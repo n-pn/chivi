@@ -55,9 +55,7 @@
 
     <div class="crits">
       {#each crits as crit}
-        <Yscrit {crit} view_all={crit.vhtml.length < 640}>
-          {@html crit.vhtml}
-        </Yscrit>
+        <Yscrit {crit} view_all={crit.vhtml.length < 640} />
       {/each}
 
       <footer class="pagi">

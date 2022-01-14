@@ -11,8 +11,8 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Appbar from '$lib/sects/Appbar.svelte'
 
-  $: ubmemo = $page.stuff.ubmemo
-  $: nvinfo = $page.stuff.nvinfo
+  $: ubmemo = $page.stuff.ubmemo || {}
+  $: nvinfo = $page.stuff.nvinfo || {}
   $: status = ubmemo.status || 'default'
 
   async function update_ubmemo(status) {

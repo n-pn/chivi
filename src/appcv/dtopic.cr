@@ -36,6 +36,11 @@ class CV::Dtopic
     owner ? where({cvuser_id: owner.id}) : with_cvuser
   end
 
+  getter dtbody : Dtpost do
+    params = {dtopic_id: self.id, dt_id: 0}
+    Dtpost.find(params) || Dtpost.new(params)
+  end
+
   def set_title(title : String)
     self.title = title
     self.tslug = TextUtils.slugify(title)

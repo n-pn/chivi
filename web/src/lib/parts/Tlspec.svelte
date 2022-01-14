@@ -80,14 +80,20 @@
     const params = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
     const [err, data] = await call_api(fetch, url, params, 'POST')
     if (err) error = data
-    else ctrl.hide()
+    else {
+      ctrl.hide()
+      on_destroy()
+    }
   }
 
   async function delete_tlspec() {
     const url = 'tlspecs/' + $entry._ukey
     const [err, data] = await call_api(fetch, url, null, 'DELETE')
     if (err) error = data
-    else ctrl.hide()
+    else {
+      ctrl.hide()
+      on_destroy()
+    }
   }
 
   function init_match() {

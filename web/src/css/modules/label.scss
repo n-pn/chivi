@@ -1,0 +1,41 @@
+@use '../essence' as *;
+
+.m-label {
+  display: inline-block;
+  line-height: 1.5rem;
+  padding: 0 0.75rem;
+
+  font-weight: 500;
+  cursor: pointer;
+
+  color: var(--color, #{color(primary, 5)});
+  box-shadow: 0 0 0 1px var(--bdcolor, #{color(primary, 2)}) inset;
+  background: var(--bgcolor, #{color(primary, 1)});
+
+  @include bdradi(0.75rem);
+  @include ftsize(sm);
+
+  &._2 {
+    --color: #{color(success, 5)};
+    --bdcolor: #{color(success, 2)};
+    --bgcolor: #{color(success, 1)};
+  }
+
+  &._3 {
+    --color: #{color(harmful, 5)};
+    --bdcolor: #{color(harmful, 2)};
+    --bgcolor: #{color(harmful, 1)};
+  }
+
+  &._4 {
+    --color: #{color(warning, 5)};
+    --bdcolor: #{color(warning, 2)};
+    --bgcolor: #{color(warning, 1)};
+  }
+
+  &._5 {
+    --color: #{color(purple, 5)};
+    --bdcolor: #{color(purple, 2)};
+    --bgcolor: #{color(purple, 1)};
+  }
+}

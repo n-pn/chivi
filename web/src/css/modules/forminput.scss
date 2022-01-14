@@ -30,12 +30,11 @@
 
   &:focus {
     @include bgcolor(tert);
-    box-shadow: 0 0 0 2px color(primary, 5, 5);
+    box-shadow: 0 0 0 1px color(primary, 5, 5);
   }
 
   &::placeholder {
     font-style: italic;
-    @include ftsize(sm);
     @include fgcolor(tert);
   }
 

@@ -45,9 +45,7 @@
 
     <div class="crits">
       {#each crits as crit}
-        <Yscrit {crit} show_book={false} view_all={crit.vhtml.length < 640}>
-          {@html crit.vhtml}
-        </Yscrit>
+        <Yscrit {crit} show_book={false} view_all={crit.vhtml.length < 640} />
       {:else}
         <div class="empty">Chưa có đánh giá</div>
       {/each}

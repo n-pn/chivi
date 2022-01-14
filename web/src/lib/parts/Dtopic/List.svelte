@@ -1,0 +1,119 @@
+<script>
+  import { dlabels } from '$lib/constants'
+  import { get_rtime } from '$atoms/RTime.svelte'
+
+  export let topics = []
+  export let dboard = {}
+</script>
+
+{#each topics as topic}
+  <topic-card>
+    <topic-body>
+      <a
+        class="topic-title"
+        href="/board/-{dboard.bslug}/-{topic.tslug}-{topic.id}">
+        {topic.title}
+      </a>
+
+      {#each topic.labels as label}
+        <a class="m-label _{label}" href="?label={label}">{dlabels[label]}</a>
+      {/each}
+    </topic-body>
+
+    <topic-foot>
+      <topic-user>{topic.u_dname}</topic-user>
+      <topic-sep>·</topic-sep>
+      <topic-time>{get_rtime(topic.ctime || 1212121200)}</topic-time>
+      <topic-sep>·</topic-sep>
+      <topic-repl>
+        {#if topic.posts > 0}
+          <span>{topic.posts} lượt trả lời</span>
+        {:else}
+          <span>Trả lời</span>
+        {/if}
+      </topic-repl>
+    </topic-foot>
+  </topic-card>
+{:else}
+  <div class="empty">
+    <h4>Chưa có chủ đề thảo luận :(</h4>
+  </div>
+{/each}
+
+<style lang="scss">
+  .empty {
+    height: 20rem;
+    max-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-style: italic;
+    @include ftsize(lg);
+    @include fgcolor(mute);
+  }
+
+  topic-card {
+    display: block;
+
+    @include border(--bd-main, $loc: bottom);
+    &:first-of-type {
+      @include border(--bd-main, $loc: top);
+    }
+
+    > * {
+      padding-left: var(--gutter);
+      padding-right: var(--gutter);
+    }
+  }
+
+  topic-foot {
+    @include flex($gap: 0.25rem);
+    line-height: 2rem;
+    @include ftsize(sm);
+    @include fgcolor(secd);
+  }
+
+  topic-time {
+    @include clamp($width: null);
+  }
+
+  topic-user {
+    font-weight: 200;
+    // @include ftsize(md);
+  }
+
+  topic-body {
+    display: block;
+    padding-top: 0.5rem;
+
+    @include bps(font-size, rem(16px), rem(17px));
+
+    cursor: pointer;
+    &:hover .topic-title {
+      @include fgcolor(primary, 5);
+    }
+  }
+
+  .topic-title {
+    @include ftsize(lg);
+    @include fgcolor(secd);
+    word-wrap: break-word;
+
+    font-weight: 500;
+    line-height: 1.5rem;
+  }
+
+  topic-repl {
+    font-style: italic;
+    cursor: pointer;
+    @include hover {
+      @include fgcolor(primary, 5);
+      text-decoration: underline;
+    }
+  }
+
+  .m-label + .m-label {
+    margin-left: 0.25rem;
+  }
+</style>

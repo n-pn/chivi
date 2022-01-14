@@ -3,8 +3,8 @@
   import { api_call } from '$api/_api_call'
 
   export async function load({ params, fetch }) {
-    const [status, props] = await api_call(fetch, `books/${params.book}`)
-    return status ? { status, error: props } : { stuff: props, props }
+    const [status, payload] = await api_call(fetch, `books/${params.book}`)
+    return status ? { status, error: payload } : { stuff: payload }
   }
 
   function gen_keywords({ zname, vname, hname, author, genres }) {
@@ -13,10 +13,11 @@
 </script>
 
 <script>
-  $: nvinfo = $page.stuff.nvinfo
-  $: bintro = nvinfo.bintro.join('').substring(0, 300)
+  $: nvinfo = $page.stuff.nvinfo || {}
+  $: bintro = (nvinfo.bintro || []).join('').substring(0, 300)
   $: bcover = nvinfo.bcover || '_blank.png'
-  $: update = new Date(nvinfo.mftime).toISOString()
+  $: update = new Date(nvinfo.mftime || 0).toISOString()
+  $: genres = nvinfo.genres || []
 </script>
 
 <svelte:head>
@@ -30,7 +31,7 @@
   <meta property="og:url" content="https://chivi.app/-{nvinfo.bslug}" />
   <meta property="og:image" content="https://chivi.app/covers/{bcover}" />
 
-  <meta property="og:novel:category" content={nvinfo.genres[0]} />
+  <meta property="og:novel:category" content={genres[0]} />
   <meta property="og:novel:author" content={nvinfo.author} />
   <meta property="og:novel:book_name" content={nvinfo.vname} />
   <meta property="og:novel:status" content={nvinfo.status} />

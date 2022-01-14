@@ -1,0 +1,77 @@
+<script context="module">
+  import { dlabels } from '$lib/constants'
+
+  export async function load({ stuff, fetch, url: { searchParams } }) {
+    const { nvinfo } = stuff
+
+    const page = +searchParams.get('page') || 1
+    const dlbl = searchParams.get('label')
+
+    const api_url = `/api/topics?dboard=${nvinfo.id}&page=${page}&take=${15}`
+    const api_res = await fetch(dlbl ? `${api_url}&dlabel=${dlbl}` : api_url)
+
+    if (api_res.ok) return { props: { content: await api_res.json() } }
+    return { status: api_res.status, error: await api_res.text() }
+  }
+</script>
+
+<script>
+  import { page, session } from '$app/stores'
+
+  import SIcon from '$atoms/SIcon.svelte'
+  import Mpager, { Pager } from '$molds/Mpager.svelte'
+
+  import DtopicList from '$parts/Dtopic/List.svelte'
+  import DtopicForm, { ctrl as dtopic_form } from '$parts/Dtopic/Form.svelte'
+  import BookPage from './_layout/BookPage.svelte'
+
+  // export let dboard
+  export let content = { items: [], pgidx: 1, pgmax: 1 }
+
+  $: pager = new Pager($page.url, { page: 1, tl: '' })
+
+  $: nvinfo = $page.stuff.nvinfo
+  $: dboard = { id: nvinfo.id, bname: nvinfo.vname, bslug: nvinfo.bslug }
+</script>
+
+<BookPage nvtab="board">
+  <board-content>
+    <DtopicList topics={content.items} {dboard} />
+
+    {#if content.total > 10}
+      <board-pagi>
+        <Mpager {pager} pgidx={content.pgidx} pgmax={content.pgmax} />
+      </board-pagi>
+    {/if}
+
+    <board-foot>
+      <button class="m-btn _primary _fill" on:click={() => dtopic_form.show(0)}>
+        <SIcon name="message-plus" />
+        <span>Tạo chủ đề mới</span></button>
+    </board-foot>
+
+    {#if $session.privi > 0 && $dtopic_form.actived}
+      <DtopicForm {dboard} />
+    {/if}
+  </board-content>
+</BookPage>
+
+<style lang="scss">
+  board-content {
+    display: block;
+    @include bps(margin-left, 0rem, 0.1rem, 1.5rem, 2rem);
+    @include bps(margin-right, 0rem, 0.1rem, 1.5rem, 2rem);
+  }
+
+  board-pagi {
+    display: block;
+    margin-top: 0.75rem;
+  }
+
+  board-foot {
+    display: block;
+    text-align: center;
+    padding-top: 0.75rem;
+    @include border($loc: top);
+  }
+</style>

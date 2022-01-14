@@ -58,6 +58,22 @@ class CV::DtopicCtrl < CV::BaseCtrl
     halt!(404, "Chủ đề không tồn tại!")
   end
 
+  def detail
+    dtopic = Dtopic.load!(params["dtopic"].to_i64)
+
+    json_view({
+      id: dtopic.id,
+
+      title:  dtopic.title,
+      labels: dtopic.dlabel_ids,
+
+      body_input: dtopic.dtbody.input,
+      body_itype: dtopic.dtbody.itype,
+    })
+  rescue err
+    halt!(404, "Chủ đề không tồn tại!")
+  end
+
   def create
     dboard = Dboard.load!(params["dboard"].to_i64)
     return halt!(403) unless DboardACL.dtopic_create?(dboard, _cvuser)
