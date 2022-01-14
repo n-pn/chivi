@@ -8,12 +8,18 @@
   font-weight: 500;
   cursor: pointer;
 
-  color: var(--color, #{color(primary, 5)});
-  box-shadow: 0 0 0 1px var(--bdcolor, #{color(primary, 2)}) inset;
-  background: var(--bgcolor, #{color(primary, 1)});
+  color: var(--color, #{color(neutral, 5)});
+  box-shadow: 0 0 0 1px var(--bdcolor, #{color(neutral, 2)}) inset;
+  background: var(--bgcolor, #{color(neutral, 1)});
 
   @include bdradi(0.75rem);
   @include ftsize(sm);
+
+  &._1 {
+    --color: #{color(primary, 5)};
+    --bdcolor: #{color(primary, 2)};
+    --bgcolor: #{color(primary, 1)};
+  }
 
   &._2 {
     --color: #{color(success, 5)};

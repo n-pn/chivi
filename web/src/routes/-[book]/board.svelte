@@ -5,12 +5,14 @@
     const { nvinfo } = stuff
 
     const page = +searchParams.get('page') || 1
-    const dlbl = searchParams.get('label')
+    const dlabel = searchParams.get('label')
 
     const api_url = `/api/topics?dboard=${nvinfo.id}&page=${page}&take=${15}`
-    const api_res = await fetch(dlbl ? `${api_url}&dlabel=${dlbl}` : api_url)
+    const api_res = await fetch(
+      dlabel ? `${api_url}&dlabel=${dlabel}` : api_url
+    )
 
-    if (api_res.ok) return { props: { content: await api_res.json() } }
+    if (api_res.ok) return { props: { dlabel, content: await api_res.json() } }
     return { status: api_res.status, error: await api_res.text() }
   }
 </script>
@@ -27,6 +29,7 @@
 
   // export let dboard
   export let content = { items: [], pgidx: 1, pgmax: 1 }
+  export let dlabel = ''
 
   $: pager = new Pager($page.url, { page: 1, tl: '' })
 
@@ -36,6 +39,20 @@
 
 <BookPage nvtab="board">
   <board-content>
+    <board-filter>
+      <span>Lọc nhãn:</span>
+      <a href="board" class="m-label _0">
+        <span>Tất cả</span>
+        {#if !dlabel}<SIcon name="check" /> {/if}
+      </a>
+      {#each Object.entries(dlabels) as [value, label]}
+        <a class="m-label _{value}" href="board?label={value}">
+          <span>{label}</span>
+          {#if dlabel == value}<SIcon name="check" /> {/if}
+        </a>
+      {/each}
+    </board-filter>
+
     <DtopicList topics={content.items} {dboard} />
 
     {#if content.total > 10}
@@ -61,6 +78,16 @@
     display: block;
     @include bps(margin-left, 0rem, 0.1rem, 1.5rem, 2rem);
     @include bps(margin-right, 0rem, 0.1rem, 1.5rem, 2rem);
+  }
+
+  board-filter {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .m-label {
+    margin-left: 0.25rem;
   }
 
   board-pagi {
