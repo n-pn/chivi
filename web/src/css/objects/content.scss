@@ -66,3 +66,28 @@ x-v {
 x-t {
   @include bdradi();
 }
+
+cv-user {
+  font-weight: 500;
+
+  &[privi='-1'] {
+    text-decoration: line-through;
+    @include fgcolor(neutral, 5);
+  }
+
+  &[privi='1'] {
+    @include fgcolor(primary, 5);
+  }
+
+  &[privi='2'] {
+    @include fgcolor(success, 5);
+  }
+
+  &[privi='3'] {
+    @include fgcolor(warning, 5);
+  }
+
+  &[privi='4'] {
+    @include fgcolor(harmful, 5);
+  }
+}

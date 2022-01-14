@@ -8,7 +8,7 @@ module CV::DtopicView
       jb.field "b_bslug", dboard.bslug
 
       jb.field "u_dname", cvuser.uname
-      jb.field "u_privi", cvuser.uname
+      jb.field "u_privi", cvuser.privi
 
       jb.field "id", dtopic.id
 

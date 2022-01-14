@@ -7,7 +7,7 @@
     const page = +searchParams.get('page') || 1
     const dlabel = searchParams.get('label')
 
-    const api_url = `/api/topics?dboard=${nvinfo.id}&page=${page}&take=${15}`
+    const api_url = `/api/topics?dboard=${nvinfo.id}&page=${page}&take=10`
     const api_res = await fetch(
       dlabel ? `${api_url}&dlabel=${dlabel}` : api_url
     )
@@ -84,12 +84,11 @@
 
   board-filter {
     display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+
     justify-content: center;
     margin-bottom: 0.75rem;
-  }
-
-  .m-label {
-    margin-left: 0.25rem;
   }
 
   board-pagi {
