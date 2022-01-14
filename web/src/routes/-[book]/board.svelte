@@ -100,6 +100,7 @@
   board-foot {
     display: block;
     text-align: center;
+    margin-top: 0.75rem;
     padding-top: 0.75rem;
     @include border($loc: top);
   }

@@ -10,6 +10,6 @@ class CV::PostUtil
 
   def self.html_to_text(input : String)
     input = "<html><body>#{input}</body></html>"
-    Myhtml::Parser.new(input).body.not_nil!.inner_text('\n')
+    Myhtml::Parser.new(input).body.not_nil!.inner_text
   end
 end
