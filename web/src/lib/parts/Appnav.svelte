@@ -17,21 +17,10 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <a href="/qtran" class="-btn">
-      <SIcon name="bolt" />
-    </a>
-
-    <a href="/crits" class="-btn">
-      <SIcon name="stars" />
-    </a>
-
-    <a href="/dicts" class="-btn">
-      <SIcon name="package" />
-    </a>
-
-    <a href="/" class="-btn">
-      <SIcon name="home" />
-    </a>
+    <a href="/qtran" class="-btn"><SIcon name="bolt" /></a>
+    <a href="/crits" class="-btn"><SIcon name="stars" /></a>
+    <a href="/dicts" class="-btn"><SIcon name="package" /></a>
+    <a href="/" class="-btn"><SIcon name="home" /></a>
   </svelte:fragment>
 
   <section class="content">
@@ -49,7 +38,7 @@
       <span>Sắp xếp</span>
     </header>
 
-    <div class="chips">
+    <div class="m-chips">
       {#each Object.entries(order_names) as [name, text]}
         <a href="/books?order={name}" class="m-chip _blue">{text}</a>
       {/each}
@@ -71,9 +60,9 @@
       <span>Nguồn truyện</span>
     </header>
 
-    <div class="chips">
+    <div class="m-chips">
       {#each snames as sname}
-        <a href="/books?sname={sname}" class="m-chip _orange _caps">
+        <a href="/books?sname={sname}" class="m-chip _caps">
           {sname}
         </a>
       {/each}

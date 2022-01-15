@@ -6,7 +6,7 @@
   let show_all_genres = false
 </script>
 
-<genre-list>
+<genre-list class="m-chips">
   {#each bgenres as [name, slug]}
     {@const _active = genres.includes(name) || genres.includes(slug)}
     {@const _reveal = show_all_genres || mgenres.includes(name)}
@@ -22,14 +22,4 @@
 </genre-list>
 
 <style lang="scss">
-  genre-list {
-    @include flow();
-    margin-right: -0.375rem;
-    margin-bottom: -0.375rem;
-    @include bps(font-size, rem(12px), rem(13px), rem(14px));
-  }
-
-  .m-chip {
-    float: left;
-  }
 </style>
