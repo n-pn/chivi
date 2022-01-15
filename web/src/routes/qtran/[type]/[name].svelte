@@ -20,7 +20,7 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import CvPage from '$sects/CvPage.svelte'
@@ -39,25 +39,18 @@
     const res = await fetch(url)
     cvdata = await res.text()
   }
+
+  $: appbar.set({
+    left: [
+      ['Dịch nhanh', 'bolt', '/qtran', null, '_show-sm'],
+      [`[${name}]`, icons[type], null, '_title'],
+    ],
+  })
 </script>
 
 <svelte:head>
-  <title>Dịch nhanh - Chivi</title>
+  <title>Dịch nhanh: {name} - Chivi</title>
 </svelte:head>
-
-<Appbar ptype="cvmtl">
-  <svelte:fragment slot="left">
-    <a href="/qtran" class="header-item">
-      <SIcon name="bolt" />
-      <span class="header-text _show-sm">Dịch nhanh</span>
-    </a>
-
-    <span class="header-item _active _title">
-      <SIcon name={icons[type]} />
-      <span class="header-text">[{name}]</span>
-    </span>
-  </svelte:fragment>
-</Appbar>
 
 <Vessel>
   <section class="body">

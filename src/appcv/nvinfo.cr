@@ -133,7 +133,7 @@ class CV::Nvinfo
   end
 
   scope :filter_genre do |input|
-    input ? where("genre_ids @> ?", [BGenre.map_id(input)]) : self
+    input ? where("genre_ids @> ?", BGenre.map_id(input.split('+'))) : self
   end
 
   scope :filter_labels do |input|

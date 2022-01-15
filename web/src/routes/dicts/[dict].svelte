@@ -26,7 +26,7 @@
   import { get_rtime_short } from '$atoms/RTime.svelte'
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let dname = 'combine'
@@ -99,24 +99,18 @@
     ztext.put(key)
     upsert.show(d_tab, state)
   }
+
+  $: appbar.set({
+    left: [
+      ['Từ điển', 'package', '/dicts', null, '_show-md'],
+      [d_dub, null, $page.url.pathname, '_title', '_title'],
+    ],
+  })
 </script>
 
 <svelte:head>
   <title>Từ điển: {d_dub} - Chivi</title>
 </svelte:head>
-
-<Appbar>
-  <svelte:fragment slot="left">
-    <a href="/dicts" class="header-item">
-      <SIcon name="package" />
-      <span class="header-text _show-md">Từ điển</span>
-    </a>
-
-    <a href={$page.url.pathname} class="header-item _active _title">
-      <span class="header-text _title">{d_dub}</span>
-    </a>
-  </svelte:fragment>
-</Appbar>
 
 <Vessel>
   <article class="m-article">

@@ -37,7 +37,41 @@ export const status_icons = {
   pending: 'calendar',
 }
 
-export const genres = [
+export const bgenres = [
+  ['Huyền ảo', 'huyen-ao', '玄幻'],
+  ['Kỳ huyễn', 'ky-huyen', '奇幻'],
+  ['Giả tưởng', 'gia-tuong', '幻想'],
+  ['Ma pháp', 'ma-phap', '魔法'],
+  ['Lịch sử', 'lich-su', '历史'],
+  ['Quân sự', 'quan-su', '军事'],
+  ['Đô thị', 'do-thi', '都市'],
+  ['Hiện thực', 'hien-thuc', '现实'],
+  ['Chức trường', 'chuc-truong', '职场'],
+  ['Quan trường', 'quan-truong', '官场'],
+  ['Vườn trường', 'vuon-truong', '校园'],
+  ['Thương chiến', 'thuong-chien', '商战'],
+  ['Tiên hiệp', 'tien-hiep', '仙侠'],
+  ['Tu chân', 'tu-chan', '修真'],
+  ['Khoa viễn', 'khoa-vien', '科幻'],
+  ['Không gian', 'khong-gian', '空间'],
+  ['Trò chơi', 'tro-choi', '游戏', '网游'],
+  ['Thể thao', 'the-thao', '体育'],
+  ['Thi đấu', 'thi-dau', '竞技'],
+  ['Huyền nghi', 'huyen-nghi', '悬疑'],
+  ['Kinh dị', 'kinh-di', '惊悚'],
+  ['Thần quái', 'than-quai', '灵异'],
+  ['Đồng nhân', 'dong-nhan', '同人'],
+  ['Võ hiệp', 'vo-hiep', '武侠'],
+  ['Đam mỹ', 'dam-my', '耽美'],
+  ['Nữ sinh', 'nu-sinh', '女生'],
+  ['Ngôn tình', 'ngon-tinh', '言情'],
+  ['Xuyên việt', 'xuyen-viet', '穿越'],
+  ['Trạch văn', 'trach-van', '二次元', '轻小说'],
+  ['Phi sắc', 'phi-sac', '緋色'],
+  ['Loại khác', 'loai-khac', '其他'],
+]
+
+export const mgenres = [
   'Huyền ảo',
   'Kỳ huyễn',
   'Lịch sử',
@@ -50,7 +84,6 @@ export const genres = [
   'Kinh dị',
   'Đồng nhân',
   'Võ hiệp',
-  'Đam mỹ',
   'Ngôn tình',
   'Trạch văn',
 ]

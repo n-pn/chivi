@@ -5,18 +5,18 @@
 </script>
 
 <script>
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let status
   export let error
+
+  $: appbar.set({ left: [[`Lỗi hệ thống: ${status}`]] })
 </script>
 
 <svelte:head>
   <title>{status} - Chivi</title>
 </svelte:head>
-
-<Appbar />
 
 <Vessel>
   <section class="wrapper">

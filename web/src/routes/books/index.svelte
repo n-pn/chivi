@@ -20,9 +20,8 @@
 
 <script>
   import { page } from '$app/stores'
-  import SIcon from '$atoms/SIcon.svelte'
   import Nvlist from '$parts/Nvlist.svelte'
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
@@ -31,27 +30,22 @@
   export let pgmax = 1
 
   $: pager = new Pager($page.url, { order: 'bumped', page: 1 })
+  $: appbar.set({
+    query: '',
+    right: [
+      [
+        'Thêm truyện',
+        'file-plus',
+        'link',
+        { href: '/books/+new', _text: '_show-lg' },
+      ],
+    ],
+  })
 </script>
 
 <svelte:head>
   <title>Chivi - Truyện tàu dịch máy</title>
 </svelte:head>
-
-<Appbar>
-  <svelte:fragment slot="left">
-    <form class="header-field" action="/search" method="get">
-      <input type="search" name="q" placeholder="Tìm truyện" />
-      <SIcon name="search" />
-    </form>
-  </svelte:fragment>
-
-  <svelte:fragment slot="right">
-    <a href="/books/+new" class="header-item">
-      <SIcon name="file-plus" />
-      <span class="header-text _show-lg">Thêm truyện</span>
-    </a>
-  </svelte:fragment>
-</Appbar>
 
 <Vessel>
   <div class="order">

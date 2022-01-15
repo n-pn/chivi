@@ -9,10 +9,8 @@
 </script>
 
 <script>
-  import SIcon from '$atoms/SIcon.svelte'
   import { get_rtime } from '$atoms/RTime.svelte'
-
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
@@ -21,21 +19,11 @@
   export let pgmax = 1
   export let items = []
 
+  const on_destroy = () => invalidate('/api/tlspecs')
+
   $: pager = new Pager($page.url)
-
-  const on_destroy = () => {
-    invalidate('/api/tlspecs?' + $page.url.searchParams.toString())
-  }
+  $: appbar.set({ left: [['Lỗi máy dịch']] })
 </script>
-
-<Appbar>
-  <svelte:fragment slot="left">
-    <span class="header-item _active">
-      <SIcon name="messages" />
-      <span class="header-text">Máy dịch</span>
-    </span>
-  </svelte:fragment>
-</Appbar>
 
 <Vessel>
   <article class="md-article">

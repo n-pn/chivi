@@ -1,4 +1,5 @@
 <script context="module">
+  import { writable } from 'svelte/store'
   import { browser } from '$app/env'
   import { session } from '$app/stores'
   import { scroll, toleft } from '$lib/stores'
@@ -9,11 +10,11 @@
   import Usercp from '$parts/Usercp.svelte'
 
   import Config from './Appbar/Config.svelte'
+
+  export const data = writable({ page: 'index' })
 </script>
 
 <script>
-  export let ptype = ''
-
   let active_usercp = false
   let active_appnav = false
   let active_config = false
@@ -31,13 +32,75 @@
         <span class="header-text _show-lg">Chivi</span>
       </a>
 
+      {#if $data.left}
+        {#each $data.left as [label, icon, href, _item = '', _text = ''], idx}
+          {@const active = idx == $data.left.length - 1}
+
+          {#if href}
+            <a class="header-item {_item}" class:_active={active} {href}>
+              {#if icon}<SIcon name={icon} />{/if}
+              <span class="header-text {_text}">{label}</span>
+            </a>
+          {:else}
+            <span class="header-item {_item}" class:_active={active}>
+              {#if icon}<SIcon name={icon} />{/if}
+              <span class="header-text {_text}">{label}</span>
+            </span>
+          {/if}
+        {/each}
+      {:else}
+        <form class="header-field" action="/books/search" method="get">
+          <input
+            type="search"
+            name="q"
+            placeholder="Tìm truyện"
+            value={$data.query || ''} />
+          <SIcon name="search" />
+        </form>
+      {/if}
+
       <slot name="left" />
     </div>
 
     <div class="-right">
-      <slot name="right" />
+      {#if $data.right}
+        {#each $data.right as [label, icon, type, opts = { }]}
+          {@const _item = opts._item || ''}
+          {@const _text = opts._text || ''}
 
-      {#if ptype == 'cvmtl'}
+          {#if type == 'button'}
+            <button
+              class="header-item {_item}"
+              data-kbd={opts.kbd}
+              on:click={opts.on_click}>
+              {#if icon}<SIcon name={icon} />{/if}
+              <span class="header-text {_text}">{label}</span>
+            </button>
+          {:else}
+            <a
+              class="header-item {_item}"
+              data-kbd={opts.kbd}
+              href={opts.href || '.'}>
+              {#if icon}<SIcon name={icon} />{/if}
+              <span class="header-text {_text}">{label}</span>
+            </a>
+          {/if}
+        {/each}
+      {/if}
+
+      {#if $data.page == 'index'}
+        <a href="/qtran" class="header-item">
+          <SIcon name="bolt" />
+          <span class="header-text _show-lg">Dịch nhanh</span>
+        </a>
+
+        <a href="/crits" class="header-item">
+          <SIcon name="stars" />
+          <span class="header-text _show-lg">Đánh giá</span>
+        </a>
+      {/if}
+
+      {#if $data.cvmtl}
         <button
           class="header-item"
           data-kbd="o"
@@ -61,9 +124,9 @@
   </nav>
 </app-bar>
 
-<Appnav bind:actived={active_appnav} />
-
 {#if browser}
+  <Appnav bind:actived={active_appnav} />
+
   {#if $session.uname == 'Khách'}
     <Signin bind:actived={active_usercp} />
   {:else}

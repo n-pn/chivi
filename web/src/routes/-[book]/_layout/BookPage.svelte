@@ -38,9 +38,7 @@
     <div class="line">
       <span class="stat -trim">
         <SIcon name="edit" />
-        <a
-          class="link"
-          href="/search?t=author&q={encodeURIComponent(nvinfo.author)}">
+        <a class="link" href="/books/={encodeURIComponent(nvinfo.author)}">
           <span class="label">{nvinfo.author}</span>
         </a>
       </span>
@@ -48,7 +46,7 @@
       <div class="bgenres">
         {#each nvinfo.genres as genre, idx}
           <span class="stat _genre" class:_trim={idx > 1}>
-            <a class="link" href="/?genre={genre}">
+            <a class="link" href="/books/-{genre}">
               <SIcon name="folder" />
               <span class="label">{genre}</span>
             </a>

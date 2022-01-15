@@ -4,6 +4,7 @@
 </script>
 
 <script>
+  import Appbar from '$sects/Appbar.svelte'
   import Loader from '$molds/Loader.svelte'
   import { onMount } from 'svelte'
   import '../css/generic.scss'
@@ -124,6 +125,8 @@
   class="app tm-{wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   class:kbd-hint={kbd_hint}
   class:_shift={$toleft}>
+  <Appbar />
+
   <slot />
 
   <footer>

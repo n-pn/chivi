@@ -1,8 +1,9 @@
 <script>
-  import { genres, snames, order_names } from '$lib/constants'
+  import { snames, order_names } from '$lib/constants'
 
   import SIcon from '$atoms/SIcon.svelte'
   import Gslide from '$molds/Gslide.svelte'
+  import Bgenre from '$sects/Bgenre.svelte'
 
   export let actived = false
 </script>
@@ -34,7 +35,7 @@
   </svelte:fragment>
 
   <section class="content">
-    <form class="search" action="/search" method="get">
+    <form class="search" action="/books/query" method="get">
       <input type="search" name="q" placeholder="Tìm truyện" />
       <button type="submit">
         <SIcon name="search" />
@@ -50,7 +51,7 @@
 
     <div class="chips">
       {#each Object.entries(order_names) as [name, text]}
-        <a href="/?order={name}" class="-chip">{text}</a>
+        <a href="/books?order={name}" class="m-chip _blue">{text}</a>
       {/each}
     </div>
   </section>
@@ -61,13 +62,7 @@
       <span>Phân loại</span>
     </header>
 
-    <div class="chips">
-      {#each genres as genre}
-        <a href="/?genre={genre}" class="-chip _green">
-          {genre}
-        </a>
-      {/each}
-    </div>
+    <Bgenre />
   </section>
 
   <section class="content">
@@ -78,7 +73,7 @@
 
     <div class="chips">
       {#each snames as sname}
-        <a href="/?sname={sname}" class="-chip _orange _caps">
+        <a href="/books?sname={sname}" class="m-chip _orange _caps">
           {sname}
         </a>
       {/each}
@@ -143,62 +138,6 @@
 
     span {
       margin-left: 0.5rem;
-    }
-  }
-
-  $-chip-height: 1.75rem;
-  .chips {
-    // @include flow();
-    display: flow-root;
-    flex-wrap: nowrap;
-    margin-right: -0.375rem;
-    margin-bottom: -0.375rem;
-
-    @include bps(font-size, rem(12px), rem(13px), rem(14px));
-    line-height: $-chip-height;
-  }
-
-  .-chip {
-    float: left;
-    padding: 0 0.5rem;
-    border-radius: math.div($-chip-height, 2);
-    // background-color: transparent;
-
-    color: var(--fg-color);
-    @include fgvar(color, primary, 6);
-    @include linesd(--bd-main);
-
-    font-weight: 500;
-    margin-right: 0.375rem;
-    margin-bottom: 0.375rem;
-
-    &._green {
-      @include fgvar(color, green, 6);
-    }
-
-    &._orange {
-      @include fgvar(color, orange, 6);
-    }
-
-    &._caps {
-      font-size: 0.9em;
-      text-transform: uppercase;
-    }
-
-    &:hover {
-      @include linesd(--fg-color, $ndef: false);
-    }
-
-    @include tm-dark {
-      @include fgvar(color, blue, 4);
-
-      &._green {
-        @include fgvar(color, green, 4);
-      }
-
-      &._orange {
-        @include fgvar(color, orange, 4);
-      }
     }
   }
 

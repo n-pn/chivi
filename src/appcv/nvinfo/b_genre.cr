@@ -10,7 +10,7 @@ module CV::BGenre
   class_getter id_map : Tabkv { Tabkv.new("#{DIR}/genres_id.tsv") }
 
   def map_id(input : String) : Int32
-    id_map.ival(input)
+    id_map.ival(input.strip)
   end
 
   def map_id(input : Array(String)) : Array(Int32)

@@ -9,9 +9,8 @@
 <script>
   import { page } from '$app/stores'
 
-  import SIcon from '$atoms/SIcon.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let cores = []
@@ -20,20 +19,13 @@
   export let total = 1
   export let pgidx = 1
   export let pgmax = 1
+
+  $: appbar.set({ left: [['Từ điển', 'package']] })
 </script>
 
 <svelte:head>
   <title>Từ điển - Chivi</title>
 </svelte:head>
-
-<Appbar>
-  <svelte:fragment slot="left">
-    <span class="header-item _active">
-      <SIcon name="package" />
-      <span class="header-text">Từ điển</span>
-    </span>
-  </svelte:fragment>
-</Appbar>
 
 <Vessel>
   <article class="m-article">

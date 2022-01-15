@@ -1,17 +1,13 @@
 <script>
-  import Nvinfo from '$sects/Nvinfo.svelte'
-  import Appbar from '$sects/Appbar.svelte'
+  import NvinfoForm from '$sects/Nvinfo/Form.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
+
+  $: appbar.set({
+    left: [['Thêm truyện', 'file-plus', '/books/+new']],
+  })
 </script>
 
-<Appbar>
-  <svelte:fragment slot="left">
-    <div class="header-item">
-      <span class="header-text">Thêm truyện</span>
-    </div>
-  </svelte:fragment>
-</Appbar>
-
 <Vessel>
-  <Nvinfo />
+  <NvinfoForm />
 </Vessel>

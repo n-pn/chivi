@@ -9,33 +9,23 @@
 </script>
 
 <script>
-  import { session } from '$app/stores'
-  import { invalidate } from '$app/navigation'
-
   import SIcon from '$atoms/SIcon.svelte'
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
 
   export let crit
+  $: appbar.set({
+    left: [
+      ['Đánh giá', 'stars', '/crits'],
+      [`[${crit.id}]`, null, null, null, '_seed'],
+    ],
+  })
 </script>
 
 <svelte:head>
   <title>Đánh giá - Chivi</title>
 </svelte:head>
-
-<Appbar ptype="cvmtl">
-  <svelte:fragment slot="left">
-    <a href="/crits" class="header-item">
-      <SIcon name="messages" />
-      <span class="header-text">Đánh giá</span>
-    </a>
-
-    <button class="header-item _active">
-      <span class="header-text _seed">[{crit.id}]</span>
-    </button>
-  </svelte:fragment>
-</Appbar>
 
 <Vessel>
   <section class="main">

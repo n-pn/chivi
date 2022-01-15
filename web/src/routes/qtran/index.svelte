@@ -1,6 +1,6 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import CvPage from '$sects/CvPage.svelte'
@@ -16,6 +16,8 @@
 
   $: if (edit_mode) text_elem && text_elem.focus()
   $: on_edit = edit_mode || !cvdata
+
+  $: appbar.set({ left: [['Dịch nhanh', 'bolt']] })
 
   const on_change = () => convert()
 
@@ -49,13 +51,6 @@
 <svelte:head>
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
-
-<Appbar ptype="cvmtl">
-  <span slot="left" class="header-item _active">
-    <SIcon name="bolt" />
-    <span class="header-text">Dịch nhanh</span>
-  </span>
-</Appbar>
 
 <Vessel>
   <section class="main">
