@@ -22,7 +22,7 @@
 
       <a
         class="topic-title"
-        href="/board/-{dboard.bslug}/-{topic.tslug}-{topic.id}">
+        href="/forum/-{dboard.bslug}/-{topic.tslug}-{topic.id}">
         {topic.title}
       </a>
     </topic-head>
