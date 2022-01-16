@@ -49,7 +49,7 @@
           {/if}
         {/each}
       {:else}
-        <form class="header-field" action="/books/search" method="get">
+        <form class="header-field" action="/books/query" method="get">
           <input
             type="search"
             name="q"
@@ -58,8 +58,6 @@
           <SIcon name="search" />
         </form>
       {/if}
-
-      <slot name="left" />
     </div>
 
     <div class="-right">
