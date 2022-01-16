@@ -10,11 +10,9 @@ module CV::TlRule
     when .vm_xiang?
       return fold_verbs!(node.set!(PosTag::Verb)) if succ.try(&.adv_bu?)
       node = heal_vm_xiang!(node, succ, nega)
+      return fold_verbs!(node) if node.verb?
     else
-      if vmodal_is_noun?(node)
-        node.tag = PosTag::Noun
-      end
-
+      node.tag = PosTag::Noun if vmodal_is_noun?(node)
       node = fold!(nega, node, node.tag, dic: 6) if nega
     end
 
@@ -25,7 +23,7 @@ module CV::TlRule
       fold_preposes!(node)
     when .adverbs?
       succ = fold_adverbs!(succ)
-      fold!(node, succ, succ.tag, dic: 6)
+      succ.verb? ? fold!(node, succ, succ.tag, dic: 6) : node
     when .verbs?
       verb = fold!(node, succ, succ.tag, dic: 6)
       fold_verbs!(verb)
@@ -69,13 +67,18 @@ module CV::TlRule
   end
 
   def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    if has_verb_after?(node)
-      node.val = "muốn" unless succ.try(&.key.== "也")
-    elsif succ && succ.human?
-      if has_verb_after?(succ)
-        node.set!("muốn")
-      else
-        node.set!("nhớ", PosTag::Verb)
+    if succ
+      if succ.vdirs? || (val = MTL::VERB_COMPLS[succ.key]?)
+        node.set!("nhớ") if succ.succ?(&.human?)
+        succ.set!(val || succ.val, PosTag::Verb)
+      elsif succ.key != "也" && has_verb_after?(node)
+        node.val = "muốn"
+      elsif succ.human?
+        if has_verb_after?(succ)
+          node.set!("muốn")
+        else
+          node.set!("nhớ", PosTag::Verb)
+        end
       end
     end
 

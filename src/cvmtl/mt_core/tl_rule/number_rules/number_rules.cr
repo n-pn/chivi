@@ -43,6 +43,8 @@ module CV::TlRule
     return node unless tail = node.succ?
     return node if tail.puncts?
 
+    return fold!(node, tail, PosTag::Noun, dic: 9, flip: true) if tail.key == "号"
+
     node, appro = fold_pre_quanti_appro!(node, tail)
     if appro > 0
       return node unless tail = node.succ?
