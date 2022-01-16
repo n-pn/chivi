@@ -58,7 +58,7 @@ module CV::TlRule
     when .verb_object?
       left = fold!(left, ude1, PosTag::DefnPhrase, dic: 4)
       fold!(left, right, PosTag::NounPhrase, dic: 5, flip: true)
-    when .nouns?, .pronouns?, .numeric?
+    when .nouns?, .pronouns?, .numeric?, .verb_clause?, .adjt_clause?
       fold_noun_ude1!(left, ude1: ude1, right: right, mode: mode)
     when .verb?, .verb_phrase?
       fold_verb_ude1!(left, ude1: ude1, right: right, mode: mode)
