@@ -51,9 +51,13 @@ module CV::TlRule
     case node.key
     when "第" then fold_第!(node)
     when "完"
-      node.val = "nộp"
-      node.tag = PosTag::Verb
-      return fold_verbs!(node)
+      if node.succ?(&.puncts?)
+        node.set!("hết")
+      else
+        node.val = "nộp"
+        node.tag = PosTag::Verb
+        fold_verbs!(node)
+      end
     when "对不起"
       return node if boundary?(succ)
       fold_verbs!(node.set!("có lỗi với", PosTag::Verb))
