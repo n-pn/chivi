@@ -12,7 +12,7 @@
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^4.1.3",
     "@sveltejs/adapter-node": "^1.0.0-next.61",
-    "@sveltejs/kit": "^1.0.0-next.229",
+    "@sveltejs/kit": "^1.0.0-next.232",
     "autoprefixer": "^10.4.2",
     "cssnano": "5.0.7",
     "mdsvex": "^0.9.8",
@@ -20,7 +20,7 @@
     "postcss-load-config": "^3.1.1",
     "remark-breaks": "^2.0.2",
     "sass": "^1.48.0",
-    "svelte": "^3.46.1",
+    "svelte": "^3.46.2",
     "svelte-preprocess": "^4.10.1"
   },
   "browserslist": [

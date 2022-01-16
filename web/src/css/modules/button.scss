@@ -6,7 +6,7 @@ $-btn-height-md: rem(36px);
 $-btn-height-lg: rem(44px);
 $-btn-height-xl: rem(60px);
 
-$-colors: (primary, success, warning, harmful);
+$-colors: (primary, success, warning, harmful, private);
 
 @mixin text-button($color: neutral) {
   @include fgvar(btn, $color, 6);

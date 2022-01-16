@@ -66,8 +66,10 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       if chinfo = zhbook.chinfo(0)
         ubmemo.lr_sname = zhbook.sname
         ubmemo.lr_chidx = -1
-        ubmemo.lc_title = chinfo.title
         ubmemo.lc_uslug = chinfo.uslug
+      else
+        ubmemo.lr_sname = "chivi"
+        ubmemo.lc_uslug = "thieu-chuong"
       end
     end
 

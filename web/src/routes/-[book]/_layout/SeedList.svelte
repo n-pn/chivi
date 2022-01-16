@@ -6,42 +6,34 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let sname = ''
-  export let pgidx = 0
-  export let center = false
+  export let pager
 
-  $: nvinfo = $page.stuff.nvinfo || {}
   $: chseed = $page.stuff.chseed || []
+  $: snames = chseed.map((x) => x.sname) || []
+  $: active_sname = pager.get('sname')
+  $: hidden_seeds = calculate_hidden_seeds(snames, active_sname)
 
   let show_less = true
 
-  function chap_url(sname, pgidx = 0) {
-    const url = `/-${nvinfo.bslug}/-${sname}`
-    return pgidx > 1 ? url + `?page=${pgidx}` : url
-  }
-
-  $: snames = chseed.map((x) => x.sname) || []
-  $: hidden_seeds = calculate_hidden_seeds(snames, sname)
-
-  function calculate_hidden_seeds(snames, sname) {
-    if (snames.length < 4) return 0
-    if (snames.slice(0, 4).includes(sname)) return snames.length - 4
-    return snames.length - 3
+  function calculate_hidden_seeds(snames, sname, size = 4) {
+    if (snames.length < size) return 0
+    if (snames.slice(0, size).includes(sname)) return snames.length - size
+    return snames.length - size + 1
   }
 </script>
 
-<seed-list class:center>
-  {#each chseed as zhbook, idx}
+<seed-list>
+  {#each chseed as { sname, chaps, _type }, idx}
     <a
       class="seed-name"
-      class:_hidden={zhbook.sname != 'users' && idx >= 3 && show_less}
-      class:_active={zhbook.sname == sname}
-      href={chap_url(zhbook.sname, pgidx)}>
+      class:_hidden={sname != 'users' && idx >= 4 && show_less}
+      class:_active={sname == active_sname}
+      href={pager.make_url({ sname })}>
       <seed-label>
-        <span>{zhbook.sname}</span>
-        <SIcon name={icon_types[zhbook._type]} />
+        <span>{sname}</span>
+        <SIcon name={icon_types[_type]} />
       </seed-label>
-      <seed-stats><strong>{zhbook.chaps}</strong> chương</seed-stats>
+      <seed-stats><strong>{chaps}</strong> chương</seed-stats>
     </a>
   {/each}
 
@@ -51,31 +43,14 @@
       <seed-stats>({hidden_seeds})</seed-stats>
     </button>
   {/if}
-
-  {#if !snames.includes('users')}
-    <a
-      class="seed-name"
-      class:_active={sname === 'users'}
-      href={chap_url('users', 0)}>
-      <seed-label>
-        <span>users</span>
-        <SIcon name="archive" />
-      </seed-label>
-      <seed-stats><strong>0</strong> chương</seed-stats>
-    </a>
-  {/if}
 </seed-list>
 
 <style lang="scss">
   seed-list {
-    @include flex($gap: 0.375rem);
+    @include flex-cx($gap: 0.375rem);
     flex-wrap: wrap;
-
-    &.center {
-      justify-content: center;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-    }
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 
   @mixin label {

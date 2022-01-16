@@ -1,10 +1,22 @@
 <script context="module">
   import { page } from '$app/stores'
   import { api_call } from '$api/_api_call'
+  import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ params, fetch }) {
-    const [status, payload] = await api_call(fetch, `books/${params.book}`)
-    return status ? { status, error: payload } : { stuff: payload }
+    const [status, stuff] = await api_call(fetch, `books/${params.book}`)
+
+    if (status) return { status, error: stuff }
+
+    const { nvinfo } = stuff
+    const left = [[nvinfo.vname, 'book', `/-${nvinfo.bslug}`, null, '_title']]
+
+    const right_link = `/dicts/${nvinfo.bhash}`
+    const right_opts = { kbd: 'p', _text: '_show-md' }
+    const right = [['Từ điển', 'package', right_link, right_opts]]
+    appbar.set({ left, right })
+
+    return { stuff }
   }
 
   function gen_keywords({ zname, vname, hname, author, genres }) {

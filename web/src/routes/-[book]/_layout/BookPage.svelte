@@ -1,19 +1,45 @@
-<script>
-  import { page } from '$app/stores'
+<script context="module">
+  import { page, session } from '$app/stores'
+  import { invalidate } from '$app/navigation'
 
-  import SIcon from '$atoms/SIcon.svelte'
-  import RTime from '$atoms/RTime.svelte'
-  import BCover from '$atoms/BCover.svelte'
-  import Vessel from '$sects/Vessel.svelte'
-
-  import SeedList from './SeedList.svelte'
-  import BookHeader from './BookHeader.svelte'
-
-  export let nvtab = 'index'
-  $: nvinfo = $page.stuff.nvinfo || {}
+  import * as ubmemo_api from '$api/ubmemo_api'
+  import { status_types, status_names, status_icons } from '$lib/constants.js'
 </script>
 
-<BookHeader />
+<script>
+  import SIcon from '$atoms/SIcon.svelte'
+
+  import RTime from '$atoms/RTime.svelte'
+  import BCover from '$atoms/BCover.svelte'
+  import Gmenu from '$molds/Gmenu.svelte'
+  import Vessel from '$sects/Vessel.svelte'
+
+  export let nvtab = 'index'
+
+  $: nvinfo = $page.stuff.nvinfo || {}
+  $: ubmemo = $page.stuff.ubmemo || {}
+
+  $: last_read = ubmemo_api.last_read(nvinfo, ubmemo)
+
+  async function update_ubmemo(status) {
+    if ($session.privi < 0) return
+    if (status == ubmemo.status) status = 'default'
+    ubmemo.status = status
+    const [stt, msg] = await ubmemo_api.update_status(nvinfo.id, status)
+
+    if (stt) return console.log(`error update book status: ${msg}`)
+    else invalidate(`/api/books/${nvinfo.bslug}`)
+  }
+
+  const status_colors = {
+    default: 'neutral',
+    reading: 'primary',
+    onhold: 'warning',
+    finished: 'success',
+    dropped: 'harmful',
+    pending: 'private',
+  }
+</script>
 
 <Vessel>
   <div class="main-info">
@@ -38,13 +64,13 @@
     <div class="line">
       <span class="stat -trim">
         <SIcon name="edit" />
-        <a class="link" href="/books/={encodeURIComponent(nvinfo.author)}">
+        <a class="link" href="/books/={nvinfo.author}">
           <span class="label">{nvinfo.author}</span>
         </a>
       </span>
 
       <div class="bgenres">
-        {#each nvinfo.genres as genre, idx}
+        {#each nvinfo.genres || [] as genre, idx}
           <span class="stat _genre" class:_trim={idx > 1}>
             <a class="link" href="/books/-{genre}">
               <SIcon name="folder" />
@@ -104,9 +130,39 @@
       </div>
     {/if}
 
-    <div class="line _chap">
-      <div class="label _chap">Chương tiết:</div>
-      <SeedList />
+    <div class="line">
+      <Gmenu class="navi-item" loc="bottom">
+        <button
+          class="m-btn _fill _{status_colors[ubmemo.status]}"
+          slot="trigger">
+          <SIcon name={status_icons[ubmemo.status]} />
+          <span>{status_names[ubmemo.status]}</span>
+        </button>
+
+        <svelte:fragment slot="content">
+          {#each status_types as status}
+            <button class="-item" on:click={() => update_ubmemo(status)}>
+              <SIcon name={status_icons[status]} />
+              <span>{status_names[status]}</span>
+              {#if status == ubmemo.status}
+                <span class="_right"><SIcon name="check" /></span>
+              {/if}
+            </button>
+          {/each}
+        </svelte:fragment>
+      </Gmenu>
+
+      <a class="m-btn" href="/-{nvinfo.bslug}/chaps" data-kbd="i">
+        <SIcon name="list" />
+        <span class="-txt">Chương tiết</span>
+      </a>
+
+      {#if !last_read.mute}
+        <a class="m-btn _primary" href={last_read.href} data-kbd="r">
+          <SIcon name={last_read.icon} />
+          <span class="-txt">{last_read.text}</span>
+        </a>
+      {/if}
     </div>
   </div>
 
@@ -175,21 +231,6 @@
     // @include bps(line-height, 1.25rem, $pl: 1.5rem, $ts: 1.75rem);
   }
 
-  // .genre {
-  //   display: inline-block;
-  //   @include bdradi();
-  //   @include bgcolor(primary, 5);
-  //   color: #fff;
-  //   text-transform: uppercase;
-  //   @include bps(font-size, rem(12px), $pl: rem(13px), $tm: rem(14px));
-  //   line-height: 1.75em;
-  //   padding: 0 0.5em;
-  //   &:hover {
-  //     @include bgcolor(primary, 5);
-  //     color: #fff;
-  //   }
-  // }
-
   .cover {
     float: left;
     @include bps(width, 40%, $pm: 35%, $pl: 30%, $ts: 25%);
@@ -201,7 +242,7 @@
 
     @include bps(width, 60%, $pm: 65%, $pl: 70%, $ts: 75%);
 
-    :global(svg) {
+    span :global(svg) {
       margin-top: -0.125rem;
     }
 
@@ -327,5 +368,9 @@
     padding: 0.75rem 0;
     display: block;
     min-height: 50vh;
+  }
+
+  .m-btn {
+    margin-right: 0.5rem;
   }
 </style>

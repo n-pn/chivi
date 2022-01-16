@@ -82,4 +82,8 @@
     width: 1.25rem;
     height: 1.25rem;
   }
+
+  .content :global(.-right) {
+    margin-left: auto;
+  }
 </style>

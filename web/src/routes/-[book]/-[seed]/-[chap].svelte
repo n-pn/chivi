@@ -1,5 +1,6 @@
 <script context="module">
   import { call_api } from '$api/_api_call'
+  import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ fetch, params: { seed, chap }, stuff }) {
     const { nvinfo } = stuff
@@ -9,6 +10,19 @@
     const [status, cvchap] = await call_api(fetch, url, null, 'GET')
 
     if (status) return { status, error: cvchap }
+
+    const book_url = `/-${nvinfo.bslug}`
+    const pgidx = Math.floor((cvchap.chinfo.chidx - 1) / 32) + 1
+    const list_url = `${book_url}/chaps?sname=${seed}&page=${pgidx}`
+
+    appbar.set({
+      left: [
+        [nvinfo.vname, 'book', book_url, '_title', '_show-sm _title'],
+        [`[${seed}]`, null, list_url, null, '_seed'],
+      ],
+      cvmtl: true,
+    })
+
     return { props: cvchap }
   }
 </script>
@@ -20,7 +34,6 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Gmenu from '$molds/Gmenu.svelte'
   import Notext from '$parts/Notext.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import CvPage from '$sects/CvPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
@@ -102,14 +115,6 @@
     if (ubmemo.sname != chmeta.sname) return false
     return ubmemo.chidx == chinfo.chidx && ubmemo.cpart == chmeta.cpart
   }
-
-  $: appbar.set({
-    left: [
-      [nvinfo.vname, 'book', paths.home, '_title', '_show-sm _title'],
-      [`[${chmeta.sname}]`, null, null, null, '_seed'],
-    ],
-    cvmtl: true,
-  })
 </script>
 
 <svelte:head>
