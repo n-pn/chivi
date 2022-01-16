@@ -107,10 +107,15 @@ module CV::TlRule
   end
 
   def clean_nquant(nquant : MtNode, prodem : MtNode?)
-    return nquant unless prodem
-    return nquant.set!("những") if nquant.key == "些"
+    return nquant unless prodem || nquant.body? || nquant.key.size > 1
 
-    nquant.dig_key?('个').try { |x| x.val = x.val.sub(/\s*cái*/, "") }
+    nquant.each do |node|
+      case node.key
+      when .includes?('些') then node.val = node.val.sub("chút", "những")
+      when .includes?('个') then node.val = node.val.sub("cái", "").strip
+      end
+    end
+
     nquant
   end
 
