@@ -53,8 +53,11 @@ module CV::TlRule
           # puts [node, node.tag]
         end
       when .preposes?
-        node = fold_preposes!(node, mode: 1) if prodem || nquant
-        # puts [node, node.succ?]
+        break unless prodem || nquant
+        node = fold_preposes!(node, mode: 1)
+        if (succ = node.succ?) && succ.ude1?
+          node = fold_ude1!(ude1: succ, prev: node)
+        end
       when .verb_object?
         break unless succ = node.succ?
 
@@ -151,7 +154,8 @@ module CV::TlRule
     # puts [node, node.succ?]
 
     case node
-    when .v_shi? then return node
+    when .v_shi?
+      return fold_v_shi!(node)
     when .veno?
       node = fold_veno!(node)
     else
@@ -169,6 +173,8 @@ module CV::TlRule
       return prev || node unless succ = scan_noun!(succ, mode: 0)
       node = fold!(node, succ, PosTag::VerbObject, dic: 6)
     end
+
+    puts [node, "here!"]
 
     fold_verb_ude1!(node)
   end

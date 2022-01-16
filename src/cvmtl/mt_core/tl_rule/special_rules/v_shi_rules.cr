@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_v_shi!(vshi : MtNode, succ = node.succ?)
+  def fold_v_shi!(vshi : MtNode, succ = vshi.succ?)
     return vshi unless succ
 
     succ = scan_noun!(succ)
