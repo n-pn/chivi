@@ -1,16 +1,18 @@
 <script context="module">
+  import { page } from '$app/stores'
+  import { data as appbar } from '$sects/Appbar.svelte'
+
   export async function load({ fetch, url: { searchParams } }) {
-    const url = `/api/dicts?${searchParams.toString()}`
-    const res = await fetch(url)
-    return { props: await res.json() }
+    const api_url = `/api/dicts?${searchParams.toString()}`
+    const api_res = await fetch(api_url)
+
+    appbar.set({ left: [['Từ điển', 'package']] })
+    return { props: await api_res.json() }
   }
 </script>
 
 <script>
-  import { page } from '$app/stores'
-
   import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let cores = []
@@ -19,8 +21,6 @@
   export let total = 1
   export let pgidx = 1
   export let pgmax = 1
-
-  $: appbar.set({ left: [['Từ điển', 'package']] })
 </script>
 
 <svelte:head>

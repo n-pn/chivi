@@ -1,20 +1,30 @@
 <script context="module">
   import { page, session } from '$app/stores'
   import { invalidate } from '$app/navigation'
-
   import { ztext, vdict } from '$lib/stores'
 
   import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
   import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
 
   import Postag, { ptnames } from '$parts/Postag.svelte'
 
   export async function load({ fetch, url }) {
     const api_url = `/api/${url.pathname}?${url.searchParams.toString()}`
-    const res = await fetch(api_url)
+    const api_res = await fetch(api_url)
+
+    const props = await api_res.json()
+
+    appbar.set({
+      left: [
+        ['Từ điển', 'package', '/dicts', null, '_show-md'],
+        [props.d_dub, null, url.pathname, '_title', '_title'],
+      ],
+    })
+
     return {
       props: {
-        ...(await res.json()),
+        ...props,
         query: Object.fromEntries(url.searchParams),
       },
     }
@@ -26,7 +36,6 @@
   import { get_rtime_short } from '$atoms/RTime.svelte'
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let dname = 'combine'
@@ -99,13 +108,6 @@
     ztext.put(key)
     upsert.show(d_tab, state)
   }
-
-  $: appbar.set({
-    left: [
-      ['Từ điển', 'package', '/dicts', null, '_show-md'],
-      [d_dub, null, $page.url.pathname, '_title', '_title'],
-    ],
-  })
 </script>
 
 <svelte:head>

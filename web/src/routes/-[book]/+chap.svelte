@@ -1,12 +1,21 @@
 <script context="module">
-  export async function load({ url, fetch, stuff }) {
+  import { data as appbar } from '$sects/Appbar.svelte'
+
+  export async function load({ url, fetch, stuff: { nvinfo } }) {
     const chidx = +url.searchParams.get('chidx') || 1
 
     let input = ''
 
     if (url.searchParams.get('mode') == 'edit') {
-      input = await load_text(fetch, stuff.nvinfo.id, chidx)
+      input = await load_text(fetch, nvinfo.id, chidx)
     }
+
+    appbar.set({
+      left: [
+        [nvinfo.vname, 'book', `/-${nvinfo.bslug}`, '_title', '_show-md'],
+        ['Thêm/sửa chương'],
+      ],
+    })
 
     return { props: { chidx, input } }
   }
@@ -22,7 +31,6 @@
   import { goto } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let chidx = 1
@@ -46,13 +54,6 @@
       await res.text()
     }
   }
-
-  $: appbar.set({
-    left: [
-      [nvinfo.vname, 'book', `/-${nvinfo.bslug}`, '_title', '_show-md'],
-      ['Thêm/sửa chương'],
-    ],
-  })
 </script>
 
 <svelte:head>

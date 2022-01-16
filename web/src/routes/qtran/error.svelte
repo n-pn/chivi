@@ -1,8 +1,11 @@
 <script context="module">
   import { page } from '$app/stores'
   import { invalidate } from '$app/navigation'
+  import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ fetch, url: { searchParams } }) {
+    appbar.set({ left: [['Lỗi máy dịch']] })
+
     const res = await fetch(`/api/tlspecs?${searchParams.toString()}`)
     return { props: await res.json() }
   }
@@ -10,7 +13,6 @@
 
 <script>
   import { get_rtime } from '$atoms/RTime.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
@@ -22,7 +24,6 @@
   const on_destroy = () => invalidate('/api/tlspecs')
 
   $: pager = new Pager($page.url)
-  $: appbar.set({ left: [['Lỗi máy dịch']] })
 </script>
 
 <Vessel>

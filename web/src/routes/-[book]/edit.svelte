@@ -1,13 +1,18 @@
 <script context="module">
   import { page } from '$app/stores'
+  import { data as appbar } from '$sects/Appbar.svelte'
+
+  export async function load() {
+    appbar.set({ left: [['Sửa nội dung']] })
+    return {}
+  }
 </script>
 
 <script>
   import NvinfoForm from '$sects/Nvinfo/Form.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  $: nvinfo = $page.stuff.nvinfo
+  $: nvinfo = $page.stuff.nvinfo || {}
 
   $: params = {
     author: nvinfo.author,
@@ -15,7 +20,6 @@
     bcover: nvinfo.bcover,
     status: 0,
   }
-  $: appbar.set({ left: [['Sửa nội dung']] })
 </script>
 
 <Vessel>

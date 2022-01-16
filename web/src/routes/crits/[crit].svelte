@@ -1,26 +1,27 @@
 <script context="module">
   import { api_call } from '$api/_api_call'
+  import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ fetch, params }) {
     const [status, crit] = await api_call(fetch, `crits/${params.crit}`)
     if (status) return { status, error: crit }
-    else return { props: { crit } }
+
+    appbar.set({
+      left: [
+        ['Đánh giá', 'stars', '/crits'],
+        [`[${crit.id}]`, null, null, null, '_seed'],
+      ],
+    })
+    return { props: { crit } }
   }
 </script>
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
 
   export let crit
-  $: appbar.set({
-    left: [
-      ['Đánh giá', 'stars', '/crits'],
-      [`[${crit.id}]`, null, null, null, '_seed'],
-    ],
-  })
 </script>
 
 <svelte:head>

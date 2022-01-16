@@ -64,6 +64,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     if (ubmemo.lr_sname.empty?) && (zhbook = zhbooks.first?)
       if chinfo = zhbook.chinfo(0)
+        ubmemo.lr_sname = zhbook.sname
         ubmemo.lr_chidx = -1
         ubmemo.lc_title = chinfo.title
         ubmemo.lc_uslug = chinfo.uslug

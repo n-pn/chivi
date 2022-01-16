@@ -1,5 +1,7 @@
 <script context="module">
+  import { page } from '$app/stores'
   import { status_types, status_names } from '$lib/constants'
+  import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ url, params, fetch }) {
     const uname = params.user
@@ -9,19 +11,18 @@
     const api_url = `/api/books?page=${page}&take=24&order=update&uname=${uname}&bmark=${bmark}`
     const res = await fetch(api_url)
 
-    if (res.ok) return { props: { uname, bmark, ...(await res.json()) } }
-    return { status: res.status, error: await res.text() }
+    if (!res.ok) return { status: res.status, error: await res.text() }
+
+    appbar.set({ left: [[`Tủ truyện của [${uname}]`, 'notebook']] })
+    return { props: { uname, bmark, ...(await res.json()) } }
   }
 </script>
 
 <script>
-  import { page } from '$app/stores'
-
   import Nvlist from '$parts/Nvlist.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
-
   import Mpager, { Pager } from '$molds/Mpager.svelte'
+
   export let uname = ''
   export let bmark = 'reading'
 
@@ -30,7 +31,6 @@
   export let pgmax = 1
 
   $: pager = new Pager($page.url)
-  $: appbar.set({ left: [[`Tủ truyện của [${uname}]`, 'notebook']] })
 </script>
 
 <svelte:head>

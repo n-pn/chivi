@@ -1,14 +1,17 @@
 <script context="module">
+  import { data as appbar } from '$sects/Appbar.svelte'
+
   export async function load({ fetch, url, params: { author } }) {
     const page = +url.searchParams.get('page') || 1
     const api_url = `/api/books?order=weight&take=8&page=${page}&author=${author}`
     const api_res = await fetch(api_url)
+
+    appbar.set({ left: [[author, 'edit', `/books/=${author}`]] })
     return { props: { author, ...(await api_res.json()) } }
   }
 </script>
 
 <script>
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import NvinfoList from '$sects/Nvinfo/List.svelte'
 
@@ -16,8 +19,6 @@
   export let books = []
   export let pgidx = 0
   export let pgmax = 0
-
-  $: appbar.set({ left: [[author, 'edit', `/books/=${author}`]] })
 </script>
 
 <svelte:head>

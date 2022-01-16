@@ -1,13 +1,29 @@
 <script context="module">
+  import { page } from '$app/stores'
+  import { data as appbar } from '$sects/Appbar.svelte'
+
   export async function load({ url, fetch }) {
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
     api_url.searchParams.set('take', 24)
 
-    const res = await fetch(api_url.toString())
+    const api_res = await fetch(api_url.toString())
+    if (!api_res.ok) {
+      return { status: api_res.status, error: await api_res.text() }
+    }
 
-    if (!res.ok) return { status: res.status, error: await res.text() }
-    return { props: await res.json() }
+    appbar.set({
+      query: '',
+      right: [
+        [
+          'Thêm truyện',
+          'file-plus',
+          'link',
+          { href: '/books/+new', _text: '_show-lg' },
+        ],
+      ],
+    })
+    return { props: await api_res.json() }
   }
 
   const order_names = {
@@ -19,9 +35,7 @@
 </script>
 
 <script>
-  import { page } from '$app/stores'
   import Nvlist from '$parts/Nvlist.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
@@ -30,17 +44,6 @@
   export let pgmax = 1
 
   $: pager = new Pager($page.url, { order: 'bumped', page: 1 })
-  $: appbar.set({
-    query: '',
-    right: [
-      [
-        'Thêm truyện',
-        'file-plus',
-        'link',
-        { href: '/books/+new', _text: '_show-lg' },
-      ],
-    ],
-  })
 </script>
 
 <svelte:head>

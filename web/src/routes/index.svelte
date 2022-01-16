@@ -1,5 +1,9 @@
 <script context="module">
+  import { data as appbar } from '$sects/Appbar.svelte'
+
   export async function load({ url, fetch }) {
+    appbar.set({ page: 'index' })
+
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
     api_url.searchParams.set('take', 24)
@@ -20,9 +24,8 @@
 
 <script>
   import { page } from '$app/stores'
-  import SIcon from '$atoms/SIcon.svelte'
   import Nvlist from '$parts/Nvlist.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
+
   import Vessel from '$sects/Vessel.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
@@ -31,7 +34,6 @@
   export let pgmax = 1
 
   $: pager = new Pager($page.url, { order: 'bumped', page: 1 })
-  $: appbar.set({ page: 'index' })
 </script>
 
 <svelte:head>

@@ -1,29 +1,18 @@
 <script context="module">
   import { page, session } from '$app/stores'
+
   import { invalidate } from '$app/navigation'
   import { call_api } from '$api/_api_call'
 
   import { kit_chap_url } from '$utils/route_utils'
   import { status_types, status_names, status_icons } from '$lib/constants.js'
+  import { data as appbar } from '$sects/Appbar.svelte'
 </script>
 
 <script>
-  import { data as appbar } from '$lib/sects/Appbar.svelte'
-
   $: ubmemo = $page.stuff.ubmemo || {}
   $: nvinfo = $page.stuff.nvinfo || {}
   $: status = ubmemo.status || 'default'
-
-  async function update_ubmemo(status) {
-    if ($session.privi < 0) return
-    if (status == ubmemo.status) status = 'default'
-    ubmemo.status = status
-
-    const url = `_self/books/${nvinfo.id}/status`
-    const [stt, msg] = await call_api(fetch, url, { status }, 'PUT')
-    if (stt) return console.log(`error update book status: ${msg}`)
-    else invalidate(`/api/books/${nvinfo.bslug}`)
-  }
 
   $: has_chap = ubmemo.chidx != 0
 
@@ -58,4 +47,15 @@
       ],
     ],
   })
+
+  async function update_ubmemo(status) {
+    if ($session.privi < 0) return
+    if (status == ubmemo.status) status = 'default'
+    ubmemo.status = status
+
+    const url = `_self/books/${nvinfo.id}/status`
+    const [stt, msg] = await call_api(fetch, url, { status }, 'PUT')
+    if (stt) return console.log(`error update book status: ${msg}`)
+    else invalidate(`/api/books/${nvinfo.bslug}`)
+  }
 </script>

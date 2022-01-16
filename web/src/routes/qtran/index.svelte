@@ -1,6 +1,19 @@
+<script context="module">
+  import { data as appbar } from '$sects/Appbar.svelte'
+
+  export async function load() {
+    appbar.set({ left: [['Dịch nhanh', 'bolt']], cvmtl: true })
+    return {
+      props: {
+        dname: 'combnie',
+        d_dub: 'Tổng hợp',
+      },
+    }
+  }
+</script>
+
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import CvPage from '$sects/CvPage.svelte'
@@ -16,8 +29,6 @@
 
   $: if (edit_mode) text_elem && text_elem.focus()
   $: on_edit = edit_mode || !cvdata
-
-  $: appbar.set({ left: [['Dịch nhanh', 'bolt']], cvmtl: true })
 
   const on_change = () => convert()
 

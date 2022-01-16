@@ -1,14 +1,5 @@
 <script context="module">
-  export async function load({ fetch, url, params }) {
-    const { type, name } = params
-
-    const api_url = `/api/qtran/${type}/${name}?${url.searchParams.toString()}`
-    const res = await fetch(api_url)
-    const props = await res.json()
-
-    if (res.ok) return { props: { ...props, type, name } }
-    return { status: 404, error }
-  }
+  import { data as appbar } from '$sects/Appbar.svelte'
 
   const icons = {
     notes: 'notes',
@@ -16,11 +7,30 @@
     links: 'link',
     crits: 'stars',
   }
+
+  export async function load({ fetch, url, params }) {
+    const { type, name } = params
+
+    const api_url = `/api/qtran/${type}/${name}?${url.searchParams.toString()}`
+    const api_res = await fetch(api_url)
+    const props = await api_res.json()
+
+    if (!api_res.ok) return { status: 404, error }
+
+    appbar.set({
+      left: [
+        ['Dịch nhanh', 'bolt', '/qtran', null, '_show-sm'],
+        [`[${name}]`, icons[type], null, '_title'],
+      ],
+      cvmtl: true,
+    })
+
+    return { props: { ...props, type, name } }
+  }
 </script>
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import CvPage from '$sects/CvPage.svelte'
@@ -39,14 +49,6 @@
     const res = await fetch(url)
     cvdata = await res.text()
   }
-
-  $: appbar.set({
-    left: [
-      ['Dịch nhanh', 'bolt', '/qtran', null, '_show-sm'],
-      [`[${name}]`, icons[type], null, '_title'],
-    ],
-    cvmtl: true,
-  })
 </script>
 
 <svelte:head>

@@ -1,4 +1,6 @@
 <script context="module">
+  import { data as appbar } from '$sects/Appbar.svelte'
+
   export async function load({ fetch, url: { searchParams } }) {
     const page = +searchParams.get('page') || 1
     const type = searchParams.get('t') || 'btitle'
@@ -7,14 +9,15 @@
     if (!input) return { props: { input, type } }
 
     const qs = input.replace(/\+|-/g, ' ')
-    const url = `/api/books?order=weight&take=8&page=${page}&${type}=${qs}`
-    const res = await fetch(url)
-    return { props: { input, type, ...(await res.json()) } }
+    const api_url = `/api/books?order=weight&take=8&page=${page}&${type}=${qs}`
+    const api_res = await fetch(api_url)
+
+    appbar.set({ query: input })
+    return { props: { input, type, ...(await api_res.json()) } }
   }
 </script>
 
 <script>
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import NvinfoList from '$sects/Nvinfo/List.svelte'
 
@@ -25,7 +28,6 @@
 
   $: from = (pgidx - 1) * 8 + 1
   $: upto = from + books.length - 1
-  $: appbar.set({ query: input })
 </script>
 
 <svelte:head>

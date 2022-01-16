@@ -1,17 +1,17 @@
 <script context="module">
+  import { data as appbar } from '$sects/Appbar.svelte'
+
   export function load(props) {
+    appbar.set({ left: [[`Lỗi hệ thống: ${props.status}`]] })
     return { props }
   }
 </script>
 
 <script>
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let status
   export let error
-
-  $: appbar.set({ left: [[`Lỗi hệ thống: ${status}`]] })
 </script>
 
 <svelte:head>

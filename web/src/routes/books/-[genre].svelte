@@ -1,5 +1,5 @@
 <script context="module">
-  import { bgenres } from '$lib/constants'
+  import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ url, fetch, params: { genre } }) {
     const api_url = new URL(url)
@@ -8,8 +8,9 @@
     api_url.searchParams.set('genre', genre)
 
     const res = await fetch(api_url.toString())
-
     if (!res.ok) return { status: res.status, error: await res.text() }
+
+    appbar.set({ left: [['Thể loại', 'folder', url.pathname]] })
     return { props: { ...(await res.json()), genres: genre.split('+') } }
   }
 </script>
@@ -18,7 +19,6 @@
   import { page } from '$app/stores'
   import Nvlist from '$parts/Nvlist.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Bgenre from '$sects/Bgenre.svelte'
 
   import Vessel from '$sects/Vessel.svelte'
@@ -29,9 +29,6 @@
   export let genres = []
 
   $: pager = new Pager($page.url, { order: 'bumped', page: 1 })
-  $: appbar.set({
-    left: [['Thể loại', 'folder', '/books/-' + genres.join('+')]],
-  })
 </script>
 
 <svelte:head>

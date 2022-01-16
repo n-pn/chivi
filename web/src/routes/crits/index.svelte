@@ -1,8 +1,11 @@
 <script context="module">
   import { page } from '$app/stores'
+  import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ fetch, url: { searchParams } }) {
     const res = await fetch(`/api/crits?${searchParams.toString()}&take=10`)
+
+    appbar.set({ left: [['Đánh giá', 'stars', '/crits']] })
     return { props: await res.json() }
   }
 
@@ -12,7 +15,6 @@
 <script>
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let crits = []
@@ -21,8 +23,6 @@
 
   $: pager = new Pager($page.url, { sort: 'mtime', page: 1 })
   $: _sort = pager.get('sort')
-
-  $: appbar.set({ left: [['Đánh giá', 'stars', '/crits']] })
 </script>
 
 <svelte:head>
