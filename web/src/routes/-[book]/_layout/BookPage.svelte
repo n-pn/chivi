@@ -4,6 +4,16 @@
 
   import * as ubmemo_api from '$api/ubmemo_api'
   import { status_types, status_names, status_icons } from '$lib/constants.js'
+
+  import { data as appbar } from '$sects/Appbar.svelte'
+
+  function gen_appbar_right(nvinfo, ubmemo) {
+    if (ubmemo.chidx == 0) return null
+    const last_read = ubmemo_api.last_read(nvinfo, ubmemo)
+    const right_opts = { kbd: '+', _text: '_show-lg' }
+
+    return [[last_read.text, last_read.icon, last_read.href, right_opts]]
+  }
 </script>
 
 <script>
@@ -18,6 +28,11 @@
 
   $: nvinfo = $page.stuff.nvinfo || {}
   $: ubmemo = $page.stuff.ubmemo || {}
+
+  $: appbar.set({
+    left: [[nvinfo.vname, 'book', `/-${nvinfo.bslug}`, null, '_title']],
+    right: gen_appbar_right(nvinfo, ubmemo),
+  })
 
   async function update_ubmemo(status) {
     if ($session.privi < 0) return
@@ -35,7 +50,7 @@
     onhold: 'warning',
     finished: 'success',
     dropped: 'harmful',
-    pending: 'purple',
+    pending: 'private',
   }
 </script>
 
