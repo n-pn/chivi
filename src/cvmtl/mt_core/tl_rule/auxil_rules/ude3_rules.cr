@@ -24,6 +24,9 @@ module CV::TlRule
       elsif succ_2.key == "很"
         succ_2.val = "cực kỳ"
         fold!(node, succ_2, PosTag::VerbPhrase, dic: 5)
+      elsif succ_2.verbs?
+        succ.set!("đến")
+        fold!(node, succ_2, succ_2.tag, dic: 8)
       else
         node
       end
