@@ -3,7 +3,7 @@
 </script>
 
 <script>
-  import Nvinfo from '$sects/Nvinfo.svelte'
+  import NvinfoForm from '$sects/Nvinfo/Form.svelte'
   import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
@@ -19,5 +19,5 @@
 </script>
 
 <Vessel>
-  <Nvinfo {params} />
+  <NvinfoForm {params} />
 </Vessel>
