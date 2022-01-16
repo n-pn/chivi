@@ -165,7 +165,7 @@ module CV::TlRule
     else
       case compl.tag
       when .pre_dui?
-        return if (succ = compl.succ?) && (succ.nouns? || succ.pro_per?)
+        return if scan_noun!(compl.succ?)
         compl.val = "đúng"
       when .pre_zai?
         if succ = scan_noun!(compl.succ?)

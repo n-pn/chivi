@@ -94,7 +94,7 @@ module CV::TlRule
 
     if nquant
       nquant = clean_nquant(nquant, prodem)
-      node = fold!(nquant, node, node.tag, dic: 4)
+      node = fold!(nquant, node, PosTag::Nform, dic: 4)
     end
 
     node = fold_prodem_nounish!(prodem, node) if prodem
