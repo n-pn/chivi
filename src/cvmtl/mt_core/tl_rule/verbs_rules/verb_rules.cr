@@ -91,12 +91,13 @@ module CV::TlRule
 
   def should_apply_ude1_after_verb?(verb : MtNode)
     # TODO: add more cases here
+    return false unless prev = verb.prev?
 
-    case prev = verb.prev?
-    when .nil?   then true
-    when .verbs? then false
-    when .nouns? then prev.prev?(&.v_shi?)
-    else              true
+    case prev.tag
+    when .nouns?
+      return true unless head = prev.prev?
+      head.v_shi? || head.none? || head.puncts?
+    else false
     end
   end
 
