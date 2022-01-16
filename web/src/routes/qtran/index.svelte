@@ -17,7 +17,7 @@
   $: if (edit_mode) text_elem && text_elem.focus()
   $: on_edit = edit_mode || !cvdata
 
-  $: appbar.set({ left: [['Dịch nhanh', 'bolt']] })
+  $: appbar.set({ left: [['Dịch nhanh', 'bolt']], cvmtl: true })
 
   const on_change = () => convert()
 

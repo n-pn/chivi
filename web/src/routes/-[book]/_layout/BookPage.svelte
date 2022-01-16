@@ -10,7 +10,7 @@
   import BookHeader from './BookHeader.svelte'
 
   export let nvtab = 'index'
-  $: nvinfo = $page.stuff.nvinfo
+  $: nvinfo = $page.stuff.nvinfo || {}
 </script>
 
 <BookHeader />
@@ -24,7 +24,7 @@
           <bname-sep>/</bname-sep>
           <bname-zh>{nvinfo.zname}</bname-zh>
         {/if}
-        {#if nvinfo.hname != nvinfo.vname.toLowerCase() && nvinfo.hname != nvinfo.zname}
+        {#if nvinfo.hname != nvinfo.vname && nvinfo.hname != nvinfo.zname}
           <bname-sep>/</bname-sep>
           <bname-vi>{nvinfo.hname}</bname-vi>
         {/if}

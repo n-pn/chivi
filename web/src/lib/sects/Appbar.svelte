@@ -11,7 +11,7 @@
 
   import Config from './Appbar/Config.svelte'
 
-  export const data = writable({ page: 'index' })
+  export const data = writable({})
 </script>
 
 <script>
@@ -75,6 +75,23 @@
               on:click={opts.on_click}>
               {#if icon}<SIcon name={icon} />{/if}
               <span class="header-text {_text}">{label}</span>
+            </button>
+          {:else if type == 'menu'}
+            <button class="header-item _menu {_item}">
+              {#if icon}<SIcon name={icon} />{/if}
+              <span class="header-text {_text}">{label}</span>
+
+              <div class="header-menu">
+                {#each opts.menu as [value, label, icon_left, icon_right]}
+                  <div class="-item" on:click={() => opts.on_click(value)}>
+                    {#if icon_left}<SIcon name={icon_left} />{/if}
+                    <span>{label}</span>
+                    {#if icon_right}
+                      <span class="_right"><SIcon name={icon_right} /></span>
+                    {/if}
+                  </div>
+                {/each}
+              </div>
             </button>
           {:else}
             <a

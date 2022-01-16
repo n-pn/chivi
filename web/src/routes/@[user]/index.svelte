@@ -17,9 +17,8 @@
 <script>
   import { page } from '$app/stores'
 
-  import SIcon from '$atoms/SIcon.svelte'
   import Nvlist from '$parts/Nvlist.svelte'
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
@@ -31,17 +30,12 @@
   export let pgmax = 1
 
   $: pager = new Pager($page.url)
+  $: appbar.set({ left: [[`Tủ truyện của [${uname}]`, 'notebook']] })
 </script>
 
 <svelte:head>
   <title>Tủ truyện của {uname} - Chivi</title>
 </svelte:head>
-<Appbar>
-  <span slot="left" class="header-item _active">
-    <SIcon name="notebook" />
-    <span class="header-text _title">Tủ truyện của [{uname}]</span>
-  </span>
-</Appbar>
 
 <Vessel>
   <div class="tabs">

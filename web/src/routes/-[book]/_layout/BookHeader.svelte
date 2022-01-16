@@ -8,8 +8,7 @@
 </script>
 
 <script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import Appbar from '$lib/sects/Appbar.svelte'
+  import { data as appbar } from '$lib/sects/Appbar.svelte'
 
   $: ubmemo = $page.stuff.ubmemo || {}
   $: nvinfo = $page.stuff.nvinfo || {}
@@ -25,55 +24,38 @@
     if (stt) return console.log(`error update book status: ${msg}`)
     else invalidate(`/api/books/${nvinfo.bslug}`)
   }
+
+  $: has_chap = ubmemo.chidx != 0
+
+  $: appbar.set({
+    left: [[nvinfo.vname, 'book', `/-${nvinfo.bslug}`, null, '_title']],
+    right: [
+      [
+        status_names[status],
+        status_icons[status],
+        'menu',
+        {
+          _item: '_menu' + $session.privi < 0 ? ' _disable' : '',
+          _text: '_show-md',
+          on_click: (value) => update_ubmemo(value),
+          menu: status_types.map((value) => [
+            value,
+            status_names[value],
+            status_icons[value],
+            status == value ? 'check' : '',
+          ]),
+        },
+      ],
+      [
+        ubmemo.chidx > 0 ? 'Đọc tiếp' : 'Đọc thử',
+        ubmemo.locked ? 'player-skip-forward' : 'player-play',
+        has_chap ? 'link' : 'text',
+        {
+          href: kit_chap_url(nvinfo.bslug, ubmemo),
+          _item: has_chap ? '' : '_disable',
+          _text: '_show-lg',
+        },
+      ],
+    ],
+  })
 </script>
-
-<Appbar>
-  <a slot="left" href="/-{nvinfo.bslug}" class="header-item _active">
-    <SIcon name="book" />
-    <span class="header-text _title">{nvinfo.hname}</span>
-  </a>
-
-  <svelte:fragment slot="right">
-    {#if $session.privi > 0}
-      <div class="header-item _menu" class:_disable={$session.privi < 0}>
-        <SIcon name={status_icons[status]} />
-
-        <span class="header-text _show-md">{status_names[status]}</span>
-
-        <div class="header-menu">
-          {#each status_types as status}
-            <div class="-item" on:click={() => update_ubmemo(status)}>
-              <SIcon name={status_icons[status]} />
-              <span>{status_names[status]}</span>
-
-              {#if status == status}
-                <span class="_right">
-                  <SIcon name="check" />
-                </span>
-              {/if}
-            </div>
-          {/each}
-        </div>
-      </div>
-    {/if}
-
-    {#if ubmemo.chidx == 0}
-      <div class="header-item _disable" title="Chưa có chương tiết">
-        <SIcon name="player-play" />
-        <span class="header-text _show-lg">Đọc thử</span>
-      </div>
-    {:else if ubmemo.chidx > 0}
-      <a class="header-item" href={kit_chap_url(nvinfo.bslug, ubmemo)}>
-        <SIcon name={ubmemo.locked ? 'player-skip-forward' : 'player-play'} />
-        <span class="header-text _show-lg">Đọc tiếp</span>
-      </a>
-    {:else}
-      <a
-        class="header-item"
-        href={kit_chap_url(nvinfo.bslug, { ...ubmemo, chidx: 1 })}>
-        <SIcon name="player-play" />
-        <span class="header-text _show-lg">Đọc thử</span>
-      </a>
-    {/if}
-  </svelte:fragment>
-</Appbar>

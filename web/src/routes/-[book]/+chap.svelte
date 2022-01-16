@@ -22,7 +22,7 @@
   import { goto } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let chidx = 1
@@ -46,24 +46,18 @@
       await res.text()
     }
   }
+
+  $: appbar.set({
+    left: [
+      [nvinfo.vname, 'book', `/-${nvinfo.bslug}`, '_title', '_show-md'],
+      ['Thêm/sửa chương'],
+    ],
+  })
 </script>
 
 <svelte:head>
   <title>Thêm/sửa chương - {nvinfo.vname} - Chivi</title>
 </svelte:head>
-
-<Appbar>
-  <svelte:fragment slot="left">
-    <a href="/-{nvinfo.bslug}" class="header-item _title">
-      <SIcon name="book" />
-      <span class="header-text _show-md _title">{nvinfo.vname}</span>
-    </a>
-
-    <button class="header-item _active">
-      <span class="header-text _title">Thêm/sửa chương</span>
-    </button>
-  </svelte:fragment>
-</Appbar>
 
 <Vessel>
   <nav class="navi">
@@ -72,7 +66,7 @@
     </div>
 
     <div class="-item">
-      <a href="/-{nvinfo.bslug}/-chivi" class="-link">Mục lục</a>
+      <a href="/-{nvinfo.bslug}/-chivi" class="-link">Chương tiết</a>
     </div>
   </nav>
 

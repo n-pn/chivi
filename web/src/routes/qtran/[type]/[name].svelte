@@ -45,6 +45,7 @@
       ['Dịch nhanh', 'bolt', '/qtran', null, '_show-sm'],
       [`[${name}]`, icons[type], null, '_title'],
     ],
+    cvmtl: true,
   })
 </script>
 

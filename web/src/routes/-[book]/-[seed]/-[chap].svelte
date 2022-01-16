@@ -20,14 +20,13 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Gmenu from '$molds/Gmenu.svelte'
   import Notext from '$parts/Notext.svelte'
-  import Appbar from '$sects/Appbar.svelte'
+  import { data as appbar } from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import CvPage from '$sects/CvPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
 
   $: nvinfo = $page.stuff.nvinfo || {}
   $: ubmemo = $page.stuff.ubmemo || []
-  $: chseed = $page.stuff.chseed || []
 
   export let chmeta
   export let chinfo
@@ -103,24 +102,19 @@
     if (ubmemo.sname != chmeta.sname) return false
     return ubmemo.chidx == chinfo.chidx && ubmemo.cpart == chmeta.cpart
   }
+
+  $: appbar.set({
+    left: [
+      [nvinfo.vname, 'book', paths.home, '_title', '_show-sm _title'],
+      [`[${chmeta.sname}]`, null, null, null, '_seed'],
+    ],
+    cvmtl: true,
+  })
 </script>
 
 <svelte:head>
   <title>{chinfo.title} - {nvinfo.vname} - Chivi</title>
 </svelte:head>
-
-<Appbar ptype="cvmtl">
-  <svelte:fragment slot="left">
-    <a href={paths.home} class="header-item _title">
-      <SIcon name="book" />
-      <span class="header-text _show-sm _title">{nvinfo.hname}</span>
-    </a>
-
-    <button class="header-item _active">
-      <span class="header-text _seed">[{chmeta.sname}]</span>
-    </button>
-  </svelte:fragment>
-</Appbar>
 
 <Vessel>
   <ChapSeed {chmeta} {chinfo} />
