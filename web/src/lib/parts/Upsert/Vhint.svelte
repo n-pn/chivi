@@ -98,7 +98,7 @@
         return ['v', 'n']
 
       case 'vi':
-        return ['v', 'vl']
+        return ['v', 'vo']
 
       case 'vg':
         return ['v', 'kv']

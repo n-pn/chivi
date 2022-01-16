@@ -63,8 +63,8 @@
     'w': 'Dấu câu',
 
     '!': 'Từ đặc biệt',
-    'vp': 'Cụm động từ',
     'np': 'Cụm danh từ',
+    'vp': 'Cụm động từ',
     'ap': 'Cụm tính từ',
     'dp': 'Cụm định ngữ',
     'sv': 'Cụm chủ + vị (động)',
