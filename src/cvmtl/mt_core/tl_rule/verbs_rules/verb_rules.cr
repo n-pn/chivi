@@ -78,9 +78,26 @@ module CV::TlRule
     end
 
     return fold_uzhi!(uzhi: succ, prev: verb) if succ.uzhi?
+    return verb if verb.verb_object? || verb.vintr?
 
-    # puts [verb, verb.succ, verb.succ.succ?]
-    verb
+    return verb unless (noun = scan_noun!(succ)) && noun.subject?
+
+    if (ude1 = noun.succ?) && ude1.ude1? && should_apply_ude1_after_verb?(verb)
+      noun = fold_ude1!(ude1, prev: noun)
+    end
+
+    fold!(verb, noun, PosTag::VerbObject, dic: 7)
+  end
+
+  def should_apply_ude1_after_verb?(verb : MtNode)
+    # TODO: add more cases here
+
+    case prev = verb.prev?
+    when .nil?   then true
+    when .verbs? then false
+    when .nouns? then prev.prev?(&.v_shi?)
+    else              true
+    end
   end
 
   def fold_verb_bu_verb!(verb : MtNode, succ : MtNode, succ_2 : MtNode)

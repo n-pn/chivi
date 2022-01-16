@@ -19,8 +19,7 @@ module CV::TlRule
 
     case node.tag
     when .v_shi?
-      # TODO handle vshi
-      return node
+      fold_v_shi!(node, succ)
     when .v_you?
       # TODO handle vyou
       return node
