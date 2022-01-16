@@ -6,7 +6,7 @@ module CV::TlRule
 
   def heal_ajno!(node : MtNode)
     case succ = node.succ?
-    when .nil?, .ends?, .verbs?, .preposes?
+    when .nil?, .ends?, .verbs?, .preposes?, .noun?
       cast_noun!(node)
     when .ude1?
       cast_adjt!(node)

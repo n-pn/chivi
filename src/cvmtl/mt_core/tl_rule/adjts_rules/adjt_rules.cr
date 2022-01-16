@@ -50,7 +50,7 @@ module CV::TlRule
         node = fold!(node, succ, PosTag::Adverb)
         return fold_adverbs!(node)
       when .nouns?
-        fold_adj_adv!(node, prev)
+        node = fold_adj_adv!(node, prev)
         return fold_adjt_noun!(node, succ)
       when .vpro?, .verb?
         case succ.key
