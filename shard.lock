@@ -6,7 +6,7 @@ shards:
 
   amber:
     git: https://github.com/amberframework/amber.git
-    version: 1.0.0rc2+git.commit.fb0cbcc346a102423c482452ad2a37f17e49228d
+    version: 1.2.1+git.commit.836ab0f92671bfa393ed305d48546dc8f0393528
 
   amber_router:
     git: https://github.com/amberframework/amber-router.git
@@ -22,7 +22,7 @@ shards:
 
   callback:
     git: https://github.com/amberframework/callback.git
-    version: 0.9.1
+    version: 0.9.2
 
   clear:
     git: https://github.com/np-nam/clear.git
@@ -30,15 +30,15 @@ shards:
 
   cli:
     git: https://github.com/amberframework/cli.git
-    version: 0.11.3
+    version: 0.11.4
 
   cmark:
     git: https://github.com/amauryt/cr-cmark-gfm.git
-    version: 0.1.0+git.commit.09fe300cd040be2d2a72f0f7e0489663ea92440b
+    version: 0.1.0+git.commit.c59a22223a901abd78bf0dd0a61cdc87cb65e2a5
 
   compiled_license:
     git: https://github.com/elorest/compiled_license.git
-    version: 1.0.0
+    version: 1.2.2
 
   db:
     git: https://github.com/crystal-lang/crystal-db.git
@@ -50,7 +50,7 @@ shards:
 
   exception_page:
     git: https://github.com/crystal-loot/exception_page.git
-    version: 0.2.0
+    version: 0.2.1
 
   future:
     git: https://github.com/crystal-community/future.cr.git
@@ -66,7 +66,7 @@ shards:
 
   icu:
     git: https://github.com/olbat/icu.cr.git
-    version: 0.1.0+git.commit.7975bc59100c5fa77cd0fb6206f7969ee9c5a19d
+    version: 0.1.0+git.commit.fdf870c29d02694cc6414563970cabe00da6544d
 
   inflector:
     git: https://github.com/phoffer/inflector.cr.git
@@ -86,11 +86,11 @@ shards:
 
   micrate:
     git: https://github.com/amberframework/micrate.git
-    version: 0.11.0
+    version: 0.12.0
 
   myhtml:
     git: https://github.com/kostya/myhtml.git
-    version: 1.5.5
+    version: 1.5.8
 
   mysql:
     git: https://github.com/crystal-lang/crystal-mysql.git
@@ -98,7 +98,7 @@ shards:
 
   optarg:
     git: https://github.com/amberframework/optarg.git
-    version: 0.9.2
+    version: 0.9.3
 
   pg:
     git: https://github.com/will/crystal-pg.git

@@ -2,6 +2,12 @@
   import { call_api } from '$api/_api_call'
   import { data as appbar } from '$sects/Appbar.svelte'
 
+  function gen_book_path(bslug, sname, chidx) {
+    let url = `/-${bslug}/chaps?sname=${sname}`
+    const page = Math.floor((chidx - 1) / 32) + 1
+    return page > 1 ? url + `&page=${page}` : url
+  }
+
   export async function load({ fetch, params: { seed, chap }, stuff }) {
     const { nvinfo } = stuff
     const [chidx, cpart = 0] = chap.split('-').pop().split('.')
@@ -12,8 +18,7 @@
     if (status) return { status, error: cvchap }
 
     const book_url = `/-${nvinfo.bslug}`
-    const pgidx = Math.floor((cvchap.chinfo.chidx - 1) / 32) + 1
-    const list_url = `${book_url}/chaps?sname=${seed}&page=${pgidx}`
+    const list_url = gen_book_path(nvinfo.bslug, seed, cvchap.chinfo.chidx)
 
     appbar.set({
       left: [
@@ -77,20 +82,14 @@
   }
 
   function gen_paths({ bslug }, { sname, _prev, _next }, { chidx }) {
-    const home = gen_book_path(bslug, sname, 0)
+    const home = gen_book_path(bslug, sname, 1)
     const list = gen_book_path(bslug, sname, chidx)
 
     const base = `/-${bslug}/-${sname}/`
     const prev = _prev ? `${base}-${_prev}` : home
     const next = _next ? `${base}-${_next}` : list
 
-    return { home, list, prev, next }
-  }
-
-  function gen_book_path(bslug, sname, chidx) {
-    let url = `/-${bslug}/-${sname}`
-    const page = Math.floor((chidx - 1) / 32) + 1
-    return page > 1 ? url + `?page=${page}` : url
+    return { list, prev, next }
   }
 
   async function update_history(lock) {
