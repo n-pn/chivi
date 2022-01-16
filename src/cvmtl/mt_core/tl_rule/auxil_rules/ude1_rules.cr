@@ -22,8 +22,7 @@ module CV::TlRule
       # ude3 => ude1 grammar error
       fold!(prev, succ, prev.tag, dic: 8)
     else
-      # puts [ude1, prev, succ, ude1.idx, "here?"]
-      ude1
+      heal_ude!(ude1, prev)
     end
   end
 
@@ -38,8 +37,7 @@ module CV::TlRule
     end
     # TODO: handle verbs?, adjts?
 
-    ude1.val = "của"
-    fold!(prev, ude1, PosTag::DefnPhrase, dic: 6, flip: true)
+    fold!(prev, ude1.set!("của"), PosTag::DefnPhrase, dic: 6, flip: true)
   end
 
   # do not return left when fail to prevent infinity loop
