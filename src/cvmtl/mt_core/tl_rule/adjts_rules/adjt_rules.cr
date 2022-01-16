@@ -50,9 +50,8 @@ module CV::TlRule
         node = fold!(node, succ, PosTag::Adverb)
         return fold_adverbs!(node)
       when .nouns?
-        if node.modifier? || node.key.size == 1 && !prev
-          node = fold_adjt_noun!(node, succ)
-        end
+        fold_adj_adv!(node, prev)
+        return fold_adjt_noun!(node, succ)
       when .vpro?, .verb?
         case succ.key
         when "到"
