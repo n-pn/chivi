@@ -19,8 +19,6 @@
   $: nvinfo = $page.stuff.nvinfo || {}
   $: ubmemo = $page.stuff.ubmemo || {}
 
-  $: last_read = ubmemo_api.last_read(nvinfo, ubmemo)
-
   async function update_ubmemo(status) {
     if ($session.privi < 0) return
     if (status == ubmemo.status) status = 'default'
@@ -37,7 +35,7 @@
     onhold: 'warning',
     finished: 'success',
     dropped: 'harmful',
-    pending: 'private',
+    pending: 'purple',
   }
 </script>
 
@@ -152,17 +150,15 @@
         </svelte:fragment>
       </Gmenu>
 
-      <a class="m-btn" href="/-{nvinfo.bslug}/chaps" data-kbd="i">
+      <a class="m-btn _primary" href="/-{nvinfo.bslug}/chaps" data-kbd="i">
         <SIcon name="list" />
-        <span class="-txt">Chương tiết</span>
+        <span class="-txt _hide">Chương tiết</span>
       </a>
 
-      {#if !last_read.mute}
-        <a class="m-btn _primary" href={last_read.href} data-kbd="r">
-          <SIcon name={last_read.icon} />
-          <span class="-txt">{last_read.text}</span>
-        </a>
-      {/if}
+      <a class="m-btn" href="/dicts/{nvinfo.bhash}" data-kbd="p">
+        <SIcon name="package" />
+        <span class="-txt _hide">Từ điển</span>
+      </a>
     </div>
   </div>
 
@@ -372,5 +368,9 @@
 
   .m-btn {
     margin-right: 0.5rem;
+
+    ._hide {
+      @include bps(display, none, $tm: initial);
+    }
   }
 </style>

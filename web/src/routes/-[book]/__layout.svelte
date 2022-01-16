@@ -1,6 +1,8 @@
 <script context="module">
   import { page } from '$app/stores'
   import { api_call } from '$api/_api_call'
+  import * as ubmemo_api from '$api/ubmemo_api'
+
   import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ params, fetch }) {
@@ -11,16 +13,20 @@
     const { nvinfo } = stuff
     const left = [[nvinfo.vname, 'book', `/-${nvinfo.bslug}`, null, '_title']]
 
-    const right_link = `/dicts/${nvinfo.bhash}`
-    const right_opts = { kbd: 'p', _text: '_show-md' }
-    const right = [['Từ điển', 'package', right_link, right_opts]]
-    appbar.set({ left, right })
-
+    appbar.set({ left, right: gen_appbar_right(nvinfo, stuff.ubmemo) })
     return { stuff }
   }
 
   function gen_keywords({ zname, vname, hname, author, genres }) {
     return [zname, vname, hname, author, ...genres].join(',')
+  }
+
+  function gen_appbar_right(nvinfo, ubmemo) {
+    if (ubmemo.chidx == 0) return null
+    const last_read = ubmemo_api.last_read(nvinfo, ubmemo)
+    const right_opts = { kbd: '+', _text: '_show-lg' }
+
+    return [[last_read.text, last_read.icon, last_read.href, right_opts]]
   }
 </script>
 

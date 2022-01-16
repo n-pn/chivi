@@ -27,10 +27,10 @@
     return { props: { chinfo } }
   }
 
-  function chidx_to_page(chidx, psize = 32) {
-    if (chidx < 1) return 1
-    return Math.floor((chidx - 1) / psize) + 1
-  }
+  // function chidx_to_page(chidx, psize = 32) {
+  //   if (chidx < 1) return 1
+  //   return Math.floor((chidx - 1) / psize) + 1
+  // }
 
   function gen_appbar_right(nvinfo, ubmemo) {
     if (ubmemo.chidx == 0) return null

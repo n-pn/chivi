@@ -1,6 +1,6 @@
 <script>
   export let bcover
-  $: src = bcover.startsWith('http') ? bcover : `/covers/${bcover}`
+  $: src = bcover && bcover.startsWith('http') ? bcover : `/covers/${bcover}`
 </script>
 
 <div>
