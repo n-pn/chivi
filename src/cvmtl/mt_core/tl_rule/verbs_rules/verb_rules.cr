@@ -168,7 +168,7 @@ module CV::TlRule
         return if scan_noun!(compl.succ?)
         compl.val = "đúng"
       when .pre_zai?
-        if succ = scan_noun!(compl.succ?)
+        if (succ = scan_noun!(compl.succ?)) && succ.subject?
           return if find_verb_after(succ)
         end
 

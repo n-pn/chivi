@@ -92,6 +92,10 @@ module CV::TlRule
       when .nouns?
         node = fold_noun!(node, mode: 1)
         node = scan_noun!(node) || node unless node.nouns?
+      when .ude2?
+        if node.prev? { |x| x.pre_zai? || x.verbs? } || node.succ?(&.spaces?)
+          node.set!("đất", PosTag::Noun)
+        end
       end
 
       break
