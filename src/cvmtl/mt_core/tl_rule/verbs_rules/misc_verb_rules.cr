@@ -50,4 +50,32 @@ module CV::TlRule
   def need_2_objects?(key : String)
     MtDict::VERBS_2_OBJECTS.has_key?(key)
   end
+
+  def should_apply_ude1_after_verb?(verb : MtNode)
+    # TODO: add more cases here
+    return false unless prev = verb.prev?
+
+    case prev.tag
+    when .nouns?
+      return true unless head = prev.prev?
+      head.v_shi? || head.none? || head.puncts?
+    else false
+    end
+  end
+
+  def fold_left_verb!(node : MtNode, prev : MtNode?)
+    return node unless prev && prev.adverbs?
+    fold_adverb_node!(prev, node)
+  end
+
+  def fold_verb_uzhe!(prev : MtNode, uzhe : MtNode, succ = uzhe.succ?) : MtNode
+    uzhe.val = ""
+
+    if succ && succ.verbs?
+      # succ = fold_verbs!(succ)
+      fold!(prev, succ, PosTag::Verb, dic: 5)
+    else
+      fold!(prev, uzhe, PosTag::Verb, dic: 6)
+    end
+  end
 end
