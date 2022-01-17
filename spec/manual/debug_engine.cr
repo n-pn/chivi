@@ -1,8 +1,8 @@
 require "../../src/cvmtl/mt_core"
 
-GENERIC = CV::MtCore.generic_mtl("6y9qp333")
+GENERIC = CV::MtCore.generic_mtl("combine")
 
-inp = "，姿势潇洒地拨了拨身后的长发。"
+inp = "徐向阳关心地问道"
 res = GENERIC.cv_title_full(inp)
 
 {res.inspect, inp, res}.each do |text|

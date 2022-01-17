@@ -12,10 +12,11 @@ module CV::TlRule
 
       return fold_verb_nquant!(verb, succ, has_ule: true)
     when .ude2?
-      return verb unless (succ_2 = auxil.succ?) && (succ_2.verb? || succ_2.veno?)
+      return verb unless (succ_2 = auxil.succ?) && succ_2.verbs?
+      node = fold!(verb, auxil.set!("mà"), PosTag::Adverb, dic: 6)
+
       succ_2 = fold_verbs!(succ_2)
-      auxil.set!("mà")
-      fold!(verb, succ_2, PosTag::Verb, dic: 5)
+      fold!(node, succ_2, succ_2.tag, dic: 5)
     when .ude3?
       fold_verb_ude3!(verb, auxil)
     when .uguo?
