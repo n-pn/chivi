@@ -84,6 +84,9 @@ module CV::TlRule
         elsif node.adjts?
           node = fold_adjt_as_noun!(node)
         end
+      when .veno?
+        node = fold_veno!(node)
+        node = fold_verb_as_noun!(node, mode: mode) if node.verbs?
       when .verbs?
         node = fold_verb_as_noun!(node, mode: mode)
       when .adjts?

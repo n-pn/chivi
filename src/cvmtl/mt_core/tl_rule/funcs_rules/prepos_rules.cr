@@ -101,6 +101,8 @@ module CV::TlRule
       end
     when "令"
       node.val = "làm" if node.prev?(&.subject?)
+    when "自"
+      node.val = "từ"
     when "让"
       # node.val = "nhường"
     end

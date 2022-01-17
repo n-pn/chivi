@@ -79,7 +79,11 @@ module CV::TlRule
     when .vmodals?
       heal_vmodal!(succ, nega: node)
     when .verbs?
-      node.set!("phí công") if node.key == "白"
+      case node.key
+      when "白" then node.val = "phí công"
+      when "正" then node.val = "đang"
+      end
+
       succ.tag = PosTag::Verb if succ.veno? || succ.vead?
       fold_adverb_node!(node, fold_verbs!(succ))
     when .adjts?

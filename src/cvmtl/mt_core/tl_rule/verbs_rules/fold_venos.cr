@@ -16,14 +16,21 @@ module CV::TlRule
         #     return cast_noun!(node)
         #   end
       when .pro_dems?, .qtnoun?
-        unless node.succ?(&.nouns?)
+        case succ = node.succ?
+        when .nil?, .ends?
           return cast_noun!(node)
+        when .nouns?
+          return cast_verb!(node)
+        when .ude1?
+          if {"扭曲"}.includes?(node.key)
+            return node.set!(PosTag::Vintr)
+          end
         end
       when .verb?
         return cast_noun!(node) if node.succ?(&.ude1?)
       when .ude1?
         if node.succ? { |x| x.ends? || x.nouns? }
-          cast_noun!(node)
+          return cast_noun!(node)
         end
       end
     end

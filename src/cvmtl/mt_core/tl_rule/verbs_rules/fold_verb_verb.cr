@@ -4,16 +4,13 @@ module CV::TlRule
       return fold!(verb_1, verb_2.set!(val), PosTag::Verb, dic: 6)
     end
 
-    if can_combine_verb_verb?(verb_1)
-      return fold!(verb_1, verb_2, verb_2.tag, dic: 7)
-    end
-
+    return verb_1 unless can_combine_verb_verb?(verb_1)
+    verb_2 = verb_2.adverbs? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
+    verb_2.verbs? ? fold!(verb_1, verb_2, verb_2.tag, dic: 7) : verb_1
     # TODO: add more cases
-
-    verb_1
   end
 
-  VERB_COMBINE = {"爱", "喜欢", "避免"}
+  VERB_COMBINE = {"爱", "喜欢", "避免", "忍不住"}
 
   def can_combine_verb_verb?(verb : MtNode)
     verb.each do |node|
