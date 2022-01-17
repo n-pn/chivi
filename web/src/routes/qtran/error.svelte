@@ -5,7 +5,7 @@
 
   export async function load({ fetch, url }) {
     appbar.set({ left: [['Lỗi máy dịch']] })
-    const api_res = await fetch(`/api/tlspecs?${url.search}`)
+    const api_res = await fetch(`/api/tlspecs${url.search}`)
     return { props: await api_res.json() }
   }
 </script>
@@ -20,7 +20,7 @@
   export let pgmax = 1
   export let items = []
 
-  const on_destroy = () => invalidate(`/api/tlspecs?${$page.url.search}`)
+  const on_destroy = () => invalidate(`/api/tlspecs${$page.url.search}`)
 
   $: pager = new Pager($page.url)
 </script>
