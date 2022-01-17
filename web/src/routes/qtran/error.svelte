@@ -25,9 +25,13 @@
   $: pager = new Pager($page.url)
 </script>
 
+<svelte:head>
+  <title>Lỗi máy dịch - Chivi</title>
+</svelte:head>
+
 <Vessel>
   <article class="md-article">
-    <h1>Lỗi máy dịch</h1>
+    <h1>Lỗi máy dịch (Đỏ: Đang lỗi, Xanh: Đã sửa đúng)</h1>
 
     <table>
       <thead>
