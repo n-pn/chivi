@@ -56,7 +56,7 @@ module CV::TlRule
         true
       end
     else
-      {"但", "又", "或"}.includes?(node.key)
+      node.key.in?({"但", "又", "或", "或是"})
     end
   end
 
