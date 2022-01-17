@@ -19,7 +19,7 @@
   export let books = []
   export let users = []
 
-  $: nvinfo = $page.stuff.nvinfo
+  $: nvinfo = $page.stuff.nvinfo || {}
 
   let short_intro = false
 </script>
@@ -48,10 +48,7 @@
 
     <h3 class="sub">
       <sub-label>Truyện đồng tác giả</sub-label>
-      <a
-        class="sub-link"
-        href="/search?t=author&q={encodeURIComponent(nvinfo.author)}"
-        >Xem tất cả</a>
+      <a class="sub-link" href="/books/={nvinfo.author}">Xem tất cả</a>
     </h3>
 
     {#if books.length > 0}
@@ -135,30 +132,6 @@
     margin-right: 0.5rem;
     display: inline-flex;
     align-items: center;
-
-    &._default {
-      --color: #{color(neutral, 5)};
-    }
-
-    &._reading {
-      --color: #{color(primary, 5)};
-    }
-
-    &._completed {
-      --color: #{color(success, 5)};
-    }
-
-    &._onhold {
-      --color: #{color(warning, 5)};
-    }
-
-    &._dropped {
-      --color: #{color(harmful, 5)};
-    }
-
-    &._pending {
-      --color: #{color(private, 5)};
-    }
 
     > cv-user {
       padding: 0 0.25rem;
