@@ -3,11 +3,10 @@
   import { invalidate } from '$app/navigation'
   import { data as appbar } from '$sects/Appbar.svelte'
 
-  export async function load({ fetch, url: { searchParams } }) {
+  export async function load({ fetch, url }) {
     appbar.set({ left: [['Lỗi máy dịch']] })
-
-    const res = await fetch(`/api/tlspecs?${searchParams.toString()}`)
-    return { props: await res.json() }
+    const api_res = await fetch(`/api/tlspecs?${url.search}`)
+    return { props: await api_res.json() }
   }
 </script>
 
@@ -21,7 +20,7 @@
   export let pgmax = 1
   export let items = []
 
-  const on_destroy = () => invalidate('/api/tlspecs')
+  const on_destroy = () => invalidate(`/api/tlspecs?${$page.url.search}`)
 
   $: pager = new Pager($page.url)
 </script>
