@@ -81,48 +81,6 @@ module CV::TlRule
     {node, qtnoun, succ}
   end
 
-  # FIX_PRONOUNS = {
-  #   "这" => "này",
-  #   "那" => "kia",
-  #   "这个" => "kia",
-  #   "那个" => "kia",
-  #   "这样" => "như vậy",
-  #   "那样" => "như thế",
-  # }
-
-  # def split_pro_dem!(node : MtNode) : Tuple(MtNode, MtNode?)
-  #   if qtnoun = node.body?
-  #     prodem = qtnoun.succ
-
-  #     # flip back
-
-  #     prodem.fix_prev!(node.prev?)
-  #     qtnoun.fix_succ!(node.succ?)
-  #     prodem.fix_succ!(qtnoun)
-
-  #     return {prodem, qtnoun}
-  #   end
-
-  #   if node.key.size < 2 || node.key == "这儿" || node.key == "这儿"
-  #     return {node, nil}
-  #   end
-
-  #   node.key, qt_key = node.key.split("", 2)
-
-  #   node.tag, pro_val = map_pro_dem!(node.key)
-  #   return {node, nil} if pro_val.empty?
-
-  #   qt_val = node.val.sub(" " + pro_val, "")
-  #   node.val = pro_val
-
-  #   qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
-
-  #   prodem = node
-  #   prodem.set_succ!(qtnoun)
-
-  #   {prodem, qtnoun}
-  # end
-
   def map_pro_dem!(key : String) : {PosTag, String}
     case key
     when "这" then {PosTag::ProZhe, "này"}

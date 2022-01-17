@@ -19,7 +19,13 @@ module CV::TlRule
           node = node.popens? ? nil : node
         end
       when .pro_per?
-        node = nil if prodem || nquant
+        if prodem || nquant
+          node = nil
+        else
+          node = fold_pro_per!(node, node.succ?)
+        end
+
+        break
       when .pro_dems?
         if prodem || nquant
           # TODO: call scan_noun here then fold

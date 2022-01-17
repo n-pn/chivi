@@ -16,9 +16,9 @@ module CV::TlRule
       succ = heal_ajno!(succ)
       succ.noun? ? fold_proper_nounish!(node, succ) : node
     when .nouns?, .numbers?, .pro_per?, .pro_dem?
-      return node unless succ = scan_noun!(succ)
+      return node unless (succ = scan_noun!(succ)) && succ.subject?
       return node unless noun_can_combine?(node.prev?, succ.succ?)
-      fold_proper_nounish!(node, succ)
+      fold!(node, succ, succ.tag, dic: 5, flip: !node.nform?)
     when .uzhi?
       fold_uzhi!(uzhi: succ, prev: node)
     else
