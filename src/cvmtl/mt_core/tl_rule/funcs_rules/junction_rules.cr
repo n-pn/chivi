@@ -4,11 +4,21 @@ module CV::TlRule
   end
 
   def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
-    return unless verb && succ && succ.verb?
+    return unless verb && succ && is_concoord?(junc)
+    return if is_concoord?(verb.prev?)
 
-    return unless is_concoord?(junc)
+    if succ.key == "过"
+      tag = verb.tag
+    elsif succ.preposes?
+      succ = fold_preposes!(succ)
+    elsif succ.adverbs?
+      succ = fold_adverbs!(succ)
+    elsif succ.verbs?
+      succ = fold_verbs!(succ)
+    end
 
-    fold!(verb, succ, tag: succ.tag, dic: 4)
+    return unless tag || succ.verbs?
+    fold!(verb, succ, tag: tag || succ.tag, dic: 4)
   end
 
   def fold_adjt_junction!(node : MtNode, prev = node.prev?, succ = node.succ?)
@@ -28,6 +38,10 @@ module CV::TlRule
     end
 
     fold!(prev, succ, tag: PosTag::Nform, dic: 4)
+  end
+
+  def is_concoord?(node : Nil)
+    false
   end
 
   def is_concoord?(node : MtNode, check_prepos = false)
