@@ -3,7 +3,17 @@ module CV::TlRule
     return node if node.key == "这儿" || node.key == "那儿"
     return heal_pro_dem!(node) if succ.key.in?({"就"})
 
-    return fold_proji_nhanzi!(node, succ) if node.pro_ji? && succ.nhanzi?
+    if succ.pro_ji? && (tail = succ.succ?)
+      if tail.nhanzi?
+        succ = fold_proji_nhanzi!(succ, tail)
+        return fold_prodem_nounish!(node, succ)
+      else
+        tail = heal_quanti!(tail)
+        succ = fold!(succ, tail, PosTag::Nqnoun, dic: 6) if tail.quantis?
+      end
+    elsif node.pro_ji? && succ.nhanzi?
+      return fold_proji_nhanzi!(node, succ)
+    end
 
     node, quanti, succ = split_prodem!(node)
     # puts [node, quanti, succ]
