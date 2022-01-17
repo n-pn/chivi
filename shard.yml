@@ -1,10 +1,10 @@
 name: chivi
-version: 0.7.0
+version: 0.8.0
 
 authors:
   - NP Nam <me@npn.am>
 
-crystal: 1.0.0
+crystal: 1.2.0
 
 license: MIT
 

@@ -29,6 +29,7 @@ Amber::Server.configure do
     put "/books", CV::NvinfoCtrl, :upsert
     post "/books", CV::NvinfoCtrl, :upsert
     get "/books/:bslug", CV::NvinfoCtrl, :show
+    get "/books/:bhash/front", CV::NvinfoCtrl, :front
 
     get "/chaps/:book/:sname", CV::NvchapCtrl, :ch_list
     get "/chaps/:book/:sname/:chidx/_raw", CV::NvchapCtrl, :zh_text

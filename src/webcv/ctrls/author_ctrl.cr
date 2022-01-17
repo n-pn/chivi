@@ -18,21 +18,12 @@ class CV::AuthorCtrl < CV::BaseCtrl
 
     response.headers.add("Cache-Control", "public, min-fresh=180")
 
-    json_view do |jb|
-      jb.object {
-        jb.field "total", total
-        jb.field "pgidx", pgidx
-        jb.field "pgmax", (total - 1) // limit + 1
-
-        jb.field "books" {
-          jb.array {
-            books[offset, limit].each do |book|
-              NvinfoView.render(jb, book, full: false)
-            end
-          }
-        }
-      }
-    end
+    json_view({
+      total: total,
+      pgidx: pgidx,
+      pgmax: (total - 1) // limit + 1,
+      books: books[offset, limit].map { |x| NvinfoView.new(x, false) },
+    })
   rescue err
     puts err.inspect_with_backtrace
     halt! 500, err.message

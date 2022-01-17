@@ -1,7 +1,7 @@
 type: app
 database: pg
 language: ecr
-model: granite
+model: clear
 
 # list of tasks to be run by `amber watch`
 watch:

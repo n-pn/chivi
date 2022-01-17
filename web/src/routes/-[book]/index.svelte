@@ -1,28 +1,23 @@
 <script context="module">
   import { page } from '$app/stores'
+  import { status_icons, status_names } from '$lib/constants.js'
 
   export async function load({ fetch, stuff: { nvinfo } }) {
-    const crit_url = `/api/crits?book=${nvinfo.id}&page=1&take=3&sort=stars`
-    const crit_res = await fetch(crit_url)
-    const { crits } = await crit_res.json()
-
-    const book_url = `/api/authors/${nvinfo.author_id}/books?take=7`
-    const book_res = await fetch(book_url)
-
-    const { books: book_raw } = await book_res.json()
-    const books = book_raw.filter((x) => x.id != nvinfo.id)
-
-    return { props: { crits, books } }
+    const api_url = `/api/books/${nvinfo.bhash}/front`
+    const api_res = await fetch(api_url)
+    return { props: await api_res.json() }
   }
 </script>
 
 <script>
+  import SIcon from '$atoms/SIcon.svelte'
   import Nvlist from '$parts/Nvlist.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
   export let crits = []
   export let books = []
+  export let users = []
 
   $: nvinfo = $page.stuff.nvinfo
 
@@ -64,6 +59,24 @@
     {:else}
       <div class="empty">Danh sách trống</div>
     {/if}
+
+    <h3 class="sub">
+      <sub-label>Danh sách độc giả</sub-label>
+    </h3>
+
+    <div class="users">
+      {#each users as { u_dname, u_privi, _status }}
+        <a
+          class="m-chip _{_status}"
+          href="/@{u_dname}?bmark={_status}"
+          data-tip="[{status_names[_status]}]">
+          <cv-user privi={u_privi}>{u_dname}</cv-user>
+          <SIcon name={status_icons[_status]} />
+        </a>
+      {:else}
+        <div class="empty">Chưa có người đọc</div>
+      {/each}
+    </div>
   </article>
 </BookPage>
 
@@ -116,5 +129,39 @@
     text-align: center;
     @include fgcolor(mute);
     @include ftsize(sm);
+  }
+
+  .m-chip {
+    margin-right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+
+    &._default {
+      --color: #{color(neutral, 5)};
+    }
+
+    &._reading {
+      --color: #{color(primary, 5)};
+    }
+
+    &._completed {
+      --color: #{color(success, 5)};
+    }
+
+    &._onhold {
+      --color: #{color(warning, 5)};
+    }
+
+    &._dropped {
+      --color: #{color(harmful, 5)};
+    }
+
+    &._pending {
+      --color: #{color(private, 5)};
+    }
+
+    > cv-user {
+      padding: 0 0.25rem;
+    }
   }
 </style>

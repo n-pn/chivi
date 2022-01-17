@@ -22,25 +22,18 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     total = query.dup.limit(offset + limit * 3).offset(0).count
 
+    limit = limit == 24 ? 25 : limit
     query.sort_by(params.fetch_str("order", "access"))
+    query.limit(limit).offset(offset).with_author
+
     response.headers.add("Cache-Control", "public, min-fresh=180")
 
-    json_view do |jb|
-      jb.object {
-        jb.field "total", total
-        jb.field "pgidx", pgidx
-        jb.field "pgmax", (total - 1) // limit + 1
-
-        jb.field "books" {
-          jb.array {
-            limit = limit == 24 ? 25 : limit
-            query.limit(limit).offset(offset).with_author.each do |book|
-              NvinfoView.render(jb, book, full: false)
-            end
-          }
-        }
-      }
-    end
+    json_view({
+      total: total,
+      pgidx: pgidx,
+      pgmax: (total - 1) // limit + 1,
+      books: query.map { |x| NvinfoView.new(x, false) },
+    })
   rescue err
     Log.error { err.message }
     halt! 500, err.message
@@ -77,7 +70,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     json_view do |jb|
       jb.object {
-        jb.field "nvinfo" { NvinfoView.render(jb, nvinfo, full: true) }
+        jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
         jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
 
         jb.field "chseed" do
@@ -98,6 +91,43 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     end
   rescue err
     Log.error { err.message.colorize.red }
+    halt! 500, "Có lỗi từ hệ thống"
+  end
+
+  # show related data for book front page
+  def front
+    nvinfo = Nvinfo.load!(params["bhash"])
+
+    yscrits =
+      Yscrit.query
+        .where("nvinfo_id = #{nvinfo.id}")
+        .sort_by("stars").limit(3)
+
+    nvinfos =
+      Nvinfo.query
+        .where("author_id = #{nvinfo.author_id} AND id != #{nvinfo.id}")
+        .sort_by("weight").limit(6)
+
+    ubmemos =
+      Ubmemo.query
+        .where("nvinfo_id = #{nvinfo.id} AND status > 0")
+        .order_by(utime: :desc)
+        .with_cvuser
+        .limit(100)
+
+    json_view({
+      crits: yscrits.map { |x| YscritView.new(x) },
+      books: nvinfos.map { |x| NvinfoView.new(x, false) },
+      users: ubmemos.map do |x|
+        {
+          u_dname: x.cvuser.uname,
+          u_privi: x.cvuser.privi,
+          _status: x.status_s,
+        }
+      end,
+    })
+  rescue err
+    Log.error { err.inspect_with_backtrace }
     halt! 500, "Có lỗi từ hệ thống"
   end
 

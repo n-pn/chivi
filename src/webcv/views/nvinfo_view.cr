@@ -1,37 +1,40 @@
-require "json"
+require "./_base_view"
 
-module CV::NvinfoView
-  extend self
+struct CV::NvinfoView
+  include BaseView
 
-  def render(jb : JSON::Builder, obj : Nvinfo, full = true)
+  def initialize(@data : Nvinfo, @full = true)
+  end
+
+  def to_json(jb : JSON::Builder)
     jb.object do
-      jb.field "id", obj.id
-      jb.field "bhash", obj.bhash
-      jb.field "bslug", obj.bslug
+      jb.field "id", @data.id
+      jb.field "bhash", @data.bhash
+      jb.field "bslug", @data.bslug
 
-      jb.field "zname", obj.zname
-      jb.field "hname", obj.hname
-      jb.field "vname", obj.vname
+      jb.field "zname", @data.zname
+      jb.field "hname", @data.hname
+      jb.field "vname", @data.vname
 
-      jb.field "author", obj.author.vname
+      jb.field "author", @data.author.vname
 
-      jb.field "genres", obj.genres
-      jb.field "bcover", obj.bcover
+      jb.field "genres", @data.genres
+      jb.field "bcover", @data.bcover
 
-      jb.field "voters", obj.voters
-      jb.field "rating", obj.rating / 10
+      jb.field "voters", @data.voters
+      jb.field "rating", @data.rating / 10
 
-      if full
-        jb.field "zseeds", obj.zseeds
-        jb.field "bintro", obj.vintro.split("\n")
+      if @full
+        jb.field "zseeds", @data.zseeds
+        jb.field "bintro", @data.vintro.split("\n")
 
-        jb.field "mftime", obj.utime
-        jb.field "status", map_status(obj.status)
+        jb.field "mftime", @data.utime
+        jb.field "status", map_status(@data.status)
 
-        jb.field "ys_snvid", obj.ys_snvid
-        jb.field "pub_link", obj.pub_link
-        jb.field "pub_name", obj.pub_name
-        jb.field "author_id", obj.author_id
+        jb.field "ys_snvid", @data.ys_snvid
+        jb.field "pub_link", @data.pub_link
+        jb.field "pub_name", @data.pub_name
+        jb.field "author_id", @data.author_id
       end
     end
   end

@@ -32,87 +32,33 @@ class CV::YscritCtrl < CV::BaseCtrl
       end
     end
 
-    render_json do |res|
-      JSON.build(res) do |jb|
-        jb.object do
-          jb.field "pgidx", page
-          jb.field "pgmax", pgmax(total, take)
-
-          jb.field "crits" do
-            jb.array do
-              crits.each { |crit| render_crit(jb, crit) }
-            end
-          end
-        end
-      end
-    end
+    render_json({
+      pgidx: page,
+      pgmax: pgmax(total, take),
+      crits: crits.map { |x| YscritView.new(x) },
+    })
   rescue err
-    puts err.inspect_with_backtrace.colorize.red
+    Log.error { err.inspect_with_backtrace }
     halt! 500, err.message
   end
 
   def show
     crit_id = UkeyUtil.decode32(params["crit"])
-    unless yscrit = Yscrit.find({id: crit_id})
-      return halt! 404, "Đánh giá không tồn tại"
-    end
-
-    render_json do |res|
-      JSON.build(res) do |jb|
-        render_crit(jb, yscrit)
-      end
-    end
+    yscrit = Yscrit.find!({id: crit_id})
+    render_json(YscritView.new(yscrit))
+  rescue err
+    Log.error { err.inspect_with_backtrace }
+    halt! 404, "Đánh giá không tồn tại"
   end
 
   def replies
     crit_id = UkeyUtil.decode32(params["crit"])
-    unless yscrit = Yscrit.find({id: crit_id})
-      return halt! 404, "Đánh giá không tồn tại"
-    end
+    yscrit = Yscrit.find!({id: crit_id})
 
-    render_json do |res|
-      JSON.build(res) do |jb|
-        jb.array {
-          query = Ysrepl.query.where("yscrit_id = ?", yscrit.id)
-
-          query.with_ysuser.each { |repl|
-            jb.object {
-              jb.field "uname", repl.ysuser.vname
-              jb.field "uslug", repl.ysuser.id
-              jb.field "vhtml", repl.vhtml
-
-              jb.field "mftime", repl.created_at.to_unix
-              jb.field "like_count", repl.like_count
-            }
-          }
-        }
-      end
-    end
-  end
-
-  private def render_crit(jb : JSON::Builder, crit : Yscrit)
-    jb.object do
-      jb.field "id", UkeyUtil.encode32(crit.id)
-
-      jb.field "bid", crit.nvinfo.id
-      jb.field "bname", crit.nvinfo.vname
-      jb.field "bslug", crit.nvinfo.bslug
-      jb.field "bhash", crit.nvinfo.bhash
-
-      jb.field "author", crit.nvinfo.author.vname
-      jb.field "bgenre", crit.nvinfo.genres.first? || "Loại khác"
-
-      jb.field "uname", crit.ysuser.vname
-      jb.field "uslug", crit.ysuser.id
-
-      jb.field "stars", crit.stars
-
-      jb.field "vhtml", crit.vhtml
-
-      jb.field "like_count", crit.like_count
-      jb.field "repl_count", crit.repl_count
-
-      jb.field "mftime", crit.mftime
-    end
+    query = Ysrepl.query.where("yscrit_id = ?", yscrit.id).with_ysuser
+    render_json(query.map { |x| YsreplView.new(x) })
+  rescue err
+    Log.error { err.inspect_with_backtrace }
+    halt! 404, "Đánh giá không tồn tại"
   end
 end

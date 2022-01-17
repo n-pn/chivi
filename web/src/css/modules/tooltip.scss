@@ -8,7 +8,7 @@
   color: var(--bg-main);
   background-color: var(--fg-secd);
 
-  @include ftsize(sm);
+  @include ftsize(xs);
   @include bdradi(0.25rem);
 }
 

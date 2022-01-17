@@ -67,27 +67,32 @@ x-t {
   @include bdradi();
 }
 
-cv-user {
+cv-user,
+.cv-user {
   font-weight: 500;
+  color: var(--color, #{color(neutral, 5)});
 
   &[privi='-1'] {
     text-decoration: line-through;
-    @include fgcolor(neutral, 5);
+  }
+
+  &[privi='0'] {
+    --color: #{color(neutral, 5)};
   }
 
   &[privi='1'] {
-    @include fgcolor(primary, 5);
+    --color: #{color(primary, 5)};
   }
 
   &[privi='2'] {
-    @include fgcolor(success, 5);
+    --color: #{color(success, 5)};
   }
 
   &[privi='3'] {
-    @include fgcolor(warning, 5);
+    --color: #{color(warning, 5)};
   }
 
   &[privi='4'] {
-    @include fgcolor(harmful, 5);
+    --color: #{color(harmful, 5)};
   }
 }
