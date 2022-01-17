@@ -62,7 +62,7 @@ module CV::TlRule
       return nil unless tail = fold_noun_space!(noun: tail)
     end
 
-    fold_noun_ude1_noun!(noun, ude1, tail)
+    fold_noun_ude1!(noun, ude1, tail)
   end
 
   def fold_prepos!(node : MtNode, noun = node.succ?, mode = 0) : MtNode
@@ -85,7 +85,7 @@ module CV::TlRule
         node = fold!(prev, noun, PosTag::NounPhrase, dic: 8)
         return fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
       else
-        noun = fold_noun_ude1_noun!(noun, ude1: verb, right: tail)
+        noun = fold_noun_ude1!(noun, ude1: verb, right: tail)
         verb = noun.succ?
       end
     end
@@ -115,14 +115,9 @@ module CV::TlRule
     end
 
     return node unless verb.verbs?
+    node = fold!(node, verb, verb.tag, dic: 8, flip: flip)
 
-    verb = fold!(node, verb, verb.tag, dic: 8, flip: flip)
-    unless verb.verb_object? || verb.vintr?
-      return verb unless tail = scan_noun!(verb.succ?, mode: 0)
-      verb = fold!(verb, tail, PosTag::VerbObject, dic: 5)
-    end
-
-    return verb unless mode == 1 && (ude1 = verb.succ?) && ude1.ude1?
-    fold_ude1!(ude1, verb)
+    return node unless mode == 1 && (ude1 = node.succ?) && ude1.ude1?
+    fold_ude1!(ude1, node)
   end
 end

@@ -185,8 +185,6 @@ module CV::TlRule
       node = fold!(node, succ, PosTag::VerbObject, dic: 6)
     end
 
-    puts [node, "here!"]
-
     fold_verb_ude1!(node)
   end
 
