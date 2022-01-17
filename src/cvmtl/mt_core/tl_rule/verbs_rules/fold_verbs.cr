@@ -76,10 +76,25 @@ module CV::TlRule
 
     return verb unless (noun = scan_noun!(succ)) && noun.subject?
 
-    if (ude1 = noun.succ?) && ude1.ude1? && should_apply_ude1_after_verb?(verb)
+    if (ude1 = noun.succ?) && ude1.ude1? && should_apply_ude1_after_verb?(verb, ude1.succ?)
       noun = fold_ude1!(ude1, prev: noun)
     end
 
     fold!(verb, noun, PosTag::VerbObject, dic: 7)
+  end
+
+  def should_apply_ude1_after_verb?(verb : MtNode, noun : MtNode?)
+    # puts [verb, noun, noun.body?, "verb-object"]
+
+    return true unless prev = verb.prev?
+    return false if !noun || {"时候", "时", "打算"}.includes?(noun.key)
+
+    case prev.tag
+    when .comma? then true
+    when .nouns?
+      return true unless head = prev.prev?
+      head.v_shi? || head.none? || head.puncts?
+    else false
+    end
   end
 end
