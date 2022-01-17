@@ -5,7 +5,6 @@ module CV::TlRule
 
   def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
     return unless verb && succ && is_concoord?(junc)
-    return if is_concoord?(verb.prev?)
 
     if succ.key == "过"
       tag = verb.tag

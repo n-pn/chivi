@@ -11,11 +11,14 @@ module CV::TlRule
 
       case succ
       when .maybe_adjt?
-        return noun unless noun.prev?(&.nouns?)
         succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
 
-        return noun unless succ.succ?(&.ude1?)
-        return fold!(noun, succ, PosTag::Aform, dic: 6)
+        case succ.succ?
+        when .nil?, .ude1?, .junction?
+          return fold!(noun, succ, PosTag::Aform, dic: 6)
+        else
+          return noun
+        end
       when .middot?
         break unless (succ_2 = succ.succ?) && succ_2.human?
         succ.val = ""
