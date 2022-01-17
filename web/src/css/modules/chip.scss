@@ -30,8 +30,10 @@ $height: 1.75rem;
   @include bps(font-size, rem(12px), rem(13px), rem(14px));
 
   --color: #{color(gray, 6)};
-  &._blue { --color: #{color(blue, 6)}; }
-  &._green { --color: #{color(green, 6)}; }
+
+  @each $type, $color in $color-mapping {
+    &._#{$type} { --color: #{color($color, 6)}; }
+  }
 
   &._caps {
     @include bps(font-size, rem(10px), rem(11px), rem(12px));
@@ -45,7 +47,9 @@ $height: 1.75rem;
 
   @include tm-dark {
     --color: #{color(gray, 4)};
-    &._blue { --color: #{color(blue, 4)}; }
-    &._green { --color: #{color(green, 4)}; }
+
+    @each $type, $color in $color-mapping {
+      &._#{$type} { --color: #{color($color, 4)}; }
+    }
   }
 }

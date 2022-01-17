@@ -37,6 +37,15 @@ export const status_icons = {
   pending: 'calendar',
 }
 
+export const status_colors = {
+  default: 'neutral',
+  reading: 'primary',
+  onhold: 'warning',
+  finished: 'success',
+  dropped: 'harmful',
+  pending: 'private',
+}
+
 export const bgenres = [
   ['Huyền ảo', 'huyen-ao', '玄幻'],
   ['Kỳ huyễn', 'ky-huyen', '奇幻'],

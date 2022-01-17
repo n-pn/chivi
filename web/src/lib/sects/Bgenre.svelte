@@ -12,7 +12,7 @@
     {@const _reveal = show_all_genres || mgenres.includes(name)}
 
     {#if _active || _reveal}
-      <a href="/books/-{slug}" class="m-chip _green" class:_active>{name}</a>
+      <a href="/books/-{slug}" class="m-chip _success" class:_active>{name}</a>
     {/if}
   {/each}
 

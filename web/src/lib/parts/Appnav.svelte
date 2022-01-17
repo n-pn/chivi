@@ -40,7 +40,7 @@
 
     <div class="m-chips">
       {#each Object.entries(order_names) as [name, text]}
-        <a href="/books?order={name}" class="m-chip _blue">{text}</a>
+        <a href="/books?order={name}" class="m-chip _primary">{text}</a>
       {/each}
     </div>
   </section>

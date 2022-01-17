@@ -3,7 +3,12 @@
   import { invalidate } from '$app/navigation'
 
   import * as ubmemo_api from '$api/ubmemo_api'
-  import { status_types, status_names, status_icons } from '$lib/constants.js'
+  import {
+    status_types,
+    status_names,
+    status_icons,
+    status_colors,
+  } from '$lib/constants.js'
 
   import { data as appbar } from '$sects/Appbar.svelte'
 
@@ -42,15 +47,6 @@
 
     if (stt) return console.log(`error update book status: ${msg}`)
     else invalidate(`/api/books/${nvinfo.bslug}`)
-  }
-
-  const status_colors = {
-    default: 'neutral',
-    reading: 'primary',
-    onhold: 'warning',
-    finished: 'success',
-    dropped: 'harmful',
-    pending: 'private',
   }
 </script>
 

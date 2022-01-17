@@ -1,6 +1,6 @@
 <script context="module">
   import { page } from '$app/stores'
-  import { status_icons, status_names } from '$lib/constants.js'
+  import { status_icons, status_names, status_colors } from '$lib/constants.js'
 
   export async function load({ fetch, stuff: { nvinfo } }) {
     const api_url = `/api/books/${nvinfo.bhash}/front`
@@ -67,7 +67,7 @@
     <div class="users">
       {#each users as { u_dname, u_privi, _status }}
         <a
-          class="m-chip _{_status}"
+          class="m-chip _{status_colors[_status]}"
           href="/@{u_dname}?bmark={_status}"
           data-tip="[{status_names[_status]}]">
           <cv-user privi={u_privi}>{u_dname}</cv-user>
