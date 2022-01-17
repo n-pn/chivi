@@ -56,6 +56,7 @@ module CV::TlRule
     return false unless prev = verb.prev?
 
     case prev.tag
+    when .comma? then true
     when .nouns?
       return true unless head = prev.prev?
       head.v_shi? || head.none? || head.puncts?
