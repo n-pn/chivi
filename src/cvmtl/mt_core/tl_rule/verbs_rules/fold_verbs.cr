@@ -83,11 +83,15 @@ module CV::TlRule
     fold!(verb, noun, PosTag::VerbObject, dic: 7)
   end
 
-  def should_apply_ude1_after_verb?(verb : MtNode, noun : MtNode?)
-    # puts [verb, noun, noun.body?, "verb-object"]
+  def should_apply_ude1_after_verb?(verb : MtNode, noun : MtNode?, prev = verb.prev?)
+    # puts [verb, noun, verb.prev?, "verb-object"]
 
-    return true unless prev = verb.prev?
-    return false if !noun || {"时候", "时", "打算"}.includes?(noun.key)
+    while prev && prev.adverb?
+      prev = prev.prev?
+    end
+
+    return false unless prev && noun
+    return false if {"时候", "时", "打算"}.includes?(noun.key)
 
     case prev.tag
     when .comma? then true

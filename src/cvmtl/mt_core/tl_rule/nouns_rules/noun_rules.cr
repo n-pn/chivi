@@ -13,9 +13,12 @@ module CV::TlRule
       when .maybe_adjt?
         succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
 
-        case succ.succ?
+        case succ_2 = succ.succ?
         when .nil?, .ude1?, .junction?
           return fold!(noun, succ, PosTag::Aform, dic: 6)
+        when .ude2?
+          adjt = fold!(noun, succ, PosTag::Aform, dic: 6)
+          return fold_adjt_ude2!(adjt, succ_2)
         else
           return noun
         end

@@ -69,14 +69,8 @@ module CV::TlRule
         succ_2.val = "chút"
         return fold!(node, succ_2, PosTag::Aform, dic: 6)
       when .ude2?
-        break unless succ_2 = succ.succ?
-        break unless succ_2.verb? || succ_2.veno?
-
-        succ_2 = fold_verbs!(succ_2)
         node = fold_adj_adv!(node, prev)
-
-        succ.set!("mà")
-        return fold!(node, succ_2, PosTag::VerbPhrase, dic: 5)
+        return fold_adjt_ude2!(node, succ)
       when .uzhi?
         node = fold_adj_adv!(node, prev)
         return fold_uzhi!(succ, node)
