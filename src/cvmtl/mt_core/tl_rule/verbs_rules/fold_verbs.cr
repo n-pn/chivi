@@ -95,7 +95,7 @@ module CV::TlRule
 
     case prev.tag
     when .comma? then true
-    when .nouns?
+    when .subject?
       return true unless head = prev.prev?
       head.v_shi? || head.none? || head.puncts?
     else false

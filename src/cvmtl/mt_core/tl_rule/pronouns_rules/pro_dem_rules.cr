@@ -1,9 +1,7 @@
 module CV::TlRule
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
-    # if node.key == "这儿" || node.key == "这儿"
-    #   succ = fold_noun!(succ) if succ.nouns?
-    #   return node
-    # end
+    return node if node.key == "这儿" || node.key == "那儿"
+    return heal_pro_dem!(node) if succ.key.in?({"就"})
 
     return fold_proji_nhanzi!(node, succ) if node.pro_ji? && succ.nhanzi?
 
@@ -14,12 +12,16 @@ module CV::TlRule
       return scan_noun!(succ, prodem: node, nquant: quanti).not_nil!
     end
 
-    return fold!(node, quanti, PosTag::ProDem, dic: 8, flip: true) if quanti
+    return heal_pro_dem!(node) unless quanti
+    fold!(node, quanti, PosTag::ProDem, dic: 8, flip: true)
+  end
 
-    return node.set!("cái này") if node.pro_zhe?
-    return node.set!("vậy") if node.pro_na1? && !node.succ?(&.maybe_verb?)
-
-    node
+  def heal_pro_dem!(pro_dem : MtNode)
+    case pro_dem
+    when .pro_zhe? then pro_dem.set!("cái này")
+    when .pro_na1? then pro_dem.set!("vậy")
+    else                pro_dem
+    end
   end
 
   def fold_proji_nhanzi!(node : MtNode, succ : MtNode)
@@ -37,9 +39,7 @@ module CV::TlRule
       return fold!(prodem, nounish, tag, dic: 2, flip: flip)
     end
 
-    return prodem.set!("cái này") if prodem.pro_zhe?
-    return prodem.set!("vậy") if prodem.pro_na1? && !prodem.succ?(&.maybe_verb?)
-    prodem
+    heal_pro_dem!(prodem)
   end
 
   def should_flip_prodem?(prodem : MtNode)
