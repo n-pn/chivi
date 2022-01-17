@@ -124,7 +124,7 @@ struct CV::PosTag
   # words that can act as noun
   @[AlwaysInline]
   def subject?
-    @pos.nouns? || @tag.nqiffy? || @tag.pro_per? || @tag.verb_object?
+    @pos.nouns? || @pos.numeric? || @pos.pronouns? || @tag.verb_object?
   end
 
   @[AlwaysInline]

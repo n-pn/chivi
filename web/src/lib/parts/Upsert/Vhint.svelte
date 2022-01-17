@@ -116,7 +116,7 @@
         return ['al', 'nl']
 
       case 'i':
-        return ['nl', 'vl']
+        return ['nl', 'al']
 
       case 'm':
       case 'q':

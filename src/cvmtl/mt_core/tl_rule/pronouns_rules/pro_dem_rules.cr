@@ -33,12 +33,7 @@ module CV::TlRule
 
     if nounish
       flip = should_flip_prodem?(prodem)
-      if !prodem.pro_dem? && nounish.qtnoun?
-        tag = PosTag::ProDem
-      else
-        tag = nounish.tag
-      end
-
+      tag = !prodem.pro_dem? && nounish.qtnoun? ? PosTag::ProDem : nounish.tag
       return fold!(prodem, nounish, tag, dic: 2, flip: flip)
     end
 
