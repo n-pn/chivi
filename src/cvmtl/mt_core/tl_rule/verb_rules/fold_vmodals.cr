@@ -27,6 +27,9 @@ module CV::TlRule
     when .verbs?
       verb = fold!(node, succ, succ.tag, dic: 6)
       fold_verbs!(verb)
+    when .nouns?
+      # return node unless node.vm_neng?
+      fold_verb_object!(node, succ)
     else
       node
     end
