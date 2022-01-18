@@ -33,16 +33,14 @@
   <article class="md-article">
     <h1>Lỗi máy dịch (Đỏ: Đang lỗi, Xanh: Đã sửa đúng)</h1>
 
-    <table>
+    <table class="m-table">
       <thead>
         <tr>
           <th class="id">#</th>
           <th class="ztext">Từ gốc</th>
           <th class="cvmtl">Dịch máy</th>
           <th class="match">Nghĩa đúng</th>
-          <th class="d_dub">Bộ truyện</th>
-          <th class="uname">N. dùng</th>
-          <th class="mtime">Cập nhật</th>
+          <th class="_meta">N. dùng</th>
         </tr>
       </thead>
       <tbody>
@@ -51,12 +49,20 @@
             class={cvmtl == match ? 'ok' : 'err'}
             on:click={() => tlspec.load(_ukey)}>
             <td class="id">{idx + 1 + (pgidx - 1) * 50}</td>
-            <td class="ztext">{ztext}</td>
-            <td class="cvmtl" title={cvmtl}>{cvmtl}</td>
-            <td class="match" title={match}>{match}</td>
-            <td class="d_dub" title={d_dub}>{d_dub}</td>
-            <td class="uname">{uname}</td>
-            <td class="mtime">{get_rtime(mtime)}</td>
+            <td class="ztext">
+              <div class="txt">{ztext}</div>
+              <div class="dic">{d_dub}</div>
+            </td>
+            <td class="cvmtl">
+              <div title={cvmtl}>{cvmtl}</div>
+            </td>
+            <td class="match">
+              <div title={match}>{match}</div>
+            </td>
+            <td class="_meta">
+              <div class="uname">{uname}</div>
+              <div class="mtime">{get_rtime(mtime)}</div>
+            </td>
           </tr>
         {/each}
       </tbody>
@@ -92,17 +98,19 @@
   }
 
   tr {
-    cursor: pointer;
+    line-height: 1.25rem;
+    // padding: 0.25rem;
 
     &:hover {
+      cursor: pointer;
       @include bgcolor(primary, 5, 1);
     }
   }
 
   td {
+    padding: 0.375rem 0.5rem;
     text-align: center;
     @include ftsize(sm);
-    @include clamp($width: null);
     @include fgcolor(tert);
   }
 
@@ -112,15 +120,29 @@
     @include clamp($width: null);
   }
 
-  .ztext,
-  .d_dub,
-  .mtime {
-    max-width: 6rem;
+  .txt {
+    @include fgcolor(secd);
+  }
+
+  .dic {
+    font-style: italic;
+  }
+
+  .ztext {
+    max-width: 10rem;
+    > * {
+      width: 100%;
+      @include clamp($width: null);
+    }
   }
 
   .cvmtl,
   .match {
-    max-width: 10rem;
+    max-width: 12rem;
+
+    > * {
+      @include clamp($lines: 2, $width: null);
+    }
 
     tr.ok & {
       @include fgcolor(success, 5);
@@ -131,8 +153,16 @@
     }
   }
 
+  ._meta {
+    width: 6.5rem;
+  }
+
   .uname {
-    max-width: 4.5rem;
+    font-weight: 500;
+  }
+
+  .mtime {
+    font-size: 0.9em;
   }
 
   td.cvmtl,

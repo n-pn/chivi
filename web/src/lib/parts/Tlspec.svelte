@@ -226,7 +226,7 @@
         <form-action>
           {#if $entry._ukey}
             <button
-              class="m-btn _harmful _lg"
+              class="m-btn _harmful"
               data-kbd="delete"
               on:click={delete_tlspec}>
               <SIcon name="trash" />
@@ -236,10 +236,10 @@
 
           <button
             type="submit"
-            class="m-btn _primary _lg _fill"
+            class="m-btn _primary _fill"
             data-kbd="⇧↵"
             disabled={!$entry.match}>
-            <SIcon name="send" />
+            <SIcon name="device-floppy" />
             <span>{$entry._ukey ? 'Lưu lại' : 'Báo lỗi'}</span>
           </button>
         </form-action>
