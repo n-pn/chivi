@@ -79,7 +79,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
       mode = 0
     end
 
-    lines = zhbook.chtext(chinfo, cpart, mode: mode)
+    lines = zhbook.chtext(chinfo, cpart, mode: mode, uname: _cvuser.uname)
 
     ubmemo = Ubmemo.find_or_new(_cvuser.id, zhbook.nvinfo_id)
     if _cvuser.privi > -1
