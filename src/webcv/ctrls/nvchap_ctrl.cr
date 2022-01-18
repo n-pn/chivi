@@ -73,12 +73,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    if remote_chap?(zhbook, chinfo)
-      mode = params["redo"]? ? 2 : 1
-    else
-      mode = 0
-    end
-
+    mode = !remote_chap?(zhbook, chinfo) ? 0 : params["redo"]? ? 2 : 1
     lines = zhbook.chtext(chinfo, cpart, mode: mode, uname: _cvuser.uname)
 
     ubmemo = Ubmemo.find_or_new(_cvuser.id, zhbook.nvinfo_id)
