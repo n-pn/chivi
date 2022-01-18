@@ -15,6 +15,8 @@ module CV::TlRule
       end
 
       fold_nouns!(node)
+    when .noun?
+      fold_nouns!(node)
     else
       scan_noun!(node.succ?, nquant: node) || node
     end

@@ -111,7 +111,9 @@ module CV::TlRule
     return node unless succ = node.succ?
 
     succ.set!(PosTag::Noun) if succ.veno? || succ.ajno?
-    succ.noun? ? fold_adjt_noun!(node, succ) : node
+
+    # puts [node, succ]
+    succ.nouns? ? fold_adjt_noun!(node, succ) : node
   end
 
   def fold_adj_adv!(node : MtNode, prev = node.prev?)

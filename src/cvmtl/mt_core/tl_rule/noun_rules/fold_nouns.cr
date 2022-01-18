@@ -24,6 +24,7 @@ module CV::TlRule
         return noun if succ.verbs?
         noun = fold!(noun, succ, PosTag::Noun, dic: 7, flip: true)
       when .junction?
+        return noun if mode == 2 || noun.prev?(&.adjts?)
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
       when .spaces?
         return mode == 0 ? fold_noun_space!(noun, succ) : noun

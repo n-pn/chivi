@@ -38,7 +38,7 @@ module CV::TlRule
         if nquant
           node = nil
         else
-          node = fuse_number!(node)
+          node = fold_number!(node)
           break unless node.numeric?
           nquant, node = node, node.succ?
           next
