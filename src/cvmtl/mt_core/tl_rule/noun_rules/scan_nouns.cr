@@ -118,9 +118,7 @@ module CV::TlRule
     # node = fold_proper_nounish!(proper, node) if proper
 
     return node unless mode == 0 && (succ = node.succ?)
-
-    node = fold_uzhi!(uzhi: succ, prev: node) if succ.uzhi?
-    fold_noun_space!(noun: node)
+    fold_noun_after!(node, succ)
   end
 
   def clean_nquant(nquant : MtNode, prodem : MtNode?)

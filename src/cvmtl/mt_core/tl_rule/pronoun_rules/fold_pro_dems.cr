@@ -61,7 +61,7 @@ module CV::TlRule
   def should_flip_prodem?(prodem : MtNode)
     return true if prodem.pro_zhe? || prodem.pro_na1?
 
-    {"另", "其他", "此", "某个"}.includes?(prodem.key)
+    {"另", "其他", "此", "某个", "某些"}.includes?(prodem.key)
   end
 
   def split_prodem!(node : MtNode?, succ : MtNode? = node.succ?)

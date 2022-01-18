@@ -26,15 +26,14 @@ module CV::TlRule
 
   def noun_can_combine?(prev : MtNode?, succ : MtNode?) : Bool
     while prev && (prev.numeric? || prev.pronouns?)
+      # puts [prev, succ, "noun_can_combine"]
       prev = prev.prev?
     end
 
-    # puts [prev, succ, "noun_can_combine"]
-
     return true unless prev && !prev.preposes?
-    # return false if succ.maybe_adjt?
 
     while succ
+      # puts [prev, succ, "noun_can_combine"]
       case succ
       when .adjts?   then return !succ.succ?(&.ude1?)
       when .adverbs? then succ = succ.succ?

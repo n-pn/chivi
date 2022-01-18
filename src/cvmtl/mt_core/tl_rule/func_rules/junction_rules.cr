@@ -29,13 +29,9 @@ module CV::TlRule
   end
 
   def fold_noun_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)
-    return unless prev && succ
-    return unless is_concoord?(node, check_prepos: true)
+    return unless prev && succ && is_concoord?(node, check_prepos: true)
 
-    unless similar_tag?(prev, succ)
-      return unless succ = scan_noun!(succ)
-    end
-
+    return unless (succ = scan_noun!(succ)) && similar_tag?(prev, succ)
     fold!(prev, succ, tag: PosTag::Nform, dic: 4)
   end
 
