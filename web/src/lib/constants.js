@@ -113,6 +113,16 @@ export const snames = [
   'shubaow',
   'jx_la',
   'zxcs_me',
+  'users',
+]
+
+export let book_origins = [
+  'qidian',
+  'zongheng',
+  'ciweimao',
+  '17k',
+  'faloo',
+  'motie',
 ]
 
 export const order_names = {

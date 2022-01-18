@@ -124,6 +124,7 @@
             title="Trang nguồn">
             <span>{nvinfo.pub_name}</span>
           </a>
+          <a href="books?source={nvinfo.pub_name}"><SIcon name="search" /></a>
         {/if}
 
         {#if nvinfo.ys_snvid != ''}

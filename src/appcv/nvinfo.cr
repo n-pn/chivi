@@ -140,6 +140,10 @@ class CV::Nvinfo
     input ? where("labels @> ?", input) : self
   end
 
+  scope :filter_origin do |input|
+    input ? where("pub_name = ?", input) : self
+  end
+
   scope :filter_cvuser do |uname, bmark|
     if uname && (cvuser = Cvuser.load!(uname))
       where_clause = "cvuser_id=#{cvuser.id}"

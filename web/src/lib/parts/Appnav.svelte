@@ -1,5 +1,5 @@
 <script>
-  import { snames, order_names } from '$lib/constants'
+  import { snames, order_names, book_origins } from '$lib/constants'
 
   import SIcon from '$atoms/SIcon.svelte'
   import Gslide from '$molds/Gslide.svelte'
@@ -57,14 +57,26 @@
   <section class="content">
     <header class="label">
       <SIcon name="archive" />
-      <span>Nguồn truyện</span>
+      <span>Nguồn text</span>
     </header>
 
     <div class="m-chips">
       {#each snames as sname}
-        <a href="/books?sname={sname}" class="m-chip _caps">
-          {sname}
-        </a>
+        <a href="/books?sname={sname}" class="m-chip _caps">{sname}</a>
+      {/each}
+    </div>
+  </section>
+
+  <section class="content">
+    <header class="label">
+      <SIcon name="archive" />
+      <span>Trang gốc</span>
+    </header>
+
+    <div class="m-chips">
+      {#each book_origins as origin}
+        <a href="/books?origin={origin}" class="m-chip _caps _private"
+          >{origin}</a>
       {/each}
     </div>
   </section>

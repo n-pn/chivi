@@ -18,6 +18,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .filter_author(params["author"]?)
         .filter_zseed(params["sname"]?)
         .filter_genre(params["genre"]?)
+        .filter_origin(params["origin"]?)
         .filter_cvuser(params["uname"]?, params["bmark"]?)
 
     total = query.dup.limit(offset + limit * 3).offset(0).count
