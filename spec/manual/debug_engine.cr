@@ -1,8 +1,8 @@
 require "../../src/cvmtl/mt_core"
 
-GENERIC = CV::MtCore.generic_mtl("combine")
+GENERIC = CV::MtCore.generic_mtl("fnjqty5r")
 
-inp = "有些控制不住"
+inp = "小白狗飞快地跑出去"
 res = GENERIC.cv_plain(inp)
 
 {res.inspect, inp, res}.each do |text|

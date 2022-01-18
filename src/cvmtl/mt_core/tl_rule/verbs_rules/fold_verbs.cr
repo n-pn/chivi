@@ -91,7 +91,7 @@ module CV::TlRule
     end
 
     return false unless prev && noun
-    return false if {"时候", "时", "打算"}.includes?(noun.key)
+    return false if {"时候", "时", "打算", "方法"}.includes?(noun.key)
 
     case prev.tag
     when .comma? then true
