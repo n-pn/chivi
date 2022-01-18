@@ -124,6 +124,7 @@ module CV::TlRule
     return unless verb = find_verb_after_for_prepos(tail, skip_comma: false)
 
     return unless verb.v_shi? || verb.key == "就是"
+    return if find_verb_after(verb)
 
     ude1.val = ""
     node = fold!(prev, noun, PosTag::NounPhrase, dic: 8)
