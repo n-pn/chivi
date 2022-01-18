@@ -101,10 +101,11 @@ module CV::TlRule
     when .subject?
       return true unless head = prev.prev?
       return false if head.v_shi?
-      return true if head.none? || head.pstops? || (head.unkn? && head.body?.try(&.quoteop?))
+      return true if head.none? || head.unkn? || head.pstops?
+    when .none?, .pstops?, .unkn?
+      return !find_verb_after(right)
     end
 
-    return true unless verb_2 = find_verb_after(right)
-    is_linking_verb?(verb, verb_2)
+    find_verb_after(right).try { |x| is_linking_verb?(verb, x) } || true
   end
 end
