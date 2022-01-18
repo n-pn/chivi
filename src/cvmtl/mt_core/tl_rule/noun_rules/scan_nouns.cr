@@ -1,7 +1,7 @@
 module CV::TlRule
   # modes:
   # 1 => do not include spaces after nouns
-  # 2 => ??
+  # 2 => do not join junctions
   # 3 => scan_noun after ude1
   #   can return non nounish node
   def scan_noun!(node : MtNode?, mode : Int32 = 0,
@@ -93,7 +93,7 @@ module CV::TlRule
         node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
         node = fold_adjt_as_noun!(node)
       when .nouns?
-        node = fold_nouns!(node, mode: 1)
+        node = fold_nouns!(node, mode: 2)
         node = scan_noun!(node) || node unless node.nouns?
       when .ude2?
         if node.prev? { |x| x.pre_zai? || x.verbs? } || node.succ?(&.spaces?)

@@ -13,7 +13,7 @@ module CV::TlRule
       end
     end
 
-    noun = fold_nouns!(noun, mode: 1)
+    noun = ude1 ? scan_noun!(noun, mode: 2) || noun : fold_nouns!(noun, mode: 1)
     noun = fold!(adjt, noun, noun.tag, dic: 6, flip: flip)
     noun = fold_noun_after!(noun)
 
