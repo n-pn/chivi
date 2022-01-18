@@ -51,13 +51,13 @@ module CV::TlRule
   end
 
   private def is_learnable_skill?(node : MtNode?) : Bool
-    return true unless node
-
-    case node.tag
-    when .exmark?, .qsmark?, .nouns? then true
-    when .adverbs?                   then false
-    when .verb?, .verb_object?
+    case node
+    when .nil?, .exmark?, .qsmark?, .nouns?
+      true
+    when .verb_object?
       MtDict::VERBS_SEPERATED.has_key?(node.key)
+    when .adverbs?, .verbs?
+      false
     else
       case node.prev?(&.key)
       when "都", "也" then true
