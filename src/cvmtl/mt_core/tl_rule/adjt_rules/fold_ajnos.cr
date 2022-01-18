@@ -9,8 +9,10 @@ module CV::TlRule
     case succ = node.succ?
     when .nil?, .puncts?
       node.prev?(&.subject?) ? cast_adjt!(node) : cast_noun!(node)
-    when .verbs?, .preposes?, .nouns?
+    when .verbs?, .preposes?
       cast_noun!(node)
+    when .noun?
+      node.set!(PosTag::Modifier)
     when .ude1?
       cast_adjt!(node)
     else

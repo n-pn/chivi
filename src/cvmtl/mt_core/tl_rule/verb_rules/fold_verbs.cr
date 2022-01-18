@@ -13,8 +13,6 @@ module CV::TlRule
     flag = 0
 
     while !verb.verb_object? && (succ = verb.succ?)
-      # puts [verb, verb.idx, succ]
-
       case succ
       when .junction?
         fold_verb_junction!(junc: succ, verb: verb).try { |x| verb = x } || break
@@ -33,6 +31,7 @@ module CV::TlRule
         verb = fold!(verb, succ, PosTag::Verb, dic: 4)
       when .verbs?, .adverbs?
         verb = fold_verb_verb!(verb, succ)
+        break
       when .adjts?, .preposes?, .uniques?, .space?
         break unless flag == 0
         fold_verb_compl!(verb, succ).try { |x| verb = x } || break

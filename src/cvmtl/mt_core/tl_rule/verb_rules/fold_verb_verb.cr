@@ -4,6 +4,8 @@ module CV::TlRule
       return fold!(verb_1, verb_2.set!(val), PosTag::Verb, dic: 6)
     end
 
+    return fold!(verb_1, verb_2, verb_1.tag) if verb_1.key == verb_2.key
+
     return verb_1 unless can_combine_verb_verb?(verb_1)
     verb_2 = verb_2.adverbs? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
     verb_2.verbs? ? fold!(verb_1, verb_2, verb_2.tag, dic: 7) : verb_1
