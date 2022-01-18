@@ -27,12 +27,11 @@ module CV::TlRule
   end
 
   def heal_pro_dem!(pro_dem : MtNode)
-    return pro_dem if has_verb_after?(pro_dem)
-
     case pro_dem
     when .pro_zhe? then pro_dem.set!("cái này")
-    when .pro_na1? then pro_dem.set!("vậy")
-    else                pro_dem
+    when .pro_na1?
+      has_verb_after?(pro_dem) ? pro_dem : pro_dem.set!("vậy")
+    else pro_dem
     end
   end
 
