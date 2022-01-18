@@ -76,7 +76,7 @@ module CV::TlRule
   end
 
   def fold_verb_object!(verb : MtNode, succ : MtNode?)
-    return verb if verb.verb_object? || verb.vintr? || !succ
+    return verb if !succ || verb.verb_object? || verb.vintr?
     return verb unless (noun = scan_noun!(succ)) && noun.subject?
 
     if (ude1 = noun.succ?) && ude1.ude1? && (right = ude1.succ?)
