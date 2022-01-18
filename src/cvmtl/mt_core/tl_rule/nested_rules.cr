@@ -26,7 +26,7 @@ module CV::TlRule
       root.tag = PosTag::NounPhrase
     end
 
-    root.noun? ? fold_noun!(root, mode: 1) : root
+    root.noun? ? fold_nouns!(root, mode: 1) : root
   end
 
   private def match_end(char : Char)

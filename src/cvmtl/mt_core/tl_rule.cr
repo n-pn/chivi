@@ -23,7 +23,7 @@ module CV::TlRule
       when .space?    then node = fold_space!(node)
       when .vmodals?  then node = heal_vmodal!(node)
       when .verbs?    then node = fold_verbs!(node)
-      when .nouns?    then node = fold_noun!(node)
+      when .nouns?    then node = fold_nouns!(node)
       when .onomatopoeia?
         node = fold_onoma!(node)
       end

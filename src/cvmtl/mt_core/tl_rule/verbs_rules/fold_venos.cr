@@ -1,7 +1,7 @@
 module CV::TlRule
   def fold_veno!(node : MtNode)
     node = heal_veno!(node)
-    node.noun? ? fold_noun!(node) : fold_verbs!(node)
+    node.noun? ? fold_nouns!(node) : fold_verbs!(node)
   end
 
   def heal_veno!(node : MtNode)

@@ -40,7 +40,7 @@ module CV::TlRule
         return fold!(node, succ, PosTag::Noun, dic: 7, flip: true)
       when .veno?
         unless prev || node.key.size > 1
-          succ = fold_noun!(cast_noun!(succ))
+          succ = fold_nouns!(cast_noun!(succ))
           return fold!(node, succ, PosTag::NounPhrase, dic: 4, flip: true)
         else
           succ = cast_verb!(succ)

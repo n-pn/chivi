@@ -15,7 +15,7 @@ module CV::TlRule
     case succ.tag
     when .noun?, .time?, .ptitle?
       node = fold!(node, succ, succ.tag, dic: 8, flip: true)
-      fold_noun!(node)
+      fold_nouns!(node)
     when .quantis?
       if (succ_2 = succ.succ?) && succ_2.nouns?
         succ = fold!(succ, succ_2, PosTag::NounPhrase, dic: 7)

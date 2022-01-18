@@ -14,7 +14,7 @@ module CV::TlRule
         node = fold_nested!(node)
 
         if node.nouns?
-          node = fold_noun!(node)
+          node = fold_nouns!(node)
         else
           node = node.popens? ? nil : node
         end
@@ -69,7 +69,7 @@ module CV::TlRule
 
         case succ
         when .nouns?
-          succ = fold_noun!(succ, mode: 1)
+          succ = fold_nouns!(succ, mode: 1)
           node = fold!(node, succ, PosTag::NounPhrase, dic: 5, flip: true)
         when .ude1?
           node = fold_ude1!(ude1: succ, prev: node)
@@ -93,7 +93,7 @@ module CV::TlRule
         node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
         node = fold_adjt_as_noun!(node)
       when .nouns?
-        node = fold_noun!(node, mode: 1)
+        node = fold_nouns!(node, mode: 1)
         node = scan_noun!(node) || node unless node.nouns?
       when .ude2?
         if node.prev? { |x| x.pre_zai? || x.verbs? } || node.succ?(&.spaces?)

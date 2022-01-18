@@ -3,7 +3,7 @@ module CV::TlRule
   # 1: skip uzhi and space and let the caller handle it
   # 2: stop at concoords
 
-  def fold_noun!(noun : MtNode, mode : Int32 = 0) : MtNode
+  def fold_nouns!(noun : MtNode, mode : Int32 = 0) : MtNode
     # return node if node.nform?
 
     while noun.nouns?

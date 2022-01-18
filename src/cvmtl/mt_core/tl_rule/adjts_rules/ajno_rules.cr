@@ -1,7 +1,7 @@
 module CV::TlRule
   def fold_ajno!(node : MtNode)
     node = heal_ajno!(node)
-    node.noun? ? fold_noun!(node) : fold_adjts!(node)
+    node.noun? ? fold_nouns!(node) : fold_adjts!(node)
   end
 
   def heal_ajno!(node : MtNode)

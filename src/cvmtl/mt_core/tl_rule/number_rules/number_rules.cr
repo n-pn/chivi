@@ -14,7 +14,7 @@ module CV::TlRule
         node = fold!(prev, node, node.tag, dic: 6, flip: true)
       end
 
-      fold_noun!(node)
+      fold_nouns!(node)
     else
       scan_noun!(node.succ?, nquant: node) || node
     end
