@@ -51,8 +51,8 @@
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let chinfo
-  $: nvinfo = $page.stuff.nvinfo
-  $: ubmemo = $page.stuff.ubmemo
+  $: nvinfo = $page.stuff.nvinfo || {}
+  $: ubmemo = $page.stuff.ubmemo || {}
 
   $: pager = new Pager($page.url, { sname: 'chivi', page: 1 })
 </script>

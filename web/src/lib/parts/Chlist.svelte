@@ -1,6 +1,7 @@
 <script>
   import { kit_chap_url } from '$lib/utils/route_utils'
   import SIcon from '$atoms/SIcon.svelte'
+  import { get_rtime } from '$atoms/Rtime.svelte'
 
   export let bslug = ''
   export let sname = ''
@@ -35,13 +36,15 @@
           <div class="chap-chvol">{chap.chvol}</div>
 
           {#if chap.chars > 0}
-            <div class="chap-track">
+            <div
+              class="chap-track"
+              data-tip="Lưu: {get_rtime(chap.utime)} bởi {chap.uname || '??'}">
               <SIcon name={is_remote ? 'cloud-download' : 'device-floppy'} />
             </div>
           {/if}
 
           {#if same_sname && is_marked(chap)}
-            <chap-mark>
+            <chap-mark data-tip="Xem: {get_rtime(track.utime)}">
               <SIcon name={track.locked ? 'bookmark' : 'eye'} />
             </chap-mark>
           {/if}

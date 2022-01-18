@@ -6,6 +6,9 @@ module CV::UbmemoView
       jb.field "status", obj.status_s
       jb.field "locked", obj.locked
 
+      jb.field "atime", obj.atime
+      jb.field "utime", obj.utime
+
       jb.field "sname", obj.lr_sname
       jb.field "chidx", obj.lr_chidx
       jb.field "cpart", obj.lr_cpart
