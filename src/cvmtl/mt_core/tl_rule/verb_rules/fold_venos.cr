@@ -10,12 +10,10 @@ module CV::TlRule
 
       case prev
       when .ude1?
-        if prev.prev?(&.adverbs?)
-          return cast_verb!(node)
-        elsif node.succ? { |x| x.ends? || x.nouns? }
-          return cast_noun!(node)
-        end
-      when .adverbs?, .vmodals?, .vpro?, .pre_zai?
+        return cast_verb!(node) if prev.prev?(&.adverbs?)
+        return cast_noun!(node) unless (succ = node.succ?) && !(succ.ends?)
+        return cast_noun!(node) if succ.nouns?
+      when .adverbs?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
         return cast_verb!(node)
       when .auxils?, .preposes?
         return cast_noun!(node)
