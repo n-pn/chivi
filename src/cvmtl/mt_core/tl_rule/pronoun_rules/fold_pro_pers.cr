@@ -18,7 +18,9 @@ module CV::TlRule
     when .nouns?, .numbers?, .pro_per?, .pro_dem?
       return node unless (succ = scan_noun!(succ)) && succ.subject?
       return node unless noun_can_combine?(node.prev?, succ.succ?)
-      fold!(node, succ, succ.tag, dic: 5, flip: !node.nform?)
+
+      flip = flip_proper_noun?(node, succ)
+      fold!(node, succ, succ.tag, dic: 5, flip: flip)
     when .uzhi?
       fold_uzhi!(uzhi: succ, prev: node)
     else
@@ -44,5 +46,16 @@ module CV::TlRule
     else
       fold!(node, succ, PosTag::Nform, dic: 8)
     end
+  end
+
+  def flip_proper_noun?(proper : MtNode, noun : MtNode) : Bool
+    return false if noun.nform?
+    return true unless (prev = proper.prev?) && prev.verbs?
+
+    prev.each do |node|
+      return false if need_2_objects?(node.key)
+    end
+
+    true
   end
 end
