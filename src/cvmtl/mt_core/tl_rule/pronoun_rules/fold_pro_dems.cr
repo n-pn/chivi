@@ -27,6 +27,8 @@ module CV::TlRule
   end
 
   def heal_pro_dem!(pro_dem : MtNode)
+    return pro_dem if has_verb_after?(pro_dem)
+
     case pro_dem
     when .pro_zhe? then pro_dem.set!("cái này")
     when .pro_na1? then pro_dem.set!("vậy")
@@ -44,7 +46,12 @@ module CV::TlRule
     return nounish unless prodem
 
     if nounish
-      flip = should_flip_prodem?(prodem)
+      if nounish.verb_object?
+        prodem = heal_pro_dem!(prodem)
+        return fold!(prodem, nounish, PosTag::VerbClause, dic: 8)
+      end
+
+      flip = nounish.nouns? && should_flip_prodem?(prodem)
       tag = !prodem.pro_dem? && nounish.qtnoun? ? PosTag::ProDem : nounish.tag
       return fold!(prodem, nounish, tag, dic: 2, flip: flip)
     end
