@@ -7,10 +7,10 @@ module CV::TlRule
   def heal_veno!(node : MtNode)
     if prev = node.prev?
       case prev
+      when .adverbs?, .vmodals?, .vpro?, .pre_zai?
+        return cast_verb!(node)
       when .auxils?, .preposes?
         return cast_noun!(node)
-      when .adverbs?, .vmodals?, .vpro?
-        return cast_verb!(node)
         # when .numeric?
         #   if (succ = node.succ?) && !(succ.nouns? || succ.pronouns?)
         #     return cast_noun!(node)
