@@ -6,7 +6,15 @@ module CV::TlRule
 
   def heal_veno!(node : MtNode)
     if prev = node.prev?
+      # puts [node, prev, "heal_veno"]
+
       case prev
+      when .ude1?
+        if prev.prev?(&.adverbs?)
+          return cast_verb!(node)
+        elsif node.succ? { |x| x.ends? || x.nouns? }
+          return cast_noun!(node)
+        end
       when .adverbs?, .vmodals?, .vpro?, .pre_zai?
         return cast_verb!(node)
       when .auxils?, .preposes?
@@ -28,10 +36,6 @@ module CV::TlRule
         end
       when .verb?
         return cast_noun!(node) if node.succ?(&.ude1?)
-      when .ude1?
-        if node.succ? { |x| x.ends? || x.nouns? }
-          return cast_noun!(node)
-        end
       end
     end
 
