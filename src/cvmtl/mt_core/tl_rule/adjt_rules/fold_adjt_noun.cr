@@ -12,7 +12,7 @@ module CV::TlRule
       when .adjt?     then return adjt if adjt.key.size > 1
       when .modifier? then flip = !do_not_flip?(adjt.key)
       end
-      fold_nouns!(noun, mode: 1)
+      noun = fold_nouns!(noun, mode: 1)
     end
 
     return adjt unless noun.nouns?
