@@ -6,7 +6,10 @@ module CV::TlRule
     return vshi unless succ && (tail = succ.succ?) && succ.subject?
 
     tail = fold_verbs!(tail) if tail.verbs?
-    fold!(succ, tail, PosTag::VerbClause, dic: 7) if tail.verbs? && tail.succ?(&.ude1?)
+    if tail.verbs? && tail.succ?(&.ude1?)
+      tag = succ.verb_object? ? tail.tag : PosTag::VerbClause
+      fold!(succ, tail, tag: tag, dic: 8)
+    end
 
     vshi
   end
