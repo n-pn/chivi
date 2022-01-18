@@ -175,7 +175,8 @@ class CV::InitNvinfo
       nvinfo.set_utime(nvinfo.ys_utime)
 
       get_val(:origin, snvid).try do |vals|
-        nvinfo.pub_name, nvinfo.pub_link = vals
+        nvinfo.pub_name = vals[0].downcase
+        nvinfo.pub_link = vals[1]
       end
 
       extras = get_ys_extras(snvid)

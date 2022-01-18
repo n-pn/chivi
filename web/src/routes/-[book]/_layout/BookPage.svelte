@@ -116,6 +116,8 @@
         <span class="stat">Liên kết:</span>
 
         {#if nvinfo.pub_link != ''}
+          <a href="books?source={nvinfo.pub_name}"><SIcon name="search" /></a>
+
           <a
             class="stat link _outer"
             href={nvinfo.pub_link}
@@ -124,7 +126,6 @@
             title="Trang nguồn">
             <span>{nvinfo.pub_name}</span>
           </a>
-          <a href="books?source={nvinfo.pub_name}"><SIcon name="search" /></a>
         {/if}
 
         {#if nvinfo.ys_snvid != ''}

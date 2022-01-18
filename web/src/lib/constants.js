@@ -122,7 +122,14 @@ export let book_origins = [
   'ciweimao',
   '17k',
   'faloo',
-  'motie',
+  'chuangshi',
+  'jjwxc',
+  'sfacg',
+  'zhulang',
+  'laikan',
+  '8kana',
+  'youdubook',
+  'kanshu',
 ]
 
 export const order_names = {
