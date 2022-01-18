@@ -47,7 +47,17 @@ module CV::TlRule
         node = heal_uniques!(node)
       when .adverbs?
         node = fold_adverbs!(node)
-        node = fold_verb_as_noun!(node, mode: mode) if node.verbs?
+
+        case node.tag
+        when .verbs?
+          node = fold_verb_as_noun!(node, mode: mode)
+        when .adjts?
+          node = fold_adjt_as_noun!(node)
+        when .adverb?
+          break
+        else
+          # puts [node, node.tag]
+        end
       when .preposes?
         break unless prodem || nquant
         node = fold_preposes!(node, mode: 1)
@@ -72,7 +82,7 @@ module CV::TlRule
         elsif node.verbs?
           node = fold_verb_as_noun!(node, mode: mode)
         elsif node.adjts?
-          node = fold_adjts!(node)
+          node = fold_adjt_as_noun!(node)
         end
       when .veno?
         node = fold_veno!(node)
@@ -81,6 +91,7 @@ module CV::TlRule
         node = fold_verb_as_noun!(node, mode: mode)
       when .adjts?
         node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
+        node = fold_adjt_as_noun!(node)
       when .nouns?
         node = fold_nouns!(node, mode: 2)
         node = scan_noun!(node) || node unless node.nouns?
@@ -129,6 +140,13 @@ module CV::TlRule
 
     return head unless tail = scan_noun!(succ.succ?)
     fold!(head, tail, PosTag::NounPhrase, dic: 4, flip: true)
+  end
+
+  def fold_adjt_as_noun!(node : MtNode)
+    return node if node.nouns? || !(succ = node.succ?)
+
+    noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
+    fold_adjt_noun!(node, noun, ude1)
   end
 
   def fold_verb_as_noun!(node : MtNode, prev : MtNode? = nil, mode = 0)
