@@ -96,13 +96,15 @@ module CV::TlRule
     return false if {"时候", "时", "打算", "方法"}.includes?(right.key)
 
     case prev.tag
-    when .comma? then true
+    when .comma?
+      return true
     when .subject?
       return true unless head = prev.prev?
-      head.v_shi? || head.none? || head.puncts?
-    else
-      return true unless verb_2 = find_verb_after(right)
-      return true if is_linking_verb?(verb, verb_2)
+      return false if head.v_shi?
+      return true if head.none? || head.pstops? || (head.unkn? && head.body?.try(&.quoteop?))
     end
+
+    return true unless verb_2 = find_verb_after(right)
+    is_linking_verb?(verb, verb_2)
   end
 end
