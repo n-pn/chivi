@@ -30,6 +30,12 @@ module CV::TlRule
       break unless succ = node.succ?
 
       case succ.tag
+      when .adverb?
+        if succ.key == "又"
+          fold_adjt_junction!(succ, prev: node).try { |x| node = x } || break
+        else
+          break
+        end
       when .junction?
         fold_adjt_junction!(succ, prev: node).try { |x| node = x } || break
       when .aform?
