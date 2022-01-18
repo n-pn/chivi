@@ -116,7 +116,7 @@
         <span class="stat">Liên kết:</span>
 
         {#if nvinfo.pub_link != ''}
-          <a href="books?source={nvinfo.pub_name}"><SIcon name="search" /></a>
+          <a href="books?origin={nvinfo.pub_name}"><SIcon name="search" /></a>
 
           <a
             class="stat link _outer"
