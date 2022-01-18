@@ -76,22 +76,24 @@ module CV::TlRule
 
     return verb unless (noun = scan_noun!(succ)) && noun.subject?
 
-    if (ude1 = noun.succ?) && ude1.ude1? && should_apply_ude1_after_verb?(verb, ude1.succ?)
-      noun = fold_ude1!(ude1, prev: noun)
+    if (ude1 = noun.succ?) && ude1.ude1? && (right = ude1.succ?)
+      if (right = scan_noun!(right)) && should_apply_ude1_after_verb?(verb, right)
+        noun = fold_ude1_left!(ude1: ude1, left: noun, right: right)
+      end
     end
 
     fold!(verb, noun, PosTag::VerbObject, dic: 7)
   end
 
-  def should_apply_ude1_after_verb?(verb : MtNode, noun : MtNode?, prev = verb.prev?)
-    # puts [verb, noun, verb.prev?, "verb-object"]
+  def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)
+    # puts [verb, right, verb.prev?, "verb-object"]
 
     while prev && prev.adverb?
       prev = prev.prev?
     end
 
-    return false unless prev && noun
-    return false if {"时候", "时", "打算", "方法"}.includes?(noun.key)
+    return false unless prev && right
+    return false if {"时候", "时", "打算", "方法"}.includes?(right.key)
 
     case prev.tag
     when .comma? then true
@@ -99,7 +101,8 @@ module CV::TlRule
       return true unless head = prev.prev?
       head.v_shi? || head.none? || head.puncts?
     else
-      !find_verb_after(noun)
+      return true unless verb_2 = find_verb_after(right)
+      return true if is_linking_verb?(verb, verb_2)
     end
   end
 end
