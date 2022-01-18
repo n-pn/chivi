@@ -1,8 +1,8 @@
 require "../../src/cvmtl/mt_core"
 
-GENERIC = CV::MtCore.generic_mtl("6y9qp333")
+GENERIC = CV::MtCore.generic_mtl("m1596jjw")
 
-inp = "扭曲的肢体与可怖的样貌"
+inp = "往苏荆脸上一刷"
 res = GENERIC.cv_plain(inp)
 
 {res.inspect, inp, res}.each do |text|

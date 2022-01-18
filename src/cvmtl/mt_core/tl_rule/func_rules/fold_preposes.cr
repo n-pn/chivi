@@ -72,10 +72,10 @@ module CV::TlRule
     return fold!(prepos, noun, PosTag::PrepPhrase, dic: 2) unless verb = noun.succ?
 
     # combine with noun after ude1 if there exists verb right after
-    if verb.ude1? && (tail = scan_noun!(verb.succ?, mode: mode))
+    if verb.ude1? && (tail = scan_noun!(verb.succ?, mode: 1))
       # TODO: combine this part with `fold_prepos_left`
 
-      unless find_verb_after_for_prepos(tail, skip_comma: false)
+      unless verb_2 = find_verb_after_for_prepos(tail, skip_comma: false)
         if prepos.pre_zai? && (noun = fold_prezai_places?(prepos, noun, verb, tail))
           return fold!(prepos, noun, PosTag::PrepPhrase, dic: 3)
         end
@@ -87,6 +87,8 @@ module CV::TlRule
       fold_prepos_left(prepos.prev?, noun, ude1: verb, tail: tail).try { |x| return x }
 
       noun = fold_noun_ude1!(noun, ude1: verb, right: tail)
+      noun = fold_noun_after!(noun) unless verb_2.spaces?
+
       verb = noun.succ?
     end
 

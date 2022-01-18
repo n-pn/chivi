@@ -134,19 +134,6 @@ module CV::TlRule
     nquant
   end
 
-  def fold_noun_after!(noun : MtNode, succ : MtNode? = noun.succ?)
-    return noun unless succ
-
-    case succ
-    when .uzhi?
-      fold_uzhi!(uzhi: succ, prev: noun)
-    when .space?
-      fold_noun_space!(noun: noun, space: succ)
-    else
-      noun
-    end
-  end
-
   def fold_head_ude1_noun!(head : MtNode)
     return head unless (succ = head.succ?) && succ.ude1?
     succ.val = "" unless head.noun? || head.names?

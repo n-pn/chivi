@@ -27,14 +27,17 @@ module CV::TlRule
 
   def find_verb_after_for_prepos(node : MtNode, skip_comma = true) : MtNode?
     while node = node.succ?
-      # puts [node]
       case node
-      when .vmodals?, .verbs?
-        return node unless node.v_shang? || node.v_xia?
-        return node if node.succ?(&.ule?)
-        # when .plsgn?, .mnsgn? then return node
+      # when .plsgn?, .mnsgn? then return node
       when .comma? then return nil if skip_comma
+      when .v_shang?, .v_xia?
+        return node if node.succ?(&.ule?)
+      when .vmodals?, .verbs? then return node
       else
+        if node.key == "一" && (succ = node.succ?) && succ.verb?
+          return fold!(node.set!("một phát"), succ, succ.tag, dic: 5, flip: true)
+        end
+
         return nil unless node.adverbs? || node.pdash?
       end
     end
