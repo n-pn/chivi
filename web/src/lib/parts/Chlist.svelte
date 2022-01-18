@@ -1,7 +1,7 @@
 <script>
   import { kit_chap_url } from '$lib/utils/route_utils'
   import SIcon from '$atoms/SIcon.svelte'
-  import { get_rtime } from '$atoms/Rtime.svelte'
+  import { get_rtime } from '$atoms/RTime.svelte'
 
   export let bslug = ''
   export let sname = ''
@@ -32,15 +32,15 @@
           <chap-title>{chap.title}</chap-title>
           <chap-chidx>{chap.chidx}.</chap-chidx>
         </div>
-        <div class="chap-meta">
-          <div class="chap-chvol">{chap.chvol}</div>
-
+        <chap-meta>
+          <chap-chvol>
+            {#if chap.o_sname}{chap.o_sname} - {/if}{chap.chvol}
+          </chap-chvol>
           {#if chap.chars > 0}
-            <div
-              class="chap-track"
+            <chap-track
               data-tip="Lưu: {get_rtime(chap.utime)} bởi {chap.uname || '??'}">
               <SIcon name={is_remote ? 'cloud-download' : 'device-floppy'} />
-            </div>
+            </chap-track>
           {/if}
 
           {#if same_sname && is_marked(chap)}
@@ -48,7 +48,7 @@
               <SIcon name={track.locked ? 'bookmark' : 'eye'} />
             </chap-mark>
           {/if}
-        </div>
+        </chap-meta>
       </a>
     </list-item>
   {/each}
@@ -115,7 +115,7 @@
     line-height: 1.5rem;
   }
 
-  .chap-meta {
+  chap-meta {
     display: flex;
     padding: 0;
     height: 1rem;
@@ -142,13 +142,13 @@
     @include ftsize(xs);
   }
 
-  .chap-chvol {
+  chap-chvol {
     flex: 1;
     @include fgcolor(neutral, 5);
     @include clamp($width: null);
   }
 
-  .chap-track {
+  chap-track {
     @include fgcolor(neutral, 5);
     font-size: 1rem;
   }
