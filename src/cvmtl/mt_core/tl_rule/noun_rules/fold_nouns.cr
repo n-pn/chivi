@@ -19,6 +19,11 @@ module CV::TlRule
       when .uzhi?
         # TODO: check with prev to group
         return mode == 0 ? fold_uzhi!(succ, noun) : noun
+      when .uyy?
+        node = fold!(noun, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
+        return node unless (succ = node.succ?) && succ.maybe_adjt?
+        succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
+        return fold!(node, succ, PosTag::Aform, dic: 8)
       when .veno?
         succ = heal_veno!(succ)
         return noun if succ.verbs?
