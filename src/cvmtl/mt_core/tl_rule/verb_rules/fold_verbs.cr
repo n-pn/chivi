@@ -66,8 +66,8 @@ module CV::TlRule
     return verb unless succ = verb.succ?
 
     verb.each do |node|
-      if node.key.in?("像") && (fold = fold_compare(verb))
-        return verb
+      if node.key.in?({"像"}) && (fold = fold_compare(verb))
+        return fold
       end
     end
 

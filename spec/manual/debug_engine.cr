@@ -1,9 +1,10 @@
 require "../../src/cvmtl/mt_core"
 
-GENERIC = CV::MtCore.generic_mtl("w5d6vmqr")
+inp = ARGV[0]? || "怎么带着一群猪队友把一群神一样！"
+dic = ARGV[1]? || "w5d6vmqr"
 
-inp = "她的魂海之中"
-res = GENERIC.cv_plain(inp)
+mtl = CV::MtCore.generic_mtl(dic)
+res = mtl.cv_plain(inp)
 
 {res.inspect, inp, res}.each do |text|
   puts "--------", text
