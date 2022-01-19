@@ -7,7 +7,12 @@ module CV::TlRule
     when .pre_dui? then fold_pre_dui!(node, succ, mode: mode)
     when .pre_bei? then fold_pre_bei!(node, succ, mode: mode)
     when .pre_zai? then fold_pre_zai!(node, succ, mode: mode)
-    else                fold_prepos!(node, succ, mode: mode)
+    else
+      if node.key.in?("同", "跟") && (fold = fold_compare(node, succ))
+        return fold
+      end
+
+      fold_prepos!(node, succ, mode: mode)
     end
   end
 
