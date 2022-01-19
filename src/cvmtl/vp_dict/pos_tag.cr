@@ -128,6 +128,11 @@ struct CV::PosTag
   end
 
   @[AlwaysInline]
+  def object?
+    @pos.nouns? || @pos.pronouns? || @pos.nquants?
+  end
+
+  @[AlwaysInline]
   def ends?
     @pos.puncts? || @pos.none? || @tag.interjection? || @tag.modalparticle?
   end
@@ -140,11 +145,6 @@ struct CV::PosTag
   @[AlwaysInline]
   def spaces?
     @tag.space? || @tag.v_shang? || @tag.v_xia?
-  end
-
-  @[AlwaysInline]
-  def object?
-    @tag.noun? || @tag.nmorp? || @tag.noun_phrase? || @pos.human? || @pos.names?
   end
 
   def self.from_str(tag : ::String, key : ::String = "") : self

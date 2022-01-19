@@ -77,17 +77,19 @@ module CV::TlRule
   def fold_verb_object!(verb : MtNode, succ : MtNode?)
     return verb if !succ || verb.verb_object? || verb.vintr?
 
-    # if succ.ude1?
-    #   succ.set!("")
-    #   if (prev = verb.prev?) && prev.subject? && !prev.verb_object?
-    #     node = fold!(prev, succ, PosTag::DefnPhrase, dic: 6)
-    #   else
-    #     node = fold!(verb, succ, PosTag::DefnPhrase, dic: 6)
-    #   end
+    if succ.ude1?
+      return verb unless (object = scan_noun!(succ.succ?)) && object.object?
 
-    #   return node unless (noun = scan_noun!(node.succ)) && noun.subject?
-    #   return fold!(node, noun, noun.tag, dic: 8, flip: true)
-    # end
+      # FIXME: this will cause infinity loop if fold_verb! is called in scan_noun
+      # if (prev = verb.prev?) && prev.object?
+      #   puts [prev, verb, object]
+      #   exit 0
+      #   verb = prev
+      # end
+
+      node = fold!(verb, succ.set!(""), PosTag::DefnPhrase, dic: 6)
+      return fold!(node, object, object.tag, dic: 8, flip: true)
+    end
 
     return verb unless (noun = scan_noun!(succ)) && noun.subject?
 

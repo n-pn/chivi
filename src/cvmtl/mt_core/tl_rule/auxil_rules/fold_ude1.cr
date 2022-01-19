@@ -5,7 +5,12 @@ module CV::TlRule
 
     ude1.set!("")
 
-    if noun = scan_noun!(succ, mode: 3)
+    if (noun = scan_noun!(succ, mode: 3))
+      if noun.verb_object? && prev.verb?
+        # ude1 here acts like ude3
+        return fold!(prev, noun, noun.tag, dic: 9)
+      end
+
       node = fold_ude1_left!(ude1: ude1, left: prev, right: noun)
       return fold_noun_after!(node, succ)
     end

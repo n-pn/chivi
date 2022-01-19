@@ -117,7 +117,7 @@ class CV::MtNode
     while succ
       # puts [succ, "maybe_verb", succ.verbs?]
       case succ
-      when .verbs? then return true
+      when .verbs?, .vmodals? then return true
       when .adverbs?, .comma?, pro_ints?, .conjunct?, .time?
         succ = succ.succ?
       else return false
@@ -128,6 +128,7 @@ class CV::MtNode
   end
 
   def maybe_adjt? : Bool
+    return !@succ.try(&.maybe_verb?) if @tag.ajad?
     @tag.adjts? || @tag.adverbs? && @succ.try(&.maybe_adjt?) || false
   end
 
