@@ -51,6 +51,9 @@ module CV::TlRule
         return fold!(prodem, nounish, PosTag::VerbClause, dic: 8)
       end
 
+      # puts [prodem.prev?, prodem.succ?]
+      # puts [nounish.prev?, nounish.succ?]
+
       flip = nounish.nouns? && should_flip_prodem?(prodem)
       tag = !prodem.pro_dem? && nounish.qtnoun? ? PosTag::ProDem : nounish.tag
       return fold!(prodem, nounish, tag, dic: 2, flip: flip)

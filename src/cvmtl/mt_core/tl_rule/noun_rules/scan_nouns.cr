@@ -105,7 +105,6 @@ module CV::TlRule
     end
 
     unless node && node.subject?
-      # puts [prodem, nquant, "no_noun"]
       return fold_prodem_nounish!(prodem, nquant)
     end
 

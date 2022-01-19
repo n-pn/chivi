@@ -6,12 +6,8 @@ module CV::TlRule
     ude1.set!("")
 
     if noun = scan_noun!(succ, mode: 3)
-      node = fold_ude1_left!(prev, ude1, noun)
-      return node unless succ = node.succ?
-      node = fold_uzhi!(uzhi: succ, prev: node) if succ.uzhi?
-      return fold_noun_space!(noun: node)
-    else
-      succ = ude1.succ
+      node = fold_ude1_left!(ude1: ude1, left: prev, right: noun)
+      return fold_noun_after!(node, succ)
     end
 
     if prev.adjt? && succ.verbs?
