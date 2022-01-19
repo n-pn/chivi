@@ -5,14 +5,15 @@ module CV::TlRule
     adjt = adjt.adverbs? ? fold_adverbs!(adjt) : fold_adjts!(adjt)
 
     case succ = adjt.succ?
-    when .nil?, .ude1?, .junction?
-      return fold!(noun, adjt, PosTag::Aform, dic: 6)
+    when .nil? then noun
+    when .ude1?, .junction?
+      fold!(noun, adjt, PosTag::Aform, dic: 6)
     when .ude2?
       return noun unless (prev = noun.prev?) && (prev.subject? || prev.junction?)
       adjt = fold!(noun, adjt, PosTag::Aform, dic: 6)
-      return fold_adjt_ude2!(adjt, succ)
+      fold_adjt_ude2!(adjt, succ)
     else
-      return noun
+      noun
     end
   end
 end

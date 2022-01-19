@@ -33,6 +33,9 @@ module CV::TlRule
       when .v_shang?, .v_xia?
         return node if node.succ?(&.ule?)
       when .vmodals?, .verbs? then return node
+      when .adjts?
+        return nil unless {"相同", "类似"}.includes?(node.key)
+        return node.set!(PosTag::Vintr)
       else
         if node.key == "一" && (succ = node.succ?) && succ.verb?
           return fold!(node.set!("một phát"), succ, succ.tag, dic: 5, flip: true)

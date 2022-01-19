@@ -24,6 +24,13 @@ module CV::TlRule
       when .vmodals?  then node = heal_vmodal!(node)
       when .verbs?    then node = fold_verbs!(node)
       when .nouns?    then node = fold_nouns!(node)
+      when .concoord?
+        next unless node.key.in?("与", "和")
+        if fold = fold_compare(node)
+          node = fold
+        else
+          node = fold_prepos!(node)
+        end
       when .onomatopoeia?
         node = fold_onoma!(node)
       end
