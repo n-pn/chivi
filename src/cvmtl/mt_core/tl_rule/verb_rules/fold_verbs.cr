@@ -77,17 +77,17 @@ module CV::TlRule
   def fold_verb_object!(verb : MtNode, succ : MtNode?)
     return verb if !succ || verb.verb_object? || verb.vintr?
 
-    if succ.ude1?
-      succ.set!("")
-      if (prev = verb.prev?) && prev.subject? && !prev.verb_object?
-        node = fold!(prev, succ, PosTag::DefnPhrase, dic: 6)
-      else
-        node = fold!(verb, succ, PosTag::DefnPhrase, dic: 6)
-      end
+    # if succ.ude1?
+    #   succ.set!("")
+    #   if (prev = verb.prev?) && prev.subject? && !prev.verb_object?
+    #     node = fold!(prev, succ, PosTag::DefnPhrase, dic: 6)
+    #   else
+    #     node = fold!(verb, succ, PosTag::DefnPhrase, dic: 6)
+    #   end
 
-      return node unless (noun = scan_noun!(node.succ)) && noun.subject?
-      return fold!(node, noun, noun.tag, dic: 8, flip: true)
-    end
+    #   return node unless (noun = scan_noun!(node.succ)) && noun.subject?
+    #   return fold!(node, noun, noun.tag, dic: 8, flip: true)
+    # end
 
     return verb unless (noun = scan_noun!(succ)) && noun.subject?
 
