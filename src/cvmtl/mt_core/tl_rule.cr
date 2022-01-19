@@ -26,9 +26,14 @@ module CV::TlRule
       when .nouns?    then node = fold_nouns!(node)
       when .concoord?
         next unless node.key.in?("与", "和")
+
         if fold = fold_compare(node)
           node = fold
         else
+          #   if (prev = node.prev?) && prev.object? && (fold = fold_noun_concoord!(node))
+          #     node = fold
+          #     next
+          #   end
           node = fold_prepos!(node)
         end
       when .onomatopoeia?

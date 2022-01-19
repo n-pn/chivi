@@ -18,13 +18,7 @@ module CV::TlRule
     return adjt unless noun.nouns?
 
     noun = fold!(adjt, noun, noun.tag, dic: 6, flip: flip)
-    noun = fold_noun_after!(noun)
-
-    if (succ = noun.succ?) && succ.junction?
-      fold_noun_concoord!(succ, noun).try { |fold| return fold }
-    end
-
-    noun
+    fold_noun_after!(noun)
   end
 
   def do_not_flip?(key : String)
