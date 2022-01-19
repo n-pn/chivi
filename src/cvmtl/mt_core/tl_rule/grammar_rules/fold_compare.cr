@@ -1,7 +1,7 @@
 module CV::TlRule
   def fold_compare(head : MtNode, tail = head.succ?)
     while tail
-      return if tail.puncts?
+      return if tail.puncts? || tail.key == "像"
       break if tail.uyy?
       tail = tail.succ?
     end
