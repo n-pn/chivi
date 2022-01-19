@@ -17,6 +17,7 @@ class CV::MtDict
 
   VERBS_2_OBJECTS = new("#{DIR}/verbs-2-objects.tsv")
   VERBS_SEPERATED = new("#{DIR}/verbs-seperated.tsv")
+  VERB_COMPLEMENT = new("#{DIR}/verb-complement.tsv")
 
   getter list = [] of VpTerm
   getter hash = {} of String => VpTerm
@@ -31,6 +32,10 @@ class CV::MtDict
     @ftab = @file.sub(".tsv", ".tab")
     load!(@file)
     load!(@ftab) if File.exists?(@ftab)
+  end
+
+  def get(key : String)
+    @vals[key]?
   end
 
   def load!(file : String)

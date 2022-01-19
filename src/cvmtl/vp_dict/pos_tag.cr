@@ -1,4 +1,3 @@
-require "../_consts/*"
 require "./pos_tag/*"
 
 struct CV::PosTag

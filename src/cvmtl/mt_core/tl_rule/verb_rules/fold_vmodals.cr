@@ -66,7 +66,7 @@ module CV::TlRule
 
   def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     if succ
-      if succ.vdirs? || (val = MTL::VERB_COMPLS[succ.key]?)
+      if succ.vdirs? || (val = MtDict::VERB_COMPLEMENT.get(succ.key))
         node.set!("nhớ") if succ.succ?(&.human?)
         succ.set!(val || succ.val, PosTag::Verb)
       elsif succ.key != "也" && has_verb_after?(node)

@@ -2,7 +2,7 @@ module CV::TlRule
   def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
     return if verb.v_you? || verb.v_shi?
 
-    if val = MTL::VERB_COMPLS[compl.key]?
+    if val = MtDict::VERB_COMPLEMENT.get(compl.key)
       compl.val = val
     else
       case compl.tag
