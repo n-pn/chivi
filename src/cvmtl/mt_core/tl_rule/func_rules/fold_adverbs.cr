@@ -4,7 +4,7 @@ module CV::TlRule
     when .adv_bu?  then fold_adv_bu!(node, succ)
     when .adv_mei? then fold_adv_mei!(node, succ)
     when .adv_fei? then fold_adv_fei!(node, succ)
-    else                fold_adverb!(node, succ)
+    else                fold_adverb_base!(node, succ)
     end
   end
 
@@ -19,7 +19,7 @@ module CV::TlRule
       fold!(node, succ, succ.tag, dic: 9)
     when .adverb?
       node = fold!(node, succ, succ.tag, dic: 4)
-      fold_adverb!(node)
+      fold_adverb_base!(node)
     when .verbs?
       succ.set!(PosTag::Verb) if succ.veno?
       node = fold!(node, succ, succ.tag, dic: 4)
@@ -66,7 +66,7 @@ module CV::TlRule
     # TODO: check for key when 没 mean "không"
   end
 
-  def fold_adverb!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
+  def fold_adverb_base!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     node = fold!(nega, node, PosTag::Adverb, dic: 2) if nega
 
     return node unless succ
@@ -80,21 +80,15 @@ module CV::TlRule
     when .vmodals?
       heal_vmodal!(succ, nega: node)
     when .verbs?
-      case node.key
-      when "白" then node.val = "phí công"
-      when "正" then node.val = "đang" unless succ.v_shi?
-      end
-
-      succ.tag = PosTag::Verb if succ.veno? || succ.vead?
-      fold_verbs!(succ, prev: node)
-    when .adverb?
-      node = fold!(node, succ, succ.tag, dic: 6)
+      fold_adverb_verb!(node, succ)
     when .adjts?
       succ.tag = PosTag::Adjt if succ.ajno? || succ.ajad?
       fold_adjts!(succ, prev: node)
     when .adv_bu?
       succ = fold_adv_bu!(succ)
       fold!(node, succ, succ.tag, dic: 2)
+    when .adverb?
+      node = fold!(node, succ, succ.tag, dic: 6)
     when .space?
       return node unless node.key = "最"
       return fold!(node, succ, succ.tag, dic: 7, flip: true)
@@ -105,28 +99,13 @@ module CV::TlRule
     end
   end
 
-  def fold_adverb_node!(adv : MtNode, node = adv.succ, tag = node.tag, dic = 4) : MtNode
-    flip = false
-
-    case adv.key
-    when "不太"
-      # TODO: just delete this entry
-      head = MtNode.new("不", "không", PosTag::AdvBu, 1, adv.idx)
-      tail = MtNode.new("太", "lắm", PosTag::Adverb, 1, adv.idx + 1)
-
-      node.set_prev!(head)
-      node.set_succ!(tail)
-
-      return fold!(head, tail, PosTag::Aform, dic: dic)
-    when "最", "最为", "那么", "这么", "非常", "如此"
-      flip = true
-    when "十分"
-      adv.val = "vô cùng"
-      flip = true
-    when "挺"
-      adv.val = "rất"
+  def fold_adverb_verb!(adverb : MtNode, verb : MtNode)
+    verb.tag = PosTag::Verb if verb.veno? || verb.vead?
+    case adverb.key
+    when "白" then adverb.val = "phí công"
+    when "正" then adverb.val = "đang" unless verb.v_shi?
     end
 
-    fold!(adv, node, tag, dic: dic, flip: flip)
+    fold_verbs!(verb, prev: adverb)
   end
 end
