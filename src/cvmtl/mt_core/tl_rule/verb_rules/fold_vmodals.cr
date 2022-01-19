@@ -42,7 +42,7 @@ module CV::TlRule
   end
 
   def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
-    if is_learnable_skill?(succ)
+    if vmhui_before_skill?(prev, succ)
       node.val = "biết"
       flip = false
     else
@@ -53,19 +53,14 @@ module CV::TlRule
     prev ? fold!(prev, node, node.tag, dic: 6, flip: flip) : node
   end
 
-  private def is_learnable_skill?(node : MtNode?) : Bool
-    case node
+  private def vmhui_before_skill?(prev : MtNode?, succ : MtNode?) : Bool
+    case succ
     when .nil?, .exmark?, .qsmark?, .nouns?
       true
     when .verb_object?
-      MtDict::VERBS_SEPERATED.has_key?(node.key)
-    when .adverbs?, .verbs?
-      false
+      MtDict::VERBS_SEPERATED.has_key?(succ.key)
     else
-      case node.prev?(&.key)
-      when "都", "也" then true
-      else               false
-      end
+      {"都", "也", "只"}.includes?(prev.try(&.key))
     end
   end
 
