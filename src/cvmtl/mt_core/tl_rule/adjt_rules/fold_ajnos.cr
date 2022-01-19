@@ -8,7 +8,11 @@ module CV::TlRule
     # puts [node, node.prev?, node.succ?]
     case succ = node.succ?
     when .nil?, .puncts?
-      cast_noun!(node)
+      if node.prev?(&.object?)
+        cast_adjt!(node)
+      else
+        cast_noun!(node)
+      end
     when .verbs?, .preposes?
       cast_noun!(node)
     when .noun?
