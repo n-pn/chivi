@@ -28,7 +28,8 @@ module CV::TlRule
 
   def heal_pro_dem!(pro_dem : MtNode)
     case pro_dem
-    when .pro_zhe? then pro_dem.set!("cái này")
+    when .pro_zhe?
+      has_verb_after?(pro_dem) ? pro_dem.set!("đây") : pro_dem.set!("cái này")
     when .pro_na1?
       has_verb_after?(pro_dem) ? pro_dem : pro_dem.set!("vậy")
     else pro_dem
