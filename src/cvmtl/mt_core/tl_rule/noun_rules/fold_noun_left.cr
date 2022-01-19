@@ -27,7 +27,7 @@ module CV::TlRule
   #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 8)
   #     when .ude1?
   #       break if mode < 1
-  #       node = fold_ude1_left!(prev, node)
+  #       node = fold_ude1_left!(ude1: node, left: prev, right: ude1.succ?)
   #     else
   #       break
   #     end

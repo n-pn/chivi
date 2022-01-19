@@ -2,14 +2,10 @@ module CV::TlRule
   def fold_verb_vdirs!(verb : MtNode, vdir : MtNode) : MtNode
     if verb.verb? && vdir.key == "过去"
       if (succ = vdir.succ?)
+        # puts [verb, vdir, succ]
         if succ.ude1? && (noun = scan_noun!(succ.succ?))
-          if noun.human?
-            vdir.set!("đi qua", PosTag::Vintr)
-          else
-            vdir.set!("quá khứ", PosTag::Noun)
-          end
-
-          node = fold_ude1_left!(succ, vdir, noun)
+          vdir.set!("quá khứ", PosTag::Noun)
+          node = fold_ude1_left!(ude1: succ, left: vdir, right: noun)
           return fold!(verb, node, PosTag::VerbObject, dic: 6)
         end
 

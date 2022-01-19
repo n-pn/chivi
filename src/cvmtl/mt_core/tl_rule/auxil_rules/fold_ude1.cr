@@ -41,7 +41,7 @@ module CV::TlRule
   end
 
   # do not return left when fail to prevent infinity loop
-  def fold_ude1_left!(left : MtNode, ude1 : MtNode, right : MtNode?, mode = 0) : MtNode
+  def fold_ude1_left!(ude1 : MtNode, left : MtNode, right : MtNode?, mode = 0) : MtNode
     return ude1 unless right
 
     if left.ajno?
