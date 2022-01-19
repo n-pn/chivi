@@ -89,6 +89,9 @@ module CV::TlRule
         node = fold_verb_as_noun!(node, mode: mode) if node.verbs?
       when .verbs?
         node = fold_verb_as_noun!(node, mode: mode)
+      when .modifier?
+        node = fold_modifier!(node)
+        node = fold_adjt_as_noun!(node)
       when .adjts?
         node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
         node = fold_adjt_as_noun!(node)

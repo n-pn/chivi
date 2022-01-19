@@ -15,7 +15,7 @@ module CV::TlRule
         return cast_noun!(node) if succ.nouns?
       when .adverbs?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
         return cast_verb!(node)
-      when .auxils?, .preposes?
+      when .auxils?, .preposes?, .modifier?
         return cast_noun!(node)
         # when .numeric?
         #   if (succ = node.succ?) && !(succ.nouns? || succ.pronouns?)

@@ -38,15 +38,18 @@ module CV::TlRule
       return succ.quantis? ? {node, succ, succ.succ?} : {node, nil, succ}
     end
 
-    if (qtnoun = node.body?) && (prodem = qtnoun.succ?)
-      if prodem.pro_dems?
+    if (left = node.body?) && (right = left.succ?)
+      if right.pro_dems?
         # flip back if swapped before
-        prodem.fix_prev!(node.prev?)
-        qtnoun.fix_succ!(node.succ?)
-        prodem.fix_succ!(qtnoun)
+        right.fix_prev!(node.prev?)
+        left.fix_succ!(node.succ?)
+        right.fix_succ!(left)
+        return {right, left, succ}
+      else
+        left.fix_prev!(node.prev?)
+        right.fix_succ!(node.succ?)
+        return {left, right, succ}
       end
-
-      return {prodem, qtnoun, succ}
     end
 
     unless match = node.key.match(/^(这|那)(.*[^儿])$/)
