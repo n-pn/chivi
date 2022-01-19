@@ -21,7 +21,7 @@ module CV::TlRule
     flip = true
     case space.key
     when "上", "下"
-      return noun if space.succ?(&.ule?)
+      return noun if noun.human? || space.succ?(&.ule?)
       space.val = fix_space_val!(space)
     when "中"
       return noun if space.succ?(&.ule?)

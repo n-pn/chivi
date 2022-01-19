@@ -4,8 +4,6 @@ module CV::TlRule
   end
 
   def fold_pro_per!(node : MtNode, succ : MtNode) : MtNode
-    # puts [node, succ, "proper"]
-
     case succ.tag
     when .concoord?, .penum?
       fold_noun_concoord!(succ, node) || node
