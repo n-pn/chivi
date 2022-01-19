@@ -26,50 +26,10 @@ module CV::TlRule
     fold!(node, quanti, PosTag::ProDem, dic: 8, flip: true)
   end
 
-  def heal_pro_dem!(pro_dem : MtNode)
-    case pro_dem
-    when .pro_zhe?
-      if pro_dem.succ?(&.comma?) || has_verb_after?(pro_dem)
-        pro_dem.set!("đây")
-      else
-        pro_dem.set!("cái này")
-      end
-    when .pro_na1?
-      has_verb_after?(pro_dem) ? pro_dem : pro_dem.set!("vậy")
-    else pro_dem
-    end
-  end
-
   def fold_proji_nhanzi!(node : MtNode, succ : MtNode)
     succ.val = succ.val.sub("mười", "chục")
     node = fold!(node, succ, PosTag::Number, dic: 5)
     scan_noun!(node.succ?, nquant: node).not_nil!
-  end
-
-  def fold_prodem_nounish!(prodem : MtNode?, nounish : MtNode?)
-    return nounish unless prodem
-
-    if nounish
-      if nounish.verb_object?
-        prodem = heal_pro_dem!(prodem)
-        return fold!(prodem, nounish, PosTag::VerbClause, dic: 8)
-      end
-
-      # puts [prodem.prev?, prodem.succ?]
-      # puts [nounish.prev?, nounish.succ?]
-
-      flip = nounish.nouns? && should_flip_prodem?(prodem)
-      tag = !prodem.pro_dem? && nounish.qtnoun? ? PosTag::ProDem : nounish.tag
-      return fold!(prodem, nounish, tag, dic: 2, flip: flip)
-    end
-
-    heal_pro_dem!(prodem)
-  end
-
-  def should_flip_prodem?(prodem : MtNode)
-    return true if prodem.pro_zhe? || prodem.pro_na1?
-
-    {"另", "其他", "此", "某个", "某些"}.includes?(prodem.key)
   end
 
   def split_prodem!(node : MtNode?, succ : MtNode? = node.succ?)
