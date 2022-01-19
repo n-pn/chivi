@@ -87,6 +87,8 @@ module CV::TlRule
 
       succ.tag = PosTag::Verb if succ.veno? || succ.vead?
       fold_verbs!(succ, prev: node)
+    when .adverb?
+      node = fold!(node, succ, succ.tag, dic: 6)
     when .adjts?
       succ.tag = PosTag::Adjt if succ.ajno? || succ.ajad?
       fold_adjts!(succ, prev: node)
@@ -118,8 +120,11 @@ module CV::TlRule
       return fold!(head, tail, PosTag::Aform, dic: dic)
     when "最", "最为", "那么", "这么", "非常", "如此"
       flip = true
-    when "十分" then adv.val = "vô cùng"
-    when "挺"  then adv.val = "rất"
+    when "十分"
+      adv.val = "vô cùng"
+      flip = true
+    when "挺"
+      adv.val = "rất"
     end
 
     fold!(adv, node, tag, dic: dic, flip: flip)
