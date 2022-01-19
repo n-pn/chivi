@@ -39,11 +39,12 @@ module CV::TlRule
     end
 
     if (qtnoun = node.body?) && (prodem = qtnoun.succ?)
-      # flip back
-
-      prodem.fix_prev!(node.prev?)
-      qtnoun.fix_succ!(node.succ?)
-      prodem.fix_succ!(qtnoun)
+      if prodem.pro_dems?
+        # flip back if swapped before
+        prodem.fix_prev!(node.prev?)
+        qtnoun.fix_succ!(node.succ?)
+        prodem.fix_succ!(qtnoun)
+      end
 
       return {prodem, qtnoun, succ}
     end
