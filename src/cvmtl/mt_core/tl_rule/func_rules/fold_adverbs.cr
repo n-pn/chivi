@@ -86,7 +86,7 @@ module CV::TlRule
       end
 
       succ.tag = PosTag::Verb if succ.veno? || succ.vead?
-      fold_adverb_node!(node, fold_verbs!(succ))
+      fold_verbs!(succ, prev: node)
     when .adjts?
       succ.tag = PosTag::Adjt if succ.ajno? || succ.ajad?
       fold_adjts!(succ, prev: node)

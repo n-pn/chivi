@@ -62,7 +62,7 @@ module CV::TlRule
       verb.set!(PosTag::Verb) unless verb.vintr?
     end
 
-    fold_adverb_node!(prev, verb) if prev
+    verb = fold_adverb_node!(prev, verb) if prev
     return verb unless succ = verb.succ?
 
     verb.each do |node|
