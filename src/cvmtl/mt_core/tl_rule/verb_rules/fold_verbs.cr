@@ -65,6 +65,12 @@ module CV::TlRule
     fold_adverb_node!(prev, verb) if prev
     return verb unless succ = verb.succ?
 
+    verb.each do |node|
+      if node.key.in?("像") && (fold = fold_compare(verb))
+        return verb
+      end
+    end
+
     if succ.suf_noun? || succ.usuo?
       verb = fold_suf_noun!(verb, succ)
       return verb unless succ = verb.succ?

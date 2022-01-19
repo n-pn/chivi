@@ -82,7 +82,7 @@ module CV::TlRule
     when .verbs?
       case node.key
       when "白" then node.val = "phí công"
-      when "正" then node.val = "đang"
+      when "正" then node.val = "đang" unless succ.v_shi?
       end
 
       succ.tag = PosTag::Verb if succ.veno? || succ.vead?
