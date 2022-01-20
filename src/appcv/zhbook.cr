@@ -34,7 +34,7 @@ class CV::Zhbook
   getter _type : Int32 do
     case sname
     when "chivi"          then 0
-    when "users", "miscs" then 1
+    when "users", "local" then 1
     else
       NvSeed::REMOTES.includes?(sname) ? 3 : 2
     end

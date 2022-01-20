@@ -3,7 +3,7 @@ module CV::NvSeed
 
   MAP_ID = {
     "chivi" => 0,
-    "miscs" => 1,
+    "local" => 1,
     "users" => 63,
 
     "zxcs_me" => 2,

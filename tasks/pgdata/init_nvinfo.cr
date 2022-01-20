@@ -55,7 +55,7 @@ class CV::InitNvinfo
 
   private def group_and_basename(type : Symbol, snvid : String, len = 4)
     case @sname
-    when "chivi", "users", "miscs", "zhwenpg"
+    when "chivi", "users", "local", "zhwenpg"
       {"-", "#{type}"}
     else
       group = snvid.rjust(len, '0')[0..-len]
@@ -114,7 +114,7 @@ class CV::InitNvinfo
   def seed_all!(only_cached = true)
     unless only_cached
       case @sname
-      when "chivi", "users", "miscs", "zhwenpg"
+      when "chivi", "users", "local", "zhwenpg"
         files = ["#{@s_dir}/_index.tsv"]
       else
         files = Dir.glob("#{@s_dir}/_index/*.tsv")
@@ -264,7 +264,7 @@ class CV::InitNvinfo
 
   def should_seed?(snvid : String)
     case @sname
-    when "zxcs_me", "hetushu", "users", "miscs" then true
+    when "zxcs_me", "hetushu", "users", "local" then true
     when "yousuu"
       list_count, crit_count = get_ys_extras(snvid)
       return list_count > 1 || crit_count > 3
@@ -278,7 +278,7 @@ class CV::InitNvinfo
 
     case @sname
     when "hetushu", "rengshu", "xbiquge", "69shu",
-         "zhwenpg", "yousuu", "users", "miscs"
+         "zhwenpg", "yousuu", "users", "local"
       Nvinfo.upsert!(author, ztitle)
     else
       Nvinfo.get(author, ztitle)
