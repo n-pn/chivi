@@ -9,9 +9,9 @@
   }
 
   export async function load({ fetch, url, params }) {
-    const { type, name } = params
+    const [type, name] = params.id.split('/')
 
-    const api_url = `/api/qtran/${type}/${name}?${url.searchParams.toString()}`
+    const api_url = `/api/qtran/${type}/${name}${url.search}`
     const api_res = await fetch(api_url)
     const props = await api_res.json()
 
