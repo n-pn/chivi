@@ -4,7 +4,7 @@
   import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ url, params, fetch }) {
-    const uname = params.user
+    const uname = params.uname
     const bmark = url.searchParams.get('bmark') || 'reading'
     const page = +url.searchParams.get('page') || 1
 
@@ -41,7 +41,7 @@
   <div class="tabs">
     {#each status_types as status}
       <a
-        href="/@{uname}?bmark={status}"
+        href="/books/@{uname}?bmark={status}"
         class="tab"
         class:_active={status == bmark}>
         {status_names[status]}

@@ -45,7 +45,7 @@
   {#if section == 'main'}
     <div class="chips">
       {#each ['reading', 'onhold', 'pending'] as status}
-        <a href="/@{$session.uname}?bmark={status}" class="chip">
+        <a href="/books/@{$session.uname}?bmark={status}" class="chip">
           <span class="chip-icon">
             <SIcon name={status_icons[status]} />
           </span>

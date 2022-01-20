@@ -65,7 +65,7 @@
       {#each users as { u_dname, u_privi, _status }}
         <a
           class="m-chip _{status_colors[_status]}"
-          href="/@{u_dname}?bmark={_status}"
+          href="/books/@{u_dname}?bmark={_status}"
           data-tip="[{status_names[_status]}]">
           <cv-user privi={u_privi}>{u_dname}</cv-user>
           <SIcon name={status_icons[_status]} />
