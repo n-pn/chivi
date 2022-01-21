@@ -19,22 +19,9 @@ module CV::TlRule
     fix_grammar!(head.succ, level: 1)
     root.body.set_succ!(tail)
 
-    return root unless (succ = root.succ?)
+    return root unless succ = scan_adjt!(root.succ?)
+    return root unless succ.adjts? || succ.verb_object?
 
-    if succ.maybe_adjt?
-      succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
-      return fold!(root, succ, PosTag::Aform, dic: 7, flip: true)
-    end
-
-    if succ.key.in?("爱", "喜欢")
-      succ = fold_verbs!(succ.set!(PosTag::Verb))
-
-      if succ.verb_object? || succ
-        tail.val = ""
-        return fold!(root, succ, succ.tag, dic: 8, flip: true)
-      end
-    end
-
-    root
+    return fold!(root, succ, PosTag::Aform, dic: 1, flip: true)
   end
 end

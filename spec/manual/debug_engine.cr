@@ -1,6 +1,6 @@
 require "../../src/cvmtl/mt_core"
 
-inp = ARGV[0]? || "皆如释重负一般"
+inp = ARGV[0]? || "我跟爸爸一样高"
 dic = ARGV[1]? || "w5d6vmqr"
 
 mtl = CV::MtCore.generic_mtl(dic)
