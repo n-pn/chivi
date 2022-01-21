@@ -14,8 +14,8 @@
   export let section = 'main'
 
   async function logout() {
-    $session = { uname: 'Khách', privi: -1 }
     await fetch('/api/user/logout')
+    window.location.reload()
   }
 
   let chaps = []

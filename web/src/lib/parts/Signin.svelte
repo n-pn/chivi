@@ -8,7 +8,7 @@
       body: JSON.stringify(params),
     })
 
-    return res.ok ? [0, await res.json()] : [res.status, await res.text()]
+    return res.ok ? '' : await res.text()
   }
 </script>
 
@@ -20,20 +20,13 @@
 
   let params = { dname: '', email: '', upass: '' }
 
-  let errs
   let type = 'login'
+  let errs
 
-  async function submit(evt) {
-    evt.preventDefault()
+  async function submit() {
     errs = null
-
-    const [_err, data] = await signin_user(type, params)
-    if (_err) {
-      errs = data
-    } else {
-      $session = data
-      actived = false
-    }
+    errs = await signin_user(type, params)
+    if (!errs) window.location.reload()
   }
 </script>
 
@@ -52,7 +45,10 @@
       <span class="-text">Chivi</span>
     </div>
 
-    <form action="/api/user/{type}" method="POST" on:submit={submit}>
+    <form
+      action="/api/user/{type}"
+      method="POST"
+      on:submit|preventDefault={submit}>
       {#if type == 'signup'}
         <div class="input">
           <label for="cname">Tên người dùng</label>
