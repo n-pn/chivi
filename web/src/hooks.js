@@ -1,12 +1,11 @@
-export async function handle({ request, resolve }) {
-  if (request.url.pathname.startsWith('/api/'))
-    return await mutateFetch(request)
-  return resolve(request)
+export async function handle({ event, resolve }) {
+  if (event.url.pathname.startsWith('/api/')) return await mutateFetch(event)
+  return resolve(event)
 }
 
-async function mutateFetch({ url, method, headers, rawBody: body }) {
-  const api_url = 'http://localhost:5010' + url.pathname + url.search
-  const res = await fetch(api_url, { method, headers, body })
+async function mutateFetch({ url, request }) {
+  const api_url = 'http://localhost:5010' + request.url
+  const res = await fetch(api_url, request)
 
   const res_headers = {}
   for (let [key, val] of res.headers.entries()) res_headers[key] = val
@@ -21,7 +20,7 @@ async function mutateFetch({ url, method, headers, rawBody: body }) {
 
 const users = {}
 
-export async function getSession({ headers, locals }) {
+export async function getSession({ request: { headers }, locals }) {
   const token = getUserToken(headers.cookie || '')
   users[token] = locals.user || users[token] || (await currentUser(headers))
   return users[token]

@@ -34,15 +34,18 @@
 
       {#if $data.left}
         {#each $data.left as [label, icon, href, _item = '', _text = ''], idx}
-          {@const active = idx == $data.left.length - 1}
-
           {#if href}
-            <a class="appbar-item {_item}" class:_active={active} {href}>
+            <a
+              class="appbar-item {_item}"
+              class:_active={idx == $data.left.length - 1}
+              {href}>
               {#if icon}<SIcon name={icon} />{/if}
               <span class="appbar-text {_text}">{label}</span>
             </a>
           {:else}
-            <span class="appbar-item {_item}" class:_active={active}>
+            <span
+              class="appbar-item {_item}"
+              class:_active={idx == $data.left.length - 1}>
               {#if icon}<SIcon name={icon} />{/if}
               <span class="appbar-text {_text}">{label}</span>
             </span>
