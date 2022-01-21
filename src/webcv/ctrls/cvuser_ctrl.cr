@@ -10,8 +10,7 @@ class CV::CvuserCtrl < CV::BaseCtrl
     session.delete("u_dname")
     session.delete("u_privi")
 
-    save_session!
-    json_view([1])
+    return_user
   end
 
   def login
