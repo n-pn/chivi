@@ -28,8 +28,8 @@
   let l_focus = 0
 
   $: if ($navigating) {
-    cvmenu.hide()
     l_focus = 0
+    cvmenu.hide()
   }
 
   function render_html(render, index, hover, focus) {
