@@ -7,10 +7,11 @@ module CV::TlRule
     when .pre_dui? then fold_pre_dui!(node, succ, mode: mode)
     when .pre_bei? then fold_pre_bei!(node, succ, mode: mode)
     when .pre_zai? then fold_pre_zai!(node, succ, mode: mode)
-    when .pre_bi3? then fold_pre_bi3!(node, succ, mode: mode)
+    when .pre_bi3? then fold_compare_bi3!(node, succ, mode: mode)
     else
-      if node.key.in?("同", "跟") && (fold = fold_compare(node, succ))
-        return fold
+      case node.key
+      when "不比"     then return fold_compare_bi3!(node.set!("không bằng"), succ)
+      when "同", "跟" then fold_compare(node, succ).try { |x| return x }
       end
 
       fold_prepos_inner!(node, succ, mode: mode)
@@ -71,22 +72,5 @@ module CV::TlRule
     end
 
     fold_noun_ude1!(noun, ude1, tail)
-  end
-
-  def fold_pre_bi3!(prepos : MtNode, succ = node.succ?, mode = 0)
-    return prepos unless noun = scan_noun!(succ, mode: mode)
-
-    unless (succ = scan_adjt!(noun.succ?)) && (succ.maybe_adjt? || succ.verb_object?)
-      return fold!(prepos, noun, PosTag::PrepPhrase, dic: 2)
-    end
-
-    adverb = fold!(prepos.set!("hơn"), noun, PosTag::Adverb, dic: 8)
-    phrase = fold!(adverb, succ, PosTag::Aform, dic: 7, flip: true)
-
-    return phrase unless (succ = phrase.succ?) && (succ.ude1? || succ.ude3?)
-    return phrase unless (tail = succ.succ?) && tail.key == "多"
-
-    succ.val = ""
-    fold!(phrase, tail, PosTag::Unkn, dic: 0)
   end
 end
