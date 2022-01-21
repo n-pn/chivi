@@ -20,14 +20,16 @@ module CV::TlRule
         # TODO: check with prev to group
         return mode == 0 ? fold_uzhi!(succ, noun) : noun
       when .uyy?
-        node = fold!(noun, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
-        return node unless (succ = node.succ?) && succ.maybe_adjt?
+        adjt = fold!(noun, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
+        return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
         succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
-        return fold!(node, succ, PosTag::Aform, dic: 8)
+        return fold!(adjt, succ, PosTag::Aform, dic: 8)
       when .veno?
         succ = heal_veno!(succ)
-        return noun if succ.verbs?
+        return fold_noun_verb!(noun, succ) if succ.verbs?
         noun = fold!(noun, succ, PosTag::Noun, dic: 7, flip: true)
+      when .verbs?
+        return fold_noun_verb!(noun, succ)
       when .junction?
         return noun if mode == 2 || noun.prev?(&.adjts?)
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break

@@ -34,7 +34,7 @@ module CV::TlRule
           #     node = fold
           #     next
           #   end
-          node = fold_prepos!(node)
+          node = fold_prepos_inner!(node)
         end
       when .onomatopoeia?
         node = fold_onoma!(node)

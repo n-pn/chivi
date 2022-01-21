@@ -22,9 +22,8 @@ module CV::TlRule
 
   def fold_adjt_junction!(node : MtNode, prev = node.prev?, succ = node.succ?)
     return unless prev && succ && is_concoord?(node)
+    return unless (succ = scan_adjt!(succ)) && succ.adjts?
 
-    succ = scan_adjt!(succ)
-    return unless succ.adjts?
     fold!(prev, succ, tag: PosTag::Aform, dic: 4)
   end
 

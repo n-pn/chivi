@@ -84,15 +84,8 @@ module CV::TlRule
     return verb if !succ || verb.verb_object? || verb.vintr?
 
     if succ.ude1?
+      return verb if verb.prev?(&.object?)
       return verb unless (object = scan_noun!(succ.succ?)) && object.object?
-
-      # FIXME: this will cause infinity loop if fold_verb! is called in scan_noun
-      # if (prev = verb.prev?) && prev.object?
-      #   puts [prev, verb, object]
-      #   exit 0
-      #   verb = prev
-      # end
-
       node = fold!(verb, succ.set!(""), PosTag::DefnPhrase, dic: 6)
       return fold!(node, object, object.tag, dic: 8, flip: true)
     end

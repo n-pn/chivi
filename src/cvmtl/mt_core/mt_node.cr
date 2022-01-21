@@ -152,6 +152,14 @@ class CV::MtNode
     child.ends_with?(key)
   end
 
+  def key_in?(key)
+    @key.in?(key)
+  end
+
+  def key?(key : String)
+    @key === key
+  end
+
   def dig_key?(key : String | Char) : self | Nil
     return @key.includes?(key) ? self : nil unless child = @body
 

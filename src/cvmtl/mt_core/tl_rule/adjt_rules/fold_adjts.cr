@@ -72,8 +72,7 @@ module CV::TlRule
       when .ule?
         break unless (succ_2 = succ.succ?) && succ_2.key == "点"
         succ.val = ""
-        succ_2.val = "chút"
-        return fold!(node, succ_2, PosTag::Aform, dic: 6)
+        adjt = fold!(node, succ_2.set!("chút"), PosTag::Aform, dic: 6)
       when .ude2?
         node = fold_adj_adv!(node, prev)
         return fold_adjt_ude2!(node, succ)
