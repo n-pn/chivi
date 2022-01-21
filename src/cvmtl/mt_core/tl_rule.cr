@@ -9,7 +9,7 @@ module CV::TlRule
       case node.tag
       when .popens?   then node = fold_nested!(node)
       when .auxils?   then node = heal_auxils!(node)
-      when .uniques?  then node = heal_uniques!(node)
+      when .uniques?  then node = fold_uniqs!(node)
       when .strings?  then node = fold_strings!(node)
       when .preposes? then node = fold_preposes!(node)
       when .pronouns? then node = fold_pronouns!(node)

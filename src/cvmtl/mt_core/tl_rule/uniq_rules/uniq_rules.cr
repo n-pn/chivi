@@ -14,19 +14,16 @@ module CV::TlRule
     end
   end
 
-  private def heal_uniques!(node : MtNode, succ = node.succ?) : MtNode
-    # puts [node, succ, "heal_uniq"]
+  private def fold_uniqs!(node : MtNode, succ = node.succ?) : MtNode
+    # puts [node, succ, "fold_uniq"]
 
     case node.tag
     when .v_shi?
       fold_v_shi!(node, succ)
     when .v_you?
-      # TODO handle vyou
-      return node
+      fold_compare_vyou!(node, succ)
     when .v_shang?, .v_xia?
       # puts [node, succ, "fold_noun_space"]
-
-      return node unless succ && (succ.ule?)
       fold_verbs!(node)
     when .adj_hao?
       return node unless succ
@@ -42,11 +39,11 @@ module CV::TlRule
         node
       end
     else
-      heal_uniques_by_key!(node, succ)
+      fold_uniqs_by_key!(node, succ)
     end
   end
 
-  def heal_uniques_by_key!(node : MtNode, succ = node.succ?)
+  def fold_uniqs_by_key!(node : MtNode, succ = node.succ?)
     case node.key
     when "第" then fold_第!(node)
     when "完"

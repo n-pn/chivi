@@ -44,7 +44,7 @@ module CV::TlRule
           next
         end
       when .uniques?
-        node = heal_uniques!(node)
+        node = fold_uniqs!(node)
       when .adverbs?
         node = fold_adverbs!(node)
 
