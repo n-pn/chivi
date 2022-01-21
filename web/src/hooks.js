@@ -1,4 +1,4 @@
-const users = {}
+// const users = {}
 
 export async function handle({ event, resolve }) {
   const path = event.url.pathname
@@ -6,10 +6,10 @@ export async function handle({ event, resolve }) {
     const api_url = `http://localhost:5010${path}${event.url.search}`
     const response = await fetch(new Request(api_url, event.request))
 
-    if (response.ok && path.startsWith('/api/user')) {
-      const user_token = getUserToken(response.headers.cookie || '')
-      event.locals.user = users[user_token] = await response.json()
-    }
+    // if (response.ok && path.startsWith('/api/user/logout')) {
+    //   const user_token = getUserToken(response.headers.cookie || '')
+    //   event.locals.user = users[user_token] = await response.json()
+    // }
 
     return response
   }
@@ -28,9 +28,7 @@ export async function handle({ event, resolve }) {
 // }
 
 export async function getSession({ request: { headers }, locals }) {
-  const token = getUserToken(headers.cookie || '')
-  users[token] = locals.user || users[token] || (await currentUser(headers))
-  return users[token]
+  return await currentUser(headers)
 }
 
 function getUserToken(cookies) {

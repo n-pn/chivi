@@ -1,4 +1,6 @@
 <script context="module">
+  import { session } from '$app/stores'
+
   export async function signin_user(type, params) {
     const res = await fetch(`/api/user/${type}`, {
       method: 'POST',
@@ -6,7 +8,7 @@
       body: JSON.stringify(params),
     })
 
-    return res.ok ? '' : await res.text()
+    return res.ok ? [0, await res.json()] : [res.status, await res.text()]
   }
 </script>
 
@@ -15,15 +17,23 @@
   import Gslide from '$molds/Gslide.svelte'
 
   export let actived = false
+
   let params = { dname: '', email: '', upass: '' }
 
   let errs
   let type = 'login'
 
-  async function submit() {
+  async function submit(evt) {
+    evt.preventDefault()
     errs = null
-    errs = await signin_user(type, params)
-    if (!errs) window.location.reload()
+
+    const [_err, data] = await signin_user(type, params)
+    if (_err) {
+      errs = data
+    } else {
+      $session = data
+      actived = false
+    }
   }
 </script>
 
@@ -42,10 +52,7 @@
       <span class="-text">Chivi</span>
     </div>
 
-    <form
-      action="/api/user/{type}"
-      method="POST"
-      on:submit|preventDefault={submit}>
+    <form action="/api/user/{type}" method="POST" on:submit={submit}>
       {#if type == 'signup'}
         <div class="input">
           <label for="cname">Tên người dùng</label>
