@@ -8,7 +8,7 @@ export async function handle({ event, resolve }) {
 
     if (response.ok && path.startsWith('/api/user')) {
       const user_token = getUserToken(response.headers.cookie || '')
-      users[user_token] = null
+      event.locals.user = users[user_token] = await response.json()
     }
 
     return response
@@ -27,9 +27,9 @@ export async function handle({ event, resolve }) {
 //   return fetch(request)
 // }
 
-export async function getSession({ request: { headers } }) {
+export async function getSession({ request: { headers }, locals }) {
   const token = getUserToken(headers.cookie || '')
-  users[token] = users[token] || (await currentUser(headers))
+  users[token] = locals.user || users[token] || (await currentUser(headers))
   return users[token]
 }
 
