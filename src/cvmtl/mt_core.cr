@@ -104,6 +104,8 @@ class CV::MtCore
     res.prepend!(lst)
     idx -= lst.key.size
 
+    in_quote = false
+
     while idx > 0
       cur = nodes.unsafe_fetch(idx)
       idx -= cur.key.size
@@ -114,6 +116,12 @@ class CV::MtCore
         lst.val = cur.nhanzi? ? "#{cur.val} #{fix_val!(cur, lst)}" : "#{cur.val}#{lst.val}"
         lst.key = "#{cur.key}#{lst.key}"
       else
+        if cur.key == "\""
+          cur.val = in_quote ? "“" : "”"
+          cur.tag = PosTag.map_puncts(cur.val)
+          in_quote = !in_quote
+        end
+
         res.prepend!(cur)
         lst = cur
       end
