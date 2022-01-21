@@ -1,6 +1,6 @@
 require "../../src/cvmtl/mt_core"
 
-inp = ARGV[0]? || "\"厉鬼\"的主角"
+inp = ARGV[0]? || "皆如释重负一般"
 dic = ARGV[1]? || "w5d6vmqr"
 
 mtl = CV::MtCore.generic_mtl(dic)

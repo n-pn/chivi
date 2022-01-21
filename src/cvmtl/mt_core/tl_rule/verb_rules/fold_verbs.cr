@@ -10,6 +10,7 @@ module CV::TlRule
       verb = fold!(verb, succ, succ.tag, dic: 5)
     end
 
+    head = verb
     flag = 0
 
     while !verb.verb_object? && (succ = verb.succ?)
@@ -65,8 +66,10 @@ module CV::TlRule
     verb = fold_adverb_node!(prev, verb) if prev
     return verb unless succ = verb.succ?
 
-    verb.each do |node|
-      if node.key.in?({"像"}) && (fold = fold_compare(verb))
+    case head.key
+    when "像", "如"
+      if fold = fold_compare(verb)
+        head.val = "tựa" if head.key == "如"
         return fold
       end
     end
