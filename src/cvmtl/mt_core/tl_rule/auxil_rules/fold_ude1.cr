@@ -15,9 +15,9 @@ module CV::TlRule
       return fold_noun_after!(node, succ)
     end
 
-    if prev.adjt? && succ.verbs?
+    if succ.verbs? && prev.adjts? || prev.adverbs?
+      # ude1 as ude2 grammar error
       # puts [prev, succ, ude1]
-      # handle adjt + ude1 + verb
       fold!(prev, succ, succ.tag, dic: 9)
     elsif prev.verb? && succ.adjts?
       # ude3 => ude1 grammar error
