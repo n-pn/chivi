@@ -1,25 +1,35 @@
-require "json"
+require "./_base_view"
 
-module CV::DtpostView
-  def self.render(jb : JSON::Builder, dtpost : Dtpost, cvuser = dtpost.cvuser)
+class CV::DtpostView
+  include BaseView
+
+  def initialize(@data : Dtpost, @full = false)
+  end
+
+  def to_json(jb : JSON::Builder)
     jb.object {
-      jb.field "cvuser", {
-        uname: cvuser.uname,
-        privi: cvuser.privi,
-      }
+      jb.field "u_dname", @data.cvuser.uname
+      jb.field "u_privi", @data.cvuser.privi
 
-      jb.field "id", dtpost.id
-      jb.field "dt_id", dtpost.dt_id
+      jb.field "id", @data.id
+      jb.field "dt_id", @data.dt_id
 
-      jb.field "ohtml", dtpost.ohtml
-      jb.field "odesc", dtpost.odesc
+      jb.field "ohtml", @data.ohtml
+      jb.field "odesc", @data.otext.split("\n", 2).first?
 
-      jb.field "state", dtpost.state
-      jb.field "utime", dtpost.utime
+      jb.field "state", @data.state
+      jb.field "utime", @data.utime
 
-      jb.field "edits", dtpost.edits
-      jb.field "likes", dtpost.likes
-      jb.field "award", dtpost.award
+      jb.field "edit_count", @data.edit_count
+      jb.field "like_count", @data.like_count
+      jb.field "repl_count", @data.repl_count
+
+      jb.field "coins", @data.coins
+
+      if @full
+        jb.field "input", @data.input
+        jb.field "itype", @data.itype
+      end
     }
   end
 end

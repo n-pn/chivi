@@ -48,8 +48,8 @@ class CV::Dboard
   def self.map_id_to_name(id : Int64) : {String, String}
     case id
     when -1_i64 then {"Đại sảnh", "dai-sanh"}   # general place
-    when -2_i64 then {"Thông cáo", "thong-cao"} # show in top of board list
-    when -3_i64 then {"Quảng bá", "quang-ba"}   # show in every page
+    when -2_i64 then {"Hướng dẫn", "huong-dan"} # show in top of board list
+    when -3_i64 then {"Thông cáo", "thong-cao"} # show in every page
     else
       raise "Unknown book!" unless nvinfo = Nvinfo.load!(id)
       {nvinfo.vname, nvinfo.bslug}
@@ -59,8 +59,8 @@ class CV::Dboard
   def self.guess_id(bslug : String) : Int64
     case bslug
     when "dai-sanh"  then -1_i64
-    when "thong-cao" then -2_i64
-    when "quang-ba"  then -3_i64
+    when "huong-dan" then -2_i64
+    when "thong-cao" then -3_i64
     else
       Nvinfo.load!(bslug).try(&.id) || raise "Unknown books!"
     end

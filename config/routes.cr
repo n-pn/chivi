@@ -65,12 +65,16 @@ Amber::Server.configure do
 
     get "/topics", CV::DtopicCtrl, :index
     post "/topics", CV::DtopicCtrl, :create
-    # get "/boards/:dboard/topics", CV::DtopicCtrl, :index
-
     get "/topics/:dtopic", CV::DtopicCtrl, :show
     get "/topics/:dtopic/detail", CV::DtopicCtrl, :detail
     post "/topics/:dtopic", CV::DtopicCtrl, :update
     delete "/topics/:dtopic", CV::DtopicCtrl, :delete
+
+    get "/tposts", CV::DtpostCtrl, :index
+    post "/tposts", CV::DtpostCtrl, :create
+    get "/tposts/:dtpost", CV::DtpostCtrl, :detail
+    post "/tposts/:dtpost", CV::DtpostCtrl, :update
+    delete "/tposts/:dtpost", CV::DtpostCtrl, :delete
 
     get "/tlspecs/", CV::TlspecCtrl, :index
     get "/tlspecs/:ukey", CV::TlspecCtrl, :show

@@ -11,35 +11,22 @@ class CV::DboardCtrl < CV::BaseCtrl
 
     cache_rule :public, 30, 120
 
-    json_view do |jb|
-      jb.object {
-        jb.field "total", total
-        jb.field "pgidx", pgidx
-        jb.field "pgmax", (total - 1) // limit + 1
-
-        jb.field "items" {
-          jb.array {
-            query.limit(limit).offset(skips).each(&.to_json(jb))
-          }
-        }
-      }
-    end
+    json_view({
+      total: total,
+      pgidx: pgidx,
+      pgmax: (total - 1) // limit + 1,
+      items: query.limit(limit).offset(skips).map { |x| DboardView.new(x) },
+    })
   end
 
   def show
-    dboard = Dboard.load!(params["dboard"].to_i64)
+    dboard = Dboard.load!(params["dboard"])
     dboard.bump_view_count!
 
+    # TODO: load user impression
     cache_rule :public, 120, 300, dboard.updated_at.to_s
 
-    # TODO: load user trace
-    json_view do |jb|
-      jb.object {
-        jb.field "bname", dboard.bname
-        jb.field "bslug", dboard.bslug
-        jb.field "posts", dboard.posts
-      }
-    end
+    json_view({dboard: DboardView.new(dboard)})
   rescue err
     halt!(404, "Diễn đàn không tồn tại!")
   end

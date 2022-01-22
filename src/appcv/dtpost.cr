@@ -7,7 +7,7 @@ class CV::Dtpost
   primary_key
 
   belongs_to cvuser : Cvuser
-  belongs_to dtopic : Dboard
+  belongs_to dtopic : Dtopic
 
   column dt_id : Int32 = 0 # post index in the thread
 
@@ -32,6 +32,23 @@ class CV::Dtpost
   column coins : Int32 = 0 # reward given by users to this post
 
   timestamps
+
+  scope :filter_topic do |topic|
+    topic ? where({dtopic_id: topic.id}) : with_dtopic
+  end
+
+  scope :filter_owner do |owner|
+    owner ? where({cvuser_id: owner.id}) : with_cvuser
+  end
+
+  scope :sort_by do |order|
+    case order
+    when "tn"  then order_by(dt_id: :asc)
+    when "-tn" then order_by(dt_id: :desc)
+    when "-id" then order_by(id: :desc)
+    else            order_by(id: :asc)
+    end
+  end
 
   def set_input(input : String, itype = "md")
     self.utime = Time.utc.to_unix
