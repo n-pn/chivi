@@ -52,6 +52,7 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
+  import MdForm from '$molds/MdForm.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
   export let dboard = { id: 0, bname: 'Thảo luận' }
@@ -119,12 +120,10 @@
       </form-field>
 
       <form-field class="body">
-        <textarea
-          class="m-input"
+        <MdForm
+          bind:value={$form.body_input}
           name="body_input"
-          lang="vi"
-          placeholder="Nội dung thảo luận"
-          bind:value={$form.body_input} />
+          placeholder="Nội dung thảo luận" />
       </form-field>
 
       {#if error}
@@ -229,11 +228,6 @@
       font-weight: 500;
       padding-top: 0.75rem;
       padding-bottom: 0.75rem;
-    }
-
-    &[name='body_input'] {
-      min-height: 10rem;
-      max-height: 90vh;
     }
   }
 

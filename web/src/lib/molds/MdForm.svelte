@@ -1,0 +1,151 @@
+<script>
+  import SIcon from '$atoms/SIcon.svelte'
+
+  export let value = ''
+  export let name = 'mdform'
+  export let placeholder = ''
+  let input
+
+  let old_value = ''
+
+  function apply(type) {
+    const { selectionStart: start, selectionEnd: end } = input
+
+    switch (type) {
+      case 'bold':
+        return insert_text([start, end], '**')
+
+      case 'italic':
+        return insert_text([start, end], '_')
+
+      case 'code':
+        return insert_text([start, end], '`')
+
+      case 'link':
+        return insert_text([start, end], '[', '](url)')
+
+      case 'heading':
+        return insert_text(extend_range(start, end), '# ', '')
+
+      case 'blockquote':
+        return insert_text(extend_range(start, end), '> ', '')
+
+      case 'list':
+        return insert_text(extend_range(start, end), '- ', '')
+
+      default:
+        return
+    }
+  }
+
+  function insert_text([start, end], prefix, suffix = prefix) {
+    const text = input.value.substring(start, end)
+    const data = text.split(/\r?\n|\r/).map((x) => prefix + x + suffix)
+
+    input.focus()
+    old_value = value
+
+    input.setSelectionRange(start, end)
+    input.setRangeText(data.join('\n'))
+
+    const offset = prefix.length
+    if (!text) {
+      input.setSelectionRange(start + offset, end + offset * data.length)
+    } else {
+      const after = end + offset * data.length + suffix.length * data.length
+      input.setSelectionRange(after, after)
+    }
+  }
+
+  function extend_range(start, end) {
+    const chars = Array.from(value.replace(/\r\n?/g, '\n'))
+    while (start > 0 && chars[start - 1] != '\n') start -= 1
+    while (end < chars.length && chars[end] != '\n') end += 1
+    return [start, end]
+  }
+
+  function handle_key(evt) {
+    if (!evt.ctrlKey) return
+
+    switch (evt.key) {
+      case 'z':
+        if (old_value) {
+          evt.preventDefault()
+          input.value = old_value
+        }
+    }
+  }
+
+  const menu = [
+    ['heading', '#', 'Đề mục'],
+    ['bold', '*', 'In đậm'],
+    ['italic', '_', 'In nghiêng'],
+    ['blockquote', '>', 'Trích dẫn'],
+    ['code', '`', 'Đoạn code'],
+    ['link', '[', 'Liên kết'],
+    ['list', '-', 'Danh sách'],
+    ['list-numbers', '+', 'Danh sách đánh số'],
+  ]
+</script>
+
+<svelte:window on:keydown={handle_key} />
+
+<md-form class="m-input">
+  <md-menu>
+    {#each menu as [name, kbd, tip]}
+      <button on:click={() => apply(name)} data-kbd={kbd} data-tip={tip}
+        ><SIcon {name} /></button>
+    {/each}
+  </md-menu>
+
+  <textarea {name} {placeholder} lang="vi" bind:value bind:this={input} />
+</md-form>
+
+<style lang="scss">
+  md-form {
+    display: block;
+    padding: 0;
+  }
+
+  md-menu {
+    display: flex;
+    height: 2.25rem;
+    padding: 0.25rem 0.5rem;
+    @include bdradi($loc: top);
+    @include border($loc: bottom);
+    @include bgcolor(tert);
+  }
+
+  button {
+    background: none;
+    height: 1.75rem;
+    width: 1.75rem;
+    border-radius: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    @include fgcolor(tert);
+
+    &:hover {
+      @include fgcolor(primary, 5);
+      @include bgcolor(secd);
+    }
+  }
+
+  textarea {
+    display: block;
+    width: 100%;
+    min-height: 10rem;
+    max-height: 90vh;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    padding: 0.375rem 0.75rem;
+
+    &::placeholder {
+      font-style: italic;
+      @include fgcolor(tert);
+    }
+  }
+</style>

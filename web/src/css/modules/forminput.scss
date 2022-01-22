@@ -28,7 +28,8 @@
     @include bdcolor(primary, 5);
   }
 
-  &:focus {
+  &:focus,
+  &:focus-within {
     @include bgcolor(tert);
     box-shadow: 0 0 0 1px color(primary, 5, 5);
   }

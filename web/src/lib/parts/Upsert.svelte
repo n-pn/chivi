@@ -66,7 +66,7 @@
   }
 </script>
 
-<Gmodal actived={$ctrl.state > 0} on_close={ctrl.hide}>
+<Gmodal actived={$ctrl.state > 0} on_close={ctrl.hide} _klass="upsert">
   <upsert-wrap>
     <upsert-head class="head">
       <Gmenu dir="left" loc="bottom">
