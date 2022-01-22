@@ -91,7 +91,8 @@
   }
 
   function is_invalid_form(form) {
-    if (form.title.length < 5 || form.title.length > 200) return true
+    if (form.title.length < 4 || form.title.length > 200) return true
+    if (form.body_input.length < 1 || form.body_input.length > 2000) return true
     // TODO
     return false
   }
@@ -101,7 +102,7 @@
   <board-form>
     <board-head>
       <head-title>
-        {#if on_edit}Sửa nội dung{:else}Tạo chủ đề mới{/if}
+        {#if on_edit}Sửa chủ đề{:else}Tạo chủ đề mới{/if}
       </head-title>
 
       <button type="button" data-kbd="esc" class="x-btn" on:click={ctrl.hide}>
@@ -130,10 +131,10 @@
         <form-error>{error}</form-error>
       {/if}
 
-      <form-foot>
-        <form-labels>
-          <label-caption>Nhãn:</label-caption>
+      <form-field>
+        <form-label>Phân loại chủ đề:</form-label>
 
+        <form-chips>
           {#each Object.entries(dlabels) as [value, label]}
             <label class="m-label _{value}">
               <input type="checkbox" {value} bind:checked={labels[value]} />
@@ -143,8 +144,10 @@
               {/if}
             </label>
           {/each}
-        </form-labels>
+        </form-chips>
+      </form-field>
 
+      <form-foot>
         <button
           type="submit"
           class="m-btn _primary _fill"
@@ -202,10 +205,10 @@
 
   form-field {
     display: block;
-    margin-top: 1rem;
+    margin-top: 0.75rem;
   }
 
-  .form-label {
+  form-label {
     display: block;
     line-height: 1.75rem;
     font-weight: 500;
@@ -214,8 +217,14 @@
   }
 
   form-foot {
-    @include flex($center: vert, $gap: 0.5rem);
     margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    @include flex($center: vert, $gap: 0.5rem);
+    @include border($loc: top);
+
+    > button {
+      margin-left: auto;
+    }
   }
 
   .m-input {
@@ -236,15 +245,11 @@
     margin-top: 0.25rem;
   }
 
-  form-labels {
+  form-chips {
     @include flex($gap: 0.25rem);
     flex: 1;
     flex-wrap: wrap;
     @include ftsize(sm);
-  }
-
-  label-caption {
-    font-weight: 500;
   }
 
   form-error {
