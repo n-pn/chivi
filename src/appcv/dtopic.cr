@@ -26,7 +26,11 @@ class CV::Dtopic
   timestamps
 
   scope :filter_label do |label|
-    label ? where("dlabel_ids @> ?", [label.to_i]) : self
+    if label_id = label.try(&.to_i?)
+      where("dlabel_ids @> ?", [label_id])
+    else
+      self
+    end
   end
 
   scope :filter_board do |board|

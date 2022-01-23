@@ -37,7 +37,7 @@ class CV::Dboard
   end
 
   def self.load!(bslug : String) : self
-    CACHE_STR.get(bslug) { load!(guess_id(bslug)) }
+    CACHE_STR.get(bslug) { load!(map_blug_to_id(bslug)) }
   end
 
   def self.init!(id : Int64) : self
@@ -56,13 +56,13 @@ class CV::Dboard
     end
   end
 
-  def self.guess_id(bslug : String) : Int64
+  def self.map_blug_to_id(bslug : String) : Int64
     case bslug
     when "dai-sanh"  then -1_i64
     when "huong-dan" then -2_i64
     when "thong-cao" then -3_i64
     else
-      Nvinfo.load!(bslug).try(&.id) || raise "Unknown books!"
+      Nvinfo.find({bslug: bslug}).try(&.id) || raise "Unknown book!"
     end
   end
 end

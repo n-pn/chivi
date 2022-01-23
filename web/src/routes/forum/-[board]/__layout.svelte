@@ -7,3 +7,5 @@
     return { status: api_res.status, error: await api_res.text() }
   }
 </script>
+
+<slot />

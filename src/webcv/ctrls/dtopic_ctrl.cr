@@ -4,7 +4,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
   def index
     limit = params.fetch_int("take", min: 1, max: 24)
     pgidx = params.fetch_int("page", min: 1)
-    skips = (pgidx - 1) * limit
+    offset = (pgidx - 1) * limit
 
     query =
       Dtopic.query
@@ -20,11 +20,11 @@ class CV::DtopicCtrl < CV::BaseCtrl
       query.filter_owner(cvuser)
     end
 
-    total = query.dup.limit(limit * 3 + skips).offset(0).count
+    total = query.dup.limit(limit * 3 + offset).offset(0).count
 
     query.with_dboard unless dboard
     query.with_cvuser unless cvuser
-    items = query.limit(limit).offset(skips).to_a
+    items = query.limit(limit).offset(offset).to_a
 
     cache_rule :public, 10, 60
 
@@ -32,13 +32,14 @@ class CV::DtopicCtrl < CV::BaseCtrl
       total: total,
       pgidx: pgidx,
       pgmax: (total - 1) // limit + 1,
-      items: items.map do |x|
+      items: items.map { |x|
         x.cvuser = cvuser if cvuser
         x.dboard = dboard if dboard
         DtopicView.new(x)
-      end,
+      },
     })
   rescue err
+    Log.error { err.inspect_with_backtrace }
     halt!(500, err.message)
   end
 

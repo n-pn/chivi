@@ -1,75 +1,88 @@
 <script context="module">
+  import { page, session } from '$app/stores'
   import { dlabels } from '$lib/constants'
+  import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ stuff, fetch, url: { searchParams } }) {
-    const { board } = stuff
+    const { dboard } = stuff
 
     const page = +searchParams.get('page') || 1
     const dlabel = searchParams.get('label')
 
-    const api_url = `/api/topics?dboard=${board.id}&page=${page}&take=24`
-    const api_res = await fetch(`${api_url}&dlabel=${dlabel || ''}`)
+    let api_url = `/api/topics?dboard=${dboard.id}&page=${page}&take=24`
+    if (dlabel) api_url += `&dlabel=${dlabel}`
 
-    if (api_res.ok) return { props: { dlabel, content: await api_res.json() } }
-    return { status: api_res.status, error: await api_res.text() }
+    const res = await fetch(api_url)
+    if (!res.ok) return { status: res.status, error: await res.text() }
+
+    appbar.set({
+      left: [
+        ['Diễn đàn', 'messages', '/forum', '_show-lg'],
+        [dboard.bname, null, '/forum/-' + dboard.bslug, null, '_title'],
+      ],
+    })
+
+    return { props: { dlabel, content: await res.json() } }
   }
 </script>
 
 <script>
-  import { page, session } from '$app/stores'
-
   import SIcon from '$atoms/SIcon.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   import DtopicList from '$parts/Dtopic/List.svelte'
   import DtopicForm, { ctrl as dtopic_form } from '$parts/Dtopic/Form.svelte'
+  import Vessel from '$sects/Vessel.svelte'
 
   // export let dboard
   export let content = { items: [], pgidx: 1, pgmax: 1 }
   export let dlabel = ''
 
   $: pager = new Pager($page.url, { page: 1, tl: '' })
-
-  $: nvinfo = $page.stuff.nvinfo
-  $: dboard = { id: nvinfo.id, bname: nvinfo.vname, bslug: nvinfo.bslug }
+  $: dboard = $page.stuff.dboard
+  $: console.log({ dboard, dlabel, content })
 </script>
 
-<board-content>
-  <board-filter>
-    <span>Lọc nhãn:</span>
-    <a href="board" class="m-label _0">
-      <span>Tất cả</span>
-      {#if !dlabel}<SIcon name="check" /> {/if}
-    </a>
-    {#each Object.entries(dlabels) as [value, label]}
-      <a class="m-label _{value}" href="board?label={value}">
-        <span>{label}</span>
-        {#if dlabel == value}<SIcon name="check" /> {/if}
+<Vessel>
+  <board-content>
+    <board-filter>
+      <span>Lọc nhãn:</span>
+      <a href="board" class="m-label _0">
+        <span>Tất cả</span>
+        {#if !dlabel}<SIcon name="check" /> {/if}
       </a>
-    {/each}
-  </board-filter>
+      {#each Object.entries(dlabels) as [value, label]}
+        <a class="m-label _{value}" href=".?label={value}">
+          <span>{label}</span>
+          {#if dlabel == value}<SIcon name="check" /> {/if}
+        </a>
+      {/each}
+    </board-filter>
 
-  <DtopicList topics={content.items} {dboard} />
+    <DtopicList topics={content.items} {dboard} />
 
-  {#if content.total > 10}
     <board-pagi>
       <Mpager {pager} pgidx={content.pgidx} pgmax={content.pgmax} />
     </board-pagi>
-  {/if}
 
-  {#if $session.privi > 2}
-    <board-foot>
-      <button class="m-btn _primary _fill" on:click={() => dtopic_form.show(0)}>
-        <SIcon name="message-plus" />
-        <span>Tạo chủ đề mới</span></button>
-    </board-foot>
-  {/if}
+    {#if $session.privi > 2}
+      <board-foot>
+        <button
+          class="m-btn _primary _fill"
+          on:click={() => dtopic_form.show(0)}>
+          <SIcon name="message-plus" />
+          <span>Tạo chủ đề mới</span></button>
+      </board-foot>
 
-  {#if $dtopic_form.actived}<DtopicForm {dboard} />{/if}
-</board-content>
+      {#if $dtopic_form.actived}<DtopicForm {dboard} />{/if}
+    {/if}
+  </board-content>
+</Vessel>
 
 <style lang="scss">
   board-content {
+    padding: 1rem var(--gutter);
+
     display: block;
     @include bps(margin-left, 0rem, 0.1rem, 1.5rem, 2rem);
     @include bps(margin-right, 0rem, 0.1rem, 1.5rem, 2rem);
