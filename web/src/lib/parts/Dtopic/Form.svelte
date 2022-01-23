@@ -1,5 +1,7 @@
 <script context="module">
   import { writable } from 'svelte/store'
+
+  import { dtopic_form as form } from '$lib/stores'
   import { dlabels } from '$lib/constants'
 
   function build_labels(labels) {
@@ -12,30 +14,6 @@
     const output = []
     for (let k in labels) if (labels[k]) output.push(+k)
     return output
-  }
-
-  async function load_dtopic(id) {
-    if (id == 0) return init_dtopic(id)
-
-    const api_url = `/api/topics/${id}/detail`
-    const api_res = await fetch(api_url)
-
-    if (api_res.ok) return await api_res.json()
-    else return init_dtopic()
-  }
-
-  function init_dtopic() {
-    return {
-      title: '',
-      labels: [1],
-      body_input: '',
-      body_itype: 'md',
-    }
-  }
-
-  const form = {
-    ...writable(init_dtopic()),
-    init: async (id = 0) => form.set(await load_dtopic(id)),
   }
 
   export const ctrl = {
@@ -73,28 +51,11 @@
   }
 
   async function submit() {
-    if (is_invalid_form($form)) return
+    error = await form.submit(api_url)
+    if (error) return
 
-    console.log({ api_url })
-    const res = await fetch(api_url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify($form),
-    })
-
-    if (res.ok) {
-      ctrl.hide()
-      on_destroy()
-    } else {
-      error = await res.text()
-    }
-  }
-
-  function is_invalid_form(form) {
-    if (form.title.length < 4 || form.title.length > 200) return true
-    if (form.body_input.length < 1 || form.body_input.length > 2000) return true
-    // TODO
-    return false
+    on_destroy()
+    ctrl.hide()
   }
 </script>
 
@@ -151,7 +112,6 @@
         <button
           type="submit"
           class="m-btn _primary _fill"
-          disabled={is_invalid_form($form)}
           on:click|preventDefault={submit}>
           <SIcon name="send" />
           <!-- prettier-ignore -->

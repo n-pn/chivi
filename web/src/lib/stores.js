@@ -69,3 +69,6 @@ export const ztext = {
 }
 
 export const vdict = writable({ dname: 'combine', d_dub: 'Tổng hợp' })
+
+export { form as dtopic_form } from './stores/dtopic_stores'
+export { appbar } from './stores/global_stores'

@@ -9,7 +9,7 @@ class CV::DtpostCtrl < CV::BaseCtrl
     query =
       Dtpost.query
         .sort_by(params["sort"]? || "id")
-        .where("state >= 0 AND dt_id >= 0")
+        .where("state >= 0 AND dt_id > 0")
 
     if dtopic = params["dtopic"]?.try { |x| Dtopic.load!(x.to_i64) }
       query.filter_topic(dtopic)

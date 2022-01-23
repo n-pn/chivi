@@ -1,21 +1,44 @@
 <script context="module">
+  import { dlabels } from '$lib/constants'
+  import { data as appbar } from '$sects/Appbar.svelte'
+
   export async function load({ stuff, fetch, url: { searchParams } }) {
-    const { dtopic } = stuff
+    const { dboard, dtopic } = stuff
     const page = +searchParams.get('page') || 1
 
     const api_url = `/api/tposts?dtopic=${dtopic.id}&page=${page}&take=20`
-    const api_res = await fetch(api_url)
+    const res = await fetch(api_url)
 
-    if (api_res.ok) return { props: { dtopic, ...(await api_res.json()) } }
-    return { status: api_res.status, error: await api_res.text() }
+    if (!res.ok) return { status: res.status, error: await api_res.text() }
+
+    appbar.set({
+      left: [
+        ['Diễn đàn', 'messages', '/forum', '_show-lg'],
+        [dboard.bname, null, '/forum/-' + dboard.bslug, null, '_title'],
+      ],
+    })
+
+    return { props: { dtopic, dboard, dtlist: await res.json() } }
   }
 </script>
 
 <script>
+  import { DtopicCard, DtpostList } from '$lib/components'
+
+  export let dboard
   export let dtopic
-  export let tposts
+  export let dtlist
 </script>
 
-{dtopic.title}
+<DtopicCard {dboard} {dtopic} _mode={dtlist.pgidx == 1 ? 3 : 2} />
 
-{tposts.length}
+<dtopic-posts>
+  <DtpostList {dtlist} />
+</dtopic-posts>
+
+<style lang="scss">
+  dtopic-posts {
+    display: block;
+    margin-top: 0.75rem;
+  }
+</style>

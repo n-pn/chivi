@@ -1,8 +1,7 @@
 <script context="module">
-  import { writable } from 'svelte/store'
   import { browser } from '$app/env'
   import { session } from '$app/stores'
-  import { scroll, toleft } from '$lib/stores'
+  import { appbar, scroll, toleft } from '$lib/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
   import Signin from '$parts/Signin.svelte'
@@ -11,7 +10,7 @@
 
   import Config from './Appbar/Config.svelte'
 
-  export const data = writable({})
+  export const data = appbar
 </script>
 
 <script>
@@ -32,12 +31,12 @@
         <span class="appbar-text _show-lg">Chivi</span>
       </a>
 
-      {#if $data.left}
-        {#each $data.left as [label, icon, href, _item = '', _text = ''], idx}
+      {#if $appbar.left}
+        {#each $appbar.left as [label, icon, href, _item = '', _text = ''], idx}
           {#if href}
             <a
               class="appbar-item {_item}"
-              class:_active={idx == $data.left.length - 1}
+              class:_active={idx == $appbar.left.length - 1}
               {href}>
               {#if icon}<SIcon name={icon} />{/if}
               <span class="appbar-text {_text}">{label}</span>
@@ -45,7 +44,7 @@
           {:else}
             <span
               class="appbar-item {_item}"
-              class:_active={idx == $data.left.length - 1}>
+              class:_active={idx == $appbar.left.length - 1}>
               {#if icon}<SIcon name={icon} />{/if}
               <span class="appbar-text {_text}">{label}</span>
             </span>
@@ -57,15 +56,15 @@
             type="search"
             name="q"
             placeholder="Tìm truyện"
-            value={$data.query || ''} />
+            value={$appbar.query || ''} />
           <SIcon name="search" />
         </form>
       {/if}
     </div>
 
     <div class="-right">
-      {#if $data.right}
-        {#each $data.right as [label, icon, meta, opts = { }]}
+      {#if $appbar.right}
+        {#each $appbar.right as [label, icon, meta, opts = { }]}
           {@const _item = opts._item || ''}
           {@const _text = opts._text || ''}
 
@@ -89,7 +88,7 @@
         {/each}
       {/if}
 
-      {#if $data.page == 'index'}
+      {#if $appbar.page == 'index'}
         <a href="/qtran" class="appbar-item">
           <SIcon name="bolt" />
           <span class="appbar-text _show-lg">Dịch nhanh</span>
@@ -101,7 +100,7 @@
         </a>
       {/if}
 
-      {#if $data.cvmtl}
+      {#if $appbar.cvmtl}
         <button
           class="appbar-item"
           data-kbd="o"
@@ -157,7 +156,6 @@
 
     color: #fff;
     @include bgcolor(primary, 8);
-
     @include shadow(2);
 
     &.clear {
