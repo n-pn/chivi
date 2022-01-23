@@ -6,7 +6,10 @@ class CV::DtpostCtrl < CV::BaseCtrl
     pgidx = params.fetch_int("page", min: 1)
     skips = (pgidx - 1) * limit
 
-    query = Dtpost.query.sort_by(params["sort"]? || "id")
+    query =
+      Dtpost.query
+        .sort_by(params["sort"]? || "id")
+        .where("state >= 0 AND dt_id >= 0")
 
     if dtopic = params["dtopic"]?.try { |x| Dtopic.load!(x.to_i64) }
       query.filter_topic(dtopic)
@@ -54,19 +57,19 @@ class CV::DtpostCtrl < CV::BaseCtrl
   end
 
   def create
-    dboard = Dboard.load!(params["dboard"].to_i64)
-    return halt!(403) unless DboardACL.dtpost_create?(dboard, _cvuser)
+    dtopic = Dtopic.load!(params["dtopic"].to_i64)
+    return halt!(403) unless DboardACL.dtpost_create?(dtopic, _cvuser)
 
-    dtpost = Dtpost.new({cvuser: _cvuser, dboard: dboard})
+    dtpost = Dtpost.new({cvuser: _cvuser, dtopic: dtopic, dt_id: dtopic.post_count + 1})
     dtpost.update_content!(params)
+    dtopic.bump_post_count!
 
     json_view({dtpost: DtpostView.new(dtpost)})
   end
 
   def update
-    dboard = Dboard.load!(params["dboard"].to_i64)
     dtpost = Dtpost.load!(params["dtpost"].to_i64)
-    return halt!(403) unless DboardACL.dtpost_update?(dboard, _cvuser, dtpost)
+    return halt!(403) unless DboardACL.dtpost_update?(dtpost, _cvuser)
 
     dtpost.update_content!(params)
     json_view({dtpost: DtpostView.new(dtpost)})

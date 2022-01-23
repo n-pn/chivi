@@ -49,15 +49,29 @@ class CV::Dtopic
 
   def set_utime(utime : Int64)
     self.utime = utime
-    update_sort(utime)
+    update_sort!
   end
 
-  def update_sort(utime : Int64)
-    self._sort = (utime // 60 + post_count + view_count // 100 + like_count * 5).to_i
+  def update_sort!
+    self._sort = (self.utime // 60).to_i + post_count + view_count // 100 + like_count * 5
+  end
+
+  def bump_post_count!
+    self.post_count = self.post_count + 1
+    set_utime(Time.utc.to_unix)
+    self.save!
   end
 
   def bump_view_count!
-    update!({view_count: view_count + 1})
+    self.view_count = self.view_count + 1
+    update_sort!
+    self.save!
+  end
+
+  def bump_like_count!
+    self.like_count = self.like_count + 1
+    update_sort!
+    self.save!
   end
 
   def update_content!(params)
@@ -74,6 +88,10 @@ class CV::Dtopic
 
     self.brief = dtbody.otext.split("\n", 2).first? || ""
     self.save!
+  end
+
+  def solf_delete(admin = false)
+    update!(state: admin ? -3 : -2)
   end
 
   #################

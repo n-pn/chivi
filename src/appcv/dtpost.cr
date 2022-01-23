@@ -74,4 +74,28 @@ class CV::Dtpost
 
     {output, users}
   end
+
+  def update_content!(params)
+    utime = Time.utc.to_unix
+    set_input(params["input"], params["itype"])
+
+    if dtpost_id = params["dtpost"]?.try(&.to_i64)
+      self.repl_dtpost_id = dtpost_id
+      self.repl_cvuser_id = Dtpost.load!(dtpost_id).cvuser.id
+    end
+
+    self.save!
+  end
+
+  def solf_delete(admin = false)
+    update!(state: admin ? -2 : -1)
+  end
+
+  #################
+
+  CACHE = RamCache(Int64, self).new(1024, ttl: 20.minutes)
+
+  def self.load!(id : Int64)
+    CACHE.get(id) { find!({id: id}) }
+  end
 end

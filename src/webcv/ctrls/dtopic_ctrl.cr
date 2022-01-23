@@ -6,8 +6,11 @@ class CV::DtopicCtrl < CV::BaseCtrl
     pgidx = params.fetch_int("page", min: 1)
     skips = (pgidx - 1) * limit
 
-    query = Dtopic.query.order_by(_sort: :desc)
-    query.filter_label(params["dlabel"]?)
+    query =
+      Dtopic.query
+        .order_by(_sort: :desc)
+        .where("state >= -1")
+        .filter_label(params["dlabel"]?)
 
     if dboard = params["dboard"]?.try { |x| Dboard.load!(x.to_i64) }
       query.filter_board(dboard)
