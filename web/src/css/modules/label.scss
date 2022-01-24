@@ -15,33 +15,69 @@
   @include bdradi(0.75rem);
   @include ftsize(sm);
 
+  @include tm-dark($svelte: false) {
+    --color: #{color(neutral, 3)};
+    --bdcolor: #{color(neutral, 5, 5)};
+    --bgcolor: #{color(neutral, 5, 3)};
+  }
+
   &._1 {
     --color: #{color(primary, 5)};
     --bdcolor: #{color(primary, 2)};
     --bgcolor: #{color(primary, 1)};
+
+    @include tm-dark($svelte: false) {
+      --color: #{color(primary, 3)};
+      --bdcolor: #{color(primary, 5, 5)};
+      --bgcolor: #{color(primary, 5, 3)};
+    }
   }
 
   &._2 {
     --color: #{color(success, 5)};
     --bdcolor: #{color(success, 2)};
     --bgcolor: #{color(success, 1)};
+
+    @include tm-dark($svelte: false) {
+      --color: #{color(success, 3)};
+      --bdcolor: #{color(success, 5, 5)};
+      --bgcolor: #{color(success, 5, 3)};
+    }
   }
 
   &._3 {
     --color: #{color(harmful, 5)};
     --bdcolor: #{color(harmful, 2)};
     --bgcolor: #{color(harmful, 1)};
+
+    @include tm-dark($svelte: false) {
+      --color: #{color(harmful, 3)};
+      --bdcolor: #{color(harmful, 5, 5)};
+      --bgcolor: #{color(harmful, 5, 3)};
+    }
   }
 
   &._4 {
     --color: #{color(warning, 5)};
     --bdcolor: #{color(warning, 2)};
     --bgcolor: #{color(warning, 1)};
+
+    @include tm-dark($svelte: false) {
+      --color: #{color(warning, 3)};
+      --bdcolor: #{color(warning, 5, 5)};
+      --bgcolor: #{color(warning, 5, 3)};
+    }
   }
 
   &._5 {
-    --color: #{color(purple, 5)};
-    --bdcolor: #{color(purple, 2)};
-    --bgcolor: #{color(purple, 1)};
+    --color: #{color(private, 5)};
+    --bdcolor: #{color(private, 2)};
+    --bgcolor: #{color(private, 1)};
+
+    @include tm-dark($svelte: false) {
+      --color: #{color(private, 3)};
+      --bdcolor: #{color(private, 5, 5)};
+      --bgcolor: #{color(private, 5, 3)};
+    }
   }
 }
