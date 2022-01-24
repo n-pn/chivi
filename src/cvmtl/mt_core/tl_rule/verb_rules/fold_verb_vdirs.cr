@@ -29,6 +29,7 @@ module CV::TlRule
     when "起来" then vdir.val = "lên"
     end
 
+    return verb if vdir.succ?(&.verbs?) && verb.ends_with?('了')
     fold!(verb, vdir, PosTag::Verb, dic: 5)
   end
 end

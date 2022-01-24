@@ -21,9 +21,18 @@ module CV::TlRule
         noun = fold!(defn, tail, tail.tag, dic: 4, flip: true)
         return fold!(vyou, noun, PosTag::VerbObject, dic: 6)
       end
+    else
+      if vyou.key == "有"
+        if noun.key == "些" || noun.key == "点"
+          node = fold!(vyou, noun, PosTag::Adverb, dic: 4)
+          return fold_adverbs!(node)
+        end
+
+        return fold!(vyou, noun, PosTag::VerbObject, dic: 6)
+      end
     end
 
-    unless (succ = scan_adjt!(succ)) && (succ.adjts? || succ.verb_object?)
+    unless (succ = scan_adjt!(succ)) && (succ.adjts? || proint && succ.verb_object?)
       return fold!(vyou, noun, PosTag::VerbObject, dic: 7)
     end
 
