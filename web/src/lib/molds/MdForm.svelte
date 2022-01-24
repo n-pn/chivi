@@ -142,7 +142,9 @@
     outline: 0;
     background: transparent;
     padding: 0.375rem 0.75rem;
+    // font-size: rem(17px);
 
+    @include fgcolor(main);
     &::placeholder {
       font-style: italic;
       @include fgcolor(tert);
