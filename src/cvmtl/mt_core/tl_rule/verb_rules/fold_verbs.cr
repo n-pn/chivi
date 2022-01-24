@@ -87,7 +87,7 @@ module CV::TlRule
     return verb if !succ || verb.verb_object? || verb.vintr?
 
     if succ.ude1?
-      return verb if verb.prev?(&.object?)
+      return verb if verb.prev? { |x| x.object? || x.prep_phrase? }
       return verb unless (object = scan_noun!(succ.succ?)) && object.object?
       node = fold!(verb, succ.set!(""), PosTag::DefnPhrase, dic: 6)
       return fold!(node, object, object.tag, dic: 8, flip: true)
