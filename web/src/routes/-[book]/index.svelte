@@ -5,7 +5,7 @@
   export async function load({ fetch, stuff: { nvinfo } }) {
     const api_url = `/api/books/${nvinfo.bhash}/front`
     const api_res = await fetch(api_url)
-    return { props: await api_res.json() }
+    return { props: { nvinfo, ...(await api_res.json()) } }
   }
 </script>
 
@@ -15,16 +15,15 @@
   import Yscrit from '$parts/Yscrit.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
+  export let nvinfo = $page.stuff.nvinfo || {}
   export let crits = []
   export let books = []
   export let users = []
 
-  $: nvinfo = $page.stuff.nvinfo || {}
-
   let short_intro = false
 </script>
 
-<BookPage nvtab="index">
+<BookPage {nvinfo} nvtab="index">
   <article class="m-article">
     <h2>Giới thiệu:</h2>
     <div class="intro" class:_short={short_intro}>

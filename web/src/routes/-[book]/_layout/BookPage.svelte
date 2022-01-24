@@ -29,10 +29,9 @@
   import Gmenu from '$molds/Gmenu.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
+  export let nvinfo = $page.stuff.nvinfo || {}
+  export let ubmemo = $page.stuff.ubmemo || {}
   export let nvtab = 'index'
-
-  $: nvinfo = $page.stuff.nvinfo || {}
-  $: ubmemo = $page.stuff.ubmemo || {}
 
   $: appbar.set({
     left: [[nvinfo.vname, 'book', `/-${nvinfo.bslug}`, null, '_title']],

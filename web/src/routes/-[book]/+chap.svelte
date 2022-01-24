@@ -17,7 +17,7 @@
       ],
     })
 
-    return { props: { chidx, input } }
+    return { props: { nvinfo, chidx, input } }
   }
 
   async function load_text(fetch, book_id, chidx) {
@@ -33,10 +33,10 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
+  export let nvinfo = $page.stuff.nvinfo
   export let chidx = 1
   export let input = ''
 
-  $: nvinfo = $page.stuff.nvinfo
   let _trad = false
 
   async function submit_text() {

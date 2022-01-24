@@ -24,7 +24,7 @@
       ],
       right: gen_appbar_right(nvinfo, ubmemo),
     })
-    return { props: { chinfo } }
+    return { props: { chinfo, nvinfo, ubmemo } }
   }
 
   // function chidx_to_page(chidx, psize = 32) {
@@ -50,9 +50,9 @@
   import SeedList from './_layout/SeedList.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
+  export let nvinfo = $page.stuff.nvinfo || {}
+  export let ubmemo = $page.stuff.ubmemo || {}
   export let chinfo
-  $: nvinfo = $page.stuff.nvinfo || {}
-  $: ubmemo = $page.stuff.ubmemo || {}
 
   $: pager = new Pager($page.url, { sname: 'chivi', page: 1 })
 </script>

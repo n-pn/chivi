@@ -2,9 +2,9 @@
   import { page } from '$app/stores'
   import { data as appbar } from '$sects/Appbar.svelte'
 
-  export async function load() {
+  export async function load({ stuff }) {
     appbar.set({ left: [['Sửa nội dung']] })
-    return {}
+    return { props: stuff }
   }
 </script>
 
@@ -12,7 +12,7 @@
   import NvinfoForm from '$sects/Nvinfo/Form.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  $: nvinfo = $page.stuff.nvinfo || {}
+  export let nvinfo = $page.stuff.nvinfo || {}
 
   $: params = {
     author: nvinfo.author,
