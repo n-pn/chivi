@@ -5,11 +5,13 @@
     const page = +searchParams.get('page') || 1
     const dlabel = searchParams.get('label')
 
-    const api_url = `/api/topics?dboard=${nvinfo.id}&page=${page}&take=10`
-    const res = await fetch(dlabel ? `${api_url}&dlabel=${dlabel}` : api_url)
+    let api_url = `/api/topics?dboard=${nvinfo.id}&page=${page}&take=10`
+    if (dlabel) api_url += `&dlabel=${dlabel}`
 
-    if (res.ok) return { props: { nvinfo, bdtlist: await res.json() } }
-    return { status: res.status, error: await res.text() }
+    const res = await fetch(api_url)
+    if (!res.ok) return { status: res.status, error: await res.text() }
+
+    return { props: { nvinfo, dtlist: await res.json() } }
   }
 </script>
 
