@@ -33,7 +33,7 @@
 <DtopicCard {dboard} {dtopic} _mode={dtlist.pgidx == 1 ? 3 : 2} />
 
 <dtopic-posts>
-  <DtpostList {dtlist} />
+  <DtpostList {dtlist} {dtopic} />
 </dtopic-posts>
 
 <style lang="scss">
