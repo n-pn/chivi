@@ -1,25 +1,22 @@
 import { writable, get } from 'svelte/store'
 
-function init() {
-  return {
-    input: '',
-    itype: 'md',
-  }
+function init(rp_id = 0, itype = 'md') {
+  return { input: '', itype, rp_id }
 }
 
-async function load(id) {
-  if (id == 0) return init(id)
+async function load(id, rp_id) {
+  if (id == 0) return init(rp_id)
 
-  const api_url = `/api/tposts/${id}`
+  const api_url = `/api/tposts/${id}/detail`
   const api_res = await fetch(api_url)
 
-  if (api_res.ok) return await api_res.json()
-  else return init()
+  if (!api_res.ok) return init(rp_id)
+  return await api_res.json()
 }
 
 export const form = {
   ...writable(init()),
-  init: async (id = 0) => form.set(await load(id)),
+  init: async (id = 0, rp_id = 0) => form.set(await load(id, rp_id)),
   // prettier-ignore
   validate(data = get(form)) {
     const { input } = data

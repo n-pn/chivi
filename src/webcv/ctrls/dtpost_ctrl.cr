@@ -51,7 +51,12 @@ class CV::DtpostCtrl < CV::BaseCtrl
     dtpost = Dtpost.load!(params["dtpost"].to_i64)
     cache_rule :public, 120, 300, dtpost.updated_at.to_s
 
-    json_view({dtpost: DtpostView.new(dtpost, full: true)})
+    json_view({
+      id:    dtpost.id,
+      input: dtpost.input,
+      itype: dtpost.itype,
+      rp_id: dtpost.repl_dtpost_id,
+    })
   rescue err
     halt!(404, "Bài viết không tồn tại!")
   end
@@ -63,6 +68,11 @@ class CV::DtpostCtrl < CV::BaseCtrl
     dtpost = Dtpost.new({cvuser: _cvuser, dtopic: dtopic, dt_id: dtopic.post_count + 1})
     dtpost.update_content!(params)
     dtopic.bump_post_count!
+
+    if dtpost.repl_dtpost_id > 0
+      repl = Dtpost.load!(dtpost.repl_dtpost_id)
+      repl.update!({repl_count: repl.repl_count + 1})
+    end
 
     json_view({dtpost: DtpostView.new(dtpost)})
   end

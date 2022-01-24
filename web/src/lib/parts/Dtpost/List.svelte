@@ -4,6 +4,7 @@
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import { SIcon } from '$lib/components'
   import DtpostForm, { ctrl as dtpost_ctrl } from './Form.svelte'
+  import DtpostCard from './Card.svelte'
 </script>
 
 <script>
@@ -15,21 +16,15 @@
   }
 
   $: pager = new Pager($page.url, { page: 1, tl: '' })
+
+  let active_card = $page.url.hash.substring(1)
+
+  $: console.log({ active_card })
 </script>
 
 <dtpost-list>
   {#each dtlist.items as dtpost}
-    <dtpost-item>
-      <dtpost-head>
-        <dtpost-user>
-          <cv-user privi={dtpost.u_privi}>{dtpost.u_dname}</cv-user>
-        </dtpost-user>
-      </dtpost-head>
-
-      <dtpost-body>
-        {@html dtpost.ohtml}
-      </dtpost-body>
-    </dtpost-item>
+    <DtpostCard {dtpost} bind:active_card />
   {:else}
     <div class="empty">Chưa có bình luận</div>
   {/each}
@@ -50,7 +45,9 @@
     <span>Thêm bình luận</span>
   </button>
 
-  {#if $dtpost_ctrl.actived}<DtpostForm {dtopic} />{/if}
+  {#if $dtpost_ctrl.actived}
+    <DtpostForm {dtopic} />
+  {/if}
 </dtlist-foot>
 
 <style lang="scss">

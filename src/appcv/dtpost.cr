@@ -13,6 +13,7 @@ class CV::Dtpost
 
   column repl_dtpost_id : Int64 = 0 # replied to dtpost.id
   column repl_cvuser_id : Int64 = 0 # replied to dtpost's cvuser.id
+  getter parent : Dtpost { Dtpost.load!(repl_dtpost_id) }
 
   column tagged_ids : Array(Int64) = [] of Int64
 
@@ -79,12 +80,17 @@ class CV::Dtpost
     utime = Time.utc.to_unix
     set_input(params["input"], params["itype"])
 
-    if dtpost_id = params["dtpost"]?.try(&.to_i64)
-      self.repl_dtpost_id = dtpost_id
-      self.repl_cvuser_id = Dtpost.load!(dtpost_id).cvuser.id
+    if (dtpost_id = params["rp_id"]?.try(&.to_i64))
+      set_repl_id(dtpost_id)
     end
 
     self.save!
+  end
+
+  def set_repl_id(dtpost_id : Int64)
+    return unless dtpost_id > 0
+    self.repl_dtpost_id = dtpost_id
+    self.repl_cvuser_id = Dtpost.load!(dtpost_id).cvuser.id
   end
 
   def solf_delete(admin = false)

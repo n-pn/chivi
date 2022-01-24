@@ -1,7 +1,6 @@
 <script>
-  import { get_rtime } from '$atoms/RTime.svelte'
-  import SIcon from '$atoms/SIcon.svelte'
-  import Gmenu from '$molds/Gmenu.svelte'
+  import { rel_time } from '$lib/utils'
+  import { SIcon, Gmenu } from '$lib/components'
   import Replies from './Yscrit/Replies.svelte'
 
   export let crit
@@ -32,7 +31,7 @@
     <a class="crit-user" href="/crits?user={crit.uslug}">{crit.uname}</a>
     <crit-sep>·</crit-sep>
     <a class="crit-time" href="/qtran/crits/{crit.id}"
-      >{get_rtime(crit.mftime)}</a>
+      >{rel_time(crit.mftime)}</a>
 
     <crit-star>{get_stars(crit.stars)}</crit-star>
     {#if crit.vhtml.length >= 640}

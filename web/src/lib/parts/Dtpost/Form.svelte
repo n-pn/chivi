@@ -4,8 +4,8 @@
 
   export const ctrl = {
     ...writable({ id: 0, actived: false }),
-    show(id = 0) {
-      form.init(id)
+    show(id = 0, rp_id = 0) {
+      form.init(id, rp_id)
       ctrl.set({ id, actived: true })
     },
     hide() {

@@ -48,7 +48,8 @@ class CV::Dtopic
 
   def set_title(title : String)
     self.title = title
-    self.tslug = TextUtils.slugify(title)
+    frags = TextUtils.slugify(title).split("-")[6]
+    self.tslug = frags.join("-")[0..20]
   end
 
   def set_utime(utime : Int64)

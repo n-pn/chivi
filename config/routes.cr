@@ -72,7 +72,7 @@ Amber::Server.configure do
 
     get "/tposts", CV::DtpostCtrl, :index
     post "/tposts", CV::DtpostCtrl, :create
-    get "/tposts/:dtpost", CV::DtpostCtrl, :detail
+    get "/tposts/:dtpost/detail", CV::DtpostCtrl, :detail
     post "/tposts/:dtpost", CV::DtpostCtrl, :update
     delete "/tposts/:dtpost", CV::DtpostCtrl, :delete
 

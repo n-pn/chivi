@@ -114,3 +114,10 @@ sup {
 //   font-style: normal;
 //   line-height: inherit;
 // }
+
+blockquote {
+  @include border(--bd-bold, $width: 3px, $loc: left);
+  padding-left: 5px;
+
+  @include fgcolor(tert);
+}

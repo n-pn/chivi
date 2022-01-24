@@ -12,12 +12,21 @@ class CV::DtpostView
       jb.field "u_privi", @data.cvuser.privi
 
       jb.field "id", @data.id
-      jb.field "dt_id", @data.dt_id
+      jb.field "no", @data.dt_id
+
+      if @data.repl_dtpost_id > 0
+        repl = Dtpost.load!(@data.repl_dtpost_id)
+        jb.field "rp_id", repl.id
+        jb.field "rp_no", repl.dt_id
+        jb.field "ru_dname", repl.cvuser.uname
+        jb.field "ru_privi", repl.cvuser.privi
+      end
 
       jb.field "ohtml", @data.ohtml
       jb.field "odesc", @data.otext.split("\n", 2).first?
 
       jb.field "state", @data.state
+      jb.field "ctime", @data.created_at.to_unix
       jb.field "utime", @data.utime
 
       jb.field "edit_count", @data.edit_count

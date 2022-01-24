@@ -68,11 +68,6 @@
     display: block;
 
     @include border(--bd-main, $loc: bottom);
-
-    > * {
-      margin-left: var(--gutter);
-      margin-right: var(--gutter);
-    }
   }
 
   topic-head {
