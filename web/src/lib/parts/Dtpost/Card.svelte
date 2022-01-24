@@ -105,8 +105,9 @@
 
   dtpost-card {
     display: inline-block;
-    min-width: 18rem;
+    min-width: min(24rem, 85vw);
     max-width: 100%;
+
     @include bgcolor(secd);
     @include bdradi();
     @include shadow();
