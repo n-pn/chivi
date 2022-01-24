@@ -12,7 +12,7 @@ module CV::TlRule
       when .ude1?
         return cast_verb!(node) if prev.prev?(&.adverbs?)
         return cast_noun!(node) unless (succ = node.succ?) && !(succ.ends?)
-        return cast_noun!(node) if succ.nouns?
+        return cast_noun!(node) if succ.nouns? || succ.junction?
       when .adverbs?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
         return cast_verb!(node)
       when .auxils?, .preposes?, .modifier?
@@ -21,6 +21,11 @@ module CV::TlRule
         #   if (succ = node.succ?) && !(succ.nouns? || succ.pronouns?)
         #     return cast_noun!(node)
         #   end
+      when .junction?
+        prev.prev? do |prev_2|
+          return cast_noun!(node) if prev_2.nouns?
+          return cast_verb!(node) if prev_2.verbs?
+        end
       when .pro_dems?, .qtnoun?
         case succ = node.succ?
         when .nil?, .ends?
