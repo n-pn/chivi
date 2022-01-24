@@ -60,7 +60,7 @@ module CV::TlRule
     when .verb_object?
       MtDict::VERBS_SEPERATED.has_key?(succ.key)
     else
-      {"都", "也", "只"}.includes?(prev.try(&.key))
+      {"都", "也", "只", "还"}.includes?(prev.try(&.key))
     end
   end
 
