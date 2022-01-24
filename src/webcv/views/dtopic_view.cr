@@ -8,9 +8,13 @@ class CV::DtopicView
 
   def to_json(jb : JSON::Builder)
     jb.object {
-      jb.field "b_id", @data.dboard.id
-      jb.field "b_bname", @data.dboard.bname
-      jb.field "b_bslug", @data.dboard.bslug
+      jb.field "dboard" do
+        jb.object {
+          jb.field "id", @data.dboard.id
+          jb.field "bname", @data.dboard.bname
+          jb.field "bslug", @data.dboard.bslug
+        }
+      end
 
       jb.field "u_dname", @data.cvuser.uname
       jb.field "u_privi", @data.cvuser.privi

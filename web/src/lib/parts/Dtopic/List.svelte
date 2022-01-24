@@ -48,15 +48,16 @@
   </board-pagi>
 {/if}
 
-{#if dboard && $session.privi > 2}
-  <board-foot>
-    <button class="m-btn _primary _fill" on:click={() => dtopic_form.show(0)}>
-      <SIcon name="message-plus" />
-      <span>Tạo chủ đề mới</span></button>
-  </board-foot>
+<board-foot>
+  <button
+    class="m-btn _primary _fill"
+    disabled={$session.privi < 0}
+    on:click={() => dtopic_form.show(0)}>
+    <SIcon name="message-plus" />
+    <span>Tạo chủ đề mới</span></button>
+</board-foot>
 
-  {#if $dtopic_form.actived}<DtopicForm {dboard} />{/if}
-{/if}
+{#if $dtopic_form.actived}<DtopicForm {dboard} />{/if}
 
 <style lang="scss">
   board-head {

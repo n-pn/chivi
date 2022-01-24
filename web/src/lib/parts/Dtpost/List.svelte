@@ -3,8 +3,10 @@
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import { SIcon } from '$lib/components'
-  import DtpostForm, { ctrl as dtpost_ctrl } from './Form.svelte'
+
   import DtpostCard from './Card.svelte'
+  import DtopicForm, { ctrl as dtopic_ctrl } from '../Dtopic/Form.svelte'
+  import DtpostForm, { ctrl as dtpost_ctrl } from './Form.svelte'
 </script>
 
 <script>
@@ -16,10 +18,7 @@
   }
 
   $: pager = new Pager($page.url, { page: 1, tl: '' })
-
   let active_card = $page.url.hash.substring(1)
-
-  $: console.log({ active_card })
 </script>
 
 <dtpost-list>
@@ -29,6 +28,8 @@
     <div class="empty">Chưa có bình luận</div>
   {/each}
 </dtpost-list>
+
+{#if $dtopic_ctrl.actived}<DtopicForm dboard={dtopic.dboard} />{/if}
 
 {#if dtlist.pgmax > 1}
   <dtpost-pagi>

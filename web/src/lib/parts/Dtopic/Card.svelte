@@ -9,8 +9,8 @@
   export let dtopic
   export let _mode = 0
 
-  $: board_url = `/forum/-${dtopic.b_bslug}`
-  $: label_url = _mode > -1 ? board_url : `/-${dtopic.b_bslug}/board`
+  $: board_url = `/forum/-${dtopic.dboard.bslug}`
+  $: label_url = _mode > -1 ? board_url : `/-${dtopic.dboard.bslug}/board`
 </script>
 
 <topic-card>
@@ -18,7 +18,7 @@
     {#if _mode > 0}
       <a class="m-board" href={board_url}>
         <SIcon name="messages" />
-        <span>{dtopic.b_bname}</span>
+        <span>{dtopic.dboard.bname}</span>
       </a>
     {/if}
 
@@ -48,8 +48,8 @@
     <topic-sep>·</topic-sep>
 
     <topic-repl>
-      {#if dtopic.posts > 0}
-        <span>{dtopic.posts} lượt trả lời</span>
+      {#if dtopic.post_count > 0}
+        <span>{dtopic.post_count} lượt trả lời</span>
       {:else}
         <span>Trả lời</span>
       {/if}
