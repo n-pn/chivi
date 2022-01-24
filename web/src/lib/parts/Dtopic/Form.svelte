@@ -33,7 +33,7 @@
   import MdForm from '$molds/MdForm.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
-  export let dboard = { id: 0, bname: 'Thảo luận' }
+  export let dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
   export let on_destroy = () => window.location.reload()
 
   $: on_edit = $ctrl.id > 0
@@ -57,11 +57,19 @@
     on_destroy()
     ctrl.hide()
   }
+
+  function focus(node) {
+    node.focus()
+  }
 </script>
 
 <Gmodal actived={$ctrl.actived} on_close={ctrl.hide}>
   <board-form>
     <board-head>
+      <head-board>{dboard.bname}</head-board>
+      <head-sep>
+        <SIcon name="caret-right" />
+      </head-sep>
       <head-title>
         {#if on_edit}Sửa chủ đề{:else}Tạo chủ đề mới{/if}
       </head-title>
@@ -72,12 +80,28 @@
     </board-head>
 
     <form action={api_url} method="POST" on:submit|preventDefault={submit}>
+      <form-field>
+        <form-chips>
+          <label-cap>Phân loại:</label-cap>
+          {#each Object.entries(dlabels) as [value, label]}
+            <label class="m-label _{value}">
+              <input type="checkbox" {value} bind:checked={labels[value]} />
+              <label-name>{label}</label-name>
+              {#if labels[value]}
+                <SIcon name="check" />
+              {/if}
+            </label>
+          {/each}
+        </form-chips>
+      </form-field>
+
       <form-field class="title">
         <input
           class="m-input"
           name="title"
           lang="vi"
           bind:value={$form.title}
+          use:focus
           placeholder="Chủ đề thảo luận" />
       </form-field>
 
@@ -91,22 +115,6 @@
       {#if error}
         <form-error>{error}</form-error>
       {/if}
-
-      <form-field>
-        <form-label>Phân loại chủ đề:</form-label>
-
-        <form-chips>
-          {#each Object.entries(dlabels) as [value, label]}
-            <label class="m-label _{value}">
-              <input type="checkbox" {value} bind:checked={labels[value]} />
-              <label-name>{label}</label-name>
-              {#if labels[value]}
-                <SIcon name="check" />
-              {/if}
-            </label>
-          {/each}
-        </form-chips>
-      </form-field>
 
       <form-foot>
         <button
@@ -127,7 +135,7 @@
     display: block;
     width: 40rem;
     max-width: 100%;
-    padding: 0.75rem;
+    padding: 0 0.75rem;
 
     @include bdradi();
     @include shadow(1);
@@ -139,7 +147,8 @@
   }
 
   board-head {
-    display: flex;
+    @include flex-ca($gap: 0.25rem);
+    padding-top: 0.375rem;
 
     :global(svg) {
       width: 1rem;
@@ -149,18 +158,25 @@
   }
 
   .x-btn {
+    background: none;
+    margin-left: auto;
+    margin-right: -0.25rem;
+    padding: 0;
     @include fgcolor(tert);
-    @include bgcolor(tert);
 
-    &:hover {
-      @include fgcolor(primary, 6);
+    @include hover {
+      @include fgcolor(primary, 5);
     }
   }
 
+  head-board,
   head-title {
-    flex: 1;
     font-weight: 500;
-    @include ftsize(lg);
+    // @include ftsize(lg);
+  }
+
+  head-sep {
+    @include flex-ca;
   }
 
   form-field {
@@ -168,19 +184,16 @@
     margin-top: 0.75rem;
   }
 
-  form-label {
-    display: block;
-    line-height: 1.75rem;
+  label-cap {
     font-weight: 500;
-    margin-top: 0.25rem;
     @include fgcolor(secd);
   }
 
   form-foot {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
+    padding: 0.75rem 0;
+    // padding-top: 0.75rem;
     @include flex($center: vert, $gap: 0.5rem);
-    @include border($loc: top);
+    // @include border($loc: top);
 
     > button {
       margin-left: auto;

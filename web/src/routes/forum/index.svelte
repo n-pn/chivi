@@ -23,6 +23,12 @@
   import DtopicList from '$parts/Dtopic/List.svelte'
 
   export let dtlist = { items: [], pgidx: 1, pgmax: 1 }
+
+  const dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
 </script>
 
-<DtopicList {dtlist} _mode={1} />
+<svelte:head>
+  <title>Diễn đàn - Chivi</title>
+</svelte:head>
+
+<DtopicList {dtlist} {dboard} _mode={1} />

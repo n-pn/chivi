@@ -67,7 +67,8 @@
 
   board-pagi {
     display: block;
-    margin: 0.75rem 0;
+    padding: 0.75rem 0;
+
     @include border($loc: bottom);
   }
 

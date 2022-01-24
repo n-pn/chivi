@@ -73,7 +73,9 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
   def create
     dboard = Dboard.load!(params["dboard"].to_i64)
-    return halt!(403) unless DboardACL.dtopic_create?(dboard, _cvuser)
+    unless DboardACL.dtopic_create?(dboard, _cvuser)
+      return halt!(403, "Bạn không có quyền tạo chủ đề")
+    end
 
     dtopic = Dtopic.new({cvuser: _cvuser, dboard: dboard})
     dtopic.update_content!(params)
@@ -82,9 +84,11 @@ class CV::DtopicCtrl < CV::BaseCtrl
   end
 
   def update
-    dboard = Dboard.load!(params["dboard"].to_i64)
     dtopic = Dtopic.load!(params["dtopic"].to_i64)
-    return halt!(403) unless DboardACL.dtopic_update?(dboard, _cvuser, dtopic)
+
+    unless DboardACL.dtopic_update?(dtopic, _cvuser)
+      return halt!(403, "Bạn không có quyền sửa chủ đề")
+    end
 
     dtopic.update_content!(params)
     json_view({dtopic: DtopicView.new(dtopic)})

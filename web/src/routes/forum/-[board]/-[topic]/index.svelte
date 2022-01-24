@@ -30,6 +30,10 @@
   export let dtlist
 </script>
 
+<svelte:head>
+  <title>{dtopic.title} - Diễn đàn - Chivi</title>
+</svelte:head>
+
 <DtopicCard {dboard} {dtopic} _mode={dtlist.pgidx == 1 ? 3 : 2} />
 
 <dtopic-posts>

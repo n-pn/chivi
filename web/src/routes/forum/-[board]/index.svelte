@@ -31,4 +31,8 @@
   export let dtlist = { items: [], pgidx: 1, pgmax: 1 }
 </script>
 
+<svelte:head>
+  <title>{dboard.bname} - Diễn đàn - Chivi</title>
+</svelte:head>
+
 <DtopicList {dboard} {dtlist} />

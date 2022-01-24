@@ -1,7 +1,9 @@
 @use '../essence' as *;
 
 .m-label {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   line-height: 1.5rem;
   padding: 0 0.75rem;
 

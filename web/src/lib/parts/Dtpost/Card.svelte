@@ -129,7 +129,7 @@
     display: block;
     margin: 0.375rem 0.75rem;
     word-wrap: break-word;
-    font-size: rem(17px);
+    // font-size: rem(17px);
   }
 
   dtpost-sep {
