@@ -100,7 +100,8 @@ module CV::TlRule
   end
 
   def fold_adverb_verb!(adverb : MtNode, verb : MtNode)
-    verb.tag = PosTag::Verb if verb.veno? || verb.vead?
+    verb = cast_verb!(verb) if verb.veno? || verb.vead?
+
     case adverb.key
     when "白" then adverb.val = "phí công"
     when "正" then adverb.val = "đang" unless verb.v_shi?
