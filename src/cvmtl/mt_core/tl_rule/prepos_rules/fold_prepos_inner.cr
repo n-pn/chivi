@@ -28,7 +28,7 @@ module CV::TlRule
     when .nil?     then return prepos
     when .adverbs? then verb = fold_adverbs!(verb)
     when .veno?    then verb = fold_verbs!(cast_verb!(verb))
-    when .verb?    then verb = fold_verbs!(verb)
+    when .verbs?   then verb = fold_verbs!(verb)
     end
 
     flip = false
