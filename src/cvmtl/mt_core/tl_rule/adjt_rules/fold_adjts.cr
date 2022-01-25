@@ -61,8 +61,12 @@ module CV::TlRule
       when .vpro?, .verb?
         case succ.key
         when "到"
-          node = fold!(node, succ, PosTag::Verb, dic: 6)
-          return fold_verbs!(succ, prev: prev)
+          if (tail = succ.succ?) && tail.adjts?
+            node = fold!(node, tail, PosTag::Aform, dic: 7)
+          else
+            node = fold!(node, succ, PosTag::Verb, dic: 6)
+            return fold_verbs!(succ, prev: prev)
+          end
         end
 
         break if prev || node.key.size > 1
@@ -105,10 +109,10 @@ module CV::TlRule
     node = fold!(nega, node, node.tag, dic: 4) if nega
     return node unless succ = node.succ?
 
-    succ.set!(PosTag::Noun) if succ.veno? || succ.ajno?
-
+    succ = cast_noun!(succ) if succ.veno? || succ.ajno?
     # puts [node, succ]
-    succ.nouns? ? fold_adjt_noun!(node, succ) : node
+
+    succ.nouns? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
   end
 
   def fold_adj_adv!(node : MtNode, prev = node.prev?)
