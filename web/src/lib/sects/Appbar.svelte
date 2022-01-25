@@ -88,18 +88,6 @@
         {/each}
       {/if}
 
-      {#if $appbar.page == 'index'}
-        <a href="/qtran" class="appbar-item">
-          <SIcon name="bolt" />
-          <span class="appbar-text _show-lg">Dịch nhanh</span>
-        </a>
-
-        <a href="/crits" class="appbar-item">
-          <SIcon name="stars" />
-          <span class="appbar-text _show-lg">Đánh giá</span>
-        </a>
-      {/if}
-
       {#if $appbar.cvmtl}
         <button
           class="appbar-item"

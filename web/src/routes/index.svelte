@@ -1,8 +1,15 @@
 <script context="module">
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import { appbar } from '$lib/stores'
 
   export async function load({ url, fetch }) {
-    appbar.set({ page: 'index' })
+    appbar.set({
+      page: 'index',
+      right: [
+        ['Dịch nhanh', 'bolt', '/qtran', { _text: '_show-lg' }],
+        ['Đánh giá', 'stars', '/crits', { _text: '_show-lg' }],
+        ['Thảo luận', 'messages', '/forum', { _text: '_show-lg' }],
+      ],
+    })
 
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
