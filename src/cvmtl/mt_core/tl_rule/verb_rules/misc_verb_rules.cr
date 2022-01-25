@@ -62,15 +62,4 @@ module CV::TlRule
     return node unless prev && prev.adverbs?
     fold_adverb_node!(prev, node)
   end
-
-  def fold_verb_uzhe!(prev : MtNode, uzhe : MtNode, succ = uzhe.succ?) : MtNode
-    uzhe.val = ""
-
-    if succ && succ.verbs?
-      # succ = fold_verbs!(succ)
-      fold!(prev, succ, PosTag::Verb, dic: 5)
-    else
-      fold!(prev, uzhe, PosTag::Verb, dic: 6)
-    end
-  end
 end

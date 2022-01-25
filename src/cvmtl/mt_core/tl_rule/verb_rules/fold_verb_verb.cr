@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_verb_verb!(verb_1 : MtNode, verb_2 : MtNode) : MtNode
-    return fold!(verb_1, verb_2, verb_1.tag) if verb_1.key == verb_2.key
+    return fold!(verb_1, verb_2, verb_1.tag) if !verb_1.body? && verb_1.key == verb_2.key
 
     if val = MtDict::VERB_COMPLEMENT.get(verb_2.key)
       return fold!(verb_1, verb_2.set!(val), PosTag::Verb, dic: 6)
