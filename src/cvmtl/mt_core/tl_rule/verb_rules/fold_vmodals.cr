@@ -19,6 +19,8 @@ module CV::TlRule
     case succ
     when .nil? then node
     when .preposes?
+      return node if succ.pre_bi3?
+
       node = fold!(node, succ, succ.tag, dic: 6)
       fold_preposes!(node)
     when .adverbs?
@@ -58,6 +60,7 @@ module CV::TlRule
 
     case succ
     when .nil?, .ends?, .nouns? then true
+    when .preposes?             then false
     when .verb_object?
       MtDict::VERBS_SEPERATED.has_key?(succ.key)
     else
