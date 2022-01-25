@@ -21,6 +21,8 @@
   let active_card = $page.url.hash.substring(1)
 </script>
 
+<h3>Bình luận</h3>
+
 <dtpost-list>
   {#each dtlist.items as dtpost}
     <DtpostCard {dtpost} bind:active_card />
@@ -59,8 +61,8 @@
 
   .empty {
     @include flex-ca();
-    height: 15rem;
-    max-height: 40vh;
+    height: 10rem;
+    max-height: 30vh;
     font-style: italic;
     @include fgcolor(tert);
   }

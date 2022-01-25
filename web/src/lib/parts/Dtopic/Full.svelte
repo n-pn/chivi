@@ -66,13 +66,15 @@
   <topic-pbody class:_all>
     <article class="m-article">{@html dtopic.bhtml}</article>
 
-    <pbody-foot>
-      <button
-        class="m-btn _primary _xs btn-show"
-        on:click={() => (_all = !_all)}>
-        <span>{_all ? 'Thu gọn' : 'Xem hết'}</span>
-      </button>
-    </pbody-foot>
+    {#if dtopic.bhtml.length >= 500}
+      <pbody-foot>
+        <button
+          class="m-btn _primary _xs btn-show"
+          on:click={() => (_all = !_all)}>
+          <span>{_all ? 'Thu gọn' : 'Xem hết'}</span>
+        </button>
+      </pbody-foot>
+    {/if}
   </topic-pbody>
 </topic-full>
 
@@ -183,7 +185,7 @@
     --hide: #{color(neutral, 7, 2)};
     display: block;
     position: relative;
-    margin-bottom: .75rem;
+
     background: linear-gradient(to top, color(--hide) .25rem, transparent 1rem);
     @include border(--bd-main, $loc: bottom);
     @include tm-dark { --hide: #{color(neutral, 5, 2)}; }
