@@ -88,6 +88,7 @@ module CV::TlRule
         node = fold_veno!(node)
         node = fold_verb_as_noun!(node, mode: mode) if node.verbs?
       when .verbs?
+        break if node.v_shi?
         node = fold_verb_as_noun!(node, mode: mode)
       when .modifier?
         node = fold_modifier!(node)

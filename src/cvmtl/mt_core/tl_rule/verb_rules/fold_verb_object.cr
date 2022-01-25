@@ -11,6 +11,10 @@ module CV::TlRule
 
     return verb unless (noun = scan_noun!(succ)) && noun.object?
 
+    if noun.place? && verb.ends_with?('在')
+      return fold!(verb, noun, PosTag::VerbObject, dic: 4)
+    end
+
     if (ude1 = noun.succ?) && ude1.ude1? && (right = ude1.succ?)
       if (right = scan_noun!(right)) && should_apply_ude1_after_verb?(verb, right)
         noun = fold_ude1_left!(ude1: ude1, left: noun, right: right)
@@ -31,8 +35,10 @@ module CV::TlRule
     return false if {"时候", "时", "打算", "方法"}.includes?(right.key)
 
     case prev.tag
-    when .comma?
-      return true
+    when .comma? then return true
+    when .v_shi? then return false
+    when .v_you? then return false
+    when .verbs? then return is_linking_verb?(prev, verb)
     when .subject?
       return true unless head = prev.prev?
       return false if head.v_shi?
