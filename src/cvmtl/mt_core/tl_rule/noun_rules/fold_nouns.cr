@@ -45,6 +45,12 @@ module CV::TlRule
       when .usuo?
         break if succ.succ?(&.verbs?)
         noun = fold_suf_noun!(noun, succ)
+      when .pro_per?
+        if succ.key == "自己"
+          noun = fold!(noun, succ, noun.tag, dic: 7, flip: true)
+        end
+
+        break
       when .uniques?
         case succ.key
         when "第"

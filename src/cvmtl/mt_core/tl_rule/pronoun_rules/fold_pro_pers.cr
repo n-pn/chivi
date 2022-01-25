@@ -13,8 +13,14 @@ module CV::TlRule
     when .ajno?
       succ = heal_ajno!(succ)
       succ.noun? ? fold_proper_nounish!(node, succ) : node
-    when .nouns?, .numbers?, .pro_per?, .pro_dem?
-      return node unless (succ = scan_noun!(succ)) && succ.subject?
+    when .pro_per?
+      # TODO: check for linking verb
+      return node if node.prev?(&.verbs?) && succ.succ?(&.verbs?)
+
+      flip = succ.key == "自己"
+      node = fold!(node, succ, node.tag, dic: 7, flip: flip)
+    when .nouns?, .numbers?, .pro_dem?
+      return node unless (succ = scan_noun!(succ)) && succ.object?
       return node unless noun_can_combine?(node.prev?, succ.succ?)
 
       flip = flip_proper_noun?(node, succ)
