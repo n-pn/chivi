@@ -7,6 +7,8 @@ module CV::TlRule
     return noun unless tail = scan_noun!(succ.succ?)
 
     defn = fold!(noun, succ.set!(""), PosTag::DefnPhrase, dic: 6)
-    fold!(defn, tail, tail.tag, dic: 7, flip: true)
+    tag = tail.names? || tail.human? ? tail.tag : PosTag::Nform
+
+    fold!(defn, tail, tag, dic: 5, flip: true)
   end
 end
