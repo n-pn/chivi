@@ -11,10 +11,18 @@
 <style lang="scss">
   forum-wrap {
     display: block;
+    max-width: 45rem;
 
-    margin: var(--gutter);
+    padding: 0.75rem var(--gutter);
+    margin: 0.75rem auto;
 
-    @include bps(margin-left, 0rem, $ts: 1.5rem, $tl: 2rem);
-    @include bps(margin-right, 0rem, $ts: 1.5rem, $tl: 2rem);
+    @include bgcolor(tert);
+    @include shadow();
+    @include bps(border-radius, 0, $ts: 0.5rem);
+    @include bps(margin-left, calc(var(--gutter) * -1), $ts: auto);
+    @include bps(margin-right, calc(var(--gutter) * -1), $ts: auto);
+    @include tm-dark {
+      @include linesd(--bd-soft, $ndef: false, $inset: false);
+    }
   }
 </style>
