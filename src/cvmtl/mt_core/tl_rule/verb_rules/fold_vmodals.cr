@@ -20,7 +20,6 @@ module CV::TlRule
     when .nil? then node
     when .preposes?
       return node if succ.pre_bi3?
-
       node = fold!(node, succ, succ.tag, dic: 6)
       fold_preposes!(node)
     when .adverbs?

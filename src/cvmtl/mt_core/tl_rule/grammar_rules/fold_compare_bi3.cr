@@ -8,11 +8,7 @@ module CV::TlRule
     output.fix_succ!(succ.succ?)
     noun.fix_succ!(nil)
 
-    case prepos.key
-    when "比"
-      output.set_body!(succ)
-      succ.fix_succ!(prepos.set!("hơn"))
-    when "不比"
+    if prepos.key == "不比"
       adv_bu = MtNode.new("不", "không", PosTag::AdvBu, 1, prepos.idx)
       output.set_body!(adv_bu)
       adv_bu.fix_succ!(succ)
@@ -22,7 +18,8 @@ module CV::TlRule
 
       prepos.fix_succ!(noun)
     else
-      return prepos
+      output.set_body!(succ)
+      succ.fix_succ!(prepos.set!("hơn"))
     end
 
     return output unless (succ = output.succ?) && (succ.ude1? || succ.ude3?)
