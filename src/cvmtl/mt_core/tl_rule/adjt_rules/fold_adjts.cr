@@ -86,20 +86,10 @@ module CV::TlRule
         node = fold_adj_adv!(node, prev)
         return fold_suf_verb!(node, succ)
       when .adv_bu?
-        break unless (succ_2 = succ.succ?)
-
-        if prev && prev.adv_bu?
-          return fold!(prev, succ_2, PosTag::Aform, dic: 4)
-        elsif succ_2.key == node.key
-          node = fold_adj_adv!(node, prev)
-          succ.val = "hay"
-          succ_2.val = "không"
-          return fold!(node, succ_2, PosTag::Aform, dic: 4)
-        end
-
-        break
+        fold_adjt_adv_bu!(node, succ, prev).try { |x| return x } || break
       else
-        break
+        break unless succ.key == "又"
+        fold_adjt_junction!(succ, prev: node).try { |x| node = x } || break
       end
 
       break if succ == node.succ?
