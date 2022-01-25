@@ -108,9 +108,7 @@ module CV::TlRule
       break
     end
 
-    unless node && node.subject?
-      return fold_prodem_nounish!(prodem, nquant)
-    end
+    return fold_prodem_nounish!(prodem, nquant) unless node && node.object?
 
     if nquant
       nquant = clean_nquant(nquant, prodem)

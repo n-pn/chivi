@@ -5,7 +5,8 @@ module CV::TlRule
     return true if !succ || succ.starts_with?('不')
 
     head.each do |node|
-      return true if {'来', '去', '到', '有', '上', '想', '出'}.includes?(node.key[0])
+      next unless char = node.key[0]?
+      return true if {'来', '去', '到', '有', '上', '想', '出'}.includes?(char)
     end
 
     {'了', '过'}.each do |char|
