@@ -5,7 +5,7 @@
   import { SIcon } from '$lib/components'
 
   import DtpostCard from './Card.svelte'
-  import DtopicForm, { ctrl as dtopic_ctrl } from '../Dtopic/Form.svelte'
+
   import DtpostForm, { ctrl as dtpost_ctrl } from './Form.svelte'
 </script>
 
@@ -28,8 +28,6 @@
     <div class="empty">Chưa có bình luận</div>
   {/each}
 </dtpost-list>
-
-{#if $dtopic_ctrl.actived}<DtopicForm dboard={dtopic.dboard} />{/if}
 
 {#if dtlist.pgmax > 1}
   <dtpost-pagi>

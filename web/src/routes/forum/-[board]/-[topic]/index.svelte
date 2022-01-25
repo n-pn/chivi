@@ -23,7 +23,7 @@
 </script>
 
 <script>
-  import { DtopicCard, DtpostList } from '$lib/components'
+  import { DtopicFull, DtpostList } from '$lib/components'
 
   export let dboard
   export let dtopic
@@ -34,7 +34,7 @@
   <title>{dtopic.title} - Diễn đàn - Chivi</title>
 </svelte:head>
 
-<DtopicCard {dboard} {dtopic} _mode={dtlist.pgidx == 1 ? 3 : 2} />
+<DtopicFull {dboard} {dtopic} />
 
 <dtopic-posts>
   <DtpostList {dtlist} {dtopic} />
