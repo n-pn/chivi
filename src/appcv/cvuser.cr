@@ -6,18 +6,11 @@ class CV::Cvuser
   self.table = "cvusers"
   primary_key
 
-  has_many ubmemos : Ubmemo, foreign_key: "cvuser_id"
-  has_many nvinfos : Nvinfo, through: "ubmemos"
-
   column uname : String
   column email : String
 
   column cpass : String
   getter upass : String? # virtual password field
-
-  # reserve for future, can be treated as currency
-  # rewarded for being a donor or has great contribution
-  column karma : Int32 = 0
 
   # user group and privilege:
   # - admin: 4 // granted all access
@@ -27,8 +20,16 @@ class CV::Cvuser
   # - leech: 0  // leecher has restristed access
   # - banned: -1 // banned user is treated similar to unregisted user
   column privi : Int32 = 0
+  column privi_1_until : Int64 = 0
+  column privi_2_until : Int64 = 0
+  column privi_3_until : Int64 = 0
 
-  column privi_until : Time? # when the prmium period terminated
+  column vcoin_total : Int32 = 0
+  column vcoin_avail : Int32 = 0
+
+  column last_loggedin_at : Time = Time.utc
+  column reply_checked_at : Time = Time.utc
+  column notif_checked_at : Time = Time.utc
 
   # TODO: mapping miscellaneous preferences
   column wtheme : String = "light"
@@ -43,6 +44,8 @@ class CV::Cvuser
   def authentic?(upass : String)
     Crypto::Bcrypt::Password.new(cpass).verify(upass)
   end
+
+  ##############################################
 
   def self.create!(email : String, uname : String, upass : String) : self
     raise "Địa chỉ hòm thư quá ngắn" if email.size < 3
@@ -69,19 +72,8 @@ class CV::Cvuser
 
   CACHED = {} of String => self
 
-  GUEST = new({
-    id:     -1,
-    uname:  "Khách",
-    email:  "guest@chivi.app",
-    cpass:  "xxxxxxxxx",
-    privi:  -1,
-    wtheme: "light",
-  })
-
   def self.load!(dname : String) : self
-    CACHED[dname.downcase] ||= find({uname: dname}) || begin
-      dname == "Khách" ? GUEST : raise "User not found!"
-    end
+    CACHED[dname.downcase] ||= find({uname: dname}) || raise "User not found!"
   end
 
   def self.validate(email : String, upass : String)
