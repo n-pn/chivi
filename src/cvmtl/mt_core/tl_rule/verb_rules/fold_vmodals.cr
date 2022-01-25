@@ -54,13 +54,14 @@ module CV::TlRule
   end
 
   private def vmhui_before_skill?(prev : MtNode?, succ : MtNode?) : Bool
+    return true if {"只", "还"}.includes?(prev.try(&.key))
+
     case succ
-    when .nil?, .exmark?, .qsmark?, .nouns?
-      true
+    when .nil?, .ends?, .nouns? then true
     when .verb_object?
       MtDict::VERBS_SEPERATED.has_key?(succ.key)
     else
-      {"都", "也", "只", "还"}.includes?(prev.try(&.key))
+      {"都", "也"}.includes?(prev.try(&.key))
     end
   end
 

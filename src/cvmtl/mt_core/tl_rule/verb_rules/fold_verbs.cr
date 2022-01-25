@@ -73,9 +73,16 @@ module CV::TlRule
       end
     end
 
-    if succ.suf_noun? || succ.usuo?
+    case succ
+    when .suf_noun?, .usuo?
       verb = fold_suf_noun!(verb, succ)
       return verb unless succ = verb.succ?
+
+      # TODO: link with adverb
+      # when .adverb?
+      #   if succ.key == "就" && (succ = fold_adverbs!(succ)) && succ.verbs?
+      #     verb = fold!(verb, succ, succ.tag, dic: 9)
+      #   end
     end
 
     return fold_uzhi!(uzhi: succ, prev: verb) if succ.uzhi?

@@ -9,7 +9,7 @@ module CV::TlRule
     return unless tail && tail != head.succ?
 
     case tail.key
-    when "一样", "似的", "一般"
+    when "一样", "似的", "一般", "般"
       tail.val = "như"
     end
 
