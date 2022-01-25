@@ -3,7 +3,7 @@
 ul,
 ol {
   padding: 0;
-  padding-left: var(--gutter);
+  padding-left: 1rem;
 }
 
 // prettier-ignore
@@ -23,13 +23,13 @@ ol {
 // prettier-ignore
 li {
   padding: 0;
-  li + & { margin-top: var(--verpad); }
-  ul &, li & { margin-top: var(--verpad-sm) }
+  li + & { margin-top: .75rem; }
+  ul &, ol &, li & { margin-top: .5rem; }
 }
 
 // prettier-ignore
 dt {
-  & ~ dt { margin-top: var(--verpad-sm); }
+  & ~ dt { margin-top: .75rem; }
   dt & { margin-top: 0; }
 }
 

@@ -29,7 +29,7 @@ export const form = {
     if (title.length > 200) return 'Độ dài của chủ đề phải nhỏ hơn 200 ký tự'
 
     if (body.length < 1) return 'Độ dài của nội dung phải dài hơn 1 ký tự'
-    if (body.length > 2000) return 'Độ dài của nội dung phải nhỏ hơn 2000 ký tự'
+    if (body.length > 5000) return 'Độ dài của nội dung phải nhỏ hơn 5000 ký tự'
 
     // TODO
     return false

@@ -117,7 +117,13 @@ sup {
 
 blockquote {
   @include border(--bd-bold, $width: 3px, $loc: left);
-  padding-left: 5px;
-
+  padding: 0.375rem 0.375rem 0.375rem 9px;
+  font-size: em(16, 17);
+  @include bdradi(0.125rem, $loc: right);
   @include fgcolor(tert);
+  @include bgcolor(neutral, 4, 1);
+
+  > blockquote {
+    margin: 0.375rem 0;
+  }
 }
