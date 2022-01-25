@@ -19,8 +19,8 @@ module CV::TlRule
 
       flip = succ.key == "自己"
       node = fold!(node, succ, node.tag, dic: 7, flip: flip)
-    when .nouns?, .numbers?, .pro_dem?
-      return node unless (succ = scan_noun!(succ)) && succ.object?
+    when .nouns?, .numbers?, .pro_dems?
+      return node unless (succ = scan_noun!(succ)) && succ.object? && !succ.pro_dems?
       return node unless noun_can_combine?(node.prev?, succ.succ?)
 
       flip = flip_proper_noun?(node, succ)

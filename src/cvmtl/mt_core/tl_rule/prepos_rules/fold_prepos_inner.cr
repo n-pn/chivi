@@ -24,13 +24,6 @@ module CV::TlRule
       verb = noun.succ?
     end
 
-    case verb
-    when .nil?     then return prepos
-    when .adverbs? then verb = fold_adverbs!(verb)
-    when .veno?    then verb = fold_verbs!(cast_verb!(verb))
-    when .verbs?   then verb = fold_verbs!(verb)
-    end
-
     flip = false
 
     # fix prepos meaning
@@ -40,19 +33,24 @@ module CV::TlRule
     when "让"
       # prepos.val = "nhường"
     when "给"
-      if prepos.prev?(&.subject?)
-        prepos.val = "cho"
-        flip = verb.verb_object?
-      end
+      prepos.val = "cho" if prepos.prev?(&.subject?)
     when "对"
       prepos.val = "với"
       flip = true
     end
 
     prepos = fold!(prepos, noun, PosTag::PrepPhrase, dic: 5)
-    return prepos unless verb.verbs?
 
-    node = fold!(prepos, verb, verb.tag, dic: 8, flip: flip)
+    case verb
+    when .nil?     then return prepos
+    when .adverbs? then verb = fold_adverbs!(verb)
+    when .veno?    then verb = fold_verbs!(cast_verb!(verb))
+    when .verbs?   then verb = fold_verbs!(verb)
+    else                return prepos
+    end
+
+    return prepos unless verb.verbs?
+    node = fold!(prepos, verb, verb.tag, dic: 8, flip: false)
     node.succ? { |x| fold_ude1!(x, prev: node) if mode == 1 && x.ude1? } || node
   end
 

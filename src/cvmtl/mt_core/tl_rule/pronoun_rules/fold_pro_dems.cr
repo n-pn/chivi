@@ -16,7 +16,7 @@ module CV::TlRule
     end
 
     node, quanti, succ = split_prodem!(node)
-    # puts [node, quanti, succ]
+    # puts [node, quanti, succ, quanti.try(&.succ?), node.succ?]
 
     if succ && !(succ.pro_dems? || succ.v_shi? || succ.v_you?)
       return scan_noun!(succ, prodem: node, nquant: quanti).not_nil!
@@ -39,6 +39,8 @@ module CV::TlRule
     end
 
     if (left = node.body?) && (right = left.succ?)
+      left.fix_root!(nil)
+
       if right.pro_dems?
         # flip back if swapped before
         right.fix_prev!(node.prev?)
@@ -64,8 +66,9 @@ module CV::TlRule
     node.val = pro_val
 
     qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
+    qtnoun.fix_succ!(succ)
+    node.fix_succ!(qtnoun)
 
-    node.set_succ!(qtnoun)
     {node, qtnoun, succ}
   end
 
