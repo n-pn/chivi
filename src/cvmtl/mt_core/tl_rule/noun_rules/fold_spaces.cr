@@ -18,6 +18,8 @@ module CV::TlRule
   end
 
   def fold_noun_space!(noun : MtNode, space : MtNode) : MtNode
+    # puts [noun, space, "noun_space"]
+
     flip = true
     case space.key
     when "上", "下"

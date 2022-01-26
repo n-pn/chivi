@@ -24,17 +24,17 @@ module CV::TlRule
         return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
         succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
         return fold!(adjt, succ, PosTag::Aform, dic: 8)
+      when .spaces?
+        return mode == 0 ? fold_noun_space!(noun, succ) : noun
+      when .verbs?
+        return fold_noun_verb!(noun, succ)
       when .veno?
         succ = heal_veno!(succ)
         return fold_noun_verb!(noun, succ) if succ.verbs?
         noun = fold!(noun, succ, PosTag::Noun, dic: 7, flip: true)
-      when .verbs?
-        return fold_noun_verb!(noun, succ)
       when .junction?
         return noun if mode == 2 || noun.prev?(&.adjts?)
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
-      when .spaces?
-        return mode == 0 ? fold_noun_space!(noun, succ) : noun
       when .nouns?
         return noun unless fold = fold_noun_noun!(noun, succ, mode: mode)
         noun = fold
