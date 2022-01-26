@@ -32,34 +32,33 @@
     {dtopic.title}
   </a>
 
-  {#if _mode == 3}
-    <topic-pbody class="m-article">{@html dtopic.bhtml}</topic-pbody>
-  {:else}
-    <topic-brief>{dtopic.brief}</topic-brief>
-  {/if}
+  <topic-brief>{dtopic.brief}</topic-brief>
 
   <topic-foot>
     <topic-user>
       <cv-user privi={dtopic.u_privi}>{dtopic.u_dname}</cv-user>
     </topic-user>
+
     <topic-sep>·</topic-sep>
     <topic-time>{rel_time(dtopic.ctime)}</topic-time>
 
     <topic-sep>·</topic-sep>
+    <topic-meta>
+      <SIcon name="messages" />
+      <span>{dtopic.post_count}</span>
+    </topic-meta>
 
-    <topic-repl>
-      {#if dtopic.post_count > 0}
-        <span>{dtopic.post_count} lượt trả lời</span>
-      {:else}
-        <span>Trả lời</span>
-      {/if}
-    </topic-repl>
-    {#if $session.privi > 3 || $session.uname == dtopic.u_dname}
-      <topic-sep>·</topic-sep>
-      <topic-action on:click={() => dtopic_form.show(dtopic.id)}>
-        <span>Sửa</span>
-      </topic-action>
-    {/if}
+    <topic-sep>·</topic-sep>
+    <topic-meta>
+      <SIcon name="eye" />
+      <span>{dtopic.view_count}</span>
+    </topic-meta>
+
+    <topic-sep>·</topic-sep>
+    <topic-meta>
+      <SIcon name="star" />
+      <span>{dtopic.like_count}</span>
+    </topic-meta>
   </topic-foot>
 </topic-card>
 
@@ -108,12 +107,8 @@
     }
   }
 
-  topic-pbody,
   topic-brief {
     display: block;
-  }
-
-  topic-brief {
     font-style: italic;
     @include fgcolor(secd);
   }
@@ -131,22 +126,8 @@
     @include clamp($width: null);
   }
 
-  topic-repl {
-    cursor: pointer;
-    font-style: italic;
-
-    @include hover {
-      @include fgcolor(primary, 5);
-      text-decoration: underline;
-    }
-  }
-
-  topic-action {
-    cursor: pointer;
-    font-style: italic;
-
-    @include hover {
-      @include fgcolor(primary, 5);
-    }
+  topic-meta {
+    @include flex-cy;
+    gap: 0.25rem;
   }
 </style>

@@ -40,26 +40,39 @@
 
     <topic-foot>
       <topic-user>
+        <SIcon name="edit" />
         <cv-user privi={dtopic.u_privi}>{dtopic.u_dname}</cv-user>
       </topic-user>
+
       <topic-sep>·</topic-sep>
       <topic-time>{rel_time(dtopic.ctime)}</topic-time>
 
-      <topic-sep>·</topic-sep>
-
-      <topic-repl>
-        {#if dtopic.post_count > 0}
-          <span>{dtopic.post_count} lượt trả lời</span>
-        {:else}
-          <span>Trả lời</span>
-        {/if}
-      </topic-repl>
       {#if $session.privi > 3 || $session.uname == dtopic.u_dname}
         <topic-sep>·</topic-sep>
         <topic-action on:click={() => dtopic_ctrl.show(dtopic.id)}>
           <span>Sửa</span>
         </topic-action>
       {/if}
+
+      <foot-right>
+        <topic-sep>·</topic-sep>
+        <topic-meta>
+          <SIcon name="messages" />
+          <span>{dtopic.post_count}</span>
+        </topic-meta>
+
+        <topic-sep>·</topic-sep>
+        <topic-meta>
+          <SIcon name="eye" />
+          <span>{dtopic.view_count}</span>
+        </topic-meta>
+
+        <topic-sep>·</topic-sep>
+        <topic-meta>
+          <SIcon name="star" />
+          <span>{dtopic.like_count}</span>
+        </topic-meta>
+      </foot-right>
     </topic-foot>
   </topic-head>
 
@@ -161,14 +174,15 @@
     @include clamp($width: null);
   }
 
-  topic-repl {
-    cursor: pointer;
-    font-style: italic;
+  topic-meta {
+    @include flex-cy;
+    gap: 0.25rem;
+  }
 
-    @include hover {
-      @include fgcolor(primary, 5);
-      text-decoration: underline;
-    }
+  foot-right {
+    display: inline-flex;
+    gap: 0.25rem;
+    margin-left: auto;
   }
 
   topic-action {
