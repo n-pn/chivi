@@ -133,7 +133,7 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def ends?
-    @pos.puncts? || @pos.none? || @tag.interjection? || @tag.modalparticle?
+    @pos.puncts? || @pos.none? || @tag.exclam? || @tag.mopart?
   end
 
   @[AlwaysInline]

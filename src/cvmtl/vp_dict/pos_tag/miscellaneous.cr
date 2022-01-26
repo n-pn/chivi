@@ -20,9 +20,9 @@ struct CV::PosTag
     {"c", "Conjunct", Pos::Funcws},  # 连词 - conjunction - liên từ
     {"cc", "Concoord", Pos::Funcws}, # 并列连词 - coordinating conjunction - liên từ kết hợp
 
-    {"e", "Interjection", Pos::Funcws},  # 叹词 - interjection/exclamation - thán từ
-    {"y", "Modalparticle", Pos::Funcws}, # 语气词 - modal particle - ngữ khí
-    {"o", "Onomatopoeia", Pos::Funcws},  # 拟声词 - onomatopoeia - tượng thanh
+    {"e", "Exclam", Pos::Funcws}, # 叹词 - interjection/exclamation - thán từ
+    {"y", "Mopart", Pos::Funcws}, # 语气词 - modal particle - ngữ khí
+    {"o", "Onomat", Pos::Funcws}, # 拟声词 - onomatopoeia - tượng thanh
 
     {"np", "NounPhrase", Pos::Nouns | Pos::Contws}, # noun phrase
     {"vp", "VerbPhrase", Pos::Verbs | Pos::Contws}, # verb phrase

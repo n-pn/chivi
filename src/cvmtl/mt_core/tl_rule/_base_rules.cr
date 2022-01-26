@@ -65,6 +65,6 @@ module CV::TlRule
   end
 
   def boundary?(node : MtNode)
-    node == node.tag.none? || node.tag.puncts? || node.tag.interjection?
+    node == node.tag.none? || node.tag.puncts? || node.tag.exclam?
   end
 end

@@ -24,20 +24,11 @@ module CV::TlRule
       when .vmodals?  then node = heal_vmodal!(node)
       when .verbs?    then node = fold_verbs!(node)
       when .nouns?    then node = fold_nouns!(node)
+      when .onomat?   then node = fold_onomat!(node)
       when .concoord?
         next unless node.key.in?("与", "和")
-
-        if fold = fold_compare(node)
-          node = fold
-        else
-          #   if (prev = node.prev?) && prev.object? && (fold = fold_noun_concoord!(node))
-          #     node = fold
-          #     next
-          #   end
-          node = fold_prepos_inner!(node)
-        end
-      when .onomatopoeia?
-        node = fold_onoma!(node)
+        fold_compare(node).try { |x| node = x; next }
+        node = fold_prepos_inner!(node)
       end
     end
   end
