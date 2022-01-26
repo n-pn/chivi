@@ -21,6 +21,13 @@ module CV::TlRule
       when .uzhe?
         verb = fold_verb_uzhe!(verb, uzhe: succ)
         break
+      when .uyy?
+        adjt = fold!(verb, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
+        adjt = fold_adverb_node!(prev, adjt) if prev
+
+        return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
+        return adjt unless (succ = scan_adjt!(succ)) && succ.adjts?
+        return fold!(adjt, succ, PosTag::Aform, dic: 8)
       when .auxils?
         verb = fold_verb_auxils!(verb, succ)
         break if verb.succ? == succ
@@ -67,7 +74,7 @@ module CV::TlRule
     return verb unless succ = verb.succ?
 
     case head.key
-    when "像", "如"
+    when "如", "像", "好像"
       if fold = fold_compare(verb)
         head.val = "tựa" if head.key == "如"
         return fold
