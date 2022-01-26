@@ -1,7 +1,7 @@
 require "option_parser"
 require "../shared/bootstrap"
 
-class CV::FextText
+class CV::FetchText
   DIR = "var/chtexts/chivi"
 
   @snvid : String
@@ -19,7 +19,7 @@ class CV::FextText
       group = File.basename(file, ".tsv")
       next if group == "-"
 
-      infos = ChList.load!("chivi", @snvid, group)
+      infos = ChList.new(file)
       infos.data.each_value do |chinfo|
         @queue << chinfo if should_crawl?(chinfo, crawl_all)
       end
@@ -93,4 +93,4 @@ class CV::FextText
   end
 end
 
-CV::FextText.run!
+CV::FetchText.run!

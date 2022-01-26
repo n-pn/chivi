@@ -2,98 +2,80 @@ require "colorize"
 require "compress/zip"
 require "file_utils"
 require "option_parser"
+require "../shared/bootstrap"
 
 class CV::Tagger
   INP_DIR = "var/chtexts"
   OUT_DIR = "_db/vpinit/baidulac"
 
-  def initialize(@sname : String, @snvid : String, @redo = false)
-    @inp_dir = File.join(INP_DIR, @sname, @snvid)
-    @out_dir = File.join(OUT_DIR, @sname, @snvid)
+  def initialize(@bhash : String, @redo = false)
+    @inp_dir = File.join(INP_DIR, "chivi", @bhash)
+    @out_dir = File.join(OUT_DIR, "chivi", @bhash)
+    FileUtils.mkdir_p(@out_dir)
   end
 
   SCRIPT = "tasks/postag/baidu-lac.py"
-  IOPIPE = Process::Redirect::Inherit
 
-  def run!(mode = 1)
-    extract_txt(tag_mode: mode)
-    Process.run("python3", [SCRIPT, @sname, @snvid], output: IOPIPE)
-  end
+  # IOPIPE = Process::Redirect::Inherit
 
-  def extract_txt(tag_mode = 1) : Nil
-    files = Dir.glob("#{@inp_dir}/*.zip")
-    tag_mode = 2 if files.size < 3 # parse all if total chapters < 200
+  def run!(load_all = false)
+    files = Dir.glob("#{@inp_dir}/*.tsv")
+    load_all ||= files.size < 3
 
-    FileUtils.mkdir_p(@out_dir)
+    files.each do |file|
+      list = ChList.new(file)
+      list.data.each_value do |info|
+        next if info.chars == 0
+        next unless load_all || info.chidx < 64 || info.chidx % 8 == 0
 
-    files.each do |zip_file|
-      extract_zip(zip_file, tag_mode: tag_mode)
-      tag_mode = 0 if tag_mode == 1 # reset tag_mode unless tagging all
-    end
-  end
+        out_file = "#{@out_dir}/#{info.chidx}-0.txt"
+        tsv_file = "#{@out_dir}/#{info.chidx}-0.tsv"
+        next if !@redo && File.exists?(out_file) || File.exists?(tsv_file)
 
-  def extract_zip(zip_file : String, tag_mode = 0) : Nil
-    Compress::Zip::File.open(zip_file) do |file|
-      file.entries.each_with_index do |entry, index|
-        next unless should_tag?(tag_mode, index)
+        pgidx = (info.o_chidx - 1) // 128
+        zip_file = "#{INP_DIR}/#{info.o_sname}/#{info.o_snvid}/#{pgidx}.zip"
 
-        txt_file = File.join(@out_dir, entry.filename)
-        next if !@redo && File.exists?(txt_file.sub(".txt", ".tsv"))
-
-        entry.open { |io| File.write(txt_file, io.gets_to_end) }
+        `unzip -p #{zip_file} #{info.schid}-0.txt > #{out_file}`
+      rescue err
+        puts info
+        puts err.inspect_with_backtrace
+        exit(1)
       end
     end
+
+    Process.run("python3", [SCRIPT, "chivi", @bhash])
   end
 
-  # tag_mode:
-  # - 0: only postag every 8th chaps
-  # - 1: postag every 4th chaps plus first 64 chaps
-  # - 2: postag all entries inside the archive
-  private def should_tag?(tag_mode : Int32, chap_index : Int32)
-    return true if chap_index % 4 == 0
-    tag_mode == 2 || (tag_mode == 1 && chap_index < 64)
-  end
+  def self.run!(argv = ARGV)
+    workers, load_all, redo = 6, false, false
 
-  # class_getter library : Set(String) do
-  #   inp_dir = "_db/vi_users/marks"
-  #   bhashes = Dir.children(inp_dir).map { |x| File.basename(x, ".tsv") }
-  #   Set(String).new(bhashes)
-  # end
+    OptionParser.parse(argv) do |opt|
+      opt.banner = "Usage: invoke-pkuseg [arguments]"
+      opt.on("-t THREADS", "Parallel workers") { |x| workers = x.to_i }
+      opt.on("-a", "Less or more chaps") { load_all = true }
+      opt.on("-r", "Redo postagging") { redo = true }
+    end
 
-  # def self.should_tag?(bhash : String, favi = false)
-  #   return true unless favi
-  #   library.includes?(bhash)
-  # end
-end
+    # workers = files.size if workers > files.size
+    workers = 1 if workers < 1
+    channel = Channel(Nil).new(workers)
 
-wrks, mode, redo = 6, 1, false
+    infos = Nvinfo.query.sort_by("weight").limit(30000)
+    infos.to_a.each_with_index(1) do |info, idx|
+      channel.receive if idx > workers
 
-OptionParser.parse(ARGV) do |opt|
-  opt.banner = "Usage: invoke-pkuseg [arguments]"
-  opt.on("-t THREADS", "Parallel workers") { |x| wrks = x.to_i }
-  opt.on("-m MODE", "Less or more chaps") { |x| mode = x.to_i }
-  opt.on("-r", "Redo postagging") { redo = true }
-end
+      spawn do
+        puts "- <#{idx}> #{info.bslug}".colorize.yellow
+        new(info.bhash, redo: redo).run!(load_all: load_all)
+      rescue err
+        puts err.message.colorize.red
+      ensure
+        channel.send(nil)
+      end
+    end
 
-# wrks = files.size if wrks > files.size
-wrks = 1 if wrks < 1
-chan = Channel(Nil).new(wrks)
-
-lines = File.read_lines("priv/zhseed.tsv").reject(&.empty?)
-
-lines.first(30000).each_with_index(1) do |line, idx|
-  chan.receive if idx > wrks
-
-  spawn do
-    sname, snvid, bhash, bslug = line.split('\t')
-    puts "- <#{idx}/#{lines.size}> [#{sname}/#{snvid}] #{bslug}".colorize.yellow
-    tagger = CV::Tagger.new(sname, snvid, redo: redo)
-    tagger.run!(mode: mode)
-  rescue err
-    puts err.message.colorize.red
-  ensure
-    chan.send(nil)
+    workers.times { channel.receive }
   end
 end
 
-wrks.times { chan.receive }
+CV::Tagger.run!
