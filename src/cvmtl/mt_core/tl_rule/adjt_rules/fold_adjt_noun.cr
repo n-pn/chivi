@@ -3,18 +3,17 @@ module CV::TlRule
     return adjt if !noun
     flip = true
 
-    if ude1
-      adjt = fold!(adjt, ude1.set!(""), PosTag::DefnPhrase, 2)
-      return adjt unless (noun = scan_noun!(noun, mode: 2))
-    else
-      case adjt.tag
-      when .aform?    then return adjt
-      when .adjt?     then return adjt if adjt.key.size > 1
-      when .modifier? then flip = !do_not_flip?(adjt.key)
-      end
-      noun = fold_nouns!(noun, mode: 1)
+    if ude1 && (fold = fold_ude1!(ude1: ude1, prev: adjt, succ: noun))
+      return ude1 == fold ? adjt : fold
     end
 
+    case adjt.tag
+    when .aform?    then return adjt
+    when .adjt?     then return adjt if adjt.key.size > 1
+    when .modifier? then flip = !do_not_flip?(adjt.key)
+    end
+
+    noun = fold_nouns!(noun, mode: 1)
     return adjt unless noun.nouns?
 
     noun = fold!(adjt, noun, noun.tag, dic: 6, flip: flip)
