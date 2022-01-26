@@ -6,16 +6,13 @@ module CV::TlRule
     ude1.set!("")
 
     if (noun = scan_noun!(succ, mode: 3))
-      if noun.verb_object? && prev.verb?
-        # ude1 here acts like ude3
-        return fold!(prev, noun, noun.tag, dic: 9)
-      end
-
       node = fold_ude1_left!(ude1: ude1, left: prev, right: noun)
       return fold_noun_after!(node, succ)
+    else
+      succ = ude1.succ
     end
 
-    if succ.verbs? && prev.adjts? || prev.adverbs?
+    if succ.verbs? && prev.adjts? || prev.adverbs? || prev.verb?
       # ude1 as ude2 grammar error
       # puts [prev, succ, ude1]
       fold!(prev, succ, succ.tag, dic: 9)
