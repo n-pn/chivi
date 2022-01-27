@@ -7,6 +7,7 @@
 
     'n': 'Danh từ',
     'nw': 'Danh xưng',
+    'na': 'Thuộc tính',
     // 'nc': 'Danh từ trừu tượng,
     's': 'Nơi chốn',
     'f': 'Phương vị',
@@ -79,6 +80,7 @@
     'nz': 'Các từ viết hoa khác như tựa sách, chiêu thức, từ viết tắt đứng độc lập',
     'n': 'Danh từ thông dụng như tên động vật, đồ vật hoặc các khái niệm trừu tượng',
     'nw': 'Danh xưng cho người như tỷ tỷ, muội muội, đại nhân, lão sư, tiểu thư',
+    'na': 'Danh từ chỉ màu sắc, đặc điểm nhận dạng, phân chia cấp độ...',
     // 'nc': 'Danh từ trừu tượng,
     's': 'Từ chỉ nơi chốn của đồ vật như trên bàn, dưới núi, trong thư viện',
     'f': 'Các danh từ chỉ phương hướng như phía trên, bên dưới, đằng sau, ở giữa',
@@ -150,8 +152,8 @@
     [
       'nr','nn', 'nz',
       '-',
-      'n', 'nw', 't',
-      's', 'f',
+      'n', 'nw', 'na',
+      't', 's', 'f',
       '-',
       'a', 'an', 'ad',
       'b', 'al',

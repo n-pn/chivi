@@ -2,7 +2,7 @@
 title: Từ loại trong tiếng Trung (WIP)
 ---
 
-Cập nhật: 21/11/2021
+Cập nhật: 27/02/2022
 
 **Tài liệu đang trong quá trình hoàn thiện.**
 
@@ -22,16 +22,13 @@ Trong Chivi danh từ được chia thành các loại nhỏ:
 
   Ví dụ từ: [Tên người trong từ điển thông dụng](/dicts/regular?ptag=nr)
 
-- **Địa danh/Tổ chức**: Tên riêng của các địa danh, tổ chức như Hoa Sơn, phái Thiếu Lâm.
+- **Nơi sở thuộc**: Tên riêng của các địa danh, tổ chức như Hoa Sơn, phái Thiếu Lâm.
 
   _Tên địa danh/tổ chức khác với tên người là không kết hợp được với danh xưng đằng sau._
 
   Ví dụ từ:
 
-  - [Địa danh trong từ điển thông dụng](/dicts/regular?ptag=ns)
-  - [Tổ chức trong từ điển thông dụng](/dicts/regular?ptag=nt)
-
-  **_Hiện tại thì trong Chivi chưa có phân biệt trong vai trò về ngữ pháp giữa địa danh và cổ chức, nhiều khả năng hai loại từ này sẽ được gộp lại làm một để thuận tiện hơn cho người dùng._**
+  - [Địa danh/tổ chức trong từ điển thông dụng](/dicts/regular?ptag=nn)
 
 - **Tên riêng khác**: Những loại tên riêng khác không hợp với các loại trên, ví dụ tên chiêu thức, tựa sách, hoá chất...
 
@@ -51,6 +48,16 @@ Trong Chivi danh từ được chia thành các loại nhỏ:
   Trong ngữ pháp thì danh từ nhân xưng có thể gộp với **Tên/họ người** đằng trước tạo thành tên người.
 
   [Các danh xưng thường dùng](/dicts/regular?ptag=nw)
+
+- **Thuộc tính**: các từ có mang tính chất mô tả nhưng không phải là tính từ, ví dụ:
+
+  - các màu sắc: màu đỏ, màu xanh nhạt....
+  - đặc điểm nhận dạng như: tóc dài, áo trắng...
+  - các từ chỉ cấp độ như nguyên anh, hợp thể, trúc cơ...
+  - từ chỉ họ người như họ Tống, họ Phạm...
+  - một số biến thể của số từ/lượng từ
+
+  Đặc điểm chung của **danh từ thuộc tính** là nếu làm định ngữ (đằng sau là "đích") thì không cần thêm "của".
 
 - **Phương vị**:
   Phương vị từ là những danh từ chỉ phương hướng, được sử dụng rất nhiều trong giao tiếp tiếng Trung, nhất là chủ đề giao tiếp liên quan tới xác định phương hướng, hỏi thăm đường xá.

@@ -71,7 +71,10 @@
         return ['nr', 'nz']
 
       case 'n':
-        return ['s', 't']
+        return ['na', 't']
+
+      case 'na':
+        return ['n', 'an']
 
       case 'a':
         return ['b', 'an']
@@ -80,7 +83,7 @@
         return ['a', 'n']
 
       case 'an':
-        return ['a', 'n']
+        return ['a', 'na']
 
       case 'ad':
         return ['a', 'd']
@@ -140,7 +143,7 @@
         return ['ka', 'kn', 'kv']
 
       default:
-        return ['n']
+        return ['n', 'v', 'a']
     }
   }
 
