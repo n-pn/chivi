@@ -1,8 +1,7 @@
 <script>
   export let name = 'x'
-  export let spin = false
 </script>
 
-<svg class="m-icon" class:a-spin={spin}>
+<svg class="m-icon {$$props.class}">
   <use xlink:href="/icons/tabler.svg#{name}" />
 </svg>

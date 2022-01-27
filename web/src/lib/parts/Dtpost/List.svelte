@@ -1,12 +1,10 @@
 <script context="module">
-  import { page, session } from '$app/stores'
+  import { page } from '$app/stores'
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import { SIcon } from '$lib/components'
 
   import DtpostCard from './Card.svelte'
-
-  import DtpostForm, { ctrl as dtpost_ctrl } from './Form.svelte'
+  import DtpostForm from './Form.svelte'
 </script>
 
 <script>
@@ -38,25 +36,25 @@
 {/if}
 
 <dtlist-foot>
-  <button
-    class="m-btn _primary _fill"
-    disabled={$session.privi < 0}
-    on:click={() => dtpost_ctrl.show(0)}>
-    <SIcon name="plus" />
-    <span>Thêm bình luận</span>
-  </button>
-
-  {#if $dtpost_ctrl.actived}
-    <DtpostForm {dtopic} />
-  {/if}
+  <DtpostForm dtopic_id={dtopic.id} />
 </dtlist-foot>
 
 <style lang="scss">
+  dtpost-list {
+    margin-left: 0.75rem;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  dtpost-pagi {
+    display: block;
+    // padding-bottom: 0.75rem;
+    // @include border($loc: bottom);
+  }
+
   dtlist-foot {
-    @include flex-cx();
-    padding-top: 0.75rem;
-    margin-top: 0.75rem;
-    @include border($loc: top);
+    @include flex();
+    margin: 0.75rem;
   }
 
   .empty {

@@ -75,6 +75,9 @@ class CV::DtpostCtrl < CV::BaseCtrl
     end
 
     json_view({dtpost: DtpostView.new(dtpost)})
+  rescue err
+    Log.error { err.inspect_with_backtrace }
+    halt! 500, err.message
   end
 
   def update

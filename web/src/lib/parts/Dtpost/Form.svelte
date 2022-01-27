@@ -1,61 +1,57 @@
-<script context="module">
-  import { writable } from 'svelte/store'
-  import { dtpost_form as form } from '$lib/stores'
-
-  export const ctrl = {
-    ...writable({ id: 0, actived: false }),
-    show(id = 0, rp_id = 0) {
-      form.init(id, rp_id)
-      ctrl.set({ id, actived: true })
-    },
-    hide() {
-      ctrl.set({ actived: false })
-    },
-  }
-</script>
-
 <script>
+  import { session } from '$app/stores'
+
   import SIcon from '$atoms/SIcon.svelte'
   import MdForm from '$molds/MdForm.svelte'
-  import Gmodal from '$molds/Gmodal.svelte'
 
-  export let dtopic = {}
-  export let on_destroy = () => window.location.reload()
+  export let dtopic_id = 0
+  export let dtpost_id = 0
+  export let dtrepl_id = 0
 
-  $: on_edit = $ctrl.id > 0
-  $: api_url = gen_api_url(dtopic.id, on_edit)
+  export let on_destroy = (dirty = false) => {
+    if (dirty) window.location.reload()
+  }
+
+  let on_edit = dtpost_id > 0
+  let api_url = gen_api_url(dtopic_id)
+
+  let form = { input: '', itype: 'md', rp_id: dtrepl_id }
+  $: if (dtpost_id > 0) load_form(dtpost_id)
 
   let error = ''
 
-  function gen_api_url(dtopic_id, on_edit) {
+  async function load_form(id) {
+    const api_url = `/api/tposts/${id}/detail`
+    const api_res = await fetch(api_url)
+    if (api_res.ok) form = await api_res.json()
+  }
+
+  function gen_api_url(dtopic_id) {
     let base_url = '/api/tposts'
-    if (on_edit) return base_url + '/' + $ctrl.id
+    if (dtpost_id) return base_url + '/' + dtpost_id
     return base_url + '?dtopic=' + dtopic_id
   }
 
   async function submit() {
-    error = await form.submit(api_url)
-    if (error) return
+    error = ''
 
-    on_destroy()
-    ctrl.hide()
+    const res = await fetch(api_url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    })
+
+    if (!res.ok) return (error = await res.text())
+    on_destroy(true)
   }
 </script>
 
-<Gmodal actived={$ctrl.actived} on_close={ctrl.hide}>
+{#if $session.privi >= 0}
   <dtpost-form>
-    <dtpost-head>
-      <head-title>{on_edit ? 'Sửa' : 'Thêm'} bình luận</head-title>
-
-      <button type="button" data-kbd="esc" class="x-btn" on:click={ctrl.hide}>
-        <SIcon name="x" />
-      </button>
-    </dtpost-head>
-
     <form action={api_url} method="POST" on:submit|preventDefault={submit}>
       <form-field class="body">
         <MdForm
-          bind:value={$form.input}
+          bind:value={form.input}
           name="input"
           placeholder="Nội dung bình luận" />
       </form-field>
@@ -65,58 +61,36 @@
       {/if}
 
       <form-foot>
+        {#if dtpost_id || dtrepl_id}
+          <button
+            type="button"
+            class="m-btn _sm"
+            on:click={() => on_destroy(false)}>
+            <SIcon name="x" />
+          </button>
+        {/if}
+
         <button
           type="submit"
-          class="m-btn _primary _fill"
+          class="m-btn _primary _fill _sm"
           on:click|preventDefault={submit}>
           <SIcon name="send" />
-          <!-- prettier-ignore -->
-          <span>{on_edit ? 'Lưu' : 'Gửi'} bình luận</span>
+          <span
+            >{on_edit ? 'Lưu' : 'Gửi'}
+            {dtrepl_id ? 'trả lời' : 'bình luận'}</span>
         </button>
       </form-foot>
     </form>
   </dtpost-form>
-</Gmodal>
+{:else}
+  <div class="disable">Đăng nhập để bình luận</div>
+{/if}
 
 <style lang="scss">
   dtpost-form {
     display: block;
     width: 40rem;
     max-width: 100%;
-    padding: 0.75rem;
-
-    @include bdradi();
-    @include shadow(1);
-    @include bgcolor(secd);
-
-    @include tm-dark {
-      @include linesd(--bd-soft, $ndef: false, $inset: false);
-    }
-  }
-
-  dtpost-head {
-    display: flex;
-
-    :global(svg) {
-      width: 1rem;
-      height: 1rem;
-      margin-top: -0.125rem;
-    }
-  }
-
-  .x-btn {
-    @include fgcolor(tert);
-    @include bgcolor(tert);
-
-    &:hover {
-      @include fgcolor(primary, 6);
-    }
-  }
-
-  head-title {
-    flex: 1;
-    font-weight: 500;
-    @include ftsize(lg);
   }
 
   form-field {
@@ -125,14 +99,10 @@
   }
 
   form-foot {
-    margin-top: 0.75rem;
     padding-top: 0.75rem;
     @include flex($center: vert, $gap: 0.5rem);
-    @include border($loc: top);
 
-    > button {
-      margin-left: auto;
-    }
+    justify-content: right;
   }
 
   dtpost-form {
@@ -148,5 +118,10 @@
     font-style: italic;
     @include ftsize(sm);
     @include fgcolor(harmful, 5);
+  }
+
+  .disable {
+    @include fgcolor(tert);
+    font-style: italic;
   }
 </style>

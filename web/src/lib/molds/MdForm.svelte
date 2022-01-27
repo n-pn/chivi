@@ -77,7 +77,6 @@
   }
 
   const menu = [
-    ['heading', '#', 'Đề mục'],
     ['bold', '*', 'In đậm'],
     ['italic', '_', 'In nghiêng'],
     ['blockquote', '>', 'Trích dẫn'],
@@ -90,13 +89,15 @@
 
 <svelte:window on:keydown={handle_key} />
 
-<md-form class="m-input">
-  <md-menu>
-    {#each menu as [name, kbd, tip]}
-      <button on:click={() => apply(name)} data-kbd={kbd} data-tip={tip}
-        ><SIcon {name} /></button>
-    {/each}
-  </md-menu>
+<md-form>
+  <md-head>
+    <md-menu>
+      {#each menu as [name, kbd, tip]}
+        <button on:click={() => apply(name)} data-kbd={kbd} data-tip={tip}
+          ><SIcon {name} /></button>
+      {/each}
+    </md-menu>
+  </md-head>
 
   <textarea {name} {placeholder} lang="vi" bind:value bind:this={input} />
 </md-form>
@@ -104,23 +105,39 @@
 <style lang="scss">
   md-form {
     display: block;
-    padding: 0;
+    max-width: 100%;
+
+    @include fgcolor(main);
+    @include bgcolor(main);
+
+    @include bdradi();
+    @include border($width: 1px);
+
+    &:focus,
+    &:focus-within {
+      @include bgcolor(tert);
+      box-shadow: 0 0 0 1px color(primary, 5, 5);
+    }
   }
 
-  md-menu {
+  md-head {
     display: flex;
-    height: 2.25rem;
-    padding: 0.25rem 0.5rem;
+    height: 2rem;
+    padding: 0 0.75rem;
     @include bdradi($loc: top);
     @include border($loc: bottom);
     @include bgcolor(tert);
   }
 
+  md-menu {
+    display: flex;
+    margin-left: auto;
+  }
+
   button {
     background: none;
-    height: 1.75rem;
-    width: 1.75rem;
-    border-radius: 0.25rem;
+    height: 2rem;
+    width: 1.875rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -136,15 +153,16 @@
   textarea {
     display: block;
     width: 100%;
-    min-height: 10rem;
-    max-height: 90vh;
+    min-height: 6rem;
+    max-height: 80vh;
     border: 0;
     outline: 0;
+    line-height: 1.5rem;
     background: transparent;
     padding: 0.375rem 0.75rem;
     // font-size: rem(17px);
-
     @include fgcolor(main);
+
     &::placeholder {
       font-style: italic;
       @include fgcolor(tert);

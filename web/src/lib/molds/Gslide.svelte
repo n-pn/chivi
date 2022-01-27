@@ -44,7 +44,12 @@
       </button>
     {/if}
 
-    <button class="-btn" data-kbd="esc" on:click={() => (actived = false)}>
+    <button
+      class="-btn"
+      data-kbd="esc"
+      on:click={() => (actived = false)}
+      data-tip="Đóng"
+      tip-loc="bottom">
       <SIcon name="x" />
     </button>
   </header>
@@ -82,19 +87,20 @@
 
   slider-main {
     position: fixed;
-    display: block;
 
     top: 0;
     bottom: 0;
     width: var(--width, 20rem);
-    overflow-y: auto;
     max-width: calc(100vw - 1.5rem);
+
+    display: flex;
+    flex-direction: column;
+
     // height: 100vh;
     z-index: 55;
 
     will-change: transform;
     transition: transform 0.1s ease-in-out;
-
     // prettier-ignore
     @media (prefers-reduced-motion) { transition: none; }
 
@@ -125,20 +131,15 @@
 
   .head {
     display: flex;
-    position: sticky;
-
-    top: 0;
-    z-index: 1002;
-
-    @include fgcolor(tert);
-    @include bgcolor(secd);
 
     height: $hd-height;
     line-height: $hd-line-height;
     padding: 0.375rem 0.5rem;
 
-    border-bottom: 1px solid var(--bd-main);
+    @include border($loc: bottom);
     @include shadow(1);
+    @include fgcolor(tert);
+    @include bgcolor(secd);
 
     :global(svg) {
       width: 1.25rem;
@@ -170,7 +171,9 @@
   }
 
   .body {
-    display: flex;
-    flex-direction: column;
+    // display: flex;
+    // flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
   }
 </style>

@@ -1,5 +1,5 @@
 <script>
-  export let section
+  import SIcon from '$atoms/SIcon.svelte'
 
   let old_pass = ''
   let new_pass = ''
@@ -18,7 +18,18 @@
     if (res.ok) section = 'main'
     else error = await res.text()
   }
+  async function logout() {
+    await fetch('/api/user/logout')
+    window.location.reload()
+  }
 </script>
+
+<div class="tabnav">
+  <button class="m-btn btn-back umami--click--logout" on:click={logout}>
+    <SIcon name="logout" />
+    <span>Đăng xuất</span>
+  </button>
+</div>
 
 <div class="form">
   <header class="h3">Đổi mật khẩu</header>
@@ -61,12 +72,21 @@
   {/if}
 
   <footer class="pfoot">
-    <button class="m-btn _primary  _fill" on:click={save_pass}
-      >Cập nhật mật khẩu</button>
+    <button class="m-btn _primary  _fill" on:click={save_pass}>
+      <span>Đổi mật khẩu</span>
+    </button>
   </footer>
 </div>
 
 <style lang="scss">
+  .tabnav {
+    display: flex;
+    padding: 0.75rem;
+
+    justify-content: space-between;
+    @include border($loc: bottom);
+  }
+
   .form {
     margin: 0.75rem 0;
   }

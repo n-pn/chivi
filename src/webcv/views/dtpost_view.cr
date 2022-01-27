@@ -8,11 +8,12 @@ class CV::DtpostView
 
   def to_json(jb : JSON::Builder)
     jb.object {
-      jb.field "u_dname", @data.cvuser.uname
-      jb.field "u_privi", @data.cvuser.privi
-
       jb.field "id", @data.id
       jb.field "no", @data.dt_id
+      jb.field "dt", @data.dtopic_id
+
+      jb.field "u_dname", @data.cvuser.uname
+      jb.field "u_privi", @data.cvuser.privi
 
       if @data.repl_dtpost_id > 0
         repl = Dtpost.load!(@data.repl_dtpost_id)

@@ -114,4 +114,10 @@ class Amber::Validators::Params
   def fetch_int(name : String | Symbol, &block : -> Int32) : Int32
     self[name]?.try(&.to_i?) || yield
   end
+
+  def get_paged(min = 1, max = 100) : Tuple(Int32, Int32)
+    limit = fetch_int("lm", min, max)
+    pgidx = fetch_int("pg", min: 1)
+    {limit, limit * (pgidx - 1)}
+  end
 end
