@@ -4,6 +4,7 @@
   import { rel_time } from '$lib/utils'
   import { SIcon, Gmenu } from '$lib/components'
   import DtpostForm from './Form.svelte'
+  import { dtopic_form } from '$lib/stores'
 
   export let dtpost
   export let active_card = ''
@@ -31,6 +32,18 @@
       id={card_id}
       class:active={active_card == card_id}
       class:spread={render_mode == 1}>
+      {#if render_mode > 0}
+        <dtpost-orig>
+          <a href="/forum/-{dtpost.db_bslug}">
+            {dtpost.db_bname}
+          </a>
+          <span>/</span>
+          <a href="/forum/-{dtpost.db_bslug}/-{dtpost.dt_tslug}-{dtpost.dt}">
+            {dtpost.dt_title}
+          </a>
+        </dtpost-orig>
+      {/if}
+
       <dtpost-head>
         <dtpost-meta>
           <a
@@ -81,9 +94,7 @@
         </dthead-right>
       </dtpost-head>
 
-      <dtpost-body class="m-article">
-        {@html dtpost.ohtml}
-      </dtpost-body>
+      <dtpost-body class="m-article">{@html dtpost.ohtml}</dtpost-body>
 
       <dtpost-foot>
         <dtpost-stats>
@@ -175,7 +186,6 @@
     display: block;
     margin: 0.375rem 0.75rem;
     word-wrap: break-word;
-    // font-size: rem(17px);
   }
 
   dtpost-sep {
@@ -230,5 +240,24 @@
 
   dtpost-react {
     margin-left: auto;
+  }
+
+  dtpost-orig {
+    @include flex($gap: 0.25rem);
+    @include border($loc: bottom);
+
+    @include fgcolor(tert);
+    padding: 0.125rem 0.75rem;
+    font-size: rem(13px);
+
+    // line-height: 2rem;
+    a {
+      color: inherit;
+      @include clamp($width: null);
+    }
+
+    a:hover {
+      @include fgcolor(primary, 5);
+    }
   }
 </style>

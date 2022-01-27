@@ -12,7 +12,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
       .limit(limit).offset(offset)
 
     cache_rule :private, 10, 60
-    json_view(query.map { |x| DtpostView.new(x) })
+    json_view(query.map { |x| DtpostView.new(x, full: true) })
   rescue err
     Log.error { err }
     halt!(500, err.message)

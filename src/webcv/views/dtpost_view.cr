@@ -12,6 +12,13 @@ class CV::DtpostView
       jb.field "no", @data.dt_id
       jb.field "dt", @data.dtopic_id
 
+      if @full
+        jb.field "db_bname", @data.dtopic.dboard.bname
+        jb.field "db_bslug", @data.dtopic.dboard.bslug
+        jb.field "dt_title", @data.dtopic.title
+        jb.field "dt_tslug", @data.dtopic.tslug
+      end
+
       jb.field "u_dname", @data.cvuser.uname
       jb.field "u_privi", @data.cvuser.privi
 
@@ -36,11 +43,6 @@ class CV::DtpostView
       jb.field "repl_count", @data.repl_count
 
       jb.field "coins", @data.coins
-
-      if @full
-        jb.field "input", @data.input
-        jb.field "itype", @data.itype
-      end
     }
   end
 end
