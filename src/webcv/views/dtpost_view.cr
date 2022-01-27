@@ -17,6 +17,7 @@ class CV::DtpostView
 
       if @data.repl_dtpost_id > 0
         repl = Dtpost.load!(@data.repl_dtpost_id)
+
         jb.field "rp_id", repl.id
         jb.field "rp_no", repl.dt_id
         jb.field "ru_dname", repl.cvuser.uname

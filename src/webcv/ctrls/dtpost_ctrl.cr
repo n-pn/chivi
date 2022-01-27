@@ -66,13 +66,16 @@ class CV::DtpostCtrl < CV::BaseCtrl
     return halt!(403) unless DboardACL.dtpost_create?(dtopic, _cvuser)
 
     dtpost = Dtpost.new({cvuser: _cvuser, dtopic: dtopic, dt_id: dtopic.post_count + 1})
-    dtpost.update_content!(params)
-    dtopic.bump_post_count!
 
-    if dtpost.repl_dtpost_id > 0
-      repl = Dtpost.load!(dtpost.repl_dtpost_id)
-      repl.update!({repl_count: repl.repl_count + 1})
-    end
+    dtrepl_id = params["rp_id"]?.try(&.to_i64?) || 0_i64
+    dtrepl_id = dtopic.dtbody.id if dtrepl_id == 0
+
+    dtpost.set_dtrepl_id(dtrepl_id)
+    dtpost.update_content!(params)
+
+    dtopic.bump_post_count!
+    repl = Dtpost.load!(dtpost.repl_dtpost_id)
+    repl.update!({repl_count: repl.repl_count + 1})
 
     json_view({dtpost: DtpostView.new(dtpost)})
   rescue err

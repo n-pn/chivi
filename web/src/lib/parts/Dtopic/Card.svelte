@@ -1,10 +1,8 @@
 <script>
-  import { session } from '$app/stores'
   import { rel_time } from '$lib/utils'
   import { dlabels } from '$lib/constants'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import { ctrl as dtopic_form } from '$parts/Dtopic/Form.svelte'
 
   export let dtopic
   export let _mode = 0

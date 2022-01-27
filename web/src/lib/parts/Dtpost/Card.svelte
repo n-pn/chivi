@@ -41,7 +41,7 @@
           </a>
         </dtpost-meta>
 
-        {#if dtpost.rp_id}
+        {#if dtpost.rp_no > 0}
           <dtpost-sep><SIcon name="corner-up-right" /></dtpost-sep>
           <dtpost-meta>
             <a
@@ -141,7 +141,7 @@
 
   dtpost-item {
     display: block;
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
   }
 
   dtpost-card {
