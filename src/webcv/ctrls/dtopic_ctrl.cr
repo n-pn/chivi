@@ -12,8 +12,8 @@ class CV::DtopicCtrl < CV::BaseCtrl
         .where("state >= -1")
         .filter_label(params["dlabel"]?)
 
-    if dboard = params["dboard"]?.try { |x| Dboard.load!(x.to_i64) }
-      query.filter_board(dboard)
+    if nvinfo = params["dboard"]?.try { |x| Nvinfo.load!(x.to_i64) }
+      query.filter_board(nvinfo)
     end
 
     if cvuser = params["cvuser"]?.try { |x| Cvuser.load!(x) }
@@ -22,7 +22,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count
 
-    query.with_dboard unless dboard
+    query.with_nvinfo unless nvinfo
     query.with_cvuser unless cvuser
     items = query.limit(limit).offset(offset).to_a
 
@@ -33,8 +33,8 @@ class CV::DtopicCtrl < CV::BaseCtrl
       pgidx: pgidx,
       pgmax: (total - 1) // limit + 1,
       items: items.map { |x|
+        x.nvinfo = nvinfo if nvinfo
         x.cvuser = cvuser if cvuser
-        x.dboard = dboard if dboard
         DtopicView.new(x)
       },
     })
@@ -46,6 +46,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
   def show
     dtopic = Dtopic.load!(params["dtopic"].to_i64)
     dtopic.bump_view_count!
+    dtopic.nvinfo.tap { |x| x.update!({dt_view_count: x.dt_view_count + 1}) }
 
     cache_rule :public, 120, 300, dtopic.updated_at.to_s
     # TODO: load user trace
@@ -72,13 +73,14 @@ class CV::DtopicCtrl < CV::BaseCtrl
   end
 
   def create
-    dboard = Dboard.load!(params["dboard"].to_i64)
-    unless DboardACL.dtopic_create?(dboard, _cvuser)
+    nvinfo = Nvinfo.load!(params["dboard"].to_i64)
+    unless DboardACL.dtopic_create?(nvinfo, _cvuser)
       return halt!(403, "Bạn không có quyền tạo chủ đề")
     end
 
-    dtopic = Dtopic.new({cvuser: _cvuser, dboard: dboard})
+    dtopic = Dtopic.new({cvuser: _cvuser, nvinfo: nvinfo})
     dtopic.update_content!(params)
+    nvinfo.update!({dtopic_count: nvinfo.dtopic_count + 1, dt_post_utime: dtopic.utime})
 
     json_view({dtopic: DtopicView.new(dtopic)})
   end

@@ -6,7 +6,7 @@ class CV::DboardCtrl < CV::BaseCtrl
     pgidx = params.fetch_int("page", min: 1)
     skips = (pgidx - 1) * limit
 
-    query = Dboard.query.order_by(_sort: :desc)
+    query = Nvinfo.query.order_by(utime: :desc)
     total = query.dup.limit(limit * 3 + skips).offset(0).count
 
     cache_rule :public, 30, 120
@@ -20,8 +20,7 @@ class CV::DboardCtrl < CV::BaseCtrl
   end
 
   def show
-    dboard = Dboard.load!(params["dboard"])
-    dboard.bump_view_count!
+    dboard = Nvinfo.load!(params["dboard"])
 
     # TODO: load user impression
     cache_rule :public, 120, 300, dboard.updated_at.to_s

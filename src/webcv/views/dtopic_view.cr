@@ -10,9 +10,9 @@ class CV::DtopicView
     jb.object {
       jb.field "dboard" do
         jb.object {
-          jb.field "id", @data.dboard.id
-          jb.field "bname", @data.dboard.bname
-          jb.field "bslug", @data.dboard.bslug
+          jb.field "id", @data.nvinfo.id
+          jb.field "bname", @data.nvinfo.vname
+          jb.field "bslug", @data.nvinfo.bslug
         }
       end
 

@@ -85,6 +85,8 @@ class CV::Nvinfo
   column dtopic_count : Int32 = 0 # discuss topic count
   column ubmemo_count : Int32 = 0 # user tracking count
 
+  column dt_view_count : Int32 = 0
+  column dt_post_utime : Int64 = 0
   # links
 
   column ys_snvid : Int64? = nil # yousuu book id
@@ -284,9 +286,11 @@ class CV::Nvinfo
     CACHE_INT.get(id) { find!({id: id}) }
   end
 
-  def self.load!(bhash : String)
-    CACHE_STR.get(bhash) do
-      find!({bhash: bhash}).tap { |x| CACHE_INT.set(x.id, x) }
+  def self.load!(bname : String)
+    CACHE_STR.get(bname) do
+      item = find({bslug: bname}) || find({bhash: bname})
+      raise "Book not found" unless item
+      item.tap { |x| CACHE_INT.set(x.id, x) }
     end
   end
 

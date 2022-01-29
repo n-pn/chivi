@@ -1,8 +1,8 @@
 module CV::DboardACL
   extend self
 
-  def dtopic_create?(dboard : Dboard, cvuser : Cvuser)
-    dboard.id < -1 ? cvuser.privi > 3 : cvuser.privi >= 0
+  def dtopic_create?(nvinfo : Nvinfo, cvuser : Cvuser)
+    nvinfo.id < -1 ? cvuser.privi > 3 : cvuser.privi >= 0
   end
 
   def dtopic_update?(dtopic : Dtopic, cvuser : Cvuser)

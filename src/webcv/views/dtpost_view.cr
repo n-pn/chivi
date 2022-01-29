@@ -13,8 +13,8 @@ class CV::DtpostView
       jb.field "dt", @data.dtopic_id
 
       if @full
-        jb.field "db_bname", @data.dtopic.dboard.bname
-        jb.field "db_bslug", @data.dtopic.dboard.bslug
+        jb.field "db_bname", @data.dtopic.nvinfo.vname
+        jb.field "db_bslug", @data.dtopic.nvinfo.bslug
         jb.field "dt_title", @data.dtopic.title
         jb.field "dt_tslug", @data.dtopic.tslug
       end

@@ -7,9 +7,10 @@ class CV::Dtopic
   primary_key
 
   belongs_to cvuser : Cvuser
-  belongs_to dboard : Dboard
+  belongs_to nvinfo : Nvinfo
 
   column dlabel_ids : Array(Int32) = [] of Int32
+  column labels : Array(String) = [] of String
 
   column title : String = ""
   column tslug : String = ""
@@ -34,7 +35,7 @@ class CV::Dtopic
   end
 
   scope :filter_board do |board|
-    board ? where({dboard_id: board.id}) : with_dboard
+    board ? where({nvinfo_id: board.id}) : with_nvinfo
   end
 
   scope :filter_owner do |owner|
