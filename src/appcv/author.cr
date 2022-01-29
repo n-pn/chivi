@@ -2,6 +2,7 @@ require "./nvinfo/nv_util"
 
 class CV::Author
   include Clear::Model
+
   self.table = "authors"
   primary_key
 

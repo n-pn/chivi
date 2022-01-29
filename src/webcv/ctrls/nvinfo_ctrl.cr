@@ -13,7 +13,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     query =
       Nvinfo.query
-        # .where("subdue_id > -1")
+        .where("shield < 2")
         .filter_btitle(params["btitle"]?)
         .filter_author(params["author"]?)
         .filter_zseed(params["sname"]?)

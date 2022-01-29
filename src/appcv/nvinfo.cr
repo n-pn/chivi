@@ -12,7 +12,7 @@ class CV::Nvinfo
   has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
   # has_many yslists : Yslist, through: "yscrits"
 
-  column subdue_id : Int64 = -1 # in case of duplicate entries, this column will point to the better one
+  column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
 
   column zseed_ids : Array(Int32) = [] of Int32
   getter zseeds : Array(String) { NvSeed.to_s(zseed_ids) }
@@ -81,7 +81,7 @@ class CV::Nvinfo
   column cvlist_count : Int32 = 0 # chivi booklists count
   column yslist_count : Int32 = 0 # yousuu booklists count
 
-  column total_clicks : Int32 = 0 # views count
+  column total_clicks : Int32 = 0 # chap views count
   column dtopic_count : Int32 = 0 # discuss topic count
   column ubmemo_count : Int32 = 0 # user tracking count
 
