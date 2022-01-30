@@ -17,4 +17,13 @@ class CV::UsercpCtrl < CV::BaseCtrl
     Log.error { err }
     halt!(500, err.message)
   end
+
+  def upgrade
+    privi = params.fetch_int("privi", min: 1, max: 3)
+    tspan = params.fetch_int("tspan", min: 1, max: 4)
+
+    json_view(_cvuser.upgrade!(privi, tspan))
+  rescue err
+    halt! 400, "Bạn chưa đủ số vcoid tối thiểu để tăng quyền hạn!"
+  end
 end

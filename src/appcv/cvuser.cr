@@ -45,6 +45,54 @@ class CV::Cvuser
     Crypto::Bcrypt::Password.new(cpass).verify(upass)
   end
 
+  TSPAN_UNIT = 1.days.total_seconds.to_i
+  PRIVI_SPAN = {14, 30, 60, 90}.map(&.* TSPAN_UNIT)
+
+  PRIVI_COST = {
+    # 14 days, 30 days, 60 days, 90 days
+    {10, 20, 35, 50},    # privi 1
+    {30, 50, 90, 130},   # privi 2
+    {50, 100, 175, 250}, # privi 2
+  }
+
+  def fix_vcoin(value : Int32)
+    self.vcoin_total += value
+    self.vcoin_avail += value
+  end
+
+  def upgrade!(privi : Int32, tspan : Int32) : Tuple(Int64, Int64, Int64)
+    vcoin = PRIVI_COST[privi][tspan]
+    raise "Not enough vcoin" if vcoin_avail < vcoin
+
+    self.fix_vcoin(-vcoin)
+
+    self.privi = privi
+
+    tspan = PRIVI_SPAN[tspan]
+    start = Time.utc.to_unix
+
+    if privi == 3
+      self.privi_3_until = start if self.privi_3_until < start
+      self.privi_3_until += tspan
+      self.privi_2_until = self.privi_3_until
+      tspan //= 2
+      privi -= 1
+    end
+
+    if privi == 2
+      self.privi_2_until = start if self.privi_2_until < start
+      self.privi_2_until += tspan
+      self.privi_1_until = self.privi_2_until
+      tspan //= 2
+    end
+
+    self.privi_1_until = start if self.privi_1_until < start
+    self.privi_1_until += tspan
+
+    self.save!
+    {self.privi_1_until - start, self.privi_2_until - start, self.privi_3_until - start}
+  end
+
   ##############################################
 
   def self.create!(email : String, uname : String, upass : String) : self

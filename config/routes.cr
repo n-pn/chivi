@@ -24,6 +24,7 @@ Amber::Server.configure do
     put "/user/passwd", CV::CvuserCtrl, :passwd
 
     get "/_self/replied", CV::UsercpCtrl, :replied
+    get "/_self/upgrade", CV::UsercpCtrl, :upgrade
 
     # get "/authors/:author_id/books", CV::AuthorCtrl, :books
 
