@@ -19,7 +19,7 @@ class CV::DtopicView
       jb.field "u_dname", @data.cvuser.uname
       jb.field "u_privi", @data.cvuser.privi
 
-      jb.field "id", @data.id
+      jb.field "id", @data.oid
 
       jb.field "title", @data.title
       jb.field "tslug", @data.tslug

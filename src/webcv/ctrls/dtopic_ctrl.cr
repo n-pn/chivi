@@ -14,6 +14,8 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
     if nvinfo = params["dboard"]?.try { |x| Nvinfo.load!(x.to_i64) }
       query.filter_board(nvinfo)
+    else
+      query.where("_sort > 0")
     end
 
     if cvuser = params["cvuser"]?.try { |x| Cvuser.load!(x) }
@@ -44,7 +46,8 @@ class CV::DtopicCtrl < CV::BaseCtrl
   end
 
   def show
-    dtopic = Dtopic.load!(params["dtopic"].to_i64)
+    dtopic = Dtopic.load!(params["dtopic"])
+
     dtopic.bump_view_count!
     dtopic.nvinfo.tap { |x| x.update!({dt_view_count: x.dt_view_count + 1}) }
 
@@ -53,17 +56,18 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
     json_view({dtopic: DtopicView.new(dtopic, full: true)})
   rescue err
+    Log.error { err.inspect_with_backtrace }
     halt!(404, "Chủ đề không tồn tại!")
   end
 
   def detail
-    dtopic = Dtopic.load!(params["dtopic"].to_i64)
+    oid = params["dtopic"]
+    dtopic = Dtopic.load!(oid)
 
     json_view({
-      id: dtopic.id,
-
+      id:     oid,
       title:  dtopic.title,
-      labels: dtopic.dlabel_ids,
+      labels: dtopic.dlabel_ids.join(","),
 
       body_input: dtopic.dtbody.input,
       body_itype: dtopic.dtbody.itype,
@@ -78,16 +82,17 @@ class CV::DtopicCtrl < CV::BaseCtrl
       return halt!(403, "Bạn không có quyền tạo chủ đề")
     end
 
-    ii = nvinfo.dtopic_count + 1
-    dtopic = Dtopic.new({cvuser: _cvuser, nvinfo: nvinfo, ii: ii})
+    count = nvinfo.dtopic_count + 1
+    dtopic = Dtopic.new({cvuser: _cvuser, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
+
     dtopic.update_content!(params)
-    nvinfo.update!({dtopic_count: ii, dt_post_utime: dtopic.utime})
+    nvinfo.update!({dtopic_count: count, dt_post_utime: dtopic.utime})
 
     json_view({dtopic: DtopicView.new(dtopic)})
   end
 
   def update
-    dtopic = Dtopic.load!(params["dtopic"].to_i64)
+    dtopic = Dtopic.load!(params["dtopic"])
 
     unless DboardACL.dtopic_update?(dtopic, _cvuser)
       return halt!(403, "Bạn không có quyền sửa chủ đề")
@@ -101,8 +106,17 @@ class CV::DtopicCtrl < CV::BaseCtrl
   end
 
   def delete
-    return halt!(403) unless _cvuser.privi > 2
-    Dtopic.load!(params["dtopic"].to_i64).delete
+    dtopic = Dtopic.load!(params["dtopic"])
+
+    if _cvuser.privi == dtopic.cvuser_id
+      admin = false
+    elsif _cvuser.privi > 2
+      admin = true
+    else
+      return halt!(403, "Bạn không có quyền xoá chủ đề")
+    end
+
+    dtopic.soft_delete(admin: admin)
     json_view({msg: "ok"})
   end
 end

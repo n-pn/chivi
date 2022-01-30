@@ -5,7 +5,9 @@ class CV::Dtopic
 
   self.table = "dtopics"
   primary_key
+
   column ii : Int32 = 1 # increase for each board
+  getter oid : String { UkeyUtil.encode32(ii) }
 
   belongs_to cvuser : Cvuser
   getter cvuser : Cvuser { Cvuser.load!(self.cvuser_id) }
@@ -86,11 +88,11 @@ class CV::Dtopic
     self.save!
   end
 
-  def update_content!(params)
-    set_utime(Time.utc.to_unix)
+  def update_content!(params, set_utime = true)
+    set_utime(Time.utc.to_unix) if set_utime
 
     set_title(params["title"])
-    self.dlabel_ids = params.json("labels").as_a.map(&.as_i)
+    self.dlabel_ids = params["labels"].split(",").map(&.strip.to_i)
 
     self.save! unless @id_column.defined? # make id column available
 
@@ -104,7 +106,7 @@ class CV::Dtopic
     self.save!
   end
 
-  def solf_delete(admin = false)
+  def soft_delete(admin = false)
     update!(state: admin ? -3 : -2)
   end
 
@@ -112,7 +114,38 @@ class CV::Dtopic
 
   CACHE = RamCache(Int64, self).new(1024, ttl: 10.minutes)
 
-  def self.load!(id : Int64)
-    CACHE.get(id) { find!({id: id}) }
+  def self.load!(ii : Int64) : self
+    CACHE.get(ii) { find!({ii: ii}) }
+  end
+
+  def self.load!(ii : String) : self
+    load!(UkeyUtil.decode32(ii))
+  end
+
+  def self.init_base_topic!(nvinfo : Nvinfo)
+    dtopic = find({ii: nvinfo.dt_ii}) || new({
+      ii:        nvinfo.dt_ii,
+      state:     1,
+      cvuser_id: -2,
+      nvinfo_id: nvinfo.id,
+      labels:    "thao-luan",
+    })
+
+    bintro = nvinfo.vintro.split("\n").map { |x| "> #{x}\n>\n" }.join("\n")
+    tpbody = <<-MARKDOWN
+    **Tên truyện**: #{nvinfo.vname}
+    **Tác giả**: #{nvinfo.author.vname}
+
+    ### Giới thiệu vắn tắt:
+
+    #{bintro.empty? ? "Cần bổ sung" : bintro}
+    MARKDOWN
+
+    dtopic.update_content!({
+      "title":      "Thảo luận chung truyện #{nvinfo.vname}",
+      "labels":     "1",
+      "body_input": tpbody,
+      "body_itype": "md",
+    }, set_utime: false)
   end
 end

@@ -47,7 +47,7 @@ module CV::UkeyUtil
   end
 
   # convert zbase32 to integer
-  def decode32(input : String)
+  def decode32(input : String) : Int64
     number = 0_i64
 
     input.chars.reverse_each do |char|

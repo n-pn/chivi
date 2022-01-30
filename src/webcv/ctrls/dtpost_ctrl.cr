@@ -11,7 +11,7 @@ class CV::DtpostCtrl < CV::BaseCtrl
         .sort_by(params["sort"]? || "id")
         .where("state >= 0 AND ii > 0")
 
-    if dtopic = params["dtopic"]?.try { |x| Dtopic.load!(x.to_i64) }
+    if dtopic = params["dtopic"]?.try { |x| Dtopic.load!(x) }
       query.filter_topic(dtopic)
     end
 
@@ -62,7 +62,7 @@ class CV::DtpostCtrl < CV::BaseCtrl
   end
 
   def create
-    dtopic = Dtopic.load!(params["dtopic"].to_i64)
+    dtopic = Dtopic.load!(params["dtopic"])
     return halt!(403) unless DboardACL.dtpost_create?(dtopic, _cvuser)
 
     dtpost = Dtpost.new({cvuser: _cvuser, dtopic: dtopic, ii: dtopic.post_count + 1})
@@ -95,8 +95,17 @@ class CV::DtpostCtrl < CV::BaseCtrl
   end
 
   def delete
-    return halt!(403) unless _cvuser.privi > 2
-    Dtpost.load!(params["dtpost"].to_i64).delete
+    dtpost = Dtpost.load!(params["dtpost"].to_i64)
+
+    if _cvuser.privi == dtpost.cvuser_id
+      admin = false
+    elsif _cvuser.privi > 2
+      admin = true
+    else
+      return halt!(403, "Bạn không có quyền xoá chủ đề")
+    end
+
+    Dtpost.load!(params["dtpost"].to_i64).soft_delete
     json_view({msg: "ok"})
   end
 end

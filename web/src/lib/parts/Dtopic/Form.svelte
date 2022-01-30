@@ -6,14 +6,14 @@
 
   function build_labels(labels) {
     const output = {}
-    labels.forEach((x) => (output[x] = true))
+    labels.split(',').forEach((x) => (output[x] = true))
     return output
   }
 
   function extract_labels(labels) {
     const output = []
     for (let k in labels) if (labels[k]) output.push(+k)
-    return output
+    return output.join(',')
   }
 
   export const ctrl = {
@@ -37,17 +37,19 @@
   export let on_destroy = () => window.location.reload()
 
   $: on_edit = $ctrl.id > 0
-  $: api_url = make_api_endpoint(dboard.id, on_edit)
+  $: api_url = make_api_endpoint(dboard.id)
 
   let labels = build_labels($form.labels)
   $: $form.labels = extract_labels(labels)
 
   let error = ''
 
-  function make_api_endpoint(dboard_id, on_edit) {
-    let api_url = '/api/topics'
-    if (on_edit) api_url += '/' + $ctrl.id
-    return api_url + '?dboard=' + dboard_id
+  function make_api_endpoint(dboard_id) {
+    if ($ctrl.id > 0) {
+      return `/api/topics/${$ctrl.id}`
+    } else {
+      return `/api/topics?dboard=${dboard_id}`
+    }
   }
 
   async function submit() {

@@ -67,8 +67,10 @@ Amber::Server.configure do
 
     get "/topics", CV::DtopicCtrl, :index
     post "/topics", CV::DtopicCtrl, :create
+
     get "/topics/:dtopic", CV::DtopicCtrl, :show
     get "/topics/:dtopic/detail", CV::DtopicCtrl, :detail
+
     post "/topics/:dtopic", CV::DtopicCtrl, :update
     delete "/topics/:dtopic", CV::DtopicCtrl, :delete
 

@@ -7,6 +7,8 @@ class CV::Nvinfo
   self.table = "nvinfos"
   primary_key
 
+  getter dt_ii : Int32 { (id > 0 ? id + 20 : id * -5).to_i &* 10000 }
+
   belongs_to author : Author
   has_many zhbooks : Zhbook, foreign_key: "nvinfo_id"
   has_many yscrits : Yscrit, foreign_key: "nvinfo_id"

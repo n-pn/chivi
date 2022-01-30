@@ -87,7 +87,7 @@ class CV::Dtpost
     self.save!
   end
 
-  def solf_delete(admin = false)
+  def soft_delete(admin = false)
     update!(state: admin ? -2 : -1)
   end
 

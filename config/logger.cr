@@ -31,7 +31,7 @@ Log.builder.bind "*", Amber.settings.logging.severity, backend
 # CRYSTAL_LOG_LEVEL=INFO
 # CRYSTAL_LOG_SOURCES=*
 # Logs are emitted to STDOUT
-# Log.setup_from_env
+Log.setup_from_env
 
 # Using more advanced options:
 # backend = Log::IOBackend.new

@@ -1,5 +1,4 @@
 <script context="module">
-  import { dlabels } from '$lib/constants'
   import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ stuff, fetch, url: { searchParams } }) {
@@ -9,7 +8,7 @@
     const api_url = `/api/tposts?dtopic=${dtopic.id}&page=${page}&take=20`
     const res = await fetch(api_url)
 
-    if (!res.ok) return { status: res.status, error: await api_res.text() }
+    if (!res.ok) return { status: res.status, error: await res.text() }
 
     appbar.set({
       left: [

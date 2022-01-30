@@ -3,7 +3,7 @@ import { writable, get } from 'svelte/store'
 function init() {
   return {
     title: '',
-    labels: [1],
+    labels: '1',
     body_input: '',
     body_itype: 'md',
   }

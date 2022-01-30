@@ -1,7 +1,10 @@
 include CV
 
 Nvinfo.query.each do |nvinfo|
-  topics = nvinfo.dtopics.to_a.reject(&.ii.== 0)
+  # next if nvinfo.dtopic_count == 0
+  # Dtopic.init_base_topic!(nvinfo) if nvinfo.id > 0
+
+  topics = Dtopic.query.where({nvinfo_id: nvinfo.id}).to_a
   next if topics.empty?
 
   nvinfo.dtopic_count = topics.size
@@ -10,12 +13,14 @@ Nvinfo.query.each do |nvinfo|
   nvinfo.save!
 
   topics.sort_by(&.id).each_with_index(1) do |dtopic, ii|
-    dtopic.ii = ii
+    dtopic_ii = nvinfo.dt_ii + ii
 
-    if dtbody = Dtpost.find({dtopic_id: dtopic.id, ii: 0})
-      dtopic.dtbody_id = dtbody.id
+    dtbody = dtopic.dtbody
+    unless dtbody.id_column.defined?
+      dtbody.cvuser_id = dtopic.cvuser_id
+      dtbody.save!
     end
 
-    dtopic.save!
+    dtopic.update!({ii: dtopic_ii.to_i, dtbody_id: dtbody.id})
   end
 end

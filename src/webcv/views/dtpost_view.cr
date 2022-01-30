@@ -10,7 +10,7 @@ class CV::DtpostView
     jb.object {
       jb.field "id", @data.id
       jb.field "no", @data.ii
-      jb.field "dt", @data.dtopic_id
+      jb.field "dt", @data.dtopic.oid
 
       if @full
         jb.field "db_bname", @data.dtopic.nvinfo.vname

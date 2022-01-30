@@ -23,7 +23,7 @@ Amber::Server.configure do |settings|
   # settings.logging.severity = "info"
   # settings.logging.colorize = true
   # settings.logging.color = "white"
-  # settings.logging.filter = %w(password confirm_password)
+  settings.logging.filter = %w(password confirm_password)
   # settings.logging.skip = %w()
   #
   #
