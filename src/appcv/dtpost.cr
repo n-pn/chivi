@@ -9,7 +9,7 @@ class CV::Dtpost
   belongs_to cvuser : Cvuser
   belongs_to dtopic : Dtopic
 
-  column dt_id : Int32 = 0 # post index in the thread
+  column ii : Int32 = 0 # post index in the thread
 
   column repl_dtpost_id : Int64 = 0 # replied to dtpost.id
   column repl_cvuser_id : Int64 = 0 # replied to dtpost's cvuser.id
@@ -44,8 +44,8 @@ class CV::Dtpost
 
   scope :sort_by do |order|
     case order
-    when "tn"  then order_by(dt_id: :asc)
-    when "-tn" then order_by(dt_id: :desc)
+    when "tn"  then order_by(ii: :asc)
+    when "-tn" then order_by(ii: :desc)
     when "-id" then order_by(id: :desc)
     else            order_by(id: :asc)
     end

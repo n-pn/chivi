@@ -9,7 +9,7 @@ class CV::DtpostCtrl < CV::BaseCtrl
     query =
       Dtpost.query
         .sort_by(params["sort"]? || "id")
-        .where("state >= 0 AND dt_id > 0")
+        .where("state >= 0 AND ii > 0")
 
     if dtopic = params["dtopic"]?.try { |x| Dtopic.load!(x.to_i64) }
       query.filter_topic(dtopic)
@@ -65,7 +65,7 @@ class CV::DtpostCtrl < CV::BaseCtrl
     dtopic = Dtopic.load!(params["dtopic"].to_i64)
     return halt!(403) unless DboardACL.dtpost_create?(dtopic, _cvuser)
 
-    dtpost = Dtpost.new({cvuser: _cvuser, dtopic: dtopic, dt_id: dtopic.post_count + 1})
+    dtpost = Dtpost.new({cvuser: _cvuser, dtopic: dtopic, ii: dtopic.post_count + 1})
 
     dtrepl_id = params["rp_id"]?.try(&.to_i64?) || 0_i64
     dtrepl_id = dtopic.dtbody.id if dtrepl_id == 0

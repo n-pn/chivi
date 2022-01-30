@@ -10,6 +10,7 @@ class CV::Nvinfo
   belongs_to author : Author
   has_many zhbooks : Zhbook, foreign_key: "nvinfo_id"
   has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
+  has_many dtopics : Dtopic, foreign_key: "nvinfo_id"
   # has_many yslists : Yslist, through: "yscrits"
 
   column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one

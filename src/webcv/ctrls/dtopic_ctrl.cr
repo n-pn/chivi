@@ -78,9 +78,10 @@ class CV::DtopicCtrl < CV::BaseCtrl
       return halt!(403, "Bạn không có quyền tạo chủ đề")
     end
 
-    dtopic = Dtopic.new({cvuser: _cvuser, nvinfo: nvinfo})
+    ii = nvinfo.dtopic_count + 1
+    dtopic = Dtopic.new({cvuser: _cvuser, nvinfo: nvinfo, ii: ii})
     dtopic.update_content!(params)
-    nvinfo.update!({dtopic_count: nvinfo.dtopic_count + 1, dt_post_utime: dtopic.utime})
+    nvinfo.update!({dtopic_count: ii, dt_post_utime: dtopic.utime})
 
     json_view({dtopic: DtopicView.new(dtopic)})
   end

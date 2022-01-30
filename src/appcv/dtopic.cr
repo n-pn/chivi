@@ -5,9 +5,19 @@ class CV::Dtopic
 
   self.table = "dtopics"
   primary_key
+  column ii : Int32 = 1 # increase for each board
 
   belongs_to cvuser : Cvuser
+  getter cvuser : Cvuser { Cvuser.load!(self.cvuser_id) }
+
   belongs_to nvinfo : Nvinfo
+  getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
+
+  column dtbody_id : Int64 = 0
+  getter dtbody : Dtpost do
+    params = {dtopic_id: self.id, ii: 0}
+    Dtpost.find(params) || Dtpost.new(params)
+  end
 
   column dlabel_ids : Array(Int32) = [] of Int32
   column labels : Array(String) = [] of String
@@ -42,11 +52,6 @@ class CV::Dtopic
     owner ? where({cvuser_id: owner.id}) : with_cvuser
   end
 
-  getter dtbody : Dtpost do
-    params = {dtopic_id: self.id, dt_id: 0}
-    Dtpost.find(params) || Dtpost.new(params)
-  end
-
   def set_title(title : String)
     self.title = title
     uslug = TextUtils.slugify(title).split("-").first(8).join("-")
@@ -65,6 +70,7 @@ class CV::Dtopic
   def bump_post_count!
     self.post_count = self.post_count + 1
     set_utime(Time.utc.to_unix)
+    self.nvinfo.update!({dt_post_utime: self.utime})
     self.save!
   end
 
@@ -93,6 +99,8 @@ class CV::Dtopic
     self.dtbody.save!
 
     self.brief = dtbody.otext.split("\n", 2).first? || ""
+    self.dtbody_id = self.dtbody.id
+
     self.save!
   end
 

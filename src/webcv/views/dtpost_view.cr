@@ -9,7 +9,7 @@ class CV::DtpostView
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "id", @data.id
-      jb.field "no", @data.dt_id
+      jb.field "no", @data.ii
       jb.field "dt", @data.dtopic_id
 
       if @full
@@ -26,7 +26,7 @@ class CV::DtpostView
         repl = Dtpost.load!(@data.repl_dtpost_id)
 
         jb.field "rp_id", repl.id
-        jb.field "rp_no", repl.dt_id
+        jb.field "rp_no", repl.ii
         jb.field "ru_dname", repl.cvuser.uname
         jb.field "ru_privi", repl.cvuser.privi
       end

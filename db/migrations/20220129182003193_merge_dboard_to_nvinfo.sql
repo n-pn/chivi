@@ -5,7 +5,6 @@ ALTER TABLE dtopics RENAME COLUMN dboard_id TO nvinfo_id;
 ALTER TABLE dtopics ADD COLUMN dtbody_id integer not null default '0';
 ALTER TABLE dtopics ADD COLUMN labels text[] not null default '{}';
 
-
 ALTER TABLE nvinfos ADD COLUMN dt_view_count integer not null default '0';
 ALTER TABLE nvinfos ADD COLUMN dt_post_utime bigint not null default '0';
 

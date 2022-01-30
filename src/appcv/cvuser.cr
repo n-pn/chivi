@@ -68,13 +68,23 @@ class CV::Cvuser
     end
   end
 
-  DUMMY_PASS = Crypto::Bcrypt::Password.create("chivi123", cost: 10)
+  CACHE_INT = RamCache(Int64, self).new
+  CACHE_STR = RamCache(String, self).new
+
+  def self.load!(id : Int64)
+    CACHE_INT.get(id) { find!({id: id}) }
+  end
 
   CACHED = {} of String => self
 
   def self.load!(dname : String) : self
-    CACHED[dname.downcase] ||= find({uname: dname}) || raise "User not found!"
+    CACHE_STR.get(dname.downcase) do
+      user = find!({uname: dname})
+      user.tap { |x| CACHE_INT.set(x.id, x) }
+    end
   end
+
+  DUMMY_PASS = Crypto::Bcrypt::Password.create("chivi123", cost: 10)
 
   def self.validate(email : String, upass : String)
     if user = find({email: email})
