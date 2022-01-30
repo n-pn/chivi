@@ -5,7 +5,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
     limit, offset = params.get_paged(min: 10)
 
     query = Dtpost.query
-      .where("state >= 0")
+      .where("state >= 0 AND cvuser_id != ?", _cvuser.id)
       .where("(repl_cvuser_id = ? OR tagged_ids @> ?::bigint[])", _cvuser.id, [_cvuser.id])
       .order_by(id: :desc)
       .with_dtopic.with_cvuser
