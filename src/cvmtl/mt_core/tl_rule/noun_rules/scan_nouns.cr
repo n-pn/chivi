@@ -126,7 +126,7 @@ module CV::TlRule
 
     nquant.each do |node|
       case node.key
-      when .includes?('些') then node.val = node.val.sub("chút", "những")
+      when "些"             then node.val = "những"
       when .includes?('个') then node.val = node.val.sub("cái", "").strip
       end
     end
