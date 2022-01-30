@@ -150,7 +150,7 @@
     :global(.-text) {
       flex-grow: 1;
       font-weight: 500;
-      margin-left: 0.5rem;
+      margin-left: 0.25rem;
       text-transform: uppercase;
       @include ftsize(md);
     }

@@ -2,7 +2,16 @@ require "./base_ctrl"
 
 class CV::CvuserCtrl < CV::BaseCtrl
   def _self
-    return_user
+    render_json({
+      uname:  _cvuser.uname,
+      privi:  _cvuser.privi,
+      vcoin:  _cvuser.vcoin_avail,
+      wtheme: _cvuser.wtheme,
+
+      privi_1_until: _cvuser.privi_1_until,
+      privi_2_until: _cvuser.privi_2_until,
+      privi_3_until: _cvuser.privi_3_until,
+    })
   end
 
   def logout

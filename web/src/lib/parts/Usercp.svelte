@@ -11,6 +11,10 @@
 
   export let actived = false
   export let tab = 'replied'
+
+  function format_coin(vcoin) {
+    return vcoin < 1000 ? vcoin : vcoin / 1000 + 'K'
+  }
 </script>
 
 <Gslide _klass="usercp" bind:actived _rwidth={26}>
@@ -18,6 +22,10 @@
     <div class="-icon"><SIcon name="user" /></div>
     <div class="-text">
       <cv-user privi={$session.privi}>{$session.uname}</cv-user>
+      <span class="stats"
+        ><SIcon name="crown" /><span>{$session.privi}</span></span>
+      <span class="stats"
+        ><SIcon name="coin" /><span>{format_coin($session.vcoin)}</span></span>
     </div>
   </svelte:fragment>
 
@@ -53,7 +61,7 @@
   {#if tab == 'reading'}
     <Reading />
   {:else if tab == 'setting'}
-    <Setting />
+    <Setting bind:tab />
   {:else}
     <Replied />
   {/if}
@@ -63,5 +71,22 @@
   .-btn._active {
     // @include bgcolor(primary, 1, 5);
     @include fgcolor(primary, 5);
+  }
+
+  .stats {
+    margin-left: 0.25rem;
+    // padding-top: 0.25rem;
+    @include fgcolor(mute);
+    // @include ftsize(sm);
+
+    :global(svg) {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+
+    span {
+      margin-left: 0.125rem;
+      text-transform: none;
+    }
   }
 </style>

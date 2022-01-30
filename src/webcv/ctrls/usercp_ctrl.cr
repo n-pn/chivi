@@ -20,9 +20,19 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
   def upgrade
     privi = params.fetch_int("privi", min: 1, max: 3)
-    tspan = params.fetch_int("tspan", min: 1, max: 4)
+    tspan = params.fetch_int("tspan", min: 0, max: 3)
+    _cvuser.upgrade!(privi, tspan)
 
-    json_view(_cvuser.upgrade!(privi, tspan))
+    render_json({
+      uname:  _cvuser.uname,
+      privi:  _cvuser.privi,
+      vcoin:  _cvuser.vcoin_avail,
+      wtheme: _cvuser.wtheme,
+
+      privi_1_until: _cvuser.privi_1_until,
+      privi_2_until: _cvuser.privi_2_until,
+      privi_3_until: _cvuser.privi_3_until,
+    })
   rescue err
     halt! 400, "Bạn chưa đủ số vcoid tối thiểu để tăng quyền hạn!"
   end

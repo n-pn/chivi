@@ -47,9 +47,8 @@ class CV::Cvuser
 
   TSPAN_UNIT = 1.days.total_seconds.to_i
   PRIVI_SPAN = {14, 30, 60, 90}.map(&.* TSPAN_UNIT)
-
   PRIVI_COST = {
-    # 14 days, 30 days, 60 days, 90 days
+    {0, 0, 0, 0},        # privi 0
     {10, 20, 35, 50},    # privi 1
     {30, 50, 90, 130},   # privi 2
     {50, 100, 175, 250}, # privi 2
@@ -76,7 +75,7 @@ class CV::Cvuser
       self.privi_3_until += tspan
       self.privi_2_until = self.privi_3_until
       tspan //= 2
-      privi -= 1
+      privi = 2
     end
 
     if privi == 2
@@ -90,7 +89,26 @@ class CV::Cvuser
     self.privi_1_until += tspan
 
     self.save!
-    {self.privi_1_until - start, self.privi_2_until - start, self.privi_3_until - start}
+    {self.privi_1_until, self.privi_2_until, self.privi_3_until}
+  end
+
+  def check_privi! : Nil
+    now = Time.utc.to_unix
+
+    if self.privi == 3
+      return if now < self.privi_3_until
+      self.privi = 2
+    end
+
+    if self.privi == 2
+      return self.save! if now < self.privi_2_until
+      self.privi = 1
+    end
+
+    if self.privi == 1
+      self.privi = 0 if now > self.privi_1_until
+      self.save!
+    end
   end
 
   ##############################################
@@ -128,6 +146,7 @@ class CV::Cvuser
   def self.load!(dname : String) : self
     CACHE_STR.get(dname.downcase) do
       user = find!({uname: dname})
+      user.check_privi!
       user.tap { |x| CACHE_INT.set(x.id, x) }
     end
   end
