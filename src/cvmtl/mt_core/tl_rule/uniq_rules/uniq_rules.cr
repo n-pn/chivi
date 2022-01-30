@@ -32,10 +32,11 @@ module CV::TlRule
     case node.key
     when "第" then fold_第!(node)
     when "完"
-      if node.succ?(&.puncts?)
+      case node.succ?
+      when .nil?, .ends?, .ule?
         node.set!("hết")
       else
-        node.val = "nộp"
+        # node.val = "nộp"
         node.tag = PosTag::Verb
         fold_verbs!(node)
       end
