@@ -9,7 +9,9 @@ module CV::TlRule
       fold_noun_concoord!(succ, node) || node
     when .veno?
       succ = heal_veno!(succ)
-      succ.noun? ? fold_proper_nounish!(node, succ) : node
+      succ.noun? ? fold_proper_nounish!(node, succ) : fold_noun_verb!(node, succ)
+    when .verbs?, .vmodals?
+      return fold_noun_verb!(node, succ)
     when .ajno?
       succ = heal_ajno!(succ)
       succ.noun? ? fold_proper_nounish!(node, succ) : node

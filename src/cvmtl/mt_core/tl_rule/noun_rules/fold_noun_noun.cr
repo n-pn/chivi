@@ -3,8 +3,6 @@ module CV::TlRule
     return unless noun_can_combine?(node.prev?, succ.succ?)
 
     case succ.tag
-    when .nmorp?
-      fold!(node, succ, node.tag, dic: 4)
     when .ptitle?
       if node.names? || node.ptitle?
         fold!(node, succ, PosTag::Person, dic: 3)
@@ -20,7 +18,8 @@ module CV::TlRule
       # when .space?
       #   fold_noun_space!(node, succ) if mode == 0
     else
-      fold!(node, succ, PosTag::Noun, dic: 3, flip: true)
+      tag = node.tag == succ.tag ? node.tag : PosTag::Noun
+      fold!(node, succ, tag, dic: 3, flip: true)
     end
   end
 

@@ -2,8 +2,8 @@ module CV::TlRule
   def fold_noun_verb!(noun : MtNode, verb : MtNode)
     return noun if noun.prev?(&.preposes?)
 
-    verb = fold_verbs!(verb)
-    return noun unless verb.verb? && (succ = verb.succ?) && succ.ude1?
+    verb = verb.vmodals? ? fold_vmodals!(verb) : fold_verbs!(verb)
+    return noun unless (succ = verb.succ?) && succ.ude1? && (verb.verb? || verb.vmodals?)
     return noun unless tail = scan_noun!(succ.succ?)
 
     defn = fold!(noun, succ.set!(""), PosTag::DefnPhrase, dic: 6)

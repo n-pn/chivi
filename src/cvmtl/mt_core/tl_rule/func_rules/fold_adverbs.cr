@@ -13,7 +13,7 @@ module CV::TlRule
 
     case succ.tag
     when .vmodals?
-      heal_vmodal!(succ, nega: node)
+      fold_vmodals!(succ, nega: node)
     when .pre_dui?
       succ = fold_pre_dui!(succ)
       fold!(node, succ, succ.tag, dic: 9)
@@ -78,7 +78,7 @@ module CV::TlRule
       succ = fold!(succ, noun, PosTag::Aform, dic: 5)
       fold_adverb_node!(node, succ)
     when .vmodals?
-      heal_vmodal!(succ, nega: node)
+      fold_vmodals!(succ, nega: node)
     when .verbs?
       fold_adverb_verb!(node, succ)
     when .adjts?

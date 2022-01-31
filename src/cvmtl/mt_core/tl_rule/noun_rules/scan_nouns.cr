@@ -75,7 +75,7 @@ module CV::TlRule
           node = fold_ude1!(ude1: succ, prev: node)
         end
       when .vmodals?
-        node = heal_vmodal!(node)
+        node = fold_vmodals!(node)
 
         if node.preposes?
           node = fold_preposes!(node, mode: 1)

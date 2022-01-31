@@ -40,8 +40,6 @@
     prefix = ztext.substring(zfrom - 10, zfrom)
     suffix = ztext.substring(zupto, zupto + 10)
 
-    navigator.clipboard.writeText(output)
-
     let words = make_word_list(ztext, zfrom, zupto)
     words = words.filter((x) => x && !cached_vpterms[x])
 

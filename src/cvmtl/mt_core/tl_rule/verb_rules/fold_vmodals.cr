@@ -1,5 +1,5 @@
 module CV::TlRule
-  def heal_vmodal!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
+  def fold_vmodals!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     return node.set!(PosTag::Noun) if vmodal_is_noun?(node)
     succ.tag = PosTag::Verb if succ && (succ.veno? || succ.vead?)
 
@@ -58,8 +58,9 @@ module CV::TlRule
     return true if {"只", "还"}.includes?(prev.try(&.key))
 
     case succ
-    when .nil?, .ends?, .nouns? then true
-    when .preposes?             then false
+    when .nil?, .ends?, .nouns?, .ude1?
+      true
+    when .preposes? then false
     when .verb_object?
       MtDict::VERBS_SEPERATED.has_key?(succ.key)
     else

@@ -21,7 +21,7 @@ module CV::TlRule
       when .modifier? then node = fold_modifier!(node)
       when .adjts?    then node = fold_adjts!(node, prev: nil)
       when .space?    then node = fold_space!(node)
-      when .vmodals?  then node = heal_vmodal!(node)
+      when .vmodals?  then node = fold_vmodals!(node)
       when .verbs?    then node = fold_verbs!(node)
       when .nouns?    then node = fold_nouns!(node)
       when .onomat?   then node = fold_onomat!(node)
