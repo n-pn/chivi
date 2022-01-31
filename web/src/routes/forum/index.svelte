@@ -21,9 +21,7 @@
 
 <script>
   import DtopicList from '$parts/Dtopic/List.svelte'
-
   export let dtlist = { items: [], pgidx: 1, pgmax: 1 }
-
   const dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
 </script>
 

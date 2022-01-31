@@ -12,7 +12,6 @@
 </script>
 
 <script>
-  import Vessel from '$sects/Vessel.svelte'
   import NvinfoList from '$sects/Nvinfo/List.svelte'
 
   export let author = ''
@@ -25,10 +24,8 @@
   <title>Tác giả: {author} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <h1>Truyện của tác giả [<em>{author}</em>]</h1>
-  <NvinfoList items={books} {pgidx} {pgmax} />
-</Vessel>
+<h1>Truyện của tác giả [<em>{author}</em>]</h1>
+<NvinfoList items={books} {pgidx} {pgmax} />
 
 <style lang="scss">
   h1 {

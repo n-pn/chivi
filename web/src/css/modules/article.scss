@@ -1,13 +1,14 @@
 @use '../essence' as *;
 
 .m-article {
-  font-size: rem(17px);
+  // font-size: rem(17px);
+
   > * + * {
     margin-top: 1.25rem;
     margin-bottom: 0;
   }
 
-  a {
+  p > a {
     // display: inline-block;
     @include fgcolor(primary, 5);
   }

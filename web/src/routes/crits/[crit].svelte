@@ -18,7 +18,6 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import Vessel from '$sects/Vessel.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
 
   export let crit
@@ -28,40 +27,26 @@
   <title>Đánh giá - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <section class="main">
-    <nav class="h3 navi">
-      <a class="-link" href="/crits">
-        <SIcon name="messages" />
-        <span>Đánh giá</span>
-      </a>
-      <span class="-sep">/</span>
-      <a class="-link" href="/crits?user={crit.uslug}">
-        <SIcon name="user" />
-        <span>{crit.uname}</span>
-      </a>
-      <span class="-sep">/</span>
-      <a class="-link" href="/crits?book={crit.bid}">
-        <SIcon name="book" />
-        <span>{crit.bname}</span>
-      </a>
-    </nav>
+<nav class="h3 navi">
+  <a class="-link" href="/crits">
+    <SIcon name="messages" />
+    <span>Đánh giá</span>
+  </a>
+  <span class="-sep">/</span>
+  <a class="-link" href="/crits?user={crit.uslug}">
+    <SIcon name="user" />
+    <span>{crit.uname}</span>
+  </a>
+  <span class="-sep">/</span>
+  <a class="-link" href="/crits?book={crit.bid}">
+    <SIcon name="book" />
+    <span>{crit.bname}</span>
+  </a>
+</nav>
 
-    <Yscrit {crit} view_all={true} big_text={true} />
-  </section>
-</Vessel>
+<Yscrit {crit} view_all={true} big_text={true} />
 
 <style lang="scss">
-  .main {
-    border-radius: 0.5rem;
-    @include bgcolor(tert);
-
-    margin-top: 1rem;
-    @include bps(margin-left, calc(var(--gutter) * -1), 0);
-    @include bps(margin-right, calc(var(--gutter) * -1), 0);
-    padding: var(--gutter) calc(var(--gutter) * 2);
-  }
-
   .navi {
     a {
       @include fgcolor(secd);

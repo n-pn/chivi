@@ -78,8 +78,8 @@
 
 <style lang="scss">
   article {
-    @include bps(margin-left, 0rem, 0.1rem, 1.5rem, 2rem);
-    @include bps(margin-right, 0rem, 0.1rem, 1.5rem, 2rem);
+    @include bps(margin-left, 0rem, 0.25rem, 1.5rem, 2rem);
+    @include bps(margin-right, 0rem, 0.25rem, 1.5rem, 2rem);
   }
 
   .intro {

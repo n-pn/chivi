@@ -18,7 +18,6 @@
 </script>
 
 <script>
-  import Vessel from '$sects/Vessel.svelte'
   import NvinfoList from '$sects/Nvinfo/List.svelte'
 
   export let input = ''
@@ -34,15 +33,13 @@
   <title>Kết quả tìm kiếm cho "{input}" - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  {#if pgmax > 0}
-    <h1>Hiển thị kết quả từ {from} tới {upto} cho từ khoá "{input}":</h1>
-  {:else}
-    <h1>Không tìm được kết quả phù hợp cho từ khoá "{input}"</h1>
-  {/if}
+{#if pgmax > 0}
+  <h1>Hiển thị kết quả từ {from} tới {upto} cho từ khoá "{input}":</h1>
+{:else}
+  <h1>Không tìm được kết quả phù hợp cho từ khoá "{input}"</h1>
+{/if}
 
-  <NvinfoList items={books} {pgidx} {pgmax} />
-</Vessel>
+<NvinfoList items={books} {pgidx} {pgmax} />
 
 <style lang="scss">
   h1 {

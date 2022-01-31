@@ -133,7 +133,22 @@
   class:_shift={$toleft}>
   <Appbar />
 
-  <slot />
+  <main class="main">
+    <div class="vessel">
+      {#if $session.privi < 0}
+        <div class="pledge">
+          Protip: Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá
+          các tính năng!
+        </div>
+      {:else if $session.privi < 2}
+        <a class="pledge" href="/guide/donation">
+          Ủng hộ <strong>Chivi</strong> để nâng cấp quyền hạn!
+        </a>
+      {/if}
+
+      <slot />
+    </div>
+  </main>
 
   <footer>
     <div class="notes">
@@ -167,6 +182,48 @@
 
     &._shift {
       @include bps(padding-right, $ls: 30rem);
+    }
+  }
+
+  $page-width: 56rem;
+
+  :global(.vessel) {
+    width: $page-width;
+    max-width: 100%;
+    margin: 0 auto;
+
+    > :global(*) {
+      padding: 0 var(--gutter);
+    }
+  }
+
+  // $footer-height: 3.5rem;
+
+  .main {
+    flex: 1;
+    position: relative;
+  }
+
+  .pledge {
+    text-align: vessel;
+    margin: 0.5rem auto;
+    // max-width: 50vw;
+    font-size: rem(15px);
+    text-align: center;
+
+    padding: 0.5rem var(--gutter-small);
+
+    @include fgcolor(tert);
+    @include bgcolor(tert);
+
+    @include bdradi();
+  }
+
+  a.pledge {
+    display: block;
+
+    &:hover {
+      @include fgcolor(primary, 5);
     }
   }
 

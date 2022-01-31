@@ -10,7 +10,6 @@
 
 <script>
   import NvinfoForm from '$sects/Nvinfo/Form.svelte'
-  import Vessel from '$sects/Vessel.svelte'
 
   export let nvinfo = $page.stuff.nvinfo || {}
 
@@ -22,6 +21,4 @@
   }
 </script>
 
-<Vessel>
-  <NvinfoForm {params} />
-</Vessel>
+<NvinfoForm {params} />

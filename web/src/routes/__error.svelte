@@ -8,8 +8,6 @@
 </script>
 
 <script>
-  import Vessel from '$sects/Vessel.svelte'
-
   export let status
   export let error
 </script>
@@ -18,14 +16,12 @@
   <title>{status} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <section class="wrapper">
-    <article class="content">
-      <h1>{status}</h1>
-      <p>{error.message}</p>
-    </article>
-  </section>
-</Vessel>
+<section class="wrapper">
+  <article class="content">
+    <h1>{status}</h1>
+    <p>{error.message}</p>
+  </article>
+</section>
 
 <style lang="scss">
   .wrapper {

@@ -36,7 +36,7 @@
 
 <script>
   import Nvlist from '$parts/Nvlist.svelte'
-  import Vessel from '$sects/Vessel.svelte'
+  import Footer from '$sects/Footer.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let books = []
@@ -50,28 +50,26 @@
   <title>Chivi - Truyện tàu dịch máy</title>
 </svelte:head>
 
-<Vessel>
-  <div class="order">
-    {#each Object.entries(order_names) as [type, label]}
-      <a
-        href={pager.make_url({ page: 1, order: type })}
-        class="-type"
-        class:_active={pager.get('order') == type}>
-        <span>{label}</span>
-      </a>
-    {/each}
-  </div>
+<div class="order">
+  {#each Object.entries(order_names) as [type, label]}
+    <a
+      href={pager.make_url({ page: 1, order: type })}
+      class="-type"
+      class:_active={pager.get('order') == type}>
+      <span>{label}</span>
+    </a>
+  {/each}
+</div>
 
-  {#if books.length > 0}
-    <Nvlist {books} />
-  {:else}
-    <div class="empty">Danh sách trống</div>
-  {/if}
+{#if books.length > 0}
+  <Nvlist {books} />
+{:else}
+  <div class="empty">Danh sách trống</div>
+{/if}
 
-  <svelte:fragment slot="footer">
-    <Mpager {pager} {pgidx} {pgmax} />
-  </svelte:fragment>
-</Vessel>
+<Footer>
+  <Mpager {pager} {pgidx} {pgmax} />
+</Footer>
 
 <style lang="scss">
   :global(#svelte) {

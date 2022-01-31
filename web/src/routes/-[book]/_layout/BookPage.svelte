@@ -27,7 +27,6 @@
   import RTime from '$atoms/RTime.svelte'
   import BCover from '$atoms/BCover.svelte'
   import Gmenu from '$molds/Gmenu.svelte'
-  import Vessel from '$sects/Vessel.svelte'
 
   export let nvinfo = $page.stuff.nvinfo || {}
   export let ubmemo = $page.stuff.ubmemo || {}
@@ -49,160 +48,158 @@
   }
 </script>
 
-<Vessel>
-  <div class="main-info">
-    <div class="title">
-      <h1 class="bname _main">
-        <bname-vi>{nvinfo.vname}</bname-vi>
-        {#if nvinfo.zname != nvinfo.vname}
-          <bname-sep>/</bname-sep>
-          <bname-zh>{nvinfo.zname}</bname-zh>
-        {/if}
-        {#if nvinfo.hname != nvinfo.vname && nvinfo.hname != nvinfo.zname}
-          <bname-sep>/</bname-sep>
-          <bname-vi>{nvinfo.hname}</bname-vi>
-        {/if}
-      </h1>
-    </div>
+<div class="main-info">
+  <div class="title">
+    <h1 class="bname _main">
+      <bname-vi>{nvinfo.vname}</bname-vi>
+      {#if nvinfo.zname != nvinfo.vname}
+        <bname-sep>/</bname-sep>
+        <bname-zh>{nvinfo.zname}</bname-zh>
+      {/if}
+      {#if nvinfo.hname != nvinfo.vname && nvinfo.hname != nvinfo.zname}
+        <bname-sep>/</bname-sep>
+        <bname-vi>{nvinfo.hname}</bname-vi>
+      {/if}
+    </h1>
+  </div>
 
-    <div class="cover">
-      <BCover bcover={nvinfo.bcover} />
-    </div>
+  <div class="cover">
+    <BCover bcover={nvinfo.bcover} />
+  </div>
 
-    <div class="line">
-      <span class="stat -trim">
-        <SIcon name="edit" />
-        <a class="link" href="/books/={nvinfo.author}">
-          <span class="label">{nvinfo.author}</span>
-        </a>
-      </span>
-
-      <div class="bgenres">
-        {#each nvinfo.genres || [] as genre, idx}
-          <span class="stat _genre" class:_trim={idx > 1}>
-            <a class="link" href="/books/-{genre}">
-              <SIcon name="folder" />
-              <span class="label">{genre}</span>
-            </a>
-          </span>
-        {/each}
-      </div>
-    </div>
-
-    <div class="line">
-      <span class="stat _status">
-        <SIcon name="activity" />
-        <span>{nvinfo.status}</span>
-      </span>
-
-      <span class="stat _mftime">
-        <SIcon name="clock" />
-        <span><RTime mtime={nvinfo.mftime} /></span>
-      </span>
-    </div>
-
-    <div class="line">
-      <span class="stat">
-        <span>Đánh giá: </span><span class="label"
-          >{nvinfo.voters <= 10 ? '--' : nvinfo.rating}</span
-        >/10</span>
-      <span class="stat"
-        >({nvinfo.voters} lượt<span class="trim">&nbsp;đánh giá</span>)</span>
-    </div>
-
-    {#if nvinfo.ys_snvid || nvinfo.pub_link}
-      <div class="line">
-        <span class="stat">Liên kết:</span>
-
-        {#if nvinfo.pub_link != ''}
-          <a href="books?origin={nvinfo.pub_name}"><SIcon name="search" /></a>
-
-          <a
-            class="stat link _outer"
-            href={nvinfo.pub_link}
-            rel="noopener noreferer"
-            target="_blank"
-            title="Trang nguồn">
-            <span>{nvinfo.pub_name}</span>
-          </a>
-        {/if}
-
-        {#if nvinfo.ys_snvid != ''}
-          <a
-            class="stat link _outer"
-            href="https://www.yousuu.com/book/{nvinfo.ys_snvid}"
-            rel="noopener noreferer"
-            target="_blank"
-            title="Đánh giá">
-            <span>yousuu</span>
-          </a>
-        {/if}
-      </div>
-    {/if}
-
-    <div class="line">
-      <Gmenu class="navi-item" loc="bottom">
-        <button
-          class="m-btn _fill _{status_colors[ubmemo.status]}"
-          slot="trigger">
-          <SIcon name={status_icons[ubmemo.status]} />
-          <span>{status_names[ubmemo.status]}</span>
-        </button>
-
-        <svelte:fragment slot="content">
-          {#each status_types as status}
-            <button class="-item" on:click={() => update_ubmemo(status)}>
-              <SIcon name={status_icons[status]} />
-              <span>{status_names[status]}</span>
-              {#if status == ubmemo.status}
-                <span class="_right"><SIcon name="check" /></span>
-              {/if}
-            </button>
-          {/each}
-        </svelte:fragment>
-      </Gmenu>
-
-      <a class="m-btn _primary" href="/-{nvinfo.bslug}/chaps" data-kbd="i">
-        <SIcon name="list" />
-        <span class="-txt _hide">Chương tiết</span>
+  <div class="line">
+    <span class="stat -trim">
+      <SIcon name="edit" />
+      <a class="link" href="/books/={nvinfo.author}">
+        <span class="label">{nvinfo.author}</span>
       </a>
+    </span>
 
-      <a class="m-btn" href="/dicts/{nvinfo.bhash}" data-kbd="p">
-        <SIcon name="package" />
-        <span class="-txt _hide">Từ điển</span>
-      </a>
+    <div class="bgenres">
+      {#each nvinfo.genres || [] as genre, idx}
+        <span class="stat _genre" class:_trim={idx > 1}>
+          <a class="link" href="/books/-{genre}">
+            <SIcon name="folder" />
+            <span class="label">{genre}</span>
+          </a>
+        </span>
+      {/each}
     </div>
   </div>
 
-  <book-section>
-    <header class="section-header">
-      <a
-        href="/-{nvinfo.bslug}"
-        class="header-tab"
-        class:_active={nvtab == 'index'}>
-        <span>Tổng quan</span>
-      </a>
+  <div class="line">
+    <span class="stat _status">
+      <SIcon name="activity" />
+      <span>{nvinfo.status}</span>
+    </span>
 
-      <a
-        href="/-{nvinfo.bslug}/crits"
-        class="header-tab"
-        class:_active={nvtab == 'crits'}>
-        <span>Đánh giá</span>
-      </a>
+    <span class="stat _mftime">
+      <SIcon name="clock" />
+      <span><RTime mtime={nvinfo.mftime} /></span>
+    </span>
+  </div>
 
-      <a
-        href="/-{nvinfo.bslug}/board"
-        class="header-tab"
-        class:_active={nvtab == 'board'}>
-        <span>Thảo luận</span>
-      </a>
-    </header>
+  <div class="line">
+    <span class="stat">
+      <span>Đánh giá: </span><span class="label"
+        >{nvinfo.voters <= 10 ? '--' : nvinfo.rating}</span
+      >/10</span>
+    <span class="stat"
+      >({nvinfo.voters} lượt<span class="trim">&nbsp;đánh giá</span>)</span>
+  </div>
 
-    <div class="section-content">
-      <slot />
+  {#if nvinfo.ys_snvid || nvinfo.pub_link}
+    <div class="line">
+      <span class="stat">Liên kết:</span>
+
+      {#if nvinfo.pub_link != ''}
+        <a href="books?origin={nvinfo.pub_name}"><SIcon name="search" /></a>
+
+        <a
+          class="stat link _outer"
+          href={nvinfo.pub_link}
+          rel="noopener noreferer"
+          target="_blank"
+          title="Trang nguồn">
+          <span>{nvinfo.pub_name}</span>
+        </a>
+      {/if}
+
+      {#if nvinfo.ys_snvid != ''}
+        <a
+          class="stat link _outer"
+          href="https://www.yousuu.com/book/{nvinfo.ys_snvid}"
+          rel="noopener noreferer"
+          target="_blank"
+          title="Đánh giá">
+          <span>yousuu</span>
+        </a>
+      {/if}
     </div>
-  </book-section>
-</Vessel>
+  {/if}
+
+  <div class="line">
+    <Gmenu class="navi-item" loc="bottom">
+      <button
+        class="m-btn _fill _{status_colors[ubmemo.status]}"
+        slot="trigger">
+        <SIcon name={status_icons[ubmemo.status]} />
+        <span>{status_names[ubmemo.status]}</span>
+      </button>
+
+      <svelte:fragment slot="content">
+        {#each status_types as status}
+          <button class="-item" on:click={() => update_ubmemo(status)}>
+            <SIcon name={status_icons[status]} />
+            <span>{status_names[status]}</span>
+            {#if status == ubmemo.status}
+              <span class="_right"><SIcon name="check" /></span>
+            {/if}
+          </button>
+        {/each}
+      </svelte:fragment>
+    </Gmenu>
+
+    <a class="m-btn _primary" href="/-{nvinfo.bslug}/chaps" data-kbd="i">
+      <SIcon name="list" />
+      <span class="-txt _hide">Chương tiết</span>
+    </a>
+
+    <a class="m-btn" href="/dicts/{nvinfo.bhash}" data-kbd="p">
+      <SIcon name="package" />
+      <span class="-txt _hide">Từ điển</span>
+    </a>
+  </div>
+</div>
+
+<book-section>
+  <header class="section-header">
+    <a
+      href="/-{nvinfo.bslug}"
+      class="header-tab"
+      class:_active={nvtab == 'index'}>
+      <span>Tổng quan</span>
+    </a>
+
+    <a
+      href="/-{nvinfo.bslug}/crits"
+      class="header-tab"
+      class:_active={nvtab == 'crits'}>
+      <span>Đánh giá</span>
+    </a>
+
+    <a
+      href="/-{nvinfo.bslug}/board"
+      class="header-tab"
+      class:_active={nvtab == 'board'}>
+      <span>Thảo luận</span>
+    </a>
+  </header>
+
+  <div class="section-content">
+    <slot />
+  </div>
+</book-section>
 
 <style lang="scss">
   .main-info {

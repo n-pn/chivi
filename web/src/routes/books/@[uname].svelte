@@ -20,7 +20,7 @@
 
 <script>
   import Nvlist from '$parts/Nvlist.svelte'
-  import Vessel from '$sects/Vessel.svelte'
+  import Footer from '$sects/Footer.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let uname = ''
@@ -37,28 +37,28 @@
   <title>Tủ truyện của {uname} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <div class="tabs">
-    {#each status_types as status}
-      <a
-        href="/books/@{uname}?bmark={status}"
-        class="tab"
-        class:_active={status == bmark}>
-        {status_names[status]}
-      </a>
-    {/each}
-  </div>
+<div class="tabs">
+  {#each status_types as status}
+    <a
+      href="/books/@{uname}?bmark={status}"
+      class="tab"
+      class:_active={status == bmark}>
+      {status_names[status]}
+    </a>
+  {/each}
+</div>
 
-  {#if books.length == 0}
-    <div class="empty">Danh sách trống</div>
-  {:else}
-    <Nvlist {books} nvtab="chaps" />
-  {/if}
+{#if books.length == 0}
+  <div class="empty">Danh sách trống</div>
+{:else}
+  <Nvlist {books} nvtab="chaps" />
+{/if}
 
-  <div class="pagi" slot="footer">
+<Footer>
+  <div class="pagi">
     <Mpager {pager} {pgidx} {pgmax} />
   </div>
-</Vessel>
+</Footer>
 
 <style lang="scss">
   .tabs {

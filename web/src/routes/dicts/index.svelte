@@ -12,8 +12,8 @@
 </script>
 
 <script>
+  import Footer from '$lib/sects/Footer.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import Vessel from '$sects/Vessel.svelte'
 
   export let cores = []
   export let books = []
@@ -27,43 +27,41 @@
   <title>Từ điển - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <article class="m-article">
-    <h1>Từ điển</h1>
+<article class="m-article">
+  <h1>Từ điển</h1>
 
-    <h2>Hệ thống</h2>
+  <h2>Hệ thống</h2>
 
-    <div class="dicts">
-      {#each cores as [dname, label, dsize]}
-        <a class="-dict" href="/dicts/{dname}">
-          <div class="-name">{label}</div>
-          <div class="-meta">
-            <div class="-type">Hệ thống</div>
-            <div class="-size">Số từ: {dsize}</div>
-          </div>
-        </a>
-      {/each}
-    </div>
+  <div class="dicts">
+    {#each cores as [dname, label, dsize]}
+      <a class="-dict" href="/dicts/{dname}">
+        <div class="-name">{label}</div>
+        <div class="-meta">
+          <div class="-type">Hệ thống</div>
+          <div class="-size">Số từ: {dsize}</div>
+        </div>
+      </a>
+    {/each}
+  </div>
 
-    <h2>Theo bộ ({total})</h2>
+  <h2>Theo bộ ({total})</h2>
 
-    <div class="dicts">
-      {#each books as [dname, label, dsize]}
-        <a class="-dict" href="/dicts/{dname}">
-          <div class="-name">{label}</div>
-          <div class="-meta">
-            <div class="-type">Bộ truyện</div>
-            <div class="-size">Số từ: {dsize}</div>
-          </div>
-        </a>
-      {/each}
-    </div>
+  <div class="dicts">
+    {#each books as [dname, label, dsize]}
+      <a class="-dict" href="/dicts/{dname}">
+        <div class="-name">{label}</div>
+        <div class="-meta">
+          <div class="-type">Bộ truyện</div>
+          <div class="-size">Số từ: {dsize}</div>
+        </div>
+      </a>
+    {/each}
+  </div>
+</article>
 
-    <footer class="foot">
-      <Mpager pager={new Pager($page.url)} {pgidx} {pgmax} />
-    </footer>
-  </article>
-</Vessel>
+<Footer>
+  <Mpager pager={new Pager($page.url)} {pgidx} {pgmax} />
+</Footer>
 
 <style lang="scss">
   .dicts {

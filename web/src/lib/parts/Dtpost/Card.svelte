@@ -27,111 +27,109 @@
     <DtpostForm dtopic_id={dtpost.dt} dtpost_id={dtpost.id} {on_destroy} />
   </dtpost-edit>
 {:else}
-  <dtpost-item>
-    <dtpost-card
-      id={card_id}
-      class:active={active_card == card_id}
-      class:spread={render_mode == 1}>
-      {#if render_mode > 0}
-        <dtpost-orig>
-          <a href="/forum/-{dtpost.db_bslug}">
-            {dtpost.db_bname}
-          </a>
-          <span>/</span>
-          <a href="/forum/-{dtpost.db_bslug}/-{dtpost.dt_tslug}-{dtpost.dt}">
-            {dtpost.dt_title}
-          </a>
-        </dtpost-orig>
-      {/if}
+  <dtpost-card
+    id={card_id}
+    class:active={active_card == card_id}
+    class:larger={render_mode == 0}>
+    {#if render_mode > 0}
+      <dtpost-orig>
+        <a href="/forum/-{dtpost.db_bslug}">
+          {dtpost.db_bname}
+        </a>
+        <span>/</span>
+        <a href="/forum/-{dtpost.db_bslug}/-{dtpost.dt_tslug}-{dtpost.dt}">
+          {dtpost.dt_title}
+        </a>
+      </dtpost-orig>
+    {/if}
 
-      <dtpost-head>
+    <dtpost-head>
+      <dtpost-meta>
+        <a
+          class="cv-user"
+          href="{$page.url.pathname}?cvuser={dtpost.u_dname}"
+          privi={dtpost.u_privi}
+          >{dtpost.u_dname}
+        </a>
+      </dtpost-meta>
+
+      {#if dtpost.rp_no > 0}
+        <dtpost-sep><SIcon name="corner-up-right" /></dtpost-sep>
         <dtpost-meta>
           <a
             class="cv-user"
-            href="{$page.url.pathname}?cvuser={dtpost.u_dname}"
-            privi={dtpost.u_privi}
-            >{dtpost.u_dname}
+            href="{$page.url.pathname}#tp-{dtpost.rp_no}"
+            privi={dtpost.ru_privi}
+            on:click={() => (active_card = 'tp-' + dtpost.rp_no)}
+            >{dtpost.ru_dname}
           </a>
         </dtpost-meta>
+      {/if}
 
-        {#if dtpost.rp_no > 0}
-          <dtpost-sep><SIcon name="corner-up-right" /></dtpost-sep>
-          <dtpost-meta>
-            <a
-              class="cv-user"
-              href="{$page.url.pathname}#tp-{dtpost.rp_no}"
-              privi={dtpost.ru_privi}
-              on:click={() => (active_card = 'tp-' + dtpost.rp_no)}
-              >{dtpost.ru_dname}
-            </a>
-          </dtpost-meta>
-        {/if}
+      <dtpost-sep>·</dtpost-sep>
+      <dtpost-meta>{rel_time(dtpost.ctime)}</dtpost-meta>
 
+      {#if dtpost.utime > dtpost.ctime}
         <dtpost-sep>·</dtpost-sep>
-        <dtpost-meta>{rel_time(dtpost.ctime)}</dtpost-meta>
+        <dtpost-meta class="edit">Đã sửa</dtpost-meta>
+      {/if}
 
-        {#if dtpost.utime > dtpost.ctime}
-          <dtpost-sep>·</dtpost-sep>
-          <dtpost-meta class="edit">Đã sửa</dtpost-meta>
+      <dthead-right>
+        <Gmenu dir="right">
+          <button class="btn" slot="trigger">
+            <dtpost-meta class="no">#{dtpost.no}</dtpost-meta>
+          </button>
+
+          <svelte:fragment slot="content">
+            <button
+              class="-item"
+              disabled={!can_edit}
+              on:click={() => (_mode = 1)}>
+              <SIcon name="pencil" />
+              <span>Sửa nội dung</span>
+            </button>
+          </svelte:fragment>
+        </Gmenu>
+      </dthead-right>
+    </dtpost-head>
+
+    <dtpost-body class="m-article">{@html dtpost.ohtml}</dtpost-body>
+
+    <dtpost-foot>
+      <dtpost-stats>
+        {#if dtpost.like_count > 0}
+          <dtpost-meta>
+            <SIcon name="heart" />
+            <span>{dtpost.like_count}</span>
+          </dtpost-meta>
         {/if}
 
-        <dthead-right>
-          <Gmenu dir="right">
-            <button class="btn" slot="trigger">
-              <dtpost-meta class="no">#{dtpost.no}</dtpost-meta>
-            </button>
-
-            <svelte:fragment slot="content">
-              <button
-                class="-item"
-                disabled={!can_edit}
-                on:click={() => (_mode = 1)}>
-                <SIcon name="pencil" />
-                <span>Sửa nội dung</span>
-              </button>
-            </svelte:fragment>
-          </Gmenu>
-        </dthead-right>
-      </dtpost-head>
-
-      <dtpost-body class="m-article">{@html dtpost.ohtml}</dtpost-body>
-
-      <dtpost-foot>
-        <dtpost-stats>
-          {#if dtpost.like_count > 0}
-            <dtpost-meta>
-              <SIcon name="heart" />
-              <span>{dtpost.like_count}</span>
-            </dtpost-meta>
-          {/if}
-
-          {#if dtpost.repl_count > 0}
-            <dtpost-meta>
-              <SIcon name="message-circle" />
-              <span>{dtpost.repl_count}</span>
-            </dtpost-meta>
-          {/if}
-        </dtpost-stats>
-
-        <dtpost-react>
+        {#if dtpost.repl_count > 0}
           <dtpost-meta>
-            <button class="btn">
-              <span>{dtpost.like_count > 0 ? dtpost.like_count : ''}</span>
-              <SIcon name="thumb-up" />
-              <span>Thích</span>
-            </button>
+            <SIcon name="message-circle" />
+            <span>{dtpost.repl_count}</span>
           </dtpost-meta>
+        {/if}
+      </dtpost-stats>
 
-          <dtpost-meta>
-            <button class="btn" on:click={() => (_mode = 2)}>
-              <SIcon name="arrow-back-up" />
-              <span>Trả lời</span>
-            </button>
-          </dtpost-meta>
-        </dtpost-react>
-      </dtpost-foot>
-    </dtpost-card>
-  </dtpost-item>
+      <dtpost-react>
+        <dtpost-meta>
+          <button class="btn">
+            <span>{dtpost.like_count > 0 ? dtpost.like_count : ''}</span>
+            <SIcon name="thumb-up" />
+            <span>Thích</span>
+          </button>
+        </dtpost-meta>
+
+        <dtpost-meta>
+          <button class="btn" on:click={() => (_mode = 2)}>
+            <SIcon name="arrow-back-up" />
+            <span>Trả lời</span>
+          </button>
+        </dtpost-meta>
+      </dtpost-react>
+    </dtpost-foot>
+  </dtpost-card>
 {/if}
 
 {#if _mode == 2}
@@ -150,15 +148,9 @@
     margin-left: 0.75rem;
   }
 
-  dtpost-item {
+  dtpost-card {
     display: block;
     margin-top: 0.75rem;
-  }
-
-  dtpost-card {
-    display: inline-block;
-    min-width: min(24rem, 85vw);
-    max-width: 100%;
 
     @include bgcolor(secd);
     @include bdradi();
@@ -168,8 +160,8 @@
       @include bgcolor(tert);
     }
 
-    &.spread {
-      width: 100%;
+    &.larger {
+      font-size: rem(17px);
     }
 
     @include tm-dark {

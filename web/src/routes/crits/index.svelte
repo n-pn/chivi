@@ -15,7 +15,6 @@
 <script>
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
-  import Vessel from '$sects/Vessel.svelte'
 
   export let crits = []
   export let pgidx = 1
@@ -29,41 +28,27 @@
   <title>Đánh giá - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <section class="main">
-    <div class="sorts" id="sorts">
-      <span class="h3 -label">Đánh giá</span>
-      {#each Object.entries(sorts) as [sort, name]}
-        <a
-          href={pager.make_url({ sort, page: 1 })}
-          class="-sort"
-          class:_active={sort == _sort}>{name}</a>
-      {/each}
-    </div>
+<div class="sorts" id="sorts">
+  <span class="h3 -label">Đánh giá</span>
+  {#each Object.entries(sorts) as [sort, name]}
+    <a
+      href={pager.make_url({ sort, page: 1 })}
+      class="-sort"
+      class:_active={sort == _sort}>{name}</a>
+  {/each}
+</div>
 
-    <div class="crits">
-      {#each crits as crit}
-        <Yscrit {crit} view_all={crit.vhtml.length < 640} />
-      {/each}
+<div class="crits">
+  {#each crits as crit}
+    <Yscrit {crit} view_all={crit.vhtml.length < 640} />
+  {/each}
 
-      <footer class="pagi">
-        <Mpager {pager} {pgidx} {pgmax} />
-      </footer>
-    </div>
-  </section>
-</Vessel>
+  <footer class="pagi">
+    <Mpager {pager} {pgidx} {pgmax} />
+  </footer>
+</div>
 
 <style lang="scss">
-  .main {
-    border-radius: 0.5rem;
-    @include bgcolor(tert);
-
-    margin-top: 1rem;
-    @include bps(margin-left, calc(var(--gutter) * -1), 0);
-    @include bps(margin-right, calc(var(--gutter) * -1), 0);
-    padding: var(--gutter) calc(var(--gutter) * 2);
-  }
-
   .sorts {
     line-height: 2rem;
     height: 2rem;

@@ -39,7 +39,7 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Gmenu from '$molds/Gmenu.svelte'
   import Notext from '$parts/Notext.svelte'
-  import Vessel from '$sects/Vessel.svelte'
+  import Footer from '$sects/Footer.svelte'
   import CvPage from '$sects/CvPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
 
@@ -120,29 +120,29 @@
   <title>{chinfo.title} - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <ChapSeed {chmeta} {chinfo} />
+<ChapSeed {chmeta} {chinfo} />
 
-  {#if cvdata}
-    <CvPage
-      {cvdata}
-      {zhtext}
-      dname={nvinfo.bhash}
-      d_dub={nvinfo.vname}
-      {on_change}>
-      <svelte:fragment slot="header">
-        <nav class="bread">
-          <a href="/-{nvinfo.bslug}" class="crumb _link">{nvinfo.vname}</a>
-          <span>/</span>
-          <span class="crumb _text">{chinfo.chvol}</span>
-        </nav>
-      </svelte:fragment>
-    </CvPage>
-  {:else}
-    <Notext {chmeta} />
-  {/if}
+{#if cvdata}
+  <CvPage
+    {cvdata}
+    {zhtext}
+    dname={nvinfo.bhash}
+    d_dub={nvinfo.vname}
+    {on_change}>
+    <svelte:fragment slot="header">
+      <nav class="bread">
+        <a href="/-{nvinfo.bslug}" class="crumb _link">{nvinfo.vname}</a>
+        <span>/</span>
+        <span class="crumb _text">{chinfo.chvol}</span>
+      </nav>
+    </svelte:fragment>
+  </CvPage>
+{:else}
+  <Notext {chmeta} />
+{/if}
 
-  <div class="navi" slot="footer">
+<Footer>
+  <div class="navi">
     <a
       href={paths.prev}
       class="m-btn navi-item"
@@ -220,7 +220,7 @@
       <SIcon name="chevron-right" />
     </a>
   </div>
-</Vessel>
+</Footer>
 
 <style lang="scss">
   .navi {

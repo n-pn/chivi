@@ -154,6 +154,7 @@
     max-height: 15rem;
     overflow: hidden;
     transform: max-height 1s ease-in-out;
+    font-size: rem(17px);
 
     ._all & {
       max-height: initial;

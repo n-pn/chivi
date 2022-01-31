@@ -57,78 +57,76 @@
   $: pager = new Pager($page.url, { sname: 'chivi', page: 1 })
 </script>
 
-<Vessel>
-  <SeedList {pager} />
+<SeedList {pager} />
 
-  <chap-page>
-    <page-info>
-      <info-left>
-        <info-text>{chinfo.sname}</info-text>
-        <info-span>{chinfo.total} chương</info-span>
-        <info-span><RTime mtime={chinfo.utime} /></info-span>
-      </info-left>
+<chap-page>
+  <page-info>
+    <info-left>
+      <info-text>{chinfo.sname}</info-text>
+      <info-span>{chinfo.total} chương</info-span>
+      <info-span><RTime mtime={chinfo.utime} /></info-span>
+    </info-left>
 
-      <info-right>
-        {#if chinfo.sname == 'chivi' || chinfo.sname == 'users'}
-          <a
-            class="m-btn"
-            class:_disable={$session.privi < 2}
-            href="/-{nvinfo.bslug}/+chap?chidx={chinfo.total + 1}">
-            <SIcon name="circle-plus" />
-            <span class="-hide">Thêm</span>
-          </a>
-        {:else}
-          <a
-            class="m-btn"
-            href={chinfo.wlink}
-            target="_blank"
-            rel="noopener noreferer">
-            <SIcon name="external-link" />
-            <span class="-hide">Nguồn</span>
-          </a>
-        {/if}
-
+    <info-right>
+      {#if chinfo.sname == 'chivi' || chinfo.sname == 'users'}
         <a
           class="m-btn"
-          class:_disable={$session.privi < 1}
-          href={pager.make_url({ page: chinfo.pgidx, force: true })}>
-          {#if $navigating}
-            <SIcon name="loader" spin={true} />
-          {:else}
-            <SIcon name="refresh" />
-          {/if}
-          <span class="-hide">Đổi mới</span>
+          class:_disable={$session.privi < 2}
+          href="/-{nvinfo.bslug}/+chap?chidx={chinfo.total + 1}">
+          <SIcon name="circle-plus" />
+          <span class="-hide">Thêm</span>
         </a>
-      </info-right>
-    </page-info>
-
-    <chap-list>
-      {#if chinfo.pgmax > 0}
-        <Chlist
-          bslug={nvinfo.bslug}
-          sname={chinfo.sname}
-          chaps={chinfo.lasts}
-          track={ubmemo}
-          is_remote={chinfo._type > 2} />
-
-        <div class="chlist-sep" />
-
-        <Chlist
-          bslug={nvinfo.bslug}
-          sname={chinfo.sname}
-          chaps={chinfo.chaps}
-          track={ubmemo}
-          is_remote={chinfo._type > 2} />
-
-        <footer class="foot">
-          <Mpager {pager} pgidx={chinfo.pgidx} pgmax={chinfo.pgmax} />
-        </footer>
       {:else}
-        <p class="empty">Không có nội dung :(</p>
+        <a
+          class="m-btn"
+          href={chinfo.wlink}
+          target="_blank"
+          rel="noopener noreferer">
+          <SIcon name="external-link" />
+          <span class="-hide">Nguồn</span>
+        </a>
       {/if}
-    </chap-list>
-  </chap-page>
-</Vessel>
+
+      <a
+        class="m-btn"
+        class:_disable={$session.privi < 1}
+        href={pager.make_url({ page: chinfo.pgidx, force: true })}>
+        {#if $navigating}
+          <SIcon name="loader" spin={true} />
+        {:else}
+          <SIcon name="refresh" />
+        {/if}
+        <span class="-hide">Đổi mới</span>
+      </a>
+    </info-right>
+  </page-info>
+
+  <chap-list>
+    {#if chinfo.pgmax > 0}
+      <Chlist
+        bslug={nvinfo.bslug}
+        sname={chinfo.sname}
+        chaps={chinfo.lasts}
+        track={ubmemo}
+        is_remote={chinfo._type > 2} />
+
+      <div class="chlist-sep" />
+
+      <Chlist
+        bslug={nvinfo.bslug}
+        sname={chinfo.sname}
+        chaps={chinfo.chaps}
+        track={ubmemo}
+        is_remote={chinfo._type > 2} />
+
+      <footer class="foot">
+        <Mpager {pager} pgidx={chinfo.pgidx} pgmax={chinfo.pgmax} />
+      </footer>
+    {:else}
+      <p class="empty">Không có nội dung :(</p>
+    {/if}
+  </chap-list>
+</chap-page>
 
 <style lang="scss">
   @mixin label {

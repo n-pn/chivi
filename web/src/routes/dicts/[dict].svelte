@@ -114,131 +114,119 @@
   <title>Từ điển: {d_dub} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <article class="m-article">
-    <h1 class="h3">{d_dub}</h1>
-    <p>Entries: {total}</p>
+<article class="m-article">
+  <h1 class="h3">{d_dub}</h1>
+  <p>Entries: {total}</p>
 
-    <div class="body">
-      <table>
-        <thead>
-          <tr class="thead">
-            <th>#</th>
-            <th>Trung</th>
-            <th>Nghĩa Việt</th>
-            <th>Phân loại</th>
-            <th>Ư.t</th>
-            <th>Người dùng</th>
-            <th>Cập nhật</th>
-          </tr>
+  <div class="body">
+    <table>
+      <thead>
+        <tr class="thead">
+          <th>#</th>
+          <th>Trung</th>
+          <th>Nghĩa Việt</th>
+          <th>Phân loại</th>
+          <th>Ư.t</th>
+          <th>Người dùng</th>
+          <th>Cập nhật</th>
+        </tr>
 
-          <tr class="tquery">
-            <td><SIcon name="search" /></td>
-            <td
-              ><input type="text" placeholder="-" bind:value={query.key} /></td>
-            <td
-              ><input type="text" placeholder="-" bind:value={query.val} /></td>
-            <td>
-              <button class="m-btn _sm" on:click={() => (postag_state = 2)}
-                >{ptnames[query.ptag] || '-'}</button>
-            </td>
-            <td
-              ><input
-                type="text"
-                placeholder="-"
-                bind:value={query.rank} /></td>
-            <td
-              ><input
-                type="text"
-                placeholder="-"
-                bind:value={query.uname} /></td>
-            <td>
-              <button class="m-btn _sm" on:click={reset_query}>
-                <SIcon name="eraser" />
-              </button>
-              <a
-                class="m-btn _sm"
-                data-kbd="ctrl+enter"
-                href={pager.make_url({ ...query, page: 1 })}>
-                <SIcon name="search" />
-              </a>
-            </td>
-          </tr>
-        </thead>
+        <tr class="tquery">
+          <td><SIcon name="search" /></td>
+          <td><input type="text" placeholder="-" bind:value={query.key} /></td>
+          <td><input type="text" placeholder="-" bind:value={query.val} /></td>
+          <td>
+            <button class="m-btn _sm" on:click={() => (postag_state = 2)}
+              >{ptnames[query.ptag] || '-'}</button>
+          </td>
+          <td><input type="text" placeholder="-" bind:value={query.rank} /></td>
+          <td
+            ><input type="text" placeholder="-" bind:value={query.uname} /></td>
+          <td>
+            <button class="m-btn _sm" on:click={reset_query}>
+              <SIcon name="eraser" />
+            </button>
+            <a
+              class="m-btn _sm"
+              data-kbd="ctrl+enter"
+              href={pager.make_url({ ...query, page: 1 })}>
+              <SIcon name="search" />
+            </a>
+          </td>
+        </tr>
+      </thead>
 
-        <tbody>
-          {#each terms as { key, val, ptag, rank, mtime, uname, _flag }, idx}
-            <tr class="term _{_flag}">
-              <td class="-idx">{offset + idx}</td>
-              <td class="-key" on:click={() => show_lookup(key)}>
-                <span>{key}</span>
-                <div class="hover">
-                  <span class="m-btn _xs _active">
-                    <SIcon name="compass" />
-                  </span>
-
-                  <button
-                    class="m-btn _xs"
-                    on:click|stopPropagation={() => (query.key = key)}>
-                    <SIcon name="search" />
-                  </button>
-                </div>
-              </td>
-              <td
-                class="-val"
-                class:_del={!val[0]}
-                on:click={() => show_upsert(key, 1)}>
-                <span>
-                  {val[0] || 'Đã xoá'}
+      <tbody>
+        {#each terms as { key, val, ptag, rank, mtime, uname, _flag }, idx}
+          <tr class="term _{_flag}">
+            <td class="-idx">{offset + idx}</td>
+            <td class="-key" on:click={() => show_lookup(key)}>
+              <span>{key}</span>
+              <div class="hover">
+                <span class="m-btn _xs _active">
+                  <SIcon name="compass" />
                 </span>
 
-                <div class="hover">
-                  <span class="m-btn _xs _active">
-                    <SIcon name="pencil" />
-                  </span>
-                  <button
-                    class="m-btn _xs"
-                    on:click|stopPropagation={() => (query.val = val[0])}>
-                    <SIcon name="search" />
-                  </button>
-                </div>
-              </td>
-              <td class="-ptag">
-                <span on:click={() => show_upsert(key, 2)}>
-                  {ptnames[ptag] || '~'}
-                </span>
-                <div class="hover">
-                  <button
-                    on:click={() => show_upsert(key, 2)}
-                    class="m-btn _xs _active">
-                    <SIcon name="pencil" />
-                  </button>
-                  <a
-                    class="m-btn _xs"
-                    href={pager.make_url({ ptag: ptag || '~' })}>
-                    <SIcon name="search" />
-                  </a>
-                </div>
-              </td>
-              <td class="-rank">
-                <a href="{$page.url.pathname}?rank={rank}"
-                  >{render_rank(rank)}</a>
-              </td>
-              <td class="-uname  _{special_type(uname)}">
-                <a href="{$page.url.pathname}?uname={uname}">{uname}</a>
-              </td>
-              <td class="-mtime">{render_time(mtime)} </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
+                <button
+                  class="m-btn _xs"
+                  on:click|stopPropagation={() => (query.key = key)}>
+                  <SIcon name="search" />
+                </button>
+              </div>
+            </td>
+            <td
+              class="-val"
+              class:_del={!val[0]}
+              on:click={() => show_upsert(key, 1)}>
+              <span>
+                {val[0] || 'Đã xoá'}
+              </span>
 
-    <footer class="foot">
-      <Mpager {pager} {pgidx} {pgmax} />
-    </footer>
-  </article>
-</Vessel>
+              <div class="hover">
+                <span class="m-btn _xs _active">
+                  <SIcon name="pencil" />
+                </span>
+                <button
+                  class="m-btn _xs"
+                  on:click|stopPropagation={() => (query.val = val[0])}>
+                  <SIcon name="search" />
+                </button>
+              </div>
+            </td>
+            <td class="-ptag">
+              <span on:click={() => show_upsert(key, 2)}>
+                {ptnames[ptag] || '~'}
+              </span>
+              <div class="hover">
+                <button
+                  on:click={() => show_upsert(key, 2)}
+                  class="m-btn _xs _active">
+                  <SIcon name="pencil" />
+                </button>
+                <a
+                  class="m-btn _xs"
+                  href={pager.make_url({ ptag: ptag || '~' })}>
+                  <SIcon name="search" />
+                </a>
+              </div>
+            </td>
+            <td class="-rank">
+              <a href="{$page.url.pathname}?rank={rank}">{render_rank(rank)}</a>
+            </td>
+            <td class="-uname  _{special_type(uname)}">
+              <a href="{$page.url.pathname}?uname={uname}">{uname}</a>
+            </td>
+            <td class="-mtime">{render_time(mtime)} </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="foot">
+    <Mpager {pager} {pgidx} {pgmax} />
+  </footer>
+</article>
 
 {#if $lookup.enabled}
   <Lookup />

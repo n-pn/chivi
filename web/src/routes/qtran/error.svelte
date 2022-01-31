@@ -84,8 +84,6 @@
     padding: var(--gutter);
     @include bdradi();
     @include bgcolor(tert);
-    @include bps(margin-left, calc(var(--gutter) * -1), $pl: 0);
-    @include bps(margin-right, calc(var(--gutter) * -1), $pl: 0);
     @include bps(border-radius, 0, $pl: 1rem);
 
     @include tm-dark {

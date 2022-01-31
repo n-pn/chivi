@@ -31,7 +31,7 @@
   import { goto } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import Vessel from '$sects/Vessel.svelte'
+  import Footer from '$sects/Footer.svelte'
 
   export let nvinfo = $page.stuff.nvinfo
   export let chidx = 1
@@ -60,27 +60,27 @@
   <title>Thêm/sửa chương - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <nav class="navi">
-    <div class="-item _sep">
-      <a href="/-{nvinfo.bslug}" class="-link">{nvinfo.vname}</a>
-    </div>
+<nav class="navi">
+  <div class="-item _sep">
+    <a href="/-{nvinfo.bslug}" class="-link">{nvinfo.vname}</a>
+  </div>
 
-    <div class="-item">
-      <a href="/-{nvinfo.bslug}/-chivi" class="-link">Chương tiết</a>
-    </div>
-  </nav>
+  <div class="-item">
+    <a href="/-{nvinfo.bslug}/-chivi" class="-link">Chương tiết</a>
+  </div>
+</nav>
 
-  <section class="body">
-    <textarea
-      class="m-input"
-      name="input"
-      lang="zh"
-      id="input"
-      bind:value={input} />
-  </section>
+<section class="body">
+  <textarea
+    class="m-input"
+    name="input"
+    lang="zh"
+    id="input"
+    bind:value={input} />
+</section>
 
-  <div slot="footer" class="vessel">
+<Footer>
+  <div class="vessel">
     <label class="label" for="chidx">
       <span>Chương số</span>
       <input class="m-input" name="chidx" bind:value={chidx} />
@@ -96,7 +96,7 @@
       <span class="-text">Lưu</span>
     </button>
   </div>
-</Vessel>
+</Footer>
 
 <style lang="scss">
   .navi {

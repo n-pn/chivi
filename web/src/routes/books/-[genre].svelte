@@ -20,8 +20,7 @@
   import Nvlist from '$parts/Nvlist.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Bgenre from '$sects/Bgenre.svelte'
-
-  import Vessel from '$sects/Vessel.svelte'
+  import Footer from '$sects/Footer.svelte'
 
   export let books = []
   export let pgidx = 1
@@ -35,21 +34,19 @@
   <title>Chivi - Truyện tàu dịch máy</title>
 </svelte:head>
 
-<Vessel>
-  <div class="filter">
-    <Bgenre {genres} />
-  </div>
+<div class="filter">
+  <Bgenre {genres} />
+</div>
 
-  {#if books.length > 0}
-    <Nvlist {books} />
-  {:else}
-    <div class="empty">Danh sách trống</div>
-  {/if}
+{#if books.length > 0}
+  <Nvlist {books} />
+{:else}
+  <div class="empty">Danh sách trống</div>
+{/if}
 
-  <svelte:fragment slot="footer">
-    <Mpager {pager} {pgidx} {pgmax} />
-  </svelte:fragment>
-</Vessel>
+<Footer>
+  <Mpager {pager} {pgidx} {pgmax} />
+</Footer>
 
 <style lang="scss">
   :global(#svelte) {

@@ -86,9 +86,6 @@
     min-height: 50vh;
     padding: 0 var(--gutter) var(--verpad);
 
-    margin-left: calc(-1 * var(--gutter));
-    margin-right: calc(-1 * var(--gutter));
-
     @include fgcolor(secd);
     @include bgcolor(tert);
     @include shadow(1);

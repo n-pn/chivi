@@ -5,7 +5,7 @@
   export async function load({ params, fetch }) {
     const [status, stuff] = await api_call(fetch, `books/${params.book}`)
     if (status) return { status, error: stuff }
-    return { stuff }
+    return { stuff, props: stuff }
   }
 
   function gen_keywords({ zname, vname, hname, author, genres }) {
@@ -14,8 +14,9 @@
 </script>
 
 <script>
-  $: nvinfo = $page.stuff.nvinfo || {}
-  $: bintro = (nvinfo.bintro || []).join('').substring(0, 300)
+  export let nvinfo = $page.stuff.nvinfo
+  export let bintro = nvinfo.bintro.join('').substring(0, 300)
+
   $: bcover = nvinfo.bcover || '_blank.png'
   $: update = new Date(nvinfo.mftime || 0).toISOString()
   $: genres = nvinfo.genres || []

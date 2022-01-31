@@ -9,9 +9,6 @@
 
 <script>
   import NvinfoForm from '$sects/Nvinfo/Form.svelte'
-  import Vessel from '$sects/Vessel.svelte'
 </script>
 
-<Vessel>
-  <NvinfoForm />
-</Vessel>
+<NvinfoForm />
