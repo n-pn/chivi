@@ -146,6 +146,12 @@
         </a>
       {/if}
 
+      <a
+        href="/forum/-thong-bao/-thong-bao-ve-viec-thay-doi-co-che-hfj4"
+        class="pledge">
+        Thông báo về việc thay đổi cơ chế quyền hạn [31-01-2022]
+      </a>
+
       <slot />
     </div>
   </main>
@@ -205,13 +211,15 @@
   }
 
   .pledge {
+    display: block;
     text-align: vessel;
-    margin: 0.5rem auto;
+    margin: 0.75rem var(--gutter);
     // max-width: 50vw;
     font-size: rem(15px);
     text-align: center;
+    line-height: 1.25rem;
 
-    padding: 0.5rem var(--gutter-small);
+    padding: 0.5rem var(--gutter);
 
     @include fgcolor(tert);
     @include bgcolor(tert);
@@ -220,8 +228,6 @@
   }
 
   a.pledge {
-    display: block;
-
     &:hover {
       @include fgcolor(primary, 5);
     }
