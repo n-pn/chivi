@@ -1,11 +1,12 @@
 <script context="module">
-  import { navigating } from '$app/stores'
+  import { navigating, session } from '$app/stores'
   import { config } from '$lib/stores'
   import { vdict } from '$lib/stores'
   import CvData from '$lib/cv_data'
 
   import Cvmenu, { ctrl as cvmenu } from './CvPage/Cvmenu.svelte'
 
+  import Aditem from '$molds/Aditem.svelte'
   import Cvline from '$sects/Cvline.svelte'
   import Zhline from './CvPage/Zhline.svelte'
 </script>
@@ -51,22 +52,22 @@
     <slot name="header">Dịch nhanh</slot>
   </header>
 
-  {#key zhtext}
-    {#each cv_lines as input, index (index)}
-      <cv-data
-        id="L{index}"
-        class:debug={$config.render == 1}
-        class:focus={index == l_focus}
-        on:mouseenter={() => (l_hover = index)}>
-        {#if $config.showzh}
-          <Zhline ztext={zhtext[index]} plain={$config.render < 0} />
-        {/if}
-        <Cvline
-          {input}
-          focus={render_html($config.render, index, l_hover, l_focus)} />
-      </cv-data>
-    {/each}
-  {/key}
+  {#each zhtext as ztext, index (index)}
+    <cv-data
+      id="L{index}"
+      class:debug={$config.render == 1}
+      class:focus={index == l_focus}
+      on:mouseenter={() => (l_hover = index)}>
+      {#if $config.showzh}<Zhline {ztext} plain={$config.render < 0} />{/if}
+      <Cvline
+        input={cv_lines[index]}
+        focus={render_html($config.render, index, l_hover, l_focus)} />
+    </cv-data>
+
+    {#if $session.privi < 2 && index % 10 == zhtext.length % 10}
+      <Aditem type="article" />
+    {/if}
+  {/each}
 
   {#if $config.render >= 0}
     <Cvmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />

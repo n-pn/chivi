@@ -1,19 +1,3 @@
-<script context="module">
-  export function ad_indexes(len, min = 15) {
-    let res = []
-
-    for (let idx = 0; idx < len; idx += random_int(min - 5, min + 5)) {
-      res.push(idx)
-    }
-
-    return res
-  }
-
-  function random_int(min, max) {
-    return Math.round(Math.random() * (max - min)) + min
-  }
-</script>
-
 <script>
   export let type = 'banner'
 </script>
@@ -30,12 +14,10 @@
     quảng cáo.
   </div>
   <script>
-    if (browser) {
-      try {
-        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-      } catch (aderr) {
-        console.log({ aderr })
-      }
+    try {
+      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+    } catch (aderr) {
+      console.log({ aderr })
     }
   </script>
 </ins>

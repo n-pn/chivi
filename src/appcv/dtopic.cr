@@ -92,7 +92,7 @@ class CV::Dtopic
     set_utime(Time.utc.to_unix) if set_utime
 
     set_title(params["title"])
-    self.dlabel_ids = params["labels"].split(",").map(&.strip.to_i)
+    self.dlabel_ids = params["labels"].split(",").compact_map(&.strip.to_i?)
 
     self.save! unless @id_column.defined? # make id column available
 

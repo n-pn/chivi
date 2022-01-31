@@ -119,6 +119,12 @@
 
 <svelte:head>
   <meta name="theme-color" content="#0b476b" />
+  {#if $session.privi < 2}
+    <script
+      async
+      data-ad-client="ca-pub-5468438393284967"
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  {/if}
 </svelte:head>
 
 <div

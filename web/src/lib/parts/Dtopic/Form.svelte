@@ -36,16 +36,17 @@
   export let dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
   export let on_destroy = () => window.location.reload()
 
-  $: on_edit = $ctrl.id > 0
+  $: on_edit = $ctrl.id != '0'
   $: api_url = make_api_endpoint(dboard.id)
 
   let labels = build_labels($form.labels)
   $: $form.labels = extract_labels(labels)
 
   let error = ''
+  $: console.log($ctrl)
 
   function make_api_endpoint(dboard_id) {
-    if ($ctrl.id > 0) {
+    if ($ctrl.id != '0') {
       return `/api/topics/${$ctrl.id}`
     } else {
       return `/api/topics?dboard=${dboard_id}`
