@@ -122,8 +122,8 @@
   {#if $session.privi < 2}
     <script
       async
-      data-ad-client="ca-pub-5468438393284967"
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5468438393284967"
+      crossorigin="anonymous"></script>
   {/if}
 </svelte:head>
 
