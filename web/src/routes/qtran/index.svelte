@@ -14,7 +14,7 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import Vessel from '$sects/Vessel.svelte'
+  import Footer from '$sects/Footer.svelte'
 
   import CvPage from '$sects/CvPage.svelte'
 
@@ -63,21 +63,21 @@
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <section class="main">
-    {#if on_edit}
-      <textarea
-        class="m-input"
-        lang="zh"
-        bind:value={zhtext}
-        bind:this={text_elem}
-        placeholder="Nhập dữ liệu vào đây" />
-    {:else}
-      <CvPage zhtext={split_input(zhtext)} {cvdata} {on_change} />
-    {/if}
-  </section>
+<section class="main">
+  {#if on_edit}
+    <textarea
+      class="m-input"
+      lang="zh"
+      bind:value={zhtext}
+      bind:this={text_elem}
+      placeholder="Nhập dữ liệu vào đây" />
+  {:else}
+    <CvPage zhtext={split_input(zhtext)} {cvdata} {on_change} />
+  {/if}
+</section>
 
-  <div slot="footer" class="foot">
+<Footer>
+  <div class="foot">
     {#if on_edit}
       <button class="m-btn" on:click={cleanup}>
         <SIcon name="eraser" />
@@ -103,7 +103,7 @@
       </button>
     {/if}
   </div>
-</Vessel>
+</Footer>
 
 <style lang="scss">
   .main {

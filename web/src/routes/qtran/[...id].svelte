@@ -31,8 +31,7 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import Vessel from '$sects/Vessel.svelte'
-
+  import Footer from '$sects/Footer.svelte'
   import CvPage from '$sects/CvPage.svelte'
 
   export let name
@@ -55,23 +54,23 @@
   <title>Dịch nhanh: {name} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <section class="body">
-    <CvPage {dname} {d_dub} {zhtext} {cvdata} {on_change}>
-      <svete:fragment slot="header">
-        <nav class="bread">
-          <a href="/qtran" class="crumb _link">Dịch nhanh</a>
-          <span>/</span>
-          <span class="crumb _text">[{type}]</span>
+<section class="body">
+  <CvPage {dname} {d_dub} {zhtext} {cvdata} {on_change}>
+    <svete:fragment slot="header">
+      <nav class="bread">
+        <a href="/qtran" class="crumb _link">Dịch nhanh</a>
+        <span>/</span>
+        <span class="crumb _text">[{type}]</span>
 
-          <span>/</span>
-          <span class="crumb _text">[{name}]</span>
-        </nav>
-      </svete:fragment>
-    </CvPage>
-  </section>
+        <span>/</span>
+        <span class="crumb _text">[{name}]</span>
+      </nav>
+    </svete:fragment>
+  </CvPage>
+</section>
 
-  <div slot="footer" class="foot">
+<Footer>
+  <div class="foot">
     <button
       class="m-btn"
       data-kbd="r"
@@ -84,7 +83,7 @@
       <span>Dịch mới</span>
     </a>
   </div>
-</Vessel>
+</Footer>
 
 <style lang="scss">
   .body {
