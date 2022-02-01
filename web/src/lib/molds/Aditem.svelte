@@ -5,7 +5,7 @@
 <ins
   class="adsbygoogle"
   data-ad-client="ca-pub-5468438393284967"
-  data-ad-slot={type == 'banner' ? 2323076740 : 4952630589}
+  data-ad-slot={type == 'banner' ? 2323076740 : 1006213923}
   data-ad-format={type == 'banner' ? 'auto' : 'fluid'}
   data-ad-layout={type == 'banner' ? '' : 'in-article'}
   data-full-width-responsive="true">
