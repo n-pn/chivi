@@ -23,10 +23,7 @@ module CV::TlRule
       node = fold!(node, succ, node.tag, dic: 7, flip: flip)
     when .nouns?, .numbers?, .pro_dems?
       return node unless (succ = scan_noun!(succ)) && succ.object? && !succ.pro_dems?
-      return node unless noun_can_combine?(node.prev?, succ.succ?)
-
-      flip = flip_proper_noun?(node, succ)
-      fold!(node, succ, succ.tag, dic: 5, flip: flip)
+      fold_proper_nounish!(node, succ)
     when .uzhi?
       fold_uzhi!(uzhi: succ, prev: node)
     else
@@ -36,27 +33,30 @@ module CV::TlRule
   end
 
   def fold_proper_nounish!(node : MtNode, succ : MtNode) : MtNode
+    return node unless noun_can_combine?(node.prev?, succ.succ?)
+    flip = !((prev = node.prev?) && need_2_objects?(prev))
+
     case succ.tag
     when .space?
       fold_noun_space!(node, succ)
     when .place?
-      fold!(node, succ, PosTag::DefnPhrase, dic: 4, flip: true)
-    when .ptitle?
-      fold!(node, succ, succ.tag, dic: 4, flip: true)
+      fold!(node, succ, PosTag::DefnPhrase, dic: 4, flip: flip)
     when .person?
       fold!(node, succ, node.tag, dic: 4, flip: false)
-    when .names?
+    when .nqtime?
+      flip = !succ.succ?(&.ends?) if flip
+      fold!(node, succ, succ.tag, dic: 4, flip: flip)
+    when .names?, .ptitle?
       # TODO: add pseudo node
-      node.val = "của #{node.val}"
-      fold!(node, succ, succ.tag, dic: 4, flip: true)
+      node.val = "của #{node.val}" if flip
+      fold!(node, succ, succ.tag, dic: 4, flip: flip)
     else
-      fold!(node, succ, PosTag::Nform, dic: 8)
+      fold!(node, succ, PosTag::Nform, dic: 8, flip: false)
     end
   end
 
   def flip_proper_noun?(proper : MtNode, noun : MtNode) : Bool
-    return false if noun.nform?
-    return true unless (prev = proper.prev?) && prev.verbs?
+    return !noun.nqtime? unless (prev = proper.prev?) && prev.verbs?
 
     prev.each do |node|
       return false if need_2_objects?(node.key)

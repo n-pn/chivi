@@ -53,6 +53,11 @@ module CV::TlRule
     end
   end
 
+  def need_2_objects?(node : MtNode)
+    node.each { |x| return true if need_2_objects?(node.key) }
+    false
+  end
+
   def need_2_objects?(key : String)
     MtDict::VERBS_2_OBJECTS.has_key?(key)
   end
