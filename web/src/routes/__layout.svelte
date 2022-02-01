@@ -10,7 +10,6 @@
   import '../css/generic.scss'
 
   const links = [
-    ['Voz.vn', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],
     ['Discord', 'https://discord.gg/mdC3KQH'],
     ['Github', 'https://github.com/np-nam/chivi'],
     ['Facebook', 'https://www.facebook.com/chivi.fb/'],
@@ -158,7 +157,6 @@
 
   <footer>
     <div class="notes">
-      <a href="/notes/changelog" class="-link">Thông tin cập nhật</a>
       <a href="/notes/donation" class="-link">Ủng hộ trang</a>
     </div>
 
