@@ -52,6 +52,10 @@ class CV::ChList
       next if line.empty?
       info = ChInfo.new(line.split('\t'))
       @data[info.chidx] = info
+    rescue err
+      File.open("var/_ulogs/chinfo.log", "a") do |io|
+        io.puts "#{@file}, #{line}"
+      end
     end
   end
 
