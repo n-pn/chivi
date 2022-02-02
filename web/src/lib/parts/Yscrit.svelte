@@ -71,12 +71,12 @@
           <span>{crit.bname}</span>
         </a>
 
-        <a class="crit-link _author" href="/search?q={crit.author}&t=author">
+        <a class="crit-link _author" href="/books/={crit.author}">
           <SIcon name="edit" />
           <span>{crit.author}</span>
         </a>
 
-        <a class="crit-link _genre" href="/?genre={crit.bgenre}">
+        <a class="crit-link _genre" href="/books/-{crit.bgenre}">
           <SIcon name="folder" />
           <span>{crit.bgenre}</span>
         </a>
