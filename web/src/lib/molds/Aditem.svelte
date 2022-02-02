@@ -2,17 +2,15 @@
   export let type = 'banner'
 </script>
 
-<ins
-  class="adsbygoogle"
-  data-ad-client="ca-pub-5468438393284967"
-  data-ad-slot={type == 'banner' ? 2323076740 : 1006213923}
-  data-ad-format={type == 'banner' ? 'auto' : 'fluid'}
-  data-ad-layout={type == 'banner' ? '' : 'in-article'}
-  data-full-width-responsive="true">
-  <div>
-    Hãy ủng hộ cho chivi <a href="/guide/donation">tại đây</a> nếu không muốn xem
-    quảng cáo.
-  </div>
+<section>
+  <ins
+    class="adsbygoogle"
+    style="display:block; text-align:center;"
+    data-ad-client="ca-pub-5468438393284967"
+    data-ad-slot={type == 'banner' ? '2323076740' : '1006213923'}
+    data-ad-format={type == 'banner' ? 'auto' : 'fluid'}
+    data-ad-layout={type == 'banner' ? '' : 'in-article'}
+    data-full-width-responsive="true" />
   <script>
     try {
       ;(window.adsbygoogle = window.adsbygoogle || []).push({})
@@ -20,29 +18,11 @@
       console.log({ aderr })
     }
   </script>
-</ins>
+</section>
 
 <style lang="scss">
   ins {
-    display: block;
-    margin: 1rem 0;
     max-width: 100%;
-    text-align: center;
-    text-decoration: none;
-  }
-
-  div {
-    padding: 3rem;
-    text-transform: uppercase;
-    font-size: 500;
-
-    @include bdradi();
-    @include fgcolor(neutral, 7);
-    @include bgcolor(harmful, 1);
-  }
-
-  a {
-    @include fgcolor(primary, 6);
-    font-weight: 500;
+    margin: 1rem 0;
   }
 </style>

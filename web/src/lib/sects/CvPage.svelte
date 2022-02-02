@@ -64,10 +64,8 @@
         focus={render_html($config.render, index, l_hover, l_focus)} />
     </cv-data>
 
-    {#if $session.privi < 2 && index % 10 == (zhtext.length % 5) + 5}
-      {#key index}
-        <Aditem type="article" />
-      {/key}
+    {#if $session.privi < 2 && index % 10 == zhtext.length % 10}
+      <Aditem type="article" />
     {/if}
   {/each}
 
@@ -129,7 +127,7 @@
   // prettier-ignore
   cv-data {
     display: block;
-    margin-top: 1em;
+    margin: 1em 0;
     color: var(--fgcolor, var(--fg-main));
 
     :global(.app-ff-1) & { font-family: var(--font-sans); }
