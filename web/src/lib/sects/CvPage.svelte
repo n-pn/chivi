@@ -63,10 +63,6 @@
         input={cv_lines[index]}
         focus={render_html($config.render, index, l_hover, l_focus)} />
     </cv-data>
-
-    {#if $session.privi < 2 && index % 10 == zhtext.length % 10}
-      <Aditem type="article" />
-    {/if}
   {/each}
 
   {#if $config.render >= 0}
