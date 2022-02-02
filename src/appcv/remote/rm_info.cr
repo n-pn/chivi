@@ -220,7 +220,7 @@ class CV::RmInfo
       case node.tag_sym
       when :dt
         inner = node.css("b").first? || node
-        label = inner.inner_text.gsub(/《.*》/, "")
+        label = inner.inner_text.gsub(/《.*》/, "").gsub("\n|\t", "  ").strip
       when :dd
         next if label.includes?("最新章节")
         next unless link = node.css("a").first?

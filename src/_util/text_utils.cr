@@ -127,13 +127,13 @@ module CV::TextUtils
   }
 
   def format_title(title : String, label = "正文", trim = false) : Tuple(String, String)
-    title = fix_spaces(title).gsub("\n", "  ").strip
+    title = fix_spaces(title).gsub("\n|\t", "  ").strip
 
     LABEL_RE.each do |regex|
       next unless match = regex.match(title)
 
       _, label, title = match
-      label = fix_spaces(label).strip
+      label = fix_spaces(label)
 
       break
     end
