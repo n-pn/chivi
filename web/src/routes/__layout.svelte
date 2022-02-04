@@ -111,27 +111,10 @@
     elem.click()
   }
 
-  // force hard refresh after number of click
-
-  let counter = 0
-
   beforeNavigate(({ to, cancel }) => {
-    counter += 1
-
-    switch ($session.privi) {
-      case -1:
-      case 0:
-        if (counter < 3) return
-        break
-      case 1:
-        if (counter < 6) return
-        break
-      default:
-        if (counter < 18) return
-    }
-
+    if ($session.privi > 1) return
     cancel()
-    window.location.href = to.pathname
+    window.location.href = to.href
   })
 </script>
 
@@ -179,15 +162,14 @@
   </main>
 
   <footer>
-    {counter}
-    <div class="notes">
-      <a href="/notes/donation" class="-link">Ủng hộ trang</a>
+    <div class="foot-notes">
+      <a href="/notes/donation" class="foot-link">Ủng hộ trang</a>
     </div>
 
-    <div class="links">
+    <div class="foot-links">
       <strong>Links: </strong>
       {#each links as [text, href]}
-        <a {href} class="-link" target="_blank" rel="noreferer noopener"
+        <a {href} class="foot-link" target="_blank" rel="noreferer noopener"
           >{text}</a>
       {/each}
     </div>
@@ -270,7 +252,7 @@
     @include bgcolor(tert);
   }
 
-  .links {
+  .foot-links {
     &:before {
       @include fgcolor(mute);
       margin: 0 0.5rem;
@@ -278,17 +260,11 @@
     }
   }
 
-  .-link {
-    & + & {
-      margin-left: 0.5rem;
-    }
-
+  // prettier-ignore
+  .foot-link {
     font-weight: 500;
-
     @include fgcolor(primary, 6);
-
-    &:hover {
-      @include fgcolor(primary, 4);
-    }
+    &:hover { @include fgcolor(primary, 4); }
+    & + & { margin-left: 0.5rem; }
   }
 </style>
