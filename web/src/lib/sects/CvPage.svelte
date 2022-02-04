@@ -1,4 +1,5 @@
 <script context="module">
+  import { browser } from '$app/env'
   import { navigating, session } from '$app/stores'
   import { config } from '$lib/stores'
   import { vdict } from '$lib/stores'
@@ -60,7 +61,7 @@
   </header>
 
   {#each zhtext as ztext, index (index)}
-    {#if $session.privi < 2 && index % ads_blocks == ads_offset}
+    {#if browser && $session.privi < 2 && index % ads_blocks == ads_offset}
       <Aditem type="article" />
     {/if}
 
