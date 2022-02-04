@@ -1,7 +1,7 @@
 <script context="module">
   import { navigating, page, session } from '$app/stores'
   import { scroll, toleft, config, layers } from '$lib/stores'
-  // import { beforeNavigate } from '$app/navigation'
+  import { beforeNavigate } from '$app/navigation'
 </script>
 
 <script>
@@ -42,11 +42,6 @@
     $scroll = scrollTop - prevScrollTop
     prevScrollTop = scrollTop <= 0 ? 0 : scrollTop
   }
-
-  // function disable_router_unless_vip(e) {
-  //   // disabled until adsense is unblocked
-  //   if ($session.privi < 2) e.stopPropagation()
-  // }
 
   let kbd_hint = false
 

@@ -21,9 +21,12 @@
       </p>
     </div>
   </div>
-
   <script>
-    ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+    try {
+      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+    } catch (err) {
+      console.log(err)
+    }
   </script>
 </section>
 
