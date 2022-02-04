@@ -8,6 +8,7 @@
   import Loader from '$molds/Loader.svelte'
   import { onMount } from 'svelte'
   import '../css/generic.scss'
+  import A from './[...slug].svelte'
 
   const links = [
     ['Discord', 'https://discord.gg/mdC3KQH'],
@@ -109,6 +110,27 @@
     evt.stopPropagation()
     elem.click()
   }
+
+  // force hard refresh after number of click
+
+  let counter = 0
+
+  function handle_click(evt) {
+    if (!evt.target.nodeName == 'A') return
+    counter += 1
+
+    switch ($session.privi) {
+      case -1:
+      case 0:
+        if (count < 3) return
+      case 1:
+        if (counter < 6) return
+      default:
+        if (counter < 18) return
+    }
+
+    evt.stopPropagation()
+  }
 </script>
 
 <svelte:head>
@@ -128,7 +150,8 @@
 <div
   class="app tm-{wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   class:kbd-hint={kbd_hint}
-  class:_shift={$toleft}>
+  class:_shift={$toleft}
+  on:click={handle_click}>
   <Appbar />
 
   <main class="main">
