@@ -97,10 +97,8 @@
     @include bgcolor(tert);
     @include shadow(1);
 
-    @include bp-min(tl) {
-      margin-left: 0;
-      margin-right: 0;
-
+    @include bp-min(ts) {
+      margin: 0 var(--gutter);
       @include bdradi();
       @include tm-dark {
         @include linesd(--bd-soft, $ndef: false, $inset: false);
@@ -109,10 +107,6 @@
 
     :global(.tm-warm) & {
       background: #fffbeb;
-    }
-
-    :global(.adsbygoogle) {
-      margin-top: 1rem;
     }
 
     :global(cite) {
