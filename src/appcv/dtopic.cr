@@ -66,7 +66,15 @@ class CV::Dtopic
   end
 
   def update_sort!
-    self._sort = (self.utime // 60).to_i + post_count + view_count // 100 + like_count * 5
+    _sort = (self.utime // 60).to_i + post_count // 3 + like_count // 20 + view_count // 60
+    self._sort = _sort &+ sort_bonus
+  end
+
+  MINUTES_OF_30_DAYS = 43200
+
+  @[AlwaysInline]
+  def sort_bonus
+    self.state &* MINUTES_OF_30_DAYS &* (self.nvinfo_id > 0 ? 1 : (1 - nvinfo_id.to_i))
   end
 
   def bump_post_count!
