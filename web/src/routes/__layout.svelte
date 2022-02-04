@@ -1,7 +1,7 @@
 <script context="module">
   import { navigating, page, session } from '$app/stores'
-  import { beforeNavigate } from '$app/navigation'
   import { scroll, toleft, config, layers } from '$lib/stores'
+  // import { beforeNavigate } from '$app/navigation'
 </script>
 
 <script>
@@ -111,11 +111,11 @@
     elem.click()
   }
 
-  beforeNavigate(({ to, cancel }) => {
-    if ($session.privi > 1) return
-    cancel()
-    window.location.href = to.href
-  })
+  // beforeNavigate(({ to, cancel }) => {
+  //   if ($session.privi > 1) return
+  //   cancel()
+  //   window.location.href = to.href
+  // })
 </script>
 
 <svelte:head>
