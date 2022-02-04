@@ -41,6 +41,13 @@
     if (focus == 0) return index == zhtext.length - 1
     return index == 0 && focus == zhtext.length - 1
   }
+
+  $: ads_offset = (zhtext.length % 3) + 2 // offset ads placement
+  let ads_blocks = 10 // show as after this number of lines
+  $: {
+    const lines = Math.round(zhtext.length / 4) // only show max 4 ads
+    ads_blocks = lines < 15 ? 10 : lines // show less ads if chapter is short
+  }
 </script>
 
 <article
@@ -63,6 +70,10 @@
         input={cv_lines[index]}
         focus={render_html($config.render, index, l_hover, l_focus)} />
     </cv-data>
+
+    {#if $session.privi < 2 && index % ads_blocks == ads_offset}
+      <Aditem type="article" />
+    {/if}
   {/each}
 
   {#if $config.render >= 0}
