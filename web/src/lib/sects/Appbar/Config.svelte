@@ -148,8 +148,7 @@
 
     z-index: 90;
     right: 0;
-    // right: var(--gutter);
-    padding-bottom: 1rem;
+    padding: 0 0 1rem;
 
     @include fgcolor(secd);
     @include bgcolor(secd);
