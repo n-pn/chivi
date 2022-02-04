@@ -11,13 +11,15 @@
     data-ad-format={type == 'banner' ? 'auto' : 'fluid'}
     data-ad-layout={type == 'banner' ? '' : 'in-article'}
     data-full-width-responsive="true" />
-  <div>
-    <p>Bạn đang bật adblock, hoặc adsense vì lý do nào đó không chạy :(</p>
-    <p>Quảng cáo là yếu tố thiết yếu để trang tiếp tục tồn tại.</p>
-    <p>
-      Xin hãy tắt adblock, hoặc nâng cấp quyền hạn lên <strong>2</strong> để không
-      phải xem quảng cáo.
-    </p>
+  <div class="no-ads">
+    <div>
+      <p>Bạn đang bật adblock, hoặc adsense vì lý do nào đó không chạy :(</p>
+      <p>Quảng cáo là yếu tố thiết yếu để một trang web có thể tồn tại.</p>
+      <p>
+        Xin hãy tắt adblock, hoặc nâng cấp quyền hạn lên <strong>2</strong> để không
+        phải xem quảng cáo.
+      </p>
+    </div>
   </div>
 
   <script>
@@ -30,22 +32,14 @@
     margin: 1rem 0;
   }
 
-  ins:empty + div {
+  .no-ads {
+    @include flex-ca;
     padding: 0.75rem var(--gutter);
-    text-align: center;
-
-    @include bdradi();
     @include fgcolor(neutral, 7);
     @include bgcolor(harmful, 1);
   }
 
-  ins:not(:empty) + div {
+  ins:not(:empty) ~ .no-ads {
     display: none;
-  }
-
-  p {
-    font-size: 500;
-    margin: 0;
-    @include ftsize(lg);
   }
 </style>

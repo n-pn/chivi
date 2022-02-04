@@ -42,10 +42,10 @@
     return index == 0 && focus == zhtext.length - 1
   }
 
-  $: ads_offset = (zhtext.length % 3) + 2 // offset ads placement
+  $: ads_offset = (zhtext.length % 3) + 3 // offset ads placement
   let ads_blocks = 8 // show as after this number of lines
   $: {
-    const lines = Math.floor(zhtext.length / 5) // only show max 5 ads
+    const lines = Math.floor(zhtext.length / 7) // only show max 8 ads
     ads_blocks = lines < 8 ? 8 : lines // show less ads if chapter is short
   }
 </script>
@@ -60,6 +60,10 @@
   </header>
 
   {#each zhtext as ztext, index (index)}
+    {#if $session.privi < 2 && index % ads_blocks == ads_offset}
+      <Aditem type="article" />
+    {/if}
+
     <cv-data
       id="L{index}"
       class:debug={$config.render == 1}
@@ -70,10 +74,6 @@
         input={cv_lines[index]}
         focus={render_html($config.render, index, l_hover, l_focus)} />
     </cv-data>
-
-    {#if $session.privi < 2 && index % ads_blocks == ads_offset}
-      <Aditem type="article" />
-    {/if}
   {/each}
 
   {#if $config.render >= 0}
