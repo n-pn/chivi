@@ -111,13 +111,7 @@
   }
 </script>
 
-<svelte:window
-  on:scroll={handle_scroll}
-  on:keydown={handle_keydown}
-  on:keyup={() => (kbd_hint = false)} />
-
 <svelte:head>
-  <meta name="theme-color" content="#0b476b" />
   {#if $session.privi < 2}
     <script
       async
@@ -125,6 +119,11 @@
       crossorigin="anonymous"></script>
   {/if}
 </svelte:head>
+
+<svelte:window
+  on:scroll={handle_scroll}
+  on:keydown={handle_keydown}
+  on:keyup={() => (kbd_hint = false)} />
 
 <div
   class="app tm-{wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
