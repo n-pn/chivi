@@ -309,23 +309,19 @@
     @include bgcolor(tert);
 
     display: block;
-    margin: 0 -0.5rem var(--gutter);
-    padding: 0 0.5rem;
-    border-radius: 0.5rem;
-
+    margin: 0.5rem 0;
     @include shadow(2);
 
-    @include bp-min(pl) {
-      margin-left: 0;
-      margin-right: 0;
+    @include bp-min(tm) {
+      margin: var(--gutter);
 
       padding-left: 1rem;
       padding-right: 1rem;
       border-radius: 1rem;
+    }
 
-      @include tm-dark {
-        @include linesd(--bd-soft, $ndef: false, $inset: false);
-      }
+    @include tm-dark {
+      @include linesd(--bd-soft, $ndef: false, $inset: false);
     }
   }
 

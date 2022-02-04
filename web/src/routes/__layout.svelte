@@ -115,21 +115,23 @@
 
   let counter = 0
 
-  beforeNavigate(({ from, to, cancel }) => {
-    console.log(from, to, counter)
-
+  beforeNavigate(({ to, cancel }) => {
     counter += 1
+
     switch ($session.privi) {
       case -1:
       case 0:
-        if (counter < 1) return
+        if (counter < 3) return
+        break
       case 1:
         if (counter < 6) return
+        break
       default:
         if (counter < 18) return
     }
 
     cancel()
+    window.location.href = to.pathname
   })
 </script>
 

@@ -137,24 +137,18 @@
 
   chap-page {
     display: block;
-    margin: 0 -0.5rem var(--gutter);
+    margin: 0 0 var(--gutter);
 
     @include shadow(2);
     @include bgcolor(tert);
 
-    @include bp-min(pl) {
-      margin-left: 0;
-      margin-right: 0;
+    @include bp-min(tm) {
+      margin: 0 var(--gutter) var(--gutter);
       border-radius: 1rem;
     }
 
     @include tm-dark {
       @include linesd(--bd-soft, $ndef: false, $inset: false);
-    }
-
-    > * {
-      padding-left: var(--gutter);
-      padding-right: var(--gutter);
     }
   }
 
