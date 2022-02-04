@@ -1,5 +1,6 @@
 <script context="module">
   import { navigating, page, session } from '$app/stores'
+  import { beforeNavigate } from '$app/navigation'
   import { scroll, toleft, config, layers } from '$lib/stores'
 </script>
 
@@ -8,7 +9,6 @@
   import Loader from '$molds/Loader.svelte'
   import { onMount } from 'svelte'
   import '../css/generic.scss'
-  import A from './[...slug].svelte'
 
   const links = [
     ['Discord', 'https://discord.gg/mdC3KQH'],
@@ -115,23 +115,22 @@
 
   let counter = 0
 
-  function handle_click(evt) {
-    if (!evt.target.nodeName == 'A') return
-    counter += 1
+  beforeNavigate(({ from, to, cancel }) => {
+    console.log(from, to, counter)
 
+    counter += 1
     switch ($session.privi) {
       case -1:
       case 0:
-        if (count < 3) return
+        if (counter < 1) return
       case 1:
         if (counter < 6) return
       default:
         if (counter < 18) return
     }
 
-    evt.stopPropagation()
-    evt.preventDefault()
-  }
+    cancel()
+  })
 </script>
 
 <svelte:head>
@@ -151,8 +150,7 @@
 <div
   class="app tm-{wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   class:kbd-hint={kbd_hint}
-  class:_shift={$toleft}
-  on:click={handle_click}>
+  class:_shift={$toleft}>
   <Appbar />
 
   <main class="main">

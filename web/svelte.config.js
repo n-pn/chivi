@@ -25,12 +25,12 @@ export default {
         includePaths: [path.resolve(_cwd, 'src/css')],
         renderSync: true,
       },
+      postcss: true,
     }),
     mdsvex(mdsvexConfig),
   ],
   kit: {
     adapter: node(),
-    target: '#svelte',
     vite: {
       resolve: {
         alias: {
