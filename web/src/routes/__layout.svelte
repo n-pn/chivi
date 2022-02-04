@@ -106,11 +106,11 @@
     elem.click()
   }
 
-  // beforeNavigate(({ to, cancel }) => {
-  //   if ($session.privi > 1) return
-  //   cancel()
-  //   window.location.href = to.href
-  // })
+  beforeNavigate(({ to, cancel }) => {
+    if ($session.privi > 1) return
+    cancel()
+    window.location.href = to.href
+  })
 </script>
 
 <svelte:head>
