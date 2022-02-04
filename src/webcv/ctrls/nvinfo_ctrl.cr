@@ -36,8 +36,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       books: query.map { |x| NvinfoView.new(x, false) },
     })
   rescue err
-    Log.error { err.message }
-    halt! 500, err.message
+    Log.error { err.inspect_with_backtrace }
+    halt! 500, "Có lỗi từ hệ thống!"
   end
 
   def show : Nil
@@ -91,7 +91,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       }
     end
   rescue err
-    Log.error { err.message.colorize.red }
+    Log.error { err.inspect_with_backtrace }
     halt! 500, "Có lỗi từ hệ thống"
   end
 
