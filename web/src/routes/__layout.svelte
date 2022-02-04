@@ -130,6 +130,7 @@
     }
 
     evt.stopPropagation()
+    evt.preventDefault()
   }
 </script>
 
@@ -178,6 +179,7 @@
   </main>
 
   <footer>
+    {counter}
     <div class="notes">
       <a href="/notes/donation" class="-link">Ủng hộ trang</a>
     </div>
