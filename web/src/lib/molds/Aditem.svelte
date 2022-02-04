@@ -31,7 +31,7 @@
   }
 
   ins:empty + div {
-    padding: 0.75rem;
+    padding: 0.75rem var(--gutter);
     text-align: center;
 
     @include bdradi();
