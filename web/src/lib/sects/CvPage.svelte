@@ -43,10 +43,10 @@
   }
 
   $: ads_offset = (zhtext.length % 3) + 2 // offset ads placement
-  let ads_blocks = 10 // show as after this number of lines
+  let ads_blocks = 8 // show as after this number of lines
   $: {
-    const lines = Math.round(zhtext.length / 4) // only show max 4 ads
-    ads_blocks = lines < 15 ? 10 : lines // show less ads if chapter is short
+    const lines = Math.floor(zhtext.length / 5) // only show max 5 ads
+    ads_blocks = lines < 8 ? 8 : lines // show less ads if chapter is short
   }
 </script>
 
