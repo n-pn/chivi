@@ -4,6 +4,7 @@ module CV::TlRule
 
     # TODO!
     case node.tag
+    when .pre_ba3? then fold_pre_ba3!(node, succ, mode: mode)
     when .pre_dui? then fold_pre_dui!(node, succ, mode: mode)
     when .pre_bei? then fold_pre_bei!(node, succ, mode: mode)
     when .pre_zai? then fold_pre_zai!(node, succ, mode: mode)

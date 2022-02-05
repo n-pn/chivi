@@ -41,25 +41,31 @@ module CV::TlRule
       return node
     end
 
-    return node unless node.numbers?
-    return node unless tail = node.succ?
-    return node if tail.puncts?
+    return node unless node.numbers? && (tail = node.succ?) && !tail.puncts?
+    appro = 0
 
-    return fold!(node, tail, PosTag::Noun, dic: 9, flip: true) if tail.key == "号"
-
-    node, appro = fold_pre_quanti_appro!(node, tail)
-    if appro > 0
-      return node unless tail = node.succ?
-    end
-
-    if tail.pre_dui?
+    case tail
+    when .pre_dui?
       if (succ_2 = tail.succ?) && succ_2.numbers?
         tail.val = "đối"
         return fold!(node, succ_2, PosTag::Aform, dic: 2)
       end
 
       tail.set!("đôi", PosTag::Qtnoun)
+    when .pre_ba3?
+      tail = fold_pre_ba3!(tail)
+      return node unless tail.nouns?
+      return fold!(node, tail, tail.tag, dic: 3)
     else
+      if tail.key == "号"
+        return fold!(node, tail, PosTag::Noun, dic: 9, flip: true)
+      end
+
+      node, appro = fold_pre_quanti_appro!(node, tail)
+      if appro > 0
+        return node unless tail = node.succ?
+      end
+
       tail = heal_quanti!(tail)
       return fold_yi_verb!(node, tail) unless tail.quantis?
     end

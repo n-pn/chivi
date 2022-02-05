@@ -13,6 +13,7 @@ module CV::TlRule
   def is_temp_nqverb?(node : MtNode)
     case node.key[-1]?
     when '把'
+      return false unless node.succ?(&.noun?)
       node.val = node.val.sub("bả", "phát")
     when '脚', '眼', '圈', '次' # , '口'
       true
