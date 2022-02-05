@@ -98,7 +98,7 @@
     @include bgcolor(tert);
     @include shadow(1);
 
-    @include bp-min(ts) {
+    @include bp-min(tl) {
       margin: 0 var(--gutter);
       @include bdradi();
       @include tm-dark {

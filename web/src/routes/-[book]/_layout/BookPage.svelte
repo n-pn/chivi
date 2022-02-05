@@ -312,7 +312,7 @@
     margin: 0.5rem 0;
     @include shadow(2);
 
-    @include bp-min(tm) {
+    @include bp-min(tl) {
       margin: var(--gutter);
 
       padding-left: 1rem;
