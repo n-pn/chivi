@@ -5,12 +5,7 @@
   export async function load({ url, fetch }) {
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
-    api_url.searchParams.set('take', 24)
-
-    const api_res = await fetch(api_url.toString())
-    if (!api_res.ok) {
-      return { status: api_res.status, error: await api_res.text() }
-    }
+    api_url.searchParams.set('lm', 24)
 
     appbar.set({
       query: '',
@@ -23,7 +18,9 @@
         ],
       ],
     })
-    return { props: await api_res.json() }
+
+    const api_res = await fetch(api_url.toString())
+    return api_res.json()
   }
 
   const order_names = {
@@ -43,7 +40,7 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pager = new Pager($page.url, { order: 'bumped', page: 1 })
+  $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
 </script>
 
 <svelte:head>
@@ -53,7 +50,7 @@
 <div class="order">
   {#each Object.entries(order_names) as [type, label]}
     <a
-      href={pager.make_url({ page: 1, order: type })}
+      href={pager.make_url({ pg: 1, order: type })}
       class="-type"
       class:_active={pager.get('order') == type}>
       <span>{label}</span>

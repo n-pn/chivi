@@ -1,19 +1,22 @@
 <script context="module">
   import { data as appbar } from '$sects/Appbar.svelte'
 
-  export async function load({ fetch, url: { searchParams } }) {
-    const page = +searchParams.get('page') || 1
-    const type = searchParams.get('t') || 'btitle'
+  export async function load({ fetch, url }) {
+    const pg = +url.searchParams.get('pg') || 1
+    const type = url.searchParams.get('t') || 'btitle'
+    const input = url.searchParams.get('q')
+    appbar.set({ query: input })
 
-    const input = searchParams.get('q')
     if (!input) return { props: { input, type } }
 
     const qs = input.replace(/\+|-/g, ' ')
-    const api_url = `/api/books?order=weight&take=8&page=${page}&${type}=${qs}`
+    const api_url = `/api/books?order=weight&lm=8&pg=${pg}&${type}=${qs}`
     const api_res = await fetch(api_url)
+    const payload = await api_res.json()
 
-    appbar.set({ query: input })
-    return { props: { input, type, ...(await api_res.json()) } }
+    payload.props.input = input
+    payload.props.type = type
+    return payload
   }
 </script>
 

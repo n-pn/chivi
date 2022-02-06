@@ -15,7 +15,7 @@
     items: [],
   }
 
-  $: pager = new Pager($page.url, { page: 1, tl: '' })
+  $: pager = new Pager($page.url, { pg: 1, tl: '' })
   let active_card = $page.url.hash.substring(1)
 </script>
 

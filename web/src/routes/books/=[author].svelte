@@ -2,12 +2,15 @@
   import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ fetch, url, params: { author } }) {
-    const page = +url.searchParams.get('page') || 1
-    const api_url = `/api/books?order=weight&take=8&page=${page}&author=${author}`
-    const api_res = await fetch(api_url)
-
     appbar.set({ left: [[author, 'edit', `/books/=${author}`]] })
-    return { props: { author, ...(await api_res.json()) } }
+
+    const page = +url.searchParams.get('pg') || 1
+    const api_url = `/api/books?order=weight&lm=8&pg=${page}&author=${author}`
+    const api_res = await fetch(api_url)
+    const payload = await api_res.json()
+
+    payload.props.author = author
+    return payload
   }
 </script>
 

@@ -1,11 +1,11 @@
 <script context="module">
   import { page } from '$app/stores'
-  import { api_call } from '$api/_api_call'
 
   export async function load({ params, fetch }) {
-    const [status, stuff] = await api_call(fetch, `books/${params.book}`)
-    if (status) return { status, error: stuff }
-    return { stuff, props: stuff }
+    const res = await fetch(`/api/books/${params.book}`)
+    const data = await res.json()
+    if (res.ok) data.stuff = data.props
+    return data
   }
 
   function gen_keywords({ zname, vname, hname, author, genres }) {
@@ -15,8 +15,8 @@
 
 <script>
   export let nvinfo = $page.stuff.nvinfo
-  export let bintro = nvinfo.bintro.join('').substring(0, 300)
 
+  let bintro = nvinfo.bintro.join('').substring(0, 300)
   $: bcover = nvinfo.bcover || '_blank.png'
   $: update = new Date(nvinfo.mftime || 0).toISOString()
   $: genres = nvinfo.genres || []

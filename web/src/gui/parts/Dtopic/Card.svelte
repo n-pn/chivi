@@ -21,7 +21,7 @@
     {/if}
 
     {#each dtopic.labels as label}
-      <a class="m-label _{label}" href="{label_url}?label={label}"
+      <a class="m-label _{label}" href="{label_url}?tl={label}"
         >{dlabels[label]}</a>
     {/each}
   </topic-head>

@@ -9,8 +9,10 @@
   async function load_replies(pgidx) {
     const url = `/api/_self/replied?lm=10&pg=${pgidx}`
     const res = await fetch(url)
-    if (res.ok) items = await res.json()
-    else console.log(await res.text())
+    const data = await res.json()
+
+    if (res.ok) items = data.props
+    else console.log(data.error)
   }
 </script>
 

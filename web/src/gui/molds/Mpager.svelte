@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
 
   export class Pager {
-    constructor(url, dfs = { page: 1 }) {
+    constructor(url, dfs = { pg: 1 }) {
       this.url = url
       this.dfs = dfs
     }
@@ -71,7 +71,7 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let pager = new Pager('/', {}, { page: 1 })
+  export let pager = new Pager('/', {}, { pg: 1 })
   export let pgidx = 1
   export let pgmax = 1
   export let _navi = { replace: false, scrollto: null }
@@ -81,7 +81,7 @@
   {#if pgidx > 1}
     <a
       class="m-btn _fill -md"
-      href={pager.make_url({ page: pgidx - 1 })}
+      href={pager.make_url({ pg: pgidx - 1 })}
       data-kbd="j"
       sveltekit:noscroll={_navi.scrollto}
       use:navigate={_navi}>
@@ -97,7 +97,7 @@
     {#if pgnow != pgidx}
       <a
         class="m-btn _line"
-        href={pager.make_url({ page: pgnow })}
+        href={pager.make_url({ pg: pgnow })}
         data-kbd={pgnow == 1 ? 'h' : pgnow == pgmax ? 'l' : ''}
         sveltekit:noscroll={_navi.scrollto}
         use:navigate={_navi}><span>{pgnow}</span></a>
@@ -111,7 +111,7 @@
   {#if pgidx < pgmax}
     <a
       class="m-btn _primary _fill"
-      href={pager.make_url({ page: pgidx + 1 })}
+      href={pager.make_url({ pg: pgidx + 1 })}
       data-kbd="k"
       sveltekit:noscroll={_navi.scrollto}
       use:navigate={_navi}>

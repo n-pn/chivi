@@ -6,7 +6,7 @@
   export async function load({ fetch, url }) {
     appbar.set({ left: [['Lỗi máy dịch']] })
     const api_res = await fetch(`/api/tlspecs${url.search}`)
-    return { props: await api_res.json() }
+    return await api_res.json()
   }
 </script>
 

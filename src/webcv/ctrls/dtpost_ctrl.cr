@@ -32,14 +32,16 @@ class CV::DtpostCtrl < CV::BaseCtrl
     set_cache :public, maxage: 20
 
     send_json({
-      total: total,
-      pgidx: pgidx,
-      pgmax: (total - 1) // limit + 1,
-      items: items.map do |x|
-        x.cvuser = cvuser if cvuser
-        x.dtopic = dtopic if dtopic
-        DtpostView.new(x)
-      end,
+      dtlist: {
+        total: total,
+        pgidx: pgidx,
+        pgmax: (total - 1) // limit + 1,
+        items: items.map do |x|
+          x.cvuser = cvuser if cvuser
+          x.dtopic = dtopic if dtopic
+          DtpostView.new(x)
+        end,
+      },
     })
   end
 

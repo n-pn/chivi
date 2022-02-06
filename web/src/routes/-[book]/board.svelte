@@ -1,25 +1,25 @@
 <script context="module">
-  export async function load({ stuff, fetch, url: { searchParams } }) {
+  export async function load({ stuff, fetch, url }) {
     const { nvinfo } = stuff
 
-    const page = +searchParams.get('page') || 1
-    const dlabel = searchParams.get('label')
+    const pg = +url.searchParams.get('pg') || 1
+    const tl = url.searchParams.get('tl')
 
-    let api_url = `/api/topics?dboard=${nvinfo.id}&page=${page}&take=10`
-    if (dlabel) api_url += `&dlabel=${dlabel}`
+    let api_url = `/api/topics?dboard=${nvinfo.id}&pg=${pg}&lm=10`
+    if (tl) api_url += `&dlabel=${tl}`
 
     const res = await fetch(api_url)
-    if (!res.ok) return { status: res.status, error: await res.text() }
-
-    return { props: { nvinfo, dtlist: await res.json() } }
+    return await res.json()
   }
 </script>
 
 <script>
+  import { page } from '$app/stores'
+
   import DtopicList from '$parts/Dtopic/List.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
-  export let nvinfo
+  export let nvinfo = $page.stuff.nvinfo
   export let dtlist = { items: [], pgidx: 1, pgmax: 1 }
 
   $: dboard = { id: nvinfo.id, bname: nvinfo.vname, bslug: nvinfo.bslug }

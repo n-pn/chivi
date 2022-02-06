@@ -1,15 +1,8 @@
 <script context="module">
   import { data as appbar } from '$sects/Appbar.svelte'
 
-  export async function load({ stuff, fetch, url: { searchParams } }) {
+  export async function load({ stuff, fetch, url }) {
     const { dboard, dtopic } = stuff
-    const page = +searchParams.get('page') || 1
-
-    const api_url = `/api/tposts?dtopic=${dtopic.id}&page=${page}&take=20`
-    const res = await fetch(api_url)
-
-    if (!res.ok) return { status: res.status, error: await res.text() }
-
     appbar.set({
       left: [
         ['Diễn đàn', 'messages', '/forum', '_show-lg'],
@@ -17,7 +10,15 @@
       ],
     })
 
-    return { props: { dtopic, dboard, dtlist: await res.json() } }
+    const pg = url.searchParams.get('pg') || 1
+
+    const api_url = `/api/tposts?dtopic=${dtopic.id}&pg=${pg}&lm=20`
+    const api_res = await fetch(api_url)
+    const payload = await api_res.json()
+
+    payload.props.dboard = dboard
+    payload.props.dtopic = dtopic
+    return payload
   }
 </script>
 

@@ -12,13 +12,8 @@
     const { nvinfo } = stuff
     const [chidx, cpart = 0] = chap.split('-').pop().split('.')
 
-    const url = `chaps/${nvinfo.id}/${seed}/${chidx}/${+cpart}`
-    const [status, cvchap] = await call_api(fetch, url, null, 'GET')
-
-    if (status) return { status, error: cvchap }
-
     const book_url = `/-${nvinfo.bslug}`
-    const list_url = gen_book_path(nvinfo.bslug, seed, cvchap.chinfo.chidx)
+    const list_url = gen_book_path(nvinfo.bslug, seed, chidx)
 
     appbar.set({
       left: [
@@ -28,7 +23,9 @@
       cvmtl: true,
     })
 
-    return { props: cvchap }
+    const api_url = `/api/chaps/${nvinfo.id}/${seed}/${chidx}/${+cpart}`
+    const api_res = await fetch(api_url)
+    return await api_res.json()
   }
 </script>
 

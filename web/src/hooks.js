@@ -7,7 +7,7 @@ export async function handle({ event, resolve }) {
 }
 
 export async function getSession({ request: { headers } }) {
-  const res = await fetch('http://localhost:5010/api/user/_self', { headers })
-  if (res.ok) return await res.json()
-  return { uname: 'Khách', privi: -1, wtheme: 'light' }
+  const res = await fetch('http://localhost:5010/api/_self', { headers })
+  const data = await res.json()
+  return data.props
 }

@@ -2,9 +2,10 @@
   export async function load({ fetch, params: { board } }) {
     const api_url = `/api/boards/` + board
     const api_res = await fetch(api_url)
+    const payload = await api_res.json()
 
-    if (api_res.ok) return { stuff: await api_res.json() }
-    return { status: api_res.status, error: await api_res.text() }
+    payload.stuff = payload.props
+    return payload
   }
 </script>
 

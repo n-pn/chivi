@@ -2,12 +2,12 @@
   import { page } from '$app/stores'
   import { data as appbar } from '$sects/Appbar.svelte'
 
-  export async function load({ fetch, url: { searchParams } }) {
-    const api_url = `/api/dicts?${searchParams.toString()}`
-    const api_res = await fetch(api_url)
-
+  export async function load({ fetch, url }) {
     appbar.set({ left: [['Từ điển', 'package']] })
-    return { props: await api_res.json() }
+
+    const api_url = `/api/dicts${url.search}`
+    const api_res = await fetch(api_url)
+    return await api_res.json()
   }
 </script>
 

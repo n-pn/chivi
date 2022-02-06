@@ -3,10 +3,11 @@
   import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ fetch, url: { searchParams } }) {
-    const res = await fetch(`/api/crits?${searchParams.toString()}&take=10`)
-
     appbar.set({ left: [['Đánh giá', 'stars', '/crits']] })
-    return { props: await res.json() }
+
+    const api_url = `/api/crits?${searchParams.toString()}&lm=10`
+    const api_res = await fetch(api_url)
+    return await api_res.json()
   }
 
   const sorts = { mtime: 'Gần nhất', stars: 'Cho điểm', likes: 'Ưa thích' }
@@ -20,7 +21,7 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pager = new Pager($page.url, { sort: 'mtime', page: 1 })
+  $: pager = new Pager($page.url, { sort: 'mtime', pg: 1 })
   $: _sort = pager.get('sort')
 </script>
 
@@ -32,7 +33,7 @@
   <span class="h3 -label">Đánh giá</span>
   {#each Object.entries(sorts) as [sort, name]}
     <a
-      href={pager.make_url({ sort, page: 1 })}
+      href={pager.make_url({ sort, pg: 1 })}
       class="-sort"
       class:_active={sort == _sort}>{name}</a>
   {/each}

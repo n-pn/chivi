@@ -14,8 +14,8 @@
   export let dtlist = []
   export let _mode = 0
 
-  $: pager = new Pager($page.url, { page: 1, label: '' })
-  $: dlabel = pager.get('label')
+  $: pager = new Pager($page.url, { pg: 1, tl: '' })
+  $: dlabel = pager.get('tl')
 </script>
 
 <board-head>
@@ -25,7 +25,7 @@
     {#if !dlabel}<SIcon name="check" /> {/if}
   </a>
   {#each Object.entries(dlabels) as [value, label]}
-    <a class="m-label _{value}" href={pager.make_url({ label: value })}>
+    <a class="m-label _{value}" href={pager.make_url({ tl: value })}>
       <span>{label}</span>
       {#if dlabel == value}<SIcon name="check" /> {/if}
     </a>

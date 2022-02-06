@@ -1,21 +1,17 @@
 <script context="module">
   import { data as appbar } from '$sects/Appbar.svelte'
 
-  export async function load({ fetch, url: { searchParams } }) {
-    const page = +searchParams.get('page') || 1
-    const dlabel = searchParams.get('label')
+  export async function load({ fetch, url }) {
+    appbar.set({ left: [['Diễn đàn', 'messages', '/forum']] })
 
-    let api_url = `/api/topics?page=${page}&take=10`
-    if (dlabel) api_url += `&dlabel=${dlabel}`
+    const pg = url.searchParams.get('pg') || 1
+    const tl = url.searchParams.get('tl')
 
-    const res = await fetch(api_url)
-    if (!res.ok) return { status: res.status, error: await res.text() }
+    let api_url = `/api/topics?pg=${pg}&lm=10`
+    if (tl) api_url += `&dlabel=${tl}`
 
-    appbar.set({
-      left: [['Diễn đàn', 'messages', '/forum']],
-    })
-
-    return { props: { dtlist: await res.json() } }
+    const api_res = await fetch(api_url)
+    return await api_res.json()
   }
 </script>
 

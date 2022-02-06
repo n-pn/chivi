@@ -1,18 +1,16 @@
 <script context="module">
-  import { api_call } from '$api/_api_call'
   import { data as appbar } from '$sects/Appbar.svelte'
 
-  export async function load({ fetch, params }) {
-    const [status, crit] = await api_call(fetch, `crits/${params.crit}`)
-    if (status) return { status, error: crit }
-
+  export async function load({ fetch, params: { crit } }) {
     appbar.set({
       left: [
         ['Đánh giá', 'stars', '/crits'],
-        [`[${crit.id}]`, null, null, null, '_seed'],
+        [`[${crit}]`, null, null, null, '_seed'],
       ],
     })
-    return { props: { crit } }
+
+    const api_res = await fetch(`/api/crits/${crit}`)
+    return await api_res.json()
   }
 </script>
 
@@ -20,7 +18,7 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
 
-  export let crit
+  export let yscrit
 </script>
 
 <svelte:head>
@@ -33,18 +31,18 @@
     <span>Đánh giá</span>
   </a>
   <span class="-sep">/</span>
-  <a class="-link" href="/crits?user={crit.uslug}">
+  <a class="-link" href="/crits?user={yscrit.uslug}">
     <SIcon name="user" />
-    <span>{crit.uname}</span>
+    <span>{yscrit.uname}</span>
   </a>
   <span class="-sep">/</span>
-  <a class="-link" href="/crits?book={crit.bid}">
+  <a class="-link" href="/crits?book={yscrit.bid}">
     <SIcon name="book" />
-    <span>{crit.bname}</span>
+    <span>{yscrit.bname}</span>
   </a>
 </nav>
 
-<Yscrit {crit} view_all={true} big_text={true} />
+<Yscrit crit={yscrit} view_all={true} big_text={true} />
 
 <style lang="scss">
   .navi {

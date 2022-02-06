@@ -1,24 +1,27 @@
 <script context="module">
-  import { page } from '$app/stores'
   import { status_types, status_names } from '$lib/constants'
   import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ url, params, fetch }) {
     const uname = params.uname
     const bmark = url.searchParams.get('bmark') || 'reading'
-    const page = +url.searchParams.get('page') || 1
+    const page = +url.searchParams.get('pg') || 1
 
-    const api_url = `/api/books?page=${page}&take=24&order=update&uname=${uname}&bmark=${bmark}`
-    const res = await fetch(api_url)
-
-    if (!res.ok) return { status: res.status, error: await res.text() }
+    const api_url = `/api/books?pg=${page}&lm=24&order=update&uname=${uname}&bmark=${bmark}`
+    const api_res = await fetch(api_url)
+    const payload = await api_res.json()
+    if (!api_res.ok) return payload
 
     appbar.set({ left: [[`Tủ truyện của [${uname}]`, 'notebook']] })
-    return { props: { uname, bmark, ...(await res.json()) } }
+    payload.props.uname = uname
+    payload.props.bmark = bmark
+    return payload
   }
 </script>
 
 <script>
+  import { page } from '$app/stores'
+
   import Nvlist from '$parts/Nvlist.svelte'
   import Footer from '$sects/Footer.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'

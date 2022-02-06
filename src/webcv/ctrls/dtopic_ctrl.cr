@@ -29,13 +29,15 @@ class CV::DtopicCtrl < CV::BaseCtrl
     set_cache :public, maxage: 20
 
     send_json({
-      total: total,
-      pgidx: pgidx,
-      pgmax: (total - 1) // limit + 1,
-      items: items.map { |x|
-        x.nvinfo = nvinfo if nvinfo
-        x.cvuser = cvuser if cvuser
-        DtopicView.new(x)
+      dtlist: {
+        total: total,
+        pgidx: pgidx,
+        pgmax: (total - 1) // limit + 1,
+        items: items.map { |x|
+          x.nvinfo = nvinfo if nvinfo
+          x.cvuser = cvuser if cvuser
+          DtopicView.new(x)
+        },
       },
     })
   end

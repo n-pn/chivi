@@ -2,20 +2,24 @@
   import { session, navigating, page } from '$app/stores'
   import * as ubmemo_api from '$api/ubmemo_api'
 
-  import { api_call } from '$api/_api_call'
   import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ fetch, stuff, url }) {
     const { nvinfo, ubmemo } = stuff
     const sname = url.searchParams.get('sname') || 'chivi'
-    const pgidx = +url.searchParams.get('page')
+    const pgidx = +url.searchParams.get('pg')
 
-    const api_url = `chaps/${nvinfo.id}/${sname}?page=${pgidx}`
+    const api_url = `/api/chaps/${nvinfo.id}/${sname}?pg=${pgidx}`
+    const api_res = await fetch(api_url)
 
-    const [status, chinfo] = await api_call(fetch, api_url)
-    if (status) return { status, error: chinfo }
+    const payload = await api_res.json()
+    if (!api_res.ok) return payload
 
-    if (chinfo.utime > nvinfo.mftime) nvinfo.mftime = chinfo.utime
+    payload.props.nvinfo = nvinfo
+    payload.props.ubmemo = ubmemo
+
+    const { chseed } = payload.props
+    if (chseed.utime > nvinfo.mftime) nvinfo.mftime = chseed.utime
 
     appbar.set({
       left: [
@@ -24,7 +28,7 @@
       ],
       right: gen_appbar_right(nvinfo, ubmemo),
     })
-    return { props: { chinfo, nvinfo, ubmemo } }
+    return payload
   }
 
   // function chidx_to_page(chidx, psize = 32) {
@@ -45,16 +49,16 @@
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
   import Chlist from '$parts/Chlist.svelte'
-  import Vessel from '$sects/Vessel.svelte'
 
   import SeedList from './_layout/SeedList.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let nvinfo = $page.stuff.nvinfo || {}
   export let ubmemo = $page.stuff.ubmemo || {}
-  export let chinfo
+  export let chseed
+  export let chpage
 
-  $: pager = new Pager($page.url, { sname: 'chivi', page: 1 })
+  $: pager = new Pager($page.url, { sname: 'chivi', pg: 1 })
 </script>
 
 <SeedList {pager} />
@@ -62,24 +66,24 @@
 <chap-page>
   <page-info>
     <info-left>
-      <info-text>{chinfo.sname}</info-text>
-      <info-span>{chinfo.total} chương</info-span>
-      <info-span><RTime mtime={chinfo.utime} /></info-span>
+      <info-text>{chseed.sname}</info-text>
+      <info-span>{chseed.total} chương</info-span>
+      <info-span><RTime mtime={chseed.utime} /></info-span>
     </info-left>
 
     <info-right>
-      {#if chinfo.sname == 'chivi' || chinfo.sname == 'users'}
+      {#if chseed.sname == 'chivi' || chseed.sname == 'users'}
         <a
           class="m-btn"
           class:_disable={$session.privi < 2}
-          href="/-{nvinfo.bslug}/+chap?chidx={chinfo.total + 1}">
+          href="/-{nvinfo.bslug}/+chap?chidx={chpage.total + 1}">
           <SIcon name="circle-plus" />
           <span class="-hide">Thêm</span>
         </a>
       {:else}
         <a
           class="m-btn"
-          href={chinfo.wlink}
+          href={chseed.wlink}
           target="_blank"
           rel="noopener noreferer">
           <SIcon name="external-link" />
@@ -90,7 +94,7 @@
       <a
         class="m-btn"
         class:_disable={$session.privi < 1}
-        href={pager.make_url({ page: chinfo.pgidx, force: true })}>
+        href={pager.make_url({ pg: chpage.pgidx, force: true })}>
         {#if $navigating}
           <SIcon name="loader" spin={true} />
         {:else}
@@ -102,25 +106,25 @@
   </page-info>
 
   <chap-list>
-    {#if chinfo.pgmax > 0}
+    {#if chpage.pgmax > 0}
       <Chlist
         bslug={nvinfo.bslug}
-        sname={chinfo.sname}
-        chaps={chinfo.lasts}
+        sname={chseed.sname}
+        chaps={chpage.lasts}
         track={ubmemo}
-        is_remote={chinfo._type > 2} />
+        is_remote={chseed._type > 2} />
 
       <div class="chlist-sep" />
 
       <Chlist
         bslug={nvinfo.bslug}
-        sname={chinfo.sname}
-        chaps={chinfo.chaps}
+        sname={chseed.sname}
+        chaps={chpage.chaps}
         track={ubmemo}
-        is_remote={chinfo._type > 2} />
+        is_remote={chseed._type > 2} />
 
       <footer class="foot">
-        <Mpager {pager} pgidx={chinfo.pgidx} pgmax={chinfo.pgmax} />
+        <Mpager {pager} pgidx={chpage.pgidx} pgmax={chpage.pgmax} />
       </footer>
     {:else}
       <p class="empty">Không có nội dung :(</p>

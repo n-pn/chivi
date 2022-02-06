@@ -27,7 +27,7 @@
   export let pgmax = 1
   export let genres = []
 
-  $: pager = new Pager($page.url, { order: 'bumped', page: 1 })
+  $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
 </script>
 
 <svelte:head>

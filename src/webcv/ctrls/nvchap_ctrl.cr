@@ -25,17 +25,22 @@ class CV::NvchapCtrl < CV::BaseCtrl
     pgidx = params.fetch_int("page", min: 1)
 
     send_json({
-      sname: zhbook.sname,
-      utime: zhbook.utime,
-      atime: zhbook.atime,
-      wlink: zhbook.wlink,
+      chseed: {
+        sname: zhbook.sname,
+        utime: zhbook.utime,
+        atime: zhbook.atime,
+        wlink: zhbook.wlink,
+        _type: zhbook._type,
+        _seed: is_remote,
+      },
 
-      _seed: is_remote,
-      total: total,
-      pgidx: pgidx,
-      pgmax: CtrlUtil.pgmax(total, 32),
-      lasts: zhbook.lastpg.to_a,
-      chaps: zhbook.chpage(pgidx - 1).to_a,
+      chpage: {
+        total: total,
+        pgidx: pgidx,
+        pgmax: CtrlUtil.pgmax(total, 32),
+        lasts: zhbook.lastpg.to_a,
+        chaps: zhbook.chpage(pgidx - 1).to_a,
+      },
     })
   end
 

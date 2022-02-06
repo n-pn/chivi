@@ -1,12 +1,17 @@
 <script context="module">
-  export async function load({ fetch, stuff, url: { searchParams } }) {
-    const page = +searchParams.get('page') || 1
-    const sort = searchParams.get('sort') || 'stars'
+  export async function load({ fetch, stuff, url }) {
+    const page = +url.searchParams.get('pg') || 1
+    const sort = url.searchParams.get('sort') || 'stars'
 
-    const qs = `page=${page}&take=10&sort=${sort}`
+    const qs = `pg=${page}&lm=10&sort=${sort}`
     const res = await fetch(`/api/crits?book=${stuff.nvinfo.id}&${qs}`)
 
-    return { props: { _sort: sort, ...(await res.json()) } }
+    console.log(res)
+
+    const data = await res.json()
+    if (res.ok) data.props._sort = sort
+
+    return data
   }
 
   const sorts = {
@@ -28,7 +33,7 @@
   export let pgmax = 1
   export let _sort
 
-  $: pager = new Pager($page.url, { sort: 'stars', page: 1 })
+  $: pager = new Pager($page.url, { sort: 'stars', pg: 1 })
 </script>
 
 <BookPage nvtab="crits">
@@ -37,7 +42,7 @@
       <span class="h3 -label">Đánh giá</span>
       {#each Object.entries(sorts) as [sort, name]}
         <a
-          href={pager.make_url({ sort, page: 1 })}
+          href={pager.make_url({ sort, pg: 1 })}
           class="-sort"
           class:_active={sort == _sort}>{name}</a>
       {/each}

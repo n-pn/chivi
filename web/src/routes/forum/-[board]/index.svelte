@@ -3,16 +3,6 @@
 
   export async function load({ stuff, fetch, url: { searchParams } }) {
     const { dboard } = stuff
-
-    const page = +searchParams.get('page') || 1
-    const dlabel = searchParams.get('label')
-
-    let api_url = `/api/topics?dboard=${dboard.id}&page=${page}&take=10`
-    if (dlabel) api_url += `&dlabel=${dlabel}`
-
-    const res = await fetch(api_url)
-    if (!res.ok) return { status: res.status, error: await res.text() }
-
     appbar.set({
       left: [
         ['Diễn đàn', 'messages', '/forum', '_show-lg'],
@@ -20,7 +10,17 @@
       ],
     })
 
-    return { props: { dboard, dtlist: await res.json() } }
+    const pg = +searchParams.get('pg') || 1
+    const tl = searchParams.get('tl')
+
+    let api_url = `/api/topics?dboard=${dboard.id}&pg=${pg}&lm=10`
+    if (tl) api_url += `&dlabel=${tl}`
+
+    const api_res = await fetch(api_url)
+    const payload = await api_res.json()
+
+    payload.props.dboard = dboard
+    return payload
   }
 </script>
 

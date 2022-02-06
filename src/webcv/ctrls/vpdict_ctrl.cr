@@ -38,10 +38,11 @@ class CV::VpdictCtrl < CV::BaseCtrl
     vdict = VpDict.load(dname)
 
     pgidx, limit, offset = params.page_info(min: 30)
+    puts [pgidx, limit, offset]
 
     total = offset + 128
     terms = [] of VpTerm
-    filter = VMatch.init(params.to_unsafe_h)
+    filter = VMatch.init(params)
 
     # TODO: provide cursor to search faster
 
@@ -51,13 +52,14 @@ class CV::VpdictCtrl < CV::BaseCtrl
       break if terms.size >= total
     end
 
+    total = terms.size
     send_json({
       dname: dname,
       d_dub: CtrlUtil.d_dub(dname),
-      terms: terms.size > offset ? terms[offset, limit] : [] of VpTerm,
-      total: vdict.size,
+      total: total,
       pgidx: pgidx,
       pgmax: CtrlUtil.pgmax(total, limit),
+      terms: total > offset ? terms[offset, limit] : [] of VpTerm,
     })
   end
 

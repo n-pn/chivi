@@ -60,17 +60,17 @@
   <title>Thêm/sửa chương - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
-<nav class="navi">
-  <div class="-item _sep">
-    <a href="/-{nvinfo.bslug}" class="-link">{nvinfo.vname}</a>
-  </div>
+<section>
+  <nav class="navi">
+    <div class="-item _sep">
+      <a href="/-{nvinfo.bslug}" class="-link">{nvinfo.vname}</a>
+    </div>
 
-  <div class="-item">
-    <a href="/-{nvinfo.bslug}/-chivi" class="-link">Chương tiết</a>
-  </div>
-</nav>
+    <div class="-item">
+      <a href="/-{nvinfo.bslug}/-chivi" class="-link">Chương tiết</a>
+    </div>
+  </nav>
 
-<section class="body">
   <textarea
     class="m-input"
     name="input"
@@ -80,7 +80,7 @@
 </section>
 
 <Footer>
-  <div class="vessel">
+  <div class="pagi">
     <label class="label" for="chidx">
       <span>Chương số</span>
       <input class="m-input" name="chidx" bind:value={chidx} />
@@ -99,7 +99,11 @@
 </Footer>
 
 <style lang="scss">
-  .navi {
+  section {
+    margin: 0;
+  }
+
+  nav {
     padding: 0.5rem 0;
     line-height: 1.25rem;
 
@@ -126,14 +130,16 @@
     }
   }
 
-  #input {
+  textarea {
+    display: block;
     width: 100%;
-    height: calc(100vh - 12rem);
+    min-height: 10rem;
+    height: calc(100vh - 13rem);
     padding: 0.75rem;
     font-size: rem(18px);
   }
 
-  .vessel {
+  .pagi {
     @include flex-cy($gap: 0.5rem);
 
     .m-input {
@@ -142,6 +148,7 @@
         margin-left: 0.25rem;
         width: 3.5rem;
         text-align: center;
+        padding: 0 0.25rem;
       }
     }
 

@@ -5,7 +5,9 @@
   export async function load({ fetch, stuff: { nvinfo } }) {
     const api_url = `/api/books/${nvinfo.bhash}/front`
     const api_res = await fetch(api_url)
-    return { props: { nvinfo, ...(await api_res.json()) } }
+    const payload = await api_res.json()
+    if (api_res.ok) payload.nvinfo = nvinfo
+    return payload
   }
 </script>
 

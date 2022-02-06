@@ -10,24 +10,20 @@
   import Postag, { ptnames } from '$parts/Postag.svelte'
 
   export async function load({ fetch, url }) {
-    const api_url = `/api/${url.pathname}?${url.searchParams.toString()}`
+    const api_url = `/api${url.pathname}${url.search}`
     const api_res = await fetch(api_url)
 
-    const props = await api_res.json()
+    const payload = await api_res.json()
 
+    payload.query = Object.fromEntries(url.searchParams)
     appbar.set({
       left: [
         ['Từ điển', 'package', '/dicts', null, '_show-md'],
-        [props.d_dub, null, url.pathname, '_title', '_title'],
+        [payload.props.d_dub, null, url.pathname, '_title', '_title'],
       ],
     })
 
-    return {
-      props: {
-        ...props,
-        query: Object.fromEntries(url.searchParams),
-      },
-    }
+    return payload
   }
 </script>
 
@@ -40,6 +36,13 @@
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
 
+  export let terms = []
+  export let total = 1
+  export let pgidx = 1
+  export let pgmax = 1
+
+  export let query = { key: '', val: '', ptag: '', rank: '', uname: '' }
+
   $: {
     if (dname == 'regular' || dname == 'hanviet') {
       vdict.set({ dname: 'combine', d_dub: 'Tổng hợp' })
@@ -48,15 +51,6 @@
     }
   }
   $: d_tab = dname == 'regular' ? 1 : dname == 'hanviet' ? 2 : 0
-
-  // export let p_min = 1
-  export let terms = []
-
-  export let total = 1
-  export let pgidx = 1
-  export let pgmax = 1
-
-  export let query = { key: '', val: '', ptag: '', rank: '', uname: '' }
 
   $: offset = (pgidx - 1) * 30 + 1
   function render_time(mtime) {
@@ -146,7 +140,7 @@
             <a
               class="m-btn _sm"
               data-kbd="ctrl+enter"
-              href={pager.make_url({ ...query, page: 1 })}>
+              href={pager.make_url({ ...query, pg: 1 })}>
               <SIcon name="search" />
             </a>
           </td>

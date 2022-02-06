@@ -63,9 +63,13 @@
       body: JSON.stringify(params),
     })
 
-    if (res.ok) on_change()
-    else alert(await res.text())
-    ctrl.hide()
+    if (res.ok) {
+      on_change()
+      ctrl.hide()
+    } else {
+      const { error } = await res.json()
+      alert(error)
+    }
   }
 
   function is_edited(tab) {
@@ -93,13 +97,7 @@
         </svelte:fragment>
       </Gmenu>
 
-      <Hanzi
-        ztext={$ztext}
-        lower={$zfrom}
-        upper={$zupto}
-        bind:vpterms
-        bind:valhint
-        bind:output={key} />
+      <Hanzi bind:vpterms bind:valhint bind:output={key} />
 
       <button
         type="button"

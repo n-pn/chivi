@@ -40,7 +40,7 @@ class CV::YscritCtrl < CV::BaseCtrl
   def show
     crit_id = UkeyUtil.decode32(params["crit"])
     yscrit = Yscrit.find!({id: crit_id})
-    send_json(YscritView.new(yscrit))
+    send_json({yscrit: YscritView.new(yscrit)})
   rescue err
     halt! 404, "Đánh giá không tồn tại"
   end

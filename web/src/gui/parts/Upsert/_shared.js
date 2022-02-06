@@ -91,7 +91,7 @@ export function decor_term(data) {
 
   data.disabled = (privi) => {
     if (data._priv) {
-      if (privi < data.u_privi) return true
+      if (privi < data._cvuser.privi) return true
       if (data.val != data.u_val) return false
       if (data.ptag != data.u_ptag) return false
       if (data.rank != data.u_rank) return false

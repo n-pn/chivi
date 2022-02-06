@@ -13,12 +13,10 @@
 
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
-    api_url.searchParams.set('take', 24)
+    api_url.searchParams.set('lm', 24)
 
     const res = await fetch(api_url.toString())
-
-    if (!res.ok) return { status: res.status, error: await res.text() }
-    return { props: await res.json() }
+    return res.json()
   }
 
   const order_names = {
@@ -40,7 +38,7 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pager = new Pager($page.url, { order: 'bumped', page: 1 })
+  $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
 </script>
 
 <svelte:head>
@@ -50,7 +48,7 @@
 <div class="order">
   {#each Object.entries(order_names) as [type, label]}
     <a
-      href={pager.make_url({ page: 1, order: type })}
+      href={pager.make_url({ pg: 1, order: type })}
       class="-type"
       class:_active={pager.get('order') == type}>
       <span>{label}</span>

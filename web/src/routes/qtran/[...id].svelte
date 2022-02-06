@@ -10,13 +10,6 @@
 
   export async function load({ fetch, url, params }) {
     const [type, name] = params.id.split('/')
-
-    const api_url = `/api/qtran/${type}/${name}${url.search}`
-    const api_res = await fetch(api_url)
-    const props = await api_res.json()
-
-    if (!api_res.ok) return { status: 404, error }
-
     appbar.set({
       left: [
         ['Dịch nhanh', 'bolt', '/qtran', null, '_show-sm'],
@@ -25,7 +18,13 @@
       cvmtl: true,
     })
 
-    return { props: { ...props, type, name } }
+    const api_url = `/api/qtran/${type}/${name}${url.search}`
+    const api_res = await fetch(api_url)
+    const payload = await api_res.json()
+
+    payload.props.type = type
+    payload.props.name = name
+    return payload
   }
 </script>
 
