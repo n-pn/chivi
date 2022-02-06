@@ -10,10 +10,11 @@
   let chaps = []
   onMount(load_history)
 
-  async function load_history(skip = 0) {
-    const url = `/api/_self/books/access?skip=${skip}&take=10`
-    const res = await fetch(url)
-    if (res.ok) chaps = await res.json()
+  async function load_history(pg = 1) {
+    const api_url = `/api/_self/books/access?pg=${pg}&lm=10`
+    const api_res = await fetch(api_url)
+    const payload = await api_res.json()
+    if (api_res.ok) chaps = payload.props
   }
 </script>
 
