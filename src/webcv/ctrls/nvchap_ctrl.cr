@@ -1,4 +1,4 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::NvchapCtrl < CV::BaseCtrl
   private def load_zhbook
@@ -10,7 +10,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
   def ch_list
     zhbook = load_zhbook
-    mode = u_privi > 0 && params["force"]? ? 1 : 0
+    mode = _cvuser.privi > 0 && params["force"]? ? 1 : 0
 
     is_remote = NvSeed::REMOTES.includes?(zhbook.sname)
     mode += 2 if is_remote && seed_outdated?(zhbook)
@@ -24,44 +24,28 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     pgidx = params.fetch_int("page", min: 1)
 
-    render_json do |res|
-      JSON.build(res) do |jb|
-        jb.object do
-          jb.field "_seed", is_remote
-          jb.field "sname", zhbook.sname
+    send_json({
+      sname: zhbook.sname,
+      utime: zhbook.utime,
+      atime: zhbook.atime,
+      wlink: zhbook.wlink,
 
-          jb.field "utime", zhbook.utime
-          jb.field "atime", zhbook.atime
-
-          jb.field "wlink", zhbook.wlink
-          # jb.field "crawl", zhbook.remote?(u_privi)
-
-          jb.field "total", total
-          jb.field "pgidx", pgidx
-          jb.field "pgmax", (total - 1) // 32 + 1
-
-          jb.field "lasts" do
-            jb.array { zhbook.lastpg.each(&.to_json(jb)) }
-          end
-
-          jb.field "chaps" do
-            jb.array { zhbook.chpage(pgidx - 1).each(&.to_json(jb)) }
-          end
-        end
-      end
-    end
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    halt! 500, "Internal error!"
+      _seed: is_remote,
+      total: total,
+      pgidx: pgidx,
+      pgmax: CtrlUtil.pgmax(total, 32),
+      lasts: zhbook.lastpg.to_a,
+      chaps: zhbook.chpage(pgidx - 1).to_a,
+    })
   end
 
   private def seed_outdated?(zhbook : Zhbook)
     utime = Time.unix(zhbook.atime)
 
     case zhbook.status
-    when 0 then Time.utc - 2.**(4 - u_privi).hours > utime
-    when 1 then Time.utc - 2.*(4 - u_privi).days > utime
-    when 2 then Time.utc - 3.*(4 - u_privi).weeks > utime
+    when 0 then Time.utc - 2.**(4 - _cvuser.privi).hours > utime
+    when 1 then Time.utc - 2.*(4 - _cvuser.privi).days > utime
+    when 2 then Time.utc - 3.*(4 - _cvuser.privi).weeks > utime
     else        false
     end
   end
@@ -81,7 +65,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
       ubmemo.mark!(zhbook.sname, chidx, cpart, chinfo.title, chinfo.uslug)
     end
 
-    json_view do |jb|
+    send_json do |jb|
       jb.object {
         jb.field "chmeta" {
           jb.object {
@@ -128,8 +112,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    response.headers.add("Cache-Control", "private")
-    response.content_type = "text/plain; charset=utf-8"
+    set_cache :private, maxage: 10
+    set_headers content_type: :text
 
     response << "//// #{chinfo.z_chvol}\n#{chinfo.z_title}\n"
 
@@ -146,9 +130,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    min_fresh = _cvuser.privi < 2 ? 60 : 20
-    response.headers.add("Cache-Control", "private, min-fresh=#{min_fresh}")
-    response.content_type = "text/plain; charset=utf-8"
+    set_cache :private, maxage: _cvuser.privi < 2 ? 60 : 20
+    set_headers content_type: :text
 
     lines = zhbook.chtext(chinfo, cpart, mode: 0, uname: _cvuser.uname)
     convert(zhbook, chinfo, lines, cpart, response)
@@ -174,12 +157,9 @@ class CV::NvchapCtrl < CV::BaseCtrl
       strio << "\n"
       cvmtl.cv_plain(line).to_str(strio)
     rescue err
-      Log.error { err.message }
       strio << "\t[[Máy dịch gặp lỗi, mời liên hệ ban quản trị]]"
+      Log.error { err }
     end
-  rescue err
-    puts err
-    puts err.inspect_with_backtrace
   end
 
   def upsert
@@ -193,11 +173,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
     input = params.fetch_str("input")
     lines = TextUtils.split_text(input, false)
 
-    Log.info { params["_trad"]? }
-
     if params["_trad"]? == "true"
       lines.map! { |x| MtCore.trad_to_simp(x) }
-      puts "trad => simp"
     end
 
     chaps = split_chaps(lines, "")
@@ -233,10 +210,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
       zhbook.save!
     end
 
-    render_json({msg: "ok", chidx: chidx, uslug: infos.first.uslug})
-  rescue err
-    puts "- Error loading chtext: #{err}"
-    halt!(500, err.message)
+    send_json({chidx: chidx, uslug: infos.first.uslug}, 201)
   end
 
   struct Chap

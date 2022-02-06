@@ -1,31 +1,26 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::DboardCtrl < CV::BaseCtrl
   def index
-    limit = params.fetch_int("take", min: 1, max: 24)
-    pgidx = params.fetch_int("page", min: 1)
-    skips = (pgidx - 1) * limit
+    pgidx, limit, offset = params.page_info(max: 24)
 
     query = Nvinfo.query.order_by(utime: :desc)
-    total = query.dup.limit(limit * 3 + skips).offset(0).count
+    total = query.dup.limit(limit * 3 + offset).count
 
-    cache_rule :public, 30, 120
-
-    json_view({
+    set_cache :private, maxage: 30
+    send_json({
       total: total,
       pgidx: pgidx,
-      pgmax: (total - 1) // limit + 1,
-      items: query.limit(limit).offset(skips).map { |x| DboardView.new(x) },
+      pgmax: CtrlUtil.pgmax(total, limit),
+      items: query.limit(limit).offset(offset).map { |x| DboardView.new(x) },
     })
   end
 
   def show
     dboard = Nvinfo.load!(params["dboard"])
-
     # TODO: load user impression
-    cache_rule :public, 120, 300, dboard.updated_at.to_s
-
-    json_view({dboard: DboardView.new(dboard)})
+    set_cache :private, maxage: 120
+    send_json({dboard: DboardView.new(dboard)})
   rescue err
     halt!(404, "Diễn đàn không tồn tại!")
   end

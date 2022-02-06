@@ -1,14 +1,8 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::AuthorCtrl < CV::BaseCtrl
-  private def extract_params
-    page = params.fetch_int("page", min: 1)
-    take = params.fetch_int("take", min: 1, max: 25)
-    {page, take, (page - 1) * take}
-  end
-
   def books
-    pgidx, limit, offset = extract_params
+    pgidx, limit, offset = Params.page_info(max: 25)
 
     author_id = params["author_id"].to_i64
     author = Author.load!(author_id)
@@ -16,16 +10,13 @@ class CV::AuthorCtrl < CV::BaseCtrl
     books = author.books
     total = books.size
 
-    response.headers.add("Cache-Control", "public, min-fresh=180")
+    set_cache maxage: 180
 
-    json_view({
+    send_json({
       total: total,
       pgidx: pgidx,
-      pgmax: (total - 1) // limit + 1,
+      pgmax: CtrlUtil.pgmax(total, limit),
       books: books[offset, limit].map { |x| NvinfoView.new(x, false) },
     })
-  rescue err
-    puts err.inspect_with_backtrace
-    halt! 500, err.message
   end
 end

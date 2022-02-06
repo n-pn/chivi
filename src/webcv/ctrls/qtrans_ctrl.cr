@@ -1,4 +1,4 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::QtransCtrl < CV::BaseCtrl
   NOTE_DIR = "var/qttexts/notes"
@@ -26,17 +26,15 @@ class CV::QtransCtrl < CV::BaseCtrl
     return halt! 404, "Not found!" if lines.empty?
 
     if params["mode"]? == "text"
-      response.content_type = "text/plain; charset=utf-8"
+      set_headers content_type: :text
       convert(dname, lines, response)
     else
-      json_view do |jb|
-        jb.object do
-          jb.field "dname", dname
-          jb.field "d_dub", d_dub
-          jb.field "zhtext", lines
-          jb.field "cvdata", String.build { |io| convert(dname, lines, io) }.to_s
-        end
-      end
+      send_json({
+        dname:  dname,
+        d_dub:  d_dub,
+        zhtext: lines,
+        cvdata: String.build { |io| convert(dname, lines, io) },
+      })
     end
   end
 
@@ -63,7 +61,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     lines = parse_lines(params.fetch_str("input"))
     dname = params.fetch_str("dname", "combine")
 
-    response.content_type = "text/plain; charset=utf-8"
+    set_headers content_type: :text
     convert(dname, lines, response)
   end
 
@@ -71,7 +69,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     input = params.fetch_str("input")
     dname = params.fetch_str("dname", "combine")
 
-    response.content_type = "text/plain; charset=utf-8"
+    set_headers content_type: :text
 
     if params["mode"]? == "tlspec"
       cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)

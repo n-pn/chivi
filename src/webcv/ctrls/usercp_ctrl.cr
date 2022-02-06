@@ -1,39 +1,32 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::UsercpCtrl < CV::BaseCtrl
+  def cv_user
+    set_cache :private, maxage: 30
+    send_json(CvuserView.new(_cvuser))
+  end
+
   def replied
-    limit, offset = params.get_paged(min: 10)
+    _pgidx, limit, offset = params.page_info(min: 10)
+    user_id = _cvuser.id
 
     query = Dtpost.query
-      .where("state >= 0 AND cvuser_id != ?", _cvuser.id)
-      .where("(repl_cvuser_id = ? OR tagged_ids @> ?::bigint[])", _cvuser.id, [_cvuser.id])
+      .where("state >= 0 AND cvuser_id != ?", user_id)
+      .where("(repl_cvuser_id = ? OR tagged_ids @> ?::bigint[])", user_id, [user_id])
       .order_by(id: :desc)
       .with_dtopic.with_cvuser
       .limit(limit).offset(offset)
 
-    cache_rule :private, 10, 60
-    json_view(query.map { |x| DtpostView.new(x, full: true) })
-  rescue err
-    Log.error { err }
-    halt!(500, err.message)
+    set_cache :private, maxage: 20
+    send_json(query.map { |x| DtpostView.new(x, full: true) })
   end
 
   def upgrade
     privi = params.fetch_int("privi", min: 1, max: 3)
     tspan = params.fetch_int("tspan", min: 0, max: 3)
     _cvuser.upgrade!(privi, tspan)
-
-    render_json({
-      uname:  _cvuser.uname,
-      privi:  _cvuser.privi,
-      vcoin:  _cvuser.vcoin_avail,
-      wtheme: _cvuser.wtheme,
-
-      privi_1_until: _cvuser.privi_1_until,
-      privi_2_until: _cvuser.privi_2_until,
-      privi_3_until: _cvuser.privi_3_until,
-    })
+    send_json(CvuserView.new(_cvuser))
   rescue err
-    halt! 400, "Bạn chưa đủ số vcoid tối thiểu để tăng quyền hạn!"
+    halt! 403, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
   end
 end

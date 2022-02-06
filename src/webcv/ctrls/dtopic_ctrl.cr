@@ -1,10 +1,8 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::DtopicCtrl < CV::BaseCtrl
   def index
-    limit = params.fetch_int("take", min: 1, max: 24)
-    pgidx = params.fetch_int("page", min: 1)
-    offset = (pgidx - 1) * limit
+    pgidx, limit, offset = params.page_info(max: 24)
 
     query =
       Dtopic.query
@@ -28,9 +26,9 @@ class CV::DtopicCtrl < CV::BaseCtrl
     query.with_cvuser unless cvuser
     items = query.limit(limit).offset(offset).to_a
 
-    cache_rule :public, 10, 60
+    set_cache :public, maxage: 20
 
-    json_view({
+    send_json({
       total: total,
       pgidx: pgidx,
       pgmax: (total - 1) // limit + 1,
@@ -40,9 +38,6 @@ class CV::DtopicCtrl < CV::BaseCtrl
         DtopicView.new(x)
       },
     })
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    halt!(500, err.message)
   end
 
   def show
@@ -51,12 +46,12 @@ class CV::DtopicCtrl < CV::BaseCtrl
     dtopic.bump_view_count!
     dtopic.nvinfo.tap { |x| x.update!({dt_view_count: x.dt_view_count + 1}) }
 
-    cache_rule :public, 120, 300, dtopic.updated_at.to_s
     # TODO: load user trace
 
-    json_view({dtopic: DtopicView.new(dtopic, full: true)})
+    set_cache :public, maxage: 20
+    send_json({dtopic: DtopicView.new(dtopic, full: true)})
   rescue err
-    Log.error { err.inspect_with_backtrace }
+    Log.error { err }
     halt!(404, "Chủ đề không tồn tại!")
   end
 
@@ -64,7 +59,8 @@ class CV::DtopicCtrl < CV::BaseCtrl
     oid = params["dtopic"]
     dtopic = Dtopic.load!(oid)
 
-    json_view({
+    set_cache :public, maxage: 20
+    send_json({
       id:     oid,
       title:  dtopic.title,
       labels: dtopic.dlabel_ids.join(","),
@@ -88,7 +84,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     dtopic.update_content!(params)
     nvinfo.update!({dtopic_count: count, dt_post_utime: dtopic.utime})
 
-    json_view({dtopic: DtopicView.new(dtopic)})
+    send_json({dtopic: DtopicView.new(dtopic)})
   end
 
   def update
@@ -99,10 +95,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     end
 
     dtopic.update_content!(params)
-    json_view({dtopic: DtopicView.new(dtopic)})
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    halt! 500, err.message
+    send_json({dtopic: DtopicView.new(dtopic)})
   end
 
   def delete
@@ -117,6 +110,6 @@ class CV::DtopicCtrl < CV::BaseCtrl
     end
 
     dtopic.soft_delete(admin: admin)
-    json_view({msg: "ok"})
+    send_json("Chủ đề đã bị xoá")
   end
 end

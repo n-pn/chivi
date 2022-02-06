@@ -1,15 +1,8 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::NvinfoCtrl < CV::BaseCtrl
-  private def extract_params
-    page = params.fetch_int("page", min: 1)
-    take = params.fetch_int("take", min: 1, max: 25)
-    {page, take, (page - 1) * take}
-  end
-
   def index
-    Log.info { params.to_h }
-    pgidx, limit, offset = extract_params
+    pgidx, limit, offset = params.page_info(max: 24)
 
     query =
       Nvinfo.query
@@ -21,23 +14,20 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .filter_origin(params["origin"]?)
         .filter_cvuser(params["uname"]?, params["bmark"]?)
 
+    query.sort_by(params.fetch_str("order", "access"))
     total = query.dup.limit(offset + limit * 3).offset(0).count
 
     limit = limit == 24 ? 25 : limit
-    query.sort_by(params.fetch_str("order", "access"))
     query.limit(limit).offset(offset).with_author
 
-    response.headers.add("Cache-Control", "public, min-fresh=180")
+    set_cache :public, maxage: 60
 
-    json_view({
+    send_json({
       total: total,
       pgidx: pgidx,
       pgmax: (total - 1) // limit + 1,
       books: query.map { |x| NvinfoView.new(x, false) },
     })
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    halt! 500, "Có lỗi từ hệ thống!"
   end
 
   def show : Nil
@@ -45,7 +35,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
-    nvinfo.bump! if u_privi >= 0
+    nvinfo.bump! if _cvuser.privi >= 0
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
 
     zhbooks = nvinfo.zhbooks.to_a.sort_by(&.zseed)
@@ -67,9 +57,9 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       end
     end
 
-    response.headers.add("Cache-Control", "min-fresh=30")
+    set_cache :private, maxage: 30
 
-    json_view do |jb|
+    send_json do |jb|
       jb.object {
         jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
         jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
@@ -90,9 +80,6 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         end
       }
     end
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    halt! 500, "Có lỗi từ hệ thống"
   end
 
   # show related data for book front page
@@ -116,7 +103,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .with_cvuser
         .limit(100)
 
-    json_view({
+    send_json({
       crits: yscrits.map { |x| YscritView.new(x) },
       books: nvinfos.map { |x| NvinfoView.new(x, false) },
       users: ubmemos.map do |x|
@@ -127,9 +114,6 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         }
       end,
     })
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    halt! 500, "Có lỗi từ hệ thống"
   end
 
   def upsert
@@ -148,7 +132,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     nvinfo.save!
 
     log_upsert_action(params)
-    json_view({bslug: nvinfo.bslug})
+    send_json({bslug: nvinfo.bslug})
   end
 
   LOG_FILE = "var/_ulogs/#{Time.utc.to_s.split(' ', 2).first}.log"

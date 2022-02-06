@@ -1,4 +1,4 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::VptermCtrl < CV::BaseCtrl
   def upsert_entry
@@ -7,7 +7,7 @@ class CV::VptermCtrl < CV::BaseCtrl
     vdict = VpDict.load(dname, scope)
 
     _priv = params["_priv"]? == "true"
-    unless vdict.allow?(u_privi, _priv)
+    unless vdict.allow?(_cvuser.privi, _priv)
       return halt!(403, "Không đủ quyền hạn để sửa từ!")
     end
 
@@ -24,17 +24,18 @@ class CV::VptermCtrl < CV::BaseCtrl
     uname = _priv ? "!" + u_dname : u_dname
     vpterm = VpTerm.new(key, val, attr, rank, uname: uname)
 
-    return halt!(501, "Nội dung không thay đổi!") unless vdict.set!(vpterm)
+    unless vdict.set!(vpterm)
+      return halt!(401, "Nội dung không thay đổi!")
+    end
 
-    # add to suggestion
-    add_to_suggest(vpterm.dup) if vdict.dtype > 1
-    # add to qtran dict if entry is a person name
-    add_to_combine(vpterm.dup) if vdict.dtype > 3 && dname != "combine"
+    spawn do
+      # add to suggestion
+      add_to_suggest(vpterm.dup) if vdict.dtype > 1
+      # add to qtran dict if entry is a person name
+      add_to_combine(vpterm.dup) if vdict.dtype > 3 && dname != "combine"
+    end
 
-    json_view(vpterm)
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    halt! 500, err.message
+    send_json(vpterm)
   end
 
   private def add_to_suggest(term : VpTerm)
@@ -51,6 +52,6 @@ class CV::VptermCtrl < CV::BaseCtrl
   end
 
   def upsert_batch
-    halt! 404, "Unsupported!"
+    halt! 404, "Chức năng đang hoàn thiện!"
   end
 end

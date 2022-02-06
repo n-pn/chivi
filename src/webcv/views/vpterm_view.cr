@@ -65,13 +65,13 @@ class CV::VpTermView
     jb.object do
       case vdict.dtype
       when 1 # hanviet
-        jb.field "u_privi", 4
+        jb.field "_cvuser.privi", 4
         jb.field "b_privi", 3
       when 2 # regular
-        jb.field "u_privi", 1
+        jb.field "_cvuser.privi", 1
         jb.field "b_privi", 2
       when 3 # special
-        jb.field "u_privi", 0
+        jb.field "_cvuser.privi", 0
         jb.field "b_privi", 1
       end
 

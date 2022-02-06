@@ -20,7 +20,7 @@ class CV::DtpostView
       end
 
       jb.field "u_dname", @data.cvuser.uname
-      jb.field "u_privi", @data.cvuser.privi
+      jb.field "_cvuser.privi", @data.cvuser.privi
 
       if @data.repl_dtpost_id > 0
         repl = Dtpost.load!(@data.repl_dtpost_id)
@@ -28,7 +28,7 @@ class CV::DtpostView
         jb.field "rp_id", repl.id
         jb.field "rp_no", repl.ii
         jb.field "ru_dname", repl.cvuser.uname
-        jb.field "ru_privi", repl.cvuser.privi
+        jb.field "r_cvuser.privi", repl.cvuser.privi
       end
 
       jb.field "ohtml", @data.ohtml

@@ -1,18 +1,17 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::UbmemoCtrl < CV::BaseCtrl
   def cvbook
-    json_view({msg: "TODO!"})
+    send_json("Chưa có chức năng")
   end
 
   def access
-    skip = params.fetch_int("skip", min: 0)
-    take = params.fetch_int("take", min: 15, max: 30)
+    pgidx, limit, offset = params.page_info(min: 15, max: 30)
 
     query = Ubmemo.query.where("cvuser_id = #{_cvuser.id}")
-    query = query.limit(take).offset(skip).order_by(utime: :desc)
+    query = query.limit(limit).offset(offset).order_by(utime: :desc)
 
-    json_view do |jb|
+    send_json do |jb|
       jb.array do
         query.with_nvinfo.each do |ubmemo|
           jb.object {
@@ -32,9 +31,6 @@ class CV::UbmemoCtrl < CV::BaseCtrl
         end
       end
     end
-  rescue err
-    Log.error { err.message.colorize.red }
-    halt! 500, err.message
   end
 
   def show : Nil
@@ -44,10 +40,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
 
     nvinfo_id = params["book_id"].to_i64
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
-    json_view { |jb| UbmemoView.render(jb, ubmemo) }
-  rescue err
-    Log.error { err.message.colorize.red }
-    halt!(500, err.message)
+    send_json { |jb| UbmemoView.render(jb, ubmemo) }
   end
 
   def update_access
@@ -64,10 +57,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
       params.fetch_str("uslug"),
       params["locked"]? == "true" ? 1 : 0
     )
-    json_view { |jb| UbmemoView.render(jb, ubmemo) }
-  rescue err
-    Log.error { err.message.colorize.red }
-    halt! 500, err.message
+    send_json { |jb| UbmemoView.render(jb, ubmemo) }
   end
 
   def update_status
@@ -78,8 +68,6 @@ class CV::UbmemoCtrl < CV::BaseCtrl
 
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
     ubmemo.update!({status: status})
-    json_view { |jb| UbmemoView.render(jb, ubmemo) }
-  rescue err
-    halt!(500, err.message)
+    send_json { |jb| UbmemoView.render(jb, ubmemo) }
   end
 end

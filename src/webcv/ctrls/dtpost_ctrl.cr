@@ -1,10 +1,8 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::DtpostCtrl < CV::BaseCtrl
   def index
-    limit = params.fetch_int("take", min: 1, max: 24)
-    pgidx = params.fetch_int("page", min: 1)
-    skips = (pgidx - 1) * limit
+    pgidx, limit, offset = params.page_info(max: 24)
 
     query =
       Dtpost.query
@@ -22,18 +20,18 @@ class CV::DtpostCtrl < CV::BaseCtrl
     if dtopic
       total = dtopic.post_count
     else
-      total = query.dup.limit(limit * 3 + skips).offset(0).count
+      total = query.dup.limit(limit * 3 + offset).offset(0).count
     end
 
     # TODO: load user trace
 
     query.with_dtopic unless dtopic
     query.with_cvuser unless cvuser
-    items = query.limit(limit).offset(skips)
+    items = query.limit(limit).offset(offset)
 
-    cache_rule :public, 10, 60
+    set_cache :public, maxage: 20
 
-    json_view({
+    send_json({
       total: total,
       pgidx: pgidx,
       pgmax: (total - 1) // limit + 1,
@@ -43,15 +41,13 @@ class CV::DtpostCtrl < CV::BaseCtrl
         DtpostView.new(x)
       end,
     })
-  rescue err
-    halt!(500, err.message)
   end
 
   def detail
     dtpost = Dtpost.load!(params["dtpost"].to_i64)
-    cache_rule :public, 120, 300, dtpost.updated_at.to_s
+    set_cache maxage: 30
 
-    json_view({
+    send_json({
       id:    dtpost.id,
       input: dtpost.input,
       itype: dtpost.itype,
@@ -63,7 +59,9 @@ class CV::DtpostCtrl < CV::BaseCtrl
 
   def create
     dtopic = Dtopic.load!(params["dtopic"])
-    return halt!(403) unless DboardACL.dtpost_create?(dtopic, _cvuser)
+    unless DboardACL.dtpost_create?(dtopic, _cvuser)
+      return halt!(403, "Bạn không có quyền tạo bình luận mới")
+    end
 
     dtpost = Dtpost.new({cvuser: _cvuser, dtopic: dtopic, ii: dtopic.post_count + 1})
 
@@ -77,10 +75,7 @@ class CV::DtpostCtrl < CV::BaseCtrl
     repl = Dtpost.load!(dtpost.repl_dtpost_id)
     repl.update!({repl_count: repl.repl_count + 1})
 
-    json_view({dtpost: DtpostView.new(dtpost)})
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    halt! 500, err.message
+    send_json({dtpost: DtpostView.new(dtpost)})
   end
 
   def update
@@ -88,10 +83,7 @@ class CV::DtpostCtrl < CV::BaseCtrl
     return halt!(403) unless DboardACL.dtpost_update?(dtpost, _cvuser)
 
     dtpost.update_content!(params)
-    json_view({dtpost: DtpostView.new(dtpost)})
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    halt! 500, err.message
+    send_json({dtpost: DtpostView.new(dtpost)})
   end
 
   def delete
@@ -106,6 +98,6 @@ class CV::DtpostCtrl < CV::BaseCtrl
     end
 
     Dtpost.load!(params["dtpost"].to_i64).soft_delete
-    json_view({msg: "ok"})
+    send_json({msg: "ok"})
   end
 end

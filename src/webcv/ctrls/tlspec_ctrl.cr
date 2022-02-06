@@ -1,21 +1,20 @@
-require "./base_ctrl"
+require "./_base_ctrl"
 
 class CV::TlspecCtrl < CV::BaseCtrl
   def index
-    pgidx = params.fetch_int("page", min: 1)
-    limit = 50
-    start = (pgidx - 1) * limit
+    pgidx, limit, offset = params.page_info(min: 50)
+
     total = Tlspec.items.size
 
-    json_view do |jb|
+    send_json do |jb|
       jb.object {
         jb.field "total", total
         jb.field "pgidx", pgidx
-        jb.field "pgmax", (total - 1) // limit + 1
+        jb.field "pgmax", CtrlUtil.pgmax(total, limit)
 
         jb.field "items" {
           jb.array {
-            Tlspec.items[start..(start + limit)].each do |ukey|
+            Tlspec.items[offset..(offset + limit)].each do |ukey|
               entry = Tlspec.load!(ukey)
               last_edit = entry.edits.last
               lower = last_edit.lower
@@ -41,7 +40,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
   end
 
   def create
-    return halt! 403, "Quyền hạn của bạn không đủ." if u_privi < 0
+    return halt! 403, "Quyền hạn của bạn không đủ." if _cvuser.privi < 0
 
     ztext = params.fetch_str("ztext")
 
@@ -55,7 +54,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     entry.add_edit!(params, _cvuser)
     entry.save!
 
-    json_view(["ok"])
+    send_json(["ok"])
   rescue err
     Log.error { err.message.colorize.red }
     halt! 500, "Có lỗi từ hệ thống, mời check lại!"
@@ -72,7 +71,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     ztext = entry.ztext[lower...upper]
     cvmtl = MtCore.generic_mtl(entry.dname)
 
-    json_view({
+    send_json({
       ztext: entry.ztext,
       lower: lower,
       upper: upper,
@@ -104,7 +103,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     entry.add_edit!(params, _cvuser)
     entry.save!
 
-    json_view(["ok"])
+    send_json(["ok"])
   end
 
   def delete
@@ -116,6 +115,6 @@ class CV::TlspecCtrl < CV::BaseCtrl
 
     entry.delete!
 
-    json_view(["ok"])
+    send_json(["ok"])
   end
 end
