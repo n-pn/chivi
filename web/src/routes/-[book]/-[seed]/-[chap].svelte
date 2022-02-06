@@ -65,12 +65,12 @@
     if (redo) {
       const res = await fetch(api_url + '?redo=true')
       if (!res.ok) return console.log('Error: ' + (await res.text()))
-      const data = await res.json()
-      ubmemo = data.ubmemo
-      chmeta = data.chmeta
-      chinfo = data.chinfo
-      zhtext = data.zhtext
-      cvdata = data.cvdata
+      const { props } = await res.json()
+      ubmemo = props.ubmemo
+      chmeta = props.chmeta
+      chinfo = props.chinfo
+      zhtext = props.zhtext
+      cvdata = props.cvdata
     } else {
       const res = await fetch(api_url + '/text')
       if (res.ok) cvdata = await res.text()
