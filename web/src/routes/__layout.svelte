@@ -5,10 +5,10 @@
 </script>
 
 <script>
+  import { onMount } from 'svelte'
   import Appbar from '$sects/Appbar.svelte'
   import Loader from '$molds/Loader.svelte'
-  import { onMount } from 'svelte'
-  import '../css/generic.scss'
+  import '../styles/generic.scss'
 
   const links = [
     ['Discord', 'https://discord.gg/mdC3KQH'],

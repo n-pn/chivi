@@ -22,7 +22,7 @@ export default {
     preprocess({
       scss: {
         prependData: `@use "sass:math";\n@use "sass:list";\n@import "essence";`,
-        includePaths: [path.resolve(_cwd, 'src/css')],
+        includePaths: [path.resolve(_cwd, 'src/styles')],
         renderSync: true,
       },
       postcss: true,
