@@ -65,9 +65,10 @@ export function decor_term(data) {
   }
 
   data.get_state = (_priv = data._priv) => {
-    if (!data.val) return ['Xoá', '_harmful']
-    const o_val = _priv ? data.u_val : data.b_val
     const style = _priv ? '_line' : '_fill'
+    if (!data.val) return ['Xoá', `${style} _harmful`]
+
+    const o_val = _priv ? data.u_val : data.b_val
     return o_val ? ['Sửa', `${style} _primary`] : ['Lưu', `${style} _success`]
   }
 
@@ -91,7 +92,7 @@ export function decor_term(data) {
 
   data.disabled = (privi) => {
     if (data._priv) {
-      if (privi < data._cvuser.privi) return true
+      if (privi < data.u_privi) return true
       if (data.val != data.u_val) return false
       if (data.ptag != data.u_ptag) return false
       if (data.rank != data.u_rank) return false

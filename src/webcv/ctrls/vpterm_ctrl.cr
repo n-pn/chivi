@@ -3,7 +3,7 @@ require "./_base_ctrl"
 class CV::VptermCtrl < CV::BaseCtrl
   def upsert_entry
     dname = params["dname"]
-    scope = params["scope"]? || "basic"
+    scope = params["scope"]? || "novel"
     vdict = VpDict.load(dname, scope)
 
     _priv = params["_priv"]? == "true"
@@ -35,7 +35,7 @@ class CV::VptermCtrl < CV::BaseCtrl
       add_to_combine(vpterm.dup) if vdict.dtype > 3 && dname != "combine"
     end
 
-    send_json(vpterm)
+    send_json(vpterm, 201)
   end
 
   private def add_to_suggest(term : VpTerm)

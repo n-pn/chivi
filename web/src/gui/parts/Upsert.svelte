@@ -39,8 +39,6 @@
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
-  $: dicts = [$vdict]
-
   let vpterms = []
   let valhint = []
   let key = ''
@@ -53,14 +51,12 @@
 
   async function submit_val() {
     const dname = [$vdict.dname, 'regular', 'hanviet'][$ctrl.tab]
-
     const { val, rank, ptag: attr, _priv } = vpterm
-    const params = { key, val, rank, attr, _priv, dname }
 
     const res = await fetch('/api/terms/entry', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
+      body: JSON.stringify({ key, val, rank, attr, _priv, dname }),
     })
 
     if (res.ok) {
