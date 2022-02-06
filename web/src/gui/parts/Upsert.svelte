@@ -5,7 +5,6 @@
   import { session } from '$app/stores'
 
   import { vdict, ztext, zfrom, zupto } from '$lib/stores'
-  import { dict_upsert } from '$api/dictdb_api.js'
   import { decor_term, hint } from './Upsert/_shared.js'
 
   export const ctrl = {
@@ -40,6 +39,8 @@
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
+  $: dicts = [$vdict]
+
   let vpterms = []
   let valhint = []
   let key = ''
@@ -54,10 +55,16 @@
     const dname = [$vdict.dname, 'regular', 'hanviet'][$ctrl.tab]
 
     const { val, rank, ptag: attr, _priv } = vpterm
-    const params = { key, val, rank, attr, _priv }
+    const params = { key, val, rank, attr, _priv, dname }
 
-    const [status] = await dict_upsert(fetch, dname, params)
-    if (!status) on_change()
+    const res = await fetch('/api/terms/entry', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    })
+
+    if (res.ok) on_change()
+    else alert(await res.text())
     ctrl.hide()
   }
 
@@ -178,7 +185,7 @@
 
         <upsert-btns>
           <button
-            class="m-btn _lg _fill _left {btn_state}"
+            class="m-btn _lg _left {btn_state}"
             data-kbd="\"
             data-key="220"
             use:hint={vpterm._priv
@@ -189,7 +196,7 @@
           </button>
 
           <button
-            class="m-btn _lg _fill _right {btn_state}"
+            class="m-btn _lg _right {btn_state}"
             data-kbd="↵"
             disabled={vpterm.disabled($session.privi)}
             on:click={submit_val}

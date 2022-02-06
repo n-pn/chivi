@@ -12,7 +12,7 @@ const mdsvexConfig = {
   smartypants: { dashes: 'oldschool' },
   remarkPlugins: [breaks],
   rehypePlugins: [],
-  layout: path.resolve(_cwd, 'src/lib/sects/MdPost.svelte'),
+  layout: path.resolve(_cwd, 'src/gui/sects/MdPost.svelte'),
 }
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -35,10 +35,11 @@ export default {
       resolve: {
         alias: {
           $api: path.resolve(_cwd, 'src/api'),
-          $atoms: path.resolve(_cwd, 'src/lib/atoms'),
-          $molds: path.resolve(_cwd, 'src/lib/molds'),
-          $parts: path.resolve(_cwd, 'src/lib/parts'),
-          $sects: path.resolve(_cwd, 'src/lib/sects'),
+          $gui: path.resolve(_cwd, 'src/gui'),
+          $atoms: path.resolve(_cwd, 'src/gui/atoms'),
+          $molds: path.resolve(_cwd, 'src/gui/molds'),
+          $parts: path.resolve(_cwd, 'src/gui/parts'),
+          $sects: path.resolve(_cwd, 'src/gui/sects'),
           $utils: path.resolve(_cwd, 'src/lib/utils'),
         },
       },

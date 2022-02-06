@@ -36,7 +36,6 @@
   import { get_rtime_short } from '$atoms/RTime.svelte'
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import Vessel from '$sects/Vessel.svelte'
 
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
@@ -67,9 +66,7 @@
   let postag_state = 1
 
   const on_change = () =>
-    invalidate(
-      `/api/${$page.url.pathname}?${$page.url.searchParams.toString()}`
-    )
+    invalidate(`/api/${$page.url.pathname}${$page.url.search}`)
 
   $: pager = new Pager($page.url)
 

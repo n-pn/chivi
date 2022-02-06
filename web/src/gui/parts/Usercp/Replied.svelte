@@ -1,5 +1,5 @@
 <script>
-  import { DtpostCard } from '$lib/components'
+  import { DtpostCard } from '$gui'
 
   let items = []
   let pgidx = 1

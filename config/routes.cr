@@ -57,7 +57,9 @@ Amber::Server.configure do
     put "/dicts/:dname/lookup", CV::VpdictCtrl, :lookup
     get "/dicts/:dname/search", CV::VpdictCtrl, :search
     put "/dicts/:dname/search", CV::VpdictCtrl, :search
-    put "/dicts/:dname/upsert", CV::VpdictCtrl, :upsert
+
+    put "/terms/entry", CV::VptermCtrl, :upsert_entry
+    post "/terms/batch", CV::VptermCtrl, :upsert_batch
 
     get "/qtran/:type/:name", CV::QtransCtrl, :show
     post "/qtran", CV::QtransCtrl, :qtran

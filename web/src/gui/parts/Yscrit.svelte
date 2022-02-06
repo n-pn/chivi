@@ -1,6 +1,6 @@
 <script>
   import { rel_time } from '$lib/utils'
-  import { SIcon, Gmenu } from '$lib/components'
+  import { SIcon, Gmenu } from '$gui'
   import Replies from './Yscrit/Replies.svelte'
 
   export let crit

@@ -67,7 +67,8 @@ export function decor_term(data) {
   data.get_state = (_priv = data._priv) => {
     if (!data.val) return ['Xoá', '_harmful']
     const o_val = _priv ? data.u_val : data.b_val
-    return o_val ? ['Sửa', '_primary'] : ['Lưu', '_success']
+    const style = _priv ? '_line' : '_fill'
+    return o_val ? ['Sửa', `${style} _primary`] : ['Lưu', `${style} _success`]
   }
 
   data.swap_dict = () => {

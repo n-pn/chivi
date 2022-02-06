@@ -1,5 +1,5 @@
 <script>
-  import SIcon from '$lib/atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 </script>
 
 <button class={$$props.class} disabled={$$props.disabled} on:click>

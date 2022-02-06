@@ -12,7 +12,7 @@
 </script>
 
 <script>
-  import Footer from '$lib/sects/Footer.svelte'
+  import Footer from '$sects/Footer.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let cores = []

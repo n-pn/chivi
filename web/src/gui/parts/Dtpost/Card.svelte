@@ -2,7 +2,7 @@
   import { session, page } from '$app/stores'
 
   import { rel_time } from '$lib/utils'
-  import { SIcon, Gmenu } from '$lib/components'
+  import { SIcon, Gmenu } from '$gui'
   import DtpostForm from './Form.svelte'
   import { dtopic_form } from '$lib/stores'
 

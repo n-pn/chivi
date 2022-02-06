@@ -8,7 +8,7 @@
 </script>
 
 <script>
-  import { SIcon } from '$lib/components'
+  import { SIcon } from '$gui'
 
   export let dboard
   export let dtlist = []

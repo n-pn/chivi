@@ -22,7 +22,7 @@
 </script>
 
 <script>
-  import { DtopicFull, DtpostList } from '$lib/components'
+  import { DtopicFull, DtpostList } from '$gui'
 
   export let dboard
   export let dtopic

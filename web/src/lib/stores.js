@@ -68,7 +68,11 @@ export const ztext = {
   },
 }
 
-export const vdict = writable({ dname: 'combine', d_dub: 'Tổng hợp' })
+export const vdict = writable({
+  dname: 'combine',
+  d_dub: 'Tổng hợp',
+  scope: '',
+})
 
 export { form as dtopic_form } from './stores/dtopic_stores'
 export { form as dtpost_form } from './stores/dtpost_stores'
