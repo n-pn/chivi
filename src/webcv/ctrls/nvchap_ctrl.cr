@@ -117,7 +117,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    set_cache :private, maxage: 10
+    set_cache :private, maxage: 5 - _cvuser.privi
     set_headers content_type: :text
 
     response << "//// #{chinfo.z_chvol}\n#{chinfo.z_title}\n"
@@ -135,7 +135,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    set_cache :private, maxage: _cvuser.privi < 2 ? 60 : 20
+    set_cache :private, maxage: 5 - _cvuser.privi
     set_headers content_type: :text
 
     lines = zhbook.chtext(chinfo, cpart, mode: 0, uname: _cvuser.uname)

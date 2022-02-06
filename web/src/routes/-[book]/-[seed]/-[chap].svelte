@@ -72,7 +72,7 @@
       zhtext = props.zhtext
       cvdata = props.cvdata
     } else {
-      const res = await fetch(api_url + '/text')
+      const res = await fetch(api_url + '/text?redo=true')
       if (res.ok) cvdata = await res.text()
       else console.log(res.status)
     }
