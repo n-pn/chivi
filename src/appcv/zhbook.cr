@@ -180,15 +180,23 @@ class CV::Zhbook
     chinfo.chap_url(cpart)
   end
 
-  def copy_newers!(others : Array(self))
-    others.each do |other|
-      next unless other.chap_count > self.chap_count
+  def copy_newers!(others : Array(self), redo : Bool = false)
+    start = redo ? 1 : self.chap_count + 1
 
-      infos = ChList.fetch(other.sname, other.snvid, self.chap_count + 1, other.chap_count)
+    others.each do |other|
+      if redo && other.sname == "users"
+        infos = ChList.fetch("users", other.snvid, 1, other.chap_count)
+        infos.select! { |x| should_keep?(x) }
+      else
+        next if other.chap_count < start
+        infos = ChList.fetch(other.sname, other.snvid, start, other.chap_count)
+      end
+
       ChList.save!(self.sname, self.snvid, infos)
 
-      self.chap_count = other.chap_count
       self.utime = other.utime if self.utime < other.utime
+      self.chap_count = other.chap_count
+      start = self.chap_count + 1
     end
 
     self.purge_cache!
@@ -196,6 +204,12 @@ class CV::Zhbook
 
     self.atime = Time.utc.to_unix
     self.save!
+  end
+
+  def should_keep?(new_chinfo : ChInfo)
+    return false if new_chinfo.chars == 0
+    return true unless old_chinfo = self.chinfo(new_chinfo.chidx - 1)
+    old_chinfo.o_sname != "staff" || old_chinfo.utime < new_chinfo.utime
   end
 
   def chlist(pgidx : Int32)
