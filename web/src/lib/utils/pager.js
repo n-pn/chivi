@@ -1,5 +1,5 @@
 export class Pager {
-  constructor(url, dfs = { page: 1 }) {
+  constructor(url, dfs = { pg: 1 }) {
     this.url = url
     this.dfs = dfs
   }

@@ -22,7 +22,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
       base_zhbook.copy_newers!([zhbook]) if base_zhbook.chap_count < total
     end
 
-    pgidx = params.fetch_int("page", min: 1)
+    pgidx = params.fetch_int("pg", min: 1)
 
     send_json({
       chseed: {

@@ -23,7 +23,8 @@
   async function load_form(id) {
     const api_url = `/api/tposts/${id}/detail`
     const api_res = await fetch(api_url)
-    if (api_res.ok) form = await api_res.json()
+    const payload = await api_res.json()
+    if (api_res.ok) form = payload.props
   }
 
   function gen_api_url(dtopic_id) {
@@ -41,8 +42,9 @@
       body: JSON.stringify(form),
     })
 
-    if (!res.ok) return (error = await res.text())
-    on_destroy(true)
+    const payload = await api_res.json()
+    error = payload.error
+    if (res.ok) on_destroy(true)
   }
 </script>
 

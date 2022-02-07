@@ -6,8 +6,17 @@
 
   export async function load({ fetch, stuff, url }) {
     const { nvinfo, ubmemo } = stuff
+
+    appbar.set({
+      left: [
+        [nvinfo.vname, 'book', `/-${nvinfo.bslug}`, '_title', '_title'],
+        ['Mục lục', 'list', url.pathname, null, '_show-md'],
+      ],
+      right: gen_appbar_right(nvinfo, ubmemo),
+    })
+
     const sname = url.searchParams.get('sname') || 'chivi'
-    const pgidx = +url.searchParams.get('pg')
+    const pgidx = +url.searchParams.get('pg') || 1
 
     const api_url = `/api/chaps/${nvinfo.id}/${sname}?pg=${pgidx}`
     const api_res = await fetch(api_url)
@@ -21,13 +30,6 @@
     const { chseed } = payload.props
     if (chseed.utime > nvinfo.mftime) nvinfo.mftime = chseed.utime
 
-    appbar.set({
-      left: [
-        [nvinfo.vname, 'book', `/-${nvinfo.bslug}`, '_title', '_title'],
-        ['Mục lục', 'list', url.pathname, null, '_show-md'],
-      ],
-      right: gen_appbar_right(nvinfo, ubmemo),
-    })
     return payload
   }
 
@@ -67,7 +69,7 @@
   <page-info>
     <info-left>
       <info-text>{chseed.sname}</info-text>
-      <info-span>{chseed.total} chương</info-span>
+      <info-span>{chpage.total} chương</info-span>
       <info-span><RTime mtime={chseed.utime} /></info-span>
     </info-left>
 
