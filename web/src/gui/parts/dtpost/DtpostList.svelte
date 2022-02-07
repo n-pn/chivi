@@ -3,8 +3,8 @@
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
-  import DtpostCard from './Card.svelte'
-  import DtpostForm from './Form.svelte'
+  import DtpostCard from './DtpostCard.svelte'
+  import DtpostForm from './DtpostForm.svelte'
 </script>
 
 <script>

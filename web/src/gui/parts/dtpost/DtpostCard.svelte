@@ -3,8 +3,7 @@
 
   import { rel_time } from '$lib/utils'
   import { SIcon, Gmenu } from '$gui'
-  import DtpostForm from './Form.svelte'
-  import { dtopic_form } from '$lib/stores'
+  import DtpostForm from './DtpostForm.svelte'
 
   export let dtpost
   export let active_card = ''
