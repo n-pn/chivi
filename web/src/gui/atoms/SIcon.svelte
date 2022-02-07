@@ -1,7 +1,8 @@
 <script>
   export let name = 'x'
+  export let iset = 'tabler'
 </script>
 
 <svg class="m-icon {$$props.class}">
-  <use xlink:href="/icons/tabler.svg#{name}" />
+  <use xlink:href="/icons/{iset}.svg#{name}" />
 </svg>
