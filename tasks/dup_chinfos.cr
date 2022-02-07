@@ -11,6 +11,7 @@ Dir.children(DIR).each do |sname|
 
   books.each do |snvid|
     next if snvid == "_"
+    sleep 100.milliseconds
 
     n_dir = File.join(DIR, sname, snvid)
     next unless File.directory?(n_dir)
@@ -41,7 +42,7 @@ Dir.children(DIR).each do |sname|
 
     next if txt_infos.empty?
     txt_fpath = File.join(keep_dir, snvid + ".log")
-    txt_items = txt_infos.values.sort_by(&.chidx)
+    txt_items = txt_infos.values.sort_by(&.utime)
     File.write(txt_fpath, txt_items.map(&.to_s).join("\n"))
   end
 end
