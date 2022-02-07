@@ -74,6 +74,9 @@ class CV::Zhbook
         infos = parser.chap_infos
         pgmax = (infos.size - 1) // CV_PSIZE + 1
 
+        # save all file to special folder
+        spawn { ChList.save_all!(sname, snvid, infos) }
+
         if mode > 2
           ChList.save!(sname, snvid, infos)
           pgmin = 0
@@ -210,6 +213,7 @@ class CV::Zhbook
 
     chlist = self.chlist(index // ChList::PSIZE)
     chlist.update!(chinfo)
+    spawn { ChList.save_log!(sname, snvid, chinfo) }
 
     CV_CACHE.delete page_uuid(index // CV_PSIZE)
     @lastpg = nil if chap_count < index + 4
@@ -220,6 +224,8 @@ class CV::Zhbook
 
     ChList.save!(self.sname, self.snvid, infos)
     self.utime = utime
+
+    spawn { ChList.save_log!(sname, snvid, infos) }
 
     pgmin = (infos.first.chidx - 1) // CV_PSIZE
     pgmax = (infos.last.chidx - 1) // CV_PSIZE

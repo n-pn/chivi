@@ -27,6 +27,10 @@ module CV::NvSeed
     "jx_la" => 60,
   }
 
+  MAP_ID.each_key do |sname|
+    FileUtils.mkdir_p("var/chtexts/#{sname}/_")
+  end
+
   def map_id(sname : Array(String))
     sname.map { |x| map_id(x) }.uniq
   end

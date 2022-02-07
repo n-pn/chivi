@@ -28,6 +28,23 @@ class CV::ChList
     end
   end
 
+  def self.save_all!(sname : String, snvid : String, infos : Array(ChInfo))
+    file = "#{DIR}/#{sname}/_/#{snvid}.tsv"
+    File.write(file, infos.map(&.to_s).join('\n'))
+  end
+
+  def self.save_log!(sname : String, snvid : String, info : ChInfo)
+    file = "#{DIR}/#{sname}/_/#{snvid}.log"
+    File.open(file, "a") { |io| io << '\n' << info }
+  end
+
+  def self.save_log!(sname : String, snvid : String, infos : Array(ChInfo))
+    file = "#{DIR}/#{sname}/_/#{snvid}.log"
+    File.open(file, "a") do |io|
+      infos.each { |info| io << '\n' << info }
+    end
+  end
+
   def self.fetch(sname : String, snvid : String, chmin : Int32, chmax : Int32)
     pgmin = (chmin - 1) // PSIZE
     pgmax = (chmax - 1) // PSIZE
