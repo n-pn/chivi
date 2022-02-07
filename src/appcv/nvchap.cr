@@ -1,28 +1,7 @@
-# class CV::ChMeta
-#   property index : Int32
-#   property sname : String
-#   property snvid : String
-#   property chidx : In32
-
-#   def initialize(argv : Array(String))
-#     @index = argv[0].to_i
-#     @sname = argv[1]
-#     @snvid = argv[2]
-#     @chidx = argv[3].to_i
-#   end
-
-#   def initialize(@index, @sname, @snvid, @chidx = @index)
-#   end
-
-#   def to_s(io : IO)
-#     {@index, @sname, @snvid, @chidx}.join(IO, '\t')
-#   end
-# end
-
 class CV::Nvchap
   CACHE = {} of Int64 => self
 
-  CHDIR = "var/chtexts/_base"
+  CHDIR = "var/chtexts/chivi"
   ::FileUtils.mkdir_p(CHDIR)
 
   def self.load!(nvinfo : Nvinfo)
