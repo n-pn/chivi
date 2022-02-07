@@ -2,8 +2,8 @@
   import { page, session } from '$app/stores'
   import { dlabels } from '$lib/constants'
 
-  import DtopicCard from './Card.svelte'
-  import DtopicForm, { ctrl as dtopic_form } from './Form.svelte'
+  import DtopicCard from './DtopicCard.svelte'
+  import DtopicForm, { ctrl as dtopic_form } from './DtopicForm.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 </script>
 

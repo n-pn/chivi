@@ -14,9 +14,11 @@ async function load(id) {
 
   const api_url = `/api/topics/${id}/detail`
   const api_res = await fetch(api_url)
+  const payload = await api_res.json()
+  if (api_res.ok) return payload.props
 
-  if (api_res.ok) return await api_res.json()
-  else return init()
+  console.log(payload.error)
+  return init()
 }
 
 export const form = {
@@ -45,6 +47,6 @@ export const form = {
       body: JSON.stringify(get(form)),
     })
 
-    return res.ok ? '' : await res.text()
+    return res.ok ? '' : (await res.json()).error
   },
 }

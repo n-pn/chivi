@@ -25,7 +25,7 @@
 </script>
 
 <script>
-  import DtopicList from '$parts/Dtopic/List.svelte'
+  import DtopicList from '$parts/dtopic/DtopicList.svelte'
 
   export let dboard
   export let dtlist = { items: [], pgidx: 1, pgmax: 1 }

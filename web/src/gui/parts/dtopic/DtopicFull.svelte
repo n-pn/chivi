@@ -4,7 +4,7 @@
   import { dlabels } from '$lib/constants'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import DtopicForm, { ctrl as dtopic_ctrl } from '$parts/Dtopic/Form.svelte'
+  import DtopicForm, { ctrl as dtopic_ctrl } from './DtopicForm.svelte'
 
   export let dtopic
   export let _all = dtopic.bhtml.length < 500
