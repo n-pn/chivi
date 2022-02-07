@@ -28,7 +28,8 @@
       class="seed-name"
       class:_hidden={sname != 'users' && idx >= 4 && show_less}
       class:_active={sname == active_sname}
-      href={pager.make_url({ sname })}>
+      href={pager.make_url({ sname })}
+      rel={sname != 'chivi' ? 'nofollow' : ''}>
       <seed-label>
         <span>{sname}</span>
         <SIcon name={icon_types[_type]} />

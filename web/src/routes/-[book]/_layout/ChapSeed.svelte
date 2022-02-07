@@ -31,7 +31,8 @@
         class="seed-name"
         class:_hidden={idx > 3 && show_less}
         class:_active={zhbook.sname == chmeta.sname}
-        href={chap_url(zhbook.sname)}>
+        href={chap_url(zhbook.sname)}
+        rel={zhbook.sname != 'chivi' ? 'nofollow' : ''}>
         <seed-label>{zhbook.sname}</seed-label>
       </a>
     {/if}
