@@ -29,7 +29,7 @@ module CV::TlRule
   def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)
     # puts [verb, right, verb.prev?, "verb-object"]
 
-    return false if verb.body?.try(&.pre_bei?)
+    return false if verb.body?.try(&.pre_bei?) || need_2_objects?(verb)
 
     while prev && prev.adverb?
       prev = prev.prev?
