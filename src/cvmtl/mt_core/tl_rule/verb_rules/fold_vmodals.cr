@@ -58,13 +58,13 @@ module CV::TlRule
     return true if {"只", "还"}.includes?(prev.try(&.key))
 
     case succ
-    when .nil?, .ends?, .nouns?, .ude1?
+    when .nil?, .ends?, .nouns?, .ude1?, .ule?
       true
     when .preposes? then false
     when .verb_object?
       MtDict::VERBS_SEPERATED.has_key?(succ.key)
     else
-      {"都", "也"}.includes?(prev.try(&.key))
+      {"都", "也", "太"}.includes?(prev.try(&.key))
     end
   end
 
@@ -82,6 +82,8 @@ module CV::TlRule
     when .adverbs?
       if succ.key == "也" && !succ.succ?(&.maybe_verb?)
         node.val = "nhớ"
+      elsif succ.key == "越"
+        node.val = "nghĩ"
       else
         node.val = "muốn"
       end

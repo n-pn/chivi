@@ -4,7 +4,7 @@ module CV::TlRule
   end
 
   def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
-    return unless verb && succ && is_concoord?(junc)
+    return unless verb && succ && succ.maybe_verb? && is_concoord?(junc)
 
     case succ
     when .preposes?

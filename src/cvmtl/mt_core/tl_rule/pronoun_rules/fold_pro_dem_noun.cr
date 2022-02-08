@@ -28,15 +28,24 @@ module CV::TlRule
   def heal_pro_dem!(pro_dem : MtNode) : MtNode
     case pro_dem
     when .pro_zhe?
-      if (succ = pro_dem.succ?) && succ.comma?
-        if succ.succ?(&.pro_zhe?) && has_verb_after?(succ.succ)
-          return pro_dem.set!("đây")
+      case succ = pro_dem.succ?
+      when .nil?, .ends?
+        pro_dem.set!("cái này")
+      when .verbs?
+        pro_dem.set!("đây")
+      when .comma?
+        if (succ_2 = succ.succ?) && succ_2.pro_zhe? && succ_2.succ?(&.maybe_verb?)
+          pro_dem.set!("đây")
+        else
+          pro_dem.set!("cái này")
         end
-      elsif has_verb_after?(pro_dem)
-        return pro_dem.set!(pro_dem.prev?(&.nouns?) ? "giờ" : "đây")
+      else
+        if pro_dem.prev?(&.nouns?)
+          pro_dem.set!("giờ")
+        else
+          pro_dem.set!("cái này")
+        end
       end
-
-      pro_dem.set!("cái này")
     when .pro_na1?
       has_verb_after?(pro_dem) ? pro_dem : pro_dem.set!("vậy")
     else pro_dem

@@ -21,6 +21,8 @@ module CV::TlRule
       flip = true
     when "怎么"
       flip = true
+    when "哪个"
+      return proint unless succ.nouns?
     end
 
     fold!(proint, succ, succ.tag, dic: 3, flip: flip)
