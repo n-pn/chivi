@@ -32,26 +32,34 @@ module CV::TlRule
     end
   end
 
-  def fold_proper_nounish!(node : MtNode, succ : MtNode) : MtNode
-    return node unless noun_can_combine?(node.prev?, succ.succ?)
-    flip = !((prev = node.prev?) && need_2_objects?(prev))
+  def fold_proper_nounish!(proper : MtNode, nounish : MtNode) : MtNode
+    return proper unless noun_can_combine?(proper.prev?, nounish.succ?)
+    if (prev = proper.prev?) && need_2_objects?(prev)
+      flip = false
 
-    case succ.tag
-    when .space?
-      fold_noun_space!(node, succ)
-    when .place?
-      fold!(node, succ, PosTag::DefnPhrase, dic: 4, flip: flip)
-    when .person?
-      fold!(node, succ, node.tag, dic: 4, flip: false)
-    when .nqtime?
-      flip = !succ.succ?(&.ends?) if flip
-      fold!(node, succ, succ.tag, dic: 4, flip: flip)
-    when .names?, .ptitle?
-      # TODO: add pseudo node
-      node.val = "của #{node.val}" if flip
-      fold!(node, succ, succ.tag, dic: 4, flip: flip)
+      if (succ = nounish.succ?) && (succ.ude1?)
+        nounish = fold_ude1!(ude1: succ, prev: nounish)
+      end
     else
-      fold!(node, succ, PosTag::Nform, dic: 8, flip: false)
+      flip = true
+    end
+
+    case nounish.tag
+    when .space?
+      fold_noun_space!(proper, nounish)
+    when .place?
+      fold!(proper, nounish, PosTag::DefnPhrase, dic: 4, flip: flip)
+    when .person?
+      fold!(proper, nounish, proper.tag, dic: 4, flip: false)
+    when .nqtime?
+      flip = !nounish.succ?(&.ends?) if flip
+      fold!(proper, nounish, nounish.tag, dic: 4, flip: flip)
+    when .names?, .ptitle?, .noun?
+      # TODO: add pseudo proper
+      proper.val = "của #{proper.val}" if flip
+      fold!(proper, nounish, nounish.tag, dic: 4, flip: flip)
+    else
+      fold!(proper, nounish, PosTag::Nform, dic: 8, flip: false)
     end
   end
 
