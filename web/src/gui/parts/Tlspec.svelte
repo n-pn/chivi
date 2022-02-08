@@ -133,7 +133,7 @@
     <tlspec-head>
       <tlspec-title>
         <title-lbl>Báo lỗi dịch:</title-lbl>
-        <title-dub>{$vdict.d_dub}</title-dub>
+        <title-dic>{$vdict.dname}-{$vdict.d_dub}</title-dic>
       </tlspec-title>
       <button type="button" data-kbd="esc" class="x-btn" on:click={ctrl.hide}>
         <SIcon name="x" />
@@ -297,7 +297,7 @@
     padding-right: 0.25rem;
   }
 
-  title-dub {
+  title-dic {
     flex: 1;
     @include fgcolor(tert);
     @include clamp($width: null);

@@ -3,7 +3,6 @@ require "./_base_ctrl"
 class CV::TlspecCtrl < CV::BaseCtrl
   def index
     pgidx, limit, offset = params.page_info(min: 50)
-
     total = Tlspec.items.size
 
     send_json(
@@ -11,7 +10,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
         total: total,
         pgidx: pgidx,
         pgmax: CtrlUtil.pgmax(total, limit),
-        items: Tlspec.items[offset..(offset + limit)].map do |ukey|
+        items: Tlspec.items.skip(offset).first(limit).compact_map do |ukey|
           entry = Tlspec.load!(ukey)
           last_edit = entry.edits.last
           ztext = entry.ztext[last_edit.lower...last_edit.upper]
@@ -27,6 +26,8 @@ class CV::TlspecCtrl < CV::BaseCtrl
             match: last_edit.match,
             cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_s,
           }
+        rescue
+          nil
         end,
       }
     )
@@ -48,9 +49,6 @@ class CV::TlspecCtrl < CV::BaseCtrl
     entry.save!
 
     send_json(["ok"])
-  rescue err
-    Log.error { err.message.colorize.red }
-    halt! 500, "Có lỗi từ hệ thống, mời check lại!"
   end
 
   def show
@@ -80,10 +78,6 @@ class CV::TlspecCtrl < CV::BaseCtrl
       },
       # edits: entry.edits,
     })
-  rescue err
-    puts err
-
-    halt! 500, err.message
   end
 
   def update
