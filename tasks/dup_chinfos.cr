@@ -1,8 +1,10 @@
 require "./shared/bootstrap"
 
 DIR = "var/chtexts"
+snames = Dir.children(DIR)
+snames = snames.select(&.in?(ARGV)) unless ARGV.empty?
 
-Dir.children(DIR).each do |sname|
+snames.each do |sname|
   s_dir = File.join(DIR, sname)
   books = Dir.children(s_dir)
 
