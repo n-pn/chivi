@@ -44,16 +44,16 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     dname = params.fetch_str("dname", "combine")
     d_dub = CtrlUtil.d_dub(dname)
+
+    dname = "$" + dname if dname != "combine" && dname[0]? != '$'
     {dname, d_dub, parse_lines(File.read(file))}
   end
 
   private def load_crit(name : String) : RawQt
     crit_id = UkeyUtil.decode32(name)
     return {"", "", [] of String} unless yscrit = Yscrit.find({id: crit_id})
-
-    dname = yscrit.nvinfo.bhash
-    d_dub = yscrit.nvinfo.vname
-    {dname, d_dub, parse_lines(yscrit.ztext)}
+    nvinfo = yscrit.nvinfo
+    {nvinfo.dname, nvinfo.vname, parse_lines(yscrit.ztext)}
   end
 
   def create_post

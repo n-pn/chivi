@@ -4,7 +4,7 @@
   import { writable } from 'svelte/store'
   import { session } from '$app/stores'
 
-  import { vdict, ztext, zfrom, zupto } from '$lib/stores'
+  import { vdict, zfrom, zupto } from '$lib/stores'
   import { decor_term, hint } from './Upsert/_shared.js'
 
   export const ctrl = {
@@ -39,9 +39,16 @@
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
+  let key = ''
+
+  $: vpdicts = [
+    $vdict,
+    { dname: 'regular', d_dub: 'Thông dụng' },
+    { dname: 'hanviet', d_dub: 'Hán việt' },
+  ]
+
   let vpterms = []
   let valhint = []
-  let key = ''
 
   $: vpterm = vpterms[$ctrl.tab] || decor_term({})
   $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
@@ -93,7 +100,7 @@
         </svelte:fragment>
       </Gmenu>
 
-      <Hanzi bind:vpterms bind:valhint bind:output={key} />
+      <Hanzi {vpdicts} bind:vpterms bind:output={key} />
 
       <button
         type="button"

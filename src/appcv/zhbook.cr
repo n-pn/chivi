@@ -30,7 +30,7 @@ class CV::Zhbook
   timestamps
 
   getter wlink : String { SiteLink.binfo_url(sname, snvid) }
-  getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.bhash) }
+  getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }
   getter _type : Int32 do
     case sname
     when "chivi"          then 0

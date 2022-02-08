@@ -28,20 +28,34 @@ class CV::VpDict
   class_getter novels : Array(String) do
     files = Dir.glob("#{DIR}/novel/*.tab")
     files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
-    files.map { |f| File.basename(f, ".tab") }
+    files.map { |f| "$" + File.basename(f, ".tab") }
   end
 
   class_getter themes : Array(String) do
     files = Dir.glob("#{DIR}/theme/*.tab")
     files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
-    files.map { |f| File.basename(f, ".tab") }
+    files.map { |f| "!" + File.basename(f, ".tab") }
+  end
+
+  class_getter cvmtls : Array(String) do
+    files = Dir.glob("#{DIR}/cvmtl/*.tsv")
+    files.map { |f| "~" + File.basename(f, ".tsv") }
   end
 
   BASICS = {} of String => self
   NOVELS = {} of String => self
   THEMES = {} of String => self
 
-  def self.load(dname : String, scope = "novel", reset = false)
+  def self.load(dname : String, reset = false)
+    case dname[0]?
+    when '$'
+      return NOVELS[dname] ||= new(path(dname[1..], "novel"), dtype: 3, reset: reset)
+    when '!'
+      return THEMES[dname] ||= new(path(dname[1..], "theme"), dtype: 2, reset: reset)
+    when '~'
+      return BASICS[dname] ||= new(path(dname[1..], "cvmtl"), dtype: 1, reset: reset)
+    end
+
     case dname
     when "trungviet", "cc_cedict", "trich_dan"
       BASICS[dname] ||= new(path(dname, "miscs"), dtype: -1)
@@ -51,16 +65,13 @@ class CV::VpDict
       BASICS[dname] ||= new(path(dname, "basic"), dtype: 1, reset: reset)
     when "regular", "suggest"
       BASICS[dname] ||= new(path(dname, "basic"), dtype: 2, reset: reset)
-    when "combine"
-      BASICS[dname] ||= new(path(dname, "basic"), dtype: 3, reset: reset)
     else
-      cached = scope == "novel" ? NOVELS : THEMES
-      cached[dname] ||= new(path(dname, scope), dtype: 3, reset: reset)
+      BASICS[dname] ||= new(path(dname, "basic"), dtype: 3, reset: reset)
     end
   end
 
-  def self.path(label : String, scope : String = ".")
-    File.join(DIR, scope, label + ".tsv")
+  def self.path(label : String, group : String = ".")
+    File.join(DIR, group, label + ".tsv")
   end
 
   #########################

@@ -67,7 +67,7 @@ class CV::RawYscrit
 
     crit.stars = self.stars
     crit.ztext = self.ztext
-    crit.vhtml = vhtml(nvinfo.bhash)
+    crit.vhtml = vhtml(nvinfo.dname)
 
     crit.bumped = bumped
     crit.mftime = self.updated_at.to_unix

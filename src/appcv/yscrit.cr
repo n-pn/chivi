@@ -48,8 +48,8 @@ class CV::Yscrit
     self.ztext.split("\n").map(&.strip).reject(&.empty?)
   end
 
-  def cvdata(bname = self.nvinfo.bhash, mode = 1)
-    cvmtl = MtCore.generic_mtl(bname)
+  def cvdata(dname = self.nvinfo.dname, mode = 1)
+    cvmtl = MtCore.generic_mtl(dname)
     zhtext.map { |line| cvmtl.cv_plain(line, mode: mode).to_str }.join("\n")
   end
 

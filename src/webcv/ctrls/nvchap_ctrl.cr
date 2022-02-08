@@ -149,8 +149,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
   private def convert(zhbook, chinfo, lines : Array(String), cpart : Int32, strio : IO)
     return if lines.empty?
 
-    dname = zhbook.nvinfo.bhash
-    cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
+    cvmtl = MtCore.generic_mtl(zhbook.nvinfo.dname, _cvuser.uname)
 
     cvmtl.cv_title_full(lines[0]).to_str(strio)
     strio << "\t" << " (#{cpart + 1}/#{chinfo.parts})" if chinfo.parts > 1

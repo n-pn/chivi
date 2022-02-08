@@ -60,13 +60,19 @@ class CV::TlspecCtrl < CV::BaseCtrl
     upper = last_edit.upper
 
     ztext = entry.ztext[lower...upper]
-    cvmtl = MtCore.generic_mtl(entry.dname)
+
+    dname = entry.dname
+    if dname != "combine" && dname[0]? != '$'
+      dname = "$" + dname
+    end
+
+    cvmtl = MtCore.generic_mtl(dname)
 
     send_json({
       ztext: entry.ztext,
       lower: lower,
       upper: upper,
-      dname: entry.dname,
+      dname: dname,
       d_dub: entry.d_dub,
       uname: entry.edits.first.uname,
       privi: entry.edits.first.privi,

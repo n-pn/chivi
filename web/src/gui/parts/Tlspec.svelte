@@ -28,7 +28,6 @@
 
       vdict.set({ dname: props.dname, d_dub: props.d_dub })
       entry.set(props.entry)
-
       ctrl.set({ actived: true })
     },
   }

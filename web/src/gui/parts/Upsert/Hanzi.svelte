@@ -1,69 +1,50 @@
 <script context="module">
-  import { call_api } from '$api/_api_call'
-  import { vdict, ztext, zfrom, zupto } from '$lib/stores'
+  import { ztext, zfrom, zupto } from '$lib/stores'
 
-  function make_word_list(ztext, lower, upper) {
-    const words = [ztext.substring(lower, upper)]
+  const mapper = [
+    [0, 0],
+    [-1, 0],
+    [1, 0],
+    [0, 1],
+    [0, -1],
+    [-2, 0],
+    [-1, -1],
+    [-1, 1],
+  ]
 
-    if (lower > 0) words.push(ztext.substring(lower - 1, upper))
-    if (lower + 1 < upper) words.push(ztext.substring(lower + 1, upper))
-
-    if (upper - 1 > lower) words.push(ztext.substring(lower, upper - 1))
-    if (upper + 1 < ztext.length) words.push(ztext.substring(lower, upper + 1))
-    if (upper + 2 < ztext.length) words.push(ztext.substring(lower, upper + 2))
-    if (upper + 3 < ztext.length) words.push(ztext.substring(lower, upper + 3))
-
-    if (lower > 1) words.push(ztext.substring(lower - 2, upper))
-
-    return words
+  function gen_words(str, from, upto) {
+    const words = mapper.map((l, r) => str.substring(from + l, upto + r))
+    return words.filter((x, i, s) => x && s.indexOf(x) == i)
   }
 </script>
 
 <script>
-  import { hint, decor_term } from './_shared'
+  import { hint } from './_shared'
   import SIcon from '$atoms/SIcon.svelte'
 
+  export let vpdicts = []
   export let vpterms = []
-  export let valhint = []
   export let output = ''
 
-  let cached_vpterms = {}
-  let cached_valhint = {}
-  let cached_pin_yin = {}
+  let cached = {
+    pin_yin: {},
+    regular: {},
+  }
+
   let prefix = ''
   let suffix = ''
 
-  $: update_input($ztext, $zfrom, $zupto)
+  $: update_input($ztext, $zfrom, $zupto, vpdicts)
 
-  async function update_input(ztext, zfrom, zupto) {
+  async function update_input(ztext, zfrom, zupto, dicts) {
     output = ztext.substring(zfrom, zupto)
     prefix = ztext.substring(zfrom - 10, zfrom)
     suffix = ztext.substring(zupto, zupto + 10)
 
-    let words = make_word_list(ztext, zfrom, zupto)
-    words = words.filter((x) => x && !cached_vpterms[x])
+    const words = gen_words(ztext, zfrom, zupto)
+    await update_cached(words, dicts)
 
-    if (words.length > 0) {
-      const url = `dicts/${$vdict.dname}/search`
-      const [err, res] = await call_api(fetch, url, { words })
-      if (err) return console.log({ err, res })
-
-      for (const inp in res) {
-        const data = res[inp]
-
-        cached_pin_yin[inp] = data.pin_yin
-        cached_valhint[inp] = data.val_hint
-
-        cached_vpterms[inp] = [
-          decor_term(data.special),
-          decor_term(data.regular),
-          decor_term(data.hanviet),
-        ]
-      }
-    }
-
-    vpterms = cached_vpterms[output] || []
-    valhint = cached_valhint[output] || []
+    vpterms = vpdicts.map((x) => cached[x.dname][output])
   }
 
   function change_focus(index) {
@@ -85,6 +66,35 @@
 
     $zupto = value
     if ($zfrom >= value) $zfrom = value - 1
+  }
+
+  async function update_cached(words, dicts = []) {
+    if (words.length == 0) return
+
+    const params = {
+      pin_yin: words.map((x) => !cached.pinyins[x]).slice(0, 7),
+    }
+
+    for (const { dname } of dicts) {
+      params[dname] = words.map((x) => !cached[dname][x]).slice(0, 4)
+    }
+
+    const api_url = `/api/terms/inquire`
+    const api_res = fetch(api_url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    })
+
+    const payload = await api_res.json()
+    if (!api_res.ok) return console.log(payload.error)
+
+    for (const dname in payload.props) {
+      const terms = payload.props[dname]
+      for (const key in terms) {
+        cached[dname][key] = decor_term(terms[key])
+      }
+    }
   }
 </script>
 
@@ -142,7 +152,7 @@
   </div>
 
   <div class="pinyin">
-    <span class="pinyin-txt">{cached_pin_yin[output] || ''}</span>
+    <span class="pinyin-txt">{cached.pin_yin[output] || ''}</span>
   </div>
 
   <button

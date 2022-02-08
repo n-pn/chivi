@@ -9,16 +9,17 @@
 
   import Postag, { ptnames } from '$parts/Postag.svelte'
 
-  export async function load({ fetch, url }) {
-    const api_url = `/api${url.pathname}${url.search}`
+  export async function load({ fetch, url, params: { dict } }) {
+    const api_url = `/api/dicts/${dict}${url.search}`
     const api_res = await fetch(api_url)
 
     const payload = await api_res.json()
-
     payload.query = Object.fromEntries(url.searchParams)
+
     appbar.set({
       left: [
         ['Từ điển', 'package', '/dicts', null, '_show-md'],
+        // ['Từ điển', null, '/dicts/' + type, null, '_show-md'],
         [payload.props.d_dub, null, url.pathname, '_title', '_title'],
       ],
     })
@@ -44,10 +45,10 @@
   export let query = { key: '', val: '', ptag: '', rank: '', uname: '' }
 
   $: {
-    if (dname == 'regular' || dname == 'hanviet') {
-      vdict.set({ dname: 'combine', d_dub: 'Tổng hợp' })
-    } else {
+    if (dname.startsWith('$')) {
       vdict.set({ dname, d_dub })
+    } else {
+      vdict.set({ dname: 'combine', d_dub: 'Tổng hợp' })
     }
   }
   $: d_tab = dname == 'regular' ? 1 : dname == 'hanviet' ? 2 : 0

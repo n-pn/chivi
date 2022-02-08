@@ -74,7 +74,7 @@ module CV::YscritRaw
 
     unless json.ztext.empty? || json.ztext == "请登录查看评论内容"
       crit.ztext = json.ztext
-      crit.vhtml = SeedUtil.cv_ztext(json.ztext, nvinfo.bhash)
+      crit.vhtml = SeedUtil.cv_ztext(json.ztext, nvinfo.dname)
     end
 
     crit.bumped = bumped

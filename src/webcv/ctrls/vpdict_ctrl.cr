@@ -1,10 +1,10 @@
 require "./_base_ctrl"
 
 class CV::VpdictCtrl < CV::BaseCtrl
-  alias Dinfo = Tuple(String, String, Int32) # dict name, dict slug, entries count
+  alias VdInfo = Tuple(String, String, Int32) # dict name, dict slug, entries count
 
-  getter core_dicts : Array(Dinfo) do
-    dicts = [] of Dinfo
+  getter core_dicts : Array(VdInfo) do
+    dicts = [] of VdInfo
 
     dicts << {"regular", CtrlUtil.d_dub("regular"), VpDict.regular.size}
     dicts << {"hanviet", CtrlUtil.d_dub("hanviet"), VpDict.hanviet.size}
@@ -15,13 +15,15 @@ class CV::VpdictCtrl < CV::BaseCtrl
   end
 
   def index
-    pgidx, limit, offset = params.page_info(min: 40)
+    pgidx, limit, offset = params.page_info(min: 24, max: 40)
 
     input = VpDict.novels
-    book_dicts = [] of Dinfo
+    book_dicts = [] of VdInfo
 
     input[offset, limit].each do |dname|
-      book_dicts << {dname, CtrlUtil.d_dub(dname), VpDict.load(dname).size}
+      book_dicts << {
+        dname, CtrlUtil.d_dub(dname[1..]), VpDict.load(dname).size,
+      }
     end
 
     send_json({
