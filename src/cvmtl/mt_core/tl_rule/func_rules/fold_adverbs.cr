@@ -72,6 +72,15 @@ module CV::TlRule
     return node unless succ
     node.val = "vậy" if !nega && succ.ends? && node.key == "也"
 
+    if succ.vead?
+      if (tail = succ.succ?) && (tail.verbs? || tail.preposes? || tail.key == "和")
+        node = fold!(node, succ, succ.tag, dic: 5)
+        return node unless succ = node.succ?
+      else
+        return fold_adverb_verb!(node, cast_verb!(succ))
+      end
+    end
+
     case succ.tag
     when .v_you?
       return node unless (noun = succ.succ?) && noun.noun?
@@ -79,6 +88,8 @@ module CV::TlRule
       fold_adverb_node!(node, succ)
     when .vmodals?
       fold_vmodals!(succ, nega: node)
+    when .veno?
+      fold_adverb_verb!(node, cast_verb!(succ))
     when .verbs?
       fold_adverb_verb!(node, succ)
     when .adjts?
@@ -100,9 +111,8 @@ module CV::TlRule
   end
 
   def fold_adverb_verb!(adverb : MtNode, verb : MtNode)
-    verb = cast_verb!(verb) if verb.veno? || verb.vead?
-
     case adverb.key
+    when "光" then adverb.val = "chỉ riêng"
     when "白" then adverb.val = "phí công"
     when "正" then adverb.val = "đang" unless verb.v_shi?
     end
