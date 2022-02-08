@@ -1,6 +1,7 @@
 module CV::TlRule
   def fold_noun_adjt!(noun : MtNode, adjt : MtNode)
-    return noun if !noun.noun? || adjt.adj_hao? || noun.prev?(&.pre_bi3?)
+    return noun if !noun.noun? || adjt.adj_hao?
+    return noun if noun.prev? { |x| x.ude1? || x.pre_bi3? }
     return noun unless (adjt = scan_adjt!(adjt)) && adjt.adjts?
 
     case succ = adjt.succ?
@@ -8,7 +9,7 @@ module CV::TlRule
     when .junction?
       fold!(noun, adjt, PosTag::Aform, dic: 6)
     when .ude1?
-      return noun if succ.succ?(&.verbs?)
+      return noun if succ.succ? { |x| x.verbs? || x.ends? }
       fold!(noun, adjt, PosTag::Aform, dic: 7)
     when .ude2?
       return noun unless (prev = noun.prev?) && (prev.subject? || prev.junction?)
