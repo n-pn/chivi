@@ -160,13 +160,8 @@ class CV::MtCore
       return false unless left.nhanzi?
       return true unless right.key == "两"
 
-      case left.key[-1]?
-      when '一', '三'
-        true
-      else
-        right.set!("lượng", PosTag::Qtnoun)
-        false
-      end
+      right.set!("lượng", PosTag::Qtnoun)
+      false
     else
       false
     end

@@ -34,10 +34,13 @@ module CV::TlRule
     while succ
       # puts [prev, succ, "noun_can_combine"]
       case succ
-      when .adjts?   then return !succ.succ?(&.ude1?)
+      when .adjts?
+        return false unless (tail = succ.succ?) && tail.ude1?
+        return tail.succ? { |x| x.ends? || x.verbs? } || false
       when .adverbs? then succ = succ.succ?
       when .preposes?, .verbs?
-        return is_linking_verb?(prev, succ) || prev.ends?
+        return false if prev.ends?
+        return is_linking_verb?(prev, succ)
       else return true
       end
     end
