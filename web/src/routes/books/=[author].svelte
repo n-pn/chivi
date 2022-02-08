@@ -27,8 +27,10 @@
   <title>Tác giả: {author} - Chivi</title>
 </svelte:head>
 
-<h1>Truyện của tác giả [<em>{author}</em>]</h1>
-<NvinfoList items={books} {pgidx} {pgmax} />
+<section>
+  <h1>Truyện của tác giả [<em>{author}</em>]</h1>
+  <NvinfoList items={books} {pgidx} {pgmax} />
+</section>
 
 <style lang="scss">
   h1 {

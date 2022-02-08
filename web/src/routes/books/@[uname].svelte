@@ -4,15 +4,15 @@
 
   export async function load({ url, params, fetch }) {
     const uname = params.uname
+    appbar.set({ left: [[`Tủ truyện của [${uname}]`, 'notebook']] })
+
     const bmark = url.searchParams.get('bmark') || 'reading'
     const page = +url.searchParams.get('pg') || 1
 
     const api_url = `/api/books?pg=${page}&lm=24&order=update&uname=${uname}&bmark=${bmark}`
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
-    if (!api_res.ok) return payload
 
-    appbar.set({ left: [[`Tủ truyện của [${uname}]`, 'notebook']] })
     payload.props.uname = uname
     payload.props.bmark = bmark
     return payload

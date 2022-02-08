@@ -2,16 +2,17 @@
   import { data as appbar } from '$sects/Appbar.svelte'
 
   export async function load({ url, fetch, params: { genre } }) {
+    appbar.set({ left: [['Thể loại', 'folder', url.pathname]] })
+
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
-    api_url.searchParams.set('take', 24)
+    api_url.searchParams.set('lm', 24)
     api_url.searchParams.set('genre', genre)
 
-    const res = await fetch(api_url.toString())
-    if (!res.ok) return { status: res.status, error: await res.text() }
-
-    appbar.set({ left: [['Thể loại', 'folder', url.pathname]] })
-    return { props: { ...(await res.json()), genres: genre.split('+') } }
+    const api_res = await fetch(api_url.toString())
+    const payload = await api_res.json()
+    payload.props.genres = genre.split('+')
+    return payload
   }
 </script>
 

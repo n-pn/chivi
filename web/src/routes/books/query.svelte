@@ -36,13 +36,15 @@
   <title>Kết quả tìm kiếm cho "{input}" - Chivi</title>
 </svelte:head>
 
-{#if pgmax > 0}
-  <h1>Hiển thị kết quả từ {from} tới {upto} cho từ khoá "{input}":</h1>
-{:else}
-  <h1>Không tìm được kết quả phù hợp cho từ khoá "{input}"</h1>
-{/if}
+<section>
+  {#if pgmax > 0}
+    <h1>Hiển thị kết quả từ {from} tới {upto} cho từ khoá "{input}":</h1>
+  {:else}
+    <h1>Không tìm được kết quả phù hợp cho từ khoá "{input}"</h1>
+  {/if}
 
-<NvinfoList items={books} {pgidx} {pgmax} />
+  <NvinfoList items={books} {pgidx} {pgmax} />
+</section>
 
 <style lang="scss">
   h1 {
