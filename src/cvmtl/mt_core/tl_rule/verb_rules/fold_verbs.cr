@@ -29,7 +29,6 @@ module CV::TlRule
         return adjt unless (succ = scan_adjt!(succ)) && succ.adjts?
         return fold!(adjt, succ, PosTag::Aform, dic: 8)
       when .auxils?
-        # puts [verb, succ]
         verb = fold_verb_auxils!(verb, succ)
         break if verb.succ? == succ
       when .vdirs?

@@ -1,5 +1,10 @@
 module CV::TlRule
   def fold_adverbs!(node : MtNode, succ = node.succ?) : MtNode
+    unless succ && !succ.ends?
+      node.val = "vậy" if node.key == "也"
+      return node
+    end
+
     case node.tag
     when .adv_bu?  then fold_adv_bu!(node, succ)
     when .adv_mei? then fold_adv_mei!(node, succ)
@@ -8,24 +13,22 @@ module CV::TlRule
     end
   end
 
-  def fold_adv_bu!(node : MtNode, succ = node.succ?) : MtNode
-    return node unless succ
-
+  def fold_adv_bu!(node : MtNode, succ = node.succ) : MtNode
     case succ.tag
     when .vmodals?
       fold_vmodals!(succ, nega: node)
     when .pre_dui?
       succ = fold_pre_dui!(succ)
       fold!(node, succ, succ.tag, dic: 9)
-    when .adverb?
+    when .adverbs?
       node = fold!(node, succ, succ.tag, dic: 4)
       fold_adverb_base!(node)
     when .verbs?
-      succ.set!(PosTag::Verb) if succ.veno?
+      succ = cast_verb!(succ) if succ.veno?
       node = fold!(node, succ, succ.tag, dic: 4)
       fold_verbs!(node)
     when .adjts?
-      succ.set!(PosTag::Adjt) if succ.ajno?
+      succ = cast_adjt!(succ) if succ.ajno?
       node = fold!(node, succ, succ.tag, dic: 5)
       fold_adjts!(node)
     else
@@ -33,16 +36,13 @@ module CV::TlRule
     end
   end
 
-  def fold_adv_mei!(node : MtNode, succ = node.succ?) : MtNode
-    return node unless succ
-    succ = heal_veno!(succ) if succ.veno?
-
+  def fold_adv_mei!(node : MtNode, succ = node.succ) : MtNode
     case succ.tag
     when .verbs?
+      succ = heal_veno!(succ) if succ.veno?
       # TODO: add more cases
       node.val = succ.succ?(&.uzhe?) ? "không" : node.prev?(&.subject?) ? "chưa" : "không có"
-      node = fold!(node, succ, succ.tag, dic: 7)
-      fold_verbs!(node)
+      fold_verbs!(succ, prev: node)
     when .adjt?, .ajad?, .ajno?
       fold!(node.set!("không"), succ, PosTag::Adjt, dic: 2)
     else
@@ -50,9 +50,8 @@ module CV::TlRule
     end
   end
 
-  def fold_adv_fei!(node : MtNode, succ = node.succ?) : MtNode
+  def fold_adv_fei!(node : MtNode, succ = node.succ) : MtNode
     case succ
-    when .nil? then node
     when .modifier?, .noun?, .ajno?, .veno?
       node = fold!(node, succ, PosTag::Modifier, dic: 7)
       fold_adjts!(node)
@@ -66,12 +65,7 @@ module CV::TlRule
     # TODO: check for key when 没 mean "không"
   end
 
-  def fold_adverb_base!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    node = fold!(nega, node, PosTag::Adverb, dic: 2) if nega
-
-    return node unless succ
-    node.val = "vậy" if !nega && succ.ends? && node.key == "也"
-
+  def fold_adverb_base!(node : MtNode, succ = node.succ) : MtNode
     if succ.vead?
       if (tail = succ.succ?) && (tail.verbs? || tail.preposes? || tail.key == "和")
         node = fold!(node, succ, succ.tag, dic: 5)
