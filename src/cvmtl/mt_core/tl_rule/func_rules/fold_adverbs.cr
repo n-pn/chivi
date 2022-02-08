@@ -106,7 +106,15 @@ module CV::TlRule
     when .preposes?
       succ = fold_preposes!(succ)
       fold!(node, succ, succ.tag, dic: 2)
-    else node
+    else
+      case node
+      when .vead?
+        fold_verbs!(cast_verb!(node))
+      when .ajad?
+        fold_adjts!(cast_adjt!(node))
+      else
+        node
+      end
     end
   end
 

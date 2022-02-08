@@ -46,6 +46,11 @@ module CV::TlRule
       when .adv_bu?
         verb = fold_verb_advbu!(verb, succ)
       when .numeric?
+        case head.key
+        when "如", "像", "好像", "仿佛"
+          fold_compare(verb).try { |x| return x }
+        end
+
         if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
           verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
           break # TODO: still keep folding?
@@ -74,11 +79,8 @@ module CV::TlRule
     return verb unless succ = verb.succ?
 
     case head.key
-    when "如", "像", "好像"
-      if fold = fold_compare(verb)
-        head.val = "tựa" if head.key == "如"
-        return fold
-      end
+    when "如", "像", "好像", "仿佛"
+      fold_compare(verb).try { |x| return x }
     end
 
     case succ

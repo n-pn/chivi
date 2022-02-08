@@ -8,6 +8,11 @@ module CV::TlRule
 
     return unless tail && tail != head.succ?
 
+    case head.key
+    when "仿佛" then head.val = "giống"
+    when "如"  then head.val = "tựa"
+    end
+
     case tail.key
     when "一样", "似的", "一般", "般"
       tail.val = "như"

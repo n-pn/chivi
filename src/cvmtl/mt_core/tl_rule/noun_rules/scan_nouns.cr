@@ -34,6 +34,9 @@ module CV::TlRule
           prodem, nquant, node = split_prodem!(node, node.succ?)
           next
         end
+      when .pro_ints?
+        node = fold_pro_ints!(node, node.succ?)
+        node = nil if node.pro_int?
       when .numeric?
         if nquant
           node = nil
