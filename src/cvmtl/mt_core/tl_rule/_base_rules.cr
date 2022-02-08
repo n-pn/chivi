@@ -2,7 +2,7 @@ module CV::TlRule
   extend self
 
   def fold!(head : MtNode, tail : MtNode,
-            tag : PosTag = PosTag::None, dic : Int32 = 9,
+            tag : PosTag = PosTag::Unkn, dic : Int32 = 9,
             flip : Bool = false)
     # Create new common root
     root = MtNode.new("", "", tag, dic, head.idx)

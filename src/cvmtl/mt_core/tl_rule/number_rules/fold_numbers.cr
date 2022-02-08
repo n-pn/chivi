@@ -54,8 +54,13 @@ module CV::TlRule
       tail.set!("đôi", PosTag::Qtnoun)
     when .pre_ba3?
       tail = fold_pre_ba3!(tail)
-      return node unless tail.nouns?
-      return fold!(node, tail, tail.tag, dic: 3)
+
+      if tail.nouns?
+        return fold!(node, tail, tail.tag, dic: 3)
+      else
+        tail.set!("chiếc", PosTag::Qtnoun)
+        return fold!(node, tail, PosTag::Nqnoun, dic: 5)
+      end
     when .pro_ji?
       node = fold!(node, tail, PosTag::Number, dic: 5)
 
