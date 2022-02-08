@@ -3,32 +3,34 @@ module CV::TlRule
     node
   end
 
-  def fold_pro_per!(node : MtNode, succ : MtNode) : MtNode
+  def fold_pro_per!(proper : MtNode, succ : MtNode) : MtNode
     case succ.tag
     when .concoord?, .penum?
-      fold_noun_concoord!(succ, node) || node
+      fold_noun_concoord!(succ, proper) || proper
     when .veno?
       succ = heal_veno!(succ)
-      succ.noun? ? fold_proper_nounish!(node, succ) : fold_noun_verb!(node, succ)
+      succ.noun? ? fold_proper_nounish!(proper, succ) : fold_noun_verb!(proper, succ)
     when .verbs?, .vmodals?
-      return fold_noun_verb!(node, succ)
+      return fold_noun_verb!(proper, succ)
     when .ajno?
       succ = heal_ajno!(succ)
-      succ.noun? ? fold_proper_nounish!(node, succ) : node
+      succ.noun? ? fold_proper_nounish!(proper, succ) : proper
     when .pro_per?
       # TODO: check for linking verb
-      return node if node.prev?(&.verbs?) && succ.succ?(&.verbs?)
+      return proper if proper.prev?(&.verbs?) && succ.succ?(&.verbs?)
 
       flip = succ.key == "自己"
-      node = fold!(node, succ, node.tag, dic: 7, flip: flip)
+      proper = fold!(proper, succ, proper.tag, dic: 7, flip: flip)
     when .nouns?, .numbers?, .pro_dems?
-      return node unless (succ = scan_noun!(succ)) && succ.object? && !succ.pro_dems?
-      fold_proper_nounish!(node, succ)
+      return proper unless (succ = scan_noun!(succ)) && !succ.pro_dems?
+      noun = fold_proper_nounish!(proper, succ)
+      return noun unless (succ = noun.succ?) && succ.maybe_verb?
+      return fold_noun_verb!(noun, succ)
     when .uzhi?
-      fold_uzhi!(uzhi: succ, prev: node)
+      fold_uzhi!(uzhi: succ, prev: proper)
     else
       # TODO: handle special cases
-      node
+      proper
     end
   end
 
@@ -47,12 +49,12 @@ module CV::TlRule
     case nounish.tag
     when .space?
       fold_noun_space!(proper, nounish)
-    when .place?
-      fold!(proper, nounish, PosTag::DefnPhrase, dic: 4, flip: flip)
     when .person?
       fold!(proper, nounish, proper.tag, dic: 4, flip: false)
     when .nqtime?
       flip = !nounish.succ?(&.ends?) if flip
+      fold!(proper, nounish, nounish.tag, dic: 4, flip: flip)
+    when .place?
       fold!(proper, nounish, nounish.tag, dic: 4, flip: flip)
     when .names?, .ptitle?, .noun?
       # TODO: add pseudo proper

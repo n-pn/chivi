@@ -39,6 +39,7 @@ module CV::TlRule
         return tail.succ? { |x| x.ends? || x.verbs? } || false
       when .adverbs? then succ = succ.succ?
       when .preposes?, .verbs?
+        return true if succ.succ? { |x| x.ude1? || x.ends? }
         return false if prev.ends?
         return is_linking_verb?(prev, succ)
       else return true
