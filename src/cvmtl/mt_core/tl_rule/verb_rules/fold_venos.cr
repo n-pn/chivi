@@ -48,6 +48,8 @@ module CV::TlRule
     when .nil? then node
     when .auxils?, .vdir?, .pre_zai?
       cast_verb!(node)
+    when .verbs?
+      cast_noun!(node)
     else node
     end
   end

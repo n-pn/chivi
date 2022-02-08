@@ -6,7 +6,8 @@ module CV::TlRule
     return noun unless (succ = verb.succ?) && succ.ude1? && (verb.verb? || verb.vmodals?)
     return noun unless tail = scan_noun!(succ.succ?)
 
-    defn = fold!(noun, succ.set!(""), PosTag::DefnPhrase, dic: 6)
+    left = fold!(noun, verb, PosTag::VerbPhrase, dic: 4)
+    defn = fold!(left, succ.set!("do"), PosTag::DefnPhrase, dic: 6, flip: true)
     tag = tail.names? || tail.human? ? tail.tag : PosTag::NounPhrase
 
     fold!(defn, tail, tag, dic: 5, flip: true)
