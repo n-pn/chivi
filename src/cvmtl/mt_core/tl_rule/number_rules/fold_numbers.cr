@@ -56,6 +56,13 @@ module CV::TlRule
       tail = fold_pre_ba3!(tail)
       return node unless tail.nouns?
       return fold!(node, tail, tail.tag, dic: 3)
+    when .pro_ji?
+      node = fold!(node, tail, PosTag::Number, dic: 5)
+
+      if (succ = node.succ?) && succ.nhanzi?
+        node = fold!(node, succ.set!(PosTag::Qtnoun), PosTag::Nqnoun, dic: 7)
+        return node unless tail = node.succ?
+      end
     else
       if tail.key == "号"
         return fold!(node, tail, PosTag::Noun, dic: 9, flip: true)
@@ -70,7 +77,7 @@ module CV::TlRule
       return fold_yi_verb!(node, tail) unless tail.quantis?
     end
 
-    has_个 = tail if tail.key.ends_with?('个')
+    has_ge4 = tail if tail.key.ends_with?('个')
     appro = 1 if is_pre_appro_num?(node.prev?)
 
     case tail.key
@@ -80,11 +87,11 @@ module CV::TlRule
     when "分" then node = fold_minute!(node, tail, appro)
     else
       node = fold!(node, tail, map_nqtype(tail), dic: 2)
-      node = fold_suf_quanti_appro!(node) if has_个
+      node = fold_suf_quanti_appro!(node) if has_ge4
     end
 
-    if has_个 && (tail = node.succ?) && tail.quantis?
-      # heal_has_个!(has_个)
+    if has_ge4 && (tail = node.succ?) && tail.quantis?
+      heal_has_ge4!(has_ge4)
       node = fold!(node, tail, map_nqtype(tail), dic: 2)
     end
 
@@ -100,7 +107,7 @@ module CV::TlRule
     end
   end
 
-  def heal_has_个!(node : MtNode)
+  def heal_has_ge4!(node : MtNode)
     if node.key.size == 1
       node.val = ""
     else
