@@ -64,6 +64,11 @@ module CV::TlRule
     when .verb_object?
       MtDict::VERBS_SEPERATED.has_key?(succ.key)
     else
+      if succ.key == "生气"
+        succ.val = "tức giận"
+        return false
+      end
+
       {"都", "也", "太"}.includes?(prev.try(&.key))
     end
   end
