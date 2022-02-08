@@ -20,14 +20,14 @@
     },
     load: async (ukey) => {
       const res = await fetch(`/api/tlspecs/${ukey}`)
-      const data = await res.json()
+      const { props } = await res.json()
 
-      ztext.set(data.ztext)
-      zfrom.set(data.lower)
-      zupto.set(data.upper)
+      ztext.set(props.ztext)
+      zfrom.set(props.lower)
+      zupto.set(props.upper)
 
-      vdict.set({ dname: data.dname, d_dub: data.d_dub })
-      entry.set(data.entry)
+      vdict.set({ dname: props.dname, d_dub: props.d_dub })
+      entry.set(props.entry)
 
       ctrl.set({ actived: true })
     },
