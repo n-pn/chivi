@@ -6,37 +6,30 @@ class CV::TlspecCtrl < CV::BaseCtrl
 
     total = Tlspec.items.size
 
-    send_json do |jb|
-      jb.object {
-        jb.field "total", total
-        jb.field "pgidx", pgidx
-        jb.field "pgmax", CtrlUtil.pgmax(total, limit)
+    send_json(
+      {
+        total: total,
+        pgidx: pgidx,
+        pgmax: CtrlUtil.pgmax(total, limit),
+        items: Tlspec.items[offset..(offset + limit)].map do |ukey|
+          entry = Tlspec.load!(ukey)
+          last_edit = entry.edits.last
+          ztext = entry.ztext[last_edit.lower...last_edit.upper]
+          cvmtl = MtCore.generic_mtl(entry.dname)
 
-        jb.field "items" {
-          jb.array {
-            Tlspec.items[offset..(offset + limit)].each do |ukey|
-              entry = Tlspec.load!(ukey)
-              last_edit = entry.edits.last
-              lower = last_edit.lower
-              upper = last_edit.upper
-              ztext = entry.ztext[lower...upper]
-              cvmtl = MtCore.generic_mtl(entry.dname)
-
-              {
-                _ukey: ukey,
-                ztext: ztext,
-                d_dub: entry.d_dub,
-                mtime: last_edit.mtime,
-                uname: entry.edits.first.uname,
-                privi: entry.edits.first.privi,
-                match: last_edit.match,
-                cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_s,
-              }.to_json(jb)
-            end
+          {
+            _ukey: ukey,
+            ztext: ztext,
+            d_dub: entry.d_dub,
+            mtime: last_edit.mtime,
+            uname: entry.edits.first.uname,
+            privi: entry.edits.first.privi,
+            match: last_edit.match,
+            cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_s,
           }
-        }
+        end,
       }
-    end
+    )
   end
 
   def create
