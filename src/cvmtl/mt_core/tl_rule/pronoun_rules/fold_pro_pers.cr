@@ -65,11 +65,6 @@ module CV::TlRule
 
   def flip_proper_noun?(proper : MtNode, noun : MtNode) : Bool
     return !noun.nqtime? unless (prev = proper.prev?) && prev.verbs?
-
-    prev.each do |node|
-      return false if need_2_objects?(node.key)
-    end
-
-    true
+    !need_2_objects?(prev)
   end
 end
