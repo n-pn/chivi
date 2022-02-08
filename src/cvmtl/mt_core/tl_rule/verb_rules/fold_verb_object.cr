@@ -21,7 +21,9 @@ module CV::TlRule
       end
     end
 
-    fold!(verb, noun, PosTag::VerbObject, dic: 9)
+    node = fold!(verb, noun, PosTag::VerbObject, dic: 9)
+    return node unless (succ = node.succ?) && succ.junction?
+    fold_verb_junction!(junc: succ, verb: node) || node
   end
 
   def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)

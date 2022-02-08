@@ -22,6 +22,8 @@ module CV::TlRule
         #     return cast_noun!(node)
         #   end
       when .junction?
+        return cast_verb!(node) if prev.key == "而"
+
         prev.prev? do |prev_2|
           return cast_noun!(node) if prev_2.nouns?
           return cast_verb!(node) if prev_2.verbs?
