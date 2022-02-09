@@ -19,16 +19,23 @@ module CV::TlRule
   def find_verb_after(right : MtNode)
     while right = right.succ?
       # puts ["find_verb", right]
-      return right if right.verbs? || right.preposes?
-      return nil unless right.adverbs? || right.comma? # || right.conjunct?
+
+      case right
+      when .plsgn?, .mnsgn?, .verbs?, .preposes?
+        return right
+      when .adverbs?, .comma?
+        next
+      else
+        return nil
+      end
     end
   end
 
   def find_verb_after_for_prepos(node : MtNode, skip_comma = true) : MtNode?
     while node = node.succ?
       case node
-      # when .plsgn?, .mnsgn? then return node
-      when .comma? then return nil if skip_comma
+      when .plsgn?, .mnsgn? then return node
+      when .comma?          then return nil if skip_comma
       when .v_shang?, .v_xia?
         return node if node.succ?(&.ule?)
       when .vmodals?, .verbs? then return node
