@@ -4,7 +4,8 @@ module CV::TlRule
   end
 
   def fold_quoted!(head : MtNode) : MtNode
-    end_tag, end_val = match_end(head.val[0])
+    return head unless char = head.val[0]?
+    end_tag, end_val = match_end(char)
 
     tail = head
     while tail = tail.succ?
@@ -15,7 +16,6 @@ module CV::TlRule
     return head unless tail && tail != head.succ?
 
     root = fold!(head, tail, tag: PosTag::Unkn, dic: 0)
-
     fix_grammar!(root.body, level: 1)
 
     succ = head.succ
