@@ -3,8 +3,6 @@ module CV::TlRule
     tail = fuse_number!(tail) if tail.numbers?
     return verb unless tail.nquants?
 
-    puts [verb, tail]
-
     if tail.nqiffy? || tail.nqnoun?
       return verb if has_ule || !is_temp_nqverb?(tail)
     end
