@@ -4,7 +4,7 @@ module CV::TlRule
     node.noun? ? fold_nouns!(node) : fold_verbs!(node)
   end
 
-  def heal_veno!(node : MtNode)
+  def heal_veno!(node : MtNode, succ = node.succ?)
     if prev = node.prev?
       # puts [node, prev, "heal_veno"]
 
@@ -49,7 +49,7 @@ module CV::TlRule
     when .auxils?, .vdir?, .pre_zai?
       cast_verb!(node)
     when .verbs?
-      cast_noun!(node)
+      VERB_COMBINE.includes?(node.key) ? cast_verb!(node) : cast_noun!(node)
     else node
     end
   end

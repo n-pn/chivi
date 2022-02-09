@@ -16,7 +16,6 @@ module CV::TlRule
 
       prepos = MtNode.new("比", "bằng", PosTag::PreBi3, 1, prepos.idx + 1)
       tail.fix_succ!(prepos)
-
       prepos.fix_succ!(noun)
     else
       output.set_body!(tail)
@@ -24,16 +23,17 @@ module CV::TlRule
       tail.fix_succ!(prepos.set!("hơn"))
     end
 
-    return output unless (succ = output.succ?) && succ.auxils?
+    return output unless (succ = output.succ?) && succ.auxils? && (tail = succ.succ?)
 
     case succ
     when .ule?
-      return output unless (tail = succ.succ?) && tail.key == "点"
-      succ.val = ""
-      fold!(output, tail.set!("chút"), PosTag::Aform, dic: 6)
+      return output unless tail.key == "点"
+      noun.fix_succ!(succ.set!(""))
+      output.fix_succ!(tail.succ?)
+      tail.fix_succ!(nil)
+      output.set!(PosTag::Aform)
     when .ude1?, .ude3?
-      return output unless (tail = succ.succ?) && tail.key == "多"
-
+      return output unless tail.key == "多"
       noun.fix_succ!(succ.set!(""))
       output.fix_succ!(tail.succ?)
       tail.fix_succ!(nil)
