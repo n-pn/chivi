@@ -53,7 +53,7 @@ module CV::SeedUtil
 
   def cv_ztext(lines : Array(String), dname : String)
     cvmtl = MtCore.generic_mtl(dname)
-    lines.map { |x| "<p>#{cvmtl.cv_plain(x).to_s}</p>" }.join("\n")
+    lines.map { |x| "<p>#{cvmtl.cv_plain(x)}</p>" }.join("\n")
   end
 end
 

@@ -10,9 +10,9 @@ class CV::VpDict
   ::FileUtils.mkdir_p("#{DIR}/novel")
   ::FileUtils.mkdir_p("#{DIR}/theme")
 
-  class_getter trungviet : self { load("trungviet") }
-  class_getter cc_cedict : self { load("cc_cedict") }
-  class_getter trich_dan : self { load("trich_dan") }
+  class_getter trungviet : self { new(path("trungviet", "miscs"), dtype: -1) }
+  class_getter cc_cedict : self { new(path("cc_cedict", "miscs"), dtype: -1) }
+  class_getter trich_dan : self { new(path("trich_dan", "miscs"), dtype: -1) }
 
   class_getter hanviet : self { load("hanviet") }
   class_getter pin_yin : self { load("pin_yin") }
@@ -57,8 +57,6 @@ class CV::VpDict
     end
 
     case dname
-    when "trungviet", "cc_cedict", "trich_dan"
-      BASICS[dname] ||= new(path(dname, "miscs"), dtype: -1)
     when "tradsim", "hanviet", "pin_yin"
       BASICS[dname] ||= new(path(dname, "miscs"), dtype: 0, reset: reset)
     when "essence", "fixture"
