@@ -29,16 +29,18 @@ module CV::TlRule
     case pro_dem
     when .pro_zhe?
       case succ = pro_dem.succ?
-      when .nil?, .ends?
+      when .nil?
         pro_dem.set!("cái này")
       when .verbs?
         pro_dem.set!("đây")
       when .comma?
-        if (succ_2 = succ.succ?) && succ_2.pro_zhe? && succ_2.succ?(&.maybe_verb?)
+        if (succ_2 = succ.succ?) && succ_2.pro_zhe? # && succ_2.succ?(&.maybe_verb?)
           pro_dem.set!("đây")
         else
           pro_dem.set!("cái này")
         end
+      when .ends?
+        pro_dem.set!("cái này")
       else
         if pro_dem.prev?(&.nouns?)
           pro_dem.set!("giờ")

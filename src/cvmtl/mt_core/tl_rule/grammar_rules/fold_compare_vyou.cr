@@ -33,7 +33,7 @@ module CV::TlRule
       end
     end
 
-    unless (tail = scan_adjt!(tail)) && (tail.adjts? || adverb && tail.verb_object?)
+    unless (tail = scan_adjt!(succ)) && (tail.adjts? || adverb && tail.verb_object?)
       return fold!(vyou, noun, PosTag::VerbObject, dic: 7)
     end
 
