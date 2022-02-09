@@ -1,6 +1,11 @@
 module CV::TlRule
   def fold_compare_bi3!(prepos : MtNode, succ = prepos.succ?, mode = 0)
     return prepos unless (noun = scan_noun!(succ, mode: mode)) && noun.object?
+
+    if (tail = noun.succ?) && tail.ude1? && tail.succ?(&.maybe_adjt?)
+      noun = fold!(noun, tail, PosTag::DefnPhrase, dic: 7, flip: true)
+    end
+
     return prepos unless (tail = scan_adjt!(noun.succ?)) && (tail.adjts? || tail.verb_object?)
 
     output = MtNode.new("", "", PosTag::Unkn, dic: 1, idx: prepos.idx)

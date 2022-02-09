@@ -12,29 +12,32 @@ module CV::TlRule
   end
 
   def fold_verb_ude3!(node : MtNode, succ : MtNode) : MtNode
-    return node unless succ_2 = succ.succ?
+    return node unless tail = succ.succ?
     succ.val = ""
 
-    case succ_2
+    case tail
+    when .pre_bi3?
+      tail = fold_compare_bi3!(tail)
+      fold!(node, tail, PosTag::VerbObject, dic: 7)
     when .adverbs?
-      succ_2 = fold_adverbs!(succ_2)
+      tail = fold_adverbs!(tail)
 
-      if succ_2.adjts?
-        fold!(node, succ_2, PosTag::VerbPhrase, dic: 5)
-      elsif succ_2.key == "很"
-        succ_2.val = "cực kỳ"
-        fold!(node, succ_2, PosTag::VerbPhrase, dic: 5)
-      elsif succ_2.verbs?
+      if tail.adjts?
+        fold!(node, tail, PosTag::VerbPhrase, dic: 5)
+      elsif tail.key == "很"
+        tail.val = "cực kỳ"
+        fold!(node, tail, PosTag::VerbPhrase, dic: 5)
+      elsif tail.verbs?
         succ.set!("đến")
-        fold!(node, succ_2, succ_2.tag, dic: 8)
+        fold!(node, tail, tail.tag, dic: 8)
       else
         node
       end
     when .adjts?
-      fold!(node, succ_2, PosTag::VerbPhrase, dic: 6)
+      fold!(node, tail, PosTag::VerbPhrase, dic: 6)
     when .verbs?
       node = fold!(node, succ, PosTag::Verb, dic: 6)
-      return fold_verb_compl!(node, succ_2) || node
+      return fold_verb_compl!(node, tail) || node
     else
       # TODO: handle verb form
       node
