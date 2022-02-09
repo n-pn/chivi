@@ -23,85 +23,85 @@ module CV::TlRule
     return fold!(adjt, succ, PosTag::VerbPhrase, dic: 7)
   end
 
-  def fold_adjts!(node : MtNode, prev : MtNode? = nil) : MtNode
-    fold_measurement!(node).try { |x| return x }
+  def fold_adjts!(adjt : MtNode, prev : MtNode? = nil) : MtNode
+    fold_measurement!(adjt).try { |x| return x }
 
-    while node.adjts?
-      break unless succ = node.succ?
+    while adjt.adjts?
+      break unless succ = adjt.succ?
 
       case succ.tag
       when .adverb?
         if succ.key == "又"
-          fold_adjt_junction!(succ, prev: node).try { |x| node = x } || break
+          fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
         else
           break
         end
       when .junction?
-        fold_adjt_junction!(succ, prev: node).try { |x| node = x } || break
+        fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
       when .aform?
-        node = fold!(node, succ, PosTag::Aform, dic: 4)
+        adjt = fold!(adjt, succ, PosTag::Aform, dic: 4)
       when .adjt?, .amorp?
-        node = fold!(node, succ, PosTag::Adjt, dic: 4)
+        adjt = fold!(adjt, succ, PosTag::Adjt, dic: 4)
       when .ajno?
-        return fold!(node, succ, PosTag::Noun, dic: 7, flip: true)
+        return fold!(adjt, succ, PosTag::Noun, dic: 7, flip: true)
       when .veno?
-        unless prev || node.key.size > 1
+        unless prev || adjt.key.size > 1
           succ = fold_nouns!(cast_noun!(succ))
-          return fold!(node, succ, PosTag::NounPhrase, dic: 4, flip: true)
+          return fold!(adjt, succ, PosTag::NounPhrase, dic: 4, flip: true)
         else
           succ = cast_verb!(succ)
         end
       when .verb?
         break unless succ.key == "到"
-        node = fold!(node, succ, PosTag::Adverb)
-        return fold_adverbs!(node)
+        adjt = fold!(adjt, succ, PosTag::Adverb)
+        return fold_adverbs!(adjt)
       when .nouns?
-        node = fold_adj_adv!(node, prev)
-        return fold_adjt_noun!(node, succ)
+        adjt = fold_adj_adv!(adjt, prev)
+        return fold_adjt_noun!(adjt, succ)
       when .vpro?, .verb?
         case succ.key
         when "到"
           if (tail = succ.succ?) && tail.adjts?
-            node = fold!(node, tail, PosTag::Aform, dic: 7)
+            adjt = fold!(adjt, tail, PosTag::Aform, dic: 7)
           else
-            node = fold!(node, succ, PosTag::Verb, dic: 6)
+            adjt = fold!(adjt, succ, PosTag::Verb, dic: 6)
             return fold_verbs!(succ, prev: prev)
           end
         end
 
-        break if prev || node.key.size > 1
+        break if prev || adjt.key.size > 1
 
         succ = fold_verbs!(succ)
-        return fold!(node, succ, succ.tag, dic: 4, flip: true)
+        return fold!(adjt, succ, succ.tag, dic: 4, flip: true)
         # when .ule?
         #   break unless (tail = succ.succ?) && tail.key == "点"
         #   succ.val = ""
-        #   node = fold!(node, tail.set!("chút"), PosTag::Aform, dic: 6)
+        #   adjt = fold!(adjt, tail.set!("chút"), PosTag::Aform, dic: 6)
         #   break
       when .ude2?
-        node = fold_adj_adv!(node, prev)
-        return fold_adjt_ude2!(node, succ)
+        adjt = fold_adj_adv!(adjt, prev)
+        return fold_adjt_ude2!(adjt, succ)
       when .uzhi?
-        node = fold_adj_adv!(node, prev)
-        return fold_uzhi!(succ, node)
+        adjt = fold_adj_adv!(adjt, prev)
+        return fold_uzhi!(succ, adjt)
       when .suf_noun?
-        node = fold_adj_adv!(node, prev)
-        return fold_suf_noun!(node, succ)
+        adjt = fold_adj_adv!(adjt, prev)
+        return fold_suf_noun!(adjt, succ)
       when .suf_verb?
-        node = fold_adj_adv!(node, prev)
-        return fold_suf_verb!(node, succ)
+        adjt = fold_adj_adv!(adjt, prev)
+        return fold_suf_verb!(adjt, succ)
       when .adv_bu?
-        fold_adjt_adv_bu!(node, succ, prev).try { |x| return x } || break
+        fold_adjt_adv_bu!(adjt, succ, prev).try { |x| return x } || break
       else
         break unless succ.key == "又"
-        fold_adjt_junction!(succ, prev: node).try { |x| node = x } || break
+        fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
       end
 
-      break if succ == node.succ?
+      break if succ == adjt.succ?
     end
 
     # TODO: combine with nouns
-    fold_adj_adv!(node, prev)
+    fold_adj_adv!(adjt, prev)
   end
 
   def fold_modifier!(node : MtNode, succ = node.succ?, nega : MtNode? = nil)
