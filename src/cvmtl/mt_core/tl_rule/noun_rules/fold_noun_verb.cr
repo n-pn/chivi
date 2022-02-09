@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_noun_verb!(noun : MtNode, verb : MtNode)
-    return noun if noun.prev? { |x| x.preposes? || x.pro_per? }
+    return noun if noun.prev? { |x| x.pro_per? || x.preposes? && !x.pre_bi3? }
 
     verb = verb.vmodals? ? fold_vmodals!(verb) : fold_verbs!(verb)
     return noun unless (succ = verb.succ?) && succ.ude1? && (verb.verb? || verb.vmodals?)

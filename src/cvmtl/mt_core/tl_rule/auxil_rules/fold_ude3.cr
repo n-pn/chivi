@@ -23,10 +23,10 @@ module CV::TlRule
       tail = fold_adverbs!(tail)
 
       if tail.adjts?
-        fold!(node, tail, PosTag::VerbPhrase, dic: 5)
+        fold!(node, tail, PosTag::Aform, dic: 5)
       elsif tail.key == "很"
         tail.val = "cực kỳ"
-        fold!(node, tail, PosTag::VerbPhrase, dic: 5)
+        fold!(node, tail, PosTag::Aform, dic: 5)
       elsif tail.verbs?
         succ.set!("đến")
         fold!(node, tail, tail.tag, dic: 8)
@@ -34,7 +34,7 @@ module CV::TlRule
         node
       end
     when .adjts?
-      fold!(node, tail, PosTag::VerbPhrase, dic: 6)
+      fold!(node, tail, PosTag::Aform, dic: 6)
     when .verbs?
       node = fold!(node, succ, PosTag::Verb, dic: 6)
       return fold_verb_compl!(node, tail) || node

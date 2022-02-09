@@ -50,11 +50,16 @@ module CV::TlRule
     when .penum?
       true
     when .concoord?
-      return true unless node.key == "和"
+      return true unless node.key == "和" || node.key == "跟"
+      if fold = fold_compare(node)
+        node.val = fold.dic == 0 ? "giống" : ""
+        return false
+      end
+
       if check_prepos && he2_is_prepos?(node)
         false
       else
-        node.val = "và"
+        node.val = "và" if node.key == "和"
         true
       end
     else

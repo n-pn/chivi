@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_adjt_noun!(adjt : MtNode, noun : MtNode?, ude1 : MtNode? = nil)
-    return adjt if !noun
+    return adjt unless noun
     flip = true
 
     if ude1 && (fold = fold_ude1!(ude1: ude1, prev: adjt, succ: noun))

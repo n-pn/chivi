@@ -8,9 +8,11 @@ module CV::TlRule
 
     return unless tail && tail != head.succ?
 
-    case head.key
-    when "仿佛" then head.val = "giống"
-    when "如"  then head.val = "tựa"
+    head.each do |x|
+      case x.key
+      when "仿佛" then x.val = "giống"
+      when "如"  then x.val = "tựa"
+      end
     end
 
     case tail.key
@@ -19,10 +21,9 @@ module CV::TlRule
     end
 
     root = fold!(head, tail, tag: PosTag::Aform, dic: 0)
-
-    tail.prev.set_succ!(nil)
-    fix_grammar!(head.succ, level: 1)
-    root.body.set_succ!(tail)
+    tail.prev.fix_succ!(nil)
+    fix_grammar!(head, level: 1)
+    head.set_succ!(tail)
 
     return root unless succ = scan_adjt!(root.succ?)
     return root unless succ.adjts? || succ.verb_object?
