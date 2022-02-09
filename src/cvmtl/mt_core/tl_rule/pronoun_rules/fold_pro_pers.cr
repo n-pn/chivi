@@ -16,11 +16,13 @@ module CV::TlRule
       succ = heal_ajno!(succ)
       succ.noun? ? fold_proper_nounish!(proper, succ) : proper
     when .pro_per?
-      # TODO: check for linking verb
-      return proper if proper.prev?(&.verbs?) && succ.succ?(&.verbs?)
+      if tail = succ.succ?
+        succ = fold_pro_per!(succ, tail)
+      end
 
-      flip = succ.key == "自己"
-      proper = fold!(proper, succ, proper.tag, dic: 7, flip: flip)
+      noun = fold_proper_nounish!(proper, succ)
+      return noun unless (succ = noun.succ?) && succ.maybe_verb?
+      return fold_noun_verb!(noun, succ)
     when .nouns?, .numbers?, .pro_dems?
       return proper unless (succ = scan_noun!(succ)) && !succ.pro_dems?
       noun = fold_proper_nounish!(proper, succ)
@@ -28,6 +30,9 @@ module CV::TlRule
       return fold_noun_verb!(noun, succ)
     when .uzhi?
       fold_uzhi!(uzhi: succ, prev: proper)
+    when .ude1?
+      return proper if proper.prev? { |x| x.verbs? || x.preposes? }
+      fold_ude1!(ude1: succ, prev: proper)
     else
       # TODO: handle special cases
       proper
@@ -43,7 +48,7 @@ module CV::TlRule
         nounish = fold_ude1!(ude1: succ, prev: nounish)
       end
     else
-      flip = true
+      flip = !nounish.pro_per? || nounish.key == "自己"
     end
 
     case nounish.tag
