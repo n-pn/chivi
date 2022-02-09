@@ -207,7 +207,7 @@ class CV::InitNvinfo
       return {vals[0].to_i, vals[1]}
     end
 
-    base_path = ChList.path(@sname, snvid, "-")
+    base_path = ChList.path(@sname, "_", snvid)
     FileUtils.mkdir_p(File.dirname(base_path))
 
     if File.exists?(base_path)
