@@ -12,10 +12,10 @@ module CV::TlRule
     if prepos.key == "不比"
       adv_bu = MtNode.new("不", "không", PosTag::AdvBu, 1, prepos.idx)
       output.set_body!(adv_bu)
-      adv_bu.fix_succ!(succ)
+      adv_bu.fix_succ!(tail)
 
       prepos = MtNode.new("比", "bằng", PosTag::PreBi3, 1, prepos.idx + 1)
-      succ.fix_succ!(prepos)
+      tail.fix_succ!(prepos)
 
       prepos.fix_succ!(noun)
     else
