@@ -22,7 +22,8 @@ module CV::TlRule
       fold!(node, succ, succ.tag, dic: 9)
     when .adverbs?
       node = fold!(node, succ, succ.tag, dic: 4)
-      fold_adverb_base!(node)
+      return node unless succ = node.succ?
+      fold_adverb_base!(node, succ)
     when .verbs?
       succ = cast_verb!(succ) if succ.veno?
       node = fold!(node, succ, succ.tag, dic: 4)
@@ -90,7 +91,9 @@ module CV::TlRule
       succ.tag = PosTag::Adjt if succ.ajno? || succ.ajad?
       fold_adjts!(succ, prev: node)
     when .adv_bu?
-      succ = fold_adv_bu!(succ)
+      if tail = succ.succ?
+        succ = fold_adv_bu!(succ, tail)
+      end
       fold!(node, succ, succ.tag, dic: 2)
     when .adverb?
       node = fold!(node, succ, succ.tag, dic: 6)
