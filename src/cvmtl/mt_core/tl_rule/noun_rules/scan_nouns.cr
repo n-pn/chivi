@@ -62,11 +62,17 @@ module CV::TlRule
           # puts [node, node.tag]
         end
       when .preposes?
-        break unless prodem || nquant
+        # break unless prodem || nquant
         node = fold_preposes!(node, mode: 1)
         if (succ = node.succ?) && succ.ude1?
           node = fold_ude1!(ude1: succ, prev: node)
+        elsif node.verbs?
+          node = fold_verb_as_noun!(node, mode: mode)
+        elsif node.adjts?
+          node = fold_adjt_as_noun!(node)
         end
+
+        break
       when .verb_object?
         break unless succ = node.succ?
 

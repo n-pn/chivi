@@ -1,11 +1,12 @@
 module CV::TlRule
   def fold_compare_bi3!(prepos : MtNode, succ = prepos.succ?, mode = 0)
-    return prepos unless noun = scan_noun!(succ, mode: mode)
-    return prepos unless (succ = scan_adjt!(noun.succ?)) && (succ.adjts? || succ.verb_object?)
+    return prepos unless (noun = scan_noun!(succ, mode: mode)) && noun.object?
+    return prepos unless (tail = scan_adjt!(noun.succ?)) && (tail.adjts? || tail.verb_object?)
 
     output = MtNode.new("", "", PosTag::Unkn, dic: 1, idx: prepos.idx)
     output.fix_prev!(prepos.prev?)
-    output.fix_succ!(succ.succ?)
+    output.fix_succ!(tail.succ?)
+
     noun.fix_succ!(nil)
 
     if prepos.key == "不比"
@@ -18,17 +19,27 @@ module CV::TlRule
 
       prepos.fix_succ!(noun)
     else
-      output.set_body!(succ)
-      succ.fix_succ!(prepos.set!("hơn"))
+      output.set_body!(tail)
+      tail.fix_prev!(nil)
+      tail.fix_succ!(prepos.set!("hơn"))
     end
 
-    return output unless (succ = output.succ?) && (succ.ude1? || succ.ude3?)
-    return output unless (tail = succ.succ?) && tail.key == "多"
+    return output unless (succ = output.succ?) && succ.auxils?
 
-    noun.fix_succ!(succ.set!(""))
-    output.fix_succ!(tail.succ?)
-    tail.fix_succ!(nil)
+    case succ
+    when .ule?
+      return output unless (tail = succ.succ?) && tail.key == "点"
+      succ.val = ""
+      fold!(output, tail.set!("chút"), PosTag::Aform, dic: 6)
+    when .ude1?, .ude3?
+      return output unless (tail = succ.succ?) && tail.key == "多"
 
-    output
+      noun.fix_succ!(succ.set!(""))
+      output.fix_succ!(tail.succ?)
+      tail.fix_succ!(nil)
+      output
+    else
+      output
+    end
   end
 end

@@ -11,12 +11,13 @@ struct CV::PosTag
 
   def self.map_preposes(key : ::String)
     case key
-    when "把" then PreBa3
-    when "被" then PreBei
-    when "对" then PreDui
-    when "在" then PreZai
-    when "比" then PreBi3
-    else          Prepos
+    when "把"  then PreBa3
+    when "被"  then PreBei
+    when "对"  then PreDui
+    when "在"  then PreZai
+    when "比"  then PreBi3
+    when "不比" then PreBi3
+    else           Prepos
     end
   end
 end

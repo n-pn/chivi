@@ -73,10 +73,11 @@ module CV::TlRule
 
         succ = fold_verbs!(succ)
         return fold!(node, succ, succ.tag, dic: 4, flip: true)
-      when .ule?
-        break unless (succ_2 = succ.succ?) && succ_2.key == "点"
-        succ.val = ""
-        adjt = fold!(node, succ_2.set!("chút"), PosTag::Aform, dic: 6)
+        # when .ule?
+        #   break unless (tail = succ.succ?) && tail.key == "点"
+        #   succ.val = ""
+        #   node = fold!(node, tail.set!("chút"), PosTag::Aform, dic: 6)
+        #   break
       when .ude2?
         node = fold_adj_adv!(node, prev)
         return fold_adjt_ude2!(node, succ)

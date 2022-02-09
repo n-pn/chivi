@@ -11,7 +11,6 @@ module CV::TlRule
     when .pre_bi3? then fold_compare_bi3!(node, succ, mode: mode)
     else
       case node.key
-      when "不比" then return fold_compare_bi3!(node.set!("không bằng"), succ)
       when "同", "跟"
         if fold = fold_compare(node, succ)
           node.val = fold.dic == 0 ? "giống" : ""
