@@ -96,7 +96,7 @@ class Parser
       res.each do |word, tags|
         f << word
 
-        ary = tags.to_a.sort_by { |_, c| -c }.each do |tag, count|
+        tags.to_a.sort_by! { |_, c| -c }.each do |tag, count|
           f << '\t' << tag << ':' << count
         end
 

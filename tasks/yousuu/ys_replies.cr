@@ -25,6 +25,7 @@ class CV::CrawlYsrepl
 
     until queue.empty?
       count += 1
+      qsize = queue.size
       puts "\n[page: #{page}, loop: #{count}, size: #{queue.size}]".colorize.cyan
 
       fails = [] of String
@@ -37,15 +38,15 @@ class CV::CrawlYsrepl
         return if @http.no_proxy?
 
         spawn do
-          label = "(#{page}) <#{idx}/#{queue.size}> [#{string}]"
+          label = "(#{page}) <#{idx}/#{qsize}> [#{string}]"
           inbox.send(crawl_repl!(string, page, label: label))
         end
 
-        inbox.receive.try { |string| fails << string } if idx > limit
+        inbox.receive.try { |x| fails << x } if idx > limit
       end
 
       limit.times do
-        inbox.receive.try { |string| fails << string }
+        inbox.receive.try { |x| fails << x }
       end
 
       queue = fails

@@ -8,13 +8,13 @@ class CV::Export
   def merge!(redo = false)
     File.each_line("priv/zhseed.tsv") do |line|
       next if line.empty?
-      sname, snvid, bhash, bslug = line.split('\t')
+      sname, snvid, bhash, _bslug = line.split('\t')
 
       inp_dir = "#{INP_DIR}/#{sname}/#{snvid}"
       next unless File.exists?(inp_dir)
 
       out_file = "#{OUT_DIR}/raw/#{bhash}.tsv"
-      next unless redo || !File.exists?(out_file)
+      next if !redo && File.exists?(out_file)
 
       merge_dir(inp_dir, out_file)
     end

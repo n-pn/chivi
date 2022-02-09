@@ -10,7 +10,7 @@ module CV::TlRule
         return fold!(verb, succ, succ.tag, dic: 4)
       end
 
-      return fold_verb_nquant!(verb, succ, has_ule: true)
+      fold_verb_nquant!(verb, succ, has_ule: true)
     when .ude2?
       return verb unless (succ_2 = auxil.succ?) && succ_2.verbs?
       node = fold!(verb, auxil.set!("mà"), PosTag::Adverb, dic: 6)

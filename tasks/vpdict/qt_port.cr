@@ -20,7 +20,7 @@ def save_old(file, out_name)
   vp_main = read_file("#{DIR}/#{file}-main.tsv")
   vp_pleb = read_file("#{DIR}/#{file}-pleb.tsv")
 
-  vp_main.merge!(vp_pleb) do |k, v1, v2|
+  vp_main.merge!(vp_pleb) do |_k, v1, v2|
     v1.concat(v2).uniq!
   end
 

@@ -53,7 +53,7 @@ class CV::Zhbook
   end
 
   def fix_id!
-    id = nvinfo.id << 6 | zseed
+    self.id = nvinfo.id << 6 | zseed
   end
 
   # mode:
@@ -94,7 +94,7 @@ class CV::Zhbook
           nvinfo.update_utime(self.utime)
         end
 
-        lastpg = nil
+        @lastpg = nil
         purge_cache!(pgmin, pgmax)
       end
 

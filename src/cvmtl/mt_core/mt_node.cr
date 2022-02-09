@@ -167,8 +167,6 @@ class CV::MtNode
       child = child.succ? unless found = child.dig_key?(key)
       return found
     end
-
-    nil
   end
 
   def each

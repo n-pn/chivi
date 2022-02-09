@@ -60,7 +60,7 @@ class CV::ChInfo
   end
 
   def get(chidx : Int32)
-    info = @data[chidx]? || ChInfo.new(chidx)
+    @data[chidx]? || ChInfo.new(chidx)
   end
 
   def trans!(cvmtl : MtCore) : Nil

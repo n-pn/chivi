@@ -211,6 +211,7 @@ class CV::Zxcs::SplitText
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   private def split_chapters(snvid : String, lines : Array(String))
     case snvid
     when "4683", "3868", "4314", "3199", "4942", "1552"
@@ -313,8 +314,6 @@ class CV::Zxcs::SplitText
   private def split_delimit(input : Array(String))
     chaps = [] of Array(String)
     lines = [] of String
-
-    prev_blank = false
 
     input.each do |line|
       if line.empty?

@@ -13,7 +13,7 @@ module CV::TlRule
   def guess_pre_ba3_defn(noun : MtNode) : String?
     noun.each do |x|
       if body = noun.body?
-        guess_pre_ba3_defn(body).try { |x| return x }
+        guess_pre_ba3_defn(body).try { |y| return y }
       else
         x.key.each_char do |char|
           return "thanh" if BA3_HANDLERS.includes?(char)

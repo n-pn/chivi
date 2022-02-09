@@ -108,6 +108,6 @@ class CV::Chpage
   end
 
   def self.path(sname : String, snvid : String, pgidx : Int32)
-    return "#{VPDIR}/#{sname}/#{snvid}/#{pgidx}.tsv"
+    "#{VPDIR}/#{sname}/#{snvid}/#{pgidx}.tsv"
   end
 end

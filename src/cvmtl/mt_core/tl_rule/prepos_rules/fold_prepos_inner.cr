@@ -1,4 +1,5 @@
 module CV::TlRule
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_prepos_inner!(prepos : MtNode, succ = prepos.succ?, mode = 0) : MtNode
     return prepos unless (noun = scan_noun!(succ, mode: 0)) && noun.subject?
     return fold!(prepos, noun, PosTag::PrepPhrase, dic: 2) unless verb = noun.succ?
@@ -51,7 +52,7 @@ module CV::TlRule
       flip = true
     end
 
-    node = fold!(head, verb, verb.tag, dic: 8, flip: false)
+    node = fold!(head, verb, verb.tag, dic: 8, flip: flip)
     node.succ? { |x| fold_ude1!(x, prev: node) if mode == 1 && x.ude1? } || node
   end
 
@@ -64,6 +65,6 @@ module CV::TlRule
 
     ude1.val = ""
     node = fold!(prev, noun, PosTag::NounPhrase, dic: 8)
-    return fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
+    fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
   end
 end

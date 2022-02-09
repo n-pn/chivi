@@ -20,9 +20,10 @@ module CV::TlRule
       return fold!(adjt, succ_2, PosTag::Aform, dic: 7)
     end
 
-    return fold!(adjt, succ, PosTag::VerbPhrase, dic: 7)
+    fold!(adjt, succ, PosTag::VerbPhrase, dic: 7)
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_adjts!(adjt : MtNode, prev : MtNode? = nil) : MtNode
     fold_measurement!(adjt).try { |x| return x }
 
@@ -45,11 +46,11 @@ module CV::TlRule
       when .ajno?
         return fold!(adjt, succ, PosTag::Noun, dic: 7, flip: true)
       when .veno?
-        unless prev || adjt.key.size > 1
+        if !prev && adjt.key.size == 1
+          succ = cast_verb!(succ)
+        else
           succ = fold_nouns!(cast_noun!(succ))
           return fold!(adjt, succ, PosTag::NounPhrase, dic: 4, flip: true)
-        else
-          succ = cast_verb!(succ)
         end
       when .verb?
         break unless succ.key == "到"

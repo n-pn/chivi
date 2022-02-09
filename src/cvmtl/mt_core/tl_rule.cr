@@ -2,6 +2,7 @@ require "../mt_dict"
 require "./tl_rule/**"
 
 module CV::TlRule
+  # ameba:disable Metrics/CyclomaticComplexity
   def fix_grammar!(node : MtNode, level = 0) : Nil
     # puts [node, node.idx, node.succ?, "level: #{level}"].colorize.blue
 

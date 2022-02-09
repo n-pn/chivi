@@ -21,9 +21,9 @@ class CV::ChList
     FileUtils.mkdir_p("#{DIR}/#{sname}/#{snvid}")
 
     input = infos.group_by { |x| (x.chidx - 1) // PSIZE }
-    input.each do |pgidx, infos|
+    input.each do |pgidx, slice|
       ch_list = load!(sname, snvid, pgidx)
-      infos.each { |chinfo| ch_list.add(chinfo) }
+      slice.each { |chinfo| ch_list.add(chinfo) }
       ch_list.save!
     end
   end

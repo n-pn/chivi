@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_adverbs!(node : MtNode, succ = node.succ?) : MtNode
-    unless succ && !succ.ends?
+    if !succ || succ.ends?
       node.val = "vậy" if node.key == "也"
       return node
     end
@@ -66,6 +66,7 @@ module CV::TlRule
     # TODO: check for key when 没 mean "không"
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_adverb_base!(node : MtNode, succ = node.succ) : MtNode
     if succ.vead?
       if (tail = succ.succ?) && (tail.verbs? || tail.preposes? || tail.key == "和")
@@ -99,7 +100,7 @@ module CV::TlRule
       node = fold!(node, succ, succ.tag, dic: 6)
     when .space?
       return node unless node.key = "最"
-      return fold!(node, succ, succ.tag, dic: 7, flip: true)
+      fold!(node, succ, succ.tag, dic: 7, flip: true)
     when .preposes?
       succ = fold_preposes!(succ)
       fold!(node, succ, succ.tag, dic: 2)

@@ -80,13 +80,10 @@ class CV::RawYscrit
     puts err.inspect_with_backtrace.colorize.red
   end
 
-  def vhtml(book : String)
+  def vhtml(dname : String)
+    cvmtl = MtCore.generic_mtl(dname)
     lines = self.ztext.split("\n").map(&.strip).reject(&.empty?)
-    cvmtl = MtCore.generic_mtl(book)
-
-    lines.map do |line|
-      "<p>#{cvmtl.cv_plain(line, mode: 1).to_s}</p>"
-    end.join("\n")
+    lines.map { |l| "<p>#{cvmtl.cv_plain(l, mode: 1)}</p>" }.join("\n")
   end
 
   alias Data = NamedTuple(total: Int32, comments: Array(RawYscrit))

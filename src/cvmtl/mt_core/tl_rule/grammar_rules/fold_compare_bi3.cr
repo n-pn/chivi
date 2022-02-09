@@ -28,23 +28,27 @@ module CV::TlRule
       tail.fix_succ!(prepos.set!("hơn"))
     end
 
-    return output unless (succ = output.succ?) && succ.auxils? && (tail = succ.succ?)
+    fold_compare_bi3_after!(output)
+  end
+
+  def fold_compare_bi3_after!(node : MtNode)
+    return node unless (succ = node.succ?) && succ.auxils? && (tail = succ.succ?)
 
     case succ
     when .ule?
-      return output unless tail.key == "点"
+      return node unless tail.key == "点"
       noun.fix_succ!(succ.set!(""))
-      output.fix_succ!(tail.succ?)
+      node.fix_succ!(tail.succ?)
       tail.fix_succ!(nil)
-      output.set!(PosTag::Aform)
+      node.set!(PosTag::Aform)
     when .ude1?, .ude3?
-      return output unless tail.key == "多"
+      return node unless tail.key == "多"
       noun.fix_succ!(succ.set!(""))
-      output.fix_succ!(tail.succ?)
+      node.fix_succ!(tail.succ?)
       tail.fix_succ!(nil)
-      output
+      node
     else
-      output
+      node
     end
   end
 end

@@ -27,7 +27,7 @@ Dir.children(INP_DIR).each do |sname|
   next if sname == "chivi" || sname == "zhwenpg"
 
   inp_dir = File.join(INP_DIR, sname)
-  out_dir = File.join(OUT_DIR, sname)
+  # out_dir = File.join(OUT_DIR, sname)
   next unless File.directory?(inp_dir)
 
   # copy_file("#{inp_dir}/_index.tsv", "#{out_dir}/_index", :_index)

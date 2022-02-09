@@ -1,6 +1,7 @@
 require "../../src/cvmtl/*"
 
 struct CV::PosTag
+  # ameba:disable Metrics/CyclomaticComplexity
   def self.from_pfr(tag : ::String) : self
     case tag
     when "nnt", "nis", "nnd", "ntc", "nf", "nhd", "nit", "nhm", "nmc", "nba",
@@ -213,7 +214,7 @@ class CV::Merger
     min_count = max_count > 10 ? 5 : max_count - 5
     min_count = 2 if min_count < 2
 
-    vals = vals.reject { |t, c| c < min_count }
+    vals = vals.reject { |_, c| c < min_count }
 
     return first_tag if vals.size < 2
 

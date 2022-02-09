@@ -15,8 +15,9 @@ class CV::RawYsbook
   getter introduction = ""
   getter bintro : Array(String) { TextUtils.split_html(introduction) }
 
-  getter classInfo : NamedTuple(classId: Int32, className: String)?
-  getter klass : String { @classInfo.try(&.[:className]) || "" }
+  @[JSON::Field(key: "classInfo")]
+  getter class_info : NamedTuple(classId: Int32, className: String)?
+  getter klass : String { @class_info.try(&.[:className]) || "" }
 
   getter tags = [] of String
   getter tags_fixed : Array(String) { @tags.map(&.split("-")).flatten.uniq }
@@ -24,9 +25,10 @@ class CV::RawYsbook
   getter cover = ""
   getter bcover : String { get_fixed_cover }
 
-  getter updateAt : String = "2020-01-01T07:00:00.000Z"
+  @[JSON::Field(key: "updateAt")]
+  getter update_str : String = "2020-01-01T07:00:00.000Z"
   getter updated_at : Time do
-    tstr = updateAt.sub("0000", "2020")
+    tstr = update_str.sub("0000", "2020")
     time = Time.parse_utc(tstr, "%FT%T.%3NZ")
     time < Time.utc ? time : Time.utc
   rescue err
@@ -34,19 +36,22 @@ class CV::RawYsbook
     Time.utc(2020, 1, 1, 7, 0, 0)
   end
 
-  getter scorerCount = 0_i32
-  getter voters : Int32 { scorerCount }
+  @[JSON::Field(key: "scorerCount")]
+  getter scorer = 0_i32
+  getter voters : Int32 { scorer }
 
   getter score = 0_f32
   getter rating : Int32 { score.*(10).round.to_i }
 
-  getter countWord = 0_f64
+  @[JSON::Field(key: "countWord")]
+  getter words = 0_f64
   getter word_count : Int32 do
-    count = countWord < 100_000_000 ? countWord : (countWord / 10000)
+    count = words < 100_000_000 ? words : (words / 10000)
     count.round.to_i
   end
 
-  getter commentCount = 0_i32
+  @[JSON::Field(key: "commentCount")]
+  getter crit_count = 0_i32
 
   getter status = 0
   getter shielded = false
@@ -65,14 +70,17 @@ class CV::RawYsbook
 
     case host.first
     when "yunqi", "chuangshi", "huayu", "yuedu", "shenqi"
-      return host.first.capitalize
+      host.first.capitalize
     else
-      host[-2]
+      host[-2].capitalize
     end
   end
 
-  getter addListCount = 0_i32
-  getter addListTotal = 0_i32
+  @[JSON::Field(key: "addListCount")]
+  getter list_count = 0_i32
+
+  @[JSON::Field(key: "addListTotal")]
+  getter list_total = 0_i32
 
   getter genres : Array(String) do
     tags = tags_fixed.reject { |x| x == author || x == title }
@@ -80,7 +88,7 @@ class CV::RawYsbook
   end
 
   def decent?
-    addListTotal > 0 || commentCount > 4
+    list_total > 0 || crit_count > 4
   end
 
   private def get_fixed_cover

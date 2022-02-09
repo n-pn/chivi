@@ -4,6 +4,6 @@ module CV::TlRule
     return adjt unless (succ = ude2.succ?) && succ.verbs?
 
     adjt = fold!(adjt, ude2.set!("mà"), PosTag::Adverb, dic: 3)
-    return fold!(adjt, fold_verbs!(succ), PosTag::VerbPhrase, dic: 5)
+    fold!(adjt, fold_verbs!(succ), PosTag::VerbPhrase, dic: 5)
   end
 end

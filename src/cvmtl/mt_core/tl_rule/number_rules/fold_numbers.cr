@@ -4,7 +4,6 @@ module CV::TlRule
     node = fuse_number!(node, prev: prev) # if head.numbers?
 
     case node
-    when .verbs? then return fold_verbs!(node)
     when .time?
       # puts [node, node.succ?, node.prev?]
       node = fold_time_prev!(node, prev: prev) if prev && prev.time?
@@ -15,6 +14,8 @@ module CV::TlRule
       end
 
       fold_nouns!(node)
+    when .verbs?
+      old_verbs!(node)
     when .noun?
       fold_nouns!(node)
     else
@@ -28,6 +29,7 @@ module CV::TlRule
     node
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def fuse_number!(node : MtNode, prev : MtNode? = nil) : MtNode
     case node.tag
     when .ndigit?
@@ -41,7 +43,8 @@ module CV::TlRule
       return node
     end
 
-    return node unless node.numbers? && (tail = node.succ?) && !tail.puncts?
+    return node unless node.numbers? && (tail = node.succ?)
+    return node if tail.puncts?
     appro = 0
 
     case tail
@@ -136,6 +139,7 @@ module CV::TlRule
     PRE_NUM_APPROS.has_key?(prev.key)
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def meld_number!(node : MtNode)
     key_io = String::Builder.new(node.key)
     val_io = String::Builder.new(node.val)

@@ -6,7 +6,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
   end
 
   def access
-    pgidx, limit, offset = params.page_info(min: 15, max: 30)
+    _pgidx, limit, offset = params.page_info(min: 15, max: 30)
 
     query = Ubmemo.query.where("cvuser_id = #{_cvuser.id}")
     query = query.limit(limit).offset(offset).order_by(utime: :desc)

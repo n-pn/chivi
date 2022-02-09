@@ -29,14 +29,6 @@ class CV::VpTermView
   end
 
   def to_json(jb : JSON::Builder)
-    if f_term = VpDict.fixture.find(@key)
-      c_base = c_priv = f_term
-    else
-      c_base, c_priv = VpDict.regular.find(@key, @uname)
-    end
-
-    u_base, u_priv = @bdict.find(@key, @uname)
-
     jb.object do
       @val_hint << @hanviet # add hanviet as val hint
 
@@ -51,13 +43,14 @@ class CV::VpTermView
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def to_json(jb : JSON::Builder, vdict : VpDict)
     if vdict.dtype == 2 && (f_term = VpDict.fixture.find(@key))
       b_term, u_term = f_term, nil
     elsif node = vdict.trie.find(@key)
       b_term, u_term = node.base, node.privs[@uname]?
       add_hints(b_term) if b_term
-      node.privs.each_value { |u_term| add_hints(u_term) }
+      node.privs.each_value { |term| add_hints(term) }
     else
       b_term, u_term = nil, nil
     end

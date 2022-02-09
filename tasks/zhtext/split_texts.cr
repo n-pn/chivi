@@ -32,7 +32,7 @@ class CV::SplitText
 
     @chaps.shift if @chaps.first.lines.empty?
 
-    puts "\nsplit #{@inp_file} by regex #{regex.to_s}:"
+    puts "\nsplit #{@inp_file} by regex #{regex}:"
     puts "- total chaps: #{@chaps.size}"
     puts "-" * 8
     @chaps.first(4).each do |chap|

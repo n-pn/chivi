@@ -162,7 +162,7 @@ class CeInput
     counter.each do |trad, counts|
       next if HANZIDB.has_key?(trad) || counts.has_key?(trad)
 
-      best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
+      best = counts.to_a.sort_by { |_simp, count| -count }.map(&.first)
       output.set(trad, best)
     end
 
@@ -215,7 +215,7 @@ class CeInput
     end
 
     counter.each do |char, counts|
-      best = counts.to_a.sort_by { |pinyin, count| -count }.map(&.first)
+      best = counts.to_a.sort_by { |_pinyin, count| -count }.map(&.first)
       output.set(char, best.first(3))
     end
 

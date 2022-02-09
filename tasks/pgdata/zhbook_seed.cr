@@ -60,7 +60,6 @@ class CV::SeedZhbook
 
     RmInfo.mkdir!(@sname) # ensure the seed cache folde
     channel = Channel(Nil).new(threads)
-    encoding = HttpUtil.encoding_for(@sname)
 
     queue.each_with_index(1) do |snvid, index|
       spawn do
@@ -142,6 +141,7 @@ class CV::SeedZhbook
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   private def site_index_link(sname : String) : String
     case sname
     when "69shu"    then "https://www.69shu.com/"

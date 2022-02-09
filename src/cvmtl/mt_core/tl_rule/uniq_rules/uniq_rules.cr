@@ -28,6 +28,7 @@ module CV::TlRule
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_uniqs_by_key!(node : MtNode, succ = node.succ?)
     case node.key
     when "第" then fold_第!(node)

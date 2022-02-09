@@ -1,4 +1,5 @@
 module CV::TlRule
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_vmodals!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     return node.set!(PosTag::Noun) if vmodal_is_noun?(node)
     succ.tag = PosTag::Verb if succ && (succ.veno? || succ.vead?)
@@ -73,6 +74,7 @@ module CV::TlRule
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     case succ
     when .nil? # do nothing

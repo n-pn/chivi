@@ -31,6 +31,7 @@ module CV::TlRule
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def find_verb_after_for_prepos(node : MtNode, skip_comma = true) : MtNode?
     while node = node.succ?
       case node

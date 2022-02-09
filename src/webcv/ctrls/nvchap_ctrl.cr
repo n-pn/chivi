@@ -185,11 +185,11 @@ class CV::NvchapCtrl < CV::BaseCtrl
     chaps = split_chaps(lines, "")
     chidx = zhbook.chap_count + 1 if chidx < 1
 
-    infos = chaps.map_with_index(chidx) do |chap, chidx|
-      if chinfo = zhbook.chinfo(chidx - 1)
+    infos = chaps.map_with_index(chidx) do |chap, c_idx|
+      if chinfo = zhbook.chinfo(c_idx - 1)
         chinfo.bump_version!
       else
-        chinfo = ChInfo.new(chidx, (chidx * 10).to_s)
+        chinfo = ChInfo.new(c_idx, (c_idx * 10).to_s)
       end
 
       chinfo.utime = Time.utc.to_unix

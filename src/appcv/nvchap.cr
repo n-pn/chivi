@@ -50,15 +50,15 @@ class CV::Nvchap
   def chpage(pgidx : Int32)
     PAGES.get(nvinfo.id << 6 | pgidx) do
       yield_meta(pgidx) do |index, snvid, sname, chidx|
-        1
+        {index, snvid, sname, chidx}
       end
     end
   end
 
   def yield_meta(pgidx : Int32)
-    chidx = pgidx &* 32 + 1
-    chmax = chidx + 31
-    return unless index = @ch_map.bsearch_index(chidx)
+    chmin = pgidx &* 32 + 1
+    chmax = chmin + 31
+    return unless index = @ch_map.bsearch_index(chmin)
     from = @ch_map.unsafe_fetch(index)
 
     while index < @ch_map.size

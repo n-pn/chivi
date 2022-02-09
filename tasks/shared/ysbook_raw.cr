@@ -16,8 +16,9 @@ class CV::YsbookRaw
   getter introduction = ""
   getter bintro : Array(String) { TextUtils.split_html(introduction) }
 
-  getter classInfo : NamedTuple(classId: Int32, className: String)?
-  getter klass : String { @classInfo.try(&.[:className]) || "" }
+  @[JSON::Field(key: "classInfo")]
+  getter class_info : NamedTuple(classId: Int32, className: String)?
+  getter klass : String { @class_info.try(&.[:className]) || "" }
 
   getter tags = [] of String
   getter genres : Array(String) {
@@ -39,10 +40,10 @@ class CV::YsbookRaw
   }
 
   @[JSON::Field(key: "updateAt")]
-  getter update : String = "2020-01-01T07:00:00.000Z"
+  getter update_str : String = "2020-01-01T07:00:00.000Z"
 
   getter updated_at : Time do
-    tstr = update.sub(/^0000/, "2020")
+    tstr = update_str.sub(/^0000/, "2020")
     time = Time.parse_utc(tstr, "%FT%T.%3NZ")
     time < Time.utc ? time : Time.utc
   rescue err
@@ -58,9 +59,10 @@ class CV::YsbookRaw
   getter score = 0_f32
   getter rating : Int32 { score.*(10).round.to_i }
 
-  getter countWord = 0_f64
+  @[JSON::Field(key: "countWord")]
+  getter words = 0_f64
   getter word_count : Int32 do
-    count = countWord < 100_000_000 ? countWord : (countWord / 10000)
+    count = words < 100_000_000 ? words : (words / 10000)
     count.round.to_i
   end
 
@@ -82,7 +84,7 @@ class CV::YsbookRaw
     when "yunqi", "chuangshi", "huayu", "yuedu", "shenqi"
       return host.first.capitalize
     else
-      host[-2]
+      host[-2].capitalize
     end
   }
 

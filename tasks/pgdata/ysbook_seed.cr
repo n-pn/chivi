@@ -18,7 +18,7 @@ class CV::YsbookSeed
       end
 
       entries.sort_by!(&.[1].to_i)
-      entries.each_with_index(1) do |(file, snvid, atime), idx|
+      entries.each do |file, snvid, atime|
         next unless redo || @seed.staled?(snvid, atime)
 
         entry = YsbookRaw.parse_file(file)

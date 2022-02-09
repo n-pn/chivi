@@ -190,8 +190,8 @@ class CV::SeedZxcsme
   end
 
   def fix_authors!
-    @seed._index.each do |snvid, value|
-      bumped, rtitle, author = value
+    @seed._index.each do |_snvid, value|
+      _atime, rtitle, author = value
       next if author.ends_with?("【断更】") # resolved
       next unless author =~ /[\(\[（【]/
 
@@ -205,8 +205,8 @@ class CV::SeedZxcsme
   end
 
   def fix_btitles!
-    @seed._index.each do |snvid, value|
-      bumped, rtitle, author = value
+    @seed._index.each do |_snvid, value|
+      _atime, rtitle, author = value
 
       next unless rtitle =~ /[\(\[（【]/
       author = BookUtils.fix_zh_author(author, rtitle)

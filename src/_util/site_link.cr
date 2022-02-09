@@ -1,6 +1,7 @@
 module CV::SiteLink
   extend self
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def index_url(sname : String)
     case sname
     when "hetushu"  then "https://www.hetushu.com/book/index.php"
@@ -18,6 +19,7 @@ module CV::SiteLink
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def binfo_url(sname : String, snvid : String)
     case sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/"
@@ -49,6 +51,7 @@ module CV::SiteLink
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def chtxt_url(sname : String, snvid : String, schid : String)
     case sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/#{schid}/"

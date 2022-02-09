@@ -27,6 +27,7 @@ class CV::FixCovers
     @@widths.each_value { |map| map.save!(clean: false) }
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def fix_cover!(nvinfo, redo = false)
     unless redo || nvinfo.bcover.empty?
       return File.exists?(out_path(nvinfo.bcover))

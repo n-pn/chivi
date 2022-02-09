@@ -1,4 +1,5 @@
 module CV::TlRule
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_verb_object!(verb : MtNode, succ : MtNode?)
     return verb if !succ || verb.verb_object? || verb.vintr?
 
@@ -26,6 +27,7 @@ module CV::TlRule
     fold_verb_junction!(junc: succ, verb: node) || node
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)
     # puts [verb, right, verb.prev?, "verb-object"]
 

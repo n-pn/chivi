@@ -86,7 +86,7 @@ class CV::Chtext
     @infos.parts = @infos.chars = 0
     title = nil
 
-    while true
+    loop do
       chdata = self.load!(@infos.parts)
       break if chdata.utime == 0
 

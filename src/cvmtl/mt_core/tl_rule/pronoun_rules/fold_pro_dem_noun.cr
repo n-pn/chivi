@@ -25,6 +25,7 @@ module CV::TlRule
     {"另", "其他", "此", "某个", "某些"}.includes?(prodem.key)
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def heal_pro_dem!(pro_dem : MtNode) : MtNode
     case pro_dem
     when .pro_zhe?

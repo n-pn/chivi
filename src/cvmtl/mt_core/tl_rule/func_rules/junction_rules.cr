@@ -1,8 +1,10 @@
 module CV::TlRule
   def can_combine_adjt?(left : MtNode, right : MtNode?)
-    return right.adjts?
+    # TODO
+    right.adjts?
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
     return unless verb && succ && succ.maybe_verb? && is_concoord?(junc)
 
@@ -87,6 +89,6 @@ module CV::TlRule
     fold!(node, scan_verb!(verb), verb.tag, dic: 6)
 
     # TOD: fold as subject + verb structure?
-    return true
+    true
   end
 end

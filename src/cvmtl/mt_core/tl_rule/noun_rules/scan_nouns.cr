@@ -4,6 +4,8 @@ module CV::TlRule
   # 2 => do not join junctions
   # 3 => scan_noun after ude1
   #   can return non nounish node
+
+  # ameba:disable Metrics/CyclomaticComplexity
   def scan_noun!(node : MtNode?, mode : Int32 = 0,
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
     # puts [node, prodem, nquant, "scan_noun"]

@@ -99,7 +99,7 @@ class CV::DtpostCtrl < CV::BaseCtrl
       return halt!(403, "Bạn không có quyền xoá chủ đề")
     end
 
-    Dtpost.load!(params["dtpost"].to_i64).soft_delete
+    Dtpost.load!(params["dtpost"].to_i64).soft_delete(admin: admin)
     send_json({msg: "ok"})
   end
 end

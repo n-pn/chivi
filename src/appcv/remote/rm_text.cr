@@ -81,6 +81,7 @@ class CV::RmText
     lines
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   private def extract_paras(sel : String)
     return [] of String unless node = page.find(sel)
 
@@ -161,13 +162,13 @@ class CV::RmText
     res
   end
 
-  private def get_hetushu_line_order(meta_file)
+  private def get_hetushu_line_order(meta_file : String, retry = false)
+    File.delete(meta_file) if retry
     base64 = hetushu_encrypt_string(meta_file)
-    orders = Base64.decode_string(base64).split(/[A-Z]+%/).map(&.to_i)
-  rescue # redo for wrong token
-    File.delete(meta_file)
-    base64 = hetushu_encrypt_string(meta_file)
-    orders = Base64.decode_string(base64).split(/[A-Z]+%/).map(&.to_i)
+    Base64.decode_string(base64).split(/[A-Z]+%/).map(&.to_i)
+  rescue
+    return [] of Int32 if retry
+    get_hetushu_line_order(meta_file, retry: true)
   end
 
   private def hetushu_encrypt_string(meta_file)

@@ -7,7 +7,7 @@ module CV::TlRule
       return verb if has_ule || !is_temp_nqverb?(tail)
     end
 
-    return fold!(verb, tail, verb.tag, dic: 6)
+    fold!(verb, tail, verb.tag, dic: 6)
   end
 
   def is_temp_nqverb?(tail : MtNode)

@@ -3,8 +3,8 @@ require "./vp_term"
 class CV::VMatch
   def self.init(query)
     # TODO: add more filters
-    key = query["key"]?.try { |key| Regex.new(key) }
-    val = query["val"]?.try { |val| Regex.new(val) }
+    key = query["key"]?.try { |k| Regex.new(k) }
+    val = query["val"]?.try { |v| Regex.new(v) }
 
     attr = query["ptag"]?
     rank = query["rank"]?.try(&.to_i?) || 3

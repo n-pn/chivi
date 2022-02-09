@@ -1,26 +1,14 @@
 module CV::TlRule
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_compare_vyou!(vyou : MtNode, succ = vyou.succ?, mode = 0)
     return vyou unless noun = scan_noun!(succ, mode: mode)
 
     case succ = noun.succ?
-    when .nil? then return vyou
+    when .nil?  then return vyou
+    when .ude1? then return fold_vyou_ude1(vyou, succ)
     when .adverb?
       if succ.key == "这么" || succ.key == "那么"
         adverb, succ = succ, succ.succ?
-      end
-    when .ude1?
-      unless tail = scan_noun!(succ.succ?)
-        return fold!(vyou, noun, PosTag::VerbObject, dic: 6)
-      end
-
-      if find_verb_after(tail)
-        succ.set!("")
-        head = fold!(vyou, noun, PosTag::VerbObject, dic: 7)
-        return fold!(head, tail, tail.tag, dic: 8, flip: true)
-      else
-        defn = fold!(noun, succ.set!("của"), PosTag::DefnPhrase, dic: 3, flip: true)
-        noun = fold!(defn, tail, tail.tag, dic: 4, flip: true)
-        return fold!(vyou, noun, PosTag::VerbObject, dic: 6)
       end
     else
       if vyou.key == "有"
@@ -68,5 +56,21 @@ module CV::TlRule
     tail.fix_succ!(nil)
 
     output
+  end
+
+  def fold_vyou_ude1(vyou : MtNode, ude1 : MtNode)
+    unless tail = scan_noun!(ude1.succ?)
+      return fold!(vyou, noun, PosTag::VerbObject, dic: 6)
+    end
+
+    if find_verb_after(tail)
+      ude1.set!("")
+      head = fold!(vyou, noun, PosTag::VerbObject, dic: 7)
+      fold!(head, tail, tail.tag, dic: 8, flip: true)
+    else
+      defn = fold!(noun, ude1.set!("của"), PosTag::DefnPhrase, dic: 3, flip: true)
+      noun = fold!(defn, tail, tail.tag, dic: 4, flip: true)
+      fold!(vyou, noun, PosTag::VerbObject, dic: 6)
+    end
   end
 end

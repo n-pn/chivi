@@ -29,8 +29,6 @@ test1 = "坚定不移沿着中国特色社会主义道路前进  为全面建成
 test2 = "MUV  LUV AL 红龙"
 test3 = "异闻录  每晚一个离奇的故事"
 test4 = "红龙M红~~~龙 MUV  LUV AL 红龙 http://test.com/test?q=1"
-test5 = "【实验总分：79.3。排名：6】"
-test6 = "“稍等。”李峥倒是不在意这些议论，更在意身旁失魂落魄的大兄弟，“英男别慌，最惨的是我才对，400分满分，输了一分，输了一生。”"
 
 puts HANVIET.translit(test1)
 puts HANVIET.translit(test2)

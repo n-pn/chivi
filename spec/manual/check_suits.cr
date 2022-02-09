@@ -14,7 +14,7 @@ files.each do |file|
   lines = File.read_lines(file).reject(&.empty?)
 
   lines.each do |line|
-    left, right = line.split('\t')
+    left, _right = line.split('\t')
     File.write("tmp/test.txt", left)
     puts [left, convert(left)]
   end

@@ -28,32 +28,31 @@ module CV::MtUtil
     res + acc
   end
 
+  HAN_VAL = {
+    '零' => 0,
+    '〇' => 0,
+    '一' => 1,
+    '两' => 2,
+    '二' => 2,
+    '三' => 3,
+    '四' => 4,
+    '五' => 5,
+    '六' => 6,
+    '七' => 7,
+    '八' => 8,
+    '九' => 9,
+    '十' => 10,
+    '百' => 100,
+    '千' => 1000,
+    '万' => 10_000,
+    '亿' => 100_000_000,
+    '兆' => 1_000_000_000_000,
+  }
+
   # :ditto:
-  def to_integer(char : Char)
-    case char
-    when '零' then 0
-    when '〇' then 0
-    when '一' then 1
-    when '两' then 2
-    when '二' then 2
-    when '三' then 3
-    when '四' then 4
-    when '五' then 5
-    when '六' then 6
-    when '七' then 7
-    when '八' then 8
-    when '九' then 9
-    when '十' then 10
-    when '百' then 100
-    when '千' then 1000
-    when '万' then 10000
-    when '亿' then 10000000
-    when '兆' then 10000000000
-    when .ascii_number?
-      char.to_i
-    else
-      raise ArgumentError.new("Unknown char: #{char}")
-    end
+  def to_integer(char : Char) : Int32 | Int64
+    return char.to_i if char.ascii_number?
+    HAN_VAL[char]? || 0
   end
 
   NUMS = "零〇一二两三四五六七八九十百千"

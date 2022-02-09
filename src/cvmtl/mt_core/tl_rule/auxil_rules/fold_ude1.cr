@@ -1,6 +1,7 @@
 module CV::TlRule
   # do not return left when fail to prevent infinity loop!
   def fold_ude1!(ude1 : MtNode, prev = ude1.prev?, succ = ude1.succ?) : MtNode
+    # ameba:disable Style/NegatedConditionsInUnless
     return heal_ude!(ude1, prev) unless prev && succ && !(prev.ends?)
 
     ude1.set!("")

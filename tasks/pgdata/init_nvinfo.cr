@@ -267,7 +267,7 @@ class CV::InitNvinfo
     when "zxcs_me", "hetushu", "users", "local" then true
     when "yousuu"
       list_count, crit_count = get_ys_extras(snvid)
-      return list_count > 1 || crit_count > 3
+      list_count > 1 || crit_count > 3
     else
       false
     end

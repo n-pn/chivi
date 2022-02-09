@@ -3,6 +3,7 @@ module CV::TlRule
     node
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_pro_per!(proper : MtNode, succ : MtNode) : MtNode
     case succ.tag
     when .concoord?, .penum?
@@ -11,7 +12,7 @@ module CV::TlRule
       succ = heal_veno!(succ)
       succ.noun? ? fold_proper_nounish!(proper, succ) : fold_noun_verb!(proper, succ)
     when .verbs?, .vmodals?
-      return fold_noun_verb!(proper, succ)
+      fold_noun_verb!(proper, succ)
     when .ajno?
       succ = heal_ajno!(succ)
       succ.noun? ? fold_proper_nounish!(proper, succ) : proper
@@ -22,12 +23,12 @@ module CV::TlRule
 
       noun = fold_proper_nounish!(proper, succ)
       return noun unless (succ = noun.succ?) && succ.maybe_verb?
-      return fold_noun_verb!(noun, succ)
+      fold_noun_verb!(noun, succ)
     when .nouns?, .numbers?, .pro_dems?
-      return proper unless (succ = scan_noun!(succ)) && !succ.pro_dems?
+      return proper if !(succ = scan_noun!(succ)) || succ.pro_dems?
       noun = fold_proper_nounish!(proper, succ)
       return noun unless (succ = noun.succ?) && succ.maybe_verb?
-      return fold_noun_verb!(noun, succ)
+      fold_noun_verb!(noun, succ)
     when .uzhi?
       fold_uzhi!(uzhi: succ, prev: proper)
     when .ude1?
@@ -39,6 +40,7 @@ module CV::TlRule
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_proper_nounish!(proper : MtNode, nounish : MtNode) : MtNode
     return proper unless noun_can_combine?(proper.prev?, nounish.succ?)
     if (prev = proper.prev?) && need_2_objects?(prev)

@@ -1,4 +1,5 @@
 module CV::TlRule
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
     return fold_verb_object!(verb, verb.succ?) if verb.body?
     # puts [verb, prev].colorize.yellow

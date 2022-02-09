@@ -22,8 +22,9 @@ class CV::CrawlYsbook
     count = 0
 
     until queue.empty?
+      qsize = queue.size
       count += 1
-      puts "\n[loop: #{count}, mode: #{mode}, size: #{queue.size}]".colorize.cyan
+      puts "\n[loop: #{count}, mode: #{mode}, size: #{qsize}]".colorize.cyan
 
       fails = [] of String
 
@@ -35,15 +36,15 @@ class CV::CrawlYsbook
         exit(0) if @http.no_proxy?
 
         spawn do
-          label = "<#{idx}/#{queue.size}> [#{snvid}]"
+          label = "<#{idx}/#{qsize}> [#{snvid}]"
           inbox.send(crawl_info!(snvid, label: label))
         end
 
-        inbox.receive.try { |snvid| fails << snvid } if idx > limit
+        inbox.receive.try { |x| fails << x } if idx > limit
       end
 
       limit.times do
-        inbox.receive.try { |snvid| fails << snvid }
+        inbox.receive.try { |x| fails << x }
       end
 
       exit(0) if @http.no_proxy?

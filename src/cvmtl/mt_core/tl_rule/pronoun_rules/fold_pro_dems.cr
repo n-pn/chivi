@@ -1,4 +1,5 @@
 module CV::TlRule
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
     return node if node.key == "这儿" || node.key == "那儿"
     return heal_pro_dem!(node) if succ.key.in?({"就"})

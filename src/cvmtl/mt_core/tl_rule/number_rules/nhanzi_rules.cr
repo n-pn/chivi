@@ -18,7 +18,8 @@ module CV::TlRule
       return node.tap(&.fix_succ!(result.succ?))
     end
 
-    node = prev || result ? fold_number_hour!(node, succ) : node
+    return node unless prev ||= result
+    fold_number_hour!(prev, succ)
   end
 
   def keep_pure_numeric?(node : MtNode?) : Bool | MtNode

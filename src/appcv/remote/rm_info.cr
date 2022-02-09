@@ -212,21 +212,20 @@ class CV::RmInfo
 
   def extract_generic_chaps(query : String)
     chaps = [] of ChInfo
-    return chaps unless node = @cpage.find(query)
+    return chaps unless body = @cpage.find(query)
 
-    label = ""
-
-    node.children.each do |node|
+    chvol = ""
+    body.children.each do |node|
       case node.tag_sym
       when :dt
         inner = node.css("b").first? || node
-        label = inner.inner_text.gsub(/《.*》/, "").gsub("\n|\t", "  ").strip
+        chvol = inner.inner_text.gsub(/《.*》/, "").gsub("\n|\t", "  ").strip
       when :dd
-        next if label.includes?("最新章节")
+        next if chvol.includes?("最新章节")
         next unless link = node.css("a").first?
         next unless href = link.attributes["href"]?
 
-        chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text, label)
+        chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text, chvol)
         chaps << chap unless chap.invalid?
       end
     rescue err

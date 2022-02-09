@@ -83,7 +83,7 @@ module CV::TlRule
   end
 
   def deep_clean_个!(node : MtNode) : Nil
-    while true
+    loop do
       return node.set!("") if node.key == "个"
       break unless node = node.succ?
     end

@@ -66,14 +66,14 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
         jb.field "chseed" do
           jb.array do
-            zhbooks.each do |zhbook|
+            zhbooks.each do |entry|
               jb.object {
-                jb.field "sname", zhbook.sname
-                jb.field "snvid", zhbook.snvid
-                # jb.field "wlink", zhbook.wlink
-                jb.field "utime", zhbook.utime
-                jb.field "chaps", zhbook.chap_count
-                jb.field "_type", zhbook._type
+                jb.field "sname", entry.sname
+                jb.field "snvid", entry.snvid
+                # jb.field "wlink", entry.wlink
+                jb.field "utime", entry.utime
+                jb.field "chaps", entry.chap_count
+                jb.field "_type", entry._type
               }
             end
           end

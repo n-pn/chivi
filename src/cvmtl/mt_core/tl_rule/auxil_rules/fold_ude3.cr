@@ -37,7 +37,7 @@ module CV::TlRule
       fold!(node, tail, PosTag::Aform, dic: 6)
     when .verbs?
       node = fold!(node, succ, PosTag::Verb, dic: 6)
-      return fold_verb_compl!(node, tail) || node
+      fold_verb_compl!(node, tail) || node
     else
       # TODO: handle verb form
       node

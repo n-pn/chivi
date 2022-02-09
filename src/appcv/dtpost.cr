@@ -82,7 +82,7 @@ class CV::Dtpost
   end
 
   def update_content!(params)
-    utime = Time.utc.to_unix
+    self.utime = Time.utc.to_unix
     set_input(params["input"], params["itype"])
     self.save!
   end

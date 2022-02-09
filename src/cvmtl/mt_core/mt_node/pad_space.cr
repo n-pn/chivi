@@ -31,6 +31,7 @@ module CV::MTL::PadSpace
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def should_space_before?(prev : MtNode) : Bool
     return false if prev.val.blank?
 

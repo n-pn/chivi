@@ -87,7 +87,6 @@ module CV::YscritSeed
     info_maps = Dir.glob("#{DIR}/*-infos.tsv")
 
     info_maps.each do |infos_file|
-      infos_map = Tabkv.new(infos_file)
       ztext_file = infos_file.sub("infos", "ztext")
 
       infos_map = Tabkv.new(infos_file)

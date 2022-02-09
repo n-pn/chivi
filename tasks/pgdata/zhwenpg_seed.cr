@@ -49,7 +49,7 @@ class CV::ZhwenpgSeed
     page = Myhtml::Parser.new(File.read(file))
     nodes = page.css(".cbooksingle").to_a[2..-2]
 
-    nodes.each_with_index(1) do |node, idx|
+    nodes.each do |node|
       parser = ZhwenpgParser.new(node, status)
       snvid = parser.snvid
 

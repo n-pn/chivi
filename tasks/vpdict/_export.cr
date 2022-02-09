@@ -260,6 +260,7 @@ app_file = "_db/vpdict/logs/suggest.appcv.tsv"
 suggest_out.load!(app_file) if File.exists?(app_file)
 suggest_out.save!
 
+# ameba:disable Metrics/CyclomaticComplexity
 def export_book(bhash, regular_set)
   checked = Set(String).new
   book_inp = Postag.load("pkuseg/#{bhash}", mode: 1)

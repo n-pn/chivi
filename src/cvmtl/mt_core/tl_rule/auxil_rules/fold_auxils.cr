@@ -10,6 +10,7 @@ module CV::TlRule
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def heal_ule!(node : MtNode) : MtNode
     return node unless (prev = node.prev?) && (succ = node.succ?)
 
@@ -31,7 +32,7 @@ module CV::TlRule
   end
 
   def fold_verb_ule!(verb : MtNode, node : MtNode, succ = node.succ?)
-    unless !succ || succ.ends? || succ.succ?(&.ule?)
+    if succ && !(succ.ends? || succ.succ?(&.ule?))
       node.val = ""
     end
 

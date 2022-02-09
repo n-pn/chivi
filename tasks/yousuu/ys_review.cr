@@ -26,6 +26,7 @@ class CV::CrawlYscrit
 
     until queue.empty?
       count += 1
+      qsize = queue.size
       puts "\n[page: #{page}, loop: #{count}, size: #{queue.size}]".colorize.cyan
 
       fails = [] of Int64
@@ -38,15 +39,15 @@ class CV::CrawlYscrit
         return if @http.no_proxy?
 
         spawn do
-          label = "(#{page}) <#{idx}/#{queue.size}> [#{snvid}]"
+          label = "(#{page}) <#{idx}/#{qsize}> [#{snvid}]"
           inbox.send(crawl_crit!(snvid, page, label: label))
         end
 
-        inbox.receive.try { |snvid| fails << snvid } if idx > limit
+        inbox.receive.try { |s| fails << s } if idx > limit
       end
 
       limit.times do
-        inbox.receive.try { |snvid| fails << snvid }
+        inbox.receive.try { |s| fails << s }
       end
 
       break if @http.no_proxy?

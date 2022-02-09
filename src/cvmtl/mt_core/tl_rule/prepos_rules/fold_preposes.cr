@@ -23,7 +23,7 @@ module CV::TlRule
   end
 
   def fold_pre_dui!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
-    return node.set!("đúng", PosTag::Unkn) unless succ && !succ.ends?
+    return node.set!("đúng", PosTag::Unkn) if !succ || succ.ends?
 
     # TODO: combine grammar
 

@@ -1,6 +1,5 @@
 module CV::TlRule
   def fold_v_shi!(vshi : MtNode, succ = vshi.succ?)
-    return vshi
     return vshi unless (succ = scan_noun!(succ)) && (tail = succ.succ?)
 
     tail = fold_verbs!(tail) if tail.verbs?

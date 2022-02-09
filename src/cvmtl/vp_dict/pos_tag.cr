@@ -69,6 +69,7 @@ struct CV::PosTag
   def initialize(@tag = Tag::Unkn, @pos = Pos::Contws)
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def to_str
     case @pos
     when .puncts?   then "w"
