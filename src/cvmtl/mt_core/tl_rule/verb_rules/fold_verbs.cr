@@ -9,6 +9,8 @@ module CV::TlRule
     when .vpro?
       return verb unless (succ = verb.succ?) && succ.verbs?
       verb = fold!(verb, succ, succ.tag, dic: 5)
+    when .vmodals?
+      verb.tag = PosTag::Verb
     end
 
     head = verb
@@ -72,7 +74,6 @@ module CV::TlRule
       end
 
       break if verb.succ? == succ
-      verb.set!(PosTag::Verb) unless verb.vintr?
     end
 
     verb = fold_adverb_node!(prev, verb) if prev
