@@ -38,7 +38,6 @@ class CV::VpdictCtrl < CV::BaseCtrl
     vdict = VpDict.load(dname)
 
     pgidx, limit, offset = params.page_info(min: 30)
-    puts [pgidx, limit, offset]
 
     total = offset + 128
     terms = [] of VpTerm
