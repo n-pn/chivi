@@ -15,7 +15,7 @@ module CV::TlRule
 
       fold_nouns!(node)
     when .verbs?
-      old_verbs!(node)
+      fold_verbs!(node)
     when .noun?
       fold_nouns!(node)
     else

@@ -5,7 +5,7 @@ module CV::TlRule
 
     case succ = noun.succ?
     when .nil?  then return vyou
-    when .ude1? then return fold_vyou_ude1(vyou, succ)
+    when .ude1? then return fold_vyou_ude1(vyou, succ, noun)
     when .adverb?
       if succ.key == "这么" || succ.key == "那么"
         adverb, succ = succ, succ.succ?
@@ -58,7 +58,7 @@ module CV::TlRule
     output
   end
 
-  def fold_vyou_ude1(vyou : MtNode, ude1 : MtNode)
+  def fold_vyou_ude1(vyou : MtNode, ude1 : MtNode, noun : MtNode)
     unless tail = scan_noun!(ude1.succ?)
       return fold!(vyou, noun, PosTag::VerbObject, dic: 6)
     end
