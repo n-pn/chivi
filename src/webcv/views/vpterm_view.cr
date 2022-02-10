@@ -35,48 +35,42 @@ struct CV::VpTermView
   end
 
   def to_json(jb : JSON::Builder, word : String)
-    b_term, u_term, h_vals, h_tags = load_terms(word)
+    b_term, u_term, h_vals, h_tags, h_fval, h_ptag = load_terms(word)
 
     jb.object do
-      render_priv_term(jb, u_term) if u_term
-      render_base_term(jb, b_term) if b_term
+      if u_term
+        jb.field "u_val", u_term.val.first
+        jb.field "u_ptag", u_term.ptag.to_str
+        jb.field "u_rank", u_term.rank
 
-      fval = h_vals.first
-      jb.field "h_vals", h_vals
-      jb.field "h_fval", @vdict.dtype == 3 ? TextUtils.titleize(fval) : fval
-
-      if @vdict.dtype > 0
-        jb.field "h_tags", h_tags
-        jb.field "h_ptag", h_tags.first
+        jb.field "u_mtime", u_term.mtime
+        # jb.field "u_uname", u_term.uname
+        jb.field "u_state", u_term.state
       end
+
+      if b_term
+        jb.field "b_val", b_term.val.first
+        jb.field "b_ptag", b_term.ptag.to_str
+        jb.field "b_rank", b_term.rank
+
+        jb.field "b_mtime", b_term.mtime
+        jb.field "b_uname", b_term.uname
+        jb.field "b_state", b_term.state
+      end
+
+      jb.field "h_vals", h_vals
+      jb.field "h_fval", h_fval
+      jb.field "h_tags", h_tags
+      jb.field "h_ptag", h_ptag
     end
   end
 
-  @[AlwaysInline]
-  def render_priv_term(jb : JSON::Builder, u_term : VpTerm)
-    jb.field "u_val", u_term.val.first
-    jb.field "u_ptag", u_term.ptag.to_str
-    jb.field "u_rank", u_term.rank
-
-    jb.field "u_mtime", u_term.mtime
-    # jb.field "u_uname", u_term.uname
-    jb.field "u_state", u_term.state
-  end
-
-  @[AlwaysInline]
-  def render_base_term(jb : JSON::Builder, b_term : VpTerm)
-    jb.field "b_val", b_term.val.first
-    jb.field "b_ptag", b_term.ptag.to_str
-    jb.field "b_rank", b_term.rank
-
-    jb.field "b_mtime", b_term.mtime
-    jb.field "b_uname", b_term.uname
-    jb.field "b_state", b_term.state
-  end
+  alias Hints = Set(String)
 
   private def load_terms(word : String)
-    vals = Set{@hvmap[word]}
-    tags = Set(String).new
+    vals = Hints.new
+    tags = Hints.new
+    vals << @hvmap[word]
 
     if @vdict.dtype == 2 && (f_term = VpDict.fixture.find(word))
       b_term, u_term = f_term, nil
@@ -88,26 +82,21 @@ struct CV::VpTermView
       b_term, u_term = nil, nil
     end
 
-    tran = @cvmtl.cv_plain(word, cap_first: false)
-    vals << tran.to_s
+    # TODO: add suggest values here
 
     if @vdict.dtype > 0
-      fc, lc = word[0], word[-1]
-      tags << "nr" if LASTNAMES.includes?(fc)
-      tags << "nn" if AFFILIATE.includes?(lc)
-      tags << "na" if ATTRIBUTE.includes?(lc) || fc == '姓'
-
-      extract_tag(tran).try { |t| tags << t }
-      tags << (@vdict.dtype == 3 ? "nr" : "n")
+      fval, ptag = add_hints_by_ctx(word, vals, tags)
+    else
+      fval, ptag = vals.first?, nil
     end
 
-    {b_term, u_term, vals, tags}
+    {b_term, u_term, vals, tags, fval, ptag}
   end
 
   @[AlwaysInline]
   private def extract_tag(tran : MtList) : String?
     # exit if list is not singleton
-    return unless (first = tran.first) && first.body?
+    return if !(first = tran.first) || first.succ?
 
     case tag = first.tag.to_str
     when "np" then "n"
@@ -117,17 +106,49 @@ struct CV::VpTermView
     end
   end
 
-  private def add_hints(node : VpTrie, vals : Set(String), tags : Set(String))
+  private def add_hints(node : VpTrie, vals : Hints, tags : Hints)
     node.base.try { |x| add_hints(x, vals, tags) }
     node.privs.each_value { |t| add_hints(t, vals, tags) }
   end
 
-  private def add_hints(term : VpTerm, vals : Set(String), tags : Set(String))
+  private def add_hints(term : VpTerm, vals : Hints, tags : Hints)
     vals.concat(term.val)
     tags << term.ptag.to_str
 
     return unless prev = term._prev
     vals.concat(prev.val)
     tags << term.ptag.to_str
+  end
+
+  private def add_hints_by_ctx(word : String, vals : Hints, tags : Hints)
+    cvmt = @cvmtl.cv_plain(word, cap_first: false)
+
+    fc, lc = word[0], word[-1]
+    tags << "nn" if AFFILIATE.includes?(lc)
+    tags << "na" if ATTRIBUTE.includes?(lc) || fc == '姓'
+    if is_human_name?(fc, lc)
+      is_human = true
+      tags << "nr"
+    end
+
+    tran = cvmt.to_s
+    vals << tran
+
+    if ftag = extract_tag(cvmt)
+      tags << ftag
+      fval = tran
+    else
+      ftag = tags.first?
+      fval = vals.first
+    end
+
+    fval = is_human || ftag.in?("nr", "nn", "nz") ? TextUtils.titleize(fval) : fval
+    {fval, ftag}
+  end
+
+  @[AlwaysInline]
+  private def is_human_name?(fc : Char, lc : Char)
+    return true if @vdict.dtype == 3 || LASTNAMES.includes?(fc)
+    fc.in?('小', '老') && LASTNAMES.includes?(lc)
   end
 end

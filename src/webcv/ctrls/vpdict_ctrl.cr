@@ -21,9 +21,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
     book_dicts = [] of VdInfo
 
     input[offset, limit].each do |dname|
-      book_dicts << {
-        dname, CtrlUtil.d_dub(dname[1..]), VpDict.load(dname).size,
-      }
+      book_dicts << {dname, CtrlUtil.d_dub(dname), VpDict.load(dname).size}
     end
 
     send_json({

@@ -20,7 +20,7 @@
     if (tab == 0) list.push('nr', 'nn')
     else list.push('n', 'nr')
 
-    const filter = (x, i, s) => x && s.indexOf(x) == i
+    const filter = (x, i, s) => x && x != vpterm.ptag && s.indexOf(x) == i
     const hints = list.filter(filter)
     return [priv, base, hints.slice(0, 2)]
   }
