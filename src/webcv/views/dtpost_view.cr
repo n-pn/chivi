@@ -1,6 +1,6 @@
 require "./_base_view"
 
-class CV::DtpostView
+struct CV::DtpostView
   include BaseView
 
   def initialize(@data : Dtpost, @full = false)

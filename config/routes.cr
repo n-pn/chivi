@@ -55,8 +55,6 @@ Amber::Server.configure do
     get "/dicts/:dname", CV::VpdictCtrl, :show
     get "/dicts/:dname/lookup", CV::VpdictCtrl, :lookup
     put "/dicts/:dname/lookup", CV::VpdictCtrl, :lookup
-    get "/dicts/:dname/search", CV::VpdictCtrl, :search
-    put "/dicts/:dname/search", CV::VpdictCtrl, :search
 
     post "/terms/query", CV::VptermCtrl, :lookup
     put "/terms/entry", CV::VptermCtrl, :upsert_entry

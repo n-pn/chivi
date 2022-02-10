@@ -1,6 +1,6 @@
 require "./_base_view"
 
-class CV::DtopicView
+struct CV::DtopicView
   include BaseView
 
   def initialize(@data : Dtopic, @full = false)

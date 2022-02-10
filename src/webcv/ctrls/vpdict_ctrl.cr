@@ -108,23 +108,4 @@ class CV::VpdictCtrl < CV::BaseCtrl
   def find_node(dict, key)
     dict.trie.find(key)
   end
-
-  def search
-    dname = params["dname"]
-    words = params.json("words").as_a
-
-    bdict = VpDict.load(dname)
-    cvmtl = MtCore.generic_mtl(dname, u_dname)
-
-    send_json do |jb|
-      jb.object do
-        words.each do |word|
-          jb.field (word.as_s) do
-            view = VpTermView.new(word.as_s, bdict, cvmtl, "!#{u_dname}")
-            view.to_json(jb)
-          end
-        end
-      end
-    end
-  end
 end

@@ -3,46 +3,26 @@ require "./_base_ctrl"
 class CV::VptermCtrl < CV::BaseCtrl
   def lookup
     input = params.json("input").as_h
-    uname = "!#{u_dname}"
+    hvmap = Hash(String, String).new { |h, k| h[k] = MtCore.cv_hanviet(k) }
 
     send_json do |jb|
-      jb.object {
+      jb.object do
         input.each do |dname, words|
-          cvmtl = load_cvmtl(dname, uname)
-          vdict = VpDict.load(dname)
+          words = words.as_a.map(&.to_s)
 
-          jb.field(dname) {
-            jb.object {
-              words.as_a.each do |word|
-                word = word.as_s
-                if dname == "pin_yin"
-                  jb.field(word, cvmtl.translit(word).to_s)
-                else
-                  jb.field(word) {
-                    VpTermView.new(word, vdict, cvmtl, uname).to_json(jb)
-                  }
-                end
-              end
-            }
-          }
+          if dname == "pin_yin"
+            jb.field(dname, words.map { |w| {w, MtCore.cv_pin_yin(w)} }.to_h)
+          else
+            jb.field(dname) { VpTermView.new(dname, words, hvmap, u_dname).to_json(jb) }
+          end
         end
-      }
-    end
-  end
-
-  private def load_cvmtl(dname : String, uname : String)
-    case dname
-    when "pin_yin"          then MtCore.pin_yin_mtl
-    when "hanviet"          then MtCore.hanviet_mtl
-    when .starts_with?('$') then MtCore.generic_mtl(dname, uname)
-    else                         MtCore.generic_mtl("combine", uname)
+      end
     end
   end
 
   def upsert_entry
     dname = params["dname"]
-    scope = params["scope"]? || "novel"
-    vdict = VpDict.load(dname, scope)
+    vdict = VpDict.load(dname)
 
     _priv = params["_priv"]? == "true"
     unless vdict.allow?(_cvuser.privi, _priv)

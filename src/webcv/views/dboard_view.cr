@@ -1,6 +1,6 @@
 require "./_base_view"
 
-class CV::DboardView
+struct CV::DboardView
   include BaseView
 
   def initialize(@data : Nvinfo)

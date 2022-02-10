@@ -39,7 +39,7 @@
     words = words.filter((x, i, s) => x && s.indexOf(x) == i)
     await update_cached(words, dicts)
 
-    vpterms = vpdicts.map((x) => cached[x.dname][output])
+    vpterms = vpdicts.map(({ dname }) => cached[dname][output])
   }
 
   function change_focus(index) {

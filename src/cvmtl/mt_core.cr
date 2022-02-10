@@ -11,16 +11,34 @@ class CV::MtCore
     new(dicts, "!#{uname}")
   end
 
+  def self.load(dname : String, uname : String = "")
+    case dname
+    when "pin_yin" then pin_yin_mtl
+    when "hanviet" then hanviet_mtl
+    when "tradsim" then tradsim_mtl
+    else
+      generic_mtl(dname.starts_with?('$') ? dname : "combine", uname)
+    end
+  end
+
+  def self.cv_pin_yin(input : String)
+    pin_yin_mtl.translit(input).to_s
+  end
+
+  def self.cv_hanviet(input : String)
+    hanviet_mtl.translit(input).to_s
+  end
+
   def self.trad_to_simp(input : String) : String
     tradsim_mtl.tokenize(input.chars).to_s
   end
 
   def self.convert(input : String, dname = "combine") : Cvmtl
     case dname
-    when "hanviet" then hanviet.translit(input).to_s
-    when "pin_yin" then pin_yin.translit(input).to_s
-    when "tradsim" then tradsim.tokenize(input.chars).to_s
-    else                generic(dname).cv_plain(input).to_s
+    when "hanviet" then hanviet_mtl.translit(input).to_s
+    when "pin_yin" then pin_yin_mtl.translit(input).to_s
+    when "tradsim" then tradsim_mtl.tokenize(input.chars).to_s
+    else                generic_mtl(dname).cv_plain(input).to_s
     end
   end
 

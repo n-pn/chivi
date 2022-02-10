@@ -1,6 +1,6 @@
 require "./_base_view"
 
-class CV::CvuserView
+struct CV::CvuserView
   include BaseView
 
   def initialize(@data : Cvuser, @full = false)

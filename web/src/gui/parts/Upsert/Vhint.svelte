@@ -1,55 +1,26 @@
 <script context="module">
-  // prettier-ignore
-  const surnames = [
-    "赵", "钱", "孙", "李", "周", "吴", "郑", "王", "冯", "陈",
-    "褚", "衞", "蒋", "沈", "韩", "杨", "朱", "秦", "尤", "许",
-    "何", "吕", "施", "张", "孔", "曹", "严", "华", "金", "魏",
-    "陶", "姜", "戚", "谢", "邹", "喻", "柏", "水", "窦", "章",
-    '雲', '苏', '潘', '葛', '奚', '范', '彭', '郎', '鲁', '韦',
-    '昌', '马', '苗', '凤', '花', '方', '俞', '任', '袁', '柳',
-    '酆', '鮑', '史', '唐', '費', '廉', '岑', '薛', '雷', '賀',
-    '倪', '湯', '滕', '殷', '罗', '毕', '郝', '邬', '安', '常',
-  ]
-
-  // prettier-ignore
-  const affiliates = [
-    '门', '教', '组', '朝', '校', '廷', '会', '部', '司', '宗',
-    '派', '家', '人', '楼', '氏', '府', '队', '织', '学', '院',
-    '区', '谷', '町', '山', '岛', '国', '洲', '海', '峡', '省',
-    '湾', '江', '市', '桥', '宫', '城', '池', '县', '寺', '殿',
-    '峠', '乡', '川', '园', '湖', '都', '堂', '坡', '河', '坂',
-    '社', '关', '门', '墟', '庙', '镇', '院', '村'
-  ]
-
+  import { ptnames } from '$parts/Postag.svelte'
   const v_kbd = ['q', '@', '#', '$', '%', '^']
   const p_kbd = ['-', '=']
 </script>
 
 <script>
-  import { ptnames } from '$parts/Postag.svelte'
-
-  export let key = ''
-  export let tab = 0
-  export let hints = []
   export let vpterm
+  export let tab = 0
 
-  $: [ptag_priv, ptag_base, tag_hints] = gen_hint(key, tab, vpterm)
+  $: [ptag_priv, ptag_base, tag_hints] = gen_hint(tab, vpterm)
 
-  function gen_hint(key, tab, vpterm) {
+  function gen_hint(tab, vpterm) {
     if (tab > 1) return ['', '', []]
 
     const priv = get_ptag(vpterm, true) || ''
     const base = get_ptag(vpterm, false) || ''
-    const list = [priv, base, ...similar_tag(vpterm.ptag)]
-
-    const last_char = key.charAt(key.length - 1)
-    if (affiliates.includes(last_char)) list.push('nn')
-    if (surnames.includes(key.charAt(0))) list.push('nr')
+    const list = [priv, base, ...vpterm.h_tags, ...similar_tag(vpterm.ptag)]
 
     if (tab == 0) list.push('nr', 'nn')
     else list.push('n', 'nr')
 
-    const filter = (x, i, s) => x && x != vpterm.ptag && s.indexOf(x) == i
+    const filter = (x, i, s) => x && s.indexOf(x) == i
     const hints = list.filter(filter)
     return [priv, base, hints.slice(0, 2)]
   }
@@ -165,8 +136,8 @@
 </div>
 
 <div class="hints">
-  {#each hints as hint, idx (hint)}
-    {#if idx == 0 || (hint && hint != vpterm.val.trim())}
+  {#each vpterm.h_vals as hint, idx (hint)}
+    {#if idx == 0 || hint != vpterm.val.trim()}
       <button
         class="hint"
         class:_base={hint == vpterm.b_val}
@@ -177,13 +148,15 @@
   {/each}
 
   <div class="right">
-    {#each tag_hints as hint, idx}
-      <button
-        class="hint _ptag"
-        class:_base={hint == ptag_base}
-        class:_priv={hint == ptag_priv}
-        data-kbd={p_kbd[idx]}
-        on:click={() => (vpterm.ptag = hint)}>{ptnames[hint]}</button>
+    {#each tag_hints as tag, idx (tag)}
+      {#if tag != vpterm.ptag}
+        <button
+          class="hint _ptag"
+          class:_base={tag == ptag_base}
+          class:_priv={tag == ptag_priv}
+          data-kbd={p_kbd[idx]}
+          on:click={() => (vpterm.ptag = tag)}>{ptnames[tag]}</button>
+      {/if}
     {/each}
   </div>
 </div>

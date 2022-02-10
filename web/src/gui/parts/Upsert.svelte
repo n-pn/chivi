@@ -48,7 +48,6 @@
   ]
 
   let vpterms = []
-  let valhint = []
 
   $: vpterm = vpterms[$ctrl.tab] || decor_term({})
   $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
@@ -154,10 +153,10 @@
     </upsert-tabs>
 
     <upsert-body>
-      <Emend privi={$session.privi} {vpterm} />
+      <Emend {vpterm} />
 
       <upsert-main>
-        <Vhint {key} tab={$ctrl.tab} hints={valhint} bind:vpterm />
+        <Vhint tab={$ctrl.tab} bind:vpterm />
 
         <div class="value" class:_fresh={vpterm.state == 0}>
           <input
