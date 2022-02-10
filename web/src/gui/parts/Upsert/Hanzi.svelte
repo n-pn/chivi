@@ -8,28 +8,22 @@
     [0, 1],
     [0, -1],
     [-2, 0],
+    [0, 2],
     [-1, -1],
     [-1, 1],
   ]
-
-  function gen_words(str, from, upto) {
-    const words = mapper.map((l, r) => str.substring(from + l, upto + r))
-    return words.filter((x, i, s) => x && s.indexOf(x) == i)
-  }
 </script>
 
 <script>
-  import { hint } from './_shared'
+  import { hint, decor_term } from './_shared'
   import SIcon from '$atoms/SIcon.svelte'
 
   export let vpdicts = []
   export let vpterms = []
   export let output = ''
 
-  let cached = {
-    pin_yin: {},
-    regular: {},
-  }
+  let cached = { pin_yin: {} }
+  for (const { dname } of vpdicts) cached[dname] = {}
 
   let prefix = ''
   let suffix = ''
@@ -41,7 +35,8 @@
     prefix = ztext.substring(zfrom - 10, zfrom)
     suffix = ztext.substring(zupto, zupto + 10)
 
-    const words = gen_words(ztext, zfrom, zupto)
+    let words = mapper.map(([l, r]) => ztext.substring(zfrom + l, zupto + r))
+    words = words.filter((x, i, s) => x && s.indexOf(x) == i)
     await update_cached(words, dicts)
 
     vpterms = vpdicts.map((x) => cached[x.dname][output])
@@ -71,19 +66,19 @@
   async function update_cached(words, dicts = []) {
     if (words.length == 0) return
 
-    const params = {
-      pin_yin: words.map((x) => !cached.pinyins[x]).slice(0, 7),
+    const input = {
+      pin_yin: words.filter((x) => !cached.pin_yin[x]).slice(0, 7),
     }
 
     for (const { dname } of dicts) {
-      params[dname] = words.map((x) => !cached[dname][x]).slice(0, 4)
+      input[dname] = words.filter((x) => !cached[dname][x]).slice(0, 4)
     }
 
-    const api_url = `/api/terms/inquire`
-    const api_res = fetch(api_url, {
+    const api_url = `/api/terms/query`
+    const api_res = await fetch(api_url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
+      body: JSON.stringify({ input }),
     })
 
     const payload = await api_res.json()
@@ -92,7 +87,8 @@
     for (const dname in payload.props) {
       const terms = payload.props[dname]
       for (const key in terms) {
-        cached[dname][key] = decor_term(terms[key])
+        const val = terms[key]
+        cached[dname][key] = dname == 'pin_yin' ? val : decor_term(val)
       }
     }
   }

@@ -1,18 +1,23 @@
 module CV::CtrlUtil
   extend self
 
+  DICT_LABELS = {
+    "cc_cedict" => "CC-CEDICT",
+    "trungviet" => "Trung Việt",
+    "hanviet"   => "Hán Việt",
+    "pin_yin"   => "Bính âm",
+    "tradsim"   => "Phồn giản",
+    "regular"   => "Thông dụng",
+    "essence"   => "Nền tảng",
+    "fixture"   => "Khoá cứng",
+  }
+
   def d_dub(dname : String)
     case dname
-    when "cc_cedict" then "CC-CEDICT"
-    when "trungviet" then "Trung Việt"
-    when "hanviet"   then "Hán Việt"
-    when "pin_yin"   then "Bính âm"
-    when "tradsim"   then "Phồn giản"
-    when "regular"   then "Thông dụng"
-    when "essence"   then "Nền tảng"
-    when "fixture"   then "Khoá cứng"
+    when .starts_with?('$')
+      Nvinfo.find({bhash: dname[1..]}).try(&.vname) || dname
     else
-      Nvinfo.find({bhash: dname}).try(&.vname) || dname
+      DICT_LABELS.fetch(dname, dname)
     end
   end
 

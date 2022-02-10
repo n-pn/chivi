@@ -1,6 +1,44 @@
 require "./_base_ctrl"
 
 class CV::VptermCtrl < CV::BaseCtrl
+  def lookup
+    input = params.json("input").as_h
+    uname = "!#{u_dname}"
+
+    send_json do |jb|
+      jb.object {
+        input.each do |dname, words|
+          cvmtl = load_cvmtl(dname, uname)
+          vdict = VpDict.load(dname)
+
+          jb.field(dname) {
+            jb.object {
+              words.as_a.each do |word|
+                word = word.as_s
+                if dname == "pin_yin"
+                  jb.field(word, cvmtl.translit(word).to_s)
+                else
+                  jb.field(word) {
+                    VpTermView.new(word, vdict, cvmtl, uname).to_json(jb)
+                  }
+                end
+              end
+            }
+          }
+        end
+      }
+    end
+  end
+
+  private def load_cvmtl(dname : String, uname : String)
+    case dname
+    when "pin_yin"          then MtCore.pin_yin_mtl
+    when "hanviet"          then MtCore.hanviet_mtl
+    when .starts_with?('$') then MtCore.generic_mtl(dname, uname)
+    else                         MtCore.generic_mtl("combine", uname)
+    end
+  end
+
   def upsert_entry
     dname = params["dname"]
     scope = params["scope"]? || "novel"
