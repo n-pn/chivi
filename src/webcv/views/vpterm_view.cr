@@ -76,13 +76,14 @@ struct CV::VpTermView
       b_term, u_term = f_term, nil
       add_hints(f_term, vals, tags)
     elsif node = @vdict.trie.find(word)
-      b_term, u_term = node.base, node.privs[@uname]?
+      b_term, u_term = node.base, node.privs["!" + @uname]?
       add_hints(node, vals, tags)
     else
       b_term, u_term = nil, nil
     end
 
     # TODO: add suggest values here
+    VpDict.suggest.find(word).try { |x| add_hints(x, vals, tags) }
 
     if @vdict.dtype > 0
       fval, ptag = add_hints_by_ctx(word, vals, tags)
@@ -112,12 +113,12 @@ struct CV::VpTermView
   end
 
   private def add_hints(term : VpTerm, vals : Hints, tags : Hints)
-    vals.concat(term.val)
-    tags << term.ptag.to_str
+    vals.concat(term.val.reject(&.empty?))
+    tags << term.attr unless term.attr.empty?
 
     return unless prev = term._prev
-    vals.concat(prev.val)
-    tags << term.ptag.to_str
+    vals.concat(prev.val.reject(&.empty?))
+    tags << term.attr unless term.attr.empty?
   end
 
   private def add_hints_by_ctx(word : String, vals : Hints, tags : Hints)
@@ -126,8 +127,11 @@ struct CV::VpTermView
     fc, lc = word[0], word[-1]
     tags << "nn" if AFFILIATE.includes?(lc)
     tags << "na" if ATTRIBUTE.includes?(lc) || fc == '姓'
+
     if is_human_name?(fc, lc)
       is_human = true
+      tags << "nr"
+    elsif @vdict.dtype == 3
       tags << "nr"
     end
 
@@ -142,13 +146,16 @@ struct CV::VpTermView
       fval = vals.first
     end
 
-    fval = is_human || ftag.in?("nr", "nn", "nz") ? TextUtils.titleize(fval) : fval
+    if is_human || ftag.in?("nr", "nn", "nz")
+      fval = TextUtils.titleize(fval)
+    end
+
     {fval, ftag}
   end
 
   @[AlwaysInline]
   private def is_human_name?(fc : Char, lc : Char)
-    return true if @vdict.dtype == 3 || LASTNAMES.includes?(fc)
+    return true if LASTNAMES.includes?(fc)
     fc.in?('小', '老') && LASTNAMES.includes?(lc)
   end
 end
