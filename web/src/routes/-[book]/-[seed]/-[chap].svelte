@@ -5,7 +5,7 @@
   function gen_book_path(bslug, sname, chidx) {
     let url = `/-${bslug}/chaps?sname=${sname}`
     const page = Math.floor((chidx - 1) / 32) + 1
-    return page > 1 ? url + `&page=${page}` : url
+    return page > 1 ? url + `&pg=${page}` : url
   }
 
   export async function load({ fetch, params: { seed, chap }, stuff }) {
