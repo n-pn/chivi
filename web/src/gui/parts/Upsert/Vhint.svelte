@@ -6,19 +6,16 @@
 
 <script>
   export let vpterm
-  export let tab = 0
+  export let dname = 'combine'
 
-  $: [ptag_priv, ptag_base, tag_hints] = gen_hint(tab, vpterm)
+  $: [ptag_priv, ptag_base, tag_hints] = gen_hint(dname, vpterm)
 
-  function gen_hint(tab, vpterm) {
-    if (tab > 1) return ['', '', []]
+  function gen_hint(dname, vpterm) {
+    if (dname == 'hanviet' || dname == 'tradsim') return ['', '', []]
 
     const priv = get_ptag(vpterm, true) || ''
     const base = get_ptag(vpterm, false) || ''
     const list = [priv, base, ...vpterm.h_tags, ...similar_tag(vpterm.ptag)]
-
-    if (tab == 0) list.push('nr', 'nn')
-    else list.push('n', 'nr')
 
     const filter = (x, i, s) => x && x != vpterm.ptag && s.indexOf(x) == i
     const hints = list.filter(filter)

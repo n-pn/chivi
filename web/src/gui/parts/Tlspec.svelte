@@ -2,7 +2,7 @@
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
   import { call_api } from '$api/_api_call'
-  import { ztext, zfrom, zupto, vdict } from '$lib/stores/cvdata_store'
+  import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
   const entry = {
     ...writable({ _ukey: '', match: '', extra: '', cvmtl: '' }),

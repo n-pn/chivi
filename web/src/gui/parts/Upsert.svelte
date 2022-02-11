@@ -55,6 +55,9 @@
   let vpterms = []
   $: vpterm = vpterms[$ctrl.tab] || decor_term({})
 
+  let dname = $vdict.dname
+  $: if (extra) dname = vpdicts[$ctrl.tab].dname
+
   $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
 
   let focus
@@ -151,7 +154,7 @@
     <Emend {vpterm} />
 
     <upsert-main>
-      <Vhint tab={$ctrl.tab} bind:vpterm />
+      <Vhint {dname} bind:vpterm />
 
       <div class="value" class:_fresh={vpterm.state == 0}>
         <input
@@ -162,7 +165,7 @@
           autocomplete="off"
           autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
 
-        {#if $ctrl.tab < 2}
+        {#if dname != 'hanviet'}
           <button
             class="postag"
             data-kbd="w"

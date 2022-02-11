@@ -1,8 +1,5 @@
-import { writable, get } from 'svelte/store'
-import {
-  create_config_store,
-  create_layers_store,
-} from '$utils/create_stores.js'
+import { writable } from 'svelte/store'
+import { create_config_store } from '$utils/create_stores.js'
 
 export const config = create_config_store('_pref', {
   wtheme: '',
@@ -13,12 +10,15 @@ export const config = create_config_store('_pref', {
   showzh: false,
 })
 
-export const layers = create_layers_store(['#svelte'])
-export const scroll = writable(0)
-export const toleft = writable(false)
+export const layers = {
+  ...writable(['#svelte']),
+  add: (l) => layers.update((x) => [l, ...x]),
+  remove: (l) => layers.update((x) => x.filter((i) => i != l)),
+  toggle: (active, l) => (active ? layers.add(l) : layers.remove(l)),
+}
 
-export * from './stores/cvdata_store'
+export * from './stores/cvdata_stores'
+export * from './stores/global_stores'
 
 export { form as dtopic_form } from './stores/dtopic_stores'
 export { form as dtpost_form } from './stores/dtpost_stores'
-export { appbar } from './stores/global_stores'

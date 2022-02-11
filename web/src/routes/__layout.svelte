@@ -111,6 +111,8 @@
     cancel()
     window.location.href = to.href
   })
+
+  $: console.log($layers)
 </script>
 
 <svelte:head>

@@ -9,7 +9,8 @@
   export let on_close = () => {}
   export let _size = 'md'
 
-  $: layers.toggle(actived, '.' + $$props.class)
+  $: layer = '.' + $$props.class
+  $: actived ? layers.add(layer) : layers.remove(layer)
 
   function hide_dialog() {
     actived = false
