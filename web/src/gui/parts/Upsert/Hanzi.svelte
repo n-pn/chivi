@@ -74,6 +74,8 @@
       input[dname] = words.filter((x) => !cached[dname][x]).slice(0, 4)
     }
 
+    if (input_is_empty(input)) return
+
     const api_url = `/api/terms/query`
     const api_res = await fetch(api_url, {
       method: 'POST',
@@ -91,6 +93,13 @@
         cached[dname][key] = dname == 'pin_yin' ? val : decor_term(val)
       }
     }
+  }
+
+  function input_is_empty(input) {
+    for (const dname in input) {
+      if (input[dname].length > 0) return false
+    }
+    return true
   }
 </script>
 
