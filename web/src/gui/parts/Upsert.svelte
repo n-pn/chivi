@@ -82,10 +82,6 @@
     }
   }
 
-  function is_edited(tab) {
-    return vpterms[tab]?.state > 0
-  }
-
   function swap_dict(entry) {
     $ctrl = { tab: 2, state: 1 }
     if (entry) extra = entry
@@ -133,7 +129,7 @@
       <button
         class="tab-item _{infos.class}"
         class:_active={$ctrl.tab == tab}
-        class:_edited={is_edited(tab)}
+        class:_edited={vpterms[tab]?.state > 0}
         data-kbd={infos.kbd}
         on:click={() => ctrl.set_tab(tab)}
         use:hint={descs}>
@@ -234,7 +230,7 @@
     }
   }
 
-  $tab-height: 2.25rem;
+  $tab-height: 2rem;
 
   upsert-tabs {
     margin-top: 0.5rem;
@@ -243,13 +239,9 @@
 
     @include flex;
     @include border(--bd-main, $loc: bottom);
-    @include ftsize(md);
+    font-size: rem(14px);
 
     // prettier-ignore
-  }
-
-  .tab-right {
-    margin-left: auto;
   }
 
   .tab-item {
@@ -271,13 +263,13 @@
     &._novel {
       min-width: 6rem;
       max-width: 40%;
-      flex-shrink: 1;
       @include bps(margin-right, none, $pm: 0.5rem);
     }
 
     &._basic {
       max-width: 30%;
       flex-shrink: 1;
+      @include bps(margin-right, none, $pm: 0.5rem);
     }
 
     &._miscs {
@@ -296,7 +288,6 @@
 
     &._active {
       flex-shrink: 0;
-      max-width: 40%;
       @include bgcolor(secd);
       @include fgcolor(primary, 5);
       @include bdcolor(primary, 5);
@@ -304,7 +295,7 @@
 
     > span {
       display: block;
-      @include clamp($width: 100%);
+      @include clamp($width: 100%, $style: '-');
     }
 
     > :global(svg) {

@@ -14,7 +14,7 @@ function get_place(target, parent) {
 }
 
 export function hint(node, data) {
-  const parent = document.querySelector('upsert-wrap') || node
+  const parent = document.querySelector('.upsert') || node
   parent.style.position = 'relative'
 
   const tip = document.createElement('tool-tip')

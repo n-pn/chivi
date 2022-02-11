@@ -44,7 +44,7 @@
   .emend {
     @include flex($center: horz, $gap: 0.2rem);
 
-    line-height: 1.25rem;
+    line-height: 1.5rem;
     @include ftsize(xs);
     @include fgcolor(tert);
   }
