@@ -99,7 +99,11 @@
         </svelte:fragment>
       </Gmenu>
 
-      <Hanzi {vpdicts} bind:vpterms bind:output={key} />
+      <Hanzi
+        {vpdicts}
+        bind:vpterms
+        bind:output={key}
+        active={$ctrl.state > 0} />
 
       <button
         type="button"

@@ -21,6 +21,7 @@
   export let vpdicts = []
   export let vpterms = []
   export let output = ''
+  export let active = true
 
   let cached = { pin_yin: {} }
   for (const { dname } of vpdicts) cached[dname] = {}
@@ -28,7 +29,7 @@
   let prefix = ''
   let suffix = ''
 
-  $: update_input($ztext, $zfrom, $zupto, vpdicts)
+  $: active && update_input($ztext, $zfrom, $zupto, vpdicts)
 
   async function update_input(ztext, zfrom, zupto, dicts) {
     output = ztext.substring(zfrom, zupto)
@@ -40,6 +41,7 @@
     await update_cached(words, dicts)
 
     vpterms = vpdicts.map(({ dname }) => cached[dname][output])
+    // console.log(vpterms)
   }
 
   function change_focus(index) {
