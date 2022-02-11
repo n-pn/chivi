@@ -37,13 +37,11 @@ module CV::TlRule
       when .nil?, .ends?, .ule?
         node.set!("hết")
       else
-        # node.val = "nộp"
-        node.tag = PosTag::Verb
-        fold_verbs!(node)
+        fold_verbs!(MtDict.fix_verb!(node))
       end
     when "对不起"
       return node if boundary?(succ)
-      fold_verbs!(node.set!("có lỗi với", PosTag::Verb))
+      fold_verbs!(MtDict.fix_verb!(node))
     when "百分之"
       return node unless succ && succ.numbers?
       succ = fuse_number!(succ)
@@ -61,7 +59,7 @@ module CV::TlRule
       if succ.try(&.numeric?)
         node.set!("cao đến")
       else
-        node.set!("Gundam", tag: PosTag::Noun)
+        fold_nouns!(MtDict.fix_noun!(node))
       end
     else
       node

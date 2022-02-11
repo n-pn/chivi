@@ -6,8 +6,7 @@ module CV::TlRule
       node.tag = PosTag::Adverb
       fold_adverbs!(node)
     else
-      node.tag = PosTag::Adjt
-      fold_adjts!(node)
+      fold_adjts!(MtDict.fix_adjt!(node))
     end
   end
 end

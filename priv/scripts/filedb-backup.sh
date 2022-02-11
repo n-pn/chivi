@@ -18,6 +18,7 @@ then
   rsync -aiz --no-p "$SSH/var/vpdicts/basic" "var/vpdicts"
   rsync -aiz --no-p "$SSH/var/vpdicts/novel" "var/vpdicts"
   rsync -aiz --no-p "$SSH/var/vpdicts/theme" "var/vpdicts"
+  rsync -aiz --no-p "$SSH/var/vpdicts/cvmtl/*.tab" "var/vpdicts/cvmtl"
 fi
 
 ## backup user data

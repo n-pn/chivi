@@ -5,6 +5,8 @@ module CV::TlRule
       return node
     end
 
+    # puts [node, succ]
+
     case node.tag
     when .adv_bu?  then return fold_adv_bu!(node, succ)
     when .adv_mei? then return fold_adv_mei!(node, succ)

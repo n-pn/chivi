@@ -102,7 +102,7 @@ class CV::VpDict
       Log.error { "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red }
     end
 
-    Log.info { "<vp_dict> [#{file.sub(DIR, "")}] loaded: #{lines.size} lines".colorize.green }
+    # Log.info { "<vp_dict> [#{file.sub(DIR, "")}] loaded: #{lines.size} lines".colorize.green }
   end
 
   def find(key : String) : VpTerm?
