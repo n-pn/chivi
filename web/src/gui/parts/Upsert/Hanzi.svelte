@@ -73,6 +73,7 @@
     }
 
     for (const { dname } of dicts) {
+      cached[dname] = cached[dname] || {}
       input[dname] = words.filter((x) => !cached[dname][x]).slice(0, 4)
     }
 
@@ -90,6 +91,7 @@
 
     for (const dname in payload.props) {
       const terms = payload.props[dname]
+
       for (const key in terms) {
         const val = terms[key]
         cached[dname][key] = dname == 'pin_yin' ? val : decor_term(val)

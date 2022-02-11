@@ -47,3 +47,17 @@ $shadows: (
   @if $color { --ringsd: #{ringsd($color, $tone, $width, $offset)}; }
   @if $ndef { box-shadow: var(--ringsd), var(--linesd, $shadow-0); }
 }
+
+// shadow only appears on dark mode
+@mixin darksd($svelte: true, $color: --bd-soft) {
+  @include tm-dark($svelte: $svelte) {
+    @include linesd($color, $ndef: false, $inset: false);
+  }
+}
+
+// shadow only appears in oled mode
+@mixin oledsd($svelte: true, $color: --bd-soft) {
+  @include tm-oled($svelte: $svelte) {
+    @include linesd($color, $ndef: false, $inset: false);
+  }
+}

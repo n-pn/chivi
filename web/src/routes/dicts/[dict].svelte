@@ -36,6 +36,7 @@
 
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
+  $: vdict.put(dname, d_dub)
 
   export let terms = []
   export let total = 1
@@ -44,14 +45,12 @@
 
   export let query = { key: '', val: '', ptag: '', rank: '', uname: '' }
 
+  let d_tab = 2
   $: {
-    if (dname.startsWith('$')) {
-      vdict.set({ dname, d_dub })
-    } else {
-      vdict.set({ dname: 'combine', d_dub: 'Tổng hợp' })
-    }
+    if (dname == 'generic') d_tab = 1
+    else if (dname == 'combine' || dname.startsWith('$')) d_tab = 0
+    else d_tab = 2
   }
-  $: d_tab = dname == 'regular' ? 1 : dname == 'hanviet' ? 2 : 0
 
   $: offset = (pgidx - 1) * 30 + 1
   function render_time(mtime) {

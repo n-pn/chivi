@@ -5,6 +5,7 @@
   import { session } from '$app/stores'
 
   import { vdict, zfrom, zupto } from '$lib/stores'
+  import { upsert_dicts } from '$utils/vpdict_utils'
   import { decor_term, hint } from './Upsert/_shared.js'
 
   export const ctrl = {
@@ -18,14 +19,20 @@
     set_tab: (tab) => ctrl.update((x) => ({ ...x, tab })),
     set_state: (state) => ctrl.update((x) => ({ ...x, state })),
   }
+  const tabs = [
+    { kbd: 'x', icon: 'book', class: 'novel' },
+    { kbd: 'c', icon: 'world', class: 'basic' },
+    { kbd: 'v', icon: 'package', class: 'miscs' },
+  ]
 </script>
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
   import Gmenu from '$molds/Gmenu.svelte'
-  import Gmodal from '$molds/Gmodal.svelte'
+  import Dialog from '$molds/Dialog.svelte'
 
   import Hanzi from './Upsert/Hanzi.svelte'
+  import Vdict from './Upsert/Vdict.svelte'
   import Emend from './Upsert/Emend.svelte'
   import Vhint from './Upsert/Vhint.svelte'
   import Vutil from './Upsert/Vutil.svelte'
@@ -34,6 +41,7 @@
 
   import Postag, { ptnames } from '$parts/Postag.svelte'
   import { ctrl as tlspec } from '$parts/Tlspec.svelte'
+  import { make_vdict } from '$lib/utils/vpdict_utils.js'
 
   export let on_change = () => {}
   export let on_destroy = () => {}
@@ -41,22 +49,19 @@
 
   let key = ''
 
-  $: vpdicts = [
-    $vdict,
-    { dname: 'regular', d_dub: 'Thông dụng' },
-    { dname: 'hanviet', d_dub: 'Hán việt' },
-  ]
+  let extra = make_vdict('hanviet')
+  $: vpdicts = upsert_dicts($vdict, extra)
 
   let vpterms = []
-
   $: vpterm = vpterms[$ctrl.tab] || decor_term({})
+
   $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
 
   let focus
   $: vpterm, focus && focus.focus()
 
   async function submit_val() {
-    const dname = [$vdict.dname, 'regular', 'hanviet'][$ctrl.tab]
+    const { dname } = vpdicts[$ctrl.tab]
     const { val, rank, ptag: attr, _priv } = vpterm
 
     const res = await fetch('/api/terms/entry', {
@@ -77,145 +82,134 @@
   function is_edited(tab) {
     return vpterms[tab]?.state > 0
   }
+
+  function swap_dict(entry) {
+    $ctrl = { tab: 2, state: 1 }
+    if (entry) extra = entry
+  }
 </script>
 
-<Gmodal actived={$ctrl.state > 0} on_close={ctrl.hide} _klass="upsert">
-  <upsert-wrap>
-    <upsert-head class="head">
-      <Gmenu dir="left" loc="bottom">
-        <button class="m-btn _text" slot="trigger">
-          <SIcon name="menu-2" />
+<Dialog
+  actived={$ctrl.state > 0}
+  on_close={ctrl.hide}
+  class="upsert"
+  _size="lg">
+  <upsert-head class="head">
+    <Gmenu dir="left" loc="bottom">
+      <button class="m-btn _text" slot="trigger">
+        <SIcon name="menu-2" />
+      </button>
+      <svelte:fragment slot="content">
+        <a class="-item" href="/dicts/{$vdict.dname}" target="_blank">
+          <SIcon name="package" />
+          <span>Từ điển</span>
+        </a>
+
+        <button class="-item" on:click={tlspec.show}>
+          <SIcon name="flag" />
+          <span>Báo lỗi</span>
         </button>
-        <svelte:fragment slot="content">
-          <a class="-item" href="/dicts/{$vdict.dname}" target="_blank">
-            <SIcon name="package" />
-            <span>Từ điển</span>
-          </a>
+      </svelte:fragment>
+    </Gmenu>
 
-          <button class="-item" on:click={tlspec.show}>
-            <SIcon name="flag" />
-            <span>Báo lỗi</span>
+    <Hanzi {vpdicts} bind:vpterms bind:output={key} active={$ctrl.state > 0} />
+
+    <button
+      type="button"
+      class="m-btn _text"
+      data-kbd="esc"
+      on:click={ctrl.hide}>
+      <SIcon name="x" />
+    </button>
+  </upsert-head>
+
+  <upsert-tabs>
+    {#each vpdicts as { d_dub, descs }, tab}
+      {@const infos = tabs[tab]}
+
+      <button
+        class="tab-item _{infos.class}"
+        class:_active={$ctrl.tab == tab}
+        class:_edited={is_edited(tab)}
+        data-kbd={infos.kbd}
+        on:click={() => ctrl.set_tab(tab)}
+        use:hint={descs}>
+        <SIcon name={infos.icon} />
+        <span>{d_dub}</span>
+      </button>
+    {/each}
+
+    <button
+      class="tab-btn"
+      on:click={() => ($ctrl.state = 3)}
+      use:hint={'Chọn từ điển nâng cao'}>
+      <SIcon name="dots" />
+    </button>
+  </upsert-tabs>
+
+  <upsert-body>
+    <Emend {vpterm} />
+
+    <upsert-main>
+      <Vhint tab={$ctrl.tab} bind:vpterm />
+
+      <div class="value" class:_fresh={vpterm.state == 0}>
+        <input
+          type="text"
+          class="-input"
+          bind:this={focus}
+          bind:value={vpterm.val}
+          autocomplete="off"
+          autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
+
+        {#if $ctrl.tab < 2}
+          <button
+            class="postag"
+            data-kbd="w"
+            on:click={() => ctrl.set_state(2)}>
+            {ptnames[vpterm.ptag] || 'Phân loại'}
           </button>
-        </svelte:fragment>
-      </Gmenu>
-
-      <Hanzi
-        {vpdicts}
-        bind:vpterms
-        bind:output={key}
-        active={$ctrl.state > 0} />
-
-      <button
-        type="button"
-        class="m-btn _text"
-        data-kbd="esc"
-        on:click={ctrl.hide}>
-        <SIcon name="x" />
-      </button>
-    </upsert-head>
-
-    <upsert-tabs>
-      <button
-        class="tab-item _book"
-        class:_active={$ctrl.tab == 0}
-        class:_edited={is_edited(0)}
-        data-kbd="x"
-        on:click={() => ctrl.set_tab(0)}
-        use:hint={'Từ điển riêng cho từng bộ truyện'}>
-        <SIcon name="book" />
-        <span>{$vdict.d_dub}</span>
-      </button>
-
-      <button
-        class="tab-item"
-        class:_active={$ctrl.tab == 1}
-        class:_edited={is_edited(1)}
-        data-kbd="c"
-        on:click={() => ctrl.set_tab(1)}
-        use:hint={'Từ điển chung cho tất cả các bộ truyện'}>
-        <SIcon name="world" />
-        <span>Thông dụng</span>
-      </button>
-
-      <div class="tab-right">
-        <Gmenu dir="right">
-          <button slot="trigger" class="tab-item" class:_active={$ctrl.tab > 1}>
-            <SIcon name="caret-down" />
-          </button>
-
-          <svelte:fragment slot="content">
-            <button
-              class="-item"
-              data-kbd="v"
-              on:click={() => ctrl.set_tab(2)}
-              use:hint={'Phiên âm Hán Việt cho tên người, sự vật...'}>
-              <span>Hán Việt</span>
-            </button>
-          </svelte:fragment>
-        </Gmenu>
+        {/if}
       </div>
-    </upsert-tabs>
 
-    <upsert-body>
-      <Emend {vpterm} />
+      <Vutil {key} tab={$ctrl.tab} bind:vpterm />
+    </upsert-main>
 
-      <upsert-main>
-        <Vhint tab={$ctrl.tab} bind:vpterm />
+    <upsert-foot>
+      <Vrank {vpterm} bind:rank={vpterm.rank} />
 
-        <div class="value" class:_fresh={vpterm.state == 0}>
-          <input
-            type="text"
-            class="-input"
-            bind:this={focus}
-            bind:value={vpterm.val}
-            autocomplete="off"
-            autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
+      <btn-group>
+        <button
+          class="m-btn _lg _left {btn_state}"
+          data-kbd="\"
+          data-key="220"
+          use:hint={vpterm._priv
+            ? 'Đổi sang từ điển chung'
+            : 'Đổi sang từ điển cá nhân'}
+          on:click={() => (vpterm = vpterm.swap_dict())}>
+          <SIcon name={vpterm._priv ? 'user' : 'share'} />
+        </button>
 
-          {#if $ctrl.tab < 2}
-            <button
-              class="postag"
-              data-kbd="w"
-              on:click={() => ctrl.set_state(2)}>
-              {ptnames[vpterm.ptag] || 'Phân loại'}
-            </button>
-          {/if}
-        </div>
+        <button
+          class="m-btn _lg _right {btn_state}"
+          data-kbd="↵"
+          disabled={vpterm.disabled($session.privi)}
+          on:click={submit_val}
+          use:hint={vpterm._priv
+            ? 'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'
+            : 'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}>
+          <span class="submit-text">{lbl_state}</span>
+        </button>
+      </btn-group>
+    </upsert-foot>
+  </upsert-body>
 
-        <Vutil {key} tab={$ctrl.tab} bind:vpterm />
-      </upsert-main>
+  <Links {key} />
+</Dialog>
 
-      <upsert-foot>
-        <Vrank {vpterm} bind:rank={vpterm.rank} />
-
-        <upsert-btns>
-          <button
-            class="m-btn _lg _left {btn_state}"
-            data-kbd="\"
-            data-key="220"
-            use:hint={vpterm._priv
-              ? 'Đổi sang từ điển chung'
-              : 'Đổi sang từ điển cá nhân'}
-            on:click={() => (vpterm = vpterm.swap_dict())}>
-            <SIcon name={vpterm._priv ? 'user' : 'share'} />
-          </button>
-
-          <button
-            class="m-btn _lg _right {btn_state}"
-            data-kbd="↵"
-            disabled={vpterm.disabled($session.privi)}
-            on:click={submit_val}
-            use:hint={vpterm._priv
-              ? 'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'
-              : 'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}>
-            <span class="submit-text">{lbl_state}</span>
-          </button>
-        </upsert-btns>
-      </upsert-foot>
-    </upsert-body>
-
-    <Links {key} />
-  </upsert-wrap>
-</Gmodal>
+{#if $ctrl.state == 3}
+  <Vdict vdict={extra} bind:state={$ctrl.state} on_close={swap_dict} />
+{/if}
 
 {#if $ctrl.state == 2}
   <Postag bind:ptag={vpterm.ptag} bind:state={$ctrl.state} />
@@ -223,22 +217,6 @@
 
 <style lang="scss">
   $gutter: 0.75rem;
-
-  upsert-wrap {
-    display: block;
-    width: $bp-phone-lg;
-    min-width: 320px;
-    max-width: 100%;
-
-    @include bgcolor(tert);
-    @include shadow(3);
-
-    @include bps(border-radius, 0, $pl: 0.25rem);
-
-    @include tm-dark {
-      @include linesd(--bd-soft, $inset: false);
-    }
-  }
 
   upsert-head {
     @include flex();
@@ -265,7 +243,7 @@
     height: $tab-height;
     padding: 0 0.75rem;
 
-    @include flex($gap: 0.5rem);
+    @include flex;
     @include border(--bd-main, $loc: bottom);
     @include ftsize(md);
 
@@ -292,9 +270,22 @@
     @include fgcolor(tert);
     @include border(--bd-main, $loc: top-left-right);
 
-    &._book {
+    &._novel {
       min-width: 6rem;
-      max-width: 50%;
+      max-width: 40%;
+      flex-shrink: 1;
+      margin-right: 0.5rem;
+    }
+
+    &._basic {
+      max-width: 30%;
+      flex-shrink: 1;
+      margin-right: 0.5rem;
+    }
+
+    &._miscs {
+      margin-left: auto;
+      max-width: 20%;
       flex-shrink: 1;
     }
 
@@ -307,6 +298,8 @@
     }
 
     &._active {
+      flex-shrink: 0;
+      max-width: 40%;
       @include bgcolor(secd);
       @include fgcolor(primary, 5);
       @include bdcolor(primary, 5);
@@ -320,6 +313,20 @@
     > :global(svg) {
       width: 1.25rem;
       margin-right: 0.125rem;
+      opacity: 0.7;
+      @include bps(display, none, $pl: inline-block);
+    }
+  }
+
+  .tab-btn {
+    padding: 0 0.5rem;
+    background-color: transparent;
+
+    height: $tab-height;
+    line-height: $tab-height;
+    @include fgcolor(tert);
+    &:hover {
+      @include fgcolor(primary, 5);
     }
   }
 
@@ -400,7 +407,7 @@
     justify-content: right;
   }
 
-  upsert-btns {
+  btn-group {
     @include flex();
   }
 

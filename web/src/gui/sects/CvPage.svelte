@@ -22,7 +22,7 @@
   export let on_change = () => {}
 
   $: cv_lines = CvData.parse_lines(cvdata)
-  $: vdict.set({ dname, d_dub })
+  $: vdict.put(dname, d_dub)
 
   let article = null
 
