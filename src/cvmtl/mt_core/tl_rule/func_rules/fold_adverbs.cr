@@ -6,11 +6,14 @@ module CV::TlRule
     end
 
     case node.tag
-    when .adv_bu?  then fold_adv_bu!(node, succ)
-    when .adv_mei? then fold_adv_mei!(node, succ)
-    when .adv_fei? then fold_adv_fei!(node, succ)
-    else                fold_adverb_base!(node, succ)
+    when .adv_bu?  then return fold_adv_bu!(node, succ)
+    when .adv_mei? then return fold_adv_mei!(node, succ)
+    when .adv_fei? then return fold_adv_fei!(node, succ)
+    when .vead?
+      return fold_verbs!(MtDict.fix_verb!(node)) if succ.nouns?
     end
+
+    fold_adverb_base!(node, succ)
   end
 
   def fold_adv_bu!(node : MtNode, succ = node.succ) : MtNode
