@@ -47,10 +47,6 @@
     line-height: 1.25rem;
     @include ftsize(xs);
     @include fgcolor(tert);
-
-    // :global(svg) {
-    //   margin-right: -0.125rem;
-    // }
   }
 
   .group {
@@ -64,16 +60,6 @@
     padding: 0.25rem 0;
     @include clamp();
   }
-
-  // prettier-ignore
-  .privi {
-    @include flex($center: vert);
-    padding: 0.25rem 0.125rem;
-  }
-
-  // .lbl {
-  //   @include bps(display, none, $pl: inline);
-  // }
 
   .val {
     font-weight: 500;
