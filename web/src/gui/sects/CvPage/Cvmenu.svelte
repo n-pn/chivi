@@ -276,7 +276,7 @@
     const { top, left } = get_client_rect(nodes[0])
     const { right } = get_client_rect(nodes[nodes.length - 1])
 
-    const width = 144
+    const width = 152
 
     p_mid = width / 2
     let out_left = Math.floor((left + right) / 2) - width / 2
@@ -361,8 +361,8 @@
     z-index: 40;
     position: absolute;
     height: $size;
-    width: 9rem;
-    padding: 0 0.25rem;
+    width: 9.5rem;
+    padding: 0;
 
     top: var(--top, 20vw);
     left: var(--left, 20vw);
@@ -391,6 +391,7 @@
     }
   }
 
+  // prettier-ignore
   cv-item {
     @include flex-ca;
     cursor: pointer;
@@ -398,7 +399,8 @@
     height: 100%;
     @include fgcolor(white);
 
-    // prettier-ignore
     &:hover { @include fgcolor(primary, 2); }
+    &:first-child { @include bdradi($loc: left); }
+    &:last-child { @include bdradi($loc: right); }
   }
 </style>
