@@ -51,6 +51,8 @@
   $: prefill_match($ztext, lower, upper)
 
   async function prefill_match(ztext, lower, upper) {
+    if (!$ctrl.actived) return
+
     const input = ztext.substring(lower, upper)
     if (!input) return
 
