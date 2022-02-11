@@ -66,7 +66,7 @@ module CV::TlRule
       if body = x.body?
         return true if need_2_objects?(body)
       else
-        return true if MtDict.has_key?(:verbs_2_objects, x.key)
+        return true if MtDict.has_key?(:v2_objs, x.key)
       end
     end
 
@@ -74,7 +74,7 @@ module CV::TlRule
   end
 
   def need_2_objects?(key : String)
-    MtDict::VERBS_2_OBJECTS.has_key?(key)
+    MtDict.get(:v2_objs).has_key?(key)
   end
 
   def fold_left_verb!(node : MtNode, prev : MtNode?)

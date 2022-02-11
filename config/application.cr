@@ -19,6 +19,7 @@ require "../src/appcv/**"
 
 require "../src/webcv/pipes/**"
 require "../src/webcv/views/**"
+require "../src/webcv/forms/**"
 require "../src/webcv/ctrls/**"
 
 require "./routes"

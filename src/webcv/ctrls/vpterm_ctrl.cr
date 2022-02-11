@@ -23,32 +23,21 @@ class CV::VptermCtrl < CV::BaseCtrl
   def upsert_entry
     dname = params["dname"]
     vdict = VpDict.load(dname)
+    chset = VpTermForm.new(params, vdict, _cvuser)
 
-    _priv = params["_priv"]? == "true"
-    unless vdict.allow?(_cvuser.privi, _priv)
-      return halt!(403, "Không đủ quyền hạn để sửa từ!")
+    if error = chset.validate
+      return halt!(403, error)
     end
 
-    key = params.fetch_str("key").gsub("\t", " ").strip
-    val = params.fetch_str("val").tr("", "").split(" | ").map(&.strip)
-
-    if vdict.dtype == 2 && VpDict.fixture.find(key)
-      return halt!(403, "Không thể sửa được từ khoá cứng!")
-    end
-
-    attr = params.fetch_str("attr", "")
-    rank = params.fetch_str("rank", "").to_u8? || 3_u8
-
-    uname = _priv ? "!" + u_dname : u_dname
-    vpterm = VpTerm.new(key, val, attr, rank, uname: uname)
-
-    unless vdict.set!(vpterm)
+    unless vpterm = chset.save?
       return halt!(401, "Nội dung không thay đổi!")
     end
 
-    spawn do
+    if vdict.dtype == 1
+      MtDict.upsert(dname[1..], vpterm) if dname[0] == '~'
+    else
       # add to suggestion
-      add_to_suggest(vpterm.dup) if vdict.dtype > 1
+      add_to_suggest(vpterm.dup) if vdict.dtype > 1 && dname != "suggest"
       # add to qtran dict if entry is a person name
       add_to_combine(vpterm.dup) if vdict.dtype > 3 && dname != "combine"
     end

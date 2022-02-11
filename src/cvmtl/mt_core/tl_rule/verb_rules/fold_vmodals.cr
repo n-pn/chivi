@@ -63,7 +63,7 @@ module CV::TlRule
       true
     when .preposes? then false
     when .verb_object?
-      MtDict.has_key?(:verbs_seperated, succ.key)
+      MtDict.has_key?(:v_group, succ.key)
     else
       if succ.key == "生气"
         succ.val = "tức giận"

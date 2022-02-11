@@ -23,29 +23,24 @@ module CV::MtDict
   end
 
   enum Dnames
-    REFINE_NOUNS
-    REFINE_VERBS
-    REFINE_ADJTS
-    QUANTI_NOUNS
-    QUANTI_TIMES
-    QUANTI_VERBS
-    U_ZHI_RIGHTS
-    VERBS_2_OBJECTS
-    VERBS_SEPERATED
-    VERB_COMPLEMENT
+    FixUZhi
+    FixNouns; FixVerbs; FixAdjts
+    QtTimes; QtVerbs; QtNouns
+
+    VCompl; VGroup; V2Objs
   end
 
   DICTS = {
-    load("~refine-nouns", PosTag::Noun),
-    load("~refine-verbs", PosTag::Verb),
-    load("~refine-adjts", PosTag::Adjt),
-    load("~quanti-nouns", PosTag::Qtnoun),
-    load("~quanti-times", PosTag::Qttime),
-    load("~quanti-verbs", PosTag::Qtverb),
-    load("~u_zhi-rights", PosTag::Nform),
-    load("~verbs-2-objects", PosTag::Verb),
-    load("~verbs-seperated", PosTag::VerbObject),
-    load("~verb-complement", PosTag::Verb),
+    load("~fix_u_zhi", PosTag::Nform),
+    load("~fix_nouns", PosTag::Noun),
+    load("~fix_verbs", PosTag::Verb),
+    load("~fix_adjts", PosTag::Adjt),
+    load("~qt_times", PosTag::Qttime),
+    load("~qt_verbs", PosTag::Qtverb),
+    load("~qt_nouns", PosTag::Qtnoun),
+    load("~v_compl", PosTag::Verb),
+    load("~v_group", PosTag::VerbObject),
+    load("~v2_objs", PosTag::Verb),
   }
 
   def load(dname : String, df_ptag = PosTag::Unkn)
@@ -60,7 +55,7 @@ module CV::MtDict
   end
 
   def get(dict : String) : MtHash
-    DICTS[Dicts.new(dict).to_i]
+    DICTS[Dnames.parse(dict).to_i]
   end
 
   def get(dict : Dnames) : MtHash
@@ -80,7 +75,7 @@ module CV::MtDict
   end
 
   def fix_noun!(node : MtNode) : MtNode
-    if term = get(:refine_nouns)[node.key]?
+    if term = get(:fix_nouns)[node.key]?
       node.set!(term[0], term[1])
     else
       node.set!(PosTag::Noun)
@@ -88,7 +83,7 @@ module CV::MtDict
   end
 
   def fix_verb!(node : MtNode) : MtNode
-    if term = get(:refine_verbs)[node.key]?
+    if term = get(:fix_verbs)[node.key]?
       node.set!(term[0], term[1])
     else
       node.set!(PosTag::Verb)
@@ -96,7 +91,7 @@ module CV::MtDict
   end
 
   def fix_adjt!(node : MtNode) : MtNode
-    if term = get(:refine_adjts)[node.key]?
+    if term = get(:fix_adjts)[node.key]?
       node.set!(term[0], term[1])
     else
       node.set!(PosTag::Adjt)
@@ -104,20 +99,20 @@ module CV::MtDict
   end
 
   def fix_uzhi(node : MtNode)
-    return unless term = get(:u_zhi_rights)[node.key]?
+    return unless term = get(:fix_u_zhi)[node.key]?
     node.val = term[0]
     term[1]
   end
 
   def fix_vcompl(node : MtNode)
-    return unless term = get(:verb_complement)[node.key]?
+    return unless term = get(:v_compl)[node.key]?
     node.set!(term[0], term[1])
   end
 
   def fix_quanti(node : MtNode)
     key = node.key
 
-    {get(:quanti_times), get(:quanti_verbs), get(:quanti_nouns)}.each do |hash|
+    {get(:qt_times), get(:qt_verbs), get(:qt_nouns)}.each do |hash|
       next unless term = hash[key]?
       return node.set!(term[0], term[1])
     end

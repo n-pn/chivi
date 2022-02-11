@@ -1,6 +1,25 @@
 <script context="module">
-  const dicts = ['hanviet', 'fixture', 'essence']
   import { make_vdict } from '$utils/vpdict_utils'
+
+  const dicts = {
+    basic: ['hanviet', 'fixture', 'essence'],
+    cvmtl: [
+      '~fix_nouns',
+      '~fix_verbs',
+      '~fix_adjts',
+      '~qt_times',
+      '~qt_verbs',
+      '~qt_nouns',
+      '~fix_u_zhi',
+      '~v_compl',
+      '~v_2_obj',
+    ],
+  }
+
+  const groups = {
+    basic: 'Cơ bản',
+    cvmtl: 'Máy dịch',
+  }
 </script>
 
 <script>
@@ -14,29 +33,68 @@
 
 <Dialog actived={state == 3} --z-idx="80" class="vpdict" _size="sm" {on_close}>
   <svelte:fragment slot="header">
-    <head-title>Chọn từ điển</head-title>
+    <head-title>Từ điển nâng cao</head-title>
   </svelte:fragment>
 
   <vpdict-body>
-    {#each dicts as dname}
-      {@const entry = make_vdict(dname)}
-      <button
-        class="vpdict-item"
-        class:_active={dname == vdict.dname}
-        use:tooltip={entry.descs}
-        data-anchor="vpdict-body"
-        on:click={() => on_close(entry)}>
-        {entry.d_dub}
-      </button>
+    {#each Object.entries(dicts) as [group, items]}
+      <h3><span>{groups[group]}</span></h3>
+      <vpdict-list>
+        {#each items as dname}
+          {@const entry = make_vdict(dname)}
+          <button
+            class="vpdict-item"
+            class:_active={dname == vdict.dname}
+            use:tooltip={entry.descs}
+            data-anchor="vpdict-body"
+            on:click={() => on_close(entry)}>
+            {entry.d_dub}
+          </button>
+        {/each}
+      </vpdict-list>
     {/each}
   </vpdict-body>
 </Dialog>
 
 <style lang="scss">
   vpdict-body {
+    display: block;
+    margin: 0 0.75rem 0.75rem;
+  }
+
+  h3 {
+    display: flex;
+    position: relative;
+    margin-top: 0.25rem;
+    justify-content: center;
+    height: 1.5rem;
+    line-height: 1.5rem;
+
+    &:before {
+      position: absolute;
+      display: block;
+      content: '';
+      height: 1px;
+      top: 50%;
+      left: 0;
+      right: 0;
+      @include border($loc: top);
+    }
+
+    > span {
+      z-index: 1;
+      padding: 0 0.25rem;
+      text-transform: uppercase;
+      @include ftsize(xs);
+      @include fgcolor(tert);
+      @include bgcolor(secd);
+    }
+  }
+
+  vpdict-list {
     @include grid(null, $gap: 0.375rem);
     grid-template-columns: 1fr 1fr 1fr;
-    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .vpdict-item {

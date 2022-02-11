@@ -160,15 +160,4 @@ class CV::VpDict
     File.write(file, data)
     Log.info { "<vp_dict> [#{file.sub(DIR, "")}] saved, items: #{list.size}".colorize.yellow }
   end
-
-  # check if user has privilege to add new term for this dict
-  def allow?(privi : Int32, _priv = false)
-    privi += 1 if _priv
-
-    case @dtype
-    when 2 then privi > 1
-    when 3 then privi > 0
-    else        privi > 2
-    end
-  end
 end

@@ -85,7 +85,9 @@ struct CV::VpTermView
     # TODO: add suggest values here
     VpDict.suggest.find(word).try { |x| add_hints(x, vals, tags) }
 
-    if @vdict.dtype > 0
+    if @dname[0] == '~'
+      fval, ptag = vals.first?, MtDict.load(@dname[1..]).df_ptag.to_str
+    elsif @vdict.dtype > 0
       fval, ptag = add_hints_by_ctx(word, vals, tags)
     else
       fval, ptag = vals.first?, nil
