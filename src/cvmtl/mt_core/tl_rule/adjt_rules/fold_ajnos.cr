@@ -9,19 +9,19 @@ module CV::TlRule
     case succ = node.succ?
     when .nil?, .puncts?
       if node.prev?(&.object?)
-        cast_adjt!(node)
+        MtDict.fix_adjt!(node)
       else
-        cast_noun!(node)
+        MtDict.fix_noun!(node)
       end
     when .verbs?, .preposes?
-      cast_noun!(node)
+      MtDict.fix_noun!(node)
     when .noun?
       node.set!(PosTag::Modifier)
     when .ude1?
-      cast_adjt!(node)
+      MtDict.fix_adjt!(node)
     else
       if {"到"}.includes?(succ.key)
-        cast_adjt!(node)
+        MtDict.fix_adjt!(node)
       else
         node
       end

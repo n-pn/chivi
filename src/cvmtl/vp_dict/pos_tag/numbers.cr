@@ -30,8 +30,8 @@ struct CV::PosTag
   end
 
   def self.map_quantis(key : ::String) : self
-    return Qttime if MtDict::QUANTI_TIMES.has_key?(key)
-    return Qtverb if MtDict::QUANTI_VERBS.has_key?(key)
+    return Qttime if MtDict.has_key?(:quanti_times, key)
+    return Qtverb if MtDict.has_key?(:quanti_verbs, key)
     Qtnoun
   end
 
@@ -40,10 +40,10 @@ struct CV::PosTag
   def self.map_nquants(key : ::String) : self
     key = key.sub(NUMCHR_RE, "")
     case
-    when MtDict::QUANTI_TIMES.has_key?(key) then Nqtime
-    when MtDict::QUANTI_NOUNS.has_key?(key) then Nqnoun
-    when MtDict::QUANTI_VERBS.has_key?(key) then Nqverb
-    else                                         Nqiffy
+    when MtDict.has_key?(:quanti_times, key) then Nqtime
+    when MtDict.has_key?(:quanti_nouns, key) then Nqnoun
+    when MtDict.has_key?(:quanti_verbs, key) then Nqverb
+    else                                          Nqiffy
     end
   end
 end

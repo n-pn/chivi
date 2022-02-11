@@ -47,9 +47,9 @@ module CV::TlRule
         return fold!(adjt, succ, PosTag::Noun, dic: 7, flip: true)
       when .veno?
         if !prev && adjt.key.size == 1
-          succ = cast_verb!(succ)
+          succ = MtDict.fix_verb!(succ)
         else
-          succ = fold_nouns!(cast_noun!(succ))
+          succ = fold_nouns!(MtDict.fix_noun!(succ))
           return fold!(adjt, succ, PosTag::NounPhrase, dic: 4, flip: true)
         end
       when .verb?
@@ -111,7 +111,7 @@ module CV::TlRule
     node = fold!(nega, node, node.tag, dic: 4) if nega
     return node unless succ = node.succ?
 
-    succ = cast_noun!(succ) if succ.veno? || succ.ajno?
+    MtDict.fix_noun!(succ) if succ.veno? || succ.ajno?
     # puts [node, succ]
 
     succ.nouns? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)

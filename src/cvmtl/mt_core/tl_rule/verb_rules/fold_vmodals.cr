@@ -63,7 +63,7 @@ module CV::TlRule
       true
     when .preposes? then false
     when .verb_object?
-      MtDict::VERBS_SEPERATED.has_key?(succ.key)
+      MtDict.has_key?(:verbs_seperated, succ.key)
     else
       if succ.key == "生气"
         succ.val = "tức giận"
@@ -95,9 +95,8 @@ module CV::TlRule
         node.val = "muốn"
       end
     else
-      if succ.vdirs? || (val = MtDict::VERB_COMPLEMENT.get(succ.key))
+      if succ.vdirs? || MtDict.fix_vcompl(succ)
         node.set!("nhớ") if succ.succ?(&.human?)
-        succ.set!(val || succ.val, PosTag::Verb)
       end
     end
 

@@ -37,21 +37,6 @@ module CV::TlRule
     root
   end
 
-  def cast_noun!(node : MtNode)
-    MtDict::REFINE_NOUNS[node.key]?.try { |val| node.val = val }
-    node.set!(PosTag::Noun)
-  end
-
-  def cast_verb!(node : MtNode)
-    MtDict::REFINE_VERBS[node.key]?.try { |val| node.val = val }
-    node.set!(PosTag::Verb)
-  end
-
-  def cast_adjt!(node : MtNode)
-    MtDict::REFINE_ADJTS[node.key]?.try { |val| node.val = val }
-    node.set!(PosTag::Adjt)
-  end
-
   def end_sentence?(node : Nil)
     true
   end

@@ -1,4 +1,4 @@
-require "../mt_dict"
+require "./mt_dict"
 require "./tl_rule/**"
 
 module CV::TlRule

@@ -17,7 +17,7 @@ module CV::TlRule
     when .nil?, .v_shi?, .v_you?
       return proint
     when .veno?
-      succ = fold_verbs!(cast_verb!(succ))
+      succ = fold_verbs!(MtDict.fix_verb!(succ))
     when .verbs?
       succ = fold_verbs!(succ)
     when .nouns?

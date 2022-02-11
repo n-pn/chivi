@@ -13,13 +13,13 @@ module CV::TlRule
       return fold!(verb_1, verb_2, tag, dic: 0)
     end
 
-    if val = MtDict::VERB_COMPLEMENT.get(verb_2.key)
-      return fold!(verb_1, verb_2.set!(val), PosTag::Verb, dic: 6)
+    if MtDict.fix_vcompl(verb_2)
+      return fold!(verb_1, verb_2, PosTag::Verb, dic: 6)
     end
 
     return verb_1 unless can_combine_verb_verb?(verb_1, verb_2)
 
-    verb_2 = cast_verb!(verb_2) if verb_2.veno?
+    verb_2 = MtDict.fix_verb!(verb_2) if verb_2.veno?
     verb_2.verbs? ? fold!(verb_1, verb_2, verb_2.tag, dic: 5) : verb_1
     # TODO: add more cases
   end

@@ -66,7 +66,7 @@ module CV::TlRule
       if body = x.body?
         return true if need_2_objects?(body)
       else
-        return true if MtDict::VERBS_2_OBJECTS.has_key?(x.key)
+        return true if MtDict.has_key?(:verbs_2_objects, x.key)
       end
     end
 

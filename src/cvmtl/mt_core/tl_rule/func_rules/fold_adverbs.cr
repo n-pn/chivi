@@ -25,11 +25,11 @@ module CV::TlRule
       return node unless succ = node.succ?
       fold_adverb_base!(node, succ)
     when .verbs?
-      succ = cast_verb!(succ) if succ.veno?
+      succ = MtDict.fix_verb!(succ) if succ.veno?
       node = fold!(node, succ, succ.tag, dic: 4)
       fold_verbs!(node)
     when .adjts?
-      succ = cast_adjt!(succ) if succ.ajno?
+      succ = MtDict.fix_adjt!(succ) if succ.ajno?
       node = fold!(node, succ, succ.tag, dic: 5)
       fold_adjts!(node)
     else
@@ -73,7 +73,7 @@ module CV::TlRule
         node = fold!(node, succ, succ.tag, dic: 5)
         return node unless succ = node.succ?
       else
-        return fold_adverb_verb!(node, cast_verb!(succ))
+        return fold_adverb_verb!(node, MtDict.fix_verb!(succ))
       end
     end
 
@@ -85,7 +85,7 @@ module CV::TlRule
     when .vmodals?
       fold_vmodals!(succ, nega: node)
     when .veno?
-      fold_adverb_verb!(node, cast_verb!(succ))
+      fold_adverb_verb!(node, MtDict.fix_verb!(succ))
     when .verbs?
       fold_adverb_verb!(node, succ)
     when .adjts?
@@ -107,9 +107,9 @@ module CV::TlRule
     else
       case node
       when .vead?
-        fold_verbs!(cast_verb!(node))
+        fold_verbs!(MtDict.fix_verb!(node))
       when .ajad?
-        fold_adjts!(cast_adjt!(node))
+        fold_adjts!(MtDict.fix_adjt!(node))
       else
         node
       end

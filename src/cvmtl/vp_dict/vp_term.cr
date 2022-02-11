@@ -19,11 +19,12 @@ class CV::VpTerm
   getter uname : String = "~"
 
   # auto generated fields
-  getter ptag : PosTag { PosTag.from_str(@attr, @key) }
+  property ptag : PosTag { PosTag.from_str(@attr, @key) }
   getter point : Float64 do
     base = 1.5 + rank * 0.125
     base ** @key.size + @key.size ** base
   end
+
   getter is_priv : Bool { @uname[0]? == '!' }
 
   property _prev : VpTerm? = nil
