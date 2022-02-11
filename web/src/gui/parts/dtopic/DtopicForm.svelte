@@ -1,7 +1,7 @@
 <script context="module">
   import { writable } from 'svelte/store'
 
-  import { dtopic_form as form } from '$lib/stores'
+  import { dtopic_form as data } from '$lib/stores'
   import { dlabels } from '$lib/constants'
 
   function build_labels(labels) {
@@ -19,7 +19,7 @@
   export const ctrl = {
     ...writable({ id: 0, actived: false }),
     show(id = 0) {
-      form.init(id)
+      data.init(id)
       ctrl.set({ id, actived: true })
     },
     hide() {
@@ -31,7 +31,7 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
   import MdForm from '$molds/MdForm.svelte'
-  import Gmodal from '$molds/Gmodal.svelte'
+  import Dialog from '$molds/Dialog.svelte'
 
   export let dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
   export let on_destroy = () => window.location.reload()
@@ -39,8 +39,8 @@
   $: on_edit = $ctrl.id != '0'
   $: api_url = make_api_endpoint(dboard.id)
 
-  let labels = build_labels($form.labels)
-  $: $form.labels = extract_labels(labels)
+  let labels = build_labels($data.labels)
+  $: $data.labels = extract_labels(labels)
 
   let error = ''
   $: console.log($ctrl)
@@ -66,22 +66,18 @@
   }
 </script>
 
-<Gmodal actived={$ctrl.actived} on_close={ctrl.hide}>
+<Dialog actived={$ctrl.actived} class="dtopic" on_close={ctrl.hide}>
+  <svelte:fragment slot="header">
+    <head-board>{dboard.bname}</head-board>
+    <head-sep>
+      <SIcon name="caret-right" />
+    </head-sep>
+    <head-title>
+      {#if on_edit}Sửa chủ đề{:else}Tạo chủ đề mới{/if}
+    </head-title>
+  </svelte:fragment>
+
   <board-form>
-    <board-head>
-      <head-board>{dboard.bname}</head-board>
-      <head-sep>
-        <SIcon name="caret-right" />
-      </head-sep>
-      <head-title>
-        {#if on_edit}Sửa chủ đề{:else}Tạo chủ đề mới{/if}
-      </head-title>
-
-      <button type="button" data-kbd="esc" class="x-btn" on:click={ctrl.hide}>
-        <SIcon name="x" />
-      </button>
-    </board-head>
-
     <form action={api_url} method="POST" on:submit|preventDefault={submit}>
       <form-field>
         <form-chips>
@@ -103,14 +99,14 @@
           class="m-input"
           name="title"
           lang="vi"
-          bind:value={$form.title}
+          bind:value={$data.title}
           use:focus
           placeholder="Chủ đề thảo luận" />
       </form-field>
 
       <form-field class="body">
         <MdForm
-          bind:value={$form.body_input}
+          bind:value={$data.body_input}
           name="body_input"
           placeholder="Nội dung thảo luận" />
       </form-field>
@@ -131,7 +127,7 @@
       </form-foot>
     </form>
   </board-form>
-</Gmodal>
+</Dialog>
 
 <style lang="scss">
   board-form {
@@ -147,35 +143,6 @@
     @include tm-dark {
       @include linesd(--bd-soft, $ndef: false, $inset: false);
     }
-  }
-
-  board-head {
-    @include flex-ca($gap: 0.25rem);
-    padding-top: 0.375rem;
-
-    :global(svg) {
-      width: 1rem;
-      height: 1rem;
-      margin-top: -0.125rem;
-    }
-  }
-
-  .x-btn {
-    background: none;
-    margin-left: auto;
-    margin-right: -0.25rem;
-    padding: 0;
-    @include fgcolor(tert);
-
-    @include hover {
-      @include fgcolor(primary, 5);
-    }
-  }
-
-  head-board,
-  head-title {
-    font-weight: 500;
-    // @include ftsize(lg);
   }
 
   head-sep {

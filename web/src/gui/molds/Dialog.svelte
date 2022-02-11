@@ -11,35 +11,34 @@
 
   $: layer = '.' + $$props.class
   $: actived ? layers.add(layer) : layers.remove(layer)
-
-  function hide_dialog() {
-    actived = false
-    on_close(false) // false mean nothing changed
-  }
 </script>
 
-<dialog-wrap on:click={hide_dialog} transition:fade={{ duration: 100 }}>
-  <dialog-body
-    tabindex="-1"
-    class="{$$props.class} _{_size}"
-    on:click={(e) => e.stopPropagation()}
-    transition:scale={{ duration: 100, easing: backInOut }}>
-    {#if $$slots.header}
-      <dialog-head>
-        <slot name="header" />
-        <button
-          type="button"
-          class="x-btn"
-          data-kbd="esc"
-          on:click={hide_dialog}>
-          <SIcon name="x" />
-        </button>
-      </dialog-head>
-    {/if}
+{#if actived}
+  <dialog-wrap
+    on:click={() => on_close(false)}
+    transition:fade={{ duration: 100 }}>
+    <dialog-body
+      tabindex="-1"
+      class="{$$props.class} _{_size}"
+      on:click={(e) => e.stopPropagation()}
+      transition:scale={{ duration: 100, easing: backInOut }}>
+      {#if $$slots.header}
+        <dialog-head>
+          <slot name="header" />
+          <button
+            type="button"
+            class="x-btn"
+            data-kbd="esc"
+            on:click={() => on_close(false)}>
+            <SIcon name="x" />
+          </button>
+        </dialog-head>
+      {/if}
 
-    <slot />
-  </dialog-body>
-</dialog-wrap>
+      <slot />
+    </dialog-body>
+  </dialog-wrap>
+{/if}
 
 <style lang="scss">
   dialog-wrap {
@@ -55,13 +54,21 @@
 
   dialog-head {
     @include flex-cx;
-    padding: 0.25rem 0.5rem;
+
+    height: 2.25rem;
+    line-height: 2.25rem;
+    padding-left: 0.75rem;
+    font-weight: 500;
+    @include border(--bd-main, $loc: bottom);
+    @include fgcolor(secd);
   }
 
   .x-btn {
+    @include flex-ca;
+    width: 2.25rem;
+    height: 2.25rem;
     margin-left: auto;
-    padding: 0 0.125rem;
-    background: none;
+    background: transparent;
 
     @include fgcolor(tert);
     // prettier-ignore
@@ -94,7 +101,8 @@
       }
     }
 
-    &.upsert {
+    &.upsert,
+    &.postag {
       @include bgcolor(tert);
     }
   }

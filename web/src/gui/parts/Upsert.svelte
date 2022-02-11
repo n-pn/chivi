@@ -146,7 +146,7 @@
       class="tab-btn"
       on:click={() => ($ctrl.state = 3)}
       use:hint={'Chọn từ điển nâng cao'}>
-      <SIcon name="dots" />
+      <SIcon name="package" />
     </button>
   </upsert-tabs>
 
@@ -210,13 +210,8 @@
   <Links {key} />
 </Dialog>
 
-{#if $ctrl.state == 3}
-  <Vdict vdict={extra} bind:state={$ctrl.state} on_close={swap_dict} />
-{/if}
-
-{#if $ctrl.state == 2}
-  <Postag bind:ptag={vpterm.ptag} bind:state={$ctrl.state} />
-{/if}
+<Vdict vdict={extra} bind:state={$ctrl.state} on_close={swap_dict} />
+<Postag bind:ptag={vpterm.ptag} bind:state={$ctrl.state} />
 
 <style lang="scss">
   $gutter: 0.75rem;
@@ -262,7 +257,7 @@
     @include flex($center: vert);
     // text-transform: capitalize;
     font-weight: 500;
-    padding: 0 0.5rem;
+    padding: 0 0.375rem;
     background-color: transparent;
 
     height: $tab-height;
@@ -277,18 +272,17 @@
       min-width: 6rem;
       max-width: 40%;
       flex-shrink: 1;
-      margin-right: 0.5rem;
+      @include bps(margin-right, none, $pm: 0.5rem);
     }
 
     &._basic {
       max-width: 30%;
       flex-shrink: 1;
-      margin-right: 0.5rem;
     }
 
     &._miscs {
       margin-left: auto;
-      max-width: 20%;
+      max-width: 25%;
       flex-shrink: 1;
     }
 

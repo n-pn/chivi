@@ -112,7 +112,7 @@
     window.location.href = to.href
   })
 
-  $: console.log($layers)
+  // $: console.log($layers)
 </script>
 
 <svelte:head>

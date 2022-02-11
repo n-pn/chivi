@@ -24,6 +24,7 @@
         class="vpdict-item"
         class:_active={dname == vdict.dname}
         use:tooltip={entry.descs}
+        data-anchor="vpdict-body"
         on:click={() => on_close(entry)}>
         {entry.d_dub}
       </button>

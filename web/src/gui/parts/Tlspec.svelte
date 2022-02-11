@@ -35,7 +35,7 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import Gmodal from '$molds/Gmodal.svelte'
+  import Dialog from '$molds/Dialog.svelte'
 
   export let on_destroy = () => {}
   onDestroy(on_destroy)
@@ -129,207 +129,142 @@
   }
 </script>
 
-<Gmodal actived={$ctrl.actived} _z_idx={80} on_close={ctrl.hide}>
-  <tlspec-wrap>
-    <tlspec-head>
-      <tlspec-title>
-        <title-lbl>Báo lỗi dịch:</title-lbl>
-        <title-dic>{$vdict.dname}-{$vdict.d_dub}</title-dic>
-      </tlspec-title>
-      <button type="button" data-kbd="esc" class="x-btn" on:click={ctrl.hide}>
-        <SIcon name="x" />
-      </button>
-    </tlspec-head>
+<Dialog
+  actived={$ctrl.actived}
+  --z-idx={80}
+  class="tlspec"
+  on_close={ctrl.hide}>
+  <tlspec-title slot="header">
+    <title-lbl><SIcon name="flag" /></title-lbl>
+    <title-dic>{$vdict.d_dub} [{$vdict.dname}]</title-dic>
+  </tlspec-title>
 
-    <tlspec-body>
-      <form-label>
-        <span>Khoanh phạm vi lỗi dịch</span>
+  <tlspec-body>
+    <form-label>
+      <span>Khoanh phạm vi lỗi dịch</span>
 
-        <btn-group>
+      <btn-group>
+        <button
+          data-kbd="←"
+          disabled={lower == 0}
+          on:click={() => shift_lower(-1)}>
+          <SIcon name="arrow-left" />
+        </button>
+
+        <button
+          data-kbd="⇧←"
+          disabled={lower == $ztext.length - 1}
+          on:click={() => shift_lower(1)}>
+          <SIcon name="arrow-bar-to-right" />
+        </button>
+
+        <span>({upper - lower})</span>
+
+        <button
+          data-kbd="⇧→"
+          disabled={lower == 1}
+          on:click={() => shift_upper(-1)}>
+          <SIcon name="arrow-bar-to-left" />
+        </button>
+
+        <button
+          data-kbd="→"
+          disabled={lower == $ztext.length}
+          on:click={() => shift_upper(1)}>
+          <SIcon name="arrow-right" />
+        </button>
+
+        <button data-kbd="c" on:click={copy_ztext}>
+          <SIcon name="copy" />
+        </button>
+      </btn-group>
+    </form-label>
+
+    <tlspec-input>
+      <tlspec-hanzi bind:this={hanzi_elem}>
+        {#each Array.from($ztext) as char, index}
+          <x-z
+            class:active={index >= lower && index < upper}
+            on:click={() => change_focus(index)}>{char}</x-z>
+        {/each}
+      </tlspec-hanzi>
+
+      <tlspec-cvmtl>{hvmtl}</tlspec-cvmtl>
+      <tlspec-cvmtl>{$entry.cvmtl}</tlspec-cvmtl>
+    </tlspec-input>
+
+    <form
+      action="/api/tlspecs"
+      method="POST"
+      class="tlspec-form"
+      on:submit|preventDefault={handle_submit}>
+      <form-group>
+        <form-label>
+          <span>Kết quả dịch chính xác</span>
+          <span class="hint" on:click={init_match}>Chép từ dịch máy</span>
+        </form-label>
+        <textarea
+          class="m-input _match"
+          name="match"
+          bind:value={$entry.match}
+          bind:this={match_elem} />
+      </form-group>
+
+      <form-group>
+        <form-label>Giải thích thêm nếu cần</form-label>
+        <textarea
+          class="m-input _extra"
+          name="extra"
+          bind:value={$entry.extra} />
+      </form-group>
+
+      {#if error}
+        <form-error>{error}</form-error>
+      {/if}
+
+      <form-action>
+        {#if $entry._ukey}
           <button
-            data-kbd="←"
-            disabled={lower == 0}
-            on:click={() => shift_lower(-1)}>
-            <SIcon name="arrow-left" />
+            class="m-btn _harmful"
+            data-kbd="delete"
+            on:click={delete_tlspec}>
+            <SIcon name="trash" />
+            <span>Xoá bỏ</span>
           </button>
-
-          <button
-            data-kbd="⇧←"
-            disabled={lower == $ztext.length - 1}
-            on:click={() => shift_lower(1)}>
-            <SIcon name="arrow-bar-to-right" />
-          </button>
-
-          <span>({upper - lower})</span>
-
-          <button
-            data-kbd="⇧→"
-            disabled={lower == 1}
-            on:click={() => shift_upper(-1)}>
-            <SIcon name="arrow-bar-to-left" />
-          </button>
-
-          <button
-            data-kbd="→"
-            disabled={lower == $ztext.length}
-            on:click={() => shift_upper(1)}>
-            <SIcon name="arrow-right" />
-          </button>
-
-          <button data-kbd="c" on:click={copy_ztext}>
-            <SIcon name="copy" />
-          </button>
-        </btn-group>
-      </form-label>
-
-      <tlspec-input>
-        <tlspec-hanzi bind:this={hanzi_elem}>
-          {#each Array.from($ztext) as char, index}
-            <x-z
-              class:active={index >= lower && index < upper}
-              on:click={() => change_focus(index)}>{char}</x-z>
-          {/each}
-        </tlspec-hanzi>
-
-        <tlspec-cvmtl>{hvmtl}</tlspec-cvmtl>
-        <tlspec-cvmtl>{$entry.cvmtl}</tlspec-cvmtl>
-      </tlspec-input>
-
-      <form
-        action="/api/tlspecs"
-        method="POST"
-        class="tlspec-form"
-        on:submit|preventDefault={handle_submit}>
-        <form-group>
-          <form-label>
-            <span>Kết quả dịch chính xác</span>
-            <span class="hint" on:click={init_match}> Chép từ dịch máy </span>
-          </form-label>
-          <textarea
-            class="m-input _match"
-            name="match"
-            bind:value={$entry.match}
-            bind:this={match_elem} />
-        </form-group>
-
-        <form-group>
-          <form-label>Giải thích thêm nếu cần</form-label>
-          <textarea
-            class="m-input _extra"
-            name="extra"
-            bind:value={$entry.extra} />
-        </form-group>
-
-        {#if error}
-          <form-error>{error}</form-error>
         {/if}
 
-        <form-action>
-          {#if $entry._ukey}
-            <button
-              class="m-btn _harmful"
-              data-kbd="delete"
-              on:click={delete_tlspec}>
-              <SIcon name="trash" />
-              <span>Xoá bỏ</span>
-            </button>
-          {/if}
-
-          <button
-            type="submit"
-            class="m-btn _primary _fill"
-            data-kbd="⇧↵"
-            disabled={!$entry.match}>
-            <SIcon name="device-floppy" />
-            <span>{$entry._ukey ? 'Lưu lại' : 'Báo lỗi'}</span>
-          </button>
-        </form-action>
-      </form>
-    </tlspec-body>
-  </tlspec-wrap>
-</Gmodal>
+        <button
+          type="submit"
+          class="m-btn _primary _fill"
+          data-kbd="⇧↵"
+          disabled={!$entry.match}>
+          <SIcon name="device-floppy" />
+          <span>{$entry._ukey ? 'Lưu lại' : 'Báo lỗi'}</span>
+        </button>
+      </form-action>
+    </form>
+  </tlspec-body>
+</Dialog>
 
 <style lang="scss">
-  tlspec-wrap {
-    display: block;
-    width: 28rem;
-    max-width: 100%;
-    padding-bottom: 0.25rem;
-
-    @include bdradi();
-    @include shadow(1);
-    @include bgcolor(secd);
-
-    @include tm-dark {
-      @include linesd(--bd-soft, $ndef: false, $inset: false);
-    }
-  }
-
-  $head-height: 2.25rem;
-
-  tlspec-head {
-    @include flex($gap: 0.25rem, $center: vert);
-    padding-left: 0.75rem;
-    padding-right: 0.25rem;
-
-    height: $head-height;
-    // margin-bottom: 0.25rem;
-
-    @include border(--bd-main, $loc: bottom);
-    @include bdradi($loc: top);
-    @include bgcolor(tert);
-
-    :global(svg) {
-      width: 1rem;
-      height: 1rem;
-      margin-top: -0.125rem;
-    }
-  }
-
   tlspec-title {
-    flex: 1;
     display: flex;
+    flex: 1;
     overflow: hidden;
-    line-height: $head-height;
   }
 
   title-lbl {
-    font-weight: 500;
     padding-right: 0.25rem;
   }
 
   title-dic {
     flex: 1;
-    @include fgcolor(tert);
     @include clamp($width: null);
-
-    &:before {
-      content: '[';
-    }
-    &:after {
-      content: ']';
-    }
-  }
-
-  .x-btn {
-    padding: 0.25rem;
-    @include fgcolor(tert);
-    @include bgcolor(tert);
-
-    > :global(svg) {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-
-    &:hover {
-      @include fgcolor(primary, 6);
-    }
   }
 
   tlspec-body {
     display: block;
-    padding: 0 0.75rem;
-    // @include scroll();
+    margin: 0.75rem;
     @include bgcolor(secd);
   }
 
@@ -421,7 +356,7 @@
   form-action {
     @include flex($gap: 0.75rem);
     justify-content: right;
-    margin: 0.75rem 0 0.5rem;
+    margin: 0.75rem 0;
   }
 
   btn-group {
