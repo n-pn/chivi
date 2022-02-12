@@ -1,10 +1,10 @@
 /// <reference types="@sveltejs/kit" />
 
-import type from './types/models'
-
 // See https://kit.svelte.dev/docs/typescript
 // for information about these interfaces
 declare namespace App {
+  import type { Nvinfo } from './types/models'
+
   interface Locals {}
   interface Platform {}
 

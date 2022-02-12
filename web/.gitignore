@@ -1,5 +1,8 @@
 .DS_Store
-.svelte-kit
+node_modules
 /build
-/node_modules
-/public/covers
+/.svelte-kit
+/package
+.env
+.env.*
+.output

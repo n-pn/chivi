@@ -1,5 +1,5 @@
 import preprocess from 'svelte-preprocess'
-import node from '@sveltejs/adapter-node'
+import adapter from '@sveltejs/adapter-node'
 import { mdsvex } from 'mdsvex'
 import breaks from 'remark-breaks'
 import path from 'path'
@@ -30,7 +30,7 @@ export default {
     mdsvex(mdsvexConfig),
   ],
   kit: {
-    adapter: node(),
+    adapter: adapter(),
     methodOverride: {
       allowed: ['PATCH', 'DELETE'],
     },
