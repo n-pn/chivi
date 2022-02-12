@@ -76,10 +76,10 @@
     @include bdradi();
     @include shadow(1);
 
-    @include bgcolor(tert);
+    @include bgcolor(secd);
 
     &:hover {
-      @include bgcolor(secd);
+      @include bgcolor(main);
       & > .-name {
         @include fgcolor(primary, 5);
       }

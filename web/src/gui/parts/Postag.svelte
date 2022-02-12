@@ -283,7 +283,7 @@
               data-tag={ntag}
               data-kbd={map_kbd(ntag)}
               use:tooltip={tooltips[ntag]}
-              data-anchor="postag-body"
+              data-anchor=".postag"
               on:click={() => on_close(ntag)}>
               <span>{ptnames[ntag]}</span>
               {#if ntag == ptag}

@@ -43,7 +43,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     return {"", "", [] of String} unless File.exists?(file)
 
     dname = params.fetch_str("dname", "combine")
-    d_dub = CtrlUtil.d_dub(dname)
+    d_dub = CtrlUtil.d_dub(dname) || dname
 
     dname = "$" + dname if dname != "combine" && dname[0]? != '$'
     {dname, d_dub, parse_lines(File.read(file))}

@@ -1,7 +1,7 @@
 require "./_base_ctrl"
 
 class CV::VpdictCtrl < CV::BaseCtrl
-  alias VdInfo = Tuple(String, String, Int32) # dict name, dict slug, entries count
+  alias VdInfo = Tuple(String, String?, Int32) # dict name, label, entries count
 
   getter core_dicts : Array(VdInfo) do
     dicts = [] of VdInfo
@@ -37,9 +37,9 @@ class CV::VpdictCtrl < CV::BaseCtrl
     dname = params["dname"]
     vdict = VpDict.load(dname)
 
-    pgidx, limit, offset = params.page_info(min: 30)
+    pgidx, limit, offset = params.page_info(min: 25, max: 50)
 
-    total = offset + 128
+    total = offset + limit * 3
     terms = [] of VpTerm
     filter = VMatch.init(params)
 
@@ -57,6 +57,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
       d_dub: CtrlUtil.d_dub(dname),
       total: total,
       pgidx: pgidx,
+      start: offset + 1,
       pgmax: CtrlUtil.pgmax(total, limit),
       terms: total > offset ? terms[offset, limit] : [] of VpTerm,
     })

@@ -17,7 +17,7 @@ module CV::CtrlUtil
     when .starts_with?('$')
       Nvinfo.find({bhash: dname[1..]}).try(&.vname) || dname
     else
-      DICT_LABELS.fetch(dname, dname)
+      DICT_LABELS[dname]?
     end
   end
 

@@ -1,7 +1,8 @@
 <script context="module">
   import { page, session } from '$app/stores'
   import { invalidate } from '$app/navigation'
-  import { ztext, vdict } from '$lib/stores'
+
+  import { make_vdict } from '$utils/vpdict_utils'
 
   import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
   import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
@@ -16,11 +17,14 @@
     const payload = await api_res.json()
     payload.query = Object.fromEntries(url.searchParams)
 
+    const { d_dub, descs } = make_vdict(dict, payload.props.d_dub)
+    payload.props.d_dub = d_dub
+    payload.props.descs = descs
+
     appbar.set({
       left: [
         ['Từ điển', 'package', '/dicts', null, '_show-md'],
-        // ['Từ điển', null, '/dicts/' + type, null, '_show-md'],
-        [payload.props.d_dub, null, url.pathname, '_title', '_title'],
+        [dict, null, url.pathname, '_title', '_title'],
       ],
     })
 
@@ -29,20 +33,20 @@
 </script>
 
 <script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import { get_rtime_short } from '$atoms/RTime.svelte'
+  import { browser } from '$app/env'
+  import { ztext, vdict } from '$lib/stores'
+  import { rel_time } from '$utils/relative_time'
 
+  import SIcon from '$atoms/SIcon.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let dname = 'combine'
-  export let d_dub = 'Tổng hợp'
+  export let d_dub = dname
+
   $: vdict.put(dname, d_dub)
 
   export let terms = []
-  export let total = 1
-  export let pgidx = 1
-  export let pgmax = 1
-
+  export let start = 1
   export let query = { key: '', val: '', ptag: '', rank: '', uname: '' }
 
   let d_tab = 2
@@ -52,9 +56,8 @@
     else d_tab = 2
   }
 
-  $: offset = (pgidx - 1) * 30 + 1
   function render_time(mtime) {
-    return mtime > 1577836800 ? get_rtime_short(mtime) + ' trước' : '~'
+    return mtime > 1577836800 ? rel_time(mtime) : '~'
   }
 
   let postag_state = 1
@@ -106,8 +109,10 @@
 </svelte:head>
 
 <article class="m-article">
-  <h1 class="h3">{d_dub}</h1>
-  <p>Entries: {total}</p>
+  <h1 class="h2">[{dname}] {d_dub}</h1>
+  <p class="descs">{$$props.descs}</p>
+
+  <h2 class="h3">Số lượng từ: {$$props.total}</h2>
 
   <div class="body">
     <table>
@@ -150,7 +155,7 @@
       <tbody>
         {#each terms as { key, val, ptag, rank, mtime, uname, _flag }, idx}
           <tr class="term _{_flag}">
-            <td class="-idx">{offset + idx}</td>
+            <td class="-idx">{start + idx}</td>
             <td class="-key" on:click={() => show_lookup(key)}>
               <span>{key}</span>
               <div class="hover">
@@ -215,29 +220,31 @@
   </div>
 
   <footer class="foot">
-    <Mpager {pager} {pgidx} {pgmax} />
+    <Mpager {pager} pgidx={$$props.pgidx} pgmax={$$props.pgmax} />
   </footer>
 </article>
 
-{#if $lookup.enabled}
+{#if browser}
   <Lookup />
-{/if}
 
-{#if $upsert.state > 0}
-  <Upsert {on_change} />
-{/if}
+  {#if $upsert.state > 0}
+    <Upsert {on_change} />
+  {/if}
 
-{#if postag_state > 1}
-  <Postag bind:state={postag_state} bind:ptag={query.ptag} />
+  {#if postag_state > 1}
+    <Postag bind:state={postag_state} bind:ptag={query.ptag} />
+  {/if}
 {/if}
 
 <style lang="scss">
-  article {
-    // padding: var;
-    @include bgcolor(main);
-    // @include fgcolor(main);
-    @include shadow(1);
-    @include bdradi();
+  .descs {
+    font-style: italic;
+    margin-top: 1rem;
+    @include fgcolor(tert);
+  }
+
+  .h3 {
+    margin-top: 1rem;
   }
 
   .body {
@@ -358,5 +365,13 @@
 
   ._e {
     @include fgcolor(harmful);
+  }
+
+  thead .m-btn {
+    background: transparent;
+
+    &:hover {
+      @include bgcolor(main);
+    }
   }
 </style>
