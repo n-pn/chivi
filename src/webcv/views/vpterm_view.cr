@@ -86,21 +86,15 @@ struct CV::VpTermView
     VpDict.suggest.find(word).try { |x| add_hints(x, vals, tags) }
 
     if @dname[0] == '~'
-      fval, ptag = vals.first?, MtDict.load(@dname[1..]).df_ptag.to_str
+      fval = @cvmtl.cv_plain(word, cap_first: false).to_s
+      ptag = ""
     elsif @vdict.dtype > 0
       fval, ptag = add_hints_by_ctx(word, vals, tags)
     else
-      fval, ptag = vals.first?, nil
+      fval, ptag = vals.first?, ""
     end
 
     {b_term, u_term, vals, tags, fval, ptag}
-  end
-
-  @[AlwaysInline]
-  private def extract_tag(tran : MtList) : String?
-    # exit if list is not singleton
-    return if !(first = tran.first) || first.succ?
-    first.tag.to_str
   end
 
   private def add_hints(node : VpTrie, vals : Hints, tags : Hints)
@@ -131,19 +125,17 @@ struct CV::VpTermView
       tags << "nr"
     end
 
-    tran = cvmt.to_s
-    vals << tran
+    fval = cvmt.to_s
+    vals << fval
 
     if ftag = extract_tag(cvmt)
       tags << ftag
-      fval = tran
     else
-      ftag = tags.first?
-      fval = vals.first
+      ftag = tags.first? || ""
     end
 
     if is_human || ftag.in?("nr", "nn", "nz")
-      fval = TextUtils.titleize(fval)
+      fval = TextUtils.titleize(vals.first)
     end
 
     {fval, ftag}
@@ -153,5 +145,12 @@ struct CV::VpTermView
   private def is_human_name?(fc : Char, lc : Char)
     return true if LASTNAMES.includes?(fc)
     fc.in?('小', '老') && LASTNAMES.includes?(lc)
+  end
+
+  @[AlwaysInline]
+  private def extract_tag(tran : MtList) : String?
+    # exit if list is not singleton
+    return if !(first = tran.first) || first.succ?
+    first.tag.to_str
   end
 end
