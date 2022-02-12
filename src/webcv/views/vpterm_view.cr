@@ -151,6 +151,7 @@ struct CV::VpTermView
   private def extract_tag(tran : MtList) : String?
     # exit if list is not singleton
     return if !(first = tran.first) || first.succ?
-    first.tag.to_str
+    ptag = first.tag.to_str
+    return ptag unless ptag.empty?
   end
 end
