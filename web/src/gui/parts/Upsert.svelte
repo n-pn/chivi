@@ -162,10 +162,7 @@
           autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
 
         {#if dname != 'hanviet'}
-          <button
-            class="postag"
-            data-kbd="w"
-            on:click={() => ctrl.set_state(2)}>
+          <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
             {ptnames[vpterm.ptag] || 'Phân loại'}
           </button>
         {/if}
@@ -248,13 +245,13 @@
     cursor: pointer;
     @include flex($center: vert);
     // text-transform: capitalize;
-    font-weight: 500;
+    margin-right: 0.25rem;
     padding: 0 0.375rem;
-    background-color: transparent;
-
+    flex-shrink: 0;
     height: $tab-height;
     line-height: $tab-height;
-    flex-shrink: 0;
+    font-weight: 500;
+    background-color: transparent;
 
     @include bdradi($loc: top);
     @include fgcolor(tert);
@@ -263,13 +260,11 @@
     &._novel {
       min-width: 6rem;
       max-width: 40%;
-      @include bps(margin-right, none, $pm: 0.5rem);
     }
 
     &._basic {
       max-width: 30%;
       flex-shrink: 1;
-      @include bps(margin-right, none, $pm: 0.5rem);
     }
 
     &._miscs {
@@ -301,7 +296,6 @@
     > :global(svg) {
       width: 1.25rem;
       margin-right: 0.125rem;
-      opacity: 0.7;
       @include bps(display, none, $pl: inline-block);
     }
   }
@@ -372,7 +366,7 @@
     }
   }
 
-  .postag {
+  .ptag {
     white-space: nowrap;
     padding: 0 0.5rem;
     margin-left: 0.5rem;

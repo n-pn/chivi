@@ -11,16 +11,6 @@
   import Postag, { ptnames } from '$parts/Postag.svelte'
 
   export async function load({ fetch, url, params: { dict } }) {
-    const api_url = `/api/dicts/${dict}${url.search}`
-    const api_res = await fetch(api_url)
-
-    const payload = await api_res.json()
-    payload.query = Object.fromEntries(url.searchParams)
-
-    const { d_dub, descs } = make_vdict(dict, payload.props.d_dub)
-    payload.props.d_dub = d_dub
-    payload.props.descs = descs
-
     appbar.set({
       left: [
         ['Từ điển', 'package', '/dicts', null, '_show-md'],
@@ -28,6 +18,14 @@
       ],
     })
 
+    const api_url = `/api/dicts/${dict}${url.search}`
+    const api_res = await fetch(api_url)
+
+    const payload = await api_res.json()
+    const { d_dub, descs } = make_vdict(dict, payload.props.d_dub)
+    payload.props.d_dub = d_dub
+    payload.props.descs = descs
+    payload.props.query = Object.fromEntries(url.searchParams)
     return payload
   }
 </script>
