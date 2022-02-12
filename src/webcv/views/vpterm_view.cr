@@ -100,13 +100,7 @@ struct CV::VpTermView
   private def extract_tag(tran : MtList) : String?
     # exit if list is not singleton
     return if !(first = tran.first) || first.succ?
-
-    case tag = first.tag.to_str
-    when "np" then "n"
-    when "ap" then "a"
-    when "vp" then "v"
-    else           tag
-    end
+    first.tag.to_str
   end
 
   private def add_hints(node : VpTrie, vals : Hints, tags : Hints)

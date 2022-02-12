@@ -12,7 +12,7 @@
       '~qt_nouns',
       '~fix_u_zhi',
       '~v_compl',
-      '~v_2_obj',
+      '~v2_objs',
     ],
   }
 

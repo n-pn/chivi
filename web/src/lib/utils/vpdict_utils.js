@@ -15,7 +15,7 @@ const labels = {
   '~qt_verbs': 'Động lượng từ',
   '~qt_nouns': 'Danh lượng từ',
   '~v_compl': 'Bổ ngữ động từ',
-  '~v_2_obj': 'Động từ 2 tân',
+  '~v2_objs': 'Động từ 2 tân',
 }
 
 const intros = {
@@ -29,7 +29,7 @@ const intros = {
   '~qt_verbs': 'Lượng từ làm bổ ngữ cho động từ phía trước',
   '~qt_nouns': 'Lượng từ đếm với danh từ',
   '~v_compl': 'Những từ đứng sau động từ thì làm bổ ngữ cho nó',
-  '~v_2_obj': 'Động từ yêu cầu 2 tân ngữ, tân ngữ trước thường chỉ người',
+  '~v2_objs': 'Động từ yêu cầu 2 tân ngữ, tân ngữ trước thường chỉ người',
 }
 
 export function upsert_dicts(vdict, extra) {

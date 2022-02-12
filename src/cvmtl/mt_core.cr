@@ -16,8 +16,7 @@ class CV::MtCore
     when "pin_yin" then pin_yin_mtl
     when "hanviet" then hanviet_mtl
     when "tradsim" then tradsim_mtl
-    else
-      generic_mtl(dname.starts_with?('$') ? dname : "combine", uname)
+    else                generic_mtl(dname)
     end
   end
 
