@@ -120,8 +120,8 @@
           <th>Trung</th>
           <th>Nghĩa Việt</th>
           <th>Phân loại</th>
-          <th>Ư.t</th>
-          <th>Người dùng</th>
+          <th class="rank">Ư.t</th>
+          <th class="uname">Người dùng</th>
           <th>Cập nhật</th>
         </tr>
 
@@ -133,8 +133,9 @@
             <button class="m-btn _sm" on:click={() => (postag_state = 2)}
               >{ptnames[query.ptag] || '-'}</button>
           </td>
-          <td><input type="text" placeholder="-" bind:value={query.rank} /></td>
-          <td
+          <td class="rank"
+            ><input type="text" placeholder="-" bind:value={query.rank} /></td>
+          <td class="uname"
             ><input type="text" placeholder="-" bind:value={query.uname} /></td>
           <td>
             <button class="m-btn _sm" on:click={reset_query}>
@@ -204,13 +205,13 @@
                 </a>
               </div>
             </td>
-            <td class="-rank">
+            <td class="rank">
               <a href="{$page.url.pathname}?rank={rank}">{render_rank(rank)}</a>
             </td>
-            <td class="-uname  _{special_type(uname)}">
+            <td class="uname _{special_type(uname)}">
               <a href="{$page.url.pathname}?uname={uname}">{uname}</a>
             </td>
-            <td class="-mtime">{render_time(mtime)} </td>
+            <td class="mtime">{render_time(mtime)} </td>
           </tr>
         {/each}
       </tbody>
@@ -303,10 +304,18 @@
   }
 
   .-idx,
-  .-rank,
-  .-mtime,
-  .-uname {
+  .rank,
+  .mtime,
+  .uname {
     @include fgcolor(tert);
+  }
+
+  .rank {
+    width: 3rem;
+  }
+
+  .uname {
+    width: 6rem;
   }
 
   .-val {
