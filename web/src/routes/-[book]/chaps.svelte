@@ -1,8 +1,8 @@
-<script context="module">
+<script context="module" lang="ts">
   import { session, navigating, page } from '$app/stores'
   import * as ubmemo_api from '$api/ubmemo_api'
 
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ fetch, stuff, url }) {
     const { nvinfo, ubmemo } = stuff
@@ -47,13 +47,13 @@
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import RTime from '$atoms/RTime.svelte'
-  import Chlist from '$parts/Chlist.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import RTime from '$gui/atoms/RTime.svelte'
+  import Chlist from '$gui/parts/Chlist.svelte'
 
   import SeedList from './_layout/SeedList.svelte'
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let nvinfo = $page.stuff.nvinfo || {}
   export let ubmemo = $page.stuff.ubmemo || {}

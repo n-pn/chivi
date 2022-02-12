@@ -1,7 +1,7 @@
-<script>
-  import { get_rtime } from '$atoms/RTime.svelte'
+<script lang="ts">
+  import { get_rtime } from '$gui/atoms/RTime.svelte'
   import { hint } from './_shared'
-  import SIcon from '$atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let vpterm
 

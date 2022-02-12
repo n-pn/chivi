@@ -1,5 +1,5 @@
-<script context="module">
-  import { data as appbar } from '$sects/Appbar.svelte'
+<script context="module" lang="ts">
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ fetch, url, params: { author } }) {
     appbar.set({ left: [[author, 'edit', `/books/=${author}`]] })
@@ -14,8 +14,8 @@
   }
 </script>
 
-<script>
-  import NvinfoList from '$sects/Nvinfo/List.svelte'
+<script lang="ts">
+  import NvinfoList from '$gui/sects/Nvinfo/List.svelte'
 
   export let author = ''
   export let books = []

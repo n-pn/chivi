@@ -1,14 +1,14 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page, session } from '$app/stores'
   import { invalidate } from '$app/navigation'
 
   import { make_vdict } from '$utils/vpdict_utils'
 
-  import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
-  import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
+  import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
-  import Postag, { ptnames } from '$parts/Postag.svelte'
+  import Postag, { ptnames } from '$gui/parts/Postag.svelte'
 
   export async function load({ fetch, url, params: { dict } }) {
     appbar.set({
@@ -30,13 +30,13 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { browser } from '$app/env'
   import { ztext, vdict } from '$lib/stores'
   import { rel_time } from '$utils/relative_time'
 
-  import SIcon from '$atoms/SIcon.svelte'
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let dname = 'combine'
   export let d_dub = dname

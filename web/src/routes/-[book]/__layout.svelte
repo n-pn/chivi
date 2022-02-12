@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page } from '$app/stores'
 
   export async function load({ params, fetch }) {
@@ -13,7 +13,7 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   export let nvinfo = $page.stuff.nvinfo
 
   let bintro = nvinfo.bintro.join('').substring(0, 300)

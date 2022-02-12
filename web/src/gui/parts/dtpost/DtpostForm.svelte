@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import { session } from '$app/stores'
 
-  import SIcon from '$atoms/SIcon.svelte'
-  import MdForm from '$molds/MdForm.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import MdForm from '$gui/molds/MdForm.svelte'
 
   export let dtopic_id = 0
   export let dtpost_id = 0

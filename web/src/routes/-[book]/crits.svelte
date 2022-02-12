@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   export async function load({ fetch, stuff, url }) {
     const page = +url.searchParams.get('pg') || 1
     const sort = url.searchParams.get('sort') || 'stars'
@@ -21,11 +21,11 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { page } from '$app/stores'
 
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import Yscrit from '$parts/Yscrit.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import Yscrit from '$gui/parts/Yscrit.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
   export let crits = []

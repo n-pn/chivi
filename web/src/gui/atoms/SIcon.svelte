@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let name = 'x'
   export let iset = 'tabler'
 </script>

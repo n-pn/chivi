@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import { session } from '$app/stores'
 
-  import SIcon from '$atoms/SIcon.svelte'
-  import Gslide from '$molds/Gslide.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Gslide from '$gui/molds/Gslide.svelte'
 
   // import Config from './Usercp/Config.svelte'
   import Replied from './Usercp/Replied.svelte'

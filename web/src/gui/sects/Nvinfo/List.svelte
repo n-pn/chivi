@@ -1,10 +1,10 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page } from '$app/stores'
 </script>
 
-<script>
-  import NvinfoCard from '$sects/Nvinfo/Card.svelte'
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
+<script lang="ts">
+  import NvinfoCard from '$gui/sects/Nvinfo/Card.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let items = []
   export let pgidx = 0

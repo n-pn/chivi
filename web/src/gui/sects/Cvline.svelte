@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let input
   export let focus = false
 </script>

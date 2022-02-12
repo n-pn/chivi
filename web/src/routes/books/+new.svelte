@@ -1,5 +1,5 @@
-<script context="module">
-  import { data as appbar } from '$sects/Appbar.svelte'
+<script context="module" lang="ts">
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load() {
     appbar.set({ left: [['Thêm truyện', 'file-plus', '/books/+new']] })
@@ -7,8 +7,8 @@
   }
 </script>
 
-<script>
-  import NvinfoForm from '$sects/Nvinfo/Form.svelte'
+<script lang="ts">
+  import NvinfoForm from '$gui/sects/Nvinfo/Form.svelte'
 </script>
 
 <NvinfoForm />

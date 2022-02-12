@@ -3,7 +3,7 @@ const hour_span = minute_span * 60 // 3600 seconds
 const day_span = hour_span * 24
 const month_span = day_span * 30
 
-export function rel_time(mtime) {
+export function rel_time(mtime: number) {
   if (mtime < 100000) return 'Không rõ thời gian'
 
   const span = new Date().getTime() / 1000 - mtime // unit: seconds
@@ -20,10 +20,10 @@ export function rel_time(mtime) {
   return `${year}-${pad_zero(month)}-${pad_zero(day)}`
 }
 
-function pad_zero(input) {
+function pad_zero(input: number) {
   return input.toString().padStart(2, '0')
 }
 
-function round(input, unit) {
+function round(input: number, unit: number) {
   return input <= unit ? 1 : Math.floor(input / unit)
 }

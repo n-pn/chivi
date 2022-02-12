@@ -1,12 +1,9 @@
 <!-- @hmr:keep-all -->
-<script context="module">
+<script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
-  import { session } from '$app/stores'
 
   import { vdict, zfrom, zupto } from '$lib/stores'
-  import { upsert_dicts } from '$utils/vpdict_utils'
-  import { decor_term, hint } from './Upsert/_shared.js'
 
   export const ctrl = {
     ...writable({ tab: 0, state: 0 }),
@@ -26,10 +23,14 @@
   ]
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import Gmenu from '$molds/Gmenu.svelte'
-  import Dialog from '$molds/Dialog.svelte'
+<script lang="ts">
+  import { session } from '$app/stores'
+  import { upsert_dicts } from '$utils/vpdict_utils'
+  import { decor_term, hint } from './Upsert/_shared'
+
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Gmenu from '$gui/molds/Gmenu.svelte'
+  import Dialog from '$gui/molds/Dialog.svelte'
 
   import Hanzi from './Upsert/Hanzi.svelte'
   import Vdict from './Upsert/Vdict.svelte'
@@ -39,9 +40,9 @@
   import Vrank from './Upsert/Vrank.svelte'
   import Links from './Upsert/Links.svelte'
 
-  import Postag, { ptnames } from '$parts/Postag.svelte'
-  import { ctrl as tlspec } from '$parts/Tlspec.svelte'
-  import { make_vdict } from '$lib/utils/vpdict_utils.js'
+  import Postag, { ptnames } from '$gui/parts/Postag.svelte'
+  import { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
+  import { make_vdict } from '$utils/vpdict_utils'
 
   export let on_change = () => {}
   export let on_destroy = () => {}

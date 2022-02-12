@@ -1,6 +1,6 @@
-<script context="module">
+<script context="module" lang="ts">
   import { status_types, status_names } from '$lib/constants'
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ url, params, fetch }) {
     const uname = params.uname
@@ -19,12 +19,12 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { page } from '$app/stores'
 
-  import Nvlist from '$parts/Nvlist.svelte'
-  import Footer from '$sects/Footer.svelte'
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Nvlist from '$gui/parts/Nvlist.svelte'
+  import Footer from '$gui/sects/Footer.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let uname = ''
   export let bmark = 'reading'

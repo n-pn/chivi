@@ -31,16 +31,16 @@ export default {
   ],
   kit: {
     adapter: node(),
+    methodOverride: {
+      allowed: ['PATCH', 'DELETE'],
+    },
     vite: {
       resolve: {
         alias: {
           $api: path.resolve(_cwd, 'src/api'),
           $gui: path.resolve(_cwd, 'src/gui'),
-          $atoms: path.resolve(_cwd, 'src/gui/atoms'),
-          $molds: path.resolve(_cwd, 'src/gui/molds'),
-          $parts: path.resolve(_cwd, 'src/gui/parts'),
-          $sects: path.resolve(_cwd, 'src/gui/sects'),
-          $utils: path.resolve(_cwd, 'src/lib/utils'),
+          $utils: path.resolve(_cwd, 'src/utils'),
+          $types: path.resolve(_cwd, 'src/types'),
         },
       },
       server: {

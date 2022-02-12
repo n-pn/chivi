@@ -1,6 +1,6 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page } from '$app/stores'
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ fetch, url: { searchParams } }) {
     appbar.set({ left: [['Đánh giá', 'stars', '/crits']] })
@@ -13,9 +13,9 @@
   const sorts = { mtime: 'Gần nhất', stars: 'Cho điểm', likes: 'Ưa thích' }
 </script>
 
-<script>
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import Yscrit from '$parts/Yscrit.svelte'
+<script lang="ts">
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import Yscrit from '$gui/parts/Yscrit.svelte'
 
   export let crits = []
   export let pgidx = 1

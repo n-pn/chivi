@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
   import { ztext, zfrom, zupto } from '$lib/stores'
@@ -53,12 +53,12 @@
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
-  import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
-  import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
-  import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
+  import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
+  import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
+  import Tlspec, { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
 
   export let article
 

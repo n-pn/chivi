@@ -1,5 +1,5 @@
-<script context="module">
-  import { data as appbar } from '$sects/Appbar.svelte'
+<script context="module" lang="ts">
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ url, fetch, stuff: { nvinfo } }) {
     const chidx = +url.searchParams.get('chidx') || 1
@@ -26,12 +26,12 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
 
-  import SIcon from '$atoms/SIcon.svelte'
-  import Footer from '$sects/Footer.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Footer from '$gui/sects/Footer.svelte'
 
   export let nvinfo = $page.stuff.nvinfo
   export let chidx = 1

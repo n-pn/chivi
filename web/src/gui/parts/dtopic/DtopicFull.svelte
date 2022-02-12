@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
   import { session } from '$app/stores'
-  import { rel_time } from '$lib/utils'
+  import { rel_time } from '$utils'
   import { dlabels } from '$lib/constants'
 
-  import SIcon from '$atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import DtopicForm, { ctrl as dtopic_ctrl } from './DtopicForm.svelte'
 
   export let dtopic

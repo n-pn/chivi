@@ -1,5 +1,5 @@
-<script context="module">
-  import { data as appbar } from '$sects/Appbar.svelte'
+<script context="module" lang="ts">
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   const icons = {
     notes: 'notes',
@@ -28,10 +28,10 @@
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import Footer from '$sects/Footer.svelte'
-  import CvPage from '$sects/CvPage.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Footer from '$gui/sects/Footer.svelte'
+  import CvPage from '$gui/sects/CvPage.svelte'
 
   export let name
   export let type

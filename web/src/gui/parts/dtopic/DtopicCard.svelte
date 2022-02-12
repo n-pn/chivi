@@ -1,8 +1,8 @@
-<script>
-  import { rel_time } from '$lib/utils'
+<script lang="ts">
+  import { rel_time } from '$utils'
   import { dlabels } from '$lib/constants'
 
-  import SIcon from '$atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let dtopic
   export let _mode = 0

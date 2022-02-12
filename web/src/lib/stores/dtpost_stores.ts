@@ -1,10 +1,16 @@
 import { writable, get } from 'svelte/store'
 
-function init(rp_id = 0, itype = 'md') {
+export interface DtpostForm {
+  input: string
+  itype: string
+  rp_id: number
+}
+
+function init(rp_id = 0, itype = 'md'): DtpostForm {
   return { input: '', itype, rp_id }
 }
 
-async function load(id, rp_id) {
+async function load(id: number, rp_id: number): Promise<DtpostForm> {
   if (id == 0) return init(rp_id)
 
   const api_url = `/api/tposts/${id}/detail`
@@ -18,7 +24,7 @@ export const form = {
   ...writable(init()),
   init: async (id = 0, rp_id = 0) => form.set(await load(id, rp_id)),
   // prettier-ignore
-  validate(data = get(form)) {
+  validate(data: DtpostForm = get(form) ) {
     const { input } = data
 
     if (input.length < 1) return 'Độ dài của nội dung phải dài hơn 1 ký tự'
@@ -28,7 +34,7 @@ export const form = {
     return false
   },
 
-  async submit(api_url) {
+  async submit(api_url: string) {
     const err = form.validate()
     if (err) return err
 

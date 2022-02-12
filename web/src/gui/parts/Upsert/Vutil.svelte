@@ -1,5 +1,5 @@
-<script context="module">
-  export function titleize(str, count = 9) {
+<script context="module" lang="ts">
+  export function titleize(str: string, count = 9) {
     if (!str) return ''
     if (typeof count == 'boolean') count = count ? 9 : 0
 
@@ -12,11 +12,11 @@
     return res.join(' ')
   }
 
-  export function capitalize(str) {
+  export function capitalize(str: String) {
     return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
-  function detitle(str, count = 9) {
+  function detitle(str: String, count = 9) {
     const res = str.split(' ')
     if (count > res.length) count = res.length
     for (let i = 0; i < count; i++) res[i] = res[i].toLowerCase()
@@ -26,13 +26,13 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { hint } from './_shared'
-  import { gtran } from '$utils/gtran.js'
+  import { gtran } from '$utils/gtran'
 
-  import SIcon from '$atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let key
+  export let key: string
   export let tab = 0
   export let vpterm
 
@@ -44,8 +44,8 @@
   let lang = [0, 0, 0]
   $: if (key) lang = [0, 0, 0] // lang index for each tab
 
-  function upcase_val(node, count) {
-    const action = (_) => {
+  function upcase_val(node: Element, count: number) {
+    const action = (_: any) => {
       if (count != capped) {
         vpterm.val = titleize(vpterm.val, count)
         capped = count

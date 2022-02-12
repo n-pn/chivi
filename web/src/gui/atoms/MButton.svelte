@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import SIcon from './SIcon.svelte'
 </script>
 

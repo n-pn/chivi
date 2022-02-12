@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   export const ptnames = {
     '_': 'Không rõ',
     'nr': 'Tên người',
@@ -216,12 +216,12 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { onMount } from 'svelte'
   import { tooltip } from '$utils/custom_actions'
 
-  import SIcon from '$atoms/SIcon.svelte'
-  import Dialog from '$molds/Dialog.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Dialog from '$gui/molds/Dialog.svelte'
 
   export let ptag = ''
   export let state = 1

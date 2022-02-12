@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
   import { session, page } from '$app/stores'
 
-  import { rel_time } from '$lib/utils'
+  import { rel_time } from '$utils'
   import { SIcon, Gmenu } from '$gui'
   import DtpostForm from './DtpostForm.svelte'
 

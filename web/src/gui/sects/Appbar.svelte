@@ -1,19 +1,18 @@
-<script context="module">
+<script context="module" lang="ts">
   import { browser } from '$app/env'
   import { session } from '$app/stores'
   import { appbar, scroll, toleft } from '$lib/stores'
 
-  import SIcon from '$atoms/SIcon.svelte'
-  import Signin from '$parts/Signin.svelte'
-  import Appnav from '$parts/Appnav.svelte'
-  import Usercp from '$parts/Usercp.svelte'
-
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Signin from '$gui/parts/Signin.svelte'
+  import Appnav from '$gui/parts/Appnav.svelte'
+  import Usercp from '$gui/parts/Usercp.svelte'
   import Config from './Appbar/Config.svelte'
 
   export const data = appbar
 </script>
 
-<script>
+<script lang="ts">
   let active_usercp = false
   let active_appnav = false
   let active_config = false

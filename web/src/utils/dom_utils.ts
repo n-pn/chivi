@@ -1,27 +1,31 @@
 const fallback_rect = { left: 0, right: 0, bottom: 0, top: 0 }
 
-export function get_client_rect(node) {
+export function get_client_rect(node: HTMLElement) {
   if (!node) return fallback_rect
   const rects = node.getClientRects()
   return rects[0] || fallback_rect
 }
 
-export function scroll_into_view(child, parent, behavior = 'auto') {
+export function scroll_into_view(
+  child: Element | string,
+  parent: Element | null | undefined,
+  behavior: 'auto' | 'smooth' = 'auto'
+) {
   if (typeof child == 'string') {
     child = parent?.querySelector(child)
     if (!child) return
   }
 
   if (elem_in_viewport(child)) return
-  child.scrollIntoView({ behavior, block: 'center' })
+  child.scrollIntoView({ block: 'center', behavior })
 }
 
-export function elem_in_viewport(elem) {
+export function elem_in_viewport(elem: Element) {
   const rect = elem.getBoundingClientRect()
   return rect.top > 0 && rect.bottom <= window.innerHeight
 }
 
-export function read_selection() {
+export function read_selection(): Array<Element> {
   const selection = document.getSelection()
   if (selection.isCollapsed) return null
 
@@ -33,7 +37,7 @@ export function read_selection() {
   return nodes.filter((x) => x.nodeName == 'V-N' || x.nodeName == 'Z-N')
 }
 
-function get_selected(range) {
+function get_selected(range: Range) {
   let node = range.startContainer
   if (node.nodeName == 'CV-DATA') node = node.firstChild
   const stop = range.endContainer
@@ -61,23 +65,23 @@ function get_selected(range) {
 // function next_node(node) {
 //   if (node.hasChildNodes()) return node.firstChild
 
-//   while (node && !node.nextElementSibling) node = node.parentNode
+//   while (node && !node.nextElementSibling) node = node.parentElement
 //   if (!node) return null
 //   return node.nextSibling
 // }
 
-function next_node(node) {
+function next_node(node: Node) {
   if (node.firstChild) return node.firstChild
 
   while (node) {
-    if (node.nextElementSibling) return node.nextElementSibling
+    if (node.nextSibling) return node.nextSibling
     else node = node.parentNode
   }
 
   return null
 }
 
-export function prev_elem(node, skip = false) {
+export function prev_elem(node: Node, skip = false) {
   if (!node) return
   const name = node.nodeName
 
@@ -91,14 +95,15 @@ export function prev_elem(node, skip = false) {
     prev = prev.nodeType == 1 ? prev.lastChild : prev.previousSibling
   }
 
-  return skip && prev && +prev.dataset.d == 0 ? prev_elem(prev) : prev
+  const d = prev instanceof HTMLElement ? +prev.dataset.d : 0
+  return skip && prev && d == 0 ? prev_elem(prev) : prev
 }
 
-export function next_elem(node, skip = false) {
+export function next_elem(node: Node, skip = false) {
   if (!node) return
   const name = node.nodeName
 
-  while (!node.nextElementSibling) {
+  while (!node.nextSibling) {
     node = node.parentNode
     if (node.nodeName == 'CV-DATA') return null
   }
@@ -108,5 +113,6 @@ export function next_elem(node, skip = false) {
     next = next.nodeType == 1 ? next.firstChild : next.nextSibling
   }
 
-  return skip && next && +next.dataset.d == 0 ? next_elem(next) : next
+  const d = next instanceof HTMLElement ? +next.dataset.d : 0
+  return skip && next && d == 0 ? next_elem(next) : next
 }

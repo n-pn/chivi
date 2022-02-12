@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   export async function load({ stuff, fetch, url }) {
     const { nvinfo } = stuff
 
@@ -13,10 +13,10 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { page } from '$app/stores'
 
-  import DtopicList from '$parts/dtopic/DtopicList.svelte'
+  import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
   export let nvinfo = $page.stuff.nvinfo

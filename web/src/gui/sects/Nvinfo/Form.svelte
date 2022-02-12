@@ -1,10 +1,10 @@
-<script context="module">
+<script context="module" lang="ts">
   const status = ['Còn tiếp', 'Hoàn thành', 'Thái giám']
 </script>
 
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation'
-  import SIcon from '$atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let params = {
     author: '',

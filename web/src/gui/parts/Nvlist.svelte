@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   export let books = []
   export let nvtab = 'index'
 
-  import Nvinfo from '$molds/Nvinfo.svelte'
+  import Nvinfo from '$gui/molds/Nvinfo.svelte'
 </script>
 
 <div class="list">

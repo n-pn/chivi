@@ -1,5 +1,5 @@
-<script context="module">
-  import { data as appbar } from '$sects/Appbar.svelte'
+<script context="module" lang="ts">
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export function load(props) {
     appbar.set({ left: [[`Lỗi hệ thống: ${props.status}`]] })
@@ -7,7 +7,7 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   export let status
   export let error
 </script>

@@ -1,14 +1,17 @@
-<script context="module">
+<script context="module" lang="ts">
   import { goto } from '$app/navigation'
 
   export class Pager {
-    constructor(url, dfs = { pg: 1 }) {
+    url: URL
+    dfs: object
+
+    constructor(url: URL, dfs: object = { pg: 1 }) {
       this.url = url
       this.dfs = dfs
     }
 
-    get(value) {
-      return this.url.searchParams.get(value) || this.dfs[value]
+    get(key: string) {
+      return this.url.searchParams.get(key) || this.dfs[key]
     }
 
     make_url(opts = {}) {
@@ -28,10 +31,10 @@
     }
   }
 
-  export function navigate(node, { href, replace, scrollto }) {
+  export function navigate(node: Element, { href = null, replace, scrollto }) {
     const opts = { replaceState: replace, noscroll: !!scrollto }
 
-    const action = async (event) => {
+    const action = async (event: Event) => {
       href = href || node.getAttribute('href')
       await goto(href, opts)
       // console.log({ href, replace, scrollto })
@@ -51,7 +54,7 @@
     return { destroy: () => node.removeEventListener('click', action) }
   }
 
-  function make_pages(pgidx, pgmax) {
+  function make_pages(pgidx: number, pgmax: number) {
     const res = []
     const min = pgidx > 2 ? pgidx - 2 : 1
     const max = min + 5 <= pgmax ? min + 5 : pgmax
@@ -68,10 +71,10 @@
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let pager = new Pager('/', {}, { pg: 1 })
+  export let pager
   export let pgidx = 1
   export let pgmax = 1
   export let _navi = { replace: false, scrollto: null }

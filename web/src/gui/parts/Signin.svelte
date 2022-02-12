@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   import { session } from '$app/stores'
 
   export async function signin_user(type, params) {
@@ -12,9 +12,9 @@
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import Gslide from '$molds/Gslide.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Gslide from '$gui/molds/Gslide.svelte'
 
   export let actived = false
 

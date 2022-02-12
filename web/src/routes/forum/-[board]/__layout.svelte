@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   export async function load({ fetch, params: { board } }) {
     const api_url = `/api/boards/` + board
     const api_res = await fetch(api_url)

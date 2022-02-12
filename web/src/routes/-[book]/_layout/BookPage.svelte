@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page, session } from '$app/stores'
   import { invalidate } from '$app/navigation'
 
@@ -8,9 +8,9 @@
     status_names,
     status_icons,
     status_colors,
-  } from '$lib/constants.js'
+  } from '$lib/constants'
 
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   function gen_appbar_right(nvinfo, ubmemo) {
     if (ubmemo.chidx == 0) return null
@@ -21,12 +21,12 @@
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
-  import RTime from '$atoms/RTime.svelte'
-  import BCover from '$atoms/BCover.svelte'
-  import Gmenu from '$molds/Gmenu.svelte'
+  import RTime from '$gui/atoms/RTime.svelte'
+  import BCover from '$gui/atoms/BCover.svelte'
+  import Gmenu from '$gui/molds/Gmenu.svelte'
 
   export let nvinfo = $page.stuff.nvinfo || {}
   export let ubmemo = $page.stuff.ubmemo || {}

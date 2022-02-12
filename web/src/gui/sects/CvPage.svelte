@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   import { browser } from '$app/env'
   import { navigating, session } from '$app/stores'
   import { config } from '$lib/stores'
@@ -7,12 +7,12 @@
 
   import Cvmenu, { ctrl as cvmenu } from './CvPage/Cvmenu.svelte'
 
-  import Aditem from '$molds/Aditem.svelte'
-  import Cvline from '$sects/Cvline.svelte'
+  import Aditem from '$gui/molds/Aditem.svelte'
+  import Cvline from '$gui/sects/Cvline.svelte'
   import Zhline from './CvPage/Zhline.svelte'
 </script>
 
-<script>
+<script lang="ts">
   export let cvdata = ''
   export let zhtext = []
 

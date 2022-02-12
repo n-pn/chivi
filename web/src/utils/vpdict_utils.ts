@@ -32,7 +32,13 @@ const intros = {
   '~v2_objs': 'Động từ yêu cầu 2 tân ngữ, tân ngữ trước thường chỉ người',
 }
 
-export function upsert_dicts(vdict, extra) {
+export interface VpDict {
+  dname: string
+  d_dub: string
+  descs: string
+}
+
+export function upsert_dicts(vdict: VpDict, extra: VpDict) {
   extra = extra || make_vdict('hanviet')
 
   const { dname } = vdict
@@ -43,13 +49,14 @@ export function upsert_dicts(vdict, extra) {
   }
 }
 
-export function make_vdict(dname, d_dub, descs) {
+// prettier-ignore
+export function make_vdict( dname: string, d_dub?: string, descs?: string ): VpDict {
   d_dub = d_dub || labels[dname] || dname
   descs = descs || intros[dname] || make_intro(dname, d_dub)
   return { dname, d_dub, descs }
 }
 
-function make_intro(dname, d_dub) {
+function make_intro(dname: string, d_dub: string) {
   const prefix = dname.charAt(0)
   if (prefix != '$') return `Từ điển đặc biệt: ${d_dub}`
   return `Từ điển riêng cho bộ truyện: ${d_dub}`

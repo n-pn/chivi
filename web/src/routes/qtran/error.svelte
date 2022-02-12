@@ -1,7 +1,7 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page } from '$app/stores'
   import { invalidate } from '$app/navigation'
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ fetch, url }) {
     appbar.set({ left: [['Lỗi máy dịch']] })
@@ -10,10 +10,10 @@
   }
 </script>
 
-<script>
-  import { get_rtime } from '$atoms/RTime.svelte'
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
+<script lang="ts">
+  import { get_rtime } from '$gui/atoms/RTime.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import Tlspec, { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
 
   export let pgidx = 1
   export let pgmax = 1

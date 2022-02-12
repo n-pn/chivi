@@ -1,6 +1,12 @@
 import { writable, get } from 'svelte/store'
+export interface DtopicForm {
+  title: string
+  labels: string
+  body_input: string
+  body_itype: string
+}
 
-function init() {
+function init(): DtopicForm {
   return {
     title: '',
     labels: '1',
@@ -9,14 +15,13 @@ function init() {
   }
 }
 
-async function load(id) {
-  if (id == 0) return init(id)
+async function load(id: number): Promise<DtopicForm> {
+  if (id == 0) return init()
 
   const api_url = `/api/topics/${id}/detail`
   const api_res = await fetch(api_url)
   const payload = await api_res.json()
   if (api_res.ok) return payload.props
-
   console.log(payload.error)
   return init()
 }
@@ -24,7 +29,7 @@ async function load(id) {
 export const form = {
   ...writable(init()),
   init: async (id = 0) => form.set(await load(id)),
-  validate(data = get(form)) {
+  validate(data: DtopicForm = get(form)) {
     const { title, body_input: body } = data
 
     if (title.length < 4) return 'Độ dài của chủ đề phải dài hơn 4 ký tự'
@@ -37,7 +42,7 @@ export const form = {
     return false
   },
 
-  async submit(api_url) {
+  async submit(api_url: string) {
     const err = form.validate()
     if (err) return err
 

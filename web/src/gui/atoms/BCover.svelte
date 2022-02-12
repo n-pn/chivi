@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let bcover
   $: src = bcover && bcover.startsWith('http') ? bcover : `/covers/${bcover}`
 </script>

@@ -1,5 +1,5 @@
-<script>
-  import BCover from '$atoms/BCover.svelte'
+<script lang="ts">
+  import BCover from '$gui/atoms/BCover.svelte'
 
   export let nvinfo
 </script>

@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
   import { session } from '$app/stores'
 
-  import SIcon from '$atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let tab = 'setting'
   let old_pass = ''

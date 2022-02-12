@@ -1,6 +1,6 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page } from '$app/stores'
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ fetch, url }) {
     appbar.set({ left: [['Từ điển', 'package']] })
@@ -11,9 +11,9 @@
   }
 </script>
 
-<script>
-  import Footer from '$sects/Footer.svelte'
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
+<script lang="ts">
+  import Footer from '$gui/sects/Footer.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let cores = []
   export let books = []

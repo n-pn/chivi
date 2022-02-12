@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
   import { bgenres, mgenres } from '$lib/constants'
-  import SIcon from '$atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let genres = []
   let show_all_genres = false

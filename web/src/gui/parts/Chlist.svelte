@@ -1,7 +1,7 @@
-<script>
-  import { kit_chap_url } from '$lib/utils/route_utils'
-  import SIcon from '$atoms/SIcon.svelte'
-  import { get_rtime } from '$atoms/RTime.svelte'
+<script lang="ts">
+  import { kit_chap_url } from '$utils/route_utils'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import { get_rtime } from '$gui/atoms/RTime.svelte'
 
   export let bslug = ''
   export let sname = ''

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let chmeta = {}
 
   const pleb_seeds = ['5200', 'bqg_5200', 'rengshu', 'noff']

@@ -1,6 +1,6 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page } from '$app/stores'
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ url, fetch }) {
     const api_url = new URL(url)
@@ -31,10 +31,10 @@
   }
 </script>
 
-<script>
-  import Nvlist from '$parts/Nvlist.svelte'
-  import Footer from '$sects/Footer.svelte'
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
+<script lang="ts">
+  import Nvlist from '$gui/parts/Nvlist.svelte'
+  import Footer from '$gui/sects/Footer.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let books = []
   export let pgidx = 1

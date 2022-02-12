@@ -1,5 +1,5 @@
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let value = ''
   export let name = 'mdform'

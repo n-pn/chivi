@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   import { make_vdict } from '$utils/vpdict_utils'
 
   const dicts = {
@@ -22,8 +22,8 @@
   }
 </script>
 
-<script>
-  import Dialog from '$molds/Dialog.svelte'
+<script lang="ts">
+  import Dialog from '$gui/molds/Dialog.svelte'
   import { tooltip } from '$utils/custom_actions'
 
   export let vdict = make_vdict('hanviet')

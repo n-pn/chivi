@@ -1,12 +1,12 @@
-<script context="module">
-  import { data as appbar } from '$sects/Appbar.svelte'
+<script context="module" lang="ts">
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ url, fetch, params: { genre } }) {
     appbar.set({ left: [['Thể loại', 'folder', url.pathname]] })
 
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
-    api_url.searchParams.set('lm', 24)
+    api_url.searchParams.set('lm', '24')
     api_url.searchParams.set('genre', genre)
 
     const api_res = await fetch(api_url.toString())
@@ -16,12 +16,12 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { page } from '$app/stores'
-  import Nvlist from '$parts/Nvlist.svelte'
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import Bgenre from '$sects/Bgenre.svelte'
-  import Footer from '$sects/Footer.svelte'
+  import Nvlist from '$gui/parts/Nvlist.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import Bgenre from '$gui/sects/Bgenre.svelte'
+  import Footer from '$gui/sects/Footer.svelte'
 
   export let books = []
   export let pgidx = 1

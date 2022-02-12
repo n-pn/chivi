@@ -1,6 +1,6 @@
-<script context="module">
+<script context="module" lang="ts">
   import { config } from '$lib/stores'
-  import { ctrl as lookup } from '$parts/Lookup.svelte'
+  import { ctrl as lookup } from '$gui/parts/Lookup.svelte'
 
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
@@ -14,8 +14,8 @@
   ]
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let actived = false
 

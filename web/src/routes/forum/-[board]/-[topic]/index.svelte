@@ -1,5 +1,5 @@
-<script context="module">
-  import { data as appbar } from '$sects/Appbar.svelte'
+<script context="module" lang="ts">
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ stuff, fetch, url }) {
     const { dboard, dtopic } = stuff
@@ -22,7 +22,7 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { DtopicFull, DtpostList } from '$gui'
 
   export let dboard

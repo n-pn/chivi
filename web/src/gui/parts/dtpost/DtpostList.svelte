@@ -1,13 +1,13 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page } from '$app/stores'
 
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   import DtpostCard from './DtpostCard.svelte'
   import DtpostForm from './DtpostForm.svelte'
 </script>
 
-<script>
+<script lang="ts">
   export let dtopic
   export let dtlist = {
     pgidx: 1,

@@ -1,6 +1,6 @@
-<script context="module">
+<script context="module" lang="ts">
   import { call_api } from '$api/_api_call'
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   function gen_book_path(bslug, sname, chidx) {
     let url = `/-${bslug}/chaps?sname=${sname}`
@@ -29,15 +29,15 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { page, session } from '$app/stores'
   import { invalidate } from '$app/navigation'
 
-  import SIcon from '$atoms/SIcon.svelte'
-  import Gmenu from '$molds/Gmenu.svelte'
-  import Notext from '$parts/Notext.svelte'
-  import Footer from '$sects/Footer.svelte'
-  import CvPage from '$sects/CvPage.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Gmenu from '$gui/molds/Gmenu.svelte'
+  import Notext from '$gui/parts/Notext.svelte'
+  import Footer from '$gui/sects/Footer.svelte'
+  import CvPage from '$gui/sects/CvPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
 
   $: nvinfo = $page.stuff.nvinfo || {}

@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable, get } from 'svelte/store'
   import { call_api } from '$api/_api_call'
@@ -6,8 +6,8 @@
   import CvData from '$lib/cv_data'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
-  import { ptnames } from '$parts/Postag.svelte'
-  import { ctrl as upsert } from '$parts/Upsert.svelte'
+  import { ptnames } from '$gui/parts/Postag.svelte'
+  import { ctrl as upsert } from '$gui/parts/Upsert.svelte'
 
   export const ctrl = {
     ...writable({ actived: false, enabled: false }),
@@ -19,9 +19,9 @@
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import Gslide from '$molds/Gslide.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Gslide from '$gui/molds/Gslide.svelte'
 
   export let on_destroy = () => {}
   onDestroy(on_destroy)

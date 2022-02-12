@@ -1,10 +1,9 @@
-<script>
+<script lang="ts">
   import { session } from '$app/stores'
   import { status_names, status_icons } from '$lib/constants'
+  import { kit_chap_url } from '$utils/route_utils'
 
-  import { kit_chap_url } from '$lib/utils/route_utils'
-
-  import SIcon from '$atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import { onMount } from 'svelte'
 
   let chaps = []

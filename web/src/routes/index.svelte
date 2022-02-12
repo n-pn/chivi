@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   import { appbar } from '$lib/stores'
 
   export async function load({ url, fetch }) {
@@ -27,12 +27,12 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import { page } from '$app/stores'
-  import Nvlist from '$parts/Nvlist.svelte'
+  import Nvlist from '$gui/parts/Nvlist.svelte'
 
-  import Footer from '$sects/Footer.svelte'
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Footer from '$gui/sects/Footer.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let books = []
   export let pgidx = 1

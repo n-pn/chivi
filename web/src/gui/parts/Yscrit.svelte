@@ -1,5 +1,5 @@
-<script>
-  import { rel_time } from '$lib/utils'
+<script lang="ts">
+  import { rel_time } from '$utils'
   import { SIcon, Gmenu } from '$gui'
   import Replies from './Yscrit/Replies.svelte'
 
@@ -11,7 +11,7 @@
   let active_repls = false
   let replies = []
 
-  function get_stars(count) {
+  function get_stars(count: number) {
     return Array(count).fill('⭐').join('')
   }
 

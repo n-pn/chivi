@@ -1,10 +1,10 @@
-<script context="module">
+<script context="module" lang="ts">
   const keys = ['a', 's', 'd', 'f']
   const lbls = ['Cao', 'Bình', 'Thấp', 'Đáy']
   const labels = ['Hơi cao', 'Trung bình', ' Hơi thấp', 'Rất thấp']
 </script>
 
-<script>
+<script lang="ts">
   import { hint } from './_shared'
 
   export let vpterm

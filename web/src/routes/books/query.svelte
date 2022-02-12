@@ -1,5 +1,5 @@
-<script context="module">
-  import { data as appbar } from '$sects/Appbar.svelte'
+<script context="module" lang="ts">
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ fetch, url }) {
     const pg = +url.searchParams.get('pg') || 1
@@ -20,8 +20,8 @@
   }
 </script>
 
-<script>
-  import NvinfoList from '$sects/Nvinfo/List.svelte'
+<script lang="ts">
+  import NvinfoList from '$gui/sects/Nvinfo/List.svelte'
 
   export let input = ''
   export let books = []

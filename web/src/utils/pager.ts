@@ -1,18 +1,21 @@
 export class Pager {
-  constructor(url, dfs = { pg: 1 }) {
+  url: URL
+  dfs: object
+
+  constructor(url: URL, dfs = { pg: 1 }) {
     this.url = url
     this.dfs = dfs
   }
 
-  get_al(value) {
-    return this.url.searchParams.get(value) || this.dfs[value]
-  }
-
-  get path() {
+  get path(): string {
     return this.url.pathname
   }
 
-  gen_url(opts = {}) {
+  get_val(value: string) {
+    return this.url.searchParams.get(value) || this.dfs[value]
+  }
+
+  gen_url(opts = {}): string {
     const query = new URLSearchParams(this.url.searchParams)
 
     for (const key in opts) {

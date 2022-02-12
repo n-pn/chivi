@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   export async function load({ fetch, params: { topic } }) {
     const frags = topic.split('-')
     const topic_id = frags[frags.length - 1]

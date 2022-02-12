@@ -1,8 +1,8 @@
-<script context="module">
-  import BCover from '$atoms/BCover.svelte'
+<script context="module" lang="ts">
+  import BCover from '$gui/atoms/BCover.svelte'
 </script>
 
-<script>
+<script lang="ts">
   export let nvinfo = {}
   export let nvtab = ''
 

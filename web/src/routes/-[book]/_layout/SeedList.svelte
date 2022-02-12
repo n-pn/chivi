@@ -1,10 +1,10 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page } from '$app/stores'
   const icon_types = ['affiliate', 'archive', 'archive', 'cloud']
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let pager
 

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { scroll } from '$lib/stores'
 
   function observe(node) {

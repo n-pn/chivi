@@ -1,13 +1,14 @@
-<script context="module">
+<script context="module" lang="ts">
   import { navigating, page, session } from '$app/stores'
-  import { scroll, toleft, config, layers } from '$lib/stores'
   import { beforeNavigate } from '$app/navigation'
+  import { scroll, toleft, config, layers } from '$lib/stores'
+  declare var gtag: any
 </script>
 
-<script>
+<script lang="ts">
   import { onMount } from 'svelte'
-  import Appbar from '$sects/Appbar.svelte'
-  import Loader from '$molds/Loader.svelte'
+  import Appbar from '$gui/sects/Appbar.svelte'
+  import Loader from '$gui/molds/Loader.svelte'
   import '../styles/generic.scss'
 
   const links = [
@@ -22,20 +23,18 @@
     }
   }
 
-  let wtheme = $session.wtheme
-  $: if ($config.wtheme) wtheme = $config.wtheme
-
-  onMount(() => {
-    if (!$config.wtheme) config.put('wtheme', $session.wtheme)
-  })
+  let wtheme = $session.wtheme || 'oled'
+  $: {
+    if ($config.wtheme) wtheme = $config.wtheme
+    else config.put('wtheme', wtheme)
+  }
 
   let prevScrollTop = 0
 
   function handle_scroll() {
-    if ($navigating == true) {
+    if ($navigating) {
       prevScrollTop = 0
-      $scroll = 0
-      return
+      return ($scroll = 0)
     }
 
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
@@ -45,14 +44,14 @@
 
   let kbd_hint = false
 
-  function map_key(evt, key) {
+  function map_key(evt: KeyboardEvent, key: string) {
     if (evt.shiftKey) key = '⇧' + key
     if (evt.ctrlKey) key = '⌃' + key
 
     return key
   }
 
-  function handle_keydown(evt) {
+  function handle_keydown(evt: KeyboardEvent) {
     switch (evt.key) {
       case 'Enter':
         return trigger_click(evt, `[data-kbd="${map_key(evt, '↵')}"]`)
@@ -92,13 +91,13 @@
       trigger_click(evt, `[data-kbd='"']`)
     } else {
       trigger_click(evt, `[data-kbd="${evt.key}"]`)
-      trigger_click(evt, `[data-key="${evt.keyCode}"]`)
+      trigger_click(evt, `[data-key="${evt.code}"]`)
     }
   }
 
-  function trigger_click(evt, sel) {
+  function trigger_click(evt: KeyboardEvent, sel: string) {
     const layer = $layers[0]
-    const elem = document.querySelector(`${layer} ${sel}`)
+    const elem: HTMLElement = document.querySelector(`${layer} ${sel}`)
     if (!elem) return
 
     evt.preventDefault()

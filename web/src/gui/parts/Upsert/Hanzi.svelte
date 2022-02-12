@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   import { ztext, zfrom, zupto } from '$lib/stores'
 
   const mapper = [
@@ -14,9 +14,9 @@
   ]
 </script>
 
-<script>
+<script lang="ts">
   import { hint, decor_term } from './_shared'
-  import SIcon from '$atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let vpdicts = []
   export let vpterms = []

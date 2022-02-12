@@ -1,10 +1,10 @@
-<script context="module">
-  import { ptnames } from '$parts/Postag.svelte'
+<script context="module" lang="ts">
+  import { ptnames } from '$gui/parts/Postag.svelte'
   const v_kbd = ['q', '@', '#', '$', '%', '^']
   const p_kbd = ['-', '=']
 </script>
 
-<script>
+<script lang="ts">
   export let vpterm
   export let dname = 'combine'
 

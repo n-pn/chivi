@@ -1,5 +1,5 @@
-<script context="module">
-  import { data as appbar } from '$sects/Appbar.svelte'
+<script context="module" lang="ts">
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ fetch, params: { crit } }) {
     appbar.set({
@@ -14,9 +14,9 @@
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import Yscrit from '$parts/Yscrit.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Yscrit from '$gui/parts/Yscrit.svelte'
 
   export let yscrit
 </script>

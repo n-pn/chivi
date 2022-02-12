@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
   import { call_api } from '$api/_api_call'
@@ -33,9 +33,9 @@
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import Dialog from '$molds/Dialog.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Dialog from '$gui/molds/Dialog.svelte'
 
   export let on_destroy = () => {}
   onDestroy(on_destroy)

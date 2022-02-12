@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let loc = 'bottom'
   export let dir = 'center'
 </script>

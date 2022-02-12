@@ -1,16 +1,18 @@
-<script context="module">
+<script context="module" lang="ts">
+  import type { Dboard } from '$types/models'
+
   import { page, session } from '$app/stores'
   import { dlabels } from '$lib/constants'
 
   import DtopicCard from './DtopicCard.svelte'
   import DtopicForm, { ctrl as dtopic_form } from './DtopicForm.svelte'
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 </script>
 
-<script>
+<script lang="ts">
   import { SIcon } from '$gui'
 
-  export let dboard
+  export let dboard: Dboard
   export let dtlist = []
   export let _mode = 0
 

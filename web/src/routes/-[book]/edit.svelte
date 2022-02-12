@@ -1,6 +1,6 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page } from '$app/stores'
-  import { data as appbar } from '$sects/Appbar.svelte'
+  import { data as appbar } from '$gui/sects/Appbar.svelte'
 
   export async function load({ stuff }) {
     appbar.set({ left: [['Sửa nội dung']] })
@@ -8,8 +8,8 @@
   }
 </script>
 
-<script>
-  import NvinfoForm from '$sects/Nvinfo/Form.svelte'
+<script lang="ts">
+  import NvinfoForm from '$gui/sects/Nvinfo/Form.svelte'
 
   export let nvinfo = $page.stuff.nvinfo || {}
 

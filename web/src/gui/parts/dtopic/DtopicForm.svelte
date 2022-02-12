@@ -1,37 +1,37 @@
-<script context="module">
+<script context="module" lang="ts">
   import { writable } from 'svelte/store'
 
   import { dtopic_form as data } from '$lib/stores'
   import { dlabels } from '$lib/constants'
 
-  function build_labels(labels) {
+  function build_labels(labels: string): { [x: string]: boolean } {
     const output = {}
     labels.split(',').forEach((x) => (output[x] = true))
     return output
   }
 
-  function extract_labels(labels) {
+  function extract_labels(labels: { [x: string]: boolean }) {
     const output = []
     for (let k in labels) if (labels[k]) output.push(+k)
     return output.join(',')
   }
 
   export const ctrl = {
-    ...writable({ id: 0, actived: false }),
-    show(id = 0) {
+    ...writable({ id: '0', actived: false }),
+    show(id = '0') {
       data.init(id)
       ctrl.set({ id, actived: true })
     },
     hide() {
-      ctrl.set({ actived: false })
+      ctrl.set({ id: '0', actived: false })
     },
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import MdForm from '$molds/MdForm.svelte'
-  import Dialog from '$molds/Dialog.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import MdForm from '$gui/molds/MdForm.svelte'
+  import Dialog from '$gui/molds/Dialog.svelte'
 
   export let dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
   export let on_destroy = () => window.location.reload()
@@ -43,9 +43,8 @@
   $: $data.labels = extract_labels(labels)
 
   let error = ''
-  $: console.log($ctrl)
 
-  function make_api_endpoint(dboard_id) {
+  function make_api_endpoint(dboard_id: string | number) {
     if ($ctrl.id != '0') {
       return `/api/topics/${$ctrl.id}`
     } else {
@@ -54,16 +53,14 @@
   }
 
   async function submit() {
-    error = await form.submit(api_url)
+    error = await data.submit(api_url)
     if (error) return
 
     on_destroy()
     ctrl.hide()
   }
 
-  function focus(node) {
-    node.focus()
-  }
+  const focus = (node: HTMLElement) => node.focus()
 </script>
 
 <Dialog actived={$ctrl.actived} class="dtopic" on_close={ctrl.hide}>

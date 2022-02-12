@@ -1,14 +1,4 @@
 import { writable } from 'svelte/store'
-import { create_config_store } from '$utils/create_stores.js'
-
-export const config = create_config_store('_pref', {
-  wtheme: '',
-  ftsize: 3,
-  ftface: 1,
-  textlh: 150,
-  render: 0,
-  showzh: false,
-})
 
 export const layers = {
   ...writable(['#svelte']),
@@ -17,6 +7,7 @@ export const layers = {
   toggle: (active, l) => (active ? layers.add(l) : layers.remove(l)),
 }
 
+export * from './stores/config_store'
 export * from './stores/cvdata_stores'
 export * from './stores/global_stores'
 

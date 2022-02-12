@@ -1,6 +1,6 @@
-<script>
-  import { get_rtime } from '$atoms/RTime.svelte'
-  import SIcon from '$atoms/SIcon.svelte'
+<script lang="ts">
+  import { get_rtime } from '$gui/atoms/RTime.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let replies = []
   export let _active = true

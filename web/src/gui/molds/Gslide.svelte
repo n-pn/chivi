@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import { navigating } from '$app/stores'
   import { toleft, layers } from '$lib/stores'
 
-  import SIcon from '$atoms/SIcon.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let actived = false
 

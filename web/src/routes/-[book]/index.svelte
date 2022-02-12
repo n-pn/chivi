@@ -1,6 +1,6 @@
-<script context="module">
+<script context="module" lang="ts">
   import { page } from '$app/stores'
-  import { status_icons, status_names, status_colors } from '$lib/constants.js'
+  import { status_icons, status_names, status_colors } from '$lib/constants'
 
   export async function load({ fetch, stuff: { nvinfo } }) {
     const api_url = `/api/books/${nvinfo.bhash}/front`
@@ -11,10 +11,10 @@
   }
 </script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
-  import Nvlist from '$parts/Nvlist.svelte'
-  import Yscrit from '$parts/Yscrit.svelte'
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Nvlist from '$gui/parts/Nvlist.svelte'
+  import Yscrit from '$gui/parts/Yscrit.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
   export let nvinfo = $page.stuff.nvinfo || {}

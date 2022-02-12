@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
   import { snames, order_names, book_origins } from '$lib/constants'
 
-  import SIcon from '$atoms/SIcon.svelte'
-  import Gslide from '$molds/Gslide.svelte'
-  import Bgenre from '$sects/Bgenre.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Gslide from '$gui/molds/Gslide.svelte'
+  import Bgenre from '$gui/sects/Bgenre.svelte'
 
   export let actived = false
 </script>

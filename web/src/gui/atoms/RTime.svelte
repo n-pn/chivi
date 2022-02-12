@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   const minute_span = 60 // 60 seconds
   const hour_span = minute_span * 60 // 3600 seconds
   const day_span = hour_span * 24
@@ -40,7 +40,7 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   export let mtime = 0
   $: rtime = new Date(mtime * 1000)
 </script>

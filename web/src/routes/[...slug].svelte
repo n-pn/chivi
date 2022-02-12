@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
   export async function load({ params: { slug } }) {
     if (slug.startsWith('@')) {
       return { status: 301, redirect: slug.replace('@', '/books/@') }
