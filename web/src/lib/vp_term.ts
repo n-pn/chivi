@@ -1,25 +1,25 @@
 export interface VpTermInit {
-  u_val: string
-  b_val: string
+  u_val?: string
+  b_val?: string
 
-  u_ptag: string
-  b_ptag: string
+  u_ptag?: string
+  b_ptag?: string
 
-  u_rank: number
-  b_rank: number
+  u_rank?: number
+  b_rank?: number
 
-  u_mtime: number
-  u_state: string
+  u_mtime?: number
+  u_state?: string
 
-  b_mtime: number
-  b_state: string
-  b_uname: string
+  b_mtime?: number
+  b_state?: string
+  b_uname?: string
 
-  h_vals: string[]
-  h_fval: string
+  h_vals?: string[]
+  h_fval?: string
 
-  h_tags: string[]
-  h_ptag: string
+  h_tags?: string[]
+  h_ptag?: string
 }
 
 export class VpTerm {
@@ -36,6 +36,11 @@ export class VpTerm {
   rank: number = 3
 
   constructor(init?: VpTermInit) {
+    if (!init) {
+      this.init = {}
+      return
+    }
+
     this.init = init
 
     this.val = this.o_val
@@ -52,9 +57,10 @@ export class VpTerm {
     }
   }
 
-  get h_ptags() {
-    const list = [this.init.b_ptag, this.init.u_ptag, ...this.init.h_tags]
-    list.push(...similar_tag(this.ptag))
+  h_ptags(similar_tags: string[] = []) {
+    const list = [this.init.b_ptag, this.init.u_ptag]
+    list.push(...(this.init.h_tags || []))
+    list.push(...similar_tags)
 
     return list
       .filter((x, i, s) => x && x != this.ptag && s.indexOf(x) == i)
@@ -62,7 +68,7 @@ export class VpTerm {
   }
 
   get o_val() {
-    return this.init.u_val || this.init.b_val || this.init.h_fval || ''
+    return this.init?.u_val || this.init?.b_val || this.init?.h_fval || ''
   }
 
   reset() {
@@ -103,98 +109,5 @@ export class VpTerm {
     }
 
     return false
-  }
-}
-
-function similar_tag(ptag: string) {
-  switch (ptag) {
-    case '_':
-      return ['n', 'a', 'v']
-
-    case 'ng':
-    case 'nl':
-    case 'np':
-      return ['n']
-
-    case 'nz':
-      return ['nr', 'nn']
-
-    case 'nn':
-      return ['nr', 'nz']
-
-    case 'n':
-      return ['na', 't']
-
-    case 'na':
-      return ['n', 'an']
-
-    case 'a':
-      return ['b', 'an']
-
-    case 'b':
-      return ['a', 'n']
-
-    case 'an':
-      return ['a', 'na']
-
-    case 'ad':
-      return ['a', 'd']
-
-    case 'ag':
-      return ['a', 'k']
-
-    case 'v':
-      return ['vi', 'vn']
-
-    case 'vd':
-      return ['v', 'd']
-
-    case 'vn':
-      return ['v', 'n']
-
-    case 'vi':
-      return ['v', 'vo']
-
-    case 'vg':
-      return ['v', 'kv']
-
-    case 'r':
-    case 'rr':
-    case 'ry':
-    case 'rz':
-      return ['rr', 'rz', 'ry']
-
-    case 'al':
-      return ['a', 'b']
-
-    case 'vl':
-      return ['al', 'nl']
-
-    case 'i':
-      return ['nl', 'al']
-
-    case 'm':
-    case 'q':
-    case 'mp':
-      return ['m', 'q', 'mq']
-
-    case 'c':
-    case 'cc':
-    case 'd':
-      return ['d', 'c', 'cc']
-
-    case 'e':
-    case 'y':
-    case 'o':
-      return ['e', 'y', 'o']
-
-    case 'k':
-    case 'ka':
-    case 'kn':
-    case 'kv':
-      return ['ka', 'kn', 'kv']
-
-    default:
-      return ['n', 'v', 'a']
   }
 }

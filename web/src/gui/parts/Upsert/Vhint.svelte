@@ -2,6 +2,99 @@
   import { ptnames } from '$gui/parts/Postag.svelte'
   const v_kbd = ['q', '@', '#', '$', '%', '^']
   const p_kbd = ['-', '=']
+
+  function similar_tags(ptag: string) {
+    switch (ptag) {
+      case '_':
+        return ['n', 'a', 'v']
+
+      case 'ng':
+      case 'nl':
+      case 'np':
+        return ['n']
+
+      case 'nz':
+        return ['nr', 'nn']
+
+      case 'nn':
+        return ['nr', 'nz']
+
+      case 'n':
+        return ['na', 't']
+
+      case 'na':
+        return ['n', 'an']
+
+      case 'a':
+        return ['b', 'an']
+
+      case 'b':
+        return ['a', 'n']
+
+      case 'an':
+        return ['a', 'na']
+
+      case 'ad':
+        return ['a', 'd']
+
+      case 'ag':
+        return ['a', 'k']
+
+      case 'v':
+        return ['vi', 'vn']
+
+      case 'vd':
+        return ['v', 'd']
+
+      case 'vn':
+        return ['v', 'n']
+
+      case 'vi':
+        return ['v', 'vo']
+
+      case 'vg':
+        return ['v', 'kv']
+
+      case 'r':
+      case 'rr':
+      case 'ry':
+      case 'rz':
+        return ['rr', 'rz', 'ry']
+
+      case 'al':
+        return ['a', 'b']
+
+      case 'vl':
+        return ['al', 'nl']
+
+      case 'i':
+        return ['nl', 'al']
+
+      case 'm':
+      case 'q':
+      case 'mp':
+        return ['m', 'q', 'mq']
+
+      case 'c':
+      case 'cc':
+      case 'd':
+        return ['d', 'c', 'cc']
+
+      case 'e':
+      case 'y':
+      case 'o':
+        return ['e', 'y', 'o']
+
+      case 'k':
+      case 'ka':
+      case 'kn':
+      case 'kv':
+        return ['ka', 'kn', 'kv']
+
+      default:
+        return ['n', 'v', 'a']
+    }
+  }
 </script>
 
 <script lang="ts">
@@ -14,7 +107,7 @@
 
   function gen_hint(dname: string, vpterm: VpTerm): string[] {
     if (dname == 'hanviet' || dname == 'tradsim') return []
-    return vpterm.h_ptags
+    return vpterm.h_ptags(similar_tags(vpterm.ptag))
   }
 </script>
 
@@ -30,7 +123,7 @@
 </div>
 
 <div class="hints">
-  {#each vpterm.init.h_vals as hint, idx (hint)}
+  {#each vpterm.init.h_vals || [] as hint, idx (hint)}
     {#if idx == 0 || hint != vpterm.val.trim()}
       <button
         class="hint"
