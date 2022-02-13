@@ -109,9 +109,11 @@
   </nav>
 </app-bar>
 
-<Appnav bind:actived={active_appnav} />
+{#if active_appnav}
+  <Appnav bind:actived={active_appnav} />
+{/if}
 
-{#if browser}
+{#if active_usercp}
   {#if $session.uname == 'Khách'}
     <Signin bind:actived={active_usercp} />
   {:else}

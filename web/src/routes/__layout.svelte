@@ -19,6 +19,7 @@
   import Appbar from '$gui/sects/layout/Appbar.svelte'
 
   import '../styles/generic.scss'
+  import { onMount } from 'svelte'
 
   $: {
     if (typeof gtag === 'function') {
@@ -49,11 +50,11 @@
     }
   }
 
-  beforeNavigate(({ to, cancel }) => {
-    if ($session.privi > 1) return
-    cancel()
-    to ? (window.location.href = to.href) : window.location.reload()
-  })
+  // beforeNavigate(({ to, cancel }) => {
+  //   if ($session.privi > 1) return
+  //   cancel()
+  //   to ? (window.location.href = to.href) : window.location.reload()
+  // })
 
   function handle_scroll() {
     if ($navigating) return scroll.reset()
