@@ -1,14 +1,9 @@
 <script context="module" lang="ts">
-  import { session } from '$app/stores'
+  import { api_call } from '$lib/api_call'
 
-  export async function signin_user(type, params) {
-    const res = await fetch(`/api/user/${type}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    })
-
-    return res.ok ? '' : await res.text()
+  export async function signin_user(type: string, form) {
+    const [stt, msg] = await api_call(fetch, `users/${type}`, form, 'POST')
+    return stt < 400 ? '' : (msg as string)
   }
 </script>
 
@@ -21,10 +16,10 @@
   let params = { dname: '', email: '', upass: '' }
 
   let type = 'login'
-  let errs
+  let errs: string
 
   async function submit() {
-    errs = null
+    errs = ''
     errs = await signin_user(type, params)
     if (!errs) window.location.reload()
   }

@@ -83,7 +83,7 @@
     }
   }
 
-  function swap_dict(entry?: VpDict) {
+  function swap_dict(entry?: CV.VpDict) {
     $ctrl = { tab: 2, state: 1 }
     if (entry) extra = entry
   }

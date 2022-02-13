@@ -43,14 +43,14 @@
   let hvmtl = ''
   let error = ''
 
-  let hanzi_elem
-  let match_elem
+  let hanzi_elem: HTMLElement
+  let match_elem: HTMLElement
 
   $: lower = $zfrom
   $: upper = $zupto
   $: prefill_match($ztext, lower, upper)
 
-  async function prefill_match(ztext, lower, upper) {
+  async function prefill_match(ztext: String, lower: number, upper: number) {
     if (!$ctrl.actived) return
 
     const input = ztext.substring(lower, upper)
@@ -102,7 +102,7 @@
     match_elem.focus()
   }
 
-  function change_focus(index, _prev = lower) {
+  function change_focus(index: number, _prev = lower) {
     if (index < upper) lower = index
     if (index >= _prev) upper = index + 1
   }

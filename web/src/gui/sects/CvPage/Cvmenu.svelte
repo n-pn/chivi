@@ -11,8 +11,8 @@
     prev_elem,
   } from '$utils/dom_utils'
 
-  const hovered = []
-  const focused = []
+  const hovered: HTMLElement[] = []
+  const focused: HTMLElement[] = []
 
   export const ctrl = {
     ...writable({ actived: false }),
@@ -23,17 +23,17 @@
     },
   }
 
-  function update_hovered(line, from = 0, upto = 0) {
+  function update_hovered(line?: HTMLElement, from = 0, upto = 0) {
     hovered.forEach((x) => x?.classList.remove('hover'))
     hovered.length = 0
 
     if (!line) return
 
-    const add_hover = (query) => {
-      for (let node of line.querySelectorAll(query)) {
+    const add_hover = (query: string) => {
+      line.querySelectorAll(query).forEach((node) => {
         node.classList.add('hover')
-        hovered.push(node)
-      }
+        hovered.push(node as HTMLElement)
+      })
     }
 
     for (let i = from; i < upto; i++) {
@@ -60,11 +60,11 @@
   import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
   import Tlspec, { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
 
-  export let article
+  export let article: HTMLElement
 
-  export let lines
-  export let l_focus
-  export let l_hover
+  export let lines: string[]
+  export let l_focus: number
+  export let l_hover: number
 
   export let on_change = () => {}
 
@@ -106,7 +106,7 @@
         return
     }
 
-    change_focus(nodes, l_hover, target)
+    change_focus(nodes as HTMLElement[], l_hover, target)
   }
 
   function handle_keydown(event) {
@@ -142,21 +142,23 @@
     return setTimeout(() => upsert.show(dic), 20)
   }
 
-  function find_nearest_nodes(line, idx, max) {
+  function find_nearest_nodes(line: HTMLElement, idx: number, max: number) {
     if (idx >= max) idx = max - 1
 
     let fallback
 
     for (let i = idx; i < max; i++) {
       const elem = line.querySelector(`v-n[data-l="${i}"]`)
-      if (!elem) continue
+      if (!(elem instanceof HTMLElement)) continue
+
       if (+elem.dataset.d > 0) return [elem]
       else fallback = elem
     }
 
     for (let i = idx; i >= 0; i--) {
       const elem = line.querySelector(`v-n[data-l="${i}"]`)
-      if (!elem) continue
+      if (!(elem instanceof HTMLElement)) continue
+
       if (+elem.dataset.d > 0) return [elem]
       else fallback = fallback || elem
     }
@@ -164,13 +166,18 @@
     return fallback ? [fallback] : []
   }
 
-  let timeout
+  let timeout: number
 
-  function change_focus(nodes, index, target = null, delay = 0) {
+  function change_focus(
+    nodes: HTMLElement[],
+    index: number,
+    target = null,
+    delay = 0
+  ) {
     if (index != l_focus) l_focus = index
     $ztext = lines[index]
 
-    const line = article.querySelector(`#L${index}`)
+    const line = article.querySelector(`#L${index}`) as HTMLElement | null
     if (line) scroll_into_view(line, article, 'smooth')
 
     if (!nodes) nodes = find_nearest_nodes(line, $zfrom, $ztext.length)
@@ -196,8 +203,8 @@
       update_hovered(line, $zfrom, $zupto)
       update_focused(nodes)
 
-      if (timeout) clearTimeout(timeout)
-      timeout = setTimeout(() => show_cvmenu(nodes), delay)
+      if (timeout) window.clearTimeout(timeout)
+      timeout = window.setTimeout(() => show_cvmenu(nodes), delay)
     }
   }
 
@@ -230,7 +237,7 @@
     return change_focus(nodes, focus, null, delay)
   }
 
-  function can_skip(node) {
+  function can_skip(node: HTMLElement | null) {
     return node ? +node.dataset.d < 1 : false
   }
 
@@ -270,7 +277,7 @@
   let p_left = 0
   let p_mid = 0
 
-  function show_cvmenu(nodes) {
+  function show_cvmenu(nodes: HTMLElement[]) {
     const parent_rect = article.getBoundingClientRect()
 
     const { top, left } = get_client_rect(nodes[0])

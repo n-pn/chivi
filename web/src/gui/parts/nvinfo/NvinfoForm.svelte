@@ -9,11 +9,11 @@
   export let params: CV.Nvinfo
   let errors: string
 
-  import { call_api } from '$lib/api_call'
+  import { api_call } from '$lib/api_call'
   async function submit() {
-    const [status, payload] = await call_api(fetch, 'books', params, 'PUT')
-    if (status >= 400) errors = payload as string
-    else await goto(`/-${payload.bslug}`)
+    const [stt, data] = await api_call(fetch, 'books', params, 'PUT')
+    if (stt >= 400) errors = data as string
+    else await goto(`/-${data.bslug}`)
   }
 </script>
 

@@ -158,7 +158,7 @@
         <button
           class="-item"
           disabled={$session.privi < 1}
-          on:click={reload_chap}
+          on:click={() => reload_chap(false)}
           data-kbd="r">
           <SIcon name="rotate-clockwise" />
           <span>Dịch lại</span>
