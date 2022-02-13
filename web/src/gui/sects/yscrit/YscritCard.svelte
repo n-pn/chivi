@@ -54,7 +54,7 @@
       </button>
 
       {#if crit.vhtml.length >= 640}
-        <button class="m-btn _sm _show" on:click={() => (view_all = !view_all)}>
+        <button class="meta _show" on:click={() => (view_all = !view_all)}>
           <SIcon name={view_all ? 'minus' : 'plus'} />
         </button>
       {/if}
@@ -93,6 +93,8 @@
   crit-item {
     display: block;
     margin: 1rem 0;
+    padding-bottom: 0.01px;
+
     @include shadow();
     @include bdradi();
     @include bgcolor(secd);
@@ -127,11 +129,6 @@
     margin-left: auto;
     @include ftsize(sm);
     @include flex($gap: 0.375rem);
-
-    ._show {
-      margin-left: -0.5rem;
-      margin-right: -0.75rem;
-    }
   }
 
   ._user,
@@ -147,13 +144,25 @@
     @include fgcolor(tert);
   }
 
+  // prettier-ignore
   .meta {
     @include fgcolor(tert);
-    @include flex-cy($gap: 0.25rem);
+    @include flex-cy($gap: 0.125rem);
     // @include ftsize(sm);
 
-    // prettier-ignore
-    // :global(svg) { margin-top: -0.125rem; }
+    :global(svg) { width: 1rem; height: 1rem; }
+
+    &._show {
+      margin-left: -0.5rem;
+      margin-right: -0.75rem;
+      @include fgcolor(secd);
+      :global(svg) { width: 1.125rem; height: 1.125rem; }
+    }
+  }
+
+  a.meta:hover,
+  button.meta:hover {
+    @include fgcolor(primary, 5);
   }
 
   // prettier-ignore
@@ -173,20 +182,19 @@
   }
 
   crit-body {
+    --hide: #{color(neutral, 7, 2)};
+
     display: block;
-    margin: 0 var(--gutter);
-    @include bps(font-size, rem(16px), $pl: rem(17px), $tm: rem(18px));
+    margin: 0 var(--gutter) 1rem;
 
     max-height: 12rem;
     overflow: hidden;
 
-    --hide: #{color(neutral, 7, 2)};
+    @include bps(font-size, rem(16px), $pl: rem(17px), $tm: rem(18px));
     // prettier-ignore
     background: linear-gradient( to top, color(--hide) 0.25rem, transparent 1rem);
-
-    @include tm-dark {
-      --hide: #{color(neutral, 5, 2)};
-    }
+    // prettier-ignore
+    @include tm-dark { --hide: #{color(neutral, 5, 2)}; }
 
     &._all {
       max-height: initial;
@@ -198,9 +206,9 @@
       @include bps(font-size, rem(18px), $pl: rem(19px), $tm: rem(20px));
     }
 
-    :global(p) {
+    :global(p + p) {
+      margin-top: 1em !important;
       line-height: 1.5em;
-      margin-bottom: 1em !important;
     }
   }
 
