@@ -17,6 +17,8 @@
     const right_opts = { kbd: '+', _text: '_show-lg' }
     return [[last_read.text, last_read.icon, last_read.href, right_opts]]
   }
+
+  import { map_status } from '$utils/nvinfo_utils'
 </script>
 
 <script lang="ts">
@@ -88,7 +90,7 @@
   <div class="line">
     <span class="stat _status">
       <SIcon name="activity" />
-      <span>{nvinfo.status}</span>
+      <span>{map_status(nvinfo.status)}</span>
     </span>
 
     <span class="stat _mftime">

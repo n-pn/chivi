@@ -1,15 +1,13 @@
 <script context="module" lang="ts">
   export async function load({ fetch, stuff, url }) {
-    const page = +url.searchParams.get('pg') || 1
-    const sort = url.searchParams.get('sort') || 'stars'
+    const pg = url.searchParams.get('pg') || 1
+    const _s = url.searchParams.get('sort') || 'stars'
 
-    const qs = `pg=${page}&lm=10&sort=${sort}`
+    const qs = `pg=${pg}&lm=10&sort=${_s}`
     const res = await fetch(`/api/crits?book=${stuff.nvinfo.id}&${qs}`)
 
-    console.log(res)
-
     const data = await res.json()
-    if (res.ok) data.props._sort = sort
+    if (res.ok) data.props._sort = _s
 
     return data
   }
