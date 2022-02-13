@@ -16,9 +16,13 @@ let prevScrollTop = 0
 
 export const scroll = {
   ...writable(0),
-  on_scroll: () => {
+  update() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
     scroll.set(scrollTop - prevScrollTop)
     prevScrollTop = scrollTop <= 0 ? 0 : scrollTop
+  },
+  reset() {
+    prevScrollTop = 0
+    scroll.set(0)
   },
 }

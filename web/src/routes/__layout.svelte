@@ -55,7 +55,10 @@
     to ? (window.location.href = to.href) : window.location.reload()
   })
 
-  // $: console.log($layers)
+  function handle_scroll() {
+    if ($navigating) return scroll.reset()
+    else scroll.update()
+  }
 </script>
 
 <svelte:head>
@@ -68,7 +71,7 @@
 </svelte:head>
 
 <svelte:window
-  on:scroll={scroll.on_scroll}
+  on:scroll={handle_scroll}
   on:keydown={handle_keydown}
   on:keyup={() => (kbd_hint = false)} />
 
