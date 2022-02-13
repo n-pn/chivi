@@ -111,8 +111,9 @@
     @include bgcolor(secd);
     @include bdradi($loc: top);
 
-    padding: 0.25rem var(--gutter) 0.5rem var(--gutter);
-    line-height: 2rem;
+    padding: 0 var(--gutter);
+    line-height: 2.25rem;
+    @include border(--bd-soft, $loc: bottom);
     @include bps(font-size, rem(14px), rem(15px), rem(16px));
 
     button {

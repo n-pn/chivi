@@ -44,6 +44,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
   import Chlist from '$gui/parts/Chlist.svelte'
+  import Footer from '$gui/sects/Footer.svelte'
 
   import SeedList from './_layout/SeedList.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
@@ -118,9 +119,11 @@
         track={ubmemo}
         is_remote={chseed._type > 2} />
 
-      <footer class="foot">
-        <Mpager {pager} pgidx={chpage.pgidx} pgmax={chpage.pgmax} />
-      </footer>
+      <Footer>
+        <div class="foot">
+          <Mpager {pager} pgidx={chpage.pgidx} pgmax={chpage.pgmax} />
+        </div>
+      </Footer>
     {:else}
       <p class="empty">Không có nội dung :(</p>
     {/if}

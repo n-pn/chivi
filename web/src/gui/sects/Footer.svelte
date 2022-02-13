@@ -3,7 +3,7 @@
 
   function observe(node: Element) {
     const observer = new IntersectionObserver(
-      ([e]) => e.target.classList.toggle('sticked', e.intersectionRatio < 1),
+      ([e]) => e.target.classList.toggle('sticky', e.intersectionRatio < 1),
       { threshold: [1] }
     )
 
@@ -12,41 +12,36 @@
   }
 </script>
 
-<footer class="sticky" class:_show={$scroll < 0} use:observe>
-  <slot />
-</footer>
+<footer class:show={$scroll <= 0} use:observe><slot /></footer>
 
 <style lang="scss">
-  .sticky {
+  footer {
     will-change: transform;
     transition: transform 100ms ease-in-out;
 
     padding: 0.5rem var(--gutter);
+    bottom: 0;
     position: sticky;
-    bottom: 0px;
+    bottom: -0.1px;
 
-    // transform: translateY(-1px);
-
-    &:global(.sticked) {
+    &:global(.sticky) {
+      background-color: color(neutral, 5, 5);
       transform: translateY(100%);
-      background: linear-gradient(color(neutral, 1, 1), color(neutral, 7, 7));
+      // @include bdradi(0.5rem, $loc: top);
+
+      --bg-to: #{color(neutral, 7, 7)};
+      --bg-from: #{color(neutral, 1, 1)};
+      background: linear-gradient(var(--bg-from), var(--bg-to));
 
       @include tm-dark {
-        background: linear-gradient(color(neutral, 7, 1), color(neutral, 8, 7));
+        --bg-from: #{color(neutral, 7, 1)};
+        --bg-to: #{color(neutral, 8, 7)};
       }
-    }
 
-    &._show:global(.sticked) {
-      transform: none !important;
-    }
-
-    &:after {
-      display: block;
-      position: absolute;
-      content: '';
-      top: 100%;
-      left: 0;
-      height: 1px;
+      &.show {
+        // transform: translateY(100%);
+        transform: none;
+      }
     }
   }
 </style>
