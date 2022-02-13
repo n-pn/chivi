@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
+  import { appbar } from '$lib/stores'
 
   export async function load() {
     appbar.set({ left: [['Dịch nhanh', 'bolt']], cvmtl: true })
@@ -51,7 +51,7 @@
     edit_mode = true
   }
 
-  function split_input(input) {
+  function split_input(input: string) {
     return input
       .split('\n')
       .map((x) => x.trim())

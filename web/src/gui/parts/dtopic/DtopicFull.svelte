@@ -6,7 +6,8 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import DtopicForm, { ctrl as dtopic_ctrl } from './DtopicForm.svelte'
 
-  export let dtopic
+  export let dtopic: Dtopic
+  export let dboard: Dboard = dtopic.dboard
   export let _all = dtopic.bhtml.length < 500
 
   $: board_url = `/forum/-${dtopic.dboard.bslug}`
@@ -91,7 +92,7 @@
   </topic-pbody>
 </topic-full>
 
-{#if $dtopic_ctrl.actived}<DtopicForm dboard={dtopic.dboard} />{/if}
+{#if $dtopic_ctrl.actived}<DtopicForm {dboard} />{/if}
 
 <style lang="scss">
   topic-full {

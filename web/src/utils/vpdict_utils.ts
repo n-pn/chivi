@@ -32,12 +32,6 @@ const intros = {
   '~v2_objs': 'Động từ yêu cầu 2 tân ngữ, tân ngữ trước thường chỉ người',
 }
 
-export interface VpDict {
-  dname: string
-  d_dub: string
-  descs: string
-}
-
 export function upsert_dicts(vdict: VpDict, extra: VpDict) {
   extra = extra || make_vdict('hanviet')
 

@@ -28,7 +28,7 @@
 
 <script lang="ts">
   import { hint } from './_shared'
-  import { gtran } from '$utils/gtran'
+  import { gtran } from '$lib/gtran'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
@@ -59,10 +59,10 @@
     return { destroy: () => node.removeEventListener('click', action) }
   }
 
-  function check_capped(val) {
+  function check_capped(val: string) {
     const words = val.split(' ')
 
-    let capped
+    let capped: number
     for (capped = 0; capped < words.length; capped++) {
       const word = words[capped]
       if (word != capitalize(word)) break
@@ -71,14 +71,14 @@
     return [capped, words.length]
   }
 
-  async function load_gtran(text) {
+  async function load_gtran(text: string) {
     vpterm.val = '...'
 
     try {
       const res = await gtran(text, lang[tab])
       const [capped, length] = check_capped(res)
 
-      if (lang == 2 && capped == 2 && length == 2) {
+      if (tab == 2 && capped == 2 && length == 2) {
         // swap first name and last name if result is a japanese name
         const [fname, lname] = res.split(' ')
         vpterm.val = lname + ' ' + fname

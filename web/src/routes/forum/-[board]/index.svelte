@@ -1,7 +1,5 @@
 <script context="module" lang="ts">
-  import type { Dboard } from '$types/models'
-
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
+  import { appbar } from '$lib/stores'
 
   export async function load({ stuff, fetch, url: { searchParams } }) {
     const { dboard } = stuff
@@ -30,7 +28,7 @@
   import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
 
   export let dboard: Dboard
-  export let dtlist = { items: [], pgidx: 1, pgmax: 1 }
+  export let dtlist: Dtlist
 </script>
 
 <svelte:head>

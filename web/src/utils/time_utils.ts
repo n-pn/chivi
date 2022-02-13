@@ -20,6 +20,11 @@ export function rel_time(mtime: number) {
   return `${year}-${pad_zero(month)}-${pad_zero(day)}`
 }
 
+// for vp term when mtime start from 2020-01-01 00:00:00 time
+export function rel_time_vp(mtime: number) {
+  return mtime > 1577836800 ? rel_time(mtime) : '~'
+}
+
 function pad_zero(input: number) {
   return input.toString().padStart(2, '0')
 }

@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   const icons = {
     notes: 'notes',
     posts: 'user',
@@ -33,13 +32,13 @@
   import Footer from '$gui/sects/Footer.svelte'
   import CvPage from '$gui/sects/CvPage.svelte'
 
-  export let name
-  export let type
+  export let name: string
+  export let type: string
 
-  export let dname
-  export let d_dub
+  export let dname: string
+  export let d_dub: string | undefined
 
-  export let zhtext = []
+  export let zhtext: string[] = []
   export let cvdata = ''
 
   const on_change = async () => {

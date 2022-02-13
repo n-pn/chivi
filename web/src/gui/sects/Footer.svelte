@@ -1,7 +1,7 @@
 <script lang="ts">
   import { scroll } from '$lib/stores'
 
-  function observe(node) {
+  function observe(node: Element) {
     const observer = new IntersectionObserver(
       ([e]) => e.target.classList.toggle('sticked', e.intersectionRatio < 1),
       { threshold: [1] }

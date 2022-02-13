@@ -7,9 +7,7 @@
   import Signin from '$gui/parts/Signin.svelte'
   import Appnav from '$gui/parts/Appnav.svelte'
   import Usercp from '$gui/parts/Usercp.svelte'
-  import Config from './Appbar/Config.svelte'
-
-  export const data = appbar
+  import Config from '../Appbar/Config.svelte'
 </script>
 
 <script lang="ts">

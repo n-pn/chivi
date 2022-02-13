@@ -7,14 +7,14 @@
 
   export const ctrl = {
     ...writable({ tab: 0, state: 0 }),
-    show: (tab = 0, state = 1, from, upto) => {
+    show: (tab = 0, state = 1, from?: number, upto?: number) => {
       if (from) zfrom.set(from)
       if (upto) zupto.set(upto)
       ctrl.set({ tab, state })
     },
     hide: () => ctrl.set_state(0),
-    set_tab: (tab) => ctrl.update((x) => ({ ...x, tab })),
-    set_state: (state) => ctrl.update((x) => ({ ...x, state })),
+    set_tab: (tab: number) => ctrl.update((x) => ({ ...x, tab })),
+    set_state: (state: number) => ctrl.update((x) => ({ ...x, state })),
   }
   const tabs = [
     { kbd: 'x', icon: 'book', class: 'novel' },
@@ -61,7 +61,7 @@
 
   $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
 
-  let focus
+  let focus: HTMLElement | null = null
   $: vpterm, focus && focus.focus()
 
   async function submit_val() {
@@ -83,7 +83,7 @@
     }
   }
 
-  function swap_dict(entry) {
+  function swap_dict(entry?: VpDict) {
     $ctrl = { tab: 2, state: 1 }
     if (entry) extra = entry
   }

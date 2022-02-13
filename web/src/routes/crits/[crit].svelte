@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   export async function load({ fetch, params: { crit } }) {
     appbar.set({
       left: [
@@ -16,9 +15,9 @@
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Yscrit from '$gui/parts/Yscrit.svelte'
+  import YscritCard from '$gui/parts/Yscrit.svelte'
 
-  export let yscrit
+  export let yscrit: Yscrit
 </script>
 
 <svelte:head>
@@ -42,7 +41,7 @@
   </a>
 </nav>
 
-<Yscrit crit={yscrit} view_all={true} big_text={true} />
+<YscritCard crit={yscrit} view_all={true} big_text={true} />
 
 <style lang="scss">
   .navi {

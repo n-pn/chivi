@@ -1,8 +1,7 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
   import { invalidate } from '$app/navigation'
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   export async function load({ fetch, url }) {
     appbar.set({ left: [['Lỗi máy dịch']] })
     const api_res = await fetch(`/api/tlspecs${url.search}`)

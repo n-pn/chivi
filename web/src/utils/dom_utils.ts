@@ -1,6 +1,13 @@
-const fallback_rect = { left: 0, right: 0, bottom: 0, top: 0 }
+const fallback_rect = {
+  left: 0,
+  right: 0,
+  bottom: 0,
+  top: 0,
+  width: 0,
+  height: 0,
+}
 
-export function get_client_rect(node: HTMLElement) {
+export function get_client_rect(node: Element | null) {
   if (!node) return fallback_rect
   const rects = node.getClientRects()
   return rects[0] || fallback_rect

@@ -29,14 +29,13 @@
     "checkJs": true,
     "outDir": "./dist",
     "paths": {
+      "*": ["./src/types/*.d.ts"],
       "$lib": ["./src/lib"],
       "$lib/*": ["./src/lib/*"],
       "$api": ["./src/api"],
       "$api/*": ["./src/api/*"],
       "$gui": ["./src/gui"],
       "$gui/*": ["./src/gui/*"],
-      "$types": ["./src/types"],
-      "$types/*": ["./src/types/*"],
       "$utils": ["./src/utils"],
       "$utils/*": ["./src/utils/*"]
     }

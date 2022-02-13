@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   export async function load({ fetch, url }) {
     appbar.set({ left: [['Diễn đàn', 'messages', '/forum']] })
 
@@ -17,8 +16,7 @@
 
 <script lang="ts">
   import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
-
-  export let dtlist = { items: [], pgidx: 1, pgmax: 1 }
+  export let dtlist: Dtlist
   const dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
 </script>
 

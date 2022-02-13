@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { rel_time } from '$utils'
+  import { rel_time } from '$utils/time_utils'
   import { SIcon, Gmenu } from '$gui'
   import Replies from './Yscrit/Replies.svelte'
 
-  export let crit
+  export let crit: Yscrit
   export let show_book = true
   export let view_all = false
   export let big_text = false
@@ -28,11 +28,9 @@
 
 <crit-item>
   <crit-head>
-    <a class="crit-user" href="/crits?user={crit.uslug}">{crit.uname}</a>
-    <crit-sep>·</crit-sep>
-    <a class="crit-time" href="/qtran/crits/{crit.id}"
-      >{rel_time(crit.mftime)}</a>
-
+    <a class="user" href="/crits?user={crit.uslug}">{crit.uname}</a>
+    <x-sep>·</x-sep>
+    <a class="time" href="/qtran/crits/{crit.id}">{rel_time(crit.mftime)}</a>
     <crit-star>{get_stars(crit.stars)}</crit-star>
     {#if crit.vhtml.length >= 640}
       <button class="m-btn _sm _show" on:click={() => (view_all = !view_all)}>
@@ -65,33 +63,33 @@
 
   <crit-foot>
     {#if show_book}
-      <crit-meta>
-        <a class="crit-link _title" href="/-{crit.bslug}">
+      <x-meta>
+        <a class="link _title" href="/-{crit.bslug}">
           <SIcon name="book" />
           <span>{crit.bname}</span>
         </a>
 
-        <a class="crit-link _author" href="/books/={crit.author}">
+        <a class="link _author" href="/books/={crit.author}">
           <SIcon name="edit" />
           <span>{crit.author}</span>
         </a>
 
-        <a class="crit-link _genre" href="/books/-{crit.bgenre}">
+        <a class="link _genre" href="/books/-{crit.bgenre}">
           <SIcon name="folder" />
           <span>{crit.bgenre}</span>
         </a>
-      </crit-meta>
+      </x-meta>
     {/if}
 
-    <crit-like>
+    <x-like>
       <SIcon name="thumb-up" />
       <span>{crit.like_count}</span>
-    </crit-like>
+    </x-like>
 
-    <crit-repl on:click={show_replies}>
+    <x-repl on:click={show_replies}>
       <SIcon name="message" />
       <span>{crit.repl_count}</span>
-    </crit-repl>
+    </x-repl>
   </crit-foot>
 </crit-item>
 
@@ -136,8 +134,8 @@
     }
   }
 
-  .crit-user,
-  .crit-time {
+  .user,
+  .time {
     @include fgcolor(secd);
     @include clamp($width: null);
     &:hover {
@@ -145,12 +143,12 @@
     }
   }
 
-  .crit-user {
+  .user {
     font-weight: 500;
     max-width: 36vw;
   }
 
-  .crit-time {
+  .time {
     @include fgcolor(tert);
   }
 
@@ -208,12 +206,12 @@
     :global(svg) { margin-bottom: .125rem; }
   }
 
-  crit-meta {
+  x-meta {
     flex: 1;
     @include flex($gap: 0.375rem);
   }
 
-  .crit-link {
+  .link {
     font-weight: 500;
     @include clamp($width: null);
 
@@ -236,13 +234,13 @@
     }
   }
 
-  crit-repl {
+  x-repl {
     @include hover {
       cursor: pointer;
     }
   }
 
-  crit-like {
+  x-like {
     margin-left: auto;
   }
 </style>

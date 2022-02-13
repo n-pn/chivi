@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   export async function load({ stuff, fetch, url }) {
     const { dboard, dtopic } = stuff
     appbar.set({
@@ -25,9 +24,9 @@
 <script lang="ts">
   import { DtopicFull, DtpostList } from '$gui'
 
-  export let dboard
-  export let dtopic
-  export let dtlist
+  export let dboard: Dboard
+  export let dtopic: Dtopic
+  export let dtlist: Dtlist
 </script>
 
 <svelte:head>

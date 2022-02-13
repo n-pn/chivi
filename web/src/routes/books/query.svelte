@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   export async function load({ fetch, url }) {
     const pg = +url.searchParams.get('pg') || 1
     const type = url.searchParams.get('t') || 'btitle'

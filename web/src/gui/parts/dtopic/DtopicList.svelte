@@ -1,6 +1,4 @@
 <script context="module" lang="ts">
-  import type { Dboard } from '$types/models'
-
   import { page, session } from '$app/stores'
   import { dlabels } from '$lib/constants'
 
@@ -13,7 +11,7 @@
   import { SIcon } from '$gui'
 
   export let dboard: Dboard
-  export let dtlist = []
+  export let dtlist: Dtlist
   export let _mode = 0
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
@@ -54,7 +52,7 @@
   <button
     class="m-btn _primary _fill"
     disabled={$session.privi < 0}
-    on:click={() => dtopic_form.show(0)}>
+    on:click={() => dtopic_form.show('0')}>
     <SIcon name="message-plus" />
     <span>Tạo chủ đề mới</span></button>
 </board-foot>

@@ -1,20 +1,15 @@
 <script context="module" lang="ts">
   import { make_vdict } from '$utils/vpdict_utils'
 
-  const dicts = {
-    basic: ['hanviet', 'fixture', 'essence'],
-    cvmtl: [
-      '~fix_nouns',
-      '~fix_verbs',
-      '~fix_adjts',
-      '~qt_times',
-      '~qt_verbs',
-      '~qt_nouns',
-      '~fix_u_zhi',
-      '~v_compl',
-      '~v2_objs',
-    ],
-  }
+  const basic = ['hanviet', 'fixture', 'essence']
+  // prettier-ignore
+  const cvmtl = [
+    '~fix_nouns', '~fix_verbs', '~fix_adjts',
+    '~qt_times', '~qt_verbs', '~qt_nouns',
+    '~fix_u_zhi', '~v_compl', '~v2_objs',
+  ]
+
+  const dicts = { basic, cvmtl }
 
   const groups = {
     basic: 'Cơ bản',
@@ -24,11 +19,12 @@
 
 <script lang="ts">
   import Dialog from '$gui/molds/Dialog.svelte'
-  import { tooltip } from '$utils/custom_actions'
+  import { tooltip } from '$lib/actions'
 
   export let vdict = make_vdict('hanviet')
   export let state = 3
-  export let on_close = () => (state = 1)
+  // prettier-ignore
+  export let on_close = (_?: any): void => { state = 1 }
 </script>
 
 <Dialog actived={state == 3} --z-idx="80" class="vpdict" _size="sm" {on_close}>

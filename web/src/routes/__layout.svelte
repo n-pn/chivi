@@ -3,19 +3,22 @@
   import { beforeNavigate } from '$app/navigation'
   import { scroll, toleft, config, layers } from '$lib/stores'
   declare var gtag: any
-</script>
-
-<script lang="ts">
-  import { onMount } from 'svelte'
-  import Appbar from '$gui/sects/Appbar.svelte'
-  import Loader from '$gui/molds/Loader.svelte'
-  import '../styles/generic.scss'
 
   const links = [
     ['Discord', 'https://discord.gg/mdC3KQH'],
     ['Github', 'https://github.com/np-nam/chivi'],
     ['Facebook', 'https://www.facebook.com/chivi.fb/'],
   ]
+</script>
+
+<script lang="ts">
+  import { map_keypress, trigger_click } from '$utils/kbd_utils'
+
+  import Pledge from '$gui/sects/layout/Pledge.svelte'
+  import Loader from '$gui/sects/layout/Loader.svelte'
+  import Appbar from '$gui/sects/layout/Appbar.svelte'
+
+  import '../styles/generic.scss'
 
   $: {
     if (typeof gtag === 'function') {
@@ -29,80 +32,21 @@
     else config.put('wtheme', wtheme)
   }
 
-  let prevScrollTop = 0
-
-  function handle_scroll() {
-    if ($navigating) {
-      prevScrollTop = 0
-      return ($scroll = 0)
-    }
-
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-    $scroll = scrollTop - prevScrollTop
-    prevScrollTop = scrollTop <= 0 ? 0 : scrollTop
-  }
-
   let kbd_hint = false
 
-  function map_key(evt: KeyboardEvent, key: string) {
-    if (evt.shiftKey) key = '⇧' + key
-    if (evt.ctrlKey) key = '⌃' + key
-
-    return key
-  }
-
   function handle_keydown(evt: KeyboardEvent) {
-    switch (evt.key) {
-      case 'Enter':
-        return trigger_click(evt, `[data-kbd="${map_key(evt, '↵')}"]`)
+    if (evt.key == 'Shift') return (kbd_hint = true)
 
-      case 'Escape':
-        return trigger_click(evt, `[data-kbd="esc"]`)
+    let kbd = map_keypress(evt)
+    if (!kbd) return
 
-      case 'ArrowLeft':
-        if (!evt.altKey) return
-        return trigger_click(evt, `[data-kbd="${map_key(evt, '←')}"]`)
-
-      case 'ArrowRight':
-        if (!evt.altKey) return
-        return trigger_click(evt, `[data-kbd="${map_key(evt, '→')}"]`)
-
-      case 'ArrowUp':
-        if (!evt.altKey) return
-        return trigger_click(evt, `[data-kbd="${map_key(evt, '↑')}"]`)
-
-      case 'ArrowDown':
-        if (!evt.altKey) return
-        return trigger_click(evt, `[data-kbd="${map_key(evt, '↓')}"]`)
-
-      default:
-        if (evt.ctrlKey) return
-    }
-
-    switch (document.activeElement?.tagName) {
-      case 'TEXTAREA':
-      case 'INPUT':
-        if (!evt.altKey) return
-    }
-
-    if (evt.key == 'Shift') kbd_hint = true
-
+    const scope = $layers[0]
     if (evt.key == '"') {
-      trigger_click(evt, `[data-kbd='"']`)
+      trigger_click(evt, `${scope} [data-kbd='${kbd}']`)
     } else {
-      trigger_click(evt, `[data-kbd="${evt.key}"]`)
-      trigger_click(evt, `[data-key="${evt.code}"]`)
+      trigger_click(evt, `${scope} [data-kbd="${kbd}"]`)
+      trigger_click(evt, `${scope} [data-key="${evt.code}"]`)
     }
-  }
-
-  function trigger_click(evt: KeyboardEvent, sel: string) {
-    const layer = $layers[0]
-    const elem: HTMLElement = document.querySelector(`${layer} ${sel}`)
-    if (!elem) return
-
-    evt.preventDefault()
-    evt.stopPropagation()
-    elem.click()
   }
 
   beforeNavigate(({ to, cancel }) => {
@@ -124,9 +68,11 @@
 </svelte:head>
 
 <svelte:window
-  on:scroll={handle_scroll}
+  on:scroll={scroll.on_scroll}
   on:keydown={handle_keydown}
   on:keyup={() => (kbd_hint = false)} />
+
+{#if $navigating}<Loader />{/if}
 
 <div
   class="app tm-{wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
@@ -134,27 +80,9 @@
   class:_shift={$toleft}>
   <Appbar />
 
-  <main class="main">
-    <div class="vessel">
-      {#if $session.privi < 0}
-        <div class="pledge">
-          Protip: Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá
-          các tính năng!
-        </div>
-      {:else if $session.privi < 2}
-        <a class="pledge" href="/guide/donation">
-          Ủng hộ <strong>Chivi</strong> để nâng cấp quyền hạn!
-        </a>
-      {/if}
-
-      <a
-        href="/forum/-thong-bao/-thong-bao-ve-viec-thay-doi-co-che-hfj4"
-        class="pledge">
-        Thông báo về việc thay đổi cơ chế quyền hạn [31-01-2022]
-      </a>
-
-      <slot />
-    </div>
+  <main>
+    <Pledge />
+    <slot />
   </main>
 
   <footer>
@@ -171,10 +99,6 @@
     </div>
   </footer>
 </div>
-
-{#if $navigating}
-  <Loader />
-{/if}
 
 <style lang="scss">
   .app {
@@ -193,43 +117,15 @@
 
   $page-width: 56rem;
 
-  :global(.vessel) {
+  main {
+    flex: 1;
+    position: relative;
     width: $page-width;
     max-width: 100%;
     margin: 0 auto;
 
     > :global(*) {
       padding: 0 var(--gutter);
-    }
-  }
-
-  // $footer-height: 3.5rem;
-
-  .main {
-    flex: 1;
-    position: relative;
-  }
-
-  .pledge {
-    display: block;
-    text-align: vessel;
-    margin: 0.75rem var(--gutter);
-    // max-width: 50vw;
-    font-size: rem(15px);
-    text-align: center;
-    line-height: 1.25rem;
-
-    padding: 0.5rem var(--gutter);
-
-    @include fgcolor(tert);
-    @include bgcolor(tert);
-
-    @include bdradi();
-  }
-
-  a.pledge {
-    &:hover {
-      @include fgcolor(primary, 5);
     }
   }
 

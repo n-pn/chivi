@@ -10,8 +10,7 @@
     status_colors,
   } from '$lib/constants'
 
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   function gen_appbar_right(nvinfo, ubmemo) {
     if (ubmemo.chidx == 0) return null
     const last_read = ubmemo_api.last_read(nvinfo, ubmemo)

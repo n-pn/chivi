@@ -2,8 +2,7 @@
   import { session, navigating, page } from '$app/stores'
   import * as ubmemo_api from '$api/ubmemo_api'
 
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   export async function load({ fetch, stuff, url }) {
     const { nvinfo, ubmemo } = stuff
 

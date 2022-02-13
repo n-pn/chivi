@@ -9,5 +9,15 @@ interface AppBar {
 }
 
 export const appbar: Writable<AppBar> = writable({})
-export const scroll = writable(0)
 export const toleft = writable(false)
+
+let prevScrollTop = 0
+
+export const scroll = {
+  ...writable(0),
+  on_scroll: () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+    scroll.set(scrollTop - prevScrollTop)
+    prevScrollTop = scrollTop <= 0 ? 0 : scrollTop
+  },
+}

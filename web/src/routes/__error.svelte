@@ -1,15 +1,14 @@
 <script context="module" lang="ts">
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
-  export function load(props) {
-    appbar.set({ left: [[`Lỗi hệ thống: ${props.status}`]] })
-    return { props }
+  import { appbar } from '$lib/stores'
+  export function load({ status, error }) {
+    appbar.set({ left: [[`Lỗi hệ thống: ${status}`]] })
+    return { props: { status, error } }
   }
 </script>
 
 <script lang="ts">
-  export let status
-  export let error
+  export let status: number
+  export let error: Error
 </script>
 
 <svelte:head>

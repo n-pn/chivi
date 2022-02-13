@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
   import { status_types, status_names } from '$lib/constants'
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   export async function load({ url, params, fetch }) {
     const uname = params.uname
     appbar.set({ left: [[`Tủ truyện của [${uname}]`, 'notebook']] })

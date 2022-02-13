@@ -1,11 +1,10 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   export async function load({ url, fetch }) {
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
-    api_url.searchParams.set('lm', 24)
+    api_url.searchParams.set('lm', '24')
 
     appbar.set({
       query: '',

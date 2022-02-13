@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
   import { call_api } from '$api/_api_call'
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   function gen_book_path(bslug, sname, chidx) {
     let url = `/-${bslug}/chaps?sname=${sname}`
     const page = Math.floor((chidx - 1) / 32) + 1

@@ -218,7 +218,7 @@
 
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { tooltip } from '$utils/custom_actions'
+  import { tooltip } from '$lib/actions'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
@@ -229,7 +229,7 @@
   let active_tab = 0
   let origin_tab = 0
 
-  let modal
+  let modal: HTMLElement | null = null
 
   onMount(() => {
     if (!ptag) return
@@ -238,17 +238,20 @@
     scroll_to_tag(ptag)
   })
 
-  const on_close = (ntag) => {
+  // prettier-ignore
+  const on_close = (_?: any) => { state = 1 }
+
+  const pick_tag = (ntag: string) => {
     ptag = ptag == ntag ? '' : ntag
-    state = 1
+    on_close()
   }
 
-  function scroll_to_tab(tab) {
+  function scroll_to_tab(tab: number) {
     sections[tab]?.scrollIntoView({ behavior: 'smooth' })
     active_tab = tab
   }
 
-  function scroll_to_tag(tag) {
+  function scroll_to_tag(tag: string) {
     modal
       ?.querySelector(`.pos-tag[data-tag="${tag}"]`)
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -284,7 +287,7 @@
               data-kbd={map_kbd(ntag)}
               use:tooltip={tooltips[ntag]}
               data-anchor=".postag"
-              on:click={() => on_close(ntag)}>
+              on:click={() => pick_tag(ntag)}>
               <span>{ptnames[ntag]}</span>
               {#if ntag == ptag}
                 <SIcon name="check" />

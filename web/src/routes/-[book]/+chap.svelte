@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   export async function load({ url, fetch, stuff: { nvinfo } }) {
     const chidx = +url.searchParams.get('chidx') || 1
 

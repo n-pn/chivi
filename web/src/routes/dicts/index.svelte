@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   export async function load({ fetch, url }) {
     appbar.set({ left: [['Từ điển', 'package']] })
 

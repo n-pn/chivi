@@ -6,8 +6,7 @@
 
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
   import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
-  import { data as appbar } from '$gui/sects/Appbar.svelte'
-
+  import { appbar } from '$lib/stores'
   import Postag, { ptnames } from '$gui/parts/Postag.svelte'
 
   export async function load({ fetch, url, params: { dict } }) {
@@ -33,7 +32,7 @@
 <script lang="ts">
   import { browser } from '$app/env'
   import { ztext, vdict } from '$lib/stores'
-  import { rel_time } from '$utils/relative_time'
+  import { rel_time_vp } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
@@ -54,18 +53,14 @@
     else d_tab = 2
   }
 
-  function render_time(mtime) {
-    return mtime > 1577836800 ? rel_time(mtime) : '~'
-  }
-
   let postag_state = 1
 
-  const on_change = () =>
-    invalidate(`/api/${$page.url.pathname}${$page.url.search}`)
+  // prettier-ignore
+  const on_change = () => invalidate(`/api/${$page.url.pathname}${$page.url.search}`)
 
   $: pager = new Pager($page.url)
 
-  function render_rank(rank) {
+  function render_rank(rank: number) {
     switch (rank) {
       case 1:
         return '-2'
@@ -85,18 +80,18 @@
     query = query
   }
 
-  function special_type(uname) {
+  function special_type(uname?: string) {
     if (!uname) return 'a'
     if (uname.charAt(0) != '!') return uname == $session.uname ? 'b' : 'c'
     return uname == '!' + $session.uname ? 'd' : 'e'
   }
 
-  function show_lookup(key) {
+  function show_lookup(key: string) {
     ztext.put(key)
     lookup.show(true)
   }
 
-  function show_upsert(key, state = 1) {
+  function show_upsert(key: string, state = 1) {
     ztext.put(key)
     upsert.show(d_tab, state)
   }
@@ -211,7 +206,7 @@
             <td class="uname _{special_type(uname)}">
               <a href="{$page.url.pathname}?uname={uname}">{uname}</a>
             </td>
-            <td class="mtime">{render_time(mtime)} </td>
+            <td class="mtime">{rel_time_vp(mtime)} </td>
           </tr>
         {/each}
       </tbody>
