@@ -105,8 +105,9 @@
   crit-head {
     @include flex($gap: 0.25rem);
     position: sticky;
-    top: 3rem;
+    top: 0;
     z-index: 10;
+
     @include bgcolor(secd);
     @include bdradi($loc: top);
 
