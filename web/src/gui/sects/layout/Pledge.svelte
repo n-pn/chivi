@@ -13,12 +13,6 @@
   </a>
 {/if}
 
-<a
-  href="/forum/-thong-bao/-thong-bao-ve-viec-thay-doi-co-che-hfj4"
-  class="pledge">
-  Thông báo về việc thay đổi cơ chế quyền hạn [31-01-2022]
-</a>
-
 <style lang="scss">
   .pledge {
     display: block;
