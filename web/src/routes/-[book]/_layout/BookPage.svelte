@@ -68,8 +68,8 @@
   <div class="line">
     <span class="stat -trim">
       <SIcon name="edit" />
-      <a class="link" href="/books/={nvinfo.author}">
-        <span class="label">{nvinfo.author}</span>
+      <a class="link" href="/books/={nvinfo.author.vname}">
+        <span class="label">{nvinfo.author.vname}</span>
       </a>
     </span>
 
