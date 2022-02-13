@@ -190,7 +190,7 @@
     ],
   ]
 
-  function find_group(tag) {
+  function find_group(tag: string) {
     for (const [idx, group] of groups.entries()) {
       if (group.includes(tag)) return idx
     }
@@ -198,7 +198,7 @@
     return -1
   }
 
-  function map_kbd(tag) {
+  function map_kbd(tag: string) {
     if (tag.length == 1) return tag
 
     // prettier-ignore

@@ -8,9 +8,8 @@
 </script>
 
 <script lang="ts">
-  import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
-
+  import NvinfoForm, { Params } from '$gui/parts/nvinfo/NvinfoForm.svelte'
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
 </script>
 
-<NvinfoForm params={nvinfo} />
+<NvinfoForm params={new Params(nvinfo)} />

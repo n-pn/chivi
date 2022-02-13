@@ -4,11 +4,11 @@
   export let value = ''
   export let name = 'mdform'
   export let placeholder = ''
-  let input
+  let input: HTMLTextAreaElement
 
   let old_value = ''
 
-  function apply(type) {
+  function apply(type: string) {
     const { selectionStart: start, selectionEnd: end } = input
 
     switch (type) {
@@ -38,7 +38,11 @@
     }
   }
 
-  function insert_text([start, end], prefix, suffix = prefix) {
+  function insert_text(
+    [start, end]: [number, number],
+    prefix: string,
+    suffix = prefix
+  ) {
     const text = input.value.substring(start, end)
     const data = text.split(/\r?\n|\r/).map((x) => prefix + x + suffix)
 
@@ -57,14 +61,14 @@
     }
   }
 
-  function extend_range(start, end) {
+  function extend_range(start: number, end: number): [number, number] {
     const chars = Array.from(value.replace(/\r\n?/g, '\n'))
     while (start > 0 && chars[start - 1] != '\n') start -= 1
     while (end < chars.length && chars[end] != '\n') end += 1
     return [start, end]
   }
 
-  function handle_key(evt) {
+  function handle_key(evt: KeyboardEvent) {
     if (!evt.ctrlKey) return
 
     switch (evt.key) {

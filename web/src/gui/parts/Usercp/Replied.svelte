@@ -6,7 +6,7 @@
 
   $: if (pgidx) load_replies(pgidx)
 
-  async function load_replies(pgidx) {
+  async function load_replies(pgidx: number) {
     const url = `/api/_self/replied?lm=10&pg=${pgidx}`
     const res = await fetch(url)
     const data = await res.json()

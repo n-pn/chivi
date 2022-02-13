@@ -37,7 +37,7 @@ export function hint(node, data) {
   node.addEventListener('blur', hide, true)
 
   return {
-    update: (data) => (tip.innerText = data),
+    update: (data: string) => (tip.innerText = data),
     destroy: () => {
       tip.remove()
 
@@ -48,68 +48,4 @@ export function hint(node, data) {
       node.removeEventListener('blur', hide)
     },
   }
-}
-
-export function decor_term(data) {
-  data.val = data.o_val = data.u_val || data.b_val || data.h_fval || ''
-  data.state = data.u_val ? 2 : data.b_val ? 1 : 0
-
-  data.h_vals = data.h_vals || []
-  data.h_tags = data.h_tags || []
-
-  if (data.u_val) {
-    data._priv = true
-    data.ptag = data.o_ptag = data.u_ptag || ''
-    data.rank = data.u_rank || 3
-  } else {
-    data._priv = false
-    data.ptag = data.o_ptag = data.b_ptag || data.h_ptag || ''
-    data.rank = data.b_rank || 3
-  }
-
-  data.get_state = (_priv = data._priv) => {
-    const style = _priv ? '_line' : '_fill'
-    if (!data.val) return ['Xoá', `${style} _harmful`]
-
-    const o_val = _priv ? data.u_val : data.b_val
-    return o_val ? ['Sửa', `${style} _primary`] : ['Lưu', `${style} _success`]
-  }
-
-  data.swap_dict = () => {
-    data._priv = !data._priv
-    return data
-  }
-
-  data.clear = () => {
-    if (data.val) data.val = ''
-    else if (data.ptag) data.ptag = ''
-    else data.val = '[[pass]]'
-    return data
-  }
-
-  data.reset = () => {
-    data.val = data.o_val
-    data.ptag = data.o_ptag
-    return data
-  }
-
-  data.disabled = (privi) => {
-    if (data._priv) {
-      if (privi < data.u_privi) return true
-      if (data.val != data.u_val) return false
-      if (data.ptag != data.u_ptag) return false
-      if (data.rank != data.u_rank) return false
-
-      return true
-    } else {
-      if (privi < data.b_privi) return true
-      if (data.val != data.b_val) return false
-      if (data.ptag != data.b_ptag) return false
-      if (data.rank != data.b_rank) return false
-
-      return true
-    }
-  }
-
-  return data
 }

@@ -2,11 +2,11 @@
   import { page } from '$app/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let chmeta
-  export let chinfo
+  export let chmeta: CV.Chmeta
+  export let chinfo: CV.Chinfo
 
   $: nvinfo = $page.stuff.nvinfo
-  $: chseed = $page.stuff.chseed || []
+  $: chseed = $page.stuff.chseed
 
   let show_less = true
 
@@ -17,7 +17,7 @@
   $: snames = chseed?.map((x) => x.sname) || []
   $: hidden_seeds = calculate_hidden_seeds(snames, chmeta.sname)
 
-  function calculate_hidden_seeds(snames, sname) {
+  function calculate_hidden_seeds(snames: string[], sname: string) {
     if (snames.length < 5) return 0
     if (snames.slice(0, 5).includes(sname)) return snames.length - 5
     return snames.length - 4

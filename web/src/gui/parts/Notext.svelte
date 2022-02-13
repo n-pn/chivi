@@ -1,11 +1,11 @@
 <script lang="ts">
-  export let chmeta = {}
+  export let chmeta: CV.Chmeta
 
   const pleb_seeds = ['5200', 'bqg_5200', 'rengshu', 'noff']
   const lvl0_seeds = ['hetushu', 'biqubao', 'bxwxorg', 'xbiquge', '69shu']
   const lvl1_seeds = ['zhwenpg', 'paoshu8', 'duokan8']
 
-  function render_seeds(seeds) {
+  function render_seeds(seeds: string[]) {
     return seeds.map((x) => `<strong>${x}</strong>`).join(', ')
   }
 </script>

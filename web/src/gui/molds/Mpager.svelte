@@ -74,7 +74,7 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let pager
+  export let pager: Pager
   export let pgidx = 1
   export let pgmax = 1
   export let _navi = { replace: false, scrollto: null }

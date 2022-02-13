@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-  import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
+  import NvinfoForm, { Params } from '$gui/parts/nvinfo/NvinfoForm.svelte'
 </script>
 
-<NvinfoForm />
+<NvinfoForm params={new Params()} />

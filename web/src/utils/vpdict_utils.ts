@@ -32,7 +32,7 @@ const intros = {
   '~v2_objs': 'Động từ yêu cầu 2 tân ngữ, tân ngữ trước thường chỉ người',
 }
 
-export function upsert_dicts(vdict: VpDict, extra: VpDict) {
+export function upsert_dicts(vdict: CV.VpDict, extra: CV.VpDict) {
   extra = extra || make_vdict('hanviet')
 
   const { dname } = vdict
@@ -44,7 +44,7 @@ export function upsert_dicts(vdict: VpDict, extra: VpDict) {
 }
 
 // prettier-ignore
-export function make_vdict( dname: string, d_dub?: string, descs?: string ): VpDict {
+export function make_vdict( dname: string, d_dub?: string, descs?: string ): CV.VpDict {
   d_dub = d_dub || labels[dname] || dname
   descs = descs || intros[dname] || make_intro(dname, d_dub)
   return { dname, d_dub, descs }

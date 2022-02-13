@@ -15,7 +15,7 @@
 
   let show_less = true
 
-  function calculate_hidden_seeds(snames, sname, size = 4) {
+  function calculate_hidden_seeds(snames: string[], sname: string, size = 4) {
     if (snames.length < size) return 0
     if (snames.slice(0, size).includes(sname)) return snames.length - size
     return snames.length - size + 1

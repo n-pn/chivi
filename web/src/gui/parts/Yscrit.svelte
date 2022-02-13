@@ -3,7 +3,7 @@
   import { SIcon, Gmenu } from '$gui'
   import Replies from './Yscrit/Replies.svelte'
 
-  export let crit: Yscrit
+  export let crit: CV.Yscrit
   export let show_book = true
   export let view_all = false
   export let big_text = false

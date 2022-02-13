@@ -12,7 +12,7 @@
   export let actived = false
   export let tab = 'replied'
 
-  function format_coin(vcoin) {
+  function format_coin(vcoin: number) {
     return vcoin < 1000 ? vcoin : vcoin / 1000 + 'K'
   }
 </script>
@@ -21,7 +21,7 @@
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name="user" /></div>
     <div class="-text">
-      <cv-user privi={$session.privi}>{$session.uname}</cv-user>
+      <cv-user data-privi={$session.privi}>{$session.uname}</cv-user>
       <span class="stats"
         ><SIcon name="crown" /><span>{$session.privi}</span></span>
       <span class="stats"

@@ -2,7 +2,7 @@
   export let ztext = ''
   export let plain = true
 
-  function render_tokens(ztext) {
+  function render_tokens(ztext: string) {
     let res = ''
 
     for (let i = 0; i < ztext.length; i++) {

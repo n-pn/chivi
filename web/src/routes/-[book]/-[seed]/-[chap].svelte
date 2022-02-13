@@ -1,7 +1,8 @@
 <script context="module" lang="ts">
   import { call_api } from '$api/_api_call'
   import { appbar } from '$lib/stores'
-  function gen_book_path(bslug, sname, chidx) {
+
+  function gen_book_path(bslug: string, sname: string, chidx: number) {
     let url = `/-${bslug}/chaps?sname=${sname}`
     const page = Math.floor((chidx - 1) / 32) + 1
     return page > 1 ? url + `&pg=${page}` : url
@@ -42,11 +43,11 @@
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
 
-  export let chmeta
-  export let chinfo
+  export let chmeta: CV.Chmeta
+  export let chinfo: CV.Chinfo
 
-  export let zhtext
-  export let cvdata
+  export let zhtext: string[]
+  export let cvdata: string
 
   const on_change = () => reload_chap(false)
 
@@ -88,7 +89,7 @@
     return { list, prev, next }
   }
 
-  async function update_history(lock) {
+  async function update_history(lock: boolean) {
     const { sname, cpart } = chmeta
     const { chidx, title, uslug } = chinfo
 
@@ -106,7 +107,7 @@
   // prettier-ignore
   $: memo_icon = !ubmemo.locked ? 'menu-2' : on_memory ? 'bookmark' : 'bookmark-off'
 
-  function check_memo(ubmemo) {
+  function check_memo(ubmemo: CV.Ubmemo) {
     if (ubmemo.sname != chmeta.sname) return false
     return ubmemo.chidx == chinfo.chidx && ubmemo.cpart == chmeta.cpart
   }

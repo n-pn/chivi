@@ -9,12 +9,13 @@ declare namespace App {
   interface Session {
     uname: string
     privi: number
+    vcoin: number
     wtheme: string
   }
 
   interface Stuff {
     nvinfo: CV.Nvinfo
     ubmemo: CV.Ubmemo
-    chseed?: JSON
+    chseed: CV.Chseed[]
   }
 }

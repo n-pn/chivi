@@ -109,7 +109,7 @@
     change_focus(nodes as HTMLElement[], l_hover, target)
   }
 
-  function handle_keydown(event) {
+  function handle_keydown(event: KeyboardEvent) {
     if (article != document.activeElement) return
 
     switch (event.key) {
@@ -145,7 +145,7 @@
   function find_nearest_nodes(line: HTMLElement, idx: number, max: number) {
     if (idx >= max) idx = max - 1
 
-    let fallback
+    let fallback: HTMLElement
 
     for (let i = idx; i < max; i++) {
       const elem = line.querySelector(`v-n[data-l="${i}"]`)

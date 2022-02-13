@@ -20,14 +20,14 @@
 
   let error = ''
 
-  async function load_form(id) {
+  async function load_form(id: number) {
     const api_url = `/api/tposts/${id}/detail`
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
     if (api_res.ok) form = payload.props
   }
 
-  function gen_api_url(dtopic_id) {
+  function gen_api_url(dtopic_id: number) {
     let base_url = '/api/tposts'
     if (dtpost_id) return base_url + '/' + dtpost_id
     return base_url + '?dtopic=' + dtopic_id
@@ -36,15 +36,15 @@
   async function submit() {
     error = ''
 
-    const res = await fetch(api_url, {
+    const api_res = await fetch(api_url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     })
 
     const payload = await api_res.json()
-    error = payload.error
-    if (res.ok) on_destroy(true)
+    if (api_res.ok) on_destroy(true)
+    else error = payload.error
   }
 </script>
 

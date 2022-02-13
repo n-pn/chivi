@@ -6,7 +6,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let actived = true
-  export let on_close = () => {}
+  export let on_close = (_?: any) => {}
   export let _size = 'md'
 
   $: layer = '.' + $$props.class

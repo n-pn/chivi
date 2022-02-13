@@ -1,19 +1,23 @@
 const escape_tags = { '&': '&amp;', '"': '&quot;', "'": '&apos;' }
 
-function escape_html(str) {
+function escape_html(str: string | null) {
   return str && str.replace(/[&<>]/g, (x) => escape_tags[x] || x)
 }
 
 export default class CvData {
+  data: any[]
+  _html: string
+  _text: string
+
   static parse_lines(input = '') {
     return input.split('\n').map((x) => new CvData(x))
   }
 
-  constructor(input) {
+  constructor(input: string) {
     this.data = this.parse(Array.from(input), 0)[0]
   }
 
-  parse(chars, i = 0) {
+  parse(chars: string[], i = 0): any[] {
     const data = []
     let term = []
     let word = ''
@@ -160,7 +164,7 @@ export default class CvData {
     return res
   }
 
-  static render_zh(input) {
+  static render_zh(input: string) {
     let res = ''
     let idx = 0
 

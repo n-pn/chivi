@@ -26,7 +26,8 @@
 <script lang="ts">
   import { session } from '$app/stores'
   import { upsert_dicts } from '$utils/vpdict_utils'
-  import { decor_term, hint } from './Upsert/_shared'
+  import { hint } from './Upsert/_shared'
+  import { VpTerm } from '$lib/vp_term'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
@@ -53,8 +54,8 @@
   let extra = make_vdict('hanviet')
   $: vpdicts = upsert_dicts($vdict, extra)
 
-  let vpterms = []
-  $: vpterm = vpterms[$ctrl.tab] || decor_term({})
+  let vpterms: VpTerm[] = []
+  $: vpterm = vpterms[$ctrl.tab] || new VpTerm()
 
   let dname = $vdict.dname
   $: if (extra) dname = vpdicts[$ctrl.tab].dname
@@ -190,7 +191,7 @@
         <button
           class="m-btn _lg _right {btn_state}"
           data-kbd="↵"
-          disabled={vpterm.disabled($session.privi)}
+          disabled={!vpterm.changed}
           on:click={submit_val}
           use:hint={vpterm._priv
             ? 'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'

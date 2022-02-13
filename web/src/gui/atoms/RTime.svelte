@@ -45,4 +45,4 @@
   $: rtime = new Date(mtime * 1000)
 </script>
 
-<time datetime={rtime}>{get_rtime(mtime, rtime)}</time>
+<time datetime={rtime.toDateString()}>{get_rtime(mtime, rtime)}</time>

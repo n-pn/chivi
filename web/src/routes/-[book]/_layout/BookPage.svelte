@@ -35,7 +35,7 @@
     right: gen_appbar_right(nvinfo, ubmemo),
   })
 
-  async function update_ubmemo(status) {
+  async function update_ubmemo(status: string) {
     if ($session.privi < 0) return
     if (status == ubmemo.status) status = 'default'
     ubmemo.status = status

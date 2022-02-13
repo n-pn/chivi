@@ -72,27 +72,27 @@ cv-user,
   font-weight: 500;
   color: var(--color, #{color(neutral, 5)});
 
-  &[privi='-1'] {
+  &[data-privi='-1'] {
     text-decoration: line-through;
   }
 
-  &[privi='0'] {
+  &[data-privi='0'] {
     --color: #{color(neutral, 5)};
   }
 
-  &[privi='1'] {
+  &[data-privi='1'] {
     --color: #{color(primary, 5)};
   }
 
-  &[privi='2'] {
+  &[data-privi='2'] {
     --color: #{color(success, 5)};
   }
 
-  &[privi='3'] {
+  &[data-privi='3'] {
     --color: #{color(warning, 5)};
   }
 
-  &[privi='4'] {
+  &[data-privi='4'] {
     --color: #{color(harmful, 5)};
   }
 }

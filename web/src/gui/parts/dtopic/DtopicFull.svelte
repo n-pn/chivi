@@ -1,16 +1,16 @@
 <script lang="ts">
   import { session } from '$app/stores'
-  import { rel_time } from '$utils'
+  import { rel_time } from '$utils/time_utils'
   import { dlabels } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import DtopicForm, { ctrl as dtopic_ctrl } from './DtopicForm.svelte'
 
-  export let dtopic: Dtopic
-  export let dboard: Dboard = dtopic.dboard
+  export let dtopic: CV.Dtopic
+  export let dboard: CV.Dboard = dtopic.dboard
   export let _all = dtopic.bhtml.length < 500
 
-  $: board_url = `/forum/-${dtopic.dboard.bslug}`
+  $: board_url = `/forum/-${dboard.bslug}`
 </script>
 
 <topic-full>
@@ -42,7 +42,7 @@
     <topic-foot>
       <topic-user>
         <SIcon name="edit" />
-        <cv-user privi={dtopic.u_privi}>{dtopic.u_dname}</cv-user>
+        <cv-user data-privi={dtopic.u_privi}>{dtopic.u_dname}</cv-user>
       </topic-user>
 
       <topic-sep>·</topic-sep>

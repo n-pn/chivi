@@ -10,8 +10,8 @@
 <script lang="ts">
   import { SIcon } from '$gui'
 
-  export let dboard: Dboard
-  export let dtlist: Dtlist
+  export let dboard: CV.Dboard
+  export let dtlist: CV.Dtlist
   export let _mode = 0
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })

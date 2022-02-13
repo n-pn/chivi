@@ -12,10 +12,13 @@
     [-1, -1],
     [-1, 1],
   ]
+
+  import type { VpTermInit } from '$lib/vp_term'
+  import { VpTerm } from '$lib/vp_term'
 </script>
 
 <script lang="ts">
-  import { hint, decor_term } from './_shared'
+  import { hint } from './_shared'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let vpdicts = []
@@ -31,7 +34,12 @@
 
   $: active && update_input($ztext, $zfrom, $zupto, vpdicts)
 
-  async function update_input(ztext, zfrom, zupto, dicts) {
+  async function update_input(
+    ztext: string,
+    zfrom: number,
+    zupto: number,
+    dicts: CV.VpDict[]
+  ) {
     output = ztext.substring(zfrom, zupto)
     prefix = ztext.substring(zfrom - 10, zfrom)
     suffix = ztext.substring(zupto, zupto + 10)
@@ -44,14 +52,14 @@
     // console.log(vpterms)
   }
 
-  function change_focus(index) {
+  function change_focus(index: number) {
     if (index != $zfrom && index < $zupto) $zfrom = index
     if (index >= $zfrom) $zupto = index + 1
   }
 
   function shift_lower(value = 0) {
     value += $zfrom
-    if (value < 0 || value >= ztext.length) return
+    if (value < 0 || value >= $ztext.length) return
 
     $zfrom = value
     if ($zupto <= value) $zupto = value + 1
@@ -59,13 +67,13 @@
 
   function shift_upper(value = 0) {
     value += $zupto
-    if (value < 1 || value > ztext.length) return
+    if (value < 1 || value > $ztext.length) return
 
     $zupto = value
     if ($zfrom >= value) $zfrom = value - 1
   }
 
-  async function update_cached(words, dicts = []) {
+  async function update_cached(words: string[], dicts: CV.VpDict[]) {
     if (words.length == 0) return
 
     const input = {
@@ -94,7 +102,8 @@
 
       for (const key in terms) {
         const val = terms[key]
-        cached[dname][key] = dname == 'pin_yin' ? val : decor_term(val)
+        if (dname == 'pinyin') cached[dname][key] = dname as string
+        else cached[dname][key] = new VpTerm(val as VpTermInit)
       }
     }
   }
@@ -121,7 +130,7 @@
     class="btn _left"
     data-kbd="⇧←"
     use:hint={'Thu hẹp từ trái'}
-    disabled={$zfrom == ztext.length - 1}
+    disabled={$zfrom == $ztext.length - 1}
     on:click={() => shift_lower(1)}>
     <SIcon name="chevron-right" />
   </button>
@@ -177,7 +186,7 @@
     class="btn _right _hide"
     data-kbd="→"
     use:hint={'Mở rộng sang phải'}
-    disabled={$zupto == ztext.length}
+    disabled={$zupto == $ztext.length}
     on:click={() => shift_upper(1)}>
     <SIcon name="chevron-right" />
   </button>

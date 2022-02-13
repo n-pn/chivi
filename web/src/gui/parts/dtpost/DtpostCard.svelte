@@ -1,7 +1,7 @@
 <script lang="ts">
   import { session, page } from '$app/stores'
 
-  import { rel_time } from '$utils'
+  import { rel_time } from '$utils/time_utils'
   import { SIcon, Gmenu } from '$gui'
   import DtpostForm from './DtpostForm.svelte'
 
@@ -47,7 +47,7 @@
         <a
           class="cv-user"
           href="{$page.url.pathname}?cvuser={dtpost.u_dname}"
-          privi={dtpost.u_privi}
+          data-privi={dtpost.u_privi}
           >{dtpost.u_dname}
         </a>
       </dtpost-meta>
@@ -58,7 +58,7 @@
           <a
             class="cv-user"
             href="{$page.url.pathname}#tp-{dtpost.rp_no}"
-            privi={dtpost.ru_privi}
+            data-privi={dtpost.ru_privi}
             on:click={() => (active_card = 'tp-' + dtpost.rp_no)}
             >{dtpost.ru_dname}
           </a>

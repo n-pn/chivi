@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { rel_time } from '$utils'
+  import { rel_time } from '$utils/time_utils'
   import { dlabels } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let dtopic
+  export let dtopic: CV.Dtopic
+  export let dboard: CV.Dboard = dtopic.dboard
   export let _mode = 0
 
-  $: board_url = `/forum/-${dtopic.dboard.bslug}`
-  $: label_url = _mode > -1 ? board_url : `/-${dtopic.dboard.bslug}/board`
+  $: board_url = `/forum/-${dboard.bslug}`
+  $: label_url = _mode > -1 ? board_url : `/-${dboard.bslug}/board`
 </script>
 
 <topic-card>
@@ -16,7 +17,7 @@
     {#if _mode > 0}
       <a class="m-board" href={board_url}>
         <SIcon name="messages" />
-        <span>{dtopic.dboard.bname}</span>
+        <span>{dboard.bname}</span>
       </a>
     {/if}
 
@@ -34,7 +35,7 @@
 
   <topic-foot>
     <topic-user>
-      <cv-user privi={dtopic.u_privi}>{dtopic.u_dname}</cv-user>
+      <cv-user data-privi={dtopic.u_privi}>{dtopic.u_dname}</cv-user>
     </topic-user>
 
     <topic-sep>·</topic-sep>

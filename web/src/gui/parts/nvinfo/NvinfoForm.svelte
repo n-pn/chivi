@@ -1,15 +1,40 @@
 <script context="module" lang="ts">
+  import { api_call } from '$lib/api_call'
   import { book_status } from '$utils/nvinfo_utils'
+
+  export class Params {
+    zname: string = ''
+    vname: string = ''
+
+    status: number = 0
+    bintro: string = ''
+    genres: string = ''
+    bcover: string = ''
+
+    author_zh: string = ''
+    author_vi: string = ''
+
+    constructor(nvinfo?: CV.Nvinfo) {
+      if (!nvinfo) return
+
+      const keys = ['zname', 'vname', 'status', 'bcover']
+      for (const key in keys) this[key] = nvinfo[key]
+
+      this.genres = nvinfo.genres.join(', ')
+
+      this.author_zh = nvinfo.author.zname
+      this.author_vi = nvinfo.author.vname
+    }
+  }
 </script>
 
 <script lang="ts">
   import { goto } from '$app/navigation'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let params: CV.Nvinfo
+  export let params: Params
   let errors: string
 
-  import { api_call } from '$lib/api_call'
   async function submit() {
     const [stt, data] = await api_call(fetch, 'books', params, 'PUT')
     if (stt >= 400) errors = data as string
@@ -40,7 +65,7 @@
         name="author"
         placeholder="Tên tác giả bộ truyện"
         required
-        bind:value={params.author.zname} />
+        bind:value={params.author_zh} />
     </form-group>
 
     <form-group>

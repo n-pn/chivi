@@ -50,8 +50,8 @@
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
-  export let chseed
-  export let chpage
+  export let chseed: CV.Chseed
+  export let chpage: CV.Chpage
 
   $: pager = new Pager($page.url, { sname: 'chivi', pg: 1 })
 </script>

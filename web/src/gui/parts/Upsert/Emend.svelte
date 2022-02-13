@@ -3,9 +3,10 @@
   import { hint } from './_shared'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let vpterm
+  import type { VpTerm } from '$lib/vp_term'
+  export let vpterm: VpTerm
 
-  function render_time(mtime) {
+  function render_time(mtime: number) {
     return get_rtime(mtime * 60 + 1577836800)
   }
 </script>
@@ -15,9 +16,9 @@
     <span class="entry" use:hint={'Lịch sử thêm/sửa của từ điển cá nhân bạn'}>
       <SIcon name="user" />
 
-      {#if vpterm.u_mtime > 0}
-        <span>{vpterm.u_state}:</span>
-        <span class="val">{render_time(vpterm.u_mtime)}</span>
+      {#if vpterm.init.u_mtime > 0}
+        <span>{vpterm.init.u_state}:</span>
+        <span class="val">{render_time(vpterm.init.u_mtime)}</span>
       {:else}
         <span>Chưa có lịch sử</span>
       {/if}
@@ -28,11 +29,11 @@
     <span class="entry" use:hint={'Lịch sử thêm/sửa dữ liệu từ điển cộng đồng'}>
       <SIcon name="share" />
 
-      {#if vpterm.b_mtime > 0}
-        <span>{vpterm.b_state}:</span>
-        <span class="val">{render_time(vpterm.b_mtime)}</span>
-        <span class>bởi</span>
-        <span class="val user">{vpterm.b_uname}</span>
+      {#if vpterm.init.b_mtime > 0}
+        <span>{vpterm.init.b_state}:</span>
+        <span class="val">{render_time(vpterm.init.b_mtime)}</span>
+        <span>bởi</span>
+        <span class="val user">{vpterm.init.b_uname}</span>
       {:else}
         <span>Chưa có lịch sử</span>
       {/if}
