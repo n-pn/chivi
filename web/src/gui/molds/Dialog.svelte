@@ -20,7 +20,7 @@
     <dialog-body
       tabindex="-1"
       class="{$$props.class} _{_size}"
-      on:click={(e) => e.stopPropagation()}
+      on:click|stopPropagation={() => {}}
       transition:scale={{ duration: 100, easing: backInOut }}>
       {#if $$slots.header}
         <dialog-head>

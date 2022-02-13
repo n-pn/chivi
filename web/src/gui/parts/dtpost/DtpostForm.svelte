@@ -4,7 +4,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import MdForm from '$gui/molds/MdForm.svelte'
 
-  export let dtopic_id = 0
+  export let dtopic_id = '0'
   export let dtpost_id = 0
   export let dtrepl_id = 0
 
@@ -27,7 +27,7 @@
     if (api_res.ok) form = payload.props
   }
 
-  function gen_api_url(dtopic_id: number) {
+  function gen_api_url(dtopic_id: string) {
     let base_url = '/api/tposts'
     if (dtpost_id) return base_url + '/' + dtpost_id
     return base_url + '?dtopic=' + dtopic_id

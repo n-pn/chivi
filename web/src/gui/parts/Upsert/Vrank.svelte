@@ -5,9 +5,11 @@
 </script>
 
 <script lang="ts">
+  import type { VpTerm } from '$lib/vp_term'
+
   import { hint } from './_shared'
 
-  export let vpterm
+  export let vpterm: VpTerm
   export let rank = 3
 </script>
 
@@ -19,8 +21,8 @@
   {#each lbls as lbl, idx}
     <button
       class="btn"
-      class:_base={vpterm.b_rank == 4 - idx}
-      class:_priv={vpterm.b_rank == 4 - idx}
+      class:_base={vpterm.init.b_rank == 4 - idx}
+      class:_priv={vpterm.init.b_rank == 4 - idx}
       class:_curr={rank == 4 - idx}
       data-kbd={keys[idx]}
       on:click={() => (rank = 4 - idx)}

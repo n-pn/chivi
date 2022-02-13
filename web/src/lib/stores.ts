@@ -2,9 +2,9 @@ import { writable } from 'svelte/store'
 
 export const layers = {
   ...writable(['#svelte']),
-  add: (l) => layers.update((x) => [l, ...x]),
-  remove: (l) => layers.update((x) => x.filter((i) => i != l)),
-  toggle: (active, l) => (active ? layers.add(l) : layers.remove(l)),
+  add: (l: string) => layers.update((x) => [l, ...x]),
+  remove: (l: string) => layers.update((x) => x.filter((i) => i != l)),
+  toggle: (a: boolean, l: string) => (a ? layers.add(l) : layers.remove(l)),
 }
 
 export * from './stores/config_store'

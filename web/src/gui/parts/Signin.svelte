@@ -1,8 +1,14 @@
 <script context="module" lang="ts">
   import { api_call } from '$lib/api_call'
 
-  export async function signin_user(type: string, form) {
-    const [stt, msg] = await api_call(fetch, `users/${type}`, form, 'POST')
+  class Params {
+    dname = ''
+    email = ''
+    upass = ''
+  }
+
+  export async function signin_user(type: string, params: Params) {
+    const [stt, msg] = await api_call(fetch, `users/${type}`, params, 'POST')
     return stt < 400 ? '' : (msg as string)
   }
 </script>
@@ -12,8 +18,7 @@
   import Gslide from '$gui/molds/Gslide.svelte'
 
   export let actived = false
-
-  let params = { dname: '', email: '', upass: '' }
+  export let params = new Params()
 
   let type = 'login'
   let errs: string

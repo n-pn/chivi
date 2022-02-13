@@ -108,7 +108,7 @@
     }
   }
 
-  function input_is_empty(input) {
+  function input_is_empty(input: Record<string, string[]>) {
     for (const dname in input) {
       if (input[dname].length > 0) return false
     }

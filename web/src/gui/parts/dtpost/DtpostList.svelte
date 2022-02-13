@@ -8,12 +8,8 @@
 </script>
 
 <script lang="ts">
-  export let dtopic
-  export let dtlist = {
-    pgidx: 1,
-    pgmax: 1,
-    items: [],
-  }
+  export let dtopic: CV.Dtopic
+  export let dtlist: CV.Dtlist
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
   let active_card = $page.url.hash.substring(1)

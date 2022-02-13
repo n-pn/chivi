@@ -4,13 +4,13 @@
   import { dtopic_form as data } from '$lib/stores'
   import { dlabels } from '$lib/constants'
 
-  function build_labels(labels: string): { [x: string]: boolean } {
+  function build_labels(labels: string): Record<string, boolean> {
     const output = {}
     labels.split(',').forEach((x) => (output[x] = true))
     return output
   }
 
-  function extract_labels(labels: { [x: string]: boolean }) {
+  function extract_labels(labels: Record<string, boolean>) {
     const output = []
     for (let k in labels) if (labels[k]) output.push(+k)
     return output.join(',')

@@ -24,6 +24,8 @@
 
     return res.join(' ')
   }
+
+  import type { VpTerm } from '$lib/vp_term'
 </script>
 
 <script lang="ts">
@@ -34,7 +36,7 @@
 
   export let key: string
   export let tab = 0
-  export let vpterm
+  export let vpterm: VpTerm
 
   let capped = 0
   let length = 0

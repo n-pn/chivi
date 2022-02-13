@@ -8,15 +8,15 @@
   export let is_remote = false
 
   export let chaps = []
-  export let track
+  export let track: CV.Ubmemo
 
   $: same_sname = sname == track.sname
 
-  function is_marked(chap) {
+  function is_marked(chap: CV.Chinfo) {
     return chap.chidx == track.chidx
   }
 
-  function track_cpart(chap) {
+  function track_cpart(chap: CV.Chinfo) {
     return same_sname && is_marked(chap) ? track.cpart : 0
   }
 </script>

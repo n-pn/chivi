@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let bcover
+  export let bcover: string | undefined
   $: src = bcover && bcover.startsWith('http') ? bcover : `/covers/${bcover}`
 </script>
 

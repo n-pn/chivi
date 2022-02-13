@@ -4,7 +4,7 @@
   const day_span = hour_span * 24
   const month_span = day_span * 30
 
-  export function get_rtime(mtime, rtime = new Date(mtime * 1000)) {
+  export function get_rtime(mtime: number, rtime = new Date(mtime * 1000)) {
     if (mtime < 100000) return 'Không rõ thời gian'
     const span = new Date().getTime() / 1000 - mtime // unit: seconds
 
@@ -14,23 +14,23 @@
     return `${rounding(span, minute_span)} phút trước`
   }
 
-  function iso_date(rtime) {
+  function iso_date(rtime: Date) {
     const year = rtime.getFullYear()
     const month = rtime.getMonth() + 1
     const day = rtime.getDate() + 1
     return `${year}-${pad_zero(month)}-${pad_zero(day)}`
   }
 
-  function pad_zero(input) {
+  function pad_zero(input: number) {
     return input.toString().padStart(2, '0')
   }
 
-  function rounding(input, unit) {
+  function rounding(input: number, unit: number) {
     if (input <= unit) return 1
     return Math.floor(input / unit)
   }
 
-  export function get_rtime_short(mtime) {
+  export function get_rtime_short(mtime: number) {
     const span = new Date().getTime() / 1000 - mtime // unit: seconds
 
     if (span > month_span * 3) return `${rounding(span, month_span)} tháng`

@@ -1,4 +1,4 @@
-export async function api_call(fetch, route: string) {
+export async function api_call(fetch: App.Fetch, route: string) {
   const res = await fetch(`/api/${route}`, {
     headers: { 'Content-Type': 'application/json' },
   })
@@ -8,7 +8,8 @@ export async function api_call(fetch, route: string) {
   return [res.status, data.error]
 }
 
-export async function call_api(fetch, url: String, body: any, method = 'PUT') {
+// prettier-ignore
+export async function call_api(fetch: App.Fetch, url: String, body: any, method = 'PUT') {
   const opts = {
     method,
     headers: { 'Content-Type': 'application/json' },

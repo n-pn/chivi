@@ -1,9 +1,9 @@
-function get_rect(node) {
+function get_rect(node: HTMLElement) {
   const rects = node.getClientRects()
   return rects[rects.length - 1]
 }
 
-function get_place(target, parent) {
+function get_place(target: HTMLElement, parent: HTMLElement) {
   const target_rect = get_rect(target)
   const parent_rect = get_rect(parent)
 
@@ -13,8 +13,8 @@ function get_place(target, parent) {
   return [top, left]
 }
 
-export function hint(node, data) {
-  const parent = document.querySelector('.upsert') || node
+export function hint(node: HTMLElement, data: string) {
+  const parent = (document.querySelector('.upsert') as HTMLElement) || node
   parent.style.position = 'relative'
 
   const tip = document.createElement('tool-tip')

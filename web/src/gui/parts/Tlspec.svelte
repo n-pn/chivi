@@ -18,7 +18,7 @@
       entry.reset()
       ctrl.set({ actived: false })
     },
-    load: async (ukey) => {
+    load: async (ukey: string) => {
       const res = await fetch(`/api/tlspecs/${ukey}`)
       const { props } = await res.json()
 
