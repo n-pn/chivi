@@ -18,6 +18,8 @@
   import BookPage from './_layout/BookPage.svelte'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
+  export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
+
   export let crits: CV.Yscrit[] = []
   export let books: CV.Nvinfo[] = []
   export let users = []
@@ -25,7 +27,7 @@
   let short_intro = false
 </script>
 
-<BookPage {nvinfo} nvtab="index">
+<BookPage {nvinfo} {ubmemo} nvtab="index">
   <article class="m-article">
     <h2>Giới thiệu:</h2>
     <div class="intro" class:_short={short_intro}>

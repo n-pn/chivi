@@ -26,8 +26,8 @@
   import BCover from '$gui/atoms/BCover.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
 
-  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
-  export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
+  export let nvinfo = $page.stuff.nvinfo
+  export let ubmemo = $page.stuff.ubmemo
   export let nvtab = 'index'
 
   $: appbar.set({
