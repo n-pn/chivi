@@ -19,7 +19,7 @@
 
   export let actived = false
 
-  let config_elem
+  let config_elem: HTMLElement
   $: if (actived && config_elem) config_elem.focus()
 
   async function update_wtheme(wtheme) {

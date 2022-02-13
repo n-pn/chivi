@@ -13,7 +13,7 @@
 
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
-    api_url.searchParams.set('lm', 24)
+    api_url.searchParams.set('lm', '24')
 
     const res = await fetch(api_url.toString())
     return res.json()
@@ -29,7 +29,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
-  import Nvlist from '$gui/parts/Nvlist.svelte'
+  import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
 
   import Footer from '$gui/sects/Footer.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
@@ -57,7 +57,7 @@
 </div>
 
 {#if books.length > 0}
-  <Nvlist {books} />
+  <NvinfoList {books} />
 {:else}
   <div class="empty">Danh sách trống</div>
 {/if}

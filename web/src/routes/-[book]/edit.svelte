@@ -8,16 +8,9 @@
 </script>
 
 <script lang="ts">
-  import NvinfoForm from '$gui/sects/Nvinfo/Form.svelte'
+  import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
 
-  export let nvinfo = $page.stuff.nvinfo || {}
-
-  $: params = {
-    author: nvinfo.author,
-    btitle: nvinfo.zname,
-    bcover: nvinfo.bcover,
-    status: 0,
-  }
+  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
 </script>
 
-<NvinfoForm {params} />
+<NvinfoForm params={nvinfo} />

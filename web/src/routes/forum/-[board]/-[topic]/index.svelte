@@ -24,9 +24,9 @@
 <script lang="ts">
   import { DtopicFull, DtpostList } from '$gui'
 
-  export let dboard: Dboard
-  export let dtopic: Dtopic
-  export let dtlist: Dtlist
+  export let dboard: CV.Dboard
+  export let dtopic: CV.Dtopic
+  export let dtlist: CV.Dtlist
 </script>
 
 <svelte:head>

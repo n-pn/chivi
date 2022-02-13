@@ -32,16 +32,10 @@
     return payload
   }
 
-  // function chidx_to_page(chidx, psize = 32) {
-  //   if (chidx < 1) return 1
-  //   return Math.floor((chidx - 1) / psize) + 1
-  // }
-
-  function gen_appbar_right(nvinfo, ubmemo) {
+  function gen_appbar_right(nvinfo: CV.Nvinfo, ubmemo: CV.Ubmemo) {
     if (ubmemo.chidx == 0) return null
     const last_read = ubmemo_api.last_read(nvinfo, ubmemo)
     const right_opts = { kbd: '+', _text: '_show-lg' }
-
     return [[last_read.text, last_read.icon, last_read.href, right_opts]]
   }
 </script>
@@ -54,8 +48,8 @@
   import SeedList from './_layout/SeedList.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
-  export let nvinfo = $page.stuff.nvinfo || {}
-  export let ubmemo = $page.stuff.ubmemo || {}
+  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
+  export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
   export let chseed
   export let chpage
 

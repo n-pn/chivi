@@ -16,7 +16,7 @@
 
 <script lang="ts">
   import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
-  export let dtlist: Dtlist
+  export let dtlist: CV.Dtlist
   const dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
 </script>
 

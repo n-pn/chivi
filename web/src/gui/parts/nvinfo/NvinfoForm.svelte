@@ -1,38 +1,19 @@
 <script context="module" lang="ts">
-  const status = ['Còn tiếp', 'Hoàn thành', 'Thái giám']
+  import { book_status } from '$utils/nvinfo_utils'
 </script>
 
 <script lang="ts">
   import { goto } from '$app/navigation'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let params = {
-    author: '',
-    btitle: '',
-    genres: '',
-    bintro: '',
-    bcover: '',
-    status: 0,
-  }
+  export let params: CV.Nvinfo
+  let errors: string
 
-  let error = ''
-
+  import { call_api } from '$lib/api_call'
   async function submit() {
-    const body = JSON.stringify(params)
-    const opts = {
-      headers: { 'Content-Type': 'application/json' },
-      method: 'PUT',
-      body,
-    }
-
-    const res = await fetch('/api/books', opts)
-
-    if (res.ok) {
-      const { bslug } = await res.json()
-      await goto(`/-${bslug}`)
-    } else {
-      error = await res.text()
-    }
+    const [status, payload] = await call_api(fetch, 'books', params, 'PUT')
+    if (status >= 400) errors = payload as string
+    else await goto(`/-${payload.bslug}`)
   }
 </script>
 
@@ -48,7 +29,7 @@
         name="btitle"
         placeholder="Tên tựa bộ truyện"
         required
-        bind:value={params.btitle} />
+        bind:value={params.zname} />
     </form-group>
 
     <form-group>
@@ -59,7 +40,7 @@
         name="author"
         placeholder="Tên tác giả bộ truyện"
         required
-        bind:value={params.author} />
+        bind:value={params.author.zname} />
     </form-group>
 
     <form-group>
@@ -96,7 +77,7 @@
     <form-group>
       <label for="status">Trạng thái truyện</label>
       <form-radio>
-        {#each status as label, value}
+        {#each book_status as label, value}
           <label class="m-radio">
             <input
               type="radio"
@@ -109,9 +90,9 @@
       </form-radio>
     </form-group>
 
-    {#if error}
+    {#if errors}
       <form-group>
-        <form-error>{error}</form-error>
+        <form-error>{errors}</form-error>
       </form-group>
     {/if}
 

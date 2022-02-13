@@ -3,10 +3,10 @@
 </script>
 
 <script lang="ts">
-  export let nvinfo = {}
+  export let nvinfo: CV.Nvinfo
   export let nvtab = ''
 
-  function rating_stars(rating, voters) {
+  function rating_stars(rating: number, voters: number) {
     if (voters <= 10) return []
 
     const output = ['⭐']

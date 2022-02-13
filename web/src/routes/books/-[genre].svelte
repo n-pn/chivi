@@ -17,7 +17,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
-  import Nvlist from '$gui/parts/Nvlist.svelte'
+  import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import Bgenre from '$gui/sects/Bgenre.svelte'
   import Footer from '$gui/sects/Footer.svelte'
@@ -39,7 +39,7 @@
 </div>
 
 {#if books.length > 0}
-  <Nvlist {books} />
+  <NvinfoList {books} />
 {:else}
   <div class="empty">Danh sách trống</div>
 {/if}

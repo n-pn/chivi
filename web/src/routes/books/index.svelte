@@ -31,11 +31,11 @@
 </script>
 
 <script lang="ts">
-  import Nvlist from '$gui/parts/Nvlist.svelte'
+  import Nvlist from '$gui/parts/nvinfo/NvinfoList.svelte'
   import Footer from '$gui/sects/Footer.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
-  export let books = []
+  export let books: CV.Nvinfo[] = []
   export let pgidx = 1
   export let pgmax = 1
 

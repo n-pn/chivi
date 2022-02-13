@@ -34,7 +34,12 @@
     cvmenu.hide()
   }
 
-  function render_html(render, index, hover, focus) {
+  function render_html(
+    render: number,
+    index: number,
+    hover: number,
+    focus: number
+  ) {
     if (render != 0) return render > 0
     if (index == hover) return true
 

@@ -13,8 +13,8 @@ declare namespace App {
   }
 
   interface Stuff {
-    nvinfo: Nvinfo
-    ubmemo?: JSON
+    nvinfo: CV.Nvinfo
+    ubmemo: CV.Ubmemo
     chseed?: JSON
   }
 }

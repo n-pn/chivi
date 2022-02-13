@@ -19,7 +19,7 @@
     return { props: { nvinfo, chidx, input } }
   }
 
-  async function load_text(fetch, book_id, chidx) {
+  async function load_text(fetch, book_id: number, chidx: number) {
     const res = await fetch(`/api/chaps/${book_id}/chivi/${chidx}/_raw`)
     return await res.text()
   }
@@ -32,7 +32,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  export let nvinfo = $page.stuff.nvinfo
+  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let chidx = 1
   export let input = ''
 

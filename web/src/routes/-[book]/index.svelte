@@ -13,13 +13,13 @@
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Nvlist from '$gui/parts/Nvlist.svelte'
+  import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
   import Yscrit from '$gui/parts/Yscrit.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
-  export let nvinfo = $page.stuff.nvinfo || {}
-  export let crits = []
-  export let books = []
+  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
+  export let crits: CV.Yscrit[] = []
+  export let books: CV.Nvinfo[] = []
   export let users = []
 
   let short_intro = false
@@ -53,7 +53,7 @@
     </h3>
 
     {#if books.length > 0}
-      <Nvlist {books} />
+      <NvinfoList {books} />
     {:else}
       <div class="empty">Danh sách trống</div>
     {/if}

@@ -21,11 +21,10 @@
     will-change: transform;
     transition: transform 100ms ease-in-out;
 
-    position: relative;
     padding: 0.5rem var(--gutter);
-
     position: sticky;
-    bottom: -0.1px;
+    bottom: 0px;
+
     // transform: translateY(-1px);
 
     &:global(.sticked) {
@@ -39,6 +38,15 @@
 
     &._show:global(.sticked) {
       transform: none !important;
+    }
+
+    &:after {
+      display: block;
+      position: absolute;
+      content: '';
+      top: 100%;
+      left: 0;
+      height: 1px;
     }
   }
 </style>

@@ -19,8 +19,8 @@
   import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
-  export let nvinfo = $page.stuff.nvinfo
-  export let dtlist = { items: [], pgidx: 1, pgmax: 1 }
+  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
+  export let dtlist: CV.Dtlist = { items: [], pgidx: 1, pgmax: 1 }
 
   $: dboard = { id: nvinfo.id, bname: nvinfo.vname, bslug: nvinfo.bslug }
 </script>

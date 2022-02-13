@@ -17,7 +17,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import YscritCard from '$gui/parts/Yscrit.svelte'
 
-  export let yscrit: Yscrit
+  export let yscrit: CV.Yscrit
 </script>
 
 <svelte:head>

@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-  import NvinfoForm from '$gui/sects/Nvinfo/Form.svelte'
+  import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
 </script>
 
 <NvinfoForm />

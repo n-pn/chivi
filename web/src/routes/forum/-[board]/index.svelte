@@ -27,8 +27,8 @@
 <script lang="ts">
   import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
 
-  export let dboard: Dboard
-  export let dtlist: Dtlist
+  export let dboard: CV.Dboard
+  export let dtlist: CV.Dtlist
 </script>
 
 <svelte:head>

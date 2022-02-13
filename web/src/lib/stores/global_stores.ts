@@ -2,6 +2,7 @@ import type { Writable } from 'svelte/store'
 import { writable } from 'svelte/store'
 
 interface AppBar {
+  page?: string
   left?: Array<Array<string | null>>
   right?: Array<Array<any>>
   query?: string

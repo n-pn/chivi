@@ -28,10 +28,10 @@
   import Yscrit from '$gui/parts/Yscrit.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
-  export let crits = []
+  export let crits: CV.Yscrit[] = []
   export let pgidx = 1
   export let pgmax = 1
-  export let _sort
+  export let _sort: string
 
   $: pager = new Pager($page.url, { sort: 'stars', pg: 1 })
 </script>

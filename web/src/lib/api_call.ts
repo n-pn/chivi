@@ -1,5 +1,5 @@
-type Fetch = (url: String, option: object) => Promise<Response>
-type Output = Promise<[number, object | string]>
+type Fetch = (url: RequestInfo, option?: RequestInit) => Promise<Response>
+type Output = Promise<[number, any]>
 
 const headers = { 'Content-Type': 'application/json' }
 

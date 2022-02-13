@@ -6,7 +6,7 @@ export async function update_status(nvinfo_id: number, status: string) {
   return await call_api(fetch, url, { status }, 'PUT')
 }
 
-export function last_read({ bslug }, ubmemo: any) {
+export function last_read({ bslug }, ubmemo: CV.Ubmemo) {
   return {
     href: kit_chap_url(bslug, ubmemo),
     icon: ubmemo.locked ? 'player-skip-forward' : 'player-play',

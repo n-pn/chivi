@@ -1,7 +1,7 @@
 <script lang="ts">
   import BCover from '$gui/atoms/BCover.svelte'
 
-  export let nvinfo
+  export let nvinfo: CV.Nvinfo
 </script>
 
 <a href="/-{nvinfo.bslug}" class="nvinfo">
@@ -19,7 +19,7 @@
     </div>
 
     <div class="extra _author">
-      <span class="value -trim">{nvinfo.author}</span>
+      <span class="value -trim">{nvinfo.author.vname}</span>
     </div>
 
     <div class="extra">

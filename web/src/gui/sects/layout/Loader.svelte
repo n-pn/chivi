@@ -13,16 +13,16 @@
     if (!state) progress.set(100, { duration: 100 })
   })
 
-  let ticking // fake progress
+  let ticking: number // fake progress
 
   function fake_progress() {
     progress.update((x) => x + Math.floor((100 - x) / 2))
-    ticking = setTimeout(fake_progress, interval)
+    ticking = window.setTimeout(fake_progress, interval)
   }
 
   onMount(() => {
     progress.set(85)
-    ticking = setTimeout(fake_progress, interval)
+    ticking = window.setTimeout(fake_progress, interval)
   })
 
   onDestroy(() => {

@@ -39,8 +39,8 @@
   import CvPage from '$gui/sects/CvPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
 
-  $: nvinfo = $page.stuff.nvinfo || {}
-  $: ubmemo = $page.stuff.ubmemo || []
+  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
+  export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
 
   export let chmeta
   export let chinfo

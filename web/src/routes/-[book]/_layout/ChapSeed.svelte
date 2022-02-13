@@ -2,15 +2,15 @@
   import { page } from '$app/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let chmeta = {}
-  export let chinfo = {}
+  export let chmeta
+  export let chinfo
 
-  $: nvinfo = $page.stuff.nvinfo || {}
+  $: nvinfo = $page.stuff.nvinfo
   $: chseed = $page.stuff.chseed || []
 
   let show_less = true
 
-  function chap_url(sname) {
+  function chap_url(sname: string) {
     return `/-${nvinfo.bslug}/-${sname}/-${chinfo.uslug}-${chinfo.chidx}`
   }
 
