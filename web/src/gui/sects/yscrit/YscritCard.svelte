@@ -20,9 +20,13 @@
       headers: { 'Content-Type': 'application/json' },
     })
 
-    if (!res.ok) return
-    replies = await res.json()
-    active_repls = true
+    const data = await res.json()
+    if (!res.ok) {
+      alert(data.error)
+    } else {
+      replies = data.props
+      active_repls = true
+    }
   }
 </script>
 
