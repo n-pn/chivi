@@ -25,7 +25,7 @@
   import { page } from '$app/stores'
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-  import Yscrit from '$gui/parts/Yscrit.svelte'
+  import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
   export let crits: CV.Yscrit[] = []
@@ -50,7 +50,10 @@
 
     <div class="crits">
       {#each crits as crit}
-        <Yscrit {crit} show_book={false} view_all={crit.vhtml.length < 640} />
+        <YscritCard
+          {crit}
+          show_book={false}
+          view_all={crit.vhtml.length < 640} />
       {/each}
 
       <footer class="pagi">

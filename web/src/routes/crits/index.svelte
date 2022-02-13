@@ -14,8 +14,7 @@
 
 <script lang="ts">
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-  import Yscrit from '$gui/parts/Yscrit.svelte'
-
+  import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
   export let crits = []
   export let pgidx = 1
   export let pgmax = 1
@@ -40,7 +39,7 @@
 
 <div class="crits">
   {#each crits as crit}
-    <Yscrit {crit} view_all={crit.vhtml.length < 640} />
+    <YscritCard {crit} view_all={crit.vhtml.length < 640} />
   {/each}
 
   <footer class="pagi">

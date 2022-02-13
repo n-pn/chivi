@@ -1,7 +1,7 @@
 <script lang="ts">
   import { rel_time } from '$utils/time_utils'
-  import { SIcon, Gmenu } from '$gui'
-  import Replies from './Yscrit/Replies.svelte'
+  import { SIcon } from '$gui'
+  import Replies from './Replies.svelte'
 
   export let crit: CV.Yscrit
   export let show_book = true
@@ -31,30 +31,16 @@
     <a class="user" href="/crits?user={crit.uslug}">{crit.uname}</a>
     <x-sep>·</x-sep>
     <a class="time" href="/qtran/crits/{crit.id}">{rel_time(crit.mftime)}</a>
-    <crit-star>{get_stars(crit.stars)}</crit-star>
+    <x-sep>·</x-sep>
+    <a class="meta _link" href="/crits/{crit.id}"
+      ><SIcon name="external-link" /></a>
+
+    <x-stars>{get_stars(crit.stars)}</x-stars>
     {#if crit.vhtml.length >= 640}
       <button class="m-btn _sm _show" on:click={() => (view_all = !view_all)}>
         <SIcon name={view_all ? 'minus' : 'plus'} />
       </button>
     {/if}
-
-    <Gmenu dir="right">
-      <button class="m-btn _sm _menu" slot="trigger">
-        <SIcon name="dots-vertical" />
-      </button>
-
-      <svelte:fragment slot="content">
-        <a class="-item" href="/crits/{crit.id}">
-          <SIcon name="link" />
-          <span>Đường dẫn</span>
-        </a>
-
-        <a class="-item" href="/qtran/crits/{crit.id}">
-          <SIcon name="bolt" />
-          <span>Dịch nhanh</span>
-        </a>
-      </svelte:fragment>
-    </Gmenu>
   </crit-head>
 
   <crit-body class:_all={view_all} class:big_text>
@@ -119,7 +105,7 @@
     @include bgcolor(secd);
     @include bdradi($loc: top);
 
-    padding: 0.25rem 0 0.5rem var(--gutter);
+    padding: 0.25rem var(--gutter) 0.5rem var(--gutter);
     line-height: 2rem;
     @include bps(font-size, rem(14px), rem(15px), rem(16px));
 
@@ -143,6 +129,17 @@
     }
   }
 
+  x-sep {
+    @include fgcolor(tert);
+  }
+
+  .meta {
+    @include fgcolor(tert);
+    &._link {
+      margin-top: -0.125rem;
+    }
+  }
+
   .user {
     font-weight: 500;
     max-width: 36vw;
@@ -152,7 +149,7 @@
     @include fgcolor(tert);
   }
 
-  crit-star {
+  x-stars {
     @include ftsize(sm);
     margin-left: auto;
   }

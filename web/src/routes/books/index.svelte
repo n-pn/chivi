@@ -9,12 +9,7 @@
     appbar.set({
       query: '',
       right: [
-        [
-          'Thêm truyện',
-          'file-plus',
-          'link',
-          { href: '/books/+new', _text: '_show-lg' },
-        ],
+        ['Thêm truyện', 'file-plus', '/books/+new', { _text: '_show-lg' }],
       ],
     })
 

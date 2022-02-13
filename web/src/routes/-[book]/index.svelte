@@ -14,7 +14,7 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
-  import Yscrit from '$gui/parts/Yscrit.svelte'
+  import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
@@ -41,7 +41,10 @@
 
     <div class="crits">
       {#each crits as crit}
-        <Yscrit {crit} show_book={false} view_all={crit.vhtml.length < 640} />
+        <YscritCard
+          {crit}
+          show_book={false}
+          view_all={crit.vhtml.length < 640} />
       {:else}
         <div class="empty">Chưa có đánh giá</div>
       {/each}

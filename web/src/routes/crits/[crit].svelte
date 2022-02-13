@@ -15,8 +15,7 @@
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import YscritCard from '$gui/parts/Yscrit.svelte'
-
+  import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
   export let yscrit: CV.Yscrit
 </script>
 
