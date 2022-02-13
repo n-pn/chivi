@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable, get } from 'svelte/store'
-  import { call_api } from '$api/_api_call'
+  import { api_call } from '$lib/api_call'
 
   import CvData from '$lib/cv_data'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
@@ -35,9 +35,9 @@
   let hv_html = ''
   $: zh_html = CvData.render_zh($ztext)
 
-  async function update_lookup(input) {
+  async function update_lookup(input: string) {
     const url = `dicts/${$vdict.dname}/lookup`
-    const [err, data] = await call_api(fetch, url, { input })
+    const [err, data] = await api_call(fetch, url, { input }, 'PUT')
     if (err) return console.log({ err })
 
     entries = data.entries

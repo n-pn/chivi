@@ -2,7 +2,7 @@
   import { page, session } from '$app/stores'
   import { invalidate } from '$app/navigation'
 
-  import * as ubmemo_api from '$api/ubmemo_api'
+  import { last_read, update_status } from '$utils/ubmemo_utils'
   import {
     status_types,
     status_names,
@@ -13,9 +13,9 @@
   import { appbar } from '$lib/stores'
   function gen_appbar_right(nvinfo: CV.Nvinfo, ubmemo: CV.Ubmemo) {
     if (ubmemo.chidx == 0) return null
-    const last_read = ubmemo_api.last_read(nvinfo, ubmemo)
+    const history = last_read(nvinfo, ubmemo)
     const right_opts = { kbd: '+', _text: '_show-lg' }
-    return [[last_read.text, last_read.icon, last_read.href, right_opts]]
+    return [[history.text, history.icon, history.href, right_opts]]
   }
 
   import { map_status } from '$utils/nvinfo_utils'
@@ -41,7 +41,7 @@
     if ($session.privi < 0) return
     if (status == ubmemo.status) status = 'default'
     ubmemo.status = status
-    const [stt, msg] = await ubmemo_api.update_status(nvinfo.id, status)
+    const [stt, msg] = await update_status(nvinfo.id, status)
 
     if (stt) return console.log(`error update book status: ${msg}`)
     else invalidate(`/api/books/${nvinfo.bslug}`)

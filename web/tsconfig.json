@@ -32,13 +32,12 @@
       "*": ["./src/types/*.d.ts"],
       "$lib": ["./src/lib"],
       "$lib/*": ["./src/lib/*"],
-      "$api": ["./src/api"],
-      "$api/*": ["./src/api/*"],
       "$gui": ["./src/gui"],
       "$gui/*": ["./src/gui/*"],
       "$utils": ["./src/utils"],
       "$utils/*": ["./src/utils/*"]
     }
   },
+  "files": ["src/types/shared.d.ts"],
   "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.svelte"]
 }

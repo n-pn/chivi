@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
-  import { call_api } from '$api/_api_call'
+  import { api_call } from '$lib/api_call'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
   const entry = {
@@ -79,7 +79,7 @@
     if ($entry._ukey) url += '/' + $entry._ukey
 
     const params = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
-    const [err, data] = await call_api(fetch, url, params, 'POST')
+    const [err, data] = await api_call(fetch, url, params, 'POST')
     if (err) error = data
     else {
       ctrl.hide()
@@ -89,7 +89,7 @@
 
   async function delete_tlspec() {
     const url = 'tlspecs/' + $entry._ukey
-    const [err, data] = await call_api(fetch, url, null, 'DELETE')
+    const [err, data] = await api_call(fetch, url, null, 'DELETE')
     if (err) error = data
     else {
       ctrl.hide()

@@ -102,7 +102,7 @@
 
       for (const key in terms) {
         const val = terms[key]
-        if (dname == 'pinyin') cached[dname][key] = dname as string
+        if (dname == 'pin_yin') cached[dname][key] = val as string
         else cached[dname][key] = new VpTerm(val as VpTermInit)
       }
     }

@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { session, navigating, page } from '$app/stores'
-  import * as ubmemo_api from '$api/ubmemo_api'
+  import { last_read } from '$utils/ubmemo_utils'
 
   import { appbar } from '$lib/stores'
   export async function load({ fetch, stuff, url }) {
@@ -34,9 +34,9 @@
 
   function gen_appbar_right(nvinfo: CV.Nvinfo, ubmemo: CV.Ubmemo) {
     if (ubmemo.chidx == 0) return null
-    const last_read = ubmemo_api.last_read(nvinfo, ubmemo)
+    const history = last_read(nvinfo, ubmemo)
     const right_opts = { kbd: '+', _text: '_show-lg' }
-    return [[last_read.text, last_read.icon, last_read.href, right_opts]]
+    return [[history.text, history.icon, history.href, right_opts]]
   }
 </script>
 

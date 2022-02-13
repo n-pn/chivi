@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { call_api } from '$api/_api_call'
+  import { api_call } from '$lib/api_call'
   import { appbar } from '$lib/stores'
 
   function gen_book_path(bslug: string, sname: string, chidx: number) {
@@ -96,7 +96,7 @@
     const url = `_self/books/${nvinfo.id}/access`
     const params = { sname, cpart, chidx, title, uslug, locked: lock }
 
-    const [status, payload] = await call_api(fetch, url, params, 'PUT')
+    const [status, payload] = await api_call(fetch, url, params, 'PUT')
     if (status) return console.log(`Error update history: ${payload}`)
 
     ubmemo = payload

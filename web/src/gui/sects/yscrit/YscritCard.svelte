@@ -11,7 +11,7 @@
   let active_repls = false
   let replies = []
 
-  function get_stars(count: number) {
+  function dup_stars(count: number) {
     return Array(count).fill('⭐').join('')
   }
 
@@ -28,55 +28,57 @@
 
 <crit-item>
   <crit-head>
-    <a class="user" href="/crits?user={crit.uslug}">{crit.uname}</a>
+    <a class="meta _user" href="/crits?user={crit.uslug}">{crit.uname}</a>
     <x-sep>·</x-sep>
-    <a class="time" href="/qtran/crits/{crit.id}">{rel_time(crit.mftime)}</a>
+    <a class="meta _time" href="/qtran/crits/{crit.id}"
+      >{rel_time(crit.mftime)}</a>
     <x-sep>·</x-sep>
     <a class="meta _link" href="/crits/{crit.id}"
       ><SIcon name="external-link" /></a>
 
-    <x-stars>{get_stars(crit.stars)}</x-stars>
-    {#if crit.vhtml.length >= 640}
-      <button class="m-btn _sm _show" on:click={() => (view_all = !view_all)}>
-        <SIcon name={view_all ? 'minus' : 'plus'} />
+    <div class="right">
+      <span class="meta _star"
+        ><x-sm>{crit.stars}⭐</x-sm><x-lg>{dup_stars(crit.stars)}</x-lg></span>
+      <span class="meta">
+        <SIcon name="thumb-up" />
+        <span>{crit.like_count}</span>
+      </span>
+
+      <button class="meta" on:click={show_replies}>
+        <SIcon name="message" />
+        <span>{crit.repl_count}</span>
       </button>
-    {/if}
+
+      {#if crit.vhtml.length >= 640}
+        <button class="m-btn _sm _show" on:click={() => (view_all = !view_all)}>
+          <SIcon name={view_all ? 'minus' : 'plus'} />
+        </button>
+      {/if}
+    </div>
   </crit-head>
 
   <crit-body class:_all={view_all} class:big_text>
     {@html crit.vhtml}
   </crit-body>
 
-  <crit-foot>
-    {#if show_book}
-      <x-meta>
-        <a class="link _title" href="/-{crit.bslug}">
-          <SIcon name="book" />
-          <span>{crit.bname}</span>
-        </a>
+  {#if show_book}
+    <crit-foot>
+      <a class="link _title" href="/-{crit.bslug}">
+        <SIcon name="book" />
+        <span>{crit.bname}</span>
+      </a>
 
-        <a class="link _author" href="/books/={crit.author}">
-          <SIcon name="edit" />
-          <span>{crit.author}</span>
-        </a>
+      <a class="link _author" href="/books/={crit.author}">
+        <SIcon name="edit" />
+        <span>{crit.author}</span>
+      </a>
 
-        <a class="link _genre" href="/books/-{crit.bgenre}">
-          <SIcon name="folder" />
-          <span>{crit.bgenre}</span>
-        </a>
-      </x-meta>
-    {/if}
-
-    <x-like>
-      <SIcon name="thumb-up" />
-      <span>{crit.like_count}</span>
-    </x-like>
-
-    <x-repl on:click={show_replies}>
-      <SIcon name="message" />
-      <span>{crit.repl_count}</span>
-    </x-repl>
-  </crit-foot>
+      <a class="link _genre" href="/books/-{crit.bgenre}">
+        <SIcon name="folder" />
+        <span>{crit.bgenre}</span>
+      </a>
+    </crit-foot>
+  {/if}
 </crit-item>
 
 {#if active_repls}
@@ -99,9 +101,8 @@
   crit-head {
     @include flex($gap: 0.25rem);
     position: sticky;
-    top: 0;
-    z-index: 9;
-
+    top: 3rem;
+    z-index: 10;
     @include bgcolor(secd);
     @include bdradi($loc: top);
 
@@ -113,15 +114,22 @@
       --linesd: 0;
       background: inherit;
     }
+  }
+
+  .right {
+    display: flex;
+    margin-left: auto;
+    @include ftsize(sm);
+    @include flex($gap: 0.375rem);
 
     ._show {
-      margin-left: -0.25rem;
+      margin-left: -0.5rem;
       margin-right: -0.75rem;
     }
   }
 
-  .user,
-  .time {
+  ._user,
+  ._time {
     @include fgcolor(secd);
     @include clamp($width: null);
     &:hover {
@@ -135,23 +143,27 @@
 
   .meta {
     @include fgcolor(tert);
-    &._link {
-      margin-top: -0.125rem;
+    @include flex-cy($gap: 0.25rem);
+    // @include ftsize(sm);
+
+    // prettier-ignore
+    // :global(svg) { margin-top: -0.125rem; }
+  }
+
+  // prettier-ignore
+  ._star {
+    margin-left: auto;
+
+    x-lg {display: none;}
+    @include bp-min(ts) {
+      x-sm { display: none;}
+      x-lg { display: inline; }
     }
   }
 
-  .user {
+  ._user {
     font-weight: 500;
     max-width: 36vw;
-  }
-
-  .time {
-    @include fgcolor(tert);
-  }
-
-  x-stars {
-    @include ftsize(sm);
-    margin-left: auto;
   }
 
   crit-body {
@@ -187,12 +199,10 @@
   }
 
   crit-foot {
-    margin: 0 var(--gutter);
-    padding: 0.5rem 0;
-
-    @include flex($gap: 1rem);
-    justify-content: right;
+    @include flex($gap: 0.375rem);
     @include border(--bd-main, $loc: top);
+
+    margin: 0 var(--gutter);
 
     @include fgcolor(tert);
 
@@ -203,41 +213,23 @@
     :global(svg) { margin-bottom: .125rem; }
   }
 
-  x-meta {
-    flex: 1;
-    @include flex($gap: 0.375rem);
-  }
-
   .link {
     font-weight: 500;
-    @include clamp($width: null);
+    padding: 0.375rem 0;
+    flex-shrink: 1;
 
+    @include clamp($width: null);
     @include fgcolor(tert);
-    @include hover {
-      @include fgcolor(primary, 5);
-    }
+
+    // prettier-ignore
+    &:hover { @include fgcolor(primary, 5); }
 
     &._title {
-      @include bps(max-width, 55vw, 60vw, $ts: 35vw);
-    }
-
-    &._author {
-      max-width: 25vw;
-      @include bps(display, none, $ts: inline-block);
+      max-width: 60vw;
     }
 
     &._genre {
-      @include bps(display, none, $tm: inline-block);
+      @include bps(display, none, $pl: inline-block);
     }
-  }
-
-  x-repl {
-    @include hover {
-      cursor: pointer;
-    }
-  }
-
-  x-like {
-    margin-left: auto;
   }
 </style>
