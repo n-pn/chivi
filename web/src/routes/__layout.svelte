@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
   import { navigating, page, session } from '$app/stores'
-  import { beforeNavigate } from '$app/navigation'
   import { scroll, toleft, config, layers } from '$lib/stores'
   declare var gtag: any
 
@@ -12,6 +11,9 @@
 </script>
 
 <script lang="ts">
+  // import { onMount } from 'svelte'
+  // import { beforeNavigate } from '$app/navigation'
+
   import { map_keypress, trigger_click } from '$utils/kbd_utils'
 
   import Pledge from '$gui/sects/layout/Pledge.svelte'
@@ -19,7 +21,6 @@
   import Appbar from '$gui/sects/layout/Appbar.svelte'
 
   import '../styles/generic.scss'
-  import { onMount } from 'svelte'
 
   $: {
     if (typeof gtag === 'function') {
@@ -50,9 +51,8 @@
     }
   }
 
-  // beforeNavigate(({ to, cancel }) => {
+  // beforeNavigate(({ to }) => {
   //   if ($session.privi > 1) return
-  //   cancel()
   //   to ? (window.location.href = to.href) : window.location.reload()
   // })
 

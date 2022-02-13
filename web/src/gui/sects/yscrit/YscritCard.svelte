@@ -36,9 +36,7 @@
     <x-sep>·</x-sep>
     <a class="meta _time" href="/qtran/crits/{crit.id}"
       >{rel_time(crit.mftime)}</a>
-    <x-sep>·</x-sep>
-    <a class="meta _link" href="/crits/{crit.id}"
-      ><SIcon name="external-link" /></a>
+    <a class="meta _link" href="/crits/{crit.id}"><SIcon name="link" /></a>
 
     <div class="right">
       <span class="meta _star"
@@ -115,8 +113,6 @@
 
     padding: 0 var(--gutter);
     line-height: 2.25rem;
-    @include border(--bd-soft, $loc: bottom);
-    @include bps(font-size, rem(14px), rem(15px), rem(16px));
 
     button {
       --linesd: 0;
@@ -127,42 +123,49 @@
   .right {
     display: flex;
     margin-left: auto;
-    @include ftsize(sm);
     @include flex($gap: 0.375rem);
-  }
-
-  ._user,
-  ._time {
-    @include fgcolor(secd);
-    @include clamp($width: null);
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
   }
 
   x-sep {
     @include fgcolor(tert);
   }
 
-  // prettier-ignore
   .meta {
     @include fgcolor(tert);
     @include flex-cy($gap: 0.125rem);
-    // @include ftsize(sm);
 
-    :global(svg) { width: 1rem; height: 1rem; }
+    // prettier-ignore
+    :global(svg) { width: 1.1em; height: 1.1em; }
+    @include bps(font-size, rem(12px), $pl: rem(13px), $tm: rem(14px));
 
+    // prettier-ignore
     &._show {
-      margin-left: -0.5rem;
-      margin-right: -0.75rem;
+      margin-left: -0.25rem;
+      padding: 0 0.25rem;
+      margin-right: calc(var(--gutter) * -0.75);
       @include fgcolor(secd);
-      :global(svg) { width: 1.125rem; height: 1.125rem; }
+      :global(svg) { width: 1.2em; height: 1.2em}
+    }
+
+    &._user {
+      font-weight: 500;
+      @include bps(font-size, rem(13px), $pl: rem(14px), $tm: rem(15px));
+      // flex-shrink: 0;
+    }
+
+    &._user,
+    &._time {
+      @include fgcolor(secd);
+      @include clamp($width: null);
     }
   }
 
-  a.meta:hover,
-  button.meta:hover {
-    @include fgcolor(primary, 5);
+  a.meta,
+  button.meta {
+    padding: 0;
+    &:hover {
+      @include fgcolor(primary, 5);
+    }
   }
 
   // prettier-ignore
@@ -174,11 +177,6 @@
       x-sm { display: none;}
       x-lg { display: inline; }
     }
-  }
-
-  ._user {
-    font-weight: 500;
-    max-width: 36vw;
   }
 
   crit-body {
