@@ -18,6 +18,4 @@ declare namespace App {
     ubmemo: CV.Ubmemo
     chseed: CV.Chseed[]
   }
-
-  type Fetch = (url: RequestInfo, option?: RequestInit) => Promise<Response>
 }

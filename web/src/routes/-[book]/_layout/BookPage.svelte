@@ -158,9 +158,9 @@
       </svelte:fragment>
     </Gmenu>
 
-    <a class="m-btn _primary" href="/-{nvinfo.bslug}/chaps" data-kbd="i">
-      <SIcon name="list" />
-      <span class="-txt _hide">Chương tiết</span>
+    <a class="m-btn _primary" href="/forum/-{nvinfo.bslug}" data-kbd="f">
+      <SIcon name="messages" />
+      <span class="-txt _hide">Thảo luận</span>
     </a>
 
     <a class="m-btn" href="/dicts/{nvinfo.bhash}" data-kbd="p">
@@ -180,17 +180,17 @@
     </a>
 
     <a
+      href="/-{nvinfo.bslug}/chaps"
+      class="header-tab"
+      class:_active={nvtab == 'chaps'}>
+      <span>Chương tiết</span>
+    </a>
+
+    <a
       href="/-{nvinfo.bslug}/crits"
       class="header-tab"
       class:_active={nvtab == 'crits'}>
       <span>Đánh giá</span>
-    </a>
-
-    <a
-      href="/-{nvinfo.bslug}/board"
-      class="header-tab"
-      class:_active={nvtab == 'board'}>
-      <span>Thảo luận</span>
     </a>
   </header>
 

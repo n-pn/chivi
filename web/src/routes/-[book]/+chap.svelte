@@ -19,7 +19,7 @@
     return { props: { nvinfo, chidx, input } }
   }
 
-  async function load_text(fetch, book_id: number, chidx: number) {
+  async function load_text(fetch: CV.Fetch, book_id: number, chidx: number) {
     const res = await fetch(`/api/chaps/${book_id}/chivi/${chidx}/_raw`)
     return await res.text()
   }
@@ -46,11 +46,12 @@
       body: JSON.stringify({ chidx, input, _trad }),
     })
 
+    const payload = await res.json()
     if (res.ok) {
-      const data = await res.json()
-      goto(`/-${nvinfo.bslug}/-chivi/-${data.uslug}-${data.chidx}`)
+      const { props } = payload
+      goto(`/-${nvinfo.bslug}/-chivi/-${props.uslug}-${props.chidx}`)
     } else {
-      await res.text()
+      alert(payload.error)
     }
   }
 </script>

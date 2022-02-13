@@ -8,7 +8,7 @@
   }
 
   export async function signin_user(type: string, params: Params) {
-    const [stt, msg] = await api_call(fetch, `users/${type}`, params, 'POST')
+    const [stt, msg] = await api_call(fetch, `user/${type}`, params, 'POST')
     return stt < 400 ? '' : (msg as string)
   }
 </script>

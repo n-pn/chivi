@@ -52,7 +52,7 @@
   beforeNavigate(({ to, cancel }) => {
     if ($session.privi > 1) return
     cancel()
-    window.location.href = to.href
+    to ? (window.location.href = to.href) : window.location.reload()
   })
 
   // $: console.log($layers)
@@ -81,8 +81,10 @@
   <Appbar />
 
   <main>
-    <Pledge />
-    <slot />
+    <div class="vessel">
+      <Pledge />
+      <slot />
+    </div>
   </main>
 
   <footer>
@@ -120,6 +122,9 @@
   main {
     flex: 1;
     position: relative;
+  }
+
+  :global(.vessel) {
     width: $page-width;
     max-width: 100%;
     margin: 0 auto;

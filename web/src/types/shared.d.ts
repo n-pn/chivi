@@ -4,4 +4,6 @@ declare namespace CV {
     pgmax: number
     total?: number
   }
+
+  type Fetch = (url: RequestInfo, option?: RequestInit) => Promise<Response>
 }
