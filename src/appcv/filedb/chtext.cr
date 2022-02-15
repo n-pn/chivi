@@ -6,148 +6,137 @@ require "../remote/rm_text"
 require "../nvchap/ch_info"
 
 class CV::Chtext
-  struct Data
-    property lines = [] of String
-    property utime = 0_i64
-
-    def initialize
-    end
-
-    def initialize(@lines, @utime)
-    end
-  end
+  record Data, lines = [] of String, utime : Int64 = 0_i64
+  NOTFOUND = Data.new
 
   CACHE = RamCache(String, self).new(1024, 6.hours)
   TEXTS = RamCache(String, Data).new(512, 3.hours)
 
-  CHARS = 3000
   VPDIR = "var/chtexts"
 
-  def self.load(sname : String, snvid : String, infos : ChInfo)
-    CACHE.get("#{sname}/#{snvid}/#{infos.chidx}") { new(sname, snvid, infos) }
+  def self.load(sname : String, snvid : String, chinfo : ChInfo)
+    CACHE.get("#{sname}/#{snvid}/#{chinfo.chidx}") { new(sname, snvid, chinfo) }
   end
 
-  getter infos : ChInfo
+  getter chinfo : ChInfo
 
-  def initialize(@sname : String, @snvid : String, @infos)
-    if @sname == "chivi"
-      @chdir = "#{VPDIR}/#{@infos.o_sname}/#{@infos.o_snvid}"
-      pgidx = (@infos.o_chidx - 1) // 128
+  def initialize(@sname : String, @snvid : String, @chinfo)
+    if proxy = @chinfo.proxy
+      @chdir = "#{VPDIR}/#{proxy.sname}/#{proxy.snvid}"
+      pgidx = (proxy.chidx - 1) // 128
 
-      @h_key = "#{@infos.o_sname}/#{@infos.o_snvid}/#{@infos.o_chidx}"
+      @c_key = "#{proxy.sname}/#{proxy.snvid}/#{proxy.chidx}"
     else
       @chdir = "#{VPDIR}/#{sname}/#{snvid}"
-      pgidx = (@infos.chidx - 1) // 128
+      pgidx = (@chinfo.chidx - 1) // 128
 
-      @h_key = "#{@sname}/#{@snvid}/#{@infos.chidx}"
+      @c_key = "#{@sname}/#{@snvid}/#{@chinfo.chidx}"
     end
+
     @store = "#{@chdir}/#{pgidx}.zip"
   end
 
-  def mkdir!
-    FileUtils.mkdir_p(@chdir)
-  end
-
-  NOTFOUND = Data.new([] of String, 0_i64)
-
   def load!(part = 0) : Data
-    TEXTS.get("#{@h_key}/#{part}") do
+    TEXTS.get("#{@c_key}/#{part}") do
       Compress::Zip::File.open(@store) do |zip|
         entry = zip[part_path(part)]
         lines = entry.open(&.gets_to_end).split('\n')
-        utime = entry.time.to_unix
-        Data.new(lines, utime)
+        Data.new(lines, entry.time.to_unix)
       end
     rescue
       NOTFOUND
     end
   end
 
-  private def part_path(part = 0)
-    "#{@infos.schid}-#{part}.txt"
-  end
-
   def fetch!(part : Int32 = 0, ttl = 10.years, mkdir = true, lbl = "1/1")
-    sname = @sname == "chivi" ? @infos.o_sname : @sname
-    snvid = @sname == "chivi" ? @infos.o_snvid : @snvid
+    if proxy = @chinfo.proxy
+      sname, snvid = proxy.sname, proxy.snvid
+    else
+      sname, snvid = @sname, @snvid
+    end
 
-    RmText.mkdir!(sname, snvid)
-    remote = RmText.new(sname, snvid, @infos.schid, ttl: ttl, lbl: lbl)
+    RmText.mkdir!(sname, snvid) if mkdir
+    remote = RmText.new(sname, snvid, @chinfo.schid, ttl: ttl, lbl: lbl)
 
     lines = remote.paras
     # special fix for 69shu, will investigate later
     lines.unshift(remote.title) unless remote.title.empty?
 
-    save!(lines, mkdir: mkdir)
+    save!(lines)
     load!(part)
   end
 
-  def remap!
-    @infos.parts = @infos.chars = 0
+  def remap! : String
+    stats = @chinfo.stats
+
+    stats.parts = stats.chars = 0
     title = nil
 
     loop do
-      chdata = self.load!(@infos.parts)
+      chdata = self.load!(stats.parts)
       break if chdata.utime == 0
 
       title ||= chdata.lines[0]?
 
-      @infos.utime = chdata.utime if @infos.utime < chdata.utime
-      @infos.chars += chdata.lines.map(&.size).sum
-      @infos.parts += 1
+      stats.utime = chdata.utime if stats.utime < chdata.utime
+      stats.chars += chdata.lines.map(&.size).sum
+      stats.parts += 1
     end
 
-    title
+    title || ""
   end
 
-  def save!(input : Array(String), zipping = true, mkdir = false) : Nil
+  def save!(input : Array(String), zipping = true) : Nil
     return if input.empty?
-    self.mkdir! if mkdir
+    stats = @chinfo.stats
 
-    title = input[0]
-    @infos.chars = input.map(&.size).sum
-    @infos.utime = Time.utc.to_unix
+    stats.utime = Time.utc.to_unix
+    stats.chars, files = split_text!(input)
+    stats.parts = files.size
 
-    if @infos.chars < CHARS * 1.5
-      @infos.parts = 1
-      return save_part!(input, 0, zipping: zipping)
-    end
-
-    parts = (@infos.chars / CHARS).round.to_i
-    limit = @infos.chars // (parts < 2 ? 1 : parts)
-
-    lines = [] of String
-    count, parts = 0, 0
-
-    input.each do |line|
-      lines << line
-      count += line.size
-      next if count < limit
-
-      lines.unshift(title) if parts > 0
-      save_part!(lines, parts, zipping: zipping)
-      parts += 1
-
-      lines = [] of String
-      count = 0
-    end
-
-    unless lines.empty?
-      lines.unshift(title) if parts > 0
-      save_part!(lines, parts, zipping: zipping)
-      parts += 1
-    end
-
-    @infos.parts = parts
+    `zip -jqm #{@store} #{files.join(' ')}` if zipping
+    # puts "- <zh_text> [#{file}] saved.".colorize.yellow
   end
 
-  def save_part!(lines : Array(String), part = 0, zipping = true) : Nil
-    file = "#{@chdir}/#{part_path(part)}"
-    File.open(file, "w") { |io| lines.join(io, "\n") }
+  LIMIT = 3000
 
-    `zip -jqm #{@store} #{file}` if zipping
-    # puts "- <zh_text> [#{file}] saved.".colorize.yellow
+  def split_text!(lines : Array(String))
+    sizes = lines.map(&.size)
+    chars = sizes.sum
 
-    TEXTS.set("#{@h_key}/#{part}", Data.new(lines, @infos.utime))
+    return {chars, [save_part!(lines.join('\n'))]} if chars <= LIMIT * 1.5
+
+    parts = (chars / LIMIT).round.to_i
+    limit = chars // parts
+
+    title = lines[0]
+    strio = String::Builder.new(title)
+
+    chars, cpart = 0, 0
+    files = [] of String
+
+    lines.each_with_index do |line, idx|
+      strio << "\n" << line
+      chars += sizes[idx]
+      next if chars < limit
+
+      files << save_part!(strio.to_s, cpart)
+      cpart += 1
+
+      strio = String::Builder.new(title)
+      chars = 0
+    end
+
+    files << save_part!(strio.to_s, cpart + 1) if chars > 0
+    {chars, files}
+  end
+
+  def save_part!(input : String, part = 0) : String
+    TEXTS.delete("#{@c_key}/#{part}")
+    "#{@chdir}/#{part_path(part)}".tap { |fpath| File.write(fpath, input) }
+  end
+
+  private def part_path(part = 0)
+    "#{@chinfo.schid}-#{part}.txt"
   end
 end

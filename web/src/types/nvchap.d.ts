@@ -1,12 +1,12 @@
 declare namespace CV {
   interface Chseed {
     sname: string
-    wlink?: string
+    chaps: number // chap_count
     utime: number
     atime?: number
+    _link?: string
     _type: number
     _seed?: boolean
-    chaps: number // chap_count
   }
 
   interface Chinfo {

@@ -1,81 +1,100 @@
 class CV::Nvchap
-  CACHE = {} of Int64 => self
+  DIR = "var/chtexts"
 
-  CHDIR = "var/chtexts/chivi"
-  ::FileUtils.mkdir_p(CHDIR)
+  CACHE = RamCache(String, ChList).new(4096, 3.days)
+  PSIZE = 128
 
-  def self.load!(nvinfo : Nvinfo)
-    CACHE[nvinfo.id] ||= new(nvinfo)
+  def initialize(@sname : String, @snvid : String)
+    @fraw = "#{DIR}/#{sname}/_/#{snvid}.tsv"
+    @flog = "#{DIR}/#{sname}/_/#{snvid}.log"
   end
 
-  getter nvinfo : Nvinfo
-
-  def initialize(@nvinfo)
-    @file = File.join(CHDIR, @nvinfo.bhash)
-
-    if File.exists?(file)
-      @ch_map = File.read_lines(file).map { |x| ChMeta.new(x.split('\t')) }
-      @ch_map.sort_by!(x.index)
-    end
-
-    return unless @ch_map.empty? && (zseed = nvinfo.zseed_ids.sort.first?)
-    zhbook = Zhbook.load!(nvinfo, zseed)
-
-    nvinfo.update({cv_utime: zhbook.utime, cv_chap_count: zhbook.chap_count})
-    ChList.dup_to_local!(zhbook.sname, zhbook.snvid, nvinfo.bhash)
+  def pgidx(chidx : Int32)
+    (chidx - 1) // PSIZE
   end
 
-  # def delete!(index : Int32, count : Int32 = 1)
-  #   if (last = @ch_map.last?) && last.index < index
-  #     @ch_map << ChMeta.new(index, last.sname, last.snvid, last.chidx + count)
-  #   else
-  #   end
-
-  #   self.save!
-  # end
-
-  # def insert!(sname : String, snvid : String, index : Int32, count : Int32 = 1)
-  #   @ch_map.reverse_each do |meta|
-  #     if meta.index > index
-  #       meta.index += count
-  #       next
-  #     end
-  #   end
-
-  #   self.save!
-  # end
-
-  PAGES = RamCache(Int64, Array(ChInfo)).new(2048, 6.hours)
-
-  def chpage(pgidx : Int32)
-    PAGES.get(nvinfo.id << 6 | pgidx) do
-      yield_meta(pgidx) do |index, snvid, sname, chidx|
-        {index, snvid, sname, chidx}
-      end
-    end
+  def chlist(pgidx : Int32)
+    label = "#{@sname}/#{@snvid}/#{pgidx}"
+    CACHE.get(label) { ChList.new("#{DIR}/#{label}.tsv") }
   end
 
-  def yield_meta(pgidx : Int32)
-    chmin = pgidx &* 32 + 1
-    chmax = chmin + 31
-    return unless index = @ch_map.bsearch_index(chmin)
-    from = @ch_map.unsafe_fetch(index)
+  def chinfo(chidx : Int32)
+    self.chlist(chidx).data[chidx]?
+  end
 
-    while index < @ch_map.size
-      diff = from.chidx - from.index
-      upto = fetch(index + 1)
+  # expand data from @fraw and @flog to pages
+  def apply!
+    # TODO
+  end
 
-      from.index.upto(upto.index - 1) do |chidx|
-        break if chidx > chmax
-        yield chidx, from.snvid, from.sname, chidx + diff
+  # save all infos, bail early if result is the same
+  def store!(infos : Array(ChInfo), reset = false) : {Int32, Int32}
+    ChList.save!(@fraw, infos, mode: "w")
+
+    pgmax = self.pgidx(infos.size)
+    chmin = pgmax * PSIZE
+
+    chlist = self.chlist(pgmax)
+    chmin.upto(infos.size - 1).each { |index| chlist.store(infos[index]) }
+    chlist.save!
+
+    (pgmax - 1).downto(0).each do |pgidx|
+      chlist = self.chlist(pgidx)
+      changed = true
+
+      PSIZE.times do
+        chmin -= 1
+        chlist.store(infos.unsafe_fetch(chmin)).tap { |x| changed ||= x }
       end
 
-      from = upto
-      index += 1
+      (reset || changed) ? chlist.save! : return {pgmax, pgidx}
     end
+
+    {pgmax, 0}
   end
 
-  private def fetch(index : Int32)
-    @ch_map[index]? || ChMeta.new(nvinfo.chap_count + 1, from.sname, from.snvidt)
+  def patch!(input : Array(ChInfo)) : {Int32, Int32}
+    parts = input.group_by { |x| self.pgidx(x.chidx) }
+    parts.each do |pgidx, infos|
+      self.chlist(pgidx).tap(&.patch(infos)).save!
+      ChList.save!(@fraw, infos, "a")
+      ChList.save!(@flog, infos, "a")
+    end
+
+    pages = parts.keys.sort
+    {pages.first, pages.last}
+  end
+
+  def fetch!(chmin : Int32, chmax : Int32) : Array(ChInfo)
+    pgmin = self.pgidx(chmin)
+    pgmax = self.pgidx(chmax) + 1
+    infos = [] of ChInfo
+
+    pgmin.upto(pgmax) do |pgidx|
+      self.chlist(pgidx).data.each_value do |chap|
+        next if chap.stats.chars == 0 || chap.chidx < chmin || chap.chidx > chmax
+        infos << chap.as_proxy!(@sname, @snvid)
+      end
+    end
+
+    infos
+  end
+
+  def remote?(privi : Int32 = 4, special_case : Bool = false) : Bool
+    remote?(privi) { special_case }
+  end
+
+  def remote?(privi : Int32 = 4) : Bool
+    case @sname
+    when "5200", "bqg_5200", "rengshu", "nofff"
+      privi >= 0 || yield
+    when "hetushu", "bxwxorg", "xbiquge", "biqubao"
+      privi >= 1 || yield
+    when "69shu", "paoshu8", "duokan8"
+      privi >= 2 || yield
+    when "shubaow", "zhwenpg"
+      privi > 4
+    else false
+    end
   end
 end

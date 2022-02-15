@@ -16,8 +16,9 @@
 
     const sname = url.searchParams.get('sname') || 'chivi'
     const pgidx = +url.searchParams.get('pg') || 1
+    const force = url.searchParams.get('force') == 'true'
 
-    const api_url = `/api/chaps/${nvinfo.id}/${sname}?pg=${pgidx}`
+    const api_url = `/api/chaps/${nvinfo.id}/${sname}?pg=${pgidx}&force=${force}`
     const api_res = await fetch(api_url)
 
     const payload = await api_res.json()
@@ -79,7 +80,7 @@
       {:else}
         <a
           class="m-btn"
-          href={chseed.wlink}
+          href={chseed._link}
           target="_blank"
           rel="noopener noreferer">
           <SIcon name="external-link" />

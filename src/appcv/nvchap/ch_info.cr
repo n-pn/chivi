@@ -2,87 +2,99 @@ require "json"
 require "../../_util/text_utils"
 
 class CV::ChInfo
-  include JSON::Serializable
+  class Stats
+    property utime, chars, parts, uname
+
+    def initialize(@utime = 0_i64, @chars = 0, @parts = 0, @uname = "")
+    end
+
+    def initialize(utime : String, chars : String, parts : String, @uname)
+      @utime = utime.to_i64
+      @chars = chars.to_i
+      @parts = parts.to_i
+    end
+
+    def to_s(io : IO)
+      io << '\t' << @utime << '\t' << @chars << '\t' << @parts
+    end
+  end
+
+  record Proxy, sname : String, snvid : String, chidx : Int32 do
+    def to_s(io : IO)
+      io << '\t' << @sname << '\t' << @snvid << '\t' << @chidx
+    end
+  end
+
+  record Trans, title = "", chvol = "", uslug = "" do
+    def initialize(@title : String, @chvol : String, @uslug = slugify(title))
+    end
+
+    def slugify(title : String)
+      TextUtils.tokenize(title).first(10).join("-")
+    end
+  end
 
   property chidx : Int32
   property schid : String
 
   @[JSON::Field(ignore: true)]
-  property z_title = ""
+  property title = ""
   @[JSON::Field(ignore: true)]
-  property z_chvol = ""
+  property chvol = ""
 
-  property utime = 0_i64 # chapter modified at
-  property chars = 0     # char count
-  property parts = 0     # chapter splitted parts
-  property uname = ""    # user name
-
-  property title = "Thiếu chương"
-  property chvol = "Chính văn"
-  property uslug = "thieu-chuong"
-
-  property o_sname = ""
-  property o_snvid = ""
-  property o_chidx = 0
+  property stats : Stats = Stats.new
+  property proxy : Proxy? = nil
+  property trans = Trans.new("Thiếu chương", "Chính văn")
 
   def initialize(argv : Array(String))
     @chidx = argv[0].to_i
     @schid = argv[1]
 
     return if argv.size < 4
-    @z_title = argv[2]
-    @z_chvol = argv[3]
+    @title = argv[2]
+    @chvol = argv[3]
 
     return if argv.size < 7
-    @utime = argv[4].to_i64
-    @chars = argv[5].to_i
-    @parts = argv[6].to_i
-    @uname = argv[7]? || ""
+    @stats = Stats.new(argv[4], argv[5], argv[6], argv[7])
 
     return if argv.size < 11
-    @o_sname = argv[8]
-    @o_snvid = argv[9]
-    @o_chidx = argv[10].to_i
+    @proxy = Proxy.new(argv[8], argv[9], argv[10].to_i)
   end
 
   def initialize(@chidx, @schid = chidx.to_s)
   end
 
-  def initialize(@chidx, @schid, title : String, chvol = "")
-    @z_title, @z_chvol = TextUtils.format_title(title, chvol)
-    @z_chvol = @z_chvol.sub(/\s{2,}/, " ")
+  def initialize(@chidx, @schid, title : String, chvol : String = "")
+    set_title!(title, chvol)
   end
 
-  # delegate empty?, to: @z_title
+  def set_title!(title : String, chvol : String = "")
+    @title, @chvol = TextUtils.format_title(title, chvol)
+  end
+
+  # delegate empty?, to: @title
 
   def invalid?
-    @z_title.empty?
-  end
-
-  def get(chidx : Int32)
-    @data[chidx]? || ChInfo.new(chidx)
+    @title.empty?
   end
 
   def trans!(cvmtl : MtCore) : Nil
     return if self.invalid?
-    @title = cvmtl.cv_title(@z_title).to_s
-    @chvol = @z_chvol.empty? ? "Chính văn" : cvmtl.cv_title(@z_chvol).to_s
-    @uslug = TextUtils.tokenize(@title).first(10).join("-")
+    @trans = Trans.new(
+      title: cvmtl.cv_title(@title).to_s,
+      chvol: @chvol.empty? ? "Chính văn" : cvmtl.cv_title(@chvol).to_s
+    )
   end
 
-  def equal?(other : self)
-    @schid == other.schid && @z_title == other.z_title && @z_chvol == other.z_chvol
-  end
+  # def pgidx : Int32
+  #   (self.chidx - 1) // 128
+  # end
 
-  def pgidx : Int32
-    (self.chidx - 1) // 128
-  end
-
-  def chap_url(part = 0)
+  def chap_url(cpart = 0)
     String.build do |io|
-      io << @uslug << '-' << @chidx
-      if part != 0 && @parts > 1
-        io << '.' << part % @parts
+      io << @trans.uslug << '-' << @chidx
+      if cpart != 0 && @stats.parts > 1
+        io << '.' << cpart % @stats.parts
       end
     end
   end
@@ -96,33 +108,56 @@ class CV::ChInfo
     @schid = (chidx * 10 + version).to_s
   end
 
-  def to_s
+  def exists?
+    @stats.chars > 0
+  end
+
+  def as_proxy!(sname : String, snvid : String, chidx = self.chidx) : self
+    self.dup.tap { |x| x.proxy = Proxy.new(sname, snvid, chidx) }
+  end
+
+  def inherit!(prev : self) : Void
+    return unless self.proxy == prev.proxy && self.schid == prev.schid
+    @stats = prev.stats if self.stats.utime < prev.stats.utime
+  end
+
+  def changed?(other : self)
+    @schid != other.schid || @title != other.title || @chvol != other.chvol
+  end
+
+  def to_s(full : Bool = true)
     String.build { |io| to_s(io) }
   end
 
   def to_s(io : IO)
+    return if @title.empty?
     io << @chidx << '\t' << @schid
 
-    return if @z_title.empty?
-    io << '\t' << @z_title << '\t' << @z_chvol
+    io << '\t' << @title << '\t' << @chvol
+    return unless @proxy || exists?
 
-    return if @utime == 0 && @o_sname.empty?
-    io << '\t' << @utime << '\t' << @chars << '\t' << @parts
-
-    return if @uname.empty? && @o_sname.empty?
-    io << '\t' << @uname
-
-    return if @o_sname.empty?
-    io << '\t' << @o_sname << '\t' << @o_snvid << '\t' << @o_chidx
+    @stats.to_s(io)
+    @proxy.try(&.to_s(io))
   end
 
-  def make_copy!(sname : String, snvid : String, chidx = self.chidx) : self
-    copy = self.dup
+  def o_sname
+    @proxy.try(&.sname)
+  end
 
-    copy.o_sname = sname
-    copy.o_snvid = snvid
-    copy.o_chidx = chidx
+  def to_json(jb : JSON::Builder)
+    {
+      chidx: @chidx,
+      schid: @schid,
 
-    copy
+      title: @trans.title,
+      chvol: @trans.chvol,
+      uslug: @trans.uslug,
+
+      utime: @stats.utime,
+      chars: @stats.chars,
+      parts: @stats.parts,
+
+      o_sname: self.o_sname,
+    }.to_json(jb)
   end
 end

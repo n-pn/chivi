@@ -10,30 +10,28 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
   def ch_list
     zhbook = load_zhbook
-    mode = _cvuser.privi > 0 && params["force"]? ? 1 : 0
+
+    redo = params["force"]? == "true" && _cvuser.privi >= 0
+    mode = redo ? 1 : 0
 
     is_remote = NvSeed::REMOTES.includes?(zhbook.sname)
-    mode += 2 if is_remote && seed_outdated?(zhbook)
-
-    total = zhbook.count_chap!(mode, ttl: 5.minutes)
 
     if is_remote
-      base_zhbook = Zhbook.load!(zhbook.nvinfo, 0)
-      base_zhbook.copy_newers!([zhbook]) if base_zhbook.chap_count < total
+      mode += 2 if redo || seed_outdated?(zhbook, _cvuser.privi)
+      total = zhbook.count_chap!(mode, ttl: 5.hours)
+    else
+      total = zhbook.chap_count
     end
+
+    # if is_remote
+    #   base_zhbook = Zhbook.load!(zhbook.nvinfo, 0)
+    #   base_zhbook.copy_newers!([zhbook]) if base_zhbook.chap_count < total
+    # end
 
     pgidx = params.fetch_int("pg", min: 1)
 
     send_json({
-      chseed: {
-        sname: zhbook.sname,
-        utime: zhbook.utime,
-        atime: zhbook.atime,
-        wlink: zhbook.wlink,
-        _type: zhbook._type,
-        _seed: is_remote,
-      },
-
+      chseed: ChseedView.new(zhbook),
       chpage: {
         total: total,
         pgidx: pgidx,
@@ -44,20 +42,21 @@ class CV::NvchapCtrl < CV::BaseCtrl
     })
   end
 
-  private def seed_outdated?(zhbook : Zhbook)
-    utime = Time.unix(zhbook.atime)
+  private def seed_outdated?(zhbook : Zhbook, privi = 0)
+    tspan = Time.utc - Time.unix(zhbook.atime)
+    bonus = 4 - privi
 
     case zhbook.status
-    when 0 then Time.utc - 2.**(4 - _cvuser.privi).hours > utime
-    when 1 then Time.utc - 2.*(4 - _cvuser.privi).days > utime
-    when 2 then Time.utc - 3.*(4 - _cvuser.privi).weeks > utime
+    when 0 then tspan > 2.hours * bonus
+    when 1 then tspan > 2.days * bonus
+    when 2 then tspan > 2.weeks * bonus
     else        false
     end
   end
 
   def ch_info
     chidx = params.fetch_int("chidx")
-    cpart = params.fetch_int("cpart") { 0 }
+    cpart = params.fetch_int("cpart", min: 0)
 
     zhbook = load_zhbook
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
@@ -67,7 +66,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     ubmemo = Ubmemo.find_or_new(_cvuser.id, zhbook.nvinfo_id)
     if _cvuser.privi > -1
-      ubmemo.mark!(zhbook.sname, chidx, cpart, chinfo.title, chinfo.uslug)
+      trans = chinfo.trans
+      ubmemo.mark!(zhbook.sname, chidx, cpart, trans.title, trans.uslug)
     end
 
     send_json do |jb|
@@ -77,11 +77,11 @@ class CV::NvchapCtrl < CV::BaseCtrl
             jb.field "sname", zhbook.sname
             jb.field "total", zhbook.chap_count
 
-            jb.field "clink", zhbook.clink(chinfo.schid)
             jb.field "cpart", cpart
+            jb.field "clink", zhbook.clink(chinfo.schid)
 
             jb.field "_prev", cpart == 0 ? zhbook.chap_url(chidx - 1, -1) : chinfo.chap_url(cpart - 1)
-            jb.field "_next", cpart + 1 < chinfo.parts ? chinfo.chap_url(cpart + 1) : zhbook.chap_url(chidx + 1)
+            jb.field "_next", cpart + 1 < chinfo.stats.parts ? chinfo.chap_url(cpart + 1) : zhbook.chap_url(chidx + 1)
           }
         }
 
@@ -90,22 +90,25 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
         jb.field "zhtext", lines
 
+        # start = Time.monotonic
+
         strio = String::Builder.new
-        start = Time.monotonic
-
         convert(zhbook, chinfo, lines, cpart, strio)
-        tspan = (Time.monotonic - start).total_milliseconds.round.to_i
-
         jb.field "cvdata" { jb.string(strio.to_s) }
-        jb.field "tlspan", tspan
+
+        # tspan = (Time.monotonic - start).total_milliseconds.round.to_i
+        # jb.field "tlspan", tspan
       }
     end
   end
 
-  private def remote_chap?(zhbook, chinfo)
-    sname = zhbook.zseed == 0 ? chinfo.o_sname : zhbook.sname
+  private def remote_chap?(chseed : Zhbook, chinfo : ChInfo)
+    sname = chinfo.proxy.try(&.sname) || chseed.sname
+
     NvSeed.remote?(sname, _cvuser.privi) do
-      chinfo.chidx <= 40 || chinfo.chidx + 3 >= zhbook.chap_count
+      chidx = chinfo.chidx
+      count = chseed.chap_count
+      chidx >= count - 8 || chidx <= 40 || chidx <= count // 3
     end
   end
 
@@ -120,9 +123,9 @@ class CV::NvchapCtrl < CV::BaseCtrl
     set_cache :private, maxage: 5 - _cvuser.privi
     set_headers content_type: :text
 
-    response << "//// #{chinfo.z_chvol}\n#{chinfo.z_title}\n"
+    response << "//// #{chinfo.chvol}\n#{chinfo.title}\n"
 
-    chinfo.parts.times do |cpart|
+    chinfo.stats.parts.times do |cpart|
       lines = zhbook.chtext(chinfo, cpart)
       1.upto(lines.size - 1) { |i| response << '\n' << lines.unsafe_fetch(i) }
     end
@@ -152,7 +155,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     cvmtl = MtCore.generic_mtl(zhbook.nvinfo.dname, _cvuser.uname)
 
     cvmtl.cv_title_full(lines[0]).to_str(strio)
-    strio << "\t" << " (#{cpart + 1}/#{chinfo.parts})" if chinfo.parts > 1
+    strio << "\t" << " [#{cpart + 1}/#{chinfo.stats.parts}]" if chinfo.stats.parts > 1
 
     1.upto(lines.size - 1) do |i|
       line = lines.unsafe_fetch(i)
@@ -191,30 +194,21 @@ class CV::NvchapCtrl < CV::BaseCtrl
         chinfo = ChInfo.new(c_idx, (c_idx * 10).to_s)
       end
 
-      chinfo.utime = Time.utc.to_unix
-      chinfo.uname = _cvuser.uname
+      chinfo.stats.uname = _cvuser.uname
+      Chtext.load(zhbook.sname, zhbook.snvid, chinfo).save!(chap.lines)
 
-      chtext = Chtext.load(zhbook.sname, zhbook.snvid, chinfo)
-      chtext.save!(chap.lines, mkdir: true)
-
-      zhbook.upsert_chinfo!(chinfo, chap.title, chap.chvol)
-      chinfo.make_copy!(zhbook.sname, zhbook.snvid)
+      chinfo.tap(&.set_title!(chap.title, chap.chvol))
     end
+
+    # save chapter infos
+    zhbook.patch!(infos)
 
     # copy new uploaded chapters to "chivi" source
-    Zhbook.load!(zhbook.nvinfo, 0).upsert_chinfos!(infos)
+    infos.map!(&.as_proxy!("users", zhbook.snvid))
+    Zhbook.load!(zhbook.nvinfo, 0).patch!(infos)
 
-    chmax = chidx + chaps.size - 1
-
-    if chmax > zhbook.chap_count
-      zhbook.utime = Time.utc.to_unix
-      zhbook.last_schid = infos.last.schid
-      zhbook.chap_count = chmax
-      zhbook.nvinfo.update_utime(zhbook.utime)
-      zhbook.save!
-    end
-
-    send_json({chidx: chidx, uslug: infos.first.uslug}, 201)
+    first = infos.first.tap(&.trans!(zhbook.cvmtl))
+    send_json({chidx: chidx, uslug: first.trans.uslug}, 201)
   end
 
   struct Chap

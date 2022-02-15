@@ -50,7 +50,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       if chinfo = zhbook.chinfo(0)
         ubmemo.lr_sname = zhbook.sname
         ubmemo.lr_chidx = -1
-        ubmemo.lc_uslug = chinfo.uslug
+        ubmemo.lc_uslug = chinfo.trans.uslug
       else
         ubmemo.lr_sname = "chivi"
         ubmemo.lc_uslug = "thieu-chuong"
@@ -63,21 +63,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       jb.object {
         jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
         jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
-
-        jb.field "chseed" do
-          jb.array do
-            zhbooks.each do |entry|
-              jb.object {
-                jb.field "sname", entry.sname
-                jb.field "snvid", entry.snvid
-                # jb.field "wlink", entry.wlink
-                jb.field "utime", entry.utime
-                jb.field "chaps", entry.chap_count
-                jb.field "_type", entry._type
-              }
-            end
-          end
-        end
+        jb.field "chseed", zhbooks.map { |x| ChseedView.new(x) }
       }
     end
   end
