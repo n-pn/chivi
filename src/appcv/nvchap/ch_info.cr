@@ -9,13 +9,17 @@ class CV::ChInfo
     end
 
     def initialize(utime : String, chars : String, parts : String, @uname)
-      @utime = utime.to_i64
-      @chars = chars.to_i
-      @parts = parts.to_i
+      @utime = utime.to_i64? || 0_i64
+      @chars = chars.to_i? || 0
+      @parts = parts.to_i? || 0
     end
 
     def to_s(io : IO)
-      io << '\t' << @utime << '\t' << @chars << '\t' << @parts
+      if @utime > 0
+        io << '\t' << @utime << '\t' << @chars << '\t' << @parts << '\t' << @uname
+      else
+        io << "\t\t\t\t"
+      end
     end
   end
 
@@ -44,7 +48,7 @@ class CV::ChInfo
 
   property stats : Stats = Stats.new
   property proxy : Proxy? = nil
-  property trans = Trans.new("Thiếu chương", "Chính văn")
+  property trans = Trans.new("-", "-")
 
   def initialize(argv : Array(String))
     @chidx = argv[0].to_i
@@ -78,12 +82,13 @@ class CV::ChInfo
     @title.empty?
   end
 
-  def trans!(cvmtl : MtCore) : Nil
-    return if self.invalid?
+  def trans!(cvmtl : MtCore) : self
     @trans = Trans.new(
-      title: cvmtl.cv_title(@title).to_s,
+      title: @title.empty? ? "Thiếu chương" : cvmtl.cv_title(@title).to_s,
       chvol: @chvol.empty? ? "Chính văn" : cvmtl.cv_title(@chvol).to_s
     )
+
+    self
   end
 
   # def pgidx : Int32
@@ -134,7 +139,7 @@ class CV::ChInfo
     io << @chidx << '\t' << @schid
 
     io << '\t' << @title << '\t' << @chvol
-    return unless @proxy || exists?
+    return unless @proxy || @stats.utime > 0
 
     @stats.to_s(io)
     @proxy.try(&.to_s(io))

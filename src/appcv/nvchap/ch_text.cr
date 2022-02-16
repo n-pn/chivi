@@ -3,38 +3,35 @@ require "compress/zip"
 
 require "../../_util/ram_cache"
 require "../remote/rm_text"
-require "../nvchap/ch_info"
+require "./ch_info"
+require "./ch_util"
 
-class CV::Chtext
-  record Data, lines = [] of String, utime : Int64 = 0_i64
-  NOTFOUND = Data.new
-
-  CACHE = RamCache(String, self).new(1024, 6.hours)
-  TEXTS = RamCache(String, Data).new(512, 3.hours)
-
+class CV::ChText
   VPDIR = "var/chtexts"
-
-  def self.load(sname : String, snvid : String, chinfo : ChInfo)
-    CACHE.get("#{sname}/#{snvid}/#{chinfo.chidx}") { new(sname, snvid, chinfo) }
-  end
 
   getter chinfo : ChInfo
 
   def initialize(@sname : String, @snvid : String, @chinfo)
     if proxy = @chinfo.proxy
-      @chdir = "#{VPDIR}/#{proxy.sname}/#{proxy.snvid}"
+      dir = "#{VPDIR}/#{proxy.sname}/#{proxy.snvid}"
       pgidx = (proxy.chidx - 1) // 128
 
       @c_key = "#{proxy.sname}/#{proxy.snvid}/#{proxy.chidx}"
     else
-      @chdir = "#{VPDIR}/#{sname}/#{snvid}"
+      dir = "#{VPDIR}/#{sname}/#{snvid}"
       pgidx = (@chinfo.chidx - 1) // 128
 
       @c_key = "#{@sname}/#{@snvid}/#{@chinfo.chidx}"
     end
 
-    @store = "#{@chdir}/#{pgidx}.zip"
+    @chdir = "#{dir}/#{pgidx}"
+    @store = "#{dir}/#{pgidx}.zip"
   end
+
+  record Data, lines = [] of String, utime : Int64 = 0_i64
+  EMPTY = Data.new
+
+  TEXTS = RamCache(String, Data).new(512, 3.hours)
 
   def load!(part = 0) : Data
     TEXTS.get("#{@c_key}/#{part}") do
@@ -44,7 +41,7 @@ class CV::Chtext
         Data.new(lines, entry.time.to_unix)
       end
     rescue
-      NOTFOUND
+      EMPTY
     end
   end
 
@@ -91,49 +88,18 @@ class CV::Chtext
     stats = @chinfo.stats
 
     stats.utime = Time.utc.to_unix
-    stats.chars, files = split_text!(input)
-    stats.parts = files.size
+    stats.chars, chaps = ChUtil.split_parts(input)
+    stats.parts = chaps.size
 
-    `zip -jqm #{@store} #{files.join(' ')}` if zipping
-    # puts "- <zh_text> [#{file}] saved.".colorize.yellow
-  end
+    FileUtils.mkdir_p(@chdir)
 
-  LIMIT = 3000
-
-  def split_text!(lines : Array(String))
-    sizes = lines.map(&.size)
-    chars = sizes.sum
-
-    return {chars, [save_part!(lines.join('\n'))]} if chars <= LIMIT * 1.5
-
-    parts = (chars / LIMIT).round.to_i
-    limit = chars // parts
-
-    title = lines[0]
-    strio = String::Builder.new(title)
-
-    chars, cpart = 0, 0
-    files = [] of String
-
-    lines.each_with_index do |line, idx|
-      strio << "\n" << line
-      chars += sizes[idx]
-      next if chars < limit
-
-      files << save_part!(strio.to_s, cpart)
-      cpart += 1
-
-      strio = String::Builder.new(title)
-      chars = 0
+    chaps.each_with_index do |text, part|
+      File.write("#{@chdir}/#{part_path(part)}", text)
+      TEXTS.delete("#{@c_key}/#{part}")
     end
 
-    files << save_part!(strio.to_s, cpart + 1) if chars > 0
-    {chars, files}
-  end
-
-  def save_part!(input : String, part = 0) : String
-    TEXTS.delete("#{@c_key}/#{part}")
-    "#{@chdir}/#{part_path(part)}".tap { |fpath| File.write(fpath, input) }
+    return unless zipping
+    `zip --include=\\*.txt -rjmq #{@store} #{@chdir}`
   end
 
   private def part_path(part = 0)

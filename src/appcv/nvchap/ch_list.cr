@@ -12,7 +12,7 @@ class CV::ChList
 
   # forward_missing_to @data
 
-  def initialize(@file : String, reset = false)
+  def initialize(@file : String, reset : Bool = false)
     load_file!(@file) if !reset && File.exists?(file)
   end
 
@@ -20,8 +20,12 @@ class CV::ChList
     File.read_lines(file).each do |line|
       store(ChInfo.new(line.split('\t'))) unless line.empty?
     rescue err
-      File.open("var/_ulogs/chinfo.log", "a") { |io| io.puts "#{@file}, #{line}" }
+      puts line.split('\t')
     end
+  end
+
+  def get(chidx : Int32)
+    @data[chidx]? || ChInfo.new(chidx)
   end
 
   def store!(chap : ChInfo) : Nil

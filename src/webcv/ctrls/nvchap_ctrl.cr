@@ -182,13 +182,14 @@ class CV::NvchapCtrl < CV::BaseCtrl
       end
 
       chinfo.stats.uname = _cvuser.uname
-      Chtext.load(zhbook.sname, zhbook.snvid, chinfo).save!(chap.lines)
+      ChText.new(zhbook.sname, zhbook.snvid, chinfo).save!(chap.lines)
 
       chinfo.tap(&.set_title!(chap.title, chap.chvol))
     end
 
     # save chapter infos
     zhbook.patch!(infos)
+    zhbook.reset_cache!
 
     # copy new uploaded chapters to "chivi" source
     infos.map!(&.as_proxy!("users", zhbook.snvid))
