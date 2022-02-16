@@ -50,8 +50,7 @@
   seed-list {
     @include flex-cx($gap: 0.375rem);
     flex-wrap: wrap;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    padding: 0.75rem var(--gutter);
   }
 
   @mixin label {

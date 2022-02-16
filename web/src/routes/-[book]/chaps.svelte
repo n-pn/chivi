@@ -16,16 +16,26 @@
 
     const sname = url.searchParams.get('sname') || 'chivi'
     const pgidx = +url.searchParams.get('pg') || 1
-    const force = url.searchParams.get('force') == 'true'
 
-    const api_url = `/api/chaps/${nvinfo.id}/${sname}?pg=${pgidx}&force=${force}`
-    const api_res = await fetch(api_url)
-
-    const payload = await api_res.json()
-    if (!api_res.ok) return payload
+    const payload = await load_page(fetch, nvinfo, sname, pgidx)
+    if (payload.error) return payload
 
     payload.props.nvinfo = nvinfo
     payload.props.ubmemo = ubmemo
+    return payload
+  }
+
+  async function load_page(
+    fetch: CV.Fetch,
+    nvinfo: CV.Nvinfo,
+    sname: string,
+    pgidx: number,
+    force = false
+  ) {
+    const api_url = `/api/chaps/${nvinfo.id}/${sname}?pg=${pgidx}&force=${force}`
+    const api_res = await fetch(api_url)
+    const payload = await api_res.json()
+    if (payload.error) return payload
 
     const { chseed } = payload.props
     if (chseed.utime > nvinfo.mftime) nvinfo.mftime = chseed.utime
@@ -56,11 +66,33 @@
   export let chpage: CV.Chpage
 
   $: pager = new Pager($page.url, { sname: 'chivi', pg: 1 })
+
+  let _refresh = false
+  let _error: string
+
+  async function force_update() {
+    _refresh = true
+    _error = ''
+
+    // prettier-ignore
+    const payload = await load_page( fetch, nvinfo, chseed.sname, chpage.pgidx, true )
+
+    if (payload.props) {
+      chseed = payload.props.chseed
+      chpage = payload.props.chpage
+    } else {
+      _error = payload.error
+    }
+
+    _refresh = false
+  }
 </script>
 
-<SeedList {pager} />
-
 <chap-page>
+  <page-head>
+    <SeedList {pager} />
+  </page-head>
+
   <page-info>
     <info-left>
       <info-text>{chseed.sname}</info-text>
@@ -88,18 +120,16 @@
         </a>
       {/if}
 
-      <a
-        class="m-btn"
-        class:_disable={$session.privi < 1}
-        href={pager.make_url({ pg: chpage.pgidx, force: true })}>
-        {#if $navigating}
-          <SIcon name="loader" spin={true} />
-        {:else}
-          <SIcon name="refresh" />
-        {/if}
+      <button
+        class="m-btn _primary"
+        disabled={$session.privi < 1}
+        on:click={force_update}>
+        <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
         <span class="-hide">Đổi mới</span>
-      </a>
+      </button>
     </info-right>
+
+    {#if _error}<div class="error">{_error}</div>{/if}
   </page-info>
 
   <chap-list>
@@ -140,13 +170,13 @@
 
   chap-page {
     display: block;
-    margin: 0 0 var(--gutter);
+    margin: var(--gutter) 0;
 
     @include shadow(2);
     @include bgcolor(tert);
 
     @include bp-min(tm) {
-      margin: 0 var(--gutter) var(--gutter);
+      margin: var(--gutter);
       border-radius: 1rem;
     }
 
@@ -155,15 +185,17 @@
     }
   }
 
+  page-head {
+    display: block;
+    @include border(--bd-main, $loc: bottom);
+  }
+
   page-info {
     display: flex;
-    padding-top: var(--gutter);
-    padding-bottom: var(--gutter);
-    margin-bottom: var(--gutter);
+    padding: 0.75rem 0;
 
     // @include bgcolor(main);
     // @include bdradi(1rem, $loc: top);
-    @include border(--bd-main, $loc: bottom);
   }
 
   info-left {
@@ -183,13 +215,13 @@
     @include flex($gap: 0.5rem);
   }
 
-  .m-btn {
-    background: inherit;
+  // .m-btn {
+  //   background: inherit;
 
-    &:hover {
-      @include bgcolor(secd);
-    }
-  }
+  //   &:hover {
+  //     @include bgcolor(secd);
+  //   }
+  // }
   // .chinfo {
   //   margin-bottom: var(--gutter-pl);
   // }
@@ -237,5 +269,11 @@
 
   .foot {
     margin-top: 1rem;
+  }
+
+  .error {
+    font-size: italic;
+    @include fgcolor(harmful, 5);
+    @include ftsize(sm);
   }
 </style>
