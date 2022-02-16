@@ -38,12 +38,9 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     nvinfo.bump! if _cvuser.privi >= 0
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
 
-    zhbooks = nvinfo.zhbooks.to_a.sort_by(&.zseed)
+    zhbooks = nvinfo.zhbooks.to_a.sort_by!(&.zseed)
     if zhbooks.empty? || zhbooks.first.zseed != 0
       zhbooks.unshift(Zhbook.load!(nvinfo, 0))
-    else
-      base_zhbook = zhbooks[0]
-      base_zhbook.copy_newers!(zhbooks[1..]) if base_zhbook.staled?
     end
 
     if (ubmemo.lr_sname.empty?) && (zhbook = zhbooks.first?)

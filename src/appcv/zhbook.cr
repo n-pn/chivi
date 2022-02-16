@@ -43,55 +43,6 @@ class CV::Zhbook
     SiteLink.chtxt_url(sname, snvid, schid)
   end
 
-  def staled?(ttl = 12.hours)
-    Time.unix(self.atime) < Time.utc - ttl
-  end
-
-  # mode:
-  # 0 : just return utime and chap_count
-  # 1 : reset cached translation
-  # 2 : update remote source
-  # 3 : make a full remote update
-
-  def count_chap!(mode = 0, ttl = 5.minutes) : Int32
-    if mode > 1
-      fetch!(ttl, force: mode > 2)
-    elsif mode > 0
-      reset_cache!
-    end
-
-    self.chap_count
-  end
-
-  def fetch!(ttl : Time::Span, force : Bool = false) : Nil
-    parser = RmInfo.init(sname, snvid, ttl: ttl, mkdir: true)
-    changed = parser.last_schid != self.last_schid
-
-    return unless force || changed
-    status, chinfos = parser.istate, parser.chap_infos
-
-    self.update_status(status)
-    self.atime = Time.utc.to_unix
-
-    if changed
-      self.update_latest(chinfos.last)
-      self.update_mftime(parser.mftime > 0 ? parser.mftime : self.atime)
-    end
-
-    pgmax, pgmin = _repo.store!(chinfos, reset: force)
-    reset_cache!(pgmin * 4, pgmax * 4 + 1)
-
-    self.save!
-  rescue err
-    puts err.inspect_with_backtrace
-  end
-
-  def update_status(status : Int32)
-    return if self.status >= status && self.status != 3
-    nvinfo.set_status(status)
-    self.status = status
-  end
-
   CV_PSIZE = 32
   CV_CACHE = RamCache(String, Array(ChInfo)).new(4096, 12.hours)
 
@@ -101,7 +52,7 @@ class CV::Zhbook
 
       chmin = pgidx * CV_PSIZE + 1
       chmax = chmin + CV_PSIZE
-      chmax = chap_count if chmax > chap_count
+      chmax = chap_count + 1 if chmax > chap_count
 
       (chmin...chmax).map do |chidx|
         next ChInfo.new(chidx) unless chinfo = chlist.data[chidx]?
@@ -124,6 +75,7 @@ class CV::Zhbook
     chmin = chmax > 3 ? chmax - 3 : 0
 
     output = [] of ChInfo
+
     chmax.downto(chmin) do |index|
       output << (self.chinfo(index) || ChInfo.new(index + 1))
     end
@@ -166,29 +118,50 @@ class CV::Zhbook
     [] of String
   end
 
-  def copy_newers!(others : Array(self), redo : Bool = false) : Nil
-    start = redo ? 1 : self.chap_count + 1
+  def update_latest(chap : ChInfo)
+    self.last_schid = chap.schid
+    self.chap_count = chap.chidx
+  end
 
-    others.each do |other|
-      if redo && other.sname == "users"
-        infos = other._repo.fetch!(1, other.chap_count)
-        infos.select! do |chap|
-          next true unless prev = _repo.chinfo(chap.chidx)
-          prev.stats.utime < chap.stats.utime || prev.o_sname != "staff"
-        end
+  def update_mftime(utime : Int64 = Time.utc.to_unix, force : Bool = false)
+    return unless force || self.utime < utime
+    self.nvinfo.update_utime(utime)
+    self.utime = utime
+  end
 
-        next if infos.empty?
-      else
-        next if other.chap_count < start
-        infos = other._repo.fetch!(start, other.chap_count)
-      end
+  def update_status(status : Int32)
+    return if self.status >= status && self.status != 3
+    nvinfo.set_status(status)
+    self.status = status
+  end
 
-      self.patch!(infos, other.utime)
-      start = self.chap_count + 1
-    end
+  def remote?
+    return false if sname == "5200"
+    NvSeed::REMOTES.includes?(sname)
+  end
 
+  def locals?
+    {"users", "staff"}.includes?(sname)
+  end
+
+  def fetch!(ttl : Time::Span, force : Bool = false) : Nil
+    parser = RmInfo.init(sname, snvid, ttl: ttl, mkdir: true)
+    changed = parser.last_schid != self.last_schid
+
+    return unless force || changed
+    status, chinfos = parser.istate, parser.chap_infos
+
+    pgmax, pgmin = _repo.store!(chinfos, reset: force)
+    reset_cache!(pgmin * 4, pgmax * 4 + 1)
+
+    self.update_status(status)
+    self.update_latest(chinfos.last)
+    self.update_mftime(parser.mftime > 0 ? parser.mftime : self.atime)
     self.atime = Time.utc.to_unix
+
     self.save!
+  rescue err
+    puts err.inspect_with_backtrace
   end
 
   def patch!(chap : ChInfo, utime : Int64 = Time.utc.to_unix) : Nil
@@ -206,18 +179,75 @@ class CV::Zhbook
     self.update_latest(last)
     self.update_mftime(utime)
 
+    self.atime = Time.utc.to_unix
     self.save!
   end
 
-  def update_latest(chap : ChInfo)
-    self.last_schid = chap.schid
-    self.chap_count = chap.chidx
+  def proxy!(other : self, start = self.chap_count + 1)
+    return if other.chap_count < start
+    infos = other._repo.fetch!(start, other.chap_count)
+
+    if other.sname == "users"
+      infos.select! do |chap|
+        next false if chap.stats.chars == 0
+        next true unless prev = _repo.chinfo(chap.chidx)
+        prev.stats.utime < chap.stats.utime || prev.o_sname != "staff"
+      end
+
+      return if infos.empty?
+    end
+
+    self.patch!(infos, other.utime)
   end
 
-  def update_mftime(utime : Int64 = Time.utc.to_unix, force : Bool = false)
-    return unless force || self.utime < utime
-    self.nvinfo.update_utime(utime)
-    self.utime = utime
+  def proxy_many!(others : Array(self), force : Bool = false) : Nil
+    others.each do |other|
+      start = force && other.sname == "users" ? 1 : self.chap_count + 1
+      self.proxy!(other, start)
+    end
+  end
+
+  def remap!(force : Bool = false)
+    seeds = self.nvinfo.zhbooks.to_a.sort_by!(&.zseed)
+    seeds.shift if seeds.first?.try(&.id.== self.id)
+
+    seeds.first(4).each_with_index do |chseed, idx|
+      next unless chseed.remote?
+      ttl = map_expiry(self.nvinfo.status, force: force)
+      chseed.fetch!(ttl: ttl * (2 ** idx), force: force)
+    rescue
+      next
+    end
+
+    proxy_many!(seeds, force: force)
+  end
+
+  # ------------------------
+
+  def staled?(privi : Int32 = 4, force : Bool = false)
+    return true if self.chap_count == 0
+    tspan = Time.utc - Time.unix(self.atime)
+    tspan > map_expiry(self.status, force) * (4 - privi)
+  end
+
+  def map_expiry(status = self.status, force : Bool = false)
+    case self.status
+    when 0 then force ? 3.minutes : 1.hours
+    when 1 then force ? 2.hours : 2.days
+    when 2 then force ? 3.days : 1.weeks
+    else        force ? 4.hours : 4.days
+    end
+  end
+
+  def refresh!(force : Bool = false) : Nil
+    if sname == "chivi"
+      self.remap!(force: force)
+    elsif self.remote?
+      self.fetch!(ttl: map_expiry(force: force), force: force)
+      Zhbook.load!(self.nvinfo, 0).proxy!(self)
+    else
+      reset_cache! if force
+    end
   end
 
   ###########################
@@ -229,7 +259,7 @@ class CV::Zhbook
       case zseed
       when 0
         seeds = nvinfo.zhbooks.to_a.sort_by!(&.zseed)
-        init!(nvinfo, "chivi").tap(&.copy_newers!(seeds, redo: true))
+        init!(nvinfo, "chivi").tap(&.proxy_many!(seeds, force: true))
       when 63 then init!(nvinfo, "users")
       else         raise "Zhbook not found!"
       end

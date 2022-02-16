@@ -11,23 +11,10 @@ class CV::NvchapCtrl < CV::BaseCtrl
   def ch_list
     zhbook = load_zhbook
 
-    redo = params["force"]? == "true" && _cvuser.privi >= 0
-    mode = redo ? 1 : 0
+    force = params["force"]? == "true" && _cvuser.privi >= 0
+    zhbook.refresh!(force: force) if zhbook.staled?(_cvuser.privi, force)
 
-    is_remote = NvSeed::REMOTES.includes?(zhbook.sname)
-
-    if is_remote
-      mode += 2 if redo || seed_outdated?(zhbook, _cvuser.privi)
-      total = zhbook.count_chap!(mode, ttl: 5.hours)
-    else
-      total = zhbook.chap_count
-    end
-
-    # if is_remote
-    #   base_zhbook = Zhbook.load!(zhbook.nvinfo, 0)
-    #   base_zhbook.copy_newers!([zhbook]) if base_zhbook.chap_count < total
-    # end
-
+    total = zhbook.chap_count
     pgidx = params.fetch_int("pg", min: 1)
 
     send_json({

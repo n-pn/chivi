@@ -69,16 +69,17 @@ class CV::Nvchap
   def fetch!(chmin : Int32, chmax : Int32) : Array(ChInfo)
     pgmin = self.pgidx(chmin)
     pgmax = self.pgidx(chmax) + 1
-    infos = [] of ChInfo
+    chaps = [] of ChInfo
 
     pgmin.upto(pgmax) do |pgidx|
-      self.chlist(pgidx).data.each_value do |chap|
-        next if chap.stats.chars == 0 || chap.chidx < chmin || chap.chidx > chmax
-        infos << chap.as_proxy!(@sname, @snvid)
+      input = self.chlist(pgidx).data.values.sort_by!(&.chidx)
+      input.each do |chap|
+        break if chap.chidx > chmax
+        chaps << chap.as_proxy!(@sname, @snvid) unless chap.chidx < chmin
       end
     end
 
-    infos
+    chaps
   end
 
   def remote?(privi : Int32 = 4, special_case : Bool = false) : Bool
