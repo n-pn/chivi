@@ -15,11 +15,7 @@ class CV::ChInfo
     end
 
     def to_s(io : IO)
-      if @utime > 0
-        io << '\t' << @utime << '\t' << @chars << '\t' << @parts << '\t' << @uname
-      else
-        io << "\t\t\t\t"
-      end
+      io << '\t' << @utime << '\t' << @chars << '\t' << @parts << '\t' << @uname
     end
   end
 
@@ -59,7 +55,7 @@ class CV::ChInfo
     @chvol = argv[3]
 
     return if argv.size < 7
-    @stats = Stats.new(argv[4], argv[5], argv[6], argv[7])
+    @stats = Stats.new(argv[4], argv[5], argv[6], argv[7]? || "")
 
     return if argv.size < 11
     @proxy = Proxy.new(argv[8], argv[9], argv[10].to_i)
