@@ -1,7 +1,6 @@
 class CV::Nvchap
   DIR = "var/chtexts"
 
-  CACHE = RamCache(String, ChList).new(4096, 3.days)
   PSIZE = 128
 
   def initialize(@sname : String, @snvid : String)
@@ -13,9 +12,11 @@ class CV::Nvchap
     (chidx - 1) // PSIZE
   end
 
+  LISTS = RamCache(String, ChList).new(4096, 3.days)
+
   def chlist(pgidx : Int32)
     label = "#{@sname}/#{@snvid}/#{pgidx}"
-    CACHE.get(label) { ChList.new("#{DIR}/#{label}.tsv") }
+    LISTS.get(label) { ChList.new("#{DIR}/#{label}.tsv") }
   end
 
   def chinfo(chidx : Int32)

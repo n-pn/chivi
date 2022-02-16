@@ -74,13 +74,8 @@ class CV::Zhbook
     self.atime = Time.utc.to_unix
 
     if changed
-      self.chap_count = chinfos.size
-      self.last_schid = chinfos.last.schid
-
-      self.utime = parser.mftime
-      self.utime = self.atime if self.utime == 0
-
-      nvinfo.update_utime(self.utime)
+      self.update_latest(chinfos.last)
+      self.update_mftime(parser.mftime > 0 ? parser.mftime : self.atime)
     end
 
     pgmax, pgmin = _repo.store!(chinfos, reset: force)
@@ -181,41 +176,48 @@ class CV::Zhbook
           next true unless prev = _repo.chinfo(chap.chidx)
           prev.stats.utime < chap.stats.utime || prev.o_sname != "staff"
         end
+
+        next if infos.empty?
       else
         next if other.chap_count < start
         infos = other._repo.fetch!(start, other.chap_count)
       end
 
-      _repo.patch!(infos)
-
-      self.utime = other.utime if self.utime < other.utime
-
-      self.chap_count = other.chap_count
-      self.last_schid = other.last_schid
+      self.patch!(infos, other.utime)
       start = self.chap_count + 1
     end
 
-    self.reset_cache!
     self.atime = Time.utc.to_unix
     self.save!
   end
 
-  def patch!(chaps : Array(ChInfo))
+  def patch!(chap : ChInfo, utime : Int64 = Time.utc.to_unix) : Nil
+    patch!([chap], utime)
+  end
+
+  def patch!(chaps : Array(ChInfo), utime : Int64 = Time.utc.to_unix)
+    return if chaps.empty?
+
     pgmax, pgmin = _repo.patch!(chaps)
     reset_cache!(pgmin * 4, pgmax * 4 + 1)
 
     return unless (last = chaps.last?) && last.chidx > self.chap_count
-    self.last_schid = last.schid
-    self.chap_count = last.chidx
 
-    self.utime = Time.utc.to_unix
-    self.nvinfo.update_utime(self.utime)
+    self.update_latest(last)
+    self.update_mftime(utime)
 
     self.save!
   end
 
-  def patch!(chap : ChInfo) : Nil
-    patch!([chap])
+  def update_latest(chap : ChInfo)
+    self.last_schid = chap.schid
+    self.chap_count = chap.chidx
+  end
+
+  def update_mftime(utime : Int64 = Time.utc.to_unix, force : Bool = false)
+    return unless force || self.utime < utime
+    self.nvinfo.update_utime(utime)
+    self.utime = utime
   end
 
   ###########################
