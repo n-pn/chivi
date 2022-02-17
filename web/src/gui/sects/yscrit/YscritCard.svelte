@@ -208,7 +208,7 @@
 
   crit-foot {
     @include flex($gap: 0.375rem);
-    @include border(--bd-main, $loc: top);
+    @include border(--bd-soft, $loc: top);
 
     margin: 0 var(--gutter);
 

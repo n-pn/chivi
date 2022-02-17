@@ -14,7 +14,7 @@ $colors: (gray, blue, green, orange, red, violet) !default;
   --fg-tert: #{color(neutral, 5)};
   --fg-mute: #{color(neutral, 4)};
 
-  --bd-soft: #{color(neutral, 1)};
+  --bd-soft: #{color(neutral, 3, 3)};
   --bd-main: #{color(neutral, 2)};
   --bd-bold: #{color(neutral, 3)};
 }
@@ -24,7 +24,7 @@ $colors: (gray, blue, green, orange, red, violet) !default;
   --bg-secd: #fcf7ee;
   --bg-tert: #fffbeb;
 
-  --bd-soft: #{color(orange, 1, 5)};
+  --bd-soft: #{color(orange, 3, 3)};
   --bd-main: #{color(orange, 2, 5)};
   --bd-bold: #{color(orange, 3, 5)};
 }
@@ -45,7 +45,7 @@ $colors: (gray, blue, green, orange, red, violet) !default;
   --fg-tert: #{color(gray, 4)};
   --fg-mute: #{color(gray, 5)};
 
-  --bd-soft: #{color(gray, 8)};
+  --bd-soft: #{color(gray, 6, 3)};
   --bd-main: #{color(gray, 7)};
   --bd-bold: #{color(gray, 6)};
 }
@@ -61,7 +61,7 @@ $colors: (gray, blue, green, orange, red, violet) !default;
   --fg-tert: #{color(gray, 5)};
   --fg-mute: #{color(gray, 6)};
 
-  --bd-soft: #{color(gray, 9)};
+  --bd-soft: #{color(gray, 7, 3)};
   --bd-main: #{color(gray, 8)};
   --bd-bold: #{color(gray, 7)};
 }
