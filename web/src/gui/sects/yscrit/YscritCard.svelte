@@ -110,6 +110,7 @@
 
     @include bgcolor(secd);
     @include bdradi($loc: top);
+    @include border($loc: bottom);
 
     padding: 0 var(--gutter);
     line-height: 2.25rem;
@@ -183,10 +184,11 @@
     --hide: #{color(neutral, 7, 2)};
 
     display: block;
-    margin: 0 var(--gutter) 1rem;
+    margin: 0 var(--gutter) 0.75em;
 
     max-height: 12rem;
     overflow: hidden;
+    line-height: 1.5rem;
 
     @include bps(font-size, rem(16px), $pl: rem(17px), $tm: rem(18px));
     // prettier-ignore
@@ -204,9 +206,8 @@
       @include bps(font-size, rem(18px), $pl: rem(19px), $tm: rem(20px));
     }
 
-    :global(p + p) {
-      margin-top: 1em !important;
-      line-height: 1.5em;
+    :global(p) {
+      margin-top: 0.75em;
     }
   }
 
