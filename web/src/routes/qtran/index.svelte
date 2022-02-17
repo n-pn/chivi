@@ -5,7 +5,8 @@
   export async function load({ url }) {
     appbar.set({ left: [['Dịch nhanh', 'bolt']], cvmtl: true })
     const dname = url.searchParams.get('dname') || 'combine'
-    return { props: make_vdict(dname) }
+    const input = url.searchParams.get('input')
+    return { props: { dname, d_dub: make_vdict(dname).d_dub, zhtext: input } }
   }
 </script>
 
@@ -17,8 +18,8 @@
 
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
+  export let zhtext = ''
 
-  let zhtext = ''
   let cvdata = ''
 
   let edit_mode = true
