@@ -107,18 +107,12 @@
     position: sticky;
     top: 0;
     z-index: 10;
-
-    @include bgcolor(secd);
-    @include bdradi($loc: top);
-    @include border($loc: bottom);
-
     padding: 0 var(--gutter);
     line-height: 2.25rem;
 
-    button {
-      --linesd: 0;
-      background: inherit;
-    }
+    @include bgcolor(secd);
+    @include bdradi($loc: top);
+    @include border(--bd-soft, $loc: bottom);
   }
 
   .right {
@@ -163,6 +157,7 @@
 
   a.meta,
   button.meta {
+    background: inherit;
     padding: 0;
     &:hover {
       @include fgcolor(primary, 5);
@@ -181,20 +176,20 @@
   }
 
   crit-body {
-    --hide: #{color(neutral, 7, 2)};
+    --bg-hide: #{color(neutral, 7, 2)};
 
     display: block;
     margin: 0 var(--gutter) 0.75em;
 
     max-height: 12rem;
     overflow: hidden;
-    line-height: 1.5rem;
+    line-height: 1.5em;
 
     @include bps(font-size, rem(16px), $pl: rem(17px), $tm: rem(18px));
     // prettier-ignore
-    background: linear-gradient( to top, color(--hide) 0.25rem, transparent 1rem);
+    background: linear-gradient( to top, color(--bg-hide) 0.25rem, transparent 1rem);
     // prettier-ignore
-    @include tm-dark { --hide: #{color(neutral, 5, 2)}; }
+    @include tm-dark { --bg-hide: #{color(neutral, 5, 2)}; }
 
     &._all {
       max-height: initial;
