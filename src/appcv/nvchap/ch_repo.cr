@@ -8,6 +8,10 @@ class CV::ChRepo
     @flog = "#{DIR}/#{sname}/_/#{snvid}.log"
   end
 
+  def mkdir!
+    FileUtils.mkdir_p("#{DIR}/#{@sname}/#{@snvid}")
+  end
+
   def pgidx(chidx : Int32)
     (chidx - 1) // PSIZE
   end
