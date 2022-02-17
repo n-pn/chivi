@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { session, navigating, page } from '$app/stores'
+  import { session, page } from '$app/stores'
   import { last_read } from '$utils/ubmemo_utils'
 
   import { appbar } from '$lib/stores'
@@ -75,7 +75,7 @@
     _error = ''
 
     // prettier-ignore
-    const payload = await load_page( fetch, nvinfo, chseed.sname, chpage.pgidx, true )
+    const payload = await load_page(fetch, nvinfo, chseed.sname, chpage.pgidx, true)
 
     if (payload.props) {
       chseed = payload.props.chseed
@@ -114,14 +114,14 @@
           class="m-btn"
           href={chseed._link}
           target="_blank"
-          rel="noopener noreferer">
+          rel="external noopener noreferer">
           <SIcon name="external-link" />
           <span class="-hide">Nguồn</span>
         </a>
       {/if}
 
       <button
-        class="m-btn _primary"
+        class="m-btn _primary umami--click--chaps-force-update"
         disabled={$session.privi < 1}
         on:click={force_update}>
         <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
