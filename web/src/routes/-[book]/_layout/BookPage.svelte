@@ -165,7 +165,7 @@
       <span class="-txt _hide">Thảo luận</span>
     </a>
 
-    <a class="m-btn" href="/dicts/{nvinfo.bhash}" data-kbd="p">
+    <a class="m-btn" href="/dicts/${nvinfo.bhash}" data-kbd="p">
       <SIcon name="package" />
       <span class="-txt _hide">Từ điển</span>
     </a>
