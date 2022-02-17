@@ -37,10 +37,14 @@
   let kbd_hint = false
 
   function handle_keydown(evt: KeyboardEvent) {
-    if (evt.key == 'Shift') return (kbd_hint = true)
+    const tag_name = document.activeElement?.tagName
+    const on_input = tag_name == 'TEXTAREA' || tag_name == 'INPUT'
 
-    let kbd = map_keypress(evt)
-    if (!kbd) return
+    const kbd = map_keypress(evt, on_input)
+    if (!kbd) {
+      if (evt.shiftKey && (!on_input || evt.altKey)) kbd_hint = true
+      return
+    }
 
     const scope = $layers[0]
     if (evt.key == '"') {

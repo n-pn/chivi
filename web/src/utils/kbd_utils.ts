@@ -1,7 +1,4 @@
-export function map_keypress(evt: KeyboardEvent) {
-  const tag_name = document.activeElement?.tagName
-  const on_input = tag_name == 'TEXTAREA' || tag_name == 'INPUT'
-
+export function map_keypress(evt: KeyboardEvent, on_input = false) {
   switch (evt.key) {
     case 'Escape':
       return 'esc'
@@ -25,8 +22,13 @@ export function map_keypress(evt: KeyboardEvent) {
       if (!evt.altKey) return
       return prefix_key(evt, '↓')
 
+    case 'Shift':
+    case 'Ctrl':
+      return
+
     default:
-      return on_input ? '' : prefix_key(evt, evt.key)
+      if (on_input && !evt.altKey) return ''
+      return prefix_key(evt, evt.key)
   }
 }
 

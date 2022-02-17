@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
-  const icon_types = ['affiliate', 'archive', 'archive', 'cloud']
+  const icon_types = ['affiliate', 'archive', 'cloud-off', 'cloud', 'cloud-fog']
 </script>
 
 <script lang="ts">

@@ -16,7 +16,7 @@
 tool-tip {
   @include tooltip();
   width: 10rem;
-  z-index: 2;
+  z-index: 10;
   position: absolute;
   display: inline-block;
   text-align: center;
@@ -65,7 +65,7 @@ tool-tip {
 
 [data-tip][tip-loc='bottom']:after {
   bottom: unset;
-  top: 90%;
+  top: 100%;
 }
 
 .kbd-hint [data-kbd] {
