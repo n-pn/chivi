@@ -54,11 +54,11 @@ class CV::ChRepo
   end
 
   def patch!(input : Array(ChInfo)) : Nil
-    parts = input.group_by { |x| self.pgidx(x.chidx) }
-    parts.each do |pgidx, infos|
+    ChList.save!(@fraw, input, "a") if @sname == "users"
+    ChList.save!(@flog, input, "a") unless @sname == "chivi"
+
+    input.group_by { |x| self.pgidx(x.chidx) }.each do |pgidx, infos|
       self.chlist(pgidx).tap(&.patch(infos)).save!
-      ChList.save!(@fraw, infos, "a")
-      ChList.save!(@flog, infos, "a")
     end
   end
 
