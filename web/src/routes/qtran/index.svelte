@@ -1,14 +1,11 @@
 <script context="module" lang="ts">
+  import { make_vdict } from '$utils/vpdict_utils'
   import { appbar } from '$lib/stores'
 
-  export async function load() {
+  export async function load({ url }) {
     appbar.set({ left: [['Dịch nhanh', 'bolt']], cvmtl: true })
-    return {
-      props: {
-        dname: 'combnie',
-        d_dub: 'Tổng hợp',
-      },
-    }
+    const dname = url.searchParams.get('dname') || 'combine'
+    return { props: make_vdict(dname) }
   }
 </script>
 
