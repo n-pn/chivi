@@ -14,20 +14,11 @@ struct CV::ChseedView
       utime: @data.utime,
       # atime: @data.atime,
       _link: site_link,
-      _type: seed_type,
+      _type: NvSeed.map_type(@data.sname),
     }.to_json(jb)
   end
 
   def site_link
     SiteLink.binfo_url(@data.sname, @data.snvid)
-  end
-
-  def seed_type
-    case @data.sname
-    when "chivi"          then 0
-    when "users", "local" then 1
-    else
-      NvSeed::REMOTES.includes?(@data.sname) ? 3 : 2
-    end
   end
 end

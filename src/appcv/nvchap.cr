@@ -124,13 +124,9 @@ class CV::Zhbook
     self.status = status
   end
 
-  def remote?
-    return false if sname == "5200"
-    NvSeed::REMOTES.includes?(sname)
-  end
-
-  def locals?
-    {"users", "staff"}.includes?(sname)
+  def remote?(force : Bool = true)
+    type = NvSeed.map_type(sname)
+    type == 3 || (force && type == 4)
   end
 
   def fetch!(ttl : Time::Span, force : Bool = false) : Nil
@@ -204,7 +200,7 @@ class CV::Zhbook
     seeds.shift if seeds.first?.try(&.id.== self.id)
 
     seeds.each_with_index do |chseed, idx|
-      next unless chseed.remote?
+      next unless self.remote?(force: false)
       ttl = map_expiry(self.nvinfo.status, force: false)
       chseed.fetch!(ttl: ttl * (2 ** idx), force: false)
     rescue
@@ -234,7 +230,7 @@ class CV::Zhbook
   def refresh!(force : Bool = false) : Nil
     if sname == "chivi"
       self.remap!(force: force)
-    elsif self.remote?
+    elsif self.remote?(force: force)
       self.fetch!(ttl: map_expiry(force: force), force: force)
       Zhbook.load!(self.nvinfo, 0).tap(&.proxy!(self)).reset_cache!
     else
