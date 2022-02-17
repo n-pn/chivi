@@ -1,6 +1,6 @@
 struct CV::PosTag
   PUNCTS = {
-    {"Middot", Pos::Puncts, ["‧", "•", "·"]},
+    {"Middot", Pos::Puncts, ["・", "‧", "•", "·"]},
     {"Comma", Pos::Puncts, ["﹐", "，", ","]},
     {"Penum", Pos::Puncts, ["﹑", "、", "､"]},
     {"Colon", Pos::Puncts, ["︰", "∶", "﹕", "：", ":"]},
