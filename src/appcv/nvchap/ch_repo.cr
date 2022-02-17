@@ -1,16 +1,13 @@
 class CV::ChRepo
   DIR = "var/chtexts"
 
-  PSIZE = 128
-
   def initialize(@sname : String, @snvid : String)
     @fraw = "#{DIR}/#{sname}/_/#{snvid}.tsv"
     @flog = "#{DIR}/#{sname}/_/#{snvid}.log"
-  end
-
-  def mkdir!
     FileUtils.mkdir_p("#{DIR}/#{@sname}/#{@snvid}")
   end
+
+  PSIZE = 128
 
   def pgidx(chidx : Int32)
     (chidx - 1) // PSIZE

@@ -260,17 +260,15 @@ class CV::Zhbook
     case zseed
     when 0
       seeds = nvinfo.zhbooks.to_a.sort_by!(&.zseed)
-      model = init!(nvinfo, "chivi").tap(&.proxy_many!(seeds, force: true))
+      init!(nvinfo, "chivi").tap(&.proxy_many!(seeds, force: true))
     when 63 then init!(nvinfo, "users")
-    else         raise "Zhbook not found!"
+    else         raise "Source not found!"
     end
   end
 
   def self.init!(nvinfo : Nvinfo, sname : String, snvid = nvinfo.bhash)
     zseed = NvSeed.map_id(sname)
     model = new({nvinfo: nvinfo, zseed: zseed, sname: sname, snvid: snvid})
-
-    model._repo.mkdir!
     model.tap(&.fix_id!)
   end
 
