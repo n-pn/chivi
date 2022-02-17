@@ -118,10 +118,12 @@ struct CV::VpTermView
     tags << "nn" if AFFILIATE.includes?(lc)
     tags << "na" if ATTRIBUTE.includes?(lc) || fc == '姓'
 
+    on_book = @vdict.dtype == 3
+
     if is_human_name?(fc, lc)
-      is_human = true
+      is_human = on_book
       tags << "nr"
-    elsif @vdict.dtype == 3
+    elsif on_book
       tags << "nr"
     end
 
@@ -134,7 +136,7 @@ struct CV::VpTermView
       ftag = tags.first? || ""
     end
 
-    if is_human || ftag.in?("nr", "nn", "nz")
+    if is_human || (on_book && ftag.in?("nr", "nn", "nz"))
       fval = TextUtils.titleize(vals.first)
     end
 
