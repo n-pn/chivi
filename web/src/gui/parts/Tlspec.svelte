@@ -216,11 +216,13 @@
           <span>Kết quả dịch chính xác</span>
           <btn-group>
             <button
+              type="button"
               on:click={() => ($entry.match = '')}
               data-tip="Xoá hết kết quả dịch">
               <SIcon name="eraser" />
             </button>
             <button
+              type="button"
               on:click={apply_gtran}
               data-tip="Lấy kết quả từ Google Translate">
               <SIcon name="language" />
@@ -230,7 +232,10 @@
               data-tip="Mở bằng trang dịch nhanh">
               <SIcon name="external-link" />
             </a>
-            <button on:click={appy_cvmtl} data-tip="Copy từ kết quả dịch máy">
+            <button
+              type="button"
+              on:click={appy_cvmtl}
+              data-tip="Copy từ kết quả dịch máy">
               <SIcon name="copy" />
             </button>
           </btn-group>
@@ -257,6 +262,7 @@
       <form-action>
         {#if $entry._ukey}
           <button
+            type="button"
             class="m-btn _harmful"
             data-kbd="delete"
             on:click={delete_tlspec}>
@@ -380,14 +386,6 @@
     margin-top: 0.5rem;
     margin-bottom: 0.25rem;
     @include ftsize(sm);
-  }
-
-  .hint {
-    cursor: pointer;
-    margin-left: auto;
-    font-weight: 400;
-    font-style: italic;
-    @include fgcolor(tert);
   }
 
   form-action {
