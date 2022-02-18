@@ -34,6 +34,7 @@
 </script>
 
 <script lang="ts">
+  import { gtran } from '$lib/gtran'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
@@ -97,11 +98,6 @@
     }
   }
 
-  function init_match() {
-    $entry.match = $entry.cvmtl
-    match_elem.focus()
-  }
-
   function change_focus(index: number, _prev = lower) {
     if (index < upper) lower = index
     if (index >= _prev) upper = index + 1
@@ -127,6 +123,16 @@
     const input = $ztext.substring(lower, upper)
     navigator.clipboard.writeText(input)
   }
+
+  function appy_cvmtl() {
+    $entry.match = $entry.cvmtl
+    match_elem.focus()
+  }
+
+  async function apply_gtran() {
+    $entry.match = await gtran($ztext.substring(lower, upper), 1)
+    match_elem.focus()
+  }
 </script>
 
 <Dialog
@@ -147,14 +153,16 @@
         <button
           data-kbd="←"
           disabled={lower == 0}
-          on:click={() => shift_lower(-1)}>
+          on:click={() => shift_lower(-1)}
+          data-tip="Mở rộng sang trái">
           <SIcon name="arrow-left" />
         </button>
 
         <button
           data-kbd="⇧←"
           disabled={lower == $ztext.length - 1}
-          on:click={() => shift_lower(1)}>
+          on:click={() => shift_lower(1)}
+          data-tip="Thu hẹp về trái">
           <SIcon name="arrow-bar-to-right" />
         </button>
 
@@ -163,19 +171,24 @@
         <button
           data-kbd="⇧→"
           disabled={lower == 1}
-          on:click={() => shift_upper(-1)}>
+          on:click={() => shift_upper(-1)}
+          data-tip="Tu hẹp từ phải">
           <SIcon name="arrow-bar-to-left" />
         </button>
 
         <button
           data-kbd="→"
           disabled={lower == $ztext.length}
-          on:click={() => shift_upper(1)}>
+          on:click={() => shift_upper(1)}
+          data-tip="Mở rộng sang phải">
           <SIcon name="arrow-right" />
         </button>
 
-        <button data-kbd="c" on:click={copy_ztext}>
-          <SIcon name="copy" />
+        <button
+          data-kbd="c"
+          on:click={copy_ztext}
+          data-tip="Copy đoạn text vào clipboard">
+          <SIcon name="clipboard" />
         </button>
       </btn-group>
     </form-label>
@@ -201,7 +214,26 @@
       <form-group>
         <form-label>
           <span>Kết quả dịch chính xác</span>
-          <span class="hint" on:click={init_match}>Chép từ dịch máy</span>
+          <btn-group>
+            <button
+              on:click={() => ($entry.match = '')}
+              data-tip="Xoá hết kết quả dịch">
+              <SIcon name="eraser" />
+            </button>
+            <button
+              on:click={apply_gtran}
+              data-tip="Lấy kết quả từ Google Translate">
+              <SIcon name="language" />
+            </button>
+            <a
+              href="/qtran?dname={$vdict.dname}&input={$ztext}"
+              data-tip="Mở bằng trang dịch nhanh">
+              <SIcon name="external-link" />
+            </a>
+            <button on:click={appy_cvmtl} data-tip="Copy từ kết quả dịch máy">
+              <SIcon name="copy" />
+            </button>
+          </btn-group>
         </form-label>
         <textarea
           class="m-input _match"
@@ -238,8 +270,13 @@
           class="m-btn _primary _fill"
           data-kbd="⇧↵"
           disabled={!$entry.match}>
-          <SIcon name="device-floppy" />
-          <span>{$entry._ukey ? 'Lưu lại' : 'Báo lỗi'}</span>
+          {#if $entry._ukey}
+            <SIcon name="device-floppy" />
+            <span>Lưu lại</span>
+          {:else}
+            <SIcon name="send" />
+            <span>Báo lỗi</span>
+          {/if}
         </button>
       </form-action>
     </form>
@@ -363,12 +400,12 @@
     display: flex;
     margin-left: auto;
 
-    * + * {
+    > * + * {
       margin-left: 0.25rem;
     }
 
     // prettier-ignore
-    button {
+    > button, > a {
       background: none;
       padding: 0;
       width: 1.5rem;
