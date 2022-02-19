@@ -66,15 +66,6 @@
   }
 </script>
 
-<svelte:head>
-  {#if $session.privi < 2}
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5468438393284967"
-      crossorigin="anonymous"></script>
-  {/if}
-</svelte:head>
-
 <svelte:window
   on:scroll={handle_scroll}
   on:keydown={handle_keydown}

@@ -1,13 +1,11 @@
 <script context="module" lang="ts">
-  import { browser } from '$app/env'
-  import { navigating, session } from '$app/stores'
+  import { navigating } from '$app/stores'
   import { config } from '$lib/stores'
   import { vdict } from '$lib/stores'
   import CvData from '$lib/cv_data'
 
   import Cvmenu, { ctrl as cvmenu } from './CvPage/Cvmenu.svelte'
 
-  import Aditem from '$gui/molds/Aditem.svelte'
   import Cvline from '$gui/sects/Cvline.svelte'
   import Zhline from './CvPage/Zhline.svelte'
 </script>
@@ -47,13 +45,6 @@
     if (focus == 0) return index == zhtext.length - 1
     return index == 0 && focus == zhtext.length - 1
   }
-
-  $: ads_offset = (zhtext.length % 3) + 3 // offset ads placement
-  let ads_blocks = 8 // show as after this number of lines
-  $: {
-    const lines = Math.floor(zhtext.length / 7) // only show max 8 ads
-    ads_blocks = lines < 8 ? 8 : lines // show less ads if chapter is short
-  }
 </script>
 
 <article
@@ -66,10 +57,6 @@
   </header>
 
   {#each zhtext as ztext, index (index)}
-    {#if browser && $session.privi < 2 && index % ads_blocks == ads_offset}
-      <Aditem type="article" />
-    {/if}
-
     <cv-data
       id="L{index}"
       class:debug={$config.render == 1}
