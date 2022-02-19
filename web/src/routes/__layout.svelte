@@ -11,9 +11,6 @@
 </script>
 
 <script lang="ts">
-  // import { onMount } from 'svelte'
-  // import { beforeNavigate } from '$app/navigation'
-
   import { map_keypress, trigger_click } from '$utils/kbd_utils'
 
   import Pledge from '$gui/sects/layout/Pledge.svelte'
@@ -54,11 +51,6 @@
       trigger_click(evt, `${scope} [data-key="${evt.code}"]`)
     }
   }
-
-  // beforeNavigate(({ to }) => {
-  //   if ($session.privi > 1) return
-  //   to ? (window.location.href = to.href) : window.location.reload()
-  // })
 
   function handle_scroll() {
     if ($navigating) return scroll.reset()
