@@ -2,11 +2,16 @@
   import { page } from '$app/stores'
   import { status_icons, status_names, status_colors } from '$lib/constants'
 
-  export async function load({ fetch, stuff: { nvinfo } }) {
+  export async function load({ fetch, stuff: { nvinfo, ubmemo } }) {
     const api_url = `/api/books/${nvinfo.bhash}/front`
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
-    if (api_res.ok) payload.nvinfo = nvinfo
+
+    if (api_res.ok) {
+      payload.props.nvinfo = nvinfo
+      payload.props.ubmemo = ubmemo
+    }
+
     return payload
   }
 </script>
@@ -17,8 +22,8 @@
   import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
-  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
-  export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
+  export let nvinfo: CV.Nvinfo
+  export let ubmemo: CV.Ubmemo
 
   export let crits: CV.Yscrit[] = []
   export let books: CV.Nvinfo[] = []
@@ -54,7 +59,7 @@
 
     <h3 class="sub">
       <sub-label>Truyện đồng tác giả</sub-label>
-      <a class="sub-link" href="/books/={nvinfo.author}">Xem tất cả</a>
+      <a class="sub-link" href="/books/={nvinfo.author.vname}">Xem tất cả</a>
     </h3>
 
     {#if books.length > 0}
