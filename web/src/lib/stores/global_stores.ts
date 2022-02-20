@@ -26,3 +26,10 @@ export const scroll = {
     scroll.set(0)
   },
 }
+
+export const usercp = {
+  ...writable({ actived: false, tab: 0 }),
+  show: (tab = 0) => usercp.set({ actived: true, tab }),
+  hide: () => usercp.set({ actived: false, tab: 0 }),
+  change_tab: (tab: number) => usercp.update((x) => ({ ...x, tab })),
+}

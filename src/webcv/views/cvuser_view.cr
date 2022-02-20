@@ -8,10 +8,13 @@ struct CV::CvuserView
 
   def to_json(jb : JSON::Builder)
     {
-      uname:  @data.uname,
-      privi:  @data.privi,
-      vcoin:  @data.vcoin_avail,
+      uname: @data.uname,
+      privi: @data.privi,
+
       wtheme: @data.wtheme,
+
+      vcoin_avail: @data.vcoin_avail,
+      vcoin_total: @data.vcoin_total,
 
       privi_1_until: @data.privi_1_until,
       privi_2_until: @data.privi_2_until,

@@ -3,7 +3,7 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let tab = 'setting'
+  export let tab = 2
   let old_pass = ''
   let new_pass = ''
   let confirm_pass = ''
@@ -16,14 +16,16 @@
 
   async function update_passwd() {
     cpass_error = ''
-    const res = await fetch('/api/user/passwd', {
+
+    const api_res = await fetch('/api/user/passwd', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ old_pass, new_pass, confirm_pass }),
     })
+    const payload = await api_res.json()
 
-    if (res.ok) tab = 'replied'
-    else cpass_error = await res.text()
+    if (api_res.ok) tab = 0
+    else cpass_error = payload.error
   }
 
   async function logout() {
@@ -33,17 +35,18 @@
 
   async function upgrade_privi() {
     privi_error = ''
-    const res = await fetch('/api/_self/upgrade', {
+    const api_res = await fetch('/api/_self/upgrade', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ privi, tspan }),
     })
 
-    if (res.ok) {
-      $session = await res.json()
-      tab = 'replied'
+    const payload = await api_res.json()
+    if (api_res.ok) {
+      $session = payload.props
+      tab = 0
     } else {
-      privi_error = await res.text()
+      privi_error = payload.error
     }
   }
 
@@ -93,7 +96,7 @@
     <button
       type="submit"
       class="m-btn _success  _fill"
-      disabled={vcoin > $session.vcoin}
+      disabled={vcoin > $session.vcoin_avail}
       on:click|preventDefault={upgrade_privi}>
       <span>Nâng cấp</span>
       <SIcon name="coin" />{vcoin}

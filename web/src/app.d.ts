@@ -9,8 +9,15 @@ declare namespace App {
   interface Session {
     uname: string
     privi: number
-    vcoin: number
+
     wtheme: string
+
+    vcoin_avail: number
+    vcoin_total: number
+
+    privi_1_until: number
+    privi_2_until: number
+    privi_3_until: number
   }
 
   interface Stuff {

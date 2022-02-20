@@ -15,7 +15,7 @@
 
   import Pledge from '$gui/sects/layout/Pledge.svelte'
   import Loader from '$gui/sects/layout/Loader.svelte'
-  import Appbar from '$gui/sects/layout/Appbar.svelte'
+  import Topbar from '$gui/sects/layout/Topbar.svelte'
 
   import '../styles/generic.scss'
 
@@ -69,7 +69,7 @@
   class="app tm-{wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   class:kbd-hint={kbd_hint}
   class:_shift={$toleft}>
-  <Appbar />
+  <Topbar />
 
   <main>
     <div class="vessel">

@@ -3,21 +3,25 @@ const hour_span = minute_span * 60 // 3600 seconds
 const day_span = hour_span * 24
 const month_span = day_span * 30
 
-export function rel_time(mtime: number) {
-  if (mtime < 100000) return 'Không rõ thời gian'
+export function rel_time(lower: number, upper: Date = new Date()) {
+  if (lower < 100000) return 'Không rõ thời gian'
+  const diff = upper.getTime() / 1000 - lower
+  return rel_time_diff(diff) || get_dmy(new Date(lower * 1000))
+}
 
-  const span = new Date().getTime() / 1000 - mtime // unit: seconds
+export function rel_time_diff(diff: number, suffix = ' trước') {
+  if (diff < hour_span) return `${round(diff, minute_span)} phút${suffix}`
+  if (diff < day_span * 2) return `${round(diff, hour_span)} giờ${suffix}`
+  if (diff < month_span * 3) return `${round(diff, day_span)} ngày${suffix}`
+  if (diff < month_span * 12) return `${round(diff, month_span)} tháng${suffix}`
+  return null
+}
 
-  if (span < hour_span) return `${round(span, minute_span)} phút trước`
-  if (span < day_span * 2) return `${round(span, hour_span)} giờ trước`
-  if (span < month_span * 3) return `${round(span, day_span)} ngày trước`
-  if (span < month_span * 12) return `${round(span, month_span)} tháng trước`
-
-  const date = new Date(mtime * 1000)
+export function get_dmy(date: Date) {
   const year = date.getFullYear()
   const month = date.getMonth() + 1
   const day = date.getDate() + 1
-  return `${year}-${pad_zero(month)}-${pad_zero(day)}`
+  return `${pad_zero(day)}/${pad_zero(month)}/${year}`
 }
 
 // for vp term when mtime start from 2020-01-01 00:00:00 time

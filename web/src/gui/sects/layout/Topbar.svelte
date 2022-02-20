@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { browser } from '$app/env'
   import { session } from '$app/stores'
-  import { appbar, scroll, toleft } from '$lib/stores'
+  import { appbar, scroll, toleft, usercp } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Signin from '$gui/parts/Signin.svelte'
@@ -95,7 +95,7 @@
         </button>
       {/if}
 
-      <button class="appbar-item" on:click={() => (active_usercp = true)}>
+      <button class="appbar-item" on:click={() => usercp.show()}>
         <SIcon name="user" />
         <span class="appbar-text _show-md">
           {#if $session.privi >= 0}{$session.uname} [{$session.privi}]{:else}Khách{/if}
@@ -113,11 +113,11 @@
   <Appnav bind:actived={active_appnav} />
 {/if}
 
-{#if active_usercp}
+{#if $usercp.actived}
   {#if $session.uname == 'Khách'}
-    <Signin bind:actived={active_usercp} />
+    <Signin bind:actived={$usercp.actived} />
   {:else}
-    <Usercp bind:actived={active_usercp} />
+    <Usercp />
   {/if}
 {/if}
 

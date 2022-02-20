@@ -55,7 +55,7 @@ class CV::Cvuser
   }
 
   def fix_vcoin(value : Int32)
-    self.vcoin_total += value
+    self.vcoin_total += value if value > 0
     self.vcoin_avail += value
   end
 
@@ -63,8 +63,7 @@ class CV::Cvuser
     vcoin = PRIVI_COST[privi][tspan]
     raise "Not enough vcoin" if vcoin_avail < vcoin
 
-    self.fix_vcoin(-vcoin)
-
+    self.vcoin_avail -= vcoin
     self.privi = privi
 
     tspan = PRIVI_SPAN[tspan]
@@ -92,7 +91,7 @@ class CV::Cvuser
     {self.privi_1_until, self.privi_2_until, self.privi_3_until}
   end
 
-  def check_privi! : Nil
+  def downgrade_privi! : Nil
     now = Time.utc.to_unix
 
     if self.privi == 3
@@ -101,13 +100,12 @@ class CV::Cvuser
     end
 
     if self.privi == 2
-      return self.save! if now < self.privi_2_until
+      return if now < self.privi_2_until
       self.privi = 1
     end
 
     if self.privi == 1
       self.privi = 0 if now > self.privi_1_until
-      self.save!
     end
   end
 
@@ -146,7 +144,9 @@ class CV::Cvuser
   def self.load!(dname : String) : self
     CACHE_STR.get(dname.downcase) do
       user = find!({uname: dname})
-      user.check_privi!
+      user.downgrade_privi!
+      user.last_loggedin_at = Time.utc
+      user.save!
       user.tap { |x| CACHE_INT.set(x.id, x) }
     end
   end
