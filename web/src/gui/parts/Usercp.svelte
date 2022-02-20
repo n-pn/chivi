@@ -85,10 +85,12 @@
         <span class="lbl">Quyền hạn:</span>
         <SIcon name="crown" /><strong>{$session.privi}</strong>
       </div>
-      <div>
-        <span class="lbl">Hết hạn:</span>
-        <strong>{avail_until($session.privi)}</strong>
-      </div>
+      {#if $session.privi > 0 && $session.privi < 4}
+        <div>
+          <span class="lbl">Hết hạn:</span>
+          <strong>{avail_until($session.privi)}</strong>
+        </div>
+      {/if}
       <button class="m-btn _xs _primary" on:click={() => ctrl.change_tab(2)}
         >{$session.privi < 1 ? 'Nâng cấp' : 'Gia hạn'}</button>
     </div>
