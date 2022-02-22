@@ -1,19 +1,16 @@
 <script context="module" lang="ts">
-  import { browser } from '$app/env'
   import { session } from '$app/stores'
-  import { appbar, scroll, toleft, usercp } from '$lib/stores'
+  import { appbar, scroll, toleft, usercp, config_ctrl } from '$lib/stores'
+</script>
 
+<script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Signin from '$gui/parts/Signin.svelte'
   import Appnav from '$gui/parts/Appnav.svelte'
   import Usercp from '$gui/parts/Usercp.svelte'
-  import Config from '../Appbar/Config.svelte'
-</script>
+  import Config from '$gui/sects/reader/Config.svelte'
 
-<script lang="ts">
-  let active_usercp = false
   let active_appnav = false
-  let active_config = false
 </script>
 
 <app-bar class:shift={$toleft} class:clear={$scroll > 0}>
@@ -86,10 +83,7 @@
       {/if}
 
       {#if $appbar.cvmtl}
-        <button
-          class="appbar-item"
-          data-kbd="o"
-          on:click={() => (active_config = true)}>
+        <button class="appbar-item" data-kbd="o" on:click={config_ctrl.show}>
           <SIcon name="adjustments-alt" />
           <span class="appbar-text _show-md">Cài đặt </span>
         </button>
@@ -103,9 +97,7 @@
       </button>
     </div>
 
-    {#if active_config}
-      <Config bind:actived={active_config} />
-    {/if}
+    {#if $config_ctrl.actived}<Config />{/if}
   </nav>
 </app-bar>
 

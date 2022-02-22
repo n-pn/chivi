@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { navigating } from '$app/stores'
-  import { config } from '$lib/stores'
+  import { config_data } from '$lib/stores'
   import { vdict } from '$lib/stores'
   import CvData from '$lib/cv_data'
 
@@ -49,7 +49,7 @@
 
 <article
   tabindex="-1"
-  style="--textlh: {$config.textlh}%"
+  style="--textlh: {$config_data.textlh}%"
   on:blur={cvmenu.hide}
   bind:this={article}>
   <header>
@@ -59,25 +59,27 @@
   {#each zhtext as ztext, index (index)}
     <cv-data
       id="L{index}"
-      class:debug={$config.render == 1}
+      class:debug={$config_data.render == 1}
       class:focus={index == l_focus}
       on:mouseenter={() => (l_hover = index)}>
-      {#if $config.showzh}<Zhline {ztext} plain={$config.render < 0} />{/if}
+      {#if $config_data.showzh}<Zhline
+          {ztext}
+          plain={$config_data.render < 0} />{/if}
       <Cvline
         input={cv_lines[index]}
-        focus={render_html($config.render, index, l_hover, l_focus)} />
+        focus={render_html($config_data.render, index, l_hover, l_focus)} />
     </cv-data>
   {/each}
 
-  {#if $config.render >= 0}
+  {#if $config_data.render >= 0}
     <Cvmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />
   {/if}
 </article>
 
 <div hidden>
-  <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
-  <button data-kbd="z" on:click={() => config.set_render(-1)}>Z</button>
-  <button data-kbd="g" on:click={() => config.set_render(1)}>G</button>
+  <button data-kbd="s" on:click={() => config_data.toggle('showzh')}>A</button>
+  <button data-kbd="z" on:click={() => config_data.set_render(-1)}>Z</button>
+  <button data-kbd="g" on:click={() => config_data.set_render(1)}>G</button>
 </div>
 
 <style lang="scss">

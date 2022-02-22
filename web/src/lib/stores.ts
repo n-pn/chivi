@@ -7,7 +7,7 @@ export const layers = {
   toggle: (a: boolean, l: string) => (a ? layers.add(l) : layers.remove(l)),
 }
 
-export * from './stores/config_store'
+export * from './stores/config_stores'
 export * from './stores/cvdata_stores'
 export * from './stores/global_stores'
 

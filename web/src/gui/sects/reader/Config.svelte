@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { config } from '$lib/stores'
+  import { config_data as data, config_ctrl as ctrl } from '$lib/stores'
   import { ctrl as lookup } from '$gui/parts/Lookup.svelte'
 
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
@@ -7,20 +7,15 @@
   const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora']
 
   // const textlhs = [150, 150, 150, 150]
-  const renders = [
-    ['Thường', 0],
-    ['Zen', -1],
-    ['Dev', 1],
-  ]
+  // prettier-ignore
+  const renders = [['Thường', 0], ['Zen', -1], ['Dev', 1]]
 </script>
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let actived = false
-
   let config_elem: HTMLElement
-  $: if (actived && config_elem) config_elem.focus()
+  $: if ($ctrl.actived && config_elem) config_elem.focus()
 
   async function update_wtheme(wtheme: string) {
     await fetch('/api/user/setting', {
@@ -34,7 +29,7 @@
 <config-main bind:this={config_elem}>
   <config-head>
     <config-title>Cài đặt</config-title>
-    <button class="m-btn _sm" data-kbd="esc" on:click={() => (actived = false)}>
+    <button class="m-btn _sm" data-kbd="esc" on:click={ctrl.hide}>
       <SIcon name="x" />
     </button>
   </config-head>
@@ -43,12 +38,12 @@
     <field-label>Màu nền:</field-label>
     <field-input>
       {#each wthemes as value}
-        <label class="wtheme _{value}" class:_active={value == $config.wtheme}>
+        <label class="wtheme _{value}" class:_active={value == $data.wtheme}>
           <input
             type="radio"
             name="wtheme"
             {value}
-            bind:group={$config.wtheme}
+            bind:group={$data.wtheme}
             on:change={() => update_wtheme(value)} />
         </label>
       {/each}
@@ -60,15 +55,15 @@
     <field-input>
       <button
         class="m-btn _sm"
-        on:click={() => ($config.ftsize -= 1)}
-        disabled={$config.ftsize == 1}>
+        on:click={() => ($data.ftsize -= 1)}
+        disabled={$data.ftsize == 1}>
         <SIcon name="minus" />
       </button>
-      <field-value>{ftsizes[$config.ftsize - 1]}</field-value>
+      <field-value>{ftsizes[$data.ftsize - 1]}</field-value>
       <button
         class="m-btn _sm"
-        on:click={() => ($config.ftsize += 1)}
-        disabled={$config.ftsize == 5}>
+        on:click={() => ($data.ftsize += 1)}
+        disabled={$data.ftsize == 5}>
         <SIcon name="plus" />
       </button>
     </field-input>
@@ -77,7 +72,7 @@
   <config-item>
     <field-label>Font chữ:</field-label>
     <field-input>
-      <select class="m-input" name="ftface" bind:value={$config.ftface}>
+      <select class="m-input" name="ftface" bind:value={$data.ftface}>
         {#each ftfaces as value, index}
           <option value={index + 1}>{value}</option>
         {/each}
@@ -90,15 +85,15 @@
     <field-input>
       <button
         class="m-btn _sm"
-        on:click={() => ($config.textlh -= 10)}
-        disabled={$config.textlh <= 130}>
+        on:click={() => ($data.textlh -= 10)}
+        disabled={$data.textlh <= 130}>
         <SIcon name="minus" />
       </button>
-      <field-value>{$config.textlh}%</field-value>
+      <field-value>{$data.textlh}%</field-value>
       <button
         class="m-btn _sm"
-        on:click={() => ($config.textlh += 10)}
-        disabled={$config.textlh >= 180}>
+        on:click={() => ($data.textlh += 10)}
+        disabled={$data.textlh >= 180}>
         <SIcon name="plus" />
       </button>
     </field-input>
@@ -110,12 +105,8 @@
     <field-label class="small">Chế độ:</field-label>
     <field-input>
       {#each renders as [label, value]}
-        <label class:_active={value == $config.render}>
-          <input
-            type="radio"
-            name="render"
-            {value}
-            bind:group={$config.render} />
+        <label class:_active={value == $data.render}>
+          <input type="radio" name="render" {value} bind:group={$data.render} />
           <span>{label}</span>
         </label>
       {/each}
@@ -124,7 +115,7 @@
 
   <config-item>
     <label class="switch">
-      <input type="checkbox" bind:checked={$config.showzh} />
+      <input type="checkbox" bind:checked={$data.showzh} />
       <span class="switch-label">Hiển thị tiếng Trung gốc:</span>
     </label>
   </config-item>
@@ -137,7 +128,7 @@
   </config-item>
 </config-main>
 
-<config-wrap on:click={() => (actived = false)} />
+<config-wrap on:click={ctrl.hide} />
 
 <style lang="scss">
   config-main {

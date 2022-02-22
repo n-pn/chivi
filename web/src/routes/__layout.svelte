@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { navigating, page, session } from '$app/stores'
-  import { scroll, toleft, config, layers } from '$lib/stores'
+  import { scroll, toleft, layers, config_data } from '$lib/stores'
   declare var gtag: any
 
   const links = [
@@ -27,8 +27,8 @@
 
   let wtheme = $session.wtheme || 'oled'
   $: {
-    if ($config.wtheme) wtheme = $config.wtheme
-    else config.put('wtheme', wtheme)
+    if ($config_data.wtheme) wtheme = $config_data.wtheme
+    else config_data.put('wtheme', wtheme)
   }
 
   let kbd_hint = false
@@ -66,7 +66,7 @@
 {#if $navigating}<Loader />{/if}
 
 <div
-  class="app tm-{wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+  class="app tm-{wtheme} app-fs-{$config_data.ftsize} app-ff-{$config_data.ftface}"
   class:kbd-hint={kbd_hint}
   class:_shift={$toleft}>
   <Topbar />
