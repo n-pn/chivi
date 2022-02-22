@@ -8,10 +8,13 @@ module CV::FixBnames
 
   def fix_all!
     books = Nvinfo.query.order_by(id: :desc).to_a
-
     books.each_with_index(1) do |nvinfo, index|
+      next if nvinfo.id <= 0
       nvinfo.fix_names!
-      puts "- [fix_bnames] <#{index}/#{books.size}>".colorize.blue if index % 100 == 0
+
+      if index % 100 == 0
+        puts "- [fix_bnames] <#{index}/#{books.size}>".colorize.blue
+      end
     end
   end
 
