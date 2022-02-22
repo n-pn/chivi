@@ -70,7 +70,7 @@
       bind:this={text_elem}
       placeholder="Nhập dữ liệu vào đây" />
   {:else}
-    <CvPage zhtext={split_input(zhtext)} {cvdata} {on_change} />
+    <CvPage {dname} {d_dub} zhtext={split_input(zhtext)} {cvdata} {on_change} />
   {/if}
 </section>
 
