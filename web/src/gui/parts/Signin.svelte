@@ -15,7 +15,7 @@
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Gslide from '$gui/molds/Gslide.svelte'
+  import Slider from '$gui/molds/Slider.svelte'
 
   export let actived = false
   export let params = new Params()
@@ -30,7 +30,7 @@
   }
 </script>
 
-<Gslide bind:actived _rwidth={26}>
+<Slider class="signin" bind:actived _rwidth={26}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="user" />
@@ -108,7 +108,7 @@
       </footer>
     </form>
   </section>
-</Gslide>
+</Slider>
 
 <style lang="scss">
   .inner {

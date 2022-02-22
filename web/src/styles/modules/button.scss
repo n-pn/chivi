@@ -73,7 +73,6 @@ $-colors: (primary, success, warning, harmful, private);
 .m-btn {
   --height: #{$-btn-height-md};
   --gutter: var(--gutter-pm);
-  --ftsize: var(--ftsize-md);
   --innerh: calc(var(--height) - var(--gutter) - var(--gutter));
 
   display: inline-flex;
@@ -90,7 +89,7 @@ $-colors: (primary, success, warning, harmful, private);
   padding: var(--gutter);
   height: var(--height);
   line-height: var(--innerh);
-  font-size: var(--ftsize);
+  font-size: var(--ftsize, #{ftsize(md)});
   @include bdradi;
 
   color: var(--fg-btn);
@@ -142,23 +141,23 @@ $-colors: (primary, success, warning, harmful, private);
 .m-btn._xs {
   --height: #{$-btn-height-xs};
   --gutter: var(--gutter-pm);
-  --ftsize: var(--ftsize-xs);
+  --ftsize: #{ftsize(xs)};
 }
 
 .m-btn._sm {
   --height: #{$-btn-height-sm};
   --gutter: var(--gutter-pm);
-  --ftsize: var(--ftsize-sm);
+  --ftsize: #{ftsize(sm)};
 }
 
 .m-btn._lg {
   --height: #{$-btn-height-lg};
   --gutter: var(--gutter-pl);
-  --ftsize: var(--ftsize-lg);
+  --ftsize: #{ftsize(lg)};
 }
 
 .m-btn._xl {
   --height: #{$-btn-height-xl};
   --gutter: var(--gutter-ts);
-  --ftsize: var(--ftsize-xl);
+  --ftsize: #{ftsize(xl)};
 }

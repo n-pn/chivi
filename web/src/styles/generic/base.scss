@@ -1,8 +1,6 @@
 @use 'sass:map';
 @use '../essence' as *;
 
-$colors: (gray, blue, green, orange, red, violet) !default;
-
 :root {
   --bg-main: #{color(neutral, 1)};
   --bg-secd: #{color(white)};
@@ -70,15 +68,6 @@ $colors: (gray, blue, green, orange, red, violet) !default;
   --font-serif: #{$font-serif};
   --font-sans: #{$font-sans};
   --font-mono: #{$font-mono};
-
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-  --radius-xl: 16px;
-
-  --lh-normal: 1.5rem;
-  --lh-narrow: 1.25rem;
-  --lh-packed: 1rem;
 }
 
 // prettier-ignore
@@ -120,30 +109,17 @@ $colors: (gray, blue, green, orange, red, violet) !default;
   }
 }
 
-:root {
-  --height-xs: 1rem;
-  --height-sm: 1.5rem;
-  --height-md: 2rem;
-  --height-lg: 2.5rem;
-  --height-xl: 3rem;
+// :root {
+//   --height-xs: 1rem;
+//   --height-sm: 1.5rem;
+//   --height-md: 2rem;
+//   --height-lg: 2.5rem;
+//   --height-xl: 3rem;
+// }
 
-  --ftsize-ss: #{rem(10px)};
-  --ftsize-xs: #{rem(12px)};
-  --ftsize-sm: #{rem(14px)};
-  --ftsize-md: #{rem(16px)};
-  --ftsize-lg: #{rem(18px)};
-  --ftsize-xl: #{rem(20px)};
-  --ftsize-x2: #{rem(24px)};
-  --ftsize-x3: #{rem(30px)};
-  --ftsize-x4: #{rem(36px)};
-  --ftsize-x5: #{rem(48px)};
-
-  --ftsize-code: 0.875em;
-}
-
-:root {
-  --d2-color: #{color(blue, 5)};
-  --d3-color: #{color(teal, 5)};
-  --d4-color: #{color(orange, 5)};
-  --d5-color: #{color(red, 5)};
-}
+// :root {
+//   --d2-color: #{color(blue, 5)};
+//   --d3-color: #{color(teal, 5)};
+//   --d4-color: #{color(orange, 5)};
+//   --d5-color: #{color(red, 5)};
+// }

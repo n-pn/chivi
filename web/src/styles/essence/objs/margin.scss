@@ -1,0 +1,18 @@
+@mixin margin($value: 0.5rem, $loc: all) {
+  $sides: (top, left, bottom, right);
+  @each $side in $sides {
+    @if $loc == all or str-index($side, $loc) {
+      margin-#{$side}: $value;
+    }
+  }
+}
+
+@mixin margin-x($value: 0.5rem) {
+  margin-left: $value;
+  margin-right: $value;
+}
+
+@mixin margin-y($value: 0.5rem) {
+  margin-top: $value;
+  margin-bottpm: $value;
+}

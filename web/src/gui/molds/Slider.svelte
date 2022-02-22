@@ -6,7 +6,6 @@
 
   export let actived = false
 
-  export let _klass = 'slider'
   export let _sticky = false
   export let _slider = 'right'
   export let _rwidth = 25
@@ -16,11 +15,8 @@
   $: $toleft = sticked && actived
   $: if ($navigating) actived = false
 
-  $: layers.toggle(actived, '.' + _klass)
-
-  function trigger_sticky() {
-    sticked = !sticked
-  }
+  let klass = $$props.class || 'slider'
+  $: layers.toggle(actived, '.' + klass)
 </script>
 
 <slider-wrap
@@ -29,7 +25,7 @@
   on:click={() => (actived = false)} />
 
 <slider-main
-  class={_klass}
+  class={klass}
   class:_left={_slider == 'left'}
   class:_right={_slider == 'right'}
   class:_active={actived}
@@ -39,7 +35,10 @@
     <slot name="header-right" />
 
     {#if _sticky}
-      <button class="-btn" class:_active={sticked} on:click={trigger_sticky}>
+      <button
+        class="-btn"
+        class:_active={sticked}
+        on:click={() => (sticked = !sticked)}>
         <SIcon name="pin" />
       </button>
     {/if}
@@ -90,7 +89,7 @@
 
     top: 0;
     bottom: 0;
-    width: var(--width, 20rem);
+    width: var(--slider-width, 20rem);
     max-width: calc(100vw - 1.5rem);
 
     display: flex;
@@ -99,13 +98,9 @@
     // height: 100vh;
     z-index: 55;
 
-    will-change: transform;
-    transition: transform 0.1s ease-in-out;
-    // prettier-ignore
-    @media (prefers-reduced-motion) { transition: none; }
-
     background: var(--bg-secd);
     @include shadow(2);
+    @include transition();
 
     &._left {
       right: 100%;

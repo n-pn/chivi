@@ -2,13 +2,13 @@
   import { snames, order_names, book_origins } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Gslide from '$gui/molds/Gslide.svelte'
+  import Slider from '$gui/molds/Slider.svelte'
   import Bgenre from '$gui/sects/Bgenre.svelte'
 
   export let actived = false
 </script>
 
-<Gslide _klass="appnav" bind:actived _rwidth={22} _slider="left">
+<Slider class="appnav" bind:actived _rwidth={22} _slider="left">
   <svelte:fragment slot="header-left">
     <a class="brand" href="/">
       <img src="/icons/chivi.svg" alt="logo" class="-icon" />
@@ -80,7 +80,7 @@
       {/each}
     </div>
   </section>
-</Gslide>
+</Slider>
 
 <style lang="scss">
   @mixin label {

@@ -6,14 +6,6 @@
   }
 }
 
-@mixin ftsize($size: md) {
-  @if type-of($size) == number {
-    font-size: $size;
-  } @else {
-    font-size: #{var(--ftsize-#{$size})};
-  }
-}
-
 @mixin scroll {
   overflow-y: auto;
   scrollbar-width: thin;
@@ -21,4 +13,11 @@
     cursor: pointer;
     width: 8px;
   }
+}
+
+@mixin transition($type: tranform, $duration: 0.1s, $timing: ease-in-out) {
+  will-change: $type;
+  transition: $type $duration $timing;
+  // prettier-ignore
+  @media (prefers-reduced-motion) { transition: none; }
 }

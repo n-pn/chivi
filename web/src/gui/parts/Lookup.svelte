@@ -21,7 +21,7 @@
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Gslide from '$gui/molds/Gslide.svelte'
+  import Slider from '$gui/molds/Slider.svelte'
 
   export let on_destroy = () => {}
   onDestroy(on_destroy)
@@ -72,7 +72,8 @@
 
     for (let idx = $zfrom; idx < $zupto; idx++) {
       const nodes = viewer.querySelectorAll(`x-n[data-l="${idx}"]`)
-      nodes.forEach((x) => {
+
+      nodes.forEach((x: HTMLElement) => {
         focused.push(x)
         x.classList.add('focus')
         x.scrollIntoView({ block: 'end', behavior: 'smooth' })
@@ -81,11 +82,7 @@
   }
 </script>
 
-<Gslide
-  _klass="lookup"
-  _rwidth={30}
-  _sticky={true}
-  bind:actived={$ctrl.actived}>
+<Slider class="lookup" _rwidth={30} _sticky={true} bind:actived={$ctrl.actived}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="compass" />
@@ -153,7 +150,7 @@
       </div>
     {/each}
   </section>
-</Gslide>
+</Slider>
 
 <style lang="scss">
   .input-nav {

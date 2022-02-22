@@ -1,0 +1,22 @@
+@use '../defs' as *;
+
+$ftsizes: (
+  ss: rem(10px),
+  xs: rem(12px),
+  sm: rem(14px),
+  md: rem(16px),
+  lg: rem(18px),
+  xl: rem(20px),
+  x2: rem(24px),
+  x3: rem(30px),
+  x4: rem(36px),
+  x5: rem(48px),
+);
+
+@function ftsize($key) {
+  @return map-get($ftsizes, $key) or $key;
+}
+
+@mixin ftsize($size: md) {
+  font-size: ftsize(($size));
+}

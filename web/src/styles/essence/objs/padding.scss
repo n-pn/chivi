@@ -1,0 +1,18 @@
+@mixin padding($value: 0.5rem, $loc: all) {
+  $sides: (top, left, bottom, right);
+  @each $side in $sides {
+    @if $loc == all or str-index($side, $loc) {
+      padding-#{$side}: $value;
+    }
+  }
+}
+
+@mixin padding-x($value: 0.5rem) {
+  padding-left: $value;
+  padding-right: $value;
+}
+
+@mixin padding-y($value: 0.5rem) {
+  padding-top: $value;
+  padding-bottpm: $value;
+}

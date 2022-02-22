@@ -4,7 +4,7 @@
   import { get_dmy } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Gslide from '$gui/molds/Gslide.svelte'
+  import Slider from '$gui/molds/Slider.svelte'
 
   // import Config from './Usercp/Config.svelte'
   import Replied from './Usercp/Replied.svelte'
@@ -38,7 +38,7 @@
   }
 </script>
 
-<Gslide _klass="usercp" bind:actived={$ctrl.actived} _rwidth={26}>
+<Slider class="usercp" bind:actived={$ctrl.actived} _rwidth={26}>
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name="user" /></div>
     <div class="-text">
@@ -115,7 +115,7 @@
   {:else}
     <Replied />
   {/if}
-</Gslide>
+</Slider>
 
 <style lang="scss">
   .-btn._active {
