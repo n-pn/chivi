@@ -91,8 +91,11 @@
 <style lang="scss">
   dtpost-form {
     display: block;
-    width: 40rem;
-    max-width: 100%;
+  }
+
+  form {
+    display: block;
+    // width: 100%;
   }
 
   form-field {

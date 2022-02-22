@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { session, page } from '$app/stores'
+  import { session } from '$app/stores'
 
   import { rel_time } from '$utils/time_utils'
-  import { SIcon, Gmenu } from '$gui'
+  import { SIcon } from '$gui'
   import DtpostForm from './DtpostForm.svelte'
 
   export let dtpost
@@ -19,141 +19,130 @@
     if (dirty) window.location.reload()
     else _mode = 0
   }
+
+  $: board_url = `/forum/-${dtpost.db_bslug}`
+  $: topic_url = `${board_url}/-${dtpost.dt_tslug}-${dtpost.dt}`
 </script>
 
-{#if _mode == 1}
-  <dtpost-edit>
-    <DtpostForm dtopic_id={dtpost.dt} dtpost_id={dtpost.id} {on_destroy} />
-  </dtpost-edit>
-{:else}
-  <dtpost-card
-    id={card_id}
-    class:active={active_card == card_id}
-    class:larger={render_mode == 0}>
-    {#if render_mode > 0}
-      <dtpost-orig>
-        <a href="/forum/-{dtpost.db_bslug}">
-          {dtpost.db_bname}
-        </a>
-        <span>/</span>
-        <a href="/forum/-{dtpost.db_bslug}/-{dtpost.dt_tslug}-{dtpost.dt}">
-          {dtpost.dt_title}
-        </a>
-      </dtpost-orig>
-    {/if}
+<dtpost-wrap>
+  {#if _mode == 1}
+    <dtpost-edit>
+      <DtpostForm dtopic_id={dtpost.dt} dtpost_id={dtpost.id} {on_destroy} />
+    </dtpost-edit>
+  {:else}
+    <dtpost-card
+      id={card_id}
+      class:active={active_card == card_id}
+      class:larger={render_mode == 0}>
+      {#if render_mode > 0}
+        <dtpost-orig>
+          <SIcon name="messages" />
+          <a href={board_url}>{dtpost.db_bname}</a>
+          <span>/</span>
+          <a href={topic_url}>{dtpost.dt_title}</a>
+        </dtpost-orig>
+      {/if}
 
-    <dtpost-head>
-      <dtpost-meta>
-        <a
-          class="cv-user"
-          href="{$page.url.pathname}?cvuser={dtpost.u_dname}"
-          data-privi={dtpost.u_privi}
-          >{dtpost.u_dname}
-        </a>
-      </dtpost-meta>
-
-      {#if dtpost.rp_no > 0}
-        <dtpost-sep><SIcon name="corner-up-right" /></dtpost-sep>
+      <dtpost-head>
         <dtpost-meta>
           <a
             class="cv-user"
-            href="{$page.url.pathname}#tp-{dtpost.rp_no}"
-            data-privi={dtpost.ru_privi}
-            on:click={() => (active_card = 'tp-' + dtpost.rp_no)}
-            >{dtpost.ru_dname}
+            href="{topic_url}?op={dtpost.u_dname}"
+            data-privi={dtpost.u_privi}
+            >{dtpost.u_dname}
           </a>
         </dtpost-meta>
-      {/if}
 
-      <dtpost-sep>·</dtpost-sep>
-      <dtpost-meta>{rel_time(dtpost.ctime)}</dtpost-meta>
+        {#if dtpost.rp_no > 0}
+          <dtpost-sep><SIcon name="corner-up-right" /></dtpost-sep>
+          <dtpost-meta>
+            <a
+              class="cv-user"
+              href="{topic_url}#tp-{dtpost.rp_no}"
+              data-privi={dtpost.ru_privi}
+              on:click={() => (active_card = 'tp-' + dtpost.rp_no)}
+              >{dtpost.ru_dname}
+            </a>
+          </dtpost-meta>
+        {/if}
 
-      {#if dtpost.utime > dtpost.ctime}
         <dtpost-sep>·</dtpost-sep>
-        <dtpost-meta class="edit">Đã sửa</dtpost-meta>
-      {/if}
+        <dtpost-meta>{rel_time(dtpost.ctime)}</dtpost-meta>
 
-      <dthead-right>
-        <Gmenu dir="right">
-          <button class="btn" slot="trigger">
+        {#if dtpost.utime > dtpost.ctime}
+          <dtpost-sep>·</dtpost-sep>
+          <dtpost-meta class="edit">Đã sửa</dtpost-meta>
+        {/if}
+
+        <dthead-right>
+          <button
+            class="btn"
+            disabled={!can_edit}
+            data-tip="Sửa nội dung"
+            on:click={() => (_mode = 1)}>
+            <SIcon name="pencil" />
+          </button>
+
+          <a class="btn" href="{topic_url}#{card_id}">
             <dtpost-meta class="no">#{dtpost.no}</dtpost-meta>
-          </button>
+          </a>
+        </dthead-right>
+      </dtpost-head>
 
-          <svelte:fragment slot="content">
-            <button
-              class="-item"
-              disabled={!can_edit}
-              on:click={() => (_mode = 1)}>
-              <SIcon name="pencil" />
-              <span>Sửa nội dung</span>
+      <dtpost-body class="m-article">{@html dtpost.ohtml}</dtpost-body>
+
+      <dtpost-foot>
+        <dtpost-stats>
+          {#if dtpost.like_count > 0}
+            <dtpost-meta>
+              <SIcon name="heart" />
+              <span>{dtpost.like_count}</span>
+            </dtpost-meta>
+          {/if}
+
+          {#if dtpost.repl_count > 0}
+            <dtpost-meta>
+              <SIcon name="message-circle" />
+              <span>{dtpost.repl_count}</span>
+            </dtpost-meta>
+          {/if}
+        </dtpost-stats>
+
+        <dtpost-react>
+          <dtpost-meta>
+            <button class="btn">
+              <span>{dtpost.like_count > 0 ? dtpost.like_count : ''}</span>
+              <SIcon name="thumb-up" />
+              <span>Thích</span>
             </button>
-          </svelte:fragment>
-        </Gmenu>
-      </dthead-right>
-    </dtpost-head>
-
-    <dtpost-body class="m-article">{@html dtpost.ohtml}</dtpost-body>
-
-    <dtpost-foot>
-      <dtpost-stats>
-        {#if dtpost.like_count > 0}
-          <dtpost-meta>
-            <SIcon name="heart" />
-            <span>{dtpost.like_count}</span>
           </dtpost-meta>
-        {/if}
 
-        {#if dtpost.repl_count > 0}
           <dtpost-meta>
-            <SIcon name="message-circle" />
-            <span>{dtpost.repl_count}</span>
+            <button class="btn" on:click={() => (_mode = 2)}>
+              <SIcon name="arrow-back-up" />
+              <span>Trả lời</span>
+            </button>
           </dtpost-meta>
-        {/if}
-      </dtpost-stats>
+        </dtpost-react>
+      </dtpost-foot>
+    </dtpost-card>
+  {/if}
 
-      <dtpost-react>
-        <dtpost-meta>
-          <button class="btn">
-            <span>{dtpost.like_count > 0 ? dtpost.like_count : ''}</span>
-            <SIcon name="thumb-up" />
-            <span>Thích</span>
-          </button>
-        </dtpost-meta>
-
-        <dtpost-meta>
-          <button class="btn" on:click={() => (_mode = 2)}>
-            <SIcon name="arrow-back-up" />
-            <span>Trả lời</span>
-          </button>
-        </dtpost-meta>
-      </dtpost-react>
-    </dtpost-foot>
-  </dtpost-card>
-{/if}
-
-{#if _mode == 2}
-  <dtpost-repl>
-    <DtpostForm dtopic_id={dtpost.dt} dtrepl_id={dtpost.id} {on_destroy} />
-  </dtpost-repl>
-{/if}
+  {#if _mode == 2}
+    <dtpost-repl>
+      <DtpostForm dtopic_id={dtpost.dt} dtrepl_id={dtpost.id} {on_destroy} />
+    </dtpost-repl>
+  {/if}
+</dtpost-wrap>
 
 <style lang="scss">
-  dtpost-edit {
+  dtpost-wrap {
     display: block;
-  }
-
-  dtpost-repl {
-    display: block;
-    margin-left: 0.75rem;
+    @include border($loc: top);
   }
 
   dtpost-card {
     display: block;
-    margin-top: 0.75rem;
-
-    @include bgcolor(secd);
-    @include bdradi();
-    @include shadow();
 
     &.active {
       @include bgcolor(tert);
@@ -162,20 +151,27 @@
     &.larger {
       font-size: rem(17px);
     }
+  }
 
-    @include tm-dark {
-      @include linesd(--bd-main);
-    }
+  dtpost-edit {
+    display: block;
+    padding-bottom: 0.75rem;
+  }
+
+  dtpost-repl {
+    display: block;
+    margin-left: var(--gutter);
+    @include border($loc: top);
   }
 
   dtpost-head {
     @include flex-cy($gap: 0.25rem);
-    margin: 0.375rem 0.75rem;
+    padding-top: 0.25rem;
   }
 
   dtpost-body {
     display: block;
-    margin: 0.375rem 0.75rem;
+    margin: 0.25rem 0;
     word-wrap: break-word;
   }
 
@@ -193,13 +189,13 @@
   }
 
   dthead-right {
-    @include flex-cy;
+    @include flex-cy($gap: 0.25rem);
     margin-left: auto;
   }
 
   dtpost-foot {
     display: flex;
-    margin: 0.375rem 0.75rem;
+    padding-bottom: 0.25rem;
   }
 
   .btn {
@@ -234,14 +230,13 @@
   }
 
   dtpost-orig {
-    @include flex($gap: 0.25rem);
-    @include border($loc: bottom);
+    @include flex-cy($gap: 0.125rem);
+    @include ftsize(xs);
+    line-height: 1.25rem;
 
+    @include border($loc: top-bottom);
     @include fgcolor(tert);
-    padding: 0.125rem 0.75rem;
-    font-size: rem(13px);
 
-    // line-height: 2rem;
     a {
       color: inherit;
       @include clamp($width: null);

@@ -15,42 +15,62 @@
   let active_card = $page.url.hash.substring(1)
 </script>
 
-<h3>Bình luận</h3>
-
 <dtpost-list>
+  <dtpost-head>
+    <h3>Bình luận</h3>
+  </dtpost-head>
+
   {#each dtlist.items as dtpost}
     <DtpostCard {dtpost} bind:active_card />
   {:else}
     <div class="empty">Chưa có bình luận</div>
   {/each}
+
+  {#if dtlist.pgmax > 1}
+    <dtpost-pagi>
+      <Mpager {pager} pgidx={dtlist.pgidx} pgmax={dtlist.pgmax} />
+    </dtpost-pagi>
+  {/if}
+
+  <dtlist-foot>
+    <DtpostForm dtopic_id={dtopic.id} />
+  </dtlist-foot>
 </dtpost-list>
-
-{#if dtlist.pgmax > 1}
-  <dtpost-pagi>
-    <Mpager {pager} pgidx={dtlist.pgidx} pgmax={dtlist.pgmax} />
-  </dtpost-pagi>
-{/if}
-
-<dtlist-foot>
-  <DtpostForm dtopic_id={dtopic.id} />
-</dtlist-foot>
 
 <style lang="scss">
   dtpost-list {
-    margin-left: 0.75rem;
+    // margin-left: 0.75rem;
     display: block;
-    margin-bottom: 0.75rem;
+    padding: 0 var(--gutter) 0.75rem;
+    max-width: 40rem;
+    margin: 0 auto;
+
+    @include bgcolor(secd);
+    @include bdradi();
+    @include shadow();
+
+    @include tm-dark {
+      @include linesd(--bd-main);
+    }
+  }
+
+  dtpost-head {
+    display: block;
+    padding: 0.5rem 0;
   }
 
   dtpost-pagi {
     display: block;
+    @include border($loc: top);
+
     // padding-bottom: 0.75rem;
     // @include border($loc: bottom);
   }
 
   dtlist-foot {
-    @include flex();
-    margin: 0.75rem;
+    display: block;
+
+    @include border($loc: top);
   }
 
   .empty {

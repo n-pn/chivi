@@ -119,8 +119,9 @@
 
     &:focus,
     &:focus-within {
-      @include bgcolor(tert);
-      box-shadow: 0 0 0 1px color(primary, 5, 5);
+      @include bgcolor(secd);
+      border-color: color(primary, 5);
+      box-shadow: 0 0 0 2px color(primary, 5, 5);
     }
   }
 

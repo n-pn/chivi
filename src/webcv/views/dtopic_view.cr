@@ -17,7 +17,7 @@ struct CV::DtopicView
       end
 
       jb.field "u_dname", @data.cvuser.uname
-      jb.field "_cvuser.privi", @data.cvuser.privi
+      jb.field "u_privi", @data.cvuser.privi
 
       jb.field "id", @data.oid
 
