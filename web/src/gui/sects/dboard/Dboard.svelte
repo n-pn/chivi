@@ -5,15 +5,13 @@
   import { dboard_ctrl as ctrl } from '$lib/stores'
 
   import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
-  import Dtlist from './Dtlist.svelte'
-  import Tplist from './Tplist.svelte'
   import UInbox from './UInbox.svelte'
 
   const tabs = [
     { icon: 'home', btip: 'Tất cả chủ đề' },
     { icon: 'book', btip: 'Chủ đề của bộ truyện' },
     { icon: 'message', btip: 'Chủ đề vừa xem' },
-    { icon: 'message-circle', btip: 'Phản hồi' },
+    { icon: 'mail-opened', btip: 'Phản hồi' },
   ]
 
   async function load_topics(dboard_id?: number) {

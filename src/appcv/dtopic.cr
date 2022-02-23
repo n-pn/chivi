@@ -16,7 +16,7 @@ class CV::Dtopic
   getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
   belongs_to dtbody : Dtpost
-  # belongs_to lastrp : Dtpost
+  belongs_to lasttp : Dtpost
 
   column dlabel_ids : Array(Int32) = [] of Int32
   column labels : Array(String) = [] of String

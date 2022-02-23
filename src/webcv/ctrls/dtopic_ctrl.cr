@@ -24,6 +24,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
     query.with_nvinfo unless nvinfo
     query.with_cvuser unless cvuser
+    query.with_dtbody.with_lasttp(&.with_cvuser)
     items = query.limit(limit).offset(offset).to_a
 
     set_cache :public, maxage: 20

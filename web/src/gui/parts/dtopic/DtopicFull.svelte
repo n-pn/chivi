@@ -42,13 +42,13 @@
     <topic-foot>
       <topic-user>
         <SIcon name="edit" />
-        <cv-user data-privi={dtopic.u_privi}>{dtopic.u_dname}</cv-user>
+        <cv-user data-privi={dtopic.op_privi}>{dtopic.op_uname}</cv-user>
       </topic-user>
 
       <topic-sep>·</topic-sep>
       <topic-time>{rel_time(dtopic.ctime)}</topic-time>
 
-      {#if $session.privi > 3 || $session.uname == dtopic.u_dname}
+      {#if $session.privi > 3 || $session.uname == dtopic.op_uname}
         <topic-sep>·</topic-sep>
         <topic-action on:click={() => dtopic_ctrl.show(dtopic.id)}>
           <span>Sửa</span>
