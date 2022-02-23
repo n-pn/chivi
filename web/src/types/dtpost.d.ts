@@ -30,4 +30,10 @@ declare namespace CV {
     like_count: number
     repl_count: number
   }
+
+  interface Tplist {
+    items: Array<Dtpost>
+    pgidx: number
+    pgmax: number
+  }
 }

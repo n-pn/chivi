@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { rel_time } from '$utils/time_utils'
   import { dlabels } from '$lib/constants'
+  import { dboard_ctrl } from '$lib/stores'
+  import { rel_time } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
@@ -14,12 +15,18 @@
 
 <topic-card class:sm={$$props.size == 'sm'}>
   <topic-head class={_mode}>
-    <a class="topic-title" href="{board_url}/-{dtopic.tslug}-{dtopic.id}">
+    <a
+      class="topic-title"
+      href="{board_url}/-{dtopic.tslug}-{dtopic.id}"
+      on:click={(e) => dboard_ctrl.view_topic(e, dtopic)}>
       {dtopic.title}
     </a>
 
     {#each dtopic.labels as label}
-      <a class="m-label _{label} _sm" href="{label_url}?tl={label}"
+      <a
+        class="m-label _{label} _sm"
+        href="{label_url}?tl={label}"
+        on:click={(e) => dboard_ctrl.view_board(e, dboard, label)}
         >{dlabels[label]}</a>
     {/each}
   </topic-head>
@@ -43,7 +50,10 @@
 
   <topic-foot>
     {#if _mode > 0}
-      <a class="m-board" href={board_url}>
+      <a
+        class="m-board"
+        href={board_url}
+        on:click={(e) => dboard_ctrl.view_board(e, dboard)}>
         <SIcon name="message" />
         <span>{dboard.bname}</span>
       </a>
@@ -78,6 +88,7 @@
 
   topic-head {
     @include flex-cy($gap: 0.25rem);
+    flex-wrap: wrap;
 
     padding-top: 0.5rem;
     line-height: 1.5rem;

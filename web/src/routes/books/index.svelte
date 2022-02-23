@@ -44,7 +44,7 @@
 <div class="order">
   {#each Object.entries(order_names) as [type, label]}
     <a
-      href={pager.make_url({ pg: 1, order: type })}
+      href={pager.gen_url({ pg: 1, order: type })}
       class="-type"
       class:_active={pager.get('order') == type}>
       <span>{label}</span>

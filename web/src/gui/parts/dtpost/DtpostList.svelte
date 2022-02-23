@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
 
+  import { dboard_ctrl } from '$lib/stores'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   import DtpostCard from './DtpostCard.svelte'
@@ -9,10 +10,17 @@
 
 <script lang="ts">
   export let dtopic: CV.Dtopic
-  export let dtlist: CV.Dtlist
+  export let tplist: CV.Tplist
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
   let active_card = $page.url.hash.substring(1)
+
+  function on_navigate(evt: Event, pgidx: number) {
+    dboard_ctrl.view(evt, (x) => {
+      x.tab_1.pg = pgidx
+      return x
+    })
+  }
 </script>
 
 <dtpost-list>
@@ -20,15 +28,15 @@
     <h3>Bình luận</h3>
   </dtpost-head>
 
-  {#each dtlist.items as dtpost}
+  {#each tplist.items as dtpost}
     <DtpostCard {dtpost} bind:active_card />
   {:else}
     <div class="empty">Chưa có bình luận</div>
   {/each}
 
-  {#if dtlist.pgmax > 1}
+  {#if tplist.pgmax > 1}
     <dtpost-pagi>
-      <Mpager {pager} pgidx={dtlist.pgidx} pgmax={dtlist.pgmax} />
+      <Mpager {pager} pgidx={tplist.pgidx} pgmax={tplist.pgmax} {on_navigate} />
     </dtpost-pagi>
   {/if}
 

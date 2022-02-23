@@ -26,7 +26,7 @@
 
   export let dboard: CV.Dboard
   export let dtopic: CV.Dtopic
-  export let dtlist: CV.Dtlist
+  export let tplist: CV.Tplist
 </script>
 
 <svelte:head>
@@ -36,7 +36,7 @@
 <DtopicFull {dboard} {dtopic} />
 
 <dtopic-posts>
-  <DtpostList {dtlist} {dtopic} />
+  <DtpostList {tplist} {dtopic} />
 </dtopic-posts>
 
 <style lang="scss">

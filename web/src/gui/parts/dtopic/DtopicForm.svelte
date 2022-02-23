@@ -33,7 +33,9 @@
   import MdForm from '$gui/molds/MdForm.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
-  export let dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
+  export let dboard: CV.Dboard
+  $: dboard = dboard || { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
+
   export let on_destroy = () => window.location.reload()
 
   $: on_edit = $ctrl.id != '0'

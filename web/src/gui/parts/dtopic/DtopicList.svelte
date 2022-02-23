@@ -2,6 +2,8 @@
   import { page, session } from '$app/stores'
   import { dlabels } from '$lib/constants'
 
+  import { dboard_ctrl } from '$lib/stores'
+
   import DtopicCard from './DtopicCard.svelte'
   import DtopicForm, { ctrl as dtopic_form } from './DtopicForm.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
@@ -12,22 +14,36 @@
 
   export let dboard: CV.Dboard
   export let dtlist: CV.Dtlist
+
+  export let tlabel = $page.url.searchParams.get('tl')
   export let _mode = 0
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
-  $: dlabel = pager.get('tl')
+
+  function on_navigate(evt: Event, pgidx: number) {
+    dboard_ctrl.view(evt, (x) => {
+      x.tab_0.pg = pgidx
+      return x
+    })
+  }
 </script>
 
 <board-head>
   <span>Lọc nhãn:</span>
-  <a href={pager.url.pathname} class="m-label _0">
+  <a
+    href={pager.url.pathname}
+    class="m-label _0"
+    on:click={(e) => dboard_ctrl.set_tlabel(e, '')}>
     <span>Tất cả</span>
-    {#if !dlabel}<SIcon name="check" /> {/if}
+    {#if !tlabel}<SIcon name="check" /> {/if}
   </a>
   {#each Object.entries(dlabels) as [value, label]}
-    <a class="m-label _{value}" href={pager.make_url({ tl: value })}>
+    <a
+      class="m-label _{value}"
+      href={pager.gen_url({ tl: value })}
+      on:click={(e) => dboard_ctrl.set_tlabel(e, value)}>
       <span>{label}</span>
-      {#if dlabel == value}<SIcon name="check" /> {/if}
+      {#if tlabel == value}<SIcon name="check" /> {/if}
     </a>
   {/each}
 </board-head>
@@ -44,7 +60,7 @@
 
 {#if dtlist.pgmax > 1}
   <board-pagi>
-    <Mpager {pager} pgidx={dtlist.pgidx} pgmax={dtlist.pgmax} />
+    <Mpager {pager} pgidx={dtlist.pgidx} pgmax={dtlist.pgmax} {on_navigate} />
   </board-pagi>
 {/if}
 

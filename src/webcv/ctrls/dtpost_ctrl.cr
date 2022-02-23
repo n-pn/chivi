@@ -32,7 +32,7 @@ class CV::DtpostCtrl < CV::BaseCtrl
     set_cache :public, maxage: 20
 
     send_json({
-      dtlist: {
+      tplist: {
         total: total,
         pgidx: pgidx,
         pgmax: (total - 1) // limit + 1,

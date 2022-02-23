@@ -1,3 +1,4 @@
+import { goto } from '$app/navigation'
 import { get_client_rect } from '../utils/dom_utils'
 
 export function get_offset(target: HTMLElement, parent: Element) {
@@ -50,4 +51,27 @@ export function tooltip(node: HTMLElement, text: string) {
       tip.remove()
     },
   }
+}
+
+export function navigate(node: Element, { href = null, replace, scrollto }) {
+  const opts = { replaceState: replace, noscroll: !!scrollto }
+
+  const action = async (event: Event) => {
+    href = href || node.getAttribute('href')
+    await goto(href, opts)
+    // console.log({ href, replace, scrollto })
+
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (scrollto) {
+      const elem = document.querySelector(scrollto)
+      elem?.scrollIntoView({ block: 'start' })
+    }
+  }
+
+  if (!replace && !scrollto) return { destroy: () => {} } // return noop
+
+  node.addEventListener('click', action)
+  return { destroy: () => node.removeEventListener('click', action) }
 }

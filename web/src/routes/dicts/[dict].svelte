@@ -139,7 +139,7 @@
             <a
               class="m-btn _sm"
               data-kbd="ctrl+enter"
-              href={pager.make_url({ ...query, pg: 1 })}>
+              href={pager.gen_url({ ...query, pg: 1 })}>
               <SIcon name="search" />
             </a>
           </td>
@@ -195,7 +195,7 @@
                 </button>
                 <a
                   class="m-btn _xs"
-                  href={pager.make_url({ ptag: ptag || '~' })}>
+                  href={pager.gen_url({ ptag: ptag || '~' })}>
                   <SIcon name="search" />
                 </a>
               </div>

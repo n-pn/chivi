@@ -2,7 +2,7 @@ export class Pager {
   url: URL
   dfs: object
 
-  constructor(url: URL, dfs = { pg: 1 }) {
+  constructor(url: URL, dfs: Record<string, any> = { pg: 1 }) {
     this.url = url
     this.dfs = dfs
   }
@@ -11,7 +11,7 @@ export class Pager {
     return this.url.pathname
   }
 
-  get_val(value: string) {
+  get(value: string) {
     return this.url.searchParams.get(value) || this.dfs[value]
   }
 

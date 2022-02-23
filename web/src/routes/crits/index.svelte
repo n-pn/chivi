@@ -31,7 +31,7 @@
   <span class="h3 -label">Đánh giá</span>
   {#each Object.entries(sorts) as [sort, name]}
     <a
-      href={pager.make_url({ sort, pg: 1 })}
+      href={pager.gen_url({ sort, pg: 1 })}
       class="-sort"
       class:_active={sort == _sort}>{name}</a>
   {/each}
