@@ -92,7 +92,7 @@
       </form-field>
 
       <form-field class="title">
-        <input
+        <textarea
           class="m-input"
           name="title"
           lang="vi"
@@ -132,14 +132,6 @@
     width: 40rem;
     max-width: 100%;
     padding: 0 0.75rem;
-
-    @include bdradi();
-    @include shadow(1);
-    @include bgcolor(secd);
-
-    @include tm-dark {
-      @include linesd(--bd-soft, $ndef: false, $inset: false);
-    }
   }
 
   head-sep {
@@ -170,13 +162,13 @@
   .m-input {
     display: block;
     width: 100%;
+
     @include fgcolor(secd);
 
     &[name='title'] {
       @include ftsize(lg);
       font-weight: 500;
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
+      padding: 0.25rem 0.75rem;
     }
   }
 

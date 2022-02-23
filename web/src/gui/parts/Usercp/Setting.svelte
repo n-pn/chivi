@@ -62,8 +62,9 @@
   $: vcoin = costs[privi][tspan]
 </script>
 
-<h3>Nâng quyền hạn</h3>
 <div class="form">
+  <h3>Nâng quyền hạn</h3>
+
   <div class="field">
     <label class="label" for="privi">Chọn quyền hạn:</label>
     <div class="radio-group">
@@ -104,9 +105,9 @@
   </footer>
 </div>
 
-<h3>Đổi mật khẩu</h3>
-
 <div class="form">
+  <h3>Đổi mật khẩu</h3>
+
   <div class="field">
     <label class="label" for="upass">Mật khẩu cũ</label>
     <input
@@ -163,14 +164,13 @@
 
 <style lang="scss">
   .form {
-    margin: 0.75rem;
-
     padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
     @include border($loc: bottom);
   }
 
   h3 {
-    margin: 0.75rem;
+    margin: 0;
     font-weight: 500;
     @include ftsize(md);
     // @include fgcolor(tert);
@@ -230,10 +230,10 @@
 
   .action {
     @include flex-cx;
-    padding: 0.25rem 0;
+    // padding: 0.25rem 0;
 
     &._vcoin {
-      padding-top: 0.75rem;
+      padding-top: 0.5rem;
     }
   }
 </style>

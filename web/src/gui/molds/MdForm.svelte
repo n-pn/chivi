@@ -128,7 +128,7 @@
   md-head {
     display: flex;
     height: 2rem;
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
     @include bdradi($loc: top);
     @include border($loc: bottom);
     @include bgcolor(tert);

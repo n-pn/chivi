@@ -15,11 +15,8 @@ class CV::Dtopic
   belongs_to nvinfo : Nvinfo
   getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
-  column dtbody_id : Int64 = 0
-  getter dtbody : Dtpost do
-    params = {dtopic_id: self.id, ii: 0}
-    Dtpost.find(params) || Dtpost.new(params)
-  end
+  belongs_to dtbody : Dtpost
+  # belongs_to lastrp : Dtpost
 
   column dlabel_ids : Array(Int32) = [] of Int32
   column labels : Array(String) = [] of String
@@ -74,13 +71,17 @@ class CV::Dtopic
 
   @[AlwaysInline]
   def sort_bonus
-    self.state &* MINUTES_OF_30_DAYS &* (self.nvinfo_id > 0 ? 1 : (1 - nvinfo_id.to_i))
+    bonus = self.nvinfo_id > 0 ? 1 : (1 - nvinfo_id.to_i)
+    self.state &* MINUTES_OF_30_DAYS &* bonus
   end
 
   def bump_post_count!
+    # @lastrp = nil
+
     self.post_count = self.post_count + 1
     set_utime(Time.utc.to_unix)
     self.nvinfo.update!({dt_post_utime: self.utime})
+
     self.save!
   end
 

@@ -6,15 +6,9 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
 
-  // import Config from './Usercp/Config.svelte'
-  import Replied from './Usercp/Replied.svelte'
   import Reading from './Usercp/Reading.svelte'
   import Setting from './Usercp/Setting.svelte'
   import UVcoin from './Usercp/UVcoin.svelte'
-
-  function format_coin(vcoin: number) {
-    return vcoin < 1000 ? vcoin : vcoin / 1000 + 'K'
-  }
 
   $: on_tab = $ctrl.tab
 
@@ -36,9 +30,17 @@
   function round(input: number, unit: number) {
     return input <= unit ? 1 : Math.floor(input / unit)
   }
+
+  const tabs = [
+    { icon: 'history', btip: 'Lịch sửa đọc' },
+    { icon: 'settings', btip: 'Cài đặt' },
+    { icon: 'coin', btip: 'Vcoin' },
+  ]
+
+  const comps = [Reading, Setting, UVcoin]
 </script>
 
-<Slider class="usercp" bind:actived={$ctrl.actived} _rwidth={26}>
+<Slider class="usercp" bind:actived={$ctrl.actived} --slider-width="26rem">
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name="user" /></div>
     <div class="-text">
@@ -47,36 +49,16 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <button
-      class="-btn"
-      class:_active={on_tab == 0}
-      on:click={() => ctrl.change_tab(0)}
-      data-tip="Phản hồi"
-      tip-loc="bottom">
-      <SIcon name="messages" />
-    </button>
-    <button
-      class="-btn"
-      class:_active={on_tab == 1}
-      on:click={() => ctrl.change_tab(1)}
-      data-tip="Lịch sửa đọc"
-      tip-loc="bottom">
-      <SIcon name="history" />
-    </button>
-    <button
-      class="-btn"
-      class:_active={on_tab == 2}
-      on:click={() => ctrl.change_tab(2)}
-      data-tip="Cài đặt"
-      tip-loc="bottom">
-      <SIcon name="settings" />
-    </button>
-    <button
-      class="-btn"
-      class:_active={on_tab == 3}
-      on:click={() => ctrl.change_tab(3)}>
-      <SIcon name="coin" />
-    </button>
+    {#each tabs as { icon, btip }, tab}
+      <button
+        class="-btn"
+        class:_active={on_tab == tab}
+        on:click={() => ctrl.change_tab(tab)}
+        data-tip={btip}
+        tip-loc="bottom">
+        <SIcon name={icon} />
+      </button>
+    {/each}
   </svelte:fragment>
 
   <section class="infos">
@@ -106,15 +88,9 @@
     </div>
   </section>
 
-  {#if on_tab == 1}
-    <Reading />
-  {:else if on_tab == 2}
-    <Setting bind:tab={$ctrl.tab} />
-  {:else if on_tab == 3}
-    <UVcoin bind:tab={$ctrl.tab} />
-  {:else}
-    <Replied />
-  {/if}
+  <usercp-body>
+    <svelte:component this={comps[on_tab]} bind:tab={$ctrl.tab} />
+  </usercp-body>
 </Slider>
 
 <style lang="scss">
@@ -157,5 +133,10 @@
       margin-bottom: 0.125rem;
       margin-right: 0.075rem;
     }
+  }
+
+  usercp-body {
+    display: block;
+    padding: 0.75rem;
   }
 </style>

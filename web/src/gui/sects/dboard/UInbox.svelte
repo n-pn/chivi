@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { DtpostCard } from '$gui'
+  import DtpostCard from '$gui/parts/dtpost/DtpostCard.svelte'
 
   let items = []
   let pgidx = 1
@@ -20,7 +20,7 @@
   {#each items as dtpost}
     <DtpostCard {dtpost} render_mode={1} />
   {:else}
-    <div class="empty">Chưa có bình luận</div>
+    <div class="empty">Danh sách trống</div>
   {/each}
 </dtpost-list>
 

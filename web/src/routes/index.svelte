@@ -7,8 +7,8 @@
       right: [
         ['Dịch nhanh', 'bolt', '/qtran', { _text: '_show-lg' }],
         ['Đánh giá', 'stars', '/crits', { _text: '_show-lg' }],
-        ['Thảo luận', 'messages', '/forum', { _text: '_show-lg' }],
       ],
+      forum: true,
     })
 
     const api_url = new URL(url)

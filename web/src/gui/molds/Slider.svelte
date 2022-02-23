@@ -8,7 +8,6 @@
 
   export let _sticky = false
   export let _slider = 'right'
-  export let _rwidth = 25
 
   let sticked = false
 
@@ -28,8 +27,7 @@
   class={klass}
   class:_left={_slider == 'left'}
   class:_right={_slider == 'right'}
-  class:_active={actived}
-  style="--width: {_rwidth}rem;">
+  class:_active={actived}>
   <header class="head">
     <slot name="header-left" />
     <slot name="header-right" />
@@ -89,7 +87,7 @@
 
     top: 0;
     bottom: 0;
-    width: var(--slider-width, 20rem);
+    width: var(--slider-width, 25rem);
     max-width: calc(100vw - 1.5rem);
 
     display: flex;

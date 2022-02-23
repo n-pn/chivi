@@ -34,7 +34,7 @@
 
 <topic-list>
   {#each dtlist.items as dtopic}
-    <DtopicCard {dtopic} {_mode} />
+    <DtopicCard size="sm" {dtopic} {_mode} />
   {:else}
     <div class="empty">
       <h4>Chưa có chủ đề thảo luận :(</h4>
@@ -63,7 +63,7 @@
   board-head {
     @include flex-cx($gap: 0.25rem);
     flex-wrap: wrap;
-    margin: 0.75rem 0;
+    margin-bottom: 0.75rem;
   }
 
   board-pagi {
@@ -75,12 +75,15 @@
 
   topic-list {
     display: block;
-    @include border(--bd-main, $loc: top);
+
+    > :global(* + *) {
+      margin-top: 0.375rem;
+    }
   }
 
   board-foot {
     @include flex-cx();
-    margin: 0.75rem 0;
+    margin-top: 0.75rem;
   }
 
   .empty {

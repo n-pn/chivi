@@ -4,11 +4,14 @@
 </script>
 
 <script lang="ts">
+  import { dboard_ctrl } from '$lib/stores'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Signin from '$gui/parts/Signin.svelte'
   import Appnav from '$gui/parts/Appnav.svelte'
   import Usercp from '$gui/parts/Usercp.svelte'
   import Config from '$gui/sects/reader/Config.svelte'
+  import Dboard from '$gui/sects/dboard/Dboard.svelte'
 
   let active_appnav = false
 </script>
@@ -85,7 +88,14 @@
       {#if $appbar.cvmtl}
         <button class="appbar-item" data-kbd="o" on:click={config_ctrl.show}>
           <SIcon name="adjustments-alt" />
-          <span class="appbar-text _show-md">Cài đặt </span>
+          <span class="appbar-text _show-md">Cài đặt</span>
+        </button>
+      {/if}
+
+      {#if $appbar.forum}
+        <button class="appbar-item" data-kbd="f" on:click={dboard_ctrl.show}>
+          <SIcon name="messages" />
+          <span class="appbar-text _show-md">Thảo luận</span>
         </button>
       {/if}
 
@@ -101,16 +111,14 @@
   </nav>
 </app-bar>
 
-{#if active_appnav}
-  <Appnav bind:actived={active_appnav} />
-{/if}
+<Appnav bind:actived={active_appnav} />
 
-{#if $usercp.actived}
-  {#if $session.uname == 'Khách'}
-    <Signin bind:actived={$usercp.actived} />
-  {:else}
-    <Usercp />
-  {/if}
+<Dboard />
+
+{#if $session.uname == 'Khách'}
+  <Signin bind:actived={$usercp.actived} />
+{:else}
+  <Usercp />
 {/if}
 
 <style lang="scss">

@@ -5,7 +5,7 @@
   align-items: center;
   gap: 0.25rem;
   line-height: 1.5rem;
-  padding: 0 0.75rem;
+  padding: 0 0.5rem;
 
   font-weight: 500;
   cursor: pointer;
@@ -14,13 +14,20 @@
   box-shadow: 0 0 0 1px var(--bdcolor, #{color(neutral, 2)}) inset;
   background: var(--bgcolor, #{color(neutral, 1)});
 
+  font-size: rem(13px);
   @include bdradi(0.75rem);
-  @include ftsize(sm);
 
   @include tm-dark($svelte: false) {
     --color: #{color(neutral, 3)};
     --bdcolor: #{color(neutral, 5, 5)};
     --bgcolor: #{color(neutral, 5, 3)};
+  }
+
+  &._sm {
+    font-size: rem(12px);
+    padding: 0 0.375rem;
+    line-height: 1.25rem;
+    // height: 1.25rem;
   }
 
   &._1 {

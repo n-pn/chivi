@@ -63,8 +63,7 @@
 
   .label {
     @include flex();
-    margin: 0.25rem 0.375rem;
-    padding: 0 0.5rem;
+    margin: 0.25rem 0;
 
     line-height: 2.25rem;
     font-weight: 500;
@@ -84,9 +83,6 @@
 
   .chips {
     @include flex($center: horz);
-    padding: 0.75rem;
-    padding-bottom: 0;
-
     @include bps(font-size, 12px, 12px, 13px);
   }
 
@@ -139,7 +135,6 @@
 
   .chap {
     display: block;
-    margin: 0 0.75rem;
     @include border(--bd-main, $loc: bottom);
 
     padding: 0.375rem 0.5rem;
