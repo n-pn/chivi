@@ -15,7 +15,7 @@
   ]
 </script>
 
-<Slider class="dboard" bind:actived={$ctrl.actived}>
+<Slider class="dboard" bind:actived={$ctrl.actived} --slider-width="30rem">
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="messages" />

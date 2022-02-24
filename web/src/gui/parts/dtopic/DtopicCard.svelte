@@ -6,9 +6,9 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let dtopic: CV.Dtopic
-  export let dboard: CV.Dboard = dtopic.dboard
   export let _mode = 0
 
+  $: dboard = dtopic.dboard
   $: board_url = `/forum/-${dboard.bslug}`
   $: label_url = _mode > -1 ? board_url : `/-${dboard.bslug}/board`
 </script>
