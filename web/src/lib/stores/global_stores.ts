@@ -7,7 +7,6 @@ interface AppBar {
   right?: Array<Array<any>>
   query?: string
   cvmtl?: boolean
-  forum?: true
 }
 
 export const appbar: Writable<AppBar> = writable({})

@@ -17,7 +17,7 @@
 
   function on_navigate(evt: Event, pgidx: number) {
     dboard_ctrl.view(evt, (x) => {
-      x.tab_1.pg = pgidx
+      x.topic.pg = pgidx
       return x
     })
   }

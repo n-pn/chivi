@@ -1,10 +1,8 @@
 <script lang="ts">
-  import { dboard_ctrl as ctrl, DtlistData } from '$lib/stores'
+  import { dtlist_data as data, DtlistData } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
-
-  export let data = new DtlistData()
 
   let dtlist: CV.Dtlist = {
     items: [],
@@ -12,78 +10,148 @@
     pgmax: 1,
   }
 
-  $: if ($ctrl.actived) load_topics(data)
+  $: load_topics($data)
 
-  async function load_topics({ _t, b0, tl = '', pg = 1 }) {
-    let api_url = `/api/topics?pg=${pg}&lm=10`
-    if (tl) api_url += '&dlabel=' + tl
+  async function load_topics(data: DtlistData) {
+    const { tab, query } = data
+    let api_url = `/api/topics?pg=${query.pg}&lm=10`
 
-    if (_t == 1 && b0) api_url += '&dboard=' + b0.id
-    else if (_t == 2) api_url += '&starred'
+    if (query.tl) api_url += '&dlabel=' + query.tl
+    if (query.op) api_url += '&cvuser=' + query.op
 
-    const res = await fetch(api_url)
-    const data = await res.json()
+    switch (tab) {
+      case 'book':
+      case 'show':
+        api_url += '&dboard=' + data[tab].id
+        break
 
-    if (res.ok) dtlist = data.props.dtlist
-    else alert(data.error)
+      case 'star':
+      case 'seen':
+      case 'mine':
+        api_url += '_self=' + tab
+        break
+    }
+
+    const api_res = await fetch(api_url)
+    const payload = await api_res.json()
+
+    if (api_res.ok) dtlist = payload.props.dtlist
+    else alert(payload.error)
   }
 
-  function change_tab(tab = 0) {
-    ctrl.update((x) => {
-      x.tab_0._t = tab
-      x.tab_0.pg = 1
-      x.tab_0.tl = ''
-      x.tab_0.kw = ''
+  function change_tab(tab: CV.DtlistType) {
+    data.update((x) => {
+      x.tab = tab
+      x.query = { pg: 1, tl: '', kw: '', op: '' }
       return x
     })
   }
+
+  $: [curr_icon, curr_text] = map_board($data)
+
+  function map_board({ tab, show, book }: DtlistData) {
+    switch (tab) {
+      case 'show':
+        return ['filter', show.bname]
+      case 'book':
+        return ['book', book?.bname]
+      case 'seen':
+        return ['history', 'Chủ đề vừa xem']
+      case 'star':
+        return ['star', 'Chủ đề ưa thích']
+      case 'mine':
+        return ['send', 'Chủ đề bạn tạo']
+      default:
+        return ['clear-all', 'Tất cả các chủ đề']
+    }
+  }
+
+  const types: Array<CV.DtlistType> = ['book', 'show', '']
 </script>
 
 <nav class="tabs">
-  <button
-    class="tab"
-    class:_active={data._t == 0}
-    on:click={() => change_tab(0)}>
-    <SIcon name="messages" />
-    <span>Tất cả chủ đề</span>
-  </button>
+  <div class="curr">
+    <SIcon name={curr_icon} />
+    <span>{curr_text}</span>
+  </div>
 
-  <button
-    class="tab"
-    class:_active={data._t == 1}
-    on:click={() => change_tab(1)}>
-    <SIcon name={data.b0.id > 0 ? 'book' : 'message-2'} />
-
-    <span>{data.b0.bname}</span>
-  </button>
+  <nav-right>
+    {#each types as tab}
+      {@const [icon, btip] = map_board({ ...$data, tab })}
+      <button
+        class="tab"
+        class:_active={tab == $data.tab}
+        on:click={() => change_tab(tab)}
+        disabled={!btip}
+        data-tip={btip}
+        tip-loc="bottom"
+        tip-pos="right">
+        <SIcon name={icon} />
+      </button>
+    {/each}
+  </nav-right>
 </nav>
 
-<DtopicList
-  dboard={data._t > 0 ? null : data.b0}
-  tlabel={data.tl}
-  {dtlist}
-  _mode={1} />
+<section>
+  <DtopicList
+    dboard={$data[$data.tab]}
+    tlabel={$data.query.tl}
+    {dtlist}
+    _mode={1} />
+</section>
 
 <style lang="scss">
+  section {
+    flex: 1;
+    overflow-y: auto;
+    @include scroll();
+    padding: 0.75rem;
+  }
+
   .tabs {
-    @include flex($gap: 0rem);
+    @include flex();
     @include border($loc: bottom);
-    margin-bottom: 0.75rem;
+    margin: 0 0.75rem;
+    // padding-top: 0.5rem;
+    line-height: 2rem;
+    height: 2rem;
+  }
+
+  .curr {
+    @include flex-cy;
+    flex-shrink: 1;
+    // flex: 1;
+    @include fgcolor(main);
+    :global(svg) {
+      @include fgcolor(warning, 5);
+      width: 1.125rem;
+      height: 1.125rem;
+      margin-right: 0.25rem;
+    }
+
+    > span {
+      @include clamp($width: null);
+      @include bps(max-width, 30vw, 40vw, $pl: 12rem);
+    }
+  }
+
+  nav-right {
+    @include flex($gap: 0rem);
+    // flex-shrink: 0;
+    margin-left: auto;
   }
 
   .tab {
-    display: inline-flex;
-    align-items: center;
-
-    line-height: 2rem;
-    height: 2rem;
-
+    @include flex-ca;
+    margin: 0;
+    padding: 0;
     // padding: 0 0.5rem;
     background: none;
+    width: 2rem;
+    height: 2rem;
     // max-width: 30%;
     font-weight: 500;
 
-    flex-shrink: 1;
     @include ftsize(sm);
     @include fgcolor(tert);
 
@@ -92,10 +160,8 @@
       @include border(warning, 5, $width: 2px, $loc: bottom);
     }
 
-    span {
-      margin-left: 0.25rem;
-      max-width: 8rem;
-      @include clamp($width: null);
+    &:disabled {
+      @include fgcolor(mute);
     }
 
     :global(svg) {

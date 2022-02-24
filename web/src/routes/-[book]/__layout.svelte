@@ -16,12 +16,24 @@
 </script>
 
 <script lang="ts">
+  import { dtlist_data } from '$lib/stores'
+
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
 
   $: bintro = nvinfo.bintro.join('').substring(0, 300)
   $: bcover = nvinfo.bcover || '_blank.png'
   $: update = new Date(nvinfo.mftime || 0).toISOString()
   $: genres = nvinfo.genres || []
+
+  $: dtlist_data.update((x) => {
+    x.tab = 'book'
+    x.book = {
+      id: nvinfo.id,
+      bname: nvinfo.vname,
+      bslug: nvinfo.bslug,
+    }
+    return x
+  })
 </script>
 
 <svelte:head>

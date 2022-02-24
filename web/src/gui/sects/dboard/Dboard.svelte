@@ -36,15 +36,17 @@
     {/each}
   </svelte:fragment>
 
-  <dboard-body>
-    {#if $ctrl.tab == 0}
-      <Dtlist data={$ctrl.tab_0} />
-    {:else if $ctrl.tab == 1}
-      <Tplist data={$ctrl.tab_1} />
-    {:else if $ctrl.tab == 2}
-      <UInbox />
-    {/if}
-  </dboard-body>
+  {#if $ctrl.actived}
+    <dboard-body>
+      {#if $ctrl.tab == 0}
+        <Dtlist />
+      {:else if $ctrl.tab == 1}
+        <Tplist data={$ctrl.topic} />
+      {:else if $ctrl.tab == 2}
+        <UInbox />
+      {/if}
+    </dboard-body>
+  {/if}
 </Slider>
 
 <style lang="scss">
@@ -54,7 +56,9 @@
   }
 
   dboard-body {
-    display: block;
-    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-top: 0.5rem;
   }
 </style>

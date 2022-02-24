@@ -92,12 +92,10 @@
         </button>
       {/if}
 
-      {#if $appbar.forum}
-        <button class="appbar-item" data-kbd="f" on:click={dboard_ctrl.show}>
-          <SIcon name="messages" />
-          <span class="appbar-text _show-md">Thảo luận</span>
-        </button>
-      {/if}
+      <button class="appbar-item" data-kbd="f" on:click={dboard_ctrl.show}>
+        <SIcon name="messages" />
+        <span class="appbar-text _show-md">Thảo luận</span>
+      </button>
 
       <button class="appbar-item" on:click={() => usercp.show()}>
         <SIcon name="user" />

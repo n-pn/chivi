@@ -68,6 +68,18 @@ tool-tip {
   top: 100%;
 }
 
+[data-tip][tip-pos='left']:after {
+  margin-left: 0;
+  transform: unset;
+}
+
+[data-tip][tip-pos='right']:after {
+  right: 0;
+  left: unset;
+  margin-left: 0;
+  transform: unset;
+}
+
 .kbd-hint [data-kbd] {
   // overflow: auto !important;
 

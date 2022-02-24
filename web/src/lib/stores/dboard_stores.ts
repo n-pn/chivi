@@ -1,65 +1,75 @@
-import { writable } from 'svelte/store'
+import { writable, get } from 'svelte/store'
 
 export class DtlistData {
-  _t = 0
-  b0 = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
-  pg = 1
-  tl = ''
-  kw = ''
+  show = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
+  book?: CV.Dboard
+
+  tab: CV.DtlistType = ''
+  query = { pg: 1, tl: '', kw: '', op: '' }
+}
+
+export const dtlist_data = {
+  ...writable(new DtlistData()),
+  set_board(board: CV.Dboard | null, tl = '', pg = 1) {
+    dtlist_data.update((x) => {
+      x.query = { tl, pg, kw: '', op: '' }
+      if (!board) return x
+
+      if (board.id == x.book?.id) {
+        x.tab = 'book'
+      } else {
+        x.tab = 'show'
+        x.show = board
+      }
+
+      return x
+    })
+  },
+  set_pgidx(pgidx = 1) {
+    dtlist_data.update((x) => {
+      x.query.pg = pgidx
+      return x
+    })
+  },
+  set_label(label = '') {
+    dtlist_data.update((x) => {
+      x.query.tl = label
+      return x
+    })
+  },
 }
 
 export class TplistData {
   _t = 0
   t0?: CV.Dtopic
-  pg = 1
-  op = ''
+  query = { pg: 1, tl: '', kw: '', op: '' }
 }
 
 export class DboardData {
   actived = false
   tab = 0
-
-  tab_0 = new DtlistData()
-  tab_1 = new TplistData()
-}
-
-function patch(store: DboardData, key: string, val: any) {
-  store[key] = val
-  return store
+  topic = new TplistData()
 }
 
 export const dboard_ctrl = {
   ...writable(new DboardData()),
-  show: () => dboard_ctrl.update((x) => patch(x, 'actived', true)),
-  hide: () => dboard_ctrl.update((x) => patch(x, 'actived', false)),
+  show: () => dboard_ctrl.update((x) => ({ ...x, actived: true })),
+  hide: () => dboard_ctrl.update((x) => ({ ...x, actived: false })),
   change_tab: (tab: number) => dboard_ctrl.update((x) => ({ ...x, tab })),
-  view(evt: Event, fn: (x: DboardData) => DboardData) {
-    dboard_ctrl.update((x) => {
-      if (x.actived) evt.preventDefault()
-      return fn(x)
-    })
+  stop_event(evt: Event) {
+    const actived = get(dboard_ctrl).actived
+    if (actived) evt.preventDefault()
   },
-  set_tlabel(evt: Event, tl: string) {
-    dboard_ctrl.view(evt, (x) => {
-      x.tab = 0
-      x.tab_0.tl = tl
-      return x
-    })
-  },
-  view_board(evt: Event, dboard: CV.Dboard, tlabel = '', pgidx = 1) {
-    dboard_ctrl.view(evt, (x) => {
-      x.tab_0._t = 0
-      x.tab_0.b0 = dboard
-      x.tab_0.tl = tlabel
-      x.tab_0.pg = pgidx
-      return x
-    })
+  view_board(evt: Event, board: CV.Dboard | null, tl = '', pg = 1) {
+    dboard_ctrl.stop_event(evt)
+    dtlist_data.set_board(board, tl, pg)
   },
   view_topic(evt: Event, topic: CV.Dtopic) {
-    dboard_ctrl.view(evt, (x) => {
+    dboard_ctrl.stop_event(evt)
+    dboard_ctrl.update((x) => {
       x.tab = 1
-      x.tab_1._t = 0
-      x.tab_1.t0 = topic
+      x.topic._t = 0
+      x.topic.t0 = topic
       return x
     })
   },

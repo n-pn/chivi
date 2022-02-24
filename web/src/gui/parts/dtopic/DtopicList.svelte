@@ -2,7 +2,7 @@
   import { page, session } from '$app/stores'
   import { dlabels } from '$lib/constants'
 
-  import { dboard_ctrl } from '$lib/stores'
+  import { dtlist_data, dboard_ctrl } from '$lib/stores'
 
   import DtopicCard from './DtopicCard.svelte'
   import DtopicForm, { ctrl as dtopic_form } from './DtopicForm.svelte'
@@ -21,10 +21,8 @@
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
 
   function on_navigate(evt: Event, pgidx: number) {
-    dboard_ctrl.view(evt, (x) => {
-      x.tab_0.pg = pgidx
-      return x
-    })
+    dboard_ctrl.stop_event(evt)
+    dtlist_data.set_pgidx(pgidx)
   }
 </script>
 
@@ -33,7 +31,7 @@
   <a
     href={pager.url.pathname}
     class="m-label _0"
-    on:click={(e) => dboard_ctrl.set_tlabel(e, '')}>
+    on:click={(e) => dboard_ctrl.view_board(e, dboard, '')}>
     <span>Tất cả</span>
     {#if !tlabel}<SIcon name="check" /> {/if}
   </a>
@@ -41,7 +39,7 @@
     <a
       class="m-label _{value}"
       href={pager.gen_url({ tl: value })}
-      on:click={(e) => dboard_ctrl.set_tlabel(e, value)}>
+      on:click={(e) => dboard_ctrl.view_board(e, dboard, value)}>
       <span>{label}</span>
       {#if tlabel == value}<SIcon name="check" /> {/if}
     </a>
