@@ -165,7 +165,7 @@
     }
 
     :global(.app-fs-2) & {
-      @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(10px), rem(20px));
+      @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(19px), rem(20px));
     }
 
     :global(.app-fs-3) & {

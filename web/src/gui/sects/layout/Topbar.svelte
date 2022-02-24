@@ -88,18 +88,18 @@
       {#if $appbar.cvmtl}
         <button class="appbar-item" data-kbd="o" on:click={config_ctrl.show}>
           <SIcon name="adjustments-alt" />
-          <span class="appbar-text _show-md">Cài đặt</span>
+          <span class="appbar-text _show-lg">Cài đặt</span>
         </button>
       {/if}
 
       <button class="appbar-item" data-kbd="f" on:click={dboard_ctrl.show}>
         <SIcon name="messages" />
-        <span class="appbar-text _show-md">Thảo luận</span>
+        <span class="appbar-text _show-lg">Thảo luận</span>
       </button>
 
       <button class="appbar-item" on:click={() => usercp.show()}>
         <SIcon name="user" />
-        <span class="appbar-text _show-md">
+        <span class="appbar-text _show-lg">
           {#if $session.privi >= 0}{$session.uname} [{$session.privi}]{:else}Khách{/if}
         </span>
       </button>

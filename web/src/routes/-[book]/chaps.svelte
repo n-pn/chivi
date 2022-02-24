@@ -8,7 +8,7 @@
 
     appbar.set({
       left: [
-        [nvinfo.vname, 'book', `/-${nvinfo.bslug}`, '_title', '_title'],
+        [nvinfo.vname, 'book', `/-${nvinfo.bslug}`, '_show-lg', '_title'],
         ['Mục lục', 'list', url.pathname, null, '_show-md'],
       ],
       right: gen_appbar_right(nvinfo, ubmemo),
