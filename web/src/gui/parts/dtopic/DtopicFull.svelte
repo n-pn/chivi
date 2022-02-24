@@ -13,7 +13,7 @@
   $: board_url = `/forum/-${dboard.bslug}`
 </script>
 
-<topic-full>
+<topic-full class:fluid={$$props.fluid}>
   <topic-navi>
     <a href="/forum" class="m-board">
       <SIcon name="messages" />
@@ -23,10 +23,9 @@
     <navi-sep>/</navi-sep>
 
     <a class="m-board" href={board_url}>
+      <SIcon name="message" />
       <span>{dtopic.dboard.bname}</span>
     </a>
-
-    <navi-sep>/</navi-sep>
 
     {#each dtopic.labels as label}
       <a class="m-label _{label}" href="{board_url}?label={label}"
@@ -56,7 +55,6 @@
       {/if}
 
       <foot-right>
-        <topic-sep>·</topic-sep>
         <topic-meta>
           <SIcon name="messages" />
           <span>{dtopic.post_count}</span>
@@ -85,7 +83,7 @@
         <button
           class="m-btn _primary _xs btn-show"
           on:click={() => (_all = !_all)}>
-          <span>{_all ? 'Thu gọn' : 'Xem hết'}</span>
+          <SIcon name="chevrons-{_all ? 'up' : 'down'}" />
         </button>
       </pbody-foot>
     {/if}
@@ -138,28 +136,37 @@
   .topic-title {
     display: block;
     font-weight: 500;
-    line-height: 1.5rem;
-    padding: 0.25rem 0;
 
     @include fgcolor(secd);
-    @include ftsize(x2);
-
     @include hover {
       @include fgcolor(primary, 5);
+    }
+
+    // typography
+    line-height: 1.5rem;
+    font-size: rem(18px);
+
+    .fluid & {
+      @include bps(line-height, 1.375rem, $pl: 1.5rem, $tm: 1.75rem);
+      @include bps(font-size, rem(17px), $pl: rem(20px), $tm: rem(24px));
     }
   }
 
   .m-article {
     display: block;
     padding: 0.75rem 0;
-    max-height: 15rem;
+    max-height: 10rem;
     overflow: hidden;
     transform: max-height 1s ease-in-out;
-    font-size: rem(17px);
+    font-size: rem(16px);
 
     ._all & {
       max-height: initial;
       overflow: initial;
+    }
+
+    .fluid & {
+      @include bps(font-size, rem(16px), $tm: rem(17px));
     }
   }
 
@@ -219,5 +226,10 @@
 
   .btn-show {
     text-transform: uppercase;
+    padding: 0.25rem;
+    :global(svg) {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 </style>

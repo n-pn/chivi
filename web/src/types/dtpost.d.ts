@@ -14,7 +14,7 @@ declare namespace CV {
     u_privi: number
 
     rp_id: number
-    rp_no: string
+    rp_no: number
 
     ru_dname: string
     ru_privi: number

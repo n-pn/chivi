@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
 
-  import { dboard_ctrl } from '$lib/stores'
+  import { tplist_data, dboard_ctrl } from '$lib/stores'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   import DtpostCard from './DtpostCard.svelte'
@@ -16,20 +16,17 @@
   let active_card = $page.url.hash.substring(1)
 
   function on_navigate(evt: Event, pgidx: number) {
-    dboard_ctrl.view(evt, (x) => {
-      x.topic.pg = pgidx
+    dboard_ctrl.stop_event(evt)
+    tplist_data.update((x) => {
+      x.query.pg = pgidx
       return x
     })
   }
 </script>
 
 <dtpost-list>
-  <dtpost-head>
-    <h3>Bình luận</h3>
-  </dtpost-head>
-
   {#each tplist.items as dtpost}
-    <DtpostCard {dtpost} bind:active_card />
+    <DtpostCard {dtpost} bind:active_card fluid={$$props.fluid} />
   {:else}
     <div class="empty">Chưa có bình luận</div>
   {/each}
@@ -49,22 +46,7 @@
   dtpost-list {
     // margin-left: 0.75rem;
     display: block;
-    padding: 0 var(--gutter) 0.75rem;
-    max-width: 40rem;
-    margin: 0 auto;
-
-    @include bgcolor(secd);
-    @include bdradi();
-    @include shadow();
-
-    @include tm-dark {
-      @include linesd(--bd-main);
-    }
-  }
-
-  dtpost-head {
-    display: block;
-    padding: 0.5rem 0;
+    padding-bottom: 0.75rem;
   }
 
   dtpost-pagi {

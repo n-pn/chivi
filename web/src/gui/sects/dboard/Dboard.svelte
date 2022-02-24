@@ -9,22 +9,22 @@
   import UInbox from './UInbox.svelte'
 
   const tabs = [
-    { icon: 'home', btip: 'Tất cả chủ đề' },
-    { icon: 'message', btip: 'Bình luận chủ đề' },
-    { icon: 'mail-opened', btip: 'Phản hồi cá nhân' },
+    ['messages', 'Chủ đề thảo luận'],
+    ['message', 'Bình luận chủ đề'],
+    ['mail-opened', 'Phản hồi cá nhân'],
   ]
+
+  $: [curr_icon, curr_text] = tabs[$ctrl.tab]
 </script>
 
 <Slider class="dboard" bind:actived={$ctrl.actived} --slider-width="30rem">
   <svelte:fragment slot="header-left">
-    <div class="-icon">
-      <SIcon name="messages" />
-    </div>
-    <div class="-text">Thảo luận</div>
+    <div class="-icon"><SIcon name={curr_icon} /></div>
+    <div class="-text">{curr_text}</div>
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    {#each tabs as { icon, btip }, tab}
+    {#each tabs as [icon, btip], tab}
       <button
         class="-btn"
         class:_active={$ctrl.tab == tab}
@@ -41,7 +41,7 @@
       {#if $ctrl.tab == 0}
         <Dtlist />
       {:else if $ctrl.tab == 1}
-        <Tplist data={$ctrl.topic} />
+        <Tplist />
       {:else if $ctrl.tab == 2}
         <UInbox />
       {/if}

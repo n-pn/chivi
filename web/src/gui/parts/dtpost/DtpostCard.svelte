@@ -5,7 +5,7 @@
   import { SIcon } from '$gui'
   import DtpostForm from './DtpostForm.svelte'
 
-  export let dtpost
+  export let dtpost: CV.Dtpost
   export let active_card = ''
   export let render_mode = 0
 
@@ -24,7 +24,7 @@
   $: topic_url = `${board_url}/-${dtpost.dt_tslug}-${dtpost.dt}`
 </script>
 
-<dtpost-wrap>
+<dtpost-wrap class:fluid={$$props.fluid}>
   {#if _mode == 1}
     <dtpost-edit>
       <DtpostForm dtopic_id={dtpost.dt} dtpost_id={dtpost.id} {on_destroy} />
@@ -173,6 +173,12 @@
     display: block;
     margin: 0.25rem 0;
     word-wrap: break-word;
+
+    font-size: rem(16px);
+
+    .fluid & {
+      @include bps(font-size, rem(16px), $tm: rem(17px));
+    }
   }
 
   dtpost-sep {
@@ -227,6 +233,7 @@
 
   dtpost-react {
     margin-left: auto;
+    padding-right: 0.5rem;
   }
 
   dtpost-orig {

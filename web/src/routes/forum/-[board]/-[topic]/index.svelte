@@ -33,15 +33,34 @@
   <title>{dtopic.title} - Diễn đàn - Chivi</title>
 </svelte:head>
 
-<DtopicFull {dboard} {dtopic} />
+<DtopicFull {dboard} {dtopic} fluid={true} />
 
 <dtopic-posts>
-  <DtpostList {tplist} {dtopic} />
+  <dtpost-head>
+    <h3>Bình luận</h3>
+  </dtpost-head>
+
+  <DtpostList {tplist} {dtopic} fluid={true} />
 </dtopic-posts>
 
 <style lang="scss">
   dtopic-posts {
     display: block;
-    margin-top: 0.75rem;
+    max-width: 40rem;
+    margin: 1.25rem auto 0;
+    padding: 0 var(--gutter);
+
+    @include bgcolor(secd);
+    @include bdradi();
+    @include shadow();
+
+    @include tm-dark {
+      @include linesd(--bd-main);
+    }
+  }
+
+  dtpost-head {
+    display: block;
+    padding: 0.5rem var(--gutter);
   }
 </style>

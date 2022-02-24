@@ -40,9 +40,19 @@ export const dtlist_data = {
 }
 
 export class TplistData {
-  _t = 0
-  t0?: CV.Dtopic
-  query = { pg: 1, tl: '', kw: '', op: '' }
+  topic: CV.Dtopic
+  query = { pg: 1, kw: '', op: '' }
+}
+
+export const tplist_data = {
+  ...writable(new TplistData()),
+  set_topic(topic: CV.Dtopic, pg = 1) {
+    tplist_data.update((x) => {
+      x.topic = topic
+      x.query = { pg, kw: '', op: '' }
+      return x
+    })
+  },
 }
 
 export class DboardData {
@@ -62,15 +72,12 @@ export const dboard_ctrl = {
   },
   view_board(evt: Event, board: CV.Dboard | null, tl = '', pg = 1) {
     dboard_ctrl.stop_event(evt)
+    dboard_ctrl.change_tab(0)
     dtlist_data.set_board(board, tl, pg)
   },
   view_topic(evt: Event, topic: CV.Dtopic) {
     dboard_ctrl.stop_event(evt)
-    dboard_ctrl.update((x) => {
-      x.tab = 1
-      x.topic._t = 0
-      x.topic.t0 = topic
-      return x
-    })
+    dboard_ctrl.change_tab(1)
+    tplist_data.set_topic(topic)
   },
 }
