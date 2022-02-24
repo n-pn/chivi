@@ -160,14 +160,9 @@
       </svelte:fragment>
     </Gmenu>
 
-    <a class="m-btn _primary" href="/forum/-{nvinfo.bslug}" data-kbd="f">
-      <SIcon name="messages" />
-      <span class="-txt _hide">Thảo luận</span>
-    </a>
-
     <a class="m-btn" href="/dicts/${nvinfo.bhash}" data-kbd="p">
       <SIcon name="package" />
-      <span class="-txt _hide">Từ điển</span>
+      <span class="-txt">Từ điển</span>
     </a>
   </div>
 </div>
@@ -182,17 +177,17 @@
     </a>
 
     <a
-      href="/-{nvinfo.bslug}/chaps"
-      class="header-tab"
-      class:_active={nvtab == 'chaps'}>
-      <span>Chương tiết</span>
-    </a>
-
-    <a
       href="/-{nvinfo.bslug}/crits"
       class="header-tab"
       class:_active={nvtab == 'crits'}>
       <span>Đánh giá</span>
+    </a>
+
+    <a
+      href="/-{nvinfo.bslug}/chaps"
+      class="header-tab"
+      class:_active={nvtab == 'chaps'}>
+      <span>Chương tiết</span>
     </a>
   </header>
 
