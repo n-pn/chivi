@@ -14,7 +14,7 @@ module CV::TlRule
   def fold_adverb_ude3!(node : MtNode, succ : MtNode) : MtNode
     case tail = succ.succ?
     when .nil?
-      fold!(MtDict.fix_verb!(node), succ.set!("được"), PosTag::Verb, dic: 6)
+      fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)
     when .key?("住")
       succ.val = ""
       fold!(MtDict.fix_verb!(node), tail.set!("nổi"), PosTag::Verb, dic: 5)

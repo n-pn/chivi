@@ -124,12 +124,14 @@ module CV::TlRule
   end
 
   def fix_adverb!(node : MtNode, succ = node.succ) : {MtNode, MtNode?}
-    if succ.vead? || succ.ajad?
+    if succ.vead? || succ.ajad? || succ.adj_hao?
       if is_adverb?(succ)
         node = fold!(node, succ, PosTag::Adverb, dic: 5)
         succ = node.succ?
       elsif succ.vead?
         succ = MtDict.fix_verb!(succ)
+      elsif succ.adj_hao?
+        succ.val = "thật"
       else
         succ = MtDict.fix_adjt!(succ)
       end
@@ -153,7 +155,7 @@ module CV::TlRule
       case node
       when .comma?
         return false unless node = node.succ?
-      when .plsgn?, .mnsgn?, .verbs?, .preposes?, .adjts?, .adverbs?
+      when .plsgn?, .mnsgn?, .verbs?, .preposes?, .adjts?, .adverbs?, .vmodals?
         return true
       when .concoord?
         return false unless node.key == "和"

@@ -14,12 +14,12 @@ module CV::TlRule
       return node unless succ
 
       case succ
-      when .ule?, .nouns?
-        node.tag == PosTag::Adjt
-        fold_adjts!(node)
       when .adjts?, .verbs?, .vmodals?
         node.set!(succ.verbs? ? "dễ" : "thật", PosTag::Adverb)
         fold_adverbs!(node, succ)
+      when .ule?, .nouns?
+        node.tag == PosTag::Adjt
+        fold_adjts!(node)
       else
         node
       end

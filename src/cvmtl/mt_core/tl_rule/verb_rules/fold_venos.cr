@@ -45,12 +45,16 @@ module CV::TlRule
       end
     end
 
-    case node.succ?
+    case succ = node.succ?
     when .nil? then node
     when .auxils?, .vdir?, .pre_zai?
       MtDict.fix_verb!(node)
     when .verbs?
-      VERB_COMBINE.includes?(node.key) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
+      if MtDict.has_key?(:v_compl, succ.key) || VERB_COMBINE.includes?(node.key)
+        MtDict.fix_verb!(node)
+      else
+        MtDict.fix_noun!(node)
+      end
     else node
     end
   end
