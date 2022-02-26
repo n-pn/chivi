@@ -1,7 +1,10 @@
 module CV::TlRule
   def fold_ajno!(node : MtNode)
-    node = heal_ajno!(node)
-    node.noun? ? fold_nouns!(node) : fold_adjts!(node)
+    case node = heal_ajno!(node)
+    when .verb? then fold_verbs!(node)
+    when .noun? then fold_nouns!(node)
+    else             fold_adjts!(node)
+    end
   end
 
   def heal_ajno!(node : MtNode)
@@ -13,6 +16,8 @@ module CV::TlRule
       else
         MtDict.fix_noun!(node)
       end
+    when .vdir?
+      MtDict.fix_verb!(node)
     when .verbs?, .preposes?
       MtDict.fix_noun!(node)
     when .noun?

@@ -52,6 +52,8 @@ module CV::TlRule
           succ = fold_nouns!(MtDict.fix_noun!(succ))
           return fold!(adjt, succ, PosTag::NounPhrase, dic: 4, flip: true)
         end
+      when .vdir?
+        return fold_verbs!(MtDict.fix_verb!(adjt))
       when .verb?
         break unless succ.key == "到"
         adjt = fold!(adjt, succ, PosTag::Adverb)
