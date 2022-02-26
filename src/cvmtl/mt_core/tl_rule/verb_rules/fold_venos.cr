@@ -14,7 +14,9 @@ module CV::TlRule
     when .ude1?
       return MtDict.fix_verb!(node) if prev.prev?(&.adverbs?)
       return MtDict.fix_noun!(node) unless succ = node.succ?
-      return MtDict.fix_noun!(node) if succ.nouns? || succ.junction?
+      if succ.nouns? || succ.junction? || succ.ule? || succ.mopart?
+        return MtDict.fix_noun!(node)
+      end
     when .adverbs?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
       return MtDict.fix_verb!(node)
     when .auxils?, .preposes?, .modifier?
