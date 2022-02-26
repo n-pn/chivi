@@ -48,16 +48,13 @@ tests = [
   {"69shu", "35875", false},
   # {"69shu", "30062", false},
 
-  {"sdyfcm", "18288", false},
-  # {"sdyfcm", "18288", true},
-
   {"rengshu", "181", false},
   # {"rengshu", "181", true},
 
   {"hetushu", "5", false},
   # {"hetushu", "5", true},
 
-  {"hetushu", "4420", false},
+  # {"hetushu", "4420", false},
   # {"hetushu", "4420", true},
 
   {"duokan8", "6293", false},
@@ -76,7 +73,7 @@ tests = [
   # {"zhwenpg", "aun4tm", true},
 
   {"5200", "28208", false},
-  {"5200", "28208", true},
+  # {"5200", "28208", true},
 
   {"biqu5200", "131878", false},
   # {"biqu5200", "131878", true},
@@ -90,7 +87,8 @@ tests = [
   {"bxwxorg", "32154", false},
   # {"bxwxorg", "32154", true},
 
-  {"sdyfcm", "125228", false},
+  # {"sdyfcm", "125228", false},
+  # {"sdyfcm", "125228", true},
 
   {"ptwxz", "1806", false},
 

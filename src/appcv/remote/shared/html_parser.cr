@@ -1,12 +1,13 @@
-require "myhtml"
+require "lexbor"
 require "../../../_util/text_utils"
 
 class CV::HtmlParser
   def initialize(html : String)
-    @doc = Myhtml::Parser.new(html)
+    @doc = Lexbor::Parser.new(html)
   end
 
-  forward_missing_to @doc
+  # forward_missing_to @doc
+  delegate css, to: @doc
 
   # find the first node matching the query, return nil otherwise
   def find(query : String)
@@ -18,15 +19,31 @@ class CV::HtmlParser
   end
 
   # reading attribute data of a node
-  def attr(query : String, name : String, fallback : String? = "")
-    find(query).try(&.attributes[name]?) || fallback
+  def attr(query : String, name : String)
+    find(query).try(&.attributes[name]?) || yield
+  end
+
+  def attr(node : Lexbor::Node, name : String)
+    node.attributes[name]? || ""
+  end
+
+  def attr(query : String, name : String)
+    attr(query, name) { "" }
   end
 
   # return inner text
-  def text(query : String, fallback : String? = "")
-    return fallback unless node = find(query)
+  def text(query : String)
+    return yield unless node = find(query)
     text = node.inner_text
     TextUtils.fix_spaces(text).strip
+  end
+
+  def text(query : String) : String
+    text(query) { "" }
+  end
+
+  def text(node : Lexbor::Node) : String
+    node.inner_text
   end
 
   # return multi text entries for each nodes
@@ -40,8 +57,8 @@ class CV::HtmlParser
   end
 
   # extract open graph metadata
-  def meta(query : String, fallback : String? = "")
-    attr("meta[property=\"#{query}\"]", "content", fallback)
+  def meta(query : String)
+    attr("meta[property=\"#{query}\"]", "content") { "" }
   end
 
   # split meta content to multi lines

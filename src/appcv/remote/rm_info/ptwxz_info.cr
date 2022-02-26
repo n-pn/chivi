@@ -5,12 +5,24 @@ class CV::RmInfoPtwxz < CV::RmInfoGeneric
     @info.text("h1")
   end
 
+  getter table : Lexbor::Node do
+    @info.css("table[width=\"100%\"]", &.first)
+  end
+
+  getter rows_1 : Array(Lexbor::Node) do
+    table.css("tr:nth-child(2) > td").to_a
+  end
+
+  getter rows_2 : Array(Lexbor::Node) do
+    table.css("tr:nth-child(3) > td").to_a
+  end
+
   def author : String
-    @info.text("td[width=\"25%\"]:nth-child(2)").sub(/作\s+者：/, "").strip
+    inner_text(rows_1[1])
   end
 
   def genres : Array(String)
-    [@info.text("td[width=\"25%\"]:nth-child(1)").sub(/类\s+别：/, "").strip]
+    [inner_text(rows_1[0])]
   end
 
   def bintro : Array(String)
@@ -26,7 +38,28 @@ class CV::RmInfoPtwxz < CV::RmInfoGeneric
     @info.attr("img[width=\"100\"]", "src")
   end
 
+  def status_str
+    inner_text(rows_2[1])
+  end
+
+  def update_str
+    inner_text(rows_2[0])
+  end
+
+  def updated_at(update_str = self.update_str) : Time
+    fix_update(super(update_str))
+  end
+
   def chapters
     extract_chapters_plain(".centent li > a")
+  end
+
+  def last_schid_href
+    node = @info.css(".grid a[target]").first
+    node.attributes["href"]? || ""
+  end
+
+  private def inner_text(node : Lexbor::Node)
+    node.inner_text.sub(/^.+：/, "").strip
   end
 end

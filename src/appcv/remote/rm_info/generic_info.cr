@@ -52,7 +52,7 @@ class CV::RmInfoGeneric
   MISSING_UPDATE = {Time.utc(2020, 1, 1, 7, 0, 0), ""}
 
   def update : {Time, String}
-    update_str = self.update_str
+    update_str = self.update_str || ""
     if update_str.blank?
       MISSING_UPDATE
     else

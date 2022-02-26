@@ -7,16 +7,17 @@ class CV::RmInfo69shu < CV::RmInfoGeneric
   end
 
   def btitle : String
-    @info.text("h1 > a", nil) || @info.text(".weizhi > a:last-child")
+    @info.text("h1 > a") { @info.text(".weizhi > a:last-child") }
   end
 
   def author : String
-    @info.text(".booknav2 > p:nth-child(2) > a", nil) || @info.text(".mu_beizhu > a[target]")
+    @info.text(".booknav2 > p:nth-child(2) > a") { @info.text(".mu_beizhu > a[target]") }
   end
 
   def genres : Array(String)
-    bgenre = @info.text(".booknav2 > p:nth-child(3) > a", nil)
-    [bgenre || @info.text(".weizhi > a:nth-child(2)")]
+    sel_1 = ".booknav2 > p:nth-child(3) > a"
+    sel_2 = ".weizhi > a:nth-child(2)"
+    [@info.text(sel_1) { @info.text(sel_2) }]
   end
 
   def bintro : Array(String)

@@ -20,7 +20,7 @@ module CV::HttpUtil
                (try: #{try.colorize.magenta})]"
 
       html = get_by_curl(url, encoding)
-      return replace_charset(html, encoding) unless html.empty?
+      return fix_charset(html, encoding) unless html.empty?
     rescue err
       puts "<http_utils> #{url} err: #{err}".colorize.red
     ensure
@@ -43,8 +43,8 @@ module CV::HttpUtil
     end
   end
 
-  private def replace_charset(html : String, encoding : String)
-    encoding == "UTF-8" ? html : html.sub(/charset=#{encoding}/i, "charset=utf-8")
+  private def fix_charset(html : String, encoding : String)
+    encoding == "UTF-8" ? html : html.sub(/charset="?#{encoding}"?/i, "charset=utf-8")
   end
 
   UTF_8 = {"jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "nofff"}
@@ -61,7 +61,7 @@ module CV::HttpUtil
               [GET: #{url.colorize.magenta}, \
               (try: #{try.colorize.magenta})]"
 
-      `curl -L -k -s -f -m 100 '#{url}' -o '#{file}'`
+      `curl -L -k -s -f -m 200 '#{url}' -o '#{file}'`
       return if File.exists?(file)
     ensure
       try += 1

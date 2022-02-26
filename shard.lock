@@ -80,6 +80,10 @@ shards:
     git: https://github.com/jeromegn/kilt.git
     version: 0.6.1
 
+  lexbor:
+    git: https://github.com/kostya/lexbor.git
+    version: 3.0.2
+
   liquid:
     git: https://github.com/dare892/liquid.cr.git
     version: 0.4.1+git.commit.e4ef5ca06bf5bafe74e0b270c7aae2941a91ddd3
@@ -87,10 +91,6 @@ shards:
   micrate:
     git: https://github.com/amberframework/micrate.git
     version: 0.12.0
-
-  myhtml:
-    git: https://github.com/kostya/myhtml.git
-    version: 1.5.8
 
   mysql:
     git: https://github.com/crystal-lang/crystal-mysql.git
