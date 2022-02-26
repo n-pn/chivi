@@ -38,8 +38,19 @@ module CV::TlRule
         verb = fold_verb_vdirs!(verb, succ)
         flag = 1
       when .adj_hao?
-        break unless flag == 0 || succ.succ?(&.noun?)
-        succ.val = "xong" unless succ.succ?(&.ule?)
+        case succ.succ?
+        when .nil?
+          succ.val = "tốt"
+        when .maybe_adjt?
+          break
+        when .noun?
+          break unless flag == 0
+        when .ule?
+          succ.val = "tốt"
+        else
+          succ.val = "xong"
+        end
+
         verb = fold!(verb, succ, PosTag::Verb, dic: 4)
       when .verbs?
         verb = fold_verb_verb!(verb, succ)
