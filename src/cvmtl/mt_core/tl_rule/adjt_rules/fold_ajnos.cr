@@ -18,7 +18,7 @@ module CV::TlRule
       end
     when .vdir?
       MtDict.fix_verb!(node)
-    when .verbs?, .preposes?
+    when .verbs?, .preposes?, .none?, .mopart?
       MtDict.fix_noun!(node)
     when .noun?
       node.set!(PosTag::Modifier)
