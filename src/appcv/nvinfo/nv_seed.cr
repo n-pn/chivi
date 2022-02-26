@@ -21,8 +21,6 @@ module CV::NvSeed
     "5200"     => 34,
     "duokan8"  => 40,
 
-    # dead
-
     "sdyfcm"  => 50,
     "jx_la"   => 56,
     "zhwenpg" => 60,

@@ -21,7 +21,7 @@ class CV::RmText
   getter schid : String
 
   getter file : String { "#{RmText.c_dir(@sname, @snvid)}/#{@schid}.html.gz" }
-  getter link : String { SiteLink.chtxt_url(sname, snvid, schid) }
+  getter link : String { SiteLink.text_url(sname, snvid, schid) }
 
   alias TimeSpan = Time::Span | Time::MonthSpan
 
@@ -164,16 +164,18 @@ class CV::RmText
 
   private def get_hetushu_line_order(meta_file : String, retry = false)
     File.delete(meta_file) if retry
-    base64 = hetushu_encrypt_string(meta_file)
+
+    base64 = page.attr("meta[name=client]", "content") do
+      hetushu_encrypt_string(meta_file)
+    end
+
     Base64.decode_string(base64).split(/[A-Z]+%/).map(&.to_i)
   rescue
     return [] of Int32 if retry
     get_hetushu_line_order(meta_file, retry: true)
   end
 
-  private def hetushu_encrypt_string(meta_file)
-    page.attr("meta[name=client]", "content", nil).try { |attr| return attr }
-
+  private def hetushu_encrypt_string(meta_file : String)
     return File.read(meta_file) if File.exists?(meta_file)
     json_link = link.sub("#{@schid}.html", "r#{@schid}.json")
 

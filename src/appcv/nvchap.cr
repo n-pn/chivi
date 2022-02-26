@@ -40,7 +40,7 @@ class CV::Zhbook
   end
 
   def clink(schid : String) : String
-    SiteLink.chtxt_url(sname, snvid, schid)
+    SiteLink.text_url(sname, snvid, schid)
   end
 
   PSIZE = 32
@@ -130,11 +130,12 @@ class CV::Zhbook
   end
 
   def fetch!(ttl : Time::Span, force : Bool = false) : Nil
-    parser = RmInfo.init(sname, snvid, ttl: ttl, mkdir: true)
+    parser = RmInfo.new(sname, snvid, ttl: ttl)
     changed = parser.last_schid != self.last_schid
 
     return unless force || changed
-    status, chinfos = parser.istate, parser.chap_infos
+    status, _ = parser.status
+    chinfos = parser.chap_infos
 
     _repo.store!(chinfos, reset: force)
     reset_cache!
@@ -143,7 +144,10 @@ class CV::Zhbook
     self.update_latest(chinfos.last, force: true)
 
     self.atime = Time.utc.to_unix
-    self.update_mftime(parser.mftime > 0 ? parser.mftime : self.atime)
+
+    mftime, update_str = parser.update
+    mftime = self.atime if update_str.empty? && changed
+    self.update_mftime(mftime)
 
     self.save!
   rescue err
