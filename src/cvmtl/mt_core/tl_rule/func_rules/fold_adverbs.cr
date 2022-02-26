@@ -139,6 +139,9 @@ module CV::TlRule
       else
         succ = MtDict.fix_adjt!(succ)
       end
+    elsif succ.concoord?
+      return {node, nil} unless succ.key == "和"
+      succ.set!(PosTag::Prepos)
     end
 
     {node, succ}
@@ -164,6 +167,7 @@ module CV::TlRule
         return true
       when .concoord?
         return false unless node.key == "和"
+        node.set!(PosTag::Prepos)
         # TODO: deep checking
         return true
       when .ude3?
