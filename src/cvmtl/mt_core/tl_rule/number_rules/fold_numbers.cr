@@ -44,7 +44,11 @@ module CV::TlRule
     end
 
     return node unless node.numbers? && (tail = node.succ?)
-    return node if tail.puncts?
+    if tail.puncts?
+      node = fold!(node, tail, PosTag::Nattr, dic: 5) if tail.quantis?
+      return node
+    end
+
     appro = 0
 
     case tail

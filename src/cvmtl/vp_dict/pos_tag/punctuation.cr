@@ -18,7 +18,7 @@ struct CV::PosTag
     # minus sign -
     {"Mnsgn", Pos::Puncts, ["﹣", "-"]}, # wms
     # percentage and permillle signs: ％ and ‰ of full length; % of half length
-    {"Perct", Pos::Quantis | Pos::Puncts, ["％", "﹪", "‰", "%"]}, # wpc
+    {"Perct", Pos::Puncts | Pos::Quantis, ["％", "﹪", "‰", "%"]}, # wpc
     # full or half-length unit symbol ￥ ＄ ￡ ° ℃  $
     {"Squanti", Pos::Quantis | Pos::Puncts, ["￥", "﹩", "＄", "$", "￡", "°", "℃"]}, # wqt
     # full-length single or double opening quote: “ ‘ 『
