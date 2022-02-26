@@ -11,13 +11,17 @@ module CV::TlRule
     when .adv_bu?  then return fold_adv_bu!(node, succ)
     when .adv_mei? then return fold_adv_mei!(node, succ)
     when .adv_fei? then return fold_adv_fei!(node, succ)
-    when .vead?
-      case succ
-      when .nouns?
-        return fold_verbs!(MtDict.fix_verb!(node))
-      when .ude3?
-        return fold_adverb_ude3!(node, succ)
-      end
+    when .vead?    then return fold_vead!(node, succ)
+    end
+
+    fold_adverb_base!(node, succ)
+  end
+
+  def fold_vead!(node : MtNode, succ = node.succ)
+    case succ
+    when .ajno?  then node.tag = PosTag::Adverb
+    when .nouns? then return fold_verbs!(MtDict.fix_verb!(node))
+    when .ude3?  then return fold_adverb_ude3!(node, succ)
     end
 
     fold_adverb_base!(node, succ)
