@@ -139,7 +139,7 @@
         sname={chseed.sname}
         chaps={chpage.lasts}
         track={ubmemo}
-        is_remote={chseed._type > 2} />
+        is_remote={chseed.stype > 2} />
 
       <div class="chlist-sep" />
 
@@ -148,7 +148,7 @@
         sname={chseed.sname}
         chaps={chpage.chaps}
         track={ubmemo}
-        is_remote={chseed._type > 2} />
+        is_remote={chseed.stype > 2} />
 
       <Footer>
         <div class="foot">

@@ -11,20 +11,21 @@ module CV::NvSeed
 
     "bxwxorg" => 8,
     "69shu"   => 10,
-
     "xbiquge" => 16,
     "rengshu" => 18,
-    "biqubao" => 20,
-    "paoshu8" => 22,
-    "shubaow" => 24,
+    "biqugee" => 20,
 
-    "bqg_5200" => 32,
+    "paoshu8"  => 22,
+    "shubaow"  => 24,
+    "biqu5200" => 32,
     "5200"     => 34,
-    "nofff"    => 36,
-    "zhwenpg"  => 38,
     "duokan8"  => 40,
 
-    "jx_la" => 60,
+    # dead
+
+    "sdyfcm"  => 50,
+    "jx_la"   => 56,
+    "zhwenpg" => 60,
   }
 
   def map_type(sname : String)
@@ -33,12 +34,14 @@ module CV::NvSeed
       0 # act as mirror
     when "users", "staff", "zxcs_me"
       1 # manual update
-    when "jx_la", "nofff", "zhwenpg", "shubaow"
+    when "jx_la", "zhwenpg", "shubaow"
       2 # dead remote
-    when "paoshu8", "duokan8", "5200", "hetushu"
-      4 # slow but still alive
+    when "paoshu8", "duokan8", "5200", "hetushu", "sdyfcm"
+      3 # slow but still alive
+    when "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee", "biqu5200"
+      4 # fast remote
     else
-      3 # alive and fast enough
+      3 # other
     end
   end
 
@@ -66,11 +69,11 @@ module CV::NvSeed
 
   def remote?(sname : String, privi = 4)
     case sname
-    when "5200", "bqg_5200", "rengshu"
+    when "5200", "biqu5200", "rengshu"
       privi >= 0 || yield
-    when "bxwxorg", "xbiquge", "biqubao", "69shu"
+    when "bxwxorg", "xbiquge", "biqugee", "69shu"
       privi >= 1 || yield
-    when "hetushu", "paoshu8", "duokan8", "nofff"
+    when "hetushu", "paoshu8", "duokan8", "sdyfcm"
       privi >= 2 || yield
     when "shubaow", "zhwenpg"
       privi > 4
@@ -84,7 +87,7 @@ module CV::NvSeed
 
   REMOTES = {
     "69shu", "5200", "bxwxorg",
-    "bqg_5200", "nofff", "biqubao",
+    "biqu5200", "sdyfcm", "biqugee",
     "rengshu", "hetushu", "xbiquge",
     "duokan8", "paoshu8",
   }

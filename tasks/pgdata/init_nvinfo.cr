@@ -207,7 +207,7 @@ class CV::InitNvinfo
       return {vals[0].to_i, vals[1]}
     end
 
-    base_path = ChList.path(@sname, "_", snvid)
+    base_path = "var/chtexts/#{@sname}/_/#{snvid}.tsv"
     FileUtils.mkdir_p(File.dirname(base_path))
 
     if File.exists?(base_path)
@@ -216,9 +216,8 @@ class CV::InitNvinfo
         ChInfo.new(line.split('\t')) unless line.empty?
       end
     elsif NvSeed.remote?(@sname, privi: 5)
-      ttl = NvSeed::REMOTES.includes?(@sname) ? 1.months : 10.years
       infos = fetch_chinfos!(snvid, ttl)
-      File.write(base_path, infos.map(&.to_s).join('\n'))
+      ChList.save!(base_path, infos)
     else
       puts "- Missing data for: #{snvid}".colorize.red.bold
       return {0, ""}
@@ -235,12 +234,6 @@ class CV::InitNvinfo
     set_val!(:extras, snvid, [chap_count.to_s, last_schid])
 
     {chap_count, last_schid}
-  end
-
-  def fetch_chinfos!(snvid : String, ttl = 1.months)
-    parser = RmInfo.init(@sname, snvid, ttl: ttl, mkdir: true)
-    output = parser.chap_infos
-    output.empty? && ttl != 1.hours ? fetch_chinfos!(snvid, 1.hours) : output
   end
 
   def get_names(snvid : String)

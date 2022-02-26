@@ -4,9 +4,8 @@ declare namespace CV {
     chaps: number // chap_count
     utime: number
     atime?: number
+    stype: number
     _link?: string
-    _type: number
-    _seed?: boolean
   }
 
   interface Chinfo {

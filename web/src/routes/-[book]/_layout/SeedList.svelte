@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
-  const icon_types = ['affiliate', 'archive', 'cloud-off', 'cloud', 'cloud-fog']
+  const icon_types = ['affiliate', 'archive', 'cloud-off', 'cloud-fog', 'cloud']
 </script>
 
 <script lang="ts">
@@ -23,7 +23,7 @@
 </script>
 
 <seed-list>
-  {#each chseed as { sname, chaps, _type }, idx}
+  {#each chseed as { sname, chaps, stype }, idx}
     <a
       class="seed-name"
       class:_hidden={sname != 'users' && idx >= 4 && show_less}
@@ -32,7 +32,7 @@
       rel={sname != 'chivi' ? 'nofollow' : ''}>
       <seed-label>
         <span>{sname}</span>
-        <SIcon name={icon_types[_type]} />
+        <SIcon name={icon_types[stype]} />
       </seed-label>
       <seed-stats><strong>{chaps}</strong> chương</seed-stats>
     </a>

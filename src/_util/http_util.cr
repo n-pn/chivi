@@ -5,7 +5,7 @@ require "./gzip_file"
 module CV::HttpUtil
   extend self
 
-  TTL = Time.utc(2021, 1, 1)
+  TTL = Time.utc(2021, 1, 1, 7, 0, 0)
 
   def load_html(url : String, file : String, ttl = TTL, lbl = "1/1", encoding = "UTF-8")
     GzipFile.new(file).read(ttl) { get_html(url, encoding: encoding, lbl: lbl) }
@@ -47,13 +47,10 @@ module CV::HttpUtil
     encoding == "UTF-8" ? html : html.sub(/charset=#{encoding}/i, "charset=utf-8")
   end
 
+  UTF_8 = {"jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "nofff"}
+
   def encoding_for(sname : String) : String
-    case sname
-    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "nofff"
-      "UTF-8"
-    else
-      "GBK"
-    end
+    UTF_8.includes?(sname) ? "UTF-8" : "GBK"
   end
 
   def fetch_file(url : String, file : String, lbl = "1/1") : Nil

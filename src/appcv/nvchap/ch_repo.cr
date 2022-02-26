@@ -25,8 +25,24 @@ class CV::ChRepo
   end
 
   # expand data from @fraw and @flog to pages
-  def apply!
-    # TODO
+  def reset!
+    infos = ChList.new(@fraw).data.values.sort_by(&.chidx)
+
+    if info.empty?
+      case NvSeed.map_type(@sname)
+      when 2 then infos = fetch!(10.years) # dead remote
+      when 3 then infos = fetch!(1.months) # slow remote
+      when 4 then infos = fetch!(1.weeks)  # fast remote
+      end
+    end
+
+    self.store!(infos, reset: true)
+  end
+
+  def fetch!(ttl = 10.years)
+    parser = RmInfo.init(@sname, @snvid, ttl: ttl, mkdir: true)
+    output = parser.chap_infos
+    output.empty? && ttl != 1.hours ? fetch!(1.hours) : output
   end
 
   # save all infos, bail early if result is the same
@@ -84,9 +100,9 @@ class CV::ChRepo
 
   def remote?(privi : Int32 = 4) : Bool
     case @sname
-    when "5200", "bqg_5200", "rengshu", "nofff"
+    when "5200", "biqu5200", "rengshu", "sdyfcm"
       privi >= 0 || yield
-    when "hetushu", "bxwxorg", "xbiquge", "biqubao"
+    when "hetushu", "bxwxorg", "xbiquge", "biqugee"
       privi >= 1 || yield
     when "69shu", "paoshu8", "duokan8"
       privi >= 2 || yield

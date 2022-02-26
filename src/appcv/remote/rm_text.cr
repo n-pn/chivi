@@ -105,7 +105,7 @@ class CV::RmText
       lines.pop if lines.last.starts_with?("正在手打中")
     when "5200"
       lines.pop if lines.last.ends_with?("更新速度最快。")
-    when "nofff"
+    when "sdyfcm"
       3.times { lines.shift } if lines[1].includes?("eqeq.net")
       lines.pop if lines.last.includes?("eqeq.net")
     when "xbiquge"
@@ -119,7 +119,7 @@ class CV::RmText
       lines.map!(&.sub("</div>", "").sub("<r />", "")).reject!(&.empty?)
     when "ptwxz"
       lines.shift if lines.first.includes?(title)
-    when "bqg_5200"
+    when "biqu5200"
       trash = title.tr(" ", "").sub(/（.+）/, "")
       lines[0] = lines[0].gsub(/^.*#{trash}\s*/, "")
 

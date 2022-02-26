@@ -62,7 +62,7 @@ class CV::FetchText
 
   def sleep_by_sname(sname : String)
     case sname
-    when "shubaow", "bqg_5200"
+    when "shubaow", "biqu5200"
       sleep Random.rand(1000..2000).milliseconds
     end
   end

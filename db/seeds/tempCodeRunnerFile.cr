@@ -1,1 +1,0 @@
-File.read("db/seeds/nvinfos.json")

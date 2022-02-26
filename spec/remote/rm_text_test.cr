@@ -21,7 +21,7 @@ fetch_text("jx_la", "7", "3666", fresh: false)
 # fetch_text("jx_la", "75722", "4089610")
 # fetch_text("jx_la", "249305", "1725573")
 
-fetch_text("nofff", "5906", "50749469", fresh: false)
+fetch_text("sdyfcm", "5906", "50749469", fresh: false)
 
 fetch_text("rengshu", "4243", "1408503", fresh: false)
 
@@ -38,8 +38,8 @@ fetch_text("paoshu8", "1986", "1447835", fresh: false)
 
 fetch_text("5200", "28208", "12163631", fresh: false)
 
-fetch_text("bqg_5200", "139731", "174666986", fresh: false)
-# fetch_text("bqg_5200", "131878", "174602931")
+fetch_text("biqu5200", "139731", "174666986", fresh: false)
+# fetch_text("biqu5200", "131878", "174602931")
 
 fetch_text("shubaow", "150092", "32706021", fresh: false)
 # fetch_text("shubaow", "149926", "32662664")
@@ -49,7 +49,7 @@ fetch_text("shubaow", "150092", "32706021", fresh: false)
 
 fetch_text("69shu", "35875", "25117266", fresh: false)
 
-fetch_text("biqubao", "33775", "18804401", fresh: false)
+fetch_text("biqugee", "33775", "18804401", fresh: false)
 
 fetch_text("bxwxorg", "119227", "1367374", fresh: false)
 # fetch_text("bxwxorg", "170826", "1399584", fresh: false)
@@ -63,4 +63,4 @@ fetch_text("69shu", "35094", "24508034", fresh: false)
 CV::RmText.mkdir!("ptwxz", "1806")
 fetch_text("ptwxz", "1806", "803058", fresh: false)
 
-fetch_text("biqubao", "51452", "649594", fresh: false)
+fetch_text("biqugee", "51452", "649594", fresh: false)

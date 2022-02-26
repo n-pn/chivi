@@ -65,8 +65,8 @@ Ngoài ra, quyền hạn của các bạn sẽ được tăng lên theo số ti�
   Để tránh các nguồn truyện chết hàng loạt thì việc kết nối với các nguồn đã bị hạn chế:
 
   - các nguồn `zhwenpg`, `69shu`, `duokan8` và `paoshu8` cần quyền hạn **lvl 2**
-  - các nguồn `hetushu`, `biqubao`, `bxwxorg` và `xbiquge` cần quyền hạn **lvl 1**
-  - các nguồn `5200`, `bqg_5200`, `nofff` và `rengshu` được để mở cho tất cả mọi người
+  - các nguồn `hetushu`, `biqugee`, `bxwxorg` và `xbiquge` cần quyền hạn **lvl 1**
+  - các nguồn `5200`, `biqu5200`, `sdyfcm` và `rengshu` được để mở cho tất cả mọi người
 
   Các nguồn truyện khác không liệt kê ra ở đây là nguồn offline không cần thiết phải cập nhật.
 

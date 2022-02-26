@@ -3,292 +3,74 @@ require "../../_util/site_link"
 require "../../_util/path_util"
 require "../../_util/time_utils"
 
-require "../nvchap/ch_info"
-require "./shared/html_parser"
+require "./rm_info/*"
+require "../nvinfo/nv_seed"
 
 class CV::RmInfo
   def self.mkdir!(sname : String)
-    FileUtils.mkdir_p(PathUtil.cache_dir(sname, "infos"))
+    FileUtils.mkdir_p("_db/.cache/#{sname}/infos")
   end
 
   TTL = 1.years
+  @parser : RmInfoGeneric
 
-  def self.binfo_html(sname : String, snvid : String, ttl = TTL, lbl = "1/1")
-    file = PathUtil.binfo_cpath(sname, snvid)
+  def initialize(@sname : String, @snvid : String, ttl = TTL, lbl = "1/1")
+    @dir = "_db/.cache/#{@sname}/infos"
+    ttl = 10.years if NvSeed.map_type(@sname) < 3
+    @encoding = HttpUtil.encoding_for(sname)
+    @parser = load_parser(ttl, lbl)
+  end
+
+  def load_parser(ttl = TTL, lbl = "1/1")
+    ihtml = load_info_html(ttl: ttl, lbl: lbl)
+
+    case @sname
+    when "hetushu" then RmInfoHetushu.new(ihtml)
+    when "zhwenpg" then RmInfoZhwenpg.new(ihtml)
+    when "bxwxorg" then RmInfoBxwxorg.new(ihtml)
+    when "ptwxz"   then RmInfoPtwxz.new(ihtml, load_mulu_html(ttl, lbl))
+    when "69shu"   then RmInfo69shu.new(ihtml, load_mulu_html(ttl, lbl), @snvid)
+    else                RmInfoGeneric.new(ihtml)
+    end
+  end
+
+  def load_info_html(ttl = TTL, lbl = "1/1")
+    file = "#{@dir}/#{@snvid}.html.gz"
 
     GzipFile.new(file).read(ttl) do
-      url = SiteLink.binfo_url(sname, snvid)
-      encoding = HttpUtil.encoding_for(sname)
-      HttpUtil.get_html(url, encoding: encoding, lbl: lbl)
+      url = SiteLink.info_url(@sname, @snvid)
+      HttpUtil.get_html(url, encoding: @encoding, lbl: lbl)
     end
   end
 
-  def self.chidx_html(sname : String, snvid : String, ttl = TTL, lbl = "1/1")
-    file = PathUtil.chdix_cpath(sname, snvid)
+  def load_mulu_html(ttl = TTL, lbl = "1/1")
+    file = "#{@dir}/#{@snvid}-mulu.html.gz"
 
     GzipFile.new(file).read(ttl) do
-      url = SiteLink.chidx_url(sname, snvid)
-      encoding = HttpUtil.encoding_for(sname)
-      HttpUtil.get_html(url, encoding: encoding, lbl: lbl)
+      url = SiteLink.mulu_url(@sname, @snvid)
+      HttpUtil.get_html(url, encoding: @encoding, lbl: lbl)
     end
   end
 
-  def self.init(sname : String, snvid : String, ttl = TTL, lbl = "1/1", full = true, mkdir = false)
-    # fix for dead sites
-    ttl = 10.years if sname == "jx_la" || sname == "zhwenpg"
+  getter btitle : String { @parser.btitle }
+  getter author : String { @parser.author }
+  getter genres : Array(String) { @parser.genres }
+  getter bintro : Array(String) { @parser.bintro }
+  getter bcover : String { @parser.bcover }
 
-    FileUtils.mkdir_p(PathUtil.cache_dir(sname, "infos")) if mkdir
-
-    ihtml = binfo_html(sname, snvid, ttl, lbl)
-
-    if full && sname == "69shu" || sname == "ptwxz"
-      chtml = chidx_html(sname, snvid, ttl, lbl)
-    end
-
-    new(sname, snvid, ihtml, chtml)
+  getter status : Tuple(Int32, String) { @parser.status }
+  getter update : Tuple(Int64, String) do
+    updated_at, update_str = @parser.update
+    {updated_at.to_unix, update_str}
   end
 
-  def initialize(@sname, @snvid, info_html : String, chap_html : String? = nil)
-    @ipage = HtmlParser.new(info_html)
-    @cpage = chap_html ? HtmlParser.new(chap_html) : @ipage
-  end
-
-  getter sname : String
-  getter snvid : String
-
-  getter btitle : String do
-    case @sname
-    when "zhwenpg" then @ipage.text(".cbooksingle h2")
-    when "hetushu" then @ipage.text("h2")
-    when "ptwxz"   then @ipage.text("h1")
-    when "69shu"
-      @ipage.text("h1 > a", nil) || @ipage.text(".weizhi > a:last-child")
-    else
-      @ipage.meta("og:novel:book_name").sub(/作\s+者[：:].+$/, "")
-    end
-  end
-
-  getter author : String do
-    case @sname
-    when "zhwenpg" then @ipage.text(".fontwt")
-    when "hetushu" then @ipage.text(".book_info a:first-child")
-    when "ptwxz"
-      @ipage.text("td[width=\"25%\"]:nth-child(2)").sub("作    者：", "").strip
-    when "69shu"
-      @ipage.text(".booknav2 > p:nth-child(2) > a", nil) || @ipage.text(".mu_beizhu > a[target]")
-    else
-      @ipage.meta("og:novel:author")
-    end
-  end
-
-  getter genres : Array(String) do
-    case @sname
-    when "zhwenpg" then [] of String
-    when "hetushu"
-      genre = @ipage.text(".title > a:last-child")
-      tags = @ipage.text_list(".tag a")
-      [genre].concat(tags).uniq
-    when "ptwxz"
-      [@ipage.text("td[width=\"25%\"]:nth-child(1)").sub("类    别：", "").strip]
-    when "69shu"
-      genre = @ipage.text(".booknav2 > p:nth-child(3) > a", nil)
-      [genre || @ipage.text(".weizhi > a:nth-child(2)")]
-    else
-      [@ipage.meta("og:novel:category")]
-    end
-  end
-
-  getter bintro : Array(String) do
-    case @sname
-    when "hetushu" then @ipage.text_list(".intro > p")
-    when "zhwenpg" then @ipage.text_para("tr:nth-of-type(3)")
-    when "bxwxorg" then @ipage.text_para("#intro > p:first-child")
-    when "69shu"   then @ipage.text_para(".navtxt > p:first-child")
-    when "ptwxz"
-      return [""] unless node = @ipage.find("div[style=\"float:left;width:390px;\"]")
-      node.children.each do |tag|
-        tag.remove! if {"span", "a"}.includes?(tag.tag_name)
-      end
-      TextUtils.split_html(node.inner_text)
-    else @ipage.meta_para("og:description")
-    end
-  end
-
-  getter bcover : String do
-    case @sname
-    when "hetushu"
-      "https://www.hetushu.com#{@ipage.attr(".book_info img", "src")}"
-    when "69shu"
-      image_url = "/#{@snvid.to_i // 1000}/#{@snvid}/#{@snvid}s.jpg"
-      "https://www.69shu.com/files/article/image/#{image_url}"
-    when "zhwenpg"
-      @ipage.attr(".cover_wrapper_m img", "data-src")
-    when "ptwxz"
-      @ipage.attr("img[width=\"100\"]", "src")
-    when "jx_la"
-      @ipage.meta("og:image").sub("qu.la", "jx.la")
-    else
-      @ipage.meta("og:image")
-    end
-  end
-
-  getter status : String do
-    case @sname
-    when "zhwenpg" then "0"
-    when "69shu"
-      @ipage.text(".booknav2 > p:nth-child(4)").split("  |  ").last
-    when "hetushu"
-      @ipage.attr(".book_info", "class").includes?("finish") ? "1" : "0"
-    else
-      @ipage.meta("og:novel:status")
-    end
-  end
-
-  getter istate : Int32 do
-    case status
-    when "暂停", "暂 停", "暂　停" then 2
-    when "1", "完成", "完本", "已经完结", "已经完本",
-         "完结", "已完结", "此书已完成", "已完本", "全本",
-         "完结申请", "已完成"
-      1
-    else 0
-    end
-  end
-
-  getter update : String do
-    case @sname
-    when "69shu"
-      @ipage.text(".booknav2 > p:nth-child(5)").sub("更新：", "")
-    when "bqg_5200"
-      @ipage.text("#info > p:last-child").sub("最后更新：", "")
-    else
-      @ipage.meta("og:novel:update_time")
-    end
-  end
-
-  getter mftime : Int64 do
-    return 0_i64 if @sname == "hetushu" || @sname == "zhwenpg"
-
-    updated_at = TimeUtils.parse_time(update)
-    updated_at += 12.hours if @sname == "bqg_5200" || @sname == "69shu"
-
-    upper_time = Time.utc - 1.minutes
-    updated_at < upper_time ? updated_at.to_unix : upper_time.to_unix
-  rescue
-    0_i64
-  end
-
-  getter last_schid : String { extract_schid(last_schid_href) }
-
-  def last_schid_href
-    case @sname
-    when "69shu"    then @ipage.attr(".qustime a:first-child", "href")
-    when "hetushu"  then @ipage.attr("#dir :last-child a:last-of-type", "href")
-    when "zhwenpg"  then @ipage.attr(".fontwt0 + a", "href")
-    when "bqg_5200" then @ipage.attr("#list a:first-of-type", "href")
-    else                 @ipage.meta("og:novel:latest_chapter_url")
-    end
-  end
-
-  private def extract_schid(href : String)
-    case @sname
-    when "zhwenpg" then href.sub("r.php?id=", "")
-    when "69shu"   then File.basename(href)
-    else                File.basename(href, ".html")
-    end
-  end
+  getter last_schid : String { @parser.last_schid }
 
   getter chap_infos : Array(ChInfo) do
     case @sname
-    when "69shu"   then extract_69shu_chaps
-    when "ptwxz"   then extract_ptwxz_chaps
-    when "zhwenpg" then extract_zhwenpg_chaps
-    when "duokan8" then extract_duokan8_chaps
-    when "hetushu" then extract_generic_chaps("#dir")
-    when "5200"    then extract_generic_chaps(".listmain > dl")
-    else                extract_generic_chaps("#list > dl")
+    when "duokan8" then @parser.extract_chapters_plain(".chapter-list a")
+    when "5200"    then @parser.extract_chapters_chvol(".listmain")
+    else                @parser.chapters
     end
-  end
-
-  def extract_generic_chaps(query : String)
-    chaps = [] of ChInfo
-    return chaps unless body = @cpage.find(query)
-
-    chvol = ""
-    body.children.each do |node|
-      case node.tag_sym
-      when :dt
-        inner = node.css("b").first? || node
-        chvol = inner.inner_text.gsub(/《.*》/, "").gsub("\n|\t", "  ").strip
-      when :dd
-        next if chvol.includes?("最新章节")
-        next unless link = node.css("a").first?
-        next unless href = link.attributes["href"]?
-
-        chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text, chvol)
-        chaps << chap unless chap.invalid?
-      end
-    rescue err
-      puts err.colorize.red
-    end
-
-    chaps
-  end
-
-  def extract_69shu_chaps
-    chaps = [] of ChInfo
-
-    @cpage.css("#catalog li > a").each do |link|
-      next unless href = link.attributes["href"]?
-      chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text)
-      chaps << chap unless chap.invalid?
-    end
-
-    chaps
-  end
-
-  def extract_ptwxz_chaps
-    chaps = [] of ChInfo
-
-    @cpage.css(".centent li > a").each do |link|
-      next unless href = link.attributes["href"]?
-      chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text)
-      chaps << chap unless chap.invalid?
-    end
-
-    chaps
-  end
-
-  def extract_zhwenpg_chaps
-    chaps = [] of ChInfo
-
-    @cpage.css(".clistitem > a").each do |link|
-      href = link.attributes["href"]
-      chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text)
-      chaps << chap unless chap.invalid?
-    end
-
-    # check if the list is in correct orlder
-    if chaps.first.schid == last_schid
-      chaps.reverse!
-
-      chaps.each_with_index(1) do |chinfo, chidx|
-        chinfo.chidx = chidx
-      end
-    end
-
-    chaps
-  end
-
-  private def extract_duokan8_chaps
-    chaps = [] of ChInfo
-
-    @cpage.css(".chapter-list a").each do |link|
-      next unless href = link.attributes["href"]?
-      chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text)
-      chaps << chap unless chap.invalid?
-    end
-
-    chaps
   end
 end

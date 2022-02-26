@@ -1,8 +1,8 @@
 <script lang="ts">
   export let chmeta: CV.Chmeta
 
-  const pleb_seeds = ['5200', 'bqg_5200', 'rengshu', 'noff']
-  const lvl0_seeds = ['hetushu', 'biqubao', 'bxwxorg', 'xbiquge', '69shu']
+  const pleb_seeds = ['5200', 'biqu5200', 'rengshu', 'noff']
+  const lvl0_seeds = ['hetushu', 'biqugee', 'bxwxorg', 'xbiquge', '69shu']
   const lvl1_seeds = ['zhwenpg', 'paoshu8', 'duokan8']
 
   function render_seeds(seeds: string[]) {

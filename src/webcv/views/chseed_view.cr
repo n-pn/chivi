@@ -12,9 +12,9 @@ struct CV::ChseedView
       snvid: @data.snvid,
       chaps: @data.chap_count,
       utime: @data.utime,
+      stype: NvSeed.map_type(@data.sname),
       # atime: @data.atime,
       _link: site_link,
-      _type: NvSeed.map_type(@data.sname),
     }.to_json(jb)
   end
 

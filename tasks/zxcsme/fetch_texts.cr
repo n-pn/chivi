@@ -11,8 +11,8 @@ class CV::Seeds::ZxcsText
   FileUtils.mkdir_p(DLPG_DIR)
   FileUtils.mkdir_p(RARS_DIR)
 
-  def fetch!(from = 1, upto = 12092) : Nil
-    queue = (from..upto).to_a.reverse
+  def fetch!(max = 14000, min = 1) : Nil
+    queue = (min..max).to_a.reverse
     queue.each_with_index(1) do |snvid, idx|
       rar_file = "#{RARS_DIR}/#{snvid}.rar"
       next if File.exists?(rar_file) && File.size(rar_file) > 1000
@@ -52,4 +52,4 @@ class CV::Seeds::ZxcsText
 end
 
 worker = CV::Seeds::ZxcsText.new
-worker.fetch!(from: 1, upto: 13400)
+worker.fetch!(max: 13600, min: 12000)
