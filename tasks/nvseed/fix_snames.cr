@@ -25,9 +25,10 @@ def rename_seed(from source : String, to target : String)
   end
 end
 
-rename_seed("nofff", "sdyfcm")
-rename_seed("bqg_5200", "biqu5200")
-rename_seed("biqubao", "biqugee")
+# rename_seed("nofff", "sdyfcm")
+# rename_seed("bqg_5200", "biqu5200")
+# rename_seed("biqubao", "biqugee")
 
 FileUtils.rm_rf("var/chtexts/chivi")
 FileUtils.mkdir_p("var/chtexts/chivi")
+CV::Zhbook.query.where(zseed: 0).to_update.set(chap_count: 0).execute
