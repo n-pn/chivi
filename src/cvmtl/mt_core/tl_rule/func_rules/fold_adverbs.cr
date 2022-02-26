@@ -146,6 +146,7 @@ module CV::TlRule
 
   def fold_adverb_verb!(adverb : MtNode, verb : MtNode)
     case adverb.key
+    when "老" then adverb.val = "luôn"
     when "光" then adverb.val = "chỉ riêng"
     when "白" then adverb.val = "phí công"
     when "正" then adverb.val = "đang" unless verb.v_shi?
