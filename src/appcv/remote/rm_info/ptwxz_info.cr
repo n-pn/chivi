@@ -55,8 +55,7 @@ class CV::RmInfoPtwxz < CV::RmInfoGeneric
   end
 
   def last_schid_href
-    node = @info.css(".grid a[target]").first
-    node.attributes["href"]? || ""
+    @info.css(".grid a[target]") { |x| x[0].attributes["href"]? || "" }
   end
 
   private def inner_text(node : Lexbor::Node)

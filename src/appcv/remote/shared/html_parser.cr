@@ -11,11 +11,11 @@ class CV::HtmlParser
 
   # find the first node matching the query, return nil otherwise
   def find(query : String)
-    @doc.css(query).first?
+    @doc.css(query, &.first?)
   end
 
   def find_list(query : String)
-    @doc.css(query).to_a
+    @doc.css(query, &.to_a)
   end
 
   # reading attribute data of a node
@@ -48,7 +48,7 @@ class CV::HtmlParser
 
   # return multi text entries for each nodes
   def text_list(query : String) : Array(String)
-    @doc.css(query).map(&.inner_text).to_a
+    @doc.css(query) { |x| x.map(&.inner_text) }
   end
 
   # split text string to multi lines
@@ -58,7 +58,7 @@ class CV::HtmlParser
 
   # extract open graph metadata
   def meta(query : String)
-    attr("meta[property=\"#{query}\"]", "content") { "" }
+    attr("meta[property=\"#{query}\"]", "content")
   end
 
   # split meta content to multi lines

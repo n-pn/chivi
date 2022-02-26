@@ -69,7 +69,7 @@ class CV::RmInfo
   getter chap_infos : Array(ChInfo) do
     case @sname
     when "duokan8" then @parser.extract_chapters_plain(".chapter-list a")
-    when "5200"    then @parser.extract_chapters_chvol(".listmain")
+    when "5200"    then @parser.extract_chapters_chvol(".listmain > dl")
     else                @parser.chapters
     end
   end
