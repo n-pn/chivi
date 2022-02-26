@@ -28,3 +28,6 @@ end
 rename_seed("nofff", "sdyfcm")
 rename_seed("bqg_5200", "biqu5200")
 rename_seed("biqubao", "biqugee")
+
+FileUtils.rm_rf("var/chtexts/chivi")
+FileUtils.mkdir_p("var/chtexts/chivi")
