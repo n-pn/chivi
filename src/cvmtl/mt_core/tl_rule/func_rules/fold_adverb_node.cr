@@ -14,6 +14,9 @@ module CV::TlRule
       return fold!(head, tail, PosTag::Aform, dic: dic)
     when "最", "最为", "那么", "这么", "非常", "如此"
       flip = true
+    when "好好"
+      adv.val = "cho tốt"
+      flip = true
     when "十分"
       adv.val = "vô cùng"
       flip = true

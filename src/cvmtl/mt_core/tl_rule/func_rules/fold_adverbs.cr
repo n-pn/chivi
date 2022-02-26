@@ -12,7 +12,12 @@ module CV::TlRule
     when .adv_mei? then return fold_adv_mei!(node, succ)
     when .adv_fei? then return fold_adv_fei!(node, succ)
     when .vead?
-      return fold_verbs!(MtDict.fix_verb!(node)) if succ.nouns?
+      case succ
+      when .nouns?
+        return fold_verbs!(MtDict.fix_verb!(node))
+      when .ude3?
+        return fold_adverb_ude3!(node, succ)
+      end
     end
 
     fold_adverb_base!(node, succ)
@@ -73,16 +78,8 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_adverb_base!(node : MtNode, succ = node.succ) : MtNode
-    if succ.vead? || succ.ajad?
-      if is_adverb?(succ)
-        node = fold!(node, succ, PosTag::Adverb, dic: 5)
-        return node unless succ = node.succ?
-      elsif succ.vead?
-        succ = MtDict.fix_verb!(succ)
-      else
-        succ = MtDict.fix_adjt!(succ)
-      end
-    end
+    node, succ = fix_adverb!(node, succ)
+    return node unless succ
 
     case succ.tag
     when .v_you?
@@ -95,15 +92,16 @@ module CV::TlRule
       fold_adverb_verb!(node, MtDict.fix_verb!(succ))
     when .verbs?
       fold_adverb_verb!(node, succ)
+    when .ajno?
+      fold_adjts!(MtDict.fix_adjt!(succ), prev: node)
     when .adjts?
-      succ.tag = PosTag::Adjt if succ.ajno? || succ.ajad?
+      succ.tag = PosTag::Adjt if succ.ajno?
       fold_adjts!(succ, prev: node)
     when .adv_bu?
-      if tail = succ.succ?
-        succ = fold_adv_bu!(succ, tail)
-      end
+      succ.succ? { |tail| succ = fold_adv_bu!(succ, tail) }
       fold!(node, succ, succ.tag, dic: 2)
     when .adverb?
+      succ = fold_adverbs!(succ)
       node = fold!(node, succ, succ.tag, dic: 6)
     when .space?
       return node unless node.key = "最"
@@ -111,6 +109,8 @@ module CV::TlRule
     when .preposes?
       succ = fold_preposes!(succ)
       fold!(node, succ, succ.tag, dic: 2)
+    when .ude3?
+      fold_adverb_ude3!(node, succ)
     else
       case node
       when .vead?
@@ -121,6 +121,21 @@ module CV::TlRule
         node
       end
     end
+  end
+
+  def fix_adverb!(node : MtNode, succ = node.succ) : {MtNode, MtNode?}
+    if succ.vead? || succ.ajad?
+      if is_adverb?(succ)
+        node = fold!(node, succ, PosTag::Adverb, dic: 5)
+        succ = node.succ?
+      elsif succ.vead?
+        succ = MtDict.fix_verb!(succ)
+      else
+        succ = MtDict.fix_adjt!(succ)
+      end
+    end
+
+    {node, succ}
   end
 
   def fold_adverb_verb!(adverb : MtNode, verb : MtNode)
@@ -144,6 +159,8 @@ module CV::TlRule
         return false unless node.key == "和"
         # TODO: deep checking
         return true
+      when .ude3?
+        return node.succ?(&.verbs?) || false
       else
         return false
       end
