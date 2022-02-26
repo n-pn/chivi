@@ -47,7 +47,7 @@ module CV::HttpUtil
     encoding == "UTF-8" ? html : html.sub(/charset="?#{encoding}"?/i, "charset=utf-8")
   end
 
-  UTF_8 = {"jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "nofff"}
+  UTF_8 = {"jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "sdyfcm"}
 
   def encoding_for(sname : String) : String
     UTF_8.includes?(sname) ? "UTF-8" : "GBK"

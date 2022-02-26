@@ -1,4 +1,4 @@
-require "./shared/bootstrap"
+require "../shared/bootstrap"
 
 CV::Zhbook.query.each do |zhbook|
   zhbook.zseed = CV::NvSeed.map_id(zhbook.sname)

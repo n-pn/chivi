@@ -10,6 +10,14 @@ then
   rsync -aiz --no-p --delete "$SSH/var/pg_data/cvusers" "var/pg_data"
 fi
 
+## backup user logs
+if [[ $1 == "all" || $* == *ulog* ]]
+then
+  echo backup user logs!
+  rsync -aiz --no-p --delete "$SSH/var/_proxy" "var"
+  rsync -aiz --no-p --delete "$SSH/var/_ulogs" "var"
+fi
+
 ## backup user data
 if [[ $1 == "all" || $* == *dict* ]]
 then
