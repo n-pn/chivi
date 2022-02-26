@@ -73,12 +73,14 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_adverb_base!(node : MtNode, succ = node.succ) : MtNode
-    if succ.vead?
-      if (tail = succ.succ?) && (tail.verbs? || tail.preposes? || tail.key == "和")
-        node = fold!(node, succ, succ.tag, dic: 5)
+    if succ.vead? || succ.ajad?
+      if is_adverb?(succ)
+        node = fold!(node, succ, PosTag::Adverb, dic: 5)
         return node unless succ = node.succ?
+      elsif succ.vead?
+        succ = MtDict.fix_verb!(succ)
       else
-        return fold_adverb_verb!(node, MtDict.fix_verb!(succ))
+        succ = MtDict.fix_adjt!(succ)
       end
     end
 
@@ -129,5 +131,24 @@ module CV::TlRule
     end
 
     fold_verbs!(verb, prev: adverb)
+  end
+
+  def is_adverb?(node : MtNode) : Bool
+    while node = node.succ?
+      case node
+      when .comma?
+        return false unless node = node.succ?
+      when .plsgn?, .mnsgn?, .verbs?, .preposes?, .adjts?, .adverbs?
+        return true
+      when .concoord?
+        return false unless node.key == "和"
+        # TODO: deep checking
+        return true
+      else
+        return false
+      end
+    end
+
+    false
   end
 end

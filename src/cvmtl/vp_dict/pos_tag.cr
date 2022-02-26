@@ -174,7 +174,8 @@ struct CV::PosTag
     {% for type in TYPES %}
     when {{ type[0] }} then {{ type[1].id }}
     {% end %}
-    else          Unkn
+    else
+      Unkn
     end
     {% end %}
   end
