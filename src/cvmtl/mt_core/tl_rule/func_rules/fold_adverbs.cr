@@ -130,12 +130,14 @@ module CV::TlRule
   def fix_adverb!(node : MtNode, succ = node.succ) : {MtNode, MtNode?}
     if succ.vead? || succ.ajad? || succ.adj_hao?
       if is_adverb?(succ)
+        succ = heal_adj_hao!(succ) if succ.adj_hao?
         node = fold!(node, succ, PosTag::Adverb, dic: 5)
         succ = node.succ?
       elsif succ.vead?
         succ = MtDict.fix_verb!(succ)
       elsif succ.adj_hao?
-        succ.val = "thật"
+        # TODO: inspect more on this case
+        succ = heal_adj_hao!(succ)
       else
         succ = MtDict.fix_adjt!(succ)
       end
@@ -145,6 +147,15 @@ module CV::TlRule
     end
 
     {node, succ}
+  end
+
+  def heal_adj_hao!(node : MtNode)
+    case node.succ?
+    when .nil?   then node
+    when .adjts? then node.set!("thật")
+    when .verbs? then node.set!("dễ")
+    else              node.set!("tốt")
+    end
   end
 
   def fold_adverb_verb!(adverb : MtNode, verb : MtNode)
