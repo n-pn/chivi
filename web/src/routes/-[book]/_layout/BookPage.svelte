@@ -368,9 +368,5 @@
 
   .m-btn {
     margin-right: 0.5rem;
-
-    ._hide {
-      @include bps(display, none, $tm: initial);
-    }
   }
 </style>
