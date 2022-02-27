@@ -1,4 +1,4 @@
-require "../../../_util/text_utils"
+require "../../../_util/text_util"
 
 module CV::MTL::ApplyCap
   def apply_cap!(cap : Bool = true) : Bool
@@ -19,7 +19,7 @@ module CV::MTL::ApplyCap
     when .puncts? then cap_after_punct?(cap) # TODO: merge this with should_cap?
     when .rawstr? then false
     else
-      @val = TextUtils.capitalize(@val) if cap
+      @val = TextUtil.capitalize(@val) if cap
       false
     end
   end

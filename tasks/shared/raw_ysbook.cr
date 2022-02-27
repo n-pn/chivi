@@ -13,7 +13,7 @@ class CV::RawYsbook
   getter author = ""
 
   getter introduction = ""
-  getter bintro : Array(String) { TextUtils.split_html(introduction) }
+  getter bintro : Array(String) { TextUtil.split_html(introduction) }
 
   @[JSON::Field(key: "classInfo")]
   getter class_info : NamedTuple(classId: Int32, className: String)?

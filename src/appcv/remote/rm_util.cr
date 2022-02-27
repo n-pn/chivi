@@ -6,7 +6,7 @@ require "../../_util/http_util"
 require "../../_util/site_link"
 require "../../_util/gzip_file"
 require "../../_util/path_util"
-require "../../_util/time_utils"
+require "../../_util/time_util"
 
 module CV::RmUtil
   extend self

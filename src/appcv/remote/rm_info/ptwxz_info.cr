@@ -31,7 +31,7 @@ class CV::RmInfoPtwxz < CV::RmInfoGeneric
       tag.remove! if {"span", "a"}.includes?(tag.tag_name)
     end
 
-    TextUtils.split_html(node.inner_text)
+    TextUtil.split_html(node.inner_text)
   end
 
   def bcover : String

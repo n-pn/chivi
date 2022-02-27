@@ -4,7 +4,7 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   old_btitle = nvinfo.zname
   old_author = nvinfo.author.zname
 
-  fix_btitle, fix_author = CV::NvUtil.fix_names(old_btitle, old_author)
+  fix_btitle, fix_author = CV::BookUtil.fix_names(old_btitle, old_author)
   next if old_btitle == fix_btitle && old_author == fix_author
 
   puts "- #{nvinfo.bhash}"

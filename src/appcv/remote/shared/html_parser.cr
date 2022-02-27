@@ -1,5 +1,5 @@
 require "lexbor"
-require "../../../_util/text_utils"
+require "../../../_util/text_util"
 
 class CV::HtmlParser
   def initialize(html : String)
@@ -35,7 +35,7 @@ class CV::HtmlParser
   def text(query : String)
     return yield unless node = find(query)
     text = node.inner_text
-    TextUtils.fix_spaces(text).strip
+    TextUtil.fix_spaces(text).strip
   end
 
   def text(query : String) : String
@@ -53,7 +53,7 @@ class CV::HtmlParser
 
   # split text string to multi lines
   def text_para(query : String) : Array(String)
-    TextUtils.split_html(text(query))
+    TextUtil.split_html(text(query))
   end
 
   # extract open graph metadata
@@ -63,6 +63,6 @@ class CV::HtmlParser
 
   # split meta content to multi lines
   def meta_para(query : String) : Array(String)
-    TextUtils.split_html(meta(query))
+    TextUtil.split_html(meta(query))
   end
 end

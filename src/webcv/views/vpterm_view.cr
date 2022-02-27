@@ -137,7 +137,7 @@ struct CV::VpTermView
     end
 
     if is_human || (on_book && ftag.in?("nr", "nn", "nz"))
-      fval = TextUtils.titleize(vals.first)
+      fval = TextUtil.titleize(vals.first)
     end
 
     {fval, ftag}

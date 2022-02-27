@@ -1,9 +1,9 @@
 require "../_util/ukey_util"
 require "../_util/site_link"
 require "../cvmtl/mt_core"
-require "./nvinfo/nv_seed"
 require "./nvchap/ch_list"
 require "./remote/rm_info"
+require "./nvinfo/seed_util"
 
 class CV::Zhbook
   include Clear::Model

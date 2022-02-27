@@ -1,7 +1,7 @@
 require "json"
 require "tabkv"
 
-module CV::NvUtil
+module CV::BookUtil
   extend self
 
   DIR = "var/nvinfos/fixed"
@@ -33,7 +33,7 @@ module CV::NvUtil
   end
 
   NORMALIZE = begin
-    lines = File.read_lines("#{__DIR__}/nv_util/normalize.tsv")
+    lines = File.read_lines("#{__DIR__}/book_util/normalize.tsv")
     lines.each_with_object({} of Char => Char) do |line, hash|
       hash[line[0]] = line[2]
     end
@@ -89,18 +89,18 @@ module CV::NvUtil
       vname = convert_btitle_vname(bhash, zname)
     end
 
-    TextUtils.titleize(vname)
+    TextUtil.titleize(vname)
   end
 
   def hanviet(input : String, caps : Bool = true) : String
     return input unless input =~ /\p{Han}/ # return if no hanzi found
 
     output = MtCore.hanviet_mtl.translit(input, false).to_s
-    caps ? TextUtils.titleize(output) : output
+    caps ? TextUtil.titleize(output) : output
   end
 
   def convert(input : String, udict = "combine") : Array(String)
-    lines = TextUtils.split_html(input)
+    lines = TextUtil.split_html(input)
     convert(lines, udict)
   end
 
@@ -138,5 +138,5 @@ module CV::NvUtil
   end
 end
 
-# puts CV::NvUtil.scrub_zname("9205.第9205章 test 番外 test??!!")
-# puts CV::NvUtil.scrub_vname("sd9205.test 番外 12 test2??!! tiếng việt=", "-")
+# puts CV::BookUtil.scrub_zname("9205.第9205章 test 番外 test??!!")
+# puts CV::BookUtil.scrub_vname("sd9205.test 番外 12 test2??!! tiếng việt=", "-")

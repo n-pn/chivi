@@ -65,7 +65,7 @@ class CV::RmInfoGeneric
   end
 
   def updated_at(update_str = self.update_str)
-    TimeUtils.parse_time(update_str)
+    TimeUtil.parse_time(update_str)
   end
 
   def fix_update(time : Time) : Time

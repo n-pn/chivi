@@ -14,3 +14,22 @@ export function last_read({ bslug }, ubmemo: CV.Ubmemo) {
     mute: ubmemo.chidx == 0,
   }
 }
+
+export function update_ubmemo(
+  ubmemo: CV.Ubmemo,
+  chmeta: CV.Chmeta,
+  chinfo: CV.Chinfo,
+  lock_mode = 0
+) {
+  if (ubmemo.locked && lock_mode == 0) return
+  ubmemo.locked = lock_mode == 1
+
+  ubmemo.sname = chmeta.sname
+  ubmemo.cpart = chmeta.cpart
+
+  ubmemo.chidx = chinfo.chidx
+  ubmemo.title = chinfo.title
+  ubmemo.uslug = chinfo.uslug
+
+  return ubmemo
+}

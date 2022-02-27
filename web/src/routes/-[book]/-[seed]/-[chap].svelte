@@ -2,6 +2,8 @@
   import { api_call } from '$lib/api_call'
   import { appbar } from '$lib/stores'
 
+  import { update_ubmemo } from '$utils/ubmemo_utils'
+
   function gen_book_path(bslug: string, sname: string, chidx: number) {
     let url = `/-${bslug}/chaps?sname=${sname}`
     const page = Math.floor((chidx - 1) / 32) + 1
@@ -25,13 +27,20 @@
 
     const api_url = `/api/chaps/${nvinfo.id}/${seed}/${chidx}/${+cpart}`
     const api_res = await fetch(api_url)
-    return await api_res.json()
+
+    const payload = await api_res.json()
+    const { chmeta, chinfo } = payload.props
+    stuff.ubmemo = update_ubmemo(stuff.ubmemo, chmeta, chinfo)
+
+    payload.props.nvinfo = stuff.nvinfo
+    payload.props.ubmemo = stuff.ubmemo
+
+    return payload
   }
 </script>
 
 <script lang="ts">
   import { page, session } from '$app/stores'
-  import { invalidate } from '$app/navigation'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
@@ -98,9 +107,7 @@
 
     const [status, payload] = await api_call(fetch, url, params, 'PUT')
     if (status) return console.log(`Error update history: ${payload}`)
-
-    ubmemo = payload
-    invalidate(`/api/books/${nvinfo.bslug}`)
+    $page.stuff.ubmemo = ubmemo
   }
 
   $: on_memory = check_memo(ubmemo)

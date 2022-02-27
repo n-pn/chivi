@@ -1,5 +1,5 @@
-require "./nvinfo/nv_seed"
-require "./nvinfo/b_genre"
+require "./nvinfo/genre_map"
+require "./nvinfo/book_util"
 
 class CV::Nvinfo
   include Clear::Model
@@ -21,7 +21,7 @@ class CV::Nvinfo
   getter snames : Array(String) { SeedUtil.to_s(zseed_ids) }
 
   column genre_ids : Array(Int32) = [] of Int32
-  getter genres : Array(String) { BGenre.to_s(genre_ids) }
+  getter genres : Array(String) { GenreMap.to_s(genre_ids) }
 
   column labels : Array(String) = [] of String
 
@@ -113,10 +113,10 @@ class CV::Nvinfo
     if input.nil?
       self
     elsif input =~ /\p{Han}/
-      scrub = NvUtil.scrub_zname(input)
+      scrub = BookUtil.scrub_zname(input)
       where("zname LIKE '%#{scrub}%'")
     else
-      scrub = NvUtil.scrub_vname(input, "-")
+      scrub = BookUtil.scrub_vname(input, "-")
       where("(vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%')")
     end
   end
@@ -125,10 +125,10 @@ class CV::Nvinfo
     if input.nil?
       return self
     elsif input =~ /\p{Han}/
-      scrub = NvUtil.scrub_zname(input)
+      scrub = BookUtil.scrub_zname(input)
       query = "zname LIKE '%#{scrub}%'"
     else
-      scrub = NvUtil.scrub_vname(input, "-")
+      scrub = BookUtil.scrub_vname(input, "-")
       query = "vslug LIKE '%-#{scrub}-%'"
     end
 
@@ -140,7 +140,7 @@ class CV::Nvinfo
   end
 
   scope :filter_genre do |input|
-    input ? where("genre_ids @> ?", BGenre.map_id(input.split('+'))) : self
+    input ? where("genre_ids @> ?", GenreMap.map_id(input.split('+'))) : self
   end
 
   scope :filter_labels do |input|
@@ -179,12 +179,12 @@ class CV::Nvinfo
   end
 
   def set_zgenre(genres : Array(String), force = false) : Nil
-    set_genres(BGenre.map_zh(genres), force: force)
+    set_genres(GenreMap.map_zh(genres), force: force)
   end
 
   def set_genres(genres : Array(String), force = false) : Nil
     return unless force || self.genre_ids.empty?
-    genres_ids = BGenre.map_id(genres)
+    genres_ids = GenreMap.map_id(genres)
 
     self.genre_ids = genres_ids.empty? ? [0] : genres_ids
     self.genre_ids_column.dirty!
@@ -194,7 +194,7 @@ class CV::Nvinfo
     return unless force || self.zintro.empty?
     self.zintro = lines.join("\n")
 
-    trans = NvUtil.convert(lines, self.bhash)
+    trans = BookUtil.convert(lines, self.bhash)
     set_vintro(trans.join("\n"), force: true)
   end
 
@@ -265,11 +265,11 @@ class CV::Nvinfo
   end
 
   def fix_names!
-    self.vname = NvUtil.btitle_vname(self.zname, self.bhash)
-    self.vslug = "-" + NvUtil.scrub_vname(self.vname, "-") + "-"
+    self.vname = BookUtil.btitle_vname(self.zname, self.bhash)
+    self.vslug = "-" + BookUtil.scrub_vname(self.vname, "-") + "-"
 
-    self.hname = NvUtil.hanviet(self.zname)
-    hslug = NvUtil.scrub_vname(self.hname, "-")
+    self.hname = BookUtil.hanviet(self.zname)
+    hslug = BookUtil.scrub_vname(self.hname, "-")
     self.hslug = "-" + hslug + "-"
 
     self.bslug = hslug.split("-").first(8).join("-") + "-" + bhash[0..3]

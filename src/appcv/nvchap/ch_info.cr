@@ -1,5 +1,5 @@
 require "json"
-require "../../_util/text_utils"
+require "../../_util/text_util"
 
 class CV::ChInfo
   class Stats
@@ -30,7 +30,7 @@ class CV::ChInfo
     end
 
     def slugify(title : String)
-      TextUtils.tokenize(title).first(10).join("-")
+      TextUtil.tokenize(title).first(10).join("-")
     end
   end
 
@@ -69,7 +69,7 @@ class CV::ChInfo
   end
 
   def set_title!(title : String, chvol : String = "")
-    @title, @chvol = TextUtils.format_title(title, chvol)
+    @title, @chvol = TextUtil.format_title(title, chvol)
   end
 
   # delegate empty?, to: @title

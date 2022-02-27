@@ -1,4 +1,4 @@
-require "./nvinfo/nv_util"
+require "./nvinfo/book_util"
 
 class CV::Author
   include Clear::Model
@@ -40,11 +40,11 @@ class CV::Author
   end
 
   def self.upsert!(zname : String, vname : String? = nil) : Author
-    find({zname: zname}) || create!(zname, vname || NvUtil.author_vname(zname))
+    find({zname: zname}) || create!(zname, vname || BookUtil.author_vname(zname))
   end
 
   def self.create!(zname : String, vname : String) : Author
-    vslug = "-#{NvUtil.scrub_vname(vname, "-")}-"
+    vslug = "-#{BookUtil.scrub_vname(vname, "-")}-"
     author = new({zname: zname, vname: vname, vslug: vslug})
     author.tap(&.save!)
   end

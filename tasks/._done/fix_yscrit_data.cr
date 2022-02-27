@@ -17,14 +17,14 @@ def fix_timestamp!
       ctime = infos[6]
       unless ctime.to_i64?
         puts ctime
-        infos[6] = CV::TimeUtils.parse_time(ctime).to_unix.to_s
+        infos[6] = CV::TimeUtil.parse_time(ctime).to_unix.to_s
         changed = true
       end
 
       utime = infos[7]
       unless utime.to_i64?
         puts utime
-        infos[7] = CV::TimeUtils.parse_time(utime).to_unix.to_s
+        infos[7] = CV::TimeUtil.parse_time(utime).to_unix.to_s
         changed = true
       end
 

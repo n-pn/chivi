@@ -20,11 +20,11 @@ class CV::ZhwenpgParser
   getter genres : Array(String) { [bgenre.empty? ? "其他" : bgenre] }
 
   getter bintro : Array(String) do
-    TextUtils.split_html(rows[4]?.try(&.inner_text("\n")) || "")
+    TextUtil.split_html(rows[4]?.try(&.inner_text("\n")) || "")
   end
 
   getter update : String { rows[3].css(".fontime").first.inner_text }
-  getter mftime : Int64 { (TimeUtils.parse_time(update) + 24.hours).to_unix }
+  getter mftime : Int64 { (TimeUtil.parse_time(update) + 24.hours).to_unix }
 end
 
 class CV::ZhwenpgSeed

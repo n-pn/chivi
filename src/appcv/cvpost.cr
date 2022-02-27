@@ -53,7 +53,7 @@ class CV::Dtopic
 
   def set_title(title : String)
     self.title = title
-    uslug = TextUtils.slugify(title).split("-").first(8).join("-")
+    uslug = TextUtil.slugify(title).split("-").first(8).join("-")
     self.tslug = uslug.size < 48 ? uslug : uslug[0..40]
   end
 

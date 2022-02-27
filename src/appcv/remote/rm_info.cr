@@ -1,10 +1,10 @@
 require "../../_util/http_util"
 require "../../_util/site_link"
 require "../../_util/path_util"
-require "../../_util/time_utils"
+require "../../_util/time_util"
 
 require "./rm_info/*"
-require "../nvinfo/nv_seed"
+require "../nvinfo/seed_util"
 
 class CV::RmInfo
   def self.mkdir!(sname : String)

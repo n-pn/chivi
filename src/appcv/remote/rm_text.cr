@@ -1,8 +1,8 @@
 require "file_utils"
 
 require "../../_util/site_link"
-require "../../_util/time_utils"
-require "../../_util/text_utils"
+require "../../_util/time_util"
+require "../../_util/text_util"
 require "../../_util/http_util"
 require "./shared/html_parser"
 
@@ -51,7 +51,7 @@ class CV::RmText
   # remove volume label from chap title
   private def extract_title(sel : String) : String
     title = page.text(sel)
-    TextUtils.format_title(title)[0]
+    TextUtil.format_title(title)[0]
   end
 
   getter paras : Array(String) do
@@ -74,7 +74,7 @@ class CV::RmText
       tag.remove! if {"script", "div", "h1", "table"}.includes?(tag.tag_name)
     end
 
-    lines = TextUtils.split_html(node.inner_text("\n"))
+    lines = TextUtil.split_html(node.inner_text("\n"))
     lines.shift if lines.first == title
     lines.pop if lines.last == "(本章完)"
 
@@ -95,7 +95,7 @@ class CV::RmText
       end
     end
 
-    lines = TextUtils.split_html(node.inner_text("\n"))
+    lines = TextUtil.split_html(node.inner_text("\n"))
     lines.shift if lines.first == title
 
     case @sname

@@ -1,9 +1,9 @@
 require "html"
 require "colorize"
 
-require "./text_utils/*"
+require "./text_util/*"
 
-module CV::TextUtils
+module CV::TextUtil
   extend self
 
   # Convert chinese punctuations to english punctuations
@@ -169,7 +169,7 @@ module CV::TextUtils
   end
 end
 
-# pp CV::TextUtils.format_title("第二十集 红粉骷髅 第八章")
-# pp CV::TextUtils.format_title("9205.第9205章")
-# pp CV::TextUtils.format_title("340.番外：林薇实习（1）", trim: false)
-# pp CV::TextUtils.format_title("【第006章】我的美女死党")
+# pp CV::TextUtil.format_title("第二十集 红粉骷髅 第八章")
+# pp CV::TextUtil.format_title("9205.第9205章")
+# pp CV::TextUtil.format_title("340.番外：林薇实习（1）", trim: false)
+# pp CV::TextUtil.format_title("【第006章】我的美女死党")

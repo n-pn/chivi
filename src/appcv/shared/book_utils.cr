@@ -1,7 +1,7 @@
-require "../../_util/text_utils"
+require "../../_util/text_util"
 require "../../_util/tsv_store"
 
-module CV::BookUtils
+module CV::BookUtilOld
   extend self
 
   DIR = "var/nvinfos/fixed"
@@ -31,7 +31,7 @@ module CV::BookUtils
 
   def fix_zh_btitle(ztitle : String, author : String = "") : String
     zh_btitles.fval_alt("#{ztitle}  #{author}", ztitle) || begin
-      output = TextUtils.normalize(ztitle).join
+      output = TextUtil.normalize(ztitle).join
       clean_name(output)
     end
   end
@@ -46,14 +46,14 @@ module CV::BookUtils
       vtitle = mtl.cv_plain(ztitle).to_s
     end
 
-    TextUtils.titleize(vtitle)
+    TextUtil.titleize(vtitle)
   end
 
   def hanviet(input : String, caps : Bool = true) : String
     return input unless input =~ /\p{Han}/ # return if no hanzi found
 
     output = MtCore.hanviet_mtl.translit(input, false).to_s
-    caps ? TextUtils.titleize(output) : output
+    caps ? TextUtil.titleize(output) : output
   end
 
   def convert(input : String, udict = "combine") : Array(String)

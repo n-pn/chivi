@@ -53,7 +53,7 @@ class CV::MtCore
   end
 
   def cv_title_full(title : String)
-    title, label = TextUtils.format_title(title)
+    title, label = TextUtil.format_title(title)
 
     title_res = cv_title(title, offset: label.size)
     return title_res if label.empty?

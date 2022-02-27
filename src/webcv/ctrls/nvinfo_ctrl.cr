@@ -102,11 +102,11 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   def upsert
     return halt!(403, "Quyền hạn không đủ!") if _cvuser.privi < 3
 
-    btitle_zname, author_zname = NvUtil.fix_names(params["btitle"].strip, params["author"].strip)
+    btitle_zname, author_zname = BookUtil.fix_names(params["btitle"].strip, params["author"].strip)
     author = Author.upsert!(author_zname)
     nvinfo = Nvinfo.upsert!(author, btitle_zname)
 
-    params["bintro"]?.try { |x| nvinfo.set_zintro(TextUtils.split_text(x), true) }
+    params["bintro"]?.try { |x| nvinfo.set_zintro(TextUtil.split_text(x), true) }
     params["genres"]?.try { |x| nvinfo.set_zgenre(x.split(' ').map(&.strip), true) }
 
     params["bcover"]?.try { |x| nvinfo.set_bcover(x, force: true) }

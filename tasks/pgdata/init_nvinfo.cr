@@ -138,7 +138,7 @@ class CV::InitNvinfo
 
   def seed_part!(map : Tabkv, idx = 0)
     map.data.each do |snvid, value|
-      btitle, author = NvUtil.fix_names(value[1], value[2])
+      btitle, author = BookUtil.fix_names(value[1], value[2])
       seed_nvinfo!(snvid, btitle, author)
     end
 
@@ -238,7 +238,7 @@ class CV::InitNvinfo
 
   def get_names(snvid : String)
     _, btitle, author = get_map(:_index, snvid).get(snvid).not_nil!
-    NvUtil.fix_names(btitle, author)
+    BookUtil.fix_names(btitle, author)
   end
 
   def get_ys_extras(snvid : String) : Array(Int32)

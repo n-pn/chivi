@@ -178,7 +178,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     chidx = params.fetch_int("chidx") { 1 }
 
     input = params.fetch_str("input")
-    lines = TextUtils.split_text(input, false)
+    lines = TextUtil.split_text(input, false)
 
     if params["_trad"]? == "true"
       lines.map! { |x| MtCore.trad_to_simp(x) }

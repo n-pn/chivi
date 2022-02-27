@@ -1,4 +1,4 @@
-module CV::TimeUtils
+module CV::TimeUtil
   extend self
 
   LOCATION = Time::Location.fixed(3600 * 8) # chinese timezone
@@ -30,6 +30,6 @@ module CV::TimeUtils
   end
 end
 
-# puts CV::TimeUtils.parse_time("5/14/2020 7:00:48 AM")
-# puts CV::TimeUtils.parse_time("2020-09-08 10:00")
-# puts CV::TimeUtils.parse_time("2020-09-11T16:00:00.000Z")
+# puts CV::TimeUtil.parse_time("5/14/2020 7:00:48 AM")
+# puts CV::TimeUtil.parse_time("2020-09-08 10:00")
+# puts CV::TimeUtil.parse_time("2020-09-11T16:00:00.000Z")

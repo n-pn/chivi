@@ -84,7 +84,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
   private def parse_lines(ztext : String) : Array(String)
     ztext = ztext.gsub("\t", "  ")
-    TextUtils.split_text(ztext, spaces_as_newline: false)
+    TextUtil.split_text(ztext, spaces_as_newline: false)
   end
 
   private def convert(dname, lines : Array(String), output : IO)
