@@ -1,17 +1,20 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
+  import { seed_url } from '$utils/route_utils'
+
   const icon_types = ['affiliate', 'archive', 'cloud-off', 'cloud-fog', 'cloud']
 </script>
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let pager
+  export let nvinfo = $page.stuff.nvinfo
+  export let nvseed = $page.stuff.nvseed || []
+  export let chseed: CV.Chseed
+  export let pgidx = 1
 
-  $: chseed = $page.stuff.chseed || []
-  $: snames = chseed.map((x) => x.sname) || []
-  $: active_sname = pager.get('sname')
-  $: hidden_seeds = calculate_hidden_seeds(snames, active_sname)
+  $: snames = nvseed.map((x) => x.sname) || []
+  $: hidden_seeds = calculate_hidden_seeds(snames, chseed.sname)
 
   let show_less = true
 
@@ -23,12 +26,12 @@
 </script>
 
 <seed-list>
-  {#each chseed as { sname, chaps, stype }, idx}
+  {#each nvseed as { sname, chaps, stype }, idx}
     <a
+      href={seed_url(nvinfo.bslug, sname, pgidx)}
       class="seed-name"
       class:_hidden={sname != 'users' && idx >= 4 && show_less}
-      class:_active={sname == active_sname}
-      href={pager.gen_url({ sname })}
+      class:_active={sname == chseed.sname}
       rel={sname != 'chivi' ? 'nofollow' : ''}>
       <seed-label>
         <span>{sname}</span>

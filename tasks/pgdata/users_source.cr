@@ -17,7 +17,7 @@ Dir.children(DIR).each do |bhash|
   lines = File.read_lines(idx_file)
   lines.pop if lines.last.empty?
 
-  zhbook = CV::Zhbook.load!(nvinfo, CV::NvSeed.map_id("users"))
+  zhbook = CV::Zhbook.load!(nvinfo, CV::SeedUtil.map_id("users"))
 
   zhbook.chap_count = lines.size
   zhbook.last_schid = lines.last.split('\t')[1]

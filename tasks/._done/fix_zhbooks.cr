@@ -6,7 +6,7 @@ require "./shared/bootstrap"
 
 #   zhbooks.each do |zhbook|
 #     zhbook.nvinfo = nvinfo
-#     zhbook.zseed = CV::NvSeed.map_id(zhbook.sname)
+#     zhbook.zseed = CV::SeedUtil.map_id(zhbook.sname)
 #     zhbook.fix_id!
 #     zhbook.save!
 #   end
@@ -16,6 +16,6 @@ require "./shared/bootstrap"
 
 CV::Ubmemo.query.each_with_cursor(20) do |ubmemo|
   ubmemo.lr_sname = "chivi"
-  ubmemo.lr_zseed = CV::NvSeed.map_id(ubmemo.lr_sname)
+  ubmemo.lr_zseed = CV::SeedUtil.map_id(ubmemo.lr_sname)
   ubmemo.save!
 end

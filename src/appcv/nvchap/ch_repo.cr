@@ -29,7 +29,7 @@ class CV::ChRepo
     infos = ChList.new(@fraw).data.values.sort_by(&.chidx)
 
     if info.empty?
-      case NvSeed.map_type(@sname)
+      case SeedUtil.map_type(@sname)
       when 2 then infos = fetch!(10.years) # dead remote
       when 3 then infos = fetch!(1.months) # slow remote
       when 4 then infos = fetch!(1.weeks)  # fast remote

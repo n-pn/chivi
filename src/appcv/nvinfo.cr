@@ -18,7 +18,7 @@ class CV::Nvinfo
   column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
 
   column zseed_ids : Array(Int32) = [] of Int32
-  getter zseeds : Array(String) { NvSeed.to_s(zseed_ids) }
+  getter snames : Array(String) { SeedUtil.to_s(zseed_ids) }
 
   column genre_ids : Array(Int32) = [] of Int32
   getter genres : Array(String) { BGenre.to_s(genre_ids) }
@@ -136,7 +136,7 @@ class CV::Nvinfo
   end
 
   scope :filter_zseed do |input|
-    input ? where("zseed_ids @> ?", [NvSeed.map_id(input)]) : self
+    input ? where("zseed_ids @> ?", [SeedUtil.map_id(input)]) : self
   end
 
   scope :filter_genre do |input|

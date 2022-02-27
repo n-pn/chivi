@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { kit_chap_url } from '$utils/route_utils'
+  import { chap_url } from '$utils/route_utils'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import { get_rtime } from '$gui/atoms/RTime.svelte'
 
@@ -25,7 +25,7 @@
   {#each chaps as chap}
     <list-item>
       <a
-        href={kit_chap_url(bslug, { ...chap, sname, cpart: track_cpart(chap) })}
+        href={chap_url(bslug, { ...chap, sname, cpart: track_cpart(chap) })}
         class="chap"
         class:_active={is_marked(chap)}
         rel={sname != 'chivi' ? 'nofollow' : ''}>

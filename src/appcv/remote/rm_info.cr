@@ -16,7 +16,7 @@ class CV::RmInfo
 
   def initialize(@sname : String, @snvid : String, ttl = TTL, lbl = "1/1")
     @dir = "_db/.cache/#{@sname}/infos"
-    ttl = 10.years if NvSeed.map_type(@sname) < 3
+    ttl = 10.years if SeedUtil.map_type(@sname) < 3
     @encoding = HttpUtil.encoding_for(sname)
     @parser = load_parser(ttl, lbl)
   end

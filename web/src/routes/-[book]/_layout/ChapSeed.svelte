@@ -6,7 +6,7 @@
   export let chinfo: CV.Chinfo
 
   $: nvinfo = $page.stuff.nvinfo
-  $: chseed = $page.stuff.chseed
+  $: nvseed = $page.stuff.nvseed
 
   let show_less = true
 
@@ -14,7 +14,7 @@
     return `/-${nvinfo.bslug}/-${sname}/-${chinfo.uslug}-${chinfo.chidx}`
   }
 
-  $: snames = chseed?.map((x) => x.sname) || []
+  $: snames = nvseed?.map((x) => x.sname) || []
   $: hidden_seeds = calculate_hidden_seeds(snames, chmeta.sname)
 
   function calculate_hidden_seeds(snames: string[], sname: string) {
@@ -25,7 +25,7 @@
 </script>
 
 <chap-seed>
-  {#each chseed as zhbook, idx}
+  {#each nvseed as zhbook, idx}
     {#if zhbook.chaps >= chinfo.chidx}
       <a
         class="seed-name"

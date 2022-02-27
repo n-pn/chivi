@@ -2,14 +2,6 @@
   import { appbar } from '$lib/stores'
 
   export async function load({ url, fetch }) {
-    appbar.set({
-      page: 'index',
-      right: [
-        ['Dịch nhanh', 'bolt', '/qtran', { _text: '_show-lg' }],
-        ['Đánh giá', 'stars', '/crits', { _text: '_show-lg' }],
-      ],
-    })
-
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
     api_url.searchParams.set('lm', '24')
@@ -38,6 +30,14 @@
   export let pgmax = 1
 
   $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
+
+  $: appbar.set({
+    page: 'index',
+    right: [
+      ['Dịch nhanh', 'bolt', '/qtran', { _text: '_show-lg' }],
+      ['Đánh giá', 'stars', '/crits', { _text: '_show-lg' }],
+    ],
+  })
 </script>
 
 <svelte:head>

@@ -20,7 +20,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     limit = limit == 24 ? 25 : limit
     query.limit(limit).offset(offset).with_author
 
-    set_cache :public, maxage: 60
+    set_cache :public, maxage: 10
 
     send_json({
       total: total,
@@ -60,7 +60,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       jb.object {
         jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
         jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
-        jb.field "chseed", zhbooks.map { |x| ChseedView.new(x) }
+        jb.field "nvseed", zhbooks.map { |x| ChseedView.new(x) }
       }
     end
   end

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { session } from '$app/stores'
   import { status_names, status_icons } from '$lib/constants'
-  import { kit_chap_url } from '$utils/route_utils'
+  import { chap_url } from '$utils/route_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import { onMount } from 'svelte'
@@ -37,7 +37,7 @@
 
 <chap-list>
   {#each chaps as chap}
-    <a class="chap" href={kit_chap_url(chap.bslug, chap)}>
+    <a class="chap" href={chap_url(chap.bslug, chap)}>
       <div class="chap-text">
         <div class="chap-title">{chap.title}</div>
         <div class="chap-chidx">{chap.chidx}.</div>

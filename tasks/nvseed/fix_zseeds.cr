@@ -13,7 +13,7 @@ CV::Nvinfo.query.each do |nvinfo|
       CV::Zhbook.query.where(id: items.map(&.id)).to_delete.execute
     end
 
-    zhbook.zseed = CV::NvSeed.map_id(sname)
+    zhbook.zseed = CV::SeedUtil.map_id(sname)
     zhbook.fix_id!
     zhbook.save!
 

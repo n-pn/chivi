@@ -31,7 +31,7 @@ struct CV::NvinfoView
       jb.field "rating", @data.rating / 10
 
       if @full
-        jb.field "zseeds", @data.zseeds
+        jb.field "snames", @data.snames
         jb.field "bintro", @data.vintro.split("\n")
 
         jb.field "ys_snvid", @data.ys_snvid

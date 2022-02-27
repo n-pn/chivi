@@ -34,9 +34,12 @@ Amber::Server.configure do
     get "/books/:bslug", CV::NvinfoCtrl, :show
     get "/books/:bhash/front", CV::NvinfoCtrl, :front
 
+    get "/chaps/:book", CV::NvchapCtrl, :ch_seed
     get "/chaps/:book/:sname", CV::NvchapCtrl, :ch_list
+
     get "/chaps/:book/:sname/:chidx/_raw", CV::NvchapCtrl, :zh_text
     get "/chaps/:book/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info
+
     get "/chaps/:book/:sname/:chidx/:cpart/text", CV::NvchapCtrl, :cv_text
     post "/chaps/:book/:sname", CV::NvchapCtrl, :upsert
 

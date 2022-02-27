@@ -23,6 +23,6 @@ declare namespace App {
   interface Stuff {
     nvinfo: CV.Nvinfo
     ubmemo: CV.Ubmemo
-    chseed: CV.Chseed[]
+    nvseed: CV.Chseed[]
   }
 }

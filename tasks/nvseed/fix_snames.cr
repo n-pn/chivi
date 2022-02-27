@@ -16,8 +16,8 @@ def rename_seed(from source : String, to target : String)
     File.rename(dir, out_dir)
   end
 
-  CV::Zhbook.query.where(sname: source).each do |nvchap|
-    nvchap.update({sname: target})
+  CV::Zhbook.query.where(sname: source).each do |zhseed|
+    zhseed.update({sname: target})
   end
 
   CV::Ubmemo.query.where(lr_sname: source).each do |ubmemo|

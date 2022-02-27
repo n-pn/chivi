@@ -3,7 +3,7 @@
   import { last_read } from '$utils/ubmemo_utils'
 
   import { appbar } from '$lib/stores'
-  export async function load({ fetch, stuff, url }) {
+  export async function load({ fetch, stuff, url, params }) {
     const { nvinfo, ubmemo } = stuff
 
     appbar.set({
@@ -14,7 +14,7 @@
       right: gen_appbar_right(nvinfo, ubmemo),
     })
 
-    const sname = url.searchParams.get('sname') || 'chivi'
+    const sname = params.seed
     const pgidx = +url.searchParams.get('pg') || 1
 
     const payload = await load_page(fetch, nvinfo, sname, pgidx)
@@ -57,11 +57,13 @@
   import Chlist from '$gui/parts/Chlist.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import SeedList from './_layout/SeedList.svelte'
+  import SeedList from '../_layout/SeedList.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
+
+  export let nvseed: Array<CV.Chseed> = $page.stuff.nvseed
   export let chseed: CV.Chseed
   export let chpage: CV.Chpage
 
@@ -78,6 +80,7 @@
     const payload = await load_page(fetch, nvinfo, chseed.sname, chpage.pgidx, true)
 
     if (payload.props) {
+      nvseed = payload.props.nvseed
       chseed = payload.props.chseed
       chpage = payload.props.chpage
     } else {
@@ -90,7 +93,7 @@
 
 <chap-page>
   <page-head>
-    <SeedList {pager} />
+    <SeedList {nvinfo} {nvseed} {chseed} pgidx={chpage.pgidx} />
   </page-head>
 
   <page-info>

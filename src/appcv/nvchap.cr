@@ -125,7 +125,7 @@ class CV::Zhbook
   end
 
   def remote?(force : Bool = true)
-    type = NvSeed.map_type(sname)
+    type = SeedUtil.map_type(sname)
     type == 3 || (force && type == 4)
   end
 
@@ -251,7 +251,7 @@ class CV::Zhbook
   end
 
   def self.load!(nvinfo : Nvinfo, sname : String) : self
-    load!(nvinfo, NvSeed.map_id(sname))
+    load!(nvinfo, SeedUtil.map_id(sname))
   end
 
   def self.load!(nvinfo : Nvinfo, zseed : Int32) : self
@@ -271,7 +271,7 @@ class CV::Zhbook
   end
 
   def self.init!(nvinfo : Nvinfo, sname : String, snvid = nvinfo.bhash)
-    zseed = NvSeed.map_id(sname)
+    zseed = SeedUtil.map_id(sname)
     model = new({nvinfo: nvinfo, zseed: zseed, sname: sname, snvid: snvid})
     model.tap(&.fix_id!)
   end
@@ -281,7 +281,7 @@ class CV::Zhbook
   end
 
   def self.find(nvinfo_id : Int64, sname : String)
-    find({nvinfo_id: nvinfo_id, zseed: NvSeed.map_id(sname)})
+    find({nvinfo_id: nvinfo_id, zseed: SeedUtil.map_id(sname)})
   end
 
   def self.find(nvinfo_id : Int64, zseed : Int32)

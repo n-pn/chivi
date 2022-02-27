@@ -3,9 +3,20 @@ require "./_base_ctrl"
 class CV::NvchapCtrl < CV::BaseCtrl
   private def load_zhbook
     nvinfo_id = params["book"].to_i64
-    sname = params["sname"]
+    sname = params.fetch_str("sname", "chivi")
+    Zhbook.load!(nvinfo_id, SeedUtil.map_id(sname))
+  end
 
-    Zhbook.load!(nvinfo_id, NvSeed.map_id(sname))
+  def ch_seed
+    nvinfo = Nvinfo.load!(params["book"].to_i64)
+
+    sname = params.fetch_str("sname", "chivi")
+    zhbook = Zhbook.load!(nvinfo.id, SeedUtil.map_id(sname))
+
+    force = params["force"]? == "true" && _cvuser.privi >= 0
+    zhbook.refresh!(force: force) if zhbook.staled?(_cvuser.privi, force)
+
+    send_json({chseed: nvinfo.zhbooks.to_a.map { |x| ChseedView.new(x) }})
   end
 
   def ch_list
@@ -18,8 +29,10 @@ class CV::NvchapCtrl < CV::BaseCtrl
     pgidx = params.fetch_int("pg", min: 1)
 
     send_json({
+      nvseed: zhbook.nvinfo.zhbooks.to_a.map { |x| ChseedView.new(x) },
       chseed: ChseedView.new(zhbook),
       chpage: {
+        sname: zhbook.sname,
         total: total,
         pgidx: pgidx,
         pgmax: CtrlUtil.pgmax(total, 32),
@@ -92,7 +105,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
   private def remote_chap?(chseed : Zhbook, chinfo : ChInfo)
     sname = chinfo.proxy.try(&.sname) || chseed.sname
 
-    NvSeed.remote?(sname, _cvuser.privi) do
+    SeedUtil.remote?(sname, _cvuser.privi) do
       chidx = chinfo.chidx
       count = chseed.chap_count
       chidx >= count - 8 || chidx <= 40 || chidx <= count // 3

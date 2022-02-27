@@ -215,7 +215,7 @@ class CV::InitNvinfo
       infos = lines.compact_map do |line|
         ChInfo.new(line.split('\t')) unless line.empty?
       end
-    elsif NvSeed.remote?(@sname, privi: 5)
+    elsif SeedUtil.remote?(@sname, privi: 5)
       infos = fetch_chinfos!(snvid, ttl)
       ChList.save!(base_path, infos)
     else
