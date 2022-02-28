@@ -35,7 +35,7 @@ class CV::Tagger
     files.each do |file|
       list = ChList.new(file)
       list.data.each_value do |info|
-        extract_text(info, redo: redo) if should_parse?(info.chidx)
+        extract_text(info, redo: redo)
       rescue err
         puts info
         puts err.inspect_with_backtrace
@@ -43,7 +43,7 @@ class CV::Tagger
       end
     end
 
-    Process.run("python3", [SCRIPT, @bname])
+    # Process.run("python3", [SCRIPT, @bname])
   end
 
   def should_parse?(chidx : Int32)
@@ -62,13 +62,18 @@ class CV::Tagger
 
     out_txt = "#{@out_dir}/#{chidx}-0.txt"
     out_tsv = out_txt.sub(".txt", ".tsv")
-    return if !redo && File.exists?(out_txt) || File.exists?(out_tsv)
+    if File.exists?(out_txt) || File.exists?(out_tsv)
+      # puts "Existed!"
+      return unless redo
+    end
 
     old_tsv = File.join(OUT_DIR, ".old", sname, snvid, "#{schid}-0.tsv")
     if File.exists?(old_tsv)
-      puts "- inherit old file #{old_tsv}".colorize.green
+      # puts "- inherit old file #{old_tsv}".colorize.green
       return FileUtils.mv(old_tsv, out_tsv)
     end
+
+    return unless should_parse?(info.chidx)
 
     pgidx = (chidx - 1) // 128
     inp_zip = "#{INP_DIR}/#{sname}/#{snvid}/#{pgidx}.zip"
