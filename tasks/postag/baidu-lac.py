@@ -5,13 +5,13 @@ from LAC import LAC
 DIR = "_db/vpinit/baidulac"
 lac = LAC(mode='lac')
 
-def parse_book(sname, snvid):
-  nvdir = os.path.join(DIR, sname, snvid)
+def parse_book(bname):
+  nvdir = os.path.join(DIR,  bname)
   files = glob.glob(os.path.join(nvdir, "*.txt"))
 
   count = len(files)
   index = 0
-  label = "- [" + sname + "/" + snvid + "] <{}/" + str(count) + "> {},"
+  label = "- [" + bname + "] <{}/" + str(count) + "> {},"
 
   for inp_path in files:
     index += 1
@@ -39,8 +39,6 @@ def parse_book(sname, snvid):
     out_file.close()
     os.remove(inp_path)
 
-sname = sys.argv[1]
-snvid = sys.argv[2]
-
-if sname and snvid:
-  parse_book(sname, snvid)
+bname = sys.argv[1]
+if bname:
+  parse_book(bname)
