@@ -11,6 +11,8 @@ class CV::Zhbook
   self.table = "zhbooks"
   primary_key
 
+  column ix : Int64 = 0_i64 # alternative unique index
+
   belongs_to nvinfo : Nvinfo
   getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
@@ -35,8 +37,8 @@ class CV::Zhbook
   delegate chlist, to: _repo
 
   # update book id
-  def fix_id!
-    self.id = nvinfo.id << 6 | zseed
+  def fix_ix!
+    self.ix = Zhbook.map_ix(nvinfo_id, zseed)
   end
 
   def clink(schid : String) : String
@@ -158,7 +160,7 @@ class CV::Zhbook
     patch!([chap], utime)
   end
 
-  def patch!(chaps : Array(ChInfo), utime : Int64 = Time.utc.to_unix)
+  def patch!(chaps : Array(ChInfo), utime : Int64 = Time.utc.to_unix) : Nil
     return if chaps.empty?
     _repo.patch!(chaps)
 
@@ -199,16 +201,16 @@ class CV::Zhbook
     self.reset_cache!
   end
 
-  def remap!(force : Bool = false)
+  def remap!(force : Bool = false, fetch : Bool = true)
     seeds = self.nvinfo.zhbooks.to_a.sort_by!(&.zseed)
     seeds.shift if seeds.first?.try(&.id.== self.id)
 
-    seeds.each_with_index do |chseed, idx|
-      next unless self.remote?(force: false)
+    seeds.each_with_index do |nvseed, idx|
+      next unless fetch && self.remote?(force: false)
       ttl = map_expiry(self.nvinfo.status, force: false)
-      chseed.fetch!(ttl: ttl * (2 ** idx), force: false)
-    rescue
-      next
+      nvseed.fetch!(ttl: ttl * (2 ** idx), force: false)
+    rescue err
+      puts err.colorize.red
     end
 
     proxy_many!(seeds, force: force)
@@ -233,7 +235,7 @@ class CV::Zhbook
 
   def refresh!(force : Bool = false) : Nil
     if sname == "chivi"
-      self.remap!(force: force)
+      self.remap!(force: force, fetch: true)
     elsif self.remote?(force: force)
       self.fetch!(ttl: map_expiry(force: force), force: force)
       Zhbook.load!(self.nvinfo, 0).tap(&.proxy!(self)).reset_cache!
@@ -246,25 +248,27 @@ class CV::Zhbook
 
   CACHE = RamCache(Int64, self).new(1024)
 
+  def self.map_ix(nvinfo_id : Int64, zseed = 0)
+    (nvinfo_id << 6) | zseed
+  end
+
   def self.load!(nvinfo_id : Int64, zseed : Int32) : self
     load!(Nvinfo.load!(nvinfo_id), zseed)
   end
 
   def self.load!(nvinfo : Nvinfo, sname : String) : self
-    load!(nvinfo, SeedUtil.map_id(sname))
+    load!(nvinfo, SnameMap.map_str(sname))
   end
 
   def self.load!(nvinfo : Nvinfo, zseed : Int32) : self
-    CACHE.get(nvinfo.id << 6 | zseed) do
+    CACHE.get(map_ix(nvinfo.id, zseed)) do
       find(nvinfo.id, zseed) || init!(nvinfo, zseed)
     end
   end
 
   def self.init!(nvinfo : Nvinfo, zseed : Int32)
     case zseed
-    when 0
-      seeds = nvinfo.zhbooks.to_a.sort_by!(&.zseed)
-      init!(nvinfo, "chivi").tap(&.proxy_many!(seeds, force: true))
+    when  0 then init!(nvinfo, "chivi").tap(&.remap!(fetch: false))
     when 63 then init!(nvinfo, "users")
     else         raise "Source not found!"
     end
@@ -273,18 +277,20 @@ class CV::Zhbook
   def self.init!(nvinfo : Nvinfo, sname : String, snvid = nvinfo.bhash)
     zseed = SnameMap.map_int(sname)
     model = new({nvinfo: nvinfo, zseed: zseed, sname: sname, snvid: snvid})
-    model.tap(&.fix_id!)
+    model.ix = map_ix(nvinfo.id, zseed)
+    model.tap(&.save!)
   end
 
   def self.upsert!(nvinfo : Nvinfo, sname : String, snvid : String)
-    find({nvinfo_id: nvinfo.id, sname: sname}) || init!(nvinfo, sname, snvid)
+    find(nvinfo.id, sname) || init!(nvinfo, sname, snvid)
   end
 
   def self.find(nvinfo_id : Int64, sname : String)
-    find({nvinfo_id: nvinfo_id, zseed: SnameMap.map_int(sname)})
+    zseed = SnameMap.map_int(sname)
+    find({ix: map_ix(nvinfo_id, zseed)})
   end
 
   def self.find(nvinfo_id : Int64, zseed : Int32)
-    find({nvinfo_id: nvinfo_id, zseed: zseed})
+    find({ix: map_ix(nvinfo_id, zseed)})
   end
 end

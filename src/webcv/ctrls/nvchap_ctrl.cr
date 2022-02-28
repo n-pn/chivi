@@ -21,6 +21,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
   def ch_list
     zhbook = load_zhbook
+    bseeds = zhbook.nvinfo.zhbooks
 
     force = params["force"]? == "true" && _cvuser.privi >= 0
     zhbook.refresh!(force: force) if zhbook.staled?(_cvuser.privi, force)
@@ -29,7 +30,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     pgidx = params.fetch_int("pg", min: 1)
 
     send_json({
-      nvseed: zhbook.nvinfo.zhbooks.to_a.map { |x| ChseedView.new(x) },
+      nvseed: bseeds.to_a.sort_by!(&.zseed).map { |x| ChseedView.new(x) },
       chseed: ChseedView.new(zhbook),
       chpage: {
         sname: zhbook.sname,

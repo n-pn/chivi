@@ -1,6 +1,6 @@
 require "../shared/bootstrap"
 
-CV::Nvinfo.query.order_by(id: :desc).each do |nvinfo|
+CV::Nvinfo.query.each do |nvinfo|
   zhbooks = nvinfo.zhbooks.to_a
 
   zseeds = [] of Int32
@@ -9,14 +9,18 @@ CV::Nvinfo.query.order_by(id: :desc).each do |nvinfo|
 
     zhbook = items.shift
     zhbook.zseed = CV::SnameMap.map_int(sname)
+    zseeds << zhbook.zseed
 
     unless items.empty?
-      puts nvinfo.bslug, "#{nvinfo.blsug}: #{zhbook.id} <- #{items.map(&.id)}"
+      puts "#{nvinfo.bslug}: #{zhbook.id} <- #{items.map(&.id)}"
       CV::Zhbook.query.where(id: items.map(&.id)).to_delete.execute
     end
 
-    zhbook.tap(&.fix_id!).save!
-    zseeds << zhbook.zseed
+    ix = CV::Zhbook.map_ix(nvinfo.id, zhbook.zseed)
+    if zhbook.ix != ix
+      puts "update_id: [#{nvinfo.id}, #{zhbook.zseed}] #{zhbook.ix} => #{ix}"
+      zhbook.update!({ix: ix})
+    end
   end
 
   nvinfo.update!({zseed_ids: zseeds.sort})

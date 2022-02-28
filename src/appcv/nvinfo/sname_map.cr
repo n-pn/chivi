@@ -52,13 +52,13 @@ module CV::SnameMap
   end
 
   def map_int(sname : String)
-    MAP_INT[sname]? || 63
+    MAP_INT[sname]? || 1
   end
 
   MAP_STR = MAP_INT.invert
 
   def map_str(int : Int32)
-    MAP_STR[int] || "users"
+    MAP_STR[int] || "staff"
   end
 
   def map_str(ints : Array(Int32))

@@ -14,7 +14,8 @@ class CV::Tagger
     @bname = nvinfo.bslug
 
     if nvseed = Zhbook.find(nvinfo.id, 0)
-      nvseed.refresh!(force: true)
+      force = (Time.utc - 10.days).to_unix > nvseed.atime
+      nvseed.refresh!(force: force)
     else
       nvseed = Zhbook.init!(nvinfo, 0)
     end
@@ -69,7 +70,7 @@ class CV::Tagger
 
     old_tsv = File.join(OUT_DIR, ".old", sname, snvid, "#{schid}-0.tsv")
     if File.exists?(old_tsv)
-      # puts "- inherit old file #{old_tsv}".colorize.green
+      puts "- inherit old file #{old_tsv}".colorize.green
       return FileUtils.mv(old_tsv, out_tsv)
     end
 
@@ -111,7 +112,9 @@ class CV::Tagger
         puts "- <#{idx}/#{infos.size}> #{info.bslug}".colorize.yellow
         new(info).run!(redo: redo)
       rescue err
+        puts info.bslug
         puts err.message.colorize.red
+        gets
       ensure
         channel.send(nil)
       end
