@@ -28,7 +28,7 @@ class CV::ChRepo
   def reset!
     infos = ChList.new(@fraw).data.values.sort_by(&.chidx)
 
-    if info.empty?
+    if infos.empty?
       case SeedUtil.map_type(@sname)
       when 2 then infos = fetch!(10.years) # dead remote
       when 3 then infos = fetch!(1.months) # slow remote
@@ -37,10 +37,11 @@ class CV::ChRepo
     end
 
     self.store!(infos, reset: true)
+    infos.last?
   end
 
   def fetch!(ttl = 10.years)
-    parser = RmInfo.init(@sname, @snvid, ttl: ttl, mkdir: true)
+    parser = RmInfo.new(@sname, @snvid, ttl: ttl)
     output = parser.chap_infos
     output.empty? && ttl != 1.hours ? fetch!(1.hours) : output
   end

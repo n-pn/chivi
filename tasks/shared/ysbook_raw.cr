@@ -42,16 +42,18 @@ class CV::YsbookRaw
   @[JSON::Field(key: "updateAt")]
   getter update_str : String = "2020-01-01T07:00:00.000Z"
 
+  EPOCH = Time.utc(2020, 1, 1, 7, 0, 0)
+
   getter updated_at : Time do
     tstr = update_str.sub(/^0000/, "2020")
     time = Time.parse_utc(tstr, "%FT%T.%3NZ")
     time < Time.utc ? time : Time.utc
   rescue err
     puts "error parsing time: #{err.colorize.red}"
-    Time.utc(2020, 1, 1, 7, 0, 0)
+    EPOCH
   end
 
-  getter mftime : Int64 { updated_at.to_unix }
+  getter update : {Int64, String} { {updated_at.to_unix, update_str} }
 
   @[JSON::Field(key: "scorerCount")]
   getter voters : Int32

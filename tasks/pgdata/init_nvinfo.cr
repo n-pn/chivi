@@ -81,8 +81,10 @@ class CV::InitNvinfo
     set_val!(:intros, snvid, entry.bintro)
     set_val!(:genres, snvid, entry.genres)
     set_val!(:covers, snvid, entry.bcover)
-    set_val!(:status, snvid, map_status(entry.status))
-    set_val!(:utimes, snvid, [entry.mftime.to_s, entry.update])
+    # set_val!(:status, snvid, entry.status)
+
+    return if @sname.in?("zhwenpg", "zxcs_me", "miscs", "staff", "hetushu")
+    # set_val!(:utimes, snvid, entry.update)
   end
 
   def save_stores!(dirty = true) : Nil
@@ -93,12 +95,8 @@ class CV::InitNvinfo
     end
   end
 
-  def map_status(input : Int32)
-    [input.to_s]
-  end
-
   def map_status(input : String) : Array(String)
-    return ["0"] if input.empty? || @sname == "hetushu"
+    return ["0"] if input.empty?
 
     if output = STATUS_MAP.fval(input)
       return [output, input]
@@ -207,32 +205,14 @@ class CV::InitNvinfo
       return {vals[0].to_i, vals[1]}
     end
 
-    base_path = "var/chtexts/#{@sname}/_/#{snvid}.tsv"
-    FileUtils.mkdir_p(File.dirname(base_path))
-
-    if File.exists?(base_path)
-      lines = File.read_lines(base_path)
-      infos = lines.compact_map do |line|
-        ChInfo.new(line.split('\t')) unless line.empty?
-      end
-    elsif SeedUtil.remote?(@sname, privi: 5)
-      infos = fetch_chinfos!(snvid, ttl)
-      ChList.save!(base_path, infos)
-    else
-      puts "- Missing data for: #{snvid}".colorize.red.bold
+    ch_repo = ChRepo.new(@sname, snvid)
+    unless last_chap = ch_repo.reset!
+      puts "#{@sname}/#{snvid} has no chapters!".colorize.red
       return {0, ""}
     end
 
-    ChList.save!(@sname, snvid, infos)
-
-    if infos.empty?
-      puts "#{@sname}/#{snvid} has no chapters!".colorize.red
-    end
-
-    last_chap = infos.last? || ChInfo.new(0)
     chap_count, last_schid = last_chap.chidx, last_chap.schid
     set_val!(:extras, snvid, [chap_count.to_s, last_schid])
-
     {chap_count, last_schid}
   end
 
@@ -246,7 +226,7 @@ class CV::InitNvinfo
   end
 
   def get_vi_genres(snvid : String)
-    get_val(:genres, snvid).try { |x| BGenre.map_zh(x) } || [] of String
+    get_val(:genres, snvid).try { |x| GenreMap.map_zh(x) } || [] of String
   end
 
   def get_author(zname : String, snvid : String) : Author?

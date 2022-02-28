@@ -6,7 +6,7 @@ CV::Author.new({
   weight: -1,
 }).save
 
-data = Array(JSON::Any).from_json(File.read("db/seeds/nvinfos.json"))
+data = Array(JSON::Any).from_json(File.read("db/seed_data/nvinfos.json"))
 
 data.each do |info|
   CV::Nvinfo.new(info).save

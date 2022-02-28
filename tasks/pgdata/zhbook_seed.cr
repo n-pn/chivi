@@ -9,6 +9,7 @@ class CV::SeedZhbook
     # ::FileUtils.mkdir_p(@infos_dir.sub("infos", "texts"))
 
     @seed = InitNvinfo.new(@sname)
+    @encoding = HttpUtil.encoding_for(@sname)
   end
 
   def build!(upper : Int32)
@@ -58,32 +59,40 @@ class CV::SeedZhbook
 
     puts "[#{@sname}], missing: #{queue.size}, workers: #{threads}\n".colorize.cyan.bold
 
-    RmInfo.mkdir!(@sname) # ensure the seed cache folde
     channel = Channel(Nil).new(threads)
 
     queue.each_with_index(1) do |snvid, index|
-      spawn do
-        RmInfo.binfo_html(@sname, snvid, lbl: "#{index}/#{queue.size}")
-
-        # throttling if success
-        case @sname
-        when "shubaow"
-          sleep Random.rand(1000..2000).milliseconds
-        when "zhwenpg"
-          sleep Random.rand(500..1000).milliseconds
-        when "biqu5200"
-          sleep Random.rand(100..500).milliseconds
-        end
-      rescue err
-        puts err
-      ensure
-        channel.send(nil)
-      end
-
       channel.receive if index > threads
+      load_info_html(snvid, lbl: "#{index}/#{queue.size}")
+      thrott!
+    rescue err
+      puts err
+    ensure
+      channel.send(nil)
     end
 
     threads.times { channel.receive }
+  end
+
+  def thrott!
+    # throttling if success
+    case @sname
+    when "shubaow"
+      sleep Random.rand(1000..2000).milliseconds
+    when "zhwenpg"
+      sleep Random.rand(500..1000).milliseconds
+    when "biqu5200"
+      sleep Random.rand(100..500).milliseconds
+    end
+  end
+
+  def load_info_html(snvid : String, lbl = "1/1")
+    file = "#{@infos_dir}/#{snvid}.html.gz"
+
+    GzipFile.new(file).read(ttl: 10.years) do
+      url = SiteLink.info_url(@sname, snvid)
+      HttpUtil.get_html(url, encoding: @encoding, lbl: lbl)
+    end
   end
 
   def init!(queue : Array(String))
@@ -93,7 +102,7 @@ class CV::SeedZhbook
       bfile = PathUtil.binfo_cpath(@sname, snvid)
       atime = InitNvinfo.get_mtime(bfile)
 
-      entry = RmInfo.init(@sname, snvid, lbl: "#{idx}/#{queue.size}")
+      entry = RmInfo.new(@sname, snvid, lbl: "#{idx}/#{queue.size}")
       @seed.add!(entry, snvid, atime)
 
       if idx % 100 == 0

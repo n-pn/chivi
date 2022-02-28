@@ -12,9 +12,6 @@ targets:
   chivi:
     main: src/chivi.cr
 
-  amber:
-    main: lib/amber/src/amber/cli.cr
-
   zhwenpg_seed:
     main: tasks/pgdata/zhwenpg_seed.cr
 
