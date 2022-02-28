@@ -2,11 +2,22 @@ require "./nvinfo_seed"
 
 class CV::YsbookSeed
   def seed!(upper = 27000, mode = 0)
+    workers = 8
+    channel = Channel(Nil).new(workers)
+
     1.upto(upper) do |ynvid|
       NvinfoSeed.log("yousuu", "#{ynvid}/#{upper}") if ynvid % 1000 == 0
-      seed_entry!(ynvid, mode: mode)
+
+      spawn do
+        seed_entry!(ynvid, mode: mode)
+      ensure
+        channel.send(nil)
+      end
+
+      channel.receive if ynvid > workers
     end
 
+    workers.times { channel.receive }
     NvinfoSeed.log("yousuu", "#{upper}/#{upper}")
   end
 
@@ -26,7 +37,7 @@ class CV::YsbookSeed
       nvinfo.set_ys_scores(entry.voters, entry.rating)
 
       nvinfo.ys_snvid = entry._id.to_i64
-      nvinfo.ys_utime = entry.utime_int
+      nvinfo.ys_utime = entry.update_int
 
       nvinfo.pub_name = entry.pub_name
       nvinfo.pub_link = entry.pub_link

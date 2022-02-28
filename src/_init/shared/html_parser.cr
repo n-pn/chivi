@@ -1,5 +1,5 @@
 require "lexbor"
-require "../../../_util/text_util"
+require "../../_util/text_util"
 
 class CV::HtmlParser
   def initialize(html : String)

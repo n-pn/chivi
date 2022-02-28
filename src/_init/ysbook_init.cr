@@ -25,7 +25,7 @@ class CV::YsbookInit
     out_time = FileUtil.mtime_int(out_file)
 
     if (mode == 2 && inp_time > 0) || (inp_time > out_time)
-      self.new(Parser.parse_file(inp_file)).tap(&.save!)
+      self.new(Parser.parse_file(inp_file)).tap(&.save!(inp_time &+ 60))
     elsif mode == 1 && out_time > 0
       self.from_json(File.read(out_file))
     else
@@ -50,8 +50,8 @@ class CV::YsbookInit
   getter status = 0
   getter shield = 0
 
-  getter utime_str = ""
-  getter utime_int = 0_i64
+  getter update_str = ""
+  getter update_int = 0_i64
 
   getter voters = 0
   getter rating = 0
@@ -79,8 +79,8 @@ class CV::YsbookInit
     @status = parser.status
     @shield = parser.shielded ? 1 : 0
 
-    @utime_str = parser.update_str
-    @utime_int = fix_utime(@utime_str).to_unix
+    @update_str = parser.update_str
+    @update_int = fix_utime(@update_str).to_unix
 
     @voters = parser.scorer_count
     @rating = parser.score.*(10).round.to_i
@@ -93,10 +93,13 @@ class CV::YsbookInit
     @pub_name = extract_pub_name(@pub_link)
   end
 
-  def save!
+  def save!(utime : Int64 = Time.utc.to_unix) : Nil
     out_file = YsbookInit.out_path(_id)
     FileUtils.mkdir_p(File.dirname(out_file))
     File.write(out_file, self.to_pretty_json)
+
+    utime = Time.unix(utime)
+    File.utime(utime, utime, out_file)
   end
 
   def good?

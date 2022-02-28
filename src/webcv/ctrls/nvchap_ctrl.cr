@@ -4,14 +4,14 @@ class CV::NvchapCtrl < CV::BaseCtrl
   private def load_zhbook
     nvinfo_id = params["book"].to_i64
     sname = params.fetch_str("sname", "chivi")
-    Zhbook.load!(nvinfo_id, SeedUtil.map_id(sname))
+    Zhbook.load!(nvinfo_id, SnameMap.map_int(sname))
   end
 
   def ch_seed
     nvinfo = Nvinfo.load!(params["book"].to_i64)
 
     sname = params.fetch_str("sname", "chivi")
-    zhbook = Zhbook.load!(nvinfo.id, SeedUtil.map_id(sname))
+    zhbook = Zhbook.load!(nvinfo.id, SnameMap.map_int(sname))
 
     force = params["force"]? == "true" && _cvuser.privi >= 0
     zhbook.refresh!(force: force) if zhbook.staled?(_cvuser.privi, force)
@@ -105,7 +105,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
   private def remote_chap?(chseed : Zhbook, chinfo : ChInfo)
     sname = chinfo.proxy.try(&.sname) || chseed.sname
 
-    SeedUtil.remote?(sname, _cvuser.privi) do
+    SnameMap.remote?(sname, _cvuser.privi) do
       chidx = chinfo.chidx
       count = chseed.chap_count
       chidx >= count - 8 || chidx <= 40 || chidx <= count // 3

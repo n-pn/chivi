@@ -1,7 +1,7 @@
-module CV::SeedUtil
+module CV::SnameMap
   extend self
 
-  MAP_ID = {
+  MAP_INT = {
     "chivi" => 0,
     "staff" => 1,
     "users" => 63,
@@ -43,30 +43,30 @@ module CV::SeedUtil
     end
   end
 
-  MAP_ID.each_key do |sname|
+  MAP_INT.each_key do |sname|
     FileUtils.mkdir_p("var/chtexts/#{sname}/_")
   end
 
-  def map_id(sname : Array(String))
-    sname.map { |x| map_id(x) }.uniq
+  def map_int(sname : Array(String))
+    sname.map { |x| map_int(x) }.uniq
   end
 
-  def map_id(sname : String)
-    MAP_ID[sname]? || 63
+  def map_int(sname : String)
+    MAP_INT[sname]? || 63
   end
 
-  MAP_NAME = MAP_ID.invert
+  MAP_STR = MAP_INT.invert
 
-  def map_name(index : Int32)
-    MAP_NAME[index] || "users"
+  def map_str(int : Int32)
+    MAP_STR[int] || "users"
   end
 
-  def to_s(ids : Array(Int32))
-    ids.map { |id| map_name(id) }
+  def map_str(ints : Array(Int32))
+    ints.map { |id| map_str(id) }
   end
 
   def remote?(sname : String, privi = 4)
-    case sname
+    case map_type(sname)
     when "5200", "biqu5200", "rengshu"
       privi >= 0 || yield
     when "bxwxorg", "xbiquge", "biqugee", "69shu"

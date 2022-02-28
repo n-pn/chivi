@@ -2,7 +2,8 @@ require "file_utils"
 require "compress/zip"
 
 require "../../_util/ram_cache"
-require "../remote/rm_text"
+require "../../_init/remote_text"
+
 require "./ch_info"
 require "./ch_util"
 
@@ -52,8 +53,8 @@ class CV::ChText
       sname, snvid = @sname, @snvid
     end
 
-    RmText.mkdir!(sname, snvid) if mkdir
-    remote = RmText.new(sname, snvid, @chinfo.schid, ttl: ttl, lbl: lbl)
+    RemoteText.mkdir!(sname, snvid) if mkdir
+    remote = RemoteText.new(sname, snvid, @chinfo.schid, ttl: ttl, lbl: lbl)
 
     lines = remote.paras
     # special fix for 69shu, will investigate later

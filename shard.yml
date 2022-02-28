@@ -16,7 +16,7 @@ targets:
     main: tasks/pgdata/zhwenpg_seed.cr
 
   ysbook_seed:
-    main: tasks/pgdata/ysbook_seed.cr
+    main: db/seed_task/ysbook_seed.cr
 
   zhbook_seed:
     main: tasks/pgdata/zhbook_seed.cr

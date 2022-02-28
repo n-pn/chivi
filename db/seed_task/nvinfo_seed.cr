@@ -50,7 +50,7 @@ module CV::NvinfoSeed
     nvinfo.set_bcover(entry.bcover)
     nvinfo.set_status(entry.status)
 
-    nvinfo.set_utime(entry.utime_int)
+    nvinfo.set_utime(entry.update_int)
 
     nvinfo.tap(&.save!)
   end

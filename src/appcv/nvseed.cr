@@ -1,9 +1,9 @@
-require "../_util/ukey_util"
 require "../_util/site_link"
+require "../_init/remote_info"
 require "../cvmtl/mt_core"
+
 require "./nvchap/ch_list"
-require "./remote/rm_info"
-require "./nvinfo/seed_util"
+require "./nvinfo/sname_map"
 
 class CV::Zhbook
   include Clear::Model
@@ -125,12 +125,12 @@ class CV::Zhbook
   end
 
   def remote?(force : Bool = true)
-    type = SeedUtil.map_type(sname)
+    type = SnameMap.map_type(sname)
     type == 3 || (force && type == 4)
   end
 
   def fetch!(ttl : Time::Span, force : Bool = false) : Nil
-    parser = RmInfo.new(sname, snvid, ttl: ttl)
+    parser = RemoteInfo.new(sname, snvid, ttl: ttl)
     changed = parser.last_schid != self.last_schid
 
     return unless force || changed
@@ -271,7 +271,7 @@ class CV::Zhbook
   end
 
   def self.init!(nvinfo : Nvinfo, sname : String, snvid = nvinfo.bhash)
-    zseed = SeedUtil.map_id(sname)
+    zseed = SnameMap.map_int(sname)
     model = new({nvinfo: nvinfo, zseed: zseed, sname: sname, snvid: snvid})
     model.tap(&.fix_id!)
   end
@@ -281,7 +281,7 @@ class CV::Zhbook
   end
 
   def self.find(nvinfo_id : Int64, sname : String)
-    find({nvinfo_id: nvinfo_id, zseed: SeedUtil.map_id(sname)})
+    find({nvinfo_id: nvinfo_id, zseed: SnameMap.map_int(sname)})
   end
 
   def self.find(nvinfo_id : Int64, zseed : Int32)

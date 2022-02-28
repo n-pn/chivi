@@ -41,7 +41,7 @@ class CV::ChRepo
   end
 
   def fetch!(ttl = 10.years)
-    parser = RmInfo.new(@sname, @snvid, ttl: ttl)
+    parser = RemoteInfo.new(@sname, @snvid, ttl: ttl)
     output = parser.chap_infos
     output.empty? && ttl != 1.hours ? fetch!(1.hours) : output
   end

@@ -1,5 +1,5 @@
 require "../shared/html_parser"
-require "../../nvchap/ch_info"
+require "../../appcv/nvchap/ch_info"
 
 class CV::RmInfoGeneric
   def initialize(info_html : String, mulu_html : String? = nil)

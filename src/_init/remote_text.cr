@@ -1,15 +1,17 @@
 require "file_utils"
 
-require "../../_util/site_link"
-require "../../_util/time_util"
-require "../../_util/text_util"
-require "../../_util/http_util"
+require "../_util/site_link"
+require "../_util/time_util"
+require "../_util/text_util"
+require "../_util/http_util"
 require "./shared/html_parser"
 
-class CV::RmText
+class CV::RemoteText
   # cache folder path
+  DIR = "_db/.cache/%s/texts/%s"
+
   def self.c_dir(sname : String, snvid : String) : String
-    "_db/.cache/#{sname}/texts/#{snvid}"
+    DIR % {sname, snvid}
   end
 
   def self.mkdir!(sname : String, snvid)
@@ -20,7 +22,7 @@ class CV::RmText
   getter snvid : String
   getter schid : String
 
-  getter file : String { "#{RmText.c_dir(@sname, @snvid)}/#{@schid}.html.gz" }
+  getter file : String { "#{RemoteText.c_dir(@sname, @snvid)}/#{@schid}.html.gz" }
   getter link : String { SiteLink.text_url(sname, snvid, schid) }
 
   alias TimeSpan = Time::Span | Time::MonthSpan

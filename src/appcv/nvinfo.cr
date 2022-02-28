@@ -1,4 +1,5 @@
 require "./nvinfo/genre_map"
+require "./nvinfo/sname_map"
 require "./nvinfo/book_util"
 
 class CV::Nvinfo
@@ -18,7 +19,7 @@ class CV::Nvinfo
   column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
 
   column zseed_ids : Array(Int32) = [] of Int32
-  getter snames : Array(String) { SeedUtil.to_s(zseed_ids) }
+  getter snames : Array(String) { SnameMap.map_str(zseed_ids) }
 
   column genre_ids : Array(Int32) = [] of Int32
   getter genres : Array(String) { GenreMap.to_s(genre_ids) }
@@ -136,7 +137,7 @@ class CV::Nvinfo
   end
 
   scope :filter_zseed do |input|
-    input ? where("zseed_ids @> ?", [SeedUtil.map_id(input)]) : self
+    input ? where("zseed_ids @> ?", [SnameMap.map_int(input)]) : self
   end
 
   scope :filter_genre do |input|
