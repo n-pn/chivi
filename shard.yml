@@ -42,8 +42,8 @@ targets:
   fix_intros:
     main: tasks/nvinfo/fix_intros.cr
 
-  fetch_zhtexts:
-    main: tasks/zhtext/fetch_texts.cr
+  crawl_text:
+    main: tasks/zhtext/crawl_texts.cr
 
   upload_zhtext:
     main: tasks/zhtext/upload_data.cr

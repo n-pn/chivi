@@ -37,12 +37,22 @@ class CV::ChText
   def load!(part = 0) : Data
     TEXTS.get("#{@c_key}/#{part}") do
       Compress::Zip::File.open(@store) do |zip|
-        entry = zip[part_path(part)]
-        lines = entry.open(&.gets_to_end).split('\n')
-        Data.new(lines, entry.time.to_unix)
+        if entry = zip[part_path(part)]?
+          lines = entry.open(&.gets_to_end).split('\n')
+          Data.new(lines, entry.time.to_unix)
+        else
+          EMPTY
+        end
       end
     rescue
       EMPTY
+    end
+  end
+
+  def exists?
+    return false unless File.exists?(@store)
+    Compress::Zip::File.open(@store) do |zip|
+      !!zip[part_path(0)]?
     end
   end
 
@@ -57,7 +67,7 @@ class CV::ChText
     remote = RemoteText.new(sname, snvid, @chinfo.schid, ttl: ttl, lbl: lbl)
 
     lines = remote.paras
-    # special fix for 69shu, will investigate later
+    # TODO: check for empty title in parser
     lines.unshift(remote.title) unless remote.title.empty?
 
     save!(lines)
@@ -84,7 +94,7 @@ class CV::ChText
     title || ""
   end
 
-  def save!(input : Array(String), zipping = true) : Nil
+  def save!(input : Array(String), zipping = true, mkdir = true) : Nil
     return if input.empty?
     stats = @chinfo.stats
 
@@ -92,7 +102,7 @@ class CV::ChText
     stats.chars, chaps = ChUtil.split_parts(input)
     stats.parts = chaps.size
 
-    FileUtils.mkdir_p(@chdir)
+    FileUtils.mkdir_p(@chdir) if mkdir
 
     chaps.each_with_index do |text, part|
       File.write("#{@chdir}/#{part_path(part)}", text)

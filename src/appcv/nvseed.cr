@@ -181,10 +181,9 @@ class CV::Zhbook
         next true unless prev = _repo.chinfo(chap.chidx)
         prev.stats.utime < chap.stats.utime || prev.o_sname != "staff"
       end
-
-      return start if infos.empty?
     end
 
+    return start if infos.empty?
     self.patch!(infos, other.utime)
     infos.last.chidx # return latest patched chapter
   end

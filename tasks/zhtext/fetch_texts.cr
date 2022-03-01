@@ -5,59 +5,83 @@ class CV::FetchText
   DIR = "var/chtexts/chivi"
 
   @snvid : String
+  @queue = [] of ChInfo
 
-  def initialize(nvinfo : Nvinfo)
-    @snvid = nvinfo.bhash
-    zhbook = Zhbook.load!(nvinfo, 0)
-    zhbook.copy_newers!(nvinfo.zhbooks.to_a)
+  def initialize(@nvinfo : Nvinfo)
+    @snvid = @nvinfo.bhash
 
-    crawl_all = false # should_crawl_all?(nvinfo)
-    @queue = [] of ChInfo
+    @nvinfo.zhbooks.each do |nvseed|
+      next if SnameMap.map_type(nvseed.sname) < 2
+      FileUtils.mkdir_p("_db/.cache/#{nvseed.sname}/texts/#{nvseed.snvid}")
+    end
 
-    files = Dir.glob("#{DIR}/#{@snvid}/*.tsv")
-    files.each do |file|
-      group = File.basename(file, ".tsv")
-      next if group == "-"
+    # refresh_list!
+  end
 
-      infos = ChList.new(file)
-      infos.data.each_value do |chinfo|
-        @queue << chinfo if should_crawl?(chinfo, crawl_all)
-      end
+  def refresh_list!
+    nvseed = Zhbook.load(@nvinfo.id, 0)
+    if nvseed = Zhbook.find(@nvinfo.id, 0)
+      force = (Time.utc - 10.days).to_unix > nvseed.atime
+      nvseed.refresh!(force: force)
+    else
+      Zhbook.init!(@nvinfo, 0)
     end
   end
 
-  def should_crawl_all?(nvinfo : Nvinfo)
-    return true if nvinfo.cv_voters >= 8 || nvinfo.ys_voters >= 64
-    Ubmemo.query.where(nvinfo_id: nvinfo.id).where("status > 0").count > 0
+  def make_queue!
+    files = Dir.glob("#{DIR}/#{@snvid}/*.tsv")
+
+    files.each do |file|
+      ChList.new(file).data.each_value do |chinfo|
+        @queue << chinfo if should_crawl?(chinfo)
+      end
+    end
+
+    @queue.uniq!(&.chidx)
+    @queue.size
   end
 
-  # load all or load first 64 chapters and every 4th chapters
-  private def should_crawl?(chinfo : ChInfo, crawl_all = false)
-    return false if chinfo.chars > 0 || !SeedUtil.remote?(chinfo.o_sname, privi: 5)
-    crawl_all || chinfo.chidx <= 64 || chinfo.chidx % 8 == 0
+  private def should_crawl?(chinfo : ChInfo)
+    sname = chinfo.proxy.try(&.sname) || "chivi"
+    return false if SnameMap.map_type(sname) < 2 || sname.in?("5200", "jx_la")
+
+    return true if chinfo.chidx <= 128
+    chinfo.chidx % (chinfo.chidx // 128 + 1) == 0
   end
 
   def crawl!(label = "1/1")
     return if @queue.empty?
 
-    puts "- <#{label}> [zhtext/#{@snvid}] #{@queue.size} entries".colorize.light_cyan
-
     @queue.each_with_index(1) do |chinfo, idx|
-      chtext = Chtext.new("chivi", @snvid, chinfo)
-      chtext.fetch!(mkdir: false, lbl: "#{label}: #{idx}/#{@queue.size}")
+      chtext = ChText.new("chivi", @snvid, chinfo)
+      next if chtext.exists?
+
+      chtext.fetch!(mkdir: false, lbl: "#{label} | #{idx}/#{@queue.size}")
       update_chinfo!(chinfo)
     ensure
-      sleep_by_sname(chinfo.o_sname)
+      sleep_by_sname(chinfo.proxy.try(&.sname) || "")
     end
   end
 
-  def update_chinfo!(chinfo : ChInfo)
-    ChList.load!("chivi", @snvid, chinfo.pgidx).update!(chinfo)
+  @cache = {} of String => ChList
 
-    # reset info to save to origin seed
-    sname, chinfo.o_sname = chinfo.o_sname, "" # clear o_sname
-    chinfo.chidx = chinfo.o_chidx              # recover original chap _index
-    ChList.load!(sname, chinfo.o_snvid, chinfo.pgidx).update!(chinfo)
+  def chlist(sname : String, snvid : String, pgidx : Int32)
+    label = "#{sname}/#{snvid}/#{pgidx}"
+    @cache[label] ||= ChList.new("#{ChRepo::DIR}/#{label}.tsv")
+  end
+
+  def pgidx(chidx : Int32)
+    (chidx - 1) // ChRepo::PSIZE
+  end
+
+  def update_chinfo!(chinfo : ChInfo)
+    pgidx = self.pgidx(chinfo.chidx)
+    self.chlist("chivi", @snvid, pgidx).store!(chinfo)
+
+    return unless proxy = chinfo.proxy
+
+    chinfo = chinfo.dup.tap(&.proxy = nil)
+    self.chlist(proxy.sname, proxy.snvid, pgidx).store!(chinfo)
   end
 
   def sleep_by_sname(sname : String)
@@ -75,18 +99,23 @@ class CV::FetchText
       opt.on("-t WORKERS", "Parallel workers") { |x| workers = x.to_i }
     end
 
-    total = Nvinfo.query.count
     channel = Channel(Nil).new(workers)
 
-    nvinfos = Nvinfo.query.order_by(weight: :desc).to_a
+    query = "select nvinfo_id from ubmemos where status> 0"
+    infos = Nvinfo.query.where("id IN (#{query})").sort_by("weight").to_set
+    infos.concat Nvinfo.query.sort_by("weight").limit(20000)
 
-    nvinfos.each_with_index(1) do |nvinfo, idx|
-      channel.receive if idx > workers
+    total = infos.size
+    infos.each_with_index(1) do |info, idx|
       spawn do
-        new(nvinfo).crawl!("#{idx}/#{total}")
+        task = new(info)
+        task.make_queue!
+        task.crawl!("#{idx}/#{total}")
       ensure
         channel.send(nil)
       end
+
+      channel.receive if idx > workers
     end
 
     workers.times { channel.receive }
