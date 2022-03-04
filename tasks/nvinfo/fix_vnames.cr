@@ -1,13 +1,9 @@
 require "./../shared/seed_data"
 
-module CV::FixBnames
-  extend self
-
-  DIR = "var/nvinfos/fixed"
-  class_getter vtitles : TsvStore { TsvStore.new("#{DIR}/btitles_vi.tsv") }
-
-  def fix_all!
+module CV
+  def fix_all_entries
     books = Nvinfo.query.order_by(id: :desc).to_a
+
     books.each_with_index(1) do |nvinfo, index|
       next if nvinfo.id <= 0
       nvinfo.fix_names!
@@ -18,16 +14,16 @@ module CV::FixBnames
     end
   end
 
-  def fix_any!(titles : Array(String))
+  def fix_selected(titles : Array(String))
     titles.each do |title|
       query = Nvinfo.query.filter_btitle(title)
       query.each(&.fix_names!)
     end
   end
-end
 
-if ARGV.empty?
-  CV::FixBnames.fix_all!
-else
-  CV::FixBnames.fix_any!(ARGV)
+  if ARGV.empty?
+    fix_all_entries
+  else
+    fix_selected(ARGV)
+  end
 end

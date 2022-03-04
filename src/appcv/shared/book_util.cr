@@ -39,6 +39,12 @@ module CV::BookUtil
     end
   end
 
+  def make_slug(name : String)
+    String.build do |io|
+      io << '-' << BookUtil.scrub_vname(vname, "-") << '-'
+    end
+  end
+
   def scrub(name : String, delimit = "-")
     query =~ /\p{Han}/ ? scrub_zname(name) : scrub_vname(name, delimit)
   end

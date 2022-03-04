@@ -1,4 +1,4 @@
-require "./nvinfo/book_util"
+require "./shared/book_util"
 
 class CV::Author
   include Clear::Model
@@ -25,6 +25,8 @@ class CV::Author
   def update_weight!(weight : Int32)
     update!(weight: weight) if weight > self.weight
   end
+
+  ####################
 
   def self.glob(qs : String)
     qs =~ /\p{Han}/ ? glob_zh(qs) : glob_vi(qs)

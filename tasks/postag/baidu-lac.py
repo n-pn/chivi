@@ -11,7 +11,7 @@ def parse_book(bname):
 
   count = len(files)
   index = 0
-  label = "- [" + bname + "] <{}/" + str(count) + "> {},"
+  # label = "- [" + bname + "] <{}/" + str(count) + "> {},"
 
   for inp_path in files:
     index += 1

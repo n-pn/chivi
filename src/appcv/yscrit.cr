@@ -10,7 +10,7 @@ class CV::Yscrit
   belongs_to ysuser : Ysuser
   belongs_to yslist : Yslist?
 
-  has_many ysrepls : Ysrepl
+  # has_many ysrepls : Ysrepl
 
   column origin_id : String
 

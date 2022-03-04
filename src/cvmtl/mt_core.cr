@@ -77,6 +77,10 @@ class CV::MtCore
     res
   end
 
+  def translate(input : String)
+    cv_plain(input).to_s
+  end
+
   def cv_plain(input : String, cap_first = true, offset = 0)
     list = tokenize(input.chars, offset: offset)
     list.fix_grammar!

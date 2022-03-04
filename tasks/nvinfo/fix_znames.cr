@@ -1,0 +1,71 @@
+require "../shared/bootstrap"
+
+def transfer(old_nvinfo, new_nvinfo)
+  old_bid = old_nvinfo.id
+  new_bid = new_nvinfo.id
+
+  old_nvinfo.update!({subdue_id: new_bid})
+
+  zseeds = old_nvinfo.zseed_ids - new_nvinfo.zseed_ids
+  return if zseeds.empty?
+
+  query = CV::Zhbook.query
+    .where(nvinfo_id: old_bid)
+    .where("zseed in ?", zseeds)
+
+  query.each do |nvseed|
+    nvseed.nvinfo_id = new_bid
+    nvseed.fix_ix!
+    nvseed.save!
+  end
+
+  zseed_ids = new_nvinfo.zhbooks.to_a.map(&.zseed).sort
+  new_nvinfo.update!({zseed_ids: zseed_ids})
+
+  CV::Yscrit.query.where(nvinfo_id: old_bid).to_update.set(nvinfo_id: new_bid).execute
+  CV::Ubmemo.query.where(nvinfo_id: old_bid).to_update.set(nvinfo_id: new_bid).execute
+end
+
+changed_author = {} of String => String
+changed_btitle = {} of String => String
+changed_nvhash = {} of String => String
+
+CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
+  old_btitle = nvinfo.zname
+  old_author = nvinfo.author.zname
+
+  fix_btitle, fix_author = CV::BookUtil.fix_names(old_btitle, old_author)
+  next if old_btitle == fix_btitle && old_author == fix_author
+
+  puts "- #{nvinfo.bhash}"
+  puts "  btitle: #{old_btitle} => #{fix_btitle}" if old_btitle != fix_btitle
+  puts "  author: #{old_author} => #{fix_author}" if old_author != fix_author
+
+  if old_author == fix_author
+    author = nvinfo.author
+  else
+    author = CV::Author.upsert!(fix_author)
+  end
+
+  new_nvinfo = CV::Nvinfo.upsert!(author, fix_btitle)
+
+  changed_nvhash[nvinfo.bhash] = new_nvinfo.bhash
+
+  changed_author[old_author] = fix_author if old_author != fix_author
+  changed_btitle[old_btitle] = fix_btitle if old_btitle != fix_btitle
+
+  transfer(nvinfo, new_nvinfo)
+rescue err
+  puts err
+end
+
+def write_change(file : String, data : Hash(String, String))
+  File.open(file, "w") do |io|
+    data.each { |k, v| io << k << '\t' << v << '\n' }
+  end
+end
+
+DIR = "db/seed_data/nvinfos"
+write_change("#{DIR}/author_changes.tsv", changed_author)
+write_change("#{DIR}/btitle_changes.tsv", changed_btitle)
+write_change("#{DIR}/nvhash_changes.tsv", changed_nvhash)

@@ -10,11 +10,23 @@ class CV::Tagger
 
   getter bname : String
 
-  @max_size : Int32
+  getter chap_count = 0
 
   def initialize(@nvinfo : Nvinfo)
-    @bname = nvinfo.bslug
+    @inp_dir = File.join(INP_DIR, "chivi", @nvinfo.bhash)
 
+    @out_name = gen_dir_name(nvinfo)
+    @out_path = File.join(OUT_DIR, @out_name)
+
+    # @chap_count = load_chap_count(@nvinfo)
+  end
+
+  def gen_dir_name(nvinfo : Nvinfo)
+    suffix = nvinfo.bhash[0..3]
+    nvinfo.bslug.sub(/#{suffix}$/, nvinfo.bhash)
+  end
+
+  def load_chap_count(nvinfo : Nvinfo)
     if nvseed = Zhbook.find(nvinfo.id, 0)
       force = (Time.utc - 10.days).to_unix > nvseed.atime
       nvseed.refresh!(force: force)
@@ -22,46 +34,40 @@ class CV::Tagger
       nvseed = Zhbook.init!(nvinfo, 0)
     end
 
-    @max_size = nvseed.chap_count // 2
-    @max_size = 400 if @max_size > 400
-
-    @inp_dir = File.join(INP_DIR, "chivi", nvseed.snvid)
-    @out_dir = File.join(OUT_DIR, @bname)
-
-    FileUtils.mkdir_p(@out_dir)
+    nvseed.chap_count
   end
 
-  def copy!(nvseeds : Array(Zhbook))
-    nvseeds.sort_by!(&.zseed).each { |x| copy_old!(x) }
-  end
+  # def copy!(nvseeds : Array(Zhbook))
+  #   nvseeds.sort_by!(&.zseed).each { |x| copy_old!(x) }
+  # end
 
-  def copy_old!(nvseed : Zhbook)
-    return if nvseed.zseed == 0
+  # def copy_old!(nvseed : Zhbook)
+  #   return if nvseed.zseed == 0
 
-    old_dir = File.join(OUT_DIR, ".old", nvseed.sname, nvseed.snvid)
-    return unless File.exists?(old_dir)
+  #   old_dir = File.join(OUT_DIR, ".old", nvseed.sname, nvseed.snvid)
+  #   return unless File.exists?(old_dir)
 
-    inp_dir = File.join(INP_DIR, nvseed.sname, nvseed.snvid)
-    indexes = {} of String => Int32
+  #   inp_dir = File.join(INP_DIR, nvseed.sname, nvseed.snvid)
+  #   indexes = {} of String => Int32
 
-    Dir.glob("#{inp_dir}/*.tsv").each do |file|
-      ChList.new(file).data.each_value do |info|
-        indexes[info.schid] = info.chidx
-      end
-    end
+  #   Dir.glob("#{inp_dir}/*.tsv").each do |file|
+  #     ChList.new(file).data.each_value do |info|
+  #       indexes[info.schid] = info.chidx
+  #     end
+  #   end
 
-    Dir.glob("#{old_dir}/*-0.tsv").each do |old_tsv|
-      next unless chidx = indexes[get_chidx(old_tsv)]?
+  #   Dir.glob("#{old_dir}/*-0.tsv").each do |old_tsv|
+  #     next unless chidx = indexes[get_chidx(old_tsv)]?
 
-      out_tsv = File.join(@out_dir, "#{chidx}-0.tsv")
-      next if File.exists?(out_tsv)
+  #     out_tsv = File.join(@out_path, "#{chidx}-0.tsv")
+  #     next if File.exists?(out_tsv)
 
-      FileUtils.mv(old_tsv, out_tsv)
-      puts "- inherit old file #{old_tsv}".colorize.green
-    end
+  #     FileUtils.mv(old_tsv, out_tsv)
+  #     puts "- inherit old file #{old_tsv}".colorize.green
+  #   end
 
-    FileUtils.rm_rf(old_dir)
-  end
+  #   FileUtils.rm_rf(old_dir)
+  # end
 
   SCRIPT = "tasks/postag/baidu-lac.py"
 
@@ -71,9 +77,14 @@ class CV::Tagger
     File.basename(file, ".tsv").split("-", 2).first
   end
 
-  def parse!(redo = false)
-    existed = Dir.glob("#{@out_dir}/*.tsv")
-    return if existed.size > @max_size
+  def parse!(redo = false, lbl = "1/1") : Nil
+    existed = glob_parsed_chaps
+    puts "\n<#{lbl}> #{@nvinfo.bslug}: #{existed.size} parsed".colorize.yellow
+
+    max_size = calc_max_size(@chap_count)
+    if existed.size > max_size
+      return puts "  surpass limit: #{max_size}, skipping".colorize.green
+    end
 
     existed = existed.map { |x| get_chidx(x).to_i }.to_set
 
@@ -89,7 +100,19 @@ class CV::Tagger
       end
     end
 
-    Process.run("python3", [SCRIPT, @bname])
+    Process.run("python3", [SCRIPT, @out_name])
+  end
+
+  def glob_parsed_chaps
+    return Dir.glob("#{@out_path}/*.tsv") if File.exists?(@out_path)
+    FileUtils.mkdir_p(@out_path)
+    [] of String
+  end
+
+  def calc_max_size(chap_count : Int32)
+    return 384 if chap_count > 768
+    return 256 if chap_count < 512
+    chap_count // 2
   end
 
   def should_parse?(chidx : Int32)
@@ -106,7 +129,7 @@ class CV::Tagger
     sname = proxy.sname
     snvid = proxy.snvid
 
-    out_txt = "#{@out_dir}/#{chidx}-0.txt"
+    out_txt = "#{@out_path}/#{chidx}-0.txt"
     return if File.exists?(out_txt)
 
     pgidx = (chidx - 1) // 128
@@ -115,10 +138,12 @@ class CV::Tagger
 
     Compress::Zip::File.open(inp_zip) do |zip|
       return unless entry = zip["#{schid}-0.txt"]?
-      puts "- #{out_txt} extracted".colorize.cyan
+      puts "- #{sname}/#{snvid}/#{chidx} extracted".colorize.cyan
       File.write(out_txt, entry.open(&.gets_to_end))
     end
   end
+
+  ####################
 
   def self.run!(argv = ARGV)
     workers = 6
@@ -145,12 +170,14 @@ class CV::Tagger
 
     query = "select nvinfo_id from ubmemos where status> 0"
     infos = Nvinfo.query.where("id IN (#{query})").sort_by("weight").to_set
-    infos.concat Nvinfo.query.sort_by("weight").limit(20000)
+    infos.concat Nvinfo.query.sort_by("weight") # .limit(20000)
 
     infos.each_with_index(1) do |info, idx|
       spawn do
-        puts "- <#{idx}/#{infos.size}> #{info.bslug}".colorize.yellow
-        new(info).parse!(redo: redo)
+        parser = new(info)
+        next if parser.chap_count == 0
+        # parser.parse!(redo: redo, lbl: "#{idx}/#{infos.size}")
+
       rescue err
         puts err.inspect_with_backtrace
       ensure

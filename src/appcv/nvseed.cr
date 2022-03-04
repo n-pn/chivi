@@ -3,7 +3,7 @@ require "../_init/remote_info"
 require "../cvmtl/mt_core"
 
 require "./nvchap/ch_list"
-require "./nvinfo/sname_map"
+require "./shared/sname_map"
 
 class CV::Zhbook
   include Clear::Model
