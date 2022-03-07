@@ -1,9 +1,11 @@
 require "colorize"
 
-require "../../src/seeds/rm_text.cr"
+require "../../src/_init/remote_text.cr"
 
 def fetch_text(sname : String, snvid : String, schid : String, fresh = false)
-  chap = CV::RmText.new(sname, snvid, schid, ttl: fresh ? 1.minute : 10.years)
+  CV::RemoteText.mkdir!(sname, snvid)
+
+  chap = CV::RemoteText.new(sname, snvid, schid, ttl: fresh ? 1.minute : 10.years)
   puts "\n[#{chap.link}]\n".colorize.blue.bold
 
   puts chap.title
@@ -60,7 +62,7 @@ fetch_text("hetushu", "1640", "1099716", fresh: false)
 
 fetch_text("69shu", "35094", "24508034", fresh: false)
 
-CV::RmText.mkdir!("ptwxz", "1806")
 fetch_text("ptwxz", "1806", "803058", fresh: false)
 
 fetch_text("biqugee", "51452", "649594", fresh: false)
+fetch_text("biqugee", "35803", "18099935", fresh: true)

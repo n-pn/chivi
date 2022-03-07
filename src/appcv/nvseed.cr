@@ -94,7 +94,7 @@ class CV::Zhbook
 
     if mode > 1 || (mode == 1 && chdata.lines.empty?)
       # reset mode or text do not exist
-      chdata = chtext.fetch!(cpart, ttl: mode > 1 ? 3.minutes : 10.years)
+      chdata = chtext.fetch!(cpart, ttl: mode > 1 ? 1.minutes : 10.years)
       chinfo.stats.uname = uname
       patch!(chinfo)
     elsif chinfo.stats.parts == 0

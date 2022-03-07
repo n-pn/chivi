@@ -103,12 +103,12 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  private def remote_chap?(chseed : Zhbook, chinfo : ChInfo)
-    sname = chinfo.proxy.try(&.sname) || chseed.sname
+  private def remote_chap?(nvseed : Zhbook, chinfo : ChInfo)
+    sname = chinfo.proxy.try(&.sname) || nvseed.sname
 
     SnameMap.remote?(sname, _cvuser.privi) do
       chidx = chinfo.chidx
-      count = chseed.chap_count
+      count = nvseed.chap_count
       chidx >= count - 8 || chidx <= 40 || chidx <= count // 3
     end
   end

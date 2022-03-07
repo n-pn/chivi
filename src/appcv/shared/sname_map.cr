@@ -66,7 +66,7 @@ module CV::SnameMap
   end
 
   def remote?(sname : String, privi = 4)
-    case map_type(sname)
+    case sname
     when "5200", "biqu5200", "rengshu"
       privi >= 0 || yield
     when "bxwxorg", "xbiquge", "biqugee", "69shu"
