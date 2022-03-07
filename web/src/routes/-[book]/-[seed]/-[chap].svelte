@@ -112,7 +112,7 @@
 
   $: [on_memory, memo_icon] = check_memo(ubmemo, chmeta)
 
-  function check_memo(ubmemo: CV.Ubmemo, chmeta: CV.Chmeta) {
+  function check_memo(ubmemo: CV.Ubmemo, chmeta: CV.Chmeta): [boolean, string] {
     const on_memory = match_viewed(ubmemo, chmeta)
     if (!ubmemo.locked) return [on_memory, 'menu-2']
     return [on_memory, on_memory ? 'bookmark' : 'bookmark-off']

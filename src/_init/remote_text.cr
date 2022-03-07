@@ -27,7 +27,10 @@ class CV::RemoteText
 
   alias TimeSpan = Time::Span | Time::MonthSpan
 
+  getter title : String
+
   def initialize(@sname, @snvid, @schid, @ttl : TimeSpan = 10.years, @lbl = "1/1")
+    @title = extract_title
   end
 
   getter page : HtmlParser do
@@ -37,7 +40,7 @@ class CV::RemoteText
     HtmlParser.new(html)
   end
 
-  getter title : String do
+  def extract_title
     case @sname
     when "duokan8"
       extract_title("#read-content > h2")
@@ -58,8 +61,9 @@ class CV::RemoteText
 
   getter paras : Array(String) do
     case @sname
-    when "hetushu" then extract_hetushu_paras
     when "69shu"   then extract_69shu_paras
+    when "hetushu" then extract_hetushu_paras
+    when "biqugee" then extract_biqugee_paras
     when "zhwenpg" then extract_paras("#tdcontent .content")
     when "duokan8" then extract_paras("#htmlContent > p")
     when "ptwxz"   then extract_paras("body")
@@ -83,6 +87,12 @@ class CV::RemoteText
     lines
   end
 
+  def extract_biqugee_paras
+    paras = extract_paras("#content")
+    return paras unless paras.empty?
+    extract_paras(".box_con")
+  end
+
   # ameba:disable Metrics/CyclomaticComplexity
   private def extract_paras(sel : String)
     return [] of String unless node = page.find(sel)
@@ -98,6 +108,7 @@ class CV::RemoteText
     end
 
     lines = TextUtil.split_html(node.inner_text("\n"))
+    return lines if lines.empty?
     lines.shift if lines.first == title
 
     case @sname
@@ -139,7 +150,9 @@ class CV::RemoteText
 
     lines
   rescue err
-    puts "<rm_text> [#{@sname}/#{@snvid}/#{@schid}] error: #{err}".colorize.red
+    puts "<rm_text> [#{@sname}/#{@snvid}/#{@schid}] error:".colorize.red
+    puts err.inspect_with_backtrace.colorize.red
+
     [] of String
   end
 
