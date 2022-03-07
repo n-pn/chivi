@@ -4,21 +4,20 @@ require "file_utils"
 require "option_parser"
 require "../shared/bootstrap"
 
-class CV::Tagger
+class CV::BdLacInvoke
   INP_DIR = "var/chtexts"
-  OUT_DIR = "_db/vpinit/baidulac"
-
-  getter bname : String
+  OUT_DIR = "_db/vpinit/bd_lac"
 
   getter chap_count = 0
+  @dir_name : String
 
   def initialize(@nvinfo : Nvinfo)
     @inp_dir = File.join(INP_DIR, "chivi", @nvinfo.bhash)
 
-    @out_name = gen_dir_name(nvinfo)
-    @out_path = File.join(OUT_DIR, @out_name)
+    @dir_name = gen_dir_name(nvinfo)
+    @out_path = File.join(OUT_DIR, @dir_name)
 
-    # @chap_count = load_chap_count(@nvinfo)
+    @chap_count = load_chap_count(@nvinfo)
   end
 
   def gen_dir_name(nvinfo : Nvinfo)
@@ -37,45 +36,9 @@ class CV::Tagger
     nvseed.chap_count
   end
 
-  # def copy!(nvseeds : Array(Zhbook))
-  #   nvseeds.sort_by!(&.zseed).each { |x| copy_old!(x) }
-  # end
-
-  # def copy_old!(nvseed : Zhbook)
-  #   return if nvseed.zseed == 0
-
-  #   old_dir = File.join(OUT_DIR, ".old", nvseed.sname, nvseed.snvid)
-  #   return unless File.exists?(old_dir)
-
-  #   inp_dir = File.join(INP_DIR, nvseed.sname, nvseed.snvid)
-  #   indexes = {} of String => Int32
-
-  #   Dir.glob("#{inp_dir}/*.tsv").each do |file|
-  #     ChList.new(file).data.each_value do |info|
-  #       indexes[info.schid] = info.chidx
-  #     end
-  #   end
-
-  #   Dir.glob("#{old_dir}/*-0.tsv").each do |old_tsv|
-  #     next unless chidx = indexes[get_chidx(old_tsv)]?
-
-  #     out_tsv = File.join(@out_path, "#{chidx}-0.tsv")
-  #     next if File.exists?(out_tsv)
-
-  #     FileUtils.mv(old_tsv, out_tsv)
-  #     puts "- inherit old file #{old_tsv}".colorize.green
-  #   end
-
-  #   FileUtils.rm_rf(old_dir)
-  # end
-
   SCRIPT = "tasks/postag/baidu-lac.py"
 
   # IOPIPE = Process::Redirect::Inherit
-
-  def get_chidx(file : String)
-    File.basename(file, ".tsv").split("-", 2).first
-  end
 
   def parse!(redo = false, lbl = "1/1") : Nil
     existed = glob_parsed_chaps
@@ -100,7 +63,11 @@ class CV::Tagger
       end
     end
 
-    Process.run("python3", [SCRIPT, @out_name])
+    Process.run("python3", [SCRIPT, @dir_name])
+  end
+
+  def get_chidx(file : String)
+    File.basename(file, ".tsv").split("-", 2).first
   end
 
   def glob_parsed_chaps
@@ -170,14 +137,16 @@ class CV::Tagger
 
     query = "select nvinfo_id from ubmemos where status> 0"
     infos = Nvinfo.query.where("id IN (#{query})").sort_by("weight").to_set
-    infos.concat Nvinfo.query.sort_by("weight") # .limit(20000)
+    infos.concat Nvinfo.query.sort_by("weight").limit(20000)
 
     infos.each_with_index(1) do |info, idx|
       spawn do
+        next if info.subdue_id > 0
+
         parser = new(info)
         next if parser.chap_count == 0
-        # parser.parse!(redo: redo, lbl: "#{idx}/#{infos.size}")
 
+        parser.parse!(redo: redo, lbl: "#{idx}/#{infos.size}")
       rescue err
         puts err.inspect_with_backtrace
       ensure
@@ -197,4 +166,4 @@ class CV::Tagger
   end
 end
 
-CV::Tagger.run!
+CV::BdLacInvoke.run!
