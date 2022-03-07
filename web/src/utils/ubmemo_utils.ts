@@ -15,21 +15,21 @@ export function last_read({ bslug }, ubmemo: CV.Ubmemo) {
   }
 }
 
-export function update_ubmemo(
+export function update_memo(
   ubmemo: CV.Ubmemo,
-  chmeta: CV.Chmeta,
-  chinfo: CV.Chinfo,
-  lock_mode = 0
+  { sname, cpart },
+  { chidx, title, uslug },
+  mode = 0
 ) {
-  if (ubmemo.locked && lock_mode == 0) return
-  ubmemo.locked = lock_mode == 1
+  if (ubmemo.locked && mode == 0) return
+  ubmemo.locked = mode == 2
 
-  ubmemo.sname = chmeta.sname
-  ubmemo.cpart = chmeta.cpart
+  ubmemo.sname = sname
+  ubmemo.cpart = cpart
 
-  ubmemo.chidx = chinfo.chidx
-  ubmemo.title = chinfo.title
-  ubmemo.uslug = chinfo.uslug
+  ubmemo.chidx = chidx
+  ubmemo.title = title
+  ubmemo.uslug = uslug
 
   return ubmemo
 }

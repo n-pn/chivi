@@ -2,7 +2,7 @@
   import { api_call } from '$lib/api_call'
   import { appbar } from '$lib/stores'
 
-  import { update_ubmemo } from '$utils/ubmemo_utils'
+  import { update_memo } from '$utils/ubmemo_utils'
 
   function gen_book_path(bslug: string, sname: string, chidx: number) {
     let url = `/-${bslug}/chaps?sname=${sname}`
@@ -11,7 +11,7 @@
   }
 
   export async function load({ fetch, params: { seed, chap }, stuff }) {
-    const { nvinfo } = stuff
+    const { nvinfo, ubmemo } = stuff
     const [chidx, cpart = 0] = chap.split('-').pop().split('.')
 
     const book_url = `/-${nvinfo.bslug}`
@@ -30,10 +30,10 @@
 
     const payload = await api_res.json()
     const { chmeta, chinfo } = payload.props
-    stuff.ubmemo = update_ubmemo(stuff.ubmemo, chmeta, chinfo)
 
-    payload.props.nvinfo = stuff.nvinfo
-    payload.props.ubmemo = stuff.ubmemo
+    update_memo(ubmemo, chmeta, chinfo)
+    payload.props.nvinfo = nvinfo
+    payload.props.ubmemo = ubmemo
 
     return payload
   }
@@ -49,8 +49,8 @@
   import CvPage from '$gui/sects/CvPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
 
-  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
-  export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
+  export let nvinfo: CV.Nvinfo
+  export let ubmemo: CV.Ubmemo
 
   export let chmeta: CV.Chmeta
   export let chinfo: CV.Chinfo
@@ -107,14 +107,18 @@
 
     const [status, payload] = await api_call(fetch, url, params, 'PUT')
     if (status) return console.log(`Error update history: ${payload}`)
-    $page.stuff.ubmemo = ubmemo
+    ubmemo = update_memo(ubmemo, chmeta, chinfo, lock ? 2 : 1)
   }
 
-  $: on_memory = check_memo(ubmemo)
-  // prettier-ignore
-  $: memo_icon = !ubmemo.locked ? 'menu-2' : on_memory ? 'bookmark' : 'bookmark-off'
+  $: [on_memory, memo_icon] = check_memo(ubmemo, chmeta)
 
-  function check_memo(ubmemo: CV.Ubmemo) {
+  function check_memo(ubmemo: CV.Ubmemo, chmeta: CV.Chmeta) {
+    const on_memory = match_viewed(ubmemo, chmeta)
+    if (!ubmemo.locked) return [on_memory, 'menu-2']
+    return [on_memory, on_memory ? 'bookmark' : 'bookmark-off']
+  }
+
+  function match_viewed(ubmemo: CV.Ubmemo, chmeta: CV.Chmeta) {
     if (ubmemo.sname != chmeta.sname) return false
     return ubmemo.chidx == chinfo.chidx && ubmemo.cpart == chmeta.cpart
   }

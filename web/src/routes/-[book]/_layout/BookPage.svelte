@@ -37,7 +37,7 @@
     right: gen_appbar_right(nvinfo, ubmemo),
   })
 
-  async function update_ubmemo(status: string) {
+  async function update_memo(status: string) {
     if ($session.privi < 0) return
     if (status == ubmemo.status) status = 'default'
     ubmemo.status = status
@@ -149,7 +149,7 @@
 
       <svelte:fragment slot="content">
         {#each status_types as status}
-          <button class="-item" on:click={() => update_ubmemo(status)}>
+          <button class="-item" on:click={() => update_memo(status)}>
             <SIcon name={status_icons[status]} />
             <span>{status_names[status]}</span>
             {#if status == ubmemo.status}

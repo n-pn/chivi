@@ -1,7 +1,7 @@
 require "tabkv"
 require "file_utils"
 
-require "../../src/appcv/remote/rm_info"
+require "../../src/_init/remote_info"
 require "./bootstrap"
 
 module CV::SeedUtil
