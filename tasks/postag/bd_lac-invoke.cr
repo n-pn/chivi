@@ -44,10 +44,10 @@ class CV::BdLacInvoke
     existed = glob_parsed_chaps
     puts "\n<#{lbl}> #{@nvinfo.bslug}: #{existed.size} parsed".colorize.yellow
 
-    max_size = calc_max_size(@chap_count)
-    if existed.size > max_size
-      return puts "  surpass limit: #{max_size}, skipping".colorize.green
-    end
+    # max_size = calc_max_size(@chap_count)
+    # if existed.size > max_size
+    #   return puts "  surpass limit: #{max_size}, skipping".colorize.green
+    # end
 
     existed = existed.map { |x| get_chidx(x).to_i }.to_set
 

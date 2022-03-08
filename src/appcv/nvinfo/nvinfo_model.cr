@@ -93,13 +93,12 @@ module CV::NvinfoModel
 
   def fix_names!
     self.vname = BookUtil.btitle_vname(self.zname, self.bhash)
-    self.vslug = "-" + BookUtil.scrub_vname(self.vname, "-") + "-"
+    self.vslug = BookUtil.make_slug(self.vname)
 
     self.hname = BookUtil.hanviet(self.zname)
-    hslug = BookUtil.scrub_vname(self.hname, "-")
-    self.hslug = "-" + hslug + "-"
+    self.hslug = BookUtil.make_slug(self.hname)
 
-    self.bslug = hslug.split("-").first(8).join("-") + "-" + bhash[0..3]
+    self.bslug = self.hslug[1..] + bhash[0..3]
     self.save!
   end
 end

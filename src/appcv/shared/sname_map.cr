@@ -32,9 +32,9 @@ module CV::SnameMap
       0 # act as mirror
     when "users", "staff", "zxcs_me"
       1 # manual update
-    when "jx_la", "zhwenpg", "shubaow"
+    when "jx_la", "zhwenpg", "shubaow", "sdyfcm"
       2 # dead remote
-    when "paoshu8", "duokan8", "5200", "hetushu", "sdyfcm"
+    when "paoshu8", "duokan8", "5200", "hetushu"
       3 # slow but still alive
     when "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee", "biqu5200"
       4 # fast remote
@@ -71,9 +71,9 @@ module CV::SnameMap
       privi >= 0 || yield
     when "bxwxorg", "xbiquge", "biqugee", "69shu"
       privi >= 1 || yield
-    when "hetushu", "paoshu8", "duokan8", "sdyfcm"
+    when "hetushu", "paoshu8", "duokan8"
       privi >= 2 || yield
-    when "shubaow", "zhwenpg"
+    when "shubaow", "zhwenpg", "sdyfcm"
       privi > 4
     else false
     end

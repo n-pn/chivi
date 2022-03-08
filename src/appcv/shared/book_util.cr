@@ -39,12 +39,6 @@ module CV::BookUtil
     end
   end
 
-  def make_slug(name : String)
-    String.build do |io|
-      io << '-' << BookUtil.scrub_vname(vname, "-") << '-'
-    end
-  end
-
   def scrub(name : String, delimit = "-")
     query =~ /\p{Han}/ ? scrub_zname(name) : scrub_vname(name, delimit)
   end
@@ -57,7 +51,8 @@ module CV::BookUtil
     res = String::Builder.new
     acc = String::Builder.new
 
-    scrub_tones(vname).each_char do |char|
+    vname = scrub_tones(vname)
+    vname.each_char do |char|
       if char.ascii_alphanumeric?
         acc << char
       elsif !acc.empty?
@@ -84,6 +79,12 @@ module CV::BookUtil
       .tr("úùũụủưứừữựử", "u")
       .tr("ýỳỹỵỷ", "y")
       .tr("đ", "d")
+  end
+
+  def make_slug(name : String)
+    String.build do |io|
+      io << '-' << scrub_vname(name, "-") << '-'
+    end
   end
 
   def author_vname(author : String) : String
