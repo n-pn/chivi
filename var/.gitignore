@@ -3,3 +3,4 @@ _ulogs/*.log
 chtexts
 chtexts/**
 pg_data/**
+nvinfos.tsv
