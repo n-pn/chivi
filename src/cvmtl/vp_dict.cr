@@ -5,14 +5,17 @@ require "file_utils"
 require "./vp_dict/*"
 
 class CV::VpDict
-  DIR = "var/vpdicts"
-  ::FileUtils.mkdir_p("#{DIR}/basic")
-  ::FileUtils.mkdir_p("#{DIR}/novel")
-  ::FileUtils.mkdir_p("#{DIR}/theme")
+  DIR = "_db/vpdict/v2"
+  EXT = ".dic"
 
-  class_getter trungviet : self { new(path("trungviet", "miscs"), dtype: -1) }
-  class_getter cc_cedict : self { new(path("cc_cedict", "miscs"), dtype: -1) }
-  class_getter trich_dan : self { new(path("trich_dan", "miscs"), dtype: -1) }
+  ::FileUtils.mkdir_p("#{DIR}/base")
+  ::FileUtils.mkdir_p("#{DIR}/core")
+  ::FileUtils.mkdir_p("#{DIR}/misc")
+  ::FileUtils.mkdir_p("#{DIR}/uniq")
+
+  class_getter trungviet : self { new(path("trungviet", "base"), type: -1) }
+  class_getter cc_cedict : self { new(path("cc_cedict", "base"), type: -1) }
+  class_getter trich_dan : self { new(path("trich_dan", "base"), type: -1) }
 
   class_getter hanviet : self { load("hanviet") }
   class_getter pin_yin : self { load("pin_yin") }
@@ -25,79 +28,77 @@ class CV::VpDict
   class_getter combine : self { load("combine") }
   class_getter suggest : self { load("suggest") }
 
-  class_getter novels : Array(String) do
-    files = Dir.glob("#{DIR}/novel/*.tab")
+  class_getter uniques : Array(String) do
+    files = Dir.glob("#{DIR}/uniq/*.dic")
     files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
-    files.map { |f| "$" + File.basename(f, ".tab") }
+    files.map { |f| "-" + File.basename(f, EXT) }
   end
 
-  class_getter themes : Array(String) do
-    files = Dir.glob("#{DIR}/theme/*.tab")
-    files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
-    files.map { |f| "!" + File.basename(f, ".tab") }
+  class_getter qtdicts : Array(String) do
+    files = Dir.glob("#{DIR}/core/*.dic")
+    files.map { |f| "~" + File.basename(f, EXT) }
   end
 
-  class_getter cvmtls : Array(String) do
-    files = Dir.glob("#{DIR}/cvmtl/*.tsv")
-    files.map { |f| "~" + File.basename(f, ".tsv") }
-  end
+  BASE = {} of String => self
+  UNIQ = {} of String => self
+  MISC = {} of String => self
 
-  BASICS = {} of String => self
-  NOVELS = {} of String => self
-  THEMES = {} of String => self
-
-  def self.load(dname : String, reset = false)
+  def self.load(dname : String, mode = 0)
     case dname[0]?
-    when '$'
-      return NOVELS[dname] ||= new(path(dname[1..], "novel"), dtype: 3, reset: reset)
+    when '-'
+      return UNIQ[dname] ||= new(path(dname[1..], "uniq"), type: 3, mode: mode)
     when '!'
-      return THEMES[dname] ||= new(path(dname[1..], "theme"), dtype: 2, reset: reset)
+      return MISC[dname] ||= new(path(dname[1..], "misc"), type: 2, mode: mode)
     when '~'
-      return BASICS[dname] ||= new(path(dname[1..], "cvmtl"), dtype: 1, reset: reset)
+      return BASE[dname] ||= new(path(dname[1..], "core"), type: 1, mode: mode)
     end
 
     case dname
     when "tradsim", "hanviet", "pin_yin"
-      BASICS[dname] ||= new(path(dname, "miscs"), dtype: 0, reset: reset)
+      BASE[dname] ||= new(path(dname, "base"), type: 0, mode: mode)
     when "essence", "fixture"
-      BASICS[dname] ||= new(path(dname, "basic"), dtype: 1, reset: reset)
+      BASE[dname] ||= new(path(dname, "base"), type: 1, mode: mode)
     when "regular", "suggest"
-      BASICS[dname] ||= new(path(dname, "basic"), dtype: 2, reset: reset)
+      BASE[dname] ||= new(path(dname, "base"), type: 2, mode: mode)
     else
-      BASICS[dname] ||= new(path(dname, "basic"), dtype: 3, reset: reset)
+      BASE[dname] ||= new(path(dname, "base"), type: 3, mode: mode)
     end
   end
 
   def self.path(label : String, group : String = ".")
-    File.join(DIR, group, label + ".tsv")
+    File.join(DIR, group, label + EXT)
   end
 
   #########################
 
   getter file : String
-  getter ftab : String
-  getter size = 0
+  getter flog : String
 
   getter trie = VpTrie.new
-  getter data = [] of VpTerm
+  getter list = [] of VpTerm
 
-  getter dtype : Int32 # dict type
+  getter type : Int32 # dict type
+  getter size = 0
 
-  # forward_missing_to @data
+  # forward_missing_to @list
   delegate scan, to: @trie
 
-  def initialize(@file : String, @dtype = 1, reset = false)
-    @ftab = @file.sub(".tsv", ".tab")
-    return if reset
+  # mode
+  # -1: ignore existing dict file
+  # 0: load existing dict file if exists
+  # 1: load log file
+  def initialize(@file : String, @type = 1, mode = 0)
+    @flog = @file.sub(EXT, ".log") # log file path
+    return if mode < 0
 
     load!(@file) if File.exists?(@file)
-    load!(@ftab) if File.exists?(@ftab)
+    load!(@flog) if mode == 1 && File.exists?(@flog)
   end
 
   def load!(file : String = @file) : Nil
     lines = File.read_lines(file)
     lines.each do |line|
-      set(VpTerm.new(line.split('\t'), dtype: @dtype))
+      set(VpTerm.new(line.split('\t'), dtype: @type))
     rescue err
       Log.error { "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red }
     end
@@ -119,7 +120,7 @@ class CV::VpDict
   end
 
   def set(term : VpTerm) : VpTerm?
-    @data << term
+    @list << term
     return unless @trie.find!(term.key).push!(term)
     @size += 1 if term.state == "Thêm"
     term
@@ -127,7 +128,7 @@ class CV::VpDict
 
   def set!(term : VpTerm) : VpTerm?
     return unless set(term)
-    File.open(@ftab, "a") { |io| io << '\n'; term.to_s(io, dtype: @dtype) }
+    File.open(@flog, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
     term
   end
 
@@ -139,11 +140,11 @@ class CV::VpDict
   def save!(file = @file, prune : Int8 = 2_u8) : Nil
     return if prune < 1
 
-    data = @data.reject { |x| x.key.empty? || x._flag >= prune }
-    base_arr, user_arr = data.partition(&.mtime.== 0)
+    data = @list.reject { |x| x.key.empty? || x._flag >= prune }
+    save_list!(@file, data) if data.size > 0
 
-    save_list!(@file, base_arr)
-    save_list!(@ftab, user_arr)
+    logs = data.select(&.mtime.> 0)
+    save_list!(@flog, logs) if logs.size > 0
   end
 
   private def save_list!(file : String, list : Array(VpTerm))
@@ -153,7 +154,7 @@ class CV::VpDict
     data = String.build do |io|
       list.each_with_index do |term, i|
         io << "\n" unless i == 0
-        term.to_s(io, dtype: @dtype)
+        term.to_s(io, dtype: @type)
       end
     end
 

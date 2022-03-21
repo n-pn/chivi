@@ -4,3 +4,5 @@ chtexts
 chtexts/**
 pg_data/**
 nvinfos.tsv
+dtopics
+dtposts

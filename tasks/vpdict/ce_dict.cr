@@ -113,7 +113,7 @@ class CeInput
     puts "\n[-- Export ce_dict --]".colorize.cyan.bold
 
     input = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
-    output = CV::VpDict.load("cc_cedict", reset: true)
+    output = CV::VpDict.load("cc_cedict", mode: -1)
 
     @entries.each do |entry|
       input[entry.simp] << "[#{entry.pinyin}] #{entry.defins}"
@@ -157,7 +157,7 @@ class CeInput
       end
     end
 
-    output = CV::VpDict.load("tradsim", reset: true)
+    output = CV::VpDict.load("tradsim", mode: -1)
 
     counter.each do |trad, counts|
       next if HANZIDB.has_key?(trad) || counts.has_key?(trad)
@@ -172,13 +172,13 @@ class CeInput
 
     words = tswords.data.to_a.sort_by(&.[0].size)
     words.each do |key, vals|
-      simp = vals.uniq
-      next if simp.first == key
+      sims = vals.uniq
+      next if sims.first == key
 
       convert = QtUtil.convert(output, key)
-      next if simp.first == convert
+      next if sims.first == convert
 
-      output.set(key, simp)
+      output.set(key, sims)
     end
 
     output.save!(prune: 1_i8)
@@ -207,7 +207,7 @@ class CeInput
       end
     end
 
-    output = CV::VpDict.load("pin_yin", reset: true)
+    output = CV::VpDict.load("pin_yin", mode: -1)
 
     HANZIDB.each do |key, vals|
       next if vals.empty? || vals.first.empty?

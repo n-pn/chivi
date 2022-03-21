@@ -1,6 +1,8 @@
 require "colorize"
 require "file_utils"
 
+DIR = "_db/vpinit/bd_lac"
+
 class Counter
   alias CountTag = Hash(String, Int32)
   alias CountStr = Hash(String, CountTag)
@@ -21,6 +23,11 @@ class Counter
     info.modification_time < time
   end
 
+  @[AlwaysInline]
+  def update_count(term : String, tag : String, count = 1)
+    @data[term][tag] &+= count
+  end
+
   def load_parsed(file : String = @file)
     File.each_line(file) do |line|
       next if line.empty?
@@ -31,7 +38,7 @@ class Counter
 
       input[1..].each do |counts|
         tag, count = counts.split(SEP_2, 2)
-        @data[term][tag] &+= count.to_i
+        update_count(term, tag, count.to_i)
       end
     end
   end
@@ -65,7 +72,7 @@ class Counter
         next unless tag = list.pop?
         term = list.size == 1 ? list.first : list.join(' ')
 
-        @data[term][tag] &+= 1
+        update_count(term, tag, 1)
       end
     end
   end
@@ -80,14 +87,16 @@ class Counter
 end
 
 class Folder
-  def initialize(@dir : String)
+  getter counter : Counter
+  getter checked = Set(String).new
+
+  def initialize(@dir : String, @redo = false)
     @sum_file = File.join(@dir, "_all.sum")
     @log_file = File.join(@dir, "_all.log")
 
     @counter = Counter.new(@sum_file)
-    @checked = Set(String).new
 
-    return unless File.exists?(@log_file)
+    return if @redo || !File.exists?(@log_file)
 
     @counter.load_parsed
     @checked.concat(File.read_lines(@log_file))
@@ -105,7 +114,7 @@ class Folder
       counter = Counter.new(out_file)
 
       inp_time = File.info(inp_file).modification_time
-      if counter.outdated?(inp_time)
+      if @redo || counter.outdated?(inp_time)
         counter.parse_lac(inp_file)
         counter.save_output(out_file)
       else
@@ -126,22 +135,58 @@ class Folder
   end
 end
 
-REDO = ARGV.includes?("--redo")
-
-DIR = "_db/vpinit/bd_lac"
-
-Dir.children(DIR).each do |dir_name|
+def sum_up_dir(dir_name : String, redo = false, lbl = "1/1")
   dir_path = File.join(DIR, dir_name)
 
   tsv_files = Dir.glob("#{dir_path}/*.tsv")
-  puts "- #{dir_name} has #{tsv_files.size} files"
+  puts "- <#{lbl}> #{dir_name} has #{tsv_files.size} files"
 
-  if tsv_files.empty?
-    FileUtils.rm_rf(dir_path)
-    next
-  end
+  folder = Folder.new(dir_path, redo: redo)
 
-  folder = Folder.new(dir_path)
   folder.count_files(tsv_files)
   folder.save_counter
+
+  folder
 end
+
+def add_to_total(channel : Channel(Folder), all_books : Counter, all_ptags : Counter)
+  folder = channel.receive
+
+  average = folder.checked.size // 2 &+ 1
+
+  folder.counter.data.each do |word, counts|
+    best_tag = counts.to_a.sort_by(&.[1].-)[0][0]
+
+    all_books.update_count(word, best_tag, 1)
+
+    counts.each do |tag, count|
+      count = (count - 1) // average &+ 1
+      all_ptags.update_count(word, tag, count)
+    end
+  end
+end
+
+dirs = Dir.children(DIR)
+
+all_books = Counter.new("_db/vpinit/lac-books.tsv")
+all_ptags = Counter.new("_db/vpinit/lac-ptags.tsv")
+
+workers = ENV["CRYSTAL_WORKERS"]?.try(&.to_i) || 6
+channel = Channel(Folder).new(workers)
+
+redo = ARGV.includes?("--redo")
+
+dirs.each_with_index(1) do |dir_name, idx|
+  spawn do
+    channel.send sum_up_dir(dir_name, redo: redo, lbl: "#{idx}/#{dirs.size}")
+  end
+
+  if idx > workers
+    add_to_total(channel, all_books, all_ptags)
+  end
+end
+
+workers.times { add_to_total(channel, all_books, all_ptags) }
+
+all_books.save_output(sort: true)
+all_ptags.save_output(sort: true)

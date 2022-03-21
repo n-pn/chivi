@@ -41,6 +41,10 @@ if [[ $1 == "all" || $* == *book* ]]
 then
   echo backup books data!
   # rsync -aiz --no-p "$SSH/var/nvinfos/autos" "var/nvinfos"
+  rsync -aiz --no-p "$SSH/var/nvinfos.json" "var"
+  rsync -aiz --no-p "$SSH/var/dtopics" "var"
+  rsync -aiz --no-p "$SSH/var/dtposts" "var"
+
   rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
   rsync -aiz --no-p "$SSH/var/chtexts/users" "var/chtexts"
   # rsync -aiz --no-p "$SSH/var/chtexts/" "var/chtexts/"

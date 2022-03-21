@@ -18,7 +18,7 @@ class Hanviet
   end
 
   def gen_from_trad!
-    TRADSIM.data.each do |term|
+    TRADSIM.list.each do |term|
       next if term.key.size > 0
       next unless vals = @input.data[term.key]?
 
@@ -34,7 +34,7 @@ class Hanviet
   end
 
   def save!
-    output = CV::VpDict.load("hanviet", reset: true)
+    output = CV::VpDict.load("hanviet", mode: -1)
     output.load!("_db/vpinit/manual/hanviet.tab")
     output.load!("var/vpdicts/miscs/hanviet.tab")
 
