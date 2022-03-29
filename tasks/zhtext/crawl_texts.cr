@@ -41,9 +41,11 @@ class CV::CrawlText
     Dir.glob("#{@out_dir}/*.zip").each do |zip_file|
       Compress::Zip::Reader.open(zip_file) do |zip|
         zip.each_entry do |entry|
-          avail << File.basename(entry.filename, "txt").split("-").first
+          avail << File.basename(entry.filename, ".txt").split("-").first
         end
       end
+    rescue err
+      File.delete(zip_file)
     end
 
     avail
