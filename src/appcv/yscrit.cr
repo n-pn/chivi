@@ -19,8 +19,8 @@ class CV::Yscrit
   column ztext : String = "" # orginal comment
   column vhtml : String = "" # translated comment
 
-  column bumped : Int64 = 0 # list checked at by minutes from epoch
-  column mftime : Int64 = 0 # list changed at by seconds from epoch
+  column utime : Int64 = 0 # list changed at by seconds from epoch
+  column stime : Int64 = 0 # list checked at by minutes from epoch
 
   column like_count : Int32 = 0
   column repl_count : Int32 = 0 # reply count, optional

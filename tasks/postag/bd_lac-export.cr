@@ -87,4 +87,4 @@ class Counter
 end
 
 all_books = Counter.new("_db/vpinit/lac-books.tsv").tap(&.load_parsed)
-all_ptags = Counter.new("_db/vpinit/lac-ptags.tsv").tap(&.load_parsed)
+# all_ptags = Counter.new("_db/vpinit/lac-ptags.tsv").tap(&.load_parsed)

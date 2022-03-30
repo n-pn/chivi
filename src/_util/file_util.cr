@@ -13,9 +13,9 @@ module CV::FileUtil
   def read_utf8(io : IO, encoding : String? = nil, csdet_limit = 500)
     unless encoding
       str = io.read_string(csdet_limit)
-      csm = csdet.detect(str)
+      csm = CSDET.detect(str)
 
-      encoding = csm.encoding
+      encoding = csm.name
       io.rewind
     end
 

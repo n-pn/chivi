@@ -140,7 +140,7 @@ class CV::CrawlText
       crawler = new(sname, snvid)
       queue = crawler.make_queue!(mode: mode)
 
-      puts "<#{idx}/#{snvids.size}> #{queue.size} chaps missing".colorize.yellow
+      puts "<#{idx}/#{snvids.size}> #{snvid} #{queue.size} chaps missing".colorize.yellow
 
       crawler.crawl!(queue, workers)
       crawler.cleanup!

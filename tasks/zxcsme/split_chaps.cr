@@ -3,7 +3,8 @@ require "file_utils"
 require "compress/zip"
 
 require "../../src/_util/file_util"
-require "../../src/appcv/filedb/*"
+
+require "../../src/appcv/nvchap/*"
 
 class CV::Zxcs::SplitText
   struct Chap
@@ -21,7 +22,7 @@ class CV::Zxcs::SplitText
   OUT_DIR = "var/chtexts/zxcs_me"
 
   def extract_all!
-    input = Dir.glob("#{INP_RAR}/*.rar").shuffle
+    input = Dir.glob("#{INP_RAR}/*.rar")
     output = [] of String
 
     input.each_with_index(1) do |rar_file, idx|
@@ -29,7 +30,7 @@ class CV::Zxcs::SplitText
       output << file
     end
 
-    `python3 tasks/zxcsme/fix_mtime.py`
+    # `python3 tasks/zxcsme/fix_mtime.py`
 
     output.each_with_index do |file, idx|
       split_chaps!(file, "#{idx}/#{output.size}")
@@ -46,7 +47,7 @@ class CV::Zxcs::SplitText
     puts "\n- <#{label}> extracting #{rar_file.colorize.blue}"
 
     tmp_dir = "tmp/#{snvid}"
-    FileUtils.mkdir_p(tmp_dir)
+    Dir.mkdir_p(tmp_dir)
 
     `unrar e -o+ "#{rar_file}" #{tmp_dir}`
     inp_txt = Dir.glob("#{tmp_dir}/*.txt").first? || Dir.glob("#{tmp_dir}/*.TXT").first
@@ -110,19 +111,19 @@ class CV::Zxcs::SplitText
     line.empty? || line.starts_with?("更多精校小说")
   end
 
+  SKIP_CHOICE = ARGV.includes?("--skip")
+
   def split_chaps!(inp_file : String, label = "1/1")
     snvid = File.basename(inp_file, ".txt")
 
-    out_dir = "#{OUT_DIR}/#{snvid}"
-    out_idx = "#{out_dir}/0.tsv"
+    global_idx = File.join(OUT_DIR, "_", "#{snvid}.tsv")
+    return if File.exists?(global_idx)
 
-    return if File.exists?(out_idx)
-
-    FileUtils.mkdir_p(out_dir)
     input = File.read(inp_file).split(/\r\n?|\n/)
+    out_dir = File.join(OUT_DIR, snvid)
 
     # TODO: remove these hacks
-    input = reclean_text!(inp_file, input)
+    # input = reclean_text!(inp_file, input)
 
     puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
 
@@ -134,11 +135,13 @@ class CV::Zxcs::SplitText
     end
 
     if good_enough?(index)
-      save_texts!(chaps, out_dir, inp_file)
+      save_texts!(chaps, out_dir, inp_file, global_idx)
       return
     end
 
     puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
+    return puts "  Skipped".colorize.red if SKIP_CHOICE
+
     print "\nChoice (r: redo, d: delete, s: delete + exit, else: keep): "
 
     STDIN.flush
@@ -153,62 +156,72 @@ class CV::Zxcs::SplitText
         exit(0)
       end
     else
-      save_texts!(chaps, out_dir, inp_file)
+      save_texts!(chaps, out_dir, inp_file, global_idx)
       puts "\n\n- Entries [#{snvid}] saved!".colorize.yellow
     end
   end
 
-  def reclean_text!(inp_file : String, lines : Array(String))
-    changed = false
+  # def reclean_text!(inp_file : String, lines : Array(String))
+  #   changed = false
 
-    if lines.first.match(/^\s*===/)
-      changed = true
+  #   if lines.first.match(/^\s*===/)
+  #     changed = true
 
-      3.times { lines.shift; lines.pop }
+  #     3.times { lines.shift; lines.pop }
 
-      lines.shift if lines.first.match(/^\s*===/)
-      lines.pop if lines.last.match(/^\s*===/)
-    end
+  #     lines.shift if lines.first.match(/^\s*===/)
+  #     lines.pop if lines.last.match(/^\s*===/)
+  #   end
 
-    while lines.first.empty? || lines.first.match(/^分类：|作者：|类别：|字数：/)
-      changed = true
-      lines.shift
-    end
+  #   while lines.first.empty? || lines.first.match(/^分类：|作者：|类别：|字数：/)
+  #     changed = true
+  #     lines.shift
+  #   end
 
-    File.write(inp_file, lines.join("\n")) if changed
-    lines
-  rescue
-    puts [inp_file, lines]
-    exit(0)
-  end
+  #   File.write(inp_file, lines.join("\n")) if changed
+  #   lines
+  # rescue
+  #   puts [inp_file, lines]
+  #   exit(0)
+  # end
 
-  def save_texts!(chaps, out_dir : String, inp_file : String)
-    utime = File.info(inp_file).modification_time.to_s
+  def save_texts!(chaps, nv_dir : String, text_file : String, global_file : String)
+    utime = File.info(text_file).modification_time.to_unix
 
-    snvid = File.basename(out_dir)
-    FileUtils.mkdir_p(out_dir)
+    snvid = File.basename(nv_dir)
+
+    global = [] of ChInfo
 
     chaps.each_slice(128).with_index do |slice, idx|
-      chlist = [] of String
+      chlist = [] of ChInfo
 
-      out_zip = File.join(out_dir, "#{idx}.zip")
-      out_idx = "#{out_dir}/#{idx}.tsv"
+      out_dir = File.join(nv_dir, idx.to_s)
+      Dir.mkdir_p(out_dir)
+
+      out_zip = File.join(nv_dir, "#{idx}.zip")
+      out_idx = File.join(nv_dir, "#{idx}.tsv")
 
       slice.each_with_index(1) do |chap, chidx|
-        chidx = (chidx + 128 * idx)
-        schid = chidx.to_s
+        chidx = (chidx + 128 &* idx)
 
-        chinfo = Chpage.new([schid, chap.title, chap.label, utime], chidx)
-        chtext = Chtext.new("zxcs_me", snvid, chinfo)
+        chinfo = ChInfo.new(chidx, chidx.to_s, chap.title, chap.label)
+        chinfo.stats.utime = utime
 
+        chtext = ChText.new("zxcs_me", snvid, chinfo)
         chtext.save!(chap.lines, zipping: false)
-        chlist << "#{schid}\t#{chinfo}"
+
+        chlist << chinfo
+        global << chinfo
       end
 
-      `zip -jqm #{out_zip} #{out_dir}/*.txt`
-      File.write(out_idx, chlist.join('\n'))
-      puts "#{out_idx} saved!"
+      `zip --include=\\*.txt -rjmq #{out_zip} #{out_dir}`
+      ChList.save!(out_idx, chlist, "w")
+
+      puts "#{out_zip} saved!"
+      Dir.delete(out_dir)
     end
+
+    ChList.save!(global_file, global, "w")
   end
 
   # ameba:disable Metrics/CyclomaticComplexity

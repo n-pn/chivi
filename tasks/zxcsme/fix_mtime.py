@@ -14,7 +14,7 @@ def fix_mtime(file):
     os.utime(txt_file, (utime, utime))
     return utime
 
-idx_file = open("_db/zhbook/zxcs_me/mftime.tsv", "w")
+idx_file = open("db/seed_data/nvseeds/zxcs_me/mftime.tsv", "w")
 
 for file in files:
   try:

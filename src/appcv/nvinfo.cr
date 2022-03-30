@@ -7,7 +7,7 @@ class CV::Nvinfo
   self.table = "nvinfos"
   primary_key
 
-  getter dt_ii : Int32 { (id > 0 ? id + 20 : id * -5).to_i &* 10000 }
+  getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
 
   belongs_to author : Author
   has_many zhbooks : Zhbook, foreign_key: "nvinfo_id"
@@ -17,18 +17,12 @@ class CV::Nvinfo
 
   column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
 
-  column zseed_ids : Array(Int32) = [] of Int32
-  getter snames : Array(String) { SnameMap.map_str(zseed_ids) }
-
-  column genre_ids : Array(Int32) = [] of Int32
-  getter genres : Array(String) { GenreMap.to_s(genre_ids) }
-
-  column labels : Array(String) = [] of String
-
   column bhash : String # unique string generate from zh_title & zh_author
   column bslug : String # unique string generate from hv_title & bhash
 
   getter dname : String { "-" + bhash }
+
+  ###############
 
   column zname : String # chinese title
   column hname : String # hanviet title
@@ -36,6 +30,18 @@ class CV::Nvinfo
 
   column hslug : String # for text searching, auto generated from hname
   column vslug : String # for text searching, auto generated from vname
+
+  ###########
+
+  column zseeds : Array(Int32) = [] of Int32
+  getter snames : Array(String) { SnameMap.map_str(zseeds) }
+
+  column genres : Array(Int32) = [] of Int32
+  getter bgenre : Array(String) { GenreMap.to_s(genres) }
+
+  column labels : Array(String) = [] of String
+
+  ###########
 
   column scover : String = "" # original seed cover url
   column bcover : String = "" # cached book cover path
@@ -65,26 +71,9 @@ class CV::Nvinfo
 
   # ranking
 
-  column weight : Int32 = 0 # voters * rating + ???
-  column rating : Int32 = 0 # delivered from above values
-  column voters : Int32 = 0 # = ys_voters + vi_voters * 2 + random_seed (if < 25)
-
-  column cv_voters : Int32 = 0 # unique revierwers
-  column ys_voters : Int32 = 0 # yousuu book voters
-
-  column cv_scores : Int32 = 0 # chivi users ratings * voters
-  column ys_scores : Int32 = 0 # yousuu users ratings * voters
-
-  # counters
-
-  column cv_chap_count : Int32 = 0 # official chapters count
-  column ys_word_count : Int32 = 0 # total words count from yousuu
-
-  column cvcrit_count : Int32 = 0 # chivi reviews count
-  column yscrit_count : Int32 = 0 # yousuu reviews count
-
-  column cvlist_count : Int32 = 0 # chivi booklists count
-  column yslist_count : Int32 = 0 # yousuu booklists count
+  column weight : Int32 = 0
+  column rating : Int32 = 0
+  column voters : Int32 = 0
 
   column total_clicks : Int32 = 0 # chap views count
   column dtopic_count : Int32 = 0 # discuss topic count
@@ -94,9 +83,9 @@ class CV::Nvinfo
   column dt_post_utime : Int64 = 0
   # links
 
-  column ys_snvid : Int64? = nil # yousuu book id
-  column pub_name : String = ""  # original publisher name, extract from link
-  column pub_link : String = ""  # original publisher novel page
+  column ys_snvid : Int64 = 0   # yousuu book id
+  column pub_name : String = "" # original publisher name, extract from link
+  column pub_link : String = "" # original publisher novel page
 
   timestamps # created_at and updated_at
 

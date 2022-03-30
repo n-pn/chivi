@@ -37,7 +37,8 @@ module CV::UploadChseed
     `ssh #{host} mkdir -p "#{remote_dir}"`
     return unless $?.success?
 
-    dirs = Dir.children(target_dir).sort_by { |x| x.to_i? || 0 }.reverse
+    dirs = Dir.children(target_dir).sort_by { |x| x.to_i? || 0 }
+    dirs.reverse! if ARGV.includes?("--reverse")
 
     wkrs = dirs.size
     wkrs = 6 if wkrs > 6
