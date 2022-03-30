@@ -47,7 +47,7 @@ module CV::MtDict
     vpdict = VpDict.load(dname)
     output = MtHash.new(df_ptag, initial_capacity: vpdict.size)
 
-    vpdict.data.each do |vpterm|
+    vpdict.list.each do |vpterm|
       output.upsert(vpterm) if vpterm._flag == 0
     end
 

@@ -48,13 +48,13 @@ targets:
   upload_zhtext:
     main: tasks/zhtext/upload_data.cr
 
-  ys_serial:
+  ys_info_cr:
     main: tasks/yousuu/ys_serial.cr
 
-  ys_review:
+  ys_crit_cr:
     main: tasks/yousuu/ys_review.cr
 
-  ys_replies:
+  ys_repl_cr:
     main: tasks/yousuu/ys_replies.cr
 
   yscrit_seed:

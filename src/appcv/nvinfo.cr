@@ -28,7 +28,7 @@ class CV::Nvinfo
   column bhash : String # unique string generate from zh_title & zh_author
   column bslug : String # unique string generate from hv_title & bhash
 
-  getter dname : String { "$" + bhash }
+  getter dname : String { "-" + bhash }
 
   column zname : String # chinese title
   column hname : String # hanviet title

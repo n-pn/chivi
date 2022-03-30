@@ -7,7 +7,7 @@ module CV::UploadChseed
   extend self
 
   INP = "var/chtexts"
-  OUT = "/home/nipin/srv/chivi.app"
+  OUT = "/home/nipin/var/chivi_db/chtext"
 
   def run!(argv = ARGV)
     exists = Dir.children(INP)
@@ -32,7 +32,7 @@ module CV::UploadChseed
     puts "upload to: #{host.colorize.blue}, sname: #{sname.colorize.blue}"
 
     target_dir = File.join(INP, sname)
-    remote_dir = "#{OUT}/#{target_dir}"
+    remote_dir = File.join(OUT, sname)
 
     `ssh #{host} mkdir -p "#{remote_dir}"`
     return unless $?.success?

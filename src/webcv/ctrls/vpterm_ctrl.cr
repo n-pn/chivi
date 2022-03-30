@@ -33,13 +33,13 @@ class CV::VptermCtrl < CV::BaseCtrl
       return halt!(401, "Nội dung không thay đổi!")
     end
 
-    if vdict.dtype == 1
+    if vdict.type == 1
       MtDict.upsert(dname[1..], vpterm) if dname[0] == '~'
     else
       # add to suggestion
-      add_to_suggest(vpterm.dup) if vdict.dtype > 1 && dname != "suggest"
+      add_to_suggest(vpterm.dup) if vdict.type > 1 && dname != "suggest"
       # add to qtran dict if entry is a person name
-      add_to_combine(vpterm.dup) if vdict.dtype > 3 && dname != "combine"
+      add_to_combine(vpterm.dup) if vdict.type > 3 && dname != "combine"
     end
 
     send_json(vpterm, 201)

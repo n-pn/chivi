@@ -19,7 +19,7 @@ class CV::Ysuser
 
   def self.get!(zname : String)
     find({zname: zname}) || begin
-      vname = BookUtil.hanviet(zname, cap: true)
+      vname = BookUtil.hanviet(zname, caps: true)
       new({zname: zname, vname: vname}).tap(&.save!)
     end
   end

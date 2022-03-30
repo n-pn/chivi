@@ -17,7 +17,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
   def index
     pgidx, limit, offset = params.page_info(min: 24, max: 40)
 
-    input = VpDict.novels
+    input = VpDict.nvdicts
     book_dicts = [] of VdInfo
 
     input[offset, limit].each do |dname|
@@ -45,7 +45,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
 
     # TODO: provide cursor to search faster
 
-    vdict.data.reverse_each do |term|
+    vdict.list.reverse_each do |term|
       next unless filter.match?(term)
       terms << term
       break if terms.size >= total
@@ -57,7 +57,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
       d_dub: CtrlUtil.d_dub(dname),
       total: total,
       pgidx: pgidx,
-      start: offset + 1,
+      start: offset &+ 1,
       pgmax: CtrlUtil.pgmax(total, limit),
       terms: total > offset ? terms[offset, limit] : [] of VpTerm,
     })
@@ -73,7 +73,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
     vdict = {VpDict.load(dname), VpDict.regular}
 
     chars = input.chars
-    upper = chars.size - 1
+    upper = chars.size &- 1
 
     entries = (0..upper).map do |idx|
       entry = Hash(Int32, Lookup).new do |hash, key|
@@ -82,7 +82,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
 
       vdict.each do |dict|
         dict.scan(chars, "!#{_cvuser.uname}", idx) do |term|
-          dic = term.is_priv ? dict.dtype &+ 2 : dict.dtype
+          dic = term.is_priv ? dict.type &+ 2 : dict.type
 
           value = "#{term.val.join("/")}\t#{term.ptag.to_str}\t#{dic}"
           entry[term.key.size][:vietphrase] << value

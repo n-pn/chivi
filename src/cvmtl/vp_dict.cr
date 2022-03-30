@@ -5,17 +5,12 @@ require "file_utils"
 require "./vp_dict/*"
 
 class CV::VpDict
-  DIR = "_db/vpdict/v2"
-  EXT = ".dic"
+  DIR = "var/vpdicts/v1"
+  EXT = ".tsv"
 
-  ::FileUtils.mkdir_p("#{DIR}/base")
-  ::FileUtils.mkdir_p("#{DIR}/core")
-  ::FileUtils.mkdir_p("#{DIR}/misc")
-  ::FileUtils.mkdir_p("#{DIR}/uniq")
-
-  class_getter trungviet : self { new(path("trungviet", "base"), type: -1) }
-  class_getter cc_cedict : self { new(path("cc_cedict", "base"), type: -1) }
-  class_getter trich_dan : self { new(path("trich_dan", "base"), type: -1) }
+  class_getter trungviet : self { new(path("trungviet", "fixed"), type: -1) }
+  class_getter cc_cedict : self { new(path("cc_cedict", "fixed"), type: -1) }
+  class_getter trich_dan : self { new(path("trich_dan", "fixed"), type: -1) }
 
   class_getter hanviet : self { load("hanviet") }
   class_getter pin_yin : self { load("pin_yin") }
@@ -28,40 +23,40 @@ class CV::VpDict
   class_getter combine : self { load("combine") }
   class_getter suggest : self { load("suggest") }
 
-  class_getter uniques : Array(String) do
-    files = Dir.glob("#{DIR}/uniq/*.dic")
+  class_getter nvdicts : Array(String) do
+    files = Dir.glob("#{DIR}/novel/*.tab")
     files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
-    files.map { |f| "-" + File.basename(f, EXT) }
+    files.map { |f| "-" + File.basename(f, ".tab") }
   end
 
   class_getter qtdicts : Array(String) do
-    files = Dir.glob("#{DIR}/core/*.dic")
-    files.map { |f| "~" + File.basename(f, EXT) }
+    files = Dir.glob("#{DIR}/cvmtl/*.tsv")
+    files.map { |f| "~" + File.basename(f, ".tsv") }
   end
 
-  BASE = {} of String => self
-  UNIQ = {} of String => self
-  MISC = {} of String => self
+  BASIC = {} of String => self
+  NOVEL = {} of String => self
+  THEME = {} of String => self
 
-  def self.load(dname : String, mode = 0)
+  def self.load(dname : String, mode = 1)
     case dname[0]?
     when '-'
-      return UNIQ[dname] ||= new(path(dname[1..], "uniq"), type: 3, mode: mode)
+      return NOVEL[dname] ||= new(path(dname[1..], "novel"), type: 3, mode: mode)
     when '!'
-      return MISC[dname] ||= new(path(dname[1..], "misc"), type: 2, mode: mode)
+      return THEME[dname] ||= new(path(dname[1..], "theme"), type: 2, mode: mode)
     when '~'
-      return BASE[dname] ||= new(path(dname[1..], "core"), type: 1, mode: mode)
+      return BASIC[dname] ||= new(path(dname[1..], "cvmtl"), type: 1, mode: mode)
     end
 
     case dname
     when "tradsim", "hanviet", "pin_yin"
-      BASE[dname] ||= new(path(dname, "base"), type: 0, mode: mode)
+      BASIC[dname] ||= new(path(dname, "basic"), type: 0, mode: mode)
     when "essence", "fixture"
-      BASE[dname] ||= new(path(dname, "base"), type: 1, mode: mode)
+      BASIC[dname] ||= new(path(dname, "basic"), type: 1, mode: mode)
     when "regular", "suggest"
-      BASE[dname] ||= new(path(dname, "base"), type: 2, mode: mode)
+      BASIC[dname] ||= new(path(dname, "basic"), type: 2, mode: mode)
     else
-      BASE[dname] ||= new(path(dname, "base"), type: 3, mode: mode)
+      BASIC[dname] ||= new(path(dname, "basic"), type: 3, mode: mode)
     end
   end
 
@@ -87,8 +82,8 @@ class CV::VpDict
   # -1: ignore existing dict file
   # 0: load existing dict file if exists
   # 1: load log file
-  def initialize(@file : String, @type = 1, mode = 0)
-    @flog = @file.sub(EXT, ".log") # log file path
+  def initialize(@file : String, @type = 1, mode = 1)
+    @flog = @file.sub(EXT, ".tab") # log file path
     return if mode < 0
 
     load!(@file) if File.exists?(@file)

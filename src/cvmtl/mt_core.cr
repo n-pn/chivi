@@ -102,7 +102,7 @@ class CV::MtCore
 
       @dicts.each do |dict|
         dict.scan(input, @uname, idx) do |term|
-          terms[term.key.size] = {dict.dtype, term}
+          terms[term.key.size] = {dict.type, term}
         end
       end
 

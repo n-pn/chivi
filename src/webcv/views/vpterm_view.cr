@@ -72,7 +72,7 @@ struct CV::VpTermView
     tags = Hints.new
     vals << @hvmap[word]
 
-    if @vdict.dtype == 2 && (f_term = VpDict.fixture.find(word))
+    if @vdict.type == 2 && (f_term = VpDict.fixture.find(word))
       b_term, u_term = f_term, nil
       add_hints(f_term, vals, tags)
     elsif node = @vdict.trie.find(word)
@@ -88,7 +88,7 @@ struct CV::VpTermView
     if @dname[0] == '~'
       fval = @cvmtl.cv_plain(word, cap_first: false).to_s
       ptag = ""
-    elsif @vdict.dtype > 0
+    elsif @vdict.type > 0
       fval, ptag = add_hints_by_ctx(word, vals, tags)
     else
       fval, ptag = vals.first?, ""
@@ -118,7 +118,7 @@ struct CV::VpTermView
     tags << "nn" if AFFILIATE.includes?(lc)
     tags << "na" if ATTRIBUTE.includes?(lc) || fc == '姓'
 
-    on_book = @vdict.dtype == 3
+    on_book = @vdict.type == 3
 
     if is_human_name?(fc, lc)
       is_human = on_book
