@@ -1,7 +1,7 @@
 require "option_parser"
 require "./nvinfo_seed"
 
-class CV::ZhbookSeed
+class CV::NvseedSeed
   def initialize(@sname : String)
     @encoding = HttpUtil.encoding_for(@sname)
     @cache_dir = "_db/.cache/#{@sname}/infos"
@@ -56,7 +56,7 @@ class CV::ZhbookSeed
       x.add_nvseed(SnameMap.map_int(@sname))
     end
 
-    Zhbook.upsert!(nvinfo, @sname, snvid)
+    Nvseed.upsert!(nvinfo, @sname, snvid)
   end
 
   def load_entry(snvid : String, mode = 0)
@@ -198,4 +198,4 @@ class CV::ZhbookSeed
   end
 end
 
-CV::SeedZhbook.run!(ARGV)
+CV::SeedNvseed.run!(ARGV)

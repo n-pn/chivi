@@ -5,13 +5,13 @@ require "../cvmtl/mt_core"
 require "./nvchap/ch_list"
 require "./shared/sname_map"
 
-class CV::Zhbook
+class CV::Nvseed
   include Clear::Model
 
   self.table = "zhbooks"
   primary_key
 
-  column ix : Int64 = 0_i64 # alternative unique index
+  column uid : Int64 = 0_i64 # alternative unique index
 
   belongs_to nvinfo : Nvinfo
   getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
@@ -37,8 +37,8 @@ class CV::Zhbook
   delegate chlist, to: _repo
 
   # update book id
-  def fix_ix!
-    self.ix = Zhbook.map_ix(nvinfo_id, zseed)
+  def fix_uid!
+    self.uid = SnameMap.map_uid(nvinfo_id, zseed)
   end
 
   def clink(schid : String) : String
@@ -237,7 +237,7 @@ class CV::Zhbook
       self.remap!(force: force, fetch: true)
     elsif self.remote?(force: force)
       self.fetch!(ttl: map_expiry(force: force), force: force)
-      Zhbook.load!(self.nvinfo, 0).tap(&.proxy!(self)).reset_cache!
+      Nvseed.load!(self.nvinfo, 0).tap(&.proxy!(self)).reset_cache!
     else
       reset_cache! if force
     end
@@ -246,10 +246,6 @@ class CV::Zhbook
   ###########################
 
   CACHE = RamCache(Int64, self).new(1024)
-
-  def self.map_ix(nvinfo_id : Int64, zseed = 0)
-    (nvinfo_id << 6) | zseed
-  end
 
   def self.load!(nvinfo_id : Int64, zseed : Int32) : self
     load!(Nvinfo.load!(nvinfo_id), zseed)
@@ -260,7 +256,7 @@ class CV::Zhbook
   end
 
   def self.load!(nvinfo : Nvinfo, zseed : Int32) : self
-    CACHE.get(map_ix(nvinfo.id, zseed)) do
+    CACHE.get(SnameMap.map_uid(nvinfo.id, zseed)) do
       find(nvinfo.id, zseed) || init!(nvinfo, zseed)
     end
   end
@@ -276,7 +272,7 @@ class CV::Zhbook
   def self.init!(nvinfo : Nvinfo, sname : String, snvid = nvinfo.bhash)
     zseed = SnameMap.map_int(sname)
     model = new({nvinfo: nvinfo, zseed: zseed, sname: sname, snvid: snvid})
-    model.ix = map_ix(nvinfo.id, zseed)
+    model.uid = SnameMap.map_uid(nvinfo.id, zseed)
     model.tap(&.save!)
   end
 
@@ -286,10 +282,10 @@ class CV::Zhbook
 
   def self.find(nvinfo_id : Int64, sname : String)
     zseed = SnameMap.map_int(sname)
-    find({ix: map_ix(nvinfo_id, zseed)})
+    find({uid: SnameMap.map_uid(nvinfo_id, zseed)})
   end
 
   def self.find(nvinfo_id : Int64, zseed : Int32)
-    find({ix: map_ix(nvinfo_id, zseed)})
+    find({uid: SnameMap.map_uid(nvinfo_id, zseed)})
   end
 end

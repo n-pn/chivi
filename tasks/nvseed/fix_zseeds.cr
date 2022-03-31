@@ -13,10 +13,10 @@ CV::Nvinfo.query.each do |nvinfo|
 
     unless items.empty?
       puts "#{nvinfo.bslug}: #{zhbook.id} <- #{items.map(&.id)}"
-      CV::Zhbook.query.where(id: items.map(&.id)).to_delete.execute
+      CV::Nvseed.query.where(id: items.map(&.id)).to_delete.execute
     end
 
-    ix = CV::Zhbook.map_ix(nvinfo.id, zhbook.zseed)
+    ix = CV::Nvseed.map_ix(nvinfo.id, zhbook.zseed)
     if zhbook.ix != ix
       puts "update_id: [#{nvinfo.id}, #{zhbook.zseed}] #{zhbook.ix} => #{ix}"
       zhbook.update!({ix: ix})

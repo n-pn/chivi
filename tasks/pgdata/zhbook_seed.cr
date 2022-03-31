@@ -1,7 +1,7 @@
 require "option_parser"
 require "./init_nvinfo"
 
-class CV::SeedZhbook
+class CV::SeedNvseed
   def initialize(@sname : String)
     @infos_dir = "_db/.cache/#{@sname}/infos"
     ::FileUtils.mkdir_p(@infos_dir)
@@ -231,4 +231,4 @@ class CV::SeedZhbook
   end
 end
 
-CV::SeedZhbook.run!(ARGV)
+CV::SeedNvseed.run!(ARGV)

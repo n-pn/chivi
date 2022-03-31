@@ -19,12 +19,12 @@ class CV::FetchText
   end
 
   def refresh_list!
-    nvseed = Zhbook.load(@nvinfo.id, 0)
-    if nvseed = Zhbook.find(@nvinfo.id, 0)
+    nvseed = Nvseed.load(@nvinfo.id, 0)
+    if nvseed = Nvseed.find(@nvinfo.id, 0)
       force = (Time.utc - 10.days).to_unix > nvseed.atime
       nvseed.refresh!(force: force)
     else
-      Zhbook.init!(@nvinfo, 0)
+      Nvseed.init!(@nvinfo, 0)
     end
   end
 

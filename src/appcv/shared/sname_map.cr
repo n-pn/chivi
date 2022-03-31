@@ -89,4 +89,8 @@ module CV::SnameMap
     "rengshu", "hetushu", "xbiquge",
     "duokan8", "paoshu8",
   }
+
+  def map_uid(nvinfo_id : Int64, zseed = 0)
+    (nvinfo_id << 6) | zseed
+  end
 end

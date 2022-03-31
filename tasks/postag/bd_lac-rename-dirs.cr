@@ -2,11 +2,11 @@ require "colorize"
 require "file_utils"
 require "../shared/bootstrap"
 
-# def copy!(nvseeds : Array(Zhbook))
+# def copy!(nvseeds : Array(Nvseed))
 #   nvseeds.sort_by!(&.zseed).each { |x| copy_old!(x) }
 # end
 
-# def copy_old!(nvseed : Zhbook)
+# def copy_old!(nvseed : Nvseed)
 #   return if nvseed.zseed == 0
 
 #   old_dir = File.join(OUT_DIR, ".old", nvseed.sname, nvseed.snvid)

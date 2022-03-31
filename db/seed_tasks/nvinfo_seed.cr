@@ -58,7 +58,7 @@ module CV::NvinfoSeed
   def log(sname : String, label = "1/1")
     authors = Author.query.count
     nvinfos = Nvinfo.query.count
-    nvseeds = Zhbook.query.count
+    nvseeds = Nvseed.query.count
 
     puts "- [seed-#{sname}] <#{label.colorize.cyan}>, \
             authors: #{authors.colorize.cyan}, \

@@ -4,14 +4,14 @@ class CV::NvchapCtrl < CV::BaseCtrl
   private def load_zhbook
     nvinfo_id = params["book"].to_i64
     sname = params.fetch_str("sname", "chivi")
-    Zhbook.load!(nvinfo_id, SnameMap.map_int(sname))
+    Nvseed.load!(nvinfo_id, SnameMap.map_int(sname))
   end
 
   def ch_seed
     nvinfo = Nvinfo.load!(params["book"].to_i64)
 
     sname = params.fetch_str("sname", "chivi")
-    zhbook = Zhbook.load!(nvinfo.id, SnameMap.map_int(sname))
+    zhbook = Nvseed.load!(nvinfo.id, SnameMap.map_int(sname))
 
     force = params["force"]? == "true" && _cvuser.privi >= 0
     zhbook.refresh!(force: force) if zhbook.staled?(_cvuser.privi, force)
@@ -43,7 +43,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     })
   end
 
-  private def seed_outdated?(zhbook : Zhbook, privi = 0)
+  private def seed_outdated?(zhbook : Nvseed, privi = 0)
     tspan = Time.utc - Time.unix(zhbook.atime)
     bonus = 4 - privi
 
@@ -103,7 +103,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  private def remote_chap?(nvseed : Zhbook, chinfo : ChInfo)
+  private def remote_chap?(nvseed : Nvseed, chinfo : ChInfo)
     sname = chinfo.proxy.try(&.sname) || nvseed.sname
 
     SnameMap.remote?(sname, _cvuser.privi) do
@@ -207,7 +207,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     # copy new uploaded chapters to "chivi" source
     infos.map!(&.as_proxy!("users", zhbook.snvid))
-    Zhbook.load!(zhbook.nvinfo, 0).patch!(infos)
+    Nvseed.load!(zhbook.nvinfo, 0).patch!(infos)
 
     first = infos.first.tap(&.trans!(zhbook.cvmtl))
     send_json({chidx: chidx, uslug: first.trans.uslug}, 201)

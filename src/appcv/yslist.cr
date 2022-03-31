@@ -16,7 +16,7 @@ class CV::Yslist
   column zdesc : String # original description
   column vdesc : String # translated description
 
-  column group : String = "male" # target demographic: male or female
+  column klass : String = "male" # target demographic: male or female
 
   column utime : Int64 = 0 # list checked at by minutes from epoch
   column stime : Int64 = 0 # list changed at by seconds from epoch

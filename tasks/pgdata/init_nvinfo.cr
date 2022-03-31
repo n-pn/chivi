@@ -143,7 +143,7 @@ class CV::InitNvinfo
     puts "- [#{@sname}/seed] <#{idx.colorize.cyan}>, \
             authors: #{authors.size.colorize.cyan}, \
             nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
-            zhbooks: #{Zhbook.query.count.colorize.cyan}"
+            zhbooks: #{Nvseed.query.count.colorize.cyan}"
   end
 
   def seed_nvinfo!(snvid : String, nvinfo_zname : String? = nil, author_zname : String? = nil) : Nil
@@ -190,7 +190,7 @@ class CV::InitNvinfo
   end
 
   def seed_zhbook!(nvinfo : Nvinfo, snvid : String)
-    zhbook = Zhbook.upsert!(nvinfo, @sname, snvid)
+    zhbook = Nvseed.upsert!(nvinfo, @sname, snvid)
     nvinfo.add_nvseed(zhbook.zseed)
 
     if zhbook.chap_count == 0

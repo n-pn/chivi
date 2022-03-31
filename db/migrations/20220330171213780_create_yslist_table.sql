@@ -11,7 +11,7 @@ CREATE TABLE yslists (
   zdesc text not null default '',
   vdesc text not null default '',
 
-  group text not null default 'male',
+  klass text not null default 'male',
 
   utime bigint not null default 0,
   stime bigint not null default 0,

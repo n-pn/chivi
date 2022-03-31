@@ -16,7 +16,7 @@ def rename_seed(from source : String, to target : String)
     File.rename(dir, out_dir)
   end
 
-  CV::Zhbook.query.where(sname: source).each do |zhseed|
+  CV::Nvseed.query.where(sname: source).each do |zhseed|
     zhseed.update({sname: target})
   end
 
@@ -31,4 +31,4 @@ end
 
 FileUtils.rm_rf("var/chtexts/chivi")
 FileUtils.mkdir_p("var/chtexts/chivi")
-CV::Zhbook.query.where(zseed: 0).to_update.set(chap_count: 0).execute
+CV::Nvseed.query.where(zseed: 0).to_update.set(chap_count: 0).execute

@@ -40,7 +40,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     zhbooks = nvinfo.zhbooks.to_a.sort_by!(&.zseed)
     if zhbooks.empty? || zhbooks.first.zseed != 0
-      zhbooks.unshift(Zhbook.load!(nvinfo, 0))
+      zhbooks.unshift(Nvseed.load!(nvinfo, 0))
     end
 
     if (ubmemo.lr_sname.empty?) && (zhbook = zhbooks.first?)

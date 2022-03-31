@@ -3,7 +3,7 @@ require "./_base_view"
 struct CV::ChseedView
   include BaseView
 
-  def initialize(@data : Zhbook)
+  def initialize(@data : Nvseed)
   end
 
   def to_json(jb : JSON::Builder)

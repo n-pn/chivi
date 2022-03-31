@@ -26,11 +26,11 @@ class CV::BdLacInvoke
   end
 
   def load_chap_count(nvinfo : Nvinfo)
-    if nvseed = Zhbook.find(nvinfo.id, 0)
+    if nvseed = Nvseed.find(nvinfo.id, 0)
       force = (Time.utc - 10.days).to_unix > nvseed.atime
       nvseed.refresh!(force: force)
     else
-      nvseed = Zhbook.init!(nvinfo, 0)
+      nvseed = Nvseed.init!(nvinfo, 0)
     end
 
     nvseed.chap_count

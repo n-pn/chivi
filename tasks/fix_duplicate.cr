@@ -23,7 +23,7 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   zhbooks = nvinfo.zhbooks.to_a.sort_by(&.zseed)
   zhbooks.each do |zhbook|
     next if zhbook.sname == "chivi" || zhbook.sname == "users"
-    next if CV::Zhbook.find({nvinfo_id: new_nvinfo.id, zseed: zhbook.zseed})
+    next if CV::Nvseed.find({nvinfo_id: new_nvinfo.id, zseed: zhbook.zseed})
 
     zhbook.nvinfo_id = new_nvinfo.id
     zhbook.fix_id!

@@ -257,7 +257,7 @@ class CV::SeedZxcsme
     ztitle = BookUtils.fix_zh_btitle(p_ztitle, author.zname)
     nvinfo = Nvinfo.upsert!(author, ztitle)
 
-    zhbook = Zhbook.upsert!("zxcs_me", snvid)
+    zhbook = Nvseed.upsert!("zxcs_me", snvid)
     bumped = bumped.to_i64
 
     if redo || zhbook.unmatch?(nvinfo.id)
