@@ -10,7 +10,7 @@ class CV::FetchText
   def initialize(@nvinfo : Nvinfo)
     @snvid = @nvinfo.bhash
 
-    @nvinfo.zhbooks.each do |nvseed|
+    @nvinfo.nvseeds.each do |nvseed|
       next if SnameMap.map_type(nvseed.sname) < 2
       FileUtils.mkdir_p("_db/.cache/#{nvseed.sname}/texts/#{nvseed.snvid}")
     end

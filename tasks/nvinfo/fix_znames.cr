@@ -19,7 +19,7 @@ def transfer(old_nvinfo, new_nvinfo)
     nvseed.save!
   end
 
-  zseed_ids = new_nvinfo.zhbooks.to_a.map(&.zseed).sort
+  zseed_ids = new_nvinfo.nvseeds.to_a.map(&.zseed).sort
   new_nvinfo.update!({zseed_ids: zseed_ids})
 
   CV::Yscrit.query.where(nvinfo_id: old_bid).to_update.set(nvinfo_id: new_bid).execute

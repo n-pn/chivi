@@ -16,7 +16,7 @@ class CV::FixStatus
         nvinfo.update!({status: status})
       end
 
-      nvinfo.zhbooks.each do |zhbook|
+      nvinfo.nvseeds.each do |zhbook|
         next if zhbook.status == status
         zhbook.update!({status: status})
         puts "#{zhbook.sname}/#{zhbook.snvid} updated status to #{status}"

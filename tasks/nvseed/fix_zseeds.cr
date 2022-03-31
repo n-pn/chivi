@@ -1,10 +1,10 @@
 require "../shared/bootstrap"
 
 CV::Nvinfo.query.each do |nvinfo|
-  zhbooks = nvinfo.zhbooks.to_a
+  nvseeds = nvinfo.nvseeds.to_a
 
   zseeds = [] of Int32
-  zhbooks.group_by(&.sname).each do |sname, items|
+  nvseeds.group_by(&.sname).each do |sname, items|
     items.sort_by!(&.created_at)
 
     zhbook = items.shift

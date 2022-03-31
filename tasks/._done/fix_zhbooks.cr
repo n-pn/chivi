@@ -1,17 +1,17 @@
 require "./shared/bootstrap"
 
 # CV::Nvinfo.query.each_with_cursor(20) do |nvinfo|
-#   zhbooks = nvinfo.zhbooks.to_a
-#   next if zhbooks.empty?
+#   nvseeds = nvinfo.nvseeds.to_a
+#   next if nvseeds.empty?
 
-#   zhbooks.each do |zhbook|
+#   nvseeds.each do |zhbook|
 #     zhbook.nvinfo = nvinfo
 #     zhbook.zseed = CV::SeedUtil.map_id(zhbook.sname)
 #     zhbook.fix_id!
 #     zhbook.save!
 #   end
 
-#   nvinfo.update({zseed_ids: zhbooks.map(&.zseed).sort})
+#   nvinfo.update({zseed_ids: nvseeds.map(&.zseed).sort})
 # end
 
 CV::Ubmemo.query.each_with_cursor(20) do |ubmemo|

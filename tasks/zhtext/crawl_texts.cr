@@ -164,7 +164,7 @@ class CV::CrawlText
       .order_by(weight: :desc)
 
     query.each_with_cursor(20) do |nvinfo|
-      seeds = nvinfo.zhbooks.to_a.sort_by!(&.zseed)
+      seeds = nvinfo.nvseeds.to_a.sort_by!(&.zseed)
       seeds.each do |nvseed|
         case nvseed.zseed
         when 0 then next

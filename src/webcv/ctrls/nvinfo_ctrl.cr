@@ -38,12 +38,12 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     nvinfo.bump! if _cvuser.privi >= 0
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
 
-    zhbooks = nvinfo.zhbooks.to_a.sort_by!(&.zseed)
-    if zhbooks.empty? || zhbooks.first.zseed != 0
-      zhbooks.unshift(Nvseed.load!(nvinfo, 0))
+    nvseeds = nvinfo.nvseeds.to_a.sort_by!(&.zseed)
+    if nvseeds.empty? || nvseeds.first.zseed != 0
+      nvseeds.unshift(Nvseed.load!(nvinfo, 0))
     end
 
-    if (ubmemo.lr_sname.empty?) && (zhbook = zhbooks.first?)
+    if (ubmemo.lr_sname.empty?) && (zhbook = nvseeds.first?)
       if chinfo = zhbook.chinfo(0)
         ubmemo.lr_sname = zhbook.sname
         ubmemo.lr_chidx = -1
@@ -60,7 +60,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       jb.object {
         jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
         jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
-        jb.field "nvseed", zhbooks.map { |x| ChseedView.new(x) }
+        jb.field "nvseed", nvseeds.map { |x| ChseedView.new(x) }
       }
     end
   end

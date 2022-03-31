@@ -8,7 +8,7 @@ require "./shared/sname_map"
 class CV::Nvseed
   include Clear::Model
 
-  self.table = "zhbooks"
+  self.table = "nvseeds"
   primary_key
 
   column uid : Int64 = 0_i64 # alternative unique index
@@ -201,7 +201,7 @@ class CV::Nvseed
   end
 
   def remap!(force : Bool = false, fetch : Bool = true)
-    seeds = self.nvinfo.zhbooks.to_a.sort_by!(&.zseed)
+    seeds = self.nvinfo.nvseeds.to_a.sort_by!(&.zseed)
     seeds.shift if seeds.first?.try(&.id.== self.id)
 
     seeds.each_with_index do |nvseed, idx|

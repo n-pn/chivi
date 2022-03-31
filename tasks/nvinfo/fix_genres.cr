@@ -10,7 +10,7 @@ class CV::FixGenres
 
       input = [0]
       nvinfo.ysbooks.each { |x| input.concat get_genres("yousuu", x.id.to_s) }
-      nvinfo.zhbooks.each { |x| input.concat get_genres(x.sname, x.snvid) }
+      nvinfo.nvseeds.each { |x| input.concat get_genres(x.sname, x.snvid) }
 
       tally = input.tally.to_a.sort_by(&.[1].-)
       keeps = tally.reject(&.[1].< 2)

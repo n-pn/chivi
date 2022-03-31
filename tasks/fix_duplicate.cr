@@ -20,8 +20,8 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   new_nvinfo = CV::Nvinfo.upsert!(author, fix_btitle)
   nvinfo.update!({subdue_id: new_nvinfo.id})
 
-  zhbooks = nvinfo.zhbooks.to_a.sort_by(&.zseed)
-  zhbooks.each do |zhbook|
+  nvseeds = nvinfo.nvseeds.to_a.sort_by(&.zseed)
+  nvseeds.each do |zhbook|
     next if zhbook.sname == "chivi" || zhbook.sname == "users"
     next if CV::Nvseed.find({nvinfo_id: new_nvinfo.id, zseed: zhbook.zseed})
 
@@ -30,7 +30,7 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
     zhbook.save!
   end
 
-  zseed_ids = new_nvinfo.zhbooks.to_a.map(&.zseed).sort
+  zseed_ids = new_nvinfo.nvseeds.to_a.map(&.zseed).sort
   new_nvinfo.update!({zseed_ids: zseed_ids})
 
   CV::Yscrit.query.where(nvinfo_id: nvinfo.id).to_update.set(nvinfo_id: new_nvinfo.id).execute

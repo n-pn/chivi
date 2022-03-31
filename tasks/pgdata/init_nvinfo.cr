@@ -143,7 +143,7 @@ class CV::InitNvinfo
     puts "- [#{@sname}/seed] <#{idx.colorize.cyan}>, \
             authors: #{authors.size.colorize.cyan}, \
             nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
-            zhbooks: #{Nvseed.query.count.colorize.cyan}"
+            nvseeds: #{Nvseed.query.count.colorize.cyan}"
   end
 
   def seed_nvinfo!(snvid : String, nvinfo_zname : String? = nil, author_zname : String? = nil) : Nil

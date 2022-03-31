@@ -20,7 +20,7 @@ module CV::FixIntros
       else
         bintro = fintro = nil
 
-        nvinfo.zhbooks.to_a.each do |x|
+        nvinfo.nvseeds.to_a.each do |x|
           intro = get_intro(x.sname, x.snvid)
           fintro ||= intro
 

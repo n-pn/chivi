@@ -51,21 +51,25 @@ class CV::YsbookSeed
       ysbook.nvinfo_id = nvinfo.id
       ysbook.save!
 
-      ys_id = nvinfo.ysbook_id
-      if ys_id != entry._id && (old_entry = Ysbook.find(id: ys_id))
-        return if old_entry.voters > entry.voters
+      if old_entry = load_ysbook(nvinfo.ysbook_id, ysbook.id)
+        return if old_entry.voters > ysbook.voters
 
-        puts "!! override: #{nvinfo.ysbook_id} (#{nvinfo.ys_voters}) \
+        puts "!! override: #{old_entry.id} (#{old_entry.voters}) \
               => #{entry._id} (#{entry.voters})".colorize.red
       end
 
       nvinfo.set_shield(entry.shield)
-      nvinfo.fix_scores(ysbook.voters, ysbook.scores)
+      nvinfo.fix_scores!(ysbook.voters, ysbook.scores)
 
       nvinfo.ysbook_id = ysbook.id
       nvinfo.pub_name = entry.pub_name
       nvinfo.pub_link = entry.pub_link
     end
+  end
+
+  def load_ysbook(id : Int64, curr_id : Int64)
+    return if id == 0 || id == curr_id
+    Ysbook.find({id: id})
   end
 
   def load_entry(ynvid : Int32, mode = 0) : YsbookInit?

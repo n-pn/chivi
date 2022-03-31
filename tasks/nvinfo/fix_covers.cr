@@ -36,8 +36,8 @@ class CV::FixCovers
     covers = [] of Tuple(String, String)
     covers << {"chivi", nvinfo.bhash}
 
-    nvinfo.ys_snvid.try { |x| covers << {"yousuu", x.to_s} }
-    nvinfo.zhbooks.to_a.sort_by(&.zseed).each { |x| covers << {x.sname, x.snvid} }
+    covers << {"yousuu", nvinfo.ysbook_id.to_s} if nvinfo.ysbook_id > 0
+    nvinfo.nvseeds.to_a.sort_by(&.zseed).each { |x| covers << {x.sname, x.snvid} }
 
     max_width, out_cover = 0, nil
     out_sname, out_snvid = nil, nil

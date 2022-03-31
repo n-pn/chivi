@@ -35,17 +35,17 @@ class CV::Btitle
     self
   end
 
-  def gen_hname
+  def gen_hname : String
     BookUtil.hanviet(self.zname)
   end
 
-  def gen_vname(bdict : String = "combine") : self
-    vname = BookUtil.vi_btitles.fval(self.zname) || gen_vname_mtl(dict)
+  def gen_vname(bdict : String = "combine") : String
+    vname = BookUtil.vi_btitles.fval(self.zname) || gen_vname_mtl(bdict)
     TextUtil.titleize(vname)
   end
 
-  def gen_vname_mtl(bdict : String)
-    mtl = MtCore.generic_mtl(bhash)
+  def gen_vname_mtl(bdict : String) : String
+    mtl = MtCore.generic_mtl(bdict)
     txt = self.zname
 
     PREFIXES.each do |key, val|
@@ -73,9 +73,7 @@ class CV::Btitle
 
   #########################################
 
-  def self.upsert!(zname : String, bdict : String = "combine") : Author
-    find({zname: zname}) || begin
-      new({zname: zname}).reset!(bdict)
-    end
+  def self.upsert!(zname : String, bdict : String = "combine") : self
+    find({zname: zname}) || new({zname: zname}).reset!(bdict)
   end
 end

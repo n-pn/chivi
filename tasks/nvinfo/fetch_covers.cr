@@ -43,7 +43,7 @@ class CV::FetchCovers
 
     query = Cvbook.query.order_by(weight: :desc)
     query.each_with_cursor(20) do |book|
-      book.zhbooks.to_a.sort_by(&.zseed).first(3).each do |seed|
+      book.nvseeds.to_a.sort_by(&.zseed).first(3).each do |seed|
         # TODO: fix seed_zhwenpg script!
         next if seed.sname == "jx_la" || seed.sname == "chivi"
 

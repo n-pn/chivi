@@ -16,12 +16,12 @@ class CV::NvchapCtrl < CV::BaseCtrl
     force = params["force"]? == "true" && _cvuser.privi >= 0
     zhbook.refresh!(force: force) if zhbook.staled?(_cvuser.privi, force)
 
-    send_json({chseed: nvinfo.zhbooks.to_a.map { |x| ChseedView.new(x) }})
+    send_json({chseed: nvinfo.nvseeds.to_a.map { |x| ChseedView.new(x) }})
   end
 
   def ch_list
     zhbook = load_zhbook
-    bseeds = zhbook.nvinfo.zhbooks
+    bseeds = zhbook.nvinfo.nvseeds
 
     force = params["force"]? == "true" && _cvuser.privi >= 0
     zhbook.refresh!(force: force) if zhbook.staled?(_cvuser.privi, force)
