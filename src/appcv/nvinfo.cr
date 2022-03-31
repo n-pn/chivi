@@ -10,36 +10,34 @@ class CV::Nvinfo
   getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
 
   belongs_to author : Author
-  has_many zhbooks : Nvseed, foreign_key: "nvinfo_id"
-  has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
-  has_many dtopics : Dtopic, foreign_key: "nvinfo_id"
+  belongs_to btitle : Btitle
+
+  has_many nvseeds : Nvseed, foreign_key: "nvinfo_id"
+  # has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
+  # has_many dtopics : Dtopic, foreign_key: "nvinfo_id"
   # has_many yslists : Yslist, through: "yscrits"
 
+  column ysbook_id : Int64 = 0 # yousuu book id
   column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
 
+  ##############
+
+  column zname : String # book chinese name
   column bhash : String # unique string generate from zh_title & zh_author
   column bslug : String # unique string generate from hv_title & bhash
 
   getter dname : String { "-" + bhash }
-
-  ###############
-
-  column zname : String # chinese title
-  column hname : String # hanviet title
-  column vname : String # localization
-
-  column hslug : String # for text searching, auto generated from hname
-  column vslug : String # for text searching, auto generated from vname
 
   ###########
 
   column zseeds : Array(Int32) = [] of Int32
   getter snames : Array(String) { SnameMap.map_str(zseeds) }
 
-  column genres : Array(Int32) = [] of Int32
-  getter bgenre : Array(String) { GenreMap.to_s(genres) }
+  column igenres : Array(Int32) = [] of Int32
+  getter vgenres : Array(String) { GenreMap.to_s(igenres) }
 
-  column labels : Array(String) = [] of String
+  column zlabels : Array(String) = [] of String
+  column vlabels : Array(String) = [] of String
 
   ###########
 
@@ -66,48 +64,40 @@ class CV::Nvinfo
   column atime : Int64 = 0 # value by minute from the epoch, update whenever an registered user viewing book info
   column utime : Int64 = 0 # value by minute from the epoch, max value of zhbook utime and ys_utime
 
-  column cv_utime : Int64 = 0_i64 # official chapter source updates
-  column ys_utime : Int64 = 0_i64 # yousuu book update time
-
   # ranking
 
+  column voters : Int32 = 0
   column weight : Int32 = 0
   column rating : Int32 = 0
-  column voters : Int32 = 0
 
-  column total_clicks : Int32 = 0 # chap views count
-  column dtopic_count : Int32 = 0 # discuss topic count
-  column ubmemo_count : Int32 = 0 # user tracking count
+  column chap_count : Int32 = 0 # chap views count
+  column word_count : Int32 = 0 # chap views count
 
-  column dt_view_count : Int32 = 0
-  column dt_post_utime : Int64 = 0
-  # links
+  column mark_count : Int32 = 0 # discuss topic count
+  column view_count : Int32 = 0 # user tracking count
 
-  column ys_snvid : Int64 = 0   # yousuu book id
+  column post_count : Int32 = 0
+  column board_bump : Int64 = 0
+
+  # origin, copy from yousuu
+
   column pub_name : String = "" # original publisher name, extract from link
   column pub_link : String = "" # original publisher novel page
 
   timestamps # created_at and updated_at
 
-  scope :filter_zname do |input|
-    input ? where("zname LIKE %?%", input) : self
-  end
-
-  scope :filter_vname do |input|
-    input ? where("vslug LIKE %?% OR hslug LIKE %?%", input, input) : self
-    # where("vname LIKE %$% OR hname LIKE %$%", frag, frag) if accent
-  end
-
   scope :filter_btitle do |input|
     if input.nil?
-      self
+      return self
     elsif input =~ /\p{Han}/
       scrub = BookUtil.scrub_zname(input)
-      where("zname LIKE '%#{scrub}%'")
+      query = "zname LIKE '%#{scrub}%'"
     else
       scrub = BookUtil.scrub_vname(input, "-")
-      where("(vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%')")
+      query = "(vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%')"
     end
+
+    where("btitle_id IN (SELECT id from btitles WHERE #{query})")
   end
 
   scope :filter_author do |input|
@@ -124,11 +114,11 @@ class CV::Nvinfo
     where("author_id IN (SELECT id from authors WHERE #{query})")
   end
 
-  scope :filter_zseed do |input|
+  scope :filter_zseeds do |input|
     input ? where("zseed_ids @> ?", [SnameMap.map_int(input)]) : self
   end
 
-  scope :filter_genre do |input|
+  scope :filter_genres do |input|
     input ? where("genre_ids @> ?", GenreMap.map_id(input.split('+'))) : self
   end
 
@@ -186,13 +176,19 @@ class CV::Nvinfo
     end
   end
 
-  def self.upsert!(author : Author, zname : String, remap = false)
-    unless nvinfo = get(author, zname)
-      bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
-      nvinfo = new({author_id: author.id, bhash: bhash, zname: zname})
-      remap = true
+  def self.upsert!(author : Author, zname : String)
+    if nvinfo = get(author, zname)
+      return nvinfo
     end
 
-    nvinfo.tap { |x| x.fix_names! if remap }
+    bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
+    btitle = Btitle.upsert!(zname, bdict: "-" + bhash)
+
+    nvinfo = new({
+      author_id: author.id, btitle_id: btitle.id,
+      zname: zname, bhash: bhash,
+    })
+
+    nvinfo.tap(&.save!)
   end
 end

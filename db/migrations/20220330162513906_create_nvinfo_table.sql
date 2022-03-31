@@ -1,9 +1,4 @@
 -- +micrate Up
--- SQL in section 'Up' is executed when this migration is applied
-
--- +micrate Down
--- SQL section 'Down' is executed when this migration is rolled back
--- +micrate Up
 CREATE TABLE nvinfos (
   id bigserial primary key,
 
@@ -15,14 +10,18 @@ CREATE TABLE nvinfos (
 
   -- unique identity
 
+  zname text not null,
   bhash text unique not null,
   bslug text unique not null,
 
   -- extra
 
   zseeds int[] not null default '{}',
-  genres int[] not null default '{}',
-  labels text[] not null default '{}',
+
+  igenres int[] not null default '{}',
+
+  zlabels text[] not null default '{}',
+  vlabels text[] not null default '{}',
 
   scover text not null default '', -- source cover url
   bcover text not null default '', -- local cover name
@@ -47,12 +46,8 @@ CREATE TABLE nvinfos (
   chap_count int not null default 0, -- chapter count
   word_count int not null default 0, -- chapter count
 
-  star_count int not null default 0,
+  mark_count int not null default 0,
   view_count int not null default 0,
-
-  -- cvuser stats
-  crit_count int not null default 0, -- review created
-  list_count int not null default 0, --
 
   -- origin
 
@@ -75,8 +70,8 @@ CREATE UNIQUE INDEX nvinfo_unique_idx ON nvinfos (author_id, btitle_id);
 ----
 
 CREATE INDEX nvinfo_zseed_idx ON nvinfos using GIN (zseeds gin__int_ops);
-CREATE INDEX nvinfo_genre_idx ON nvinfos using GIN (genres gin__int_ops);
-CREATE INDEX nvinfo_label_idx ON nvinfos using GIN (labels);
+CREATE INDEX nvinfo_genre_idx ON nvinfos using GIN (igenres gin__int_ops);
+CREATE INDEX nvinfo_label_idx ON nvinfos using GIN (vlabels);
 
 ---
 
@@ -94,6 +89,7 @@ CREATE INDEX nvinfo_rating_idx ON nvinfos (rating);
 ---
 
 CREATE INDEX nvinfo_yousuu_idx ON nvinfos (ysbook_id);
+CREATE INDEX nvinfo_origin_idx ON nvinfos (pub_name);
 
 -- +micrate Down
 DROP TABLE IF EXISTS nvinfos;

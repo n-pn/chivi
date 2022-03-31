@@ -17,6 +17,12 @@ class CV::Btitle
 
   timestamps # created_at and updated_at
 
+  def reset!(bdict : String = "combine")
+    self.set_hname(gen_hname)
+    self.set_vname(gen_vname(bdict))
+    self.save!
+  end
+
   def set_hname(hname : String = gen_hname) : self
     self.hname = hname
     self.hslug = BookUtil.make_slug(hname)
@@ -67,9 +73,9 @@ class CV::Btitle
 
   #########################################
 
-  def self.upsert!(zname : String) : Author
+  def self.upsert!(zname : String, bdict : String = "combine") : Author
     find({zname: zname}) || begin
-      new({zname: zname}).set_hname.set_vname.save!
+      new({zname: zname}).reset!(bdict)
     end
   end
 end

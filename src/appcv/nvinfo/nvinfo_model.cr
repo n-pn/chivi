@@ -1,8 +1,8 @@
 module CV::NvinfoModel
   def add_nvseed(zseed : Int32) : Nil
-    return if self.zseed_ids.includes?(zseed)
-    self.zseed_ids.push(zseed).sort!
-    self.zseed_ids_column.dirty!
+    return if self.zseeds.includes?(zseed)
+    self.zseeds.push(zseed).sort!
+    self.zseeds_column.dirty!
   end
 
   def set_zgenre(genres : Array(String), force = false) : Nil
@@ -10,11 +10,11 @@ module CV::NvinfoModel
   end
 
   def set_genres(genres : Array(String), force = false) : Nil
-    return unless force || self.genre_ids.empty?
-    genres_ids = GenreMap.map_id(genres)
+    return unless force || self.igenres.empty?
+    igenres = GenreMap.map_id(genres)
 
-    self.genre_ids = genres_ids.empty? ? [0] : genres_ids
-    self.genre_ids_column.dirty!
+    self.igenres = igenres.empty? ? [0] : igenres
+    self.igenres_column.dirty!
   end
 
   def set_zintro(lines : Array(String), force = false) : Nil
@@ -91,14 +91,9 @@ module CV::NvinfoModel
     self.weight = scores + Math.log(self.total_clicks + 10).to_i
   end
 
-  def fix_names!
-    self.vname = BookUtil.btitle_vname(self.zname, self.bhash)
-    self.vslug = BookUtil.make_slug(self.vname)
-
-    self.hname = BookUtil.hanviet(self.zname)
-    self.hslug = BookUtil.make_slug(self.hname)
-
-    self.bslug = self.hslug[1..] + bhash[0..3]
+  def fix_title!(bdict : String = self.dname)
+    self.btitle.reset!(bdict)
+    self.bslug = self.btitle.hslug[1..] + bhash[0..3]
     self.save!
   end
 end

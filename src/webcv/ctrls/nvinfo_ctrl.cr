@@ -9,8 +9,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .where("shield < 2")
         .filter_btitle(params["btitle"]?)
         .filter_author(params["author"]?)
-        .filter_zseed(params["sname"]?)
-        .filter_genre(params["genre"]?)
+        .filter_zseeds(params["sname"]?)
+        .filter_genres(params["genre"]?)
         .filter_origin(params["origin"]?)
         .filter_cvuser(params["uname"]?, params["bmark"]?)
 
@@ -18,7 +18,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     total = query.dup.limit(offset + limit * 3).offset(0).count
 
     limit = limit == 24 ? 25 : limit
-    query.limit(limit).offset(offset).with_author
+    query.limit(limit).offset(offset).with_author.with_btitle
 
     set_cache :public, maxage: 10
 
