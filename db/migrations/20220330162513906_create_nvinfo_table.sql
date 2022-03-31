@@ -10,21 +10,13 @@ CREATE TABLE nvinfos (
   author_id bigint not null default 0,
   btitle_id bigint not null default 0,
 
+  ysbook_id bigint not null default 0,
   subdue_id bigint not null default 0,
 
   -- unique identity
 
   bhash text unique not null,
   bslug text unique not null,
-
-  -- btitle
-
-  zname text not null,
-  hname text not null default '',
-  vname text not null default '',
-
-  hslug text not null default '',
-  vslug text not null default '',
 
   -- extra
 
@@ -64,9 +56,8 @@ CREATE TABLE nvinfos (
 
   -- origin
 
-  ysbook_id bigint not null default 0,
-  root_link text not null default '',
-  root_name text not null default '',
+  pub_link text not null default '',
+  pub_name text not null default '',
 
   -- dboard
 
@@ -79,11 +70,7 @@ CREATE TABLE nvinfos (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX nvinfo_unique_idx ON nvinfos (author_id, zname);
-
-CREATE INDEX nvinfo_zname_idx ON nvinfos using GIN (zname gin_trgm_ops);
-CREATE INDEX nvinfo_hname_idx ON nvinfos using GIN (hslug gin_trgm_ops);
-CREATE INDEX nvinfo_vname_idx ON nvinfos using GIN (vslug gin_trgm_ops);
+CREATE UNIQUE INDEX nvinfo_unique_idx ON nvinfos (author_id, btitle_id);
 
 ----
 

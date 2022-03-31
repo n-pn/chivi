@@ -4,17 +4,16 @@ class CV::Yscrit
   self.table = "yscrits"
   primary_key
 
+  column origin_id : String = ""
+
   belongs_to nvinfo : Nvinfo
   column ysbook_id : Int64 = 0_i64
 
   belongs_to ysuser : Ysuser
   belongs_to yslist : Yslist?
 
-  # has_many ysrepls : Ysrepl
-
-  column origin_id : String
-
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
+  column _sort : Int32 = 0
 
   column ztext : String = "" # orginal comment
   column vhtml : String = "" # translated comment
@@ -22,8 +21,9 @@ class CV::Yscrit
   column utime : Int64 = 0 # list changed at by seconds from epoch
   column stime : Int64 = 0 # list checked at by minutes from epoch
 
+  column repl_total : Int32 = 0
+  column repl_count : Int32 = 0
   column like_count : Int32 = 0
-  column repl_count : Int32 = 0 # reply count, optional
 
   timestamps
 

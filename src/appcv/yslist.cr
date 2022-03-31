@@ -5,8 +5,8 @@ class CV::Yslist
   primary_key
 
   belongs_to ysuser : Ysuser
-  has_many yscrits : Yscrit
-  has_many nvinfos : Nvinfo, through: "yscrits"
+  # has_many yscrits : Yscrit
+  # has_many nvinfos : Nvinfo, through: "yscrits"
 
   column origin_id : String
 
@@ -16,10 +16,10 @@ class CV::Yslist
   column zdesc : String # original description
   column vdesc : String # translated description
 
-  column aim_at : String = "male" # target demographic: male or female
+  column group : String = "male" # target demographic: male or female
 
-  column bumped : Int64 = 0 # list checked at by minutes from epoch
-  column mftime : Int64 = 0 # list changed at by seconds from epoch
+  column utime : Int64 = 0 # list checked at by minutes from epoch
+  column stime : Int64 = 0 # list changed at by seconds from epoch
 
   column book_count : Int32 = 0
   column like_count : Int32 = 0

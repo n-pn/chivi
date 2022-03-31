@@ -4,9 +4,9 @@ class CV::Ysuser
   self.table = "ysusers"
   primary_key
 
-  has_many yslists : Yslist, foreign_key: "ysuser_id"
-  has_many yscrits : Yscrit, foreign_key: "ysuser_id"
-  has_many nvinfos : Nvinfo, through: "yscrits"
+  # has_many yslists : Yslist, foreign_key: "ysuser_id"
+  # has_many yscrits : Yscrit, foreign_key: "ysuser_id"
+  # has_many nvinfos : Nvinfo, through: "yscrits"
 
   column zname : String
   column vname : String

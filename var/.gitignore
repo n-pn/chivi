@@ -1,8 +1,2 @@
-_proxy/.works/*.txt
-_ulogs/*.log
-chtexts
-chtexts/**
-pg_data/**
-nvinfos.tsv
-dtopics
-dtposts
+*
+!.gitignore

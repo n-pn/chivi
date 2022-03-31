@@ -1,8 +1,9 @@
 -- +micrate Up
 CREATE TABLE yslists (
   id bigserial primary key,
+  origin_id text not null unique,
 
-  ysuser_id bigint not null,
+  ysuser_id bigint not null default 0,
 
   zname text not null,
   vname text not null,

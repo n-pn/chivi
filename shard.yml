@@ -48,7 +48,7 @@ targets:
   upload_zhtext:
     main: tasks/zhtext/upload_data.cr
 
-  ys_info_cr:
+  ys_book_cr:
     main: tasks/yousuu/ys_serial.cr
 
   ys_crit_cr:

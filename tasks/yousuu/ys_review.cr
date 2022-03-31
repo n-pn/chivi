@@ -9,9 +9,8 @@ class CV::CrawlYscrit
   def initialize(regen_proxy = false)
     @http = HttpClient.new(regen_proxy)
 
-    Nvinfo.query.order_by(id: :desc).each_with_cursor(20) do |nvinfo|
-      next unless ynvid = nvinfo.ys_snvid
-      page_count = (nvinfo.yscrit_count - 1) // 20 + 1
+    Ysbook.query.order_by(id: :desc).each_with_cursor(20) do |ysbook|
+      page_count = (ysbook.crit_total - 1) // 20 + 1
       @pages[ynvid] = page_count > 1 ? page_count : 1
     end
   end
@@ -40,7 +39,8 @@ class CV::CrawlYscrit
 
         spawn do
           label = "(#{page}) <#{idx}/#{qsize}> [#{snvid}]"
-          inbox.send(crawl_crit!(snvid, page, label: label))
+          state = crawl_crit!(snvid, page, label: label)
+          inbox.send(state)
         end
 
         inbox.receive.try { |s| fails << s } if idx > limit
@@ -66,6 +66,9 @@ class CV::CrawlYscrit
 
     crits = YscritRaw::Json.parse_list(File.read(file))
     crits.each { |json| YscritRaw.seed!(json) }
+
+    count = Yscrit.query.where(ysbook_id: snvid).count
+    Ysbook.find(snvid).update({crit_count: count})
   rescue err
     puts err
   end
