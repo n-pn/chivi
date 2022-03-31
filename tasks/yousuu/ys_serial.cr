@@ -68,12 +68,12 @@ class CV::CrawlYsbook
   end
 
   private def expiry_time(file : String) : Time::Span
-    return 6.days unless data = CV::RawYsbook.load(file)
+    return 10.days unless data = CV::RawYsbook.load(file)
 
-    span = 2.days
-    # try again in 2 4 6 days
+    span = 3.days
+    # try again in 3 6 9 days
     span *= (data.status + 1)
-    # try again in 4 8 12 days
+    # try again in 6 12 18 days if no voter
     data.voters == 0 ? span * 2 : span
   rescue
     6.days
@@ -82,7 +82,7 @@ end
 
 crawl_mode = :tail
 recheck_proxy = false
-upper_book_id = File.read("#{__DIR__}/shared/upper_nvid.txt").strip.to_i? || 270000
+upper_book_id = File.read("_db/yousuu/limit.txt").strip.to_i? || 280000
 
 OptionParser.parse(ARGV) do |opt|
   opt.on("-h", "Crawl from beginning") { crawl_mode = :head }

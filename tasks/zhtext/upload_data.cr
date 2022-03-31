@@ -44,11 +44,9 @@ module CV::UploadChseed
     wkrs = 6 if wkrs > 6
     chan = Channel(Nil).new(wkrs + 1)
 
-    cmd = %{rsync -aiWS --inplace --no-p -e "ssh -T -c aes128-ctr -o Compression=no -x"}
+    cmd = %{rsync -aiWS --inplace --no-p --exclude="*.zip" -e "ssh -T -c aes128-ctr -o Compression=no -x"}
 
     dirs.each_with_index(1) do |snvid, idx|
-      chan.receive if idx > wkrs
-
       spawn do
         text_dir = File.join(target_dir, snvid)
         puts "- <#{idx}/#{dirs.size}> [#{text_dir}]".colorize.cyan
@@ -56,6 +54,8 @@ module CV::UploadChseed
         puts output.empty? ? "Nothing to upload" : output.colorize.yellow
         chan.send(nil)
       end
+
+      chan.receive if idx > wkrs
     end
 
     wkrs.times { chan.receive }

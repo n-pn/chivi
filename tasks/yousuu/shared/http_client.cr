@@ -1,5 +1,4 @@
 require "colorize"
-require "file_utils"
 
 class CV::HttpClient
   class Proxy
@@ -9,9 +8,9 @@ class CV::HttpClient
     end
   end
 
-  PROXY_DIR = "var/_proxy"
+  PROXY_DIR = "_db/yousuu/_proxy"
   WORKS_DIR = "#{PROXY_DIR}/.works"
-  ::FileUtils.mkdir_p(WORKS_DIR)
+  Dir.mkdir_p(WORKS_DIR)
 
   getter proxies = [] of Proxy
 
@@ -61,7 +60,7 @@ class CV::HttpClient
 
     case body
     when .starts_with?("{\"success"), .includes?("未找到该图书")
-      ::FileUtils.mkdir_p(File.dirname(file))
+      Dir.mkdir_p(File.dirname(file))
       File.write(file, body)
       puts "- #{label} saved".colorize.green
 

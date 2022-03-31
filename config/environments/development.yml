@@ -14,7 +14,7 @@ port_reuse: true
 process_count: 1
 # ssl_key_file:
 # ssl_cert_file:
-database_url: postgres://postgres:postgres@localhost:5432/chivi_v2
+database_url: postgres://postgres:postgres@localhost:5432/chivi_dev
 auto_reload: true
 
 session:
