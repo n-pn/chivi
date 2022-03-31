@@ -6,18 +6,16 @@ module CV::NvinfoSeed
 
   DIR = "db/seed_data"
 
-  class_getter authors = {} of String => CV::Author
+  class_getter authors = {} of String => Author
+
   class_getter ratings = Tabkv.new("#{DIR}/rating_fix.tsv", :force)
 
-  def get_author(zname : String) : Author?
-    @@authors[zname] ||= begin
-      return unless author = Author.find({zname: zname})
-      author
-    end
+  def get_author(zname : String)
+    authors[zname] ||= Author.find({zname: zname}) || return
   end
 
   def get_author!(zname : String) : Author
-    @@authors[zname] ||= Author.upsert!(zname)
+    authors[zname] ||= Author.upsert!(zname)
   end
 
   def get_scores(btitle : String, author : String)

@@ -2,7 +2,7 @@
 CREATE TABLE authors (
   id bigserial primary key,
 
-  zname text unique not null,
+  zname text not null unique,
 
   vname text not null default '',
   vslug text not null default '',
@@ -11,6 +11,7 @@ CREATE TABLE authors (
   book_count int not null default 0,
 
   _sort int not null default 0,
+
   created_at timestamptz not null default CURRENT_TIMESTAMP,
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );

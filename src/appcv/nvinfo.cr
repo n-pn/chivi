@@ -96,16 +96,14 @@ class CV::Nvinfo
 
   scope :filter_btitle do |input|
     if input.nil?
-      return self
+      self
     elsif input =~ /\p{Han}/
       scrub = BookUtil.scrub_zname(input)
-      query = "zname LIKE '%#{scrub}%'"
+      where("zname LIKE '%#{scrub}%'")
     else
       scrub = BookUtil.scrub_vname(input, "-")
-      query = "(vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%')"
+      where("(vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%')")
     end
-
-    where("btitle_id IN (SELECT id from btitles WHERE #{query})")
   end
 
   scope :filter_author do |input|

@@ -42,7 +42,7 @@ module CV::UploadChseed
 
     wkrs = dirs.size
     wkrs = 6 if wkrs > 6
-    chan = Channel(Nil).new(wkrs + 1)
+    chan = Channel(Nil).new(wkrs)
 
     cmd = %{rsync -aiWS --inplace --no-p --exclude="*.zip" -e "ssh -T -c aes128-ctr -o Compression=no -x"}
 
@@ -52,6 +52,7 @@ module CV::UploadChseed
         puts "- <#{idx}/#{dirs.size}> [#{text_dir}]".colorize.cyan
         output = `#{cmd} "#{text_dir}" "#{host}:#{remote_dir}"`
         puts output.empty? ? "Nothing to upload" : output.colorize.yellow
+      ensure
         chan.send(nil)
       end
 

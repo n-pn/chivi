@@ -13,6 +13,7 @@ CREATE TABLE ysbooks (
   -- book info
 
   utime bigint not null default 0,
+  status int not null default 0,
   word_count int not null default 0,
 
   --  origin

@@ -16,6 +16,7 @@ class CV::Ysbook
 
   # book info
   column utime : Int64 = 0_i64 # yousuu book update time
+  column status : Int32 = 0
   column word_count : Int32 = 0
 
   # origin

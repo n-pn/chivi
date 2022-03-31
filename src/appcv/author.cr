@@ -49,9 +49,8 @@ class CV::Author
   end
 
   def self.create!(zname : String, vname : String) : Author
-    vslug = "-#{BookUtil.scrub_vname(vname, "-")}-"
-    author = new({zname: zname, vname: vname, vslug: vslug})
-    author.tap(&.save!)
+    vslug = BookUtil.make_slug(vname)
+    new({zname: zname, vname: vname, vslug: vslug}).tap(&.save!)
   end
 
   CACHE_INT = RamCache(Int64, self).new(2048)

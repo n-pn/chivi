@@ -2,7 +2,7 @@ require "json"
 
 class CV::YsbookInit
   INP_DIR = "_db/yousuu/infos"
-  OUT_DIR = "db/seed_data/ysbooks"
+  OUT_DIR = "var/yousuu/ysbooks"
 
   def self.map_path(ynvid : Int32)
     group = (ynvid // 1000).to_s
@@ -16,6 +16,11 @@ class CV::YsbookInit
   def self.out_path(ynvid : Int32)
     File.join(OUT_DIR, map_path(ynvid))
   end
+
+  # modes:
+  # 0 => only check updated
+  # 1 => check all parsed
+  # 2 => reparse all
 
   def self.load(ynvid : Int32, mode = 0)
     inp_file = self.inp_path(ynvid)
@@ -89,7 +94,7 @@ class CV::YsbookInit
 
     @word_count = fix_word_count(parser.count_word)
     @crit_count = parser.comment_count
-    @list_count = parser.list_count
+    @list_count = parser.list_total
 
     @pub_link = parser.source[0]?.try(&.link) || ""
     @pub_name = extract_pub_name(@pub_link)
@@ -104,9 +109,9 @@ class CV::YsbookInit
     File.utime(utime, utime, out_file)
   end
 
-  def good?
+  def keep?
     return false if @btitle.blank? || @author.blank?
-    @list_count > 2 || @crit_count > 4
+    @list_count > 1 || @crit_count > 3 || @voters > 9
   end
 
   # ###### fix data

@@ -2,22 +2,11 @@ require "./nvinfo_seed"
 
 class CV::YsbookSeed
   def seed!(upper = 27000, mode = 0)
-    workers = 8
-    channel = Channel(Nil).new(workers)
-
     1.upto(upper) do |ynvid|
       NvinfoSeed.log("yousuu", "#{ynvid}/#{upper}") if ynvid % 1000 == 0
-
-      spawn do
-        seed_entry!(ynvid, mode: mode)
-      ensure
-        channel.send(nil)
-      end
-
-      channel.receive if ynvid > workers
+      seed_entry!(ynvid, mode: mode)
     end
 
-    workers.times { channel.receive }
     NvinfoSeed.log("yousuu", "#{upper}/#{upper}")
   end
 
@@ -28,34 +17,38 @@ class CV::YsbookSeed
   def seed_entry!(entry : YsbookInit)
     ysbook = Ysbook.upsert!(entry._id.to_i64)
 
-    ysbook.btitle = entry.btitle
-    ysbook.author = entry.author
+    if ysbook.info_stime < entry.stime
+      ysbook.btitle = entry.btitle
+      ysbook.author = entry.author
 
-    ysbook.voters = entry.voters
-    ysbook.scores = entry.voters &* entry.rating
+      ysbook.voters = entry.voters
+      ysbook.scores = entry.voters &* entry.rating
 
-    ysbook.pub_name = entry.pub_name
-    ysbook.pub_link = entry.pub_link
+      ysbook.pub_name = entry.pub_name
+      ysbook.pub_link = entry.pub_link
 
-    ysbook.list_total = entry.list_count
-    ysbook.crit_total = entry.crit_count
+      ysbook.list_total = entry.list_count
+      ysbook.crit_total = entry.crit_count
 
-    ysbook.list_count = entry.list_count if ysbook.list_count == 0
-    ysbook.crit_count = entry.crit_count if ysbook.crit_count == 0
+      ysbook.list_count = entry.list_count if ysbook.list_count == 0
+      ysbook.crit_count = entry.crit_count if ysbook.crit_count == 0
 
-    ysbook.utime = entry.update_int
-    ysbook.word_count = entry.word_count
-    ysbook.info_stime = entry.stime
+      ysbook.utime = entry.update_int
+      ysbook.status = entry.status
+
+      ysbook.word_count = entry.word_count
+      ysbook.info_stime = entry.stime
+    end
 
     NvinfoSeed.seed!(entry) do |nvinfo|
       ysbook.nvinfo_id = nvinfo.id
       ysbook.save!
 
       if old_entry = load_ysbook(nvinfo.ysbook_id, ysbook.id)
-        return if old_entry.voters > ysbook.voters
+        return if ysbook.voters <= old_entry.voters
 
         puts "!! override: #{old_entry.id} (#{old_entry.voters}) \
-              => #{entry._id} (#{entry.voters})".colorize.red
+              => #{entry._id} (#{entry.voters})".colorize.yellow
       end
 
       nvinfo.set_shield(entry.shield)
@@ -76,7 +69,7 @@ class CV::YsbookSeed
     return unless entry = YsbookInit.load(ynvid, mode: mode)
     NvinfoSeed.fix_names!(entry)
 
-    return entry if entry.good? || NvinfoSeed.get_author(entry.author)
+    return entry if entry.keep? || NvinfoSeed.get_author(entry.author)
   rescue err
     puts [ynvid, err.colorize.red]
   end
