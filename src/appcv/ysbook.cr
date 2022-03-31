@@ -40,4 +40,7 @@ class CV::Ysbook
 
   #########################################
 
+  def self.upsert!(id : Int64)
+    find({id: id}) || new({id: id})
+  end
 end

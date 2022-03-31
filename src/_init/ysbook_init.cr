@@ -63,6 +63,8 @@ class CV::YsbookInit
   getter pub_link = ""
   getter pub_name = ""
 
+  getter stime = 0_i64
+
   def initialize(parser : Parser)
     @_id = parser._id
 
@@ -93,12 +95,12 @@ class CV::YsbookInit
     @pub_name = extract_pub_name(@pub_link)
   end
 
-  def save!(utime : Int64 = Time.utc.to_unix) : Nil
+  def save!(@stime : Int64 = Time.utc.to_unix) : Nil
     out_file = YsbookInit.out_path(_id)
     FileUtils.mkdir_p(File.dirname(out_file))
     File.write(out_file, self.to_pretty_json)
 
-    utime = Time.unix(utime)
+    utime = Time.unix(stime)
     File.utime(utime, utime, out_file)
   end
 

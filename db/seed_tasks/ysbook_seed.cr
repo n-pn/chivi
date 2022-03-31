@@ -26,26 +26,45 @@ class CV::YsbookSeed
   end
 
   def seed_entry!(entry : YsbookInit)
+    ysbook = Ysbook.upsert!(entry._id.to_i64)
+
+    ysbook.btitle = entry.btitle
+    ysbook.author = entry.author
+
+    ysbook.voters = entry.voters
+    ysbook.scores = entry.voters &* entry.rating
+
+    ysbook.pub_name = entry.pub_name
+    ysbook.pub_link = entry.pub_link
+
+    ysbook.list_total = entry.list_count
+    ysbook.crit_total = entry.crit_count
+
+    ysbook.list_count = entry.list_count if ysbook.list_count == 0
+    ysbook.crit_count = entry.crit_count if ysbook.crit_count == 0
+
+    ysbook.utime = entry.update_int
+    ysbook.word_count = entry.word_count
+    ysbook.info_stime = entry.stime
+
     NvinfoSeed.seed!(entry) do |nvinfo|
-      if nvinfo.ys_snvid != entry._id
-        return if nvinfo.ys_voters >= entry.voters
-        puts "!! override: #{nvinfo.ys_snvid} (#{nvinfo.ys_voters}) \
+      ysbook.nvinfo_id = nvinfo.id
+      ysbook.save!
+
+      ys_id = nvinfo.ysbook_id
+      if ys_id != entry._id && (old_entry = Ysbook.find(id: ys_id))
+        return if old_entry.voters > entry.voters
+
+        puts "!! override: #{nvinfo.ysbook_id} (#{nvinfo.ys_voters}) \
               => #{entry._id} (#{entry.voters})".colorize.red
       end
 
-      nvinfo.shield = entry.shield
-      nvinfo.set_ys_scores(entry.voters, entry.rating)
+      nvinfo.set_shield(entry.shield)
+      nvinfo.fix_scores(ysbook.voters, ysbook.scores)
 
-      nvinfo.ys_snvid = entry._id.to_i64
-      nvinfo.ys_utime = entry.update_int
-
+      nvinfo.ysbook_id = ysbook.id
       nvinfo.pub_name = entry.pub_name
       nvinfo.pub_link = entry.pub_link
-
-      nvinfo.yslist_count = entry.list_count
-      nvinfo.yscrit_count = entry.crit_count
-
-      nvinfo.ys_word_count = entry.word_count
     end
   end
 
@@ -60,7 +79,7 @@ class CV::YsbookSeed
 
   ##################
 
-  MAX_FILE = "tasks/_config/ysbook_max.txt"
+  MAX_FILE = "_db/yousuu/limit.txt"
 
   def self.run!(argv = ARGV)
     upper = File.read(MAX_FILE).strip.to_i

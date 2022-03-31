@@ -56,39 +56,38 @@ module CV::NvinfoModel
     self.shield = shield if force || shield > self.shield
   end
 
-  def set_ys_scores(voters : Int32, rating : Int32) : Nil
-    self.ys_voters = voters
-    self.ys_scores = voters * rating
-    fix_scores!
-  end
+  # def set_ys_scores(voters : Int32, rating : Int32) : Nil
+  #   self.ys_voters = voters
+  #   self.ys_scores = voters * rating
+  #   fix_scores!
+  # end
 
-  # trigger when user add a new book review
-  def add_cv_rating(rating : Int32) : Nil
-    self.cv_voters += 1
-    self.cv_scores += rating
-    fix_scores!
-  end
+  # # trigger when user add a new book review
+  # def add_cv_rating(rating : Int32) : Nil
+  #   self.cv_voters += 1
+  #   self.cv_scores += rating
+  #   fix_scores!
+  # end
 
-  # trigger when user change book rating in his review
-  def fix_cv_rating(new_rating : Int32, old_rating : Int32) : Nil
-    return if new_rating == old_rating
-    self.cv_scores = self.cv_scores - old_rating + new_rating
-    fix_scores!
-  end
+  # # trigger when user change book rating in his review
+  # def fix_cv_rating(new_rating : Int32, old_rating : Int32) : Nil
+  #   return if new_rating == old_rating
+  #   self.cv_scores = self.cv_scores - old_rating + new_rating
+  #   fix_scores!
+  # end
 
   # recalculate
-  def fix_scores! : Nil
-    self.voters = self.cv_voters + self.ys_voters
-    scores = self.cv_scores + self.ys_scores
+  def fix_scores!(voters : Int32, scores : Int32) : Nil
+    self.voters = voters
 
-    if self.voters < 30
-      scores += (30 - self.voters) * 45
+    if voters < 30
+      scores &+= (30 - voters) &* 45
       self.rating = scores // 30
     else
-      self.rating = scores // self.voters
+      self.rating = scores // voters
     end
 
-    self.weight = scores + Math.log(self.total_clicks + 10).to_i
+    self.weight = scores + Math.log(self.view_count + 10).to_i
   end
 
   def fix_title!(bdict : String = self.dname)
