@@ -8,8 +8,9 @@ class CV::FixGenres
       index += 1
       puts "- [fix_genres] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
-      input = [0]
-      nvinfo.ysbooks.each { |x| input.concat get_genres("yousuu", x.id.to_s) }
+      input = [] of Int32
+
+      input.concat get_genres("yousuu", nvinfo.ysbook_id) if nvinfo.ysbook_id > 0
       nvinfo.nvseeds.each { |x| input.concat get_genres(x.sname, x.snvid) }
 
       tally = input.tally.to_a.sort_by(&.[1].-)
@@ -18,7 +19,7 @@ class CV::FixGenres
       output = keeps.empty? ? tally.map(&.[0]).first(2) : keeps.map(&.[0]).first(3)
       output.reject!(&.== 0) if output.size > 1
 
-      nvinfo.bgenre_ids = output
+      nvinfo.igenres = output
       nvinfo.save!
     end
   end

@@ -10,7 +10,7 @@ class CV::Nvinfo
   getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
 
   belongs_to author : Author
-  belongs_to btitle : Btitle
+  # belongs_to btitle : Btitle
 
   has_many nvseeds : Nvseed, foreign_key: "nvinfo_id"
   # has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
@@ -22,7 +22,15 @@ class CV::Nvinfo
 
   ##############
 
-  column zname : String # book chinese name
+  column zname : String      # book chinese name
+  column hname : String = "" # hanviet title
+  column vname : String = "" # localization
+
+  column hslug : String = "" # for text searching, auto generated from hname
+  column vslug : String = "" # for text searching, auto generated from vname
+
+  #################
+
   column bhash : String # unique string generate from zh_title & zh_author
   column bslug : String # unique string generate from hv_title & bhash
 
@@ -177,18 +185,12 @@ class CV::Nvinfo
   end
 
   def self.upsert!(author : Author, zname : String)
-    if nvinfo = get(author, zname)
-      return nvinfo
+    unless nvinfo = get(author, zname)
+      bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
+      nvinfo = new({author_id: author.id, zname: zname, bhash: bhash})
+      nvinfo.fix_title!
     end
 
-    bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
-    btitle = Btitle.upsert!(zname, bdict: "-" + bhash)
-
-    nvinfo = new({
-      author_id: author.id, btitle_id: btitle.id,
-      zname: zname, bhash: bhash,
-    })
-
-    nvinfo.tap(&.save!)
+    nvinfo
   end
 end

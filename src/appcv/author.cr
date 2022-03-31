@@ -6,24 +6,27 @@ class CV::Author
   self.table = "authors"
   primary_key
 
-  has_many nvinfos : Nvinfo
+  # has_many nvinfos : Nvinfo
 
   column zname : String
   column vname : String
   column vslug : String # for text search
 
-  column weight : Int32 = 0 # weight of author's top rated book
+  column vdesc : String = ""
+  column book_count : Int32 = 0
+
+  column _sort : Int32 = 0 # weight of author's top rated book
 
   timestamps
 
   getter books : Array(Nvinfo) do
-    books = Nvinfo.query.where({author_id: self.id}).sort_by("weight")
+    books = Nvinfo.query.where({author_id: self.id}).sort_by("_sort")
     books.each { |x| x.author = self }
     books.to_a
   end
 
-  def update_weight!(weight : Int32)
-    update!(weight: weight) if weight > self.weight
+  def update_sort!(_sort : Int32)
+    update!(_sort: _sort) if _sort > self._sort
   end
 
   ####################

@@ -87,18 +87,6 @@ module CV::BookUtil
     end
   end
 
-  def author_vname(author : String) : String
-    vi_authors.fval(author) || hanviet(author)
-  end
-
-  def btitle_vname(zname : String, bhash : String = "combine") : String
-    unless vname = vi_btitles.fval(zname)
-      vname = convert_btitle_vname(bhash, zname)
-    end
-
-    TextUtil.titleize(vname)
-  end
-
   def hanviet(input : String, caps : Bool = true) : String
     return input unless input =~ /\p{Han}/ # return if no hanzi found
 
@@ -116,7 +104,29 @@ module CV::BookUtil
     lines.map! { |line| cvmtl.cv_plain(line).to_s }
   end
 
-  PREFIXES = {
+  ###################
+
+  def author_vname(author : String) : String
+    vi_authors.fval(author) || hanviet(author)
+  end
+
+  def btitle_vname(zname : String, bdict : String = "combine") : String
+    vname = vi_btitles.fval(zname) || btitle_vname_mtl(zname, bdict)
+    TextUtil.titleize(vname)
+  end
+
+  def btitle_vname_mtl(zname : String, bdict : String) : String
+    cvmtl = MtCore.generic_mtl(bdict)
+
+    NAME_PREFIXES.each do |key, val|
+      next unless zname.starts_with?(key)
+      return val + cvmtl.translate(zname[key.size..])
+    end
+
+    cvmtl.translate(zname)
+  end
+
+  NAME_PREFIXES = {
     "火影之" => "NARUTO: ",
     "民国之" => "Dân quốc: ",
     "三国之" => "Tam Quốc: ",
@@ -130,19 +140,6 @@ module CV::BookUtil
     "哈利波特之" => "Harry Potter: ",
     "网游三国之" => "Tam Quốc game online: ",
   }
-
-  def convert_btitle_vname(bhash : String, zname : String)
-    mtl = MtCore.generic_mtl(bhash)
-    pre = ""
-
-    PREFIXES.each do |key, val|
-      next unless zname.starts_with?(key)
-      pre, zname = val, zname.sub(/^#{key}/, "")
-      break
-    end
-
-    pre + mtl.cv_plain(zname).to_s
-  end
 end
 
 # puts CV::BookUtil.scrub_zname("9205.第9205章 test 番外 test??!!")

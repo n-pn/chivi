@@ -91,8 +91,13 @@ module CV::NvinfoModel
   end
 
   def fix_title!(bdict : String = self.dname)
-    self.btitle.reset!(bdict)
-    self.bslug = self.btitle.hslug[1..] + bhash[0..3]
+    self.vname = BookUtil.btitle_vname(self.zname, self.bhash)
+    self.vslug = BookUtil.make_slug(self.vname)
+
+    self.hname = BookUtil.hanviet(self.zname, caps: true)
+    self.hslug = BookUtil.make_slug(self.hname)
+
+    self.bslug = self.hslug[1..] + bhash[0..3]
     self.save!
   end
 end

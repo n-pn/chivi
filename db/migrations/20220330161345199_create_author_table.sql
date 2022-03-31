@@ -5,10 +5,9 @@ CREATE TABLE authors (
   zname text unique not null,
 
   vname text not null default '',
-  vdesc text not null default '',
-
   vslug text not null default '',
 
+  vdesc text not null default '',
   book_count int not null default 0,
 
   _sort int not null default 0,
