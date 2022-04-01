@@ -49,7 +49,7 @@
   let d_tab = 2
   $: {
     if (dname == 'generic') d_tab = 1
-    else if (dname == 'combine' || dname.startsWith('$')) d_tab = 0
+    else if (dname == 'combine' || dname.startsWith('-')) d_tab = 0
     else d_tab = 2
   }
 

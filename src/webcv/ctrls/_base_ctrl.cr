@@ -14,7 +14,7 @@ module CV::CtrlUtil
 
   def d_dub(dname : String)
     case dname
-    when .starts_with?('$')
+    when .starts_with?('-')
       Nvinfo.find({bhash: dname[1..]}).try(&.vname) || dname
     else
       DICT_LABELS[dname]?

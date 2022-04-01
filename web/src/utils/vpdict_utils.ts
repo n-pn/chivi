@@ -7,6 +7,7 @@ const labels = {
   'regular': 'Thông Dụng',
   'essence': 'Nền Tảng',
   'fixture': 'Khoá Cứng',
+  'combine': 'Tổng hợp',
   '~fix_nouns': 'Sửa danh từ',
   '~fix_verbs': 'Sửa động từ',
   '~fix_adjts': 'Sửa tính từ',
@@ -36,7 +37,7 @@ export function upsert_dicts(vdict: CV.VpDict, extra: CV.VpDict) {
   extra = extra || make_vdict('hanviet')
 
   const { dname } = vdict
-  if (dname == 'combine' || dname.charAt(0) == '$') {
+  if (dname == 'combine' || dname.startsWith('-')) {
     return [vdict, make_vdict('regular'), extra]
   } else {
     return [make_vdict('combine'), make_vdict('regular'), vdict]
@@ -51,7 +52,6 @@ export function make_vdict( dname: string, d_dub?: string, descs?: string ): CV.
 }
 
 function make_intro(dname: string, d_dub: string) {
-  const prefix = dname.charAt(0)
-  if (prefix != '$') return `Từ điển đặc biệt: ${d_dub}`
+  if (dname.startsWith('-')) return `Từ điển đặc biệt: ${d_dub}`
   return `Từ điển riêng cho bộ truyện: ${d_dub}`
 }

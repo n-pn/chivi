@@ -45,7 +45,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     dname = params.fetch_str("dname", "combine")
     d_dub = CtrlUtil.d_dub(dname) || dname
 
-    dname = "$" + dname if dname != "combine" && dname[0]? != '$'
+    dname = "-" + dname if dname != "combine" && dname[0]? != '-'
     {dname, d_dub, parse_lines(File.read(file))}
   end
 

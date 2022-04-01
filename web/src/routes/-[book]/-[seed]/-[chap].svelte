@@ -134,7 +134,7 @@
   <CvPage
     {cvdata}
     {zhtext}
-    dname="${nvinfo.bhash}"
+    dname="-{nvinfo.bhash}"
     d_dub={nvinfo.vname}
     {on_change}>
     <svelte:fragment slot="header">

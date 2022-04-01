@@ -24,7 +24,6 @@
 </script>
 
 <script lang="ts">
-  import { session } from '$app/stores'
   import { upsert_dicts } from '$utils/vpdict_utils'
   import { hint } from './Upsert/_shared'
   import { VpTerm } from '$lib/vp_term'
