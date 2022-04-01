@@ -222,7 +222,7 @@ class CV::InitNvinfo
 
   def should_seed?(snvid : String)
     case @sname
-    when "zxcs_me", "hetushu", "users", "local" then true
+    when "zxcs_me", "hetushu", "users", "local", "zhwenpg" then true
     when "yousuu"
       list_count, crit_count = get_ys_extras(snvid)
       list_count > 1 || crit_count > 3

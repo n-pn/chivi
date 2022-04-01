@@ -32,9 +32,9 @@ module CV::SnameMap
       0 # act as mirror
     when "users", "staff", "zxcs_me"
       1 # manual update
-    when "jx_la", "zhwenpg", "shubaow", "sdyfcm"
+    when "jx_la", "zhwenpg", "shubaow", "sdyfcm", "5200"
       2 # dead remote
-    when "paoshu8", "duokan8", "5200", "hetushu"
+    when "paoshu8", "duokan8", "hetushu"
       3 # slow but still alive
     when "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee", "biqu5200"
       4 # fast remote

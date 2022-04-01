@@ -6,7 +6,7 @@ module CV::UbmemoTasks
   DIR = "var/ubmemos"
 
   def backup
-    Ubmemo.query.order_by(id: :asc).each do |user|
+    Cvuser.query.order_by(id: :asc).each do |user|
       file = "#{DIR}/#{user.id}.txt"
 
       File.open(file, "w") do |io|
@@ -14,17 +14,22 @@ module CV::UbmemoTasks
           io << entry.nvinfo.bhash << '\t' << entry.to_json << '\n'
         end
       end
-      puts "  user <#{cvuser.uname}> saved!".colorize.green
+      puts "  user <#{user.uname}> saved!".colorize.green
     end
   end
 
   def restore
-    Dir.glob(DIR + ".txt").each do |file|
+    Dir.glob(DIR + "/*.txt").each do |file|
       File.read_lines(file).each do |line|
         bhash, json = line.split('\t', 2)
-        next unless nvinfo = Nvinfo.load!(bhash)
+        unless nvinfo = Nvinfo.find({bhash: bhash})
+          puts " book: #{bhash} not found!!"
+          next
+        end
 
         ubmemo = Ubmemo.from_json(json)
+        Ubmemo.find({id: ubmemo.id}).try(&.delete)
+
         ubmemo.nvinfo_id = nvinfo.id
         ubmemo.save!
       rescue err
