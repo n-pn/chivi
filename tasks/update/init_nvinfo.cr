@@ -166,20 +166,21 @@ class CV::InitNvinfo
     nvinfo.set_bcover(get_map(:covers, snvid).fval(snvid) || "")
 
     nvinfo.set_status(get_map(:status, snvid).ival(snvid))
-    seed_zhbook!(nvinfo, snvid)
+    nvinfo.fix_scores!(0, 0) if nvinfo.voters == 0
 
+    seed_nvseed!(nvinfo, snvid)
     nvinfo.save!
   end
 
-  def seed_zhbook!(nvinfo : Nvinfo, snvid : String)
-    zhbook = Nvseed.upsert!(nvinfo, @sname, snvid)
-    nvinfo.add_nvseed(zhbook.zseed)
+  def seed_nvseed!(nvinfo : Nvinfo, snvid : String)
+    nvseed = Nvseed.upsert!(nvinfo, @sname, snvid)
+    nvinfo.add_nvseed(nvseed.zseed)
 
-    if zhbook.chap_count == 0
-      zhbook.chap_count, zhbook.last_schid = self.fetch_counts(snvid)
+    if nvseed.chap_count == 0
+      nvseed.chap_count, nvseed.last_schid = self.fetch_counts(snvid)
     end
 
-    zhbook.save!
+    nvseed.save!
   end
 
   def fetch_counts(snvid : String) : {Int32, String}

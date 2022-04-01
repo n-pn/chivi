@@ -91,20 +91,19 @@ class CV::SeedZxcsme
   @seed = InitNvinfo.new("zxcs_me")
 
   def initialize
-    @snvids = Dir.children(TXT_DIR)
+    @snvids = Dir.children(TXT_DIR).reject(&.== "_")
     @snvids.sort_by!(&.to_i)
 
     puts "[INPUT: #{@snvids.size} entries]"
   end
 
   def prep!
-    @snvids.each_with_index(1) do |snvid, idx|
+    @snvids.reverse.each_with_index(1) do |snvid, idx|
       link = "http://www.zxcs.me/post/#{snvid}"
       file = File.join(INP_DIR, "#{snvid}.html.gz")
 
       next if File.exists?(file)
       HttpUtil.load_html(link, file, lbl: "#{idx}/#{@snvids.size}")
-      sleep Random.rand(500).milliseconds
     rescue err
       puts err.colorize.red
     end
@@ -120,18 +119,15 @@ class CV::SeedZxcsme
       puts "\n- <http://www.zxcs.me/post/#{snvid}>".colorize.cyan
       parser = ZxcsmeParser.new(snvid, file)
 
-      @seed.add!(parser, snvid, atime: atime)
       @seed.set_val!(:extras, snvid, read_chsize(snvid))
-
-      scores = [Random.rand(30..100), Random.rand(50..65)]
-      @seed.set_val!(:rating, snvid, scores.map(&.to_s))
+      @seed.add!(parser, snvid, atime: atime)
 
       if idx % 100 == 0
         puts "- [zxcs.me]: <#{idx}/#{@snvids.size}>"
         @seed.save_stores!
       end
     rescue err
-      puts [snvid, err.message.colorize.red]
+      puts snvid, err.inspect_with_backtrace
     end
 
     @seed.save_stores!
@@ -226,73 +222,7 @@ class CV::SeedZxcsme
   end
 
   def seed!
-    idx = 1
-
-    @seed.stores[:_index].each_value do |map|
-      map.data.each do |snvid, values|
-        save_book(snvid, values)
-
-        if idx % 100 == 0
-          puts "- [zxcs_me/seed] <#{idx.colorize.cyan}/#{input.size}>, \
-                authors: #{Author.query.count.colorize.cyan}, \
-                nvinfo: #{Nvinfo.query.count.colorize.cyan}"
-        end
-
-        idx += 1
-      end
-    end
-
-    puts "- authors: #{Author.query.count.colorize.cyan}, \
-            nvinfo: #{Nvinfo.query.count.colorize.cyan}"
-  end
-
-  def save_book(snvid : String, values : Array(String), redo = false)
-    bumped, p_btitle, p_author = values
-    return if p_btitle.empty? || p_author.empty?
-    f_btitle, f_author = BookUtil.fix_names(p_btitle, p_author)
-
-    author = Author.upsert!(f_author)
-    nvinfo = Nvinfo.upsert!(author, f_btitle)
-
-    nvseed = Nvseed.upsert!("zxcs_me", snvid)
-    bumped = bumped.to_i64
-
-    if redo || nvseed.unmatch?(nvinfo.id)
-      nvseed.nvinfo = nvinfo
-      nvinfo.add_zhseed(nvseed.zseed)
-
-      nvinfo.set_genres(@seed.get_genres(snvid))
-      # nvinfo.set_bcover("zxcs_me-#{snvid}.webp")
-      nvinfo.set_zintro(@seed.get_intro(snvid).join("\n"))
-
-      if nvinfo.voters == 0
-        voters, rating = @seed.get_scores(snvid)
-        nvinfo.set_scores(voters, rating)
-      end
-    else # nvseed already created before
-      return unless bumped > nvseed.bumped
-    end
-
-    nvseed.status = @seed.status.ival(snvid)
-    nvinfo.set_status(nvseed.status)
-
-    nvseed.bumped = bumped
-    nvseed.mftime = @seed.mftime.ival_64(snvid)
-
-    if nvseed.mftime < 1
-      nvseed.mftime = nvinfo.mftime
-    else
-      nvinfo.set_mftime(nvseed.mftime)
-    end
-
-    if nvseed.chap_count == 0
-      vals = @seed.chsize.get(snvid) || ["0", "0"]
-      nvseed.chap_count = vals[0].to_i
-      nvseed.last_schid = vals[1]
-    end
-
-    nvseed.save!
-    nvinfo.save!
+    @seed.seed_all!
   end
 
   private def gen_ys_title_search(title : String)
