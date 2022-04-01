@@ -30,8 +30,8 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
     zhbook.save!
   end
 
-  zseed_ids = new_nvinfo.nvseeds.to_a.map(&.zseed).sort
-  new_nvinfo.update!({zseed_ids: zseed_ids})
+  zseeds = new_nvinfo.nvseeds.to_a.map(&.zseed).sort
+  new_nvinfo.update!({zseeds: zseeds})
 
   CV::Yscrit.query.where(nvinfo_id: nvinfo.id).to_update.set(nvinfo_id: new_nvinfo.id).execute
   CV::Ubmemo.query.where(nvinfo_id: nvinfo.id).to_update.set(nvinfo_id: new_nvinfo.id).execute

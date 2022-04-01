@@ -11,7 +11,7 @@ require "./shared/bootstrap"
 #     zhbook.save!
 #   end
 
-#   nvinfo.update({zseed_ids: nvseeds.map(&.zseed).sort})
+#   nvinfo.update({zseeds: nvseeds.map(&.zseed).sort})
 # end
 
 CV::Ubmemo.query.each_with_cursor(20) do |ubmemo|

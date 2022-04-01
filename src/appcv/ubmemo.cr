@@ -36,9 +36,10 @@ class CV::Ubmemo
     @status_s = nil
   end
 
-  def mark!(sname : String, chidx : Int32, cpart = 0, title = "", uslug = "", lock = -1)
-    if lock >= 0
-      self.locked = lock > 0
+  def mark!(sname : String, chidx : Int32, cpart = 0,
+            title = "", uslug = "", tolock = -1)
+    if tolock >= 0
+      self.locked = tolock > 0
     elsif self.locked
       return if self.lr_sname != sname || self.lr_chidx != chidx
     end

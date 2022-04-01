@@ -39,6 +39,10 @@ module CV::UbmemoTasks
       user_id = File.basename(file, ".txt").to_i64
       puts "  user <#{user_id}> restored!".colorize.green
     end
+
+    Clear::SQL.execute <<-SQL
+      SELECT pg_catalog.setval(pg_get_serial_sequence('ubmemos', 'id'), MAX(id)) FROM ubmemos;
+    SQL
   end
 end
 

@@ -121,11 +121,11 @@ class CV::Nvinfo
   end
 
   scope :filter_zseeds do |input|
-    input ? where("zseed_ids @> ?", [SnameMap.map_int(input)]) : self
+    input ? where("zseeds @> ?", [SnameMap.map_int(input)]) : self
   end
 
   scope :filter_genres do |input|
-    input ? where("genre_ids @> ?", GenreMap.map_id(input.split('+'))) : self
+    input ? where("igenres @> ?", GenreMap.map_id(input.split('+'))) : self
   end
 
   scope :filter_labels do |input|

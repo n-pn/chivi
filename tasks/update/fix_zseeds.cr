@@ -23,5 +23,5 @@ CV::Nvinfo.query.each do |nvinfo|
     end
   end
 
-  nvinfo.update!({zseed_ids: zseeds.sort})
+  nvinfo.update!({zseeds: zseeds.sort})
 end

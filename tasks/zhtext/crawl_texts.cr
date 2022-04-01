@@ -160,7 +160,7 @@ class CV::CrawlText
     output = [] of String
 
     query = Nvinfo.query
-      .where("zseed_ids @> ?", [zseed])
+      .where("zseeds @> ?", [zseed])
       .order_by(weight: :desc)
 
     query.each_with_cursor(20) do |nvinfo|

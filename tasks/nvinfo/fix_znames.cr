@@ -6,7 +6,7 @@ def transfer(old_nvinfo, new_nvinfo)
 
   old_nvinfo.update!({subdue_id: new_bid})
 
-  zseeds = old_nvinfo.zseed_ids - new_nvinfo.zseed_ids
+  zseeds = old_nvinfo.zseeds - new_nvinfo.zseeds
   return if zseeds.empty?
 
   query = CV::Nvseed.query
@@ -19,8 +19,8 @@ def transfer(old_nvinfo, new_nvinfo)
     nvseed.save!
   end
 
-  zseed_ids = new_nvinfo.nvseeds.to_a.map(&.zseed).sort
-  new_nvinfo.update!({zseed_ids: zseed_ids})
+  zseeds = new_nvinfo.nvseeds.to_a.map(&.zseed).sort
+  new_nvinfo.update!({zseeds: zseeds})
 
   CV::Yscrit.query.where(nvinfo_id: old_bid).to_update.set(nvinfo_id: new_bid).execute
   CV::Ubmemo.query.where(nvinfo_id: old_bid).to_update.set(nvinfo_id: new_bid).execute

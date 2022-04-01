@@ -26,6 +26,10 @@ module CV::CvuserTasks
       user.save!
       puts "- #{idx}: [#{user.id}] user <#{user.uname}> restored!".colorize.green
     end
+
+    Clear::SQL.execute <<-SQL
+    SELECT pg_catalog.setval(pg_get_serial_sequence('cvusers', 'id'), MAX(id)) FROM cvusers;
+  SQL
   end
 end
 
