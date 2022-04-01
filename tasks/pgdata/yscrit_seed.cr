@@ -33,11 +33,11 @@ module CV::YscritSeed
 
     if crit.ztext != "请登录查看评论内容"
       lines = format_ztext(crit.ztext)
-      File.open("var/yousuu/yscrits-healthy.txt", "a", &.puts(ycrid)) if unmapped
+      File.open("tmp/yscrits-healthy.txt", "a", &.puts(ycrid)) if unmapped
     elsif unmapped
       lines = ["$$$"]
       @@count += 1
-      File.open("var/yousuu/yscrits-missing.txt", "a", &.puts(ycrid))
+      File.open("tmp/yscrits-missing.txt", "a", &.puts(ycrid))
     end
 
     ztext_map.set!(ycrid, lines) if lines
@@ -62,7 +62,7 @@ module CV::YscritSeed
     crits.each { |crit| save!(crit) }
   rescue
     puts file
-    File.open("var/yousuu/yscrits-invalid-json.txt", "a", &.puts(file))
+    File.open("tmp/yscrits-invalid-json.txt", "a", &.puts(file))
   end
 
   def init!(root : String = "_db/yousuu/crits")
@@ -80,7 +80,7 @@ module CV::YscritSeed
     ZTEXT.each_value(&.save!(dirty: false))
     INFOS.each_value(&.save!(dirty: false))
 
-    File.open("var/yousuu/yscrits-log.txt", "a", &.puts("#{root}: #{@@count}"))
+    File.open("tmp/yscrits-log.txt", "a", &.puts("#{root}: #{@@count}"))
   end
 
   def seed!
@@ -116,10 +116,10 @@ module CV::YscritSeed
       yscrit.like_count = infos[4].to_i
       yscrit.repl_count = infos[5].to_i
 
-      yscrit.mftime = mtime
+      yscrit.utime = mtime
 
       if ztext = ztext_map.get(ycrid)
-        File.write("tmp/yscrits.txt", ["#{bhash} #{ycrid}"].concat(ztext).join("\n"))
+        File.write("tmp/yscrits-log.txt", ["#{bhash} #{ycrid}"].concat(ztext).join("\n"))
 
         yscrit.ztext = ztext.join("\n")
         yscrit.vhtml = SeedUtil.cv_ztext(ztext, bhash)
@@ -142,7 +142,7 @@ module CV::YscritSeed
 
       map.data.each_value do |lines|
         lines.each do |line|
-          File.write("tmp/yscrits.txt", line)
+          File.write("tmp/yscrits-mtl.txt", line)
           engine.cv_plain(line)
         end
       end

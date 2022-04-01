@@ -234,6 +234,10 @@ worker = CV::SeedZxcsme.new
 worker.prep! if ARGV.includes?("prep")
 worker.init!
 worker.inherit!
-worker.fix_authors!
-worker.fix_btitles!
+
+if ARGV.includes?("fixes")
+  worker.fix_authors!
+  worker.fix_btitles!
+end
+
 worker.seed!

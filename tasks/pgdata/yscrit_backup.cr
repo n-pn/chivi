@@ -57,7 +57,7 @@ module CV::YscritBackup
     ZTEXT.each_value(&.save!(dirty: false))
     INFOS.each_value(&.save!(dirty: false))
 
-    File.open("var/yousuu/yscrits-log.txt", "a") do |io|
+    File.open("tmp/yscrits-backup-log.txt", "a") do |io|
       io.puts("backup:: missing: #{@@missing}, recover: #{@@recover}")
     end
   end
