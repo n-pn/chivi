@@ -13,7 +13,7 @@ struct CV::DboardView
       jb.field "bname", @data.vname
       jb.field "bslug", @data.bslug
 
-      jb.field "post_count", @data.dtopic_count
+      jb.field "post_count", @data.post_count
     }
   end
 end

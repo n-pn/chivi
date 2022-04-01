@@ -13,8 +13,8 @@ struct CV::NvinfoView
       jb.field "bslug", @data.bslug
 
       jb.field "zname", @data.zname
-      jb.field "hname", @data.btitle.hname
-      jb.field "vname", @data.btitle.vname
+      jb.field "hname", @data.hname
+      jb.field "vname", @data.vname
 
       jb.field "author", ({
         zname: @data.author.zname,
@@ -24,7 +24,7 @@ struct CV::NvinfoView
       jb.field "genres", @data.vgenres
 
       jb.field "scover", @data.scover
-      jb.field "bcover", @data.bcover.empty
+      jb.field "bcover", @data.bcover
 
       jb.field "status", @data.status
       jb.field "mftime", @data.utime

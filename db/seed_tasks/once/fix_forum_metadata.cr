@@ -7,9 +7,9 @@ Nvinfo.query.each do |nvinfo|
   topics = Dtopic.query.where({nvinfo_id: nvinfo.id}).to_a
   next if topics.empty?
 
-  nvinfo.dtopic_count = topics.size
-  nvinfo.dt_view_count = topics.map(&.view_count).sum
-  nvinfo.dt_post_utime = topics.map(&.utime).max
+  nvinfo.post_count = topics.size
+  nvinfo.view_count = topics.map(&.view_count).sum
+  nvinfo.board_bump = topics.map(&.utime).max
   nvinfo.save!
 
   topics.sort_by(&.id).each_with_index(1) do |dtopic, ii|

@@ -47,7 +47,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     dtopic = Dtopic.load!(params["dtopic"])
 
     dtopic.bump_view_count!
-    dtopic.nvinfo.tap { |x| x.update!({dt_view_count: x.dt_view_count + 1}) }
+    dtopic.nvinfo.tap { |x| x.update!({view_count: x.view_count + 1}) }
 
     # TODO: load user trace
 
@@ -81,11 +81,11 @@ class CV::DtopicCtrl < CV::BaseCtrl
       return halt!(403, "Bạn không có quyền tạo chủ đề")
     end
 
-    count = nvinfo.dtopic_count + 1
+    count = nvinfo.post_count + 1
     dtopic = Dtopic.new({cvuser: _cvuser, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
 
     dtopic.update_content!(params)
-    nvinfo.update!({dtopic_count: count, dt_post_utime: dtopic.utime})
+    nvinfo.update!({post_count: count, board_bump: dtopic.utime})
 
     send_json({dtopic: DtopicView.new(dtopic)})
   end

@@ -81,7 +81,7 @@ class CV::Dtopic
 
     self.post_count = self.post_count + 1
     set_utime(Time.utc.to_unix)
-    self.nvinfo.update!({dt_post_utime: self.utime})
+    self.nvinfo.update!({board_bump: self.utime})
 
     self.save!
   end

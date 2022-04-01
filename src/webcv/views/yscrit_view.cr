@@ -16,7 +16,7 @@ struct CV::YscritView
       jb.field "bhash", @data.nvinfo.bhash
 
       jb.field "author", @data.nvinfo.author.vname
-      jb.field "bgenre", @data.nvinfo.genres.first? || "Loại khác"
+      jb.field "bgenre", @data.nvinfo.vgenres.first? || "Loại khác"
 
       jb.field "uname", @data.ysuser.vname
       jb.field "uslug", @data.ysuser.id
@@ -29,7 +29,7 @@ struct CV::YscritView
       jb.field "like_count", @data.like_count
       jb.field "repl_count", @data.repl_count
 
-      jb.field "mftime", @data.mftime
+      jb.field "mftime", @data.utime
     end
   end
 end

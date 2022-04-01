@@ -18,7 +18,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     total = query.dup.limit(offset + limit * 3).offset(0).count
 
     limit = limit == 24 ? 25 : limit
-    query.limit(limit).offset(offset).with_author.with_btitle
+    query.limit(limit).offset(offset).with_author
 
     set_cache :public, maxage: 10
 
