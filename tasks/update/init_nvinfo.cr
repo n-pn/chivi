@@ -8,9 +8,7 @@ require "../shared/bootstrap.cr"
 
 class CV::InitNvinfo
   DIR = "var/nvinfos"
-  FileUtils.mkdir_p("#{DIR}/autos")
-  FileUtils.mkdir_p("#{DIR}/inits")
-  FileUtils.mkdir_p("#{DIR}/users")
+  Dir.mkdir_p("#{DIR}/autos")
 
   RATING_FIX = Tabkv.new("#{DIR}/rating_fix.tsv", :force)
   STATUS_MAP = Tabkv.new("#{DIR}/status_map.tsv", :force)
@@ -159,32 +157,7 @@ class CV::InitNvinfo
     nvinfo.set_bcover(get_map(:covers, snvid).fval(snvid) || "")
 
     nvinfo.set_status(get_map(:status, snvid).ival(snvid))
-
-    if @sname == "yousuu" || nvinfo.ys_voters == 0
-      get_val(:rating, snvid).try do |vals|
-        voters, rating = vals.map(&.to_i)
-        nvinfo.set_ys_scores(voters, rating)
-      end
-    end
-
-    if @sname == "yousuu"
-      nvinfo.ys_snvid = snvid.to_i64
-      nvinfo.ys_utime = get_map(:utimes, snvid).ival_64(snvid)
-      nvinfo.set_utime(nvinfo.ys_utime)
-
-      get_val(:origin, snvid).try do |vals|
-        nvinfo.pub_name = vals[0].downcase
-        nvinfo.pub_link = vals[1]
-      end
-
-      extras = get_ys_extras(snvid)
-      nvinfo.yslist_count = extras[0]
-      nvinfo.yscrit_count = extras[1]
-      nvinfo.ys_word_count = extras[2]
-      nvinfo.set_shield(extras[3])
-    else
-      seed_zhbook!(nvinfo, snvid)
-    end
+    seed_zhbook!(nvinfo, snvid)
 
     nvinfo.save!
   end
@@ -214,6 +187,8 @@ class CV::InitNvinfo
     chap_count, last_schid = last_chap.chidx, last_chap.schid
     set_val!(:extras, snvid, [chap_count.to_s, last_schid])
     {chap_count, last_schid}
+  rescue
+    {0, ""}
   end
 
   def get_names(snvid : String)

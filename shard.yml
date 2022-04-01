@@ -13,13 +13,13 @@ targets:
     main: src/chivi.cr
 
   zhwenpg_seed:
-    main: tasks/pgdata/zhwenpg_seed.cr
+    main: tasks/update/zhwenpg_seed.cr
 
   ysbook_seed:
     main: db/seed_task/ysbook_seed.cr
 
-  zhbook_seed:
-    main: tasks/pgdata/zhbook_seed.cr
+  remote_seed:
+    main: tasks/update/remote_seed.cr
 
   seed_zxcsme:
     main: tasks/nvinfo/seed_zxcsme.cr

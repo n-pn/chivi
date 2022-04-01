@@ -23,14 +23,13 @@ class CV::RemoteInfo
 
   def get_parser(full = false)
     info = self.info_html
-    mulu = full ? self.mulu_html : nil
 
     case @sname
     when "hetushu" then RmInfoHetushu.new(info, nil)
     when "zhwenpg" then RmInfoZhwenpg.new(info, nil)
     when "bxwxorg" then RmInfoBxwxorg.new(info, nil)
-    when "ptwxz"   then RmInfoPtwxz.new(info, mulu)
-    when "69shu"   then RmInfo69shu.new(info, mulu, @snvid)
+    when "ptwxz"   then RmInfoPtwxz.new(info, full ? self.mulu_html : nil)
+    when "69shu"   then RmInfo69shu.new(info, full ? self.mulu_html : nil, @snvid)
     else                RmInfoGeneric.new(info, nil)
     end
   end

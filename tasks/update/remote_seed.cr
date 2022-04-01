@@ -4,9 +4,9 @@ require "./init_nvinfo"
 class CV::SeedNvseed
   def initialize(@sname : String)
     @infos_dir = "_db/.cache/#{@sname}/infos"
-    ::FileUtils.mkdir_p(@infos_dir)
+    Dir.mkdir_p(@infos_dir)
 
-    # ::FileUtils.mkdir_p(@infos_dir.sub("infos", "texts"))
+    # Dir.mkdir_p(@infos_dir.sub("infos", "texts"))
 
     @seed = InitNvinfo.new(@sname)
     @encoding = HttpUtil.encoding_for(@sname)
@@ -102,7 +102,7 @@ class CV::SeedNvseed
       bfile = PathUtil.binfo_cpath(@sname, snvid)
       atime = InitNvinfo.get_mtime(bfile)
 
-      entry = RmInfo.new(@sname, snvid, lbl: "#{idx}/#{queue.size}")
+      entry = RemoteInfo.new(@sname, snvid, lbl: "#{idx}/#{queue.size}")
       @seed.add!(entry, snvid, atime)
 
       if idx % 100 == 0
