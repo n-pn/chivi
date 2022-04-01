@@ -4,11 +4,11 @@
   import { dlabels } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import DtopicForm, { ctrl as dtopic_ctrl } from './DtopicForm.svelte'
+  import DtopicForm, { ctrl as cvpost_ctrl } from './DtopicForm.svelte'
 
-  export let dtopic: CV.Dtopic
-  export let dboard: CV.Dboard = dtopic.dboard
-  export let _all = dtopic.bhtml.length < 500
+  export let cvpost: CV.Dtopic
+  export let dboard: CV.Dboard = cvpost.dboard
+  export let _all = cvpost.bhtml.length < 500
 
   $: board_url = `/forum/-${dboard.bslug}`
 </script>
@@ -24,32 +24,32 @@
 
     <a class="m-board" href={board_url}>
       <SIcon name="message" />
-      <span>{dtopic.dboard.bname}</span>
+      <span>{cvpost.dboard.bname}</span>
     </a>
 
-    {#each dtopic.labels as label}
+    {#each cvpost.labels as label}
       <a class="m-label _{label}" href="{board_url}?label={label}"
         >{dlabels[label]}</a>
     {/each}
   </topic-navi>
 
   <topic-head class={_all}>
-    <a class="topic-title" href="{board_url}/-{dtopic.tslug}-{dtopic.id}">
-      {dtopic.title}
+    <a class="topic-title" href="{board_url}/-{cvpost.tslug}-{cvpost.id}">
+      {cvpost.title}
     </a>
 
     <topic-foot>
       <topic-user>
         <SIcon name="edit" />
-        <cv-user data-privi={dtopic.op_privi}>{dtopic.op_uname}</cv-user>
+        <cv-user data-privi={cvpost.op_privi}>{cvpost.op_uname}</cv-user>
       </topic-user>
 
       <topic-sep>·</topic-sep>
-      <topic-time>{rel_time(dtopic.ctime)}</topic-time>
+      <topic-time>{rel_time(cvpost.ctime)}</topic-time>
 
-      {#if $session.privi > 3 || $session.uname == dtopic.op_uname}
+      {#if $session.privi > 3 || $session.uname == cvpost.op_uname}
         <topic-sep>·</topic-sep>
-        <topic-action on:click={() => dtopic_ctrl.show(dtopic.id)}>
+        <topic-action on:click={() => cvpost_ctrl.show(cvpost.id)}>
           <span>Sửa</span>
         </topic-action>
       {/if}
@@ -57,28 +57,28 @@
       <foot-right>
         <topic-meta>
           <SIcon name="messages" />
-          <span>{dtopic.post_count}</span>
+          <span>{cvpost.post_count}</span>
         </topic-meta>
 
         <topic-sep>·</topic-sep>
         <topic-meta>
           <SIcon name="eye" />
-          <span>{dtopic.view_count}</span>
+          <span>{cvpost.view_count}</span>
         </topic-meta>
 
         <topic-sep>·</topic-sep>
         <topic-meta>
           <SIcon name="star" />
-          <span>{dtopic.like_count}</span>
+          <span>{cvpost.like_count}</span>
         </topic-meta>
       </foot-right>
     </topic-foot>
   </topic-head>
 
   <topic-pbody class:_all>
-    <article class="m-article">{@html dtopic.bhtml}</article>
+    <article class="m-article">{@html cvpost.bhtml}</article>
 
-    {#if dtopic.bhtml.length >= 500}
+    {#if cvpost.bhtml.length >= 500}
       <pbody-foot>
         <button
           class="m-btn _primary _xs btn-show"
@@ -90,7 +90,7 @@
   </topic-pbody>
 </topic-full>
 
-{#if $dtopic_ctrl.actived}<DtopicForm {dboard} />{/if}
+{#if $cvpost_ctrl.actived}<DtopicForm {dboard} />{/if}
 
 <style lang="scss">
   topic-full {

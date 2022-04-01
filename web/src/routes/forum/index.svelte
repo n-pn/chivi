@@ -15,7 +15,7 @@
 </script>
 
 <script lang="ts">
-  import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
+  import DtopicList from '$gui/parts/cvpost/DtopicList.svelte'
   export let dtlist: CV.Dtlist
   const dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
 </script>

@@ -1,15 +1,15 @@
 require "file_utils"
 require "../shared/bootstrap"
 
-dtopic_dir = "var/dtopics"
-Dir.mkdir_p(dtopic_dir)
+cvpost_dir = "var/cvposts"
+Dir.mkdir_p(cvpost_dir)
 
-CV::Cvpost.query.order_by(id: :asc).each do |dtopic|
-  File.write("#{dtopic_dir}/#{dtopic.id}.json", dtopic.to_pretty_json)
+CV::Cvpost.query.order_by(id: :asc).each do |cvpost|
+  File.write("#{cvpost_dir}/#{cvpost.id}.json", cvpost.to_pretty_json)
 end
 
-dtpost_dir = "var/dtposts"
-Dir.mkdir_p(dtpost_dir)
-CV::Cvrepl.query.order_by(id: :asc).each do |dtpost|
-  File.write("#{dtpost_dir}/#{dtpost.id}.json", dtpost.to_pretty_json)
+cvrepl_dir = "var/cvrepls"
+Dir.mkdir_p(cvrepl_dir)
+CV::Cvrepl.query.order_by(id: :asc).each do |cvrepl|
+  File.write("#{cvrepl_dir}/#{cvrepl.id}.json", cvrepl.to_pretty_json)
 end

@@ -7,8 +7,8 @@ CREATE TABLE cvposts (
   cvuser_id bigint not null default 0,
   nvinfo_id bigint not null default 0,
 
-  dtpost_id bigint not null default 0,
-  lasttp_id bigint not null default 0,
+  rpbody_id bigint not null default 0,
+  lastrp_id bigint not null default 0,
 
   stars int not null default 3,
 
@@ -35,6 +35,7 @@ CREATE TABLE cvposts (
 CREATE INDEX cvpost_cvuser_idx ON cvposts (cvuser_id);
 CREATE INDEX cvpost_nvinfo_idx ON cvposts (nvinfo_id);
 
+CREATE INDEX cvpost_bumped_idx ON cvposts (stars);
 CREATE INDEX cvpost_bumped_idx ON cvposts (_sort);
 CREATE INDEX cvpost_number_idx ON cvposts (ii);
 

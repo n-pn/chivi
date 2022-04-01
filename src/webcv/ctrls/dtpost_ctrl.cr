@@ -9,23 +9,23 @@ class CV::CvreplCtrl < CV::BaseCtrl
         .sort_by(params["sort"]? || "id")
         .where("state >= 0 AND ii > 0")
 
-    if dtopic = params["dtopic"]?.try { |x| Cvpost.load!(x) }
-      query.filter_topic(dtopic)
+    if cvpost = params["cvpost"]?.try { |x| Cvpost.load!(x) }
+      query.filter_topic(cvpost)
     end
 
     if cvuser = params["cvuser"]?.try { |x| Cvuser.load!(x) }
       query.filter_owner(cvuser)
     end
 
-    if dtopic
-      total = dtopic.post_count
+    if cvpost
+      total = cvpost.repl_count
     else
       total = query.dup.limit(limit * 3 + offset).offset(0).count
     end
 
     # TODO: load user trace
 
-    query.with_dtopic unless dtopic
+    query.with_cvpost unless cvpost
     query.with_cvuser unless cvuser
     items = query.limit(limit).offset(offset)
 
@@ -38,7 +38,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
         pgmax: (total - 1) // limit + 1,
         items: items.map do |x|
           x.cvuser = cvuser if cvuser
-          x.dtopic = dtopic if dtopic
+          x.cvpost = cvpost if cvpost
           CvreplView.new(x)
         end,
       },
@@ -46,52 +46,52 @@ class CV::CvreplCtrl < CV::BaseCtrl
   end
 
   def detail
-    dtpost = Cvrepl.load!(params["dtpost"].to_i64)
+    cvrepl = Cvrepl.load!(params["cvrepl"].to_i64)
     set_cache maxage: 30
 
     send_json({
-      id:    dtpost.id,
-      input: dtpost.input,
-      itype: dtpost.itype,
-      rp_id: dtpost.repl_dtpost_id,
+      id:    cvrepl.id,
+      input: cvrepl.input,
+      itype: cvrepl.itype,
+      rp_id: cvrepl.repl_cvrepl_id,
     })
   rescue err
     halt!(404, "Bài viết không tồn tại!")
   end
 
   def create
-    dtopic = Cvpost.load!(params["dtopic"])
-    unless DboardACL.dtpost_create?(dtopic, _cvuser)
+    cvpost = Cvpost.load!(params["cvpost"])
+    unless DboardACL.cvrepl_create?(cvpost, _cvuser)
       return halt!(403, "Bạn không có quyền tạo bình luận mới")
     end
 
-    dtpost = Cvrepl.new({cvuser: _cvuser, dtopic: dtopic, ii: dtopic.post_count + 1})
+    cvrepl = Cvrepl.new({cvuser: _cvuser, cvpost: cvpost, ii: cvpost.repl_count + 1})
 
     dtrepl_id = params["rp_id"]?.try(&.to_i64?) || 0_i64
-    dtrepl_id = dtopic.dtbody.id if dtrepl_id == 0
+    dtrepl_id = cvpost.rpbody.id if dtrepl_id == 0
 
-    dtpost.set_dtrepl_id(dtrepl_id)
-    dtpost.update_content!(params)
+    cvrepl.set_dtrepl_id(dtrepl_id)
+    cvrepl.update_content!(params)
 
-    dtopic.bump_post_count!
-    repl = Cvrepl.load!(dtpost.repl_dtpost_id)
+    cvpost.bump_post_count!
+    repl = Cvrepl.load!(cvrepl.repl_cvrepl_id)
     repl.update!({repl_count: repl.repl_count + 1})
 
-    send_json({dtpost: CvreplView.new(dtpost)})
+    send_json({cvrepl: CvreplView.new(cvrepl)})
   end
 
   def update
-    dtpost = Cvrepl.load!(params["dtpost"].to_i64)
-    return halt!(403) unless DboardACL.dtpost_update?(dtpost, _cvuser)
+    cvrepl = Cvrepl.load!(params["cvrepl"].to_i64)
+    return halt!(403) unless DboardACL.cvrepl_update?(cvrepl, _cvuser)
 
-    dtpost.update_content!(params)
-    send_json({dtpost: CvreplView.new(dtpost)})
+    cvrepl.update_content!(params)
+    send_json({cvrepl: CvreplView.new(cvrepl)})
   end
 
   def delete
-    dtpost = Cvrepl.load!(params["dtpost"].to_i64)
+    cvrepl = Cvrepl.load!(params["cvrepl"].to_i64)
 
-    if _cvuser.privi == dtpost.cvuser_id
+    if _cvuser.privi == cvrepl.cvuser_id
       admin = false
     elsif _cvuser.privi > 2
       admin = true
@@ -99,7 +99,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
       return halt!(403, "Bạn không có quyền xoá chủ đề")
     end
 
-    Cvrepl.load!(params["dtpost"].to_i64).soft_delete(admin: admin)
+    Cvrepl.load!(params["cvrepl"].to_i64).soft_delete(admin: admin)
     send_json({msg: "ok"})
   end
 end

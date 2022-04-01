@@ -16,7 +16,7 @@
 <script lang="ts">
   import { page } from '$app/stores'
 
-  import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
+  import DtopicList from '$gui/parts/cvpost/DtopicList.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo

@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-  export let dtopic: CV.Dtopic
+  export let cvpost: CV.Dtopic
   export let tplist: CV.Tplist
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
@@ -24,32 +24,32 @@
   }
 </script>
 
-<dtpost-list>
-  {#each tplist.items as dtpost}
-    <DtpostCard {dtpost} bind:active_card fluid={$$props.fluid} />
+<cvrepl-list>
+  {#each tplist.items as cvrepl}
+    <DtpostCard {cvrepl} bind:active_card fluid={$$props.fluid} />
   {:else}
     <div class="empty">Chưa có bình luận</div>
   {/each}
 
   {#if tplist.pgmax > 1}
-    <dtpost-pagi>
+    <cvrepl-pagi>
       <Mpager {pager} pgidx={tplist.pgidx} pgmax={tplist.pgmax} {on_navigate} />
-    </dtpost-pagi>
+    </cvrepl-pagi>
   {/if}
 
   <dtlist-foot>
-    <DtpostForm dtopic_id={dtopic.id} />
+    <DtpostForm cvpost_id={cvpost.id} />
   </dtlist-foot>
-</dtpost-list>
+</cvrepl-list>
 
 <style lang="scss">
-  dtpost-list {
+  cvrepl-list {
     // margin-left: 0.75rem;
     display: block;
     padding-bottom: 0.75rem;
   }
 
-  dtpost-pagi {
+  cvrepl-pagi {
     display: block;
     @include border($loc: top);
 

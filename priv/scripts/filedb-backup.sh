@@ -42,8 +42,8 @@ then
   echo backup books data!
   # rsync -aiz --no-p "$SSH/var/nvinfos/autos" "var/nvinfos"
   rsync -aiz --no-p "$SSH/var/nvinfos.tsv" "var"
-  rsync -aiz --no-p "$SSH/var/dtopics" "var"
-  rsync -aiz --no-p "$SSH/var/dtposts" "var"
+  rsync -aiz --no-p "$SSH/var/cvposts" "var"
+  rsync -aiz --no-p "$SSH/var/cvrepls" "var"
 
   rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
   rsync -aiz --no-p "$SSH/var/chtexts/users" "var/chtexts"

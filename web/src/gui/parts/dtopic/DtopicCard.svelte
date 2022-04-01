@@ -5,10 +5,10 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let dtopic: CV.Dtopic
+  export let cvpost: CV.Dtopic
   export let _mode = 0
 
-  $: dboard = dtopic.dboard
+  $: dboard = cvpost.dboard
   $: board_url = `/forum/-${dboard.bslug}`
   $: label_url = _mode > -1 ? board_url : `/-${dboard.bslug}/board`
 </script>
@@ -17,12 +17,12 @@
   <topic-head class={_mode}>
     <a
       class="topic-title"
-      href="{board_url}/-{dtopic.tslug}-{dtopic.id}"
-      on:click={(e) => dboard_ctrl.view_topic(e, dtopic)}>
-      {dtopic.title}
+      href="{board_url}/-{cvpost.tslug}-{cvpost.id}"
+      on:click={(e) => dboard_ctrl.view_topic(e, cvpost)}>
+      {cvpost.title}
     </a>
 
-    {#each dtopic.labels as label}
+    {#each cvpost.labels as label}
       <a
         class="m-label _{label} _sm"
         href="{label_url}?tl={label}"
@@ -32,20 +32,20 @@
   </topic-head>
 
   <topic-brief>
-    {#if dtopic.lp_uname}
+    {#if cvpost.lp_uname}
       <span><SIcon name="corner-up-left" /></span>
-      <cv-user data-privi={dtopic.lp_privi}>{dtopic.lp_uname}</cv-user>
+      <cv-user data-privi={cvpost.lp_privi}>{cvpost.lp_uname}</cv-user>
       <span>·</span>
-      <topic-time>{rel_time(dtopic.ctime)}</topic-time>
+      <topic-time>{rel_time(cvpost.ctime)}</topic-time>
     {:else}
       <span><SIcon name="send" /></span>
-      <cv-user data-privi={dtopic.op_privi}>{dtopic.op_uname}</cv-user>
+      <cv-user data-privi={cvpost.op_privi}>{cvpost.op_uname}</cv-user>
       <span>·</span>
-      <topic-time>{rel_time(dtopic.ctime)}</topic-time>
+      <topic-time>{rel_time(cvpost.ctime)}</topic-time>
     {/if}
     <topic-sep>·</topic-sep>
 
-    <span class="brief">{dtopic.brief}</span>
+    <span class="brief">{cvpost.brief}</span>
   </topic-brief>
 
   <topic-foot>
@@ -62,17 +62,17 @@
     <foot-right>
       <topic-meta>
         <SIcon name="eye" />
-        <span>{dtopic.view_count}</span>
+        <span>{cvpost.view_count}</span>
       </topic-meta>
 
       <topic-meta>
         <SIcon name="messages" />
-        <span>{dtopic.post_count}</span>
+        <span>{cvpost.post_count}</span>
       </topic-meta>
 
       <topic-meta>
         <SIcon name="star" />
-        <span>{dtopic.like_count}</span>
+        <span>{cvpost.like_count}</span>
       </topic-meta>
     </foot-right>
   </topic-foot>

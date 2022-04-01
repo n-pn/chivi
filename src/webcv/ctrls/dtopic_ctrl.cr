@@ -24,7 +24,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
 
     query.with_nvinfo unless nvinfo
     query.with_cvuser unless cvuser
-    query.with_dtbody.with_lasttp(&.with_cvuser)
+    query.with_rpbody.with_lastrp(&.with_cvuser)
     items = query.limit(limit).offset(offset).to_a
 
     set_cache :public, maxage: 20
@@ -44,32 +44,32 @@ class CV::CvpostCtrl < CV::BaseCtrl
   end
 
   def show
-    dtopic = Cvpost.load!(params["dtopic"])
+    cvpost = Cvpost.load!(params["cvpost"])
 
-    dtopic.bump_view_count!
-    dtopic.nvinfo.tap { |x| x.update!({view_count: x.view_count + 1}) }
+    cvpost.bump_view_count!
+    cvpost.nvinfo.tap { |x| x.update!({view_count: x.view_count + 1}) }
 
     # TODO: load user trace
 
     set_cache :public, maxage: 20
-    send_json({dtopic: CvpostView.new(dtopic, full: true)})
+    send_json({cvpost: CvpostView.new(cvpost, full: true)})
   rescue err
     Log.error { err }
     halt!(404, "Chủ đề không tồn tại!")
   end
 
   def detail
-    oid = params["dtopic"]
-    dtopic = Cvpost.load!(oid)
+    oid = params["cvpost"]
+    cvpost = Cvpost.load!(oid)
 
     set_cache :public, maxage: 20
     send_json({
       id:     oid,
-      title:  dtopic.title,
-      labels: dtopic.dlabel_ids.join(","),
+      title:  cvpost.title,
+      labels: cvpost.ilabels.join(","),
 
-      body_input: dtopic.dtbody.input,
-      body_itype: dtopic.dtbody.itype,
+      body_input: cvpost.rpbody.input,
+      body_itype: cvpost.rpbody.itype,
     })
   rescue err
     halt!(404, "Chủ đề không tồn tại!")
@@ -77,34 +77,34 @@ class CV::CvpostCtrl < CV::BaseCtrl
 
   def create
     nvinfo = Nvinfo.load!(params["dboard"].to_i64)
-    unless DboardACL.dtopic_create?(nvinfo, _cvuser)
+    unless DboardACL.cvpost_create?(nvinfo, _cvuser)
       return halt!(403, "Bạn không có quyền tạo chủ đề")
     end
 
     count = nvinfo.post_count + 1
-    dtopic = Cvpost.new({cvuser: _cvuser, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
+    cvpost = Cvpost.new({cvuser: _cvuser, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
 
-    dtopic.update_content!(params)
-    nvinfo.update!({post_count: count, board_bump: dtopic.utime})
+    cvpost.update_content!(params)
+    nvinfo.update!({post_count: count, board_bump: cvpost.utime})
 
-    send_json({dtopic: CvpostView.new(dtopic)})
+    send_json({cvpost: CvpostView.new(cvpost)})
   end
 
   def update
-    dtopic = Cvpost.load!(params["dtopic"])
+    cvpost = Cvpost.load!(params["cvpost"])
 
-    unless DboardACL.dtopic_update?(dtopic, _cvuser)
+    unless DboardACL.cvpost_update?(cvpost, _cvuser)
       return halt!(403, "Bạn không có quyền sửa chủ đề")
     end
 
-    dtopic.update_content!(params)
-    send_json({dtopic: CvpostView.new(dtopic)})
+    cvpost.update_content!(params)
+    send_json({cvpost: CvpostView.new(cvpost)})
   end
 
   def delete
-    dtopic = Cvpost.load!(params["dtopic"])
+    cvpost = Cvpost.load!(params["cvpost"])
 
-    if _cvuser.privi == dtopic.cvuser_id
+    if _cvuser.privi == cvpost.cvuser_id
       admin = false
     elsif _cvuser.privi > 2
       admin = true
@@ -112,7 +112,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
       return halt!(403, "Bạn không có quyền xoá chủ đề")
     end
 
-    dtopic.soft_delete(admin: admin)
+    cvpost.soft_delete(admin: admin)
     send_json("Chủ đề đã bị xoá")
   end
 end

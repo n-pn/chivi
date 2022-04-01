@@ -22,29 +22,29 @@ struct CV::CvpostView
       jb.field "tslug", @data.tslug
 
       jb.field "state", @data.state
-      jb.field "labels", @data.dlabel_ids
+      jb.field "labels", @data.ilabels
 
       jb.field "ctime", @data.created_at.to_unix
 
       if @full
-        jb.field "bhtml", @data.dtbody.ohtml
+        jb.field "bhtml", @data.rpbody.ohtml
       end
 
       jb.field "op_uname", @data.cvuser.uname
       jb.field "op_privi", @data.cvuser.privi
 
-      if @data.post_count > 0
-        jb.field "brief", @data.lasttp.otext.split("\n", 2).first?
-        jb.field "utime", @data.lasttp.utime
+      if @data.repl_count > 0
+        jb.field "brief", @data.lastrp.otext.split("\n", 2).first?
+        jb.field "utime", @data.lastrp.utime
 
-        jb.field "lp_uname", @data.lasttp.cvuser.uname
-        jb.field "lp_privi", @data.lasttp.cvuser.privi
+        jb.field "lp_uname", @data.lastrp.cvuser.uname
+        jb.field "lp_privi", @data.lastrp.cvuser.privi
       else
         jb.field "brief", @data.brief
         jb.field "utime", @data.utime
       end
 
-      jb.field "post_count", @data.post_count
+      jb.field "post_count", @data.repl_count
       jb.field "like_count", @data.like_count
       jb.field "view_count", @data.view_count
     }

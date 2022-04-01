@@ -16,8 +16,8 @@ class CV::Cvpost
   belongs_to nvinfo : Nvinfo
   getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
-  belongs_to dtbody : Cvrepl
-  belongs_to lasttp : Cvrepl
+  belongs_to rpbody : Cvrepl, foreign_key: "rpbody_id"
+  belongs_to lastrp : Cvrepl, foreign_key: "lastrp_id"
 
   column stars : Int32 = 0
   column _sort : Int32 = 0
@@ -66,7 +66,7 @@ class CV::Cvpost
   end
 
   def update_sort!
-    _sort = (self.utime // 60).to_i + post_count // 3 + like_count // 20 + view_count // 60
+    _sort = (self.utime // 60).to_i + repl_count // 3 + like_count // 20 + view_count // 60
     self._sort = _sort &+ sort_bonus
   end
 
@@ -81,7 +81,7 @@ class CV::Cvpost
   def bump_post_count!
     # @lastrp = nil
 
-    self.post_count = self.post_count + 1
+    self.repl_count = self.repl_count + 1
     set_utime(Time.utc.to_unix)
     self.nvinfo.update!({board_bump: self.utime})
 
@@ -110,12 +110,12 @@ class CV::Cvpost
 
     self.save! unless @id_column.defined? # make id column available
 
-    self.dtbody.cvuser_id = self.cvuser_id
-    self.dtbody.set_input(params["body_input"], params["body_itype"])
-    self.dtbody.save!
+    self.rpbody.cvuser_id = self.cvuser_id
+    self.rpbody.set_input(params["body_input"], params["body_itype"])
+    self.rpbody.save!
 
-    self.brief = dtbody.otext.split("\n", 2).first? || ""
-    self.dtbody_id = self.dtbody.id
+    self.brief = rpbody.otext.split("\n", 2).first? || ""
+    self.rpbody_id = self.rpbody.id
 
     self.save!
   end
@@ -137,7 +137,7 @@ class CV::Cvpost
   end
 
   def self.init_base_topic!(nvinfo : Nvinfo)
-    dtopic = find({ii: nvinfo.dt_ii}) || new({
+    cvpost = find({ii: nvinfo.dt_ii}) || new({
       ii:        nvinfo.dt_ii,
       state:     1,
       cvuser_id: -2,
@@ -155,7 +155,7 @@ class CV::Cvpost
     #{bintro.empty? ? "Cần bổ sung" : bintro}
     MARKDOWN
 
-    dtopic.update_content!({
+    cvpost.update_content!({
       "title":      "Thảo luận chung truyện #{nvinfo.vname}",
       "labels":     "1",
       "body_input": tpbody,

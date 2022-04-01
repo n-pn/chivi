@@ -25,7 +25,7 @@
 </script>
 
 <script lang="ts">
-  import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
+  import DtopicList from '$gui/parts/cvpost/DtopicList.svelte'
 
   export let dboard: CV.Dboard
   export let dtlist: CV.Dtlist

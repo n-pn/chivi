@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { writable } from 'svelte/store'
 
-  import { dtopic_form as data } from '$lib/stores'
+  import { cvpost_form as data } from '$lib/stores'
   import { dlabels } from '$lib/constants'
 
   function build_labels(labels: string): Record<string, boolean> {
@@ -65,7 +65,7 @@
   const focus = (node: HTMLElement) => node.focus()
 </script>
 
-<Dialog actived={$ctrl.actived} class="dtopic" on_close={ctrl.hide}>
+<Dialog actived={$ctrl.actived} class="cvpost" on_close={ctrl.hide}>
   <svelte:fragment slot="header">
     <head-board>{dboard.bname}</head-board>
     <head-sep>

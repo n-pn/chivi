@@ -12,5 +12,5 @@ export * from './stores/cvdata_stores'
 export * from './stores/global_stores'
 export * from './stores/dboard_stores'
 
-export { form as dtopic_form } from './stores/dtopic_stores'
-export { form as dtpost_form } from './stores/dtpost_stores'
+export { form as cvpost_form } from './stores/cvpost_stores'
+export { form as cvrepl_form } from './stores/cvrepl_stores'

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import DtpostCard from '$gui/parts/dtpost/DtpostCard.svelte'
+  import DtpostCard from '$gui/parts/cvrepl/DtpostCard.svelte'
 
   let items = []
   let pgidx = 1
@@ -16,16 +16,16 @@
   }
 </script>
 
-<dtpost-list>
-  {#each items as dtpost}
-    <DtpostCard {dtpost} render_mode={1} />
+<cvrepl-list>
+  {#each items as cvrepl}
+    <DtpostCard {cvrepl} render_mode={1} />
   {:else}
     <div class="empty">Danh sách trống</div>
   {/each}
-</dtpost-list>
+</cvrepl-list>
 
 <style lang="scss">
-  dtpost-list {
+  cvrepl-list {
     display: block;
     padding: 0.25rem 0.75rem 0.75rem;
   }

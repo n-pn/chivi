@@ -1,7 +1,7 @@
 include CV
 
 Nvinfo.query.each do |nvinfo|
-  # next if nvinfo.dtopic_count == 0
+  # next if nvinfo.cvpost_count == 0
   # Cvpost.init_base_topic!(nvinfo) if nvinfo.id > 0
 
   topics = Cvpost.query.where({nvinfo_id: nvinfo.id}).to_a
@@ -12,15 +12,15 @@ Nvinfo.query.each do |nvinfo|
   nvinfo.board_bump = topics.map(&.utime).max
   nvinfo.save!
 
-  topics.sort_by(&.id).each_with_index(1) do |dtopic, ii|
-    dtopic_ii = nvinfo.dt_ii + ii
+  topics.sort_by(&.id).each_with_index(1) do |cvpost, ii|
+    cvpost_ii = nvinfo.dt_ii + ii
 
-    dtbody = dtopic.dtbody
-    unless dtbody.id_column.defined?
-      dtbody.cvuser_id = dtopic.cvuser_id
-      dtbody.save!
+    cvrepl = cvpost.cvrepl
+    unless cvrepl.id_column.defined?
+      cvrepl.cvuser_id = cvpost.cvuser_id
+      cvrepl.save!
     end
 
-    dtopic.update!({ii: dtopic_ii.to_i, dtbody_id: dtbody.id})
+    cvpost.update!({ii: cvpost_ii.to_i, cvrepl_id: cvrepl.id})
   end
 end

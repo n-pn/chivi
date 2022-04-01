@@ -2,7 +2,7 @@
   import { dtlist_data as data, DtlistData } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import DtopicList from '$gui/parts/dtopic/DtopicList.svelte'
+  import DtopicList from '$gui/parts/cvpost/DtopicList.svelte'
 
   let dtlist: CV.Dtlist = {
     items: [],

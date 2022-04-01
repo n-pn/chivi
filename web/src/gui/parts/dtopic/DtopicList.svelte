@@ -5,7 +5,7 @@
   import { dtlist_data, dboard_ctrl } from '$lib/stores'
 
   import DtopicCard from './DtopicCard.svelte'
-  import DtopicForm, { ctrl as dtopic_form } from './DtopicForm.svelte'
+  import DtopicForm, { ctrl as cvpost_form } from './DtopicForm.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 </script>
 
@@ -47,8 +47,8 @@
 </board-head>
 
 <topic-list>
-  {#each dtlist.items as dtopic}
-    <DtopicCard size="sm" {dtopic} {_mode} />
+  {#each dtlist.items as cvpost}
+    <DtopicCard size="sm" {cvpost} {_mode} />
   {:else}
     <div class="empty">
       <h4>Chưa có chủ đề thảo luận :(</h4>
@@ -66,12 +66,12 @@
   <button
     class="m-btn _primary _fill"
     disabled={$session.privi < 0}
-    on:click={() => dtopic_form.show('0')}>
+    on:click={() => cvpost_form.show('0')}>
     <SIcon name="message-plus" />
     <span>Tạo chủ đề mới</span></button>
 </board-foot>
 
-{#if $dtopic_form.actived}<DtopicForm {dboard} />{/if}
+{#if $cvpost_form.actived}<DtopicForm {dboard} />{/if}
 
 <style lang="scss">
   board-head {

@@ -1,28 +1,28 @@
 <script lang="ts">
   import { dboard_ctrl as ctrl, tplist_data as data } from '$lib/stores'
-  import DtpostList from '$gui/parts/dtpost/DtpostList.svelte'
-  import DtopicFull from '$gui/parts/dtopic/DtopicFull.svelte'
+  import DtpostList from '$gui/parts/cvrepl/DtpostList.svelte'
+  import DtopicFull from '$gui/parts/cvpost/DtopicFull.svelte'
 
-  let dtopic: CV.Dtopic
+  let cvpost: CV.Dtopic
   let tplist: CV.Tplist = {
     items: [],
     pgidx: 1,
     pgmax: 1,
   }
 
-  $: if ($ctrl.actived && $data.topic) load_dtopic($data.topic.id)
-  $: if (dtopic) load_tposts(dtopic, $data.query)
+  $: if ($ctrl.actived && $data.topic) load_cvpost($data.topic.id)
+  $: if (cvpost) load_tposts(cvpost, $data.query)
 
-  async function load_dtopic(topic_id: string) {
+  async function load_cvpost(topic_id: string) {
     const api_url = `/api/topics/${topic_id}`
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
-    dtopic = payload.props.dtopic
+    cvpost = payload.props.cvpost
   }
 
   async function load_tposts(topic: CV.Dtopic, { pg, op }) {
     let api_url = `/api/tposts?pg=${pg}&lm=20`
-    if (topic) api_url += '&dtopic=' + topic.id
+    if (topic) api_url += '&cvpost=' + topic.id
     if (op) api_url += '&uname=' + op
 
     const res = await fetch(api_url)
@@ -33,12 +33,12 @@
   }
 </script>
 
-{#if dtopic}
+{#if cvpost}
   <section class="topic">
-    <DtopicFull {dtopic} />
+    <DtopicFull {cvpost} />
   </section>
   <section class="posts">
-    <DtpostList {tplist} {dtopic} />
+    <DtpostList {tplist} {cvpost} />
   </section>
 {:else}
   Chưa chọn chủ đề

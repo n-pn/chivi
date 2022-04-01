@@ -10,20 +10,20 @@ struct CV::CvreplView
     jb.object {
       jb.field "id", @data.id
       jb.field "no", @data.ii
-      jb.field "dt", @data.dtopic.oid
+      jb.field "dt", @data.cvpost.oid
 
       if @full
-        jb.field "db_bname", @data.dtopic.nvinfo.vname
-        jb.field "db_bslug", @data.dtopic.nvinfo.bslug
-        jb.field "dt_title", @data.dtopic.title
-        jb.field "dt_tslug", @data.dtopic.tslug
+        jb.field "db_bname", @data.cvpost.nvinfo.vname
+        jb.field "db_bslug", @data.cvpost.nvinfo.bslug
+        jb.field "dt_title", @data.cvpost.title
+        jb.field "dt_tslug", @data.cvpost.tslug
       end
 
       jb.field "u_dname", @data.cvuser.uname
       jb.field "u_privi", @data.cvuser.privi
 
-      if @data.repl_dtpost_id > 0
-        repl = Cvrepl.load!(@data.repl_dtpost_id)
+      if @data.repl_cvrepl_id > 0
+        repl = Cvrepl.load!(@data.repl_cvrepl_id)
 
         jb.field "rp_id", repl.id
         jb.field "rp_no", repl.ii

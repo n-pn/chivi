@@ -14,7 +14,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
       .where("state >= 0 AND cvuser_id != ?", user_id)
       .where("(repl_cvuser_id = ? OR tagged_ids @> ?::bigint[])", user_id, [user_id])
       .order_by(id: :desc)
-      .with_dtopic.with_cvuser
+      .with_cvpost.with_cvuser
       .limit(limit).offset(offset)
 
     set_cache :private, maxage: 20

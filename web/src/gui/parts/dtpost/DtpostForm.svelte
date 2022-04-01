@@ -4,19 +4,19 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import MdForm from '$gui/molds/MdForm.svelte'
 
-  export let dtopic_id = '0'
-  export let dtpost_id = 0
+  export let cvpost_id = '0'
+  export let cvrepl_id = 0
   export let dtrepl_id = 0
 
   export let on_destroy = (dirty = false) => {
     if (dirty) window.location.reload()
   }
 
-  let on_edit = dtpost_id > 0
-  let api_url = gen_api_url(dtopic_id)
+  let on_edit = cvrepl_id > 0
+  let api_url = gen_api_url(cvpost_id)
 
   let form = { input: '', itype: 'md', rp_id: dtrepl_id }
-  $: if (dtpost_id > 0) load_form(dtpost_id)
+  $: if (cvrepl_id > 0) load_form(cvrepl_id)
 
   let error = ''
 
@@ -27,10 +27,10 @@
     if (api_res.ok) form = payload.props
   }
 
-  function gen_api_url(dtopic_id: string) {
+  function gen_api_url(cvpost_id: string) {
     let base_url = '/api/tposts'
-    if (dtpost_id) return base_url + '/' + dtpost_id
-    return base_url + '?dtopic=' + dtopic_id
+    if (cvrepl_id) return base_url + '/' + cvrepl_id
+    return base_url + '?cvpost=' + cvpost_id
   }
 
   async function submit() {
@@ -49,7 +49,7 @@
 </script>
 
 {#if $session.privi >= 0}
-  <dtpost-form>
+  <cvrepl-form>
     <form action={api_url} method="POST" on:submit|preventDefault={submit}>
       <form-field class="body">
         <MdForm
@@ -63,7 +63,7 @@
       {/if}
 
       <form-foot>
-        {#if dtpost_id || dtrepl_id}
+        {#if cvrepl_id || dtrepl_id}
           <button
             type="button"
             class="m-btn _sm"
@@ -83,13 +83,13 @@
         </button>
       </form-foot>
     </form>
-  </dtpost-form>
+  </cvrepl-form>
 {:else}
   <div class="disable">Đăng nhập để bình luận</div>
 {/if}
 
 <style lang="scss">
-  dtpost-form {
+  cvrepl-form {
     display: block;
   }
 
@@ -110,7 +110,7 @@
     justify-content: right;
   }
 
-  dtpost-form {
+  cvrepl-form {
     display: block;
     margin-top: 0.25rem;
   }

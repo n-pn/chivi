@@ -77,7 +77,7 @@ class CV::Cvrepl
   end
 
   def set_dtrepl_id(dtrepl_id : Int64)
-    self.repl_dtpost_id = dtrepl_id
+    self.repl_cvrepl_id = dtrepl_id
     self.repl_cvuser_id = Cvrepl.load!(dtrepl_id).cvuser_id
   end
 

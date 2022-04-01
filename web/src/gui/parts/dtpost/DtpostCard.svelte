@@ -5,12 +5,12 @@
   import { SIcon } from '$gui'
   import DtpostForm from './DtpostForm.svelte'
 
-  export let dtpost: CV.Dtpost
+  export let cvrepl: CV.Dtpost
   export let active_card = ''
   export let render_mode = 0
 
-  let card_id = `tp-${dtpost.no}`
-  $: is_owner = $session.uname == dtpost.u_dname
+  let card_id = `tp-${cvrepl.no}`
+  $: is_owner = $session.uname == cvrepl.u_dname
   $: can_edit = $session.privi > 3 || (is_owner && $session.privi >= 0)
 
   let _mode = 0
@@ -20,58 +20,58 @@
     else _mode = 0
   }
 
-  $: board_url = `/forum/-${dtpost.db_bslug}`
-  $: topic_url = `${board_url}/-${dtpost.dt_tslug}-${dtpost.dt}`
+  $: board_url = `/forum/-${cvrepl.db_bslug}`
+  $: topic_url = `${board_url}/-${cvrepl.dt_tslug}-${cvrepl.dt}`
 </script>
 
-<dtpost-wrap class:fluid={$$props.fluid}>
+<cvrepl-wrap class:fluid={$$props.fluid}>
   {#if _mode == 1}
-    <dtpost-edit>
-      <DtpostForm dtopic_id={dtpost.dt} dtpost_id={dtpost.id} {on_destroy} />
-    </dtpost-edit>
+    <cvrepl-edit>
+      <DtpostForm cvpost_id={cvrepl.dt} cvrepl_id={cvrepl.id} {on_destroy} />
+    </cvrepl-edit>
   {:else}
-    <dtpost-card
+    <cvrepl-card
       id={card_id}
       class:active={active_card == card_id}
       class:larger={render_mode == 0}>
       {#if render_mode > 0}
-        <dtpost-orig>
+        <cvrepl-orig>
           <SIcon name="messages" />
-          <a href={board_url}>{dtpost.db_bname}</a>
+          <a href={board_url}>{cvrepl.db_bname}</a>
           <span>/</span>
-          <a href={topic_url}>{dtpost.dt_title}</a>
-        </dtpost-orig>
+          <a href={topic_url}>{cvrepl.dt_title}</a>
+        </cvrepl-orig>
       {/if}
 
-      <dtpost-head>
-        <dtpost-meta>
+      <cvrepl-head>
+        <cvrepl-meta>
           <a
             class="cv-user"
-            href="{topic_url}?op={dtpost.u_dname}"
-            data-privi={dtpost.u_privi}
-            >{dtpost.u_dname}
+            href="{topic_url}?op={cvrepl.u_dname}"
+            data-privi={cvrepl.u_privi}
+            >{cvrepl.u_dname}
           </a>
-        </dtpost-meta>
+        </cvrepl-meta>
 
-        {#if dtpost.rp_no > 0}
-          <dtpost-sep><SIcon name="corner-up-right" /></dtpost-sep>
-          <dtpost-meta>
+        {#if cvrepl.rp_no > 0}
+          <cvrepl-sep><SIcon name="corner-up-right" /></cvrepl-sep>
+          <cvrepl-meta>
             <a
               class="cv-user"
-              href="{topic_url}#tp-{dtpost.rp_no}"
-              data-privi={dtpost.ru_privi}
-              on:click={() => (active_card = 'tp-' + dtpost.rp_no)}
-              >{dtpost.ru_dname}
+              href="{topic_url}#tp-{cvrepl.rp_no}"
+              data-privi={cvrepl.ru_privi}
+              on:click={() => (active_card = 'tp-' + cvrepl.rp_no)}
+              >{cvrepl.ru_dname}
             </a>
-          </dtpost-meta>
+          </cvrepl-meta>
         {/if}
 
-        <dtpost-sep>·</dtpost-sep>
-        <dtpost-meta>{rel_time(dtpost.ctime)}</dtpost-meta>
+        <cvrepl-sep>·</cvrepl-sep>
+        <cvrepl-meta>{rel_time(cvrepl.ctime)}</cvrepl-meta>
 
-        {#if dtpost.utime > dtpost.ctime}
-          <dtpost-sep>·</dtpost-sep>
-          <dtpost-meta class="edit">Đã sửa</dtpost-meta>
+        {#if cvrepl.utime > cvrepl.ctime}
+          <cvrepl-sep>·</cvrepl-sep>
+          <cvrepl-meta class="edit">Đã sửa</cvrepl-meta>
         {/if}
 
         <dthead-right>
@@ -84,64 +84,64 @@
           </button>
 
           <a class="btn" href="{topic_url}#{card_id}">
-            <dtpost-meta class="no">#{dtpost.no}</dtpost-meta>
+            <cvrepl-meta class="no">#{cvrepl.no}</cvrepl-meta>
           </a>
         </dthead-right>
-      </dtpost-head>
+      </cvrepl-head>
 
-      <dtpost-body class="m-article">{@html dtpost.ohtml}</dtpost-body>
+      <cvrepl-body class="m-article">{@html cvrepl.ohtml}</cvrepl-body>
 
-      <dtpost-foot>
-        <dtpost-stats>
-          {#if dtpost.like_count > 0}
-            <dtpost-meta>
+      <cvrepl-foot>
+        <cvrepl-stats>
+          {#if cvrepl.like_count > 0}
+            <cvrepl-meta>
               <SIcon name="heart" />
-              <span>{dtpost.like_count}</span>
-            </dtpost-meta>
+              <span>{cvrepl.like_count}</span>
+            </cvrepl-meta>
           {/if}
 
-          {#if dtpost.repl_count > 0}
-            <dtpost-meta>
+          {#if cvrepl.repl_count > 0}
+            <cvrepl-meta>
               <SIcon name="message-circle" />
-              <span>{dtpost.repl_count}</span>
-            </dtpost-meta>
+              <span>{cvrepl.repl_count}</span>
+            </cvrepl-meta>
           {/if}
-        </dtpost-stats>
+        </cvrepl-stats>
 
-        <dtpost-react>
-          <dtpost-meta>
+        <cvrepl-react>
+          <cvrepl-meta>
             <button class="btn">
-              <span>{dtpost.like_count > 0 ? dtpost.like_count : ''}</span>
+              <span>{cvrepl.like_count > 0 ? cvrepl.like_count : ''}</span>
               <SIcon name="thumb-up" />
               <span>Thích</span>
             </button>
-          </dtpost-meta>
+          </cvrepl-meta>
 
-          <dtpost-meta>
+          <cvrepl-meta>
             <button class="btn" on:click={() => (_mode = 2)}>
               <SIcon name="arrow-back-up" />
               <span>Trả lời</span>
             </button>
-          </dtpost-meta>
-        </dtpost-react>
-      </dtpost-foot>
-    </dtpost-card>
+          </cvrepl-meta>
+        </cvrepl-react>
+      </cvrepl-foot>
+    </cvrepl-card>
   {/if}
 
   {#if _mode == 2}
-    <dtpost-repl>
-      <DtpostForm dtopic_id={dtpost.dt} dtrepl_id={dtpost.id} {on_destroy} />
-    </dtpost-repl>
+    <cvrepl-repl>
+      <DtpostForm cvpost_id={cvrepl.dt} dtrepl_id={cvrepl.id} {on_destroy} />
+    </cvrepl-repl>
   {/if}
-</dtpost-wrap>
+</cvrepl-wrap>
 
 <style lang="scss">
-  dtpost-wrap {
+  cvrepl-wrap {
     display: block;
     @include border($loc: top);
   }
 
-  dtpost-card {
+  cvrepl-card {
     display: block;
 
     &.active {
@@ -153,23 +153,23 @@
     }
   }
 
-  dtpost-edit {
+  cvrepl-edit {
     display: block;
     padding-bottom: 0.75rem;
   }
 
-  dtpost-repl {
+  cvrepl-repl {
     display: block;
     margin-left: var(--gutter);
     @include border($loc: top);
   }
 
-  dtpost-head {
+  cvrepl-head {
     @include flex-cy($gap: 0.25rem);
     padding-top: 0.25rem;
   }
 
-  dtpost-body {
+  cvrepl-body {
     display: block;
     margin: 0.25rem 0;
     word-wrap: break-word;
@@ -181,12 +181,12 @@
     }
   }
 
-  dtpost-sep {
+  cvrepl-sep {
     @include flex-ca;
     @include fgcolor(tert);
   }
 
-  dtpost-meta {
+  cvrepl-meta {
     display: inline-flex;
     gap: 0.125rem;
     align-items: center;
@@ -199,7 +199,7 @@
     margin-left: auto;
   }
 
-  dtpost-foot {
+  cvrepl-foot {
     display: flex;
     padding-bottom: 0.25rem;
   }
@@ -226,17 +226,17 @@
     // @include fgcolor(mute);
   }
 
-  dtpost-stats,
-  dtpost-react {
+  cvrepl-stats,
+  cvrepl-react {
     @include flex-cy($gap: 0.75rem);
   }
 
-  dtpost-react {
+  cvrepl-react {
     margin-left: auto;
     padding-right: 0.5rem;
   }
 
-  dtpost-orig {
+  cvrepl-orig {
     @include flex-cy($gap: 0.125rem);
     @include ftsize(xs);
     line-height: 1.25rem;

@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { appbar } from '$lib/stores'
   export async function load({ stuff, fetch, url }) {
-    const { dboard, dtopic } = stuff
+    const { dboard, cvpost } = stuff
     appbar.set({
       left: [
         ['Diễn đàn', 'messages', '/forum', '_show-lg'],
@@ -11,12 +11,12 @@
 
     const pg = url.searchParams.get('pg') || 1
 
-    const api_url = `/api/tposts?dtopic=${dtopic.id}&pg=${pg}&lm=20`
+    const api_url = `/api/tposts?cvpost=${cvpost.id}&pg=${pg}&lm=20`
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
 
     payload.props.dboard = dboard
-    payload.props.dtopic = dtopic
+    payload.props.cvpost = cvpost
     return payload
   }
 </script>
@@ -25,26 +25,26 @@
   import { DtopicFull, DtpostList } from '$gui'
 
   export let dboard: CV.Dboard
-  export let dtopic: CV.Dtopic
+  export let cvpost: CV.Dtopic
   export let tplist: CV.Tplist
 </script>
 
 <svelte:head>
-  <title>{dtopic.title} - Diễn đàn - Chivi</title>
+  <title>{cvpost.title} - Diễn đàn - Chivi</title>
 </svelte:head>
 
-<DtopicFull {dboard} {dtopic} fluid={true} />
+<DtopicFull {dboard} {cvpost} fluid={true} />
 
-<dtopic-posts>
-  <dtpost-head>
+<cvpost-posts>
+  <cvrepl-head>
     <h3>Bình luận</h3>
-  </dtpost-head>
+  </cvrepl-head>
 
-  <DtpostList {tplist} {dtopic} fluid={true} />
-</dtopic-posts>
+  <DtpostList {tplist} {cvpost} fluid={true} />
+</cvpost-posts>
 
 <style lang="scss">
-  dtopic-posts {
+  cvpost-posts {
     display: block;
     max-width: 40rem;
     margin: 1.25rem auto 0;
@@ -59,7 +59,7 @@
     }
   }
 
-  dtpost-head {
+  cvrepl-head {
     display: block;
     padding: 0.5rem var(--gutter);
   }
