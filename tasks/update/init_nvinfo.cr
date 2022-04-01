@@ -47,6 +47,15 @@ class CV::InitNvinfo
     @authors = Author.query.to_a.to_h { |x| {x.zname, x} }
   end
 
+  def each_index
+    stores[:_index].each_value do |map|
+      map.data.each_value do |value|
+        _, btitle, author = value
+        yield btitle, author
+      end
+    end
+  end
+
   def staled?(snvid : String, atime : Int64)
     get_map(:_index, snvid).ival_64(snvid) <= atime
   end

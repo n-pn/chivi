@@ -3,7 +3,8 @@ require "json"
 require "myhtml"
 
 require "../../src/_util/http_util"
-require "../pgdata/init_nvinfo"
+require "../../src/_util/file_util"
+require "./init_nvinfo"
 
 class CV::ZxcsmeParser
   def initialize(@snvid : String, gz_file : String)
@@ -19,7 +20,7 @@ class CV::ZxcsmeParser
   getter bnames : {String, String} do
     heading = @doc.css("#content > h1").first
 
-    _, btitle, author = HEAD_RE_1.match(heading.inner_text.strip)
+    _, btitle, author = HEAD_RE_1.match(heading.inner_text.strip).not_nil!
     {btitle, author}
   end
 
@@ -113,13 +114,13 @@ class CV::SeedZxcsme
     @snvids.each_with_index(1) do |snvid, idx|
       file = File.join(INP_DIR, "#{snvid}.html.gz")
 
-      next unless atime = SeedUtil.get_mtime(file)
-      next unless redo || @seed._index.ival_64(snvid) < atime
+      next unless atime = FileUtil.mtime_int(file)
+      next unless redo || @seed.get_map(:_index, snvid).ival_64(snvid) < atime
 
       puts "\n- <http://www.zxcs.me/post/#{snvid}>".colorize.cyan
       parser = ZxcsmeParser.new(snvid, file)
 
-      @seed.add!(parser, atime: atime)
+      @seed.add!(parser, snvid, atime: atime)
       @seed.set_val!(:extras, snvid, read_chsize(snvid))
 
       scores = [Random.rand(30..100), Random.rand(50..65)]
@@ -127,13 +128,13 @@ class CV::SeedZxcsme
 
       if idx % 100 == 0
         puts "- [zxcs.me]: <#{idx}/#{@snvids.size}>"
-        @seed.save!(clean: false)
+        @seed.save_stores!
       end
     rescue err
       puts [snvid, err.message.colorize.red]
     end
 
-    @seed.save!(clean: false)
+    @seed.save_stores!
   end
 
   def read_chsize(snvid : String) : Array(String)
@@ -154,35 +155,34 @@ class CV::SeedZxcsme
 
     inputs = Hash(String, ZxcsmeJson).from_json File.read(PREV_FILE)
     inputs.each do |snvid, input|
-      next if !redo && @seed._index.get(snvid)
+      next if !redo && @seed.get_map(:_index, snvid).get(snvid)
 
       puts " - <#{snvid}> [#{input.btitle} #{input.author}]"
 
-      @seed._index.set!(snvid, [atime, input.btitle, input.author])
+      @seed.set_val!(:_index, snvid, [atime, input.btitle, input.author])
 
-      @seed.set_intro(snvid, input.bintro)
-      @seed.genres.set!(snvid, input.genres)
-      @seed.bcover.set!(snvid, input.bcover)
+      @seed.set_val!(:intros, snvid, input.bintro)
+      @seed.set_val!(:genres, snvid, input.genres)
+      @seed.set_val!(:covers, snvid, input.bcover)
 
       status = input.author.ends_with?("【断更】") ? 2 : 1
-      @seed.status.set!(snvid, status.to_s)
+      @seed.set_val!(:status, snvid, status.to_s)
 
-      @seed.chsize.set!(snvid, read_chsize(snvid))
+      @seed.set_val!(:extras, snvid, read_chsize(snvid))
 
       scores = [Random.rand(30..100), Random.rand(50..65)]
-      @seed.scores.set!(snvid, scores.map(&.to_s))
+      @seed.set_val!(:rating, snvid, scores.map(&.to_s))
     end
 
-    @seed.save!(clean: false)
+    @seed.save_stores!
   end
 
   def fix_authors!
-    @seed._index.each do |_snvid, value|
-      _atime, rtitle, author = value
+    @seed.each_index do |rtitle, author|
       next if author.ends_with?("【断更】") # resolved
       next unless author =~ /[\(\[（【]/
 
-      if fix_author = BookUtils.zh_authors.fval_alt("#{author}  #{rtitle}", author)
+      if fix_author = BookUtil.zh_authors.fval_alt("#{author}  #{rtitle}", author)
         puts "#{author} => #{fix_author}".colorize.green
         next
       end
@@ -192,13 +192,11 @@ class CV::SeedZxcsme
   end
 
   def fix_btitles!
-    @seed._index.each do |_snvid, value|
-      _atime, rtitle, author = value
-
+    @seed.each_index do |rtitle, author|
       next unless rtitle =~ /[\(\[（【]/
-      author = BookUtils.fix_zh_author(author, rtitle)
+      author = BookUtil.fix_name(:author, "#{author}  #{rtitle}", author)
 
-      if ztitle = BookUtils.zh_btitles.fval_alt("#{rtitle}  #{author}", rtitle)
+      if ztitle = BookUtil.zh_btitles.fval_alt("#{rtitle}  #{author}", rtitle)
         puts "#{rtitle} => #{ztitle}".colorize.green
       else
         fix_btitle!(rtitle, author)
@@ -222,25 +220,25 @@ class CV::SeedZxcsme
       else          {title1, "#{title2}  #{author}", "#{rtitle}  #{author}"}
       end
 
-    BookUtils.zh_btitles.set!(key2, keep)
-    BookUtils.zh_btitles.set!(key1, keep)
-    BookUtils.zh_btitles.save!
+    BookUtil.zh_btitles.set!(key2, keep)
+    BookUtil.zh_btitles.set!(key1, keep)
+    BookUtil.zh_btitles.save!
   end
 
   def seed!
-    input = @seed._index.data.to_a
+    idx = 1
 
-    puts "- Input: #{input.size.colorize.cyan} entries, \
-            authors: #{Author.query.count.colorize.cyan}, \
-            nvinfo: #{Nvinfo.query.count.colorize.cyan}"
+    @seed.stores[:_index].each_value do |map|
+      map.data.each do |snvid, values|
+        save_book(snvid, values)
 
-    input.sort_by(&.[0].to_i).each_with_index(1) do |(snvid, values), idx|
-      save_book(snvid, values)
-
-      if idx % 100 == 0
-        puts "- [zxcs_me/seed] <#{idx.colorize.cyan}/#{input.size}>, \
+        if idx % 100 == 0
+          puts "- [zxcs_me/seed] <#{idx.colorize.cyan}/#{input.size}>, \
                 authors: #{Author.query.count.colorize.cyan}, \
                 nvinfo: #{Nvinfo.query.count.colorize.cyan}"
+        end
+
+        idx += 1
       end
     end
 
@@ -249,20 +247,19 @@ class CV::SeedZxcsme
   end
 
   def save_book(snvid : String, values : Array(String), redo = false)
-    bumped, p_ztitle, p_author = values
-    return if p_ztitle.empty? || p_author.empty?
+    bumped, p_btitle, p_author = values
+    return if p_btitle.empty? || p_author.empty?
+    f_btitle, f_author = BookUtil.fix_names(p_btitle, p_author)
 
-    author = SeedUtil.get_author(p_author, p_ztitle, force: true).not_nil!
+    author = Author.upsert!(f_author)
+    nvinfo = Nvinfo.upsert!(author, f_btitle)
 
-    ztitle = BookUtils.fix_zh_btitle(p_ztitle, author.zname)
-    nvinfo = Nvinfo.upsert!(author, ztitle)
-
-    zhbook = Nvseed.upsert!("zxcs_me", snvid)
+    nvseed = Nvseed.upsert!("zxcs_me", snvid)
     bumped = bumped.to_i64
 
-    if redo || zhbook.unmatch?(nvinfo.id)
-      zhbook.nvinfo = nvinfo
-      nvinfo.add_zhseed(zhbook.zseed)
+    if redo || nvseed.unmatch?(nvinfo.id)
+      nvseed.nvinfo = nvinfo
+      nvinfo.add_zhseed(nvseed.zseed)
 
       nvinfo.set_genres(@seed.get_genres(snvid))
       # nvinfo.set_bcover("zxcs_me-#{snvid}.webp")
@@ -272,29 +269,29 @@ class CV::SeedZxcsme
         voters, rating = @seed.get_scores(snvid)
         nvinfo.set_scores(voters, rating)
       end
-    else # zhbook already created before
-      return unless bumped > zhbook.bumped
+    else # nvseed already created before
+      return unless bumped > nvseed.bumped
     end
 
-    zhbook.status = @seed.status.ival(snvid)
-    nvinfo.set_status(zhbook.status)
+    nvseed.status = @seed.status.ival(snvid)
+    nvinfo.set_status(nvseed.status)
 
-    zhbook.bumped = bumped
-    zhbook.mftime = @seed.mftime.ival_64(snvid)
+    nvseed.bumped = bumped
+    nvseed.mftime = @seed.mftime.ival_64(snvid)
 
-    if zhbook.mftime < 1
-      zhbook.mftime = nvinfo.mftime
+    if nvseed.mftime < 1
+      nvseed.mftime = nvinfo.mftime
     else
-      nvinfo.set_mftime(zhbook.mftime)
+      nvinfo.set_mftime(nvseed.mftime)
     end
 
-    if zhbook.chap_count == 0
+    if nvseed.chap_count == 0
       vals = @seed.chsize.get(snvid) || ["0", "0"]
-      zhbook.chap_count = vals[0].to_i
-      zhbook.last_schid = vals[1]
+      nvseed.chap_count = vals[0].to_i
+      nvseed.last_schid = vals[1]
     end
 
-    zhbook.save!
+    nvseed.save!
     nvinfo.save!
   end
 
@@ -307,6 +304,6 @@ worker = CV::SeedZxcsme.new
 worker.prep! if ARGV.includes?("prep")
 worker.init!
 worker.inherit!
-# worker.fix_authors!
-# worker.fix_btitles!
+worker.fix_authors!
+worker.fix_btitles!
 worker.seed!
