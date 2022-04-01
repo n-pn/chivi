@@ -9,23 +9,22 @@ module CV::CvuserTasks
     Cvuser.query.order_by(id: :asc).each do |user|
       user_file = "#{DIR}/#{user.id}.json"
       File.write(user_file, user.to_pretty_json)
-      puts "  user <#{cvuser.uname}> saved!".colorize.green
+      puts "  user <#{user.uname}> saved!".colorize.green
     end
   end
 
   def restore
-    Dir.glob(DIR + ".json").each do |file|
-      user_id = File.basename(file, ".json").to_i64
-      cvuser = Cvuser.from_json(File.read(file))
+    Dir.glob(File.join(DIR, "*.json")).each_with_index do |file, idx|
+      user = Cvuser.from_json(File.read(file))
 
-      if old_user = Cvuser.find({id: user_id})
-        old_user.delete if old_user.uname != cvuser.uname
+      if old_user = Cvuser.find({id: user.id})
+        old_user.delete
       else
-        Cvuser.find({uname: cvuser.uname}).try { |x| x.delete }
+        Cvuser.find({uname: user.uname}).try { |x| x.delete }
       end
 
-      cvuser.save!
-      puts "  user <#{cvuser.uname}> restored!".colorize.green
+      user.save!
+      puts "- #{idx}: [#{user.id}] user <#{user.uname}> restored!".colorize.green
     end
   end
 end
