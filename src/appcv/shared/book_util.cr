@@ -33,7 +33,7 @@ module CV::BookUtil
   end
 
   NORMALIZE = begin
-    lines = File.read_lines("#{__DIR__}/book_util/normalize.tsv")
+    lines = File.read_lines("var/shared/normalize.tsv")
     lines.each_with_object({} of Char => Char) do |line, hash|
       hash[line[0]] = line[2]
     end

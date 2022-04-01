@@ -1,6 +1,6 @@
-# time bin/ysbook_seed -i
+# time bin/ysbook_seed -m 1
 # time bin/zhwenpg_seed
-# time bin/zxcs_me_seed
+# time bin/zxcsme_seed
 time bin/zhbook_seed -s hetushu
 time bin/zhbook_seed -s rengshu
 time bin/zhbook_seed -s xbiquge

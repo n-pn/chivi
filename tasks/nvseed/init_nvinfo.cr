@@ -10,8 +10,8 @@ class CV::InitNvinfo
   DIR = "var/nvinfos"
   Dir.mkdir_p("#{DIR}/autos")
 
-  RATING_FIX = Tabkv.new("#{DIR}/rating_fix.tsv", :force)
-  STATUS_MAP = Tabkv.new("#{DIR}/status_map.tsv", :force)
+  RATING_FIX = Tabkv.new("var/shared/rating_fix.tsv", :force)
+  STATUS_MAP = Tabkv.new("var/shared/status_map.tsv", :force)
 
   def self.get_scores(btitle : String, author : String)
     if score = RATING_FIX.get("#{btitle}  #{author}")

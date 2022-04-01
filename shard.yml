@@ -16,16 +16,16 @@ targets:
     main: tasks/nvseed/zhwenpg_seed.cr
 
   ysbook_seed:
-    main: db/seed_task/ysbook_seed.cr
+    main: db/seed_tasks/ysbook_seed.cr
 
   remote_seed:
     main: tasks/nvseed/remote_seed.cr
 
-  seed_zxcsme:
-    main: tasks/nvinfo/seed_zxcsme.cr
+  zxcsme_seed:
+    main: tasks/nvseed/zxcsme_seed.cr
 
-  seed_locals:
-    main: tasks/nvinfo/seed_locals.cr
+  local_seeds:
+    main: tasks/nvseed/locals_seed.cr
 
   fetch_covers:
     main: tasks/nvinfo/fetch_covers.cr

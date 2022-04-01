@@ -91,7 +91,7 @@ class CV::SeedZxcsme
   @seed = InitNvinfo.new("zxcs_me")
 
   def initialize
-    @snvids = Dir.children(TXT_DIR).reject(&.== "_")
+    @snvids = Dir.glob("#{TXT_DIR}/_/*.tsv").map { |x| File.basename(x, ".tsv") }
     @snvids.sort_by!(&.to_i)
 
     puts "[INPUT: #{@snvids.size} entries]"
@@ -222,7 +222,7 @@ class CV::SeedZxcsme
   end
 
   def seed!
-    @seed.seed_all!
+    @seed.seed_all!(false)
   end
 
   private def gen_ys_title_search(title : String)

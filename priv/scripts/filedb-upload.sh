@@ -23,10 +23,20 @@ then
   # rsync -azi --no-p "var/nvinfos/autos" "$ssh/var/nvinfos"
   # rsync -azi --no-p "priv/static/covers/" "$ssh/priv/static/covers/"
 
-  rsync -azi --no-p "var/cvusers" "$ssh/var"
+  rsync -azi --no-p "var/shared" "$ssh/var"
+
+  rsync -azi --no-p --delete "var/cvusers" "$ssh/var"
+  rsync -azi --no-p --delete "var/ubmemos" "$ssh/var"
+
   rsync -azi --no-p "var/vpterms" "$ssh/var"
   rsync -azi --no-p "var/qttexts" "$ssh/var"
   rsync -azi --no-p "var/tlspecs" "$ssh/var"
+
+  rsync -azi --no-p "var/yousuu/ysbooks" "$ssh/var/yousuu"
+  rsync -azi --no-p "var/yousuu/yscrits" "$ssh/var/yousuu"
+
+  rsync -azi --no-p "var/nvinfos/fixed" "$ssh/_db/nvinfos"
+  rsync -azi --no-p "var/nvinfos/autos" "$ssh/_db/nvinfos"
 
   # rsync -azi --no-p "_db/yousuu/infos" "$ssh/_db/yousuu"
   # rsync -azi --no-p "_db/yousuu/crits" "$ssh/_db/yousuu"

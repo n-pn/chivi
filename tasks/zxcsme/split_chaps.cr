@@ -115,9 +115,9 @@ class CV::Zxcs::SplitText
 
   def split_chaps!(inp_file : String, label = "1/1")
     snvid = File.basename(inp_file, ".txt")
+    return if File.exists?("#{OUT_DIR}/#{snvid}/0.zip")
 
     global_idx = File.join(OUT_DIR, "_", "#{snvid}.tsv")
-    return if File.exists?(global_idx)
 
     input = File.read(inp_file).split(/\r\n?|\n/)
     out_dir = File.join(OUT_DIR, snvid)

@@ -199,7 +199,6 @@ class CV::SeedNvseed
     sname, upper = "hetushu", 0
     cr_mode, threads = 0, 0
     no_seed = false
-    redo = false
 
     OptionParser.parse(argv) do |parser|
       parser.banner = "Usage: map_remote [arguments]"
@@ -208,7 +207,6 @@ class CV::SeedNvseed
       parser.on("-m CR_MODE", "Crawling mode") { |x| cr_mode = x.to_i }
       parser.on("-t THREADS", "Concurrent threads") { |x| threads = x.to_i }
       parser.on("-n", "--noseed", "Init only") { no_seed = true }
-      parser.on("-r", "--redo", "Reseed") { redo = true }
 
       parser.invalid_option do |flag|
         STDERR.puts "ERROR: `#{flag}` is not a valid option."
