@@ -23,8 +23,8 @@ class CV::Nvseed
   column status : Int32 = 0 # same as Cvinfo#status
   column shield : Int32 = 0 # same as Cvinfo#shield
 
-  column atime : Int64 = 0 # last fetching time as total minutes since the epoch
   column utime : Int64 = 0 # seed page update time as total seconds since the epoch
+  column stime : Int64 = 0 # last crawled at
 
   column chap_count : Int32 = 0   # total chapters
   column last_schid : String = "" # seed's latest chap id
@@ -145,10 +145,10 @@ class CV::Nvseed
     self.update_status(status)
     self.update_latest(chinfos.last, force: true)
 
-    self.atime = Time.utc.to_unix
+    self.stime = Time.utc.to_unix
 
     mftime, update_str = parser.update
-    mftime = self.atime if update_str.empty? && changed
+    mftime = self.stime if update_str.empty? && changed
     self.update_mftime(mftime)
 
     self.save!
@@ -166,7 +166,7 @@ class CV::Nvseed
 
     self.update_latest(chaps.last, force: false)
     self.update_mftime(utime)
-    self.atime = Time.utc.to_unix
+    self.stime = Time.utc.to_unix
 
     self.save!
   end
@@ -219,7 +219,7 @@ class CV::Nvseed
 
   def staled?(privi : Int32 = 4, force : Bool = false)
     return true if self.chap_count == 0
-    tspan = Time.utc - Time.unix(self.atime)
+    tspan = Time.utc - Time.unix(self.stime)
     tspan > map_expiry(self.status, force) * (4 - privi)
   end
 

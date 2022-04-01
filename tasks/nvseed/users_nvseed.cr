@@ -10,19 +10,19 @@ Dir.children(DIR).each do |bhash|
   end
 
   next unless nvinfo = CV::Nvinfo.find({bhash: bhash})
-  puts nvinfo.bname
+  puts nvinfo.vname
 
   idx_file = idx_files.sort_by { |x| File.basename(x, ".tsv").to_i.- }.first
 
   lines = File.read_lines(idx_file)
   lines.pop if lines.last.empty?
 
-  zhbook = CV::Nvseed.load!(nvinfo, CV::SeedUtil.map_id("users"))
+  nvseed = CV::Nvseed.load!(nvinfo, CV::SnameMap.map_int("users"))
 
-  zhbook.chap_count = lines.size
-  zhbook.last_schid = lines.last.split('\t')[1]
-  zhbook.mftime = File.info(idx_file).modification_time.to_unix
+  nvseed.chap_count = lines.size
+  nvseed.last_schid = lines.last.split('\t')[1]
+  nvseed.utime = File.info(idx_file).modification_time.to_unix
 
-  puts [zhbook.chap_count, zhbook.last_schid, zhbook.mftime]
-  zhbook.save!
+  puts [nvseed.chap_count, nvseed.last_schid, nvseed.utime]
+  nvseed.save!
 end
