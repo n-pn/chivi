@@ -1,9 +1,9 @@
 require "./_base_view"
 
-struct CV::DtpostView
+struct CV::CvreplView
   include BaseView
 
-  def initialize(@data : Dtpost, @full = false)
+  def initialize(@data : Cvrepl, @full = false)
   end
 
   def to_json(jb : JSON::Builder)
@@ -23,7 +23,7 @@ struct CV::DtpostView
       jb.field "u_privi", @data.cvuser.privi
 
       if @data.repl_dtpost_id > 0
-        repl = Dtpost.load!(@data.repl_dtpost_id)
+        repl = Cvrepl.load!(@data.repl_dtpost_id)
 
         jb.field "rp_id", repl.id
         jb.field "rp_no", repl.ii

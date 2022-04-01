@@ -14,7 +14,7 @@ class CV::Nvinfo
 
   has_many nvseeds : Nvseed, foreign_key: "nvinfo_id"
   # has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
-  # has_many dtopics : Dtopic, foreign_key: "nvinfo_id"
+  # has_many dtopics : Cvpost, foreign_key: "nvinfo_id"
   # has_many yslists : Yslist, through: "yscrits"
 
   column ysbook_id : Int64 = 0 # yousuu book id

@@ -1,11 +1,11 @@
 require "./_base_ctrl"
 
-class CV::DtopicCtrl < CV::BaseCtrl
+class CV::CvpostCtrl < CV::BaseCtrl
   def index
     pgidx, limit, offset = params.page_info(max: 24)
 
     query =
-      Dtopic.query
+      Cvpost.query
         .order_by(_sort: :desc)
         .where("state >= -1")
         .filter_label(params["dlabel"]?)
@@ -37,14 +37,14 @@ class CV::DtopicCtrl < CV::BaseCtrl
         items: items.map { |x|
           x.nvinfo = nvinfo if nvinfo
           x.cvuser = cvuser if cvuser
-          DtopicView.new(x)
+          CvpostView.new(x)
         },
       },
     })
   end
 
   def show
-    dtopic = Dtopic.load!(params["dtopic"])
+    dtopic = Cvpost.load!(params["dtopic"])
 
     dtopic.bump_view_count!
     dtopic.nvinfo.tap { |x| x.update!({view_count: x.view_count + 1}) }
@@ -52,7 +52,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     # TODO: load user trace
 
     set_cache :public, maxage: 20
-    send_json({dtopic: DtopicView.new(dtopic, full: true)})
+    send_json({dtopic: CvpostView.new(dtopic, full: true)})
   rescue err
     Log.error { err }
     halt!(404, "Chủ đề không tồn tại!")
@@ -60,7 +60,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
   def detail
     oid = params["dtopic"]
-    dtopic = Dtopic.load!(oid)
+    dtopic = Cvpost.load!(oid)
 
     set_cache :public, maxage: 20
     send_json({
@@ -82,27 +82,27 @@ class CV::DtopicCtrl < CV::BaseCtrl
     end
 
     count = nvinfo.post_count + 1
-    dtopic = Dtopic.new({cvuser: _cvuser, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
+    dtopic = Cvpost.new({cvuser: _cvuser, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
 
     dtopic.update_content!(params)
     nvinfo.update!({post_count: count, board_bump: dtopic.utime})
 
-    send_json({dtopic: DtopicView.new(dtopic)})
+    send_json({dtopic: CvpostView.new(dtopic)})
   end
 
   def update
-    dtopic = Dtopic.load!(params["dtopic"])
+    dtopic = Cvpost.load!(params["dtopic"])
 
     unless DboardACL.dtopic_update?(dtopic, _cvuser)
       return halt!(403, "Bạn không có quyền sửa chủ đề")
     end
 
     dtopic.update_content!(params)
-    send_json({dtopic: DtopicView.new(dtopic)})
+    send_json({dtopic: CvpostView.new(dtopic)})
   end
 
   def delete
-    dtopic = Dtopic.load!(params["dtopic"])
+    dtopic = Cvpost.load!(params["dtopic"])
 
     if _cvuser.privi == dtopic.cvuser_id
       admin = false

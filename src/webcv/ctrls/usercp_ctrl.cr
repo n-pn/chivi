@@ -10,7 +10,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
     _pgidx, limit, offset = params.page_info(min: 10)
     user_id = _cvuser.id
 
-    query = Dtpost.query
+    query = Cvrepl.query
       .where("state >= 0 AND cvuser_id != ?", user_id)
       .where("(repl_cvuser_id = ? OR tagged_ids @> ?::bigint[])", user_id, [user_id])
       .order_by(id: :desc)
@@ -18,7 +18,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
       .limit(limit).offset(offset)
 
     set_cache :private, maxage: 20
-    send_json(query.map { |x| DtpostView.new(x, full: true) })
+    send_json(query.map { |x| CvreplView.new(x, full: true) })
   end
 
   def upgrade

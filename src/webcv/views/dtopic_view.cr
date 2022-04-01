@@ -1,9 +1,9 @@
 require "./_base_view"
 
-struct CV::DtopicView
+struct CV::CvpostView
   include BaseView
 
-  def initialize(@data : Dtopic, @full = false)
+  def initialize(@data : Cvpost, @full = false)
   end
 
   def to_json(jb : JSON::Builder)

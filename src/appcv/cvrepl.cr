@@ -1,19 +1,19 @@
 require "../_util/post_util"
 
-class CV::Dtpost
+class CV::Cvrepl
   include Clear::Model
 
-  self.table = "dtposts"
+  self.table = "cvrepls"
   primary_key
 
   belongs_to cvuser : Cvuser
-  belongs_to dtopic : Dtopic
+  belongs_to cvpost : Cvpost
 
   column ii : Int32 = 0 # post index in the thread
 
-  column repl_dtpost_id : Int64 = 0 # replied to dtpost.id
-  column repl_cvuser_id : Int64 = 0 # replied to dtpost's cvuser.id
-  getter parent : Dtpost { Dtpost.load!(repl_dtpost_id) }
+  column repl_cvrepl_id : Int64 = 0 # replied to cvrepl.id
+  column repl_cvuser_id : Int64 = 0 # replied to cvrepl's cvuser.id
+  getter parent : Cvrepl { Cvrepl.load!(repl_cvrepl_id) }
 
   column tagged_ids : Array(Int64) = [] of Int64
 
@@ -35,7 +35,7 @@ class CV::Dtpost
   timestamps
 
   scope :filter_topic do |topic|
-    topic ? where({dtopic_id: topic.id}) : with_dtopic
+    topic ? where({cvpost_id: topic.id}) : with_cvpost
   end
 
   scope :filter_owner do |owner|
@@ -78,7 +78,7 @@ class CV::Dtpost
 
   def set_dtrepl_id(dtrepl_id : Int64)
     self.repl_dtpost_id = dtrepl_id
-    self.repl_cvuser_id = Dtpost.load!(dtrepl_id).cvuser_id
+    self.repl_cvuser_id = Cvrepl.load!(dtrepl_id).cvuser_id
   end
 
   def update_content!(params)

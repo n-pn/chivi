@@ -1,10 +1,10 @@
 require "cmark"
 require "../_util/ukey_util"
 
-class CV::Dtopic
+class CV::Cvpost
   include Clear::Model
 
-  self.table = "dtopics"
+  self.table = "cvposts"
   primary_key
 
   column ii : Int32 = 1 # increase for each board
@@ -16,11 +16,14 @@ class CV::Dtopic
   belongs_to nvinfo : Nvinfo
   getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
-  belongs_to dtbody : Dtpost
-  belongs_to lasttp : Dtpost
+  belongs_to dtbody : Cvrepl
+  belongs_to lasttp : Cvrepl
 
-  column dlabel_ids : Array(Int32) = [] of Int32
-  column labels : Array(String) = [] of String
+  column stars : Int32 = 0
+  column _sort : Int32 = 0
+
+  column ilabels : Array(Int32) = [] of Int32
+  column tlabels : Array(String) = [] of String
 
   column title : String = ""
   column tslug : String = ""
@@ -28,9 +31,8 @@ class CV::Dtopic
 
   column state : Int32 = 0 # 0: normal, 1: sticky, -1: locked, -2: deleted, -3: removed
   column utime : Int64 = 0 # update when new post created
-  column _sort : Int32 = 0
 
-  column post_count : Int32 = 0 # post count
+  column repl_count : Int32 = 0 # post count
   column like_count : Int32 = 0 # counting user bookmarks
   column view_count : Int32 = 0 # number of times this topic is viewed
 
@@ -38,7 +40,7 @@ class CV::Dtopic
 
   scope :filter_label do |label|
     if label_id = label.try(&.to_i?)
-      where("dlabel_ids @> ?", [label_id])
+      where("ilabels @> ?", [label_id])
     else
       self
     end
@@ -102,7 +104,9 @@ class CV::Dtopic
     set_utime(Time.utc.to_unix) if set_utime
 
     set_title(params["title"])
-    self.dlabel_ids = params["labels"].split(",").compact_map(&.strip.to_i?)
+
+    self.tlabels = params["labels"].split(",").map(&.strip).uniq
+    self.ilabels = self.tlabels.compact_map(&.to_i?)
 
     self.save! unless @id_column.defined? # make id column available
 

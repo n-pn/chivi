@@ -2,9 +2,9 @@ include CV
 
 Nvinfo.query.each do |nvinfo|
   # next if nvinfo.dtopic_count == 0
-  # Dtopic.init_base_topic!(nvinfo) if nvinfo.id > 0
+  # Cvpost.init_base_topic!(nvinfo) if nvinfo.id > 0
 
-  topics = Dtopic.query.where({nvinfo_id: nvinfo.id}).to_a
+  topics = Cvpost.query.where({nvinfo_id: nvinfo.id}).to_a
   next if topics.empty?
 
   nvinfo.post_count = topics.size
