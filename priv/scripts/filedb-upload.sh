@@ -36,7 +36,7 @@ then
   rsync -azi --no-p "var/ysbooks" "$ssh/var"
   rsync -azi --no-p "var/yscrits" "$ssh/var"
 
-  # rsync -azi --no-p --exclude="*.zip" "var/chtexts/" "$ssh/var/chtexts/"
+  rsync -azi --no-p --exclude="*.zip" "var/chtexts/" "$ssh/var/chtexts/"
 fi
 
 if [[ $2 == "misc" ]]

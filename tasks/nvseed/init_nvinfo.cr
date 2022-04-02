@@ -166,7 +166,7 @@ class CV::InitNvinfo
 
     nvinfo.set_genres(get_vi_genres(snvid))
     nvinfo.set_zintro(get_val(:intros, snvid) || [] of String)
-    nvinfo.set_bcover(get_map(:covers, snvid).fval(snvid) || "")
+    nvinfo.set_covers(get_map(:covers, snvid).fval(snvid) || "")
 
     nvinfo.set_status(get_map(:status, snvid).ival(snvid))
 

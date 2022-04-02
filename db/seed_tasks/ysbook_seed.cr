@@ -1,6 +1,8 @@
 require "./nvinfo_seed"
 
 class CV::YsbookSeed
+  getter bcovers = Tabkv.new("var/nvseeds/yousuu/covers.tsv")
+
   def seed!(upper = 27000, mode = 0)
     1.upto(upper) do |ynvid|
       NvinfoSeed.log("yousuu", "#{ynvid}/#{upper}") if ynvid % 1000 == 0
@@ -15,6 +17,8 @@ class CV::YsbookSeed
   end
 
   def seed_entry!(entry : YsbookInit)
+    bcovers.set(entry._id.to_s, entry.bcover)
+
     ysbook = Ysbook.upsert!(entry._id.to_i64)
 
     if ysbook.info_stime < entry.stime
@@ -94,7 +98,10 @@ class CV::YsbookSeed
       opt.unknown_args { |x| argv = x }
     end
 
-    new.seed!(upper: upper, mode: mode)
+    task = new
+
+    task.seed!(upper: upper, mode: mode)
+    task.bcovers.save!
   end
 end
 

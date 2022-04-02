@@ -29,6 +29,12 @@ module CV::NvinfoModel
     self.vintro = vintro if force || self.vintro.empty?
   end
 
+  def set_covers(cover : String, force = false) : Nil
+    return unless force || self.scover.empty?
+    self.scover = cover
+    self.bcover = UkeyUtil.digest32(cover, 8) + ".webp"
+  end
+
   def set_bcover(cover : String, force = false) : Nil
     self.bcover = bcover if force || self.bcover.empty?
   end
