@@ -179,7 +179,7 @@ class CV::SeedNvseed
   end
 
   def seed!(redo = false)
-    @seed.seed_all!(only_cached: !redo)
+    @seed.seed_all!(only_cached: false)
   end
 
   private def get_fake_scores

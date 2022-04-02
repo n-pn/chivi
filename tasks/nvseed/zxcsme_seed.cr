@@ -135,6 +135,8 @@ class CV::SeedZxcsme
 
   def read_chsize(snvid : String) : Array(String)
     files = Dir.glob("#{TXT_DIR}/#{snvid}/*.tsv")
+    return ["0", ""] if files.empty?
+
     flast = files.sort_by { |x| File.basename(x, ".tsv").to_i }.last
 
     lines = File.read_lines(flast).reject(&.blank?)
@@ -143,7 +145,7 @@ class CV::SeedZxcsme
     [last_chap, last_chap]
   end
 
-  PREV_FILE = "_db/zhbook/zxcs_me/prevs.json"
+  PREV_FILE = "var/nvseeds/zxcs_me/prevs.json"
 
   # copy missing data (due to 404) from older data
   def inherit!(redo = false)

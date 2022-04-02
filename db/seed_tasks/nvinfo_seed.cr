@@ -4,11 +4,9 @@ require "./_bootstrap"
 module CV::NvinfoSeed
   extend self
 
-  DIR = "db/seed_data"
-
   class_getter authors = {} of String => Author
 
-  class_getter ratings = Tabkv.new("#{DIR}/rating_fix.tsv", :force)
+  class_getter ratings = Tabkv.new("var/_common/rating_fix.tsv", :force)
 
   def get_author(zname : String)
     authors[zname] ||= Author.find({zname: zname}) || return

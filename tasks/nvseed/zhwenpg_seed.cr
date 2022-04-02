@@ -3,11 +3,11 @@ require "./init_nvinfo"
 class CV::ZhwenpgParser
   getter status = 0
 
-  def initialize(@node : Myhtml::Node, @status)
+  def initialize(@node : Lexbor::Node, @status)
   end
 
-  getter rows : Array(Myhtml::Node) { @node.css("tr").to_a }
-  getter link : Myhtml::Node { rows[0].css("a").first }
+  getter rows : Array(Lexbor::Node) { @node.css("tr").to_a }
+  getter link : Lexbor::Node { rows[0].css("a").first }
 
   getter snvid : String { link.attributes["href"].sub("b.php?id=", "") }
 
@@ -46,7 +46,7 @@ class CV::ZhwenpgSeed
     file = "#{DIR}/#{page}-#{status}.html"
     return unless atime = File.info?(file).try(&.modification_time.to_unix)
 
-    page = Myhtml::Parser.new(File.read(file))
+    page = Lexbor::Parser.new(File.read(file))
     nodes = page.css(".cbooksingle").to_a[2..-2]
 
     nodes.each do |node|

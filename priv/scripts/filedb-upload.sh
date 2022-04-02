@@ -32,7 +32,7 @@ then
   rsync -azi --no-p "var/qttexts" "$ssh/var"
   rsync -azi --no-p "var/tlspecs" "$ssh/var"
 
-  rsync -azi --no-p "var/nvinfos" "$ssh/var"
+  rsync -azi --no-p "var/nvseeds" "$ssh/var"
   rsync -azi --no-p "var/ysbooks" "$ssh/var"
   rsync -azi --no-p "var/yscrits" "$ssh/var"
 
@@ -42,7 +42,9 @@ fi
 if [[ $2 == "misc" ]]
 then
   echo upload misc!
-  rsync -azi --no-p "priv/static/covers/" "$ssh/priv/static/covers/"
+  rsync -azi --no-p "var/nvseeds/zxcs_me" "$ssh/var/nvseeds"
+
+  # rsync -azi --no-p "priv/static/covers/" "$ssh/priv/static/covers/"
   # rsync -azi --no-p --delete  "config/environments" "$ssh/config"
   # rsync -azi --no-p --delete "db/migrations" "$ssh/db"
   # rsync -azi --no-p --delete "src" "$ssh"

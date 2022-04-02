@@ -191,19 +191,18 @@ class CV::InitNvinfo
   end
 
   def fetch_counts(snvid : String) : {Int32, String}
-    if vals = get_val(:extras, snvid)
-      return {vals[0].to_i, vals[1]}
+    unless vals = get_val(:extras, snvid)
+      files = Dir.glob("var/chtexts/#{@sname}/#{snvid}/*.tsv")
+      return {0, ""} if files.empty?
+
+      flast = files.sort_by { |x| File.basename(x, ".tsv").to_i }.last
+      lines = File.read_lines(flast).reject(&.blank?)
+
+      vals = lines.last.split('\t').first(2)
+      set_val!(:extras, snvid, vals)
     end
 
-    ch_repo = ChRepo.new(@sname, snvid)
-    unless last_chap = ch_repo.reset!
-      puts "#{@sname}/#{snvid} has no chapters!".colorize.red
-      return {0, ""}
-    end
-
-    chap_count, last_schid = last_chap.chidx, last_chap.schid
-    set_val!(:extras, snvid, [chap_count.to_s, last_schid])
-    {chap_count, last_schid}
+    {vals[0].to_i, vals[1]}
   rescue
     {0, ""}
   end
@@ -220,8 +219,8 @@ class CV::InitNvinfo
   def get_author(zname : String, snvid : String) : Author?
     return if zname.empty? || zname == "-"
 
-    if @sname == "jx_la"
-      return unless File.exists?("var/chtexts/jx_la/#{snvid}")
+    if @sname.in?("jx_la", "shubaow")
+      return unless File.exists?("var/chtexts/#{@sname}/#{snvid}")
     end
 
     authors[zname]?.try { |x| return x }

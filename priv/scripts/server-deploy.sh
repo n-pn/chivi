@@ -3,12 +3,12 @@ SSH=nipin@ssh.chivi.app:srv/chivi
 if [[ $1 == "all" || $1 == "srv" ]]
 then
   echo push server!
-  rsync -aiz --no-p config $SSH/srv
-  rsync -aiz --no-p db/migrations $SSH/srv/db
-  rsync -aiz --no-p db/seed_tasks $SSH/srv/db
-  rsync -aiz --no-p db/seeds.cr $SSH/srv/db
-
-  shards build --release chivi && rsync -aiz --no-p bin/chivi $SSH/srv
+  shards build --release chivi && rsync -aiz --no-p bin/chivi $SSH/bin
+  shards build --release zhwenpg_seed && rsync -aiz --no-p bin/zhwenpg_seed $SSH/bin
+  shards build --release yscrit_seed && rsync -aiz --no-p bin/yscrit_seed $SSH/bin
+  shards build --release ysbook_seed && rsync -aiz --no-p bin/ysbook_seed $SSH/bin
+  shards build --release zxcsme_seed && rsync -aiz --no-p bin/zxcsme_seed $SSH/bin
+  shards build --release remote_seed && rsync -aiz --no-p bin/remote_seed $SSH/bin
 fi
 
 if [[ $1 == "all" || $1 == "web" ]]
