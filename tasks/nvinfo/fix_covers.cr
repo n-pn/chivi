@@ -80,7 +80,7 @@ class CV::FixCovers
     end
 
     unless out_cover && out_sname && out_snvid
-      return puts "no cover available for #{nvinfo.bname}!"
+      return puts "no cover available for #{nvinfo.vname}!"
     end
 
     out_webp = "#{out_sname}-#{out_snvid}.webp"
@@ -121,7 +121,7 @@ class CV::FixCovers
   @@widths = {} of String => TsvStore
 
   private def width_map(sname : String)
-    @@widths[sname] ||= TsvStore.new("_db/zhbook/#{sname}/_cover.tsv")
+    @@widths[sname] ||= TsvStore.new("var/nvinfos/#{sname}/bcover.tsv")
   end
 
   # next unless cover_file = cover_path(snam

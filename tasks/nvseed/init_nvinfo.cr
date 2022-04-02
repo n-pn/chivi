@@ -8,16 +8,15 @@ require "../shared/bootstrap.cr"
 
 class CV::InitNvinfo
   DIR = "var/nvinfos"
-  Dir.mkdir_p("#{DIR}/autos")
 
-  RATING_FIX = Tabkv.new("var/shared/rating_fix.tsv", :force)
-  STATUS_MAP = Tabkv.new("var/shared/status_map.tsv", :force)
+  RATING_FIX = Tabkv.new("var/_common/rating_fix.tsv", :force)
+  STATUS_MAP = Tabkv.new("var/_common/status_map.tsv", :force)
 
   def self.get_scores(btitle : String, author : String)
     if score = RATING_FIX.get("#{btitle}  #{author}")
       score.map(&.to_i)
     else
-      [Random.rand(25..50), Random.rand(40..50)]
+      [Random.rand(10..20), Random.rand(40..50)]
     end
   end
 
@@ -42,9 +41,13 @@ class CV::InitNvinfo
 
   getter authors : Hash(String, CV::Author)
 
-  def initialize(@sname : String, root : String = "autos")
-    @s_dir = "#{DIR}/#{root}/#{@sname}"
+  @should_seed : Bool
+
+  def initialize(@sname : String)
+    @s_dir = "#{DIR}/#{@sname}"
     @authors = Author.query.to_a.to_h { |x| {x.zname, x} }
+
+    @should_seed = @sname.in?("zxcs_me", "hetushu", "users", "staff", "zhwenpg")
   end
 
   def each_index
@@ -166,7 +169,11 @@ class CV::InitNvinfo
     nvinfo.set_bcover(get_map(:covers, snvid).fval(snvid) || "")
 
     nvinfo.set_status(get_map(:status, snvid).ival(snvid))
-    nvinfo.fix_scores!(0, 0) if nvinfo.voters == 0
+
+    if nvinfo.voters == 0
+      voters, rating = get_scores(snvid)
+      nvinfo.fix_scores!(voters, voters &* rating)
+    end
 
     seed_nvseed!(nvinfo, snvid)
     nvinfo.save!
@@ -206,29 +213,15 @@ class CV::InitNvinfo
     BookUtil.fix_names(btitle, author)
   end
 
-  def get_ys_extras(snvid : String) : Array(Int32)
-    get_val(:extras, snvid).try(&.map(&.to_i)) || [0, 0, 0, 0]
-  end
-
   def get_vi_genres(snvid : String)
     get_val(:genres, snvid).try { |x| GenreMap.map_zh(x) } || [] of String
   end
 
   def get_author(zname : String, snvid : String) : Author?
     return if zname.empty? || zname == "-"
-    authors[zname]?.try { |author| return author }
-    authors[zname] = Author.upsert!(zname) if should_seed?(snvid)
-  end
 
-  def should_seed?(snvid : String)
-    case @sname
-    when "zxcs_me", "hetushu", "users", "local", "zhwenpg" then true
-    when "yousuu"
-      list_count, crit_count = get_ys_extras(snvid)
-      list_count > 1 || crit_count > 3
-    else
-      false
-    end
+    authors[zname]?.try { |x| return x }
+    authors[zname] = Author.upsert!(zname) if @should_seed
   end
 
   def get_nvinfo(author : Author, ztitle : String)
@@ -236,22 +229,22 @@ class CV::InitNvinfo
 
     case @sname
     when "hetushu", "rengshu", "xbiquge", "69shu",
-         "zhwenpg", "yousuu", "users", "local"
+         "zhwenpg", "yousuu", "users", "staff"
       Nvinfo.upsert!(author, ztitle)
     else
       Nvinfo.get(author, ztitle)
     end
   end
 
-  # def get_scores(snvid : String) : Array(Int32)
-  #   if scores = self.scores.get(snvid)
-  #     scores.map(&.to_i)
-  #   elsif scores = SeedUtil.rating_fix.get(get_nlabel(snvid))
-  #     scores.map(&.to_i)
-  #   elsif @sname == "hetushu" || @sname == "zxcs_me"
-  #     [Random.rand(30..100), Random.rand(50..65)]
-  #   else
-  #     [Random.rand(25..50), Random.rand(40..50)]
-  #   end
-  # end
+  def get_scores(snvid : String) : Array(Int32)
+    btitle, author = get_names(snvid)
+
+    if scores = RATING_FIX.get("#{btitle}  #{author}")
+      scores.map(&.to_i)
+    elsif @sname.in?("hetushu", "zxcs_me")
+      [Random.rand(20..30), Random.rand(50..60)]
+    else
+      [Random.rand(10..20), Random.rand(40..50)]
+    end
+  end
 end

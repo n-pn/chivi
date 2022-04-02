@@ -4,7 +4,7 @@ require "../../_util/tsv_store"
 module CV::BookUtilOld
   extend self
 
-  DIR = "var/nvinfos/fixed"
+  DIR = "var/_common/fixes"
 
   class_getter zh_authors : TsvStore { TsvStore.new("#{DIR}/zh_authors.tsv") }
   class_getter vi_authors : TsvStore { TsvStore.new("#{DIR}/vi_authors.tsv") }

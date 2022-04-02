@@ -58,10 +58,6 @@ class CV::ZhwenpgSeed
       @done.add(snvid)
 
       @seed.add!(parser, snvid, atime)
-
-      # add fake ratings
-      voters, rating = InitNvinfo.get_scores(parser.btitle, parser.author)
-      @seed.set_val!(:rating, snvid, [voters, rating])
     rescue err
       puts "ERROR: #{err}".colorize.red
       puts err.inspect_with_backtrace.colorize.red

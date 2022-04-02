@@ -2,7 +2,7 @@ require "json"
 
 class CV::YsbookInit
   INP_DIR = "_db/yousuu/infos"
-  OUT_DIR = "var/yousuu/ysbooks"
+  OUT_DIR = "var/ysbooks"
 
   def self.map_path(ynvid : Int32)
     group = (ynvid // 1000).to_s

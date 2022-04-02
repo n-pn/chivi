@@ -4,7 +4,7 @@ require "tabkv"
 module CV::BookUtil
   extend self
 
-  DIR = "var/nvinfos/fixed"
+  DIR = "var/_common/fixes"
 
   class_getter zh_authors : Tabkv { Tabkv.new("#{DIR}/authors_zh.tsv") }
   class_getter vi_authors : Tabkv { Tabkv.new("#{DIR}/authors_vi.tsv") }
@@ -33,7 +33,7 @@ module CV::BookUtil
   end
 
   NORMALIZE = begin
-    lines = File.read_lines("var/shared/normalize.tsv")
+    lines = File.read_lines("var/_common/normalize.tsv")
     lines.each_with_object({} of Char => Char) do |line, hash|
       hash[line[0]] = line[2]
     end

@@ -6,7 +6,7 @@ require "../shared/yscrit_raw"
 module CV::YscritSeed
   extend self
 
-  DIR = "var/yousuu/yscrits"
+  DIR = "var/yscrits"
   FileUtils.mkdir_p(DIR)
 
   class_getter count = 0
@@ -104,10 +104,11 @@ module CV::YscritSeed
       ysbook_id = infos[0].to_i64
 
       yscrit = Yscrit.get!(yscrit_id, Time.unix(mtime))
-      next unless nvinfo = Nvinfo.find({ys_snvid: ysbook_id})
-      next unless ysuser = Ysuser.get!(infos[2])
+      next unless nvinfo = Nvinfo.find({ysbook_id: ysbook_id})
+      next unless ysuser = Ysuser.upsert!(infos[2])
 
       yscrit.ysuser = ysuser
+      yscrit.nvinfo_id = nvinfo.id
 
       yscrit.origin_id = ycrid
       bhash = nvinfo.bhash

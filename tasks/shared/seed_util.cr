@@ -7,8 +7,8 @@ require "./bootstrap"
 module CV::SeedUtil
   extend self
 
-  class_getter rating_fix : Tabkv { Tabkv.new("var/shared/rating_fix.tsv") }
-  class_getter status_map : Tabkv { Tabkv.new("var/shared/status_map.tsv") }
+  class_getter rating_fix : Tabkv { Tabkv.new("var/_common/rating_fix.tsv") }
+  class_getter status_map : Tabkv { Tabkv.new("var/_common/status_map.tsv") }
 
   class_getter authors_map : Hash(String, Author) do
     Author.query.to_a.to_h { |x| {x.zname, x} }

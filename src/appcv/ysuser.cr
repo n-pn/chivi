@@ -17,7 +17,7 @@ class CV::Ysuser
 
   timestamps
 
-  def self.get!(zname : String)
+  def self.upsert!(zname : String)
     find({zname: zname}) || begin
       vname = BookUtil.hanviet(zname, caps: true)
       new({zname: zname, vname: vname}).tap(&.save!)

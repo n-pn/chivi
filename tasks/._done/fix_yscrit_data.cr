@@ -2,7 +2,7 @@ require "tabkv"
 require "../src/_util/time_utils"
 require "../src/cvmtl/mt_core"
 
-DIR = "var/yousuu/yscrits"
+DIR = "var/yscrits"
 
 def fix_timestamp!
   glob = File.join(DIR, "*-infos.tsv")

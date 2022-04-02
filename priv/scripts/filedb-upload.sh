@@ -49,5 +49,6 @@ then
   echo upload fixes!
   # rsync -azi --no-p "_db/.cache/bxwxorg/infos" "$ssh/_db/.cache/bxwxorg"
   # rsync -azi --no-p "_db/.cache/paoshu8/infos" "$ssh/_db/.cache/paoshu8"
-  rsync -azi --no-p --exclude="*.zip" "var/chtexts/" "$ssh/var/chtexts/"
+  # rsync -azi --no-p --exclude="*.zip" "var/chtexts/" "$ssh/var/chtexts/"
+  rsync -azi --no-p  "tasks" "$ssh"
 fi

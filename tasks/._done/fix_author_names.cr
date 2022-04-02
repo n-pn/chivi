@@ -12,7 +12,7 @@ class CV::FixAuthors
 
     @seed._index.data.each do |snvid, value|
       voters = @seed.rating.ival(snvid)
-      next if voters = 0
+      next if voters == 0
 
       _, title, author = value
       map_btitle[author] << title

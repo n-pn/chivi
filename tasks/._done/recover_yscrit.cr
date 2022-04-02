@@ -27,7 +27,7 @@ class Data
   end
 end
 
-OUT = "var/yousuu/yscrits"
+OUT = "var/yscrits"
 
 def save_missing(file : String) : Data
   json = Data.from_json File.read(file)
@@ -55,8 +55,8 @@ def save_fresh(file : String)
   infos_map.save!(dirty: false)
 end
 
-missing = Set(String).new File.read_lines("var/yousuu/yscrits-missing.txt")
-healthy = Set(String).new File.read_lines("var/yousuu/yscrits-healthy.txt")
+missing = Set(String).new File.read_lines("var/_yousuu/yscrits-missing.txt")
+healthy = Set(String).new File.read_lines("var/_yousuu/yscrits-healthy.txt")
 
 DIR = "_db/.keeps/yousuu/yscrits"
 ybids = Dir.children(DIR)

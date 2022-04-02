@@ -118,7 +118,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     send_json({bslug: nvinfo.bslug})
   end
 
-  LOG_FILE = "var/_ulogs/#{Time.utc.to_s.split(' ', 2).first}.log"
+  LOG_FILE = "var/weblogs/#{Time.utc.to_s.split(' ', 2).first}.log"
 
   private def log_upsert_action(params)
     params = params.to_unsafe_h

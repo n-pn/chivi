@@ -3,7 +3,7 @@ require "tabkv"
 module CV::GenreMap
   extend self
 
-  DIR = "var/nvinfos/fixed"
+  DIR = "var/_common/fixes"
 
   class_getter zh_map : Tabkv { Tabkv.new("#{DIR}/genres_zh.tsv") }
   class_getter vi_map : Tabkv { Tabkv.new("#{DIR}/genres_vi.tsv") }
