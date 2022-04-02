@@ -23,7 +23,7 @@ then
   # rsync -azi --no-p "var/nvinfos/autos" "$ssh/var/nvinfos"
   # rsync -azi --no-p "priv/static/covers/" "$ssh/priv/static/covers/"
 
-  rsync -azi --no-p "var/shared" "$ssh/var"
+  rsync -azi --no-p "var/_common" "$ssh/var"
 
   rsync -azi --no-p --delete "var/cvusers" "$ssh/var"
   rsync -azi --no-p --delete "var/ubmemos" "$ssh/var"
@@ -32,23 +32,19 @@ then
   rsync -azi --no-p "var/qttexts" "$ssh/var"
   rsync -azi --no-p "var/tlspecs" "$ssh/var"
 
-  rsync -azi --no-p "var/yousuu/ysbooks" "$ssh/var/yousuu"
-  rsync -azi --no-p "var/yousuu/yscrits" "$ssh/var/yousuu"
+  rsync -azi --no-p "var/nvinfos" "$ssh/var"
+  rsync -azi --no-p "var/ysbooks" "$ssh/var"
+  rsync -azi --no-p "var/yscrits" "$ssh/var"
 
-  rsync -azi --no-p "var/nvinfos/fixed" "$ssh/_db/nvinfos"
-  rsync -azi --no-p "var/nvinfos/autos" "$ssh/_db/nvinfos"
-
-  # rsync -azi --no-p "_db/yousuu/infos" "$ssh/_db/yousuu"
-  # rsync -azi --no-p "_db/yousuu/crits" "$ssh/_db/yousuu"
-  # rsync -azi --no-p "_db/yousuu/repls" "$ssh/_db/yousuu"
+  # rsync -azi --no-p --exclude="*.zip" "var/chtexts/" "$ssh/var/chtexts/"
 fi
 
-## upload parsed seed data
-if [[ $2 == "fixes" ]]
+if [[ $2 == "misc" ]]
 then
-  echo upload fixes!
-  # rsync -azi --no-p "_db/.cache/bxwxorg/infos" "$ssh/_db/.cache/bxwxorg"
-  # rsync -azi --no-p "_db/.cache/paoshu8/infos" "$ssh/_db/.cache/paoshu8"
-  # rsync -azi --no-p --exclude="*.zip" "var/chtexts/" "$ssh/var/chtexts/"
-  rsync -azi --no-p  "tasks" "$ssh"
+  echo upload misc!
+  rsync -azi --no-p "priv/static/covers/" "$ssh/priv/static/covers/"
+  # rsync -azi --no-p --delete  "config/environments" "$ssh/config"
+  # rsync -azi --no-p --delete "db/migrations" "$ssh/db"
+  # rsync -azi --no-p --delete "src" "$ssh"
+  # rsync -azi --no-p --delete "tasks" "$ssh"
 fi

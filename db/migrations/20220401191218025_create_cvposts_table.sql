@@ -35,8 +35,8 @@ CREATE TABLE cvposts (
 CREATE INDEX cvpost_cvuser_idx ON cvposts (cvuser_id);
 CREATE INDEX cvpost_nvinfo_idx ON cvposts (nvinfo_id);
 
-CREATE INDEX cvpost_bumped_idx ON cvposts (stars);
-CREATE INDEX cvpost_bumped_idx ON cvposts (_sort);
+CREATE INDEX cvpost_stars_idx ON cvposts (stars);
+CREATE INDEX cvpost_sorts_idx ON cvposts (_sort);
 CREATE INDEX cvpost_number_idx ON cvposts (ii);
 
 CREATE INDEX cvpost_label_idx ON cvposts using GIN (ilabels gin__int_ops);

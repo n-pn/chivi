@@ -7,7 +7,7 @@ require "tabkv"
 require "../shared/bootstrap.cr"
 
 class CV::InitNvinfo
-  DIR = "var/nvinfos"
+  DIR = "var/nvseeds"
 
   RATING_FIX = Tabkv.new("var/_common/rating_fix.tsv", :force)
   STATUS_MAP = Tabkv.new("var/_common/status_map.tsv", :force)
@@ -219,6 +219,10 @@ class CV::InitNvinfo
 
   def get_author(zname : String, snvid : String) : Author?
     return if zname.empty? || zname == "-"
+
+    if @sname == "jx_la"
+      return unless File.exists?("var/chtexts/jx_la/#{snvid}")
+    end
 
     authors[zname]?.try { |x| return x }
     authors[zname] = Author.upsert!(zname) if @should_seed
