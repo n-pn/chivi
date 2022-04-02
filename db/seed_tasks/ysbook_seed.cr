@@ -69,9 +69,15 @@ class CV::YsbookSeed
     return unless entry = YsbookInit.load(ynvid, mode: mode)
     NvinfoSeed.fix_names!(entry)
 
-    return entry if entry.keep? || NvinfoSeed.get_author(entry.author)
+    return entry if entry.keep? || existing_author?(entry.author)
   rescue err
     puts [ynvid, err.colorize.red]
+  end
+
+  AUTHORS = Set(String).new File.read_lines("var/_common/authors.txt")
+
+  def existing_author?(author : String)
+    AUTHORS.includes?(author) || NvinfoSeed.get_author(author)
   end
 
   ##################
