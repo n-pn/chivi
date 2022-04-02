@@ -1,5 +1,5 @@
 require "cmark"
-require "myhtml"
+require "lexbor"
 
 class CV::PostUtil
   OPTS = Cmark::Option.flags(Hardbreaks, ValidateUTF8, FullInfoString)
@@ -10,6 +10,6 @@ class CV::PostUtil
 
   def self.html_to_text(input : String)
     input = "<html><body>#{input}</body></html>"
-    Myhtml::Parser.new(input).body.not_nil!.inner_text
+    Lexbor::Parser.new(input).body.not_nil!.inner_text
   end
 end
