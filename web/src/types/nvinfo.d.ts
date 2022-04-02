@@ -15,11 +15,13 @@ declare namespace CV {
     vname: string
 
     author: Author
+
+    scover: string
     bcover: string
 
     genres: string[]
     bintro: string[]
-    nvseed: string[]
+    snames: string[]
 
     status: number
     mftime: number

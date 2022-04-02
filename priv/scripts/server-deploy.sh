@@ -14,5 +14,7 @@ fi
 if [[ $1 == "all" || $1 == "web" ]]
 then
   echo push webapp!
-  cd web && yarn build && rsync -aiz --no-p build/ $SSH/web/
+  cd web
+  yarn build
+  rsync -aiz --no-p build $SSH/web
 fi

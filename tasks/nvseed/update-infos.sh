@@ -1,4 +1,4 @@
-time bin/ysbook_seed -m 1
+time bin/ysbook_seed
 # time bin/zhwenpg_seed
 # time bin/zxcsme_seed
 time bin/remote_seed -s hetushu

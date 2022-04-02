@@ -42,7 +42,11 @@ fi
 if [[ $2 == "misc" ]]
 then
   echo upload misc!
-  rsync -azi --no-p "var/nvseeds/zxcs_me" "$ssh/var/nvseeds"
+  rsync -azi --no-p "var/vpdicts" "$ssh/var"
+  rsync -azi --no-p "var/_common" "$ssh/var"
+
+  rsync -azi --no-p "var/nvseeds/paoshu8" "$ssh/var/nvseeds"
+  rsync -azi --no-p "var/nvseeds/bxwxorg" "$ssh/var/nvseeds"
 
   # rsync -azi --no-p "priv/static/covers/" "$ssh/priv/static/covers/"
   # rsync -azi --no-p --delete  "config/environments" "$ssh/config"

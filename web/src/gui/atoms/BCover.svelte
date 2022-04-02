@@ -1,18 +1,17 @@
 <script lang="ts">
   export let bcover: string | undefined
-  $: src = bcover && bcover.startsWith('http') ? bcover : `/covers/${bcover}`
+  export let scover: string | undefined
 </script>
 
-<div>
-  {#if bcover}
-    <img alt="" {src} loading="lazy" />
-  {:else}
-    <img alt="" src="/imgs/blank.png" />
-  {/if}
-</div>
+<picture>
+  {#if scover}<source srcset={scover} />{/if}
+  {#if bcover}<source srcset="/covers/{bcover}" />{/if}
+  <img src="/imgs/blank.png" alt="" referrerpolicy="no-referrer" />
+</picture>
 
 <style lang="scss">
-  div {
+  picture {
+    display: block;
     position: relative;
     height: 0;
     padding-top: math.div(4, 3) * 100%;

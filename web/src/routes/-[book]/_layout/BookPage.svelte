@@ -64,7 +64,7 @@
   </div>
 
   <div class="cover">
-    <BCover bcover={nvinfo.bcover} />
+    <BCover bcover={nvinfo.bcover} scover={nvinfo.scover} />
   </div>
 
   <div class="line">
@@ -160,7 +160,7 @@
       </svelte:fragment>
     </Gmenu>
 
-    <a class="m-btn" href="/dicts/${nvinfo.bhash}" data-kbd="p">
+    <a class="m-btn" href="/dicts/-{nvinfo.bhash}" data-kbd="p">
       <SIcon name="package" />
       <span class="-txt">Từ điển</span>
     </a>
