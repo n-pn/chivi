@@ -185,7 +185,7 @@ class CV::Nvseed
 
     return start if infos.empty?
     self.patch!(infos, other.utime)
-    infos.last.chidx # return latest patched chapter
+    infos.last.chidx + 1 # return latest patched chapter
   end
 
   def proxy_many!(others : Array(self), force : Bool = false) : Nil
@@ -194,7 +194,7 @@ class CV::Nvseed
 
     others.each do |other|
       start = 1 if force && other.sname == "users"
-      start = self.proxy!(other, start: start) + 1
+      start = self.proxy!(other, start: start)
     end
 
     self.reset_cache!

@@ -5,7 +5,7 @@ then
   echo push server!
 
   shards build --release chivi && rsync -aiz --no-p bin/chivi $SSH/bin
-  ssh nipin@ssh.chivi.app "sudo service chivi-web restart"
+  ssh nipin@ssh.chivi.app "sudo service chivi-srv restart"
 
   shards build --release zhwenpg_seed && rsync -aiz --no-p bin/zhwenpg_seed $SSH/bin
   shards build --release yscrit_seed && rsync -aiz --no-p bin/yscrit_seed $SSH/bin
