@@ -21,13 +21,13 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   nvinfo.update!({subdue_id: new_nvinfo.id})
 
   nvseeds = nvinfo.nvseeds.to_a.sort_by(&.zseed)
-  nvseeds.each do |zhbook|
-    next if zhbook.sname == "chivi" || zhbook.sname == "users"
-    next if CV::Nvseed.find({nvinfo_id: new_nvinfo.id, zseed: zhbook.zseed})
+  nvseeds.each do |nvseed|
+    next if nvseed.sname == "chivi" || nvseed.sname == "users"
+    next if CV::Nvseed.find({nvinfo_id: new_nvinfo.id, zseed: nvseed.zseed})
 
-    zhbook.nvinfo_id = new_nvinfo.id
-    zhbook.fix_id!
-    zhbook.save!
+    nvseed.nvinfo_id = new_nvinfo.id
+    nvseed.fix_id!
+    nvseed.save!
   end
 
   zseeds = new_nvinfo.nvseeds.to_a.map(&.zseed).sort

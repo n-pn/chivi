@@ -70,7 +70,7 @@ class CV::Nvinfo
   column shield : Int32 = 0 # default to 0
 
   column atime : Int64 = 0 # value by minute from the epoch, update whenever an registered user viewing book info
-  column utime : Int64 = 0 # value by minute from the epoch, max value of zhbook utime and ys_utime
+  column utime : Int64 = 0 # value by minute from the epoch, max value of nvseed utime and ys_utime
 
   # ranking
 

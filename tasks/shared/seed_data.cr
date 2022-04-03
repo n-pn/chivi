@@ -21,7 +21,7 @@ class CV::SeedData
   getter origin : TsvStore { SeedUtil.load_map("#{@sname}/origin") }
 
   def initialize(@sname)
-    @s_dir = "_db/zhbook/#{@sname}"
+    @s_dir = "_db/nvseed/#{@sname}"
     ::FileUtils.mkdir_p("#{@s_dir}/intros")
   end
 

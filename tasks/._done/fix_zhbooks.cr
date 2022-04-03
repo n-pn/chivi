@@ -4,11 +4,11 @@ require "./shared/bootstrap"
 #   nvseeds = nvinfo.nvseeds.to_a
 #   next if nvseeds.empty?
 
-#   nvseeds.each do |zhbook|
-#     zhbook.nvinfo = nvinfo
-#     zhbook.zseed = CV::SeedUtil.map_id(zhbook.sname)
-#     zhbook.fix_id!
-#     zhbook.save!
+#   nvseeds.each do |nvseed|
+#     nvseed.nvinfo = nvinfo
+#     nvseed.zseed = CV::SeedUtil.map_id(nvseed.sname)
+#     nvseed.fix_id!
+#     nvseed.save!
 #   end
 
 #   nvinfo.update({zseeds: nvseeds.map(&.zseed).sort})

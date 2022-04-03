@@ -33,7 +33,7 @@ class CV::FixGenres
 
   def genres_map(sname : String)
     @cache[sname] ||= begin
-      file = "_db/zhbook/#{sname}/genres.tsv"
+      file = "_db/nvseed/#{sname}/genres.tsv"
       TsvStore.new(file, mode: 1)
     end
   end

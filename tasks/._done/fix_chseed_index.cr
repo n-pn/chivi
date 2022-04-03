@@ -6,7 +6,7 @@ class CV::Fixer
   DIR = "_db/chseed"
 
   def initialize(@sname : String)
-    @map = TsvStore.new("_db/zhbook/#{@sname}/chsize.tsv")
+    @map = TsvStore.new("_db/nvseed/#{@sname}/chsize.tsv")
     @rdir = File.join(DIR, @sname)
   end
 

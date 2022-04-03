@@ -4,7 +4,7 @@ def rename_seed(from source : String, to target : String)
   dirs = {
     "_db/.cache/#{source}",
     "_db/bcover/#{source}",
-    "_db/zhbook/#{source}",
+    "_db/nvseed/#{source}",
     "var/chtexts/#{source}",
     "var/nvinfos/autos/#{source}",
   }

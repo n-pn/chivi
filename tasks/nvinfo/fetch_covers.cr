@@ -86,7 +86,7 @@ class CV::FetchCovers
   MAP_CACHE = {} of String => TsvStore
 
   def cover_map(sname : String)
-    MAP_CACHE[sname] ||= TsvStore.new("_db/zhbook/#{sname}/bcover.tsv", mode: 2)
+    MAP_CACHE[sname] ||= TsvStore.new("_db/nvseed/#{sname}/bcover.tsv", mode: 2)
   end
 
   def fetch!(queue : Hash(String, String), limit = 8, delay = 10.milliseconds)

@@ -25,15 +25,15 @@
 </script>
 
 <chap-seed>
-  {#each nvseed as zhbook, idx}
-    {#if zhbook.chaps >= chinfo.chidx}
+  {#each nvseed as nvseed, idx}
+    {#if nvseed.chaps >= chinfo.chidx}
       <a
         class="seed-name"
         class:_hidden={idx > 3 && show_less}
-        class:_active={zhbook.sname == chmeta.sname}
-        href={chap_url(zhbook.sname)}
-        rel={zhbook.sname != 'chivi' ? 'nofollow' : ''}>
-        <seed-label>{zhbook.sname}</seed-label>
+        class:_active={nvseed.sname == chmeta.sname}
+        href={chap_url(nvseed.sname)}
+        rel={nvseed.sname != 'chivi' ? 'nofollow' : ''}>
+        <seed-label>{nvseed.sname}</seed-label>
       </a>
     {/if}
   {/each}

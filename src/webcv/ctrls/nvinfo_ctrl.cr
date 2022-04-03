@@ -43,9 +43,9 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       nvseeds.unshift(Nvseed.load!(nvinfo, 0))
     end
 
-    if (ubmemo.lr_sname.empty?) && (zhbook = nvseeds.first?)
-      if chinfo = zhbook.chinfo(0)
-        ubmemo.lr_sname = zhbook.sname
+    if (ubmemo.lr_sname.empty?) && (nvseed = nvseeds.first?)
+      if chinfo = nvseed.chinfo(0)
+        ubmemo.lr_sname = nvseed.sname
         ubmemo.lr_chidx = -1
         ubmemo.lc_uslug = chinfo.trans.uslug
       else

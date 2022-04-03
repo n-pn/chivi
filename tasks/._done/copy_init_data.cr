@@ -1,6 +1,6 @@
 require "file_utils"
 
-INP_DIR = "_db/zhbook"
+INP_DIR = "_db/nvseed"
 OUT_DIR = "var/nvinfos/autos"
 
 def copy_file(inp_file, out_dir, type = :covers)
