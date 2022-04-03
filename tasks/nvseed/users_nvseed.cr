@@ -25,4 +25,5 @@ Dir.children(DIR).each do |bhash|
 
   puts [nvseed.chap_count, nvseed.last_schid, nvseed.utime]
   nvseed.save!
+  nvinfo.tap(&.add_seed(nvseed.zseed)).save!
 end
