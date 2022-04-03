@@ -82,7 +82,11 @@
   }
 </script>
 
-<Slider class="lookup" _rwidth={30} _sticky={true} bind:actived={$ctrl.actived}>
+<Slider
+  class="lookup"
+  _sticky={true}
+  bind:actived={$ctrl.actived}
+  --slider-width="30rem">
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="compass" />
@@ -161,9 +165,10 @@
     @include scroll;
 
     &._zh {
-      $line: 1.375rem;
+      $line: 1.5rem;
       line-height: $line;
-      max-height: $line * 2 + 0.75rem;
+      max-height: $line * 3 + 0.75rem;
+      @include ftsize(lg);
       @include border($loc: bottom);
     }
 
