@@ -1,3 +1,5 @@
+require "./shared/seed_data"
+
 class CV::Ysbook
   include Clear::Model
 
@@ -38,6 +40,37 @@ class CV::Ysbook
   column list_stime : Int64 = 0_i64
 
   timestamps # created_at and updated_at
+
+  ################
+
+  def set_bindex(bindex : Seed::Bindex)
+    self.stime = bindex.stime
+
+    self.btitle = bindex.btitle
+    self.author = bindex.author
+  end
+
+  def set_rating(rating : Seed::Rating)
+    self.voters = scores.voters
+    self.scores = scores.voters &* scores.rating
+  end
+
+  def set_ystats(ystats : Seed::Ystats)
+    self.list_total = ystats.list_count
+    self.crit_total = ystats.crit_count
+
+    self.list_count = ystats.list_count if self.list_count == 0
+    self.crit_count = ystats.crit_count if self.crit_count == 0
+  end
+
+  def set_origin(origin : Seed::Origin)
+    self.pub_name = origin.pub_name
+    self.pub_link = origin.pub_link
+  end
+
+  def set_mftime(mftime : Seed::Mfitime)
+    self.utime = mftime.update
+  end
 
   #########################################
 

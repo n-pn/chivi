@@ -1,9 +1,10 @@
-require "./init_nvinfo"
+require "./seed_nvinfo"
 
 class CV::ZhwenpgParser
-  getter status = 0
+  getter status_int = 0
+  getter status_str : String { @status_int.to_s }
 
-  def initialize(@node : Lexbor::Node, @status)
+  def initialize(@node : Lexbor::Node, @status_int)
   end
 
   getter rows : Array(Lexbor::Node) { @node.css("tr").to_a }
@@ -23,21 +24,21 @@ class CV::ZhwenpgParser
     TextUtil.split_html(rows[4]?.try(&.inner_text("\n")) || "")
   end
 
-  getter update : String { rows[3].css(".fontime").first.inner_text }
-  getter mftime : Int64 { (TimeUtil.parse_time(update) + 24.hours).to_unix }
+  getter update_str : String { rows[3].css(".fontime").first.inner_text }
+  getter update_int : Int64 { (TimeUtil.parse_time(update_str) + 24.hours).to_unix }
 end
 
 class CV::ZhwenpgSeed
   DIR = "_db/.cache/zhwenpg/pages"
   # ::FileUtils.mkdir_p(DIR)
 
-  @seed = InitNvinfo.new("zhwenpg")
+  @seed = Seed::SeedNvinfo.new("zhwenpg", 0)
   @done = Set(String).new
 
   def init!(pages = 1, status = 0)
     1.upto(3) { |page| init_page!(page, 1) }
     1.upto(11) { |page| init_page!(page, 0) }
-    @seed.save_stores!
+    @seed.save!(clean: true)
   end
 
   def init_page!(page = 1, status = 0)
@@ -65,10 +66,11 @@ class CV::ZhwenpgSeed
   end
 
   def seed!
-    @seed.seed_all!(only_cached: false)
+    # TODO
+    # @seed.seed_all!(only_cached: false)
   end
 end
 
 worker = CV::ZhwenpgSeed.new
-worker.init! if ARGV.includes?("-i")
-worker.seed!
+worker.init! if ARGV.includes?("init")
+worker.seed! if ARGV.includes?("seed")

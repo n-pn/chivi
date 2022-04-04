@@ -1,7 +1,8 @@
 require "uri"
 require "json"
 
-require "../../src/_util/*"
+require "../../src/_util/text_util"
+require "../../src/_util/time_util"
 
 class CV::YsbookRaw
   include JSON::Serializable
@@ -18,42 +19,17 @@ class CV::YsbookRaw
 
   @[JSON::Field(key: "classInfo")]
   getter class_info : NamedTuple(classId: Int32, className: String)?
-  getter klass : String { @class_info.try(&.[:className]) || "" }
+  getter klass : String { @class_info.try(&.[:className]) || "其他" }
 
   getter tags = [] of String
-  getter genres : Array(String) {
-    labels = @tags.map(&.split("-")).flatten
-    [klass].concat(labels).uniq
-  }
+  getter genres : Array(String) { @tags.map(&.split("-")).flatten.unshift(klass).uniq }
 
   getter cover = ""
-  getter bcover : String {
-    return "" unless @cover.starts_with?("http")
-    if @cover.includes?("qidian")
-      @cover
-        .sub("http:", "https:")
-        .sub("image.qidian.com/books", "qidian.qpic.cn/qdbimg")
-        .sub(/(\/180|\.jpg)$/, "/300")
-    else
-      @cover
-    end
-  }
+  getter bcover : String { fix_cover(@cover) }
 
   @[JSON::Field(key: "updateAt")]
   getter update_str : String = "2020-01-01T07:00:00.000Z"
-
-  EPOCH = Time.utc(2020, 1, 1, 7, 0, 0)
-
-  getter updated_at : Time do
-    tstr = update_str.sub(/^0000/, "2020")
-    time = Time.parse_utc(tstr, "%FT%T.%3NZ")
-    time < Time.utc ? time : Time.utc
-  rescue err
-    puts "error parsing time: #{err.colorize.red}"
-    EPOCH
-  end
-
-  getter update : {Int64, String} { {updated_at.to_unix, update_str} }
+  getter update_int : Int64 { parse_time(update_str).to_unix }
 
   @[JSON::Field(key: "scorerCount")]
   getter voters : Int32
@@ -63,10 +39,7 @@ class CV::YsbookRaw
 
   @[JSON::Field(key: "countWord")]
   getter words = 0_f64
-  getter word_count : Int32 do
-    count = words < 100_000_000 ? words : (words / 10000)
-    count.round.to_i
-  end
+  getter word_count : Int32 { (words < 100_000_000 ? words : words / 10000).round.to_i }
 
   @[JSON::Field(key: "commentCount")]
   getter crit_count = 0_i32
@@ -77,18 +50,9 @@ class CV::YsbookRaw
   # getter recom_ignore = false
 
   property source = [] of Source
-  getter pub_link : String { source[0]?.try(&.link) || "" }
-  getter pub_name : String {
-    return "" if pub_link.empty? || !(host = URI.parse(pub_link).host)
-    host = host.split(".")
 
-    case host.first
-    when "yunqi", "chuangshi", "huayu", "yuedu", "shenqi"
-      return host.first.capitalize
-    else
-      host[-2].capitalize
-    end
-  }
+  getter pub_link : String { source[0]?.try(&.link) || "" }
+  getter pub_name : String { extract_pub_name(pub_link) }
 
   @[JSON::Field(key: "addListCount")]
   getter list_count = 0_i32
@@ -96,9 +60,40 @@ class CV::YsbookRaw
   @[JSON::Field(key: "addListTotal")]
   getter list_total = 0_i32
 
-  def decent?
-    list_count > 0 || crit_count > 4
+  #############
+
+  def fix_cover(cover : String)
+    return "" unless cover.starts_with?("http")
+    return cover unless cover.includes?("qidian")
+
+    cover
+      .sub(/^http:/, "https:")
+      .sub("image.qidian.com/books", "qidian.qpic.cn/qdbimg")
+      .sub(/(\/180|\.jpg)$/, "/300")
   end
+
+  PUBS = {"yunqi", "chuangshi", "huayu", "yuedu", "shenqi"}
+
+  def extract_pub_name(pub_link : String)
+    return "" if pub_link.empty?
+    return "" unless host = URI.parse(pub_link).host
+
+    host = host.split(".")
+    PUBS.includes?(host.first) ? host.first : host[-2]
+  end
+
+  EPOCH = Time.utc(2020, 1, 1, 7, 0, 0)
+
+  def parse_time(update_str : String)
+    tstr = update_str.sub(/^0000/, "2020")
+    time = Time.parse_utc(tstr, "%FT%T.%3NZ")
+    time < Time.utc ? time : Time.utc
+  rescue err
+    Log.error { "Error parsing time: #{err.colorize.red}" }
+    EPOCH
+  end
+
+  ########################
 
   struct Source
     include JSON::Serializable

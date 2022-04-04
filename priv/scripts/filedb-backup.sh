@@ -7,16 +7,10 @@ SSH=nipin@ssh.chivi.app:srv/chivi.app
 if [[ $1 == "all" || $* == *user* ]]
 then
   echo backup user seeds!
-  rsync -aiz --no-p --delete "$SSH/var/pg_data/cvusers" "var/pg_data"
+  rsync -aiz --no-p --delete "$SSH/var/cvusers" "var"
+  rsync -aiz --no-p --delete "$SSH/var/weblogs" "var"
 fi
 
-## backup user logs
-if [[ $1 == "all" || $* == *ulog* ]]
-then
-  echo backup user logs!
-  rsync -aiz --no-p --delete "$SSH/var/_proxy" "var"
-  rsync -aiz --no-p --delete "$SSH/var/_ulogs" "var"
-fi
 
 ## backup user data
 if [[ $1 == "all" || $* == *dict* ]]
@@ -41,7 +35,6 @@ if [[ $1 == "all" || $* == *book* ]]
 then
   echo backup books data!
   # rsync -aiz --no-p "$SSH/var/nvinfos/autos" "var/nvinfos"
-  rsync -aiz --no-p "$SSH/var/nvinfos.tsv" "var"
   rsync -aiz --no-p "$SSH/var/cvposts" "var"
   rsync -aiz --no-p "$SSH/var/cvrepls" "var"
 
@@ -51,8 +44,10 @@ then
 fi
 
 ## backup crit data
-if [[ $1 == "all" || $* == *crit* ]]
+if [[ $1 == "all" || $* == *seed* ]]
 then
   echo backup reviews data!
-  rsync -aiz --no-p "$SSH/var/yousuu/yscrits" "var/yousuu"
+  rsync -aiz --no-p "$SSH/var/nvseeds" "var"
+  rsync -aiz --no-p "$SSH/var/ysbooks" "var"
+  rsync -aiz --no-p "$SSH/var/yscrits" "var"
 fi

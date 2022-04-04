@@ -5,12 +5,12 @@ module CV::GenreMap
 
   DIR = "var/_common/fixes"
 
-  class_getter zh_map : Tabkv { Tabkv.new("#{DIR}/genres_zh.tsv") }
-  class_getter vi_map : Tabkv { Tabkv.new("#{DIR}/genres_vi.tsv") }
-  class_getter id_map : Tabkv { Tabkv.new("#{DIR}/genres_id.tsv") }
+  class_getter zh_map : Tabkv(Array(String)) { Tabkv(Array(String)).new("#{DIR}/genres_zh.tsv") }
+  class_getter vi_map : Tabkv(String) { Tabkv(String).new("#{DIR}/genres_vi.tsv") }
+  class_getter id_map : Tabkv(Int32) { Tabkv(Int32).new("#{DIR}/genres_id.tsv") }
 
   def map_id(input : String) : Int32
-    id_map.ival(input.strip)
+    id_map[input.strip]
   end
 
   def map_id(input : Array(String)) : Array(Int32)
@@ -22,13 +22,13 @@ module CV::GenreMap
   end
 
   def to_s(index : Int32) : String
-    vi_map.fval(index.to_s) || "Loại khác"
+    vi_map[index.to_s]? || "Loại khác"
   end
 
   # mapping chinese genre to vietnamese one
   def map_zh(input : String) : Array(String)
     input == "轻小说" ? input : input.sub("小说", "")
-    zh_map.get(input) || [] of String
+    zh_map[input]? || [] of String
   end
 
   def map_zh(input : Array(String)) : Array(String)

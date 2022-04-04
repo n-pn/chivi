@@ -24,21 +24,6 @@ class CV::InitNvinfo
     File.info?(file).try(&.modification_time.to_unix) || 0_i64
   end
 
-  getter stores = {
-    _index: {} of String => Tabkv,
-
-    intros: {} of String => Tabkv,
-    genres: {} of String => Tabkv,
-    covers: {} of String => Tabkv,
-
-    status: {} of String => Tabkv,
-    utimes: {} of String => Tabkv,
-    rating: {} of String => Tabkv,
-
-    origin: {} of String => Tabkv,
-    extras: {} of String => Tabkv,
-  }
-
   getter authors : Hash(String, CV::Author)
 
   @should_seed : Bool
@@ -46,7 +31,6 @@ class CV::InitNvinfo
   def initialize(@sname : String)
     @s_dir = "#{DIR}/#{@sname}"
     @authors = Author.query.to_a.to_h { |x| {x.zname, x} }
-
     @should_seed = @sname.in?("zxcs_me", "hetushu", "users", "staff", "zhwenpg")
   end
 
@@ -243,11 +227,11 @@ class CV::InitNvinfo
     btitle, author = get_names(snvid)
 
     if scores = RATING_FIX.get("#{btitle}  #{author}")
-      scores.map(&.to_i)
+      scores
     elsif @sname.in?("hetushu", "zxcs_me")
-      [Random.rand(20..30), Random.rand(50..60)]
+      Rating.new(Random.rand(20..30), Random.rand(50..60))
     else
-      [Random.rand(10..20), Random.rand(40..50)]
+      Rating.new(Random.rand(10..20), Random.rand(40..50))
     end
   end
 end

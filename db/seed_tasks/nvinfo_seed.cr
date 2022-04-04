@@ -1,12 +1,13 @@
 require "tabkv"
 require "./_bootstrap"
 
+require "../../src/_init/init_records"
+
 module CV::NvinfoSeed
   extend self
 
   class_getter authors = {} of String => Author
-
-  class_getter ratings = Tabkv.new("var/_common/rating_fix.tsv", :force)
+  class_getter ratings = Tabkv(Scores).new("var/_common/rating_fix.tsv", :force)
 
   def get_author(zname : String)
     authors[zname] ||= Author.find({zname: zname}) || return
@@ -17,11 +18,7 @@ module CV::NvinfoSeed
   end
 
   def get_scores(btitle : String, author : String)
-    if score = @@ratings.get("#{btitle}  #{author}")
-      score.map(&.to_i)
-    else
-      [Random.rand(25..50), Random.rand(40..50)]
-    end
+    @@ratings["#{btitle}  #{author}"]? || Scores.rand
   end
 
   def get_mtime(file : String) : Int64

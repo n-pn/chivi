@@ -6,11 +6,17 @@ module CV::BookUtil
 
   DIR = "var/_common/fixes"
 
-  class_getter zh_authors : Tabkv { Tabkv.new("#{DIR}/authors_zh.tsv") }
-  class_getter vi_authors : Tabkv { Tabkv.new("#{DIR}/authors_vi.tsv") }
+  class_getter zh_authors : Tabkv(String) { load_tsv("authors_zh") }
+  class_getter vi_authors : Tabkv(String) { load_tsv("authors_vi") }
 
-  class_getter zh_btitles : Tabkv { Tabkv.new("#{DIR}/btitles_zh.tsv") }
-  class_getter vi_btitles : Tabkv { Tabkv.new("#{DIR}/btitles_vi.tsv") }
+  class_getter zh_btitles : Tabkv(String) { load_tsv("btitles_zh") }
+  class_getter vi_btitles : Tabkv(String) { load_tsv("btitles_vi") }
+
+  def load_tsv(name : String)
+    Tabkv(String).new("#{DIR}/#{name}.tsv")
+  end
+
+  #############
 
   def fix_names(btitle : String, author : String)
     new_author = fix_name(:author, "#{author}  #{btitle}", author)
@@ -21,7 +27,7 @@ module CV::BookUtil
 
   def fix_name(type : Symbol, *keys : String)
     map = type == :author ? zh_authors : zh_btitles
-    keys.each { |key| map.fval(key).try { |x| return x } }
+    keys.each { |key| map[key]?.try { |x| return x } }
     clean_name(keys[-1], type)
   end
 
@@ -107,11 +113,11 @@ module CV::BookUtil
   ###################
 
   def author_vname(author : String) : String
-    vi_authors.fval(author) || hanviet(author)
+    vi_authors[author]? || hanviet(author)
   end
 
   def btitle_vname(zname : String, bdict : String = "combine") : String
-    vname = vi_btitles.fval(zname) || btitle_vname_mtl(zname, bdict)
+    vname = vi_btitles[zname]? || btitle_vname_mtl(zname, bdict)
     TextUtil.titleize(vname)
   end
 
