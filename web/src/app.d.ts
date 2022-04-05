@@ -24,5 +24,6 @@ declare namespace App {
     nvinfo: CV.Nvinfo
     ubmemo: CV.Ubmemo
     nvseed: CV.Chseed[]
+    nvtab: 'index' | 'board' | 'crits' | 'chaps'
   }
 }

@@ -24,7 +24,6 @@
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
-  import BookPage from './_layout/BookPage.svelte'
 
   export let crits: CV.Yscrit[] = []
   export let pgidx = 1
@@ -34,34 +33,29 @@
   $: pager = new Pager($page.url, { sort: 'stars', pg: 1 })
 </script>
 
-<BookPage nvtab="crits">
-  <article class="m-article">
-    <div class="sorts" id="sorts">
-      <span class="h3 -label">Đánh giá</span>
-      {#each Object.entries(sorts) as [sort, name]}
-        <a
-          href={pager.gen_url({ sort, pg: 1 })}
-          class="-sort"
-          class:_active={sort == _sort}>{name}</a>
-      {/each}
-    </div>
+<article class="m-article">
+  <div class="sorts" id="sorts">
+    <span class="h3 -label">Đánh giá</span>
+    {#each Object.entries(sorts) as [sort, name]}
+      <a
+        href={pager.gen_url({ sort, pg: 1 })}
+        class="-sort"
+        class:_active={sort == _sort}>{name}</a>
+    {/each}
+  </div>
 
-    <div class="crits">
-      {#each crits as crit}
-        <YscritCard
-          {crit}
-          show_book={false}
-          view_all={crit.vhtml.length < 640} />
-      {/each}
+  <div class="crits">
+    {#each crits as crit}
+      <YscritCard {crit} show_book={false} view_all={crit.vhtml.length < 640} />
+    {/each}
 
-      <footer class="pagi">
-        {#if crits.length > 0}
-          <Mpager {pager} {pgidx} {pgmax} />
-        {/if}
-      </footer>
-    </div>
-  </article>
-</BookPage>
+    <footer class="pagi">
+      {#if crits.length > 0}
+        <Mpager {pager} {pgidx} {pgmax} />
+      {/if}
+    </footer>
+  </div>
+</article>
 
 <style lang="scss">
   article {

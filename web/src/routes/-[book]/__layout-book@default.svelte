@@ -19,6 +19,10 @@
   }
 
   import { map_status } from '$utils/nvinfo_utils'
+
+  export async function load({ stuff }) {
+    return { props: stuff }
+  }
 </script>
 
 <script lang="ts">
@@ -27,10 +31,10 @@
   import RTime from '$gui/atoms/RTime.svelte'
   import BCover from '$gui/atoms/BCover.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
+  import { getContext } from 'svelte'
 
   export let nvinfo = $page.stuff.nvinfo
   export let ubmemo = $page.stuff.ubmemo
-  export let nvtab = 'index'
 
   $: appbar.set({
     left: [[nvinfo.vname, 'book', `/-${nvinfo.bslug}`, null, '_title']],
@@ -46,6 +50,8 @@
     if (stt) return console.log(`error update book status: ${msg}`)
     else invalidate(`/api/books/${nvinfo.bslug}`)
   }
+
+  $: nvtab = $page.routeId.split('/').pop().replace('@book', '')
 </script>
 
 <div class="main-info">
@@ -169,10 +175,7 @@
 
 <book-section>
   <header class="section-header">
-    <a
-      href="/-{nvinfo.bslug}"
-      class="header-tab"
-      class:_active={nvtab == 'index'}>
+    <a href="/-{nvinfo.bslug}" class="header-tab" class:_active={nvtab == ''}>
       <span>Tổng quan</span>
     </a>
 
