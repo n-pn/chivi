@@ -1,23 +1,9 @@
-<script lang="ts">
-  import { session } from '$app/stores'
-  import { usercp as ctrl } from '$lib/stores'
-  import { get_dmy } from '$utils/time_utils'
-
-  import SIcon from '$gui/atoms/SIcon.svelte'
-  import Slider from '$gui/molds/Slider.svelte'
-
-  import Reading from './Usercp/Reading.svelte'
-  import Setting from './Usercp/Setting.svelte'
-  import UVcoin from './Usercp/UVcoin.svelte'
-
-  $: on_tab = $ctrl.tab
-
+<script context="module" lang="ts">
   const hour_span = 3600
   const day_span = 3600 * 24
   const month_span = day_span * 30
 
-  function avail_until(privi: number) {
-    const time = $session[`privi_${privi}_until`]
+  function avail_until(time: number) {
     const diff = time - new Date().getTime() / 1000
 
     if (diff < hour_span) return '< 1 tiếng'
@@ -30,6 +16,20 @@
   function round(input: number, unit: number) {
     return input <= unit ? 1 : Math.floor(input / unit)
   }
+</script>
+
+<script lang="ts">
+  import { session } from '$app/stores'
+  import { usercp as ctrl } from '$lib/stores'
+  import { get_dmy } from '$utils/time_utils'
+
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Slider from '$gui/molds/Slider.svelte'
+
+  import Reading from './Usercp/Reading.svelte'
+  import Setting from './Usercp/Setting.svelte'
+  import UVcoin from './Usercp/UVcoin.svelte'
+  const components = [Reading, Setting, UVcoin]
 
   const tabs = [
     { icon: 'history', btip: 'Lịch sửa đọc' },
@@ -37,14 +37,14 @@
     { icon: 'coin', btip: 'Vcoin' },
   ]
 
-  const comps = [Reading, Setting, UVcoin]
+  $: privi = $session.privi || 0
 </script>
 
 <Slider class="usercp" bind:actived={$ctrl.actived} --slider-width="26rem">
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name="user" /></div>
     <div class="-text">
-      <cv-user data-privi={$session.privi}>{$session.uname}</cv-user>
+      <cv-user data-privi={privi}>{$session.uname}</cv-user>
     </div>
   </svelte:fragment>
 
@@ -52,7 +52,7 @@
     {#each tabs as { icon, btip }, tab}
       <button
         class="-btn"
-        class:_active={on_tab == tab}
+        class:_active={tab == $ctrl.tab}
         on:click={() => ctrl.change_tab(tab)}
         data-tip={btip}
         tip-loc="bottom">
@@ -65,16 +65,16 @@
     <div class="info">
       <div>
         <span class="lbl">Quyền hạn:</span>
-        <SIcon name="crown" /><strong>{$session.privi}</strong>
+        <SIcon name="crown" /><strong>{privi}</strong>
       </div>
-      {#if $session.privi > 0 && $session.privi < 4}
+      {#if privi > 0 && privi < 4}
         <div>
           <span class="lbl">Hết hạn:</span>
-          <strong>{avail_until($session.privi)}</strong>
+          <strong>{avail_until($session[`privi_${privi}_until`])}</strong>
         </div>
       {/if}
       <button class="m-btn _xs _primary" on:click={() => ctrl.change_tab(2)}
-        >{$session.privi < 1 ? 'Nâng cấp' : 'Gia hạn'}</button>
+        >{privi < 1 ? 'Nâng cấp' : 'Gia hạn'}</button>
     </div>
 
     <div class="info">
@@ -89,7 +89,9 @@
   </section>
 
   <usercp-body>
-    <svelte:component this={comps[on_tab]} bind:tab={$ctrl.tab} />
+    {#if $ctrl.actived}
+      <svelte:component this={components[$ctrl.tab]} bind:tab={$ctrl.tab} />
+    {/if}
   </usercp-body>
 </Slider>
 

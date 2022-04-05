@@ -5,7 +5,7 @@
     const uname = params.uname
     appbar.set({ left: [[`Tủ truyện của [${uname}]`, 'notebook']] })
 
-    const bmark = url.searchParams.get('bmark') || 'reading'
+    const bmark = params.bmark || 'reading'
     const page = +url.searchParams.get('pg') || 1
 
     const api_url = `/api/books?pg=${page}&lm=24&order=update&uname=${uname}&bmark=${bmark}`
@@ -31,6 +31,7 @@
   export let books = []
   export let pgidx = 1
   export let pgmax = 1
+  // export let total = 1
 
   $: pager = new Pager($page.url)
 </script>
@@ -42,7 +43,7 @@
 <div class="tabs">
   {#each status_types as status}
     <a
-      href="/books/@{uname}?bmark={status}"
+      href="/books/@{uname}/{status}"
       class="tab"
       class:_active={status == bmark}>
       {status_names[status]}

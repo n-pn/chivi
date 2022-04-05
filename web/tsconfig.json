@@ -38,6 +38,7 @@
       "$utils/*": ["./src/utils/*"]
     }
   },
+  "extends": "./.svelte-kit/tsconfig.json",
   "files": ["src/types/shared.d.ts"],
   "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.svelte"]
 }

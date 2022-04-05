@@ -4,10 +4,11 @@
   import { chap_url } from '$utils/route_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import { onMount } from 'svelte'
 
-  let chaps = []
-  onMount(load_history)
+  export let tab = 0
+
+  let chaps: Array<any> = undefined
+  $: if (tab == 0 && !chaps) load_history()
 
   async function load_history(pg = 1) {
     const api_url = `/api/_self/books/access?pg=${pg}&lm=10`
@@ -19,7 +20,7 @@
 
 <div class="chips">
   {#each ['reading', 'onhold', 'pending'] as status}
-    <a href="/books/@{$session.uname}?bmark={status}" class="chip">
+    <a href="/books/@{$session.uname}/{status}" class="chip">
       <span class="chip-icon">
         <SIcon name={status_icons[status]} />
       </span>
@@ -36,7 +37,7 @@
 </div>
 
 <chap-list>
-  {#each chaps as chap}
+  {#each chaps || [] as chap}
     <a class="chap" href={chap_url(chap.bslug, chap)}>
       <div class="chap-text">
         <div class="chap-title">{chap.title}</div>
