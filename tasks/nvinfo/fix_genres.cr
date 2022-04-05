@@ -1,4 +1,4 @@
-require "../shared/seed_util"
+require "../shared/bootstrap"
 
 class CV::FixGenres
   def set!
@@ -10,8 +10,13 @@ class CV::FixGenres
 
       input = [] of Int32
 
-      input.concat get_genres("yousuu", nvinfo.ysbook_id) if nvinfo.ysbook_id > 0
-      nvinfo.nvseeds.each { |x| input.concat get_genres(x.sname, x.snvid) }
+      if ysbook = Ysbook.get(nvinfo.ysbook_id)
+        input.concat GenreMap.map_int(ysbook.bgenre.split('\t'))
+      end
+
+      nvinfo.nvseeds.each do |nvseed|
+        input.concat GenreMap.map_int(nvseed.bgenre.split('\t'))
+      end
 
       tally = input.tally.to_a.sort_by(&.[1].-)
       keeps = tally.reject(&.[1].< 2)
@@ -21,20 +26,6 @@ class CV::FixGenres
 
       nvinfo.igenres = output
       nvinfo.save!
-    end
-  end
-
-  def get_genres(sname : String, snvid : String) : Array(Int32)
-    genres = genres_map(sname).get(snvid) || [] of String
-    Bgenre.zh_map_ids(genres)
-  end
-
-  @cache = {} of String => TsvStore
-
-  def genres_map(sname : String)
-    @cache[sname] ||= begin
-      file = "_db/nvseed/#{sname}/genres.tsv"
-      TsvStore.new(file, mode: 1)
     end
   end
 end

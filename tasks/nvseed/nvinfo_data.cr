@@ -9,7 +9,7 @@ module CV
     end
 
     def to_tsv
-      "#{@stime}\#{@btitle}\t#{@author}"
+      "#{@stime}\t#{@btitle}\t#{@author}"
     end
 
     def fix_names
@@ -27,27 +27,13 @@ module CV
     end
   end
 
-  record Mftime, update : Int64, rawstr : String? do
+  record Mftime, utime : Int64, rawstr : String? do
     def self.from_tsv(rows : Array(String))
       new(rows[0].to_i64, rows[1]?)
     end
 
     def to_tsv
-      "#{@update}\t#{@rawstr}"
-    end
-  end
-
-  record Rating, voters : Int32, rating : Int32 do
-    def self.rand
-      {Random.rand(25..50), Random.rand(40..50)}
-    end
-
-    def self.from_tsv(rows : Array(String))
-      new(rows[0].to_i, rows[1].to_i)
-    end
-
-    def to_tsv
-      "#{@voters}\t#{@rating}"
+      "#{@utime}\t#{@rawstr}"
     end
   end
 
@@ -60,32 +46,44 @@ module CV
       "#{@chap_count}\t#{@last_schid}"
     end
   end
-
-  record Origin, pub_link : String, pub_name : String? do
-    def self.from_tsv(rows : Array(String))
-      pub_link = rows[0]
-      pub_name = rows[1]? || extract_name(pub_link)
-      new(pub_link, pub_name)
-    end
-
-    def to_tsv
-      "#{@pub_link}\t#{@pub_name}"
-    end
-  end
-
-  record Ystats, word_count : Int32, crit_count : Int32, list_count : Int32 do
-    def self.from_tsv(rows : Array(String))
-      new(rows[0].to_i, rows[1].to_i, rows[2].to_i)
-    end
-
-    def to_tsv
-      {@word_count, @crit_count, @list_count}.join('\t')
-    end
-  end
 end
 
 class CV::NvinfoData
   DIR = "var/nvinfos"
+
+  class_getter authors : Hash(String, Author) do
+    query = Author.query.select("id", "zname")
+
+    query.each_with_object({} of String => Author) do |author, output|
+      output[author.zname] = author
+    end
+  end
+
+  def self.get_author(zname : String)
+    authors[zname] ||= Author.find({zname: zname}) || begin
+      return unless yield
+      Author.upsert!(zname)
+    end
+  end
+
+  def self.get_author(zname : String)
+    get_author(zname) { false }
+  end
+
+  def self.get_author!(zname : String) : Author
+    authors[zname] ||= Author.upsert!(zname)
+  end
+
+  def self.stime(file : String)
+    File.info(file).modification_time.to_unix
+  end
+
+  def self.print_stats(label : String)
+    puts "- [seed #{label}] <#{idx.colorize.cyan}>, \
+            authors: #{authors.size.colorize.cyan}, \
+            nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
+            nvseeds: #{Nvseed.query.count.colorize.cyan}"
+  end
 
   ###################
 
@@ -96,22 +94,14 @@ class CV::NvinfoData
   getter covers : Tabkv(String) { Tabkv(String).new("#{@_wd}/covers.tsv") }
 
   getter status : Tabkv(Status) { Tabkv(Status).new("#{@_wd}/status.tsv") }
-  getter rating : Tabkv(Rating) { Tabkv(Rating).new("#{@_wd}/rating.tsv") }
   getter utimes : Tabkv(Mftime) { Tabkv(Mftime).new("#{@_wd}/utimes.tsv") }
 
   # for nvseed
   getter chsize : Tabkv(Chsize) { Tabkv(Chsize).new("#{@_wd}/chsize.tsv") }
 
-  # for yousuu
-  getter origin : Tabkv(Origin) { Tabkv(Origin).new("#{@_wd}/origin.tsv") }
-  getter ystats : Tabkv(Origin) { Tabkv(Origin).new("#{@_wd}/ystats.tsv") }
-  getter shield : Tabkv(Int32) { Tabkv(Int32).new("#{@_wd}/shield.tsv") }
-
   getter _wd : String # working directory
 
-  def initialize(@sname : String, slice : String | Int32)
-    @_wd = "#{DIR}/#{@sname}/#{slice}"
-    Dir.mkdir_p(@_wd)
+  def initialize(@_wd)
   end
 
   def save!(clean : Bool = false)
@@ -125,78 +115,43 @@ class CV::NvinfoData
     @utimes.try(&.save!(clean: clean))
 
     @chsize.try(&.save!(clean: clean))
-    @rating.try(&.save!(clean: clean))
   end
 
   def add!(entry, snvid : String, atime : Int64)
     _index.append(snvid, Bindex.new(atime, entry.btitle, entry.author))
-
     genres.append(snvid, entry.genres)
     intros.append(snvid, entry.bintro)
     covers.append(snvid, entry.bcover)
-
-    mftime.append(snvid, Mftime.new(entry.update_int, entry.update_str))
-    status.append(snvid, Status.new(entry.status_int, entry.status_str))
-
-    # if entry.is_a?(YsbookInit)
-    #   origin.append(snvid, Origin.from_tsv([entry.pub_link]))
-    # end
+    utimes.append(snvid, Mftime.new(entry.update_int, entry.update_str))
   end
 
-  # def seed!(force : Bool = false)
-  #   case @sname
-  #   when "yousuu"
-  #     _index.data.each_key { |snvid, bindex| upsert_ysbook(snvid, bindex) }
-  #   else
-  #     _index.data.each_key { |snvid, bindex| upsert_nvseed(snvid, bindex) }
-  #   end
-  # end
+  def seed!(force : Bool = false)
+    _index.data.each_key { |snvid, bindex| seed!(snvid, bindex, force: force) }
+  end
 
-  # def seed_ysbook(snvid : String, force : Bool = false)
-  #   bindex = sellf._index[snvid]?
-  #   btitle, author_zname = bindex.fix_names
+  def update_bindex(entry, bindex : Bindex)
+    entry.stime = bindex.stime
+    entry.btitle = bindex.btitle
+    entry.author = bindex.author
+  end
 
-  #   return if btitle.blank? || author_zname.blank?
-  #   return unless ysbook = load_ysbook()
+  def update_common(entry : Ysbook | Nvseed, snvid : String)
+    entry.utime = self.utimes[snvid].utime
 
-  #   #####
-  #   ysbook.set_bindex(bindex)
-  #   ysbook.set_rating(rating)
-  #   ysbook.set_ystats(ystats)
-  #   ysbook.set_origin(self.origin[snvid])
+    entry.bcover = self.covers[snvid]
+    entry.bgenre = self.genres[snvid].join('\t')
+    entry.bintro = self.intros[snvid].join('\t')
+  end
 
-  #   ysbook.utime = self.utimes[snvid].update
-  #   ysbook.status = self.status[snvid].status
+  def update_nvinfo(nvinfo : Nvinfo, entry : Ysbook | Nvseed)
+    nvinfo.set_genres(entry.bgenre.split('\t'))
+    nvinfo.set_zintro(entry.bintro.split('\t'))
 
-  #   #####
+    nvinfo.set_covers(entry.bcover)
+    nvinfo.set_status(entry.status)
 
-  #   nvinfo = upsert_nvinfo(snvid, btitle , author )
-
-  #   ysbook.tap(&.nvinfo_id = nvinfo.id).save!
-
-  # end
-
-  # def upsert_nvinfo(snvid : String, btitle : String, author : Author)
-
-  # end
-
-  # def init_nvinfo(ysbook : Ysbook, btitle : String, author : Author)
-  #   nvinfo = Nvinfo.upsert!(btitle, author)
-
-  #   if old_ysbook = load_ysbook(nvinfo.ysbook_id, ysbook.id)
-  #     return nvinfo if ysbook.voters <= old_ysbook.voters
-
-  #     puts "!! override: #{old_ysbook.id} (#{old_ysbook.voters}) \
-  # => #{entry._id} (#{entry.voters})".colorize.yellow
-  #   end
-
-  #   nvinfo.ysbook_id = ysbook.id
-
-  #   nvinfo.set_shield(self.shield[snvid]? || 0)
-  #   nvinfo.fix_scores!(ysbook.voters, ysbook.scores)
-
-  #   nvinfo
-  # end
+    nvinfo.set_utime(entry.utime)
+  end
 
   # def get_scores(snvid : String)
   #   rating[snvid]? || {0, Random.rand(40..50)}

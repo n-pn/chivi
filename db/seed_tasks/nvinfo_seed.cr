@@ -1,8 +1,6 @@
 require "tabkv"
 require "./_bootstrap"
 
-require "../../src/_init/init_records"
-
 module CV::NvinfoSeed
   extend self
 

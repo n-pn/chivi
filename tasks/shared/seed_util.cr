@@ -7,23 +7,8 @@ require "./bootstrap"
 module CV::SeedUtil
   extend self
 
-  class_getter rating_fix : Tabkv { Tabkv.new("var/_common/rating_fix.tsv") }
-  class_getter status_map : Tabkv { Tabkv.new("var/_common/status_map.tsv") }
-
-  class_getter authors_map : Hash(String, Author) do
-    Author.query.to_a.to_h { |x| {x.zname, x} }
-  end
-
   def save_maps!(clean = false)
     @@status_map.try(&.save!(clean: clean))
-  end
-
-  def get_author(author : String, ztitle = "", force = false) : Author?
-    zname = BookUtils.fix_zh_author(author, ztitle)
-    authors_map[zname] ||= begin
-      return unless force
-      Author.upsert!(zname)
-    end
   end
 
   def parse_status(status_str : String)
