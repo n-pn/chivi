@@ -17,9 +17,15 @@ class CV::YsbookSeed
   def seed_entry!(entry : YsbookInit)
     ysbook = Ysbook.upsert!(entry._id.to_i64)
 
-    if ysbook.info_stime < entry.stime
+    if ysbook.stime < entry.stime
+      ysbook.stime = entry.stime
+
       ysbook.btitle = entry.btitle
       ysbook.author = entry.author
+
+      ysbook.bcover = entry.bcover
+      ysbook.bgenre = entry.genres.join('\t')
+      ysbook.bintro = entry.bintro.join('\t')
 
       ysbook.voters = entry.voters
       ysbook.scores = entry.voters &* entry.rating
@@ -35,9 +41,9 @@ class CV::YsbookSeed
 
       ysbook.utime = entry.update_int
       ysbook.status = entry.status
+      ysbook.shield = entry.shield
 
       ysbook.word_count = entry.word_count
-      ysbook.info_stime = entry.stime
     end
 
     NvinfoSeed.seed!(entry) do |nvinfo|

@@ -20,8 +20,19 @@ class CV::Nvseed
   column sname : String = ""
   column snvid : String # seed book id
 
+  # seed data
+
+  column btitle : String = ""
+  column author : String = ""
+
+  column bcover : String = ""
+  column bintro : String = ""
+  column bgenre : String = ""
+
   column status : Int32 = 0 # same as Cvinfo#status
   column shield : Int32 = 0 # same as Cvinfo#shield
+
+  ##########
 
   column utime : Int64 = 0 # seed page update time as total seconds since the epoch
   column stime : Int64 = 0 # last crawled at
