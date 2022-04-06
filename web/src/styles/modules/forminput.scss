@@ -56,6 +56,7 @@
   padding: var(--gutter-pl) var(--gutter-ts);
   line-height: 1.75rem;
   height: 3rem;
+  @include ftsize(lg);
 }
 
 .form-inp {
@@ -80,7 +81,12 @@
 }
 
 .form-btns {
-  margin-top: .75rem;
+  margin-top: 1.25rem;
+  text-align: center;
+}
+
+.form-more {
+  margin-top: 1.25rem;
   @include flex($center: horz, $gap: .75rem);
 }
 

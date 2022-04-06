@@ -51,13 +51,17 @@
   <footer class="form-btns">
     <button type="submit" class="m-btn _fill _warning umami--click--pwtemp">
       <SIcon name="key" />
-      <span class="-txt">Yêu cầu mật khẩu</span>
+      <span class="-txt">Gửi mật khẩu</span>
     </button>
   </footer>
-
-  <div class="form-btns">
-    <button class="m-btn _text" on:click={() => (_form = 'login')}>
-      <span class="-text">Đăng nhập</span>
-    </button>
-  </div>
 </form>
+
+<div class="form-more">
+  <button class="m-btn _text" on:click={() => (_form = 'login')}>
+    <span class="-text">Đăng nhập</span>
+  </button>
+
+  <button class="m-btn _text _success" on:click={() => (_form = 'signup')}>
+    <span class="-txt">Tài khoản mới</span>
+  </button>
+</div>

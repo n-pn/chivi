@@ -47,33 +47,18 @@
   {#if error}<div class="form-msg _err">{error}</div>{/if}
 
   <footer class="form-btns">
-    <button class="m-btn _text" on:click={() => (_form = 'signup')}>
-      <span class="-txt">Tài khoản mới</span>
-    </button>
-
-    <button type="submit" class="m-btn _fill _primaryumami--click--login">
+    <button type="submit" class="m-btn _fill _lg _primary umami--click--login">
       <SIcon name="login" />
       <span class="-txt">Đăng nhập</span>
     </button>
   </footer>
-
-  <div class="pwtemp">
-    <button type="button" on:click={() => (_form = 'pwtemp')}
-      ><span class="-txt">Quên mật khẩu</span></button>
-  </div>
 </form>
 
-<style lang="scss">
-  .pwtemp {
-    @include flex-cx();
-    margin-top: 1rem;
+<div class="form-more">
+  <button class="m-btn _text _success" on:click={() => (_form = 'signup')}>
+    <span class="-txt">Tài khoản mới</span>
+  </button>
 
-    > button {
-      background: transparent;
-      @include fgcolor(tert);
-      @include hover {
-        @include fgcolor(primary, 5);
-      }
-    }
-  }
-</style>
+  <button class="m-btn _text" on:click={() => (_form = 'pwtemp')}
+    ><span class="-txt">Quên mật khẩu</span></button>
+</div>

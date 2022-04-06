@@ -3,7 +3,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let email: string
-  export let _form = 'tempwd'
+  export let _form = 'signup'
 
   let dname = ''
   let upass = ''
@@ -37,6 +37,7 @@
   <div class="form-inp">
     <label class="form-lbl" for="cname">Tên người dùng</label>
     <input
+      class="m-input"
       type="text"
       id="cname"
       name="cname"
@@ -45,9 +46,10 @@
       bind:value={dname} />
   </div>
 
-  <div class="m-input">
-    <label for="cpass">Mật khẩu</label>
+  <div class="form-inp">
+    <label class="form-lbl" for="cpass">Mật khẩu</label>
     <input
+      class="m-input"
       type="password"
       id="upass"
       name="upass"
@@ -59,16 +61,18 @@
   {#if error}<div class="form-msg _err">{error}</div> {/if}
 
   <footer class="form-btns">
+    <button type="submit" class="m-btn _fill _lg _success umami--click--signup">
+      <SIcon name="user-plus" />
+      <span class="-text">Tạo tài khoản</span>
+    </button>
+  </footer>
+
+  <div class="form-more">
     <button
       type="button"
       class="m-btn _text"
       on:click={() => (_form = 'login')}>
       <span class="-text">Đăng nhập</span>
     </button>
-
-    <button type="submit" class="m-btn _fill _success umami--click--signup">
-      <SIcon name="user-plus" />
-      <span class="-text">Tạo tài khoản</span>
-    </button>
-  </footer>
+  </div>
 </form>
