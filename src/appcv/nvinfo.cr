@@ -42,7 +42,7 @@ class CV::Nvinfo
   getter snames : Array(String) { SnameMap.map_str(zseeds) }
 
   column igenres : Array(Int32) = [] of Int32
-  getter vgenres : Array(String) { GenreMap.to_s(igenres) }
+  getter vgenres : Array(String) { GenreMap.to_str(igenres) }
 
   column zlabels : Array(String) = [] of String
   column vlabels : Array(String) = [] of String
@@ -125,7 +125,7 @@ class CV::Nvinfo
   end
 
   scope :filter_genres do |input|
-    input ? where("igenres @> ?", GenreMap.map_id(input.split('+'))) : self
+    input ? where("igenres @> ?", GenreMap.map_int(input.split('+'))) : self
   end
 
   scope :filter_labels do |input|

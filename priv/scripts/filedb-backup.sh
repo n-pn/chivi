@@ -18,8 +18,8 @@ then
   echo backup dicts data!
 
   rsync -aiz --no-p "$SSH/var/vpdicts/v1/basic" "var/vpdicts/v1"
-  rsync -aiz --no-p "$SSH/var/vpdicts/v1/novel" "var/vpdictsv1/"
-  rsync -aiz --no-p "$SSH/var/vpdicts/v1/theme" "var/vpdictsv1/"
+  rsync -aiz --no-p "$SSH/var/vpdicts/v1/novel" "var/vpdicts/v1/"
+  rsync -aiz --no-p "$SSH/var/vpdicts/v1/theme" "var/vpdicts/v1/"
   rsync -aiz --no-p "$SSH/var/vpdicts/v1/cvmtl/*.tab" "var/vpdicts/v1/cvmtl"
 fi
 

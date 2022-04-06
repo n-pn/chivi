@@ -22,7 +22,7 @@ module CV::GenreMap
   end
 
   def to_str(index : Int32) : String
-    vi_map[index.to_str]? || "Loại khác"
+    vi_map[index.to_s]? || "Loại khác"
   end
 
   # mapping chinese genre to vietnamese one

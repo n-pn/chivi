@@ -11,7 +11,7 @@ module CV::NvinfoModel
 
   def set_genres(genres : Array(String), force = false) : Nil
     return unless force || self.igenres.empty?
-    igenres = GenreMap.map_id(genres)
+    igenres = GenreMap.map_int(genres)
 
     self.igenres = igenres.empty? ? [0] : igenres
     self.igenres_column.dirty!
