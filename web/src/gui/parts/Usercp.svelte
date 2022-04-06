@@ -73,7 +73,7 @@
           <strong>{avail_until($session[`privi_${privi}_until`])}</strong>
         </div>
       {/if}
-      <button class="m-btn _xs _primary" on:click={() => ctrl.change_tab(2)}
+      <button class="m-btn _xs _primary" on:click={() => ctrl.change_tab(1)}
         >{privi < 1 ? 'Nâng cấp' : 'Gia hạn'}</button>
     </div>
 
@@ -83,7 +83,7 @@
         <SIcon name="coin" /><strong>{$session.vcoin_avail}</strong>
       </div>
 
-      <button class="m-btn _xs" on:click={() => ctrl.change_tab(3)}
+      <button class="m-btn _xs" on:click={() => ctrl.change_tab(2)}
         >Chi tiết</button>
     </div>
   </section>
