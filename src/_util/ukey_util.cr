@@ -26,6 +26,12 @@ module CV::UkeyUtil
     encode32(number).ljust(limit, '0')
   end
 
+  def rand_str(limit : Int32 = 8)
+    String.build do |io|
+      limit.times { io << B32_CF.sample }
+    end
+  end
+
   B32_CF = {
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k',

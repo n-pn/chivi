@@ -55,7 +55,7 @@ class CV::Cvuser
   end
 
   def set_pwtemp!
-    self.pwtemp = Random::Secure.base64(8)
+    self.pwtemp = UkeyUtil.rand_str(8)
     self.pwtemp_until = (Time.utc + PWTEMP_TSPAN).to_unix
 
     save!
