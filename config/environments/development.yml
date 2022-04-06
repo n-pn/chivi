@@ -23,7 +23,10 @@ session:
   expires: 2592000
 
 smtp:
-  enabled: false
+  enabled: true
+  host: email-smtp.ap-southeast-1.amazonaws.com
+  post: 25
+  tls: true
 
 pipes:
   static:

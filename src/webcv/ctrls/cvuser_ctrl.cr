@@ -32,6 +32,18 @@ class CV::CvuserCtrl < CV::BaseCtrl
     send_json(CvuserView.new(_cvuser))
   end
 
+  def pwtemp
+    email = params["email"].strip
+
+    if user = Cvuser.find_by_mail(email)
+      PasswdMailer.new(user).deliver
+    else
+      Log.error { email + " not found!" }
+    end
+
+    send_json("ok")
+  end
+
   def passwd
     raise "Quyền hạn không đủ" if _cvuser.privi < 0
 

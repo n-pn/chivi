@@ -46,14 +46,51 @@
   }
 }
 
-.inp-sm {
+.m-input._sm {
   padding: var(--gutter-ps) var(--gutter-ts);
   line-height: 1.25rem;
   height: 2rem;
 }
 
-.inp-lg {
+.m-input._lg {
   padding: var(--gutter-pl) var(--gutter-ts);
   line-height: 1.75rem;
   height: 3rem;
+}
+
+.form-inp {
+  & + & {
+    margin-top: 0.75rem;
+  }
+
+  .m-input {
+    display: block;
+    width: 100%;
+  }
+}
+
+.form-lbl {
+  display: block;
+  // text-transform: uppercase;
+  font-weight: 500;
+  line-height: 1.5rem;
+  margin-bottom: 0.25rem;
+  @include ftsize(md);
+  @include fgcolor(neutral, 5);
+}
+
+.form-btns {
+  margin-top: .75rem;
+  @include flex($center: horz, $gap: .75rem);
+}
+
+// prettier-ignore
+.form-msg {
+  margin-top: .75rem;
+  line-height: 1.25rem;
+  @include ftsize(sm);
+
+  &._err { @include fgcolor(harmful, 5); }
+
+  &._ok { @include fgcolor(success, 5); }
 }

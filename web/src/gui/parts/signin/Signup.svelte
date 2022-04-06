@@ -1,0 +1,74 @@
+<script lang="ts">
+  import { api_call } from '$lib/api_call'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+
+  export let email: string
+  export let _form = 'tempwd'
+
+  let dname = ''
+  let upass = ''
+
+  let error = ''
+
+  async function submit(event: Event) {
+    event.preventDefault()
+    error = ''
+
+    const params = { email, dname, upass }
+    const [stt, msg] = await api_call(fetch, `user/signup`, params, 'POST')
+    if (stt > 200) error = msg
+    else window.location.reload()
+  }
+</script>
+
+<form action="/api/user/signup" method="POST" on:submit={submit}>
+  <div class="form-inp">
+    <label class="form-lbl" for="email">Hòm thư</label>
+    <input
+      class="m-input"
+      type="email"
+      id="email"
+      name="email"
+      placeholder="Hòm thư"
+      required
+      bind:value={email} />
+  </div>
+
+  <div class="form-inp">
+    <label class="form-lbl" for="cname">Tên người dùng</label>
+    <input
+      type="text"
+      id="cname"
+      name="cname"
+      placeholder="Tên người dùng"
+      required
+      bind:value={dname} />
+  </div>
+
+  <div class="m-input">
+    <label for="cpass">Mật khẩu</label>
+    <input
+      type="password"
+      id="upass"
+      name="upass"
+      placeholder="Mật khẩu"
+      required
+      bind:value={upass} />
+  </div>
+
+  {#if error}<div class="form-msg _err">{error}</div> {/if}
+
+  <footer class="form-btns">
+    <button
+      type="button"
+      class="m-btn _text"
+      on:click={() => (_form = 'login')}>
+      <span class="-text">Đăng nhập</span>
+    </button>
+
+    <button type="submit" class="m-btn _fill _success umami--click--signup">
+      <SIcon name="user-plus" />
+      <span class="-text">Tạo tài khoản</span>
+    </button>
+  </footer>
+</form>

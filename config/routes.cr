@@ -20,6 +20,7 @@ Amber::Server.configure do
     post "/user/login", CV::CvuserCtrl, :login
     post "/user/signup", CV::CvuserCtrl, :signup
     put "/user/setting", CV::CvuserCtrl, :update
+    post "/user/pwtemp", CV::CvuserCtrl, :pwtemp
     put "/user/passwd", CV::CvuserCtrl, :passwd
 
     get "/_self", CV::UsercpCtrl, :cv_user

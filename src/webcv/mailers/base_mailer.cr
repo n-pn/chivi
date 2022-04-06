@@ -1,7 +1,7 @@
 require "quartz_mailer"
 
-class BaseMailer < Quartz::Composer
+class CV::BaseMailer < Quartz::Composer
   def sender
-    address name: "Chivi", email: "noreply@chivi.app"
+    address name: "Chivi", email: "sys@chivi.app"
   end
 end

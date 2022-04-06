@@ -12,6 +12,9 @@ class CV::Cvuser
   column cpass : String
   getter upass : String? # virtual password field
 
+  column pwtemp : String = ""
+  column pwtemp_until : Int64 = 0
+
   # user group and privilege:
   # - admin: 4 // granted all access
   # - vip_2: 3 // granted all premium features
@@ -42,7 +45,20 @@ class CV::Cvuser
   end
 
   def authentic?(upass : String)
-    Crypto::Bcrypt::Password.new(cpass).verify(upass)
+    Crypto::Bcrypt::Password.new(cpass).verify(upass) || pwtemp?(upass)
+  end
+
+  PWTEMP_TSPAN = 5.minutes
+
+  def pwtemp?(upass : String)
+    self.pwtemp == upass && self.pwtemp_until >= Time.utc.to_unix
+  end
+
+  def set_pwtemp!
+    self.pwtemp = Random::Secure.base64(8)
+    self.pwtemp_until = (Time.utc + PWTEMP_TSPAN).to_unix
+
+    save!
   end
 
   TSPAN_UNIT = 1.days.total_seconds.to_i
@@ -135,6 +151,15 @@ class CV::Cvuser
   CACHE_INT = RamCache(Int64, self).new
   CACHE_STR = RamCache(String, self).new
 
+  def self.find_by_mail(email : String)
+    return unless user = find({email: email})
+
+    CACHE_INT.set(user.id, user)
+    CACHE_STR.set(user.uname.downcase, user)
+
+    user
+  end
+
   def self.load!(id : Int64)
     CACHE_INT.get(id) { find!({id: id}) }
   end
@@ -151,10 +176,10 @@ class CV::Cvuser
     end
   end
 
-  DUMMY_PASS = Crypto::Bcrypt::Password.create("chivi123", cost: 10)
+  DUMMY_PASS = Crypto::Bcrypt::Password.create("----", cost: 10)
 
   def self.validate(email : String, upass : String)
-    if user = find({email: email})
+    if user = find_by_mail(email)
       user.authentic?(upass) ? user : nil
     else
       DUMMY_PASS.verify(upass) # prevent timing attack
