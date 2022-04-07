@@ -10,11 +10,11 @@ module CV::GenreMap
   class_getter id_map : Tabkv(Int32) { Tabkv(Int32).new("#{DIR}/genres_id.tsv") }
 
   def map_int(input : String) : Int32
-    id_map[input.strip]
+    id_map[input.strip]? || -1
   end
 
   def map_int(input : Array(String)) : Array(Int32)
-    input.map { |x| map_int(x) }.uniq
+    input.map { |x| map_int(x) }.reject(&.< 1)
   end
 
   def to_str(ids : Array(Int32)) : Array(String)
@@ -26,12 +26,12 @@ module CV::GenreMap
   end
 
   # mapping chinese genre to vietnamese one
-  def map_zh(input : String) : Array(String)
+  def zh_to_vi(input : String) : Array(String)
     input == "轻小说" ? input : input.sub("小说", "")
     zh_map[input]? || [] of String
   end
 
-  def map_zh(input : Array(String)) : Array(String)
-    input.map { |x| map_zh(x) }.flatten.uniq
+  def zh_to_vi(input : Array(String)) : Array(String)
+    input.map { |x| zh_to_vi(x) }.flatten.uniq
   end
 end

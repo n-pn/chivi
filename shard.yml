@@ -16,7 +16,7 @@ targets:
     main: tasks/nvseed/zhwenpg_seed.cr
 
   ysbook_seed:
-    main: db/seed_tasks/ysbook_seed.cr
+    main: tasks/nvseed/ysbook_seed.cr
 
   remote_seed:
     main: tasks/nvseed/remote_seed.cr

@@ -5,15 +5,24 @@ module CV::NvinfoModel
     self.zseeds_column.dirty!
   end
 
-  def set_zgenre(genres : Array(String), force = false) : Nil
-    set_genres(GenreMap.map_zh(genres), force: force)
+  def set_zgenres(zgenres : Array(String), force = false) : Nil
+    set_vgenres(GenreMap.zh_to_vi(zgenres), force: force)
   end
 
-  def set_genres(genres : Array(String), force = false) : Nil
+  def set_vgenres(vgenres : Array(String), force = false) : Nil
     return unless force || self.igenres.empty?
-    igenres = GenreMap.map_int(genres)
+    self.igenres.clear
 
-    self.igenres = igenres.empty? ? [0] : igenres
+    vgenres.each do |vgenre|
+      case igenre = GenreMap.map_int(vgenre)
+      when .< 0 then self.vlabels << vgenre
+      when .> 0 then self.igenres << igenre
+      end
+    end
+
+    self.igenres << 0 if self.igenres.empty?
+
+    self.vlabels_column.dirty!
     self.igenres_column.dirty!
   end
 

@@ -17,9 +17,9 @@ module CV
     end
   end
 
-  record Status, status : Int32, rawstr : String? do
+  record Status, status : Int32, rawstr : String do
     def self.from_tsv(rows : Array(String))
-      new(rows[0].to_i, rows[1]?)
+      new(rows[0].to_i, rows[1]? || rows[0])
     end
 
     def to_tsv
@@ -48,26 +48,22 @@ module CV
   end
 end
 
-class CV::NvinfoData
+abstract class CV::NvinfoData
   DIR = "var/nvinfos"
 
   class_getter authors : Hash(String, Author) do
     query = Author.query.select("id", "zname")
 
-    query.each_with_object({} of String => Author) do |author, output|
+    query.to_a.each_with_object({} of String => Author) do |author, output|
       output[author.zname] = author
     end
   end
 
-  def self.get_author(zname : String)
+  def self.get_author(zname : String, force = false)
     authors[zname] ||= Author.find({zname: zname}) || begin
-      return unless yield
+      return unless force
       Author.upsert!(zname)
     end
-  end
-
-  def self.get_author(zname : String)
-    get_author(zname) { false }
   end
 
   def self.get_author!(zname : String) : Author
@@ -78,8 +74,8 @@ class CV::NvinfoData
     File.info(file).modification_time.to_unix
   end
 
-  def self.print_stats(label : String)
-    puts "- [seed #{label}] <#{idx.colorize.cyan}>, \
+  def self.print_stats(label : String, index = 0)
+    puts "- [seed #{label}] <#{index.colorize.cyan}>, \
             authors: #{authors.size.colorize.cyan}, \
             nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
             nvseeds: #{Nvseed.query.count.colorize.cyan}"
@@ -126,8 +122,10 @@ class CV::NvinfoData
   end
 
   def seed!(force : Bool = false)
-    _index.data.each_key { |snvid, bindex| seed!(snvid, bindex, force: force) }
+    _index.data.each { |snvid, bindex| seed_entry!(snvid, bindex, force: force) }
   end
+
+  abstract def seed_entry!(snvid : String, bindex : Bindex, force : Bool)
 
   def update_bindex(entry, bindex : Bindex)
     entry.stime = bindex.stime
@@ -144,7 +142,7 @@ class CV::NvinfoData
   end
 
   def update_nvinfo(nvinfo : Nvinfo, entry : Ysbook | Nvseed)
-    nvinfo.set_genres(entry.bgenre.split('\t'))
+    nvinfo.set_zgenres(entry.bgenre.split('\t'))
     nvinfo.set_zintro(entry.bintro.split('\t'))
 
     nvinfo.set_covers(entry.bcover)

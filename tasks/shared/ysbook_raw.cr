@@ -37,6 +37,11 @@ class CV::YsbookRaw
   getter score = 0_f32
   getter rating : Int32 { score.*(10).round.to_i }
 
+  getter status = 0
+  getter shielded = false
+  getter shield : Int32 { shielded ? 1 : 0 }
+  # getter recom_ignore = false
+
   @[JSON::Field(key: "countWord")]
   getter words = 0_f64
   getter word_count : Int32 { (words < 100_000_000 ? words : words / 10000).round.to_i }
@@ -44,21 +49,16 @@ class CV::YsbookRaw
   @[JSON::Field(key: "commentCount")]
   getter crit_count = 0_i32
 
-  getter status = 0
-  getter shielded = false
-  getter shield : Int32 { shielded ? 1 : 0 }
-  # getter recom_ignore = false
-
-  property source = [] of Source
-
-  getter pub_link : String { source[0]?.try(&.link) || "" }
-  getter pub_name : String { extract_pub_name(pub_link) }
-
   @[JSON::Field(key: "addListCount")]
   getter list_count = 0_i32
 
   @[JSON::Field(key: "addListTotal")]
   getter list_total = 0_i32
+
+  getter pub_link : String { source[0]?.try(&.link) || "" }
+  getter pub_name : String { extract_pub_name(pub_link) }
+
+  property source = [] of Source
 
   #############
 
@@ -105,22 +105,16 @@ class CV::YsbookRaw
     property link : String
   end
 
-  class InvalidFile < Exception; end
-
-  def self.parse_file(file : String) : self
-    json = File.read(file)
-    raise InvalidFile.new(file) unless json.starts_with?("{\"success")
-    parse_json(json)
-  end
-
   alias Data = NamedTuple(bookInfo: YsbookRaw, bookSource: Array(Source))
 
-  def self.parse_json(json : String) : self
-    json = NamedTuple(data: Data).from_json(json)
-    info = json[:data][:bookInfo]
-    info.source = json[:data][:bookSource]
+  def self.parse_file(file : String)
+    text = File.read(file)
+    return unless text.starts_with?("{\"success")
 
-    info
+    json = NamedTuple(data: Data).from_json(text)
+    json[:data][:bookInfo].tap do |info|
+      info.source = json[:data][:bookSource]
+    end
   end
 end
 

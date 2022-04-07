@@ -45,8 +45,8 @@ fi
 if [[ $1 == "all" || $* == *seed* ]]
 then
   echo backup seed data!
-  rsync -aiz --no-p "$SSH/var/cvposts" "var"
-  rsync -aiz --no-p "$SSH/var/cvrepls" "var"
+  # rsync -aiz --no-p "$SSH/var/cvposts" "var"
+  # rsync -aiz --no-p "$SSH/var/cvrepls" "var"
 
   rsync -aiz --no-p "$SSH/var/nvseeds" "var"
   rsync -aiz --no-p "$SSH/var/ysbooks" "var"
