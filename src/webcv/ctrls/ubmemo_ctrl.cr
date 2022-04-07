@@ -7,30 +7,9 @@ class CV::UbmemoCtrl < CV::BaseCtrl
 
   def access
     _pgidx, limit, offset = params.page_info(min: 15, max: 30)
-
     query = Ubmemo.query.where("cvuser_id = #{_cvuser.id}")
     query = query.limit(limit).offset(offset).order_by(utime: :desc)
-
-    send_json do |jb|
-      jb.array do
-        query.with_nvinfo.each do |ubmemo|
-          jb.object {
-            jb.field "bname", ubmemo.nvinfo.vname
-            jb.field "bslug", ubmemo.nvinfo.bslug
-
-            jb.field "status", ubmemo.status_s
-            jb.field "locked", ubmemo.locked
-
-            jb.field "sname", ubmemo.lr_sname
-            jb.field "chidx", ubmemo.lr_chidx
-            jb.field "cpart", ubmemo.lr_cpart
-
-            jb.field "title", ubmemo.lc_title
-            jb.field "uslug", ubmemo.lc_uslug
-          }
-        end
-      end
-    end
+    send_json(query.with_nvinfo.map { |x| UbmemoView.new(x, true) })
   end
 
   def show : Nil
@@ -40,7 +19,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
 
     nvinfo_id = params["book_id"].to_i64
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
-    send_json { |jb| UbmemoView.render(jb, ubmemo) }
+    send_json(UbmemoView.new(ubmemo))
   end
 
   def update_access
@@ -57,7 +36,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
       params.fetch_str("uslug"),
       params["locked"]? == "true" ? 1 : 0
     )
-    send_json { |jb| UbmemoView.render(jb, ubmemo) }
+    send_json(UbmemoView.new(ubmemo))
   end
 
   def update_status
@@ -68,6 +47,6 @@ class CV::UbmemoCtrl < CV::BaseCtrl
 
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
     ubmemo.update!({status: status})
-    send_json { |jb| UbmemoView.render(jb, ubmemo) }
+    send_json(UbmemoView.new(ubmemo))
   end
 end

@@ -59,7 +59,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     send_json do |jb|
       jb.object {
         jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
-        jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
+        jb.field "ubmemo" { UbmemoView.new(ubmemo).to_json(jb) }
         jb.field "nvseed", nvseeds.map { |x| ChseedView.new(x) }
       }
     end

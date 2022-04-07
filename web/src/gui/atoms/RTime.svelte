@@ -5,7 +5,7 @@
   const month_span = day_span * 30
 
   export function get_rtime(mtime: number, rtime = new Date(mtime * 1000)) {
-    if (mtime < 100000) return 'Không rõ thời gian'
+    if (mtime < 100000) return 'Không rõ'
     const span = new Date().getTime() / 1000 - mtime // unit: seconds
 
     if (span > month_span * 3) return iso_date(rtime)

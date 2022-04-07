@@ -1,4 +1,3 @@
-require "json"
 require "../../_util/text_util"
 
 class CV::ChInfo
@@ -87,19 +86,6 @@ class CV::ChInfo
     self
   end
 
-  # def pgidx : Int32
-  #   (self.chidx - 1) // 128
-  # end
-
-  def chap_url(cpart = 0)
-    String.build do |io|
-      io << @trans.uslug << '-' << @chidx
-      if cpart != 0 && @stats.parts > 1
-        io << '.' << cpart % @stats.parts
-      end
-    end
-  end
-
   # for sname == "users" only, avoid overwrite previous uploaded entry by increase
   # last digit of schid by one
   # schid initialized by multiple chidx by 10
@@ -139,26 +125,5 @@ class CV::ChInfo
 
     @stats.to_s(io)
     @proxy.try(&.to_s(io))
-  end
-
-  def o_sname
-    @proxy.try(&.sname)
-  end
-
-  def to_json(jb : JSON::Builder)
-    {
-      chidx: @chidx,
-      schid: @schid,
-
-      title: @trans.title,
-      chvol: @trans.chvol,
-      uslug: @trans.uslug,
-
-      utime: @stats.utime,
-      chars: @stats.chars,
-      parts: @stats.parts,
-
-      o_sname: self.o_sname,
-    }.to_json(jb)
   end
 end

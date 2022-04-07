@@ -190,7 +190,7 @@ class CV::Nvseed
       infos.select! do |chap|
         next false if chap.stats.chars == 0
         next true unless prev = _repo.chinfo(chap.chidx)
-        prev.stats.utime < chap.stats.utime || prev.o_sname != "staff"
+        prev.stats.utime < chap.stats.utime
       end
     end
 

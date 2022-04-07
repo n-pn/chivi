@@ -5,12 +5,16 @@
 
   export let bslug = ''
   export let sname = ''
-  export let is_remote = false
+
+  export let total = 0
+  export let stype = 0
+  export let privi = -1
 
   export let chaps = []
   export let track: CV.Ubmemo
 
   $: same_sname = sname == track.sname
+  $: chmax = max_free(total)
 
   function is_marked(chap: CV.Chinfo) {
     return chap.chidx == track.chidx
@@ -19,10 +23,38 @@
   function track_cpart(chap: CV.Chinfo) {
     return same_sname && is_marked(chap) ? track.cpart : 0
   }
+
+  function max_free(total: number) {
+    const third = Math.round(total / 3)
+    return third < 40 ? 40 : third
+  }
+
+  function gen_view_icon(chidx: number, chmax: number): [string, string] {
+    if (stype == 0) {
+      // chivi source
+      if (chidx <= chmax) return ['world', 'Bạn đủ quyền xem chương']
+      return privi < 0
+        ? ['lock', 'Bạn cần đăng nhập để xem chương']
+        : ['unlock', 'Bạn đủ quyền xem chương']
+    }
+
+    if (stype == 1) {
+      if (privi < 0) return ['lock', 'Đăng nhập để xem chương']
+      return chidx <= chmax || privi > 0
+        ? ['unlock', 'Bạn đủ quyền xem chương']
+        : ['lock', 'Cần quyền hạn 1 để xem chương']
+    }
+
+    if (privi < 1) return ['lock', 'Cần quyền hạn 2 để xem chương']
+    return chidx <= chmax || privi > 1
+      ? ['unlock', 'Bạn đủ quyền xem chương']
+      : ['lock', 'Cần quyền hạn 2 để xem chương']
+  }
 </script>
 
 <list-grid>
   {#each chaps as chap}
+    {@const [view_icon, data_tip] = gen_view_icon(chap.chidx, chmax)}
     <list-item>
       <a
         href={chap_url(bslug, { ...chap, sname, cpart: track_cpart(chap) })}
@@ -35,12 +67,12 @@
         </div>
         <chap-meta>
           <chap-chvol>
-            {#if chap.o_sname}{chap.o_sname} - {/if}{chap.chvol}
+            {#if chap.sname}{chap.sname} - {/if}{chap.chvol}
           </chap-chvol>
           {#if chap.chars > 0}
             <chap-track
               data-tip="Lưu: {get_rtime(chap.utime)} bởi {chap.uname || '??'}">
-              <SIcon name={is_remote ? 'cloud-download' : 'device-floppy'} />
+              <SIcon name={stype > 2 ? 'cloud-download' : 'device-floppy'} />
             </chap-track>
           {/if}
 
@@ -49,6 +81,8 @@
               <SIcon name={track.locked ? 'bookmark' : 'eye'} />
             </chap-mark>
           {/if}
+
+          <chap-mark data-tip={data_tip}><SIcon name={view_icon} /></chap-mark>
         </chap-meta>
       </a>
     </list-item>

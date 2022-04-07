@@ -1,102 +1,100 @@
 <script lang="ts">
+  import { session } from '$app/stores'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+
   export let chmeta: CV.Chmeta
 
-  const pleb_seeds = ['5200', 'biqu5200', 'rengshu', 'noff']
-  const lvl0_seeds = ['hetushu', 'biqugee', 'bxwxorg', 'xbiquge', '69shu']
-  const lvl1_seeds = ['zhwenpg', 'paoshu8', 'duokan8']
-
-  function render_seeds(seeds: string[]) {
-    return seeds.map((x) => `<strong>${x}</strong>`).join(', ')
-  }
+  export let min_privi: number
+  export let chidx_max: number
 </script>
 
 <article class="notext cvdata m-article">
-  <slot name="header" />
-  <h1>Chương tiết không có nội dung.</h1>
+  {#if min_privi > $session.privi}
+    <h1>Bạn không đủ quyền hạn để xem chương.</h1>
+    {#if $session.privi < 0}
+      <p class="warn">
+        <em
+          >Bạn chưa đăng nhập, hãy bấm biểu tượng <SIcon name="user" /> bên phải
+          màn hình để đăng nhập hoặc đăng ký tài khoản mới.</em>
+      </p>
+    {:else}
+      <p>Nâng cấp quyền hạn của bạn ngay hôm nay để mở khoá các tính năng.</p>
+    {/if}
 
-  {#if chmeta.sname == 'chivi'}
-    <p>
-      Nguồn <strong>chivi</strong> được cung cấp bởi người dùng của chivi. Việc không
-      có nội dung hiếm khi xảy ra.
-    </p>
-    <p>Mời liên hệ với ban quản trị để khắc phục.</p>
-  {:else if chmeta.sname == 'zxcs_me'}
-    <p>
-      Nguồn <strong>zxcs.me</strong> được tải bằng tay từ trang
-      <a href="http://www.zxcs.me/" rel="noopener noferrer">zxcs.me</a>
-    </p>
-    <p>Có lẽ đã xảy ra lỗi khi đăng tải truyện lên hệ thống.</p>
-    <p>Mời liên hệ với ban quản trị để khắc phục</p>
-  {:else if chmeta.sname == 'shubaow'}
-    <p>
-      Nguồn <strong>shubaow</strong> cấm việc tải chương truyện từ các máy chủ.
-    </p>
-    <p>
-      Liên hệ với ban quản trị nếu bạn thực sự muốn đọc truyện từ nguồn này.
-    </p>
-    <p>Chúng tôi sẽ sắp xếp thời gian chạy công cụ để tải truyện từ máy bàn.</p>
-  {:else if pleb_seeds.includes(chmeta.sname)}
-    <p>
-      Các nguồn {@html render_seeds(pleb_seeds)} về lý thuyết là được mở ra với tất
-      cả mọi người.
-    </p>
-    <p>
-      Hãy kiểm tra từ <a href={chmeta.clink} rel="noopener noferrer"
-        >trang gốc</a> xem có phải vấn đề từ bên đó hay không.
-    </p>
-    <p>Hoặc liên hệ với ban quản trị để chúng tôi kiểm tra.</p>
-  {:else if lvl0_seeds.includes(chmeta.sname)}
-    <p>
-      Các nguồn {@html render_seeds(lvl0_seeds)} yêu cầu bạn phải đăng nhập. Kiểm
-      tra lại xem mình đã đăng nhập hay chưa.
-    </p>
-    <p>
-      Nếu không phải do vấn đề đăng nhập, hãy kiểm tra từ <a
-        href={chmeta.clink}
-        rel="noopener noferrer"
-        target="_blank">trang gốc</a> xem có phải vấn đề từ bên đó hay không.
-    </p>
-    <p>Nếu vẫn còn vấn đề, mời liên hệ với ban quản trị.</p>
-    <p />
-  {:else if lvl1_seeds.includes(chmeta.sname)}
-    <p>
-      Các nguồn {@html render_seeds(lvl0_seeds)} chỉ mở ra với các bạn donors.
-    </p>
-    <p>
-      Hãy thử nâng cấp quyền hạn của mình bằng việc ủng hộ cho trang web <a
-        href="/guide/donation">tại đây</a>
-    </p>
+    <ul>
+      <li>
+        Với nguồn <x-seed>chivi</x-seed> (<SIcon name="share" />), bạn cần phải
+        đăng nhập để xem các chương từ <code>#{chidx_max + 1}</code>.
+      </li>
+      <li>
+        Với các nguồn dạng lưu trữ (ký hiệu <SIcon name="archive" />, <SIcon
+          name="cloud-off" />) như <x-seed>zxcs_me</x-seed> hay
+        <x-seed>users</x-seed>, bạn cần đăng nhập để xem các chương từ
+        <code>#1</code>
+        tới <code>#{chidx_max}</code>, và cần quyền hạn tối thiểu là
+        <strong>1</strong>
+        để xem các chương từ <code>#{chidx_max + 1}</code> trở đi.
+      </li>
+
+      <li>
+        Với các nguồn truyện ngoài hiện còn đang sống (ký hiệu <SIcon
+          name="cloud" />), bạn cần quyền hạn tối thiểu là <strong>1</strong>
+        xem các chương từ
+        <x-chap>#1</x-chap>
+        tới <x-chap>#{chidx_max}</x-chap>, và cần quyền hạn tối thiểu là
+        <strong>2</strong>
+        để xem các chương từ <x-chap>#{chidx_max + 1}</x-chap> trở đi.
+        <p>
+          <em
+            >* Với các chương tiết đã được lưu tạm trên hệ thống (có biểu tượng <SIcon
+              name="cloud-download" />), tạm thời áp dụng các quy tắc tương tự
+            các nguồn dạng lưu trữ.
+          </em>
+        </p>
+      </li>
+    </ul>
 
     <p>
-      Nếu bạn đã là power user mà vẫn gặp lỗi, hãy thử kiểm tra <a
-        href={chmeta.clink}
-        rel="noopener noferrer"
-        target="_blank">trang gốc</a> xem có phải vấn đề từ đó không.
+      <strong
+        >Con số đặc biệt <x-chap>{chidx_max}</x-chap> được tính bằng tổng số chương
+        của nguồn truyện chia cho 3, và luôn lớn hơn 40.</strong>
     </p>
-    <p>Nếu vẫn còn vấn đề, mời liên hệ với ban quản trị.</p>
-  {:else if chmeta.sname == 'jx_la'}
-    <p>
-      Trang <strong>jx_la</strong> đã thay đổi cấu trúc trang web, cấu trúc mới rất
-      khó tải nội dung.
-    </p>
-    <p>
-      Chivi hiện tại không tiếp tục hỗ trợ <strong>jx_la</strong> nữa, chỉ giữ lại
-      chương tiết đã được lưu từ trước.
-    </p>
-    <p>Nếu không có nội dung chương, hãy đổi nguồn.</p>
+  {:else}
+    <h1>Chương tiết không có nội dung.</h1>
+
+    {#if chmeta.sname == 'users'}
+      <p>
+        Nguồn <x-seed>users</x-seed> được cung cấp bởi người dùng của Chivi.<br />
+        Không có nội dung nghĩa là có lỗi hệ thống. Hãy liên hệ ban quản trị.
+      </p>
+    {:else if chmeta.sname == 'zxcs_me'}
+      <p>
+        Nguồn <x-seed>zxcs.me</x-seed> được tải thủ công từ trang
+        <a href="http://www.zxcs.me/" rel="noopener noferrer">zxcs.me</a><br />
+        Không có nội dung nghĩa là có lỗi hệ thống. Hãy liên hệ ban quản trị.
+      </p>
+    {:else if chmeta.sname == 'shubaow'}
+      <p>
+        Nguồn <x-seed>shubaow</x-seed> không cho phép các IP server truy cập.
+      </p>
+      <p>
+        Liên hệ với ban quản trị nếu bạn thực sự muốn đọc truyện từ nguồn này.
+      </p>
+    {:else}
+      <p>
+        Bạn có quyền xem chương tiết từ nguồn này, nhưng vì lý do nào đó chương
+        tiết bị lỗi.
+      </p>
+      <p>
+        Hãy kiểm tra từ <a href={chmeta.clink} rel="noopener noferrer"
+          >trang gốc</a> xem có phải vấn đề từ bên đó hay không.
+      </p>
+      <p>
+        Nếu vấn đề thuộc về bên Chivi, hãy liên hệ với ban quản trị để khắc
+        phục.
+      </p>
+    {/if}
   {/if}
-
-  <p>
-    <strong
-      >Trang web hỗ trợ việc xem chương tiết từ nhiều nguồn, hãy thử thay đổi
-      nguồn nếu có thể.</strong>
-  </p>
-  <p>
-    <em>
-      Lưu ý: Hiện nay thì mọi người đều xem được các chương tiết đã được lưu trữ
-      trên server, nhưng điều này có thể thay đổi trong tương lai!
-    </em>
-  </p>
 </article>
 
 <style lang="scss">
@@ -132,5 +130,28 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  .warn {
+    @include fgcolor(warning, 5);
+    margin-bottom: 1.5rem;
+  }
+
+  x-seed {
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: 500;
+    line-height: 1rem;
+    padding: 0.125rem 0.25rem;
+    @include ftsize(xs);
+    @include fgcolor(primary, 5);
+    @include bgcolor(primary, 5, 1);
+    @include border(primary, 5);
+    @include bdradi();
+  }
+
+  x-chap {
+    @include fgcolor(primary, 5);
+    font-weight: 500;
   }
 </style>

@@ -37,8 +37,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
         total: total,
         pgidx: pgidx,
         pgmax: CtrlUtil.pgmax(total, 32),
-        lasts: nvseed.lastpg.to_a,
-        chaps: nvseed.chpage(pgidx - 1).to_a,
+        lasts: nvseed.lastpg.to_a.map { |x| ChinfoView.new(x) },
+        chaps: nvseed.chpage(pgidx - 1).map { |x| ChinfoView.new(x) },
       },
     })
   end
@@ -62,32 +62,19 @@ class CV::NvchapCtrl < CV::BaseCtrl
     nvseed = load_nvseed
     return text_not_found! unless chinfo = nvseed.chinfo(chidx - 1)
 
-    mode = !remote_chap?(nvseed, chinfo) ? 0 : params["redo"]? ? 2 : 1
-    lines = nvseed.chtext(chinfo, cpart, mode: mode, uname: _cvuser.uname)
-
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvseed.nvinfo_id)
-    if _cvuser.privi > -1
-      trans = chinfo.trans
-      ubmemo.mark!(nvseed.sname, chidx, cpart, trans.title, trans.uslug)
-    end
+    ubmemo.mark_chap!(chinfo, nvseed.sname, cpart) if _cvuser.privi > -1
+
+    lines, min_privi, chidx_max = load_text(nvseed, chinfo, cpart, params["redo"]? == "true")
 
     send_json do |jb|
       jb.object {
-        jb.field "chmeta" {
-          jb.object {
-            jb.field "sname", nvseed.sname
-            jb.field "total", nvseed.chap_count
+        jb.field "chmeta" { ChmetaView.new(nvseed, chinfo, cpart).to_json(jb) }
+        jb.field "chinfo" { ChinfoView.new(chinfo).to_json(jb) }
+        jb.field "ubmemo" { UbmemoView.new(ubmemo).to_json(jb) }
 
-            jb.field "cpart", cpart
-            jb.field "clink", nvseed.clink(chinfo.schid)
-
-            jb.field "_prev", cpart == 0 ? nvseed.chap_url(chidx - 1, -1) : chinfo.chap_url(cpart - 1)
-            jb.field "_next", cpart + 1 < chinfo.stats.parts ? chinfo.chap_url(cpart + 1) : nvseed.chap_url(chidx + 1)
-          }
-        }
-
-        jb.field "chinfo" { chinfo.to_json(jb) }
-        jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
+        jb.field "min_privi", min_privi
+        jb.field "chidx_max", chidx_max
 
         jb.field "zhtext", lines
 
@@ -103,14 +90,21 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  private def remote_chap?(nvseed : Nvseed, chinfo : ChInfo)
+  private def load_text(nvseed : Nvseed, chinfo : ChInfo, cpart = 0, redo = false)
     sname = chinfo.proxy.try(&.sname) || nvseed.sname
+    stype = SnameMap.map_type(sname)
 
-    SnameMap.remote?(sname, _cvuser.privi) do
-      chidx = chinfo.chidx
-      count = nvseed.chap_count
-      chidx >= count - 8 || chidx <= 40 || chidx <= count // 3
-    end
+    # lower privi requirement if chapter < 1/3 total chap
+    chidx_max = nvseed.chap_count // 3
+    chidx_max = 40 if chidx_max < 40
+
+    min_privi = nvseed.zseed == 0 ? -1 : (stype < 3 || chinfo.stats.chars > 0 ? 0 : 1)
+    min_privi &+= chinfo.chidx > chidx_max ? 1 : 0
+
+    mode = stype < 3 ? 0 : (redo ? 2 : 1)
+    lines = _cvuser.privi < min_privi ? [] of String : nvseed.chtext(chinfo, cpart, mode: mode)
+
+    {lines, min_privi, chidx_max}
   end
 
   def zh_text
@@ -142,7 +136,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     set_cache :private, maxage: 5 - _cvuser.privi
     set_headers content_type: :text
 
-    lines = nvseed.chtext(chinfo, cpart, mode: 0, uname: _cvuser.uname)
+    lines, _, _ = load_text(nvseed, chinfo, cpart)
     convert(nvseed, chinfo, lines, cpart, response)
   end
 

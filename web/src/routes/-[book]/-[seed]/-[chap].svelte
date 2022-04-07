@@ -58,6 +58,9 @@
   export let zhtext: string[]
   export let cvdata: string
 
+  export let min_privi = -1
+  export let chidx_max = 0
+
   const on_change = () => reload_chap(false)
 
   $: paths = gen_paths(nvinfo, chmeta, chinfo)
@@ -130,7 +133,7 @@
 
 <ChapSeed {chmeta} {chinfo} />
 
-{#if cvdata}
+{#if cvdata && $session.privi >= min_privi}
   <CvPage
     {cvdata}
     {zhtext}
@@ -146,7 +149,7 @@
     </svelte:fragment>
   </CvPage>
 {:else}
-  <Notext {chmeta} />
+  <Notext {chmeta} {min_privi} {chidx_max} />
 {/if}
 
 <Footer>

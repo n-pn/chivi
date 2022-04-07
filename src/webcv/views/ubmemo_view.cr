@@ -1,20 +1,30 @@
-require "json"
+require "./_base_view"
 
-module CV::UbmemoView
-  def self.render(jb : JSON::Builder, obj : Ubmemo)
+struct CV::UbmemoView
+  include BaseView
+
+  def initialize(@data : Ubmemo, @full = false)
+  end
+
+  def to_json(jb : JSON::Builder)
     jb.object do
-      jb.field "status", obj.status_s
-      jb.field "locked", obj.locked
+      if @full
+        jb.field "bname", @data.nvinfo.vname
+        jb.field "bslug", @data.nvinfo.bslug
+      end
 
-      jb.field "atime", obj.atime
-      jb.field "utime", obj.utime
+      jb.field "status", @data.status_s
+      jb.field "locked", @data.locked
 
-      jb.field "sname", obj.lr_sname
-      jb.field "chidx", obj.lr_chidx
-      jb.field "cpart", obj.lr_cpart
+      jb.field "atime", @data.atime
+      jb.field "utime", @data.utime
 
-      jb.field "title", obj.lc_title
-      jb.field "uslug", obj.lc_uslug
+      jb.field "sname", @data.lr_sname
+      jb.field "chidx", @data.lr_chidx
+      jb.field "cpart", @data.lr_cpart
+
+      jb.field "title", @data.lc_title
+      jb.field "uslug", @data.lc_uslug
     end
   end
 end

@@ -104,13 +104,23 @@
     </info-left>
 
     <info-right>
+      <button
+        class="m-btn _primary umami--click--chaps-force-update"
+        disabled={$session.privi < 1}
+        data-tip="Yêu cầu quyền hạn: Đăng nhập"
+        on:click={force_update}>
+        <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
+        <span class="-hide">Đổi mới</span>
+      </button>
+
       {#if chseed.sname == 'chivi' || chseed.sname == 'users'}
         <a
           class="m-btn"
           class:_disable={$session.privi < 2}
-          href="/-{nvinfo.bslug}/+chap?chidx={chpage.total + 1}">
-          <SIcon name="circle-plus" />
-          <span class="-hide">Thêm</span>
+          href="/-{nvinfo.bslug}/+chap?chidx={chpage.total + 1}"
+          data-tip="Yêu cầu quyền hạn: 2">
+          <SIcon name={$session.privi < 2 ? 'lock' : 'circle-plus'} />
+          <span class="-hide">Thêm chương</span>
         </a>
       {:else}
         <a
@@ -119,17 +129,9 @@
           target="_blank"
           rel="external noopener noreferer">
           <SIcon name="external-link" />
-          <span class="-hide">Nguồn</span>
+          <span class="-hide">Liên kết ngoài</span>
         </a>
       {/if}
-
-      <button
-        class="m-btn _primary umami--click--chaps-force-update"
-        disabled={$session.privi < 1}
-        on:click={force_update}>
-        <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
-        <span class="-hide">Đổi mới</span>
-      </button>
     </info-right>
 
     {#if _error}<div class="error">{_error}</div>{/if}
@@ -141,8 +143,10 @@
         bslug={nvinfo.bslug}
         sname={chseed.sname}
         chaps={chpage.lasts}
+        total={chpage.total}
         track={ubmemo}
-        is_remote={chseed.stype > 2} />
+        privi={$session.privi}
+        stype={chseed.stype} />
 
       <div class="chlist-sep" />
 
@@ -150,8 +154,10 @@
         bslug={nvinfo.bslug}
         sname={chseed.sname}
         chaps={chpage.chaps}
+        total={chpage.total}
         track={ubmemo}
-        is_remote={chseed.stype > 2} />
+        privi={$session.privi}
+        stype={chseed.stype} />
 
       <Footer>
         <div class="foot">

@@ -106,13 +106,13 @@ $-colors: (primary, success, warning, harmful, private);
     @include hover { cursor: text; }
   }
 
-  > .m-icon {
+   .m-icon, .-ico {
     display: block;
     --icon-size: var(--innerh, 1.25em);
   }
 
   > span,
-  > .-txt {
+   .-txt {
     margin: 0 calc(var(--gutter) * 0.5);
   }
 }
