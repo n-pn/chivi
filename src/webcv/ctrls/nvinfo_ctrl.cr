@@ -107,7 +107,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     nvinfo = Nvinfo.upsert!(author, btitle_zname)
 
     params["bintro"]?.try { |x| nvinfo.set_zintro(TextUtil.split_text(x), true) }
-    params["genres"]?.try { |x| nvinfo.set_zgenre(x.split(' ').map(&.strip), true) }
+    params["genres"]?.try { |x| nvinfo.set_zgenres(x.split(' ').map(&.strip), true) }
 
     params["bcover"]?.try { |x| nvinfo.set_bcover(x, force: true) }
     params["status"]?.try { |x| nvinfo.set_status(x.to_i, force: true) }

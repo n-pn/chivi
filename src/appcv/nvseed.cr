@@ -276,7 +276,7 @@ class CV::Nvseed
     case zseed
     when  0 then init!(nvinfo, "chivi").tap(&.remap!(fetch: false))
     when 63 then init!(nvinfo, "users")
-    else         raise "Source not found!"
+    else         raise "Source #{zseed} not found!"
     end
   end
 
