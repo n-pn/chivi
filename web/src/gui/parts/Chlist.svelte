@@ -29,32 +29,15 @@
     return third < 40 ? 40 : third
   }
 
-  function gen_view_icon(chidx: number, chmax: number): [string, string] {
-    if (stype == 0) {
-      // chivi source
-      if (chidx <= chmax) return ['world', 'Bạn đủ quyền xem chương']
-      return privi < 0
-        ? ['lock', 'Bạn cần đăng nhập để xem chương']
-        : ['unlock', 'Bạn đủ quyền xem chương']
-    }
-
-    if (stype == 1) {
-      if (privi < 0) return ['lock', 'Đăng nhập để xem chương']
-      return chidx <= chmax || privi > 0
-        ? ['unlock', 'Bạn đủ quyền xem chương']
-        : ['lock', 'Cần quyền hạn 1 để xem chương']
-    }
-
-    if (privi < 1) return ['lock', 'Cần quyền hạn 2 để xem chương']
-    return chidx <= chmax || privi > 1
-      ? ['unlock', 'Bạn đủ quyền xem chương']
-      : ['lock', 'Cần quyền hạn 2 để xem chương']
+  function check_privi(chap: CV.Chinfo, chmax = 1): number {
+    let min_privi = stype == 0 ? -1 : stype < 3 || chap.chars > 0 ? 0 : 1
+    return min_privi + (chap.chidx > chmax ? 1 : 0)
   }
 </script>
 
 <list-grid>
   {#each chaps as chap}
-    {@const [view_icon, data_tip] = gen_view_icon(chap.chidx, chmax)}
+    {@const min_privi = check_privi(chap, chmax)}
     <list-item>
       <a
         href={chap_url(bslug, { ...chap, sname, cpart: track_cpart(chap) })}
@@ -82,7 +65,17 @@
             </chap-mark>
           {/if}
 
-          <chap-mark data-tip={data_tip}><SIcon name={view_icon} /></chap-mark>
+          {#if privi >= min_privi}
+            {#if min_privi > -1}<chap-mark data-tip="Bạn đủ quyền xem chương"
+                ><SIcon name="lock-open" /></chap-mark>
+            {/if}
+          {:else}
+            <chap-mark
+              data-tip={min_privi > 0
+                ? `Cần quyền hạn ${min_privi} để xem chương`
+                : 'Bạn cần đăng nhập để xem chương'}
+              ><SIcon name="lock" /></chap-mark>
+          {/if}
         </chap-meta>
       </a>
     </list-item>
