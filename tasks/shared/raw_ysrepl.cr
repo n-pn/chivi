@@ -1,5 +1,5 @@
 require "json"
-require "./seed_util"
+require "./bootstrap"
 
 class CV::RawYsrepl
   class User
@@ -35,7 +35,7 @@ class CV::RawYsrepl
   @[JSON::Field(key: "createdAt")]
   getter created_at : Time
 
-  def seed!(bumped : Int64 = Time.utc.to_unix)
+  def seed!(stime : Int64 = Time.utc.to_unix)
     if self.ztext == "请登录查看评论内容"
       return unless repl = Ysrepl.find({id: self.id})
     else
@@ -43,7 +43,7 @@ class CV::RawYsrepl
     end
 
     return unless yscrit = Yscrit.find({origin_id: self.yscrit_id})
-    ysuser = Ysuser.get!(self.user.name)
+    ysuser = Ysuser.upsert!(self.user.name)
 
     repl.ysuser = ysuser
     repl.yscrit = yscrit
@@ -51,9 +51,9 @@ class CV::RawYsrepl
     repl.origin_id = self._id
 
     repl.ztext = self.ztext
-    repl.vhtml = vhtml(yscrit.nvinfo.bhash)
+    repl.vhtml = self.vhtml(yscrit.nvinfo.dname)
 
-    repl.bumped = bumped
+    repl.stime = stime
 
     repl.like_count = self.like_count
     repl.repl_count = self.repl_count
@@ -63,13 +63,11 @@ class CV::RawYsrepl
     puts err.inspect_with_backtrace.colorize.red
   end
 
-  def vhtml(book : String)
+  def vhtml(dname : String)
     lines = self.ztext.split("\n").map(&.strip).reject(&.empty?)
-    cvmtl = MtCore.generic_mtl(book)
+    cvmtl = MtCore.generic_mtl(dname)
 
-    lines.map do |line|
-      "<p>#{cvmtl.cv_plain(line)}</p>"
-    end.join("\n")
+    lines.map { |line| "<p>#{cvmtl.cv_plain(line)}</p>" }.join("\n")
   end
 
   alias Data = NamedTuple(total: Int32, commentReply: Array(RawYsrepl))

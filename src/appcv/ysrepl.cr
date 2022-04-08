@@ -3,16 +3,15 @@ class CV::Ysrepl
 
   self.table = "ysrepls"
   primary_key
+  column origin_id : String
 
   belongs_to ysuser : Ysuser
   belongs_to yscrit : Yscrit
 
-  column origin_id : String
-
   column ztext : String = "" # orginal comment
   column vhtml : String = "" # translated comment
 
-  column bumped : Int64 = 0 # list checked at by minutes from epoch
+  column stime : Int64 = 0 # list checked at by minutes from epoch
 
   column like_count : Int32 = 0
   column repl_count : Int32 = 0 # reply count, optional

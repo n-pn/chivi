@@ -1,10 +1,10 @@
-require "./shared/seed_util"
-require "./shared/raw_ysrepl"
+require "../shared/raw_ysrepl"
 
 class CV::SeedYsrepl
   def seed_file!(file : String)
     _total, repls = RawYsrepl.parse_raw(File.read(file))
-    repls.each(&.seed!)
+    stime = File.info(file).modification_time.to_unix
+    repls.each(&.seed!(stime))
   end
 
   DIR = "_db/yousuu/repls"
