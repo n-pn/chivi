@@ -66,11 +66,26 @@ class CV::ZhwenpgSeed
   end
 
   def seed!
-    # TODO
-    # @seed.seed_all!(only_cached: false)
+    NvinfoData.print_stats("yousuu")
+    @seed.seed!(force: force, index: index)
   end
 end
 
-worker = CV::ZhwenpgSeed.new
-worker.init! if ARGV.includes?("init")
-worker.seed! if ARGV.includes?("seed")
+init = 0
+seed = 1
+
+OptionParser.parse(argv) do |parser|
+  parser.banner = "Usage: zhwenpg_seed [arguments]"
+  parser.on("-i INIT", "Init mode: 0 => skip, 1 => only updated, 2 => reinit all") { |x| init = x.to_i }
+  parser.on("-s SEED", "Seed mode: 0 => skip, 1 => only updated, 2 => reseed all") { |x| seed = x.to_i }
+
+  parser.invalid_option do |flag|
+    STDERR.puts "ERROR: `#{flag}` is not a valid option."
+    STDERR.puts parser
+    exit(1)
+  end
+end
+
+task = CV::ZhwenpgSeed.new
+task.init!(redo: init == 2) if init > 0
+task.seed!(force: seed == 2) if seed > 0

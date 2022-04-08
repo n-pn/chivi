@@ -136,7 +136,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     set_cache :private, maxage: 5 - _cvuser.privi
     set_headers content_type: :text
 
-    lines, _, _ = load_text(nvseed, chinfo, cpart)
+    lines = load_text(nvseed, chinfo, cpart).first
     convert(nvseed, chinfo, lines, cpart, response)
   end
 

@@ -11,13 +11,13 @@ PROXY_SSH="$SSH_DIR/_proxy"
 
 if [[ $1 == "all" || $* == *proxy* ]]
 then
-  echo upload proxies!
+  rsync -azui --no-p "$DIR/limit.txt" $SSH_DIR
 
   rsync -azui --no-p "$PROXY_DIR/awmproxy.com.txt" $PROXY_SSH
   rsync -azui --no-p "$PROXY_DIR/openproxy.space.txt" $PROXY_SSH
   rsync -azui --no-p "$PROXY_DIR/proxyscrape.com.txt" $PROXY_SSH
 
-  rsync -azui --no-p "$PROXY_DIR/.works" $PROXY_SSH
+  # rsync -azui --no-p "$PROXY_DIR/.works" $PROXY_SSH
 fi
 
 if [[ $1 == "all" || $* == *infos* ]]

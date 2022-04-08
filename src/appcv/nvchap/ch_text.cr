@@ -8,18 +8,18 @@ require "./ch_info"
 require "./ch_util"
 
 class CV::ChText
-  VPDIR = "var/chtexts"
+  DIR = "var/chtexts"
 
   getter chinfo : ChInfo
 
   def initialize(@sname : String, @snvid : String, @chinfo)
     if proxy = @chinfo.proxy
-      dir = "#{VPDIR}/#{proxy.sname}/#{proxy.snvid}"
+      dir = "#{DIR}/#{proxy.sname}/#{proxy.snvid}"
       pgidx = (proxy.chidx - 1) // 128
 
       @c_key = "#{proxy.sname}/#{proxy.snvid}/#{proxy.chidx}"
     else
-      dir = "#{VPDIR}/#{sname}/#{snvid}"
+      dir = "#{DIR}/#{sname}/#{snvid}"
       pgidx = (@chinfo.chidx - 1) // 128
 
       @c_key = "#{@sname}/#{@snvid}/#{@chinfo.chidx}"
@@ -36,6 +36,12 @@ class CV::ChText
 
   def load!(part = 0) : Data
     TEXTS.get("#{@c_key}/#{part}") do
+      unless File.exists?(@store)
+        remote_path = @store.sub(/^var/, "s3://chivi-bak")
+        `aws s3 cp #{remote_path} #{@store}`
+        return EMPTY unless $?.success?
+      end
+
       Compress::Zip::File.open(@store) do |zip|
         if entry = zip[part_path(part)]?
           lines = entry.open(&.gets_to_end).split('\n')

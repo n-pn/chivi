@@ -4,7 +4,6 @@ require "../shared/bootstrap"
 class CV::FetchText
   DIR = "var/chtexts/chivi"
 
-  @snvid : String
   @queue = [] of ChInfo
 
   def initialize(@nvinfo : Nvinfo)
