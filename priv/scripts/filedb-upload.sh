@@ -32,9 +32,9 @@ then
   rsync -azi --no-p "var/qttexts" "$ssh/var"
   rsync -azi --no-p "var/tlspecs" "$ssh/var"
 
-  rsync -azi --no-p "var/nvseeds" "$ssh/var"
-  rsync -azi --no-p "var/ysbooks" "$ssh/var"
-  rsync -azi --no-p "var/yscrits" "$ssh/var"
+  rsync -azi --no-p "var/zhinfos" "$ssh/var"
+  rsync -azi --no-p "var/ysinfos/ysbooks" "$ssh/var/ysinfos"
+  rsync -azi --no-p "var/ysinfos/yscrits" "$ssh/var/ysinfos"
 
   rsync -azi --no-p --exclude="*.zip" "var/chtexts/" "$ssh/var/chtexts/"
 fi
@@ -45,10 +45,7 @@ then
   # rsync -azi --no-p "var/vpdicts" "$ssh/var"
 
   rsync -azi --no-p "var/_common" "$ssh/var"
+  rsync -azi --no-p "var/zhinfos" "$ssh/var"
 
   # rsync -azi --no-p "priv/static/covers/" "$ssh/priv/static/covers/"
-  # rsync -azi --no-p --delete  "config/environments" "$ssh/config"
-  # rsync -azi --no-p --delete "db/migrations" "$ssh/db"
-  # rsync -azi --no-p --delete "src" "$ssh"
-  # rsync -azi --no-p --delete "tasks" "$ssh"
 fi

@@ -25,3 +25,13 @@ then
   rsync -aiz --no-p bin/ysbook_seed $SSH/bin
   rsync -azi --no-p "var/ysbooks" "$SSH/var"
 fi
+
+if [[ $1 == "all" || $1 == "ysrepl" ]]
+then
+  echo push ysrepl seed!
+
+  crystal build --release tasks/pgdata/ysrepl_seed.cr -o bin/ysrepl_seed
+
+  rsync -aiz --no-p bin/ysrepl_seed $SSH/bin
+  # rsync -azi --no-p "var/ysrepls" "$SSH/var"
+fi

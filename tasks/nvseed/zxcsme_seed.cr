@@ -4,7 +4,7 @@ require "myhtml"
 
 require "../../src/_util/http_util"
 require "../../src/_util/file_util"
-require "./init_nvinfo"
+require "../shared/nvseed_data"
 
 class CV::ZxcsmeParser
   def initialize(@snvid : String, gz_file : String)
@@ -67,9 +67,11 @@ class CV::ZxcsmeParser
     genres.tap(&.shift?)
   end
 
-  getter status : {Int32, String} do
-    author.ends_with?("【断更】") ? {2, "【断更】"} : {1, ""}
-  end
+  getter status_str : String { author.ends_with?("【断更】") ? "2" : "1" }
+  getter status_int : Int32 { status_str.to_i }
+
+  property update_str = ""
+  property update_int = 0_i64
 end
 
 class CV::ZxcsmeJson
@@ -80,127 +82,105 @@ class CV::ZxcsmeJson
 
   property genres : Array(String)
   property bintro : Array(String)
-  property bcover : String?
+  property bcover : String = ""
+
+  getter status_str : String { author.ends_with?("【断更】") ? "2" : "1" }
+  getter status_int : Int32 { status_str.to_i }
+
+  property update_str = ""
+  property update_int = 0_i64
 end
 
-class CV::SeedZxcsme
+module CV::SeedZxcsme
+  extend self
+
   INP_DIR = "_db/.cache/zxcs_me/infos"
   TXT_DIR = "var/chtexts/zxcs_me"
 
-  getter snvids : Array(String)
-  @seed = InitNvinfo.new("zxcs_me")
+  OUT_DIR = "var/zhinfos/zxcs_me"
+  MFTIMES = Tabkv(Int64).new("#{OUT_DIR}/utimes.tsv")
 
-  def initialize
-    @snvids = Dir.glob("#{TXT_DIR}/_/*.tsv").map { |x| File.basename(x, ".tsv") }
-    @snvids.sort_by!(&.to_i)
+  PREVS = Hash(String, ZxcsmeJson).from_json(File.read("#{OUT_DIR}/prevs.json"))
+  STIME = Time.utc(2019, 1, 1).to_unix
 
-    puts "[INPUT: #{@snvids.size} entries]"
-  end
+  CACHE = {} of Int32 => NvseedData
 
-  def prep!
-    @snvids.reverse.each_with_index(1) do |snvid, idx|
-      link = "http://www.zxcs.me/post/#{snvid}"
-      file = File.join(INP_DIR, "#{snvid}.html.gz")
-
-      next if File.exists?(file)
-      HttpUtil.load_html(link, file, lbl: "#{idx}/#{@snvids.size}")
-    rescue err
-      puts err.colorize.red
-    end
+  def load_seed(group : Int32)
+    CACHE[group] ||= NvseedData.new("zxcs_me", "#{OUT_DIR}/#{group}")
   end
 
   def init!(redo = false)
-    @snvids.each_with_index(1) do |snvid, idx|
+    input = Dir.glob("#{TXT_DIR}/_/*.tsv").map { |x| File.basename(x, ".tsv") }
+    puts "[INPUT: #{input.size} entries]"
+
+    input.sort_by!(&.to_i).each_with_index(1) do |snvid, idx|
+      link = "http://www.zxcs.me/post/#{snvid}"
+      puts "\n- <#{link}>".colorize.cyan
+
       file = File.join(INP_DIR, "#{snvid}.html.gz")
-
-      next unless atime = FileUtil.mtime_int(file)
-      next unless redo || @seed.get_map(:_index, snvid).ival_64(snvid) < atime
-
-      puts "\n- <http://www.zxcs.me/post/#{snvid}>".colorize.cyan
-      parser = ZxcsmeParser.new(snvid, file)
-
-      @seed.set_val!(:extras, snvid, read_chsize(snvid))
-      @seed.add!(parser, snvid, atime: atime)
-
-      if idx % 100 == 0
-        puts "- [zxcs.me]: <#{idx}/#{@snvids.size}>"
-        @seed.save_stores!
-      end
-    rescue err
-      puts snvid, err.inspect_with_backtrace
-    end
-
-    @seed.save_stores!
-  end
-
-  def read_chsize(snvid : String) : Array(String)
-    files = Dir.glob("#{TXT_DIR}/#{snvid}/*.tsv")
-    return ["0", ""] if files.empty?
-
-    flast = files.sort_by { |x| File.basename(x, ".tsv").to_i }.last
-
-    lines = File.read_lines(flast).reject(&.blank?)
-    last_chap = lines[-1].split('\t', 2)[0]
-
-    [last_chap, last_chap]
-  end
-
-  PREV_FILE = "var/nvseeds/zxcs_me/prevs.json"
-
-  # copy missing data (due to 404) from older data
-  def inherit!(redo = false)
-    atime = Time.utc(2019, 1, 1).to_unix.to_s
-
-    inputs = Hash(String, ZxcsmeJson).from_json File.read(PREV_FILE)
-    inputs.each do |snvid, input|
-      next if !redo && @seed.get_map(:_index, snvid).get(snvid)
-
-      puts " - <#{snvid}> [#{input.btitle} #{input.author}]"
-
-      @seed.set_val!(:_index, snvid, [atime, input.btitle, input.author])
-
-      @seed.set_val!(:intros, snvid, input.bintro)
-      @seed.set_val!(:genres, snvid, input.genres)
-      @seed.set_val!(:covers, snvid, input.bcover)
-
-      status = input.author.ends_with?("【断更】") ? 2 : 1
-      @seed.set_val!(:status, snvid, status.to_s)
-
-      @seed.set_val!(:extras, snvid, read_chsize(snvid))
-
-      scores = [Random.rand(30..100), Random.rand(50..65)]
-      @seed.set_val!(:rating, snvid, scores.map(&.to_s))
-    end
-
-    @seed.save_stores!
-  end
-
-  def fix_authors!
-    @seed.each_index do |rtitle, author|
-      next if author.ends_with?("【断更】") # resolved
-      next unless author =~ /[\(\[（【]/
-
-      if fix_author = BookUtil.zh_authors.fval_alt("#{author}  #{rtitle}", author)
-        puts "#{author} => #{fix_author}".colorize.green
-        next
+      unless File.exists?(file)
+        HttpUtil.load_html(link, file, lbl: "#{idx}/#{input.size}")
       end
 
-      puts [rtitle, author].join('\t').colorize.red
-    end
-  end
-
-  def fix_btitles!
-    @seed.each_index do |rtitle, author|
-      next unless rtitle =~ /[\(\[（【]/
-      author = BookUtil.fix_name(:author, "#{author}  #{rtitle}", author)
-
-      if ztitle = BookUtil.zh_btitles.fval_alt("#{rtitle}  #{author}", rtitle)
-        puts "#{rtitle} => #{ztitle}".colorize.green
+      if stime = FileUtil.mtime(file).try(&.to_unix)
+        entry = ZxcsmeParser.new(snvid, file)
       else
-        fix_btitle!(rtitle, author)
+        next unless entry = PREVS[snvid]?
+        stime = STIME
       end
+
+      output = load_seed(snvid.to_i // 1000)
+      if bindex = output._index[snvid]?
+        next unless redo || bindex.stime < stime
+      end
+
+      entry.update_int = MFTIMES[snvid]? || 0_i64
+      output.add!(entry, snvid, stime: stime)
+    rescue err
+      puts err.colorize.red
     end
+
+    CACHE.each_value(&.save!(clean: true))
   end
+
+  # def read_chsize(snvid : String) : Array(String)
+  #   files = Dir.glob("#{TXT_DIR}/#{snvid}/*.tsv")
+  #   return ["0", ""] if files.empty?
+
+  #   flast = files.sort_by { |x| File.basename(x, ".tsv").to_i }.last
+
+  #   lines = File.read_lines(flast).reject(&.blank?)
+  #   last_chap = lines[-1].split('\t', 2)[0]
+
+  #   [last_chap, last_chap]
+  # end
+
+  # def fix_authors!
+  #   @seed.each_index do |rtitle, author|
+  #     next if author.ends_with?("【断更】") # resolved
+  #     next unless author =~ /[\(\[（【]/
+
+  #     if fix_author = BookUtil.zh_authors.fval_alt("#{author}  #{rtitle}", author)
+  #       puts "#{author} => #{fix_author}".colorize.green
+  #       next
+  #     end
+
+  #     puts [rtitle, author].join('\t').colorize.red
+  #   end
+  # end
+
+  # def fix_btitles!
+  #   @seed.each_index do |rtitle, author|
+  #     next unless rtitle =~ /[\(\[（【]/
+  #     author = BookUtil.fix_name(:author, "#{author}  #{rtitle}", author)
+
+  #     if ztitle = BookUtil.zh_btitles.fval_alt("#{rtitle}  #{author}", rtitle)
+  #       puts "#{rtitle} => #{ztitle}".colorize.green
+  #     else
+  #       fix_btitle!(rtitle, author)
+  #     end
+  #   end
+  # end
 
   def fix_btitle!(rtitle : String, author : String)
     _, title1, title2 = rtitle.match(/^(.+)[\(\[（【](.+)[）】\)\]]$/).not_nil!
@@ -223,23 +203,18 @@ class CV::SeedZxcsme
     BookUtil.zh_btitles.save!
   end
 
-  def seed!
-    @seed.seed_all!(false)
-  end
-
   private def gen_ys_title_search(title : String)
     "https://www.yousuu.com/search/?search_type=title&search_value=#{title}"
   end
+
+  def seed!
+    puts "TODO!"
+  end
+
+  def run!(argv = ARGV)
+    init!
+    seed!
+  end
 end
 
-worker = CV::SeedZxcsme.new
-worker.prep! if ARGV.includes?("prep")
-worker.init!
-worker.inherit!
-
-if ARGV.includes?("fixes")
-  worker.fix_authors!
-  worker.fix_btitles!
-end
-
-worker.seed!
+CV::SeedZxcsme.run!

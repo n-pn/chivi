@@ -2,20 +2,6 @@ require "./nvinfo_data"
 require "./raw_ysbook"
 
 module CV
-  record Rating, voters : Int32, rating : Int32 do
-    def self.rand
-      {Random.rand(25..50), Random.rand(40..50)}
-    end
-
-    def self.from_tsv(rows : Array(String))
-      new(rows[0].to_i, rows[1].to_i)
-    end
-
-    def to_tsv
-      "#{@voters}\t#{@rating}"
-    end
-  end
-
   record Ystats, word_count : Int32, crit_count : Int32, list_count : Int32 do
     def self.from_tsv(rows : Array(String))
       new(rows[0].to_i, rows[1].to_i, rows[2].to_i)
@@ -57,11 +43,6 @@ class CV::YsbookData < CV::NvinfoData
     @rating.try(&.save!(clean: clean))
     @origin.try(&.save!(clean: clean))
     @ystats.try(&.save!(clean: clean))
-  end
-
-  def seed!(force : Bool = false, index : Int32 = 1)
-    super(force: force)
-    NvinfoData.print_stats("yousuu", index: index)
   end
 
   def seed_entry!(snvid : String, bindex : Bindex, force : Bool = false)

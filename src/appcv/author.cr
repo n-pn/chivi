@@ -29,6 +29,11 @@ class CV::Author
     update!(_sort: _sort) if _sort > self._sort
   end
 
+  def fix_name!
+    self.vname = BookUtil.author_vname(self.zname)
+    self.vslug = BookUtil.make_slug(self.vname)
+  end
+
   ####################
 
   def self.glob(qs : String)

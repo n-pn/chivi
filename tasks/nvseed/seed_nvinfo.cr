@@ -1,7 +1,7 @@
 require "./nvinfo_data"
 
 class CV::SeedNvinfo
-  DIR = "var/nvinfos"
+  DIR = "var/zhinfos"
 
   ###########
 

@@ -32,7 +32,7 @@ class CV::ZhwenpgSeed
   DIR = "_db/.cache/zhwenpg/pages"
   # ::FileUtils.mkdir_p(DIR)
 
-  @seed = NvinfoData.new("var/nvinfos/zhwenpg/0")
+  @seed = NvinfoData.new("var/zhinfos/zhwenpg/0")
   @done = Set(String).new
 
   def init!(pages = 1, status = 0)

@@ -6,7 +6,7 @@ def rename_seed(from source : String, to target : String)
     "_db/bcover/#{source}",
     "_db/nvseed/#{source}",
     "var/chtexts/#{source}",
-    "var/nvinfos/autos/#{source}",
+    "var/zhinfos/#{source}",
   }
 
   dirs.each do |dir|

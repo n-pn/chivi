@@ -48,9 +48,8 @@ then
   # rsync -aiz --no-p "$SSH/var/cvposts" "var"
   # rsync -aiz --no-p "$SSH/var/cvrepls" "var"
 
-  rsync -aiz --no-p "$SSH/var/nvseeds" "var"
-  rsync -aiz --no-p "$SSH/var/ysbooks" "var"
-  rsync -aiz --no-p "$SSH/var/yscrits" "var"
+  rsync -aiz --no-p "$SSH/var/zhinfos" "var"
+  rsync -aiz --no-p "$SSH/var/ysinfos" "var"
 fi
 
 ## backup pg_data

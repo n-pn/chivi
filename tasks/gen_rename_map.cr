@@ -1,16 +1,11 @@
-DIR = "var/nvinfos/autos"
+DIR = "var/zhinfos"
 
 require "../src/appcv/shared/book_util"
 
 record Bname, btitle : String, author : String
 
 def load_index(sname : String)
-  index_dir = File.join(DIR, sname, "_index")
-  if File.exists?(index_dir)
-    input = File.glob("#{index_dir}/*.tsv")
-  else
-    input = [index_dir + ".tsv"]
-  end
+  input = File.glob("#{DIR}/#{sname}/*/_index.tsv")
 
   output = [] of Bname
   input.each do |file|
@@ -31,10 +26,10 @@ end
 
 changed = Set(Bname).new
 
-Dir.children(DIR).each do |sname|
-  index = load_index(sname)
-index.each do |bname|
-    btitle, author =
+# Dir.children(DIR).each do |sname|
+#   index = load_index(sname)
+# index.each do |bname|
+#     btitle, author =
 
-end
-end
+# end
+# end

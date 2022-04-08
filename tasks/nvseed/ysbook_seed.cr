@@ -1,15 +1,17 @@
 require "../shared/bootstrap"
 require "../shared/ysbook_data"
 
-class CV::YsbookSeed
+module CV::YsbookSeed
+  extend self
+
   INP_DIR = "_db/yousuu/infos"
-  OUT_DIR = "var/ysbooks"
+  OUT_DIR = "var/ysinfos/ysbooks"
   Dir.mkdir_p(OUT_DIR)
 
-  CACHE = {} of String => NvinfoData
+  CACHE = {} of String => YsbookData
 
   def load_data(slice : String | Int32)
-    CACHE[slice.to_s] ||= YsbookData.new("#{OUT_DIR}/#{slice}")
+    CACHE[slice.to_s] ||= YsbookData.new("yousuu", "#{OUT_DIR}/#{slice}")
   end
 
   def init!(redo = false)
@@ -40,12 +42,13 @@ class CV::YsbookSeed
   def seed!(force = false)
     NvinfoData.print_stats("yousuu")
 
-    Dir.children(OUT_DIR).each_with_index(1) do |child, index|
-      load_data(child).seed!(force: force, index: index)
+    dirs = Dir.children(OUT_DIR)
+    dirs.each_with_index(1) do |child, index|
+      load_data(child).seed!(force: force, label: "#{index}/#{dirs.size}")
     end
   end
 
-  def self.run!(argv = ARGV)
+  def exec!(argv = ARGV)
     init = 1
     seed = 1
 
@@ -61,10 +64,9 @@ class CV::YsbookSeed
       end
     end
 
-    task = new
-    task.init!(redo: init == 2) if init > 0
-    task.seed!(force: seed == 2) if seed > 0
+    init!(redo: init == 2) if init > 0
+    seed!(force: seed == 2) if seed > 0
   end
 end
 
-CV::YsbookSeed.run!(ARGV)
+CV::YsbookSeed.exec!(ARGV)

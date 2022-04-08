@@ -27,7 +27,7 @@ class Data
   end
 end
 
-OUT = "var/yscrits"
+OUT = "var/ysinfos/yscrits"
 
 def save_missing(file : String) : Data
   json = Data.from_json File.read(file)

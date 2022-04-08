@@ -46,11 +46,19 @@ module CV
       "#{@chap_count}\t#{@last_schid}"
     end
   end
+
+  record Rating, voters : Int32, rating : Int32 do
+    def self.from_tsv(rows : Array(String))
+      new(rows[0].to_i, rows[1].to_i)
+    end
+
+    def to_tsv
+      "#{@voters}\t#{@rating}"
+    end
+  end
 end
 
 abstract class CV::NvinfoData
-  DIR = "var/nvinfos"
-
   class_getter authors : Hash(String, Author) do
     query = Author.query.select("id", "zname")
 
@@ -74,30 +82,24 @@ abstract class CV::NvinfoData
     File.info(file).modification_time.to_unix
   end
 
-  def self.print_stats(label : String, index = 0)
-    puts "- [seed #{label}] <#{index.colorize.cyan}>, \
-            authors: #{authors.size.colorize.cyan}, \
-            nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
-            nvseeds: #{Nvseed.query.count.colorize.cyan}"
-  end
-
   ###################
 
-  getter _index : Tabkv(Bindex) { Tabkv(Bindex).new("#{@_wd}/_index.tsv") }
+  getter _index : Tabkv(Bindex) { Tabkv(Bindex).new("#{@w_dir}/_index.tsv") }
 
-  getter genres : Tabkv(Array(String)) { Tabkv(Array(String)).new("#{@_wd}/genres.tsv") }
-  getter intros : Tabkv(Array(String)) { Tabkv(Array(String)).new("#{@_wd}/intros.tsv") }
-  getter covers : Tabkv(String) { Tabkv(String).new("#{@_wd}/covers.tsv") }
+  getter genres : Tabkv(Array(String)) { Tabkv(Array(String)).new("#{@w_dir}/genres.tsv") }
+  getter intros : Tabkv(Array(String)) { Tabkv(Array(String)).new("#{@w_dir}/intros.tsv") }
+  getter covers : Tabkv(String) { Tabkv(String).new("#{@w_dir}/covers.tsv") }
 
-  getter status : Tabkv(Status) { Tabkv(Status).new("#{@_wd}/status.tsv") }
-  getter utimes : Tabkv(Mftime) { Tabkv(Mftime).new("#{@_wd}/utimes.tsv") }
+  getter status : Tabkv(Status) { Tabkv(Status).new("#{@w_dir}/status.tsv") }
+  getter utimes : Tabkv(Mftime) { Tabkv(Mftime).new("#{@w_dir}/utimes.tsv") }
 
   # for nvseed
-  getter chsize : Tabkv(Chsize) { Tabkv(Chsize).new("#{@_wd}/chsize.tsv") }
+  getter chsize : Tabkv(Chsize) { Tabkv(Chsize).new("#{@w_dir}/chsize.tsv") }
 
-  getter _wd : String # working directory
+  getter sname : String # working directory
+  getter w_dir : String # working directory
 
-  def initialize(@_wd)
+  def initialize(@sname, @w_dir)
   end
 
   def save!(clean : Bool = false)
@@ -121,8 +123,19 @@ abstract class CV::NvinfoData
     utimes.append(snvid, Mftime.new(entry.update_int, entry.update_str))
   end
 
-  def seed!(force : Bool = false)
-    _index.data.each { |snvid, bindex| seed_entry!(snvid, bindex, force: force) }
+  def seed!(force : Bool = false, label : String = "1/1")
+    _index.data.each do |snvid, bindex|
+      seed_entry!(snvid, bindex, force: force)
+    end
+
+    self.class.print_stats(@sname, label)
+  end
+
+  def self.print_stats(sname : String, label : String = "-")
+    puts "- [seed #{sname}] <#{label.colorize.cyan}>, \
+            authors: #{authors.size.colorize.cyan}, \
+            nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
+            nvseeds: #{Nvseed.query.count.colorize.cyan}"
   end
 
   abstract def seed_entry!(snvid : String, bindex : Bindex, force : Bool)

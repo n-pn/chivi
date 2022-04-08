@@ -7,4 +7,4 @@ rsync -azui --no-p "$SSH/$DIR/infos" "$DIR"
 rsync -azui --no-p "$SSH/$DIR/crits" "$DIR"
 rsync -azui --no-p "$SSH/$DIR/repls" "$DIR"
 
-# rsync -azui --no-p "$SSH/var/yscrits" "var"
+# rsync -azui --no-p "$SSH/var/ysinfos" "var"

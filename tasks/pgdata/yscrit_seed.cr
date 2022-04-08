@@ -6,7 +6,7 @@ require "../shared/yscrit_raw"
 module CV::YscritSeed
   extend self
 
-  DIR = "var/yscrits"
+  DIR = "var/ysinfos/yscrits"
   FileUtils.mkdir_p(DIR)
 
   class_getter count = 0

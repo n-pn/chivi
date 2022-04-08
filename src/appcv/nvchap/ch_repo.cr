@@ -94,22 +94,4 @@ class CV::ChRepo
 
     chaps
   end
-
-  def remote?(privi : Int32 = 4, special_case : Bool = false) : Bool
-    remote?(privi) { special_case }
-  end
-
-  def remote?(privi : Int32 = 4) : Bool
-    case @sname
-    when "biqu5200", "rengshu", "sdyfcm"
-      privi >= 0 || yield
-    when "hetushu", "bxwxorg", "xbiquge", "biqugee"
-      privi >= 1 || yield
-    when "69shu", "paoshu8", "duokan8" # , "5200"
-      privi >= 2 || yield
-    when "shubaow", "zhwenpg"
-      privi > 4
-    else false
-    end
-  end
 end

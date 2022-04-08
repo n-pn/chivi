@@ -3,7 +3,7 @@ require "../shared/nvseed_data"
 
 class CV::RemoteSeed
   INP_DIR = "_db/.cache/"
-  OUT_DIR = "var/nvinfos"
+  OUT_DIR = "var/zhinfos"
 
   def initialize(@sname : String)
     @out_dir = File.join(OUT_DIR, @sname)
@@ -24,7 +24,7 @@ class CV::RemoteSeed
     parts = input.group_by { |x| (x[0].to_i? || 0) // 1000 }
 
     parts.each do |group, items|
-      output = NvseedData.new("#{@out_dir}/#{group}")
+      output = load_data(group)
 
       items.sort_by(&.[0].to_i).each do |snvid, stime|
         if bindex = output._index[snvid]?
@@ -41,8 +41,19 @@ class CV::RemoteSeed
     end
   end
 
-  def seed!(force : Bool = false)
-    puts "TODO!"
+  CACHE = {} of String => NvseedData
+
+  def load_data(slice : String | Int32)
+    CACHE[slice.to_s] ||= NvseedData.new(@sname, "#{OUT_DIR}/#{slice}")
+  end
+
+  def seed!(force = false)
+    NvinfoData.print_stats(@sname)
+
+    input = Dir.children(OUT_DIR).compact_map(&.to_i?).sort
+    input.each_with_index(1) do |child, index|
+      load_data(child).seed!(force: force, label: "#{index}/#{input.size}")
+    end
   end
 end
 

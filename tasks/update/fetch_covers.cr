@@ -7,8 +7,8 @@ require "colorize"
 module CV::FetchCovers
   extend self
 
-  INP = "var/nvinfos/autos"
-  OUT = "var/nvinfos/_imgs"
+  INP = "var/zhinfos"
+  OUT = "var/bcovers"
 
   def fetch_yousuu(redo = false)
     input = Dir.glob("#{INP}/yousuu/covers/*.tsv").map do |file|
