@@ -21,13 +21,9 @@ class CV::RmInfoZhwenpg < CV::RmInfoGeneric
     @info.attr(".cover_wrapper_m img", "data-src")
   end
 
-  def status : {Int32, String}
-    {0, "0"}
-  end
-
-  def update_str : String
-    ""
-  end
+  @status_str = "0"
+  @update_str = ""
+  @update_int = 0_i64
 
   def extract_schid(href : String)
     href.sub("r.php?id=", "")

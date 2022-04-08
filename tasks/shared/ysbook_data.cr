@@ -42,7 +42,7 @@ class CV::YsbookData < CV::NvinfoData
   getter ystats : Tabkv(Ystats) { Tabkv(Ystats).new("#{@_wd}/ystats.tsv") }
   getter origin : Tabkv(Origin) { Tabkv(Origin).new("#{@_wd}/origin.tsv") }
 
-  def add!(entry, snvid : String, atime : Int64)
+  def add!(entry, snvid : String, stime : Int64)
     super
 
     rating.append(snvid, Rating.new(entry.voters, entry.rating))

@@ -29,16 +29,16 @@ class CV::RmInfo69shu < CV::RmInfoGeneric
     "https://www.69shu.com/files/article/image/#{href}"
   end
 
-  def status_str : String
+  getter status_str : String do
     @info.text(".booknav2 > p:nth-child(4)").split("  |  ").last
   end
 
-  def update_str : String
+  getter update_str : String do
     @info.text(".booknav2 > p:nth-child(5)").sub("更新：", "")
   end
 
-  def updated_at(update_str = self.update_str) : Time
-    fix_update(super(update_str))
+  def updated_at : Time
+    super(fix: true)
   end
 
   def extract_schid(href : String)

@@ -23,16 +23,20 @@ class CV::RmInfoHetushu < CV::RmInfoGeneric
     "https://www.hetushu.com" + @info.attr(".book_info img", "src")
   end
 
-  def status_str
+  getter status_str do
     @info.attr(".book_info", "class").includes?("finish") ? "1" : "0"
   end
 
-  def status_int(status = self.status_str)
+  def map_status(status : String)
     status.to_i? || 0
   end
 
   def update_str
     ""
+  end
+
+  def update_int
+    0_i64
   end
 
   def last_schid_href : String

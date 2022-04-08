@@ -38,16 +38,11 @@ class CV::RmInfoPtwxz < CV::RmInfoGeneric
     @info.attr("img[width=\"100\"]", "src")
   end
 
-  def status_str
-    inner_text(rows_2[1])
-  end
+  getter status_str : String { inner_text(rows_2[1]) }
+  getter update_str : String { inner_text(rows_2[0]) }
 
-  def update_str
-    inner_text(rows_2[0])
-  end
-
-  def updated_at(update_str = self.update_str) : Time
-    fix_update(super(update_str))
+  def updated_at : Time
+    super(fix: true)
   end
 
   def chapters

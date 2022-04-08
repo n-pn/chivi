@@ -7,7 +7,7 @@ require "./remote/*"
 
 class CV::RemoteInfo
   DIR = "_db/.cache/%s/infos"
-  TTL = 1.years
+  TTL = 10.years
 
   getter dir : String
   @ttl : Time::Span | Time::MonthSpan

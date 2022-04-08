@@ -113,8 +113,8 @@ abstract class CV::NvinfoData
     @chsize.try(&.save!(clean: clean))
   end
 
-  def add!(entry, snvid : String, atime : Int64)
-    _index.append(snvid, Bindex.new(atime, entry.btitle, entry.author))
+  def add!(entry, snvid : String, stime : Int64)
+    _index.append(snvid, Bindex.new(stime, entry.btitle, entry.author))
     genres.append(snvid, entry.genres)
     intros.append(snvid, entry.bintro)
     covers.append(snvid, entry.bcover)

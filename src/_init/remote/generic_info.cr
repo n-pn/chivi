@@ -27,14 +27,8 @@ class CV::RmInfoGeneric
     @info.meta("og:image")
   end
 
-  def status : Tuple(Int32, String)
-    status_str = self.status_str
-    {map_status(status_str), status_str}
-  end
-
-  def status_str : String
-    @info.meta("og:novel:status")
-  end
+  getter status_str : String { @info.meta("og:novel:status") }
+  getter status_int : Int32 { map_status(status_str) }
 
   def map_status(status : String)
     case status
@@ -51,24 +45,13 @@ class CV::RmInfoGeneric
 
   MISSING_UPDATE = {Time.utc(2020, 1, 1, 7, 0, 0), ""}
 
-  def update : {Time, String}
-    update_str = self.update_str || ""
-    if update_str.blank?
-      MISSING_UPDATE
-    else
-      {updated_at(update_str), update_str}
-    end
-  end
+  getter update_str : String { @info.meta("og:novel:update_time") }
+  getter update_int : Int64 { updated_at.to_unix }
 
-  def update_str : String
-    @info.meta("og:novel:update_time")
-  end
+  def updated_at(fix : Bool = false)
+    time = TimeUtil.parse_time(update_str)
+    return time unless fix
 
-  def updated_at(update_str = self.update_str)
-    TimeUtil.parse_time(update_str)
-  end
-
-  def fix_update(time : Time) : Time
     time += 24.hours
     now = Time.utc - 1.minutes
     time < now ? time : now

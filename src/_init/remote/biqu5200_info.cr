@@ -1,10 +1,10 @@
 class CV::RmInfoBiqu5200 < CV::RmInfoGeneric
-  def update_str : String
+  getter update_str : String do
     @info.text("#info > p:last-child").sub("最后更新：", "")
   end
 
-  def updated_at(update_str = self.update_str) : Time
-    fix_update(super(update_str))
+  def updated_at : Time
+    super(fix: true)
   end
 
   def last_schid_href : String
