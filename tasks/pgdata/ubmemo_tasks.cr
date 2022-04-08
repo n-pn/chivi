@@ -18,19 +18,32 @@ module CV::UbmemoTasks
     end
   end
 
+  FORCE = ARGV.includes?("--force")
+
   def restore
+    hashes = Tabkv(String).new("_common/nv_hash.tsv")
+
     Dir.glob(DIR + "/*.txt").each do |file|
       File.read_lines(file).each do |line|
         bhash, json = line.split('\t', 2)
+        bhash = hashes[bhash]? || bhash
+
         unless nvinfo = Nvinfo.find({bhash: bhash})
           puts " book: #{bhash} not found!!"
           next
         end
 
         ubmemo = Ubmemo.from_json(json)
-        Ubmemo.find({id: ubmemo.id}).try(&.delete)
+        if old_record = Ubmemo.find({id: ubmemo.id})
+          next unless FORCE
+          old_record.delete
+        end
 
         ubmemo.nvinfo_id = nvinfo.id
+
+        ubmemo.lr_sname = "chivi"
+        ubmemo.lr_zseed = 0
+
         ubmemo.save!
       rescue err
         puts err
