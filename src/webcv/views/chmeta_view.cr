@@ -26,7 +26,7 @@ struct CV::ChmetaView
 
   def next_url
     return chap_url(@chap, @cpart + 1) if @cpart < @chap.stats.parts - 1
-    @seed.chinfo(@chap.chidx - 1).try { |succ| chap_url(succ, 0) }
+    @seed.chinfo(@chap.chidx).try { |succ| chap_url(succ, 0) }
   end
 
   def chap_url(chap = @chap, cpart = 0)
