@@ -52,11 +52,6 @@ class CV::RemoteInfo
     end
   end
 
-  getter update : Tuple(Int64, String) do
-    updated_at, update_str = parser.update
-    {updated_at.to_unix, update_str}
-  end
-
   getter chap_infos : Array(ChInfo) do
     case @sname
     when "duokan8" then parser.extract_chapters_plain(".chapter-list a")

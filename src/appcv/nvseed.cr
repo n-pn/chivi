@@ -147,19 +147,22 @@ class CV::Nvseed
     changed = parser.last_schid != self.last_schid
 
     return unless force || changed
-    status, _ = parser.status
     chinfos = parser.chap_infos
 
     _repo.store!(chinfos, reset: force)
     reset_cache!
 
-    self.update_status(status)
+    self.update_status(parser.status_int)
     self.update_latest(chinfos.last, force: true)
 
     self.stime = Time.utc.to_unix
 
-    mftime, update_str = parser.update
-    mftime = self.stime if update_str.empty? && changed
+    if parser.update_str.empty?
+      mftime = changed ? self.stime : self.utime
+    else
+      mftime = parser.update_int
+    end
+
     self.update_mftime(mftime)
 
     self.save!
