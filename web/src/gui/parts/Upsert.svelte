@@ -100,12 +100,12 @@
         <SIcon name="menu-2" />
       </button>
       <svelte:fragment slot="content">
-        <a class="-item" href="/dicts/{$vdict.dname}" target="_blank">
+        <a class="gmenu-item" href="/dicts/{$vdict.dname}" target="_blank">
           <SIcon name="package" />
           <span>Từ điển</span>
         </a>
 
-        <button class="-item" on:click={tlspec.show}>
+        <button class="gmenu-item" on:click={tlspec.show}>
           <SIcon name="flag" />
           <span>Báo lỗi</span>
         </button>

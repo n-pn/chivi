@@ -39,6 +39,7 @@ class CV::Yscrit
     case order
     when "ctime" then self.order_by(id: :desc)
     when "likes" then self.order_by(like_count: :desc)
+    when "score" then self.order_by(_sort: :desc, stars: :desc)
     when "stars" then self.order_by(stars: :desc, like_count: :desc)
     else              self.order_by(created_at: :desc)
     end

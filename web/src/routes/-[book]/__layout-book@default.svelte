@@ -155,11 +155,11 @@
 
       <svelte:fragment slot="content">
         {#each status_types as status}
-          <button class="-item" on:click={() => update_memo(status)}>
+          <button class="gmenu-item" on:click={() => update_memo(status)}>
             <SIcon name={status_icons[status]} />
             <span>{status_names[status]}</span>
             {#if status == ubmemo.status}
-              <span class="_right"><SIcon name="check" /></span>
+              <span class="-right"><SIcon name="check" /></span>
             {/if}
           </button>
         {/each}

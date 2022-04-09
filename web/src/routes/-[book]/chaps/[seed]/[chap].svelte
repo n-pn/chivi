@@ -44,6 +44,9 @@
   export let zhtext: string[]
   export let cvdata: string
 
+  export let min_privi = -1
+  export let chidx_max = 0
+
   const on_change = () => reload_chap(false)
 
   $: paths = gen_paths(nvinfo, chmeta, chinfo)
@@ -130,7 +133,7 @@
     </svelte:fragment>
   </CvPage>
 {:else}
-  <Notext {chmeta} />
+  <Notext {chmeta} {min_privi} {chidx_max} />
 {/if}
 
 <Footer>
@@ -152,7 +155,7 @@
 
       <svelte:fragment slot="content">
         <button
-          class="-item"
+          class="gmenu-item"
           disabled={$session.privi < 1}
           on:click={() => reload_chap(false)}
           data-kbd="r">
@@ -162,13 +165,13 @@
 
         {#if $session.privi > 1}
           {#if chmeta.clink != '/'}
-            <button class="-item" on:click={() => reload_chap(true)}>
+            <button class="gmenu-item" on:click={() => reload_chap(true)}>
               <SIcon name="rotate-rectangle" />
               <span>Tải lại nguồn</span>
             </button>
           {:else}
             <a
-              class="-item"
+              class="gmenu-item"
               href="/-{nvinfo.bslug}/+chap?chidx={chinfo.chidx}&mode=edit">
               <SIcon name="pencil" />
               <span>Sửa text gốc</span>
@@ -178,7 +181,7 @@
 
         {#if on_memory && ubmemo.locked}
           <button
-            class="-item"
+            class="gmenu-item"
             disabled={$session.privi < 0}
             on:click={() => update_history(false)}
             data-kbd="p">
@@ -187,7 +190,7 @@
           </button>
         {:else}
           <button
-            class="-item"
+            class="gmenu-item"
             disabled={$session.privi < 0}
             on:click={() => update_history(true)}
             data-kbd="p">
@@ -196,7 +199,7 @@
           </button>
         {/if}
 
-        <a href={paths.list} class="-item" data-kbd="h">
+        <a href={paths.list} class="gmenu-item" data-kbd="h">
           <SIcon name="list" />
           <span>Mục lục</span>
         </a>

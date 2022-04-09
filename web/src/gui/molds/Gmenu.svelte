@@ -1,6 +1,8 @@
 <script lang="ts">
   export let loc = 'bottom'
   export let dir = 'center'
+
+  export let lbl = ''
 </script>
 
 <menu-wrap class={$$props.class || ''}>
@@ -8,6 +10,8 @@
 
   <menu-body class="{loc} {dir}">
     <div class="content">
+      {#if lbl}<header class="header">{lbl}</header>{/if}
+
       <slot name="content" />
     </div>
   </menu-body>
@@ -41,7 +45,7 @@
     &.center { left: 50%; transform: translateX(-50%);}
 
     // prettier-ignore
-    menu-wrap:hover > &, menu-wrap.active > & { display: block; }
+    menu-wrap:hover > &, menu-wrap._active > & { display: block; }
   }
 
   .content {
@@ -51,39 +55,46 @@
     @include bgcolor(secd);
   }
 
-  .content :global(.-item) {
-    display: block;
-    width: 100%;
-    padding: 0.5rem;
+  .header {
+    padding: 0 1rem 0.25rem;
     line-height: 1.25rem;
-    // text-transform: uppercase;
+
     font-weight: 500;
+    font-size: rem(13px);
 
-    @include flex(0);
-
-    @include border(--bd-main, $loc: top);
-    &:last-child {
-      @include border(--bd-main, $loc: bottom);
-    }
-
-    // @include ftsize(sm);
-
+    @include border(--bd-soft, $loc: bottom);
     @include fgcolor(tert);
+  }
+
+  :global(.gmenu-item) {
+    @include flex();
+    width: 100%;
+
+    padding: 0.5rem 1rem;
+    line-height: 1.25rem;
+
+    font-weight: 500;
+    font-size: rem(15px);
+
     background: inherit;
+    @include fgcolor(secd);
 
     &:hover {
       @include fgcolor(primary, 5);
       @include bgcolor(tert);
     }
-  }
 
-  .content :global(svg) {
-    margin: 0 0.5rem;
-    width: 1.25rem;
-    height: 1.25rem;
-  }
+    > :global(* + *) {
+      margin-left: 0.5rem;
+    }
 
-  .content :global(.-right) {
-    margin-left: auto;
+    :global(svg) {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    > :global(.-right) {
+      margin-left: auto;
+    }
   }
 </style>
