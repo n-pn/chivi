@@ -55,7 +55,7 @@ targets:
     main: tasks/yousuu/ys_crit_cr.cr
 
   ys_repl_cr:
-    main: tasks/yousuu/ys_replies.cr
+    main: tasks/yousuu/ys_repl_cr.cr
 
   yscrit_seed:
     main: tasks/pgdata/yscrit_seed.cr

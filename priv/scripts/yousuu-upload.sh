@@ -45,8 +45,8 @@ then
   echo upload service binaries!
 
   rsync -azui --no-p "$DIR/limit.txt" $SSH_DIR
-
   shards build --release ys_book_cr && rsync -azui --no-p "bin/ys_book_cr" "$SSH/bin"
+
   shards build --release ys_crit_cr && rsync -azui --no-p "bin/ys_crit_cr" "$SSH/bin"
   shards build --release ys_repl_cr && rsync -azui --no-p "bin/ys_repl_cr" "$SSH/bin"
 fi

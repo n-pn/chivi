@@ -62,7 +62,7 @@ module CV::YscritRaw
   def seed!(json : Json, stime : Int64 = Time.utc.to_unix)
     crit = Yscrit.get!(json.id, json.created_at)
 
-    return unless nvinfo = Nvinfo.find({ys_snvid: json.book._id})
+    return unless nvinfo = Nvinfo.find({ysbook_id: json.book._id})
     ysuser = Ysuser.upsert!(json.user.name)
 
     crit.ysuser = ysuser
