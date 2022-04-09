@@ -7,11 +7,6 @@ class CV::NvseedData < CV::NvinfoData
     status.append(snvid, Status.new(entry.status_int, entry.status_str))
   end
 
-  def seed!(force : Bool = false, label = "-")
-    super(force: force)
-    NvinfoData.print_stats(@sname, label: label)
-  end
-
   getter force_author : Bool { @sname.in?("zxcs_me", "hetushu", "users", "staff", "zhwenpg") }
   getter force_nvinfo : Bool { force_author || @sname.in?("rengshu") }
 
@@ -21,6 +16,7 @@ class CV::NvseedData < CV::NvinfoData
 
   def seed_entry!(snvid : String, bindex : Bindex, force : Bool = false)
     btitle, author_zname = bindex.fix_names
+
     return if btitle.blank? || author_zname.blank?
 
     return unless author = NvinfoData.get_author(author_zname, force: force_author)
@@ -44,13 +40,26 @@ class CV::NvseedData < CV::NvinfoData
 
   def update_nvseed(nvseed : Nvseed, snvid : String)
     unless last_chap = self.last_chap(snvid)
-      chap_list = RemoteInfo.new(sname, snvid, ttl: 10.years).chap_infos
+      raise "Missing chapters for #{@sname}/#{snvid}" if SnameMap.map_type(@sname) < 2
+
+      chap_list = RemoteInfo.new(sname, snvid, ttl: ttl).chap_infos
       nvseed._repo.store!(chap_list, reset: true)
       last_chap = chap_list.last
     end
 
     self.status[snvid]?.try { |x| nvseed.update_status(x.status) }
     nvseed.tap(&.update_latest(last_chap)).save!
+  rescue err
+    puts err.inspect_with_backtrace.colorize.red
+    nil
+  end
+
+  getter ttl : Time::Span | Time::MonthSpan do
+    case SnameMap.map_type(@sname)
+    when 0, 1, 2 then 10.years
+    when 3       then 3.months
+    else              1.week
+    end
   end
 
   def last_chap(snvid : String) : ChInfo?

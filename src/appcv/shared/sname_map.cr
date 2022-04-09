@@ -65,31 +65,6 @@ module CV::SnameMap
     ints.map { |id| map_str(id) }
   end
 
-  def remote?(sname : String, privi = 4)
-    case sname
-    when "5200", "biqu5200", "rengshu"
-      privi >= 0 || yield
-    when "bxwxorg", "xbiquge", "biqugee", "69shu"
-      privi >= 1 || yield
-    when "hetushu", "paoshu8", "duokan8"
-      privi >= 2 || yield
-    when "shubaow", "zhwenpg", "sdyfcm"
-      privi > 4
-    else false
-    end
-  end
-
-  def remote?(sname : String, privi : Int32 = 4, special_case = false)
-    remote?(sname, privi) { special_case }
-  end
-
-  REMOTES = {
-    "69shu", "5200", "bxwxorg",
-    "biqu5200", "sdyfcm", "biqugee",
-    "rengshu", "hetushu", "xbiquge",
-    "duokan8", "paoshu8",
-  }
-
   def map_uid(nvinfo_id : Int64, zseed = 0)
     (nvinfo_id << 6) | zseed
   end

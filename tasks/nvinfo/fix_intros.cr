@@ -1,4 +1,4 @@
-require "./../pgdata/init_nvinfo"
+require "../shared/bootstrap"
 
 module CV::FixIntros
   extend self
@@ -13,24 +13,27 @@ module CV::FixIntros
       puts "- [fix_intros] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
       yintro = nil
-      nvinfo.ys_snvid.try { |x| yintro = get_intro("yousuu", x.to_s) }
+
+      if ysbook = Ysbook.find({id: nvinfo.ysbook_id})
+        yintro = ysbook.bintro.split('\t')
+      end
 
       if yintro && yintro.size > 1
         bintro = yintro
       else
         bintro = fintro = nil
 
-        nvinfo.nvseeds.to_a.each do |x|
-          intro = get_intro(x.sname, x.snvid)
-          fintro ||= intro
+        nvinfo.nvseeds.to_a.each do |nvseed|
+          sintro = nvseed.bintro.split('\t')
+          fintro ||= sintro
 
-          if decent_intro?(x.sname, intro, yintro)
-            bintro = intro
+          if decent_intro?(nvseed.sname, sintro, yintro)
+            bintro = sintro
             break
           end
         end
 
-        bintro ||= yintro || fintro
+        bintro ||= fintro || yintro
       end
 
       next if bintro.nil?
@@ -47,22 +50,13 @@ module CV::FixIntros
     end
   end
 
-  @@seeds = Hash(String, InitNvinfo).new do |hash, sname|
-    hash[sname] = InitNvinfo.new(sname)
-  end
-
-  def get_intro(sname : String, snvid : String) : Array(String)
-    @@seeds[sname].get_val(:intros, snvid) || [] of String
-  end
-
-  private def decent_intro?(sname : String, bintro : Array(String), yintro)
+  private def decent_intro?(sname : String, bintro : Array(String), yintro : Array(String)?)
     case sname
     when "hetushu", "zhwenpg"
       bintro.size > 0
     else
       return false if bintro.empty?
-      return bintro.size > 1 unless yintro
-      yintro.includes?(bintro[0])
+      yintro ? yintro.includes?(bintro[0]) : bintro.size > 1
     end
   end
 end

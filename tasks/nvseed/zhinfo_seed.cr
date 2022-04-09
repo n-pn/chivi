@@ -44,20 +44,22 @@ class CV::RemoteSeed
   CACHE = {} of String => NvseedData
 
   def load_data(slice : String | Int32)
-    CACHE[slice.to_s] ||= NvseedData.new(@sname, "#{OUT_DIR}/#{slice}")
+    CACHE[slice.to_s] ||= NvseedData.new(@sname, "#{@out_dir}/#{slice}")
   end
 
   def seed!(force = false)
+    return unless File.exists?(@out_dir)
     NvinfoData.print_stats(@sname)
 
-    input = Dir.children(OUT_DIR).compact_map(&.to_i?).sort
+    input = Dir.children(@out_dir).compact_map(&.to_i?).sort
     input.each_with_index(1) do |child, index|
       load_data(child).seed!(force: force, label: "#{index}/#{input.size}")
     end
   end
 end
 
-snames = ["hetushu"]
+snames = CV::SnameMap::MAP_INT.keys
+
 init_mode = 1
 seed_mode = 1
 

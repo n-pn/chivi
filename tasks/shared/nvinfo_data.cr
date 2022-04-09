@@ -123,7 +123,7 @@ abstract class CV::NvinfoData
     utimes.append(snvid, Mftime.new(entry.update_int, entry.update_str))
   end
 
-  def seed!(force : Bool = false, label : String = "1/1")
+  def seed!(force : Bool = false, label : String = "-/-")
     _index.data.each do |snvid, bindex|
       seed_entry!(snvid, bindex, force: force)
     end
@@ -131,7 +131,7 @@ abstract class CV::NvinfoData
     self.class.print_stats(@sname, label)
   end
 
-  def self.print_stats(sname : String, label : String = "-")
+  def self.print_stats(sname : String, label : String = "-/-")
     puts "- [seed #{sname}] <#{label.colorize.cyan}>, \
             authors: #{authors.size.colorize.cyan}, \
             nvinfos: #{Nvinfo.query.count.colorize.cyan}, \

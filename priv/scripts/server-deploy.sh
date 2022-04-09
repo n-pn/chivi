@@ -35,3 +35,19 @@ then
   rsync -aiz --no-p bin/ysrepl_seed $SSH/bin
   # rsync -azi --no-p "var/ysrepls" "$SSH/var"
 fi
+
+if [[ $1 == "all" || $1 == "zhinfo" ]]
+then
+  echo push zhinfo seed!
+
+  shards build --release zhinfo_seed
+  rsync -aiz --no-p bin/zhinfo_seed $SSH/bin
+  rsync -azi --no-p "var/zhinfos" "$SSH/var"
+fi
+
+if [[ $1 == "all" || $1 == "fixes" ]]
+then
+  echo push fixes binaries!
+  shards build --release fix_genres && rsync -aiz --no-p bin/fix_genres $SSH/bin
+  shards build --release fix_intros && rsync -aiz --no-p bin/fix_intros $SSH/bin
+fi
