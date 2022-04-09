@@ -59,11 +59,11 @@ module CV::YscritRaw
 
   extend self
 
-  def seed!(json : Json, bumped : Int64 = Time.utc.to_unix)
+  def seed!(json : Json, stime : Int64 = Time.utc.to_unix)
     crit = Yscrit.get!(json.id, json.created_at)
 
     return unless nvinfo = Nvinfo.find({ys_snvid: json.book._id})
-    ysuser = Ysuser.get!(json.user.name)
+    ysuser = Ysuser.upsert!(json.user.name)
 
     crit.ysuser = ysuser
     crit.nvinfo = nvinfo
@@ -72,16 +72,18 @@ module CV::YscritRaw
     crit.origin_id = json._id
     crit.stars = json.stars
 
+    crit.stime = stime
+    crit.utime = json.updated_at.to_unix
+
+    crit.like_count = json.like_count
+    crit.repl_count = json.repl_count
+
+    crit._sort = crit.stars * crit.stars * crit.like_count
+
     unless json.ztext.empty? || json.ztext == "请登录查看评论内容"
       crit.ztext = json.ztext
       crit.vhtml = SeedUtil.cv_ztext(json.ztext, nvinfo.dname)
     end
-
-    crit.bumped = bumped
-    crit.mftime = json.updated_at.to_unix
-
-    crit.like_count = json.like_count
-    crit.repl_count = json.repl_count
 
     crit.save!
   rescue err

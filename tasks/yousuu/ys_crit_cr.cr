@@ -11,7 +11,7 @@ class CV::CrawlYscrit
 
     Ysbook.query.order_by(id: :desc).each_with_cursor(20) do |ysbook|
       page_count = (ysbook.crit_total - 1) // 20 + 1
-      @pages[ynvid] = page_count > 1 ? page_count : 1
+      @pages[ysbook.id] = page_count > 1 ? page_count : 1
     end
   end
 
@@ -68,7 +68,9 @@ class CV::CrawlYscrit
     crits.each { |json| YscritRaw.seed!(json) }
 
     count = Yscrit.query.where(ysbook_id: snvid).count
-    Ysbook.find(snvid).update({crit_count: count})
+    Ysbook.find!(snvid).update(crit_count: count.to_i)
+
+    snvid
   rescue err
     puts err
   end

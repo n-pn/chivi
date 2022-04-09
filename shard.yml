@@ -52,7 +52,7 @@ targets:
     main: tasks/yousuu/ys_serial.cr
 
   ys_crit_cr:
-    main: tasks/yousuu/ys_review.cr
+    main: tasks/yousuu/ys_crit_cr.cr
 
   ys_repl_cr:
     main: tasks/yousuu/ys_replies.cr
