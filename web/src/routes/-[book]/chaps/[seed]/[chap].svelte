@@ -80,7 +80,7 @@
     const home = seed_url(bslug, sname, 1)
     const list = seed_url(bslug, sname, to_pgidx(chidx))
 
-    const base = `/-${bslug}/-${sname}/`
+    const base = `/-${bslug}/chaps/${sname}/`
     const prev = _prev ? `${base}-${_prev}` : home
     const next = _next ? `${base}-${_next}` : list
 
