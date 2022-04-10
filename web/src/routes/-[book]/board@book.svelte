@@ -16,7 +16,7 @@
 <script lang="ts">
   import { page } from '$app/stores'
 
-  import DtopicList from '$gui/parts/cvpost/DtopicList.svelte'
+  import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let dtlist: CV.Dtlist = { items: [], pgidx: 1, pgmax: 1 }
@@ -24,4 +24,4 @@
   $: dboard = { id: nvinfo.id, bname: nvinfo.vname, bslug: nvinfo.bslug }
 </script>
 
-<DtopicList {dboard} {dtlist} />
+<CvpostList {dboard} {dtlist} />

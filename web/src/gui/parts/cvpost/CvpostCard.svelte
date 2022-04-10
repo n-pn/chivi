@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { dlabels } from '$lib/constants'
   import { dboard_ctrl } from '$lib/stores'
   import { rel_time } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let cvpost: CV.Dtopic
+  export let cvpost: CV.Cvpost
   export let _mode = 0
 
   $: dboard = cvpost.dboard
@@ -22,12 +21,11 @@
       {cvpost.title}
     </a>
 
-    {#each cvpost.labels as label}
+    {#each cvpost.labels as label, index}
       <a
-        class="m-label _{label} _sm"
-        href="{label_url}?tl={label}"
-        on:click={(e) => dboard_ctrl.view_board(e, dboard, label)}
-        >{dlabels[label]}</a>
+        class="m-label _{index + 1} _sm"
+        href="{label_url}?lb={label}"
+        on:click={(e) => dboard_ctrl.view_board(e, dboard, label)}>{label}</a>
     {/each}
   </topic-head>
 

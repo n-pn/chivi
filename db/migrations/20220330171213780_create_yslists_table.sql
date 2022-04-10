@@ -16,7 +16,12 @@ CREATE TABLE yslists (
   utime bigint not null default 0,
   stime bigint not null default 0,
 
+  _bump int not null default 0,
+  _sort int not null default 0,
+
   book_count int not null default 0,
+  book_total int not null default 0,
+
   like_count int not null default 0,
   view_count int not null default 0,
 

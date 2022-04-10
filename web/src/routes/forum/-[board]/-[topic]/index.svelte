@@ -22,10 +22,10 @@
 </script>
 
 <script lang="ts">
-  import { DtopicFull, DtpostList } from '$gui'
+  import { CvpostFull, DtpostList } from '$gui'
 
   export let dboard: CV.Dboard
-  export let cvpost: CV.Dtopic
+  export let cvpost: CV.Cvpost
   export let tplist: CV.Tplist
 </script>
 
@@ -33,7 +33,7 @@
   <title>{cvpost.title} - Diễn đàn - Chivi</title>
 </svelte:head>
 
-<DtopicFull {dboard} {cvpost} fluid={true} />
+<CvpostFull {dboard} {cvpost} fluid={true} />
 
 <cvpost-posts>
   <cvrepl-head>

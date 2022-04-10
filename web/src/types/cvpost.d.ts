@@ -1,5 +1,5 @@
 declare namespace CV {
-  interface Dtopic {
+  interface Cvpost {
     dboard?: Dboard
 
     id: string

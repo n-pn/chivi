@@ -8,7 +8,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
       Cvpost.query
         .order_by(_sort: :desc)
         .where("state >= -1")
-        .filter_label(params["dlabel"]?)
+        .filter_label(params["labels"]?)
 
     if nvinfo = params["dboard"]?.try { |x| Nvinfo.load!(x.to_i64) }
       query.filter_board(nvinfo)
@@ -66,7 +66,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     send_json({
       id:     oid,
       title:  cvpost.title,
-      labels: cvpost.ilabels.join(","),
+      labels: cvpost.labels.join(","),
 
       body_input: cvpost.rpbody.input,
       body_itype: cvpost.rpbody.itype,

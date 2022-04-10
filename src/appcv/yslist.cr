@@ -21,9 +21,20 @@ class CV::Yslist
   column utime : Int64 = 0 # list checked at by minutes from epoch
   column stime : Int64 = 0 # list changed at by seconds from epoch
 
+  column _bump : Int32 = 0 # mapped from raw yousuu praiseAt column
+  column _sort : Int32 = 0 # sort list by custom algorithm
+
   column book_count : Int32 = 0
+  column book_total : Int32 = 0
+
   column like_count : Int32 = 0
   column view_count : Int32 = 0
 
   timestamps
+
+  ##################
+
+  def self.get!(id : Int64, created_at : Time)
+    find({id: id}) || new({id: id, created_at: created_at})
+  end
 end

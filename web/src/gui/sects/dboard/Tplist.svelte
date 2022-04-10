@@ -1,9 +1,9 @@
 <script lang="ts">
   import { dboard_ctrl as ctrl, tplist_data as data } from '$lib/stores'
   import DtpostList from '$gui/parts/cvrepl/DtpostList.svelte'
-  import DtopicFull from '$gui/parts/cvpost/DtopicFull.svelte'
+  import CvpostList from '$gui/parts/cvpost/CvpostFull.svelte'
 
-  let cvpost: CV.Dtopic
+  let cvpost: CV.Cvpost
   let tplist: CV.Tplist = {
     items: [],
     pgidx: 1,
@@ -20,7 +20,7 @@
     cvpost = payload.props.cvpost
   }
 
-  async function load_tposts(topic: CV.Dtopic, { pg, op }) {
+  async function load_tposts(topic: CV.Cvpost, { pg, op }) {
     let api_url = `/api/tposts?pg=${pg}&lm=20`
     if (topic) api_url += '&cvpost=' + topic.id
     if (op) api_url += '&uname=' + op
@@ -35,7 +35,7 @@
 
 {#if cvpost}
   <section class="topic">
-    <DtopicFull {cvpost} />
+    <CvpostList {cvpost} />
   </section>
   <section class="posts">
     <DtpostList {tplist} {cvpost} />

@@ -12,7 +12,7 @@
 
   function extract_labels(labels: Record<string, boolean>) {
     const output = []
-    for (let k in labels) if (labels[k]) output.push(+k)
+    for (let k in labels) if (labels[k]) output.push(k)
     return output.join(',')
   }
 
@@ -81,13 +81,11 @@
       <form-field>
         <form-chips>
           <label-cap>Phân loại:</label-cap>
-          {#each Object.entries(dlabels) as [value, label]}
-            <label class="m-label _{value}">
+          {#each dlabels as value, index}
+            <label class="m-label _{index + 1}">
               <input type="checkbox" {value} bind:checked={labels[value]} />
-              <label-name>{label}</label-name>
-              {#if labels[value]}
-                <SIcon name="check" />
-              {/if}
+              <label-name>{value}</label-name>
+              {#if labels[value]}<SIcon name="check" />{/if}
             </label>
           {/each}
         </form-chips>

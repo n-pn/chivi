@@ -72,8 +72,8 @@ class CV::CvreplCtrl < CV::BaseCtrl
 
     cvrepl.set_dtrepl_id(dtrepl_id)
     cvrepl.update_content!(params)
+    cvpost.bump!(cvrepl.id)
 
-    cvpost.bump_post_count!
     repl = Cvrepl.load!(cvrepl.repl_cvrepl_id)
     repl.update!({repl_count: repl.repl_count + 1})
 

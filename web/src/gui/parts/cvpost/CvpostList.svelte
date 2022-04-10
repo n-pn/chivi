@@ -4,8 +4,8 @@
 
   import { dtlist_data, dboard_ctrl } from '$lib/stores'
 
-  import DtopicCard from './DtopicCard.svelte'
-  import DtopicForm, { ctrl as cvpost_form } from './DtopicForm.svelte'
+  import CvpostCard from './CvpostCard.svelte'
+  import CvpostForm, { ctrl as cvpost_form } from './CvpostForm.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 </script>
 
@@ -35,12 +35,12 @@
     <span>Tất cả</span>
     {#if !tlabel}<SIcon name="check" /> {/if}
   </a>
-  {#each Object.entries(dlabels) as [value, label]}
+  {#each dlabels as value, index}
     <a
-      class="m-label _{value}"
+      class="m-label _{index + 1}"
       href={pager.gen_url({ tl: value })}
       on:click={(e) => dboard_ctrl.view_board(e, dboard, value)}>
-      <span>{label}</span>
+      <span>{value}</span>
       {#if tlabel == value}<SIcon name="check" /> {/if}
     </a>
   {/each}
@@ -48,7 +48,7 @@
 
 <topic-list>
   {#each dtlist.items as cvpost}
-    <DtopicCard size="sm" {cvpost} {_mode} />
+    <CvpostCard size="sm" {cvpost} {_mode} />
   {:else}
     <div class="empty">
       <h4>Chưa có chủ đề thảo luận :(</h4>
@@ -71,7 +71,7 @@
     <span>Tạo chủ đề mới</span></button>
 </board-foot>
 
-{#if $cvpost_form.actived}<DtopicForm {dboard} />{/if}
+{#if $cvpost_form.actived}<CvpostForm {dboard} />{/if}
 
 <style lang="scss">
   board-head {

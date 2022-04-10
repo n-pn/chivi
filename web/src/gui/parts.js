@@ -1,4 +1,4 @@
-export { default as DtopicForm } from './parts/cvpost/DtopicForm.svelte'
-export { default as DtopicList } from './parts/cvpost/DtopicList.svelte'
-export { default as DtopicCard } from './parts/cvpost/DtopicCard.svelte'
-export { default as DtopicFull } from './parts/cvpost/DtopicFull.svelte'
+export { default as CvpostForm } from './parts/cvpost/CvpostForm.svelte'
+export { default as CvpostList } from './parts/cvpost/CvpostList.svelte'
+export { default as CvpostCard } from './parts/cvpost/CvpostCard.svelte'
+export { default as CvpostFull } from './parts/cvpost/CvpostFull.svelte'

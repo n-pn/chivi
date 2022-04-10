@@ -4,10 +4,10 @@
     appbar.set({ left: [['Diễn đàn', 'messages', '/forum']] })
 
     const pg = url.searchParams.get('pg') || 1
-    const tl = url.searchParams.get('tl')
+    const lb = url.searchParams.get('lb')
 
     let api_url = `/api/topics?pg=${pg}&lm=10`
-    if (tl) api_url += `&dlabel=${tl}`
+    if (lb) api_url += `&labels=${lb}`
 
     const api_res = await fetch(api_url)
     return await api_res.json()
@@ -15,7 +15,7 @@
 </script>
 
 <script lang="ts">
-  import DtopicList from '$gui/parts/cvpost/DtopicList.svelte'
+  import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
   export let dtlist: CV.Dtlist
   const dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
 </script>
@@ -24,4 +24,4 @@
   <title>Diễn đàn - Chivi</title>
 </svelte:head>
 
-<DtopicList {dtlist} {dboard} _mode={1} />
+<CvpostList {dtlist} {dboard} _mode={1} />

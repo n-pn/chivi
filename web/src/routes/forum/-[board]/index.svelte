@@ -11,10 +11,10 @@
     })
 
     const pg = +searchParams.get('pg') || 1
-    const tl = searchParams.get('tl')
+    const lb = searchParams.get('lb')
 
     let api_url = `/api/topics?dboard=${dboard.id}&pg=${pg}&lm=10`
-    if (tl) api_url += `&dlabel=${tl}`
+    if (lb) api_url += `&labels=${lb}`
 
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
@@ -25,7 +25,7 @@
 </script>
 
 <script lang="ts">
-  import DtopicList from '$gui/parts/cvpost/DtopicList.svelte'
+  import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
 
   export let dboard: CV.Dboard
   export let dtlist: CV.Dtlist
@@ -35,4 +35,4 @@
   <title>{dboard.bname} - Diễn đàn - Chivi</title>
 </svelte:head>
 
-<DtopicList {dboard} {dtlist} />
+<CvpostList {dboard} {dtlist} />

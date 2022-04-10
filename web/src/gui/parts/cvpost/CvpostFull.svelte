@@ -1,12 +1,11 @@
 <script lang="ts">
   import { session } from '$app/stores'
   import { rel_time } from '$utils/time_utils'
-  import { dlabels } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import DtopicForm, { ctrl as cvpost_ctrl } from './DtopicForm.svelte'
+  import CvpostForm, { ctrl as cvpost_ctrl } from './CvpostForm.svelte'
 
-  export let cvpost: CV.Dtopic
+  export let cvpost: CV.Cvpost
   export let dboard: CV.Dboard = cvpost.dboard
   export let _all = cvpost.bhtml.length < 500
 
@@ -27,9 +26,8 @@
       <span>{cvpost.dboard.bname}</span>
     </a>
 
-    {#each cvpost.labels as label}
-      <a class="m-label _{label}" href="{board_url}?label={label}"
-        >{dlabels[label]}</a>
+    {#each cvpost.labels as label, index}
+      <a class="m-label _{index + 1}" href="{board_url}?lb={label}">{label}</a>
     {/each}
   </topic-navi>
 
@@ -90,7 +88,7 @@
   </topic-pbody>
 </topic-full>
 
-{#if $cvpost_ctrl.actived}<DtopicForm {dboard} />{/if}
+{#if $cvpost_ctrl.actived}<CvpostForm {dboard} />{/if}
 
 <style lang="scss">
   topic-full {

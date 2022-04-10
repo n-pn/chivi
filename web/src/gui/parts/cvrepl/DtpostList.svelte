@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-  export let cvpost: CV.Dtopic
+  export let cvpost: CV.Cvpost
   export let tplist: CV.Tplist
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })

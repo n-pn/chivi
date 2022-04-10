@@ -22,7 +22,7 @@ struct CV::CvpostView
       jb.field "tslug", @data.tslug
 
       jb.field "state", @data.state
-      jb.field "labels", @data.ilabels
+      jb.field "labels", @data.labels
 
       jb.field "ctime", @data.created_at.to_unix
 
@@ -33,12 +33,12 @@ struct CV::CvpostView
       jb.field "op_uname", @data.cvuser.uname
       jb.field "op_privi", @data.cvuser.privi
 
-      if @data.repl_count > 0
-        jb.field "brief", @data.lastrp.otext.split("\n", 2).first?
-        jb.field "utime", @data.lastrp.utime
+      if lastrp = Cvrepl.find({id: @data.lastrp_id})
+        jb.field "brief", lastrp.brief
+        jb.field "utime", lastrp.utime
 
-        jb.field "lp_uname", @data.lastrp.cvuser.uname
-        jb.field "lp_privi", @data.lastrp.cvuser.privi
+        jb.field "lp_uname", lastrp.cvuser.uname
+        jb.field "lp_privi", lastrp.cvuser.privi
       else
         jb.field "brief", @data.brief
         jb.field "utime", @data.utime

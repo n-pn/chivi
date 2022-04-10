@@ -1,3 +1,4 @@
+require "log"
 require "colorize"
 
 class CV::HttpClient
@@ -14,17 +15,19 @@ class CV::HttpClient
 
   getter proxies = [] of Proxy
 
-  def initialize(regen = false)
+  def initialize(regen = false, limit = 200)
     time_slice = Time.utc.to_unix // (3600 * 12)
     @proxy_file = "#{WORKS_DIR}/#{time_slice}.txt"
 
-    load_proxies(@proxy_file)
+    files = Dir.glob("#{WORKS_DIR}/*.txt")
 
-    if @proxies.size < 200
-      previous_proxy_file.try { |file| load_proxies(file) }
+    files.sort_by! { |file| File.basename(file, ".txt").to_i }
+    files.reverse_each do |file|
+      load_proxies(file)
+      break if @proxies.size > limit
     end
 
-    if @proxies.size < 200 || regen
+    if regen || @proxies.size < limit
       Dir.glob("#{PROXY_DIR}/*.txt").each { |file| load_proxies(file) }
     end
   end
@@ -32,47 +35,37 @@ class CV::HttpClient
   delegate size, to: @proxies
 
   private def load_proxies(file : String) : Nil
-    return unless File.exists?(file)
-
     lines = File.read_lines(file).map(&.strip).uniq
     input = lines.select { |line| line =~ /^\d+\.\d+\.\d+\.\d+:\d+$/ }
-    puts "- <proxies> [#{file}] loaded, entries: #{input.size}".colorize.yellow
+    Log.info { "[#{file.colorize.yellow}] loaded, entries: #{input.size.colorize.yellow}" }
 
     input.each { |proxy| @proxies << Proxy.new(proxy) }
     @proxies.uniq!.shuffle!
   end
 
-  private def previous_proxy_file : String?
-    files = Dir.glob("#{WORKS_DIR}/*.txt")
-    files.sort_by! { |file| File.basename(file, ".txt").to_i? || 0 }
-
-    return unless last = files.last?
-    last == @proxy_file ? files[-2]? : last
-  end
-
   def save!(link : String, file : String, label : String) : Bool
     unless proxy = @proxies.pop?
-      puts " - Out of proxy, aborting!".colorize.red
+      Log.info { " - Out of proxy, aborting!".colorize.red }
       exit(0)
     end
 
-    body = `curl -s -L -x #{proxy.host} -m 60 "#{link}"`
+    body = `curl -s -L -x #{proxy.host} -m 30 "#{link}"`
 
     case body
     when .starts_with?("{\"success"), .includes?("未找到该图书")
       Dir.mkdir_p(File.dirname(file))
       File.write(file, body)
-      puts "- #{label} saved".colorize.green
+      Log.info { "- #{label} saved".colorize.green }
 
       File.open(@proxy_file, "a", &.puts(proxy.host)) if proxy.succ == 0
-      proxy.succ += 1
 
+      proxy.succ += 1
       proxy.fail = 0
       add_proxy(proxy, append: proxy.succ < 50)
 
       true
     else
-      puts "- #{label} failed, remain proxies: #{@proxies.size}".colorize.yellow
+      Log.info { "- #{label} failed, remain proxies: #{@proxies.size}".colorize.yellow }
       proxy.fail += 1
       add_proxy(proxy, append: proxy.succ == 0) if proxy.fail < 4
 

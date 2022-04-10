@@ -2,7 +2,7 @@
   import { dtlist_data as data, DtlistData } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import DtopicList from '$gui/parts/cvpost/DtopicList.svelte'
+  import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
 
   let dtlist: CV.Dtlist = {
     items: [],
@@ -93,7 +93,7 @@
 </nav>
 
 <section>
-  <DtopicList
+  <CvpostList
     dboard={$data[$data.tab]}
     tlabel={$data.query.tl}
     {dtlist}

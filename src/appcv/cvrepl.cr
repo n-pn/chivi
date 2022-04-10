@@ -91,6 +91,10 @@ class CV::Cvrepl
     update!(state: admin ? -2 : -1)
   end
 
+  def brief
+    self.otext.split("\n", 2).first? || ""
+  end
+
   #################
 
   CACHE = RamCache(Int64, self).new(1024, ttl: 20.minutes)
