@@ -118,7 +118,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     set_cache :private, maxage: 5 - _cvuser.privi
     set_headers content_type: :text
 
-    response << "//// #{chinfo.chvol}\n#{chinfo.title}\n"
+    response << "/// #{chinfo.chvol}\n#{chinfo.title}\n"
 
     chinfo.stats.parts.times do |cpart|
       lines = nvseed.chtext(chinfo, cpart)
@@ -179,13 +179,11 @@ class CV::NvchapCtrl < CV::BaseCtrl
       lines.map! { |x| MtCore.trad_to_simp(x) }
     end
 
-    chaps = split_chaps(lines, "")
+    chaps = ChUtil.split_chaps(lines, nvseed.get_chvol(chidx))
     chidx = nvseed.chap_count + 1 if chidx < 1
 
     infos = chaps.map_with_index(chidx) do |chap, c_idx|
-      if chinfo = nvseed.chinfo(c_idx - 1)
-        chinfo.bump_version!
-      else
+      unless chinfo = nvseed.chinfo(c_idx - 1)
         chinfo = ChInfo.new(c_idx, (c_idx * 10).to_s)
       end
 
@@ -205,34 +203,5 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     first = infos.first.tap(&.trans!(nvseed.cvmtl))
     send_json({chidx: chidx, uslug: first.trans.uslug}, 201)
-  end
-
-  struct Chap
-    getter chvol : String
-    getter lines = [] of String
-    getter title : String { lines.first? || "" }
-
-    def initialize(@chvol)
-    end
-  end
-
-  LINE_RE = /^\/{3,}(.*)$/
-
-  private def split_chaps(input : Array(String), chvol = "")
-    chaps = [Chap.new(chvol)]
-
-    input.each do |line|
-      if match = LINE_RE.match(line)
-        extra = match[1].strip
-        chvol = extra unless extra.empty? || extra == "正文"
-        chaps << Chap.new(chvol)
-      else
-        line = line.strip
-        chaps.last.lines << line unless line.empty?
-      end
-    end
-
-    chaps.shift if chaps.first.lines.empty?
-    chaps
   end
 end

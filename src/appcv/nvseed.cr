@@ -92,6 +92,18 @@ class CV::Nvseed
     chpage(index // PSIZE)[index % PSIZE]?
   end
 
+  def get_chvol(chidx : Int32, limit = 4)
+    chmin = chidx - limit
+    chmin = 1 if chmin > 1
+
+    chidx.downto(chmin).each do |index|
+      next unless info = self.chinfo(index - 1)
+      return info.chvol unless info.chvol.empty?
+    end
+
+    ""
+  end
+
   def chap_url(chidx : Int32, cpart = 0)
     return unless chinfo = self.chinfo(chidx - 1)
     chinfo.chap_url(cpart)

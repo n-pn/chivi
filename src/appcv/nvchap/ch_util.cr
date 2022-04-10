@@ -18,8 +18,9 @@ module CV::ChUtil
     count, cpart = 0, 0
     chaps = [] of String
 
-    lines.each_with_index do |line, idx|
-      strio << "\n" << line
+    1.upto(lines.size - 1) do |idx|
+      strio << "\n" << lines.unsafe_fetch(idx)
+
       count += sizes[idx]
       next if count < limit
 
@@ -32,5 +33,35 @@ module CV::ChUtil
 
     chaps << strio.to_s if count > 0
     {chars, chaps}
+  end
+
+  struct Chap
+    getter chvol : String
+    getter lines = [] of String
+    getter title : String { lines.first? || "" }
+
+    def initialize(@chvol)
+    end
+  end
+
+  LINE_RE = /^\/{3,}(.*)$/
+
+  def split_chaps(input : Array(String), chvol = "")
+    chaps = [Chap.new(chvol)]
+
+    input.each do |line|
+      if match = LINE_RE.match(line)
+        extra = match[1].strip
+        chvol = extra unless extra.empty?
+
+        chaps << Chap.new(chvol)
+      else
+        line = line.strip
+        chaps.last.lines << line unless line.empty?
+      end
+    end
+
+    chaps.shift if chaps.first.lines.empty?
+    chaps
   end
 end

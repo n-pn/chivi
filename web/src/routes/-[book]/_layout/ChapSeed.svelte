@@ -11,7 +11,7 @@
   let show_less = true
 
   function chap_url(sname: string) {
-    return `/-${nvinfo.bslug}/-${sname}/-${chinfo.uslug}-${chinfo.chidx}`
+    return `/-${nvinfo.bslug}/chaps/${sname}/-${chinfo.uslug}-${chinfo.chidx}`
   }
 
   $: snames = nvseed?.map((x) => x.sname) || []
