@@ -49,7 +49,7 @@
     const payload = await res.json()
     if (res.ok) {
       const { props } = payload
-      goto(`/-${nvinfo.bslug}/-chivi/-${props.uslug}-${props.chidx}`)
+      goto(`/-${nvinfo.bslug}/chaps/chivi/-${props.uslug}-${props.chidx}`)
     } else {
       alert(payload.error)
     }
