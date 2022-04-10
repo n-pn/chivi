@@ -72,24 +72,24 @@ class CV::YslistCrawl
 
   def still_good?(file : String)
     return false unless mtime = File.info?(file).try(&.modification_time)
-    mtime > Time.utc - 2.days
+    mtime > Time.utc - 4.hours
   end
 
   def self.run!(argv = ARGV)
-    crawl_mode = Mode::Head
+    crawl_mode = Mode::TAIL
     recheck_proxy = false
 
     type = "man"
     screen = "comprehensive"
 
-    page_limit = 731
+    page_limit = 732
 
     OptionParser.parse(ARGV) do |opt|
       opt.on("--proxy", "Recheck proxies") { recheck_proxy = true }
       opt.on("-m MODE", "Crawl mode") { |x| crawl_mode = Mode.parse(x) }
-      opt.on("-u", "Page limit") { |x| page_limit = x.to_i }
-      opt.on("-t", "List type") { |x| type = x }
-      opt.on("-s", "List screen") { |x| screen = x }
+      opt.on("-u LIMIT", "Page limit") { |x| page_limit = x.to_i }
+      opt.on("-t TYPE", "List type") { |x| type = x }
+      opt.on("-s SCREEN", "List screen") { |x| screen = x }
     end
 
     worker = new(recheck_proxy, type, screen)

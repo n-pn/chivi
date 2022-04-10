@@ -71,12 +71,15 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     set_headers content_type: :text
 
-    if params["mode"]? == "tlspec"
+    case params["mode"]?
+    when "tlspec"
       cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
       cvmtl.cv_plain(input, cap_first: false).to_s(response)
 
       response << "\n"
       MtCore.hanviet_mtl.translit(input, apply_cap: false).to_s(response)
+    when "plain"
+      convert(dname, parse_lines(input), response, plain: true)
     else
       convert(dname, parse_lines(input), response)
     end
@@ -87,12 +90,13 @@ class CV::QtransCtrl < CV::BaseCtrl
     TextUtil.split_text(ztext, spaces_as_newline: false)
   end
 
-  private def convert(dname, lines : Array(String), output : IO)
+  private def convert(dname, lines : Array(String), output : IO, plain = false)
     cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
 
     lines.each_with_index do |line, idx|
       output << "\n" if idx > 0
-      cvmtl.cv_plain(line, cap_first: true).to_str(output)
+      result = cvmtl.cv_plain(line, cap_first: true)
+      plain ? result.to_s(response) : result.to_str(output)
     end
   end
 end
