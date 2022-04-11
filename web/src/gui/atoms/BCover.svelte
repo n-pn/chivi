@@ -1,11 +1,12 @@
 <script lang="ts">
   export let bcover: string | undefined
   export let scover: string | undefined
+
+  $: cover_url = bcover ? `/covers/${bcover}` : scover || '/imgs/blank.png'
 </script>
 
 <picture>
-  {#if scover}<source srcset={scover} />{/if}
-  {#if bcover}<source srcset="/covers/{bcover}" />{/if}
+  <source srcset={cover_url} />
   <img src="/imgs/blank.png" alt="" referrerpolicy="no-referrer" />
 </picture>
 

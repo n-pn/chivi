@@ -47,5 +47,5 @@ then
   rsync -azi --no-p "var/_common" "$ssh/var"
   rsync -azi --no-p "var/zhinfos" "$ssh/var"
 
-  # rsync -azi --no-p "priv/static/covers/" "$ssh/priv/static/covers/"
+  rsync -azi --no-p --delete "priv/static/covers/" "$ssh/priv/static/covers/"
 fi
