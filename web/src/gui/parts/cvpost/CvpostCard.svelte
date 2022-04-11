@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { session } from '$app/stores'
   import { dboard_ctrl } from '$lib/stores'
   import { dlabels } from '$lib/constants'
 
@@ -12,6 +13,20 @@
   $: dboard = cvpost.dboard
   $: board_url = `/forum/-${dboard.bslug}`
   $: label_url = _mode > -1 ? board_url : `/-${dboard.bslug}/board`
+
+  async function toggle_like() {
+    const action = cvpost.self_liked ? 'unlike' : 'like'
+    const api_url = `/api/!posts/${cvpost.id}/${action}`
+    const api_res = await fetch(api_url, { method: 'PUT' })
+
+    if (!api_res.ok) {
+      console.log(await api_res.text())
+    } else {
+      const payload = await api_res.json()
+      cvpost.like_count = payload.like_count
+      cvpost.self_liked = !cvpost.self_liked
+    }
+  }
 </script>
 
 <topic-card class:sm={$$props.size == 'sm'}>
@@ -60,20 +75,25 @@
     {/if}
 
     <foot-right>
-      <topic-meta>
+      <topic-meta class="meta">
         <SIcon name="eye" />
         <span>{cvpost.view_count}</span>
       </topic-meta>
 
-      <topic-meta>
+      <topic-meta class="meta">
         <SIcon name="messages" />
         <span>{cvpost.post_count}</span>
       </topic-meta>
 
-      <topic-meta>
+      <button
+        class="meta"
+        class:_active={cvpost.self_liked}
+        disabled={$session.privi < 0}
+        on:click={toggle_like}>
         <SIcon name="star" />
         <span>{cvpost.like_count}</span>
-      </topic-meta>
+      </button>
+      <topic-meta />
     </foot-right>
   </topic-foot>
 </topic-card>
@@ -158,8 +178,16 @@
     @include clamp($width: null);
   }
 
-  topic-meta {
+  .meta {
     @include flex-cy;
+
+    @include fgcolor(tert);
+    padding: 0;
+    background: transparent;
     gap: 0.25rem;
+
+    &._active {
+      @include fgcolor(warning, 5);
+    }
   }
 </style>

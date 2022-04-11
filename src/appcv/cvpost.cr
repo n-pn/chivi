@@ -69,8 +69,13 @@ class CV::Cvpost
   end
 
   def update_sort!
-    _sort = (self.utime // 60).to_i + repl_count // 3 + like_count // 20 + view_count // 60
-    self._sort = _sort &+ sort_bonus
+    _sort = (self.utime // 60).to_i
+    _sort &+= repl_count // 3
+    _sort &+= like_count // 20
+    _sort &+= view_count // 60
+    _sort &+= sort_bonus
+
+    self._sort = _sort
   end
 
   MINUTES_OF_30_DAYS = 43200
@@ -96,9 +101,9 @@ class CV::Cvpost
     self.save!
   end
 
-  def bump_like_count!
-    self.like_count = self.like_count + 1
-    update_sort!
+  def inc_like_count!(value = 1)
+    self.like_count = self.like_count + value
+    self.update_sort!
     self.save!
   end
 

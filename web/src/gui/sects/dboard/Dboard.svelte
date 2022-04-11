@@ -17,7 +17,7 @@
   $: [curr_icon, curr_text] = tabs[$ctrl.tab]
 </script>
 
-<Slider class="dboard" bind:actived={$ctrl.actived} --slider-width="30rem">
+<Slider class="dboard" bind:actived={$ctrl.actived} --slider-width="32rem">
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name={curr_icon} /></div>
     <div class="-text">{curr_text}</div>

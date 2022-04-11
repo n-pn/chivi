@@ -75,6 +75,7 @@ class CV::BaseCtrl < Amber::Controller::Base
 
   def send_json(status = 200)
     set_headers(status, :json)
+
     JSON.build(response) do |jb|
       jb.object {
         jb.field "status", status
@@ -82,6 +83,16 @@ class CV::BaseCtrl < Amber::Controller::Base
         jb.field "maxage", @maxage
       }
     end
+  end
+
+  def serv_json(object : Object, status = 200)
+    set_headers(status, :json)
+    response.puts(object.to_json)
+  end
+
+  def serv_text(object : Object, status = 200)
+    set_headers(status, :json)
+    response.puts(object.to_s)
   end
 
   def halt!(status : Int32 = 200, error : String = "")

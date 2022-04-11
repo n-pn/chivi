@@ -27,6 +27,8 @@ class CV::CvpostCtrl < CV::BaseCtrl
     query.with_rpbody.with_lastrp(&.with_cvuser)
     items = query.limit(limit).offset(offset).to_a
 
+    memos = UserPost.glob(_cvuser.id, items.map(&.id))
+
     send_json({
       dtlist: {
         total: total,
@@ -35,7 +37,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
         items: items.map { |x|
           x.nvinfo = nvinfo if nvinfo
           x.cvuser = cvuser if cvuser
-          CvpostView.new(x)
+          CvpostView.new(x, full: false, memo: memos[x.id]?)
         },
       },
     })

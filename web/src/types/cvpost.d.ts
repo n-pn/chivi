@@ -24,5 +24,8 @@ declare namespace CV {
     post_count?: number
     view_count?: number
     like_count?: number
+
+    self_liked?: boolean
+    self_rp_ii?: number
   }
 }

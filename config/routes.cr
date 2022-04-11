@@ -91,6 +91,8 @@ Amber::Server.configure do
     post "/tlspecs", CV::TlspecCtrl, :create
     post "/tlspecs/:ukey", CV::TlspecCtrl, :update
     delete "/tlspecs/:ukey", CV::TlspecCtrl, :delete
+
+    put "/!posts/:post_ii/:action", CV::UsercpCtrl, :mark_post
   end
 
   routes :static do
