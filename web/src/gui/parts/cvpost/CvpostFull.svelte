@@ -1,6 +1,7 @@
 <script lang="ts">
   import { session } from '$app/stores'
   import { rel_time } from '$utils/time_utils'
+  import { dlabels } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import CvpostForm, { ctrl as cvpost_ctrl } from './CvpostForm.svelte'
@@ -28,8 +29,9 @@
       <span>{cvpost.dboard.bname}</span>
     </a>
 
-    {#each cvpost.labels as label, index}
-      <a class="m-label _{index + 1}" href="{board_url}?lb={label}">{label}</a>
+    {#each cvpost.labels as label}
+      <a class="m-label _{dlabels[label]}" href="{board_url}?lb={label}"
+        >{label}</a>
     {/each}
   </topic-navi>
 

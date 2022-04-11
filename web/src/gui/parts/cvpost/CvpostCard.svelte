@@ -1,5 +1,7 @@
 <script lang="ts">
   import { dboard_ctrl } from '$lib/stores'
+  import { dlabels } from '$lib/constants'
+
   import { rel_time } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -21,9 +23,9 @@
       {cvpost.title}
     </a>
 
-    {#each cvpost.labels as label, index}
+    {#each cvpost.labels as label}
       <a
-        class="m-label _{index + 1} _sm"
+        class="m-label _{dlabels[label]} _sm"
         href="{label_url}?lb={label}"
         on:click={(e) => dboard_ctrl.view_board(e, dboard, label)}>{label}</a>
     {/each}

@@ -37,9 +37,9 @@
     <span>Tất cả</span>
     {#if !tlabel}<SIcon name="check" /> {/if}
   </a>
-  {#each dlabels as value, index}
+  {#each Object.entries(dlabels) as [value, klass]}
     <a
-      class="m-label _{index + 1}"
+      class="m-label _{klass}"
       href={pager.gen_url({ lb: value })}
       on:click={(e) => dboard_ctrl.view_board(e, dboard, value)}>
       <span>{value}</span>

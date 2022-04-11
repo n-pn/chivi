@@ -3,10 +3,10 @@
     const { nvinfo } = stuff
 
     const pg = +url.searchParams.get('pg') || 1
-    const tl = url.searchParams.get('tl')
+    const lb = url.searchParams.get('lb')
 
     let api_url = `/api/topics?dboard=${nvinfo.id}&pg=${pg}&lm=10`
-    if (tl) api_url += `&dlabel=${tl}`
+    if (lb) api_url += `&labels=${lb}`
 
     const res = await fetch(api_url)
     return await res.json()

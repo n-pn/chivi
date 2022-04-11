@@ -82,8 +82,8 @@
       <form-field>
         <form-chips>
           <label-cap>Phân loại:</label-cap>
-          {#each dlabels as value, index}
-            <label class="m-label _{index + 1}">
+          {#each Object.entries(dlabels) as [value, klass]}
+            <label class="m-label _{klass}">
               <input type="checkbox" {value} bind:checked={labels[value]} />
               <label-name>{value}</label-name>
               {#if labels[value]}<SIcon name="check" />{/if}

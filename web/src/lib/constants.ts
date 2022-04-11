@@ -139,10 +139,10 @@ export const order_names = {
   weight: 'Tổng hợp',
 }
 
-export const dlabels = [
-  'Thảo luận',
-  'Chia sẻ',
-  'Thắc mắc',
-  'Yêu cầu',
-  'Dịch thuật',
-]
+export const dlabels = {
+  'Thảo luận': 1,
+  'Chia sẻ': 2,
+  'Thắc mắc': 3,
+  'Yêu cầu': 4,
+  'Dịch thuật': 5,
+}
