@@ -34,7 +34,7 @@
       <span><SIcon name="corner-up-left" /></span>
       <cv-user data-privi={cvpost.lp_privi}>{cvpost.lp_uname}</cv-user>
       <span>·</span>
-      <topic-time>{rel_time(cvpost.ctime)}</topic-time>
+      <topic-time>{rel_time(cvpost.utime)}</topic-time>
     {:else}
       <span><SIcon name="send" /></span>
       <cv-user data-privi={cvpost.op_privi}>{cvpost.op_uname}</cv-user>
