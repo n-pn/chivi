@@ -32,13 +32,12 @@ module CV::FixCovers
     end
   end
 
-  def image_width(file : String, delete = false)
+  def image_width(file : String, delete = false) : Int32?
     return unless File.exists?(file)
-    `identify -format '%w %h' "#{file}"`.split(" ").first.to_i
+    `identify -format '%w %h' "#{file}"`.split(" ").first.to_i?
   rescue err
     puts [file, err].colorize.red
     File.delete(file) if delete
-    nil
   end
 
   def fetch_image(link : String, out_file : String)
@@ -125,11 +124,10 @@ module CV::FixCovers
     covers.each do |sname, snvid, scover|
       next unless data = copy_file(sname, snvid, scover, nodl: nodl)
       bcover, width = data
-
       next unless width > best_width
-      nvinfo.update({bcover: bcover, scover: covers.first.last})
 
-      return if width >= 200
+      nvinfo.update({bcover: bcover, scover: covers.first.last})
+      return if width >= 100
       best_width = width
     end
 
