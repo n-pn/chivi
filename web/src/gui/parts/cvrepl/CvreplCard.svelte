@@ -3,9 +3,9 @@
 
   import { rel_time } from '$utils/time_utils'
   import { SIcon } from '$gui'
-  import DtpostForm from './DtpostForm.svelte'
+  import CvreplForm from './CvreplForm.svelte'
 
-  export let cvrepl: CV.Dtpost
+  export let cvrepl: CV.Cvrepl
   export let active_card = ''
   export let render_mode = 0
 
@@ -15,7 +15,7 @@
 
   let _mode = 0
 
-  let on_destroy = (dirty = false) => {
+  export let on_cvrelp_form = (dirty = false) => {
     if (dirty) window.location.reload()
     else _mode = 0
   }
@@ -27,7 +27,10 @@
 <cvrepl-wrap class:fluid={$$props.fluid}>
   {#if _mode == 1}
     <cvrepl-edit>
-      <DtpostForm cvpost_id={cvrepl.dt} cvrepl_id={cvrepl.id} {on_destroy} />
+      <CvreplForm
+        cvpost_id={cvrepl.dt}
+        cvrepl_id={cvrepl.id}
+        on_destroy={on_cvrelp_form} />
     </cvrepl-edit>
   {:else}
     <cvrepl-card
@@ -130,7 +133,10 @@
 
   {#if _mode == 2}
     <cvrepl-repl>
-      <DtpostForm cvpost_id={cvrepl.dt} dtrepl_id={cvrepl.id} {on_destroy} />
+      <CvreplForm
+        cvpost_id={cvrepl.dt}
+        dtrepl_id={cvrepl.id}
+        on_destroy={on_cvrelp_form} />
     </cvrepl-repl>
   {/if}
 </cvrepl-wrap>

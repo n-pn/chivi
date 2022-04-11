@@ -22,7 +22,7 @@
 </script>
 
 <script lang="ts">
-  import { CvpostFull, DtpostList } from '$gui'
+  import { CvpostFull, CvreplList } from '$gui'
 
   export let dboard: CV.Dboard
   export let cvpost: CV.Cvpost
@@ -40,7 +40,7 @@
     <h3>Bình luận</h3>
   </cvrepl-head>
 
-  <DtpostList {tplist} {cvpost} fluid={true} />
+  <CvreplList {tplist} {cvpost} fluid={true} />
 </cvpost-posts>
 
 <style lang="scss">

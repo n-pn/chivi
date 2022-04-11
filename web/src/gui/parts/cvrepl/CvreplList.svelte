@@ -4,13 +4,17 @@
   import { tplist_data, dboard_ctrl } from '$lib/stores'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
-  import DtpostCard from './DtpostCard.svelte'
-  import DtpostForm from './DtpostForm.svelte'
+  import CvreplCard from './CvreplCard.svelte'
+  import CvreplForm from './CvreplForm.svelte'
 </script>
 
 <script lang="ts">
   export let cvpost: CV.Cvpost
   export let tplist: CV.Tplist
+
+  export let on_cvrelp_form = (dirty = false) => {
+    if (dirty) window.location.reload()
+  }
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
   let active_card = $page.url.hash.substring(1)
@@ -26,7 +30,7 @@
 
 <cvrepl-list>
   {#each tplist.items as cvrepl}
-    <DtpostCard {cvrepl} bind:active_card fluid={$$props.fluid} />
+    <CvreplCard {cvrepl} bind:active_card fluid={$$props.fluid} />
   {:else}
     <div class="empty">Chưa có bình luận</div>
   {/each}
@@ -38,7 +42,7 @@
   {/if}
 
   <dtlist-foot>
-    <DtpostForm cvpost_id={cvpost.id} />
+    <CvreplForm cvpost_id={cvpost.id} on_destroy={on_cvrelp_form} />
   </dtlist-foot>
 </cvrepl-list>
 

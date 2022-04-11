@@ -1,6 +1,6 @@
 <script lang="ts">
   import { dboard_ctrl as ctrl, tplist_data as data } from '$lib/stores'
-  import DtpostList from '$gui/parts/cvrepl/DtpostList.svelte'
+  import CvreplList from '$gui/parts/cvrepl/CvreplList.svelte'
   import CvpostList from '$gui/parts/cvpost/CvpostFull.svelte'
 
   let cvpost: CV.Cvpost
@@ -38,7 +38,7 @@
     <CvpostList {cvpost} />
   </section>
   <section class="posts">
-    <DtpostList {tplist} {cvpost} />
+    <CvreplList {tplist} {cvpost} />
   </section>
 {:else}
   Chưa chọn chủ đề

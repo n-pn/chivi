@@ -1,18 +1,6 @@
-<script lang="ts">
+<script context="module" lang="ts">
   import { dtlist_data as data, DtlistData } from '$lib/stores'
-
-  import SIcon from '$gui/atoms/SIcon.svelte'
-  import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
-
-  let dtlist: CV.Dtlist = {
-    items: [],
-    pgidx: 1,
-    pgmax: 1,
-  }
-
-  $: load_topics($data)
-
-  async function load_topics(data: DtlistData) {
+  export function make_api_url(data: DtlistData) {
     const { tab, query } = data
     let api_url = `/api/topics?pg=${query.pg}&lm=10`
 
@@ -32,6 +20,31 @@
         break
     }
 
+    return api_url
+  }
+</script>
+
+<script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
+  import { invalidate } from '$app/navigation'
+
+  let dtlist: CV.Dtlist = {
+    items: [],
+    pgidx: 1,
+    pgmax: 1,
+  }
+
+  $: api_url = make_api_url($data)
+  $: load_topics(api_url)
+
+  const on_cvpost_form = async () => {
+    await invalidate(api_url)
+    await load_topics(api_url)
+  }
+
+  async function load_topics(api_url: string) {
+    console.log(api_url)
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
 
@@ -97,6 +110,7 @@
     dboard={$data[$data.tab]}
     tlabel={$data.query.tl}
     {dtlist}
+    {on_cvpost_form}
     _mode={1} />
 </section>
 

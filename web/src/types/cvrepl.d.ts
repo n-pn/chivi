@@ -1,5 +1,5 @@
 declare namespace CV {
-  interface Dtpost {
+  interface Cvrepl {
     id: number
     no: string
     dt: string
@@ -32,7 +32,7 @@ declare namespace CV {
   }
 
   interface Tplist {
-    items: Array<Dtpost>
+    items: Array<Cvrepl>
     pgidx: number
     pgmax: number
   }

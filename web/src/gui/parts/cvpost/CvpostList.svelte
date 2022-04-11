@@ -18,6 +18,8 @@
   export let tlabel = $page.url.searchParams.get('tl')
   export let _mode = 0
 
+  export let on_cvpost_form = () => window.location.reload()
+
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
 
   function on_navigate(evt: Event, pgidx: number) {
@@ -71,7 +73,9 @@
     <span>Tạo chủ đề mới</span></button>
 </board-foot>
 
-{#if $cvpost_form.actived}<CvpostForm {dboard} />{/if}
+{#if $cvpost_form.actived}
+  <CvpostForm {dboard} on_destroy={on_cvpost_form} />
+{/if}
 
 <style lang="scss">
   board-head {
