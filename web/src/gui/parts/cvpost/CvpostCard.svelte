@@ -93,7 +93,6 @@
         <SIcon name="star" />
         <span>{cvpost.like_count}</span>
       </button>
-      <topic-meta />
     </foot-right>
   </topic-foot>
 </topic-card>

@@ -3,7 +3,7 @@ require "./_base_view"
 struct CV::CvreplView
   include BaseView
 
-  def initialize(@data : Cvrepl, @full = false)
+  def initialize(@data : Cvrepl, @full = false, @memo : UserRepl? = nil)
   end
 
   def to_json(jb : JSON::Builder)
@@ -43,6 +43,11 @@ struct CV::CvreplView
       jb.field "repl_count", @data.repl_count
 
       jb.field "coins", @data.coins
+
+      if memo = @memo
+        jb.field "self_liked", memo.liked
+        jb.field "self_rp_ii", memo.last_rp_ii
+      end
     }
   end
 end

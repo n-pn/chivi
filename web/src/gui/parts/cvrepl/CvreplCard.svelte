@@ -22,6 +22,20 @@
 
   $: board_url = `/forum/-${cvrepl.db_bslug}`
   $: topic_url = `${board_url}/-${cvrepl.dt_tslug}-${cvrepl.dt}`
+
+  async function toggle_like() {
+    const action = cvrepl.self_liked ? 'unlike' : 'like'
+    const api_url = `/api/!repls/${cvrepl.id}/${action}`
+    const api_res = await fetch(api_url, { method: 'PUT' })
+
+    if (!api_res.ok) {
+      console.log(await api_res.text())
+    } else {
+      const payload = await api_res.json()
+      cvrepl.like_count = payload.like_count
+      cvrepl.self_liked = !cvrepl.self_liked
+    }
+  }
 </script>
 
 <cvrepl-wrap class:fluid={$$props.fluid}>
@@ -113,8 +127,11 @@
 
         <cvrepl-react>
           <cvrepl-meta>
-            <button class="btn">
-              <span>{cvrepl.like_count > 0 ? cvrepl.like_count : ''}</span>
+            <button
+              class="btn"
+              class:_active={cvrepl.self_liked}
+              disabled={$session.privi < 0}
+              on:click={toggle_like}>
               <SIcon name="thumb-up" />
               <span>Thích</span>
             </button>
@@ -218,6 +235,10 @@
     @include ftsize(sm);
     @include hover {
       @include fgcolor(primary, 5);
+    }
+
+    &._active {
+      @include fgcolor(warning, 5);
     }
   }
 

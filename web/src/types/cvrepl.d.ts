@@ -29,6 +29,9 @@ declare namespace CV {
     edit_count: number
     like_count: number
     repl_count: number
+
+    self_liked?: boolean
+    self_rp_ii?: number
   }
 
   interface Tplist {

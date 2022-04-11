@@ -95,6 +95,11 @@ class CV::Cvrepl
     self.otext.split("\n", 2).first? || ""
   end
 
+  def inc_like_count!(value = 1)
+    self.like_count = self.like_count + value
+    self.save!
+  end
+
   #################
 
   CACHE = RamCache(Int64, self).new(1024, ttl: 20.minutes)

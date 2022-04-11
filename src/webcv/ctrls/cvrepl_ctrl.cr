@@ -7,7 +7,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     query =
       Cvrepl.query
         .sort_by(params["sort"]? || "id")
-        .where("state >= 0 AND ii > 0")
+        .where("ii > 0")
 
     if cvpost = params["cvpost"]?.try { |x| Cvpost.load!(x) }
       query.filter_topic(cvpost)
@@ -23,11 +23,10 @@ class CV::CvreplCtrl < CV::BaseCtrl
       total = query.dup.limit(limit * 3 + offset).offset(0).count
     end
 
-    # TODO: load user trace
-
     query.with_cvpost unless cvpost
     query.with_cvuser unless cvuser
-    items = query.limit(limit).offset(offset)
+    items = query.limit(limit).offset(offset).to_a
+    memos = UserRepl.glob(_cvuser, items.map(&.id))
 
     send_json({
       tplist: {
@@ -37,7 +36,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
         items: items.map do |x|
           x.cvuser = cvuser if cvuser
           x.cvpost = cvpost if cvpost
-          CvreplView.new(x)
+          CvreplView.new(x, false, memo: memos[x.id]?)
         end,
       },
     })

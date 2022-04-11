@@ -10,15 +10,18 @@ class CV::UsercpCtrl < CV::BaseCtrl
     _pgidx, limit, offset = params.page_info(min: 10)
     user_id = _cvuser.id
 
-    query = Cvrepl.query
-      .where("state >= 0 AND cvuser_id != ?", user_id)
-      .where("(repl_cvuser_id = ? OR tagged_ids @> ?::bigint[])", user_id, [user_id])
-      .order_by(id: :desc)
-      .with_cvpost.with_cvuser
-      .limit(limit).offset(offset)
+    query = Cvrepl.query.order_by(id: :desc)
+    query.where("state >= 0 AND cvuser_id != ?", user_id)
+    query.where("(repl_cvuser_id = ? OR tagged_ids @> ?::bigint[])", user_id, [user_id])
 
-    set_cache :private, maxage: 5
-    send_json(query.map { |x| CvreplView.new(x, full: true) })
+    query.with_cvpost.with_cvuser
+    query.limit(limit).offset(offset)
+
+    items = query.to_a
+    memos = UserRepl.glob(_cvuser, items.map(&.id))
+
+    set_cache :private, maxage: 3
+    send_json(items.map { |x| CvreplView.new(x, full: true, memo: memos[x.id]?) })
   end
 
   def upgrade
@@ -49,6 +52,30 @@ class CV::UsercpCtrl < CV::BaseCtrl
       cvpost.inc_like_count!(-1)
       target.set_liked!(false)
       serv_json({like_count: cvpost.like_count})
+    else
+      serv_text("Hành động không được hỗ trợ", 400)
+    end
+  end
+
+  def mark_repl
+    return serv_text("Bạn cần đăng nhập", 403) if _cvuser.privi < 0
+
+    cvrepl = Cvrepl.load!(params["repl_id"].to_i64)
+    target = UserRepl.find_or_new(_cvuser.id, cvrepl.id)
+
+    case params["action"]?
+    when "like"
+      return serv_text("Bạn đã ưa thích bình luận", 400) if target.liked
+
+      cvrepl.inc_like_count!(1)
+      target.set_liked!(true)
+      serv_json({like_count: cvrepl.like_count})
+    when "unlike"
+      return serv_text("Bạn chưa ưa thích bình luận", 400) unless target.liked
+
+      cvrepl.inc_like_count!(-1)
+      target.set_liked!(false)
+      serv_json({like_count: cvrepl.like_count})
     else
       serv_text("Hành động không được hỗ trợ", 400)
     end

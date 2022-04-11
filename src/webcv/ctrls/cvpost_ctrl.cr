@@ -25,9 +25,9 @@ class CV::CvpostCtrl < CV::BaseCtrl
     query.with_nvinfo unless nvinfo
     query.with_cvuser unless cvuser
     query.with_rpbody.with_lastrp(&.with_cvuser)
-    items = query.limit(limit).offset(offset).to_a
 
-    memos = UserPost.glob(_cvuser.id, items.map(&.id))
+    items = query.limit(limit).offset(offset).to_a
+    memos = UserPost.glob(_cvuser, items.map(&.id))
 
     send_json({
       dtlist: {
@@ -51,7 +51,11 @@ class CV::CvpostCtrl < CV::BaseCtrl
 
     # TODO: load user trace
 
-    send_json({cvpost: CvpostView.new(cvpost, full: true)})
+    if _cvuser.privi >= 0
+      memo = UserPost.find({cvuser_id: _cvuser.id, cvpost_id: cvpost.id})
+    end
+
+    send_json({cvpost: CvpostView.new(cvpost, full: true, memo: memo)})
   rescue err
     Log.error { err }
     halt!(404, "Chủ đề không tồn tại!")

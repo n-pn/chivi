@@ -27,21 +27,17 @@ class CV::UserPost
 
   ############
 
-  CACHE = {} of String => self
-
   def self.find_or_new(cvuser_id : Int64, cvpost_id : Int64) : self
-    CACHE["#{cvuser_id}-#{cvpost_id}"] ||= begin
-      params = {cvuser_id: cvuser_id, cvpost_id: cvpost_id}
-      self.find(params) || self.new(params)
-    end
+    params = {cvuser_id: cvuser_id, cvpost_id: cvpost_id}
+    self.find(params) || self.new(params)
   end
 
-  def self.find_or_new(cvuser : Cvuser, nvinfo : Nvinfo) : self
-    self.find_or_new(cvuser.id, nvinfo.id)
+  def self.find_or_new(cvuser : Cvuser, cvpost : Cvpost) : self
+    self.find_or_new(cvuser.id, cvpost.id)
   end
 
-  def self.upsert!(cvuser : Cvuser, nvinfo : Nvinfo) : self
-    user_post = find_or_new(cvuser, nvinfo)
+  def self.upsert!(cvuser : Cvuser, cvpost : Cvpost) : self
+    user_post = find_or_new(cvuser, cvpost)
     yield user_post
     user_post.save!
   end
@@ -52,12 +48,14 @@ class CV::UserPost
     user_post.save!
   end
 
-  def self.glob(cvuser_id : Int64, cvpost_ids : Array(Int64))
-    result = self.query.where({cvuser_id: cvuser_id})
-      .where { cvpost_id.in? cvpost_ids }
-
+  def self.glob(cvuser : Cvuser, cvpost_ids : Array(Int64))
     output = {} of Int64 => self
-    result.each { |entry| output[entry.cvpost_id] = entry }
+    return output if cvuser.privi < 0
+
+    result = self.query.where({cvuser_id: cvuser.id})
+      .where { cvpost_id.in? cvpost_ids }
+      .each { |x| output[x.cvpost_id] = x }
+
     output
   end
 end

@@ -13,6 +13,20 @@
   export let on_cvpost_form = () => window.location.reload()
 
   $: board_url = `/forum/-${dboard.bslug}`
+
+  async function toggle_like() {
+    const action = cvpost.self_liked ? 'unlike' : 'like'
+    const api_url = `/api/!posts/${cvpost.id}/${action}`
+    const api_res = await fetch(api_url, { method: 'PUT' })
+
+    if (!api_res.ok) {
+      console.log(await api_res.text())
+    } else {
+      const payload = await api_res.json()
+      cvpost.like_count = payload.like_count
+      cvpost.self_liked = !cvpost.self_liked
+    }
+  }
 </script>
 
 <topic-full class:fluid={$$props.fluid}>
@@ -57,22 +71,27 @@
       {/if}
 
       <foot-right>
-        <topic-meta>
+        <topic-meta class="meta">
           <SIcon name="messages" />
           <span>{cvpost.post_count}</span>
         </topic-meta>
 
         <topic-sep>·</topic-sep>
-        <topic-meta>
+        <topic-meta class="meta">
           <SIcon name="eye" />
           <span>{cvpost.view_count}</span>
         </topic-meta>
 
         <topic-sep>·</topic-sep>
-        <topic-meta>
+
+        <button
+          class="meta"
+          class:_active={cvpost.self_liked}
+          disabled={$session.privi < 0}
+          on:click={toggle_like}>
           <SIcon name="star" />
           <span>{cvpost.like_count}</span>
-        </topic-meta>
+        </button>
       </foot-right>
     </topic-foot>
   </topic-head>
@@ -187,9 +206,16 @@
     @include clamp($width: null);
   }
 
-  topic-meta {
+  .meta {
     @include flex-cy;
+    @include fgcolor(tert);
+    padding: 0;
+    background: transparent;
     gap: 0.25rem;
+
+    &._active {
+      @include fgcolor(warning, 5);
+    }
   }
 
   foot-right {
