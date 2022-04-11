@@ -1,7 +1,9 @@
 require "json"
 require "option_parser"
 
-require "./shared/http_client"
+require "../shared/bootstrap"
+require "../shared/http_client"
+require "../shared/yslist_raw"
 
 class CV::YslistCrawl
   DIR = "_db/yousuu/lists"
@@ -9,6 +11,8 @@ class CV::YslistCrawl
 
   def initialize(regen_proxy = false, @type = "man", @screen = "comprehensive")
     @http = HttpClient.new(regen_proxy)
+
+    @channel = Channel(String).new
   end
 
   enum Mode
@@ -21,6 +25,21 @@ class CV::YslistCrawl
     case mode
     when .tail? then queue.reverse!
     when .rand? then queue.shuffle!
+    end
+
+    done = false
+
+    spawn do
+      loop do
+        break if done
+
+        select
+        when file = @channel.receive
+          seed_file!(file)
+        when timeout(1.second)
+          sleep 1.second
+        end
+      end
     end
 
     loops = 0
@@ -55,6 +74,8 @@ class CV::YslistCrawl
       queue = fails
       loops += 1
     end
+
+    done = true
   end
 
   def page_url(page = 1)
@@ -63,20 +84,30 @@ class CV::YslistCrawl
 
   def crawl_page!(page : Int32, label : String)
     file = "#{DIR}/#{@type}-#{@screen}/#{page}.json"
-    unless still_good?(file)
+
+    unless FileUtil.mtime(file).try { |x| x + 12.hours > Time.utc }
       return page unless @http.save!(page_url(page), file, label)
     end
 
-    # TODO: seed database
+    @channel.send(file)
+    nil
   end
 
-  def still_good?(file : String)
-    return false unless mtime = File.info?(file).try(&.modification_time)
-    mtime > Time.utc - 4.hours
+  def seed_file!(file : String) : Nil
+    stime = FileUtil.mtime(file).not_nil!.to_unix
+    lists = YslistRaw.parse_list(File.read(file))
+    lists.each(&.seed!(stime))
+
+    Log.info { "- yslists: #{Yslist.query.count}".colorize.cyan }
+  rescue err : JSON::ParseException
+    puts err
+    File.delete(file)
+  rescue err
+    puts err
   end
 
   def self.run!(argv = ARGV)
-    crawl_mode = Mode::TAIL
+    crawl_mode = Mode::Tail
     recheck_proxy = false
 
     type = "man"

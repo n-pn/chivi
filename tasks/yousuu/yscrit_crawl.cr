@@ -1,4 +1,4 @@
-require "./shared/http_client"
+require "../shared/http_client"
 require "../shared/yscrit_raw"
 
 class CV::CrawlYscrit

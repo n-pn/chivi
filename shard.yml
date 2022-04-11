@@ -48,14 +48,17 @@ targets:
   upload_zhtext:
     main: tasks/zhtext/upload_data.cr
 
-  ys_book_cr:
-    main: tasks/yousuu/ys_serial.cr
+  ysbook_crawl:
+    main: tasks/yousuu/ysbook_crawl.cr
 
-  ys_crit_cr:
-    main: tasks/yousuu/ys_crit_cr.cr
+  yscrit_crawl:
+    main: tasks/yousuu/yscrit_crawl.cr
 
-  ys_repl_cr:
-    main: tasks/yousuu/ys_repl_cr.cr
+  ysrepl_crawl:
+    main: tasks/yousuu/ysrepl_crawl.cr
+
+  yslist_crawl:
+    main: tasks/yousuu/yslist_crawl.cr
 
   yscrit_seed:
     main: tasks/pgdata/yscrit_seed.cr

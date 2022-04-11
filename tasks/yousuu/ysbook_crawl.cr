@@ -2,7 +2,7 @@ require "json"
 require "option_parser"
 
 require "../shared/raw_ysbook"
-require "./shared/http_client"
+require "../shared/http_client"
 
 class CV::CrawlYsbook
   DIR = "_db/yousuu/infos"

@@ -40,13 +40,19 @@ then
   rsync -azui --no-p "$DIR/repls" $SSH_DIR
 fi
 
+if [[ $1 == "all" || $* == *lists* ]]
+then
+  echo upload raw reply jsons!
+  rsync -azui --no-p "$DIR/lists" $SSH_DIR
+fi
+
 if [[ $1 == "all" || $* == *execs* ]]
 then
   echo upload service binaries!
 
   rsync -azui --no-p "$DIR/limit.txt" $SSH_DIR
-  shards build --release ys_book_cr && rsync -azui --no-p "bin/ys_book_cr" "$SSH/bin"
-
-  shards build --release ys_crit_cr && rsync -azui --no-p "bin/ys_crit_cr" "$SSH/bin"
-  shards build --release ys_repl_cr && rsync -azui --no-p "bin/ys_repl_cr" "$SSH/bin"
+  shards build --release ysbook_crawl && rsync -azui --no-p "bin/ysbook_crawl" "$SSH/bin"
+  shards build --release yscrit_crawl && rsync -azui --no-p "bin/yscrit_crawl" "$SSH/bin"
+  shards build --release ysrepl_crawl && rsync -azui --no-p "bin/ysrepl_crawl" "$SSH/bin"
+  shards build --release yslist_crawl && rsync -azui --no-p "bin/yslist_crawl" "$SSH/bin"
 fi
