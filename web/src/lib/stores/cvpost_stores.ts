@@ -42,7 +42,7 @@ export const form = {
     // TODO
     return false
   },
-
+  reset: () => form.set(init()),
   async submit(api_url: string) {
     const err = form.validate()
     if (err) return err

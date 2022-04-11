@@ -43,8 +43,13 @@
     })
 
     const payload = await api_res.json()
-    if (api_res.ok) on_destroy(true)
-    else error = payload.error
+    if (!api_res.ok) {
+      error = payload.error
+      return
+    } else {
+      form.input = ''
+      on_destroy(true)
+    }
   }
 </script>
 

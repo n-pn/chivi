@@ -15,7 +15,7 @@
   export let dboard: CV.Dboard
   export let dtlist: CV.Dtlist
 
-  export let tlabel = $page.url.searchParams.get('tl')
+  export let tlabel = $page.url.searchParams.get('lb')
   export let _mode = 0
 
   export let on_cvpost_form = () => window.location.reload()
@@ -40,7 +40,7 @@
   {#each dlabels as value, index}
     <a
       class="m-label _{index + 1}"
-      href={pager.gen_url({ tl: value })}
+      href={pager.gen_url({ lb: value })}
       on:click={(e) => dboard_ctrl.view_board(e, dboard, value)}>
       <span>{value}</span>
       {#if tlabel == value}<SIcon name="check" /> {/if}

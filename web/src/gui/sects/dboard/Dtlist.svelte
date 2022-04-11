@@ -4,7 +4,7 @@
     const { tab, query } = data
     let api_url = `/api/topics?pg=${query.pg}&lm=10`
 
-    if (query.tl) api_url += '&dlabel=' + query.tl
+    if (query.lb) api_url += '&dlabel=' + query.lb
     if (query.op) api_url += '&cvuser=' + query.op
 
     switch (tab) {
@@ -44,7 +44,6 @@
   }
 
   async function load_topics(api_url: string) {
-    console.log(api_url)
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
 
@@ -55,7 +54,7 @@
   function change_tab(tab: CV.DtlistType) {
     data.update((x) => {
       x.tab = tab
-      x.query = { pg: 1, tl: '', kw: '', op: '' }
+      x.query = { pg: 1, lb: '', kw: '', op: '' }
       return x
     })
   }
@@ -108,7 +107,7 @@
 <section>
   <CvpostList
     dboard={$data[$data.tab]}
-    tlabel={$data.query.tl}
+    tlabel={$data.query.lb}
     {dtlist}
     {on_cvpost_form}
     _mode={1} />

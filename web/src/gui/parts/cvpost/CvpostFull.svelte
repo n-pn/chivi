@@ -9,6 +9,8 @@
   export let dboard: CV.Dboard = cvpost.dboard
   export let _all = cvpost.bhtml.length < 500
 
+  export let on_cvpost_form = () => window.location.reload()
+
   $: board_url = `/forum/-${dboard.bslug}`
 </script>
 
@@ -88,7 +90,9 @@
   </topic-pbody>
 </topic-full>
 
-{#if $cvpost_ctrl.actived}<CvpostForm {dboard} />{/if}
+{#if $cvpost_ctrl.actived}
+  <CvpostForm {dboard} on_destroy={on_cvpost_form} />
+{/if}
 
 <style lang="scss">
   topic-full {

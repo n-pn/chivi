@@ -58,6 +58,7 @@
     error = await data.submit(api_url)
     if (error) return
 
+    data.init()
     on_destroy()
     ctrl.hide()
   }

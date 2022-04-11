@@ -5,14 +5,14 @@ export class DtlistData {
   book?: CV.Dboard
 
   tab: CV.DtlistType = ''
-  query = { pg: 1, tl: '', kw: '', op: '' }
+  query = { pg: 1, lb: '', kw: '', op: '' }
 }
 
 export const dtlist_data = {
   ...writable(new DtlistData()),
-  set_board(board: CV.Dboard | null, tl = '', pg = 1) {
+  set_board(board: CV.Dboard | null, lb = '', pg = 1) {
     dtlist_data.update((x) => {
-      x.query = { tl, pg, kw: '', op: '' }
+      x.query = { lb, pg, kw: '', op: '' }
       if (!board) return x
 
       if (board.id == x.book?.id) {
@@ -33,20 +33,20 @@ export const dtlist_data = {
   },
   set_label(label = '') {
     dtlist_data.update((x) => {
-      x.query.tl = label
+      x.query.lb = label
       return x
     })
   },
 }
 
 export class TplistData {
-  topic: CV.Dtopic
+  topic: CV.Cvpost
   query = { pg: 1, kw: '', op: '' }
 }
 
 export const tplist_data = {
   ...writable(new TplistData()),
-  set_topic(topic: CV.Dtopic, pg = 1) {
+  set_topic(topic: CV.Cvpost, pg = 1) {
     tplist_data.update((x) => {
       x.topic = topic
       x.query = { pg, kw: '', op: '' }
@@ -70,12 +70,12 @@ export const dboard_ctrl = {
     const actived = get(dboard_ctrl).actived
     if (actived) evt.preventDefault()
   },
-  view_board(evt: Event, board: CV.Dboard | null, tl = '', pg = 1) {
+  view_board(evt: Event, board: CV.Dboard | null, lb = '', pg = 1) {
     dboard_ctrl.stop_event(evt)
     dboard_ctrl.change_tab(0)
-    dtlist_data.set_board(board, tl, pg)
+    dtlist_data.set_board(board, lb, pg)
   },
-  view_topic(evt: Event, topic: CV.Dtopic) {
+  view_topic(evt: Event, topic: CV.Cvpost) {
     dboard_ctrl.stop_event(evt)
     dboard_ctrl.change_tab(1)
     tplist_data.set_topic(topic)

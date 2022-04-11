@@ -29,8 +29,6 @@ class CV::CvreplCtrl < CV::BaseCtrl
     query.with_cvuser unless cvuser
     items = query.limit(limit).offset(offset)
 
-    set_cache :public, maxage: 20
-
     send_json({
       tplist: {
         total: total,
@@ -47,7 +45,6 @@ class CV::CvreplCtrl < CV::BaseCtrl
 
   def detail
     cvrepl = Cvrepl.load!(params["cvrepl"].to_i64)
-    set_cache maxage: 30
 
     send_json({
       id:    cvrepl.id,

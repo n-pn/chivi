@@ -27,8 +27,6 @@ class CV::CvpostCtrl < CV::BaseCtrl
     query.with_rpbody.with_lastrp(&.with_cvuser)
     items = query.limit(limit).offset(offset).to_a
 
-    set_cache :public, maxage: 20
-
     send_json({
       dtlist: {
         total: total,
@@ -51,7 +49,6 @@ class CV::CvpostCtrl < CV::BaseCtrl
 
     # TODO: load user trace
 
-    set_cache :public, maxage: 20
     send_json({cvpost: CvpostView.new(cvpost, full: true)})
   rescue err
     Log.error { err }
@@ -62,7 +59,6 @@ class CV::CvpostCtrl < CV::BaseCtrl
     oid = params["cvpost"]
     cvpost = Cvpost.load!(oid)
 
-    set_cache :public, maxage: 20
     send_json({
       id:     oid,
       title:  cvpost.title,

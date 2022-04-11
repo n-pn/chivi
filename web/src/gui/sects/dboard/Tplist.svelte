@@ -1,7 +1,20 @@
-<script lang="ts">
+<script context="module" lang="ts">
   import { dboard_ctrl as ctrl, tplist_data as data } from '$lib/stores'
+
+  export function make_api_url(data: CV.Cvpost, { pg, op }) {
+    let api_url = `/api/tposts?pg=${pg}&lm=20`
+    if (data) api_url += '&cvpost=' + data.id
+    if (op) api_url += '&uname=' + op
+
+    return api_url
+  }
+</script>
+
+<script lang="ts">
+  import { invalidate } from '$app/navigation'
+
+  import CvpostFull from '$gui/parts/cvpost/CvpostFull.svelte'
   import CvreplList from '$gui/parts/cvrepl/CvreplList.svelte'
-  import CvpostList from '$gui/parts/cvpost/CvpostFull.svelte'
 
   let cvpost: CV.Cvpost
   let tplist: CV.Tplist = {
@@ -10,21 +23,29 @@
     pgmax: 1,
   }
 
-  $: if ($ctrl.actived && $data.topic) load_cvpost($data.topic.id)
-  $: if (cvpost) load_tposts(cvpost, $data.query)
+  $: post_api_url = `/api/topics/${$data.topic.id}`
+  $: list_api_url = make_api_url(cvpost, $data.query)
 
-  async function load_cvpost(topic_id: string) {
-    const api_url = `/api/topics/${topic_id}`
-    const api_res = await fetch(api_url)
+  $: if ($ctrl.actived && $data.topic) load_cvpost(post_api_url)
+  $: if (cvpost) load_tposts(list_api_url)
+
+  const on_cvpost_form = async () => {
+    await invalidate(post_api_url)
+    await load_cvpost(post_api_url)
+  }
+
+  const on_cvrepl_form = async () => {
+    await invalidate(list_api_url)
+    await load_tposts(list_api_url)
+  }
+
+  async function load_cvpost(post_api_url: string) {
+    const api_res = await fetch(post_api_url)
     const payload = await api_res.json()
     cvpost = payload.props.cvpost
   }
 
-  async function load_tposts(topic: CV.Cvpost, { pg, op }) {
-    let api_url = `/api/tposts?pg=${pg}&lm=20`
-    if (topic) api_url += '&cvpost=' + topic.id
-    if (op) api_url += '&uname=' + op
-
+  async function load_tposts(api_url: string) {
     const res = await fetch(api_url)
     const data = await res.json()
 
@@ -35,10 +56,10 @@
 
 {#if cvpost}
   <section class="topic">
-    <CvpostList {cvpost} />
+    <CvpostFull {cvpost} {on_cvpost_form} />
   </section>
   <section class="posts">
-    <CvreplList {tplist} {cvpost} />
+    <CvreplList {tplist} {cvpost} {on_cvrepl_form} />
   </section>
 {:else}
   Chưa chọn chủ đề

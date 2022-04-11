@@ -12,7 +12,7 @@
   export let cvpost: CV.Cvpost
   export let tplist: CV.Tplist
 
-  export let on_cvrelp_form = (dirty = false) => {
+  export let on_cvrepl_form = (dirty = false) => {
     if (dirty) window.location.reload()
   }
 
@@ -42,7 +42,7 @@
   {/if}
 
   <dtlist-foot>
-    <CvreplForm cvpost_id={cvpost.id} on_destroy={on_cvrelp_form} />
+    <CvreplForm cvpost_id={cvpost.id} on_destroy={on_cvrepl_form} />
   </dtlist-foot>
 </cvrepl-list>
 
