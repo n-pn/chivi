@@ -36,6 +36,7 @@ class CV::Nvseed
 
   column utime : Int64 = 0 # seed page update time as total seconds since the epoch
   column stime : Int64 = 0 # last crawled at
+  column ftime : Int64 = 0 # last crawled at
 
   column chap_count : Int32 = 0   # total chapters
   column last_schid : String = "" # seed's latest chap id
@@ -230,7 +231,7 @@ class CV::Nvseed
     seeds = self.nvinfo.nvseeds.to_a.sort_by!(&.zseed)
     seeds.shift if seeds.first?.try(&.id.== self.id)
 
-    ttl = map_ttl(force: false)
+    ttl = map_ttl(force: force)
 
     seeds.each_with_index(1) do |nvseed, idx|
       next unless fetch && self.remote?(force: false)
@@ -288,10 +289,10 @@ class CV::Nvseed
     end
   end
 
-  def self.init!(nvinfo : Nvinfo, zseed : Int32)
+  def self.init!(nvinfo : Nvinfo, zseed : Int32, fetch : Bool = true)
     case zseed
-    when  0 then init!(nvinfo, "chivi").tap(&.remap!(fetch: false))
-    when 63 then init!(nvinfo, "users")
+    when  0 then init!(nvinfo, "chivi").tap(&.remap!(fetch: fetch))
+    when 63 then init!(nvinfo, "users") # TODO: check folder and recover
     else         raise "Source #{zseed} not found!"
     end
   end
