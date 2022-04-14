@@ -14,7 +14,6 @@ CREATE TABLE nvseeds (
 
   utime bigint not null default 0,
   stime bigint not null default 0,
-  ftime bigint not null default 0,
 
   chap_count int not null default 0,
   last_schid text not null default '',

@@ -36,7 +36,6 @@ class CV::Nvseed
 
   column utime : Int64 = 0 # seed page update time as total seconds since the epoch
   column stime : Int64 = 0 # last crawled at
-  column ftime : Int64 = 0 # last crawled at
 
   column chap_count : Int32 = 0   # total chapters
   column last_schid : String = "" # seed's latest chap id
@@ -155,7 +154,7 @@ class CV::Nvseed
     type == 4 || (force && type == 3)
   end
 
-  def fetch!(ttl : Time::Span, force : Bool = false) : Nil
+  def fetch!(ttl : Time::Span, force : Bool = false, @lbl = "-/-") : Nil
     parser = RemoteInfo.new(sname, snvid, ttl: ttl)
     changed = parser.last_schid != self.last_schid
 
@@ -193,7 +192,6 @@ class CV::Nvseed
 
     self.update_latest(chaps.last, force: false)
     self.update_mftime(utime)
-    self.stime = Time.utc.to_unix
 
     self.save!
   end
@@ -203,11 +201,7 @@ class CV::Nvseed
     infos = other._repo.fetch_as_proxies!(start, other.chap_count)
 
     if other.sname == "users"
-      infos.select! do |chap|
-        next false if chap.stats.chars == 0
-        next true unless prev = _repo.chinfo(chap.chidx)
-        prev.stats.utime < chap.stats.utime
-      end
+      infos.select! { |chap| chap.stats.chars > 0 }
     end
 
     return start if infos.empty?
@@ -234,8 +228,8 @@ class CV::Nvseed
     ttl = map_ttl(force: force)
 
     seeds.each_with_index(1) do |nvseed, idx|
-      next unless fetch && self.remote?(force: false)
-      nvseed.fetch!(ttl: ttl * idx, force: false)
+      next unless fetch && nvseed.remote?(force: false)
+      nvseed.fetch!(ttl: ttl * (2 ** idx), force: false, lbl: "#{idx}/#{seeds.size}")
     rescue err
       puts err.colorize.red
     end
@@ -254,15 +248,16 @@ class CV::Nvseed
   def map_ttl(force : Bool = false)
     case self.nvinfo.status
     when 0 then force ? 5.minutes : 60.minutes
-    when 1 then force ? 2.hours : 12.hours
+    when 1 then force ? 5.hours : 60.hours
     when 2 then force ? 1.days : 12.days
-    else        force ? 12.hours : 6.days
+    else        force ? 5.hours : 60.days
     end
   end
 
   def refresh!(force : Bool = false) : Nil
     if zseed == 0 # sname == "chivi"
       self.remap!(force: force, fetch: true)
+      self.update({stime: Time.utc.to_unix})
     elsif self.remote?(force: force)
       self.fetch!(ttl: map_ttl(force: force), force: force)
       Nvseed.load!(self.nvinfo, 0).tap(&.proxy!(self)).reset_cache!
