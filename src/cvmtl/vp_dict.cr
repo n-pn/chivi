@@ -110,8 +110,8 @@ class CV::VpDict
     {node.base, node.privs[uname]?}
   end
 
-  def set(key : String, vals : Array(String))
-    set(VpTerm.new(key, vals, mtime: 0))
+  def set(key : String, vals : Array(String), attr = "")
+    set(VpTerm.new(key, vals, attr, mtime: 0))
   end
 
   def set(term : VpTerm) : VpTerm?
@@ -123,7 +123,8 @@ class CV::VpDict
 
   def set!(term : VpTerm) : VpTerm?
     return unless set(term)
-    File.open(@flog, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
+    file = term.mtime > 0 ? @flog : @file
+    File.open(file, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
     term
   end
 

@@ -84,6 +84,10 @@ class CV::VpTerm
     io << ']'
   end
 
+  def utime
+    @mtime * 60 + EPOCH
+  end
+
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "key", @key

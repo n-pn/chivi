@@ -79,7 +79,13 @@ class CV::QtransCtrl < CV::BaseCtrl
       response << "\n"
       MtCore.hanviet_mtl.translit(input, apply_cap: false).to_s(response)
     when "plain"
-      convert(dname, parse_lines(input), response, plain: true)
+      lines = input.split("\n")
+
+      if params["trad"]? == "true"
+        lines.map! { |x| MtCore.trad_to_simp(x) }
+      end
+
+      convert(dname, lines, response, plain: true)
     else
       convert(dname, parse_lines(input), response)
     end

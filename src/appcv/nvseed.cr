@@ -151,7 +151,7 @@ class CV::Nvseed
 
   def remote?(force : Bool = true)
     type = SnameMap.map_type(sname)
-    type == 3 || (force && type == 4)
+    type == 4 || (force && type == 3)
   end
 
   def fetch!(ttl : Time::Span, force : Bool = false) : Nil
@@ -230,10 +230,11 @@ class CV::Nvseed
     seeds = self.nvinfo.nvseeds.to_a.sort_by!(&.zseed)
     seeds.shift if seeds.first?.try(&.id.== self.id)
 
-    seeds.each_with_index do |nvseed, idx|
+    ttl = map_ttl(force: false)
+
+    seeds.each_with_index(1) do |nvseed, idx|
       next unless fetch && self.remote?(force: false)
-      ttl = map_expiry(self.nvinfo.status, force: false)
-      nvseed.fetch!(ttl: ttl * (2 ** idx), force: false)
+      nvseed.fetch!(ttl: ttl * idx, force: false)
     rescue err
       puts err.colorize.red
     end
@@ -246,23 +247,23 @@ class CV::Nvseed
   def staled?(privi : Int32 = 4, force : Bool = false)
     return true if self.chap_count == 0
     tspan = Time.utc - Time.unix(self.stime)
-    tspan > map_expiry(self.status, force) * (4 - privi)
+    tspan >= map_ttl(force: force) * (4 - privi)
   end
 
-  def map_expiry(status = self.status, force : Bool = false)
-    case self.status
-    when 0 then force ? 3.minutes : 1.hours
-    when 1 then force ? 2.hours : 2.days
-    when 2 then force ? 3.days : 1.weeks
-    else        force ? 4.hours : 4.days
+  def map_ttl(force : Bool = false)
+    case self.nvinfo.status
+    when 0 then force ? 5.minutes : 60.minutes
+    when 1 then force ? 2.hours : 12.hours
+    when 2 then force ? 1.days : 12.days
+    else        force ? 12.hours : 6.days
     end
   end
 
   def refresh!(force : Bool = false) : Nil
-    if sname == "chivi"
+    if zseed == 0 # sname == "chivi"
       self.remap!(force: force, fetch: true)
     elsif self.remote?(force: force)
-      self.fetch!(ttl: map_expiry(force: force), force: force)
+      self.fetch!(ttl: map_ttl(force: force), force: force)
       Nvseed.load!(self.nvinfo, 0).tap(&.proxy!(self)).reset_cache!
     else
       reset_cache! if force

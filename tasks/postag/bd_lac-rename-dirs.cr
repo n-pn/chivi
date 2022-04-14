@@ -67,7 +67,7 @@ def find(dir : String)
   bhash = dir.split("-").last
   CV::Nvinfo.find({bhash: bhash}).try { |x| return x }
 
-  books = CV::Nvinfo.query.where("bhash LIKE '#{bhash}%'").to_a
+  books = CV::Nvinfo.query.where("bslug LIKE '#{bhash}%'").to_a
   raise "Duplicate name!" if books.size != 1
 
   books.first?
