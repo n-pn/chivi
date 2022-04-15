@@ -65,6 +65,7 @@
 
   <table>
     <thead>
+      <th>#</th>
       <th>Uname</th>
       <th>Mtime</th>
       <th>Key</th>
@@ -78,6 +79,7 @@
       {#each data as { ptag, attr, key, val, uname, mtime }, idx}
         {@const fresh = mtime > epoch}
         <tr>
+          <td>{idx + 1}</td>
           <td>{uname}</td>
           <td class="mtime">{rel_time(mtime)}</td>
           <td class="key" on:click={() => show_lookup(key)}>{key}</td>

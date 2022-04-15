@@ -167,8 +167,6 @@ class CV::PostagInit
     end
   end
 
-  @@similar = VpDict.new("#{DIR}/patch/similar-tags.tsv")
-
   record Conflict, term : VpTerm, ptag : String do
     def to_json(jb)
       {
@@ -188,14 +186,15 @@ class CV::PostagInit
     TARGETS[target] ||= VpDict.new("#{DIR}/patch/#{target}-tags.tsv")
   end
 
+  class_getter similar = VpDict.new("#{DIR}/patch/similar-tags.tsv")
+  class_getter topatch = VpDict.new("#{DIR}/patch/topatch-tags.tsv")
+
   def match(target = "regular")
     matcher = VpDict.load(target)
-    target = self.class.get_target(target)
-
     conflicts = [] of Conflict
 
     @data.each do |key, counts|
-      next if target.find(key) || @@similar.find(key)
+      next if @@topatch.find(key) || @@similar.find(key)
       ptag = counts.first_key
 
       next unless term = matcher.find(key)
@@ -206,7 +205,7 @@ class CV::PostagInit
         # next if PFR14.includes?(key)
 
         if attr = fix_ptag?(term, ptag)
-          target.set!(VpTerm.new(key, term.val, attr, mtime: 0))
+          @@topatch.set!(VpTerm.new(key, term.val, attr, mtime: 0))
         else
           conflicts << Conflict.new(term, ptag)
         end
@@ -214,7 +213,6 @@ class CV::PostagInit
     end
 
     @@similar.save!
-
     conflicts
   end
 end

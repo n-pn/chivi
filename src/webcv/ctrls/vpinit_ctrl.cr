@@ -14,13 +14,13 @@ class CV::VpinitCtrl < CV::BaseCtrl
   def upsert
     return halt! 400, "Not authorized" if _cvuser.privi < 3
 
-    target = params["target"]
     key = params["key"]
     val = params["val"]
     tag = params["tag"]
 
     vpterm = VpTerm.new(key, [val], tag, uname: _cvuser.uname, mtime: 0)
-    result = PostagInit.get_target(target).set!(vpterm)
+    result = PostagInit.topatch.set!(vpterm)
+
     send_json({result: result})
   end
 end

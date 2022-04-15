@@ -106,7 +106,7 @@ module CV::NvinfoModel
   end
 
   def fix_names!(bdict : String = self.dname)
-    self.vname = BookUtil.btitle_vname(self.zname, self.bhash)
+    self.vname = BookUtil.btitle_vname(self.zname, self.dname)
     self.vslug = BookUtil.make_slug(self.vname)
 
     self.hname = BookUtil.hanviet(self.zname, caps: true)
