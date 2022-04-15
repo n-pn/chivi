@@ -133,16 +133,16 @@ module CV::BookUtil
   end
 
   NAME_PREFIXES = {
-    "火影之" => "NARUTO: ",
-    "民国之" => "Dân quốc: ",
-    "三国之" => "Tam Quốc: ",
-    "综漫之" => "Tổng mạn: ",
-    "娱乐之" => "Giải trí: ",
-    "重生之" => "Trùng sinh: ",
-    "穿越之" => "Xuyên qua: ",
-    "复活之" => "Phục sinh: ",
-    "网游之" => "Game online: ",
-
+    "火影之"   => "NARUTO: ",
+    "民国之"   => "Dân quốc: ",
+    "三国之"   => "Tam Quốc: ",
+    "综漫之"   => "Tổng mạn: ",
+    "娱乐之"   => "Giải trí: ",
+    "重生之"   => "Trùng sinh: ",
+    "穿越之"   => "Xuyên qua: ",
+    "复活之"   => "Phục sinh: ",
+    "网游之"   => "Game online: ",
+    "异界之"   => "Thế giới khác: ",
     "哈利波特之" => "Harry Potter: ",
     "网游三国之" => "Tam Quốc game online: ",
   }
