@@ -105,7 +105,7 @@ module CV::NvinfoModel
     self.weight = scores + Math.log(self.view_count + 10).to_i
   end
 
-  def fix_title!(bdict : String = self.dname)
+  def fix_names!(bdict : String = self.dname)
     self.vname = BookUtil.btitle_vname(self.zname, self.bhash)
     self.vslug = BookUtil.make_slug(self.vname)
 

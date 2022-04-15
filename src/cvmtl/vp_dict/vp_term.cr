@@ -49,6 +49,9 @@ class CV::VpTerm
     end
   end
 
+  def force_fix!(@val, @attr = "", @_flag = 0_u8)
+  end
+
   def empty? : Bool
     @val.empty? || @val.first.empty?
   end

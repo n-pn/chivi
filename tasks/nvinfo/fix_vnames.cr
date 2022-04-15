@@ -1,4 +1,4 @@
-require "./../shared/seed_data"
+require "./../shared/bootstrap"
 
 def fix_all_entries
   books = CV::Nvinfo.query.order_by(id: :desc).to_a

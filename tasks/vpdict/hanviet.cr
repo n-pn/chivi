@@ -35,8 +35,6 @@ class Hanviet
 
   def save!
     output = CV::VpDict.load("hanviet", mode: -1)
-    output.load!("_db/vpinit/manual/hanviet.tab")
-    output.load!("var/vpdicts/miscs/hanviet.tab")
 
     input = @input.to_a.sort_by(&.[0].size)
     input.each do |(key, vals)|
@@ -51,6 +49,20 @@ class Hanviet
       end
 
       output.set(key, vals.uniq.first(3))
+    end
+
+    output.load!("var/vpdicts/v1/basic/hanviet.tab")
+
+    File.each_line("var/vpdicts/v1/_init/patch/hanviet.tsv") do |line|
+      next if line.empty?
+
+      new_term = CV::VpTerm.new(line.split('\t'))
+
+      if old_term = output.find(new_term.key)
+        old_term.force_fix!(new_term.val)
+      else
+        output.set(new_term)
+      end
     end
 
     output.save!(prune: 1)
