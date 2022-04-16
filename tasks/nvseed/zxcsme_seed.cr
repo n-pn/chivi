@@ -1,6 +1,6 @@
 require "compress/gzip"
 require "json"
-require "myhtml"
+require "lexbor"
 
 require "../../src/_util/http_util"
 require "../../src/_util/file_util"
@@ -12,7 +12,7 @@ class CV::ZxcsmeParser
       Compress::Gzip::Reader.open(io, &.gets_to_end)
     end
 
-    @doc = Myhtml::Parser.new(html)
+    @doc = Lexbor::Parser.new(html)
   end
 
   HEAD_RE_1 = /^《(.+)》.+作者[:：]\s*(.+)$/
@@ -212,7 +212,7 @@ module CV::SeedZxcsme
   end
 
   def run!(argv = ARGV)
-    init!
+    init! if argv.includes?("-i")
     seed!
   end
 end

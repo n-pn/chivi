@@ -43,7 +43,7 @@ CREATE INDEX cvpost_sorts_idx ON cvposts (_sort);
 CREATE INDEX cvpost_number_idx ON cvposts (ii);
 
 CREATE INDEX cvpost_label_idx ON cvposts using GIN (lslugs);
-CREATE INDEX cvpost_uslug_idx ON cvposts using GIN (uslug gin_trgm_ops);
+CREATE INDEX cvpost_uslug_idx ON cvposts using GIN (tslug gin_trgm_ops);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

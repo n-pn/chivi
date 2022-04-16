@@ -24,9 +24,9 @@ module CV
 end
 
 class CV::YsbookData < CV::NvinfoData
-  getter rating : Tabkv(Rating) { Tabkv(Rating).new("#{@_wd}/rating.tsv") }
-  getter ystats : Tabkv(Ystats) { Tabkv(Ystats).new("#{@_wd}/ystats.tsv") }
-  getter origin : Tabkv(Origin) { Tabkv(Origin).new("#{@_wd}/origin.tsv") }
+  getter rating : Tabkv(Rating) { Tabkv(Rating).new("#{@w_dir}/rating.tsv") }
+  getter ystats : Tabkv(Ystats) { Tabkv(Ystats).new("#{@w_dir}/ystats.tsv") }
+  getter origin : Tabkv(Origin) { Tabkv(Origin).new("#{@w_dir}/origin.tsv") }
 
   def add!(entry, snvid : String, stime : Int64)
     super

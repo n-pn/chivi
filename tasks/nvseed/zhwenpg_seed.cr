@@ -1,4 +1,4 @@
-require "./nvinfo_data"
+require "../shared/nvseed_data"
 
 class CV::ZhwenpgParser
   getter status_int = 0
@@ -32,7 +32,7 @@ class CV::ZhwenpgSeed
   DIR = "_db/.cache/zhwenpg/pages"
   # ::FileUtils.mkdir_p(DIR)
 
-  @seed = NvinfoData.new("var/zhinfos/zhwenpg/0")
+  @seed = NvseedData.new("zhwenpg", "var/zhinfos/zhwenpg/0")
   @done = Set(String).new
 
   def init!(pages = 1, status = 0)
@@ -65,18 +65,16 @@ class CV::ZhwenpgSeed
     end
   end
 
-  def seed!
-    NvinfoData.print_stats("yousuu")
-    @seed.seed!(force: force, index: index)
+  def seed!(force = false, label = "1/1")
+    NvinfoData.print_stats("zhwenpg")
+    @seed.seed!(force: force, label: label)
   end
 end
 
-init = 0
 seed = 1
 
-OptionParser.parse(argv) do |parser|
+OptionParser.parse(ARGV) do |parser|
   parser.banner = "Usage: zhwenpg_seed [arguments]"
-  parser.on("-i INIT", "Init mode: 0 => skip, 1 => only updated, 2 => reinit all") { |x| init = x.to_i }
   parser.on("-s SEED", "Seed mode: 0 => skip, 1 => only updated, 2 => reseed all") { |x| seed = x.to_i }
 
   parser.invalid_option do |flag|
@@ -87,5 +85,4 @@ OptionParser.parse(argv) do |parser|
 end
 
 task = CV::ZhwenpgSeed.new
-task.init!(redo: init == 2) if init > 0
 task.seed!(force: seed == 2) if seed > 0
