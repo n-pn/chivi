@@ -30,7 +30,7 @@ SHORTS = {
 }
 
 def translate(inp : String, dict : Trie) : String
-  if val = find_defined(key)
+  if val = find_defined(inp)
     return val if val != val.downcase
   end
 
