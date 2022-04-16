@@ -37,27 +37,11 @@ def translate_person(inp : String) : String
   while char = chars.pop?
     break unless trie = trie[char]?
     next unless val = trie.val
-    name = translate(chars.join) + " " + val
+    name = translate(chars) + " " + val
   end
 
   name || translate(inp)
 end
-
-def translate(key : String) : String
-  if val = find_defined(key)
-    return val
-  end
-
-  hanviet = CV::MtCore.hanviet_mtl.translit(key, false)
-  CV::TextUtil.titleize(hanviet.to_s)
-end
-
-def find_defined(key : String)
-  return unless term = CV::VpDict.regular.find(key)
-  term.val.first if term.attr.in?("nr", "nn")
-end
-
-##############
 
 def extract_book(name : String)
   # min_count = File.read_lines("#{DIR}/#{name}/_all.log").size
@@ -68,13 +52,30 @@ def extract_book(name : String)
   vdict.load!(vdict.flog) if File.exists?(vdict.flog)
 
   hints = CV::PostagInit.new("var/vpdicts/v0/novel/#{name}.tag", reset: true)
+
   input = CV::PostagInit.new("#{DIR}/#{name}/_all.sum", fixed: false)
   input.data.each do |key, counts|
-    next if counts.values.sum < min_count
-    hints.data[key] = counts
+    counts = counts.to_a.sort(&.[1].-)
+
+    ptag, count = counts.first
+    next if count < min_count
+    next unless ptag.in?("nr", "nn", "nw")
+    ptag = "nz" if ptag == "nw"
+
+    if old_term = vdict.find(key)
+      val = old_term.val
+      uname = old_term.uname
+      mtime = old_term.mtime + 1
+    else
+      val = [ptag == "nr" ? translate_person(key) : translate(key)]
+      uname = "[hv]"
+      mtime = 0
+    end
+
+    vdict.set(CV::VpTerm.new(key, val, ptag, mtime: mtime, uname: uname))
   end
 
-  hints.save!(sort: true)
+  vdict.save!
 end
 
 Dir.each_child(DIR) do |dir|

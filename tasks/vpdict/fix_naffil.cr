@@ -27,6 +27,7 @@ end
 SHORTS = {
   '府' => "? phủ", # '城' => "thành"
   '朝' => "triều ?",
+  '国' => "nước ?",
 }
 
 def translate(inp : String, dict : Trie) : String
@@ -92,7 +93,7 @@ def fix_terms(file : String)
 end
 
 files = Dir.glob("#{DIR}/*.tsv")
-input = files.sample(20)
+input = files.sample(50)
 
 input.each_with_index(1) do |file, idx|
   puts "\n[#{idx}/#{files.size}] #{File.basename(file)}"
