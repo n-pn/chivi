@@ -1,7 +1,5 @@
 require "../shared/bootstrap"
 
-require "tabkv"
-
 module CV
   record Bindex, stime : Int64, btitle : String, author : String do
     def self.from_tsv(rows : Array(String))
@@ -124,10 +122,7 @@ abstract class CV::NvinfoData
   end
 
   def seed!(force : Bool = false, label : String = "-/-")
-    _index.data.each do |snvid, bindex|
-      seed_entry!(snvid, bindex, force: force)
-    end
-
+    _index.data.each { |snvid, bindex| seed_entry!(snvid, bindex, force: force) }
     self.class.print_stats(@sname, label)
   end
 

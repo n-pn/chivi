@@ -14,7 +14,7 @@ shards:
 
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
-    version: 0.13.4
+    version: 1.0.0+git.commit.73bd1ba5a3de65ec609bb78afdf6f9820a779e74
 
   backtracer:
     git: https://github.com/sija/backtracer.cr.git
@@ -46,11 +46,11 @@ shards:
 
   email:
     git: https://github.com/arcage/crystal-email.git
-    version: 0.6.3
+    version: 0.6.4
 
   exception_page:
     git: https://github.com/crystal-loot/exception_page.git
-    version: 0.2.1
+    version: 0.2.2
 
   future:
     git: https://github.com/crystal-community/future.cr.git
@@ -82,7 +82,7 @@ shards:
 
   lexbor:
     git: https://github.com/kostya/lexbor.git
-    version: 3.0.2
+    version: 3.0.3
 
   liquid:
     git: https://github.com/dare892/liquid.cr.git
