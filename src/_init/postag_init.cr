@@ -5,10 +5,19 @@ class CV::PostagInit
   alias CountTag = Hash(String, Int32)
   alias CountStr = Hash(String, CountTag)
 
-  DIR = "var/vpdicts/v1/_init"
+  DIR = "var/vpdicts/v0"
+
+  TARGETS = {} of String => VpDict
+
+  def self.get_target(target = "regular")
+    TARGETS[target] ||= VpDict.new("#{DIR}/patch/#{target}-tags.tsv")
+  end
+
+  class_getter similar = VpDict.new("#{DIR}/patch/similar-tags.tsv")
+  class_getter topatch = VpDict.new("#{DIR}/patch/topatch-tags.tsv")
 
   def self.load(name : String, fixed = false)
-    new("#{DIR}/#{name}.tsv", fixed: fixed)
+    new("#{DIR}/_init/#{name}.tsv", fixed: fixed)
   end
 
   SEP_1 = '\t'
@@ -179,15 +188,6 @@ class CV::PostagInit
       }.to_json(jb)
     end
   end
-
-  TARGETS = {} of String => VpDict
-
-  def self.get_target(target = "regular")
-    TARGETS[target] ||= VpDict.new("#{DIR}/patch/#{target}-tags.tsv")
-  end
-
-  class_getter similar = VpDict.new("#{DIR}/patch/similar-tags.tsv")
-  class_getter topatch = VpDict.new("#{DIR}/patch/topatch-tags.tsv")
 
   def match(target = "regular")
     matcher = VpDict.load(target)

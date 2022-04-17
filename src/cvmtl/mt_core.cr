@@ -26,8 +26,8 @@ class CV::MtCore
     pin_yin_mtl.translit(input).to_s
   end
 
-  def self.cv_hanviet(input : String)
-    hanviet_mtl.translit(input).to_s
+  def self.cv_hanviet(input : String, apply_cap = true)
+    hanviet_mtl.translit(input, apply_cap: apply_cap).to_s
   end
 
   def self.trad_to_simp(input : String) : String

@@ -23,7 +23,7 @@ then
 
   shards build --release ysbook_seed
   rsync -aiz --no-p bin/ysbook_seed $SSH/bin
-  rsync -azi --no-p "var/ysbooks" "$SSH/var"
+  rsync -azi --no-p "var/ysinfos/ysbooks" "$SSH/var/ysinfos"
 fi
 
 if [[ $1 == "all" || $1 == "ysrepl" ]]
@@ -33,7 +33,7 @@ then
   crystal build --release tasks/pgdata/ysrepl_seed.cr -o bin/ysrepl_seed
 
   rsync -aiz --no-p bin/ysrepl_seed $SSH/bin
-  # rsync -azi --no-p "var/ysrepls" "$SSH/var"
+  rsync -azi --no-p "var/ysinfos/ysrepls" "$SSH/var/ysinfo"
 fi
 
 if [[ $1 == "all" || $1 == "zhinfo" ]]
@@ -50,4 +50,11 @@ then
   echo push fixes binaries!
   shards build --release fix_genres && rsync -aiz --no-p bin/fix_genres $SSH/bin
   shards build --release fix_intros && rsync -aiz --no-p bin/fix_intros $SSH/bin
+fi
+
+if [[ $1 == "all" || $1 == "binary" ]]
+then
+  echo push binaries!
+  shards build --release ysbook_seed && rsync -aiz --no-p bin/ysbook_seed $SSH/bin
+  shards build --release zhinfo_seed && rsync -aiz --no-p bin/zhinfo_seed $SSH/bin
 fi
