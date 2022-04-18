@@ -59,6 +59,7 @@ class CV::YsbookRaw
   getter pub_name : String { extract_pub_name(pub_link) }
 
   property source = [] of Source
+  property blists = [] of Yblist
 
   #############
 
@@ -124,6 +125,18 @@ class CV::YsbookRaw
     ysbook.nvinfo = Nvinfo.upsert!(author, btitle)
     ysbook.update_nvinfo
     ysbook.save!
+
+    self.blists.each do |yblist|
+      next if Yslist.find({origin_id: yblist._id})
+      Yslist.new({
+        id:        yblist.id,
+        origin_id: yblist._id,
+        zname:     yblist.title,
+        vname:     MtCore.generic_mtl.translate(yblist.title),
+      }).save
+    rescue err
+      Log.error { err }
+    end
   end
 
   def update_ysbook(ysbook : Ysbook, stime : Int64)
@@ -163,15 +176,37 @@ class CV::YsbookRaw
     property link : String
   end
 
-  alias Data = NamedTuple(bookInfo: YsbookRaw, bookSource: Array(Source))
+  struct Yblist
+    include JSON::Serializable
+
+    getter _id : String
+    getter id : Int64 { _id[12..].to_i64(base: 16) }
+
+    getter title : String
+  end
+
+  alias List = NamedTuple(booklistId: Yblist)
+
+  struct Rawdata
+    include JSON::Serializable
+
+    @[JSON::Field(key: "bookInfo")]
+    getter info : YsbookRaw
+
+    @[JSON::Field(key: "bookSource")]
+    getter source : Array(Source)
+
+    getter booklist : Array(List)
+  end
 
   def self.parse_file(file : String)
     text = File.read(file)
     return unless text.starts_with?("{\"success")
 
-    json = NamedTuple(data: Data).from_json(text)
-    json[:data][:bookInfo].tap do |info|
-      info.source = json[:data][:bookSource]
+    json = NamedTuple(data: Rawdata).from_json(text)[:data]
+    json.info.tap do |info|
+      info.source = json.source
+      info.blists = json.booklist.map { |x| x[:booklistId] }
     end
   end
 end
