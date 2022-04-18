@@ -15,6 +15,9 @@ CREATE TABLE yscrits (
   ztext text not null default '',
   vhtml text not null default '',
 
+  ztags text[] not null default '{}',
+  vtags text[] not null default '{}',
+
   utime bigint not null default 0,
   stime bigint not null default 0,
 
@@ -30,8 +33,8 @@ CREATE INDEX yscrit_nvinfo_idx ON yscrits (nvinfo_id, stars);
 CREATE INDEX yscrit_ysbook_idx ON yscrits (ysbook_id);
 CREATE INDEX yscrit_ysuser_idx ON yscrits (ysuser_id, created_at);
 CREATE INDEX yscrit_yslist_idx ON yscrits (yslist_id);
-
 CREATE INDEX yscrit_sorted_idx ON yscrits (_sort);
+CREATE INDEX yscrit_vtags_idx ON yscrits USING GIN(vtags);
 
 -- +micrate Down
 DROP TABLE IF EXISTS yscrits;

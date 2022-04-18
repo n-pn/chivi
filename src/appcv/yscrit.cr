@@ -1,14 +1,12 @@
 class CV::Yscrit
   include Clear::Model
-
   self.table = "yscrits"
-  primary_key
 
+  primary_key
   column origin_id : String = ""
 
   belongs_to nvinfo : Nvinfo
-  column ysbook_id : Int64 = 0_i64
-
+  belongs_to ysbook : Ysbook
   belongs_to ysuser : Ysuser
   belongs_to yslist : Yslist?
 
@@ -17,6 +15,9 @@ class CV::Yscrit
 
   column ztext : String = "" # orginal comment
   column vhtml : String = "" # translated comment
+
+  column ztags : Array(String) = [] of String
+  column vtags : Array(String) = [] of String
 
   column utime : Int64 = 0 # list changed at by seconds from epoch
   column stime : Int64 = 0 # list checked at by minutes from epoch
@@ -49,10 +50,42 @@ class CV::Yscrit
     self.ztext.split("\n").map(&.strip).reject(&.empty?)
   end
 
-  def cvdata(dname = self.nvinfo.dname, mode = 1)
-    cvmtl = MtCore.generic_mtl(dname)
-    zhtext.map { |line| cvmtl.cv_plain(line, mode: mode).to_str }.join("\n")
+  def update_sort!
+    self._sort = self.stars * self.stars * self.like_count
   end
+
+  def set_tags(tags : Array(String))
+    return if tags.empty?
+
+    self.ztags = tags
+    self.vtags = tags.map { |x| MtCore.cv_hanviet(x) }
+  end
+
+  def set_body(ztext : String, dname = self.nvinfo.dname)
+    return if ztext.empty? || ztext == "请登录查看评论内容"
+    self.ztext = ztext
+    self.vhtml = cvdata(dname, mode: :html)
+  end
+
+  enum RenderMode
+    Mtl; Text; Html
+  end
+
+  def cvdata(dname = self.nvinfo.dname, mode : RenderMode = :mtl)
+    cvmtl = MtCore.generic_mtl(dname)
+
+    zhtext.map do |line|
+      mt_list = cvmtl.cv_plain(line)
+
+      case mode
+      when .text? then mt_list.to_s
+      when .html? then "<p>#{mt_list}</p>"
+      else             mt_list.to_str
+      end
+    end.join("\n")
+  end
+
+  ###################
 
   def self.get!(id : Int64, created_at : Time)
     find({id: id}) || new({id: id, created_at: created_at})
