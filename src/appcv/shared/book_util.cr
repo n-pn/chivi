@@ -33,9 +33,11 @@ module CV::BookUtil
 
   def clean_name(name : String, type = :btitle)
     name = name.chars.map { |x| NORMALIZE[x]? || x }.join
-    name = name.sub(/[（【\(\[].+?[）】\)\]](\s*ˇ第.+章ˇ\s*)?\s*(最新更新.+)?$/, "").strip
+    name = name.sub(/\s*(ˇ第.+章ˇ)?\s*(最新更新.+)?$/, "")
+    name = name.sub(/^\s*(.+?)\s*[（【\(\[].*?[）】\)\]]$/) { |_, x| x[1] }
+
     return name unless type == :author
-    name.sub(/\.(QD|CS)$/, "").sub(/^·+(.+)·+$/) { |x| x }
+    name.sub(/\.(QD|CS)$/, "").sub(/^·+(.+)·+$/) { |_, x| x[1] }
   end
 
   NORMALIZE = begin

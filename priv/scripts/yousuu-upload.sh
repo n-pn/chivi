@@ -46,13 +46,24 @@ then
   rsync -azui --no-p "$DIR/lists" $SSH_DIR
 fi
 
+SRC=tasks/yousuu
+
 if [[ $1 == "all" || $* == *execs* ]]
 then
   echo upload service binaries!
 
   rsync -azui --no-p "$DIR/limit.txt" $SSH_DIR
-  shards build --release ysbook_crawl && rsync -azui --no-p "bin/ysbook_crawl" "$SSH/bin"
-  shards build --release yscrit_crawl && rsync -azui --no-p "bin/yscrit_crawl" "$SSH/bin"
-  shards build --release ysrepl_crawl && rsync -azui --no-p "bin/ysrepl_crawl" "$SSH/bin"
-  shards build --release yslist_crawl && rsync -azui --no-p "bin/yslist_crawl" "$SSH/bin"
+
+  crystal build --release $SRC/yslist_books_crawl.cr -o bin/yscrit_crawl
+  rsync -azui --no-p "bin/yscrit_crawl" "$SSH/bin"
+
+  crystal build --release $SRC/ysbook_crawl.cr -o bin/ysbook_crawl
+  rsync -azui --no-p "bin/ysbook_crawl" "$SSH/bin"
+
+  # shards build --release yscrit_crawl && rsync -azui --no-p "bin/yscrit_crawl" "$SSH/bin"
+
+  crystal build --release $SRC/ysrepl_crawl.cr -o bin/ysrepl_crawl
+  rsync -azui --no-p "bin/ysrepl_crawl" "$SSH/bin"
+
+  # shards build --release yslist_crawl && rsync -azui --no-p "bin/yslist_crawl" "$SSH/bin"
 fi

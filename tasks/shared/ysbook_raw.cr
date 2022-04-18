@@ -1,10 +1,10 @@
 require "uri"
-require "json"
 
-require "../../src/_util/text_util"
-require "../../src/_util/time_util"
+# require "../../src/_util/text_util"
+# require "../../src/_util/time_util"
+require "./bootstrap"
 
-class CV::RawYsbook
+class CV::YsbookRaw
   include JSON::Serializable
 
   getter _id : Int32
@@ -22,7 +22,7 @@ class CV::RawYsbook
   getter klass : String { @class_info.try(&.[:className]) || "其他" }
 
   getter tags = [] of String
-  getter genres : Array(String) { @tags.map(&.split("-")).flatten.unshift(klass).uniq }
+  getter genres : Array(String) { @tags.flat_map(&.split("-")).unshift(klass).uniq! }
 
   getter cover = ""
   getter bcover : String { fix_cover(@cover) }
@@ -85,14 +85,70 @@ class CV::RawYsbook
   EPOCH = Time.utc(2020, 1, 1, 7, 0, 0)
 
   def parse_time(update_str : String)
-    return EPOCH if update_str.empty?
-
     tstr = update_str.sub(/^0000/, "2020")
     time = Time.parse_utc(tstr, "%FT%T.%3NZ")
     time < Time.utc ? time : Time.utc
   rescue err
     Log.error { "Error parsing time: #{err.colorize.red}" }
     EPOCH
+  end
+
+  def should_seed?
+    self.voters > 9 || self.crit_count > 4 || self.list_total > 1
+  end
+
+  AUTHORS = {} of String => Author
+
+  def load_author(zname : String)
+    AUTHORS[zname] ||= Author.find({zname: zname}) || begin
+      should_seed? ? Author.upsert!(zname) : return
+    end
+  end
+
+  def seed!(stime = Time.utc.to_unix, force = false) : Nil
+    return if btitle.empty? || author.empty?
+
+    btitle, author_zname = BookUtil.fix_names(btitle, author)
+    params = {id: _id.to_i64}
+
+    if ysbook = Ysbook.find(params)
+      return unless force || ysbook.stime < stime || ysbook.voters < voters
+      author = Author.upsert!(author_zname)
+    else
+      return unless author = load_author(author_zname)
+      ysbook = Ysbook.new(params)
+    end
+
+    update_ysbook(ysbook, stime)
+
+    ysbook.nvinfo = Nvinfo.upsert!(author, btitle)
+    ysbook.update_nvinfo
+    ysbook.save!
+  end
+
+  def update_ysbook(ysbook : Ysbook, stime : Int64)
+    ysbook.stime = stime
+    ysbook.utime = self.update_int
+
+    ysbook.btitle = self.btitle
+    ysbook.author = self.author
+
+    ysbook.bcover = self.bcover
+    ysbook.bgenre = self.genres.join('\t')
+    ysbook.bintro = self.bintro.join('\t')
+
+    ysbook.voters = self.voters
+    ysbook.scores = self.voters &* self.rating
+
+    ysbook.word_count = self.word_count
+    ysbook.crit_total = self.crit_count
+    ysbook.list_total = self.list_total
+
+    ysbook.status = self.status
+    ysbook.shield = self.shield
+
+    ysbook.pub_name = self.pub_name
+    ysbook.pub_link = self.pub_link
   end
 
   ########################
@@ -107,7 +163,7 @@ class CV::RawYsbook
     property link : String
   end
 
-  alias Data = NamedTuple(bookInfo: RawYsbook, bookSource: Array(Source))
+  alias Data = NamedTuple(bookInfo: YsbookRaw, bookSource: Array(Source))
 
   def self.parse_file(file : String)
     text = File.read(file)
@@ -119,11 +175,3 @@ class CV::RawYsbook
     end
   end
 end
-
-# info = CV::YsBook.load("_db/yousuu/.cache/infos/153426.json").not_nil!
-# puts info.intro
-# puts info.genre
-# # puts info.tags_fixed
-# # puts info.cover_fixed
-# puts info.updated_at
-# puts info.rating

@@ -6,7 +6,7 @@ class CV::Ysbook
   self.table = "ysbooks"
   primary_key
 
-  column nvinfo_id : Int64 = 0
+  belongs_to nvinfo : Nvinfo
 
   # seed data
 
@@ -27,7 +27,7 @@ class CV::Ysbook
   column shield : Int32 = 0
 
   column utime : Int64 = 0_i64 # yousuu book update time
-  column word_count : Int32 = 0
+  column stime : Int64 = 0_i64
 
   # origin
 
@@ -36,6 +36,7 @@ class CV::Ysbook
 
   # counters
 
+  column word_count : Int32 = 0
   column crit_count : Int32 = 0 # fetched reviews
   column list_count : Int32 = 0 # fetched book lists
 
@@ -44,11 +45,35 @@ class CV::Ysbook
 
   # for crawlers
 
-  column stime : Int64 = 0_i64
   column crit_stime : Int64 = 0_i64
   column list_stime : Int64 = 0_i64
 
   timestamps # created_at and updated_at
+
+  def update_nvinfo : Nil
+    return if nvinfo.ysbook_id != self.id && lesser_source?(nvinfo.ysbook_id)
+
+    nvinfo.set_zintro(self.bintro.split('\t'))
+    nvinfo.set_genres(self.bgenre.split('\t'))
+    nvinfo.set_covers(self.bcover)
+
+    nvinfo.set_utime(self.utime)
+    nvinfo.set_status(self.status)
+    nvinfo.set_shield(self.shield)
+    nvinfo.fix_scores!(self.voters, self.scores)
+
+    nvinfo.ysbook_id = self.id
+    nvinfo.save!
+  end
+
+  def lesser_source?(other_id : Int64)
+    return false if other_id == 0 || !(other = Ysbook.find({id: other_id}))
+
+    self.voters <= other.voters.tap do |lesser|
+      Log.info { "!! override: #{other_id} (#{other.voters}) \
+                   => #{self.id} (#{self.voters})".colorize.yellow } if lesser
+    end
+  end
 
   #########################################
 

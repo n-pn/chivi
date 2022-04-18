@@ -1,7 +1,7 @@
 require "json"
 require "option_parser"
 
-require "../shared/raw_ysbook"
+require "../shared/ysbook_raw"
 require "../shared/http_client"
 
 class CV::CrawlYsbook
@@ -11,86 +11,101 @@ class CV::CrawlYsbook
     @http = HttpClient.new(regen_proxy)
   end
 
-  def crawl!(upto = 260000, mode = :tail)
-    queue = (1..upto).to_a.map(&.to_s)
+  enum Mode
+    Head; Tail; Rand
+  end
 
+  def crawl!(upto = 260000, mode : Mode = :tail)
+    queue = (1..upto).to_a
     case mode
-    when :tail then queue.reverse!
-    when :rand then queue.shuffle!
+    when .tail? then queue.reverse!
+    when .rand? then queue.shuffle!
     end
 
-    count = 0
+    loops = 0
 
     until queue.empty?
       qsize = queue.size
-      count += 1
-      puts "\n[loop: #{count}, mode: #{mode}, size: #{qsize}]".colorize.cyan
+      puts "\n[loop: #{loops}, mode: #{mode}, size: #{qsize}]".colorize.cyan
 
-      fails = [] of String
+      fails = [] of Int32
 
-      limit = queue.size
-      limit = 15 if limit > 15
-      inbox = Channel(String?).new(limit)
+      workers = queue.size
+      workers = 10 if workers > 10
+      channel = Channel(Int32?).new(workers)
 
       queue.each_with_index(1) do |snvid, idx|
-        exit(0) if @http.no_proxy?
+        return if @http.no_proxy?
 
         spawn do
-          label = "<#{idx}/#{qsize}> [#{snvid}]"
-          inbox.send(crawl_info!(snvid, label: label))
+          result = crawl_info!(snvid, label: "<#{idx}/#{qsize}> [#{snvid}]")
+          channel.send(result)
         end
 
-        inbox.receive.try { |x| fails << x } if idx > limit
+        channel.receive.try { |x| fails << x } if idx > workers
       end
 
-      limit.times do
-        inbox.receive.try { |x| fails << x }
-      end
+      workers.times { channel.receive.try { |x| fails << x } }
 
-      exit(0) if @http.no_proxy?
+      break if @http.no_proxy?
       queue = fails
+      loops += 1
     end
   end
 
-  def crawl_info!(snvid : String, label = "1/1/1")
-    group = (snvid.to_i // 1000).to_s.rjust(3, '0')
+  enum State
+    Absent; Staled; Fresh; Error; Blank
+  end
+
+  def crawl_info!(snvid : Int32, label = "-/-") : Int32?
+    group = (snvid // 1000).to_s.rjust(3, '0')
     file = "#{DIR}/#{group}/#{snvid}.json"
 
-    return if still_good?(file)
+    state, ydata = map_state(file)
 
-    link = "https://api.yousuu.com/api/book/#{snvid}"
-    return snvid unless @http.save!(link, file, label)
+    if state.absent? || state.staled?
+      link = "https://api.yousuu.com/api/book/#{snvid}"
+      return snvid unless @http.save!(link, file, label)
+      ydata = YsbookRaw.parse_file(file) || ydata
+    end
+
+    ydata.try(&.seed!)
+  rescue err
+    Log.error { err.inspect_with_backtrace }
   end
 
-  def still_good?(file : String)
-    return false unless info = File.info?(file)
-    info.modification_time + expiry_time(file) >= Time.utc
+  private def map_state(file : String) : {State, YsbookRaw?}
+    return {State::Absent, nil} unless mtime = File.info?(file).try(&.modification_time)
+    return {State::Blank, nil} unless ydata = YsbookRaw.parse_file(file)
+    {mtime >= Time.utc - map_expiry(ydata) ? State::Fresh : State::Staled, ydata}
+  rescue err
+    Log.error { err.inspect_with_backtrace }
+
+    {State::Error, nil}
   end
 
-  private def expiry_time(file : String) : Time::Span
-    return 10.days unless data = CV::RawYsbook.parse_file(file)
-
+  private def map_expiry(ydata : YsbookRaw)
     span = 3.days
     # try again in 3 6 9 days
-    span *= (data.status + 1)
+    span *= (ydata.status + 1)
     # try again in 6 12 18 days if no voter
-    data.voters == 0 ? span * 2 : span
-  rescue
-    6.days
+    ydata.voters == 0 ? span * 2 : span
   end
+
+  def self.run!(argv = ARGV)
+    regen_proxy = false
+    upper_nsvid = File.read("_db/yousuu/limit.txt").strip.to_i? || 280000
+    crawl_mode = Mode::Tail
+
+    OptionParser.parse(argv) do |opt|
+      opt.on("-h", "Crawl from beginning") { crawl_mode = Mode::Head }
+      opt.on("-r", "Crawl infos randomly") { crawl_mode = Mode::Rand }
+      opt.on("-x", "Refresh proxies") { regen_proxy = true }
+      opt.on("-u", "Newest book id") { |x| upper_nsvid = x.to_i }
+    end
+
+    new(regen_proxy).crawl!(upper_nsvid, mode: crawl_mode)
+  end
+
+  run!(ARGV)
 end
-
-crawl_mode = :tail
-recheck_proxy = false
-upper_book_id = File.read("_db/yousuu/limit.txt").strip.to_i? || 280000
-
-OptionParser.parse(ARGV) do |opt|
-  opt.on("-h", "Crawl from beginning") { crawl_mode = :head }
-  opt.on("-r", "Crawl infos randomly") { crawl_mode = :rand }
-  opt.on("-p", "Recheck proxies") { recheck_proxy = true }
-  opt.on("-u", "Upper book id") { |x| upper_book_id = x.to_i }
-end
-
-recheck_proxy = ARGV.includes?("proxy")
-worker = CV::CrawlYsbook.new(recheck_proxy)
-worker.crawl!(upper_book_id, mode: crawl_mode)
