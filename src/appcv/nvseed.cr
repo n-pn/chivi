@@ -284,7 +284,7 @@ class CV::Nvseed
     end
   end
 
-  def self.init!(nvinfo : Nvinfo, zseed : Int32, fetch : Bool = true)
+  def self.init!(nvinfo : Nvinfo, zseed : Int32, fetch : Bool = false)
     case zseed
     when  0 then init!(nvinfo, "chivi").tap(&.remap!(fetch: fetch))
     when 63 then init!(nvinfo, "users") # TODO: check folder and recover

@@ -16,17 +16,13 @@ SHORTS = {
 TAGS = ["nn", "ns", "nt", "n", ""]
 
 def translate(inp : String) : String
-  if inp.size == 2
-    return CV::TlUtil.convert(inp, TAGS) unless val = SHORTS[inp[-1]]?
-    return val.sub("?", CV::TlUtil.convert(inp[0].to_s))
-  end
-
-  CV::TlUtil.translate(inp, "nn")
+  return CV::TlUtil.translate(inp, "nn") if inp.size > 2
+  return CV::TlUtil.convert(inp, TAGS) unless val = SHORTS[inp[-1]]?
+  val.sub("?", CV::TlUtil.convert(inp[0].to_s))
 end
 
-def fix_terms(file : String)
+def fix_terms(file : String, dry_mode = true)
   vdict = CV::VpDict.new(file)
-
   fixed = 0
 
   vdict.list.each do |term|
@@ -36,20 +32,27 @@ def fix_terms(file : String)
     old_val = term.val.first
     new_val = translate(term.key)
 
-    # term.force_fix!(term.val.unshift(new_val).uniq!)
-    # fixed += 1
+    if dry_mode
+      color = old_val != new_val ? :red : (term.key.size > 2 ? :green : :blue)
+      puts "- [#{term.key}] #{old_val} => #{new_val}".colorize(color)
+      next
+    end
 
-    color = old_val != new_val ? :red : (term.key.size > 2 ? :green : :blue)
-    puts "- [#{term.key}] #{old_val} => #{new_val}".colorize(color)
+    if old_val != new_val
+      term.force_fix!(term.val.unshift(new_val).uniq!)
+      fixed += 1
+    end
   end
 
   vdict.save! if fixed > 0
 end
 
-files = Dir.glob("#{DIR}/*.tsv")
-# input = files.sample(100)
+dry_mode = ARGV.includes?("--dry")
 
-input.each_with_index(1) do |file, idx|
+files = Dir.glob("#{DIR}/*.tsv")
+files = files.sample(100) if dry_mode
+
+files.each_with_index(1) do |file, idx|
   puts "\n[#{idx}/#{files.size}] #{File.basename(file)}"
-  fix_terms(file)
+  fix_terms(file, dry_mode: dry_mode)
 end

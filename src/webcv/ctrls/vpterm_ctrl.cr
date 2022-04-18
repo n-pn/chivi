@@ -3,7 +3,7 @@ require "./_base_ctrl"
 class CV::VptermCtrl < CV::BaseCtrl
   def lookup
     input = params.json("input").as_h
-    hvmap = Hash(String, String).new { |h, k| h[k] = MtCore.cv_hanviet(k) }
+    hvmap = Hash(String, String).new { |h, k| h[k] = MtCore.cv_hanviet(k, apply_cap: false) }
 
     send_json do |jb|
       jb.object do

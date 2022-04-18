@@ -122,7 +122,7 @@ class CV::PostagInit
     when "nz"
       return ptag if attr == "n"
     when "a"
-      return "al" if attr.in?("vl", "bl", "az") || term.key =~ /.(.)\1/
+      return "al" if attr.in?("vl", "bl", "az", "z") || term.key =~ /.(.)\1/
     when "ad"
       return ptag if attr.in?("a", "d")
     when "an"
@@ -133,17 +133,15 @@ class CV::PostagInit
       return ptag if attr.in?("v", "n")
     when "nr"
       return not_name ? nil : ptag
-    when "v"
-      return "vo" if attr.in?("n")
+      # when "v"
+      # return "vn" if attr.in?("n")
     when "m"
       return "mq" if attr.in?("q", "n", "t")
     end
 
     case attr
-    when "b", "bl", "a", "an"
+    when "b", "bl", "an", "al"
       return "na" if ptag == "n"
-    when "vl"
-      return "vo" if ptag == "n"
     when "nr", "ns", "nt"
       return ptag if not_name
     when "nz"
@@ -176,20 +174,20 @@ class CV::PostagInit
     end
   end
 
-  record Conflict, term : VpTerm, ptag : String do
+  record Conflict, term : VpTerm, ptags : CountTag do
     def to_json(jb)
       {
-        ptag:  ptag,
         attr:  term.attr,
         key:   term.key,
         val:   term.val[0],
         uname: term.uname,
         mtime: term.utime,
+        ptags: ptags,
       }.to_json(jb)
     end
   end
 
-  def match(target = "regular")
+  def match(target = "regular", limit = 500)
     matcher = VpDict.load(target)
     conflicts = [] of Conflict
 
@@ -207,7 +205,8 @@ class CV::PostagInit
         if attr = fix_ptag?(term, ptag)
           @@topatch.set!(VpTerm.new(key, term.val, attr, mtime: 0))
         else
-          conflicts << Conflict.new(term, ptag)
+          conflicts << Conflict.new(term, counts)
+          break if conflicts.size >= limit
         end
       end
     end
