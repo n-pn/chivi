@@ -1,4 +1,11 @@
 <script context="module" lang="ts">
+  import { writable } from 'svelte/store'
+
+  export const usercp = {
+    ...writable(0),
+    change_tab: (tab: number) => usercp.set(tab),
+  }
+
   const hour_span = 3600
   const day_span = 3600 * 24
   const month_span = day_span * 30
@@ -31,6 +38,8 @@
   import UVcoin from './Usercp/UVcoin.svelte'
   const components = [Reading, Setting, UVcoin]
 
+  export let actived = false
+
   const tabs = [
     { icon: 'history', btip: 'Lịch sửa đọc' },
     { icon: 'settings', btip: 'Cài đặt' },
@@ -40,7 +49,7 @@
   $: privi = $session.privi || 0
 </script>
 
-<Slider class="usercp" bind:actived={$ctrl.actived} --slider-width="26rem">
+<Slider class="usercp" bind:actived --slider-width="26rem">
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name="user" /></div>
     <div class="-text">

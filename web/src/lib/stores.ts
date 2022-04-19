@@ -14,3 +14,18 @@ export * from './stores/dboard_stores'
 
 export { form as cvpost_form } from './stores/cvpost_stores'
 export { form as cvrepl_form } from './stores/cvrepl_stores'
+
+export const popups = {
+  ...writable({
+    appnav: false,
+    usercp: false,
+    config: false,
+    dboard: false,
+  }),
+  show(popup: string) {
+    popups.update((x) => ({ ...x, [popup]: true }))
+  },
+  hide(popup: string) {
+    popups.update((x) => ({ ...x, [popup]: false }))
+  },
+}

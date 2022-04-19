@@ -96,3 +96,31 @@ cv-user,
     --color: #{color(harmful, 5)};
   }
 }
+
+
+.bread {
+  padding: .5rem 0;
+  line-height: 1.25rem;
+
+  // @include flow();
+  @include ftsize(sm);
+  @include fgcolor(secd);
+
+}
+
+.crumb {
+  @include fgcolor(tert);
+  // float: left;
+
+  &._caps {
+    text-transform: uppercase;
+    @include ftsize(xs);
+  }
+
+  &._link {
+    color: inherit;
+    &:hover {
+      @include fgcolor(primary, 5);
+    }
+  }
+}

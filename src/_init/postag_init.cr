@@ -187,7 +187,7 @@ class CV::PostagInit
     end
   end
 
-  def match(target = "regular", limit = 500)
+  def match(target = "regular", limit = 200)
     matcher = VpDict.load(target)
     conflicts = [] of Conflict
 

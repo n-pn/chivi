@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-  import { appbar } from '$lib/stores'
   export async function load({ url, fetch, stuff: { nvinfo } }) {
     const chidx = +url.searchParams.get('chidx') || 1
 
@@ -8,13 +7,6 @@
     if (url.searchParams.get('mode') == 'edit') {
       input = await load_text(fetch, nvinfo.id, chidx)
     }
-
-    appbar.set({
-      left: [
-        [nvinfo.vname, 'book', `/-${nvinfo.bslug}`, '_title', '_show-md'],
-        ['Thêm/sửa chương'],
-      ],
-    })
 
     return { props: { nvinfo, chidx, input } }
   }
@@ -29,8 +21,7 @@
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
 
-  import SIcon from '$gui/atoms/SIcon.svelte'
-  import Footer from '$gui/sects/Footer.svelte'
+  import { MainApp, BarItem, SIcon, Footer } from '$gui'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let chidx = 1
@@ -60,43 +51,57 @@
   <title>Thêm/sửa chương - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
-<section>
-  <nav class="navi">
-    <div class="-item _sep">
-      <a href="/-{nvinfo.bslug}" class="-link">{nvinfo.vname}</a>
+<MainApp>
+  <svelte:fragment slot="header-left">
+    <BarItem
+      this="a"
+      href="/-{nvinfo.bslug}"
+      icon="book"
+      text={nvinfo.vname}
+      kind="title"
+      show="tm" />
+
+    <BarItem this="span" icon="plus" text="Thêm/sửa chương" show="tm" />
+  </svelte:fragment>
+
+  <section>
+    <nav class="navi">
+      <div class="-item _sep">
+        <a href="/-{nvinfo.bslug}" class="-link">{nvinfo.vname}</a>
+      </div>
+
+      <div class="-item">
+        <a href="/-{nvinfo.bslug}/-chivi" class="-link">Chương tiết</a>
+      </div>
+    </nav>
+
+    <textarea
+      class="m-input"
+      name="input"
+      lang="zh"
+      id="input"
+      bind:value={input} />
+  </section>
+
+  <Footer>
+    <div class="pagi">
+      <label class="label" for="chidx">
+        <span>Chương số</span>
+        <input class="m-input" name="chidx" bind:value={chidx} />
+      </label>
+
+      <label class="label">
+        <input type="checkbox" name="_trad" bind:checked={_trad} />
+        <span>Phồn -> Giản</span>
+      </label>
+
+      <button class="m-btn _primary _fill" on:click={submit_text}>
+        <SIcon name="square-plus" />
+        <span class="-text">Lưu</span>
+      </button>
     </div>
-
-    <div class="-item">
-      <a href="/-{nvinfo.bslug}/-chivi" class="-link">Chương tiết</a>
-    </div>
-  </nav>
-
-  <textarea
-    class="m-input"
-    name="input"
-    lang="zh"
-    id="input"
-    bind:value={input} />
-</section>
-
-<Footer>
-  <div class="pagi">
-    <label class="label" for="chidx">
-      <span>Chương số</span>
-      <input class="m-input" name="chidx" bind:value={chidx} />
-    </label>
-
-    <label class="label">
-      <input type="checkbox" name="_trad" bind:checked={_trad} />
-      <span>Phồn -> Giản</span>
-    </label>
-
-    <button class="m-btn _primary _fill" on:click={submit_text}>
-      <SIcon name="square-plus" />
-      <span class="-text">Lưu</span>
-    </button>
-  </div>
-</Footer>
+  </Footer>
+</MainApp>
 
 <style lang="scss">
   section {

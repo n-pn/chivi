@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
-  import { appbar } from '$lib/stores'
+  import { MainApp, BarItem } from '$gui'
   export function load({ status, error }) {
-    appbar.set({ left: [[`Lỗi hệ thống: ${status}`]] })
     return { props: { status, error } }
   }
 </script>
@@ -15,12 +14,18 @@
   <title>{status} - Chivi</title>
 </svelte:head>
 
-<section class="wrapper">
-  <article class="content">
-    <h1>{status}</h1>
-    <p>{error.message}</p>
-  </article>
-</section>
+<MainApp>
+  <svelte:fragment slot="header-left">
+    <BarItem this="span" text="Lỗi hệ thống: {status}" active={true} />
+  </svelte:fragment>
+
+  <section class="wrapper">
+    <article class="content">
+      <h1>{status}</h1>
+      <p>{error.message}</p>
+    </article>
+  </section>
+</MainApp>
 
 <style lang="scss">
   .wrapper {

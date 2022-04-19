@@ -26,22 +26,22 @@ function save_config(data: ConfigData) {
   }
 }
 
-export const config_data = {
+export const config = {
   ...writable(load_config()),
   put(key: string, val: any) {
-    config_data.update((x: ConfigData) => ({ ...x, [key]: val }))
+    config.update((x: ConfigData) => ({ ...x, [key]: val }))
   },
   put_fn(key: string, fn: (x: any) => any) {
-    config_data.update((x: ConfigData) => ({ ...x, [key]: fn(x[key]) }))
+    config.update((x: ConfigData) => ({ ...x, [key]: fn(x[key]) }))
   },
-  toggle: (key: string) => config_data.put_fn(key, (val) => !val),
+  toggle: (key: string) => config.put_fn(key, (val) => !val),
   set_render: (val: number) => {
-    config_data.update((x: ConfigData) => {
+    config.update((x: ConfigData) => {
       return { ...x, render: val == x.render ? 0 : val }
     })
   },
 }
 
-config_data.subscribe((data: ConfigData) => save_config(data))
+config.subscribe((data: ConfigData) => save_config(data))
 
 export const config_ctrl = dialog_store()

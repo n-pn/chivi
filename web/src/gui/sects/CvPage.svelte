@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { navigating } from '$app/stores'
-  import { config_data } from '$lib/stores'
+  import { config } from '$lib/stores'
   import { vdict } from '$lib/stores'
   import CvData from '$lib/cv_data'
 
@@ -48,8 +48,9 @@
 </script>
 
 <article
+  class="app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   tabindex="-1"
-  style="--textlh: {$config_data.textlh}%"
+  style="--textlh: {$config.textlh}%"
   on:blur={cvmenu.hide}
   bind:this={article}>
   <header>
@@ -59,27 +60,25 @@
   {#each zhtext as ztext, index (index)}
     <cv-data
       id="L{index}"
-      class:debug={$config_data.render == 1}
+      class:debug={$config.render == 1}
       class:focus={index == l_focus}
       on:mouseenter={() => (l_hover = index)}>
-      {#if $config_data.showzh}<Zhline
-          {ztext}
-          plain={$config_data.render < 0} />{/if}
+      {#if $config.showzh}<Zhline {ztext} plain={$config.render < 0} />{/if}
       <Cvline
         input={cv_lines[index]}
-        focus={render_html($config_data.render, index, l_hover, l_focus)} />
+        focus={render_html($config.render, index, l_hover, l_focus)} />
     </cv-data>
   {/each}
 
-  {#if $config_data.render >= 0}
+  {#if $config.render >= 0}
     <Cvmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />
   {/if}
 </article>
 
 <div hidden>
-  <button data-kbd="s" on:click={() => config_data.toggle('showzh')}>A</button>
-  <button data-kbd="z" on:click={() => config_data.set_render(-1)}>Z</button>
-  <button data-kbd="g" on:click={() => config_data.set_render(1)}>G</button>
+  <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
+  <button data-kbd="z" on:click={() => config.set_render(-1)}>Z</button>
+  <button data-kbd="g" on:click={() => config.set_render(1)}>G</button>
 </div>
 
 <style lang="scss">
@@ -178,19 +177,6 @@
 
     :global(.app-fs-5) & {
       @include bps(font-size, rem(21px), rem(22px), rem(23px), rem(24px), rem(25px));
-    }
-  }
-
-  :global {
-    .crumb {
-      // float: left;
-
-      &._link {
-        color: inherit;
-        &:hover {
-          @include fgcolor(primary, 5);
-        }
-      }
     }
   }
 </style>

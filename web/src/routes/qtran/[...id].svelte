@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-  import { appbar } from '$lib/stores'
   const icons = {
     notes: 'notes',
     posts: 'user',
@@ -9,13 +8,6 @@
 
   export async function load({ fetch, url, params }) {
     const [type, name] = params.id.split('/')
-    appbar.set({
-      left: [
-        ['Dịch nhanh', 'bolt', '/qtran', null, '_show-sm'],
-        [`[${name}]`, icons[type], null, '_title'],
-      ],
-      cvmtl: true,
-    })
 
     const api_url = `/api/qtran/${type}/${name}${url.search}`
     const api_res = await fetch(api_url)
@@ -28,8 +20,8 @@
 </script>
 
 <script lang="ts">
-  import SIcon from '$gui/atoms/SIcon.svelte'
-  import Footer from '$gui/sects/Footer.svelte'
+  import { MainApp, BarItem, Footer, SIcon } from '$gui'
+
   import CvPage from '$gui/sects/CvPage.svelte'
 
   export let name: string
@@ -52,42 +44,48 @@
   <title>Dịch nhanh: {name} - Chivi</title>
 </svelte:head>
 
-<section class="body">
-  <CvPage {dname} {d_dub} {zhtext} {cvdata} {on_change}>
-    <svete:fragment slot="header">
-      <nav class="bread">
-        <a href="/qtran" class="crumb _link">Dịch nhanh</a>
-        <span>/</span>
-        <span class="crumb _text">[{type}]</span>
+<MainApp config={true}>
+  <svelte:fragment slot="header-left">
+    <BarItem this="a" href="/qtran" icon="bolt" text="Dịch nhanh" show="pl" />
+    <BarItem
+      this="span"
+      icon={icons[type]}
+      text="[{name}]"
+      kind="title"
+      active />
+  </svelte:fragment>
 
-        <span>/</span>
-        <span class="crumb _text">[{name}]</span>
-      </nav>
-    </svete:fragment>
-  </CvPage>
-</section>
+  <div>
+    <nav class="bread">
+      <a href="/qtran" class="crumb _link">Dịch nhanh</a>
+      <span>/</span>
+      <span class="crumb _caps">{type}</span>
 
-<Footer>
-  <div class="foot">
-    <button
-      class="m-btn"
-      data-kbd="r"
-      on:click={() => window.location.reload()}>
-      <SIcon name="rotate" />
-      <span>Dịch lại</span>
-    </button>
-
-    <a class="m-btn _success _fill" data-kbd="n" href="/qtran">
-      <span>Dịch mới</span>
-    </a>
+      <span>/</span>
+      <span class="crumb _caps">[{name}]</span>
+    </nav>
   </div>
-</Footer>
+
+  <CvPage {dname} {d_dub} {zhtext} {cvdata} {on_change} />
+
+  <Footer>
+    <div class="foot">
+      <button
+        class="m-btn"
+        data-kbd="r"
+        on:click={() => window.location.reload()}>
+        <SIcon name="rotate" />
+        <span>Dịch lại</span>
+      </button>
+
+      <a class="m-btn _success _fill" data-kbd="n" href="/qtran">
+        <span>Dịch mới</span>
+      </a>
+    </div>
+  </Footer>
+</MainApp>
 
 <style lang="scss">
-  .body {
-    margin-top: 1rem;
-  }
-
   .foot {
     @include flex($center: horz, $gap: 0.5rem);
     // justify-content: right;

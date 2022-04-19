@@ -1,12 +1,9 @@
 <script context="module" lang="ts">
-  import { appbar } from '$lib/stores'
   import { rel_time } from '$utils/time_utils'
 
   import * as api from '$lib/api_call'
 
   export async function load({ fetch, url }) {
-    appbar.set({ left: [['Fix Tag', 'pencil', '/$dict']] })
-
     const source = url.searchParams.get('source') || 'ptags-united'
     const target = url.searchParams.get('target') || 'regular'
 
@@ -31,7 +28,8 @@
   import { ztext } from '$lib/stores'
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
   import Upsert from '$gui/parts/Upsert.svelte'
-  import SIcon from '$gui/atoms/SIcon.svelte'
+
+  import { MainApp, BarItem, SIcon } from '$gui'
 
   export let source: string
   export let target: string
@@ -77,55 +75,63 @@
   <title>Fix dict - Chivi</title>
 </svelte:head>
 
-<article class="m-article">
-  <h1>Source: <code>{source}</code>, target: <code>{target}</code></h1>
+<MainApp>
+  <svelte:fragment slot="header-left">
+    <BarItem this="span" icon="pencil" text="Phân loại" show="tm" />
+  </svelte:fragment>
 
-  <table>
-    <thead>
-      <th>#</th>
-      <th>Uname</th>
-      <th>Mtime</th>
-      <th>Key</th>
-      <th>Val</th>
-      <th>Chivi</th>
-      <th>Baidu</th>
-      <th>Custom</th>
-    </thead>
+  <article class="m-article">
+    <h1>Source: <code>{source}</code>, target: <code>{target}</code></h1>
 
-    <tbody>
-      {#each data as { attr, key, val, uname, mtime, ptags }, idx (key)}
-        {@const fresh = mtime > epoch}
-        <tr>
-          <td class="idx">{idx + 1}</td>
-          <td class="uname">{uname}</td>
-          <td class="mtime">{rel_time(mtime)}</td>
-          <td class="key" on:click={() => show_lookup(key)}>{key}</td>
-          <td class="val"><span>{val}</span></td>
-          <td
-            ><button
-              class="m-btn _xs"
-              class:_primary={fresh}
-              on:click={() => resolve(idx, attr)}>{attr}</button
-            ></td>
-          <td>
-            {#each Object.entries(ptags) as [ptag, count], i2}
+    <table>
+      <thead>
+        <th>#</th>
+        <th>Uname</th>
+        <th>Mtime</th>
+        <th>Key</th>
+        <th>Val</th>
+        <th>Chivi</th>
+        <th>Baidu</th>
+        <th>Custom</th>
+      </thead>
+
+      <tbody>
+        {#each data as { attr, key, val, uname, mtime, ptags }, idx (key)}
+          {@const fresh = mtime > epoch}
+          <tr>
+            <td class="idx">{idx + 1}</td>
+            <td class="uname">{uname}</td>
+            <td class="mtime">{rel_time(mtime)}</td>
+            <td class="key" on:click={() => show_lookup(key)}>{key}</td>
+            <td class="val"><span>{val}</span></td>
+            <td
+              ><button
+                class="m-btn _xs"
+                class:_primary={fresh}
+                on:click={() => resolve(idx, attr)}>{attr}</button
+              ></td>
+            <td>
+              {#each Object.entries(ptags) as [ptag, count], i2}
+                <button
+                  class="m-btn _xs"
+                  class:_success={!fresh && i2 == 0}
+                  on:click={() => resolve(idx, ptag)}
+                  >{ptag} ({render_count(count)})</button
+                >{/each}
+            </td>
+            <td class="action">
+              <input class="m-input _xs" type="text" bind:value={value[idx]} />
               <button
                 class="m-btn _xs"
-                class:_success={!fresh && i2 == 0}
-                on:click={() => resolve(idx, ptag)}
-                >{ptag} ({render_count(count)})</button
-              >{/each}
-          </td>
-          <td class="action">
-            <input class="m-input _xs" type="text" bind:value={value[idx]} />
-            <button class="m-btn _xs" on:click={() => resolve(idx, value[idx])}
-              ><SIcon name="send" /></button>
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-</article>
+                on:click={() => resolve(idx, value[idx])}
+                ><SIcon name="send" /></button>
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </article>
+</MainApp>
 
 <Lookup />
 <Upsert />

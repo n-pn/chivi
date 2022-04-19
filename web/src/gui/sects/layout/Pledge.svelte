@@ -2,22 +2,22 @@
   import { session } from '$app/stores'
 </script>
 
-{#if $session.privi < 0}
-  <div class="pledge">
-    Protip: Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá các
-    tính năng!
-  </div>
-{:else if $session.privi < 2}
-  <a class="pledge" href="/guide/donation">
-    Ủng hộ <strong>Chivi</strong> để nâng cấp quyền hạn!
-  </a>
-{/if}
+<div class="vessel">
+  {#if $session.privi < 0}
+    <div class="pledge">
+      Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá các tính năng!
+    </div>
+  {:else if $session.privi < 2}
+    <a class="pledge" href="/guide/donation">
+      Ủng hộ <strong>Chivi</strong> để nâng cấp quyền hạn!
+    </a>
+  {/if}
+</div>
 
 <style lang="scss">
   .pledge {
     display: block;
     text-align: vessel;
-    margin: 0.75rem var(--gutter);
     // max-width: 50vw;
     font-size: rem(15px);
     text-align: center;

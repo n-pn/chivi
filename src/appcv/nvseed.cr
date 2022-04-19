@@ -245,13 +245,11 @@ class CV::Nvseed
     tspan >= map_ttl(force: force) * (4 - privi)
   end
 
+  TIMES = {1.days, 5.days, 10.days, 30.days}
+
   def map_ttl(force : Bool = false)
-    case self.nvinfo.status
-    when 0 then force ? 5.minutes : 60.minutes
-    when 1 then force ? 5.hours : 60.hours
-    when 2 then force ? 1.days : 12.days
-    else        force ? 5.hours : 60.days
-    end
+    return 5.minutes if force
+    TIMES[self.nvinfo.status]? || 60.days
   end
 
   def refresh!(force : Bool = false) : Nil

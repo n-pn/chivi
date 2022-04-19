@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { config_data as data, config_ctrl as ctrl } from '$lib/stores'
+  import { config as data, popups } from '$lib/stores'
   import { ctrl as lookup } from '$gui/parts/Lookup.svelte'
 
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
@@ -15,7 +15,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   let config_elem: HTMLElement
-  $: if ($ctrl.actived && config_elem) config_elem.focus()
+  $: if ($popups.config && config_elem) config_elem.focus()
 
   async function update_wtheme(wtheme: string) {
     await fetch('/api/user/setting', {
@@ -29,7 +29,10 @@
 <config-main bind:this={config_elem}>
   <config-head>
     <config-title>Cài đặt</config-title>
-    <button class="m-btn _sm" data-kbd="esc" on:click={ctrl.hide}>
+    <button
+      class="m-btn _sm"
+      data-kbd="esc"
+      on:click={() => popups.hide('config')}>
       <SIcon name="x" />
     </button>
   </config-head>
@@ -128,7 +131,7 @@
   </config-item>
 </config-main>
 
-<config-wrap on:click={ctrl.hide} />
+<config-wrap on:click={() => popups.hide('config')} />
 
 <style lang="scss">
   config-main {
@@ -136,9 +139,10 @@
     width: 18rem;
     position: absolute;
     top: 3.5rem;
+    right: var(--gutter);
 
     z-index: 90;
-    right: 0;
+    // right: 0;
     padding: 0 0 1rem;
 
     @include fgcolor(secd);

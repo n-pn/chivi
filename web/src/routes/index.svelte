@@ -22,7 +22,7 @@
   import { page } from '$app/stores'
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
 
-  import Footer from '$gui/sects/Footer.svelte'
+  import { MainApp, Footer, BarItem, TopSearch } from '$gui'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let books = []
@@ -30,40 +30,40 @@
   export let pgmax = 1
 
   $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
-
-  $: appbar.set({
-    page: 'index',
-    right: [
-      ['Dịch nhanh', 'bolt', '/qtran', { _text: '_show-lg' }],
-      ['Đánh giá', 'stars', '/crits', { _text: '_show-lg' }],
-    ],
-  })
 </script>
 
 <svelte:head>
   <title>Chivi - Truyện tàu dịch máy</title>
 </svelte:head>
 
-<div class="order">
-  {#each Object.entries(order_names) as [type, label]}
-    <a
-      href={pager.gen_url({ pg: 1, order: type })}
-      class="-type"
-      class:_active={pager.get('order') == type}>
-      <span>{label}</span>
-    </a>
-  {/each}
-</div>
+<MainApp>
+  <TopSearch slot="header-left" />
+  <svelte:fragment slot="header-right">
+    <BarItem this="a" href="/qtran" icon="bolt" text="Dịch nhanh" show="tm" />
+    <BarItem this="a" href="/crits" icon="stars" text="Đánh giá" show="tm" />
+  </svelte:fragment>
 
-{#if books.length > 0}
-  <NvinfoList {books} />
-{:else}
-  <div class="empty">Danh sách trống</div>
-{/if}
+  <div class="order">
+    {#each Object.entries(order_names) as [type, label]}
+      <a
+        href={pager.gen_url({ pg: 1, order: type })}
+        class="-type"
+        class:_active={pager.get('order') == type}>
+        <span>{label}</span>
+      </a>
+    {/each}
+  </div>
 
-<Footer>
-  <Mpager {pager} {pgidx} {pgmax} />
-</Footer>
+  {#if books.length > 0}
+    <NvinfoList {books} />
+  {:else}
+    <div class="empty">Danh sách trống</div>
+  {/if}
+
+  <Footer>
+    <Mpager {pager} {pgidx} {pgmax} />
+  </Footer>
+</MainApp>
 
 <style lang="scss">
   :global(#svelte) {

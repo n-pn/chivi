@@ -1,130 +1,73 @@
-<script context="module" lang="ts">
-  import { session } from '$app/stores'
-  import { appbar, scroll, toleft, usercp, config_ctrl } from '$lib/stores'
-</script>
-
 <script lang="ts">
-  import { dboard_ctrl } from '$lib/stores'
+  import { session } from '$app/stores'
+  import { scroll, toleft, popups } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Signin from '$gui/parts/Signin.svelte'
-  import Appnav from '$gui/parts/Appnav.svelte'
-  import Usercp from '$gui/parts/Usercp.svelte'
   import Config from '$gui/sects/reader/Config.svelte'
-  import Dboard from '$gui/sects/dboard/Dboard.svelte'
+  import BarItem from '$gui/parts/topbar/BarItem.svelte'
 
-  let active_appnav = false
+  export let config = false
+  $: uname = $session.privi < 0 ? 'Khách' : $session.uname
 </script>
 
-<app-bar class:shift={$toleft} class:clear={$scroll > 0}>
-  <nav class="vessel -wrap">
+<nav class:shift={$toleft} class:clear={$scroll > 0}>
+  <div class="vessel -wrap">
     <div class="-left">
-      <button class="appbar-item" on:click={() => (active_appnav = true)}>
-        <SIcon name="menu-2" />
-      </button>
+      <BarItem this="button" on:click={() => popups.show('appnav')}>
+        <SIcon name="menu-2" slot="icon" />
+      </BarItem>
 
-      <a href="/" class="appbar-item _brand _show-sm">
-        <img src="/icons/chivi.svg" alt="logo" />
-        <span class="appbar-text _show-lg">Chivi</span>
-      </a>
+      <BarItem this="a" href="/" kind="brand" show="tl" text="Chivi">
+        <img src="/icons/chivi.svg" alt="logo" slot="icon" />
+      </BarItem>
 
-      {#if $appbar.left}
-        {#each $appbar.left as [label, icon, href, _item = '', _text = ''], idx}
-          {#if href}
-            <a
-              class="appbar-item {_item}"
-              class:_active={idx == $appbar.left.length - 1}
-              {href}>
-              {#if icon}<SIcon name={icon} />{/if}
-              <span class="appbar-text {_text}">{label}</span>
-            </a>
-          {:else}
-            <span
-              class="appbar-item {_item}"
-              class:_active={idx == $appbar.left.length - 1}>
-              {#if icon}<SIcon name={icon} />{/if}
-              <span class="appbar-text {_text}">{label}</span>
-            </span>
-          {/if}
-        {/each}
-      {:else}
-        <form class="appbar-field" action="/books/query" method="get">
-          <input
-            type="search"
-            name="q"
-            placeholder="Tìm truyện"
-            value={$appbar.query || ''} />
-          <SIcon name="search" />
-        </form>
-      {/if}
+      <slot name="left" />
     </div>
 
     <div class="-right">
-      {#if $appbar.right}
-        {#each $appbar.right as [label, icon, meta, opts = { }]}
-          {@const _item = opts._item || ''}
-          {@const _text = opts._text || ''}
+      <slot name="right" />
 
-          {#if typeof meta == 'function'}
-            <button
-              class="appbar-item {_item}"
-              data-kbd={opts.kbd}
-              on:click={meta}>
-              {#if icon}<SIcon name={icon} />{/if}
-              <span class="appbar-text {_text}">{label}</span>
-            </button>
-          {:else}
-            <a
-              class="appbar-item {_item}"
-              data-kbd={opts.kbd}
-              href={meta || '.'}>
-              {#if icon}<SIcon name={icon} />{/if}
-              <span class="appbar-text {_text}">{label}</span>
-            </a>
-          {/if}
-        {/each}
+      {#if config}
+        <BarItem
+          this="button"
+          text="Cài đặt"
+          show="tl"
+          data-kbd="o"
+          on:click={() => popups.show('config')}>
+          <SIcon name="adjustments-alt" slot="icon" />
+        </BarItem>
       {/if}
 
-      {#if $appbar.cvmtl}
-        <button class="appbar-item" data-kbd="o" on:click={config_ctrl.show}>
-          <SIcon name="adjustments-alt" />
-          <span class="appbar-text _show-lg">Cài đặt</span>
-        </button>
-      {/if}
+      <BarItem
+        this="button"
+        text="Thảo luận"
+        show="tl"
+        data-kbd="f"
+        on:click={() => popups.show('dboard')}>
+        <SIcon name="messages" slot="icon" />
+      </BarItem>
 
-      <button class="appbar-item" data-kbd="f" on:click={dboard_ctrl.show}>
-        <SIcon name="messages" />
-        <span class="appbar-text _show-lg">Thảo luận</span>
-      </button>
+      <BarItem
+        this="button"
+        text={uname}
+        kind="uname"
+        show="tl"
+        data-kbd="u"
+        on:click={() => popups.show('usercp')}>
+        <SIcon name="user" slot="icon" />
+      </BarItem>
 
-      <button class="appbar-item" on:click={() => usercp.show()}>
-        <SIcon name="user" />
-        <span class="appbar-text _show-lg">
-          {#if $session.privi >= 0}{$session.uname} [{$session.privi}]{:else}Khách{/if}
-        </span>
-      </button>
+      {#if $popups.config}<Config />{/if}
     </div>
-
-    {#if $config_ctrl.actived}<Config />{/if}
-  </nav>
-</app-bar>
-
-<Appnav bind:actived={active_appnav} />
-
-<Dboard />
-
-{#if $session.uname == 'Khách'}
-  <Signin bind:actived={$usercp.actived} />
-{:else}
-  <Usercp />
-{/if}
+  </div>
+</nav>
 
 <style lang="scss">
   $header-height: 3rem;
   $header-inner-height: 2.25rem;
   $header-gutter: math.div($header-height - $header-inner-height, 2);
 
-  app-bar {
+  nav {
     transition: transform 100ms ease-in-out;
     will-change: transform;
 

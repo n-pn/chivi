@@ -8,3 +8,10 @@ export { default as CvpostFull } from './parts/cvpost/CvpostFull.svelte'
 
 export { default as CvreplList } from './parts/cvrepl/CvreplList.svelte'
 export { default as CvreplCard } from './parts/cvrepl/CvreplCard.svelte'
+
+// export { default as Upsert } from './parts/Upsert.svelte'
+
+export { default as Footer } from './sects/Footer.svelte'
+export { default as MainApp } from './sects/MainApp.svelte'
+export { default as BarItem } from './parts/topbar/BarItem.svelte'
+export { default as TopSearch } from './parts/topbar/TopSearch.svelte'

@@ -3,8 +3,8 @@ import { writable } from 'svelte/store'
 
 interface AppBar {
   page?: string
-  left?: Array<Array<string | null>>
-  right?: Array<Array<any>>
+  left?: Record<string, any>[]
+  right?: Record<string, any>[]
   query?: string
   cvmtl?: boolean
 }
