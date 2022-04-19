@@ -89,14 +89,18 @@ class CV::YscritRaw
       ysbook = Ysbook.new({id: ysbook_id})
       ysbook.btitle = book.title
       ysbook.author = book.author
-      ysbook.save!
     end
 
     btitle, author_zname = BookUtil.fix_names(book.title, book.author)
     author = Author.upsert!(author_zname)
     nvinfo = Nvinfo.upsert!(author, btitle)
-    nvinfo.ysbook_id = ysbook_id unless nvinfo.ysbook_id == 0
 
+    unless ysbook.nvinfo_id_column.defined?
+      ysbook.nvinfo = nvinfo
+      ysbook.save!
+    end
+
+    nvinfo.ysbook_id = ysbook_id unless nvinfo.ysbook_id == 0
     {ysbook, nvinfo}
   end
 
