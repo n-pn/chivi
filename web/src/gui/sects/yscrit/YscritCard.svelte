@@ -31,7 +31,7 @@
 </script>
 
 <crit-item>
-  <crit-head>
+  <header>
     <a class="meta _user" href="/crits?user={crit.uslug}">{crit.uname}</a>
     <x-sep>·</x-sep>
     <a class="meta _time" href="/qtran/crits/{crit.id}"
@@ -57,24 +57,25 @@
         </button>
       {/if}
     </div>
-  </crit-head>
+  </header>
 
-  <crit-body class:_all={view_all} class:big_text>
+  <section class="body" class:_all={view_all} class:big_text>
+    <div class="vtags">
+      {#each crit.vtags as label}
+        <a
+          class="link _genre"
+          href="/crits?list={crit.yslist_id}&label={label}">
+          <SIcon name="hash" />
+          <span>{label}</span>
+        </a>
+      {/each}
+    </div>
+
     {@html crit.vhtml}
-  </crit-body>
-
-  {#if crit.yslist_id}
-    <crit-foot>
-      <a class="link _list" href="/crits?list={crit.yslist_id}">
-        <SIcon name="bookmarks" />
-        <span>{crit.yslist_vname}</span>
-        <span>({crit.yslist_count})</span>
-      </a>
-    </crit-foot>
-  {/if}
+  </section>
 
   {#if show_book}
-    <crit-foot>
+    <footer>
       <a class="link _title" href="/-{crit.bslug}">
         <SIcon name="book" />
         <span>{crit.bname}</span>
@@ -89,7 +90,17 @@
         <SIcon name="folder" />
         <span>{crit.bgenre}</span>
       </a>
-    </crit-foot>
+    </footer>
+  {/if}
+
+  {#if crit.yslist_id}
+    <footer>
+      <a class="link _list" href="/crits?list={crit.yslist_id}">
+        <SIcon name="bookmarks" />
+        <span>{crit.yslist_vname}</span>
+        <span>({crit.yslist_count})</span>
+      </a>
+    </footer>
   {/if}
 </crit-item>
 
@@ -112,7 +123,7 @@
     }
   }
 
-  crit-head {
+  header {
     @include flex($gap: 0.25rem);
     position: sticky;
     top: 0;
@@ -185,10 +196,9 @@
     }
   }
 
-  crit-body {
+  .body {
     --bg-hide: #{color(neutral, 7, 2)};
 
-    display: block;
     margin: 0 var(--gutter) 0.75em;
 
     max-height: 12rem;
@@ -216,7 +226,7 @@
     }
   }
 
-  crit-foot {
+  footer {
     @include flex($gap: 0.375rem);
     @include border(--bd-soft, $loc: top);
 

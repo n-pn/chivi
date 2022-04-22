@@ -3,6 +3,7 @@ declare namespace CV {
     id: string
     vhtml: string
     stars: number
+    vtags: string[]
 
     uname: string
     uslug: string
