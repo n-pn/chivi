@@ -46,16 +46,13 @@ class CV::YslistRaw
   @[JSON::Field(key: "booklistId")]
   getter list_id : String
 
-  MTL = MtCore.generic_mtl
-
   def seed!(stime : Int64 = Time.utc.to_unix)
     list = Yslist.get!(self.id, self.created_at)
 
     list.origin_id = self._id
     list.ysuser = Ysuser.upsert!(self.user.name)
 
-    list.zname = self.zname
-    list.vname = MTL.translate(self.zname)
+    list.set_name(self.zname)
 
     list.stime = stime
     list.utime = self.updated_at.to_unix

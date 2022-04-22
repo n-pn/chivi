@@ -32,6 +32,13 @@ class CV::Yslist
 
   timestamps
 
+  MTL = MtCore.generic_mtl
+
+  def set_name(zname : String)
+    self.zname = zname
+    self.vname = MTL.translate(self.zname)
+  end
+
   ##################
 
   def self.get!(id : Int64, created_at : Time)

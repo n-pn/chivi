@@ -131,7 +131,7 @@
       <a class="link _list" href="/crits?list={crit.yslist_id}">
         <SIcon name="bookmarks" />
         <span>{crit.yslist_vname}</span>
-        <span>({crit.yslist_count})</span>
+        <span>({crit.yslist_count} bộ truyện)</span>
       </a>
     </footer>
   {/if}

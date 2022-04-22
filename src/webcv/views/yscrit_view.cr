@@ -43,6 +43,7 @@ struct CV::YscritView
 
       if yslist = @data.yslist
         jb.field "yslist_id", UkeyUtil.encode32(yslist.id)
+        jb.field "yslist_class", yslist.klass
         jb.field "yslist_vname", yslist.vname
         jb.field "yslist_count", yslist.book_count
       end

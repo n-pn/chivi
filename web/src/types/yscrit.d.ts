@@ -33,6 +33,7 @@ declare namespace CV {
     repl_count: number
 
     yslist_id?: string
+    yslist_class?: string
     yslist_vname?: string
     yslist_count?: number
   }
