@@ -1,6 +1,4 @@
 <script context="module" lang="ts">
-  import { appbar } from '$lib/stores'
-
   export async function load({ url, fetch }) {
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
@@ -20,29 +18,30 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
-  import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
 
-  import { MainApp, Footer, BarItem, TopSearch } from '$gui'
+  import { Vessel, Footer } from '$gui'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
 
   export let books = []
   export let pgidx = 1
   export let pgmax = 1
 
   $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
+
+  $: topbar = {
+    rights: [
+      ['Dịch nhanh', 'bolt', { href: '/qtran', show: 'tm' }],
+      ['Đánh giá', 'stars', { href: '/crits', show: 'tm' }],
+    ],
+  }
 </script>
 
 <svelte:head>
   <title>Chivi - Truyện tàu dịch máy</title>
 </svelte:head>
 
-<MainApp>
-  <TopSearch slot="header-left" />
-  <svelte:fragment slot="header-right">
-    <BarItem this="a" href="/qtran" icon="bolt" text="Dịch nhanh" show="tm" />
-    <BarItem this="a" href="/crits" icon="stars" text="Đánh giá" show="tm" />
-  </svelte:fragment>
-
+<Vessel {topbar}>
   <div class="order">
     {#each Object.entries(order_names) as [type, label]}
       <a
@@ -60,10 +59,10 @@
     <div class="empty">Danh sách trống</div>
   {/if}
 
-  <Footer>
+  <Footer slot="footer">
     <Mpager {pager} {pgidx} {pgmax} />
   </Footer>
-</MainApp>
+</Vessel>
 
 <style lang="scss">
   :global(#svelte) {

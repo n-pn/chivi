@@ -1,51 +1,60 @@
 <script lang="ts">
   import { session } from '$app/stores'
-  import { scroll, toleft, popups } from '$lib/stores'
+  import { scroll, popups } from '$lib/stores'
 
-  import SIcon from '$gui/atoms/SIcon.svelte'
+  import BarItem from '../topbar/BarItem.svelte'
   import Config from '$gui/sects/reader/Config.svelte'
-  import BarItem from '$gui/parts/topbar/BarItem.svelte'
 
+  type Item = [string, string | undefined, Record<string, any> | undefined]
+
+  export let lefts: Item[] = []
+  export let rights: Item[] = []
   export let config = false
+
   $: uname = $session.privi < 0 ? 'Khách' : $session.uname
 </script>
 
-<nav class:shift={$toleft} class:clear={$scroll > 0}>
+<nav class:clear={$scroll > 0}>
   <div class="vessel -wrap">
     <div class="-left">
-      <BarItem this="button" on:click={() => popups.show('appnav')}>
-        <SIcon name="menu-2" slot="icon" />
-      </BarItem>
+      <BarItem
+        this="button"
+        on:click={() => popups.show('appnav')}
+        icon="menu-2" />
 
       <BarItem this="a" href="/" kind="brand" show="tl" text="Chivi">
         <img src="/icons/chivi.svg" alt="logo" slot="icon" />
       </BarItem>
 
-      <slot name="left" />
+      {#each lefts as [text, icon, opts], idx}
+        {@const active = idx == lefts.length - 1 || null}
+        <BarItem this="a" {text} {icon} {...opts} {active} />
+      {/each}
     </div>
 
     <div class="-right">
-      <slot name="right" />
+      {#each rights as [text, icon, opts = { }]}
+        {@const type = opts.href ? 'a' : 'button'}
+        <BarItem this={type} {text} {icon} {...opts} />
+      {/each}
 
       {#if config}
         <BarItem
           this="button"
           text="Cài đặt"
           show="tl"
+          icon="adjustments-alt"
           data-kbd="o"
-          on:click={() => popups.show('config')}>
-          <SIcon name="adjustments-alt" slot="icon" />
-        </BarItem>
+          on:click={() => popups.show('config')} />
       {/if}
 
       <BarItem
         this="button"
         text="Thảo luận"
         show="tl"
+        icon="messages"
         data-kbd="f"
-        on:click={() => popups.show('dboard')}>
-        <SIcon name="messages" slot="icon" />
-      </BarItem>
+        on:click={() => popups.show('dboard')} />
 
       <BarItem
         this="button"
@@ -53,12 +62,11 @@
         kind="uname"
         show="tl"
         data-kbd="u"
-        on:click={() => popups.show('usercp')}>
-        <SIcon name="user" slot="icon" />
-      </BarItem>
-
-      {#if $popups.config}<Config />{/if}
+        icon="user"
+        on:click={() => popups.show('usercp')} />
     </div>
+
+    {#if $popups.config}<Config />{/if}
   </div>
 </nav>
 

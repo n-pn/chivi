@@ -18,7 +18,7 @@
 </script>
 
 <script lang="ts">
-  import { MainApp, BarItem, SIcon } from '$gui'
+  import { Vessel, BarItem, SIcon } from '$gui'
 
   import RTime from '$gui/atoms/RTime.svelte'
   import BCover from '$gui/atoms/BCover.svelte'
@@ -42,7 +42,7 @@
   $: nvtab = $page.routeId.split('/').pop().replace('@book', '')
 </script>
 
-<MainApp>
+<Vessel>
   <svelte:fragment slot="header-left">
     <BarItem
       this="a"
@@ -207,7 +207,7 @@
       <slot />
     </div>
   </book-section>
-</MainApp>
+</Vessel>
 
 <style lang="scss">
   .main-info {
