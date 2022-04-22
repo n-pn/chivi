@@ -135,6 +135,8 @@ module CV::BookUtil
   end
 
   NAME_PREFIXES = {
+    "华娱之"   => "C-biz: ",
+    "韩娱之"   => "K-biz: ",
     "火影之"   => "NARUTO: ",
     "民国之"   => "Dân quốc: ",
     "三国之"   => "Tam Quốc: ",
