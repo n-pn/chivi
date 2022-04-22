@@ -57,8 +57,8 @@
   $: book_url = `/-${nvinfo.bslug}`
   $: topbar.set({
     left: [
-      [nvinfo.vname, 'book', { href: book_url, show: 'tm', kind: 'title' }],
-      ['Mục lục', 'list', { href: $page.url.pathname, show: 'ts' }],
+      [nvinfo.vname, 'book', { href: book_url, show: 'ts', kind: 'title' }],
+      ['Chương tiết', 'list', { href: $page.url.pathname, show: 'tm' }],
     ],
     right: [suggest_read(nvinfo, ubmemo)],
   })
@@ -84,6 +84,14 @@
     _refresh = false
   }
 </script>
+
+<nav class="bread">
+  <a href="/-{nvinfo.bslug}" class="crumb _link">
+    <SIcon name="book" />
+    <span class="-text">{nvinfo.vname}</span></a>
+  <span>/</span>
+  <span class="crumb _text">Chương tiết</span>
+</nav>
 
 <chap-page>
   <page-head>
@@ -173,14 +181,15 @@
 
   chap-page {
     display: block;
-    margin: var(--gutter) 0;
-    @include padding-x(var(--gutter));
+    margin: 0;
+    margin-bottom: var(--gutter);
 
+    @include padding-x(var(--gutter));
     @include shadow(2);
     @include bgcolor(tert);
 
     @include bp-min(tm) {
-      margin: var(--gutter);
+      @include margin-x(var(--gutter));
       border-radius: 1rem;
     }
 
@@ -196,7 +205,7 @@
 
   page-info {
     display: flex;
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
 
     // @include bgcolor(main);
     // @include bdradi(1rem, $loc: top);

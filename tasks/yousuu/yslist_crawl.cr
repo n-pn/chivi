@@ -115,7 +115,7 @@ class CV::YslistCrawl
     tuple[:booklists].each(&.seed!(stime))
 
     ysbook.update({
-      list_total: tuple[:total],
+      list_total: tuple[:total] > ysbook.list_total ? tuple[:total] : ysbook.list_total,
       list_count: Yscrit.query.where("ysbook_id = ? AND yslist_id > 0", ysbook.id).count.to_i,
     })
 

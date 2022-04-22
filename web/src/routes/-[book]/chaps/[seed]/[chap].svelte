@@ -115,7 +115,14 @@
   <title>{chinfo.title} - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
-<ChapSeed {chmeta} {chinfo} />
+<nav class="bread">
+  <a href="/-{nvinfo.bslug}" class="crumb _link">
+    <SIcon name="book" />
+    <span>{nvinfo.vname}</span>
+  </a>
+  <span>/</span>
+  <span class="crumb _text">{chinfo.chvol}</span>
+</nav>
 
 {#if cvdata}
   <CvPage
@@ -125,11 +132,7 @@
     d_dub={nvinfo.vname}
     {on_change}>
     <svelte:fragment slot="header">
-      <nav class="bread">
-        <a href="/-{nvinfo.bslug}" class="crumb _link">{nvinfo.vname}</a>
-        <span>/</span>
-        <span class="crumb _text">{chinfo.chvol}</span>
-      </nav>
+      <ChapSeed {chmeta} {chinfo} />
     </svelte:fragment>
   </CvPage>
 {:else}

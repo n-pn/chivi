@@ -49,7 +49,6 @@
   chap-seed {
     @include flex-cx($gap: 0.375rem);
     flex-wrap: wrap;
-    padding: 0.5rem var(--gutter);
   }
 
   @mixin label {
@@ -88,7 +87,7 @@
     @include flex($center: both);
     @include label();
 
-    line-height: 1rem;
+    line-height: 1.25rem;
     font-size: rem(13px);
 
     :global(svg) {

@@ -20,7 +20,7 @@ export function suggest_read(
   ubmemo: CV.Ubmemo
 ): [string, string, Record<string, any>] {
   const { text, icon, href, mute } = last_read(nvinfo, ubmemo)
-  return [text, icon, { href, show: 'tm', disable: mute }]
+  return [text, icon, { href, show: 'tm', disable: mute ? true : null }]
 }
 
 export function update_memo(

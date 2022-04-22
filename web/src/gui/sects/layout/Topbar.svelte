@@ -108,6 +108,7 @@
     .-left,
     .-right {
       @include flex($gap: var(--gutter-pm));
+      margin: 0;
     }
 
     .-left {
@@ -117,5 +118,8 @@
     .-right {
       padding-left: $header-gutter;
     }
+  }
+  .vessel {
+    padding: 0 var(--gutter);
   }
 </style>

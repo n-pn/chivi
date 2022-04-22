@@ -92,7 +92,7 @@
 
     [kind='title'] > & {
       @include clamp($width: null);
-      @include bps(max-width, 25vw, $pl: 28vw, $ts: 22vw, $tl: 18vw);
+      @include bps(max-width, 25vw, $tl: 12rem);
     }
 
     [kind='zseed'] > & {

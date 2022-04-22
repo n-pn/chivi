@@ -58,8 +58,10 @@
   </header>
 
   {#each zhtext as ztext, index (index)}
-    <cv-data
+    <svelte:element
+      this={index > 0 || $$props.no_title ? 'p' : 'h1'}
       id="L{index}"
+      class="cv-line"
       class:debug={$config.render == 1}
       class:focus={index == l_focus}
       on:mouseenter={() => (l_hover = index)}>
@@ -67,7 +69,7 @@
       <Cvline
         input={cv_lines[index]}
         focus={render_html($config.render, index, l_hover, l_focus)} />
-    </cv-data>
+    </svelte:element>
   {/each}
 
   {#if $config.render >= 0}
@@ -121,7 +123,7 @@
   }
 
   // prettier-ignore
-  cv-data {
+  .cv-line {
     display: block;
     margin: 1em 0;
     color: var(--fgcolor, var(--fg-main));
@@ -140,7 +142,7 @@
   }
 
   // prettier-ignore
-  cv-data:first-of-type {
+  :global(h1).cv-line {
     line-height: 1.4em;
 
     @include bps(font-size, rem(22px), rem(23px), rem(24px), rem(26px), rem(28px));
@@ -155,7 +157,7 @@
   }
 
   // prettier-ignore
-  cv-data:not(:first-of-type) {
+  :global(p).cv-line {
     text-align: justify;
     text-justify: auto;
     line-height: var(--textlh, 160%);
