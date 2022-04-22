@@ -124,3 +124,19 @@ cv-user,
     }
   }
 }
+
+.article.article {
+  @include padding-x(var(--gutter));
+  @include margin-x(0);
+  @include shadow(2);
+  @include bgcolor(tert);
+
+  @include bp-min(tl) {
+    border-radius: 1rem;
+    @include margin-x(var(--gutter));
+  }
+
+  @include tm-dark {
+    @include linesd(--bd-soft, $ndef: false, $inset: false);
+  }
+}

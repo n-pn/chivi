@@ -5,7 +5,7 @@
 
   export async function load({ fetch, params: { seed, chap }, stuff }) {
     const { nvinfo } = stuff
-    const [chidx, cpart = 0] = chap.split('-').pop().split('.')
+    const [chidx, cpart = 0] = chap.split('-')[0].split('.')
 
     const api_url = `/api/chaps/${nvinfo.id}/${seed}/${chidx}/${+cpart}`
     const api_res = await fetch(api_url)
@@ -22,7 +22,7 @@
   import Notext from '$gui/parts/Notext.svelte'
   import Footer from '$gui/sects/Footer.svelte'
   import CvPage from '$gui/sects/CvPage.svelte'
-  import ChapSeed from '../../_layout/ChapSeed.svelte'
+  import ChapSeed from '../_layout/ChapSeed.svelte'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
@@ -49,6 +49,7 @@
       [nvinfo.vname, 'book', { href: book_url, kind: 'title', show: 'pl' }],
       [`[${ubmemo.sname}]`, null, { href: list_url, kind: 'zseed' }],
     ],
+    right: [],
     config: true,
   })
 
@@ -80,9 +81,9 @@
     const home = seed_url(bslug, sname, 1)
     const list = seed_url(bslug, sname, to_pgidx(chidx))
 
-    const base = `/-${bslug}/chaps/${sname}/`
-    const prev = _prev ? `${base}-${_prev}` : home
-    const next = _next ? `${base}-${_next}` : list
+    const base = `/-${bslug}/-${sname}/`
+    const prev = _prev ? `${base}${_prev}` : home
+    const next = _next ? `${base}${_next}` : list
 
     return { list, prev, next }
   }

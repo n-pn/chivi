@@ -62,7 +62,7 @@
         'book',
         { href: `/-${nvinfo.bslug}`, show: 'tm', kind: 'title' },
       ],
-      ['Mục lục', 'list', { href: $page.url.pathname, show: 'ts' }],
+      ['Chương tiết', 'list', { href: $page.url.pathname, show: 'pm' }],
     ],
     right: [suggest_read(nvinfo, ubmemo)],
   })
@@ -88,6 +88,14 @@
     _refresh = false
   }
 </script>
+
+<nav class="bread">
+  <a href="/-{nvinfo.bslug}" class="crumb _link">
+    <SIcon name="book" />
+    <span class="-text">{nvinfo.vname}</span></a>
+  <span>/</span>
+  <span class="crumb _text">Chương tiết</span>
+</nav>
 
 <chap-page>
   <page-head>
@@ -177,13 +185,15 @@
 
   chap-page {
     display: block;
-    margin: var(--gutter) 0;
+    margin: 0;
+    margin-bottom: var(--gutter);
+    @include padding-x(var(--gutter));
 
     @include shadow(2);
     @include bgcolor(tert);
 
     @include bp-min(tm) {
-      margin: var(--gutter);
+      @include margin-x(var(--gutter));
       border-radius: 1rem;
     }
 

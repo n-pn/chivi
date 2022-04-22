@@ -14,17 +14,17 @@ class CV::ChText
 
   def initialize(@sname : String, @snvid : String, @chinfo)
     if proxy = @chinfo.proxy
-      dir = "#{DIR}/#{proxy.sname}/#{proxy.snvid}"
-      pgidx = (proxy.chidx - 1) // 128
-
-      @c_key = "#{proxy.sname}/#{proxy.snvid}/#{proxy.chidx}"
+      @sname = proxy.sname
+      @snvid = proxy.snvid
+      chidx = proxy.chidx
     else
-      dir = "#{DIR}/#{sname}/#{snvid}"
-      pgidx = (@chinfo.chidx - 1) // 128
-
-      @c_key = "#{@sname}/#{@snvid}/#{@chinfo.chidx}"
+      chidx = @chinfo.chidx
     end
 
+    dir = "#{DIR}/#{@sname}/#{@snvid}"
+    @c_key = "#{@sname}/#{@snvid}/#{@chinfo.chidx}"
+
+    pgidx = (chidx &- 1) // 128
     @chdir = "#{dir}/#{pgidx}"
     @store = "#{dir}/#{pgidx}.zip"
   end
@@ -36,11 +36,7 @@ class CV::ChText
 
   def load!(part = 0) : Data
     TEXTS.get("#{@c_key}/#{part}") do
-      unless File.exists?(@store)
-        remote_path = @store.sub(/^var/, "s3://chivi-bak")
-        `aws s3 cp #{remote_path} #{@store}`
-        return EMPTY unless $?.success?
-      end
+      fetch_zip unless File.exists?(@store)
 
       Compress::Zip::File.open(@store) do |zip|
         if entry = zip[part_path(part)]?
@@ -55,6 +51,14 @@ class CV::ChText
     end
   end
 
+  def fetch_zip
+    return unless @sname.in?("hetushu", "zxcs_me", "jx_la", "zhwenpg", "users")
+
+    remote_path = @store.sub(/^var/, "s3://chivi-bak")
+    `aws s3 cp #{remote_path} #{@store}`
+    return EMPTY unless $?.success?
+  end
+
   def exists?
     return false unless File.exists?(@store)
     Compress::Zip::File.open(@store) do |zip|
@@ -63,14 +67,8 @@ class CV::ChText
   end
 
   def fetch!(part : Int32 = 0, ttl = 10.years, mkdir = true, lbl = "1/1")
-    if proxy = @chinfo.proxy
-      sname, snvid = proxy.sname, proxy.snvid
-    else
-      sname, snvid = @sname, @snvid
-    end
-
-    RemoteText.mkdir!(sname, snvid) if mkdir
-    remote = RemoteText.new(sname, snvid, @chinfo.schid, ttl: ttl, lbl: lbl)
+    RemoteText.mkdir!(@sname, @snvid) if mkdir
+    remote = RemoteText.new(@sname, @snvid, @chinfo.schid, ttl: ttl, lbl: lbl)
 
     lines = remote.paras
     # TODO: check for empty title in parser
@@ -93,7 +91,7 @@ class CV::ChText
       title ||= chdata.lines[0]?
 
       stats.utime = chdata.utime if stats.utime < chdata.utime
-      stats.chars += chdata.lines.map(&.size).sum
+      stats.chars += chdata.lines.sum(&.size)
       stats.parts += 1
     end
 

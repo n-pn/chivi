@@ -38,7 +38,7 @@
     else invalidate(`/api/books/${nvinfo.bslug}`)
   }
 
-  $: nvtab = $page.routeId.split('/').pop().replace('@book', '')
+  $: nvtab = $page.routeId.replace(/-\[book\](.*)@book$/, '$1')
 
   $: topbar.set({
     left: [
@@ -176,14 +176,14 @@
     <a
       href="/-{nvinfo.bslug}/crits"
       class="header-tab"
-      class:_active={nvtab == 'crits'}>
+      class:_active={nvtab == '/crits'}>
       <span>Đánh giá</span>
     </a>
 
     <a
       href="/-{nvinfo.bslug}/chaps"
       class="header-tab"
-      class:_active={nvtab == 'chaps'}>
+      class:_active={nvtab == '/chaps'}>
       <span>Chương tiết</span>
     </a>
   </header>

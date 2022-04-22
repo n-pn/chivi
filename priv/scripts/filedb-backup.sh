@@ -56,6 +56,6 @@ fi
 if [[ $1 == "all" || $* == *data* ]]
 then
   echo backup pg_data!
-  rsync -aiz --no-p "nipin@ssh.chivi.app:var/wal_log" "var/.backup"
-  # rsync -aiz --no-p "nipin@ssh.chivi.app:var/pg_data" "var/.backup"
+  rsync -aiz --no-p --delete "nipin@ssh.chivi.app:var/wal_log" "var/.backup"
+  rsync -aiz --no-p --delete "nipin@ssh.chivi.app:var/pg_data" "var/.backup"
 fi

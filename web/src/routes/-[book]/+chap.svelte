@@ -41,7 +41,7 @@
     const payload = await res.json()
     if (res.ok) {
       const { props } = payload
-      goto(`/-${nvinfo.bslug}/chaps/chivi/-${props.uslug}-${props.chidx}`)
+      goto(`/-${nvinfo.bslug}/-chivi/${props.chidx}-${props.uslug}`)
     } else {
       alert(payload.error)
     }
@@ -50,7 +50,7 @@
   $: topbar.set({
     left: [
       [nvinfo.vname, 'book', { href: `/-${nvinfo.bslug}`, kind: 'title' }],
-      ['Thêm/sửa chương', 'plus', { href: '.', show: 'tm' }],
+      ['Thêm/sửa chương', 'file-plus', { href: '.', show: 'pl' }],
     ],
   })
 </script>
@@ -59,16 +59,17 @@
   <title>Thêm/sửa chương - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
-<section>
-  <nav class="navi">
-    <div class="-item _sep">
-      <a href="/-{nvinfo.bslug}" class="-link">{nvinfo.vname}</a>
-    </div>
+<nav class="bread">
+  <a href="/-{nvinfo.bslug}" class="crumb _link">
+    <SIcon name="book" />
+    <span>{nvinfo.vname}</span>
+  </a>
+  <span>/</span>
+  <a href="/-{nvinfo.bslug}/-chivi" class="crumb _link">Chương tiết</a>
+</nav>
 
-    <div class="-item">
-      <a href="/-{nvinfo.bslug}/-chivi" class="-link">Chương tiết</a>
-    </div>
-  </nav>
+<section class="article">
+  <h2>Thêm/sửa chương</h2>
 
   <textarea
     class="m-input"
@@ -76,66 +77,39 @@
     lang="zh"
     id="input"
     bind:value={input} />
+
+  <Footer>
+    <div class="pagi">
+      <label class="label" for="chidx">
+        <span>Chương số</span>
+        <input class="m-input" name="chidx" bind:value={chidx} />
+      </label>
+
+      <label class="label">
+        <input type="checkbox" name="_trad" bind:checked={_trad} />
+        <span>Phồn -> Giản</span>
+      </label>
+
+      <button class="m-btn _primary _fill" on:click={submit_text}>
+        <SIcon name="square-plus" />
+        <span class="-text">Lưu</span>
+      </button>
+    </div>
+  </Footer>
 </section>
 
-<Footer>
-  <div class="pagi">
-    <label class="label" for="chidx">
-      <span>Chương số</span>
-      <input class="m-input" name="chidx" bind:value={chidx} />
-    </label>
-
-    <label class="label">
-      <input type="checkbox" name="_trad" bind:checked={_trad} />
-      <span>Phồn -> Giản</span>
-    </label>
-
-    <button class="m-btn _primary _fill" on:click={submit_text}>
-      <SIcon name="square-plus" />
-      <span class="-text">Lưu</span>
-    </button>
-  </div>
-</Footer>
-
 <style lang="scss">
-  section {
-    margin: 0;
-  }
-
-  nav {
-    padding: 0.5rem 0;
-    line-height: 1.25rem;
-
-    @include ftsize(sm);
-
-    .-item {
-      display: inline;
-      // float: left;
-      @include fgcolor(neutral, 6);
-
-      &._sep:after {
-        display: inline-block;
-        padding-left: 0.325em;
-        content: '/';
-        @include fgcolor(neutral, 4);
-      }
-    }
-
-    .-link {
-      color: inherit;
-      &:hover {
-        @include fgcolor(primary, 6);
-      }
-    }
-  }
-
   textarea {
     display: block;
     width: 100%;
     min-height: 10rem;
-    height: calc(100vh - 13rem);
+    height: calc(100vh - 12rem);
     padding: 0.75rem;
     font-size: rem(18px);
+  }
+
+  h2 {
+    padding: 0.75rem 0;
   }
 
   .pagi {
