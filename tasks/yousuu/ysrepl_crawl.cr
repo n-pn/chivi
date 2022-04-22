@@ -18,7 +18,7 @@ class CV::CrawlYsrepl
     count = 0
     queue = [] of Yscrit
 
-    @max_pgs.each do |yscrit|
+    @crits.each do |yscrit|
       queue << yscrit if yscrit.repl_total >= (page &- 1) &* 20
     end
 
