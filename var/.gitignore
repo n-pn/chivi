@@ -1,2 +1,5 @@
-pg_data
-vpdicts
+*
+!.gitignore
+!qttexts/notes
+!tlspecs
+!vpterms

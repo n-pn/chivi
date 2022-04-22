@@ -1,7 +1,7 @@
 require "json"
 require "./bootstrap"
 
-class CV::RawYsrepl
+class CV::YsreplRaw
   class User
     include JSON::Serializable
 
@@ -70,9 +70,9 @@ class CV::RawYsrepl
     lines.map { |line| "<p>#{cvmtl.cv_plain(line)}</p>" }.join("\n")
   end
 
-  alias Data = NamedTuple(total: Int32, commentReply: Array(RawYsrepl))
+  alias Data = NamedTuple(total: Int32, commentReply: Array(self))
 
-  def self.from_list(data : String) : Tuple(Int32, Array(RawYsrepl))
+  def self.from_list(data : String) : Tuple(Int32, Array(self))
     json = NamedTuple(data: Data).from_json(data)
     {json[:data][:total], json[:data][:commentReply]}
   end

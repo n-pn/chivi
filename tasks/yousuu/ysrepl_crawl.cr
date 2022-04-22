@@ -18,7 +18,7 @@ class CV::CrawlYsrepl
     count = 0
     queue = [] of Yscrit
 
-    @crits.each do |yscrit|
+    @crits.each_value do |yscrit|
       queue << yscrit if yscrit.repl_total >= (page &- 1) &* 20
     end
 
@@ -56,7 +56,7 @@ class CV::CrawlYsrepl
   def crawl_repl!(yscrit : Yscrit, page = 1, label = "-/-") : Yscrit?
     origin_id = yscrit.origin_id
 
-    group = orgin_id[0..3]
+    group = origin_id[0..3]
     file = "#{DIR}/#{group}/#{origin_id}-#{page}.json"
 
     pgmax = (yscrit.repl_count &- 1) // 20 &+ 1
@@ -65,11 +65,11 @@ class CV::CrawlYsrepl
       return yscrit unless @http.save!(link, file, label)
     end
 
-    total, repls = YsreplyRaw.from_list(File.read(file))
+    total, repls = YsreplRaw.from_list(File.read(file))
     repls.each(&.seed!)
 
     yscrit.update!(
-      repl_total: yscrit.total > total ? yscrit.total : total,
+      repl_total: yscrit.repl_total > total ? yscrit.repl_total : total,
       repl_count: Ysrepl.query.where("yscrit_id = ?", yscrit.id).count.to_i
     )
   rescue err
