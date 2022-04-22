@@ -1,4 +1,5 @@
 import { writable, get } from 'svelte/store'
+import { popups } from './global_stores'
 
 export class DtlistData {
   show = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
@@ -56,19 +57,18 @@ export const tplist_data = {
 }
 
 export class DboardData {
-  actived = false
   tab = 0
   topic = new TplistData()
 }
 
 export const dboard_ctrl = {
   ...writable(new DboardData()),
-  show: () => dboard_ctrl.update((x) => ({ ...x, actived: true })),
-  hide: () => dboard_ctrl.update((x) => ({ ...x, actived: false })),
+  show: () => popups.update((x) => ({ ...x, dboard: true })),
+  hide: () => popups.update((x) => ({ ...x, dboard: false })),
   change_tab: (tab: number) => dboard_ctrl.update((x) => ({ ...x, tab })),
   stop_event(evt: Event) {
-    const actived = get(dboard_ctrl).actived
-    if (actived) evt.preventDefault()
+    const { dboard } = get(popups)
+    if (dboard) evt.preventDefault()
   },
   view_board(evt: Event, board: CV.Dboard | null, lb = '', pg = 1) {
     dboard_ctrl.stop_event(evt)

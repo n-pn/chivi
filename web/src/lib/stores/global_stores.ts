@@ -39,3 +39,18 @@ export const usercp = {
   hide: () => usercp.set({ actived: false, tab: 0 }),
   change_tab: (tab: number) => usercp.update((x) => ({ ...x, tab })),
 }
+
+export const popups = {
+  ...writable({
+    appnav: false,
+    usercp: false,
+    config: false,
+    dboard: false,
+  }),
+  show(popup: string) {
+    popups.update((x) => ({ ...x, [popup]: true }))
+  },
+  hide(popup: string) {
+    popups.update((x) => ({ ...x, [popup]: false }))
+  },
+}

@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { dboard_ctrl as ctrl, tplist_data as data } from '$lib/stores'
+  import { dboard_ctrl as ctrl, tplist_data as data, popups } from '$lib/stores'
 
   export function make_api_url(data: CV.Cvpost, { pg, op }) {
     let api_url = `/api/tposts?pg=${pg}&lm=20`
@@ -26,7 +26,7 @@
   $: post_api_url = `/api/topics/${$data.topic.id}`
   $: list_api_url = make_api_url(cvpost, $data.query)
 
-  $: if ($ctrl.actived && $data.topic) load_cvpost(post_api_url)
+  $: if ($popups.dboard && $data.topic) load_cvpost(post_api_url)
   $: if (cvpost) load_tposts(list_api_url)
 
   const on_cvpost_form = async () => {

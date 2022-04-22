@@ -27,7 +27,6 @@
 
 <script lang="ts">
   import { session } from '$app/stores'
-  import { usercp as ctrl } from '$lib/stores'
   import { get_dmy } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -61,8 +60,8 @@
     {#each tabs as { icon, btip }, tab}
       <button
         class="-btn"
-        class:_active={tab == $ctrl.tab}
-        on:click={() => ctrl.change_tab(tab)}
+        class:_active={tab == $usercp}
+        on:click={() => usercp.change_tab(tab)}
         data-tip={btip}
         tip-loc="bottom">
         <SIcon name={icon} />
@@ -82,7 +81,7 @@
           <strong>{avail_until($session[`privi_${privi}_until`])}</strong>
         </div>
       {/if}
-      <button class="m-btn _xs _primary" on:click={() => ctrl.change_tab(1)}
+      <button class="m-btn _xs _primary" on:click={() => usercp.change_tab(1)}
         >{privi < 1 ? 'Nâng cấp' : 'Gia hạn'}</button>
     </div>
 
@@ -92,14 +91,14 @@
         <SIcon name="coin" /><strong>{$session.vcoin_avail}</strong>
       </div>
 
-      <button class="m-btn _xs" on:click={() => ctrl.change_tab(2)}
+      <button class="m-btn _xs" on:click={() => usercp.change_tab(2)}
         >Chi tiết</button>
     </div>
   </section>
 
   <usercp-body>
-    {#if $ctrl.actived}
-      <svelte:component this={components[$ctrl.tab]} bind:tab={$ctrl.tab} />
+    {#if actived}
+      <svelte:component this={components[$usercp]} bind:tab={$usercp} />
     {/if}
   </usercp-body>
 </Slider>

@@ -38,7 +38,7 @@
     {/each}
   </svelte:fragment>
 
-  {#if $ctrl.actived}
+  {#if actived}
     <dboard-body>
       {#if $ctrl.tab == 0}
         <Dtlist />
