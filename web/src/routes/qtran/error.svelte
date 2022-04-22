@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-  import { MainApp, BarItem } from '$gui'
+  import { Vessel } from '$gui'
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
@@ -21,17 +21,18 @@
   const on_destroy = () => invalidate(`/api/tlspecs${$page.url.search}`)
 
   $: pager = new Pager($page.url)
+
+  $: topbar = {
+    lefts: [['Lỗi máy dịch', 'flag', { href: '/qtran/error' }]],
+    config: true,
+  }
 </script>
 
 <svelte:head>
   <title>Lỗi máy dịch - Chivi</title>
 </svelte:head>
 
-<MainApp config={true}>
-  <svelte:fragment slot="header-left">
-    <BarItem this="span" icon="flag" text="Lỗi máy dịch" active />
-  </svelte:fragment>
-
+<Vessel {topbar} config={true}>
   <article class="md-article">
     <h1>Lỗi máy dịch (Đỏ: Đang lỗi, Xanh: Đã sửa đúng)</h1>
 
@@ -74,7 +75,7 @@
       <Mpager {pager} {pgidx} {pgmax} />
     </footer>
   </article>
-</MainApp>
+</Vessel>
 
 {#if $tlspec.actived}<Tlspec {on_destroy} />{/if}
 

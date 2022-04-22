@@ -29,7 +29,7 @@
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
   import Upsert from '$gui/parts/Upsert.svelte'
 
-  import { MainApp, BarItem, SIcon } from '$gui'
+  import { Vessel, BarItem, SIcon } from '$gui'
 
   export let source: string
   export let target: string
@@ -75,7 +75,7 @@
   <title>Fix dict - Chivi</title>
 </svelte:head>
 
-<MainApp>
+<Vessel>
   <svelte:fragment slot="header-left">
     <BarItem this="span" icon="pencil" text="Phân loại" show="tm" />
   </svelte:fragment>
@@ -131,7 +131,7 @@
       </tbody>
     </table>
   </article>
-</MainApp>
+</Vessel>
 
 <Lookup />
 <Upsert />

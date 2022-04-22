@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-  import { MainApp, BarItem, Footer, SIcon } from '$gui'
+  import { Vessel, BarItem, Footer, SIcon } from '$gui'
 
   import CvPage from '$gui/sects/CvPage.svelte'
 
@@ -52,17 +52,18 @@
       .map((x) => x.trim())
       .filter((x) => x)
   }
+
+  $: topbar = {
+    lefts: [['Dịch nhanh', 'bolt', { href: '/qtran' }]],
+    config: true,
+  }
 </script>
 
 <svelte:head>
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<MainApp config={true}>
-  <svelte:fragment slot="header-left">
-    <BarItem this="span" icon="bolt" text="Dịch nhanh" active />
-  </svelte:fragment>
-
+<Vessel {topbar}>
   <section class="main">
     {#if on_edit}
       <textarea
@@ -109,7 +110,7 @@
       {/if}
     </div>
   </Footer>
-</MainApp>
+</Vessel>
 
 <style lang="scss">
   .main {

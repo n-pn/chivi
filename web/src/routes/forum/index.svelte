@@ -1,8 +1,6 @@
 <script context="module" lang="ts">
   import { appbar } from '$lib/stores'
   export async function load({ fetch, url }) {
-    appbar.set({ left: [['Diễn đàn', 'messages', '/forum']] })
-
     const pg = url.searchParams.get('pg') || 1
     const lb = url.searchParams.get('lb')
 
@@ -15,13 +13,23 @@
 </script>
 
 <script lang="ts">
+  import { Vessel } from '$gui'
+
   import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
   export let dtlist: CV.Dtlist
   const dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
+
+  $: topbar = {
+    lefts: [['Diễn đàn', 'messages', { href: '/forum' }]],
+  }
 </script>
 
 <svelte:head>
   <title>Diễn đàn - Chivi</title>
 </svelte:head>
 
-<CvpostList {dtlist} {dboard} _mode={1} />
+<Vessel {topbar} vessel="forum">
+  <forum-wrap>
+    <CvpostList {dtlist} {dboard} _mode={1} />
+  </forum-wrap>
+</Vessel>

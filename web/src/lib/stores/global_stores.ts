@@ -1,15 +1,12 @@
-import type { Writable } from 'svelte/store'
 import { writable } from 'svelte/store'
 
-interface AppBar {
-  page?: string
-  left?: Record<string, any>[]
-  right?: Record<string, any>[]
-  query?: string
-  cvmtl?: boolean
-}
+export const appbar = writable({
+  lefts: [],
+  rights: [],
+  config: false,
+  search: '',
+})
 
-export const appbar: Writable<AppBar> = writable({})
 export const toleft = writable(false)
 
 let prevScrollTop = 0

@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { MainApp, BarItem } from '$gui'
+  import { Vessel, BarItem } from '$gui'
   export function load({ status, error }) {
     return { props: { status, error } }
   }
@@ -14,7 +14,7 @@
   <title>{status} - Chivi</title>
 </svelte:head>
 
-<MainApp>
+<Vessel>
   <svelte:fragment slot="header-left">
     <BarItem this="span" text="Lỗi hệ thống: {status}" active={true} />
   </svelte:fragment>
@@ -25,7 +25,7 @@
       <p>{error.message}</p>
     </article>
   </section>
-</MainApp>
+</Vessel>
 
 <style lang="scss">
   .wrapper {

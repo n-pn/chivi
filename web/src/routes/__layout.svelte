@@ -71,13 +71,15 @@
 
 {#if $navigating}<Loader />{/if}
 
-<div class="app tm-{wtheme}" class:kbd-hint={kbd_hint} class:_shift={$toleft}>
+<div class="app tm-{wtheme}" class:kbd-hint={kbd_hint}>
   <Appnav bind:actived={$popups.appnav} />
   <Dboard bind:actived={$popups.dboard} />
   <svelte:component this={usercp} bind:actived={$popups.usercp} />
   <Pledge />
 
-  <slot />
+  <main class:_shift={$toleft}>
+    <slot />
+  </main>
 
   <footer>
     <div class="foot-links">
@@ -114,8 +116,14 @@
 
     // padding: 0 var(--gutter);
     > :global(*) {
-      padding: 0 var(--gutter);
+      margin-left: var(--gutter);
+      margin-right: var(--gutter);
     }
+  }
+
+  main {
+    flex: 1;
+    position: relative;
   }
 
   footer {

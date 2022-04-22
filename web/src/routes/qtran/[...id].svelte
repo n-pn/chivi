@@ -20,7 +20,7 @@
 </script>
 
 <script lang="ts">
-  import { MainApp, BarItem, Footer, SIcon } from '$gui'
+  import { Vessel, Footer, SIcon } from '$gui'
 
   import CvPage from '$gui/sects/CvPage.svelte'
 
@@ -38,23 +38,21 @@
     const res = await fetch(url)
     cvdata = await res.text()
   }
+
+  $: topbar = {
+    lefts: [
+      ['Dịch nhanh', 'bolt', { href: '/qtran', show: 'ts' }],
+      [`[${name}]`, icons[type], { href: name, kind: 'title' }],
+    ],
+    config: true,
+  }
 </script>
 
 <svelte:head>
   <title>Dịch nhanh: {name} - Chivi</title>
 </svelte:head>
 
-<MainApp config={true}>
-  <svelte:fragment slot="header-left">
-    <BarItem this="a" href="/qtran" icon="bolt" text="Dịch nhanh" show="pl" />
-    <BarItem
-      this="span"
-      icon={icons[type]}
-      text="[{name}]"
-      kind="title"
-      active />
-  </svelte:fragment>
-
+<Vessel {topbar} config={true}>
   <div>
     <nav class="bread">
       <a href="/qtran" class="crumb _link">Dịch nhanh</a>
@@ -83,7 +81,7 @@
       </a>
     </div>
   </Footer>
-</MainApp>
+</Vessel>
 
 <style lang="scss">
   .foot {

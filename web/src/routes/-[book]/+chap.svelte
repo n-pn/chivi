@@ -21,7 +21,7 @@
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
 
-  import { MainApp, BarItem, SIcon, Footer } from '$gui'
+  import { Vessel, BarItem, SIcon, Footer } from '$gui'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let chidx = 1
@@ -51,7 +51,7 @@
   <title>Thêm/sửa chương - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
-<MainApp>
+<Vessel>
   <svelte:fragment slot="header-left">
     <BarItem
       this="a"
@@ -101,7 +101,7 @@
       </button>
     </div>
   </Footer>
-</MainApp>
+</Vessel>
 
 <style lang="scss">
   section {
