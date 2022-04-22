@@ -1,9 +1,7 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
-  import { appbar } from '$lib/stores'
-  export async function load({ fetch, url: { searchParams } }) {
-    appbar.set({ left: [['Đánh giá', 'stars', '/crits']] })
 
+  export async function load({ fetch, url: { searchParams } }) {
     const api_url = `/api/crits?${searchParams.toString()}&lm=10`
     const api_res = await fetch(api_url)
     return await api_res.json()
@@ -13,6 +11,7 @@
 </script>
 
 <script lang="ts">
+  import { topbar } from '$lib/stores'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
   export let crits = []
@@ -21,6 +20,8 @@
 
   $: pager = new Pager($page.url, { sort: 'mtime', pg: 1 })
   $: _sort = pager.get('sort')
+
+  $: topbar.set({ left: [['Đánh giá', 'stars', { href: '/crits' }]] })
 </script>
 
 <svelte:head>

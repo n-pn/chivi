@@ -6,17 +6,10 @@
 
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
   import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
-  import { appbar } from '$lib/stores'
+
   import Postag, { ptnames } from '$gui/parts/Postag.svelte'
 
   export async function load({ fetch, url, params: { dict } }) {
-    appbar.set({
-      left: [
-        ['Từ điển', 'package', '/dicts', null, '_show-md'],
-        [dict, null, url.pathname, '_title', '_title'],
-      ],
-    })
-
     const api_url = `/api/dicts/${dict}${url.search}`
     const api_res = await fetch(api_url)
 
@@ -31,7 +24,7 @@
 
 <script lang="ts">
   import { browser } from '$app/env'
-  import { ztext, vdict } from '$lib/stores'
+  import { ztext, vdict, topbar } from '$lib/stores'
   import { rel_time_vp } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -39,12 +32,17 @@
 
   export let dname = 'combine'
   export let d_dub = dname
-
-  $: vdict.put(dname, d_dub)
-
   export let terms = []
   export let start = 1
   export let query = { key: '', val: '', ptag: '', rank: '', uname: '' }
+
+  $: vdict.put(dname, d_dub)
+  $: topbar.set({
+    left: [
+      ['Từ điển', 'package', { href: '/dicts', show: 'ts' }],
+      [dname, null, { href: $page.url.pathname, kind: 'title' }],
+    ],
+  })
 
   let d_tab = 2
   $: {

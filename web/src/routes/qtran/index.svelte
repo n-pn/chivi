@@ -9,7 +9,8 @@
 </script>
 
 <script lang="ts">
-  import { Vessel, BarItem, Footer, SIcon } from '$gui'
+  import { topbar } from '$lib/stores'
+  import { Footer, SIcon } from '$gui'
 
   import CvPage from '$gui/sects/CvPage.svelte'
 
@@ -53,8 +54,8 @@
       .filter((x) => x)
   }
 
-  $: topbar = {
-    lefts: [['Dịch nhanh', 'bolt', { href: '/qtran' }]],
+  $: $topbar = {
+    left: [['Dịch nhanh', 'bolt', { href: '/qtran' }]],
     config: true,
   }
 </script>
@@ -63,54 +64,47 @@
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<Vessel {topbar}>
-  <section class="main">
+<section class="main">
+  {#if on_edit}
+    <textarea
+      class="m-input"
+      lang="zh"
+      bind:value={zhtext}
+      bind:this={text_elem}
+      placeholder="Nhập dữ liệu vào đây" />
+  {:else}
+    <CvPage {dname} {d_dub} zhtext={split_input(zhtext)} {cvdata} {on_change} />
+  {/if}
+</section>
+
+<Footer>
+  <div class="foot">
     {#if on_edit}
-      <textarea
-        class="m-input"
-        lang="zh"
-        bind:value={zhtext}
-        bind:this={text_elem}
-        placeholder="Nhập dữ liệu vào đây" />
+      <button class="m-btn" on:click={cleanup}>
+        <SIcon name="eraser" />
+        <span>Xoá</span>
+      </button>
+
+      <button class="m-btn _primary _fill" on:click={convert}>
+        <span>Dịch nhanh</span>
+      </button>
     {:else}
-      <CvPage
-        {dname}
-        {d_dub}
-        zhtext={split_input(zhtext)}
-        {cvdata}
-        {on_change} />
+      <button class="m-btn" on:click={() => (edit_mode = true)}>
+        <SIcon name="pencil" />
+        <span>Sửa</span>
+      </button>
+
+      <button class="m-btn _fill" on:click={convert}>
+        <SIcon name="rotate-clockwise" />
+        <span>Dịch lại</span>
+      </button>
+
+      <button class="m-btn _success _fill" on:click={cleanup}>
+        <span>Dịch mới</span>
+      </button>
     {/if}
-  </section>
-
-  <Footer>
-    <div class="foot">
-      {#if on_edit}
-        <button class="m-btn" on:click={cleanup}>
-          <SIcon name="eraser" />
-          <span>Xoá</span>
-        </button>
-
-        <button class="m-btn _primary _fill" on:click={convert}>
-          <span>Dịch nhanh</span>
-        </button>
-      {:else}
-        <button class="m-btn" on:click={() => (edit_mode = true)}>
-          <SIcon name="pencil" />
-          <span>Sửa</span>
-        </button>
-
-        <button class="m-btn _fill" on:click={convert}>
-          <SIcon name="rotate-clockwise" />
-          <span>Dịch lại</span>
-        </button>
-
-        <button class="m-btn _success _fill" on:click={cleanup}>
-          <span>Dịch mới</span>
-        </button>
-      {/if}
-    </div>
-  </Footer>
-</Vessel>
+  </div>
+</Footer>
 
 <style lang="scss">
   .main {

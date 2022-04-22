@@ -1,9 +1,5 @@
 <script context="module" lang="ts">
-  import { page } from '$app/stores'
-  import { appbar } from '$lib/stores'
   export async function load({ fetch, url }) {
-    appbar.set({ left: [['Từ điển', 'package']] })
-
     const api_url = `/api/dicts${url.search}`
     const api_res = await fetch(api_url)
     return await api_res.json()
@@ -11,8 +7,11 @@
 </script>
 
 <script lang="ts">
-  import Footer from '$gui/sects/Footer.svelte'
-  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import { page } from '$app/stores'
+  import { topbar } from '$lib/stores'
+
+  import { Footer, Mpager } from '$gui'
+  import { Pager } from '$gui/molds/Mpager.svelte'
 
   export let cores = []
   export let books = []
@@ -20,6 +19,8 @@
   export let total = 1
   export let pgidx = 1
   export let pgmax = 1
+
+  $: topbar.set({ left: [['Từ điển', 'package', { href: '/dicts' }]] })
 </script>
 
 <svelte:head>

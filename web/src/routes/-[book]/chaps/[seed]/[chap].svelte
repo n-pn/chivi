@@ -1,22 +1,11 @@
 <script context="module" lang="ts">
   import { api_call } from '$lib/api_call'
-  import { appbar } from '$lib/stores'
+  import { topbar } from '$lib/stores'
   import { seed_url, to_pgidx } from '$utils/route_utils'
 
   export async function load({ fetch, params: { seed, chap }, stuff }) {
     const { nvinfo } = stuff
     const [chidx, cpart = 0] = chap.split('-').pop().split('.')
-
-    const book_url = `/-${nvinfo.bslug}`
-    const list_url = seed_url(nvinfo.bslug, seed, to_pgidx(chidx))
-
-    appbar.set({
-      left: [
-        [nvinfo.vname, 'book', book_url, '_title', '_show-sm _title'],
-        [`[${seed}]`, null, list_url, null, '_seed'],
-      ],
-      cvmtl: true,
-    })
 
     const api_url = `/api/chaps/${nvinfo.id}/${seed}/${chidx}/${+cpart}`
     const api_res = await fetch(api_url)
@@ -51,6 +40,17 @@
 
   $: paths = gen_paths(nvinfo, chmeta, chinfo)
   $: api_url = gen_api_url(nvinfo, chmeta, chinfo)
+
+  $: book_url = `/-${nvinfo.bslug}`
+  $: list_url = seed_url(nvinfo.bslug, ubmemo.sname, to_pgidx(chinfo.chidx))
+
+  $: topbar.set({
+    left: [
+      [nvinfo.vname, 'book', { href: book_url, kind: 'title', show: 'pl' }],
+      [`[${ubmemo.sname}]`, null, { href: list_url, kind: 'zseed' }],
+    ],
+    config: true,
+  })
 
   function gen_api_url({ id: book_id }, { sname, cpart }, { chidx }) {
     return `/api/chaps/${book_id}/${sname}/${chidx}/${cpart}`

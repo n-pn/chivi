@@ -1,8 +1,17 @@
-import { writable } from 'svelte/store'
+import { writable, type Writable } from 'svelte/store'
 
-export const appbar = writable({
-  lefts: [],
-  rights: [],
+type BarItem = [string, string | undefined, Record<string, any> | undefined]
+
+interface Topbar {
+  left?: BarItem[]
+  right?: BarItem[]
+  config?: boolean
+  search?: string
+}
+
+export const topbar: Writable<Topbar> = writable({
+  left: [],
+  right: [],
   config: false,
   search: '',
 })

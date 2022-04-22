@@ -16,26 +16,22 @@
 </script>
 
 <script lang="ts">
-  import { Vessel } from '$gui'
+  import { topbar } from '$lib/stores'
   import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
 
   export let dboard: CV.Dboard
   export let dtlist: CV.Dtlist
 
-  $: topbar = {
-    lefts: [
+  $: topbar.set({
+    left: [
       ['Diễn đàn', 'messages', { href: '/forum', show: 'pl' }],
       [dboard.bname, null, { href: `/forum/-${dboard.bslug}`, kind: 'title' }],
     ],
-  }
+  })
 </script>
 
 <svelte:head>
   <title>{dboard.bname} - Diễn đàn - Chivi</title>
 </svelte:head>
 
-<Vessel {topbar} vessel="forum">
-  <forum-wrap>
-    <CvpostList {dboard} {dtlist} />
-  </forum-wrap>
-</Vessel>
+<CvpostList {dboard} {dtlist} />

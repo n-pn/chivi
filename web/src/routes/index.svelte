@@ -18,9 +18,10 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
+  import { topbar } from '$lib/stores'
 
-  import { Vessel, Footer } from '$gui'
-  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import { Footer, Mpager } from '$gui'
+  import { Pager } from '$gui/molds/Mpager.svelte'
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
 
   export let books = []
@@ -29,40 +30,39 @@
 
   $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
 
-  $: topbar = {
-    rights: [
+  $: topbar.set({
+    right: [
       ['Dịch nhanh', 'bolt', { href: '/qtran', show: 'tm' }],
       ['Đánh giá', 'stars', { href: '/crits', show: 'tm' }],
     ],
-  }
+    search: '',
+  })
 </script>
 
 <svelte:head>
   <title>Chivi - Truyện tàu dịch máy</title>
 </svelte:head>
 
-<Vessel {topbar}>
-  <div class="order">
-    {#each Object.entries(order_names) as [type, label]}
-      <a
-        href={pager.gen_url({ pg: 1, order: type })}
-        class="-type"
-        class:_active={pager.get('order') == type}>
-        <span>{label}</span>
-      </a>
-    {/each}
-  </div>
+<div class="order">
+  {#each Object.entries(order_names) as [type, label]}
+    <a
+      href={pager.gen_url({ pg: 1, order: type })}
+      class="-type"
+      class:_active={pager.get('order') == type}>
+      <span>{label}</span>
+    </a>
+  {/each}
+</div>
 
-  {#if books.length > 0}
-    <NvinfoList {books} />
-  {:else}
-    <div class="empty">Danh sách trống</div>
-  {/if}
+{#if books.length > 0}
+  <NvinfoList {books} />
+{:else}
+  <div class="empty">Danh sách trống</div>
+{/if}
 
-  <Footer slot="footer">
-    <Mpager {pager} {pgidx} {pgmax} />
-  </Footer>
-</Vessel>
+<Footer>
+  <Mpager {pager} {pgidx} {pgmax} />
+</Footer>
 
 <style lang="scss">
   :global(#svelte) {

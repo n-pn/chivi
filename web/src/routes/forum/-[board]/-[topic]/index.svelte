@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-  import { appbar } from '$lib/stores'
   export async function load({ stuff, fetch, url }) {
     const { dboard, cvpost } = stuff
 
@@ -16,15 +15,17 @@
 </script>
 
 <script lang="ts">
-  import { CvpostFull, CvreplList, Vessel } from '$gui'
+  import { topbar } from '$lib/stores'
+
+  import { CvpostFull, CvreplList } from '$gui'
 
   export let dboard: CV.Dboard
   export let cvpost: CV.Cvpost
   export let tplist: CV.Tplist
 
   $: board_url = `/forum/-${dboard.bslug}`
-  $: topbar = {
-    lefts: [
+  $: $topbar = {
+    left: [
       ['Diễn đàn', 'messages', { href: '/forum', show: 'tl' }],
       [dboard.bname, 'message', { href: board_url, show: 'tm', kind: 'title' }],
       [cvpost.title, null, { href: '.', kind: 'title' }],
@@ -36,17 +37,15 @@
   <title>{cvpost.title} - Diễn đàn - Chivi</title>
 </svelte:head>
 
-<Vessel {topbar} vessel="forum">
-  <CvpostFull {dboard} {cvpost} fluid={true} />
+<CvpostFull {dboard} {cvpost} fluid={true} />
 
-  <cvpost-posts>
-    <cvrepl-head>
-      <h3>Bình luận</h3>
-    </cvrepl-head>
+<cvpost-posts>
+  <cvrepl-head>
+    <h3>Bình luận</h3>
+  </cvrepl-head>
 
-    <CvreplList {tplist} {cvpost} fluid={true} />
-  </cvpost-posts>
-</Vessel>
+  <CvreplList {tplist} {cvpost} fluid={true} />
+</cvpost-posts>
 
 <style lang="scss">
   cvpost-posts {

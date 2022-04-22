@@ -7,14 +7,14 @@
 </script>
 
 <script lang="ts">
-  import { Vessel, BarItem } from '$gui'
+  import { topbar } from '$lib/stores'
+
   import NvinfoForm, { Params } from '$gui/parts/nvinfo/NvinfoForm.svelte'
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
+
+  $: topbar.set({
+    left: [['Sửa nội dung', 'pencil', { href: '.', show: 'tm' }]],
+  })
 </script>
 
-<Vessel>
-  <svelte:fragment slot="header-left">
-    <BarItem this="span" icon="pencil" text="Sửa nội dung" show="tm" />
-  </svelte:fragment>
-  <NvinfoForm params={new Params(nvinfo)} />
-</Vessel>
+<NvinfoForm params={new Params(nvinfo)} />

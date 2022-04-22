@@ -1,6 +1,4 @@
 <script context="module" lang="ts">
-  import { page } from '$app/stores'
-  import { invalidate } from '$app/navigation'
   export async function load({ fetch, url }) {
     const api_res = await fetch(`/api/tlspecs${url.search}`)
     return await api_res.json()
@@ -8,7 +6,9 @@
 </script>
 
 <script lang="ts">
-  import { Vessel } from '$gui'
+  import { invalidate } from '$app/navigation'
+  import { page } from '$app/stores'
+  import { topbar } from '$lib/stores'
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
@@ -22,60 +22,58 @@
 
   $: pager = new Pager($page.url)
 
-  $: topbar = {
-    lefts: [['Lỗi máy dịch', 'flag', { href: '/qtran/error' }]],
+  $: topbar.set({
+    left: [['Lỗi máy dịch', 'flag', { href: '/qtran/error' }]],
     config: true,
-  }
+  })
 </script>
 
 <svelte:head>
   <title>Lỗi máy dịch - Chivi</title>
 </svelte:head>
 
-<Vessel {topbar} config={true}>
-  <article class="md-article">
-    <h1>Lỗi máy dịch (Đỏ: Đang lỗi, Xanh: Đã sửa đúng)</h1>
+<article class="md-article">
+  <h1>Lỗi máy dịch (Đỏ: Đang lỗi, Xanh: Đã sửa đúng)</h1>
 
-    <table class="m-table">
-      <thead>
-        <tr>
-          <th class="id">#</th>
-          <th class="ztext">Từ gốc</th>
-          <th class="cvmtl">Dịch máy</th>
-          <th class="match">Nghĩa đúng</th>
-          <th class="_meta">N. dùng</th>
+  <table class="m-table">
+    <thead>
+      <tr>
+        <th class="id">#</th>
+        <th class="ztext">Từ gốc</th>
+        <th class="cvmtl">Dịch máy</th>
+        <th class="match">Nghĩa đúng</th>
+        <th class="_meta">N. dùng</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#each items as { _ukey, ztext, d_dub, mtime, uname, match, cvmtl }, idx}
+        <tr
+          class={cvmtl == match ? 'ok' : 'err'}
+          on:click={() => tlspec.load(_ukey)}>
+          <td class="id">{idx + 1 + (pgidx - 1) * 50}</td>
+          <td class="ztext">
+            <div class="txt">{ztext}</div>
+            <div class="dic">{d_dub}</div>
+          </td>
+          <td class="cvmtl">
+            <div title={cvmtl}>{cvmtl}</div>
+          </td>
+          <td class="match">
+            <div title={match}>{match}</div>
+          </td>
+          <td class="_meta">
+            <div class="uname">{uname}</div>
+            <div class="mtime">{get_rtime(mtime)}</div>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        {#each items as { _ukey, ztext, d_dub, mtime, uname, match, cvmtl }, idx}
-          <tr
-            class={cvmtl == match ? 'ok' : 'err'}
-            on:click={() => tlspec.load(_ukey)}>
-            <td class="id">{idx + 1 + (pgidx - 1) * 50}</td>
-            <td class="ztext">
-              <div class="txt">{ztext}</div>
-              <div class="dic">{d_dub}</div>
-            </td>
-            <td class="cvmtl">
-              <div title={cvmtl}>{cvmtl}</div>
-            </td>
-            <td class="match">
-              <div title={match}>{match}</div>
-            </td>
-            <td class="_meta">
-              <div class="uname">{uname}</div>
-              <div class="mtime">{get_rtime(mtime)}</div>
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
+      {/each}
+    </tbody>
+  </table>
 
-    <footer class="pagi">
-      <Mpager {pager} {pgidx} {pgmax} />
-    </footer>
-  </article>
-</Vessel>
+  <footer class="pagi">
+    <Mpager {pager} {pgidx} {pgmax} />
+  </footer>
+</article>
 
 {#if $tlspec.actived}<Tlspec {on_destroy} />{/if}
 

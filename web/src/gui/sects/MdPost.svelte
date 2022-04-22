@@ -1,9 +1,10 @@
 <script lang="ts">
-  export let title = 'Untitled'
-  import { Vessel } from '$gui'
+  import { topbar } from '$lib/stores'
 
-  $: topbar = {
-    lefts: [[title, 'news', { kind: 'title' }]],
+  export let title = 'Untitled'
+
+  $: $topbar = {
+    left: [[title, 'news', { kind: 'title' }]],
     config: true,
   }
 </script>
@@ -12,11 +13,9 @@
   <title>{title} - Chivi</title>
 </svelte:head>
 
-<Vessel {topbar}>
-  <section>
-    <article class="md-post">
-      <h1>{title}</h1>
-      <slot />
-    </article>
-  </section>
-</Vessel>
+<section>
+  <article class="md-post">
+    <h1>{title}</h1>
+    <slot />
+  </article>
+</section>

@@ -25,11 +25,10 @@
 </script>
 
 <script lang="ts">
-  import { ztext } from '$lib/stores'
+  import { ztext, topbar } from '$lib/stores'
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
   import Upsert from '$gui/parts/Upsert.svelte'
-
-  import { Vessel, BarItem, SIcon } from '$gui'
+  import { SIcon } from '$gui'
 
   export let source: string
   export let target: string
@@ -69,69 +68,65 @@
     if (count < 1000) return count
     return Math.round(count / 1000) + 'k'
   }
+
+  $: topbar.set({
+    left: [['Phân loại', 'pencil', { href: '.' }]],
+  })
 </script>
 
 <svelte:head>
   <title>Fix dict - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <svelte:fragment slot="header-left">
-    <BarItem this="span" icon="pencil" text="Phân loại" show="tm" />
-  </svelte:fragment>
+<article class="m-article">
+  <h1>Source: <code>{source}</code>, target: <code>{target}</code></h1>
 
-  <article class="m-article">
-    <h1>Source: <code>{source}</code>, target: <code>{target}</code></h1>
+  <table>
+    <thead>
+      <th>#</th>
+      <th>Uname</th>
+      <th>Mtime</th>
+      <th>Key</th>
+      <th>Val</th>
+      <th>Chivi</th>
+      <th>Baidu</th>
+      <th>Custom</th>
+    </thead>
 
-    <table>
-      <thead>
-        <th>#</th>
-        <th>Uname</th>
-        <th>Mtime</th>
-        <th>Key</th>
-        <th>Val</th>
-        <th>Chivi</th>
-        <th>Baidu</th>
-        <th>Custom</th>
-      </thead>
-
-      <tbody>
-        {#each data as { attr, key, val, uname, mtime, ptags }, idx (key)}
-          {@const fresh = mtime > epoch}
-          <tr>
-            <td class="idx">{idx + 1}</td>
-            <td class="uname">{uname}</td>
-            <td class="mtime">{rel_time(mtime)}</td>
-            <td class="key" on:click={() => show_lookup(key)}>{key}</td>
-            <td class="val"><span>{val}</span></td>
-            <td
-              ><button
-                class="m-btn _xs"
-                class:_primary={fresh}
-                on:click={() => resolve(idx, attr)}>{attr}</button
-              ></td>
-            <td>
-              {#each Object.entries(ptags) as [ptag, count], i2}
-                <button
-                  class="m-btn _xs"
-                  class:_success={!fresh && i2 == 0}
-                  on:click={() => resolve(idx, ptag)}
-                  >{ptag} ({render_count(count)})</button
-                >{/each}
-            </td>
-            <td class="action">
-              <input class="m-input _xs" type="text" bind:value={value[idx]} />
+    <tbody>
+      {#each data as { attr, key, val, uname, mtime, ptags }, idx (key)}
+        {@const fresh = mtime > epoch}
+        <tr>
+          <td class="idx">{idx + 1}</td>
+          <td class="uname">{uname}</td>
+          <td class="mtime">{rel_time(mtime)}</td>
+          <td class="key" on:click={() => show_lookup(key)}>{key}</td>
+          <td class="val"><span>{val}</span></td>
+          <td
+            ><button
+              class="m-btn _xs"
+              class:_primary={fresh}
+              on:click={() => resolve(idx, attr)}>{attr}</button
+            ></td>
+          <td>
+            {#each Object.entries(ptags) as [ptag, count], i2}
               <button
                 class="m-btn _xs"
-                on:click={() => resolve(idx, value[idx])}
-                ><SIcon name="send" /></button>
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </article>
-</Vessel>
+                class:_success={!fresh && i2 == 0}
+                on:click={() => resolve(idx, ptag)}
+                >{ptag} ({render_count(count)})</button
+              >{/each}
+          </td>
+          <td class="action">
+            <input class="m-input _xs" type="text" bind:value={value[idx]} />
+            <button class="m-btn _xs" on:click={() => resolve(idx, value[idx])}
+              ><SIcon name="send" /></button>
+          </td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+</article>
 
 <Lookup />
 <Upsert />

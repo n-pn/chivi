@@ -1,5 +1,7 @@
 export { default as SIcon } from './atoms/SIcon.svelte'
+
 export { default as Gmenu } from './molds/Gmenu.svelte'
+export { default as Mpager } from './molds/Mpager.svelte'
 
 export { default as CvpostForm } from './parts/cvpost/CvpostForm.svelte'
 export { default as CvpostList } from './parts/cvpost/CvpostList.svelte'

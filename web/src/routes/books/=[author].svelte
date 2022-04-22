@@ -1,8 +1,5 @@
 <script context="module" lang="ts">
-  import { appbar } from '$lib/stores'
   export async function load({ fetch, url, params: { author } }) {
-    appbar.set({ left: [[author, 'edit', `/books/=${author}`]] })
-
     const page = +url.searchParams.get('pg') || 1
     const api_url = `/api/books?order=weight&lm=8&pg=${page}&author=${author}`
     const api_res = await fetch(api_url)
@@ -14,12 +11,15 @@
 </script>
 
 <script lang="ts">
+  import { topbar } from '$lib/stores'
   import NvinfoList from '$gui/sects/Nvinfo/List.svelte'
 
   export let author = ''
   export let books = []
   export let pgidx = 0
   export let pgmax = 0
+
+  $: topbar.set({ left: [[author, 'edit', { href: `/books/=${author}` }]] })
 </script>
 
 <svelte:head>

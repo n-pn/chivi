@@ -15,6 +15,14 @@ export function last_read({ bslug }, ubmemo: CV.Ubmemo) {
   }
 }
 
+export function suggest_read(
+  nvinfo: CV.Nvinfo,
+  ubmemo: CV.Ubmemo
+): [string, string, Record<string, any>] {
+  const { text, icon, href, mute } = last_read(nvinfo, ubmemo)
+  return [text, icon, { href, show: 'tm', disable: mute }]
+}
+
 export function update_memo(
   ubmemo: CV.Ubmemo,
   { sname, cpart },

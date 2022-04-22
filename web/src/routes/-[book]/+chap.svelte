@@ -18,10 +18,11 @@
 </script>
 
 <script lang="ts">
-  import { page } from '$app/stores'
   import { goto } from '$app/navigation'
+  import { page } from '$app/stores'
+  import { topbar } from '$lib/stores'
 
-  import { Vessel, BarItem, SIcon, Footer } from '$gui'
+  import { SIcon, Footer } from '$gui'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let chidx = 1
@@ -45,63 +46,56 @@
       alert(payload.error)
     }
   }
+
+  $: topbar.set({
+    left: [
+      [nvinfo.vname, 'book', { href: `/-${nvinfo.bslug}`, kind: 'title' }],
+      ['Thêm/sửa chương', 'plus', { href: '.', show: 'tm' }],
+    ],
+  })
 </script>
 
 <svelte:head>
   <title>Thêm/sửa chương - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <svelte:fragment slot="header-left">
-    <BarItem
-      this="a"
-      href="/-{nvinfo.bslug}"
-      icon="book"
-      text={nvinfo.vname}
-      kind="title"
-      show="tm" />
-
-    <BarItem this="span" icon="plus" text="Thêm/sửa chương" show="tm" />
-  </svelte:fragment>
-
-  <section>
-    <nav class="navi">
-      <div class="-item _sep">
-        <a href="/-{nvinfo.bslug}" class="-link">{nvinfo.vname}</a>
-      </div>
-
-      <div class="-item">
-        <a href="/-{nvinfo.bslug}/-chivi" class="-link">Chương tiết</a>
-      </div>
-    </nav>
-
-    <textarea
-      class="m-input"
-      name="input"
-      lang="zh"
-      id="input"
-      bind:value={input} />
-  </section>
-
-  <Footer>
-    <div class="pagi">
-      <label class="label" for="chidx">
-        <span>Chương số</span>
-        <input class="m-input" name="chidx" bind:value={chidx} />
-      </label>
-
-      <label class="label">
-        <input type="checkbox" name="_trad" bind:checked={_trad} />
-        <span>Phồn -> Giản</span>
-      </label>
-
-      <button class="m-btn _primary _fill" on:click={submit_text}>
-        <SIcon name="square-plus" />
-        <span class="-text">Lưu</span>
-      </button>
+<section>
+  <nav class="navi">
+    <div class="-item _sep">
+      <a href="/-{nvinfo.bslug}" class="-link">{nvinfo.vname}</a>
     </div>
-  </Footer>
-</Vessel>
+
+    <div class="-item">
+      <a href="/-{nvinfo.bslug}/-chivi" class="-link">Chương tiết</a>
+    </div>
+  </nav>
+
+  <textarea
+    class="m-input"
+    name="input"
+    lang="zh"
+    id="input"
+    bind:value={input} />
+</section>
+
+<Footer>
+  <div class="pagi">
+    <label class="label" for="chidx">
+      <span>Chương số</span>
+      <input class="m-input" name="chidx" bind:value={chidx} />
+    </label>
+
+    <label class="label">
+      <input type="checkbox" name="_trad" bind:checked={_trad} />
+      <span>Phồn -> Giản</span>
+    </label>
+
+    <button class="m-btn _primary _fill" on:click={submit_text}>
+      <SIcon name="square-plus" />
+      <span class="-text">Lưu</span>
+    </button>
+  </div>
+</Footer>
 
 <style lang="scss">
   section {

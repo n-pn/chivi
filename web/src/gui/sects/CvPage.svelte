@@ -85,6 +85,7 @@
   article {
     position: relative;
     min-height: 50vh;
+    margin: 0;
     padding: 0 var(--gutter) var(--verpad);
 
     @include fgcolor(secd);

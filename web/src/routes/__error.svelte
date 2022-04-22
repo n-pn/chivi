@@ -1,31 +1,30 @@
 <script context="module" lang="ts">
-  import { Vessel, BarItem } from '$gui'
   export function load({ status, error }) {
     return { props: { status, error } }
   }
 </script>
 
 <script lang="ts">
+  import { topbar } from '$lib/stores'
+
   export let status: number
   export let error: Error
+
+  $: $topbar = {
+    left: [[`Lỗi hệ thống: {status}`, null, { href: '/' }]],
+  }
 </script>
 
 <svelte:head>
   <title>{status} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <svelte:fragment slot="header-left">
-    <BarItem this="span" text="Lỗi hệ thống: {status}" active={true} />
-  </svelte:fragment>
-
-  <section class="wrapper">
-    <article class="content">
-      <h1>{status}</h1>
-      <p>{error.message}</p>
-    </article>
-  </section>
-</Vessel>
+<section class="wrapper">
+  <article class="content">
+    <h1>{status}</h1>
+    <p>{error.message}</p>
+  </article>
+</section>
 
 <style lang="scss">
   .wrapper {

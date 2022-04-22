@@ -15,6 +15,7 @@
 
   import Pledge from '$gui/sects/layout/Pledge.svelte'
   import Loader from '$gui/sects/layout/Loader.svelte'
+  import Topbar from '$gui/sects/layout/Topbar.svelte'
 
   import Signin from '$gui/parts/Signin.svelte'
   import Appnav from '$gui/parts/Appnav.svelte'
@@ -72,13 +73,17 @@
 {#if $navigating}<Loader />{/if}
 
 <div class="app tm-{wtheme}" class:kbd-hint={kbd_hint}>
+  <Topbar />
+  <Pledge />
+
   <Appnav bind:actived={$popups.appnav} />
   <Dboard bind:actived={$popups.dboard} />
   <svelte:component this={usercp} bind:actived={$popups.usercp} />
-  <Pledge />
 
   <main class:_shift={$toleft}>
-    <slot />
+    <div class="vessel">
+      <slot />
+    </div>
   </main>
 
   <footer>

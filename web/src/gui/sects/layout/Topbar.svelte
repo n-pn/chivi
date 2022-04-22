@@ -1,17 +1,16 @@
 <script lang="ts">
   import { session } from '$app/stores'
-  import { scroll, popups } from '$lib/stores'
+  import { scroll, popups, topbar } from '$lib/stores'
 
-  import BarItem from '../topbar/BarItem.svelte'
+  import BarItem from '../Topbar/BarItem.svelte'
+  import TopSearch from '../Topbar/TopSearch.svelte'
   import Config from '$gui/sects/reader/Config.svelte'
 
-  type Item = [string, string | undefined, Record<string, any> | undefined]
-
-  export let lefts: Item[] = []
-  export let rights: Item[] = []
-  export let config = false
-
   $: uname = $session.privi < 0 ? 'Khách' : $session.uname
+  $: left = $topbar.left || []
+  $: right = $topbar.right || []
+  $: config = $topbar.config || false
+  $: search = $topbar.search ?? undefined
 </script>
 
 <nav class:clear={$scroll > 0}>
@@ -26,14 +25,16 @@
         <img src="/icons/chivi.svg" alt="logo" slot="icon" />
       </BarItem>
 
-      {#each lefts as [text, icon, opts], idx}
-        {@const active = idx == lefts.length - 1 || null}
+      {#if search != undefined}<TopSearch query={search} />{/if}
+
+      {#each left as [text, icon, opts], idx}
+        {@const active = idx == left.length - 1 || null}
         <BarItem this="a" {text} {icon} {...opts} {active} />
       {/each}
     </div>
 
     <div class="-right">
-      {#each rights as [text, icon, opts = { }]}
+      {#each right as [text, icon, opts = { }]}
         {@const type = opts.href ? 'a' : 'button'}
         <BarItem this={type} {text} {icon} {...opts} />
       {/each}

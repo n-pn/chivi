@@ -1,18 +1,9 @@
 <script context="module" lang="ts">
   import { session, page } from '$app/stores'
-  import { last_read } from '$utils/ubmemo_utils'
+  import { suggest_read } from '$utils/ubmemo_utils'
 
-  import { appbar } from '$lib/stores'
   export async function load({ fetch, stuff, url, params }) {
     const { nvinfo, ubmemo } = stuff
-
-    appbar.set({
-      left: [
-        [nvinfo.vname, 'book', `/-${nvinfo.bslug}`, '_show-lg', '_title'],
-        ['Mục lục', 'list', url.pathname, null, '_show-md'],
-      ],
-      right: gen_appbar_right(nvinfo, ubmemo),
-    })
 
     const sname = params.seed
     const pgidx = +url.searchParams.get('pg') || 1
@@ -42,16 +33,11 @@
 
     return payload
   }
-
-  function gen_appbar_right(nvinfo: CV.Nvinfo, ubmemo: CV.Ubmemo) {
-    if (ubmemo.chidx == 0) return null
-    const history = last_read(nvinfo, ubmemo)
-    const right_opts = { kbd: '+', _text: '_show-lg' }
-    return [[history.text, history.icon, history.href, right_opts]]
-  }
 </script>
 
 <script lang="ts">
+  import { topbar } from '$lib/stores'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
   import Chlist from '$gui/parts/Chlist.svelte'
@@ -68,6 +54,18 @@
   export let chpage: CV.Chpage
 
   $: pager = new Pager($page.url, { sname: 'chivi', pg: 1 })
+
+  $: topbar.set({
+    left: [
+      [
+        nvinfo.vname,
+        'book',
+        { href: `/-${nvinfo.bslug}`, show: 'tm', kind: 'title' },
+      ],
+      ['Mục lục', 'list', { href: $page.url.pathname, show: 'ts' }],
+    ],
+    right: [suggest_read(nvinfo, ubmemo)],
+  })
 
   let _refresh = false
   let _error: string

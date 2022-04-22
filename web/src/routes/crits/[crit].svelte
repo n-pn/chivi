@@ -1,22 +1,23 @@
 <script context="module" lang="ts">
-  import { appbar } from '$lib/stores'
   export async function load({ fetch, params: { crit } }) {
-    appbar.set({
-      left: [
-        ['Đánh giá', 'stars', '/crits'],
-        [`[${crit}]`, null, null, null, '_seed'],
-      ],
-    })
-
     const api_res = await fetch(`/api/crits/${crit}`)
     return await api_res.json()
   }
 </script>
 
 <script lang="ts">
+  import { topbar } from '$lib/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
+
   export let yscrit: CV.Yscrit
+
+  $: topbar.set({
+    left: [
+      ['Đánh giá', 'stars', { href: '/crits' }],
+      [`[${yscrit.id}]`, null, { href: '.', kind: 'zseed' }],
+    ],
+  })
 </script>
 
 <svelte:head>

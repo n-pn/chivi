@@ -20,7 +20,8 @@
 </script>
 
 <script lang="ts">
-  import { Vessel, Footer, SIcon } from '$gui'
+  import { topbar } from '$lib/stores'
+  import { Footer, SIcon } from '$gui'
 
   import CvPage from '$gui/sects/CvPage.svelte'
 
@@ -39,8 +40,8 @@
     cvdata = await res.text()
   }
 
-  $: topbar = {
-    lefts: [
+  $: $topbar = {
+    left: [
       ['Dịch nhanh', 'bolt', { href: '/qtran', show: 'ts' }],
       [`[${name}]`, icons[type], { href: name, kind: 'title' }],
     ],
@@ -52,36 +53,34 @@
   <title>Dịch nhanh: {name} - Chivi</title>
 </svelte:head>
 
-<Vessel {topbar} config={true}>
-  <div>
-    <nav class="bread">
-      <a href="/qtran" class="crumb _link">Dịch nhanh</a>
-      <span>/</span>
-      <span class="crumb _caps">{type}</span>
+<div>
+  <nav class="bread">
+    <a href="/qtran" class="crumb _link">Dịch nhanh</a>
+    <span>/</span>
+    <span class="crumb _caps">{type}</span>
 
-      <span>/</span>
-      <span class="crumb _caps">[{name}]</span>
-    </nav>
+    <span>/</span>
+    <span class="crumb _caps">[{name}]</span>
+  </nav>
+</div>
+
+<CvPage {dname} {d_dub} {zhtext} {cvdata} {on_change} />
+
+<Footer>
+  <div class="foot">
+    <button
+      class="m-btn"
+      data-kbd="r"
+      on:click={() => window.location.reload()}>
+      <SIcon name="rotate" />
+      <span>Dịch lại</span>
+    </button>
+
+    <a class="m-btn _success _fill" data-kbd="n" href="/qtran">
+      <span>Dịch mới</span>
+    </a>
   </div>
-
-  <CvPage {dname} {d_dub} {zhtext} {cvdata} {on_change} />
-
-  <Footer>
-    <div class="foot">
-      <button
-        class="m-btn"
-        data-kbd="r"
-        on:click={() => window.location.reload()}>
-        <SIcon name="rotate" />
-        <span>Dịch lại</span>
-      </button>
-
-      <a class="m-btn _success _fill" data-kbd="n" href="/qtran">
-        <span>Dịch mới</span>
-      </a>
-    </div>
-  </Footer>
-</Vessel>
+</Footer>
 
 <style lang="scss">
   .foot {

@@ -1,10 +1,8 @@
 <script context="module" lang="ts">
-  import { appbar } from '$lib/stores'
   export async function load({ fetch, url }) {
     const pg = +url.searchParams.get('pg') || 1
     const type = url.searchParams.get('t') || 'btitle'
     const input = url.searchParams.get('q')
-    appbar.set({ query: input })
 
     if (!input) return { props: { input, type } }
 
@@ -20,6 +18,7 @@
 </script>
 
 <script lang="ts">
+  import { topbar } from '$lib/stores'
   import NvinfoList from '$gui/sects/Nvinfo/List.svelte'
 
   export let input = ''
@@ -29,6 +28,8 @@
 
   $: from = (pgidx - 1) * 8 + 1
   $: upto = from + books.length - 1
+
+  $: topbar.set({ search: input })
 </script>
 
 <svelte:head>

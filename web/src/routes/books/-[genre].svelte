@@ -1,8 +1,5 @@
 <script context="module" lang="ts">
-  import { appbar } from '$lib/stores'
   export async function load({ url, fetch, params: { genre } }) {
-    appbar.set({ left: [['Thể loại', 'folder', url.pathname]] })
-
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
     api_url.searchParams.set('lm', '24')
@@ -17,6 +14,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
+  import { topbar } from '$lib/stores'
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import Bgenre from '$gui/sects/Bgenre.svelte'
@@ -28,6 +26,9 @@
   export let genres = []
 
   $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
+  $: topbar.set({
+    left: [['Thể loại', 'folder', { href: $page.url.pathname }]],
+  })
 </script>
 
 <svelte:head>
@@ -54,7 +55,7 @@
   }
 
   .filter {
-    margin: 1.5rem 0;
+    @include margin-y(1.5rem);
   }
 
   .empty {

@@ -1,9 +1,8 @@
 <script context="module" lang="ts">
   import { status_types, status_names } from '$lib/constants'
-  import { appbar } from '$lib/stores'
+  import { topbar } from '$lib/stores'
   export async function load({ url, params, fetch }) {
     const uname = params.uname
-    appbar.set({ left: [[`Tủ truyện của [${uname}]`, 'notebook']] })
 
     const bmark = params.bmark || 'reading'
     const page = +url.searchParams.get('pg') || 1
@@ -34,6 +33,11 @@
   // export let total = 1
 
   $: pager = new Pager($page.url)
+  $: topbar.set({
+    left: [
+      [`Tủ truyện của [${uname}]`, 'notebook', { href: $page.url.pathname }],
+    ],
+  })
 </script>
 
 <svelte:head>
