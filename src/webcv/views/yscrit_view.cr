@@ -10,14 +10,6 @@ struct CV::YscritView
 
   def to_json(jb = JSON::Builder.new)
     jb.object do
-      jb.field "bid", @data.nvinfo.id
-      jb.field "bname", @data.nvinfo.vname
-      jb.field "bslug", @data.nvinfo.bslug
-      jb.field "bhash", @data.nvinfo.bhash
-
-      jb.field "author", @data.nvinfo.author.vname
-      jb.field "bgenre", @data.nvinfo.vgenres.first? || "Loại khác"
-
       jb.field "uname", @data.ysuser.vname
       jb.field "uslug", @data.ysuser.id
 
@@ -30,7 +22,24 @@ struct CV::YscritView
       jb.field "like_count", @data.like_count
       jb.field "repl_count", @data.repl_count
 
-      jb.field "mftime", @data.utime
+      jb.field "ctime", @data.created_at.to_unix
+      jb.field "utime", @data.utime
+
+      jb.field "book", {
+        bslug: @data.nvinfo.bslug,
+
+        author: @data.nvinfo.author.vname,
+        btitle: @data.nvinfo.vname,
+
+        bgenre: @data.nvinfo.vgenres.first? || "Loại khác",
+        bcover: @data.nvinfo.bcover,
+
+        voters: @data.nvinfo.voters,
+        rating: @data.nvinfo.rating / 10,
+
+        status: @data.nvinfo.status,
+        update: @data.nvinfo.utime,
+      }
 
       if yslist = @data.yslist
         jb.field "yslist_id", UkeyUtil.encode32(yslist.id)

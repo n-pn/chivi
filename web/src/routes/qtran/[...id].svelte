@@ -64,13 +64,7 @@
   </nav>
 </div>
 
-<CvPage
-  {dname}
-  {d_dub}
-  {zhtext}
-  {cvdata}
-  {on_change}
-  no_title={type == 'crit'} />
+<CvPage {dname} {d_dub} {zhtext} {cvdata} {on_change} no_title={true} />
 
 <Footer>
   <div class="foot">

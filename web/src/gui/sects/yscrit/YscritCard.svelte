@@ -1,5 +1,7 @@
 <script lang="ts">
   import { rel_time } from '$utils/time_utils'
+  import { map_status } from '$utils/nvinfo_utils'
+
   import { SIcon } from '$gui'
   import Replies from './Replies.svelte'
 
@@ -28,6 +30,8 @@
       active_repls = true
     }
   }
+
+  $: book = crit.book
 </script>
 
 <crit-item>
@@ -35,7 +39,7 @@
     <a class="meta _user" href="/crits?user={crit.uslug}">{crit.uname}</a>
     <x-sep>·</x-sep>
     <a class="meta _time" href="/qtran/crits/{crit.id}"
-      >{rel_time(crit.mftime)}</a>
+      >{rel_time(crit.utime)}{#if crit.utime != crit.ctime}*{/if}</a>
     <a class="meta _link" href="/crits/{crit.id}"><SIcon name="link" /></a>
 
     <div class="right">
@@ -59,6 +63,54 @@
     </div>
   </header>
 
+  {#if show_book && book}
+    <section class="book">
+      <a class="bcover" href="/-{book.bslug}">
+        <img src="/covers/{book.bcover}" alt="" />
+      </a>
+
+      <div class="book-info">
+        <div class="book-title">
+          <a class="link _title" href="/-{book.bslug}">
+            <SIcon name="book" />
+            <span>{book.btitle}</span>
+          </a>
+        </div>
+        <div class="book-extra">
+          <a class="link _author" href="/books/={book.author}">
+            <SIcon name="edit" />
+            <span>{book.author}</span>
+          </a>
+
+          <a class="link _genre" href="/books/-{book.bgenre}">
+            <SIcon name="folder" />
+            <span>{book.bgenre}</span>
+          </a>
+        </div>
+        <div class="book-extra">
+          <span class="meta">
+            <SIcon name="activity" />
+            <span>{map_status(book.status)}</span>
+          </span>
+
+          <span class="meta">
+            <SIcon name="clock" />
+            <span>{rel_time(book.update)}</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="book-vote">
+        {#if book.voters > 0}
+          <div class="book-rating" data-tip="Đánh giá">{book.rating}</div>
+          <div class="book-voters" data-tip="Lượt đánh giá" tip-loc="bottom">
+            {book.voters} lượt
+          </div>
+        {/if}
+      </div>
+    </section>
+  {/if}
+
   <section class="body" class:_all={view_all} class:big_text>
     <div class="vtags">
       {#each crit.vtags as label}
@@ -73,25 +125,6 @@
 
     {@html crit.vhtml}
   </section>
-
-  {#if show_book}
-    <footer>
-      <a class="link _title" href="/-{crit.bslug}">
-        <SIcon name="book" />
-        <span>{crit.bname}</span>
-      </a>
-
-      <a class="link _author" href="/books/={crit.author}">
-        <SIcon name="edit" />
-        <span>{crit.author}</span>
-      </a>
-
-      <a class="link _genre" href="/books/-{crit.bgenre}">
-        <SIcon name="folder" />
-        <span>{crit.bgenre}</span>
-      </a>
-    </footer>
-  {/if}
 
   {#if crit.yslist_id}
     <footer>
@@ -109,6 +142,75 @@
 {/if}
 
 <style lang="scss">
+  .book {
+    @include flex($gap: 0.5rem);
+    @include bgcolor(secd);
+    max-width: 32rem;
+
+    @include border(--bd-soft);
+    padding: 0.75rem 0.75rem;
+    margin-top: 0.75rem;
+    @include margin-x(0);
+
+    @include bp-min(pl) {
+      @include margin-x(var(--gutter));
+      @include bdradi;
+    }
+  }
+
+  .book-info {
+    flex-shrink: 1;
+    overflow: hidden;
+  }
+
+  .book-vote {
+    min-width: 3.5rem;
+    margin-left: auto;
+    flex-direction: column;
+    @include flex-ca;
+  }
+
+  .book-title,
+  .book-extra {
+    @include flex($gap: 0.5rem);
+    line-height: 1.5rem;
+  }
+
+  .book-title {
+    @include ftsize(md);
+    @include fgcolor(secd);
+    @include clamp($width: null);
+  }
+
+  .book-extra {
+    @include ftsize(sm);
+    @include fgcolor(tert);
+  }
+
+  .book-rating {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    @include ftsize(xl);
+  }
+
+  .book-voters {
+    @include ftsize(sm);
+    font-style: italic;
+    line-height: 1rem;
+    // max-width: 3.5rem;
+    @include fgcolor(tert);
+    @include clamp($width: null);
+  }
+
+  .bcover {
+    display: inline-block;
+    > img {
+      width: 3.5rem;
+      height: auto;
+      @include bdradi;
+    }
+  }
+
   crit-item {
     display: block;
     margin: 1rem 0;
@@ -231,6 +333,7 @@
     @include border(--bd-soft, $loc: top);
 
     margin: 0 var(--gutter);
+    padding: 0.375rem 0;
 
     @include fgcolor(tert);
 
@@ -243,21 +346,13 @@
 
   .link {
     font-weight: 500;
-    padding: 0.375rem 0;
+    // padding: 0.375rem 0;
     flex-shrink: 1;
 
+    color: inherit;
+    // @include fgcolor(tert);
     @include clamp($width: null);
-    @include fgcolor(tert);
-
     // prettier-ignore
     &:hover { @include fgcolor(primary, 5); }
-
-    &._title {
-      max-width: 60vw;
-    }
-
-    &._genre {
-      @include bps(display, none, $pl: inline-block);
-    }
   }
 </style>

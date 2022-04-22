@@ -1,5 +1,23 @@
 declare namespace CV {
+  interface Crbook {
+    bslug: string
+
+    btitle: string
+    author: string
+
+    bgenre: string
+    bcover: string
+
+    rating: number
+    voters: number
+
+    status: number
+    update: number
+  }
+
   interface Yscrit {
+    book: Crbook
+
     id: string
     vhtml: string
     stars: number
@@ -8,13 +26,9 @@ declare namespace CV {
     uname: string
     uslug: string
 
-    bid: string
-    bname: string
-    bslug: string
-    author: string
-    bgenre: string
+    ctime: number
+    utime: number
 
-    mftime: number
     like_count: number
     repl_count: number
 
