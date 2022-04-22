@@ -6,7 +6,7 @@ require "../shared/http_client"
 require "../shared/yscrit_raw"
 
 class CV::YslistCrawl
-  DIR = "_db/yousuu/list-books"
+  DIR = "_db/yousuu/list-books-by-score"
   Dir.mkdir_p(DIR)
 
   @lists = {} of String => Yslist
@@ -103,7 +103,7 @@ class CV::YslistCrawl
   end
 
   def page_url(origin_id : String, page = 1)
-    "https://api.yousuu.com/api/booklist/#{origin_id}?page=#{page}&t=#{Time.utc.to_unix_ms}"
+    "https://api.yousuu.com/api/booklist/#{origin_id}?page=#{page}&sort=score&t=#{Time.utc.to_unix_ms}"
   end
 
   def seed_file!(file : String) : Nil
