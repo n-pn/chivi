@@ -9,17 +9,22 @@ module CV::TlRule
     when .pre_bei? then fold_pre_bei!(node, succ, mode: mode)
     when .pre_zai? then fold_pre_zai!(node, succ, mode: mode)
     when .pre_bi3? then fold_compare_bi3!(node, succ, mode: mode)
-    else
-      case node.key
-      when "同", "跟"
-        if fold = fold_compare(node, succ)
-          node.val = fold.dic == 0 ? "giống" : ""
-          return fold
-        end
-      end
-
-      fold_prepos_inner!(node, succ, mode: mode)
+    else                fold_other_preposes!(node, succ, mode)
     end
+  end
+
+  def fold_other_preposes!(node : MtNode, succ : MtNode, mode : Int32)
+    case node.key
+    when "将"
+      return fold_verbs!(succ, node.set!("sẽ")) if succ.verbs?
+    when "同", "跟"
+      if fold = fold_compare(node, succ)
+        node.val = fold.dic == 0 ? "giống" : ""
+        return fold
+      end
+    end
+
+    fold_prepos_inner!(node, succ, mode: mode)
   end
 
   def fold_pre_dui!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
