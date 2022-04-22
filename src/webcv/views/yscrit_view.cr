@@ -24,12 +24,19 @@ struct CV::YscritView
       jb.field "id", UkeyUtil.encode32(@data.id)
 
       jb.field "stars", @data.stars
+      jb.field "vtags", @data.vtags
       jb.field "vhtml", @data.vhtml
 
       jb.field "like_count", @data.like_count
       jb.field "repl_count", @data.repl_count
 
       jb.field "mftime", @data.utime
+
+      if yslist = @data.yslist
+        jb.field "yslist_id", UkeyUtil.encode32(yslist.id)
+        jb.field "yslist_vname", yslist.vname
+        jb.field "yslist_count", yslist.book_count
+      end
     end
   end
 end

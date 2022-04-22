@@ -54,16 +54,16 @@ then
 
   rsync -azui --no-p "$DIR/limit.txt" $SSH_DIR
 
+  # crystal build --release $SRC/yscrit_crawl.cr -o bin/yscrit_crawl
   crystal build --release $SRC/yslist_books_crawl.cr -o bin/yscrit_crawl
   rsync -azui --no-p "bin/yscrit_crawl" "$SSH/bin"
 
   crystal build --release $SRC/ysbook_crawl.cr -o bin/ysbook_crawl
   rsync -azui --no-p "bin/ysbook_crawl" "$SSH/bin"
 
-  # shards build --release yscrit_crawl && rsync -azui --no-p "bin/yscrit_crawl" "$SSH/bin"
-
   crystal build --release $SRC/ysrepl_crawl.cr -o bin/ysrepl_crawl
   rsync -azui --no-p "bin/ysrepl_crawl" "$SSH/bin"
 
-  # shards build --release yslist_crawl && rsync -azui --no-p "bin/yslist_crawl" "$SSH/bin"
+  crystal build --release $SRC/yslist_crawl.cr -o bin/yslist_crawl
+  rsync -azui --no-p "bin/yslist_crawl" "$SSH/bin"
 fi

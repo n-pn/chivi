@@ -37,4 +37,10 @@ class CV::Yslist
   def self.get!(id : Int64, created_at : Time)
     find({id: id}) || new({id: id, created_at: created_at})
   end
+
+  CACHE_INT = RamCache(Int64, self).new
+
+  def self.load!(id : Int64)
+    CACHE_INT.get(id) { find!({id: id}) }
+  end
 end

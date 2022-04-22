@@ -16,5 +16,9 @@ declare namespace CV {
     mftime: number
     like_count: number
     repl_count: number
+
+    yslist_id?: string
+    yslist_vname?: string
+    yslist_count?: number
   }
 }

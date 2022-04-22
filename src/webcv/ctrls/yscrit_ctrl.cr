@@ -12,22 +12,31 @@ class CV::YscritCtrl < CV::BaseCtrl
       query.filter_nvinfo(book_id)
 
       total = query.dup.count
-      crits = query.limit(limit).offset(offset).to_a
+      crits = query.limit(limit).offset(offset).with_yslist.to_a
 
       if crits.size > 0
         nvinfo = Nvinfo.load!(book_id)
-        crits.each { |x| x.nvinfo = nvinfo }
+        crits.each(&.nvinfo = nvinfo)
+      end
+    elsif list_id = params["list"]?.try { |x| UkeyUtil.decode32(x) }
+      query.filter_yslist(list_id)
+      total = query.dup.count
+      crits = query.limit(limit).offset(offset).with_nvinfo.to_a
+
+      if crits.size > 0
+        yslist = Yslist.load!(list_id)
+        crits.each(&.yslist = yslist)
       end
     else
       total = query.dup.limit((pgidx + 2) * limit).count
-      crits = query.limit(limit).offset(offset).to_a
+      crits = query.limit(limit).offset(offset).with_nvinfo.with_yslist
 
-      if crits.size > 0
-        nvinfos = Nvinfo.query.with_author.where("id = ANY(?)", crits.map(&.nvinfo_id))
-        bookmap = nvinfos.map { |x| {x.id, x} }.to_h
+      # if crits.size > 0
+      #   nvinfos = Nvinfo.query.with_author.where("id = ANY(?)", crits.map(&.nvinfo_id))
+      #   bookmap = nvinfos.map { |x| {x.id, x} }.to_h
 
-        crits.each { |x| x.nvinfo = bookmap[x.nvinfo_id] }
-      end
+      #   crits.each { |x| x.nvinfo = bookmap[x.nvinfo_id] }
+      # end
     end
 
     send_json({

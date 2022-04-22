@@ -36,6 +36,10 @@ class CV::Yscrit
     ysuser_id ? where("ysuser_id = #{ysuser_id}") : self
   end
 
+  scope :filter_yslist do |yslist_id|
+    yslist_id ? where("yslist_id = #{yslist_id}") : self
+  end
+
   scope :sort_by do |order|
     case order
     when "ctime" then self.order_by(id: :desc)

@@ -63,6 +63,16 @@
     {@html crit.vhtml}
   </crit-body>
 
+  {#if crit.yslist_id}
+    <crit-foot>
+      <a class="link _list" href="/crits?list={crit.yslist_id}">
+        <SIcon name="bookmarks" />
+        <span>{crit.yslist_vname}</span>
+        <span>({crit.yslist_count})</span>
+      </a>
+    </crit-foot>
+  {/if}
+
   {#if show_book}
     <crit-foot>
       <a class="link _title" href="/-{crit.bslug}">
