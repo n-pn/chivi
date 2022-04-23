@@ -29,6 +29,7 @@ class CV::Yslist
 
   column like_count : Int32 = 0
   column view_count : Int32 = 0
+  column star_count : Int32 = 0
 
   timestamps
 
@@ -37,6 +38,17 @@ class CV::Yslist
   def set_name(zname : String)
     self.zname = zname
     self.vname = MTL.translate(self.zname)
+  end
+
+  def set_desc(zdesc : String)
+    return if zdesc.empty?
+
+    self.zdesc = zdesc
+    self.vdesc = zdesc.split('\n').map { |x| MTL.translate(x) }.join('\n')
+  end
+
+  def fix_sort!
+    self._sort = self.book_total &+ self.like_count &+ self.star_count &+ self.view_count
   end
 
   ##################

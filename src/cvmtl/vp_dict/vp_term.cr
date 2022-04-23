@@ -49,7 +49,7 @@ class CV::VpTerm
     end
   end
 
-  def force_fix!(@val, @attr = "", @_flag = 0_u8)
+  def force_fix!(@val, @attr = "", @mtime = @mtime + 1, @_flag = 0_u8)
   end
 
   def empty? : Bool

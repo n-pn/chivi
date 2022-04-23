@@ -26,6 +26,9 @@ class CV::YslistRaw
   @[JSON::Field(key: "praiseTotal")]
   getter like_count : Int32 = 0
 
+  @[JSON::Field(key: "favsTotal")]
+  getter star_count : Int32 = 0
+
   @[JSON::Field(key: "bookTotal")]
   getter book_total : Int32 = 0
 
@@ -40,6 +43,9 @@ class CV::YslistRaw
   @[JSON::Field(key: "title")]
   getter zname : String
 
+  @[JSON::Field(key: "content")]
+  getter zdesc : String = ""
+
   @[JSON::Field(key: "listType")]
   getter klass : String = "male"
 
@@ -53,16 +59,18 @@ class CV::YslistRaw
     list.ysuser = Ysuser.upsert!(self.user.name)
 
     list.set_name(self.zname)
+    list.set_desc(self.zdesc)
 
     list.stime = stime
     list.utime = self.updated_at.to_unix
 
-    list.book_total = self.book_total
-    list.like_count = self.like_count
-    list.view_count = self.view_count
+    list.book_total = self.book_total if self.book_total < list.book_total
+    list.like_count = self.like_count if self.like_count < list.like_count
 
-    list._sort = list.book_total + list.like_count + list.view_count
+    list.view_count = self.view_count if self.view_count < list.view_count
+    list.star_count = self.star_count if self.star_count < list.star_count
 
+    list.fix_sort!
     list.save!
   rescue err
     Log.error { err.inspect_with_backtrace.colorize.red }
@@ -74,5 +82,9 @@ class CV::YslistRaw
 
   def self.from_list(data : String) : Data
     NamedTuple(data: Data).from_json(data)[:data]
+  end
+
+  def self.from_info(data : String) : self
+    NamedTuple(data: self).from_json(data)[:data]
   end
 end

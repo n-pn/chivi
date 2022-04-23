@@ -24,6 +24,7 @@ CREATE TABLE yslists (
 
   like_count int not null default 0,
   view_count int not null default 0,
+  star_count int not null default 0,
 
   created_at timestamptz not null default CURRENT_TIMESTAMP,
   updated_at timestamptz not null default CURRENT_TIMESTAMP
