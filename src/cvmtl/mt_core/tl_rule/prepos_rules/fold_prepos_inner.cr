@@ -9,6 +9,11 @@ module CV::TlRule
       # TODO: combine this part with `fold_prepos_left`
 
       unless verb_2 = find_verb_after_for_prepos(tail, skip_comma: false)
+        if tail.succ? { |x| x.ends? || x.subject? }
+          noun = fold_ude1_left!(ude1: verb, left: noun, right: tail)
+          return fold!(prepos, noun, PosTag::VerbObject, dic: 9)
+        end
+
         if prepos.pre_zai? && (noun = fold_prezai_places?(prepos, noun, verb, tail))
           return fold!(prepos, noun, PosTag::PrepPhrase, dic: 3)
         end
