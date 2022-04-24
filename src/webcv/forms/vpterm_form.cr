@@ -10,7 +10,8 @@ struct CV::VpTermForm
 
   def validate : String?
     return "Không đủ quyền hạn để sửa từ!" unless has_privi?
-    if @vdict.type == 2 && VpDict.fixture.find(@key)
+
+    if @vdict.type == 2 && VpDict.fixture.find(@key).try(&.val.first.empty?.!)
       return "Không thể sửa được từ khoá cứng!"
     end
   end

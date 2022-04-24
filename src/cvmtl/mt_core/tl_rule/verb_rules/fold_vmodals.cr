@@ -54,7 +54,7 @@ module CV::TlRule
   end
 
   private def vmhui_before_skill?(prev : MtNode?, succ : MtNode?) : Bool
-    return true if {"只", "还"}.includes?(prev.try(&.key))
+    return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
     when .nil?, .ends?, .nouns?, .ude1?, .ule?
@@ -63,12 +63,15 @@ module CV::TlRule
     when .verb_object?
       MtDict.has_key?(:v_group, succ.key)
     else
-      if succ.key == "生气"
+      case succ.key
+      when "生气"
         succ.val = "tức giận"
-        return false
+        false
+      when .starts_with?("做")
+        true
+      else
+        {"都", "也", "太"}.includes?(prev.try(&.key))
       end
-
-      {"都", "也", "太"}.includes?(prev.try(&.key))
     end
   end
 
