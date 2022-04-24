@@ -4,8 +4,20 @@ module CV::TlRule
     return noun if noun.prev? { |x| x.pro_per? || x.preposes? && !x.pre_bi3? }
 
     verb = verb.vmodals? ? fold_vmodals!(verb) : fold_verbs!(verb)
-    return noun unless (succ = verb.succ?) && succ.ude1? && (verb.verb? || verb.vmodals?)
+    return noun unless (succ = verb.succ?) && succ.ude1?
+
+    # && (verb.verb? || verb.vmodals?)
     return noun unless tail = scan_noun!(succ.succ?)
+
+    if verb.verb_no_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?
+      verb_2 = verb_2.adverbs? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
+
+      if !verb_2.verb_no_obj? && verb.prev?(&.object?)
+        tail = fold!(tail, verb_2, PosTag::VerbClause, dic: 8)
+        noun = fold!(noun, verb, PosTag::VerbClause, dic: 7)
+        return fold!(noun, succ.set!("cái"), dic: 9, flip: true)
+      end
+    end
 
     left = fold!(noun, verb, PosTag::VerbPhrase, dic: 4)
     succ.set!(noun.names? || noun.ptitle? || noun.noun? ? "do" : "")

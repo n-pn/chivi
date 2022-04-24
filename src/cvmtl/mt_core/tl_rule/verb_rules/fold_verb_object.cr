@@ -6,6 +6,13 @@ module CV::TlRule
     if succ.ude1?
       return verb if verb.prev? { |x| x.object? || x.prep_phrase? }
       return verb unless (object = scan_noun!(succ.succ?)) && object.object?
+
+      if (verb_2 = object.succ?) && verb_2.maybe_verb?
+        verb_2 = verb_2.adverbs? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
+
+        return verb if !verb_2.verb_no_obj? && verb.prev?(&.object?)
+      end
+
       node = fold!(verb, succ.set!(""), PosTag::DefnPhrase, dic: 6)
       return fold!(node, object, object.tag, dic: 8, flip: true)
     end

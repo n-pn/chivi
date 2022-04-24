@@ -48,7 +48,9 @@ module CV::TlRule
       node = fold!(node, succ, succ.tag, dic: 5)
       fold_adjts!(node)
     else
-      node
+      return node unless succ.key == "一样"
+      succ.set!("giống nhau", PosTag::Vintr)
+      fold_verbs!(succ, node)
     end
   end
 

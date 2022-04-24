@@ -2,7 +2,12 @@ module CV::TlRule
   def fold_compare(head : MtNode, tail = head.succ?)
     while tail
       return if tail.puncts? || tail.key == "像"
-      break if tail.uyy?
+
+      if tail.uyy?
+        break unless tail.key == "一样"
+        break unless tail.prev?(&.adv_bu?)
+      end
+
       tail = tail.succ?
     end
 
