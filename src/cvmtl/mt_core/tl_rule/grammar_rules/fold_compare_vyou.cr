@@ -4,8 +4,10 @@ module CV::TlRule
     return vyou unless noun = scan_noun!(succ, mode: mode)
 
     case succ = noun.succ?
-    when .nil?  then return vyou
-    when .ude1? then return fold_vyou_ude1(vyou, succ, noun)
+    when .nil?    then return vyou
+    when .adv_bu? then return vyou
+    when .ude1?
+      return fold_vyou_ude1(vyou, succ, noun)
     when .adverb?
       if succ.key == "这么" || succ.key == "那么"
         adverb, succ = succ, succ.succ?

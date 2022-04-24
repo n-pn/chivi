@@ -12,6 +12,7 @@ module CV::TlRule
 
       case succ
       when .maybe_adjt?
+        break if succ.adv_bu?
         return fold_noun_adjt!(noun, succ)
       when .middot?
         break unless (succ_2 = succ.succ?) && succ_2.human?
