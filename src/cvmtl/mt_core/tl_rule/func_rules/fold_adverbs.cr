@@ -20,6 +20,7 @@ module CV::TlRule
   def fold_vead!(node : MtNode, succ = node.succ)
     case succ
     when .ajno?  then node.tag = PosTag::Adverb
+    when .veno?  then return fold_verbs!(MtDict.fix_verb!(succ), node)
     when .nouns? then return fold_verbs!(MtDict.fix_verb!(node))
     when .ude3?  then return fold_adverb_ude3!(node, succ)
     end
