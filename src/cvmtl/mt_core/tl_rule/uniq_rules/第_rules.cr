@@ -3,25 +3,24 @@ module CV::TlRule
     return node unless succ = node.succ?
     return node unless succ.nhanzi? || succ.ndigit?
 
-    if succ.key == "一"
-      succ.val = "nhất"
-      node.val = "đệ" if node.prev?(&.nouns?)
-    end
+    succ.val = "nhất" if succ.key == "一"
+    head = fold!(node, succ, PosTag::Noun, dic: 3)
 
-    node = fold!(node, succ, PosTag::Noun, dic: 3)
-    return node unless succ = node.succ?
-    succ = heal_quanti!(succ)
+    return head unless tail = head.succ?
+    tail = heal_quanti!(tail)
 
-    case succ.tag
+    case tail.tag
     when .noun?, .time?, .ptitle?
-      node = fold!(node, succ, succ.tag, dic: 8, flip: true)
-      fold_nouns!(node)
+      node.val = "đệ" if node.prev?(&.nouns?)
+
+      head = fold!(head, tail, tail.tag, dic: 8, flip: true)
+      fold_nouns!(head)
     when .quantis?
-      if (succ_2 = succ.succ?) && succ_2.nouns?
-        succ = fold!(succ, succ_2, PosTag::NounPhrase, dic: 7)
-        fold!(node, succ, succ.tag, dic: 6, flip: true)
+      if (tail_2 = tail.succ?) && tail_2.nouns?
+        tail = fold!(tail, tail_2, PosTag::NounPhrase, dic: 7)
+        fold!(head, tail, tail.tag, dic: 6, flip: true)
       else
-        fold!(node, succ, PosTag::Noun, flip: true)
+        fold!(head, tail, PosTag::Nqnoun, flip: true)
       end
     else
       node

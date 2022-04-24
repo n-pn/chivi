@@ -50,6 +50,15 @@ module CV::TlRule
 
     case succ = node.succ?
     when .nil? then node
+    when .penum?
+      case tail = succ.succ?
+      when .nil? then node
+      when .veno?, .nouns?, .verbs?
+        tail = heal_veno!(tail)
+        fold!(node, tail, tail.tag, dic: 4)
+      else
+        node
+      end
     when .pronouns?
       MtDict.fix_verb!(node)
     when .nouns?
@@ -61,6 +70,8 @@ module CV::TlRule
     when .v_shi?, .v_you?
       MtDict.fix_noun!(node)
     when .verbs?
+      return node.set!(PosTag::Vpro) if node.key == "选择"
+
       if MtDict.has_key?(:v_compl, succ.key) || VERB_COMBINE.includes?(node.key)
         MtDict.fix_verb!(node)
       else

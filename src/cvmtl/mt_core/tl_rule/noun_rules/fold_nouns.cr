@@ -56,7 +56,10 @@ module CV::TlRule
       when .uniques?
         case succ.key
         when "第"
-          noun = fold!(noun, fold_第!(succ), succ.tag, dic: 6, flip: true)
+          succ = fold_第!(succ)
+          return noun if succ.nquants?
+
+          noun = fold!(noun, succ, succ.tag, dic: 6, flip: true)
         else
           # TODO!
           break
