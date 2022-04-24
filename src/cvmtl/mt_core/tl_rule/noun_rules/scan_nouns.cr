@@ -140,7 +140,7 @@ module CV::TlRule
 
     return node if verb.verb_no_obj?
     return node unless (ude1 = verb.succ?) && ude1.ude1?
-    return node unless (tail = scan_noun!(ude1.succ)) && tail.object?
+    return node unless (tail = scan_noun!(ude1.succ?)) && tail.object?
 
     node = fold!(node, ude1.set!(""), PosTag::DefnPhrase, dic: 8)
     fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
