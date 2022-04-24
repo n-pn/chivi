@@ -97,6 +97,7 @@ module CV::TlRule
         end
       when .veno?
         node = fold_veno!(node)
+        puts [node]
         node = fold_verb_as_noun!(node, mode: mode) if node.verbs?
       when .verbs?
         node = fold_verb_as_noun!(node, mode: mode)

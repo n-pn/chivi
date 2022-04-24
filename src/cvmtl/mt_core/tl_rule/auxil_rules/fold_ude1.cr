@@ -8,7 +8,7 @@ module CV::TlRule
 
     if (noun = scan_noun!(succ, mode: 3))
       node = fold_ude1_left!(ude1: ude1, left: prev, right: noun)
-      return fold_noun_after!(node, succ)
+      return fold_noun_after!(node)
     else
       succ = ude1.succ
     end

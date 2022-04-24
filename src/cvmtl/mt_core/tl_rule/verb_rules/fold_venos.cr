@@ -12,10 +12,12 @@ module CV::TlRule
     when .nil?
       # nothing
     when .ude1?
-      return MtDict.fix_verb!(node) if prev.prev?(&.adverbs?)
-      return MtDict.fix_noun!(node) unless succ = node.succ?
-      if succ.nouns? || succ.junction? || succ.ule? || succ.mopart?
-        return MtDict.fix_noun!(node)
+      case prev.prev?
+      when .nil?     then return node
+      when .adverbs? then return MtDict.fix_verb!(node)
+        # TODO: check for adjt + ude1 + verb (grammar error)
+      else
+        return MtDict.fix_noun!(node).tap { |x| puts x }
       end
     when .adverbs?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
       return MtDict.fix_verb!(node)
