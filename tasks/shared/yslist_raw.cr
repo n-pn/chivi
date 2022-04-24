@@ -50,7 +50,7 @@ class CV::YslistRaw
   getter klass : String = "male"
 
   @[JSON::Field(key: "booklistId")]
-  getter list_id : String
+  getter list_id : String = ""
 
   def seed!(stime : Int64 = Time.utc.to_unix)
     list = Yslist.get!(self.id, self.created_at)

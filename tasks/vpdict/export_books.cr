@@ -22,6 +22,8 @@ def extract_book(file : String)
     ptag = counts.first_key
 
     next unless ptag.in?("nr", "nn", "nw")
+    ptag = "nz" if ptag == "nw"
+
     if term = SIMILAR.find(key)
       next if similar?(term.attr, ptag)
     end
@@ -36,7 +38,6 @@ def extract_book(file : String)
       mtime = 0
     end
 
-    ptag = "nz" if ptag == "nw"
     vdict.set(CV::VpTerm.new(key, val, ptag, mtime: mtime, uname: uname))
   end
 
