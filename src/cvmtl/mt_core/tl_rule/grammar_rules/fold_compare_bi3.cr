@@ -2,11 +2,24 @@ module CV::TlRule
   def fold_compare_bi3!(prepos : MtNode, succ = prepos.succ?, mode = 0)
     return prepos unless (noun = scan_noun!(succ, mode: mode)) && noun.object?
 
-    if (tail = noun.succ?) && tail.ude1? && tail.succ?(&.maybe_adjt?)
-      noun = fold!(noun, tail, PosTag::DefnPhrase, dic: 7, flip: true)
+    if (succ = noun.succ?) && succ.verb_no_obj?
+      noun = fold!(noun, succ, PosTag::VerbClause, dic: 6)
     end
 
-    return prepos unless (tail = scan_adjt!(noun.succ?)) && (tail.adjts? || tail.verb_object?)
+    if (tail = noun.succ?) && tail.ude1? && tail.succ?(&.maybe_adjt?)
+      if noun.verb_clause?
+        flip = false
+        tail.set!("")
+      else
+        flip = true
+        tail.set!("của")
+      end
+
+      noun = fold!(noun, tail, PosTag::DefnPhrase, dic: 7, flip: flip)
+    end
+
+    return prepos unless tail = scan_adjt!(noun.succ?)
+    return prepos unless tail.adjts? || tail.verb_object?
 
     output = MtNode.new("", "", PosTag::Unkn, dic: 1, idx: prepos.idx)
     output.fix_prev!(prepos.prev?)

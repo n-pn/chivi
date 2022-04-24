@@ -143,6 +143,11 @@ struct CV::PosTag
   end
 
   @[AlwaysInline]
+  def verb_no_obj?
+    @tag.vintr? || @tag.verb_object?
+  end
+
+  @[AlwaysInline]
   def spaces?
     @tag.space? || @tag.v_shang? || @tag.v_xia?
   end
