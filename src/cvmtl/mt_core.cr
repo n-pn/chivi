@@ -180,9 +180,8 @@ class CV::MtCore
       else               false
       end
     when .nhanzi?
-      return false unless left.nhanzi?
+      return false unless left.numbers?
       return true unless right.key == "两"
-
       right.set!("lượng", PosTag::Qtnoun)
       false
     else

@@ -39,14 +39,12 @@ module CV::TlRule
         flag = 1
       when .adj_hao?
         case succ.succ?
-        when .nil?
+        when .nil?, .ule?
           succ.val = "tốt"
-        when .maybe_adjt?
+        when .maybe_adjt?, .maybe_verb?, .preposes?
           break
         when .noun?
           break unless flag == 0
-        when .ule?
-          succ.val = "tốt"
         else
           succ.val = "xong"
         end
