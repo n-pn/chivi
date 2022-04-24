@@ -5,7 +5,7 @@ module CV::TlRule
     return fold!(prepos, noun, PosTag::PrepPhrase, dic: 2) unless verb = noun.succ?
 
     # combine with noun after ude1 if there exists verb right after
-    if verb.ude1? && (tail = scan_noun!(verb.succ?, mode: 1))
+    if verb.ude1? && (tail = scan_noun!(verb.succ?))
       # TODO: combine this part with `fold_prepos_left`
 
       unless verb_2 = find_verb_after_for_prepos(tail, skip_comma: false)
@@ -17,7 +17,9 @@ module CV::TlRule
         return fold!(prepos, tail, PosTag::NounPhrase, dic: 6, flip: true)
       end
 
-      fold_prepos_left(prepos.prev?, noun, ude1: verb, tail: tail).try { |x| return x }
+      # puts [verb_2, verb, tail]
+
+      fold_prepos_left(prepos, noun, ude1: verb, tail: tail).try { |x| return x }
 
       noun = fold_noun_ude1!(noun, ude1: verb, right: tail)
       noun = fold_noun_after!(noun) unless verb_2.spaces?
@@ -25,10 +27,11 @@ module CV::TlRule
       verb = noun.succ?
     end
 
-    head = fold!(prepos, noun, PosTag::PrepPhrase, dic: 5)
+    head = fold!(prepos, noun, PosTag::PrepPhrase, dic: 4)
 
     case verb
-    when .nil?     then return head
+    when .nil?, .v_shi?, .v_you?
+      return head
     when .adverbs? then verb = fold_adverbs!(verb)
     when .veno?    then verb = fold_verbs!(MtDict.fix_verb!(verb))
     when .verbs?   then verb = fold_verbs!(verb)
@@ -56,15 +59,10 @@ module CV::TlRule
     node.succ? { |x| fold_ude1!(x, prev: node) if mode == 1 && x.ude1? } || node
   end
 
-  def fold_prepos_left(prev : MtNode?, noun : MtNode, ude1 : MtNode, tail : MtNode)
-    return unless prev && prev.subject?
-    return unless verb = find_verb_after_for_prepos(tail, skip_comma: false)
-
-    return unless verb.v_shi? || verb.key == "就是"
-    return if find_verb_after(verb)
-
-    ude1.val = ""
-    node = fold!(prev, noun, PosTag::NounPhrase, dic: 8)
-    fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
+  def fold_prepos_left(prepos : MtNode, noun : MtNode, ude1 : MtNode, tail : MtNode)
+    # puts [prepos, noun, ude1, tail, prepos.prev?]
+    return unless prepos.prev?(&.pro_dems?)
+    left = fold!(prepos, ude1.set!(""), PosTag::DefnPhrase, dic: 6)
+    fold!(left, tail, PosTag::NounPhrase, dic: 9, flip: true)
   end
 end

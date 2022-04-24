@@ -65,9 +65,11 @@ module CV::TlRule
         end
       when .preposes?
         # break unless prodem || nquant
-        node = fold_preposes!(node, mode: 1)
-        if (succ = node.succ?) && succ.ude1?
-          node = fold_ude1!(ude1: succ, prev: node)
+        node = fold_preposes!(node)
+        # puts [node, node.body?]
+
+        if (ude1 = node.succ?) && ude1.ude1?
+          node = fold_ude1!(ude1: ude1, prev: node)
         elsif node.verbs?
           node = fold_verb_as_noun!(node, mode: mode)
         elsif node.adjts?
@@ -97,7 +99,6 @@ module CV::TlRule
         end
       when .veno?
         node = fold_veno!(node)
-        puts [node]
         node = fold_verb_as_noun!(node, mode: mode) if node.verbs?
       when .verbs?
         node = fold_verb_as_noun!(node, mode: mode)
@@ -132,7 +133,17 @@ module CV::TlRule
     # node = fold_proper_nounish!(proper, node) if proper
 
     return node unless mode == 0 && (succ = node.succ?)
-    fold_noun_after!(node, succ)
+    node = fold_noun_after!(node, succ)
+
+    return node unless (verb = node.succ?) && verb.maybe_verb?
+    verb = scan_verbs!(verb)
+
+    return node if verb.verb_no_obj?
+    return node unless (ude1 = verb.succ?) && ude1.ude1?
+    return node unless (tail = scan_noun!(ude1.succ)) && tail.object?
+
+    node = fold!(node, ude1.set!(""), PosTag::DefnPhrase, dic: 8)
+    fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
   end
 
   def clean_nquant(nquant : MtNode, prodem : MtNode?)

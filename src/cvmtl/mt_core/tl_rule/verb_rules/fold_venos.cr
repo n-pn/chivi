@@ -16,8 +16,7 @@ module CV::TlRule
       when .nil?     then return node
       when .adverbs? then return MtDict.fix_verb!(node)
         # TODO: check for adjt + ude1 + verb (grammar error)
-      else
-        return MtDict.fix_noun!(node).tap { |x| puts x }
+      else return MtDict.fix_noun!(node)
       end
     when .adverbs?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
       return MtDict.fix_verb!(node)
@@ -59,6 +58,8 @@ module CV::TlRule
       MtDict.fix_noun!(node)
     when .auxils?, .vdir?, .pre_zai?
       MtDict.fix_verb!(node)
+    when .v_shi?, .v_you?
+      MtDict.fix_noun!(node)
     when .verbs?
       if MtDict.has_key?(:v_compl, succ.key) || VERB_COMBINE.includes?(node.key)
         MtDict.fix_verb!(node)
