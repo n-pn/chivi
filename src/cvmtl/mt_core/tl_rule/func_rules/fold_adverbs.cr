@@ -134,6 +134,7 @@ module CV::TlRule
     case succ
     when .v_shi?
       node = fold!(node, succ, PosTag::Adverb, dic: 8)
+      succ = node.succ?
     when succ.vead? || succ.ajad? || succ.adj_hao?
       if is_adverb?(succ)
         succ = heal_adj_hao!(succ) if succ.adj_hao?
