@@ -60,11 +60,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     upper = last_edit.upper
 
     ztext = entry.ztext[lower...upper]
-
     dname = entry.dname
-    if dname != "combine" && dname[0]? != '-'
-      dname = "-" + dname
-    end
 
     cvmtl = MtCore.generic_mtl(dname)
 
