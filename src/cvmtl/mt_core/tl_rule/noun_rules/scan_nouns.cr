@@ -14,7 +14,6 @@ module CV::TlRule
       case node
       when .popens?
         node = fold_nested!(node)
-
         if node.nouns?
           node = fold_nouns!(node)
         else

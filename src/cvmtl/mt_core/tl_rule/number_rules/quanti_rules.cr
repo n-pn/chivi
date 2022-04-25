@@ -1,11 +1,12 @@
 module CV::TlRule
   def heal_quanti!(node : MtNode) : MtNode
-    # abort transform if node is certainly a verb
-    if node.verbs? && (succ = node.succ?)
-      return node if succ.ule? || succ.ends?
-    end
+    not_quanti?(node) ? node : MtDict.fix_quanti(node)
+  end
 
-    MtDict.fix_quanti(node)
+  def not_quanti?(node : MtNode)
+    # abort transform if node is certainly a verb
+    return false unless node.verbs? && (succ = node.succ?)
+    succ.ule? || succ.comma? || succ.colon? || succ.pstop?
   end
 
   QUANTI_PRE_APPRO = {
