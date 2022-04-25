@@ -47,7 +47,7 @@ module CV::TlRule
     if (left = node.body?) && (right = left.succ?)
       left.fix_root!(nil)
 
-      if right.pro_dems?
+      if right.pronouns?
         # flip back if swapped before
         right.fix_prev!(node.prev?)
         left.fix_succ!(node.succ?)
