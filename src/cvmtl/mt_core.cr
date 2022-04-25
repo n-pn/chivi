@@ -136,7 +136,7 @@ class CV::MtCore
       if can_merge?(cur, lst)
         lst.idx = cur.idx
 
-        lst.val = lst.nhanzi? ? "#{cur.val} #{fix_val!(cur, lst)}" : "#{cur.val}#{lst.val}"
+        lst.val = cur.ndigit? && lst.ndigit? ? "#{cur.val}#{lst.val}" : "#{cur.val} #{fix_val!(cur, lst)}"
         lst.key = "#{cur.key}#{lst.key}"
       else
         if cur.key == "\""
