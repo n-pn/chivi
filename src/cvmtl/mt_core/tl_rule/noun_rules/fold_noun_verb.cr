@@ -8,6 +8,11 @@ module CV::TlRule
 
     # && (verb.verb? || verb.vmodals?)
     return noun unless tail = scan_noun!(succ.succ?)
+    case tail.key
+    when "时候"
+      noun = fold!(noun, succ.set!(""), PosTag::DefnPhrase, dic: 7)
+      return fold!(noun, tail.set!("lúc"), PosTag::Time, dic: 9, flip: true)
+    end
 
     if verb.verb_no_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?
       verb_2 = verb_2.adverbs? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)

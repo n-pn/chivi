@@ -5,11 +5,14 @@ module CV::TlRule
     succ = MtDict.fix_verb!(succ) if succ && (succ.veno? || succ.vead?)
 
     case node
-    when .vm_hui? then node = heal_vm_hui!(node, succ, nega)
+    when .vm_hui?
+      node = heal_vm_hui!(node, succ, nega)
     when .vm_xiang?
       return fold_verbs!(node.set!(PosTag::Verb)) if succ.try(&.adv_bu?)
       node = heal_vm_xiang!(node, succ, nega)
       return fold_verbs!(node) if node.verb?
+    when .key?("要")
+      node.set!("phải") if succ.try(&.maybe_verb?)
     else
       node.tag = PosTag::Noun if vmodal_is_noun?(node)
       node = fold!(nega, node, node.tag, dic: 6) if nega

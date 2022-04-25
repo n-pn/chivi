@@ -29,7 +29,7 @@ module CV::TlRule
       end
     end
 
-    node = fold!(verb, noun, PosTag::VerbObject, dic: 9)
+    node = fold!(verb, noun, PosTag::VerbObject, dic: 8)
     return node unless (succ = node.succ?) && succ.junction?
     fold_verb_junction!(junc: succ, verb: node) || node
   end
@@ -48,10 +48,11 @@ module CV::TlRule
     return false if {"时候", "时", "打算", "方法"}.includes?(right.key)
 
     case prev.tag
-    when .comma? then return true
-    when .v_shi? then return false
-    when .v_you? then return false
-    when .verbs? then return is_linking_verb?(prev, verb)
+    when .comma?   then return true
+    when .v_shi?   then return false
+    when .v_you?   then return false
+    when .verbs?   then return is_linking_verb?(prev, verb)
+    when .nquants? then return false
     when .subject?
       return true unless head = prev.prev?
       return false if head.v_shi?
