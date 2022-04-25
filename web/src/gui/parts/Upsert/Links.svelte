@@ -5,7 +5,7 @@
   $: links = [
     ['G.Trans', `//translate.google.com/?sl=zh-CN&tl=en&op=translate&text=${key}`, ],
     ['Fanyi', `//fanyi.baidu.com/#zh/en/${key}`],
-    ['Bing', `//www.bing.com/translator?sl=zh-CN&tl=vi&text=${key}`],
+    ['Bing', `//www.bing.com/translator?from=zh-Hans&to=vi&text=${key}`],
     ['iCIBA', `//www.iciba.com/word?w=${key}`],
     ['Baidu', `//www.baidu.com/s?wd=${key}`],
     ['G.Search', `//www.google.com/search?q=${key}`],
