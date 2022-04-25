@@ -65,7 +65,7 @@ module CV::TlRule
         end
       when .preposes?
         # break unless prodem || nquant
-        node = fold_preposes!(node)
+        node = fold_preposes!(node, mode: 3)
         # puts [node, node.body?]
 
         if (ude1 = node.succ?) && ude1.ude1?
@@ -134,6 +134,7 @@ module CV::TlRule
 
     return node unless mode == 0 && (succ = node.succ?)
     node = fold_noun_after!(node, succ)
+    return node if node.prev?(&.preposes?) && !node.property?
 
     return node unless (verb = node.succ?) && verb.maybe_verb?
     verb = scan_verbs!(verb)
@@ -142,7 +143,7 @@ module CV::TlRule
     return node unless (ude1 = verb.succ?) && ude1.ude1?
     return node unless (tail = scan_noun!(ude1.succ?)) && tail.object?
 
-    node = fold!(node, ude1.set!(""), PosTag::DefnPhrase, dic: 8)
+    node = fold!(node, ude1.set!(""), PosTag::DefnPhrase, dic: 4)
     fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
   end
 

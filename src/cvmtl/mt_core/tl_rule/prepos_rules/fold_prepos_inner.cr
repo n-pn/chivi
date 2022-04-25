@@ -49,25 +49,34 @@ module CV::TlRule
 
     # fix prepos meaning
     case prepos.key
-    when "令" then prepos.val = "làm" if head.prev?(&.subject?)
     when "自" then prepos.val = "từ"
-    when "让"
-      # prepos.val = "nhường"
-    when "给"
-      prepos.val = "cho" if head.prev?(&.subject?)
+    when "让" then prepos.val = "khiến"
+    when "令" then prepos.val = "làm" if head.prev?(&.subject?)
+    when "给" then prepos.val = "cho" if head.prev?(&.subject?)
     when "对"
       prepos.val = "với"
       flip = true
     end
 
     node = fold!(head, verb, verb.tag, dic: 8, flip: flip)
-    node.succ? { |x| fold_ude1!(x, prev: node) if mode == 1 && x.ude1? } || node
+    return node unless (ude1 = node.succ?) && ude1.ude1?
+
+    # if !node.verb_no_obj? && (prev = node.prev?) && prev.subject?
+    #   node = fold!(prev, node, PosTag::VerbClause, dic: 7) unless mode == 3
+    # end
+
+    fold_ude1!(ude1: ude1, prev: node)
   end
 
   def fold_prepos_left(prepos : MtNode, noun : MtNode, ude1 : MtNode, tail : MtNode)
     # puts [prepos, noun, ude1, tail, prepos.prev?]
-    return unless prepos.prev?(&.pro_dems?)
-    left = fold!(prepos, ude1.set!(""), PosTag::DefnPhrase, dic: 6)
-    fold!(left, tail, PosTag::NounPhrase, dic: 9, flip: true)
+
+    case prepos.prev?
+    when .nil?, .pro_dems?, .pro_ints?
+      left = fold!(prepos, ude1.set!(""), PosTag::DefnPhrase, dic: 6)
+      fold!(left, tail, PosTag::NounPhrase, dic: 9, flip: true)
+    else
+      # TODO
+    end
   end
 end

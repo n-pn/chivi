@@ -13,22 +13,17 @@ module CV::TlRule
       return proint
     end
 
-    flip = true
+    flip = false
 
     case proint.key
     when "什么"
+      flip = succ.nouns?
       val = "gì"
     when "哪个"
+      flip = succ.nouns?
       val = "nào"
     when "怎么"
-      if succ.verb?
-        val = "thế nào"
-      else
-        val = "làm sao"
-        flip = false
-      end
-    else
-      return proint
+      val = "làm sao"
     end
 
     proint.set!(val) if val

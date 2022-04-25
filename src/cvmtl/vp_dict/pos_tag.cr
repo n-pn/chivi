@@ -133,6 +133,11 @@ struct CV::PosTag
   end
 
   @[AlwaysInline]
+  def property?
+    @tag.naffil? || @tag.nattr? || @tag.place?
+  end
+
+  @[AlwaysInline]
   def ends?
     @pos.puncts? || @pos.none? || @tag.exclam? || @tag.mopart?
   end

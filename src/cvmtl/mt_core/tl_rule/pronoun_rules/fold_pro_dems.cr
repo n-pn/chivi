@@ -33,8 +33,13 @@ module CV::TlRule
     scan_noun!(node.succ?, nquant: node).not_nil!
   end
 
+  def prodem_shoud_split?(node : MtNode)
+    return true unless node.pro_dem? # is pro_zhe, pro_na1, pro_ji...
+    node.key == "此"
+  end
+
   def split_prodem!(node : MtNode?, succ : MtNode? = node.succ?)
-    if succ && !node.pro_dem? # is pro_zhe, pro_na1, pro_ji
+    if succ && prodem_shoud_split?(node)
       succ = heal_quanti!(succ)
       return succ.quantis? ? {node, succ, succ.succ?} : {node, nil, succ}
     end

@@ -1,7 +1,7 @@
 module CV::TlRule
   def fold_noun_ude1!(noun : MtNode, ude1 : MtNode, right : MtNode, mode = 0) : MtNode
     case noun.tag
-    when .times?, .place?, .space?, .numeric?, .nattr? # , .prep_phrase?, .defn_phrase?
+    when .times?, .place?, .space?, .numeric?, .nattr?, .verb_clause? # , .prep_phrase?, .defn_phrase?
       ude1.val = ""
     when .pro_dem?
       if node = noun.dig_key?('样')
