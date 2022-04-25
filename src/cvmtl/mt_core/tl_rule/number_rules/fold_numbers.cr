@@ -64,6 +64,9 @@ module CV::TlRule
 
       if tail.nouns?
         return fold!(node, tail, tail.tag, dic: 3)
+      elsif node.prev? { |x| x.verbs? || x.prev?(&.verbs?) }
+        tail.set!("phát", PosTag::Qtverb)
+        return fold!(node, tail, PosTag::Nqverb, dic: 5)
       else
         tail.set!("chiếc", PosTag::Qtnoun)
         return fold!(node, tail, PosTag::Nqnoun, dic: 5)

@@ -76,7 +76,7 @@ module CV::TlRule
           return fold!(verb, succ, succ.tag, dic: 8)
         end
 
-        verb = fold_verb_nquant!(verb, succ, prev)
+        verb = fold_verb_nquant!(verb, succ)
         prev = nil
         break
       else
