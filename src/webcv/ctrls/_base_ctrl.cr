@@ -69,7 +69,7 @@ class CV::BaseCtrl < Amber::Controller::Base
 
   def send_json(props : Object, status = 200)
     set_headers(status, :json)
-    body = {status: status, props: props, maxage: @maxage}
+    body = {status: status, props: props, cache: {maxage: @maxage}}
     response.puts(body.to_json)
   end
 

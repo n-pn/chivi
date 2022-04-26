@@ -11,7 +11,7 @@
   export let error: Error
 
   $: $topbar = {
-    left: [[`Lỗi hệ thống: {status}`, null, { href: '/' }]],
+    left: [[`Lỗi hệ thống: ${status}`, null, { href: '/' }]],
   }
 </script>
 
@@ -29,7 +29,7 @@
 <style lang="scss">
   .wrapper {
     min-height: 80vh;
-    @include flex($center: both);
+    @include flex-ca;
   }
 
   .content {
