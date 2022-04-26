@@ -43,7 +43,7 @@
         href={chap_url(bslug, { ...chap, sname, cpart: track_cpart(chap) })}
         class="chap"
         class:_active={is_marked(chap)}
-        rel={sname != 'chivi' ? 'nofollow' : ''}>
+        rel={sname != 'chivi' ? 'nofollow' : null}>
         <div class="chap-text">
           <chap-title>{chap.title}</chap-title>
           <chap-chidx>{chap.chidx}.</chap-chidx>
