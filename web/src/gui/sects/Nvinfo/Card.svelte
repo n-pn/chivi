@@ -71,7 +71,7 @@
   .infos {
     @include flex-cx;
     flex-direction: column;
-    padding: 0.5rem;
+    padding: 0.5rem var(--gutter);
     width: 70%;
   }
 
