@@ -1,4 +1,5 @@
 require "./_base_ctrl"
+require "../../cvmtl/vp_hint"
 
 class CV::VpdictCtrl < CV::BaseCtrl
   alias VdInfo = Tuple(String, String?, Int32) # dict name, label, entries count
@@ -89,12 +90,12 @@ class CV::VpdictCtrl < CV::BaseCtrl
         end
       end
 
-      VpDict.trungviet.scan(chars, idx: idx) do |item|
-        entry[item.key.size][:trungviet] = item.val
+      VpHint.trungviet.scan(chars, idx: idx) do |key, vals|
+        entry[key.size][:trungviet] = vals
       end
 
-      VpDict.cc_cedict.scan(chars, idx: idx) do |item|
-        entry[item.key.size][:cc_cedict] = item.val
+      VpHint.cc_cedict.scan(chars, idx: idx) do |key, vals|
+        entry[key.size][:cc_cedict] = vals
       end
 
       entry.to_a.sort_by(&.[0].-)

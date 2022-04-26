@@ -113,19 +113,17 @@ class CeInput
     puts "\n[-- Export ce_dict --]".colorize.cyan.bold
 
     input = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
-    output = CV::VpDict.load("cc_cedict", mode: -1)
+    output = CV::VpHint.cc_cedict
 
     @entries.each do |entry|
       input[entry.simp] << "[#{entry.pinyin}] #{entry.defins}"
     end
 
     input.each do |key, vals|
-      QtUtil.lexicon.add(key)
-      output.set(key, vals)
+      output.add(key, vals)
     end
 
-    QtUtil.lexicon.save!
-    output.save!(prune: 1_i8)
+    output.save!
   end
 
   HANZIDB = QtDict.load("system/hanzidb.txt")

@@ -8,10 +8,6 @@ class CV::VpDict
   DIR = "var/vpdicts/v1"
   EXT = ".tsv"
 
-  class_getter trungviet : self { new(path("trungviet", "fixed"), type: -1) }
-  class_getter cc_cedict : self { new(path("cc_cedict", "fixed"), type: -1) }
-  class_getter trich_dan : self { new(path("trich_dan", "fixed"), type: -1) }
-
   class_getter hanviet : self { load("hanviet") }
   class_getter pin_yin : self { load("pin_yin") }
   class_getter tradsim : self { load("tradsim") }

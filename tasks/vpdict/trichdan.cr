@@ -3,18 +3,12 @@ require "./shared/qt_dict"
 
 def cleanup(input : String)
   input.split("\\t")
-    .map(&.gsub(/^\d+\.\s*/, "").gsub(/\.\s*$/, ""))
-    .reject(&.empty?)
     .join("; ")
-    .gsub("]; ", "] ")
-    .gsub("}; ", "} ")
-    .split(/;\s+/)
-    .uniq
-    .join("; ")
+    .gsub(/(\]|}); /) { |_, x| x[1] + " " }
 end
 
-inp_dict = QtDict.load("system/lacviet-mtd.txt", preload: true)
-out_dict = CV::VpHint.trungviet
+inp_dict = QtDict.load("system/trichdan.txt", preload: true)
+out_dict = CV::VpHint.trich_dan
 
 puts "- input: #{inp_dict.size}"
 
