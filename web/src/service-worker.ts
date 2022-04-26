@@ -48,7 +48,7 @@ async function fetchAndCache(request: Request) {
   }
 }
 
-worker.addEventListener('fetch', ({ request, respondWith }) => {
+worker.addEventListener('fetch', async ({ request, respondWith }) => {
   if (request.method !== 'GET' || request.headers.has('range')) return
 
   const url = new URL(request.url)
@@ -63,15 +63,7 @@ worker.addEventListener('fetch', ({ request, respondWith }) => {
     request.cache === 'only-if-cached' && !isStaticAsset
 
   if (isHttp && !isDevServerRequest && !skipBecauseUncached) {
-    respondWith(
-      (async () => {
-        // always serve static files and bundler-generated assets from cache.
-        // if your application has other URLs with data that will never change,
-        // set this variable to true for them and they will only be fetched once.
-        const cachedAsset = isStaticAsset && (await caches.match(request))
-
-        return cachedAsset || fetchAndCache(request)
-      })()
-    )
+    const cachedAsset = isStaticAsset && (await caches.match(request))
+    respondWith(cachedAsset || (await fetchAndCache(request)))
   }
 })
