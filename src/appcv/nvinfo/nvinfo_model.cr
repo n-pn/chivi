@@ -121,14 +121,13 @@ module CV::NvinfoModel
     self.weight = scores + Math.log(self.view_count + 10).to_i
   end
 
-  def fix_names!(bdict : String = self.dname)
-    self.vname = BookUtil.btitle_vname(self.zname, self.dname)
-    self.vslug = BookUtil.make_slug(self.vname)
+  def fix_names!(bdict : String? = self.dname)
+    self.btitle.regen!(bdict) if bdict
 
-    self.hname = BookUtil.hanviet(self.zname, caps: true)
-    self.hslug = BookUtil.make_slug(self.hname)
+    self.hname = self.btitle.hname
+    self.vname = self.btitle.vname
 
-    self.bslug = self.hslug[1..] + bhash[0..3]
+    self.bslug = self.btitle.hslug[1..] + bhash[0..3]
     self.save!
   end
 end

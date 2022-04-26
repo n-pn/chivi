@@ -10,7 +10,7 @@ class CV::Nvinfo
   getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
 
   belongs_to author : Author
-  belongs_to btitle : Btitle?
+  belongs_to btitle : Btitle
 
   belongs_to ysbook : Ysbook?
 
@@ -23,9 +23,6 @@ class CV::Nvinfo
   column zname : String      # book chinese name
   column hname : String = "" # hanviet title
   column vname : String = "" # localization
-
-  column hslug : String = "" # for text searching, auto generated from hname
-  column vslug : String = "" # for text searching, auto generated from vname
 
   #################
 
@@ -187,7 +184,7 @@ class CV::Nvinfo
     unless nvinfo = get(author, btitle)
       bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
       nvinfo = new({author: author, btitle: btitle, zname: zname, bhash: bhash})
-      nvinfo.fix_names!
+      nvinfo.fix_names!(nil)
     end
 
     nvinfo
@@ -197,7 +194,7 @@ class CV::Nvinfo
     unless nvinfo = get(author, btitle)
       bhash = UkeyUtil.digest32("#{btitle.zname}--#{author.zname}")
       nvinfo = new({author: author, btitle: btitle, zname: zname, bhash: bhash})
-      nvinfo.fix_names!
+      nvinfo.fix_names!(nil)
     end
 
     nvinfo

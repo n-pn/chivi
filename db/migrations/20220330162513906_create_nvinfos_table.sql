@@ -14,9 +14,6 @@ CREATE TABLE nvinfos (
   hname text not null default '',
   vname text not null default '',
 
-  hslug text not null default '',
-  vslug text not null default '',
-
   -- unique identity
 
   bhash text unique not null,
@@ -71,10 +68,6 @@ CREATE TABLE nvinfos (
 CREATE UNIQUE INDEX nvinfo_unique_idx ON nvinfos (btitle_id, author_id);
 CREATE INDEX nvinfo_author_idx ON nvinfos (author_id);
 CREATE INDEX nvinfo_yousuu_idx ON nvinfos (ysbook_id);
-
-CREATE INDEX nvinos_zname_idx ON nvinfos using GIN (zname gin_trgm_ops);
-CREATE INDEX nvinos_hslug_idx ON nvinfos using GIN (hslug gin_trgm_ops);
-CREATE INDEX nvinos_vslug_idx ON nvinfos using GIN (vslug gin_trgm_ops);
 
 ----
 
