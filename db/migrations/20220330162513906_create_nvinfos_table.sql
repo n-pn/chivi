@@ -11,7 +11,6 @@ CREATE TABLE nvinfos (
   -- title
 
   zname text not null,
-  hname text not null default '',
   vname text not null default '',
 
   -- unique identity

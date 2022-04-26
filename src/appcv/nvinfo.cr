@@ -21,7 +21,6 @@ class CV::Nvinfo
   ##############
 
   column zname : String      # book chinese name
-  column hname : String = "" # hanviet title
   column vname : String = "" # localization
 
   #################

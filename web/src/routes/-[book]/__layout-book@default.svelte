@@ -56,9 +56,9 @@
         <bname-sep>/</bname-sep>
         <bname-zh>{nvinfo.zname}</bname-zh>
       {/if}
-      {#if nvinfo.hname != nvinfo.vname && nvinfo.hname != nvinfo.zname}
+      {#if nvinfo.btitle_hv != nvinfo.vname && nvinfo.btitle_hv != nvinfo.zname}
         <bname-sep>/</bname-sep>
-        <bname-vi>{nvinfo.hname}</bname-vi>
+        <bname-vi>{nvinfo.btitle_hv}</bname-vi>
       {/if}
     </h1>
   </div>
@@ -70,8 +70,8 @@
   <div class="line">
     <span class="stat -trim">
       <SIcon name="edit" />
-      <a class="link" href="/books/={nvinfo.author.vname}">
-        <span class="label">{nvinfo.author.vname}</span>
+      <a class="link" href="/books/={nvinfo.author_vi}">
+        <span class="label">{nvinfo.author_vi}</span>
       </a>
     </span>
 

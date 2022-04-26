@@ -22,13 +22,11 @@ def create_nvinfo(zname : String, id : Int64)
   CV::Nvinfo.new({
     id:        id,
     author_id: 0,
+    bitlte_id: 0,
     zname:     zname,
-    hname:     zname,
     vname:     zname,
     bhash:     slug,
     bslug:     slug,
-    vslug:     "-#{slug}-",
-    hslug:     "-#{slug}-",
     shield:    2,
   }).save!
 rescue err

@@ -11,10 +11,12 @@ declare namespace CV {
     bhash: string
 
     zname: string
-    hname: string
     vname: string
 
-    author: Author
+    btitle_hv: string
+
+    author_zh: string
+    author_vi: string
 
     scover: string
     bcover: string

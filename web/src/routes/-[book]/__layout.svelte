@@ -9,8 +9,15 @@
     return data
   }
 
-  function gen_keywords({ zname, vname, hname, author, genres }) {
-    const kw = [zname, vname, hname, author.vname, author.zname, ...genres]
+  function gen_keywords(nvinfo: CV.Nvinfo) {
+    const kw = [
+      nvinfo.zname,
+      nvinfo.vname,
+      nvinfo.btitle_hv,
+      nvinfo.author_zh,
+      nvinfo.author_vi,
+      ...nvinfo.genres,
+    ]
     return kw.filter((v, i, a) => i != a.indexOf(v)).join(',')
   }
 </script>
@@ -48,7 +55,7 @@
   <meta property="og:image" content="https://chivi.app/covers/{bcover}" />
 
   <meta property="og:novel:category" content={genres[0]} />
-  <meta property="og:novel:author" content={nvinfo.author.vname} />
+  <meta property="og:novel:author" content={nvinfo.author_vi} />
   <meta property="og:novel:book_name" content={nvinfo.vname} />
   <meta property="og:novel:status" content={map_status(nvinfo.status)} />
   <meta property="og:novel:update_time" content={update} />

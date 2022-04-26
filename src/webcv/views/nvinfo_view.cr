@@ -9,17 +9,11 @@ struct CV::NvinfoView
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "id", @data.id
-      jb.field "bhash", @data.bhash
       jb.field "bslug", @data.bslug
 
+      jb.field "author_vi", @data.author.vname
       jb.field "zname", @data.zname
-      jb.field "hname", @data.hname
       jb.field "vname", @data.vname
-
-      jb.field "author", ({
-        zname: @data.author.zname,
-        vname: @data.author.vname,
-      })
 
       jb.field "genres", @data.vgenres
 
@@ -33,8 +27,13 @@ struct CV::NvinfoView
       jb.field "rating", @data.rating / 10
 
       if @full
+        jb.field "bhash", @data.bhash
+
         jb.field "snames", @data.snames
         jb.field "bintro", @data.bintro
+
+        jb.field "author_zh", @data.author.zname
+        jb.field "btitle_hv", @data.btitle.hname
 
         if ysbook = @data.ysbook
           jb.field "ys_snvid", ysbook.id

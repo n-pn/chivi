@@ -22,8 +22,8 @@
 
       this.genres = nvinfo.genres.join(', ')
 
-      this.author_zh = nvinfo.author.zname
-      this.author_vi = nvinfo.author.vname
+      this.author_zh = nvinfo.author_zh
+      this.author_vi = nvinfo.author_vi
     }
   }
 </script>

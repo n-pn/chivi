@@ -19,7 +19,7 @@
     </div>
 
     <div class="extra _author">
-      <span class="value -trim">{nvinfo.author.vname}</span>
+      <span class="value -trim">{nvinfo.author_vi}</span>
     </div>
 
     <div class="extra">
