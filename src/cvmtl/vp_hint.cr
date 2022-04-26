@@ -5,7 +5,11 @@ class CV::VpHint
   class_getter trungviet : self { new("#{DIR}/lookup/trungviet", 128) }
   class_getter trich_dan : self { new("#{DIR}/lookup/trich_dan", 128) }
 
-  class_getter val_hints : self { new("#{DIR}/phrase/val_hints", 128) }
+  class_getter user_vals : self { new("#{DIR}/phrase/cvuser", 256) }
+  class_getter prev_vals : self { new("#{DIR}/phrase/legary", 256) }
+
+  class_getter user_tags : self { new("#{DIR}/postag/cvuser", 256) }
+  class_getter blac_tags : self { new("#{DIR}/postag/bd_lac", 256) }
 
   ##########
 
@@ -19,24 +23,35 @@ class CV::VpHint
 
   def initialize(@root : String, @split = 128)
     Dir.mkdir_p(@root)
-    @data = Hash(Int32, Trie).new { |h, g| h[g] = load_trie(g) }
-  end
-
-  def load_trie(group : Int32) : Trie
-    trie = Trie.new
-    file = File.join("#{@root}/#{group}.tsv")
-    read_trie(trie, file) if File.exists?(file)
-    trie
+    @data = Hash(Int32, Trie).new(initial_capacity: @split)
   end
 
   def get_trie(char : Char)
-    @data[char.ord % @split]
+    group = char.ord % @split
+    @data[group] ||= read_trie(File.join("#{@root}/#{group}.tsv"))
   end
 
-  def read_trie(trie : Trie, file : String) : Nil
+  def read_trie(file : String, trie = Trie.new) : Trie
+    return trie unless File.exists?(file)
+
     File.each_line(file) do |line|
       vals = line.split('\t')
       vals.shift?.try { |key| add(key, vals, trie) }
+    end
+
+    trie
+  end
+
+  def add(key : String, vals : Array(String), node = get_trie(key[0]))
+    key.each_char { |c| node = node.hash[c] }
+    node.vals = vals.empty? ? nil : vals
+  end
+
+  def add!(key : String, vals : Array(String))
+    add(key, vals)
+
+    File.open(File.join("#{@root}/#{key[0]}.tsv"), "a") do |io|
+      io << '\n' << key << '\t' << vals.join('\t')
     end
   end
 
@@ -70,19 +85,6 @@ class CV::VpHint
       str += char
       next unless vals = node.vals
       yield str, vals
-    end
-  end
-
-  def add(key : String, vals : Array(String), node = get_trie(key[0]))
-    key.each_char { |c| node = node.hash[c] }
-    node.vals = vals.empty? ? nil : vals
-  end
-
-  def add!(key : String, vals : Array(String))
-    add(key, vals)
-
-    File.open(File.join("#{@root}/#{key[0]}.tsv"), "a") do |io|
-      io << '\n' << key << '\t' << vals.join('\t')
     end
   end
 

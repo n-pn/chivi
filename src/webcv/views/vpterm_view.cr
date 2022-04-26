@@ -1,5 +1,5 @@
 require "json"
-require "../../cvmtl/tl_util"
+require "../../cvmtl/*"
 
 struct CV::VpTermView
   DIR = "var/vphints/detect"
@@ -83,8 +83,8 @@ struct CV::VpTermView
       b_term, u_term = nil, nil
     end
 
-    # TODO: add suggest values here
-    VpDict.suggest.find(word).try { |x| add_hints(x, vals, tags) }
+    VpHint.user_vals.find(word).try { |x| vals.concat(x) }
+    VpHint.user_tags.find(word).try { |x| tags.concat(x) }
 
     if @dname[0] == '~'
       fval = @cvmtl.cv_plain(word, cap_first: false).to_s

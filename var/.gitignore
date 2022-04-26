@@ -1,5 +1,5 @@
 *
 !.gitignore
 !qttexts/notes
-!tlspecs
-!vphints
+!tlspecs/
+!vphints/
