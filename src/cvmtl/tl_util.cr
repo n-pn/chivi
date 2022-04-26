@@ -25,7 +25,7 @@ module CV::TlUtil
     root
   end
 
-  DIR = "var/vpdicts"
+  DIR = "var/vphints/tlhint"
   class_getter ptitle : Trie { load_trie("#{DIR}/ptitle.tsv") }
   class_getter naffil : Trie { load_trie("#{DIR}/naffil.tsv") }
   class_getter nother : Trie { load_trie("#{DIR}/nother.tsv") }

@@ -142,7 +142,7 @@
           class:_base={tag == vpterm.init.b_ptag}
           class:_priv={tag == vpterm.init.u_ptag}
           data-kbd={p_kbd[idx]}
-          on:click={() => (vpterm.ptag = tag)}>{ptnames[tag]}</button>
+          on:click={() => (vpterm.ptag = tag)}>{ptnames[tag] || tag}</button>
       {/if}
     {/each}
   </div>

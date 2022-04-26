@@ -1,7 +1,8 @@
 require "json"
+require "../../cvmtl/tl_util"
 
 struct CV::VpTermView
-  DIR = "var/vpterms"
+  DIR = "var/vphints/detect"
 
   LASTNAMES = read_chars_to_set("#{DIR}/lastnames.txt")
   AFFILIATE = read_chars_to_set("#{DIR}/affiliate.txt")
@@ -104,7 +105,7 @@ struct CV::VpTermView
 
   private def add_hints(term : VpTerm, vals : Hints, tags : Hints)
     vals.concat(term.val.reject(&.empty?))
-    tags << term.attr unless term.attr.empty?
+    tags << term.ptag.to_str unless term.attr.empty?
 
     return unless prev = term._prev
     vals.concat(prev.val.reject(&.empty?))
@@ -137,7 +138,7 @@ struct CV::VpTermView
     end
 
     if is_human || (on_book && ftag.in?("nr", "nn", "nz"))
-      fval = TextUtil.titleize(vals.first)
+      fval = TlUtil.translate(vals.first, ftag)
     end
 
     {fval, ftag}
