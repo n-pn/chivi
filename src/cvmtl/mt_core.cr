@@ -155,7 +155,6 @@ class CV::MtCore
 
   @[AlwaysInline]
   def should_space?(left : MtNode, right : MtNode)
-    return false unless left.numeric? && right.numeric?
     left.nhanzi? || right.nhanzi?
   end
 
