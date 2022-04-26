@@ -10,7 +10,7 @@ class CV::Nvinfo
   getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
 
   belongs_to author : Author
-  # belongs_to btitle : Btitle
+  belongs_to btitle : Btitle?
 
   belongs_to ysbook : Ysbook?
 
@@ -89,14 +89,16 @@ class CV::Nvinfo
 
   scope :filter_btitle do |input|
     if input.nil?
-      self
+      return self
     elsif input =~ /\p{Han}/
       scrub = BookUtil.scrub_zname(input)
-      where("zname LIKE '%#{scrub}%'")
+      query = "zname LIKE '%#{scrub}%'"
     else
       scrub = BookUtil.scrub_vname(input, "-")
-      where("(vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%')")
+      query = "vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%'"
     end
+
+    where("btitle_id IN (SELECT id from btitles where #{query})")
   end
 
   scope :filter_author do |input|
@@ -160,6 +162,10 @@ class CV::Nvinfo
     find({author_id: author.id, zname: zname})
   end
 
+  def self.get(author : Author, btitle : Btitle)
+    find({author_id: author.id, btitle_id: btitle.id})
+  end
+
   CACHE_INT = RamCache(Int64, self).new
   CACHE_STR = RamCache(String, self).new
 
@@ -176,9 +182,21 @@ class CV::Nvinfo
   end
 
   def self.upsert!(author : Author, zname : String)
-    unless nvinfo = get(author, zname)
+    btitle = Btitle.upsert!(zname)
+
+    unless nvinfo = get(author, btitle)
       bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
-      nvinfo = new({author_id: author.id, zname: zname, bhash: bhash})
+      nvinfo = new({author: author, btitle: btitle, zname: zname, bhash: bhash})
+      nvinfo.fix_names!
+    end
+
+    nvinfo
+  end
+
+  def self.upsert!(author : Author, btitle : Btitle)
+    unless nvinfo = get(author, btitle)
+      bhash = UkeyUtil.digest32("#{btitle.zname}--#{author.zname}")
+      nvinfo = new({author: author, btitle: btitle, zname: zname, bhash: bhash})
       nvinfo.fix_names!
     end
 

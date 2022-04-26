@@ -19,7 +19,7 @@ class CV::Btitle
 
   def regen!(bdict : String = "combine") : Nil
     self.set_hname(BookUtil.hanviet(self.zname))
-    self.set_vname(BookUtil.btitle_vname(sel.zname, bdict))
+    self.set_vname(BookUtil.btitle_vname(self.zname, bdict))
 
     self.save!
   end
