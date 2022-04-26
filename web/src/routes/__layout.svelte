@@ -1,8 +1,4 @@
 <script context="module" lang="ts">
-  import { navigating, page, session } from '$app/stores'
-  import { scroll, toleft, layers, popups, config } from '$lib/stores'
-  declare var gtag: any
-
   const links = [
     ['Discord', 'https://discord.gg/mdC3KQH'],
     ['Github', 'https://github.com/np-nam/chivi'],
@@ -12,6 +8,8 @@
 
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { navigating, session } from '$app/stores'
+  import { scroll, toleft, layers, popups, config } from '$lib/stores'
   import { map_keypress, trigger_click } from '$utils/kbd_utils'
 
   import Pledge from '$gui/sects/layout/Pledge.svelte'
@@ -24,12 +22,6 @@
   import Dboard from '$gui/sects/dboard/Dboard.svelte'
 
   import '../styles/generic.scss'
-
-  // $: {
-  //   if (typeof gtag === 'function') {
-  //     gtag('config', 'G-0GJNGJEFNH', { page_path: $page.url.pathname })
-  //   }
-  // }
 
   onMount(() => {
     if (!$config.wtheme) config.put('wtheme', $session.wtheme || 'light')
