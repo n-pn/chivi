@@ -93,7 +93,7 @@ class CV::CrawlYsbook
   end
 
   def self.run!(argv = ARGV)
-    upper_nsvid = Tabkv(Int32).new("var/_common/upper.tsv").get("yousuu") || 270000
+    upper_nsvid = Tabkv(Int32).new("var/_common/upper.tsv")["yousuu"]? || 270000
     regen_proxy = false
 
     crawl_mode = Mode::Tail
