@@ -11,6 +11,7 @@
 </script>
 
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { map_keypress, trigger_click } from '$utils/kbd_utils'
 
   import Pledge from '$gui/sects/layout/Pledge.svelte'
@@ -30,11 +31,11 @@
     }
   }
 
-  let wtheme = $session.wtheme || 'oled'
-  $: {
-    if ($config.wtheme) wtheme = $config.wtheme
-    else config.put('wtheme', wtheme)
-  }
+  onMount(() => {
+    if (!$config.wtheme) config.put('wtheme', $session.wtheme || 'light')
+  })
+
+  $: wtheme = $config.wtheme || $session.wtheme || 'light'
 
   let kbd_hint = false
 
