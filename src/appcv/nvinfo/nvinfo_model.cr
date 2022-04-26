@@ -121,7 +121,6 @@ module CV::NvinfoModel
 
   def fix_names!(bdict : String? = self.dname)
     self.btitle.regen!(bdict) if bdict
-
     self.vname = self.btitle.vname
 
     self.bslug = self.btitle.hslug[1..] + bhash[0..3]

@@ -20,7 +20,6 @@ class CV::Nvinfo
 
   ##############
 
-  column zname : String      # book chinese name
   column vname : String = "" # localization
 
   #################
@@ -153,10 +152,6 @@ class CV::Nvinfo
 
   class_getter total : Int64 { query.count }
 
-  def self.get(author : Author, zname : String)
-    find({author_id: author.id, zname: zname})
-  end
-
   def self.get(author : Author, btitle : Btitle)
     find({author_id: author.id, btitle_id: btitle.id})
   end
@@ -177,21 +172,13 @@ class CV::Nvinfo
   end
 
   def self.upsert!(author : Author, zname : String)
-    btitle = Btitle.upsert!(zname)
-
-    unless nvinfo = get(author, btitle)
-      bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
-      nvinfo = new({author: author, btitle: btitle, zname: zname, bhash: bhash})
-      nvinfo.fix_names!(nil)
-    end
-
-    nvinfo
+    upsert!(author, Btitle.upsert!(zname))
   end
 
   def self.upsert!(author : Author, btitle : Btitle)
     unless nvinfo = get(author, btitle)
       bhash = UkeyUtil.digest32("#{btitle.zname}--#{author.zname}")
-      nvinfo = new({author: author, btitle: btitle, zname: zname, bhash: bhash})
+      nvinfo = new({author: author, btitle: btitle, bhash: bhash})
       nvinfo.fix_names!(nil)
     end
 

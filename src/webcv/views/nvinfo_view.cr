@@ -32,7 +32,7 @@ struct CV::NvinfoView
         jb.field "bintro", @data.bintro
 
         jb.field "author_zh", @data.author.zname
-        jb.field "btitle_zh", @data.zname
+        jb.field "btitle_zh", @data.btitle.zname
         jb.field "btitle_hv", @data.btitle.hname
 
         if ysbook = @data.ysbook
