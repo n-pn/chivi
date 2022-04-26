@@ -25,11 +25,11 @@
 
   import '../styles/generic.scss'
 
-  $: {
-    if (typeof gtag === 'function') {
-      gtag('config', 'G-0GJNGJEFNH', { page_path: $page.url.pathname })
-    }
-  }
+  // $: {
+  //   if (typeof gtag === 'function') {
+  //     gtag('config', 'G-0GJNGJEFNH', { page_path: $page.url.pathname })
+  //   }
+  // }
 
   onMount(() => {
     if (!$config.wtheme) config.put('wtheme', $session.wtheme || 'light')
