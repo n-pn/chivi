@@ -34,7 +34,7 @@ struct CV::NvinfoView
 
       if @full
         jb.field "snames", @data.snames
-        jb.field "bintro", @data.vintro.split("\n")
+        jb.field "bintro", @data.bintro
 
         if ysbook = @data.ysbook
           jb.field "ys_snvid", ysbook.id

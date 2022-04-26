@@ -43,15 +43,13 @@ module CV::NvinfoModel
   # end
 
   def set_zintro(lines : Array(String), force = false) : Nil
-    return unless force || self.zintro.empty?
-    self.zintro = lines.join("\n")
-
-    trans = BookUtil.convert(lines, self.bhash)
-    set_vintro(trans.join("\n"), force: true)
+    return unless force || self.bintro.empty?
+    vintro = BookUtil.convert(lines, self.bhash)
+    set_vintro(vintro.join("\n"), force: true)
   end
 
   def set_vintro(vintro : String, force = false) : Nil
-    self.vintro = vintro if force || self.vintro.empty?
+    self.bintro = vintro if force || self.bintro.empty?
   end
 
   def set_covers(cover : String, force = false) : Nil

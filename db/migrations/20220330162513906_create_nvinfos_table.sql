@@ -31,8 +31,7 @@ CREATE TABLE nvinfos (
   scover text not null default '', -- source cover url
   bcover text not null default '', -- local cover name
 
-  zintro text not null default '', -- book intro in chinese
-  vintro text not null default '', -- book intro converted
+  bintro text not null default '', -- book intro converted
 
   status int not null default 0,
   shield int not null default 0,

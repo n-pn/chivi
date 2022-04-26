@@ -20,7 +20,7 @@
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
 
-  $: bintro = nvinfo.bintro.join('').substring(0, 300)
+  $: bintro = nvinfo.bintro.substring(0, 300)
   $: bcover = nvinfo.bcover || '_blank.png'
   $: update = new Date(nvinfo.mftime || 0).toISOString()
   $: genres = nvinfo.genres || []

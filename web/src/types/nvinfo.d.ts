@@ -18,9 +18,9 @@ declare namespace CV {
 
     scover: string
     bcover: string
+    bintro: string
 
     genres: string[]
-    bintro: string[]
     snames: string[]
 
     status: number

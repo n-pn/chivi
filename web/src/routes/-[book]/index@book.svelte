@@ -30,9 +30,10 @@
 <article class="m-article">
   <h2>Giới thiệu:</h2>
   <div class="intro" class:_short={short_intro}>
-    {#each nvinfo.bintro as para}
-      <p>{para}</p>
-    {/each}
+    {@html nvinfo.bintro
+      .split('\n')
+      .map((x) => `<p>${x}</p>`)
+      .join('\n')}
   </div>
 
   <h3 class="sub">
@@ -97,7 +98,7 @@
       scrollbar-color: color(gray, 8);
     }
 
-    p {
+    > :global(p) {
       margin-top: 0.75rem;
     }
   }

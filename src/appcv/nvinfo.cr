@@ -47,8 +47,7 @@ class CV::Nvinfo
   column scover : String = "" # original seed cover url
   column bcover : String = "" # cached book cover path
 
-  column zintro : String = "" # book introduction in chinese
-  column vintro : String = "" # translated book introduction
+  column bintro : String = "" # book introduction in chinese
 
   # status value:
   # 0: ongoing,
