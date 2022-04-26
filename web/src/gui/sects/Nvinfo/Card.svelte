@@ -12,7 +12,7 @@
   </div>
 
   <div class="infos">
-    <div class="info _title"><div class="trim">{nvinfo.vname}</div></div>
+    <div class="info _title"><div class="trim">{nvinfo.btitle_vi}</div></div>
     <div class="info"><strong class="trim">{nvinfo.author_vi}</strong></div>
 
     <div class="info">

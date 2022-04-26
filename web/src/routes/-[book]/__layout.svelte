@@ -11,8 +11,8 @@
 
   function gen_keywords(nvinfo: CV.Nvinfo) {
     const kw = [
-      nvinfo.zname,
-      nvinfo.vname,
+      nvinfo.btitle_zh,
+      nvinfo.btitle_vi,
       nvinfo.btitle_hv,
       nvinfo.author_zh,
       nvinfo.author_vi,
@@ -36,7 +36,7 @@
     x.tab = 'book'
     x.book = {
       id: nvinfo.id,
-      bname: nvinfo.vname,
+      bname: nvinfo.btitle_vi,
       bslug: nvinfo.bslug,
     }
     return x
@@ -44,11 +44,11 @@
 </script>
 
 <svelte:head>
-  <title>{nvinfo.vname} - Chivi</title>
+  <title>{nvinfo.btitle_vi} - Chivi</title>
   <meta name="keywords" content={gen_keywords(nvinfo)} />
   <meta name="description" content={bintro} />
 
-  <meta property="og:title" content={nvinfo.vname} />
+  <meta property="og:title" content={nvinfo.btitle_vi} />
   <meta property="og:type" content="novel" />
   <meta property="og:description" content={bintro} />
   <meta property="og:url" content="https://chivi.app/-{nvinfo.bslug}" />
@@ -56,7 +56,7 @@
 
   <meta property="og:novel:category" content={genres[0]} />
   <meta property="og:novel:author" content={nvinfo.author_vi} />
-  <meta property="og:novel:book_name" content={nvinfo.vname} />
+  <meta property="og:novel:book_name" content={nvinfo.btitle_vi} />
   <meta property="og:novel:status" content={map_status(nvinfo.status)} />
   <meta property="og:novel:update_time" content={update} />
 </svelte:head>

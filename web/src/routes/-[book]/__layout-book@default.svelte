@@ -42,7 +42,7 @@
 
   $: topbar.set({
     left: [
-      [nvinfo.vname, 'book', { href: `/-${nvinfo.bslug}`, kind: 'title' }],
+      [nvinfo.btitle_vi, 'book', { href: `/-${nvinfo.bslug}`, kind: 'title' }],
     ],
     right: [suggest_read(nvinfo, ubmemo)],
   })
@@ -51,12 +51,12 @@
 <div class="main-info">
   <div class="title">
     <h1 class="bname _main">
-      <bname-vi>{nvinfo.vname}</bname-vi>
-      {#if nvinfo.zname != nvinfo.vname}
+      <bname-vi>{nvinfo.btitle_vi}</bname-vi>
+      {#if nvinfo.btitle_zh != nvinfo.btitle_vi}
         <bname-sep>/</bname-sep>
-        <bname-zh>{nvinfo.zname}</bname-zh>
+        <bname-zh>{nvinfo.btitle_zh}</bname-zh>
       {/if}
-      {#if nvinfo.btitle_hv != nvinfo.vname && nvinfo.btitle_hv != nvinfo.zname}
+      {#if nvinfo.btitle_hv != nvinfo.btitle_vi && nvinfo.btitle_hv != nvinfo.btitle_zh}
         <bname-sep>/</bname-sep>
         <bname-vi>{nvinfo.btitle_hv}</bname-vi>
       {/if}

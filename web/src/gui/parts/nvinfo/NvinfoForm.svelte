@@ -3,11 +3,11 @@
   import { book_status } from '$utils/nvinfo_utils'
 
   // prettier-ignore
-  const assigns = ['zname', 'vname', 'status', 'bcover', 'author_vi', 'author_zh']
+  const assigns = ['btitle_zh', 'btitle_vi', 'status', 'bcover', 'author_vi', 'author_zh']
 
   export class Params {
-    zname: string = ''
-    vname: string = ''
+    btitle_zh: string = ''
+    btitle_vi: string = ''
 
     status: number = 0
     bintro: string = ''
@@ -51,7 +51,7 @@
         name="btitle"
         placeholder="Tên tựa bộ truyện"
         required
-        bind:value={params.zname} />
+        bind:value={params.btitle_zh} />
     </form-group>
 
     <form-group>

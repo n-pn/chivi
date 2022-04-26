@@ -12,8 +12,7 @@ struct CV::NvinfoView
       jb.field "bslug", @data.bslug
 
       jb.field "author_vi", @data.author.vname
-      jb.field "zname", @data.zname
-      jb.field "vname", @data.vname
+      jb.field "btitle_vi", @data.vname
 
       jb.field "genres", @data.vgenres
 
@@ -33,6 +32,7 @@ struct CV::NvinfoView
         jb.field "bintro", @data.bintro
 
         jb.field "author_zh", @data.author.zname
+        jb.field "btitle_zh", @data.zname
         jb.field "btitle_hv", @data.btitle.hname
 
         if ysbook = @data.ysbook

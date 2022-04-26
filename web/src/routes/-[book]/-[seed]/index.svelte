@@ -58,7 +58,7 @@
   $: topbar.set({
     left: [
       [
-        nvinfo.vname,
+        nvinfo.btitle_vi,
         'book',
         { href: `/-${nvinfo.bslug}`, show: 'tm', kind: 'title' },
       ],
@@ -92,7 +92,7 @@
 <nav class="bread">
   <a href="/-{nvinfo.bslug}" class="crumb _link">
     <SIcon name="book" />
-    <span class="-text">{nvinfo.vname}</span></a>
+    <span class="-text">{nvinfo.btitle_vi}</span></a>
   <span>/</span>
   <span class="crumb _text">Chương tiết</span>
 </nav>

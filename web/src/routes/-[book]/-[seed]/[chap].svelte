@@ -46,7 +46,7 @@
 
   $: topbar.set({
     left: [
-      [nvinfo.vname, 'book', { href: book_url, kind: 'title', show: 'pl' }],
+      [nvinfo.btitle_vi, 'book', { href: book_url, kind: 'title', show: 'pl' }],
       [`[${ubmemo.sname}]`, null, { href: list_url, kind: 'zseed' }],
     ],
     right: [],
@@ -113,13 +113,13 @@
 </script>
 
 <svelte:head>
-  <title>{chinfo.title} - {nvinfo.vname} - Chivi</title>
+  <title>{chinfo.title} - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
 
 <nav class="bread">
   <a href="/-{nvinfo.bslug}" class="crumb _link">
     <SIcon name="book" />
-    <span>{nvinfo.vname}</span>
+    <span>{nvinfo.btitle_vi}</span>
   </a>
   <span>/</span>
   <span class="crumb _text">{chinfo.chvol}</span>
@@ -130,7 +130,7 @@
     {cvdata}
     {zhtext}
     dname="-{nvinfo.bhash}"
-    d_dub={nvinfo.vname}
+    d_dub={nvinfo.btitle_vi}
     {on_change}>
     <svelte:fragment slot="header">
       <ChapSeed {chmeta} {chinfo} />

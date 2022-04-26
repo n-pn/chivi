@@ -49,20 +49,20 @@
 
   $: topbar.set({
     left: [
-      [nvinfo.vname, 'book', { href: `/-${nvinfo.bslug}`, kind: 'title' }],
+      [nvinfo.btitle_vi, 'book', { href: `/-${nvinfo.bslug}`, kind: 'title' }],
       ['Thêm/sửa chương', 'file-plus', { href: '.', show: 'pl' }],
     ],
   })
 </script>
 
 <svelte:head>
-  <title>Thêm/sửa chương - {nvinfo.vname} - Chivi</title>
+  <title>Thêm/sửa chương - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
 
 <nav class="bread">
   <a href="/-{nvinfo.bslug}" class="crumb _link">
     <SIcon name="book" />
-    <span>{nvinfo.vname}</span>
+    <span>{nvinfo.btitle_vi}</span>
   </a>
   <span>/</span>
   <a href="/-{nvinfo.bslug}/-chivi" class="crumb _link">Chương tiết</a>
