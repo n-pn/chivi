@@ -1,6 +1,8 @@
 <script lang="ts">
   import BCover from '$gui/atoms/BCover.svelte'
-
+  import { SIcon } from '$gui'
+  import { rel_time } from '$utils/time_utils'
+  import { map_status } from '$utils/nvinfo_utils'
   export let nvinfo: CV.Nvinfo
 </script>
 
@@ -10,133 +12,91 @@
   </div>
 
   <div class="infos">
-    <div class="extra _vname">
-      <span class="-vi -trim">{nvinfo.vname}</span>
+    <div class="info _title"><div class="trim">{nvinfo.vname}</div></div>
+    <div class="info"><strong class="trim">{nvinfo.author_vi}</strong></div>
+
+    <div class="info">
+      <span>Thể loại:</span>
+      <strong>{nvinfo.genres[0]}</strong>
     </div>
 
-    <div class="extra _zname">
-      <small class="-zh -trim">{nvinfo.zname}</small>
+    <div class="info">
+      <span>Đánh giá:</span>
+      <strong>{nvinfo.voters < 10 ? '--' : nvinfo.rating}</strong>
+      <em>({nvinfo.voters} lượt)</em>
     </div>
 
-    <div class="extra _author">
-      <span class="value -trim">{nvinfo.author_vi}</span>
-    </div>
-
-    <div class="extra">
-      <span class="label">Thể loại:</span>
-      <span class="value">{nvinfo.genres[0]}</span>
-    </div>
-
-    <div class="extra">
-      <span class="label">Đánh giá:</span>
-      <span class="value">{nvinfo.rating == 0 ? '--' : nvinfo.rating}</span
-      ><span class="label">/10</span>
+    <div class="info _small">
+      <span><SIcon name="activity" /></span>
+      <em>{map_status(nvinfo.status)}</em>
+      <span><SIcon name="clock" /></span>
+      <em>{rel_time(nvinfo.mftime)}</em>
     </div>
   </div>
 </a>
 
 <style lang="scss">
   .nvinfo {
-    display: block;
-    padding: 0.5rem;
+    display: flex;
+    // overflow: hidden;
 
-    @include bgcolor(white);
+    @include bgcolor(secd);
     @include bdradi();
     @include shadow(1);
-
-    @include flow;
 
     &:hover {
       @include shadow(2);
 
-      .-zh,
-      .-vi {
+      ._title {
         @include fgcolor(primary, 5);
       }
     }
   }
 
   .cover {
-    float: left;
-    @include bdradi();
-    @include bps(width, 35%, 30%);
+    height: 100%;
+    width: 30%;
+    flex-shrink: 0;
 
-    position: relative;
     overflow: hidden;
+    @include bdradi($loc: left);
 
-    @include flow;
-
-    &:before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 0;
-      padding-top: math.div(4, 3) * 100%;
-      @include bgcolor(primary, 7);
-      z-index: -1;
-    }
-
-    :global(img) {
-      width: 100%;
-      height: auto;
-      @include bdradi();
+    :global(picture) {
+      height: 100%;
+      width: auto;
+      border-radius: 0 !important;
     }
   }
 
   .infos {
-    float: right;
-
-    padding-left: 0.5rem;
-    width: 65%;
-    @include bps(width, 65%, 70%);
+    @include flex-cx;
+    flex-direction: column;
+    padding: 0.5rem;
+    width: 70%;
   }
 
-  .extra {
-    @include flow();
-    margin-top: 0.25rem;
-
-    > * {
-      float: left;
-    }
-    > * + * {
-      margin-left: 0.25rem;
+  .info {
+    // @include flex-cy(0.25rem);
+    @include fgcolor(tert);
+    & + & {
+      margin-top: 0.5rem;
     }
   }
 
-  .-vi,
-  .-zh {
-    display: inline-block;
-  }
-
-  .-vi {
+  ._title {
     line-height: 1.5rem;
     // font-weight: 500;
+
     @include ftsize(xl);
-    @include fgcolor(neutral, 8);
+    @include fgcolor(secd);
   }
 
-  .-zh {
-    line-height: 1.25rem;
-    margin-bottom: 0.25rem;
-    @include ftsize(lg);
-    @include fgcolor(neutral, 7);
+  ._small {
+    font-size: 0.95em;
   }
 
-  .label {
-    @include fgcolor(neutral, 6);
-  }
-
-  .value {
-    font-weight: 500;
-    @include fgcolor(neutral, 6);
-  }
-
-  .-trim {
-    display: inline-block;
-    max-width: 100%;
-    @include clamp($width: null);
+  .trim {
+    @include clamp($lines: 1);
+    // overflow: hidden;
   }
 </style>

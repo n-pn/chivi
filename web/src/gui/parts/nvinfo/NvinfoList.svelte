@@ -1,12 +1,12 @@
 <script lang="ts">
-  import Nvinfo from '$gui/parts/nvinfo/NvinfoCard.svelte'
+  import NvinfoCard from '$gui/parts/nvinfo/NvinfoCard.svelte'
   export let books: CV.Nvinfo[] = []
   export let nvtab = 'index'
 </script>
 
 <div class="list">
   {#each books as nvinfo (nvinfo)}
-    <Nvinfo {nvinfo} {nvtab} />
+    <NvinfoCard {nvinfo} {nvtab} />
   {/each}
 </div>
 
