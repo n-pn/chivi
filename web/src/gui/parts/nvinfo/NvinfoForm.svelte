@@ -2,6 +2,9 @@
   import { api_call } from '$lib/api_call'
   import { book_status } from '$utils/nvinfo_utils'
 
+  // prettier-ignore
+  const assigns = ['zname', 'vname', 'status', 'bcover', 'author_vi', 'author_zh']
+
   export class Params {
     zname: string = ''
     vname: string = ''
@@ -16,14 +19,8 @@
 
     constructor(nvinfo?: CV.Nvinfo) {
       if (!nvinfo) return
-
-      const keys = ['zname', 'vname', 'status', 'bcover']
-      for (const key in keys) this[key] = nvinfo[key]
-
+      for (const key in assigns) this[key] = nvinfo[key]
       this.genres = nvinfo.genres.join(', ')
-
-      this.author_zh = nvinfo.author_zh
-      this.author_vi = nvinfo.author_vi
     }
   }
 </script>
