@@ -10,20 +10,14 @@ class CV::Author
 
   column zname : String
   column vname : String
+
   column vslug : String # for text search
 
   column vdesc : String = ""
+
   column book_count : Int32 = 0
 
-  column _sort : Int32 = 0 # weight of author's top rated book
-
   timestamps
-
-  getter books : Array(Nvinfo) do
-    books = Nvinfo.query.where({author_id: self.id}).sort_by("_sort")
-    books.each { |x| x.author = self }
-    books.to_a
-  end
 
   def update_sort!(_sort : Int32)
     update!(_sort: _sort) if _sort > self._sort

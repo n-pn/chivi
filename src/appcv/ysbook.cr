@@ -48,7 +48,7 @@ class CV::Ysbook
   timestamps # created_at and updated_at
 
   def update_nvinfo : Nil
-    return if nvinfo.ysbook_id != self.id && lesser_source?(nvinfo.ysbook_id)
+    return if nvinfo.ysbook_id != self.id && lesser_source?(nvinfo.ysbook_id || 0_i64)
 
     nvinfo.set_zintro(self.bintro.split('\t'))
     nvinfo.set_genres(self.bgenre.split('\t'))

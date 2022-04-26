@@ -11,14 +11,11 @@ class CV::Nvinfo
 
   belongs_to author : Author
   # belongs_to btitle : Btitle
+
   belongs_to ysbook : Ysbook?
 
   has_many nvseeds : Nvseed, foreign_key: "nvinfo_id"
-  # has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
-  # has_many cvposts : Cvpost, foreign_key: "nvinfo_id"
-  # has_many yslists : Yslist, through: "yscrits"
 
-  column ysbook_id : Int64 = 0 # yousuu book id
   column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
 
   ##############

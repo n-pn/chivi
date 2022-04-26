@@ -17,63 +17,26 @@ class CV::Btitle
 
   timestamps # created_at and updated_at
 
-  def reset!(bdict : String = "combine")
-    self.set_hname(gen_hname)
-    self.set_vname(gen_vname(bdict))
+  def regen!(bdict : String = "combine") : Nil
+    self.set_hname(BookUtil.hanviet(self.zname))
+    self.set_vname(BookUtil.btitle_vname(sel.zname, bdict))
+
     self.save!
   end
 
-  def set_hname(hname : String = gen_hname) : self
+  def set_hname(hname : String) : Nil
     self.hname = hname
     self.hslug = BookUtil.make_slug(hname)
-    self
   end
 
-  def set_vname(vname : String = gen_vname) : self
+  def set_vname(vname : String) : Nil
     self.vname = vname
     self.vslug = BookUtil.make_slug(vname)
-    self
   end
-
-  def gen_hname : String
-    BookUtil.hanviet(self.zname)
-  end
-
-  def gen_vname(bdict : String = "combine") : String
-    vname = BookUtil.vi_btitles.fval(self.zname) || gen_vname_mtl(bdict)
-    TextUtil.titleize(vname)
-  end
-
-  def gen_vname_mtl(bdict : String) : String
-    mtl = MtCore.generic_mtl(bdict)
-    txt = self.zname
-
-    PREFIXES.each do |key, val|
-      next unless txt.starts_with?(key)
-      return val + mtl.translate(txt[key.size..])
-    end
-
-    mtl.translate(txt)
-  end
-
-  PREFIXES = {
-    "火影之" => "NARUTO: ",
-    "民国之" => "Dân quốc: ",
-    "三国之" => "Tam Quốc: ",
-    "综漫之" => "Tổng mạn: ",
-    "娱乐之" => "Giải trí: ",
-    "重生之" => "Trùng sinh: ",
-    "穿越之" => "Xuyên qua: ",
-    "复活之" => "Phục sinh: ",
-    "网游之" => "Game online: ",
-
-    "哈利波特之" => "Harry Potter: ",
-    "网游三国之" => "Tam Quốc game online: ",
-  }
 
   #########################################
 
   def self.upsert!(zname : String, bdict : String = "combine") : self
-    find({zname: zname}) || new({zname: zname}).reset!(bdict)
+    find({zname: zname}) || new({zname: zname}).tap(&.regen!(bdict))
   end
 end
