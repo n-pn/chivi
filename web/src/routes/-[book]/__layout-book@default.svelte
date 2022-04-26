@@ -112,28 +112,29 @@
     <div class="line">
       <span class="stat">Liên kết:</span>
 
-      {#if nvinfo.pub_link != ''}
-        <a href="books?origin={nvinfo.pub_name}"><SIcon name="search" /></a>
-
-        <a
-          class="stat link _outer"
-          href={nvinfo.pub_link}
-          rel="noopener noreferer"
-          target="_blank"
-          title="Trang nguồn">
-          <span>{nvinfo.pub_name}</span>
-        </a>
-      {/if}
-
       {#if nvinfo.ys_snvid != ''}
         <a
           class="stat link _outer"
           href="https://www.yousuu.com/book/{nvinfo.ys_snvid}"
           rel="noopener noreferer"
           target="_blank"
-          title="Đánh giá">
+          data-tip="Đánh giá tiếng Trung">
           <span>yousuu</span>
         </a>
+
+        <a
+          class="stat link _outer"
+          href={nvinfo.pub_link}
+          rel="noopener noreferer"
+          target="_blank"
+          data-tip="Trang xuất bản gốc">
+          <span>{nvinfo.pub_name}</span>
+        </a>
+
+        <a
+          class="stat link"
+          href="/books?origin={nvinfo.pub_name}"
+          data-tip="Tìm truyện cùng nguồn"><SIcon name="search" /></a>
       {/if}
     </div>
   {/if}
