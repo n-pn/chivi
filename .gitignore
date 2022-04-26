@@ -14,3 +14,4 @@
 production.yml
 .DS_Store
 *.dwarf
+/.cache

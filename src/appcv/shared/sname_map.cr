@@ -44,11 +44,15 @@ module CV::SnameMap
   end
 
   MAP_INT.each_key do |sname|
-    FileUtils.mkdir_p("var/chtexts/#{sname}/_")
+    Dir.mkdir_p("var/chtexts/.seeds/#{sname}")
+  end
+
+  def alive_snames : Array(String)
+    MAP_INT.keys.select { |sname| map_type(sname) > 2 }
   end
 
   def map_int(sname : Array(String))
-    sname.map { |x| map_int(x) }.uniq
+    sname.map { |x| map_int(x) }.uniq!
   end
 
   def map_int(sname : String)

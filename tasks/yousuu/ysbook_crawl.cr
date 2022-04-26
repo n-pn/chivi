@@ -93,8 +93,9 @@ class CV::CrawlYsbook
   end
 
   def self.run!(argv = ARGV)
+    upper_nsvid = Tabkv(Int32).new("var/_common/upper.tsv").get("yousuu") || 270000
     regen_proxy = false
-    upper_nsvid = File.read("_db/yousuu/limit.txt").strip.to_i? || 280000
+
     crawl_mode = Mode::Tail
 
     OptionParser.parse(argv) do |opt|

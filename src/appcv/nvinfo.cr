@@ -11,6 +11,7 @@ class CV::Nvinfo
 
   belongs_to author : Author
   # belongs_to btitle : Btitle
+  belongs_to ysbook : Ysbook?
 
   has_many nvseeds : Nvseed, foreign_key: "nvinfo_id"
   # has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
@@ -87,11 +88,6 @@ class CV::Nvinfo
   column post_count : Int32 = 0
   column board_bump : Int64 = 0
 
-  # origin, copy from yousuu
-
-  column pub_name : String = "" # original publisher name, extract from link
-  column pub_link : String = "" # original publisher novel page
-
   timestamps # created_at and updated_at
 
   scope :filter_btitle do |input|
@@ -133,7 +129,7 @@ class CV::Nvinfo
   end
 
   scope :filter_origin do |input|
-    input ? where("pub_name = ?", input) : self
+    input ? where("ysbook_id in (select id from ysbooks where pub_name = ?)", input) : self
   end
 
   scope :filter_cvuser do |uname, bmark|

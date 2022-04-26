@@ -6,7 +6,7 @@ require "../shared/http_client"
 require "../shared/yscrit_raw"
 
 class CV::YslistCrawl
-  DIR = "_db/yousuu/list-books-by-score"
+  DIR = "_db/yousuu/list-books"
   Dir.mkdir_p(DIR)
 
   @lists = {} of String => Yslist
@@ -88,13 +88,13 @@ class CV::YslistCrawl
     done = true
   end
 
-  FRESH = 2.days
+  FRESH = Time.utc - 4.days
 
   def crawl_page!(yslist : Yslist, page : Int32, label : String)
     origin_id = yslist.origin_id
     file = "#{DIR}/#{origin_id[0..3]}/#{origin_id}-#{page}.json"
 
-    unless FileUtil.mtime(file).try { |x| x + FRESH * page > Time.utc }
+    unless FileUtil.mtime(file).try { |x| x + 1.days * page > FRESH }
       return yslist unless @http.save!(page_url(origin_id, page), file, label)
     end
 
@@ -103,7 +103,7 @@ class CV::YslistCrawl
   end
 
   def page_url(origin_id : String, page = 1)
-    "https://api.yousuu.com/api/booklist/#{origin_id}?page=#{page}&sort=score&t=#{Time.utc.to_unix_ms}"
+    "https://api.yousuu.com/api/booklist/#{origin_id}?page=#{page}&t=#{Time.utc.to_unix_ms}"
   end
 
   def seed_file!(file : String) : Nil

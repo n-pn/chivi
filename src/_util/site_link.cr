@@ -2,24 +2,6 @@ module CV::SiteLink
   extend self
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def index_url(sname : String)
-    case sname
-    when "hetushu"  then "https://www.hetushu.com/book/index.php"
-    when "rengshu"  then "http://www.rengshu.com/"
-    when "xbiquge"  then "https://www.xbiquge.so/"
-    when "biqugee"  then "https://www.biqugee.com/"
-    when "5200"     then "https://www.5200.tv/"
-    when "duokan8"  then "http://www.duokan8.com/"
-    when "sdyfcm"   then "https://www.sdyfcm.com/"
-    when "biqu5200" then "http://www.biqu5200.net/"
-    when "bxwxorg"  then "https://www.bxwxorg.com/"
-    when "shubaow"  then "https://www.shubaow.net/"
-    when "paoshu8"  then "http://www.paoshu8.com/"
-    else                 "/"
-    end
-  end
-
-  # ameba:disable Metrics/CyclomaticComplexity
   def info_url(sname : String, snvid : String)
     case sname
     when "sdyfcm"   then "https://www.sdyfcm.com/#{snvid}/"
@@ -33,7 +15,7 @@ module CV::SiteLink
     when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/"
     when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/index.html"
-    when "duokan8"  then "http://www.duokanb.com/#{group(snvid)}/"
+    when "duokan8"  then "http://www.duokanba.com/#{group(snvid)}/"
     when "paoshu8"  then "http://www.paoshu8.com/#{group(snvid)}/"
     when "5200"     then "https://www.5200.tv/#{group(snvid)}/"
     when "shubaow"  then "https://www.shubaow.net/#{group(snvid)}/"
@@ -64,7 +46,7 @@ module CV::SiteLink
     when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/#{schid}.html"
     when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/#{schid}.html"
-    when "duokan8"  then "http://www.duokanb.com/#{group(snvid)}/#{schid}.html"
+    when "duokan8"  then "http://www.duokanba.com/#{group(snvid)}/#{schid}.html"
     when "paoshu8"  then "http://www.paoshu8.com/#{group(snvid)}/#{schid}.html"
     when "5200"     then "https://www.5200.tv/#{group(snvid)}/#{schid}.html"
     when "shubaow"  then "https://www.shubaow.net/#{group(snvid)}/#{schid}.html"

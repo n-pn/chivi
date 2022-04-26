@@ -57,11 +57,6 @@ CREATE TABLE nvinfos (
   mark_count int not null default 0,
   view_count int not null default 0,
 
-  -- origin
-
-  pub_link text not null default '',
-  pub_name text not null default '',
-
   -- dboard
 
   board_bump bigint not null default 0,
@@ -74,6 +69,7 @@ CREATE TABLE nvinfos (
 );
 
 CREATE UNIQUE INDEX nvinfo_unique_idx ON nvinfos (author_id, zname);
+CREATE INDEX nvinfo_yousuu_idx ON nvinfos (ysbook_id);
 
 CREATE INDEX nvinos_zname_idx ON nvinfos using GIN (zname gin_trgm_ops);
 CREATE INDEX nvinos_hslug_idx ON nvinfos using GIN (hslug gin_trgm_ops);
@@ -89,7 +85,6 @@ CREATE INDEX nvinfo_label_idx ON nvinfos using GIN (vlabels);
 
 CREATE INDEX nvinfo_atime_idx ON nvinfos (atime);
 CREATE INDEX nvinfo_utime_idx ON nvinfos (utime);
-
 CREATE INDEX nvinfo_bump_idx ON nvinfos (board_bump);
 
 ---
@@ -98,10 +93,6 @@ CREATE INDEX nvinfo_weight_idx ON nvinfos (weight);
 CREATE INDEX nvinfo_voters_idx ON nvinfos (voters);
 CREATE INDEX nvinfo_rating_idx ON nvinfos (rating);
 
----
-
-CREATE INDEX nvinfo_yousuu_idx ON nvinfos (ysbook_id);
-CREATE INDEX nvinfo_origin_idx ON nvinfos (pub_name);
 
 -- +micrate Down
 DROP TABLE IF EXISTS nvinfos;

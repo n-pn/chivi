@@ -87,7 +87,7 @@ class CV::YslistCrawl
     done = true
   end
 
-  FRESH = 1.days
+  FRESH = 2.days
 
   def crawl_page!(ysbook : Ysbook, page : Int32, label : String)
     file = "#{DIR}/#{ysbook.id}/#{page}.json"

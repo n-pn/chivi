@@ -36,9 +36,11 @@ struct CV::NvinfoView
         jb.field "snames", @data.snames
         jb.field "bintro", @data.vintro.split("\n")
 
-        jb.field "ys_snvid", @data.ysbook_id
-        jb.field "pub_link", @data.pub_link
-        jb.field "pub_name", @data.pub_name
+        if ysbook = @data.ysbook
+          jb.field "ys_snvid", ysbook.id
+          jb.field "pub_link", ysbook.pub_link
+          jb.field "pub_name", ysbook.pub_name
+        end
       end
     end
   end

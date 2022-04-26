@@ -76,9 +76,11 @@ class CV::CrawlYsrepl
     puts err
   end
 
+  FRESH = 5.days
+
   private def still_fresh?(file : String, page_desc = 1)
     return false if @redo || !(info = File.info?(file))
-    info.modification_time >= Time.utc - 5.day * page_desc
+    info.modification_time >= Time.utc - FRESH * page_desc
   end
 
   delegate no_proxy?, to: @http

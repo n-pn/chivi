@@ -114,61 +114,6 @@ class CV::SeedNvseed
     @seed.save_stores!
   end
 
-  def extract_upper : String
-    page = begin
-      file = @infos_dir.sub("infos", "index.html.gz")
-      link = site_index_link(@sname)
-      encoding = HttpUtil.encoding_for(@sname)
-      html = HttpUtil.load_html(link, file, ttl: 12.hours, encoding: encoding)
-      HtmlParser.new(html)
-    end
-
-    case @sname
-    when "69shu"
-      href = page.attr(".ranking:nth-child(2) a:first-of-type", "href")
-      File.basename(href, ".htm")
-    when "hetushu"
-      href = page.attr("#list a:first-of-type", "href")
-      File.basename(File.dirname(href))
-    when "sdyfcm"
-      href = page.attr("#newscontent_n .s2 > a", "href")
-      File.basename(href)
-    when "rengshu", "xbiquge", "biqugee", "bxwxorg"
-      href = page.attr("#newscontent > .r .s2 > a", "href")
-      File.basename(href)
-    when "biqu5200", "paoshu8", "shubaow"
-      href = page.attr("#newscontent > .r .s2 > a", "href")
-      File.basename(href).split("_").last
-    when "5200"
-      href = page.attr(".up > .r .s2 > a", "href")
-      File.basename(href).split("_").last
-    when "duokan8"
-      href = page.attr(".recommend-list ul:not([class]) a:first-of-type", "href")
-      File.basename(href).split("_").last
-    else
-      raise "Unsupported source name!"
-    end
-  end
-
-  # ameba:disable Metrics/CyclomaticComplexity
-  private def site_index_link(sname : String) : String
-    case sname
-    when "69shu"    then "https://www.69shu.com/"
-    when "hetushu"  then "https://www.hetushu.com/book/index.php"
-    when "rengshu"  then "http://www.rengshu.com/"
-    when "xbiquge"  then "https://www.xbiquge.so/"
-    when "biqugee"  then "https://www.biqugee.com/"
-    when "5200"     then "https://www.5200.tv/"
-    when "duokan8"  then "http://www.duokan8.com/"
-    when "sdyfcm"   then "https://www.sdyfcm.com/"
-    when "biqu5200" then "http://www.biqu5200.net/"
-    when "bxwxorg"  then "https://www.bxwxorg.com/"
-    when "shubaow"  then "https://www.shubaow.net/"
-    when "paoshu8"  then "http://www.paoshu8.com/"
-    else                 raise "Unsupported source name!"
-    end
-  end
-
   private def ideal_threads
     case @sname
     when "zhwenpg", "shubaow"           then 1

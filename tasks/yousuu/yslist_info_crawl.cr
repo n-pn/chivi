@@ -81,8 +81,6 @@ class CV::YslistCrawl
     done = true
   end
 
-  FRESH = 2.days
-
   def crawl_info!(yslist : Yslist, label : String)
     origin_id = yslist.origin_id
     file = "#{DIR}/#{origin_id}.json"

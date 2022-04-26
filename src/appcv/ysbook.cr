@@ -45,9 +45,6 @@ class CV::Ysbook
 
   # for crawlers
 
-  column crit_stime : Int64 = 0_i64
-  column list_stime : Int64 = 0_i64
-
   timestamps # created_at and updated_at
 
   def update_nvinfo : Nil

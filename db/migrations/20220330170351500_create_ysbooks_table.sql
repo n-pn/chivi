@@ -13,6 +13,8 @@ CREATE TABLE ysbooks (
   -- book info
 
   utime bigint not null default 0,
+  stime bigint not null default 0, -- stime: crawled at
+
   status int not null default 0,
   word_count int not null default 0,
 
@@ -29,12 +31,6 @@ CREATE TABLE ysbooks (
   crit_total int not null default 0,
   list_total int not null default 0,
 
-  -- crawl times
-
-  info_stime bigint not null default 0, -- stime: crawled at
-  crit_stime bigint not null default 0,
-  list_stime bigint not null default 0,
-
   -- timestamps
 
   created_at timestamptz not null default CURRENT_TIMESTAMP,
@@ -42,8 +38,7 @@ CREATE TABLE ysbooks (
 );
 
 CREATE INDEX ysbook_nvinfo_idx ON ysbooks (nvinfo_id);
-CREATE INDEX ysbook_info_stime_idx ON ysbooks (info_stime);
-
+CREATE INDEX ysbook_source_idx ON ysbooks (pub_name);
 
 -- +micrate Down
 DROP TABLE IF EXISTS ysbooks;
