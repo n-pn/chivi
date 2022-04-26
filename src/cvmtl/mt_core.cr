@@ -136,7 +136,7 @@ class CV::MtCore
       if can_merge?(cur, lst)
         lst.idx = cur.idx
 
-        lst.val = cur.ndigit? && lst.ndigit? ? "#{cur.val}#{lst.val}" : "#{cur.val} #{fix_val!(cur, lst)}"
+        lst.val = should_space?(cur, lst) ? "#{cur.val} #{fix_val!(cur, lst)}" : "#{cur.val}#{lst.val}"
         lst.key = "#{cur.key}#{lst.key}"
       else
         if cur.key == "\""
@@ -151,6 +151,12 @@ class CV::MtCore
     end
 
     res
+  end
+
+  @[AlwaysInline]
+  def should_space?(left : MtNode, right : MtNode)
+    return false unless left.numeric? && right.numeric?
+    left.nhanzi? || right.nhanzi?
   end
 
   private def fix_val!(left : MtNode, right : MtNode)
