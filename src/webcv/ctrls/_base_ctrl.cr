@@ -80,7 +80,7 @@ class CV::BaseCtrl < Amber::Controller::Base
       jb.object {
         jb.field "status", status
         jb.field "props" { yield jb }
-        jb.field "maxage", @maxage
+        jb.field "cache", {maxage: @maxage}
       }
     end
   end
