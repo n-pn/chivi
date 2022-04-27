@@ -53,35 +53,35 @@ class CV::ZhinfoData
     Nvinfo.upsert!(author, btitle)
   end
 
-  def seed!(force : Bool = true, label : String = "-/-")
+  def seed!(mode : Int32 = 0, label : String = "-/-")
     _index.data.each do |snvid, bindex|
-      seed_entry!(snvid, bindex, force: force)
+      seed_entry!(snvid, bindex, mode: mode)
     rescue err
-      puts err
+      puts err.inspect_with_backtrace
       puts "#{snvid}: #{bindex}"
     end
 
     NvinfoUtil.print_stats("#{@sname}/#{label}")
   end
 
-  def seed_entry!(snvid : String, bindex : Bindex, force : Bool = false)
+  def seed_entry!(snvid : String, bindex : Bindex, mode : Int32 = 0)
     btitle_zh, author_zh = bindex.fix_names
     return unless nvinfo = get_nvinfo(author_zh, btitle_zh)
 
     nvseed = Nvseed.upsert!(nvinfo, @sname, snvid)
-    return unless force || nvseed.stime < bindex.stime
+    return unless mode > 0 || nvseed.stime < bindex.stime
 
     nvseed.stime = bindex.stime
 
     nvseed.btitle = bindex.btitle
     nvseed.author = bindex.author
 
-    nvseed.set_genres(self.genres[snvid], force: force)
-    nvseed.set_bintro(self.bintro[snvid], force: force)
-    nvseed.set_bcover(self.bcover[snvid], force: force)
-    nvseed.set_mftime(self.mftime[snvid].mftime, force: force)
-    nvseed.set_status(self.status[snvid].status, force: force)
-    nvseed.fix_latest(force: force)
+    nvseed.set_genres(self.genres[snvid], force: mode > 0)
+    nvseed.set_bintro(self.bintro[snvid], force: mode > 0)
+    nvseed.set_bcover(self.bcover[snvid], force: mode > 0)
+    nvseed.set_mftime(self.mftime[snvid].mftime, force: mode > 0)
+    nvseed.set_status(self.status[snvid].status, force: mode > 0)
+    nvseed.fix_latest(force: mode > 1)
 
     if nvinfo.voters < 10
       voters, rating = get_scores(btitle_zh, author_zh)

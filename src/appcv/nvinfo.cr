@@ -179,7 +179,7 @@ class CV::Nvinfo
     unless nvinfo = get(author, btitle)
       bhash = UkeyUtil.digest32("#{btitle.zname}--#{author.zname}")
       nvinfo = new({author: author, btitle: btitle, bhash: bhash})
-      nvinfo.fix_names!(nil)
+      nvinfo.fix_names!
     end
 
     nvinfo

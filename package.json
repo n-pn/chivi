@@ -15,16 +15,10 @@
     "ys-infos": "crystal tasks/yousuu/ys_serial.cr",
     "ys-crits": "crystal tasks/yousuu/ys_review.cr",
     "seed-ysbook": "./bin/seed_ysbook",
-    "seed-zhwenpg": "./bin/seed_zhwenpg",
-    "seed-nvseed": "./bin/seed_nvseed -s",
-    "seed-nvseeds": "bash tasks/nvinfo/seed_nvseed.sh",
-    "seed-infos": "./bin/seed_ysbook -t && ./bin/seed_zxcsme && yarn seed-nvseeds",
-    "update-infos": "bash tasks/nvinfo/update-infos.sh",
+    "seed-remote": "bash tasks/nvseed/remote_seed.sh",
     "fix-covers": "./bin/fetch_covers && ./bin/fix_covers",
     "fix-nvinfo": "./bin/fix_intros && ./bin/fix_genres",
     "build": "shards build --release",
-    "build-mt": "shards build --release -Dpreview_mt",
-    "user-backup": "crystal tasks/maintain/user_backup.cr",
-    "user-restore": "crystal tasks/maintain/user_restore.cr"
+    "build-mt": "shards build --release -Dpreview_mt"
   }
 }

@@ -6,8 +6,8 @@ time bin/zhinfo_seed biqugee
 time bin/zhinfo_seed 69shu
 time bin/zhinfo_seed ptwxz
 time bin/zhinfo_seed biqu5200
-time bin/zhinfo_seed 5200
 time bin/zhinfo_seed paoshu8
+time bin/zhinfo_seed 5200 -i 0
 time bin/zhinfo_seed sdyfcm -i 0
 time bin/zhinfo_seed duokan8 -i 0
 time bin/zhinfo_seed shubaow -i 0

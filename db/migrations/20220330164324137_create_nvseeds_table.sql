@@ -22,7 +22,7 @@ CREATE TABLE nvseeds (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX nvseed_unique_idx ON nvseeds (zseed, snvid);
+CREATE INDEX nvseed_unique_idx ON nvseeds (zseed, snvid);
 CREATE INDEX nvseed_autogen_idx ON nvseeds (uid);
 CREATE INDEX nvseed_nvinfo_idx ON nvseeds (nvinfo_id);
 CREATE INDEX nvseed_stime_idx ON nvseeds (stime);
