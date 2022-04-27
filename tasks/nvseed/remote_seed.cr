@@ -184,7 +184,7 @@ class CV::RemoteSeed
 
         task = new(sname, group, upper)
         task.init!(mode: init_mode)
-        task.seed!(force: seed_mode == 2) if seed_mode > 0
+        task.seed!(seed_mode == 2, label: "#{group}/#{pages}") if seed_mode > 0
       end
     end
   end

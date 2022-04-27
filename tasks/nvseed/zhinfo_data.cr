@@ -54,7 +54,13 @@ class CV::ZhinfoData
   end
 
   def seed!(force : Bool = true, label : String = "-/-")
-    _index.data.each { |snvid, bindex| seed_entry!(snvid, bindex, force: force) }
+    _index.data.each do |snvid, bindex|
+      seed_entry!(snvid, bindex, force: force)
+    rescue err
+      puts err
+      puts "#{snvid}: #{bindex}"
+    end
+
     NvinfoUtil.print_stats("#{@sname}/#{label}")
   end
 
@@ -82,6 +88,7 @@ class CV::ZhinfoData
       nvinfo.fix_scores!(voters, voters &* rating)
     end
 
+    nvseed.save!
     nvinfo.tap(&.add_nvseed(nvseed.zseed)).save!
   end
 

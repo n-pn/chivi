@@ -3,8 +3,6 @@ require "colorize"
 require "../../src/_init/remote_text.cr"
 
 def fetch_text(sname : String, snvid : String, schid : String, fresh = false)
-  CV::RemoteText.mkdir!(sname, snvid)
-
   chap = CV::RemoteText.new(sname, snvid, schid, ttl: fresh ? 1.minute : 10.years)
   puts "\n[#{chap.link}]\n".colorize.blue.bold
 

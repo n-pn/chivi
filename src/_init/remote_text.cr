@@ -1,4 +1,4 @@
-require "file_utils"
+require "http/client"
 
 require "../_util/site_link"
 require "../_util/time_util"
@@ -8,16 +8,17 @@ require "./shared/html_parser"
 
 class CV::RemoteText
   # cache folder path
-  PATH = "_db/.cache/%s/texts/%s/%.html.gz"
+  PATH = "var/chmetas/.html/%s/%s/%s.html.gz"
 
   getter sname : String
   getter snvid : String
   getter schid : String
-
   getter title : String
 
   @ttl : Time::Span | Time::MonthSpan
-  @file : String
+
+  getter file : String
+  getter link : String
 
   def initialize(@sname, @snvid, @schid, @ttl = 10.years, @lbl = "-/-")
     @file = PATH % {@sname, @snvid, @schid}
@@ -28,6 +29,8 @@ class CV::RemoteText
 
   getter page : HtmlParser do
     encoding = HttpUtil.encoding_for(@sname)
+
+    Dir.mkdir_p(File.dirname(@file))
     html = HttpUtil.cache(@file, @link, @ttl, @lbl, encoding)
     HtmlParser.new(html)
   end

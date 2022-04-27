@@ -61,9 +61,7 @@ class CV::ChText
 
   def exists?
     return false unless File.exists?(@store)
-    Compress::Zip::File.open(@store) do |zip|
-      !!zip[part_path(0)]?
-    end
+    Compress::Zip::File.open(@store) { |zip| !!zip[part_path(0)]? }
   end
 
   def fetch!(part : Int32 = 0, ttl = 10.years, lbl = "1/1")

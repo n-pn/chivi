@@ -47,8 +47,8 @@ module CV::SnameMap
   end
 
   MAP_INT.each_key do |sname|
-    Dir.mkdir_p("var/chtexts/.seeds/#{sname}")
-    Dir.mkdir_p("var/chtexts/.users/#{sname}")
+    Dir.mkdir_p("var/chmetas/seeds/#{sname}")
+    Dir.mkdir_p("var/chmetas/users/#{sname}")
   end
 
   def alive_snames : Array(String)

@@ -7,10 +7,10 @@ class CV::ChRepo
   getter fuser : String
 
   def initialize(@sname : String, @snvid : String, @dname : String)
-    @fseed = "#{DIR}/.seeds/#{sname}/#{snvid}.tsv"
-    @fuser = "#{DIR}/.users/#{sname}/#{snvid}.log"
+    @fseed = "var/chmetas/seeds/#{sname}/#{snvid}.tsv"
+    @fuser = "var/chmetas/users/#{sname}/#{snvid}.log"
 
-    Dir.mkdir_p("_db/.cache/#{sname}/texts/#{snvid}")
+    Dir.mkdir_p("var/chmetas/.html/#{sname}/#{snvid}")
     Dir.mkdir_p("#{DIR}/#{@sname}/#{@snvid}")
   end
 
