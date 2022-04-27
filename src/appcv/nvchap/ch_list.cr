@@ -1,13 +1,6 @@
-require "../../_util/ram_cache"
 require "./ch_info"
 
 class CV::ChList
-  # CACHE = RamCache(String, ChList).new(4096, 3.days)
-
-  # def self.load!(file : String)
-  #   CACHE.get(file) { ChList.new(file) }
-  # end
-
   getter data = Hash(Int32, ChInfo).new(initial_capacity: 128)
 
   # forward_missing_to @data

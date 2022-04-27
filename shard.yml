@@ -18,8 +18,8 @@ targets:
   ysbook_seed:
     main: tasks/nvseed/ysbook_seed.cr
 
-  zhinfo_seed:
-    main: tasks/nvseed/zhinfo_seed.cr
+  remote_seed:
+    main: tasks/nvseed/remote_seed.cr
 
   zxcsme_seed:
     main: tasks/nvseed/zxcsme_seed.cr

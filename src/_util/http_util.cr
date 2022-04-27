@@ -5,10 +5,10 @@ require "compress/gzip"
 module CV::HttpUtil
   extend self
 
-  UTF_8 = {"jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "sdyfcm"}
+  UTF8 = {"jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "sdyfcm"}
 
   def encoding_for(sname : String) : String
-    UTF_8.includes?(sname) ? "UTF-8" : "GBK"
+    UTF8.includes?(sname) ? "UTF-8" : "GBK"
   end
 
   def cache(file : String, url : String, ttl = 10.years, lbl = "-/-", encoding = "UTF-8")
@@ -27,7 +27,7 @@ module CV::HttpUtil
   end
 
   def fetch(url : String, lbl = "-/-", encoding = "UTF-8") : String
-    try = 0
+    try = 1
     cmd = "curl -L -k -s -f -m 30 '#{url}'"
 
     if encoding != "UTF-8"

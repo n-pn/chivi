@@ -1,46 +1,48 @@
+require "../../cvmtl/mt_core"
+
 class CV::ChRepo
   DIR = "var/chtexts"
 
-  def initialize(@sname : String, @snvid : String)
-    @fraw = "#{DIR}/#{sname}/_/#{snvid}.tsv"
-    @flog = "#{DIR}/#{sname}/_/#{snvid}.log"
-    FileUtils.mkdir_p("#{DIR}/#{@sname}/#{@snvid}")
+  getter fseed : String
+  getter fuser : String
+
+  def initialize(@sname : String, @snvid : String, @dname : String)
+    @fseed = "#{DIR}/.seeds/#{sname}/#{snvid}.tsv"
+    @fuser = "#{DIR}/.users/#{sname}/#{snvid}.log"
+
+    Dir.mkdir_p("_db/.cache/#{sname}/texts/#{snvid}")
+    Dir.mkdir_p("#{DIR}/#{@sname}/#{@snvid}")
   end
 
-  PSIZE = 128
+  getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }
 
-  def pgidx(chidx : Int32)
-    (chidx - 1) // PSIZE
+  ZH_PSIZE = 128
+
+  @[AlwaysInline]
+  def zh_pg(chidx : Int32)
+    (chidx &- 1) // ZH_PSIZE
   end
 
-  LISTS = RamCache(String, ChList).new(4096, 3.days)
+  ZH_LISTS = RamCache(String, ChList).new(4096, 3.days)
 
-  def chlist(pgidx : Int32)
-    label = "#{@sname}/#{@snvid}/#{pgidx}"
-    LISTS.get(label) { ChList.new("#{DIR}/#{label}.tsv") }
+  def chlist(zh_pg : Int32)
+    label = "#{@sname}/#{@snvid}/#{zh_pg}"
+    ZH_LISTS.get(label) { ChList.new("#{DIR}/#{label}.tsv") }
   end
 
-  def chinfo(chidx : Int32)
-    self.chlist(chidx).data[chidx]?
-  end
-
-  # expand data from @fraw and @flog to pages
-  def reset!
-    infos = ChList.new(@fraw).data.values.sort_by(&.chidx)
+  def regen!(force : Bool = false) : ChInfo?
+    infos = ChList.new(@fseed).data.values
 
     if infos.empty?
-      case SnameMap.map_type(@sname)
-      when 2 then infos = fetch!(10.years) # dead remote
-      when 3 then infos = fetch!(5.months) # slow remote
-      when 4 then infos = fetch!(2.weeks)  # fast remote
-      end
+      infos = fetch!(10.years)
+      ChList.save!(@fseed, infos)
     end
 
-    self.store!(infos, reset: true)
+    self.store!(infos, reset: force)
     infos.last?
   end
 
-  def fetch!(ttl = 10.years)
+  private def fetch!(ttl = 10.years)
     parser = RemoteInfo.new(@sname, @snvid, ttl: ttl)
     output = parser.chap_infos
     output.empty? && ttl != 1.hours ? fetch!(1.hours) : output
@@ -48,10 +50,8 @@ class CV::ChRepo
 
   # save all infos, bail early if result is the same
   def store!(infos : Array(ChInfo), reset = false) : Nil
-    ChList.save!(@fraw, infos, mode: "w")
-
-    pgmax = self.pgidx(infos.size)
-    chmin = pgmax * PSIZE
+    pgmax = self.zh_pg(infos.size)
+    chmin = pgmax * ZH_PSIZE
 
     chlist = self.chlist(pgmax)
     chmin.upto(infos.size - 1).each { |index| chlist.store(infos[index]) }
@@ -59,29 +59,28 @@ class CV::ChRepo
 
     (pgmax - 1).downto(0).each do |pgidx|
       chlist = self.chlist(pgidx)
-      changed = true
+      update = false
 
-      PSIZE.times do
+      ZH_PSIZE.times do
         chmin -= 1
-        chlist.store(infos.unsafe_fetch(chmin)).tap { |x| changed ||= x }
+        update ||= chlist.store(infos.unsafe_fetch(chmin))
       end
 
-      changed ? chlist.save! : (break unless reset)
+      update ? chlist.save! : (break unless reset)
     end
   end
 
   def patch!(input : Array(ChInfo)) : Nil
-    ChList.save!(@fraw, input, "a") if @sname == "users"
-    ChList.save!(@flog, input, "a") unless @sname == "chivi"
+    spawn ChList.save!(@fuser, input, "a")
 
-    input.group_by { |x| self.pgidx(x.chidx) }.each do |pgidx, infos|
+    input.group_by { |x| self.zh_pg(x.chidx) }.each do |pgidx, infos|
       self.chlist(pgidx).tap(&.patch(infos)).save!
     end
   end
 
   def fetch_as_proxies!(chmin : Int32, chmax : Int32) : Array(ChInfo)
-    pgmin = self.pgidx(chmin)
-    pgmax = self.pgidx(chmax) + 1
+    pgmin = self.zh_pg(chmin)
+    pgmax = self.zh_pg(chmax) + 1
     chaps = [] of ChInfo
 
     pgmin.upto(pgmax) do |pgidx|

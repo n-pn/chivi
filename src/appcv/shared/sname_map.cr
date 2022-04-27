@@ -15,8 +15,11 @@ module CV::SnameMap
     "rengshu" => 18,
     "biqugee" => 20,
 
-    "paoshu8"  => 22,
-    "shubaow"  => 24,
+    "paoshu8" => 22,
+    "shubaow" => 24,
+
+    "ptwxz" => 26,
+
     "biqu5200" => 32,
     "5200"     => 34,
     "duokan8"  => 40,
@@ -34,7 +37,7 @@ module CV::SnameMap
       1 # manual update
     when "jx_la", "zhwenpg", "shubaow", "sdyfcm"
       2 # dead remote
-    when "paoshu8", "duokan8", "hetushu", "5200"
+    when "paoshu8", "duokan8", "hetushu", "5200", "ptwxz"
       3 # slow but still alive
     when "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee", "biqu5200"
       4 # fast remote
@@ -45,6 +48,7 @@ module CV::SnameMap
 
   MAP_INT.each_key do |sname|
     Dir.mkdir_p("var/chtexts/.seeds/#{sname}")
+    Dir.mkdir_p("var/chtexts/.users/#{sname}")
   end
 
   def alive_snames : Array(String)

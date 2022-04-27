@@ -25,9 +25,11 @@ class CV::RemoteInfo
 
     html = HttpUtil.cache(file, link, @ttl, @lbl, @encoding)
     HtmlParser.new(html)
+  rescue
+    HtmlParser.new("")
   end
 
-  getter mulu : HtmlParser {
+  getter mulu : HtmlParser do
     return info unless @sname.in?("69shu", "ptwxz")
 
     file = "#{@dir}/#{@snvid}-mulu.html.gz"
@@ -35,7 +37,9 @@ class CV::RemoteInfo
 
     html = HttpUtil.cache(file, link, @ttl, @lbl, @encoding)
     HtmlParser.new(html)
-  }
+  rescue
+    HtmlParser.new("")
+  end
 
   getter btitle : String do
     case @sname
@@ -55,7 +59,7 @@ class CV::RemoteInfo
 
   getter author : String do
     case @sname
-    when "ptwxz"   then inner_text(ptwxz_info.css("tr:nth-child(2) > td")[1])
+    when "ptwxz"   then info.inner_text(ptwxz_info.css("tr:nth-child(2) > td")[1])
     when "hetushu" then info.text(".book_info a:first-child")
     when "zhwenpg" then info.text(".fontwt")
     when "69shu"
@@ -69,7 +73,7 @@ class CV::RemoteInfo
     case @sname
     when "zhwenpg" then [] of String
     when "ptwxz"
-      [inner_text(ptwxz_info.css("tr:nth-child(2) > td")[0])]
+      [info.inner_text(ptwxz_info.css("tr:nth-child(2) > td")[0])]
     when "69shu"
       query = ".booknav2 > p:nth-child(3) > a"
       [info.text(query) { info.text(".weizhi > a:nth-child(2)") }]
@@ -85,7 +89,7 @@ class CV::RemoteInfo
     case @sname
     when "ptwxz"
       return [""] unless node = info.find("div[style=\"float:left;width:390px;\"]")
-      clean_node(node, [:span, :a])
+      info.clean_node(node, :span, :a)
       TextUtil.split_html(node.inner_text)
     when "69shu"
       info.text_para(".navtxt > p:first-child")
@@ -117,7 +121,7 @@ class CV::RemoteInfo
     case @sname
     when "zhwenpg" then "0"
     when "ptwxz"
-      inner_text(ptwxz_info.css("tr:nth-child(3) > td").to_a[1])
+      info.inner_text(ptwxz_info.css("tr:nth-child(3) > td").to_a[1])
     when "69shu"
       info.text(".booknav2 > p:nth-child(4)").split("  |  ").last
     when "hetushu"
@@ -143,19 +147,18 @@ class CV::RemoteInfo
   getter update_str : String do
     case @sname
     when "ptwxz"
-      inner_text(ptwxz_info.css("tr:nth-child(3) > td").to_a[0])
+      info.inner_text(ptwxz_info.css("tr:nth-child(3) > td").to_a[0])
     when "69shu"
       info.text(".booknav2 > p:nth-child(5)").sub("更新：", "")
     when "biqu5200"
       info.text("#info > p:last-child").sub("最后更新：", "")
-    when "hetushu", "zhwenpg"
-      "2021-01-01T07:00:00Z"
+    when "hetushu", "zhwenpg" then ""
     else
       info.meta("og:novel:update_time")
     end
   end
 
-  getter update_int : Int32 do
+  getter update_int : Int64 do
     time = TimeUtil.parse_time(update_str)
 
     if @sname.in?("69shu", "biqu5200", "ptwxz")
@@ -165,6 +168,8 @@ class CV::RemoteInfo
     end
 
     time.to_unix
+  rescue
+    0_i64
   end
 
   getter last_schid : String { extract_schid(last_schid_href) }
@@ -257,15 +262,5 @@ class CV::RemoteInfo
     end
 
     chaps
-  end
-
-  private def inner_text(node : Lexbor::Node)
-    node.inner_text.sub(/^.+：/, "").strip
-  end
-
-  private def clean_node(node : Lexbor::Node, tags = [] of Symbol)
-    node.children.each do |tag|
-      tag.remove! if tags.includes?(tag.tag_sym)
-    end
   end
 end

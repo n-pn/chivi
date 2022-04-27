@@ -1,4 +1,4 @@
-module CV::NvinfoModel
+module CV::NvinfoInner
   def add_nvseed(zseed : Int32) : Nil
     return if self.zseeds.includes?(zseed)
     self.zseeds.push(zseed).sort!
@@ -20,27 +20,6 @@ module CV::NvinfoModel
     self.vlabels_column.dirty!
     self.igenres_column.dirty!
   end
-
-  # def set_zgenres(zgenres : Array(String), force = false) : Nil
-  #   set_vgenres(GenreMap.zh_to_vi(zgenres), force: force)
-  # end
-
-  # def set_vgenres(vgenres : Array(String), force = false) : Nil
-  #   return unless force || self.igenres.empty?
-  #   self.igenres.clear
-
-  #   vgenres.each do |vgenre|
-  #     case igenre = GenreMap.map_int(vgenre)
-  #     when .< 0 then self.vlabels << vgenre
-  #     when .> 0 then self.igenres << igenre
-  #     end
-  #   end
-
-  #   self.igenres << 0 if self.igenres.empty?
-
-  #   self.vlabels_column.dirty!
-  #   self.igenres_column.dirty!
-  # end
 
   def set_zintro(lines : Array(String), force = false) : Nil
     return unless force || self.bintro.empty?
@@ -84,26 +63,6 @@ module CV::NvinfoModel
   def set_shield(shield : Int32, force = false) : Nil
     self.shield = shield if force || shield > self.shield
   end
-
-  # def set_ys_scores(voters : Int32, rating : Int32) : Nil
-  #   self.ys_voters = voters
-  #   self.ys_scores = voters * rating
-  #   fix_scores!
-  # end
-
-  # # trigger when user add a new book review
-  # def add_cv_rating(rating : Int32) : Nil
-  #   self.cv_voters += 1
-  #   self.cv_scores += rating
-  #   fix_scores!
-  # end
-
-  # # trigger when user change book rating in his review
-  # def fix_cv_rating(new_rating : Int32, old_rating : Int32) : Nil
-  #   return if new_rating == old_rating
-  #   self.cv_scores = self.cv_scores - old_rating + new_rating
-  #   fix_scores!
-  # end
 
   # recalculate
   def fix_scores!(voters : Int32, scores : Int32) : Nil

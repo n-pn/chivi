@@ -64,4 +64,14 @@ class CV::HtmlParser
   def meta_para(query : String) : Array(String)
     TextUtil.split_html(meta(query))
   end
+
+  def inner_text(node : Lexbor::Node)
+    node.inner_text.sub(/^.+：/, "").strip
+  end
+
+  def clean_node(node : Lexbor::Node, *tags : Symbol)
+    node.children.each do |tag|
+      tag.remove! if tags.includes?(tag.tag_sym)
+    end
+  end
 end

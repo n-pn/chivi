@@ -1,13 +1,14 @@
-time bin/remote_seed -s hetushu -m 2
-time bin/remote_seed -s rengshu -m 2
-time bin/remote_seed -s xbiquge -m 2
-time bin/remote_seed -s biqugee -m 2
-time bin/remote_seed -s 69shu -m 2
-time bin/remote_seed -s 5200 -m 2
-time bin/remote_seed -s duokan8 -m 2
-time bin/remote_seed -s sdyfcm -m 2
-time bin/remote_seed -s biqu5200 -m 2
-time bin/remote_seed -s paoshu8 -m 2
-time bin/remote_seed -s bxwxorg -m 2
-time bin/remote_seed -s shubaow -m 2
-time bin/remote_seed -s jx_la -m 2 -u 259742
+time bin/zhinfo_seed hetushu
+time bin/zhinfo_seed rengshu
+time bin/zhinfo_seed xbiquge
+time bin/zhinfo_seed bxwxorg
+time bin/zhinfo_seed biqugee
+time bin/zhinfo_seed 69shu
+time bin/zhinfo_seed ptwxz
+time bin/zhinfo_seed biqu5200
+time bin/zhinfo_seed 5200
+time bin/zhinfo_seed paoshu8
+time bin/zhinfo_seed sdyfcm -i 0
+time bin/zhinfo_seed duokan8 -i 0
+time bin/zhinfo_seed shubaow -i 0
+time bin/zhinfo_seed jx_la -i 0

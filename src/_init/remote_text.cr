@@ -8,35 +8,27 @@ require "./shared/html_parser"
 
 class CV::RemoteText
   # cache folder path
-  DIR = "_db/.cache/%s/texts/%s"
-
-  def self.c_dir(sname : String, snvid : String) : String
-    DIR % {sname, snvid}
-  end
-
-  def self.mkdir!(sname : String, snvid)
-    ::FileUtils.mkdir_p(c_dir(sname, snvid))
-  end
+  PATH = "_db/.cache/%s/texts/%s/%.html.gz"
 
   getter sname : String
   getter snvid : String
   getter schid : String
 
-  getter file : String { "#{RemoteText.c_dir(@sname, @snvid)}/#{@schid}.html.gz" }
-  getter link : String { SiteLink.text_url(sname, snvid, schid) }
-
-  alias TimeSpan = Time::Span | Time::MonthSpan
-
   getter title : String
 
-  def initialize(@sname, @snvid, @schid, @ttl : TimeSpan = 10.years, @lbl = "1/1")
+  @ttl : Time::Span | Time::MonthSpan
+  @file : String
+
+  def initialize(@sname, @snvid, @schid, @ttl = 10.years, @lbl = "-/-")
+    @file = PATH % {@sname, @snvid, @schid}
+    @link = SiteLink.text_url(sname, snvid, schid)
+
     @title = extract_title
   end
 
   getter page : HtmlParser do
     encoding = HttpUtil.encoding_for(@sname)
-
-    html = HttpUtil.load_html(link, file, @ttl, @lbl, encoding)
+    html = HttpUtil.cache(@file, @link, @ttl, @lbl, encoding)
     HtmlParser.new(html)
   end
 
@@ -97,9 +89,7 @@ class CV::RemoteText
   private def extract_paras(sel : String)
     return [] of String unless node = page.find(sel)
 
-    node.children.each do |tag|
-      tag.remove! if {"script", "div", "h1", "table"}.includes?(tag.tag_name)
-    end
+    page.clean_node(node, :script, :div, :h1, :table)
 
     if @sname == "bxwxorg"
       node.children.each do |tag|
@@ -157,7 +147,7 @@ class CV::RemoteText
   end
 
   private def extract_hetushu_paras
-    orders = get_hetushu_line_order(file.sub(".html.gz", ".meta"))
+    orders = get_hetushu_line_order(@file.sub(".html.gz", ".meta"))
 
     res = Array(String).new(orders.size, "")
     jmp = 0
@@ -192,10 +182,10 @@ class CV::RemoteText
 
   private def hetushu_encrypt_string(meta_file : String)
     return File.read(meta_file) if File.exists?(meta_file)
-    json_link = link.sub("#{@schid}.html", "r#{@schid}.json")
+    json_link = @link.sub("#{@schid}.html", "r#{@schid}.json")
 
     headers = HTTP::Headers{
-      "Referer"          => link,
+      "Referer"          => @link,
       "Content-Type"     => "application/x-www-form-urlencoded",
       "X-Requested-With" => "XMLHttpRequest",
       "Cookie"           => "PHPSESSID=48grk8h3bi58q13rhbjp1kaa73",

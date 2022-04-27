@@ -66,8 +66,7 @@ class CV::ChText
     end
   end
 
-  def fetch!(part : Int32 = 0, ttl = 10.years, mkdir = true, lbl = "1/1")
-    RemoteText.mkdir!(@sname, @snvid) if mkdir
+  def fetch!(part : Int32 = 0, ttl = 10.years, lbl = "1/1")
     remote = RemoteText.new(@sname, @snvid, @chinfo.schid, ttl: ttl, lbl: lbl)
 
     lines = remote.paras

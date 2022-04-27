@@ -1,9 +1,10 @@
 require "../_util/site_link"
 require "../_init/remote_info"
-require "../cvmtl/mt_core"
 
 require "./nvchap/ch_list"
 require "./shared/sname_map"
+
+require "./inners/nvseed_inner"
 
 class CV::Nvseed
   include Clear::Model
@@ -43,9 +44,10 @@ class CV::Nvseed
   timestamps
 
   getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }
-
-  getter _repo : ChRepo { ChRepo.new(sname, snvid) }
+  getter _repo : ChRepo { ChRepo.new(sname, snvid, nvinfo.dname) }
   delegate chlist, to: _repo
+
+  include NvseedInner
 
   # update book id
   def fix_uid!
@@ -56,22 +58,22 @@ class CV::Nvseed
     SiteLink.text_url(sname, snvid, schid)
   end
 
-  PSIZE = 32
+  VI_PSIZE = 32
 
-  @cached = Hash(Int32, Array(ChInfo)).new
+  @vpages = Hash(Int32, Array(ChInfo)).new
 
   def reset_cache!
-    @cached.clear
+    @vpages.clear
     @lastpg = nil
   end
 
-  def chpage(pgidx : Int32)
-    @cached[pgidx] ||= begin
-      chmin = pgidx * PSIZE + 1
-      chmax = chmin + PSIZE - 1
+  def chpage(vi_pg : Int32)
+    @vpages[vi_pg] ||= begin
+      chmin = vi_pg * VI_PSIZE + 1
+      chmax = chmin + VI_PSIZE - 1
       chmax = chap_count if chmax > chap_count
 
-      chlist = _repo.chlist(pgidx // 4)
+      chlist = _repo.chlist(vi_pg // 4)
       (chmin..chmax).map { |chidx| chlist.get(chidx).trans!(cvmtl) }
     end
   end
@@ -88,25 +90,8 @@ class CV::Nvseed
     output
   end
 
-  def chinfo(index : Int32) # provide real chap index
-    chpage(index // PSIZE)[index % PSIZE]?
-  end
-
-  def get_chvol(chidx : Int32, limit = 4)
-    chmin = chidx - limit
-    chmin = 1 if chmin > 1
-
-    chidx.downto(chmin).each do |index|
-      next unless info = self.chinfo(index - 1)
-      return info.chvol unless info.chvol.empty?
-    end
-
-    ""
-  end
-
-  def chap_url(chidx : Int32, cpart = 0)
-    return unless chinfo = self.chinfo(chidx - 1)
-    chinfo.chap_url(cpart)
+  def chinfo(index : Int32) : ChInfo?
+    self.chpage(index // VI_PSIZE)[index % VI_PSIZE]?
   end
 
   def chtext(chinfo : ChInfo, cpart = 0, mode = 0, uname = "")
@@ -131,29 +116,6 @@ class CV::Nvseed
     [] of String
   end
 
-  def update_latest(chap : ChInfo, force : Bool = true)
-    return unless force || self.chap_count <= chap.chidx
-    self.last_schid = chap.schid
-    self.chap_count = chap.chidx
-  end
-
-  def update_mftime(utime : Int64 = Time.utc.to_unix, force : Bool = false)
-    return unless force || self.utime < utime
-    self.nvinfo.update_utime(utime)
-    self.utime = utime
-  end
-
-  def update_status(status : Int32)
-    return if self.status >= status && self.status != 3
-    nvinfo.set_status(status)
-    self.status = status
-  end
-
-  def remote?(force : Bool = true)
-    type = SnameMap.map_type(sname)
-    type == 4 || (force && type == 3)
-  end
-
   def fetch!(ttl : Time::Span, force : Bool = false, @lbl = "-/-") : Nil
     parser = RemoteInfo.new(sname, snvid, ttl: ttl)
     changed = parser.last_schid != self.last_schid
@@ -161,11 +123,10 @@ class CV::Nvseed
     return unless force || changed
     chinfos = parser.chap_infos
 
+    spawn ChList.save!(_repo.fseed, chinfos, mode: "w")
     _repo.store!(chinfos, reset: force)
-    reset_cache!
 
-    self.update_status(parser.status_int)
-    self.update_latest(chinfos.last, force: true)
+    self.reset_cache!
 
     self.stime = Time.utc.to_unix
 
@@ -175,7 +136,9 @@ class CV::Nvseed
       mftime = parser.update_int
     end
 
-    self.update_mftime(mftime)
+    self.set_mftime(mftime)
+    self.set_status(parser.status_int)
+    self.set_latest(chinfos.last, force: true)
 
     self.save!
   rescue err
@@ -190,8 +153,8 @@ class CV::Nvseed
     return if chaps.empty?
     _repo.patch!(chaps)
 
-    self.update_latest(chaps.last, force: false)
-    self.update_mftime(utime)
+    self.set_mftime(utime)
+    self.set_latest(chaps.last, force: false)
 
     self.save!
   end
@@ -238,19 +201,6 @@ class CV::Nvseed
   end
 
   # ------------------------
-
-  def staled?(privi : Int32 = 4, force : Bool = false)
-    return true if self.chap_count == 0
-    tspan = Time.utc - Time.unix(self.stime)
-    tspan >= map_ttl(force: force) * (4 - privi)
-  end
-
-  TIMES = {1.days, 5.days, 10.days, 30.days}
-
-  def map_ttl(force : Bool = false)
-    return 5.minutes if force
-    TIMES[self.nvinfo.status]? || 60.days
-  end
 
   def refresh!(force : Bool = false) : Nil
     if zseed == 0 # sname == "chivi"

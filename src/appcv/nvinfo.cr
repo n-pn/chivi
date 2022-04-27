@@ -1,5 +1,5 @@
-require "./nvinfo/*"
 require "./shared/*"
+require "./inners/nvinfo_inner"
 
 class CV::Nvinfo
   include Clear::Model
@@ -146,7 +146,7 @@ class CV::Nvinfo
     end
   end
 
-  include NvinfoModel
+  include NvinfoInner
 
   #########################################
 

@@ -81,5 +81,4 @@ rescue err
   puts sname, err.inspect_with_backtrace
 end
 
-pp output.data
 output.save!(clean: true)
