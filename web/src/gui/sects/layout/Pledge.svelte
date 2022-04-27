@@ -19,6 +19,7 @@
     display: block;
     text-align: vessel;
     // max-width: 50vw;
+    margin-top: 0.75rem;
     font-size: rem(15px);
     text-align: center;
     line-height: 1.25rem;

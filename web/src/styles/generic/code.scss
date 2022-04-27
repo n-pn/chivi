@@ -12,7 +12,7 @@ samp {
   font-size: em(15, 16);
   direction: ltr #{'/* rtl:ignore */'};
   unicode-bidi: bidi-override;
-  border-radius: var(--radius, 4px);
+  @include bdradi();
 }
 
 pre {
@@ -33,19 +33,14 @@ pre {
 }
 
 code {
-  padding: 0 0.25em;
+  padding: .125rem 0.375em;
   word-wrap: break-word;
 
-  color: var(--code-fg, #{color(neutral, 6)});
-  @include bgcolor(neutral, 1);
+  @include fgcolor(secd);
+  @include bgcolor(secd);
 
   // prettier-ignore
   a > & { color: inherit; }
-
-  @include tm-dark($svelte: false) {
-    --code-fg: #{color(neutral, 3)};
-    @include bgcolor(neutral, 9);
-  }
 }
 
 kbd {

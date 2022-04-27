@@ -8,7 +8,7 @@
   export let chidx_max: number
 </script>
 
-<article class="notext cvdata m-article">
+<article class="notext cvdata m-article article">
   {#if min_privi > $session.privi}
     <h1>Bạn không đủ quyền hạn để xem chương.</h1>
     {#if $session.privi < 0}
@@ -24,25 +24,25 @@
     <ul>
       <li>
         Với nguồn <x-seed>chivi</x-seed> (<SIcon name="share" />), bạn cần phải
-        đăng nhập để xem các chương từ <code>#{chidx_max + 1}</code>.
+        đăng nhập để xem các chương từ <x-chap>#{chidx_max + 1}</x-chap>.
       </li>
       <li>
         Với các nguồn dạng lưu trữ (ký hiệu <SIcon name="archive" />, <SIcon
           name="cloud-off" />) như <x-seed>zxcs_me</x-seed> hay
         <x-seed>users</x-seed>, bạn cần đăng nhập để xem các chương từ
-        <code>#1</code>
-        tới <code>#{chidx_max}</code>, và cần quyền hạn tối thiểu là
-        <strong>1</strong>
-        để xem các chương từ <code>#{chidx_max + 1}</code> trở đi.
+        <x-chap>#1</x-chap>
+        tới <x-chap>#{chidx_max}</x-chap>, và cần quyền hạn tối thiểu là
+        <x-bold>1</x-bold>
+        để xem các chương từ <x-chap>#{chidx_max + 1}</x-chap> trở đi.
       </li>
 
       <li>
         Với các nguồn truyện ngoài hiện còn đang sống (ký hiệu <SIcon
-          name="cloud" />), bạn cần quyền hạn tối thiểu là <strong>1</strong>
+          name="cloud" />), bạn cần quyền hạn tối thiểu là <x-bold>1</x-bold>
         xem các chương từ
         <x-chap>#1</x-chap>
         tới <x-chap>#{chidx_max}</x-chap>, và cần quyền hạn tối thiểu là
-        <strong>2</strong>
+        <x-bold>2</x-bold>
         để xem các chương từ <x-chap>#{chidx_max + 1}</x-chap> trở đi.
         <p>
           <em
@@ -100,8 +100,8 @@
 <style lang="scss">
   .notext {
     // height: calc(100vh - 10rem);
-    margin: 1rem auto;
-    max-width: 40rem;
+    margin: 0.25rem auto;
+    max-width: 45rem;
 
     // font-style: italic;
 
@@ -123,6 +123,10 @@
     strong {
       font-weight: 500;
     }
+
+    :global(svg) {
+      margin-bottom: 0.2em;
+    }
   }
 
   a {
@@ -135,6 +139,7 @@
   .warn {
     @include fgcolor(warning, 5);
     margin-bottom: 1.5rem;
+    font-weight: 500;
   }
 
   x-seed {
@@ -145,13 +150,18 @@
     padding: 0.125rem 0.25rem;
     @include ftsize(xs);
     @include fgcolor(primary, 5);
-    @include bgcolor(primary, 5, 1);
+    // @include bgcolor(primary, 5, 1);
     @include border(primary, 5);
     @include bdradi();
   }
 
   x-chap {
     @include fgcolor(primary, 5);
+    font-weight: 500;
+  }
+
+  x-bold {
+    @include fgcolor(main);
     font-weight: 500;
   }
 </style>
