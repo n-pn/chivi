@@ -18,7 +18,7 @@
     "seed-remote": "bash tasks/nvseed/remote_seed.sh",
     "fix-covers": "./bin/fetch_covers && ./bin/fix_covers",
     "fix-nvinfo": "./bin/fix_intros && ./bin/fix_genres",
-    "build": "shards build --release",
-    "build-mt": "shards build --release -Dpreview_mt"
+    "build": "shards build -s --release",
+    "build-mt": "shards build -s --release -Dpreview_mt"
   }
 }

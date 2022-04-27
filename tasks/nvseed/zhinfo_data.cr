@@ -42,6 +42,8 @@ class CV::ZhinfoData
 
     mftime.append(snvid, Mftime.new(entry.update_int, entry.update_str))
     status.append(snvid, Status.new(entry.status_int, entry.status_str))
+  rescue
+    _index.append(snvid, Bindex.new(stime, "", ""))
   end
 
   def get_nvinfo(author_zh : String, btitle_zh : String)

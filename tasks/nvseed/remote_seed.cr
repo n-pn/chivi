@@ -43,9 +43,7 @@ class CV::RemoteSeed
 
     changed.each_with_index(1) do |(snvid, stime), idx|
       spawn do
-        legend = "#{idx &+ offset}/#{@total}"
-        parser = RemoteInfo.new(@sname, snvid, lbl: legend)
-
+        parser = RemoteInfo.new(@sname, snvid, lbl: "#{idx &+ offset}/#{@total}")
         @data.add!(parser, snvid, stime)
       rescue err
         Log.error { err.inspect_with_backtrace }
@@ -69,9 +67,7 @@ class CV::RemoteSeed
 
     missing.each_with_index(1) do |snvid, idx|
       spawn do
-        legend = "#{snvid}/#{@total}"
-        parser = RemoteInfo.new(@sname, snvid, ttl: 1.days, lbl: legend)
-
+        parser = RemoteInfo.new(@sname, snvid, ttl: 1.days, lbl: "#{snvid}/#{@total}")
         @data.add!(parser, snvid, Time.utc.to_unix)
         throlt_crawl!
       rescue err

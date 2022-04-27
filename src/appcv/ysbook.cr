@@ -47,18 +47,45 @@ class CV::Ysbook
 
   timestamps # created_at and updated_at
 
+  def set_bcover(bcover : String, force : Bool = false) : Nil
+    return unless force || self.bcover.empty?
+    self.bcover = bcover
+    self.nvinfo.set_covers(bcover)
+  end
+
+  def set_bintro(bintro : Array(String), force : Bool = false) : Nil
+    return unless force || self.bintro.empty?
+    self.bintro = bintro.join('\n')
+    self.nvinfo.set_zintro(bintro)
+  end
+
+  def set_genres(genres : Array(String), force : Bool = false) : Nil
+    return unless force || self.bgenre.empty?
+    self.bgenre = genres.join('\t')
+    self.nvinfo.set_genres(genres)
+  end
+
+  def set_mftime(mftime : Int64, force : Bool = false) : Nil
+    return unless force || self.utime < mftime
+    self.utime = mftime
+    self.nvinfo.set_utime(mftime)
+  end
+
+  def set_status(status : Int32, force : Bool = false) : Nil
+    return unless force || self.status < status
+    self.status = status
+    self.nvinfo.set_status(status)
+  end
+
+  def set_shield(shield : Int32, force : Bool = false) : Nil
+    return unless force || self.shield < shield
+    self.shield = shield
+    self.nvinfo.set_shield(shield)
+  end
+
   def update_nvinfo : Nil
     return if nvinfo.ysbook_id != self.id && lesser_source?(nvinfo.ysbook_id || 0_i64)
-
-    nvinfo.set_zintro(self.bintro.split('\t'))
-    nvinfo.set_genres(self.bgenre.split('\t'))
-    nvinfo.set_covers(self.bcover)
-
-    nvinfo.set_utime(self.utime)
-    nvinfo.set_status(self.status)
-    nvinfo.set_shield(self.shield)
     nvinfo.fix_scores!(self.voters, self.scores)
-
     nvinfo.ysbook_id = self.id
     nvinfo.save!
   end
