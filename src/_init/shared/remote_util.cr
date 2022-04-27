@@ -1,48 +1,44 @@
-require "myhtml"
 require "colorize"
-require "file_utils"
+require "compress/gzip"
 
-require "../../_util/http_util"
 require "../../_util/site_link"
-require "../../_util/gzip_file"
-require "../../_util/path_util"
-require "../../_util/time_util"
 
-module CV::RmUtil
+module CV::RemoteUtil
   extend self
 
-  def fetch(file : String, link : String, sname : String, ttl = 1.week, lbl = "1/1")
-    expiry = sname == "jx_la" ? Time.utc(2010, 1, 1) : Time.utc - ttl
+  def fetch(file : String, link : String, ttl = 1.week, lbl = "-/-")
+    unless File.info?(file).try(&.modification_time.> Time.utc - ttl)
+      loops = 0
 
-    GzipFile.new(file).read(expiry) do
-      encoding = HttpUtil.encoding_for(sname)
-      HttpUtil.get_html(link, encoding: encoding, lbl: lbl)
+      while loops < 3
+        puts " - #{lbl} Fetching #{link} (loop: #{loops})".colorize.cyan
+        `curl -L -k -s -f -m 30 '#{link}' | gzip > #{file}`
+        break if $?.success?
+        sleep loops * 100
+      end
     end
+
+    File.open(file) { |io| Compress::Gzip::Reader.open(io, &.gets_to_end) }
   end
 
-  def fetch_all(input : Array(Tuple(String, String)), sname : String, limit : Int32? = nil)
-    limit ||= ideal_workers_count_for(sname)
-    limit = input.size if limit > input.size
-
-    channel = Channel(Nil).new(limit + 1)
-    encoding = HttpUtil.encoding_for(sname)
-    FileUtils.mkdir_p(File.dirname(input.first))
+  def fetch_all(input : Array(Tuple(String, String)), sname : String)
+    workers = ideal_workers_count_for(sname)
+    channel = Channel(Nil).new(workers)
 
     input.each_with_index(1) do |(file, link), idx|
-      channel.receive if idx > limit
+      channel.receive if idx > workers
 
       spawn do
-        html = HttpUtil.get_html(link, encoding, lbl: "#{idx}/#{input.size}")
-        File.write(file, html)
+        fetch(file, link, ttl: 30.minutes)
         sleep ideal_delayed_time_for(sname)
       rescue err
-        puts err
+        puts err.inspect_with_backtrace
       ensure
         channel.send(nil)
       end
     end
 
-    limit.times { channel.receive }
+    workers.times { channel.receive }
   end
 
   def ideal_workers_count_for(sname : String) : Int32

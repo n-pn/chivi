@@ -1,10 +1,10 @@
 require "file_utils"
 
-require "../../src/appcv/remote/rm_info.cr"
+require "../../src/_init/remote_info.cr"
 
 def fetch_info(sname, snvid, fresh = false) : Void
   puts "\n[#{CV::SiteLink.info_url(sname, snvid)}]".colorize.green.bold
-  parser = CV::RmInfo.new(sname, snvid, ttl: fresh ? 10.seconds : 1.year)
+  parser = CV::RemoteInfo.new(sname, snvid, ttl: fresh ? 10.seconds : 1.year)
 
   puts "------".colorize.green
 
@@ -14,8 +14,8 @@ def fetch_info(sname, snvid, fresh = false) : Void
     genres: parser.genres.join(" "),
     bintro: parser.bintro.join("\n"),
     bcover: parser.bcover,
-    status: parser.status,
-    update: parser.update,
+    status: parser.status_str,
+    update: parser.update_str,
 
     last_schid: parser.last_schid,
   }
@@ -94,6 +94,6 @@ tests = [
 
 ]
 
-CV::RmInfo.mkdir!("ptwxz")
-
 tests.each { |sname, snvid, fresh| fetch_info(sname, snvid, fresh: fresh) }
+
+# fetch_info("69shu", "43236", fresh: true)

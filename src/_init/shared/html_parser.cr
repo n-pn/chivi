@@ -32,10 +32,9 @@ class CV::HtmlParser
   end
 
   # return inner text
-  def text(query : String)
+  def text(query : String) : String
     return yield unless node = find(query)
-    text = node.inner_text
-    TextUtil.fix_spaces(text).strip
+    TextUtil.fix_spaces(node.inner_text).strip
   end
 
   def text(query : String) : String

@@ -36,9 +36,7 @@ class CV::ChInfo
   property chidx : Int32
   property schid : String
 
-  @[JSON::Field(ignore: true)]
   property title = ""
-  @[JSON::Field(ignore: true)]
   property chvol = ""
 
   property stats : Stats = Stats.new
