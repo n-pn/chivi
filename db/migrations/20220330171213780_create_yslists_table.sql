@@ -11,6 +11,7 @@ CREATE TABLE yslists (
   zdesc text not null default '',
   vdesc text not null default '',
 
+  vslug text not null default '-',
   klass text not null default 'male',
 
   utime bigint not null default 0,
@@ -31,6 +32,7 @@ CREATE TABLE yslists (
 );
 
 CREATE INDEX yslist_ysuser_idx ON yslists (ysuser_id);
+CREATE INDEX yslist_search_idx ON yslists using GIN (vslug gin_trgm_ops);
 
 
 -- +micrate Down

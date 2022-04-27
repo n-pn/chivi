@@ -13,6 +13,8 @@ class CV::Yslist
   column zname : String = "" # original list name
   column vname : String = "" # translated name
 
+  column vslug : String = "" # to search
+
   column zdesc : String = "" # original description
   column vdesc : String = "" # translated description
 
@@ -35,9 +37,10 @@ class CV::Yslist
 
   MTL = MtCore.generic_mtl
 
-  def set_name(zname : String)
+  def set_name(zname : String) : Nil
     self.zname = zname
     self.vname = MTL.translate(self.zname)
+    self.vslug = "-" + BookUtil.scrub_vname(self.vname) + "-"
   end
 
   def set_desc(zdesc : String)
