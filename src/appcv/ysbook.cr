@@ -92,11 +92,12 @@ class CV::Ysbook
 
   def lesser_source?(other_id : Int64)
     return false if other_id == 0 || !(other = Ysbook.find({id: other_id}))
+    return true if self.voters <= other.voters
 
-    self.voters <= other.voters.tap do |lesser|
-      Log.info { "!! override: #{other_id} (#{other.voters}) \
-                   => #{self.id} (#{self.voters})".colorize.yellow } if lesser
-    end
+    puts "!! override: #{other_id} (#{other.voters}) \
+          => #{self.id} (#{self.voters})".colorize.yellow
+
+    false
   end
 
   #########################################

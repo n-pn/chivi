@@ -1,6 +1,7 @@
 module CV::NvinfoInner
   def add_nvseed(zseed : Int32) : Nil
     return if self.zseeds.includes?(zseed)
+
     self.zseeds.push(zseed).sort!
     self.zseeds_column.dirty!
   end

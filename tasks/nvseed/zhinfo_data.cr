@@ -17,7 +17,7 @@ class CV::ZhinfoData
 
   def initialize(@sname : String, @w_dir : String)
     @force_author = @sname.in?("zxcs_me", "hetushu", "users", "staff", "zhwenpg")
-    @force_btitle = @force_author || @sname.in?("rengshu", "ptwzx", "69shu")
+    @force_btitle = @force_author || @sname.in?("rengshu")
   end
 
   def save!(clean : Bool = false)
@@ -78,11 +78,26 @@ class CV::ZhinfoData
     nvseed.btitle = bindex.btitle
     nvseed.author = bindex.author
 
-    nvseed.set_genres(self.genres[snvid], force: mode > 0)
-    nvseed.set_bintro(self.bintro[snvid], force: mode > 0)
-    nvseed.set_bcover(self.bcover[snvid], force: mode > 0)
-    nvseed.set_mftime(self.mftime[snvid].mftime, force: mode > 0)
-    nvseed.set_status(self.status[snvid].status, force: mode > 0)
+    if genres = self.genres[snvid]?
+      nvseed.set_genres(genres, force: mode > 0)
+    end
+
+    if bintro = self.bintro[snvid]?
+      nvseed.set_bintro(bintro, force: mode > 0)
+    end
+
+    if bcover = self.bcover[snvid]?
+      nvseed.set_bcover(bcover, force: mode > 0)
+    end
+
+    if mftime = self.mftime[snvid]?
+      nvseed.set_mftime(mftime.mftime, force: mode > 0)
+    end
+
+    if status = self.status[snvid]?
+      nvseed.set_status(status.status, force: mode > 0)
+    end
+
     nvseed.fix_latest(force: mode > 1)
 
     if nvinfo.voters < 10
