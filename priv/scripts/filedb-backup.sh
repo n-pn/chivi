@@ -38,8 +38,9 @@ then
   # rsync -aiz --no-p "$SSH/var/nvinfos/autos" "var/nvinfos"
 
   rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
+  rsync -aiz --no-p "$SSH/var/chmetas/.html" "var/chmetas"
+  rsync -aiz --no-p "$SSH/var/chmetas/users" "var/chmetas"
   rsync -aiz --no-p "$SSH/var/chtexts/users" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/" "var/chtexts/"
 fi
 
 ## backup crit data

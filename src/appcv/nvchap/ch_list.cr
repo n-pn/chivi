@@ -35,6 +35,7 @@ class CV::ChList
     end
 
     @data[chap.chidx] = chap
+
     changed
   end
 

@@ -2,12 +2,15 @@ require "../../_util/text_util"
 
 class CV::ChInfo
   class Stats
-    property utime, chars, parts, uname
+    property utime : Int64
+    property chars : Int32
+    property parts : Int32
+    property uname : String
 
     def initialize(@utime = 0_i64, @chars = 0, @parts = 0, @uname = "")
     end
 
-    def initialize(utime : String, chars : String, parts : String, @uname)
+    def initialize(utime : String, chars : String, parts : String, @uname = "")
       @utime = utime.to_i64? || 0_i64
       @chars = chars.to_i? || 0
       @parts = parts.to_i? || 0
@@ -89,7 +92,7 @@ class CV::ChInfo
   end
 
   def as_proxy!(sname : String, snvid : String, chidx = self.chidx) : self
-    self.dup.tap { |x| x.proxy = Proxy.new(sname, snvid, chidx) }
+    self.dup.tap(&.proxy = Proxy.new(sname, snvid, chidx))
   end
 
   def inherit!(prev : self) : Void

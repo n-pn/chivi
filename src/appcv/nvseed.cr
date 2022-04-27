@@ -123,11 +123,10 @@ class CV::Nvseed
     return unless force || changed
     chinfos = parser.chap_infos
 
-    spawn ChList.save!(_repo.fseed, chinfos, mode: "w")
+    spawn { ChList.save!(_repo.fseed, chinfos, mode: "w") }
     _repo.store!(chinfos, reset: force)
 
     self.reset_cache!
-
     self.stime = Time.utc.to_unix
 
     if parser.update_str.empty?

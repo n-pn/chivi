@@ -16,11 +16,9 @@ def fetch_info(sname, snvid, fresh = false) : Void
     bcover: parser.bcover,
     status: parser.status_str,
     update: parser.update_str,
-
-    last_schid: parser.last_schid,
   }
 
-  pp output
+  puts output
 
   puts "------".colorize.green
 

@@ -35,7 +35,7 @@ class CV::ChRepo
 
     if infos.empty?
       infos = fetch!(10.years)
-      ChList.save!(@fseed, infos)
+      spawn ChList.save!(@fseed, infos)
     end
 
     self.store!(infos, reset: force)
@@ -50,23 +50,22 @@ class CV::ChRepo
 
   # save all infos, bail early if result is the same
   def store!(infos : Array(ChInfo), reset = false) : Nil
+    return if infos.empty?
+
     pgmax = self.zh_pg(infos.size)
-    chmin = pgmax * ZH_PSIZE
-
-    chlist = self.chlist(pgmax)
-    chmin.upto(infos.size - 1).each { |index| chlist.store(infos[index]) }
-    chlist.save!
-
-    (pgmax - 1).downto(0).each do |pgidx|
+    pgmax.downto(0).each do |pgidx|
       chlist = self.chlist(pgidx)
       update = false
 
-      ZH_PSIZE.times do
-        chmin -= 1
-        update ||= chlist.store(infos.unsafe_fetch(chmin))
+      chmin = pgidx &* ZH_PSIZE
+      chmax = pgidx == pgmax ? infos.size : chmin &+ ZH_PSIZE
+      chmin.upto(chmax &- 1) do |chidx|
+        status = chlist.store(infos[chidx])
+        update ||= status
       end
 
-      update ? chlist.save! : (break unless reset)
+      break unless update || reset
+      chlist.save!
     end
   end
 

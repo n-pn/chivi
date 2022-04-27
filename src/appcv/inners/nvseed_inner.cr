@@ -2,7 +2,7 @@ module CV::NvseedInner
   def fix_latest(force : Bool = false) : Nil
     return unless force || self.chap_count == 0
 
-    if last_chap = _repo.regen!(force: force)
+    if last_chap = self._repo.regen!(force: force)
       set_latest(last_chap, force: force)
     else
       Log.error { "Missing chapters for #{sname}/#{snvid}".colorize.red }

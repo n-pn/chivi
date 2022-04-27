@@ -27,8 +27,34 @@ class CV::RemoteSeed
     add_changed!(changed)
     add_missing!(missing) if mode > 0
     add_missing!(empties) if mode > 1
+    fetch_mulus! if mode > 1 && @sname.in?("69shu", "ptwxz")
 
     @data.save!(clean: true)
+  end
+
+  def fetch_mulus!
+    workers = @upper - @lower + 1
+    workers = 6 if workers > 6
+    channel = Channel(Nil).new(workers)
+    encoding = HttpUtil.encoding_for(@sname)
+
+    @lower.upto(@upper).with_index(1) do |index, idx|
+      spawn do
+        snvid = index.to_s
+
+        file = "_db/.cache/#{@sname}/infos/#{snvid}-mulu.html.gz"
+        next if File.exists?(file)
+
+        link = SiteLink.mulu_url(@sname, snvid)
+        HttpUtil.cache(file, link, lbl: "#{idx + @lower}/#{@total}", encoding: encoding)
+      ensure
+        channel.send(nil)
+      end
+
+      channel.receive if idx > workers
+    end
+
+    workers.times { channel.receive }
   end
 
   def add_changed!(changed : Hash(String, Int64)) : Nil
@@ -69,6 +95,7 @@ class CV::RemoteSeed
       spawn do
         parser = RemoteInfo.new(@sname, snvid, ttl: 1.days, lbl: "#{snvid}/#{@total}")
         @data.add!(parser, snvid, Time.utc.to_unix)
+
         throlt_crawl!
       rescue err
         Log.error { err.inspect_with_backtrace }
