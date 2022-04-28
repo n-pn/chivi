@@ -86,7 +86,10 @@
   </div>
 
   <div class="origin">
-    <a href="https://yousuu.com/booklist/{yl_id}" rel="noopener noreferer">
+    <a
+      href="https://www.yousuu.com/booklist/{yl_id}"
+      rel="noopener noreferer"
+      target="_blank">
       <SIcon name="external-link" />
       <span> Nguồn </span></a>
   </div>
