@@ -82,7 +82,10 @@
   </div>
 
   <div class="vdesc">
-    {@html ylist.vdesc.split('\n').map((x) => `<p>${x}</p>`)}
+    {@html ylist.vdesc
+      .split('\n')
+      .map((x) => `<p>${x}</p>`)
+      .join('\n')}
   </div>
 
   <div class="origin">
