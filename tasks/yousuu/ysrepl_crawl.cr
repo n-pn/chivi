@@ -65,11 +65,13 @@ class CV::CrawlYsrepl
       return yscrit unless @http.save!(link, file, label)
     end
 
-    total, repls = YsreplRaw.from_list(File.read(file))
-    repls.each(&.seed!)
+    json = YsreplRaw.from_list(File.read(file))
+
+    stime = File.info(file).modification_time.to_unix
+    json[:commentReply].each(&.seed!(stime: stime))
 
     yscrit.update!(
-      repl_total: yscrit.repl_total > total ? yscrit.repl_total : total,
+      repl_total: yscrit.repl_total > json[:total] ? yscrit.repl_total : json[:total],
       repl_count: Ysrepl.query.where("yscrit_id = ?", yscrit.id).count.to_i
     )
   rescue err

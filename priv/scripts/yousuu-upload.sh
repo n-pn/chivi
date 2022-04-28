@@ -30,8 +30,6 @@ if [[ $1 == "all" || $* == *crits* ]]
 then
   echo upload raw review jsons!
   rsync -azui --no-p "$DIR/crits" $SSH_DIR
-
-  rsync -azui --no-p "var/yousuu/yscrits" "$ssh/var/yousuu"
 fi
 
 if [[ $1 == "all" || $* == *repls* ]]
@@ -44,6 +42,13 @@ if [[ $1 == "all" || $* == *lists* ]]
 then
   echo upload raw reply jsons!
   rsync -azui --no-p "$DIR/lists" $SSH_DIR
+fi
+
+if [[ $1 == "all" || $* == *seeds* ]]
+then
+  echo upload seed data!
+  rsync -azui --no-p "var/ysinfos/ysusers.tsv" "$SSH/var/ysinfos"
+  rsync -azui --no-p "var/ysinfos/yscrits" "$SSH/var/ysinfos"
 fi
 
 SRC=tasks/yousuu

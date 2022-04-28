@@ -10,7 +10,7 @@ class CV::YscritRaw
     @[JSON::Field(key: "bookId")]
     getter book_id : Int64 = 0_i64
 
-    getter id : Int64 { _id > 0 ? id : book_id }
+    getter id : Int64 { _id > 0 ? _id : book_id }
 
     getter title : String
     getter author : String
@@ -34,7 +34,7 @@ class CV::YscritRaw
   getter stars : Int32 = 3
 
   @[JSON::Field(key: "content")]
-  property ztext : String = ""
+  getter ztext : String = ""
 
   getter tags : Array(String) = [] of String
 
@@ -69,7 +69,7 @@ class CV::YscritRaw
 
     crit.stars = self.stars
     crit.set_tags(self.tags)
-    crit.set_body(self.ztext)
+    crit.set_ztext(fix_ztext(ztext))
 
     crit.stime = stime
     crit.utime = (self.updated_at || self.created_at).to_unix
@@ -81,6 +81,23 @@ class CV::YscritRaw
     crit.save!
   rescue err
     puts err.inspect_with_backtrace.colorize.red
+  end
+
+  ZTEXTS = Hash(String, Tabkv(String)).new do |h, k|
+    h[k] = Tabkv(String).new("var/ysinfos/yscrits/#{k}-ztext.tsv")
+  end
+
+  def fix_ztext(input : String)
+    return input unless input == "请登录查看评论内容"
+
+    stored = ZTEXTS[_id[0..3]]
+
+    unless input = stored[_id]?
+      input = "$$$"
+      stored.append!(_id, input)
+    end
+
+    input
   end
 
   def upsert_ysbook(book : Book)

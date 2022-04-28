@@ -102,14 +102,40 @@ module CV::BookUtil
     caps ? TextUtil.titleize(output) : output
   end
 
-  def convert(input : String, udict = "combine") : Array(String)
-    lines = TextUtil.split_html(input)
-    convert(lines, udict)
+  #######################
+
+  def split_lines(input : String)
+    input.split(/\r?\n|\r/).map(&.strip).reject(&.empty?)
   end
 
-  def convert(lines : Array(String), udict = "combine") : Array(String)
+  enum RenderMode
+    Mtl; Text; Html
+  end
+
+  def cv_lines(input : String, udict : String, mode : RenderMode) : String
+    cv_lines(split_lines(input), udict, mode)
+  end
+
+  def cv_lines(lines : Array(String), udict : String = "combine", mode : RenderMode = :text) : String
     cvmtl = MtCore.generic_mtl(udict)
-    lines.map! { |line| cvmtl.cv_plain(line).to_s }
+
+    String.build do |io|
+      lines.each_with_index do |line, idx|
+        mt_list = cvmtl.cv_plain(line)
+        io << '\n' if idx > 0
+
+        case mode
+        when .html?
+          io << "<p>"
+          mt_list.to_s(io)
+          io << "</p>"
+        when .text?
+          mt_list.to_s(io)
+        else
+          mt_list.to_str(io)
+        end
+      end
+    end
   end
 
   ###################

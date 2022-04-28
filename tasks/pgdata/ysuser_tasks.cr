@@ -2,16 +2,17 @@
 require "../shared/nvinfo_util"
 
 module CV
-  # def self.reseed!
-  #   Dir.glob("_db/yousuu/list-infos/*.json") do |file|
-  #     input = YslistRaw.from_info(File.read(file))
-  #     stime = NvinfoUtil.mtime(file).not_nil!
+  def self.reseed!
+    Tabkv(Int32).new("var/ysinfos/ysusers.tsv").data.each do |zname, origin_id|
+      zname = zname.gsub("'", "''")
+      Clear::SQL.execute <<-SQL
+        update ysusers set origin_id = #{origin_id} where zname = '#{zname}';
+      SQL
 
-  #     input.seed!(stime)
-  #   rescue err
-  #     puts err
-  #   end
-  # end
+    rescue err
+      puts err
+    end
+  end
 
   def self.update!
     Ysuser.query.each do |ysuser|
@@ -24,6 +25,6 @@ module CV
     end
   end
 
-  # reseed! if ARGV.includes?("reseed")
+  reseed! if ARGV.includes?("reseed")
   update! if ARGV.includes?("update")
 end

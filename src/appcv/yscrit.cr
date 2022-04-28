@@ -65,28 +65,14 @@ class CV::Yscrit
     self.vtags = tags.map { |x| MtCore.cv_hanviet(x) }
   end
 
-  def set_body(ztext : String, dname = self.nvinfo.dname)
-    return if ztext.empty? || ztext == "请登录查看评论内容"
+  def set_ztext(ztext : String)
+    return if ztext.empty?
     self.ztext = ztext
-    self.vhtml = cvdata(dname, mode: :html)
+    self.fix_vhtml
   end
 
-  enum RenderMode
-    Mtl; Text; Html
-  end
-
-  def cvdata(dname = self.nvinfo.dname, mode : RenderMode = :mtl)
-    cvmtl = MtCore.generic_mtl(dname)
-
-    zhtext.map do |line|
-      mt_list = cvmtl.cv_plain(line)
-
-      case mode
-      when .text? then mt_list.to_s
-      when .html? then "<p>#{mt_list}</p>"
-      else             mt_list.to_str
-      end
-    end.join("\n")
+  def fix_vhtml(dname = self.nvinfo.dname)
+    self.vhtml = BookUtil.cv_lines(ztext, dname, mode: :html)
   end
 
   ###################

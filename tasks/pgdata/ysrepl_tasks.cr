@@ -1,0 +1,37 @@
+require "../shared/ysrepl_raw"
+
+module CV
+  extend self
+
+  reseed! if ARGV.includes?("reseed")
+  update! if ARGV.includes?("update")
+
+  DIR = "_db/yousuu/repls"
+
+  def reseed!
+    groups = Dir.children(DIR).sort!
+
+    groups.each do |group|
+      puts "[#{group}]"
+
+      files = Dir.glob("#{DIR}/#{group}/*.json")
+
+      files.each do |file|
+        crits = YsreplRaw.from_list(File.read(file))[:commentReply]
+        stime = File.info(file).modification_time.to_unix
+        crits.each(&.seed!(stime))
+      rescue err
+        puts err
+        File.delete(file)
+      end
+    end
+  end
+
+  def update!
+    Ysrepl.query.order_by(id: :asc)
+      .with_yscrit(&.with_nvinfo)
+      .each_with_cursor(20) do |ysrepl|
+        ysrepl.tap(&.fix_vhtml).save!
+      end
+  end
+end

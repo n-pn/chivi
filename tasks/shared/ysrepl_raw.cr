@@ -72,8 +72,7 @@ class CV::YsreplRaw
 
   alias Data = NamedTuple(total: Int32, commentReply: Array(self))
 
-  def self.from_list(data : String) : Tuple(Int32, Array(self))
-    json = NamedTuple(data: Data).from_json(data)
-    {json[:data][:total], json[:data][:commentReply]}
+  def self.from_list(data : String) : Data
+    NamedTuple(data: Data).from_json(data)[:data]
   end
 end

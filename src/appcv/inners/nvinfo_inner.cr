@@ -24,8 +24,8 @@ module CV::NvinfoInner
 
   def set_zintro(lines : Array(String), force = false) : Nil
     return unless force || self.bintro.empty?
-    vintro = BookUtil.convert(lines, self.bhash)
-    set_vintro(vintro.join("\n"), force: true)
+    vintro = BookUtil.cv_lines(lines, self.bhash, :text)
+    set_vintro(vintro, force: true)
   end
 
   def set_vintro(vintro : String, force = false) : Nil

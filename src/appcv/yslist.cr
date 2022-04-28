@@ -69,9 +69,12 @@ class CV::Yslist
 
   def set_desc(zdesc : String)
     return if zdesc.empty?
-
     self.zdesc = zdesc
-    self.vdesc = zdesc.split(/\r?\n|\r/).map { |x| MTL.translate(x) }.join('\n')
+    self.fix_desc
+  end
+
+  def fix_desc
+    self.vdesc = BookUtil.cv_lines(zdesc, "combine", mode: :text)
   end
 
   def fix_sort!

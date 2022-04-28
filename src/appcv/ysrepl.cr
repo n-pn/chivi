@@ -34,10 +34,14 @@ class CV::Ysrepl
     end
   end
 
-  def cvdata(dname = self.yscrit.nvinfo.dname, mode = 1)
-    lines = self.ztext.split("\n").map(&.strip).reject(&.empty?)
-    cvmtl = MtCore.generic_mtl(dname)
-    lines.map { |line| cvmtl.cv_plain(line, mode: mode).to_str }.join("\n")
+  def set_ztext(ztext : String)
+    return if ztext.empty?
+    self.ztext = ztext
+    self.fix_vhtml
+  end
+
+  def fix_vhtml(dname = self.yscrit.nvinfo.dname)
+    self.vhtml = BookUtil.cv_lines(ztext, dname, mode: :html)
   end
 
   def self.get!(id : Int64, created_at : Time)
