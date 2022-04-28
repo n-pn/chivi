@@ -54,7 +54,9 @@ then
 
   rsync -azui --no-p "$DIR/limit.txt" $SSH_DIR
 
-  # crystal build --release $SRC/yscrit_crawl.cr -o bin/yscrit_crawl
+  crystal build --release $SRC/yscrit_crawl.cr -o bin/yscrit_crawl_by_book
+  rsync -azui --no-p "bin/yscrit_crawl_by_book" "$SSH/bin"
+
   crystal build -s --release $SRC/yslist_books_crawl.cr -o bin/yscrit_crawl
   rsync -azui --no-p "bin/yscrit_crawl" "$SSH/bin"
 

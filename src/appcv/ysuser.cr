@@ -12,9 +12,14 @@ class CV::Ysuser
   column vname : String
   column vslug : String = ""
 
-  column like_count : Int32 = 0 # TBD: total list like_count or direct like count
-  column list_count : Int32 = 0 # book list count
-  column crit_count : Int32 = 0 # review count
+  column like_count : Int32 = 0
+  column star_count : Int32 = 0
+
+  column list_total : Int32 = 0
+  column list_count : Int32 = 0
+
+  column crit_total : Int32 = 0
+  column crit_count : Int32 = 0
 
   timestamps
 
