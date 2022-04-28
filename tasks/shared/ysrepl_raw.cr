@@ -5,7 +5,7 @@ class CV::YsreplRaw
   class User
     include JSON::Serializable
 
-    getter _id : Int64
+    getter _id : Int32
     @[JSON::Field(key: "userName")]
     getter name : String
   end
@@ -43,7 +43,7 @@ class CV::YsreplRaw
     end
 
     return unless yscrit = Yscrit.find({origin_id: self.yscrit_id})
-    ysuser = Ysuser.upsert!(self.user.name)
+    ysuser = Ysuser.upsert!(self.user.name, self.user._id)
 
     repl.ysuser = ysuser
     repl.yscrit = yscrit

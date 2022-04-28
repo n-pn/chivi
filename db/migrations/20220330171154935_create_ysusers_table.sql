@@ -1,6 +1,7 @@
 -- +micrate Up
 CREATE TABLE ysusers (
   id bigserial primary key,
+  origin_id int not null,
 
   zname text unique not null,
   vname text not null,
@@ -19,7 +20,8 @@ CREATE TABLE ysusers (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX ysuser_zname_idx ON ysusers (zname);
+CREATE UNIQUE INDEX ysuser_unique_idx ON ysusers (zname);
+CREATE UNIQUE INDEX ysuser_origin_idx ON ysusers (origin_id);
 
 
 -- +micrate Down

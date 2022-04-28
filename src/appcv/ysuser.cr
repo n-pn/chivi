@@ -4,6 +4,8 @@ class CV::Ysuser
   self.table = "ysusers"
   primary_key
 
+  column origin_id : Int32
+
   # has_many yslists : Yslist, foreign_key: "ysuser_id"
   # has_many yscrits : Yscrit, foreign_key: "ysuser_id"
   # has_many nvinfos : Nvinfo, through: "yscrits"
@@ -30,9 +32,9 @@ class CV::Ysuser
 
   ###############
 
-  def self.upsert!(zname : String)
+  def self.upsert!(zname : String, origin_id : Int32)
     find({zname: zname}) || begin
-      entry = new({zname: zname}).tap(&.fix_name)
+      entry = new({origin_id: origin_id, zname: zname}).tap(&.fix_name)
       entry.tap(&.save!)
     end
   end

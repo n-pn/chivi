@@ -19,7 +19,8 @@ class CV::YscritRaw
   struct User
     include JSON::Serializable
 
-    getter _id : Int64
+    getter _id : Int32
+
     @[JSON::Field(key: "userName")]
     getter name : String
   end
@@ -61,7 +62,7 @@ class CV::YscritRaw
     crit = Yscrit.get!(self.id, self.created_at)
 
     crit.ysbook, crit.nvinfo = upsert_ysbook(self.book)
-    crit.ysuser = Ysuser.upsert!(self.user.name)
+    crit.ysuser = Ysuser.upsert!(self.user.name, self.user._id)
 
     crit.origin_id = self._id
     crit.yslist_id = yslist_id if yslist_id
