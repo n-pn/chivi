@@ -8,6 +8,8 @@ module CV
 
   DIR = "_db/yousuu/crits"
 
+  PURGE = ARGV.includes?("--purge")
+
   def reseed!
     groups = Dir.children(DIR).sort_by!(&.to_i)
 
@@ -19,8 +21,8 @@ module CV
         crits = YscritRaw.from_book(File.read(file))[:comments]
         crits.each(&.seed!(FileUtil.mtime(file).not_nil!.to_unix))
       rescue err
-        puts err
-        File.delete(file)
+        puts [err, file]
+        File.delete(file) if PURGE
       end
     end
   end

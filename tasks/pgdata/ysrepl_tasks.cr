@@ -6,7 +6,8 @@ module CV
   reseed! if ARGV.includes?("reseed")
   update! if ARGV.includes?("update")
 
-  DIR = "_db/yousuu/repls"
+  DIR   = "_db/yousuu/repls"
+  PURGE = ARGV.includes?("--purge")
 
   def reseed!
     groups = Dir.children(DIR).sort!
@@ -21,8 +22,8 @@ module CV
         stime = File.info(file).modification_time.to_unix
         crits.each(&.seed!(stime))
       rescue err
-        puts err
-        File.delete(file)
+        puts [err, file]
+        File.delete(file) if PURGE
       end
     end
   end

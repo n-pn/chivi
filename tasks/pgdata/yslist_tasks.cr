@@ -2,6 +2,8 @@ require "../shared/yslist_raw"
 require "../shared/nvinfo_util"
 
 module CV
+  PURGE = ARGV.includes?("--purge")
+
   def self.reseed!
     Dir.glob("_db/yousuu/list-infos/*.json") do |file|
       input = YslistRaw.from_info(File.read(file))
@@ -9,7 +11,8 @@ module CV
 
       input.seed!(stime)
     rescue err
-      puts err
+      puts [err, file]
+      File.delete(file) if PURGE
     end
   end
 
