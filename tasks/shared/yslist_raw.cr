@@ -15,7 +15,6 @@ class CV::YslistRaw
   include JSON::Serializable
 
   getter _id : String
-  getter id : Int64 { _id[12..].to_i64(base: 16) }
 
   @[JSON::Field(key: "createrId")]
   getter user : User
@@ -53,9 +52,7 @@ class CV::YslistRaw
   getter list_id : String = ""
 
   def seed!(stime : Int64 = Time.utc.to_unix)
-    list = Yslist.get!(self.id, self.created_at)
-
-    list.origin_id = self._id
+    list = Yslist.upsert!(self._id, self.created_at)
     list.ysuser = Ysuser.upsert!(self.user.name)
 
     list.set_name(self.zname)

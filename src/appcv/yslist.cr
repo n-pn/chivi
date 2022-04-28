@@ -56,8 +56,17 @@ class CV::Yslist
 
   ##################
 
-  def self.get!(id : Int64, created_at : Time)
-    find({id: id}) || new({id: id, created_at: created_at})
+  def self.gen_id(origin_id : String)
+    origin_id[-7..-1].to_i64(base: 16)
+  end
+
+  def self.upsert!(origin_id : String, created_at : Time)
+    find({origin_id: origin_id}) || new({
+      id: gen_id(origin_id),
+
+      origin_id:  origin_id,
+      created_at: created_at,
+    })
   end
 
   CACHE_INT = RamCache(Int64, self).new

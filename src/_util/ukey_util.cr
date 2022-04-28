@@ -21,7 +21,7 @@ module CV::UkeyUtil
   end
 
   # from base16 to base32
-  def hexto32(input : String, limit : Int32 = 8)
+  def hexto32(input : String, limit : Int32 = 8) : String
     number = input[0, (limit &* 6 / 5).ceil.to_i].to_i64(base: 16)
     encode32(number).ljust(limit, '0')
   end
