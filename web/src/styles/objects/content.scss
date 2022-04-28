@@ -136,7 +136,7 @@ cv-user,
     @include margin-x(var(--gutter));
   }
 
-  @include tm-dark {
-    @include linesd(--bd-soft, $ndef: false, $inset: false);
+  @include tm-dark($svelte: false) {
+    @include linesd(--bd-soft, $inset: true);
   }
 }

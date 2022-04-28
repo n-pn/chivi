@@ -21,7 +21,7 @@
   }
 
   async function show_replies() {
-    const res = await fetch(`/api/crits/${crit.id}/replies`, {
+    const res = await fetch(`/api/yscrits/${crit.id}/replies`, {
       headers: { 'Content-Type': 'application/json' },
     })
 
@@ -241,8 +241,8 @@
     z-index: 10;
     padding: 0 var(--gutter);
     line-height: 2.25rem;
+    background-color: inherit;
 
-    @include bgcolor(secd);
     @include bdradi($loc: top);
     @include border(--bd-soft, $loc: bottom);
   }
@@ -345,7 +345,7 @@
     width: 100%;
     background: inherit;
 
-    height: 1.5rem;
+    height: 1.75rem;
 
     &._sticky {
       position: sticky;
@@ -353,7 +353,7 @@
     }
 
     @include hover {
-      @include bgcolor(main);
+      @include bgcolor(neutral, 5, 2);
     }
   }
 

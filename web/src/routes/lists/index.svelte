@@ -55,8 +55,7 @@
   .article {
     @include margin-y(var(--gutter));
     > * {
-      max-width: 42rem;
-      // margin: 0 auto;
+      @include padding-x(var(--gutter-large));
     }
   }
 

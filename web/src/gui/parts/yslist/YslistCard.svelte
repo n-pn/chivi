@@ -84,14 +84,14 @@
 
   .covers {
     position: relative;
-    width: 7rem;
+    width: 30%;
+    padding: 0.5rem;
+    max-width: 7rem;
     min-height: 9rem;
   }
 
   .cover {
     position: absolute;
-    top: 0.5rem;
-    left: 0.5rem;
     width: 6rem;
     height: 8rem;
 
@@ -119,10 +119,12 @@
   }
 
   .infos {
-    flex: 1;
+    flex: 1 1;
     padding-left: 0.75rem;
     display: flex;
     flex-direction: column;
+    z-index: 9;
+    background: inherit;
   }
 
   .genres {

@@ -133,7 +133,7 @@
 
   .article {
     > * {
-      max-width: 42rem;
+      @include padding-x(var(--gutter-large));
       // margin: 0 auto;
     }
   }

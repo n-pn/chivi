@@ -4,10 +4,10 @@
 
 <style lang="scss">
   .article {
-    margin-top: 1rem;
+    @include margin-y(1rem);
 
     > :global(*) {
-      max-width: 42rem;
+      @include padding-x(var(--gutter-large));
     }
   }
 </style>
