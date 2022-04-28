@@ -57,12 +57,6 @@
         <SIcon name="message" />
         <span>{crit.repl_count}</span>
       </button>
-
-      {#if crit.vhtml.length >= 640}
-        <button class="meta _show" on:click={() => (view_all = !view_all)}>
-          <SIcon name={view_all ? 'minus' : 'plus'} />
-        </button>
-      {/if}
     </div>
   </header>
 
@@ -113,20 +107,28 @@
     </section>
   {/if}
 
-  <section class="body" class:_all={view_all} class:big_text>
-    <div class="vtags">
-      {#each crit.vtags as label}
-        <a
-          class="link _genre"
-          href="/crits?list={crit.yslist_id}&label={label}">
-          <SIcon name="hash" />
-          <span>{label}</span>
-        </a>
-      {/each}
-    </div>
+  <div class="vtags">
+    {#each crit.vtags as label}
+      <a class="link _genre" href="/crits?list={crit.yslist_id}&label={label}">
+        <SIcon name="hash" />
+        <span>{label}</span>
+      </a>
+    {/each}
+  </div>
 
+  <section class="body" class:big_text class:_all={view_all}>
     {@html crit.vhtml}
   </section>
+
+  {#if crit.vhtml.length > 600}
+    <button
+      type="button"
+      class="reveal"
+      class:_sticky={view_all}
+      on:click={() => (view_all = !view_all)}>
+      <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
+    </button>
+  {/if}
 
   {#if show_list && crit.yslist_id}
     <footer>
@@ -263,15 +265,6 @@
     :global(svg) { width: 1.1em; height: 1.1em; }
     @include bps(font-size, rem(12px), $pl: rem(13px), $tm: rem(14px));
 
-    // prettier-ignore
-    &._show {
-      margin-left: -0.25rem;
-      padding: 0 0.25rem;
-      margin-right: calc(var(--gutter) * -0.75);
-      @include fgcolor(secd);
-      :global(svg) { width: 1.2em; height: 1.2em}
-    }
-
     &._user {
       font-weight: 500;
       @include bps(font-size, rem(13px), $pl: rem(14px), $tm: rem(15px));
@@ -308,17 +301,25 @@
   .body {
     --bg-hide: #{color(neutral, 7, 2)};
 
-    margin: 0 var(--gutter) 0.75em;
+    padding: 0 var(--gutter);
 
-    max-height: 12rem;
-    overflow: hidden;
     line-height: 1.5em;
+    position: relative;
+
+    overflow: hidden;
+    max-height: 12rem;
 
     @include bps(font-size, rem(16px), $pl: rem(17px), $tm: rem(18px));
-    // prettier-ignore
-    background: linear-gradient( to top, color(--bg-hide) 0.25rem, transparent 1rem);
-    // prettier-ignore
-    @include tm-dark { --bg-hide: #{color(neutral, 5, 2)}; }
+
+    @include tm-dark {
+      --bg-hide: #{color(neutral, 5, 2)};
+    }
+
+    background: linear-gradient(
+      to top,
+      color(--bg-hide) 0.25rem,
+      transparent 0.75rem
+    );
 
     &._all {
       max-height: initial;
@@ -331,7 +332,28 @@
     }
 
     :global(p) {
-      margin-top: 0.75em;
+      margin: 0.75em 0;
+    }
+  }
+
+  .reveal {
+    @include flex-ca;
+    @include border(--bd-soft, $loc: top);
+    @include fgcolor(tert);
+
+    outline: none;
+    width: 100%;
+    background: inherit;
+
+    height: 1.5rem;
+
+    &._sticky {
+      position: sticky;
+      bottom: 0;
+    }
+
+    @include hover {
+      @include bgcolor(main);
     }
   }
 
@@ -339,9 +361,7 @@
     @include flex($gap: 0.375rem);
     @include border(--bd-soft, $loc: top);
 
-    margin: 0 var(--gutter);
-    padding: 0.375rem 0;
-
+    padding: 0.375rem var(--gutter);
     @include fgcolor(tert);
 
     // prettier-ignore

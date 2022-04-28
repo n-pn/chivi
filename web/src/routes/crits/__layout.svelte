@@ -1,16 +1,13 @@
-<section class="main">
+<article class="article">
   <slot />
-</section>
+</article>
 
 <style lang="scss">
-  .main {
-    border-radius: 0.5rem;
-    @include bgcolor(tert);
-
+  .article {
     margin-top: 1rem;
-    margin: 1rem auto;
-    max-width: 48rem;
 
-    padding: var(--gutter);
+    > :global(*) {
+      max-width: 42rem;
+    }
   }
 </style>
