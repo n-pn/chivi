@@ -6,8 +6,11 @@
   import Replies from './Replies.svelte'
 
   export let crit: CV.Yscrit
+
   export let show_book = true
-  export let view_all = false
+  export let show_list = true
+
+  export let view_all = crit.vhtml.length < 640
   export let big_text = false
 
   let active_repls = false
@@ -72,7 +75,6 @@
       <div class="book-info">
         <div class="book-title">
           <a class="link _title" href="/-{book.bslug}">
-            <SIcon name="book" />
             <span>{book.btitle}</span>
           </a>
         </div>
@@ -126,7 +128,7 @@
     {@html crit.vhtml}
   </section>
 
-  {#if crit.yslist_id}
+  {#if show_list && crit.yslist_id}
     <footer>
       <a class="link _list" href="/lists/{crit.yslist_id}{crit.yslist_vslug}">
         <SIcon name="bookmarks" />
@@ -144,28 +146,31 @@
 <style lang="scss">
   .book {
     @include flex($gap: 0.5rem);
-    @include bgcolor(secd);
-    max-width: 32rem;
+    @include bgcolor(main);
 
-    @include border(--bd-soft);
-    padding: 0.75rem 0.75rem;
-    margin-top: 0.75rem;
-    @include margin-x(0);
+    // @include border(--bd-soft);
+    // @include shadow();
+
+    @include border(--bd-soft, $loc: bottom);
+    // margin-top: 0.75rem;
+    @include margin-x(auto);
 
     @include bp-min(pl) {
-      @include margin-x(var(--gutter));
-      @include bdradi;
+      padding: 0 var(--gutter);
+      // margin: 0 var(--gutter);
+      // @include bdradi;
+      // @include linesd(--bd-soft);
     }
   }
 
   .book-info {
-    flex-shrink: 1;
     overflow: hidden;
   }
 
   .book-vote {
     min-width: 3.5rem;
     margin-left: auto;
+    margin-right: 0.5rem;
     flex-direction: column;
     @include flex-ca;
   }
@@ -180,6 +185,7 @@
     @include ftsize(md);
     @include fgcolor(secd);
     @include clamp($width: null);
+    margin-top: 0.5rem;
   }
 
   .book-extra {
@@ -203,11 +209,12 @@
   }
 
   .bcover {
-    display: inline-block;
-    > img {
-      width: 3.5rem;
-      height: auto;
-      @include bdradi;
+    height: 100%;
+    width: 4rem;
+
+    img {
+      width: 100%;
+      height: 100%;
     }
   }
 

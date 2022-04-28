@@ -21,9 +21,22 @@ class CV::YslistCtrl < CV::BaseCtrl
   end
 
   def show
-    list_id = UkeyUtil.decode32(params["list"])
-    yslist = Yslist.find!({id: list_id})
-    send_json({yslist: YslistView.new(yslist, true)})
+    yslist = Yslist.find!({id: UkeyUtil.decode32(params["list"])})
+
+    pgidx, limit, offset = params.page_info(min: 10, max: 20)
+
+    crits = Yscrit.sort_by(params["_s"]?)
+      .where("yslist_id = ?", yslist.id)
+      .limit(limit).offset(offset).with_nvinfo
+    crits.each(&.ysuser = yslist.ysuser)
+
+    send_json({
+      ylist: YslistView.new(yslist),
+      yl_id: yslist.origin_id,
+      crits: crits.map { |x| YscritView.new(x) },
+      pgmax: CtrlUtil.pgmax(yslist.book_count, limit),
+      pgidx: pgidx,
+    })
   rescue err
     halt! 404, "Đánh giá không tồn tại"
   end

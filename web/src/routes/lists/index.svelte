@@ -7,7 +7,7 @@
     return await api_res.json()
   }
 
-  const sorts = { utime: 'Gần nhất', likes: 'Ưa thích' }
+  const sorts = { utime: 'Gần nhất', likes: 'Ưa thích', views: 'Lượt xem' }
 </script>
 
 <script lang="ts">
@@ -34,7 +34,7 @@
     <span class="h2 -label">Thư đơn</span>
     {#each Object.entries(sorts) as [sort, name]}
       <a
-        href={pager.gen_url({ sort, pg: 1 })}
+        href={pager.gen_url({ _s: sort, pg: 1 })}
         class="-sort"
         class:_active={sort == _sort}>{name}</a>
     {/each}
@@ -54,6 +54,10 @@
 <style lang="scss">
   .article {
     @include margin-y(var(--gutter));
+    > * {
+      max-width: 40rem;
+      margin: 0 auto;
+    }
   }
 
   .sorts {
@@ -78,11 +82,6 @@
         @include fgcolor(primary, 5);
       }
     }
-  }
-
-  .lists {
-    max-width: 40rem;
-    // margin: 0 auto;
   }
 
   .pagi {

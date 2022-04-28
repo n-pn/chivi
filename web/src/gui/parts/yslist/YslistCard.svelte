@@ -73,10 +73,10 @@
 <style lang="scss">
   .yslist {
     display: flex;
-    margin-top: 0.75rem;
-    padding: 0.75rem;
+    margin-top: var(--gutter);
+    padding: var(--gutter);
 
-    @include bgcolor(tert);
+    @include bgcolor(secd);
     @include bdradi;
     @include shadow;
     @include linesd(--bd-soft);
@@ -127,6 +127,15 @@
   .genres {
     display: flex;
     margin: 0.25rem 0;
+    overflow: hidden;
+  }
+
+  .genre {
+    @include fgcolor(tert);
+    font-weight: 500;
+    margin-right: 0.5rem;
+    font-size: rem(15px);
+    @include clamp($width: null);
   }
 
   .vdesc {
@@ -136,13 +145,6 @@
     line-height: 1.25rem;
     margin-bottom: 0.25rem;
     font-style: italic;
-  }
-
-  .genre {
-    @include fgcolor(tert);
-    font-weight: 500;
-    margin-right: 0.5rem;
-    font-size: rem(15px);
   }
 
   .vname {
