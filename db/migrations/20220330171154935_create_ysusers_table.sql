@@ -4,6 +4,7 @@ CREATE TABLE ysusers (
 
   zname text unique not null,
   vname text not null,
+  vslug text not null default '',
 
   like_count int not null default 0,
   crit_count int not null default 0,

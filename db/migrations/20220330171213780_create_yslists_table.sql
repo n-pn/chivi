@@ -14,6 +14,9 @@ CREATE TABLE yslists (
   vslug text not null default '-',
   klass text not null default 'male',
 
+  covers text[] not null default '{}';
+  genres text[] not null default '{}';
+
   utime bigint not null default 0,
   stime bigint not null default 0,
 

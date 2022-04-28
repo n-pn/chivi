@@ -2,12 +2,12 @@
   import { page } from '$app/stores'
 
   export async function load({ fetch, url: { searchParams } }) {
-    const api_url = `/api/crits?${searchParams.toString()}&lm=10`
+    const api_url = `/api/yscrits?${searchParams.toString()}&lm=10`
     const api_res = await fetch(api_url)
     return await api_res.json()
   }
 
-  const sorts = { mtime: 'Gần nhất', stars: 'Cho điểm', likes: 'Ưa thích' }
+  const sorts = { utime: 'Gần nhất', score: 'Nổi bật' }
 </script>
 
 <script lang="ts">
@@ -18,7 +18,7 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pager = new Pager($page.url, { sort: 'mtime', pg: 1 })
+  $: pager = new Pager($page.url, { sort: 'utime', pg: 1 })
   $: _sort = pager.get('sort')
 
   $: topbar.set({ left: [['Đánh giá', 'stars', { href: '/crits' }]] })

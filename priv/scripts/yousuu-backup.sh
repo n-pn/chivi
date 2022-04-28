@@ -8,6 +8,7 @@ rsync -azui --no-p "$SSH/$DIR/crits" "$DIR"
 rsync -azui --no-p "$SSH/$DIR/repls" "$DIR"
 
 rsync -azui --no-p "$SSH/$DIR/lists" "$DIR"
+rsync -azui --no-p "$SSH/$DIR/list-infos" "$DIR"
 rsync -azui --no-p "$SSH/$DIR/lists-by-book" "$DIR"
 
 rsync -azui --no-p "$SSH/$DIR/list-books" "$DIR"

@@ -36,7 +36,7 @@
 
 <crit-item>
   <header>
-    <a class="meta _user" href="/crits?user={crit.uslug}">{crit.uname}</a>
+    <a class="meta _user" href="/crits?user={crit.op_id}">{crit.uname}</a>
     <x-sep>·</x-sep>
     <a class="meta _time" href="/qtran/crits/{crit.id}"
       >{rel_time(crit.utime)}{#if crit.utime != crit.ctime}*{/if}</a>
@@ -128,7 +128,7 @@
 
   {#if crit.yslist_id}
     <footer>
-      <a class="link _list" href="/crits?list={crit.yslist_id}">
+      <a class="link _list" href="/lists/{crit.yslist_id}{crit.yslist_vslug}">
         <SIcon name="bookmarks" />
         <span>{crit.yslist_vname}</span>
         <span>({crit.yslist_count} bộ truyện)</span>

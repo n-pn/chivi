@@ -1,28 +1,34 @@
-require "../shared/bootstrap"
+require "../shared/yslist_raw"
+require "../shared/nvinfo_util"
 
-CV::Yslist.query.each do |yslist|
-  yslist.set_name(yslist.zname)
-  yslist.set_desc(yslist.zdesc)
+module CV
+  def self.reseed!
+    Dir.glob("_db/yousuu/list-infos/*.json") do |file|
+      input = YslistRaw.from_info(File.read(file))
+      stime = NvinfoUtil.mtime(file).not_nil!
 
-  yslist.save!
+      input.seed!(stime)
+    rescue err
+      puts err
+    end
+  end
+
+  def self.update!
+    Yslist.query.each do |yslist|
+      book = yslist.nvinfos.to_a
+
+      genres = book.flat_map(&.vgenres)
+      yslist.genres = genres.tally.to_a.sort_by!(&.[1].-).map(&.[0])
+
+      yslist.covers = book.sort_by(&.weight.-).first(3).map(&.bcover)
+
+      yslist.set_name(yslist.zname)
+      yslist.set_desc(yslist.zdesc)
+
+      yslist.save!
+    end
+  end
+
+  reseed! if ARGV.includes?("reseed")
+  update! if ARGV.includes?("update")
 end
-
-# set4 = Set(String).new
-# set5 = Set(String).new
-# set6 = Set(String).new
-# set8 = Set(String).new
-
-# CV::Nvinfo.query.with_author.each do |x|
-#   bhash = x.bhash
-#   set8 << bhash
-
-#   # bhash_2 = CV::UkeyUtil.digest32(x.author.zname, 3) + CV::UkeyUtil.digest32(x.zname, 5)
-#   set6 << bhash[0..5] + x.hslug[0..1]
-#   set5 << bhash[0..3] + x.hslug[0..3]
-#   set4 << bhash[0..3] + x.hslug[0..4]
-# end
-
-# puts "8: #{set8.size}, #{set8.first}"
-# puts "6: #{set6.size}, #{set6.first}"
-# puts "5: #{set5.size}, #{set5.first}"
-# puts "4: #{set4.size}, #{set4.first}"

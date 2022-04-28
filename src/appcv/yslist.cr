@@ -5,8 +5,8 @@ class CV::Yslist
   primary_key
 
   belongs_to ysuser : Ysuser
-  # has_many yscrits : Yscrit
-  # has_many nvinfos : Nvinfo, through: "yscrits"
+  has_many yscrits : Yscrit, foreign_key: "yslist_id"
+  has_many nvinfos : Nvinfo, through: "yscrits"
 
   column origin_id : String = ""
 
@@ -19,6 +19,9 @@ class CV::Yslist
   column vdesc : String = "" # translated description
 
   column klass : String = "male" # target demographic: male or female
+
+  column covers : Array(String) = [] of String
+  column genres : Array(String) = [] of String
 
   column utime : Int64 = 0 # list checked at by minutes from epoch
   column stime : Int64 = 0 # list changed at by seconds from epoch
@@ -35,19 +38,39 @@ class CV::Yslist
 
   timestamps
 
+  scope :filter_ysuser do |ysuser_id|
+    ysuser_id ? where("ysuser_id = #{ysuser_id}") : self
+  end
+
+  scope :filter_string do |qs|
+    qs ? where("vslug LIKE '%-#{BookUtil.scrub_vname(qs, '-')}-%'") : self
+  end
+
+  scope :sort_by do |order|
+    case order
+    when "utime" then self.order_by(utime: :desc)
+    when "likes" then self.order_by(like_count: :desc)
+    when "stars" then self.order_by(star_count: :desc)
+    when "score" then self.order_by(_sort: :desc)
+    else              self.order_by(id: :desc)
+    end
+  end
+
+  ####################
+
   MTL = MtCore.generic_mtl
 
   def set_name(zname : String) : Nil
     self.zname = zname
     self.vname = MTL.translate(self.zname)
-    self.vslug = "-" + BookUtil.scrub_vname(self.vname) + "-"
+    self.vslug = "-" + BookUtil.scrub_vname(self.vname, "-") + "-"
   end
 
   def set_desc(zdesc : String)
     return if zdesc.empty?
 
     self.zdesc = zdesc
-    self.vdesc = zdesc.split('\n').map { |x| MTL.translate(x) }.join('\n')
+    self.vdesc = zdesc.split(/\r?\n|\r/).map { |x| MTL.translate(x) }.join('\n')
   end
 
   def fix_sort!

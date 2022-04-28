@@ -10,6 +10,7 @@ class CV::Ysuser
 
   column zname : String
   column vname : String
+  column vslug : String = ""
 
   column like_count : Int32 = 0 # TBD: total list like_count or direct like count
   column list_count : Int32 = 0 # book list count
@@ -17,10 +18,17 @@ class CV::Ysuser
 
   timestamps
 
+  def fix_name : Nil
+    self.vname = BookUtil.hanviet(self.zname, caps: true)
+    self.vslug = BookUtil.scrub_vname(self.vname, "-")
+  end
+
+  ###############
+
   def self.upsert!(zname : String)
     find({zname: zname}) || begin
-      vname = BookUtil.hanviet(zname, caps: true)
-      new({zname: zname, vname: vname}).tap(&.save!)
+      entry = new({zname: zname}).tap(&.fix_name)
+      entry.tap(&.save!)
     end
   end
 end

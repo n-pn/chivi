@@ -32,8 +32,12 @@ CREATE TABLE yscrits (
 CREATE INDEX yscrit_nvinfo_idx ON yscrits (nvinfo_id, stars);
 CREATE INDEX yscrit_ysbook_idx ON yscrits (ysbook_id);
 CREATE INDEX yscrit_ysuser_idx ON yscrits (ysuser_id, created_at);
+
 CREATE INDEX yscrit_yslist_idx ON yscrits (yslist_id);
+
 CREATE INDEX yscrit_sorted_idx ON yscrits (_sort);
+CREATE INDEX yscrit_update_idx ON yscrits (utime);
+
 CREATE INDEX yscrit_vtags_idx ON yscrits USING GIN(vtags);
 
 -- +micrate Down

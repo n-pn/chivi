@@ -4,7 +4,7 @@
     const _s = url.searchParams.get('sort') || 'score'
 
     const qs = `pg=${pg}&lm=10&sort=${_s}`
-    const res = await fetch(`/api/crits?book=${stuff.nvinfo.id}&${qs}`)
+    const res = await fetch(`/api/yscrits?book=${stuff.nvinfo.id}&${qs}`)
 
     const data = await res.json()
     if (res.ok) data.props._sort = _s

@@ -10,8 +10,9 @@ struct CV::YscritView
 
   def to_json(jb = JSON::Builder.new)
     jb.object do
+      jb.field "op_id", @data.ysuser.id
       jb.field "uname", @data.ysuser.vname
-      jb.field "uslug", @data.ysuser.id
+      jb.field "uslug", @data.ysuser.vslug
 
       jb.field "id", UkeyUtil.encode32(@data.id)
 
@@ -26,6 +27,7 @@ struct CV::YscritView
       jb.field "utime", @data.utime
 
       jb.field "book", {
+        id:    @data.nvinfo.id,
         bslug: @data.nvinfo.bslug,
 
         author: @data.nvinfo.author.vname,
@@ -43,8 +45,11 @@ struct CV::YscritView
 
       if yslist = @data.yslist
         jb.field "yslist_id", UkeyUtil.encode32(yslist.id)
-        jb.field "yslist_class", yslist.klass
+
         jb.field "yslist_vname", yslist.vname
+        jb.field "yslist_vslug", yslist.vslug
+
+        jb.field "yslist_class", yslist.klass
         jb.field "yslist_count", yslist.book_count
       end
     end

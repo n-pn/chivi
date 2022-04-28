@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   export async function load({ fetch, params: { crit } }) {
-    const api_res = await fetch(`/api/crits/${crit}`)
+    const api_res = await fetch(`/api/yscrits/${crit}`)
     return await api_res.json()
   }
 </script>
@@ -35,9 +35,9 @@
     <span>{yscrit.uname}</span>
   </a>
   <span class="-sep">/</span>
-  <a class="-link" href="/crits?book={yscrit.bid}">
+  <a class="-link" href="/crits?book={yscrit.book.id}">
     <SIcon name="book" />
-    <span>{yscrit.bname}</span>
+    <span>{yscrit.book.btitle}</span>
   </a>
 </nav>
 

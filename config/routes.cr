@@ -44,9 +44,13 @@ Amber::Server.configure do
     get "/chaps/:book/:sname/:chidx/:cpart/text", CV::NvchapCtrl, :cv_text
     post "/chaps/:book/:sname", CV::NvchapCtrl, :upsert
 
-    get "/crits", CV::YscritCtrl, :index
-    get "/crits/:crit", CV::YscritCtrl, :show
-    get "/crits/:crit/replies", CV::YscritCtrl, :replies
+    get "/yscrits", CV::YscritCtrl, :index
+    get "/yscrits/:crit", CV::YscritCtrl, :show
+    get "/yscrits/:crit/replies", CV::YscritCtrl, :replies
+
+    get "/yslists", CV::YslistCtrl, :index
+    get "/yslists/:list", CV::YslistCtrl, :show
+    # get "/yslists/:list/books", CV::YslistCtrl, :books
 
     get "/_self/books", CV::UbmemoCtrl, :cvbook
     get "/_self/books/access", CV::UbmemoCtrl, :access

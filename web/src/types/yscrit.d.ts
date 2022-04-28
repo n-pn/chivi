@@ -1,5 +1,6 @@
 declare namespace CV {
   interface Crbook {
+    id: number
     bslug: string
 
     btitle: string
@@ -23,6 +24,7 @@ declare namespace CV {
     stars: number
     vtags: string[]
 
+    op_id: number
     uname: string
     uslug: string
 
@@ -33,8 +35,11 @@ declare namespace CV {
     repl_count: number
 
     yslist_id?: string
-    yslist_class?: string
+
     yslist_vname?: string
+    yslist_vslug?: string
+
+    yslist_class?: string
     yslist_count?: number
   }
 }
