@@ -96,7 +96,6 @@
     height: 8rem;
 
     z-index: 2;
-    @include shadow(2);
 
     &._1 {
       transform: translate(0.5rem, 0.5rem);
@@ -111,9 +110,11 @@
     }
 
     > img {
-      @include bdradi;
       width: 100%;
       height: 100%;
+
+      @include bdradi;
+      @include shadow(2);
     }
   }
 

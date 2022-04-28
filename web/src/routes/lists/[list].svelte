@@ -134,7 +134,7 @@
   .article {
     > * {
       max-width: 42rem;
-      margin: 0 auto;
+      // margin: 0 auto;
     }
   }
 
