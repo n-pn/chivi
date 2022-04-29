@@ -13,7 +13,6 @@ class CV::YsreplRaw
   include JSON::Serializable
 
   getter _id : String
-  getter id : Int64 { _id[12..].to_i64(base: 16) }
 
   @[JSON::Field(key: "fromId")]
   getter user : User
@@ -30,49 +29,32 @@ class CV::YsreplRaw
   @[JSON::Field(key: "replyCount")]
   getter repl_count : Int32 = 0
 
-  # getter createdAt : Time # ignoring
-
   @[JSON::Field(key: "createdAt")]
   getter created_at : Time
 
   def seed!(stime : Int64 = Time.utc.to_unix)
-    if self.ztext == "请登录查看评论内容"
-      return unless repl = Ysrepl.find({id: self.id})
-    else
-      repl = Ysrepl.get!(self.id, self.created_at)
-    end
+    ysrepl = Ysrepl.upsert!(self._id, self.created_at)
 
-    return unless yscrit = Yscrit.find({origin_id: self.yscrit_id})
-    ysuser = Ysuser.upsert!(self.user.name, self.user._id)
+    ysrepl.yscrit = Yscrit.find!({origin_id: self.yscrit_id})
+    ysrepl.ysuser = Ysuser.upsert!(self.user.name, self.user._id)
 
-    repl.ysuser = ysuser
-    repl.yscrit = yscrit
+    ysrepl.stime = stime
+    ysrepl.set_ztext(self.ztext)
 
-    repl.origin_id = self._id
+    ysrepl.like_count = self.like_count if self.like_count > ysrepl.like_count
+    ysrepl.repl_count = self.repl_count if self.repl_count > ysrepl.repl_count
 
-    repl.ztext = self.ztext
-    repl.vhtml = self.vhtml(yscrit.nvinfo.dname)
-
-    repl.stime = stime
-
-    repl.like_count = self.like_count
-    repl.repl_count = self.repl_count
-
-    repl.save!
+    ysrepl.save!
   rescue err
     puts err.inspect_with_backtrace.colorize.red
   end
 
-  def vhtml(dname : String)
-    lines = self.ztext.split("\n").map(&.strip).reject(&.empty?)
-    cvmtl = MtCore.generic_mtl(dname)
+  ##################
 
-    lines.map { |line| "<p>#{cvmtl.cv_plain(line)}</p>" }.join("\n")
-  end
+  alias Data = NamedTuple(commentReply: Array(self), total: Int32)
 
-  alias Data = NamedTuple(total: Int32, commentReply: Array(self))
-
-  def self.from_list(data : String) : Data
-    NamedTuple(data: Data).from_json(data)[:data]
+  def self.from_list(json : String) : {Array(self), Int32}
+    data = NamedTuple(data: Data).from_json(json)[:data]
+    {data[:commentReply], data[:total]}
   end
 end

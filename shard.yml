@@ -51,17 +51,23 @@ targets:
   ysbook_crawl:
     main: tasks/yousuu/ysbook_crawl.cr
 
-  yscrit_crawl:
-    main: tasks/yousuu/yscrit_crawl.cr
-
   ysrepl_crawl:
     main: tasks/yousuu/ysrepl_crawl.cr
 
-  yslist_crawl:
-    main: tasks/yousuu/yslist_crawl.cr
+  yscrit_crawl_by_book:
+    main: tasks/yousuu/yscrit_crawl_by_book.cr
 
-  yscrit_seed:
-    main: tasks/pgdata/yscrit_seed.cr
+  yscrit_crawl_by_list:
+    main: tasks/yousuu/yscrit_crawl_by_list.cr
+
+  yslist_crawl_by_book:
+    main: tasks/yousuu/yslist_crawl_by_book.cr
+
+  yscrit_tasks:
+    main: tasks/pgdata/yscrit_tasks.cr
+
+  ysrepl_tasks:
+    main: tasks/pgdata/ysrepl_tasks.cr
 
 dependencies:
   tabkv:

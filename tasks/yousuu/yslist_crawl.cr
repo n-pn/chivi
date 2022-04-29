@@ -1,147 +1,101 @@
-require "json"
-require "option_parser"
-
-require "../shared/bootstrap"
 require "../shared/http_client"
 require "../shared/yslist_raw"
 
 class CV::YslistCrawl
-  DIR = "_db/yousuu/lists-by-book"
+  DIR = "_db/yousuu/lists"
   Dir.mkdir_p(DIR)
 
-  @books = {} of Int64 => Ysbook
-
-  def initialize(regen_proxy = false)
-    @http = HttpClient.new(regen_proxy)
-    @channel = Channel(String).new
-
-    Ysbook.query.order_by(id: :desc).each_with_cursor(20) do |ysbook|
-      @books[ysbook.id] = ysbook if ysbook.list_count < ysbook.list_total
-    end
-  end
-
-  enum Mode
+  enum CrMode
     Head; Tail; Rand
   end
 
-  def crawl!(page = 1, mode : Mode = :head)
-    queue = [] of Ysbook
+  @http = HttpClient.new(false)
+  @data : Array(Yslist)
 
-    @books.each_value do |ysbook|
-      queue << ysbook if ysbook.list_total >= (page &- 1) &* 20
-    end
+  def initialize(crmode : CrMode = :tail, @reseed = false)
+    fresh = Time.utc - 3.days
+    @data = Yslist.query.where("stime < ?", fresh.to_unix)
 
     case mode
-    when .tail? then queue.reverse!
-    when .rand? then queue.shuffle!
+    when .rand? then @data.shuffle!
+    when .head? then @data.sort_by!(&.id)
+    when .tail? then @data.sort_by!(&.id.-)
     end
+  end
 
-    done = false
-
-    spawn do
-      loop do
-        break if done
-
-        select
-        when file = @channel.receive
-          seed_file!(file)
-        when timeout(1.second)
-          sleep 1.second
-        end
-      end
-    end
+  def crawl!
+    queue = @data
+    exit 0 if queue.empty?
 
     loops = 0
 
     until queue.empty?
       qsize = queue.size
+      qnext = [] of Yslist
 
-      puts "\n[loop: #{loops}, mode: #{mode}, size: #{qsize}]".colorize.cyan
+      Log.info { "<#{page}> [loop: #{loops}, size: #{qsize}]".colorize.cyan }
 
-      fails = [] of Ysbook
+      qnext = [] of Yslist
 
-      limit = queue.size
-      limit = 15 if limit > 15
-      inbox = Channel(Ysbook?).new(limit)
+      workers = qsize
+      workers = 10 if workers > 10
+      channel = Channel(Yslist?).new(workers)
 
-      queue.each_with_index(1) do |ysbook, idx|
+      queue.each_with_index(1) do |yslist, idx|
         exit(0) if @http.no_proxy?
 
         spawn do
-          label = "<#{idx}/#{qsize}> [#{ysbook.id}]"
-          inbox.send(crawl_page!(ysbook, page, label: label))
+          label = "<#{idx}/#{qsize}> [#{yslist.id}]"
+          channel.send(do_crawl!(yslist, label: label))
         end
 
-        inbox.receive.try { |x| fails << x } if idx > limit
+        channel.receive.try { |x| qnext << x } if idx > limit
       end
 
-      limit.times do
-        inbox.receive.try { |x| fails << x }
+      workers.times do
+        channel.receive.try { |x| qnext << x }
       end
 
-      return if @http.no_proxy?
-      queue = fails
+      exit 0 if @http.no_proxy?
+      queue = qnext
       loops += 1
     end
-
-    done = true
   end
 
-  FRESH = 2.days
+  def do_crawl!(yslist : Yslist, label : String = "-/-") : Yslist?
+    y_lid = yslist.origin_id
+    ofile = "#{DIR}/#{y_lid}.json"
 
-  def crawl_page!(ysbook : Ysbook, page : Int32, label : String)
-    file = "#{DIR}/#{ysbook.id}/#{page}.json"
-
-    unless FileUtil.mtime(file).try { |x| x + FRESH * page > Time.utc }
-      return ysbook unless @http.save!(page_url(ysbook.id, page), file, label)
+    if FileUtil.fresh?(ofile, Time.utc - 2.days)
+      return unless @reseed # skip seeding old data
+    elsif !@http.save!(api_url(y_bid, page), ofile, label)
+      return yslist
     end
 
-    @channel.send(file)
-    nil
-  end
+    stime = FileUtil.mtime_int(file)
+    YslistRaw.from_info(File.read(file)).seed!(stime)
 
-  def page_url(book_id : Int64, page = 1)
-    "https://api.yousuu.com/api/book/#{book_id}/booklist?page=#{page}&t=#{Time.utc.to_unix_ms}"
-  end
-
-  def seed_file!(file : String) : Nil
-    stime = FileUtil.mtime(file).not_nil!.to_unix
-
-    tuple = YslistRaw.from_list(File.read(file))
-
-    ys_bid = File.basename(File.dirname(file)).to_i64
-    ysbook = @books[ys_bid]
-
-    tuple[:booklists].each(&.seed!(stime))
-
-    ysbook.update({
-      list_total: tuple[:total] > ysbook.list_total ? tuple[:total] : ysbook.list_total,
-      list_count: Yscrit.query.where("ysbook_id = ? AND yslist_id > 0", ysbook.id).count.to_i,
-    })
-
-    Log.info { "- yslists: #{Yslist.query.count}".colorize.cyan }
-  rescue err : JSON::ParseException
-    puts err
-    File.delete(file)
+    Log.info { "- yslists: #{Yslist.query.where("zdesc != ''").count}".colorize.cyan }
   rescue err
     puts err
   end
 
-  delegate no_proxy?, to: @http
+  private def api_url(y_lid : String)
+    "https://api.yousuu.com/api/booklist/#{y_lid}/info"
+  end
+
+  #####################
 
   def self.run!(argv = ARGV)
-    crawl_mode = Mode::Rand
-    recheck_proxy = false
+    crmode = CrMode::Rand
+    reseed = false
 
-    OptionParser.parse(ARGV) do |opt|
-      opt.on("--proxy", "Recheck proxies") { recheck_proxy = true }
-      opt.on("-m MODE", "Crawl mode") { |x| crawl_mode = Mode.parse(x) }
+    OptionParser.parse(argv) do |opt|
+      opt.on("-m MODE", "Crawl mode") { |x| crmode = CrMode.parse(x) }
+      opt.on("-r", "Reseed content") { reseed = true }
     end
 
-    worker = new(recheck_proxy)
-    1.upto(100) do |page|
-      worker.crawl!(page, crawl_mode) unless worker.no_proxy?
-    end
+    new(crmode, reseed).crawl!
   end
 
   run!(ARGV)

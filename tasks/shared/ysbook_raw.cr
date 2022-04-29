@@ -106,7 +106,6 @@ class CV::YsbookRaw
 
   def seed!(stime = Time.utc.to_unix, force = false) : Nil
     return if btitle.empty? || author.empty?
-
     btitle_zh, author_zh = BookUtil.fix_names(btitle, author)
 
     params = {id: _id.to_i64}

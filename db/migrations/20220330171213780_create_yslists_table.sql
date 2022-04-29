@@ -1,7 +1,7 @@
 -- +micrate Up
 CREATE TABLE yslists (
   id bigserial primary key,
-  origin_id text not null unique,
+  origin_id text not null,
 
   ysuser_id bigint not null default 0,
 
@@ -33,6 +33,8 @@ CREATE TABLE yslists (
   created_at timestamptz not null default CURRENT_TIMESTAMP,
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX yslist_origin_idx ON yslists (origin_id);
 
 CREATE INDEX yslist_ysuser_idx ON yslists (ysuser_id);
 CREATE INDEX yslist_search_idx ON yslists using GIN (vslug gin_trgm_ops);

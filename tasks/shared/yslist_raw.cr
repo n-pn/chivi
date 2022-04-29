@@ -52,33 +52,34 @@ class CV::YslistRaw
   getter list_id : String = ""
 
   def seed!(stime : Int64 = Time.utc.to_unix)
-    list = Yslist.upsert!(self._id, self.created_at)
-    list.ysuser = Ysuser.upsert!(self.user.name, self.user._id)
+    yslist = Yslist.upsert!(self._id, self.created_at)
+    yslist.ysuser = Ysuser.upsert!(self.user.name, self.user._id)
 
-    list.set_name(self.zname)
-    list.set_desc(self.zdesc)
+    yslist.set_name(self.zname)
+    yslist.set_desc(self.zdesc)
 
-    list.stime = stime
-    list.utime = self.updated_at.to_unix
+    yslist.stime = stime
+    yslist.utime = self.updated_at.to_unix
 
-    list.book_total = self.book_total if self.book_total < list.book_total
-    list.like_count = self.like_count if self.like_count < list.like_count
+    yslist.book_total = self.book_total if self.book_total > yslist.book_total
+    yslist.like_count = self.like_count if self.like_count > yslist.like_count
 
-    list.view_count = self.view_count if self.view_count < list.view_count
-    list.star_count = self.star_count if self.star_count < list.star_count
+    yslist.view_count = self.view_count if self.view_count > yslist.view_count
+    yslist.star_count = self.star_count if self.star_count > yslist.star_count
 
-    list.fix_sort!
-    list.save!
+    yslist.fix_sort!
+    yslist.save!
   rescue err
     Log.error { err.inspect_with_backtrace.colorize.red }
   end
 
   ###################
 
-  alias Data = NamedTuple(total: Int32, booklists: Array(self))
+  alias Data = NamedTuple(booklists: Array(self), total: Int32)
 
-  def self.from_list(data : String) : Data
-    NamedTuple(data: Data).from_json(data)[:data]
+  def self.from_list(data : String) : {Array(self), Int32}
+    data = NamedTuple(data: Data).from_json(data)[:data]
+    {data[:booklists], data[:total]}
   end
 
   def self.from_info(data : String) : self

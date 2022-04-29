@@ -1,7 +1,7 @@
 -- +micrate Up
 CREATE TABLE yscrits (
   id bigserial primary key,
-  origin_id text not null unique,
+  origin_id text not null,
 
   ysbook_id bigint not null default 0,
   nvinfo_id bigint not null default 0,
@@ -29,14 +29,15 @@ CREATE TABLE yscrits (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE INDEX yscrit_nvinfo_idx ON yscrits (nvinfo_id, stars);
+CREATE UNIQUE INDEX yscrit_origin_idx ON yscrits (origin_id);
+
+CREATE INDEX yscrit_nvinfo_idx ON yscrits (nvinfo_id, _sort);
 CREATE INDEX yscrit_ysbook_idx ON yscrits (ysbook_id);
 CREATE INDEX yscrit_ysuser_idx ON yscrits (ysuser_id, created_at);
-
 CREATE INDEX yscrit_yslist_idx ON yscrits (yslist_id);
 
-CREATE INDEX yscrit_sorted_idx ON yscrits (_sort);
-CREATE INDEX yscrit_update_idx ON yscrits (utime);
+CREATE INDEX yscrit_sorted_idx ON yscrits (_sort, stars);
+CREATE INDEX yscrit_update_idx ON yscrits (utime, nvinfo_id);
 
 CREATE INDEX yscrit_vtags_idx ON yscrits USING GIN(vtags);
 

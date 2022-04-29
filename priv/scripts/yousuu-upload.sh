@@ -57,23 +57,16 @@ if [[ $1 == "all" || $* == *execs* ]]
 then
   echo upload service binaries!
 
-  rsync -azui --no-p "$DIR/limit.txt" $SSH_DIR
+  # rsync -azui --no-p "$DIR/limit.txt" $SSH_DIR
 
-  crystal build --release $SRC/yscrit_crawl.cr -o bin/yscrit_crawl_by_book
-  rsync -azui --no-p "bin/yscrit_crawl_by_book" "$SSH/bin"
+  yarn build yscrit_crawl_by_book && rsync -azui --no-p "bin/yscrit_crawl_by_book" "$SSH/bin"
+  yarn build yscrit_crawl_by_list && rsync -azui --no-p "bin/yscrit_crawl_by_list" "$SSH/bin"
 
-  crystal build -s --release $SRC/yslist_books_crawl.cr -o bin/yscrit_crawl
-  rsync -azui --no-p "bin/yscrit_crawl" "$SSH/bin"
+  yarn build yslist_crawl_by_book && rsync -azui --no-p "bin/yslist_crawl_by_book" "$SSH/bin"
 
-  crystal build -s --release $SRC/ysbook_crawl.cr -o bin/ysbook_crawl
-  rsync -azui --no-p "bin/ysbook_crawl" "$SSH/bin"
-
-  crystal build -s --release $SRC/ysrepl_crawl.cr -o bin/ysrepl_crawl
-  rsync -azui --no-p "bin/ysrepl_crawl" "$SSH/bin"
+  yarn build ysbook_crawl && rsync -azui --no-p "bin/ysbook_crawl" "$SSH/bin"
+  yarn build ysrepl_crawl && rsync -azui --no-p "bin/ysrepl_crawl" "$SSH/bin"
 
   crystal build -s --release $SRC/yslist_crawl.cr -o bin/yslist_crawl
   rsync -azui --no-p "bin/yslist_crawl" "$SSH/bin"
-
-  crystal build -s --release $SRC/yslist_info_crawl.cr -o bin/yslist_info_crawl
-  rsync -azui --no-p "bin/yslist_info_crawl" "$SSH/bin"
 fi

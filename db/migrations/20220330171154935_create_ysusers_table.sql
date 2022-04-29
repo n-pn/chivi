@@ -3,7 +3,7 @@ CREATE TABLE ysusers (
   id bigserial primary key,
   origin_id int not null,
 
-  zname text unique not null,
+  zname text not null,
   vname text not null,
   vslug text not null default '',
 

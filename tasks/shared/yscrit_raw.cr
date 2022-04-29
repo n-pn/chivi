@@ -28,7 +28,6 @@ class CV::YscritRaw
   include JSON::Serializable
 
   getter _id : String
-  getter id : Int64 { _id[12..].to_i64(base: 16) }
 
   @[JSON::Field(key: "score")]
   getter stars : Int32 = 3
@@ -42,7 +41,7 @@ class CV::YscritRaw
   getter like_count : Int32 = 0
 
   @[JSON::Field(key: "replyCount")]
-  getter repl_count : Int32 = 0
+  getter repl_total : Int32 = 0
 
   # getter createdAt : Time # ignoring
 
@@ -59,26 +58,24 @@ class CV::YscritRaw
   getter user : User
 
   def seed!(stime : Int64 = Time.utc.to_unix, yslist_id : Int64? = nil)
-    crit = Yscrit.get!(self.id, self.created_at)
+    yscrit = Yscrit.upsert!(self._id, self.created_at)
 
-    crit.ysbook, crit.nvinfo = upsert_ysbook(self.book)
-    crit.ysuser = Ysuser.upsert!(self.user.name, self.user._id)
+    yscrit.ysbook, yscrit.nvinfo = upsert_ysbook(self.book)
+    yscrit.ysuser = Ysuser.upsert!(self.user.name, self.user._id)
+    yscrit.yslist_id = yslist_id if yslist_id
 
-    crit.origin_id = self._id
-    crit.yslist_id = yslist_id if yslist_id
+    yscrit.stars = self.stars
+    yscrit.set_tags(self.tags)
+    yscrit.set_ztext(fix_ztext(ztext))
 
-    crit.stars = self.stars
-    crit.set_tags(self.tags)
-    crit.set_ztext(fix_ztext(ztext))
+    yscrit.stime = stime
+    yscrit.utime = (self.updated_at || self.created_at).to_unix
 
-    crit.stime = stime
-    crit.utime = (self.updated_at || self.created_at).to_unix
+    yscrit.like_count = self.like_count if self.like_count > yscrit.like_count
+    yscrit.repl_total = self.repl_total if self.repl_total > yscrit.repl_total
 
-    crit.like_count = self.like_count
-    crit.repl_total = self.repl_count
-    crit.update_sort!
-
-    crit.save!
+    yscrit.fix_sort!
+    yscrit.save!
   rescue err
     puts err.inspect_with_backtrace.colorize.red
   end
@@ -89,15 +86,7 @@ class CV::YscritRaw
 
   def fix_ztext(input : String)
     return input unless input == "请登录查看评论内容"
-
-    stored = ZTEXTS[_id[0..3]]
-
-    unless input = stored[_id]?
-      input = "$$$"
-      stored.append!(_id, input)
-    end
-
-    input
+    ZTEXTS[_id[0..3]][_id]? || "$$$"
   end
 
   def upsert_ysbook(book : Book)
@@ -124,20 +113,16 @@ class CV::YscritRaw
 
   #############
 
-  # record BookComment, total : Int32, comments : Array(self) do
-  #   include JSON::Serializable
-  # end
+  alias BookComment = NamedTuple(comments: Array(self), total: Int32)
+  alias ListComment = NamedTuple(books: Array(self), total: Int32)
 
-  alias BookComment = NamedTuple(total: Int32, comments: Array(self))
-  alias ListComment = NamedTuple(total: Int32, books: Array(self))
-
-  def self.from_book(data : String) : BookComment
-    json = NamedTuple(data: BookComment).from_json(data)
-    json[:data]
+  def self.from_book(json : String) : {Array(self), Int32}
+    data = NamedTuple(data: BookComment).from_json(json)[:data]
+    {data[:comments], data[:total]}
   end
 
-  def self.from_list(data : String) : ListComment
-    json = NamedTuple(data: ListComment).from_json(data)
-    json[:data]
+  def self.from_list(json : String) : {Array(self), Int32}
+    data = NamedTuple(data: ListComment).from_json(json)[:data]
+    {data[:books], data[:total]}
   end
 end

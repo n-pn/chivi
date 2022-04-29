@@ -44,7 +44,15 @@ class CV::Ysrepl
     self.vhtml = BookUtil.cv_lines(ztext, dname, mode: :html)
   end
 
-  def self.get!(id : Int64, created_at : Time)
-    find({id: id}) || new({id: id, created_at: created_at})
+  ##############
+
+  def self.gen_id(origin_id : String)
+    origin_id[12..].to_i64(base: 16)
+  end
+
+  def self.upsert!(origin_id : String, created_at : Time)
+    find({origin_id: origin_id}) || begin
+      new({id: gen_id(origin_id), origin_id: origin_id, created_at: created_at})
+    end
   end
 end

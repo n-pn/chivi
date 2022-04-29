@@ -35,16 +35,17 @@ module CV::FileUtil
     end
   end
 
+  @[AlwaysInline]
   def mtime(file : String) : Time?
     File.info?(file).try(&.modification_time)
   end
 
+  @[AlwaysInline]
   def mtime_int(file : String) : Int64
     mtime(file).try(&.to_unix) || 0_i64
   end
 
   def fresh?(file : String, expiry : Time)
-    return false unless mtime = self.mtime(file)
-    mtime >= expiry
+    self.mtime(file).try(&.>= expiry) || false
   end
 end

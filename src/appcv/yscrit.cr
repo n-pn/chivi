@@ -54,8 +54,9 @@ class CV::Yscrit
     self.ztext.split("\n").map(&.strip).reject(&.empty?)
   end
 
-  def update_sort!
-    self._sort = self.stars * self.stars * self.like_count
+  def fix_sort!
+    self._sort = self.stars &* self.stars &* self.like_count
+    self._sort &+ self.repl_count &* self.stars
   end
 
   def set_tags(tags : Array(String))
@@ -77,7 +78,13 @@ class CV::Yscrit
 
   ###################
 
-  def self.get!(id : Int64, created_at : Time)
-    find({id: id}) || new({id: id, created_at: created_at})
+  def self.gen_id(origin_id : String)
+    origin_id[12..].to_i64(base: 16)
+  end
+
+  def self.upsert!(origin_id : String, created_at : Time)
+    find({origin_id: origin_id}) || begin
+      new({id: gen_id(origin_id), origin_id: origin_id, created_at: created_at})
+    end
   end
 end

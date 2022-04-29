@@ -59,14 +59,14 @@ class CV::CrawlYsbook
 
   def crawl_info!(snvid : Int32, label = "-/-") : Int32?
     group = (snvid // 1000).to_s.rjust(3, '0')
-    file = "#{DIR}/#{group}/#{snvid}.json"
+    ofile = "#{DIR}/#{group}/#{snvid}.json"
 
-    state, ydata = map_state(file)
+    state, ydata = map_state(ofile)
 
     if state.absent? || state.staled?
       link = "https://api.yousuu.com/api/book/#{snvid}"
-      return snvid unless @http.save!(link, file, label)
-      ydata = YsbookRaw.parse_file(file) || ydata
+      return snvid unless @http.save!(link, ofile, label)
+      ydata = YsbookRaw.parse_file(ofile) || ydata
     end
 
     ydata.try(&.seed!)
