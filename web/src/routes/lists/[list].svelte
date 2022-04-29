@@ -39,6 +39,17 @@
 
 <svelte:head>
   <title>Thư đơn: {ylist.vname} - Chivi</title>
+  <meta name="description" content={ylist.vdesc} />
+
+  <meta property="og:title" content={ylist.vname} />
+  <meta property="og:article" content="novel" />
+  <meta property="og:description" content={ylist.vdesc} />
+  <meta
+    property="og:url"
+    content="https://chivi.app/list/{ylist.id}{ylist.vslug}" />
+  <meta
+    property="og:image"
+    content="https://chivi.app/covers/{ylist.covers[0] || 'blank.webp'}" />
 </svelte:head>
 
 <section class="content">
