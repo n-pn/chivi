@@ -234,7 +234,7 @@
     @include bgcolor(secd);
 
     @include tm-dark {
-      @include linesd(--bd-soft, $inset: false);
+      @include linesd(--bd-soft, $ndef: false, $inset: false);
     }
   }
 
@@ -357,7 +357,7 @@
     }
 
     @include hover {
-      @include bgcolor(neutral, 5, 2);
+      @include bgcolor(tert);
     }
   }
 
