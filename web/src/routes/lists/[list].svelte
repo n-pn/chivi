@@ -46,7 +46,8 @@
     <def class="left">
       <span class="entry">
         <SIcon name="user" />
-        <a class="uname" href="/lists?by={ylist.op_id}">{ylist.uname}</a>
+        <a class="uname" href="/lists?by={ylist.op_id}-{ylist.uslug}"
+          >{ylist.uname}</a>
       </span>
 
       <span class="entry">

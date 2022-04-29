@@ -126,4 +126,8 @@ class Amber::Validators::Params
     limit = fetch_int("lm", min, max)
     {pgidx, limit, limit &* (pgidx - 1)}
   end
+
+  def fetch_i64(name : String)
+    self[name]?.try(&.split('-', 2).first.to_i64?)
+  end
 end

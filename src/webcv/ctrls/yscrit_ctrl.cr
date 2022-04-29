@@ -5,7 +5,7 @@ class CV::YscritCtrl < CV::BaseCtrl
     pgidx, limit, offset = params.page_info(max: 24)
 
     query = Yscrit.sort_by(params["sort"]? || "utime")
-      .filter_ysuser(params["by"]?.try(&.to_i64?))
+      .filter_ysuser(params.fetch_i64("by"))
       .filter_labels(params["lb"]?)
 
     if book_id = params["book"]?.try(&.to_i64?)
