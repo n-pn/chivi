@@ -63,7 +63,10 @@
   {#if show_book && book}
     <section class="book">
       <a class="bcover" href="/-{book.bslug}">
-        <img src="/covers/{book.bcover}" alt="" />
+        <picture>
+          <source type="image/webp" srcset="/covers/{book.bcover}" />
+          <img src="/imgs/blank.png" alt="" />
+        </picture>
       </a>
 
       <div class="book-info">
@@ -215,6 +218,7 @@
     width: 4rem;
 
     img {
+      display: block;
       width: 100%;
       height: 100%;
     }

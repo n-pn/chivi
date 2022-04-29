@@ -4,7 +4,7 @@ class CV::YslistCtrl < CV::BaseCtrl
   def index
     pgidx, limit, offset = params.page_info(max: 24)
 
-    query = Yslist.sort_by(params["_s"]?)
+    query = Yslist.sort_by(params["_s"]? || "score")
       .filter_ysuser(params["by"]?.try(&.to_i64?))
       .filter_string(params["qs"]?)
 

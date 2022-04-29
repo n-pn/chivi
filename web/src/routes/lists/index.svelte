@@ -7,7 +7,7 @@
     return await api_res.json()
   }
 
-  const sorts = { utime: 'Gần nhất', likes: 'Ưa thích', views: 'Lượt xem' }
+  const sorts = { score: 'Nổi bật', likes: 'Ưa thích', utime: 'Đổi mới' }
 </script>
 
 <script lang="ts">
@@ -19,10 +19,13 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pager = new Pager($page.url, { _s: 'utime', pg: 1 })
+  $: pager = new Pager($page.url, { _s: 'score', pg: 1 })
   $: _sort = pager.get('_s')
 
-  $: topbar.set({ left: [['Thư đơn', 'bookmarks', { href: '/lists' }]] })
+  $: topbar.set({
+    left: [['Thư đơn', 'bookmarks', { href: '/lists' }]],
+    right: [['Đánh giá', 'stars', { href: '/crits', show: 'tm' }]],
+  })
 </script>
 
 <svelte:head>

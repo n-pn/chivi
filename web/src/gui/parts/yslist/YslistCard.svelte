@@ -15,7 +15,12 @@
 <article class="yslist">
   <div class="covers">
     {#each list.covers as cover, idx}
-      <div class="cover _{idx}"><img src="/covers/{cover}" alt="" /></div>
+      <div class="cover _{idx}">
+        <picture>
+          <source type="image/webp" srcset="/covers/{cover}" />
+          <img src="/imgs/blank.png" alt="" />
+        </picture>
+      </div>
     {:else}
       <div class="cover _0"><img src="/imgs/blank.png" alt="" /></div>
     {/each}
@@ -56,14 +61,14 @@
           <span>{list.book_count}</span>
         </span>
 
-        <span class="entry" data-tip="Lượt xem">
-          <SIcon name="eye" />
-          <span>{humanize(list.view_count)}</span>
-        </span>
-
         <span class="entry" data-tip="Ưa thích">
           <SIcon name="heart" />
           <span>{list.like_count}</span>
+        </span>
+
+        <span class="entry" data-tip="Lượt xem">
+          <SIcon name="eye" />
+          <span>{humanize(list.view_count)}</span>
         </span>
       </div>
     </footer>
@@ -109,7 +114,8 @@
       // opacity: 0.8;
     }
 
-    > img {
+    img {
+      display: block;
       width: 100%;
       height: 100%;
 

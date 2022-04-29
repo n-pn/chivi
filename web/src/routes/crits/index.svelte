@@ -21,7 +21,10 @@
   $: pager = new Pager($page.url, { sort: 'utime', pg: 1 })
   $: _sort = pager.get('sort')
 
-  $: topbar.set({ left: [['Đánh giá', 'stars', { href: '/crits' }]] })
+  $: topbar.set({
+    left: [['Đánh giá', 'stars', { href: '/crits' }]],
+    right: [['Thư đơn', 'bookmarks', { href: '/lists', show: 'tm' }]],
+  })
 </script>
 
 <svelte:head>

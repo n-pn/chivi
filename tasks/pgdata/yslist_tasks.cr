@@ -20,13 +20,14 @@ module CV
     Yslist.query.each do |yslist|
       binfos = yslist.nvinfos.to_a
 
-      genres = binfos.flat_map(&.vgenres)
-      yslist.genres = genres.tally.to_a.sort_by!(&.[1].-).map(&.[0])
+      genres = binfos.flat_map(&.vgenres).reject(&.== "Loại khác")
+      yslist.genres = genres.tally.to_a.sort_by!(&.[1].-).map(&.[0]).first(10)
 
       yslist.covers = binfos.sort_by(&.weight.-).first(3).map(&.bcover)
 
-      yslist.set_name(yslist.zname)
-      yslist.set_desc(yslist.zdesc)
+      yslist.fix_vname
+      yslist.fix_vdesc
+      yslist.fix_sort!
 
       yslist.save!
     end

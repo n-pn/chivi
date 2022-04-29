@@ -77,7 +77,7 @@ class CV::Yscrit
     self.vhtml = BookUtil.cv_lines(ztext, dname, mode: :html)
   end
 
-  MTL = MtCore.generic_mtl("!label")
+  MTL = MtCore.generic_mtl("!labels")
 
   def fix_vtags
     self.vtags = self.ztags.map { |x| MTL.translate(x) }

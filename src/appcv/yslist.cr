@@ -59,26 +59,34 @@ class CV::Yslist
 
   ####################
 
-  MTL = MtCore.generic_mtl
+  MTL = MtCore.generic_mtl("!yousuu")
 
   def set_name(zname : String) : Nil
     self.zname = zname
-    self.vname = MTL.translate(self.zname)
-    self.vslug = "-" + BookUtil.scrub_vname(self.vname, "-") + "-"
+    self.fix_vname
   end
 
   def set_desc(zdesc : String)
     return if zdesc.empty?
     self.zdesc = zdesc
-    self.fix_desc
+    self.fix_vdesc
   end
 
-  def fix_desc
+  def fix_vname
+    vdict = MTL.dicts.last
+    vdict.set(ysuser.zname, [ysuser.vname], "nr")
+
+    self.vname = MTL.translate(self.zname)
+    self.vslug = "-" + BookUtil.scrub_vname(self.vname, "-") + "-"
+    vdict.set(ysuser.zname, [""])
+  end
+
+  def fix_vdesc
     self.vdesc = BookUtil.cv_lines(zdesc, "combine", mode: :text)
   end
 
   def fix_sort!
-    self._sort = self.book_total &+ self.like_count &+ self.star_count &+ self.view_count
+    self._sort = self.book_total &* (self.like_count &+ self.star_count &+ 1) &+ self.view_count
   end
 
   ##################

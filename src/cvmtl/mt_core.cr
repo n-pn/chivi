@@ -43,6 +43,8 @@ class CV::MtCore
     end
   end
 
+  getter dicts
+
   def initialize(@dicts : Array(VpDict), @uname : String = "")
   end
 

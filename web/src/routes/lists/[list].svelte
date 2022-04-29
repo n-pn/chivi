@@ -61,14 +61,14 @@
         <span>{ylist.book_count}</span>
       </span>
 
-      <span class="entry" data-tip="Lượt xem">
-        <SIcon name="eye" />
-        <span>{ylist.view_count}</span>
-      </span>
-
       <span class="entry" data-tip="Ưa thích">
         <SIcon name="heart" />
         <span>{ylist.like_count}</span>
+      </span>
+
+      <span class="entry" data-tip="Lượt xem">
+        <SIcon name="eye" />
+        <span>{ylist.view_count}</span>
       </span>
     </div>
   </header>
