@@ -7,6 +7,8 @@ CREATE TABLE ysusers (
   vname text not null,
   vslug text not null default '',
 
+  stime bigint not null default 0,
+
   like_count int not null default 0,
   star_count int not null default 0,
 

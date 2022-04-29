@@ -23,6 +23,8 @@ class CV::Ysuser
   column crit_total : Int32 = 0
   column crit_count : Int32 = 0
 
+  column stime : Int64 = 0
+
   timestamps
 
   def fix_name : Nil

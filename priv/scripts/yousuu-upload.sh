@@ -63,10 +63,14 @@ then
   yarn build yscrit_crawl_by_list && rsync -azui --no-p "bin/yscrit_crawl_by_list" "$SSH/bin"
 
   yarn build yslist_crawl_by_book && rsync -azui --no-p "bin/yslist_crawl_by_book" "$SSH/bin"
+  yarn build yslist_crawl_by_user && rsync -azui --no-p "bin/yslist_crawl_by_user" "$SSH/bin"
 
   yarn build ysbook_crawl && rsync -azui --no-p "bin/ysbook_crawl" "$SSH/bin"
   yarn build ysrepl_crawl && rsync -azui --no-p "bin/ysrepl_crawl" "$SSH/bin"
 
   crystal build -s --release $SRC/yslist_crawl.cr -o bin/yslist_crawl
   rsync -azui --no-p "bin/yslist_crawl" "$SSH/bin"
+
+  crystal build -s --release $SRC/ysuser_crawl.cr -o bin/ysuser_crawl
+  rsync -azui --no-p "bin/ysuser_crawl" "$SSH/bin"
 fi

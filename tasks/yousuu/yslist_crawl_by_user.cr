@@ -1,8 +1,8 @@
 require "../shared/http_client"
-require "../shared/ysrepl_raw"
+require "../shared/yslist_raw"
 
-class CV::YsreplCrawl
-  DIR = "_db/yousuu/repls"
+class CV::YslistCrawlByUser
+  DIR = "_db/yousuu/lists-by-user"
   Dir.mkdir_p(DIR)
 
   enum CrMode
@@ -10,10 +10,10 @@ class CV::YsreplCrawl
   end
 
   @http = HttpClient.new(false)
-  @data : Array(Yscrit)
+  @data : Array(Ysuser)
 
   def initialize(crmode : CrMode, @reseed = false)
-    @data = Yscrit.query.where("repl_count < repl_total").to_a
+    @data = Ysuser.query.where("origin_id > 0 AND list_count < list_total").to_a
 
     case crmode
     when .rand? then @data.shuffle!
@@ -23,25 +23,25 @@ class CV::YsreplCrawl
   end
 
   def crawl!(page = 1)
-    queue = @data.select!(&.repl_total.>= (page &- 1) &* 20)
+    queue = @data.select!(&.list_total.>= (page &- 1) &* 20)
     exit 0 if queue.empty?
 
     loops = 0
 
     until queue.empty?
       qsize = queue.size
-      qnext = [] of Yscrit
+      qnext = [] of Ysuser
 
       Log.info { "<#{page}> [loop: #{loops}, size: #{qsize}]".colorize.cyan }
 
       workers = qsize
       workers = 10 if workers > 10
-      channel = Channel(Yscrit?).new(workers)
+      channel = Channel(Ysuser?).new(workers)
 
-      queue.each_with_index(1) do |yscrit, idx|
+      queue.each_with_index(1) do |ysuser, idx|
         spawn do
-          label = "[#{page}] <#{idx}/#{qsize}> [#{yscrit.id}]"
-          channel.send(do_crawl!(yscrit, page, label: label))
+          label = "[#{page}] <#{idx}/#{qsize}> [#{ysuser.id}]"
+          channel.send(do_crawl!(ysuser, page, label: label))
         end
 
         channel.receive.try { |x| qnext << x } if idx > workers
@@ -57,34 +57,30 @@ class CV::YsreplCrawl
     end
   end
 
-  def do_crawl!(yscrit : Yscrit, page = 1, label = "-/-") : Yscrit?
-    y_cid = yscrit.origin_id
-    ofile = "#{DIR}/#{y_cid[0..3]}/#{y_cid}-#{page}.json"
+  def do_crawl!(ysuser : Ysuser, page = 0, label = "-/-") : Ysuser?
+    y_uid = ysuser.origin_id
+    ofile = "#{DIR}/#{y_uid}/#{page}.json"
 
-    revp = (yscrit.repl_count &- 1) // 20 &+ 1 &- page
-
-    if FileUtil.fresh?(ofile, Time.utc - 2.days * revp - 4.days)
+    if FileUtil.fresh?(ofile, Time.utc - 2.days - 6.hours * page)
       return unless @reseed # skip seeding old data
-    elsif !@http.save!(api_url(y_cid, page), ofile, label)
-      return yscrit
+    elsif !@http.save!(api_url(y_uid, page), ofile, label)
+      return ysuser
     end
 
-    crits, total = YsreplRaw.from_list(File.read(ofile))
+    lists, total = YslistRaw.from_list(File.read(ofile))
 
     stime = FileUtil.mtime_int(ofile)
-    crits.each(&.seed!(stime: stime))
+    lists.each(&.seed!(stime, ysuser: ysuser))
 
-    total = yscrit.repl_total if yscrit.repl_total > total
-    count = Ysrepl.query.where(yscrit_id: yscrit.id).count.to_i
+    total = ysuser.list_total if ysuser.list_total > total
+    count = Yslist.query.where(ysuser_id: ysuser.id).count.to_i
 
-    yscrit.update(repl_total: total, repl_count: count)
-    Log.info { "- ysrepls: #{Ysrepl.query.count}".colorize.cyan }
-  rescue err
-    puts err
+    ysuser.update(list_total: total, list_count: count)
+    Log.info { "- yslists: #{Yslist.query.count}".colorize.cyan }
   end
 
-  private def api_url(y_cid : String, page = 1)
-    "https://api.yousuu.com/api/comment/#{y_cid}/reply?&page=#{page}"
+  def api_url(y_uid : Int32, page = 1)
+    "https://api.yousuu.com/api/user/#{y_uid}/booklistDetail?page=#{page}&t=#{Time.utc.to_unix_ms}"
   end
 
   #####################

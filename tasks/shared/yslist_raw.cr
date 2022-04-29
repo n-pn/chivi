@@ -14,10 +14,15 @@ class CV::YslistRaw
 
   include JSON::Serializable
 
-  getter _id : String
+  getter _id : String = ""
+
+  @[JSON::Field(key: "booklistId")]
+  getter list_id : String = ""
+
+  getter oid : String { _id.empty? ? list_id : _id }
 
   @[JSON::Field(key: "createrId")]
-  getter user : User
+  getter user : User?
 
   @[JSON::Field(key: "clicks")]
   getter view_count : Int32 = 0
@@ -32,7 +37,7 @@ class CV::YslistRaw
   getter book_total : Int32 = 0
 
   @[JSON::Field(key: "createdAt")]
-  getter created_at : Time
+  getter created_at : Time?
   @[JSON::Field(key: "updateAt")]
   getter updated_at : Time
 
@@ -48,12 +53,13 @@ class CV::YslistRaw
   @[JSON::Field(key: "listType")]
   getter klass : String = "male"
 
-  @[JSON::Field(key: "booklistId")]
-  getter list_id : String = ""
+  def seed!(stime : Int64 = Time.utc.to_unix, ysuser : Ysuser? = nil)
+    yslist = Yslist.upsert!(self.oid, self.created_at || self.updated_at)
 
-  def seed!(stime : Int64 = Time.utc.to_unix)
-    yslist = Yslist.upsert!(self._id, self.created_at)
-    yslist.ysuser = Ysuser.upsert!(self.user.name, self.user._id)
+    yslist.ysuser = ysuser || begin
+      user = self.user.not_nil!
+      Ysuser.upsert!(user.name, user._id)
+    end
 
     yslist.set_name(self.zname)
     yslist.set_desc(self.zdesc)
