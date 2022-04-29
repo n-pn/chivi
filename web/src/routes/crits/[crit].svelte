@@ -30,7 +30,7 @@
     <span>Đánh giá</span>
   </a>
   <span class="-sep">/</span>
-  <a class="-link" href="/crits?user={yscrit.uslug}">
+  <a class="-link" href="/crits?by={yscrit.uslug}">
     <SIcon name="user" />
     <span>{yscrit.uname}</span>
   </a>

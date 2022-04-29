@@ -39,7 +39,7 @@
 
 <crit-item>
   <header>
-    <a class="meta _user" href="/crits?user={crit.op_id}">{crit.uname}</a>
+    <a class="meta _user" href="/crits?by={crit.op_id}">{crit.uname}</a>
     <x-sep>·</x-sep>
     <a class="meta _time" href="/qtran/crits/{crit.id}"
       >{rel_time(crit.utime)}{#if crit.utime != crit.ctime}*{/if}</a>
@@ -109,7 +109,7 @@
 
   <div class="vtags">
     {#each crit.vtags as label}
-      <a class="link _genre" href="/crits?list={crit.yslist_id}&label={label}">
+      <a class="vtag" href="/crits?lb={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>
@@ -381,5 +381,23 @@
     @include clamp($width: null);
     // prettier-ignore
     &:hover { @include fgcolor(primary, 5); }
+  }
+
+  .vtags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.75rem;
+    @include padding-x(var(--gutter));
+  }
+
+  .vtag {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+    @include fgcolor(tert);
+    @include hover {
+      @include fgcolor(primary, 5);
+    }
   }
 </style>

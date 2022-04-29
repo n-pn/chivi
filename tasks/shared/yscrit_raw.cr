@@ -125,4 +125,8 @@ class CV::YscritRaw
     data = NamedTuple(data: ListComment).from_json(json)[:data]
     {data[:books], data[:total]}
   end
+
+  def self.from_json(json : String, type = :book)
+    type == :book ? from_book(json) : from_list(json)
+  end
 end

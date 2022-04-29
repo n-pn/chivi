@@ -6,20 +6,25 @@ module CV
   reseed! if ARGV.includes?("reseed")
   update! if ARGV.includes?("update")
 
-  DIR = "_db/yousuu/crits"
-
   PURGE = ARGV.includes?("--purge")
 
   def reseed!
-    groups = Dir.children(DIR).sort_by!(&.to_i)
+    reseed!("_db/yousuu/crits-by-list", type: :list)
+    reseed!("_db/yousuu/crits", type: :book)
+  end
 
-    groups.each do |group|
-      puts "[#{group}]"
+  def reseed!(dir : String, type = :book)
+    dirs = Dir.children(dir)
+    dirs.sort_by!(&.to_i) if type == :book
 
-      files = Dir.glob("#{DIR}/#{group}/*.json")
+    dirs.each_with_index(1) do |dirname, idx|
+      puts "- <#{idx}/#{dirs.size}> [#{dirname}]"
+      files = Dir.glob("#{dir}/#{dirname}/*.json")
+
       files.each do |file|
-        crits = YscritRaw.from_book(File.read(file))[:comments]
-        crits.each(&.seed!(FileUtil.mtime(file).not_nil!.to_unix))
+        crits, _ = YscritRaw.from_json(File.read(file), type)
+        stime = FileUtil.mtime_int(file)
+        crits.each(&.seed!(stime))
       rescue err
         puts [err, file]
         File.delete(file) if PURGE

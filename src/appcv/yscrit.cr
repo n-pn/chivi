@@ -40,6 +40,10 @@ class CV::Yscrit
     yslist_id ? where("yslist_id = #{yslist_id}") : self
   end
 
+  scope :filter_labels do |vtag|
+    vtag ? where("vtags @> ?", [vtag]) : self
+  end
+
   scope :sort_by do |order|
     case order
     when "ctime" then self.order_by(id: :desc)
