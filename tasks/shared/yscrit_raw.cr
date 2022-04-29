@@ -65,7 +65,7 @@ class CV::YscritRaw
     yscrit.yslist_id = yslist_id if yslist_id
 
     yscrit.stars = self.stars
-    yscrit.set_tags(self.tags)
+    yscrit.set_tags(self.tags, force: true) unless self.tags.empty?
     yscrit.set_ztext(fix_ztext(ztext))
 
     yscrit.stime = stime

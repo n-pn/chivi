@@ -54,20 +54,11 @@ class CV::Yscrit
     end
   end
 
-  getter zhtext : Array(String) do
-    self.ztext.split("\n").map(&.strip).reject(&.empty?)
-  end
-
+  #############
+  #
   def fix_sort!
     self._sort = self.stars &* self.stars &* self.like_count
     self._sort &+ self.repl_count &* self.stars
-  end
-
-  def set_tags(tags : Array(String))
-    return if tags.empty?
-
-    self.ztags = tags
-    self.vtags = tags.map { |x| MtCore.cv_hanviet(x) }
   end
 
   def set_ztext(ztext : String)
@@ -76,8 +67,20 @@ class CV::Yscrit
     self.fix_vhtml
   end
 
+  def set_tags(tags : Array(String), force : Bool = false)
+    return unless force || self.ztags.empty?
+    self.ztags = tags
+    self.fix_vtags
+  end
+
   def fix_vhtml(dname = self.nvinfo.dname)
     self.vhtml = BookUtil.cv_lines(ztext, dname, mode: :html)
+  end
+
+  MTL = MtCore.generic_mtl("!label")
+
+  def fix_vtags
+    self.vtags = self.ztags.map { |x| MTL.translate(x) }
   end
 
   ###################

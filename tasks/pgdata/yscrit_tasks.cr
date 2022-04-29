@@ -33,9 +33,13 @@ module CV
   end
 
   def update!
-    Yscrit.query.order_by(id: :asc).with_nvinfo.each_with_cursor(10) do |yscrit|
+    Yscrit.query.order_by(id: :asc).with_nvinfo.each_with_cursor(20) do |yscrit|
       yscrit.fix_vhtml
+      yscrit.fix_vtags
+
       yscrit.repl_count = Ysrepl.query.where(yscrit_id: yscrit.id).count.to_i
+
+      yscrit.fix_sort!
       yscrit.save!
     end
   end
