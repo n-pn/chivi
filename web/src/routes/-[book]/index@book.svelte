@@ -4,7 +4,9 @@
   import { status_icons, status_names, status_colors } from '$lib/constants'
 
   export async function load({ fetch, stuff }) {
-    const api_url = `/api/books/${stuff.nvinfo.bhash}/front`
+    const bhash = stuff.nvinfo.bslug.substring(0, 8)
+    const api_url = `/api/books/${bhash}/front`
+
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
 

@@ -159,14 +159,24 @@ class CV::Nvinfo
   CACHE_INT = RamCache(Int64, self).new
   CACHE_STR = RamCache(String, self).new
 
+  def self.find(sql : String) : self | Nil
+    query.where(sql).limit(1).first
+  end
+
   def self.load!(id : Int64)
     CACHE_INT.get(id) { find!({id: id}) }
   end
 
-  def self.load!(bname : String)
-    CACHE_STR.get(bname) do
-      item = find({bslug: bname}) || find({bhash: bname})
-      raise "Book not found" unless item
+  def self.load!(bslug : String)
+    bhash = bslug[0..7]
+
+    CACHE_STR.get(bhash) do
+      item = find("bslug like '#{bhash}%'") || begin
+        frags = bslug.split('-')
+        find("bhash like '#{frags.pop}%' AND bslug like '%#{frags.join('-')}%'")
+      end
+
+      return unless item
       item.tap { |x| CACHE_INT.set(x.id, x) }
     end
   end

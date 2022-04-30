@@ -17,11 +17,12 @@ class CV::DboardCtrl < CV::BaseCtrl
   end
 
   def show
-    dboard = Nvinfo.load!(params["dboard"])
+    unless dboard = Nvinfo.load!(params["bslug"])
+      return halt!(404, "Diễn đàn không tồn tại!")
+    end
+
     # TODO: load user impression
     set_cache :private, maxage: 120
     send_json({dboard: DboardView.new(dboard)})
-  rescue err
-    halt!(404, "Diễn đàn không tồn tại!")
   end
 end

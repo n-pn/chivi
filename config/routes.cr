@@ -33,7 +33,7 @@ Amber::Server.configure do
     put "/books", CV::NvinfoCtrl, :upsert
     post "/books", CV::NvinfoCtrl, :upsert
     get "/books/:bslug", CV::NvinfoCtrl, :show
-    get "/books/:bhash/front", CV::NvinfoCtrl, :front
+    get "/books/:bslug/front", CV::NvinfoCtrl, :front
 
     get "/chaps/:book", CV::NvseedCtrl, :index
     get "/chaps/:book/:sname", CV::NvseedCtrl, :show
@@ -73,7 +73,7 @@ Amber::Server.configure do
     post "/qtran/posts", CV::QtransCtrl, :create_post
 
     get "/boards/", CV::DboardCtrl, :index
-    get "/boards/:dboard", CV::DboardCtrl, :show
+    get "/boards/:bslug", CV::DboardCtrl, :show
 
     get "/topics", CV::CvpostCtrl, :index
     post "/topics", CV::CvpostCtrl, :create

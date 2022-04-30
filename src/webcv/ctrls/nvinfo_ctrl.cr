@@ -31,7 +31,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   end
 
   def show : Nil
-    unless nvinfo = Nvinfo.find({bslug: params["bslug"]})
+    bslug = params["bslug"]
+    unless nvinfo = Nvinfo.load!(bslug)
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
@@ -61,13 +62,16 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
         jb.field "ubmemo" { UbmemoView.new(ubmemo).to_json(jb) }
         jb.field "nvseed", nvseeds.map { |x| ChseedView.new(x) }
+        jb.field "nvslug", nvinfo.bslug != bslug ? nvinfo.bslug : ""
       }
     end
   end
 
   # show related data for book front page
   def front
-    nvinfo = Nvinfo.load!(params["bhash"])
+    unless nvinfo = Nvinfo.load!(params["bslug"])
+      return halt!(404, "Quyển sách không tồn tại!")
+    end
 
     yscrits =
       Yscrit.query
