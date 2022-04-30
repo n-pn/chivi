@@ -48,7 +48,7 @@
 </script>
 
 <article
-  class="app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+  class="article app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   tabindex="-1"
   style="--textlh: {$config.textlh}%"
   on:blur={cvmenu.hide}
@@ -84,31 +84,29 @@
 </div>
 
 <style lang="scss">
-  article {
+  .article {
     position: relative;
     min-height: 50vh;
-    margin: 0;
-    padding: 0 var(--gutter) var(--verpad);
+
+    // margin: 0;
+    @include padding-y(0);
 
     @include fgcolor(secd);
     @include bgcolor(tert);
-    @include shadow(1);
-
-    @include bp-min(tl) {
-      margin: 0 var(--gutter);
-      @include bdradi();
-      @include tm-dark {
-        @include linesd(--bd-soft, $ndef: false, $inset: false);
-      }
-    }
 
     :global(.tm-warm) & {
-      background: #fffbeb;
+      background-color: #fffbeb;
     }
 
     :global(cite) {
       font-style: normal;
       font-variant: small-caps;
+    }
+  }
+
+  .article.article {
+    @include bp-min(tl) {
+      @include padding-x(2rem);
     }
   }
 

@@ -110,7 +110,7 @@
   </div>
 </section>
 
-<article class="article">
+<article class="article _narrow">
   <div class="sorts" id="sorts">
     <span class="h3 -label">Đánh giá</span>
     {#each Object.entries(sorts) as [sort, name]}
@@ -141,13 +141,6 @@
 
   .origin {
     margin-bottom: 1rem;
-  }
-
-  .article {
-    > * {
-      @include padding-x(var(--gutter-large));
-      // margin: 0 auto;
-    }
   }
 
   .vname {

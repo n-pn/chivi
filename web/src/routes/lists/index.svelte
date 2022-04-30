@@ -32,7 +32,7 @@
   <title>Thư đơn - Chivi</title>
 </svelte:head>
 
-<article class="article">
+<article class="article _narrow">
   <div class="sorts">
     <span class="h2 -label">Thư đơn</span>
     {#each Object.entries(sorts) as [sort, name]}
@@ -57,9 +57,6 @@
 <style lang="scss">
   .article {
     @include margin-y(var(--gutter));
-    > * {
-      @include padding-x(var(--gutter-large));
-    }
   }
 
   .sorts {

@@ -12,6 +12,8 @@
 
 <script lang="ts">
   import { topbar } from '$lib/stores'
+
+  import { SIcon } from '$gui'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
   export let crits = []
@@ -31,25 +33,37 @@
   <title>Đánh giá - Chivi</title>
 </svelte:head>
 
-<div class="sorts" id="sorts">
-  <span class="h3 -label">Đánh giá</span>
-  {#each Object.entries(sorts) as [sort, name]}
-    <a
-      href={pager.gen_url({ sort, pg: 1 })}
-      class="-sort"
-      class:_active={sort == _sort}>{name}</a>
-  {/each}
-</div>
+<nav class="bread">
+  <a class="crumb _link" href=".">
+    <SIcon name="home" />
+  </a>
+  <span class="-sep">/</span>
+  <a class="crumb _link" href="/crits">
+    <span>Đánh giá</span>
+  </a>
+</nav>
 
-<div class="crits">
-  {#each crits as crit}
-    <YscritCard {crit} view_all={crit.vhtml.length < 640} />
-  {/each}
+<article class="article _narrow">
+  <div class="sorts" id="sorts">
+    <span class="h3 -label">Đánh giá</span>
+    {#each Object.entries(sorts) as [sort, name]}
+      <a
+        href={pager.gen_url({ sort, pg: 1 })}
+        class="-sort"
+        class:_active={sort == _sort}>{name}</a>
+    {/each}
+  </div>
 
-  <footer class="pagi">
-    <Mpager {pager} {pgidx} {pgmax} />
-  </footer>
-</div>
+  <div class="crits">
+    {#each crits as crit}
+      <YscritCard {crit} view_all={crit.vhtml.length < 640} />
+    {/each}
+
+    <footer class="pagi">
+      <Mpager {pager} {pgidx} {pgmax} />
+    </footer>
+  </div>
+</article>
 
 <style lang="scss">
   .sorts {
