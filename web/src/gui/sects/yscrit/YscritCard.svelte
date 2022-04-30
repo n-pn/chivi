@@ -2,7 +2,7 @@
   import { rel_time } from '$utils/time_utils'
   import { map_status } from '$utils/nvinfo_utils'
 
-  import { SIcon } from '$gui'
+  import { SIcon, Stars } from '$gui'
   import Replies from './Replies.svelte'
 
   export let crit: CV.Yscrit
@@ -10,7 +10,7 @@
   export let show_book = true
   export let show_list = true
 
-  export let view_all = crit.vhtml.length < 640
+  export let view_all = crit.vhtml.length < 600
   export let big_text = false
 
   let active_repls = false
@@ -44,20 +44,11 @@
     <x-sep>·</x-sep>
     <a class="meta _time" href="/qtran/crits/{crit.id}"
       >{rel_time(crit.utime)}{#if crit.utime != crit.ctime}*{/if}</a>
-    <a class="meta _link" href="/crits/{crit.id}"><SIcon name="link" /></a>
 
     <div class="right">
-      <span class="meta _star"
-        ><x-sm>{crit.stars}⭐</x-sm><x-lg>{dup_stars(crit.stars)}</x-lg></span>
-      <span class="meta">
-        <SIcon name="thumb-up" />
-        <span>{crit.like_count}</span>
+      <span class="meta _star">
+        <Stars count={crit.stars} />
       </span>
-
-      <button class="meta" on:click={show_replies}>
-        <SIcon name="message" />
-        <span>{crit.repl_count}</span>
-      </button>
     </div>
   </header>
 
@@ -124,18 +115,36 @@
     {@html crit.vhtml}
   </section>
 
-  {#if crit.vhtml.length > 600}
-    <button
-      type="button"
-      class="reveal"
-      class:_sticky={view_all}
-      on:click={() => (view_all = !view_all)}>
-      <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
-    </button>
-  {/if}
+  <footer class:_sticky={view_all}>
+    <!-- <span class="meta">&middot;</span> -->
+
+    <a class="meta" href="/crits/{crit.id}">
+      <SIcon name="link" />
+      <span>Liên kết</span>
+    </a>
+
+    {#if crit.vhtml.length > 600}
+      <button class="meta" on:click={() => (view_all = !view_all)}>
+        <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
+        <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
+      </button>
+    {/if}
+
+    <div class="right">
+      <span class="meta">
+        <SIcon name="thumb-up" />
+        <span>{crit.like_count}</span>
+      </span>
+
+      <button class="meta" on:click={show_replies}>
+        <SIcon name="message" />
+        <span>{crit.repl_count}</span>
+      </button>
+    </div>
+  </footer>
 
   {#if show_list && crit.yslist_id}
-    <footer>
+    <footer class="list">
       <a class="link _list" href="/lists/{crit.yslist_id}{crit.yslist_vslug}">
         <SIcon name="bookmarks" />
         <span>{crit.yslist_vname}</span>
@@ -266,8 +275,6 @@
     @include fgcolor(tert);
     @include flex-cy($gap: 0.125rem);
 
-    // prettier-ignore
-    :global(svg) { width: 1.1em; height: 1.1em; }
     @include bps(font-size, rem(12px), $pl: rem(13px), $tm: rem(14px));
 
     &._user {
@@ -281,6 +288,17 @@
       @include fgcolor(secd);
       @include clamp($width: null);
     }
+
+    :global(.m-icon) {
+      width: 1.1em;
+      height: 1.1em;
+      @include fgcolor(mute);
+    }
+
+    &._star :global(.star) {
+      width: 1.1em;
+      height: 1.1em;
+    }
   }
 
   a.meta,
@@ -289,17 +307,6 @@
     padding: 0;
     &:hover {
       @include fgcolor(primary, 5);
-    }
-  }
-
-  // prettier-ignore
-  ._star {
-    margin-left: auto;
-
-    x-lg {display: none;}
-    @include bp-min(ts) {
-      x-sm { display: none;}
-      x-lg { display: inline; }
     }
   }
 
@@ -337,43 +344,28 @@
     }
 
     :global(p) {
-      margin: 0.75em 0;
-    }
-  }
-
-  .reveal {
-    @include flex-ca;
-    @include border(--bd-soft, $loc: top);
-    @include fgcolor(tert);
-
-    outline: none;
-    width: 100%;
-    background: inherit;
-
-    height: 1.75rem;
-
-    &._sticky {
-      position: sticky;
-      bottom: 0;
-    }
-
-    @include hover {
-      @include bgcolor(tert);
+      margin-top: 0.75em;
     }
   }
 
   footer {
     @include flex($gap: 0.375rem);
-    @include border(--bd-soft, $loc: top);
 
     padding: 0.375rem var(--gutter);
     @include fgcolor(tert);
+    background: inherit;
 
     // prettier-ignore
     span { @include ftsize(sm); }
 
-    // prettier-ignore
-    :global(svg) { margin-bottom: .125rem; }
+    &._sticky {
+      position: sticky;
+      bottom: 0;
+    }
+  }
+
+  .list {
+    @include border(--bd-soft, $loc: top);
   }
 
   .link {
