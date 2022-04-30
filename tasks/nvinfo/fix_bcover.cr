@@ -8,16 +8,14 @@ module CV::FixCovers
   INP = "_db/bcover"
   OUT = "priv/static/covers"
 
-  KNOWN_EXTS = {".jpg", ".raw", ".png", ".gif", ".webp", ".html", ".xml"}
-
   def gif_to_webp(inp_file : String, out_file : String)
     `gif2webp -quiet "#{inp_file}" -o "#{out_file}"`
     return unless width = image_width(out_file)
-    to_webp(out_file, out_file, width)
+    img_to_webp(out_file, out_file, width)
   end
 
-  def to_webp(inp_file : String, out_file : String, width = 300)
-    webp_cmd = %{cwebp -quiet -q 100 -mt}
+  def img_to_webp(inp_file : String, out_file : String, width = 300)
+    webp_cmd = "cwebp -quiet -q 100 -mt"
     webp_cmd += " -resize 300 0" if width > 300
     webp_cmd += %{ "#{inp_file}" -o "#{out_file}"}
     `#{webp_cmd}`
@@ -26,8 +24,8 @@ module CV::FixCovers
   def cover_path(sname : String, snvid : String, togen = "")
     prefix = snvid.to_i?.try(&.// 1000) || -1
 
-    {"png", "jpg", "gif", "webp"}.each do |ext|
-      file = File.join(INP, sname, prefix.to_s, "#{snvid}.#{ext}")
+    {"png", "gif", "webp", "bmp", "jpg"}.each do |ext|
+      file = "#{INP}/#{sname}/#{prefix}/#{snvid}.#{ext}"
       return file if File.exists?(file) || ext == togen
     end
   end
@@ -36,13 +34,13 @@ module CV::FixCovers
     return unless File.exists?(file)
     `identify -format '%w %h' "#{file}"`.split(" ").first.to_i?
   rescue err
-    puts [file, err].colorize.red
+    Log.error { [file, err].colorize.red }
     File.delete(file) if delete
   end
 
-  def fetch_image(link : String, out_file : String)
-    Dir.mkdir_p(File.dirname(out_file))
+  KNOWN_EXTS = {".jpg", ".raw", ".png", ".gif", ".webp", ".html", ".xml"}
 
+  def fetch_image(link : String, out_file : String) : String?
     HTTP::Client.get(link) do |res|
       ext = map_extension(res.content_type)
 
@@ -51,14 +49,15 @@ module CV::FixCovers
       end
 
       out_file = out_file.sub(".jpg", ext)
+
+      Dir.mkdir_p(File.dirname(out_file))
       File.write(out_file, res.body_io)
     end
 
-    puts "-- [#{out_file}] saved".colorize.yellow
+    Log.info { "[#{link}] saved to [#{out_file}]".colorize.yellow }
     out_file
   rescue err
-    puts err.colorize.red
-    nil
+    Log.error { err.colorize.red }
   end
 
   def map_extension(mime : String?)
@@ -80,28 +79,26 @@ module CV::FixCovers
     out_path = File.join(OUT, out_file)
 
     if File.exists?(out_path)
-      return {out_file, image_width(out_path) || 99999}
+      return {out_file, image_width(out_path) || 9999}
     end
 
     unless inp_path = cover_path(sname, snvid)
       return if nodl || slink.empty? || SnameMap.map_type(sname) < 3
       inp_path = cover_path(sname, snvid, togen: "jpg").not_nil!
 
-      Log.info { "-- Fetching [#{sname}/#{snvid}]: #{slink}".colorize.cyan }
-      return unless fetch_image(slink, inp_path)
+      Log.info { "Fetching [#{sname}/#{snvid}]: #{slink}".colorize.cyan }
+      return unless inp_path = fetch_image(slink, inp_path)
     end
 
-    is_gif = inp_path.ends_with?(".gif")
-
-    if is_gif
+    if inp_path.ends_with?(".gif")
       gif_to_webp(inp_path, out_path)
-    else
-      return unless width = image_width(inp_path, delete: true)
-      to_webp(inp_path, out_path, width)
+      width = 9999
+    elsif width = image_width(inp_path, delete: true)
+      img_to_webp(inp_path, out_path, width)
     end
 
-    return unless File.exists?(out_path)
-    {out_file, image_width(out_path) || (is_gif ? 99999 : 0)}
+    return unless width && File.exists?(out_path)
+    {out_file, width}
   end
 
   def fix_cover(nvinfo : Nvinfo, redo = false, nodl = false)
@@ -111,7 +108,7 @@ module CV::FixCovers
 
     covers = [] of {String, String, String}
 
-    if ysbook = Ysbook.find({id: nvinfo.ysbook_id})
+    if ysbook = nvinfo.ysbook
       covers << {"yousuu", ysbook.id.to_s, ysbook.bcover}
     end
 
@@ -119,30 +116,31 @@ module CV::FixCovers
       covers << {nvseed.sname, nvseed.snvid, nvseed.bcover}
     end
 
-    best_width = 0
+    max_width = 0
 
     covers.each do |sname, snvid, scover|
       next unless data = copy_file(sname, snvid, scover, nodl: nodl)
-      bcover, width = data
-      next unless width > best_width
 
-      nvinfo.update({bcover: bcover, scover: covers.first.last})
+      bcover, width = data
+      next unless width > max_width
+
+      nvinfo.update({bcover: bcover, scover: scover})
+
       return if width >= 100
-      best_width = width
+      max_width = width
     end
 
-    nvinfo.update({bcover: "", scover: ""}) if best_width == 0
+    nvinfo.update({bcover: "", scover: ""}) if max_width == 0
   end
 
   def run!(clean = false)
     redo = ARGV.includes?("--redo")
     nodl = ARGV.includes?("--nodl")
 
-    count = 0
-    input = Nvinfo.query.order_by(ysbook_id: :desc).to_a
+    input = Nvinfo.query.order_by(id: :desc).to_a
 
     q_size = input.size
-    w_size = q_size > 12 ? 12 : q_size
+    w_size = q_size > 8 ? 8 : q_size
 
     workers = Channel(Nvinfo).new(w_size)
     results = Channel(Nvinfo).new(q_size)
@@ -158,7 +156,6 @@ module CV::FixCovers
         loop do
           nvinfo = workers.receive
           fix_cover(nvinfo, redo: redo, nodl: nodl)
-
           results.send(nvinfo)
         end
       end
@@ -167,23 +164,23 @@ module CV::FixCovers
     q_size.times do |idx|
       select
       when nvinfo = results.receive
-        label = "- <#{idx}/#{input.size}> : #{nvinfo.bslug} =>"
+        label = "<#{idx}/#{input.size}> : #{nvinfo.bslug} =>"
 
         if nvinfo.bcover.empty?
           Log.error { "#{label} #{nvinfo.scover}".colorize.red }
         else
           Log.info { "#{label} #{nvinfo.bcover}".colorize.green }
         end
-      when timeout(10.seconds)
-        puts "Timeout!!".colorize.red
+      when timeout(30.seconds)
+        Log.info { "<#{idx}> Timeout!!".colorize.red }
         next
       end
     end
 
-    return unless clean
+    return unless ARGV.includes?("--clean")
     to_delete = Dir.children(OUT) - input.map(&.bcover)
     to_delete.each { |file| File.delete("#{OUT}/#{file}") }
   end
 
-  run!(clean: ARGV.includes?("--clean"))
+  run!
 end
