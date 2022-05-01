@@ -41,9 +41,9 @@ then
   rsync -aiz --no-p "$SSH/_db/bcover/" "_db/bcover/"
 
   rsync -aiz --no-p "$SSH/var/chmetas/.html" "var/chmetas"
-  rsync -aiz --no-p "$SSH/var/chmetas/seeds" "var/chmetas"
-  rsync -aiz --no-p "$SSH/var/chmetas/stats" "var/chmetas"
   rsync -aiz --no-p "$SSH/var/chtexts/users" "var/chtexts"
+  rsync -aiz --no-p "$SSH/var/chmetas/stats" "var/chmetas"
+  rsync -aiz --no-p "$SSH/var/chmetas/seeds" "var/chmetas"
 fi
 
 ## backup crit data

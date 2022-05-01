@@ -5,7 +5,11 @@ require "compress/gzip"
 module CV::HttpUtil
   extend self
 
-  UTF8 = {"jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "sdyfcm"}
+  UTF8 = {
+    "jx_la", "zxcs_me", "xswang",
+    "hetushu", "paoshu8", "zhwenpg",
+    "bxwxorg", "sdyfcm",
+  }
 
   def encoding_for(sname : String) : String
     UTF8.includes?(sname) ? "UTF-8" : "GBK"

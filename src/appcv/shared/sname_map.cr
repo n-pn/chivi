@@ -22,6 +22,7 @@ module CV::SnameMap
 
     "biquyue" => 24,
     "ptwxz"   => 26,
+    "xswang"  => 28,
 
     "biqu5200" => 32,
     "5200"     => 34,

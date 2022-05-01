@@ -26,6 +26,7 @@ private def index_link(sname : String) : String
   case sname
   when "yousuu"   then "https://www.yousuu.com/newbooks"
   when "69shu"    then "https://www.69shu.com/"
+  when "xswang"   then "https://www.xswang.com/"
   when "hetushu"  then "https://www.hetushu.com/book/index.php"
   when "rengshu"  then "http://www.rengshu.com/"
   when "xbiquge"  then "https://www.xbiquge.so/"
@@ -55,12 +56,14 @@ def extract_upper(sname : String) : String
     get_upper(page, ".ranking:nth-child(2) a:first-of-type", ".htm")
   when "hetushu"
     get_upper(page, "#list a:first-of-type", "/index.html")
-  when "sdyfcm"
-    get_upper(page, "#newscontent_n .s2 > a")
-  when "5200"
-    get_upper(page, ".up > .r .s2 > a").split("_").last
   when "biqu5200", "paoshu8", "shubaow", "biquyue"
     get_upper(page, "#newscontent > .r .s2 > a").split("_").last
+  when "sdyfcm"
+    get_upper(page, "#newscontent_n .s2 > a")
+  when "xswang"
+    get_upper(page, "#newscontent .s2 > a")
+  when "5200"
+    get_upper(page, ".up > .r .s2 > a").split("_").last
   else
     get_upper(page, "#newscontent > .r .s2 > a")
   end

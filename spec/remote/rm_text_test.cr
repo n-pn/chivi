@@ -66,3 +66,5 @@ fetch_text("biqugee", "51452", "649594", fresh: false)
 fetch_text("biqugee", "57287", "538148", fresh: false)
 
 fetch_text("biquyue", "56580", "63002", fresh: false)
+
+fetch_text("xswang", "2028", "6718369", fresh: false)

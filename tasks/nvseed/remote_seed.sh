@@ -3,6 +3,7 @@ time bin/remote_seed rengshu
 time bin/remote_seed xbiquge
 time bin/remote_seed bxwxorg
 time bin/remote_seed biqugee
+time bin/remote_seed biquyue
 time bin/remote_seed 69shu
 time bin/remote_seed ptwxz
 time bin/remote_seed biqu5200

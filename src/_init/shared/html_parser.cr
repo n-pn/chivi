@@ -32,17 +32,17 @@ class CV::HtmlParser
   end
 
   # return inner text
-  def text(query : String) : String
+  def text(query : String, sep = "  ") : String
     return yield unless node = find(query)
-    TextUtil.fix_spaces(node.inner_text).strip
+    TextUtil.fix_spaces(node.inner_text(sep)).strip
   end
 
-  def text(query : String) : String
-    text(query) { "" }
+  def text(query : String, sep = "  ") : String
+    text(query, sep) { "" }
   end
 
-  def text(node : Lexbor::Node) : String
-    node.inner_text
+  def text(node : Lexbor::Node, sep = "  ") : String
+    node.inner_text(sep)
   end
 
   # return multi text entries for each nodes
@@ -52,7 +52,7 @@ class CV::HtmlParser
 
   # split text string to multi lines
   def text_para(query : String) : Array(String)
-    TextUtil.split_html(text(query))
+    TextUtil.split_html(text(query, "\n"))
   end
 
   # extract open graph metadata

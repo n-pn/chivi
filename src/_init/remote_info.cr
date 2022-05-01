@@ -103,6 +103,8 @@ class CV::RemoteInfo
       info.text_list(".intro > p")
     when "zhwenpg"
       info.text_para("tr:nth-of-type(3)")
+    when "xswang"
+      info.text_para("#intro").reject!(&.includes?(@sname))
     else
       info.meta_para("og:description")
     end

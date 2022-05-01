@@ -1,5 +1,4 @@
-require "file_utils"
-
+require "json"
 require "../../src/_init/remote_info.cr"
 
 def fetch_info(sname, snvid, fresh = false) : Void
@@ -11,14 +10,14 @@ def fetch_info(sname, snvid, fresh = false) : Void
   output = {
     btitle: parser.btitle,
     author: parser.author,
-    genres: parser.genres.join(" "),
-    bintro: parser.bintro.join("\n"),
+    genres: parser.genres.join("\t"),
+    bintro: parser.bintro,
     bcover: parser.bcover,
     status: parser.status_str,
     update: parser.update_str,
   }
 
-  puts output
+  puts output.to_pretty_json
 
   puts "------".colorize.green
 
@@ -85,14 +84,19 @@ tests = [
   {"bxwxorg", "32154", false},
   # {"bxwxorg", "32154", true},
 
-  # {"sdyfcm", "125228", false},
+  {"sdyfcm", "10", false},
   # {"sdyfcm", "125228", true},
 
   {"ptwxz", "1806", false},
+  # {"ptwxz", "1806", true},
 
+  {"biquyue", "56580", false},
+  # {"biquyue", "56580", true},
+
+  {"xswang", "2028", false},
+  # {"xswang", "2028", true},
 ]
 
-tests.each { |sname, snvid, fresh| fetch_info(sname, snvid, fresh: fresh) }
-
-CV::RemoteInfo.mkdir!("biquyue")
-fetch_info("biquyue", "56580", fresh: false)
+tests.each do |sname, snvid, fresh|
+  fetch_info(sname, snvid, fresh: fresh)
+end
