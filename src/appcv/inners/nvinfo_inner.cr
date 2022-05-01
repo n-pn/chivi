@@ -48,8 +48,8 @@ module CV::NvinfoInner
     self.utime = utime
   end
 
-  def update_utime(utime : Int64) : Nil
-    self.save! if set_utime(utime)
+  def update_utime(utime : Int64, force = false) : Nil
+    self.save! if set_utime(utime, force: force)
   end
 
   def bump!(time = Time.utc)

@@ -1,10 +1,6 @@
 require "./../shared/bootstrap"
 
 def fix_all_entries
-  CV::Author.query.order_by(id: :desc).each do |author|
-    author.tap(&.fix_name!).save!
-  end
-
   books = CV::Nvinfo.query.order_by(id: :desc).to_a
 
   books.each_with_index(1) do |nvinfo, index|

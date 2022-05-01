@@ -4,7 +4,9 @@ def rename_seed(from source : String, to target : String)
   dirs = {
     "_db/.cache/#{source}",
     "_db/bcover/#{source}",
-    "_db/nvseed/#{source}",
+    "var/chmetas/.html/#{source}",
+    "var/chmetas/seeds/#{source}",
+    "var/chmetas/stats/#{source}",
     "var/chtexts/#{source}",
     "var/zhinfos/#{source}",
   }
@@ -12,6 +14,7 @@ def rename_seed(from source : String, to target : String)
   dirs.each do |dir|
     next unless File.exists?(dir)
     out_dir = dir.sub(source, target)
+
     File.rename(out_dir, out_dir + ".old") if File.exists?(out_dir)
     File.rename(dir, out_dir)
   end
