@@ -126,7 +126,7 @@ module CV::FixCovers
 
       nvinfo.update({bcover: bcover, scover: scover})
 
-      return if width >= 100
+      return if width >= 150
       max_width = width
     end
 

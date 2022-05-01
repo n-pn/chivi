@@ -30,6 +30,7 @@ private def index_link(sname : String) : String
   when "rengshu"  then "http://www.rengshu.com/"
   when "xbiquge"  then "https://www.xbiquge.so/"
   when "biqugee"  then "https://www.biqugee.com/"
+  when "biquyue"  then "https://www.biquyue.com/"
   when "5200"     then "https://www.5200.tv/"
   when "duokan8"  then "http://www.duokanba.com/"
   when "sdyfcm"   then "https://www.sdyfcm.com/"
@@ -46,24 +47,22 @@ def extract_upper(sname : String) : String
   page = Lexbor::Parser.new(html)
 
   case sname
+  when "yousuu"
+    get_upper(page, ".book-info > .book-name")
+  when "duokan8"
+    get_upper(page, ".recommend-list ul:not([class]) a:first-of-type").split("_").last
   when "69shu"
     get_upper(page, ".ranking:nth-child(2) a:first-of-type", ".htm")
   when "hetushu"
     get_upper(page, "#list a:first-of-type", "/index.html")
   when "sdyfcm"
     get_upper(page, "#newscontent_n .s2 > a")
-  when "rengshu", "xbiquge", "biqugee", "bxwxorg"
-    get_upper(page, "#newscontent > .r .s2 > a")
-  when "biqu5200", "paoshu8", "shubaow"
-    get_upper(page, "#newscontent > .r .s2 > a").split("_").last
   when "5200"
     get_upper(page, ".up > .r .s2 > a").split("_").last
-  when "duokan8"
-    get_upper(page, ".recommend-list ul:not([class]) a:first-of-type").split("_").last
-  when "yousuu"
-    get_upper(page, ".book-info > .book-name")
+  when "biqu5200", "paoshu8", "shubaow"
+    get_upper(page, "#newscontent > .r .s2 > a").split("_").last
   else
-    raise "Unsupported source name!"
+    get_upper(page, "#newscontent > .r .s2 > a")
   end
 end
 

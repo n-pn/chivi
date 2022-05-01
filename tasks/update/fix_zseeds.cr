@@ -8,6 +8,7 @@ CV::Nvinfo.query.each do |nvinfo|
     items.sort_by!(&.created_at)
 
     nvseed = items.shift
+
     nvseed.zseed = CV::SnameMap.map_int(sname)
     zseeds << nvseed.zseed
 
@@ -16,11 +17,11 @@ CV::Nvinfo.query.each do |nvinfo|
       CV::Nvseed.query.where(id: items.map(&.id)).to_delete.execute
     end
 
-    ix = CV::Nvseed.map_ix(nvinfo.id, nvseed.zseed)
-    if nvseed.ix != ix
-      puts "update_id: [#{nvinfo.id}, #{nvseed.zseed}] #{nvseed.ix} => #{ix}"
-      nvseed.update!({ix: ix})
-    end
+    new_uid = CV::SnameMap.map_uid(nvinfo.id, nvseed.zseed)
+    next if nvseed.uid == new_uid
+
+    puts "update_uid: [#{nvinfo.id}, #{nvseed.sname}] #{nvseed.uid} => #{new_uid}"
+    nvseed.update!(uid: new_uid)
   end
 
   nvinfo.update!({zseeds: zseeds.sort})

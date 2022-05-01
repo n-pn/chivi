@@ -11,18 +11,20 @@ module CV::SnameMap
 
     "bxwxorg" => 8,
     "69shu"   => 10,
+
     "xbiquge" => 16,
     "rengshu" => 18,
     "biqugee" => 20,
 
     "paoshu8" => 22,
-    "shubaow" => 24,
 
     "ptwxz" => 26,
 
     "biqu5200" => 32,
     "5200"     => 34,
-    "duokan8"  => 40,
+
+    "shubaow" => 38,
+    "duokan8" => 40,
 
     "sdyfcm"  => 50,
     "jx_la"   => 56,
