@@ -174,7 +174,7 @@ class CV::Nvseed
     seeds = self.nvinfo.nvseeds.to_a.sort_by!(&.zseed)
 
     seeds.shift if seeds.first?.try(&.zseed.== 0)
-    seeds.pop if (users_seed = seeds.last?) && users_seed.sname == "users"
+    users_seed = seeds.pop if seeds.last?.try(&.sname.== "users")
 
     ttl = map_ttl(force: force)
     start = 1
@@ -192,7 +192,7 @@ class CV::Nvseed
       Log.error { err.colorize.red }
     end
 
-    users_seed.try { |x| self.proxy!(x, 1) }
+    users_seed.try { |x| self.proxy!(x, start: 1) }
 
     self.reset_cache!
     self.save!

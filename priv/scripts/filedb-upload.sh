@@ -19,16 +19,13 @@ then
 
   rsync -azi --no-p "var/_common" "$SSH/var"
 
-  rsync -azi --no-p --delete "var/cvusers" "$SSH/var"
-  rsync -azi --no-p --delete "var/ubmemos" "$SSH/var"
-
   rsync -azi --no-p "var/vpterms" "$SSH/var"
   rsync -azi --no-p "var/qttexts" "$SSH/var"
   rsync -azi --no-p "var/tlspecs" "$SSH/var"
 
   rsync -azi --no-p "var/zhinfos" "$SSH/var"
-  rsync -azi --no-p "var/ysinfos/ysbooks" "$SSH/var/ysinfos"
-  rsync -azi --no-p "var/ysinfos/yscrits" "$SSH/var/ysinfos"
+  rsync -azi --no-p "var/ysinfos" "$SSH/var"
+  rsync -azi --no-p "var/pg_data" "$SSH/var"
 
   rsync -azi --no-p --exclude="*.zip" "var/chtexts/" "$SSH/var/chtexts/"
 fi
