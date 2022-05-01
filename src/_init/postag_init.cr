@@ -67,8 +67,8 @@ class CV::PostagInit
     when "LOC"  then "nn"
     when "ORG"  then "nn"
     when "TIME" then "t"
-      # when "nw"   then "nz"
-    else tag
+    when "nw"   then "nx"
+    else             tag
     end
   end
 

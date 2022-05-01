@@ -30,7 +30,7 @@ def parse_book(bname):
       tags = res_line[1]
 
       for idx, raw in enumerate(raws):
-        out_text = raw + " " + tags[idx]
+        out_text = raw + "¦" + tags[idx]
         out_text = "\t" + out_text if idx > 0 else out_text
         out_file.write(out_text)
 
@@ -40,5 +40,6 @@ def parse_book(bname):
     os.remove(inp_path)
 
 bname = sys.argv[1]
+
 if bname:
   parse_book(bname)

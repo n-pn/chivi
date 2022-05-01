@@ -6,29 +6,26 @@ require "../shared/bootstrap"
 
 class CV::BdLacInvoke
   INP_DIR = "var/chtexts"
-  OUT_DIR = "_db/vpinit/bd_lac"
+  OUT_DIR = "_db/vpinit/bd_lac/raw"
 
   getter chap_count = 0
-  @dir_name : String
 
   def initialize(@nvinfo : Nvinfo)
     @inp_dir = File.join(INP_DIR, "chivi", @nvinfo.bhash)
 
-    @dir_name = gen_dir_name(nvinfo)
+    @dir_name = nvinfo.bslug
+
     @out_path = File.join(OUT_DIR, @dir_name)
+    Dir.mkdir_p(@out_path)
 
     @chap_count = load_chap_count(@nvinfo)
   end
 
-  def gen_dir_name(nvinfo : Nvinfo)
-    suffix = nvinfo.bhash[0..3]
-    nvinfo.bslug.sub(/#{suffix}$/, nvinfo.bhash)
-  end
-
   def load_chap_count(nvinfo : Nvinfo)
+    return 0 if nvinfo.subdue_id > 0
+
     if nvseed = Nvseed.find(nvinfo.id, 0)
-      force = (Time.utc - 10.days).to_unix > nvseed.atime
-      nvseed.refresh!(force: force)
+      nvseed.refresh!(force: false)
     else
       nvseed = Nvseed.init!(nvinfo, 0)
     end
@@ -38,42 +35,35 @@ class CV::BdLacInvoke
 
   SCRIPT = "tasks/postag/baidu-lac.py"
 
+  SKIP_IF_ENOUGH = ARGV.includes?("--skip-enough")
+
   # IOPIPE = Process::Redirect::Inherit
 
   def parse!(redo = false, lbl = "1/1") : Nil
-    existed = glob_parsed_chaps
-    puts "\n<#{lbl}> #{@nvinfo.bslug}: #{existed.size} parsed".colorize.yellow
+    return if @chap_count == 0
+    existed = Dir.glob("#{@out_path}/*.tsv")
 
-    # max_size = calc_max_size(@chap_count)
-    # if existed.size > max_size
-    #   return puts "  surpass limit: #{max_size}, skipping".colorize.green
-    # end
+    if SKIP_IF_ENOUGH && existed.size > calc_max_size(@chap_count)
+      Log.info { "<#{lbl}> #{@nvinfo.bslug}: #{existed.size} parsed".colorize.green }
+      return
+    else
+      Log.info { "<#{lbl}> #{@nvinfo.bslug}: #{existed.size} parsed".colorize.yellow }
+    end
 
-    existed = existed.map { |x| get_chidx(x).to_i }.to_set
+    existed = existed.map { |x| File.basename(x, ".tsv").split("-", 2).first }.to_set
 
-    files = Dir.glob("#{@inp_dir}/*.tsv")
-    files.each do |file|
-      list = ChList.new(file)
-      list.data.each_value do |info|
-        next if !redo && existed.includes?(info.chidx)
-        extract_text(info) if should_parse?(info.chidx)
+    Dir.glob("#{@inp_dir}/*.tsv").each do |list_file|
+      chlist = ChList.new(list_file)
+
+      chlist.data.each_value do |chinfo|
+        next if !redo && existed.includes?(chinfo.chidx)
+        extract_text(chinfo) if should_parse?(chinfo.chidx)
       rescue err
-        puts err.inspect_with_backtrace
-        exit(1)
+        Log.error { err.inspect_with_backtrace }
       end
     end
 
-    Process.run("python3", [SCRIPT, @dir_name])
-  end
-
-  def get_chidx(file : String)
-    File.basename(file, ".tsv").split("-", 2).first
-  end
-
-  def glob_parsed_chaps
-    return Dir.glob("#{@out_path}/*.tsv") if File.exists?(@out_path)
-    FileUtils.mkdir_p(@out_path)
-    [] of String
+    Process.run("python3", {SCRIPT, @dir_name})
   end
 
   def calc_max_size(chap_count : Int32)
@@ -99,14 +89,15 @@ class CV::BdLacInvoke
     out_txt = "#{@out_path}/#{chidx}-0.txt"
     return if File.exists?(out_txt)
 
-    pgidx = (chidx - 1) // 128
-    inp_zip = "#{INP_DIR}/#{sname}/#{snvid}/#{pgidx}.zip"
+    inp_zip = "#{INP_DIR}/#{sname}/#{snvid}/#{(chidx &- 1) // 128}.zip"
     return unless File.exists?(inp_zip)
 
     Compress::Zip::File.open(inp_zip) do |zip|
       return unless entry = zip["#{schid}-0.txt"]?
-      puts "- #{sname}/#{snvid}/#{chidx} extracted".colorize.cyan
+      # puts "- #{sname}/#{snvid}/#{chidx}-0.txt extracted".colorize.cyan
       File.write(out_txt, entry.open(&.gets_to_end))
+    rescue err
+      Log.error { err.colorize.red }
     end
   end
 
@@ -135,18 +126,13 @@ class CV::BdLacInvoke
     workers = 1 if workers < 1
     channel = Channel(Nil).new(workers)
 
-    query = "select nvinfo_id from ubmemos where status> 0"
+    query = "select nvinfo_id from ubmemos where status > 0"
     infos = Nvinfo.query.where("id IN (#{query})").sort_by("weight").to_set
     infos.concat Nvinfo.query.sort_by("weight").limit(20000)
 
     infos.each_with_index(1) do |info, idx|
       spawn do
-        next if info.subdue_id > 0
-
-        parser = new(info)
-        next if parser.chap_count == 0
-
-        parser.parse!(redo: redo, lbl: "#{idx}/#{infos.size}")
+        new(info).parse!(redo: redo, lbl: "#{idx}/#{infos.size}")
       rescue err
         puts err.inspect_with_backtrace
       ensure
@@ -164,6 +150,6 @@ class CV::BdLacInvoke
     puts "#{nvinfo.bslug}: #{nvinfo.vname}".colorize.red
     new(nvinfo).parse!(redo: redo)
   end
-end
 
-CV::BdLacInvoke.run!
+  run!
+end

@@ -6,13 +6,12 @@ SSH=nipin@ssh.chivi.app:srv/chivi
 ## backup user data
 if [[ $1 == "all" || $* == *user* ]]
 then
-  echo backup user seeds!
-  rsync -aiz --no-p --delete "$SSH/var/pg_data/cvusers" "var/pg_data"
-  rsync -aiz --no-p --delete "$SSH/var/pg_data/weblogs" "var/pg_data"
+  echo backup users data!
+  rsync -aiz --no-p --delete "$SSH/var/pg_data/" "var/pg_data/"
+  rsync -aiz --no-p --delete "$SSH/var/tlspecs/users" "var/tlspecs"
 fi
 
-
-## backup user data
+## backup dict data
 if [[ $1 == "all" || $* == *dict* ]]
 then
   echo backup dicts data!
@@ -24,14 +23,7 @@ then
   # rsync -aiz --no-p "$SSH/var/vpdicts/v1/cvmtl/*.tsv" "var/vpdicts/v1/cvmtl"
 fi
 
-## backup user data
-if [[ $1 == "all" || $* == *spec* ]]
-then
-  echo backup tlspecs
-  rsync -aiz --no-p --delete "$SSH/var/tlspecs/users" "var/tlspecs"
-fi
-
-## backup user data
+## backup book data
 if [[ $1 == "all" || $* == *book* ]]
 then
   echo backup books data!
@@ -49,16 +41,14 @@ fi
 ## backup crit data
 if [[ $1 == "all" || $* == *seed* ]]
 then
-  echo backup seed data!
-  # rsync -aiz --no-p "$SSH/var/cvposts" "var"
-  # rsync -aiz --no-p "$SSH/var/cvrepls" "var"
+  echo backup seeds data!
 
   rsync -aiz --no-p "$SSH/var/zhinfos" "var"
   rsync -aiz --no-p "$SSH/var/ysinfos" "var"
 fi
 
 ## backup pg_data
-if [[ $1 == "all" || $* == *data* ]]
+if [[ $1 == "all" || $* == *pg_data* ]]
 then
   echo backup pg_data!
   rsync -aiz --no-p --delete "nipin@ssh.chivi.app:var/wal_log" "var/.backup"
