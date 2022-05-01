@@ -10,7 +10,7 @@ CV::Nvinfo.query.each do |nvinfo|
     nvseed = items.shift
 
     nvseed.zseed = CV::SnameMap.map_int(sname)
-    zseeds << nvseed.zseed
+    zseeds << nvseed.zseed if nvseed.chap_count > 0
 
     unless items.empty?
       puts "#{nvinfo.bslug}: #{nvseed.id} <- #{items.map(&.id)}"

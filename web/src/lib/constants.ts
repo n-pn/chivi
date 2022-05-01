@@ -115,6 +115,8 @@ export const snames = [
   'shubaow',
   'jx_la',
   'zxcs_me',
+  'ptwxz',
+  'xswang',
   'users',
 ]
 
