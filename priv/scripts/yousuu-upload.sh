@@ -11,9 +11,8 @@ PROXY_SSH="$SSH_DIR/_proxy"
 
 if [[ $1 == "all" || $* == *proxy* ]]
 then
-  rsync -azui --no-p "$DIR/limit.txt" $SSH_DIR
-
-  rsync -azui --no-p "$PROXY_DIR/awmproxy.com.txt" $PROXY_SSH
+  # rsync -azui --no-p "$PROXY_DIR/awmproxy.com.txt" $PROXY_SSH
+  rsync -azui --no-p "$PROXY_DIR/jetkai.github.txt" $PROXY_SSH
   rsync -azui --no-p "$PROXY_DIR/openproxy.space.txt" $PROXY_SSH
   rsync -azui --no-p "$PROXY_DIR/proxyscrape.com.txt" $PROXY_SSH
 

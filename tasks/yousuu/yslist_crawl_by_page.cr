@@ -72,7 +72,7 @@ class CV::YslistCrawl
     stime = FileUtil.mtime_int(file)
     lists.each(&.seed!(stime))
 
-    Log.info { "- yslists: #{Yslist.query.count}".colorize.cyan }
+    Log.info { "yslists: #{Yslist.query.count}".colorize.cyan }
   end
 
   private def api_url(page = 1)

@@ -78,7 +78,7 @@ class CV::YsreplCrawl
     count = Ysrepl.query.where(yscrit_id: yscrit.id).count.to_i
 
     yscrit.update(repl_total: total, repl_count: count)
-    Log.info { "- ysrepls: #{Ysrepl.query.count}".colorize.cyan }
+    Log.info { "ysrepls: #{Ysrepl.query.count}".colorize.cyan }
   rescue err
     puts err
   end

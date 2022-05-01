@@ -9,12 +9,12 @@ class CV::YslistCrawl
     Head; Tail; Rand
   end
 
-  @http = HttpClient.new(false)
+  @http = HttpClient.new(ARGV.includes?("--refresh-proxy"))
   @data : Array(Yslist)
 
   def initialize(crmode : CrMode = :tail, @reseed = false)
     fresh = Time.utc - 3.days
-    @data = Yslist.query.where("stime < ?", fresh.to_unix).to_a
+    @data = Yslist.query.where("stime < #{fresh.to_unix}").to_a
 
     case crmode
     when .rand? then @data.shuffle!
@@ -75,7 +75,7 @@ class CV::YslistCrawl
     stime = FileUtil.mtime_int(ofile)
     YslistRaw.from_info(File.read(ofile)).seed!(stime)
 
-    Log.info { "- yslists: #{Yslist.query.where("zdesc != ''").count}".colorize.cyan }
+    Log.info { "yslists: #{Yslist.query.where("zdesc != ''").count}".colorize.cyan }
   rescue err
     puts err
   end

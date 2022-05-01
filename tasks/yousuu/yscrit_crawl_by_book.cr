@@ -9,7 +9,7 @@ class CV::YscritCrawlByBook
     Head; Tail; Rand
   end
 
-  @http = HttpClient.new(false)
+  @http = HttpClient.new(ARGV.includes?("--refresh-proxy"))
   @data : Array(Ysbook)
 
   def initialize(crmode : CrMode = :tail, @reseed = false)

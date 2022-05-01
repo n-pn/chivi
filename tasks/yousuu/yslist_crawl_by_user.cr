@@ -9,7 +9,7 @@ class CV::YslistCrawlByUser
     Head; Tail; Rand
   end
 
-  @http = HttpClient.new(false)
+  @http = HttpClient.new(ARGV.includes?("--refresh-proxy"))
   @data : Array(Ysuser)
 
   def initialize(crmode : CrMode, @reseed = false)
@@ -76,7 +76,7 @@ class CV::YslistCrawlByUser
     count = Yslist.query.where(ysuser_id: ysuser.id).count.to_i
 
     ysuser.update(list_total: total, list_count: count)
-    Log.info { "- yslists: #{Yslist.query.count}".colorize.cyan }
+    Log.info { "yslists: #{Yslist.query.count}".colorize.cyan }
   end
 
   def api_url(y_uid : Int32, page = 1)

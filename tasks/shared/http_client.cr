@@ -45,8 +45,8 @@ class CV::HttpClient
 
   def save!(link : String, file : String, label : String) : Bool
     unless proxy = @proxies.pop?
-      Log.info { " - Out of proxy, aborting!".colorize.red }
-      exit(0)
+      Log.info { "Out of proxy, aborting!".colorize.red }
+      exit 0
     end
 
     body = `curl -s -L -x #{proxy.host} -m 30 "#{link}"`
@@ -55,7 +55,7 @@ class CV::HttpClient
     when .starts_with?("{\"success"), .includes?("未找到该图书")
       Dir.mkdir_p(File.dirname(file))
       File.write(file, body)
-      Log.info { "- #{label} saved".colorize.green }
+      Log.info { "#{label} saved".colorize.green }
 
       File.open(@proxy_file, "a", &.puts(proxy.host)) if proxy.succ == 0
 
@@ -65,7 +65,7 @@ class CV::HttpClient
 
       true
     else
-      Log.info { "- #{label} failed, remain proxies: #{@proxies.size}".colorize.yellow }
+      Log.info { "#{label} failed, remain proxies: #{@proxies.size}".colorize.yellow }
       proxy.fail += 1
       add_proxy(proxy, append: proxy.succ == 0) if proxy.fail < 4
 

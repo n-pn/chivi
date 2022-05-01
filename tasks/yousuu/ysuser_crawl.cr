@@ -75,7 +75,7 @@ class CV::YsuserCrawl
     stime = FileUtil.mtime_int(ofile)
     YsuserRaw.from_info(File.read(ofile)).seed!(stime)
 
-    Log.info { "- ysusers: #{Ysuser.query.where("crit_total > 0").count}".colorize.cyan }
+    Log.info { "ysusers: #{Ysuser.query.where("crit_total > 0").count}".colorize.cyan }
   rescue err
     puts err
   end

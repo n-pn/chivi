@@ -9,7 +9,7 @@ class CV::YscritCrawlByList
     Head; Tail; Rand
   end
 
-  @http = HttpClient.new(false)
+  @http = HttpClient.new(ARGV.includes?("--refresh-proxy"))
   @data : Array(Yslist)
 
   def initialize(@crmode : CrMode, @reseed = false)
@@ -76,7 +76,7 @@ class CV::YscritCrawlByList
     count = Yscrit.query.where(yslist_id: yslist.id).count.to_i
 
     yslist.update(book_total: total, book_count: count)
-    Log.info { "- yscrits: #{Yscrit.query.count}".colorize.cyan }
+    Log.info { "yscrits: #{Yscrit.query.count}".colorize.cyan }
   rescue err
     Log.error { err }
   end

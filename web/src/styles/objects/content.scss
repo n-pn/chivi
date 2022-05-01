@@ -145,8 +145,10 @@ cv-user,
 
   &._narrow {
     // @include padding-x(var(--gutter));
-    > * {
-      @include padding-x(var(--gutter));
+    @include bp-min(tl) {
+      > * {
+        @include padding-x(var(--gutter));
+      }
     }
   }
 }
