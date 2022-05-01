@@ -42,16 +42,4 @@ class CV::NvseedCtrl < CV::BaseCtrl
     sname = params.fetch_str("sname", "chivi")
     Nvseed.load!(nvinfo_id, SnameMap.map_int(sname))
   end
-
-  private def seed_outdated?(nvseed : Nvseed, privi = 0)
-    tspan = Time.utc - Time.unix(nvseed.atime)
-    bonus = 4 - privi
-
-    case nvseed.status
-    when 0 then tspan > 2.hours * bonus
-    when 1 then tspan > 2.days * bonus
-    when 2 then tspan > 2.weeks * bonus
-    else        false
-    end
-  end
 end

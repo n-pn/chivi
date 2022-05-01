@@ -9,6 +9,8 @@ export const remote_snames = [
   'xbiquge',
   'duokan8',
   'paoshu8',
+  'ptwxz',
+  'xswang',
 ]
 
 export const status_types = [
