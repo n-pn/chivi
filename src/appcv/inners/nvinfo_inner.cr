@@ -69,9 +69,9 @@ module CV::NvinfoInner
   def fix_scores!(voters : Int32, scores : Int32) : Nil
     self.voters = voters
 
-    if voters < 30
-      scores &+= (30 - voters) &* 45
-      self.rating = scores // 30
+    if voters < 10
+      scores &+= (10 - voters) &* 45
+      self.rating = scores // 10
     else
       self.rating = scores // voters
     end
