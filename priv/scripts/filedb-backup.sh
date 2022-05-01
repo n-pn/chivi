@@ -7,8 +7,8 @@ SSH=nipin@ssh.chivi.app:srv/chivi
 if [[ $1 == "all" || $* == *user* ]]
 then
   echo backup user seeds!
-  rsync -aiz --no-p --delete "$SSH/var/cvusers" "var"
-  rsync -aiz --no-p --delete "$SSH/var/weblogs" "var"
+  rsync -aiz --no-p --delete "$SSH/var/pg_data/cvusers" "var/pg_data"
+  rsync -aiz --no-p --delete "$SSH/var/pg_data/weblogs" "var/pg_data"
 fi
 
 
@@ -41,6 +41,7 @@ then
   rsync -aiz --no-p "$SSH/_db/bcover/" "_db/bcover/"
 
   rsync -aiz --no-p "$SSH/var/chmetas/.html" "var/chmetas"
+  rsync -aiz --no-p "$SSH/var/chmetas/seeds" "var/chmetas"
   rsync -aiz --no-p "$SSH/var/chmetas/stats" "var/chmetas"
   rsync -aiz --no-p "$SSH/var/chtexts/users" "var/chtexts"
 fi

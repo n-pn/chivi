@@ -4,6 +4,7 @@ module CV::SnameMap
   MAP_INT = {
     "mixed" => 0,
     "chivi" => 0,
+
     "staff" => 1,
     "users" => 63,
 
@@ -15,11 +16,12 @@ module CV::SnameMap
 
     "xbiquge" => 16,
     "rengshu" => 18,
-    "biqugee" => 20,
 
+    "biqugee" => 20,
     "paoshu8" => 22,
 
-    "ptwxz" => 26,
+    "biquyue" => 24,
+    "ptwxz"   => 26,
 
     "biqu5200" => 32,
     "5200"     => 34,
@@ -34,18 +36,16 @@ module CV::SnameMap
 
   def map_type(sname : String)
     case sname
-    when "chivi"
+    when "chivi", "mixed"
       0 # act as mirror
     when "users", "staff", "zxcs_me"
       1 # manual update
-    when "jx_la", "zhwenpg", "shubaow", "sdyfcm"
+    when "jx_la", "zhwenpg", "shubaow", "sdyfcm", "duokan8"
       2 # dead remote
-    when "paoshu8", "duokan8", "hetushu", "5200", "ptwxz"
-      3 # slow but still alive
-    when "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee", "biqu5200"
-      4 # fast remote
-    else
-      3 # other
+    when "paoshu8", "hetushu", "5200", "biqu5200", "ptwxz"
+      3  # slow but still alive
+    else # "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee"
+      4  # fast remote
     end
   end
 
@@ -69,7 +69,7 @@ module CV::SnameMap
   MAP_STR = MAP_INT.invert
 
   def map_str(int : Int32)
-    MAP_STR[int] || "staff"
+    MAP_STR[int] || "mixed"
   end
 
   def map_str(ints : Array(Int32))

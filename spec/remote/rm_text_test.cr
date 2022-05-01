@@ -64,3 +64,5 @@ fetch_text("ptwxz", "1806", "803058", fresh: false)
 
 fetch_text("biqugee", "51452", "649594", fresh: false)
 fetch_text("biqugee", "57287", "538148", fresh: false)
+
+fetch_text("biquyue", "56580", "63002", fresh: false)

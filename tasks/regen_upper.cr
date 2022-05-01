@@ -59,7 +59,7 @@ def extract_upper(sname : String) : String
     get_upper(page, "#newscontent_n .s2 > a")
   when "5200"
     get_upper(page, ".up > .r .s2 > a").split("_").last
-  when "biqu5200", "paoshu8", "shubaow"
+  when "biqu5200", "paoshu8", "shubaow", "biquyue"
     get_upper(page, "#newscontent > .r .s2 > a").split("_").last
   else
     get_upper(page, "#newscontent > .r .s2 > a")

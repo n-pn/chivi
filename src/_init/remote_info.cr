@@ -10,6 +10,10 @@ class CV::RemoteInfo
   DIR = "_db/.cache/%s/infos"
   TTL = 10.years
 
+  def self.mkdir!(sname : String)
+    Dir.mkdir_p(DIR % sname)
+  end
+
   getter dir : String
   @ttl : Time::Span | Time::MonthSpan
 

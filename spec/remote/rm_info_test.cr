@@ -94,4 +94,5 @@ tests = [
 
 tests.each { |sname, snvid, fresh| fetch_info(sname, snvid, fresh: fresh) }
 
-# fetch_info("69shu", "43236", fresh: true)
+CV::RemoteInfo.mkdir!("biquyue")
+fetch_info("biquyue", "56580", fresh: false)
