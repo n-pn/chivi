@@ -76,7 +76,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     yscrits =
       Yscrit.query
         .where("nvinfo_id = #{nvinfo.id}")
-        .sort_by("stars").limit(3)
+        .sort_by("score").limit(3)
 
     nvinfos =
       Nvinfo.query
