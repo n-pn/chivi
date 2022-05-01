@@ -118,6 +118,7 @@ class CV::RemoteInfo
       "https://www.hetushu.com" + info.attr(".book_info img", "src")
     when "zhwenpg" then info.attr(".cover_wrapper_m img", "data-src")
     when "ptwxz"   then info.attr("img[width=\"100\"]", "src")
+    when "xswang"  then "https://www.xswang.com" + info.meta("og:image")
     else                info.meta("og:image")
     end
   end
@@ -129,6 +130,8 @@ class CV::RemoteInfo
       info.inner_text(ptwxz_info.css("tr:nth-child(3) > td").to_a[1])
     when "69shu"
       info.text(".booknav2 > p:nth-child(4)").split("  |  ").last
+    when "xswang"
+      info.text("#info > p:nth-child(6)").split(/\s+/).last
     when "hetushu"
       info.attr(".book_info", "class").includes?("finish") ? "1" : "0"
     else
