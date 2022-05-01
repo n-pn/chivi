@@ -39,11 +39,11 @@ class CV::BdLacInvoke
 
   # IOPIPE = Process::Redirect::Inherit
 
-  def parse!(redo = false, lbl = "1/1") : Nil
+  def parse!(lbl = "1/1") : Nil
     return if @chap_count == 0
     existed = Dir.glob("#{@out_path}/*.tsv")
 
-    if SKIP_IF_ENOUGH && existed.size > calc_max_size(@chap_count)
+    if @@skip_if_plenty && existed.size > calc_max_size(@chap_count)
       Log.info { "<#{lbl}> #{@nvinfo.bslug}: #{existed.size} parsed".colorize.green }
       return
     else
@@ -56,7 +56,7 @@ class CV::BdLacInvoke
       chlist = ChList.new(list_file)
 
       chlist.data.each_value do |chinfo|
-        next if !redo && existed.includes?(chinfo.chidx)
+        next if existed.includes?(chinfo.chidx)
         extract_text(chinfo) if should_parse?(chinfo.chidx)
       rescue err
         Log.error { err.inspect_with_backtrace }
@@ -77,24 +77,19 @@ class CV::BdLacInvoke
     chidx % (chidx // 128 + 1) == 0
   end
 
-  def extract_text(info : ChInfo)
+  def extract_text(info : ChInfo) : Nil
     return unless proxy = info.proxy
 
-    chidx = info.chidx
-    schid = info.schid
-
-    sname = proxy.sname
-    snvid = proxy.snvid
-
-    out_txt = "#{@out_path}/#{chidx}-0.txt"
+    out_txt = "#{@out_path}/#{info.chidx}-0.txt"
     return if File.exists?(out_txt)
 
-    inp_zip = "#{INP_DIR}/#{sname}/#{snvid}/#{(chidx &- 1) // 128}.zip"
+    pgidx = (info.chidx &- 1) // 128
+    inp_zip = "#{INP_DIR}/#{proxy.sname}/#{proxy.snvid}/#{pgidx}.zip"
+
     return unless File.exists?(inp_zip)
 
     Compress::Zip::File.open(inp_zip) do |zip|
-      return unless entry = zip["#{schid}-0.txt"]?
-      # puts "- #{sname}/#{snvid}/#{chidx}-0.txt extracted".colorize.cyan
+      return unless entry = zip["#{info.schid}-0.txt"]?
       File.write(out_txt, entry.open(&.gets_to_end))
     rescue err
       Log.error { err.colorize.red }
@@ -103,38 +98,36 @@ class CV::BdLacInvoke
 
   ####################
 
+  class_property skip_if_plenty = false
+
   def self.run!(argv = ARGV)
     workers = 6
-    bslug = ""
-    redo = false
+    books = [] of String
 
     OptionParser.parse(argv) do |opt|
-      opt.banner = "Usage: baidu-lac-invoke [arguments]"
+      opt.banner = "Usage: bd_lac-invoke [arguments]"
       opt.on("-t WORKERS", "Parallel workers") { |x| workers = x.to_i }
-      opt.on("-r", "Redo postagging") { redo = true }
-      opt.on("-b BSLUG", "Do a single book") { |x| bslug = x }
+      opt.on("--skip-if-plenty", "Skip if enough chapters parsed") { @@skip_if_plenty = true }
+
+      opt.unknown_args { |args| books = args }
     end
 
-    if bslug.empty?
-      self.batch(workers, redo)
+    if books.empty?
+      query = "select nvinfo_id from ubmemos where status > 0"
+      infos = Nvinfo.query.where("id IN (#{query})").sort_by("weight").to_set
+      infos.concat Nvinfo.query.sort_by("weight").limit(20000)
     else
-      self.entry(bslug, redo)
+      infos = Nvinfo.query.where("bhash in ?", books).to_set
     end
-  end
 
-  def self.batch(workers = 6, redo = false)
-    workers = 1 if workers < 1
+    workers = infos.size if workers > infos.size
     channel = Channel(Nil).new(workers)
-
-    query = "select nvinfo_id from ubmemos where status > 0"
-    infos = Nvinfo.query.where("id IN (#{query})").sort_by("weight").to_set
-    infos.concat Nvinfo.query.sort_by("weight").limit(20000)
 
     infos.each_with_index(1) do |info, idx|
       spawn do
-        new(info).parse!(redo: redo, lbl: "#{idx}/#{infos.size}")
+        new(info).parse!(lbl: "#{idx}/#{infos.size}")
       rescue err
-        puts err.inspect_with_backtrace
+        Log.error { err.inspect_with_backtrace }
       ensure
         channel.send(nil)
       end
@@ -145,11 +138,5 @@ class CV::BdLacInvoke
     workers.times { channel.receive }
   end
 
-  def self.entry(bslug : String, redo = false)
-    return unless nvinfo = Nvinfo.find({bslug: bslug})
-    puts "#{nvinfo.bslug}: #{nvinfo.vname}".colorize.red
-    new(nvinfo).parse!(redo: redo)
-  end
-
-  run!
+  run!(ARGV)
 end
