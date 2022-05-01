@@ -2,6 +2,7 @@ module CV::SnameMap
   extend self
 
   MAP_INT = {
+    "mixed" => 0,
     "chivi" => 0,
     "staff" => 1,
     "users" => 63,
@@ -50,7 +51,7 @@ module CV::SnameMap
 
   MAP_INT.each_key do |sname|
     Dir.mkdir_p("var/chmetas/seeds/#{sname}")
-    Dir.mkdir_p("var/chmetas/users/#{sname}")
+    Dir.mkdir_p("var/chmetas/stats/#{sname}")
   end
 
   def alive_snames : Array(String)

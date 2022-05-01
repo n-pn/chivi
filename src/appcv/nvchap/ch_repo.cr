@@ -4,11 +4,11 @@ class CV::ChRepo
   DIR = "var/chtexts"
 
   getter fseed : String
-  getter fuser : String
+  getter fstat : String
 
   def initialize(@sname : String, @snvid : String, @dname : String)
     @fseed = "var/chmetas/seeds/#{sname}/#{snvid}.tsv"
-    @fuser = "var/chmetas/users/#{sname}/#{snvid}.log"
+    @fstat = "var/chmetas/stats/#{sname}/#{snvid}.log"
 
     Dir.mkdir_p("var/chmetas/.html/#{sname}/#{snvid}")
     Dir.mkdir_p("#{DIR}/#{@sname}/#{@snvid}")
@@ -70,7 +70,7 @@ class CV::ChRepo
   end
 
   def patch!(input : Array(ChInfo)) : Nil
-    spawn ChList.save!(@fuser, input, "a")
+    spawn ChList.save!(@fstat, input, "a")
 
     input.group_by { |x| self.zh_pg(x.chidx) }.each do |pgidx, infos|
       self.chlist(pgidx).tap(&.patch(infos)).save!
