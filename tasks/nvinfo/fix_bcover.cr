@@ -130,7 +130,7 @@ module CV::FixCovers
       max_width = width
     end
 
-    nvinfo.update({bcover: "", scover: ""}) if max_width == 0
+    nvinfo.update({bcover: ""}) if max_width == 0
   end
 
   def run!(clean = false)
