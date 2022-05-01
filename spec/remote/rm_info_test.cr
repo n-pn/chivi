@@ -3,7 +3,7 @@ require "../../src/_init/remote_info.cr"
 
 def fetch_info(sname, snvid, fresh = false) : Void
   puts "\n[#{CV::SiteLink.info_url(sname, snvid)}]".colorize.green.bold
-  parser = CV::RemoteInfo.new(sname, snvid, ttl: fresh ? 10.seconds : 1.year)
+  parser = CV::RemoteInfo.new(sname, snvid, ttl: fresh ? 10.seconds : 10.years)
 
   puts "------".colorize.green
 
@@ -38,7 +38,7 @@ tests = [
   # {"ql_la", "7", false},
   # {"ql_la", "9923", false},
 
-  {"jx_la", "7", false},
+  # {"jx_la", "7", false},
   # {"jx_la", "7", true},
 
   # {"69shu", "22729", true},
@@ -66,7 +66,7 @@ tests = [
   {"paoshu8", "151780", false},
   # {"paoshu8", "151780", true},
 
-  {"zhwenpg", "aun4tm", false},
+  # {"zhwenpg", "aun4tm", false},
   # {"zhwenpg", "aun4tm", true},
 
   {"5200", "28208", false},
@@ -84,7 +84,7 @@ tests = [
   {"bxwxorg", "32154", false},
   # {"bxwxorg", "32154", true},
 
-  {"sdyfcm", "10", false},
+  # {"sdyfcm", "10", false},
   # {"sdyfcm", "125228", true},
 
   {"ptwxz", "1806", false},

@@ -35,13 +35,14 @@ module CV::HttpUtil
     cmd = "curl -L -k -s -m 30 '#{url}'"
 
     if encoding != "UTF-8"
-      cmd += %{ | iconv -c -f #{encoding} -t UTF-8}
-      cmd += %{ | sed -r 's/charset=\\"?GBK\\"?/charset=utf-8/i'}
+      cmd += " | iconv -c -f #{encoding} -t UTF-8"
+      cmd += %q{ | sed -r 's/charset=\"?GBK\"?/charset=utf-8/i'}
     end
 
     loop do
-      puts "-- <#{lbl.colorize.magenta}> [GET: #{url.colorize.magenta} (try: #{try})]"
-      `#{cmd}`.try { |x| return x unless x.empty? }
+      Log.info { "<#{lbl}> [GET: #{url.colorize.magenta} (try: #{try})]" }
+      html = `#{cmd}`
+      return html unless html.empty?
     rescue err
       Log.error { err.inspect_with_backtrace }
     ensure

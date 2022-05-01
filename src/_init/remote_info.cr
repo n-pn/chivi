@@ -7,7 +7,7 @@ require "../appcv/nvchap/ch_info"
 require "../appcv/shared/sname_map"
 
 class CV::RemoteInfo
-  DIR = "_db/.cache/%s/infos"
+  DIR = "_db/.cache"
   TTL = 10.years
 
   def self.mkdir!(sname : String)
@@ -17,6 +17,12 @@ class CV::RemoteInfo
   getter dir : String
   @ttl : Time::Span | Time::MonthSpan
 
+  getter info_file : String { "#{DIR}/#{@sname}/infos/#{@snvid}.html.gz" }
+  getter info_link : String { SiteLink.info_url(@sname, @snvid) }
+
+  getter mulu_link : String { SiteLink.mulu_url(@sname, @snvid) }
+  getter mulu_file : String { "#{DIR}/#{@sname}/infos/#{@snvid}-mulu.html.gz" }
+
   def initialize(@sname : String, @snvid : String, @ttl = TTL, @lbl = "-/-")
     @dir = DIR % @sname
     @ttl = 10.years if SnameMap.map_type(@sname) < 3
@@ -24,10 +30,7 @@ class CV::RemoteInfo
   end
 
   getter info : HtmlParser do
-    file = "#{@dir}/#{@snvid}.html.gz"
-    link = SiteLink.info_url(@sname, @snvid)
-
-    html = HttpUtil.cache(file, link, @ttl, @lbl, @encoding)
+    html = HttpUtil.cache(info_file, info_link, @ttl, @lbl, @encoding)
     HtmlParser.new(html)
   rescue
     HtmlParser.new("")
@@ -35,11 +38,7 @@ class CV::RemoteInfo
 
   getter mulu : HtmlParser do
     return info unless @sname.in?("69shu", "ptwxz")
-
-    file = "#{@dir}/#{@snvid}-mulu.html.gz"
-    link = SiteLink.mulu_url(@sname, @snvid)
-
-    html = HttpUtil.cache(file, link, @ttl, @lbl, @encoding)
+    html = HttpUtil.cache(mulu_file, mulu_link, @ttl, @lbl, @encoding)
     HtmlParser.new(html)
   rescue
     HtmlParser.new("")

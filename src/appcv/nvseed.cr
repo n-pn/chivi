@@ -1,4 +1,5 @@
 require "../_util/site_link"
+require "../_util/file_util"
 require "../_init/remote_info"
 
 require "./nvchap/ch_list"
@@ -116,8 +117,8 @@ class CV::Nvseed
     [] of String
   end
 
-  def fetch!(ttl : Time::Span, force : Bool = false, @lbl = "-/-") : Nil
-    parser = RemoteInfo.new(sname, snvid, ttl: ttl)
+  def fetch!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
+    parser = RemoteInfo.new(sname, snvid, ttl: ttl, lbl: lbl)
     changed = parser.last_schid != self.last_schid
 
     return unless force || changed
@@ -127,7 +128,7 @@ class CV::Nvseed
     _repo.store!(chinfos, reset: force)
 
     self.reset_cache!
-    self.stime = Time.utc.to_unix
+    self.stime = FileUtil.mtime_int(parser.info_link)
 
     if parser.update_str.empty?
       mftime = changed ? self.stime : self.utime
@@ -148,63 +149,67 @@ class CV::Nvseed
     patch!([chap], utime)
   end
 
-  def patch!(chaps : Array(ChInfo), utime : Int64 = Time.utc.to_unix) : Nil
+  def patch!(chaps : Array(ChInfo), utime : Int64, save = true) : Nil
     return if chaps.empty?
     _repo.patch!(chaps)
 
-    self.set_mftime(utime)
+    self.set_mftime(utime, force: false)
     self.set_latest(chaps.last, force: false)
 
-    self.save!
+    self.save! if save
   end
 
-  def proxy!(other : self, start = self.chap_count + 1) : Int32
+  def proxy!(other : self, start = 1) : Int32
     return start if other.chap_count < start
-    infos = other._repo.fetch_as_proxies!(start, other.chap_count)
 
-    if other.sname == "users"
-      infos.select! { |chap| chap.stats.chars > 0 }
-    end
+    infos = other._repo.fetch_as_proxies!(start, other.chap_count)
+    infos.select!(&.stats.chars.> 0) if other.sname == "users"
 
     return start if infos.empty?
-    self.patch!(infos, other.utime)
+    self.patch!(infos, other.utime, save: false)
     infos.last.chidx + 1 # return latest patched chapter
   end
 
-  def proxy_many!(others : Array(self), force : Bool = false) : Nil
-    self.chap_count = 0 if force
-    start = self.chap_count + 1
-
-    others.each do |other|
-      start = 1 if force && other.sname == "users"
-      start = self.proxy!(other, start: start)
-    end
-
-    self.reset_cache!
-  end
-
-  def remap!(force : Bool = false, fetch : Bool = true)
+  def remap!(force : Bool = false, fetch : Bool = true) : Nil
     seeds = self.nvinfo.nvseeds.to_a.sort_by!(&.zseed)
-    seeds.shift if seeds.first?.try(&.id.== self.id)
+
+    seeds.shift if seeds.first?.try(&.zseed.== 0)
+    seeds.pop if (users_seed = seeds.last?) && users_seed.sname == "users"
 
     ttl = map_ttl(force: force)
+    start = 1
 
-    seeds.each_with_index(1) do |nvseed, idx|
-      next unless fetch && nvseed.remote?(force: false)
-      nvseed.fetch!(ttl: ttl * (2 ** idx), force: false, lbl: "#{idx}/#{seeds.size}")
+    seeds = seeds.first(5)
+    seeds.each_with_index(1) do |other, idx|
+      if fetch && other.remote?(force: force)
+        ttl *= 2
+        other.fetch!(ttl: ttl, force: false, lbl: "#{idx}/#{seeds.size}")
+        self.stime = other.stime if self.stime < other.stime
+      end
+
+      start = self.proxy!(other, start: start)
     rescue err
-      puts err.colorize.red
+      Log.error { err.colorize.red }
     end
 
-    proxy_many!(seeds, force: force)
+    users_seed.try { |x| self.proxy!(x, 1) }
+
+    self.reset_cache!
+    self.save!
   end
 
   # ------------------------
 
   def refresh!(force : Bool = false) : Nil
     if zseed == 0 # sname == "chivi"
+      if force
+        self.chap_count = 0
+        self.last_schid = ""
+        self.utime = 0_i64
+        self.stime = Time.utc.to_unix
+      end
+
       self.remap!(force: force, fetch: true)
-      self.update({stime: Time.utc.to_unix})
     elsif self.remote?(force: force)
       self.fetch!(ttl: map_ttl(force: force), force: force)
       Nvseed.load!(self.nvinfo, 0).tap(&.proxy!(self)).reset_cache!

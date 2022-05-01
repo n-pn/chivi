@@ -17,7 +17,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     nvseed = load_nvseed
     bseeds = nvseed.nvinfo.nvseeds
 
-    force = params["force"]? == "true" && _cvuser.privi >= 0
+    force = _cvuser.privi >= 0 && params["force"]? == "true"
     nvseed.refresh!(force: force) if nvseed.staled?(_cvuser.privi, force)
 
     total = nvseed.chap_count

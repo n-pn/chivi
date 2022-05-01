@@ -145,13 +145,16 @@ class CV::NvchapCtrl < CV::BaseCtrl
       chinfo.tap(&.set_title!(chap.title, chap.chvol))
     end
 
+    stime = Time.utc.to_unix
     # save chapter infos
-    nvseed.tap(&.patch!(infos)).reset_cache!
+    nvseed.tap(&.patch!(infos, stime)).reset_cache!
     nvseed.nvinfo.tap(&.add_nvseed(nvseed.zseed)).save!
 
     # copy new uploaded chapters to "chivi" source
     infos.map!(&.as_proxy!("users", nvseed.snvid))
-    Nvseed.load!(nvseed.nvinfo, 0).tap(&.patch!(infos)).reset_cache!
+
+    mixed_seed = Nvseed.load!(nvseed.nvinfo, 0)
+    mixed_seed.tap(&.patch!(infos, stime)).reset_cache!
 
     first = infos.first.tap(&.trans!(nvseed.cvmtl))
     send_json({chidx: chidx, uslug: first.trans.uslug}, 201)
