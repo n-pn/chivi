@@ -28,7 +28,8 @@ module CV::FixIntros
       bintro = yintro
     end
 
-    return unless bintro ||= yintro
+    bintro ||= yintro
+    return unless bintro
 
     if DEBUG
       title = "#{nvinfo.bslug}\t#{nvinfo.bhash}\n"

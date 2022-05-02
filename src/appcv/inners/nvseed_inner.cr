@@ -28,29 +28,28 @@ module CV::NvseedInner
     self.nvinfo.set_utime(utime)
   end
 
-  def set_status(status : Int32, force : Bool = false) : Nil
-    return unless force || self.status < status || self.status == 3
-
-    self.nvinfo.set_status(status)
+  def set_status(status : Int32, mode : Int32 = 0) : Nil
+    return unless mode > 0 || self.status < status || self.status == 3
     self.status = status
+    self.nvinfo.set_status(status, force: mode > 1)
   end
 
-  def set_genres(genres : Array(String), force : Bool = false)
-    return unless force || self.bgenre.empty?
+  def set_genres(genres : Array(String), mode : Int32 = 0)
+    return unless mode > 0 || self.bgenre.empty?
     self.bgenre = genres.join('\t')
-    self.nvinfo.set_genres(genres)
+    self.nvinfo.set_genres(genres, force: mode > 1)
   end
 
-  def set_bintro(bintro : Array(String), force : Bool = false) : Nil
-    return unless force || self.bintro.empty?
+  def set_bintro(bintro : Array(String), mode : Int32 = 0) : Nil
+    return unless mode > 0 || self.bintro.empty?
     self.bintro = bintro.join('\n')
-    self.nvinfo.set_bintro(bintro)
+    self.nvinfo.set_bintro(bintro, force: mode > 1)
   end
 
-  def set_bcover(bcover : String, force : Bool = false) : Nil
-    return unless force || self.bcover.empty?
+  def set_bcover(bcover : String, mode : Int32 = 0) : Nil
+    return unless mode > 0 || self.bcover.empty?
     self.bcover = bcover
-    self.nvinfo.set_bcover(bcover)
+    self.nvinfo.set_bcover(bcover, force: mode > 1)
   end
 
   ############

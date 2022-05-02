@@ -1,18 +1,22 @@
 module CV::NvinfoInner
   def add_nvseed(zseed : Int32) : Nil
     return if self.zseeds.includes?(zseed)
-
     self.zseeds.push(zseed).sort!
     self.zseeds_column.dirty!
   end
 
   def set_genres(zgenres : Array(String), force = false) : Nil
     return unless force || self.igenres.empty? || self.igenres == [0]
+    set_vgenres(GenreMap.zh_to_vi(zgenres), force: force)
+  end
+
+  def set_vgenres(vgenres : Array(String), force = false) : Nil
+    return unless force || self.igenres.empty? || self.igenres == [0]
 
     self.igenres.clear
     self.vlabels.clear if force
 
-    GenreMap.zh_to_vi(zgenres).each do |vgenre|
+    vgenres.each do |vgenre|
       case igenre = GenreMap.map_int(vgenre)
       when .< 0 then self.vlabels << vgenre
       when .> 0 then self.igenres << igenre

@@ -78,26 +78,13 @@ class CV::ZhinfoData
     nvseed.btitle = bindex.btitle
     nvseed.author = bindex.author
 
-    if genres = self.genres[snvid]?
-      nvseed.set_genres(genres, force: mode > 0)
-    end
+    force_mode = mode > 0 ? 1 : 0
 
-    if bintro = self.bintro[snvid]?
-      nvseed.set_bintro(bintro, force: mode > 0)
-    end
-
-    if bcover = self.bcover[snvid]?
-      nvseed.set_bcover(bcover, force: mode > 0)
-    end
-
-    if mftime = self.mftime[snvid]?
-      nvseed.set_mftime(mftime.mftime, force: mode > 0)
-    end
-
-    if status = self.status[snvid]?
-      nvseed.set_status(status.status, force: mode > 0)
-    end
-
+    self.genres[snvid]?.try { |x| nvseed.set_genres(x, mode: force_mode) }
+    self.bintro[snvid]?.try { |x| nvseed.set_bintro(x, mode: force_mode) }
+    self.bcover[snvid]?.try { |x| nvseed.set_bcover(x, mode: force_mode) }
+    self.status[snvid]?.try { |x| nvseed.set_status(x, mode: force_mode) }
+    self.mftime[snvid]?.try { |x| nvseed.set_mftime(x, force: mode > 0) }
     nvseed.fix_latest(force: mode > 1)
 
     if nvinfo.voters < 10

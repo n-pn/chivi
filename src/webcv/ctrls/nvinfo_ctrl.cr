@@ -125,7 +125,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     author = Author.upsert!(author_zh)
     params["author_vi"]?.try do |author_vi|
       author_vi = TextUtil.fix_spaces(author_vi).strip
-      next if author_vi.empty?
+      break if author_vi.empty?
 
       BookUtil.vi_authors.append!("#{author_zh}  #{btitle_zh}", author_vi)
       author.tap(&.set_vname(author_vi)).save!
@@ -134,7 +134,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     btitle = Btitle.upsert!(btitle_zh)
     params["btitle_vi"]?.try do |btitle_vi|
       btitle_vi = TextUtil.fix_spaces(btitle_vi).strip
-      next if btitle_vi.empty?
+      break if btitle_vi.empty?
 
       BookUtil.vi_btitles.append!("#{btitle_zh}  #{author_zh}", btitle_vi)
       btitle.tap(&.set_vname(btitle_vi)).save!
@@ -148,28 +148,28 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     params["bintro"]?.try do |bintro|
       bintro = TextUtil.split_html(bintro, true)
-      nvseed.set_bintro(bintro, force: true)
-      nvinfo.set_bintro(bintro, force: true)
+      nvseed.set_bintro(bintro, mode: 2)
     end
 
     params["genres"]?.try do |genres|
-      genres = GenreMap.vi_to_zh(genres.split(",").map(&.strip))
-      nvseed.set_genres(genres, force: true)
-      nvinfo.set_genres(genres, force: true)
+      vgenres = genres.split(",").map(&.strip)
+      nvinfo.igenres = GenreMap.map_int(vgenres)
+
+      zgenres = GenreMap.vi_to_zh(vgenres)
+      nvseed.set_genres(zgenres, mode: 1)
+
+      Log.info { [vgenres, zgenres, nvinfo.igenres] }
     end
 
     params["bcover"]?.try do |bcover|
       bcover = TextUtil.fix_spaces(bcover).strip
       next unless bcover.starts_with?("http")
-
-      nvseed.set_bcover(bcover, force: true)
-      nvinfo.set_bcover(bcover, force: true)
+      nvseed.set_bcover(bcover, mode: 2)
     end
 
     params["status"]?.try do |status|
       status = TextUtil.fix_spaces(status).strip.to_i
-      nvseed.set_status(status, force: true)
-      nvinfo.set_status(status, force: true)
+      nvseed.set_status(status, mode: 2)
     end
 
     nvinfo.save!

@@ -11,11 +11,11 @@ module CV::GenreMap
   class_getter id_map : Tabkv(Int32) { Tabkv(Int32).new("#{DIR}/genres_id.tsv") }
 
   def map_int(input : String) : Int32
-    id_map[input.strip]? || -1
+    id_map[input]? || -1
   end
 
   def map_int(input : Array(String)) : Array(Int32)
-    input.map { |x| map_int(x) }.reject(&.< 1)
+    input.map { |x| map_int(x) }.reject(&.< 0)
   end
 
   def to_str(ids : Array(Int32)) : Array(String)
