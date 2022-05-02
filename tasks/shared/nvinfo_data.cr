@@ -150,10 +150,10 @@ abstract class CV::NvinfoData
   end
 
   def update_nvinfo(nvinfo : Nvinfo, entry : Ysbook | Nvseed)
-    nvinfo.set_zgenres(entry.bgenre.split('\t'))
-    nvinfo.set_zintro(entry.bintro.split('\t'))
+    nvinfo.set_genres(entry.bgenre.split('\t'))
+    nvinfo.set_bintro(entry.bintro.split('\t'))
 
-    nvinfo.set_covers(entry.bcover)
+    nvinfo.set_bovers(entry.bcover)
     nvinfo.set_status(entry.status)
 
     nvinfo.set_utime(entry.utime)

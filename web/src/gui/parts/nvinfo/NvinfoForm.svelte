@@ -38,7 +38,7 @@
       }
 
       for (const field of fields) {
-        const value = this[field].trim()
+        const value = this[field]
         if (value && value != nvinfo[field]) output[field] = value
       }
 

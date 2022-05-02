@@ -36,9 +36,9 @@ module CV::NvinfoSeed
 
   def save!(nvinfo : Nvinfo, entry)
     nvinfo.set_genres(entry.genres)
-    nvinfo.set_zintro(entry.bintro)
+    nvinfo.set_bintro(entry.bintro)
 
-    nvinfo.set_covers(entry.bcover)
+    nvinfo.set_bcover(entry.bcover)
     nvinfo.set_status(entry.status)
 
     nvinfo.set_utime(entry.update_int)

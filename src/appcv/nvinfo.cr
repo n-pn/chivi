@@ -181,11 +181,14 @@ class CV::Nvinfo
   end
 
   def self.upsert!(author_zh : String, btitle_zh : String, fix_names : Bool = false)
-    upsert(Author.upsert!(author_zh), Btitle.upsert!(btitle_zh), fix_names)
+    author = Author.upsert!(author_zh)
+    btitle = Btitle.upsert!(btitle_zh)
+    upsert!(author, btitle, fix_names)
   end
 
   def self.upsert!(author : Author, btitle_zh : String, fix_names : Bool = false)
-    upsert(author, Btitle.upsert!(btitle_zh), fix_names)
+    btitle = Btitle.upsert!(btitle_zh)
+    upsert!(author, btitle, fix_names)
   end
 
   def self.upsert!(author : Author, btitle : Btitle, fix_names : Bool = false)
