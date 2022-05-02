@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { bgenres } from '$lib/constants'
 
-  const fields = ['btitle_vi', 'author_vi', 'status', 'bintro', 'bcover']
+  const fields = ['btitle_vi', 'author_vi', 'bintro', 'bcover']
 
   export class Params {
     nvinfo?: CV.Nvinfo
@@ -25,6 +25,7 @@
       this.btitle_zh = nvinfo.btitle_zh
       this.author_zh = nvinfo.author_zh
       this.genres = nvinfo.genres
+      this.status = nvinfo.status
       for (const field of fields) this[field] = nvinfo[field]
     }
 
@@ -37,8 +38,10 @@
         genres: this.genres.join(','),
       }
 
+      if (this.status != this.nvinfo.status) output['status'] = this.status
+
       for (const field of fields) {
-        const value = this[field]
+        const value = this[field].trim()
         if (value && value != nvinfo[field]) output[field] = value
       }
 
