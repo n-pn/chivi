@@ -22,7 +22,7 @@ module CV::FixCovers
     out_path = File.join(OUT, out_file)
 
     if File.exists?(out_path)
-      return {out_file, image_width(out_path) || 9999}
+      return {out_file, HttpUtil.image_width(out_path) || 9999}
     end
 
     unless inp_path = cover_path(sname, snvid)
