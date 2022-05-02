@@ -108,10 +108,13 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
+    bcover = nvinfo.cvseed.bcover
+    bcover = nvinfo.scover if bcover.empty?
+
     serv_json({
       genres: nvinfo.cvseed.bgenre.split('\t'),
       bintro: nvinfo.cvseed.bintro,
-      bcover: nvinfo.cvseed.bcover,
+      bcover: bcover,
     })
   end
 

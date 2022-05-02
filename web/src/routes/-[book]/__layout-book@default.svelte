@@ -163,8 +163,12 @@
 
     <a class="m-btn" href="/dicts/-{nvinfo.bhash}" data-kbd="p">
       <SIcon name="package" />
-      <span class="-txt">Từ điển</span>
     </a>
+    {#if $session.privi > 2}
+      <a class="m-btn _harmful" href="/-{nvinfo.bslug}/edit">
+        <SIcon name="edit" />
+      </a>
+    {/if}
   </div>
 </div>
 

@@ -11,7 +11,9 @@ module CV::NvinfoInner
   def set_genres(zgenres : Array(String), force = false) : Nil
     return unless force || self.igenres.empty? || self.igenres == [0]
     cvseed.update(bgenre: zgenres.join('\t'))
+
     self.igenres.clear
+    self.vlabels.clear
 
     GenreMap.zh_to_vi(zgenres).each do |vgenre|
       case igenre = GenreMap.map_int(vgenre)

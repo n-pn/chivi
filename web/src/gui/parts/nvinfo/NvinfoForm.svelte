@@ -193,7 +193,7 @@
   form-group {
     display: flex;
     margin-top: 1.5rem;
-    gap: var(--gutter);
+    gap: 0.75rem;
 
     @include bps(flex-direction, column, $tm: row);
 
@@ -218,8 +218,9 @@
   .form-label {
     position: absolute;
     background: inherit;
-    top: -0.75rem;
+    top: -0.5rem;
     left: 0.75rem;
+    line-height: 1rem;
     padding: 0 0.25rem;
     // transition: all 0.1s ease-in-out;
 

@@ -34,7 +34,7 @@ class CV::MtCore
     tradsim_mtl.tokenize(input.chars).to_s
   end
 
-  def self.convert(input : String, dname = "combine") : Cvmtl
+  def self.convert(input : String, dname = "combine") : String
     case dname
     when "hanviet" then hanviet_mtl.translit(input).to_s
     when "pin_yin" then pin_yin_mtl.translit(input).to_s

@@ -21,7 +21,11 @@
 
   $: topbar.set({
     left: [
-      [nvinfo.btitle_vi, 'book', { href: book_href, show: 'tm' }],
+      [
+        nvinfo.btitle_vi,
+        'book',
+        { href: book_href, show: 'tm', kind: 'title' },
+      ],
       ['Sửa thông tin', 'pencil', { href: '.' }],
     ],
   })

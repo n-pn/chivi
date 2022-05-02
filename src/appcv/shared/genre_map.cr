@@ -28,7 +28,7 @@ module CV::GenreMap
   # mapping chinese genre to vietnamese one
   def zh_to_vi(input : String) : Array(String)
     input == "轻小说" ? input : input.sub("小说", "")
-    zh_map[input]? || [MtCore.cv_hanviet(input)]
+    zh_map[input]? || [MtCore.convert(input, "!labels")]
   end
 
   def zh_to_vi(input : Array(String)) : Array(String)
