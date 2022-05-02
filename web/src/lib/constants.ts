@@ -49,6 +49,7 @@ export const status_colors = {
 }
 
 export const bgenres = [
+  ['Loại khác', 'loai-khac', '其他'],
   ['Huyền ảo', 'huyen-ao', '玄幻'],
   ['Kỳ huyễn', 'ky-huyen', '奇幻'],
   ['Giả tưởng', 'gia-tuong', '幻想'],
@@ -79,7 +80,6 @@ export const bgenres = [
   ['Xuyên việt', 'xuyen-viet', '穿越'],
   ['Trạch văn', 'trach-van', '二次元', '轻小说'],
   ['Phi sắc', 'phi-sac', '緋色'],
-  ['Loại khác', 'loai-khac', '其他'],
 ]
 
 export const mgenres = [
@@ -97,6 +97,7 @@ export const mgenres = [
   'Võ hiệp',
   'Ngôn tình',
   'Trạch văn',
+  'Phi sắc',
 ]
 
 export const snames = [

@@ -112,8 +112,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     bcover = nvinfo.scover if bcover.empty?
 
     serv_json({
-      genres: nvinfo.cvseed.bgenre.split('\t'),
       bintro: nvinfo.cvseed.bintro,
+      genres: nvinfo.igenres,
       bcover: bcover,
     })
   end

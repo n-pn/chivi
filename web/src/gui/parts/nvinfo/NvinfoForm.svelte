@@ -1,7 +1,4 @@
 <script context="module" lang="ts">
-  import { api_call } from '$lib/api_call'
-  import { book_status } from '$utils/nvinfo_utils'
-
   export class Params {
     btitle_zh: string = ''
     author_zh: string = ''
@@ -10,6 +7,7 @@
     author_vi: string = ''
 
     status: number = 0
+    igenres: Array<number> = []
     genres: string = ''
 
     bintro: string = ''
@@ -24,27 +22,43 @@
       this.author_zh = nvinfo.author_zh
       this.author_vi = nvinfo.author_vi
 
-      this.status = nvinfo.status
-
       this.bintro = nvinfo.bintro
       this.bcover = nvinfo.bcover
-      this.genres = nvinfo.genres.join(',')
+
+      this.status = nvinfo.status
+      this.igenres = nvinfo.genres.map((x) => +x)
     }
   }
 </script>
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import SIcon from '$gui/atoms/SIcon.svelte'
+  import { SIcon } from '$gui'
+  import { api_call } from '$lib/api_call'
+  import { bgenres, mgenres } from '$lib/constants'
+  import { book_status } from '$utils/nvinfo_utils'
 
   export let params: Params
   let errors: string
 
   async function submit() {
+    params.genres = params.igenres.map((x) => bgenres[x][2]).join(',')
+
     const [stt, data] = await api_call(fetch, 'books', params, 'PUT')
     if (stt >= 400) errors = data as string
     else await goto(`/-${data.bslug}`)
   }
+
+  function remove_genre(igenre: number) {
+    params.igenres = params.igenres.filter((x) => x != igenre)
+  }
+
+  function add_genre(igenre: number) {
+    params.igenres = [...params.igenres, igenre]
+  }
+
+  let show_genres_menu = false
+  let show_genres_more = false
 </script>
 
 <article class="article">
@@ -120,26 +134,63 @@
 
     <form-group>
       <form-field>
-        <label class="form-label" for="genres">Thể loại (tiếng Trung)</label>
+        <label class="form-label" for="bcover">Ảnh bìa truyện</label>
         <input
           type="text"
           class="m-input"
-          name="genres"
-          placeholder="Tách biệt nhiều thể loại bằng dấu phẩy"
-          bind:value={params.genres} />
+          name="bcover"
+          placeholder="Liên kết địa chỉ file ảnh"
+          bind:value={params.bcover} />
       </form-field>
     </form-group>
 
     <form-group>
       <form-field>
-        <label class="form-label" for="bcover"
-          >Ảnh bìa truyện (đường link)</label>
-        <input
-          type="text"
-          class="m-input"
-          name="bcover"
-          placeholder="Hạn chế dùng đường dẫn link tới site chính chủ"
-          bind:value={params.bcover} />
+        <label class="label" for="genres">Thể loại</label>
+
+        <div class="m-chips ">
+          {#each params.igenres as igenre}
+            <button
+              type="button"
+              class="m-chip _success"
+              on:click={() => remove_genre(igenre)}>
+              <span>{bgenres[igenre][0]}</span>
+              <SIcon name="x" />
+            </button>
+          {/each}
+
+          <button
+            type="button"
+            class="m-chip"
+            on:click={() => (show_genres_menu = !show_genres_menu)}>
+            <SIcon name={show_genres_menu ? 'minus' : 'plus'} />
+          </button>
+        </div>
+
+        {#if show_genres_menu}
+          <div class="m-chips suggest">
+            {#each bgenres as [vgenre], igenre}
+              {@const included = params.igenres.includes(igenre)}
+              {@const revealed = show_genres_more || mgenres.includes(vgenre)}
+              <button
+                type="button"
+                class="m-chip _xs"
+                hidden={included || !revealed}
+                on:click={() => add_genre(igenre)}>
+                <span>{vgenre}</span>
+                <SIcon name="plus" />
+              </button>
+            {/each}
+
+            <button
+              type="button"
+              class="m-chip _xs"
+              on:click={() => (show_genres_more = !show_genres_more)}>
+              <SIcon
+                name={show_genres_more ? 'chevron-left' : 'chevron-right'} />
+            </button>
+          </div>
+        {/if}
       </form-field>
     </form-group>
 
@@ -247,5 +298,16 @@
   .m-input {
     display: block;
     width: 100%;
+  }
+
+  .suggest {
+    margin-top: 0.75rem;
+    margin-right: -0.25rem;
+    margin-bottom: -0.25rem;
+
+    > * {
+      margin-right: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
   }
 </style>

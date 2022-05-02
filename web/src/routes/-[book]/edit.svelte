@@ -17,15 +17,11 @@
   import NvinfoForm, { Params } from '$gui/parts/nvinfo/NvinfoForm.svelte'
   export let nvinfo: CV.Nvinfo
 
-  $: book_href = `-${nvinfo.bslug}`
+  $: nv_href = `-${nvinfo.bslug}`
 
   $: topbar.set({
     left: [
-      [
-        nvinfo.btitle_vi,
-        'book',
-        { href: book_href, show: 'tm', kind: 'title' },
-      ],
+      [nvinfo.btitle_vi, 'book', { href: nv_href, show: 'tm', kind: 'title' }],
       ['Sửa thông tin', 'pencil', { href: '.' }],
     ],
   })
@@ -33,7 +29,7 @@
 
 <Crumb
   tree={[
-    [nvinfo.btitle_vi, book_href],
+    [nvinfo.btitle_vi, nv_href],
     ['Sửa thông tin', '.'],
   ]} />
 
