@@ -144,20 +144,22 @@
     </form-group>
 
     <form-group>
-      <label class="label" for="status">Trạng thái truyện</label>
+      <form-field>
+        <label class="label" for="status">Trạng thái truyện</label>
 
-      <form-radio>
-        {#each book_status as label, value}
-          <label class="m-radio">
-            <input
-              type="radio"
-              bind:group={params.status}
-              name="status"
-              {value} />
-            <span>{label}</span>
-          </label>
-        {/each}
-      </form-radio>
+        <form-radio>
+          {#each book_status as label, value}
+            <label class="m-radio">
+              <input
+                type="radio"
+                bind:group={params.status}
+                name="status"
+                {value} />
+              <span>{label}</span>
+            </label>
+          {/each}
+        </form-radio>
+      </form-field>
     </form-group>
 
     {#if errors}
@@ -184,6 +186,7 @@
 
   header {
     @include border($loc: bottom);
+    padding-bottom: var(--gutter-small);
     margin-bottom: var(--gutter);
   }
 

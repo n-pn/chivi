@@ -1,4 +1,8 @@
 module CV::NvseedInner
+  def bintro_lines
+    bintro.split('\n')
+  end
+
   def fix_latest(force : Bool = false) : Nil
     return unless force || self.chap_count == 0
 

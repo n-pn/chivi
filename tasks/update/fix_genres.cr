@@ -16,6 +16,8 @@ class CV::FixGenres
       end
 
       nvinfo.nvseeds.each do |nvseed|
+        next if nvseed.zseed == 0
+
         genres = GenreMap.zh_to_vi nvseed.bgenre.split('\t')
         input.concat GenreMap.map_int(genres)
       end

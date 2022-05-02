@@ -102,6 +102,6 @@ module CV::NvinfoUtil
           authors: #{authors.size.colorize.cyan}, \
           nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
           ysbooks: #{Ysbook.query.count.colorize.cyan}, \
-          nvseeds: #{Nvseed.query.count.colorize.cyan}"
+          nvseeds: #{Nvseed.query.where("zseed > 0").count.colorize.cyan}"
   end
 end

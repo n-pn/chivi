@@ -10,8 +10,7 @@ module CV::NvinfoInner
 
   def set_genres(zgenres : Array(String), force = false) : Nil
     return unless force || self.igenres.empty? || self.igenres == [0]
-    cvseed.set_genres(zgenres, force: true)
-
+    cvseed.update(bgenre: zgenres.join('\t'))
     self.igenres.clear
 
     GenreMap.zh_to_vi(zgenres).each do |vgenre|
@@ -28,14 +27,13 @@ module CV::NvinfoInner
 
   def set_bintro(lines : Array(String), force = false) : Nil
     return unless force || self.bintro.empty?
-    cvseed.set_bintro(lines, force: true)
-    self.bintro = BookUtil.cv_lines(lines, self.bhash, :text)
+    cvseed.update(bintro: lines.join('\n'))
+    self.bintro = BookUtil.cv_lines(lines, self.dname, :text)
   end
 
   def set_bcover(scover : String, force = false) : Nil
     return unless force || self.bcover.empty?
-    cvseed.set_bcover(scover, force: true)
-
+    cvseed.update(bcover: scover)
     self.bcover = UkeyUtil.digest32(scover, 8) + ".webp"
   end
 

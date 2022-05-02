@@ -22,7 +22,7 @@
   $: topbar.set({
     left: [
       [nvinfo.btitle_vi, 'book', { href: book_href, show: 'tm' }],
-      ['Sửa nội dung', 'pencil', { href: '.' }],
+      ['Sửa thông tin', 'pencil', { href: '.' }],
     ],
   })
 </script>
@@ -30,9 +30,9 @@
 <Crumb
   tree={[
     [nvinfo.btitle_vi, book_href],
-    ['Sửa nội dung', '.'],
+    ['Sửa thông tin', '.'],
   ]} />
 
 <NvinfoForm params={new Params(nvinfo)}>
-  <h1 slot="header">Sửa nội dung truyện [{nvinfo.btitle_vi}]</h1>
+  <h1 slot="header">Sửa thông tin truyện [{nvinfo.btitle_vi}]</h1>
 </NvinfoForm>
