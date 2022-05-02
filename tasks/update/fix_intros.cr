@@ -6,8 +6,8 @@ module CV::FixIntros
   DEBUG = ARGV.includes?("--debug")
 
   def fix_intro!(nvinfo : Nvinfo, redo = false)
-    unless redo || nvinfo.cvseed.bintro.empty?
-      bintro = nvinfo.cvseed.bintro.split("\n")
+    unless redo || nvinfo.zintro.empty?
+      bintro = nvinfo.zintro.split("\n")
       return nvinfo.update(bintro: BookUtil.cv_lines(bintro, nvinfo.dname, :text))
     end
 

@@ -11,19 +11,17 @@ module CV::FixGenres
       index += 1
       puts "- [fix_genres] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
+      next unless redo || nvinfo.igenres.empty?
+
       zgenres, zlabels = pick_genres(nvinfo, redo)
+
       nvinfo.set_genres(zgenres, force: true)
       nvinfo.vlabels.concat(GenreMap.zh_to_vi(zlabels)).uniq!
       nvinfo.save!
     end
   end
 
-  def pick_genres(nvinfo : Nvinfo, redo = false)
-    if !redo && (cvseed = Nvseed.find(nvinfo.id, 0))
-      genres = cvseed.bgenre.split('\t')
-      return genres, [] of String unless genres.empty?
-    end
-
+  def pick_genres(nvinfo : Nvinfo)
     genres = [] of String
 
     nvinfo.ysbook.try do |ysbook|

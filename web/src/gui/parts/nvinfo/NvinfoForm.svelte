@@ -39,7 +39,7 @@
 
   export let nvinfo: CV.Nvinfo = undefined
 
-  $: params = new Params(nvinfo)
+  let params = new Params(nvinfo)
   let errors: string
 
   async function submit() {
