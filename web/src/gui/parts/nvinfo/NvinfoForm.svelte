@@ -87,19 +87,19 @@
   <form action="/api/books" method="POST" on:submit|preventDefault={submit}>
     <form-group>
       <form-field>
-        <label class="form-label" for="btitle_zh">Tựa sách tiếng Trung</label>
+        <label class="form-label" for="btitle_zh">Tên truyện tiếng Trung</label>
         <input
           type="text"
           class="m-input"
           name="btitle_zh"
-          placeholder="Tên tựa bộ truyện"
+          placeholder="Tựa bộ truyện"
           disabled={!!params.nvinfo}
           required
           bind:value={params.btitle_zh} />
       </form-field>
 
       <form-field>
-        <label class="form-label" for="btitle_vi">Tựa sách tiếng Việt</label>
+        <label class="form-label" for="btitle_vi">Tên truyện tiếng Việt</label>
         <input
           type="text"
           class="m-input"
@@ -150,12 +150,12 @@
 
     <form-group>
       <form-field>
-        <label class="form-label" for="bcover">Ảnh bìa truyện</label>
+        <label class="form-label" for="bcover">Ảnh bìa</label>
         <input
           type="text"
           class="m-input"
           name="bcover"
-          placeholder="Liên kết địa chỉ file ảnh"
+          placeholder="Đường dẫn tới file ảnh"
           bind:value={params.bcover} />
       </form-field>
     </form-group>
