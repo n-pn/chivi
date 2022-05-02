@@ -13,7 +13,7 @@ module CV::NvinfoInner
     cvseed.update(bgenre: zgenres.join('\t'))
 
     self.igenres.clear
-    self.vlabels.clear
+    self.vlabels.clear if force
 
     GenreMap.zh_to_vi(zgenres).each do |vgenre|
       case igenre = GenreMap.map_int(vgenre)

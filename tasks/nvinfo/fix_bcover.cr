@@ -8,69 +8,12 @@ module CV::FixCovers
   INP = "_db/bcover"
   OUT = "priv/static/covers"
 
-  def gif_to_webp(inp_file : String, out_file : String)
-    `gif2webp -quiet "#{inp_file}" -o "#{out_file}"`
-    return unless width = image_width(out_file)
-    img_to_webp(out_file, out_file, width)
-  end
-
-  def img_to_webp(inp_file : String, out_file : String, width = 300)
-    webp_cmd = "cwebp -quiet -q 100 -mt"
-    webp_cmd += " -resize 300 0" if width > 300
-    webp_cmd += %{ "#{inp_file}" -o "#{out_file}"}
-    `#{webp_cmd}`
-  end
-
   def cover_path(sname : String, snvid : String, togen = "")
     prefix = snvid.to_i?.try(&.// 1000) || -1
 
     {"png", "gif", "webp", "bmp", "jpg"}.each do |ext|
       file = "#{INP}/#{sname}/#{prefix}/#{snvid}.#{ext}"
       return file if File.exists?(file) || ext == togen
-    end
-  end
-
-  def image_width(file : String, delete = false) : Int32?
-    return unless File.exists?(file)
-    `identify -format '%w %h' "#{file}"`.split(" ").first.to_i?
-  rescue err
-    Log.error { [file, err].colorize.red }
-    File.delete(file) if delete
-  end
-
-  KNOWN_EXTS = {".jpg", ".raw", ".png", ".gif", ".webp", ".html", ".xml"}
-
-  def fetch_image(link : String, out_file : String) : String?
-    HTTP::Client.get(link) do |res|
-      ext = map_extension(res.content_type)
-
-      unless KNOWN_EXTS.includes?(ext)
-        Log.error { [res.content_type, link, out_file].colorize.red }
-      end
-
-      out_file = out_file.sub(".jpg", ext)
-
-      Dir.mkdir_p(File.dirname(out_file))
-      File.write(out_file, res.body_io)
-    end
-
-    Log.info { "[#{link}] saved to [#{out_file}]".colorize.yellow }
-    out_file
-  rescue err
-    Log.error { err.colorize.red }
-  end
-
-  def map_extension(mime : String?)
-    case mime
-    when .nil?        then ".raw"
-    when "image/jpeg" then ".jpg"
-    when "image/png"  then ".png"
-    when "image/gif"  then ".gif"
-    when "image/webp" then ".webp"
-    when "text/html"  then ".html"
-    else
-      exts = MIME.extensions(mime)
-      exts.empty? ? ".raw" : exts.first
     end
   end
 
@@ -87,14 +30,14 @@ module CV::FixCovers
       inp_path = cover_path(sname, snvid, togen: "jpg").not_nil!
 
       Log.info { "Fetching [#{sname}/#{snvid}]: #{slink}".colorize.cyan }
-      return unless inp_path = fetch_image(slink, inp_path)
+      return unless inp_path = HttpUtil.fetch_image(slink, inp_path)
     end
 
     if inp_path.ends_with?(".gif")
-      gif_to_webp(inp_path, out_path)
+      HttpUtil.gif_to_webp(inp_path, out_path)
       width = 9999
-    elsif width = image_width(inp_path, delete: true)
-      img_to_webp(inp_path, out_path, width)
+    elsif width = HttpUtil.image_width(inp_path, delete: true)
+      HttpUtil.img_to_webp(inp_path, out_path, width)
     end
 
     return unless width && File.exists?(out_path)

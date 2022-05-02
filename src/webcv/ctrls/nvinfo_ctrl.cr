@@ -112,8 +112,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     bcover = nvinfo.scover if bcover.empty?
 
     serv_json({
+      genres: nvinfo.vgenres,
       bintro: nvinfo.cvseed.bintro,
-      genres: nvinfo.igenres,
       bcover: bcover,
     })
   end
@@ -128,20 +128,22 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     author = Author.upsert!(author_zh)
     params["author_vi"]?.try do |author_vi|
       author_vi = TextUtil.fix_spaces(author_vi).strip
-      BookUtil.vi_authors.append!("#{author_zh}  #{btitle_zh}", author_vi)
+      next if author_vi.empty?
 
+      BookUtil.vi_authors.append!("#{author_zh}  #{btitle_zh}", author_vi)
       author.tap(&.set_vname(author_vi)).save!
     end
 
     btitle = Btitle.upsert!(btitle_zh)
     params["btitle_vi"]?.try do |btitle_vi|
       btitle_vi = TextUtil.fix_spaces(btitle_vi).strip
-      BookUtil.vi_btitles.append!("#{btitle_zh}  #{author_zh}", btitle_vi)
+      next if btitle_vi.empty?
 
+      BookUtil.vi_btitles.append!("#{btitle_zh}  #{author_zh}", btitle_vi)
       btitle.tap(&.set_vname(btitle_vi)).save!
     end
 
-    nvinfo = Nvinfo.upsert!(author, btitle)
+    nvinfo = Nvinfo.upsert!(author, btitle, fix_names: true)
     nvseed = Nvseed.upsert!(nvinfo, "users", nvinfo.bhash)
 
     nvseed.btitle = btitle_zh
@@ -154,15 +156,23 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     end
 
     params["genres"]?.try do |genres|
-      genres = genres.split(",").map(&.strip).uniq!
+      genres = GenreMap.vi_to_zh(genres.split(",").map(&.strip))
       nvseed.set_genres(genres, force: true)
       nvinfo.set_genres(genres, force: true)
     end
 
     params["bcover"]?.try do |bcover|
       bcover = TextUtil.fix_spaces(bcover).strip
+      next unless bcover.starts_with?("http")
+
       nvseed.set_bcover(bcover, force: true)
       nvinfo.set_bcover(bcover, force: true)
+
+      spawn do
+        img_file = "_db/bcover/users/#{nvinfo.bhash}.jpg"
+        webp_file = "priv/static/covers/#{nvinfo.bcover}"
+        HttpUtil.save_image(bcover, img_file, webp_file)
+      end
     end
 
     params["status"]?.try do |status|

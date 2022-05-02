@@ -1,5 +1,11 @@
 <script context="module" lang="ts">
+  import { bgenres } from '$lib/constants'
+
+  const fields = ['btitle_vi', 'author_vi', 'status', 'bintro', 'bcover']
+
   export class Params {
+    nvinfo: CV.Nvinfo | object
+
     btitle_zh: string = ''
     author_zh: string = ''
 
@@ -7,26 +13,34 @@
     author_vi: string = ''
 
     status: number = 0
-    igenres: Array<number> = []
-    genres: string = ''
+    genres: Array<string> = []
 
     bintro: string = ''
     bcover: string = ''
 
     constructor(nvinfo?: CV.Nvinfo) {
+      this.nvinfo = nvinfo || {}
       if (!nvinfo) return
 
       this.btitle_zh = nvinfo.btitle_zh
-      this.btitle_vi = nvinfo.btitle_vi
-
       this.author_zh = nvinfo.author_zh
-      this.author_vi = nvinfo.author_vi
+      this.genres = nvinfo.genres
+      for (const field of fields) this[field] = nvinfo[field]
+    }
+    get form() {
+      const output = {
+        btitle_zh: this.btitle_zh,
+        author_zh: this.author_zh,
+        genres: this.genres.join(','),
+      }
 
-      this.bintro = nvinfo.bintro
-      this.bcover = nvinfo.bcover
+      for (const field of fields) {
+        const value = this[field]
+        if (value) output[field] = value
+        // if (value && value != this.nvinfo[field]) output[field] = value
+      }
 
-      this.status = nvinfo.status
-      this.igenres = nvinfo.genres.map((x) => +x)
+      return output
     }
   }
 </script>
@@ -35,26 +49,24 @@
   import { goto } from '$app/navigation'
   import { SIcon } from '$gui'
   import { api_call } from '$lib/api_call'
-  import { bgenres, mgenres } from '$lib/constants'
+
   import { book_status } from '$utils/nvinfo_utils'
 
   export let params: Params
   let errors: string
 
   async function submit() {
-    params.genres = params.igenres.map((x) => bgenres[x][2]).join(',')
-
-    const [stt, data] = await api_call(fetch, 'books', params, 'PUT')
+    const [stt, data] = await api_call(fetch, 'books', params.form, 'PUT')
     if (stt >= 400) errors = data as string
     else await goto(`/-${data.bslug}`)
   }
 
-  function remove_genre(igenre: number) {
-    params.igenres = params.igenres.filter((x) => x != igenre)
+  function remove_genre(genre: string) {
+    params.genres = params.genres.filter((x) => x != genre)
   }
 
-  function add_genre(igenre: number) {
-    params.igenres = [...params.igenres, igenre]
+  function add_genre(genre: string) {
+    params.genres = [...params.genres, genre]
   }
 
   let show_genres_menu = false
@@ -88,7 +100,6 @@
           class="m-input"
           name="btitle_vi"
           placeholder="Có thể để trắng"
-          required
           bind:value={params.btitle_vi} />
       </form-field>
     </form-group>
@@ -113,7 +124,6 @@
           class="m-input"
           name="author_vi"
           placeholder="Có thể để trắng"
-          required
           bind:value={params.author_vi} />
       </form-field>
     </form-group>
@@ -149,12 +159,12 @@
         <label class="label" for="genres">Thể loại</label>
 
         <div class="m-chips ">
-          {#each params.igenres as igenre}
+          {#each params.genres as genre}
             <button
               type="button"
               class="m-chip _success"
-              on:click={() => remove_genre(igenre)}>
-              <span>{bgenres[igenre][0]}</span>
+              on:click={() => remove_genre(genre)}>
+              <span>{genre}</span>
               <SIcon name="x" />
             </button>
           {/each}
@@ -169,14 +179,14 @@
 
         {#if show_genres_menu}
           <div class="m-chips suggest">
-            {#each bgenres as [vgenre], igenre}
-              {@const included = params.igenres.includes(igenre)}
-              {@const revealed = show_genres_more || mgenres.includes(vgenre)}
+            {#each bgenres as [vgenre, _slug, primary_genre]}
+              {@const included = params.genres.includes(vgenre)}
+              {@const revealed = show_genres_more || primary_genre}
               <button
                 type="button"
                 class="m-chip _xs"
                 hidden={included || !revealed}
-                on:click={() => add_genre(igenre)}>
+                on:click={() => add_genre(vgenre)}>
                 <span>{vgenre}</span>
                 <SIcon name="plus" />
               </button>

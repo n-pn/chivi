@@ -7,6 +7,7 @@ module CV::GenreMap
 
   class_getter zh_map : Tabkv(Array(String)) { Tabkv(Array(String)).new("#{DIR}/genres_zh.tsv") }
   class_getter vi_map : Tabkv(String) { Tabkv(String).new("#{DIR}/genres_vi.tsv") }
+  class_getter vz_map : Tabkv(String) { Tabkv(String).new("#{DIR}/genres_vz.tsv") }
   class_getter id_map : Tabkv(Int32) { Tabkv(Int32).new("#{DIR}/genres_id.tsv") }
 
   def map_int(input : String) : Int32
@@ -33,5 +34,13 @@ module CV::GenreMap
 
   def zh_to_vi(input : Array(String)) : Array(String)
     input.flat_map { |x| zh_to_vi(x) }.uniq!
+  end
+
+  def vi_to_zh(input : String) : String
+    vz_map[input]? || "其他"
+  end
+
+  def vi_to_zh(input : Array(String)) : Array(String)
+    input.flat_map { |x| vi_to_zh(x) }.uniq!
   end
 end

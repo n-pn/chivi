@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { bgenres, mgenres } from '$lib/constants'
+  import { bgenres } from '$lib/constants'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let genres = []
@@ -7,9 +7,9 @@
 </script>
 
 <genre-list class="m-chips">
-  {#each bgenres as [name, slug]}
+  {#each bgenres as [name, slug, primary_genre]}
     {@const _active = genres.includes(name) || genres.includes(slug)}
-    {@const _reveal = show_all_genres || mgenres.includes(name)}
+    {@const _reveal = show_all_genres || primary_genre}
 
     {#if _active || _reveal}
       <a href="/books/-{slug}" class="m-chip _success" class:_active>{name}</a>

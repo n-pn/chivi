@@ -181,17 +181,13 @@ class CV::Nvinfo
     end
   end
 
-  def self.upsert!(author : Author, zname : String)
-    upsert!(author, Btitle.upsert!(zname))
-  end
-
-  def self.upsert!(author : Author, btitle : Btitle)
+  def self.upsert!(author : Author, btitle : Btitle, fix_names : Bool = false)
     unless nvinfo = get(author, btitle)
       bhash = UkeyUtil.digest32("#{btitle.zname}--#{author.zname}")
       nvinfo = new({author: author, btitle: btitle, bhash: bhash})
-      nvinfo.fix_names!
+      fix_names = true
     end
 
-    nvinfo
+    nvinfo.tap { |x| x.fix_names! if fix_names }
   end
 end
