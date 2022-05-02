@@ -11,17 +11,15 @@ class CV::FetchText
 
     @nvinfo.nvseeds.each do |nvseed|
       next if SnameMap.map_type(nvseed.sname) < 2
-      FileUtils.mkdir_p("_db/.cache/#{nvseed.sname}/texts/#{nvseed.snvid}")
+      FileUtils.mkdir_p("var/chmetas/.html/#{nvseed.sname}/#{nvseed.snvid}")
     end
 
-    # refresh_list!
+    refresh_list!
   end
 
   def refresh_list!
-    nvseed = Nvseed.load(@nvinfo.id, 0)
     if nvseed = Nvseed.find(@nvinfo.id, 0)
-      force = (Time.utc - 10.days).to_unix > nvseed.atime
-      nvseed.refresh!(force: force)
+      nvseed.refresh!(force: Time.utc - 4.weeks > Time.unix(nvseed.atime))
     else
       Nvseed.init!(@nvinfo, 0)
     end
@@ -100,7 +98,7 @@ class CV::FetchText
 
     channel = Channel(Nil).new(workers)
 
-    query = "select nvinfo_id from ubmemos where status> 0"
+    query = "select nvinfo_id from ubmemos where status > 0"
     infos = Nvinfo.query.where("id IN (#{query})").sort_by("weight").to_set
     infos.concat Nvinfo.query.sort_by("weight").limit(20000)
 

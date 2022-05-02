@@ -2,8 +2,16 @@
 import os, sys, glob
 from LAC import LAC
 
-DIR = "_db/vpinit/baidulac"
+DIR = "_db/vpinit/bd_lac/raw"
 lac = LAC(mode='lac')
+
+FIX = {
+  'PER': 'nr',
+  'ORG': 'nt',
+  'LOC': 'ns',
+  'TIME': 't',
+  'nw': 'nx'
+}
 
 def parse_book(bname):
   nvdir = os.path.join(DIR,  bname)
@@ -30,9 +38,13 @@ def parse_book(bname):
       tags = res_line[1]
 
       for idx, raw in enumerate(raws):
-        out_text = raw + "¦" + tags[idx]
-        out_text = "\t" + out_text if idx > 0 else out_text
-        out_file.write(out_text)
+        if idx > 0:
+          out_file.write("\t")
+
+        out_file.write(raw + "¦")
+
+        tag = tags[idx]
+        out_file.write(FIX.get(tag, tag))
 
       out_file.write("\n")
 

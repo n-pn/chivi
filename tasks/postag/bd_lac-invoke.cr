@@ -10,7 +10,7 @@ class CV::BdLacInvoke
 
   getter chap_count = 0
 
-  def initialize(@nvinfo : Nvinfo)
+  def initialize(@nvinfo : Nvinfo, @parse_all = false)
     @inp_dir = File.join(INP_DIR, "chivi", @nvinfo.bhash)
 
     @dir_name = nvinfo.bslug
@@ -35,35 +35,38 @@ class CV::BdLacInvoke
 
   SCRIPT = "tasks/postag/baidu-lac.py"
 
-  SKIP_IF_ENOUGH = ARGV.includes?("--skip-enough")
-
   # IOPIPE = Process::Redirect::Inherit
 
   def parse!(lbl = "1/1") : Nil
     return if @chap_count == 0
     existed = Dir.glob("#{@out_path}/*.tsv")
 
-    if @@skip_if_plenty && existed.size > calc_max_size(@chap_count)
-      Log.info { "<#{lbl}> #{@nvinfo.bslug}: #{existed.size} parsed".colorize.green }
-      return
+    if @@skip_if_plenty && existed.size >= calc_max_size(@chap_count)
+      color = :green
     else
-      Log.info { "<#{lbl}> #{@nvinfo.bslug}: #{existed.size} parsed".colorize.yellow }
+      color = :yellow
+      extract(existed.map { |x| get_chidx(x) }.to_set)
     end
 
-    existed = existed.map { |x| File.basename(x, ".tsv").split("-", 2).first }.to_set
+    Log.info { "<#{lbl}> #{@nvinfo.bslug}: #{existed.size} parsed".colorize(color) }
+    Process.run("python3", {SCRIPT, @dir_name})
+  end
 
+  def get_chidx(file : String)
+    File.basename(x, ".tsv").split("-", 2).first
+  end
+
+  def extract(existed : Set(String))
     Dir.glob("#{@inp_dir}/*.tsv").each do |list_file|
       chlist = ChList.new(list_file)
 
       chlist.data.each_value do |chinfo|
         next if existed.includes?(chinfo.chidx)
-        extract_text(chinfo) if should_parse?(chinfo.chidx)
+        extract_text(chinfo) if @parse_all || should_parse?(chinfo.chidx)
       rescue err
         Log.error { err.inspect_with_backtrace }
       end
     end
-
-    Process.run("python3", {SCRIPT, @dir_name})
   end
 
   def calc_max_size(chap_count : Int32)
@@ -74,7 +77,7 @@ class CV::BdLacInvoke
 
   def should_parse?(chidx : Int32)
     return true if chidx <= 128
-    chidx % (chidx // 128 + 1) == 0
+    chidx % (chidx // 128 &+ 1) == 0
   end
 
   def extract_text(info : ChInfo) : Nil
@@ -125,7 +128,7 @@ class CV::BdLacInvoke
 
     infos.each_with_index(1) do |info, idx|
       spawn do
-        new(info).parse!(lbl: "#{idx}/#{infos.size}")
+        new(info, parse_all: idx < 1000).parse!(lbl: "#{idx}/#{infos.size}")
       rescue err
         Log.error { err.inspect_with_backtrace }
       ensure

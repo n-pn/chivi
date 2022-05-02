@@ -2,13 +2,14 @@ require "option_parser"
 require "../shared/bootstrap"
 
 class CV::CrawlText
-  INP_DIR = "_db/.cache/%s/texts/%s"
+  INP_DIR = "var/chmetas/.html"
 
   DIR = "var/chtexts"
 
   def initialize(@sname : String, @snvid : String)
-    FileUtils.mkdir_p(INP_DIR % [@sname, @snvid])
-    @out_dir = File.join("#{DIR}/#{@sname}/#{snvid}")
+    File.mkdir_p("#{INP_DIR}/#{sname}/#{snvid}")
+
+    @out_dir = File.join("#{DIR}/#{sname}/#{snvid}")
   end
 
   # modes:
@@ -24,7 +25,7 @@ class CV::CrawlText
 
     Dir.glob("#{@out_dir}/*.tsv").each do |tsv_file|
       # create text folder
-      FileUtils.mkdir_p(tsv_file.sub(".tsv", ""))
+      File.mkdir_p(tsv_file.sub(".tsv", ""))
 
       ChList.new(tsv_file).data.each_value do |info|
         next if mode < 2 && avail.includes?(info.schid)
@@ -180,6 +181,6 @@ class CV::CrawlText
 
     output
   end
-end
 
-CV::CrawlText.run!
+  run!
+end

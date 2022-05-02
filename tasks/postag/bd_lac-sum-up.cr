@@ -23,7 +23,7 @@ class Counter
       fbase = File.basename(inp_file)
       next if @checked.includes?(fbase)
 
-      @counter.load(inp_file)
+      @counter.load_raw(inp_file)
       @checked << fbase
     end
   end

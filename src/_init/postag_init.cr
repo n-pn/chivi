@@ -40,19 +40,8 @@ class CV::PostagInit
     File.each_line(file) do |line|
       line.split(SEP_1) do |frag|
         term, tag = frag.split(SEP_2, 2)
-        update_count(term, fix_tag(tag), 1)
+        update_count(term, tag.in?("nt", "ns") ? "nn" : tag, 1)
       end
-    end
-  end
-
-  def fix_tag(tag : String)
-    case tag
-    when "PER"  then "nr"
-    when "LOC"  then "nn"
-    when "ORG"  then "nn"
-    when "TIME" then "t"
-    when "nw"   then "nx"
-    else             tag
     end
   end
 
