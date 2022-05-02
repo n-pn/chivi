@@ -125,24 +125,25 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     author = Author.upsert!(author_zh)
     params["author_vi"]?.try do |author_vi|
       author_vi = TextUtil.fix_spaces(author_vi).strip
-      break if author_vi.empty?
-
-      BookUtil.vi_authors.append!("#{author_zh}  #{btitle_zh}", author_vi)
-      author.tap(&.set_vname(author_vi)).save!
+      unless author_vi.empty?
+        BookUtil.vi_authors.append!("#{author_zh}  #{btitle_zh}", author_vi)
+        author.tap(&.set_vname(author_vi)).save!
+      end
     end
 
     btitle = Btitle.upsert!(btitle_zh)
     params["btitle_vi"]?.try do |btitle_vi|
       btitle_vi = TextUtil.fix_spaces(btitle_vi).strip
-      break if btitle_vi.empty?
-
-      BookUtil.vi_btitles.append!("#{btitle_zh}  #{author_zh}", btitle_vi)
-      btitle.tap(&.set_vname(btitle_vi)).save!
+      unless btitle_vi.empty?
+        BookUtil.vi_btitles.append!("#{btitle_zh}  #{author_zh}", btitle_vi)
+        btitle.tap(&.set_vname(btitle_vi)).save!
+      end
     end
 
     nvinfo = Nvinfo.upsert!(author, btitle, fix_names: true)
     nvseed = Nvseed.upsert!(nvinfo, "users", nvinfo.bhash)
 
+    nvseed.nvinfo = nvinfo
     nvseed.btitle = btitle_zh
     nvseed.author = author_zh
 
@@ -161,7 +162,6 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     params["bcover"]?.try do |bcover|
       bcover = TextUtil.fix_spaces(bcover).strip
-      next unless bcover.starts_with?("http")
       nvseed.set_bcover(bcover, mode: 2)
     end
 
@@ -175,10 +175,11 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     Nvinfo.cache!(nvinfo)
 
     spawn do
-      log_upsert_action(params)
-      img_file = "_db/bcover/users/#{nvinfo.bhash}.jpg"
+      img_file = "_db/bcover/users/#{nvinfo.bcover.sub("webp", "jpg")}"
       webp_file = "priv/static/covers/#{nvinfo.bcover}"
       HttpUtil.save_image(nvinfo.scover, img_file, webp_file)
+
+      log_upsert_action(params)
     end
 
     send_json({bslug: nvinfo.bslug})

@@ -34,10 +34,10 @@ module CV::NvinfoInner
     self.bintro = BookUtil.cv_lines(lines, self.dname, :text)
   end
 
-  def set_bcover(scover : String, force = false) : Nil
+  def set_bcover(zcover : String, force = false) : Nil
     return unless force || self.bcover.empty?
-    self.scover = scover
-    self.bcover = UkeyUtil.digest32(scover, 8) + ".webp"
+    self.scover = zcover
+    self.bcover = UkeyUtil.digest32(zcover, 8) + ".webp"
   end
 
   def set_utime(utime : Int64, force = false) : Int64?

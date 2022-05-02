@@ -203,6 +203,6 @@ class CV::Nvinfo
       fix_names = true
     end
 
-    nvinfo.tap { |x| x.fix_names! if fix_names }
+    nvinfo.tap { |x| x.fix_names!(nil) if fix_names }
   end
 end
