@@ -9,10 +9,10 @@ class CV::YslistCrawlByUser
     Head; Tail; Rand
   end
 
-  @http = HttpClient.new(ARGV.includes?("--refresh-proxy"))
   @data : Array(Ysuser)
 
-  def initialize(crmode : CrMode, @reseed = false)
+  def initialize(crmode : CrMode, @reseed = false, refresh_proxy = fase)
+    @http = HttpClient.new(refresh_proxy)
     @data = Ysuser.query.where("origin_id > 0 AND list_count < list_total").to_a
 
     case crmode
@@ -88,13 +88,15 @@ class CV::YslistCrawlByUser
   def self.run!(argv = ARGV)
     crmode = CrMode::Rand
     reseed = false
+    refresh_proxy = false
 
     OptionParser.parse(argv) do |opt|
       opt.on("-m MODE", "Crawl mode") { |x| crmode = CrMode.parse(x) }
       opt.on("-r", "Reseed content") { reseed = true }
+      opt.on("--refresh-proxy", "Refresh proxy") { refresh_proxy = true }
     end
 
-    worker = new(crmode, reseed)
+    worker = new(crmode, reseed, refresh_proxy)
     1.upto(100) { |page| worker.crawl!(page) }
   end
 
