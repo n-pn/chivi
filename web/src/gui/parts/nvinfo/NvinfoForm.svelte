@@ -2,25 +2,37 @@
   import { api_call } from '$lib/api_call'
   import { book_status } from '$utils/nvinfo_utils'
 
-  // prettier-ignore
-  const assigns = ['btitle_zh', 'btitle_vi', 'status', 'bcover', 'author_vi', 'author_zh']
+  const assigns = [
+    'btitle_zh',
+    'btitle_vi',
+
+    'author_vi',
+    'author_zh',
+
+    'status',
+    'bintro',
+  ]
 
   export class Params {
     btitle_zh: string = ''
+    author_zh: string = ''
+
     btitle_vi: string = ''
+    author_vi: string = ''
 
     status: number = 0
-    bintro: string = ''
     genres: string = ''
-    bcover: string = ''
 
-    author_zh: string = ''
-    author_vi: string = ''
+    bintro: string = ''
+    bcover: string = ''
 
     constructor(nvinfo?: CV.Nvinfo) {
       if (!nvinfo) return
+
       for (const key in assigns) this[key] = nvinfo[key]
-      this.genres = nvinfo.genres.join(', ')
+
+      this.bcover = nvinfo.scover
+      this.genres = nvinfo.genres.join(',')
     }
   }
 </script>
@@ -44,22 +56,22 @@
 
   <form action="/api/books" method="POST" on:submit|preventDefault={submit}>
     <form-group>
-      <label for="btitle">Tựa sách (tiếng Trung)</label>
+      <label for="btitle_zh">Tựa sách (tiếng Trung)</label>
       <input
         type="text"
         class="m-input"
-        name="btitle"
+        name="btitle_zh"
         placeholder="Tên tựa bộ truyện"
         required
         bind:value={params.btitle_zh} />
     </form-group>
 
     <form-group>
-      <label for="author">Tên tác giả (tiếng Trung)</label>
+      <label for="author_zh">Tên tác giả (tiếng Trung)</label>
       <input
         type="text"
         class="m-input"
-        name="author"
+        name="author_zh"
         placeholder="Tên tác giả bộ truyện"
         required
         bind:value={params.author_zh} />
@@ -82,7 +94,7 @@
         type="text"
         class="m-input"
         name="genres"
-        placeholder="Tách biệt nhiều thể loại bằng dấu cách"
+        placeholder="Tách biệt nhiều thể loại bằng dấu phẩy"
         bind:value={params.genres} />
     </form-group>
 
@@ -129,7 +141,7 @@
 
 <style lang="scss">
   article {
-    width: 30rem;
+    width: 35rem;
     max-width: 100%;
     margin: 1rem auto;
 
