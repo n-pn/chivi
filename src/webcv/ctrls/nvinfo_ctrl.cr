@@ -157,8 +157,6 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
       zgenres = GenreMap.vi_to_zh(vgenres)
       nvseed.set_genres(zgenres, mode: 1)
-
-      Log.info { [vgenres, zgenres, nvinfo.igenres] }
     end
 
     params["bcover"]?.try do |bcover|
@@ -174,10 +172,10 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     nvinfo.save!
     nvseed.save!
-
-    spawn log_upsert_action(params)
+    Nvinfo.cache!(nvinfo)
 
     spawn do
+      log_upsert_action(params)
       img_file = "_db/bcover/users/#{nvinfo.bhash}.jpg"
       webp_file = "priv/static/covers/#{nvinfo.bcover}"
       HttpUtil.save_image(nvinfo.scover, img_file, webp_file)

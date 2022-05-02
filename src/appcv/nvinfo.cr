@@ -166,6 +166,11 @@ class CV::Nvinfo
     CACHE_INT.get(id) { find!({id: id}) }
   end
 
+  def self.cache!(nvinfo : self)
+    CACHE_INT.set(nvinfo.id, nvinfo)
+    CACHE_STR.set(nvinfo.bslug[0..7], nvinfo)
+  end
+
   def self.load!(bslug : String)
     bhash = bslug[0..7]
 
