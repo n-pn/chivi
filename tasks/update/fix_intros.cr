@@ -15,7 +15,7 @@ module CV::FixIntros
     nvinfo.ysbook.try { |x| yintro = x.bintro.split(/\n|\t/) }
 
     bintro = sname = nil
-    nvinfo.nvseeds.to_a.sort(&.zseed.-).each do |nvseed|
+    nvinfo.nvseeds.to_a.sort(&.zseed).each do |nvseed|
       sintro = nvseed.bintro.split(/\n|\t/)
       next if sintro.empty? || !decent?(nvseed.sname, sintro, yintro)
 
@@ -26,9 +26,10 @@ module CV::FixIntros
 
     if sname != "users" && yintro && yintro.size > 1
       bintro = yintro
+    else
+      bintro ||= yintro
     end
 
-    bintro ||= yintro
     return unless bintro
 
     if DEBUG
@@ -37,6 +38,7 @@ module CV::FixIntros
     end
 
     nvinfo.set_bintro(bintro, force: true)
+    nvinfo.save!
   end
 
   private def decent?(sname : String, bintro : Array(String), yintro : Array(String)?)

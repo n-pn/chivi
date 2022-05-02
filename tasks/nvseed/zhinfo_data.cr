@@ -83,8 +83,8 @@ class CV::ZhinfoData
     self.genres[snvid]?.try { |x| nvseed.set_genres(x, mode: force_mode) }
     self.bintro[snvid]?.try { |x| nvseed.set_bintro(x, mode: force_mode) }
     self.bcover[snvid]?.try { |x| nvseed.set_bcover(x, mode: force_mode) }
-    self.status[snvid]?.try { |x| nvseed.set_status(x, mode: force_mode) }
-    self.mftime[snvid]?.try { |x| nvseed.set_mftime(x, force: mode > 0) }
+    self.status[snvid]?.try { |x| nvseed.set_status(x.status, mode: force_mode) }
+    self.mftime[snvid]?.try { |x| nvseed.set_mftime(x.mftime, force: mode > 0) }
     nvseed.fix_latest(force: mode > 1)
 
     if nvinfo.voters < 10
