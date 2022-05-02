@@ -41,7 +41,7 @@ module CV::TextUtil
   SPACES = "\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000"
 
   def fix_spaces(input : String) : String
-    input.tr(SPACES, " ")
+    input.tr(SPACES, " ").tr("", "")
   end
 
   # capitalize all words

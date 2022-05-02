@@ -106,22 +106,60 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   def upsert
     return halt!(403, "Quyền hạn không đủ!") if _cvuser.privi < 3
 
-    btitle_zh, author_zh = BookUtil.fix_names(params["btitle_zh"].strip, params["author_zh"].strip)
+    btitle_zh = TextUtil.fix_spaces(params["btitle_zh"]).strip
+    author_zh = TextUtil.fix_spaces(params["author_zh"]).strip
+    btitle_zh, author_zh = BookUtil.fix_names(btitle_zh, author_zh)
 
     author = Author.upsert!(author_zh)
+    params["author_vi"]?.try do |author_vi|
+      author_vi = TextUtil.fix_spaces(author_vi).strip
+      BookUtil.vi_authors.append!("#{author_zh}  #{btitle_zh}", author_vi)
+
+      author.tap(&.set_vname(author_vi)).save!
+    end
+
     btitle = Btitle.upsert!(btitle_zh)
+    params["btitle_vi"]?.try do |btitle_vi|
+      btitle_vi = TextUtil.fix_spaces(btitle_vi).strip
+      BookUtil.vi_btitles.append!("#{btitle_zh}  #{author_zh}", btitle_vi)
+
+      btitle.tap(&.set_vname(btitle_vi)).save!
+    end
 
     nvinfo = Nvinfo.upsert!(author, btitle)
+    nvseed = Nvseed.upsert!(nvinfo, "users", nvinfo.bhash)
 
-    params["bintro"]?.try { |x| nvinfo.set_zintro(TextUtil.split_text(x), true) }
-    params["genres"]?.try { |x| nvinfo.set_genres(x.split(',').map(&.strip), true) }
+    nvseed.btitle = btitle_zh
+    nvseed.author = author_zh
 
-    params["bcover"]?.try { |x| nvinfo.set_covers(x, force: true) }
-    params["status"]?.try { |x| nvinfo.set_status(x.to_i, force: true) }
+    params["bintro"]?.try do |bintro|
+      bintro = TextUtil.split_html(bintro, true)
+      nvseed.set_bintro(bintro, force: true)
+      nvinfo.set_zintro(bintro, force: true)
+    end
+
+    params["genres"]?.try do |genres|
+      genres = genres.split(",").map(&.strip).uniq!
+      nvseed.set_genres(genres, force: true)
+      nvinfo.set_genres(genres, force: true)
+    end
+
+    params["bcover"]?.try do |bcover|
+      bcover = TextUtil.fix_spaces(bcover).strip
+      nvseed.set_bcover(bcover, force: true)
+      nvinfo.set_covers(bcover, force: true)
+    end
+
+    params["status"]?.try do |status|
+      status = TextUtil.fix_spaces(status).strip.to_i
+      nvseed.set_status(status, force: true)
+      nvinfo.set_status(status, force: true)
+    end
 
     nvinfo.save!
+    nvseed.save!
 
-    log_upsert_action(params)
+    spawn log_upsert_action(params)
     send_json({bslug: nvinfo.bslug})
   end
 

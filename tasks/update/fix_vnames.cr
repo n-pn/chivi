@@ -20,7 +20,7 @@ def fix_selected(titles : Array(String))
     query = CV::Nvinfo.query.filter_btitle(title)
     query.each do |nvinfo|
       nvinfo.fix_names!
-      nvinfo.author.tap(&.fix_name!).save!
+      nvinfo.author.tap(&.set_vname).save!
     end
   end
 end
