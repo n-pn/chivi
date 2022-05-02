@@ -6,8 +6,12 @@ module CV::NvinfoInner
     self.zseeds_column.dirty!
   end
 
+  getter cvseed : Nvseed { Nvseed.upsert!(self, "chivi", self.bhash) }
+
   def set_genres(zgenres : Array(String), force = false) : Nil
     return unless force || self.igenres.empty? || self.igenres == [0]
+    cvseed.set_genres(zgenres, force: true)
+
     self.igenres.clear
 
     GenreMap.zh_to_vi(zgenres).each do |vgenre|
@@ -22,28 +26,22 @@ module CV::NvinfoInner
     self.igenres_column.dirty!
   end
 
-  def set_zintro(lines : Array(String), force = false) : Nil
+  def set_bintro(lines : Array(String), force = false) : Nil
     return unless force || self.bintro.empty?
-    vintro = BookUtil.cv_lines(lines, self.bhash, :text)
-    set_vintro(vintro, force: true)
+    cvseed.set_bintro(lines, force: true)
+    self.bintro = BookUtil.cv_lines(lines, self.bhash, :text)
   end
 
-  def set_vintro(vintro : String, force = false) : Nil
-    self.bintro = vintro if force || self.bintro.empty?
-  end
+  def set_bcover(scover : String, force = false) : Nil
+    return unless force || self.bcover.empty?
+    cvseed.set_bcover(scover, force: true)
 
-  def set_covers(cover : String, force = false) : Nil
-    return unless force || self.scover.empty?
-    self.scover = cover
-    self.bcover = UkeyUtil.digest32(cover, 8) + ".webp"
-  end
-
-  def set_bcover(cover : String, force = false) : Nil
-    self.bcover = bcover if force || self.bcover.empty?
+    self.bcover = UkeyUtil.digest32(scover, 8) + ".webp"
   end
 
   def set_utime(utime : Int64, force = false) : Int64?
     return unless force || utime > self.utime
+
     self.atime = utime if self.atime < utime
     self.utime = utime
   end

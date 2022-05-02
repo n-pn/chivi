@@ -31,12 +31,6 @@ module CV::NvseedInner
     self.status = status
   end
 
-  def set_bcover(bcover : String, force : Bool = false) : Nil
-    return unless force || self.bcover.empty?
-    self.bcover = bcover
-    self.nvinfo.set_covers(bcover)
-  end
-
   def set_genres(genres : Array(String), force : Bool = false)
     return unless force || self.bgenre.empty?
     self.bgenre = genres.join('\t')
@@ -46,7 +40,13 @@ module CV::NvseedInner
   def set_bintro(bintro : Array(String), force : Bool = false) : Nil
     return unless force || self.bintro.empty?
     self.bintro = bintro.join('\n')
-    self.nvinfo.set_zintro(bintro)
+    self.nvinfo.set_bintro(bintro)
+  end
+
+  def set_bcover(bcover : String, force : Bool = false) : Nil
+    return unless force || self.bcover.empty?
+    self.bcover = bcover
+    self.nvinfo.set_bcover(bcover)
   end
 
   ############

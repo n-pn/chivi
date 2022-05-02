@@ -1,6 +1,7 @@
 export { default as SIcon } from './atoms/SIcon.svelte'
 export { default as Stars } from './atoms/Stars.svelte'
 
+export { default as Crumb } from './molds/Crumb.svelte'
 export { default as Gmenu } from './molds/Gmenu.svelte'
 export { default as Mpager } from './molds/Mpager.svelte'
 

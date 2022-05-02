@@ -103,6 +103,18 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     })
   end
 
+  def detail
+    unless nvinfo = Nvinfo.load!(params["bslug"])
+      return halt!(404, "Quyển sách không tồn tại!")
+    end
+
+    serv_json({
+      genres: nvinfo.cvseed.bgenre.split('\t'),
+      bintro: nvinfo.cvseed.bintro,
+      bcover: nvinfo.cvseed.bcover,
+    })
+  end
+
   def upsert
     return halt!(403, "Quyền hạn không đủ!") if _cvuser.privi < 3
 
@@ -135,7 +147,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     params["bintro"]?.try do |bintro|
       bintro = TextUtil.split_html(bintro, true)
       nvseed.set_bintro(bintro, force: true)
-      nvinfo.set_zintro(bintro, force: true)
+      nvinfo.set_bintro(bintro, force: true)
     end
 
     params["genres"]?.try do |genres|
@@ -147,7 +159,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     params["bcover"]?.try do |bcover|
       bcover = TextUtil.fix_spaces(bcover).strip
       nvseed.set_bcover(bcover, force: true)
-      nvinfo.set_covers(bcover, force: true)
+      nvinfo.set_bcover(bcover, force: true)
     end
 
     params["status"]?.try do |status|

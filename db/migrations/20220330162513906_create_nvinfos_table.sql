@@ -27,9 +27,7 @@ CREATE TABLE nvinfos (
   zlabels text[] not null default '{}',
   vlabels text[] not null default '{}',
 
-  scover text not null default '', -- source cover url
   bcover text not null default '', -- local cover name
-
   bintro text not null default '', -- book intro converted
 
   status int not null default 0,
