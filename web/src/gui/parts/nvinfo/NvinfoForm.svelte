@@ -27,6 +27,23 @@
       this.genres = nvinfo.genres
       for (const field of fields) this[field] = nvinfo[field]
     }
+
+    get output() {
+      const nvinfo = this.nvinfo || {}
+
+      const output = {
+        btitle_zh: this.btitle_zh,
+        author_zh: this.author_zh,
+        genres: this.genres.join(','),
+      }
+
+      for (const field of fields) {
+        const value = this[field].trim()
+        if (value && value != nvinfo[field]) output[field] = value
+      }
+
+      return output
+    }
   }
 </script>
 
@@ -43,20 +60,7 @@
   let errors: string
 
   async function submit() {
-    const nvinfo = this.nvinfo || {}
-
-    const output = {
-      btitle_zh: this.btitle_zh,
-      author_zh: this.author_zh,
-      genres: this.genres.join(','),
-    }
-
-    for (const field of fields) {
-      const value = this[field].trim()
-      if (value && value != nvinfo[field]) output[field] = value
-    }
-
-    const [stt, data] = await api_call(fetch, 'books', output, 'PUT')
+    const [stt, data] = await api_call(fetch, 'books', params.output, 'PUT')
     if (stt >= 400) errors = data as string
     else await goto(`/-${data.bslug}`)
   }
