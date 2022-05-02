@@ -10,11 +10,7 @@ CREATE TABLE nvinfos (
 
   -- title
 
-  zname text not null,
   vname text not null default '',
-
-  -- unique identity
-
   bhash text unique not null,
   bslug text unique not null,
 
@@ -23,11 +19,12 @@ CREATE TABLE nvinfos (
   zseeds int[] not null default '{}',
 
   igenres int[] not null default '{}',
-
-  zlabels text[] not null default '{}',
   vlabels text[] not null default '{}',
 
+  scover text not null default '', -- local cover name
   bcover text not null default '', -- local cover name
+
+  zintro text not null default '', -- origin book intro
   bintro text not null default '', -- book intro converted
 
   status int not null default 0,

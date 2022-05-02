@@ -35,6 +35,8 @@ module CV::NvinfoInner
 
   def set_bcover(scover : String, force = false) : Nil
     return unless force || self.bcover.empty?
+    self.scover = scover
+
     cvseed.update(bcover: scover)
     self.bcover = UkeyUtil.digest32(scover, 8) + ".webp"
   end

@@ -108,13 +108,10 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
-    bcover = nvinfo.cvseed.bcover
-    bcover = nvinfo.scover if bcover.empty?
-
     serv_json({
       genres: nvinfo.vgenres,
       bintro: nvinfo.cvseed.bintro,
-      bcover: bcover,
+      bcover: nvinfo.scover,
     })
   end
 
@@ -167,12 +164,6 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
       nvseed.set_bcover(bcover, force: true)
       nvinfo.set_bcover(bcover, force: true)
-
-      spawn do
-        img_file = "_db/bcover/users/#{nvinfo.bhash}.jpg"
-        webp_file = "priv/static/covers/#{nvinfo.bcover}"
-        HttpUtil.save_image(bcover, img_file, webp_file)
-      end
     end
 
     params["status"]?.try do |status|
@@ -185,6 +176,13 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     nvseed.save!
 
     spawn log_upsert_action(params)
+
+    spawn do
+      img_file = "_db/bcover/users/#{nvinfo.bhash}.jpg"
+      webp_file = "priv/static/covers/#{nvinfo.bcover}"
+      HttpUtil.save_image(nvinfo.scover, img_file, webp_file)
+    end
+
     send_json({bslug: nvinfo.bslug})
   end
 
@@ -198,5 +196,16 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       data = {action: "upsert_nvinfo", cvuser: _cvuser.uname, params: params}
       io.puts(data.to_json)
     end
+  end
+
+  def delete
+    return halt!(403, "Quyền hạn không đủ!") if _cvuser.privi < 4
+    unless nvinfo = Nvinfo.load!(params["bslug"])
+      return halt!(404, "Quyển sách không tồn tại!")
+    end
+
+    nvinfo.delete
+    Ubmemo.query.where(nvinfo_id: nvinfo.id).to_delete.execute
+    send_json({message: "ok"})
   end
 end

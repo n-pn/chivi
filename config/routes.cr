@@ -35,6 +35,7 @@ Amber::Server.configure do
     get "/books/:bslug", CV::NvinfoCtrl, :show
     get "/books/:bslug/front", CV::NvinfoCtrl, :front
     get "/books/:bslug/detail", CV::NvinfoCtrl, :detail
+    delete "/books/:bslug/delete", CV::NvinfoCtrl, :delete
 
     get "/chaps/:book", CV::NvseedCtrl, :index
     get "/chaps/:book/:sname", CV::NvseedCtrl, :show

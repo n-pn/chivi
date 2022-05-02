@@ -36,8 +36,6 @@ class CV::Nvinfo
 
   column igenres : Array(Int32) = [] of Int32
   getter vgenres : Array(String) { GenreMap.to_str(igenres) }
-
-  column zlabels : Array(String) = [] of String
   column vlabels : Array(String) = [] of String
 
   ###########

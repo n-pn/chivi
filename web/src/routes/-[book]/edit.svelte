@@ -11,20 +11,28 @@
 </script>
 
 <script lang="ts">
+  import { goto } from '$app/navigation'
+  import { session } from '$app/stores'
   import { topbar } from '$lib/stores'
-  import { Crumb } from '$gui'
+  import { Crumb, SIcon } from '$gui'
 
-  import NvinfoForm, { Params } from '$gui/parts/nvinfo/NvinfoForm.svelte'
+  import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
   export let nvinfo: CV.Nvinfo
 
-  $: nv_href = `-${nvinfo.bslug}`
+  $: nv_href = `/-${nvinfo.bslug}`
 
   $: topbar.set({
     left: [
       [nvinfo.btitle_vi, 'book', { href: nv_href, show: 'tm', kind: 'title' }],
-      ['Sửa thông tin', 'pencil', { href: '.' }],
+      ['Sửa thông tin', 'pencil', { href: './edit' }],
     ],
   })
+
+  async function delete_book() {
+    const bslug = nvinfo.bslug.substring(0, 8)
+    await fetch(`api/books/${bslug}/delete`, { method: 'DELETE' })
+    await goto('/')
+  }
 </script>
 
 <Crumb
@@ -33,6 +41,22 @@
     ['Sửa thông tin', '.'],
   ]} />
 
-<NvinfoForm params={new Params(nvinfo)}>
+<NvinfoForm {nvinfo}>
   <h1 slot="header">Sửa thông tin truyện [{nvinfo.btitle_vi}]</h1>
 </NvinfoForm>
+
+{#if $session.privi > 3}
+  <footer>
+    <button class="m-btn _harmful _lg" type="button" on:click={delete_book}>
+      <SIcon name="trash" />
+      <span class="-txt">Xoá bộ sách</span>
+    </button>
+  </footer>
+{/if}
+
+<style lang="scss">
+  footer {
+    margin-top: var(--gutter);
+    @include flex-ca;
+  }
+</style>

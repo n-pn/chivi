@@ -81,7 +81,7 @@ module CV::HttpUtil
   end
 
   def save_image(link : String, file : String, webp_file : String)
-    return if File.exists?(webp_file)
+    return if File.exists?(webp_file) || link.blank?
     return unless img_file = fetch_image(link, file)
 
     if img_file.ends_with?(".gif")
@@ -109,7 +109,7 @@ module CV::HttpUtil
     Log.error { err.colorize.red }
   end
 
-  def map_extension(mime : String?)
+  def map_extension(mime : String?) : String
     case mime
     when .nil?        then ".raw"
     when "image/jpeg" then ".jpg"
@@ -119,7 +119,7 @@ module CV::HttpUtil
     when "text/html"  then ".html"
     else
       exts = MIME.extensions(mime)
-      exts.empty? ? ".raw" : exts.first
+      exts.empty? ? ".jpg" : exts.first
     end
   end
 

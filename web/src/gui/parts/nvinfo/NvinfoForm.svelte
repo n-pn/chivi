@@ -4,7 +4,7 @@
   const fields = ['btitle_vi', 'author_vi', 'status', 'bintro', 'bcover']
 
   export class Params {
-    nvinfo: CV.Nvinfo | object
+    nvinfo?: CV.Nvinfo
 
     btitle_zh: string = ''
     author_zh: string = ''
@@ -19,7 +19,7 @@
     bcover: string = ''
 
     constructor(nvinfo?: CV.Nvinfo) {
-      this.nvinfo = nvinfo || {}
+      this.nvinfo = nvinfo
       if (!nvinfo) return
 
       this.btitle_zh = nvinfo.btitle_zh
@@ -27,36 +27,36 @@
       this.genres = nvinfo.genres
       for (const field of fields) this[field] = nvinfo[field]
     }
-    get form() {
-      const output = {
-        btitle_zh: this.btitle_zh,
-        author_zh: this.author_zh,
-        genres: this.genres.join(','),
-      }
-
-      for (const field of fields) {
-        const value = this[field]
-        if (value) output[field] = value
-        // if (value && value != this.nvinfo[field]) output[field] = value
-      }
-
-      return output
-    }
   }
 </script>
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { SIcon } from '$gui'
   import { api_call } from '$lib/api_call'
-
   import { book_status } from '$utils/nvinfo_utils'
 
-  export let params: Params
+  import { SIcon } from '$gui'
+
+  export let nvinfo: CV.Nvinfo = undefined
+
+  $: params = new Params(nvinfo)
   let errors: string
 
   async function submit() {
-    const [stt, data] = await api_call(fetch, 'books', params.form, 'PUT')
+    const nvinfo = this.nvinfo || {}
+
+    const output = {
+      btitle_zh: this.btitle_zh,
+      author_zh: this.author_zh,
+      genres: this.genres.join(','),
+    }
+
+    for (const field of fields) {
+      const value = this[field].trim()
+      if (value && value != nvinfo[field]) output[field] = value
+    }
+
+    const [stt, data] = await api_call(fetch, 'books', output, 'PUT')
     if (stt >= 400) errors = data as string
     else await goto(`/-${data.bslug}`)
   }
@@ -89,6 +89,7 @@
           class="m-input"
           name="btitle_zh"
           placeholder="Tên tựa bộ truyện"
+          disabled={!!params.nvinfo}
           required
           bind:value={params.btitle_zh} />
       </form-field>
@@ -114,6 +115,7 @@
           name="author_zh"
           placeholder="Tên tác giả bộ truyện"
           required
+          disabled={!!params.nvinfo}
           bind:value={params.author_zh} />
       </form-field>
 
