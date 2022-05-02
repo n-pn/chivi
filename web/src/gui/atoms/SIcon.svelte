@@ -5,5 +5,5 @@
 </script>
 
 <svg class="m-icon {$$props.class || '_' + name}" class:a-spin={spin}>
-  <use xlink:href="/icons/{iset}.svg#{iset}-{name}" />
+  <use xlink:href="/icons/{iset}.svg#{name}" />
 </svg>

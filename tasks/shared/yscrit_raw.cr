@@ -98,9 +98,8 @@ class CV::YscritRaw
       ysbook.author = book.author
     end
 
-    btitle, author_zname = BookUtil.fix_names(book.title, book.author)
-    author = Author.upsert!(author_zname)
-    nvinfo = Nvinfo.upsert!(author, btitle)
+    btitle_zh, author_zh = BookUtil.fix_names(book.title, book.author)
+    nvinfo = Nvinfo.upsert!(author_zh, btitle_zh)
 
     unless ysbook.nvinfo_id_column.defined?
       ysbook.nvinfo = nvinfo

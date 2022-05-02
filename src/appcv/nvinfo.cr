@@ -43,6 +43,7 @@ class CV::Nvinfo
   column scover : String = "" # original seed cover url
   column bcover : String = "" # cached book cover path
 
+  column zintro : String = "" # book introduction in chinese
   column bintro : String = "" # book introduction in chinese
 
   # status value:
@@ -177,6 +178,14 @@ class CV::Nvinfo
       return unless item
       item.tap { |x| CACHE_INT.set(x.id, x) }
     end
+  end
+
+  def self.upsert!(author_zh : String, btitle_zh : String, fix_names : Bool = false)
+    upsert(Author.upsert!(author_zh), Btitle.upsert!(btitle_zh), fix_names)
+  end
+
+  def self.upsert!(author : Author, btitle_zh : String, fix_names : Bool = false)
+    upsert(author, Btitle.upsert!(btitle_zh), fix_names)
   end
 
   def self.upsert!(author : Author, btitle : Btitle, fix_names : Bool = false)

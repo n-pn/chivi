@@ -110,7 +110,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     serv_json({
       genres: nvinfo.vgenres,
-      bintro: nvinfo.cvseed.bintro,
+      bintro: nvinfo.zintro,
       bcover: nvinfo.scover,
     })
   end

@@ -53,7 +53,7 @@ class CV::BdLacInvoke
   end
 
   def get_chidx(file : String)
-    File.basename(x, ".tsv").split("-", 2).first
+    File.basename(file, ".tsv").split("-", 2).first
   end
 
   def extract(existed : Set(String))
