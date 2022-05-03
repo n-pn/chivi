@@ -1,13 +1,10 @@
 <script lang="ts">
   export let bcover: string | undefined
-  export let scover: string | undefined
-
-  $: cover_url = bcover ? `/covers/${bcover}` : scover || '/imgs/blank.png'
 </script>
 
 <picture>
-  <source srcset={cover_url} />
-  <img src="/imgs/blank.png" alt="" referrerpolicy="no-referrer" />
+  <source srcset="/covers/{bcover}" type="image/webp" />
+  <img src="/imgs/empty.png" alt="" />
 </picture>
 
 <style lang="scss">

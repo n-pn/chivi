@@ -18,11 +18,11 @@
       <div class="cover _{idx}">
         <picture>
           <source type="image/webp" srcset="/covers/{cover}" />
-          <img src="/imgs/blank.png" alt="" />
+          <img src="/imgs/empty.png" alt="" />
         </picture>
       </div>
     {:else}
-      <div class="cover _0"><img src="/imgs/blank.png" alt="" /></div>
+      <div class="cover _0"><img src="/imgs/empty.png" alt="" /></div>
     {/each}
   </div>
 

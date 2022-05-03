@@ -57,7 +57,7 @@
       <a class="bcover" href="/-{book.bslug}">
         <picture>
           <source type="image/webp" srcset="/covers/{book.bcover}" />
-          <img src="/imgs/blank.png" alt="" />
+          <img src="/imgs/empty.png" alt="" />
         </picture>
       </a>
 
