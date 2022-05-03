@@ -4,8 +4,10 @@ module CV::MTL::ApplyCap
   def apply_cap!(cap : Bool = true) : Bool
     if body = @body
       cap = body.apply_cap!(cap)
-      if @prev.try { |x| x.none? || x.pstops? } || true
-        cap = true if body.brackop? || body.titleop?
+
+      prev = @prev || @root.try(&.prev)
+      if prev.try { |x| x.none? || x.pstops? }
+        cap = true if body.brackop?
       end
     else
       cap = self.capitalize!(cap)
