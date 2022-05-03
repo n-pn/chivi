@@ -38,7 +38,7 @@
         genres: this.genres.join(','),
       }
 
-      if (this.status != this.nvinfo.status) output['status'] = this.status
+      if (this.status != nvinfo['status']) output['status'] = this.status
 
       for (const field of fields) {
         const value = this[field].trim()
