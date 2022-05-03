@@ -33,13 +33,16 @@ class CV::PostagInit
       end
     end
 
-    Log.info { "[postag] #{file} loaded, entries: #{lines.size} " }
+    # Log.info { "<postag> [#{file}] loaded, entries: #{lines.size} " }
   end
 
   def load_raw!(file : String)
-    File.each_line(file) do |line|
+    File.read_lines(file).each do |line|
+      next if line.empty?
+
       line.split(SEP_1) do |frag|
         term, tag = frag.split(SEP_2, 2)
+        # raise "Invalid content: #{frag}" if tag.empty?
         update_count(term, tag.in?("nt", "ns") ? "nn" : tag, 1)
       end
     end

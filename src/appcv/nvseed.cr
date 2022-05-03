@@ -123,6 +123,7 @@ class CV::Nvseed
 
     return unless force || changed
     chinfos = parser.chap_infos
+    return if chinfos.empty?
 
     spawn { ChList.save!(_repo.fseed, chinfos, mode: "w") }
     _repo.store!(chinfos, reset: force)

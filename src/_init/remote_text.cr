@@ -105,6 +105,7 @@ class CV::RemoteText
       extract_paras("#content").tap do |lines|
         lines.shift if lines.first =~ /bxwx66|bxwxorg/
         lines.pop if lines.last.includes?("bxwxorg.com")
+        lines.clear if lines.first == "抱歉！..."
       end
     when "ptwxz"
       extract_paras("body").tap do |lines|

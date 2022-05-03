@@ -1,51 +1,106 @@
 require "colorize"
 require "file_utils"
-require "../../"
+require "../../src/_init/postag_init"
 
-INP = "_db/vpinit/bd_lac/raw"
-OUT = "_db/vpinit/bd_lac/sum"
+RAW = "_db/vpinit/bd_lac/raw"
+TMP = "_db/vpinit/bd_lac/tmp"
+SUM = "_db/vpinit/bd_lac/sum"
 
-class Counter
-  getter counter : PostagInit
-  getter checked = Set(String).new
+class CV::CountDir
+  getter batch : PostagInit
+  getter check = Set(String).new
 
-  def initialize(@bslug : String, @redo = false)
-    @inp_dir = File.join(INP, @bslug)
+  def initialize(@bslug : String, @redo = false, @purge = false)
+    @raw_dir = File.join(RAW, @bslug)
+    @tmp_dir = File.join(TMP, @bslug)
+    Dir.mkdir_p(@tmp_dir)
 
-    @log_file = File.join(OUT, @bslug + ".log")
+    @sum_file = File.join(SUM, @bslug + ".tsv")
+    @log_file = File.join(SUM, @bslug + ".log")
 
-    @counter = Counter.new(File.join(OUT, @bslug + ".tsv"), reset: @redo)
-    @checked.concat(File.read_lines(@log_file)) unless @redo
+    @batch = PostagInit.new(@sum_file, reset: @redo)
+
+    if !@redo && File.exists?(@log_file)
+      @check.concat(File.read_lines(@log_file))
+    end
   end
 
   def count! : Nil
-    Dir.glob("#{@inp_dir}/*.tsv").each do |inp_file|
-      fbase = File.basename(inp_file)
-      next if @checked.includes?(fbase)
+    Dir.glob("#{@raw_dir}/*.tsv").each do |raw_file|
+      fbase = File.basename(raw_file)
+      next if @check.includes?(fbase)
 
-      @counter.load_raw(inp_file)
-      @checked << fbase
+      tmp_file = File.join(@tmp_dir, fbase)
+      next unless single = load_chap(raw_file, tmp_file)
+
+      single.data.each do |term, counts|
+        counts.each { |tag, count| @batch.update_count(term, tag, count) }
+      end
+
+      @check.add(fbase)
+    rescue err
+      Log.error { err }
+    end
+  end
+
+  def load_chap(raw_file : String, tmp_file : String) : PostagInit?
+    counter = CV::PostagInit.new(tmp_file, reset: true)
+
+    if File.exists?(tmp_file)
+      counter.load!(tmp_file)
+    else
+      counter.load_raw!(raw_file)
+      counter.save!
+    end
+
+    counter
+  rescue err
+    Log.error { [raw_file, tmp_file, err].colorize.red }
+
+    if @purge
+      File.delete(raw_file)
+      File.delete(tmp_file) if File.exists?(tmp_file)
     end
   end
 
   def save!
-    @counter.save!(sort: true)
-    File.open(@log_file, "w", @checked.join('\n'))
+    @batch.save!(sort: true)
+    File.write(@log_file, @check.to_a.join("\n"))
   end
-end
 
-redo = ARGV.includes?("--redo")
+  ##########
 
-Dir.children(INP).each do |bslug|
-  puts bslug
-  counter = Counter.new(bslug, redo: redo).tap(&.count!)
-  counter.save!
+  REDO  = ARGV.includes?("--redo")
+  PURGE = ARGV.includes?("--purge")
+
+  def self.run!
+    workers = ENV["CRYSTAL_WORKERS"]?.try(&.to_i) || 6
+    channel = Channel(Nil).new(workers)
+
+    dirs = Dir.children(RAW)
+    dirs.each_with_index(1) do |bslug, idx|
+      channel.receive if idx > workers
+
+      spawn do
+        Log.info { "<#{idx}/#{bslug}>".colorize.yellow }
+        counter = new(bslug, REDO, PURGE)
+        counter.count!
+        counter.save!
+      ensure
+        channel.send(nil)
+      end
+    end
+
+    workers.times { channel.receive }
+  end
+
+  run!
 end
 
 # def add_to_total(channel : Channel(Folder), all_books : Counter, all_ptags : Counter)
 #   folder = channel.receive
 
-#   average = folder.checked.size // 2 &+ 1
+#   average = folder.check.size // 2 &+ 1
 
 #   folder.counter.data.each do |word, counts|
 #     best_tag = counts.to_a.sort_by(&.[1].-)[0][0]

@@ -9,6 +9,7 @@ class CV::BdLacInvoke
   OUT_DIR = "_db/vpinit/bd_lac/raw"
 
   getter chap_count = 0
+  getter to_parse = 0
 
   def initialize(@nvinfo : Nvinfo, @parse_all = false)
     @inp_dir = File.join(INP_DIR, "chivi", @nvinfo.bhash)
@@ -48,7 +49,8 @@ class CV::BdLacInvoke
       extract(existed.map { |x| get_chidx(x) }.to_set)
     end
 
-    Log.info { "<#{lbl}> #{@nvinfo.bslug}: #{existed.size} parsed".colorize(color) }
+    Log.info { "<#{lbl}> #{@nvinfo.bslug.colorize(color)}: #{existed.size.colorize(color)} parsed, \
+                to parse: #{@to_parse.colorize(color)}" }
     Process.run("python3", {SCRIPT, @dir_name})
   end
 
@@ -84,7 +86,7 @@ class CV::BdLacInvoke
     return unless proxy = info.proxy
 
     out_txt = "#{@out_path}/#{info.chidx}-0.txt"
-    return if File.exists?(out_txt)
+    return if File.exists?(out_txt) || File.exists?(out_txt.sub(".txt", ".tsv"))
 
     pgidx = (info.chidx &- 1) // 128
     inp_zip = "#{INP_DIR}/#{proxy.sname}/#{proxy.snvid}/#{pgidx}.zip"
@@ -94,6 +96,7 @@ class CV::BdLacInvoke
     Compress::Zip::File.open(inp_zip) do |zip|
       return unless entry = zip["#{info.schid}-0.txt"]?
       File.write(out_txt, entry.open(&.gets_to_end))
+      @to_parse += 1
     rescue err
       Log.error { err.colorize.red }
     end
@@ -127,6 +130,8 @@ class CV::BdLacInvoke
     channel = Channel(Nil).new(workers)
 
     infos.each_with_index(1) do |info, idx|
+      channel.receive if idx > workers
+
       spawn do
         new(info, parse_all: idx < 1000).parse!(lbl: "#{idx}/#{infos.size}")
       rescue err
@@ -134,8 +139,6 @@ class CV::BdLacInvoke
       ensure
         channel.send(nil)
       end
-
-      channel.receive if idx > workers
     end
 
     workers.times { channel.receive }

@@ -41,7 +41,7 @@ def parse_book(bname):
         if idx > 0:
           out_file.write("\t")
 
-        out_file.write(raw + "¦")
+        out_file.write(raw.replace("\t", " ") + "¦")
 
         tag = tags[idx]
         out_file.write(FIX.get(tag, tag))
