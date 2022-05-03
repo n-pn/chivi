@@ -5,9 +5,9 @@ module CV::MTL::ApplyCap
     if body = @body
       cap = body.apply_cap!(cap)
 
-      prev = @prev || @root.try(&.prev)
-      if prev.try { |x| x.none? || x.pstops? }
-        cap = true if body.brackop?
+      if body.brackop?
+        prev = @prev || @root.try(&.prev?)
+        cap = true if !prev || prev.none? || prev.pstops?
       end
     else
       cap = self.capitalize!(cap)
