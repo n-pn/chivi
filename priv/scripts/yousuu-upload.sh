@@ -48,6 +48,7 @@ then
   echo upload seed data!
   rsync -azui --no-p "var/ysinfos/ysusers.tsv" "$SSH/var/ysinfos"
   rsync -azui --no-p "var/ysinfos/yscrits" "$SSH/var/ysinfos"
+  rsync -azui --no-p "var/ysinfos/yscrits.old" "$SSH/var/ysinfos"
 fi
 
 SRC=tasks/yousuu

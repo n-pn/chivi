@@ -5,6 +5,7 @@ module CV
 
   reseed! if ARGV.includes?("reseed")
   update! if ARGV.includes?("update")
+  restore! if ARGV.includes?("restore")
 
   PURGE = ARGV.includes?("--purge")
 
@@ -41,6 +42,21 @@ module CV
 
       yscrit.fix_sort!
       yscrit.save!
+    end
+  end
+
+  def restore!
+    dir = "var/ysinfos/yscrits"
+
+    Dir.glob("#{dir}/*-ztext.tsv") do |file|
+      target = Tabkv(Array(String)).new(file)
+      target.data.each do |y_cid, bintro|
+        next if bintro == ["$$$"]
+        next unless yscrit = Yscrit.find({origin_id: y_cid})
+
+        yscrit.set_ztext(bintro.join("\n"))
+        yscrit.save!
+      end
     end
   end
 end
