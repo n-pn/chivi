@@ -18,9 +18,9 @@ module CV
       files = Dir.glob("#{DIR}/#{group}/*.json")
 
       files.each do |file|
-        crits = YsreplRaw.from_list(File.read(file))[:commentReply]
-        stime = File.info(file).modification_time.to_unix
-        crits.each(&.seed!(stime))
+        repls, _ = YsreplRaw.from_list(File.read(file))
+        stime = FileUtil.mtime_int(file)
+        repls.each(&.seed!(stime))
       rescue err
         puts [err, file]
         File.delete(file) if PURGE
