@@ -4,10 +4,13 @@
     ['Github', 'https://github.com/np-nam/chivi'],
     ['Facebook', 'https://www.facebook.com/chivi.fb/'],
   ]
+  declare var gtag: any
 </script>
 
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { page } from '$app/stores'
+
   import { navigating, session } from '$app/stores'
   import { scroll, toleft, layers, popups, config } from '$lib/stores'
   import { map_keypress, trigger_click } from '$utils/kbd_utils'
@@ -28,6 +31,12 @@
   })
 
   $: wtheme = $config.wtheme || $session.wtheme || 'light'
+
+  $: {
+    if (typeof gtag === 'function') {
+      gtag('config', 'G-0GJNGJEFNH', { page_path: $page.url.pathname })
+    }
+  }
 
   let kbd_hint = false
 
