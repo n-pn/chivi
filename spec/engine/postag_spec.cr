@@ -1,7 +1,7 @@
 require "./_helper"
 
 macro assert_eq(left, right)
-  CV::PosTag.from_str("m", {{left}}).should eq(CV::PosTag::{{right}})
+  CV::PosTag.parse("m", {{left}}).should eq(CV::PosTag::{{right}})
 end
 
 describe CV::PosTag do

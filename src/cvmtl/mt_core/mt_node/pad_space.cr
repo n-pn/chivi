@@ -16,7 +16,7 @@ module CV::MTL::PadSpace
     return if @val.blank?
 
     if @tag.ndigit? && (prev.tag.plsgn? || prev.tag.mnsgn?)
-      @tag = PosTag::String unless prev.prev?(&.ndigit?)
+      @tag = PosTag::Litstr unless prev.prev?(&.ndigit?)
     elsif should_space_before?(prev)
       self.prepend_space!
     end
@@ -36,7 +36,7 @@ module CV::MTL::PadSpace
     return false if prev.val.blank?
 
     case @tag
-    when .string? then return false if prev.tag.pdeci?
+    when .litstr? then return false if prev.tag.pdeci?
     when .ndigit? then return false if prev.tag.plsgn? || prev.tag.mnsgn?
     when .plsgn?  then return false if prev.tag.ndigit?
     when .mnsgn?  then return false if prev.tag.ndigit?

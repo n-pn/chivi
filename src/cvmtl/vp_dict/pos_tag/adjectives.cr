@@ -19,4 +19,19 @@ struct CV::PosTag
     # 区别词性惯用语 - noun modifier morpheme
     # {"bl", "Modiform", Pos::Adjts | Pos::Contws},
   }
+
+  {% for type in ADJTS %}
+    {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
+  {% end %}
+
+  def self.parse_adjt(tag : String, key : String)
+    case tag[1]?
+    when nil then Adjt
+    when 'n' then Ajno
+    when 'd' then Ajad
+    when 'l' then Aform
+    when 'z' then Aform
+    else          Adjt
+    end
+  end
 end

@@ -1,7 +1,7 @@
 module CV::TlRule
   def fold_strings!(node : MtNode) : MtNode
-    if node.string?
-      fold_string!(node)
+    if node.litstr?
+      fold_litstr!(node)
     elsif node.key.starts_with?("http")
       fold_urlstr!(node)
     else
@@ -9,7 +9,7 @@ module CV::TlRule
     end
   end
 
-  def fold_string!(root : MtNode) : MtNode
+  def fold_litstr!(root : MtNode) : MtNode
     return root unless node = root.succ?
 
     key_io = String::Builder.new(root.key)
@@ -31,8 +31,8 @@ module CV::TlRule
 
   private def string_component?(node : MtNode) : Bool
     case node.tag
-    when .pdeci?, .atsgn? then node.succ?(&.string?) || false
-    when .string?         then true
+    when .pdeci?, .atsgn? then node.succ?(&.litstr?) || false
+    when .litstr?         then true
     else                       false
     end
   end
@@ -54,13 +54,13 @@ module CV::TlRule
     root.key = key_io.to_s
     root.val = val_io.to_s
 
-    root.tag = PosTag::Rawstr
+    root.tag = PosTag::Fixstr
     root.tap(&.fix_succ!(node))
   end
 
   private def uri_component?(node : MtNode) : Bool
     case node.tag
-    when .string?, .pdeci?, .ndigit? then true
+    when .litstr?, .pdeci?, .ndigit? then true
     when .puncts?
       case node.key[0]?
       when '%', '?', '-', '=', '~', '#', '@', '/' then true

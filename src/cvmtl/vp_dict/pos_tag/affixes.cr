@@ -11,4 +11,8 @@ struct CV::PosTag
   def suffixes?
     @tag.suf_noun? || @tag.suf_verb? || @tag.suf_adjt?
   end
+
+  {% for type in AFFIXES %}
+    {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
+  {% end %}
 end

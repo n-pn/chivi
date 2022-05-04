@@ -9,7 +9,7 @@ struct CV::PosTag
   PreBi3 = new(Tag::PreBi3, POSPRE)
   Prepos = new(Tag::Prepos, POSPRE)
 
-  def self.map_preposes(key : ::String)
+  def self.parse_prepos(key : ::String)
     case key
     when "把"  then PreBa3
     when "被"  then PreBei

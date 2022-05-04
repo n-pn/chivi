@@ -22,7 +22,7 @@ module CV::MTL::ApplyCap
     case @tag
     when .none?   then cap
     when .puncts? then cap_after_punct?(cap) # TODO: merge this with should_cap?
-    when .rawstr? then false
+    when .fixstr? then false
     else
       @val = TextUtil.capitalize(@val) if cap
       false
@@ -34,7 +34,7 @@ module CV::MTL::ApplyCap
     when .quoteop?, .exmark?, .qsmark?,
          .pstop?, .colon?, .middot?, .titleop?
       true
-    when .pdeci?   then @prev.try { |x| x.ndigit? || x.string? } || prev
+    when .pdeci?   then @prev.try { |x| x.ndigit? || x.litstr? } || prev
     when .brackop? then true
       # when .parenop? then  prev
     else prev

@@ -43,7 +43,7 @@ struct CV::PosTag
     when "rzt", "rzs", "rzv"        then new(Tag::ProDem)
     when "ryt", "rys", "ryv"        then new(Tag::ProInt)
     when "dl", "dg"                 then new(Tag::Adverb)
-    else                                 from_str(tag)
+    else                                 parse(tag)
     end
   end
 
@@ -54,7 +54,7 @@ struct CV::PosTag
     when "LOC"  then new(Tag::Nloc)
     when "ORG"  then new(Tag::Norg)
     when "TIME" then new(Tag::Time)
-    else             from_str(tag)
+    else             parse(tag)
     end
   end
 end
@@ -129,7 +129,7 @@ class CV::Tagsum
     when :pfr    then PosTag.from_pfr(tag.downcase)
     when :pku    then PosTag.from_pku(tag)
     when :paddle then PosTag.from_paddle(tag)
-    else              PosTag.from_str(tag)
+    else              PosTag.parse(tag)
     end
   end
 
@@ -241,7 +241,7 @@ class CV::Merger
     when .empty?
       vals.first_key
     else
-      postag = PosTag.from_str(tag)
+      postag = PosTag.parse(tag)
       raise "Unknown postag <#{tag}>" if postag == PosTag::None
       postag
     end

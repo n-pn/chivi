@@ -1,3 +1,5 @@
+require "../../mt_core/mt_dict"
+
 struct CV::PosTag
   # 数词 - numeral - số từ
   NB_POS = Pos::Numbers | Pos::Numeric | Pos::Contws
@@ -21,7 +23,9 @@ struct CV::PosTag
   NUMLAT_RE = /^[0-9０-９]+$/
   NUMHAN_RE = /^[零〇一二两三四五六七八九十百千万亿兆]+$/
 
-  def self.map_numbers(key : ::String) : self
+  def self.parse_number(tag : String, key : String) : self
+    return parse_nquant(key) if tag == "mq"
+
     case key
     when .matches?(NUMLAT_RE) then Ndigit
     when .matches?(NUMHAN_RE) then Nhanzi
@@ -29,7 +33,7 @@ struct CV::PosTag
     end
   end
 
-  def self.map_quantis(key : ::String) : self
+  def self.parse_quanti(key : String) : self
     return Qttime if MtDict.has_key?(:qt_times, key)
     return Qtverb if MtDict.has_key?(:qt_verbs, key)
     Qtnoun
@@ -37,7 +41,7 @@ struct CV::PosTag
 
   NUMCHR_RE = /[零〇一二两三四五六七八九十百千万亿兆多每]/
 
-  def self.map_nquants(key : ::String) : self
+  def self.parse_nquant(key : ::String) : self
     key = key.sub(NUMCHR_RE, "")
     case
     when MtDict.has_key?(:qt_times, key) then Nqtime

@@ -6,7 +6,7 @@ struct CV::PosTag
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
   {% begin %}
-    TYPES = {{ NOUNS + VERBS + ADJTS + AFFIXES + MISCS }}
+    TYPES = {{ NOUNS + NOUNS_2 + VERBS + ADJTS + AFFIXES + MISCS }}
   {% end %}
 
   enum Tag
@@ -33,10 +33,12 @@ struct CV::PosTag
 
     Unique; AdjHao; VShang; VXia; VShi; VYou
 
-    {% for group in {PUNCTS, AUXILS} %}
-      {% for type in group %}
+    {% for type in PUNCTS %}
       {{ type[0].id }}
-      {% end %}
+    {% end %}
+
+    {% for type in AUXILS %}
+      {{ type[0].id }}
     {% end %}
 
     def to_str
@@ -57,10 +59,6 @@ struct CV::PosTag
 
   None = new(Tag::None, Pos::Puncts)
   Unkn = new(Tag::Unkn, Pos::Contws)
-
-  {% for type in TYPES %}
-    {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
-  {% end %}
 
   getter pos : Pos
   getter tag : Tag
@@ -88,38 +86,6 @@ struct CV::PosTag
       @tag.to_str
     end
   end
-
-  delegate nouns?, to: @pos
-  delegate times?, to: @pos
-  delegate names?, to: @pos
-  delegate human?, to: @pos
-  delegate object?, to: @pos
-
-  delegate numbers?, to: @pos
-  delegate quantis?, to: @pos
-  delegate nquants?, to: @pos
-  delegate numeric?, to: @pos
-
-  delegate pronouns?, to: @pos
-  delegate pro_dems?, to: @pos
-  delegate pro_ints?, to: @pos
-
-  delegate verbs?, to: @pos
-  delegate vdirs?, to: @pos
-  delegate vmodals?, to: @pos
-
-  delegate adjts?, to: @pos
-  delegate adverbs?, to: @pos
-
-  delegate preposes?, to: @pos
-  delegate auxils?, to: @pos
-
-  delegate junction?, to: @pos
-  delegate strings?, to: @pos
-
-  delegate contws?, to: @pos
-  delegate funcws?, to: @pos
-  delegate uniques?, to: @pos
 
   # words that can act as noun
   @[AlwaysInline]
@@ -157,46 +123,61 @@ struct CV::PosTag
     @tag.space? || @tag.v_shang? || @tag.v_xia?
   end
 
-  def self.from_str(tag : ::String, key : ::String = "") : self
-    {% begin %}
-    case tag
-    when "w" then map_puncts(key)
-    when "u" then map_auxils(key)
-    when "d" then map_adverbs(key)
-    when "p" then map_preposes(key)
-    when "vm" then map_vmodals(key)
-    when "rz" then map_pro_dems(key)
-    when "ry" then map_pro_ints(key)
-    when "!" then map_uniques(key)
-    when "m", "mx", "mz" then map_numbers(key)
-    when "q", "qt", "qv" then map_quantis(key)
-    when "mq" then map_nquants(key)
-    when "bl" then Modifier
-    when "vl" then VerbObject
-    when "z", "az" then Aform
-    when "ns", "nt" then Naffil
-    when "nf" then Person
-    when "r" then Pronoun
-    when "rr" then ProPer
-    when "l" then Idiom
-    when "j" then Noun
-    when "-" then None
-    {% for type in TYPES %}
-    when {{ type[0] }} then {{ type[1].id }}
-    {% end %}
-    else
-      Unkn
+  # ameba:disable Metrics/CyclomaticComplexity
+  def self.parse(tag : String, key : String = "") : self
+    case tag[0]?
+    when nil then Unkn
+    when '-' then None
+    when 'n' then parse_noun(tag, key)
+    when 'v' then parse_verb(tag, key)
+    when 'a' then parse_adjt(tag, key)
+    when 'w' then parse_punct(key)
+    when 'u' then parse_auxil(key)
+    when 'p' then parse_prepos(key)
+    when 'd' then parse_adverb(key)
+    when 'm' then parse_number(tag, key)
+    when 'q' then parse_quanti(key)
+    when 'r' then parse_pronoun(tag, key)
+    when '!' then parse_unique(key)
+    when 't' then Time
+    when 'b' then Modifier
+    else          parse_other(tag, key)
     end
-    {% end %}
+  end
+
+  # ameba:disable Metrics/CyclomaticComplexity
+  def self.parse_other(tag : String, key : String = "") : self
+    case tag
+    when "j"   then Noun
+    when "i"   then Idiom
+    when "l"   then Idiom
+    when "z"   then Aform
+    when "s"   then Space
+    when "f"   then Place
+    when "x"   then Litstr
+    when "xl"  then Urlstr
+    when "xx"  then Fixstr
+    when "c"   then Conjunct
+    when "cc"  then Concoord
+    when "e"   then Exclam
+    when "y"   then Mopart
+    when "o"   then Onomat
+    when "s-v" then VerbClause
+    when "s-a" then AdjtClause
+    when "~dp" then DefnPhrase
+    when "~pp" then PrepPhrase
+    else            Unkn
+    end
   end
 end
 
-# puts CV::PosTag.from_str("n").to_str
-# puts CV::PosTag.from_str("v").to_str
-# puts CV::PosTag.from_str("vd").to_str
-# puts CV::PosTag.from_str("w", "﹑").tag
-# puts CV::PosTag.from_str("w", ":").tag
-# puts CV::PosTag.from_str("w", "：").tag
-# puts CV::PosTag.from_str("vm", "会").tag
-# puts CV::PosTag.from_str("w", "《").tag
-# puts CV::PosTag.from_str("w", "“").tag
+# puts CV::PosTag.parse("n").tag
+# puts CV::PosTag.parse("na").tag
+# puts CV::PosTag.parse("vm", "").tag
+# puts CV::PosTag.parse("vd").tag
+# puts CV::PosTag.parse("w", "﹑").tag
+# puts CV::PosTag.parse("w", ":").tag
+# puts CV::PosTag.parse("w", "：").tag
+# puts CV::PosTag.parse("vm", "会").tag
+# puts CV::PosTag.parse("w", "《").tag
+# puts CV::PosTag.parse("w", "“").tag

@@ -19,7 +19,7 @@ class CV::VpTerm
   getter uname : String = "~"
 
   # auto generated fields
-  property ptag : PosTag { PosTag.from_str(@attr, @key) }
+  property ptag : PosTag { PosTag.parse(@attr, @key) }
   getter point : Float64 do
     base = 1.5 + rank * 0.125
     base ** @key.size + @key.size ** base

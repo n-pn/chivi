@@ -24,13 +24,13 @@ struct CV::PosTag
     {{ type[0].id }} = new(Tag::{{type[0].id}}, AUPOS)
   {% end %}
 
-  def self.map_auxils(key : ::String)
+  def self.parse_auxil(key : String)
     {% begin %}
     case key
     {% for item in AUXILS %}
-    {% for key in item[1] %}
-    when {{key}} then {{item[0].id}}
-    {% end %}
+      {% for key in item[1] %}
+      when {{key}} then {{item[0].id}}
+      {% end %}
     {% end %}
     else Auxil
     end

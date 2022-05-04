@@ -309,7 +309,7 @@ def export_book(bhash, regular_set)
     else        next if count < 30
     end
 
-    postag = CV::PosTag.from_str(tag)
+    postag = CV::PosTag.parse(tag)
     next unless postag.nouns?
     cap_mode = postag.names? ? 2 : 0
 

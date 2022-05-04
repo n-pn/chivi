@@ -24,6 +24,15 @@ struct CV::PosTag
     # danh xưng: chức danh, nghề nghiệp, địa vị
     {"nw", "Ptitle", Pos::Nouns | Pos::Human | Pos::Contws},
 
+    # attributes
+    {"na", "Nattr", Pos::Nouns | Pos::Contws},
+
+    # noun phrase
+    {"np", "NounPhrase", Pos::Nouns | Pos::Contws},
+
+  }
+
+  NOUNS_2 = {
     # 时间词性语素 - time word morpheme
     {"tg", "Tmorp", Pos::Nouns | Pos::Contws},
 
@@ -35,12 +44,37 @@ struct CV::PosTag
     # 时间词 - time word - thời gian
     {"t", "Time", Pos::Nouns | Pos::Times | Pos::Contws},
 
-    # attributes
-    {"na", "Nattr", Pos::Nouns | Pos::Contws},
   }
+
+  {% for type in NOUNS %}
+    {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
+  {% end %}
+
+  {% for type in NOUNS_2 %}
+    {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
+  {% end %}
 
   @[AlwaysInline]
   def places?
     @tag.naffil? || @tag.place?
+  end
+
+  # ameba:disable Metrics/CyclomaticComplexity
+  def self.parse_noun(tag : String, key : String)
+    case tag[1]?
+    when nil then Noun
+    when 'g' then Noun
+    when 'l' then Nform
+    when 'a' then Nattr
+    when 'r' then Person
+    when "f" then Person
+    when 'z' then Nother
+    when 'w' then Ptitle
+    when 'n' then Naffil
+    when 's' then Naffil
+    when 't' then Naffil
+    when 'p' then NounPhrase
+    else          Noun
+    end
   end
 end

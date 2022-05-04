@@ -13,7 +13,7 @@ CV::VpDict.load("suggest").list.each do |term|
   end
 
   tags = term.attr.split(' ')
-    .map! { |x| CV::PosTag.from_str(x, term.key).to_str }
+    .map! { |x| CV::PosTag.parse(x, term.key).to_str }
     .reject!(&.empty?).uniq!
 
   out_vals.add(term.key, vals) unless vals.empty?

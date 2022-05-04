@@ -7,7 +7,7 @@ struct CV::PosTag
   VmNeng  = new(Tag::VmNeng, VMODPOS)
   VmXiang = new(Tag::VmXiang, VMODPOS)
 
-  def self.map_vmodals(key : ::String)
+  def self.parse_vmodal(key : ::String)
     case key
     when "会" then VmHui   # động từ `hội`
     when "能" then VmNeng  # động từ `năng`

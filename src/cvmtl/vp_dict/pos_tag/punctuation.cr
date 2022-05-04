@@ -41,7 +41,7 @@ struct CV::PosTag
 
   Punct = new(Tag::Punct, Pos::Puncts)
 
-  def self.map_puncts(key : ::String)
+  def self.parse_punct(key : ::String)
     {% begin %}
     case key
     {% for item in PUNCTS %}

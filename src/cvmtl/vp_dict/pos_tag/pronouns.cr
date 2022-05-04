@@ -19,7 +19,16 @@ struct CV::PosTag
   ProInt = new(Tag::ProInt, INTPOS)
   ProNa2 = new(Tag::ProNa2, INTPOS)
 
-  def self.map_pro_dems(key : ::String)
+  def self.parse_pronoun(tag : String, key : String)
+    case tag[1]?
+    when 'z' then parse_prodem(key)
+    when 'y' then parse_proint(key)
+    when 'r' then ProPer
+    else          Pronoun
+    end
+  end
+
+  def self.parse_prodem(key : String)
     case key
     when "这" then ProZhe
     when "那" then ProNa1
@@ -28,7 +37,7 @@ struct CV::PosTag
     end
   end
 
-  def self.map_pro_ints(key : ::String)
+  def self.parse_proint(key : ::String)
     case key
     when "哪" then ProNa2
     else          ProInt

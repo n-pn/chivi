@@ -9,13 +9,11 @@ struct CV::PosTag
     {"Adverb"},
   }
 
-  ADVPOS = Pos::Adverbs | Pos::Funcws
-
   {% for type in ADVERBS %}
-    {{ type[0].id }} = new(Tag::{{type[0].id}}, ADVPOS)
+    {{ type[0].id }} = new(Tag::{{type[0].id}},  Pos::Adverbs)
   {% end %}
 
-  def self.map_adverbs(key : ::String)
+  def self.parse_adverb(key : String)
     case key
     when "不" then AdvBu
     when "没" then AdvMei

@@ -143,7 +143,7 @@ class CV::MtCore
       else
         if cur.key == "\""
           cur.val = in_quote ? "“" : "”"
-          cur.tag = PosTag.map_puncts(cur.val)
+          cur.tag = PosTag.parse_punct(cur.val)
           in_quote = !in_quote
         end
 
@@ -176,10 +176,10 @@ class CV::MtCore
   private def can_merge?(left : MtNode, right : MtNode)
     case right.tag
     when .puncts? then left.tag == right.tag
-    when .string? then left.tag.string? || left.tag.ndigit?
+    when .litstr? then left.tag.litstr? || left.tag.ndigit?
     when .ndigit?
       case left.tag
-      when .string?
+      when .litstr?
         right.tag = left.tag
         true
       when .pdeci?  then true

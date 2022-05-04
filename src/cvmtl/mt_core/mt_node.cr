@@ -28,9 +28,9 @@ class CV::MtNode
     @tag =
       case char
       when ' ' then PosTag::Punct
-      when '_' then PosTag::String
+      when '_' then PosTag::Litstr
       else
-        char.alphanumeric? ? PosTag::String : PosTag::None
+        char.alphanumeric? ? PosTag::Litstr : PosTag::None
       end
   end
 
