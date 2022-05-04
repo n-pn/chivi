@@ -60,16 +60,16 @@ class CV::CountDir
     Log.error { [raw_file, tmp_file, err].colorize.red }
 
     if @purge
+      @has_error = true
       File.delete(raw_file)
       File.delete(tmp_file) if File.exists?(tmp_file)
-      @has_error = true
     end
   end
 
   def save!
     @batch.save!(sort: true)
     File.write(@log_file, @check.to_a.join("\n"))
-    File.append("_db/vpinit/bd_lac/error.log", @bslug) if @has_error
+    File.open("_db/vpinit/bd_lac/error.log", "a", &.puts(@bslug)) if @has_error
   end
 
   ##########
@@ -77,7 +77,7 @@ class CV::CountDir
   REDO  = ARGV.includes?("--redo")
   PURGE = ARGV.includes?("--purge")
 
-  def self.run!
+  def self.sum_up!
     workers = ENV["CRYSTAL_WORKERS"]?.try(&.to_i) || 6
     channel = Channel(Nil).new(workers)
 
@@ -93,6 +93,8 @@ class CV::CountDir
         counter = new(bslug, REDO, PURGE)
         counter.count!
         counter.save!
+      rescue err
+        puts err
       ensure
         channel.send(nil)
       end
@@ -101,47 +103,5 @@ class CV::CountDir
     workers.times { channel.receive }
   end
 
-  run!
+  sum_up!
 end
-
-# def add_to_total(channel : Channel(Folder), all_books : Counter, all_ptags : Counter)
-#   folder = channel.receive
-
-#   average = folder.check.size // 2 &+ 1
-
-#   folder.counter.data.each do |word, counts|
-#     best_tag = counts.to_a.sort_by(&.[1].-)[0][0]
-
-#     all_books.update_count(word, best_tag, 1)
-
-#     counts.each do |tag, count|
-#       count = (count - 1) // average &+ 1
-#       all_ptags.update_count(word, tag, count)
-#     end
-#   end
-# end
-
-# dirs = Dir.children(DIR)
-
-# all_books = Counter.new("_db/vpinit/lac-books.tsv")
-# all_ptags = Counter.new("_db/vpinit/lac-ptags.tsv")
-
-# workers = ENV["CRYSTAL_WORKERS"]?.try(&.to_i) || 6
-# channel = Channel(Folder).new(workers)
-
-# redo = ARGV.includes?("--redo")
-
-# dirs.each_with_index(1) do |dir_name, idx|
-#   spawn do
-#     channel.send sum_up_dir(dir_name, redo: redo, lbl: "#{idx}/#{dirs.size}")
-#   end
-
-#   if idx > workers
-#     add_to_total(channel, all_books, all_ptags)
-#   end
-# end
-
-# workers.times { add_to_total(channel, all_books, all_ptags) }
-
-# all_books.save_output(sort: true)
-# all_ptags.save_output(sort: true)

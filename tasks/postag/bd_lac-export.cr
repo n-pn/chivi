@@ -4,86 +4,79 @@ require "tabkv"
 require "../../src/_init/postag_init"
 require "../../src/cvmtl/mt_core"
 
-DIR = "_db/vpinit/bd_lac"
+module CV
+  extend self
 
-class Trie
-  property val : String? = nil
-  getter trie = Hash(Char, Trie).new { |h, c| h[c] = Trie.new }
-  forward_missing_to @trie
-end
+  SUM = "_db/vpinit/bd_lac/sum"
+  OUT = "_db/vpinit/bd_lac/out"
 
-def build_ptitle(file : String)
-  output = Trie.new
-
-  File.read_lines(file).each do |line|
-    key, val = line.split('\t', 2)
-
-    trie = output
-    key.chars.reverse_each { |c| trie = trie[c] }
-    trie.val = val
+  def add_book(file : String, books)
+    PostagInit.new(file).data.each do |term, counts|
+      books.update_count(term, counts.first_key, 1)
+    end
   end
 
-  output
-end
+  def combine_raw
+    books = PostagInit.new("#{OUT}/raw-books.tsv", reset: true)
+    # ptags = PostagInit.new("#{OUT}/all-ptags.tsv", reset: true)
 
-PTITLE = build_ptitle("var/vpdicts/ptitle.tsv")
+    Dir.glob("#{SUM}/*.tsv").each do |file|
+      add_book(file, books)
+    end
 
-def translate_person(inp : String) : String
-  chars = inp.chars
-
-  trie = PTITLE
-  name = nil
-
-  while char = chars.pop?
-    break unless trie = trie[char]?
-    next unless val = trie.val
-    name = translate(chars.join) + " " + val
+    books.save!
   end
 
-  name || translate(inp)
-end
+  # combine_raw
 
-def translate(key : String) : String
-  if val = find_defined(key)
-    return val
+  BONUS = Tabkv(Int32).new("_db/vpinit/term-bonus.tsv")
+
+  def should_keep?(term : String)
+    return true if BONUS[term]?
+
+    term =~ /^[\p{Han}a-zA-Z0-9-_.· ○]+$/
   end
 
-  hanviet = CV::MtCore.hanviet_mtl.translit(key, false)
-  CV::TextUtil.titleize(hanviet.to_s)
-end
+  def reduce_raw
+    input = PostagInit.new("#{OUT}/raw-books.tsv")
+    keep = PostagInit.new("#{OUT}/all-books.tsv", reset: true)
+    skip = PostagInit.new("#{OUT}/del-books.tsv", reset: true)
+    punc = PostagInit.new("#{OUT}/puncts.tsv", reset: true)
 
-def find_defined(key : String)
-  return unless term = CV::VpDict.regular.find(key)
-  term.val.first if term.attr.in?("nr", "nn")
-end
+    input.data.each do |term, counts|
+      if should_keep?(term)
+        keep.data[term] = counts
+      elsif term.size == 1 && counts.first_key == "w"
+        punc.data[term] = counts
+      else
+        skip.data[term] = counts
+      end
+    end
 
-##############
-
-def extract_book(name : String)
-  # min_count = File.read_lines("#{DIR}/#{name}/_all.log").size
-  min_count = 20
-
-  dname = name.split("-").last
-  vdict = CV::VpDict.load("-#{dname}", mode: -1)
-  vdict.load!(vdict.flog) if File.exists?(vdict.flog)
-
-  hints = CV::PostagInit.new("var/vpdicts/v0/novel/#{name}.tag", reset: true)
-  input = CV::PostagInit.new("#{DIR}/#{name}/_all.sum", fixed: false)
-  input.data.each do |key, counts|
-    next if counts.values.sum < min_count
-    hints.data[key] = counts
+    keep.save!(sort: true)
+    skip.save!(sort: true)
+    punc.save!(sort: true)
   end
 
-  hints.save!(sort: true)
-end
+  # reduce_raw
 
-Dir.each_child(DIR) do |dir|
-  extract_book(dir)
-end
+  def extract_top
+    input = PostagInit.new("#{OUT}/all-books.tsv")
 
-# pp! translate_person("马总")
-# pp! translate_person("李居士")
-# pp! translate_person("黄局长")
-# pp! translate_person("暮雪公主")
-# pp! translate_person("吴克明")
-# pp! translate_person("夏秘书")
+    top25 = PostagInit.new("#{OUT}/t25-books.tsv", reset: true)
+    top50 = PostagInit.new("#{OUT}/t50-books.tsv", reset: true)
+
+    input.data.each do |term, counts|
+      count = counts.values.sum &+ (BONUS[term]? || 0)
+
+      next if count < 25
+      top25.data[term] = counts
+      top50.data[term] = counts if count >= 50
+    end
+
+    top25.save!
+    top50.save!
+  end
+
+  extract_top
+end

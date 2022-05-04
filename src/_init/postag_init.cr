@@ -30,6 +30,8 @@ class CV::PostagInit
       rows.each do |entry|
         tag, count = entry.split(SEP_2, 2)
         update_count(term, tag, count.to_i)
+      rescue
+        puts [file, entry]
       end
     end
 
