@@ -127,9 +127,10 @@
     display: inline-flex;
     align-items: center;
     margin-right: 0.5rem;
-    @include fgcolor(secd);
+    line-height: 1.25rem;
+    @include fgcolor(primary, 5);
     &:hover {
-      @include fgcolor(primary, 5);
+      @include border(primary, 5, $loc: bottom);
     }
   }
 
@@ -141,6 +142,7 @@
     font-style: italic;
     @include ftsize(md);
     @include fgcolor(tert);
+
     &:hover {
       @include fgcolor(primary, 5);
     }

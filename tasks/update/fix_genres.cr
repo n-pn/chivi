@@ -21,7 +21,7 @@ module CV::FixGenres
     end
   end
 
-  def pick_genres(nvinfo : Nvinfo)
+  def pick_genres(nvinfo : Nvinfo, redo = false)
     genres = [] of String
 
     nvinfo.ysbook.try do |ysbook|
@@ -33,11 +33,13 @@ module CV::FixGenres
 
       nvseed.bgenre.split('\t') do |x|
         genres << x
-        genres << x << x if nvseed.sname == "users"
+        genres << x if nvseed.sname == "users"
       end
     end
 
-    tally = genres.reject!(&.in?("其他", "")).tally.to_a.sort_by(&.[1].-)
+    genres.reject!(&.in?(nvinfo.author.zname, nvinfo.btitle.zname, "其他", ""))
+
+    tally = genres.tally.to_a.sort_by(&.[1].-)
     keeps = tally.reject(&.[1].< 2)
 
     labels = tally.map(&.[0])
