@@ -31,9 +31,9 @@ module CV::TlRule
 
   private def string_component?(node : MtNode) : Bool
     case node.tag
-    when .pdeci?, .atsgn? then node.succ?(&.litstr?) || false
-    when .litstr?         then true
-    else                       false
+    when .pdeci?, .atsign? then node.succ?(&.litstr?) || false
+    when .litstr?          then true
+    else                        false
     end
   end
 
@@ -60,14 +60,38 @@ module CV::TlRule
 
   private def uri_component?(node : MtNode) : Bool
     case node.tag
-    when .litstr?, .pdeci?, .ndigit? then true
+    when .litstr?, .ndigit? then true
     when .puncts?
-      case node.key[0]?
-      when '%', '?', '-', '=', '~', '#', '@', '/' then true
-      else                                             false
-      end
+      {'%', '?', '-', '=', '~', '#', '@', '/'}.includes?(node.key[0]?)
     else
-      false
+      node.key !~ /[^a-zA-Z]/
+    end
+  end
+
+  def fold_atsign!(head : MtNode, tail = head)
+    key_io = String::Builder.new
+
+    while tail = tail.succ?
+      break if tail.key == " "
+      return head if tail.puncts?
+      key_io << tail.key
+    end
+
+    return head unless tail
+
+    key = key_io.to_s
+    val = TextUtil.titleize(MtCore.cv_hanviet(key, false))
+
+    key = "#{head.key}#{key}#{tail.key}"
+
+    if (prev = head.prev?) && prev.key == " "
+      head = prev
+      key = prev.key + key
+    end
+
+    MtNode.new(key, "@#{val}", PosTag::Person, dic: 2, idx: head.idx).tap do |new_node|
+      new_node.fix_prev!(head.prev?)
+      new_node.fix_succ!(tail.succ?)
     end
   end
 end

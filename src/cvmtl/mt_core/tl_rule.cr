@@ -4,11 +4,12 @@ require "./tl_rule/**"
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fix_grammar!(node : MtNode, level = 0) : Nil
+    preprocess!(node)
+
     # puts [node, node.idx, node.succ?, "level: #{level}"].colorize.blue
 
     while node = node.succ?
       case node.tag
-      when .popens?   then node = fold_nested!(node)
       when .auxils?   then node = heal_auxils!(node)
       when .uniques?  then node = fold_uniqs!(node)
       when .strings?  then node = fold_strings!(node)
@@ -31,6 +32,16 @@ module CV::TlRule
         next unless node.key.in?("与", "和")
         fold_compare(node).try { |x| node = x; next }
         node = fold_prepos_inner!(node)
+      end
+    end
+  end
+
+  def preprocess!(node : MtNode)
+    while node = node.succ?
+      case node.tag
+      when .titleop? then node = fold_ptitle!(node)
+      when .popens?  then node = fold_quoted!(node)
+      when .atsign?  then node = fold_atsign!(node)
       end
     end
   end

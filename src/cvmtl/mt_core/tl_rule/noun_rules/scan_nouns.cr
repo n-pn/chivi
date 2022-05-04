@@ -12,13 +12,6 @@ module CV::TlRule
 
     while node
       case node
-      when .popens?
-        node = fold_nested!(node)
-        if node.nouns?
-          node = fold_nouns!(node)
-        else
-          node = node.popens? ? nil : node
-        end
       when .pro_per?
         if prodem || nquant
           node = nil

@@ -10,9 +10,9 @@ struct CV::PosTag
     {"Pstop", Pos::Pstops | Pos::Puncts, ["。", "｡", "．"]},
     {"Exmark", Pos::Pstops | Pos::Puncts, ["！", "﹗", "!"]},
     {"Qsmark", Pos::Pstops | Pos::Puncts, ["？", "﹖", "?"]},
+    {"Atsign", Pos::Puncts, ["＠", "﹫", "@"]},
     {"Smcln", Pos::Pstops | Pos::Puncts, ["；", "﹔", ";"]},
     {"Tilde", Pos::Puncts, ["～", "~"]},
-    {"Atsgn", Pos::Puncts, ["＠", "﹫"]},
     # plus sign +
     {"Plsgn", Pos::Puncts, ["﹢", "＋", "+"]}, # wps
     # minus sign -

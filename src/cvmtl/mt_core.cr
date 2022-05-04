@@ -27,6 +27,7 @@ class CV::MtCore
   end
 
   def self.cv_hanviet(input : String, apply_cap = true)
+    return input unless input =~ /\p{Han}/
     hanviet_mtl.translit(input, apply_cap: apply_cap).to_s
   end
 
