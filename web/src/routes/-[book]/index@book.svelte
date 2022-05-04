@@ -38,6 +38,17 @@
       .join('\n')}
   </div>
 
+  <h3 class="sub">Từ khoá</h3>
+
+  <div class="tags">
+    {#each nvinfo.labels as label}
+      <a class="tag" href="/books?tagged={label}">
+        <SIcon name="hash" />
+        <span>{label}</span>
+      </a>
+    {/each}
+  </div>
+
   <h3 class="sub">
     <sub-label>Đánh giá nổi bật</sub-label>
     <a class="sub-link" href="/-{nvinfo.bslug}/crits">Xem tất cả</a>
@@ -110,6 +121,16 @@
     height: 2rem;
     @include flex($gap: 0.5rem);
     @include border(--bd-main, $loc: bottom);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.5rem;
+    @include fgcolor(secd);
+    &:hover {
+      @include fgcolor(primary, 5);
+    }
   }
 
   sub-label {

@@ -30,6 +30,7 @@ struct CV::NvinfoView
 
         jb.field "snames", @data.snames
         jb.field "bintro", @data.bintro
+        jb.field "labels", @data.vlabels
 
         jb.field "author_zh", @data.author.zname
         jb.field "btitle_zh", @data.btitle.zname

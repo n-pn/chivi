@@ -20,10 +20,7 @@ declare namespace CV {
     bintro: string
     bcover: string
     genres: string[]
-
-    scover: string
-    zintro: string
-    zgenres: string[]
+    labels: string[]
 
     status: number
     mftime: number

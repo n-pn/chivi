@@ -4,7 +4,7 @@
     ['Github', 'https://github.com/np-nam/chivi'],
     ['Facebook', 'https://www.facebook.com/chivi.fb/'],
   ]
-  declare var gtag: any
+  declare var gtag: Function | undefined
 </script>
 
 <script lang="ts">

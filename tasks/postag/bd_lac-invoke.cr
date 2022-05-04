@@ -72,9 +72,9 @@ class CV::BdLacInvoke
   end
 
   def calc_max_size(chap_count : Int32)
+    return chap_count if chap_count < 256
     return 384 if chap_count > 768
-    return 256 if chap_count < 512
-    chap_count // 2
+    chap_count < 512 ? 256 : chap_count // 2
   end
 
   def should_parse?(chidx : Int32)
@@ -123,7 +123,7 @@ class CV::BdLacInvoke
       infos = Nvinfo.query.where("id IN (#{query})").sort_by("weight").to_set
       infos.concat Nvinfo.query.sort_by("weight").limit(20000)
     else
-      infos = Nvinfo.query.where("bhash in ?", books).to_set
+      infos = Nvinfo.query.where { bslug.in?(books) }.to_set
     end
 
     workers = infos.size if workers > infos.size
@@ -133,7 +133,7 @@ class CV::BdLacInvoke
       channel.receive if idx > workers
 
       spawn do
-        new(info, parse_all: idx < 1000).parse!(lbl: "#{idx}/#{infos.size}")
+        new(info).parse!(lbl: "#{idx}/#{infos.size}")
       rescue err
         Log.error { err.inspect_with_backtrace }
       ensure

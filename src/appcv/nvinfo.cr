@@ -116,8 +116,8 @@ class CV::Nvinfo
     input ? where("igenres @> ?", GenreMap.map_int(input.split('+'))) : self
   end
 
-  scope :filter_labels do |input|
-    input ? where("labels @> ?", input) : self
+  scope :filter_tagged do |input|
+    input ? where("vlabels @> ?", input.split("+").map(&.strip)) : self
   end
 
   scope :filter_origin do |input|

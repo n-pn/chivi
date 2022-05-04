@@ -10,6 +10,8 @@ class CV::CountDir
   getter batch : PostagInit
   getter check = Set(String).new
 
+  @has_error = false
+
   def initialize(@bslug : String, @redo = false, @purge = false)
     @raw_dir = File.join(RAW, @bslug)
     @tmp_dir = File.join(TMP, @bslug)
@@ -60,12 +62,14 @@ class CV::CountDir
     if @purge
       File.delete(raw_file)
       File.delete(tmp_file) if File.exists?(tmp_file)
+      @has_error = true
     end
   end
 
   def save!
     @batch.save!(sort: true)
     File.write(@log_file, @check.to_a.join("\n"))
+    File.append("_db/vpinit/bd_lac/error.log", @bslug) if @has_error
   end
 
   ##########
@@ -77,7 +81,10 @@ class CV::CountDir
     workers = ENV["CRYSTAL_WORKERS"]?.try(&.to_i) || 6
     channel = Channel(Nil).new(workers)
 
-    dirs = Dir.children(RAW)
+    dirs = ARGV.reject(&.starts_with?("-"))
+    dirs = Dir.children(RAW) if dirs.empty?
+    workers = dirs.size if workers > dirs.size
+
     dirs.each_with_index(1) do |bslug, idx|
       channel.receive if idx > workers
 

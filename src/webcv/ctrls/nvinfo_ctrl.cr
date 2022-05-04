@@ -11,6 +11,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .filter_author(params["author"]?)
         .filter_zseeds(params["sname"]?)
         .filter_genres(params["genre"]?)
+        .filter_tagged(params["tagged"]?)
         .filter_origin(params["origin"]?)
         .filter_cvuser(params["uname"]?, params["bmark"]?)
 
