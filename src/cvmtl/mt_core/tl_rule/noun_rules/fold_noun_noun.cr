@@ -35,6 +35,7 @@ module CV::TlRule
     while succ
       # puts [prev, succ, "noun_can_combine"]
       case succ
+      when .v_shi?, .v_you? then return true
       when .adjts?
         return false unless (tail = succ.succ?) && tail.ude1?
         return tail.succ? { |x| x.ends? || x.verbs? } || false
