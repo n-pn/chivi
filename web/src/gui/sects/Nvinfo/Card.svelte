@@ -8,7 +8,7 @@
 
 <a href="/-{nvinfo.bslug}" class="nvinfo">
   <div class="cover">
-    <BCover bcover={nvinfo.bcover} scover={nvinfo.scover} />
+    <BCover bcover={nvinfo.bcover} />
   </div>
 
   <div class="infos">

@@ -64,7 +64,7 @@
   </div>
 
   <div class="cover">
-    <BCover bcover={nvinfo.bcover} scover={nvinfo.scover} />
+    <BCover bcover={nvinfo.bcover} />
   </div>
 
   <div class="line">
