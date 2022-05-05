@@ -137,6 +137,7 @@ struct CV::PosTag
     when 'd' then parse_adverb(key)
     when 'm' then parse_number(tag, key)
     when 'q' then parse_quanti(key)
+    when 'k' then parse_suffix(tag)
     when 'r' then parse_pronoun(tag, key)
     when '!' then parse_special(key)
     when 't' then Time
