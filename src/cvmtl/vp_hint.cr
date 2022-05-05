@@ -5,11 +5,11 @@ class CV::VpHint
   class_getter trungviet : self { new("#{DIR}/lookup/trungviet", 128) }
   class_getter trich_dan : self { new("#{DIR}/lookup/trich_dan", 128) }
 
+  class_getter seed_vals : self { new("#{DIR}/phrase/legacy", 256) }
   class_getter user_vals : self { new("#{DIR}/phrase/cvuser", 256) }
-  class_getter prev_vals : self { new("#{DIR}/phrase/legary", 256) }
 
+  class_getter seed_tags : self { new("#{DIR}/postag/bd_lac", 256) }
   class_getter user_tags : self { new("#{DIR}/postag/cvuser", 256) }
-  class_getter blac_tags : self { new("#{DIR}/postag/bd_lac", 256) }
 
   ##########
 

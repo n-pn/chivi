@@ -10,9 +10,9 @@ module CV
   SUM = "_db/vpinit/bd_lac/sum"
   OUT = "_db/vpinit/bd_lac/out"
 
-  def add_book(file : String, books)
+  def add_book(file : String, target)
     PostagInit.new(file).data.each do |term, counts|
-      books.update_count(term, counts.first_key, 1)
+      target.update_count(term, counts.first_key, 1)
     end
   end
 
@@ -63,8 +63,8 @@ module CV
   def extract_top
     input = PostagInit.new("#{OUT}/all-books.tsv")
 
-    top25 = PostagInit.new("#{OUT}/t25-books.tsv", reset: true)
-    top50 = PostagInit.new("#{OUT}/t50-books.tsv", reset: true)
+    top25 = PostagInit.new("#{OUT}/top25-raw.tsv", reset: true)
+    top50 = PostagInit.new("#{OUT}/top50-raw.tsv", reset: true)
 
     input.data.each do |term, counts|
       count = counts.values.sum &+ (BONUS[term]? || 0)
@@ -78,5 +78,57 @@ module CV
     top50.save!
   end
 
-  extract_top
+  # extract_top
+
+  def export_top25
+    picked = File.read_lines("#{OUT}/top25-raw.tsv").map(&.split('\t', 2).first).to_set
+
+    target = PostagInit.new("#{OUT}/top25-all.tsv", reset: true)
+
+    Dir.glob("#{SUM}/*.tsv").each do |file|
+      reduce_value = File.read_lines(file.sub(".tsv", ".log")).size
+      reduce_value = reduce_value // 10 &+ 1
+
+      PostagInit.new(file).data.each do |term, counts|
+        next unless picked.includes?(term)
+
+        minimal = counts.first_value // 10
+        minimal = 10 if minimal > 10
+
+        counts.each do |tag, count|
+          next if count < minimal
+          target.update_count(term, tag, count // reduce_value + 1)
+        end
+      end
+    rescue err
+      puts err
+    end
+
+    target.save!(sort: true)
+  end
+
+  def export_top50
+    picked = File.read_lines("#{OUT}/top50-raw.tsv").map(&.split('\t', 2).first).to_set
+
+    target = PostagInit.new("#{OUT}/top50-all.tsv", reset: true)
+
+    Dir.glob("#{SUM}/*.tsv").each do |file|
+      reduce_value = File.read_lines(file.sub(".tsv", ".log")).size
+      reduce_value = reduce_value // 2 &+ 1
+
+      PostagInit.new(file).data.each do |term, counts|
+        next unless picked.includes?(term)
+
+        counts.each do |tag, count|
+          target.update_count(term, tag, count // reduce_value + 1)
+        end
+      end
+    rescue err
+      puts err
+    end
+
+    target.save!(sort: true)
+  end
+
+  export_top25
 end

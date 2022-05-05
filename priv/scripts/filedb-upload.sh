@@ -7,7 +7,8 @@ SSH=nipin@ssh.chivi.app:srv/chivi
 if [[ $* == "all" || $* == *dict* ]]
 then
   echo upload dicts!
-  rsync -azi --no-p "var/vpdicts/v2" "$SSH/var/vpdicts"
+  rsync -azi --no-p "var/vpdicts/v1/basic/fixture.tsv" "$SSH/var/vpdicts/v1/basic"
+  rsync -azi --no-p "var/vpdicts/v1/basic/essence.tsv" "$SSH/var/vpdicts/v1/basic"
 fi
 
 ## upload parsed seed data

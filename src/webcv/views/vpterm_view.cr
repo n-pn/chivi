@@ -83,6 +83,9 @@ struct CV::VpTermView
       b_term, u_term = nil, nil
     end
 
+    VpHint.seed_vals.find(word).try { |x| vals.concat(x) }
+    VpHint.seed_tags.find(word).try { |x| tags.concat(x) }
+
     VpHint.user_vals.find(word).try { |x| vals.concat(x) }
     VpHint.user_tags.find(word).try { |x| tags.concat(x) }
 
