@@ -127,7 +127,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     params["author_vi"]?.try do |author_vi|
       author_vi = TextUtil.fix_spaces(author_vi).strip
       unless author_vi.empty?
-        BookUtil.vi_authors.append!("#{author_zh}  #{btitle_zh}", author_vi)
+        BookUtil.vi_authors.append!(author_zh, author_vi)
         author.tap(&.set_vname(author_vi)).save!
       end
     end
@@ -136,7 +136,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     params["btitle_vi"]?.try do |btitle_vi|
       btitle_vi = TextUtil.fix_spaces(btitle_vi).strip
       unless btitle_vi.empty?
-        BookUtil.vi_btitles.append!("#{btitle_zh}  #{author_zh}", btitle_vi)
+        BookUtil.vi_btitles.append!(btitle_zh, btitle_vi)
         btitle.tap(&.set_vname(btitle_vi)).save!
       end
     end
