@@ -74,7 +74,7 @@
 
 {#if $navigating}<Loader />{/if}
 
-<div class="app tm-{wtheme}" class:kbd-hint={kbd_hint}>
+<div class="app tm-{wtheme}" class:kbd-hint={kbd_hint} class:_shift={$toleft}>
   <Topbar />
   <Pledge />
 
@@ -82,7 +82,7 @@
   <Dboard bind:actived={$popups.dboard} />
   <svelte:component this={usercp} bind:actived={$popups.usercp} />
 
-  <main class:_shift={$toleft}>
+  <main>
     <div class="vessel">
       <slot />
     </div>
