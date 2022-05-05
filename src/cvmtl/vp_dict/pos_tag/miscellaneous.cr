@@ -31,13 +31,51 @@ struct CV::PosTag
     {"s-v", "VerbClause", Pos::Contws},
     # subject + adjt clause
     {"s-a", "AdjtClause", Pos::Contws},
-    # cụm định ngữ/definition
+    # complex phrase ac as verb
+    {"~vp", "VerbPhrase", Pos::Verbs | Pos::Contws},
+    # complex phrase act as adjective
+    {"~ap", "AdjtPhrase", Pos::Verbs | Pos::Contws},
+    # complex phrase act as noun
+    {"~np", "NounPhrase", Pos::Nouns | Pos::Contws},
+    # definition phrase
     {"~dp", "DefnPhrase", Pos::Contws},
-    # cụm giới từ
+    # prepos phrase
     {"~pp", "PrepPhrase", Pos::Contws},
   }
 
   {% for type in MISCS %}
     {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
   {% end %}
+
+  # ameba:disable Metrics/CyclomaticComplexity
+  def self.parse_miscs(tag : String) : self
+    case tag
+    when "j"  then Noun
+    when "i"  then Idiom
+    when "l"  then Idiom
+    when "z"  then Aform
+    when "x"  then Litstr
+    when "xl" then Urlstr
+    when "xx" then Fixstr
+    when "c"  then Conjunct
+    when "cc" then Concoord
+    when "e"  then Exclam
+    when "y"  then Mopart
+    when "o"  then Onomat
+    else           Unkn
+    end
+  end
+
+  def self.parse_extra(tag : String) : self
+    case tag
+    when "~sv" then VerbClause
+    when "~sa" then AdjtClause
+    when "~np" then NounPhrase
+    when "~vp" then VerbPhrase
+    when "~ap" then AdjtPhrase
+    when "~dp" then DefnPhrase
+    when "~pp" then PrepPhrase
+    else            Unkn
+    end
+  end
 end

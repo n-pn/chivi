@@ -140,34 +140,12 @@ struct CV::PosTag
     when 'k' then parse_suffix(tag)
     when 'r' then parse_pronoun(tag, key)
     when '!' then parse_special(key)
+    when '~' then parse_extra(tag)
     when 't' then Time
+    when 'f' then Place
     when 'b' then Modifier
-    else          parse_other(tag, key)
-    end
-  end
-
-  # ameba:disable Metrics/CyclomaticComplexity
-  def self.parse_other(tag : String, key : String = "") : self
-    case tag
-    when "j"   then Noun
-    when "i"   then Idiom
-    when "l"   then Idiom
-    when "z"   then Aform
-    when "s"   then Space
-    when "f"   then Place
-    when "x"   then Litstr
-    when "xl"  then Urlstr
-    when "xx"  then Fixstr
-    when "c"   then Conjunct
-    when "cc"  then Concoord
-    when "e"   then Exclam
-    when "y"   then Mopart
-    when "o"   then Onomat
-    when "s-v" then VerbClause
-    when "s-a" then AdjtClause
-    when "~dp" then DefnPhrase
-    when "~pp" then PrepPhrase
-    else            Unkn
+    when 's' then Space
+    else          parse_miscs(tag)
     end
   end
 end

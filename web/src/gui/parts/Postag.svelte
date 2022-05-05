@@ -59,17 +59,19 @@
     'kv': 'Hậu tố động từ',
     'k': 'Hậu tố chưa phân loại',
 
-    'x': 'Chữ latin',
+    'x': 'Ký tự khác',
+    'xl': 'Liên kết web',
     'xx': 'Chuỗi ký tự',
     'w': 'Dấu câu',
 
     '!': 'Từ đặc biệt',
-    'np': 'Cụm danh từ',
-    'vp': 'Cụm động từ',
-    'ap': 'Cụm tính từ',
-    'dp': 'Cụm định ngữ',
-    'sv': 'Cụm chủ + vị (động)',
-    'sa': 'Cụm chủ + vị (tính)',
+    '~ap': 'Cụm tính từ',
+    '~vp': 'Cụm động từ',
+    '~np': 'Cụm danh từ',
+    '~dp': 'Cụm phó từ',
+    '~pp': 'Cụm giới từ',
+    '~sv': 'Cụm chủ + vị (động)',
+    '~sa': 'Cụm chủ + vị (tính)',
   }
 
   // prettier-ignore

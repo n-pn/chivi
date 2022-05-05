@@ -19,16 +19,12 @@ struct CV::PosTag
 
     # verb + object phrase
     {"vo", "VerbObject", Pos::Verbs | Pos::Contws},
-
-    # verb phrase
-    {"vp", "VerbPhrase", Pos::Verbs | Pos::Contws},
   }
 
   {% for type in VERBS %}
     {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
   {% end %}
 
-  # ameba:disable Metrics/CyclomaticComplexity
   def self.parse_verb(tag : String, key : String)
     case tag[1]?
     when nil then Verb
@@ -39,7 +35,6 @@ struct CV::PosTag
     when 'i' then Vintr
     when 'l' then VerbObject
     when 'o' then VerbObject
-    when 'p' then VerbPhrase
     when 'm' then parse_vmodal(key)
     else          Verb
     end

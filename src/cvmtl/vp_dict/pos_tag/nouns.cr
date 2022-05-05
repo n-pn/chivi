@@ -27,9 +27,6 @@ struct CV::PosTag
     # attributes
     {"na", "Nattr", Pos::Nouns | Pos::Contws},
 
-    # noun phrase
-    {"np", "NounPhrase", Pos::Nouns | Pos::Contws},
-
   }
 
   NOUNS_2 = {
@@ -73,7 +70,6 @@ struct CV::PosTag
     when 'n' then Naffil
     when 's' then Naffil
     when 't' then Naffil
-    when 'p' then NounPhrase
     else          Noun
     end
   end
