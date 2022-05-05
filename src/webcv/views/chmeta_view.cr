@@ -20,16 +20,14 @@ struct CV::ChmetaView
   end
 
   def prev_url
-    return if @chap.chidx == 1
-
     return chap_url(@chap, @cpart - 1) if @cpart > 0
+    return if @chap.chidx == 1
     @seed.chinfo(@chap.chidx - 2).try { |prev| chap_url(prev, -1) }
   end
 
   def next_url
-    return if @chap.chidx == @seed.chap_count
-
     return chap_url(@chap, @cpart + 1) if @cpart < @chap.stats.parts - 1
+    return if @chap.chidx == @seed.chap_count
     @seed.chinfo(@chap.chidx).try { |succ| chap_url(succ, 0) }
   end
 
