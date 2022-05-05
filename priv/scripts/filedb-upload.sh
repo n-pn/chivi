@@ -9,6 +9,8 @@ then
   echo upload dicts!
   rsync -azi --no-p "var/vpdicts/v1/basic/fixture.tsv" "$SSH/var/vpdicts/v1/basic"
   rsync -azi --no-p "var/vpdicts/v1/basic/essence.tsv" "$SSH/var/vpdicts/v1/basic"
+
+  rsync -azi --no-p --delete "var/vphints/postag/bd_lac" "$SSH/var/vphints/postag"
 fi
 
 ## upload parsed seed data

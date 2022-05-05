@@ -107,9 +107,22 @@
   export let dname = 'combine'
 
   $: val_hints = gen_val_hints(vpterm.init.h_vals || [], vpterm.val.trim())
+  $: val_limit = gen_val_limit(val_hints)
 
   function gen_val_hints(hints: Array<string>, cval: string) {
     return hints.filter((x, i) => i == 0 || x != cval)
+  }
+
+  function gen_val_limit(val_hints: Array<string>) {
+    const max_chars = 30
+
+    let char_count = 0
+    for (let i = 0; i < val_hints.length; i++) {
+      char_count += val_hints[i].length
+      if (char_count > max_chars) return i + 1
+    }
+
+    return val_hints.length
   }
 
   $: tag_hints = gent_tag_hints(dname, vpterm)
@@ -123,6 +136,7 @@
   // show_mode = 1 => show vals, hide tags
   // show_mode = 2 => show tags, hide vals
   var show_mode = 0
+  $: if (vpterm) show_mode = 0
 </script>
 
 <div hidden={true}>
@@ -138,7 +152,8 @@
 
 <div class="hints">
   {#each val_hints as val, idx (val)}
-    {@const _hide = show_mode == 0 ? idx > 2 : show_mode == 2 ? idx > 0 : false}
+    {@const _hide =
+      show_mode == 0 ? idx > val_limit : show_mode == 2 ? idx > 0 : false}
     <button
       class="hint"
       class:_base={val == vpterm.init.b_val}
@@ -148,7 +163,7 @@
       on:click={() => (vpterm.val = val)}>{val}</button>
   {/each}
 
-  {#if val_hints.length > 2 || show_mode == 2}
+  {#if val_hints.length > val_limit || show_mode == 2}
     <button
       class="hint _icon"
       on:click={() => (show_mode = show_mode == 1 ? 0 : 1)}
@@ -159,7 +174,13 @@
   <div class="right">
     {#each tag_hints as tag, idx (tag)}
       {@const _hide =
-        show_mode == 0 ? idx > 1 : show_mode == 1 ? idx > 0 : false}
+        show_mode == 0
+          ? idx > 1
+          : show_mode == 2
+          ? false
+          : val_hints.length == val_limit
+          ? idx > 0
+          : true}
       <button
         class="hint _ptag"
         class:_base={tag == vpterm.init.b_ptag}
@@ -190,6 +211,7 @@
 
   .right {
     margin-left: auto;
+    padding-left: 0.5rem;
     @include flex();
   }
 
@@ -198,13 +220,13 @@
     // display: inline-flex;
     // align-items: center;
     cursor: pointer;
-    padding: 0.25rem;
-    line-height: 1.5rem;
+    padding: 0 .2rem;
+    line-height: 2rem;
     background-color: inherit;
     @include fgcolor(tert);
 
     @include bdradi;
-    @include clamp($width: null);
+    @include clamp($width: null, $style: '-');
 
     &._ptag {
       font-size: rem(13px);
@@ -227,7 +249,7 @@
     }
 
     :global(svg) {
-      margin-top: -0.125rem;
+      margin-top: -0.2rem;
     }
   }
 </style>
