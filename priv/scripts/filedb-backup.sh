@@ -7,6 +7,7 @@ SSH=nipin@ssh.chivi.app:srv/chivi
 if [[ $1 == "all" || $* == *user* ]]
 then
   echo backup users data!
+  rsync -aiz --no-p --delete "$SSH/var/_common" "var"
   rsync -aiz --no-p --delete "$SSH/var/pg_data/" "var/pg_data/"
   rsync -aiz --no-p --delete "$SSH/var/tlspecs/users" "var/tlspecs"
 fi

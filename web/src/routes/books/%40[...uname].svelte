@@ -2,9 +2,7 @@
   import { status_types, status_names } from '$lib/constants'
   import { topbar } from '$lib/stores'
   export async function load({ url, params, fetch }) {
-    const uname = params.uname
-
-    const bmark = params.bmark || 'reading'
+    const [uname, bmark = 'reading'] = params.uname.split('/')
     const page = +url.searchParams.get('pg') || 1
 
     const api_url = `/api/books?pg=${page}&lm=24&order=update&uname=${uname}&bmark=${bmark}`
