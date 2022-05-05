@@ -115,6 +115,7 @@ struct CV::VpTermView
     tags << term.attr unless term.attr.empty?
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   private def add_hints_by_ctx(word : String, vals : Hints, tags : Hints)
     cvmt = @cvmtl.cv_plain(word, cap_first: false)
 
@@ -140,8 +141,16 @@ struct CV::VpTermView
       ftag = tags.first? || ""
     end
 
-    if is_human || (on_book && ftag.in?("nr", "nn", "nz"))
-      fval = TlUtil.translate(vals.first, ftag)
+    if is_human || ftag == "nr" || on_book
+      fval = TlUtil.translate(word, "nr")
+    end
+
+    if on_book || ftag == "nn"
+      vals << TlUtil.translate(word, "nn")
+    end
+
+    if ftag == "nz"
+      vals << TlUtil.translate(word, "nz")
     end
 
     {fval, ftag}

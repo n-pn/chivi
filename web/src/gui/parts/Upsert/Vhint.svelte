@@ -98,17 +98,31 @@
 </script>
 
 <script lang="ts">
+  import { hint } from './_shared'
+
+  import { SIcon } from '$gui'
   import type { VpTerm } from '$lib/vp_term'
 
   export let vpterm: VpTerm
   export let dname = 'combine'
 
-  $: tag_hints = gen_hint(dname, vpterm)
+  $: val_hints = gen_val_hints(vpterm.init.h_vals || [], vpterm.val.trim())
 
-  function gen_hint(dname: string, vpterm: VpTerm): string[] {
+  function gen_val_hints(hints: Array<string>, cval: string) {
+    return hints.filter((x, i) => i == 0 || x != cval)
+  }
+
+  $: tag_hints = gent_tag_hints(dname, vpterm)
+
+  function gent_tag_hints(dname: string, vpterm: VpTerm): string[] {
     if (dname == 'hanviet' || dname == 'tradsim') return []
     return vpterm.h_ptags(similar_tags(vpterm.ptag))
   }
+
+  // show_mode = 0 => show minimal
+  // show_mode = 1 => show vals, hide tags
+  // show_mode = 2 => show tags, hide vals
+  var show_mode = 0
 </script>
 
 <div hidden={true}>
@@ -123,28 +137,45 @@
 </div>
 
 <div class="hints">
-  {#each vpterm.init.h_vals || [] as hint, idx (hint)}
-    {#if idx == 0 || hint != vpterm.val.trim()}
-      <button
-        class="hint"
-        class:_base={hint == vpterm.init.b_val}
-        class:_priv={hint == vpterm.init.u_val}
-        data-kbd={v_kbd[idx]}
-        on:click={() => (vpterm.val = hint)}>{hint}</button>
-    {/if}
+  {#each val_hints as val, idx (val)}
+    {@const _hide = show_mode == 0 ? idx > 2 : show_mode == 2 ? idx > 0 : false}
+    <button
+      class="hint"
+      class:_base={val == vpterm.init.b_val}
+      class:_priv={val == vpterm.init.u_val}
+      class:_hide
+      data-kbd={v_kbd[idx]}
+      on:click={() => (vpterm.val = val)}>{val}</button>
   {/each}
+
+  {#if val_hints.length > 2 || show_mode == 2}
+    <button
+      class="hint _icon"
+      on:click={() => (show_mode = show_mode == 1 ? 0 : 1)}
+      use:hint={'Ẩn/hiện các gợi ý nghĩa cụm từ'}
+      ><SIcon name="chevron-{show_mode == 1 ? 'left' : 'right'}" /></button>
+  {/if}
 
   <div class="right">
     {#each tag_hints as tag, idx (tag)}
-      {#if tag != vpterm.ptag}
-        <button
-          class="hint _ptag"
-          class:_base={tag == vpterm.init.b_ptag}
-          class:_priv={tag == vpterm.init.u_ptag}
-          data-kbd={p_kbd[idx]}
-          on:click={() => (vpterm.ptag = tag)}>{ptnames[tag] || tag}</button>
-      {/if}
+      {@const _hide =
+        show_mode == 0 ? idx > 1 : show_mode == 1 ? idx > 0 : false}
+      <button
+        class="hint _ptag"
+        class:_base={tag == vpterm.init.b_ptag}
+        class:_priv={tag == vpterm.init.u_ptag}
+        class:_hide
+        data-kbd={p_kbd[idx]}
+        on:click={() => (vpterm.ptag = tag)}>{ptnames[tag] || tag}</button>
     {/each}
+
+    {#if tag_hints.length > 2 || show_mode == 1}
+      <button
+        class="hint _icon"
+        on:click={() => (show_mode = show_mode == 2 ? 0 : 2)}
+        use:hint={'Ẩn/hiện các gợi ý thể loại'}
+        ><SIcon name="chevron-{show_mode == 2 ? 'left' : 'right'}" /></button>
+    {/if}
   </div>
 </div>
 
@@ -153,18 +184,19 @@
     padding: 0 0.5rem;
     height: 2rem;
 
-    @include flex($gap: 0.125rem);
+    @include flex();
     @include ftsize(sm);
   }
 
   .right {
     margin-left: auto;
     @include flex();
-    max-width: 30%;
   }
 
   // prettier-ignore
   .hint {
+    // display: inline-flex;
+    // align-items: center;
     cursor: pointer;
     padding: 0.25rem;
     line-height: 1.5rem;
@@ -175,7 +207,6 @@
     @include clamp($width: null);
 
     &._ptag {
-
       font-size: rem(13px);
     }
 
@@ -184,5 +215,19 @@
     &._base { font-style: italic; }
 
     @include hover { @include fgcolor(primary, 5); }
+
+    &._hide {
+      display: none;
+    }
+
+    &._icon {
+      margin-left: -.25rem;
+      margin-right: -.25rem;
+      @include fgcolor(mute);
+    }
+
+    :global(svg) {
+      margin-top: -0.125rem;
+    }
   }
 </style>

@@ -60,11 +60,9 @@ export class VpTerm {
   h_ptags(similar_tags: string[] = []) {
     const list = [this.init.b_ptag, this.init.u_ptag]
     list.push(...(this.init.h_tags || []))
-    list.push(...similar_tags)
 
-    return list
-      .filter((x, i, s) => x && x != this.ptag && s.indexOf(x) == i)
-      .slice(0, 2)
+    if (list.length < 3) list.push(...similar_tags)
+    return list.filter((x, i, s) => x && x != this.ptag && s.indexOf(x) == i)
   }
 
   get o_val() {
