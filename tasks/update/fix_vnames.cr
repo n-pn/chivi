@@ -1,5 +1,7 @@
 require "./../shared/bootstrap"
 
+CV::VpDict.regular.set("三国", ["Tam Quốc"], "nn")
+
 def fix_all_entries
   books = CV::Nvinfo.query.order_by(id: :desc).to_a
 

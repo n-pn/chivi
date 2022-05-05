@@ -20,7 +20,7 @@ then
   # rsync -azi --no-p "var/nvinfos/autos" "$SSH/var/nvinfos"
   # rsync -azi --no-p "priv/static/covers/" "$SSH/priv/static/covers/"
 
-  rsync -azi --no-p "var/_common" "$SSH/var"
+  # rsync -azi --no-p "var/_common" "$SSH/var"
 
   rsync -azi --no-p "var/vpterms" "$SSH/var"
   rsync -azi --no-p "var/qttexts" "$SSH/var"
@@ -40,7 +40,7 @@ then
   # rsync -azi --no-p "var/vpdicts/v1/basic/hanviet.tsv" "$SSH/var/vpdicts/v1/basic"
   # rsync -azi --no-p "var/vpdicts/v1/basic/hanviet.tab" "$SSH/var/vpdicts/v1/basic"
 
-  rsync -azi --no-p "var/_common" "$SSH/var"
+  # rsync -azi --no-p "var/_common" "$SSH/var"
   rsync -azi --no-p "var/vphints" "$SSH/var"
   # rsync -azi --no-p "var/zhinfos" "$SSH/var"
 
