@@ -53,8 +53,12 @@ class CV::NvchapCtrl < CV::BaseCtrl
     min_privi = nvseed.zseed == 0 ? -1 : (stype < 3 || chinfo.stats.chars > 0 ? 0 : 1)
     min_privi &+= chinfo.chidx > chidx_max ? 1 : 0
 
-    mode = stype < 3 ? 0 : (redo ? 2 : 1)
-    lines = _cvuser.privi < min_privi ? [] of String : nvseed.chtext(chinfo, cpart, mode: mode)
+    if _cvuser.privi < min_privi
+      lines = [] of String
+    else
+      mode = stype < 3 ? 0 : (redo ? 2 : 1)
+      lines = nvseed.chtext(chinfo, cpart, mode: mode, uname: _cvuser.uname)
+    end
 
     {lines, min_privi, chidx_max}
   end
