@@ -152,8 +152,8 @@ class CV::MtNode
     child.ends_with?(key)
   end
 
-  def key_in?(key)
-    @key.in?(key)
+  def key_in?(*keys : String)
+    keys.includes?(@key)
   end
 
   def key?(key : String)

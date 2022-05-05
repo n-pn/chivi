@@ -20,6 +20,8 @@ module CV::TlRule
         succ = fold_adverbs!(succ) if succ.adverbs?
         return fold_verbs!(succ, node.set!("sẽ"))
       end
+    when "与", "和"
+      fold_compare(node) || fold_prepos_inner!(node)
     when "同", "跟"
       if fold = fold_compare(node, succ)
         node.val = fold.dic == 0 ? "giống" : ""

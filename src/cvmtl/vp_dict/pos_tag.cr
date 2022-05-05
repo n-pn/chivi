@@ -31,7 +31,7 @@ struct CV::PosTag
 
     Auxil; Punct
 
-    Unique; AdjHao; VShang; VXia; VShi; VYou
+    Special; AdjHao; VShang; VXia; VShi; VYou
 
     {% for type in PUNCTS %}
       {{ type[0].id }}
@@ -45,9 +45,9 @@ struct CV::PosTag
       {% begin %}
       case self
       when None then "-"
-      when Pronoun then "r"
       when ProPer then "rr"
-      when Unique then "!"
+      when Pronoun then "r"
+      when Special then "!"
       {% for type in TYPES %}
         when {{ type[1].id }} then {{ type[0] }}
       {% end %}
@@ -76,7 +76,7 @@ struct CV::PosTag
     when .preposes? then "p"
     when .pro_dems? then "rz"
     when .pro_ints? then "ry"
-    when .uniques?  then "!"
+    when .specials? then "!"
     when .numbers?  then "m"
     when .quantis?  then "q"
     when .nquants?  then "mq"
@@ -138,7 +138,7 @@ struct CV::PosTag
     when 'm' then parse_number(tag, key)
     when 'q' then parse_quanti(key)
     when 'r' then parse_pronoun(tag, key)
-    when '!' then parse_unique(key)
+    when '!' then parse_special(key)
     when 't' then Time
     when 'b' then Modifier
     else          parse_other(tag, key)

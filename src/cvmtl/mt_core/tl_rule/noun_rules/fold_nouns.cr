@@ -54,7 +54,7 @@ module CV::TlRule
         break unless succ.key == "自己"
         fold_noun_noun!(noun, succ, mode: mode).try { |x| return x } || break
         # noun = fold!(noun, succ, noun.tag, dic: 7, flip: true)
-      when .uniques?
+      when .specials?
         case succ.key
         when "第"
           succ = fold_第!(succ)

@@ -9,19 +9,6 @@ module CV::TlRule
     when .v_shang?, .v_xia?
       # puts [node, succ, "fold_noun_space"]
       fold_verbs!(node)
-    when .adj_hao?
-      return node unless succ
-
-      case succ
-      when .adjts?, .verbs?, .vmodals?
-        node.set!(succ.verbs? ? "dễ" : "thật", PosTag::Adverb)
-        fold_adverbs!(node, succ)
-      when .ule?, .nouns?
-        node.tag == PosTag::Adjt
-        fold_adjts!(node)
-      else
-        node
-      end
     else
       fold_uniqs_by_key!(node, succ)
     end

@@ -14,9 +14,7 @@ struct CV::PosTag
     Numbers; Quantis; Nquants; Numeric
 
     Auxils; Preposes
-    Strings; Uniques
-
-    Various
+    Strings; Specials
   end
 
   delegate nouns?, to: @pos
@@ -49,5 +47,5 @@ struct CV::PosTag
 
   delegate contws?, to: @pos
   delegate funcws?, to: @pos
-  delegate uniques?, to: @pos
+  delegate specials?, to: @pos
 end

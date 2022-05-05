@@ -49,23 +49,9 @@ module CV::TlRule
 
   def is_concoord?(node : MtNode, check_prepos = false)
     case node
-    when .penum?
-      true
-    when .concoord?
-      return true unless node.key == "和" || node.key == "跟"
-      if fold = fold_compare(node)
-        node.val = fold.dic == 0 ? "giống" : ""
-        return false
-      end
-
-      if check_prepos && he2_is_prepos?(node)
-        false
-      else
-        node.val = "và" if node.key == "和"
-        true
-      end
+    when .penum?, .concoord? then true
     else
-      node.key.in?({"但", "又", "或", "或是"})
+      {"但", "又", "或", "或是"}.includes?(node.key)
     end
   end
 
@@ -81,7 +67,7 @@ module CV::TlRule
 
   def he2_is_prepos?(node : MtNode, succ = node.succ?) : Bool
     return false unless succ && (verb = find_verb_after_for_prepos(succ))
-    return false if verb.uniques?
+    return false if verb.specials?
 
     # TODO: add more white list?
     # puts [verb, node]

@@ -52,7 +52,7 @@ module CV::TlRule
         verb = fold!(verb, succ, PosTag::Verb, dic: 4)
       when .verbs?
         verb = fold_verb_verb!(verb, succ)
-      when .adjts?, .preposes?, .uniques?, .space?
+      when .adjts?, .preposes?, .specials?, .space?
         break unless flag == 0
         fold_verb_compl!(verb, succ).try { |x| verb = x } || break
       when .adv_bu?

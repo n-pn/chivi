@@ -40,7 +40,7 @@ module CV::TlRule
           nquant, node = node, node.succ?
           next
         end
-      when .uniques?
+      when .specials?
         node = fold_uniqs!(node)
       when .adverbs?
         node = fold_adverbs!(node)
