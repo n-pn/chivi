@@ -51,7 +51,7 @@ module CV::TlRule
     when .v_shang? then fix_上下(node, MAP_上)
     when .v_xia?   then fix_上下(node, MAP_下)
     when .key_in?("和", "跟")
-      if node.prev?(&.adverbs?) || concoord_is_prepos?(node.succ?)
+      if node.prev? { |x| x.ends? || x.adverb? } || concoord_is_prepos?(node.succ?)
         node.set!(PosTag::Prepos)
       else
         val = node.key == "和" ? "và" : node.val
