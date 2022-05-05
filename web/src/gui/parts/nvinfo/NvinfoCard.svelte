@@ -92,6 +92,7 @@
 
     .book:hover & {
       @include fgcolor(primary, 5);
+      display: block;
     }
   }
 

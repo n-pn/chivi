@@ -219,6 +219,9 @@
     // prettier-ignore
     @include bps( font-size, rem(21px), rem(22px), rem(23px), rem(25px), rem(27px) );
     @include bps(line-height, 1.5rem, $pl: 1.75rem, $ts: 2rem);
+    &:hover {
+      display: block;
+    }
   }
 
   bname-sep {
