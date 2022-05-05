@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_noun_noun!(node : MtNode, succ : MtNode, mode = 0)
-    return unless noun_can_combine?(node.prev?, succ.succ?)
+    return unless node.nattr? || noun_can_combine?(node.prev?, succ.succ?)
 
     case succ.tag
     when .ptitle?

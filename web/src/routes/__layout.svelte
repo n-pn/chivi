@@ -89,6 +89,9 @@
   </main>
 
   <footer>
+    <div class="">
+      <a href="/notes/donation" class="foot-link">Ủng hộ trang</a>
+    </div>
     <div class="foot-links">
       <strong>Liên kết: </strong>
       {#each links as [text, href]}
@@ -148,13 +151,13 @@
     @include bgcolor(tert);
   }
 
-  // .foot-links {
-  //   &:before {
-  //     @include fgcolor(mute);
-  //     margin: 0 0.5rem;
-  //     content: '|';
-  //   }
-  // }
+  .foot-links {
+    &:before {
+      @include fgcolor(mute);
+      margin: 0 0.5rem;
+      content: '|';
+    }
+  }
 
   // prettier-ignore
   .foot-link {
