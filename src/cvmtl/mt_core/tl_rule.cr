@@ -71,7 +71,7 @@ module CV::TlRule
       elsif node.specials?
         return true if node.key_in?("上", "下") && fix_上下(node).verb?
       elsif node.puncts?
-        return false
+        return false unless node.penum?
       end
     end
   end
