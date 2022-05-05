@@ -61,7 +61,7 @@ export class VpTerm {
     const list = [this.init.b_ptag, this.init.u_ptag]
     list.push(...(this.init.h_tags || []))
 
-    if (list.length < 3) list.push(...similar_tags)
+    if (list.length < 4) list.push(...similar_tags)
     return list.filter((x, i, s) => x && x != this.ptag && s.indexOf(x) == i)
   }
 
