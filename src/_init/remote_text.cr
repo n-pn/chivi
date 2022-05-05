@@ -85,7 +85,7 @@ class CV::RemoteText
       end
     when "biqu5200"
       extract_paras("#content").tap do |lines|
-        trash = title.tr(" ", "").sub(/（.+）/, "")
+        trash = Regex.escape(title.tr(" ", "").sub(/\(|（.+）|\)/, "").strip)
         lines[0] = lines[0].gsub(/^.*#{trash}\s*/, "")
 
         lines.map! do |line|
