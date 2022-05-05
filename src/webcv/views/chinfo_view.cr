@@ -18,6 +18,7 @@ struct CV::ChinfoView
       utime: @data.stats.utime,
       chars: @data.stats.chars,
       parts: @data.stats.parts,
+      uname: @data.stats.uname,
 
       sname: @data.proxy.try(&.sname),
     }.to_json(jb)
