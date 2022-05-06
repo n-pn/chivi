@@ -40,6 +40,8 @@ module CV::TlRule
       when .junction?
         return noun if mode == 2 || noun.prev?(&.adjts?)
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
+      when .time?
+        break
       when .nouns?
         return noun unless fold = fold_noun_noun!(noun, succ, mode: mode)
         noun = fold
