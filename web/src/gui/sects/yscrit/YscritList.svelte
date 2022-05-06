@@ -1,23 +1,23 @@
-<script context="module" lang="ts">
-  export async function load({ fetch, stuff, url }) {
-    url.searchParams.set('book', stuff.nvinfo.id)
-    url.searchParams.set('lm', 10)
-    const api_url = `/api/yscrits${url.search}`
-    console.log({ api_url })
-
-    const api_res = await fetch(api_url)
-    return await api_res.json()
-  }
+<script lang="ts" context="module">
+  const sorts = { score: 'Tổng hợp', likes: 'Ưa thích', mtime: 'Gần nhất' }
 </script>
 
 <script lang="ts">
-  import YscritList from '$gui/sects/yscrit/YscritList.svelte'
+  import { page } from '$app/stores'
+  import { SIcon } from '$gui'
+
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
 
   export let crits: CV.Yscrit[] = []
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pager = new Pager($page.url, { _s: 'score', pg: 1 })
+  $: pager = new Pager($page.url, { _s: 'utime', pg: 1 })
+
+  $: _s = $page.url.searchParams.get('_s') || 'score'
+  $: gt = $page.url.searchParams.get('gt') || 1
+  $: lt = $page.url.searchParams.get('lt') || 5
 </script>
 
 <div class="filter">
@@ -52,13 +52,11 @@
 
 <div class="crits">
   {#each crits as crit}
-    <YscritCard {crit} show_book={false} view_all={crit.vhtml.length < 640} />
+    <YscritCard {crit} view_all={crit.vhtml.length < 640} />
   {/each}
 
   <footer class="pagi">
-    {#if crits.length > 0}
-      <Mpager {pager} {pgidx} {pgmax} />
-    {/if}
+    <Mpager {pager} {pgidx} {pgmax} />
   </footer>
 </div>
 

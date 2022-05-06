@@ -16,10 +16,6 @@
   let active_repls = false
   let replies = []
 
-  function dup_stars(count: number) {
-    return Array(count).fill('⭐').join('')
-  }
-
   async function show_replies() {
     const res = await fetch(`/api/yscrits/${crit.id}/replies`, {
       headers: { 'Content-Type': 'application/json' },
