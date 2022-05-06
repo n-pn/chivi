@@ -10,7 +10,7 @@
 
 <script lang="ts">
   import { topbar } from '$lib/stores'
-  import { Footer, SIcon } from '$gui'
+  import { Footer, SIcon, Crumb } from '$gui'
 
   import CvPage from '$gui/sects/CvPage.svelte'
 
@@ -64,18 +64,18 @@
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<section class="main">
-  {#if on_edit}
-    <textarea
-      class="m-input"
-      lang="zh"
-      bind:value={zhtext}
-      bind:this={text_elem}
-      placeholder="Nhập dữ liệu vào đây" />
-  {:else}
-    <CvPage {dname} {d_dub} zhtext={split_input(zhtext)} {cvdata} {on_change} />
-  {/if}
-</section>
+<Crumb tree={[['Dịch nhanh', '/qtran']]} />
+
+{#if on_edit}
+  <textarea
+    class="m-input"
+    lang="zh"
+    bind:value={zhtext}
+    bind:this={text_elem}
+    placeholder="Nhập dữ liệu vào đây" />
+{:else}
+  <CvPage {dname} {d_dub} zhtext={split_input(zhtext)} {cvdata} {on_change} />
+{/if}
 
 <Footer>
   <div class="foot">
@@ -107,10 +107,6 @@
 </Footer>
 
 <style lang="scss">
-  .main {
-    margin-top: 1rem;
-  }
-
   .m-input {
     width: 100%;
     min-height: calc(100vh - 10.5rem);

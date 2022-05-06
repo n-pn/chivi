@@ -21,7 +21,7 @@
 
 <script lang="ts">
   import { topbar } from '$lib/stores'
-  import { Footer, SIcon } from '$gui'
+  import { Footer, SIcon, Crumb } from '$gui'
 
   import CvPage from '$gui/sects/CvPage.svelte'
 
@@ -53,16 +53,7 @@
   <title>Dịch nhanh: {name} - Chivi</title>
 </svelte:head>
 
-<div>
-  <nav class="bread">
-    <a href="/qtran" class="crumb _link">Dịch nhanh</a>
-    <span>/</span>
-    <span class="crumb _caps">{type}</span>
-
-    <span>/</span>
-    <span class="crumb _caps">[{name}]</span>
-  </nav>
-</div>
+<Crumb tree={[['Dịch nhanh', '/qtran']]} />
 
 <CvPage {dname} {d_dub} {zhtext} {cvdata} {on_change} no_title={true} />
 

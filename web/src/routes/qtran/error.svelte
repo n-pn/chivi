@@ -9,6 +9,7 @@
   import { invalidate } from '$app/navigation'
   import { page } from '$app/stores'
   import { topbar } from '$lib/stores'
+  import { Crumb } from '$gui'
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
@@ -31,6 +32,8 @@
 <svelte:head>
   <title>Lỗi máy dịch - Chivi</title>
 </svelte:head>
+
+<Crumb tree={[['Dịch nhanh', '/qtran']]} />
 
 <article class="md-article">
   <h1>Lỗi máy dịch (Đỏ: Đang lỗi, Xanh: Đã sửa đúng)</h1>
