@@ -10,7 +10,7 @@ struct CV::PosTag
     # 形容词性惯用语 - adjectival formulaic expression -
     {"al", "Aform", Pos::Adjts | Pos::Contws},
     # 形容词性语素 - adjectival morpheme -
-    {"ag", "Amorp", Pos::Adjts | Pos::Contws},
+    # {"ag", "Amorp", Pos::Adjts | Pos::Contws},
 
     # 状态词 - stative verb - trạng thái
     # {"az", "Adesc", Pos::Adjts | Pos::Contws},

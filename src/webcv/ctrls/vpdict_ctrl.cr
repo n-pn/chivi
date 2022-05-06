@@ -56,7 +56,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
     send_json({
       dname: dname,
       d_dub: CtrlUtil.d_dub(dname),
-      total: total,
+      total: vdict.size,
       pgidx: pgidx,
       start: offset &+ 1,
       pgmax: CtrlUtil.pgmax(total, limit),

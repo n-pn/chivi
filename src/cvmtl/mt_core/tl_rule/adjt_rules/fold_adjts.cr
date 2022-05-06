@@ -41,7 +41,7 @@ module CV::TlRule
         fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
       when .aform?
         adjt = fold!(adjt, succ, PosTag::Aform, dic: 4)
-      when .adjt?, .amorp?
+      when .adjt?
         adjt = fold!(adjt, succ, PosTag::Adjt, dic: 4)
       when .ajno?
         return fold!(adjt, succ, PosTag::Noun, dic: 7, flip: true)
