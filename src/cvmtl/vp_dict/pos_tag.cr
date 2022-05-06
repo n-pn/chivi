@@ -141,10 +141,10 @@ struct CV::PosTag
     when 'r' then parse_pronoun(tag, key)
     when '!' then parse_special(key)
     when '~' then parse_extra(tag)
-    when 't' then Time
-    when 'f' then Place
     when 'b' then Modifier
-    when 's' then Space
+    when 't' then Time
+    when 's' then Place
+    when 'f' then Space
     else          parse_miscs(tag)
     end
   end
