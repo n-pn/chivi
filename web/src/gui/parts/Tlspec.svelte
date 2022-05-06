@@ -229,6 +229,7 @@
             </button>
             <a
               href="/qtran?dname={$vdict.dname}&input={$ztext}"
+              target="_blank"
               data-tip="Mở bằng trang dịch nhanh">
               <SIcon name="external-link" />
             </a>
