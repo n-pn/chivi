@@ -82,6 +82,8 @@ module CV::TlRule
   def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     case succ
     when .nil? # do nothing
+    when .v_shi?
+      node.val = "nghĩ"
     when .verbs?, .preposes?
       node.val = "muốn"
     when .human?

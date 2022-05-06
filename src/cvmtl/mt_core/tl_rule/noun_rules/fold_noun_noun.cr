@@ -18,8 +18,14 @@ module CV::TlRule
       # when .space?
       #   fold_noun_space!(node, succ) if mode == 0
     else
+      if (prev = node.prev?) && need_2_objects?(prev)
+        flip = succ.succ?(&.subject?) || false
+      else
+        flip = true
+      end
+
       tag = node.tag == succ.tag ? node.tag : PosTag::Noun
-      fold!(node, succ, tag, dic: 3, flip: true)
+      fold!(node, succ, tag, dic: 3, flip: flip)
     end
   end
 
@@ -31,23 +37,19 @@ module CV::TlRule
     end
 
     return true if !prev || prev.preposes?
+    return true if !succ || succ.subject? || succ.ends? || succ.v_shi? || succ.v_you?
 
-    while succ
-      # puts [prev, succ, "noun_can_combine"]
-      case succ
-      when .v_shi?, .v_you? then return true
-      when .adjts?
-        return false unless (tail = succ.succ?) && tail.ude1?
-        return tail.succ? { |x| x.ends? || x.verbs? } || false
-      when .adverbs? then succ = succ.succ?
-      when .preposes?, .verbs?
-        return true if succ.succ? { |x| x.ude1? || x.ends? }
-        return false if prev.ends?
-        return is_linking_verb?(prev, succ)
-      else return true
-      end
+    # puts [prev, succ, "noun_can_combine"]
+    case succ
+    when .maybe_adjt?
+      return false unless (tail = succ.succ?) && tail.ude1?
+      tail.succ? { |x| x.ends? || x.verbs? } || false
+    when .preposes?, .verbs?
+      return true if succ.succ? { |x| x.ude1? || x.ends? }
+      return false if prev.ends?
+      is_linking_verb?(prev, succ)
+    else
+      true
     end
-
-    true
   end
 end
