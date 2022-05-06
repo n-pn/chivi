@@ -1,103 +1,135 @@
 <script context="module" lang="ts">
   export async function load({ fetch, stuff, url }) {
-    const pg = url.searchParams.get('pg') || 1
-    const _s = url.searchParams.get('sort') || 'score'
+    url.searchParams.set('book', stuff.nvinfo.id)
+    url.searchParams.set('lm', 10)
+    const api_url = `/api/yscrits${url.search}`
+    console.log({ api_url })
 
-    const qs = `pg=${pg}&lm=10&sort=${_s}`
-    const res = await fetch(`/api/yscrits?book=${stuff.nvinfo.id}&${qs}`)
-
-    const data = await res.json()
-    if (res.ok) data.props._sort = _s
-
-    return data
+    const api_res = await fetch(api_url)
+    return await api_res.json()
   }
 
-  const sorts = {
-    score: 'Tổng hợp',
-    stars: 'Cho điểm',
-    likes: 'Ưa thích',
-    mtime: 'Gần nhất',
-  }
+  const sorts = { score: 'Tổng hợp', likes: 'Ưa thích', mtime: 'Gần nhất' }
 </script>
 
 <script lang="ts">
   import { page } from '$app/stores'
+  import { SIcon } from '$gui'
 
-  import SIcon from '$gui/atoms/SIcon.svelte'
-  import Gmenu from '$gui/molds/Gmenu.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
 
   export let crits: CV.Yscrit[] = []
   export let pgidx = 1
   export let pgmax = 1
-  export let _sort: string
 
-  $: pager = new Pager($page.url, { sort: 'score', pg: 1 })
+  $: _s = $page.url.searchParams.get('_s') || 'score'
+  $: gt = $page.url.searchParams.get('gt') || 1
+  $: lt = $page.url.searchParams.get('lt') || 5
+
+  $: pager = new Pager($page.url, { _s: 'score', pg: 1 })
 </script>
 
-<article class="m-article">
+<div class="filter">
   <div class="sorts">
-    <h3 class="h3 -label">Đánh giá</h3>
-
-    <Gmenu
-      class="gmenu"
-      lbl="Sắp xếp"
-      loc="bottom"
-      dir="right"
-      --menu-width="8rem">
-      <button class="m-btn _fill _sm sort-btn" slot="trigger">
-        <SIcon name="arrows-sort" />
-        <span>{sorts[_sort]}</span>
-      </button>
-
-      <svelte:fragment slot="content">
-        {#each Object.entries(sorts) as [sort, name]}
-          {@const actived = sort == _sort}
-          <a
-            href={pager.gen_url({ sort, pg: 1 })}
-            class="gmenu-item"
-            class:_active={actived}>
-            <span>{name}</span>
-            {#if actived}
-              <span class="-right"><SIcon name="check" /></span>
-            {/if}
-          </a>
-        {/each}
-      </svelte:fragment>
-    </Gmenu>
-  </div>
-
-  <div class="crits">
-    {#each crits as crit}
-      <YscritCard {crit} show_book={false} view_all={crit.vhtml.length < 640} />
+    <span class="label">Sắp xếp:</span>
+    {#each Object.entries(sorts) as [sort, name]}
+      {@const actived = sort == _s}
+      <a
+        href={pager.gen_url({ _s: sort, pg: 1 })}
+        class="m-chip"
+        class:_active={actived}>
+        <span>{name}</span>
+      </a>
     {/each}
-
-    <footer class="pagi">
-      {#if crits.length > 0}
-        <Mpager {pager} {pgidx} {pgmax} />
-      {/if}
-    </footer>
   </div>
-</article>
+
+  <div class="stars">
+    <span class="label">Số sao:</span>
+
+    {#each [1, 2, 3, 4, 5] as star}
+      {@const _active = star >= gt && star <= lt}
+      {@const _gt = _active || star < gt ? star : gt}
+      {@const _lt = _active || star > lt ? star : lt}
+      {@const href = pager.gen_url({ _s, gt: _gt, lt: _lt, pg: 1 })}
+      <a {href} class="m-star" class:_active>
+        <span>{star}</span>
+        <SIcon name="star" iset="sprite" />
+      </a>
+    {/each}
+  </div>
+</div>
+
+<div class="crits">
+  {#each crits as crit}
+    <YscritCard {crit} show_book={false} view_all={crit.vhtml.length < 640} />
+  {/each}
+
+  <footer class="pagi">
+    {#if crits.length > 0}
+      <Mpager {pager} {pgidx} {pgmax} />
+    {/if}
+  </footer>
+</div>
 
 <style lang="scss">
-  article {
-    @include bps(margin-left, 0rem, 0.1rem, 1.5rem, 2rem);
-    @include bps(margin-right, 0rem, 0.1rem, 1.5rem, 2rem);
+  .crits {
+    @include bps(margin-left, 0rem, $tm: 0.75rem, $tl: 1.5rem);
+    @include bps(margin-right, 0rem, $tm: 0.75rem, $tl: 1.5rem);
+  }
+
+  .filter {
+    display: flex;
+    margin-top: 0.25rem;
+    @include bps(margin-left, 0rem, $tm: 0.75rem, $tl: 1.5rem);
+    @include bps(margin-right, 0rem, $tm: 0.75rem, $tl: 1.5rem);
+    @include bps(flex-direction, column, $ts: row);
+
+    .label {
+      line-height: 1.75rem;
+      @include fgcolor(mute);
+    }
   }
 
   .sorts {
-    line-height: 2rem;
-    height: 2rem;
-    @include flex($gap: 0.5rem);
-    @include border(--bd-main, $loc: bottom);
+    @include flex-cx($gap: 0.5rem);
+    @include bp-min(ts) {
+      align-items: left;
+    }
+  }
 
-    > .-label {
-      display: block;
-      flex: 1;
-      font-weight: 500;
-      @include ftsize(xl);
+  .m-chip {
+    height: 1.75rem;
+    line-height: 1.75rem;
+
+    &._active {
+      --color: #{color(primary, 5)};
+    }
+  }
+
+  .stars {
+    @include flex-cx;
+    margin-top: 0.5rem;
+    @include bp-min(ts) {
+      align-items: right;
+      margin-top: 0;
+      margin-left: auto;
+    }
+  }
+
+  .m-star {
+    display: inline-flex;
+    align-items: center;
+    @include fgcolor(mute);
+    margin-left: 0.75rem;
+
+    &._active {
+      color: rgb(247, 186, 42);
+      @include fgcolor(secd);
+    }
+
+    span {
+      margin-right: 0.125rem;
     }
   }
 </style>

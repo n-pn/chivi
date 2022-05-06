@@ -4,9 +4,21 @@ class CV::YscritCtrl < CV::BaseCtrl
   def index
     pgidx, limit, offset = params.page_info(max: 24)
 
-    query = Yscrit.sort_by(params["sort"]? || "utime")
+    query = Yscrit.sort_by(params["_s"]? || "utime")
       .filter_ysuser(params.fetch_i64("by"))
       .filter_labels(params["lb"]?)
+
+    if min_stars = params["gt"]?.try(&.to_i?)
+      min_stars = 5 if min_stars > 5
+      query.where("stars >= ?", min_stars)
+    end
+
+    if max_stars = params["lt"]?.try(&.to_i?)
+      max_stars = 1 if max_stars < 1
+      query.where("stars <= ?", max_stars)
+    end
+
+    Log.info { {params["gt"]?, min_stars, max_stars} }
 
     if book_id = params["book"]?.try(&.to_i64?)
       nvinfo = Nvinfo.load!(book_id)

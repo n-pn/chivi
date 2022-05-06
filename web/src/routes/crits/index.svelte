@@ -20,8 +20,8 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pager = new Pager($page.url, { sort: 'utime', pg: 1 })
-  $: _sort = pager.get('sort')
+  $: pager = new Pager($page.url, { _s: 'utime', pg: 1 })
+  $: _sort = pager.get('_s')
 
   $: topbar.set({
     left: [['Đánh giá', 'stars', { href: '/crits' }]],
@@ -48,7 +48,7 @@
     <span class="h3 -label">Đánh giá</span>
     {#each Object.entries(sorts) as [sort, name]}
       <a
-        href={pager.gen_url({ sort, pg: 1 })}
+        href={pager.gen_url({ _s: sort, pg: 1 })}
         class="-sort"
         class:_active={sort == _sort}>{name}</a>
     {/each}
