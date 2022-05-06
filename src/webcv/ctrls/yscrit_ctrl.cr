@@ -18,8 +18,6 @@ class CV::YscritCtrl < CV::BaseCtrl
       query.where("stars <= ?", max_stars)
     end
 
-    Log.info { {params["gt"]?, min_stars, max_stars} }
-
     if book_id = params["book"]?.try(&.to_i64?)
       nvinfo = Nvinfo.load!(book_id)
       query.filter_nvinfo(book_id)

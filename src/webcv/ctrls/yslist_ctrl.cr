@@ -25,9 +25,19 @@ class CV::YslistCtrl < CV::BaseCtrl
 
     pgidx, limit, offset = params.page_info(min: 10, max: 20)
 
-    crits = Yscrit.sort_by(params["_s"]?)
-      .where("yslist_id = ?", yslist.id)
-      .limit(limit).offset(offset).with_nvinfo
+    crits = Yscrit.sort_by(params["_s"]?).where("yslist_id = ?", yslist.id)
+
+    if min_stars = params["gt"]?.try(&.to_i?)
+      min_stars = 5 if min_stars > 5
+      crits.where("stars >= ?", min_stars)
+    end
+
+    if max_stars = params["lt"]?.try(&.to_i?)
+      max_stars = 1 if max_stars < 1
+      crits.where("stars <= ?", max_stars)
+    end
+
+    crits.limit(limit).offset(offset).with_nvinfo
     crits.each(&.ysuser = yslist.ysuser)
 
     send_json({
