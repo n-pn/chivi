@@ -8,6 +8,14 @@ module CV::TlRule
   end
 
   def heal_ajno!(node : MtNode)
+    case node.prev?
+    when .nil?
+    when .adverbs?
+      return MtDict.fix_adjt!(node)
+    when .modifier?
+      return MtDict.fix_noun!(node)
+    end
+
     # puts [node, node.prev?, node.succ?]
     case succ = node.succ?
     when .nil?, .puncts?

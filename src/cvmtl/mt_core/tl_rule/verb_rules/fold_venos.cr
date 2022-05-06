@@ -44,6 +44,8 @@ module CV::TlRule
           return node.set!(PosTag::Vintr)
         end
       end
+    when .subject?
+      return MtDict.fix_verb!(node) if prev.prev?(&.preposes?)
     when .verb?
       return MtDict.fix_noun!(node) if node.succ?(&.ude1?)
     end

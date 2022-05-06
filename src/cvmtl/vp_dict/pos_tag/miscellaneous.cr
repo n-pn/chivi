@@ -28,9 +28,9 @@ struct CV::PosTag
     {"o", "Onomat", Pos::Funcws},
 
     # subject + verb clause
-    {"s-v", "VerbClause", Pos::Contws},
+    {"~sv", "VerbClause", Pos::Contws},
     # subject + adjt clause
-    {"s-a", "AdjtClause", Pos::Contws},
+    {"~sa", "AdjtClause", Pos::Contws},
     # complex phrase ac as verb
     {"~vp", "VerbPhrase", Pos::Verbs | Pos::Contws},
     # complex phrase act as adjective
