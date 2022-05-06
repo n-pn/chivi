@@ -12,7 +12,7 @@ module CV::TlRule
 
     if month || exact_year?(node, appro)
       prev = fold!(prev, node, PosTag::Time, dic: 2, flip: true)
-      return month ? fold!(prev, month, prev.tag, dic: 2, flip: true) : prev
+      return month ? fold!(prev, month, prev.tag, dic: 3, flip: true) : prev
     end
 
     fold!(prev, node, PosTag::Qttime, dic: 2)
@@ -38,7 +38,7 @@ module CV::TlRule
 
     if date || appro == -1
       prev = fold!(prev, node, PosTag::Time, dic: 2, flip: true)
-      return date ? fold!(prev, date, prev.tag, dic: 2, flip: true) : prev
+      return date ? fold!(prev, date, prev.tag, dic: 3, flip: true) : prev
     end
 
     if appro == 0 && prev.to_int?.try(&.< 13)
@@ -67,7 +67,7 @@ module CV::TlRule
   end
 
   def fold_minute!(node : MtNode, succ : MtNode, appro : Int32 = 0)
-    fold!(node, succ, PosTag::Qttime, dic: 2)
+    fold!(node, succ, PosTag::Qttime, dic: 3)
   end
 
   def clean_个!(node : MtNode) : MtNode

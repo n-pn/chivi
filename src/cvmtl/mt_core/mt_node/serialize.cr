@@ -42,9 +42,9 @@ module CV::MTL::Serialize
 
   def deep_inspect(io : IO = STDOUT, pad = 0) : Nil
     if body = @body
-      io << " " * pad << "{" << @tag.to_str << "/" << @dic << "}" << "\n"
+      io << " " * pad << "{:" << @tag.tag << "/" << @dic << "}" << "\n"
       body.deep_inspect(io, pad &+ 2)
-      io << " " * pad << "{/" << @tag.to_str << "/" << @dic << "}" << "\n"
+      io << " " * pad << "{/" << @tag.tag << "/" << @dic << "}" << "\n"
     else
       self.inspect(io, pad: pad)
     end

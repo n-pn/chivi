@@ -13,7 +13,7 @@ module CV::TlRule
 
       flip = nounish.nouns? && should_flip_prodem?(prodem)
       tag = !prodem.pro_dem? && nounish.qtnoun? ? PosTag::ProDem : nounish.tag
-      return fold!(prodem, nounish, tag, dic: 2, flip: flip)
+      return fold!(prodem, nounish, tag, dic: 3, flip: flip)
     end
 
     heal_pro_dem!(prodem)

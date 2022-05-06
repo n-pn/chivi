@@ -19,7 +19,11 @@ module CV::TlRule
     when .noun?
       fold_nouns!(node)
     else
-      scan_noun!(node.succ?, nquant: node) || node
+      if (succ = node.succ?) && succ.uzhi?
+        fold_uzhi!(succ, node)
+      else
+        scan_noun!(node.succ?, nquant: node) || node
+      end
     end
   end
 
@@ -101,13 +105,13 @@ module CV::TlRule
     when "点" then node = fold_hour!(node, tail, appro)
     when "分" then node = fold_minute!(node, tail, appro)
     else
-      node = fold!(node, tail, map_nqtype(tail), dic: 2)
+      node = fold!(node, tail, map_nqtype(tail), dic: 3)
       node = fold_suf_quanti_appro!(node) if has_ge4
     end
 
     if has_ge4 && (tail = node.succ?) && tail.quantis?
       heal_has_ge4!(has_ge4)
-      node = fold!(node, tail, map_nqtype(tail), dic: 2)
+      node = fold!(node, tail, map_nqtype(tail), dic: 3)
     end
 
     fold_suf_quanti_appro!(node)

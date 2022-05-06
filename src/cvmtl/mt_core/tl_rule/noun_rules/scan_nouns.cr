@@ -40,8 +40,11 @@ module CV::TlRule
           nquant, node = node, node.succ?
           next
         end
-      when .specials?
-        node = fold_uniqs!(node)
+      when .v_you?
+        break unless (succ = node.succ?) && succ.noun?
+        succ = fold_nouns!(succ)
+        node = fold!(node, succ, PosTag::Aform, dic: 4)
+        node = fold_head_ude1_noun!(node)
       when .adverbs?
         node = fold_adverbs!(node)
 

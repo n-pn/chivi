@@ -26,11 +26,11 @@ module CV::TlRule
       end
     when .vdir?
       MtDict.fix_verb!(node)
-    when .verbs?, .preposes?, .none?, .mopart?, .spaces?
+    when .verbs?, .preposes?, .none?, .spaces?
       MtDict.fix_noun!(node)
     when .noun?
       node.set!(PosTag::Modifier)
-    when .ude1?
+    when .ude1?, .mopart?
       MtDict.fix_adjt!(node)
     else
       if {"到"}.includes?(succ.key)
