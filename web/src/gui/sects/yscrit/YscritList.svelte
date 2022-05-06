@@ -13,6 +13,9 @@
   export let pgidx = 1
   export let pgmax = 1
 
+  export let show_book = true
+  export let show_list = true
+
   $: pager = new Pager($page.url, { _s: 'utime', pg: 1 })
 
   $: _s = $page.url.searchParams.get('_s') || 'score'
@@ -26,7 +29,7 @@
     {#each Object.entries(sorts) as [sort, name]}
       {@const actived = sort == _s}
       <a
-        href={pager.gen_url({ _s: sort, pg: 1 })}
+        href={pager.gen_url({ _s: sort, gt: null, lt: null, pg: 1 })}
         class="m-chip"
         class:_active={actived}>
         <span>{name}</span>
@@ -52,7 +55,11 @@
 
 <div class="crits">
   {#each crits as crit}
-    <YscritCard {crit} view_all={crit.vhtml.length < 640} />
+    <YscritCard
+      {crit}
+      {show_book}
+      {show_list}
+      view_all={crit.vhtml.length < 640} />
   {/each}
 
   <footer class="pagi">

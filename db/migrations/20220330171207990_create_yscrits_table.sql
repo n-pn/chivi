@@ -37,9 +37,8 @@ CREATE INDEX yscrit_ysuser_idx ON yscrits (ysuser_id, created_at);
 CREATE INDEX yscrit_yslist_idx ON yscrits (yslist_id);
 
 CREATE INDEX yscrit_sorted_idx ON yscrits (_sort, stars);
-CREATE INDEX yscrit_stared_idx ON yscrits (stars, like_count);
-CREATE INDEX yscrit_update_idx ON yscrits (utime, nvinfo_id);
-
+CREATE INDEX yscrit_update_idx ON yscrits (utime, stars);
+CREATE INDEX yscrit_liked_idx ON yscrits (like_count, stars);
 CREATE INDEX yscrit_vtags_idx ON yscrits USING GIN(vtags);
 
 -- +micrate Down
