@@ -28,10 +28,6 @@ module CV::TlRule
     when "对不起"
       return node if boundary?(succ)
       fold_verbs!(MtDict.fix_verb!(node))
-    when "百分之"
-      return node unless succ && succ.numbers?
-      succ = fuse_number!(succ)
-      fold!(node, succ, PosTag::Number, dic: 4, flip: true)
     when "原来"
       if succ.try(&.ude1?) || node.prev?(&.contws?)
         node.set!("ban đầu", tag: PosTag::Modifier)
@@ -39,14 +35,7 @@ module CV::TlRule
         node.set!("thì ra")
       end
     when "行"
-      return node if succ.nil? || succ.titlecl?
-      boundary?(succ) ? node.set!("được") : node
-    when "高达"
-      if succ.try(&.numeric?)
-        node.set!("cao đến")
-      else
-        fold_nouns!(MtDict.fix_noun!(node))
-      end
+      succ.nil? || succ.ends? ? node.set!("được") : node
     else
       node
     end
