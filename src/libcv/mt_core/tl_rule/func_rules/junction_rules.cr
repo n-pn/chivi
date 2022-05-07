@@ -32,9 +32,8 @@ module CV::TlRule
   end
 
   def fold_noun_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)
-    # puts [node, prev, succ]
     return unless prev && succ
-    return if node.key == "而" || !is_concoord?(node, check_prepos: true)
+    return if node.key == "而" || !is_concoord?(node)
 
     if prev.tag == succ.tag
       fold!(prev, succ, tag: prev.tag, dic: 4)
@@ -43,11 +42,23 @@ module CV::TlRule
     end
   end
 
+  def should_fold_noun_concoord?(noun : MtNode, concoord : MtNode) : Bool
+    return true unless (prev = noun.prev?) && (succ = concoord.succ?)
+    return false if prev.numeric? || prev.pronouns?
+    return true unless prev.ude1? && (prev = prev.prev?)
+
+    case prev.tag
+    when .nform? then true
+    when .human? then !succ.human?
+    else              false
+    end
+  end
+
   def is_concoord?(node : Nil)
     false
   end
 
-  def is_concoord?(node : MtNode, check_prepos = false)
+  def is_concoord?(node : MtNode)
     case node
     when .penum?, .concoord? then true
     else

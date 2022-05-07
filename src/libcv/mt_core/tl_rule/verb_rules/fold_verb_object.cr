@@ -36,16 +36,20 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)
-    # puts [verb, right, verb.prev?, "verb-object"]
-
-    return false if verb.body?.try(&.pre_bei?) || need_2_objects?(verb)
+    return false if verb.body?(&.pre_bei?) || need_2_objects?(verb)
 
     while prev && prev.adverb?
       prev = prev.prev?
     end
 
     return false unless prev && right
-    return false if {"时候", "时", "打算", "方法"}.includes?(right.key)
+
+    # in case after ude1 is adverb
+    if {"时候", "时", "打算", "方法"}.includes?(right.key)
+      return false
+    elsif right.succ? { |x| x.ends? || x.ule? }
+      return true
+    end
 
     case prev.tag
     when .comma?   then return true

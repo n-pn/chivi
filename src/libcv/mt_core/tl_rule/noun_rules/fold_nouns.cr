@@ -38,7 +38,7 @@ module CV::TlRule
         return fold_noun_verb!(noun, succ) if succ.verbs?
         noun = fold!(noun, succ, PosTag::Noun, dic: 7, flip: true)
       when .junction?
-        return noun if mode == 2 || noun.prev?(&.adjts?)
+        break unless should_fold_noun_concoord?(noun, succ)
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
       when .time?
         break
@@ -52,10 +52,6 @@ module CV::TlRule
       when .usuo?
         break if succ.succ?(&.verbs?)
         noun = fold_suf_noun!(noun, succ)
-      when .pro_per?
-        break unless succ.key == "自己"
-        fold_noun_noun!(noun, succ, mode: mode).try { |x| return x } || break
-        # noun = fold!(noun, succ, noun.tag, dic: 7, flip: true)
       when .specials?
         case succ.key
         when "第"
