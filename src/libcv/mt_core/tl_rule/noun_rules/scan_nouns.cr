@@ -156,11 +156,12 @@ module CV::TlRule
   end
 
   def fold_head_ude1_noun!(head : MtNode)
-    return head unless (succ = head.succ?) && succ.ude1?
-    succ.val = "" unless head.noun? || head.names?
+    return head unless (ude1 = head.succ?) && ude1.ude1?
+    ude1.val = "" unless head.noun? || head.names?
 
-    return head unless tail = scan_noun!(succ.succ?)
-    fold!(head, tail, PosTag::NounPhrase, dic: 4, flip: true)
+    return head unless tail = scan_noun!(ude1.succ?)
+    puts [head, tail]
+    fold!(head, tail, PosTag::NounPhrase, dic: 8, flip: true)
   end
 
   def fold_adjt_as_noun!(node : MtNode)

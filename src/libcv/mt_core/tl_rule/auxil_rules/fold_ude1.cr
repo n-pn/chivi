@@ -6,8 +6,14 @@ module CV::TlRule
 
     ude1.set!("")
 
-    if (noun = scan_noun!(succ, mode: 3))
-      node = fold_ude1_left!(ude1: ude1, left: prev, right: noun)
+    if (succ.pro_dems? || succ.pro_na2?) && (tail = succ.succ?)
+      right = fold_pro_dems!(succ, tail)
+    else
+      right = scan_noun!(succ, mode: 3)
+    end
+
+    if right
+      node = fold_ude1_left!(ude1: ude1, left: prev, right: right)
       return fold_noun_after!(node)
     else
       succ = ude1.succ
@@ -58,7 +64,7 @@ module CV::TlRule
       fold_noun_ude1!(left, ude1: ude1, right: right, mode: mode)
     else
       left = fold!(left, ude1, PosTag::DefnPhrase, dic: 7)
-      fold!(left, right, PosTag::NounPhrase, dic: 4, flip: true)
+      fold!(left, right, PosTag::NounPhrase, dic: 6, flip: true)
     end
   end
 end

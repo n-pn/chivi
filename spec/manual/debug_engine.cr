@@ -1,4 +1,4 @@
-require "../../src/cvmtl/mt_core"
+require "../../src/libcv/mt_core"
 
 inp = ARGV[0]? || "这种“大聪明”"
 dic = ARGV[1]? || "-mvttgmnj"

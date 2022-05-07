@@ -8,23 +8,37 @@ module CV::TlRule
       if tail.nhanzi?
         succ = fold_proji_nhanzi!(succ, tail)
         return fold_prodem_nounish!(node, succ)
-      else
+      elsif node.pro_zhe? || node.pro_na1? || node.pro_na2?
         tail = heal_quanti!(tail)
-        succ = fold!(succ, tail, PosTag::Nqnoun, dic: 6) if tail.quantis?
+
+        case tail.tag
+        when .qttime?
+          tag = PosTag::Nqtime
+        when .qtnoun?
+          tag = PosTag::Nqtime
+        when .qtverb?
+          tag = PosTag::Nqverb
+        end
+
+        if tag
+          succ = fold!(succ, tail, tag, dic: 6)
+          return scan_noun!(succ.succ?, prodem: node, nquant: succ) || node
+        else
+          return scan_noun!(succ, prodem: node, nquant: nil) || node
+        end
       end
     elsif node.pro_ji? && succ.nhanzi?
       return fold_proji_nhanzi!(node, succ)
     end
 
     node, quanti, succ = split_prodem!(node)
-    # puts [node, quanti, succ, quanti.try(&.succ?), node.succ?]
 
     if succ && !(succ.pro_dems? || succ.v_shi? || succ.v_you?)
       return scan_noun!(succ, prodem: node, nquant: quanti).not_nil!
     end
 
     return heal_pro_dem!(node) unless quanti
-    fold!(node, quanti, PosTag::ProDem, dic: 8, flip: true)
+    fold_prodem_nounish!(node, quanti)
   end
 
   def fold_proji_nhanzi!(node : MtNode, succ : MtNode)
@@ -82,8 +96,8 @@ module CV::TlRule
     case key
     when "这" then {PosTag::ProZhe, "này"}
     when "那" then {PosTag::ProNa1, "kia"}
-      # when '几' then {PosTag::ProJi, "mấy"}
-    else {PosTag::ProDem, ""}
+    when "几" then {PosTag::ProJi, "mấy"}
+    else          {PosTag::ProDem, ""}
     end
   end
 end

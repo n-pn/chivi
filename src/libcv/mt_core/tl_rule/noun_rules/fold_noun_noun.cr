@@ -13,7 +13,7 @@ module CV::TlRule
     when .names?
       fold!(node, succ, succ.tag, dic: 4)
     when .times?
-      fold!(node, succ, PosTag::NounPhrase, dic: 4)
+      fold!(node, succ, PosTag::NounPhrase, dic: 5)
     when .place?
       fold!(node, succ, PosTag::DefnPhrase, dic: 3, flip: true)
       # when .space?

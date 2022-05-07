@@ -29,7 +29,7 @@ module CV::TlRule
 
   def fold_nquant_noun!(prev : MtNode, node : MtNode)
     prev = clean_个!(prev)
-    node = fold!(prev, node, PosTag::NounPhrase, dic: 4)
+    node = fold!(prev, node, PosTag::NounPhrase, dic: 3)
     node
   end
 

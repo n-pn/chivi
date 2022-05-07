@@ -20,7 +20,8 @@ module CV::TlRule
   end
 
   def should_flip_prodem?(prodem : MtNode)
-    return true if prodem.pro_zhe? || prodem.pro_na1? || prodem.pro_na2?
+    return false if prodem.pro_ji?
+    return true unless prodem.pro_dem? # pro_ji, pro_na1, pro_na2
     {"另", "其他", "此", "某个", "某些"}.includes?(prodem.key)
   end
 
