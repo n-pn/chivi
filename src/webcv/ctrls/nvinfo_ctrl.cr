@@ -179,10 +179,9 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       img_file = "_db/bcover/users/#{nvinfo.bcover.sub("webp", "jpg")}"
       webp_file = "priv/static/covers/#{nvinfo.bcover}"
       HttpUtil.save_image(nvinfo.scover, img_file, webp_file)
-
-      log_upsert_action(params)
     end
 
+    spawn log_upsert_action(params)
     send_json({bslug: nvinfo.bslug})
   end
 

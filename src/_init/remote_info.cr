@@ -118,6 +118,7 @@ class CV::RemoteInfo
       "https://www.hetushu.com" + info.attr(".book_info img", "src")
     when "zhwenpg" then info.attr(".cover_wrapper_m img", "data-src")
     when "ptwxz"   then info.attr("img[width=\"100\"]", "src")
+    when "bxwxorg" then "https:" + info.meta("og:image")
     when "xswang"  then "https://www.xswang.com" + info.meta("og:image")
     else                info.meta("og:image")
     end
