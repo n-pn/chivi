@@ -20,9 +20,20 @@ class CV::VpTerm
 
   # auto generated fields
   property ptag : PosTag { PosTag.parse(@attr, @key) }
-  getter point : Float64 do
-    base = 1.5 + rank * 0.125
-    base ** @key.size + @key.size ** base
+
+  #
+  SCORES = {
+    2, 6, 8,
+    13, 16, 20,
+    18, 25, 32,
+    30, 37, 45,
+    40, 50, 70,
+  }
+
+  getter point : Int32 do
+    size = @key.size  # cache result because String#size is O(n) for utf8 string
+    rank = @rank &- 2 # rank nows is 2 3 4
+    SCORES[(size &- 1) &* 3 &+ rank]? || size &* (SCORES[rank] &+ rank)
   end
 
   getter is_priv : Bool { @uname[0]? == '!' }
@@ -42,6 +53,7 @@ class CV::VpTerm
 
     @attr = cols[2]? || ""
     @rank = cols[3]?.try(&.to_u8?) || 3_u8
+    @rank = 2 if @rank < 2
 
     if mtime = cols[4]?.try(&.to_i?)
       @mtime = mtime

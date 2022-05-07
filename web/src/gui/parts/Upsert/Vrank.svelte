@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   const keys = ['a', 's', 'd', 'f']
-  const lbls = ['Cao', 'Bình', 'Thấp', 'Đáy']
-  const labels = ['Hơi cao', 'Trung bình', ' Hơi thấp', 'Rất thấp']
+  const lbls = ['Cao', 'Bình', 'Thấp']
+  const labels = ['Hơi cao', 'Trung bình', ' Hơi thấp']
 </script>
 
 <script lang="ts">

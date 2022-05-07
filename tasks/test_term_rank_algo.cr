@@ -1,10 +1,11 @@
 require "colorize"
 
 MAP = {
-  4, 6, 8,
-  9, 13, 19,
-  15, 20, 30,
-  24, 33, 40,
+  2, 6, 8,
+  13, 16, 20,
+  18, 25, 32,
+  30, 37, 45,
+  40, 50, 70,
 }
 
 def calc(size : Int32, rank = 1)
@@ -31,6 +32,9 @@ def assert_gt(lhs : List, rhs : List)
   color = calc(lhs) > calc(rhs) ? :green : :red
   puts "[#{serialize(lhs)}] (#{calc(lhs)}) \t>\t [#{serialize(rhs)}] (#{calc(rhs)})".colorize(color)
 end
+
+assert_gt [{2, 0}], [{1, 1}, {1, 1}]
+puts
 
 assert_gt [{2, 1}], [{1, 1}, {1, 1}]
 assert_gt [{3, 1}], [{1, 1}, {1, 1}, {1, 1}]
@@ -73,5 +77,6 @@ assert_gt [{2, 1}, {2, 1}], [{3, 0}, {1, 1}]
 assert_gt [{2, 1}, {2, 0}], [{3, 0}, {1, 1}]
 puts
 
-assert_gt [{1, 2}, {1, 1}], [{2, 1}]
+assert_gt [{2, 1}], [{1, 2}, {1, 1}]
+assert_gt [{1, 2}, {1, 1}], [{2, 0}]
 puts

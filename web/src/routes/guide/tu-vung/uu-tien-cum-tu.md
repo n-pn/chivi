@@ -17,8 +17,7 @@ Chú thích các từ được dùng bên dưới:
 
 ## Các từ có một ký tự:
 
-- Nên chọn độ ưu tiên là `Cao` nếu từ một ký tự là tên riêng. `1 Cao` + `1 Bình` sẽ được ưu tiên cao hơn là `2 Bình`.
-
+- Nên chọn độ ưu tiên là `Cao` nếu từ một ký tự là tên người, địa danh đặc biệt, ví dụ "Bạch", "Thiến", "Jon".
   **Lưu ý**: Chỉ nên đặt độ ưu tiên cao trong từ điển bộ truyện, đặt ở từ điển thông dụng thường không chính xác.
 
 - Các từ hay đứng độc lập trong câu (trợ từ, giới từ, phương vị) nên để là `Bình`. Bản thân các từ này có các quy luật ngữ pháp đi kèm có sẵn trong câu, cho nên đứng độc lập nhiều khi vẫn đúng.
