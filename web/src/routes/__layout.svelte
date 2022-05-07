@@ -90,7 +90,7 @@
 
   <footer>
     <div class="">
-      <a href="/notes/donation" class="foot-link">Ủng hộ trang</a>
+      <a href="/guide/donation" class="foot-link">Ủng hộ trang</a>
     </div>
     <div class="foot-links">
       <strong>Liên kết: </strong>
