@@ -30,7 +30,8 @@ module CV::TlRule
         succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
         return fold!(adjt, succ, PosTag::Aform, dic: 8)
       when .spaces?
-        return mode == 0 ? fold_noun_space!(noun, succ) : noun
+        return noun if noun.prev? { |x| x.numeric? || x.pronouns? }
+        noun = fold_noun_space!(noun, succ)
       when .verbs?
         return fold_noun_verb!(noun, succ)
       when .veno?

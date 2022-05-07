@@ -78,10 +78,8 @@ module CV::TlRule
     when .pro_ji?
       node = fold!(node, tail, PosTag::Number, dic: 5)
 
-      if (succ = node.succ?) && succ.nhanzi?
-        node = fold!(node, succ.set!(PosTag::Qtnoun), PosTag::Nqnoun, dic: 7)
-        return node unless tail = node.succ?
-      end
+      # TODO: handle appros
+      return fold_proji_right!(node)
     else
       if tail.key == "号"
         return fold!(node, tail, PosTag::Noun, dic: 9, flip: true)

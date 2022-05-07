@@ -43,8 +43,26 @@ module CV::TlRule
 
   def fold_proji_nhanzi!(node : MtNode, succ : MtNode)
     succ.val = succ.val.sub("mười", "chục")
-    node = fold!(node, succ, PosTag::Number, dic: 5)
-    scan_noun!(node.succ?, nquant: node).not_nil!
+    node = fold!(node, succ, PosTag::Number, dic: 4)
+    fold_proji_right!(node)
+  end
+
+  def fold_proji_right!(node : MtNode)
+    return node unless tail = node.succ?
+    tail = heal_quanti!(tail)
+
+    case tail.tag
+    when .qttime? then tag = PosTag::Nqtime
+    when .qtnoun? then tag = PosTag::Nqtime
+    when .qtverb? then tag = PosTag::Nqverb
+    end
+
+    if tag
+      node = fold!(node, tail, tag, dic: 6)
+      tail = node.succ?
+    end
+
+    scan_noun!(tail, prodem: nil, nquant: node) || node
   end
 
   def prodem_shoud_split?(node : MtNode)

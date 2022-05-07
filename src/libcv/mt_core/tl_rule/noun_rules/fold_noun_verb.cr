@@ -14,20 +14,19 @@ module CV::TlRule
       return fold!(noun, tail.set!("lúc"), PosTag::Time, dic: 9, flip: true)
     end
 
-    if verb.verb_no_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?
-      verb_2 = verb_2.adverbs? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
+    # if verb.verb_no_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?
+    #   verb_2 = verb_2.adverbs? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
 
-      if !verb_2.verb_no_obj? && verb.prev?(&.object?)
-        tail = fold!(tail, verb_2, PosTag::VerbClause, dic: 8)
-        noun = fold!(noun, verb, PosTag::VerbClause, dic: 7)
-        return fold!(noun, succ.set!("cái"), dic: 9, flip: true)
-      end
-    end
+    #   if !verb_2.verb_no_obj? && verb.prev?(&.object?)
+    #     tail = fold!(tail, verb_2, PosTag::VerbClause, dic: 8)
+    #     noun = fold!(noun, verb, PosTag::VerbClause, dic: 7)
+    #     return fold!(noun, succ.set!(""), dic: 9, flip: true)
+    #   end
+    # end
 
     left = fold!(noun, verb, PosTag::VerbPhrase, dic: 4)
-    succ.set!(noun.names? || noun.ptitle? || noun.noun? ? "do" : "")
 
-    defn = fold!(left, succ, PosTag::DefnPhrase, dic: 6, flip: true)
+    defn = fold!(left, succ.set!(""), PosTag::DefnPhrase, dic: 6, flip: true)
     tag = tail.names? || tail.human? ? tail.tag : PosTag::NounPhrase
 
     fold!(defn, tail, tag, dic: 5, flip: true)
