@@ -58,10 +58,7 @@ module CV::TlRule
       when .adv_bu?
         verb = fold_verb_advbu!(verb, succ)
       when .numeric?
-        case head.key
-        when "如", "像", "好像", "仿佛"
-          fold_compare(verb).try { |x| return x }
-        end
+        fold_verb_compare(verb).try { |x| return x }
 
         if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
           verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
@@ -89,10 +86,7 @@ module CV::TlRule
     verb = fold_adverb_node!(prev, verb) if prev
     return verb unless succ = verb.succ?
 
-    case head.key
-    when "如", "像", "好像", "仿佛"
-      fold_compare(verb).try { |x| return x }
-    end
+    fold_verb_compare(verb).try { |x| return x }
 
     case succ
     when .suf_noun?, .usuo?
