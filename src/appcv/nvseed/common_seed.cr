@@ -1,9 +1,10 @@
-# To be included in Nvseed class
+# Method required for all nvseed types
+
 require "../nvchap/ch_list"
 require "../nvchap/ch_repo"
 require "../../libcv/mt_core"
 
-module CV::CommonSeed
+class CV::Nvseed
   getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }
 
   getter _repo : ChRepo { ChRepo.new(sname, snvid, nvinfo.dname) }
@@ -65,5 +66,19 @@ module CV::CommonSeed
     chdata.lines
   rescue
     [] of String
+  end
+
+  def patch!(chap : ChInfo, utime : Int64 = Time.utc.to_unix) : Nil
+    patch!([chap], utime)
+  end
+
+  def patch!(chaps : Array(ChInfo), utime : Int64, save = true) : Nil
+    return if chaps.empty?
+    _repo.patch!(chaps)
+
+    self.set_mftime(utime, force: false)
+    self.set_latest(chaps.last, force: false)
+
+    self.save! if save
   end
 end

@@ -77,7 +77,7 @@ class CV::ChRepo
     end
   end
 
-  def fetch_as_proxies!(chmin : Int32, chmax : Int32) : Array(ChInfo)
+  def fetch_as_mirror!(chmin : Int32, chmax : Int32) : Array(ChInfo)
     pgmin = self.zh_pg(chmin)
     pgmax = self.zh_pg(chmax) + 1
     chaps = [] of ChInfo
