@@ -1,7 +1,7 @@
 require "./shared/seed_util"
 
 class CV::FixStatus
-  MFTIME = (Time.utc - 3.years).to_unix
+  FRESH = (Time.utc - 3.years).to_unix
 
   def set!
     total, index = Nvinfo.query.count, 0
@@ -11,7 +11,7 @@ class CV::FixStatus
       puts "- [fix_status] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
       status = nvinfo.status
-      if status == 0 && nvinfo.utime < MFTIME
+      if status == 0 && nvinfo.utime < FRESH
         status = 3
         nvinfo.update!({status: status})
       end

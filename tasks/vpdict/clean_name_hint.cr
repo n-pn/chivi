@@ -42,4 +42,4 @@ dict.reject! do |k, v|
 end
 
 write_dict("#{INP}/mixed-common.txt", dict)
-pp translate("复旦大学")
+# pp translate("复旦大学")

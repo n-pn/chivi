@@ -1,4 +1,3 @@
-require "file_utils"
 require "../shared/bootstrap"
 
 cvpost_dir = "var/cvposts"

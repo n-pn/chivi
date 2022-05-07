@@ -16,10 +16,7 @@ MAP = {
   "ụy" => "uỵ",
 }
 
-def fix_word(text)
-  MAP.each { |key, val| text.gsub!(key, val) }
-  text
-end
+SUB_RE = Regex.new MAP.keys.join("|")
 
 def fix_files(files)
   files.each_with_index do |file, idx|
@@ -27,6 +24,7 @@ def fix_files(files)
     text = File.read(file, encoding: "UTF-8")
     text = text.unicode_normalize(:nfkc)
 
+    text.gsub!(SUB_RE) {|raw| MAP[raw]? || raw}
     File.write(file, fix_word(text))
   rescue => err
     puts err
