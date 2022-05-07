@@ -124,7 +124,7 @@
   </upsert-head>
 
   <upsert-tabs>
-    {#each vpdicts as { d_dub, descs }, tab}
+    {#each vpdicts as { d_dub, d_tip }, tab}
       {@const infos = tabs[tab]}
 
       <button
@@ -133,7 +133,7 @@
         class:_edited={vpterms[tab]?.state > 0}
         data-kbd={infos.kbd}
         on:click={() => ctrl.set_tab(tab)}
-        use:hint={descs}>
+        use:hint={d_tip}>
         <SIcon name={infos.icon} />
         <span>{d_dub}</span>
       </button>

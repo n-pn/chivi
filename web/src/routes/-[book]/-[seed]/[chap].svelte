@@ -44,6 +44,8 @@
   $: book_url = `/-${nvinfo.bslug}`
   $: list_url = seed_url(nvinfo.bslug, ubmemo.sname, to_pgidx(chinfo.chidx))
 
+  $: globalThis.history?.replaceState({ chmeta }, null, chmeta._curr)
+
   $: topbar.set({
     left: [
       [nvinfo.btitle_vi, 'book', { href: book_url, kind: 'title', show: 'pl' }],

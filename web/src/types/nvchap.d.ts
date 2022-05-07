@@ -36,6 +36,7 @@ declare namespace CV {
     clink: string
     cpart: number
 
+    _curr: string
     _prev: string
     _next: string
   }

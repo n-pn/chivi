@@ -155,6 +155,8 @@ cv-user,
 
 .article.article {
   @include margin-x(0);
+  margin-bottom: var(--gutter);
+
 
   @include bp-min(tl) {
     border-radius: 1rem;

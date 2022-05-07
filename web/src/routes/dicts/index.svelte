@@ -12,6 +12,7 @@
 
   import { Footer, Mpager } from '$gui'
   import { Pager } from '$gui/molds/Mpager.svelte'
+  import { Crumb } from '$gui'
 
   export let cores = []
   export let books = []
@@ -27,7 +28,9 @@
   <title>Từ điển - Chivi</title>
 </svelte:head>
 
-<article class="m-article">
+<Crumb tree={[['Từ điển', '/dicts']]} />
+
+<article class="article m-article">
   <h1>Từ điển</h1>
 
   <h2>Hệ thống</h2>

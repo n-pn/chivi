@@ -45,10 +45,10 @@ export function upsert_dicts(vdict: CV.VpDict, extra: CV.VpDict) {
 }
 
 // prettier-ignore
-export function make_vdict( dname: string, d_dub?: string, descs?: string ): CV.VpDict {
+export function make_vdict( dname: string, d_dub?: string, d_tip?: string ): CV.VpDict {
   d_dub = d_dub || labels[dname] || dname
-  descs = descs || intros[dname] || make_intro(dname, d_dub)
-  return { dname, d_dub, descs }
+  d_tip = d_tip || intros[dname] || make_intro(dname, d_dub)
+  return { dname, d_dub, d_tip }
 }
 
 function make_intro(dname: string, d_dub: string) {

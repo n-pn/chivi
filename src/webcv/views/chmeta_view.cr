@@ -14,6 +14,7 @@ struct CV::ChmetaView
       jb.field "cpart", @cpart
       jb.field "clink", @seed.clink(@chap.schid)
 
+      jb.field "_curr", chap_url(@chap, @cpart)
       jb.field "_prev", prev_url
       jb.field "_next", next_url
     }

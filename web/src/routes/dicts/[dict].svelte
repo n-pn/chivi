@@ -14,9 +14,9 @@
     const api_res = await fetch(api_url)
 
     const payload = await api_res.json()
-    const { d_dub, descs } = make_vdict(dict, payload.props.d_dub)
+    const { d_dub, d_tip } = make_vdict(dict, payload.props.d_dub)
     payload.props.d_dub = d_dub
-    payload.props.descs = descs
+    payload.props.d_tip = d_tip
     payload.props.query = Object.fromEntries(url.searchParams)
     return payload
   }
@@ -27,7 +27,8 @@
   import { ztext, vdict, topbar } from '$lib/stores'
   import { rel_time_vp } from '$utils/time_utils'
 
-  import SIcon from '$gui/atoms/SIcon.svelte'
+  import { Crumb, SIcon } from '$gui'
+
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let dname = 'combine'
@@ -40,8 +41,9 @@
   $: topbar.set({
     left: [
       ['Từ điển', 'package', { href: '/dicts', show: 'ts' }],
-      [dname, null, { href: $page.url.pathname, kind: 'title' }],
+      [d_dub, null, { href: $page.url.pathname, kind: 'title' }],
     ],
+    right: [['Dịch nhanh', 'bolt', { href: `/qtran?dname=${dname}` }]],
   })
 
   let d_tab = 2
@@ -99,9 +101,15 @@
   <title>Từ điển: {d_dub} - Chivi</title>
 </svelte:head>
 
-<article class="m-article">
+<Crumb
+  tree={[
+    ['Từ điển', '/dicts'],
+    [d_dub, $page.url.pathname],
+  ]} />
+
+<article class="article m-article">
   <h1 class="h2">[{dname}] {d_dub}</h1>
-  <p class="descs">{$$props.descs}</p>
+  <p class="d_tip">{$$props.d_tip}</p>
 
   <h2 class="h3">Số lượng từ: {$$props.total}</h2>
 
@@ -229,7 +237,7 @@
 {/if}
 
 <style lang="scss">
-  .descs {
+  .d_tip {
     font-style: italic;
     margin-top: 1rem;
     @include fgcolor(tert);

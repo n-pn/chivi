@@ -54,6 +54,6 @@ export const ztext = {
 
 export const vdict = {
   ...writable(make_vdict('combine')),
-  put: (dname: string, d_dub?: string, descs?: string) =>
-    vdict.set(make_vdict(dname, d_dub, descs)),
+  put: (dname: string, d_dub?: string, d_tip?: string) =>
+    vdict.set(make_vdict(dname, d_dub, d_tip)),
 }
