@@ -1,13 +1,12 @@
-# require "../../src/cvmtl/vdict"
+require "../../src/libcv/vp_dict"
+test = CV::VpDict.new "test"
 
-# test = CV::Vdict.new "test"
+print "\nset abc to abc: ", test.add(["abc", "abc"])
 
-# print "\nset abc to abc: ", test.add(["abc", "abc"])
+print "\nput a to a: ", test.add(["a", "a"])
+print "\nput b to b: ", test.add(["b", "b"])
 
-# print "\nput a to a: ", test.add(["a", "a"])
-# print "\nput b to b: ", test.add(["b", "b"])
-
-# print "\nset a to c: ", test.add(["a", "c"])
+print "\nset a to c: ", test.add(["a", "c"])
 
 # print "\nfind abc: ", test.find("abc")
 # print "\nfind ab: ", test.find("ab")
@@ -19,13 +18,13 @@
 
 # # test.save!
 
-# regular = CV::Vdict.regular
+# regular = CV::VpDict.regular
 # puts regular.dtype
 # if entry = regular.find("码")
 #   pp entry, entry.worth
 # end
 
-# special = CV::Vdict.load("7c4khz40")
+# special = CV::VpDict.load("7c4khz40")
 # puts special.dtype
 # if entry = special.find("码")
 #   pp entry, entry.worth
@@ -34,6 +33,4 @@
 # pp regular._root.find("体味")
 # pp regular._root.find("三人").try { |x| {x.entry, x.emend, x._hint} }
 
-require "../../src/libcv/vp_dict"
-
-pp CV::VpDict.essence.find("、")
+puts CV::VpDict.essence.find("、")

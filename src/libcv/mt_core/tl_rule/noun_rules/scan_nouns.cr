@@ -160,7 +160,6 @@ module CV::TlRule
     ude1.val = "" unless head.noun? || head.names?
 
     return head unless tail = scan_noun!(ude1.succ?)
-    puts [head, tail]
     fold!(head, tail, PosTag::NounPhrase, dic: 8, flip: true)
   end
 
