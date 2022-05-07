@@ -1,15 +1,14 @@
 require "colorize"
 
-BONUS = {
-  -2, 0, 7,
-  -4, 0, 16,
-  -6, 0, 24,
-  -8, 0, 32,
+MAP = {
+  4, 6, 8,
+  9, 13, 19,
+  15, 20, 30,
+  24, 33, 40,
 }
 
 def calc(size : Int32, rank = 1)
-  base = size &* 8 &+ (size &- 1) &* 6
-  base &+ BONUS[3 &* (size > 4 ? 3 : size &- 1) &+ rank]
+  MAP[(size &- 1) &* 3 &+ rank]? || size &* (MAP[rank] &+ 1)
 end
 
 alias List = Array(Tuple(Int32, Int32))
@@ -61,6 +60,8 @@ assert_gt [{3, 1}, {1, 1}], [{4, 0}]
 puts
 
 assert_gt [{4, 2}], [{2, 2}, {2, 2}]
+assert_gt [{4, 2}], [{3, 2}, {1, 2}]
+
 assert_gt [{3, 1}], [{2, 1}, {1, 1}]
 assert_gt [{2, 2}, {1, 1}], [{3, 1}]
 puts
