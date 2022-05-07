@@ -2,7 +2,7 @@ require "tabkv"
 require "lexbor"
 require "../src/appcv/shared/sname_map"
 
-DIR = ".cache/index"
+DIR = "var/.cached/index"
 Dir.mkdir_p(DIR)
 
 def fresh?(file : String, ttl = 1.days) : Bool
