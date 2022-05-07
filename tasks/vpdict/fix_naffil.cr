@@ -1,4 +1,4 @@
-require "../../src/cvmtl/tl_util"
+require "../../src/libcv/tl_util"
 
 DIR = "var/vpdicts/v1/novel"
 

@@ -1,4 +1,4 @@
-require "../../cvmtl/mt_core"
+require "../../libcv/mt_core"
 
 class CV::ChRepo
   DIR = "var/chtexts"

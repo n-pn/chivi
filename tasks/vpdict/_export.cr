@@ -1,5 +1,5 @@
 require "./shared/*"
-require "../../src/cvmtl/*"
+require "../../src/libcv/*"
 
 CORPUS = "_db/vpinit/corpus"
 QTRANS = "_db/vpinit/qtrans"

@@ -1,4 +1,4 @@
-require "../../src/cvmtl/*"
+require "../../src/libcv/*"
 
 DIR = "_db/vpdict/logs"
 

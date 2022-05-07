@@ -26,7 +26,7 @@ class CV::VpDict
   end
 
   class_getter qtdicts : Array(String) do
-    files = Dir.glob("#{DIR}/cvmtl/*.tsv")
+    files = Dir.glob("#{DIR}/libcv/*.tsv")
     files.map { |f| "~" + File.basename(f, ".tsv") }
   end
 

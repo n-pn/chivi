@@ -1,5 +1,5 @@
 require "json"
-require "../../cvmtl/*"
+require "../../libcv/*"
 
 struct CV::VpTermView
   DIR = "var/vphints/detect"

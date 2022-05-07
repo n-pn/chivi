@@ -1,4 +1,4 @@
-require "../../src/cvmtl/*"
+require "../../src/libcv/*"
 
 DIR = File.join(__DIR__, "_fixes")
 

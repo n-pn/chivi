@@ -1,5 +1,5 @@
 require "../../src/_init/postag_init"
-require "../../src/cvmtl/vp_hint"
+require "../../src/libcv/vp_hint"
 
 input = CV::PostagInit.new("_db/vpinit/bd_lac/out/top25-all.tsv")
 

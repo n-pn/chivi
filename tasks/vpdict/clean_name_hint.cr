@@ -1,5 +1,5 @@
-require "../../src/cvmtl/tl_util"
-require "../../src/cvmtl/mt_core"
+require "../../src/libcv/tl_util"
+require "../../src/libcv/mt_core"
 
 alias Dict = Hash(String, Array(String))
 

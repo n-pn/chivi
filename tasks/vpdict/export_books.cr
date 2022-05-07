@@ -2,7 +2,7 @@ require "colorize"
 require "tabkv"
 
 require "../../src/_init/postag_init"
-require "../../src/cvmtl/tl_util"
+require "../../src/libcv/tl_util"
 
 def similar?(attr : String, ptag : String)
   return true if attr == ptag

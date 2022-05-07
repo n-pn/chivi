@@ -1,4 +1,4 @@
-require "../../src/cvmtl/*"
+require "../../src/libcv/*"
 
 struct CV::PosTag
   # ameba:disable Metrics/CyclomaticComplexity
