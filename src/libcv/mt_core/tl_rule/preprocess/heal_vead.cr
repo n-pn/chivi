@@ -1,0 +1,21 @@
+module CV::TlRule
+  def heal_vead!(node : MtNode) : MtNode
+    case succ = node.succ?
+    when .nil?, .ends?
+      return MtDict.fix_verb!(node)
+    when .veno?
+      succ = heal_veno!(succ)
+      return succ.nouns? ? MtDict.fix_verb!(node) : MtDict.fix_adverb!(node)
+    when .verbs?, .vmodals?, .preposes?
+      return MtDict.fix_verb!(node)
+    when .nouns?, .numeric?, .pronouns?
+      return MtDict.fix_verb!(node)
+    end
+
+    case node.prev?
+    when .nil?    then node
+    when .adverb? then MtDict.fix_verb!(node)
+    else               node
+    end
+  end
+end

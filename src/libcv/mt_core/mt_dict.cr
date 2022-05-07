@@ -23,7 +23,7 @@ module CV::MtDict
   end
 
   enum Dnames
-    FixUZhi
+    FixUZhi; FixAdverbs
     FixNouns; FixVerbs; FixAdjts
     QtTimes; QtVerbs; QtNouns
 
@@ -35,6 +35,7 @@ module CV::MtDict
     load("~fix_nouns", PosTag::Noun),
     load("~fix_verbs", PosTag::Verb),
     load("~fix_adjts", PosTag::Adjt),
+    load("~fix_adverbs", PosTag::Adverb),
     load("~qt_times", PosTag::Qttime),
     load("~qt_verbs", PosTag::Qtverb),
     load("~qt_nouns", PosTag::Qtnoun),
@@ -95,6 +96,14 @@ module CV::MtDict
       node.set!(term[0], term[1])
     else
       node.set!(PosTag::Adjt)
+    end
+  end
+
+  def fix_adverb!(node : MtNode) : MtNode
+    if term = get(:fix_adverbs)[node.key]?
+      node.set!(term[0], term[1])
+    else
+      node.set!(PosTag::Adverb)
     end
   end
 

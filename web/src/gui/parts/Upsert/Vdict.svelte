@@ -7,6 +7,7 @@
     '~fix_nouns', '~fix_verbs', '~fix_adjts',
     '~qt_times', '~qt_verbs', '~qt_nouns',
     '~fix_u_zhi', '~v_compl', '~v2_objs',
+    '~fix_adverbs'
   ]
 
   const dicts = { basic, cvmtl }

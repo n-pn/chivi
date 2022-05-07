@@ -39,6 +39,7 @@ module CV::TlRule
       when .popens?   then node = fold_quoted!(node)
       when .atsign?   then node = fold_atsign!(node)
       when .specials? then node = pre_special!(node)
+      when .vead?     then node = heal_vead!(node)
       when .veno?     then node = heal_veno!(node)
       when .ajno?     then node = heal_ajno!(node)
       end
