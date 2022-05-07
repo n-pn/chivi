@@ -2,7 +2,7 @@ module CV::TlRule
   def fold_strings!(node : MtNode) : MtNode
     if node.litstr?
       fold_litstr!(node)
-    elsif node.key.starts_with?("http")
+    elsif node.urlstr?
       fold_urlstr!(node)
     else
       node
@@ -60,9 +60,9 @@ module CV::TlRule
 
   private def uri_component?(node : MtNode) : Bool
     case node.tag
-    when .litstr?, .ndigit? then true
+    when .litstr?, .urlstr?, .ndigit? then true
     when .puncts?
-      {'%', '?', '-', '=', '~', '#', '@', '/'}.includes?(node.key[0]?)
+      {'%', '?', '-', '=', '~', '#', '@', '/', '.'}.includes?(node.key[0]?)
     else
       node.key !~ /[^a-zA-Z]/
     end
