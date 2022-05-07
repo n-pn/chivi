@@ -15,10 +15,13 @@ module CV::TlRule
     if right
       node = fold_ude1_left!(ude1: ude1, left: prev, right: right)
       return fold_noun_after!(node)
-    else
-      succ = ude1.succ
     end
 
+    succ = ude1.succ # added as counter measure when succ get changed in scan_noun
+    fix_ude1_errors!(ude1, prev, succ)
+  end
+
+  def fix_ude1_errors!(ude1 : MtNode, prev : MtNode, succ : MtNode)
     if succ.verbs? && prev.adjts? || prev.adverbs? || prev.verb?
       # ude1 as ude2 grammar error
       # puts [prev, succ, ude1]

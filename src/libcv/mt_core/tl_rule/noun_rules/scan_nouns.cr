@@ -106,8 +106,16 @@ module CV::TlRule
         node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
         node = fold_adjt_as_noun!(node)
       when .nouns?
-        node = fold_nouns!(node)
-        node = scan_noun!(node) || node unless node.nouns?
+        case node = fold_nouns!(node)
+        when .nattr?
+          node = fold_head_ude1_noun!(node)
+        when .naffil?, .place?
+          node = fold_head_ude1_noun!(node) if prodem || nquant
+        when .nouns?
+          break
+        else
+          node = scan_noun!(node) || node unless node.nouns?
+        end
       when .ude2?
         if node.prev? { |x| x.pre_zai? || x.verbs? } || node.succ?(&.spaces?)
           node.set!("đất", PosTag::Noun)
