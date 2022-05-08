@@ -48,12 +48,12 @@ class CV::Yslist
 
   scope :sort_by do |order|
     case order
+    when "ctime" then self.order_by(id: :desc)
     when "utime" then self.order_by(utime: :desc)
     when "likes" then self.order_by(like_count: :desc)
     when "stars" then self.order_by(star_count: :desc)
     when "views" then self.order_by(view_count: :desc)
-    when "score" then self.order_by(_sort: :desc)
-    else              self.order_by(id: :desc)
+    else              self.order_by(_sort: :desc)
     end
   end
 
