@@ -11,6 +11,7 @@ module CV::TlRule
     when .adverb?
       if succ.key == "这么" || succ.key == "那么"
         adverb, succ = succ, succ.succ?
+        return vyou if succ.try(&.nouns?)
       end
     else
       if vyou.key == "有"
@@ -25,6 +26,10 @@ module CV::TlRule
 
     unless (tail = scan_adjt!(succ)) && (tail.adjts? || adverb && tail.verb_object?)
       return fold!(vyou, noun, PosTag::VerbObject, dic: 7)
+    end
+
+    if tail.starts_with?("不")
+      return fold!(vyou, tail, PosTag::Unkn, 1)
     end
 
     output = MtNode.new("", "", PosTag::Unkn, dic: 1, idx: vyou.idx)
