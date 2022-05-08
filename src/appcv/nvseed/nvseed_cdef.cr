@@ -19,7 +19,7 @@ class CV::Nvseed
 
   def self.init!(nvinfo : Nvinfo, zseed : Int32, fetch : Bool = false)
     case zseed
-    when  0 then init!(nvinfo, "chivi").tap(&.mirror_regen!(fetch: fetch))
+    when  0 then init!(nvinfo, "union").tap(&.mirror_regen!(fetch: fetch))
     when 63 then init!(nvinfo, "users") # TODO: check folder and recover
     else         raise "Source #{zseed} not found!"
     end

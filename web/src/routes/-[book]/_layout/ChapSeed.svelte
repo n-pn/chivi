@@ -32,7 +32,7 @@
         class:_hidden={idx > 3 && show_less}
         class:_active={nvseed.sname == chmeta.sname}
         href={chap_url(nvseed.sname)}
-        rel={nvseed.sname != 'chivi' ? 'nofollow' : ''}>
+        rel={nvseed.sname != 'union' ? 'nofollow' : ''}>
         <seed-label>{nvseed.sname}</seed-label>
       </a>
     {/if}

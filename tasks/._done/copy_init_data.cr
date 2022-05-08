@@ -24,7 +24,7 @@ end
 
 Dir.children(INP_DIR).each do |sname|
   puts sname
-  next if sname == "chivi" || sname == "zhwenpg"
+  next if sname == "union" || sname == "zhwenpg"
 
   inp_dir = File.join(INP_DIR, sname)
   # out_dir = File.join(OUT_DIR, sname)

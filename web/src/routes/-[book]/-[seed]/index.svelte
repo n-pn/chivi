@@ -53,7 +53,7 @@
   export let chseed: CV.Chseed
   export let chpage: CV.Chpage
 
-  $: pager = new Pager($page.url, { sname: 'chivi', pg: 1 })
+  $: pager = new Pager($page.url, { sname: 'union', pg: 1 })
 
   $: topbar.set({
     left: [
@@ -119,7 +119,7 @@
         <span class="-hide">Đổi mới</span>
       </button>
 
-      {#if chseed.sname == 'chivi' || chseed.sname == 'users'}
+      {#if chseed.sname == 'union' || chseed.sname == 'users'}
         <a
           class="m-btn"
           class:_disable={$session.privi < 2}

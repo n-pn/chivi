@@ -2,8 +2,8 @@ module CV::SnameMap
   extend self
 
   MAP_INT = {
-    "mixed" => 0,
     "chivi" => 0,
+    "union" => 0,
 
     "staff" => 1,
     "users" => 63,
@@ -37,7 +37,7 @@ module CV::SnameMap
 
   def map_type(sname : String)
     case sname
-    when "chivi", "mixed"
+    when "chivi", "union"
       0 # act as mirror
     when "users", "staff", "zxcs_me"
       1 # manual update
@@ -70,7 +70,7 @@ module CV::SnameMap
   MAP_STR = MAP_INT.invert
 
   def map_str(int : Int32)
-    MAP_STR[int] || "mixed"
+    MAP_STR[int] || "union"
   end
 
   def map_str(ints : Array(Int32))

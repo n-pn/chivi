@@ -3,7 +3,7 @@ require "./_base_ctrl"
 class CV::NvchapCtrl < CV::BaseCtrl
   private def load_nvseed
     nvinfo_id = params["book"].to_i64
-    sname = params.fetch_str("sname", "chivi")
+    sname = params.fetch_str("sname", "union")
     Nvseed.load!(nvinfo_id, SnameMap.map_int(sname))
   end
 
@@ -154,7 +154,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     nvseed.tap(&.patch!(infos, stime)).reset_cache!
     nvseed.nvinfo.tap(&.add_nvseed(nvseed.zseed)).save!
 
-    # copy new uploaded chapters to "chivi" source
+    # copy new uploaded chapters to "union" source
     infos.map!(&.as_proxy!("users", nvseed.snvid))
 
     mixed_seed = Nvseed.load!(nvseed.nvinfo, 0)

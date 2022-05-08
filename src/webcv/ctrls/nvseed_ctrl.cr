@@ -4,7 +4,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
   def index
     nvinfo = Nvinfo.load!(params["book"].to_i64)
 
-    sname = params.fetch_str("sname", "chivi")
+    sname = params.fetch_str("sname", "union")
     nvseed = Nvseed.load!(nvinfo.id, SnameMap.map_int(sname))
 
     force = params["force"]? == "true" && _cvuser.privi >= 0
@@ -39,7 +39,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   private def load_nvseed
     nvinfo_id = params["book"].to_i64
-    sname = params.fetch_str("sname", "chivi")
+    sname = params.fetch_str("sname", "union")
     Nvseed.load!(nvinfo_id, SnameMap.map_int(sname))
   end
 end

@@ -58,7 +58,7 @@ class CV::FixData
 
         if @sname == "zxcs_me"
           vals[0] = vals[0].to_i.to_s
-        elsif @sname == "chivi"
+        elsif @sname == "union"
           vals[0] = vals[0].to_i.*(10).to_s
         end
 
@@ -158,7 +158,7 @@ class CV::FixData
 
         if @sname == "zxcs_me"
           schid = schid.to_i.to_s
-        elsif @sname == "chivi"
+        elsif @sname == "union"
           schid = schid.to_i.*(10).to_s
         end
 

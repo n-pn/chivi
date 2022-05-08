@@ -32,7 +32,7 @@
       class="seed-name"
       class:_hidden={sname != 'users' && idx >= 4 && show_less}
       class:_active={sname == chseed.sname}
-      rel={sname != 'chivi' ? 'nofollow' : ''}>
+      rel={sname != 'union' ? 'nofollow' : ''}>
       <seed-label>
         <span>{sname}</span>
         <SIcon name={icon_types[stype]} />

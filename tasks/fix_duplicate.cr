@@ -22,7 +22,7 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
 
   nvseeds = nvinfo.nvseeds.to_a.sort_by(&.zseed)
   nvseeds.each do |nvseed|
-    next if nvseed.sname == "chivi" || nvseed.sname == "users"
+    next if nvseed.sname == "union" || nvseed.sname == "users"
     next if CV::Nvseed.find({nvinfo_id: new_nvinfo.id, zseed: nvseed.zseed})
 
     nvseed.nvinfo_id = new_nvinfo.id

@@ -51,7 +51,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         ubmemo.lr_chidx = -1
         ubmemo.lc_uslug = chinfo.trans.uslug
       else
-        ubmemo.lr_sname = "chivi"
+        ubmemo.lr_sname = "union"
         ubmemo.lc_uslug = "thieu-chuong"
       end
     end

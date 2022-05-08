@@ -56,7 +56,7 @@ class CV::Nvseed
   # ------------------------
 
   def refresh!(force : Bool = false) : Nil
-    if zseed == 0 # sname == "chivi"
+    if zseed == 0 # sname == "union"
       if force
         self.chap_count = 0
         self.last_schid = ""

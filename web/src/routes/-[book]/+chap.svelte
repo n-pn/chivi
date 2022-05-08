@@ -12,7 +12,7 @@
   }
 
   async function load_text(fetch: CV.Fetch, book_id: number, chidx: number) {
-    const res = await fetch(`/api/chaps/${book_id}/chivi/${chidx}/_raw`)
+    const res = await fetch(`/api/chaps/${book_id}/union/${chidx}/_raw`)
     return await res.text()
   }
 </script>
@@ -41,7 +41,7 @@
     const payload = await res.json()
     if (res.ok) {
       const { props } = payload
-      goto(`/-${nvinfo.bslug}/-chivi/${props.chidx}-${props.uslug}`)
+      goto(`/-${nvinfo.bslug}/-union/${props.chidx}-${props.uslug}`)
     } else {
       alert(payload.error)
     }
@@ -65,7 +65,7 @@
     <span>{nvinfo.btitle_vi}</span>
   </a>
   <span>/</span>
-  <a href="/-{nvinfo.bslug}/-chivi" class="crumb _link">Chương tiết</a>
+  <a href="/-{nvinfo.bslug}/-union" class="crumb _link">Chương tiết</a>
 </nav>
 
 <section class="article">
