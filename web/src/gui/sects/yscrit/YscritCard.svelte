@@ -403,7 +403,7 @@
   }
 
   .mute {
-    @include fgcolor(tert);
+    @include fgcolor(secd);
     font-size: em(15, 16);
   }
 </style>
