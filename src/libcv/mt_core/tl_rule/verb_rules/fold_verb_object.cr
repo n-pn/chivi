@@ -29,9 +29,16 @@ module CV::TlRule
       end
     end
 
-    node = fold!(verb, noun, PosTag::VerbObject, dic: 8)
-    return node unless (succ = node.succ?) && succ.junction?
-    fold_verb_junction!(junc: succ, verb: node) || node
+    verb_object = fold!(verb, noun, PosTag::VerbObject, dic: 8)
+    return verb_object unless succ = verb_object.succ?
+
+    if succ.suf_noun? && succ.key == "时"
+      fold!(verb_object, succ.set!("khi"), tag: PosTag::Time, dic: 5, flip: true)
+    elsif succ.junction?
+      fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
+    else
+      verb_object
+    end
   end
 
   # ameba:disable Metrics/CyclomaticComplexity

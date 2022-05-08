@@ -49,6 +49,10 @@ module CV::TlRule
       when .suf_verb?
         return fold_suf_verb!(noun, succ)
       when .suf_noun?
+        if succ.key == "时"
+          break if noun.prev?(&.verb?)
+        end
+
         noun = fold_suf_noun!(noun, succ)
       when .usuo?
         break if succ.succ?(&.verbs?)

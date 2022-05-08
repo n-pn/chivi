@@ -66,8 +66,22 @@ module CV::TlRule
     when .nouns?, .pronouns?, .numeric?, .verb_clause?, .adjt_clause?
       fold_noun_ude1!(left, ude1: ude1, right: right, mode: mode)
     else
+      case right.key
+      when "时"
+        right.val = "khi"
+        tag = PosTag::Time
+      when "时候"
+        right.val = "lúc"
+        tag = PosTag::Time
+      when "时间"
+        right.val = "thời gian"
+        tag = PosTag::Time
+      else
+        tag = PosTag::NounPhrase
+      end
+
       left = fold!(left, ude1, PosTag::DefnPhrase, dic: 7)
-      fold!(left, right, PosTag::NounPhrase, dic: 6, flip: true)
+      fold!(left, right, tag: tag, dic: 6, flip: true)
     end
   end
 end
