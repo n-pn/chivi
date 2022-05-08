@@ -33,7 +33,7 @@ class CV::VpTerm
   getter point : Int32 do
     size = @key.size  # cache result because String#size is O(n) for utf8 string
     rank = @rank &- 2 # rank nows is 2 3 4
-    SCORES[(size &- 1) &* 3 &+ rank]? || size &* (SCORES[rank] &+ rank)
+    SCORES[(size &- 1) &* 3 &+ rank]? || size &* (SCORES[rank] &+ rank * 3)
   end
 
   getter is_priv : Bool { @uname[0]? == '!' }
