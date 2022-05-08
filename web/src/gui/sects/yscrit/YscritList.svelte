@@ -28,11 +28,8 @@
   <div class="sorts">
     <span class="label">Sắp xếp:</span>
     {#each Object.entries(sorts) as [sort, name]}
-      {@const actived = sort == _s}
-      <a
-        href={pager.gen_url({ _s: sort, gt: null, lt: null, pg: 1 })}
-        class="m-chip"
-        class:_active={actived}>
+      {@const href = pager.gen_url({ _s: sort, gt: null, lt: null, pg: 1 })}
+      <a {href} class="m-chip" class:_active={sort == _s}>
         <span>{name}</span>
       </a>
     {/each}
@@ -69,7 +66,8 @@
 </div>
 
 <style lang="scss">
-  .crits {
+  .crits,
+  .filter {
     @include bps(margin-left, 0rem, $tm: 0.75rem, $tl: 1.5rem);
     @include bps(margin-right, 0rem, $tm: 0.75rem, $tl: 1.5rem);
   }
@@ -77,8 +75,6 @@
   .filter {
     display: flex;
     margin-top: 0.25rem;
-    @include bps(margin-left, 0rem, $tm: 0.75rem, $tl: 1.5rem);
-    @include bps(margin-right, 0rem, $tm: 0.75rem, $tl: 1.5rem);
     @include bps(flex-direction, column, $ts: row);
 
     .label {
@@ -91,15 +87,6 @@
     @include flex-cx($gap: 0.5rem);
     @include bp-min(ts) {
       align-items: left;
-    }
-  }
-
-  .m-chip {
-    height: 1.75rem;
-    line-height: 1.75rem;
-
-    &._active {
-      --color: #{color(primary, 5)};
     }
   }
 

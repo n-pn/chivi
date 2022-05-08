@@ -12,15 +12,13 @@
 
 <script lang="ts">
   import { topbar } from '$lib/stores'
-  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-  import YslistCard from '$gui/parts/yslist/YslistCard.svelte'
+  import { Crumb } from '$gui'
+
+  import YslistList from '$gui/parts/yslist/YslistList.svelte'
 
   export let lists = []
   export let pgidx = 1
   export let pgmax = 1
-
-  $: pager = new Pager($page.url, { _s: 'utime', pg: 1 })
-  $: _sort = pager.get('_s') || 'utime'
 
   $: topbar.set({
     left: [['Thư đơn', 'bookmarks', { href: '/lists' }]],
@@ -32,58 +30,7 @@
   <title>Thư đơn - Chivi</title>
 </svelte:head>
 
-<article class="article _narrow">
-  <div class="sorts">
-    <span class="h2 -label">Thư đơn</span>
-    {#each Object.entries(sorts) as [sort, name]}
-      <a
-        href={pager.gen_url({ _s: sort, pg: 1 })}
-        class="-sort"
-        class:_active={sort == _sort}>{name}</a>
-    {/each}
-  </div>
-
-  <div class="lists">
-    {#each lists as list}
-      <YslistCard {list} />
-    {/each}
-
-    <footer class="pagi">
-      <Mpager {pager} {pgidx} {pgmax} />
-    </footer>
-  </div>
+<Crumb tree={[['Thư đơn', '/lists']]} />
+<article class="article">
+  <YslistList {lists} {pgidx} {pgmax} />
 </article>
-
-<style lang="scss">
-  .article {
-    @include margin-y(var(--gutter));
-  }
-
-  .sorts {
-    line-height: 2rem;
-    height: 2rem;
-    @include flex($gap: 0.5rem);
-    @include border(--bd-main, $loc: bottom);
-
-    .-label {
-      flex: 1;
-      // font-weight: 500;
-      // @include ftsize(xl);
-    }
-
-    .-sort {
-      @include fgcolor(tert);
-      padding: 0 0.125rem;
-      height: 2rem;
-
-      &._active {
-        border-bottom: 2px solid color(primary, 5);
-        @include fgcolor(primary, 5);
-      }
-    }
-  }
-
-  .pagi {
-    margin: 0.75rem 0;
-  }
-</style>

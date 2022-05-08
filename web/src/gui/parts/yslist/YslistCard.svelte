@@ -79,7 +79,7 @@
 <style lang="scss">
   .yslist {
     display: flex;
-    margin-top: var(--gutter);
+    margin-top: 1rem;
     padding: var(--gutter);
 
     @include bgcolor(secd);
