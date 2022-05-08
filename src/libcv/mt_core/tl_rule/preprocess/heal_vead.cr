@@ -12,10 +12,12 @@ module CV::TlRule
       return MtDict.fix_verb!(node)
     end
 
-    case node.prev?
+    case prev = node.prev?
     when .nil?    then node
     when .adverb? then MtDict.fix_verb!(node)
-    else               node
+    when .nhanzi?
+      prev.key == "一" ? MtDict.fix_verb!(node) : node
+    else node
     end
   end
 end

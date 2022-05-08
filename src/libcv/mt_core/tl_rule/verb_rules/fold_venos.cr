@@ -18,6 +18,8 @@ module CV::TlRule
         # TODO: check for adjt + ude1 + verb (grammar error)
       else return MtDict.fix_noun!(node)
       end
+    when .nhanzi?
+      return MtDict.fix_verb!(node) if prev.key == "一"
     when .adverbs?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
       return MtDict.fix_verb!(node)
     when .auxils?, .preposes?, .modifier?
