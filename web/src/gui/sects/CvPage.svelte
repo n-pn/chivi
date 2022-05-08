@@ -90,6 +90,7 @@
 
     // margin: 0;
     @include padding-y(0);
+    padding-bottom: 0.1px; // make inner margin effective
 
     @include fgcolor(secd);
     @include bgcolor(tert);

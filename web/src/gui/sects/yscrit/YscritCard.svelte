@@ -108,7 +108,13 @@
   </div>
 
   <section class="body" class:big_text class:_all={view_all}>
-    {@html crit.vhtml}
+    {#if crit.vhtml == '<p>$$$</p>'}
+      <p class="mute">
+        <em>(Nội dung đánh giá đã bị ẩn trên Ưu Thư Võng, đợi phục hồi)</em>
+      </p>
+    {:else}
+      {@html crit.vhtml}
+    {/if}
   </section>
 
   <footer class:_sticky={view_all}>
@@ -394,5 +400,10 @@
     @include hover {
       @include fgcolor(primary, 5);
     }
+  }
+
+  .mute {
+    @include fgcolor(tert);
+    font-size: em(15, 16);
   }
 </style>
