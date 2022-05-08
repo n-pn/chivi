@@ -19,8 +19,8 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pager = new Pager($page.url, { _s: 'score', pg: 1 })
-  $: _sort = pager.get('_s')
+  $: pager = new Pager($page.url, { _s: 'utime', pg: 1 })
+  $: _sort = pager.get('_s') || 'utime'
 
   $: topbar.set({
     left: [['Thư đơn', 'bookmarks', { href: '/lists' }]],

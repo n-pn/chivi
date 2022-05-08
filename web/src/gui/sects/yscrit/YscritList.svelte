@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  const sorts = { score: 'Tổng hợp', likes: 'Ưa thích', mtime: 'Gần nhất' }
+  const sorts = { score: 'Tổng hợp', likes: 'Ưa thích', utime: 'Gần nhất' }
 </script>
 
 <script lang="ts">
@@ -12,13 +12,14 @@
   export let crits: CV.Yscrit[] = []
   export let pgidx = 1
   export let pgmax = 1
+  export let _sort = 'score'
 
   export let show_book = true
   export let show_list = true
 
-  $: pager = new Pager($page.url, { _s: 'utime', pg: 1 })
+  $: pager = new Pager($page.url, { _s: _sort, pg: 1 })
 
-  $: _s = $page.url.searchParams.get('_s') || 'score'
+  $: _s = $page.url.searchParams.get('_s') || _sort
   $: gt = $page.url.searchParams.get('gt') || 1
   $: lt = $page.url.searchParams.get('lt') || 5
 </script>

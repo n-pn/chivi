@@ -17,4 +17,4 @@
   export let pgmax = 1
 </script>
 
-<YscritList {crits} {pgidx} {pgmax} show_book={false} />
+<YscritList {crits} {pgidx} {pgmax} _sort="score" show_book={false} />

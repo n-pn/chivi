@@ -103,7 +103,7 @@
 </section>
 
 <article class="article">
-  <YscritList {crits} {pgidx} {pgmax} show_list={false} />
+  <YscritList {crits} {pgidx} {pgmax} _sort="utime" show_list={false} />
 </article>
 
 <style lang="scss">

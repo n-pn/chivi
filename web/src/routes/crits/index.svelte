@@ -29,5 +29,5 @@
 <Crumb tree={[['Đánh giá', '/crits']]} />
 
 <article class="article">
-  <YscritList {crits} {pgidx} {pgmax} />
+  <YscritList {crits} {pgidx} {pgmax} _sort="utime" />
 </article>
