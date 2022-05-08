@@ -5,7 +5,7 @@ declare namespace CV {
     utime: number
     atime?: number
     stype: number
-    _link?: string
+    _link: string
   }
 
   interface Chinfo {

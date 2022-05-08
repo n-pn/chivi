@@ -1,9 +1,11 @@
 <script context="module" lang="ts">
   export async function load({ fetch, stuff, url }) {
+    const _sort = url.searchParams.get('_s') || 'score'
+
     url.searchParams.set('book', stuff.nvinfo.id)
     url.searchParams.set('lm', 10)
+    url.searchParams.set('_s', _sort)
     const api_url = `/api/yscrits${url.search}`
-    console.log({ api_url })
 
     const api_res = await fetch(api_url)
     return await api_res.json()
