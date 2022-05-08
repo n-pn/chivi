@@ -64,6 +64,7 @@ class CV::YslistRaw
     yslist.set_name(self.zname)
     yslist.set_desc(self.zdesc)
 
+    yslist.klass = klass
     yslist.stime = stime
     yslist.utime = self.updated_at.to_unix
 
