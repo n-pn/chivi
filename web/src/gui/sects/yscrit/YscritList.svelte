@@ -29,7 +29,7 @@
     <span class="label">Sắp xếp:</span>
     {#each Object.entries(sorts) as [sort, name]}
       {@const href = pager.gen_url({ _s: sort, gt: null, lt: null, pg: 1 })}
-      <a {href} class="m-chip" class:_active={sort == _s}>
+      <a {href} class="m-chip _sort" class:_active={sort == _s}>
         <span>{name}</span>
       </a>
     {/each}
