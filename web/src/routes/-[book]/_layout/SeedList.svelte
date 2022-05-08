@@ -3,6 +3,37 @@
   import { seed_url } from '$utils/route_utils'
 
   const icon_types = ['affiliate', 'archive', 'cloud-off', 'cloud-fog', 'cloud']
+
+  function map_info(sname: string, stype: number, _link: string) {
+    switch (sname) {
+      case 'union':
+        return 'Nguồn trộn tổng hợp từ các nguồn phía sau'
+
+      case 'users':
+        return 'Chương tiết do người dùng Chivi đăng tải'
+
+      case 'staff':
+        return 'Chương tiết do ban quản trị Chivi đăng tải'
+
+      case 'zxcs_me':
+        return 'Nguồn text tải bằng tay từ trang zxcs.me (bản đẹp)'
+
+      case 'hetushu':
+        return 'Nguồn truyện từ trang hetushu.com (phần lớn là bản đẹp)'
+
+      default:
+        const hostname = new URL(_link).hostname.replace('www.', '')
+
+        const label = `Nguồn truyện từ trang ${hostname} `
+        const status =
+          stype < 3
+            ? '(đã chết)'
+            : stype < 4
+            ? '(còn sống) (chậm)'
+            : '(còn sống)'
+        return label + status
+    }
+  }
 </script>
 
 <script lang="ts">
@@ -26,17 +57,19 @@
 </script>
 
 <seed-list>
-  {#each nvseed as { sname, chaps, stype }, idx}
+  {#each nvseed as { sname, chaps, stype, _link }, idx}
     <a
       href={seed_url(nvinfo.bslug, sname, pgidx)}
       class="seed-name"
       class:_hidden={sname != 'users' && idx >= 4 && show_less}
       class:_active={sname == chseed.sname}
+      data-tip={map_info(sname, stype, _link)}
       rel={sname != 'union' ? 'nofollow' : ''}>
       <seed-label>
         <span>{sname}</span>
         <SIcon name={icon_types[stype]} />
       </seed-label>
+
       <seed-stats><strong>{chaps}</strong> chương</seed-stats>
     </a>
   {/each}
