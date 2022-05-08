@@ -1,6 +1,13 @@
 require "../shared/bootstrap"
 
 CV::Nvinfo.query.each do |nvinfo|
-  utimes = nvinfo.nvseeds.to_a.reject(&.in?(0, 63)).map(&.utime)
-  nvinfo.update(utime: utimes.max) unless utimes.empty?
+  bseeds = nvinfo.nvseeds.to_a.reject(&.zseed.in?(0, 1, 4, 63))
+
+  if bseeds.empty?
+    utime = nvinfo.ysbook.try(&.utime) || nvinfo.utime
+  else
+    utime = bseeds.max_of(&.utime)
+  end
+
+  nvinfo.update(utime: utime)
 end
