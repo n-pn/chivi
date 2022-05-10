@@ -107,28 +107,142 @@ module CV
     target.save!(sort: true)
   end
 
-  def export_top50
-    picked = File.read_lines("#{OUT}/top50-raw.tsv").map(&.split('\t', 2).first).to_set
+  def split_by_tag_types(inp_name : String, out_dir : String)
+    input = PostagInit.new("#{OUT}/#{inp_name}.tsv")
 
-    target = PostagInit.new("#{OUT}/top50-all.tsv", reset: true)
+    ondict = PostagInit.new("#{OUT}/#{out_dir}/ondict.tsv", reset: true)
+    unseen = PostagInit.new("#{OUT}/#{out_dir}/unseen.tsv", reset: true)
 
-    Dir.glob("#{SUM}/*.tsv").each do |file|
-      reduce_value = File.read_lines(file.sub(".tsv", ".log")).size
-      reduce_value = reduce_value // 2 &+ 1
+    ondict_names = PostagInit.new("#{OUT}/#{out_dir}/ondict-names.tsv", reset: true)
+    ondict_words = PostagInit.new("#{OUT}/#{out_dir}/ondict-words.tsv", reset: true)
 
-      PostagInit.new(file).data.each do |term, counts|
-        next unless picked.includes?(term)
+    unseen_names = PostagInit.new("#{OUT}/#{out_dir}/unseen-names.tsv", reset: true)
+    unseen_words = PostagInit.new("#{OUT}/#{out_dir}/unseen-words.tsv", reset: true)
 
-        counts.each do |tag, count|
-          target.update_count(term, tag, count // reduce_value + 1)
+    input.data.each do |key, counts|
+      is_names = counts.first_key.in?("nr", "nn", "nx", "nz")
+
+      if BONUS[key]?
+        ondict.data[key] = counts
+
+        if is_names
+          ondict_names.data[key] = counts
+        else
+          ondict_words.data[key] = counts
+        end
+      else
+        unseen.data[key] = counts
+
+        if is_names
+          unseen_names.data[key] = counts
+        else
+          unseen_words.data[key] = counts
         end
       end
+    end
+
+    ondict.save!(sort: true)
+    unseen.save!(sort: true)
+
+    ondict_names.save!(sort: true)
+    ondict_words.save!(sort: true)
+
+    unseen_names.save!(sort: true)
+    unseen_words.save!(sort: true)
+  end
+
+  # split_by_tag_types("top25-all", "top25")
+
+  def gen_limits(chap_checked)
+    # min_count: minimal occurency of a phrase to be considered keeping
+    # base on number of chapters analyzed
+    # note that almost all chapters size the same (around 3k chars)
+    # so using chap count is good enough
+
+    if chap_checked < 100
+      min_count = 10 # characters mentioned less than 10 times are not worth considering
+    elsif chap_checked > 250
+      min_count = 25 # since there are series that have 3000+ chapters, we need upper limit
+    else
+      min_count = chap_checked // 10
+    end
+
+    # fail_safe:
+    # Usually we will skip including the terms already existed in `regular` dictionary
+    # But entries in `regular` dictionary is unreliable since the dict applied to
+    # all books, sometime the terms will be changed by users for reasons.
+    # By introducting a fail_safe limit, we will still keep the names in book dictionary
+    # so they won't be affected by global state
+    # this only applies to named entries (nr/nn/nx/nz tags)
+
+    if chap_checked < 100
+      # even the chapters checked is under 100, we still keep the minimal value to 100
+      # so the dict is not filled with too many regular terms
+      fail_safe = 100
+    elsif chap_checked < 500
+      # names that popular enough that the occurency of them at least equal to checked chapters
+      fail_safe = chap_checked
+    else
+      fail_safe = 500 # 500 times is enough to keep it in book dict
+    end
+
+    {min_count, fail_safe}
+  end
+
+  def export_books
+    global = PostagInit.new("#{OUT}/top50-raw.tsv")
+
+    Dir.glob("#{SUM}/*.tsv").each do |file|
+      chap_checked = File.read_lines(file.sub(".tsv", ".log")).size
+      min_count, fail_safe = gen_limits(chap_checked)
+
+      bslug = File.basename(file, ".tsv")
+
+      bdict_names = PostagInit.new("#{OUT}/books/#{bslug}-names.tsv", reset: true)
+      bdict_other = PostagInit.new("#{OUT}/books/#{bslug}-other.tsv", reset: true)
+
+      PostagInit.new(file).data.each do |word, counts|
+        count_sum = counts.each_value.sum
+
+        # reject if this entry does not appear frequenly enough
+        next if count_sum < min_count
+
+        first_tag = counts.first_key
+        next if first_tag.in?("w", "xc", "m")
+
+        is_names = first_tag.in?("nr", "nn", "nx", "nz")
+
+        if global_counts = global.data[word]?
+          if global_counts.first_key == first_tag
+            # keep the names if it appear frequently enough
+            next unless is_names && count_sum >= fail_safe
+          end
+        end
+
+        if is_names
+          bdict_names.data[word] = counts
+        else
+          bdict_other.data[word] = counts
+        end
+      end
+
+      bdict_names.save!(sort: true)
+      bdict_other.save!(sort: true)
     rescue err
       puts err
     end
-
-    target.save!(sort: true)
   end
 
-  export_top25
+  def combine_books_names_to_check_translation
+    output = Set(String).new
+    Dir.glob("#{OUT}/books/*-names.tsv").each do |file|
+      lines = File.read_lines(file)
+      lines.each { |line| output << line.split('\t', 2).first }
+    end
+
+    File.write("#{OUT}/book-names.txt", output.join("\n"))
+  end
+
+  # export_books
+  # combine_books_names_to_check_translation
 end
