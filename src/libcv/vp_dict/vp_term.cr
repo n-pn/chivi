@@ -21,19 +21,18 @@ class CV::VpTerm
   # auto generated fields
   property ptag : PosTag { PosTag.parse(@attr, @key) }
 
-  #
   SCORES = {
-    2, 6, 8,
-    13, 16, 20,
-    23, 25, 32,
-    33, 37, 45,
-    46, 50, 70,
+    3, 6, 8,
+    13, 16, 22,
+    18, 27, 35,
+    34, 40, 50,
+    50, 60, 75,
   }
 
   getter point : Int32 do
     size = @key.size  # cache result because String#size is O(n) for utf8 string
     rank = @rank &- 2 # rank nows is 2 3 4
-    SCORES[(size &- 1) &* 3 &+ rank]? || size &* (SCORES[rank] &+ rank * 3)
+    SCORES[(size &- 1) &* 3 &+ rank]? || size &* (rank &+ 6) &* 2
   end
 
   getter is_priv : Bool { @uname[0]? == '!' }
