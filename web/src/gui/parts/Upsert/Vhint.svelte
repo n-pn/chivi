@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { ptnames } from '$gui/parts/Postag.svelte'
+  import pt_labels from '$lib/consts/postag_labels.json'
   const v_kbd = ['q', '@', '#', '$', '%', '^']
   const p_kbd = ['-', '=']
 
@@ -125,11 +125,16 @@
     return val_hints.length
   }
 
-  $: tag_hints = gent_tag_hints(dname, vpterm)
+  $: tag_hints = gen_tag_hints(dname, vpterm)
 
-  function gent_tag_hints(dname: string, vpterm: VpTerm): string[] {
+  function gen_tag_hints(dname: string, vpterm: VpTerm): string[] {
     if (dname == 'hanviet' || dname == 'tradsim') return []
-    return vpterm.h_ptags(similar_tags(vpterm.ptag))
+    const output = vpterm.init.h_tags || []
+    const curr_ptag = vpterm.ptag
+
+    if (dname.startsWith('-')) output.push('nr', 'nn')
+    if (output.length < 3) output.push(...similar_tags(curr_ptag))
+    return output.filter((x, i, s) => x && x != curr_ptag && s.indexOf(x) == i)
   }
 
   // show_mode = 0 => show minimal
@@ -187,7 +192,7 @@
         class:_priv={tag == vpterm.init.u_ptag}
         class:_hide
         data-kbd={p_kbd[idx]}
-        on:click={() => (vpterm.ptag = tag)}>{ptnames[tag] || tag}</button>
+        on:click={() => (vpterm.ptag = tag)}>{pt_labels[tag] || tag}</button>
     {/each}
 
     {#if tag_hints.length > 2 || show_mode == 1}

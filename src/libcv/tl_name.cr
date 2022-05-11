@@ -111,9 +111,20 @@ class CV::TlName
       end
     end
 
+    def has_ends?(input : String)
+      node = @root
+
+      input.chars.reverse_each do |char|
+        return false unless node = node[char]?
+        return true if node.vals
+      end
+
+      false
+    end
+
     ##############
 
-    DIR = "src/libcv/tl_util"
+    DIR = "var/vphints/tlname"
 
     class_getter human : self { new("#{DIR}/human.tsv") }
     class_getter affil : self { new("#{DIR}/affil.tsv") }
@@ -132,7 +143,17 @@ class CV::TlName
   end
 
   def tl_human(input : String)
-    translate(input, Trie.human, :human)
+    if input[0] == '老'
+      output = find_defined(input, :human) || [] of String
+      others = translate(input[1..], Trie.human, :human).map! { |x| "lão #{x}" }
+      return output.empty? ? others : output.concat(others).uniq!
+    end
+
+    output = translate(input, Trie.human, :human)
+    return output unless input[0] == '小'
+
+    output.concat translate(input[1..], Trie.human, :human).map! { |x| "tiểu #{x}" }
+    output.uniq!
   end
 
   def tl_other(input : String)
@@ -215,5 +236,27 @@ class CV::TlName
 
     to_match = type.human? || type.affil? ? {"nr", "nn", "n", ""} : {"nz", "n", ""}
     term.val if to_match.includes?(term.attr)
+  end
+
+  DIR = "var/vphints/detect"
+
+  LASTNAMES = load_chars("#{DIR}/lastnames.txt")
+  ATTRIBUTE = load_chars("#{DIR}/attribute.txt")
+
+  def self.load_chars(file : String) : Set(Char)
+    lines = File.read_lines(file)
+    Set(Char).new(lines.map(&.[0]))
+  end
+
+  def self.is_human?(input : String)
+    return false unless first_char = input[0]?
+    return true if LASTNAMES.includes?(first_char)
+    return true if first_char.in?('小', '老') && LASTNAMES.includes?(input[1]?)
+
+    Trie.human.has_ends?(input)
+  end
+
+  def self.is_affil?(input : String)
+    Trie.affil.has_ends?(input)
   end
 end

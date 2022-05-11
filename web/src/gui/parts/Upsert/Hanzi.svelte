@@ -9,8 +9,6 @@
     [0, -1],
     [-2, 0],
     [0, 2],
-    [-1, -1],
-    [-1, 1],
   ]
 
   import type { VpTermInit } from '$lib/vp_term'

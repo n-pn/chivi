@@ -24,6 +24,8 @@
 </script>
 
 <script lang="ts">
+  import pt_labels from '$lib/consts/postag_labels.json'
+
   import { upsert_dicts } from '$utils/vpdict_utils'
   import { hint } from './Upsert/_shared'
   import { VpTerm } from '$lib/vp_term'
@@ -40,7 +42,7 @@
   import Vrank from './Upsert/Vrank.svelte'
   import Links from './Upsert/Links.svelte'
 
-  import Postag, { ptnames } from '$gui/parts/Postag.svelte'
+  import Postag from '$gui/parts/Postag.svelte'
   import { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
   import { make_vdict } from '$utils/vpdict_utils'
 
@@ -164,7 +166,7 @@
 
         {#if dname != 'hanviet'}
           <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
-            {ptnames[vpterm.ptag] || 'Phân loại'}
+            {pt_labels[vpterm.ptag] || 'Phân loại'}
           </button>
         {/if}
       </div>

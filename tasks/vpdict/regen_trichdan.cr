@@ -7,16 +7,26 @@ def cleanup(input : String)
     .gsub(/(\]|}); /) { |_, x| x[1] + " " }
 end
 
-inp_dict = QtDict.load("system/trichdan.txt", preload: true)
 out_dict = CV::VpHint.trich_dan
 
-puts "- input: #{inp_dict.size}"
+TRADSIM = {} of String => String
 
-inp_dict.data.each do |key, vals|
-  vals = vals.first.split("\\n").map { |x| cleanup(x) }
+File.each_line("_db/vpinit/system/trichdan.txt") do |line|
+  key, vals = line.split("=", 2)
+  if match = vals.match(/Giản thể của chữ (\p{Han}+)/)
+    TRADSIM[key] = match[1]
+  end
+
+  vals = vals.split("\\n").map { |x| cleanup(x) }
+
   out_dict.add(key, vals)
 rescue err
   puts err
+end
+
+TRADSIM.each do |trad, simp|
+  next unless vals = out_dict.find(trad)
+  out_dict.extend(simp, vals)
 end
 
 out_dict.save!

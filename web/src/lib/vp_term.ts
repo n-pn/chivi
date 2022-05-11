@@ -57,14 +57,6 @@ export class VpTerm {
     }
   }
 
-  h_ptags(similar_tags: string[] = []) {
-    const list = [this.init.b_ptag, this.init.u_ptag]
-    list.push(...(this.init.h_tags || []))
-
-    if (list.length < 4) list.push(...similar_tags)
-    return list.filter((x, i, s) => x && x != this.ptag && s.indexOf(x) == i)
-  }
-
   get o_val() {
     return this.init?.u_val || this.init?.b_val || this.init?.h_fval || ''
   }

@@ -42,7 +42,7 @@ then
 
   # rsync -azi --no-p "var/_common" "$SSH/var"
   rsync -azi --no-p "var/vphints" "$SSH/var"
-
+  rsync -azi --no-p "var/vpdicts/v1/other" "$SSH/var/vpdicts/v1"
   # rsync -azi --no-p --delete "priv/static/covers/" "$SSH/priv/static/covers/"
 fi
 

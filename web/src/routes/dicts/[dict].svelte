@@ -6,8 +6,9 @@
 
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
   import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
+  import pt_labels from '$lib/consts/postag_labels.json'
 
-  import Postag, { ptnames } from '$gui/parts/Postag.svelte'
+  import Postag from '$gui/parts/Postag.svelte'
 
   export async function load({ fetch, url, params: { dict } }) {
     const api_url = `/api/dicts/${dict}${url.search}`
@@ -132,7 +133,7 @@
           <td><input type="text" placeholder="-" bind:value={query.val} /></td>
           <td>
             <button class="m-btn _sm" on:click={() => (postag_state = 2)}
-              >{ptnames[query.ptag] || '-'}</button>
+              >{pt_labels[query.ptag] || '-'}</button>
           </td>
           <td class="rank"
             ><input type="text" placeholder="-" bind:value={query.rank} /></td>
@@ -191,7 +192,7 @@
             </td>
             <td class="-ptag">
               <span on:click={() => show_upsert(key, 2)}>
-                {ptnames[ptag] || '~'}
+                {pt_labels[ptag] || '~'}
               </span>
               <div class="hover">
                 <button

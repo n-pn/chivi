@@ -13,13 +13,11 @@ def cleanup(input : String)
     .join("; ")
 end
 
-inp_dict = QtDict.load("system/lacviet-mtd.txt", preload: true)
 out_dict = CV::VpHint.trungviet
 
-puts "- input: #{inp_dict.size}"
-
-inp_dict.data.each do |key, vals|
-  vals = vals.first.split("\\n").map { |x| cleanup(x) }
+File.each_line("_db/vpinit/system/lacviet-mtd.txt") do |line|
+  key, vals = line.split("=", 2)
+  vals = vals.split("\\n").map { |x| cleanup(x) }
   out_dict.add(key, vals)
 rescue err
   puts err

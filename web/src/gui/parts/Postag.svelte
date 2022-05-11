@@ -1,10 +1,10 @@
 <script context="module" lang="ts">
-  export const ptnames = import('$lib/consts/postag_labels.json')
-  export const tooltips = import('$lib/consts/postag_briefs.json')
+  import pt_labels from '$lib/consts/postag_labels.json'
+  import pt_briefs from '$lib/consts/postag_briefs.json'
 
-  export const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt']
+  const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt']
 
-  export const groups = [
+  const groups = [
     // prettier-ignore
     [
       'nr','nn', 'nz',
@@ -142,10 +142,10 @@
               class:_active={ntag == ptag}
               data-tag={ntag}
               data-kbd={map_kbd(ntag)}
-              use:tooltip={tooltips[ntag]}
+              use:tooltip={pt_briefs[ntag]}
               data-anchor=".postag"
               on:click={() => pick_tag(ntag)}>
-              <span>{ptnames[ntag]}</span>
+              <span>{pt_labels[ntag]}</span>
               {#if ntag == ptag}
                 <SIcon name="check" />
               {/if}

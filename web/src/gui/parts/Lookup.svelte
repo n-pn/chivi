@@ -6,7 +6,8 @@
   import CvData from '$lib/cv_data'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
-  import { ptnames } from '$gui/parts/Postag.svelte'
+  import pt_labels from '$lib/consts/postag_labels.json'
+
   import { ctrl as upsert } from '$gui/parts/Upsert.svelte'
 
   export const ctrl = {
@@ -30,7 +31,7 @@
   let current = []
 
   $: if ($ztext && $ctrl.actived) update_lookup($ztext)
-  $: if ($zfrom && $ctrl.actived) update_focus()
+  $: if ($zfrom >= 0 && $ctrl.actived) update_focus()
 
   let hv_html = ''
   $: zh_html = CvData.render_zh($ztext)
@@ -135,13 +136,13 @@
                 </term-dic>
 
                 <term-val>{val || '<đã xoá>'}</term-val>
-                <term-tag>{ptnames[tag] || 'Chưa phân loại'}</term-tag>
+                <term-tag>{pt_labels[tag] || 'Chưa phân loại'}</term-tag>
               </p>
             {/each}
           </div>
         {/if}
 
-        {#each ['trungviet', 'cc_cedict'] as dname}
+        {#each ['trungviet', 'cc_cedict', 'trich_dan'] as dname}
           {#if terms[dname]}
             <div class="item">
               <h4 class="name">{dname}</h4>

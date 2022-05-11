@@ -98,6 +98,10 @@ class CV::VpdictCtrl < CV::BaseCtrl
         entry[key.size][:cc_cedict] = vals
       end
 
+      VpHint.trich_dan.scan(chars, idx: idx) do |key, vals|
+        entry[key.size][:trich_dan] = vals
+      end
+
       entry.to_a.sort_by(&.[0].-)
     end
 

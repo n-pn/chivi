@@ -47,6 +47,11 @@ class CV::VpHint
     node.vals = vals.empty? ? nil : vals
   end
 
+  def extend(key : String, vals : Array(String), node = get_trie(key[0]))
+    key.each_char { |c| node = node.hash[c] }
+    node.vals = node.vals.try(&.concat(vals).uniq!) || vals
+  end
+
   def add!(key : String, vals : Array(String))
     add(key, vals)
 

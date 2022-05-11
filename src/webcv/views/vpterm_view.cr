@@ -4,15 +4,6 @@ require "../../libcv/*"
 struct CV::VpTermView
   DIR = "var/vphints/detect"
 
-  LASTNAMES = read_chars_to_set("#{DIR}/lastnames.txt")
-  AFFILIATE = read_chars_to_set("#{DIR}/affiliate.txt")
-  ATTRIBUTE = read_chars_to_set("#{DIR}/attribute.txt")
-
-  def self.read_chars_to_set(file : String) : Set(Char)
-    lines = File.read_lines(file)
-    Set(Char).new(lines.map(&.[0]))
-  end
-
   getter dname : String
   getter vdict : VpDict
 
@@ -36,37 +27,6 @@ struct CV::VpTermView
       end
     end
   end
-
-  # def to_json(jb : JSON::Builder, word : String)
-  #   b_term, u_term, h_vals, h_tags, h_fval, h_ptag = load_terms(word)
-
-  #   jb.object do
-  #     if u_term
-  #       jb.field "u_val", u_term.val.first
-  #       jb.field "u_ptag", u_term.ptag.to_str
-  #       jb.field "u_rank", u_term.rank
-
-  #       jb.field "u_mtime", u_term.mtime
-  #       # jb.field "u_uname", u_term.uname
-  #       jb.field "u_state", u_term.state
-  #     end
-
-  #     if b_term
-  #       jb.field "b_val", b_term.val.first
-  #       jb.field "b_ptag", b_term.ptag.to_str
-  #       jb.field "b_rank", b_term.rank
-
-  #       jb.field "b_mtime", b_term.mtime
-  #       jb.field "b_uname", b_term.uname
-  #       jb.field "b_state", b_term.state
-  #     end
-
-  #     jb.field "h_vals", h_vals
-  #     jb.field "h_fval", h_fval
-  #     jb.field "h_tags", h_tags
-  #     jb.field "h_ptag", h_ptag
-  #   end
-  # end
 
   alias Hints = Set(String)
 
@@ -106,26 +66,18 @@ struct CV::VpTermView
     getter val_hints = Set(String).new
     getter tag_hints = Set(String).new
 
+    @first_val : String? = nil
+    @first_tag : String? = nil
+
     def initialize(@word : String, @uname : String,
                    @vdict : VpDict, hanviet : String,
                    @word_mtl : MtCore, @name_mtl : TlName)
       @val_hints << hanviet
-
-      @df_val = ""
-      @df_tag = ""
     end
 
     def to_json(jb : JSON::Builder)
       b_term, u_term = load_terms
-
-      if @vdict.kind.cvmtl?
-        dname = File.basename(@vdict.file, ".tsv")
-        fill_tags_for_cvmtl_dicts(dname)
-      elsif !@vdict.kind.other? # not hanviet/pin_yin
-        add_preseed_hints
-        fill_tags_by_word
-        add_hints_by_tags
-      end
+      fill_hints(u_term || b_term)
 
       jb.object do
         if u_term
@@ -151,8 +103,9 @@ struct CV::VpTermView
         jb.field "h_vals", @val_hints
         jb.field "h_tags", @tag_hints
 
-        jb.field "h_fval", @val_hints.first
-        jb.field "h_ptag", @tag_hints.first
+        h_vals = @val_hints.to_a
+        jb.field "h_fval", @first_val || h_vals[1]? || h_vals[0]?
+        jb.field "h_ptag", @first_tag || @tag_hints.first?
       end
     end
 
@@ -166,6 +119,23 @@ struct CV::VpTermView
         return node.base, node.privs["!" + @uname]?
       else
         return nil, nil
+      end
+    end
+
+    private def fill_hints(term : VpTerm?)
+      if @vdict.kind.cvmtl?
+        dname = File.basename(@vdict.file, ".tsv")
+        fill_tags_for_cvmtl_dicts(dname)
+      elsif !@vdict.kind.other? # not hanviet/pin_yin
+        add_preseed_hints
+        fill_tags_by_word
+        add_hints_by_tags
+        add_hint_from_mtl
+      end
+
+      if @vdict.kind.novel? && !@first_val
+        @first_val = TextUtil.titleize(@val_hints.first)
+        @first_tag = "nr"
       end
     end
 
@@ -201,12 +171,20 @@ struct CV::VpTermView
     end
 
     def fill_tags_by_word
-      return unless first_char = @word[0]?
-      return unless last_char = @word[-1]?
+      if TlName.is_human?(@word)
+        @tag_hints << "nr"
+        @first_tag = "nr" if @vdict.kind.novel?
+      end
 
-      @tag_hints << "nr" if @vdict.kind.novel? || is_human_name?(first_char, @word[1]?)
-      @tag_hints << "nn" if @vdict.kind.novel? || AFFILIATE.includes?(last_char)
-      @tag_hints << "na" if ATTRIBUTE.includes?(last_char) || first_char == '姓'
+      if TlName.is_affil?(@word)
+        @tag_hints << "nn"
+        @first_tag ||= "nn" if @vdict.kind.novel?
+      end
+
+      if TlName::ATTRIBUTE.includes?(@word[-1]?) || @word[0]? == '姓'
+        @tag_hints << "na"
+      end
+
       @tag_hints << "n" if @vdict.kind.basic?
     end
 
@@ -216,46 +194,42 @@ struct CV::VpTermView
       first_char.in?('小', '老') && LASTNAMES.includes?(last_char)
     end
 
-    def add_hints_by_tags : String
-      df_val = nil
-
+    def add_hints_by_tags : Nil
       if @tag_hints.includes?("nr")
         list = @name_mtl.tl_human(@word)
         @val_hints.concat list
-        df_val = list.first
+        @first_val = list.first if @first_tag == "nr"
       end
 
       if @tag_hints.includes?("nn")
         list = @name_mtl.tl_affil(@word)
         @val_hints.concat list
-        df_val ||= list.first
+        @first_val ||= list.first if @first_tag == "nn"
       end
 
       if @tag_hints.includes?("nz")
         list = @name_mtl.tl_other(@word)
         @val_hints.concat list
-        df_val ||= list.first
       end
 
       if @tag_hints.includes?("nx")
         title_val = @name_mtl.tl_name(@word)
         @val_hints << title_val
-        df_val ||= title_val
       end
+    end
 
+    def add_hint_from_mtl : Nil
       mt_list = @word_mtl.cv_plain(@word, cap_first: false)
       mtl_val = mt_list.to_s
 
       @val_hints << mtl_val
-      add_tag_hint_by_cvmtl(mt_list)
-
-      df_val || mtl_val
-    end
-
-    private def add_tag_hint_by_cvmtl(mt_list : MtList) : Nil
       return if !(first = mt_list.first?) || first.succ?
-      ptag = first.tag
-      @tag_hints << ptag.to_str unless ptag.none?
+
+      mtl_tag = first.tag
+      return if mtl_tag.none? || mtl_tag.unkn?
+
+      @tag_hints << mtl_tag.to_str
+      @first_val ||= mtl_val
     end
   end
 end
