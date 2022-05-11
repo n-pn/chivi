@@ -47,22 +47,30 @@ struct CV::PosTag
     {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
   {% end %}
 
-  # ameba:disable Metrics/CyclomaticComplexity
   def self.parse_miscs(tag : String) : self
     case tag
     when "j"  then Noun
     when "i"  then Idiom
     when "l"  then Idiom
     when "z"  then Aform
-    when "x"  then Litstr
-    when "xl" then Urlstr
-    when "xx" then Fixstr
     when "c"  then Conjunct
     when "cc" then Concoord
     when "e"  then Exclam
     when "y"  then Mopart
     when "o"  then Onomat
     else           Unkn
+    end
+  end
+
+  def self.parse_other(tag : String) : self
+    case tag[1]?
+    when 'c' then Exclam
+    when 'e' then Exclam
+    when 'y' then Mopart
+    when 'o' then Onomat
+    when 'l' then Urlstr
+    when 'x' then Fixstr
+    else          Litstr
     end
   end
 

@@ -30,6 +30,7 @@ struct CV::PosTag
     when 'n' then Ajno
     when 'd' then Ajad
     when 'l' then Aform
+    when 'b' then Modifier
     when 'z' then Aform
     else          Adjt
     end
