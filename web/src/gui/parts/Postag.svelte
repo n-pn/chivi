@@ -7,7 +7,8 @@
   const groups = [
     // prettier-ignore
     [
-      'nr','nn', 'nz',
+      'nr','ns', 'nt',
+      'nn', 'nx', 'nz',
       '-',
       'n', 'nw', 'na',
       't', 's', 'f',
@@ -18,17 +19,16 @@
       'v', 'vn', 'vd',
       'vi', 'vo',
       '-',
-      'rr', 'rz', 'ry',
-      'r',
     ],
     // prettier-ignore
     [
-      '-',
-      'nl', 'i',
-      '-',
-      'm', 'q', 'mq',
+      'rr', 'rz', 'ry',
+      'r',
       '-',
       'vx', 'vm', 'vf',
+      '-',
+      'm', 'q', 'mq',
+
       '-',
       'd', 'p', 'u',
       'c', 'cc',
@@ -39,11 +39,15 @@
     [
       '-',
       'kn', 'ka', 'kv',
-      'ag', 'vg', 'ng',
-      'tg',
+      'k',
       '-',
-      'x', 'xx', 'w',
-      '!'
+      'x', 'xx', 'xl',
+      'w',
+      '-',
+      '!', '~sv', '~sa',
+      '-',
+      '~vp', '~ap', 'nl',
+      '~pn', '~dp', 'i'
     ],
   ]
 
