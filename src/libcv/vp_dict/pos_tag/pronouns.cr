@@ -2,7 +2,7 @@ struct CV::PosTag
   PROPOS = Pos::Pronouns | Pos::Contws
 
   # 代词 - pronoun - đại từ chưa phân loại
-  Pronoun = new(Tag::Pronoun, PROPOS)
+  ProUkn = new(Tag::ProUkn, PROPOS | Pos::Nouns)
 
   # 人称代词 - personal pronoun - đại từ nhân xưng
   ProPer = new(Tag::ProPer, Pos::Human | PROPOS)
@@ -24,7 +24,7 @@ struct CV::PosTag
     when 'z' then parse_prodem(key)
     when 'y' then parse_proint(key)
     when 'r' then ProPer
-    else          Pronoun
+    else          ProUkn
     end
   end
 

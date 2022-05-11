@@ -34,7 +34,7 @@ class Hanviet
   end
 
   def save!
-    output = CV::VpDict.load("hanviet", mode: -1)
+    output = CV::VpDict.load("$hanviet", mode: :reset)
 
     input = @input.to_a.sort_by(&.[0].size)
     input.each do |(key, vals)|
@@ -45,7 +45,7 @@ class Hanviet
       if key.size > 1
         convert = QtUtil.convert(output, key, " ")
         next if first == convert
-        pp [key, vals, convert]
+        puts [key, vals, convert]
       end
 
       output.set(key, vals.uniq.first(3))

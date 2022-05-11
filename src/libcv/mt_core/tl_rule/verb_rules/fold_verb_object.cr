@@ -4,7 +4,7 @@ module CV::TlRule
     return verb if !succ || verb.verb_object? || verb.vintr?
 
     if succ.ude1?
-      return verb if verb.prev? { |x| x.object? || x.prep_phrase? }
+      return verb if verb.prev? { |x| x.object? || x.prep_clause? }
       return verb unless (object = scan_noun!(succ.succ?)) && object.object?
 
       if (verb_2 = object.succ?) && verb_2.maybe_verb?

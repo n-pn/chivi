@@ -28,8 +28,8 @@ class CV::VpinitCtrl < CV::BaseCtrl
     send_json({result: result})
   end
 
-  @@similar = VpDict.new("#{DIR}/patch/similar-tags.tsv")
-  @@topatch = VpDict.new("#{DIR}/patch/topatch-tags.tsv")
+  @@similar = VpDict.new("#{DIR}/patch/similar-tags.tsv", kind: :basic)
+  @@topatch = VpDict.new("#{DIR}/patch/topatch-tags.tsv", kind: :basic)
 
   private def extract_conflicts(postag : PostagInit, target : VpDict, limit = 200)
     conflicts = [] of Conflict

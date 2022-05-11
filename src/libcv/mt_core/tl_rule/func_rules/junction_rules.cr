@@ -82,7 +82,7 @@ module CV::TlRule
 
     # TODO: add more white list?
     # puts [verb, node]
-    node = fold!(node, succ, PosTag::PrepPhrase, dic: 6)
+    node = fold!(node, succ, PosTag::PrepClause, dic: 6)
     fold!(node, scan_verb!(verb), verb.tag, dic: 6)
 
     # TOD: fold as subject + verb structure?

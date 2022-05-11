@@ -27,10 +27,6 @@ struct CV::PosTag
     # 拟声词 - onomatopoeia - tượng thanh
     {"o", "Onomat", Pos::Funcws},
 
-    # subject + verb clause
-    {"~sv", "VerbClause", Pos::Contws},
-    # subject + adjt clause
-    {"~sa", "AdjtClause", Pos::Contws},
     # complex phrase ac as verb
     {"~vp", "VerbPhrase", Pos::Verbs | Pos::Contws},
     # complex phrase act as adjective
@@ -40,7 +36,11 @@ struct CV::PosTag
     # definition phrase
     {"~dp", "DefnPhrase", Pos::Contws},
     # prepos phrase
-    {"~pp", "PrepPhrase", Pos::Contws},
+    {"~pn", "PrepClause", Pos::Contws},
+    # subject + verb clause
+    {"~sv", "VerbClause", Pos::Contws},
+    # subject + adjt clause
+    {"~sa", "AdjtClause", Pos::Contws},
   }
 
   {% for type in MISCS %}
@@ -68,13 +68,13 @@ struct CV::PosTag
 
   def self.parse_extra(tag : String) : self
     case tag
-    when "~sv" then VerbClause
-    when "~sa" then AdjtClause
     when "~np" then NounPhrase
     when "~vp" then VerbPhrase
     when "~ap" then AdjtPhrase
     when "~dp" then DefnPhrase
-    when "~pp" then PrepPhrase
+    when "~pp" then PrepClause
+    when "~sv" then VerbClause
+    when "~sa" then AdjtClause
     else            Unkn
     end
   end

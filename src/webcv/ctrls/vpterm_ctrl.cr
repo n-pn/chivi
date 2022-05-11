@@ -3,7 +3,10 @@ require "./_base_ctrl"
 class CV::VptermCtrl < CV::BaseCtrl
   def lookup
     input = params.json("input").as_h
-    hvmap = Hash(String, String).new { |h, k| h[k] = MtCore.cv_hanviet(k, apply_cap: false) }
+
+    hvmap = Hash(String, String).new do |h, k|
+      h[k] = MtCore.cv_hanviet(k, apply_cap: false)
+    end
 
     send_json do |jb|
       jb.object do
@@ -13,7 +16,9 @@ class CV::VptermCtrl < CV::BaseCtrl
           if dname == "pin_yin"
             jb.field(dname, words.map { |w| {w, MtCore.cv_pin_yin(w)} }.to_h)
           else
-            jb.field(dname) { VpTermView.new(dname, words, hvmap, u_dname).to_json(jb) }
+            jb.field(dname) do
+              VpTermView.new(dname, words, hvmap, _cvuser.uname).to_json(jb)
+            end
           end
         end
       end

@@ -5,19 +5,30 @@ require "file_utils"
 require "./vp_dict/*"
 
 class CV::VpDict
+  enum Kind
+    Basic; Novel; Theme; Cvmtl; Other
+  end
+
+  enum Mode
+    Full # preload both main file (.tsv) and user file (.tab)
+    Main # only preload main file
+    None # do not preload any existing files
+  end
+
   DIR = "var/vpdicts/v1"
-  EXT = ".tsv"
 
-  class_getter hanviet : self { load("hanviet") }
-  class_getter pin_yin : self { load("pin_yin") }
-  class_getter tradsim : self { load("tradsim") }
+  class_getter hanviet : self { load_other("hanviet") }
+  class_getter surname : self { load_other("surname") }
 
-  class_getter essence : self { load("essence") }
-  class_getter regular : self { load("regular") }
-  class_getter fixture : self { load("fixture") }
+  class_getter pin_yin : self { load_other("pin_yin") }
+  class_getter tradsim : self { load_other("tradsim") }
 
-  class_getter combine : self { load("combine") }
-  class_getter suggest : self { load("suggest") }
+  class_getter essence : self { load_basic("essence") }
+  class_getter regular : self { load_basic("regular") }
+  class_getter fixture : self { load_basic("fixture") }
+
+  class_getter combine : self { load_basic("combine") }
+  class_getter suggest : self { load_basic("suggest") }
 
   class_getter nvdicts : Array(String) do
     files = Dir.glob("#{DIR}/novel/*.tab")
@@ -30,34 +41,49 @@ class CV::VpDict
     files.map { |f| "~" + File.basename(f, ".tsv") }
   end
 
-  BASIC = {} of String => self
   NOVEL = {} of String => self
   THEME = {} of String => self
+  FIXED = {} of String => self
 
-  def self.load(dname : String, mode = 1)
-    case dname[0]?
-    when '-'
-      return NOVEL[dname] ||= new(path(dname[1..], "novel"), type: 3, mode: mode)
-    when '!'
-      return THEME[dname] ||= new(path(dname[1..], "theme"), type: 2, mode: mode)
-    when '~'
-      return BASIC[dname] ||= new(path(dname[1..], "cvmtl"), type: 1, mode: mode)
-    end
+  def self.load_novel(dname : String, mode : Mode = :full) : self
+    NOVEL[dname] ||= new(path(dname, "novel"), kind: :novel, type: 3, mode: mode)
+  end
 
+  def self.load_theme(dname : String, mode : Mode = :full) : self
+    THEME[dname] ||= new(path(dname, "thêm"), kind: :theme, type: 2, mode: mode)
+  end
+
+  def self.load_cvmtl(dname : String, mode : Mode = :full) : self
+    FIXED[dname] ||= new(path(dname, "cvmtl"), kind: :cvmtl, type: 1, mode: mode)
+  end
+
+  def self.load_other(dname : String, mode : Mode = :full) : self
+    FIXED[dname] ||= new(path(dname, "other"), kind: :other, type: 0, mode: mode)
+  end
+
+  def self.load_basic(dname : String, mode : Mode = :full) : self
     case dname
-    when "tradsim", "hanviet", "pin_yin"
-      BASIC[dname] ||= new(path(dname, "basic"), type: 0, mode: mode)
     when "essence", "fixture"
-      BASIC[dname] ||= new(path(dname, "basic"), type: 1, mode: mode)
-    when "regular", "suggest"
-      BASIC[dname] ||= new(path(dname, "basic"), type: 2, mode: mode)
-    else
-      BASIC[dname] ||= new(path(dname, "basic"), type: 3, mode: mode)
+      FIXED[dname] ||= new(path(dname, "basic"), kind: :basic, type: 1, mode: mode)
+    when "regular"
+      FIXED[dname] ||= new(path(dname, "basic"), kind: :basic, type: 2, mode: mode)
+    else # for combine type
+      FIXED[dname] ||= new(path(dname, "basic"), kind: :basic, type: 3, mode: mode)
+    end
+  end
+
+  def self.load(dname : String, mode : Mode = :full) : self
+    case dname[0]?
+    when '-' then load_novel(dname[1..], mode: mode)
+    when '!' then load_theme(dname[1..], mode: mode)
+    when '~' then load_cvmtl(dname[1..], mode: mode)
+    when '$' then load_other(dname[1..], mode: mode)
+    else          load_basic(dname, mode: mode)
     end
   end
 
   def self.path(label : String, group : String = ".")
-    File.join(DIR, group, label + EXT)
+    File.join(DIR, group, label + ".tsv")
   end
 
   #########################
@@ -68,7 +94,8 @@ class CV::VpDict
   getter trie = VpTrie.new
   getter list = [] of VpTerm
 
-  getter type : Int32 # dict type
+  getter kind : Kind
+  getter type = 1 # dict type
   getter size = 0
 
   # forward_missing_to @list
@@ -78,12 +105,12 @@ class CV::VpDict
   # -1: ignore existing dict file
   # 0: load existing dict file if exists
   # 1: load log file
-  def initialize(@file : String, @type = 1, mode = 1)
-    @flog = @file.sub(EXT, ".tab") # log file path
-    return if mode < 0
+  def initialize(@file : String, @kind : Kind = :basic, @type = 1, mode : Mode = :full)
+    @flog = @file.sub(".tsv", ".tab") # log file path
+    return if mode.none?
 
     load!(@file) if File.exists?(@file)
-    load!(@flog) if mode == 1 && File.exists?(@flog)
+    load!(@flog) if mode.full? && File.exists?(@flog)
   end
 
   def load!(file : String = @file) : Nil
@@ -97,7 +124,7 @@ class CV::VpDict
     # Log.info { "<vp_dict> [#{file.sub(DIR, "")}] loaded: #{lines.size} lines".colorize.green }
   end
 
-  def find(key : String) : VpTerm?
+  def find(key : String | Array(Char)) : VpTerm?
     @trie.find(key).try(&.base)
   end
 

@@ -16,15 +16,21 @@ class CV::VpTrie
     end
   end
 
-  def find!(key : String) : VpTrie
+  def find!(input : String) : VpTrie
     node = self
-    key.each_char { |c| node = node._next[c] ||= VpTrie.new }
+    input.each_char { |c| node = node._next[c] ||= VpTrie.new }
     node
   end
 
-  def find(key : String) : VpTrie?
+  def find(input : String) : VpTrie?
     node = self
-    key.each_char { |c| return unless node = node._next[c]? }
+    input.each_char { |c| return unless node = node._next[c]? }
+    node
+  end
+
+  def find(chars : Array(Char)) : VpTrie?
+    node = self
+    chars.each { |c| return unless node = node._next[c]? }
     node
   end
 

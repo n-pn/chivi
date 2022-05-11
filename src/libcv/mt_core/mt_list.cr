@@ -6,12 +6,12 @@ class CV::MtList
 
   getter head = MtNode.new("", "")
 
-  def first
+  def first?
     @head.succ?
   end
 
   def concat!(list : self)
-    self.tail.set_succ!(list.first)
+    self.tail.set_succ!(list.first?)
     self
   end
 

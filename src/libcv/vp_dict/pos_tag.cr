@@ -16,7 +16,7 @@ struct CV::PosTag
       {{ type[1].id }}
     {% end %}
 
-    Pronoun; ProPer
+    ProUkn; ProPer
     ProDem; ProZhe; ProNa1
     ProInt; ProNa2; ProJi
 
@@ -46,7 +46,7 @@ struct CV::PosTag
       case self
       when None then "-"
       when ProPer then "rr"
-      when Pronoun then "r"
+      when ProUkn then "r"
       when Special then "!"
       {% for type in TYPES %}
         when {{ type[1].id }} then {{ type[0] }}

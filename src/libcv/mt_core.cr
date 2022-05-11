@@ -6,12 +6,12 @@ class CV::MtCore
   class_getter pin_yin_mtl : self { new([VpDict.essence, VpDict.pin_yin]) }
   class_getter tradsim_mtl : self { new([VpDict.tradsim]) }
 
-  def self.generic_mtl(bname : String = "combine", uname : String = "")
+  def self.generic_mtl(bname : String = "combine", uname : String = "") : self
     dicts = [VpDict.essence, VpDict.regular, VpDict.fixture, VpDict.load(bname)]
     new(dicts, "!#{uname}")
   end
 
-  def self.load(dname : String, uname : String = "")
+  def self.load(dname : String, uname : String = "") : self
     case dname
     when "pin_yin" then pin_yin_mtl
     when "hanviet" then hanviet_mtl
@@ -22,11 +22,11 @@ class CV::MtCore
     end
   end
 
-  def self.cv_pin_yin(input : String)
+  def self.cv_pin_yin(input : String) : String
     pin_yin_mtl.translit(input).to_s
   end
 
-  def self.cv_hanviet(input : String, apply_cap = true)
+  def self.cv_hanviet(input : String, apply_cap = true) : String
     return input unless input =~ /\p{Han}/
     hanviet_mtl.translit(input, apply_cap: apply_cap).to_s
   end
@@ -49,13 +49,13 @@ class CV::MtCore
   def initialize(@dicts : Array(VpDict), @uname : String = "")
   end
 
-  def translit(input : String, apply_cap : Bool = false)
+  def translit(input : String, apply_cap : Bool = false) : MtList
     list = tokenize(input.chars)
     list.capitalize!(cap: true) if apply_cap
     list.pad_spaces!
   end
 
-  def cv_title_full(title : String)
+  def cv_title_full(title : String) : MtList
     title, label = TextUtil.format_title(title)
 
     title_res = cv_title(title, offset: label.size)
@@ -66,7 +66,7 @@ class CV::MtCore
     label_res.concat!(title_res)
   end
 
-  def cv_title(title : String, offset = 0)
+  def cv_title(title : String, offset = 0) : MtList
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
     offset_2 = offset + pre_zh.size + pad.size
 
@@ -80,7 +80,7 @@ class CV::MtCore
     res
   end
 
-  def translate(input : String)
+  def translate(input : String) : String
     cv_plain(input).to_s
   end
 
@@ -157,7 +157,7 @@ class CV::MtCore
   end
 
   @[AlwaysInline]
-  def should_space?(left : MtNode, right : MtNode)
+  def should_space?(left : MtNode, right : MtNode) : Bool
     left.nhanzi? || right.nhanzi?
   end
 
@@ -174,7 +174,7 @@ class CV::MtCore
     end
   end
 
-  private def can_merge?(left : MtNode, right : MtNode)
+  private def can_merge?(left : MtNode, right : MtNode) : Bool
     case right.tag
     when .puncts? then left.tag == right.tag
     when .litstr? then left.tag.litstr? || left.tag.ndigit?

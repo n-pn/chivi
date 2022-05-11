@@ -2,7 +2,7 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_prepos_inner!(prepos : MtNode, succ = prepos.succ?, mode = 0) : MtNode
     return prepos unless (noun = scan_noun!(succ, mode: 0)) && noun.subject?
-    return fold!(prepos, noun, PosTag::PrepPhrase, dic: 2) unless verb = noun.succ?
+    return fold!(prepos, noun, PosTag::PrepClause, dic: 2) unless verb = noun.succ?
 
     # combine with noun after ude1 if there exists verb right after
     if verb.ude1? && (tail = scan_noun!(verb.succ?))
@@ -15,10 +15,10 @@ module CV::TlRule
         end
 
         if prepos.pre_zai? && (noun = fold_prezai_places?(prepos, noun, verb, tail))
-          return fold!(prepos, noun, PosTag::PrepPhrase, dic: 3)
+          return fold!(prepos, noun, PosTag::PrepClause, dic: 3)
         end
 
-        prepos = fold!(prepos, verb.set!(""), PosTag::PrepPhrase, dic: 5)
+        prepos = fold!(prepos, verb.set!(""), PosTag::PrepClause, dic: 5)
         return fold!(prepos, tail, PosTag::NounPhrase, dic: 6, flip: true)
       end
 
@@ -32,7 +32,7 @@ module CV::TlRule
       verb = noun.succ?
     end
 
-    head = fold!(prepos, noun, PosTag::PrepPhrase, dic: 4)
+    head = fold!(prepos, noun, PosTag::PrepClause, dic: 4)
 
     case verb
     when .nil?, .v_shi?, .v_you?

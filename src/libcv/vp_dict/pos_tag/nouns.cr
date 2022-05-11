@@ -16,11 +16,14 @@ struct CV::PosTag
     # 地名 - location name - địa danh |  机构团体名 - organization name - tổ chức
     {"nn", "Naffil", Pos::Nouns | Pos::Names | Pos::Contws},
 
-    # 其它专名 - other proper noun - tên riêng khác
-    {"nz", "Nother", Pos::Nouns | Pos::Names | Pos::Contws},
-
     # danh xưng: chức danh, nghề nghiệp, địa vị
     {"nw", "Ptitle", Pos::Nouns | Pos::Human | Pos::Contws},
+
+    # tựa sách
+    {"nx", "Btitle", Pos::Nouns | Pos::Names | Pos::Contws},
+
+    # 其它专名 - other proper noun - tên riêng khác
+    {"nz", "Nother", Pos::Nouns | Pos::Names | Pos::Contws},
 
     # attributes
     {"na", "Nattr", Pos::Nouns | Pos::Contws},
@@ -57,6 +60,7 @@ struct CV::PosTag
     when 'a' then Nattr
     when 'r' then Person
     when "f" then Person
+    when 'x' then Btitle
     when 'z' then Nother
     when 'w' then Ptitle
     when 'n' then Naffil
