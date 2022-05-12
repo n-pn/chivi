@@ -144,17 +144,17 @@ class CV::TlName
   end
 
   def tl_human(input : String)
-    if input[0] == '老'
+    if input.size == 2 && input[0] == '老'
       output = find_defined(input, :human) || [] of String
-      others = translate(input[1..], Trie.human, :human).map! { |x| "lão #{x}" }
-      return output.empty? ? others : output.concat(others).uniq!
+      extras = translate(input[1..], Trie.human, :human).map! { |x| "lão #{x}" }
+      return output.empty? ? extras : output.concat(extras).uniq!
     end
 
     output = translate(input, Trie.human, :human)
     return output unless input[0] == '小'
 
-    output.concat translate(input[1..], Trie.human, :human).map! { |x| "tiểu #{x}" }
-    output.uniq!
+    extras = translate(input[1..], Trie.human, :human)
+    extras.first(2).map! { |x| "tiểu #{x}" }.concat(output).uniq!
   end
 
   def tl_other(input : String)
@@ -200,7 +200,7 @@ class CV::TlName
   end
 
   def translate(input : String, trie : Trie, type : Type = :human) : Array(String)
-    output = find_defined(input, type) || [] of String
+    output = [] of String
     chars = input.chars
 
     node = trie.root
@@ -209,11 +209,16 @@ class CV::TlName
       next unless molds = node.vals
 
       translate(chars.join, trie, type).each do |result|
-        molds.each { |mold| output << mold.sub("?", result) }
+        molds.each { |mold| output.unshift mold.sub("?", result) }
       end
     end
 
-    output << tl_name(input)
+    if defined = find_defined(input, type)
+      output = defined.concat(output.first(2))
+    elsif output.size < 2
+      output << tl_name(input)
+    end
+
     output.uniq!
   end
 
@@ -250,7 +255,10 @@ class CV::TlName
   def self.is_human?(input : String)
     return false unless first_char = input[0]?
     return true if LASTNAMES.includes?(first_char)
-    return true if first_char.in?('小', '老') && LASTNAMES.includes?(input[1]?)
+
+    if input.size == 2 && first_char.in?('小', '老')
+      return LASTNAMES.includes?(input[1]?)
+    end
 
     Trie.human.has_ends?(input)
   end

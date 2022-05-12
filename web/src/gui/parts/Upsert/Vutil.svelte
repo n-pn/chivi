@@ -106,7 +106,6 @@
     class="cap"
     class:_actived={capped == 1}
     data-kbd="1"
-    disabled={length < 1}
     use:upcase_val={1}
     use:hint={'Viết hoa một chữ đầu'}>
     <span>V. hoa 1</span>
@@ -115,7 +114,6 @@
     class="cap"
     class:_actived={capped == 2}
     data-kbd="2"
-    disabled={length < 2}
     use:upcase_val={2}
     use:hint={'Viết hoa hai chữ đầu'}>
     <span>V. hoa 2</span>
@@ -124,7 +122,6 @@
     class="cap _show-ts"
     data-kbd="3"
     class:_actived={capped == 3}
-    disabled={length < 3}
     use:upcase_val={3}
     use:hint={'Viết hoa ba chữ đầu'}>
     <span>V. hoa 3</span>
