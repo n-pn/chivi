@@ -171,7 +171,7 @@
       class="btn"
       data-kbd="e"
       on:click={() => (vpterm = vpterm.clear())}
-      use:hint={'Nhập nghĩa là [[pass]] nếu bạn muốn xoá đè.'}>
+      use:hint={'Bấm hai lần nếu bạn muốn xoá đè.'}>
       <SIcon name="eraser" />
     </button>
   </div>

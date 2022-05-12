@@ -68,8 +68,8 @@ export class VpTerm {
   }
 
   clear() {
-    if (this.val) this.val = ''
-    else if (this.ptag) this.ptag = ''
+    if (this.val == '[[pass]]') this.ptag = ''
+    else if (this.val) this.val = ''
     else this.val = '[[pass]]'
     return this
   }
