@@ -47,7 +47,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     cvpost = Cvpost.load!(params["cvpost"])
 
     cvpost.bump_view_count!
-    cvpost.nvinfo.tap { |x| x.update!({view_count: x.view_count + 1}) }
+    cvpost.nvinfo.tap { |x| x.update!(view_count: x.view_count + 1) }
 
     # TODO: load user trace
 

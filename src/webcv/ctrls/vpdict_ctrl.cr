@@ -8,9 +8,11 @@ class CV::VpdictCtrl < CV::BaseCtrl
     dicts = [] of VdInfo
 
     dicts << {"regular", CtrlUtil.d_dub("regular"), VpDict.regular.size}
-    dicts << {"hanviet", CtrlUtil.d_dub("hanviet"), VpDict.hanviet.size}
     dicts << {"essence", CtrlUtil.d_dub("essence"), VpDict.essence.size}
     dicts << {"fixture", CtrlUtil.d_dub("fixture"), VpDict.fixture.size}
+    dicts << {"$hanviet", CtrlUtil.d_dub("hanviet"), VpDict.hanviet.size}
+    dicts << {"$pin_yin", CtrlUtil.d_dub("pin_yin"), VpDict.pin_yin.size}
+    dicts << {"$tradsim", CtrlUtil.d_dub("tradsim"), VpDict.tradsim.size}
 
     dicts
   end
@@ -53,13 +55,17 @@ class CV::VpdictCtrl < CV::BaseCtrl
     end
 
     total = terms.size
+
     send_json({
       dname: dname,
       d_dub: CtrlUtil.d_dub(dname),
-      total: vdict.size,
+      dsize: vdict.size,
+
+      total: total,
       pgidx: pgidx,
-      start: offset &+ 1,
       pgmax: CtrlUtil.pgmax(total, limit),
+
+      start: offset &+ 1,
       terms: total > offset ? terms[offset, limit] : [] of VpTerm,
     })
   end

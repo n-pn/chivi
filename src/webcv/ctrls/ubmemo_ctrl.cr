@@ -8,7 +8,13 @@ class CV::UbmemoCtrl < CV::BaseCtrl
   def access
     _pgidx, limit, offset = params.page_info(min: 15, max: 30)
     query = Ubmemo.query.where("cvuser_id = #{_cvuser.id}")
-    query = query.limit(limit).offset(offset).order_by(utime: :desc)
+
+    case params["kind"]?
+    when "marked" then query.where("locked = true")
+    when "stored" then query.where("status > 0")
+    end
+
+    query = query.order_by(utime: :desc).limit(limit).offset(offset)
     send_json(query.with_nvinfo.map { |x| UbmemoView.new(x, true) })
   end
 

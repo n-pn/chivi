@@ -34,6 +34,8 @@
 
   export let dname = 'combine'
   export let d_dub = dname
+  export let dsize = 1
+
   export let terms = []
   export let start = 1
   export let query = { key: '', val: '', ptag: '', rank: '', uname: '' }
@@ -112,7 +114,7 @@
   <h1 class="h2">[{dname}] {d_dub}</h1>
   <p class="d_tip">{$$props.d_tip}</p>
 
-  <h2 class="h3">Số lượng từ: {$$props.total}</h2>
+  <h2 class="h3">Số lượng từ: {dsize}</h2>
 
   <div class="body">
     <table>

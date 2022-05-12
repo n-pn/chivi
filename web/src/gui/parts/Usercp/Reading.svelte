@@ -4,14 +4,17 @@
   import { chap_url } from '$utils/route_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import { get_rtime } from '$gui/atoms/RTime.svelte'
 
   export let tab = 0
 
-  let chaps: Array<any> = undefined
-  $: if (tab == 0 && !chaps) load_history()
+  let chaps: Array<any>
 
-  async function load_history(pg = 1) {
-    const api_url = `/api/_self/books/access?pg=${pg}&lm=10`
+  let kind = ''
+  $: if (tab == 0) load_history(kind)
+
+  async function load_history(kind = '', pg = 1) {
+    const api_url = `/api/_self/books/access?kind=${kind}&pg=${pg}&lm=15`
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
     if (api_res.ok) chaps = payload.props
@@ -20,24 +23,42 @@
 
 <div class="chips">
   {#each ['reading', 'onhold', 'pending'] as status}
+    {@const icon = status_icons[status]}
     <a href="/books/@{$session.uname}/{status}" class="chip">
-      <span class="chip-icon">
-        <SIcon name={status_icons[status]} />
-      </span>
-      <span class="chip-text">
-        {status_names[status]}
-      </span>
+      <SIcon name={icon} />
+      {status_names[status]}
     </a>
   {/each}
 </div>
 
-<div class="label">
+<h4 class="label">
   <SIcon name="clock" />
   <span>Lịch sử đọc</span>
+</h4>
+
+<div class="chips filter">
+  <button
+    class="chip _small"
+    class:_active={kind == ''}
+    on:click={() => (kind = '')}>Vừa truy cập</button>
+  <button
+    class="chip _small"
+    class:_active={kind == 'stored'}
+    on:click={() => (kind = 'stored')}>Trong tủ truyện</button>
+  <button
+    class="chip _small"
+    class:_active={kind == 'marked'}
+    on:click={() => (kind = 'marked')}>Đã đánh dấu</button>
 </div>
 
-<chap-list>
+<div class="chlist">
   {#each chaps || [] as chap}
+    {@const type = chap.locked
+      ? 'bookmark'
+      : chap.status != 'default'
+      ? 'book'
+      : 'eye'}
+
     <a class="chap" href={chap_url(chap.bslug, chap)}>
       <div class="chap-text">
         <div class="chap-title">{chap.title}</div>
@@ -46,14 +67,16 @@
 
       <div class="chap-meta">
         <div class="chap-bname">{chap.bname}</div>
-
-        {#if chap.locked}
-          <div class="chap-icon"><SIcon name="bookmark" /></div>
-        {/if}
+        <div
+          class="chap-state"
+          data-tip="Xem: {get_rtime(chap.utime)}"
+          tip-pos="right">
+          <SIcon name={type} />
+        </div>
       </div>
     </a>
   {/each}
-</chap-list>
+</div>
 
 <style lang="scss">
   @mixin label {
@@ -69,7 +92,7 @@
     line-height: 2.25rem;
     font-weight: 500;
 
-    color: var(--fg-tert);
+    @include fgcolor(tert);
 
     :global(svg) {
       margin-top: 0.625rem;
@@ -82,6 +105,11 @@
     }
   }
 
+  h4.label {
+    margin-top: 0.75rem;
+    @include border($loc: top);
+  }
+
   .chips {
     @include flex($center: horz);
     @include bps(font-size, 12px, 12px, 13px);
@@ -90,20 +118,26 @@
   .chip {
     display: inline-flex;
     border-radius: 0.75rem;
+    align-items: center;
+
     padding: 0 0.75em;
     line-height: 2.25em;
+    font-weight: 500;
+    text-transform: uppercase;
 
-    @include label();
+    @include fgcolor(tert);
     @include bgcolor(tert);
     @include linesd(var(--bd-main));
 
-    &:hover {
+    &:hover,
+    &._active {
       @include linesd(primary, 4, $ndef: false);
       @include fgcolor(primary, 5);
     }
 
     @include tm-dark {
-      &:hover {
+      &:hover,
+      &._active {
         @include linesd(primary, 5, $ndef: false);
         @include fgcolor(primary, 4);
       }
@@ -112,25 +146,21 @@
     & + & {
       @include bps(margin-left, 0.25rem, 0.375rem);
     }
-  }
 
-  .chip-icon {
-    margin-top: 0.5em;
-    margin-right: 0.375em;
+    &._small {
+      line-height: 2em;
+      text-transform: none;
+      // @include ftsize(xs);
+    }
 
-    > :global(svg) {
-      display: block;
+    :global(svg) {
       width: 1.25em;
       height: 1.25em;
+      margin-right: 0.25em;
     }
   }
 
-  .chip-text {
-    @include clamp($width: null);
-  }
-
-  chap-list {
-    display: block;
+  .filter {
     margin-bottom: 1rem;
   }
 
@@ -175,7 +205,6 @@
 
     @include ftsize(xs);
     @include fgcolor(neutral, 5);
-    @include clamp($width: null);
   }
 
   .chap-chidx {
@@ -183,15 +212,15 @@
     @include ftsize(xs);
   }
 
-  .chap-icon {
+  .chap-state {
     @include fgcolor(tert);
-    // height: 0.8rem;
-    margin-left: auto;
+    position: relative;
     font-size: 1rem;
     margin-top: -0.125rem;
   }
 
   .chap-bname {
+    flex: 1 1;
     @include clamp($width: null);
   }
 </style>
