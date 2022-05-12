@@ -208,14 +208,18 @@ class CV::TlName
       break if !(node = node[char]?) || chars.empty?
       next unless molds = node.vals
 
-      translate(chars.join, trie, type).reverse_each do |result|
-        molds.each { |mold| output.unshift mold.sub("?", result) }
+      result = molds.flat_map do |mold|
+        translate(chars.join, trie, type).map { |x| mold.sub("?", x) }
       end
+
+      output = result.concat(output)
     end
 
     if defined = find_defined(input, type)
       output = defined.concat(output.first(2))
-    elsif output.size < 3
+    end
+
+    if output.size < 3
       output << tl_name(input)
     end
 
