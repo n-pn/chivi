@@ -63,9 +63,6 @@
 
   $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
 
-  let focus: HTMLElement | null = null
-  $: vpterm, focus && focus.focus()
-
   async function submit_val() {
     const { dname } = vpdicts[$ctrl.tab]
     const { val, rank, ptag: attr, _priv } = vpterm
@@ -89,6 +86,9 @@
     $ctrl = { tab: 2, state: 1 }
     if (entry) extra = entry
   }
+
+  let val_inp: HTMLInputElement
+  $: if (vpterm) val_inp && val_inp.focus()
 </script>
 
 <Dialog
@@ -159,7 +159,7 @@
         <input
           type="text"
           class="-input"
-          bind:this={focus}
+          bind:this={val_inp}
           bind:value={vpterm.val}
           autocomplete="off"
           autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />

@@ -9,6 +9,10 @@
     [0, -1],
     [-2, 0],
     [0, 2],
+    [-1, -1],
+    [-1, 1],
+    // [1, -1],
+    // [1, 1],
   ]
 
   import type { VpTermInit } from '$lib/vp_term'
@@ -20,6 +24,7 @@
 
   export let vpdicts = []
   export let vpterms = []
+
   export let output = ''
   export let active = true
 
@@ -43,7 +48,7 @@
 
     let words = mapper.map(([l, r]) => ztext.substring(zfrom + l, zupto + r))
     words = words.filter((x, i, s) => x && s.indexOf(x) == i)
-    await update_cached(words, dicts)
+    if (words.length > 0) await update_cached(words, dicts)
 
     vpterms = vpdicts.map(({ dname }) => cached[dname][output])
     // console.log(vpterms)
@@ -71,15 +76,13 @@
   }
 
   async function update_cached(words: string[], dicts: CV.VpDict[]) {
-    if (words.length == 0) return
-
     const input = {
-      pin_yin: words.filter((x) => !cached.pin_yin[x]).slice(0, 7),
+      pin_yin: words.filter((x) => !cached.pin_yin[x]).slice(0, 5),
     }
 
     for (const { dname } of dicts) {
       cached[dname] = cached[dname] || {}
-      input[dname] = words.filter((x) => !cached[dname][x]).slice(0, 4)
+      input[dname] = words.filter((x) => !cached[dname][x]).slice(0, 5)
     }
 
     if (input_is_empty(input)) return
