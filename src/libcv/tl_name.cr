@@ -154,7 +154,7 @@ class CV::TlName
     return output unless input[0] == '小'
 
     extras = translate(input[1..], Trie.human, :human)
-    extras.first(2).map! { |x| "tiểu #{x}" }.concat(output).uniq!
+    extras.first(3).map! { |x| "tiểu #{x}" }.concat(output).uniq!
   end
 
   def tl_other(input : String)
@@ -208,14 +208,14 @@ class CV::TlName
       break if !(node = node[char]?) || chars.empty?
       next unless molds = node.vals
 
-      translate(chars.join, trie, type).each do |result|
+      translate(chars.join, trie, type).reverse_each do |result|
         molds.each { |mold| output.unshift mold.sub("?", result) }
       end
     end
 
     if defined = find_defined(input, type)
       output = defined.concat(output.first(2))
-    elsif output.size < 2
+    elsif output.size < 3
       output << tl_name(input)
     end
 

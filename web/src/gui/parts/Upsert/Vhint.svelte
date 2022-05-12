@@ -118,7 +118,7 @@
 
     let char_count = 0
     for (let i = 0; i < val_hints.length; i++) {
-      char_count += val_hints[i].length
+      char_count += val_hints[i].length + 4
       if (char_count > max_chars) return i + 1
     }
 
@@ -155,7 +155,7 @@
   <button data-kbd="n" on:click={() => (vpterm.ptag = 'n')} />
 </div>
 
-<div class="hints">
+<div class="hints" class:_expand={show_mode > 0}>
   {#each val_hints as val, idx (val)}
     {@const _hide =
       show_mode == 0 ? idx > val_limit : show_mode == 2 ? idx > 0 : false}
@@ -207,12 +207,25 @@
 
 <style lang="scss">
   .hints {
-    padding: 0 0.5rem;
+    padding: 0.25rem 0.5rem;
     height: 2rem;
+    position: relative;
 
     @include flex();
     @include ftsize(sm);
+
+    &._expand {
+      height: auto;
+      display: flex;
+      flex-wrap: wrap;
+    }
   }
+
+  // .extra {
+  //   position: absolute;
+  //   left: 0;
+  //   top: 100%;
+  // }
 
   .right {
     margin-left: auto;
@@ -226,7 +239,7 @@
     // align-items: center;
     cursor: pointer;
     padding: 0 .2rem;
-    line-height: 2rem;
+    line-height: 1.5rem;
     background-color: inherit;
     @include fgcolor(tert);
 
