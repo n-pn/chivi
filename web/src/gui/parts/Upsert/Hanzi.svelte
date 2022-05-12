@@ -16,7 +16,6 @@
 </script>
 
 <script lang="ts">
-  import { hint } from './_shared'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let vpdicts = []
@@ -30,7 +29,7 @@
   let prefix = ''
   let suffix = ''
 
-  $: active && update_input($ztext, $zfrom, $zupto, vpdicts)
+  $: if (active) update_input($ztext, $zfrom, $zupto, vpdicts)
 
   async function update_input(
     ztext: string,
@@ -118,7 +117,6 @@
   <button
     class="btn _left _hide"
     data-kbd="←"
-    use:hint={'Mở rộng sang trái'}
     disabled={$zfrom == 0}
     on:click={() => shift_lower(-1)}>
     <SIcon name="chevron-left" />
@@ -127,7 +125,6 @@
   <button
     class="btn _left"
     data-kbd="⇧←"
-    use:hint={'Thu hẹp từ trái'}
     disabled={$zfrom == $ztext.length - 1}
     on:click={() => shift_lower(1)}>
     <SIcon name="chevron-right" />
@@ -139,7 +136,6 @@
         {#each Array.from(prefix) as chr, idx}
           <button
             class="key-btn"
-            use:hint={'Mở rộng sang trái'}
             on:click={() => ($zfrom -= prefix.length - idx)}>{chr}</button>
         {/each}
       </div>
@@ -148,7 +144,6 @@
         {#each output.slice(0, 6) as chr, idx}
           <button
             class="key-btn _out"
-            use:hint={'Thu hẹp về ký tự này'}
             on:click={() => change_focus($zfrom + idx)}>{chr}</button>
         {/each}
         {#if output.length > 6}
@@ -158,10 +153,8 @@
 
       <div class="key-suf">
         {#each Array.from(suffix) as chr, idx}
-          <button
-            class="key-btn"
-            use:hint={'Mở rộng sang phải'}
-            on:click={() => ($zupto += idx + 1)}>{chr}</button>
+          <button class="key-btn" on:click={() => ($zupto += idx + 1)}
+            >{chr}</button>
         {/each}
       </div>
     </div>
@@ -174,7 +167,6 @@
   <button
     class="btn _right"
     data-kbd="⇧→"
-    use:hint={'Thu hẹp từ phải'}
     disabled={$zupto == 1}
     on:click={() => shift_upper(-1)}>
     <SIcon name="chevron-left" />
@@ -183,7 +175,6 @@
   <button
     class="btn _right _hide"
     data-kbd="→"
-    use:hint={'Mở rộng sang phải'}
     disabled={$zupto == $ztext.length}
     on:click={() => shift_upper(1)}>
     <SIcon name="chevron-right" />
