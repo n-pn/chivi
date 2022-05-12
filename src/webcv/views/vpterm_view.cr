@@ -130,8 +130,8 @@ struct CV::VpTermView
         return
       end
 
-      hint_tags_by_word
       add_hint_from_mtl
+      hint_tags_by_word
       add_hints_by_tags
       add_preseed_hints
 
