@@ -27,24 +27,35 @@
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
-  const entries_cache = {}
+  let entries_cache: Record<string, any> = {}
+  let hv_html_cache: Record<string, any> = {}
+  let zh_html_cache: Record<string, any> = {}
 
   let entries = []
   let current = []
 
+  let hv_html = ''
+  let zh_html = ''
+
+  let clear_cache: ReturnType<typeof setTimeout> | null = null
+
   $: if ($ctrl.actived) {
-    load_hanviet($ztext)
-    update_lookup($ztext, $zfrom)
+    zh_html = zh_html_cache[$ztext] ||= CvData.render_zh($ztext)
+    get_hanviet($ztext)
+    fetch_terms($ztext, $zfrom)
+    if ($zfrom >= 0) update_focus()
+
+    if (!clear_cache) {
+      clear_cache = setTimeout(() => {
+        entries_cache = {}
+        hv_html_cache = {}
+        zh_html_cache = {}
+        clear_cache = null
+      }, 300000) // clear cache after 5 minutes
+    }
   }
 
-  $: if ($zfrom >= 0 && $ctrl.actived) update_focus()
-
-  const hanviet_cache: Record<string, any> = {}
-
-  let hv_html = ''
-  $: zh_html = CvData.render_zh($ztext)
-
-  async function update_lookup(input: string, zfrom: number) {
+  async function fetch_terms(input: string, zfrom: number) {
     entries = entries_cache[$ztext] ||= []
 
     const range = []
@@ -81,14 +92,14 @@
     setTimeout(update_focus, 10)
   }
 
-  async function load_hanviet(input: string) {
-    hv_html = hanviet_cache[input]
+  async function get_hanviet(input: string) {
+    hv_html = hv_html_cache[input]
 
     if (!hv_html) {
       const url = `qtran/hanviet`
       const [err, data] = await api_call(fetch, url, { input }, 'PUT')
       if (err) return console.log({ err })
-      hanviet_cache[input] = hv_html = new CvData(data.hanviet).render_hv()
+      hv_html_cache[input] = hv_html = new CvData(data.hanviet).render_hv()
     }
   }
 
