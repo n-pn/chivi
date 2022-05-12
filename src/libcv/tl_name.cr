@@ -208,15 +208,13 @@ class CV::TlName
       break if !(node = node[char]?) || chars.empty?
       next unless molds = node.vals
 
-      result = molds.flat_map do |mold|
-        translate(chars.join, trie, type).map { |x| mold.sub("?", x) }
+      translate(chars.join, trie, type).reverse_each do |tran|
+        molds.reverse_each { |mold| output.unshift(mold.sub("?", tran)) }
       end
-
-      output = result.concat(output)
     end
 
     if defined = find_defined(input, type)
-      output = defined.concat(output.first(2))
+      defined.reverse_each { |x| output.unshift(x) }
     end
 
     if output.size < 3
