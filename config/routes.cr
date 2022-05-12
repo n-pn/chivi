@@ -71,6 +71,7 @@ Amber::Server.configure do
     post "/terms/batch", CV::VptermCtrl, :upsert_batch
 
     get "/qtran/:type/:name", CV::QtransCtrl, :show
+    put "/qtran/hanviet", CV::QtransCtrl, :hanviet
     post "/qtran", CV::QtransCtrl, :qtran
     post "/qtran/posts", CV::QtransCtrl, :create_post
 

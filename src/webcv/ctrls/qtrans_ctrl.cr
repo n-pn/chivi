@@ -4,12 +4,17 @@ class CV::QtransCtrl < CV::BaseCtrl
   NOTE_DIR = "var/qttexts/notes"
   POST_DIR = "var/qttexts/posts"
 
-  ::FileUtils.mkdir_p(NOTE_DIR)
-  ::FileUtils.mkdir_p(POST_DIR)
+  Dir.mkdir_p(NOTE_DIR)
+  Dir.mkdir_p(POST_DIR)
 
   alias RawQt = Tuple(String, String, Array(String))
 
   CACHE = RamCache(String, RawQt).new(512, 6.hours)
+
+  def hanviet
+    mt_list = MtCore.hanviet_mtl.translit(params["input"], true)
+    send_json({hanviet: mt_list.to_str})
+  end
 
   def show
     type = params["type"]

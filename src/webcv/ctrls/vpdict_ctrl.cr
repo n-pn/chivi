@@ -105,8 +105,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
       entry.to_a.sort_by(&.[0].-)
     end
 
-    hanviet = MtCore.hanviet_mtl.translit(input, apply_cap: true).to_str
-    send_json({hanviet: hanviet, entries: entries})
+    send_json(entries)
   end
 
   def find_node(dict, key)

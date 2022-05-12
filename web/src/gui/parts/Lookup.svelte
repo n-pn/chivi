@@ -30,28 +30,42 @@
   let entries = []
   let current = []
 
-  $: if ($ztext && $ctrl.actived) update_lookup($ztext)
+  $: if ($ztext && $ctrl.actived) {
+    load_hanviet($ztext)
+    update_lookup($ztext, $zfrom)
+  }
+
   $: if ($zfrom >= 0 && $ctrl.actived) update_focus()
 
   let hv_html = ''
   $: zh_html = CvData.render_zh($ztext)
 
-  async function update_lookup(input: string) {
+  async function update_lookup(ztext: string, zfrom: number) {
+    zfrom = zfrom > 5 ? zfrom - 5 : 0
+    const input = ztext.substring(zfrom, zfrom + 20)
+
     const url = `dicts/${$vdict.dname}/lookup`
-    const [err, data] = await api_call(fetch, url, { input }, 'PUT')
+    const [err, payload] = await api_call(fetch, url, { input }, 'PUT')
     if (err) return console.log({ err })
 
-    entries = data.entries
+    for (let entry of payload) {
+      entries[zfrom] = entry
+      zfrom += 1
 
-    for (const entry of entries) {
       for (const term of entry) {
-        const viet = term[1].vietphrase
+        const viet = term[1].vietphrase as Array<string>
         if (viet) term[1].vietphrase = viet.map((x) => x.split('\t'))
       }
     }
 
-    hv_html = new CvData(data.hanviet).render_hv()
     setTimeout(update_focus, 10)
+  }
+
+  async function load_hanviet(input: String) {
+    const url = `qtran/hanviet`
+    const [err, data] = await api_call(fetch, url, { input }, 'PUT')
+    if (err) return console.log({ err })
+    else hv_html = new CvData(data.hanviet).render_hv()
   }
 
   function handle_click({ target }) {
