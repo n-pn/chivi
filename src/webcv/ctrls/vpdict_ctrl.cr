@@ -71,12 +71,14 @@ class CV::VpdictCtrl < CV::BaseCtrl
     dname = "combine" if dname == "generic"
 
     input = params["input"].strip
+    range = params.json("range").as_a.map(&.as_i)
+
     vdict = {VpDict.load(dname), VpDict.regular}
-
     chars = input.chars
-    upper = chars.size &- 1
 
-    entries = (0..upper).map do |idx|
+    entries = {} of Int32 => Array(Tuple(Int32, Lookup))
+
+    range.each do |idx|
       entry = Hash(Int32, Lookup).new do |hash, key|
         hash[key] = Lookup.new { |h, k| h[k] = [] of String }
       end
@@ -102,7 +104,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
         entry[key.size][:trich_dan] = vals
       end
 
-      entry.to_a.sort_by(&.[0].-)
+      entries[idx] = entry.to_a.sort_by(&.[0].-)
     end
 
     send_json(entries)

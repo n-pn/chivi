@@ -27,45 +27,69 @@
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
+  const entries_cache = {}
+
   let entries = []
   let current = []
 
-  $: if ($ztext && $ctrl.actived) {
+  $: if ($ctrl.actived) {
     load_hanviet($ztext)
     update_lookup($ztext, $zfrom)
   }
 
   $: if ($zfrom >= 0 && $ctrl.actived) update_focus()
 
+  const hanviet_cache: Record<string, any> = {}
+
   let hv_html = ''
   $: zh_html = CvData.render_zh($ztext)
 
-  async function update_lookup(ztext: string, zfrom: number) {
-    zfrom = zfrom > 5 ? zfrom - 5 : 0
-    const input = ztext.substring(zfrom, zfrom + 20)
+  async function update_lookup(input: string, zfrom: number) {
+    entries = entries_cache[$ztext] ||= []
 
-    const url = `dicts/${$vdict.dname}/lookup`
-    const [err, payload] = await api_call(fetch, url, { input }, 'PUT')
-    if (err) return console.log({ err })
+    const range = []
+    if (!entries[zfrom]) range.push(zfrom)
 
-    for (let entry of payload) {
-      entries[zfrom] = entry
-      zfrom += 1
+    let z_max = input.length
+    if (z_max > 10) z_max = 10
 
-      for (const term of entry) {
-        const viet = term[1].vietphrase as Array<string>
-        if (viet) term[1].vietphrase = viet.map((x) => x.split('\t'))
+    for (let index = 1; index < z_max; index++) {
+      const lower = zfrom - index
+      if (lower >= 0 && !entries[lower]) range.push(lower)
+
+      const upper = zfrom + index
+      if (upper < z_max && !entries[upper]) range.push(upper)
+
+      if (range.length > 10) break
+    }
+
+    if (range.length != 0) {
+      const url = `dicts/${$vdict.dname}/lookup`
+      const [err, data] = await api_call(fetch, url, { input, range }, 'PUT')
+      if (err) return console.log({ err })
+
+      for (let index in data) {
+        const entry = data[index]
+        entries[index] = entry
+        for (const term of entry) {
+          const viet = term[1].vietphrase as Array<string>
+          if (viet) term[1].vietphrase = viet.map((x) => x.split('\t'))
+        }
       }
     }
 
     setTimeout(update_focus, 10)
   }
 
-  async function load_hanviet(input: String) {
-    const url = `qtran/hanviet`
-    const [err, data] = await api_call(fetch, url, { input }, 'PUT')
-    if (err) return console.log({ err })
-    else hv_html = new CvData(data.hanviet).render_hv()
+  async function load_hanviet(input: string) {
+    hv_html = hanviet_cache[input]
+
+    if (!hv_html) {
+      const url = `qtran/hanviet`
+      const [err, data] = await api_call(fetch, url, { input }, 'PUT')
+      if (err) return console.log({ err })
+      hanviet_cache[input] = hv_html = new CvData(data.hanviet).render_hv()
+    }
   }
 
   function handle_click({ target }) {
