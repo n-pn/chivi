@@ -2,12 +2,12 @@
   import { navigating } from '$app/stores'
   import { config } from '$lib/stores'
   import { vdict } from '$lib/stores'
-  import CvData from '$lib/cv_data'
+  import MtData from '$lib/mt_data'
 
-  import Cvmenu, { ctrl as cvmenu } from './CvPage/Cvmenu.svelte'
+  import Mtmenu, { ctrl as mtmenu } from './MtPage/Mtmenu.svelte'
 
-  import Cvline from '$gui/sects/Cvline.svelte'
-  import Zhline from './CvPage/Zhline.svelte'
+  import Cvline from './MtPage/Cvline.svelte'
+  import Zhline from './MtPage/Zhline.svelte'
 </script>
 
 <script lang="ts">
@@ -19,7 +19,7 @@
 
   export let on_change = () => {}
 
-  $: cv_lines = CvData.parse_lines(cvdata)
+  $: cv_lines = MtData.parse_lines(cvdata)
   $: vdict.put(dname, d_dub)
 
   let article = null
@@ -29,7 +29,7 @@
 
   $: if ($navigating) {
     l_focus = 0
-    cvmenu.hide()
+    mtmenu.hide()
   }
 
   function render_html(
@@ -51,7 +51,7 @@
   class="article app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   tabindex="-1"
   style="--textlh: {$config.textlh}%"
-  on:blur={cvmenu.hide}
+  on:blur={mtmenu.hide}
   bind:this={article}>
   <header>
     <slot name="header">Dịch nhanh</slot>
@@ -70,11 +70,15 @@
         input={cv_lines[index]}
         focus={render_html($config.render, index, l_hover, l_focus)} />
     </svelte:element>
+  {:else}
+    <slot name="notext" />
   {/each}
 
   {#if $config.render >= 0}
-    <Cvmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />
+    <Mtmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />
   {/if}
+
+  <slot name="footer" />
 </article>
 
 <div hidden>
@@ -90,7 +94,7 @@
 
     // margin: 0;
     @include padding-y(0);
-    padding-bottom: 0.1px; // make inner margin effective
+    padding-bottom: 0.75rem; // make inner margin effective
 
     @include fgcolor(secd);
     @include bgcolor(tert);

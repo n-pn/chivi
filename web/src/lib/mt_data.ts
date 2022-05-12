@@ -4,13 +4,13 @@ function escape_html(str: string | null) {
   return str && str.replace(/[&<>]/g, (x) => escape_tags[x] || x)
 }
 
-export default class CvData {
+export default class MtData {
   data: any[]
   _html: string
   _text: string
 
   static parse_lines(input = '') {
-    return input.split('\n').map((x) => new CvData(x))
+    return input.split('\n').map((x) => new MtData(x))
   }
 
   constructor(input: string) {

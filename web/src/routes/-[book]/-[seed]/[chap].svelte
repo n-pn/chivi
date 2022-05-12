@@ -21,7 +21,7 @@
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Notext from '$gui/parts/Notext.svelte'
   import Footer from '$gui/sects/Footer.svelte'
-  import CvPage from '$gui/sects/CvPage.svelte'
+  import CvPage from '$gui/sects/MtPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
@@ -127,101 +127,102 @@
   <span class="crumb _text">{chinfo.chvol}</span>
 </nav>
 
-{#if cvdata}
-  <CvPage
-    {cvdata}
-    {zhtext}
-    dname="-{nvinfo.bhash}"
-    d_dub={nvinfo.btitle_vi}
-    {on_change}>
-    <svelte:fragment slot="header">
-      <ChapSeed {chmeta} {chinfo} />
-    </svelte:fragment>
-  </CvPage>
-{:else}
-  <Notext {chmeta} {min_privi} {chidx_max} />
-{/if}
+<CvPage
+  {cvdata}
+  {zhtext}
+  dname="-{nvinfo.bhash}"
+  d_dub={nvinfo.btitle_vi}
+  {on_change}>
+  <svelte:fragment slot="header">
+    <ChapSeed {chmeta} {chinfo} />
+  </svelte:fragment>
+  <svelte:fragment slot="notext">
+    {#if !cvdata}
+      <Notext {chmeta} {min_privi} {chidx_max} />
+    {/if}
+  </svelte:fragment>
 
-<Footer>
-  <div class="navi">
-    <a
-      href={paths.prev}
-      class="m-btn navi-item"
-      class:_disable={!chmeta._prev}
-      data-kbd="j">
-      <SIcon name="chevron-left" />
-      <span>Trước</span>
-    </a>
+  <Footer slot="footer">
+    <div class="navi">
+      <a
+        href={paths.prev}
+        class="m-btn navi-item"
+        class:_disable={!chmeta._prev}
+        data-kbd="j">
+        <SIcon name="chevron-left" />
+        <span>Trước</span>
+      </a>
 
-    <Gmenu class="navi-item" loc="top">
-      <div class="m-btn" slot="trigger">
-        <SIcon name={memo_icon} />
-        <span>{chinfo.chidx}/{chmeta.total}</span>
-      </div>
+      <Gmenu class="navi-item" loc="top">
+        <div class="m-btn" slot="trigger">
+          <SIcon name={memo_icon} />
+          <span>{chinfo.chidx}/{chmeta.total}</span>
+        </div>
 
-      <svelte:fragment slot="content">
-        <button
-          class="gmenu-item"
-          disabled={$session.privi < 1}
-          on:click={() => reload_chap(false)}
-          data-kbd="r">
-          <SIcon name="rotate-clockwise" />
-          <span>Dịch lại</span>
-        </button>
+        <svelte:fragment slot="content">
+          <button
+            class="gmenu-item"
+            disabled={$session.privi < 1}
+            on:click={() => reload_chap(false)}
+            data-kbd="r">
+            <SIcon name="rotate-clockwise" />
+            <span>Dịch lại</span>
+          </button>
 
-        {#if $session.privi > 1}
-          {#if chmeta.clink != '/'}
-            <button class="gmenu-item" on:click={() => reload_chap(true)}>
-              <SIcon name="rotate-rectangle" />
-              <span>Tải lại nguồn</span>
+          {#if $session.privi > 1}
+            {#if chmeta.clink != '/'}
+              <button class="gmenu-item" on:click={() => reload_chap(true)}>
+                <SIcon name="rotate-rectangle" />
+                <span>Tải lại nguồn</span>
+              </button>
+            {:else}
+              <a
+                class="gmenu-item"
+                href="/-{nvinfo.bslug}/+chap?chidx={chinfo.chidx}&mode=edit">
+                <SIcon name="pencil" />
+                <span>Sửa text gốc</span>
+              </a>
+            {/if}
+          {/if}
+
+          {#if on_memory && ubmemo.locked}
+            <button
+              class="gmenu-item"
+              disabled={$session.privi < 0}
+              on:click={() => update_history(false)}
+              data-kbd="p">
+              <SIcon name="bookmark-off" />
+              <span>Bỏ đánh dấu</span>
             </button>
           {:else}
-            <a
+            <button
               class="gmenu-item"
-              href="/-{nvinfo.bslug}/+chap?chidx={chinfo.chidx}&mode=edit">
-              <SIcon name="pencil" />
-              <span>Sửa text gốc</span>
-            </a>
+              disabled={$session.privi < 0}
+              on:click={() => update_history(true)}
+              data-kbd="p">
+              <SIcon name="bookmark" />
+              <span>Đánh dấu</span>
+            </button>
           {/if}
-        {/if}
 
-        {#if on_memory && ubmemo.locked}
-          <button
-            class="gmenu-item"
-            disabled={$session.privi < 0}
-            on:click={() => update_history(false)}
-            data-kbd="p">
-            <SIcon name="bookmark-off" />
-            <span>Bỏ đánh dấu</span>
-          </button>
-        {:else}
-          <button
-            class="gmenu-item"
-            disabled={$session.privi < 0}
-            on:click={() => update_history(true)}
-            data-kbd="p">
-            <SIcon name="bookmark" />
-            <span>Đánh dấu</span>
-          </button>
-        {/if}
+          <a href={paths.list} class="gmenu-item" data-kbd="h">
+            <SIcon name="list" />
+            <span>Mục lục</span>
+          </a>
+        </svelte:fragment>
+      </Gmenu>
 
-        <a href={paths.list} class="gmenu-item" data-kbd="h">
-          <SIcon name="list" />
-          <span>Mục lục</span>
-        </a>
-      </svelte:fragment>
-    </Gmenu>
-
-    <a
-      href={paths.next}
-      class="m-btn _fill navi-item"
-      class:_primary={chmeta._next}
-      data-kbd="k">
-      <span>Kế tiếp</span>
-      <SIcon name="chevron-right" />
-    </a>
-  </div>
-</Footer>
+      <a
+        href={paths.next}
+        class="m-btn _fill navi-item"
+        class:_primary={chmeta._next}
+        data-kbd="k">
+        <span>Kế tiếp</span>
+        <SIcon name="chevron-right" />
+      </a>
+    </div>
+  </Footer>
+</CvPage>
 
 <style lang="scss">
   .navi {

@@ -96,11 +96,10 @@
         nodes = focused.includes(target) ? [...focused] : [target]
         break
 
-      case 'CV-DATA':
-      // if (nodes) break
-
       case 'ARTICLE':
-        ctrl.hide()
+      case 'H1':
+      case 'P':
+        if (!nodes) ctrl.hide()
 
       default:
         return

@@ -12,7 +12,7 @@
   import { topbar } from '$lib/stores'
   import { Footer, SIcon, Crumb } from '$gui'
 
-  import CvPage from '$gui/sects/CvPage.svelte'
+  import CvPage from '$gui/sects/MtPage.svelte'
 
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'

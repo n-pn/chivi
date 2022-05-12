@@ -8,7 +8,7 @@
   export let chidx_max: number
 </script>
 
-<article class="notext cvdata m-article article">
+<div class="notext">
   {#if min_privi > $session.privi}
     <h1>Bạn không đủ quyền hạn để xem chương.</h1>
     {#if $session.privi < 0}
@@ -95,13 +95,13 @@
       </p>
     {/if}
   {/if}
-</article>
+</div>
 
 <style lang="scss">
   .notext {
     // height: calc(100vh - 10rem);
-    margin: 0.25rem auto;
-    max-width: 45rem;
+    margin: 1rem auto;
+    max-width: 40rem;
 
     // font-style: italic;
 

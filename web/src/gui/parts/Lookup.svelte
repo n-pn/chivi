@@ -3,7 +3,7 @@
   import { writable, get } from 'svelte/store'
   import { api_call } from '$lib/api_call'
 
-  import CvData from '$lib/cv_data'
+  import MtData from '$lib/mt_data'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
   import pt_labels from '$lib/consts/postag_labels.json'
@@ -40,7 +40,7 @@
   let clear_cache: ReturnType<typeof setTimeout> | null = null
 
   $: if ($ctrl.actived) {
-    zh_html = zh_html_cache[$ztext] ||= CvData.render_zh($ztext)
+    zh_html = zh_html_cache[$ztext] ||= MtData.render_zh($ztext)
     get_hanviet($ztext)
     fetch_terms($ztext, $zfrom)
     if ($zfrom >= 0) update_focus()
@@ -89,7 +89,7 @@
       }
     }
 
-    setTimeout(update_focus, 10)
+    setTimeout(update_focus, 20)
   }
 
   async function get_hanviet(input: string) {
@@ -99,7 +99,7 @@
       const url = `qtran/hanviet`
       const [err, data] = await api_call(fetch, url, { input }, 'PUT')
       if (err) return console.log({ err })
-      hv_html_cache[input] = hv_html = new CvData(data.hanviet).render_hv()
+      hv_html_cache[input] = hv_html = new MtData(data.hanviet).render_hv()
     }
   }
 
