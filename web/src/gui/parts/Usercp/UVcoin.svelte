@@ -36,8 +36,7 @@
 
 <ul>
   <li>
-    Ví Momo: <a href="https://nhantien.momo.vn/aJ5Ks0ug0Hp" rel="external"
-      >aJ5Ks0ug0Hp</a>
+    Ví Momo: <a href="https://me.momo.vn/nipin" rel="external">aJ5Ks0ug0Hp</a>
   </li>
   <li>Techcombank: <strong>19034964108016</strong></li>
 </ul>

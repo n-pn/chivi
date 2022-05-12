@@ -13,7 +13,7 @@ Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn t�
 
 ### Việt Nam:
 
-- Ví Momo: https://nhantien.momo.vn/aJ5Ks0ug0Hp
+- Ví Momo: https://me.momo.vn/nipin
 - Techcombank: **19034964108016**
 
 **Lưu ý**: Hãy lưu lại tên tài khoản của bạn hoặc email đã đăng ký trong chivi để được nâng cấp quyền hạn.
