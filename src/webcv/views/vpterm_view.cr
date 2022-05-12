@@ -77,7 +77,7 @@ struct CV::VpTermView
 
     def to_json(jb : JSON::Builder)
       b_term, u_term = load_terms
-      fill_hints(u_term || b_term)
+      fill_hints(u_term || b_term) unless @vdict.kind.other?
 
       jb.object do
         if u_term
@@ -126,14 +126,21 @@ struct CV::VpTermView
       if @vdict.kind.cvmtl?
         dname = File.basename(@vdict.file, ".tsv")
         fill_tags_for_cvmtl_dicts(dname)
-      elsif !@vdict.kind.other? # not hanviet/pin_yin
-        add_preseed_hints
-        fill_tags_by_word
-        add_hints_by_tags
-        add_hint_from_mtl
+        VpDict.regular.find(@word).try { |x| add_hints_by_term(x) }
+        return
       end
 
-      if @vdict.kind.novel? && !@first_val
+      hint_tags_by_word
+      add_hint_from_mtl
+      add_hints_by_tags
+      add_preseed_hints
+
+      return if @first_val || !@vdict.kind.novel?
+
+      if term = VpDict.regular.find(@word)
+        @first_val = term.val.first
+        @first_tag = term.attr
+      else
         @first_val = TextUtil.titleize(@val_hints.first)
         @first_tag = "nr"
       end
@@ -170,15 +177,15 @@ struct CV::VpTermView
       end
     end
 
-    def fill_tags_by_word
+    def hint_tags_by_word
       if TlName.is_human?(@word)
         @tag_hints << "nr"
-        @first_tag = "nr" if @vdict.kind.novel?
+        @first_tag = "nr" if @vdict.kind.novel? || !@first_tag
       end
 
       if TlName.is_affil?(@word)
         @tag_hints << "nn"
-        @first_tag ||= "nn" if @vdict.kind.novel?
+        @first_tag ||= "nn" if @vdict.kind.novel? || !@first_tag
       end
 
       if TlName::ATTRIBUTE.includes?(@word[-1]?) || @word[0]? == '姓'
@@ -188,10 +195,18 @@ struct CV::VpTermView
       @tag_hints << "n" if @vdict.kind.basic?
     end
 
-    @[AlwaysInline]
-    private def is_human_name?(first_char : Char, last_char : Char?)
-      return true if LASTNAMES.includes?(first_char)
-      first_char.in?('小', '老') && LASTNAMES.includes?(last_char)
+    def add_hint_from_mtl : Nil
+      mt_list = @word_mtl.cv_plain(@word, cap_first: false)
+      mtl_val = mt_list.to_s
+
+      @val_hints << mtl_val
+      return if !(first = mt_list.first?) || first.succ?
+
+      mtl_tag = first.tag
+      return if @vdict.kind.novel? && (mtl_tag.unkn? || mtl_tag.none?)
+
+      @tag_hints << mtl_tag.to_str
+      @first_val ||= mtl_val
     end
 
     def add_hints_by_tags : Nil
@@ -216,20 +231,6 @@ struct CV::VpTermView
         title_val = @name_mtl.tl_name(@word)
         @val_hints << title_val
       end
-    end
-
-    def add_hint_from_mtl : Nil
-      mt_list = @word_mtl.cv_plain(@word, cap_first: false)
-      mtl_val = mt_list.to_s
-
-      @val_hints << mtl_val
-      return if !(first = mt_list.first?) || first.succ?
-
-      mtl_tag = first.tag
-      return if mtl_tag.none? || mtl_tag.unkn?
-
-      @tag_hints << mtl_tag.to_str
-      @first_val ||= mtl_val
     end
   end
 end

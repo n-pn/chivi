@@ -113,10 +113,11 @@ class CV::TlName
 
     def has_ends?(input : String)
       node = @root
+      chars = input.chars
 
-      input.chars.reverse_each do |char|
+      while char = chars.pop?
         return false unless node = node[char]?
-        return true if node.vals
+        return true if node.vals && !chars.empty?
       end
 
       false
@@ -204,14 +205,12 @@ class CV::TlName
 
     node = trie.root
     while char = chars.pop?
-      break unless node = node[char]?
+      break if !(node = node[char]?) || chars.empty?
       next unless molds = node.vals
 
       translate(chars.join, trie, type).each do |result|
         molds.each { |mold| output << mold.sub("?", result) }
       end
-
-      break if chars.empty?
     end
 
     output << tl_name(input)
