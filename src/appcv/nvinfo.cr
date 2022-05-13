@@ -65,8 +65,8 @@ class CV::Nvinfo
 
   # ranking
 
-  column voters : Int32 = 0
   column weight : Int32 = 0
+  column voters : Int32 = 0
   column rating : Int32 = 0
 
   column chap_count : Int32 = 0 # chap views count
