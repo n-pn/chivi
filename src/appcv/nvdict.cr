@@ -29,7 +29,7 @@ class CV::Nvdict
   CACHE_STR = RamCache(String, self).new(2048)
 
   def self.load!(dname : String)
-    CACHE_INT.get(dname) { find({dname: dname}) || init!(dname) }
+    CACHE_STR.get(dname) { find({dname: dname}) || init!(dname) }
   end
 
   def self.init!(dname : String, vpdict = VpDict.load_novel(dname))

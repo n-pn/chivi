@@ -175,21 +175,13 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     nvseed.save!
     Nvinfo.cache!(nvinfo)
 
-    spawn `bin/bcover_cli "#{nvinfo.scover}" #{nvinfo.bcover} users`
-    spawn log_upsert_action(params)
-    send_json({bslug: nvinfo.bslug})
-  end
-
-  LOG_FILE = "var/pg_data/weblogs/#{Time.utc.to_s.split(' ', 2).first}.log"
-
-  private def log_upsert_action(params)
-    params = params.to_unsafe_h
-    params.delete("_json")
-
-    File.open(LOG_FILE, "a") do |io|
-      data = {action: "upsert_nvinfo", cvuser: _cvuser.uname, params: params}
-      io.puts(data.to_json)
+    spawn do
+      `bin/bcover_cli "#{nvinfo.scover}" #{nvinfo.bcover} users`
+      body = params.to_unsafe_h.tap(&.delete("_json"))
+      CtrlUtil.log_user_action("nvinfo-upsert", body, _cvuser.uname)
     end
+
+    send_json({bslug: nvinfo.bslug})
   end
 
   def delete

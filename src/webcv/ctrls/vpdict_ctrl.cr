@@ -2,16 +2,16 @@ require "./_base_ctrl"
 require "../../libcv/vp_hint"
 
 class CV::VpdictCtrl < CV::BaseCtrl
-  alias VdInfo = Tuple(String, String?, Int32) # dict name, label, entries count
+  alias VdInfo = Tuple(String, String, Int32) # dict name, label, entries count
 
   getter core_dicts : Array(VdInfo) do
     [
-      {"regular", CtrlUtil.d_dub("regular"), VpDict.regular.size},
-      {"essence", CtrlUtil.d_dub("essence"), VpDict.essence.size},
-      {"fixture", CtrlUtil.d_dub("fixture"), VpDict.fixture.size},
-      {"$hanviet", CtrlUtil.d_dub("hanviet"), VpDict.hanviet.size},
-      {"$pin_yin", CtrlUtil.d_dub("pin_yin"), VpDict.pin_yin.size},
-      {"$tradsim", CtrlUtil.d_dub("tradsim"), VpDict.tradsim.size},
+      {"regular", "Thông dụng", VpDict.regular.size},
+      {"essence", "Nền tảng", VpDict.essence.size},
+      {"fixture", "Khoá cứng", VpDict.fixture.size},
+      {"$hanviet", "Hán việt", VpDict.hanviet.size},
+      {"$pin_yin", "Bính âm", VpDict.pin_yin.size},
+      {"$tradsim", "Phồn giản", VpDict.tradsim.size},
     ]
   end
 
@@ -56,7 +56,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
 
     send_json({
       dname: dname,
-      d_dub: CtrlUtil.d_dub(dname),
+      d_dub: dname[0] == '-' ? Nvdict.load!(dname[1..]).d_lbl : "",
       dsize: vdict.size,
 
       total: total,
