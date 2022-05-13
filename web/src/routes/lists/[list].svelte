@@ -98,7 +98,7 @@
       rel="noopener noreferer"
       target="_blank">
       <SIcon name="external-link" />
-      <span> Nguồn </span></a>
+      <span>Nguồn</span></a>
   </div>
 </section>
 

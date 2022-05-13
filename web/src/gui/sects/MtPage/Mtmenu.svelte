@@ -316,6 +316,7 @@
     </cv-item>
 
     <cv-item
+      class="umami--click-mtmenu-lookup"
       data-kbd="\"
       data-key="220"
       data-tip="Tra từ"
@@ -323,11 +324,19 @@
       <SIcon name="search" />
     </cv-item>
 
-    <cv-item data-kbd="↵" data-tip="Sửa từ" on:click|capture={show_upsert}>
+    <cv-item
+      class="umami--click-mtmenu-upsert"
+      data-kbd="↵"
+      data-tip="Sửa từ"
+      on:click|capture={show_upsert}>
       <SIcon name="pencil" />
     </cv-item>
 
-    <cv-item data-kbd="p" data-tip="Báo lỗi" on:click|capture={tlspec.show}>
+    <cv-item
+      class="umami--click-mtmenu-report"
+      data-kbd="p"
+      data-tip="Báo lỗi"
+      on:click|capture={tlspec.show}>
       <SIcon name="flag" />
     </cv-item>
 

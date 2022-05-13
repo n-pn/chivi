@@ -1,6 +1,4 @@
 <script context="module" lang="ts">
-  import { page } from '$app/stores'
-
   export async function load({ fetch, url: { searchParams } }) {
     const api_url = `/api/yslists?${searchParams.toString()}&lm=10`
     const api_res = await fetch(api_url)

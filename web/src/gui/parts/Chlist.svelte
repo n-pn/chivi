@@ -41,7 +41,7 @@
     <list-item>
       <a
         href={chap_url(bslug, { ...chap, sname, cpart: track_cpart(chap) })}
-        class="chap"
+        class="chap umami--click--chlist-toread"
         class:_active={is_marked(chap)}
         rel={sname != 'union' ? 'nofollow' : null}>
         <div class="chap-text">

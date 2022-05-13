@@ -28,7 +28,7 @@
   {#each nvseed as nvseed, idx}
     {#if nvseed.chaps >= chinfo.chidx}
       <a
-        class="seed-name"
+        class="seed-name umami--click-chtext-switch"
         class:_hidden={idx > 3 && show_less}
         class:_active={nvseed.sname == chmeta.sname}
         href={chap_url(nvseed.sname)}

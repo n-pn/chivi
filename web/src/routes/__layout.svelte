@@ -4,12 +4,10 @@
     ['Github', 'https://github.com/np-nam/chivi'],
     ['Facebook', 'https://www.facebook.com/chivi.fb/'],
   ]
-  declare var gtag: Function | undefined
 </script>
 
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { page } from '$app/stores'
 
   import { navigating, session } from '$app/stores'
   import { scroll, toleft, layers, popups, config } from '$lib/stores'
@@ -84,7 +82,8 @@
 
   <footer>
     <div class="">
-      <a href="/guide/donation" class="foot-link">Ủng hộ trang</a>
+      <a href="/guide/donation" class="foot-link umami--click--check-donation"
+        >Ủng hộ trang</a>
     </div>
     <div class="foot-links">
       <strong>Liên kết: </strong>

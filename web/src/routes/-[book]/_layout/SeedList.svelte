@@ -60,7 +60,7 @@
   {#each nvseed as { sname, chaps, stype, _link }, idx}
     <a
       href={seed_url(nvinfo.bslug, sname, pgidx)}
-      class="seed-name"
+      class="seed-name umami--click--nvseed-switch"
       class:_hidden={sname != 'users' && idx >= 4 && show_less}
       class:_active={sname == chseed.sname}
       data-tip={map_info(sname, stype, _link)}

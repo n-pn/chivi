@@ -146,7 +146,7 @@
     <div class="navi">
       <a
         href={paths.prev}
-        class="m-btn navi-item"
+        class="m-btn navi-item umami--click--prev-chap"
         class:_disable={!chmeta._prev}
         data-kbd="j">
         <SIcon name="chevron-left" />
@@ -161,7 +161,7 @@
 
         <svelte:fragment slot="content">
           <button
-            class="gmenu-item"
+            class="gmenu-item umami--click-reconvert-chap"
             disabled={$session.privi < 1}
             on:click={() => reload_chap(false)}
             data-kbd="r">
@@ -171,7 +171,9 @@
 
           {#if $session.privi > 1}
             {#if chmeta.clink != '/'}
-              <button class="gmenu-item" on:click={() => reload_chap(true)}>
+              <button
+                class="gmenu-item umami--click--reload-rmtext"
+                on:click={() => reload_chap(true)}>
                 <SIcon name="rotate-rectangle" />
                 <span>Tải lại nguồn</span>
               </button>
@@ -196,7 +198,7 @@
             </button>
           {:else}
             <button
-              class="gmenu-item"
+              class="gmenu-item umami--click--bookmark"
               disabled={$session.privi < 0}
               on:click={() => update_history(true)}
               data-kbd="p">
@@ -214,7 +216,7 @@
 
       <a
         href={paths.next}
-        class="m-btn _fill navi-item"
+        class="m-btn _fill navi-item umami--click--next-chap"
         class:_primary={chmeta._next}
         data-kbd="k">
         <span>Kế tiếp</span>
