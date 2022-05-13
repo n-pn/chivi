@@ -3,7 +3,7 @@ SSH=nipin@ssh.chivi.app:srv/chivi
 if [[ $1 == "all" || $1 == "chivi-srv" ]]
 then
   echo push server!
-
+  shards build -s --release bcover_cli && rsync -aiz --no-p bin/bcover_cli $SSH/bin
   shards build -s --release chivi && rsync -aiz --no-p bin/chivi $SSH/bin
   ssh nipin@ssh.chivi.app "sudo service chivi-srv restart"
 fi

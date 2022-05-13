@@ -23,7 +23,7 @@ CREATE TABLE if not exists nvdicts (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE INDEX nvdict_unique_idx ON nvdicts (dname);
+CREATE UNIQUE INDEX nvdict_unique_idx ON nvdicts (dname);
 
 CREATE INDEX nvdict_nvinfo_idx ON nvdicts (nvinfo_id);
 CREATE INDEX nvdict_parent_idx ON nvdicts (parent_id);

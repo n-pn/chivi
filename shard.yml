@@ -12,6 +12,9 @@ targets:
   chivi:
     main: src/chivi.cr
 
+  bcover_cli:
+    main: src/cvcli/bcover_cli.cr
+
   zhwenpg_seed:
     main: tasks/nvseed/zhwenpg_seed.cr
 

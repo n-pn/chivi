@@ -49,7 +49,7 @@ class CV::VptermCtrl < CV::BaseCtrl
       if nvdict = Nvdict.find({dname: dname})
         nvdict.update(dsize: vpdict.size, utime: vpterm.utime)
       else
-        Nvdict.init!(dname, vpdict).save!
+        Nvdict.init!(dname, vpdict)
       end
     rescue err
       Log.error { err }
