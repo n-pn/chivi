@@ -88,7 +88,11 @@ class CV::Cvuser
     if privi == 3
       self.privi_3_until = start if self.privi_3_until < start
       self.privi_3_until += tspan
-      self.privi_2_until = self.privi_3_until
+
+      if self.privi_2_until < self.priv_3_until
+        self.privi_2_until = self.privi_3_until
+      end
+
       tspan //= 2
       privi = 2
     end
@@ -96,7 +100,11 @@ class CV::Cvuser
     if privi == 2
       self.privi_2_until = start if self.privi_2_until < start
       self.privi_2_until += tspan
-      self.privi_1_until = self.privi_2_until
+
+      if self.privi_1_until < self.priv_2_until
+        self.privi_1_until = self.privi_2_until
+      end
+
       tspan //= 2
     end
 
