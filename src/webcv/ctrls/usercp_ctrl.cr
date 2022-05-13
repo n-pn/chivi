@@ -28,6 +28,12 @@ class CV::UsercpCtrl < CV::BaseCtrl
     privi = params.fetch_int("privi", min: 1, max: 3)
     tspan = params.fetch_int("tspan", min: 0, max: 3)
     _cvuser.upgrade!(privi, tspan)
+
+    spawn do
+      body = {privi: privi, tspan: tspan}
+      CtrlUtil.log_user_action("upgrade-privi", body, _cvuser.uname)
+    end
+
     send_json(CvuserView.new(_cvuser))
   rescue err
     halt! 403, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
