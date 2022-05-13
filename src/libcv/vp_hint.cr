@@ -36,26 +36,36 @@ class CV::VpHint
 
     File.each_line(file) do |line|
       vals = line.split('\t')
-      vals.shift?.try { |key| add(key, vals, trie) }
+      vals.shift?.try { |key| upsert(key, vals, trie) }
     end
 
     trie
   end
 
-  def add(key : String, vals : Array(String), node = get_trie(key[0]))
+  def upsert(key : String, vals : Array(String), node = get_trie(key[0]))
     key.each_char { |c| node = node.hash[c] }
     node.vals = vals.empty? ? nil : vals
   end
 
-  def extend(key : String, vals : Array(String), node = get_trie(key[0]))
+  def upsert!(key : String, vals : Array(String))
+    upsert(key, vals)
+    atomic_save!(key, vals)
+  end
+
+  def append(key : String, vals : Array(String), node = get_trie(key[0]))
     key.each_char { |c| node = node.hash[c] }
     node.vals = node.vals.try(&.concat(vals).uniq!) || vals
   end
 
-  def add!(key : String, vals : Array(String))
-    add(key, vals)
+  def append!(key : String, vals : Array(String))
+    vals = append(key, vals)
+    atomic_save!(key, vals)
+  end
 
-    File.open(File.join("#{@root}/#{key[0]}.tsv"), "a") do |io|
+  def atomic_save!(key : String, vals : Array(String))
+    file = File.join("#{@root}/#{key[0]}.tsv")
+
+    File.open(file, "a") do |io|
       io << '\n' << key << '\t' << vals.join('\t')
     end
   end

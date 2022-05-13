@@ -1,9 +1,7 @@
 const labels = {
-  'cc_cedict': 'CC-CEDICT',
-  'trungviet': 'Trung Việt',
-  'hanviet': 'Hán Việt',
-  'pin_yin': 'Bính Âm',
-  'tradsim': 'Phồn Giản',
+  '$hanviet': 'Hán Việt',
+  '$pin_yin': 'Bính Âm',
+  '$tradsim': 'Phồn Giản',
   'regular': 'Thông Dụng',
   'essence': 'Nền Tảng',
   'fixture': 'Khoá Cứng',
@@ -11,6 +9,7 @@ const labels = {
   '~fix_nouns': 'Sửa danh từ',
   '~fix_verbs': 'Sửa động từ',
   '~fix_adjts': 'Sửa tính từ',
+  '~fix_adverbs': 'Sửa phó từ',
   '~fix_u_zhi': 'Sửa sau 之',
   '~qt_times': 'Thời lượng từ',
   '~qt_verbs': 'Động lượng từ',
@@ -22,9 +21,11 @@ const labels = {
 const intros = {
   'combine': 'Từ điển tổng hợp dịch nhanh',
   'regular': 'Từ điển chung cho tất cả các bộ truyện',
-  'hanviet': 'Từ điển phiên âm Hán Việt',
   'fixture': 'Các từ nghĩa cố định dùng trong máy dịch',
   'essence': 'Từ điển cơ sở chung cho các chế độ dịch',
+  '$hanviet': 'Từ điển phiên âm Hán Việt',
+  '$pin_yin': 'Từ điển bính âm',
+  '$tradsim': 'Phồn sang giản',
   '~fix_u_zhi': 'Đổi nghĩa của vế phải cụm từ kết hợp bởi 之',
   '~qt_times': 'Lượng từ chỉ thời gian',
   '~qt_verbs': 'Lượng từ làm bổ ngữ cho động từ phía trước',
@@ -34,11 +35,13 @@ const intros = {
 }
 
 export function upsert_dicts(vdict: CV.VpDict, extra: CV.VpDict) {
-  extra = extra || make_vdict('hanviet')
-
+  extra = extra || make_vdict('$hanviet')
   const { dname } = vdict
+
   if (dname == 'combine' || dname.startsWith('-')) {
     return [vdict, make_vdict('regular'), extra]
+  } else if (dname == 'regular') {
+    return [make_vdict('combine'), vdict, extra]
   } else {
     return [make_vdict('combine'), make_vdict('regular'), vdict]
   }
@@ -52,6 +55,6 @@ export function make_vdict( dname: string, d_dub?: string, d_tip?: string ): CV.
 }
 
 function make_intro(dname: string, d_dub: string) {
-  if (dname.startsWith('-')) return `Từ điển đặc biệt: ${d_dub}`
+  if (dname.startsWith('~')) return `Từ điển đặc biệt: ${d_dub}`
   return `Từ điển riêng cho bộ truyện: ${d_dub}`
 }

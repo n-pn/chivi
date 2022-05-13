@@ -102,8 +102,8 @@ class CV::VpTerm
     io << ']'
   end
 
-  def utime
-    @mtime * 60 + EPOCH
+  def utime : Int64
+    EPOCH &+ @mtime &* 60
   end
 
   def to_json(jb : JSON::Builder)
@@ -114,7 +114,7 @@ class CV::VpTerm
       jb.field "ptag", ptag.to_str
       jb.field "rank", rank
 
-      jb.field "mtime", @mtime * 60 + EPOCH
+      jb.field "mtime", self.utime
       jb.field "uname", @uname
 
       jb.field "state", self.state

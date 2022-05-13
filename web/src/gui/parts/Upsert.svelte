@@ -52,7 +52,7 @@
 
   let key = ''
 
-  let extra = make_vdict('hanviet')
+  let extra = make_vdict('$hanviet')
   $: vpdicts = upsert_dicts($vdict, extra)
 
   let vpterms: VpTerm[] = []

@@ -5,34 +5,32 @@ class CV::VpdictCtrl < CV::BaseCtrl
   alias VdInfo = Tuple(String, String?, Int32) # dict name, label, entries count
 
   getter core_dicts : Array(VdInfo) do
-    dicts = [] of VdInfo
-
-    dicts << {"regular", CtrlUtil.d_dub("regular"), VpDict.regular.size}
-    dicts << {"essence", CtrlUtil.d_dub("essence"), VpDict.essence.size}
-    dicts << {"fixture", CtrlUtil.d_dub("fixture"), VpDict.fixture.size}
-    dicts << {"$hanviet", CtrlUtil.d_dub("hanviet"), VpDict.hanviet.size}
-    dicts << {"$pin_yin", CtrlUtil.d_dub("pin_yin"), VpDict.pin_yin.size}
-    dicts << {"$tradsim", CtrlUtil.d_dub("tradsim"), VpDict.tradsim.size}
-
-    dicts
+    [
+      {"regular", CtrlUtil.d_dub("regular"), VpDict.regular.size},
+      {"essence", CtrlUtil.d_dub("essence"), VpDict.essence.size},
+      {"fixture", CtrlUtil.d_dub("fixture"), VpDict.fixture.size},
+      {"$hanviet", CtrlUtil.d_dub("hanviet"), VpDict.hanviet.size},
+      {"$pin_yin", CtrlUtil.d_dub("pin_yin"), VpDict.pin_yin.size},
+      {"$tradsim", CtrlUtil.d_dub("tradsim"), VpDict.tradsim.size},
+    ]
   end
 
   def index
     pgidx, limit, offset = params.page_info(min: 24, max: 40)
 
-    input = VpDict.nvdicts
-    book_dicts = [] of VdInfo
+    total = Nvdict.query.count.to_i
+    query = Nvdict.query.limit(limit).offset(offset)
 
-    input[offset, limit].each do |dname|
-      book_dicts << {dname, CtrlUtil.d_dub(dname), VpDict.load(dname).size}
+    book_dicts = query.order_by(utime: :desc).map do |dict|
+      {dict.dname, dict.d_lbl, dict.dsize}
     end
 
     send_json({
       cores: core_dicts,
       books: book_dicts,
-      total: input.size,
+      total: total,
       pgidx: pgidx,
-      pgmax: CtrlUtil.pgmax(input.size, limit),
+      pgmax: CtrlUtil.pgmax(total, limit),
     })
   end
 
@@ -114,9 +112,5 @@ class CV::VpdictCtrl < CV::BaseCtrl
     end
 
     send_json(entries)
-  end
-
-  def find_node(dict, key)
-    dict.trie.find(key)
   end
 end

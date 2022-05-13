@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { make_vdict } from '$utils/vpdict_utils'
 
-  const basic = ['hanviet', 'fixture', 'essence']
+  const basic = ['$hanviet', 'fixture', 'essence']
   // prettier-ignore
   const cvmtl = [
     '~fix_nouns', '~fix_verbs', '~fix_adjts',
@@ -22,7 +22,7 @@
   import Dialog from '$gui/molds/Dialog.svelte'
   import { tooltip } from '$lib/actions'
 
-  export let vdict = make_vdict('hanviet')
+  export let vdict = make_vdict('$hanviet')
   export let state = 3
   // prettier-ignore
   export let on_close = (_?: any): void => { state = 1 }

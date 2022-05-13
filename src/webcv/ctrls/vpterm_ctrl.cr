@@ -27,40 +27,35 @@ class CV::VptermCtrl < CV::BaseCtrl
 
   def upsert_entry
     dname = params["dname"]
-    vdict = VpDict.load(dname)
-    chset = VpTermForm.new(params, vdict, _cvuser)
+    vpdict = VpDict.load(dname)
 
-    if error = chset.validate
-      return halt!(403, error)
+    ch_set = VpTermForm.new(params, vpdict, _cvuser)
+    ch_set.validate.try { |error| return halt!(403, error) }
+    return halt!(401, "Nội dung không thay đổi!") unless vpterm = ch_set.save?
+
+    spawn do
+      if vpdict.kind.cvmtl?
+        MtDict.upsert(dname[1..], vpterm)
+      elsif vpdict.kind.novel?
+        VpHint.user_vals.append!(vpterm.key, vpterm.val)
+        VpHint.user_tags.append!(vpterm.key, vpterm.attr.split(" "))
+      end
     end
 
-    unless vpterm = chset.save?
-      return halt!(401, "Nội dung không thay đổi!")
-    end
+    spawn do
+      next unless vpdict.kind.novel? && dname[0] == '-'
+      dname = dname[1..]
 
-    if vdict.type == 1
-      MtDict.upsert(dname[1..], vpterm) if dname[0] == '~'
-    else
-      # add to suggestion
-      add_to_suggest(vpterm.dup) if vdict.type > 1 && dname != "suggest"
-      # add to qtran dict if entry is a person name
-      add_to_combine(vpterm.dup) if vdict.type > 3 && dname != "combine"
+      if nvdict = Nvdict.find({dname: dname})
+        nvdict.update(dsize: vpdict.size, utime: vpterm.utime)
+      else
+        Nvdict.init!(dname, vpdict).save!
+      end
+    rescue err
+      Log.error { err }
     end
 
     send_json(vpterm, 201)
-  end
-
-  private def add_to_suggest(term : VpTerm)
-    VpDict.suggest.find(term.key).try do |prev|
-      term.val.concat(prev.val).uniq!
-    end
-
-    VpDict.suggest.set!(term)
-  end
-
-  private def add_to_combine(term : VpTerm)
-    return unless term.key.size > 1 && term.ptag.person?
-    VpDict.combine.set!(term)
   end
 
   def upsert_batch
