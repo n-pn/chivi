@@ -32,12 +32,6 @@
 
   $: wtheme = $config.wtheme || $session.wtheme || 'light'
 
-  $: {
-    if (typeof gtag === 'function') {
-      gtag('config', 'G-0GJNGJEFNH', { page_path: $page.url.pathname })
-    }
-  }
-
   let kbd_hint = false
 
   function handle_keydown(evt: KeyboardEvent) {
