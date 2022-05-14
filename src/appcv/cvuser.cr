@@ -83,33 +83,24 @@ class CV::Cvuser
     self.privi = privi
 
     tspan = PRIVI_SPAN[tspan]
-    start = Time.utc.to_unix
+    t_now = Time.utc.to_unix
 
-    if privi == 3
-      self.privi_3_until = start if self.privi_3_until < start
-      self.privi_3_until += tspan
-
-      if self.privi_2_until < self.privi_3_until
-        self.privi_2_until = self.privi_3_until
-      end
-
-      tspan //= 2
-      privi = 2
+    if privi > 0
+      self.privi_1_until = t_now if self.privi_1_until < t_now
+      self.privi_1_until += tspan
     end
 
-    if privi == 2
-      self.privi_2_until = start if self.privi_2_until < start
+    if privi > 1
+      self.privi_2_until = t_now if self.privi_2_until < t_now
       self.privi_2_until += tspan
-
-      if self.privi_1_until < self.privi_2_until
-        self.privi_1_until = self.privi_2_until
-      end
-
-      tspan //= 2
+      self.privi_1_until += privi == 2 ? tspan // 2 : tspan // 4
     end
 
-    self.privi_1_until = start if self.privi_1_until < start
-    self.privi_1_until += tspan
+    if privi > 2
+      self.privi_3_until = t_now if self.privi_3_until < t_now
+      self.privi_3_until += tspan
+      self.privi_2_until += tspan // 2
+    end
 
     self.save!
     {self.privi_1_until, self.privi_2_until, self.privi_3_until}
