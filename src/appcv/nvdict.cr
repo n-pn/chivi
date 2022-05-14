@@ -47,6 +47,6 @@ class CV::Nvdict
       utime:  vpdict.list.last?.try(&.utime) || 0_i64,
     })
 
-    nvdict.tap { |x| x.save if x.dsize > 0 }
+    nvdict.tap(&.save!)
   end
 end
