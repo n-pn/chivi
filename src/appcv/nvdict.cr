@@ -26,10 +26,10 @@ class CV::Nvdict
 
   #################
 
-  CACHE_STR = RamCache(String, self).new(2048)
+  # CACHE_STR = RamCache(String, self).new(2048)
 
   def self.load!(dname : String)
-    CACHE_STR.get(dname) { find({dname: dname}) || init!(dname) }
+    self.find({dname: dname}) || self.init!(dname)
   end
 
   def self.init!(dname : String, vpdict = VpDict.load_novel(dname))
@@ -40,7 +40,7 @@ class CV::Nvdict
   def self.init!(nvinfo : Nvinfo, vpdict : VpDict)
     nvdict = new({
       nvinfo: nvinfo,
-      dname:  nvinfo.dname,
+      dname:  nvinfo.bhash,
       d_lbl:  nvinfo.vname,
       dsize:  vpdict.size,
       ctime:  vpdict.list.find(&.mtime.> 10).try(&.utime) || 0_i64,
