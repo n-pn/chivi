@@ -14,14 +14,14 @@ class CV::CvuserCtrl < CV::BaseCtrl
 
   def signup
     email = params["email"].strip
-    dname = params["dname"].strip
+    uname = params["uname"].strip
     upass = params["upass"].strip
 
-    cvuser = Cvuser.create!(email, dname, upass)
+    cvuser = Cvuser.create!(email, uname, upass)
 
     spawn do
-      body = {email: email, dname: dname, cpass: cvuser.cpass}
-      CtrlUtil.log_user_action("user-signup", body, dname)
+      body = {email: email, uname: uname, cpass: cvuser.cpass}
+      CtrlUtil.log_user_action("user-signup", body, uname)
     end
 
     login_user!(cvuser)

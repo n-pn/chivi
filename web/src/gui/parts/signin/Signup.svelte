@@ -5,7 +5,7 @@
   export let email: string
   export let _form = 'signup'
 
-  let dname = ''
+  let uname = ''
   let upass = ''
 
   let error = ''
@@ -14,7 +14,7 @@
     event.preventDefault()
     error = ''
 
-    const params = { email, dname, upass }
+    const params = { email, uname, upass }
     const [stt, msg] = await api_call(fetch, `user/signup`, params, 'POST')
     if (stt > 200) error = msg
     else window.location.reload()
@@ -43,7 +43,7 @@
       name="cname"
       placeholder="Tên người dùng"
       required
-      bind:value={dname} />
+      bind:value={uname} />
   </div>
 
   <div class="form-inp">
