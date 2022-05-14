@@ -18,6 +18,12 @@ class CV::CvuserCtrl < CV::BaseCtrl
     upass = params["upass"].strip
 
     cvuser = Cvuser.create!(email, dname, upass)
+
+    spawn do
+      body = {email: email, dname: dname, cpass: cvuser.cpass}
+      CtrlUtil.log_user_action("user-signup", body, dname)
+    end
+
     login_user!(cvuser)
   rescue err
     halt!(400, err.message)
@@ -57,6 +63,11 @@ class CV::CvuserCtrl < CV::BaseCtrl
 
     _cvuser.upass = new_upass
     _cvuser.save!
+
+    spawn do
+      body = {email: _cvuser.email, cpass: _cvuser.cpass}
+      CtrlUtil.log_user_action("change-pass", body, _cvuser.uname)
+    end
 
     send_json("Đổi mật khẩu thành công", 201)
   rescue err
