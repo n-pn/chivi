@@ -44,13 +44,8 @@ class CV::VptermCtrl < CV::BaseCtrl
 
     spawn do
       next unless vpdict.kind.novel? && dname[0] == '-'
-      dname = dname[1..]
-
-      if nvdict = Nvdict.find({dname: dname})
-        nvdict.update(dsize: vpdict.size, utime: vpterm.utime)
-      else
-        Nvdict.init!(dname, vpdict)
-      end
+      nvdict = Nvdict.load!(dname[1..])
+      nvdict.update(dsize: vpdict.size, utime: vpterm.utime)
     rescue err
       Log.error { err }
     end
