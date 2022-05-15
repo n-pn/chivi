@@ -6,9 +6,9 @@ DIR = "_db/vpinit/bd_lac/raw"
 lac = LAC(mode='lac')
 
 FIX = {
-  'PER': 'nr',
-  'ORG': 'nt',
-  'LOC': 'ns',
+  'PER': 'NR',
+  'ORG': 'NT',
+  'LOC': 'NS',
   'TIME': 't',
   'nw': 'nx'
 }

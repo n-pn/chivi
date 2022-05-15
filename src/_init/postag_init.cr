@@ -45,7 +45,7 @@ class CV::PostagInit
       line.split(SEP_1) do |frag|
         term, tag = frag.split(SEP_2, 2)
         # raise "Invalid content: #{frag}" if tag.empty?
-        update_count(term, tag.in?("nt", "ns") ? "nn" : tag, 1)
+        update_count(term, tag, 1)
       end
     end
   end
