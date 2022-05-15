@@ -102,8 +102,8 @@ Amber::Server.configure do
     put "/!posts/:post_ii/:action", CV::UsercpCtrl, :mark_post
     put "/!repls/:repl_id/:action", CV::UsercpCtrl, :mark_repl
 
-    get "/vpinits/fixtag/:source/:target", CV::VpinitCtrl, :fixtag
-    put "/vpinits/upsert/:target", CV::VpinitCtrl, :upsert
+    # get "/vpinits/fixtag/:source/:target", CV::VpinitCtrl, :fixtag
+    # put "/vpinits/upsert/:target", CV::VpinitCtrl, :upsert
   end
 
   routes :static do

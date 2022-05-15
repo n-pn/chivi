@@ -1,92 +1,7 @@
+require "tabkv"
+
 require "./mt_core"
 require "./vp_dict"
-
-# module CV::TlUtil
-#   extend self
-
-#   class Trie
-#     property val : String? = nil
-#     getter trie = Hash(Char, Trie).new { |h, c| h[c] = Trie.new }
-#     forward_missing_to @trie
-#   end
-
-#   def load_trie(file : String)
-#     root = Trie.new
-
-#     File.read_lines(file).each do |line|
-#       next if line.empty?
-
-#       key, val = line.split('\t', 2)
-#       trie = root
-#       key.chars.reverse_each { |c| trie = trie[c] }
-#       trie.val = val
-#     end
-
-#     root
-#   end
-
-#   NR_TAGS = ["nr", "n", ""]
-#   NN_TAGS = ["nn", "ns", "nt", "n", ""]
-#   NZ_TAGS = ["nz", "n", ""]
-
-#   NN_SHORTS = {
-#     '府' => "? phủ", # '城' => "thành"
-#     '族' => "? tộc",
-#     '营' => "doanh ?",
-#     '朝' => "triều ?",
-#     '国' => "nước ?",
-#     '人' => "người ?",
-#     '地' => "đất ?",
-#     '市' => "thành phố ?",
-#     '家' => "? gia",
-#     '村' => "thôn ?",
-#   }
-
-#   def translate(inp : String, tag : String, dict = "combine")
-#     find_defined(inp, [tag, ""], dict).try { |x| return x }
-
-#     case tag
-#     when "nr" then convert(inp, self.ptitle, NR_TAGS)
-#     when "nn"
-#       return convert(inp, self.naffil, NN_TAGS) if inp.size > 2
-#       return convert(inp, NN_TAGS) unless val = NN_SHORTS[inp[-1]]?
-#       val.sub("?", convert(inp[0].to_s))
-#     when "nz" then convert(inp, self.nother, NZ_TAGS)
-#     else           convert(inp, [tag])
-#     end
-#   end
-
-#   def convert(inp : String, trie : Trie, tags : Array(String))
-#     chars = inp.chars
-#     output = nil
-
-#     while char = chars.pop?
-#       break unless trie = trie[char]?
-#       next unless val = trie.val
-#       output = val.sub("?", convert(chars.join, trie, tags))
-#       break if chars.empty?
-#     end
-
-#     output || convert(inp, tags.reject("n"))
-#   end
-
-#   def convert(key : String, tags = ["nr"]) : String
-#     find_defined(key, tags) || TextUtil.titleize(MtCore.cv_hanviet(key, false))
-#   end
-
-#   def find_defined(key : String, tags : Array(String), dict = "regular") : String?
-#     return unless term = VpDict.load(dict).find(key)
-#     return unless term.attr.in?(tags) && term._flag == 0
-#     term.val.first?.try { |x| return x unless x.empty? }
-#   end
-
-#   # pp! translate("马总", "nr")
-#   # pp! translate("李居士", "nr")
-#   # pp! translate("黄局长", "nr")
-#   # pp! translate("暮雪公主", "nr")
-#   # pp! translate("吴克明", "nr")
-#   # pp! translate("夏秘书", "nr")
-# end
 
 class CV::TlName
   class Trie
@@ -134,13 +49,21 @@ class CV::TlName
 
   ####################
 
-  def initialize(dname : String = "combine")
-    @udict = VpDict.load(dname)
+  enum Type
+    Human; Affil; Title; Other
+  end
+
+  def initialize(@vdict : VpDict)
     @bdict = VpDict.regular
   end
 
-  enum Type
-    Human; Affil; Title; Other
+  def tl_by_ptag(input : String, ptag : String)
+    case ptag
+    when "nr"             then tl_human(input)
+    when "nn", "ns", "nt" then tl_affil(input)
+    when "nx"             then tl_title(input)
+    else                       tl_other(input)
+    end
   end
 
   def tl_human(input : String)
@@ -148,6 +71,12 @@ class CV::TlName
       output = find_defined(input, :human) || [] of String
       extras = translate(input[1..], Trie.human, :human).map! { |x| "lão #{x}" }
       return output.empty? ? extras : output.concat(extras).uniq!
+    end
+
+    if input.includes?("·")
+      find_defined(input, :human).try { |vals| return vals }
+      names = input.split("·").map! { |x| tl_human(x).first }
+      return [names.join(" ")]
     end
 
     output = translate(input, Trie.human, :human)
@@ -180,11 +109,10 @@ class CV::TlName
 
   def tl_affil(input : String)
     return translate(input, Trie.affil, :affil) if input.size > 2
-    output = [] of String
+    output = find_defined(input, :affil, lax: false) || [] of String
 
     if mold = AFFIL_SHORTS[input[-1]]?
       first = input[0].to_s
-      find_defined(input, :affil).try { |val| output << mold.sub("?", val) }
       output << mold.sub("?", tl_name(first))
     end
 
@@ -195,7 +123,7 @@ class CV::TlName
   def tl_title(input : String)
     output = find_defined(input, :title) || [] of String
     output.map! { |x| TextUtil.titleize(x) }
-    output << tl_name(word)
+    output << tl_name(input)
     output.uniq!
   end
 
@@ -232,15 +160,15 @@ class CV::TlName
     TextUtil.titleize(mt_list.to_s)
   end
 
+  NAMES = Tabkv(Array(String)).new("var/vphints/names-common.tsv")
+
   def find_defined(input : String, type : Type = :human)
-    find_defined(@udict, input, type) || find_defined(@bdict, input, type)
+    NAMES[input]? || find_defined(@vdict, input, type) || find_defined(@bdict, input, type)
   end
 
   def find_defined(vdict : VpDict, input : String, type : Type = :human)
-    return unless term = vdict.find(input)
-    return if term.deleted?
-
-    to_match = type.human? || type.affil? ? {"nr", "nn", "n", ""} : {"nz", "n", ""}
+    return if !(term = vdict.find(input)) || term.deleted?
+    to_match = type.human? || type.affil? ? {"nr", "nn", "nt", "ns"} : {"nz", "nx"}
     term.val if to_match.includes?(term.attr)
   end
 

@@ -206,11 +206,11 @@ module CV
 
         # reject if this entry does not appear frequenly enough
         next if count_sum < min_count
+        count_nn = counts["ns"] + counts["nt"]
+        first_tag = count_nn > counts.first_value ? "nn" : counts.first_key
 
-        first_tag = counts.first_key
         next if first_tag.in?("w", "xc", "m")
-
-        is_names = first_tag.in?("nr", "nn", "nx", "nz")
+        is_names = first_tag.in?("nr", "nn", "nt", "ns", "nx", "nz")
 
         if global_counts = global.data[word]?
           if global_counts.first_key == first_tag
@@ -243,6 +243,6 @@ module CV
     File.write("#{OUT}/book-names.txt", output.join("\n"))
   end
 
-  # export_books
+  export_books
   # combine_books_names_to_check_translation
 end

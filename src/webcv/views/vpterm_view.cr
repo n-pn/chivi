@@ -15,7 +15,7 @@ struct CV::VpTermView
   def initialize(@dname, @words, @hvmap, @uname = "")
     @vdict = VpDict.load(@dname)
     @word_mtl = MtCore.load(@dname, @uname)
-    @name_mtl = TlName.new(@dname)
+    @name_mtl = TlName.new(@vdict)
   end
 
   def to_json(jb : JSON::Builder)

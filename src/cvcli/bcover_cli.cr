@@ -70,7 +70,7 @@ end
 image_url = ARGV[0]
 
 webm_name = ARGV[1]? || CV::UkeyUtil.digest32(image_url, 8) + ".webp"
-webm_path = "priv/static/covers/#{webm_name}.webp"
+webm_path = "priv/static/covers/#{webm_name}"
 
 image_dir = ARGV[2]? || "users"
 image_name = ARGV[3]? || webm_name.sub(".webp", ".jpg")

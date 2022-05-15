@@ -156,11 +156,13 @@ class CV::VpDict
   # 2: delete shadowed entries (update in under 5 minutes)
   # 3: do not delete anything
 
-  def save!(file = @file, prune : Int8 = 2_u8) : Nil
+  def save!(file = @file, prune : Int8 = 2_u8, save_log = false) : Nil
     return if prune < 1
 
     data = @list.reject { |x| x.key.empty? || x._flag >= prune }
     save_list!(@file, data) if data.size > 0
+
+    return unless save_log
 
     logs = data.select(&.mtime.> 0)
     save_list!(@flog, logs) if logs.size > 0
