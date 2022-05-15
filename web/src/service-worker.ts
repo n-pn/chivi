@@ -48,7 +48,7 @@ async function fetchAndCache(request: Request) {
   }
 }
 
-worker.addEventListener('fetch', async ({ request, respondWith }) => {
+worker.addEventListener('fetch', ({ request, respondWith }) => {
   if (request.method !== 'GET' || request.headers.has('range')) return
   const url = new URL(request.url)
 
@@ -62,8 +62,14 @@ worker.addEventListener('fetch', async ({ request, respondWith }) => {
     request.cache === 'only-if-cached' && !isStaticAsset
 
   if (isHttp && !isDevServerRequest && !skipBecauseUncached) {
-    const cachedAsset = isStaticAsset && (await caches.match(request))
-    const toResponse = cachedAsset || (await fetchAndCache(request))
-    respondWith(toResponse)
+    respondWith(
+      (async function () {
+        if (isStaticAsset) {
+          const cachedResponse = await caches.match(request)
+          if (cachedResponse) return cachedResponse
+        }
+        return await fetchAndCache(request)
+      })()
+    )
   }
 })
