@@ -31,9 +31,8 @@ class CV::VpDict
   class_getter suggest : self { load_basic("suggest") }
 
   class_getter nvdicts : Array(String) do
-    files = Dir.glob("#{DIR}/novel/*.tab")
-    files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
-    files.map { |f| "-" + File.basename(f, ".tab") }
+    files = Dir.glob("#{DIR}/novel/*.tsv")
+    files.map! { |f| File.basename(f, ".tsv") }
   end
 
   class_getter qtdicts : Array(String) do
@@ -146,8 +145,10 @@ class CV::VpDict
 
   def set!(term : VpTerm) : VpTerm?
     return unless set(term)
-    file = term.mtime > 0 ? @flog : @file
-    File.open(file, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
+
+    # File.open(@file, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
+    File.open(@flog, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
+
     term
   end
 

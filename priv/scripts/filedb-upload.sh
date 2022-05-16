@@ -42,7 +42,7 @@ then
 
   # rsync -azi --no-p "var/_common" "$SSH/var"
   rsync -azi "var/vphints" "$SSH/var"
-  rsync -azi "var/vpdicts/v1/novel/*.tsv" "$SSH/var/vpdicts/v1/novel"
+  rsync -azi --exclude="*.tab" "var/vpdicts/v1/novel" "$SSH/var/vpdicts/v1"
   # rsync -azi --no-p --delete "priv/static/covers/" "$SSH/priv/static/covers/"
 fi
 

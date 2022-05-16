@@ -39,7 +39,9 @@ def extract_book(file : String)
     if old_term = vdict.find(key)
       old_val = old_term.val.first
 
-      unless similar_tag?(old_term.attr, main_tag)
+      if similar_tag?(old_term.attr, main_tag)
+        next if old_term.attr == main_tag
+      else
         if old_term.attr.in?(top_tags)
           color = :green
         elsif old_val == old_val.downcase

@@ -20,6 +20,8 @@ class CV::VMatch
   end
 
   def match?(term : VpTerm)
+    return false if term._flag > 1
+
     @key.try { |re| return false unless term.key.matches?(re) }
     @val.try { |re| return false unless term.val.any?(&.matches?(re)) }
 
