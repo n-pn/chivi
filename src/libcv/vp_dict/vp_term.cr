@@ -61,7 +61,7 @@ class CV::VpTerm
   end
 
   def deleted?
-    @_flag > 0_i8
+    @_flag > 0_i8 || @val.empty? || @val.first.empty?
   end
 
   def force_fix!(@val, @attr = "", @mtime = @mtime + 1, @_flag = 0_u8)

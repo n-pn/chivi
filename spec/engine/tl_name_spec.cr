@@ -10,8 +10,12 @@ describe CV::TlName, tags: "tl_name" do
     tl_name.tl_affil("中国").should eq(["Trung Quốc", "nước Trung"])
   end
 
+  it "correctly translate human names" do
+    tl_name.tl_human("黑铁妖王").should eq(["Hắc Thiết yêu vương", "Hắc Thiết Yêu Vương"])
+  end
+
   it "find defined values" do
-    tl_name.tl_affil("中央银行").first.should eq("Ngân hàng Trung ương")
+    tl_name.tl_affil("中央银行").first.should eq("ngân hàng trung ương")
     tl_name.tl_affil("魏玛共和国").first.should eq("Cộng hoà Weimar")
   end
 
