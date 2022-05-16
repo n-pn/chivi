@@ -3,6 +3,7 @@ require "tabkv"
 
 require "../../src/_init/postag_init"
 require "../../src/libcv/mt_core"
+require "../../src/libcv/tl_name"
 
 module CV
   extend self
@@ -189,6 +190,49 @@ module CV
     {min_count, fail_safe}
   end
 
+  def get_first_tag(key : String, counts : Hash(String, Int32)) : String
+    count_nn = (counts["ns"]? || 0) &+ (counts["nt"]? || 0)
+    first_tag = count_nn > counts.first_value ? "nn" : counts.first_key
+
+    case first_tag
+    when "nr" then return fix_nr_tag(key)
+    when "nz" then return fix_nz_tag(key)
+    when "ns" then return fix_ns_tag(key)
+    when "nx"
+      return "nz" if key.ends_with?("号")
+    end
+
+    first_tag
+  end
+
+  def fix_nr_tag(key : String)
+    case key
+    when .ends_with?("宗") then "nt"
+    when .ends_with?("氏") then "nt"
+    when .ends_with?("人")
+      TlName.is_human?(key) ? "nr" : "nz"
+    else
+      "nr"
+    end
+  end
+
+  def fix_ns_tag(key : String)
+    case key
+    when .ends_with?("上") then "s"
+    when .ends_with?("内") then "s"
+    else                       "ns"
+    end
+  end
+
+  def fix_nz_tag(key : String)
+    case key
+    when .ends_with?("部族") then "nt"
+    when .ends_with?("世界") then "ns"
+    else
+      TlName.is_human?(key) ? "nr" : "nz"
+    end
+  end
+
   def export_books
     global = PostagInit.new("#{OUT}/top50-raw.tsv")
 
@@ -206,8 +250,7 @@ module CV
 
         # reject if this entry does not appear frequenly enough
         next if count_sum < min_count
-        count_nn = counts["ns"] + counts["nt"]
-        first_tag = count_nn > counts.first_value ? "nn" : counts.first_key
+        first_tag = get_first_tag(word, counts)
 
         next if first_tag.in?("w", "xc", "m")
         is_names = first_tag.in?("nr", "nn", "nt", "ns", "nx", "nz")
@@ -215,7 +258,9 @@ module CV
         if global_counts = global.data[word]?
           if global_counts.first_key == first_tag
             # keep the names if it appear frequently enough
-            next unless is_names && count_sum >= fail_safe
+            next unless first_tag == "nr" && count_sum >= fail_safe
+            # only if the term not exists in common dicts
+            next if BONUS[word]?
           end
         end
 

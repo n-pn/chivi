@@ -75,12 +75,24 @@ class CV::TlName
 
     if input.includes?("·")
       find_defined(input, :human).try { |vals| return vals }
-      names = input.split("·").map! { |x| tl_human(x).first }
+      names = input.split("·").map! do |x|
+        case x
+        when "冯" then "von"
+        when "德" then "de"
+        else
+          tl_human(x).first? || tl_name(x)
+        end
+      end
+
       return [names.join(" ")]
     end
 
+    if input[0]? == "圣"
+      return translate(input[1..], Trie.human, :human).map! { |x| "Thánh #{x}" }
+    end
+
     output = translate(input, Trie.human, :human)
-    return output unless input[0] == '小'
+    return output unless input[0]? == '小'
 
     extras = translate(input[1..], Trie.human, :human)
     extras.first(3).map! { |x| "tiểu #{x}" }.concat(output).uniq!
@@ -109,7 +121,7 @@ class CV::TlName
 
   def tl_affil(input : String)
     return translate(input, Trie.affil, :affil) if input.size > 2
-    output = find_defined(input, :affil, lax: false) || [] of String
+    output = find_defined(input, :affil) || [] of String
 
     if mold = AFFIL_SHORTS[input[-1]]?
       first = input[0].to_s

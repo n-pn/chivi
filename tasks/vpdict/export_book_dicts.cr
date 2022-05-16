@@ -8,7 +8,7 @@ require "../shared/bootstrap"
 EPOCH = CV::VpTerm.mtime(Time.local(2021, 10, 1))
 
 def similar_tag?(attr : String, ptag : String)
-  return true if attr == ptag
+  return true if attr == ptag || attr.empty?
   return true if attr == "nn" && ptag.in?("nt", "ns")
   return true if attr == "nz" && ptag == "nx"
 
@@ -37,9 +37,14 @@ def extract_book(file : String)
     top_tags = counts.reject! { |_, c| c < min_count }.keys
 
     if old_term = vdict.find(key)
+      old_val = old_term.val.first
+
       unless similar_tag?(old_term.attr, main_tag)
         if old_term.attr.in?(top_tags)
           color = :green
+        elsif old_val == old_val.downcase
+          main_tag = old_term == "n" ? "n" : "nz"
+          color = :blue
         elsif old_term.mtime >= EPOCH
           color = :cyan
         else
