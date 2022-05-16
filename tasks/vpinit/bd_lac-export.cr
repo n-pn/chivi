@@ -195,9 +195,10 @@ module CV
     first_tag = count_nn > counts.first_value ? "nn" : counts.first_key
 
     case first_tag
-    when "nr" then return fix_nr_tag(key)
-    when "nz" then return fix_nz_tag(key)
-    when "ns" then return fix_ns_tag(key)
+    when "nr" then return fix_nr_tag(key, counts)
+    when "nz" then return fix_nz_tag(key, counts)
+    when "ns" then return fix_ns_tag(key, counts)
+    when "nt" then return fix_nt_tag(key, counts)
     when "nx"
       return "nz" if key.ends_with?("号")
     end
@@ -205,30 +206,40 @@ module CV
     first_tag
   end
 
-  def fix_nr_tag(key : String)
+  def fix_nr_tag(key : String, counts)
     case key
+    when .ends_with?("国") then "nr"
     when .ends_with?("宗") then "nt"
     when .ends_with?("氏") then "nt"
     when .ends_with?("人")
       TlName.is_human?(key) ? "nr" : "nz"
     else
-      "nr"
+      return "nr" unless counts["ns"]? || counts["nt"]?
+      TlName.is_affil?(key) ? "nn" : "nr"
     end
   end
 
-  def fix_ns_tag(key : String)
+  def fix_ns_tag(key : String, counts)
     case key
     when .ends_with?("上") then "s"
     when .ends_with?("内") then "s"
-    else                       "ns"
+    else
+      return "ns" unless counts["nr"]?.try(&.> 10)
+      TlName.is_human?(key) ? "nr" : "ns"
     end
   end
 
-  def fix_nz_tag(key : String)
+  def fix_nt_tag(key : String, counts)
+    return "nt" unless counts["nr"]?.try(&.> 10)
+    TlName.is_human?(key) ? "nr" : "nt"
+  end
+
+  def fix_nz_tag(key : String, counts)
     case key
     when .ends_with?("部族") then "nt"
     when .ends_with?("世界") then "ns"
     else
+      return "nz" unless counts["nr"]?.try(&.> 10)
       TlName.is_human?(key) ? "nr" : "nz"
     end
   end
