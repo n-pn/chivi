@@ -66,15 +66,18 @@ class CV::TlName
     end
   end
 
+  NAMES_TAGS = ["nr", "nn", "nt", "ns"]
+  OTHER_TAGS = ["nz", "nx"]
+
   def tl_human(input : String)
     if input.size == 2 && input[0] == '老'
-      output = find_defined(input, :human) || [] of String
-      extras = translate(input[1..], Trie.human, :human).map! { |x| "lão #{x}" }
+      output = find_defined(input, NAMES_TAGS) || [] of String
+      extras = translate(input[1..], Trie.human, NAMES_TAGS).map! { |x| "lão #{x}" }
       return output.empty? ? extras : output.concat(extras).uniq!
     end
 
     if input.includes?("·")
-      find_defined(input, :human).try { |vals| return vals }
+      find_defined(input, NAMES_TAGS).try { |vals| return vals }
       names = input.split("·").map! do |x|
         case x
         when "冯" then "von"
@@ -88,18 +91,18 @@ class CV::TlName
     end
 
     if input[0]? == "圣"
-      return translate(input[1..], Trie.human, :human).map! { |x| "Thánh #{x}" }
+      return translate(input[1..], Trie.human, NAMES_TAGS).map! { |x| "Thánh #{x}" }
     end
 
-    output = translate(input, Trie.human, :human)
+    output = translate(input, Trie.human, NAMES_TAGS)
     return output unless input[0]? == '小'
 
-    extras = translate(input[1..], Trie.human, :human)
+    extras = translate(input[1..], Trie.human, NAMES_TAGS)
     extras.first(3).map! { |x| "tiểu #{x}" }.concat(output).uniq!
   end
 
   def tl_other(input : String)
-    translate(input, Trie.other, :other)
+    translate(input, Trie.other, OTHER_TAGS)
   end
 
   # usually we will skip match affil with suffixes if word size under 3 characters
@@ -120,8 +123,8 @@ class CV::TlName
   }
 
   def tl_affil(input : String)
-    return translate(input, Trie.affil, :affil) if input.size > 2
-    output = find_defined(input, :affil) || [] of String
+    return translate(input, Trie.affil, NAMES_TAGS) if input.size > 2
+    output = find_defined(input, NAMES_TAGS) || [] of String
 
     if mold = AFFIL_SHORTS[input[-1]]?
       first = input[0].to_s
@@ -133,13 +136,13 @@ class CV::TlName
   end
 
   def tl_title(input : String)
-    output = find_defined(input, :title) || [] of String
+    output = find_defined(input, OTHER_TAGS) || [] of String
     output.map! { |x| TextUtil.titleize(x) }
     output << tl_name(input)
     output.uniq!
   end
 
-  def translate(input : String, trie : Trie, type : Type = :human) : Array(String)
+  def translate(input : String, trie : Trie, tags : Array(String)) : Array(String)
     output = [] of String
     chars = input.chars
 
@@ -148,13 +151,17 @@ class CV::TlName
       break if !(node = node[char]?) || chars.empty?
       next unless molds = node.vals
 
-      translate(chars.join, trie, type).reverse_each do |tran|
+      translate(chars.join, trie, tags).reverse_each do |tran|
         molds.reverse_each { |mold| output.unshift(mold.sub("?", tran)) }
       end
     end
 
-    if defined = find_defined(input, type)
+    if defined = find_defined(input, tags)
       defined.reverse_each { |x| output.unshift(x) }
+    end
+
+    if common = find_defined(input, ["n"])
+      output.concat(common)
     end
 
     if output.size < 3
@@ -174,14 +181,13 @@ class CV::TlName
 
   NAMES = Tabkv(Array(String)).new("var/vphints/names-common.tsv")
 
-  def find_defined(input : String, type : Type = :human)
-    NAMES[input]? || find_defined(@vdict, input, type) || find_defined(@bdict, input, type)
+  def find_defined(input : String, tags : Array(String))
+    NAMES[input]? || find_defined(@vdict, input, tags) || find_defined(@bdict, input, tags)
   end
 
-  def find_defined(vdict : VpDict, input : String, type : Type = :human)
+  def find_defined(vdict : VpDict, input : String, tags : Array(String))
     return if !(term = vdict.find(input)) || term.deleted?
-    to_match = type.human? || type.affil? ? {"nr", "nn", "nt", "ns"} : {"nz", "nx"}
-    term.val if to_match.includes?(term.attr)
+    term.val if tags.includes?(term.attr)
   end
 
   DIR = "var/vphints/detect"

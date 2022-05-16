@@ -208,14 +208,17 @@ module CV
 
   def fix_nr_tag(key : String, counts)
     case key
-    when .ends_with?("国") then "nr"
-    when .ends_with?("宗") then "nt"
-    when .ends_with?("氏") then "nt"
+    when .=~ /军|族|宗|氏$/   then "nt"
+    when .ends_with?("道") then "~sv"
     when .ends_with?("人")
       TlName.is_human?(key) ? "nr" : "nz"
     else
-      return "nr" unless counts["ns"]? || counts["nt"]?
-      TlName.is_affil?(key) ? "nn" : "nr"
+      if counts["nt"]?.try(&.> 10)
+        return TlName.is_affil?(key) ? "nt" : "nz"
+      end
+
+      return "nr" unless counts["ns"]?.try(&.> 10)
+      TlName.is_affil?(key) ? "ns" : "nr"
     end
   end
 
@@ -239,8 +242,16 @@ module CV
     when .ends_with?("部族") then "nt"
     when .ends_with?("世界") then "ns"
     else
-      return "nz" unless counts["nr"]?.try(&.> 10)
-      TlName.is_human?(key) ? "nr" : "nz"
+      if counts["nr"]?.try(&.> 10)
+        return TlName.is_human?(key) ? "nr" : "nz"
+      end
+
+      if counts["nt"]?.try(&.> 5)
+        return TlName.is_affil?(key) ? "nt" : "nz"
+      end
+
+      return "nz" unless counts["ns"]?.try(&.> 5)
+      TlName.is_affil?(key) ? "ns" : "nz"
     end
   end
 
@@ -257,6 +268,8 @@ module CV
       bdict_other = PostagInit.new("#{OUT}/books/#{bslug}-other.tsv", reset: true)
 
       PostagInit.new(file).data.each do |word, counts|
+        next if word.ends_with?("的")
+
         count_sum = counts.each_value.sum
 
         # reject if this entry does not appear frequenly enough
