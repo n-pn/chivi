@@ -15,7 +15,7 @@ module CV::MtDict
     end
 
     def upsert(term : VpTerm)
-      fval = term.val.first
+      return unless fval = term.val.first?
       return delete(term.key) if fval.empty?
       term.ptag = @df_ptag if term.ptag.unkn?
       upsert(term.key, {fval, term.ptag})

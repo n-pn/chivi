@@ -16,4 +16,4 @@ end
 
 cleanup("regular")
 
-CV::VpDict.nvdicts.each { |bdict| cleanup(bdict, "novel") }
+CV::VpDict.nvdicts.each { |bdict| cleanup(CV::VpDict.load_novel(bdict)) }

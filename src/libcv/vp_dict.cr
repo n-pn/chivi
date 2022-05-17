@@ -161,15 +161,15 @@ class CV::VpDict
     return if prune < 1
 
     data = @list.reject { |x| x.key.empty? || x._flag >= prune }
-    save_list!(@file, data) if data.size > 0
+    do_save!(@file, data) if data.size > 0
 
     return unless save_log
 
     logs = data.select(&.mtime.> 0)
-    save_list!(@flog, logs) if logs.size > 0
+    do_save!(@flog, logs) if logs.size > 0
   end
 
-  private def save_list!(file : String, list : Array(VpTerm))
+  private def do_save!(file : String, list : Array(VpTerm))
     return if list.empty?
     list.sort_by! { |x| {x.mtime, x.key.size, x.key} }
 
