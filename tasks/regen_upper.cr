@@ -53,7 +53,7 @@ def extract_upper(sname : String) : String
   when "duokan8"
     get_upper(page, ".recommend-list ul:not([class]) a:first-of-type").split("_").last
   when "69shu"
-    get_upper(page, ".ranking:nth-child(2) a:first-of-type", ".htm")
+    get_upper(page, ".mybox > .ranking .active > a", ".htm")
   when "hetushu"
     get_upper(page, "#list a:first-of-type", "/index.html")
   when "biqu5200", "paoshu8", "shubaow", "biquyue"
@@ -78,7 +78,9 @@ output = Tabkv(String).new("var/_common/upper.tsv")
 snames = ARGV.empty? ? ["yousuu"].concat(CV::SnameMap.alive_snames) : ARGV
 
 snames.each do |sname|
-  output.upsert(sname, extract_upper(sname))
+  upper = extract_upper(sname)
+  puts "#{sname} => #{upper}"
+  output.upsert(sname, upper)
 rescue err
   puts sname, err.inspect_with_backtrace
 end

@@ -13,7 +13,7 @@ class CV::VpTerm
   getter val : Array(String)
 
   getter attr : String = ""
-  getter rank : UInt8 = 3_u8
+  getter rank : Int8 = 3_i8
 
   getter mtime : Int32 = 0
   getter uname : String = "~"
@@ -40,7 +40,7 @@ class CV::VpTerm
   property _prev : VpTerm? = nil
   property _flag : UInt8 = 0_u8 # 0 => keep, 1 => overwritten, 2 => to be removed
 
-  def initialize(@key, @val = [""], @attr = "", @rank = 3_u8,
+  def initialize(@key, @val = [""], @attr = "", @rank = 3_i8,
                  @mtime = VpTerm.mtime, @uname = "~")
   end
 
@@ -48,11 +48,9 @@ class CV::VpTerm
     @key = cols[0]
     @val = cols.fetch(1, "").split(SPLIT)
 
-    return if dtype < 0 # skip reading attr if dict type is lookup
-
     @attr = cols[2]? || ""
-    @rank = cols[3]?.try(&.to_u8?) || 3_u8
-    @rank = 2 if @rank < 2
+    @rank = cols[3]?.try(&.to_i8?) || 3_i8
+    @rank = 2_i8 if @rank < 2
 
     if mtime = cols[4]?.try(&.to_i?)
       @mtime = mtime
@@ -61,10 +59,10 @@ class CV::VpTerm
   end
 
   def deleted?
-    @_flag > 0_i8 || @val.empty? || @val.first.empty?
+    @_flag > 0_u8 || @val.empty? || @val.first.empty?
   end
 
-  def force_fix!(@val, @attr = "", @mtime = @mtime + 1, @_flag = 0_u8)
+  def force_fix!(@val, @attr = "", @mtime = @mtime &+ 1, @_flag = 0_u8)
   end
 
   def empty? : Bool
@@ -84,7 +82,7 @@ class CV::VpTerm
     @val.join(io, SPLIT)
 
     return if dtype < 0 # skip printing if dict type is lookup
-    io << '\t' << @attr << '\t' << (@rank == 3_u8 ? "" : @rank)
+    io << '\t' << @attr << '\t' << (@rank == 3_i8 ? "" : @rank)
     io << '\t' << @mtime << '\t' << @uname if @mtime > 0
   end
 

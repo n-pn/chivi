@@ -170,7 +170,7 @@ struct CV::VpTermView
       when "fix_nouns" then @tag_hints << "n" << "na" << "nr"
       when "fix_u_zhi" then @tag_hints << "nl" << "al" << "m"
       when "v_compl"   then @tag_hints << "v" << "vi"
-      when "v_2_obj"   then @tag_hints << "v"
+      when "v2_objs"   then @tag_hints << "v"
       when "v_group"   then @tag_hints << "vo"
       when "qt_nouns", "qt_verbs", "qt_times"
         @tag_hints << "q"
