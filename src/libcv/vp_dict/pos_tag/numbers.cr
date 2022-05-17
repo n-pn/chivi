@@ -42,7 +42,6 @@ struct CV::PosTag
   NUMCHR_RE = /[零〇一二两三四五六七八九十百千万亿兆多每]/
 
   def self.parse_nquant(key : ::String) : self
-    return Nqnoun
     key = key.sub(NUMCHR_RE, "")
     case
     when MtDict.has_key?(:qt_times, key) then Nqtime
