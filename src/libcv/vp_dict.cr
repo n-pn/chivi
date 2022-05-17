@@ -115,6 +115,7 @@ class CV::VpDict
   def load!(file : String = @file) : Nil
     lines = File.read_lines(file)
     lines.each do |line|
+      next if line.empty?
       set(VpTerm.new(line.split('\t'), dtype: @type))
     rescue err
       Log.error { "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red }

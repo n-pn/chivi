@@ -17,8 +17,8 @@ module CV::MtDict
     def upsert(term : VpTerm)
       return unless fval = term.val.first?
       return delete(term.key) if fval.empty?
-      term.ptag = @df_ptag if term.ptag.unkn?
-      upsert(term.key, {fval, term.ptag})
+      ptag = term.attr == "" ? @df_ptag : term.ptag
+      upsert(term.key, {fval, ptag})
     end
   end
 
@@ -31,25 +31,27 @@ module CV::MtDict
   end
 
   DICTS = {
-    load("~fix_u_zhi", PosTag::Nform),
-    load("~fix_nouns", PosTag::Noun),
-    load("~fix_verbs", PosTag::Verb),
-    load("~fix_adjts", PosTag::Adjt),
-    load("~fix_adverbs", PosTag::Adverb),
-    load("~qt_times", PosTag::Qttime),
-    load("~qt_verbs", PosTag::Qtverb),
-    load("~qt_nouns", PosTag::Qtnoun),
-    load("~v_compl", PosTag::Verb),
-    load("~v_group", PosTag::VerbObject),
-    load("~v2_objs", PosTag::Verb),
+    load("fix_u_zhi", PosTag::Nform),
+    load("fix_nouns", PosTag::Noun),
+    load("fix_verbs", PosTag::Verb),
+    load("fix_adjts", PosTag::Adjt),
+    load("fix_adverbs", PosTag::Adverb),
+    load("qt_times", PosTag::Qttime),
+    load("qt_verbs", PosTag::Qtverb),
+    load("qt_nouns", PosTag::Qtnoun),
+    load("v_compl", PosTag::Verb),
+    load("v_group", PosTag::VerbObject),
+    load("v2_objs", PosTag::Verb),
   }
 
   def load(dname : String, df_ptag = PosTag::Unkn)
-    vpdict = VpDict.load(dname)
-    output = MtHash.new(df_ptag, initial_capacity: vpdict.size)
+    vpdict = VpDict.load_cvmtl(dname)
+    output = MtHash.new(df_ptag, initial_capacity: vpdict.size * 2)
 
     vpdict.list.each do |vpterm|
-      output.upsert(vpterm) if vpterm._flag == 0
+      output.upsert(vpterm) unless vpterm.deleted?
+    rescue err
+      puts err, vpterm
     end
 
     output
