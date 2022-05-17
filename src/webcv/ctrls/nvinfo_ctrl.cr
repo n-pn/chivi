@@ -21,7 +21,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     limit = limit == 24 ? 25 : limit
     query.limit(limit).offset(offset).with_author
 
-    set_cache :public, maxage: 10
+    set_cache :private, maxage: 5
 
     send_json({
       total: total,
