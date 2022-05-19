@@ -32,7 +32,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
         jb.field "min_privi", min_privi
 
         if _cvuser.privi >= min_privi
-          ukey = QtranData.text_ukey(nvseed.id, chinfo.chidx, cpart)
+          ukey = QtranData.zhtext_ukey(nvseed.id, chinfo.chidx, cpart)
           QtranData::CACHE.delete(ukey) if redo
 
           qtran = QtranData.load!(ukey) do

@@ -104,17 +104,17 @@ class CV::QtranData
 
   @@counter = 0
 
-  def self.post_ukey : String
+  def self.qtpost_ukey : String
     @@counter &+= 1
     UkeyUtil.encode32(Time.local.to_unix_ms &+ @@counter)
   end
 
-  def self.text_ukey(seed_id : Int64, chidx : Int32, cpart : Int32) : String
+  def self.zhtext_ukey(seed_id : Int64, chidx : Int32, cpart : Int32) : String
     number = chidx.unsafe_shl(20) | seed_id
     "#{UkeyUtil.encode32(number)}-#{cpart}"
   end
 
-  def self.text_ukey_parse(string : String)
+  def self.zhtext_ukey_decode(string : String)
     digest, cpart = string.split("-", 2)
     number = UkeyUtil.decode32(digest)
     seed_id = number % 1.unsafe_shl(20)

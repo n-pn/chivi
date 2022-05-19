@@ -28,7 +28,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     data = QtranData.load!("#{type}--#{name}") do
       case type
-      when "posts" then load_qttext(name)
+      when "posts" then load_qtpost(name)
       when "notes" then load_qtnote(name)
       when "crits" then load_yscrit(name)
       when "repls" then load_ysrepl(name)
@@ -47,7 +47,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     data.print_raw(response) if params["_raw"]?
   end
 
-  private def load_qttext(name : String) : QtranData
+  private def load_qtpost(name : String) : QtranData
     QtranData.from_file(name) || raise NotFound.new("Địa chỉ không tồn tại")
   end
 
@@ -78,7 +78,7 @@ class CV::QtransCtrl < CV::BaseCtrl
   end
 
   private def load_zhtext(name : String) : QtranData
-    nvseed_id, chidx, cpart = QtranData.text_ukey_parse(name)
+    nvseed_id, chidx, cpart = QtranData.zhtext_ukey_decode(name)
 
     unless nvseed = Nvseed.find({id: nvseed_id})
       raise NotFound.new("Nguồn truyện không tồn tại")
@@ -103,7 +103,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     d_lbl = QtranData.get_d_lbl(dname)
 
     data = QtranData.new(lines, dname, d_lbl)
-    ukey = params["ukey"]? || QtranData.post_ukey
+    ukey = params["ukey"]? || QtranData.qtpost_ukey
 
     data.save!("#{ukey}.txt", _cvuser.uname)
     QtranData::CACHE.set(ukey, data)
