@@ -1,4 +1,4 @@
-require "../bootstrap"
+require "../shared/bootstrap"
 
 module CV::CvuserTasks
   extend self

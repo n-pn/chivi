@@ -80,7 +80,7 @@ class CV::Cvuser
     raise "Not enough vcoin" if vcoin_avail < vcoin
 
     self.vcoin_avail -= vcoin
-    self.privi = privi
+    self.privi = privi if self.privi < privi
 
     tspan = PRIVI_SPAN[tspan]
     t_now = Time.utc.to_unix

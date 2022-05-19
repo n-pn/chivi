@@ -1,4 +1,4 @@
-require "./_shared"
+require "../shared/bootstrap"
 
 module CV::UbmemoTasks
   extend self
