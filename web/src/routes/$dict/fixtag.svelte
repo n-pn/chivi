@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
   import { rel_time } from '$utils/time_utils'
-
-  import * as api from '$lib/api_call'
+  import { call_api } from '$lib/api_call'
 
   export async function load({ fetch, url }) {
     const source = url.searchParams.get('source') || 'ptags-united'
@@ -53,7 +52,7 @@
 
     const term = data[idx]
     const params = { key: term.key, val: term.val, tag }
-    await api.put(`vpinits/upsert/${target}`, params)
+    await call_api(`/api/vpinits/upsert/${target}`, 'PUT', params, fetch)
 
     data = data.filter((_, i) => i != idx)
     value = map_tags(data)

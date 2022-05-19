@@ -23,7 +23,7 @@ module CV::UbmemoTasks
     # hashes = Tabkv(String).new("_common/nv_hash.tsv")
 
     Clear::SQL.execute <<-SQL
-      TRUNCATE ubmemos;
+      truncate ubmemos restart identity;
     SQL
 
     Dir.glob(DIR + "/*.txt").each do |file|

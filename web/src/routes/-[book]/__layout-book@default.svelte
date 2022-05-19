@@ -32,10 +32,15 @@
     if ($session.privi < 0) return
     if (status == ubmemo.status) status = 'default'
     ubmemo.status = status
-    const [stt, msg] = await update_status(nvinfo.id, status)
 
-    if (stt) return console.log(`error update book status: ${msg}`)
-    else invalidate(`/api/books/${nvinfo.bslug}`)
+    const [stt, payload] = await update_status(nvinfo.id, status)
+
+    if (stt >= 400) {
+      return console.error(`Lỗi cập nhật trạng thái sách: ${payload}`)
+    } else {
+      ubmemo = payload
+      invalidate(`/api/books/${nvinfo.bslug}`)
+    }
   }
 
   $: nvtab = $page.routeId.replace(/-\[book\](.*)@book$/, '$1')

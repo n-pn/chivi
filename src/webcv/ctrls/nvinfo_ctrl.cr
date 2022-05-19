@@ -118,7 +118,9 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   end
 
   def upsert
-    return halt!(403, "Quyền hạn không đủ!") if _cvuser.privi < 3
+    if _cvuser.privi < 3
+      raise Unauthorized.new("Cần quyền hạn tối thiểu là 3")
+    end
 
     btitle_zh = TextUtil.fix_spaces(params["btitle_zh"]).strip
     author_zh = TextUtil.fix_spaces(params["author_zh"]).strip
@@ -182,7 +184,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       CtrlUtil.log_user_action("nvinfo-upsert", body, _cvuser.uname)
     end
 
-    send_json({bslug: nvinfo.bslug})
+    serv_json({bslug: nvinfo.bslug})
   end
 
   def delete

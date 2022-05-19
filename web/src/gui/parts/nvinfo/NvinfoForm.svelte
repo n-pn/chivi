@@ -52,7 +52,7 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { api_call } from '$lib/api_call'
+  import { call_api } from '$lib/api_call'
   import { book_status } from '$utils/nvinfo_utils'
 
   import { SIcon } from '$gui'
@@ -63,8 +63,10 @@
   let errors: string
 
   async function submit() {
-    const [stt, data] = await api_call(fetch, 'books', params.output, 'PUT')
-    if (stt >= 400) errors = data as string
+    const url = '/api/books'
+    const [status, data] = await call_api(url, 'PUT', params.output, fetch)
+
+    if (status >= 400) errors = data as string
     else await goto(`/-${data.bslug}`)
   }
 

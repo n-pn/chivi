@@ -31,8 +31,8 @@ module CV::CvuserTasks
     end
 
     Clear::SQL.execute <<-SQL
-    SELECT pg_catalog.setval(pg_get_serial_sequence('cvusers', 'id'), MAX(id)) FROM cvusers;
-  SQL
+      SELECT pg_catalog.setval(pg_get_serial_sequence('cvusers', 'id'), MAX(id)) FROM cvusers;
+    SQL
   end
 
   backup if ARGV.includes?("backup")

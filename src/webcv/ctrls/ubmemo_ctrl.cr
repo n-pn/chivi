@@ -44,13 +44,15 @@ class CV::UbmemoCtrl < CV::BaseCtrl
   end
 
   def update_status
-    raise "Người dùng chưa đăng nhập!" if _cvuser.privi < 0
+    if _cvuser.privi < 0
+      raise Unauthorized.new("Người dùng chưa đăng nhập!")
+    end
 
     nvinfo_id = params["book_id"].to_i64
     status = params.fetch_str("status", "default")
 
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
     ubmemo.update!({status: status})
-    send_json(UbmemoView.new(ubmemo))
+    serv_json(UbmemoView.new(ubmemo))
   end
 end
