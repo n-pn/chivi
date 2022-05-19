@@ -117,18 +117,100 @@
       background-color: #fffbeb;
     }
 
+    @include bps(
+      --head-fs,
+      rem(22px),
+      rem(23px),
+      rem(24px),
+      rem(26px),
+      rem(28px)
+    );
+
+    &.app-fs-1 {
+      @include bps(
+        --para-fs,
+        rem(15px),
+        rem(16px),
+        rem(17px),
+        rem(18px),
+        rem(19px)
+      );
+
+      @include bps(
+        --head-fs,
+        rem(21px),
+        rem(22px),
+        rem(23px),
+        rem(25px),
+        rem(27px)
+      );
+    }
+
+    &.app-fs-2 {
+      @include bps(
+        --para-fs,
+        rem(16px),
+        rem(17px),
+        rem(18px),
+        rem(19px),
+        rem(20px)
+      );
+    }
+
+    &.app-fs-3 {
+      @include bps(
+        --para-fs,
+        rem(17px),
+        rem(18px),
+        rem(19px),
+        rem(20px),
+        rem(21px)
+      );
+    }
+
+    &.app-fs-4 {
+      @include bps(
+        --para-fs,
+        rem(19px),
+        rem(20px),
+        rem(21px),
+        rem(22px),
+        rem(23px)
+      );
+    }
+
+    &.app-fs-5 {
+      @include bps(
+        --para-fs,
+        rem(21px),
+        rem(22px),
+        rem(23px),
+        rem(24px),
+        rem(25px)
+      );
+
+      @include bps(
+        --head-fs,
+        rem(23px),
+        rem(24px),
+        rem(25px),
+        rem(26px),
+        rem(29px)
+      );
+    }
+
     :global(cite) {
       font-style: normal;
       font-variant: small-caps;
     }
-  }
 
-  .article > header,
-  .article :global(p),
-  .article :global(h1) {
-    @include padding-x(var(--gutter));
-    @include bp-min(tl) {
-      @include padding-x(2rem);
+    & > header,
+    & .cv-line {
+      @include padding-x(var(--gutter));
+
+      @include bp-min(tl) {
+        @include padding-x(2rem);
+      }
     }
   }
 
@@ -142,16 +224,23 @@
     @include fgcolor(secd);
   }
 
-  // prettier-ignore
   .cv-line {
     display: block;
 
     color: var(--fgcolor, var(--fg-main));
 
-    :global(.app-ff-1) & { font-family: var(--font-sans); }
-    :global(.app-ff-2) & { font-family: var(--font-serif); }
-    :global(.app-ff-3) & { font-family: Nunito Sans, var(--font-sans); }
-    :global(.app-ff-4) & { font-family: Lora, var(--font-serif); }
+    :global(.app-ff-1) & {
+      font-family: var(--font-sans);
+    }
+    :global(.app-ff-2) & {
+      font-family: var(--font-serif);
+    }
+    :global(.app-ff-3) & {
+      font-family: Nunito Sans, var(--font-sans);
+    }
+    :global(.app-ff-4) & {
+      font-family: Lora, var(--font-serif);
+    }
 
     // &.focus {
     //   :global(.tm-light) & { @include bgcolor(warning, 2, 1); }
@@ -161,48 +250,18 @@
     // }
   }
 
-  // prettier-ignore
-  :global(h1) {
+  :global(h1).cv-line {
     line-height: 1.4em;
     margin: 1em 0;
-
-    @include bps(font-size, rem(22px), rem(23px), rem(24px), rem(26px), rem(28px));
-
-    :global(.app-fs-1) & {
-      @include bps(font-size, rem(21px), rem(22px), rem(23px), rem(25px), rem(27px));
-    }
-
-    :global(.app-fs-5) & {
-      @include bps(font-size, rem(23px), rem(24px), rem(25px), rem(26px), rem(29px));
-    }
+    font-size: var(--head-fs);
   }
 
-  // prettier-ignore
-  :global(p) {
+  :global(p).cv-line {
     margin: 1em 0;
     text-align: justify;
     text-justify: auto;
     line-height: var(--textlh, 160%);
-
-    :global(.app-fs-1) & {
-      @include bps(font-size, rem(15px), rem(16px), rem(17px), rem(18px), rem(19px));
-    }
-
-    :global(.app-fs-2) & {
-      @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(19px), rem(20px));
-    }
-
-    :global(.app-fs-3) & {
-      @include bps(font-size, rem(17px), rem(18px), rem(19px), rem(20px), rem(21px));
-    }
-
-    :global(.app-fs-4) & {
-      @include bps(font-size, rem(19px), rem(20px), rem(21px), rem(22px), rem(23px));
-    }
-
-    :global(.app-fs-5) & {
-      @include bps(font-size, rem(21px), rem(22px), rem(23px), rem(24px), rem(25px));
-    }
+    font-size: var(--para-fs);
   }
 
   .stats {

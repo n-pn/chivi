@@ -8,7 +8,7 @@
   export let chidx_max: number
 </script>
 
-<div class="notext">
+<div class="notext cv-line">
   {#if min_privi > $session.privi}
     <h1>Bạn không đủ quyền hạn để xem chương.</h1>
     {#if $session.privi < 0}
@@ -107,8 +107,10 @@
 <style lang="scss">
   .notext {
     margin: 1rem auto;
-    max-width: 40rem;
+    max-width: 42rem;
     min-height: 30vh;
+
+    font-size: var(--para-fs);
 
     // @include flex($center: both);
     @include fgcolor(secd);
@@ -117,8 +119,15 @@
       // font-weight: 500;
       @include ftsize(x4);
       text-align: center;
+
       margin-bottom: 2rem;
       @include fgcolor(secd);
+    }
+
+    p {
+      margin: 1em;
+      line-height: var(--textlh);
+      text-align: justify;
     }
 
     strong {
