@@ -64,8 +64,10 @@
 
     {#if chmeta.sname == 'users'}
       <p>
-        Nguồn <x-seed>users</x-seed> được cung cấp bởi người dùng của Chivi.<br />
-        Không có nội dung nghĩa là có lỗi hệ thống. Hãy liên hệ ban quản trị.
+        Nguồn <x-seed>users</x-seed> được cung cấp bởi người dùng của Chivi.
+      </p>
+      <p>
+        Liên hệ với các bạn có quyền hạn từ 2 trở lên để khắc phục chương thiếu.
       </p>
     {:else if chmeta.sname == 'zxcs_me'}
       <p>
@@ -99,25 +101,19 @@
 
 <style lang="scss">
   .notext {
-    // height: calc(100vh - 10rem);
     margin: 1rem auto;
     max-width: 40rem;
-
-    // font-style: italic;
+    min-height: 30vh;
 
     // @include flex($center: both);
     @include fgcolor(secd);
 
     h1 {
       // font-weight: 500;
-      // @include ftsize(6);
+      @include ftsize(x4);
       text-align: center;
       margin-bottom: 2rem;
       @include fgcolor(secd);
-    }
-
-    p {
-      margin-top: 1rem;
     }
 
     strong {
@@ -146,9 +142,9 @@
     display: inline-block;
     text-transform: uppercase;
     font-weight: 500;
-    line-height: 1rem;
-    padding: 0.125rem 0.25rem;
-    @include ftsize(xs);
+    padding: 0.25em 0.5em;
+    font-size: em(12, 16);
+    line-height: 1em;
     @include fgcolor(primary, 5);
     // @include bgcolor(primary, 5, 1);
     @include border(primary, 5);

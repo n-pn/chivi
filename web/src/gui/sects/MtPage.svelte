@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
   import { navigating } from '$app/stores'
   import { config, vdict } from '$lib/stores'
+
   import MtData from '$lib/mt_data'
 
   import Mtmenu, { ctrl as mtmenu } from './MtPage/Mtmenu.svelte'
@@ -11,10 +12,10 @@
 
 <script lang="ts">
   export let cvdata = ''
-  export let zhtext: string[] | null = null
 
   export let on_change = () => {}
 
+  let zhtext = []
   $: [mtdata, zhtext, dname, d_dub, chars, tspan] = parse_data(cvdata, zhtext)
   $: vdict.put(dname, d_dub)
 
@@ -28,15 +29,15 @@
     mtmenu.hide()
   }
 
-  function parse_data(
-    input: string,
-    rawzh?: string[]
-  ): [MtData[], string[], string, string, number, number] {
-    const [cvdata, stats, zhtext] = input.split('\n$\t$\t$\n')
-    const [d_name, d_dub, chars, tspan] = stats.split('\t')
+  type Output = [MtData[], string[], string, string, number, number]
+
+  function parse_data(input: string, rawzh: string[]): Output {
+    const [cvdata, stats = '', zhtext] = input.split('\n$\t$\t$\n')
+
+    const [d_name, d_dub, chars = '0', tspan = '0'] = stats.split('\t')
 
     const mt_data = MtData.parse_lines(cvdata)
-    const zh_data = zhtext ? zhtext.split('\n') : rawzh || []
+    const zh_data = zhtext ? zhtext.split('\n') : rawzh
 
     return [mt_data, zh_data, d_name, d_dub, +chars, +tspan]
   }
@@ -66,28 +67,26 @@
     <slot name="header">Dịch nhanh</slot>
   </header>
 
-  <section>
-    {#each zhtext as ztext, index (index)}
-      <svelte:element
-        this={index > 0 || $$props.no_title ? 'p' : 'h1'}
-        id="L{index}"
-        class="cv-line"
-        class:debug={$config.render == 1}
-        class:focus={index == l_focus}
-        on:mouseenter={() => (l_hover = index)}>
-        {#if $config.showzh}<Zhline {ztext} plain={$config.render < 0} />{/if}
-        <Cvline
-          input={mtdata[index]}
-          focus={render_html($config.render, index, l_hover, l_focus)} />
-      </svelte:element>
-    {:else}
-      <slot name="notext" />
-    {/each}
+  {#each zhtext as ztext, index (index)}
+    <svelte:element
+      this={index > 0 || $$props.no_title ? 'p' : 'h1'}
+      id="L{index}"
+      class="cv-line"
+      class:debug={$config.render == 1}
+      class:focus={index == l_focus}
+      on:mouseenter={() => (l_hover = index)}>
+      {#if $config.showzh}<Zhline {ztext} plain={$config.render < 0} />{/if}
+      <Cvline
+        input={mtdata[index]}
+        focus={render_html($config.render, index, l_hover, l_focus)} />
+    </svelte:element>
+  {:else}
+    <slot name="notext" />
+  {/each}
 
-    {#if $config.render >= 0}
-      <Mtmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />
-    {/if}
-  </section>
+  {#if $config.render >= 0}
+    <Mtmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />
+  {/if}
 
   <slot name="footer" />
 </article>
@@ -105,7 +104,7 @@
 <style lang="scss">
   .article {
     position: relative;
-    min-height: 50vh;
+    min-height: 30vh;
 
     // margin: 0;
     padding: 0;
@@ -125,7 +124,8 @@
   }
 
   .article > header,
-  .article > section {
+  .article :global(p),
+  .article :global(h1) {
     @include padding-x(var(--gutter));
     @include bp-min(tl) {
       @include padding-x(2rem);
@@ -145,7 +145,7 @@
   // prettier-ignore
   .cv-line {
     display: block;
-    margin: 1em 0;
+
     color: var(--fgcolor, var(--fg-main));
 
     :global(.app-ff-1) & { font-family: var(--font-sans); }
@@ -162,8 +162,9 @@
   }
 
   // prettier-ignore
-  :global(h1).cv-line {
+  :global(h1) {
     line-height: 1.4em;
+    margin: 1em 0;
 
     @include bps(font-size, rem(22px), rem(23px), rem(24px), rem(26px), rem(28px));
 
@@ -177,7 +178,8 @@
   }
 
   // prettier-ignore
-  :global(p).cv-line {
+  :global(p) {
+    margin: 1em 0;
     text-align: justify;
     text-justify: auto;
     line-height: var(--textlh, 160%);

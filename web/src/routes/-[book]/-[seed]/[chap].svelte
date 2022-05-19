@@ -145,9 +145,7 @@
   </svelte:fragment>
 
   <svelte:fragment slot="notext">
-    {#if !cvdata}
-      <Notext {chmeta} {min_privi} {chidx_max} />
-    {/if}
+    <Notext {chmeta} {min_privi} {chidx_max} />
   </svelte:fragment>
 
   <Footer slot="footer">
