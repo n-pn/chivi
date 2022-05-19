@@ -32,29 +32,25 @@ class CV::ChText
   record Data, lines = [] of String, utime : Int64 = 0_i64
   EMPTY = Data.new
 
-  TEXTS = RamCache(String, Data).new(512, 3.hours)
-
   def load!(part = 0) : Data
-    TEXTS.get("#{@c_key}/#{part}") do
-      fetch_zip unless File.exists?(@store)
+    fetch_zip unless File.exists?(@store)
 
-      Compress::Zip::File.open(@store) do |zip|
-        if entry = zip[part_path(part)]?
-          lines = entry.open(&.gets_to_end).split('\n')
-          Data.new(lines, entry.time.to_unix)
-        else
-          EMPTY
-        end
+    Compress::Zip::File.open(@store) do |zip|
+      if entry = zip[part_path(part)]?
+        lines = entry.open(&.gets_to_end).split('\n')
+        Data.new(lines, entry.time.to_unix)
+      else
+        EMPTY
       end
-    rescue
-      EMPTY
     end
+  rescue
+    EMPTY
   end
 
   def fetch_zip
-    return unless @sname.in?("hetushu", "zxcs_me", "jx_la", "zhwenpg", "users")
-
+    return unless @sname.in?("hetushu", "zxcs_me", "jx_la", "zhwenpg")
     remote_path = @store.sub(/^var/, "s3://chivi-bak")
+
     `aws s3 cp #{remote_path} #{@store}`
     return EMPTY unless $?.success?
   end
@@ -107,11 +103,9 @@ class CV::ChText
 
     chaps.each_with_index do |text, part|
       File.write("#{@chdir}/#{part_path(part)}", text)
-      TEXTS.delete("#{@c_key}/#{part}")
     end
 
-    return unless zipping
-    `zip --include=\\*.txt -rjmq #{@store} #{@chdir}`
+    `zip --include=\\*.txt -rjmq #{@store} #{@chdir}` if zipping
   end
 
   private def part_path(part = 0)
