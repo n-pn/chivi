@@ -59,20 +59,27 @@
     if (index >= $zfrom) $zupto = index + 1
   }
 
-  function shift_lower(value = 0) {
+  function shift_lower(evt: MouseEvent, value = 0) {
     value += $zfrom
     if (value < 0 || value >= $ztext.length) return
 
     $zfrom = value
     if ($zupto <= value) $zupto = value + 1
+    copy_to_clipboard(evt)
   }
 
-  function shift_upper(value = 0) {
+  function shift_upper(evt: MouseEvent, value = 0) {
     value += $zupto
     if (value < 1 || value > $ztext.length) return
 
     $zupto = value
     if ($zfrom >= value) $zfrom = value - 1
+    copy_to_clipboard(evt)
+  }
+
+  function copy_to_clipboard(evt: MouseEvent) {
+    if (evt.clientX == 0) return
+    navigator.clipboard.writeText($ztext.substring($zfrom, $zupto))
   }
 
   async function update_cached(words: string[], dicts: CV.VpDict[]) {
@@ -121,7 +128,7 @@
     class="btn _left _hide"
     data-kbd="←"
     disabled={$zfrom == 0}
-    on:click={() => shift_lower(-1)}>
+    on:click={(e) => shift_lower(e, -1)}>
     <SIcon name="chevron-left" />
   </button>
 
@@ -129,7 +136,7 @@
     class="btn _left"
     data-kbd="⇧←"
     disabled={$zfrom == $ztext.length - 1}
-    on:click={() => shift_lower(1)}>
+    on:click={(e) => shift_lower(e, 1)}>
     <SIcon name="chevron-right" />
   </button>
 
@@ -171,7 +178,7 @@
     class="btn _right"
     data-kbd="⇧→"
     disabled={$zupto == 1}
-    on:click={() => shift_upper(-1)}>
+    on:click={(e) => shift_upper(e, -1)}>
     <SIcon name="chevron-left" />
   </button>
 
@@ -179,7 +186,7 @@
     class="btn _right _hide"
     data-kbd="→"
     disabled={$zupto == $ztext.length}
-    on:click={() => shift_upper(1)}>
+    on:click={(e) => shift_upper(e, 1)}>
     <SIcon name="chevron-right" />
   </button>
 </div>
