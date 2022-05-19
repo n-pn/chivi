@@ -65,6 +65,7 @@ export const bgenres: Array<[string, string, boolean]> = [
   ['Xuyên việt', 'xuyen-viet', false],
   ['Trạch văn', 'trach-van', true],
   ['Phi sắc', 'phi-sac', true],
+  ['Lý phiên', 'ly-phien', true],
 ]
 
 export const snames = [
