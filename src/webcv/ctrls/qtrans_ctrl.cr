@@ -90,13 +90,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     chtext = ChText.new(nvseed.sname, nvseed.snvid, chinfo)
     chdata = chtext.load!(cpart)
-
-    nvinfo = nvseed.nvinfo
-
-    parts = chinfo.stats.parts
-    lines = chdata.lines
-    lines[0] += "#{cpart + 1}/#{parts}" if parts > 1
-    QtranData.new(chdata.lines, nvinfo.dname, nvinfo.vname, title: true)
+    QtranData.zhtext(nvseed.nvinfo, chdata.lines, chinfo.stats.parts, cpart)
   end
 
   def posts_upsert

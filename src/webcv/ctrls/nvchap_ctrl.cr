@@ -17,7 +17,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvseed.nvinfo_id)
     ubmemo.mark_chap!(chinfo, nvseed.sname, cpart) if _cvuser.privi > -1
 
-    chidx_max, min_privi = check_privi(nvseed, chinfo)
+    stype, chidx_max, min_privi = check_privi(nvseed, chinfo)
 
     redo = params["redo"]? == "true"
     trad = params["trad"]? == "true"
@@ -36,9 +36,9 @@ class CV::NvchapCtrl < CV::BaseCtrl
           QtranData::CACHE.delete(ukey) if redo
 
           qtran = QtranData.load!(ukey) do
-            lines = load_text(nvseed, chinfo, cpart, redo)
-            nvinfo = nvseed.nvinfo
-            QtranData.new(lines, nvinfo.dname, nvinfo.vname, title: true)
+            mode = stype < 3 ? 0 : (redo ? 2 : 1)
+            lines = nvseed.chtext(chinfo, cpart, mode: mode, uname: _cvuser.uname)
+            QtranData.zhtext(nvseed.nvinfo, lines, chinfo.stats.parts, cpart)
           end
 
           cvdata = String.build do |io|
@@ -57,20 +57,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  private def load_text(nvseed : Nvseed, chinfo : ChInfo, cpart = 0, redo = false)
-    sname = chinfo.proxy.try(&.sname) || nvseed.sname
-    stype = SnameMap.map_type(sname)
-
-    mode = stype < 3 ? 0 : (redo ? 2 : 1)
-
-    lines = nvseed.chtext(chinfo, cpart, mode: mode, uname: _cvuser.uname)
-    lines.tap do |x|
-      parts = chinfo.stats.parts
-      x[0] += "#{cpart + 1}/#{parts}" if parts > 1
-    end
-  end
-
-  private def check_privi(nvseed : Nvseed, chinfo : ChInfo) : {Int32, Int32}
+  private def check_privi(nvseed : Nvseed, chinfo : ChInfo) : {Int32, Int32, Int32}
     # lower privi requirement if chapter < 1/3 total chap
     chidx_max = nvseed.chap_count // 3
     chidx_max = 40 if chidx_max < 40
@@ -81,7 +68,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     min_privi = nvseed.zseed == 0 ? -1 : (stype < 3 || chinfo.stats.chars > 0 ? 0 : 1)
     min_privi &+= chinfo.chidx > chidx_max ? 1 : 0
 
-    {chidx_max, min_privi}
+    {stype, chidx_max, min_privi}
   end
 
   def zh_text
@@ -108,26 +95,6 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
   private def text_not_found!(status = 404)
     halt! 404, "Chương tiết không tồn tại!"
-  end
-
-  private def convert(nvseed, chinfo, lines : Array(String), cpart : Int32, strio : IO)
-    return if lines.empty?
-
-    cvmtl = MtCore.generic_mtl(nvseed.nvinfo.dname, _cvuser.uname)
-
-    cvmtl.cv_title_full(lines[0]).to_str(strio)
-    strio << "\t" << " [#{cpart + 1}/#{chinfo.stats.parts}]" if chinfo.stats.parts > 1
-
-    1.upto(lines.size - 1) do |i|
-      line = lines.unsafe_fetch(i)
-      # File.write("tmp/nvchap.txt", "#{dname}\n#{line}")
-
-      strio << "\n"
-      cvmtl.cv_plain(line).to_str(strio)
-    rescue err
-      strio << "\t[[Máy dịch gặp lỗi, mời liên hệ ban quản trị]]"
-      Log.error { err }
-    end
   end
 
   def upsert

@@ -8,7 +8,8 @@ class CV::QtranData
   getter d_lbl : String
   getter chars : Int32
 
-  def initialize(@input, @dname = "combine", @d_lbl = "", @chars = input.sum(&.size), @title = false)
+  def initialize(@input, @dname = "combine", @d_lbl = "",
+                 @chars = input.sum(&.size), @title = false, @label = "")
   end
 
   getter simps : Array(String) do
@@ -27,6 +28,7 @@ class CV::QtranData
 
     result = @title ? cvmtl.cv_title_full(lines[0]) : cvmtl.cv_plain(lines[0])
     mode.text? ? result.to_s(output) : result.to_str(output)
+    output << '\t' << @label unless @label.empty?
 
     1.upto(lines.size - 1) do |i|
       line = lines.unsafe_fetch(i)
@@ -118,5 +120,13 @@ class CV::QtranData
     seed_id = number % 1.unsafe_shl(20)
     chidx = number.unsafe_shr(20)
     {seed_id, chidx.to_i, cpart.to_i}
+  end
+
+  def self.zhtext(nvinfo : Nvinfo, lines : Array(String), parts : Int32, cpart : Int32)
+    dname = nvinfo.dname
+    d_lbl = nvinfo.vname
+
+    label = parts > 1 ? " [#{cpart + 1}/#{parts}]" : ""
+    new(lines, dname, d_lbl, title: true, label: label)
   end
 end
