@@ -3,11 +3,11 @@ class CV::CvuserCtrl < CV::BaseCtrl
     email = params["email"].strip
     upass = params["upass"].strip
 
-    if user = Cvuser.validate(email, upass)
-      login_user!(user)
-    else
-      halt!(403, "Thông tin đăng nhập không chính xác!")
+    unless user = Cvuser.validate(email, upass)
+      raise BadRequest.new("Thông tin đăng nhập không chính xác!")
     end
+
+    login_user!(user)
   end
 
   def signup
@@ -24,7 +24,7 @@ class CV::CvuserCtrl < CV::BaseCtrl
 
     login_user!(cvuser)
   rescue err
-    halt!(400, err.message)
+    raise BadRequest.new(err.message)
   end
 
   def update
@@ -33,7 +33,7 @@ class CV::CvuserCtrl < CV::BaseCtrl
       _cvuser.update!({wtheme: wtheme})
     end
 
-    send_json(CvuserView.new(_cvuser))
+    serv_json(CvuserView.new(_cvuser))
   end
 
   def pwtemp
@@ -45,7 +45,7 @@ class CV::CvuserCtrl < CV::BaseCtrl
       Log.error { email + " not found!" }
     end
 
-    send_json("ok")
+    serv_text("Đã gửi email")
   end
 
   def passwd
@@ -67,22 +67,22 @@ class CV::CvuserCtrl < CV::BaseCtrl
       CtrlUtil.log_user_action("change-pass", body, _cvuser.uname)
     end
 
-    send_json("Đổi mật khẩu thành công", 201)
+    serv_text("Đổi mật khẩu thành công", 201)
   rescue err
-    halt!(400, err.message)
+    raise BadRequest.new(err.message)
   end
 
   def logout
     @_cvuser = nil
     session.delete("uname")
     save_session!
-    send_json("Đã đăng xuất")
+    serv_text("Đã đăng xuất", 201)
   end
 
   private def login_user!(user : Cvuser)
     @_cvuser = user
     session["uname"] = user.uname
     save_session!
-    send_json(CvuserView.new(user))
+    serv_json(CvuserView.new(user))
   end
 end

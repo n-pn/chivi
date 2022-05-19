@@ -32,7 +32,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
       CtrlUtil.log_user_action("upgrade-privi", body, _cvuser.uname)
     end
 
-    send_json(CvuserView.new(_cvuser))
+    serv_json(CvuserView.new(_cvuser))
   rescue err
     halt! 403, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
   end

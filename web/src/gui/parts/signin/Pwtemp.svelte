@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { api_call } from '$lib/api_call'
+  import { call_api } from '$lib/api_call'
 </script>
 
 <script lang="ts">
@@ -8,7 +8,7 @@
   export let email: string
   export let _form = 'pwtemp'
 
-  let msg_type: '' | 'err' | 'ok' = ''
+  let msg_type: '' | 'ok' | 'err' = ''
   let msg_text = ''
 
   async function submit(event: Event) {
@@ -16,10 +16,12 @@
     msg_type = ''
     msg_text = ''
 
-    const [stt, msg] = await api_call(fetch, `user/pwtemp`, { email }, 'POST')
-    if (stt >= 400) {
+    const url = '/api/user/pwtemp'
+    const [status, body] = await call_api(url, 'POST', { email }, fetch)
+
+    if (status >= 400) {
       msg_type = 'err'
-      msg_text = msg
+      msg_text = body
     } else {
       msg_type = 'ok'
     }

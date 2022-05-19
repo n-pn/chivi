@@ -1,18 +1,3 @@
-<script context="module" lang="ts">
-  import { api_call } from '$lib/api_call'
-
-  class Params {
-    dname = ''
-    email = ''
-    upass = ''
-  }
-
-  export async function signin_user(type: string, params: Params) {
-    const [stt, msg] = await api_call(fetch, `user/${type}`, params, 'POST')
-    return stt < 400 ? '' : (msg as string)
-  }
-</script>
-
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'

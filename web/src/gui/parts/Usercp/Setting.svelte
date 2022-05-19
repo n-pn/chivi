@@ -1,5 +1,6 @@
 <script lang="ts">
   import { session } from '$app/stores'
+  import { call_api } from '$lib/api_call'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
@@ -17,15 +18,12 @@
   async function update_passwd() {
     cpass_error = ''
 
-    const api_res = await fetch('/api/user/passwd', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ old_pass, new_pass, confirm_pass }),
-    })
-    const payload = await api_res.json()
+    const url = '/api/user/passwd'
+    const params = { old_pass, new_pass, confirm_pass }
+    const [status, body] = await call_api(url, 'PUT', params, fetch)
 
-    if (api_res.ok) tab = 0
-    else cpass_error = payload.error
+    if (status < 400) tab = 0
+    else cpass_error = body as string
   }
 
   async function logout() {
@@ -35,18 +33,16 @@
 
   async function upgrade_privi() {
     privi_error = ''
-    const api_res = await fetch('/api/_self/upgrade', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ privi, tspan }),
-    })
 
-    const payload = await api_res.json()
-    if (api_res.ok) {
-      $session = payload.props
+    const url = '/api/_self/upgrade'
+    const params = { privi, tspan }
+    const [status, body] = await call_api(url, 'PUT', params, fetch)
+
+    if (status < 400) {
+      $session = body
       tab = 0
     } else {
-      privi_error = payload.error
+      privi_error = body
     }
   }
 
