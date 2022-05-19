@@ -42,6 +42,7 @@
   export let chinfo: CV.Chinfo
 
   export let cvdata: string
+  export let zhtext: string[]
   export let rl_key: string
 
   export let min_privi = -1
@@ -139,7 +140,7 @@
   <span class="crumb _text">{chinfo.chvol}</span>
 </nav>
 
-<CvPage {cvdata} {on_change}>
+<CvPage {cvdata} {zhtext} {on_change}>
   <svelte:fragment slot="header">
     <ChapSeed {chmeta} {chinfo} />
   </svelte:fragment>

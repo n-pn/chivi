@@ -49,15 +49,16 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
           cvdata = String.build do |io|
             qtran.print_mtl(io, _cvuser.uname, :node, trad: trad)
-            qtran.print_raw(io)
           rescue ex
             Log.error(exception: ex) { "Error: #{ex.message}" }
           end
 
           jb.field "rl_key", ukey
           jb.field "cvdata", cvdata
+          jb.field "zhtext", qtran.input
         else
           jb.field "cvdata", ""
+          jb.field "zhtext", [] of String
         end
       }
     end

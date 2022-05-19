@@ -12,10 +12,10 @@
 
 <script lang="ts">
   export let cvdata = ''
+  export let zhtext = []
 
   export let on_change = () => {}
 
-  let zhtext = []
   $: [mtdata, zhtext, dname, d_dub, chars, tspan] = parse_data(cvdata, zhtext)
   $: vdict.put(dname, d_dub)
 
@@ -37,7 +37,7 @@
     const [d_name, d_dub, chars = '0', tspan = '0'] = stats.split('\t')
 
     const mt_data = MtData.parse_lines(cvdata)
-    const zh_data = zhtext ? zhtext.split('\n') : rawzh
+    const zh_data = zhtext ? zhtext.split('\n') : rawzh || []
 
     return [mt_data, zh_data, d_name, d_dub, +chars, +tspan]
   }

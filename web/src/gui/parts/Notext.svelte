@@ -64,10 +64,15 @@
 
     {#if chmeta.sname == 'users'}
       <p>
-        Nguồn <x-seed>users</x-seed> được cung cấp bởi người dùng của Chivi.
+        Chương tiết nguồn <x-seed>users</x-seed> được đăng tải bởi người dùng của
+        Chivi.
       </p>
       <p>
-        Liên hệ với các bạn có quyền hạn từ 2 trở lên để khắc phục chương thiếu.
+        Các chương có tựa là "Thiếu chương" là các chương chưa được đăng tải.
+      </p>
+      <p>
+        Bạn có thể liên hệ với các bạn có quyền hạn từ 2 trở lên để khắc phục
+        các chương bị thiếu.
       </p>
     {:else if chmeta.sname == 'zxcs_me'}
       <p>
