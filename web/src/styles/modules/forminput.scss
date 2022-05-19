@@ -43,6 +43,10 @@
     @include bgcolor(mute);
     @include bdcolor(mute);
   }
+
+  &._error {
+    @include bdcolor(harmful, 5);
+  }
 }
 
 .m-input._sm {

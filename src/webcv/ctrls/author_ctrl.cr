@@ -1,5 +1,3 @@
-require "./_base_ctrl"
-
 class CV::AuthorCtrl < CV::BaseCtrl
   def books
     pgidx, limit, offset = Params.page_info(max: 25)

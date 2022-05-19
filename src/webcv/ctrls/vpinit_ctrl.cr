@@ -1,4 +1,3 @@
-require "./_base_ctrl"
 require "../../_init/postag_init"
 
 class CV::VpinitCtrl < CV::BaseCtrl

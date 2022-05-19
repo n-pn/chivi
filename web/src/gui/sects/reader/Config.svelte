@@ -125,6 +125,13 @@
 
   <config-item>
     <label class="switch">
+      <input type="checkbox" bind:checked={$data.tosimp} />
+      <span class="switch-label">Phồn thể sang giản thể:</span>
+    </label>
+  </config-item>
+
+  <config-item>
+    <label class="switch">
       <input type="checkbox" bind:checked={$lookup.enabled} />
       <span class="switch-label">Luôn bật ô giải nghĩa:</span>
     </label>

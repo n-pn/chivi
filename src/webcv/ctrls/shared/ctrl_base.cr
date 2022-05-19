@@ -1,19 +1,3 @@
-module CV::CtrlUtil
-  extend self
-
-  def pgmax(total : Int32 | Int64, limit : Int32)
-    (total - 1) // limit + 1
-  end
-
-  LOG_DIR = "var/pg_data/weblogs"
-
-  def log_user_action(type : String, data : Object, user = "")
-    time_now = Time.local.to_s
-    log_file = "#{LOG_DIR}/#{type}-#{time_now.split(' ', 2).first}.log"
-    File.open(log_file, "a", &.puts("#{time_now}\t#{user}\t #{data.to_json}"))
-  end
-end
-
 class CV::BaseCtrl < Amber::Controller::Base
   LAYOUT = false
 
@@ -78,44 +62,18 @@ class CV::BaseCtrl < Amber::Controller::Base
     response.puts(object.to_json)
   end
 
-  def serv_text(object : Object, status = 200)
+  def serv_json(status = 200)
     set_headers(status, :json)
+    JSON.build(response) { |jb| yield jb }
+  end
+
+  def serv_text(object : Object, status = 200)
+    set_headers(status, :text)
     response.puts(object.to_s)
   end
 
   def halt!(status : Int32 = 200, error : String = "")
-    response.status_code = status
-    response.content_type = "application/json"
-
+    set_headers(status, :json)
     response.puts({status: status, error: error}.to_json)
-  end
-end
-
-class Amber::Validators::Params
-  def fetch_str(name : String | Symbol, df = "") : String
-    self[name]? || df
-  end
-
-  def fetch_str(name : String, &block : -> String) : String
-    self[name]? || yield
-  end
-
-  def fetch_int(name : String | Symbol, min = 0, max = Int32::MAX) : Int32
-    val = self[name]?.try(&.to_i?) || 0
-    val < min ? min : (val > max ? max : val)
-  end
-
-  def fetch_int(name : String | Symbol, &block : -> Int32) : Int32
-    self[name]?.try(&.to_i?) || yield
-  end
-
-  def page_info(min = 1, max = 100) : Tuple(Int32, Int32, Int32)
-    pgidx = fetch_int("pg", min: 1)
-    limit = fetch_int("lm", min, max)
-    {pgidx, limit, limit &* (pgidx - 1)}
-  end
-
-  def fetch_i64(name : String)
-    self[name]?.try(&.split('-', 2).first.to_i64?)
   end
 end

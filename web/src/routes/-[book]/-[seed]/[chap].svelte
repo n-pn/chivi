@@ -1,15 +1,26 @@
 <script context="module" lang="ts">
-  import { api_call } from '$lib/api_call'
+  import { get } from 'svelte/store'
+  import { config } from '$lib/stores'
+
+  import { call_api } from '$lib/api_call'
   import { topbar } from '$lib/stores'
   import { seed_url, to_pgidx } from '$utils/route_utils'
+
+  function gen_api_url(path: string, redo = false) {
+    let api_url = `/api/chaps/${path}?redo=${redo}`
+    if (get(config).tosimp) api_url += '&trad=true'
+    return api_url
+  }
 
   export async function load({ fetch, params: { seed, chap }, stuff }) {
     const { nvinfo } = stuff
     const [chidx, cpart = 0] = chap.split('-')[0].split('.')
 
-    const api_url = `/api/chaps/${nvinfo.id}/${seed}/${chidx}/${+cpart}`
+    const api_url = gen_api_url(`${nvinfo.id}/${seed}/${chidx}/${+cpart}`)
     const api_res = await fetch(api_url)
-    return await api_res.json()
+
+    if (api_res.ok) return { props: await api_res.json() }
+    return { status: api_res.status, error: await api_res.text() }
   }
 </script>
 
@@ -30,8 +41,8 @@
   export let chmeta: CV.Chmeta
   export let chinfo: CV.Chinfo
 
-  export let zhtext: string[]
   export let cvdata: string
+  export let rl_key: string
 
   export let min_privi = -1
   export let chidx_max = 0
@@ -39,7 +50,6 @@
   const on_change = () => reload_chap(false)
 
   $: paths = gen_paths(nvinfo, chmeta, chinfo)
-  $: api_url = gen_api_url(nvinfo, chmeta, chinfo)
 
   $: book_url = `/-${nvinfo.bslug}`
   $: list_url = seed_url(nvinfo.bslug, ubmemo.sname, to_pgidx(chinfo.chidx))
@@ -55,25 +65,24 @@
     config: true,
   })
 
-  function gen_api_url({ id: book_id }, { sname, cpart }, { chidx }) {
-    return `/api/chaps/${book_id}/${sname}/${chidx}/${cpart}`
-  }
-
   async function reload_chap(redo = false) {
     if ($session.privi < 1) return
-    // console.log({ api_url })
 
     if (redo) {
-      const res = await fetch(api_url + '?redo=true')
-      if (!res.ok) return console.log('Error: ' + (await res.text()))
-      const { props } = await res.json()
-      ubmemo = props.ubmemo
+      const { sname, cpart } = chmeta
+      const uri = `${nvinfo.id}/${sname}/${chinfo.chidx}/${cpart}`
+      const res = await fetch(gen_api_url(uri, true))
+
+      if (!res.ok) return console.log(`Error: ${await res.text()}`)
+      const props = await res.json()
+
+      cvdata = props.cvdata
       chmeta = props.chmeta
       chinfo = props.chinfo
-      zhtext = props.zhtext
-      cvdata = props.cvdata
+      ubmemo = props.ubmemo
     } else {
-      const res = await fetch(api_url + '/text?redo=true')
+      const url = `/api/qtran/texts/${rl_key}?trad=${$config.tosimp}`
+      const res = await fetch(url)
       if (res.ok) cvdata = await res.text()
       else console.log(res.status)
     }
@@ -97,11 +106,14 @@
     const url = `_self/books/${nvinfo.id}/access`
     const params = { sname, cpart, chidx, title, uslug, locked: lock }
 
-    const [status, payload] = await api_call(fetch, url, params, 'PUT')
-    if (status) return console.log(`Error update history: ${payload}`)
+    const [status, payload] = await call_api(url, 'PUT', params, fetch)
 
-    ubmemo = payload
-    invalidate(`/api/books/${nvinfo.bslug}`)
+    if (status >= 400) {
+      console.error(`Error update history: ${payload}`)
+    } else {
+      ubmemo = payload
+      invalidate(`/api/books/${nvinfo.bslug}`)
+    }
   }
 
   $: on_memory = check_memo(ubmemo)
@@ -127,15 +139,11 @@
   <span class="crumb _text">{chinfo.chvol}</span>
 </nav>
 
-<CvPage
-  {cvdata}
-  {zhtext}
-  dname="-{nvinfo.bhash}"
-  d_dub={nvinfo.btitle_vi}
-  {on_change}>
+<CvPage {cvdata} {on_change}>
   <svelte:fragment slot="header">
     <ChapSeed {chmeta} {chinfo} />
   </svelte:fragment>
+
   <svelte:fragment slot="notext">
     {#if !cvdata}
       <Notext {chmeta} {min_privi} {chidx_max} />

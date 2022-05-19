@@ -1,5 +1,3 @@
-require "./_base_ctrl"
-
 class CV::VptermCtrl < CV::BaseCtrl
   def lookup
     input = params.json("input").as_h

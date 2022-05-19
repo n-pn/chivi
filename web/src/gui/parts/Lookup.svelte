@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable, get } from 'svelte/store'
-  import { api_call } from '$lib/api_call'
+  import { call_api } from '$lib/api_call'
 
   import MtData from '$lib/mt_data'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
@@ -75,12 +75,12 @@
     }
 
     if (range.length != 0) {
-      const url = `dicts/${$vdict.dname}/lookup`
-      const [err, data] = await api_call(fetch, url, { input, range }, 'PUT')
-      if (err) return console.log({ err })
+      const url = `/api/dicts/${$vdict.dname}/lookup`
+      const [status, body] = await call_api(url, 'PUT', { input, range }, fetch)
+      if (status >= 400) return console.error(body)
 
-      for (let index in data) {
-        const entry = data[index]
+      for (let index in body) {
+        const entry = body[index]
         entries[index] = entry
         for (const term of entry) {
           const viet = term[1].vietphrase as Array<string>
@@ -96,10 +96,11 @@
     hv_html = hv_html_cache[input]
 
     if (!hv_html) {
-      const url = `qtran/hanviet`
-      const [err, data] = await api_call(fetch, url, { input }, 'PUT')
-      if (err) return console.log({ err })
-      hv_html_cache[input] = hv_html = new MtData(data.hanviet).render_hv()
+      const url = `/api/qtran/hanviet`
+      const [status, body] = await call_api(url, 'PUT', { input }, fetch)
+
+      if (status >= 400) return console.error(body)
+      hv_html_cache[input] = hv_html = new MtData(body).render_hv()
     }
   }
 

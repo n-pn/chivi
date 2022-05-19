@@ -2,7 +2,7 @@ Amber::Server.configure do
   pipeline :api do
     plug Amber::Pipe::PoweredByAmber.new
     plug CV::Pipe::ClientIp.new("X-Forwarded-For")
-    plug Amber::Pipe::Error.new
+    plug CV::Pipe::Error.new
     plug Amber::Pipe::Logger.new(filter: ["upass"])
     # plug Amber::Pipe::Session.new # do it manually
     plug Amber::Pipe::CORS.new
@@ -42,8 +42,6 @@ Amber::Server.configure do
 
     get "/chaps/:book/:sname/:chidx/_raw", CV::NvchapCtrl, :zh_text
     get "/chaps/:book/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info
-
-    get "/chaps/:book/:sname/:chidx/:cpart/text", CV::NvchapCtrl, :cv_text
     post "/chaps/:book/:sname", CV::NvchapCtrl, :upsert
 
     get "/yscrits", CV::YscritCtrl, :index
@@ -70,10 +68,11 @@ Amber::Server.configure do
     put "/terms/entry", CV::VptermCtrl, :upsert_entry
     post "/terms/batch", CV::VptermCtrl, :upsert_batch
 
-    get "/qtran/:type/:name", CV::QtransCtrl, :show
     put "/qtran/hanviet", CV::QtransCtrl, :hanviet
-    post "/qtran", CV::QtransCtrl, :qtran
-    post "/qtran/posts", CV::QtransCtrl, :create_post
+    put "/qtran/mterror", CV::QtransCtrl, :mterror
+    post "/qtran", CV::QtransCtrl, :webpage # to make the extension works
+    get "/qtran/:type/:name", CV::QtransCtrl, :convert
+    post "/qtran/posts", CV::QtransCtrl, :posts_upsert
 
     get "/boards/", CV::DboardCtrl, :index
     get "/boards/:bslug", CV::DboardCtrl, :show

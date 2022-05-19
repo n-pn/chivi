@@ -1,5 +1,3 @@
-require "./_base_ctrl"
-
 class CV::UsercpCtrl < CV::BaseCtrl
   def cv_user
     set_cache :private, maxage: 5

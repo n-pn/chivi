@@ -28,8 +28,14 @@ module CV::TimeUtil
       raise "<parse_time> [#{input}] error: invalid format]"
     end
   end
+
+  def get_date(time : Time)
+    sprintf("%04d-%02d-%02d", *time.date)
+  end
 end
 
 # puts CV::TimeUtil.parse_time("5/14/2020 7:00:48 AM")
 # puts CV::TimeUtil.parse_time("2020-09-08 10:00")
 # puts CV::TimeUtil.parse_time("2020-09-11T16:00:00.000Z")
+
+# puts CV::TimeUtil.get_date(Time.local)

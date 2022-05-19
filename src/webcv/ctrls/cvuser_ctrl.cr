@@ -1,5 +1,3 @@
-require "./_base_ctrl"
-
 class CV::CvuserCtrl < CV::BaseCtrl
   def login
     email = params["email"].strip

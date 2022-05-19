@@ -6,16 +6,27 @@
     crits: 'stars',
   }
 
+  import { get } from 'svelte/store'
+  import { config } from '$lib/stores'
+
+  function make_url(url: URL, _raw = false) {
+    const api_url = new URL(url)
+    api_url.pathname = '/api/' + url.pathname
+    if (_raw) api_url.searchParams.set('_raw', 'true')
+    if (get(config).tosimp) api_url.searchParams.set('trad', 'true')
+
+    return api_url.toString()
+  }
+
   export async function load({ fetch, url, params }) {
-    const [type, name] = params.id.split('/')
-
-    const api_url = `/api/qtran/${type}/${name}${url.search}`
+    const api_url = make_url(url, true)
     const api_res = await fetch(api_url)
-    const payload = await api_res.json()
+    const payload = await api_res.text()
 
-    payload.props.type = type
-    payload.props.name = name
-    return payload
+    if (!api_res.ok) return { status: api_res.status, error: payload }
+
+    const [type, name] = params.id.split('/')
+    return { props: { type, name, cvdata: payload } }
   }
 </script>
 
@@ -23,19 +34,16 @@
   import { topbar } from '$lib/stores'
   import { Footer, SIcon, Crumb } from '$gui'
 
-  import CvPage from '$gui/sects/MtPage.svelte'
+  import MtPage from '$gui/sects/MtPage.svelte'
+  import { page } from '$app/stores'
 
   export let name: string
   export let type: string
 
-  export let dname: string
-  export let d_dub: string | undefined
-
-  export let zhtext: string[] = []
   export let cvdata = ''
 
   const on_change = async () => {
-    const url = `/api/qtran/${type}/${name}?mode=text`
+    const url = make_url($page.url)
     const res = await fetch(url)
     cvdata = await res.text()
   }
@@ -55,23 +63,23 @@
 
 <Crumb tree={[['Dịch nhanh', '/qtran']]} />
 
-<CvPage {dname} {d_dub} {zhtext} {cvdata} {on_change} no_title={true} />
+<MtPage {cvdata} {on_change} no_title={true}>
+  <Footer slot="footer">
+    <div class="foot">
+      <button
+        class="m-btn"
+        data-kbd="r"
+        on:click={() => window.location.reload()}>
+        <SIcon name="rotate" />
+        <span>Dịch lại</span>
+      </button>
 
-<Footer>
-  <div class="foot">
-    <button
-      class="m-btn"
-      data-kbd="r"
-      on:click={() => window.location.reload()}>
-      <SIcon name="rotate" />
-      <span>Dịch lại</span>
-    </button>
-
-    <a class="m-btn _success _fill" data-kbd="n" href="/qtran">
-      <span>Dịch mới</span>
-    </a>
-  </div>
-</Footer>
+      <a class="m-btn _success _fill" data-kbd="n" href="/qtran">
+        <span>Dịch mới</span>
+      </a>
+    </div>
+  </Footer>
+</MtPage>
 
 <style lang="scss">
   .foot {

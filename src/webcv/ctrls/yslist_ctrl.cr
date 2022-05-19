@@ -1,5 +1,3 @@
-require "./_base_ctrl"
-
 class CV::YslistCtrl < CV::BaseCtrl
   def index
     pgidx, limit, offset = params.page_info(max: 24)

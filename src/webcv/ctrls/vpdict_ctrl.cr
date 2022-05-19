@@ -1,4 +1,3 @@
-require "./_base_ctrl"
 require "../../libcv/vp_hint"
 
 class CV::VpdictCtrl < CV::BaseCtrl
@@ -111,6 +110,6 @@ class CV::VpdictCtrl < CV::BaseCtrl
       entries[idx] = entry.to_a.sort_by(&.[0].-)
     end
 
-    send_json(entries)
+    serv_json(entries)
   end
 end

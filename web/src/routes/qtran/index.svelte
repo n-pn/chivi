@@ -1,10 +1,8 @@
 <script context="module" lang="ts">
-  import { make_vdict } from '$utils/vpdict_utils'
-
   export async function load({ url }) {
     const dname = url.searchParams.get('dname') || 'combine'
     const input = url.searchParams.get('input')
-    return { props: { dname, d_dub: make_vdict(dname).d_dub, zhtext: input } }
+    return { props: { dname, input: input } }
   }
 </script>
 
@@ -12,51 +10,37 @@
   import { topbar } from '$lib/stores'
   import { Footer, SIcon, Crumb } from '$gui'
 
-  import CvPage from '$gui/sects/MtPage.svelte'
+  import { goto } from '$app/navigation'
 
   export let dname = 'combine'
-  export let d_dub = 'Tổng hợp'
-  export let zhtext = ''
+  export let input = ''
 
-  let cvdata = ''
-
-  let edit_mode = true
-  let text_elem = null
-
-  $: if (edit_mode) text_elem && text_elem.focus()
-  $: on_edit = edit_mode || !cvdata
-
-  const on_change = () => convert()
-
-  async function convert() {
+  let error = ''
+  async function submit() {
     // if ($session.privi < 0) return
 
-    const url = `/api/qtran`
+    if (input.length > 10000) {
+      error = `Số ký tự phải nhỏ hơn 10000, hiện tại: ${input.length}`
+      return
+    }
+
+    const url = `/api/qtran/posts`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input: zhtext, dname, d_dub }),
+      body: JSON.stringify({ input, dname }),
     })
 
-    cvdata = await res.text()
-    edit_mode = false
-  }
-
-  function cleanup() {
-    zhtext = ''
-    edit_mode = true
-  }
-
-  function split_input(input: string) {
-    return input
-      .split('\n')
-      .map((x) => x.trim())
-      .filter((x) => x)
+    if (res.ok) {
+      const { ukey } = await res.json()
+      goto(`/qtran/posts/${ukey}`)
+    } else {
+      error = await res.text()
+    }
   }
 
   $: $topbar = {
     left: [['Dịch nhanh', 'bolt', { href: '/qtran' }]],
-    config: true,
   }
 </script>
 
@@ -66,50 +50,36 @@
 
 <Crumb tree={[['Dịch nhanh', '/qtran']]} />
 
-{#if on_edit}
+<div class="input">
   <textarea
     class="m-input"
     lang="zh"
-    bind:value={zhtext}
-    bind:this={text_elem}
+    class:_error={error}
+    bind:value={input}
     placeholder="Nhập dữ liệu vào đây" />
-{:else}
-  <CvPage {dname} {d_dub} zhtext={split_input(zhtext)} {cvdata} {on_change} />
+</div>
+
+{#if error}
+  <div class="error">{error}</div>
 {/if}
 
 <Footer>
   <div class="foot">
-    {#if on_edit}
-      <button class="m-btn" on:click={cleanup}>
-        <SIcon name="eraser" />
-        <span>Xoá</span>
-      </button>
+    <button class="m-btn" on:click={() => (input = '')}>
+      <SIcon name="eraser" />
+      <span>Xoá</span>
+    </button>
 
-      <button class="m-btn _primary _fill" on:click={convert}>
-        <span>Dịch nhanh</span>
-      </button>
-    {:else}
-      <button class="m-btn" on:click={() => (edit_mode = true)}>
-        <SIcon name="pencil" />
-        <span>Sửa</span>
-      </button>
-
-      <button class="m-btn _fill" on:click={convert}>
-        <SIcon name="rotate-clockwise" />
-        <span>Dịch lại</span>
-      </button>
-
-      <button class="m-btn _success _fill" on:click={cleanup}>
-        <span>Dịch mới</span>
-      </button>
-    {/if}
+    <button class="m-btn _primary _fill" on:click={submit}>
+      <span>Dịch nhanh</span>
+    </button>
   </div>
 </Footer>
 
 <style lang="scss">
   .m-input {
     width: 100%;
-    min-height: calc(100vh - 10.5rem);
+    min-height: calc(100vh - 15.5rem);
 
     padding: var(--gutter-small) var(--gutter);
 
@@ -117,6 +87,12 @@
       font-style: normal;
       text-align: center;
     }
+  }
+
+  .error {
+    @include fgcolor(harmful, 5);
+    text-align: center;
+    padding: 0.5rem;
   }
 
   .foot {

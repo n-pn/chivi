@@ -1,5 +1,3 @@
-require "./_base_ctrl"
-
 class CV::NvseedCtrl < CV::BaseCtrl
   def index
     nvinfo = Nvinfo.load!(params["book"].to_i64)

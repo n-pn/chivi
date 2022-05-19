@@ -1,5 +1,3 @@
-require "./_base_ctrl"
-
 class CV::UbmemoCtrl < CV::BaseCtrl
   def cvbook
     send_json("Chưa có chức năng")

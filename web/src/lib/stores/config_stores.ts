@@ -10,6 +10,7 @@ class ConfigData {
   textlh = 150
   render = 0
   showzh = false
+  tosimp = false
 }
 
 function load_config(): ConfigData {

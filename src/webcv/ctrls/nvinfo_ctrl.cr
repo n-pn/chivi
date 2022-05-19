@@ -1,5 +1,3 @@
-require "./_base_ctrl"
-
 class CV::NvinfoCtrl < CV::BaseCtrl
   def index
     pgidx, limit, offset = params.page_info(max: 24)
@@ -37,7 +35,10 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
-    nvinfo.bump! if _cvuser.privi >= 0
+    spawn do
+      nvinfo.bump! if _cvuser.privi >= 0
+    end
+
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
 
     nvseeds = nvinfo.nvseeds.to_a.sort_by!(&.zseed)

@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
   import { navigating } from '$app/stores'
-  import { config } from '$lib/stores'
-  import { vdict } from '$lib/stores'
+  import { config, vdict } from '$lib/stores'
   import MtData from '$lib/mt_data'
 
   import Mtmenu, { ctrl as mtmenu } from './MtPage/Mtmenu.svelte'
@@ -12,14 +11,11 @@
 
 <script lang="ts">
   export let cvdata = ''
-  export let zhtext = []
-
-  export let dname = 'combine'
-  export let d_dub = 'Tổng hợp'
+  export let zhtext: string[] | null = null
 
   export let on_change = () => {}
 
-  $: cv_lines = MtData.parse_lines(cvdata)
+  $: [mtdata, zhtext, dname, d_dub, chars, tspan] = parse_data(cvdata, zhtext)
   $: vdict.put(dname, d_dub)
 
   let article = null
@@ -30,6 +26,19 @@
   $: if ($navigating) {
     l_focus = 0
     mtmenu.hide()
+  }
+
+  function parse_data(
+    input: string,
+    rawzh?: string[]
+  ): [MtData[], string[], string, string, number, number] {
+    const [cvdata, stats, zhtext] = input.split('\n$\t$\t$\n')
+    const [d_name, d_dub, chars, tspan] = stats.split('\t')
+
+    const mt_data = MtData.parse_lines(cvdata)
+    const zh_data = zhtext ? zhtext.split('\n') : rawzh || []
+
+    return [mt_data, zh_data, d_name, d_dub, +chars, +tspan]
   }
 
   function render_html(
@@ -57,29 +66,35 @@
     <slot name="header">Dịch nhanh</slot>
   </header>
 
-  {#each zhtext as ztext, index (index)}
-    <svelte:element
-      this={index > 0 || $$props.no_title ? 'p' : 'h1'}
-      id="L{index}"
-      class="cv-line"
-      class:debug={$config.render == 1}
-      class:focus={index == l_focus}
-      on:mouseenter={() => (l_hover = index)}>
-      {#if $config.showzh}<Zhline {ztext} plain={$config.render < 0} />{/if}
-      <Cvline
-        input={cv_lines[index]}
-        focus={render_html($config.render, index, l_hover, l_focus)} />
-    </svelte:element>
-  {:else}
-    <slot name="notext" />
-  {/each}
+  <section>
+    {#each zhtext as ztext, index (index)}
+      <svelte:element
+        this={index > 0 || $$props.no_title ? 'p' : 'h1'}
+        id="L{index}"
+        class="cv-line"
+        class:debug={$config.render == 1}
+        class:focus={index == l_focus}
+        on:mouseenter={() => (l_hover = index)}>
+        {#if $config.showzh}<Zhline {ztext} plain={$config.render < 0} />{/if}
+        <Cvline
+          input={mtdata[index]}
+          focus={render_html($config.render, index, l_hover, l_focus)} />
+      </svelte:element>
+    {:else}
+      <slot name="notext" />
+    {/each}
 
-  {#if $config.render >= 0}
-    <Mtmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />
-  {/if}
+    {#if $config.render >= 0}
+      <Mtmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />
+    {/if}
+  </section>
 
   <slot name="footer" />
 </article>
+
+<section class="stats">
+  Số ký tự: {chars} - Thời gian dịch: {tspan}ms
+</section>
 
 <div hidden>
   <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
@@ -93,8 +108,8 @@
     min-height: 50vh;
 
     // margin: 0;
-    @include padding-y(0);
-    padding-bottom: 0.75rem; // make inner margin effective
+    padding: 0;
+    padding-bottom: 0.75rem;
 
     @include fgcolor(secd);
     @include bgcolor(tert);
@@ -109,7 +124,9 @@
     }
   }
 
-  .article.article {
+  .article > header,
+  .article > section {
+    @include padding-x(var(--gutter));
     @include bp-min(tl) {
       @include padding-x(2rem);
     }
@@ -184,5 +201,14 @@
     :global(.app-fs-5) & {
       @include bps(font-size, rem(21px), rem(22px), rem(23px), rem(24px), rem(25px));
     }
+  }
+
+  .stats {
+    text-align: center;
+    margin-top: calc(-1 * var(--gutter));
+    padding: 0.5rem 0;
+    font-style: italic;
+    @include fgcolor(tert);
+    @include ftsize(sm);
   }
 </style>

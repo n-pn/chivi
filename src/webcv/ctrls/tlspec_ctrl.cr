@@ -1,5 +1,3 @@
-require "./_base_ctrl"
-
 class CV::TlspecCtrl < CV::BaseCtrl
   def index
     pgidx, limit, offset = params.page_info(min: 50)
@@ -48,7 +46,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     entry.add_edit!(params, _cvuser)
     entry.save!
 
-    send_json(["ok"])
+    serv_text(_ukey)
   end
 
   def show

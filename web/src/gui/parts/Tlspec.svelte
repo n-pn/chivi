@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
-  import { api_call } from '$lib/api_call'
+  import { call_api } from '$lib/api_call'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
   const entry = {
@@ -57,13 +57,13 @@
     const input = ztext.substring(lower, upper)
     if (!input) return
 
-    const res = await fetch('/api/qtran', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input, dname: $vdict.dname, mode: 'tlspec' }),
-    })
+    const api_url = `/api/qtran/mterror`
+    const params = { input, dname: $vdict.dname }
 
-    const [convert, hanviet] = (await res.text()).split('\n')
+    const [status, body] = await call_api(api_url, 'PUT', params, fetch)
+    if (status >= 400) return console.error(body)
+
+    const [convert, hanviet] = body.split('\n')
     if (!$entry.match || $entry.match == $entry.cvmtl) $entry.match = convert
 
     $entry.cvmtl = convert
@@ -76,23 +76,27 @@
   }
 
   async function handle_submit() {
-    let url = 'tlspecs'
+    let url = '/api/tlspecs'
     if ($entry._ukey) url += '/' + $entry._ukey
 
     const params = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
-    const [err, data] = await api_call(fetch, url, params, 'POST')
-    if (err) error = data
-    else {
+    const [status, data] = await call_api(url, 'POST', params, fetch)
+    if (status >= 400) {
+      console.error(data)
+      error = data
+    } else {
       ctrl.hide()
       on_destroy()
     }
   }
 
   async function delete_tlspec() {
-    const url = 'tlspecs/' + $entry._ukey
-    const [err, data] = await api_call(fetch, url, null, 'DELETE')
-    if (err) error = data
-    else {
+    const url = '/api/tlspecs/' + $entry._ukey
+    const [status, data] = await call_api(url, 'DELETE', null, fetch)
+    if (status >= 400) {
+      console.error(data)
+      error = data
+    } else {
       ctrl.hide()
       on_destroy()
     }
