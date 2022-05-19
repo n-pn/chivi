@@ -8,7 +8,7 @@ class CV::Nvseed
   end
 
   def self.load!(nvinfo : Nvinfo, sname : String) : self
-    load!(nvinfo, SnameMap.map_str(sname))
+    load!(nvinfo, SnameMap.map_int(sname))
   end
 
   def self.load!(nvinfo : Nvinfo, zseed : Int32) : self

@@ -17,7 +17,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvseed.nvinfo_id)
     ubmemo.mark_chap!(chinfo, nvseed.sname, cpart) if _cvuser.privi > -1
 
-    stype, chidx_max, min_privi = check_privi(nvseed, chinfo)
+    sname, stype, chidx_max, min_privi = check_privi(nvseed, chinfo)
 
     redo = params["redo"]? == "true"
     trad = params["trad"]? == "true"
@@ -32,7 +32,13 @@ class CV::NvchapCtrl < CV::BaseCtrl
         jb.field "min_privi", min_privi
 
         if _cvuser.privi >= min_privi
-          ukey = QtranData.zhtext_ukey(nvseed.id, chinfo.chidx, cpart)
+          if nvseed.zseed == 0
+            nvseed_id = Nvseed.load!(nvseed.nvinfo, sname).id
+          else
+            nvseed_id = nvseed.id
+          end
+
+          ukey = QtranData.zhtext_ukey(nvseed_id, chinfo.chidx, cpart)
           QtranData::CACHE.delete(ukey) if redo
 
           qtran = QtranData.load!(ukey) do
@@ -57,7 +63,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  private def check_privi(nvseed : Nvseed, chinfo : ChInfo) : {Int32, Int32, Int32}
+  private def check_privi(nvseed : Nvseed, chinfo : ChInfo) : {String, Int32, Int32, Int32}
     # lower privi requirement if chapter < 1/3 total chap
     chidx_max = nvseed.chap_count // 3
     chidx_max = 40 if chidx_max < 40
@@ -68,7 +74,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     min_privi = nvseed.zseed == 0 ? -1 : (stype < 3 || chinfo.stats.chars > 0 ? 0 : 1)
     min_privi &+= chinfo.chidx > chidx_max ? 1 : 0
 
-    {stype, chidx_max, min_privi}
+    {sname, stype, chidx_max, min_privi}
   end
 
   def zh_text
@@ -122,6 +128,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
       chinfo.stats.uname = _cvuser.uname
       ChText.new(nvseed.sname, nvseed.snvid, chinfo).save!(chap.lines)
+      QtranData.delete_zhtext(nvseed.id, chinfo.chidx, chinfo.stats.parts)
 
       chinfo.tap(&.set_title!(chap.title, chap.chvol))
     end

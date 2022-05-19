@@ -129,4 +129,11 @@ class CV::QtranData
     label = parts > 1 ? " [#{cpart + 1}/#{parts}]" : ""
     new(lines, dname, d_lbl, title: true, label: label)
   end
+
+  def self.delete_zhtext(seed_id : Int64, chidx : Int32, parts = 1)
+    parts.times do |cpart|
+      ukey = zhtext_ukey(seed_id, chidx, cpart)
+      CACHE.delete(ukey)
+    end
+  end
 end

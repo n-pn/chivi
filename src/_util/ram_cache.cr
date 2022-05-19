@@ -13,6 +13,14 @@ class CV::RamCache(K, V)
     @cache = new_cache
   end
 
+  def has?(key : K) : Bool
+    @cache.has_key?(key)
+  end
+
+  def get? : V | Nil
+    @cache[key]?
+  end
+
   def get(key : K, stale = Time.utc) : V
     if entry = @cache[key]?
       return entry.value if entry.stale >= stale
