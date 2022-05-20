@@ -28,6 +28,7 @@ article {
 .md-post {
   margin-top: 1rem;
   font-size: em(17px);
+  line-height: 1.5em;
 
   @include bp-min(ls) {
     @include padding-x(2rem);
@@ -50,21 +51,22 @@ article {
     @include fgcolor(secd);
   }
 
+  > h4,
+  > h5 {
+    @include fgcolor(tert);
+  }
+
   > * + * {
     margin-top: 1.25rem;
   }
 
-  li + li {
+  ul > * + *,
+  ol > * + * {
     margin-top: 1rem;
   }
 
-  li li + li {
+  li > * + * {
     margin-top: 0.75rem;
-  }
-
-  li li,
-  li p {
-    margin-top: 0.5rem;
   }
 
   a {
@@ -85,14 +87,6 @@ article {
   .em {
     font-style: italic;
     @include fgcolor(warning, 5);
-  }
-
-  h5 {
-    @include fgcolor(tert);
-  }
-
-  li + li {
-    margin-top: 0.25rem;
   }
 }
 
