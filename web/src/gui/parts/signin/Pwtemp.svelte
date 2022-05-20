@@ -11,13 +11,13 @@
   let msg_type: '' | 'ok' | 'err' = ''
   let msg_text = ''
 
-  async function submit(event: Event) {
-    event.preventDefault()
+  const action_url = '/api/_user/pwtemp'
+
+  async function submit() {
     msg_type = ''
     msg_text = ''
 
-    const url = '/api/user/pwtemp'
-    const [status, body] = await call_api(url, 'POST', { email }, fetch)
+    const [status, body] = await call_api(action_url, 'POST', { email }, fetch)
 
     if (status >= 400) {
       msg_type = 'err'
@@ -28,7 +28,7 @@
   }
 </script>
 
-<form action="/api/user/pwtemp" method="POST" on:submit={submit}>
+<form action={action_url} method="POST" on:submit|preventDefault={submit}>
   <div class="form-inp">
     <label class="form-lbl" for="email">Hòm thư</label>
     <input

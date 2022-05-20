@@ -28,7 +28,7 @@
     if (!$config.wtheme) config.put('wtheme', $session.wtheme || 'light')
   })
 
-  $: wtheme = $config.wtheme || $session.wtheme || 'light'
+  $: wtheme = $config.wtheme || 'light'
 
   let kbd_hint = false
 

@@ -1,13 +1,14 @@
+const api_host = '127.0.0.1:5010'
+
 export async function handle({ event, resolve }) {
   const path = event.url.pathname
   if (!path.startsWith('/api/')) return resolve(event)
 
-  const api_url = `http://127.0.0.1:5010${path}${event.url.search}`
-  return await fetch(new Request(api_url, event.request))
+  event.url.host = api_host
+  return await fetch(new Request(event.url, event.request))
 }
 
 export async function getSession({ request: { headers } }) {
-  const res = await fetch('http://127.0.0.1:5010/api/_self', { headers })
-  const data = await res.json()
-  return data.props
+  const res = await fetch(`http://${api_host}/api/_self`, { headers })
+  return await res.json()
 }

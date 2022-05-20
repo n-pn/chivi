@@ -1,8 +1,60 @@
 class CV::UsercpCtrl < CV::BaseCtrl
-  def cv_user
+  def profile
     set_cache :private, maxage: 5
-    send_json(CvuserView.new(_cvuser))
+    serv_json(CvuserView.new(_cvuser))
   end
+
+  def upgrade_privi
+    privi = params.fetch_int("privi", min: 1, max: 3)
+    tspan = params.fetch_int("tspan", min: 0, max: 3)
+    _cvuser.upgrade!(privi, tspan)
+
+    spawn do
+      body = {privi: privi, tspan: tspan}
+      CtrlUtil.log_user_action("upgrade-privi", body, _cvuser.uname)
+    end
+
+    serv_json(CvuserView.new(_cvuser))
+  rescue err
+    halt! 403, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
+  end
+
+  ##################
+
+  def update_config
+    if _cvuser.privi >= 0
+      wtheme = params.fetch_str("wtheme", "light")
+      _cvuser.update!({wtheme: wtheme})
+    end
+
+    serv_json(CvuserView.new(_cvuser))
+  end
+
+  def update_passwd
+    raise "Quyền hạn không đủ" if _cvuser.privi < 0
+
+    old_upass = params.fetch_str("old_pass").strip
+    raise "Mật khẩu cũ không đúng" unless _cvuser.authentic?(old_upass)
+
+    new_upass = params.fetch_str("new_pass").strip
+    confirmation = params.fetch_str("confirm_pass").strip
+    raise "Mật khẩu mới quá ngắn" unless new_upass.size >= 7
+    raise "Mật khẩu không trùng khớp" unless new_upass == confirmation
+
+    _cvuser.upass = new_upass
+    _cvuser.save!
+
+    spawn do
+      body = {email: _cvuser.email, cpass: _cvuser.cpass}
+      CtrlUtil.log_user_action("change-pass", body, _cvuser.uname)
+    end
+
+    serv_text("Đổi mật khẩu thành công", 201)
+  rescue err
+    raise BadRequest.new(err.message)
+  end
+
+  ################
 
   def replied
     _pgidx, limit, offset = params.page_info(min: 10)
@@ -20,21 +72,6 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
     set_cache :private, maxage: 3
     send_json(items.map { |x| CvreplView.new(x, full: true, memo: memos[x.id]?) })
-  end
-
-  def upgrade
-    privi = params.fetch_int("privi", min: 1, max: 3)
-    tspan = params.fetch_int("tspan", min: 0, max: 3)
-    _cvuser.upgrade!(privi, tspan)
-
-    spawn do
-      body = {privi: privi, tspan: tspan}
-      CtrlUtil.log_user_action("upgrade-privi", body, _cvuser.uname)
-    end
-
-    serv_json(CvuserView.new(_cvuser))
-  rescue err
-    halt! 403, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
   end
 
   def mark_post

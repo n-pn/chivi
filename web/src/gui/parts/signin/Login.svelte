@@ -8,20 +8,18 @@
   let upass = ''
   let error: string
 
-  async function submit(evt: Event) {
-    evt.preventDefault()
+  const action_url = '/api/_user/log-in'
 
-    const url = '/api/user/login'
+  async function submit() {
     const params = { email, upass }
-
-    const [status, body] = await call_api(url, 'POST', params, fetch)
+    const [status, body] = await call_api(action_url, 'POST', params, fetch)
 
     if (status >= 400) error = body
     else window.location.reload()
   }
 </script>
 
-<form action="/api/user/login" method="POST" on:submit={submit}>
+<form action={action_url} method="POST" on:submit|preventDefault={submit}>
   <div class="form-inp">
     <label class="form-lbl" for="email">Hòm thư</label>
     <input

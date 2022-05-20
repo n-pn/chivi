@@ -9,21 +9,20 @@
   let upass = ''
   let error = ''
 
-  async function submit(event: Event) {
-    event.preventDefault()
+  const action_url = '/api/_user/signup'
+
+  async function submit() {
     error = ''
 
-    const url = '/api/user/signup'
     const params = { email, uname, upass }
-
-    const [status, body] = await call_api(url, 'POST', params, fetch)
+    const [status, body] = await call_api(action_url, 'POST', params, fetch)
 
     if (status >= 400) error = body
     else window.location.reload()
   }
 </script>
 
-<form action="/api/user/signup" method="POST" on:submit={submit}>
+<form action={action_url} method="POST" on:submit|preventDefault={submit}>
   <div class="form-inp">
     <label class="form-lbl" for="email">Hòm thư</label>
     <input
@@ -68,13 +67,10 @@
       <span class="-text">Tạo tài khoản</span>
     </button>
   </footer>
-
-  <div class="form-more">
-    <button
-      type="button"
-      class="m-btn _text"
-      on:click={() => (_form = 'login')}>
-      <span class="-text">Đăng nhập</span>
-    </button>
-  </div>
 </form>
+
+<div class="form-more">
+  <button type="button" class="m-btn _text" on:click={() => (_form = 'login')}>
+    <span class="-text">Đăng nhập</span>
+  </button>
+</div>

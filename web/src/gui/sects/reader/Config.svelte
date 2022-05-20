@@ -18,7 +18,7 @@
   $: if ($popups.config && config_elem) config_elem.focus()
 
   async function update_wtheme(wtheme: string) {
-    await fetch('/api/user/setting', {
+    await fetch('/api/_self/config', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ wtheme }),

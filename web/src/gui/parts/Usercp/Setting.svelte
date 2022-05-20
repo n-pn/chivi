@@ -18,7 +18,7 @@
   async function update_passwd() {
     cpass_error = ''
 
-    const url = '/api/user/passwd'
+    const url = '/api/_self/passwd'
     const params = { old_pass, new_pass, confirm_pass }
     const [status, body] = await call_api(url, 'PUT', params, fetch)
 
@@ -27,14 +27,14 @@
   }
 
   async function logout() {
-    await fetch('/api/user/logout')
+    await fetch('/api/_user/logout', { method: 'DELETE' })
     window.location.reload()
   }
 
   async function upgrade_privi() {
     privi_error = ''
 
-    const url = '/api/_self/upgrade'
+    const url = '/api/_self/ugprivi'
     const params = { privi, tspan }
     const [status, body] = await call_api(url, 'PUT', params, fetch)
 

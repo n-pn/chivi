@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+  /** @type {import('./[slug]').Load} */
   export async function load({ url, fetch, stuff: { nvinfo } }) {
     const chidx = +url.searchParams.get('chidx') || 1
 
