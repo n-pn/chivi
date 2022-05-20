@@ -2,9 +2,13 @@
 title: Ủng hộ Chivi
 ---
 
-Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển.
+Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.
 
 ## Phương thức ủng hộ
+
+<p class="em">
+Lưu ý: Khi ủng hộ hãy để lại tên đăng nhập hoặc hòm thư đã đăng ký trên Chivi để định danh tài khoản.
+</p>
 
 ### Quốc tế (ưu tiên)
 
@@ -16,9 +20,11 @@ Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn t�
 - Ví Momo: https://me.momo.vn/nipin
 - Techcombank: **19034964108016**
 
-**Lưu ý**: Hãy lưu lại tên tài khoản của bạn hoặc email đã đăng ký trong chivi để được nâng cấp quyền hạn.
-
 Hoặc liên hệ qua các kênh liên lạc: [Facebook](https://www.facebook.com/chivi.app), [Discord](https://discord.gg/mdC3KQH).
+
+Khi bạn ủng hộ Chivi bằng tiền mặt, bạn sẽ được tặng một đơn vị tiền tệ ảo là vcoin, bạn có thể dùng vcoin để nâng cấp quyền hạn, gửi tặng người dùng khác, hoặc sử dụng các tính năng nâng cao sẽ dần được phát triển bổ sung.
+
+<p class="em">Quy ước trao đổi: 1000 VND = 1 vcoin, $1 USD = 20 vcoin.</p>
 
 ## Tại sao phải ủng hộ Chivi?
 
@@ -51,10 +57,3 @@ Hoặc liên hệ qua các kênh liên lạc: [Facebook](https://www.facebook.co
 - Các công việc bảo dưỡng làm hàng ngày/hàng tuần như backup dữ liệu, crawl thông tin mới từ các nguồn như `yousuu.com`, `zxcs.me`, `hetushu.com`....
 
 _TLDR_: Phát triển tính năng cho Chivi rất tốn kém về thời gian và tiền bạc. Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển.
-
-## Quyền lợi khi ủng hộ Chivi
-
-Khi bạn ủng hộ Chivi sẽ được nhận trở về một đơn vị tiền tệ ảo là vcoin.
-Bạn có thể dùng vcoin để nâng cấp quyền hạn, hoặc sử dụng các tính năng nâng cao sẽ được bổ sung dần theo thời gian.
-
-Protip: Quyền hạn cao ngoài việc mở khoá các tính năng trong Chivi ra còn có nhiều ưu tiên ngầm, chúng tôi đặc biệt khuyến khích các bạn nâng quyền hạn của mình lên cao nhất có thể :)

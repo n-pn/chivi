@@ -20,39 +20,20 @@
 
 <h4>Ủng hộ trang web trực tiếp bằng tiền mặt</h4>
 
-<h5>Quốc tế</h5>
-<ul>
-  <li>
-    Ko-fi: <a href="https://ko-fi.com/chivi" rel="external">ko-fi.com/chivi</a>
-  </li>
-  <li>
-    Paypay:
-    <a href="https://www.paypal.com/paypalme/nipinium" rel="external"
-      >paypal.me/nipinium</a>
-  </li>
-</ul>
+<p>Tham khảo: <a href="/guide/donation">Ủng hộ Chivi</a></p>
 
-<h5>Việt Nam</h5>
-
-<ul>
-  <li>
-    Ví Momo: <a href="https://me.momo.vn/nipin" rel="external">aJ5Ks0ug0Hp</a>
-  </li>
-  <li>Techcombank: <strong>19034964108016</strong></li>
-</ul>
-<p class="sm">Quy ước trao đổi: 1000 VND = 1 vcoin, $1 USD = 20 vcoin.</p>
 <p class="em">
-  Chvi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là điều sống còn
-  cho sự tồn tại và phát triển của trang web.
+  Chvi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy
+  nhất để nuôi sống trang web.
 </p>
 
 <h4>Đóng góp vào sự phát triển của trang web</h4>
 <p>
-  Bạn sẽ được thưởng một lượng vcoin nhỏ (từ 1 ~ 50 vcoin) bằng cách tích cực
-  đóng góp nội dung cho trang web, báo lỗi hệ thống, thảo luận tính năng...
+  Bạn sẽ được thưởng một lượng vcoin nhỏ từ 1~50 vcoin bằng cách tích cực đóng
+  góp nội dung cho trang web, báo lỗi hệ thống, thảo luận tính năng...
 </p>
 
-<p class="em">Phần này đang được hoàn thiện, sẽ bổ sung chi tiết sau</p>
+<p class="em">(Phần này đang được hoàn thiện, sẽ bổ sung chi tiết sau)</p>
 <ul />
 
 <style lang="scss">
@@ -67,6 +48,11 @@
     line-height: 1.375rem;
   }
 
+  a {
+    @include fgcolor(primary, 5);
+    font-weight: 500;
+  }
+
   h3 {
     @include border($loc: bottom);
     margin-top: 1rem;
@@ -76,20 +62,6 @@
     font-weight: 500;
     font-size: rem(17px);
     margin-top: 1rem;
-  }
-
-  h5 {
-    @include fgcolor(tert);
-  }
-
-  li + li {
-    margin-top: 0.25rem;
-  }
-
-  .sm {
-    @include ftsize(sm);
-    line-height: 1.25rem;
-    @include fgcolor(secd);
   }
 
   .em {

@@ -5,14 +5,36 @@ article {
   overflow-wrap: break-word;
 }
 
+.article {
+  @include shadow(2);
+  @include bgcolor(tert);
+  @include padding-x(var(--gutter));
+
+  @include tm-dark($svelte: false) {
+    @include linesd(--bd-soft, $inset: true);
+  }
+}
+
+.article.article {
+  @include margin-x(0);
+  margin-bottom: var(--gutter);
+
+  @include bp-min(tl) {
+    border-radius: 1rem;
+    @include margin-x(var(--gutter));
+  }
+}
+
 .md-post {
   margin-top: 1rem;
-  @include bgcolor(secd);
-  padding: 1rem 1.5rem;
-  @include bdradi();
+  font-size: em(17px);
+
+  @include bp-min(ls) {
+    @include padding-x(2rem);
+  }
 
   > h1 {
-    padding-top: 1rem;
+    padding-top: 0.5rem;
     margin-bottom: 1.5rem;
   }
 
@@ -29,10 +51,14 @@ article {
   }
 
   > * + * {
-    margin-top: 1rem;
+    margin-top: 1.25rem;
   }
 
   li + li {
+    margin-top: 1rem;
+  }
+
+  li li + li {
     margin-top: 0.75rem;
   }
 
@@ -48,6 +74,25 @@ article {
   code {
     @include bgcolor(tert);
     font-family: var(--ff-mono);
+  }
+
+  .sm {
+    @include ftsize(sm);
+    line-height: 1.25rem;
+    @include fgcolor(secd);
+  }
+
+  .em {
+    font-style: italic;
+    @include fgcolor(warning, 5);
+  }
+
+  h5 {
+    @include fgcolor(tert);
+  }
+
+  li + li {
+    margin-top: 0.25rem;
   }
 }
 
@@ -97,17 +142,15 @@ cv-user,
   }
 }
 
-
 .bread {
-  padding: .5rem 0;
+  padding: 0.5rem 0;
   line-height: 1.25rem;
-  margin: .25rem 0;
+  margin: 0.25rem 0;
 
   // display: inline-flex;
   // @include flow();
   @include ftsize(sm);
   @include fgcolor(secd);
-
 }
 
 .crumb {
@@ -131,35 +174,5 @@ cv-user,
     height: 1rem;
     width: 1rem;
     vertical-align: text-top;
-  }
-}
-
-.article.article {
-  @include shadow(2);
-  @include bgcolor(tert);
-  @include padding-x(var(--gutter));
-
-  @include tm-dark($svelte: false) {
-    @include linesd(--bd-soft, $inset: true);
-  }
-
-  &._narrow {
-    // @include padding-x(var(--gutter));
-    @include bp-min(tl) {
-      > * {
-        @include padding-x(var(--gutter));
-      }
-    }
-  }
-}
-
-.article.article {
-  @include margin-x(0);
-  margin-bottom: var(--gutter);
-
-
-  @include bp-min(tl) {
-    border-radius: 1rem;
-    @include margin-x(var(--gutter));
   }
 }

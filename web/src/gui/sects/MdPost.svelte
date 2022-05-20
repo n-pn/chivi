@@ -13,9 +13,7 @@
   <title>{title} - Chivi</title>
 </svelte:head>
 
-<section>
-  <article class="md-post">
-    <h1>{title}</h1>
-    <slot />
-  </article>
-</section>
+<article class="article md-post">
+  <h1>{title}</h1>
+  <slot />
+</article>
