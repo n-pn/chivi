@@ -28,7 +28,7 @@
       res_text = body as string
     } else {
       res_type = 'ok'
-      res_text = `[${body.receiver}] đã nhận được ${amount}, bạn còn có ${body.remain} vcoin.`
+      res_text = `[${body.receiver}] đã nhận được ${amount} vcoin, bạn còn có ${body.remain} vcoin.`
 
       // $session.vcoin_avail = body.remain
     }
@@ -62,7 +62,7 @@
     </form-field>
   </form-group>
 
-  {#if $session.privi > 2}
+  {#if $session.privi > 3}
     <label for="as_admin" class="as_admin">
       <input
         type="checkbox"
@@ -78,7 +78,7 @@
 
     <radio-group>
       {#each [5, 10, 20, 30, 50] as value}
-        <label class="amount" class:_active={value == amount}>
+        <label class="m-radio amount" class:_active={value == amount}>
           <input type="radio" bind:group={amount} {value} />
           {value}
         </label>
@@ -117,7 +117,6 @@
   }
 
   .amount {
-    cursor: pointer;
     user-select: none;
     display: inline-block;
     line-height: 2rem;
@@ -137,6 +136,10 @@
     }
   }
 
+  label.amount {
+    cursor: pointer;
+  }
+
   .as_admin {
     display: block;
     margin-top: 0.75rem;
@@ -146,6 +149,7 @@
 
   input.amount {
     width: 3.5rem;
+    background-color: inherit;
   }
 
   radio-group {

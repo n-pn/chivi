@@ -165,7 +165,7 @@
       </form-field>
     </form-group>
 
-    <form-group>
+    <div class="form-group genres">
       <form-field>
         <label class="label" for="genres">Thể loại</label>
 
@@ -213,15 +213,15 @@
           </div>
         {/if}
       </form-field>
-    </form-group>
+    </div>
 
-    <form-group>
+    <div class="form-group">
       <form-field>
         <label class="label" for="status">Trạng thái truyện</label>
 
         <form-radio>
           {#each book_status as label, value}
-            <label class="m-radio">
+            <label class="radio">
               <input
                 type="radio"
                 bind:group={params.status}
@@ -232,12 +232,10 @@
           {/each}
         </form-radio>
       </form-field>
-    </form-group>
+    </div>
 
     {#if errors}
-      <form-group>
-        <form-error>{errors}</form-error>
-      </form-group>
+      <div class="form-message _err">{errors}</div>
     {/if}
 
     <form-group class="action">
@@ -272,7 +270,7 @@
     display: block;
   }
 
-  .m-radio {
+  .radio {
     display: inline-block;
     margin-right: 0.5rem;
   }
@@ -291,5 +289,9 @@
       margin-right: 0.25rem;
       margin-bottom: 0.25rem;
     }
+  }
+
+  .form-group {
+    margin-top: 0.75rem;
   }
 </style>

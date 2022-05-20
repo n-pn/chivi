@@ -119,6 +119,7 @@
       padding-left: $header-gutter;
     }
   }
+
   .vessel {
     padding: 0 var(--gutter);
   }

@@ -16,12 +16,13 @@
 
 <style lang="scss">
   footer {
+    position: sticky;
+    padding: 0.5rem 0;
+
     will-change: transform;
     transition: transform 100ms ease-in-out;
 
-    padding: 0.5rem var(--gutter);
-    bottom: 0;
-    position: sticky;
+    // bottom: 0;
     bottom: -0.1px;
 
     &:global(.sticky) {

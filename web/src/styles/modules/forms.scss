@@ -38,6 +38,13 @@ form-field {
   margin-top: 1rem;
 }
 
+.m-radio,
+.m-label {
+  input[type='radio'] {
+    display: none;
+  }
+}
+
 .form-label {
   display: block;
   line-height: 1rem;
@@ -70,11 +77,6 @@ label.m-label {
   }
 }
 
-label {
-  input[type='radio'] {
-    display: none;
-  }
-}
 // .form-field {
 //   margin: 0.75rem 0;
 

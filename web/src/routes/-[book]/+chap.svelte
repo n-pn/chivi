@@ -2,13 +2,9 @@
   /** @type {import('./[slug]').Load} */
   export async function load({ url, fetch, stuff: { nvinfo } }) {
     const chidx = +url.searchParams.get('chidx') || 1
+    const mode = url.searchParams.get('mode')
 
-    let input = ''
-
-    if (url.searchParams.get('mode') == 'edit') {
-      input = await load_text(fetch, nvinfo.id, chidx)
-    }
-
+    const input = mode == 'edit' ? await load_text(fetch, nvinfo.id, chidx) : ''
     return { props: { nvinfo, chidx, input } }
   }
 
@@ -104,13 +100,18 @@
     display: block;
     width: 100%;
     min-height: 10rem;
-    height: calc(100vh - 12rem);
+    height: calc(100vh - 14rem);
     padding: 0.75rem;
     font-size: rem(18px);
+    margin-bottom: 0.5rem;
   }
 
   h2 {
     padding: 0.75rem 0;
+  }
+
+  section {
+    padding-bottom: 0.5rem;
   }
 
   .pagi {
