@@ -10,14 +10,14 @@ module CV::MtDict
   class MtHash < Hash(String, MtTerm)
     getter df_ptag : PosTag
 
-    def initialize(@df_ptag, initial_capacity = 0)
+    def initialize(@df_ptag, @fixed_tag = false, initial_capacity = 0)
       super(initial_capacity: initial_capacity)
     end
 
     def upsert(term : VpTerm)
       return unless fval = term.val.first?
       return delete(term.key) if fval.empty?
-      ptag = term.attr == "" ? @df_ptag : term.ptag
+      ptag = @fixed_tag || term.attr.empty? ? @df_ptag : term.ptag
       upsert(term.key, {fval, ptag})
     end
   end
@@ -36,17 +36,17 @@ module CV::MtDict
     load("fix_verbs", PosTag::Verb),
     load("fix_adjts", PosTag::Adjt),
     load("fix_adverbs", PosTag::Adverb),
-    load("qt_times", PosTag::Qttime),
-    load("qt_verbs", PosTag::Qtverb),
-    load("qt_nouns", PosTag::Qtnoun),
+    load("qt_times", PosTag::Qttime, true),
+    load("qt_verbs", PosTag::Qtverb, true),
+    load("qt_nouns", PosTag::Qtnoun, true),
     load("v_compl", PosTag::Verb),
     load("v_group", PosTag::VerbObject),
-    load("v2_objs", PosTag::Verb),
+    load("v2_objs", PosTag::Verb, true),
   }
 
-  def load(dname : String, df_ptag = PosTag::Unkn)
+  def load(dname : String, df_ptag = PosTag::Unkn, fixed_tag = false)
     vpdict = VpDict.load_cvmtl(dname)
-    output = MtHash.new(df_ptag, initial_capacity: vpdict.size * 2)
+    output = MtHash.new(df_ptag, fixed_tag, initial_capacity: vpdict.size)
 
     vpdict.list.each do |vpterm|
       output.upsert(vpterm) unless vpterm.deleted?
