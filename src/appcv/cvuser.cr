@@ -147,8 +147,8 @@ class CV::Cvuser
     end
   end
 
-  CACHE_INT = RamCache(Int64, self).new(ttl: 5.minutes)
-  CACHE_STR = RamCache(String, self).new(ttl: 5.minutes)
+  CACHE_INT = RamCache(Int64, self).new(ttl: 3.minutes)
+  CACHE_STR = RamCache(String, self).new(ttl: 3.minutes)
 
   def self.find_by_mail(email : String)
     return unless user = find({email: email})

@@ -1,6 +1,6 @@
 class CV::UsercpCtrl < CV::BaseCtrl
   def profile
-    set_cache :private, maxage: 5
+    set_cache :private, maxage: 3
     serv_json(CvuserView.new(_cvuser))
   end
 
