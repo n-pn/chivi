@@ -16,15 +16,27 @@ class CV::SigninCtrl < CV::BaseCtrl
     raise BadRequest.new(err.message)
   end
 
+  DUMMY_PASS = Crypto::Bcrypt::Password.create("----", cost: 10)
+
   def log_in
     email = params["email"].strip
     upass = params["upass"].strip
 
-    unless user = Cvuser.validate(email, upass)
+    unless user = validate_user(email, upass)
       raise BadRequest.new("Thông tin đăng nhập không chính xác!")
     end
 
+    user.check_privi!
     login_user!(user)
+  end
+
+  private def validate_user(email : String, upass : String)
+    if user = Cvuser.find({email: email})
+      user.authentic?(upass) ? user : nil
+    else
+      DUMMY_PASS.verify(upass) # prevent timing attack
+      nil
+    end
   end
 
   private def login_user!(user : Cvuser)
@@ -47,7 +59,6 @@ class CV::SigninCtrl < CV::BaseCtrl
   end
 
   def logout
-    Cvuser.reset_cache(_cvuser)
     @_cvuser = nil
     session.delete("uname")
     save_session!

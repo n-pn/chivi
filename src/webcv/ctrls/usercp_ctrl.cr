@@ -1,6 +1,8 @@
 class CV::UsercpCtrl < CV::BaseCtrl
   def profile
-    set_cache :private, maxage: 1
+    set_cache :private, maxage: 3
+    _cvuser.check_privi! unless _cvuser.privi < 0
+
     serv_json(CvuserView.new(_cvuser))
   end
 
@@ -44,8 +46,8 @@ class CV::UsercpCtrl < CV::BaseCtrl
       sender.update(vcoin_avail: sender.vcoin_avail - amount)
       receiver.update(vcoin_avail: receiver.vcoin_avail + amount)
 
-      Cvuser.reset_cache(sender)
-      Cvuser.reset_cache(receiver)
+      sender.cache!
+      receiver.cache!
 
       entry = Uvcoin.new({
         receiver: receiver, sender: sender,

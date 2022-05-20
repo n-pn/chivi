@@ -124,6 +124,18 @@ class CV::Cvuser
     end
   end
 
+  def check_privi! : Nil
+    self.downgrade_privi!
+    self.last_loggedin_at = Time.utc
+    self.save!
+    self.cache!
+  end
+
+  def cache!
+    CACHE_INT.set(self.id, self)
+    CACHE_STR.set(self.uname.downcase, self)
+  end
+
   ##############################################
 
   def self.create!(email : String, uname : String, upass : String) : self
@@ -150,11 +162,6 @@ class CV::Cvuser
   CACHE_INT = RamCache(Int64, self).new(ttl: 3.minutes)
   CACHE_STR = RamCache(String, self).new(ttl: 3.minutes)
 
-  def self.reset_cache(user : self)
-    CACHE_INT.delete(user.id)
-    CACHE_STR.delete(user.uname)
-  end
-
   def self.load!(id : Int64)
     CACHE_INT.get(id) { find!({id: id}) }
   end
@@ -162,24 +169,7 @@ class CV::Cvuser
   CACHED = {} of String => self
 
   def self.load!(dname : String) : self
-    CACHE_STR.get(dname.downcase) do
-      user = find!({uname: dname})
-      user.downgrade_privi!
-      user.last_loggedin_at = Time.utc
-      user.save!
-      user.tap { |x| CACHE_INT.set(x.id, x) }
-    end
-  end
-
-  DUMMY_PASS = Crypto::Bcrypt::Password.create("----", cost: 10)
-
-  def self.validate(email : String, upass : String)
-    if user = find({email: email})
-      user.authentic?(upass) ? user : nil
-    else
-      DUMMY_PASS.verify(upass) # prevent timing attack
-      nil
-    end
+    CACHE_STR.get(dname.downcase) { find!({uname: dname}) }
   end
 
   def self.load_many(unames : Array(String))
