@@ -4,12 +4,11 @@ const headers = { 'Content-Type': 'application/json' }
 export async function call_api(
   url: string,
   method = 'GET',
-  body?: string | object,
+  body?: object,
   fetch: CV.Fetch = globalThis.fetch
 ): Output {
   const options = { method, headers }
-  if (typeof body == 'object') JSON.stringify(body)
-  if (body) options['body'] = body
+  if (body) options['body'] = JSON.stringify(body)
 
   const res = await fetch(url, options)
   const type = res.headers.get('Content-Type')
@@ -33,7 +32,7 @@ export async function wrap_get(
 
   if (status < 300) {
     if (extra) Object.assign(data, extra)
-    return { props: data, cache }
+    return { status, props: data, cache }
   }
 
   return status >= 400 ? { status, error: data } : { status, redirect: data }

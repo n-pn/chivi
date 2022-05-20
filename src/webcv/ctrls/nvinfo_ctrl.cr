@@ -35,8 +35,12 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
-    spawn do
-      nvinfo.bump! if _cvuser.privi >= 0
+    if nvinfo.bslug != bslug
+      return serv_text(nvinfo.bslug, 301)
+    end
+
+    if _cvuser.privi >= 0
+      spawn nvinfo.bump!
     end
 
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
@@ -59,12 +63,11 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     set_cache :private, maxage: 30
 
-    send_json do |jb|
+    serv_json do |jb|
       jb.object {
         jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
         jb.field "ubmemo" { UbmemoView.new(ubmemo).to_json(jb) }
         jb.field "nvseed", nvseeds.map { |x| ChseedView.new(x) }
-        jb.field "nvslug", nvinfo.bslug != bslug ? nvinfo.bslug : ""
       }
     end
   end

@@ -179,7 +179,7 @@ class CV::Cvuser
   DUMMY_PASS = Crypto::Bcrypt::Password.create("----", cost: 10)
 
   def self.validate(email : String, upass : String)
-    if user = find_by_mail(email)
+    if user = find({email: email})
       user.authentic?(upass) ? user : nil
     else
       DUMMY_PASS.verify(upass) # prevent timing attack
