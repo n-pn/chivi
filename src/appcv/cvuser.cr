@@ -147,16 +147,17 @@ class CV::Cvuser
     end
   end
 
-  CACHE_INT = RamCache(Int64, self).new
-  CACHE_STR = RamCache(String, self).new
+  CACHE_INT = RamCache(Int64, self).new(ttl: 5.minutes)
+  CACHE_STR = RamCache(String, self).new(ttl: 5.minutes)
 
   def self.find_by_mail(email : String)
     return unless user = find({email: email})
+    user.tap { |x| cache_user(x) }
+  end
 
+  def self.cache_user(user : self)
     CACHE_INT.set(user.id, user)
-    CACHE_STR.set(user.uname.downcase, user)
-
-    user
+    CACHE_STR.set(user.uname, user)
   end
 
   def self.load!(id : Int64)

@@ -43,6 +43,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
     Clear::SQL.transaction do
       sender.update(vcoin_avail: sender.vcoin_avail - amount)
       receiver.update(vcoin_avail: receiver.vcoin_avail + amount)
+      Cvuser.cache_user(receiver)
 
       entry = Uvcoin.new({
         receiver: receiver, sender: sender,
