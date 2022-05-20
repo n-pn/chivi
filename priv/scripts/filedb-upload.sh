@@ -40,9 +40,9 @@ then
   # rsync -azi --no-p "var/vpdicts/v1/basic/hanviet.tsv" "$SSH/var/vpdicts/v1/basic"
   # rsync -azi --no-p "var/vpdicts/v1/basic/hanviet.tab" "$SSH/var/vpdicts/v1/basic"
 
-  # rsync -azi --no-p "var/_common" "$SSH/var"
-  rsync -azi "var/vphints" "$SSH/var"
-  rsync -azi --exclude="*.tab" "var/vpdicts/v1/novel" "$SSH/var/vpdicts/v1"
+  rsync -azi --no-p "var/_common" "$SSH/var"
+  # rsync -azi "var/vphints" "$SSH/var"
+  # rsync -azi --exclude="*.tab" "var/vpdicts/v1/novel" "$SSH/var/vpdicts/v1"
   # rsync -azi --no-p --delete "priv/static/covers/" "$SSH/priv/static/covers/"
 fi
 

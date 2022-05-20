@@ -173,7 +173,7 @@ struct CV::VpTermView
       when "v2_objs"   then @tag_hints << "v"
       when "v_group"   then @tag_hints << "vo"
       when "qt_nouns", "qt_verbs", "qt_times"
-        @tag_hints << "q"
+        @tag_hints << "mq"
       end
     end
 

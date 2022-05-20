@@ -19,7 +19,7 @@ class CV::VpTerm
   getter uname : String = "~"
 
   # auto generated fields
-  property ptag : PosTag { PosTag.parse(@attr, @key) }
+  getter ptag : PosTag { PosTag.parse(@attr, @key) }
 
   SCORES = {
     3, 6, 9,

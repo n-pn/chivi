@@ -164,7 +164,7 @@
           autocomplete="off"
           autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
 
-        {#if dname != 'hanviet'}
+        {#if !dname.startsWith('$')}
           <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
             {pt_labels[vpterm.ptag] || 'Phân loại'}
           </button>
