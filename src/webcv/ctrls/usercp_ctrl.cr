@@ -19,6 +19,46 @@ class CV::UsercpCtrl < CV::BaseCtrl
     halt! 403, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
   end
 
+  def send_vcoin
+    amount = params.fetch_int("amount", min: 1)
+    reason = params.fetch_str("reason").strip
+
+    receiver_name = params["receiver"].strip
+    unless receiver = Cvuser.query.where("uname = ? OR email = ?", receiver_name, receiver_name).first
+      raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại")
+    end
+
+    if _cvuser.privi > 3 && params["as_admin"]? == "true"
+      sender = Cvuser.load!(-1) # sender is system
+    elsif _cvuser.vcoin_avail >= amount
+      sender = _cvuser
+    else
+      raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
+    end
+
+    if sender.id == receiver.id
+      raise BadRequest.new("Bạn không thể gửi vcoin cho chính mình")
+    end
+
+    Clear::SQL.transaction do
+      sender.update(vcoin_avail: sender.vcoin_avail - amount)
+      receiver.update(vcoin_avail: receiver.vcoin_avail + amount)
+
+      entry = Uvcoin.new({
+        receiver: receiver, sender: sender,
+        amount: amount, reason: reason,
+      })
+      entry.save!
+    end
+
+    spawn do
+      body = {receiver: receiver_name, amount: amount, reason: reason}
+      CtrlUtil.log_user_action("send-vcoin", body, _cvuser.uname)
+    end
+
+    serv_json({receiver: receiver.uname, remain: _cvuser.vcoin_avail})
+  end
+
   ##################
 
   def update_config
@@ -33,15 +73,13 @@ class CV::UsercpCtrl < CV::BaseCtrl
   def update_passwd
     raise "Quyền hạn không đủ" if _cvuser.privi < 0
 
-    old_upass = params.fetch_str("old_pass").strip
-    raise "Mật khẩu cũ không đúng" unless _cvuser.authentic?(old_upass)
+    oldpw = params.fetch_str("oldpw").strip
+    raise "Mật khẩu cũ không đúng" unless _cvuser.authentic?(oldpw)
 
-    new_upass = params.fetch_str("new_pass").strip
-    confirmation = params.fetch_str("confirm_pass").strip
-    raise "Mật khẩu mới quá ngắn" unless new_upass.size >= 7
-    raise "Mật khẩu không trùng khớp" unless new_upass == confirmation
+    newpw = params.fetch_str("newpw").strip
+    raise "Mật khẩu mới quá ngắn" if newpw.size < 8
 
-    _cvuser.upass = new_upass
+    _cvuser.upass = newpw
     _cvuser.save!
 
     spawn do

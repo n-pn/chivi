@@ -26,6 +26,7 @@ Amber::Server.configure do
     put "/_self/passwd", CV::UsercpCtrl, :update_passwd
 
     put "/_self/ugprivi", CV::UsercpCtrl, :upgrade_privi
+    put "/_self/send-vcoin", CV::UsercpCtrl, :send_vcoin
 
     get "/_self/replied", CV::UsercpCtrl, :replied
 

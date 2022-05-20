@@ -1,157 +1,34 @@
 <script lang="ts">
-  import { session } from '$app/stores'
-  import { call_api } from '$lib/api_call'
+  import { SIcon } from '$gui'
 
-  import SIcon from '$gui/atoms/SIcon.svelte'
+  import UpgradePrivi from './Setting/UpgradePrivi.svelte'
+  import SendVcoin from './Setting/SendVcoin.svelte'
+  import UpdatePasswd from './Setting/UpdatePasswd.svelte'
 
   export let tab = 2
-  let old_pass = ''
-  let new_pass = ''
-  let confirm_pass = ''
-
-  let cpass_error = ''
-  let privi_error = ''
-
-  let privi = $session.privi < 3 ? $session.privi + 1 : 3
-  let tspan = 1
-
-  async function update_passwd() {
-    cpass_error = ''
-
-    const url = '/api/_self/passwd'
-    const params = { old_pass, new_pass, confirm_pass }
-    const [status, body] = await call_api(url, 'PUT', params, fetch)
-
-    if (status < 400) tab = 0
-    else cpass_error = body as string
-  }
 
   async function logout() {
     await fetch('/api/_user/logout', { method: 'DELETE' })
     window.location.reload()
   }
-
-  async function upgrade_privi() {
-    privi_error = ''
-
-    const url = '/api/_self/ugprivi'
-    const params = { privi, tspan }
-    const [status, body] = await call_api(url, 'PUT', params, fetch)
-
-    if (status < 400) {
-      $session = body
-      tab = 0
-    } else {
-      privi_error = body
-    }
-  }
-
-  const tspans = ['2 tuần', '1 tháng', '2 tháng', '3 tháng']
-
-  const costs = [
-    [0, 0, 0, 0],
-    [10, 20, 35, 50],
-    [30, 50, 90, 130],
-    [50, 100, 175, 250],
-  ]
-
-  $: vcoin = costs[privi][tspan]
 </script>
 
-<div class="form">
-  <h3>Nâng quyền hạn</h3>
+<details open>
+  <summary>Nâng quyền hạn</summary>
+  <UpgradePrivi bind:tab />
+</details>
 
-  <div class="field">
-    <label class="label" for="privi">Chọn quyền hạn:</label>
-    <div class="radio-group">
-      {#each [1, 2, 3] as value}
-        <label class="m-label _{value}" class:_active={value == privi}>
-          <input type="radio" bind:group={privi} {value} />
-          <span class="icon"><SIcon name="crown" /></span>Q.hạn {value}
-        </label>
-      {/each}
-    </div>
-  </div>
+<details>
+  <summary>Tặng vcoin</summary>
+  <SendVcoin />
+</details>
 
-  <div class="field">
-    <label class="label" for="privi">Chọn thời gian:</label>
-    <div class="radio-group">
-      {#each [0, 1, 2, 3] as value}
-        <label class="m-label _1" class:_active={value == tspan}>
-          <input type="radio" bind:group={tspan} {value} />
-          <SIcon name="clock" />{tspans[value]}
-        </label>
-      {/each}
-    </div>
-  </div>
+<details>
+  <summary>Đổi mật khẩu</summary>
+  <UpdatePasswd bind:tab />
+</details>
 
-  {#if privi_error}
-    <div class="error">{privi_error}</div>
-  {/if}
-
-  <footer class="action _vcoin">
-    <button
-      type="submit"
-      class="m-btn _success  _fill"
-      disabled={vcoin > $session.vcoin_avail}
-      on:click|preventDefault={upgrade_privi}>
-      <span>Nâng cấp</span>
-      <SIcon name="coin" />{vcoin}
-    </button>
-  </footer>
-</div>
-
-<div class="form">
-  <h3>Đổi mật khẩu</h3>
-
-  <div class="field">
-    <label class="label" for="upass">Mật khẩu cũ</label>
-    <input
-      type="password"
-      class="m-input"
-      name="upass"
-      placeholder="Mật khẩu cũ"
-      required
-      bind:value={old_pass} />
-  </div>
-
-  <div class="field">
-    <label class="label" for="new_upass">Mật khẩu mới</label>
-    <input
-      type="password"
-      class="m-input"
-      name="new_upass"
-      placeholder="Mật khẩu mới"
-      required
-      bind:value={new_pass} />
-  </div>
-
-  <div class="field">
-    <label class="label" for="confirm_upass">Nhập lại mật khẩu</label>
-    <input
-      type="password"
-      class="m-input"
-      name="confirm_upass"
-      placeholder="Nhập lại mật khẩu"
-      required
-      bind:value={confirm_pass} />
-  </div>
-
-  {#if cpass_error}
-    <div class="error">{cpass_error}</div>
-  {/if}
-
-  <footer class="action">
-    <button
-      type="submit"
-      class="m-btn _harmful  _fill"
-      on:click|preventDefault={update_passwd}>
-      <span>Đổi mật khẩu</span>
-    </button>
-  </footer>
-</div>
-
-<div class="action _logout">
+<div class="form-action">
   <button class="m-btn btn-back umami--click--logout" on:click={logout}>
     <SIcon name="logout" />
     <span>Đăng xuất</span>
@@ -159,77 +36,20 @@
 </div>
 
 <style lang="scss">
-  .form {
+  details {
     padding-bottom: 0.75rem;
     margin-bottom: 0.75rem;
     @include border($loc: bottom);
   }
 
-  h3 {
+  summary {
     margin: 0;
     font-weight: 500;
-    @include ftsize(md);
-    // @include fgcolor(tert);
+    @include ftsize(lg);
+    // @include fgcolor(secd);
   }
 
-  .radio-group {
-    @include flex-ca($gap: 0.5rem);
-  }
-
-  label.m-label {
-    @include flex-ca($gap: 0.125rem);
-    height: 1.75rem;
-
-    padding: 0 0.5rem;
-    @include bps(font-size, rem(12px), rem(13px), rem(14px));
-
-    .icon > :global(svg) {
-      width: 1.125rem;
-      height: 1.125rem;
-      margin-top: -0.125rem;
-    }
-
-    &._active {
-      background: var(--color);
-      box-shadow: none;
-      color: #fff;
-    }
-  }
-
-  input[type='radio'] {
+  summary:marker {
     display: none;
-  }
-
-  .field {
-    margin: 0.75rem 0;
-
-    > input {
-      width: 100%;
-    }
-  }
-
-  .label {
-    display: block;
-    // text-transform: uppercase;
-    font-weight: 500;
-    line-height: 1.5rem;
-    margin-bottom: 0.25rem;
-    @include ftsize(sm);
-    @include fgcolor(secd);
-  }
-
-  .error {
-    text-align: center;
-    @include fgcolor(harmful, 5);
-    @include ftsize(md);
-  }
-
-  .action {
-    @include flex-cx;
-    // padding: 0.25rem 0;
-
-    &._vcoin {
-      padding-top: 0.5rem;
-    }
   }
 </style>

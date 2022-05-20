@@ -15,7 +15,7 @@
 .m-input {
   line-height: 1.5rem;
   outline: 0;
-  padding: 0.375rem var(--gutter-ts);
+  padding: 0.375rem 0.75rem;
 
   @include fgcolor(main);
   @include bgcolor(main);
@@ -25,6 +25,7 @@
 
   @include hover-focus {
     @include bdcolor(primary, 5);
+    box-shadow: 0 0 0 1px color(primary, 5, 5);
   }
 
   &:focus,
@@ -49,15 +50,19 @@
   }
 }
 
+textarea {
+  overflow-y: scroll;
+  min-height: 2.25rem;
+}
+
 .m-input._sm {
   padding: var(--gutter-ps) var(--gutter-ts);
   line-height: 1.25rem;
   height: 2rem;
 }
 
-
 .m-input._xs {
-  padding: .25rem .5rem;
+  padding: 0.25rem 0.5rem;
   line-height: 1rem;
   height: 1.5rem;
   @include ftsize(xs);
@@ -98,7 +103,7 @@
 
 .form-more {
   margin-top: 1.25rem;
-  @include flex($center: horz, $gap: .75rem);
+  @include flex($center: horz, $gap: 0.75rem);
 }
 
 // prettier-ignore

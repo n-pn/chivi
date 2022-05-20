@@ -262,45 +262,6 @@
     margin-bottom: var(--gutter);
   }
 
-  form-group {
-    display: flex;
-    margin-top: 1.5rem;
-    gap: 0.75rem;
-
-    @include bps(flex-direction, column, $tm: row);
-
-    &.action {
-      @include border($loc: top);
-      justify-content: center;
-      padding-top: 1rem;
-    }
-  }
-
-  form-field {
-    display: block;
-    position: relative;
-    flex: 1;
-
-    .m-input {
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
-    }
-  }
-
-  .form-label {
-    position: absolute;
-    background: inherit;
-    top: -0.5rem;
-    left: 0.75rem;
-    line-height: 1rem;
-    padding: 0 0.25rem;
-    // transition: all 0.1s ease-in-out;
-
-    @include ftsize(sm);
-    @include bgcolor(tert);
-    @include fgcolor(tert);
-  }
-
   .label {
     display: block;
     font-weight: 500;
