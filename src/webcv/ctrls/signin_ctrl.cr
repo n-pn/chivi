@@ -37,7 +37,7 @@ class CV::SigninCtrl < CV::BaseCtrl
   def pwtemp
     email = params["email"].strip
 
-    if user = Cvuser.find_by_mail(email)
+    if user = Cvuser.find({email: email})
       PasswdMailer.new(user).deliver
     else
       Log.error { email + " not found!" }
@@ -47,6 +47,7 @@ class CV::SigninCtrl < CV::BaseCtrl
   end
 
   def logout
+    Cvuser.reset_cache(_cvuser)
     @_cvuser = nil
     session.delete("uname")
     save_session!

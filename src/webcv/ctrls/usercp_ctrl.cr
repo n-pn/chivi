@@ -1,6 +1,6 @@
 class CV::UsercpCtrl < CV::BaseCtrl
   def profile
-    set_cache :private, maxage: 3
+    set_cache :private, maxage: 1
     serv_json(CvuserView.new(_cvuser))
   end
 
@@ -29,7 +29,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
     end
 
     if _cvuser.privi > 3 && params["as_admin"]? == "true"
-      sender = Cvuser.load!(-1) # sender is system
+      sender = Cvuser.load!(-1) # sender is admin
     elsif _cvuser.vcoin_avail >= amount
       sender = _cvuser
     else
@@ -43,7 +43,9 @@ class CV::UsercpCtrl < CV::BaseCtrl
     Clear::SQL.transaction do
       sender.update(vcoin_avail: sender.vcoin_avail - amount)
       receiver.update(vcoin_avail: receiver.vcoin_avail + amount)
-      Cvuser.cache_user(receiver)
+
+      Cvuser.reset_cache(sender)
+      Cvuser.reset_cache(receiver)
 
       entry = Uvcoin.new({
         receiver: receiver, sender: sender,

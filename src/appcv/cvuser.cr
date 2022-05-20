@@ -150,14 +150,9 @@ class CV::Cvuser
   CACHE_INT = RamCache(Int64, self).new(ttl: 3.minutes)
   CACHE_STR = RamCache(String, self).new(ttl: 3.minutes)
 
-  def self.find_by_mail(email : String)
-    return unless user = find({email: email})
-    user.tap { |x| cache_user(x) }
-  end
-
-  def self.cache_user(user : self)
-    CACHE_INT.set(user.id, user)
-    CACHE_STR.set(user.uname, user)
+  def self.reset_cache(user : self)
+    CACHE_INT.delete(user.id)
+    CACHE_STR.delete(user.uname)
   end
 
   def self.load!(id : Int64)
