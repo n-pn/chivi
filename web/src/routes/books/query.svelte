@@ -1,4 +1,6 @@
 <script context="module" lang="ts">
+  import { wrap_get } from '$lib/api_call'
+
   export async function load({ fetch, url }) {
     const pg = +url.searchParams.get('pg') || 1
     const type = url.searchParams.get('t') || 'btitle'
@@ -8,12 +10,8 @@
 
     const qs = input.replace(/\+|-/g, ' ')
     const api_url = `/api/books?order=weight&lm=8&pg=${pg}&${type}=${qs}`
-    const api_res = await fetch(api_url)
-    const payload = await api_res.json()
 
-    payload.props.input = input
-    payload.props.type = type
-    return payload
+    return await wrap_get(fetch, api_url, null, { input, type })
   }
 </script>
 

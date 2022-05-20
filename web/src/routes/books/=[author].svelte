@@ -1,12 +1,11 @@
 <script context="module" lang="ts">
+  import { wrap_get } from '$lib/api_call'
+
   export async function load({ fetch, url, params: { author } }) {
     const page = +url.searchParams.get('pg') || 1
     const api_url = `/api/books?order=weight&lm=8&pg=${page}&author=${author}`
-    const api_res = await fetch(api_url)
-    const payload = await api_res.json()
 
-    payload.props.author = author
-    return payload
+    return await wrap_get(fetch, api_url, null, { author })
   }
 </script>
 

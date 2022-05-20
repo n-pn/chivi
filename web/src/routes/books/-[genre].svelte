@@ -1,14 +1,14 @@
 <script context="module" lang="ts">
+  import { wrap_get } from '$lib/api_call'
+
   export async function load({ url, fetch, params: { genre } }) {
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
     api_url.searchParams.set('lm', '24')
     api_url.searchParams.set('genre', genre)
 
-    const api_res = await fetch(api_url.toString())
-    const payload = await api_res.json()
-    payload.props.genres = genre.split('+')
-    return payload
+    const genres = genre.split('+')
+    return await wrap_get(fetch, api_url.toString(), null, { genres })
   }
 </script>
 

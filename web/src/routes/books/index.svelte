@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
+  import { wrap_get } from '$lib/api_call'
+
   export async function load({ url, fetch }) {
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
     api_url.searchParams.set('lm', '24')
-
-    const api_res = await fetch(api_url.toString())
-    return api_res.json()
+    return await wrap_get(fetch, api_url.toString())
   }
 
   const order_names = {

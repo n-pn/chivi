@@ -1,17 +1,14 @@
 <script context="module" lang="ts">
   import { status_types, status_names } from '$lib/constants'
   import { topbar } from '$lib/stores'
+  import { wrap_get } from '$lib/api_call'
+
   export async function load({ url, params, fetch }) {
     const [uname, bmark = 'reading'] = params.uname.split('/')
     const page = +url.searchParams.get('pg') || 1
 
     const api_url = `/api/books?pg=${page}&lm=24&order=update&uname=${uname}&bmark=${bmark}`
-    const api_res = await fetch(api_url)
-    const payload = await api_res.json()
-
-    payload.props.uname = uname
-    payload.props.bmark = bmark
-    return payload
+    return await wrap_get(fetch, api_url, null, { uname, bmark })
   }
 </script>
 

@@ -21,7 +21,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     set_cache :private, maxage: 5
 
-    send_json({
+    serv_json({
       total: total,
       pgidx: pgidx,
       pgmax: (total - 1) // limit + 1,

@@ -7,8 +7,11 @@ export async function call_api(
   body?: string | object,
   fetch: CV.Fetch = globalThis.fetch
 ): Output {
-  if (typeof body == 'object') body = JSON.stringify(body)
-  const res = await fetch(url, { method, headers, body })
+  const options = { method, headers }
+  if (typeof body == 'object') JSON.stringify(body)
+  if (body) options['body'] = body
+
+  const res = await fetch(url, options)
   const type = res.headers.get('Content-Type')
 
   if (type.startsWith('text/plain')) {
