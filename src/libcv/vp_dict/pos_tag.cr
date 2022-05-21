@@ -144,7 +144,7 @@ struct CV::PosTag
     when '!' then parse_special(key)
     when 'x' then parse_other(tag)
     when '~' then parse_extra(tag)
-    when 'b' then Modifier
+    when 'b' then Modi
     when 't' then Time
     when 's' then Place
     when 'f' then Space

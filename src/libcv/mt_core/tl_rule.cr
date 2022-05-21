@@ -20,7 +20,7 @@ module CV::TlRule
       when .veno?      then node = fold_veno!(node)
       when .ajad?      then node = fold_ajad!(node)
       when .adverbial? then node = fold_adverbs!(node)
-      when .modifier?  then node = fold_modifier!(node)
+      when .modi?      then node = fold_modifier!(node)
       when .ajno?      then node = fold_ajno!(node)
       when .adjective? then node = fold_adjts!(node, prev: nil)
       when .space?     then node = fold_space!(node)

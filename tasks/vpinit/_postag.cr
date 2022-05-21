@@ -11,7 +11,7 @@ struct CV::PosTag
       new(Tag::Norg)
     when "nh" then new(Tag::Nper)
     when "nx" then new(Tag::Nother)
-    when "bg" then new(Tag::Modifier)
+    when "bg" then new(Tag::Modi)
     when "rg" then new(Tag::ProPer)
     when "ul" then new(Tag::Ule)
     when "uj" then new(Tag::Ude1)

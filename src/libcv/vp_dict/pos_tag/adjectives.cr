@@ -15,7 +15,7 @@ struct CV::PosTag
     # 状态词 - stative verb - trạng thái
     # {"az", "Adesc", Pos::Adjective | Pos::Contws},
     # modifier (non-predicate noun modifier) - 区别词 - từ khu biệt
-    {"b", "Modifier", Pos::Adjective | Pos::Contws},
+    {"b", "Modi", Pos::Adjective | Pos::Contws},
     # 区别词性惯用语 - noun modifier morpheme
     # {"bl", "Modiform", Pos::Adjective | Pos::Contws},
   }
@@ -30,7 +30,7 @@ struct CV::PosTag
     when 'n' then Ajno
     when 'd' then Ajad
     when 'l' then Aform
-    when 'b' then Modifier
+    when 'b' then Modi
     when 'z' then Aform
     else          Adjt
     end

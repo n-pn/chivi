@@ -8,9 +8,9 @@ module CV::TlRule
     end
 
     case adjt.tag
-    when .aform?    then return adjt
-    when .adjt?     then return adjt if adjt.key.size > 1
-    when .modifier? then flip = !do_not_flip?(adjt.key)
+    when .aform? then return adjt
+    when .adjt?  then return adjt if adjt.key.size > 1
+    when .modi?  then flip = !do_not_flip?(adjt.key)
     end
 
     noun = fold_nouns!(noun, mode: 1)

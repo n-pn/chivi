@@ -30,7 +30,7 @@ module CV::TlRule
       fold_verbs!(MtDict.fix_verb!(node))
     when "原来"
       if succ.try(&.ude1?) || node.prev?(&.contws?)
-        node.set!("ban đầu", tag: PosTag::Modifier)
+        node.set!("ban đầu", tag: PosTag::Modi)
       else
         node.set!("thì ra")
       end

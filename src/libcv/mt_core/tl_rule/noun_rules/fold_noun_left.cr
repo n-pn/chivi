@@ -13,7 +13,7 @@ module CV::TlRule
   #     when .pro_ints?
   #       return fold_什么_noun!(prev, node) if prev.key == "什么"
   #       return fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
-  #     when .ajno?, .modifier?
+  #     when .ajno?, .modi?
   #       break if flag > 0
   #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
   #     when .place?

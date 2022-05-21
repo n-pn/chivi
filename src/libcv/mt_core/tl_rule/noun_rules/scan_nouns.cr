@@ -99,7 +99,7 @@ module CV::TlRule
         node = fold_verb_as_noun!(node, mode: mode)
       when .onomat?
         node = fold_adjt_as_noun!(node)
-      when .modifier?
+      when .modi?
         node = fold_modifier!(node)
         node = fold_adjt_as_noun!(node)
       when .adjective?

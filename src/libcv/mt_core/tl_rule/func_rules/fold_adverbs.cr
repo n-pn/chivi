@@ -70,8 +70,8 @@ module CV::TlRule
 
   def fold_adv_fei!(node : MtNode, succ = node.succ) : MtNode
     case succ
-    when .modifier?, .noun?, .ajno?, .veno?
-      node = fold!(node, succ, PosTag::Modifier, dic: 7)
+    when .modi?, .noun?, .ajno?, .veno?
+      node = fold!(node, succ, PosTag::Modi, dic: 7)
       fold_adjts!(node)
     when .verbs?
       node = fold!(node, succ, succ.tag, dic: 6)

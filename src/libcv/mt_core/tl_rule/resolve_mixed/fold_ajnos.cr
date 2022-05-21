@@ -12,7 +12,7 @@ module CV::TlRule
     when .nil?
     when .adverbial?
       return MtDict.fix_adjt!(node)
-    when .modifier?
+    when .modi?
       return MtDict.fix_noun!(node)
     end
 
@@ -29,7 +29,7 @@ module CV::TlRule
     when .verbs?, .preposes?, .none?, .spaces?
       MtDict.fix_noun!(node)
     when .noun?
-      node.set!(PosTag::Modifier)
+      node.set!(PosTag::Modi)
     when .ude1?, .mopart?
       MtDict.fix_adjt!(node)
     else

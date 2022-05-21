@@ -22,7 +22,7 @@ module CV::TlRule
       return MtDict.fix_verb!(node) if prev.key == "一"
     when .adverbial?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
       return MtDict.fix_verb!(node)
-    when .auxils?, .preposes?, .modifier?
+    when .auxils?, .preposes?, .modi?
       return MtDict.fix_noun!(node)
       # when .numeral?
       #   if (succ = node.succ?) && !(succ.nominal? || succ.pronouns?)
