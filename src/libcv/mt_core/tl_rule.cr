@@ -25,7 +25,7 @@ module CV::TlRule
       when .adjective? then node = fold_adjts!(node, prev: nil)
       when .space?     then node = fold_space!(node)
       when .vmodals?   then node = fold_vmodals!(node)
-      when .verbs?     then node = fold_verbs!(node)
+      when .verbal?    then node = fold_verbs!(node)
       when .nominal?   then node = fold_nouns!(node)
       when .onomat?    then node = fold_onomat!(node)
       end
@@ -73,7 +73,7 @@ module CV::TlRule
     return false unless node
 
     while node = node.succ?
-      if node.verbs?
+      if node.verbal?
         return !node.specials?
       elsif node.specials?
         return true if node.key_in?("上", "下") && fix_上下(node).verb?
@@ -107,8 +107,8 @@ module CV::TlRule
     case succ = node.succ?
     when .nil?, .puncts?, .ule?
       node.set!("tốt", PosTag::Adjt)
-    when .adjective?, .verbs?, .vmodals?, .adverbial?
-      node.set!(succ.verbs? ? "dễ" : "thật", PosTag::Adverb)
+    when .adjective?, .verbal?, .vmodals?, .adverbial?
+      node.set!(succ.verbal? ? "dễ" : "thật", PosTag::Adverb)
     when .nominal?
       node.set!("tốt", PosTag::Adjt)
     else

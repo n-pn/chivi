@@ -8,7 +8,7 @@ module CV::TlRule
     when .v_shi?, .v_you?
       return fold_left_verb!(verb, prev)
     when .vpro?
-      return verb unless (succ = verb.succ?) && succ.verbs?
+      return verb unless (succ = verb.succ?) && succ.verbal?
       verb = fold!(verb, succ, succ.tag, dic: 5)
     when .vmodals?
       verb.tag = PosTag::Verb
@@ -50,7 +50,7 @@ module CV::TlRule
         end
 
         verb = fold!(verb, succ, PosTag::Verb, dic: 4)
-      when .verbs?
+      when .verbal?
         verb = fold_verb_verb!(verb, succ)
       when .adjective?, .preposes?, .specials?, .space?
         break unless flag == 0
@@ -95,7 +95,7 @@ module CV::TlRule
 
       # TODO: link with adverb
       # when .adverb?
-      #   if succ.key == "就" && (succ = fold_adverbs!(succ)) && succ.verbs?
+      #   if succ.key == "就" && (succ = fold_adverbs!(succ)) && succ.verbal?
       #     verb = fold!(verb, succ, succ.tag, dic: 9)
       #   end
     end

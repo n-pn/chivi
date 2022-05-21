@@ -6,7 +6,7 @@ struct CV::PosTag
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
   {% begin %}
-    TYPES = {{ NOUNS + NOUNS_2 + VERBS + ADJTS + AFFIXES + MISCS }}
+    TYPES = {{ NOUNS + NOUNS_2 + VERBS + ADJTS + SUFFIXES + MISCS }}
   {% end %}
 
   enum Tag

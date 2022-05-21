@@ -27,7 +27,7 @@ module CV::TlRule
     when .adverbial?
       succ = fold_adverbs!(succ)
       succ.verb? ? fold!(node, succ, succ.tag, dic: 6) : node
-    when .verbs?
+    when .verbal?
       verb = fold!(node, succ, succ.tag, dic: 6)
       fold_verbs!(verb)
     when .nominal?
@@ -84,7 +84,7 @@ module CV::TlRule
     when .nil? # do nothing
     when .v_shi?
       node.val = "nghĩ"
-    when .verbs?, .preposes?
+    when .verbal?, .preposes?
       node.val = "muốn"
     when .human?
       if has_verb_after?(succ)

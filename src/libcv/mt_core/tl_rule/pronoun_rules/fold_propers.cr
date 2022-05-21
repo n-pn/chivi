@@ -11,7 +11,7 @@ module CV::TlRule
     when .veno?
       succ = heal_veno!(succ)
       succ.noun? ? fold_proper_nominal!(proper, succ) : fold_noun_verb!(proper, succ)
-    when .verbs?, .vmodals?
+    when .verbal?, .vmodals?
       fold_noun_verb!(proper, succ)
     when .ajno?
       succ = heal_ajno!(succ)
@@ -32,7 +32,7 @@ module CV::TlRule
     when .uzhi?
       fold_uzhi!(uzhi: succ, prev: proper)
     when .ude1?
-      return proper if proper.prev? { |x| x.verbs? || x.preposes? }
+      return proper if proper.prev? { |x| x.verbal? || x.preposes? }
       fold_ude1!(ude1: succ, prev: proper)
     else
       # TODO: handle special cases
@@ -73,7 +73,7 @@ module CV::TlRule
   end
 
   def flip_proper_noun?(proper : MtNode, noun : MtNode) : Bool
-    return !noun.nqtime? unless (prev = proper.prev?) && prev.verbs?
+    return !noun.nqtime? unless (prev = proper.prev?) && prev.verbal?
     !need_2_objects?(prev)
   end
 end

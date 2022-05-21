@@ -44,8 +44,8 @@ module CV::TlRule
     case succ
     when .maybe_adjt?
       return false unless (tail = succ.succ?) && tail.ude1?
-      tail.succ? { |x| x.ends? || x.verbs? } || false
-    when .preposes?, .verbs?
+      tail.succ? { |x| x.ends? || x.verbal? } || false
+    when .preposes?, .verbal?
       return true if succ.succ? { |x| x.ude1? || x.ends? }
       return false if prev.ends?
       is_linking_verb?(prev, succ)

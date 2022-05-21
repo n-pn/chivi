@@ -15,12 +15,12 @@ module CV::TlRule
       succ = fold_adverbs!(succ)
     when .veno?
       succ = fold_veno!(succ)
-    when .verbs?
+    when .verbal?
       tag = verb.tag if succ.key == "过"
       succ = fold_verbs!(succ)
     end
 
-    return unless tag || succ.verbs?
+    return unless tag || succ.verbal?
     fold!(verb, succ, tag: tag || succ.tag, dic: 4)
   end
 

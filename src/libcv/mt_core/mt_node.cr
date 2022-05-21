@@ -119,9 +119,9 @@ class CV::MtNode
   def maybe_verb? : Bool
     succ = self
     while succ
-      # puts [succ, "maybe_verb", succ.verbs?]
+      # puts [succ, "maybe_verb", succ.verbal?]
       case succ
-      when .verbs?, .vmodals? then return true
+      when .verbal?, .vmodals? then return true
       when .adverbial?, .comma?, pro_ints?, .conjunct?, .time?
         succ = succ.succ?
       else return false

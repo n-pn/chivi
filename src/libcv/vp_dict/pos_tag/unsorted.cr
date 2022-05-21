@@ -1,6 +1,5 @@
 struct CV::PosTag
   MISCS = {
-
     # 成语 - idiom - thành ngữ
     {"i", "Idiom", Pos::Contws},
     # 简称 - abbreviation - viết tắt
@@ -28,9 +27,9 @@ struct CV::PosTag
     {"o", "Onomat", Pos::Funcws},
 
     # complex phrase ac as verb
-    {"~vp", "VerbPhrase", Pos::Verbs | Pos::Contws},
+    {"~vp", "VerbPhrase", Pos::Verbal | Pos::Contws},
     # complex phrase act as adjective
-    {"~ap", "AdjtPhrase", Pos::Verbs | Pos::Contws},
+    {"~ap", "AdjtPhrase", Pos::Verbal | Pos::Contws},
     # complex phrase act as noun
     {"~np", "NounPhrase", Pos::Nominal | Pos::Contws},
     # definition phrase

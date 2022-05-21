@@ -49,7 +49,7 @@ module CV::TlRule
         node = fold_adverbs!(node)
 
         case node.tag
-        when .verbs?
+        when .verbal?
           node = fold_verb_as_noun!(node, mode: mode)
         when .adjective?
           node = fold_adjt_as_noun!(node)
@@ -65,7 +65,7 @@ module CV::TlRule
 
         if (ude1 = node.succ?) && ude1.ude1?
           node = fold_ude1!(ude1: ude1, prev: node)
-        elsif node.verbs?
+        elsif node.verbal?
           node = fold_verb_as_noun!(node, mode: mode)
         elsif node.adjective?
           node = fold_adjt_as_noun!(node)
@@ -87,15 +87,15 @@ module CV::TlRule
 
         if node.preposes?
           node = fold_preposes!(node, mode: 1)
-        elsif node.verbs?
+        elsif node.verbal?
           node = fold_verb_as_noun!(node, mode: mode)
         elsif node.adjective?
           node = fold_adjt_as_noun!(node)
         end
       when .veno?
         node = fold_veno!(node)
-        node = fold_verb_as_noun!(node, mode: mode) if node.verbs?
-      when .verbs?
+        node = fold_verb_as_noun!(node, mode: mode) if node.verbal?
+      when .verbal?
         node = fold_verb_as_noun!(node, mode: mode)
       when .onomat?
         node = fold_adjt_as_noun!(node)
@@ -117,7 +117,7 @@ module CV::TlRule
           node = scan_noun!(node) || node unless node.nominal?
         end
       when .ude2?
-        if node.prev? { |x| x.pre_zai? || x.verbs? } || node.succ?(&.spaces?)
+        if node.prev? { |x| x.pre_zai? || x.verbal? } || node.succ?(&.spaces?)
           node.set!("đất", PosTag::Noun)
         end
       end

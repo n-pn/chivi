@@ -33,7 +33,7 @@ module CV::TlRule
 
       prev.prev? do |prev_2|
         return MtDict.fix_noun!(node) if prev_2.nominal?
-        return MtDict.fix_verb!(node) if prev_2.verbs?
+        return MtDict.fix_verb!(node) if prev_2.verbal?
       end
     when .pro_dems?, .qtnoun?
       case node.succ?
@@ -57,7 +57,7 @@ module CV::TlRule
     when .penum?
       case tail = succ.succ?
       when .nil? then node
-      when .veno?, .nominal?, .verbs?
+      when .veno?, .nominal?, .verbal?
         tail = heal_veno!(tail)
         fold!(node, tail, tail.tag, dic: 4)
       else
@@ -73,7 +73,7 @@ module CV::TlRule
       MtDict.fix_verb!(node)
     when .v_shi?, .v_you?
       MtDict.fix_noun!(node)
-    when .verbs?
+    when .verbal?
       return node.set!(PosTag::Vpro) if node.key == "选择"
 
       if MtDict.has_key?(:v_compl, succ.key) || VERB_COMBINE.includes?(node.key)

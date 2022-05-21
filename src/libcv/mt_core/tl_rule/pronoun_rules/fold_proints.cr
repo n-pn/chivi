@@ -5,7 +5,7 @@ module CV::TlRule
       return proint
     when .veno?
       succ = fold_verbs!(MtDict.fix_verb!(succ))
-    when .verbs?
+    when .verbal?
       succ = fold_verbs!(succ)
     when .nominal?
       return proint unless succ = scan_noun!(succ)

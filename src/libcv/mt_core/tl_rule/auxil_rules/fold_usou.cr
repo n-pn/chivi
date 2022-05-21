@@ -5,7 +5,7 @@ module CV::TlRule
     when .veno?
       verb = fold!(usuo.set!("chỗ"), MtDict.fix_verb!(succ), succ.tag, dic: 6)
       fold_verbs!(verb)
-    when .verbs?
+    when .verbal?
       verb = fold!(usuo.set!("chỗ"), succ, succ.tag, dic: 6)
       fold_verbs!(verb)
     else

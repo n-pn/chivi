@@ -10,7 +10,7 @@ module CV::TlRule
     when .junction?
       fold!(noun, adjt, PosTag::Aform, dic: 6)
     when .ude1?
-      return noun if succ.succ? { |x| x.verbs? || x.ends? }
+      return noun if succ.succ? { |x| x.verbal? || x.ends? }
       fold!(noun, adjt, PosTag::Aform, dic: 7)
     when .ude2?
       return noun unless (prev = noun.prev?) && (prev.subject? || prev.junction?)

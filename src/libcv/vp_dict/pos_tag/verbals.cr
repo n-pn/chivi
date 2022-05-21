@@ -1,24 +1,24 @@
 struct CV::PosTag
   VERBS = {
     # 动词 - verb - động từ
-    {"v", "Verb", Pos::Verbs | Pos::Contws},
+    {"v", "Verb", Pos::Verbal | Pos::Contws},
     # 名动词 - nominal use of verb - danh động từ
-    {"vn", "Veno", Pos::Verbs | Pos::Nominal | Pos::Contws},
+    {"vn", "Veno", Pos::Verbal | Pos::Nominal | Pos::Contws},
     # 副动词 - verb | adverb
-    {"vd", "Vead", Pos::Verbs | Pos::Adverbial | Pos::Contws},
+    {"vd", "Vead", Pos::Verbal | Pos::Adverbial | Pos::Contws},
 
     # 趋向动词 - directional verb
-    {"vf", "Vdir", Pos::Verbs | Pos::Vdirs | Pos::Contws},
+    {"vf", "Vdir", Pos::Verbal | Pos::Vdirs | Pos::Contws},
     # 形式动词 - pro-verb - động từ hình thái
-    {"vx", "Vpro", Pos::Verbs | Pos::Contws},
+    {"vx", "Vpro", Pos::Verbal | Pos::Contws},
 
     # 不及物动词（内动词）- intransitive verb - nội động từ
-    {"vi", "Vintr", Pos::Verbs | Pos::Contws},
+    {"vi", "Vintr", Pos::Verbal | Pos::Contws},
     # 动词性语素 - verbal morpheme
-    # {"vg", "Vmorp", Pos::Verbs | Pos::Contws},
+    # {"vg", "Vmorp", Pos::Verbal | Pos::Contws},
 
     # verb + object phrase
-    {"vo", "VerbObject", Pos::Verbs | Pos::Contws},
+    {"vo", "VerbObject", Pos::Verbal | Pos::Contws},
   }
 
   {% for type in VERBS %}

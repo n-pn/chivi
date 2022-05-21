@@ -2,7 +2,7 @@ module CV::TlRule
   def heal_ude3!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
 
-    if succ.verbs? && succ.key != "到"
+    if succ.verbal? && succ.key != "到"
       node = fold!(node.set!("phải"), succ, succ.tag, dic: 6)
     else
       node.val = "được"
@@ -18,7 +18,7 @@ module CV::TlRule
     when .key?("住")
       succ.val = ""
       fold!(MtDict.fix_verb!(node), tail.set!("nổi"), PosTag::Verb, dic: 5)
-    when .verbs?
+    when .verbal?
       node = fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)
       fold_verbs!(tail, prev: node)
     else
@@ -43,7 +43,7 @@ module CV::TlRule
       elsif tail.key == "很"
         tail.val = "cực kỳ"
         fold!(node, tail, PosTag::Aform, dic: 5)
-      elsif tail.verbs?
+      elsif tail.verbal?
         succ.set!("đến")
         fold!(node, tail, tail.tag, dic: 8)
       else
@@ -51,7 +51,7 @@ module CV::TlRule
       end
     when .adjective?
       fold!(node, tail, PosTag::Aform, dic: 6)
-    when .verbs?
+    when .verbal?
       node = fold!(node, succ, PosTag::Verb, dic: 6)
       fold_verb_compl!(node, tail) || node
     else

@@ -5,7 +5,7 @@ module CV::TlRule
 
   def not_quanti?(node : MtNode)
     # abort transform if node is certainly a verb
-    return false unless node.verbs? && (succ = node.succ?)
+    return false unless node.verbal? && (succ = node.succ?)
     succ.ule? || succ.comma? || succ.colon? || succ.pstop?
   end
 

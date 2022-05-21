@@ -3,8 +3,8 @@ module CV::TlRule
     # puts [vshi, succ]
     return vshi unless (succ = scan_noun!(succ)) && (tail = succ.succ?)
 
-    tail = fold_verbs!(tail) if tail.verbs?
-    if tail.verbs? && tail.succ?(&.ude1?)
+    tail = fold_verbs!(tail) if tail.verbal?
+    if tail.verbal? && tail.succ?(&.ude1?)
       tag = succ.verb_object? ? tail.tag : PosTag::VerbClause
       fold!(succ, tail, tag: tag, dic: 8)
     end

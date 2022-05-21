@@ -39,7 +39,7 @@ module CV::TlRule
       node = fold!(node, succ, succ.tag, dic: 4)
       return node unless succ = node.succ?
       fold_adverb_base!(node, succ)
-    when .verbs?
+    when .verbal?
       succ = MtDict.fix_verb!(succ) if succ.veno?
       node = fold!(node, succ, succ.tag, dic: 4)
       fold_verbs!(node)
@@ -56,7 +56,7 @@ module CV::TlRule
 
   def fold_adv_mei!(node : MtNode, succ = node.succ) : MtNode
     case succ.tag
-    when .verbs?
+    when .verbal?
       succ = heal_veno!(succ) if succ.veno?
       # TODO: add more cases
       node.val = succ.succ?(&.uzhe?) ? "không" : node.prev?(&.subject?) ? "chưa" : "không có"
@@ -73,7 +73,7 @@ module CV::TlRule
     when .modi?, .noun?, .ajno?, .veno?
       node = fold!(node, succ, PosTag::Modi, dic: 7)
       fold_adjts!(node)
-    when .verbs?
+    when .verbal?
       node = fold!(node, succ, succ.tag, dic: 6)
       fold_verbs!(node)
     else
@@ -97,7 +97,7 @@ module CV::TlRule
       fold_vmodals!(succ, nega: node)
     when .veno?
       fold_adverb_verb!(node, MtDict.fix_verb!(succ))
-    when .verbs?
+    when .verbal?
       fold_adverb_verb!(node, succ)
     when .ajno?
       fold_adjts!(MtDict.fix_adjt!(succ), prev: node)
@@ -160,7 +160,7 @@ module CV::TlRule
     case node.succ?
     when .nil?       then node
     when .adjective? then node.set!("thật")
-    when .verbs?     then node.set!("dễ")
+    when .verbal?    then node.set!("dễ")
     else                  node.set!("tốt")
     end
   end
@@ -181,7 +181,7 @@ module CV::TlRule
       case node
       when .comma?
         return false unless node = node.succ?
-      when .plsgn?, .mnsgn?, .verbs?, .preposes?, .adjective?, .adverbial?, .vmodals?
+      when .plsgn?, .mnsgn?, .verbal?, .preposes?, .adjective?, .adverbial?, .vmodals?
         return true
       when .concoord?
         return false unless node.key == "和"
@@ -189,7 +189,7 @@ module CV::TlRule
         # TODO: deep checking
         return true
       when .ude3?
-        return node.succ?(&.verbs?) || false
+        return node.succ?(&.verbal?) || false
       else
         return false
       end

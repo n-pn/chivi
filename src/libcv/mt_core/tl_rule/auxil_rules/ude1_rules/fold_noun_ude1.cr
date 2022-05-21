@@ -58,7 +58,7 @@ module CV::TlRule
   def has_verb_after?(right : MtNode) : Bool
     while right = right.succ?
       case right.tag
-      when .plsgn?, .mnsgn?, .verbs?, .preposes?
+      when .plsgn?, .mnsgn?, .verbal?, .preposes?
         return true
       when .adverbial?, .comma?, .pro_ints?
         next

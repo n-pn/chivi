@@ -21,7 +21,7 @@ module CV::TlRule
       # puts ["find_verb", right]
 
       case right
-      when .plsgn?, .mnsgn?, .verbs?, .preposes?
+      when .plsgn?, .mnsgn?, .verbal?, .preposes?
         return right
       when .adverbial?, .comma?
         next
@@ -39,7 +39,7 @@ module CV::TlRule
       when .comma?          then return nil if skip_comma
       when .v_shang?, .v_xia?
         return node if node.succ?(&.ule?)
-      when .vmodals?, .verbs? then return node
+      when .vmodals?, .verbal? then return node
       when .adjective?
         return nil unless {"相同", "类似"}.includes?(node.key)
         return node.set!(PosTag::Vintr)

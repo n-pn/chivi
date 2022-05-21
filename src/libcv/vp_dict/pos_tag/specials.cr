@@ -4,8 +4,8 @@ struct CV::PosTag
   AdjHao = new(Tag::AdjHao, Pos::Adjective | Pos::Specials | Pos::Contws)
   VShang = new(Tag::VShang, Pos::Specials | Pos::Contws)
   VXia   = new(Tag::VXia, Pos::Specials | Pos::Contws)
-  VShi   = new(Tag::VShi, Pos::Verbs | Pos::Specials | Pos::Contws)
-  VYou   = new(Tag::VYou, Pos::Verbs | Pos::Specials | Pos::Contws)
+  VShi   = new(Tag::VShi, Pos::Verbal | Pos::Specials | Pos::Contws)
+  VYou   = new(Tag::VYou, Pos::Verbal | Pos::Specials | Pos::Contws)
 
   def self.parse_special(key : ::String)
     case key

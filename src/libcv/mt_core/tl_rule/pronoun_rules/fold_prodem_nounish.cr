@@ -32,7 +32,7 @@ module CV::TlRule
       case succ = pro_dem.succ?
       when .nil?, .preposes?, .body?
         pro_dem.set!("cái này")
-      when .verbs?
+      when .verbal?
         pro_dem.set!("đây")
       when .comma?
         if (succ_2 = succ.succ?) && succ_2.pro_zhe? # && succ_2.succ?(&.maybe_verb?)

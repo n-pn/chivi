@@ -32,11 +32,11 @@ module CV::TlRule
       when .spaces?
         return noun if noun.prev? { |x| x.numeral? || x.pronouns? || x.adjective? }
         noun = fold_noun_space!(noun, succ)
-      when .verbs?
+      when .verbal?
         return fold_noun_verb!(noun, succ)
       when .veno?
         succ = heal_veno!(succ)
-        return fold_noun_verb!(noun, succ) if succ.verbs?
+        return fold_noun_verb!(noun, succ) if succ.verbal?
         noun = fold!(noun, succ, PosTag::Noun, dic: 7, flip: true)
       when .junction?
         break unless should_fold_noun_concoord?(noun, succ)
@@ -55,7 +55,7 @@ module CV::TlRule
 
         noun = fold_suf_noun!(noun, succ)
       when .usuo?
-        break if succ.succ?(&.verbs?)
+        break if succ.succ?(&.verbal?)
         noun = fold_suf_noun!(noun, succ)
       when .specials?
         case succ.key

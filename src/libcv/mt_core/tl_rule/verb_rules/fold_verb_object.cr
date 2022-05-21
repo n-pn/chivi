@@ -62,7 +62,7 @@ module CV::TlRule
     when .comma?   then return true
     when .v_shi?   then return false
     when .v_you?   then return false
-    when .verbs?   then return is_linking_verb?(prev, verb)
+    when .verbal?  then return is_linking_verb?(prev, verb)
     when .nquants? then return false
     when .subject?
       return true unless head = prev.prev?

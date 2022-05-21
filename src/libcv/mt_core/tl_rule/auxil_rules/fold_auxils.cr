@@ -27,7 +27,7 @@ module CV::TlRule
     return node if node.prev? { |x| x.tag.adjective? || x.tag.adverb? }
     return node unless succ = node.succ?
     return node.set!("đất", PosTag::Noun) if succ.v_shi? || succ.v_you?
-    return node if succ.verbs? || succ.preposes? || succ.concoord?
+    return node if succ.verbal? || succ.preposes? || succ.concoord?
     node.set!(val: "địa", tag: PosTag::Noun)
   end
 

@@ -3,7 +3,7 @@ module CV::TlRule
     case node
     when .nil?       then nil
     when .adverbial? then fold_adverbs!(node)
-    when .verbs?     then fold_verbs!(node)
+    when .verbal?    then fold_verbs!(node)
     when .modi?      then fold_modifier!(node)
     when .ajno?      then fold_adjts!(MtDict.fix_adjt!(node))
     when .adjective? then fold_adjts!(node)

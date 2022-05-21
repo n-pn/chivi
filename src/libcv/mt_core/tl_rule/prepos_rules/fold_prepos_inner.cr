@@ -39,11 +39,11 @@ module CV::TlRule
       return head
     when .adverbial? then verb = fold_adverbs!(verb)
     when .veno?      then verb = fold_verbs!(MtDict.fix_verb!(verb))
-    when .verbs?     then verb = fold_verbs!(verb)
+    when .verbal?    then verb = fold_verbs!(verb)
     else                  return head
     end
 
-    return head unless verb.verbs?
+    return head unless verb.verbal?
 
     flip = false
 

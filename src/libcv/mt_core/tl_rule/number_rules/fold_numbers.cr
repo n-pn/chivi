@@ -14,7 +14,7 @@ module CV::TlRule
       end
 
       fold_nouns!(node)
-    when .verbs?
+    when .verbal?
       fold_verbs!(node)
     when .noun?
       fold_nouns!(node)
@@ -68,7 +68,7 @@ module CV::TlRule
 
       if tail.nominal?
         return fold!(node, tail, tail.tag, dic: 3)
-      elsif node.prev? { |x| x.verbs? || x.prev?(&.verbs?) }
+      elsif node.prev? { |x| x.verbal? || x.prev?(&.verbal?) }
         tail.set!("phát", PosTag::Qtverb)
         return fold!(node, tail, PosTag::Nqverb, dic: 5)
       else
