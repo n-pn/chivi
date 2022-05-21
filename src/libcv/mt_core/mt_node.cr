@@ -133,7 +133,7 @@ class CV::MtNode
 
   def maybe_adjt? : Bool
     return !@succ.try(&.maybe_verb?) if @tag.ajad?
-    @tag.adjts? || @tag.adverbial? && @succ.try(&.maybe_adjt?) || false
+    @tag.adjective? || @tag.adverbial? && @succ.try(&.maybe_adjt?) || false
   end
 
   def last_child : MtNode?

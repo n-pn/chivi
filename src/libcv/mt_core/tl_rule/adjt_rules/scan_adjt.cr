@@ -6,7 +6,7 @@ module CV::TlRule
     when .verbs?     then fold_verbs!(node)
     when .modifier?  then fold_modifier!(node)
     when .ajno?      then fold_adjts!(MtDict.fix_adjt!(node))
-    when .adjts?     then fold_adjts!(node)
+    when .adjective? then fold_adjts!(node)
     when .nominal?   then fold_nouns!(node)
     else                  node
     end

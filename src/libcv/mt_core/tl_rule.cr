@@ -22,7 +22,7 @@ module CV::TlRule
       when .adverbial? then node = fold_adverbs!(node)
       when .modifier?  then node = fold_modifier!(node)
       when .ajno?      then node = fold_ajno!(node)
-      when .adjts?     then node = fold_adjts!(node, prev: nil)
+      when .adjective? then node = fold_adjts!(node, prev: nil)
       when .space?     then node = fold_space!(node)
       when .vmodals?   then node = fold_vmodals!(node)
       when .verbs?     then node = fold_verbs!(node)
@@ -107,7 +107,7 @@ module CV::TlRule
     case succ = node.succ?
     when .nil?, .puncts?, .ule?
       node.set!("tốt", PosTag::Adjt)
-    when .adjts?, .verbs?, .vmodals?, .adverbial?
+    when .adjective?, .verbs?, .vmodals?, .adverbial?
       node.set!(succ.verbs? ? "dễ" : "thật", PosTag::Adverb)
     when .nominal?
       node.set!("tốt", PosTag::Adjt)

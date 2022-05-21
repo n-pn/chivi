@@ -29,7 +29,7 @@ module CV::TlRule
         adjt = fold_adverb_node!(prev, adjt) if prev
 
         return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
-        return adjt unless (succ = scan_adjt!(succ)) && succ.adjts?
+        return adjt unless (succ = scan_adjt!(succ)) && succ.adjective?
         return fold!(adjt, succ, PosTag::Aform, dic: 8)
       when .auxils?
         verb = fold_verb_auxils!(verb, succ)
@@ -52,7 +52,7 @@ module CV::TlRule
         verb = fold!(verb, succ, PosTag::Verb, dic: 4)
       when .verbs?
         verb = fold_verb_verb!(verb, succ)
-      when .adjts?, .preposes?, .specials?, .space?
+      when .adjective?, .preposes?, .specials?, .space?
         break unless flag == 0
         fold_verb_compl!(verb, succ).try { |x| verb = x } || break
       when .adv_bu4?

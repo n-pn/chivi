@@ -288,7 +288,7 @@ def export_book(bhash, regular_set)
     rank = term.key.size == 1 ? 2 : 3
     new_term = book_out.new_term(term.key, [val], tag, rank, mtime, uname, privi)
 
-    if new_term.ptag.nominal? || new_term.ptag.adjts?
+    if new_term.ptag.nominal? || new_term.ptag.adjective?
       book_out.set(new_term)
     elsif !regular_set.includes?(term.key)
       book_pleb.set(new_term)

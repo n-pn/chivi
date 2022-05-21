@@ -51,7 +51,7 @@ module CV::TlRule
         case node.tag
         when .verbs?
           node = fold_verb_as_noun!(node, mode: mode)
-        when .adjts?
+        when .adjective?
           node = fold_adjt_as_noun!(node)
         when .adverb?
           break
@@ -67,7 +67,7 @@ module CV::TlRule
           node = fold_ude1!(ude1: ude1, prev: node)
         elsif node.verbs?
           node = fold_verb_as_noun!(node, mode: mode)
-        elsif node.adjts?
+        elsif node.adjective?
           node = fold_adjt_as_noun!(node)
         end
 
@@ -89,7 +89,7 @@ module CV::TlRule
           node = fold_preposes!(node, mode: 1)
         elsif node.verbs?
           node = fold_verb_as_noun!(node, mode: mode)
-        elsif node.adjts?
+        elsif node.adjective?
           node = fold_adjt_as_noun!(node)
         end
       when .veno?
@@ -102,7 +102,7 @@ module CV::TlRule
       when .modifier?
         node = fold_modifier!(node)
         node = fold_adjt_as_noun!(node)
-      when .adjts?
+      when .adjective?
         node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
         node = fold_adjt_as_noun!(node)
       when .nominal?

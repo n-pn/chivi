@@ -27,7 +27,7 @@ module CV::TlRule
   def fold_adjts!(adjt : MtNode, prev : MtNode? = nil) : MtNode
     fold_measurement!(adjt).try { |x| return x }
 
-    while adjt.adjts?
+    while adjt.adjective?
       break unless succ = adjt.succ?
 
       case succ.tag
@@ -64,7 +64,7 @@ module CV::TlRule
       when .vpro?, .verb?
         case succ.key
         when "到"
-          if (tail = succ.succ?) && tail.adjts?
+          if (tail = succ.succ?) && tail.adjective?
             adjt = fold!(adjt, tail, PosTag::Aform, dic: 7)
           else
             adjt = fold!(adjt, succ, PosTag::Verb, dic: 6)

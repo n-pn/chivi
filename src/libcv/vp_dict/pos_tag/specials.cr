@@ -1,7 +1,7 @@
 struct CV::PosTag
   Special = new(Tag::Special, Pos::Specials | Pos::Contws)
 
-  AdjHao = new(Tag::AdjHao, Pos::Adjts | Pos::Specials | Pos::Contws)
+  AdjHao = new(Tag::AdjHao, Pos::Adjective | Pos::Specials | Pos::Contws)
   VShang = new(Tag::VShang, Pos::Specials | Pos::Contws)
   VXia   = new(Tag::VXia, Pos::Specials | Pos::Contws)
   VShi   = new(Tag::VShi, Pos::Verbs | Pos::Specials | Pos::Contws)

@@ -12,7 +12,7 @@ struct CV::PosTag
     Pronouns; ProDems; ProInts
 
     Verbs; Vdirs; Vmodals
-    Adjts; Adverbial
+    Adjective; Adverbial
 
     Numbers; Quantis; Nquants; Numeral
 
@@ -42,7 +42,7 @@ struct CV::PosTag
   delegate vdirs?, to: @pos
   delegate vmodals?, to: @pos
 
-  delegate adjts?, to: @pos
+  delegate adjective?, to: @pos
   delegate adverbial?, to: @pos
 
   delegate preposes?, to: @pos

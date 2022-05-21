@@ -18,13 +18,13 @@ module CV::TlRule
     return node.set!(val: "") if prev.tag.quotecl? && !succ.tag.ends?
 
     return node if succ.tag.ends? || prev.tag.ends? || succ.key == prev.key
-    return node if prev.tag.adjts? && prev.prev?(&.tag.ends?)
+    return node if prev.tag.adjective? && prev.prev?(&.tag.ends?)
 
     node.set!(val: "")
   end
 
   def heal_ude2!(node : MtNode) : MtNode
-    return node if node.prev? { |x| x.tag.adjts? || x.tag.adverb? }
+    return node if node.prev? { |x| x.tag.adjective? || x.tag.adverb? }
     return node unless succ = node.succ?
     return node.set!("đất", PosTag::Noun) if succ.v_shi? || succ.v_you?
     return node if succ.verbs? || succ.preposes? || succ.concoord?

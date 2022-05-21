@@ -22,11 +22,11 @@ module CV::TlRule
   end
 
   def fix_ude1_errors!(ude1 : MtNode, prev : MtNode, succ : MtNode)
-    if succ.verbs? && prev.adjts? || prev.adverbial? || prev.verb?
+    if succ.verbs? && prev.adjective? || prev.adverbial? || prev.verb?
       # ude1 as ude2 grammar error
       # puts [prev, succ, ude1]
       fold!(prev, succ, succ.tag, dic: 9)
-    elsif prev.verb? && succ.adjts?
+    elsif prev.verb? && succ.adjective?
       # ude3 => ude1 grammar error
       fold!(prev, succ, prev.tag, dic: 8)
     else
@@ -43,7 +43,7 @@ module CV::TlRule
       prev.prev?.try { |x| return ude1.set!("") if x.verb? || x.veno? || x.vead? }
     else return ude1.set!("")
     end
-    # TODO: handle verbs?, adjts?
+    # TODO: handle verbs?, adjective?
 
     fold!(prev, ude1.set!("của"), PosTag::DefnPhrase, dic: 6, flip: true)
   end

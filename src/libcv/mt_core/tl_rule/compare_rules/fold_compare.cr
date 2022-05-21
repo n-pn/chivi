@@ -34,7 +34,7 @@ module CV::TlRule
     head.set_succ!(tail)
 
     return root unless succ = scan_adjt!(root.succ?)
-    return root unless succ.adjts? || succ.verb_object?
+    return root unless succ.adjective? || succ.verb_object?
 
     fold!(root, succ, PosTag::Aform, dic: 1, flip: true)
   end

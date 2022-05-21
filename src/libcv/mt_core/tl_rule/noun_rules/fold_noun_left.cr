@@ -19,7 +19,7 @@ module CV::TlRule
   #     when .place?
   #       break if flag > 0
   #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
-  #     when .ajad?, .adjts?
+  #     when .ajad?, .adjective?
   #       break if flag > 0 || prev.key.size > 1
   #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 8)
   #     when .ude1?
