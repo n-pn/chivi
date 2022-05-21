@@ -22,7 +22,7 @@ module CV::TlRule
   end
 
   def fix_ude1_errors!(ude1 : MtNode, prev : MtNode, succ : MtNode)
-    if succ.verbs? && prev.adjts? || prev.adverbs? || prev.verb?
+    if succ.verbs? && prev.adjts? || prev.adverbial? || prev.verb?
       # ude1 as ude2 grammar error
       # puts [prev, succ, ude1]
       fold!(prev, succ, succ.tag, dic: 9)
@@ -63,7 +63,7 @@ module CV::TlRule
     # puts [left, right]
 
     case left
-    when .nouns?, .pronouns?, .numeric?, .verb_clause?, .adjt_clause?
+    when .nominal?, .pronouns?, .numeral?, .verb_clause?, .adjt_clause?
       fold_noun_ude1!(left, ude1: ude1, right: right, mode: mode)
     else
       case right.key

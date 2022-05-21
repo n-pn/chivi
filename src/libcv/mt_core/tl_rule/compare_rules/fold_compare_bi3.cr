@@ -28,7 +28,7 @@ module CV::TlRule
     noun.fix_succ!(nil)
 
     if prepos.key == "不比"
-      adv_bu = MtNode.new("不", "không", PosTag::AdvBu, 1, prepos.idx)
+      adv_bu = MtNode.new("不", "không", PosTag::AdvBu4, 1, prepos.idx)
       output.set_body!(adv_bu)
       adv_bu.fix_succ!(tail)
 

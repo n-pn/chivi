@@ -1,19 +1,19 @@
 module CV::TlRule
-  def fold_prodem_nounish!(prodem : MtNode?, nounish : MtNode?)
-    return nounish unless prodem
+  def fold_prodem_nominal!(prodem : MtNode?, nominal : MtNode?)
+    return nominal unless prodem
 
-    if nounish
-      if nounish.verb_object?
+    if nominal
+      if nominal.verb_object?
         prodem = heal_pro_dem!(prodem)
-        return fold!(prodem, nounish, PosTag::VerbClause, dic: 8)
+        return fold!(prodem, nominal, PosTag::VerbClause, dic: 8)
       end
 
       # puts [prodem.prev?, prodem.succ?]
-      # puts [nounish.prev?, nounish.succ?]
+      # puts [nominal.prev?, nominal.succ?]
 
-      flip = nounish.nouns? && should_flip_prodem?(prodem)
-      tag = !prodem.pro_dem? && nounish.qtnoun? ? PosTag::ProDem : nounish.tag
-      return fold!(prodem, nounish, tag, dic: 3, flip: flip)
+      flip = nominal.nominal? && should_flip_prodem?(prodem)
+      tag = !prodem.pro_dem? && nominal.qtnoun? ? PosTag::ProDem : nominal.tag
+      return fold!(prodem, nominal, tag, dic: 3, flip: flip)
     end
 
     heal_pro_dem!(prodem)
@@ -43,7 +43,7 @@ module CV::TlRule
       when .ends?
         pro_dem.set!("cái này")
       else
-        if pro_dem.prev?(&.nouns?)
+        if pro_dem.prev?(&.nominal?)
           pro_dem.set!("giờ")
         else
           pro_dem.set!("cái này")

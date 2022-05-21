@@ -8,7 +8,7 @@ module CV::TlRule
     # puts [node, succ]
 
     case node.tag
-    when .adv_bu?  then return fold_adv_bu!(node, succ)
+    when .adv_bu4? then return fold_adv_bu!(node, succ)
     when .adv_mei? then return fold_adv_mei!(node, succ)
     when .adv_fei? then return fold_adv_fei!(node, succ)
     when .vead?    then return fold_vead!(node, succ)
@@ -19,10 +19,10 @@ module CV::TlRule
 
   def fold_vead!(node : MtNode, succ = node.succ)
     case succ
-    when .ajno?  then node.tag = PosTag::Adverb
-    when .veno?  then return fold_verbs!(MtDict.fix_verb!(succ), node)
-    when .nouns? then return fold_verbs!(MtDict.fix_verb!(node))
-    when .ude3?  then return fold_adverb_ude3!(node, succ)
+    when .ajno?    then node.tag = PosTag::Adverb
+    when .veno?    then return fold_verbs!(MtDict.fix_verb!(succ), node)
+    when .nominal? then return fold_verbs!(MtDict.fix_verb!(node))
+    when .ude3?    then return fold_adverb_ude3!(node, succ)
     end
 
     fold_adverb_base!(node, succ)
@@ -35,7 +35,7 @@ module CV::TlRule
     when .pre_dui?
       succ = fold_pre_dui!(succ)
       fold!(node, succ, succ.tag, dic: 9)
-    when .adverbs?
+    when .adverbial?
       node = fold!(node, succ, succ.tag, dic: 4)
       return node unless succ = node.succ?
       fold_adverb_base!(node, succ)
@@ -104,7 +104,7 @@ module CV::TlRule
     when .adjts?
       succ.tag = PosTag::Adjt if succ.ajno?
       fold_adjts!(succ, prev: node)
-    when .adv_bu?
+    when .adv_bu4?
       succ.succ? { |tail| succ = fold_adv_bu!(succ, tail) }
       fold!(node, succ, succ.tag, dic: 2)
     when .adverb?
@@ -181,7 +181,7 @@ module CV::TlRule
       case node
       when .comma?
         return false unless node = node.succ?
-      when .plsgn?, .mnsgn?, .verbs?, .preposes?, .adjts?, .adverbs?, .vmodals?
+      when .plsgn?, .mnsgn?, .verbs?, .preposes?, .adjts?, .adverbial?, .vmodals?
         return true
       when .concoord?
         return false unless node.key == "和"

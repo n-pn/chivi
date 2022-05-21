@@ -7,12 +7,12 @@ module CV::TlRule
   def fold_nouns!(noun : MtNode, mode : Int32 = 0) : MtNode
     # return node if node.nform?
 
-    while noun.nouns?
+    while noun.nominal?
       break unless succ = noun.succ?
 
       case succ
       when .maybe_adjt?
-        break if succ.adv_bu?
+        break if succ.adv_bu4?
         return fold_noun_adjt!(noun, succ)
       when .middot?
         break unless (succ_2 = succ.succ?) && succ_2.human?
@@ -27,10 +27,10 @@ module CV::TlRule
       when .uyy?
         adjt = fold!(noun, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
         return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
-        succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
+        succ = succ.adverbial? ? fold_adverbs!(succ) : fold_adjts!(succ)
         return fold!(adjt, succ, PosTag::Aform, dic: 8)
       when .spaces?
-        return noun if noun.prev? { |x| x.numeric? || x.pronouns? || x.adjts? }
+        return noun if noun.prev? { |x| x.numeral? || x.pronouns? || x.adjts? }
         noun = fold_noun_space!(noun, succ)
       when .verbs?
         return fold_noun_verb!(noun, succ)
@@ -43,7 +43,7 @@ module CV::TlRule
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
       when .time?
         break
-      when .nouns?
+      when .nominal?
         return noun unless fold = fold_noun_noun!(noun, succ, mode: mode)
         noun = fold
       when .suf_verb?

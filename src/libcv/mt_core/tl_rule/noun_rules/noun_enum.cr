@@ -1,13 +1,13 @@
 module CV::TlRule
   def fold_noun_penum!(head : MtNode, join : MtNode)
     while node = join.succ?
-      break unless node.nouns? || node.pronouns?
+      break unless node.nominal? || node.pronouns?
       tail = node
 
       break unless join = node.succ?
 
       if join.ude1?
-        break unless (succ = join.succ?) && succ.nouns?
+        break unless (succ = join.succ?) && succ.nominal?
         join.val = "của"
         node = fold!(node, succ, succ.tag, dic: 7, flip: true)
         break unless join = node.succ?

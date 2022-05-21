@@ -4,7 +4,7 @@ module CV::TlRule
 
   #   while prev = node.prev?
   #     case prev
-  #     when .numeric?
+  #     when .numeral?
   #       break if node.veno? || node.ajno?
   #       node = fold_nquant_noun!(prev, node)
   #       flag = 1

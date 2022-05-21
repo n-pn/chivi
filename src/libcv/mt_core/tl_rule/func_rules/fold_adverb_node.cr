@@ -5,7 +5,7 @@ module CV::TlRule
     case adv.key
     when "不太"
       # TODO: just delete this entry
-      head = MtNode.new("不", "không", PosTag::AdvBu, 1, adv.idx)
+      head = MtNode.new("不", "không", PosTag::AdvBu4, 1, adv.idx)
       tail = MtNode.new("太", "lắm", PosTag::Adverb, 1, adv.idx + 1)
 
       node.set_prev!(head)

@@ -8,7 +8,7 @@ module CV::TlRule
       return verb unless (object = scan_noun!(succ.succ?)) && object.object?
 
       if (verb_2 = object.succ?) && verb_2.maybe_verb?
-        verb_2 = verb_2.adverbs? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
+        verb_2 = verb_2.adverbial? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
 
         return verb if !verb_2.verb_no_obj? && verb.prev?(&.object?)
       end

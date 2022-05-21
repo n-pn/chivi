@@ -3,10 +3,10 @@ module CV::TlRule
     case auxil.tag
     when .ule?
       verb = fold_verb_ule!(verb, auxil)
-      return verb unless (succ = verb.succ?) && succ.numeric?
+      return verb unless (succ = verb.succ?) && succ.numeral?
 
       if is_pre_appro_num?(verb)
-        succ = fuse_number!(succ) if succ.numeric?
+        succ = fuse_number!(succ) if succ.numeral?
         return fold!(verb, succ, succ.tag, dic: 4)
       end
 

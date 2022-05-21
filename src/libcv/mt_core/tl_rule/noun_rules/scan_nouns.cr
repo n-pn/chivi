@@ -3,7 +3,7 @@ module CV::TlRule
   # 1 => do not include spaces after nouns
   # 2 => do not join junctions
   # 3 => scan_noun after ude1
-  #   can return non nounish node
+  #   can return non nominal node
 
   # ameba:disable Metrics/CyclomaticComplexity
   def scan_noun!(node : MtNode?, mode : Int32 = 0,
@@ -31,12 +31,12 @@ module CV::TlRule
       when .pro_ints?
         node = fold_pro_ints!(node, node.succ?)
         node = nil if node.pro_int?
-      when .numeric?
+      when .numeral?
         if nquant
           node = nil
         else
           node = fold_number!(node)
-          break unless node.numeric?
+          break unless node.numeral?
           nquant, node = node, node.succ?
           next
         end
@@ -45,7 +45,7 @@ module CV::TlRule
         succ = fold_nouns!(succ)
         node = fold!(node, succ, PosTag::Aform, dic: 4)
         node = fold_head_ude1_noun!(node)
-      when .adverbs?
+      when .adverbial?
         node = fold_adverbs!(node)
 
         case node.tag
@@ -76,7 +76,7 @@ module CV::TlRule
         break unless succ = node.succ?
 
         case succ
-        when .nouns?
+        when .nominal?
           succ = fold_nouns!(succ, mode: 1)
           node = fold!(node, succ, PosTag::NounPhrase, dic: 5, flip: true)
         when .ude1?
@@ -105,16 +105,16 @@ module CV::TlRule
       when .adjts?
         node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
         node = fold_adjt_as_noun!(node)
-      when .nouns?
+      when .nominal?
         case node = fold_nouns!(node)
         when .nattr?
           node = fold_head_ude1_noun!(node)
         when .naffil?, .place?
           node = fold_head_ude1_noun!(node) if prodem || nquant
-        when .nouns?
+        when .nominal?
           break
         else
-          node = scan_noun!(node) || node unless node.nouns?
+          node = scan_noun!(node) || node unless node.nominal?
         end
       when .ude2?
         if node.prev? { |x| x.pre_zai? || x.verbs? } || node.succ?(&.spaces?)
@@ -125,15 +125,15 @@ module CV::TlRule
       break
     end
 
-    return fold_prodem_nounish!(prodem, nquant) unless node && node.object?
+    return fold_prodem_nominal!(prodem, nquant) unless node && node.object?
 
     if nquant
       nquant = clean_nquant(nquant, prodem)
       node = fold!(nquant, node, PosTag::Nform, dic: 4)
     end
 
-    node = fold_prodem_nounish!(prodem, node) if prodem
-    # node = fold_proper_nounish!(proper, node) if proper
+    node = fold_prodem_nominal!(prodem, node) if prodem
+    # node = fold_proper_nominal!(proper, node) if proper
 
     return node unless mode == 0 && (succ = node.succ?)
     node = fold_noun_after!(node, succ)
@@ -172,7 +172,7 @@ module CV::TlRule
   end
 
   def fold_adjt_as_noun!(node : MtNode)
-    return node if node.nouns? || !(succ = node.succ?)
+    return node if node.nominal? || !(succ = node.succ?)
 
     noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
     fold_adjt_noun!(node, noun, ude1)
@@ -190,7 +190,7 @@ module CV::TlRule
       node = fold_verbs!(node)
     end
 
-    return node if node.nouns? || mode == 3 || !(succ = node.succ?)
+    return node if node.nominal? || mode == 3 || !(succ = node.succ?)
 
     unless succ.ude1? || node.verb_object? || node.vintr?
       return node unless succ = scan_noun!(succ, mode: 0)

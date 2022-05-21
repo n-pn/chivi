@@ -23,7 +23,7 @@ module CV::TlRule
       case right
       when .plsgn?, .mnsgn?, .verbs?, .preposes?
         return right
-      when .adverbs?, .comma?
+      when .adverbial?, .comma?
         next
       else
         return nil
@@ -48,16 +48,16 @@ module CV::TlRule
           return fold!(node.set!("một phát"), succ, succ.tag, dic: 5, flip: true)
         end
 
-        return nil unless node.adverbs? || node.pdash?
+        return nil unless node.adverbial? || node.pdash?
       end
     end
   end
 
   def scan_verb!(node : MtNode)
     case node
-    when .adverbs?  then fold_adverbs!(node)
-    when .preposes? then fold_preposes!(node)
-    else                 fold_verbs!(node)
+    when .adverbial? then fold_adverbs!(node)
+    when .preposes?  then fold_preposes!(node)
+    else                  fold_verbs!(node)
     end
   end
 
@@ -78,7 +78,7 @@ module CV::TlRule
   end
 
   def fold_left_verb!(node : MtNode, prev : MtNode?)
-    return node unless prev && prev.adverbs?
+    return node unless prev && prev.adverbial?
     fold_adverb_node!(prev, node)
   end
 end

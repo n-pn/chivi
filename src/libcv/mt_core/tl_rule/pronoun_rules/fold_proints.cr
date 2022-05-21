@@ -7,7 +7,7 @@ module CV::TlRule
       succ = fold_verbs!(MtDict.fix_verb!(succ))
     when .verbs?
       succ = fold_verbs!(succ)
-    when .nouns?
+    when .nominal?
       return proint unless succ = scan_noun!(succ)
     else
       return proint
@@ -17,10 +17,10 @@ module CV::TlRule
 
     case proint.key
     when "什么"
-      flip = succ.nouns?
+      flip = succ.nominal?
       val = "gì"
     when "哪个"
-      flip = succ.nouns?
+      flip = succ.nominal?
       val = "nào"
     when "怎么"
       val = "làm sao"

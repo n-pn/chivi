@@ -37,10 +37,10 @@ module CV::TlRule
     case verb
     when .nil?, .v_shi?, .v_you?
       return head
-    when .adverbs? then verb = fold_adverbs!(verb)
-    when .veno?    then verb = fold_verbs!(MtDict.fix_verb!(verb))
-    when .verbs?   then verb = fold_verbs!(verb)
-    else                return head
+    when .adverbial? then verb = fold_adverbs!(verb)
+    when .veno?      then verb = fold_verbs!(MtDict.fix_verb!(verb))
+    when .verbs?     then verb = fold_verbs!(verb)
+    else                  return head
     end
 
     return head unless verb.verbs?

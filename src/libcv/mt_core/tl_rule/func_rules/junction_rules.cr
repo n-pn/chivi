@@ -11,7 +11,7 @@ module CV::TlRule
     case succ
     when .preposes?
       succ = fold_preposes!(succ)
-    when .adverbs?
+    when .adverbial?
       succ = fold_adverbs!(succ)
     when .veno?
       succ = fold_veno!(succ)
@@ -44,7 +44,7 @@ module CV::TlRule
 
   def should_fold_noun_concoord?(noun : MtNode, concoord : MtNode) : Bool
     return true unless (prev = noun.prev?) && (succ = concoord.succ?)
-    return false if prev.numeric? || prev.pronouns?
+    return false if prev.numeral? || prev.pronouns?
     return true unless prev.ude1? && (prev = prev.prev?)
 
     case prev.tag

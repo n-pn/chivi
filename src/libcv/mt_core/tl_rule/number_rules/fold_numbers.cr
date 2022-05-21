@@ -66,7 +66,7 @@ module CV::TlRule
     when .pre_ba3?
       tail = fold_pre_ba3!(tail)
 
-      if tail.nouns?
+      if tail.nominal?
         return fold!(node, tail, tail.tag, dic: 3)
       elsif node.prev? { |x| x.verbs? || x.prev?(&.verbs?) }
         tail.set!("phát", PosTag::Qtverb)

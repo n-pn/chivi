@@ -10,7 +10,7 @@ module CV::TlRule
   end
 
   def fold_nhanzi_dian!(node : MtNode, succ : MtNode, prev : MtNode?) : MtNode
-    result = keep_pure_numeric?(succ.succ?)
+    result = keep_pure_numeral?(succ.succ?)
 
     if result.is_a?(MtNode)
       node.key = "#{node.key}#{succ.key}#{result.key}"
@@ -21,7 +21,7 @@ module CV::TlRule
     prev || result ? fold_number_hour!(node, succ) : node
   end
 
-  def keep_pure_numeric?(node : MtNode?) : Bool | MtNode
+  def keep_pure_numeral?(node : MtNode?) : Bool | MtNode
     return false unless node
     return true if node.key == "半" || node.key == "前后"
     return false unless node.numbers?

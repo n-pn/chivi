@@ -15,7 +15,7 @@ module CV::TlRule
     adjt.val = adjt_val
     succ.val = succ_val
 
-    if (succ_2 = succ.succ?) && succ_2.numeric?
+    if (succ_2 = succ.succ?) && succ_2.numeral?
       succ_2 = fuse_number!(succ_2)
       return fold!(adjt, succ_2, PosTag::Aform, dic: 7)
     end
@@ -58,7 +58,7 @@ module CV::TlRule
         break unless succ.key == "到"
         adjt = fold!(adjt, succ, PosTag::Adverb)
         return fold_adverbs!(adjt)
-      when .nouns?
+      when .nominal?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_adjt_noun!(adjt, succ)
       when .vpro?, .verb?
@@ -103,7 +103,7 @@ module CV::TlRule
       when .suf_verb?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_suf_verb!(adjt, succ)
-      when .adv_bu?
+      when .adv_bu4?
         fold_adjt_adv_bu!(adjt, succ, prev).try { |x| return x } || break
       else
         break unless succ.key == "又"
@@ -126,11 +126,11 @@ module CV::TlRule
     MtDict.fix_noun!(succ) if succ.veno? || succ.ajno?
     # puts [node, succ]
 
-    succ.nouns? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
+    succ.nominal? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
   end
 
   def fold_adj_adv!(node : MtNode, prev = node.prev?)
-    return node unless prev && prev.adverbs?
+    return node unless prev && prev.adverbial?
     fold_adverb_node!(prev, node, tag: PosTag::Aform, dic: 4)
   end
 end

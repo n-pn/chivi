@@ -5,10 +5,10 @@ module CV::TlRule
       return MtDict.fix_verb!(node)
     when .veno?
       succ = heal_veno!(succ)
-      return succ.nouns? ? MtDict.fix_verb!(node) : MtDict.fix_adverb!(node)
+      return succ.nominal? ? MtDict.fix_verb!(node) : MtDict.fix_adverb!(node)
     when .verbs?, .vmodals?, .preposes?
       return MtDict.fix_verb!(node)
-    when .nouns?, .numeric?, .pronouns?
+    when .nominal?, .numeral?, .pronouns?
       return MtDict.fix_verb!(node)
     end
 

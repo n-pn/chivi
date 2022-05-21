@@ -14,7 +14,7 @@ module CV::TlRule
     end
 
     noun = fold_nouns!(noun, mode: 1)
-    return adjt unless noun.nouns?
+    return adjt unless noun.nominal?
 
     noun = fold!(adjt, noun, noun.tag, dic: 6, flip: flip)
     fold_noun_after!(noun)

@@ -4,14 +4,14 @@ module CV::TlRule
     return vyou unless noun = scan_noun!(succ, mode: mode)
 
     case succ = noun.succ?
-    when .nil?    then return vyou
-    when .adv_bu? then return vyou
+    when .nil?     then return vyou
+    when .adv_bu4? then return vyou
     when .ude1?
       return fold_vyou_ude1(vyou, succ, noun)
     when .adverb?
       if succ.key == "这么" || succ.key == "那么"
         adverb, succ = succ, succ.succ?
-        return vyou if succ.try(&.nouns?)
+        return vyou if succ.try(&.nominal?)
       end
     else
       if vyou.key == "有"
@@ -44,7 +44,7 @@ module CV::TlRule
       output.set_body!(tail)
       tail.fix_succ!(vyou.set!("có"))
     when "没有"
-      adv_bu = MtNode.new("没", "không", PosTag::AdvBu, 1, vyou.idx)
+      adv_bu = MtNode.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
       output.set_body!(adv_bu)
       adv_bu.fix_succ!(tail)
 

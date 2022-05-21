@@ -24,7 +24,9 @@ module CV::MtDict
 
   enum Dnames
     FixUZhi; FixAdverbs
+
     FixNouns; FixVerbs; FixAdjts
+
     QtTimes; QtVerbs; QtNouns
 
     VCompl; VGroup; V2Objs

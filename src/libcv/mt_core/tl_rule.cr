@@ -10,34 +10,40 @@ module CV::TlRule
 
     while node = node.succ?
       case node.tag
-      when .auxils?   then node = heal_auxils!(node)
-      when .specials? then node = fold_uniqs!(node)
-      when .strings?  then node = fold_strings!(node)
-      when .preposes? then node = fold_preposes!(node)
-      when .pronouns? then node = fold_pronouns!(node)
-      when .time?     then node = fold_time!(node)
-      when .numeric?  then node = fold_number!(node)
-      when .veno?     then node = fold_veno!(node)
-      when .ajad?     then node = fold_ajad!(node)
-      when .adverbs?  then node = fold_adverbs!(node)
-      when .modifier? then node = fold_modifier!(node)
-      when .ajno?     then node = fold_ajno!(node)
-      when .adjts?    then node = fold_adjts!(node, prev: nil)
-      when .space?    then node = fold_space!(node)
-      when .vmodals?  then node = fold_vmodals!(node)
-      when .verbs?    then node = fold_verbs!(node)
-      when .nouns?    then node = fold_nouns!(node)
-      when .onomat?   then node = fold_onomat!(node)
+      when .auxils?    then node = heal_auxils!(node)
+      when .specials?  then node = fold_uniqs!(node)
+      when .strings?   then node = fold_strings!(node)
+      when .preposes?  then node = fold_preposes!(node)
+      when .pronouns?  then node = fold_pronouns!(node)
+      when .time?      then node = fold_time!(node)
+      when .numeral?   then node = fold_number!(node)
+      when .veno?      then node = fold_veno!(node)
+      when .ajad?      then node = fold_ajad!(node)
+      when .adverbial? then node = fold_adverbs!(node)
+      when .modifier?  then node = fold_modifier!(node)
+      when .ajno?      then node = fold_ajno!(node)
+      when .adjts?     then node = fold_adjts!(node, prev: nil)
+      when .space?     then node = fold_space!(node)
+      when .vmodals?   then node = fold_vmodals!(node)
+      when .verbs?     then node = fold_verbs!(node)
+      when .nominal?   then node = fold_nouns!(node)
+      when .onomat?    then node = fold_onomat!(node)
       end
+    end
+  end
+
+  def fold_once!(node : MtNode) : MtNode
+    case node.tag
+    when .puncts?   then fold_puncts!(node)
+    when .strings?  then fold_strings!(node)
+    when .specials? then fold_specials!(node)
+    else                 node
     end
   end
 
   def preprocess!(node : MtNode)
     while node = node.succ?
       case node.tag
-      when .titleop?  then node = fold_ptitle!(node)
-      when .popens?   then node = fold_quoted!(node)
-      when .atsign?   then node = fold_atsign!(node)
       when .specials? then node = pre_special!(node)
       when .vead?     then node = heal_vead!(node)
       when .veno?     then node = heal_veno!(node)
@@ -101,9 +107,9 @@ module CV::TlRule
     case succ = node.succ?
     when .nil?, .puncts?, .ule?
       node.set!("tốt", PosTag::Adjt)
-    when .adjts?, .verbs?, .vmodals?, .adverbs?
+    when .adjts?, .verbs?, .vmodals?, .adverbial?
       node.set!(succ.verbs? ? "dễ" : "thật", PosTag::Adverb)
-    when .nouns?
+    when .nominal?
       node.set!("tốt", PosTag::Adjt)
     else
       node

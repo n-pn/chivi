@@ -8,7 +8,7 @@ module CV::TlRule
     when .vm_hui?
       node = heal_vm_hui!(node, succ, nega)
     when .vm_xiang?
-      return fold_verbs!(node.set!(PosTag::Verb)) if succ.try(&.adv_bu?)
+      return fold_verbs!(node.set!(PosTag::Verb)) if succ.try(&.adv_bu4?)
       node = heal_vm_xiang!(node, succ, nega)
       return fold_verbs!(node) if node.verb?
       # when .key?("要")
@@ -24,13 +24,13 @@ module CV::TlRule
       return node if succ.pre_bi3?
       node = fold!(node, succ, succ.tag, dic: 6)
       fold_preposes!(node)
-    when .adverbs?
+    when .adverbial?
       succ = fold_adverbs!(succ)
       succ.verb? ? fold!(node, succ, succ.tag, dic: 6) : node
     when .verbs?
       verb = fold!(node, succ, succ.tag, dic: 6)
       fold_verbs!(verb)
-    when .nouns?
+    when .nominal?
       # return node unless node.vm_neng?
       fold_verb_object!(node, succ)
     else
@@ -50,7 +50,7 @@ module CV::TlRule
       flip = false
     else
       node.val = "sẽ"
-      flip = prev.try(&.adv_bu?)
+      flip = prev.try(&.adv_bu4?)
     end
 
     prev ? fold!(prev, node, node.tag, dic: 6, flip: flip) : node
@@ -60,7 +60,7 @@ module CV::TlRule
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
-    when .nil?, .ends?, .nouns?, .ude1?, .ule?
+    when .nil?, .ends?, .nominal?, .ude1?, .ule?
       true
     when .preposes? then false
     when .verb_object?
@@ -92,7 +92,7 @@ module CV::TlRule
       else
         node.set!("nhớ", PosTag::Verb)
       end
-    when .adverbs?
+    when .adverbial?
       if succ.key == "也" && !succ.succ?(&.maybe_verb?)
         node.val = "nhớ"
       elsif succ.key == "越"

@@ -22,7 +22,9 @@ struct CV::PosTag
 
     Vmodal; VmHui; VmNeng; VmXiang
 
-    Adverb; AdvBu; AdvMei; AdvFei
+    Adverb; AdvBu4; AdvMei; AdvFei
+    AdvNoun; AdvUniq
+
     Prepos; PreBei; PreDui; PreZai; PreBa3; PreBi3
 
     Number; Ndigit; Nhanzi
@@ -80,8 +82,8 @@ struct CV::PosTag
     when .numbers?  then "m"
     when .quantis?  then "q"
     when .nquants?  then "mq"
-    when .adverbs?
-      (@tag.ajad? || @tag.vead?) ? @tag.to_str : "d"
+    when .adverbial?
+      @pos.mixed? ? @tag.to_str : "d"
     else
       @tag.to_str
     end
@@ -90,12 +92,12 @@ struct CV::PosTag
   # words that can act as noun
   @[AlwaysInline]
   def subject?
-    @pos.nouns? || @pos.numeric? || @pos.pronouns? || @tag.verb_object?
+    @pos.nominal? || @pos.numeral? || @pos.pronouns? || @tag.verb_object?
   end
 
   @[AlwaysInline]
   def object?
-    @pos.nouns? || @pos.pronouns? || @pos.nquants?
+    @pos.nominal? || @pos.pronouns? || @pos.nquants?
   end
 
   @[AlwaysInline]

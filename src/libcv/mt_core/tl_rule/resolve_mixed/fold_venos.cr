@@ -13,33 +13,33 @@ module CV::TlRule
       # nothing
     when .ude1?
       case prev.prev?
-      when .nil?     then return node
-      when .adverbs? then return MtDict.fix_verb!(node)
+      when .nil?       then return node
+      when .adverbial? then return MtDict.fix_verb!(node)
         # TODO: check for adjt + ude1 + verb (grammar error)
       else return MtDict.fix_noun!(node)
       end
     when .nhanzi?
       return MtDict.fix_verb!(node) if prev.key == "一"
-    when .adverbs?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
+    when .adverbial?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
       return MtDict.fix_verb!(node)
     when .auxils?, .preposes?, .modifier?
       return MtDict.fix_noun!(node)
-      # when .numeric?
-      #   if (succ = node.succ?) && !(succ.nouns? || succ.pronouns?)
+      # when .numeral?
+      #   if (succ = node.succ?) && !(succ.nominal? || succ.pronouns?)
       #     return MtDict.fix_noun!(node)
       #   end
     when .junction?
       return MtDict.fix_verb!(node) if prev.key == "而"
 
       prev.prev? do |prev_2|
-        return MtDict.fix_noun!(node) if prev_2.nouns?
+        return MtDict.fix_noun!(node) if prev_2.nominal?
         return MtDict.fix_verb!(node) if prev_2.verbs?
       end
     when .pro_dems?, .qtnoun?
       case node.succ?
       when .nil?, .ends?
         return MtDict.fix_noun!(node)
-      when .nouns?
+      when .nominal?
         return MtDict.fix_verb!(node)
       when .ude1?
         if {"扭曲"}.includes?(node.key)
@@ -57,7 +57,7 @@ module CV::TlRule
     when .penum?
       case tail = succ.succ?
       when .nil? then node
-      when .veno?, .nouns?, .verbs?
+      when .veno?, .nominal?, .verbs?
         tail = heal_veno!(tail)
         fold!(node, tail, tail.tag, dic: 4)
       else
@@ -65,7 +65,7 @@ module CV::TlRule
       end
     when .pronouns?
       MtDict.fix_verb!(node)
-    when .nouns?
+    when .nominal?
       node = MtDict.fix_verb!(node)
       return node unless node.vintr? || node.verb_object?
       MtDict.fix_noun!(node)

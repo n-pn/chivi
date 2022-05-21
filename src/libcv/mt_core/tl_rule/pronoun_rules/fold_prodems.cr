@@ -7,7 +7,7 @@ module CV::TlRule
     if succ.pro_ji? && (tail = succ.succ?)
       if tail.nhanzi?
         succ = fold_proji_nhanzi!(succ, tail)
-        return fold_prodem_nounish!(node, succ)
+        return fold_prodem_nominal!(node, succ)
       elsif node.pro_zhe? || node.pro_na1? || node.pro_na2?
         tail = heal_quanti!(tail)
 
@@ -38,7 +38,7 @@ module CV::TlRule
     end
 
     return heal_pro_dem!(node) unless quanti
-    fold_prodem_nounish!(node, quanti)
+    fold_prodem_nominal!(node, quanti)
   end
 
   def fold_proji_nhanzi!(node : MtNode, succ : MtNode)

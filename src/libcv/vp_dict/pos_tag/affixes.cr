@@ -1,10 +1,10 @@
 struct CV::PosTag
   # 后缀 - suffix - hậu tố
   AFFIXES = {
-    {"ka", "SufAdjt", Pos::Funcws},
-    {"kn", "SufNoun", Pos::Funcws},
-    {"kv", "SufVerb", Pos::Funcws},
-    {"k", "Suffix", Pos::Funcws},
+    {"ka", "SufAdjt", Pos::Contws},
+    {"kn", "SufNoun", Pos::Contws},
+    {"kv", "SufVerb", Pos::Contws},
+    {"k", "Suffix", Pos::Contws},
   }
 
   @[AlwaysInline]

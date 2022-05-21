@@ -17,7 +17,7 @@ module CV::TlRule
     case node.key
     when "将"
       if succ.maybe_verb?
-        succ = fold_adverbs!(succ) if succ.adverbs?
+        succ = fold_adverbs!(succ) if succ.adverbial?
         return fold_verbs!(succ, node.set!("sẽ"))
       end
     when "与", "和"

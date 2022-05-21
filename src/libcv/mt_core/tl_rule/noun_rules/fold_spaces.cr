@@ -28,7 +28,7 @@ module CV::TlRule
     when "中"
       return noun if space.succ?(&.ule?)
       space.val = "trong"
-      if (succ = space.succ?) && succ.nouns?
+      if (succ = space.succ?) && succ.nominal?
         return fold!(noun, succ, PosTag::NounPhrase, dic: 6, flip: true)
       end
     when "前"

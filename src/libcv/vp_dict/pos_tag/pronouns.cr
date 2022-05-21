@@ -2,7 +2,7 @@ struct CV::PosTag
   PROPOS = Pos::Pronouns | Pos::Contws
 
   # 代词 - pronoun - đại từ chưa phân loại
-  ProUkn = new(Tag::ProUkn, PROPOS | Pos::Nouns)
+  ProUkn = new(Tag::ProUkn, PROPOS | Pos::Nominal)
 
   # 人称代词 - personal pronoun - đại từ nhân xưng
   ProPer = new(Tag::ProPer, Pos::Human | PROPOS)

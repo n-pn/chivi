@@ -32,7 +32,7 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def noun_can_combine?(prev : MtNode?, succ : MtNode?) : Bool
-    while prev && (prev.numeric? || prev.pronouns?)
+    while prev && (prev.numeral? || prev.pronouns?)
       # puts [prev, succ, "noun_can_combine"]
       prev = prev.prev?
     end

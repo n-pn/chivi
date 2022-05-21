@@ -2,22 +2,28 @@ struct CV::PosTag
   @[Flags]
   enum Pos
     # content words - functional words - punctuations
-    Contws; Funcws; Puncts; Pstops; Popens
+    Contws; Funcws
+    Puncts; Pstops; Popens
 
-    Nouns; Times; Names; Human; Object
+    Mixed
+
+    Nominal; Times; Names; Human; Object
 
     Pronouns; ProDems; ProInts
 
     Verbs; Vdirs; Vmodals
-    Adjts; Adverbs
+    Adjts; Adverbial
 
-    Numbers; Quantis; Nquants; Numeric
+    Numbers; Quantis; Nquants; Numeral
 
     Auxils; Preposes
     Strings; Specials
   end
 
-  delegate nouns?, to: @pos
+  delegate mixed?, to: @pos
+
+  delegate nominal?, to: @pos
+
   delegate times?, to: @pos
   delegate names?, to: @pos
   delegate human?, to: @pos
@@ -26,7 +32,7 @@ struct CV::PosTag
   delegate numbers?, to: @pos
   delegate quantis?, to: @pos
   delegate nquants?, to: @pos
-  delegate numeric?, to: @pos
+  delegate numeral?, to: @pos
 
   delegate pronouns?, to: @pos
   delegate pro_dems?, to: @pos
@@ -37,7 +43,7 @@ struct CV::PosTag
   delegate vmodals?, to: @pos
 
   delegate adjts?, to: @pos
-  delegate adverbs?, to: @pos
+  delegate adverbial?, to: @pos
 
   delegate preposes?, to: @pos
   delegate auxils?, to: @pos
@@ -46,6 +52,5 @@ struct CV::PosTag
   delegate strings?, to: @pos
 
   delegate contws?, to: @pos
-  delegate funcws?, to: @pos
   delegate specials?, to: @pos
 end

@@ -55,9 +55,9 @@ module CV::TlRule
       when .adjts?, .preposes?, .specials?, .space?
         break unless flag == 0
         fold_verb_compl!(verb, succ).try { |x| verb = x } || break
-      when .adv_bu?
+      when .adv_bu4?
         verb = fold_verb_advbu!(verb, succ)
-      when .numeric?
+      when .numeral?
         fold_verb_compare(verb).try { |x| return x }
 
         if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
