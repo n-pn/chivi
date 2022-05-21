@@ -69,13 +69,13 @@ module CV::TlRule
       case right.key
       when "时"
         right.val = "khi"
-        tag = PosTag::Time
+        tag = PosTag::Temporal
       when "时候"
         right.val = "lúc"
-        tag = PosTag::Time
+        tag = PosTag::Temporal
       when "时间"
         right.val = "thời gian"
-        tag = PosTag::Time
+        tag = PosTag::Temporal
       else
         tag = PosTag::NounPhrase
       end

@@ -35,7 +35,7 @@ struct CV::PosTag
     # 方位词 - space word - phương vị
     {"f", "Locality", Pos::Nominal | Pos::Contws},
     # 时间词 - time word - thời gian
-    {"t", "Timeword", Pos::Nominal | Pos::Contws},
+    {"t", "Temporal", Pos::Nominal | Pos::Contws},
   }
 
   {% for type in NOUNS %}

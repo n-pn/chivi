@@ -33,7 +33,7 @@ module CV::TlRule
     return verb_object unless succ = verb_object.succ?
 
     if succ.suf_noun? && succ.key == "时"
-      fold!(verb_object, succ.set!("khi"), tag: PosTag::Time, dic: 5, flip: true)
+      fold!(verb_object, succ.set!("khi"), tag: PosTag::Temporal, dic: 5, flip: true)
     elsif succ.junction?
       fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
     else

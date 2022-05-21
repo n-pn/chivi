@@ -145,7 +145,7 @@ struct CV::PosTag
     when 'x' then parse_other(tag)
     when '~' then parse_extra(tag)
     when 'b' then Modi
-    when 't' then Timeword
+    when 't' then Temporal
     when 's' then Position
     when 'f' then Locality
     else          parse_miscs(tag)

@@ -122,7 +122,7 @@ class CV::MtNode
       # puts [succ, "maybe_verb", succ.verbal?]
       case succ
       when .verbal?, .vmodals? then return true
-      when .adverbial?, .comma?, pro_ints?, .conjunct?, .time?
+      when .adverbial?, .comma?, pro_ints?, .conjunct?, .temporal?
         succ = succ.succ?
       else return false
       end

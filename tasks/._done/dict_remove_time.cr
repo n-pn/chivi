@@ -17,7 +17,7 @@ def remove_time(dname : String)
 end
 
 def should_remove?(term)
-  return false unless term.ptag.time?
+  return false unless term.ptag.temporal?
   term.key =~ /^[零〇一二两三四五六七八九十百千万亿兆]+(点|点钟|分|分钟|秒|秒钟|半|点半)$/
 end
 

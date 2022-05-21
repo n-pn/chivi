@@ -33,7 +33,7 @@ module CV::TlRule
       end
     when "前"
       # space.val = "trước khi" if noun.verbal?
-      flip = !noun.timeword?
+      flip = !noun.temporal?
     end
 
     fold!(noun, space, PosTag::Position, dic: 5, flip: flip)

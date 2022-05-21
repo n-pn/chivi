@@ -16,13 +16,13 @@ module CV::TlRule
     when .pdash? # case 3-4
       fold_ndigit_succs!(node, succ, succ_2, PosTag::Number)
     when .colon? # for 5:6 format
-      node = fold_ndigit_succs!(node, succ, succ_2, PosTag::Time)
+      node = fold_ndigit_succs!(node, succ, succ_2, PosTag::Temporal)
 
       # for 5:6:7 format
       return node unless (succ_3 = succ_2.succ?) && (succ_4 = succ_3.succ?)
       return node unless succ_3.colon? && succ_4.ndigit?
 
-      fold_ndigit_succs!(node, succ_3, succ_4, PosTag::Time)
+      fold_ndigit_succs!(node, succ_3, succ_4, PosTag::Temporal)
     else
       return node unless succ.key == "点" || succ.key == "时"
       fold_number_hour!(node, succ)
