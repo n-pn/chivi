@@ -54,14 +54,14 @@ module CV::TlRule
     end
 
     case nominal.tag
-    when .space?
+    when .locality?
       fold_noun_space!(proper, nominal)
     when .person?
       fold!(proper, nominal, proper.tag, dic: 4, flip: false)
     when .nqtime?
       flip = !nominal.succ?(&.ends?) if flip
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
-    when .place?
+    when .position?
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
     when .names?, .ptitle?, .noun?
       # TODO: add pseudo proper

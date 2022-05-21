@@ -16,7 +16,7 @@ module CV::TlRule
   #     when .ajno?, .modi?
   #       break if flag > 0
   #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
-  #     when .place?
+  #     when .position?
   #       break if flag > 0
   #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
   #     when .ajad?, .adjective?

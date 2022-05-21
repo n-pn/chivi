@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_ptitle!(head : MtNode) : MtNode
+  def fold_btitle!(head : MtNode) : MtNode
     return head unless start_key = head.key[0]?
     end_key = match_title_end(start_key)
 

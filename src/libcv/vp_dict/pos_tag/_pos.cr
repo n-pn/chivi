@@ -7,7 +7,7 @@ struct CV::PosTag
 
     Mixed
 
-    Nominal; Times; Names; Human; Object
+    Nominal; Names; Human; Object
 
     Pronouns; ProDems; ProInts
 

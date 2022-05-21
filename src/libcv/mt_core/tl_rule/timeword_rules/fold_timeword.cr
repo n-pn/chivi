@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_time!(node : MtNode, succ = node.succ?) : MtNode
+  def fold_timeword!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
 
     case node.key

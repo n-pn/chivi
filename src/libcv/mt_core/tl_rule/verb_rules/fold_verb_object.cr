@@ -19,7 +19,7 @@ module CV::TlRule
 
     return verb unless (noun = scan_noun!(succ)) && noun.object?
 
-    if noun.place? && verb.ends_with?('在')
+    if noun.position? && verb.ends_with?('在')
       return fold!(verb, noun, PosTag::VerbObject, dic: 4)
     end
 

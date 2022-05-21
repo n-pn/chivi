@@ -109,7 +109,7 @@ module CV::TlRule
         case node = fold_nouns!(node)
         when .nattr?
           node = fold_head_ude1_noun!(node)
-        when .naffil?, .place?
+        when .naffil?, .position?
           node = fold_head_ude1_noun!(node) if prodem || nquant
         when .nominal?
           break

@@ -14,7 +14,7 @@ module CV::TlRule
         # end
 
         compl.val = "ở"
-      when .space?
+      when .locality?
         return unless compl.key == "中"
         if compl.succ?(&.ule?)
           compl.val = "trúng"

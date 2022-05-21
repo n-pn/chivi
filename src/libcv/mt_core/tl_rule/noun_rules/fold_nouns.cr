@@ -43,6 +43,9 @@ module CV::TlRule
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
       when .time?
         break
+      when .timeword?
+        # TODO: check can combine?
+        break
       when .nominal?
         return noun unless fold = fold_noun_noun!(noun, succ, mode: mode)
         noun = fold

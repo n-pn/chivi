@@ -12,11 +12,9 @@ module CV::TlRule
       end
     when .names?
       fold!(node, succ, succ.tag, dic: 4)
-    when .times?
-      fold!(node, succ, PosTag::NounPhrase, dic: 5)
-    when .place?
+    when .position?
       fold!(node, succ, PosTag::DefnPhrase, dic: 3, flip: true)
-      # when .space?
+      # when .locality?
       #   fold_noun_space!(node, succ) if mode == 0
     else
       if (prev = node.prev?) && need_2_objects?(prev)

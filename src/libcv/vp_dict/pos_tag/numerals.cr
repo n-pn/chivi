@@ -10,13 +10,13 @@ struct CV::PosTag
   # # 量词 - quantifier - lượng từ
   QT_POS = Pos::Quantis | Pos::Numeral | Pos::Contws
   Qtnoun = new(Tag::Qtnoun, QT_POS | Pos::Nominal)
-  Qttime = new(Tag::Qttime, QT_POS | Pos::Nominal | Pos::Times)
+  Qttime = new(Tag::Qttime, QT_POS | Pos::Nominal)
   Qtverb = new(Tag::Qtverb, QT_POS)
 
   # 数量词 - numeral and quantifier - số lượng từ
   NQ_POS = Pos::Nquants | Pos::Numeral | Pos::Contws
   Nqnoun = new(Tag::Nqnoun, NQ_POS | Pos::Nominal)
-  Nqtime = new(Tag::Nqtime, NQ_POS | Pos::Nominal | Pos::Times)
+  Nqtime = new(Tag::Nqtime, NQ_POS | Pos::Nominal)
   Nqverb = new(Tag::Nqverb, NQ_POS)
   Nqiffy = new(Tag::Nqiffy, NQ_POS) # unknown nquants
 

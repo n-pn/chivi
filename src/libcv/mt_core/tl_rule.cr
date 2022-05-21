@@ -2,53 +2,42 @@ require "./mt_dict"
 require "./tl_rule/**"
 
 module CV::TlRule
-  # ameba:disable Metrics/CyclomaticComplexity
   def fix_grammar!(node : MtNode, level = 0) : Nil
-    preprocess!(node)
-
     # puts [node, node.idx, node.succ?, "level: #{level}"].colorize.blue
 
     while node = node.succ?
-      case node.tag
-      when .auxils?    then node = heal_auxils!(node)
-      when .specials?  then node = fold_uniqs!(node)
-      when .strings?   then node = fold_strings!(node)
-      when .preposes?  then node = fold_preposes!(node)
-      when .pronouns?  then node = fold_pronouns!(node)
-      when .time?      then node = fold_time!(node)
-      when .numeral?   then node = fold_number!(node)
-      when .veno?      then node = fold_veno!(node)
-      when .ajad?      then node = fold_ajad!(node)
-      when .adverbial? then node = fold_adverbs!(node)
-      when .modi?      then node = fold_modifier!(node)
-      when .ajno?      then node = fold_ajno!(node)
-      when .adjective? then node = fold_adjts!(node, prev: nil)
-      when .space?     then node = fold_space!(node)
-      when .vmodals?   then node = fold_vmodals!(node)
-      when .verbal?    then node = fold_verbs!(node)
-      when .nominal?   then node = fold_nouns!(node)
-      when .onomat?    then node = fold_onomat!(node)
-      end
+      node = fold_once!(node)
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_once!(node : MtNode) : MtNode
     case node.tag
-    when .puncts?   then fold_puncts!(node)
-    when .strings?  then fold_strings!(node)
-    when .specials? then fold_specials!(node)
-    else                 node
-    end
-  end
-
-  def preprocess!(node : MtNode)
-    while node = node.succ?
-      case node.tag
-      when .specials? then node = pre_special!(node)
-      when .vead?     then node = heal_vead!(node)
-      when .veno?     then node = heal_veno!(node)
-      when .ajno?     then node = heal_ajno!(node)
-      end
+    when .puncts?    then fold_puncts!(node)
+    when .strings?   then fold_strings!(node)
+    when .mixed?     then fold_mixed!(node)
+    when .adverbial? then fold_adverbs!(node)
+    when .preposes?  then fold_preposess!(node)
+    when .specials?  then fold_specials!(node)
+    when .auxils?    then heal_auxils!(node)
+      # when .specials?  then fold_uniqs!(node)
+    when .strings?   then fold_strings!(node)
+    when .preposes?  then fold_preposes!(node)
+    when .pronouns?  then fold_pronouns!(node)
+    when .timeword?  then fold_timeword!(node)
+    when .numeral?   then fold_number!(node)
+    when .veno?      then fold_veno!(node)
+    when .ajad?      then fold_ajad!(node)
+    when .adverbial? then fold_adverbs!(node)
+    when .modi?      then fold_modifier!(node)
+    when .ajno?      then fold_ajno!(node)
+    when .adjective? then fold_adjts!(node, prev: nil)
+    when .locality?  then fold_space!(node)
+    when .vmodals?   then fold_vmodals!(node)
+    when .verbal?    then fold_verbs!(node)
+    when .nominal?   then fold_nouns!(node)
+    when .onomat?    then fold_onomat!(node)
+    else                  node
     end
   end
 
@@ -95,7 +84,7 @@ module CV::TlRule
         node.set!(vals[2], PosTag::Noun)
       end
     when .noun?, .naffil?
-      node.set!(vals[1], PosTag::Space)
+      node.set!(vals[1], PosTag::Locality)
     when .verb?, .vintr?
       node.set!(vals[0], PosTag::Vdir)
     else

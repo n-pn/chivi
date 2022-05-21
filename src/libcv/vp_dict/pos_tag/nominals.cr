@@ -31,11 +31,11 @@ struct CV::PosTag
 
   NOUNS_2 = {
     # 处所词 - place word - nơi chốn
-    {"s", "Place", Pos::Nominal | Pos::Contws},
+    {"s", "Position", Pos::Nominal | Pos::Contws},
     # 方位词 - space word - phương vị
-    {"f", "Space", Pos::Nominal | Pos::Contws},
+    {"f", "Locality", Pos::Nominal | Pos::Contws},
     # 时间词 - time word - thời gian
-    {"t", "Time", Pos::Nominal | Pos::Times | Pos::Contws},
+    {"t", "Timeword", Pos::Nominal | Pos::Contws},
   }
 
   {% for type in NOUNS %}
@@ -48,7 +48,7 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def places?
-    @tag.naffil? || @tag.place?
+    @tag.naffil? || @tag.position?
   end
 
   # ameba:disable Metrics/CyclomaticComplexity

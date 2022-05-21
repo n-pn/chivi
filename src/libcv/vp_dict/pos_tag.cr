@@ -102,7 +102,7 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def property?
-    @tag.naffil? || @tag.nattr? || @tag.place?
+    @tag.naffil? || @tag.nattr? || @tag.position?
   end
 
   @[AlwaysInline]
@@ -122,7 +122,7 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def spaces?
-    @tag.space? || @tag.v_shang? || @tag.v_xia?
+    @tag.locality? || @tag.v_shang? || @tag.v_xia?
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
@@ -145,9 +145,9 @@ struct CV::PosTag
     when 'x' then parse_other(tag)
     when '~' then parse_extra(tag)
     when 'b' then Modi
-    when 't' then Time
-    when 's' then Place
-    when 'f' then Space
+    when 't' then Timeword
+    when 's' then Position
+    when 'f' then Locality
     else          parse_miscs(tag)
     end
   end

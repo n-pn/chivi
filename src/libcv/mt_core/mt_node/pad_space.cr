@@ -1,4 +1,4 @@
-module CV::MTL::PadSpace
+module CV::MTL::PadLocality
   def pad_spaces!(prev : MtNode = self.prev) : MtNode
     # puts [self, self.idx, prev]
 
