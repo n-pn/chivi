@@ -29,7 +29,9 @@ module CV::MtDict
 
     QtTimes; QtVerbs; QtNouns
 
-    VCompl; VGroup; V2Objs
+    VerbCom; VerbDir
+
+    VGroup; V2Objs
   end
 
   DICTS = {
@@ -68,7 +70,7 @@ module CV::MtDict
     DICTS[dict.to_i]
   end
 
-  def get_val(dict : Dname, key : String)
+  def get_val(dict : Dnames, key : String)
     get(dict)[key]?.try(&.first)
   end
 

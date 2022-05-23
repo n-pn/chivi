@@ -18,7 +18,7 @@ module CV::TlRule
 
       if tail.uyy?
         break unless tail.key == "一样"
-        break unless tail.prev?(&.adv_bu4?)
+        break unless tail.prev?(&.adv_bu4?) || tail.succ?(&.ude1?)
       end
 
       tail = tail.succ?

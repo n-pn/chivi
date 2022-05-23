@@ -3,7 +3,8 @@ module CV::TlRule
   def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
     verb = fold_adverb_node!(prev, verb) if prev
 
-    return fold_verb_object!(verb, verb.succ?) if verb.checked?
+    # return verb if verb.flag.resolved?
+    return fold_verb_object!(verb, verb.succ?) if verb.flag.checked?
     # puts [verb, prev].colorize.yellow
 
     return verb unless succ = verb.succ?
@@ -12,9 +13,11 @@ module CV::TlRule
 
     case succ
     when .junction?
-      fold_verb_junction!(junc: succ, verb: verb).try { |x| verb = x } || break
-    when .suf_noun?, .usuo?
-      verb = fold_suf_noun!(verb, succ)
+      if fold = fold_verb_junction!(junc: succ, verb: verb)
+        verb = fold
+      end
+    when .suffixes?, .usuo?
+      verb = fold_suffixes!(verb, succ)
       return verb unless succ = verb.succ?
 
       # TODO: link with adverb

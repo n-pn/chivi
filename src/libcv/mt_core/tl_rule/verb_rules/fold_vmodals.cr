@@ -101,8 +101,9 @@ module CV::TlRule
         node.val = "muốn"
       end
     else
-      if succ.vdirs? || MtDict.fix_vcompl(succ)
-        node.set!("nhớ") if succ.succ?(&.human?)
+      if val = MtDict.get_val(:verb_dir, node.key) || MtDict.get_val(:verb_com, node.key)
+        succ.val = val
+        node.val = "nhớ" if succ.succ?(&.human?)
       end
     end
 

@@ -12,11 +12,11 @@ module CV::TlRule
     end
 
     case succ = noun.succ?
+    when .nil? then return noun.flag!(:resolved)
     when .maybe_adjt?
-      return fold_noun_adjt!(noun, succ) unless succ.adv_bu4?
+      noun = fold_noun_adjt!(noun, succ) unless succ.adv_bu4?
     when .ude1?
       noun = fold_ude1!(ude1: succ, prev: noun) if noun.nattr?
-      return noun
     when .uzhi?
       # TODO: check with prev to group
       return mode == 0 ? fold_uzhi!(succ, noun) : noun
@@ -24,23 +24,22 @@ module CV::TlRule
       adjt = fold!(noun, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
       return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
       succ = succ.adverbial? ? fold_adverbs!(succ) : fold_adjts!(succ)
-      return fold!(adjt, succ, PosTag::Aform, dic: 8)
+      noun = fold!(adjt, succ, PosTag::Aform, dic: 8)
     when .verbal?
-      return fold_noun_verb!(noun, succ)
+      noun = fold_noun_verb!(noun, succ)
     when .veno?
       succ = heal_veno!(succ)
       return fold_noun_verb!(noun, succ) if succ.verbal?
       noun = fold!(noun, succ, PosTag::Noun, dic: 7, flip: true)
     when .junction?
-      break unless should_fold_noun_concoord?(noun, succ)
-      fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
+      return noun unless should_fold_noun_concoord?(noun, succ)
+      fold_noun_concoord!(succ, noun).try { |fold| noun = fold }
     when .suffixes?
       unless succ.key == "时" && noun.prev?(&.verb?)
         noun = fold_suffixes!(noun, succ)
       end
     when .usuo?
-      break if succ.succ?(&.verbal?)
-      noun = fold_suf_noun!(noun, succ)
+      noun = fold_suffixes!(noun, succ) unless succ.succ?(&.verbal?)
     when .specials?
       case succ.key
       when "第"

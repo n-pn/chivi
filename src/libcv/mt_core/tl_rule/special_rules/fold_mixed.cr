@@ -154,7 +154,7 @@ module CV::TlRule
     when .verbal?
       return node.set!(PosTag::Vpro) if node.key == "选择"
 
-      if MtDict.has_key?(:v_compl, succ.key) || VERB_COMBINE.includes?(node.key)
+      if MtDict.has_key?(:verb_com, succ.key) || VERB_COMBINE.includes?(node.key)
         MtDict.fix_verb!(node)
       else
         MtDict.fix_noun!(node)

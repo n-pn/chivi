@@ -1,22 +1,5 @@
 module CV::TlRule
   def fold_verb_verb!(verb_1 : MtNode, verb_2 : MtNode) : MtNode
-    if verb_1.key == verb_2.key
-      count = 0
-
-      while succ = verb_2.succ?
-        break unless succ.key == verb_1.key
-        verb_2 = succ
-        count += 1
-      end
-
-      tag = count == 0 ? verb_1.tag : PosTag::None
-      return fold!(verb_1, verb_2, tag, dic: 0)
-    end
-
-    if MtDict.fix_vcompl(verb_2)
-      return fold!(verb_1, verb_2, PosTag::Verb, dic: 6)
-    end
-
     return verb_1 unless can_combine_verb_verb?(verb_1, verb_2)
 
     verb_2 = MtDict.fix_verb!(verb_2) if verb_2.veno?

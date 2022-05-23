@@ -97,12 +97,9 @@ module CV::TlRule
       when .uzhi?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_uzhi!(succ, adjt)
-      when .suf_noun?
+      when .suffixes?
         adjt = fold_adj_adv!(adjt, prev)
-        return fold_suf_noun!(adjt, succ)
-      when .suf_verb?
-        adjt = fold_adj_adv!(adjt, prev)
-        return fold_suf_verb!(adjt, succ)
+        return fold_suffixes!(adjt, succ)
       when .adv_bu4?
         fold_adjt_adv_bu!(adjt, succ, prev).try { |x| return x } || break
       else

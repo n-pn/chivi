@@ -8,7 +8,7 @@ module CV::TlRule
     return unless verb && succ && succ.maybe_verb? && is_concoord?(junc)
 
     tag = verb.tag if succ.verbal? && succ.key == "过"
-    verb = meld_near!(verb)
+    verb = fold_once!(verb)
 
     return unless tag || succ.verbal?
     fold!(verb, succ, tag: tag || succ.tag, dic: 4)

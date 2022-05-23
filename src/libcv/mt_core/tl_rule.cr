@@ -15,7 +15,7 @@ module CV::TlRule
     node = meld_once!(node)
 
     case node
-    when .nounish?  then fold_nouns!(node)
+    when .nominal?  then fold_nouns!(node)
     when .verbal?   then fold_verbs!(node)
     when .preposes? then fold_preposes!(node)
     else                 node

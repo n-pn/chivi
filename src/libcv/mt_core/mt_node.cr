@@ -2,7 +2,7 @@ require "../vp_dict/vp_term"
 require "./mt_node/*"
 require "./mt_util"
 
-@[::Flags]
+@[Flags]
 enum MtFlag
   Uncheck
   Checked
@@ -56,8 +56,14 @@ class CV::MtNode
   def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = -1)
   end
 
-  def add_flag(flag : MtFlag)
+  def flag!(flag : MtFlag) : self
     @flag |= flag
+    self
+  end
+
+  def flag!(flag : Symbol) : self
+    flag!(MtFlag.parse(flag.to_s))
+    # raise "Unknown flag #{flag}"
   end
 
   def blank?

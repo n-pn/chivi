@@ -47,7 +47,7 @@ module CV::TlRule
       verb_object = fold!(verb_object, succ, verb_object.tag, dic: 5)
     end
 
-    verb_object.tab(&.add_tag(:resolved))
+    verb_object.flag!(:resolved)
   end
 
   def fix_auxil_in_verb_phrase!(verb : MtNode)

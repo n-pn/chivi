@@ -1,29 +1,16 @@
 module CV::TlRule
-  def fold_verb_advbu!(verb : MtNode, adv_bu : MtNode, succ = adv_bu.succ?) : MtNode
-    return verb unless succ
+  def fold_verb_advbu!(verb : MtNode, adv_bu : MtNode, tail = adv_bu.succ?) : MtNode
+    return verb.flag!(:resolved) unless tail
 
-    if succ.key == verb.key
-      fold_verb_advbu_verb!(verb, adv_bu, succ)
-    elsif succ.vdirs?
-      fold_verb_vdirs!(verb, succ)
-    else
-      fold_verb_compl!(verb, succ).try { |x| verb = x } || verb
-    end
-  end
-
-  def fold_verb_advbu_verb!(verb : MtNode, adv_bu : MtNode, verb_2 : MtNode)
-    adv_bu.val = "hay"
-    verb_2.val = "không"
-
-    if (tail = verb_2.succ?) && (tail.noun? || tail.pro_per?)
-      verb_2.fix_succ!(tail.succ?)
-      tail.fix_succ!(adv_bu)
-      tail.fix_prev!(verb)
-      tag = PosTag::Vintr
-    else
-      tag = PosTag::Verb
+    unless tail.key == verb.key
+      verb = fold!(verb, adv_bu, verb.tag, dic: 4)
+      return fuse_verb_compl!(verb, tail)
     end
 
-    fold!(verb, verb_2, tag: tag, dic: 5)
+    verb.val = "hay"
+    verb = fold!(verb, adv_bu, tag: adv_bu.tag, dic: 2)
+    verb2 = fuse_verb!(tail)
+
+    fold!(verb, verb2, tag: verb2.tag, dic: 5, flip: true)
   end
 end

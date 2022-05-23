@@ -14,9 +14,9 @@ module CV::TlRule
     when "所"
       suff.val = "nơi"
     when "语"
-      return base unless base.nounish?
+      return base unless base.nominal?
     when "界"
-      return base unless base.nounish?
+      return base unless base.nominal?
       flip = false
     when "性"
       ptag = suff.succ?(&.ude2?) ? PosTag::Adverb : PosTag::Noun
