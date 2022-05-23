@@ -2,6 +2,7 @@ const labels = {
   '$hanviet': 'Hán Việt',
   '$pin_yin': 'Bính Âm',
   '$tradsim': 'Phồn Giản',
+  '$surname': 'Họ tiếng Trung',
   'regular': 'Thông Dụng',
   'essence': 'Nền Tảng',
   'fixture': 'Khoá Cứng',
@@ -14,7 +15,9 @@ const labels = {
   '~qt_times': 'Thời lượng từ',
   '~qt_verbs': 'Động lượng từ',
   '~qt_nouns': 'Danh lượng từ',
-  '~v_compl': 'Bổ ngữ động từ',
+  '~verb_com': 'Bổ ngữ động từ',
+  '~verb_dir': 'Động từ xu hướng',
+  '~v_group': 'Động từ ly hợp',
   '~v2_objs': 'Động từ 2 tân',
 }
 
@@ -30,7 +33,10 @@ const intros = {
   '~qt_times': 'Lượng từ chỉ thời gian',
   '~qt_verbs': 'Lượng từ làm bổ ngữ cho động từ phía trước',
   '~qt_nouns': 'Lượng từ đếm với danh từ',
-  '~v_compl': 'Những từ đứng sau động từ thì làm bổ ngữ cho nó',
+  '~verb_dir':
+    'Bổ ngữ xu hướng cho động từ, có thể đứng trước hoặc sau tân ngữ',
+  '~verb_com': 'Các loại bổ ngữ đứng sau động từ khác',
+  '~v_group': 'Cấu trúc động từ ly hợp, biểu hiện kỹ năng',
   '~v2_objs': 'Động từ yêu cầu 2 tân ngữ, tân ngữ trước thường chỉ người',
 }
 

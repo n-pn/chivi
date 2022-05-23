@@ -1,13 +1,18 @@
 <script context="module" lang="ts">
   import { make_vdict } from '$utils/vpdict_utils'
 
-  const basic = ['$hanviet', 'fixture', 'essence']
+  // prettier-ignore
+  const basic = [
+    '$hanviet', 'fixture', 'essence',
+    '$surname', '$pin_yin', '$tradsim',
+  ]
+
   // prettier-ignore
   const cvmtl = [
     '~fix_nouns', '~fix_verbs', '~fix_adjts',
     '~qt_times', '~qt_verbs', '~qt_nouns',
-    '~fix_u_zhi', '~v_compl', '~v2_objs',
-    '~fix_adverbs'
+    '~verb_com', '~verb_dir', `~v_group`,
+    '~v2_objs', '~fix_u_zhi', '~fix_adverbs'
   ]
 
   const dicts = { basic, cvmtl }
