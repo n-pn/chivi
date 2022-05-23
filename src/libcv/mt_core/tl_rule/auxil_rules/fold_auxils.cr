@@ -31,18 +31,6 @@ module CV::TlRule
     node.set!(val: "địa", tag: PosTag::Noun)
   end
 
-  def fold_verb_ule!(verb : MtNode, node : MtNode, succ = node.succ?)
-    if succ && !(succ.ends? || succ.succ?(&.ule?))
-      node.val = ""
-    end
-
-    if succ && succ.key == verb.key
-      node = succ
-    end
-
-    fold!(verb, node, PosTag::Verb, dic: 5)
-  end
-
   def keep_ule?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool
     return true unless succ
     return false if succ.popens?

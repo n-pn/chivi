@@ -2,18 +2,37 @@ require "../vp_dict/vp_term"
 require "./mt_node/*"
 require "./mt_util"
 
+@[::Flags]
+enum MtFlag
+  Uncheck
+  Checked
+  Resolved
+
+  NeedObj
+  Need2Obj
+
+  HasVdir
+
+  HasPreZai
+  HasUzhe
+  HasUle
+end
+
 class CV::MtNode
   property idx : Int32 = -1
+  property dic : Int32 = 0
+
   property key : String = ""
   property val : String = ""
   property tag : PosTag = PosTag::None
-  property dic : Int32 = 0
 
   property! prev : MtNode
   property! succ : MtNode
 
-  property! body : MtNode
   property! root : MtNode
+  property! body : MtNode
+
+  property flag : MtFlag = MtFlag::None
 
   forward_missing_to @tag
 
@@ -37,17 +56,12 @@ class CV::MtNode
   def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = -1)
   end
 
+  def add_flag(flag : MtFlag)
+    @flag |= flag
+  end
+
   def blank?
     @key.empty? || @val.blank?
-  end
-
-  def set_body!(node : MtNode) : Nil
-    self.body = node
-    self.fix_root!(node.root?)
-    node.root = self
-  end
-
-  def fix_root!(@root : MtNode?) : Nil
   end
 
   def prev?
@@ -62,12 +76,24 @@ class CV::MtNode
     @body.try { |x| yield x }
   end
 
+  def set_body!(node : MtNode) : Nil
+    self.body = node
+    self.fix_root!(node.root?)
+    node.root = self
+  end
+
+  def fix_root!(@root : MtNode?) : Nil
+  end
+
+  def set_prev!(@prev : Nil) : Nil
+  end
+
   def set_prev!(node : MtNode) : Nil
     node.fix_prev!(@prev)
     self.fix_prev!(node)
   end
 
-  def set_prev!(@prev : Nil) : Nil
+  def set_succ!(@succ : Nil) : Nil
   end
 
   def set_succ!(node : MtNode) : Nil
@@ -75,22 +101,19 @@ class CV::MtNode
     self.fix_succ!(node)
   end
 
-  def set_succ!(@succ : Nil) : Nil
+  def fix_prev!(@prev : Nil) : Nil
   end
 
   def fix_prev!(@prev : self) : Nil
     prev.succ = self
   end
 
-  def fix_prev!(@prev : Nil) : Nil
+  def fix_succ!(@succ : Nil) : Nil
+    self
   end
 
   def fix_succ!(@succ : self) : Nil
     succ.prev = self
-  end
-
-  def fix_succ!(@succ : Nil) : Nil
-    self
   end
 
   def set!(@val : String) : self

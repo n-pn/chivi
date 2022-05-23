@@ -45,33 +45,17 @@ module CV::TlRule
         succ = fold_nouns!(succ)
         node = fold!(node, succ, PosTag::Aform, dic: 4)
         node = fold_head_ude1_noun!(node)
-      when .adverbial?
+      when .mixed?
+        node = meld_mixed!(node)
+        node = fold_any_as_noun!(node)
+      when .adverb?
         node = fold_adverbs!(node)
-
-        case node.tag
-        when .verbal?
-          node = fold_verb_as_noun!(node, mode: mode)
-        when .adjective?
-          node = fold_adjt_as_noun!(node)
-        when .adverb?
-          break
-        else
-          # puts [node, node.tag]
-        end
+        node = fold_any_as_noun!(node)
       when .preposes?
         # break unless prodem || nquant
         node = fold_preposes!(node, mode: 3)
         # puts [node, node.body?]
-
-        if (ude1 = node.succ?) && ude1.ude1?
-          node = fold_ude1!(ude1: ude1, prev: node)
-        elsif node.verbal?
-          node = fold_verb_as_noun!(node, mode: mode)
-        elsif node.adjective?
-          node = fold_adjt_as_noun!(node)
-        end
-
-        break
+        node = fold_any_as_noun!(node)
       when .verb_object?
         break unless succ = node.succ?
 
@@ -84,26 +68,17 @@ module CV::TlRule
         end
       when .vmodals?
         node = fold_vmodals!(node)
-
-        if node.preposes?
-          node = fold_preposes!(node, mode: 1)
-        elsif node.verbal?
-          node = fold_verb_as_noun!(node, mode: mode)
-        elsif node.adjective?
-          node = fold_adjt_as_noun!(node)
-        end
-      when .veno?
-        node = fold_veno!(node)
-        node = fold_verb_as_noun!(node, mode: mode) if node.verbal?
+        node = fold_any_as_noun!(node)
       when .verbal?
-        node = fold_verb_as_noun!(node, mode: mode)
+        node = fold_verbs!(node)
+        node = fold_any_as_noun!(node)
       when .onomat?
         node = fold_adjt_as_noun!(node)
       when .modi?
         node = fold_modifier!(node)
         node = fold_adjt_as_noun!(node)
       when .adjective?
-        node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
+        node = fold_adjts!(node)
         node = fold_adjt_as_noun!(node)
       when .nominal?
         case node = fold_nouns!(node)
@@ -150,6 +125,23 @@ module CV::TlRule
     fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
   end
 
+  def fold_any_as_noun!(node : MtNode) : MtNode
+    case node.tag
+    when .nominal?   then node
+    when .v_shi?     then fold_v_shi!(node)
+    when .verbal?    then fold_verb_as_noun!(node)
+    when .adjective? then fold_adjt_as_noun!(node)
+    when .preposes?  then fold_preposes!(node, mode: 1)
+      # when .adverbial?
+    else
+      return node unless (ude1 = node.succ?) && ude1.ude1?
+      return node unless tail = scan_noun!(ude1.succ?)
+      fold_ude1_left!(ude1, left: node, right: tail)
+
+      # fold_head_ude1_noun!(node)
+    end
+  end
+
   def clean_nquant(nquant : MtNode, prodem : MtNode?)
     return nquant unless prodem || nquant.body? || nquant.key.size > 1
 
@@ -180,17 +172,7 @@ module CV::TlRule
 
   def fold_verb_as_noun!(node : MtNode, mode = 0)
     # puts [node, node.succ?]
-
-    case node
-    when .v_shi?
-      return fold_v_shi!(node)
-    when .veno?
-      node = fold_veno!(node)
-    else
-      node = fold_verbs!(node)
-    end
-
-    return node if node.nominal? || mode == 3 || !(succ = node.succ?)
+    return node unless succ = node.succ?
 
     unless succ.ude1? || node.verb_object? || node.vintr?
       return node unless succ = scan_noun!(succ, mode: 0)

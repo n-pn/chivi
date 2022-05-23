@@ -49,15 +49,11 @@ module CV::TlRule
   end
 
   # do not return left when fail to prevent infinity loop
-  def fold_ude1_left!(ude1 : MtNode, left : MtNode, right : MtNode?, mode = 0) : MtNode
-    return ude1 unless right
-
-    if left.ajno?
-      left.tag = PosTag::Adjt
-    elsif left.pro_na1?
+  def fold_ude1_left!(ude1 : MtNode, left : MtNode, right : MtNode, mode = 0) : MtNode
+    if left.pro_na1?
       left.val = "cái kia"
     elsif left.key == "所有"
-      return fold!(left.set!("tất cả"), right, PosTag::NounPhrase, dic: 5)
+      left.set!("tất cả")
     end
 
     # puts [left, right]
@@ -66,22 +62,25 @@ module CV::TlRule
     when .nominal?, .pronouns?, .numeral?, .verb_clause?, .adjt_clause?
       fold_noun_ude1!(left, ude1: ude1, right: right, mode: mode)
     else
-      case right.key
-      when "时"
-        right.val = "khi"
-        tag = PosTag::Temporal
-      when "时候"
-        right.val = "lúc"
-        tag = PosTag::Temporal
-      when "时间"
-        right.val = "thời gian"
-        tag = PosTag::Temporal
-      else
-        tag = PosTag::NounPhrase
-      end
-
+      tag = heal_ude1_right!(right)
       left = fold!(left, ude1, PosTag::DefnPhrase, dic: 7)
       fold!(left, right, tag: tag, dic: 6, flip: true)
+    end
+  end
+
+  def heal_ude1_right!(right : MtNode) : PosTag
+    case right.key
+    when "时"
+      right.val = "khi"
+      PosTag::Temporal
+    when "时候"
+      right.val = "lúc"
+      PosTag::Temporal
+    when "时间"
+      right.val = "thời gian"
+      PosTag::Temporal
+    else
+      PosTag::NounPhrase
     end
   end
 end

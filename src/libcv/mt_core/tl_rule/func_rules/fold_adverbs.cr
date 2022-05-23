@@ -8,24 +8,11 @@ module CV::TlRule
     # puts [node, succ]
 
     case node.tag
-    when .adv_bu4? then return fold_adv_bu!(node, succ)
-    when .adv_mei? then return fold_adv_mei!(node, succ)
-    when .adv_fei? then return fold_adv_fei!(node, succ)
-    when .vead?    then return fold_vead!(node, succ)
+    when .adv_bu4? then fold_adv_bu!(node, succ)
+    when .adv_mei? then fold_adv_mei!(node, succ)
+    when .adv_fei? then fold_adv_fei!(node, succ)
+    else                fold_adverb_base!(node, succ)
     end
-
-    fold_adverb_base!(node, succ)
-  end
-
-  def fold_vead!(node : MtNode, succ = node.succ)
-    case succ
-    when .ajno?    then node.tag = PosTag::Adverb
-    when .veno?    then return fold_verbs!(MtDict.fix_verb!(succ), node)
-    when .nominal? then return fold_verbs!(MtDict.fix_verb!(node))
-    when .ude3?    then return fold_adverb_ude3!(node, succ)
-    end
-
-    fold_adverb_base!(node, succ)
   end
 
   def fold_adv_bu!(node : MtNode, succ = node.succ) : MtNode
@@ -89,6 +76,9 @@ module CV::TlRule
     return node unless succ
 
     case succ.tag
+    when .v_shi?
+      node = fold!(node, succ, succ.tag, dic: 3)
+      fold_v_shi!(node)
     when .v_you?
       return node unless (noun = succ.succ?) && noun.noun?
       succ = fold!(succ, noun, PosTag::Aform, dic: 5)
@@ -132,9 +122,6 @@ module CV::TlRule
 
   def fix_adverb!(node : MtNode, succ = node.succ) : {MtNode, MtNode?}
     case succ
-    when .v_shi?
-      node = fold!(node, succ, PosTag::Adverb, dic: 8)
-      succ = node.succ?
     when succ.vead? || succ.ajad? || succ.adj_hao?
       if is_adverb?(succ)
         succ = heal_adj_hao!(succ) if succ.adj_hao?

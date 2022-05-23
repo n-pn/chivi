@@ -4,21 +4,11 @@ module CV::TlRule
     right.adjective?
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
   def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
     return unless verb && succ && succ.maybe_verb? && is_concoord?(junc)
 
-    case succ
-    when .preposes?
-      succ = fold_preposes!(succ)
-    when .adverbial?
-      succ = fold_adverbs!(succ)
-    when .veno?
-      succ = fold_veno!(succ)
-    when .verbal?
-      tag = verb.tag if succ.key == "过"
-      succ = fold_verbs!(succ)
-    end
+    tag = verb.tag if succ.verbal? && succ.key == "过"
+    verb = meld_near!(verb)
 
     return unless tag || succ.verbal?
     fold!(verb, succ, tag: tag || succ.tag, dic: 4)

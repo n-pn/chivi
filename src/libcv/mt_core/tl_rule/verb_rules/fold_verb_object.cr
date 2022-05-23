@@ -29,15 +29,38 @@ module CV::TlRule
       end
     end
 
+    fix_auxil_in_verb_phrase!(verb) if verb.flag.has_ule?
+
     verb_object = fold!(verb, noun, PosTag::VerbObject, dic: 8)
     return verb_object unless succ = verb_object.succ?
 
-    if succ.suf_noun? && succ.key == "时"
-      fold!(verb_object, succ.set!("khi"), tag: PosTag::Temporal, dic: 5, flip: true)
-    elsif succ.junction?
-      fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
-    else
-      verb_object
+    if succ.suffixes? && succ.key == "时"
+      return fold!(verb_object, succ.set!("khi"), tag: PosTag::Temporal, dic: 5, flip: true)
+    end
+
+    if succ.junction?
+      return fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
+    end
+
+    if val = MtDict.get_val(:verb_dir, succ.key)
+      succ.val = val
+      verb_object = fold!(verb_object, succ, verb_object.tag, dic: 5)
+    end
+
+    verb_object.tab(&.add_tag(:resolved))
+  end
+
+  def fix_auxil_in_verb_phrase!(verb : MtNode)
+    verb.each do |node|
+      if body = node.body?
+        fix_auxil_in_verb_phrase!(body)
+      else
+        if node.key.includes?('了')
+          node.val = node.val.sub(/\s?rồi/, "")
+        elsif node.key.includes?('着')
+          node.val = node.val.sub(/\s?lấy/, "")
+        end
+      end
     end
   end
 

@@ -33,16 +33,17 @@ module CV::MtDict
   end
 
   DICTS = {
-    load("fix_u_zhi", PosTag::Nform),
     load("fix_nouns", PosTag::Noun),
     load("fix_verbs", PosTag::Verb),
     load("fix_adjts", PosTag::Adjt),
-    load("fix_adverbs", PosTag::Adverb),
+    load("fix_u_zhi", PosTag::Nform),
+    load("fix_adverbs", PosTag::Adverb, true),
     load("qt_times", PosTag::Qttime, true),
     load("qt_verbs", PosTag::Qtverb, true),
     load("qt_nouns", PosTag::Qtnoun, true),
-    load("v_compl", PosTag::Verb),
-    load("v_group", PosTag::VerbObject),
+    load("verb_com", PosTag::Verb, true),
+    load("verb_dir", PosTag::Verb, true),
+    load("v_group", PosTag::VerbObject, true),
     load("v2_objs", PosTag::Verb, true),
   }
 
@@ -65,6 +66,10 @@ module CV::MtDict
 
   def get(dict : Dnames) : MtHash
     DICTS[dict.to_i]
+  end
+
+  def get_val(dict : Dname, key : String)
+    get(dict)[key]?.try(&.first)
   end
 
   def has_key?(dict : Dnames, key : String) : Bool
@@ -115,11 +120,6 @@ module CV::MtDict
     return unless term = get(:fix_u_zhi)[node.key]?
     node.val = term[0]
     term[1]
-  end
-
-  def fix_vcompl(node : MtNode)
-    return unless term = get(:v_compl)[node.key]?
-    node.set!(term[0], term[1])
   end
 
   def fix_quanti(node : MtNode)
