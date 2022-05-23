@@ -30,8 +30,9 @@
 
   async function update_memo(status: string) {
     if ($session.privi < 0) return
+
     if (status == ubmemo.status) status = 'default'
-    ubmemo.status = status
+    else ubmemo.status = status
 
     const [stt, payload] = await update_status(nvinfo.id, status)
 
