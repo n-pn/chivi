@@ -1,16 +1,17 @@
 <script lang="ts">
-  import { session } from '$app/stores'
-  import { scroll, popups, topbar } from '$lib/stores'
+  import { page, session } from '$app/stores'
+  import { scroll, popups } from '$lib/stores'
 
   import BarItem from '../Topbar/BarItem.svelte'
   import TopSearch from '../Topbar/TopSearch.svelte'
   import Config from '$gui/sects/reader/Config.svelte'
 
   $: uname = $session.privi < 0 ? 'Khách' : $session.uname
-  $: left = $topbar.left || []
-  $: right = $topbar.right || []
-  $: config = $topbar.config || false
-  $: search = $topbar.search ?? undefined
+
+  $: left = $page.stuff.topbar.left || []
+  $: right = $page.stuff.topbar.right || []
+  $: config = $page.stuff.topbar.config || false
+  $: search = $page.stuff.topbar.search ?? undefined
 </script>
 
 <nav class:clear={$scroll > 0}>

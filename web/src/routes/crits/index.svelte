@@ -2,12 +2,18 @@
   export async function load({ fetch, url: { searchParams } }) {
     const api_url = `/api/yscrits?${searchParams.toString()}&lm=10`
     const api_res = await fetch(api_url)
-    return await api_res.json()
+
+    const topbar = {
+      left: [['Đánh giá', 'stars', { href: '/crits' }]],
+      right: [['Thư đơn', 'bookmarks', { href: '/lists', show: 'tm' }]],
+    }
+
+    const payload = await api_res.json()
+    return { ...payload, stuff: { topbar } }
   }
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
   import { Crumb } from '$gui'
 
   import YscritList from '$gui/sects/yscrit/YscritList.svelte'
@@ -15,11 +21,6 @@
   export let crits = []
   export let pgidx = 1
   export let pgmax = 1
-
-  $: topbar.set({
-    left: [['Đánh giá', 'stars', { href: '/crits' }]],
-    right: [['Thư đơn', 'bookmarks', { href: '/lists', show: 'tm' }]],
-  })
 </script>
 
 <svelte:head>

@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-  import { topbar } from '$lib/stores'
   export async function load({ fetch, url }) {
     const pg = url.searchParams.get('pg') || 1
     const lb = url.searchParams.get('lb')
@@ -8,7 +7,13 @@
     if (lb) api_url += `&labels=${lb}`
 
     const api_res = await fetch(api_url)
-    return await api_res.json()
+    const payload = await api_res.json()
+
+    const topbar = {
+      left: [['Diễn đàn', 'messages', { href: '/forum' }]],
+    }
+    payload.stuff = { topbar }
+    return payload
   }
 </script>
 
@@ -16,10 +21,6 @@
   import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
   export let dtlist: CV.Dtlist
   const dboard = { id: -1, bname: 'Đại sảnh', bslug: 'dai-sanh' }
-
-  $: $topbar = {
-    left: [['Diễn đàn', 'messages', { href: '/forum' }]],
-  }
 </script>
 
 <svelte:head>

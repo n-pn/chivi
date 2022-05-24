@@ -8,7 +8,13 @@
 
     const api_url = `/api/vpinits/fixtag/${source}/${target}`
     const api_res = await fetch(api_url)
-    return await api_res.json()
+    const payload = await api_res.json()
+    const topbar = {
+      left: [['Phân loại', 'pencil', { href: '.' }]],
+    }
+
+    payload['stuff'] = { topbar }
+    return payload
   }
 
   export interface Data {
@@ -67,10 +73,6 @@
     if (count < 1000) return count
     return Math.round(count / 1000) + 'k'
   }
-
-  $: topbar.set({
-    left: [['Phân loại', 'pencil', { href: '.' }]],
-  })
 </script>
 
 <svelte:head>

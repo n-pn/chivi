@@ -3,7 +3,8 @@
   import { config } from '$lib/stores'
 
   import { call_api } from '$lib/api_call'
-  import { topbar } from '$lib/stores'
+
+  import { nvinfo_bar } from '$utils/topbar_utils'
   import { seed_url, to_pgidx } from '$utils/route_utils'
 
   function gen_api_url(path: string, redo = false) {
@@ -12,15 +13,34 @@
     return api_url
   }
 
-  export async function load({ fetch, params: { seed, chap }, stuff }) {
-    const { nvinfo } = stuff
-    const [chidx, cpart = 0] = chap.split('-')[0].split('.')
+  export async function load({ fetch, params, stuff: { nvinfo } }) {
+    const { seed: sname, chap: chap_slug } = params
+    const [chidx, cpart = 0] = chap_slug.split('-')[0].split('.')
 
-    const api_url = gen_api_url(`${nvinfo.id}/${seed}/${chidx}/${+cpart}`)
+    const api_url = gen_api_url(`${nvinfo.id}/${sname}/${chidx}/${+cpart}`)
     const api_res = await fetch(api_url)
 
-    if (api_res.ok) return { props: await api_res.json() }
-    return { status: api_res.status, error: await api_res.text() }
+    if (!api_res.ok) {
+      return { status: api_res.status, error: await api_res.text() }
+    }
+
+    const props = await api_res.json()
+
+    const stuff = { topbar: gen_topbar(nvinfo, sname, chidx) }
+    return { props, stuff }
+  }
+
+  function gen_topbar(nvinfo: CV.Nvinfo, sname: string, chidx: number) {
+    const list_url = seed_url(nvinfo.bslug, sname, to_pgidx(chidx))
+
+    return {
+      left: [
+        nvinfo_bar(nvinfo, { show: 'pl' }),
+        [`[${sname}]`, null, { href: list_url, kind: 'zseed' }],
+      ],
+      right: [],
+      config: true,
+    }
   }
 </script>
 
@@ -52,19 +72,7 @@
 
   $: paths = gen_paths(nvinfo, chmeta, chinfo)
 
-  $: book_url = `/-${nvinfo.bslug}`
-  $: list_url = seed_url(nvinfo.bslug, ubmemo.sname, to_pgidx(chinfo.chidx))
-
   $: globalThis.history?.replaceState({ chmeta }, null, chmeta._curr)
-
-  $: topbar.set({
-    left: [
-      [nvinfo.btitle_vi, 'book', { href: book_url, kind: 'title', show: 'pl' }],
-      [`[${ubmemo.sname}]`, null, { href: list_url, kind: 'zseed' }],
-    ],
-    right: [],
-    config: true,
-  })
 
   async function reload_chap(redo = false) {
     if ($session.privi < 1) return

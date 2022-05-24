@@ -20,10 +20,20 @@ declare namespace App {
     privi_3_until: number
   }
 
+  type BarItem = [string, string | undefined, Record<string, any> | undefined]
+
+  interface Topbar {
+    left: BarItem[] = []
+    right: BarItem[] = []
+    config?: boolean = false
+    search?: string = ''
+  }
+
   interface Stuff {
     nvinfo: CV.Nvinfo
     ubmemo: CV.Ubmemo
     nvseed: CV.Chseed[]
-    nvtab: 'index' | 'board' | 'crits' | 'chaps'
+    nv_tab: 'index' | 'board' | 'crits' | 'chaps'
+    topbar: Topbar
   }
 }

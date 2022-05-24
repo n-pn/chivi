@@ -4,12 +4,24 @@
     ['Github', 'https://github.com/np-nam/chivi'],
     ['Facebook', 'https://www.facebook.com/chivi.fb/'],
   ]
+
+  export async function load() {
+    const topbar = {
+      right: [
+        ['Dịch nhanh', 'bolt', { href: '/qtran', show: 'tm' }],
+        ['Đánh giá', 'stars', { href: '/crits', show: 'tm' }],
+      ],
+      search: '',
+    }
+
+    return { stuff: { topbar } }
+  }
 </script>
 
 <script lang="ts">
   import { onMount } from 'svelte'
-
   import { navigating, session } from '$app/stores'
+
   import { scroll, toleft, layers, popups, config } from '$lib/stores'
   import { map_keypress, trigger_click } from '$utils/kbd_utils'
 

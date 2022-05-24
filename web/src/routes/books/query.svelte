@@ -11,12 +11,12 @@
     const qs = input.replace(/\+|-/g, ' ')
     const api_url = `/api/books?order=weight&lm=8&pg=${pg}&${type}=${qs}`
 
-    return await wrap_get(fetch, api_url, null, { input, type })
+    const topbar = { search: input }
+    return await wrap_get(fetch, api_url, null, { input, type }, { topbar })
   }
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
   import NvinfoList from '$gui/sects/Nvinfo/List.svelte'
 
   export let input = ''
@@ -26,8 +26,6 @@
 
   $: from = (pgidx - 1) * 8 + 1
   $: upto = from + books.length - 1
-
-  $: topbar.set({ search: input })
 </script>
 
 <svelte:head>

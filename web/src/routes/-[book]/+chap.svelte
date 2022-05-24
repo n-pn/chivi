@@ -1,11 +1,23 @@
 <script context="module" lang="ts">
   /** @type {import('./[slug]').Load} */
-  export async function load({ url, fetch, stuff: { nvinfo } }) {
+  export async function load({ url, fetch, stuff }) {
+    const { nvinfo } = stuff
     const chidx = +url.searchParams.get('chidx') || 1
     const mode = url.searchParams.get('mode')
 
     const input = mode == 'edit' ? await load_text(fetch, nvinfo.id, chidx) : ''
-    return { props: { nvinfo, chidx, input } }
+
+    stuff.topbar = gen_topbar(nvinfo)
+    return { props: { nvinfo, chidx, input }, stuff }
+  }
+
+  function gen_topbar({ btitle_vi, bslug }) {
+    return {
+      left: [
+        [btitle_vi, 'book', { href: `/-${bslug}`, kind: 'title' }],
+        ['Thêm/sửa chương', 'file-plus', { href: '.', show: 'pl' }],
+      ],
+    }
   }
 
   async function load_text(fetch: CV.Fetch, book_id: number, chidx: number) {
@@ -17,7 +29,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import { topbar } from '$lib/stores'
 
   import { SIcon, Footer } from '$gui'
 
@@ -43,13 +54,6 @@
       alert(payload.error)
     }
   }
-
-  $: topbar.set({
-    left: [
-      [nvinfo.btitle_vi, 'book', { href: `/-${nvinfo.bslug}`, kind: 'title' }],
-      ['Thêm/sửa chương', 'file-plus', { href: '.', show: 'pl' }],
-    ],
-  })
 </script>
 
 <svelte:head>

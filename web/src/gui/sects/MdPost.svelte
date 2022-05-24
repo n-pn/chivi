@@ -1,12 +1,5 @@
 <script lang="ts">
-  import { topbar } from '$lib/stores'
-
   export let title = 'Untitled'
-
-  $: $topbar = {
-    left: [[title, 'news', { kind: 'title' }]],
-    config: true,
-  }
 </script>
 
 <svelte:head>

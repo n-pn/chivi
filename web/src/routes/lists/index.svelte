@@ -2,14 +2,18 @@
   export async function load({ fetch, url: { searchParams } }) {
     const api_url = `/api/yslists?${searchParams.toString()}&lm=10`
     const api_res = await fetch(api_url)
-    return await api_res.json()
-  }
+    const payload = await api_res.json()
 
-  const sorts = { score: 'Nổi bật', likes: 'Ưa thích', utime: 'Đổi mới' }
+    const topbar = {
+      left: [['Thư đơn', 'bookmarks', { href: '/lists' }]],
+      right: [['Đánh giá', 'stars', { href: '/crits', show: 'tm' }]],
+    }
+    payload.stuff = { topbar }
+    return payload
+  }
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
   import { Crumb } from '$gui'
 
   import YslistList from '$gui/parts/yslist/YslistList.svelte'
@@ -17,11 +21,6 @@
   export let lists = []
   export let pgidx = 1
   export let pgmax = 1
-
-  $: topbar.set({
-    left: [['Thư đơn', 'bookmarks', { href: '/lists' }]],
-    right: [['Đánh giá', 'stars', { href: '/crits', show: 'tm' }]],
-  })
 </script>
 
 <svelte:head>

@@ -26,13 +26,14 @@ export async function wrap_get(
   fetch: CV.Fetch,
   url: string,
   cache?: Cache,
-  extra?: object
+  extra?: object,
+  stuff?: object
 ) {
   const [status, data] = await call_api(url, 'GET', null, fetch)
 
   if (status < 300) {
     if (extra) Object.assign(data, extra)
-    return { status, props: data, cache }
+    return { status, props: data, cache, stuff }
   }
 
   return status >= 400 ? { status, error: data } : { status, redirect: data }

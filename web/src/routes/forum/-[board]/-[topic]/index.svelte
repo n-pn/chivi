@@ -10,27 +10,32 @@
 
     payload.props.dboard = dboard
     payload.props.cvpost = cvpost
+
+    const board_url = `/forum/-${dboard.bslug}`
+
+    const topbar = {
+      left: [
+        ['Diễn đàn', 'messages', { href: '/forum', show: 'tl' }],
+        [
+          dboard.bname,
+          'message',
+          { href: board_url, show: 'tm', kind: 'title' },
+        ],
+        [cvpost.title, null, { href: '.', kind: 'title' }],
+      ],
+    }
+
+    payload.stuff = { topbar }
     return payload
   }
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
-
   import { CvpostFull, CvreplList } from '$gui'
 
   export let dboard: CV.Dboard
   export let cvpost: CV.Cvpost
   export let tplist: CV.Tplist
-
-  $: board_url = `/forum/-${dboard.bslug}`
-  $: $topbar = {
-    left: [
-      ['Diễn đàn', 'messages', { href: '/forum', show: 'tl' }],
-      [dboard.bname, 'message', { href: board_url, show: 'tm', kind: 'title' }],
-      [cvpost.title, null, { href: '.', kind: 'title' }],
-    ],
-  }
 </script>
 
 <svelte:head>

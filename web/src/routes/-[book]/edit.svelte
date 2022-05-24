@@ -1,32 +1,33 @@
 <script context="module" lang="ts">
+  import { nvinfo_bar } from '$utils/topbar_utils'
+
   export async function load({ stuff, fetch }) {
     const { nvinfo } = stuff
     const api_url = `/api/books/${nvinfo.bslug.substr(0, 8)}/detail`
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
 
+    const topbar = {
+      left: [
+        nvinfo_bar(nvinfo, { show: 'tm' }),
+        ['Sửa thông tin', 'pencil', { href: './edit' }],
+      ],
+    }
+
     Object.assign(nvinfo, payload)
-    return { props: stuff }
+    return { props: { nvinfo }, stuff: { topbar } }
   }
 </script>
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { session } from '$app/stores'
-  import { topbar } from '$lib/stores'
+  import { page, session } from '$app/stores'
   import { Crumb, SIcon } from '$gui'
 
   import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
-  export let nvinfo: CV.Nvinfo
+  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
 
   $: nv_href = `/-${nvinfo.bslug}`
-
-  $: topbar.set({
-    left: [
-      [nvinfo.btitle_vi, 'book', { href: nv_href, show: 'tm', kind: 'title' }],
-      ['Sửa thông tin', 'pencil', { href: './edit' }],
-    ],
-  })
 
   async function delete_book() {
     const bslug = nvinfo.bslug.substring(0, 8)

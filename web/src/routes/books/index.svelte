@@ -5,7 +5,14 @@
     const api_url = new URL(url)
     api_url.pathname = '/api/books'
     api_url.searchParams.set('lm', '24')
-    return await wrap_get(fetch, api_url.toString())
+
+    const topbar = {
+      right: [
+        ['Thêm truyện', 'file-plus', { href: '/books/+new', show: 'tm' }],
+      ],
+      search: '',
+    }
+    return await wrap_get(fetch, api_url.toString(), null, null, { topbar })
   }
 
   const order_names = {
@@ -18,7 +25,6 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
-  import { topbar } from '$lib/stores'
   import Nvlist from '$gui/parts/nvinfo/NvinfoList.svelte'
   import Footer from '$gui/sects/Footer.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
@@ -28,11 +34,6 @@
   export let pgmax = 1
 
   $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
-
-  $: topbar.set({
-    right: [['Thêm truyện', 'file-plus', { href: '/books/+new', show: 'tm' }]],
-    search: '',
-  })
 </script>
 
 <svelte:head>

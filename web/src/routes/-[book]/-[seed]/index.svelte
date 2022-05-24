@@ -11,9 +11,23 @@
     const payload = await load_page(fetch, nvinfo, sname, pgidx)
     if (payload.error) return payload
 
+    stuff.topbar = gen_topbar(nvinfo, ubmemo, url)
     payload.props.nvinfo = nvinfo
     payload.props.ubmemo = ubmemo
+    payload.stuff = stuff
+
     return payload
+  }
+
+  function gen_topbar(nvinfo: CV.Nvinfo, ubmemo: CV.Ubmemo, { pathname }) {
+    const { btitle_vi, bslug } = nvinfo
+    return {
+      left: [
+        [btitle_vi, 'book', { href: `/-${bslug}`, show: 'tm', kind: 'title' }],
+        ['Chương tiết', 'list', { href: pathname, show: 'pm' }],
+      ],
+      right: [suggest_read(nvinfo, ubmemo)],
+    }
   }
 
   async function load_page(
@@ -36,8 +50,6 @@
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
   import Chlist from '$gui/parts/Chlist.svelte'
@@ -54,18 +66,6 @@
   export let chpage: CV.Chpage
 
   $: pager = new Pager($page.url, { sname: 'union', pg: 1 })
-
-  $: topbar.set({
-    left: [
-      [
-        nvinfo.btitle_vi,
-        'book',
-        { href: `/-${nvinfo.bslug}`, show: 'tm', kind: 'title' },
-      ],
-      ['Chương tiết', 'list', { href: $page.url.pathname, show: 'pm' }],
-    ],
-    right: [suggest_read(nvinfo, ubmemo)],
-  })
 
   let _refresh = false
   let _error: string

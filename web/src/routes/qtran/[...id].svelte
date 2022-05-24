@@ -26,19 +26,26 @@
     if (!api_res.ok) return { status: api_res.status, error: payload }
 
     const [type, name] = params.id.split('/')
-    return { props: { type, name, cvdata: payload } }
+
+    const topbar = {
+      left: [
+        ['Dịch nhanh', 'bolt', { href: '/qtran', show: 'ts' }],
+        [`[${name}]`, icons[type], { href: name, kind: 'title' }],
+      ],
+      config: true,
+    }
+
+    return { props: { type, name, cvdata: payload }, stuff: { topbar } }
   }
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
   import { Footer, SIcon, Crumb } from '$gui'
 
   import MtPage from '$gui/sects/MtPage.svelte'
   import { page } from '$app/stores'
 
   export let name: string
-  export let type: string
 
   export let cvdata = ''
 
@@ -46,14 +53,6 @@
     const url = make_url($page.url)
     const res = await fetch(url)
     cvdata = await res.text()
-  }
-
-  $: $topbar = {
-    left: [
-      ['Dịch nhanh', 'bolt', { href: '/qtran', show: 'ts' }],
-      [`[${name}]`, icons[type], { href: name, kind: 'title' }],
-    ],
-    config: true,
   }
 </script>
 

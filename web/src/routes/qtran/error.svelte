@@ -1,14 +1,21 @@
 <script context="module" lang="ts">
   export async function load({ fetch, url }) {
     const api_res = await fetch(`/api/tlspecs${url.search}`)
-    return await api_res.json()
+    const payload = await api_res.json()
+
+    const topbar = {
+      left: [['Lỗi máy dịch', 'flag', { href: url.pathname }]],
+      config: true,
+    }
+
+    payload.stuff = { topbar }
+    return payload
   }
 </script>
 
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { page } from '$app/stores'
-  import { topbar } from '$lib/stores'
   import { Crumb } from '$gui'
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
@@ -22,11 +29,6 @@
   const on_destroy = () => invalidate(`/api/tlspecs${$page.url.search}`)
 
   $: pager = new Pager($page.url)
-
-  $: topbar.set({
-    left: [['Lỗi máy dịch', 'flag', { href: '/qtran/error' }]],
-    config: true,
-  })
 </script>
 
 <svelte:head>

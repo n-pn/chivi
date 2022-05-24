@@ -1,21 +1,5 @@
 import { writable, type Writable } from 'svelte/store'
 
-type BarItem = [string, string | undefined, Record<string, any> | undefined]
-
-interface Topbar {
-  left?: BarItem[]
-  right?: BarItem[]
-  config?: boolean
-  search?: string
-}
-
-export const topbar: Writable<Topbar> = writable({
-  left: [],
-  right: [],
-  config: false,
-  search: '',
-})
-
 export const toleft = writable(false)
 
 let prevScrollTop = 0

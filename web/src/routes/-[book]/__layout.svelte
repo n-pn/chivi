@@ -14,7 +14,6 @@
       api_res['stuff'] = api_res.props
     } else if (api_res.status == 301) {
       const redirect = url.pathname.replace(slug, api_res.redirect)
-      console.log(redirect)
       api_res.redirect = encodeURI(redirect)
     }
 

@@ -3,12 +3,23 @@
     const id = params.list.split('-')[0]
     const api_url = `/api/yslists/${id}${url.search}`
     const api_res = await fetch(api_url)
-    return await api_res.json()
+
+    const payload = await api_res.json()
+
+    const topbar = {
+      left: [
+        ['Thư đơn', 'bookmarks', { href: '/lists' }],
+        [payload.props.ylist.vname, null, { href: '.', kind: 'title' }],
+      ],
+
+      right: [['Đánh giá', 'stars', { href: '/crits', show: 'tm' }]],
+    }
+    payload.stuff = { topbar }
+    return payload
   }
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
   import { rel_time } from '$utils/time_utils'
   import { SIcon } from '$gui'
 
@@ -20,13 +31,6 @@
   export let crits: CV.Yscrit[] = []
   export let pgidx = 1
   export let pgmax = 1
-
-  $: topbar.set({
-    left: [
-      ['Thư đơn', 'bookmarks', { href: '/lists' }],
-      [ylist.vname, null, { href: '.', kind: 'title' }],
-    ],
-  })
 </script>
 
 <svelte:head>

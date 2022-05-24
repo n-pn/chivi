@@ -10,7 +10,8 @@
     api_url.searchParams.set('_s', _sort)
 
     const api_res = await fetch(api_url.toString())
-    return await api_res.json()
+    const payload = api_res.json()
+    return payload
   }
 </script>
 

@@ -10,24 +10,28 @@
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
 
+    const topbar = {
+      left: [
+        ['Diễn đàn', 'messages', { href: '/forum', show: 'pl' }],
+        [
+          dboard.bname,
+          null,
+          { href: `/forum/-${dboard.bslug}`, kind: 'title' },
+        ],
+      ],
+    }
+
     payload.props.dboard = dboard
+    payload.stuff = { topbar }
     return payload
   }
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
   import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
 
   export let dboard: CV.Dboard
   export let dtlist: CV.Dtlist
-
-  $: topbar.set({
-    left: [
-      ['Diễn đàn', 'messages', { href: '/forum', show: 'pl' }],
-      [dboard.bname, null, { href: `/forum/-${dboard.bslug}`, kind: 'title' }],
-    ],
-  })
 </script>
 
 <svelte:head>

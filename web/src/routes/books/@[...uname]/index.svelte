@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
   import { status_types, status_names } from '$lib/constants'
-  import { topbar } from '$lib/stores'
   import { wrap_get } from '$lib/api_call'
 
   export async function load({ url, params, fetch }) {
@@ -8,7 +7,11 @@
     const page = +url.searchParams.get('pg') || 1
 
     const api_url = `/api/books?pg=${page}&lm=24&order=update&uname=${uname}&bmark=${bmark}`
-    return await wrap_get(fetch, api_url, null, { uname, bmark })
+
+    const topbar = {
+      left: [[`Tủ truyện của [${uname}]`, 'notebook', { href: url.pathname }]],
+    }
+    return await wrap_get(fetch, api_url, null, { uname, bmark }, { topbar })
   }
 </script>
 
@@ -28,11 +31,6 @@
   // export let total = 1
 
   $: pager = new Pager($page.url)
-  $: topbar.set({
-    left: [
-      [`Tủ truyện của [${uname}]`, 'notebook', { href: $page.url.pathname }],
-    ],
-  })
 </script>
 
 <svelte:head>

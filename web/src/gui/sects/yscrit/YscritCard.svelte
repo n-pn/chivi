@@ -52,7 +52,9 @@
     <section class="book">
       <a class="bcover" href="/-{book.bslug}">
         <picture>
-          <source type="image/webp" srcset="/covers/{book.bcover}" />
+          <source
+            type="image/webp"
+            srcset="/covers/{book.bcover || 'blank.webp'}" />
           <img src="/imgs/empty.png" alt="" />
         </picture>
       </a>

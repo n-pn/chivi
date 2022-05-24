@@ -7,14 +7,16 @@
     api_url.searchParams.set('lm', '24')
     api_url.searchParams.set('genre', genre)
 
-    const genres = genre.split('+')
-    return await wrap_get(fetch, api_url.toString(), null, { genres })
+    const extra = { genres: genre.split('+') }
+    const topbar = { left: [['Thể loại', 'folder', { href: url.pathname }]] }
+
+    return await wrap_get(fetch, api_url.toString(), null, extra, { topbar })
   }
 </script>
 
 <script lang="ts">
   import { page } from '$app/stores'
-  import { topbar } from '$lib/stores'
+
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import Bgenre from '$gui/sects/Bgenre.svelte'
@@ -26,9 +28,6 @@
   export let genres = []
 
   $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
-  $: topbar.set({
-    left: [['Thể loại', 'folder', { href: $page.url.pathname }]],
-  })
 </script>
 
 <svelte:head>

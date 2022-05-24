@@ -2,12 +2,15 @@
   export async function load({ url }) {
     const dname = url.searchParams.get('dname') || 'combine'
     const input = url.searchParams.get('input')
-    return { props: { dname, input: input } }
+
+    const topbar = {
+      left: [['Dịch nhanh', 'bolt', { href: '/qtran' }]],
+    }
+    return { props: { dname, input: input }, stuff: { topbar } }
   }
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
   import { Footer, SIcon, Crumb } from '$gui'
 
   import { goto } from '$app/navigation'
@@ -37,10 +40,6 @@
     } else {
       error = await res.text()
     }
-  }
-
-  $: $topbar = {
-    left: [['Dịch nhanh', 'bolt', { href: '/qtran' }]],
   }
 </script>
 

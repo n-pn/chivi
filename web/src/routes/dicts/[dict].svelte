@@ -16,16 +16,28 @@
 
     const payload = await api_res.json()
     const { d_dub, d_tip } = make_vdict(dict, payload.props.d_dub)
+
     payload.props.d_dub = d_dub
     payload.props.d_tip = d_tip
     payload.props.query = Object.fromEntries(url.searchParams)
+
+    const topbar = {
+      left: [
+        ['Từ điển', 'package', { href: '/dicts', show: 'ts' }],
+        [d_dub, null, { href: url.pathname, kind: 'title' }],
+      ],
+      right: [['Dịch nhanh', 'bolt', { href: `/qtran?dname=${dict}` }]],
+    }
+
+    payload.stuff = { topbar }
+
     return payload
   }
 </script>
 
 <script lang="ts">
   import { browser } from '$app/env'
-  import { ztext, vdict, topbar } from '$lib/stores'
+  import { ztext, vdict } from '$lib/stores'
   import { rel_time_vp } from '$utils/time_utils'
 
   import { Crumb, SIcon } from '$gui'
@@ -41,13 +53,6 @@
   export let query = { key: '', val: '', ptag: '', rank: '', uname: '' }
 
   $: vdict.put(dname, d_dub)
-  $: topbar.set({
-    left: [
-      ['Từ điển', 'package', { href: '/dicts', show: 'ts' }],
-      [d_dub, null, { href: $page.url.pathname, kind: 'title' }],
-    ],
-    right: [['Dịch nhanh', 'bolt', { href: `/qtran?dname=${dname}` }]],
-  })
 
   let d_tab = 2
   $: {

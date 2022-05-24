@@ -5,20 +5,18 @@
     const page = +url.searchParams.get('pg') || 1
     const api_url = `/api/books?order=weight&lm=8&pg=${page}&author=${author}`
 
-    return await wrap_get(fetch, api_url, null, { author })
+    const topbar = { left: [[author, 'edit', { href: `/books/=${author}` }]] }
+    return await wrap_get(fetch, api_url, null, { author }, { topbar })
   }
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
   import NvinfoList from '$gui/sects/Nvinfo/List.svelte'
 
   export let author = ''
   export let books = []
   export let pgidx = 0
   export let pgmax = 0
-
-  $: topbar.set({ left: [[author, 'edit', { href: `/books/=${author}` }]] })
 </script>
 
 <svelte:head>

@@ -1,7 +1,8 @@
 <script context="module" lang="ts">
   import { page, session } from '$app/stores'
-  import { topbar } from '$lib/stores'
   import { invalidate } from '$app/navigation'
+
+  import { nvinfo_bar } from '$utils/topbar_utils'
 
   import { suggest_read, update_status } from '$utils/ubmemo_utils'
   import {
@@ -14,7 +15,13 @@
   import { map_status } from '$utils/nvinfo_utils'
 
   export async function load({ stuff }) {
-    return { props: stuff }
+    const { nvinfo, ubmemo } = stuff
+
+    const topbar = {
+      left: [nvinfo_bar(nvinfo)],
+      right: [suggest_read(nvinfo, ubmemo)],
+    }
+    return { props: stuff, stuff: { topbar } }
   }
 </script>
 
@@ -27,6 +34,14 @@
 
   export let nvinfo = $page.stuff.nvinfo
   export let ubmemo = $page.stuff.ubmemo
+
+  $: nv_tab = $page.stuff.nv_tab || gen_nv_tab($page.routeId)
+
+  function gen_nv_tab(path: string) {
+    if (path.includes('crits')) return 'crits'
+    if (path.includes('board')) return 'board'
+    return 'index'
+  }
 
   async function update_memo(status: string) {
     if ($session.privi < 0) return
@@ -43,15 +58,6 @@
       invalidate(`/api/books/${nvinfo.bslug}`)
     }
   }
-
-  $: nvtab = $page.routeId.replace(/-\[book\](.*)@book$/, '$1')
-
-  $: topbar.set({
-    left: [
-      [nvinfo.btitle_vi, 'book', { href: `/-${nvinfo.bslug}`, kind: 'title' }],
-    ],
-    right: [suggest_read(nvinfo, ubmemo)],
-  })
 </script>
 
 <div class="main-info">
@@ -180,21 +186,24 @@
 
 <section class="section">
   <header class="section-header">
-    <a href="/-{nvinfo.bslug}" class="header-tab" class:_active={nvtab == ''}>
+    <a
+      href="/-{nvinfo.bslug}"
+      class="header-tab"
+      class:_active={nv_tab == 'index'}>
       <span>Tổng quan</span>
     </a>
 
     <a
       href="/-{nvinfo.bslug}/crits"
       class="header-tab"
-      class:_active={nvtab == '/crits'}>
+      class:_active={nv_tab == 'crits'}>
       <span>Đánh giá</span>
     </a>
 
     <a
       href="/-{nvinfo.bslug}/chaps"
       class="header-tab"
-      class:_active={nvtab == '/chaps'}>
+      class:_active={nv_tab == 'chaps'}>
       <span>Chương tiết</span>
     </a>
   </header>

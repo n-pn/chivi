@@ -1,18 +1,15 @@
 <script context="module" lang="ts">
   export function load({ status, error }) {
-    return { props: { status, error } }
+    const topbar = {
+      left: [[`Lỗi hệ thống: ${status}`, null, { href: '/' }]],
+    }
+    return { props: { status, error }, stuff: { topbar } }
   }
 </script>
 
 <script lang="ts">
-  import { topbar } from '$lib/stores'
-
   export let status: number
   export let error: Error
-
-  $: $topbar = {
-    left: [[`Lỗi hệ thống: ${status}`, null, { href: '/' }]],
-  }
 </script>
 
 <svelte:head>

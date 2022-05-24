@@ -1,15 +1,18 @@
+<script context="module">
+  export function load() {
+    const topbar = {
+      left: [
+        ['Thư viện', 'books', { href: '/books' }],
+        ['Thêm truyện mới', 'file-plus', { href: '/books/+new' }],
+      ],
+    }
+    return { stuff: { topbar } }
+  }
+</script>
+
 <script lang="ts">
-  import { topbar } from '$lib/stores'
   import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
-
   import { Crumb } from '$gui'
-
-  $: topbar.set({
-    left: [
-      ['Thư viện', 'books', { href: '/books' }],
-      ['Thêm truyện mới', 'file-plus', { href: '/books/+new' }],
-    ],
-  })
 </script>
 
 <Crumb
