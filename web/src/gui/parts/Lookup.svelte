@@ -37,22 +37,11 @@
   let hv_html = ''
   let zh_html = ''
 
-  let clear_cache: ReturnType<typeof setTimeout> | null = null
-
   $: if ($ctrl.actived) {
     zh_html = zh_html_cache[$ztext] ||= MtData.render_zh($ztext)
     get_hanviet($ztext)
     fetch_terms($ztext, $zfrom)
     if ($zfrom >= 0) update_focus()
-
-    if (!clear_cache) {
-      clear_cache = setTimeout(() => {
-        entries_cache = {}
-        hv_html_cache = {}
-        zh_html_cache = {}
-        clear_cache = null
-      }, 300000) // clear cache after 5 minutes
-    }
   }
 
   async function fetch_terms(input: string, zfrom: number) {
