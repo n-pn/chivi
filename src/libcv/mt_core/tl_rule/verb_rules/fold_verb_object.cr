@@ -1,6 +1,6 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_verb_object!(verb : MtNode, succ : MtNode?)
+  def fold_verb_object!(verb : MtNode, succ = verb.succ?)
     return verb if !succ || verb.v0_obj?
 
     if succ.ude1?

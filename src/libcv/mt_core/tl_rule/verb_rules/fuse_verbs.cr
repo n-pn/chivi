@@ -2,19 +2,7 @@ module CV::TlRule
   COMPL_TAILS = {'完', '到', '着', '上', '下', '起', '好'}
 
   def fuse_verb!(verb : MtNode, succ = verb.succ?)
-    return verb.flag!(:resolved) unless succ
-
-    if verb.v_compare? && (node = fold_compare(verb, succ))
-      return node.flag!(:resolved)
-    end
-
-    if verb.v_combine? && succ.verb?
-      succ = fuse_verb!(verb)
-      verb.val = MtDict.v_combine.get_val(verb.key) || verb.val
-
-      verb = fold!(verb, succ, succ.tag, dic: 5)
-      return verb.flag!(:checked)
-    end
+    # puts [verb, succ]
 
     case verb.key[-1]?
     when '在'
@@ -23,17 +11,14 @@ module CV::TlRule
     when '着'
       flag = MtFlag::Checked | MtFlag::HasUzhe
       verb.flag!(flag)
+    when .in?(COMPL_TAILS)
+      verb.flag!(:checked)
     else
-      if COMPL_TAILS.includes?(verb.key[-1]?)
-        verb.flag!(:checked)
-      else
-        verb = fuse_verb_compl!(verb, succ)
-      end
+      return verb.flag!(:resolved) unless succ
+      verb = fuse_verb_compl!(verb, succ)
     end
 
-    verb = fuse_verb_compl_extra!(verb) unless verb.flag.resolved?
-
-    verb
+    fuse_verb_compl_extra!(verb)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
@@ -72,6 +57,7 @@ module CV::TlRule
     end
 
     verb = fold!(verb, succ, PosTag::VerbPhrase, dic: 6)
+
     verb.flag!(flag)
   end
 

@@ -10,9 +10,15 @@ struct CV::PosTag
   VYou = new(Tag::VYou, Pos.flags(Verbal, Special, Contws))
 
   def self.parse_special(tag : String, key : String)
-    case tag[1]?
-    when 'v' then parse_verb_special(key)
-    else          parse_unique_special(key)
+    case tag
+    when "!vshi" then VShi
+    when "!vyou" then VYou
+    when "!v2"   then V2Object
+    when "!vf"   then VDircomp
+    when "!vx"   then VCombine
+    when "!vp"   then VCompare
+    when "!v"    then parse_verb_special(key)
+    else              parse_unique_special(key)
     end
   end
 

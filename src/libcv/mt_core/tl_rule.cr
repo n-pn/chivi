@@ -12,6 +12,7 @@ module CV::TlRule
 
   def fold_once!(node : MtNode)
     return node if node.flag.resolved?
+    # puts [node, node.flag]
     node = fuse_once!(node) unless node.flag.checked?
 
     case node
@@ -26,7 +27,7 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fuse_once!(node : MtNode) : MtNode
-    return node if node.flag.checked?
+    # puts [node, node.flag]
 
     case node.tag
     when .mixed?     then meld_mixed!(node)

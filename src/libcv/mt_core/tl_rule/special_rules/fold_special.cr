@@ -1,9 +1,10 @@
 module CV::TlRule
-  def fold_specials!(node : MtNode)
+  def fold_specials!(node : MtNode, succ = node.succ?)
+    return node.flag!(:resolved) unless succ
+
     case node
-    when .adj_hao? then fix_adj_hao(node)
-    when .v_shang? then fix_上下(node, MAP_上)
-    when .v_xia?   then fix_上下(node, MAP_下)
+    when .verbal?  then fold_special_verbs!(node, succ)
+    when .adj_hao? then heal_adj_hao!(node)
     when .key_in?("和", "跟")
       if node.prev? { |x| x.ends? || x.adverb? } || concoord_is_prepos?(node.succ?)
         node.set!(PosTag::Prepos)
@@ -12,7 +13,29 @@ module CV::TlRule
         node.set!(val, PosTag::Concoord)
       end
     else
-      fold_uniqs!(node)
+      fold_uniqs_by_key!(node)
+    end
+  end
+
+  def fold_special_verbs!(node : MtNode, succ : MtNode)
+    case node
+    when .v_shi? then fold_v_shi!(node, succ)
+    when .v_you? then fold_v_you!(node, succ)
+    when .locality?
+      node.val = node.key == '上' ? "lên" : "xuống"
+      fuse_verb!(node)
+    when .v_compare?
+      fold_compare(node, succ) || fuse_verb!(node, succ)
+    when .v_combine?
+      return fuse_verb!(node, succ) unless succ.verbal?
+      succ = fuse_verb!(succ)
+
+      node.val = MtDict.v_combine.get_val(node.key) || node.val
+
+      node = fold!(node, succ, succ.tag, dic: 5)
+      node.flag!(:checked)
+    else
+      fuse_verb!(node, succ)
     end
   end
 
@@ -50,7 +73,7 @@ module CV::TlRule
     end
   end
 
-  def fix_adj_hao(node : MtNode) : MtNode
+  def heal_adj_hao!(node : MtNode) : MtNode
     case succ = node.succ?
     when .nil?, .puncts?, .ule?
       node.set!("tốt", PosTag::Adjt)
@@ -60,20 +83,6 @@ module CV::TlRule
       node.set!("tốt", PosTag::Adjt)
     else
       node
-    end
-  end
-
-  private def fold_uniqs!(node : MtNode, succ = node.succ?) : MtNode
-    # puts [node, succ, "fold_uniq"]
-
-    case node.tag
-    when .v_shi? then fold_v_shi!(node, succ)
-    when .v_you? then fold_v_you!(node, succ)
-    when .v_shang?, .v_xia?
-      # puts [node, succ, "fold_noun_space"]
-      fold_verbs!(node)
-    else
-      fold_uniqs_by_key!(node, succ)
     end
   end
 

@@ -77,9 +77,8 @@ struct CV::PosTag
   # ameba:disable Metrics/CyclomaticComplexity
   def to_str
     case @pos
-    when .mixed? then @tag.to_str
-    when .verbal?
-      @pos.special? ? "!v" : @tag.to_str
+    when .mixed?     then @tag.to_str
+    when .locality?  then "f"
     when .puncts?    then "w"
     when .auxils?    then "u"
     when .vmodals?   then "vm"
@@ -90,8 +89,19 @@ struct CV::PosTag
     when .quantis?   then "q"
     when .nquants?   then "mq"
     when .adverbial? then "d"
-    when .special?   then "!"
-    else                  @tag.to_str
+    when .special?
+      return "!" unless @pos.verbal?
+      return "!vshi" if @tag.v_shi?
+      return "!vyou" if @tag.v_you?
+
+      case @sub
+      when .v2_object? then "!v2"
+      when .v_dircomp? then "!vf"
+      when .v_combine? then "!vx"
+      when .v_compare? then "!vp"
+      else                  "!v"
+      end
+    else @tag.to_str
     end
   end
 

@@ -5,6 +5,10 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_pro_per!(proper : MtNode, succ : MtNode) : MtNode
+    succ = fuse_once!(succ)
+
+    # puts [proper, succ]
+
     case succ.tag
     when .concoord?, .penum?
       fold_noun_concoord!(succ, proper) || proper

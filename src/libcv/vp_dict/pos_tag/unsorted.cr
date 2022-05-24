@@ -29,7 +29,7 @@ struct CV::PosTag
     # complex phrase ac as verb
     {"~vp", "VerbPhrase", Pos::Verbal | Pos::Contws},
     # complex phrase act as adjective
-    {"~ap", "AdjtPhrase", Pos::Verbal | Pos::Contws},
+    {"~ap", "AdjtPhrase", Pos::Adjective | Pos::Contws},
     # complex phrase act as noun
     {"~np", "NounPhrase", Pos::Nominal | Pos::Contws},
     # definition phrase
