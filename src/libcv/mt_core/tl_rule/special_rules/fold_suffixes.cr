@@ -1,11 +1,11 @@
 module CV::TlRule
-  # -ameba:disable Metrics/CyclomaticComplexity
+  # ameba:disable Metrics/CyclomaticComplexity
   def fold_suffixes!(base : MtNode, suff : MtNode) : MtNode
     flip = true
     ptag = PosTag::Noun
 
     case suff.key
-    when "们"
+    when "们", "們"
       suff.val = "các"
       ptag = base.pro_per? ? base.tag : ptag
     when "时"
@@ -17,6 +17,10 @@ module CV::TlRule
       return base unless base.nominal?
     when "界"
       return base unless base.nominal?
+      flip = false
+    when "化"
+      return base unless base.nominal?
+      ptag = PosTag::Verb
       flip = false
     when "性"
       ptag = suff.succ?(&.ude2?) ? PosTag::Adverb : PosTag::Noun

@@ -11,11 +11,15 @@ class CV::MtList
   end
 
   def concat!(list : self)
-    self.tail.set_succ!(list.first?)
+    concat!(list.first?)
+  end
+
+  def concat!(node : MtNode?)
+    self.tail.fix_succ!(node)
     self
   end
 
-  def tail(node = @head)
+  def tail(node = @head) : MtNode
     while node = node.succ?
       return node unless node.succ?
     end

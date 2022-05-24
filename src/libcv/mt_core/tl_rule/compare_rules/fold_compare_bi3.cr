@@ -1,6 +1,7 @@
 module CV::TlRule
   def fold_compare_bi3!(prepos : MtNode, succ = prepos.succ?, mode = 0)
     return prepos unless (noun = scan_noun!(succ, mode: mode)) && noun.object?
+    puts [prepos, noun]
 
     if (succ = noun.succ?) && succ.verb_no_obj?
       noun = fold!(noun, succ, PosTag::VerbClause, dic: 6)

@@ -22,6 +22,7 @@ module CV::TlRule
       if (succ = node.succ?) && succ.uzhi?
         fold_uzhi!(succ, node)
       else
+        # puts [node.succ?, node]
         scan_noun!(node.succ?, nquant: node) || node
       end
     end
@@ -108,11 +109,14 @@ module CV::TlRule
     end
 
     if has_ge4 && (tail = node.succ?) && tail.quantis?
-      heal_has_ge4!(has_ge4)
       node = fold!(node, tail, map_nqtype(tail), dic: 3)
     end
 
-    fold_suf_quanti_appro!(node)
+    node = fold_suf_quanti_appro!(node)
+    flag = MtFlag::Checked
+    flag |= MtFlag::HasQtGe4 if has_ge4
+
+    node.flag!(flag)
   end
 
   def map_nqtype(node : MtNode)
@@ -121,14 +125,6 @@ module CV::TlRule
     when .qttime? then PosTag::Nqtime
     when .qtverb? then PosTag::Nqverb
     else               PosTag::Nqiffy
-    end
-  end
-
-  def heal_has_ge4!(node : MtNode)
-    if node.key.size == 1
-      node.val = ""
-    else
-      node.val = node.val.sub(" cái", "")
     end
   end
 

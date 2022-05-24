@@ -12,13 +12,14 @@ module CV::TlRule
 
   def fold_once!(node : MtNode)
     return node if node.flag.resolved?
-    node = meld_once!(node)
+    node = meld_once!(node) unless node.flag.checked?
 
     case node
     when .nominal?  then fold_nouns!(node)
     when .verbal?   then fold_verbs!(node)
     when .preposes? then fold_preposes!(node)
-    else                 node
+      # when .numeral? then scan_noun!(node.succ?, nquant: node) || node
+    else node.flag!(:checked)
     end
   end
 

@@ -5,154 +5,88 @@ module CV::TlRule
   # 3 => scan_noun after ude1
   #   can return non nominal node
 
+  def scan_noun!(node : Nil, mode = 0,
+                 prodem : MtNode? = nil, nquant : MtNode? = nil)
+    fold_prodem_nominal!(prodem, nquant)
+  end
+
   # ameba:disable Metrics/CyclomaticComplexity
-  def scan_noun!(node : MtNode?, mode : Int32 = 0,
+  def scan_noun!(node : MtNode, mode : Int32 = 0,
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
     # puts [node, prodem, nquant, "scan_noun"]
 
-    while node
-      case node
-      when .pro_per?
-        if prodem || nquant
-          node = nil
-        else
-          node = fold_pro_per!(node, node.succ?)
-        end
+    node = fold_once!(node)
 
-        break
-      when .pro_dems?
-        if prodem || nquant
-          # TODO: call scan_noun here then fold
-          node = nil
-        else
-          prodem, nquant, node = split_prodem!(node, node.succ?)
-          next
-        end
-      when .pro_ints?
-        node = fold_pro_ints!(node, node.succ?)
-        node = nil if node.pro_int?
-      when .numeral?
-        if nquant
-          node = nil
-        else
-          node = fold_number!(node)
-          break unless node.numeral?
-          nquant, node = node, node.succ?
-          next
-        end
-      when .v_you?
-        break unless (succ = node.succ?) && succ.noun?
-        succ = fold_nouns!(succ)
-        node = fold!(node, succ, PosTag::Aform, dic: 4)
-        node = fold_head_ude1_noun!(node)
-      when .mixed?
-        node = meld_mixed!(node)
-        node = fold_any_as_noun!(node)
-      when .adverb?
-        node = fold_adverbs!(node)
-        node = fold_any_as_noun!(node)
-      when .preposes?
-        # break unless prodem || nquant
-        node = fold_preposes!(node, mode: 3)
-        # puts [node, node.body?]
-        node = fold_any_as_noun!(node)
-      when .verb_object?
-        break unless succ = node.succ?
-
-        case succ
-        when .nominal?
-          succ = fold_nouns!(succ, mode: 1)
-          node = fold!(node, succ, PosTag::NounPhrase, dic: 5, flip: true)
-        when .ude1?
-          node = fold_ude1!(ude1: succ, prev: node)
-        end
-      when .vmodals?
-        node = fold_vmodals!(node)
-        node = fold_any_as_noun!(node)
-      when .verbal?
-        node = fold_verbs!(node)
-        node = fold_any_as_noun!(node)
-      when .onomat?
-        node = fold_adjt_as_noun!(node)
-      when .modi?
-        node = fold_modifier!(node)
-        node = fold_adjt_as_noun!(node)
-      when .adjective?
-        node = fold_adjts!(node)
-        node = fold_adjt_as_noun!(node)
-      when .nominal?
-        case node = fold_nouns!(node)
-        when .nattr?
-          node = fold_head_ude1_noun!(node)
-        when .naffil?, .position?
-          node = fold_head_ude1_noun!(node) if prodem || nquant
-        when .nominal?
-          break
-        else
-          node = scan_noun!(node) || node unless node.nominal?
-        end
-      when .ude2?
-        if node.prev? { |x| x.pre_zai? || x.verbal? } || node.succ?(&.spaces?)
-          node.set!("đất", PosTag::Noun)
-        end
-      end
-
-      break
-    end
-
-    return fold_prodem_nominal!(prodem, nquant) unless node && node.object?
-
-    if nquant
-      nquant = clean_nquant(nquant, prodem)
-      node = fold!(nquant, node, PosTag::Nform, dic: 4)
-    end
-
-    node = fold_prodem_nominal!(prodem, node) if prodem
-    # node = fold_proper_nominal!(proper, node) if proper
-
-    return node unless mode == 0 && (succ = node.succ?)
-    node = fold_noun_after!(node, succ)
-    return node if node.prev?(&.preposes?) && !node.property?
-
-    return node unless (verb = node.succ?) && verb.maybe_verb?
-    verb = scan_verbs!(verb)
-
-    return node if verb.verb_no_obj?
-    return node unless (ude1 = verb.succ?) && ude1.ude1?
-    return node unless (tail = scan_noun!(ude1.succ?)) && tail.object?
-
-    node = fold!(node, ude1.set!(""), PosTag::DefnPhrase, dic: 4)
-    fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
-  end
-
-  def fold_any_as_noun!(node : MtNode) : MtNode
     case node.tag
-    when .nominal?   then node
-    when .v_shi?     then fold_v_shi!(node)
-    when .verbal?    then fold_verb_as_noun!(node)
-    when .adjective? then fold_adjt_as_noun!(node)
-    when .preposes?  then fold_preposes!(node, mode: 1)
-      # when .adverbial?
+    when .puncts?
+      return fold_prodem_nominal!(prodem, nquant)
+    when .pronouns?
+      return fold_prodem_nominal!(prodem, nquant) if prodem || nquant
+    when .nominal?, .numeral?
+      # do nothing
+    when .v_shi?
+      node = fold_v_shi!(node)
+    when .verb_object?
+      node = fold_verb_object_as_noun!(node)
+    when .verbal?
+      node = fold_verb_as_noun!(node)
+    when .adjective?
+      node = fold_adjt_as_noun!(node)
     else
       return node unless (ude1 = node.succ?) && ude1.ude1?
       return node unless tail = scan_noun!(ude1.succ?)
-      fold_ude1_left!(ude1, left: node, right: tail)
+      node = fold_ude1_left!(ude1, left: node, right: tail)
+    end
 
-      # fold_head_ude1_noun!(node)
+    return fold_prodem_nominal!(prodem, nquant) unless node.object?
+    node = fold_nquant_nominal!(nquant, node) if nquant
+    node = fold_prodem_nominal!(prodem, node) if prodem
+
+    return node unless mode == 0 && (succ = node.succ?)
+    scan_noun_after!(node, succ)
+  end
+
+  def fold_verb_object_as_noun!(head : MtNode)
+    return head.flag!(:resolved) unless succ = head.succ?
+
+    case succ
+    when .nominal?
+      succ = fold_nouns!(succ, mode: 1)
+      fold!(head, succ, PosTag::NounPhrase, dic: 5, flip: true)
+    when .ude1?
+      fold_ude1!(ude1: succ, prev: head)
+    else
+      head
     end
   end
 
-  def clean_nquant(nquant : MtNode, prodem : MtNode?)
-    return nquant unless prodem || nquant.body? || nquant.key.size > 1
-
-    nquant.each do |node|
-      case node.key
-      when "些"             then node.val = "những"
-      when .includes?('个') then node.val = node.val.sub("cái", "").strip
-      end
+  def fold_nquant_nominal!(nquant : MtNode, nominal : MtNode)
+    case nquant.key
+    when "些"
+      nquant.val = "những"
+    when "个"
+      nquant.val = "" if nquant.prev?(&.pro_dems?)
+    else
+      clean_nquant!(nquant) if nquant.flag.has_qt_ge4?
     end
 
-    nquant
+    if nominal.key == "个人"
+      nominal.val = "người"
+    end
+
+    fold!(nquant, nominal, PosTag::NounPhrase, dic: 3).flag!(:checked)
+  end
+
+  def clean_nquant!(nquant : MtNode) : Nil
+    nquant.each do |node|
+      if body = node.body?
+        clean_nquant!(body)
+        return
+      elsif node.key == "个"
+        node.val = ""
+        return
+      end
+    end
   end
 
   def fold_head_ude1_noun!(head : MtNode)
@@ -164,15 +98,14 @@ module CV::TlRule
   end
 
   def fold_adjt_as_noun!(node : MtNode)
-    return node if node.nominal? || !(succ = node.succ?)
-
+    return node.flag!(:resolved) unless succ = node.succ?
     noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
     fold_adjt_noun!(node, noun, ude1)
   end
 
   def fold_verb_as_noun!(node : MtNode, mode = 0)
     # puts [node, node.succ?]
-    return node unless succ = node.succ?
+    return node.flag!(:resolved) unless succ = node.succ?
 
     unless succ.ude1? || node.verb_object? || node.vintr?
       return node unless succ = scan_noun!(succ, mode: 0)
@@ -190,5 +123,20 @@ module CV::TlRule
 
     tag = noun.names? || noun.human? ? noun.tag : PosTag::NounPhrase
     fold!(node, noun, tag, dic: 6, flip: true)
+  end
+
+  def scan_noun_after!(node : MtNode, succ = node.succ) : MtNode
+    node = fold_noun_after!(node, succ)
+    return node if node.prev?(&.preposes?) && !node.property?
+
+    return node unless (verb = node.succ?) && verb.maybe_verb?
+    verb = scan_verbs!(verb)
+
+    return node if verb.verb_no_obj?
+    return node unless (ude1 = verb.succ?) && ude1.ude1?
+    return node unless (tail = scan_noun!(ude1.succ?)) && tail.object?
+
+    node = fold!(node, ude1.set!(""), PosTag::DefnPhrase, dic: 4)
+    fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
   end
 end

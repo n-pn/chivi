@@ -5,9 +5,9 @@ tl_name = CV::TlName.new(CV::VpDict.new("spec/fixtures/dict.tsv"))
 
 describe CV::TlName, tags: "tl_name" do
   it "keeps regular word meaning" do
-    tl_name.tl_human("欧尼酱").should eq(["onii-chan", "Âu Ni-chan", "Âu Ni Tương"])
+    tl_name.tl_affil("中国").first.should eq("Trung Quốc")
+    tl_name.tl_human("欧尼酱").first.should eq("onii-chan")
     tl_name.tl_human("圣索菲亚").should eq(["Thánh Sách Phi Á"])
-    tl_name.tl_affil("中国").should eq(["Trung Quốc", "nước Trung"])
   end
 
   it "correctly translate human names" do

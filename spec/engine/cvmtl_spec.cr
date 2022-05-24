@@ -17,6 +17,8 @@ files.each do |file|
 
     lines.each do |line|
       left, right = line.split('\t')
+      next if left.starts_with?("#")
+
       it left do
         convert(left).should eq(right)
       end

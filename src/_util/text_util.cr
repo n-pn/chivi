@@ -167,6 +167,36 @@ module CV::TextUtil
 
     title
   end
+
+  def split_spaces(input : String)
+    chars = input.chars
+
+    output = [] of String
+    buffer = String::Builder.new
+
+    while chars.size > 0
+      while char = chars.shift?
+        if char == ' '
+          output << buffer.to_s
+          buffer = String::Builder.new(char.to_s)
+        else
+          buffer << char
+        end
+      end
+
+      while char = chars.shift?
+        if char != ' '
+          output << buffer.to_s
+          buffer = String::Builder.new(char.to_s)
+        else
+          buffer << char
+        end
+      end
+    end
+
+    output << buffer.to_s
+    output
+  end
 end
 
 # pp CV::TextUtil.format_title("第二十集 红粉骷髅 第八章")

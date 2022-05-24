@@ -16,6 +16,8 @@ enum MtFlag
   HasPreZai
   HasUzhe
   HasUle
+
+  HasQtGe4 # has 个
 end
 
 class CV::MtNode

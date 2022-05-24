@@ -2,7 +2,6 @@ module CV::TlRule
   def fold_preposes!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
     return node unless succ
 
-    # TODO!
     case node.tag
     when .pre_ba3? then fold_pre_ba3!(node, succ, mode: mode)
     when .pre_dui? then fold_pre_dui!(node, succ, mode: mode)

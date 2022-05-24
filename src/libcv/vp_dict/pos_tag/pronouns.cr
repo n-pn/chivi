@@ -1,5 +1,5 @@
 struct CV::PosTag
-  PROPOS = Pos::Pronouns | Pos::Contws
+  PROPOS = Pos.flags(Pronouns, Contws)
 
   # 代词 - pronoun - đại từ chưa phân loại
   ProUkn = new(Tag::ProUkn, PROPOS | Pos::Nominal)
@@ -8,16 +8,16 @@ struct CV::PosTag
   ProPer = new(Tag::ProPer, Pos::Human | PROPOS)
 
   # 指示代词 - demonstrative pronoun - đại từ chỉ thị
-  DEMPOS = Pos::ProDems | Pos::Pronouns | Pos::Contws
+  DEMPOS = Pos.flags(ProDems, Pronouns, Contws)
   ProDem = new(Tag::ProDem, DEMPOS)
   ProZhe = new(Tag::ProZhe, DEMPOS)
   ProNa1 = new(Tag::ProNa1, DEMPOS)
   ProJi  = new(Tag::ProJi, DEMPOS)
 
   # 疑问代词 - interrogative pronoun - đại từ nghi vấn
-  INTPOS = Pos::ProInts | Pos::Pronouns | Pos::Contws
+  INTPOS = Pos.flags(ProInts, Pronouns, Contws)
   ProInt = new(Tag::ProInt, INTPOS)
-  ProNa2 = new(Tag::ProNa2, INTPOS)
+  ProNa2 = new(Tag::ProNa2, INTPOS | Pos::ProDems)
 
   def self.parse_pronoun(tag : String, key : String)
     case tag[1]?

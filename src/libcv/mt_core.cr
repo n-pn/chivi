@@ -56,28 +56,38 @@ class CV::MtCore
   end
 
   def cv_title_full(title : String) : MtList
-    title, label = TextUtil.format_title(title)
+    # tokens = TextUtil.split_spaces(title)
 
-    title_res = cv_title(title, offset: label.size)
-    return title_res if label.empty?
+    # tokens.each do |token|
+    #   if token.blank?
+    #     output.concat!(MtNode.new(token, " ", idx: offset))
+    #     offset &+= token.size
+    #   end
 
-    title_res.prepend!(MtNode.new("", " - ", idx: label.size))
-    label_res = cv_title(label)
-    label_res.concat!(title_res)
+    title, chvol = TextUtil.format_title(title)
+    return cv_title(title, offset: 0) if chvol.empty?
+
+    output = cv_title(chvol, offset: 0)
+    offset = chvol.size
+
+    title_res = cv_title(title, offset: offset)
+    title_res.prepend!(MtNode.new("", " - ", idx: offset))
+
+    output.concat!(title_res)
   end
 
   def cv_title(title : String, offset = 0) : MtList
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
     offset_2 = offset + pre_zh.size + pad.size
 
-    res = title.empty? ? MtList.new : cv_plain(title, offset: offset_2)
+    output = title.empty? ? MtList.new : cv_plain(title, offset: offset_2)
 
     unless pre_zh.empty?
-      res.prepend!(MtNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
-      res.prepend!(MtNode.new(pre_zh, pre_vi, dic: 1, idx: offset))
+      output.prepend!(MtNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
+      output.prepend!(MtNode.new(pre_zh, pre_vi, dic: 1, idx: offset))
     end
 
-    res
+    output
   end
 
   def translate(input : String) : String
