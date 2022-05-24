@@ -5,19 +5,22 @@ struct CV::PosTag
     Contws; Funcws
     Puncts; Pstops; Popens
 
-    Mixed
-
     Nominal; Names; Human; Object
 
     Pronouns; ProDems; ProInts
 
-    Verbal; Vdirs; Vmodals
+    Verbal; V0Obj
+
+    Vmodals
+
     Adjective; Adverbial
 
     Numbers; Quantis; Nquants; Numeral
 
     Auxils; Preposes
-    Strings; Specials
+    Strings
+
+    Mixed; Special
   end
 
   delegate mixed?, to: @pos
@@ -39,7 +42,8 @@ struct CV::PosTag
   delegate pro_ints?, to: @pos
 
   delegate verbal?, to: @pos
-  delegate vdirs?, to: @pos
+  delegate v0_obj?, to: @pos
+
   delegate vmodals?, to: @pos
 
   delegate adjective?, to: @pos
@@ -52,5 +56,17 @@ struct CV::PosTag
   delegate strings?, to: @pos
 
   delegate contws?, to: @pos
-  delegate specials?, to: @pos
+  delegate special?, to: @pos
+
+  @[Flags]
+  enum Sub
+    # verb subtypes
+    V2Object; VDircomp; VCombine; VCompare; VLinking
+  end
+
+  delegate v2_object?, to: @sub
+  delegate v_dircomp?, to: @sub
+  delegate v_combine?, to: @sub
+  delegate v_compare?, to: @sub
+  delegate v_linking?, to: @sub
 end

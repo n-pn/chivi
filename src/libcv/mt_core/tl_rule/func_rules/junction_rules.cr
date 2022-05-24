@@ -28,7 +28,7 @@ module CV::TlRule
     if prev.tag == succ.tag
       fold!(prev, succ, tag: prev.tag, dic: 4)
     elsif (succ = scan_noun!(succ)) && similar_tag?(prev, succ)
-      fold!(prev, succ, tag: PosTag::Nform, dic: 4)
+      fold!(prev, succ, tag: PosTag::NounPhrase, dic: 4)
     end
   end
 
@@ -38,9 +38,9 @@ module CV::TlRule
     return true unless prev.ude1? && (prev = prev.prev?)
 
     case prev.tag
-    when .nform? then true
-    when .human? then !succ.human?
-    else              false
+    when .noun_phrase? then true
+    when .human?       then !succ.human?
+    else                    false
     end
   end
 
@@ -58,11 +58,11 @@ module CV::TlRule
 
   def similar_tag?(left : MtNode, right : MtNode)
     case left.tag
-    when .nform? then true
-    when .human? then right.human?
-    when .noun?  then right.noun? || right.pro_dem?
+    when .noun_phrase? then true
+    when .human?       then right.human?
+    when .noun?        then right.noun? || right.pro_dem?
     else
-      right.nform? || right.tag == left.tag
+      right.noun_phrase? || right.tag == left.tag
     end
   end
 

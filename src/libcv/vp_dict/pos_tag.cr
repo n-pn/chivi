@@ -33,7 +33,11 @@ struct CV::PosTag
 
     Auxil; Punct
 
-    Special; AdjHao; VShang; VXia; VShi; VYou
+    Special; AdjHao
+
+    VShang; VXia
+
+    VShi; VYou
 
     {% for type in PUNCTS %}
       {{ type[0].id }}
@@ -63,29 +67,31 @@ struct CV::PosTag
   Unkn = new(Tag::Unkn, Pos::Contws)
 
   getter pos : Pos
+  getter sub : Sub
   getter tag : Tag
   forward_missing_to tag
 
-  def initialize(@tag = Tag::Unkn, @pos = Pos::Contws)
+  def initialize(@tag = Tag::Unkn, @pos = Pos::Contws, @sub = Sub::None)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
   def to_str
     case @pos
-    when .puncts?   then "w"
-    when .auxils?   then "u"
-    when .vmodals?  then "vm"
-    when .preposes? then "p"
-    when .pro_dems? then "rz"
-    when .pro_ints? then "ry"
-    when .specials? then "!"
-    when .numbers?  then "m"
-    when .quantis?  then "q"
-    when .nquants?  then "mq"
-    when .adverbial?
-      @pos.mixed? ? @tag.to_str : "d"
-    else
-      @tag.to_str
+    when .mixed? then @tag.to_str
+    when .verbal?
+      @pos.special? ? "!v" : @tag.to_str
+    when .puncts?    then "w"
+    when .auxils?    then "u"
+    when .vmodals?   then "vm"
+    when .preposes?  then "p"
+    when .pro_dems?  then "rz"
+    when .pro_ints?  then "ry"
+    when .numbers?   then "m"
+    when .quantis?   then "q"
+    when .nquants?   then "mq"
+    when .adverbial? then "d"
+    when .special?   then "!"
+    else                  @tag.to_str
     end
   end
 
@@ -116,11 +122,6 @@ struct CV::PosTag
   end
 
   @[AlwaysInline]
-  def verb_no_obj?
-    @tag.vintr? || @tag.verb_object?
-  end
-
-  @[AlwaysInline]
   def spaces?
     @tag.locality? || @tag.v_shang? || @tag.v_xia?
   end
@@ -141,7 +142,7 @@ struct CV::PosTag
     when 'q' then parse_quanti(key)
     when 'k' then parse_suffix(tag)
     when 'r' then parse_pronoun(tag, key)
-    when '!' then parse_special(key)
+    when '!' then parse_special(tag, key)
     when 'x' then parse_other(tag)
     when '~' then parse_extra(tag)
     when 'b' then Modi

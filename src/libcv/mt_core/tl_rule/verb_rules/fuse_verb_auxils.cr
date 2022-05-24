@@ -43,7 +43,7 @@ module CV::TlRule
     succ = ude2.succ? { |x| fold_once!(x) }
 
     unless succ && (succ.verbal? || succ.preposes?)
-      return verb.flag!(:resolved) if verb.verb_no_obj?
+      return verb.flag!(:resolved) if verb.v0_obj?
 
       ude2.val = "đất"
       verb = fold!(verb, ude2.set!("đất", PosTag::Noun), dic: 7)

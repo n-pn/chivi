@@ -12,10 +12,11 @@ module CV::TlRule
 
   def fold_once!(node : MtNode)
     return node if node.flag.resolved?
-    node = meld_once!(node) unless node.flag.checked?
+    node = fuse_once!(node) unless node.flag.checked?
 
     case node
     when .nominal?  then fold_nouns!(node)
+    when .special?  then node # should triggered by fuse_once!
     when .verbal?   then fold_verbs!(node)
     when .preposes? then fold_preposes!(node)
       # when .numeral? then scan_noun!(node.succ?, nquant: node) || node
@@ -24,12 +25,12 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def meld_once!(node : MtNode) : MtNode
+  def fuse_once!(node : MtNode) : MtNode
     return node if node.flag.checked?
 
     case node.tag
     when .mixed?     then meld_mixed!(node)
-    when .specials?  then fold_specials!(node)
+    when .special?   then fold_specials!(node)
     when .puncts?    then fold_puncts!(node)
     when .strings?   then fold_strings!(node)
     when .adverbial? then fold_adverbs!(node)

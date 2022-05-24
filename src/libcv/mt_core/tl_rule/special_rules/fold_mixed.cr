@@ -47,7 +47,7 @@ module CV::TlRule
     end
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
+  # -ameba:disable Metrics/CyclomaticComplexity
   def heal_ajno!(node : MtNode)
     case node.prev?
     when .nil?
@@ -65,8 +65,6 @@ module CV::TlRule
       else
         MtDict.fix_noun!(node)
       end
-    when .vdir?
-      MtDict.fix_verb!(node)
     when .verbal?, .preposes?, .none?, .spaces?
       MtDict.fix_noun!(node)
     when .noun?
@@ -98,7 +96,7 @@ module CV::TlRule
       end
     when .nhanzi?
       return MtDict.fix_verb!(node) if prev.key == "一"
-    when .adverbial?, .vmodals?, .vpro?, .pre_zai?, .pre_bei?
+    when .adverbial?, .vmodals?, .pre_zai?, .pre_bei?
       return MtDict.fix_verb!(node)
     when .auxils?, .preposes?, .modi?
       return MtDict.fix_noun!(node)
@@ -145,17 +143,17 @@ module CV::TlRule
       MtDict.fix_verb!(node)
     when .nominal?
       node = MtDict.fix_verb!(node)
-      return node unless node.vintr? || node.verb_object?
+      return node unless node.v0_obj?
       MtDict.fix_noun!(node)
-    when .auxils?, .vdir?, .pre_zai?
+    when .auxils?, .pre_zai?
       MtDict.fix_verb!(node)
     when .v_shi?, .v_you?
       MtDict.fix_noun!(node)
+    when .v_dircomp?
+      MtDict.fix_verb!(node)
     when .verbal?
-      return node.set!(PosTag::Vpro) if node.key == "选择"
-
-      if MtDict.has_key?(:verb_com, succ.key) || VERB_COMBINE.includes?(node.key)
-        MtDict.fix_verb!(node)
+      if node.key == "选择"
+        node.set!(PosTag::VCombine)
       else
         MtDict.fix_noun!(node)
       end

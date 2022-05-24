@@ -5,8 +5,6 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_nouns!(noun : MtNode, mode : Int32 = 0) : MtNode
-    # return node if node.nform?
-
     if (succ = noun.succ?) && (succ.nominal? || succ.middot?)
       noun = fuse_noun!(noun, succ)
     end
@@ -40,7 +38,7 @@ module CV::TlRule
       end
     when .usuo?
       noun = fold_suffixes!(noun, succ) unless succ.succ?(&.verbal?)
-    when .specials?
+    when .special?
       case succ.key
       when "第"
         succ = fold_第!(succ)

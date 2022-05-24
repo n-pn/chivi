@@ -1,17 +1,4 @@
 module CV::TlRule
-  def fold_verb_compare(head : MtNode) : MtNode?
-    case head.key
-    when "如", "像"
-      fold_compare(head.set!("tựa"))
-    when "仿佛", "宛若"
-      fold_compare(head.set!("giống"))
-    when "好像"
-      fold_compare(head.set!("thật giống"))
-    else
-      nil
-    end
-  end
-
   def fold_compare(head : MtNode, tail = head.succ?)
     while tail
       return if tail.puncts? || tail.key == "像"

@@ -107,7 +107,7 @@ module CV::TlRule
     # puts [node, node.succ?]
     return node.flag!(:resolved) unless succ = node.succ?
 
-    unless succ.ude1? || node.verb_object? || node.vintr?
+    unless succ.ude1? || node.v0_obj?
       return node unless succ = scan_noun!(succ, mode: 0)
       node = fold!(node, succ, PosTag::VerbObject, dic: 6)
     end
@@ -132,7 +132,7 @@ module CV::TlRule
     return node unless (verb = node.succ?) && verb.maybe_verb?
     verb = scan_verbs!(verb)
 
-    return node if verb.verb_no_obj?
+    return node if verb.v0_obj?
     return node unless (ude1 = verb.succ?) && ude1.ude1?
     return node unless (tail = scan_noun!(ude1.succ?)) && tail.object?
 

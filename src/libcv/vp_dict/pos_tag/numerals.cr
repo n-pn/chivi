@@ -34,8 +34,8 @@ struct CV::PosTag
   end
 
   def self.parse_quanti(key : String) : self
-    return Qttime if MtDict.has_key?(:qt_times, key)
-    return Qtverb if MtDict.has_key?(:qt_verbs, key)
+    return Qttime if MtDict.qt_times.has_key?(key)
+    return Qtverb if MtDict.qt_verbs.has_key?(key)
     Qtnoun
   end
 
@@ -44,10 +44,10 @@ struct CV::PosTag
   def self.parse_nquant(key : ::String) : self
     key = key.sub(NUMCHR_RE, "")
     case
-    when MtDict.has_key?(:qt_times, key) then Nqtime
-    when MtDict.has_key?(:qt_nouns, key) then Nqnoun
-    when MtDict.has_key?(:qt_verbs, key) then Nqverb
-    else                                      Nqiffy
+    when MtDict.qt_times.has_key?(key) then Nqtime
+    when MtDict.qt_nouns.has_key?(key) then Nqnoun
+    when MtDict.qt_verbs.has_key?(key) then Nqverb
+    else                                    Nqiffy
     end
   end
 end

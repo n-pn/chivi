@@ -64,7 +64,7 @@ module CV::TlRule
       true
     when .preposes? then false
     when .verb_object?
-      MtDict.has_key?(:v_group, succ.key)
+      MtDict.v_group.has_key?(succ.key)
     else
       case succ.key
       when "生气"
@@ -101,7 +101,7 @@ module CV::TlRule
         node.val = "muốn"
       end
     else
-      if val = MtDict.get_val(:verb_dir, node.key) || MtDict.get_val(:verb_com, node.key)
+      if val = MtDict.verb_dir.get_val(succ.key) || MtDict.verb_com.get_val(succ.key)
         succ.val = val
         node.val = "nhớ" if succ.succ?(&.human?)
       end

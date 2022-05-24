@@ -3,7 +3,7 @@ module CV::TlRule
     return prepos unless (noun = scan_noun!(succ, mode: mode)) && noun.object?
     puts [prepos, noun]
 
-    if (succ = noun.succ?) && succ.verb_no_obj?
+    if (succ = noun.succ?) && succ.v0_obj?
       noun = fold!(noun, succ, PosTag::VerbClause, dic: 6)
     end
 

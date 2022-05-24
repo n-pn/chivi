@@ -8,7 +8,7 @@ module CV::TlRule
       tag = PosTag::Number
     elsif !(tag = MtDict.fix_uzhi(succ))
       return prev if succ.adjt?
-      tag = PosTag::Nform
+      tag = PosTag::NounPhrase
     end
 
     fold!(prev, succ, tag, dic: 3, flip: true)

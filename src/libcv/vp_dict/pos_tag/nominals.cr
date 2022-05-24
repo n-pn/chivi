@@ -6,7 +6,7 @@ struct CV::PosTag
     # {"nc", "Ncon", Pos::Nominal | Pos::Contws},
 
     # 名词性语素 - nominal formulaic expression
-    {"nl", "Nform", Pos::Nominal | Pos::Contws},
+    # {"nl", "Nform", Pos::Nominal | Pos::Contws},
 
     # 人名 - person name - tên người
     {"nr", "Person", Pos::Nominal | Pos::Human | Pos::Names | Pos::Contws},
@@ -56,7 +56,6 @@ struct CV::PosTag
     case tag[1]?
     when nil then Noun
     when 'g' then Noun
-    when 'l' then Nform
     when 'a' then Nattr
     when 'r' then Person
     when 'f' then Person
@@ -67,7 +66,19 @@ struct CV::PosTag
     when 's' then Naffil
     when 't' then Naffil
     when 'd' then AdvNoun
+    when 'l' then NounPhrase
     else          Noun
+    end
+  end
+
+  def self.parse_locatity(key : String)
+    case key
+    when "上", "下"
+      new(Tag::Locative, Pos.flags(Nominal, Verbal, Special, Contws))
+    when "中"
+      new(Tag::Locative, Pos.flags(Nominal, Special, Contws))
+    else
+      Locative
     end
   end
 end

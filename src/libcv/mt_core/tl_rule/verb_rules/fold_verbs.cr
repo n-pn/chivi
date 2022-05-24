@@ -9,8 +9,6 @@ module CV::TlRule
 
     return verb unless succ = verb.succ?
 
-    fold_verb_compare(verb).try { |x| return x }
-
     case succ
     when .junction?
       if fold = fold_verb_junction!(junc: succ, verb: verb)

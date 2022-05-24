@@ -14,80 +14,63 @@ module CV::MtDict
       super(initial_capacity: initial_capacity)
     end
 
-    def upsert(term : VpTerm)
+    def upsert_term(term : VpTerm)
       return unless fval = term.val.first?
       return delete(term.key) if fval.empty?
       ptag = @fixed_tag || term.attr.empty? ? @df_ptag : term.ptag
       upsert(term.key, {fval, ptag})
     end
-  end
 
-  enum Dnames
-    FixUZhi; FixAdverbs
-
-    FixNouns; FixVerbs; FixAdjts
-
-    QtTimes; QtVerbs; QtNouns
-
-    VerbCom; VerbDir
-
-    VGroup; V2Objs
-  end
-
-  DICTS = {
-    load("fix_nouns", PosTag::Noun),
-    load("fix_verbs", PosTag::Verb),
-    load("fix_adjts", PosTag::Adjt),
-    load("fix_u_zhi", PosTag::Nform),
-    load("fix_adverbs", PosTag::Adverb, true),
-    load("qt_times", PosTag::Qttime, true),
-    load("qt_verbs", PosTag::Qtverb, true),
-    load("qt_nouns", PosTag::Qtnoun, true),
-    load("verb_com", PosTag::Verb, true),
-    load("verb_dir", PosTag::Verb, true),
-    load("v_group", PosTag::VerbObject, true),
-    load("v2_objs", PosTag::Verb, true),
-  }
-
-  def load(dname : String, df_ptag = PosTag::Unkn, fixed_tag = false)
-    vpdict = VpDict.load_cvmtl(dname)
-    output = MtHash.new(df_ptag, fixed_tag, initial_capacity: vpdict.size)
-
-    vpdict.list.each do |vpterm|
-      output.upsert(vpterm) unless vpterm.deleted?
-    rescue err
-      puts err, vpterm
+    def get_val(key : String)
+      self[key]?.try(&.first)
     end
-
-    output
   end
 
-  def get(dict : String) : MtHash
-    DICTS[Dnames.parse(dict).to_i]
+  class_getter fix_u_zhi : MtHash { load("fix_u_zhi", PosTag::NounPhrase, false) }
+  class_getter fix_nouns : MtHash { load("fix_nouns", PosTag::Noun, false) }
+  class_getter fix_verbs : MtHash { load("fix_verbs", PosTag::Verb, false) }
+  class_getter fix_adjts : MtHash { load("fix_adjts", PosTag::Adjt, false) }
+  class_getter fix_adverbs : MtHash { load("fix_adverbs", PosTag::Adverb) }
+
+  class_getter qt_times : MtHash { load("qt_times", PosTag::Nqtime) }
+  class_getter qt_verbs : MtHash { load("qt_verbs", PosTag::Nqverb) }
+  class_getter qt_nouns : MtHash { load("qt_nouns", PosTag::Nqnoun) }
+
+  class_getter verb_com : MtHash { load("verb_com", PosTag::Verb) }
+  class_getter verb_dir : MtHash { load("verb_dir", PosTag::VDircomp) }
+
+  class_getter v2_objs : MtHash { load("v2_objs", PosTag::V2Object) }
+  class_getter v_group : MtHash { load("v_group", PosTag::VerbObject) }
+  class_getter v_combine : MtHash { load("v_combine", PosTag::VCombine) }
+  class_getter v_compare : MtHash { load("v_compare", PosTag::VCompare) }
+
+  DICTS = {} of String => MtHash
+
+  def fixed_tag?(dname : String)
+    !dname.in?("fix_u_zhi", "fix_nouns", "fix_verbs", "fix_adjts")
   end
 
-  def get(dict : Dnames) : MtHash
-    DICTS[dict.to_i]
-  end
+  def load(dname : String, df_ptag = PosTag::Unkn, fixed_tag = fixed_tag?(dname))
+    DICTS[dname] ||= begin
+      vpdict = VpDict.load_cvmtl(dname)
+      output = MtHash.new(df_ptag, fixed_tag, initial_capacity: vpdict.size)
 
-  def get_val(dict : Dnames, key : String)
-    get(dict)[key]?.try(&.first)
-  end
+      vpdict.list.each do |vpterm|
+        output.upsert_term(vpterm) unless vpterm.deleted?
+      rescue err
+        puts err, vpterm
+      end
 
-  def has_key?(dict : Dnames, key : String) : Bool
-    get(dict).has_key?(key)
-  end
-
-  def upsert(hash : MtHash, term : VpTerm) : Nil
-    hash.upsert(term)
+      output
+    end
   end
 
   def upsert(dict : String, term : VpTerm) : Nil
-    get(dict).upsert(term)
+    load(dict).upsert_term(term)
   end
 
   def fix_noun!(node : MtNode) : MtNode
-    if term = get(:fix_nouns)[node.key]?
+    if term = self.fix_nouns[node.key]?
       node.set!(term[0], term[1])
     else
       node.set!(PosTag::Noun)
@@ -95,7 +78,7 @@ module CV::MtDict
   end
 
   def fix_verb!(node : MtNode) : MtNode
-    if term = get(:fix_verbs)[node.key]?
+    if term = self.fix_verbs[node.key]?
       node.set!(term[0], term[1])
     else
       node.set!(PosTag::Verb)
@@ -103,7 +86,7 @@ module CV::MtDict
   end
 
   def fix_adjt!(node : MtNode) : MtNode
-    if term = get(:fix_adjts)[node.key]?
+    if term = self.fix_adjts[node.key]?
       node.set!(term[0], term[1])
     else
       node.set!(PosTag::Adjt)
@@ -111,7 +94,7 @@ module CV::MtDict
   end
 
   def fix_adverb!(node : MtNode) : MtNode
-    if term = get(:fix_adverbs)[node.key]?
+    if term = self.fix_adverbs[node.key]?
       node.set!(term[0], term[1])
     else
       node.set!(PosTag::Adverb)
@@ -119,7 +102,7 @@ module CV::MtDict
   end
 
   def fix_uzhi(node : MtNode)
-    return unless term = get(:fix_u_zhi)[node.key]?
+    return unless term = self.fix_u_zhi[node.key]?
     node.val = term[0]
     term[1]
   end
@@ -127,7 +110,7 @@ module CV::MtDict
   def fix_quanti(node : MtNode)
     key = node.key
 
-    {get(:qt_times), get(:qt_verbs), get(:qt_nouns)}.each do |hash|
+    {self.qt_times, self.qt_verbs, self.qt_nouns}.each do |hash|
       next unless term = hash[key]?
       return node.set!(term[0], term[1])
     end

@@ -160,6 +160,7 @@ module CV::TlRule
     when "正" then adverb.val = "đang" unless verb.v_shi?
     end
 
+    verb = fuse_verb!(verb)
     fold_verbs!(verb, prev: adverb)
   end
 

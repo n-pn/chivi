@@ -21,8 +21,8 @@ module CV::TlRule
 
     while node = node.succ?
       if node.verbal?
-        return !node.specials?
-      elsif node.specials?
+        return !node.special?
+      elsif node.special?
         return true if node.key_in?("上", "下") && fix_上下(node).verb?
       elsif node.puncts?
         return false unless node.penum?
@@ -44,7 +44,7 @@ module CV::TlRule
     when .noun?, .naffil?
       node.set!(vals[1], PosTag::Locality)
     when .verb?, .vintr?
-      node.set!(vals[0], PosTag::Vdir)
+      node.set!(vals[0], PosTag::VDircomp)
     else
       node
     end

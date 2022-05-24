@@ -68,7 +68,7 @@ module CV::TlRule
       proper.val = "của #{proper.val}" if flip
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
     else
-      fold!(proper, nominal, PosTag::Nform, dic: 8, flip: false)
+      fold!(proper, nominal, PosTag::NounPhrase, dic: 8, flip: false)
     end
   end
 

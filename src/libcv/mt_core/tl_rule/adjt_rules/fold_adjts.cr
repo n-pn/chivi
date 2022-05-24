@@ -52,16 +52,21 @@ module CV::TlRule
           succ = fold_nouns!(MtDict.fix_noun!(succ))
           return fold!(adjt, succ, PosTag::NounPhrase, dic: 5, flip: true)
         end
-      when .vdir?
-        return fold_verbs!(MtDict.fix_verb!(adjt))
       when .verb?
-        break unless succ.key == "到"
-        adjt = fold!(adjt, succ, PosTag::Adverb)
-        return fold_adverbs!(adjt)
+        if succ.v_dircomp?
+          succ.val = MtDict.verb_dir.get_val(succ.key) || succ.val
+          adjt = MtDict.fix_verb!(adjt)
+          return fold!(adjt, succ, PosTag::Vintr, dic: 7).flag!(:checked)
+        elsif succ.key == "到"
+          adjt = fold!(adjt, succ, PosTag::Adverb)
+          return fold_adverbs!(adjt)
+        else
+          break
+        end
       when .nominal?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_adjt_noun!(adjt, succ)
-      when .vpro?, .verb?
+      when .verb?
         case succ.key
         when "到"
           if (tail = succ.succ?) && tail.adjective?

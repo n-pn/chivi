@@ -14,10 +14,10 @@ module CV::TlRule
       return fold!(noun, tail.set!("lúc"), PosTag::Temporal, dic: 9, flip: true)
     end
 
-    # if verb.verb_no_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?
+    # if verb.v0_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?
     #   verb_2 = verb_2.adverbial? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
 
-    #   if !verb_2.verb_no_obj? && verb.prev?(&.object?)
+    #   if !verb_2.v0_obj? && verb.prev?(&.object?)
     #     tail = fold!(tail, verb_2, PosTag::VerbClause, dic: 8)
     #     noun = fold!(noun, verb, PosTag::VerbClause, dic: 7)
     #     return fold!(noun, succ.set!(""), dic: 9, flip: true)

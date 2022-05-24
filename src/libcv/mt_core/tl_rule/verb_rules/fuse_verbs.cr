@@ -4,8 +4,16 @@ module CV::TlRule
   def fuse_verb!(verb : MtNode, succ = verb.succ?)
     return verb.flag!(:resolved) unless succ
 
-    if node = fold_verb_compare(verb)
+    if verb.v_compare? && (node = fold_compare(verb, succ))
       return node.flag!(:resolved)
+    end
+
+    if verb.v_combine? && succ.verb?
+      succ = fuse_verb!(verb)
+      verb.val = MtDict.v_combine.get_val(verb.key) || verb.val
+
+      verb = fold!(verb, succ, succ.tag, dic: 5)
+      return verb.flag!(:checked)
     end
 
     case verb.key[-1]?
@@ -52,11 +60,11 @@ module CV::TlRule
       succ.val = succ.succ? { |x| x.ule? || x.ends? } ? "tốt" : "xong"
     when .locality?
       return fuse_verb_locality!(verb, succ, flag)
+    when .v_dircomp?
+      succ.val = MtDict.verb_dir.get_val(succ.key) || succ.val
+      flag |= MtFlag::HasVdir
     else
-      if val = MtDict.get_val(:verb_dir, succ.key)
-        succ.val = val
-        flag |= MtFlag::HasVdir
-      elsif val = MtDict.get_val(:verb_com, succ.key)
+      if val = MtDict.verb_com.get_val(succ.key)
         succ.val = val
       else
         return verb.flag!(:checked)
@@ -90,31 +98,40 @@ module CV::TlRule
     verb.flag!(flag)
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
   def fuse_verb_compl_extra!(verb : MtNode, succ = verb.succ?) : MtNode
     case succ
     when nil then verb.flag!(:resolved)
     when .auxils?
       fuse_verb_auxils!(verb, succ)
     when .verbal?
-      verb = fold_verb_verb!(verb, succ)
+      return verb unless is_linking_verb?(verb, succ.succ?)
+      fuse_verb_verb!(verb, succ)
     when .adv_bu4?
-      verb = fold_verb_advbu!(verb, succ)
+      fold_verb_advbu!(verb, succ)
     when .numeral?
-      if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
-        verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
-      end
-
-      if val = PRE_NUM_APPROS[verb.key]?
-        verb.val = val
-        succ = fold_number!(succ) if succ.numbers?
-        return verb unless succ.nquants?
-        return fold!(verb, succ, succ.tag, dic: 8)
-      end
-
-      fold_verb_nquant!(verb, succ)
+      fuse_verb_numeral!(verb, succ)
     else
       verb.flag!(:checked)
     end
+  end
+
+  def fuse_verb_verb!(verb_1 : MtNode, verb_2 : MtNode) : MtNode
+    verb_2 = MtDict.fix_verb!(verb_2) if verb_2.mixed?
+    fold!(verb_1, verb_2, verb_2.tag, dic: 5).flag!(:checked)
+  end
+
+  def fuse_verb_numeral!(verb : MtNode, succ : MtNode) : MtNode
+    if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
+      verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
+    end
+
+    if val = PRE_NUM_APPROS[verb.key]?
+      verb.val = val
+      succ = fold_number!(succ) if succ.numbers?
+      return verb unless succ.nquants?
+      return fold!(verb, succ, succ.tag, dic: 8)
+    end
+
+    fold_verb_nquant!(verb, succ)
   end
 end

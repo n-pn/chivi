@@ -61,7 +61,7 @@ module CV::TlRule
     node = fold!(head, verb, verb.tag, dic: 8, flip: flip)
     return node unless (ude1 = node.succ?) && ude1.ude1?
 
-    # if !node.verb_no_obj? && (prev = node.prev?) && prev.subject?
+    # if !node.v0_obj? && (prev = node.prev?) && prev.subject?
     #   node = fold!(prev, node, PosTag::VerbClause, dic: 7) unless mode == 3
     # end
 
