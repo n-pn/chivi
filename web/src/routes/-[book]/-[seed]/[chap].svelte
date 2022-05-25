@@ -112,7 +112,7 @@
     const { sname, cpart } = chmeta
     const { chidx, title, uslug } = chinfo
 
-    const url = `_self/books/${nvinfo.id}/access`
+    const url = `/api/_self/books/${nvinfo.id}/access`
     const params = { sname, cpart, chidx, title, uslug, locked: lock }
 
     const [status, payload] = await call_api(url, 'PUT', params, fetch)
