@@ -1,3 +1,16 @@
+# compare using 比
+# reference: https://tiengtrungthuonghai.vn/cau-so-sanh-dung-chu%E6%AF%94/
+
+# patterns
+# - A 比 B + adjective
+# - A 比 B + adjective + 一点/一些/多/多了/得多/nquants
+# - A 比 B + verb + object
+# - A 比 B + verb + 得 + adjective
+# - A + verb + 得 + 比 B + adjective
+# - A 比 B + verb + object + verb + 得 + adjective
+# - A + verb + object + verb + 得 + 比 B + adjective
+# - A 比 B + 早/晚/多/少 + verb + …
+
 module CV::TlRule
   def fold_compare_bi3!(prepos : MtNode, succ = prepos.succ?, mode = 0)
     return prepos unless (noun = scan_noun!(succ, mode: mode)) && noun.object?

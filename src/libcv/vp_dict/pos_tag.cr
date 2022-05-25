@@ -78,7 +78,6 @@ struct CV::PosTag
   def to_str
     case @pos
     when .mixed?     then @tag.to_str
-    when .locality?  then "f"
     when .puncts?    then "w"
     when .auxils?    then "u"
     when .vmodals?   then "vm"
@@ -90,6 +89,7 @@ struct CV::PosTag
     when .nquants?   then "mq"
     when .adverbial? then "d"
     when .special?
+      return "f" if @tag.locality?
       return "!" unless @pos.verbal?
       return "!vshi" if @tag.v_shi?
       return "!vyou" if @tag.v_you?

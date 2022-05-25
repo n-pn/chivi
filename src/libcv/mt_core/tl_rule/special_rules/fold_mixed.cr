@@ -17,7 +17,9 @@ module CV::TlRule
     end
   end
 
-  def heal_ajad!(node : MtNode, succ = node.succ) : MtNode
+  def heal_ajad!(node : MtNode, succ = node.succ?) : MtNode
+    return MtDict.fix_adjt!(node) unless succ
+
     if mixed_is_adverb?(node, succ)
       MtDict.fix_adverb!(node)
     else
