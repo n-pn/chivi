@@ -1,12 +1,6 @@
 module CV::TlRule
   def meld_mixed!(node : MtNode) : MtNode
-    case node.tag
-    when .veno? then node = heal_veno!(node)
-    when .vead? then node = heal_vead!(node)
-    when .ajno? then node = heal_ajno!(node)
-    when .ajad? then node = heal_ajad!(node)
-      # when .adv_noun? then fold_adv_noun!(node)
-    end
+    node = heal_mixed!(node)
 
     case node
     when .adverb?    then fold_adverb_base!(node)
@@ -14,6 +8,18 @@ module CV::TlRule
     when .verbal?    then fuse_verb!(node)
     when .nominal?   then fuse_noun!(node)
     else                  node
+    end
+  end
+
+  def heal_mixed!(node : MtNode) : MtNode
+    case node.tag
+    when .veno? then heal_veno!(node)
+    when .vead? then heal_vead!(node)
+    when .ajno? then heal_ajno!(node)
+    when .ajad? then heal_ajad!(node)
+    else
+      node
+      #  raise "Unsupported mixed tag #{node.tag}"
     end
   end
 
@@ -28,14 +34,13 @@ module CV::TlRule
   end
 
   def heal_vead!(node : MtNode) : MtNode
-    case succ = node.succ?
-    when .nil?, .ends?
-      return MtDict.fix_verb!(node)
-    when .veno?
-      succ = heal_veno!(succ)
-      return succ.nominal? ? MtDict.fix_verb!(node) : MtDict.fix_adverb!(node)
-    when .verbal?, .vmodals?, .preposes?
-      return MtDict.fix_verb!(node)
+    return MtDict.fix_verb!(node) if !(succ = node.succ?) || succ.ends?
+
+    succ = heal_mixed!(succ) if succ.mixed?
+
+    case succ
+    when .adverbial?, .adjective?, .verbal?, .vmodals?, .preposes?
+      return MtDict.fix_adverb!(node)
     when .nominal?, .numeral?, .pronouns?
       return MtDict.fix_verb!(node)
     end

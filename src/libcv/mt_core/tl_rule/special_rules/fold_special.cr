@@ -4,7 +4,7 @@ module CV::TlRule
 
     case node
     when .verbal?  then fold_special_verbs!(node, succ)
-    when .adj_hao? then heal_adj_hao!(node)
+    when .adj_hao? then fold_adj_hao!(node)
     when .key_in?("和", "跟")
       if node.prev? { |x| x.ends? || x.adverb? } || concoord_is_prepos?(node.succ?)
         node.set!(PosTag::Prepos)
@@ -23,19 +23,19 @@ module CV::TlRule
     when .v_you? then fold_v_you!(node, succ)
     when .locality?
       node.val = node.key == '上' ? "lên" : "xuống"
-      fuse_verb!(node)
+      fold_verbs!(node)
     when .v_compare?
-      fold_compare(node, succ) || fuse_verb!(node, succ)
+      fold_compare(node, succ) || fold_verbs!(node, succ)
     when .v_combine?
-      return fuse_verb!(node, succ) unless succ.verbal?
-      succ = fuse_verb!(succ)
+      return fold_verbs!(node, succ) unless succ.verbal?
+      succ = fold_verbs!(succ)
 
       node.val = MtDict.v_combine.get_val(node.key) || node.val
 
       node = fold!(node, succ, succ.tag, dic: 5)
       node.flag!(:checked)
     else
-      fuse_verb!(node, succ)
+      fold_verbs!(node, succ)
     end
   end
 
@@ -73,14 +73,16 @@ module CV::TlRule
     end
   end
 
-  def heal_adj_hao!(node : MtNode) : MtNode
+  def fold_adj_hao!(node : MtNode) : MtNode
     case succ = node.succ?
     when .nil?, .puncts?, .ule?
       node.set!("tốt", PosTag::Adjt)
     when .adjective?, .verbal?, .vmodals?, .adverbial?
       node.set!(succ.verbal? ? "dễ" : "thật", PosTag::Adverb)
+      fold_adverb_base!(node)
     when .nominal?
       node.set!("tốt", PosTag::Adjt)
+      fold_adjt_noun!(node, succ)
     else
       node
     end

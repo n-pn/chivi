@@ -9,6 +9,8 @@ module CV::TlRule
       fuse_verb_ude3!(verb, auxil)
     when .uguo?
       fold!(verb, auxil, PosTag::Verb, dic: 6)
+    when .usuo?
+      fold!(verb, auxil.set!("nơi"), tag: PosTag::Noun, dic: 3, flip: true)
     when .uyy?
       adjt = fold!(verb, auxil.set!("như"), PosTag::Aform, dic: 7, flip: true)
       return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?

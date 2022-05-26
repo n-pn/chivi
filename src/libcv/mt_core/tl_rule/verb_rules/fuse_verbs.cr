@@ -96,6 +96,8 @@ module CV::TlRule
       fold_verb_advbu!(verb, succ)
     when .numeral?
       fuse_verb_numeral!(verb, succ)
+    when .suffixes?
+      fold_suffixes!(verb, succ)
     else
       verb.flag!(:checked)
     end

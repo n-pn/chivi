@@ -66,6 +66,10 @@ module CV::TlRule
     fold_compare_bi3_after!(output, noun)
   end
 
+  def fold_bi3_verbal(bi3 : MtNode, noun : MtNode, verb : MtNode) : MtNode
+    # TODO!
+  end
+
   def fold_compare_bi3_after!(node : MtNode, last : MtNode)
     return node unless (succ = node.succ?) && succ.auxils? && (tail = succ.succ?)
 
