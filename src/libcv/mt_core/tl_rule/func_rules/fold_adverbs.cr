@@ -86,6 +86,12 @@ module CV::TlRule
       fold_vmodals!(succ, nega: node)
     when .veno?
       fold_adverb_verb!(node, MtDict.fix_verb!(succ))
+    when .v_compare?
+      if comp = fold_compare(succ)
+        fold_adverb_node!(node, comp)
+      else
+        fold_adverb_verb!(node, succ)
+      end
     when .verbal?
       fold_adverb_verb!(node, succ)
     when .ajno?

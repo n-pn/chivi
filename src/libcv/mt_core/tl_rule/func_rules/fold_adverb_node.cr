@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_adverb_node!(adv : MtNode, node = adv.succ, tag = node.tag, dic = 4) : MtNode
+  def fold_adverb_node!(adv : MtNode, node = adv.succ, tag = node.tag) : MtNode
     flip = false
 
     case adv.key
@@ -11,7 +11,7 @@ module CV::TlRule
       node.set_prev!(head)
       node.set_succ!(tail)
 
-      return fold!(head, tail, PosTag::Aform, dic: dic)
+      return fold!(head, tail, PosTag::Aform, dic: 4)
     when "最", "最为", "那么", "这么", "非常", "如此"
       flip = true
     when "好好"
@@ -24,6 +24,6 @@ module CV::TlRule
       adv.val = "rất"
     end
 
-    fold!(adv, node, tag, dic: dic, flip: flip)
+    fold!(adv, node, tag, dic: 4, flip: flip)
   end
 end

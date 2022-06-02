@@ -15,7 +15,7 @@ module CV::TlRule
     end
 
     if adverb
-      adjt = fold_adverb_node!(adverb, adjt, tag: PosTag::AdjtPhrase, dic: 4)
+      adjt = fold_adverb_node!(adverb, adjt, tag: PosTag::AdjtPhrase)
     end
 
     case succ = adjt.succ?
