@@ -1,9 +1,4 @@
 module CV::TlRule
-  def can_combine_adjt?(left : MtNode, right : MtNode?)
-    # TODO
-    right.adjective?
-  end
-
   def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
     return if !succ || succ.ends?
     return if tag = verb.tag if succ.key == "过"
@@ -11,12 +6,6 @@ module CV::TlRule
 
     return unless tag || succ.verbal?
     fold!(verb, succ, tag: tag || succ.tag, dic: 4)
-  end
-
-  def fold_adjt_junction!(node : MtNode, prev = node.prev, succ = node.succ?)
-    return if !succ || succ.ends?
-    return unless (succ = scan_adjt!(succ)) && succ.adjective?
-    fold!(prev, succ, tag: PosTag::AdjtPhrase, dic: 4)
   end
 
   def fold_noun_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)

@@ -31,10 +31,10 @@ module CV::TlRule
       fold_noun_concoord!(succ, noun).try { |fold| noun = fold }
     when .suffixes?
       unless succ.key == "时" && noun.prev?(&.verb?)
-        noun = fold_suffixes!(noun, succ)
+        noun = fold_suffix!(noun, succ)
       end
     when .usuo?
-      noun = fold_suffixes!(noun, succ) unless succ.succ?(&.verbal?)
+      noun = fold_suffix!(noun, succ) unless succ.succ?(&.verbal?)
     when .special?
       case succ.key
       when "第"
@@ -56,6 +56,10 @@ module CV::TlRule
       when .spaces?
         return noun if noun.prev? { |x| x.numeral? || x.pronouns? || x.adjective? }
         noun = fold_noun_space!(noun, succ)
+      when .ajno?
+        # TODO: check more cases
+        succ = MtDict.fix_adjt!(succ)
+        return noun
       when .nominal?
         return noun unless fold = fold_noun_noun!(noun, succ)
         noun = fold

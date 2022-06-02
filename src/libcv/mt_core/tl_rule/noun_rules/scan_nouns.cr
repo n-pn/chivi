@@ -10,12 +10,11 @@ module CV::TlRule
     prodem && nquant ? fold_prodem_nominal!(prodem, nquant) : nil
   end
 
-  # -ameba:disable Metrics/CyclomaticComplexity
+  # ameba:disable Metrics/CyclomaticComplexity
   def scan_noun!(node : MtNode, mode : Int32 = 0,
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
-    # puts [node, prodem, nquant, "scan_noun"]
-
     node = fold_once!(node)
+    # puts [node, prodem, nquant, "scan_noun"]
 
     case node.tag
     when .nominal?, .numeral?, .verb_object?
@@ -24,6 +23,9 @@ module CV::TlRule
 
       return node unless succ = node.succ?
       scan_noun_after!(node, succ)
+    when .pronouns?
+      return node unless prodem || nquant
+      prodem && nquant ? fold_prodem_nominal!(prodem, nquant) : prodem || nquant
     else
       prodem && nquant ? fold_prodem_nominal!(prodem, nquant) : prodem || nquant
     end

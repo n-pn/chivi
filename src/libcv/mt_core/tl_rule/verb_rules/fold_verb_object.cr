@@ -1,11 +1,11 @@
 module CV::TlRule
-  # ameba:disable Metrics/CyclomaticComplexity
+  # -ameba:disable Metrics/CyclomaticComplexity
   def fold_verb_object!(verb : MtNode, succ = verb.succ)
-    puts [verb, succ, "fold_verb_object"]
+    # puts [verb, succ, "fold_verb_object"]
 
     return verb unless (noun = scan_noun!(succ)) && noun.object?
 
-    if noun.position? && verb.ends_with?('在')
+    if noun.position? && verb.flag.has_pre_zai?
       return fold!(verb, noun, PosTag::VerbObject, dic: 4)
     end
 
@@ -15,25 +15,8 @@ module CV::TlRule
       end
     end
 
-    fix_auxil_in_verb_phrase!(verb) if verb.flag.has_ule?
-
-    verb_object = fold!(verb, noun, PosTag::VerbObject, dic: 8)
-    return verb_object unless succ = verb_object.succ?
-
-    if succ.suffixes? && succ.key == "时"
-      return fold!(verb_object, succ.set!("khi"), tag: PosTag::Temporal, dic: 5, flip: true)
-    end
-
-    if succ.junction?
-      return fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
-    end
-
-    if succ.v_dircomp?
-      succ.val = MtDict.verb_dir.get_val(succ.key) || succ.val
-      verb_object = fold!(verb_object, succ, verb_object.tag, dic: 5)
-    end
-
-    verb_object.flag!(:resolved)
+    fix_auxil_in_verb_phrase!(verb)
+    fold!(verb, noun, PosTag::VerbObject, dic: 8)
   end
 
   def fix_auxil_in_verb_phrase!(verb : MtNode)
@@ -41,9 +24,12 @@ module CV::TlRule
       if body = node.body?
         fix_auxil_in_verb_phrase!(body)
       else
-        if node.key.includes?('了')
+        case node.key
+        when .includes?('在')
+          node.val = node.val.sub("tại", "ở")
+        when .includes?('了')
           node.val = node.val.sub(/\s?rồi/, "")
-        elsif node.key.includes?('着')
+        when .includes?('着')
           node.val = node.val.sub(/\s?lấy/, "")
         end
       end

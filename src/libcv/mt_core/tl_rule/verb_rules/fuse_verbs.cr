@@ -32,9 +32,8 @@ module CV::TlRule
 
     case succ.tag
     when .pre_dui?
-      return fuse_verb_predui!(verb, succ, flag)
+      succ.val = "đúng"
     when .pre_zai?
-      succ.val = "ở"
       flag |= MtFlag::HasPreZai
     when .uzhe?
       succ.val = ""
@@ -57,14 +56,6 @@ module CV::TlRule
     end
 
     verb = fold!(verb, succ, PosTag::VerbPhrase, dic: 6)
-
-    verb.flag!(flag)
-  end
-
-  def fuse_verb_predui!(verb : MtNode, predui : MtNode, flag = verb.flag) : MtNode
-    if (succ = predui.succ?) && (succ.verbal? || !succ.contws?)
-      verb = fold!(verb, predui.set!("đúng"), verb.tag, dic: 6)
-    end
 
     verb.flag!(flag)
   end
@@ -97,7 +88,7 @@ module CV::TlRule
     when .numeral?
       fuse_verb_numeral!(verb, succ)
     when .suffixes?
-      fold_suffixes!(verb, succ)
+      fold_suffix!(verb, succ)
     else
       verb.flag!(:checked)
     end

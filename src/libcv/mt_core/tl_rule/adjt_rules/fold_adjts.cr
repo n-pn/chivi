@@ -1,125 +1,43 @@
 module CV::TlRule
-  MEASURES = {
-    "宽" => "rộng",
-    "高" => "cao",
-    "长" => "dài",
-    "远" => "xa",
-    "重" => "nặng",
-  }
-
-  def fold_measurement!(adjt : MtNode, succ = adjt.succ?)
-    return unless succ
-    return unless adjt_val = MEASURES[adjt.key]?
-    return unless succ_val = PRE_NUM_APPROS[succ.key]?
-
-    adjt.val = adjt_val
-    succ.val = succ_val
-
-    if (succ_2 = succ.succ?) && succ_2.numeral?
-      succ_2 = fuse_number!(succ_2)
-      return fold!(adjt, succ_2, PosTag::Aform, dic: 7)
-    end
-
-    fold!(adjt, succ, PosTag::VerbPhrase, dic: 7)
-  end
-
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_adjts!(adjt : MtNode, prev : MtNode? = nil) : MtNode
-    fold_measurement!(adjt).try { |x| return x }
-
-    while adjt.adjective?
-      break unless succ = adjt.succ?
-
-      case succ.tag
-      when .adverb?
-        if succ.key == "又"
-          fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
-        else
-          break
-        end
+  def fold_adjts!(adjt : MtNode, adverb : MtNode? = nil) : MtNode
+    while (succ = adjt.succ?) && !succ.ends?
+      case succ
+      when .v_dircomp?
+        return fold_verbs!(MtDict.fix_verb!(adjt), adverb: adverb)
       when .junction?
-        fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
-      when .aform?
-        adjt = fold!(adjt, succ, PosTag::Aform, dic: 4)
-      when .adjt?
-        adjt = fold!(adjt, succ, PosTag::Adjt, dic: 4)
-      when .ajno?
-        return fold!(adjt, succ, PosTag::Noun, dic: 7, flip: true)
-      when .veno?
-        if !prev && adjt.key.size == 1
-          succ = MtDict.fix_verb!(succ)
-        else
-          succ = fold_nouns!(MtDict.fix_noun!(succ))
-          return fold!(adjt, succ, PosTag::NounPhrase, dic: 5, flip: true)
-        end
-      when .verb?
-        if succ.v_dircomp?
-          succ.val = MtDict.verb_dir.get_val(succ.key) || succ.val
-          adjt = MtDict.fix_verb!(adjt)
-          return fold!(adjt, succ, PosTag::Vintr, dic: 7).flag!(:checked)
-        elsif succ.key == "到"
-          adjt = fold!(adjt, succ, PosTag::Adverb)
-          return fold_adverbs!(adjt)
-        else
-          break
-        end
-      when .nominal?
-        adjt = fold_adj_adv!(adjt, prev)
-        return fold_adjt_noun!(adjt, succ)
-      when .verb?
-        case succ.key
-        when "到"
-          if (tail = succ.succ?) && tail.adjective?
-            adjt = fold!(adjt, tail, PosTag::Aform, dic: 7)
-          else
-            adjt = fold!(adjt, succ, PosTag::Verb, dic: 6)
-            return fold_verbs!(succ, adverb: prev)
-          end
-        end
-
-        break if prev || adjt.key.size > 1
-
-        succ = fold_verbs!(succ)
-        return fold!(adjt, succ, succ.tag, dic: 4, flip: true)
-        # when .ule?
-        #   break unless (tail = succ.succ?) && tail.key == "点"
-        #   succ.val = ""
-        #   adjt = fold!(adjt, tail.set!("chút"), PosTag::Aform, dic: 6)
-        #   break
-      when .ude1?
-        break unless (tail = succ.succ?) && tail.key == "很"
-        break if tail.succ?(&.ends?.!)
-
-        succ.val = ""
-        adjt = fold!(adjt, tail.set!("cực kỳ"), PosTag::Aform, dic: 4)
-        break
-      when .ude2?
-        adjt = fold_adj_adv!(adjt, prev)
-        return fold_adjt_ude2!(adjt, succ)
-      when .uzhe?
-        verb = fold!(adjt, succ.set!(""), PosTag::Verb, dic: 6)
-        return fold_verbs!(verb, adverb: prev)
-      when .uzhi?
-        adjt = fold_adj_adv!(adjt, prev)
-        return fold_uzhi!(succ, adjt)
-      when .suffixes?
-        adjt = fold_adj_adv!(adjt, prev)
-        return fold_suffixes!(adjt, succ)
-      when .adv_bu4?
-        fold_adjt_adv_bu!(adjt, succ, prev).try { |x| return x } || break
+        fold_adjt_junction!(junc: succ, prev: adjt).try { |x| adjt = x } || return adjt
       else
-        break unless succ.key == "又"
-        fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
+        break if !(succ.adjective?) || succ.key == "多"
+        # TODO: check edge cases, like ajno
+        adjt = fold!(adjt, succ, PosTag::Adjt, dic: 4)
       end
-
-      break if succ == adjt.succ?
     end
 
-    # TODO: combine with nouns
-    fold_adj_adv!(adjt, prev)
+    if adverb
+      adjt = fold_adverb_node!(adverb, adjt, tag: PosTag::AdjtPhrase, dic: 4)
+    end
+
+    case succ = adjt.succ?
+    when .nil? then adjt
+    when .veno?
+      succ = fold_nouns!(MtDict.fix_noun!(succ))
+      fold_adjt_noun!(adjt, succ)
+    when .nominal? then fold_adjt_noun!(adjt, succ)
+    when .verbal?  then fold_adjt_verb!(adjt, succ)
+    when .ude1?
+      if prev = adjt.prev?
+        return adjt if prev.junction? || (prev.comma? && prev.prev?(&.adjective?))
+      end
+      fold_adjt_ude1!(adjt, succ)
+    when .auxils?  then fold_adjt_auxil!(adjt, succ)
+    when .adv_bu4? then fold_adjt_adv_bu!(adjt, succ, prev: adverb)
+    else
+      adjt
+    end
   end
 
-  def fold_modifier!(node : MtNode, succ = node.succ?, nega : MtNode? = nil)
+  def fold_modifier!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     # puts [node, succ, nega].colorize.green
 
     node = fold!(nega, node, node.tag, dic: 4) if nega
@@ -131,8 +49,80 @@ module CV::TlRule
     succ.nominal? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
   end
 
-  def fold_adj_adv!(node : MtNode, prev = node.prev?)
-    return node unless prev && prev.adverbial?
-    fold_adverb_node!(prev, node, tag: PosTag::Aform, dic: 4)
+  def fold_adjt_verb!(adjt : MtNode, verb : MtNode) : MtNode
+    return adjt if verb.v_shi? || verb.v_you?
+
+    if (verb.key == "到") && (tail = verb.succ?) && tail.adjective?
+      return fold!(adjt, tail, PosTag::AdjtPhrase, dic: 7)
+    end
+
+    return adjt if adjt.body || adjt.key.size > 1
+    fold_verbs!(verb, adverb: adjt)
+  end
+
+  def fold_adjt_auxil!(adjt : MtNode, auxil : MtNode) : MtNode
+    return adjt unless tail = auxil.succ?
+
+    case auxil
+    when .ule?
+      return adjt unless tail.key == "点"
+      auxil.val = ""
+      fold!(adjt, tail.set!("chút"), PosTag::AdjtPhrase, dic: 6)
+    when .ude2?
+      fold_adjt_ude2!(adjt, auxil)
+    when .uzhe?
+      verb = MtDict.fix_verb!(adjt)
+      fold_verbs!(verb)
+    when .uzhi?
+      fold_uzhi!(auxil, adjt)
+    when .suffixes?
+      fold_suffix!(adjt, auxil)
+    else
+      adjt
+    end
+  end
+
+  def fold_adjt_ude1!(adjt : MtNode, ude1 : MtNode) : MtNode
+    adjt = fold!(adjt, ude1.set!(""), PosTag::DefnPhrase, dic: 3)
+    return adjt if !(tail = adjt.succ?) || tail.ends?
+
+    tail = fold_once!(tail)
+    flip = false
+    ptag = tail.tag
+
+    if tail.key == "很"
+      tail.val = "cực kỳ"
+      ptag = adjt.tag
+    elsif tail.verbal?
+      adjt.tag = PosTag::Adverb
+    elsif tail.object?
+      flip = true
+    else
+      return adjt
+    end
+
+    fold!(adjt, tail, tag: ptag, flip: flip)
+  end
+
+  def fold_adjt_ude2!(adjt : MtNode, ude2 : MtNode) : MtNode
+    return adjt if adjt.prev?(&.noun?)
+    return adjt unless (succ = ude2.succ?) && succ.verbal?
+
+    adjt = fold!(adjt, ude2.set!("mà"), PosTag::Adverb, dic: 3)
+    fold!(adjt, fold_verbs!(succ), PosTag::VerbPhrase, dic: 5)
+  end
+
+  def fold_adjt_adv_bu!(adjt : MtNode, adv_bu4 : MtNode, prev : MtNode?) : MtNode
+    return adjt unless tail = adv_bu4.succ?
+
+    if prev && prev.adv_bu4?
+      tail = fold_adv_bu!(adv_bu4, succ: tail)
+      return fold!(adjt, tail, tail.tag, dic: 4)
+    end
+
+    return adjt unless tail.key == adjt.key
+
+    adv_bu4.val = "hay"
+    fold!(adjt, tail.set!("không"), PosTag::AdjtPhrase, dic: 4)
   end
 end

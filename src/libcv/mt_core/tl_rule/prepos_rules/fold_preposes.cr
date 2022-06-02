@@ -32,22 +32,13 @@ module CV::TlRule
   end
 
   def fold_pre_dui!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
-    return node.set!("đúng", PosTag::Unkn) if !succ || succ.ends?
-
-    # TODO: combine grammar
-
-    case succ.tag
-    when .ude1?
-      fold!(node.set!("đúng"), succ.set!(""), PosTag::Unkn, dic: 7)
-    when .ule?
-      # succ.val = "" unless keep_ule?(node, succ)
-      fold!(node.set!("đúng"), succ, PosTag::Unkn, dic: 7)
-    when .ends?, .conjunct?, .concoord?
+    case succ
+    when .nil?, .ends?, .ule?
       node.set!("đúng", PosTag::Adjt)
-    when .contws?, .popens?
-      fold_prepos_inner!(node.set!("đối với"), succ, mode: mode)
+    when .ude1?
+      fold!(node, succ.set!(""), PosTag::Adjt, dic: 2)
     else
-      node
+      fold_prepos_inner!(node.set!("đối với"), succ, mode: mode)
     end
   end
 

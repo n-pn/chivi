@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_adjt_noun!(adjt : MtNode, noun : MtNode?, ude1 : MtNode? = nil)
+  def fold_adjt_noun!(adjt : MtNode, noun : MtNode?, ude1 : MtNode? = nil) : MtNode
     return adjt unless noun
     flip = true
 

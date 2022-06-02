@@ -12,10 +12,12 @@ struct CV::PosTag
     # 形容词性语素 - adjectival morpheme -
     # {"ag", "Amorp", Pos::Adjective | Pos::Contws},
 
+    # {"am", "AjtMeasure", Pos.flags(Adjective, Measure, Contws)},
+
     # 状态词 - stative verb - trạng thái
     # {"az", "Adesc", Pos::Adjective | Pos::Contws},
     # modifier (non-predicate noun modifier) - 区别词 - từ khu biệt
-    {"b", "Modi", Pos::Adjective | Pos::Contws},
+    {"b", "Modi", Pos.flags(Adjective, Modifier, Contws)},
     # 区别词性惯用语 - noun modifier morpheme
     # {"bl", "Modiform", Pos::Adjective | Pos::Contws},
   }
@@ -32,7 +34,10 @@ struct CV::PosTag
     when 'l' then Aform
     when 'b' then Modi
     when 'z' then Aform
-    else          Adjt
+    when 'm'
+      new(Tag::Adjt, Pos.flags(Adjective, Measure, Special))
+    else
+      key.size > 1 ? Adjt : new(Tag::Adjt, Pos.flags(Adjective, Modifier))
     end
   end
 end

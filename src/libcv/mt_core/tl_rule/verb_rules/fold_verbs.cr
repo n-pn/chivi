@@ -3,7 +3,7 @@ module CV::TlRule
   def fold_verbs!(verb : MtNode, adverb : MtNode? = nil) : MtNode
     # puts [verb, adverb].colorize.yellow
 
-    verb = fuse_verb!(verb)
+    verb = fuse_verb!(verb) unless verb.verb_object?
     verb = fold_adverb_node!(adverb, verb) if adverb
 
     return verb.flag!(:resolved) unless succ = verb.succ?
@@ -16,16 +16,22 @@ module CV::TlRule
 
     unless verb.v0_obj? || succ.ude1? || succ.ends? || succ.junction?
       verb = fold_verb_object!(verb, succ)
+      return verb.flag!(:resolved) unless succ = verb.succ?
     end
 
-    case succ = verb.succ?
-    when nil then verb.flag!(:resolved)
+    case succ
     when .ude1?
       verb.v0_obj? && (tail = succ.succ?) ? fold_verb_ude1!(verb, succ, tail) : verb
-    when .junction?
-      fold_verb_junction!(junc: succ, verb: verb) || verb.flag!(:resolved)
     when .uzhi?
       fold_uzhi!(uzhi: succ, prev: verb)
+    when .suffixes?
+      fold_suffix!(base: verb, suff: succ)
+    when .junction?
+      fold_verb_junction!(junc: succ, verb: verb) || verb.flag!(:resolved)
+    when .v_dircomp?
+      # TODO: check
+      MtDict.verb_dir.get_val(succ.key).try { |x| succ.val = x }
+      fold!(verb, succ, verb.tag, dic: 5)
     else
       verb
     end

@@ -24,7 +24,7 @@ module CV::TlRule
     when .temporal?  then fold_timeword!(node)
     when .numeral?   then fold_number!(node)
     when .modi?      then fold_modifier!(node)
-    when .adjective? then fold_adjts!(node, prev: nil)
+    when .adjective? then fold_adjts!(node)
     when .vmodals?   then fold_vmodals!(node)
     when .verbal?    then fold_verbs!(node)
     when .locality?  then fold_space!(node)

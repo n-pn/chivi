@@ -32,8 +32,7 @@ module CV::TlRule
       fold_verbs!(node)
     when .adjective?
       succ = MtDict.fix_adjt!(succ) if succ.ajno?
-      node = fold!(node, succ, succ.tag, dic: 5)
-      fold_adjts!(node)
+      fold_adjts!(succ, adverb: node)
     else
       return node unless succ.key == "一样"
       succ.set!("giống nhau", PosTag::Vintr)
@@ -90,10 +89,10 @@ module CV::TlRule
     when .verbal?
       fold_adverb_verb!(node, succ)
     when .ajno?
-      fold_adjts!(MtDict.fix_adjt!(succ), prev: node)
+      fold_adjts!(MtDict.fix_adjt!(succ), adverb: node)
     when .adjective?
       succ.tag = PosTag::Adjt if succ.ajno?
-      fold_adjts!(succ, prev: node)
+      fold_adjts!(succ, adverb: node)
     when .adv_bu4?
       succ.succ? { |tail| succ = fold_adv_bu!(succ, tail) }
       fold!(node, succ, succ.tag, dic: 2)

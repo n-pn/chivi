@@ -13,7 +13,9 @@ struct CV::PosTag
 
     Vmodals
 
-    Adjective; Adverbial
+    Adjective; Modifier
+
+    Adverbial
 
     Numbers; Quantis; Nquants; Numeral
 
@@ -21,6 +23,9 @@ struct CV::PosTag
     Strings
 
     Junction
+    # Terminal # mark open or end of a sentence
+
+    Measure
 
     Mixed; Special
   end
@@ -55,6 +60,9 @@ struct CV::PosTag
   delegate auxils?, to: @pos
 
   delegate junction?, to: @pos
+  delegate terminal?, to: @pos
+
+  delegate measure?, to: @pos
   delegate strings?, to: @pos
 
   delegate contws?, to: @pos

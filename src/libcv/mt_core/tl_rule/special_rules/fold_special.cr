@@ -3,8 +3,8 @@ module CV::TlRule
     return node.flag!(:resolved) unless succ
 
     case node
-    when .verbal?  then fold_special_verbs!(node, succ)
-    when .adj_hao? then fold_adj_hao!(node)
+    when .verbal?    then fold_special_verbs!(node, succ)
+    when .adjective? then fold_special_adjt!(node, succ)
     when .key_in?("和", "跟")
       if node.prev? { |x| x.ends? || x.adverb? } || concoord_is_prepos?(node.succ?)
         node.set!(PosTag::Prepos)
@@ -36,6 +36,14 @@ module CV::TlRule
       node.flag!(:checked)
     else
       fold_verbs!(node)
+    end
+  end
+
+  def fold_special_adjt!(node : MtNode, succ : MtNode)
+    case node
+    when .adj_hao? then fold_adj_hao!(node, succ)
+    when .measure? then fold_adjt_number!(node, succ)
+    else                fold_adjts!(node)
     end
   end
 
@@ -73,9 +81,9 @@ module CV::TlRule
     end
   end
 
-  def fold_adj_hao!(node : MtNode) : MtNode
-    case succ = node.succ?
-    when .nil?, .puncts?, .ule?
+  def fold_adj_hao!(node : MtNode, succ : MtNode) : MtNode
+    case succ
+    when .puncts?, .ule?
       node.set!("tốt", PosTag::Adjt)
     when .adjective?, .verbal?, .vmodals?, .adverbial?
       node.set!(succ.verbal? ? "dễ" : "thật", PosTag::Adverb)
@@ -103,13 +111,21 @@ module CV::TlRule
       return node if boundary?(succ)
       fold_verbs!(MtDict.fix_verb!(node))
     when "原来"
-      if succ.try(&.ude1?) || node.prev?(&.contws?)
-        node.set!("ban đầu", tag: PosTag::Modi)
+      if node.prev? { |x| x.puncts? || x.none? }
+        node.set!("thì ra", PosTag::Conjunct)
       else
-        node.set!("thì ra")
+        node.set!("ban đầu", tag: PosTag::Modi)
+        fold_modifier!(node)
       end
     when "行"
-      succ.nil? || succ.ends? ? node.set!("được") : node
+      case succ
+      when .nil?, .pstop?
+        node.set!("hành")
+      when .ends?, .puncts?
+        node.set!("được")
+      else
+        fold_verbs!(node.set!(PosTag::Verb))
+      end
     else
       node
     end

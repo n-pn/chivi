@@ -1,14 +1,14 @@
 module CV::TlRule
-  def fold_pro_per!(node : MtNode, succ : Nil) : MtNode
+  def fold_proper!(node : MtNode, succ : Nil) : MtNode
     node
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_pro_per!(proper : MtNode, succ : MtNode) : MtNode
+  def fold_proper!(proper : MtNode, succ : MtNode) : MtNode
     # puts [proper, succ]
 
     case succ.tag
-    when .concoord?, .penum?
+    when .junction?
       fold_noun_concoord!(succ, proper) || proper
     when .veno?
       succ = heal_veno!(succ)
@@ -20,7 +20,7 @@ module CV::TlRule
       succ.noun? ? fold_proper_nominal!(proper, succ) : proper
     when .pro_per?
       if tail = succ.succ?
-        succ = fold_pro_per!(succ, tail)
+        succ = fold_proper!(succ, tail)
       end
 
       noun = fold_proper_nominal!(proper, succ)

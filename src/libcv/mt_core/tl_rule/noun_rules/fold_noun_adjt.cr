@@ -12,10 +12,6 @@ module CV::TlRule
     when .ude1?
       return noun if succ.succ? { |x| x.verbal? || x.ends? }
       fold!(noun, adjt, PosTag::Aform, dic: 7)
-    when .ude2?
-      return noun unless (prev = noun.prev?) && (prev.subject? || prev.junction?)
-      adjt = fold!(noun, adjt, PosTag::Aform, dic: 8)
-      fold_adjt_ude2!(adjt, succ)
     else
       noun
     end
