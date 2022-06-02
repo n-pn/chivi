@@ -48,39 +48,27 @@ module CV::TlRule
     fold!(prev, ude1.set!("của"), PosTag::DefnPhrase, dic: 6, flip: true)
   end
 
+  def fold_any_ude1!(left : MtNode, ude1 : MtNode, right : MtNode) : MtNode
+    right = fold_once!(right)
+    ude1.val = ""
+
+    case right
+    when .subject? # .nominal?, .numeral?, .pronouns?, .verb_object?
+      ude1.val = "của" if (left.nominal? && !left.property?) || left.pro_per?
+    when .verbal?
+    end
+  end
+
   # do not return left when fail to prevent infinity loop
   def fold_ude1_left!(ude1 : MtNode, left : MtNode, right : MtNode, mode = 0) : MtNode
-    if left.pro_na1?
-      left.val = "cái kia"
-    elsif left.key == "所有"
-      left.set!("tất cả")
-    end
-
     # puts [left, right]
 
     case left
     when .nominal?, .pronouns?, .numeral?, .verb_clause?, .adjt_clause?
       fold_noun_ude1!(left, ude1: ude1, right: right, mode: mode)
     else
-      tag = heal_ude1_right!(right)
       left = fold!(left, ude1, PosTag::DefnPhrase, dic: 7)
-      fold!(left, right, tag: tag, dic: 6, flip: true)
-    end
-  end
-
-  def heal_ude1_right!(right : MtNode) : PosTag
-    case right.key
-    when "时"
-      right.val = "khi"
-      PosTag::Temporal
-    when "时候"
-      right.val = "lúc"
-      PosTag::Temporal
-    when "时间"
-      right.val = "thời gian"
-      PosTag::Temporal
-    else
-      PosTag::NounPhrase
+      fold!(left, right, tag: right.tag, dic: 6, flip: true)
     end
   end
 end

@@ -5,7 +5,7 @@ module CV::TlRule
          .position?, .locality?, .nattr?,
          .verb_clause? # , .prep_clause?, .defn_phrase?
       ude1.val = ""
-    when .pro_dem?
+    when .pro_dems?
       if node = noun.dig_key?('样')
         ude1.val = ""
         node.val = "thế"

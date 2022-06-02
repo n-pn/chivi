@@ -4,8 +4,10 @@ module CV::TlRule
   # 2: stop at concoords
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_nouns!(noun : MtNode, mode : Int32 = 0) : MtNode
+  def fold_nouns!(noun : MtNode, modi : MtNode? = nil) : MtNode
     noun = fuse_noun!(noun)
+
+    noun = fold_modi_noun!(noun: noun, modi: modi) if modi
 
     return noun unless succ = noun.succ?
     succ = fold_once!(succ)
@@ -16,8 +18,7 @@ module CV::TlRule
     when .ude1?
       noun = fold_ude1!(ude1: succ, prev: noun) if noun.nattr?
     when .uzhi?
-      # TODO: check with prev to group
-      return mode == 0 ? fold_uzhi!(succ, noun) : noun
+      noun.prev?(&.verb?) ? noun : fold_uzhi!(succ, noun)
     when .uyy?
       adjt = fold!(noun, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
       return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
@@ -46,6 +47,13 @@ module CV::TlRule
     noun
   end
 
+  def fold_modi_noun!(noun : MtNode, modi : MtNode) : MtNode
+    flip = !modi.key.in?("原", "所有", "所有的")
+    modi.val = "tất cả" if flip && modi.key == "所有"
+    fold!(modi, noun, noun.tag, dic: 6, flip: flip)
+  end
+
+  # ameba:disable Metrics/CyclomaticComplexity
   def fuse_noun!(noun : MtNode) : MtNode
     while succ = noun.succ?
       case succ

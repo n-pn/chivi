@@ -21,10 +21,12 @@ module CV::TlRule
     case succ = adjt.succ?
     when .nil? then adjt
     when .veno?
-      succ = fold_nouns!(MtDict.fix_noun!(succ))
-      fold_adjt_noun!(adjt, succ)
-    when .nominal? then fold_adjt_noun!(adjt, succ)
-    when .verbal?  then fold_adjt_verb!(adjt, succ)
+      succ = MtDict.fix_noun!(succ)
+      fold_nouns!(noun: succ, modi: adjt)
+    when .nominal?
+      fold_nouns!(noun: succ, modi: adjt)
+    when .verbal?
+      fold_adjt_verb!(adjt, succ)
     when .ude1?
       if prev = adjt.prev?
         return adjt if prev.junction? || (prev.comma? && prev.prev?(&.adjective?))
@@ -43,10 +45,10 @@ module CV::TlRule
     node = fold!(nega, node, node.tag, dic: 4) if nega
     return node unless succ = node.succ?
 
-    MtDict.fix_noun!(succ) if succ.veno? || succ.ajno?
+    MtDict.fix_noun!(succ) if succ.veno? || succ.ajno? || succ.adv_noun?
     # puts [node, succ]
 
-    succ.nominal? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
+    succ.nominal? ? fold_nouns!(noun: succ, modi: node) : fold_adjts!(node)
   end
 
   def fold_adjt_verb!(adjt : MtNode, verb : MtNode) : MtNode

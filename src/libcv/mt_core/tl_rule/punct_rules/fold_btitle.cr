@@ -10,10 +10,10 @@ module CV::TlRule
     end
 
     return head unless tail && tail != head.succ?
-    root = fold!(head, tail, PosTag::Nother, dic: 0)
+    root = fold!(head, tail, PosTag::Btitle, dic: 0)
 
     fix_grammar!(head)
-    root
+    fold_nouns!(root)
   end
 
   private def match_title_end(char : Char)

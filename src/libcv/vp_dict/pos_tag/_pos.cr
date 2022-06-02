@@ -25,7 +25,9 @@ struct CV::PosTag
     Junction
     # Terminal # mark open or end of a sentence
 
-    Measure
+    Measure # adjt/verb that can combine with numbers
+
+    Suffixes # all kind of suffixes
 
     Mixed; Special
   end
@@ -67,6 +69,8 @@ struct CV::PosTag
 
   delegate contws?, to: @pos
   delegate special?, to: @pos
+
+  delegate suffixes?, to: @pos
 
   @[Flags]
   enum Sub

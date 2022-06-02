@@ -12,8 +12,13 @@ module CV::TlRule
     case suff.key
     when "们", "們"
       suff.val = "các"
-    when "时"
-      suff.val = "khi"
+    when "时", "的时候"
+      puts [base, suff]
+      if (base.nominal? && base.prev?(&.verb?)) || (base.verbal? && base.prev?(&.subject?))
+        return base
+      end
+
+      suff.val = suff.key == "时" ? "khi" : "lúc"
       ptag = PosTag::Temporal
     when "性"
       if (tail = suff.succ?) && tail.ude2?

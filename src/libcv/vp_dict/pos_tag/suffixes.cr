@@ -1,16 +1,11 @@
 struct CV::PosTag
   # 后缀 - suffix - hậu tố
   SUFFIXES = {
-    {"ka", "SufAdjt", Pos::Contws},
-    {"kn", "SufNoun", Pos::Contws},
-    {"kv", "SufVerb", Pos::Contws},
-    {"k", "Suffix", Pos::Contws},
+    {"ka", "SufAdjt", Pos.flags(Adjective, Suffixes, Contws)},
+    {"kn", "SufNoun", Pos.flags(Nominal, Suffixes, Contws)},
+    {"kv", "SufVerb", Pos.flags(Verbal, Suffixes, Contws)},
+    {"k", "SufOther", Pos.flags(Suffixes, Contws)},
   }
-
-  @[AlwaysInline]
-  def suffixes?
-    @tag.suf_noun? || @tag.suf_verb? || @tag.suf_adjt?
-  end
 
   {% for type in SUFFIXES %}
     {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
@@ -21,7 +16,7 @@ struct CV::PosTag
     when 'a' then SufAdjt
     when 'n' then SufNoun
     when 'v' then SufVerb
-    else          Suffix
+    else          SufOther
     end
   end
 end

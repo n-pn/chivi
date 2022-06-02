@@ -68,12 +68,6 @@ module CV::TlRule
   #   fold!(head, tail, PosTag::NounPhrase, dic: 8, flip: true)
   # end
 
-  # def fold_adjt_as_noun!(node : MtNode)
-  #   return node.flag!(:resolved) unless succ = node.succ?
-  #   noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
-  #   fold_adjt_noun!(node, noun, ude1)
-  # end
-
   # def fold_verb_as_noun!(node : MtNode, mode = 0)
   #   # puts [node, node.succ?]
   #   return node.flag!(:resolved) unless succ = node.succ?
