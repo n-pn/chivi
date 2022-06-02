@@ -1,21 +1,7 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_verb_object!(verb : MtNode, succ = verb.succ?)
-    return verb if !succ || verb.v0_obj?
-
-    if succ.ude1?
-      return verb if verb.prev? { |x| x.object? || x.prep_clause? }
-      return verb unless (object = scan_noun!(succ.succ?)) && object.object?
-
-      if (verb_2 = object.succ?) && verb_2.maybe_verb?
-        verb_2 = verb_2.adverbial? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
-
-        return verb if !verb_2.v0_obj? && verb.prev?(&.object?)
-      end
-
-      node = fold!(verb, succ.set!(""), PosTag::DefnPhrase, dic: 6)
-      return fold!(node, object, object.tag, dic: 8, flip: true)
-    end
+  def fold_verb_object!(verb : MtNode, succ = verb.succ)
+    puts [verb, succ, "fold_verb_object"]
 
     return verb unless (noun = scan_noun!(succ)) && noun.object?
 
@@ -82,10 +68,10 @@ module CV::TlRule
     end
 
     case prev.tag
-    when .comma?   then return true
-    when .v_shi?   then return false
-    when .v_you?   then return false
-    when .verbal?  then return is_linking_verb?(prev, verb)
+    when .comma? then return true
+    when .v_shi? then return false
+    when .v_you? then return false
+    when .verbal? then return false # is_linking_verb?(prev, verb)
     when .nquants? then return false
     when .subject?
       return true unless head = prev.prev?
@@ -95,6 +81,7 @@ module CV::TlRule
       return !find_verb_after(right)
     end
 
-    find_verb_after(right).try { |x| is_linking_verb?(verb, x) } || true
+    true
+    # find_verb_after(right).try { |x| is_linking_verb?(verb, x) } || true
   end
 end

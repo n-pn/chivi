@@ -5,7 +5,7 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_nouns!(noun : MtNode, mode : Int32 = 0) : MtNode
-    # noun = fuse_noun!(noun)
+    noun = fuse_noun!(noun)
 
     return noun unless succ = noun.succ?
     succ = fold_once!(succ)

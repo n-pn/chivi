@@ -46,7 +46,8 @@ module CV::TlRule
     when .preposes?, .verbal?
       return true if succ.succ? { |x| x.ude1? || x.ends? }
       return false if prev.ends?
-      is_linking_verb?(prev, succ)
+      false
+      # is_linking_verb?(prev, succ)
     else
       true
     end

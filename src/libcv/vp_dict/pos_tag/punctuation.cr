@@ -2,7 +2,7 @@ struct CV::PosTag
   PUNCTS = {
     {"Middot", Pos::Puncts, {"・", "‧", "•", "·"}},
     {"Comma", Pos::Puncts, {"﹐", "，", ","}},
-    {"Penum", Pos::Puncts, {"﹑", "、", "､"}},
+    {"Penum", Pos::Puncts | Pos::Junction, {"﹑", "、", "､"}},
     {"Colon", Pos::Puncts, {"︰", "∶", "﹕", "：", ":"}},
     {"Ellip", Pos::Puncts, {"⋯", "…", "···", "...", "....", ".....", "......"}},
     {"Pdash", Pos::Puncts, {"－", "—", "--", "---"}},

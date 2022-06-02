@@ -1,13 +1,12 @@
 module CV::TlRule
-  # - ameba:disable Metrics/CyclomaticComplexity
-  def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
-    # puts [verb, prev].colorize.yellow
+  # ameba:disable Metrics/CyclomaticComplexity
+  def fold_verbs!(verb : MtNode, adverb : MtNode? = nil) : MtNode
+    # puts [verb, adverb].colorize.yellow
 
     verb = fuse_verb!(verb)
-    verb = fold_adverb_node!(prev, verb) if prev
+    verb = fold_adverb_node!(adverb, verb) if adverb
 
     return verb.flag!(:resolved) unless succ = verb.succ?
-
     # puts [verb, succ]
 
     # TODO: link with adverb
@@ -15,12 +14,39 @@ module CV::TlRule
     #    verb = fold!(verb, succ, succ.tag, dic: 9)
     #  end
 
-    if succ.junction? && (fold = fold_verb_junction!(junc: succ, verb: verb))
-      verb = fold
-      return verb.flag!(:resolved) unless succ = verb.succ?
+    unless verb.v0_obj? || succ.ude1? || succ.ends? || succ.junction?
+      verb = fold_verb_object!(verb, succ)
     end
 
-    return fold_uzhi!(uzhi: succ, prev: verb) if succ.uzhi?
-    fold_verb_object!(verb, succ)
+    case succ = verb.succ?
+    when nil then verb.flag!(:resolved)
+    when .ude1?
+      verb.v0_obj? && (tail = succ.succ?) ? fold_verb_ude1!(verb, succ, tail) : verb
+    when .junction?
+      fold_verb_junction!(junc: succ, verb: verb) || verb.flag!(:resolved)
+    when .uzhi?
+      fold_uzhi!(uzhi: succ, prev: verb)
+    else
+      verb
+    end
+  end
+
+  def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, tail = ude1.succ)
+    tail = fold_once!(tail)
+
+    case tail
+    when .object?
+      ptag = PosTag::DefnPhrase
+    when .adjective?
+      ptag = PosTag::Adverb
+    else
+      ude1.set!("đấy", PosTag::Mopart)
+      return verb
+    end
+
+    ude1.val = ""
+
+    head = fold!(verb, ude1, ptag, dic: 1)
+    fold!(head, tail, tail.tag, dic: 2, flip: true)
   end
 end

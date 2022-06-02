@@ -19,7 +19,7 @@ module CV::TlRule
     when .puncts?    then fold_puncts!(node)
     when .strings?   then fold_strings!(node)
     when .adverbial? then fold_adverbs!(node)
-    when .auxils?    then heal_auxils!(node)
+      # when .auxils?    then heal_auxils!(node)
     when .pronouns?  then fold_pronouns!(node)
     when .temporal?  then fold_timeword!(node)
     when .numeral?   then fold_number!(node)

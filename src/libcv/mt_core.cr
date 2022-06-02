@@ -102,7 +102,7 @@ class CV::MtCore
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtList
-    nodes = [MtNode.new("", "")]
+    nodes = [MtNode.new("")]
     costs = [0.0]
 
     input.each_with_index(1) do |char, idx|
@@ -149,7 +149,7 @@ class CV::MtCore
       if can_merge?(cur, lst)
         lst.idx = cur.idx
 
-        lst.val = should_locality?(cur, lst) ? "#{cur.val} #{fix_val!(cur, lst)}" : "#{cur.val}#{lst.val}"
+        lst.val = should_space?(cur, lst) ? "#{cur.val} #{fix_val!(cur, lst)}" : "#{cur.val}#{lst.val}"
         lst.key = "#{cur.key}#{lst.key}"
       else
         if cur.key == "\""
@@ -167,7 +167,7 @@ class CV::MtCore
   end
 
   @[AlwaysInline]
-  def should_locality?(left : MtNode, right : MtNode) : Bool
+  def should_space?(left : MtNode, right : MtNode) : Bool
     left.nhanzi? || right.nhanzi?
   end
 
@@ -198,8 +198,8 @@ class CV::MtCore
       else               false
       end
     when .nhanzi?
-      return false unless left.numbers?
-      return true unless right.key == "两"
+      return false unless left.nhanzi?
+      return true unless right.key == "两" && right.succ? { |x| !x.nominal? }
       right.set!("lượng", PosTag::Qtnoun)
       false
     else

@@ -127,11 +127,6 @@ struct CV::PosTag
   end
 
   @[AlwaysInline]
-  def junction?
-    @tag.penum? || @tag.conjunct? || @tag.concoord?
-  end
-
-  @[AlwaysInline]
   def spaces?
     @tag.locality? || @tag.v_shang? || @tag.v_xia?
   end
@@ -152,6 +147,7 @@ struct CV::PosTag
     when 'q' then parse_quanti(key)
     when 'k' then parse_suffix(tag)
     when 'r' then parse_pronoun(tag, key)
+    when 'c' then parse_conjunct(tag, key)
     when '!' then parse_special(tag, key)
     when 'x' then parse_other(tag)
     when '~' then parse_extra(tag)

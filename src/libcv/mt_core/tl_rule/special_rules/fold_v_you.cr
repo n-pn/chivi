@@ -28,7 +28,7 @@ module CV::TlRule
       return fold!(vyou, noun, PosTag::VerbObject, dic: 7)
     end
 
-    if tail.starts_with?("不")
+    if tail.starts_with?('不')
       return fold!(vyou, tail, PosTag::Unkn, 1)
     end
 

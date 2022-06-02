@@ -70,7 +70,7 @@ module CV::TlRule
       when "生气"
         succ.val = "tức giận"
         false
-      when .starts_with?("做")
+      when .starts_with?('做')
         true
       else
         {"都", "也", "太"}.includes?(prev.try(&.key))

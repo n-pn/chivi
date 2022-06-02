@@ -1,22 +1,16 @@
 module CV::TlRule
-  def fold_prodem_nominal!(prodem : MtNode?, nominal : MtNode?)
-    return nominal unless prodem
-
-    if nominal
-      if nominal.verb_object?
-        prodem = heal_pro_dem!(prodem)
-        return fold!(prodem, nominal, PosTag::VerbClause, dic: 8)
-      end
-
-      # puts [prodem.prev?, prodem.succ?]
-      # puts [nominal.prev?, nominal.succ?]
-
-      flip = nominal.nominal? && should_flip_prodem?(prodem)
-      tag = !prodem.pro_dem? && nominal.qtnoun? ? PosTag::ProDem : nominal.tag
-      return fold!(prodem, nominal, tag, dic: 3, flip: flip)
+  def fold_prodem_nominal!(prodem : MtNode, nominal : MtNode)
+    if nominal.verb_object?
+      prodem = heal_pro_dem!(prodem)
+      return fold!(prodem, nominal, PosTag::VerbClause, dic: 8)
     end
 
-    heal_pro_dem!(prodem)
+    # puts [prodem.prev?, prodem.succ?]
+    # puts [nominal.prev?, nominal.succ?]
+
+    flip = nominal.nominal? && should_flip_prodem?(prodem)
+    tag = !prodem.pro_dem? && nominal.qtnoun? ? PosTag::ProDem : nominal.tag
+    fold!(prodem, nominal, tag, dic: 3, flip: flip)
   end
 
   def should_flip_prodem?(prodem : MtNode)

@@ -1,7 +1,5 @@
 module CV::TlRule
   def fold_compare(head : MtNode, tail = head.succ?)
-    # puts [head, tail]
-
     while tail
       return if tail.puncts? || tail.key == "像"
 
@@ -15,9 +13,10 @@ module CV::TlRule
 
     return unless tail && tail != head.succ?
 
+    MtDict.v_compare.get_val(head.key).try { |x| head.val = x }
     tail.val = "như" if tail.key.in?("一样", "似的", "一般", "般")
 
-    root = fold!(head, tail, tag: PosTag::Aform, dic: 0)
+    root = fold!(head, tail, tag: PosTag::AdjtPhrase, dic: 0)
     tail.prev.fix_succ!(nil)
     fix_grammar!(head, level: 1)
     head.set_succ!(tail)

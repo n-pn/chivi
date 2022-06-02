@@ -20,7 +20,7 @@ module CV::TlRule
       fold!(MtDict.fix_verb!(node), tail.set!("nổi"), PosTag::Verb, dic: 5)
     when .verbal?
       node = fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)
-      fold_verbs!(tail, prev: node)
+      fold_verbs!(tail, adverb: node)
     else
       # TODO: add case here
       fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)

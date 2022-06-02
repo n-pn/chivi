@@ -25,9 +25,9 @@ module CV::TlRule
       node.val = node.key == '上' ? "lên" : "xuống"
       fold_verbs!(node)
     when .v_compare?
-      fold_compare(node, succ) || fold_verbs!(node, succ)
+      fold_compare(node, succ) || fold_verbs!(node)
     when .v_combine?
-      return fold_verbs!(node, succ) unless succ.verbal?
+      return fold_verbs!(node) unless succ.verbal?
       succ = fold_verbs!(succ)
 
       node.val = MtDict.v_combine.get_val(node.key) || node.val
@@ -35,7 +35,7 @@ module CV::TlRule
       node = fold!(node, succ, succ.tag, dic: 5)
       node.flag!(:checked)
     else
-      fold_verbs!(node, succ)
+      fold_verbs!(node)
     end
   end
 

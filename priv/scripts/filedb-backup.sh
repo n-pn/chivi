@@ -17,11 +17,10 @@ if [[ $1 == "all" || $* == *dict* ]]
 then
   echo backup dicts data!
 
-  rsync -aiz --no-p "$SSH/var/vpdicts/v1/basic" "var/vpdicts/v1"
-  rsync -aiz --no-p "$SSH/var/vpdicts/v1/novel" "var/vpdicts/v1/"
-  rsync -aiz --no-p "$SSH/var/vpdicts/v1/theme" "var/vpdicts/v1/"
-  rsync -aiz --no-p "$SSH/var/vpdicts/v1/cvmtl/*.tab" "var/vpdicts/v1/cvmtl"
-  # rsync -aiz --no-p "$SSH/var/vpdicts/v1/cvmtl/*.tsv" "var/vpdicts/v1/cvmtl"
+  rsync -aiz --no-p --include="*.tab" "$SSH/var/vpdicts/v1/basic" "var/vpdicts/v1"
+  rsync -aiz --no-p --include="*.tab" "$SSH/var/vpdicts/v1/novel" "var/vpdicts/v1"
+  rsync -aiz --no-p --include="*.tab" "$SSH/var/vpdicts/v1/cvmtl" "var/vpdicts/v1"
+  rsync -aiz --no-p --include="*.tab" "$SSH/var/vpdicts/v1/theme" "var/vpdicts/v1"
 fi
 
 ## backup book data

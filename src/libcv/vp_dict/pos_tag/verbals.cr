@@ -26,18 +26,49 @@ struct CV::PosTag
     {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
   {% end %}
 
+  SPECIAL_VERB_FLAGS = Pos.flags(Verbal, Special, Contws)
+
+  VShi = new(Tag::VShi, SPECIAL_VERB_FLAGS)
+  VYou = new(Tag::VYou, SPECIAL_VERB_FLAGS)
+
+  V2Object = new(Tag::Verb, SPECIAL_VERB_FLAGS, Sub::V2Object)
+  VDircomp = new(Tag::Verb, SPECIAL_VERB_FLAGS, Sub::VDircomp)
+  VCombine = new(Tag::Verb, SPECIAL_VERB_FLAGS, Sub::VCombine)
+  VCompare = new(Tag::Verb, SPECIAL_VERB_FLAGS, Sub::VCompare)
+
   def self.parse_verb(tag : String, key : String)
     case tag[1]?
     when nil then Verb
     when 'n' then Veno
     when 'd' then Vead
     when 'i' then Vintr
+    when '2' then V2Object
+    when 'x' then VCombine
+    when 'p' then VCompare
+    when 'f' then VDircomp
     when 'o' then VerbObject
     when 'l' then VerbPhrase
     when 'm' then parse_vmodal(key)
-    when 'f', 'x'
-      parse_verb_special(key)
-    else Verb
+    when '!' then parse_verb_special(key)
+    else          Verb
+    end
+  end
+
+  def self.parse_verb_special(key : String)
+    if key.ends_with?('是')
+      VShi # "thị"
+    elsif key.ends_with?('有')
+      VYou # "hữu"
+    elsif MtDict.v2_objs.has_key?(key)
+      V2Object
+    elsif MtDict.verb_dir.has_key?(key)
+      VDircomp
+    elsif MtDict.v_combine.has_key?(key)
+      VCombine
+    elsif MtDict.v_compare.has_key?(key)
+      VCompare
+    else
+      Verb
     end
   end
 end

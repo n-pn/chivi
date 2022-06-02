@@ -1,9 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "test": "crystal spec spec/engine/cvmtl_spec.cr",
+    "test": "crystal spec --error-trace spec/engine/cvmtl_spec.cr",
     "push": "bash priv/scripts/server-deploy.sh",
-    "debug": "crystal spec/manual/debug_engine.cr",
+    "debug": "crystal run --error-trace spec/manual/debug_engine.cr -- ",
     "db-up": "bash priv/scripts/filedb-upload.sh",
     "db-bk": "bash priv/scripts/filedb-backup.sh",
     "ys-up": "bash priv/scripts/yousuu-upload.sh",

@@ -1,6 +1,6 @@
 module CV::TlRule
   def is_linking_verb?(head : MtNode, succ : MtNode?) : Bool
-    # puts [node, succ, "check linking verb"]
+    # puts [head.to_str, succ, "check linking verb"]
     return true if head.vmodals?
     return true if !succ || succ.starts_with?('不')
 

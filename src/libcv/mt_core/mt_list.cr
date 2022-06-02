@@ -4,7 +4,7 @@ require "./tl_rule"
 class CV::MtList
   include MTL::PadLocality
 
-  getter head = MtNode.new("", "")
+  getter head = MtNode.new("")
 
   def first?
     @head.succ?

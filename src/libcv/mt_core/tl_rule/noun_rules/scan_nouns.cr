@@ -7,10 +7,10 @@ module CV::TlRule
 
   def scan_noun!(node : Nil, mode = 0,
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
-    fold_prodem_nominal!(prodem, nquant)
+    prodem && nquant ? fold_prodem_nominal!(prodem, nquant) : nil
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
+  # -ameba:disable Metrics/CyclomaticComplexity
   def scan_noun!(node : MtNode, mode : Int32 = 0,
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
     # puts [node, prodem, nquant, "scan_noun"]
@@ -18,45 +18,14 @@ module CV::TlRule
     node = fold_once!(node)
 
     case node.tag
-    when .puncts?
-      return fold_prodem_nominal!(prodem, nquant)
-    when .pronouns?
-      return fold_prodem_nominal!(prodem, nquant) if prodem || nquant
-    when .nominal?, .numeral?
-      # do nothing
-    when .v_shi?
-      node = fold_v_shi!(node)
-    when .verb_object?
-      node = fold_verb_object_as_noun!(node)
-    when .verbal?
-      node = fold_verb_as_noun!(node)
-    when .adjective?
-      node = fold_adjt_as_noun!(node)
+    when .nominal?, .numeral?, .verb_object?
+      node = fold_nquant_nominal!(nquant, node) if nquant
+      node = fold_prodem_nominal!(prodem, node) if prodem
+
+      return node unless succ = node.succ?
+      scan_noun_after!(node, succ)
     else
-      return node unless (ude1 = node.succ?) && ude1.ude1?
-      return node unless tail = scan_noun!(ude1.succ?)
-      node = fold_ude1_left!(ude1, left: node, right: tail)
-    end
-
-    return fold_prodem_nominal!(prodem, nquant) unless node.object?
-    node = fold_nquant_nominal!(nquant, node) if nquant
-    node = fold_prodem_nominal!(prodem, node) if prodem
-
-    return node unless mode == 0 && (succ = node.succ?)
-    scan_noun_after!(node, succ)
-  end
-
-  def fold_verb_object_as_noun!(head : MtNode)
-    return head.flag!(:resolved) unless succ = head.succ?
-
-    case succ
-    when .nominal?
-      succ = fold_nouns!(succ, mode: 1)
-      fold!(head, succ, PosTag::NounPhrase, dic: 5, flip: true)
-    when .ude1?
-      fold_ude1!(ude1: succ, prev: head)
-    else
-      head
+      prodem && nquant ? fold_prodem_nominal!(prodem, nquant) : prodem || nquant
     end
   end
 
@@ -89,41 +58,41 @@ module CV::TlRule
     end
   end
 
-  def fold_head_ude1_noun!(head : MtNode)
-    return head unless (ude1 = head.succ?) && ude1.ude1?
-    ude1.val = "" unless head.noun? || head.names?
+  # def fold_head_ude1_noun!(head : MtNode)
+  #   return head unless (ude1 = head.succ?) && ude1.ude1?
+  #   ude1.val = "" unless head.noun? || head.names?
 
-    return head unless tail = scan_noun!(ude1.succ?)
-    fold!(head, tail, PosTag::NounPhrase, dic: 8, flip: true)
-  end
+  #   return head unless tail = scan_noun!(ude1.succ?)
+  #   fold!(head, tail, PosTag::NounPhrase, dic: 8, flip: true)
+  # end
 
-  def fold_adjt_as_noun!(node : MtNode)
-    return node.flag!(:resolved) unless succ = node.succ?
-    noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
-    fold_adjt_noun!(node, noun, ude1)
-  end
+  # def fold_adjt_as_noun!(node : MtNode)
+  #   return node.flag!(:resolved) unless succ = node.succ?
+  #   noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
+  #   fold_adjt_noun!(node, noun, ude1)
+  # end
 
-  def fold_verb_as_noun!(node : MtNode, mode = 0)
-    # puts [node, node.succ?]
-    return node.flag!(:resolved) unless succ = node.succ?
+  # def fold_verb_as_noun!(node : MtNode, mode = 0)
+  #   # puts [node, node.succ?]
+  #   return node.flag!(:resolved) unless succ = node.succ?
 
-    unless succ.ude1? || node.v0_obj?
-      return node unless succ = scan_noun!(succ, mode: 0)
-      node = fold!(node, succ, PosTag::VerbObject, dic: 6)
-    end
+  #   unless succ.ude1? || node.v0_obj?
+  #     return node unless succ = scan_noun!(succ, mode: 0)
+  #     node = fold!(node, succ, PosTag::VerbObject, dic: 6)
+  #   end
 
-    fold_verb_ude1!(node)
-  end
+  #   fold_verb_ude1!(node)
+  # end
 
-  def fold_verb_ude1!(node : MtNode, succ = node.succ?)
-    return node unless succ && succ.ude1?
-    return node unless (noun = scan_noun!(succ.succ?, mode: 1)) && noun.object?
+  # def fold_verb_ude1!(node : MtNode, succ = node.succ?)
+  #   return node unless succ && succ.ude1?
+  #   return node unless (noun = scan_noun!(succ.succ?, mode: 1)) && noun.object?
 
-    node = fold!(node, succ.set!(""), PosTag::DefnPhrase, dic: 7)
+  #   node = fold!(node, succ.set!(""), PosTag::DefnPhrase, dic: 7)
 
-    tag = noun.names? || noun.human? ? noun.tag : PosTag::NounPhrase
-    fold!(node, noun, tag, dic: 6, flip: true)
-  end
+  #   tag = noun.names? || noun.human? ? noun.tag : PosTag::NounPhrase
+  #   fold!(node, noun, tag, dic: 6, flip: true)
+  # end
 
   def scan_noun_after!(node : MtNode, succ = node.succ) : MtNode
     node = fold_noun_after!(node, succ)

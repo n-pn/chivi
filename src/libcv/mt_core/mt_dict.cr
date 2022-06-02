@@ -46,11 +46,7 @@ module CV::MtDict
 
   DICTS = {} of String => MtHash
 
-  def fixed_tag?(dname : String)
-    !dname.in?("fix_u_zhi", "fix_nouns", "fix_verbs", "fix_adjts")
-  end
-
-  def load(dname : String, df_ptag = PosTag::Unkn, fixed_tag = fixed_tag?(dname))
+  def load(dname : String, df_ptag = PosTag::Unkn, fixed_tag = true)
     DICTS[dname] ||= begin
       vpdict = VpDict.load_cvmtl(dname)
       output = MtHash.new(df_ptag, fixed_tag, initial_capacity: vpdict.size)

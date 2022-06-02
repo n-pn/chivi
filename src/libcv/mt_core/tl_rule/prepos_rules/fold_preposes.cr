@@ -17,7 +17,7 @@ module CV::TlRule
     when "将"
       if succ.maybe_verb?
         succ = fold_adverbs!(succ) if succ.adverbial?
-        return fold_verbs!(succ, node.set!("sẽ"))
+        return fold_verbs!(succ, adverb: node.set!("sẽ"))
       end
     when "与", "和"
       return fold_compare(node) || fold_prepos_inner!(node)

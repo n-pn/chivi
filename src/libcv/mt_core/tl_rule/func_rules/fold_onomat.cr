@@ -2,7 +2,7 @@ module CV::TlRule
   def fold_onomat!(node : MtNode, succ = node.succ?)
     case succ
     when .nil?    then node
-    when .verbal? then fold_verbs!(succ, prev: node)
+    when .verbal? then fold_verbs!(succ, adverb: node)
     when .ude1?
       succ.set!("mà")
       return node unless (succ_2 = succ.succ?) && succ_2.verbal?

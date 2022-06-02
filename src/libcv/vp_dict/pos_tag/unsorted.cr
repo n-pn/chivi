@@ -17,7 +17,7 @@ struct CV::PosTag
     # 连词 - conjunction - liên từ
     {"c", "Conjunct", Pos::Funcws},
     # 并列连词 - coordinating conjunction - liên từ kết hợp
-    {"cc", "Concoord", Pos::Funcws},
+    {"cc", "Concoord", Pos::Funcws | Pos::Junction},
 
     # 叹词 - interjection/exclamation - thán từ
     {"e", "Exclam", Pos::Funcws},
@@ -48,17 +48,21 @@ struct CV::PosTag
 
   def self.parse_miscs(tag : String) : self
     case tag
-    when "j"  then Noun
-    when "i"  then Idiom
-    when "l"  then Idiom
-    when "z"  then Aform
-    when "c"  then Conjunct
-    when "cc" then Concoord
-    when "e"  then Exclam
-    when "y"  then Mopart
-    when "o"  then Onomat
-    else           Unkn
+    when "j" then Noun
+    when "i" then Idiom
+    when "l" then Idiom
+    when "z" then Aform
+    when "e" then Exclam
+    when "y" then Mopart
+    when "o" then Onomat
+    else          Unkn
     end
+  end
+
+  def self.parse_conjunct(tag : String, key : String)
+    return Concoord if tag[1]? == 'c'
+    return Conjunct unless key.in?("但", "又", "或", "或是")
+    new(Tag::Conjunct, Pos::Funcws | Pos::Junction)
   end
 
   def self.parse_other(tag : String) : self

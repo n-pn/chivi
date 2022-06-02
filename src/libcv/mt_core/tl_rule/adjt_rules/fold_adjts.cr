@@ -73,7 +73,7 @@ module CV::TlRule
             adjt = fold!(adjt, tail, PosTag::Aform, dic: 7)
           else
             adjt = fold!(adjt, succ, PosTag::Verb, dic: 6)
-            return fold_verbs!(succ, prev: prev)
+            return fold_verbs!(succ, adverb: prev)
           end
         end
 
@@ -98,7 +98,7 @@ module CV::TlRule
         return fold_adjt_ude2!(adjt, succ)
       when .uzhe?
         verb = fold!(adjt, succ.set!(""), PosTag::Verb, dic: 6)
-        return fold_verbs!(verb, prev: prev)
+        return fold_verbs!(verb, adverb: prev)
       when .uzhi?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_uzhi!(succ, adjt)

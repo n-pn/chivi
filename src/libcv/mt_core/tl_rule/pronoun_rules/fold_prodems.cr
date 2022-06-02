@@ -8,7 +8,9 @@ module CV::TlRule
       if tail.nhanzi?
         succ = fold_proji_nhanzi!(succ, tail)
         return fold_prodem_nominal!(node, succ)
-      elsif node.pro_zhe? || node.pro_na1? || node.pro_na2?
+      end
+
+      if node.pro_zhe? || node.pro_na1? || node.pro_na2?
         tail = heal_quanti!(tail)
 
         case tail.tag
@@ -37,8 +39,7 @@ module CV::TlRule
       return scan_noun!(succ, prodem: node, nquant: quanti).not_nil!
     end
 
-    return heal_pro_dem!(node) unless quanti
-    fold_prodem_nominal!(node, quanti)
+    quanti ? fold_prodem_nominal!(node, quanti) : heal_pro_dem!(node)
   end
 
   def fold_proji_nhanzi!(node : MtNode, succ : MtNode)

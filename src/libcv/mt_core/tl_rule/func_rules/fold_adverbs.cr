@@ -37,7 +37,7 @@ module CV::TlRule
     else
       return node unless succ.key == "一样"
       succ.set!("giống nhau", PosTag::Vintr)
-      fold_verbs!(succ, node)
+      fold_verbs!(succ, adverb: node)
     end
   end
 
@@ -47,7 +47,7 @@ module CV::TlRule
       succ = heal_veno!(succ) if succ.veno?
       # TODO: add more cases
       node.val = succ.succ?(&.uzhe?) ? "không" : node.prev?(&.subject?) ? "chưa" : "không có"
-      fold_verbs!(succ, prev: node)
+      fold_verbs!(succ, adverb: node)
     when .adjt?, .ajad?, .ajno?
       fold!(node.set!("không"), succ, PosTag::Adjt, dic: 2)
     else
@@ -160,7 +160,7 @@ module CV::TlRule
     when "正" then adverb.val = "đang" unless verb.v_shi?
     end
 
-    fold_verbs!(verb, prev: adverb)
+    fold_verbs!(verb, adverb: adverb)
   end
 
   def is_adverb?(node : MtNode) : Bool

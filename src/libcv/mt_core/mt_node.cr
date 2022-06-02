@@ -177,9 +177,9 @@ class CV::MtNode
     body
   end
 
-  def starts_with?(key : String | Char)
-    return @key.starts_with?(key) unless body = @body
-    body.starts_with?(key)
+  def starts_with?(inp : String | Char)
+    raise "fatal error!" if @body == self
+    @body.try(&.starts_with?(inp)) || @key.starts_with?(inp)
   end
 
   def ends_with?(key : String | Char)

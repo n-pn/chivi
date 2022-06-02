@@ -5,25 +5,22 @@ module CV::TlRule
   end
 
   def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
-    return unless verb && succ && succ.maybe_verb? && is_concoord?(junc)
-
-    tag = verb.tag if succ.verbal? && succ.key == "过"
-    verb = fold_once!(verb)
+    return if !succ || succ.ends?
+    return if tag = verb.tag if succ.key == "过"
+    succ = fold_once!(succ)
 
     return unless tag || succ.verbal?
     fold!(verb, succ, tag: tag || succ.tag, dic: 4)
   end
 
-  def fold_adjt_junction!(node : MtNode, prev = node.prev?, succ = node.succ?)
-    return unless prev && succ && is_concoord?(node)
+  def fold_adjt_junction!(node : MtNode, prev = node.prev, succ = node.succ?)
+    return if !succ || succ.ends?
     return unless (succ = scan_adjt!(succ)) && succ.adjective?
-
-    fold!(prev, succ, tag: PosTag::Aform, dic: 4)
+    fold!(prev, succ, tag: PosTag::AdjtPhrase, dic: 4)
   end
 
   def fold_noun_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)
-    return unless prev && succ
-    return if node.key == "而" || !is_concoord?(node)
+    return if !succ || succ.ends? || node.key == "而"
 
     if prev.tag == succ.tag
       fold!(prev, succ, tag: prev.tag, dic: 4)
@@ -41,18 +38,6 @@ module CV::TlRule
     when .noun_phrase? then true
     when .human?       then !succ.human?
     else                    false
-    end
-  end
-
-  def is_concoord?(node : Nil)
-    false
-  end
-
-  def is_concoord?(node : MtNode)
-    case node
-    when .penum?, .concoord? then true
-    else
-      {"但", "又", "或", "或是"}.includes?(node.key)
     end
   end
 

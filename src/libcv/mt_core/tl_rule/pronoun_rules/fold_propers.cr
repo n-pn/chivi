@@ -5,8 +5,6 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_pro_per!(proper : MtNode, succ : MtNode) : MtNode
-    succ = fold_once!(succ)
-
     # puts [proper, succ]
 
     case succ.tag

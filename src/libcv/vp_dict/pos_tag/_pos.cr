@@ -20,6 +20,8 @@ struct CV::PosTag
     Auxils; Preposes
     Strings
 
+    Junction
+
     Mixed; Special
   end
 
