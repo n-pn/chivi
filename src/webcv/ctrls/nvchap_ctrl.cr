@@ -24,10 +24,6 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     serv_json do |jb|
       jb.object {
-        jb.field "chmeta" { ChmetaView.new(nvseed, chinfo, cpart).to_json(jb) }
-        jb.field "chinfo" { ChinfoView.new(chinfo).to_json(jb) }
-        jb.field "ubmemo" { UbmemoView.new(ubmemo).to_json(jb) }
-
         jb.field "chidx_max", chidx_max
         jb.field "min_privi", min_privi
 
@@ -60,6 +56,10 @@ class CV::NvchapCtrl < CV::BaseCtrl
           jb.field "cvdata", ""
           jb.field "zhtext", [] of String
         end
+
+        jb.field "chmeta" { ChmetaView.new(nvseed, chinfo, cpart).to_json(jb) }
+        jb.field "chinfo" { ChinfoView.new(chinfo).to_json(jb) }
+        jb.field "ubmemo" { UbmemoView.new(ubmemo).to_json(jb) }
       }
     end
   end
