@@ -12,34 +12,23 @@ module CV::TlRule
     end
   end
 
-  def fold_noun_space!(noun : MtNode) : MtNode
-    return noun unless (space = noun.succ?) && space.spaces?
-    fold_noun_space!(noun, space)
-  end
-
-  def fold_noun_space!(noun : MtNode, space : MtNode) : MtNode
-    # puts [noun, space, "noun_space"]
+  def fold_noun_locality!(noun : MtNode, locality : MtNode) : MtNode
+    # puts [noun, locality, "noun_locality"]
 
     flip = true
-    case space.key
-    when "上", "下"
-      return noun if noun.human? || space.succ?(&.ule?)
-      space.val = fix_space_val!(space)
-    when "中"
-      return noun if space.succ?(&.ule?)
-      space.val = "trong"
-      if (succ = space.succ?) && succ.nominal?
-        return fold!(noun, succ, PosTag::NounPhrase, dic: 6, flip: true)
-      end
+
+    case locality.key
+    when "上", "下", "中"
+      return noun if noun.human?
     when "前"
-      # space.val = "trước khi" if noun.verbal?
+      # locality.val = "trước khi" if noun.verbal?
       flip = !noun.temporal?
     end
 
-    fold!(noun, space, PosTag::Position, dic: 5, flip: flip)
+    fold!(noun, locality, PosTag::Position, dic: 5, flip: flip)
   end
 
-  def fix_space_val!(node : MtNode)
+  def fix_locality_val!(node : MtNode)
     case node.tag
     when .v_shang? then "trên"
     when .v_xia?   then "dưới"

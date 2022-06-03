@@ -13,7 +13,7 @@ module CV::TlRule
     when "们", "們"
       suff.val = "các"
     when "时", "的时候"
-      puts [base, suff]
+      # puts [base, suff]
       if (base.nominal? && base.prev?(&.verb?)) || (base.verbal? && base.prev?(&.subject?))
         return base
       end

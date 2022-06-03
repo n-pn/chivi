@@ -18,7 +18,7 @@ module CV::TlRule
 
     root = fold!(head, tail, tag: PosTag::AdjtPhrase, dic: 0)
     tail.prev.fix_succ!(nil)
-    fix_grammar!(head, level: 1)
+    fix_grammar!(head)
     head.set_succ!(tail)
 
     return root unless succ = scan_adjt!(root.succ?)

@@ -90,7 +90,7 @@ module CV::TlRule
       fold_adverb_base!(node)
     when .nominal?
       node.set!("tốt", PosTag::Adjt)
-      fold_nouns!(noun: succ, modi: node)
+      fold_nouns!(noun: succ, defn: node)
     else
       node
     end

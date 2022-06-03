@@ -35,7 +35,7 @@ module CV::TlRule
       fold_uzhi!(uzhi: succ, prev: proper)
     when .ude1?
       return proper if proper.prev? { |x| x.verbal? || x.preposes? }
-      fold_ude1!(ude1: succ, prev: proper)
+      fold_ude1!(ude1: succ, left: proper)
     else
       # TODO: handle special cases
       proper
@@ -44,12 +44,11 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_proper_nominal!(proper : MtNode, nominal : MtNode) : MtNode
-    return proper unless noun_can_combine?(proper.prev?, nominal.succ?)
     if (prev = proper.prev?) && need_2_objects?(prev)
       flip = false
 
       if (succ = nominal.succ?) && (succ.ude1?)
-        nominal = fold_ude1!(ude1: succ, prev: nominal)
+        nominal = fold_ude1!(ude1: succ, left: nominal)
       end
     else
       flip = !nominal.pro_per? || nominal.key == "自己"
@@ -57,7 +56,7 @@ module CV::TlRule
 
     case nominal.tag
     when .locality?
-      fold_noun_space!(proper, nominal)
+      fold_noun_locality!(proper, nominal)
     when .person?
       fold!(proper, nominal, proper.tag, dic: 4, flip: false)
     when .nqtime?

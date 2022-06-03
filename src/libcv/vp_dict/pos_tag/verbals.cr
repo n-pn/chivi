@@ -36,6 +36,7 @@ struct CV::PosTag
   VCombine = new(Tag::Verb, SPECIAL_VERB_FLAGS, Sub::VCombine)
   VCompare = new(Tag::Verb, SPECIAL_VERB_FLAGS, Sub::VCompare)
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def self.parse_verb(tag : String, key : String)
     case tag[1]?
     when nil then Verb

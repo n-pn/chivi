@@ -55,6 +55,7 @@ struct CV::PosTag
 
   delegate vmodals?, to: @pos
 
+  delegate modifier?, to: @pos
   delegate adjective?, to: @pos
   delegate adverbial?, to: @pos
 

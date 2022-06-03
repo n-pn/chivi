@@ -1,25 +1,4 @@
 module CV::TlRule
-  def fold_noun_ude1!(noun : MtNode, ude1 : MtNode, right : MtNode, mode = 0) : MtNode
-    case noun.tag
-    when .temporal?, .numeral?,
-         .position?, .locality?, .nattr?,
-         .verb_clause? # , .prep_clause?, .defn_phrase?
-      ude1.val = ""
-    when .pro_dems?
-      if node = noun.dig_key?('样')
-        ude1.val = ""
-        node.val = "thế"
-      else
-        ude1.val = "của"
-      end
-    else
-      ude1.val = "của"
-    end
-
-    noun = fold!(noun, ude1, PosTag::DefnPhrase, dic: 3, flip: true)
-    fold!(noun, right, PosTag::NounPhrase, dic: 5, flip: true)
-  end
-
   # def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, right : MtNode) : MtNode
   #   case right.key
   #   when "时候", "时", "打算"

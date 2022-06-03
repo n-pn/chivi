@@ -7,10 +7,16 @@ module CV::TlRule
       return noun unless succ = noun.succ?
     end
 
-    noun = fold_uzhi!(uzhi: succ, prev: noun) if succ.uzhi?
-    noun = fold_noun_space!(noun: noun)
+    if succ.uzhi?
+      noun = fold_uzhi!(uzhi: succ, prev: noun)
+      return noun unless succ = noun.succ?
+    end
 
-    return noun unless (succ = noun.succ?) && succ.junction?
-    fold_noun_concoord!(succ, prev: noun) || noun
+    if succ.locality?
+      noun = fold_noun_locality!(noun: noun, locality: succ)
+      return noun unless succ = noun.succ?
+    end
+
+    succ.junction? ? fold_noun_concoord!(succ, prev: noun) || noun : noun
   end
 end

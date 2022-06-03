@@ -2,7 +2,7 @@ require "./mt_dict"
 require "./tl_rule/**"
 
 module CV::TlRule
-  def fix_grammar!(node : MtNode, level = 0) : Nil
+  def fix_grammar!(node : MtNode) : Nil
     # puts [node, node.idx, node.succ?, "level: #{level}"].colorize.blue
 
     while node = node.succ?
@@ -13,17 +13,17 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_once!(node : MtNode)
     case node.tag
-    when .mixed?     then meld_mixed!(node)
+    when .puncts?    then fold_puncts!(node)
+    when .mixed?     then fold_mixed!(node)
     when .special?   then fold_specials!(node)
     when .preposes?  then fold_preposes!(node)
-    when .puncts?    then fold_puncts!(node)
     when .strings?   then fold_strings!(node)
     when .adverbial? then fold_adverbs!(node)
-      # when .auxils?    then heal_auxils!(node)
+    when .auxils?    then fold_auxils!(node)
     when .pronouns?  then fold_pronouns!(node)
     when .temporal?  then fold_timeword!(node)
     when .numeral?   then fold_number!(node)
-    when .modi?      then fold_modifier!(node)
+    when .modifier?  then fold_modifier!(node)
     when .adjective? then fold_adjts!(node)
     when .vmodals?   then fold_vmodals!(node)
     when .verbal?    then fold_verbs!(node)

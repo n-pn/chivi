@@ -72,9 +72,11 @@ module CV::TlRule
     return nil if noun.places?
 
     unless tail.places?
-      return nil unless tail = fold_noun_space!(noun: tail)
+      return nil unless (local = tail.succ?) && local.locality?
+      tail = fold_noun_locality!(noun: tail, locality: local)
+      return nil if tail.succ? == local
     end
 
-    fold_noun_ude1!(noun, ude1, tail)
+    fold_ude1!(ude1: ude1, left: noun, right: tail)
   end
 end

@@ -126,11 +126,6 @@ struct CV::PosTag
     @pos.pstops? || @pos.none? || @tag.exclam? || @tag.mopart?
   end
 
-  @[AlwaysInline]
-  def spaces?
-    @tag.locality? || @tag.v_shang? || @tag.v_xia?
-  end
-
   # ameba:disable Metrics/CyclomaticComplexity
   def self.parse(tag : String, key : String = "") : self
     case tag[0]?

@@ -1,5 +1,5 @@
 module CV::TlRule
-  def heal_ude3!(node : MtNode, succ = node.succ?) : MtNode
+  def fold_ude3!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
 
     if succ.verbal? && succ.key != "到"

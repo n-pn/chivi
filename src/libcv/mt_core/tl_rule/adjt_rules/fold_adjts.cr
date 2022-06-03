@@ -22,9 +22,9 @@ module CV::TlRule
     when .nil? then adjt
     when .veno?
       succ = MtDict.fix_noun!(succ)
-      fold_nouns!(noun: succ, modi: adjt)
+      fold_nouns!(noun: succ, defn: adjt)
     when .nominal?
-      fold_nouns!(noun: succ, modi: adjt)
+      fold_nouns!(noun: succ, defn: adjt)
     when .verbal?
       fold_adjt_verb!(adjt, succ)
     when .ude1?
@@ -39,16 +39,18 @@ module CV::TlRule
     end
   end
 
-  def fold_modifier!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    # puts [node, succ, nega].colorize.green
+  def fold_modifier!(modi : MtNode, succ = modi.succ?, nega : MtNode? = nil) : MtNode
+    # puts [modi, succ, nega].colorize.green
+    modi.val = "tất cả" if modi.key == "所有"
 
-    node = fold!(nega, node, node.tag, dic: 4) if nega
-    return node unless succ = node.succ?
+    modi = fold!(nega, modi, modi.tag, dic: 4) if nega
+    return modi unless succ = modi.succ?
 
     MtDict.fix_noun!(succ) if succ.veno? || succ.ajno? || succ.adv_noun?
-    # puts [node, succ]
+    # puts [modi, succ]
 
-    succ.nominal? ? fold_nouns!(noun: succ, modi: node) : fold_adjts!(node)
+    return fold_adjts!(modi) unless succ.nominal?
+    fold_nouns!(succ, defn: modi)
   end
 
   def fold_adjt_verb!(adjt : MtNode, verb : MtNode) : MtNode
@@ -58,7 +60,7 @@ module CV::TlRule
       return fold!(adjt, tail, PosTag::AdjtPhrase, dic: 7)
     end
 
-    return adjt if adjt.body || adjt.key.size > 1
+    return adjt if adjt.body? || adjt.key.size > 1
     fold_verbs!(verb, adverb: adjt)
   end
 

@@ -1,12 +1,12 @@
 module CV::TlRule
-  def meld_mixed!(node : MtNode) : MtNode
+  def fold_mixed!(node : MtNode) : MtNode
     node = heal_mixed!(node)
 
     case node
     when .adverb?    then fold_adverb_base!(node)
     when .adjective? then fold_adjts!(node)
-    when .verbal?    then fuse_verb!(node)
-    when .nominal?   then fuse_noun!(node)
+    when .verbal?    then fold_verbs!(node)
+    when .nominal?   then fold_nouns!(node)
     else                  node
     end
   end
@@ -72,7 +72,7 @@ module CV::TlRule
       else
         MtDict.fix_noun!(node)
       end
-    when .verbal?, .preposes?, .none?, .spaces?
+    when .verbal?, .preposes?, .none?, .locality?
       MtDict.fix_noun!(node)
     when .noun?
       node.set!(PosTag::Modi)

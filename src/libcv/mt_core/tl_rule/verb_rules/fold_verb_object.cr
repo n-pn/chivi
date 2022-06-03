@@ -11,7 +11,7 @@ module CV::TlRule
 
     if (ude1 = noun.succ?) && ude1.ude1? && (right = ude1.succ?)
       if (right = scan_noun!(right)) && should_apply_ude1_after_verb?(verb, right)
-        noun = fold_ude1_left!(ude1: ude1, left: noun, right: right)
+        noun = fold_ude1!(ude1: ude1, left: noun, right: right)
       end
     end
 

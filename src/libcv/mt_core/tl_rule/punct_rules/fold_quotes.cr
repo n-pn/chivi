@@ -12,7 +12,7 @@ module CV::TlRule
     return head unless tail && tail != head.succ?
 
     root = fold!(head, tail, tag: PosTag::Unkn, dic: 0)
-    fix_grammar!(root.body, level: 1)
+    fix_grammar!(root.body)
 
     succ = head.succ
     if succ.succ? == tail
