@@ -46,12 +46,21 @@ module CV::TlRule
 
     return noun unless succ = noun.succ?
 
-    if succ.ude1? && (noun.naffil? || !fold_mode.no_ude1?)
-      noun = fold_ude1!(ude1: succ, left: noun)
+    if succ.ude1?
+      return noun unless right = fold_right_of_ude1(fold_mode, succ.succ?)
+      noun = fold_ude1!(ude1: succ, left: noun, right: right)
       return noun unless succ = noun.succ?
     end
 
     fold_noun_other!(noun, succ)
+  end
+
+  def fold_right_of_ude1(mode : NounMode, right : MtNode?) : MtNode?
+    return if !right || right.ends?
+
+    right = fold_once!(right)
+    # puts [mode, right]
+    return right if right.object? && !mode.no_ude1?
   end
 
   def fold_defn_noun!(noun : MtNode, defn : MtNode) : MtNode
@@ -62,9 +71,6 @@ module CV::TlRule
     end
 
     fold!(defn, noun, noun.tag, dic: 6, flip: flip)
-  end
-
-  def fold_noun_ude1!(noun : MtNode, ude1 : MtNode)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity

@@ -123,7 +123,7 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def ends?
-    @pos.pstops? || @pos.none? || @tag.exclam? || @tag.mopart?
+    @pos.pstops? || @tag.none? || @tag.exclam? || @tag.mopart?
   end
 
   # ameba:disable Metrics/CyclomaticComplexity

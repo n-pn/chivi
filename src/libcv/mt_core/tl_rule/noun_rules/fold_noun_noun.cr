@@ -26,10 +26,11 @@ module CV::TlRule
         return mode unless prev = prev.prev?
       end
 
+      # puts [noun, prev]
       case prev
       when .preposes? then mode.with_prepos(noun, prev)
       when .verbal?   then mode.with_verbal(noun, prev)
-      when .ude1?     then mode.with_verbal(noun, prev)
+      when .ude1?     then mode.with_ude1(noun, prev)
       else                 mode
       end
     end
