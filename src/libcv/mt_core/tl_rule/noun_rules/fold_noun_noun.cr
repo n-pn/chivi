@@ -53,6 +53,7 @@ module CV::TlRule
         mode |= NoUde1
       end
 
+      # puts [mode, verb, verb.prev?]
       mode
     end
 

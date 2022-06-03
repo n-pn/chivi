@@ -34,8 +34,9 @@ module CV::TlRule
     when .uzhi?
       fold_uzhi!(uzhi: succ, prev: proper)
     when .ude1?
-      return proper if proper.prev? { |x| x.verbal? || x.preposes? }
-      fold_ude1!(ude1: succ, left: proper)
+      fold_mode = NounMode.init(proper, proper.prev?)
+      return proper unless right = fold_right_of_ude1(fold_mode, succ.succ?)
+      fold_ude1!(ude1: succ, left: proper, right: right)
     else
       # TODO: handle special cases
       proper
