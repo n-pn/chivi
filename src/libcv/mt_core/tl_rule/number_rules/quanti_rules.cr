@@ -6,7 +6,7 @@ module CV::TlRule
   def not_quanti?(node : MtNode)
     # abort transform if node is certainly a verb
     return false unless node.verbal? && (succ = node.succ?)
-    succ.ule? || succ.comma? || succ.colon? || succ.pstop?
+    succ.ule? || succ.comma? || succ.colon? || succ.pstops?
   end
 
   QUANTI_PRE_APPRO = {
@@ -32,7 +32,6 @@ module CV::TlRule
       return {node, 0}
     end
 
-    node = fold!(node, succ) if succ = node.succ?
     {node, 1}
   end
 

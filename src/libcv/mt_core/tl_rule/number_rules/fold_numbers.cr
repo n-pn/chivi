@@ -55,6 +55,7 @@ module CV::TlRule
     end
 
     appro = 0
+    # puts [node, tail]
 
     case tail
     when .pre_dui?
