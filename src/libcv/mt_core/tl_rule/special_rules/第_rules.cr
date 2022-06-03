@@ -2,7 +2,11 @@ module CV::TlRule
   def fold_第!(node : MtNode)
     return node unless (succ = node.succ?) && (succ.nhanzi? || succ.ndigit?)
 
-    succ.val = "nhất" if succ.key == "一"
+    if succ.key == "一"
+      succ.val = "nhất"
+      node.val = "đệ" if node.prev?(&.nominal?)
+    end
+
     head = fold!(node, succ, PosTag::Noun, dic: 3)
 
     return head unless tail = head.succ?
@@ -10,7 +14,6 @@ module CV::TlRule
 
     case tail.tag
     when .noun?, .temporal?, .ptitle?, .nattr?, .naffil?
-      node.val = "đệ" if head.prev?(&.nominal?)
       fold!(head, tail, tail.tag, dic: 8, flip: true)
     when .quantis?
       if (tail_2 = tail.succ?) && tail_2.nominal?
