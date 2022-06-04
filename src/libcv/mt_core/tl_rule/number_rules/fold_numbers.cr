@@ -1,58 +1,56 @@
 module CV::TlRule
   def fold_number!(node : MtNode, prev : MtNode? = nil)
-    # puts ["number: ", node]
-    node = fuse_number!(node, prev: prev) # if head.numbers?
+    return node if !(succ = node.succ?) || succ.ends?
 
-    case node
-    when .temporal?
-      # puts [node, node.succ?, node.prev?]
-      node = fold_time_prev!(node, prev: prev) if prev && prev.temporal?
-
-      if (prev = node.prev?) && prev.temporal?
-        # TODO: do not do this but calling fold_number a second time instead
-        node = fold!(prev, node, node.tag, dic: 6, flip: true)
-      end
-
-      fold_nouns!(node)
-    when .verbal?
-      fold_verbs!(node)
-    when .noun?
-      fold_nouns!(node)
-    else
-      if (succ = node.succ?) && succ.uzhi?
-        fold_uzhi!(succ, node)
-      else
-        # puts [node.succ?, node]
-        scan_noun!(node.succ?, nquant: node) || node
-      end
+    if node.ndigit?
+      node = fold_ndigit!(node, prev: prev, succ: succ)
+      return fold_time_prev!(node, prev: prev) if node.temporal?
+    elsif node.nhanzi?
+      node = fold_nhanzi!(node, prev: prev)
+      return fold_time_prev!(node, prev: prev) if node.temporal?
     end
-  end
 
-  def fold_nquant_noun!(prev : MtNode, node : MtNode)
-    prev = clean_个!(prev)
-    node = fold!(prev, node, PosTag::NounPhrase, dic: 3)
-    node
+    if node.numbers?
+      node = fold_number_nquant!(node, prev: prev)
+      return node unless node.numeral?
+    end
+
+    prodem = prev.try(&.pronouns?) ? prev : nil
+    scan_noun!(node.succ?, prodem: prodem, nquant: node)
+
+    # # puts ["number: ", node]
+    # node = fuse_number!(node, prev: prev) # if head.numbers?
+
+    # case node
+    # when .temporal?
+    #   # puts [node, node.succ?, node.prev?]
+    #   node = fold_time_prev!(node, prev: prev) if prev && prev.temporal?
+
+    #   if (prev = node.prev?) && prev.temporal?
+    #     # TODO: do not do this but calling fold_number a second time instead
+    #     node = fold!(prev, node, node.tag, dic: 6, flip: true)
+    #   end
+
+    #   fold_nouns!(node)
+    # when .verbal?
+    #   fold_verbs!(node)
+    # when .noun?
+    #   fold_nouns!(node)
+    # else
+    #   if (succ = node.succ?) && succ.uzhi?
+    #     fold_uzhi!(succ, node)
+    #   else
+    #     # puts [node.succ?, node]
+    #     scan_noun!(node.succ?, nquant: node) || node
+    #   end
+    # end
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fuse_number!(node : MtNode, prev : MtNode? = nil) : MtNode
-    case node.tag
-    when .ndigit?
-      node = fold_ndigit!(node, prev: prev)
-      return fold_time_appro!(node) if node.temporal?
-    when .nhanzi?
-      node = fold_nhanzi!(node, prev: prev)
-      return fold_time_appro!(node) if node.temporal?
-    when .quantis?, .nquants?
-      # TODO: combine number with nquant?
-      return node
-    end
+  def fold_number_nquant!(node : MtNode, prev : MtNode? = nil) : MtNode
+    return node if !(tail = node.succ?) || tail.ends?
 
-    return node unless node.numbers? && (tail = node.succ?)
-    if tail.puncts?
-      node = fold!(node, tail, PosTag::Nattr, dic: 5) if tail.quantis?
-      return node
-    end
+    return node if tail.puncts? && !tail.quantis?
 
     appro = 0
     # puts [node, tail]
@@ -97,17 +95,9 @@ module CV::TlRule
     end
 
     has_ge4 = tail if tail.key.ends_with?('个')
-    appro = 1 if is_pre_appro_num?(node.prev?)
 
-    case tail.key
-    when "年" then node = fold_year!(node, tail, appro)
-    when "月" then node = fold_month!(node, tail, appro)
-    when "点" then node = fold_hour!(node, tail, appro)
-    when "分" then node = fold_minute!(node, tail, appro)
-    else
-      node = fold!(node, tail, map_nqtype(tail), dic: 3)
-      node = fold_suf_quanti_appro!(node) if has_ge4
-    end
+    node = fold!(node, tail, map_nqtype(tail), dic: 3)
+    node = fold_suf_quanti_appro!(node) if has_ge4
 
     if has_ge4 && (tail = node.succ?) && tail.quantis?
       node = fold!(node, tail, map_nqtype(tail), dic: 3)

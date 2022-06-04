@@ -15,7 +15,7 @@ module CV::TlRule
 
     return fold_adjts!(adjt) unless succ.numeral?
 
-    succ = fuse_number!(succ)
+    succ = fold_number!(succ)
     return adjt unless succ.nquants?
 
     adjt = fold!(adjt, succ, PosTag::AdjtPhrase, dic: 7)

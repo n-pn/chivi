@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_noun_after!(noun : MtNode, succ = noun.succ?) : MtNode
-    return noun unless succ
+    return noun if !succ || succ.ends?
 
     if succ.pro_per? && succ.key == "自己"
       noun = fold!(noun, succ, noun.tag, dic: 6, flip: true)

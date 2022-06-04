@@ -21,7 +21,7 @@ module CV::TlRule
     when .adverbial? then fold_adverbs!(node)
     when .auxils?    then fold_auxils!(node)
     when .pronouns?  then fold_pronouns!(node)
-    when .temporal?  then fold_timeword!(node)
+    when .temporal?  then fold_temporal!(node)
     when .numeral?   then fold_number!(node)
     when .modifier?  then fold_modifier!(node)
     when .adjective? then fold_adjts!(node)

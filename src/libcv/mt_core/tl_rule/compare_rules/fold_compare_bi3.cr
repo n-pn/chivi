@@ -13,7 +13,7 @@
 
 module CV::TlRule
   def fold_compare_bi3!(prepos : MtNode, succ = prepos.succ?, mode = 0)
-    return prepos unless (noun = scan_noun!(succ, mode: mode)) && noun.object?
+    return prepos unless (noun = scan_noun!(succ)) && noun.object?
 
     unless succ = noun.succ?
       prepos = fold!(prepos, noun, PosTag::PrepClause, dic: 3)

@@ -1,54 +1,54 @@
 module CV::TlRule
-  def fold_timeword!(node : MtNode, succ = node.succ?) : MtNode
-    return node unless succ
+  def fold_temporal!(node : MtNode, succ = node.succ?) : MtNode
+    return node if !succ || succ.ends?
 
-    case node.key
-    when "早上", "下午", "凌晨", "早晨", "中午", "晚上"
-      case succ.tag
-      when .nhanzi?, .ndigit?
-        fold_number!(succ, prev: node)
-      when .adj_hao?
-        fold!(node, succ.set!("chào"), PosTag::VerbPhrase, dic: 8, flip: true)
-      else
-        node
-      end
+    if succ.adj_hao? && node.key.in?("早上", "下午", "凌晨", "早晨", "中午", "晚上")
+      return fold!(node, succ.set!("chào"), PosTag::None, dic: 8, flip: true)
+    end
+
+    case succ
+    when .numbers? then fold_number!(succ, prev: node)
+    when .v_shi?   then node
+    when .v_you?   then node
+    when .verbal?
+      fold_verbs!(succ, adverb: node)
     else
       fold_nouns!(node)
     end
   end
 
-  def fold_time_prev!(node : MtNode, prev : MtNode) : MtNode
-    return node unless prev
+  def fold_time_prev!(node : MtNode, prev : MtNode?) : MtNode
+    return fold_time_after!(node) unless prev
+
+    flip = true
 
     case prev.key
-    when "早上", "早晨"
-      fold!(prev.set!("sáng"), node, PosTag::Temporal, dic: 2, flip: true)
-    when "中午"
-      fold!(prev.set!("trưa"), node, PosTag::Temporal, dic: 2, flip: true)
-    when "下午"
-      fold!(prev.set!("chiều"), node, PosTag::Temporal, dic: 2, flip: true)
-    when "晚上"
-      fold!(prev.set!("tối"), node, PosTag::Temporal, dic: 2, flip: true)
-    when "半夜"
-      fold!(prev.set!("đêm"), node, PosTag::Temporal, dic: 2, flip: true)
-    when "凌晨"
-      fold!(prev, node, PosTag::Temporal, dic: 2)
-    else node
+    when "早上" then prev.val = "sáng"
+    when "早晨" then prev.val = "sáng"
+    when "中午" then prev.val = "trưa"
+    when "下午" then prev.val = "chiều"
+    when "晚上" then prev.val = "tối"
+    when "半夜" then prev.val = "đêm"
+    when "凌晨" then flip = false
     end
+
+    time = fold!(prev, node, PosTag::Temporal, dic: 2, flip: flip)
+    fold_time_after!(time)
   end
 
-  def fold_time_appro!(node : MtNode)
-    return node unless succ = node.succ?
+  def fold_time_after!(time : MtNode, succ = time.succ?)
+    return time if !succ || succ.ends?
+
     case succ.key
-    when "前后"
-      fold!(node, succ.set!("tầm"), PosTag::Temporal, dic: 2, flip: true)
-    when "左右"
-      fold!(node, succ.set!("khoảng"), PosTag::Temporal, dic: 2, flip: true)
-    when "多"
-      fold!(node, succ.set!("hơn"), PosTag::Temporal, dic: 2, flip: true)
+    when "多"  then succ.val = "hơn"
+    when "前后" then succ.val = "tầm"
+    when "左右" then succ.val = "khoảng"
     else
-      node
+      return fold_noun_other!(time)
     end
+
+    time = fold!(time, succ, time.tag, dic: 2, flip: true)
+    fold_noun_other!(time)
   end
 
   def fold_number_hour!(node : MtNode, succ : MtNode) : MtNode

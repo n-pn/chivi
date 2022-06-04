@@ -34,7 +34,7 @@ module CV::TlRule
     return verb.flag!(flag) unless succ.numeral?
 
     if is_pre_appro_num?(verb)
-      succ = fuse_number!(succ) if succ.numeral?
+      succ = fold_number!(succ) if succ.numeral?
       return fold!(verb, succ, succ.tag, dic: 4)
     end
 

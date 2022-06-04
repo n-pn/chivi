@@ -1,35 +1,32 @@
 module CV::TlRule
-  # ameba:disable Metrics/CyclomaticComplexity
-  def fold_ndigit!(node : MtNode, prev : MtNode? = nil)
-    return node unless succ = node.succ?
+  # -ameba:disable Metrics/CyclomaticComplexity
+  def fold_ndigit!(node : MtNode, prev : MtNode? = nil, succ = node.succ)
     return fold_ndigit_nhanzi!(node, succ) if succ.nhanzi?
 
-    if prev && (succ.key == "点" || succ.key == "时")
-      return fold_number_hour!(node, succ)
+    if time = fold_number_as_temporal(num: node, qti: succ, prev: prev)
+      return time
     end
 
-    return node unless (succ_2 = succ.succ?) && succ_2.ndigit?
+    return node unless (tail = succ.succ?) && tail.ndigit?
 
     case succ.tag
     when .pdeci? # case 1.2
-      fold_ndigit_succs!(node, succ, succ_2, PosTag::Ndigit)
+      fold_ndigit_extra!(node, succ, tail, PosTag::Ndigit)
     when .pdash? # case 3-4
-      fold_ndigit_succs!(node, succ, succ_2, PosTag::Number)
+      fold_ndigit_extra!(node, succ, tail, PosTag::Number)
     when .colon? # for 5:6 format
-      node = fold_ndigit_succs!(node, succ, succ_2, PosTag::Temporal)
+      node = fold_ndigit_extra!(node, succ, tail, PosTag::Temporal)
 
       # for 5:6:7 format
-      return node unless (succ_3 = succ_2.succ?) && (succ_4 = succ_3.succ?)
-      return node unless succ_3.colon? && succ_4.ndigit?
-
-      fold_ndigit_succs!(node, succ_3, succ_4, PosTag::Temporal)
+      return node unless (succ = tail.succ?) && (tail = succ.succ?)
+      return node unless succ.colon? && tail.ndigit?
+      fold_ndigit_extra!(node, succ, tail, PosTag::Temporal)
     else
-      return node unless succ.key == "点" || succ.key == "时"
-      fold_number_hour!(node, succ)
+      node
     end
   end
 
-  private def fold_ndigit_succs!(node : MtNode, succ : MtNode, tail : MtNode, tag : PosTag)
+  private def fold_ndigit_extra!(node : MtNode, succ : MtNode, tail : MtNode, tag : PosTag)
     node.key = "#{node.key}#{succ.key}#{tail.key}"
     node.set!("#{node.val}#{succ.val}#{tail.val}", tag)
     node.tap(&.fix_succ!(tail.succ?))

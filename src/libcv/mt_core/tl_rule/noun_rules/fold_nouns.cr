@@ -34,6 +34,9 @@ module CV::TlRule
         succ = fold_第!(succ)
         ptag = succ.tag.numeral? ? noun.tag : succ.tag
         noun = fold!(noun, succ, ptag, dic: 6, flip: true)
+      when .usuo?
+        break if succ.succ? { |x| x.verbal? && !x.v_shi? && !x.v_you? }
+        noun = fold!(noun, succ.set!("nơi"), PosTag::Naffil, flip: true)
       else
         break
       end
@@ -55,7 +58,7 @@ module CV::TlRule
       return noun unless succ = noun.succ?
     end
 
-    fold_noun_other!(noun, succ)
+    fold_noun_other!(noun, succ, fold_mode)
   end
 
   def fold_right_of_ude1(mode : NounMode, right : MtNode?) : MtNode?
@@ -73,32 +76,50 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_noun_other!(noun : MtNode, succ = noun.succ) : MtNode
+  def fold_noun_other!(noun : MtNode, succ = noun.succ?, mode : NounMode? = nil) : MtNode
+    return noun if !succ || succ.ends?
+    return fold_suffix!(noun, succ) if succ.suffixes?
+
+    if succ.pro_per? && succ.key == "自己"
+      noun = fold!(noun, succ, noun.tag, dic: 6, flip: true)
+      return noun unless succ = noun.succ?
+    end
+
+    if succ.uzhi?
+      noun = fold_uzhi!(uzhi: succ, prev: noun)
+      return noun unless succ = noun.succ?
+    end
+
+    if succ.locality?
+      return noun if noun.prev? { |x| x.nquants? || x.pro_dem? }
+      noun = fold_noun_locality!(noun: noun, locality: succ)
+      return noun unless succ = noun.succ?
+    end
+
+    if succ.junction?
+      return noun unless fold = fold_noun_concoord!(succ, prev: noun)
+      noun = fold
+      return noun unless succ == noun.succ?
+    end
+
+    if succ.ude1?
+      mode ||= NounMode.init(noun, noun.prev?)
+      return noun unless right = fold_right_of_ude1(mode, succ.succ?)
+      noun = fold_ude1!(ude1: succ, left: noun, right: right)
+      return noun unless succ = noun.succ?
+    end
+
     succ = fold_once!(succ)
 
     case succ
     when .adjective?
       return noun if succ.adv_bu4?
-      noun = fold_noun_adjt!(noun, succ)
-    when .uzhi?
-      noun.prev?(&.verb?) ? noun : fold_uzhi!(succ, noun)
+      fold_noun_adjt!(noun, succ)
     when .uyy?
       adjt = fold!(noun, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
-
-      unless (succ = adjt.succ?) && succ.maybe_adjt?
-        return fold_adjts!(adjt)
-      end
-
-      succ = succ.adverbial? ? fold_adverbs!(succ) : fold_adjts!(succ)
-      noun = fold!(adjt, succ, PosTag::AdjtPhrase, dic: 8)
+      fold_adjts!(adjt)
     when .verbal?
-      noun = fold_noun_verb!(noun, succ)
-    when .junction?
-      return noun unless should_fold_noun_concoord?(noun, succ)
-      fold_noun_concoord!(succ, noun) || noun
-    when .usuo?
-      succ.succ?(&.verbal?) ? noun : fold_suffix!(noun, succ)
-    when .suffixes? then fold_suffix!(noun, succ)
+      fold_noun_verb!(noun, succ)
     else
       noun
     end

@@ -1,6 +1,6 @@
 module CV::TlRule
-  def fold_pre_ba3!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
-    return fold_prepos_inner!(node, succ, mode: mode) unless pre_ba3_is_qtnoun?(node, succ)
+  def fold_pre_ba3!(node : MtNode, succ = node.succ?) : MtNode
+    return fold_prepos_inner!(node, succ) unless pre_ba3_is_qtnoun?(node, succ)
     return node unless noun = scan_noun!(succ)
 
     node.set!(guess_pre_ba3_defn(noun) || "chiếc", PosTag::Qtnoun)
