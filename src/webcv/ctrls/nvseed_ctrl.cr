@@ -16,7 +16,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     bseeds = nvseed.nvinfo.nvseeds
 
     force = _cvuser.privi >= 0 && params["force"]? == "true"
-    nvseed.refresh!(force: force) if nvseed.staled?(_cvuser.privi, force)
+    nvseed.refresh!(force: force) if force && nvseed.staled?(_cvuser.privi, force)
 
     total = nvseed.chap_count
     pgidx = params.fetch_int("pg", min: 1)
