@@ -56,12 +56,13 @@ class CV::Nvseed
   # ------------------------
 
   def refresh!(force : Bool = false) : Nil
+    self.stime = Time.utc.to_unix if force
+
     if zseed == 0 # sname == "union"
       if force
         self.chap_count = 0
         self.last_schid = ""
         self.utime = 0_i64
-        self.stime = Time.utc.to_unix
       end
 
       self.mirror_regen!(force: force, fetch: true)

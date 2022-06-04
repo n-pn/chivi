@@ -110,15 +110,15 @@ class CV::QtranData
   end
 
   def self.zhtext_ukey(seed_id : Int64, chidx : Int32, cpart : Int32) : String
-    number = chidx.unsafe_shl(20) | seed_id
+    number = chidx.to_i64.unsafe_shl(21) | seed_id
     "#{UkeyUtil.encode32(number)}-#{cpart}"
   end
 
   def self.zhtext_ukey_decode(string : String)
     digest, cpart = string.split("-", 2)
     number = UkeyUtil.decode32(digest)
-    seed_id = number % 1.unsafe_shl(20)
-    chidx = number.unsafe_shr(20)
+    seed_id = number % 1.unsafe_shl(21)
+    chidx = number.unsafe_shr(21)
     {seed_id, chidx.to_i, cpart.to_i}
   end
 

@@ -6,7 +6,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     nvseed = Nvseed.load!(nvinfo.id, SnameMap.map_int(sname))
 
     force = params["force"]? == "true" && _cvuser.privi >= 0
-    nvseed.refresh!(force: force) if nvseed.staled?(_cvuser.privi, force)
+    nvseed.refresh!(force: true) if force && nvseed.staled?(_cvuser.privi, force)
 
     send_json({chseed: nvinfo.nvseeds.to_a.map { |x| ChseedView.new(x) }})
   end
@@ -16,7 +16,8 @@ class CV::NvseedCtrl < CV::BaseCtrl
     bseeds = nvseed.nvinfo.nvseeds
 
     force = _cvuser.privi >= 0 && params["force"]? == "true"
-    nvseed.refresh!(force: force) if nvseed.staled?(_cvuser.privi, force)
+    staled = nvseed.staled?(_cvuser.privi, force)
+    nvseed.refresh!(force: true) if force && staled
 
     total = nvseed.chap_count
     pgidx = params.fetch_int("pg", min: 1)
@@ -31,6 +32,8 @@ class CV::NvseedCtrl < CV::BaseCtrl
         pgmax: CtrlUtil.pgmax(total, 32),
         lasts: nvseed.lastpg.to_a.map { |x| ChinfoView.new(x) },
         chaps: nvseed.chpage(pgidx - 1).map { |x| ChinfoView.new(x) },
+        stime: nvseed.stime,
+        stale: staled,
       },
     })
   end
