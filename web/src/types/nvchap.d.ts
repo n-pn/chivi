@@ -27,6 +27,8 @@ declare namespace CV {
   interface Chpage extends Paginate {
     lasts: Chinfo[]
     chaps: Chinfo[]
+    stime: number
+    stale: bool
   }
 
   interface Chmeta {

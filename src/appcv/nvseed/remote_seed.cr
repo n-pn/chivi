@@ -16,7 +16,7 @@ class CV::Nvseed
     _repo.store!(chinfos, reset: force)
 
     self.reset_cache!
-    self.stime = FileUtil.mtime_int(parser.info_link)
+    self.stime = FileUtil.mtime_int(parser.info_file)
 
     if parser.update_str.empty?
       mftime = changed ? self.stime : self.utime

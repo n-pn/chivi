@@ -45,6 +45,7 @@
 
   import SeedList from '../_layout/SeedList.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import { rel_time } from '$utils/time_utils'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
@@ -139,9 +140,16 @@
         </a>
       {/if}
     </info-right>
-
-    {#if _error}<div class="error">{_error}</div>{/if}
   </page-info>
+
+  {#if _error}<div class="error">{_error}</div>{/if}
+  <div class="chap-hint">
+    <SIcon name="alert-circle" />
+    <span class="-hint" class:_bold={chpage.stale}
+      >Bấm "<SIcon name="refresh" /> Đổi mới" để cập nhật danh sách chương tiết.</span>
+    <span class="-stat"
+      >Lần cập nhật cuối: <strong>{rel_time(chpage.stime)}</strong>.</span>
+  </div>
 
   <chap-list>
     {#if chpage.pgmax > 0}
@@ -209,7 +217,7 @@
 
   page-info {
     display: flex;
-    padding: 0.75rem 0;
+    margin-top: 0.75rem;
 
     // @include bgcolor(main);
     // @include bdradi(1rem, $loc: top);
@@ -230,6 +238,25 @@
 
   info-right {
     @include flex($gap: 0.5rem);
+  }
+
+  .chap-hint {
+    // text-align: center;
+    // font-style: italic;
+    // @include flex-cx($gap: 0.5rem);
+    margin: 0.5rem 0;
+
+    @include ftsize(sm);
+    @include fgcolor(tert);
+
+    .-hint._bold {
+      @include fgcolor(warning, 5);
+    }
+
+    :global(svg) {
+      display: inline-block;
+      margin-bottom: 0.1em;
+    }
   }
 
   // .m-btn {
