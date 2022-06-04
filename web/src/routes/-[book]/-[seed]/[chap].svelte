@@ -13,7 +13,7 @@
     return api_url
   }
 
-  export async function load({ fetch, params, stuff: { nvinfo } }) {
+  export async function load({ fetch, params, stuff: { nvinfo, ubmemo } }) {
     const { seed: sname, chap: chap_slug } = params
     const [chidx, cpart = 0] = chap_slug.split('-')[0].split('.')
 
@@ -25,6 +25,7 @@
     }
 
     const props = await api_res.json()
+    Object.assign(props, { nvinfo, ubmemo })
 
     const stuff = { topbar: gen_topbar(nvinfo, sname, chidx) }
     return { props, stuff }
@@ -55,8 +56,11 @@
   import CvPage from '$gui/sects/MtPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
 
-  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
-  export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
+  export let nvinfo: CV.Nvinfo
+  export let ubmemo: CV.Ubmemo
+
+  // $: nvinfo = $page.stuff.nvinfo
+  // $: ubmemo = $page.stuff.ubmemo
 
   export let chmeta: CV.Chmeta
   export let chinfo: CV.Chinfo
