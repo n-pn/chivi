@@ -3,10 +3,10 @@ module CV::TlRule
     return node if !(succ = node.succ?) || succ.ends?
 
     if node.ndigit?
-      node = fold_ndigit!(node, prev: prev, succ: succ)
+      node = fold_ndigit!(node, succ: succ, prev: prev)
       return fold_time_prev!(node, prev: prev) if node.temporal?
     elsif node.nhanzi?
-      node = fold_nhanzi!(node, prev: prev)
+      node = fold_nhanzi!(node, succ: succ, prev: prev)
       return fold_time_prev!(node, prev: prev) if node.temporal?
     end
 

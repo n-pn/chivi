@@ -1,6 +1,9 @@
 module CV::TlRule
-  def fold_nhanzi!(node : MtNode, prev : MtNode? = nil) : MtNode
-    return node unless succ = node.succ?
+  def fold_nhanzi!(node : MtNode, succ = node.succ, prev : MtNode? = nil) : MtNode
+    if time = fold_number_as_temporal(num: node, qti: succ, prev: prev)
+      return time
+    end
+
     case succ.key
     when "点"  then fold_nhanzi_dian!(node, succ, prev)
     when "分"  then fold_number_minute!(node, succ)

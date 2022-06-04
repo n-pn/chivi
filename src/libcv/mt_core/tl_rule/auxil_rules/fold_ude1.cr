@@ -3,7 +3,7 @@ module CV::TlRule
   def fold_ude1!(ude1 : MtNode, left = ude1.prev, right : MtNode? = nil) : MtNode
     # puts [left, right]
 
-    if left.pro_per? || (left.nominal? && !left.property?)
+    if left.pro_per? || (left.nominal? && !left.property? && !left.temporal?)
       head = fold!(left, ude1.set!("của"), PosTag::Naffil, dic: 7, flip: true)
     else
       head = fold!(left, ude1.set!(""), PosTag::DefnPhrase, dic: 7, flip: true)
