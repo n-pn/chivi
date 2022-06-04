@@ -6,7 +6,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     nvseed = Nvseed.load!(nvinfo.id, SnameMap.map_int(sname))
 
     force = params["force"]? == "true" && _cvuser.privi >= 0
-    nvseed.refresh!(force: force) if nvseed.staled?(_cvuser.privi, force)
+    nvseed.refresh!(force: force) if force && nvseed.staled?(_cvuser.privi, force)
 
     send_json({chseed: nvinfo.nvseeds.to_a.map { |x| ChseedView.new(x) }})
   end
