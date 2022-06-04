@@ -1,14 +1,24 @@
 module CV::TlRule
+  LOCALITY_VERBS = {
+    "中" => "trúng",
+    "上" => "lên",
+    "下" => "xuống",
+  }
+
   def fold_space!(node : MtNode) : MtNode
     case node.key
-    when "中"
-      node.set!("trúng", PosTag::Verb)
-      fold_verbs!(node)
+    when "上", "下", "中"
+      case succ = node.succ?
+      when .nil?, .pstops?, .none? then node
+      when .exclam?, .mopart?, .auxils?, .quantis?
+        node.set!(LOCALITY_VERBS[node.key], PosTag::Verb)
+      else
+        fold_nouns!(succ)
+      end
     when "右", "左"
-      node.tag = PosTag::Modi
-      fold_modifier!(node)
+      fold_modifier!(node.set!(PosTag::Modi))
     else
-      node
+      fold_nouns!(node)
     end
   end
 

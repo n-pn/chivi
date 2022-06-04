@@ -14,7 +14,9 @@ module CV::TlRule
           break if fold_mode.no_locality?
         end
 
-        noun, defn = fold_defn_noun!(noun: noun, defn: defn), nil if defn
+        noun = fold_defn_noun!(noun: noun, defn: defn) if defn
+        defn = nil
+
         noun = fold_noun_locality!(noun, succ)
         break if noun.succ? == succ
       when .mixed?
@@ -43,8 +45,9 @@ module CV::TlRule
     end
 
     noun = fold_defn_noun!(noun: noun, defn: defn) if defn
-
     return noun unless succ = noun.succ?
+
+    # puts [noun, succ, fold_mode, "fold_noun"]
 
     if succ.ude1?
       return noun unless right = fold_right_of_ude1(fold_mode, succ.succ?)
@@ -63,13 +66,9 @@ module CV::TlRule
     return right if right.object? && !mode.no_ude1?
   end
 
+  @[AlwaysInline]
   def fold_defn_noun!(noun : MtNode, defn : MtNode) : MtNode
-    if defn.modi?
-      flip = !defn.key.in?("原", "所有", "所有的")
-    else
-      flip = true
-    end
-
+    flip = !defn.modi? || !defn.key.in?("原", "所有", "所有的")
     fold!(defn, noun, noun.tag, dic: 6, flip: flip)
   end
 

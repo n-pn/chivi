@@ -26,7 +26,8 @@ module CV::TlRule
         return mode unless prev = prev.prev?
       end
 
-      # puts [noun, prev]
+      puts [noun, prev, "init_noun_fold_mode"]
+
       case prev
       when .preposes? then mode.with_prepos(noun, prev)
       when .verbal?   then mode.with_verbal(noun, prev)
