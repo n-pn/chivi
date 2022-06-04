@@ -144,7 +144,7 @@
 
   {#if _error}<div class="error">{_error}</div>{/if}
   <div class="chap-hint">
-    <SIcon name="alert-circle" />
+    <span>Gợi ý:</span>
     <span class="-hint" class:_bold={chpage.stale}
       >Bấm "<SIcon name="refresh" /> Đổi mới" để cập nhật danh sách chương tiết.</span>
     <span class="-stat"
