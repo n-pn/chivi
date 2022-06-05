@@ -1,10 +1,10 @@
 require "./pos_tag/*"
 
-struct CV::PosTag
-  # source: https://gist.github.com/luw2007/6016931
-  # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
-  # extra: https://www.cnblogs.com/bushe/p/4635513.html
+# source: https://gist.github.com/luw2007/6016931
+# eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
+# extra: https://www.cnblogs.com/bushe/p/4635513.html
 
+struct CV::PosTag
   {% begin %}
     TYPES = {{ NOUNS + NOUNS_2 + VERBS + ADJTS + SUFFIXES + MISCS }}
   {% end %}
