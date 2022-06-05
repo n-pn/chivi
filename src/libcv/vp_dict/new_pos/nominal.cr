@@ -1,39 +1,23 @@
 require "./_base"
 
 module CV::POS
-  struct Noun < Base
-    include Content
-    include Objects
+  struct Noun < Objects; end
 
-    include Nominal
+  struct ProperName < Noun; end
+
+  struct Person < ProperName
+    include Mankind
   end
 
-  struct Person < Base
-    include Content
-    include Objects
-
-    include Nominal
-    include NProper
-
-    include Humankind
+  struct Ptitle < Noun
+    include Mankind
   end
 
-  struct Ptitle < Base
-    include Content
-    include Objects
+  module Attribute; end
 
-    include Nominal
+  module Placement; end
 
-    include Humankind
-  end
-
-  struct AffilName < Base
-    include Content
-    include Objects
-
-    include Nominal
-    include NProper
-
+  struct AffilName < ProperName
     include Attribute
     include Placement
   end
@@ -42,49 +26,20 @@ module CV::POS
 
   struct InstiName < AffilName; end
 
-  struct BookTitle < Base
-    include Content
-    include Objects
-
-    include Nominal
-    include NProper
-  end
-
-  struct OtherName < Base
-    include Content
-    include Objects
-
-    include Nominal
-    include NProper
-  end
+  struct OtherName < ProperName; end
 
   struct BookTitle < OtherName; end
 
-  struct Nattr < Base
-    include Content
-    include Objects
-
-    include Nominal
-
+  struct Attrib < Noun
     include Attribute
   end
 
-  struct Space < Base
-    include Content
-    include Objects
-
-    include Nominal
-
+  struct Space < Noun
     include Attribute
     include Placement
   end
 
-  struct Locat < Base
-    include Content
-    include Objects
-
-    include Nominal
-
+  struct Locat < Noun
     include Attribute
   end
 
@@ -104,29 +59,23 @@ module CV::POS
     end
   end
 
-  struct Timeword < Base
-    include Content
-    include Objects
-
-    include Nominal
-
+  struct Temporal < Noun
     include Attribute
-    include Temporal
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
   def self.init_noun(tag : String, key : String)
     case tag[1]?
     when nil then Noun.new
-    when 'a' then Nattr.new
     when 'r' then Person.new
-    when 'f' then Person.new
-    when 'w' then Ptitle.new
     when 'n' then AffilName.new
     when 's' then PlaceName.new
     when 't' then IntsiName.new
-    when 'x' then BookTitle.new
     when 'z' then OtherName.new
+    when 'x' then BookTitle.new
+    when 'a' then Attrib.new
+    when 'w' then Ptitle.new
+    when 'f' then Person.new
       # when 'l' then NounPhrase.new
     else Noun.new
     end

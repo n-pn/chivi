@@ -36,8 +36,7 @@ struct CV::PosTag
     when 'z' then Aform
     when 'm'
       new(Tag::Adjt, Pos.flags(Adjective, Measure, Special))
-    else
-      key.size > 1 ? Adjt : new(Tag::Adjt, Pos.flags(Adjective, Modifier))
+    else Adjt
     end
   end
 end
