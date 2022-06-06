@@ -3,14 +3,16 @@ module CV::TlRule
   def fold_ude1!(ude1 : MtNode, left = ude1.prev, right : MtNode? = nil) : MtNode
     # puts [left, right]
 
-    if left.pro_per? || (left.nominal? && !left.property? && !left.temporal?)
+    if is_tangible?(left)
       head = fold!(left, ude1.set!("của"), PosTag::Naffil, dic: 7, flip: true)
     else
       head = fold!(left, ude1.set!(""), PosTag::DefnPhrase, dic: 7, flip: true)
     end
 
     unless right
-      return head unless right = ude1.succ?
+      return head unless right = head.succ?
+      # puts [right]
+
       right = fold_once!(right)
 
       if right.verb? || right.adjective?
@@ -23,5 +25,9 @@ module CV::TlRule
     # puts [left, right, "fold_ude1"]
 
     fold!(head, right, tag: right.tag, dic: 6, flip: true)
+  end
+
+  def is_tangible?(node : MtNode)
+    node.pro_per? || (node.nominal? && !node.property? && !node.temporal?)
   end
 end

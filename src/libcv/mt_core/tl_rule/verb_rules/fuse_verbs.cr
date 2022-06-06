@@ -11,6 +11,9 @@ module CV::TlRule
     when '着'
       flag = MtFlag::Checked | MtFlag::HasUzhe
       verb.flag!(flag)
+    when '了'
+      flag = MtFlag::HasUle
+      verb.flag!(flag)
     when .in?(COMPL_TAILS)
       verb.flag!(:checked)
     else
@@ -28,6 +31,11 @@ module CV::TlRule
     if succ.key == verb.key
       verb = fold!(verb, succ, verb.tag, dic: verb.dic)
       return verb.flag!(:resolved) unless succ = verb.succ?
+    end
+
+    if succ.ule?
+      verb = fuse_verb_ule!(verb, succ)
+      return verb if verb.flag.resolved? || !(succ = verb.succ?)
     end
 
     case succ.tag

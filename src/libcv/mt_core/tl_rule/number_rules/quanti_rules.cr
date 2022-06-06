@@ -77,6 +77,7 @@ module CV::TlRule
       return node unless succ.to_int?.try { |x| x == 10 || x % 10 != 0 }
     end
 
-    fold!(node, succ.set!(val), node.tag, dic: 6, flip: true)
+    noun = fold!(node, succ.set!(val), PosTag::Nattr, dic: 6, flip: true)
+    fold_noun_other!(noun)
   end
 end

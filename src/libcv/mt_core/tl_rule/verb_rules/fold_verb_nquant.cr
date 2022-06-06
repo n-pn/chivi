@@ -14,10 +14,10 @@ module CV::TlRule
     tail.each do |x|
       case x.key[-1]?
       when '把'
-        return false if tail.succ?(&.noun?)
+        next false if tail.succ?(&.noun?)
         x.val = x.val.sub(/bả|chiếc/, "phát")
       when '脚', '眼', '圈', '次' # , '口'
-        return true
+        next true
       end
     end
 

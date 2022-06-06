@@ -64,9 +64,9 @@ module CV::TlRule
   def need_2_objects?(node : MtNode)
     node.each do |x|
       if body = x.body?
-        return true if need_2_objects?(body)
+        next true if need_2_objects?(body)
       else
-        return true if x.v2_object?
+        next true if x.v2_object?
       end
     end
 

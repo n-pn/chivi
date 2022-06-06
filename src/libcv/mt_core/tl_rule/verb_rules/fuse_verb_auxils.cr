@@ -30,8 +30,7 @@ module CV::TlRule
     verb = fold!(verb, tail, verb.tag, dic: 3)
     verb.flag!(flag)
 
-    return verb.flag!(flag | MtFlag::Resolved) unless succ = verb.succ?
-    return verb.flag!(flag) unless succ.numeral?
+    return verb.flag!(flag) unless (succ = verb.succ?) && succ.numeral?
 
     if is_pre_appro_num?(verb)
       succ = fold_number!(succ) if succ.numeral?

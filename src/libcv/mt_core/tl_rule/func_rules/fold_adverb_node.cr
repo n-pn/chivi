@@ -11,7 +11,7 @@ module CV::TlRule
       node.set_prev!(head)
       node.set_succ!(tail)
 
-      return fold!(head, tail, PosTag::Aform, dic: 4)
+      return fold!(head, tail, tag, dic: 4)
     when "最", "最为", "那么", "这么", "非常", "如此"
       flip = true
     when "好好"
@@ -25,5 +25,6 @@ module CV::TlRule
     end
 
     fold!(adv, node, tag, dic: 4, flip: flip)
+    # node
   end
 end

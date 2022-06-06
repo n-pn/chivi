@@ -6,7 +6,8 @@ module CV::TlRule
     # puts [node, node.idx, node.succ?, "level: #{level}"].colorize.blue
 
     while node = node.succ?
-      fold_once!(node)
+      # puts [node, node.prev?]
+      node = fold_once!(node)
     end
   end
 

@@ -13,10 +13,7 @@ module CV::TlRule
       end
     end
 
-    if adverb
-      adjt = fold_adverb_node!(adverb, adjt, tag: PosTag::AdjtPhrase)
-    end
-
+    adjt = fold_adverb_node!(adverb, adjt, PosTag::AdjtPhrase) if adverb
     fold_adjt_after!(adjt)
   end
 

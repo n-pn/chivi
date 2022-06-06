@@ -49,6 +49,8 @@ module CV::TlRule
       mode |= VerbTwo if verb.tag.v2_object?
       # mode |= LinkingVerb if verb.is_linking_verb?
 
+      return mode if !(prev = verb.prev?) || prev.comma?
+
       case verb.prev?
       when .nil?, .ends?, .verbal?, .numeral?, .pro_dems?
         mode |= NoUde1
@@ -83,9 +85,9 @@ module CV::TlRule
     when .names?
       fold!(node, succ, succ.tag, dic: 4)
     when .position?
-      fold!(node, succ, PosTag::DefnPhrase, dic: 3, flip: true)
+      fold!(node, succ, succ.tag, dic: 3, flip: true)
     else
-      flip = mode.verb_two? && !(succ.succ?(&.subject?))
+      flip = !mode.verb_two? || succ.succ?(&.subject?) || false
       ptag = flip ? succ.tag : PosTag::Noun
       fold!(node, succ, ptag, dic: 3, flip: flip)
     end

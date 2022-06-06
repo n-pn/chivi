@@ -205,11 +205,12 @@ class CV::MtNode
     end
   end
 
-  def each
-    yield self unless body = @body
+  def each(&block : self ->)
+    block.call(self) unless body = @body
 
     while body
-      yield body if body = body.succ?
+      body.each(&block)
+      body = body.succ?
     end
   end
 

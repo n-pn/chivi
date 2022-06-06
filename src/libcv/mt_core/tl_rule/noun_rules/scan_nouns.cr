@@ -7,6 +7,7 @@ module CV::TlRule
   def scan_noun!(node : MtNode, prodem : MtNode? = nil, nquant : MtNode? = nil)
     if node.ude1?
       return node unless left = fold_prodem_nominal!(prodem, nquant)
+      # puts [left, node]
       return fold_ude1!(ude1: node, left: left)
     end
 
@@ -45,10 +46,10 @@ module CV::TlRule
     nquant.each do |node|
       if body = node.body?
         clean_nquant!(body)
-        return
+        next
       elsif node.key == "个"
         node.val = ""
-        return
+        next
       end
     end
   end
