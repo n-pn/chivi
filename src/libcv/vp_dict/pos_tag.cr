@@ -89,7 +89,7 @@ struct CV::PosTag
     when .nquants?   then "mq"
     when .adverbial? then "d"
     when .special?
-      return "f" if @tag.locality?
+      return "f" if @tag.locative?
       return "!" unless @pos.verbal?
       return "!vshi" if @tag.v_shi?
       return "!vyou" if @tag.v_you?
@@ -118,7 +118,7 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def property?
-    @tag.naffil? || @tag.nattr? || @tag.position? || @tag.locality?
+    @tag.naffil? || @tag.nattr? || @tag.position? || @tag.locative?
   end
 
   @[AlwaysInline]
@@ -149,7 +149,7 @@ struct CV::PosTag
     when 'b' then Modi
     when 't' then Temporal
     when 's' then Position
-    when 'f' then Locality
+    when 'f' then parse_locative(key)
     else          parse_miscs(tag)
     end
   end

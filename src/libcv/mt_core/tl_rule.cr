@@ -28,7 +28,7 @@ module CV::TlRule
     when .adjective? then fold_adjts!(node)
     when .vmodals?   then fold_vmodals!(node)
     when .verbal?    then fold_verbs!(node)
-    when .locality?  then fold_space!(node)
+    when .locative?  then fold_space!(node)
     when .nominal?   then fold_nouns!(node)
     when .onomat?    then fold_onomat!(node)
     else                  node

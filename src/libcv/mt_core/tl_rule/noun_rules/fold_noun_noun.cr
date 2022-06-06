@@ -1,8 +1,8 @@
 module CV::TlRule
   @[Flags]
   enum NounMode
-    NoLocality # if before of noun still remains potential combinable node
-    NoUde1     # do not fold noun with ude1
+    NoLocat # if before of noun still remains potential combinable node
+    NoUde1  # do not fold noun with ude1
     FoldAll
     VerbTwo
     LinkingVerb
@@ -12,17 +12,17 @@ module CV::TlRule
       return mode unless prev
 
       if prev.adjective?
-        mode |= NoLocality
+        mode |= NoLocat
         return mode unless prev = prev.prev?
       end
 
       if prev.numeral?
-        mode |= NoLocality
+        mode |= NoLocat
         return mode unless prev = prev.prev?
       end
 
       if prev.pro_dems? || prev.pro_ints?
-        mode |= NoLocality
+        mode |= NoLocat
         return mode unless prev = prev.prev?
       end
 
@@ -63,7 +63,7 @@ module CV::TlRule
     def with_ude1(node : MtNode, ude1 : MtNode)
       return self if !(prev = ude1.prev?) || prev.ends?
       # TODO: check for deep prev
-      self | NoLocality
+      self | NoLocat
     end
   end
 

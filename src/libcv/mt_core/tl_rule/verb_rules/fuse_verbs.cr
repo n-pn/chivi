@@ -54,7 +54,7 @@ module CV::TlRule
       # TODO: check pronouns and numerals?
       return verb.flag!(flag) if succ.succ?(&.nominal?)
       succ.val = succ.succ? { |x| x.ule? || x.ends? } ? "tốt" : "xong"
-    when .locality?
+    when .locative?
       return fuse_verb_locality!(verb, succ, flag)
     when .v_dircomp?
       succ.val = MtDict.verb_dir.get_val(succ.key) || succ.val

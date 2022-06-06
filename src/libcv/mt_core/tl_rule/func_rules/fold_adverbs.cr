@@ -105,7 +105,7 @@ module CV::TlRule
     when .adverb?
       succ = fold_adverbs!(succ)
       node = fold!(node, succ, succ.tag, dic: 6)
-    when .locality?
+    when .locative?
       return node unless node.key = "最"
       fold!(node, succ, succ.tag, dic: 7, flip: true)
     when .preposes?

@@ -27,7 +27,7 @@ module CV::TlRule
       fold_prepos_left(prepos, noun, ude1: verb, tail: tail).try { |x| return x }
 
       noun = fold_ude1!(ude1: verb, left: noun, right: tail)
-      noun = fold_noun_after!(noun) unless verb_2.locality?
+      noun = fold_noun_after!(noun) unless verb_2.locative?
 
       verb = noun.succ?
     end

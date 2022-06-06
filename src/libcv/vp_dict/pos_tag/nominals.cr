@@ -33,7 +33,7 @@ struct CV::PosTag
     # 处所词 - place word - nơi chốn
     {"s", "Position", Pos::Nominal | Pos::Contws},
     # 方位词 - space word - phương vị
-    {"f", "Locality", Pos::Nominal | Pos::Contws},
+    {"f", "Locative", Pos::Nominal | Pos::Contws},
     # 时间词 - time word - thời gian
     {"t", "Temporal", Pos::Nominal | Pos::Contws},
   }
@@ -71,7 +71,7 @@ struct CV::PosTag
     end
   end
 
-  def self.parse_locatity(key : String)
+  def self.parse_locative(key : String)
     case key
     when "上", "下"
       new(Tag::Locative, Pos.flags(Nominal, Verbal, Special, Contws))

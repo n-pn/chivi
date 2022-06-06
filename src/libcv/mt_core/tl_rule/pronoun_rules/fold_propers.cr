@@ -67,7 +67,7 @@ module CV::TlRule
     end
 
     case nominal.tag
-    when .locality?
+    when .locative?
       fold_noun_locality!(proper, nominal)
     when .person?
       fold!(proper, nominal, proper.tag, dic: 4, flip: false)

@@ -12,7 +12,7 @@ module CV::TlRule
       return noun unless succ = noun.succ?
     end
 
-    if succ.locality?
+    if succ.locative?
       noun = fold_noun_locality!(noun: noun, locality: succ)
       return noun unless succ = noun.succ?
     end

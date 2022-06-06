@@ -9,9 +9,9 @@ module CV::TlRule
         return noun unless tail = succ.succ?
         succ.val = ""
         noun = fold!(noun, tail, PosTag::Person, dic: 3)
-      when .locality?
+      when .locative?
         unless succ.succ? { |x| x.nominal? || x.key == "第" }
-          break if fold_mode.no_locality?
+          break if fold_mode.no_locat?
         end
 
         noun = fold_defn_noun!(noun: noun, defn: defn) if defn
@@ -97,7 +97,7 @@ module CV::TlRule
       return noun unless succ = noun.succ?
     end
 
-    if succ.locality?
+    if succ.locative?
       return noun if noun.prev? { |x| x.nquants? || x.pro_dem? }
       noun = fold_noun_locality!(noun: noun, locality: succ)
       return noun unless succ = noun.succ?

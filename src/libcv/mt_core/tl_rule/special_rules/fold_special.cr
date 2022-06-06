@@ -21,7 +21,7 @@ module CV::TlRule
     case node
     when .v_shi? then fold_v_shi!(node, succ)
     when .v_you? then fold_v_you!(node, succ)
-    when .locality?
+    when .locative?
       node.val = node.key == '上' ? "lên" : "xuống"
       fold_verbs!(node)
     when .v_compare?
@@ -73,7 +73,7 @@ module CV::TlRule
         node.set!(vals[2], PosTag::Noun)
       end
     when .noun?, .naffil?
-      node.set!(vals[1], PosTag::Locality)
+      node.set!(vals[1], PosTag::Locative)
     when .verb?, .vintr?
       node.set!(vals[0], PosTag::VDircomp)
     else

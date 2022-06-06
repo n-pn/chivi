@@ -72,7 +72,7 @@ module CV::TlRule
       else
         MtDict.fix_noun!(node)
       end
-    when .verbal?, .preposes?, .none?, .locality?
+    when .verbal?, .preposes?, .none?, .locative?
       MtDict.fix_noun!(node)
     when .noun?
       node.set!(PosTag::Modi)

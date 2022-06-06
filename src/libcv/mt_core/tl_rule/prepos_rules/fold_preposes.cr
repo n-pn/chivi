@@ -67,7 +67,7 @@ module CV::TlRule
     return nil if noun.places?
 
     unless tail.places?
-      return nil unless (local = tail.succ?) && local.locality?
+      return nil unless (local = tail.succ?) && local.locative?
       tail = fold_noun_locality!(noun: tail, locality: local)
       return nil if tail.succ? == local
     end
