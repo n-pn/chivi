@@ -14,9 +14,7 @@ module CV::TlRule
       suff.val = "các"
     when "时", "的时候"
       # puts [base, suff]
-      if (base.nominal? && base.prev?(&.verb?)) || (base.verbal? && base.prev?(&.subject?))
-        return base
-      end
+      return base if do_not_fold_suffixes?(base)
 
       suff.val = suff.key == "时" ? "khi" : "lúc"
       ptag = PosTag::Temporal
@@ -40,5 +38,12 @@ module CV::TlRule
     head = fold!(base, suff, tag: ptag, dic: 3, flip: flip)
     # TODO: skip fold_noun_noun in fold_nouns!
     fold_nouns!(head)
+  end
+
+  def do_not_fold_suffixes?(base : MtNode)
+    return false if base.adjective?
+    return base.prev?(&.subject?) if base.verbal?
+    return true unless prev = base.prev?
+    prev.verbal? || prev.ude1?
   end
 end

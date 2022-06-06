@@ -1,35 +1,27 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_noun_verb!(noun : MtNode, verb : MtNode)
-    if noun.prev? { |x| x.pro_per? || x.preposes? && !x.pre_bi3? }
+    if (prev = noun.prev?) && do_not_fold_noun_verb?(prev)
       return noun.flag!(:checked)
     end
 
-    return noun unless (succ = verb.succ?) && succ.ude1?
+    verb = fold_verbs!(verb)
+    return fold_noun_other!(noun) unless verb.verbal?
 
-    # && (verb.verb? || verb.vmodals?)
-    return noun unless tail = scan_noun!(succ.succ?)
-    case tail.key
-    when "时候"
-      noun = fold!(noun, succ.set!(""), PosTag::DefnPhrase, dic: 7)
-      return fold!(noun, tail.set!("lúc"), PosTag::Temporal, dic: 9, flip: true)
+    head = fold!(noun, verb, PosTag::VerbClause, dic: 4)
+    return head unless succ = head.succ?
+
+    case succ
+    when .ude1?
+      fold_ude1!(ude1: succ, left: head)
+    when .suffixes?
+      fold_suffix!(head, succ)
+    else
+      head
     end
+  end
 
-    # if verb.v0_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?
-    #   verb_2 = verb_2.adverbial? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
-
-    #   if !verb_2.v0_obj? && verb.prev?(&.object?)
-    #     tail = fold!(tail, verb_2, PosTag::VerbClause, dic: 8)
-    #     noun = fold!(noun, verb, PosTag::VerbClause, dic: 7)
-    #     return fold!(noun, succ.set!(""), dic: 9, flip: true)
-    #   end
-    # end
-
-    left = fold!(noun, verb, PosTag::VerbPhrase, dic: 4)
-
-    defn = fold!(left, succ.set!(""), PosTag::DefnPhrase, dic: 6, flip: true)
-    tag = tail.names? || tail.human? ? tail.tag : PosTag::NounPhrase
-
-    fold!(defn, tail, tag, dic: 5, flip: true)
+  def do_not_fold_noun_verb?(prev : MtNode)
+    prev.ude1? || prev.pro_per? || prev.preposes? && !prev.pre_bi3?
   end
 end

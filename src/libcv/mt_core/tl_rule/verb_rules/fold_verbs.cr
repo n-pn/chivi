@@ -1,10 +1,11 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_verbs!(verb : MtNode, adverb : MtNode? = nil) : MtNode
-    # puts [verb, adverb].colorize.yellow
+    # puts [verb, adverb, "fold_verb"]
 
     verb = fuse_verb!(verb) unless verb.verb_object?
     verb = fold_adverb_node!(adverb, verb) if adverb
+    # puts [verb, adverb, verb.prev?]
 
     return verb.flag!(:resolved) unless succ = verb.succ?
     # puts [verb, succ]

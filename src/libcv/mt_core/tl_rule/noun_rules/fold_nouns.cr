@@ -69,6 +69,9 @@ module CV::TlRule
     right = fold_once!(right)
     # puts [mode, right]
     return right if right.object? && !mode.no_ude1?
+
+    return unless tail = right.succ?
+    return right if tail.suffixes?
   end
 
   @[AlwaysInline]

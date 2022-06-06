@@ -37,6 +37,7 @@ module CV::TlRule
       verb = fuse_verb_ule!(verb, succ)
       ule = succ
       return verb if verb.flag.resolved? || !(succ = verb.succ?)
+      ule.val = "" unless succ.ends?
     end
 
     # puts [verb, succ]
@@ -66,7 +67,6 @@ module CV::TlRule
       end
     end
 
-    ule.try(&.val = "")
     verb = fold!(verb, succ, PosTag::VerbPhrase, dic: 6)
 
     verb.flag!(flag)
@@ -99,8 +99,6 @@ module CV::TlRule
       fold_verb_advbu!(verb, succ)
     when .numeral?
       fuse_verb_numeral!(verb, succ)
-    when .suffixes?
-      fold_suffix!(verb, succ)
     else
       verb.flag!(:checked)
     end
