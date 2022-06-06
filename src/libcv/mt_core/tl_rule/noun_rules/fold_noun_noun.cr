@@ -82,8 +82,10 @@ module CV::TlRule
       else
         fold!(node, succ, PosTag::Person, dic: 3, flip: true)
       end
+    when .naffil?
+      fold!(node, succ, succ.tag, dic: 4, flip: node.naffil?)
     when .names?
-      fold!(node, succ, succ.tag, dic: 4)
+      fold!(node, succ, succ.tag, dic: 4, flip: false)
     when .position?
       fold!(node, succ, succ.tag, dic: 3, flip: true)
     else

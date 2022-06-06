@@ -53,8 +53,7 @@ module CV::TlRule
     # puts [noun, succ, noun.prev?, fold_mode, "fold_noun"]
 
     if succ.ude1?
-      return noun if (noun.position? || noun.locative?) && noun.prev?(&.pro_per?)
-      return noun unless right = fold_right_of_ude1(fold_mode, succ.succ?)
+      return noun unless right = fold_right_of_ude1(noun, fold_mode, succ.succ?)
       noun = fold_ude1!(ude1: succ, left: noun, right: right)
       return noun unless succ = noun.succ?
     end
@@ -64,8 +63,12 @@ module CV::TlRule
     fold_noun_other!(noun, succ, fold_mode)
   end
 
-  def fold_right_of_ude1(mode : NounMode, right : MtNode?) : MtNode?
+  def fold_right_of_ude1(noun : MtNode, mode : NounMode, right : MtNode?) : MtNode?
     return if !right || right.ends?
+
+    if noun.prev?(&.pro_per?)
+      return if noun.position? || noun.locative? || noun.temporal?
+    end
 
     right = fold_once!(right)
     # puts [mode, right]
@@ -113,7 +116,7 @@ module CV::TlRule
 
     if succ.ude1?
       mode ||= NounMode.init(noun, noun.prev?)
-      return noun unless right = fold_right_of_ude1(mode, succ.succ?)
+      return noun unless right = fold_right_of_ude1(noun, mode, succ.succ?)
       noun = fold_ude1!(ude1: succ, left: noun, right: right)
       return noun unless succ = noun.succ?
     end

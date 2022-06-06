@@ -30,8 +30,12 @@ module CV::TlRule
       succ = fold_nouns!(succ)
       return proper unless succ.nominal?
       fold_proper_nominal!(proper, succ)
-    when .numbers?, .pro_dems?
-      return proper if !(succ = scan_noun!(succ)) || succ.pro_dems?
+    when .numeral?
+      succ = fold_number!(succ)
+      return proper if succ.temporal? || succ.nqtime?
+      fold_proper_nominal!(proper, succ)
+    when .pro_dems?
+      return proper if !(succ = scan_noun!(succ.succ?, prodem: succ)) || succ.pro_dems?
       noun = fold_proper_nominal!(proper, succ)
       return noun unless (succ = noun.succ?) && succ.maybe_verb?
       fold_noun_verb!(noun, succ)
@@ -39,7 +43,7 @@ module CV::TlRule
       fold_uzhi!(uzhi: succ, prev: proper)
     when .ude1?
       fold_mode = NounMode.init(proper, proper.prev?)
-      return proper unless right = fold_right_of_ude1(fold_mode, succ.succ?)
+      return proper unless right = fold_right_of_ude1(proper, fold_mode, succ.succ?)
       fold_ude1!(ude1: succ, left: proper, right: right)
     else
       # TODO: handle special cases

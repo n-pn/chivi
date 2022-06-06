@@ -20,6 +20,16 @@ module CV::TlRule
       return verb.flag!(:resolved) unless succ = verb.succ?
     end
 
+    if succ.numeral?
+      succ = fold_number!(succ)
+      return verb unless succ.temporal? || succ.nqtime?
+      verb = fold!(verb, succ, verb.tag, dic: 4)
+      return verb unless succ = verb.succ?
+    elsif succ.temporal?
+      verb = fold!(verb, succ, verb.tag, dic: 4)
+      return verb unless succ = verb.succ?
+    end
+
     case succ
     when .ude1?
       verb.v0_obj? && (tail = succ.succ?) ? fold_verb_ude1!(verb, succ, tail) : verb

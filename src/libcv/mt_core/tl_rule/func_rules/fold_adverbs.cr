@@ -92,7 +92,7 @@ module CV::TlRule
       else
         fold_adverb_verb!(node, succ)
       end
-    when .verbal?
+    when .uguo?, .verbal?
       fold_adverb_verb!(node, succ)
     when .ajno?
       fold_adjts!(MtDict.fix_adjt!(succ), adverb: node)

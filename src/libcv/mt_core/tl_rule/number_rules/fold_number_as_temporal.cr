@@ -25,11 +25,8 @@ module CV::TlRule
   def map_temporal_mode(prev : MtNode?)
     return 1 if !prev || prev.puncts? || prev.none?
     return prev.pre_zai? ? 1 : 2 if prev.prepos?
-
-    if prev.verbal?
-      return 2 if prev.verb_object? || prev.key.in?("近", "约", "小于")
-      return 1 if prev.flag.has_pre_zai?
-    end
+    return prev.flag.has_pre_zai? ? 1 : 2 if prev.verbal?
+    return 1 if prev.pro_per?
 
     0
   end
@@ -41,7 +38,7 @@ module CV::TlRule
       month = fold_month!(num, mo, 1)
     end
 
-    unless month || mode == 1 || (mode == 0 && exact_year?(year))
+    unless month || mode == 1 || (mode == 0)
       return fold!(year_num, year, PosTag::Qttime, dic: 2)
     end
 
@@ -50,7 +47,7 @@ module CV::TlRule
   end
 
   private def exact_year?(year : MtNode) : Bool
-    year.tag.ndigit? || year.key !~ /[百千万亿兆]/
+    year.tag.ndigit? || year.key !~ /[两百千万亿兆]/
   end
 
   def fold_month!(mo_num : MtNode, mo : MtNode, mode : Int32 = 0)
