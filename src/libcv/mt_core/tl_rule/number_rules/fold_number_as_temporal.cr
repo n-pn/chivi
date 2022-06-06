@@ -39,7 +39,7 @@ module CV::TlRule
     end
 
     unless month || mode == 1 || (mode == 0)
-      return fold!(year_num, year, PosTag::Qttime, dic: 2)
+      return fold!(year_num, year, PosTag::Nqtime, dic: 2)
     end
 
     year = fold!(year_num, year, PosTag::Temporal, dic: 2, flip: true)
@@ -60,7 +60,7 @@ module CV::TlRule
     end
 
     unless day || mode == 1 || (mode == 0 && mo_num.to_int?.try(&.< 13))
-      return fold!(mo_num, mo, PosTag::Qttime, dic: 2)
+      return fold!(mo_num, mo, PosTag::Nqtime, dic: 2)
     end
 
     month = fold!(mo_num, mo, PosTag::Temporal, dic: 2, flip: true)
@@ -80,10 +80,10 @@ module CV::TlRule
   end
 
   def fold_hour!(node : MtNode, succ : MtNode, appro : Int32 = 0)
-    fold!(node, succ, PosTag::Qttime, dic: 2)
+    fold!(node, succ, PosTag::Nqtime, dic: 2)
   end
 
   def fold_minute!(node : MtNode, succ : MtNode, appro : Int32 = 0)
-    fold!(node, succ, PosTag::Qttime, dic: 3)
+    fold!(node, succ, PosTag::Nqtime, dic: 3)
   end
 end

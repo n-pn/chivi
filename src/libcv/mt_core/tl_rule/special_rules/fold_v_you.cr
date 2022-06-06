@@ -2,6 +2,7 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_v_you!(vyou : MtNode, succ = vyou.succ?)
     return vyou unless noun = scan_noun!(succ)
+    return fold_verb_other!(vyou) if vyou.prev?(&.verb?)
 
     case succ = noun.succ?
     when .nil?     then return vyou

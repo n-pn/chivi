@@ -1,6 +1,7 @@
 module CV::TlRule
   def fold_preposes!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
+    return fold_verbs!(node) if succ.ule?
 
     case node.tag
     when .pre_ba3? then fold_pre_ba3!(node, succ)

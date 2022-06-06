@@ -20,7 +20,7 @@ module CV::TlRule
 
     if (prev.tag == succ.tag)
       noun = fold!(prev, succ, tag: prev.tag, dic: 4)
-    elsif junc.penum? || similar_tag?(prev, succ)
+    elsif similar_tag?(prev, succ) || (junc.penum? && succ.mixed?)
       noun = fold!(prev, succ, tag: PosTag::NounPhrase, dic: 4)
     else
       return nil

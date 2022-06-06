@@ -93,7 +93,7 @@ module CV::TlRule
     when .auxils?
       fuse_verb_auxils!(verb, succ)
     when .verbal?
-      # return verb unless is_linking_verb?(verb, succ.succ?)
+      return verb unless is_linking_verb?(verb, succ.succ?)
       fuse_verb_verb!(verb, succ)
     when .adv_bu4?
       fold_verb_advbu!(verb, succ)
@@ -106,6 +106,7 @@ module CV::TlRule
 
   def fuse_verb_verb!(verb_1 : MtNode, verb_2 : MtNode) : MtNode
     verb_2 = MtDict.fix_verb!(verb_2) if verb_2.mixed?
+
     fold!(verb_1, verb_2, verb_2.tag, dic: 5).flag!(:checked)
   end
 

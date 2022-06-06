@@ -12,11 +12,15 @@ module CV::TlRule
     case suff.key
     when "们", "們"
       suff.val = "các"
-    when "时", "的时候"
+    when "时", "的时候", "的日子"
       # puts [base, suff]
       return base if do_not_fold_suffixes?(base)
 
-      suff.val = suff.key == "时" ? "khi" : "lúc"
+      case suff.key
+      when "时"   then suff.val = "khi"
+      when "的时候" then suff.val = "lúc"
+      end
+
       ptag = PosTag::Temporal
     when "性"
       if (tail = suff.succ?) && tail.ude2?

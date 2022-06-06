@@ -29,6 +29,7 @@ module CV::TlRule
   end
 
   def is_tangible?(node : MtNode)
-    node.pro_per? || (node.nominal? && !node.property? && !node.temporal?)
+    return node.pro_per? unless node.nominal?
+    !(node.property? || node.temporal? || node.nqtime?)
   end
 end

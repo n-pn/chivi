@@ -11,7 +11,13 @@ module CV::TlRule
   end
 
   def heal_ude1!(ude1 : MtNode) : MtNode
-    ude1.set!(ude1.succ?(&.puncts?.!) ? "" : "của")
+    if (prev = ude1.prev?) && !prev.puncts?
+      ude1.set!("")
+    elsif (succ = ude1.succ?) && !succ.puncts?
+      ude1.set!("")
+    else
+      ude1
+    end
   end
 
   def fold_ude2!(node : MtNode) : MtNode

@@ -1,12 +1,13 @@
 module CV::TlRule
+  LINKING = {'来', '去', '到', '有', '上', '想', '出'}
+
   def is_linking_verb?(head : MtNode, succ : MtNode?) : Bool
     # puts [head.to_str, succ, "check linking verb"]
     return true if head.vmodals?
     return true if !succ || succ.starts_with?('不')
 
     head.each do |node|
-      next unless char = node.key[0]?
-      return true if {'来', '去', '到', '有', '上', '想', '出'}.includes?(char)
+      next true if (char = node.key[0]?) && LINKING.includes?(char)
     end
 
     {'了', '过'}.each do |char|

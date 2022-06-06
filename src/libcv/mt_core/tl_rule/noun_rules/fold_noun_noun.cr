@@ -43,12 +43,17 @@ module CV::TlRule
 
     def with_verbal(noun : MtNode, verb : MtNode)
       # TODO: add checks for v_you
-      return self if verb.v_shi? || verb.v_you?
+      return self if verb.v_shi?
+
+      if verb.v_you?
+        return self unless verb.prev?(&.verbal?)
+      end
 
       mode = self
       mode |= VerbTwo if verb.tag.v2_object?
       # mode |= LinkingVerb if verb.is_linking_verb?
 
+      return mode if verb.flag.has_uzhe? || verb.key.in?("按照")
       return mode if !(prev = verb.prev?) || prev.comma?
 
       case verb.prev?
