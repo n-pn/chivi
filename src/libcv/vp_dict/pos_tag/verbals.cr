@@ -48,7 +48,7 @@ struct CV::PosTag
     when 'p' then VCompare
     when 'f' then VDircomp
     when 'o' then VerbObject
-    when 'l' then VerbPhrase
+    when 'l' then VerbObject
     when 'm' then parse_vmodal(key)
     when '!' then parse_verb_special(key)
     else          Verb

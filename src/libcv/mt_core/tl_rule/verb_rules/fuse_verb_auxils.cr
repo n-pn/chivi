@@ -61,12 +61,16 @@ module CV::TlRule
 
   def fuse_verb_ude3!(verb : MtNode, ude3 : MtNode) : MtNode
     return verb unless tail = ude3.succ?
+    flag = verb.flag | MtFlag::HasUde3
+
     ude3.val = ""
+    verb = fold!(verb, ude3, verb.tag, dic: 1)
+    verb.flag = flag
 
     case tail
     when .pre_bi3?
       tail = fold_compare_bi3!(tail)
-      fold!(verb, tail, PosTag::VerbObject, dic: 7)
+      fold!(verb, tail, PosTag::VerbObject, dic: 3)
     when .adverbial?
       tail = fold_adverbs!(tail)
 
@@ -84,7 +88,6 @@ module CV::TlRule
     when .adjective?
       fold!(verb, tail, PosTag::AdjtPhrase, dic: 6)
     when .verbal?
-      verb = fold!(verb, ude3, PosTag::Verb, dic: 6)
       fuse_verb_compl!(verb, tail)
     else
       # TODO: handle verb form

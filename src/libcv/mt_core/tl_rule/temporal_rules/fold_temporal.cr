@@ -11,6 +11,7 @@ module CV::TlRule
     when .v_shi?   then node
     when .v_you?   then node
     when .verbal?
+      return node if succ.adverbial?
       fold_verbs!(succ, adverb: node)
     else
       fold_nouns!(node)

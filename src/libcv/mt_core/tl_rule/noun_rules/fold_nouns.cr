@@ -58,6 +58,8 @@ module CV::TlRule
       return noun unless succ = noun.succ?
     end
 
+    # puts [noun, succ, fold_mode, "fold_noun"]
+
     fold_noun_other!(noun, succ, fold_mode)
   end
 
@@ -80,7 +82,8 @@ module CV::TlRule
     return noun if !succ || succ.ends?
     return fold_suffix!(noun, succ) if succ.suffixes?
 
-    if succ.pro_per? && succ.key == "自己"
+    if succ.pro_per?
+      return noun unless succ.key == "自己"
       noun = fold!(noun, succ, noun.tag, dic: 6, flip: true)
       return noun unless succ = noun.succ?
     end
@@ -99,8 +102,10 @@ module CV::TlRule
     if succ.junction?
       return noun unless fold = fold_noun_junction!(succ, prev: noun)
       noun = fold
-      return noun unless succ == noun.succ?
+      return noun unless succ = noun.succ?
     end
+
+    # puts [noun, succ, mode, "fold_noun"]
 
     if succ.ude1?
       mode ||= NounMode.init(noun, noun.prev?)

@@ -16,6 +16,7 @@ enum MtFlag
   HasPreZai
   HasUzhe
   HasUle
+  HasUde3
 
   HasQtGe4 # has 个
 end

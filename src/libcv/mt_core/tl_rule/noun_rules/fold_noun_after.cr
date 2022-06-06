@@ -17,6 +17,12 @@ module CV::TlRule
       return noun unless succ = noun.succ?
     end
 
-    succ.junction? ? fold_noun_junction!(succ, prev: noun) || noun : noun
+    if succ.junction?
+      return noun unless fold = fold_noun_junction!(succ, prev: noun)
+      noun = fold
+    end
+
+    return noun unless (ude1 = noun.succ?) && ude1.ude1?
+    fold_ude1!(ude1: ude1, left: noun)
   end
 end
