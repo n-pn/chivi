@@ -47,7 +47,7 @@ module CV::TlRule
     when .adjective?
       ptag = PosTag::Adverb
     else
-      ude1.set!("đấy", PosTag::Mopart)
+      ude1.set!("", PosTag::Mopart)
       return verb
     end
 

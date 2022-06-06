@@ -50,9 +50,10 @@ module CV::TlRule
     noun = fold_defn_noun!(noun: noun, defn: defn) if defn
     return noun unless succ = noun.succ?
 
-    # puts [noun, succ, fold_mode, "fold_noun"]
+    # puts [noun, succ, noun.prev?, fold_mode, "fold_noun"]
 
     if succ.ude1?
+      return noun if (noun.position? || noun.locative?) && noun.prev?(&.pro_per?)
       return noun unless right = fold_right_of_ude1(fold_mode, succ.succ?)
       noun = fold_ude1!(ude1: succ, left: noun, right: right)
       return noun unless succ = noun.succ?

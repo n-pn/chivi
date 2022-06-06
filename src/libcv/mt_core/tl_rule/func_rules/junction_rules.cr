@@ -16,9 +16,11 @@ module CV::TlRule
       junc.val = "và" if junc.key == "和"
     end
 
-    if prev.tag == succ.tag
+    succ = fold_once!(succ)
+
+    if (prev.tag == succ.tag)
       noun = fold!(prev, succ, tag: prev.tag, dic: 4)
-    elsif (succ = scan_noun!(succ)) && similar_tag?(prev, succ)
+    elsif junc.penum? || similar_tag?(prev, succ)
       noun = fold!(prev, succ, tag: PosTag::NounPhrase, dic: 4)
     else
       return nil

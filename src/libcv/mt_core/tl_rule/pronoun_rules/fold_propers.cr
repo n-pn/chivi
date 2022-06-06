@@ -26,7 +26,11 @@ module CV::TlRule
       noun = fold_proper_nominal!(proper, succ)
       return noun unless (succ = noun.succ?) && succ.maybe_verb?
       fold_noun_verb!(noun, succ)
-    when .nominal?, .numbers?, .pro_dems?
+    when .nominal?
+      succ = fold_nouns!(succ)
+      return proper unless succ.nominal?
+      fold_proper_nominal!(proper, succ)
+    when .numbers?, .pro_dems?
       return proper if !(succ = scan_noun!(succ)) || succ.pro_dems?
       noun = fold_proper_nominal!(proper, succ)
       return noun unless (succ = noun.succ?) && succ.maybe_verb?
@@ -45,7 +49,14 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_proper_nominal!(proper : MtNode, nominal : MtNode) : MtNode
-    if (prev = proper.prev?) && need_2_objects?(prev)
+    # puts [proper, nominal]
+
+    if nominal.position?
+      noun = fold!(proper, nominal, nominal.tag, dic: 2, flip: true)
+      return fold_noun_other!(noun)
+    end
+
+    if (prev = proper.prev?) && prev.flag.need2_obj?
       flip = false
 
       if (succ = nominal.succ?) && (succ.ude1?)

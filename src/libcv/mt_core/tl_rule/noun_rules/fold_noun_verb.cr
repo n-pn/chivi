@@ -22,6 +22,7 @@ module CV::TlRule
   end
 
   def do_not_fold_noun_verb?(prev : MtNode)
-    prev.ude1? || prev.pro_per? || prev.preposes? && !prev.pre_bi3?
+    return !prev.pre_bi3? if prev.preposes?
+    prev.ude1? || prev.pronouns? || prev.numeral? || prev.defn_phrase?
   end
 end

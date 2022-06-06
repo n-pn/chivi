@@ -18,6 +18,7 @@ module CV::TlRule
       if right.verb? || right.adjective?
         return head if left.subject?
       elsif !right.subject?
+        # ude1.val = "cái" if left.verbal?
         return head
       end
     end
