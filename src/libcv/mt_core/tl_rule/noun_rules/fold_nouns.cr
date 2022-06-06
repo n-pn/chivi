@@ -97,7 +97,7 @@ module CV::TlRule
     end
 
     if succ.junction?
-      return noun unless fold = fold_noun_concoord!(succ, prev: noun)
+      return noun unless fold = fold_noun_junction!(succ, prev: noun)
       noun = fold
       return noun unless succ == noun.succ?
     end

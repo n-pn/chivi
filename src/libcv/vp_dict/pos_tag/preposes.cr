@@ -17,6 +17,8 @@ struct CV::PosTag
     when "在"  then PreZai
     when "比"  then PreBi3
     when "不比" then PreBi3
+    when "和"  then new(Tag::Prepos, Pos.flags(Preposes, Junction, Funcws))
+    when "跟"  then new(Tag::Prepos, Pos.flags(Preposes, Junction, Funcws))
     else           Prepos
     end
   end

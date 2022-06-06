@@ -1,5 +1,4 @@
 module CV::TlRule
-  # ameba:disable Metrics/CyclomaticComplexity
   def fold_adjts!(adjt : MtNode, adverb : MtNode? = nil) : MtNode
     while (succ = adjt.succ?) && !succ.ends?
       case succ
@@ -18,6 +17,11 @@ module CV::TlRule
       adjt = fold_adverb_node!(adverb, adjt, tag: PosTag::AdjtPhrase)
     end
 
+    fold_adjt_after!(adjt)
+  end
+
+  # ameba:disable Metrics/CyclomaticComplexity
+  def fold_adjt_after!(adjt : MtNode)
     case succ = adjt.succ?
     when .nil? then adjt
     when .veno?
@@ -29,11 +33,12 @@ module CV::TlRule
       fold_adjt_verb!(adjt, succ)
     when .ude1?
       if prev = adjt.prev?
-        return adjt if prev.junction? || (prev.comma? && prev.prev?(&.adjective?))
+        return adjt if prev.nominal? || prev.junction? # ||  (prev.comma? && prev.prev?(&.adjective?))
       end
+
       fold_adjt_ude1!(adjt, succ)
     when .auxils?  then fold_adjt_auxil!(adjt, succ)
-    when .adv_bu4? then fold_adjt_adv_bu!(adjt, succ, prev: adverb)
+    when .adv_bu4? then fold_adjt_adv_bu!(adjt, succ)
     else
       adjt
     end
@@ -116,7 +121,7 @@ module CV::TlRule
     fold!(adjt, fold_verbs!(succ), PosTag::VerbPhrase, dic: 5)
   end
 
-  def fold_adjt_adv_bu!(adjt : MtNode, adv_bu4 : MtNode, prev : MtNode?) : MtNode
+  def fold_adjt_adv_bu!(adjt : MtNode, adv_bu4 : MtNode, prev : MtNode? = nil) : MtNode
     return adjt unless tail = adv_bu4.succ?
 
     if prev && prev.adv_bu4?

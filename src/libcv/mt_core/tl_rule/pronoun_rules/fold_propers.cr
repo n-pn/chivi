@@ -9,7 +9,7 @@ module CV::TlRule
 
     case succ.tag
     when .junction?
-      fold_noun_concoord!(succ, proper) || proper
+      fold_noun_junction!(succ, proper) || proper
     when .veno?
       succ = heal_veno!(succ)
       succ.noun? ? fold_proper_nominal!(proper, succ) : fold_noun_verb!(proper, succ)

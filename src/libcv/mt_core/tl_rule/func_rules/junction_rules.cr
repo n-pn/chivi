@@ -8,27 +8,46 @@ module CV::TlRule
     fold!(verb, succ, tag: tag || succ.tag, dic: 4)
   end
 
-  def fold_noun_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)
-    return if !succ || succ.ends? || node.key == "而"
+  def fold_noun_junction!(junc : MtNode, prev = junc.prev?, succ = junc.succ?)
+    return if !succ || succ.ends? || junc.key == "而"
+
+    if junc.preposes?
+      return if fold_noun_junction_special!(prev, junc, succ)
+      junc.val = "và" if junc.key == "和"
+    end
 
     if prev.tag == succ.tag
-      fold!(prev, succ, tag: prev.tag, dic: 4)
+      noun = fold!(prev, succ, tag: prev.tag, dic: 4)
     elsif (succ = scan_noun!(succ)) && similar_tag?(prev, succ)
-      fold!(prev, succ, tag: PosTag::NounPhrase, dic: 4)
+      noun = fold!(prev, succ, tag: PosTag::NounPhrase, dic: 4)
+    else
+      return nil
+    end
+
+    return noun unless (succ = noun.succ?) && (tail = succ.succ?) && succ.key.in?("与", "和")
+    tail = fold_once!(tail)
+    fold!(noun, tail, PosTag::NounPhrase, dic: 4)
+  end
+
+  def fold_noun_junction_special!(noun : MtNode, junc : MtNode, tail = junc.succ)
+    if right = fold_compare_prepos(junc)
+      right
+    elsif has_verb_after?(tail)
+      fold_prepos_inner!(junc, tail)
     end
   end
 
-  def should_fold_noun_concoord?(noun : MtNode, concoord : MtNode) : Bool
-    return true unless (prev = noun.prev?) && (succ = concoord.succ?)
-    return false if prev.numeral? || prev.pronouns?
-    return true unless prev.ude1? && (prev = prev.prev?)
+  # def should_fold_noun_junction?(noun : MtNode, concoord : MtNode) : Bool
+  #   return true unless (prev = noun.prev?) && (succ = concoord.succ?)
+  #   return false if prev.numeral? || prev.pronouns?
+  #   return true unless prev.ude1? && (prev = prev.prev?)
 
-    case prev.tag
-    when .noun_phrase? then true
-    when .human?       then !succ.human?
-    else                    false
-    end
-  end
+  #   case prev.tag
+  #   when .noun_phrase? then true
+  #   when .human?       then !succ.human?
+  #   else                    false
+  #   end
+  # end
 
   def similar_tag?(left : MtNode, right : MtNode)
     case left.tag

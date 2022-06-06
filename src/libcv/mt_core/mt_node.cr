@@ -214,5 +214,5 @@ class CV::MtNode
 
   include MTL::Serialize
   include MTL::ApplyCap
-  include MTL::PadLocality
+  include MTL::PadSpace
 end
