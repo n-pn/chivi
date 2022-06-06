@@ -22,7 +22,7 @@ module CV::TlRule
     when .v_shi? then fold_v_shi!(node, succ)
     when .v_you? then fold_v_you!(node, succ)
     when .locative?
-      node.val = node.key == '上' ? "lên" : "xuống"
+      node.val = node.key == "上" ? "lên" : "xuống"
       fold_verbs!(node)
     when .v_compare?
       fold_compare(node, succ) || fold_verbs!(node)
