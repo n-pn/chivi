@@ -35,8 +35,11 @@ module CV::TlRule
 
     if succ.ule?
       verb = fuse_verb_ule!(verb, succ)
+      ule = succ
       return verb if verb.flag.resolved? || !(succ = verb.succ?)
     end
+
+    # puts [verb, succ]
 
     case succ.tag
     when .pre_dui?
@@ -63,6 +66,7 @@ module CV::TlRule
       end
     end
 
+    ule.try(&.val = "")
     verb = fold!(verb, succ, PosTag::VerbPhrase, dic: 6)
 
     verb.flag!(flag)
