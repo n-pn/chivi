@@ -12,6 +12,9 @@ targets:
   chivi:
     main: src/chivi.cr
 
+  mtlv2:
+    main: src/mtlv2.cr
+
   bcover_cli:
     main: src/cvcli/bcover_cli.cr
 
@@ -80,8 +83,7 @@ dependencies:
     github: chi-vi/tabkv
 
   amber:
-    github: amberframework/amber
-    #version: 1.0.0rc2
+    github: np-nam/amber
     branch: master
 
   quartz_mailer:
@@ -101,6 +103,10 @@ dependencies:
   cmark:
     github: amauryt/cr-cmark-gfm
     branch: master
+
+  action-controller:
+    github: spider-gazelle/action-controller
+    version: ~> 5.1
 
 development_dependencies:
   garnet_spec:

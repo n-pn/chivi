@@ -1,12 +1,16 @@
 version: 2.0
 shards:
+  action-controller:
+    git: https://github.com/spider-gazelle/action-controller.git
+    version: 5.1.3
+
   admiral:
     git: https://github.com/jwaldrip/admiral.cr.git
     version: 1.12.1
 
   amber:
-    git: https://github.com/amberframework/amber.git
-    version: 1.2.1+git.commit.836ab0f92671bfa393ed305d48546dc8f0393528
+    git: https://github.com/np-nam/amber.git
+    version: 1.2.1+git.commit.891c9f5c90fc66446358f3cd72a7a8fec3758549
 
   amber_router:
     git: https://github.com/amberframework/amber-router.git
@@ -14,7 +18,7 @@ shards:
 
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
-    version: 1.0.0+git.commit.73bd1ba5a3de65ec609bb78afdf6f9820a779e74
+    version: 1.0.0+git.commit.8a12229116f32b8520964e4f87eb390d56a6c765
 
   backtracer:
     git: https://github.com/sija/backtracer.cr.git
@@ -50,7 +54,7 @@ shards:
 
   exception_page:
     git: https://github.com/crystal-loot/exception_page.git
-    version: 0.2.2
+    version: 0.3.0
 
   future:
     git: https://github.com/crystal-community/future.cr.git
@@ -63,6 +67,10 @@ shards:
   generate:
     git: https://github.com/anykeyh/generate.cr.git
     version: 0.1.0+git.commit.f5dafc934a70e0ee2f246dddf3df44686f844da2
+
+  habitat:
+    git: https://github.com/luckyframework/habitat.git
+    version: 0.4.7
 
   icu:
     git: https://github.com/olbat/icu.cr.git
@@ -87,6 +95,10 @@ shards:
   liquid:
     git: https://github.com/dare892/liquid.cr.git
     version: 0.4.1+git.commit.e4ef5ca06bf5bafe74e0b270c7aae2941a91ddd3
+
+  lucky_router:
+    git: https://github.com/luckyframework/lucky_router.git
+    version: 0.5.1
 
   micrate:
     git: https://github.com/amberframework/micrate.git
