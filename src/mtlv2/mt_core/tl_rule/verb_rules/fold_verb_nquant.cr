@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_verb_nquant!(verb : MtNode, tail : MtNode, has_ule = false)
     tail = fold_number!(tail) if tail.numbers?
     return verb unless tail.nquants?

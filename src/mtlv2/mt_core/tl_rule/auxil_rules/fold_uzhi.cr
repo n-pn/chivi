@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_uzhi!(uzhi : MtNode, prev : MtNode = uzhi.prev, succ = uzhi.succ?) : MtNode
     return prev if !succ || succ.ends?
     uzhi.val = ""

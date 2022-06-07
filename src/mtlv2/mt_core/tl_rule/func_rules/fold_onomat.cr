@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_onomat!(node : MtNode, succ = node.succ?)
     case succ
     when .nil?    then node

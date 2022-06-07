@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fuse_verb_auxils!(verb : MtNode, auxil : MtNode) : MtNode
     case auxil.tag
     when .ule?

@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_mixed!(node : MtNode) : MtNode
     node = heal_mixed!(node)
 

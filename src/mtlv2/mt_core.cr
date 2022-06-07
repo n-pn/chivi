@@ -1,7 +1,7 @@
 require "./vp_dict"
 require "./mt_core/*"
 
-class CV::MtCore
+class CV::MtlV2::MtCore
   class_getter hanviet_mtl : self { new([VpDict.essence, VpDict.hanviet]) }
   class_getter pin_yin_mtl : self { new([VpDict.essence, VpDict.pin_yin]) }
   class_getter tradsim_mtl : self { new([VpDict.tradsim]) }

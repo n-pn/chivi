@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_adverb_node!(adv : MtNode, node = adv.succ, tag = node.tag) : MtNode
     flip = false
 

@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   # -ameba:disable Metrics/CyclomaticComplexity
   def fold_ndigit!(node : MtNode, succ = node.succ, prev : MtNode? = nil)
     return fold_ndigit_nhanzi!(node, succ) if succ.nhanzi?

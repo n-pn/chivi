@@ -3,7 +3,7 @@ require "tabkv"
 require "./mt_core"
 require "./vp_dict"
 
-class CV::TlName
+class CV::MtlV2::TlName
   class Trie
     class Node
       property vals : Array(String)? = nil

@@ -1,7 +1,7 @@
 require "./mt_dict"
 require "./tl_rule/**"
 
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fix_grammar!(node : MtNode) : Nil
     # puts [node, node.idx, node.succ?, "level: #{level}"].colorize.blue
 

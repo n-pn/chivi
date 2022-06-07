@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def scan_verbs!(node : MtNode)
     case node
     when .v_shi?     then node

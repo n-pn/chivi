@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_prepos_inner!(prepos : MtNode, succ = prepos.succ?) : MtNode
     return prepos unless (noun = scan_noun!(succ)) && noun.subject?

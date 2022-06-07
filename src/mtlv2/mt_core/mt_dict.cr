@@ -2,7 +2,7 @@ require "log"
 require "./mt_node"
 require "../vp_dict"
 
-module CV::MtDict
+module CV::MtlV2::MtDict
   extend self
 
   alias MtTerm = Tuple(String, PosTag)

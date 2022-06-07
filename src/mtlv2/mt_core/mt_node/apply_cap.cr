@@ -1,6 +1,6 @@
 require "../../../_util/text_util"
 
-module CV::MTL::ApplyCap
+module CV::MtlV2::MTL::ApplyCap
   def apply_cap!(cap : Bool = true) : Bool
     if body = @body
       cap = body.apply_cap!(cap)

@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_specials!(node : MtNode, succ = node.succ?)
     return node.flag!(:resolved) unless succ
 

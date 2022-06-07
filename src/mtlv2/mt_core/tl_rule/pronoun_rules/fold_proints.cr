@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_pro_ints!(proint : MtNode, succ = node.succ?)
     case succ
     when .nil?, .v_shi?, .v_you?

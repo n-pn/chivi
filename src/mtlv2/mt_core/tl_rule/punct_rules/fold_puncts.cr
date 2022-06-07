@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_puncts!(node : MtNode)
     case node.tag
     when .titleop? then fold_btitle!(node)

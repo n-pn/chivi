@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_adjts!(adjt : MtNode, adverb : MtNode? = nil) : MtNode
     while (succ = adjt.succ?) && !succ.ends?
       case succ

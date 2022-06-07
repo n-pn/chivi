@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_prodem_nominal!(prodem : Nil, norminal : Nil)
     nil
   end

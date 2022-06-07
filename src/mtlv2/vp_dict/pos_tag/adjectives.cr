@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   ADJTS = {
     # 形容词 - adjective - hình dung từ (tính từ)
     {"a", "Adjt", Pos::Adjective | Pos::Contws},

@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_noun_penum!(head : MtNode, join : MtNode)
     while node = join.succ?
       break unless node.nominal? || node.pronouns?

@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   # MEASURES = {
   #   "宽" => "rộng",
   #   "高" => "cao",

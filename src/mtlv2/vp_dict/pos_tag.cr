@@ -4,7 +4,7 @@ require "./pos_tag/*"
 # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
 # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   {% begin %}
     TYPES = {{ NOUNS + NOUNS_2 + VERBS + ADJTS + SUFFIXES + MISCS }}
   {% end %}

@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_quoted!(head : MtNode) : MtNode
     return head unless char = head.val[0]?
     end_tag, end_val = match_end(char)

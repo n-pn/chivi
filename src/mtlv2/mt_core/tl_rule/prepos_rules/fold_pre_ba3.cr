@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_pre_ba3!(node : MtNode, succ = node.succ?) : MtNode
     return fold_prepos_inner!(node, succ) unless pre_ba3_is_qtnoun?(node, succ)
     return node unless noun = scan_noun!(succ)

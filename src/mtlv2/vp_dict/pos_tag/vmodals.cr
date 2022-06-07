@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   # 能愿动词 - modal verb - động từ năng nguyện
 
   VMODPOS = Pos::Vmodals | Pos::Contws

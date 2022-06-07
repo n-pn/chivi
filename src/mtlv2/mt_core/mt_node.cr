@@ -21,7 +21,7 @@ enum MtFlag
   HasQtGe4 # has 个
 end
 
-class CV::MtNode
+class CV::MtlV2::MtNode
   property idx : Int32 = -1
   property dic : Int32 = 0
 

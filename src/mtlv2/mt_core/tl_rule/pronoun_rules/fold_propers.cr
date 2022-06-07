@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_proper!(node : MtNode, succ : Nil) : MtNode
     node
   end

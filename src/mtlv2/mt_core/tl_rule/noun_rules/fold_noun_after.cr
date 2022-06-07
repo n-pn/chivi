@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_noun_after!(noun : MtNode, succ = noun.succ?) : MtNode
     return noun if !succ || succ.ends?
 

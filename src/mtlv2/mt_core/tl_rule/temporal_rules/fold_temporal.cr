@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_temporal!(node : MtNode, succ = node.succ?) : MtNode
     return node if !succ || succ.ends?
 

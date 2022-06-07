@@ -1,4 +1,4 @@
-module CV::MtUtil
+module CV::MtlV2::MtUtil
   extend self
 
   # convert chinese numbers to latin numbers
@@ -97,8 +97,8 @@ module CV::MtUtil
   end
 end
 
-# puts CV::MtUtil.normalize("０")
-# puts CV::MtUtil.normalize('０')
+# puts CV::MtlV2::MtUtil.normalize("０")
+# puts CV::MtlV2::MtUtil.normalize('０')
 
-# puts CV::MtUtil.to_integer("1245")
-# puts CV::MtUtil.to_integer("四")
+# puts CV::MtlV2::MtUtil.to_integer("1245")
+# puts CV::MtlV2::MtUtil.to_integer("四")

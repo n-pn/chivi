@@ -1,7 +1,7 @@
 require "./mt_node"
 require "./tl_rule"
 
-class CV::MtList
+class CV::MtlV2::MtList
   include MTL::PadSpace
 
   getter head = MtNode.new("")

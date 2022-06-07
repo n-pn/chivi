@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   extend self
 
   def fold!(head : MtNode, tail : MtNode,

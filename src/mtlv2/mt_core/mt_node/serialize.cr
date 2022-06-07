@@ -1,4 +1,4 @@
-module CV::MTL::Serialize
+module CV::MtlV2::MTL::Serialize
   def print_val(io : IO = STDOUT) : Nil
     if body = @body
       body.print_val(io)

@@ -1,4 +1,4 @@
-class CV::VpHint
+class CV::MtlV2::VpHint
   DIR = "var/vphints"
 
   class_getter cc_cedict : self { new("#{DIR}/lookup/cc_cedict", 128) }

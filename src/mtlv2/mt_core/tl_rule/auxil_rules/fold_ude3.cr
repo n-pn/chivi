@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_ude3!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
 

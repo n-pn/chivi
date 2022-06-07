@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
     return if !succ || succ.ends?
     return if tag = verb.tag if succ.key == "过"

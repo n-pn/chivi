@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   NOUNS = {
     # 名词 - noun - danh từ chung
     {"n", "Noun", Pos::Nominal | Pos::Contws},

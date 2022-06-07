@@ -1,7 +1,7 @@
 require "json"
 require "./pos_tag"
 
-class CV::VpTerm
+class CV::MtlV2::VpTerm
   SPLIT = "ǀ"
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
 

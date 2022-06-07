@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   # 介词 - preposition - giới từ
   POSPRE = Pos::Preposes | Pos::Funcws
 

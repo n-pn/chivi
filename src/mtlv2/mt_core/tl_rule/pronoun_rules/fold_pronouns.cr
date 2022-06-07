@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_pronouns!(pronoun : MtNode, succ = pronoun.succ?) : MtNode
     return pronoun unless succ
 

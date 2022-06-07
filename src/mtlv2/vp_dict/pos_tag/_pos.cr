@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   @[Flags]
   enum Pos
     # content words - functional words - punctuations

@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_urlstr!(root : MtNode) : MtNode
     return root unless node = root.succ?
 

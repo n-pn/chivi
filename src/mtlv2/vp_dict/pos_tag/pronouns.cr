@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   PROPOS = Pos.flags(Pronouns, Contws)
 
   # 代词 - pronoun - đại từ chưa phân loại

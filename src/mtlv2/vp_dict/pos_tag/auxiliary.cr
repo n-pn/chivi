@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   # 助词 - particle/auxiliary - trợ từ
 
   AUXILS = {

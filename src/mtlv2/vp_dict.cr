@@ -4,7 +4,7 @@ require "file_utils"
 
 require "./vp_dict/*"
 
-class CV::VpDict
+class CV::MtlV2::VpDict
   enum Kind
     Basic; Novel; Theme; Cvmtl; Other
   end

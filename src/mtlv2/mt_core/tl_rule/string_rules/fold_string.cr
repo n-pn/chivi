@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_strings!(node : MtNode) : MtNode
     if node.litstr?
       fold_litstr!(node)

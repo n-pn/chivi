@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   @[Flags]
   enum NounMode
     NoLocat # if before of noun still remains potential combinable node

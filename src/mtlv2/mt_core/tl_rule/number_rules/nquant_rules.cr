@@ -1,6 +1,6 @@
 require "../../mt_util"
 
-module CV::TlRule
+module CV::MtlV2::TlRule
   def clean_个!(node : MtNode) : MtNode
     if body = node.body?
       deep_clean_个!(body)

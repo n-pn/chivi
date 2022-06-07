@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   PUNCTS = {
     {"Middot", Pos::Puncts, {"・", "‧", "•", "·"}},
     {"Comma", Pos::Puncts, {"﹐", "，", ","}},

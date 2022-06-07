@@ -1,6 +1,6 @@
 require "./vp_term"
 
-class CV::VMatch
+class CV::MtlV2::VMatch
   def self.init(query)
     # TODO: add more filters
     key = query["key"]?.try { |k| Regex.new(k) }

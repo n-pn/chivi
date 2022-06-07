@@ -11,7 +11,7 @@
 # - A + verb + object + verb + 得 + 比 B + adjective
 # - A 比 B + 早/晚/多/少 + verb + …
 
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_compare_bi3!(prepos : MtNode, succ = prepos.succ?, mode = 0)
     return prepos unless (noun = scan_noun!(succ)) && noun.object?
 

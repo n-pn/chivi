@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_compare(head : MtNode, tail = head.succ?)
     while tail
       return if tail.puncts? || tail.key == "像"

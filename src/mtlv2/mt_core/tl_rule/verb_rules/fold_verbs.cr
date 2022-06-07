@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_verbs!(verb : MtNode, adverb : MtNode? = nil) : MtNode
     # puts [verb, adverb, "fold_verb"]
 

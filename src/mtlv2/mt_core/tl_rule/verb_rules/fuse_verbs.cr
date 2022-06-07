@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   COMPL_TAILS = {'完', '到', '着', '上', '下', '起', '好'}
 
   def fuse_verb!(verb : MtNode, succ = verb.succ?)

@@ -1,6 +1,6 @@
 require "./vp_term"
 
-class CV::VpTrie
+class CV::MtlV2::VpTrie
   alias Trie = Hash(Char, VpTrie)
 
   property base : VpTerm? = nil

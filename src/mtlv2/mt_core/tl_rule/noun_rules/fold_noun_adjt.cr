@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_noun_adjt!(noun : MtNode, adjt : MtNode)
     return noun if !noun.noun? || adjt.adj_hao?

@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   Special = new(Tag::Special, Pos::Special | Pos::Contws)
 
   AdjHao = new(Tag::AdjHao, Pos.flags(Adjective, Special, Contws))

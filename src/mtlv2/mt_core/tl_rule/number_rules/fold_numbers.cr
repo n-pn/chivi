@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_number!(node : MtNode, prev : MtNode? = nil)
     return node if !(succ = node.succ?) || succ.ends?
 

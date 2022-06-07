@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   LINKING = {'来', '去', '到', '有', '上', '想', '出'}
 
   def is_linking_verb?(head : MtNode, succ : MtNode?) : Bool

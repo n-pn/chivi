@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   # 副词 - adverb - phó từ (trạng từ)
 
   AdvNoun = new(Tag::AdvNoun, Pos::Mixed | Pos::Nominal | Pos::Adverbial)

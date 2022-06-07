@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_suffix!(base : MtNode, suff : MtNode) : MtNode
     if suff.key == "化"

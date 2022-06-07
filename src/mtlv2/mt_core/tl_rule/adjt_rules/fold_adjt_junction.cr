@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_adjt_junction!(junc : MtNode, prev = junc.prev, succ = junc.succ?)
     return if !succ || succ.ends?
 

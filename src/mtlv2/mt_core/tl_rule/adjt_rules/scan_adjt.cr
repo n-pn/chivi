@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def scan_adjt!(node : MtNode?) : MtNode?
     case node
     when .nil?       then nil

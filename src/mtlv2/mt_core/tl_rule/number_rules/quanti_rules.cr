@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def heal_quanti!(node : MtNode) : MtNode
     not_quanti?(node) ? node : MtDict.fix_quanti(node)
   end

@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   VERBS = {
     # 动词 - verb - động từ
     {"v", "Verb", Pos::Verbal | Pos::Contws},

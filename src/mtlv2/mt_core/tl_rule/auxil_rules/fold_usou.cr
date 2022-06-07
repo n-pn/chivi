@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_usuo!(usuo : MtNode)
     case succ = usuo.succ?
     when .nil? then usuo

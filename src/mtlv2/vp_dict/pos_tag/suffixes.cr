@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   # 后缀 - suffix - hậu tố
   SUFFIXES = {
     {"ka", "SufAdjt", Pos.flags(Adjective, Suffixes, Contws)},

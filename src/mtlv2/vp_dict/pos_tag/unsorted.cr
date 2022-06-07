@@ -1,4 +1,4 @@
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   MISCS = {
     # 成语 - idiom - thành ngữ
     {"i", "Idiom", Pos::Contws},

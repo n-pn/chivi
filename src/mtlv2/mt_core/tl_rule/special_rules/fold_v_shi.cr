@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_v_shi!(vshi : MtNode, succ = vshi.succ?)
     return vshi unless succ
 

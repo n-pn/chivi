@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def fold_第!(node : MtNode)
     return node unless (succ = node.succ?) && (succ.nhanzi? || succ.ndigit?)
 

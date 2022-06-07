@@ -1,6 +1,6 @@
 require "../../mt_core/mt_dict"
 
-struct CV::PosTag
+struct CV::MtlV2::PosTag
   # 数词 - numeral - số từ
   NB_POS = Pos::Numbers | Pos::Numeral | Pos::Contws
   Ndigit = new(Tag::Ndigit, NB_POS)

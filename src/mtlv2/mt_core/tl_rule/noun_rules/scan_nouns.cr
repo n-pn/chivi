@@ -1,4 +1,4 @@
-module CV::TlRule
+module CV::MtlV2::TlRule
   def scan_noun!(node : Nil, prodem : MtNode? = nil, nquant : MtNode? = nil)
     fold_prodem_nominal!(prodem, nquant)
   end
