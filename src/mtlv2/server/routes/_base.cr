@@ -1,9 +1,11 @@
 require "../../engine/*"
 
-abstract class CV::MtlV2::Server::BaseCtrl < ActionController::Base
-  Log = ::App::Log.for("controller")
+abstract class CV::MtlV2::BaseCtrl < ActionController::Base
+  Log = Server::Log.for("controller")
 
+  add_responder("*/*") { |io, result| io << result }
   add_responder("text/html") { |io, result| result.to_json(io) }
+  add_responder("text/plain") { |io, result| io << result }
 
   # This makes it simple to match client requests with server side logs.
   # When building microservices this ID should be propagated to upstream services.

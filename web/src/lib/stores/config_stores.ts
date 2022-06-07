@@ -11,6 +11,7 @@ class ConfigData {
   render = 0
   showzh = false
   tosimp = false
+  engine = 1
 }
 
 function load_config(): ConfigData {
@@ -40,6 +41,9 @@ export const config = {
     config.update((x: ConfigData) => {
       return { ...x, render: val == x.render ? 0 : val }
     })
+  },
+  set_engine: (engine: number) => {
+    config.update((x: ConfigData) => ({ ...x, engine }))
   },
 }
 

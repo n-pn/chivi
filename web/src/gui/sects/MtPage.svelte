@@ -55,6 +55,11 @@
     if (focus == 0) return index == zhtext.length - 1
     return index == 0 && focus == zhtext.length - 1
   }
+
+  function change_engine(engine: number) {
+    config.set_engine(engine)
+    on_change()
+  }
 </script>
 
 <article
@@ -99,6 +104,8 @@
   <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
   <button data-kbd="z" on:click={() => config.set_render(-1)}>Z</button>
   <button data-kbd="g" on:click={() => config.set_render(1)}>G</button>
+  <button data-kbd="⌃1" on:click={() => change_engine(1)}>1</button>
+  <button data-kbd="⌃2" on:click={() => change_engine(2)}>2</button>
 </div>
 
 <style lang="scss">

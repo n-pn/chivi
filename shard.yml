@@ -12,8 +12,8 @@ targets:
   chivi:
     main: src/chivi.cr
 
-  mtlv2:
-    main: src/mtlv2.cr
+  mtlv2-srv:
+    main: src/mtlv2/server.cr
 
   bcover_cli:
     main: src/cvcli/bcover_cli.cr

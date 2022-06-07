@@ -3,8 +3,9 @@ require "../_util/ukey_util"
 class Libcv::QtranData
   DIR = "tmp/qtrans"
 
-  Dir.mkdir_p("#{DIR}/chaps")
-  Dir.mkdir_p("#{DIR}/posts")
+  {"chaps", "posts", "crits", "repls", "lists", "descs"}.each do |type|
+    Dir.mkdir_p("#{DIR}/#{type}")
+  end
 
   spawn do
     `find #{DIR} -type f -atime +1 -delete`

@@ -1,0 +1,17 @@
+[Unit]
+Description=mtlv2 server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=nipin
+Environment=PORT=5502
+Environment=CV_ENV=production
+WorkingDirectory=/home/nipin/srv/chivi.app
+ExecStart=/home/nipin/srv/chivi.app/bin/mtlv2-srv
+
+[Install]
+WantedBy=multi-user.target

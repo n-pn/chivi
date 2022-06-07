@@ -20,6 +20,7 @@
     "fix-covers": "./bin/fetch_covers && ./bin/fix_covers",
     "fix-nvinfo": "./bin/fix_intros && ./bin/fix_genres",
     "build": "shards build -s --release",
-    "build-mt": "shards build -s --release -Dpreview_mt"
+    "build-mt": "shards build -s --release -Dpreview_mt",
+    "mtlv2-dev": "nodemon -L --watch ./src --exec 'crystal run src/mtlv2/server.cr'"
   }
 }
