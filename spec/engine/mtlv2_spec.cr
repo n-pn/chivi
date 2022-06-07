@@ -1,5 +1,5 @@
 require "spec"
-require "../../src/mtlv2/mt_core"
+require "../../src/mtlv2/engine/mt_core"
 
 MTL = CV::MtlV2::MtCore.generic_mtl("combine")
 
