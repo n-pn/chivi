@@ -10,6 +10,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
     cpart = params.fetch_int("cpart", min: 0)
 
     nvseed = load_nvseed
+    nvinfo = nvseed.nvinfo
+
     unless chinfo = nvseed.chinfo(chidx - 1)
       raise NotFound.new("Chương tiết không tồn tại")
     end
@@ -29,22 +31,24 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
         if _cvuser.privi >= min_privi
           if nvseed.zseed == 0
-            nvseed_id = Nvseed.load!(nvseed.nvinfo, sname).id
+            nvseed_id = Nvseed.load!(nvinfo, sname).id
           else
             nvseed_id = nvseed.id
           end
 
-          ukey = QtranData.zhtext_ukey(nvseed_id, chinfo.chidx, cpart)
+          ukey = QtranData.nvchap_ukey(nvseed_id, chinfo.chidx, cpart)
           QtranData::CACHE.delete(ukey) if redo
 
-          qtran = QtranData.load!(ukey) do
+          qtran = QtranData.load!(ukey, "chaps") do
             mode = stype < 3 ? 0 : (redo ? 2 : 1)
             lines = nvseed.chtext(chinfo, cpart, mode: mode, uname: _cvuser.uname)
-            QtranData.zhtext(nvseed.nvinfo, lines, chinfo.stats.parts, cpart)
+
+            QtranData.nvchap(lines, nvinfo, chinfo.stats, cpart)
           end
 
           cvdata = String.build do |io|
-            qtran.print_mtl(io, _cvuser.uname, :node, trad: trad)
+            engine = qtran.make_engine(_cvuser.uname)
+            qtran.print_mtl(engine, io, format: :node, title: true, trad: trad)
           rescue ex
             Log.error(exception: ex) { "Error: #{ex.message}" }
           end
@@ -129,7 +133,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
       chinfo.stats.uname = _cvuser.uname
       ChText.new(nvseed.sname, nvseed.snvid, chinfo).save!(chap.lines)
-      QtranData.delete_zhtext(nvseed.id, chinfo.chidx, chinfo.stats.parts)
+      QtranData.delete_nvchap(nvseed.id, chinfo.chidx, chinfo.stats.parts)
 
       chinfo.tap(&.set_title!(chap.title, chap.chvol))
     end

@@ -1,4 +1,4 @@
-require "../../../_util/text_util"
+require "../../../../_util/text_util"
 
 module CV::MtlV2::MTL::ApplyCap
   def apply_cap!(cap : Bool = true) : Bool

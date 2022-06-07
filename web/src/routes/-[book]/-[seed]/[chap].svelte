@@ -94,7 +94,7 @@
       chinfo = props.chinfo
       ubmemo = props.ubmemo
     } else {
-      const url = `/api/qtran/texts/${rl_key}?trad=${$config.tosimp}`
+      const url = `/api/qtran/chaps/${rl_key}?trad=${$config.tosimp}`
       const res = await fetch(url)
       if (res.ok) cvdata = await res.text()
       else console.log(res.status)

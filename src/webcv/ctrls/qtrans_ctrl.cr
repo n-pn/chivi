@@ -26,29 +26,26 @@ class CV::QtransCtrl < CV::BaseCtrl
     type = params["type"]
     name = params["name"]
 
-    data = QtranData.load!("#{type}--#{name}") do
+    data = QtranData.load!(name, type) do
       case type
-      when "posts" then load_qtpost(name)
-      when "notes" then load_qtnote(name)
+      when "chaps" then load_nvchap(name)
       when "crits" then load_yscrit(name)
       when "repls" then load_ysrepl(name)
-      when "texts" then load_zhtext(name)
+      when "notes" then load_qtnote(name)
+      when "posts" then raise NotFound.new("Địa chỉ không tồn tại")
       else              raise BadRequest.new("Thể loại #{type} không được hỗ trợ")
       end
     end
 
     return halt! 404, "Not found!" if data.input.empty?
 
-    mode = QtranData::Mode.parse(params.fetch_str("mode", "node"))
+    mode = QtranData::Format.parse(params.fetch_str("mode", "node"))
     trad = params["trad"]? == "true"
 
     set_headers content_type: :text
-    data.print_mtl(response, _cvuser.uname, mode: mode, trad: trad)
+    engine = data.make_engine(_cvuser.uname)
+    data.print_mtl(engine, response, format: mode, title: type == "chaps", trad: trad)
     data.print_raw(response) if params["_raw"]?
-  end
-
-  private def load_qtpost(name : String) : QtranData
-    QtranData.from_file(name) || raise NotFound.new("Địa chỉ không tồn tại")
   end
 
   private def load_qtnote(name : String) : QtranData
@@ -77,8 +74,8 @@ class CV::QtransCtrl < CV::BaseCtrl
     QtranData.new(parse_lines(ysrepl.ztext), nvinfo.dname, nvinfo.vname)
   end
 
-  private def load_zhtext(name : String) : QtranData
-    nvseed_id, chidx, cpart = QtranData.zhtext_ukey_decode(name)
+  private def load_nvchap(name : String) : QtranData
+    nvseed_id, chidx, cpart = QtranData.nvchap_ukey_decode(name)
 
     unless nvseed = Nvseed.find({id: nvseed_id})
       raise NotFound.new("Nguồn truyện không tồn tại")
@@ -90,7 +87,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     chtext = ChText.new(nvseed.sname, nvseed.snvid, chinfo)
     chdata = chtext.load!(cpart)
-    QtranData.zhtext(nvseed.nvinfo, chdata.lines, chinfo.stats.parts, cpart)
+    QtranData.nvchap(chdata.lines, nvseed.nvinfo, chinfo.stats, cpart)
   end
 
   def posts_upsert
@@ -105,7 +102,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     data = QtranData.new(lines, dname, d_lbl)
     ukey = params["ukey"]? || QtranData.qtpost_ukey
 
-    data.save!("#{ukey}.txt", _cvuser.uname)
+    data.save!(QtranData.path(ukey, "posts"))
     QtranData::CACHE.set(ukey, data)
 
     serv_json({ukey: ukey})
