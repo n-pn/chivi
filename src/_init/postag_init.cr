@@ -1,5 +1,5 @@
 require "tabkv"
-require "../libcv/vp_dict"
+require "../mtlv1/vp_dict"
 
 class CV::PostagInit
   alias CountTag = Hash(String, Int32)

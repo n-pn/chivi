@@ -1,8 +1,8 @@
 require "colorize"
 require "file_utils"
 
-require "../../../src/libcv/vp_dict"
-require "../../../src/libcv/vp_hint"
+require "../../../src/mtlv1/vp_dict"
+require "../../../src/mtlv1/vp_hint"
 
 module QtUtil
   DIR = "_db/vpinit"

@@ -1,4 +1,4 @@
-require "../../src/libcv/*"
+require "../../src/mtlv1/*"
 
 out_vals = CV::VpHint.user_vals
 out_tags = CV::VpHint.user_tags

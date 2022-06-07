@@ -1,2 +1,2 @@
 require "spec"
-require "../../src/libcv/mt_core"
+require "../../src/mtlv1/mt_core"

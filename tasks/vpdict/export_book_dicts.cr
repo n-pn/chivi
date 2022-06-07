@@ -2,7 +2,7 @@ require "colorize"
 require "tabkv"
 
 require "../../src/_init/postag_init"
-require "../../src/libcv/tl_name"
+require "../../src/mtlv1/tl_name"
 require "../shared/bootstrap"
 
 EPOCH = CV::VpTerm.mtime(Time.local(2021, 10, 1))

@@ -2,7 +2,7 @@
 
 require "../nvchap/ch_list"
 require "../nvchap/ch_repo"
-require "../../libcv/mt_core"
+require "../../mtlv1/mt_core"
 
 class CV::Nvseed
   getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }

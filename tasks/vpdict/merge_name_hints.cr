@@ -1,5 +1,5 @@
 require "tabkv"
-require "../../src/libcv/mt_core"
+require "../../src/mtlv1/mt_core"
 
 output = Tabkv(Array(String)).new "var/vphints/names.tsv", mode: :reset
 

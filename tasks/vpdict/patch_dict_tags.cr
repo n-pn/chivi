@@ -1,4 +1,4 @@
-require "../../src/libcv/vp_dict"
+require "../../src/mtlv1/vp_dict"
 
 INP = "var/vpdicts/v0/patch"
 
