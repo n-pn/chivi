@@ -31,23 +31,20 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
   def show : Nil
     bslug = params["bslug"]
+
     unless nvinfo = Nvinfo.load!(bslug)
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
-    if nvinfo.bslug != bslug
-      return serv_text(nvinfo.bslug, 301)
-    end
+    return serv_text(nvinfo.bslug, 301) if nvinfo.bslug != bslug
 
-    if _cvuser.privi >= 0
-      spawn nvinfo.bump!
-    end
-
+    nvinfo.bump! if _cvuser.privi >= 0
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
 
     nvseeds = nvinfo.nvseeds.to_a.sort_by!(&.zseed)
-    if nvseeds.empty? || nvseeds.first.zseed != 0
-      nvseeds.unshift(Nvseed.load!(nvinfo, 0))
+
+    if nvseeds.empty? || nvseeds.first.sname != "union"
+      nvseeds.unshift(Nvseed.load!(nvinfo, "union", force: true))
     end
 
     if (ubmemo.lr_sname.empty?) && (nvseed = nvseeds.first?)

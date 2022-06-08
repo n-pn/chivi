@@ -1,9 +1,7 @@
 class CV::NvseedCtrl < CV::BaseCtrl
   def index
-    nvinfo = Nvinfo.load!(params["book"].to_i64)
-
-    sname = params.fetch_str("sname", "union")
-    nvseed = Nvseed.load!(nvinfo.id, SnameMap.map_int(sname))
+    nvseed = Nvseed.load!(params["book"].to_i64, params["sname"])
+    nvinfo = nvseed.nvinfo
 
     force = params["force"]? == "true" && _cvuser.privi >= 0
     nvseed.refresh!(force: true) if force && nvseed.staled?(_cvuser.privi, force)
@@ -12,8 +10,8 @@ class CV::NvseedCtrl < CV::BaseCtrl
   end
 
   def show
-    nvseed = load_nvseed
-    bseeds = nvseed.nvinfo.nvseeds
+    nvseed = Nvseed.load!(params["book"].to_i64, params["sname"])
+    bseeds = nvseed.nvinfo.nvseeds.to_a.sort_by!(&.zseed)
 
     force = _cvuser.privi >= 0 && params["force"]? == "true"
     staled = nvseed.staled?(_cvuser.privi, force)
@@ -23,7 +21,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     pgidx = params.fetch_int("pg", min: 1)
 
     send_json({
-      nvseed: bseeds.to_a.sort_by!(&.zseed).map { |x| ChseedView.new(x) },
+      nvseed: bseeds.map { |x| ChseedView.new(x) },
       chseed: ChseedView.new(nvseed),
       chpage: {
         sname: nvseed.sname,
@@ -36,11 +34,5 @@ class CV::NvseedCtrl < CV::BaseCtrl
         stale: staled,
       },
     })
-  end
-
-  private def load_nvseed
-    nvinfo_id = params["book"].to_i64
-    sname = params.fetch_str("sname", "union")
-    Nvseed.load!(nvinfo_id, SnameMap.map_int(sname))
   end
 end

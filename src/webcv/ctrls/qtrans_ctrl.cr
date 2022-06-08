@@ -26,7 +26,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     type = params["type"]
     name = params["name"]
 
-    data = QtranData.load!(name, type) do
+    data = QtranData.load_cached(name, type) do
       case type
       when "chaps" then load_nvchap(name)
       when "crits" then load_yscrit(name)
@@ -103,7 +103,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     ukey = params["ukey"]? || QtranData.qtpost_ukey
 
     data.save!(QtranData.path(ukey, "posts"))
-    QtranData::CACHE.set(ukey, data)
+    QtranData::CACHE["posts"].set(ukey, data)
 
     serv_json({ukey: ukey})
   end

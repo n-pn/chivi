@@ -13,14 +13,14 @@ class CV::Nvseed
   self.table = "nvseeds"
   primary_key
 
-  column uid : Int64 = 0_i64 # alternative unique index
+  # column uid : Int64 = 0_i64 # alternative unique index
 
   belongs_to nvinfo : Nvinfo
   getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
-  column zseed : Int32 # seed name
   column sname : String = ""
   column snvid : String # seed book id
+  column zseed : Int32 = 64
 
   # seed data
 
@@ -44,11 +44,6 @@ class CV::Nvseed
 
   timestamps
 
-  # update book id
-  def fix_uid!
-    self.uid = SnameMap.map_uid(nvinfo_id, zseed)
-  end
-
   def clink(schid : String) : String
     SiteLink.text_url(sname, snvid, schid)
   end
@@ -58,7 +53,7 @@ class CV::Nvseed
   def refresh!(force : Bool = false) : Nil
     self.stime = Time.utc.to_unix if force
 
-    if zseed == 0 # sname == "union"
+    if sname == "union"
       if force
         self.chap_count = 0
         self.last_schid = ""
@@ -68,7 +63,10 @@ class CV::Nvseed
       self.mirror_regen!(force: force, fetch: true)
     elsif self.remote?(force: force)
       self.remote_regen!(ttl: map_ttl(force: force), force: force)
-      Nvseed.load!(self.nvinfo, 0).tap(&.mirror_other!(self)).reset_cache!
+
+      union_seed = Nvseed.load!(self.nvinfo, "union")
+      union_seed.mirror_other!(self)
+      union_seed.reset_cache!
     else
       reset_cache! if force
     end

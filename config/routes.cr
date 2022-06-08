@@ -46,6 +46,7 @@ Amber::Server.configure do
     get "/chaps/:book/:sname/:chidx/_raw", CV::NvchapCtrl, :zh_text
     get "/chaps/:book/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info
     post "/chaps/:book/:sname", CV::NvchapCtrl, :upsert
+    post "/texts/:book/:sname", CV::NvtextCtrl, :upload
 
     get "/yscrits", CV::YscritCtrl, :index
     get "/yscrits/:crit", CV::YscritCtrl, :show
@@ -107,9 +108,6 @@ Amber::Server.configure do
     # get "/vpinits/fixtag/:source/:target", CV::VpinitCtrl, :fixtag
     # put "/vpinits/upsert/:target", CV::VpinitCtrl, :upsert
 
-    post "/texts/:book/:sname", CV::NvtextCtrl, :upload
-    get "/texts/:book/:sname/:entry", CV::NvtextCtrl, :status
-    # get "/texts/:book/:sname/:entry/commit", CV::NvtextCtrl, :commit
   end
 
   routes :static do

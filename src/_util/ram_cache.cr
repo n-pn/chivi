@@ -42,6 +42,10 @@ class CV::RamCache(K, V)
     @cache.delete(key)
   end
 
+  def clear
+    @cache.clear
+  end
+
   private def new_cache
     Hash(K, Entry(V)).new(initial_capacity: @limit)
   end

@@ -65,7 +65,7 @@ module CV::SnameMap
   end
 
   def map_int(sname : String)
-    MAP_INT[sname]? || 0
+    MAP_INT[sname]? || 100
   end
 
   MAP_STR = MAP_INT.invert

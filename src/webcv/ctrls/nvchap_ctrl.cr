@@ -1,15 +1,9 @@
 class CV::NvchapCtrl < CV::BaseCtrl
-  private def load_nvseed
-    nvinfo_id = params["book"].to_i64
-    sname = params.fetch_str("sname", "union")
-    Nvseed.load!(nvinfo_id, SnameMap.map_int(sname))
-  end
-
   def ch_info
     chidx = params.fetch_int("chidx")
     cpart = params.fetch_int("cpart", min: 0)
 
-    nvseed = load_nvseed
+    nvseed = Nvseed.load!(params["book"].to_i64, params["sname"])
     nvinfo = nvseed.nvinfo
 
     unless chinfo = nvseed.chinfo(chidx - 1)
@@ -24,7 +18,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     redo = params["redo"]? == "true"
     trad = params["trad"]? == "true"
 
-    QtranData.delete_nvchap(nvseed.id, chinfo.chidx, chinfo.stats.parts) if redo
+    QtranData.clear_chaps_cache(nvseed.id, chinfo.chidx, chinfo.stats.parts) if redo
 
     serv_json do |jb|
       jb.object {
@@ -32,7 +26,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
         jb.field "min_privi", min_privi
 
         if _cvuser.privi >= min_privi
-          if nvseed.zseed == 0
+          if nvseed.sname == "union" # load proxy instead
             nvseed_id = Nvseed.load!(nvinfo, sname).id
           else
             nvseed_id = nvseed.id
@@ -40,7 +34,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
           ukey = QtranData.nvchap_ukey(nvseed_id, chinfo.chidx, cpart)
 
-          qtran = QtranData.load!(ukey, "chaps") do
+          qtran = QtranData.load_cached(ukey, "chaps") do
             mode = stype < 3 ? 0 : (redo ? 2 : 1)
             lines = nvseed.chtext(chinfo, cpart, mode: mode, uname: _cvuser.uname)
 
@@ -77,7 +71,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     sname = chinfo.proxy.try(&.sname) || nvseed.sname
     stype = SnameMap.map_type(sname)
 
-    min_privi = nvseed.zseed == 0 ? -1 : (stype < 3 || chinfo.stats.chars > 0 ? 0 : 1)
+    min_privi = nvseed.sname == "union" ? -1 : (stype < 3 || chinfo.stats.chars > 0 ? 0 : 1)
     min_privi &+= chinfo.chidx > chidx_max ? 1 : 0
 
     {sname, stype, chidx_max, min_privi}
@@ -88,7 +82,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
       raise Unauthorized.new("Quyền hạn không đủ!")
     end
 
-    nvseed = load_nvseed
+    nvseed = Nvseed.load!(params["book"].to_i64, params["sname"])
     chidx = params.fetch_int("chidx")
 
     unless chinfo = nvseed.chinfo(chidx - 1)
@@ -114,7 +108,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
       return halt!(500, "Quyền hạn không đủ!")
     end
 
-    nvseed = load_nvseed
+    nvseed = Nvseed.load!(params["book"].to_i64, params["sname"])
     chidx = params.fetch_int("chidx") { 1 }
 
     input = params.fetch_str("input")
@@ -134,7 +128,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
       chinfo.stats.uname = _cvuser.uname
       ChText.new(nvseed.sname, nvseed.snvid, chinfo).save!(chap.lines)
-      QtranData.delete_nvchap(nvseed.id, chinfo.chidx, chinfo.stats.parts)
+      QtranData.clear_chaps_cache(nvseed.id, chinfo.chidx, chinfo.stats.parts)
 
       chinfo.tap(&.set_title!(chap.title, chap.chvol))
     end
@@ -147,7 +141,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     # copy new uploaded chapters to "union" source
     infos.map!(&.as_proxy!("users", nvseed.snvid))
 
-    mixed_seed = Nvseed.load!(nvseed.nvinfo, 0)
+    mixed_seed = Nvseed.load!(nvseed.nvinfo, "union")
     mixed_seed.tap(&.patch!(infos, stime)).reset_cache!
 
     first = infos.first.tap(&.trans!(nvseed.cvmtl))

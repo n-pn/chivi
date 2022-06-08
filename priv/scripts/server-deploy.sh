@@ -4,6 +4,7 @@ if [[ $1 == "all" || $1 == "chivi-srv" ]]
 then
   echo push server!
   shards build -s --release bcover_cli && rsync -aiz --no-p bin/bcover_cli $SSH/bin
+  shards build -s --release text_split && rsync -aiz --no-p bin/text_split $SSH/bin
 
   shards build -s --release mtlv2-srv && rsync -aiz --no-p bin/mtlv2-srv $SSH/bin
   ssh nipin@ssh.chivi.app "sudo service mtlv2-srv restart"

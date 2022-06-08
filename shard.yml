@@ -18,6 +18,9 @@ targets:
   bcover_cli:
     main: cli/bcover_cli.cr
 
+  text_split:
+    main: cli/text_split.cr
+
   zhwenpg_seed:
     main: tasks/nvseed/zhwenpg_seed.cr
 

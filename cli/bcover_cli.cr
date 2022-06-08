@@ -1,7 +1,7 @@
 require "log"
 require "http/client"
 require "colorize"
-require "../_util/ukey_util"
+require "../src/_util/ukey_util"
 
 def save_image(link : String, file : String, webp_file : String)
   return if File.exists?(webp_file) || link.blank?
