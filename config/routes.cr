@@ -106,6 +106,10 @@ Amber::Server.configure do
 
     # get "/vpinits/fixtag/:source/:target", CV::VpinitCtrl, :fixtag
     # put "/vpinits/upsert/:target", CV::VpinitCtrl, :upsert
+
+    post "/texts/:book/:sname", CV::NvtextCtrl, :upload
+    get "/texts/:book/:sname/:entry", CV::NvtextCtrl, :status
+    # get "/texts/:book/:sname/:entry/commit", CV::NvtextCtrl, :commit
   end
 
   routes :static do

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-DIR=/home/nipin/srv/chivi.app/etc/services
+DIR=/home/nipin/srv/chivi.app/setup/services
 
 sudo rm /etc/systemd/system/mtlv2-srv.service
 sudo cp "$DIR/mtlv2-srv.service" /etc/systemd/system/mtlv2-srv.service
@@ -22,7 +22,7 @@ sudo service chivi-srv start
 sudo systemctl enable chivi-web.service
 sudo service chivi-web start
 
-sudo cp "$DIR/chivi-web.conf" /etc/nginx/sites-available/chivi.conf
-sudo ln -s /etc/nginx/sites-available/chivi.conf /etc/nginx/sites-enabled
+sudo cp "$DIR/chivi-web.conf" /etc/nginx/sites-available/chivi-web.conf
+sudo ln -s /etc/nginx/sites-available/chivi-web.conf /etc/nginx/sites-enabled
 
 sudo service nginx reload
