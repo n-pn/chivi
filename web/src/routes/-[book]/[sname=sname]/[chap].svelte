@@ -14,7 +14,7 @@
   }
 
   export async function load({ fetch, params, stuff: { nvinfo, ubmemo } }) {
-    const { seed: sname, chap: chap_slug } = params
+    const { sname, chap: chap_slug } = params
     const [chidx, cpart = 0] = chap_slug.split('-')[0].split('.')
 
     const api_url = gen_api_url(`${nvinfo.id}/${sname}/${chidx}/${+cpart}`)

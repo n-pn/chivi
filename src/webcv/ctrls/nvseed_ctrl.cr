@@ -1,6 +1,6 @@
 class CV::NvseedCtrl < CV::BaseCtrl
   def index
-    nvseed = Nvseed.load!(params["book"].to_i64, params["sname"])
+    nvseed = load_nvseed
     nvinfo = nvseed.nvinfo
 
     force = params["force"]? == "true" && _cvuser.privi >= 0
@@ -10,7 +10,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
   end
 
   def show
-    nvseed = Nvseed.load!(params["book"].to_i64, params["sname"])
+    nvseed = load_nvseed
     bseeds = nvseed.nvinfo.nvseeds.to_a.sort_by!(&.zseed)
 
     force = _cvuser.privi >= 0 && params["force"]? == "true"

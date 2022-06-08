@@ -2,10 +2,9 @@
   import { session, page } from '$app/stores'
   import { suggest_read } from '$utils/ubmemo_utils'
 
-  export async function load({ fetch, stuff, url, params }) {
+  export async function load({ fetch, stuff, url, params: { sname } }) {
     const { nvinfo, ubmemo } = stuff
 
-    const sname = params.seed
     const pgidx = +url.searchParams.get('pg') || 1
 
     const payload = await load_page(fetch, nvinfo, sname, pgidx)
@@ -62,7 +61,7 @@
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
   export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
 
-  export let nvseed: Array<CV.Chseed> = $page.stuff.nvseed
+  export let nvseed: Array<CV.Chseed>
   export let chseed: CV.Chseed
   export let chpage: CV.Chpage
 
@@ -87,6 +86,10 @@
     }
 
     _refresh = false
+  }
+
+  function internal_seed(sname: string) {
+    return sname.match(/^$|@|users|union/)
   }
 </script>
 
@@ -120,11 +123,11 @@
         <span class="-hide">Đổi mới</span>
       </button>
 
-      {#if chseed.sname == 'union' || chseed.sname == 'users'}
+      {#if internal_seed(chseed.sname)}
         <a
           class="m-btn"
           class:_disable={$session.privi < 2}
-          href="/-{nvinfo.bslug}/+chap?chidx={chpage.total + 1}"
+          href="/-{nvinfo.bslug}/$self/+file?chidx={chpage.total + 1}"
           data-tip="Yêu cầu quyền hạn: 2">
           <SIcon name={$session.privi < 2 ? 'lock' : 'circle-plus'} />
           <span class="-hide">Thêm chương</span>

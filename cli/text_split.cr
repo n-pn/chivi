@@ -67,10 +67,10 @@ class Splitter
   getter lines = [] of String
   getter infos = [] of CV::ChInfo
 
-  def load_input!(to_simp = false, fix_wrap = false, encoding : String? = nil)
+  def load_input!(to_simp = false, un_wrap = false, encoding : String? = nil)
     input = read_utf8(@inp_file, encoding)
     input = CV::MtCore.trad_to_simp(input) if to_simp
-    input = input.gsub(/(?=[^\n\r]{30,}\P{P})[\n\r\s]+/m, "") if fix_wrap
+    input = input.gsub(/(?=[^\n\r]{30,}\P{P})[\n\r\s]+/m, "") if un_wrap
 
     @lines = input.split(/\r?\n|\r/)
   end
@@ -138,7 +138,7 @@ class Splitter
 
     @lines.each do |line|
       unless yield line # check if this is the mark of new chapter
-        line.strip
+        line = strip_text(line)
         chapter << line unless line.empty?
         next
       end
@@ -173,23 +173,27 @@ class Splitter
   # SPLIT_RE_3 = /^\s*(?=第[零〇一二两三四五六七八九十百千]+章\s)/m
 
   # split by manually putting `///` between chaps
-  def split_mode_1
+  def split_mode_0
     split_chap do |line|
       next false unless match = line.match(/^\/(3,)(.*)/)
 
-      chvol = match[1].strip
+      chvol = strip_text(match[1])
       @chvol = chvol unless chvol.empty?
 
       true
     end
   end
 
+  def strip_text(input)
+    input.strip(" 　\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000")
+  end
+
   # split if there is `min_blank_line` number of adjacent blank lines
-  def split_mode_2(min_blank_line = 2, ignore_whitespace = false)
+  def split_mode_1(min_blank_line = 2, ignore_whitespace = false)
     blank_count = 0
 
     split_chap do |line|
-      line = line.strip if ignore_whitespace
+      line = strip_text(line) if ignore_whitespace
 
       if line.empty?
         blank_count &+= 1
@@ -202,7 +206,7 @@ class Splitter
   end
 
   # split if there is `min_blank_line` number of adjacent blank lines
-  def split_mode_3(require_blank_line = false)
+  def split_mode_2(require_blank_line = false)
     was_blank_line = true
 
     split_chap do |line|
@@ -216,12 +220,12 @@ class Splitter
     end
   end
 
-  def split_mode_4(title_suffixes : String)
+  def split_mode_3(title_suffixes : String)
     regex = /^\p{Zs}+第[\d零〇一二两三四五六七八九十百千]+#{title_suffixes}/
     split_by_regex(regex)
   end
 
-  def split_mode_5(regex : String)
+  def split_mode_4(regex : String)
     split_by_regex(Regex.new(regex))
   end
 
@@ -233,7 +237,7 @@ end
 cmd = Splitter.new
 
 to_simp = false
-fix_wrap = false
+un_wrap = false
 encoding = nil
 split_mode = 1
 
@@ -248,13 +252,13 @@ custom_regex = "^\\s*第?[d+零〇一二两三四五六七八九十百千]+章)"
 
 OptionParser.parse do |parser|
   parser.on("-i INPUT", "input file") { |i| cmd.inp_file = i }
-  parser.on("--sim", "trad to simp") { to_simp = true }
-  parser.on("--fix-wrap", "fix line breaking") { fix_wrap = true }
+  parser.on("--tosimp", "trad to simp") { to_simp = true }
+  parser.on("--unwrap", "fix line breaking") { un_wrap = true }
   parser.on("-e ENCODING", "file encoding") { |e| encoding = e }
 
   parser.on("-u UNAME", "user name") { |u| cmd.uname = u }
   parser.on("-v CHVOL", "default chapter volume name") { |v| cmd.chvol = v }
-  parser.on("-o CHIDX", "start chap index") { |i| cmd.chidx = i.to_i }
+  parser.on("-f CHIDX", "start chap index") { |f| cmd.chidx = f.to_i }
   parser.on("-d CHAP_DIR", "output folder") { |i| cmd.chap_dir = i }
 
   parser.on("-m SPLIT_MODE", "text split mode") { |m| split_mode = m.to_i }
@@ -273,14 +277,14 @@ OptionParser.parse do |parser|
   parser.on("--regex", "custom regex for splitting") { |x| custom_regex = x }
 end
 
-cmd.load_input!(to_simp, fix_wrap, encoding)
+cmd.load_input!(to_simp, un_wrap, encoding)
 
 case split_mode
-when 1 then cmd.split_mode_1
-when 2 then cmd.split_mode_2(min_blank_line, trim_whitespace)
-when 3 then cmd.split_mode_3(need_blank_before)
-when 4 then cmd.split_mode_4(title_suffixes)
-when 5 then cmd.split_mode_5(custom_regex)
+when 0 then cmd.split_mode_0
+when 1 then cmd.split_mode_1(min_blank_line, trim_whitespace)
+when 2 then cmd.split_mode_2(need_blank_before)
+when 3 then cmd.split_mode_3(title_suffixes)
+when 4 then cmd.split_mode_4(custom_regex)
 else
   cmd.log_state("Chưa hỗ trợ chế độ split #{split_mode}")
   exit(1)

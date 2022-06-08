@@ -21,7 +21,12 @@
       case 'hetushu':
         return 'Nguồn truyện từ trang hetushu.com (phần lớn là bản đẹp)'
 
+      case '$self':
+        return 'Nguồn truyện của cá nhân bạn'
+
       default:
+        if (sname.startsWith('@')) return `Nguồn truyện của ${sname}`
+
         const hostname = new URL(_link).hostname.replace('www.', '')
 
         const label = `Nguồn truyện từ trang ${hostname} `

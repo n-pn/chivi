@@ -76,4 +76,17 @@ class CV::BaseCtrl < Amber::Controller::Base
     set_headers(status, :json)
     response.puts({status: status, error: error}.to_json)
   end
+
+  def get_sname : String
+    sname = params["sname"]
+    case sname[0]?
+    when '$' then "@" + _cvuser.uname
+    when '-' then sname[1..]
+    else          sname
+    end
+  end
+
+  def load_nvseed
+    Nvseed.load!(params["book"].to_i64, get_sname)
+  end
 end

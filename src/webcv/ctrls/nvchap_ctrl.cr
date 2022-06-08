@@ -3,7 +3,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     chidx = params.fetch_int("chidx")
     cpart = params.fetch_int("cpart", min: 0)
 
-    nvseed = Nvseed.load!(params["book"].to_i64, params["sname"])
+    nvseed = load_nvseed
     nvinfo = nvseed.nvinfo
 
     unless chinfo = nvseed.chinfo(chidx - 1)
@@ -104,11 +104,11 @@ class CV::NvchapCtrl < CV::BaseCtrl
   end
 
   def upsert
-    if _cvuser.privi < 2 || params["sname"] != "users"
+    if _cvuser.privi < 2 || params["sname"] != "$self"
       return halt!(500, "Quyền hạn không đủ!")
     end
 
-    nvseed = Nvseed.load!(params["book"].to_i64, params["sname"])
+    nvseed = load_nvseed
     chidx = params.fetch_int("chidx") { 1 }
 
     input = params.fetch_str("input")

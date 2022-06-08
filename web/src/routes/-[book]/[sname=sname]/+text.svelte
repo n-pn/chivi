@@ -1,12 +1,11 @@
 <script context="module" lang="ts">
   /** @type {import('./[slug]').Load} */
-  export async function load({ url, params, stuff }) {
+  export async function load({ url, stuff }) {
     const { nvinfo } = stuff
-    const sname = params.seed
     const chidx = +url.searchParams.get('chidx') || 1
 
     stuff.topbar = gen_topbar(nvinfo)
-    return { props: { nvinfo, sname, chidx }, stuff }
+    return { props: { nvinfo, chidx }, stuff }
   }
 
   function gen_topbar({ btitle_vi, bslug }) {
@@ -21,27 +20,29 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { page } from '$app/stores'
 
   import { SIcon, Footer } from '$gui'
 
   export let nvinfo: CV.Nvinfo
-  export let sname = 'users'
   export let chidx = 1
 
   export let input = ''
   let files: FileList
-  let _trad = false
 
-  $: action_url = `/api/texts/${nvinfo.id}/${sname}`
+  let form = {
+    tosimp: false,
+    unwrap: false,
+  }
+
+  $: action_url = `/api/texts/${nvinfo.id}`
 
   async function submit(evt: SubmitEvent) {
     const body = new FormData()
 
-    body.append('chidx', chidx.toString())
-    body.append('_trad', _trad.toString())
     body.append('text', input)
     body.append('file', files && files[0])
+    body.append('chidx', chidx.toString())
+    for (let key in form) body.append(key, form[key].toString())
 
     const res = await fetch(action_url, {
       method: 'POST',
@@ -49,8 +50,8 @@
     })
 
     if (res.ok) {
-      const { entry } = await res.json()
-      goto(`/-${nvinfo.bslug}/+${sname}/${entry}`)
+      await res.json()
+      goto(`/-${nvinfo.bslug}/$self`)
     } else {
       alert(await res.text())
     }
@@ -97,7 +98,7 @@
         </label>
 
         <label class="label">
-          <input type="checkbox" name="_trad" bind:checked={_trad} />
+          <input type="checkbox" name="tosimp" bind:checked={form.tosimp} />
           <span>Phồn -> Giản</span>
         </label>
 

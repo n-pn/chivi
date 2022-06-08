@@ -3,7 +3,9 @@ export function book_url(bslug: string, sub = '') {
 }
 
 export function seed_url(bslug: string, sname = 'chivi', pgidx = 1) {
-  const url = book_url(bslug, `-${sname}`)
+  if (!sname.match(/^[$@-]/)) sname = '-' + sname
+
+  const url = book_url(bslug, sname)
   return pgidx > 1 ? `${url}?pg=${pgidx}` : url
 }
 

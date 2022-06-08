@@ -45,7 +45,9 @@ module CV::SnameMap
          "duokan8", "biquyue", "xswang"
       2 # dead remote
     when "paoshu8", "hetushu", "5200", "biqu5200", "ptwxz"
-      3  # slow but still alive
+      3 # slow but still alive
+    when .starts_with?('@')
+      1  # users seed
     else # "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee"
       4  # fast remote
     end
