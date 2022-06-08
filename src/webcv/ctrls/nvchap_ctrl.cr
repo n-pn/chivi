@@ -24,6 +24,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
     redo = params["redo"]? == "true"
     trad = params["trad"]? == "true"
 
+    QtranData.delete_nvchap(nvseed.id, chinfo.chidx, chinfo.stats.parts) if redo
+
     serv_json do |jb|
       jb.object {
         jb.field "chidx_max", chidx_max
@@ -37,7 +39,6 @@ class CV::NvchapCtrl < CV::BaseCtrl
           end
 
           ukey = QtranData.nvchap_ukey(nvseed_id, chinfo.chidx, cpart)
-          QtranData::CACHE.delete(ukey) if redo
 
           qtran = QtranData.load!(ukey, "chaps") do
             mode = stype < 3 ? 0 : (redo ? 2 : 1)

@@ -39,8 +39,6 @@ class Libcv::QtranData
       {@dname, @d_lbl, @count, @label}.join(io, '\t')
       @input.each { |line| io << '\n' << line }
     end
-
-    puts "#{file} saved!"
   end
 
   SEP = "$\t$\t$"

@@ -16,7 +16,7 @@ targets:
     main: src/mtlv2/server.cr
 
   bcover_cli:
-    main: src/cvcli/bcover_cli.cr
+    main: cli/bcover_cli.cr
 
   zhwenpg_seed:
     main: tasks/nvseed/zhwenpg_seed.cr

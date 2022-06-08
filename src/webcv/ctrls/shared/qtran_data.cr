@@ -34,9 +34,9 @@ class CV::QtranData < Libcv::QtranData
   def self.delete_nvchap(seed_id : Int64, chidx : Int32, parts = 1)
     parts.times do |cpart|
       ukey = nvchap_ukey(seed_id, chidx, cpart)
-      CACHE.delete(ukey)
+      CACHE.delete("chaps--#{ukey}")
+      file = path(ukey, "chaps")
 
-      file = path(ukey, "text")
       File.delete(file) if File.exists?(file)
     end
   end
