@@ -9,52 +9,16 @@ class CV::NvtextCtrl < CV::BaseCtrl
 
     entry = Time.local.to_unix.to_s(base: 32)
 
-    spawn do
-      folder = "var/chtexts/#{sname}/#{nvseed.snvid}/_"
-      file_path = File.join(folder, "#{entry}.txt")
+    folder = "var/chtexts/#{sname}/#{nvseed.snvid}/_"
+    file_path = File.join(folder, "#{entry}.txt")
 
-      Dir.mkdir_p(folder)
-      persist_to_disk(file_path)
-      invoke_splitter(nvseed, file_path)
-    end
+    Dir.mkdir_p(folder)
+    persist_to_disk(file_path)
 
-    serv_json({entry: entry})
-  end
+    success, message = invoke_splitter(nvseed, file_path)
+    raise BadRequest.new(message) unless success
 
-  private def persist_to_disk(file_path : String) : Nil
-    if form_file = params.files["file"]?
-      File.rename(form_file.file.path, file_path)
-    elsif text = params["text"]?
-      File.write(file_path, text)
-    else
-      raise BadRequest.new("Thiếu file hoặc text")
-    end
-  end
-
-  # -ameba:disable Metrics/CyclomaticComplexity
-  private def invoke_splitter(nvseed : Nvseed, file_path : String) : Nil
-    args = ["-i", file_path]
-    args << "-u" << _cvuser.uname
-    params["chvol"]?.try { |x| args << "-v" << x.strip }
-
-    from_chidx = params.fetch_int("chidx", min: 1)
-    args << "-f" << from_chidx.to_s
-
-    args << "--tosimp" if params["tosimp"]? == "true"
-    args << "--unwrap" if params["unwrap"]? == "true"
-    params["encoding"]?.try { |x| args << "-e" << x unless x == "auto" }
-
-    split_mode = params["split_mode"]? || "0"
-    args << "-m" << split_mode
-    add_args_for_split_mode(args, split_mode.to_i)
-
-    output = IO::Memory.new
-    status = Process.run("bin/text_split", args, output: output)
-
-    output.close
-    return unless status.success?
-
-    last_chidx, last_schid = output.to_s.split('\t')
+    last_chidx, last_schid = message.split('\t')
     last_chidx = last_chidx.to_i
 
     if last_chidx > nvseed.chap_count
@@ -69,6 +33,43 @@ class CV::NvtextCtrl < CV::BaseCtrl
     nvseed.reset_cache!
     QtranData.clear_cache("chaps", disk: true)
     `curl -s -X DELETE localhost:5502/_v2/purge/chaps`
+
+    serv_json({msg: "ok"})
+  end
+
+  private def persist_to_disk(file_path : String) : Nil
+    if form_file = params.files["file"]?
+      encoding = params["encoding"]? || "UTF-8"
+      text = File.read(form_file.file.path, encoding: encoding)
+    elsif !(text = params["text"]?)
+      raise BadRequest.new("Thiếu file hoặc text")
+    end
+
+    File.write(file_path, text)
+  end
+
+  # -ameba:disable Metrics/CyclomaticComplexity
+  private def invoke_splitter(nvseed : Nvseed, file_path : String) : {Bool, String}
+    args = ["-i", file_path]
+    args << "-u" << _cvuser.uname
+    params["chvol"]?.try { |x| args << "-v" << x.strip }
+
+    from_chidx = params.fetch_int("chidx", min: 1)
+    args << "-f" << from_chidx.to_s
+
+    args << "--tosimp" if params["tosimp"]? == "true"
+    args << "--unwrap" if params["unwrap"]? == "true"
+    args << "-e" << "UTF-8"
+
+    split_mode = params["split_mode"]? || "0"
+    args << "-m" << split_mode
+    add_args_for_split_mode(args, split_mode.to_i)
+
+    output = IO::Memory.new
+    status = Process.run("bin/text_split", args, output: output)
+    output.close
+
+    {status.success?, output.to_s}
   end
 
   private def add_args_for_split_mode(args : Array(String), split_mode : Int32)

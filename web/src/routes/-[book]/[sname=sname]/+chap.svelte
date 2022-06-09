@@ -23,8 +23,6 @@
     'Theo định dạng tên chương',
     'Theo regular expression tự nhập',
   ]
-
-  const min_editable = 50000
 </script>
 
 <script lang="ts">
@@ -73,13 +71,8 @@
   async function submit(_evt: SubmitEvent) {
     const body = new FormData()
 
-    if (input.length > min_editable) {
-      body.append('file', files[0])
-      body.append('encoding', encoding)
-    } else {
-      body.append('text', input)
-      body.append('encoding', 'UTF-8')
-    }
+    body.append('file', new Blob([input], { type: 'text/plain' }))
+    body.append('encoding', 'UTF-8')
 
     for (let key in form) {
       const val = form[key]
@@ -207,7 +200,6 @@
         name="input"
         id="input"
         rows="10"
-        disabled={input.length > min_editable}
         bind:value={input}
         placeholder="Nội dung chương tiết"
         required />
@@ -344,12 +336,6 @@
   textarea {
     display: block;
     width: 100%;
-
-    &:disabled {
-      @include fgcolor(main);
-      @include bgcolor(secd);
-      @include bdcolor(main);
-    }
   }
 
   .preview {
