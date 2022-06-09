@@ -17,6 +17,7 @@ class CV::Nvseed
   def reset_cache!
     @vpages.clear
     @lastpg = nil
+    ChRepo::ZH_LISTS.clear
   end
 
   def chpage(vi_pg : Int32)

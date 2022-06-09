@@ -32,7 +32,7 @@ class CV::NvtextCtrl < CV::BaseCtrl
     # TODO: pinpoint clear cache
     nvseed.reset_cache!
     QtranData.clear_cache("chaps", disk: true)
-    `curl -s -X DELETE localhost:5502/_v2/purge/chaps`
+    HTTP::Client.delete("localhost:5502/_v2/purge/chaps")
 
     serv_json({msg: "ok"})
   end
