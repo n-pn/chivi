@@ -6,15 +6,11 @@ require "../src/mtlv1/mt_core"
 require "../src/appcv/nvchap/ch_list"
 
 class Chapter
-  getter chvol : String
   getter lines = [] of String
 
   getter sizes = [] of Int32
   getter chars = 0
   getter parts = 1
-
-  def initialize(@chvol = "")
-  end
 
   def <<(line : String)
     size = line.size
@@ -68,7 +64,8 @@ class Splitter
   getter infos = [] of CV::ChInfo
 
   def load_input!(to_simp = false, un_wrap = false, encoding : String? = nil)
-    input = read_utf8(@inp_file, encoding)
+    input = read_utf8(@inp_file, encoding).tr("\uFEFF", "")
+
     input = CV::MtCore.trad_to_simp(input) if to_simp
     input = input.gsub(/(?=[^\n\r]{30,}\P{P})[\n\r\s]+/m, "") if un_wrap
 
@@ -96,7 +93,7 @@ class Splitter
     group = (@chidx &- 1) // 128
     schid = (@chidx &* 10).to_s
 
-    chinfo = CV::ChInfo.new(@chidx, schid, entry.lines[0], entry.chvol)
+    chinfo = CV::ChInfo.new(@chidx, schid, entry.lines[0], @chvol)
 
     stats = chinfo.stats
     stats.utime = Time.utc.to_unix
@@ -118,7 +115,9 @@ class Splitter
     if message = invalid_chlist?
       groups = chlist.map(&.chidx.&-(1).// 128).to_set
       groups.each { |group| `rm -rf "#{chap_dir}/#{group}` }
+
       log_state(message)
+      puts message
       exit 1
     end
 
@@ -146,35 +145,45 @@ class Splitter
   end
 
   def split_chap
-    chapter = Chapter.new(@chvol)
-    reuse_empty_chap_title_as_chvol = false
+    chapter = Chapter.new
+    prev_was_chvol = false
 
     @lines.each do |line|
       unless yield line # check if this is the mark of new chapter
         line = strip_text(line)
-        chapter << line unless line.empty?
+
+        unless line.empty?
+          chapter << line
+          prev_was_chvol = false
+        end
+
         next
       end
 
       case chapter.lines.size
       when 0 then next
       when 1
-        if reuse_empty_chap_title_as_chvol
-          log_state("Thừa chương trắng ở vị trí chương #{@chidx}")
+        if prev_was_chvol
+          message = "Thừa chương trắng ở vị trí chương #{@chidx}"
+          log_state(message)
           exit(1)
         end
 
         @chvol = chapter.lines[0]
-        reuse_empty_chap_title_as_chvol = true
+        prev_was_chvol = true
       else
-        reuse_empty_chap_title_as_chvol = false
+        prev_was_chvol = false
         save_chapter(chapter)
-        chapter = Chapter.new(@chvol)
+        chapter = Chapter.new
       end
     end
 
     save_chapter(chapter)
     save_chlists(@infos)
+  end
+
+  def strip_text(input : String)
+    input.strip(" \u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000")
   end
 
   # SPLIT_RE_0 = /^\/{3,}/m
@@ -184,18 +193,24 @@ class Splitter
 
   # split by manually putting `///` between chaps
   def split_mode_0
-    split_chap do |line|
-      next false unless match = line.match(/^\/(3,)(.*)/)
+    chapter = Chapter.new
 
-      chvol = strip_text(match[1])
+    @lines.each do |line|
+      unless match = line.match(/^\/{3,}(.*)/)
+        line = line.strip
+        chapter << line unless line.empty?
+        next
+      end
+
+      chvol = match[1]
       @chvol = chvol unless chvol.empty?
 
-      true
+      save_chapter(chapter)
+      chapter = Chapter.new
     end
-  end
 
-  def strip_text(input)
-    input.strip(" 　\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000")
+    save_chapter(chapter)
+    save_chlists(@infos)
   end
 
   # split if there is `min_blank_line` number of adjacent blank lines
@@ -296,7 +311,7 @@ when 2 then cmd.split_mode_2(need_blank_before)
 when 3 then cmd.split_mode_3(title_suffixes)
 when 4 then cmd.split_mode_4(custom_regex)
 else
-  cmd.log_state("Chưa hỗ trợ chế độ split #{split_mode}")
+  puts "Chưa hỗ trợ chế độ split #{split_mode}"
   exit(1)
 end
 
