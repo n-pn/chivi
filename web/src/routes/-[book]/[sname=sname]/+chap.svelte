@@ -23,6 +23,8 @@
     'Theo định dạng tên chương',
     'Theo regular expression tự nhập',
   ]
+
+  const min_editable = 50000
 </script>
 
 <script lang="ts">
@@ -71,7 +73,7 @@
   async function submit(_evt: SubmitEvent) {
     const body = new FormData()
 
-    if (input.length > 20000) {
+    if (input.length > min_editable) {
       body.append('file', files[0])
       body.append('encoding', encoding)
     } else {
@@ -205,7 +207,7 @@
         name="input"
         id="input"
         rows="10"
-        disabled={input.length > 20000}
+        disabled={input.length > min_editable}
         bind:value={input}
         placeholder="Nội dung chương tiết"
         required />
