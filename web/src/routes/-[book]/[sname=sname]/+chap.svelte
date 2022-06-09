@@ -90,7 +90,6 @@
     })
 
     if (res.ok) {
-      await res.json()
       goto(`/-${nvinfo.bslug}/$self`)
     } else {
       alert(await res.text())

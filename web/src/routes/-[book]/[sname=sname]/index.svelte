@@ -127,7 +127,7 @@
         <a
           class="m-btn"
           class:_disable={$session.privi < 2}
-          href="/-{nvinfo.bslug}/$self/+chap"
+          href="/-{nvinfo.bslug}/$self/+chap?chidx={chpage.total + 1}"
           data-tip="Yêu cầu quyền hạn: 2">
           <SIcon name={$session.privi < 2 ? 'lock' : 'circle-plus'} />
           <span class="-hide">Thêm chương</span>

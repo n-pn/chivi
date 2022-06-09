@@ -16,7 +16,6 @@ class CV::NvchapCtrl < CV::BaseCtrl
     sname, stype, chidx_max, min_privi = check_privi(nvseed, chinfo)
 
     redo = params["redo"]? == "true"
-    trad = params["trad"]? == "true"
 
     QtranData.clear_chaps_cache(nvseed.id, chinfo.chidx, chinfo.stats.parts) if redo
 
@@ -32,25 +31,15 @@ class CV::NvchapCtrl < CV::BaseCtrl
             nvseed_id = nvseed.id
           end
 
+          mode = stype < 3 ? 0 : (redo ? 2 : 1)
           ukey = QtranData.nvchap_ukey(nvseed_id, chinfo.chidx, cpart)
-
           qtran = QtranData.load_cached(ukey, "chaps") do
-            mode = stype < 3 ? 0 : (redo ? 2 : 1)
             lines = nvseed.chtext(chinfo, cpart, mode: mode, uname: _cvuser.uname)
-
-            QtranData.nvchap(lines, nvinfo, chinfo.stats, cpart)
-          end
-
-          cvdata = String.build do |io|
-            break if qtran.input.empty?
-            engine = qtran.make_engine(_cvuser.uname)
-            qtran.print_mtl(engine, io, format: :node, title: true, trad: trad)
-          rescue ex
-            Log.error(exception: ex) { "Error: #{ex.message}" }
+            QtranData.nvchap(lines, nvseed.nvinfo, chinfo.stats, cpart)
           end
 
           jb.field "rl_key", ukey
-          jb.field "cvdata", cvdata
+          jb.field "cvdata", load_cvdata(qtran)
           jb.field "zhtext", qtran.input
         else
           jb.field "cvdata", ""
@@ -61,6 +50,16 @@ class CV::NvchapCtrl < CV::BaseCtrl
         jb.field "chinfo" { ChinfoView.new(chinfo).to_json(jb) }
         jb.field "ubmemo" { UbmemoView.new(ubmemo).to_json(jb) }
       }
+    end
+  end
+
+  def load_cvdata(qtran : QtranData) : String
+    String.build do |io|
+      engine = qtran.make_engine(_cvuser.uname)
+      trad = params["trad"]? == "true"
+      qtran.print_mtl(engine, io, format: :node, title: true, trad: trad)
+    rescue ex
+      Log.error(exception: ex) { "Error: #{ex.message}" }
     end
   end
 
