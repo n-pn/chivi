@@ -39,13 +39,12 @@ class CV::NvtextCtrl < CV::BaseCtrl
 
   private def persist_to_disk(file_path : String) : Nil
     if form_file = params.files["file"]?
-      encoding = params["encoding"]? || "UTF-8"
-      text = File.read(form_file.file.path, encoding: encoding)
-    elsif !(text = params["text"]?)
+      File.copy(form_file.file.path, file_path)
+    elsif text = params["text"]?
+      File.write(file_path, text)
+    else
       raise BadRequest.new("Thiếu file hoặc text")
     end
-
-    File.write(file_path, text)
   end
 
   # -ameba:disable Metrics/CyclomaticComplexity
