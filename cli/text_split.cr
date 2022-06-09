@@ -157,10 +157,7 @@ class Splitter
       end
 
       case chapter.lines.size
-      when 0
-        next if @infos.empty?
-        log_state("Thừa chương trắng ở vị trí chương #{@chidx}")
-        exit(1)
+      when 0 then next
       when 1
         if reuse_empty_chap_title_as_chvol
           log_state("Thừa chương trắng ở vị trí chương #{@chidx}")

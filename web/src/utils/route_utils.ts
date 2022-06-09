@@ -16,5 +16,7 @@ export function to_pgidx(chidx: number, count = 32) {
 export function chap_url(bslug: string, { sname, chidx, uslug, cpart }) {
   if (chidx < 1) chidx = 1
   const index = cpart > 0 ? `${chidx}.${cpart}` : chidx.toString()
-  return book_url(bslug, `-${sname}/${index}-${uslug}`)
+
+  if (!sname.match(/^[$@-]/)) sname = '-' + sname
+  return book_url(bslug, `${sname}/${index}-${uslug}`)
 }
