@@ -115,6 +115,13 @@ class Splitter
   end
 
   def save_chlists(chlist = @infos)
+    if message = invalid_chlist?
+      groups = chlist.map(&.chidx.&-(1).// 128).to_set
+      groups.each { |group| `rm -rf "#{chap_dir}/#{group}` }
+      log_state(message)
+      exit 1
+    end
+
     chlist.group_by(&.chidx.&-(1).// 128).each do |group, slice|
       group_dir = "#{chap_dir}/#{group}"
 
@@ -125,6 +132,12 @@ class Splitter
       chlist.patch(slice)
 
       chlist.save!
+    end
+  end
+
+  def invalid_chlist?(chlist = @infos)
+    chlist.each do |chinfo|
+      return "chương #{chinfo.chidx} có quá nhiều phần" if chinfo.stats.parts > 30
     end
   end
 

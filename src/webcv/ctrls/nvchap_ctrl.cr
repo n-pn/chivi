@@ -42,6 +42,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
           end
 
           cvdata = String.build do |io|
+            break if qtran.input.empty?
             engine = qtran.make_engine(_cvuser.uname)
             qtran.print_mtl(engine, io, format: :node, title: true, trad: trad)
           rescue ex

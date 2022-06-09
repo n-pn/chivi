@@ -23,7 +23,7 @@ class CV::NvtextCtrl < CV::BaseCtrl
 
   private def persist_to_disk(file_path : String) : Nil
     if form_file = params.files["file"]?
-      `mv #{form_file.file.path} #{file_path}`
+      File.rename(form_file.file.path, file_path)
     elsif text = params["text"]?
       File.write(file_path, text)
     else
