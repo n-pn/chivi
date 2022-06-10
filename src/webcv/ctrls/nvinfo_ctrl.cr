@@ -7,7 +7,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .where("shield < 2")
         .filter_btitle(params["btitle"]?)
         .filter_author(params["author"]?)
-        .filter_zseeds(params["sname"]?)
+        .filter_nvseed(params["sname"]?)
         .filter_genres(params["genre"]?)
         .filter_tagged(params["tagged"]?)
         .filter_origin(params["origin"]?)

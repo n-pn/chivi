@@ -105,11 +105,11 @@ class CV::Nvinfo
       query = "vslug LIKE '%-#{scrub}-%'"
     end
 
-    where("author_id IN (SELECT id from authors WHERE #{query})")
+    where("author_id IN (SELECT id FROM authors WHERE #{query})")
   end
 
-  scope :filter_zseeds do |input|
-    input ? where("zseeds @> ?", [SnameMap.map_int(input)]) : self
+  scope :filter_nvseed do |input|
+    input ? where("id IN (SELECT nvinfo_id FROM nvseeds WHERE sname = ? AND chap_count > 0)", input) : self
   end
 
   scope :filter_genres do |input|
