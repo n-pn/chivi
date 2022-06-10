@@ -101,6 +101,7 @@
 
   let loading = false
   let changed = false
+  let file_hash = ''
 
   let err_msg = ''
 
@@ -153,9 +154,14 @@
     const body = new FormData()
     err_msg = ''
 
-    body.append('file', new Blob([input], { type: 'text/plain' }))
-    body.append('hash', hash_str(input))
+    const text_hash = hash_str(input)
+    body.append('hash', text_hash)
     body.append('encoding', 'UTF-8')
+
+    if (text_hash != file_hash) {
+      body.append('file', new Blob([input], { type: 'text/plain' }))
+      file_hash = text_hash
+    }
 
     for (const key in form) {
       const val = form[key]
