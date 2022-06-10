@@ -202,11 +202,11 @@ class Splitter
         next
       end
 
-      chvol = match[1]
-      @chvol = chvol unless chvol.empty?
-
       save_chapter(chapter)
       chapter = Chapter.new
+
+      chvol = match[1]
+      @chvol = chvol unless chvol.empty?
     end
 
     save_chapter(chapter)
