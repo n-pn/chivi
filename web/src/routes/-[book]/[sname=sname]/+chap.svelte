@@ -51,7 +51,7 @@
         return new RegExp(`\\n{${split_opts.min_blank + 1},}`, 'mu')
 
       case 2:
-        const count = split_opts.require_blank ? 2 : 1
+        const count = split_opts.blank_before ? 2 : 1
         return new RegExp(`\\n{${count},}[^\\s]`, 'mu')
 
       case 3:
@@ -89,7 +89,7 @@
   let split_opts = {
     min_blank: 2,
     trim_space: false,
-    require_blank: false,
+    blank_before: false,
     suffix: '章节回幕折集卷季',
     regex: `^\\s*第?[\\d${numbers}]+[章节回]`,
   }
@@ -272,8 +272,8 @@
           ><input
             class="m-input"
             type="checkbox"
-            name="require_blank"
-            bind:checked={split_opts.require_blank} /> Phía trước phải là dòng trắng</label>
+            name="blank_before"
+            bind:checked={split_opts.blank_before} /> Phía trước phải là dòng trắng</label>
       {:else if form.split_mode == 3}
         <label class="label"
           >Đằng sau <code>第[số từ]+</code> là:

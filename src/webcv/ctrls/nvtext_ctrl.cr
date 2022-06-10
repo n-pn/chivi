@@ -15,10 +15,7 @@ class CV::NvtextCtrl < CV::BaseCtrl
     persist_to_disk(file_path)
 
     success, message = invoke_splitter(nvseed, file_path)
-    unless success
-      Log.error { "parse_text_error: #{message}" }
-      raise BadRequest.new(message)
-    end
+    raise BadRequest.new(message) unless success
 
     last_chidx, last_schid = message.split('\t')
     last_chidx = last_chidx.to_i
@@ -79,7 +76,7 @@ class CV::NvtextCtrl < CV::BaseCtrl
       args << "--trim" if params["trim_space"]? == "true"
       params["min_blank"]?.try { |x| args << "--min-blank" << x }
     when 2
-      args << "--blank-before" if params["require_blank"]? == "true"
+      args << "--blank-before" if params["blank_before"]? == "true"
     when 3
       params["suffix"]?.try { |x| args << "--suffix" << x.strip }
     when 4

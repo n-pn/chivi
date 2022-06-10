@@ -123,8 +123,8 @@ class Splitter
 
   def save_chlists(chlist = @infos) : Nil
     if message = invalid_chlist?
-      groups = chlist.map(&.chidx.&-(1).// 128).to_set
-      groups.each { |group| `rm -rf "#{chap_dir}/#{group}"` }
+      # groups = chlist.map(&.chidx.&-(1).// 128).to_set
+      # groups.each { |group| `rm -rf "#{chap_dir}/#{group}"` }
 
       return log_state(message, abort: true)
     end
@@ -253,8 +253,9 @@ class Splitter
 
   def split_mode_3(suffixes : String)
     log_state("- Split mode: 3, suffixes: #{suffixes}")
+    log_state("Lỗi nhập: Không có nhãn chương", abort: true) if suffixes.empty?
 
-    regex = /^\p{Zs}+第[\d零〇一二两三四五六七八九十百千]+[#{suffixes}]/
+    regex = Regex.new("^[ 　]*第[\\d零〇一二两三四五六七八九十百千]+[#{suffixes}]")
     split_by_regex(regex)
   end
 
@@ -264,6 +265,7 @@ class Splitter
   end
 
   def split_by_regex(regex : Regex)
+    log_state("- Regex used: #{regex}")
     split_chap { |line| line =~ regex }
   end
 end
@@ -280,7 +282,7 @@ min_blank_line = 2
 trim_whitespace = false
 need_blank_before = false
 
-title_suffixes = "章节回幕"
+title_suffixes = "章节回幕折集卷季"
 
 custom_regex = "^\\s*第?[\\d+零〇一二两三四五六七八九十百千]+章"
 
@@ -305,10 +307,10 @@ OptionParser.parse do |parser|
   parser.on("--blank-before", "require blank line before new chap") { need_blank_before = true }
 
   # for mode 4
-  parser.on("--suffix", "title suffixes indication") { |x| title_suffixes = x }
+  parser.on("--suffix SUFFIXES", "title suffixes indication") { |x| title_suffixes = x }
 
   # for mode 5
-  parser.on("--regex", "custom regex for splitting") { |x| custom_regex = x }
+  parser.on("--regex REGEX", "custom regex for splitting") { |x| custom_regex = x }
 end
 
 cmd.load_input!(to_simp, un_wrap, encoding)
