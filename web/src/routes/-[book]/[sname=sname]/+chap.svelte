@@ -23,6 +23,47 @@
     'Theo định dạng tên chương',
     'Theo regular expression tự nhập',
   ]
+
+  const numbers = '零〇一二两三四五六七八九十百千'
+
+  function hash_str(s: string) {
+    var hash = 0
+
+    for (let i = 0; i < s.length; i++) {
+      const chr = s.charCodeAt(i)
+      hash = (hash << 5) - hash + chr
+      hash |= 0
+    }
+
+    return hash.toString(32)
+  }
+
+  function format_str(input: string) {
+    return input.replace(/\r?\n|\r/g, '\n')
+  }
+
+  function build_split_regex(split_mode: number, split_opts: any) {
+    switch (split_mode) {
+      case 0:
+        return /^\/{3,}/mu
+
+      case 1:
+        return new RegExp(`\\n{${split_opts.min_blank + 1},}`, 'mu')
+
+      case 2:
+        const count = split_opts.require_blank ? 2 : 1
+        return new RegExp(`\\n{${count},}[^\\s]`, 'mu')
+
+      case 3:
+        return new RegExp(`^\\s*第[\\d${numbers}]+[${split_opts.suffix}]`, 'mu')
+
+      case 4:
+        return new RegExp(split_opts.regex, 'mu')
+
+      default:
+        return /\\n{3,}/mu
+    }
+  }
 </script>
 
 <script lang="ts">
@@ -42,82 +83,60 @@
     tosimp: false,
     unwrap: false,
     split_mode: 1,
+    trunc_after: false,
+  }
+
+  let split_opts = {
+    min_blank: 2,
+    trim_space: false,
+    require_blank: false,
+    suffix: '章节回幕折集卷季',
+    regex: `^\\s*第?[\\d${numbers}]+[章节回]`,
   }
 
   let encoding = 'GBK'
-  $: if (encoding && files) read_to_input(encoding)
-
-  const numbers = '零〇一二两三四五六七八九十百千'
-
-  let modes = {
-    0: {},
-    1: {
-      min_blank: 2,
-      trim_space: false,
-    },
-    2: {
-      require_blank: false,
-    },
-    3: {
-      suffix: '章节回幕折集卷季',
-    },
-    4: {
-      regex: `^\\s*第?[\\d${numbers}]+[章节回]`,
-    },
-  }
+  $: if (encoding && files) read_to_input(files[0], encoding)
 
   $: action_url = `/api/texts/${nvinfo.id}`
 
-  async function submit(_evt: SubmitEvent) {
-    const body = new FormData()
+  let loading = false
+  let changed = false
 
-    body.append('file', new Blob([input], { type: 'text/plain' }))
-    body.append('encoding', 'UTF-8')
+  let err_msg = ''
 
-    for (let key in form) {
-      const val = form[key]
-      if (val) body.append(key, val.toString())
-    }
-
-    const mode_params = modes[form.split_mode]
-    for (let key in mode_params) {
-      body.append(key, mode_params[key].toString())
-    }
-
-    const res = await fetch(action_url, {
-      method: 'POST',
-      body,
-    })
-
-    if (res.ok) {
-      goto(`/-${nvinfo.bslug}/$self`)
-    } else {
-      alert(await res.text())
-    }
-  }
-
-  function read_to_input(encoding = 'GBK') {
-    const file = files[0]
+  function read_to_input(file: File | undefined, encoding = 'GBK') {
     if (!file) return
+    loading = true
 
     const reader = new FileReader()
-
     reader.readAsText(file, encoding)
-    reader.onload = (e) => (input = e.target.result.toString())
+
+    reader.onload = (e) => {
+      const buffer = e.target.result
+      input = format_str(buffer.toString())
+      loading = changed = false
+    }
   }
 
-  $: chap_count = try_split_chap(input, form.split_mode, modes)
+  $: chap_count = dry_check(input, form.split_mode, split_opts)
 
-  function try_split_chap(input: string, split_mode: number, modes: object) {
-    if (!input) return 0
+  function dry_check(input: string, split_mode: number, split_opts: any) {
+    if (loading || !input) return 0
+    err_msg = ''
 
-    let data = input.replace(/\r?\n|\r/g, '\n')
-    if (split_mode == 1 && modes[1].trim_space) {
+    if (changed) {
+      input = format_str(input)
+      changed = false
+    }
+
+    let data = input
+
+    if (split_mode == 1 && split_opts.trim_space) {
       data = data.replace(/[\u3000 ]+/gu, '')
     }
 
     try {
-      const regex = build_split_regex(split_mode, modes[split_mode])
+      const regex = build_split_regex(split_mode, split_opts)
       const chaps = data.split(regex)
 
       // const first = chaps.slice(0, 10)
@@ -125,32 +144,33 @@
 
       return chaps.length
     } catch (err) {
-      alert(err)
+      err_msg = err.toString()
       return 0
     }
   }
 
-  function build_split_regex(split_mode: number, mode: any) {
-    switch (split_mode) {
-      case 0:
-        return /^\/{3,}/mu
+  async function submit(_evt: SubmitEvent) {
+    const body = new FormData()
+    err_msg = ''
 
-      case 1:
-        return new RegExp(`\\n{${mode.min_blank + 1},}`, 'mu')
+    body.append('file', new Blob([input], { type: 'text/plain' }))
+    body.append('hash', hash_str(input))
+    body.append('encoding', 'UTF-8')
 
-      case 2:
-        const count = mode.require_blank ? 2 : 1
-        return new RegExp(`\\n{${count},}[^\\s]`, 'mu')
-
-      case 3:
-        return new RegExp(`^\\s*第[\\d${numbers}]+[${mode.suffix}]`, 'mu')
-
-      case 4:
-        return new RegExp(mode.regex, 'mu')
-
-      default:
-        return /\\n{3,}/mu
+    for (const key in form) {
+      const val = form[key]
+      if (val) body.append(key, val.toString())
     }
+
+    for (const key in split_opts) {
+      const val = split_opts[key]
+      if (val) body.append(key, val.toString())
+    }
+
+    const res = await fetch(action_url, { method: 'POST', body })
+
+    if (!res.ok) err_msg = await res.text()
+    else goto(`/-${nvinfo.bslug}/$self`)
   }
 </script>
 
@@ -178,7 +198,7 @@
           type="file"
           bind:files
           accept=".txt"
-          on:change={() => read_to_input(encoding)} />
+          on:change={() => read_to_input(files[0], encoding)} />
       </label>
 
       <div class="right">
@@ -186,7 +206,11 @@
 
         {#each ['GBK', 'UTF-8', 'UTF16-LE', 'BIG5'] as value}
           <label>
-            <input type="radio" {value} bind:group={encoding} />
+            <input
+              type="radio"
+              {value}
+              disabled={loading}
+              bind:group={encoding} />
             <span>{value}</span>
           </label>
         {/each}
@@ -197,9 +221,9 @@
       <textarea
         class="m-input"
         name="input"
-        id="input"
         rows="10"
         bind:value={input}
+        disabled={loading}
         placeholder="Nội dung chương tiết"
         required />
       <div class="preview">
@@ -215,7 +239,9 @@
       <select
         name="split_mode"
         class="m-input _sm"
-        bind:value={form.split_mode}>
+        disabled={loading}
+        bind:value={form.split_mode}
+        on:change={() => (changed = true)}>
         {#each split_modes as label, value}
           <option {value}>{label}</option>
         {/each}
@@ -230,7 +256,7 @@
               class="m-input _xs"
               type="number"
               name="min_blank"
-              bind:value={modes[1].min_blank}
+              bind:value={split_opts.min_blank}
               min={1}
               max={4} /></label>
 
@@ -239,7 +265,7 @@
               class="m-input"
               type="checkbox"
               name="trim_space"
-              bind:checked={modes[1].trim_space} /> Lọc bỏ dấu cách</label>
+              bind:checked={split_opts.trim_space} /> Lọc bỏ dấu cách</label>
         </div>
       {:else if form.split_mode == 2}
         <label class="label"
@@ -247,23 +273,25 @@
             class="m-input"
             type="checkbox"
             name="require_blank"
-            bind:checked={modes[2].require_blank} /> Phía trước phải là dòng trắng</label>
+            bind:checked={split_opts.require_blank} /> Phía trước phải là dòng trắng</label>
       {:else if form.split_mode == 3}
         <label class="label"
           >Đằng sau <code>第[số từ]+</code> là:
           <input
             class="m-input _xs"
             name="suffix"
-            bind:value={modes[3].suffix} /></label>
+            bind:value={split_opts.suffix} /></label>
       {:else if form.split_mode == 4}
         <label class="label"
           >Custom regex:
           <input
             class="m-input _xs"
             name="regex"
-            bind:value={modes[4].regex} /></label>
+            bind:value={split_opts.regex} /></label>
       {/if}
     </div>
+
+    <div class="errors">{err_msg}</div>
 
     <details class="split-descs">
       <summary>Giải thích cách chia</summary>
@@ -279,7 +307,7 @@
         </p>
         <pre>/// 第二十四集 今当升云<br />chương 1<br />nội dung chương 1<br />///<br />chương hai sẽ thừa kế tên tập phía trên<br />xxxxxxxx</pre>
       {:else if form.split_mode == 1}
-        {@const min_blank = modes[1].min_blank}
+        {@const min_blank = split_opts.min_blank}
 
         <p>
           Cách chương tiết sẽ được tách nếu giữa chúng có ít nhất {min_blank} khoảng
@@ -313,9 +341,14 @@
 
     <Footer>
       <div class="pagi">
-        <label class="label" for="chidx">
+        <label class="label" data-tip="Vị trí bắt đầu ghi đè">
           <span>Chương bắt đầu</span>
           <input class="m-input" name="chidx" bind:value={form.chidx} />
+        </label>
+
+        <label class="label" data-tip="Xoá các chương thừa phía sau">
+          <input type="checkbox" bind:checked={form.trunc_after} />
+          <span>Xoá phía sau</span>
         </label>
 
         <button type="submit" class="m-btn _primary _fill">
@@ -441,5 +474,10 @@
     margin-top: 0.25rem;
     // word-wrap: break-word;
     white-space: break-spaces;
+  }
+
+  .errors:not(:empty) {
+    margin: 0.5rem;
+    @include fgcolor(harmful, 5);
   }
 </style>

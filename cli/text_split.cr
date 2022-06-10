@@ -54,22 +54,31 @@ end
 class Splitter
   property inp_file = ""
   property log_file : String { @inp_file.sub(".txt", ".log") }
-  property chap_dir : String { File.dirname(@inp_file).sub(/\/_$/, "") }
+  property chap_dir : String { File.dirname(@inp_file).sub("chseeds", "chtexts") }
 
   property uname = ""
-  property chidx = 1
   property chvol = ""
+  property chidx = 1
 
   getter lines = [] of String
   getter infos = [] of CV::ChInfo
 
+  def log_state(message : String, abort = false)
+    File.open(log_file, "a", &.puts(message))
+    return unless abort
+    puts message
+    exit 1
+  end
+
   def load_input!(to_simp = false, un_wrap = false, encoding : String? = nil)
-    input = read_utf8(@inp_file, encoding).tr("\uFEFF", "")
+    input = read_utf8(@inp_file, encoding)
 
     input = CV::MtCore.trad_to_simp(input) if to_simp
-    input = input.gsub(/(?=[^\n\r]{30,}\P{P})[\n\r\s]+/m, "") if un_wrap
+    input = input.gsub(/(?=[^\n]{30,}\P{P})[\n\s　]+/m, "") if un_wrap
 
-    @lines = input.split(/\r?\n|\r/)
+    @lines = input.split('\n')
+    log_state("\n#{Time.local}\n- #{@lines.size} lines loaded")
+    lines[0] = lines[0].tr("\uFEFF", "")
   end
 
   def read_utf8(inp_file : String, encoding : String? = nil, chardet_limit = 1000) : String
@@ -83,49 +92,48 @@ class Splitter
       end
 
       io.set_encoding(encoding, invalid: :skip)
-      io.gets_to_end
+      io.gets_to_end.gsub(/\r?\n|\r/, '\n')
     end
   end
 
   def save_chapter(entry : Chapter) : Nil
     return if entry.lines.empty?
 
-    group = (@chidx &- 1) // 128
-    schid = (@chidx &* 10).to_s
+    schid = "#{@chidx}_#{@infos.size + 1}"
 
-    chinfo = CV::ChInfo.new(@chidx, schid, entry.lines[0], @chvol)
-
-    stats = chinfo.stats
-    stats.utime = Time.utc.to_unix
-    stats.uname = @uname
+    index = @chidx &+ @infos.size
+    group = (index &- 1) // 128
 
     group_dir = "#{chap_dir}/#{group}"
     Dir.mkdir_p(group_dir)
 
     entry.save!("#{group_dir}/#{schid}")
 
+    chinfo = CV::ChInfo.new(index, schid, entry.lines[0], @chvol)
+
+    stats = chinfo.stats
+    stats.utime = Time.utc.to_unix
+    stats.uname = @uname
+
     stats.chars = entry.chars
     stats.parts = entry.parts
 
     @infos << chinfo
-    @chidx &+= 1
   end
 
-  def save_chlists(chlist = @infos)
+  def save_chlists(chlist = @infos) : Nil
     if message = invalid_chlist?
       groups = chlist.map(&.chidx.&-(1).// 128).to_set
-      groups.each { |group| `rm -rf "#{chap_dir}/#{group}` }
+      groups.each { |group| `rm -rf "#{chap_dir}/#{group}"` }
 
-      log_state(message)
-      puts message
-      exit 1
+      return log_state(message, abort: true)
     end
 
     chlist.group_by(&.chidx.&-(1).// 128).each do |group, slice|
       group_dir = "#{chap_dir}/#{group}"
 
-      `zip --include=\\*.txt -rjmq #{group_dir}.zip #{group_dir} && rm -rf #{group_dir}`
-      next unless $?.success?
+      message = `zip --include=\\*.txt -rjmq #{group_dir}.zip #{group_dir} && rm -rf #{group_dir}`
+      log_state(message, abort: true) unless $?.success?
 
       chlist = CV::ChList.new("#{group_dir}.tsv")
       chlist.patch(slice)
@@ -135,46 +143,40 @@ class Splitter
   end
 
   def invalid_chlist?(chlist = @infos)
-    chlist.each do |chinfo|
-      return "chương #{chinfo.chidx} có quá nhiều phần" if chinfo.stats.parts > 30
+    if chlist.size > 4000
+      return "Lỗi chia: số lượng chương quá nhiều (#{chlist.size} chương)"
     end
-  end
 
-  def log_state(content : String)
-    File.write(log_file, content)
+    chlist.each do |chinfo|
+      parts = chinfo.stats.parts
+      return "Lỗi chia: chương số #{chinfo.chidx} có quá nhiều phần (#{parts} phần)" if parts > 30
+    end
   end
 
   def split_chap
     chapter = Chapter.new
     prev_was_chvol = false
 
-    @lines.each do |line|
-      unless yield line # check if this is the mark of new chapter
-        line = strip_text(line)
+    @lines.each_with_index(1) do |line, idx|
+      mark_new_chap = yield line # check if this is the mark of new chapter
+      line = clean_text(line)
 
-        unless line.empty?
-          chapter << line
-          prev_was_chvol = false
-        end
-
-        next
-      end
-
-      case chapter.lines.size
-      when 0 then next
-      when 1
-        if prev_was_chvol
-          message = "Thừa chương trắng ở vị trí chương #{@chidx}"
-          log_state(message)
-          exit(1)
-        end
-
-        @chvol = chapter.lines[0]
-        prev_was_chvol = true
-      else
+      if !mark_new_chap
+        prev_was_chvol = false
+        chapter << line unless line.empty?
+      elsif chapter.lines.size != 1
+        # previous chapter do not contain just a single line
         prev_was_chvol = false
         save_chapter(chapter)
+
         chapter = Chapter.new
+        chapter << line unless line.empty?
+      elsif prev_was_chvol
+        message = "Lỗi: Chương phía trước không có nội dung. Phát hiện lỗi ở dòng #{idx}: #{line}."
+        log_state(message, abort: true)
+      else
+        @chvol = chapter.lines[0]
+        prev_was_chvol = true
       end
     end
 
@@ -182,8 +184,8 @@ class Splitter
     save_chlists(@infos)
   end
 
-  def strip_text(input : String)
-    input.strip(" \u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000")
+  def clean_text(input : String)
+    input.tr("\t\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000", " ").strip
   end
 
   # SPLIT_RE_0 = /^\/{3,}/m
@@ -193,20 +195,20 @@ class Splitter
 
   # split by manually putting `///` between chaps
   def split_mode_0
+    log_state("- Split mode: 0")
     chapter = Chapter.new
 
     @lines.each do |line|
-      unless match = line.match(/^\/{3,}(.*)/)
-        line = line.strip
+      if match = line.match(/^\s*\/{3,}(.*)/)
+        save_chapter(chapter)
+        chapter = Chapter.new
+
+        chvol = clean_text(match[1])
+        @chvol = chvol unless chvol.empty?
+      else
+        line = clean_text(line)
         chapter << line unless line.empty?
-        next
       end
-
-      save_chapter(chapter)
-      chapter = Chapter.new
-
-      chvol = match[1]
-      @chvol = chvol unless chvol.empty?
     end
 
     save_chapter(chapter)
@@ -215,10 +217,12 @@ class Splitter
 
   # split if there is `min_blank_line` number of adjacent blank lines
   def split_mode_1(min_blank_line = 2, ignore_whitespace = false)
+    log_state("- Split mode: 1, min_blank: #{min_blank_line}, no_space: #{ignore_whitespace}")
+
     blank_count = 0
 
     split_chap do |line|
-      line = strip_text(line) if ignore_whitespace
+      line = clean_text(line) if ignore_whitespace
 
       if line.empty?
         blank_count &+= 1
@@ -232,6 +236,8 @@ class Splitter
 
   # split if there is `min_blank_line` number of adjacent blank lines
   def split_mode_2(require_blank_line = false)
+    log_state("- Split mode: 2, require_blank_before: #{require_blank_line}")
+
     was_blank_line = true
 
     split_chap do |line|
@@ -245,12 +251,15 @@ class Splitter
     end
   end
 
-  def split_mode_3(title_suffixes : String)
-    regex = /^\p{Zs}+第[\d零〇一二两三四五六七八九十百千]+#{title_suffixes}/
+  def split_mode_3(suffixes : String)
+    log_state("- Split mode: 3, suffixes: #{suffixes}")
+
+    regex = /^\p{Zs}+第[\d零〇一二两三四五六七八九十百千]+[#{suffixes}]/
     split_by_regex(regex)
   end
 
   def split_mode_4(regex : String)
+    log_state("- Split mode: 4, regex: #{regex}")
     split_by_regex(Regex.new(regex))
   end
 
@@ -273,7 +282,7 @@ need_blank_before = false
 
 title_suffixes = "章节回幕"
 
-custom_regex = "^\\s*第?[d+零〇一二两三四五六七八九十百千]+章)"
+custom_regex = "^\\s*第?[\\d+零〇一二两三四五六七八九十百千]+章"
 
 OptionParser.parse do |parser|
   parser.on("-i INPUT", "input file") { |i| cmd.inp_file = i }
@@ -311,9 +320,12 @@ when 2 then cmd.split_mode_2(need_blank_before)
 when 3 then cmd.split_mode_3(title_suffixes)
 when 4 then cmd.split_mode_4(custom_regex)
 else
-  puts "Chưa hỗ trợ chế độ split #{split_mode}"
+  puts "Chế độ chia #{split_mode} chưa được hỗ trợ"
   exit(1)
 end
 
 last = cmd.infos.last
+cmd.log_state("\nSuccess! chap_count: #{cmd.infos.size}, \
+                from_idx: #{cmd.chidx}, \
+                last_idx: #{last.chidx}")
 puts "#{last.chidx}\t#{last.schid}"

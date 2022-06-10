@@ -7,21 +7,23 @@ class CV::NvtextCtrl < CV::BaseCtrl
     sname = "@" + _cvuser.uname
     nvseed = Nvseed.load!(params["book"].to_i64, sname, force: true)
 
-    entry = Time.local.to_unix.to_s(base: 32)
+    save_dir = "var/chseeds/#{nvseed.sname}/#{nvseed.snvid}"
+    Dir.mkdir_p(save_dir)
 
-    folder = "var/chtexts/#{sname}/#{nvseed.snvid}/_"
-    file_path = File.join(folder, "#{entry}.txt")
-
-    Dir.mkdir_p(folder)
+    file_name = params["hash"]? || Time.local.to_unix.to_s(base: 32)
+    file_path = File.join(save_dir, "#{file_name}.txt")
     persist_to_disk(file_path)
 
     success, message = invoke_splitter(nvseed, file_path)
-    raise BadRequest.new(message) unless success
+    unless success
+      Log.error { "parse_text_error: #{message}" }
+      raise BadRequest.new(message)
+    end
 
     last_chidx, last_schid = message.split('\t')
     last_chidx = last_chidx.to_i
 
-    if last_chidx > nvseed.chap_count
+    if last_chidx > nvseed.chap_count || params["trunc_after"]? == "true"
       nvseed.chap_count = last_chidx
       nvseed.last_schid = last_schid
     end
@@ -43,7 +45,7 @@ class CV::NvtextCtrl < CV::BaseCtrl
     elsif text = params["text"]?
       File.write(file_path, text)
     else
-      raise BadRequest.new("Thiếu file hoặc text")
+      raise BadRequest.new("Thiếu file hoặc text") unless File.exists?(file_path)
     end
   end
 
@@ -65,7 +67,7 @@ class CV::NvtextCtrl < CV::BaseCtrl
     add_args_for_split_mode(args, split_mode.to_i)
 
     output = IO::Memory.new
-    status = Process.run("bin/text_split", args, output: output)
+    status = Process.run("bin/text_split", args, output: output, error: output)
     output.close
 
     {status.success?, output.to_s}
@@ -73,14 +75,14 @@ class CV::NvtextCtrl < CV::BaseCtrl
 
   private def add_args_for_split_mode(args : Array(String), split_mode : Int32)
     case split_mode
-    when 2
+    when 1
       args << "--trim" if params["trim_space"]? == "true"
       params["min_blank"]?.try { |x| args << "--min-blank" << x }
-    when 3
+    when 2
       args << "--blank-before" if params["require_blank"]? == "true"
-    when 4
+    when 3
       params["suffix"]?.try { |x| args << "--suffix" << x.strip }
-    when 5
+    when 4
       params["regex"]?.try { |x| args << "--regex" << x.strip }
     end
   end
