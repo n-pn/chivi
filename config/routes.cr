@@ -33,15 +33,16 @@ Amber::Server.configure do
     # get "/authors/:author_id/books", CV::AuthorCtrl, :books
 
     get "/books", CV::NvinfoCtrl, :index
-    put "/books", CV::NvinfoCtrl, :upsert
     post "/books", CV::NvinfoCtrl, :upsert
+
     get "/books/:bslug", CV::NvinfoCtrl, :show
     get "/books/:bslug/front", CV::NvinfoCtrl, :front
-    get "/books/:bslug/detail", CV::NvinfoCtrl, :detail
-    delete "/books/:bslug/delete", CV::NvinfoCtrl, :delete
+    get "/books/:bslug/+edit", CV::NvinfoCtrl, :extra
+    delete "/books/:bslug", CV::NvinfoCtrl, :delete
 
-    get "/chaps/:book", CV::NvseedCtrl, :index
-    get "/chaps/:book/:sname", CV::NvseedCtrl, :show
+    get "/seeds/:bslug", CV::NvseedCtrl, :index
+    get "/seeds/:bslug/:sname", CV::NvseedCtrl, :show
+    get "/seeds/:bslug/:sname/:page", CV::NvseedCtrl, :chaps
 
     get "/chaps/:book/:sname/:chidx/_raw", CV::NvchapCtrl, :zh_text
     get "/chaps/:book/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info

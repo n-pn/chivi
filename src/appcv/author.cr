@@ -48,7 +48,12 @@ class CV::Author
   end
 
   def self.upsert!(zname : String, vname : String? = nil) : Author
-    find({zname: zname}) || create!(zname, vname || BookUtil.author_vname(zname))
+    unless author = find({zname: zname})
+      return create!(zname, vname || BookUtil.author_vname(zname))
+    end
+
+    author.update({vname: vname}) if vname && author.vname != vname
+    author
   end
 
   def self.create!(zname : String, vname : String) : Author

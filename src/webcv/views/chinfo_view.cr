@@ -23,4 +23,8 @@ struct CV::ChinfoView
       sname: @data.proxy.try(&.sname),
     }.to_json(jb)
   end
+
+  def self.list(list : Enumerable(ChInfo))
+    list.map { |x| new(x) }
+  end
 end

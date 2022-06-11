@@ -16,10 +16,10 @@ class CV::Nvseed
 
   def self.upsert!(nvinfo : Nvinfo, sname : String, snvid : String, force = true)
     find({nvinfo_id: nvinfo.id, sname: sname}) || begin
-      raise "Source #{sname} not found!" unless force
+      raise "Nguồn chương #{sname} không tồn tại!" unless force
 
       model = new({nvinfo: nvinfo, sname: sname, snvid: snvid}).tap(&.save!)
-      model.mirror_regen! if sname == "nuion"
+      model.mirror_regen! if sname == "union"
 
       model
     end

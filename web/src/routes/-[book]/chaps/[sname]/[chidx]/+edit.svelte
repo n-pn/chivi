@@ -1,18 +1,19 @@
 <script context="module" lang="ts">
   /** @type {import('./[slug]').Load} */
-  export async function load({ url, stuff }) {
+  export async function load({ stuff }) {
     const { nvinfo } = stuff
-    const chidx = +url.searchParams.get('chidx') || 1
 
-    stuff.topbar = gen_topbar(nvinfo)
-    return { props: { nvinfo, chidx }, stuff }
+    stuff.chidx = stuff.chinfo.chidx
+    stuff.input = stuff.zhtext.join('\n')
+    const topbar = gen_topbar(nvinfo)
+    return { props: stuff, stuff: { topbar } }
   }
 
   function gen_topbar({ btitle_vi, bslug }) {
     return {
       left: [
         [btitle_vi, 'book', { href: `/-${bslug}`, kind: 'title' }],
-        ['Thêm/sửa chương', 'file-plus', { href: '.', show: 'pl' }],
+        ['Sửa chương', 'file-plus', { href: '.', show: 'pl' }],
       ],
     }
   }
@@ -24,9 +25,10 @@
   import { SIcon, Footer } from '$gui'
 
   export let nvinfo: CV.Nvinfo
-  export let chidx = 1
 
   export let input = ''
+  export let chidx = 1
+
   let files: FileList
 
   let form = {
@@ -59,7 +61,7 @@
 </script>
 
 <svelte:head>
-  <title>Thêm/sửa chương - {nvinfo.btitle_vi} - Chivi</title>
+  <title>Sửa text gốc - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
 
 <nav class="bread">
@@ -72,7 +74,7 @@
 </nav>
 
 <section class="article">
-  <h2>Thêm/sửa chương</h2>
+  <h2>Sửa chương</h2>
 
   <form action={action_url} method="POST" on:submit|preventDefault={submit}>
     <div class="form-field">
@@ -83,11 +85,6 @@
         lang="zh"
         id="text"
         bind:value={input} />
-    </div>
-
-    <div class="form-field">
-      <label class="label" for="file">Hoặc chọn text file:</label>
-      <input type="file" bind:files accept=".txt" />
     </div>
 
     <Footer>

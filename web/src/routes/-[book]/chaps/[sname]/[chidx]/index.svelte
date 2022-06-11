@@ -1,21 +1,14 @@
 <script context="module" lang="ts">
-  import { get } from 'svelte/store'
-  import { config } from '$lib/stores'
-
-  import { call_api } from '$lib/api_call'
-
   import { nvinfo_bar } from '$utils/topbar_utils'
   import { seed_url, to_pgidx } from '$utils/route_utils'
 
-  function gen_api_url(path: string, redo = false) {
-    let api_url = `/api/chaps/${path}?redo=${redo}`
-    if (get(config).tosimp) api_url += '&trad=true'
-    return api_url
-  }
+  import { get } from 'svelte/store'
+  import { config } from '$lib/stores'
 
-  export async function load({ fetch, params, stuff: { nvinfo, ubmemo } }) {
-    const { sname, chap: chap_slug } = params
-    const [chidx, cpart = 0] = chap_slug.split('-')[0].split('.')
+  export async function load({ fetch, params, stuff }) {
+    const { nvinfo } = stuff
+    const { sname, chidx: ch_slug } = params
+    const [chidx, cpart = 0] = ch_slug.split('-')[0].split('.')
 
     const api_url = gen_api_url(`${nvinfo.id}/${sname}/${chidx}/${+cpart}`)
     const api_res = await fetch(api_url)
@@ -24,11 +17,10 @@
       return { status: api_res.status, error: await api_res.text() }
     }
 
-    const props = await api_res.json()
-    Object.assign(props, { nvinfo, ubmemo })
+    const topbar = gen_topbar(nvinfo, sname, chidx)
 
-    const stuff = { topbar: gen_topbar(nvinfo, sname, chidx) }
-    return { props, stuff }
+    const props = Object.assign(stuff, await api_res.json())
+    return { props, stuff: { topbar } }
   }
 
   function gen_topbar(nvinfo: CV.Nvinfo, sname: string, chidx: number) {
@@ -43,6 +35,12 @@
       config: true,
     }
   }
+
+  function gen_api_url(path: string, redo = false) {
+    let api_url = `/api/chaps/${path}?redo=${redo}`
+    if (get(config).tosimp) api_url += '&trad=true'
+    return api_url
+  }
 </script>
 
 <script lang="ts">
@@ -54,9 +52,12 @@
   import Notext from '$gui/parts/Notext.svelte'
   import Footer from '$gui/sects/Footer.svelte'
   import CvPage from '$gui/sects/MtPage.svelte'
-  import ChapSeed from '../_layout/ChapSeed.svelte'
+  import Chtabs from './_tabs.svelte'
+  import { call_api } from '$lib/api_call'
 
   export let nvinfo: CV.Nvinfo
+  export let nslist: CV.Nvseed[]
+
   export let ubmemo: CV.Ubmemo
 
   // $: nvinfo = $page.stuff.nvinfo
@@ -106,7 +107,7 @@
     const home = seed_url(bslug, sname, 1)
     const list = seed_url(bslug, sname, to_pgidx(chidx))
 
-    const base = `/-${bslug}/-${sname}/`
+    const base = `/-${bslug}/chaps/${sname}/`
     const prev = _prev ? `${base}${_prev}` : home
     const next = _next ? `${base}${_next}` : list
 
@@ -155,7 +156,7 @@
 
 <CvPage {cvdata} {zhtext} {on_change}>
   <svelte:fragment slot="header">
-    <ChapSeed {chmeta} {chinfo} />
+    <Chtabs {nvinfo} {nslist} {chmeta} {chinfo} />
   </svelte:fragment>
 
   <svelte:fragment slot="notext">

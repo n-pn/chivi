@@ -1,50 +1,19 @@
 <script context="module" lang="ts">
   import { session, page } from '$app/stores'
-  import { suggest_read } from '$utils/ubmemo_utils'
 
   export async function load({ fetch, stuff, url, params: { sname } }) {
-    const { nvinfo, ubmemo } = stuff
+    const { nvinfo } = stuff
 
-    const pgidx = +url.searchParams.get('pg') || 1
-
-    const payload = await load_page(fetch, nvinfo, sname, pgidx)
-    if (payload.error) return payload
-
-    stuff.topbar = gen_topbar(nvinfo, ubmemo, url)
-    payload.props.nvinfo = nvinfo
-    payload.props.ubmemo = ubmemo
-    payload.stuff = stuff
-
-    return payload
-  }
-
-  function gen_topbar(nvinfo: CV.Nvinfo, ubmemo: CV.Ubmemo, { pathname }) {
-    const { btitle_vi, bslug } = nvinfo
-    return {
-      left: [
-        [btitle_vi, 'book', { href: `/-${bslug}`, show: 'tm', kind: 'title' }],
-        ['Chương tiết', 'list', { href: pathname, show: 'pm' }],
-      ],
-      right: [suggest_read(nvinfo, ubmemo)],
-    }
-  }
-
-  async function load_page(
-    fetch: CV.Fetch,
-    nvinfo: CV.Nvinfo,
-    sname: string,
-    pgidx: number,
-    force = false
-  ) {
-    const api_url = `/api/chaps/${nvinfo.id}/${sname}?pg=${pgidx}&force=${force}`
+    const pg = +url.searchParams.get('pg') || 1
+    const api_url = gen_api_url(nvinfo, sname, `/${pg}`)
     const api_res = await fetch(api_url)
-    const payload = await api_res.json()
-    if (payload.error) return payload
 
-    const { chseed } = payload.props
-    if (chseed.utime > nvinfo.mftime) nvinfo.mftime = chseed.utime
+    const chlist = await api_res.json()
+    return { props: Object.assign(stuff, { chlist }) }
+  }
 
-    return payload
+  function gen_api_url({ bslug }, sname: string, tail = '') {
+    return `/api/seeds/${bslug}/${sname}${tail}`
   }
 </script>
 
@@ -54,35 +23,36 @@
   import Chlist from '$gui/parts/Chlist.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import SeedList from '../_layout/SeedList.svelte'
+  import SeedTabs from '../_tabs.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import { rel_time } from '$utils/time_utils'
+  import { invalidate } from '$app/navigation'
 
-  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
-  export let ubmemo: CV.Ubmemo = $page.stuff.ubmemo
+  export let nvinfo: CV.Nvinfo
+  export let ubmemo: CV.Ubmemo
 
-  export let nvseed: Array<CV.Chseed>
-  export let chseed: CV.Chseed
-  export let chpage: CV.Chpage
+  export let nslist: CV.Nvseed[]
+  export let nvseed: CV.Nvseed
+  export let chlist: CV.Chlist
 
   $: pager = new Pager($page.url, { sname: 'union', pg: 1 })
 
   let _refresh = false
   let _error: string
 
-  async function force_update() {
+  async function refresh_seed() {
     _refresh = true
     _error = ''
 
-    // prettier-ignore
-    const payload = await load_page(fetch, nvinfo, chseed.sname, chpage.pgidx, true)
+    const api_url = gen_api_url(nvinfo, nvseed.sname, '?force=true')
+    const api_res = await fetch(api_url)
 
-    if (payload.props) {
-      nvseed = payload.props.nvseed
-      chseed = payload.props.chseed
-      chpage = payload.props.chpage
+    if (api_res.ok) {
+      await api_res.json()
+      invalidate(`/api/seeds/${nvinfo.bslug}`)
+      // invalidate(`/api/${nvinfo.bslug}`)
     } else {
-      _error = payload.error
+      _error = await api_res.text()
     }
 
     _refresh = false
@@ -101,16 +71,14 @@
   <span class="crumb _text">Chương tiết</span>
 </nav>
 
-<chap-page>
-  <page-head>
-    <SeedList {nvinfo} {nvseed} {chseed} pgidx={chpage.pgidx} />
-  </page-head>
+<SeedTabs {nvinfo} {nslist} cur_sname={nvseed.sname} cur_pgidx={chlist.pgidx} />
 
+<chap-page>
   <page-info>
     <info-left>
-      <info-text>{chseed.sname}</info-text>
-      <info-span>{chpage.total} chương</info-span>
-      <info-span><RTime mtime={chseed.utime} /></info-span>
+      <info-text>{nvseed.sname}</info-text>
+      <info-span>{nvseed.chaps} chương</info-span>
+      <info-span><RTime mtime={nvseed.utime} /></info-span>
     </info-left>
 
     <info-right>
@@ -118,16 +86,16 @@
         class="m-btn _primary umami--click--chaps-force-update"
         disabled={$session.privi < 1}
         data-tip="Yêu cầu quyền hạn: Đăng nhập"
-        on:click={force_update}>
+        on:click={refresh_seed}>
         <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
         <span class="-hide">Đổi mới</span>
       </button>
 
-      {#if internal_seed(chseed.sname)}
+      {#if internal_seed(nvseed.sname)}
         <a
           class="m-btn"
           class:_disable={$session.privi < 2}
-          href="/-{nvinfo.bslug}/$self/+chap?chidx={chpage.total + 1}"
+          href="/-{nvinfo.bslug}/chaps/+chap?chidx={nvseed.chaps + 1}"
           data-tip="Yêu cầu quyền hạn: 2">
           <SIcon name={$session.privi < 2 ? 'lock' : 'circle-plus'} />
           <span class="-hide">Thêm chương</span>
@@ -135,7 +103,7 @@
       {:else}
         <a
           class="m-btn"
-          href={chseed._link}
+          href={nvseed.slink}
           target="_blank"
           rel="external noopener noreferer">
           <SIcon name="external-link" />
@@ -148,37 +116,37 @@
   {#if _error}<div class="error">{_error}</div>{/if}
   <div class="chap-hint">
     <span>Gợi ý:</span>
-    <span class="-hint" class:_bold={chpage.stale}
+    <span class="-hint" class:_bold={!nvseed.fresh}
       >Bấm "<SIcon name="refresh" /> Đổi mới" để cập nhật danh sách chương tiết.</span>
     <span class="-stat"
-      >Lần cập nhật cuối: <strong>{rel_time(chpage.stime)}</strong>.</span>
+      >Lần cập nhật cuối: <strong>{rel_time(nvseed.stime)}</strong>.</span>
   </div>
 
   <chap-list>
-    {#if chpage.pgmax > 0}
+    {#if chlist.pgmax > 0}
       <Chlist
         bslug={nvinfo.bslug}
-        sname={chseed.sname}
-        chaps={chpage.lasts}
-        total={chpage.total}
+        sname={nvseed.sname}
+        total={nvseed.chaps}
+        chaps={nvseed.lasts}
         track={ubmemo}
         privi={$session.privi}
-        stype={chseed.stype} />
+        stype={nvseed.stype} />
 
       <div class="chlist-sep" />
 
       <Chlist
         bslug={nvinfo.bslug}
-        sname={chseed.sname}
-        chaps={chpage.chaps}
-        total={chpage.total}
+        sname={nvseed.sname}
+        total={nvseed.chaps}
+        chaps={chlist.chaps}
         track={ubmemo}
         privi={$session.privi}
-        stype={chseed.stype} />
+        stype={nvseed.stype} />
 
       <Footer>
         <div class="foot">
-          <Mpager {pager} pgidx={chpage.pgidx} pgmax={chpage.pgmax} />
+          <Mpager {pager} pgidx={chlist.pgidx} pgmax={chlist.pgmax} />
         </div>
       </Footer>
     {:else}
@@ -213,14 +181,10 @@
     }
   }
 
-  page-head {
-    display: block;
-    @include border(--bd-main, $loc: bottom);
-  }
-
   page-info {
     display: flex;
-    margin-top: 0.75rem;
+    padding: 0.75rem 0;
+    @include border(--bd-main, $loc: bottom);
 
     // @include bgcolor(main);
     // @include bdradi(1rem, $loc: top);

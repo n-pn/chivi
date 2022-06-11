@@ -1,11 +1,13 @@
 <script context="module" lang="ts">
+  import { API } from '$lib/api'
+
   const links = [
     ['Discord', 'https://discord.gg/mdC3KQH'],
     ['Github', 'https://github.com/np-nam/chivi'],
     ['Facebook', 'https://www.facebook.com/chivi.fb/'],
   ]
 
-  export async function load() {
+  export async function load({ fetch, stuff }) {
     const topbar = {
       right: [
         ['Dịch nhanh', 'bolt', { href: '/qtran', show: 'tm' }],
@@ -14,7 +16,7 @@
       search: '',
     }
 
-    return { stuff: { topbar } }
+    return { stuff: { topbar, api: new API(fetch, stuff) } }
   }
 </script>
 

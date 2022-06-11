@@ -64,7 +64,6 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       jb.object {
         jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
         jb.field "ubmemo" { UbmemoView.new(ubmemo).to_json(jb) }
-        jb.field "nvseed", nvseeds.map { |x| ChseedView.new(x) }
       }
     end
   end
@@ -105,7 +104,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     })
   end
 
-  def detail
+  def extra
     unless nvinfo = Nvinfo.load!(params["bslug"])
       return halt!(404, "Quyển sách không tồn tại!")
     end
@@ -118,73 +117,14 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   end
 
   def upsert
-    if _cvuser.privi < 3
-      raise Unauthorized.new("Cần quyền hạn tối thiểu là 3")
+    raise Unauthorized.new("Cần quyền hạn tối thiểu là 3") if _cvuser.privi < 3
+    form = NvinfoForm.new(params)
+
+    if nvinfo = form.save(_cvuser.uname)
+      serv_json({bslug: nvinfo.bslug})
+    else
+      serv_text(form.errors, 400)
     end
-
-    btitle_zh = TextUtil.fix_spaces(params["btitle_zh"]).strip
-    author_zh = TextUtil.fix_spaces(params["author_zh"]).strip
-    btitle_zh, author_zh = BookUtil.fix_names(btitle_zh, author_zh)
-
-    author = Author.upsert!(author_zh)
-    params["author_vi"]?.try do |author_vi|
-      author_vi = TextUtil.fix_spaces(author_vi).strip
-      unless author_vi.empty?
-        BookUtil.vi_authors.append!(author_zh, author_vi)
-        author.tap(&.set_vname(author_vi)).save!
-      end
-    end
-
-    btitle = Btitle.upsert!(btitle_zh)
-    params["btitle_vi"]?.try do |btitle_vi|
-      btitle_vi = TextUtil.fix_spaces(btitle_vi).strip
-      unless btitle_vi.empty?
-        BookUtil.vi_btitles.append!(btitle_zh, btitle_vi)
-        btitle.tap(&.set_vname(btitle_vi)).save!
-      end
-    end
-
-    nvinfo = Nvinfo.upsert!(author, btitle, fix_names: true)
-    nvseed = Nvseed.upsert!(nvinfo, "users", nvinfo.bhash)
-
-    nvseed.nvinfo = nvinfo
-    nvseed.btitle = btitle_zh
-    nvseed.author = author_zh
-
-    params["bintro"]?.try do |bintro|
-      bintro = TextUtil.split_html(bintro, true)
-      nvseed.set_bintro(bintro, mode: 2)
-    end
-
-    params["genres"]?.try do |genres|
-      vgenres = genres.split(",").map(&.strip)
-      nvinfo.igenres = GenreMap.map_int(vgenres)
-
-      zgenres = GenreMap.vi_to_zh(vgenres)
-      nvseed.set_genres(zgenres, mode: 1)
-    end
-
-    params["bcover"]?.try do |bcover|
-      bcover = TextUtil.fix_spaces(bcover).strip
-      nvseed.set_bcover(bcover, mode: 2)
-    end
-
-    params["status"]?.try do |status|
-      status = TextUtil.fix_spaces(status).strip.to_i
-      nvseed.set_status(status, mode: 2)
-    end
-
-    nvinfo.save!
-    nvseed.save!
-    Nvinfo.cache!(nvinfo)
-
-    spawn do
-      `bin/bcover_cli "#{nvinfo.scover}" #{nvinfo.bcover} users`
-      body = params.to_unsafe_h.tap(&.delete("_json"))
-      CtrlUtil.log_user_action("nvinfo-upsert", body, _cvuser.uname)
-    end
-
-    serv_json({bslug: nvinfo.bslug})
   end
 
   def delete

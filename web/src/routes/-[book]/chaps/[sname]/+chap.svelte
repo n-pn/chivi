@@ -42,23 +42,23 @@
     return input.replace(/\r?\n|\r/g, '\n')
   }
 
-  function build_split_regex(split_mode: number, split_opts: any) {
+  function build_split_regex(split_mode: number, opts: any) {
     switch (split_mode) {
       case 0:
         return /^\/{3,}/mu
 
       case 1:
-        return new RegExp(`\\n{${split_opts.min_blank + 1},}`, 'mu')
+        return new RegExp(`\\n{${opts.min_blank + 1},}`, 'mu')
 
       case 2:
-        const count = split_opts.blank_before ? 2 : 1
+        const count = opts.blank_before ? 2 : 1
         return new RegExp(`\\n{${count},}[^\\s]`, 'mu')
 
       case 3:
-        return new RegExp(`^\\s*第[\\d${numbers}]+[${split_opts.suffix}]`, 'mu')
+        return new RegExp(`^\\s*第[\\d${numbers}]+[${opts.suffix}]`, 'mu')
 
       case 4:
-        return new RegExp(split_opts.regex, 'mu')
+        return new RegExp(opts.regex, 'mu')
 
       default:
         return /\\n{3,}/mu
@@ -86,7 +86,7 @@
     trunc_after: false,
   }
 
-  let split_opts = {
+  let opts = {
     min_blank: 2,
     trim_space: false,
     blank_before: false,
@@ -119,9 +119,9 @@
     }
   }
 
-  $: chap_count = dry_check(input, form.split_mode, split_opts)
+  $: chap_count = dry_check(input, form.split_mode, opts)
 
-  function dry_check(input: string, split_mode: number, split_opts: any) {
+  function dry_check(input: string, mode: number, opts: any) {
     if (loading || !input) return 0
     err_msg = ''
 
@@ -132,18 +132,13 @@
 
     let data = input
 
-    if (split_mode == 1 && split_opts.trim_space) {
+    if (mode == 1 && opts.trim_space) {
       data = data.replace(/[\u3000 ]+/gu, '')
     }
 
     try {
-      const regex = build_split_regex(split_mode, split_opts)
-      const chaps = data.split(regex)
-
-      // const first = chaps.slice(0, 10)
-      // console.log(first.map((x) => x.split('\n').slice(0, 2).join('\n')))
-
-      return chaps.length
+      const regex = build_split_regex(mode, opts)
+      return data.split(regex).length
     } catch (err) {
       err_msg = err.toString()
       return 0
@@ -164,19 +159,17 @@
     }
 
     for (const key in form) {
-      const val = form[key]
-      if (val) body.append(key, val.toString())
+      body.append(key, form[key].toString())
     }
 
-    for (const key in split_opts) {
-      const val = split_opts[key]
-      if (val) body.append(key, val.toString())
+    for (const key in opts) {
+      body.append(key, opts[key].toString())
     }
 
     const res = await fetch(action_url, { method: 'POST', body })
 
     if (!res.ok) err_msg = await res.text()
-    else goto(`/-${nvinfo.bslug}/$self`)
+    else goto(`/-${nvinfo.bslug}/qtran/$self`)
   }
 </script>
 
@@ -262,7 +255,7 @@
               class="m-input _xs"
               type="number"
               name="min_blank"
-              bind:value={split_opts.min_blank}
+              bind:value={opts.min_blank}
               min={1}
               max={4} /></label>
 
@@ -271,7 +264,7 @@
               class="m-input"
               type="checkbox"
               name="trim_space"
-              bind:checked={split_opts.trim_space} /> Lọc bỏ dấu cách</label>
+              bind:checked={opts.trim_space} /> Lọc bỏ dấu cách</label>
         </div>
       {:else if form.split_mode == 2}
         <label class="label"
@@ -279,21 +272,21 @@
             class="m-input"
             type="checkbox"
             name="blank_before"
-            bind:checked={split_opts.blank_before} /> Phía trước phải là dòng trắng</label>
+            bind:checked={opts.blank_before} /> Phía trước phải là dòng trắng</label>
       {:else if form.split_mode == 3}
         <label class="label"
           >Đằng sau <code>第[số từ]+</code> là:
           <input
             class="m-input _xs"
             name="suffix"
-            bind:value={split_opts.suffix} /></label>
+            bind:value={opts.suffix} /></label>
       {:else if form.split_mode == 4}
         <label class="label"
           >Custom regex:
           <input
             class="m-input _xs"
             name="regex"
-            bind:value={split_opts.regex} /></label>
+            bind:value={opts.regex} /></label>
       {/if}
     </div>
 
@@ -313,7 +306,7 @@
         </p>
         <pre>/// 第二十四集 今当升云<br />chương 1<br />nội dung chương 1<br />///<br />chương hai sẽ thừa kế tên tập phía trên<br />xxxxxxxx</pre>
       {:else if form.split_mode == 1}
-        {@const min_blank = split_opts.min_blank}
+        {@const min_blank = opts.min_blank}
 
         <p>
           Cách chương tiết sẽ được tách nếu giữa chúng có ít nhất {min_blank} khoảng

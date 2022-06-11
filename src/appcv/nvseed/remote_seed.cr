@@ -40,16 +40,16 @@ class CV::Nvseed
     type == 4 || (force && type == 3)
   end
 
-  def staled?(privi : Int32 = 4, force : Bool = false)
-    return true if self.chap_count == 0
-    tspan = Time.utc - Time.unix(self.stime)
-    tspan >= map_ttl(force: force) * (4 - privi)
+  def fresh?(privi : Int32 = 4, force : Bool = false)
+    return false if self.chap_count == 0
+
+    ttl = map_ttl(force)
+    Time.unix(self.stime) > Time.utc - ttl * (4 &- privi)
   end
 
-  STALES = {1.days, 5.days, 10.days, 30.days}
+  TTL = {1.days, 5.days, 10.days, 30.days}
 
   def map_ttl(force : Bool = false)
-    return 5.minutes if force
-    STALES[self.nvinfo.status]? || 60.days
+    force ? 2.minutes : TTL[self.nvinfo.status]? || 10.days
   end
 end

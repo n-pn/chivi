@@ -36,7 +36,17 @@ class CV::Btitle
 
   #########################################
 
-  def self.upsert!(zname : String, bdict : String = "combine") : self
-    find({zname: zname}) || new({zname: zname}).tap(&.regen!(bdict))
+  def self.upsert!(zname : String, vname : String? = nil, bdict : String = "combine") : self
+    unless btitle = find({zname: zname})
+      btitle = new({zname: zname})
+
+      btitle.set_vname(vname || BookUtil.btitle_vname(zname, bdict))
+      btitle.set_hname(BookUtil.hanviet(zname))
+
+      return btitle.tap(&.save!)
+    end
+
+    btitle.tap(&.set_vname(vname)).save! if vname && vname != btitle.vname
+    btitle
   end
 end

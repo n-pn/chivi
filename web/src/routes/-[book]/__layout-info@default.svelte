@@ -31,6 +31,7 @@
   import RTime from '$gui/atoms/RTime.svelte'
   import BCover from '$gui/atoms/BCover.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
+  import { getContext } from 'svelte'
 
   export let nvinfo = $page.stuff.nvinfo
   export let ubmemo = $page.stuff.ubmemo
@@ -177,7 +178,7 @@
       <SIcon name="package" />
     </a>
     {#if $session.privi > 2}
-      <a class="m-btn _harmful" href="/-{nvinfo.bslug}/edit">
+      <a class="m-btn _harmful" href="/-{nvinfo.bslug}/+edit">
         <SIcon name="edit" />
       </a>
     {/if}

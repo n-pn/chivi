@@ -32,7 +32,8 @@ declare namespace App {
   interface Stuff {
     nvinfo: CV.Nvinfo
     ubmemo: CV.Ubmemo
-    nvseed: CV.Chseed[]
+    nslist: CV.Chseed[]
+
     nv_tab: 'index' | 'board' | 'crits' | 'chaps'
     topbar: Topbar
   }

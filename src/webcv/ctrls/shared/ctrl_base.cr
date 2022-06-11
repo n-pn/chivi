@@ -29,7 +29,7 @@ class CV::BaseCtrl < Amber::Controller::Base
     end
 
     if @maxage > 0
-      response.headers.add("Cache-Control", "#{@cache_type}, s-maxage=#{@maxage}")
+      response.headers.add("Cache-Control", "#{@cache_type}, max-age=#{@maxage}")
     end
   end
 
