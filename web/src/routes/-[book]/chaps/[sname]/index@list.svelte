@@ -1,19 +1,16 @@
 <script context="module" lang="ts">
   import { session, page } from '$app/stores'
 
-  export async function load({ fetch, stuff, url, params: { sname } }) {
-    const { nvinfo } = stuff
+  export async function load({ stuff, url, params: { sname } }) {
+    const { api, nvinfo } = stuff
 
-    const pg = +url.searchParams.get('pg') || 1
-    const api_url = gen_api_url(nvinfo, sname, `/${pg}`)
-    const api_res = await fetch(api_url)
+    const pgidx = +url.searchParams.get('pg') || 1
+    const chlist = await api.chlist(nvinfo.bslug, sname, pgidx)
+    if (chlist.error) return chlist
 
-    const chlist = await api_res.json()
-    return { props: Object.assign(stuff, { chlist }) }
-  }
+    const props = Object.assign(stuff, { chlist })
 
-  function gen_api_url({ bslug }, sname: string, tail = '') {
-    return `/api/seeds/${bslug}/${sname}${tail}`
+    return { props }
   }
 </script>
 
@@ -23,7 +20,6 @@
   import Chlist from '$gui/parts/Chlist.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import SeedTabs from '../_tabs.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import { rel_time } from '$utils/time_utils'
   import { invalidate } from '$app/navigation'
@@ -31,7 +27,6 @@
   export let nvinfo: CV.Nvinfo
   export let ubmemo: CV.Ubmemo
 
-  export let nslist: CV.Nvseed[]
   export let nvseed: CV.Nvseed
   export let chlist: CV.Chlist
 
@@ -44,15 +39,13 @@
     _refresh = true
     _error = ''
 
-    const api_url = gen_api_url(nvinfo, nvseed.sname, '?force=true')
-    const api_res = await fetch(api_url)
+    const res = $page.stuff.api.nvseed(nvinfo.bslug, nvseed.sname, true)
 
-    if (api_res.ok) {
-      await api_res.json()
-      invalidate(`/api/seeds/${nvinfo.bslug}`)
-      // invalidate(`/api/${nvinfo.bslug}`)
+    if (res.error) {
+      _error = res.error
     } else {
-      _error = await api_res.text()
+      nvseed = res.val
+      invalidate($page.url.toString())
     }
 
     _refresh = false
@@ -62,16 +55,6 @@
     return sname.match(/^$|@|users|union/)
   }
 </script>
-
-<nav class="bread">
-  <a href="/-{nvinfo.bslug}" class="crumb _link">
-    <SIcon name="book" />
-    <span class="-text">{nvinfo.btitle_vi}</span></a>
-  <span>/</span>
-  <span class="crumb _text">Chương tiết</span>
-</nav>
-
-<SeedTabs {nvinfo} {nslist} cur_sname={nvseed.sname} cur_pgidx={chlist.pgidx} />
 
 <chap-page>
   <page-info>
@@ -95,7 +78,8 @@
         <a
           class="m-btn"
           class:_disable={$session.privi < 2}
-          href="/-{nvinfo.bslug}/chaps/+chap?chidx={nvseed.chaps + 1}"
+          href="/-{nvinfo.bslug}/chaps/{nvseed.sname}/+chap?chidx={nvseed.chaps +
+            1}"
           data-tip="Yêu cầu quyền hạn: 2">
           <SIcon name={$session.privi < 2 ? 'lock' : 'circle-plus'} />
           <span class="-hide">Thêm chương</span>

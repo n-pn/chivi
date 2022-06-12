@@ -32,7 +32,14 @@ class CV::ChInfo
     end
 
     def slugify(title : String)
-      TextUtil.tokenize(title).first(10).join("-")
+      tokens = TextUtil.tokenize(title)
+
+      if tokens.size > 8
+        tokens.truncate(0, 8)
+        tokens[7] = ""
+      end
+
+      tokens.join("-")
     end
   end
 

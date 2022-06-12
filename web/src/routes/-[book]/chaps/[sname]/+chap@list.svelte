@@ -1,10 +1,11 @@
 <script context="module" lang="ts">
   /** @type {import('./[slug]').Load} */
-  export async function load({ stuff }) {
-    const { nvinfo } = stuff
+  export async function load({ stuff, url }) {
+    const { nvinfo, nvseed } = stuff
 
     stuff.topbar = gen_topbar(nvinfo)
-    return { props: { nvinfo }, stuff }
+    const chidx = +url.searchParams.get('chidx') || 1
+    return { props: { nvinfo, nvseed, chidx }, stuff }
   }
 
   function gen_topbar({ btitle_vi, bslug }) {
@@ -63,12 +64,14 @@
   import { SIcon, Footer } from '$gui'
 
   export let nvinfo: CV.Nvinfo
+  export let nvseed: CV.Nvseed
 
   export let input = ''
+  export let chidx = 1
   let files: FileList
 
   let form = {
-    chidx: $page.url.searchParams.get('chidx') || 1,
+    chidx,
     chvol: '',
     tosimp: false,
     unwrap: false,
@@ -87,7 +90,7 @@
   let encoding = 'GBK'
   $: if (encoding && files) read_to_input(files[0], encoding)
 
-  $: action_url = `/api/texts/${nvinfo.id}`
+  $: action_url = `/api/texts/${nvseed.sname}/${nvseed.snvid}`
 
   let loading = false
   let changed = false
@@ -164,17 +167,8 @@
 </script>
 
 <svelte:head>
-  <title>Thêm/sửa chương - {nvinfo.btitle_vi} - Chivi</title>
+  <title>Thêm text chương - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
-
-<nav class="bread">
-  <a href="/-{nvinfo.bslug}" class="crumb _link">
-    <SIcon name="book" />
-    <span>{nvinfo.btitle_vi}</span>
-  </a>
-  <span>/</span>
-  <a href="/-{nvinfo.bslug}/-union" class="crumb _link">Chương tiết</a>
-</nav>
 
 <section class="article">
   <h2>Thêm/sửa chương</h2>

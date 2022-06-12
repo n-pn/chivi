@@ -5,21 +5,19 @@
   import { get } from 'svelte/store'
   import { config } from '$lib/stores'
 
-  export async function load({ fetch, params, stuff }) {
-    const { nvinfo } = stuff
-    const { sname, chidx: ch_slug } = params
-    const [chidx, cpart = 0] = ch_slug.split('-')[0].split('.')
+  export async function load({ params, stuff }) {
+    const { api, nvinfo, ubmemo, nslist } = stuff
+    const { sname, chidx, cpart: slug } = params
+    const cpart = +slug.split('/')[1] || 1
 
-    const api_url = gen_api_url(`${nvinfo.id}/${sname}/${chidx}/${+cpart}`)
-    const api_res = await fetch(api_url)
-
-    if (!api_res.ok) {
-      return { status: api_res.status, error: await api_res.text() }
-    }
+    const api_url = gen_api_url(nvinfo, sname, chidx, cpart - 1)
+    const api_res = await api.call(api_url)
+    if (api_res.error) return api_res
 
     const topbar = gen_topbar(nvinfo, sname, chidx)
+    const props = Object.assign(api_res, { nvinfo, ubmemo, nslist })
 
-    const props = Object.assign(stuff, await api_res.json())
+    props.redirect = slug == ''
     return { props, stuff: { topbar } }
   }
 
@@ -29,15 +27,21 @@
     return {
       left: [
         nvinfo_bar(nvinfo, { show: 'pl' }),
-        [`[${sname}]`, null, { href: list_url, kind: 'zseed' }],
+        [sname, 'list', { href: list_url, kind: 'zseed' }],
       ],
       right: [],
       config: true,
     }
   }
 
-  function gen_api_url(path: string, redo = false) {
-    let api_url = `/api/chaps/${path}?redo=${redo}`
+  function gen_api_url(
+    { id: book },
+    sname: string,
+    chidx: number,
+    cpart = 0,
+    redo = false
+  ) {
+    let api_url = `/api/chaps/${book}/${sname}/${chidx}/${cpart}?redo=${redo}`
     if (get(config).tosimp) api_url += '&trad=true'
     return api_url
   }
@@ -73,34 +77,37 @@
   export let min_privi = -1
   export let chidx_max = 0
 
-  const on_change = () => reload_chap(false)
-
   $: paths = gen_paths(nvinfo, chmeta, chinfo)
 
-  $: globalThis.history?.replaceState({ chmeta }, null, chmeta._curr)
+  if ($$props.redirect) {
+    const path = $page.url.pathname
+    const url = path.replace(new RegExp(`${chinfo.chidx}$`), chmeta._curr)
+    globalThis.history?.replaceState({ chmeta }, null, url)
+  }
 
-  async function reload_chap(redo = false) {
+  async function reload_chap() {
     if ($session.privi < 1) return
 
-    if (redo) {
-      const { sname, cpart } = chmeta
-      const uri = `${nvinfo.id}/${sname}/${chinfo.chidx}/${cpart}`
-      const res = await fetch(gen_api_url(uri, true))
+    const { sname, cpart } = chmeta
+    const url = gen_api_url(nvinfo, sname, chinfo.chidx, cpart, true)
+    const res = await $page.stuff.api.call(url)
 
-      if (!res.ok) return console.log(`Error: ${await res.text()}`)
-      const props = await res.json()
+    if (res.error) return console.log(`Error: ${res.error}`)
 
-      cvdata = props.cvdata
-      chmeta = props.chmeta
-      chinfo = props.chinfo
-      ubmemo = props.ubmemo
-    } else {
-      const mtl = $config.engine == 2 ? '_v2' : 'api'
-      const url = `/${mtl}/qtran/chaps/${rl_key}?trad=${$config.tosimp}&user=${$session.uname}`
-      const res = await fetch(url)
-      if (res.ok) cvdata = await res.text()
-      else console.log(res.status)
-    }
+    cvdata = res.cvdata
+    chmeta = res.chmeta
+    chinfo = res.chinfo
+    ubmemo = res.ubmemo
+  }
+
+  async function retranslate() {
+    const base = $config.engine == 2 ? '/_v2/qtran/chaps' : '/api/qtran/chaps'
+
+    const url = `${base}/${rl_key}?trad=${$config.tosimp}&user=${$session.uname}`
+    const res = await fetch(url)
+
+    if (res.ok) cvdata = await res.text()
+    else console.log(res.status)
   }
 
   function gen_paths({ bslug }, { sname, _prev, _next }, { chidx }) {
@@ -154,7 +161,7 @@
   <span class="crumb _text">{chinfo.chvol}</span>
 </nav>
 
-<CvPage {cvdata} {zhtext} {on_change}>
+<CvPage {cvdata} {zhtext} on_change={retranslate}>
   <svelte:fragment slot="header">
     <Chtabs {nvinfo} {nslist} {chmeta} {chinfo} />
   </svelte:fragment>
@@ -183,30 +190,28 @@
         <svelte:fragment slot="content">
           <button
             class="gmenu-item umami--click-reconvert-chap"
-            disabled={$session.privi < 1}
-            on:click={() => reload_chap(false)}
+            disabled={$session.privi < 0}
+            on:click={retranslate}
             data-kbd="r">
             <SIcon name="rotate-clockwise" />
             <span>Dịch lại</span>
           </button>
 
-          {#if $session.privi > 1}
-            {#if chmeta.clink != '/'}
-              <button
-                class="gmenu-item umami--click--reload-rmtext"
-                on:click={() => reload_chap(true)}>
-                <SIcon name="rotate-rectangle" />
-                <span>Tải lại nguồn</span>
-              </button>
-            {:else}
-              <a
-                class="gmenu-item"
-                href="/-{nvinfo.bslug}/+chap?chidx={chinfo.chidx}&mode=edit">
-                <SIcon name="pencil" />
-                <span>Sửa text gốc</span>
-              </a>
-            {/if}
-          {/if}
+          <button
+            class="gmenu-item umami--click--reload-rmtext"
+            disabled={$session.privi < 0}
+            on:click={reload_chap}>
+            <SIcon name="rotate-rectangle" />
+            <span>Tải lại nguồn</span>
+          </button>
+
+          <a
+            class="gmenu-item"
+            class:_disable={$session.privi < 1}
+            href="/-{nvinfo.bslug}/chaps/{chmeta.sname}/{chinfo.chidx}/+edit">
+            <SIcon name="pencil" />
+            <span>Sửa text gốc</span>
+          </a>
 
           {#if on_memory && ubmemo.locked}
             <button

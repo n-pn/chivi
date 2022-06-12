@@ -12,7 +12,7 @@
   let show_less = true
 
   function chap_url(sname: string) {
-    return `/-${nvinfo.bslug}/chaps/${sname}/${chinfo.chidx}-`
+    return `/-${nvinfo.bslug}/chaps/${sname}/${chinfo.chidx}`
   }
 
   $: snames = nslist.map((x) => x.sname) || []

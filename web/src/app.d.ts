@@ -29,7 +29,10 @@ declare namespace App {
     search?: string = ''
   }
 
+  import type { API } from '$lib/api'
+
   interface Stuff {
+    api: API
     nvinfo: CV.Nvinfo
     ubmemo: CV.Ubmemo
     nslist: CV.Chseed[]

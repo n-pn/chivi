@@ -10,17 +10,20 @@
     if (!api_res) return { status: api_res.status, error: await api_res.text() }
 
     const input = await api_res.text()
-    stuff = Object.assign(stuff, { chidx, input, sname, snvid })
+    const props = { nvinfo, chidx, input, sname, snvid }
 
-    const topbar = gen_topbar(nvinfo)
-    return { props: stuff, stuff: { topbar } }
+    const topbar = gen_topbar(nvinfo, sname, chidx)
+    return { props, stuff: { topbar } }
   }
 
-  function gen_topbar({ btitle_vi, bslug }) {
+  function gen_topbar({ bslug, btitle_vi }, sname: string, chidx: number) {
+    const chap_href = `/-${bslug}/chaps/${sname}`
     return {
       left: [
-        [btitle_vi, 'book', { href: `/-${bslug}`, kind: 'title' }],
-        ['Sửa chương', 'file-plus', { href: '.', show: 'pl' }],
+        [btitle_vi, 'book', { href: `/-${bslug}`, kind: 'title', show: 'tm' }],
+        [sname, 'list', { href: chap_href, show: 'ts' }],
+        [`Ch. ${chidx}`, '', { href: `${chap_href}/${chidx}` }],
+        [`Sửa`, 'edit', { href: '+edit', show: 'pl' }],
       ],
     }
   }

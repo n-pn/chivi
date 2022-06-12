@@ -48,11 +48,22 @@ export class API {
     return await this.get(map, bslug, url, 300)
   }
 
-  async nvseed(bslug: string, sname: string) {
+  async nvseed(bslug: string, sname: string, force = false) {
     const map = this.maps.nslists
     const key = `${bslug}/${sname}`
-    const url = `/api/seeds/${key}`
+
+    let url = `/api/seeds/${key}`
+    if (force) {
+      map.delete(key)
+      url += '?force=true'
+    }
     return await this.get(map, key, url, 180)
+  }
+
+  async chlist(bslug: string, sname: string, pgidx = 1) {
+    const key = `${bslug}/${sname}/${pgidx}`
+    const url = `/api/seeds/${key}`
+    return await this.call(url)
   }
 
   async get<T>(
