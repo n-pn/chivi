@@ -58,10 +58,10 @@
 
   let uname = '@' + $session.uname
 
-  let _free = make_seed('union')
+  let _base = make_seed('union')
   let _self = make_seed(uname)
 
-  $: base_snames = ['union', '$free', uname]
+  $: base_snames = ['union', '$base', uname]
 
   let users: CV.Nvseed[] = []
   let other: CV.Nvseed[] = []
@@ -81,8 +81,8 @@
       if (base_snames.includes(nvseed.sname)) {
         switch (nvseed.sname) {
           case 'union':
-          case '$free':
-            _free = nvseed
+          case '$base':
+            _base = nvseed
             continue
 
           case uname:
@@ -113,16 +113,16 @@
 
 <seed-list>
   <a
-    href={seed_url(nvinfo.bslug, _free.sname, pgidx)}
+    href={seed_url(nvinfo.bslug, _base.sname, pgidx)}
     class="seed-name umami--click---swap-seed"
-    class:_active={_free.sname == _curr.sname}
+    class:_active={_base.sname == _curr.sname}
     data-tip="Danh sách chương tổng hợp từ các nguồn khác">
     <seed-label>
-      <span>$free</span>
+      <span>$base</span>
       <SIcon name="affiliate" />
     </seed-label>
 
-    <seed-stats><strong>{_free.chaps}</strong> chương</seed-stats>
+    <seed-stats><strong>{_base.chaps}</strong> chương</seed-stats>
   </a>
 
   {#if _self.chaps > 0 || $session.privi > 0}
@@ -133,7 +133,7 @@
       data-tip="Danh sách chương của cá nhân bạn">
       <seed-label>
         <span>$self</span>
-        <SIcon name="affiliate" />
+        <SIcon name="rss" />
       </seed-label>
 
       <seed-stats><strong>{_self.chaps}</strong> chương</seed-stats>
@@ -193,7 +193,7 @@
       on:click={() => (show_other = !show_other)}>
       <seed-label>
         <span>Khác</span>
-        <SIcon name="cloud" />
+        <SIcon name="archive" />
       </seed-label>
 
       <seed-stats><strong>{other.length}</strong> nguồn</seed-stats>
@@ -262,7 +262,7 @@
     @include label();
 
     line-height: 1rem;
-    font-size: rem(12px);
+    font-size: rem(13px);
 
     :global(svg) {
       width: 1rem;

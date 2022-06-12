@@ -42,7 +42,7 @@ module CV::SnameMap
     when "users", "staff", "zxcs_me"
       1 # manual update
     when "jx_la", "zhwenpg", "shubaow", "sdyfcm",
-         "duokan8", "biquyue", "xswang"
+         "duokan8", "biquyue", "xswang", "biqugee"
       2 # dead remote
     when "paoshu8", "hetushu", "5200", "biqu5200", "ptwxz"
       3 # slow but still alive
