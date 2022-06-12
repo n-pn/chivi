@@ -32,7 +32,7 @@ module CV::HttpUtil
 
   def fetch(url : String, lbl = "-/-", encoding = "UTF-8") : String
     try = 1
-    cmd = "curl -L -k -s -m 30 '#{url}'"
+    cmd = "curl -L -k -s -m 10 '#{url}'"
 
     if encoding != "UTF-8"
       cmd += " | iconv -c -f #{encoding} -t UTF-8"
@@ -46,7 +46,7 @@ module CV::HttpUtil
     rescue err
       Log.error { err.inspect_with_backtrace }
     ensure
-      raise "[GET: #{url} failed after 3 attempts.]" if try > 2
+      raise "[GET: #{url} failed after #{try} attempts.]" if try > 1
       try += 1
       sleep 250.milliseconds * try
     end
