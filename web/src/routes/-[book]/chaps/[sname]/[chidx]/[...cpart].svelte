@@ -79,7 +79,7 @@
 
   $: paths = gen_paths(nvinfo, chmeta, chinfo)
 
-  if ($$props.redirect) {
+  $: if ($$props.redirect) {
     const path = $page.url.pathname
     const url = path.replace(new RegExp(`${chinfo.chidx}$`), chmeta._curr)
     globalThis.history?.replaceState({ chmeta }, null, url)
@@ -188,14 +188,13 @@
         </div>
 
         <svelte:fragment slot="content">
-          <button
-            class="gmenu-item umami--click-reconvert-chap"
-            disabled={$session.privi < 0}
-            on:click={retranslate}
-            data-kbd="r">
-            <SIcon name="rotate-clockwise" />
-            <span>Dịch lại</span>
-          </button>
+          <a
+            class="gmenu-item"
+            class:_disable={$session.privi < 1}
+            href="/-{nvinfo.bslug}/chaps/{chmeta.sname}/{chinfo.chidx}/+edit">
+            <SIcon name="pencil" />
+            <span>Sửa text gốc</span>
+          </a>
 
           <button
             class="gmenu-item umami--click--reload-rmtext"
@@ -205,13 +204,14 @@
             <span>Tải lại nguồn</span>
           </button>
 
-          <a
-            class="gmenu-item"
-            class:_disable={$session.privi < 1}
-            href="/-{nvinfo.bslug}/chaps/{chmeta.sname}/{chinfo.chidx}/+edit">
-            <SIcon name="pencil" />
-            <span>Sửa text gốc</span>
-          </a>
+          <button
+            class="gmenu-item umami--click-reconvert-chap"
+            disabled={$session.privi < 0}
+            on:click={retranslate}
+            data-kbd="r">
+            <SIcon name="rotate-clockwise" />
+            <span>Dịch lại</span>
+          </button>
 
           {#if on_memory && ubmemo.locked}
             <button
