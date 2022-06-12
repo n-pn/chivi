@@ -49,7 +49,7 @@ export class API {
   }
 
   async nvseed(bslug: string, sname: string, force = false) {
-    const map = this.maps.nslists
+    const map = this.maps.nvseeds
     const key = `${bslug}/${sname}`
 
     let url = `/api/seeds/${key}`

@@ -23,7 +23,7 @@
 
     <ul>
       <li>
-        Với nguồn <x-seed>union</x-seed> (<SIcon name="share" />), bạn cần phải
+        Với nguồn <x-seed>$base</x-seed> (<SIcon name="share" />), bạn cần phải
         đăng nhập để xem các chương từ <x-chap>#{chidx_max + 1}</x-chap>.
       </li>
       <li>
@@ -93,8 +93,10 @@
         tiết bị lỗi.
       </p>
       <p>
-        Hãy kiểm tra từ <a href={chmeta.clink} rel="noopener noferrer"
-          >trang gốc</a> xem có phải vấn đề từ bên đó hay không.
+        Hãy kiểm tra từ <a
+          href={chmeta.clink}
+          rel="noopener noferrer"
+          target="_blank">trang gốc</a> xem có phải vấn đề từ bên đó hay không.
       </p>
       <p>
         Nếu vấn đề thuộc về bên Chivi, hãy liên hệ với ban quản trị để khắc

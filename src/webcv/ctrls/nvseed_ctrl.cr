@@ -23,7 +23,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
     force = params["force"]? == "true"
     fresh = nvseed.fresh?(_cvuser.privi, force: force)
-    nvseed.refresh!(force: fresh) if force
+    nvseed.refresh!(force: !fresh) if force
 
     serv_json(NvseedView.new(nvseed, full: true, fresh: fresh || force))
   end

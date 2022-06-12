@@ -39,12 +39,12 @@
     _refresh = true
     _error = ''
 
-    const res = $page.stuff.api.nvseed(nvinfo.bslug, nvseed.sname, true)
+    const res = await $page.stuff.api.nvseed(nvinfo.bslug, nvseed.sname, true)
 
     if (res.error) {
       _error = res.error
     } else {
-      nvseed = res.val
+      nvseed = res
       invalidate($page.url.toString())
     }
 

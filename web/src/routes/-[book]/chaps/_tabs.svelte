@@ -51,11 +51,11 @@
 
   let uname = '@' + $session.uname
 
-  let _free = make_seed('union')
+  let _base = make_seed('union')
   let _self = make_seed(uname)
   let _curr = make_seed(cur_sname)
 
-  $: base_snames = ['union', '$free', uname]
+  $: base_snames = ['union', '$base', uname]
 
   let users: CV.Nvseed[] = []
   let other: CV.Nvseed[] = []
@@ -73,8 +73,8 @@
       if (base_snames.includes(nvseed.sname)) {
         switch (nvseed.sname) {
           case 'union':
-          case '$free':
-            _free = nvseed
+          case '$base':
+            _base = nvseed
             continue
 
           case uname:
@@ -99,16 +99,16 @@
 
 <seed-list>
   <a
-    href={seed_url(nvinfo.bslug, _free.sname, cur_pgidx)}
+    href={seed_url(nvinfo.bslug, _base.sname, cur_pgidx)}
     class="seed-name umami--click---swap-seed"
-    class:_active={_free.sname == cur_sname}
+    class:_active={_base.sname == cur_sname}
     data-tip="Danh sách chương tổng hợp từ các nguồn khác">
     <seed-label>
-      <span>$free</span>
+      <span>$base</span>
       <SIcon name="affiliate" />
     </seed-label>
 
-    <seed-stats><strong>{_free.chaps}</strong> chương</seed-stats>
+    <seed-stats><strong>{_base.chaps}</strong> chương</seed-stats>
   </a>
 
   {#if _self.chaps > 0 || $session.privi > 0}
