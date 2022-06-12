@@ -55,13 +55,14 @@
     body.append('text', input)
     body.append('hash', hash_str(input))
     body.append('encoding', 'UTF-8')
+    body.append('split_mode', '0')
 
     for (const key in form) body.append(key, form[key].toString())
     const res = await fetch(action_url, { method: 'POST', body })
 
     if (res.ok) {
       await res.json()
-      goto(`/-${nvinfo.bslug}/${sname}/${chidx}-`)
+      goto(`/-${nvinfo.bslug}/chaps/${sname}/${chidx}`)
     } else {
       alert(await res.text())
     }

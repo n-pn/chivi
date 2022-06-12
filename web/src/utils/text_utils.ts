@@ -7,5 +7,6 @@ export function hash_str(s: string) {
     hash |= 0
   }
 
+  if (hash < 0) hash = -hash
   return hash.toString(32)
 }

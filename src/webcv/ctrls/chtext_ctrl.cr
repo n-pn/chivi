@@ -4,8 +4,6 @@ class CV::ChtextCtrl < CV::BaseCtrl
   private def load_nvseed(sname = params["sname"], force : Bool = false)
     snvid = params["snvid"]
 
-    sname = "@#{_cvuser.uname}" if sname == "$self"
-
     Nvseed.find({sname: sname, snvid: snvid}) || begin
       unless nvinfo = Nvinfo.find({bhash: snvid})
         raise NotFound.new("Quyển sách không tồn tại")
@@ -13,24 +11,6 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
       Nvseed.load!(nvinfo, sname, force: true)
     end
-  end
-
-  def upload
-    return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 2
-    nvseed = load_nvseed("$self", force: true)
-
-    file_path = save_text(nvseed, bulk: true)
-    success, from_chidx, message = invoke_splitter(nvseed, file_path)
-    raise BadRequest.new(message) unless success
-
-    last_chidx, last_schid = message.split('\t')
-    last_chidx = last_chidx.to_i
-
-    trunc = params["trunc_after"]? == "true"
-    update_nvseed(nvseed, last_chidx, last_schid, trunc: trunc)
-    clear_cache(nvseed, from_chidx, last_chidx)
-
-    serv_json({msg: "ok"})
   end
 
   def zhtext
@@ -53,24 +33,44 @@ class CV::ChtextCtrl < CV::BaseCtrl
     end
   end
 
-  def upsert
+  def upload
     return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
+    nvseed = load_nvseed("@#{_cvuser.uname}", force: true)
 
-    orig_seed = load_nvseed(force: false)
-    self_name = "@#{_cvuser.uname}"
-
-    if orig_seed.sname != self_name
-      self_seed = Nvseed.load!(orig_seed.nvinfo, self_name)
-    else
-      self_seed = orig_seed
-    end
-
-    file_path = save_text(self_nvseed, bulk: false)
-    success, from_chidx, message = invoke_splitter(self_nvseed, file_path)
+    file_path = save_text(nvseed)
+    success, from_chidx, message = invoke_splitter(nvseed, file_path)
     raise BadRequest.new(message) unless success
+
+    last_chidx, last_schid = message.split('\t')
+    last_chidx = last_chidx.to_i
+
+    trunc = params["trunc_after"]? == "true"
+    update_nvseed(nvseed, last_chidx, last_schid, trunc: trunc)
+    clear_cache(nvseed, from_chidx, last_chidx)
+
+    nvseed.reset_cache!
+
+    serv_json({from: from_chidx, upto: last_chidx})
   end
 
-  private def save_text(nvseed : Nvseed, bulk = true) : String
+  # def upsert
+  #   return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
+
+  #   orig_seed = load_nvseed(force: false)
+  #   self_name = "@#{_cvuser.uname}"
+
+  #   if orig_seed.sname != self_name
+  #     self_seed = Nvseed.load!(orig_seed.nvinfo, self_name)
+  #   else
+  #     self_seed = orig_seed
+  #   end
+
+  #   file_path = save_text(self_nvseed, bulk: false)
+  #   success, from_chidx, message = invoke_splitter(self_nvseed, file_path)
+  #   raise BadRequest.new(message) unless success
+  # end
+
+  private def save_text(nvseed : Nvseed) : String
     save_dir = "var/chseeds/#{nvseed.sname}/#{nvseed.snvid}"
 
     file_name = params["hash"]? || Time.local.to_unix.to_s(base: 32)
@@ -102,9 +102,10 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
   private def clear_cache(nvseed, from_chidx : Int32, upto_chidx : Int32)
     # TODO: pinpoint clear cache
-    nvseed.reset_cache!
     QtranData.clear_cache("chaps", disk: true)
-    HTTP::Client.delete("localhost:5502/_v2/purge/chaps")
+    spawn HTTP::Client.delete("localhost:5502/_v2/purge/chaps")
+  rescue err
+    puts err
   end
 
   # -ameba:disable Metrics/CyclomaticComplexity

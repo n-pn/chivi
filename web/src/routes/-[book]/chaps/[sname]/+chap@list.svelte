@@ -71,7 +71,6 @@
   let files: FileList
 
   let form = {
-    chidx,
     chvol: '',
     tosimp: false,
     unwrap: false,
@@ -90,7 +89,9 @@
   let encoding = 'GBK'
   $: if (encoding && files) read_to_input(files[0], encoding)
 
-  $: action_url = `/api/texts/${nvseed.sname}/${nvseed.snvid}`
+  $: action_url = `/api/texts/${nvseed.sname}/${nvseed.snvid}/${chidx}`
+
+  $: console.log({ action_url })
 
   let loading = false
   let changed = false
@@ -162,7 +163,11 @@
     const res = await fetch(action_url, { method: 'POST', body })
 
     if (!res.ok) err_msg = await res.text()
-    else goto(`/-${nvinfo.bslug}/qtran/$self`)
+    else {
+      const { from } = await res.json()
+      const pgidx = Math.floor((from - 1) / 128) + 1
+      goto(`/-${nvinfo.bslug}/chaps/${nvseed.sname}?pg=${pgidx}`)
+    }
   }
 </script>
 
@@ -326,7 +331,11 @@
       <div class="pagi">
         <label class="label" data-tip="Vị trí bắt đầu ghi đè">
           <span>Chương bắt đầu</span>
-          <input class="m-input" name="chidx" bind:value={form.chidx} />
+          <input
+            class="m-input"
+            type="number"
+            name="chidx"
+            bind:value={chidx} />
         </label>
 
         <label class="label" data-tip="Xoá các chương thừa phía sau">
