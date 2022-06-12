@@ -105,7 +105,7 @@ class CV::ChText
       File.write("#{@chdir}/#{part_path(part)}", text)
     end
 
-    `zip --include=\\*.txt -rjmq #{@store} #{@chdir}` if zipping
+    `zip --include=\\*.txt -rjmq "#{@store}" "#{@chdir}"` if zipping
   end
 
   private def part_path(part = 0)

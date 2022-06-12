@@ -1,10 +1,17 @@
 <script context="module" lang="ts">
   /** @type {import('./[slug]').Load} */
-  export async function load({ stuff }) {
-    const { nvinfo } = stuff
+  export async function load({ stuff, params, fetch }) {
+    const { nvinfo, nvseed } = stuff
+    const { sname, snvid } = nvseed
 
-    stuff.chidx = stuff.chinfo.chidx
-    stuff.input = stuff.zhtext.join('\n')
+    const chidx = params.chidx.split('-', 2)[0]
+
+    const api_res = await fetch(`/api/texts/${sname}/${snvid}/${chidx}`)
+    if (!api_res) return { status: api_res.status, error: await api_res.text() }
+
+    const input = await api_res.text()
+    stuff = Object.assign(stuff, { chidx, input, sname, snvid })
+
     const topbar = gen_topbar(nvinfo)
     return { props: stuff, stuff: { topbar } }
   }
@@ -21,39 +28,37 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-
   import { SIcon, Footer } from '$gui'
+  import { hash_str } from '$utils/text_utils'
 
   export let nvinfo: CV.Nvinfo
 
-  export let input = ''
+  export let sname = ''
+  export let snvid = ''
   export let chidx = 1
-
-  let files: FileList
+  export let input = ''
 
   let form = {
     tosimp: false,
     unwrap: false,
+    split_mode: 0,
   }
 
-  $: action_url = `/api/texts/${nvinfo.id}`
+  $: action_url = `/api/texts/${sname}/${snvid}/${chidx}`
 
   async function submit(evt: SubmitEvent) {
     const body = new FormData()
 
     body.append('text', input)
-    body.append('file', files && files[0])
-    body.append('chidx', chidx.toString())
-    for (let key in form) body.append(key, form[key].toString())
+    body.append('hash', hash_str(input))
+    body.append('encoding', 'UTF-8')
 
-    const res = await fetch(action_url, {
-      method: 'POST',
-      body,
-    })
+    for (const key in form) body.append(key, form[key].toString())
+    const res = await fetch(action_url, { method: 'POST', body })
 
     if (res.ok) {
       await res.json()
-      goto(`/-${nvinfo.bslug}/$self`)
+      goto(`/-${nvinfo.bslug}/${sname}/${chidx}-`)
     } else {
       alert(await res.text())
     }
@@ -79,12 +84,7 @@
   <form action={action_url} method="POST" on:submit|preventDefault={submit}>
     <div class="form-field">
       <label class="label" for="text">Nhập văn bản</label>
-      <textarea
-        class="m-input"
-        name="text"
-        lang="zh"
-        id="text"
-        bind:value={input} />
+      <textarea class="m-input" name="text" lang="zh" bind:value={input} />
     </div>
 
     <Footer>

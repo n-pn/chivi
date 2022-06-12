@@ -132,7 +132,7 @@ class Splitter
     chlist.group_by(&.chidx.&-(1).// 128).each do |group, slice|
       group_dir = "#{chap_dir}/#{group}"
 
-      message = `zip --include=\\*.txt -rjmq #{group_dir}.zip #{group_dir} && rm -rf #{group_dir}`
+      message = `zip --include=\\*.txt -rjmq "#{group_dir}.zip" "#{group_dir}" && rm -rf #{group_dir}`
       log_state(message, abort: true) unless $?.success?
 
       chlist = CV::ChList.new("#{group_dir}.tsv")

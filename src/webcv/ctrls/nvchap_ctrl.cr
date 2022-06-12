@@ -102,49 +102,4 @@ class CV::NvchapCtrl < CV::BaseCtrl
   private def text_not_found!(status = 404)
     halt! 404, "Chương tiết không tồn tại!"
   end
-
-  def upsert
-    if _cvuser.privi < 2 || params["sname"] != "$self"
-      return halt!(500, "Quyền hạn không đủ!")
-    end
-
-    nvseed = load_nvseed
-    chidx = params.fetch_int("chidx") { 1 }
-
-    input = params.fetch_str("input")
-    lines = TextUtil.split_text(input, false)
-
-    if params["_trad"]? == "true"
-      lines.map! { |x| MtCore.trad_to_simp(x) }
-    end
-
-    chaps = ChUtil.split_chaps(lines, nvseed.get_chvol(chidx))
-    chidx = nvseed.chap_count + 1 if chidx < 1
-
-    infos = chaps.map_with_index(chidx) do |chap, c_idx|
-      unless chinfo = nvseed.chinfo(c_idx - 1)
-        chinfo = ChInfo.new(c_idx, (c_idx * 10).to_s)
-      end
-
-      chinfo.stats.uname = _cvuser.uname
-      ChText.new(nvseed.sname, nvseed.snvid, chinfo).save!(chap.lines)
-      QtranData.clear_chaps_cache(nvseed.id, chinfo.chidx, chinfo.stats.parts)
-
-      chinfo.tap(&.set_title!(chap.title, chap.chvol))
-    end
-
-    stime = Time.utc.to_unix
-    # save chapter infos
-    nvseed.tap(&.patch!(infos, stime)).reset_cache!
-    nvseed.nvinfo.tap(&.add_nvseed(nvseed.zseed)).save!
-
-    # copy new uploaded chapters to "union" source
-    infos.map!(&.as_proxy!("users", nvseed.snvid))
-
-    mixed_seed = Nvseed.load!(nvseed.nvinfo, "union")
-    mixed_seed.tap(&.patch!(infos, stime)).reset_cache!
-
-    first = infos.first.tap(&.trans!(nvseed.cvmtl))
-    send_json({chidx: chidx, uslug: first.trans.uslug}, 201)
-  end
 end

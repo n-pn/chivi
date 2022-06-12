@@ -66,6 +66,9 @@
   let show_other = false
 
   function map_nslist(nslist: CV.Nvseed[]) {
+    users = []
+    other = []
+
     for (const nvseed of nslist) {
       if (base_snames.includes(nvseed.sname)) {
         switch (nvseed.sname) {

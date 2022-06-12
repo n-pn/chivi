@@ -26,17 +26,7 @@
 
   const numbers = '零〇一二两三四五六七八九十百千'
 
-  function hash_str(s: string) {
-    var hash = 0
-
-    for (let i = 0; i < s.length; i++) {
-      const chr = s.charCodeAt(i)
-      hash = (hash << 5) - hash + chr
-      hash |= 0
-    }
-
-    return hash.toString(32)
-  }
+  import { hash_str } from '$utils/text_utils'
 
   function format_str(input: string) {
     return input.replace(/\r?\n|\r/g, '\n')
