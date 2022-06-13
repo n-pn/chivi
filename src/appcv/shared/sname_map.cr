@@ -2,10 +2,7 @@ module CV::SnameMap
   extend self
 
   MAP_INT = {
-    "$base" => 0,
-
-    "staff" => 1,
-    "users" => 63,
+    "=base" => 0,
 
     "zxcs_me" => 2,
     "hetushu" => 4,
@@ -32,21 +29,21 @@ module CV::SnameMap
     "sdyfcm"  => 50,
     "jx_la"   => 56,
     "zhwenpg" => 60,
+
+    "users" => 63,
   }
 
   def map_type(sname : String)
     case sname
-    when "$base"
+    when "=base", "=user"
       0 # act as mirror
-    when "users", "staff", "zxcs_me"
+    when "zxcs_me", .starts_with?('@')
       1 # manual update
     when "jx_la", "zhwenpg", "shubaow", "sdyfcm",
          "duokan8", "biquyue", "xswang", "biqugee"
       2 # dead remote
     when "paoshu8", "hetushu", "5200", "biqu5200", "ptwxz"
-      3 # slow but still alive
-    when .starts_with?('@')
-      1  # users seed
+      3  # slow but still alive
     else # "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee"
       4  # fast remote
     end
@@ -67,7 +64,7 @@ module CV::SnameMap
   MAP_STR = MAP_INT.invert
 
   def map_str(int : Int32)
-    MAP_STR[int] || "$base"
+    MAP_STR[int] || "=base"
   end
 
   def map_str(ints : Array(Int32))

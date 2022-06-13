@@ -45,7 +45,7 @@ class CV::FetchCovers
     query.each_with_cursor(20) do |book|
       book.nvseeds.to_a.sort_by(&.zseed).first(3).each do |seed|
         # TODO: fix seed_zhwenpg script!
-        next if seed.sname.in?("jx_la", "$base")
+        next if seed.sname.in?("jx_la", "=base")
 
         out_file = "_db/bcover/#{seed.sname}/#{seed.snvid}.jpg"
         next if existed?(out_file)

@@ -16,9 +16,6 @@
       case 'users':
         return 'Chương tiết do người dùng Chivi đăng tải'
 
-      case 'staff':
-        return 'Chương tiết do ban quản trị Chivi đăng tải'
-
       case 'zxcs_me':
         return 'Nguồn text tải bằng tay từ trang zxcs.me (bản đẹp)'
 
@@ -58,10 +55,11 @@
 
   let uname = '@' + $session.uname
 
-  let _base = make_seed('union')
+  let _base = make_seed('=base')
+  let _user = make_seed('=user')
   let _self = make_seed(uname)
 
-  $: base_snames = ['union', '$base', uname]
+  $: base_snames = ['=base', '=user', uname]
 
   let users: CV.Nvseed[] = []
   let other: CV.Nvseed[] = []
@@ -78,26 +76,19 @@
     show_other = false
 
     for (const nvseed of nslist) {
-      if (base_snames.includes(nvseed.sname)) {
-        switch (nvseed.sname) {
-          case 'union':
-          case '$base':
-            _base = nvseed
-            continue
+      switch (nvseed.sname.charAt(0)) {
+        case '@':
+          if (nvseed.sname == _self.sname) _self = nvseed
+          else users.push(nvseed)
+          break
 
-          case uname:
-            _self = nvseed
-            continue
+        case '=':
+          if (nvseed.sname == '=base') _base = nvseed
+          else if (nvseed.sname == '=user') _user = nvseed
+          break
 
-          default:
-            continue
-        }
-      }
-
-      if (nvseed.sname.charAt(0) == '@') {
-        users.push(nvseed)
-      } else {
-        other.push(nvseed)
+        default:
+          other.push(nvseed)
       }
     }
   }
@@ -118,7 +109,7 @@
     class:_active={_base.sname == _curr.sname}
     data-tip="Danh sách chương tổng hợp từ các nguồn khác">
     <seed-label>
-      <span>$base</span>
+      <span>{_base.sname}</span>
       <SIcon name="affiliate" />
     </seed-label>
 
@@ -132,7 +123,22 @@
       class:_active={_self.sname == _curr.sname}
       data-tip="Danh sách chương của cá nhân bạn">
       <seed-label>
-        <span>$self</span>
+        <span>=self</span>
+        <SIcon name="rss" />
+      </seed-label>
+
+      <seed-stats><strong>{_self.chaps}</strong> chương</seed-stats>
+    </a>
+  {/if}
+
+  {#if _user.chaps > 0}
+    <a
+      href={seed_url(nvinfo.bslug, _user.sname, pgidx)}
+      class="seed-name umami--click---swap-seed"
+      class:_active={_user.sname == _curr.sname}
+      data-tip="Danh sách chương tổng hợp từ người dùng Chivi">
+      <seed-label>
+        <span>{_user.sname}</span>
         <SIcon name="rss" />
       </seed-label>
 

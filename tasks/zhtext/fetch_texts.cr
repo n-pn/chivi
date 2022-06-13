@@ -2,7 +2,7 @@ require "option_parser"
 require "../shared/bootstrap"
 
 class CV::FetchText
-  DIR = "var/chtexts/$base"
+  DIR = "var/chtexts/=base"
 
   @queue = [] of ChInfo
 
@@ -39,7 +39,7 @@ class CV::FetchText
   end
 
   private def should_crawl?(chinfo : ChInfo)
-    sname = chinfo.proxy.try(&.sname) || "$base"
+    sname = chinfo.proxy.try(&.sname) || "=base"
     return false if SnameMap.map_type(sname) < 2 || sname.in?("5200", "jx_la")
 
     return true if chinfo.chidx <= 128
@@ -50,7 +50,7 @@ class CV::FetchText
     return if @queue.empty?
 
     @queue.each_with_index(1) do |chinfo, idx|
-      chtext = ChText.new("$base", @snvid, chinfo)
+      chtext = ChText.new("=base", @snvid, chinfo)
       next if chtext.exists?
 
       chtext.fetch!(mkdir: false, lbl: "#{label} | #{idx}/#{@queue.size}")
@@ -73,7 +73,7 @@ class CV::FetchText
 
   def update_chinfo!(chinfo : ChInfo)
     pgidx = self.pgidx(chinfo.chidx)
-    self.chlist("$base", @snvid, pgidx).store!(chinfo)
+    self.chlist("=base", @snvid, pgidx).store!(chinfo)
 
     return unless proxy = chinfo.proxy
 

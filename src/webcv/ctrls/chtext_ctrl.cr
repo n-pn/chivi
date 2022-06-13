@@ -103,13 +103,13 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
     sname = target ? target.sname : nvseed.sname
 
-    if sname != "$user"
-      users = Nvseed.load!(nvseed.nvinfo, "$user", force: true)
-      users.patch!(infos, nvseed.utime, save: true)
+    if sname != "=user"
+      _user = Nvseed.load!(nvseed.nvinfo, "=user", force: true)
+      _user.patch!(infos, nvseed.utime, save: true)
     end
 
-    if sname != "$base"
-      _base = Nvseed.load!(nvseed.nvinfo, "$base", force: true)
+    if sname != "=base"
+      _base = Nvseed.load!(nvseed.nvinfo, "=base", force: true)
       _base.patch!(infos, nvseed.utime, save: true)
     end
   end

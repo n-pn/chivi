@@ -15,7 +15,7 @@ require "./shared/bootstrap"
 # end
 
 CV::Ubmemo.query.each_with_cursor(20) do |ubmemo|
-  ubmemo.lr_sname = "$base"
+  ubmemo.lr_sname = "=base"
   ubmemo.lr_zseed = CV::SeedUtil.map_id(ubmemo.lr_sname)
   ubmemo.save!
 end

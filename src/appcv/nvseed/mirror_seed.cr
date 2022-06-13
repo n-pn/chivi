@@ -6,7 +6,7 @@ class CV::Nvseed
   def mirror_regen!(force : Bool = false, fetch : Bool = true) : Nil
     seeds = self.nvinfo.nvseeds.to_a.sort_by!(&.zseed)
 
-    seeds.shift if seeds.first?.try(&.sname.== "$base")
+    seeds.shift if seeds.first?.try(&.sname.== "=base")
     users_seed = seeds.pop if seeds.last?.try(&.sname.== "users")
 
     ttl = map_ttl(force: force)

@@ -23,7 +23,7 @@
 
     <ul>
       <li>
-        Với nguồn <x-seed>$base</x-seed> (<SIcon name="share" />), bạn cần phải
+        Với nguồn <x-seed>=base</x-seed> (<SIcon name="share" />), bạn cần phải
         đăng nhập để xem các chương từ <x-chap>#{chidx_max + 1}</x-chap>.
       </li>
       <li>

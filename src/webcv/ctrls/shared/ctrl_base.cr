@@ -79,6 +79,6 @@ class CV::BaseCtrl < Amber::Controller::Base
 
   def get_sname : String
     sname = params["sname"]
-    sname == "$self" ? "@" + _cvuser.uname : sname
+    sname == "~self" ? "@" + _cvuser.uname : sname
   end
 end
