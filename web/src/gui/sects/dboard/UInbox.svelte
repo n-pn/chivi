@@ -12,7 +12,7 @@
     const data = await res.json()
 
     if (res.ok) items = data.props
-    else console.log(data.error)
+    else alert(data.error)
   }
 </script>
 

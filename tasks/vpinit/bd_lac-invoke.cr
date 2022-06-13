@@ -12,7 +12,7 @@ class CV::BdLacInvoke
   getter to_parse = 0
 
   def initialize(@nvinfo : Nvinfo, @parse_all = false)
-    @inp_dir = File.join(INP_DIR, "union", @nvinfo.bhash)
+    @inp_dir = File.join(INP_DIR, "$base", @nvinfo.bhash)
 
     @dir_name = nvinfo.bslug
 

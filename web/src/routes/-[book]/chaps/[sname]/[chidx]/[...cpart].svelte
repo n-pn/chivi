@@ -92,7 +92,7 @@
     const url = gen_api_url(nvinfo, sname, chinfo.chidx, cpart, true)
     const res = await $page.stuff.api.call(url)
 
-    if (res.error) return console.log(`Error: ${res.error}`)
+    if (res.error) return alert(`Error: ${res.error}`)
 
     cvdata = res.cvdata
     chmeta = res.chmeta
@@ -104,10 +104,10 @@
     const base = $config.engine == 2 ? '/_v2/qtran/chaps' : '/api/qtran/chaps'
 
     const url = `${base}/${rl_key}?trad=${$config.tosimp}&user=${$session.uname}`
-    const res = await fetch(url)
+    const res = await $page.stuff.api.call(url)
 
-    if (res.ok) cvdata = await res.text()
-    else console.log(res.status)
+    if (res.error) alert(res)
+    else cvdata = res
   }
 
   function gen_paths({ bslug }, { sname, _prev, _next }, { chidx }) {

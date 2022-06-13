@@ -96,7 +96,7 @@
 
       // vpterm = vpterm
     } catch (err) {
-      console.log(err)
+      alert(err)
     }
   }
 </script>

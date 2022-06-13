@@ -2,8 +2,7 @@ module CV::SnameMap
   extend self
 
   MAP_INT = {
-    "chivi" => 0,
-    "union" => 0,
+    "$base" => 0,
 
     "staff" => 1,
     "users" => 63,
@@ -37,7 +36,7 @@ module CV::SnameMap
 
   def map_type(sname : String)
     case sname
-    when "chivi", "union"
+    when "$base"
       0 # act as mirror
     when "users", "staff", "zxcs_me"
       1 # manual update
@@ -51,11 +50,6 @@ module CV::SnameMap
     else # "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee"
       4  # fast remote
     end
-  end
-
-  MAP_INT.each_key do |sname|
-    Dir.mkdir_p("var/chmetas/seeds/#{sname}")
-    Dir.mkdir_p("var/chmetas/stats/#{sname}")
   end
 
   def alive_snames : Array(String)
@@ -73,7 +67,7 @@ module CV::SnameMap
   MAP_STR = MAP_INT.invert
 
   def map_str(int : Int32)
-    MAP_STR[int] || "union"
+    MAP_STR[int] || "$base"
   end
 
   def map_str(ints : Array(Int32))

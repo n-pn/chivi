@@ -74,7 +74,10 @@ class Splitter
     input = read_utf8(@inp_file, encoding)
 
     input = CV::MtCore.trad_to_simp(input) if to_simp
-    input = input.gsub(/(?=[^\n]{30,}\P{P})[\n\s　]+/m, "") if un_wrap
+
+    if un_wrap
+      input = input.gsub(/(?=[^\n]{30,}[，\P{P}])[\n\s　]+/m, "")
+    end
 
     @lines = input.split('\n')
     log_state("\n#{Time.local}\n- #{@lines.size} lines loaded")

@@ -3,7 +3,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     chidx = params.fetch_int("chidx")
     cpart = params.fetch_int("cpart", min: 0)
 
-    nvseed = load_nvseed
+    nvseed = Nvseed.load!(params["book"].to_i64, get_sname)
     nvinfo = nvseed.nvinfo
 
     unless chinfo = nvseed.chinfo(chidx - 1)
@@ -25,7 +25,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
         jb.field "min_privi", min_privi
 
         if _cvuser.privi >= min_privi
-          if nvseed.sname == "union" # load proxy instead
+          if nvseed.sname == "$base" # load proxy instead
             nvseed_id = Nvseed.load!(nvinfo, sname).id
           else
             nvseed_id = nvseed.id
@@ -71,7 +71,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     sname = chinfo.proxy.try(&.sname) || nvseed.sname
     stype = SnameMap.map_type(sname)
 
-    min_privi = nvseed.sname == "union" ? -1 : (stype < 3 || chinfo.stats.chars > 0 ? 0 : 1)
+    min_privi = nvseed.sname == "$base" ? -1 : (stype < 3 || chinfo.stats.chars > 0 ? 0 : 1)
     min_privi &+= chinfo.chidx > chidx_max ? 1 : 0
 
     {sname, stype, chidx_max, min_privi}

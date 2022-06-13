@@ -1,12 +1,13 @@
 require "json"
 
 class CV::ChtextCtrl < CV::BaseCtrl
-  private def load_nvseed(sname = params["sname"], force : Bool = false)
+  private def load_nvseed(force : Bool = false)
+    sname = params["sname"]
     snvid = params["snvid"]
 
     Nvseed.find({sname: sname, snvid: snvid}) || begin
       unless nvinfo = Nvinfo.find({bhash: snvid})
-        raise NotFound.new("Quyển sách không tồn tại")
+        raise NotFound.new("Quyển sách không tồn tại (#{snvid})")
       end
 
       Nvseed.load!(nvinfo, sname, force: true)
@@ -35,7 +36,14 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
   def upload
     return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
-    nvseed = load_nvseed("@#{_cvuser.uname}", force: true)
+
+    nvseed = load_nvseed(force: true)
+
+    if nvseed.sname != "@#{_cvuser.uname}"
+      target = nvseed
+      nvinfo = target.nvinfo
+      nvseed = Nvseed.load!(nvinfo, nvinfo.bhash, force: true)
+    end
 
     file_path = save_text(nvseed)
     success, from_chidx, message = invoke_splitter(nvseed, file_path)
@@ -44,31 +52,16 @@ class CV::ChtextCtrl < CV::BaseCtrl
     last_chidx, last_schid = message.split('\t')
     last_chidx = last_chidx.to_i
 
-    trunc = params["trunc_after"]? == "true"
-    update_nvseed(nvseed, last_chidx, last_schid, trunc: trunc)
-    clear_cache(nvseed, from_chidx, last_chidx)
+    spawn clear_cache(nvseed, from_chidx, last_chidx)
 
-    nvseed.reset_cache!
+    spawn do
+      trunc = params["trunc_after"]? == "true"
+      update_nvseed(nvseed, last_chidx, last_schid, trunc: trunc)
+      sync_changes(nvseed, from_chidx, last_chidx, target)
+    end
 
     serv_json({from: from_chidx, upto: last_chidx})
   end
-
-  # def upsert
-  #   return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
-
-  #   orig_seed = load_nvseed(force: false)
-  #   self_name = "@#{_cvuser.uname}"
-
-  #   if orig_seed.sname != self_name
-  #     self_seed = Nvseed.load!(orig_seed.nvinfo, self_name)
-  #   else
-  #     self_seed = orig_seed
-  #   end
-
-  #   file_path = save_text(self_nvseed, bulk: false)
-  #   success, from_chidx, message = invoke_splitter(self_nvseed, file_path)
-  #   raise BadRequest.new(message) unless success
-  # end
 
   private def save_text(nvseed : Nvseed) : String
     save_dir = "var/chseeds/#{nvseed.sname}/#{nvseed.snvid}"
@@ -97,7 +90,28 @@ class CV::ChtextCtrl < CV::BaseCtrl
     end
 
     nvseed.utime = Time.utc.to_unix
+    nvseed.reset_cache!
     nvseed.save!
+  end
+
+  private def sync_changes(nvseed : Nvseed, chmin : Int32, chmax : Int32, target = Nvseed?)
+    infos = nvseed._repo.fetch_as_mirror!(chmin, chmax)
+
+    if target
+      target.patch!(infos, nvseed.utime, save: true)
+    end
+
+    sname = target ? target.sname : nvseed.sname
+
+    if sname != "$user"
+      users = Nvseed.load!(nvseed.nvinfo, "$user", force: true)
+      users.patch!(infos, nvseed.utime, save: true)
+    end
+
+    if sname != "$base"
+      _base = Nvseed.load!(nvseed.nvinfo, "$base", force: true)
+      _base.patch!(infos, nvseed.utime, save: true)
+    end
   end
 
   private def clear_cache(nvseed, from_chidx : Int32, upto_chidx : Int32)

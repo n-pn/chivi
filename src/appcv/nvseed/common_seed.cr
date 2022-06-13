@@ -79,7 +79,7 @@ class CV::Nvseed
 
     self.set_mftime(utime, force: false)
     self.set_latest(chaps.last, force: false)
-
+    self.reset_cache!
     self.save! if save
   end
 end

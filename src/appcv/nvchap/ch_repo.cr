@@ -10,8 +10,14 @@ class CV::ChRepo
     @fseed = "var/chmetas/seeds/#{sname}/#{snvid}.tsv"
     @fstat = "var/chmetas/stats/#{sname}/#{snvid}.log"
 
-    Dir.mkdir_p("var/chmetas/.html/#{sname}/#{snvid}")
-    Dir.mkdir_p("#{DIR}/#{@sname}/#{@snvid}")
+    Dir.mkdir_p("var/chmetas/stats/#{sname}")
+    Dir.mkdir_p("var/chmetas/seeds/#{sname}")
+
+    Dir.mkdir_p("var/chtexts/#{@sname}/#{@snvid}")
+
+    unless {'$', '@'}.includes?(sname[0])
+      Dir.mkdir_p("var/chmetas/.html/#{sname}/#{snvid}")
+    end
   end
 
   getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }

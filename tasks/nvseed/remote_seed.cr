@@ -176,7 +176,7 @@ class CV::RemoteSeed
   end
 
   def self.run!(argv = ARGV)
-    snames = CV::SnameMap::MAP_INT.keys.reject!(&.in? "union", "staff", "users", "zxcs_me")
+    snames = CV::SnameMap::MAP_INT.keys.reject!(&.in? "$base", "users", "zxcs_me")
 
     init_mode = 1
     seed_mode = 1

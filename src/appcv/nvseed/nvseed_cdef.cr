@@ -22,7 +22,7 @@ class CV::Nvseed
       model.zseed = SnameMap.map_int(sname)
       model.save!
 
-      model.mirror_regen! if sname == "union"
+      model.mirror_regen! if sname == "$base"
 
       model
     end

@@ -6,11 +6,11 @@ class CV::Nvseed
   def mirror_regen!(force : Bool = false, fetch : Bool = true) : Nil
     seeds = self.nvinfo.nvseeds.to_a.sort_by!(&.zseed)
 
-    seeds.shift if seeds.first?.try(&.sname.== "union")
+    seeds.shift if seeds.first?.try(&.sname.== "$base")
     users_seed = seeds.pop if seeds.last?.try(&.sname.== "users")
 
     ttl = map_ttl(force: force)
-    start = 1
+    chmin = 1
 
     seeds = seeds.first(5)
     seeds.each_with_index(1) do |other, idx|
@@ -20,12 +20,12 @@ class CV::Nvseed
         self.stime = other.stime if self.stime < other.stime
       end
 
-      start = self.mirror_other!(other, start: start)
+      chmin = self.mirror_other!(other, chmin: chmin)
     rescue err
       Log.error { err.colorize.red }
     end
 
-    users_seed.try { |x| self.mirror_other!(x, start: 1) }
+    users_seed.try { |x| self.mirror_other!(x, chmin: 1) }
 
     self.reset_cache!
     self.save!
@@ -33,13 +33,15 @@ class CV::Nvseed
     Log.error { err.inspect_with_backtrace }
   end
 
-  def mirror_other!(other : self, start = 1) : Int32
-    return start if other.chap_count < start
+  def mirror_other!(other : self, chmin = 1, chmax = other.chap_count) : Int32
+    return chmin if other.chap_count < chmin
+    infos = other._repo.fetch_as_mirror!(chmin, chmax)
 
-    infos = other._repo.fetch_as_mirror!(start, other.chap_count)
-    infos.select!(&.stats.chars.> 0) if other.sname == "users"
+    if other.sname[0]?.in?('$', '@') || other.sname == "users"
+      infos.select!(&.stats.chars.> 0)
+    end
 
-    return start if infos.empty?
+    return chmin if infos.empty?
     self.patch!(infos, other.utime, save: false)
     infos.last.chidx + 1 # return latest patched chapter
   end

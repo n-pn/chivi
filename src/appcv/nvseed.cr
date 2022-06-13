@@ -53,7 +53,7 @@ class CV::Nvseed
   def refresh!(force : Bool = false) : Nil
     self.stime = Time.utc.to_unix if force
 
-    if sname == "union"
+    if sname == "$base"
       if force
         self.chap_count = 0
         self.last_schid = ""
@@ -64,9 +64,9 @@ class CV::Nvseed
     elsif self.remote?(force: force)
       self.remote_regen!(ttl: map_ttl(force: force), force: force)
 
-      union_seed = Nvseed.load!(self.nvinfo, "union")
-      union_seed.mirror_other!(self)
-      union_seed.reset_cache!
+      base_seed = Nvseed.load!(self.nvinfo, "$base")
+      base_seed.mirror_other!(self)
+      base_seed.reset_cache!
     else
       reset_cache! if force
     end

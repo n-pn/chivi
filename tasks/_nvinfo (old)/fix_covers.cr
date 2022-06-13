@@ -34,7 +34,7 @@ class CV::FixCovers
     end
 
     covers = [] of Tuple(String, String)
-    covers << {"union", nvinfo.bhash}
+    covers << {"$base", nvinfo.bhash}
 
     covers << {"yousuu", nvinfo.ysbook_id.to_s} if nvinfo.ysbook_id > 0
     nvinfo.nvseeds.to_a.sort_by(&.zseed).each { |x| covers << {x.sname, x.snvid} }
@@ -153,7 +153,7 @@ class CV::FixCovers
 
   def gif_image_width(fname : String)
     case fname
-    when .includes?("union")  then 360
+    when .includes?("$base")  then 360
     when .includes?("yousuu") then 360
     when .includes?("jx_la")  then 0
     else                           360

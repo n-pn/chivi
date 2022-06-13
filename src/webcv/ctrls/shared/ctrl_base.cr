@@ -79,14 +79,6 @@ class CV::BaseCtrl < Amber::Controller::Base
 
   def get_sname : String
     sname = params["sname"]
-    case sname[0]?
-    when '$' then "@" + _cvuser.uname
-    when '-' then sname[1..]
-    else          sname
-    end
-  end
-
-  def load_nvseed
-    Nvseed.load!(params["book"].to_i64, get_sname)
+    sname == "$self" ? "@" + _cvuser.uname : sname
   end
 end

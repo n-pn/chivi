@@ -20,7 +20,7 @@
     const api_res = await fetch(api_url, { method: 'PUT' })
 
     if (!api_res.ok) {
-      console.log(await api_res.text())
+      alert(await api_res.text())
     } else {
       const payload = await api_res.json()
       cvpost.like_count = payload.like_count

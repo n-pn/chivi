@@ -81,7 +81,7 @@ class RebuildBook
   def fix_schid(schid : String)
     case @sname
     when "zxcs_me" then schid.to_i
-    when "union"   then schid.to_i * 10
+    when "$base"   then schid.to_i * 10
     else                schid
     end
   end

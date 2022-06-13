@@ -43,8 +43,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     nvseeds = nvinfo.nvseeds.to_a.sort_by!(&.zseed)
 
-    if nvseeds.empty? || nvseeds.first.sname != "union"
-      nvseeds.unshift(Nvseed.load!(nvinfo, "union", force: true))
+    if nvseeds.empty? || nvseeds.first.sname != "$base"
+      nvseeds.unshift(Nvseed.load!(nvinfo, "$base", force: true))
     end
 
     if (ubmemo.lr_sname.empty?) && (nvseed = nvseeds.first?)
@@ -53,7 +53,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         ubmemo.lr_chidx = -1
         ubmemo.lc_uslug = chinfo.trans.uslug
       else
-        ubmemo.lr_sname = "union"
+        ubmemo.lr_sname = "$base"
         ubmemo.lc_uslug = "thieu-chuong"
       end
     end
