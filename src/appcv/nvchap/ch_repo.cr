@@ -3,37 +3,58 @@ require "../../mtlv1/mt_core"
 class CV::ChRepo
   DIR = "var/chtexts"
 
-  getter fseed : String
-  getter fstat : String
+  CACHE = RamCache(String, self).new(512, 3.hours)
 
-  def initialize(@sname : String, @snvid : String, @dname : String)
-    @fseed = "var/chmetas/seeds/#{sname}/#{snvid}.tsv"
-    @fstat = "var/chmetas/stats/#{sname}/#{snvid}.log"
+  def self.load!(sname : String, snvid : String)
+    CACHE.get("#{sname}/#{snvid}") { new(sname, snvid) }
+  end
 
-    Dir.mkdir_p("var/chmetas/stats/#{sname}")
-    Dir.mkdir_p("var/chmetas/seeds/#{sname}")
-
-    Dir.mkdir_p("var/chtexts/#{@sname}/#{@snvid}")
-
-    unless {'$', '@'}.includes?(sname[0])
-      Dir.mkdir_p("var/chmetas/.html/#{sname}/#{snvid}")
+  def self.load!(seed : Nvseed)
+    CACHE.get("#{seed.sname}/#{seed.snvid}") do
+      new(seed.sname, seed.snvid).tap do |x|
+        x.chmax = seed.chap_count
+        x.utime = seed.utime
+      end
     end
   end
 
-  getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }
+  ###############
+
+  getter sname : String
+  getter snvid : String
+
+  property chmax : Int32 = 0
+  property utime : Int64 = 0
+
+  getter fseed : String
+  getter fstat : String
+
+  def initialize(@sname : String, @snvid : String)
+    @fseed = "var/chmetas/seeds/#{sname}/#{snvid}.tsv"
+    @fstat = "var/chmetas/stats/#{sname}/#{snvid}.log"
+
+    @chdir = "var/chtexts/#{sname}/#{snvid}"
+    @is_remote = SnameMap.remote?(@sname)
+  end
+
+  def after_initialize
+    Dir.mkdir_p(File.dirname(@fseed))
+    Dir.mkdir_p(File.dirname(@fstat))
+    Dir.mkdir_p(@chdir)
+
+    Dir.mkdir_p("var/chmetas/.html/#{@sname}/#{@snvid}") if @is_remote
+  end
 
   ZH_PSIZE = 128
 
-  @[AlwaysInline]
   def zh_pg(chidx : Int32)
     (chidx &- 1) // ZH_PSIZE
   end
 
-  ZH_LISTS = RamCache(String, ChList).new(4096, 3.days)
+  getter pages = {} of Int32 => ChList
 
   def chlist(zh_pg : Int32)
-    label = "#{@sname}/#{@snvid}/#{zh_pg}"
-    ZH_LISTS.get(label) { ChList.new("#{DIR}/#{label}.tsv") }
+    @pages[zh_pg] ||= ChList.new("#{@chdir}/#{zh_pg}.tsv")
   end
 
   def regen!(force : Bool = false) : ChInfo?
@@ -48,9 +69,10 @@ class CV::ChRepo
     infos.last?
   end
 
-  private def fetch!(ttl = 10.years)
+  def upgrade!(ttl = 10.years)
     parser = RemoteInfo.new(@sname, @snvid, ttl: ttl)
-    output = parser.chap_infos
+    chlist = parser.chap_infos
+
     output.empty? && ttl != 1.hours ? fetch!(1.hours) : output
   end
 

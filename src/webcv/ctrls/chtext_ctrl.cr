@@ -97,6 +97,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
   private def sync_changes(nvseed : Nvseed, chmin : Int32, chmax : Int32, target = Nvseed?)
     infos = nvseed._repo.fetch_as_mirror!(chmin, chmax)
 
+    puts [infos, target]
+
     if target
       target.patch!(infos, nvseed.utime, save: true)
     end

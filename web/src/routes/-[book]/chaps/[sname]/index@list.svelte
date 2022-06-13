@@ -30,7 +30,7 @@
   export let nvseed: CV.Nvseed
   export let chlist: CV.Chlist
 
-  $: pager = new Pager($page.url, { sname: 'union', pg: 1 })
+  $: pager = new Pager($page.url, { pg: 1 })
 
   let _refresh = false
   let _error: string
@@ -52,7 +52,7 @@
   }
 
   function internal_seed(sname: string) {
-    return sname.match(/^$|@|users|union/)
+    return sname.match(/^=|@|users/)
   }
 </script>
 

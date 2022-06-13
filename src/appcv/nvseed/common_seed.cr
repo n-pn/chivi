@@ -6,8 +6,7 @@ require "../../mtlv1/mt_core"
 
 class CV::Nvseed
   getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }
-
-  getter _repo : ChRepo { ChRepo.new(sname, snvid, nvinfo.dname) }
+  getter _repo : ChRepo { ChRepo.load!(self) }
   delegate chlist, to: _repo
 
   VI_PSIZE = 32
@@ -17,7 +16,7 @@ class CV::Nvseed
   def reset_cache!
     @vpages.clear
     @lastpg = nil
-    ChRepo::ZH_LISTS.clear
+    @_repo.try(&.pages.clear)
   end
 
   def chpage(vi_pg : Int32)

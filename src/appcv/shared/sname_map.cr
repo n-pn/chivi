@@ -49,6 +49,10 @@ module CV::SnameMap
     end
   end
 
+  def remote?(sname : String) : Bool
+    map_type(sname) > 2
+  end
+
   def alive_snames : Array(String)
     MAP_INT.keys.select { |sname| map_type(sname) > 2 }
   end

@@ -104,10 +104,11 @@
     const base = $config.engine == 2 ? '/_v2/qtran/chaps' : '/api/qtran/chaps'
 
     const url = `${base}/${rl_key}?trad=${$config.tosimp}&user=${$session.uname}`
-    const res = await $page.stuff.api.call(url)
+    const res = await fetch(url)
+    const txt = await res.text()
 
-    if (res.error) alert(res)
-    else cvdata = res
+    if (res.ok) cvdata = txt
+    else alert(res)
   }
 
   function gen_paths({ bslug }, { sname, _prev, _next }, { chidx }) {
