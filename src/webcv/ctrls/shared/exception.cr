@@ -1,17 +1,17 @@
 module CV
-  class HTMLException < Exception
+  class HttpError < Exception
     getter status_code : Int32 = 500
   end
 
-  class NotFound < HTMLException
+  class NotFound < HttpError
     @status_code = 404
   end
 
-  class BadRequest < HTMLException
+  class BadRequest < HttpError
     @status_code = 400
   end
 
-  class Unauthorized < HTMLException
+  class Unauthorized < HttpError
     @status_code = 401
   end
 end

@@ -2,9 +2,9 @@ class CV::Pipe::Error < CV::BasePipe
   def call(context : HTTP::Server::Context)
     raise NotFound.new(context.request.path) unless context.valid_route?
     call_next(context)
-  rescue ex : HTMLException
+  rescue ex : HttpError
     set_response(context.response, ex, ex.status_code)
-    Log.error(exception: ex) { "Error: #{ex.status_code}".colorize(:red) }
+    # Log.error(exception: ex) { "Error: #{ex.status_code}".colorize(:red) }
   rescue ex
     set_response(context.response, ex, 500)
     Log.error(exception: ex) { "Error: 500".colorize(:red) }
