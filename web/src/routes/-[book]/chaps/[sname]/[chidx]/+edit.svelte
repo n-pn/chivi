@@ -94,16 +94,26 @@
       <textarea class="m-input" name="text" lang="zh" bind:value={input} />
     </div>
 
+    <div class="form-field">
+      <div class="label">Lựa chọn nâng cao</div>
+      <div class="options">
+        <label class="label">
+          <input type="checkbox" name="tosimp" bind:checked={form.tosimp} />
+          <span>Chuyển từ Phồn -> Giản</span>
+        </label>
+
+        <label class="label">
+          <input type="checkbox" name="unwrap" bind:checked={form.unwrap} />
+          <span>Sửa lỗi vỡ dòng</span>
+        </label>
+      </div>
+    </div>
+
     <Footer>
       <div class="pagi">
         <label class="label" for="chidx">
           <span>Đánh số chương</span>
           <input class="m-input" name="chidx" bind:value={chidx} />
-        </label>
-
-        <label class="label">
-          <input type="checkbox" name="tosimp" bind:checked={form.tosimp} />
-          <span>Phồn -> Giản</span>
         </label>
 
         <button type="submit" class="m-btn _primary _fill" {disabled}>
@@ -158,5 +168,17 @@
     font-weight: 500;
     @include ftsize(sm);
     @include fgcolor(tert);
+  }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.25rem 0;
+
+    label {
+      @include fgcolor(secd);
+    }
   }
 </style>

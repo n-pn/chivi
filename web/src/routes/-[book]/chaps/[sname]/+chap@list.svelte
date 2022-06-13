@@ -318,7 +318,7 @@
         </label>
 
         <label class="label">
-          <input type="checkbox" name="tosimp" bind:checked={form.unwrap} />
+          <input type="checkbox" name="unwrap" bind:checked={form.unwrap} />
           <span>Sửa lỗi vỡ dòng</span>
         </label>
       </div>
