@@ -21,7 +21,7 @@
     return {
       left: [
         [btitle_vi, 'book', { href: `/-${bslug}`, kind: 'title', show: 'tm' }],
-        [sname, 'list', { href: chap_href, show: 'ts' }],
+        [sname, 'list', { href: chap_href, show: 'ts', kind: 'zseed' }],
         [`Ch. ${chidx}`, '', { href: `${chap_href}/${chidx}` }],
         [`Sửa`, 'edit', { href: '+edit', show: 'pl' }],
       ],
@@ -31,6 +31,7 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
+  import { session } from '$app/stores'
   import { SIcon, Footer } from '$gui'
   import { hash_str } from '$utils/text_utils'
 
@@ -47,6 +48,8 @@
     split_mode: 0,
   }
 
+  $: privi = $session.privi || -1
+  $: disabled = (privi == 1 && input.length > 30000) || privi < 1
   $: action_url = `/api/texts/${sname}/${snvid}/${chidx}`
 
   async function submit(evt: SubmitEvent) {
@@ -103,9 +106,10 @@
           <span>Phồn -> Giản</span>
         </label>
 
-        <button type="submit" class="m-btn _primary _fill">
+        <button type="submit" class="m-btn _primary _fill" {disabled}>
           <SIcon name="upload" />
           <span class="-text">Đăng tải</span>
+          <SIcon name="privi-1" iset="sprite" />
         </button>
       </div>
     </Footer>

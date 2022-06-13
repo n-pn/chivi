@@ -59,7 +59,6 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { page } from '$app/stores'
 
   import { SIcon, Footer } from '$gui'
 
@@ -90,8 +89,6 @@
   $: if (encoding && files) read_to_input(files[0], encoding)
 
   $: action_url = `/api/texts/${nvseed.sname}/${nvseed.snvid}/${chidx}`
-
-  $: console.log({ action_url })
 
   let loading = false
   let changed = false
@@ -346,6 +343,9 @@
         <button type="submit" class="m-btn _primary _fill">
           <SIcon name="upload" />
           <span class="-text">Đăng tải</span>
+          <SIcon
+            name={input.length > 30000 ? 'privi-2' : 'privi-1'}
+            iset="sprite" />
         </button>
       </div>
     </Footer>

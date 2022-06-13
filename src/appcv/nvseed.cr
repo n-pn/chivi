@@ -20,7 +20,7 @@ class CV::Nvseed
 
   column sname : String = ""
   column snvid : String # seed book id
-  column zseed : Int32 { SnameMap.map_int(sname) }
+  column zseed : Int32 = 0
 
   # seed data
 

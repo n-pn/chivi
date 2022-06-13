@@ -18,7 +18,10 @@ class CV::Nvseed
     find({nvinfo_id: nvinfo.id, sname: sname}) || begin
       raise "Nguồn chương #{sname} không tồn tại!" unless force
 
-      model = new({nvinfo: nvinfo, sname: sname, snvid: snvid}).tap(&.save!)
+      model = new({nvinfo: nvinfo, sname: sname, snvid: snvid})
+      model.zseed = SnameMap.map_int(sname)
+      model.save!
+
       model.mirror_regen! if sname == "union"
 
       model

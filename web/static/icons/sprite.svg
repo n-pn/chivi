@@ -1,5 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg">
-<defs>
-<symbol id="star" viewBox="0 0 24 24" stroke="none" fill="currentColor"><path fill-rule="evenodd" d="M12.672.668a.75.75 0 00-1.345 0L8.27 6.865l-6.838.994a.75.75 0 00-.416 1.279l4.948 4.823-1.168 6.811a.75.75 0 001.088.791L12 18.347l6.117 3.216a.75.75 0 001.088-.79l-1.168-6.812 4.948-4.823a.75.75 0 00-.416-1.28l-6.838-.993L12.672.668z"></path></symbol>
-</defs>
+  <defs>
+    <symbol id="star" viewBox="0 0 24 24" stroke="none" fill="currentColor">
+      <path fill-rule="evenodd"
+        d="M12.672.668a.75.75 0 00-1.345 0L8.27 6.865l-6.838.994a.75.75 0 00-.416 1.279l4.948 4.823-1.168 6.811a.75.75 0 001.088.791L12 18.347l6.117 3.216a.75.75 0 001.088-.79l-1.168-6.812 4.948-4.823a.75.75 0 00-.416-1.28l-6.838-.993L12.672.668z">
+      </path>
+    </symbol>
+    <symbol id="privi-0" viewBox="0 0 24 24">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"></path>
+      <circle cx="12" cy="11" r="1"></circle>
+      <line x1="12" y1="12" x2="12" y2="14.5"></line>
+    </symbol>
+    <symbol id="privi-1" viewBox="0 0 24 24">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"></path>
+      <path d="M12 16v-8l-2 2"></path>
+    </symbol>
+    <symbol id="privi-2" viewBox="0 0 24 24">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"></path>
+      <path d="M10 10a2 2 0 1 1 4 0c0 .591 -.417 1.318 -.816 1.858l-3.184 4.143l4 0"></path>
+    </symbol>
+    <symbol id="privi-3" viewBox="0 0 24 24">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"></path>
+      <path d="M12 12a2 2 0 1 0 -2 -2"></path>
+      <path d="M10 14a2 2 0 1 0 2 -2"></path>
+    </symbol>
+  </defs>
 </svg>
