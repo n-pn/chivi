@@ -32,9 +32,11 @@ class CV::ChRepo
 
     @chdir = "var/chtexts/#{sname}/#{snvid}"
     @is_remote = SnameMap.remote?(@sname)
+
+    self.mkdirs!
   end
 
-  def after_initialize
+  def mkdirs!
     Dir.mkdir_p(File.dirname(@fseed))
     Dir.mkdir_p(File.dirname(@fstat))
     Dir.mkdir_p(@chdir)
