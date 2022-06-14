@@ -74,14 +74,30 @@ class Splitter
     input = read_utf8(@inp_file, encoding)
 
     input = CV::MtCore.trad_to_simp(input) if to_simp
-
-    if un_wrap
-      input = input.gsub(/(?=[^\n]{30,}[，\P{P}])[\n\s　]+/m, "")
-    end
+    input = fix_linebreaks(input) if un_wrap
 
     @lines = input.split('\n')
+
     log_state("\n#{Time.local}\n- #{@lines.size} lines loaded")
     lines[0] = lines[0].tr("\uFEFF", "")
+  end
+
+  def fix_linebreaks(input : String)
+    output = String::Builder.new
+
+    invalid = false
+    input.each_line do |line|
+      output << line unless line.empty?
+
+      if (line.size > 10 || invalid) && line !~ /^第|[。！#\p{Pe}\p{Pf}]\s*$/
+        invalid = true
+      else
+        invalid = false
+        output << '\n'
+      end
+    end
+
+    output.to_s
   end
 
   def read_utf8(inp_file : String, encoding : String? = nil, chardet_limit = 1000) : String
@@ -139,9 +155,7 @@ class Splitter
       log_state(message, abort: true) unless $?.success?
 
       chlist = CV::ChList.new("#{group_dir}.tsv")
-      chlist.patch(slice)
-
-      chlist.save!
+      chlist.patch!(slice)
     end
   end
 
