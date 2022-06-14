@@ -33,12 +33,12 @@ class CV::Nvseed
     Log.error { err.inspect_with_backtrace }
   end
 
-  def mirror_other!(other : self, chmin = 1, chmax = other.chap_count) : Int32
+  def mirror_other!(other : self, chmin = 1, chmax = other.chap_count, offset = 0) : Int32
     return chmin if other.chap_count < chmin
-    infos = other._repo.fetch_as_mirror!(chmin, chmax)
+    infos = other._repo.clone!(chmin, chmax, offset: 0)
 
-    if other.sname[0]?.in?('$', '@') || other.sname == "users"
-      infos.select!(&.stats.chars.> 0)
+    if other.sname[0]?.in?('=', '@') || other.sname == "users"
+      infos.reject!(&.title.empty?)
     end
 
     return chmin if infos.empty?

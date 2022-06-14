@@ -78,7 +78,7 @@ export class API {
     if (cached && cached.ttl > now) return cached.val
 
     const res = await this.call(url, 'GET')
-    map.set(key, { val: res, ttl: now + (browser ? ttl : ttl / 60) })
+    map.set(key, { val: res, ttl: now + (browser ? ttl : 3) })
 
     return res
   }

@@ -5,8 +5,8 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   private def load_nvseed(sname = params["sname"])
     nvinfo = load_nvinfo(params["bslug"])
-    force = sname.in?("=base", "$user", "@#{_cvuser.uname}")
-    Nvseed.load!(nvinfo, params["sname"], force: force)
+    force = sname.in?("=base", "=user", "@#{_cvuser.uname}")
+    Nvseed.load!(nvinfo, sname, force: force)
   end
 
   ##########

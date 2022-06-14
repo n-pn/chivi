@@ -38,6 +38,8 @@ class CV::QtranData
   def self.clear_cache(type : String, disk = true)
     CACHE[type].clear
     `rm #{DIR}/#{type}/*.txt` if disk
+  rescue
+    nil
   end
 
   def self.clear_cache(type : String, ukey : String, disk = true)

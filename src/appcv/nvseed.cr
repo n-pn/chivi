@@ -71,4 +71,46 @@ class CV::Nvseed
       reset_cache! if force
     end
   end
+
+  ########
+
+  CACHED = RamCache(String, self).new(1024)
+
+  def self.load!(nvinfo_id : Int64, sname : String, force = false)
+    raise "Quyển sách không tồn tại" unless nvinfo = Nvinfo.load!(nvinfo_id)
+    load!(nvinfo, sname, force: force)
+  end
+
+  def self.load!(nvinfo : Nvinfo, sname : String, force = false) : self
+    CACHED.get("#{nvinfo.id}/#{sname}") do
+      puts "uncached, loading seed: #{nvinfo.bhash}/#{sname}"
+      upsert!(nvinfo, sname, nvinfo.bhash, force: force)
+    end
+  end
+
+  def self.load!(sname : String, snvid : String, force = false)
+    unless nvseed = find({sname: sname, snvid: snvid})
+      unless nvinfo = Nvinfo.find({bhash: snvid})
+        raise NotFound.new("Quyển sách không tồn tại (#{snvid})")
+      end
+
+      nvseed = init!(nvinfo, sname, snvid)
+    end
+
+    CACHED.set("#{nvseed.nvinfo_id}/#{nvseed.sname}", nvseed)
+    nvseed
+  end
+
+  def self.upsert!(nvinfo : Nvinfo, sname : String, snvid : String, force = true)
+    find({nvinfo_id: nvinfo.id, sname: sname}) || init!(nvinfo, sname, snvid)
+  end
+
+  def self.init!(nvinfo : Nvinfo, sname : String, snvid = nvinfo.bhash)
+    model = new({nvinfo: nvinfo, sname: sname, snvid: snvid})
+
+    model.zseed = SnameMap.map_int(sname)
+    model.mirror_regen! if sname == "=base"
+
+    model.tap(&.save!)
+  end
 end

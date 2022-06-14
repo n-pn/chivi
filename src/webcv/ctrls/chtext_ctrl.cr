@@ -4,14 +4,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
   private def load_nvseed(force : Bool = false)
     sname = params["sname"]
     snvid = params["snvid"]
-
-    Nvseed.find({sname: sname, snvid: snvid}) || begin
-      unless nvinfo = Nvinfo.find({bhash: snvid})
-        raise NotFound.new("Quyển sách không tồn tại (#{snvid})")
-      end
-
-      Nvseed.load!(nvinfo, sname, force: true)
-    end
+    Nvseed.load!(sname, snvid, force: force)
   end
 
   def zhtext
@@ -36,13 +29,13 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
   def upload
     return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
-
     nvseed = load_nvseed(force: true)
 
-    if nvseed.sname != "@#{_cvuser.uname}"
+    uname = "@#{_cvuser.uname}"
+    if nvseed.sname != uname
       target = nvseed
       nvinfo = target.nvinfo
-      nvseed = Nvseed.load!(nvinfo, nvinfo.bhash, force: true)
+      nvseed = Nvseed.load!(nvinfo, uname, force: true)
     end
 
     file_path = save_text(nvseed)
@@ -84,22 +77,21 @@ class CV::ChtextCtrl < CV::BaseCtrl
   end
 
   private def update_nvseed(nvseed : Nvseed, last_chidx, last_schid, trunc = false)
-    if last_chidx > nvseed.chap_count || trunc
+    if last_chidx >= nvseed.chap_count || trunc
       nvseed.chap_count = last_chidx
       nvseed.last_schid = last_schid
     end
 
     nvseed.utime = Time.utc.to_unix
     nvseed.reset_cache!
+
     nvseed.save!
   end
 
   private def sync_changes(nvseed : Nvseed, chmin : Int32, chmax : Int32, target = Nvseed?)
-    infos = nvseed._repo.fetch_as_mirror!(chmin, chmax)
+    infos = nvseed._repo.clone!(chmin, chmax)
 
-    puts [infos, target]
-
-    if target
+    if target && target.sname[0]? != '@'
       target.patch!(infos, nvseed.utime, save: true)
     end
 
@@ -145,7 +137,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     status = Process.run("bin/text_split", args, output: output, error: output)
     output.close
 
-    {status.success?, from_chidx, output.to_s}
+    {status.success?, from_chidx, output.to_s.strip}
   end
 
   private def add_args_for_split_mode(args : Array(String), split_mode : Int32)

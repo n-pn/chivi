@@ -6,24 +6,28 @@ require "../../mtlv1/mt_core"
 
 class CV::Nvseed
   getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }
-  getter _repo : ChRepo { ChRepo.load!(self) }
+  getter _repo : ChRepo { ChRepo.new(self.sname, self.snvid) }
   delegate chlist, to: _repo
 
   VI_PSIZE = 32
 
   @vpages = Hash(Int32, Array(ChInfo)).new
 
-  def reset_cache!
-    @vpages.clear
+  def reset_cache!(chmin = 1, chmax = self.chap_count)
     @lastpg = nil
-    @_repo.try(&.pages.clear)
+    @vpages.clear
+    @_repo.try(&.zpages.clear)
+  end
+
+  def pg_vi(chidx : Int32)
+    (chidx &- 1) // VI_PSIZE
   end
 
   def chpage(vi_pg : Int32)
     @vpages[vi_pg] ||= begin
       chmin = vi_pg * VI_PSIZE + 1
       chmax = chmin + VI_PSIZE - 1
-      chmax = chap_count if chmax > chap_count
+      chmax = self.chap_count if chmax > self.chap_count
 
       chlist = _repo.chlist(vi_pg // 4)
       (chmin..chmax).map { |chidx| chlist.get(chidx).trans!(cvmtl) }
@@ -78,6 +82,7 @@ class CV::Nvseed
 
     self.set_mftime(utime, force: false)
     self.set_latest(chaps.last, force: false)
+
     self.reset_cache!
     self.save! if save
   end

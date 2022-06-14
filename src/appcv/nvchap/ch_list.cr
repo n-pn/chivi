@@ -14,7 +14,12 @@ class CV::ChList
       store(ChInfo.new(line.split('\t'))) unless line.empty?
     rescue err
       puts line.split('\t')
+      puts err
     end
+  end
+
+  def values
+    @data.values.sort_by!(&.chidx)
   end
 
   def get(chidx : Int32)
@@ -39,8 +44,12 @@ class CV::ChList
     changed
   end
 
-  def patch(list : Array(ChInfo))
-    list.each { |chap| self.store(chap) }
+  def patch!(list : Array(ChInfo))
+    list.each do |chap|
+      @data[chap.chidx] = chap
+    end
+
+    self.save!
   end
 
   def trans!(cvmtl : MtCode)
@@ -48,7 +57,7 @@ class CV::ChList
   end
 
   def save!(file : String = @file)
-    ChList.save!(file, @data.values.sort_by!(&.chidx))
+    ChList.save!(file, self.values)
   end
 
   #######################

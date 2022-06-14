@@ -17,7 +17,8 @@ class CV::ChInfo
     end
 
     def to_s(io : IO)
-      io << '\t' << @utime << '\t' << @chars << '\t' << @parts << '\t' << @uname
+      io << '\t' << @utime << '\t' << @chars
+      io << '\t' << @parts << '\t' << @uname
     end
   end
 
@@ -64,8 +65,8 @@ class CV::ChInfo
     return if argv.size < 7
     @stats = Stats.new(argv[4], argv[5], argv[6], argv[7]? || "")
 
-    return if argv.size < 11
-    @proxy = Proxy.new(argv[8], argv[9], argv[10].to_i)
+    return if argv.size < 10
+    @proxy = Proxy.new(argv[8], argv[9], argv[10]?.try(&.to_i?) || @chidx)
   end
 
   def initialize(@chidx, @schid = chidx.to_s)
@@ -98,8 +99,11 @@ class CV::ChInfo
     @stats.chars > 0
   end
 
-  def as_proxy!(sname : String, snvid : String, chidx = self.chidx) : self
-    self.dup.tap(&.proxy = Proxy.new(sname, snvid, chidx))
+  def clone!(sname : String, snvid : String, chidx = self.chidx) : self
+    clone = self.dup
+    clone.chidx = chidx
+    clone.proxy = Proxy.new(sname, snvid, self.chidx)
+    clone
   end
 
   def inherit!(prev : self) : Void

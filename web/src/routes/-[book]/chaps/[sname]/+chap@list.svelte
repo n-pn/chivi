@@ -61,6 +61,7 @@
   import { goto } from '$app/navigation'
 
   import { SIcon, Footer } from '$gui'
+  import { page } from '$app/stores'
 
   export let nvinfo: CV.Nvinfo
   export let nvseed: CV.Nvseed
@@ -163,6 +164,7 @@
     else {
       const { from } = await res.json()
       const pgidx = Math.floor((from - 1) / 128) + 1
+      $page.stuff.api.uncache('nvseeds', `${nvinfo.bslug}/${nvseed.sname}`)
       goto(`/-${nvinfo.bslug}/chaps/${nvseed.sname}?pg=${pgidx}`)
     }
   }
