@@ -164,6 +164,7 @@
     else {
       const { from } = await res.json()
       const pgidx = Math.floor((from - 1) / 128) + 1
+      $page.stuff.api.uncache('nslists', nvinfo.bslug)
       $page.stuff.api.uncache('nvseeds', `${nvinfo.bslug}/${nvseed.sname}`)
       goto(`/-${nvinfo.bslug}/chaps/${nvseed.sname}?pg=${pgidx}`)
     }

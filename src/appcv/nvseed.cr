@@ -83,18 +83,17 @@ class CV::Nvseed
 
   def self.load!(nvinfo : Nvinfo, sname : String, force = false) : self
     CACHED.get("#{nvinfo.id}/#{sname}") do
-      puts "uncached, loading seed: #{nvinfo.bhash}/#{sname}"
       upsert!(nvinfo, sname, nvinfo.bhash, force: force)
     end
   end
 
   def self.load!(sname : String, snvid : String, force = false)
     unless nvseed = find({sname: sname, snvid: snvid})
-      unless nvinfo = Nvinfo.find({bhash: snvid})
+      if nvinfo = Nvinfo.find({bhash: snvid})
+        nvseed = init!(nvinfo, sname, snvid)
+      else
         raise NotFound.new("Quyển sách không tồn tại (#{snvid})")
       end
-
-      nvseed = init!(nvinfo, sname, snvid)
     end
 
     CACHED.set("#{nvseed.nvinfo_id}/#{nvseed.sname}", nvseed)
