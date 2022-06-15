@@ -32,7 +32,7 @@ module CV::HttpUtil
 
   def fetch(url : String, lbl = "-/-", encoding = "UTF-8") : String
     try = 1
-    cmd = "curl -L -k -s -m 10 '#{url}'"
+    cmd = "curl -L -k -s -m 30 '#{url}'"
 
     if encoding != "UTF-8"
       cmd += " | iconv -c -f #{encoding} -t UTF-8"

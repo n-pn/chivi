@@ -95,6 +95,9 @@ tests = [
 
   {"xswang", "2028", false},
   # {"xswang", "2028", true},
+
+  {"paoshu8", "180762", false},
+  {"ptwxz", "14737", true},
 ]
 
 tests.each do |sname, snvid, fresh|
