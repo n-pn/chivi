@@ -42,13 +42,11 @@ module CV::HttpUtil
     loop do
       Log.info { "<#{lbl}> [GET: #{url.colorize.magenta} (try: #{try})]" }
       html = `#{cmd}`
-      return html unless html.empty?
-    rescue err
-      Log.error { err.inspect_with_backtrace }
+      return html if $?.success?
     ensure
-      raise "[GET: #{url} failed after #{try} attempts.]" if try > 1
+      raise "[GET: #{url} failed after #{try} attempts.]" if try > 3
       try += 1
-      sleep 250.milliseconds * try
+      sleep 1.second * try
     end
   end
 
