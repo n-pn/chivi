@@ -3,46 +3,79 @@
 # from other sources
 
 class CV::Nvseed
-  def mirror_regen!(force : Bool = false, fetch : Bool = true) : Nil
-    seeds = self.nvinfo.nvseeds.to_a.sort_by!(&.zseed)
+  def init_base!(force : Bool = false, fetch : Bool = true) : Nil
+    seeds = self.nvinfo.seed_list
+    chmin = 0
 
-    seeds.shift if seeds.first?.try(&.sname.== "=base")
-    users_seed = seeds.pop if seeds.last?.try(&.sname.== "users")
-
-    ttl = map_ttl(force: force)
-    chmin = 1
-
-    seeds = seeds.first(5)
-    seeds.each_with_index(1) do |other, idx|
-      if fetch && other.remote?(force: force)
-        ttl *= 2
-        other.remote_regen!(ttl: ttl, force: false, lbl: "#{idx}/#{seeds.size}")
-        self.stime = other.stime if self.stime < other.stime
-      end
-
-      chmin = self.mirror_other!(other, chmin: chmin)
-    rescue err
-      Log.error { err.colorize.red }
+    seeds.other.first(5).each do |other|
+      chmin = self.clone_remote!(other, chmin: chmin)
     end
 
-    users_seed.try { |x| self.mirror_other!(x, chmin: 1) }
+    if _user = seeds._user
+      chmin = self.clone_range!(_user, chmin: 1)
+    end
 
     self.reset_cache!
+
     self.save!
   rescue err
     Log.error { err.inspect_with_backtrace }
   end
 
-  def mirror_other!(other : self, chmin = 1, chmax = other.chap_count, offset = 0) : Int32
-    return chmin if other.chap_count < chmin
-    infos = other._repo.clone!(chmin, chmax, offset: 0)
-
-    if other.sname[0]?.in?('=', '@') || other.sname == "users"
-      infos.reject!(&.title.empty?)
+  # clone remote seed, return chmax
+  def clone_remote!(remote : self, chmin = self.chap_count) : Int32
+    if chmin == 0 || !(last_chap = self.chinfo(chmin - 1))
+      return self.clone_range!(remote, chmin: chmin)
     end
 
+    start = chmin > 10 ? chmin &- 10 : chmin
+    infos = remote.clone_chaps(start)
+
+    20.times do
+      break unless chap_info = infos.shift?
+      next unless chap_info.title == last_chap.title
+
+      offset = chap_info.chidx &- last_chap.chidx
+
+      infos.each(&.proxy.try(&.chidx.&+ offset)) if offset != 0
+      self.patch_chaps!(infos, remote.utime, save: false)
+
+      return infos.last.chidx
+    end
+
+    chmin
+  end
+
+  def clone_range!(other : self, chmin = 1, chmax = other.chap_count, offset = 0) : Int32
+    return chmin if other.chap_count < chmin
+
+    infos = other.clone_chaps(chmin, chmax, offset: 0)
     return chmin if infos.empty?
-    self.patch!(infos, other.utime, save: false)
-    infos.last.chidx + 1 # return latest patched chapter
+
+    self.patch_chaps!(infos, other.utime, save: false)
+    infos.last.chidx # return latest patched chapter
+  end
+
+  # proxy seeds like =base, =user, @username can have blank chapters
+  getter can_have_gaps : Bool { sname[0].in?('@', '=') || sname == "users" }
+
+  def clone_chaps(chmin = 1, chmax = self.chap_count, offset = 0)
+    infos = _repo.clone!(chmin, chmax, offset: offset)
+    infos.reject!(&.title.empty?) if can_have_gaps
+    infos
+  end
+
+  def patch_chaps!(chaps : Array(ChInfo), utime : Int64, save = true) : Nil
+    _repo.patch!(chaps)
+
+    self.set_mftime(utime, force: false)
+    self.set_latest(chaps.last, force: false)
+
+    self.reset_cache!
+    self.save! if save
+  end
+
+  def patch_chaps!(chap : ChInfo, utime : Int64 = Time.utc.to_unix) : Nil
+    patch_chaps!([chap], utime)
   end
 end

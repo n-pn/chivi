@@ -3,7 +3,7 @@
 
   export async function load({ stuff, fetch }) {
     const { nvinfo } = stuff
-    const api_url = `/api/books/${nvinfo.bslug.substr(0, 8)}/detail`
+    const api_url = `/api/books/${nvinfo.bslug.substr(0, 8)}/+edit`
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
 

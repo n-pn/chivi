@@ -1,5 +1,5 @@
 require "./shared/*"
-require "./inners/nvinfo_inner"
+require "./nvinfo/*"
 
 class CV::Nvinfo
   include Clear::Model
@@ -15,6 +15,7 @@ class CV::Nvinfo
   belongs_to ysbook : Ysbook?
 
   has_many nvseeds : Nvseed, foreign_key: "nvinfo_id"
+  getter seed_list : Nslist { Nslist.new(nvseeds.to_a) }
 
   column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
 
@@ -31,11 +32,13 @@ class CV::Nvinfo
 
   ###########
 
+  # TODO: remove zseeds and let snames real database column
   column zseeds : Array(Int32) = [] of Int32
   getter snames : Array(String) { SnameMap.map_str(zseeds) }
 
   column igenres : Array(Int32) = [] of Int32
-  getter vgenres : Array(String) { GenreMap.to_str(igenres) }
+  property vgenres : Array(String) { GenreMap.to_str(igenres) }
+
   column vlabels : Array(String) = [] of String
 
   ###########

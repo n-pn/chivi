@@ -1,19 +1,46 @@
-struct CV::NvinfoForm
+require "../../_init/books/book_info"
+
+class CV::NvinfoForm
   getter params : Amber::Validators::Params
   getter errors : String = ""
+  getter nvinfo : Nvinfo
 
-  getter btitle_zh : String
-  getter author_zh : String
+  @user_log : BookInfo
+  @base_log : BookInfo
 
-  def initialize(@params)
-    @btitle_zh = get_param("btitle_zh").not_nil!
-    @author_zh = get_param("author_zh").not_nil!
-  end
+  LOG_DIR = "var/books/infos"
 
-  def get_param(name : String)
-    return unless value = params["name"]?
+  def get_param(param_name : String)
+    return unless value = params[param_name]?
     value = TextUtil.fix_spaces(value).strip
     value unless value.empty?
+  end
+
+  def initialize(@params, @uname = "users")
+    btitle_zh = get_param("btitle_zh").not_nil!
+    author_zh = get_param("author_zh").not_nil!
+    @nvinfo = init!(btitle_zh, author_zh)
+
+    @user_log = book_info_log(@uname, nvinfo.bhash, btitle_zh, author_zh)
+    @base_log = book_info_log("=base", nvinfo.bhash, btitle_zh, author_zh)
+  end
+
+  def book_info_log(sname : String, snvid : String, btitle : String, author : String)
+    info = BookInfo.new("#{LOG_DIR}/#{sname}/#{snvid}.tsv")
+
+    info.set_btitle(btitle)
+    info.set_author(author)
+
+    info
+  end
+
+  def init!(btitle_zh : String, author_zh : String) : Nvinfo
+    btitle_zh, author_zh = BookUtil.fix_names(btitle_zh, author_zh)
+
+    author = get_author(author_zh)
+    btitle = get_btitle(btitle_zh)
+
+    Nvinfo.upsert!(author, btitle, fix_names: true)
   end
 
   def get_author(author_zh : String)
@@ -28,56 +55,58 @@ struct CV::NvinfoForm
     Btitle.upsert!(btitle_zh, btitle_vi)
   end
 
+  def save_bintro(bintro = get_param("bintro"))
+    return unless bintro
+    bintro = TextUtil.split_html(bintro, true)
+
+    @user_log.set_bintro(bintro)
+    @base_log.set_bintro(bintro)
+
+    nvinfo.set_bintro(bintro, force: true)
+  end
+
+  def save_genres(genres = get_param("genres"))
+    return unless genres
+
+    vi_genres = genres.split(",").map!(&.strip)
+    zh_genres = GenreMap.vi_to_zh(vi_genres)
+
+    @user_log.set_genres(zh_genres)
+    @base_log.set_genres(zh_genres)
+
+    @nvinfo.vgenres = vi_genres
+    @nvinfo.igenres = GenreMap.map_int(vi_genres)
+  end
+
+  def save_bcover(bcover = get_param("bcover"))
+    return unless bcover
+    bcover = TextUtil.fix_spaces(bcover).strip
+
+    @user_log.set_bcover(bcover)
+    @base_log.set_bcover(bcover)
+
+    @nvinfo.set_bcover(bcover, force: true)
+  end
+
+  def save_status(status = get_param("status"))
+    return unless status
+    status = TextUtil.fix_spaces(status).strip.to_i
+
+    @user_log.set_status(status)
+    @base_log.set_status(status)
+
+    @nvinfo.set_status(status, force: true)
+  end
+
   def save(uname = "users") : Nvinfo?
-    btitle_zh, author_zh = BookUtil.fix_names(@btitle_zh, @author_zh)
+    save_bintro
+    save_genres
+    save_bcover
+    save_status
 
-    author = get_author(author_zh)
-    btitle = get_btitle(btitle_zh)
-
-    nvinfo = Nvinfo.upsert!(author, btitle, fix_names: true)
-    nvseed = Nvseed.upsert!(nvinfo, uname, nvinfo.bhash)
-
-    if bintro = get_param("bintro")
-      bintro = TextUtil.split_html(bintro, true)
-      nvseed.set_bintro(bintro, mode: 2)
-    end
-
-    if genres = get_param("genres").try(&.split(","))
-      genres.map!(&.strip)
-      nvinfo.igenres = GenreMap.map_int(genres)
-      nvseed.set_genres(GenreMap.vi_to_zh(genres), mode: 1)
-    end
-
-    if bcover = params["bcover"]?
-      bcover = TextUtil.fix_spaces(bcover).strip
-      nvseed.set_bcover(bcover, mode: 2)
-    end
-
-    if status = params["status"]?
-      status = TextUtil.fix_spaces(status).strip.to_i
-      nvseed.set_status(status, mode: 2)
-    end
-
-    nvseed.nvinfo = nvinfo
-    nvseed.btitle = @btitle_zh
-    nvseed.author = @author_zh
-
-    nvinfo.save!
-    nvseed.save!
-
-    nvinfo
+    @nvinfo.tap(&.save!)
   rescue err
     @errors = err.message || "Unknown error"
     nil
-  end
-
-  def after_save
-    Nvinfo.cache!(nvinfo)
-
-    spawn do
-      `bin/bcover_cli "#{nvinfo.scover}" #{nvinfo.bcover} users`
-      body = params.to_unsafe_h.tap(&.delete("_json"))
-      CtrlUtil.log_user_action("nvinfo-upsert", body, _cvuser.uname)
-    end
   end
 end

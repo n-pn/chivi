@@ -60,12 +60,12 @@ class CV::Nvseed
         self.utime = 0_i64
       end
 
-      self.mirror_regen!(force: force, fetch: true)
+      self.init_base!(force: force, fetch: true)
     elsif self.remote?(force: force)
       self.remote_regen!(ttl: map_ttl(force: force), force: force)
 
       base_seed = Nvseed.load!(self.nvinfo, "=base")
-      base_seed.mirror_other!(self)
+      base_seed.clone_remote!(self)
       base_seed.reset_cache!
     else
       reset_cache! if force
@@ -108,7 +108,7 @@ class CV::Nvseed
     model = new({nvinfo: nvinfo, sname: sname, snvid: snvid})
 
     model.zseed = SnameMap.map_int(sname)
-    model.mirror_regen! if sname == "=base"
+    model.init_base! if sname == "=base"
 
     model.tap(&.save!)
   end

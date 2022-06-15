@@ -83,9 +83,17 @@ export class API {
     return res
   }
 
-  async call(url: string, method = 'GET') {
-    const res = await this.fetch(url, { method })
-    if (res.ok) return await res.json()
-    return new Error(res.status, await res.text())
+  async call(url: string, method = 'GET', body?: object) {
+    const options = { method }
+    if (body) {
+      options['headers'] = { 'Content-Type': 'application/json' }
+      options['body'] = JSON.stringify(body)
+    }
+
+    const res = await this.fetch(url, options)
+    if (!res.ok) return new Error(res.status, await res.text())
+
+    const type = res.headers.get('Content-Type')
+    return type.startsWith('text') ? await res.text() : await res.json()
   }
 }

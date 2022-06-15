@@ -92,19 +92,19 @@ class CV::ChtextCtrl < CV::BaseCtrl
     infos = nvseed._repo.clone!(chmin, chmax)
 
     if target && target.sname[0]? != '@'
-      target.patch!(infos, nvseed.utime, save: true)
+      target.patch_chaps!(infos, nvseed.utime, save: true)
     end
 
     sname = target ? target.sname : nvseed.sname
 
     if sname != "=user"
       _user = Nvseed.load!(nvseed.nvinfo, "=user", force: true)
-      _user.patch!(infos, nvseed.utime, save: true)
+      _user.patch_chaps!(infos, nvseed.utime, save: true)
     end
 
     if sname != "=base"
       _base = Nvseed.load!(nvseed.nvinfo, "=base", force: true)
-      _base.patch!(infos, nvseed.utime, save: true)
+      _base.patch_chaps!(infos, nvseed.utime, save: true)
     end
   end
 

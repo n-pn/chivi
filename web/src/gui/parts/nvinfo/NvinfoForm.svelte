@@ -52,10 +52,10 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { call_api } from '$lib/api_call'
   import { book_status } from '$utils/nvinfo_utils'
 
   import { SIcon } from '$gui'
+  import { page, session } from '$app/stores'
 
   export let nvinfo: CV.Nvinfo = undefined
 
@@ -63,11 +63,16 @@
   let errors: string
 
   async function submit() {
-    const url = '/api/books'
-    const [status, data] = await call_api(url, 'PUT', params.output, fetch)
+    if ($session.privi < 2) {
+      alert('Bạn cần nâng cấp quyền hạn lên 2 để thêm/sửa truyện')
+      return
+    }
 
-    if (status >= 400) errors = data as string
-    else await goto(`/-${data.bslug}`)
+    const url = '/api/books'
+    const res = await $page.stuff.api.call(url, 'POST', params.output)
+
+    if (res.error) errors = res.error
+    else await goto(`/-${res.bslug}`)
   }
 
   function remove_genre(genre: string) {
@@ -239,9 +244,13 @@
     {/if}
 
     <form-group class="action">
-      <button class="m-btn _primary _fill _lg" type="submit">
+      <button
+        class="m-btn _primary _fill _lg"
+        type="submit"
+        disabled={$session.privi < 2}>
         <SIcon name="send" />
         <span class="-txt">Lưu thông tin</span>
+        <SIcon name="privi-2" iset="sprite" />
       </button>
     </form-group>
   </form>

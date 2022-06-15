@@ -34,10 +34,10 @@ Amber::Server.configure do
 
     get "/books", CV::NvinfoCtrl, :index
     post "/books", CV::NvinfoCtrl, :upsert
+    get "/books/:bslug/+edit", CV::NvinfoCtrl, :edit
 
     get "/books/:bslug", CV::NvinfoCtrl, :show
     get "/books/:bslug/front", CV::NvinfoCtrl, :front
-    get "/books/:bslug/+edit", CV::NvinfoCtrl, :extra
     delete "/books/:bslug", CV::NvinfoCtrl, :delete
 
     get "/seeds/:bslug", CV::NvseedCtrl, :index

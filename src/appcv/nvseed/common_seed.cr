@@ -16,7 +16,7 @@ class CV::Nvseed
   def reset_cache!(chmin = 1, chmax = self.chap_count)
     @lastpg = nil
     @vpages.clear
-    @_repo.try(&.zpages.clear)
+    # @_repo.try(&.zpages.clear)
   end
 
   def pg_vi(chidx : Int32)
@@ -60,30 +60,15 @@ class CV::Nvseed
       # reset mode or text do not exist
       chdata = chtext.fetch!(cpart, ttl: mode > 1 ? 1.minutes : 10.years)
       chinfo.stats.uname = uname
-      patch!(chinfo)
+      self.patch_chaps!(chinfo)
     elsif chinfo.stats.parts == 0
       # check if text existed in zip file but not stored in index
       chinfo.set_title!(chtext.remap!)
-      patch!(chinfo)
+      self.patch_chaps!(chinfo)
     end
 
     chdata.lines
   rescue
     [] of String
-  end
-
-  def patch!(chap : ChInfo, utime : Int64 = Time.utc.to_unix) : Nil
-    patch!([chap], utime)
-  end
-
-  def patch!(chaps : Array(ChInfo), utime : Int64, save = true) : Nil
-    return if chaps.empty?
-    _repo.patch!(chaps)
-
-    self.set_mftime(utime, force: false)
-    self.set_latest(chaps.last, force: false)
-
-    self.reset_cache!
-    self.save! if save
   end
 end

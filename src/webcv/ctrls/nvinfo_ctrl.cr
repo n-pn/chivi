@@ -58,8 +58,6 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       end
     end
 
-    set_cache :private, maxage: 30
-
     serv_json do |jb|
       jb.object {
         jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
@@ -104,7 +102,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     })
   end
 
-  def extra
+  def edit
     unless nvinfo = Nvinfo.load!(params["bslug"])
       return halt!(404, "Quyển sách không tồn tại!")
     end
@@ -117,10 +115,21 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   end
 
   def upsert
-    raise Unauthorized.new("Cần quyền hạn tối thiểu là 3") if _cvuser.privi < 3
-    form = NvinfoForm.new(params)
+    if _cvuser.privi < 2
+      raise Unauthorized.new("Cần quyền hạn tối thiểu là 2")
+    end
 
-    if nvinfo = form.save(_cvuser.uname)
+    form = NvinfoForm.new(params, "@" + _cvuser.uname)
+
+    if nvinfo = form.save
+      Nvinfo.cache!(nvinfo)
+
+      spawn do
+        `bin/bcover_cli "#{nvinfo.scover}" #{nvinfo.bcover} users`
+        body = params.to_unsafe_h.tap(&.delete("_json"))
+        CtrlUtil.log_user_action("nvinfo-upsert", body, _cvuser.uname)
+      end
+
       serv_json({bslug: nvinfo.bslug})
     else
       serv_text(form.errors, 400)
