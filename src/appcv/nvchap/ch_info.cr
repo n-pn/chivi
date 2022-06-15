@@ -102,7 +102,7 @@ class CV::ChInfo
   def clone!(sname : String, snvid : String, chidx = self.chidx) : self
     clone = self.dup
     clone.chidx = chidx
-    clone.proxy = Proxy.new(sname, snvid, self.chidx)
+    clone.proxy ||= Proxy.new(sname, snvid, self.chidx)
     clone
   end
 

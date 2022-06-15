@@ -35,11 +35,7 @@ class CV::Nvseed
       break unless chap_info = infos.shift?
       next unless chap_info.title == last_chap.title
 
-      offset = chap_info.chidx &- last_chap.chidx
-
-      infos.each(&.proxy.try(&.chidx.&+ offset)) if offset != 0
       self.patch_chaps!(infos, remote.utime, save: false)
-
       return infos.last.chidx
     end
 

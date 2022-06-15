@@ -54,6 +54,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
   end
 
   def load_cvdata(qtran : QtranData) : String
+    return "" if qtran.input.empty?
+
     String.build do |io|
       engine = qtran.make_engine(_cvuser.uname)
       trad = params["trad"]? == "true"

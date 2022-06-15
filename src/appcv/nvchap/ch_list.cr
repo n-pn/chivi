@@ -9,7 +9,7 @@ class CV::ChList
     load_file!(@file) if !reset && File.exists?(file)
   end
 
-  def load_file!(file : String)
+  def load_file!(file : String) : Nil
     File.read_lines(file).each do |line|
       store(ChInfo.new(line.split('\t'))) unless line.empty?
     rescue err
