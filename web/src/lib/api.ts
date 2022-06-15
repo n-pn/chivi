@@ -29,6 +29,7 @@ export class API {
   uname: string
 
   maps = {
+    nvinfos: new Map<string, Cached<CV.Nvinfo>>(),
     nslists: new Map<number, Cached<CV.Nvseed[]>>(),
     nvseeds: new Map<string, Cached<CV.Nvseed>>(),
   }
@@ -40,6 +41,13 @@ export class API {
 
   uncache(map_name: string, key: string) {
     this.maps[map_name].delete(key)
+  }
+
+  async nvbook(bslug: string) {
+    bslug = bslug.slice(0, 8)
+    const map = this.maps.nvinfos
+    const url = `/api/books/${bslug}`
+    return await this.get<CV.Nvinfo>(map, bslug, url, 300)
   }
 
   async nslist(nv_id: number) {

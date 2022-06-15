@@ -77,8 +77,19 @@ class CV::BaseCtrl < Amber::Controller::Base
     response.puts({status: status, error: error}.to_json)
   end
 
-  def get_sname : String
-    sname = params["sname"]
-    sname == "~self" ? "@" + _cvuser.uname : sname
+  private def load_nvinfo : Nvinfo
+    nv_id = params["nv_id"].to_i64
+    Nvinfo.load!(nv_id) || raise NotFound.new("Quyển sách không tồn tại")
+  end
+
+  private def load_nvseed(force = false)
+    case sname = params["sname"]
+    when "=base", "=user"
+      Nvseed.load!(load_nvinfo, sname, force: true)
+    when "=self", "@" + _cvuser.uname
+      Nvseed.load!(load_nvinfo, "@" + _cvuser.uname, force: true)
+    else
+      Nvseed.load!(load_nvinfo, sname, force: false)
+    end
   end
 end

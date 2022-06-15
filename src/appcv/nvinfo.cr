@@ -175,15 +175,8 @@ class CV::Nvinfo
   end
 
   def self.load!(bslug : String)
-    bhash = bslug[0..7]
-
-    CACHE_STR.get(bhash) do
-      item = find("bslug like '#{bhash}%'") || begin
-        frags = bslug.split('-')
-        find("bhash like '#{frags.pop}%' AND bslug like '%#{frags.join('-')}%'")
-      end
-
-      return unless item
+    CACHE_STR.get(bslug) do
+      return unless item = find("bslug like '#{bslug}%'")
       item.tap { |x| CACHE_INT.set(x.id, x) }
     end
   end

@@ -44,11 +44,11 @@ Amber::Server.configure do
     get "/seeds/:nv_id/:sname", CV::NvseedCtrl, :show
     get "/seeds/:nv_id/:sname/:page", CV::NvseedCtrl, :chaps
 
-    get "/chaps/:book/:sname/:chidx/_raw", CV::NvchapCtrl, :zh_text
-    get "/chaps/:book/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info
+    # get "/chaps/:nv_id/:sname/:chidx", CV::NvchapCtrl, :ch_info
+    get "/chaps/:nv_id/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info
 
-    get "/texts/:sname/:snvid/:chidx", CV::ChtextCtrl, :zhtext
-    post "/texts/:sname/:snvid/:chidx", CV::ChtextCtrl, :upload
+    get "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :zhtext
+    post "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :upload
 
     get "/yscrits", CV::YscritCtrl, :index
     get "/yscrits/:crit", CV::YscritCtrl, :show

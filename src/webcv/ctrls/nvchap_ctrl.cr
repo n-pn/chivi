@@ -1,10 +1,10 @@
 class CV::NvchapCtrl < CV::BaseCtrl
   def ch_info
+    nvseed = load_nvseed
+    nvinfo = nvseed.nvinfo
+
     chidx = params.fetch_int("chidx")
     cpart = params.fetch_int("cpart", min: 0)
-
-    nvseed = Nvseed.load!(params["book"].to_i64, get_sname)
-    nvinfo = nvseed.nvinfo
 
     unless chinfo = nvseed.chinfo(chidx - 1)
       raise NotFound.new("Chương tiết không tồn tại")
@@ -60,6 +60,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
       engine = qtran.make_engine(_cvuser.uname)
       trad = params["trad"]? == "true"
       qtran.print_mtl(engine, io, format: :node, title: true, trad: trad)
+      # qtran.print_raw
+
     rescue ex
       Log.error(exception: ex) { "Error: #{ex.message}" }
     end
@@ -79,29 +81,26 @@ class CV::NvchapCtrl < CV::BaseCtrl
     {sname, stype, chidx_max, min_privi}
   end
 
-  def zh_text
-    if _cvuser.privi < 2
-      raise Unauthorized.new("Quyền hạn không đủ!")
-    end
+  # def zh_text
+  #   if _cvuser.privi < 2
+  #     raise Unauthorized.new("Quyền hạn không đủ!")
+  #   end
 
-    nvseed = Nvseed.load!(params["book"].to_i64, params["sname"])
-    chidx = params.fetch_int("chidx")
+  #   nvseed = load_nvseed
+  #   chidx = params.fetch_int("chidx")
 
-    unless chinfo = nvseed.chinfo(chidx - 1)
-      raise NotFound.new("Chương tiết không tồn tại")
-    end
+  #   unless chinfo = nvseed.chinfo(chidx - 1)
+  #     raise NotFound.new("Chương tiết không tồn tại")
+  #   end
 
-    set_headers content_type: :text
+  #   set_headers content_type: :text
 
-    response << "/// #{chinfo.chvol}\n#{chinfo.title}\n"
+  #   response << "/// #{chinfo.chvol}\n#{chinfo.title}\n"
 
-    chinfo.stats.parts.times do |cpart|
-      lines = nvseed.chtext(chinfo, cpart)
-      1.upto(lines.size - 1) { |i| response << '\n' << lines.unsafe_fetch(i) }
-    end
-  end
+  #   chinfo.stats.parts.times do |cpart|
+  #     lines = nvseed.chtext(chinfo, cpart)
+  #     1.upto(lines.size - 1) { |i| response << '\n' << lines.unsafe_fetch(i) }
+  #   end
+  # end
 
-  private def text_not_found!(status = 404)
-    halt! 404, "Chương tiết không tồn tại!"
-  end
 end

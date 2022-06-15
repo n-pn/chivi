@@ -30,13 +30,16 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   end
 
   def show : Nil
-    bslug = params["bslug"]
+    bslug = TextUtil.slugify(params["bslug"])
 
     unless nvinfo = Nvinfo.load!(bslug)
-      return halt!(404, "Quyển sách không tồn tại!")
-    end
+      frags = bslug.split('-')
 
-    return serv_text(nvinfo.bslug, 301) if nvinfo.bslug != bslug
+      unless nvinfo = Nvinfo.find("bhash like '#{frags.last}%'")
+        raise NotFound.new("Quyển sách không tồn tại!")
+      end
+      return serv_text(nvinfo.bslug, 301)
+    end
 
     nvinfo.bump! if _cvuser.privi >= 0
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)

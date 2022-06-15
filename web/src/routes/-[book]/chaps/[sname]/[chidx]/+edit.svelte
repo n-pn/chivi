@@ -1,18 +1,19 @@
 <script context="module" lang="ts">
   /** @type {import('./[slug]').Load} */
-  export async function load({ stuff, params, fetch }) {
-    const { nvinfo, nvseed } = stuff
-    const { sname, snvid } = nvseed
+  export async function load({ stuff, params }) {
+    const { api, nvinfo, nvseed } = stuff
+    const { sname } = nvseed
 
     const chidx = params.chidx.split('-', 2)[0]
 
-    const api_res = await fetch(`/api/texts/${sname}/${snvid}/${chidx}`)
-    if (!api_res) return { status: api_res.status, error: await api_res.text() }
+    const api_url = `/api/texts/${nvinfo.id}/${sname}/${chidx}`
+    const api_res = await api.call(api_url, 'GET')
 
-    const input = await api_res.text()
-    const props = { nvinfo, chidx, input, sname, snvid }
+    if (api_res.error) return api_res
 
+    const props = { nvinfo, chidx, input: api_res, sname }
     const topbar = gen_topbar(nvinfo, sname, chidx)
+
     return { props, stuff: { topbar } }
   }
 
@@ -31,14 +32,13 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { session } from '$app/stores'
+  import { page, session } from '$app/stores'
   import { SIcon, Footer } from '$gui'
   import { hash_str } from '$utils/text_utils'
 
   export let nvinfo: CV.Nvinfo
 
   export let sname = ''
-  export let snvid = ''
   export let chidx = 1
   export let input = ''
 
@@ -50,7 +50,7 @@
 
   $: privi = $session.privi || -1
   $: disabled = (privi == 1 && input.length > 30000) || privi < 1
-  $: action_url = `/api/texts/${sname}/${snvid}/${chidx}`
+  $: action_url = `/api/texts/${nvinfo.id}/${sname}/${chidx}`
 
   async function submit(evt: SubmitEvent) {
     const body = new FormData()
@@ -65,6 +65,8 @@
 
     if (res.ok) {
       await res.json()
+      $page.stuff.api.uncache('nslists', nvinfo.id)
+      $page.stuff.api.uncache('nvseeds', `${nvinfo.id}/${sname}`)
       goto(`/-${nvinfo.bslug}/chaps/${sname}/${chidx}`)
     } else {
       alert(await res.text())

@@ -5,7 +5,7 @@
   import { wrap_get } from '$lib/api_call'
 
   export async function load({ params, fetch, url }) {
-    const slug = params.book
+    const slug = params.book.substr(0, 8)
 
     const api_url = `/api/books/${slug}`
     const api_res = await wrap_get(fetch, api_url)

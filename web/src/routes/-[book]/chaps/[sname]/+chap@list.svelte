@@ -89,7 +89,7 @@
   let encoding = 'GBK'
   $: if (encoding && files) read_to_input(files[0], encoding)
 
-  $: action_url = `/api/texts/${nvseed.sname}/${nvseed.snvid}/${chidx}`
+  $: action_url = `/api/texts/${nvinfo.id}/${nvseed.sname}/${chidx}`
 
   let loading = false
   let changed = false
@@ -164,8 +164,8 @@
     else {
       const { from } = await res.json()
       const pgidx = Math.floor((from - 1) / 128) + 1
-      $page.stuff.api.uncache('nslists', nvinfo.bslug)
-      $page.stuff.api.uncache('nvseeds', `${nvinfo.bslug}/${nvseed.sname}`)
+      $page.stuff.api.uncache('nslists', nvinfo.id)
+      $page.stuff.api.uncache('nvseeds', `${nvinfo.id}/${nvseed.sname}`)
       goto(`/-${nvinfo.bslug}/chaps/${nvseed.sname}?pg=${pgidx}`)
     }
   }

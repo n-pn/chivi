@@ -1,12 +1,6 @@
 require "json"
 
 class CV::ChtextCtrl < CV::BaseCtrl
-  private def load_nvseed(force : Bool = false)
-    sname = params["sname"]
-    snvid = params["snvid"]
-    Nvseed.load!(sname, snvid, force: force)
-  end
-
   def zhtext
     raise Unauthorized.new("Quyền hạn không đủ!") if _cvuser.privi < 1
 
@@ -31,7 +25,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
     return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
     nvseed = load_nvseed(force: true)
 
-    uname = "@#{_cvuser.uname}"
+    uname = "@" + _cvuser.uname
+
     if nvseed.sname != uname
       target = nvseed
       nvinfo = target.nvinfo
