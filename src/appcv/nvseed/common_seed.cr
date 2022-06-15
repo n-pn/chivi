@@ -16,7 +16,7 @@ class CV::Nvseed
   def reset_cache!(chmin = 1, chmax = self.chap_count)
     @lastpg = nil
     @vpages.clear
-    # @_repo.try(&.zpages.clear)
+    @_repo.try(&.zpages.clear)
   end
 
   def pg_vi(chidx : Int32)
