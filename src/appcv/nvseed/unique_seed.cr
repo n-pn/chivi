@@ -57,7 +57,10 @@ class CV::Nvseed
     end
 
     return if self.last_sname == self.sname
+
     upstream = Nvseed.load!(self.nvinfo, self.last_sname)
+    upstream.refresh!(mode: mode)
+
     self.refresh_mirror!(upstream)
   end
 
