@@ -24,13 +24,6 @@ class CV::Nvseed
 
   # seed data
 
-  column btitle : String = ""
-  column author : String = ""
-
-  column bcover : String = ""
-  column bintro : String = ""
-  column bgenre : String = ""
-
   column status : Int32 = 0 # same as Cvinfo#status
   column shield : Int32 = 0 # same as Cvinfo#shield
 

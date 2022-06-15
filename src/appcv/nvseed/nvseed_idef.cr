@@ -36,24 +36,6 @@ class CV::Nvseed
     self.nvinfo.set_status(status, force: mode > 1)
   end
 
-  def set_genres(genres : Array(String), mode : Int32 = 0)
-    return unless mode > 0 || self.bgenre.empty?
-    self.bgenre = genres.join('\t')
-    self.nvinfo.set_genres(genres, force: mode > 1)
-  end
-
-  def set_bintro(bintro : Array(String), mode : Int32 = 0) : Nil
-    return unless mode > 0 || self.bintro.empty?
-    self.bintro = bintro.join('\n')
-    self.nvinfo.set_bintro(bintro, force: mode > 1)
-  end
-
-  def set_bcover(bcover : String, mode : Int32 = 0) : Nil
-    return unless mode > 0 || self.bcover.empty?
-    self.bcover = bcover
-    self.nvinfo.set_bcover(bcover, force: mode > 1)
-  end
-
   ############
 
   def get_chvol(chidx : Int32, limit = 4)

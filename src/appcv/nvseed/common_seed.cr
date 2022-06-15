@@ -13,10 +13,10 @@ class CV::Nvseed
 
   @vpages = Hash(Int32, Array(ChInfo)).new
 
-  def reset_cache!(chmin = 1, chmax = self.chap_count)
+  def reset_cache!(chmin = 1, chmax = self.chap_count, raws : Bool = true)
     @lastpg = nil
     @vpages.clear
-    @_repo.try(&.zpages.clear)
+    @_repo.try(&.zpages.clear) if raws
   end
 
   def pg_vi(chidx : Int32)

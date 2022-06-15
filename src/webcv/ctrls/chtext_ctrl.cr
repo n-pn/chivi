@@ -83,7 +83,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     end
 
     nvseed.utime = Time.utc.to_unix
-    nvseed.reset_cache!
+    nvseed.reset_cache!(raws: true)
     nvseed.save!
   end
 
