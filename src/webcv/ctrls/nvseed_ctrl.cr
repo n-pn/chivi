@@ -1,31 +1,40 @@
 class CV::NvseedCtrl < CV::BaseCtrl
-  private def load_nvinfo(bslug = params["bslug"]) : Nvinfo
-    Nvinfo.load!(bslug) || raise NotFound.new("Quyển sách #{bslug} không tồn tại")
+  private def load_nvinfo : Nvinfo
+    nv_id = params["nv_id"].to_i64
+    Nvinfo.load!(nv_id) || raise NotFound.new("Quyển sách không tồn tại")
   end
 
-  private def load_nvseed(sname = params["sname"])
-    nvinfo = load_nvinfo(params["bslug"])
+  private def load_nvseed
+    sname = params["sname"]
     force = sname.in?("=base", "=user", "@#{_cvuser.uname}")
-    Nvseed.load!(nvinfo, sname, force: force)
+    Nvseed.load!(load_nvinfo, sname, force: force)
   end
 
   ##########
 
   def index
-    nvinfo = load_nvinfo(params["bslug"])
-    nslist = nvinfo.nvseeds.to_a.uniq!(&.sname).sort_by!(&.zseed)
-
+    nslist = load_nvinfo.nvseeds.to_a.uniq!(&.sname).sort_by!(&.zseed)
     serv_json(nslist.map { |x| NvseedView.new(x) })
   end
 
   def show
     nvseed = load_nvseed(params["sname"])
+    mode = params.fetch_int("mode", 0)
 
-    force = params["force"]? == "true"
-    fresh = nvseed.fresh?(_cvuser.privi, force: force)
-    nvseed.refresh!(force: !fresh) if force
+    if mode > 0 && can_refresh?(nvseed)
+      nvseed.refresh!(mode: mode)
+      fresh = true
+    else
+      fresh = nvseed.fresh?(_cvuser.privi, force: false)
+    end
 
-    serv_json(NvseedView.new(nvseed, full: true, fresh: fresh || force))
+    serv_json(NvseedView.new(nvseed, full: true, fresh: fresh))
+  end
+
+  private def can_refresh?(nvseed : Nvseed)
+    return false if _cvuser.privi < 0
+    return true unless nvseed.sname[0] == '@'
+    nvseed.sname == '@' + _cvuser.uname
   end
 
   def chaps

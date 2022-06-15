@@ -85,6 +85,7 @@ class CV::ChRepo
   # save all infos, bail early if result is the same
   def store!(infos : Array(ChInfo), reset = false) : Nil
     return if infos.empty?
+    spawn { ChList.save!(@fseed, infos, mode: "w") }
 
     pgmax = self.map_pg(infos.size)
     pgmax.downto(0).each do |pgidx|

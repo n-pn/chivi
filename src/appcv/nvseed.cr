@@ -32,8 +32,9 @@ class CV::Nvseed
   column utime : Int64 = 0 # seed page update time as total seconds since the epoch
   column stime : Int64 = 0 # last crawled at
 
-  column chap_count : Int32 = 0   # total chapters
+  column last_sname : String = "" # seed's latest chap id
   column last_schid : String = "" # seed's latest chap id
+  column chap_count : Int32 = 0   # total chapters
 
   timestamps
 
@@ -43,25 +44,20 @@ class CV::Nvseed
 
   # ------------------------
 
-  def refresh!(force : Bool = false) : Nil
-    self.stime = Time.utc.to_unix if force
+  def refresh!(mode : Int32 = 1) : Nil
+    self.stime = Time.utc.to_unix
 
-    if sname == "=base"
-      if force
-        self.chap_count = 0
-        self.last_schid = ""
-        self.utime = 0_i64
-      end
-
-      self.init_base!(force: force, fetch: true)
-    elsif self.remote?(force: force)
-      self.remote_regen!(ttl: map_ttl(force: force), force: force)
-
-      base_seed = Nvseed.load!(self.nvinfo, "=base")
-      base_seed.clone_remote!(self)
-      base_seed.reset_cache!
+    case sname
+    when "=base" then self.upgrade_base!(mode: mode)
+    when "=user" then self.upgrade_user!(mode: mode)
+    when .starts_with?('@')
+      self.upgrade_self!(mode: mode)
     else
-      reset_cache! if force
+      if remote?(force: mode > 0)
+        self.update_remote!(mode: mode)
+      else
+        self.reset_cache!
+      end
     end
   end
 
@@ -99,10 +95,17 @@ class CV::Nvseed
 
   def self.init!(nvinfo : Nvinfo, sname : String, snvid = nvinfo.bhash)
     model = new({nvinfo: nvinfo, sname: sname, snvid: snvid})
-
     model.zseed = SnameMap.map_int(sname)
-    model.init_base! if sname == "=base"
 
-    model.tap(&.save!)
+    case sname
+    when "=base"
+      model.autogen_base!(mode: 0)
+    when "=user"
+      model.autogen_user!(mode: 0)
+    else
+      model.save!
+    end
+
+    model
   end
 end

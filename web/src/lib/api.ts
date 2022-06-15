@@ -29,7 +29,7 @@ export class API {
   uname: string
 
   maps = {
-    nslists: new Map<string, Cached<CV.Nvseed[]>>(),
+    nslists: new Map<number, Cached<CV.Nvseed[]>>(),
     nvseeds: new Map<string, Cached<CV.Nvseed>>(),
   }
 
@@ -42,33 +42,33 @@ export class API {
     this.maps[map_name].delete(key)
   }
 
-  async nslist(bslug: string) {
+  async nslist(nv_id: number) {
     const map = this.maps.nslists
-    const url = `/api/seeds/${bslug}`
-    return await this.get(map, bslug, url, 300)
+    const url = `/api/seeds/${nv_id}`
+    return await this.get<CV.Nvseed[]>(map, nv_id, url, 300)
   }
 
-  async nvseed(bslug: string, sname: string, force = false) {
+  async nvseed(nv_id: number, sname: string, mode = 0) {
     const map = this.maps.nvseeds
-    const key = `${bslug}/${sname}`
+    const key = `${nv_id}/${sname}`
 
     let url = `/api/seeds/${key}`
-    if (force) {
+    if (mode > 0) {
       map.delete(key)
-      url += '?force=true'
+      url += '?mode=' + mode
     }
     return await this.get(map, key, url, 180)
   }
 
-  async chlist(bslug: string, sname: string, pgidx = 1) {
-    const key = `${bslug}/${sname}/${pgidx}`
+  async chlist(nv_id: number, sname: string, pgidx = 1) {
+    const key = `${nv_id}/${sname}/${pgidx}`
     const url = `/api/seeds/${key}`
     return await this.call(url)
   }
 
   async get<T>(
-    map: Map<string, Cached<T>>,
-    key: string,
+    map: Map<string | number, Cached<T>>,
+    key: string | number,
     url: string,
     ttl: number
   ) {

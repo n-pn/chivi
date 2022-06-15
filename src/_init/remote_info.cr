@@ -29,6 +29,12 @@ class CV::RemoteInfo
     @encoding = HttpUtil.encoding_for(@sname)
   end
 
+  def changed?(last_schid : String, update_int : Int64)
+    return true if self.last_schid != last_schid
+    return false if @sname.in?("69shu", "biqu5200", "ptwxz")
+    self.update_int != update_int
+  end
+
   getter info : HtmlParser do
     html = HttpUtil.cache(info_file, info_link, @ttl, @lbl, @encoding)
     HtmlParser.new(html)

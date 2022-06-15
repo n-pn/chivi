@@ -5,7 +5,7 @@
     const { api, nvinfo } = stuff
 
     const pgidx = +url.searchParams.get('pg') || 1
-    const chlist = await api.chlist(nvinfo.bslug, sname, pgidx)
+    const chlist = await api.chlist(nvinfo.id, sname, pgidx)
     if (chlist.error) return chlist
 
     const props = Object.assign(stuff, { chlist })
@@ -39,7 +39,7 @@
     _refresh = true
     _error = ''
 
-    const res = await $page.stuff.api.nvseed(nvinfo.bslug, nvseed.sname, true)
+    const res = await $page.stuff.api.nvseed(nvinfo.id, nvseed.sname, 1)
 
     if (res.error) {
       _error = res.error

@@ -3,45 +3,6 @@
 # from other sources
 
 class CV::Nvseed
-  def init_base!(force : Bool = false, fetch : Bool = true) : Nil
-    seeds = self.nvinfo.seed_list
-    chmin = 0
-
-    seeds.other.first(5).each do |other|
-      chmin = self.clone_remote!(other, chmin: chmin)
-    end
-
-    if _user = seeds._user
-      chmin = self.clone_range!(_user, chmin: 1)
-    end
-
-    self.reset_cache!
-
-    self.save!
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-  end
-
-  # clone remote seed, return chmax
-  def clone_remote!(remote : self, chmin = self.chap_count) : Int32
-    if chmin == 0 || !(last_chap = self.chinfo(chmin - 1))
-      return self.clone_range!(remote, chmin: chmin)
-    end
-
-    start = chmin > 10 ? chmin &- 10 : chmin
-    infos = remote.clone_chaps(start)
-
-    20.times do
-      break unless chap_info = infos.shift?
-      next unless chap_info.title == last_chap.title
-
-      self.patch_chaps!(infos, remote.utime, save: false)
-      return infos.last.chidx
-    end
-
-    chmin
-  end
-
   def clone_range!(other : self, chmin = 1, chmax = other.chap_count, offset = 0) : Int32
     return chmin if other.chap_count < chmin
 
@@ -73,5 +34,31 @@ class CV::Nvseed
 
   def patch_chaps!(chap : ChInfo, utime : Int64 = Time.utc.to_unix) : Nil
     patch_chaps!([chap], utime)
+  end
+
+  ######
+
+  def refresh_mirror!(force = false) : Nil
+    return unless last_chap = self.chinfo(self.chap_count &- 1)
+    return unless proxy = last_chap.proxy
+
+    self.last_sname = proxy.sname
+    return if self.last_sname == self.sname
+
+    target = Nvseed.load!(self.nvinfo, self.last_sname)
+    target.refresh!(force: force)
+
+    return if target.chap_count == proxy.chidx
+
+    offset = last_chap.chidx &- proxy.chidx
+    self.clone_range!(target, last_chap.chidx, offset: offset)
+  end
+
+  def refresh_mirror!(upstream : Nvseed, force : Bool = false) : Nil
+    return unless last_chap = self.chinfo(self.chap_count &- 1)
+    return unless proxy = last_chap.proxy
+
+    offset = last_chap.chidx &- proxy.chidx
+    self.clone_range!(upstream, last_chap.chidx, offset: offset)
   end
 end

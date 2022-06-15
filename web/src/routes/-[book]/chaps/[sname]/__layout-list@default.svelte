@@ -180,7 +180,7 @@
       <a
         href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
         class="seed-name umami--click---swap-seed"
-        hidden={nvseed.sname == _curr.sname}
+        class:_active={nvseed.sname == _curr.sname}
         data-tip={map_info(nvseed)}>
         <seed-label>
           <span>{nvseed.sname}</span>
@@ -211,7 +211,7 @@
       <a
         href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
         class="seed-name umami--click---swap-seed"
-        hidden={nvseed.sname == _curr.sname}
+        class:_active={nvseed.sname == _curr.sname}
         data-tip={map_info(nvseed)}>
         <seed-label>
           <span>{nvseed.sname}</span>

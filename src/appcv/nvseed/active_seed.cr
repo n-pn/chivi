@@ -4,18 +4,16 @@ require "../../_init/remote_info"
 # internet
 
 class CV::Nvseed
-  def remote_regen!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
+  def refresh_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
     parser = RemoteInfo.new(sname, snvid, ttl: ttl, lbl: lbl)
-    changed = parser.last_schid != self.last_schid
+    changed = parser.changed?(self.last_schid, self.utime)
 
     return unless force || changed
+
     chinfos = parser.chap_infos
     return if chinfos.empty?
 
-    spawn { ChList.save!(_repo.fseed, chinfos, mode: "w") }
     _repo.store!(chinfos, reset: force)
-
-    self.reset_cache!
     self.stime = FileUtil.mtime_int(parser.info_file)
 
     if parser.update_str.empty?
@@ -31,6 +29,22 @@ class CV::Nvseed
     self.save!
   rescue err
     puts err.inspect_with_backtrace
+  end
+
+  def update_remote!(mode : Int32) : Nil
+    self.refresh_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
+
+    nslist = self.nvinfo.seed_list
+
+    nslist._base.try do |base|
+      next unless base.last_sname == self.sname
+      base.refresh_mirror!(self, force: mode > 0)
+    end
+
+    nslist.users.each do |user|
+      next unless user.last_sname == self.sname
+      user.refresh_mirror!(self, force: mode > 0)
+    end
   end
 
   ############

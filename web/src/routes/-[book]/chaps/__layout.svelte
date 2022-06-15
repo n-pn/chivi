@@ -3,7 +3,7 @@
 
   export async function load({ stuff, url }) {
     const { api, nvinfo } = stuff
-    let nslist = await api.nslist(nvinfo.bslug)
+    let nslist = await api.nslist(nvinfo.id)
 
     const topbar = gen_topbar(nvinfo, stuff.ubmemo, url)
     return nslist.error ? nslist : { stuff: { nslist, topbar } }

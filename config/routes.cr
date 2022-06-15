@@ -40,9 +40,9 @@ Amber::Server.configure do
     get "/books/:bslug/front", CV::NvinfoCtrl, :front
     delete "/books/:bslug", CV::NvinfoCtrl, :delete
 
-    get "/seeds/:bslug", CV::NvseedCtrl, :index
-    get "/seeds/:bslug/:sname", CV::NvseedCtrl, :show
-    get "/seeds/:bslug/:sname/:page", CV::NvseedCtrl, :chaps
+    get "/seeds/:nv_id", CV::NvseedCtrl, :index
+    get "/seeds/:nv_id/:sname", CV::NvseedCtrl, :show
+    get "/seeds/:nv_id/:sname/:page", CV::NvseedCtrl, :chaps
 
     get "/chaps/:book/:sname/:chidx/_raw", CV::NvchapCtrl, :zh_text
     get "/chaps/:book/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info

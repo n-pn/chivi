@@ -2,7 +2,7 @@
   export async function load({ stuff, params }) {
     const { api, nvinfo } = stuff
 
-    const nvseed = await api.nvseed(nvinfo.bslug, params.sname)
+    const nvseed = await api.nvseed(nvinfo.id, params.sname)
     return nvseed.error ? nvseed : { stuff: { nvseed } }
   }
 </script>
