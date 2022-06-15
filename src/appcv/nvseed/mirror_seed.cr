@@ -6,7 +6,7 @@ class CV::Nvseed
   def clone_range!(other : self, chmin = 1, chmax = other.chap_count, offset = 0) : Int32
     return chmin if other.chap_count < chmin
 
-    infos = other.clone_chaps(chmin, chmax, offset: 0)
+    infos = other.clone_chaps(chmin, chmax, offset: offset)
     return chmin if infos.empty?
 
     self.patch_chaps!(infos, other.utime, save: false)

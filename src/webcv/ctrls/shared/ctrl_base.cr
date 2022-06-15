@@ -82,8 +82,8 @@ class CV::BaseCtrl < Amber::Controller::Base
     Nvinfo.load!(nv_id) || raise NotFound.new("Quyển sách không tồn tại")
   end
 
-  private def load_nvseed(force = false)
-    case sname = params["sname"]
+  private def load_nvseed(sname : String = params["sname"])
+    case sname
     when "=base", "=user"
       Nvseed.load!(load_nvinfo, sname, force: true)
     when "=self", "@" + _cvuser.uname

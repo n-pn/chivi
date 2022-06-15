@@ -54,6 +54,13 @@
   function internal_seed(sname: string) {
     return sname.match(/^=|@|users/)
   }
+
+  function can_edit(sname: string) {
+    if (sname.startsWith('=')) return $session.privi > 1
+    if (!sname.startsWith('@')) return $session.privi > 2
+    if (sname != '@' + $session.uname) return false
+    return $session.privi > 0
+  }
 </script>
 
 <chap-page>
@@ -76,13 +83,14 @@
 
       {#if internal_seed(nvseed.sname)}
         <a
-          class="m-btn"
-          class:_disable={$session.privi < 2}
+          class="m-btn _primary _fill"
+          class:_disable={$session.privi < 1}
           href="/-{nvinfo.bslug}/chaps/{nvseed.sname}/+chap?chidx={nvseed.chaps +
             1}"
-          data-tip="Yêu cầu quyền hạn: 2">
-          <SIcon name={$session.privi < 2 ? 'lock' : 'circle-plus'} />
+          data-tip="Yêu cầu quyền hạn: 1">
+          <SIcon name="upload" />
           <span class="-hide">Thêm chương</span>
+          <SIcon name="privi-1" iset="sprite" />
         </a>
       {:else}
         <a
@@ -92,6 +100,15 @@
           rel="external noopener noreferer">
           <SIcon name="external-link" />
           <span class="-hide">Liên kết ngoài</span>
+        </a>
+      {/if}
+
+      {#if can_edit(nvseed.sname)}
+        <a
+          class="m-btn"
+          class:_disable={$session.privi < 1}
+          href="/-{nvinfo.bslug}/chaps/{nvseed.sname}/+edit">
+          <SIcon name="settings" />
         </a>
       {/if}
     </info-right>

@@ -4,7 +4,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
   def zhtext
     raise Unauthorized.new("Quyền hạn không đủ!") if _cvuser.privi < 1
 
-    nvseed = load_nvseed(force: false)
+    nvseed = load_nvseed
     chidx = params.fetch_int("chidx", min: 1)
 
     unless chinfo = nvseed.chinfo(chidx - 1)
@@ -23,7 +23,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
   def upload
     return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
-    nvseed = load_nvseed(force: true)
+    nvseed = load_nvseed
 
     uname = "@" + _cvuser.uname
 

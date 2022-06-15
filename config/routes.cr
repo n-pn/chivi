@@ -43,6 +43,7 @@ Amber::Server.configure do
     get "/seeds/:nv_id", CV::NvseedCtrl, :index
     get "/seeds/:nv_id/:sname", CV::NvseedCtrl, :show
     get "/seeds/:nv_id/:sname/:page", CV::NvseedCtrl, :chaps
+    put "/seeds/:nv_id/:sname/patch", CV::NvseedCtrl, :patch
 
     # get "/chaps/:nv_id/:sname/:chidx", CV::NvchapCtrl, :ch_info
     get "/chaps/:nv_id/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info
