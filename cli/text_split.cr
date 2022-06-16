@@ -216,7 +216,7 @@ class Splitter
     chapter = Chapter.new
 
     @lines.each do |line|
-      if match = line.match(/^\s*\/{3,}(.*)/)
+      if match = line.match(/^\s*\/{3,}(.*)$/)
         save_chapter(chapter)
         chapter = Chapter.new
 

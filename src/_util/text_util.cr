@@ -38,7 +38,7 @@ module CV::TextUtil
     input.split(/\r\n?|\n/).map(&.strip).reject(&.empty?)
   end
 
-  SPACES = "\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000"
+  SPACES = "\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000\t"
 
   def fix_spaces(input : String) : String
     input.tr(SPACES, " ").tr("", "")
@@ -126,8 +126,12 @@ module CV::TextUtil
     /^【?(第[#{NUMS}\d]+[集卷])】?\s*(.+)$/,
   }
 
-  def format_title(title : String, chvol = "正文", trim = false) : Tuple(String, String)
-    title = fix_spaces(title).gsub("\n|\t", "  ").strip
+  def format_title(title : String, chvol = "", trim = false) : Tuple(String, String)
+    title = fix_spaces(title).tr("\n", " ").strip
+    unless chvol.empty?
+      chvol = fix_spaces(chvol).tr("\n", " ").strip
+      return {title, chvol}
+    end
 
     match = nil
     LABEL_RE.each { |regex| break if match = regex.match(title) }

@@ -90,7 +90,6 @@
           data-tip="Yêu cầu quyền hạn: 1">
           <SIcon name="upload" />
           <span class="-hide">Thêm chương</span>
-          <SIcon name="privi-1" iset="sprite" />
         </a>
       {:else}
         <a
