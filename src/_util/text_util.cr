@@ -44,6 +44,10 @@ module CV::TextUtil
     input.tr(SPACES, " ").tr("", "")
   end
 
+  def trim_spaces(input : String) : String
+    input.tr("\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000\t\n", " ").strip
+  end
+
   # capitalize all words
   def titleize(input : String) : String
     input.split(' ').map { |x| capitalize(x) }.join(' ')
@@ -118,59 +122,56 @@ module CV::TextUtil
 
   NUMS = "零〇一二两三四五六七八九十百千"
   TAGS = "章节幕回折"
-  SEPS = ".，,、：: "
+  # SEPS = ".，,、：: "
 
   LABEL_RE = {
     /^(第[#{NUMS}\d]+[集卷季].*?)(第?[#{NUMS}\d]+[#{TAGS}].*)$/,
     /^(第[#{NUMS}\d]+[集卷季].*?)(（\p{N}+）.*)$/,
-    /^【?(第[#{NUMS}\d]+[集卷])】?\s*(.+)$/,
+    /^【?(第[#{NUMS}\d]+[集卷季])】?\s*(.+)$/,
   }
 
   def format_title(title : String, chvol = "", trim = false) : Tuple(String, String)
-    title = fix_spaces(title).tr("\n", " ").strip
+    title = trim_spaces(title)
+
     unless chvol.empty?
-      chvol = fix_spaces(chvol).tr("\n", " ").strip
+      chvol = trim_spaces(chvol)
       return {title, chvol}
     end
 
-    match = nil
-    LABEL_RE.each { |regex| break if match = regex.match(title) }
-
-    if match
-      chvol = fix_spaces(match[1])
-      title = match[2]
+    LABEL_RE.each do |regex|
+      next unless match = regex.match(title)
+      return {match[2].lstrip, match[1].rstrip}
     end
 
-    title = fix_title(title, trim: false).gsub(/\s{2,}/, " ")
-    {title, chvol == "正文" ? "" : chvol}
+    {title, chvol}
   end
 
-  FIX_RE_0 = {
-    /^第?([#{NUMS}\d]+)([#{TAGS}])[#{SEPS}]*(.*)$/, # generic
-    /^\d+\.\s*第(.+)([#{TAGS}])[#{SEPS}]*(.*)/,     # 69shu 1
-    /^第(.+)([#{TAGS}])\s\d+\.\s*(.*)/,             # 69shu 2
-  }
+  # FIX_RE_0 = {
+  #   /^第?([#{NUMS}\d]+)([#{TAGS}])[#{SEPS}]*(.*)$/, # generic
+  #   /^\d+\.\s*第(.+)([#{TAGS}])[#{SEPS}]*(.*)/,     # 69shu 1
+  #   /^第(.+)([#{TAGS}])\s\d+\.\s*(.*)/,             # 69shu 2
+  # }
 
-  FIX_RE_1 = {
-    /^([#{NUMS}\d]+)[#{SEPS}]+(.*)$/,
-    /^\（(\p{N}+)\）[#{SEPS}]*(.*)$/,
-  }
+  # FIX_RE_1 = {
+  #   /^([#{NUMS}\d]+)[#{SEPS}]+(.*)$/,
+  #   /^\（(\p{N}+)\）[#{SEPS}]*(.*)$/,
+  # }
 
-  private def fix_title(title : String, trim = false) : String
-    FIX_RE_0.each do |regex|
-      next unless match = regex.match(title)
-      _, idx, tag, title = match
-      return title.empty? ? "第#{idx}#{tag}" : "第#{idx}#{tag} #{title}"
-    end
+  # private def fix_title(title : String, trim = false) : String
+  #   FIX_RE_0.each do |regex|
+  #     next unless match = regex.match(title)
+  #     _, idx, tag, title = match
+  #     return title.empty? ? "第#{idx}#{tag}" : "第#{idx}#{tag} #{title}"
+  #   end
 
-    FIX_RE_1.each do |regex|
-      next unless match = regex.match(title)
-      _, idx, title = match
-      return title.empty? ? "#{idx}." : trim ? title : "#{idx}. #{title}"
-    end
+  #   FIX_RE_1.each do |regex|
+  #     next unless match = regex.match(title)
+  #     _, idx, title = match
+  #     return title.empty? ? "#{idx}." : trim ? title : "#{idx}. #{title}"
+  #   end
 
-    title
-  end
+  #   title
+  # end
 
   def split_spaces(input : String)
     chars = input.chars

@@ -44,11 +44,7 @@ class CV::RemoteText
     when "ptwxz"
       node = page.css("h1").first
       node.css("a").each(&.remove!)
-
-      TextUtil.fix_spaces(node.inner_text)
-        .gsub("\t", "  ")
-        .sub("正文 ", "")
-        .strip
+      TextUtil.fix_spaces(node.inner_text).sub("正文 ", "").strip
     when "hetushu"
       page.text("#content .h2")
     when "zhwenpg"
