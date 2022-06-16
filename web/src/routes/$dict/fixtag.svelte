@@ -30,7 +30,7 @@
 </script>
 
 <script lang="ts">
-  import { ztext, topbar } from '$lib/stores'
+  import { ztext } from '$lib/stores'
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
   import Upsert from '$gui/parts/Upsert.svelte'
   import { SIcon } from '$gui'
