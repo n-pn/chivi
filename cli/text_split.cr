@@ -251,19 +251,20 @@ class Splitter
     end
   end
 
-  # split if there is `min_blank_line` number of adjacent blank lines
+  # split if body is padded with spaces
   def split_mode_2(require_blank_line = false)
     log_state("- Split mode: 2, require_blank_before: #{require_blank_line}")
 
     was_blank_line = true
 
     split_chap do |line|
-      unless line =~ /\P{Zs}/
+      if line =~ /^[ 　\t]/ || line.empty?
         was_blank_line = line.blank?
         next false
       end
 
-      is_new_chap, was_blank_line = !require_blank_line || was_blank_line, false
+      is_new_chap = !require_blank_line || was_blank_line
+      was_blank_line = false
       is_new_chap
     end
   end
