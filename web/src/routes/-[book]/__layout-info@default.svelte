@@ -177,7 +177,8 @@
     <a class="m-btn" href="/dicts/-{nvinfo.bhash}" data-kbd="p">
       <SIcon name="package" />
     </a>
-    {#if $session.privi > 2}
+
+    {#if $session.privi > 0}
       <a class="m-btn _harmful" href="/-{nvinfo.bslug}/+edit">
         <SIcon name="edit" />
       </a>
