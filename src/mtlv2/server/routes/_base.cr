@@ -1,6 +1,6 @@
 require "../../engine/*"
 
-abstract class CV::MtlV2::BaseCtrl < ActionController::Base
+abstract class MtlV2::BaseCtrl < ActionController::Base
   Log = Server::Log.for("controller")
 
   add_responder("*/*") { |io, result| io << result }

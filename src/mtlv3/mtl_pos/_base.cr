@@ -23,23 +23,23 @@ module CV::MtlV3::POS
       yield prev
     end
 
-    def self.set_prev(prev : BaseNode) : BaseNode
+    def set_prev(prev : BaseNode) : BaseNode
       @prev = prev
       prev.succ = self
       self
     end
 
-    def self.set_prev(@prev : Nil) : BaseNode
+    def set_prev(@prev : Nil) : BaseNode
       self
     end
 
-    def self.set_succ(succ : BaseNode) : BaseNode
+    def set_succ(succ : BaseNode) : BaseNode
       @succ = succ
       succ.prev = self
       self
     end
 
-    def self.set_succ(@succ : Nil) : BaseNode
+    def set_succ(@succ : Nil) : BaseNode
       self
     end
 

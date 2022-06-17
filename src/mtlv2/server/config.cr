@@ -2,7 +2,7 @@ require "action-controller"
 require "action-controller/logger"
 require "action-controller/server"
 
-module CV::MtlV2::Server
+module MtlV2::Server
   NAME = "MtlV2"
 
   Log         = ::Log.for(NAME)

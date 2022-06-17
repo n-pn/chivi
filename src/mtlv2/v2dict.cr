@@ -2,9 +2,9 @@ require "log"
 require "colorize"
 require "file_utils"
 
-require "./vp_dict/*"
+require "./v2dict/*"
 
-class CV::VpDict
+class MtlV2::V2Dict
   enum Kind
     Basic; Novel; Theme; Cvmtl; Other
   end
@@ -91,7 +91,7 @@ class CV::VpDict
   getter flog : String
 
   getter trie = VpTrie.new
-  getter list = [] of VpTerm
+  getter list = [] of V2Term
 
   getter kind : Kind
   getter type = 1 # dict type
@@ -116,7 +116,7 @@ class CV::VpDict
     lines = File.read_lines(file)
     lines.each do |line|
       next if line.empty?
-      set(VpTerm.new(line.split('\t'), dtype: @type))
+      set(V2Term.new(line.split('\t'), dtype: @type))
     rescue err
       Log.error { "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red }
     end
@@ -124,27 +124,27 @@ class CV::VpDict
     # Log.info { "<vp_dict> [#{file.sub(DIR, "")}] loaded: #{lines.size} lines".colorize.green }
   end
 
-  def find(key : String | Array(Char)) : VpTerm?
+  def find(key : String | Array(Char)) : V2Term?
     @trie.find(key).try(&.base)
   end
 
-  def find(key : String, uname : String) : Tuple(VpTerm?, VpTerm?)
+  def find(key : String, uname : String) : Tuple(V2Term?, V2Term?)
     return {nil, nil} unless node = @trie.find(key)
     {node.base, node.privs[uname]?}
   end
 
   def set(key : String, vals : Array(String), attr = "")
-    set(VpTerm.new(key, vals, attr, mtime: 0))
+    set(V2Term.new(key, vals, attr, mtime: 0))
   end
 
-  def set(term : VpTerm) : VpTerm?
+  def set(term : V2Term) : V2Term?
     @list << term
     return unless @trie.find!(term.key).push!(term)
     @size += 1 if term.state == "Thêm"
     term
   end
 
-  def set!(term : VpTerm) : VpTerm?
+  def set!(term : V2Term) : V2Term?
     return unless set(term)
 
     # File.open(@file, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
@@ -170,7 +170,7 @@ class CV::VpDict
     do_save!(@flog, logs) if logs.size > 0
   end
 
-  private def do_save!(file : String, list : Array(VpTerm))
+  private def do_save!(file : String, list : Array(V2Term))
     return if list.empty?
     list.sort_by! { |x| {x.mtime, x.key.size, x.key} }
 

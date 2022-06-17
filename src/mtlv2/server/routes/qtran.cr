@@ -2,15 +2,15 @@ require "../../../libcv/qtran_data"
 
 class CV::QtranData
   getter simps : Array(String) do
-    @input.map { |x| CV::MtlV2::MtCore.trad_to_simp(x) }
+    @input.map { |x| MtlV2::MtCore.trad_to_simp(x) }
   end
 
   def make_engine(uname : String)
-    CV::MtlV2::MtCore.generic_mtl(@dname, uname)
+    MtlV2::MtCore.generic_mtl(@dname, uname)
   end
 end
 
-class CV::MtlV2::QtranCtrl < CV::MtlV2::BaseCtrl
+class MtlV2::QtranCtrl < MtlV2::BaseCtrl
   base "/"
 
   @[AC::Route::POST("/_v2/qtran/:type")]

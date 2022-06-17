@@ -1,7 +1,7 @@
 require "spec"
-require "../../src/mtlv2/engine/mt_core"
+require "../../src/mtlv2/engine"
 
-MTL = CV::MtlV2::MtCore.generic_mtl("combine")
+MTL = MtlV2::Engine.generic_mtl("combine")
 
 def convert(input : String)
   MTL.cv_plain(input, cap_first: false).to_s
@@ -9,7 +9,7 @@ end
 
 DIR = "spec/engine/cases"
 
-describe CV::MtCore do
+describe MtlV2::Engine do
   files = Dir.glob("#{DIR}/**/*.tsv")
 
   files.each do |file|
