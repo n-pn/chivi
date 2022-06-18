@@ -1,6 +1,6 @@
 require "../v2dict/vp_term"
 require "./mt_util"
-require "./mt_node/*"
+require "./base_node/*"
 
 @[Flags]
 enum MtFlag
@@ -40,7 +40,10 @@ module MtlV2
 
     forward_missing_to @tag
 
-    def initialize(term : V2Term, @dic : Int32 = 0, @idx = -1)
+    def initialize(@key = "", @val = @key, @tag = PosTag::None, @dic = 0, @idx = 0)
+    end
+
+    def initialize(term : V2Term, @dic : Int32 = 0, @idx = 0)
       @key = term.key
       @val = term.val.first
       @tag = term.ptag
@@ -55,9 +58,6 @@ module MtlV2
         else
           char.alphanumeric? ? PosTag::Litstr : PosTag::None
         end
-    end
-
-    def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = -1)
     end
 
     def flag!(flag : MtFlag) : self
@@ -162,28 +162,31 @@ module MtlV2
 
     #######
 
-    # ameba:disable Metrics/CyclomaticComplexity
+    # -ameba:disable Metrics/CyclomaticComplexity
+
     def fold!(succ = self.succ?) : BaseNode
-      case @tag
-      when .puncts?    then TlRule.fold_puncts!(self)
-      when .mixed?     then TlRule.fold_mixed!(self)
-      when .special?   then TlRule.fold_specials!(self)
-      when .preposes?  then TlRule.fold_preposes!(self)
-      when .strings?   then TlRule.fold_strings!(self)
-      when .adverbial? then TlRule.fold_adverbs!(self)
-      when .auxils?    then TlRule.fold_auxils!(self)
-      when .pronouns?  then TlRule.fold_pronouns!(self)
-      when .temporal?  then TlRule.fold_temporal!(self)
-      when .numeral?   then TlRule.fold_number!(self)
-      when .modifier?  then TlRule.fold_modifier!(self)
-      when .adjective? then TlRule.fold_adjts!(self)
-      when .vmodals?   then TlRule.fold_vmodals!(self)
-      when .verbal?    then TlRule.fold_verbs!(self)
-      when .locative?  then TlRule.fold_space!(self)
-      when .nominal?   then TlRule.fold_nouns!(self)
-      when .onomat?    then TlRule.fold_onomat!(self)
-      else                  self
-      end
+      self
+
+      # case @tag
+      # when .puncts?    then TlRule.fold_puncts!(self)
+      # when .mixed?     then TlRule.fold_mixed!(self)
+      # when .special?   then TlRule.fold_specials!(self)
+      # when .preposes?  then TlRule.fold_preposes!(self)
+      # when .strings?   then TlRule.fold_strings!(self)
+      # when .adverbial? then TlRule.fold_adverbs!(self)
+      # when .auxils?    then TlRule.fold_auxils!(self)
+      # when .pronouns?  then TlRule.fold_pronouns!(self)
+      # when .temporal?  then TlRule.fold_temporal!(self)
+      # when .numeral?   then TlRule.fold_number!(self)
+      # when .modifier?  then TlRule.fold_modifier!(self)
+      # when .adjective? then TlRule.fold_adjts!(self)
+      # when .vmodals?   then TlRule.fold_vmodals!(self)
+      # when .verbal?    then TlRule.fold_verbs!(self)
+      # when .locative?  then TlRule.fold_space!(self)
+      # when .nominal?   then TlRule.fold_nouns!(self)
+      # when .onomat?    then TlRule.fold_onomat!(self)
+      # else                  self
+      # end
     end
   end
 end

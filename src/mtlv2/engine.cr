@@ -64,27 +64,27 @@ class MtlV2::Engine
     #     offset &+= token.size
     #   end
 
-    title, chvol = TextUtil.format_title(title)
+    title, chvol = CV::TextUtil.format_title(title)
     return cv_title(title, offset: 0) if chvol.empty?
 
     output = cv_title(chvol, offset: 0)
     offset = chvol.size
 
     title_res = cv_title(title, offset: offset)
-    title_res.prepend!(BaseNode.new("", " - ", idx: offset))
+    title_res.add_head(BaseNode.new("", " - ", idx: offset))
 
-    output.concat!(title_res)
+    output.add_tail(title_res)
   end
 
   def cv_title(title : String, offset = 0) : BaseList
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
     offset_2 = offset + pre_zh.size + pad.size
 
-    output = title.empty? ? BaseList.new : cv_plain(title, offset: offset_2)
+    output = title.empty? ? BaseList.new("") : cv_plain(title, offset: offset_2)
 
     unless pre_zh.empty?
-      output.prepend!(BaseNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
-      output.prepend!(BaseNode.new(pre_zh, pre_vi, dic: 1, idx: offset))
+      output.add_head(BaseNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
+      output.add_head(BaseNode.new(pre_zh, pre_vi, dic: 1, idx: offset))
     end
 
     output

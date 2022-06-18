@@ -2,11 +2,11 @@ require "../../../libcv/qtran_data"
 
 class CV::QtranData
   getter simps : Array(String) do
-    @input.map { |x| MtlV2::MtCore.trad_to_simp(x) }
+    @input.map { |x| MtlV2::Engine.trad_to_simp(x) }
   end
 
   def make_engine(uname : String)
-    MtlV2::MtCore.generic_mtl(@dname, uname)
+    MtlV2::Engine.generic_mtl(@dname, uname)
   end
 end
 
@@ -21,10 +21,10 @@ class MtlV2::QtranCtrl < MtlV2::BaseCtrl
     case type
     when "hanviet"
       apply_cap = params["apply_cap"]? == "true"
-      tokens = MtCore.hanviet_mtl.translit(input, apply_cap)
+      tokens = Engine.hanviet_mtl.translit(input, apply_cap)
       render text: rmode == "text" ? tokens.to_s : token.to_str
     when "tradsim"
-      render text: MtCore.tradsim_mtl.translit(input).to_s
+      render text: Engine.tradsim_mtl.translit(input).to_s
     else
       raise "Unsupported"
     end

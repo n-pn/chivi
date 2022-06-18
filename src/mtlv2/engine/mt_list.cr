@@ -64,7 +64,7 @@ module MtlV2
     end
 
     def fold!
-      node = head
+      node = @head
 
       while node
         node.fold!(node.succ?)
