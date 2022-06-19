@@ -15,6 +15,8 @@ rescue err
   puts err.inspect_with_backtrace.colorize.red
 end
 
+fetch_text("uukanshu", "33933", "55150", fresh: false)
+
 fetch_text("69shu", "30494", "22578503", fresh: false)
 
 fetch_text("jx_la", "7", "3666", fresh: false)

@@ -57,6 +57,7 @@ class CV::RemoteInfo
     when "zhwenpg" then info.text(".cbooksingle h2")
     when "69shu"
       info.text("h1 > a") { info.text(".weizhi > a:last-child") }
+    when "uukanshu" then info.text("h1").sub(/最新章节\s*/, "")
     else
       info.meta("og:novel:book_name").sub(/作\s+者[：:].+$/, "")
     end
@@ -68,9 +69,10 @@ class CV::RemoteInfo
 
   getter author : String do
     case @sname
-    when "ptwxz"   then info.inner_text(ptwxz_info.css("tr:nth-child(2) > td")[1])
-    when "hetushu" then info.text(".book_info a:first-child")
-    when "zhwenpg" then info.text(".fontwt")
+    when "ptwxz"    then info.inner_text(ptwxz_info.css("tr:nth-child(2) > td")[1])
+    when "hetushu"  then info.text(".book_info a:first-child")
+    when "zhwenpg"  then info.text(".fontwt")
+    when "uukanshu" then info.text("h2 > a")
     when "69shu"
       info.text(".booknav2 > p:nth-child(2) > a") { info.text(".mu_beizhu > a[target]") }
     else
@@ -89,6 +91,8 @@ class CV::RemoteInfo
     when "hetushu"
       bgenre = info.text(".title > a:last-child")
       info.text_list(".tag a").tap(&.unshift(bgenre)).uniq!
+    when "uukanshu"
+      [info.text(".path > a:nth-child(2)").sub("小说", "")]
     else
       [info.meta("og:novel:category")]
     end
@@ -108,8 +112,14 @@ class CV::RemoteInfo
       info.text_list(".intro > p")
     when "zhwenpg"
       info.text_para("tr:nth-of-type(3)")
-    when "xswang"
-      info.text_para("#intro").reject!(&.includes?(@sname))
+    when "uukanshu"
+      intro = info.text_para("h3")
+      intro[0] = intro[0].sub(/^.+www\.uukanshu\.com\s*/, "")
+      intro.shift if intro[0].empty?
+      intro.pop if intro.last =~ /^－+$/
+      intro[-1] = intro[-1].sub(/\s*https:\/\/www\.uukanshu\.com.*$/, "")
+      intro.pop if intro.last.empty?
+      intro
     else
       info.meta_para("og:description")
     end
@@ -122,11 +132,11 @@ class CV::RemoteInfo
       "https://www.69shu.com/files/article/image/#{image_path}"
     when "hetushu"
       "https://www.hetushu.com" + info.attr(".book_info img", "src")
-    when "zhwenpg" then info.attr(".cover_wrapper_m img", "data-src")
-    when "ptwxz"   then info.attr("img[width=\"100\"]", "src")
-    when "bxwxorg" then "https:" + info.meta("og:image")
-    when "xswang"  then "https://www.xswang.com" + info.meta("og:image")
-    else                info.meta("og:image")
+    when "zhwenpg"  then info.attr(".cover_wrapper_m img", "data-src")
+    when "ptwxz"    then info.attr("img[width=\"100\"]", "src")
+    when "bxwxorg"  then "https:" + info.meta("og:image")
+    when "uukanshu" then "https:" + info.attr(".bookImg > img", "src")
+    else                 info.meta("og:image")
     end
   end
 
@@ -168,6 +178,8 @@ class CV::RemoteInfo
     when "biqu5200"
       info.text("#info > p:last-child").sub("最后更新：", "")
     when "hetushu", "zhwenpg" then ""
+    when "uukanshu"
+      info.text(".shijian").split(" ", 2).first.sub("更新时间：", "")
     else
       info.meta("og:novel:update_time")
     end
@@ -209,6 +221,8 @@ class CV::RemoteInfo
       info.attr("#dir :last-child a:last-of-type", "href")
     when "zhwenpg"
       info.attr(".fontwt0 + a", "href")
+    when "uukanshu"
+      info.attr(".zuixin > a", "href")
     else
       info.meta("og:novel:latest_chapter_url")
     end
@@ -216,11 +230,12 @@ class CV::RemoteInfo
 
   getter chap_infos : Array(ChInfo) do
     case @sname
-    when "ptwxz"   then extract_chapters_plain(".centent li > a")
-    when "69shu"   then extract_chapters_plain("#catalog li > a")
-    when "duokan8" then extract_chapters_plain(".chapter-list a")
-    when "5200"    then extract_chapters_chvol(".listmain > dl")
-    when "hetushu" then extract_chapters_chvol("#dir")
+    when "ptwxz"    then extract_chapters_plain(".centent li > a")
+    when "69shu"    then extract_chapters_plain("#catalog li > a")
+    when "duokan8"  then extract_chapters_plain(".chapter-list a")
+    when "5200"     then extract_chapters_chvol(".listmain > dl")
+    when "hetushu"  then extract_chapters_chvol("#dir")
+    when "uukanshu" then extract_chapters_uukanshu
     when "zhwenpg"
       chaps = extract_chapters_plain(".clistitem > a")
 
@@ -272,6 +287,28 @@ class CV::RemoteInfo
       href = link.attributes["href"]
       chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text)
       chaps << chap unless chap.invalid?
+    rescue err
+      puts err.colorize.red
+    end
+
+    chaps
+  end
+
+  def extract_chapters_uukanshu(selector = "#chapterList")
+    chaps = [] of ChInfo
+    return chaps unless body = mulu.find(selector)
+
+    chvol = ""
+    body.children.to_a.reverse_each do |node|
+      if node.attributes["class"]? == "volume"
+        chvol = node.inner_text.strip
+      else
+        next unless link = node.css("a").first?
+        next unless href = link.attributes["href"]?
+
+        chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text, chvol)
+        chaps << chap unless chap.invalid?
+      end
     rescue err
       puts err.colorize.red
     end

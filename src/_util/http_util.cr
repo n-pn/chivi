@@ -36,7 +36,7 @@ module CV::HttpUtil
 
     if encoding != "UTF-8"
       cmd += " | iconv -c -f #{encoding} -t UTF-8"
-      cmd += %q{ | sed -r 's/charset=\"?GBK\"?/charset=utf-8/i'}
+      cmd += %q{ | sed -r 's/charset=\"?(gbk|gb2312)\"?/charset=utf-8/i'}
     end
 
     loop do

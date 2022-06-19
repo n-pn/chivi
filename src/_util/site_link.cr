@@ -9,11 +9,9 @@ module CV::SiteLink
     when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
     when "69shu"    then "https://www.69shu.com/txt/#{snvid}.htm"
     when "zxcs_me"  then "http://www.zxcs.me/post/#{snvid}/"
-    when "xswang"   then "http://www.xswang.com/book/#{snvid}"
     when "rengshu"  then "http://www.rengshu.com/book/#{snvid}"
     when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/"
     when "biqugee"  then "https://www.biqugee.com/book/#{snvid}/"
-    when "biquyue"  then "https://www.biquyue.com/book_#{snvid}/"
     when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/"
     when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/index.html"
@@ -23,6 +21,7 @@ module CV::SiteLink
     when "shubaow"  then "https://www.shubaow.net/#{group(snvid)}/"
     when "biqu5200" then "http://www.biqu5200.net/#{group(snvid)}/"
     when "ptwxz"    then "https://www.ptwxz.com/bookinfo/#{group(snvid, "/")}.html"
+    when "uukanshu" then "https://www.uukanshu.com/b/#{snvid}/"
     else                 "/"
     end
   end
@@ -41,12 +40,9 @@ module CV::SiteLink
     when "sdyfcm"   then "https://www.sdyfcm.com/#{snvid}/#{schid}/"
     when "69shu"    then "https://www.69shu.com/txt/#{snvid}/#{schid}"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/#{schid}.html"
-    when "qu_la"    then "https://www.qu.la/book/#{snvid}/#{schid}.html"
     when "rengshu"  then "http://www.rengshu.com/book/#{snvid}/#{schid}"
-    when "xswang"   then "https://www.xswang.com/book/#{snvid}/#{schid}.html"
     when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/#{schid}.html"
     when "biqugee"  then "https://www.biqugee.com/book/#{snvid}/#{schid}.html"
-    when "biquyue"  then "https://www.biquyue.com/book_#{snvid}/#{schid}.html"
     when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/#{schid}.html"
     when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/#{schid}.html"
@@ -56,6 +52,7 @@ module CV::SiteLink
     when "shubaow"  then "https://www.shubaow.net/#{group(snvid)}/#{schid}.html"
     when "biqu5200" then "http://www.biqu5200.net/#{group(snvid)}/#{schid}.html"
     when "ptwxz"    then "https://www.ptwxz.com/html/#{group(snvid, "/")}/#{schid}.html"
+    when "uukanshu" then "https://www.uukanshu.com/b/#{snvid}/#{schid}.html"
     else                 "/"
     end
   end

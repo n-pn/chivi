@@ -120,11 +120,13 @@ class CV::RemoteText
       extract_paras("#content").tap do |lines|
         lines.shift if lines.first.starts_with?("笔趣阁")
       end
-    when "xswang"
-      extract_paras("#content").tap do |lines|
-        lines.shift if lines.first.starts_with?("天才一秒记住")
-        lines.shift if lines.first.starts_with?("最快更新")
-      end
+      # when "xswang"
+      #   extract_paras("#content").tap do |lines|
+      #     lines.shift if lines.first.starts_with?("天才一秒记住")
+      #     lines.shift if lines.first.starts_with?("最快更新")
+      #   end
+    when "uukanshu"
+      extract_paras("#contentbox")
     else
       extract_paras("#content")
     end
