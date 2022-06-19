@@ -47,12 +47,20 @@ class CV::ChText
     EMPTY
   end
 
-  def fetch_zip
-    return unless @sname.in?("hetushu", "zxcs_me", "jx_la", "zhwenpg")
+  def fetch_zip : Bool
+    tab_file = @store.sub(".zip", ".tab")
+
+    if File.exists?(tab_file)
+      zip_href = @store.sub("var/chtexts", "https://r2.chivi.app/texts")
+      `curl "#{zip_href}" -o "#{@store}"`
+      return $?.success?
+    end
+
+    return false unless @sname.in?("hetushu", "zxcs_me", "jx_la", "zhwenpg")
     remote_path = @store.sub(/^var/, "s3://chivi-bak")
 
     `aws s3 cp #{remote_path} #{@store}`
-    return EMPTY unless $?.success?
+    $?.success?
   end
 
   def exists?

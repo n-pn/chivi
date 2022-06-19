@@ -44,9 +44,11 @@ class MtlV2::Engine
     end
   end
 
-  getter dicts
+  ############
 
-  def initialize(@dicts : Array(V2Dict), @uname : String = "")
+  getter dicts : Array(V2Dict)
+
+  def initialize(@dicts, @uname : String = "")
   end
 
   def translit(input : String, apply_cap : Bool = false) : BaseList
