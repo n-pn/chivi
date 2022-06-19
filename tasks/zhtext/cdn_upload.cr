@@ -7,18 +7,30 @@ def upload(dir : String, remove_zip = false, sync_log = false)
 
   puts "\n uploading [#{dir}]: #{files.size} files"
 
-  files.each do |zip_file|
-    unless uploaded?(zip_file)
-      next unless object_path = upload_file(zip_file)
-      log_result(zip_file, object_path)
-      puts "-- #{zip_file} uploaded"
-    end
+  workers = files.size
+  workers = 6 if workers > 6
+  channel = Channel(Nil).new(workers)
 
-    File.delete(zip_file) if remove_zip && staled?(zip_file)
+  files.each_with_index(1) do |zip_file, idx|
+    channel.receive if idx > workers
+
+    spawn do
+      unless uploaded?(zip_file)
+        next unless object_path = upload_file(zip_file)
+        log_result(zip_file, object_path)
+        puts "-- #{zip_file} uploaded"
+      end
+
+      File.delete(zip_file) if remove_zip && staled?(zip_file)
+    ensure
+      channel.send(nil)
+    end
   end
 
+  workers.times { channel.receive }
+
   return unless sync_log
-  `rsync -azi --no-p --include="*.tab" "#{dir}" "#{SSH}/#{File.dirname(dir)}"`
+  `rsync -azi --no-p --exclude="*.zip" "#{dir}" "#{SSH}/#{File.dirname(dir)}"`
 end
 
 def log_result(zip_file : String, object_path : String)
