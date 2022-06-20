@@ -136,7 +136,9 @@ class CV::RemoteInfo
     when "ptwxz"    then info.attr("img[width=\"100\"]", "src")
     when "bxwxorg"  then "https:" + info.meta("og:image")
     when "uukanshu" then "https:" + info.attr(".bookImg > img", "src")
-    else                 info.meta("og:image")
+    when "133txt"
+      info.meta("og:image").sub("https://www.133txt.comhttps://", "https://")
+    else info.meta("og:image")
     end
   end
 
@@ -246,6 +248,8 @@ class CV::RemoteInfo
       end
 
       chaps
+    when "133txt"
+      extract_chapters_chvol(".box_con:last-of-type > div:last-of-type > dl")
     else
       extract_chapters_chvol("#list > dl")
     end

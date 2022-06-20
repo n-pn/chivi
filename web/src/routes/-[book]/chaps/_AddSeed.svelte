@@ -30,12 +30,8 @@
 
     switch (name) {
       case '69shu':
-        const snvid_69shu =
-          slugs[0] == 'txt' ? slugs[1].replace('.htm', '') : slugs[0]
-        return [name, snvid_69shu]
-
-      case 'ptwxz':
-        return [name, slugs[1]]
+        const snvid_69shu = slugs[0] == 'txt' ? slugs[1] : slugs[0]
+        return [name, snvid_69shu.replace('.htm', '')]
 
       case 'uukanshu':
       case 'bxwxorg':
@@ -43,6 +39,8 @@
       case 'xbiquge':
       case 'hetushu':
       case 'biqugee':
+      case 'ptwxz':
+      case '133txt':
         return [name, slugs[1]]
 
       case 'paoshu8':

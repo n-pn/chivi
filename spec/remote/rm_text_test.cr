@@ -72,3 +72,5 @@ fetch_text("biquyue", "56580", "63002", fresh: false)
 fetch_text("xswang", "2028", "6718369", fresh: false)
 
 fetch_text("biqu5200", "153174", "180388551", fresh: false)
+
+fetch_text("133txt", "9", "5900", fresh: false)

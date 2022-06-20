@@ -26,6 +26,9 @@ module CV::SnameMap
     "shubaow" => 38,
     "duokan8" => 40,
 
+    "uukanshu" => 42,
+    "133txt"   => 44,
+
     "sdyfcm"  => 50,
     "jx_la"   => 56,
     "zhwenpg" => 60,

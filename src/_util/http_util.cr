@@ -8,7 +8,7 @@ module CV::HttpUtil
   UTF8 = {
     "jx_la", "zxcs_me", "xswang",
     "hetushu", "paoshu8", "zhwenpg",
-    "bxwxorg", "sdyfcm",
+    "bxwxorg", "sdyfcm", "133txt",
   }
 
   def encoding_for(sname : String) : String

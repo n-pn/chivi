@@ -87,19 +87,20 @@ tests = [
   # {"sdyfcm", "10", false},
   # {"sdyfcm", "125228", true},
 
-  {"ptwxz", "1806", false},
+  # {"ptwxz", "1806", false},
   # {"ptwxz", "1806", true},
 
-  {"biquyue", "56580", false},
+  # {"biquyue", "56580", false},
   # {"biquyue", "56580", true},
 
-  {"xswang", "2028", false},
+  # {"xswang", "2028", false},
   # {"xswang", "2028", true},
 
   {"paoshu8", "180762", false},
-  {"ptwxz", "14737", true},
+  # {"ptwxz", "14737", false},
 
   {"uukanshu", "33933", false},
+  {"133txt", "9", false},
 ]
 
 tests.each do |sname, snvid, fresh|

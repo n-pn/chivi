@@ -41,7 +41,7 @@ class CV::ChRepo
     Dir.mkdir_p(File.dirname(@fstat))
     Dir.mkdir_p(@chdir)
 
-    Dir.mkdir_p("_db/.cache/#{@sname}/infos/#{@snvid}") if @is_remote
+    Dir.mkdir_p("_db/.cache/#{@sname}/infos") if @is_remote
     Dir.mkdir_p("var/chmetas/.html/#{@sname}/#{@snvid}") if @is_remote
   end
 

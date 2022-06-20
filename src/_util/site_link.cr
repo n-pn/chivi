@@ -21,6 +21,7 @@ module CV::SiteLink
     when "biqu5200" then "http://www.biqu5200.net/#{group(snvid)}/"
     when "ptwxz"    then "https://www.ptwxz.com/bookinfo/#{group(snvid, "/")}.html"
     when "uukanshu" then "https://www.uukanshu.com/b/#{snvid}/"
+    when "133txt"   then "https://www.133txt.com/book/#{snvid}/"
     else                 "/"
     end
   end
@@ -52,6 +53,7 @@ module CV::SiteLink
     when "biqu5200" then "http://www.biqu5200.net/#{group(snvid)}/#{schid}.html"
     when "ptwxz"    then "https://www.ptwxz.com/html/#{group(snvid, "/")}/#{schid}.html"
     when "uukanshu" then "https://www.uukanshu.com/b/#{snvid}/#{schid}.html"
+    when "133txt"   then "https://www.133txt.com/xiaoshuo/#{snvid}/#{schid}.html"
     else                 "/"
     end
   end
