@@ -85,8 +85,10 @@
     globalThis.history?.replaceState({ chmeta }, null, url)
   }
 
+  let _reloading = false
   async function reload_chap() {
     if ($session.privi < 1) return
+    _reloading = true
 
     const { sname, cpart } = chmeta
     const url = gen_api_url(nvinfo, sname, chinfo.chidx, cpart, true)
@@ -98,6 +100,7 @@
     chmeta = res.chmeta
     chinfo = res.chinfo
     ubmemo = res.ubmemo
+    _reloading = false
   }
 
   async function retranslate() {
@@ -201,7 +204,7 @@
             class="gmenu-item umami--click--reload-rmtext"
             disabled={$session.privi < 0}
             on:click={reload_chap}>
-            <SIcon name="rotate-rectangle" />
+            <SIcon name="rotate-rectangle" spin={_reloading} />
             <span>Tải lại nguồn</span>
           </button>
 

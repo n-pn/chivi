@@ -98,7 +98,7 @@ export default class MtData {
         continue
       }
 
-      const fval = val[0]
+      const fval = val.charAt(0)
       if (fval == '“' || fval == '‘') {
         lvl += 1
         res += '<em>'
@@ -115,7 +115,7 @@ export default class MtData {
         res += `<v-n data-d=${dic} data-l=${l} data-u=${u}>${esc}</v-n>`
       }
 
-      const lval = val[val.length - 1]
+      const lval = val.charAt(val.length - 1)
 
       if (lval == '”' || lval == '’') {
         lvl -= 1
@@ -127,12 +127,12 @@ export default class MtData {
 
     while (lvl < 0) {
       res = '<em>' + res
-      lvl++
+      lvl += 1
     }
 
     while (lvl > 0) {
       res = res + '</em>'
-      lvl--
+      lvl -= 1
     }
 
     return res
