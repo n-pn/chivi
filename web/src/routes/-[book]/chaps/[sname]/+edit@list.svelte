@@ -18,8 +18,11 @@
 </script>
 
 <script lang="ts">
-  import { page } from '$app/stores'
+  import { page, session } from '$app/stores'
   import { goto } from '$app/navigation'
+  import AddSeed from '../_AddSeed.svelte'
+
+  import { SIcon } from '$gui'
 
   export let nvinfo: CV.Nvinfo
   export let nslist: CV.Nvseed[]
@@ -59,64 +62,77 @@
 <article class="article">
   <h2>Tinh chỉnh nguồn truyện</h2>
 
-  <h3>Thừa kế từ nguồn khác</h3>
+  <details open>
+    <summary>Thừa kế từ nguồn khác</summary>
 
-  <div class="form-group">
-    <div class="form-field">
-      <label for="nvseed" class="form-label">Chọn nguồn</label>
-      <select
-        class="m-input"
-        name="nvseed"
-        id="nvseed"
-        bind:value={patch_form.o_sname}>
-        {#each nslist as nvseed}
-          <option value={nvseed.sname} on:click={() => update_patch(nvseed)}
-            >[{nvseed.sname}] ({nvseed.chaps} chương)</option>
-        {/each}
-      </select>
-    </div>
+    <div class="form-group">
+      <div class="form-field">
+        <label for="nvseed" class="form-label">Chọn nguồn</label>
+        <select
+          class="m-input"
+          name="nvseed"
+          id="nvseed"
+          bind:value={patch_form.o_sname}>
+          {#each nslist as nvseed}
+            <option value={nvseed.sname} on:click={() => update_patch(nvseed)}
+              >[{nvseed.sname}] ({nvseed.chaps} chương)</option>
+          {/each}
+        </select>
+      </div>
 
-    <div class="form-field">
-      <label class="form-label" for="patch_chmin">Từ chương</label>
-      <input
-        type="number"
-        id="patch_chmin"
-        class="m-input"
-        bind:value={patch_form.chmin}
-        on:change={() => (patch_form.i_chmin = patch_form.chmin)} />
-    </div>
+      <div class="form-field">
+        <label class="form-label" for="patch_chmin">Từ chương</label>
+        <input
+          type="number"
+          id="patch_chmin"
+          class="m-input"
+          bind:value={patch_form.chmin}
+          on:change={() => (patch_form.i_chmin = patch_form.chmin)} />
+      </div>
 
-    <div class="form-field">
-      <label class="form-label" for="patch_chmax">Tới chương</label>
-      <input
-        type="number"
-        id="patch_chmax"
-        class="m-input"
-        bind:value={patch_form.chmax} />
-    </div>
+      <div class="form-field">
+        <label class="form-label" for="patch_chmax">Tới chương</label>
+        <input
+          type="number"
+          id="patch_chmax"
+          class="m-input"
+          bind:value={patch_form.chmax} />
+      </div>
 
-    <div class="form-field">
-      <label class="form-label" for="patch_i_chmin">Vị trí mới</label>
-      <input
-        type="number"
-        id="patch_i_chmin"
-        class="m-input"
-        bind:value={patch_form.i_chmin} />
-    </div>
+      <div class="form-field">
+        <label class="form-label" for="patch_i_chmin">Vị trí mới</label>
+        <input
+          type="number"
+          id="patch_i_chmin"
+          class="m-input"
+          bind:value={patch_form.i_chmin} />
+      </div>
 
-    <div class="form-field _button">
-      <button
-        type="button"
-        class="m-btn _primary _fill _lg"
-        on:click={submit_patch}>Thực hiện</button>
+      <div class="form-field _button">
+        <button
+          type="button"
+          class="m-btn _primary _fill"
+          on:click={submit_patch}>
+          <SIcon name="send" />
+          <span>Thực hiện</span>
+        </button>
+      </div>
     </div>
-  </div>
+  </details>
+
+  {#if nvseed.sname == '=base' && $session.privi > 1}
+    <details open>
+      <summary>Thêm nguồn truyện</summary>
+      <AddSeed {nvinfo} />
+    </details>
+  {/if}
 </article>
 
 <style lang="scss">
   .form-group {
     display: flex;
     gap: 0.75rem;
+    align-items: flex-end;
   }
 
   h2 {
@@ -130,9 +146,17 @@
       text-align: center;
     }
   }
+
   ._button {
     margin-left: auto;
-    display: flex;
-    align-items: center;
+  }
+
+  details + details {
+    margin-top: 1rem;
+  }
+
+  summary {
+    font-weight: 500;
+    // @include ftsize(lg);
   }
 </style>

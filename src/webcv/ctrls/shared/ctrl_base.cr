@@ -92,4 +92,8 @@ class CV::BaseCtrl < Amber::Controller::Base
       Nvseed.load!(load_nvinfo, sname, force: false)
     end
   end
+
+  def assert_privi(privi : Int32 = 1)
+    raise Unauthorized.new("Bạn không đủ quyền hạn") if _cvuser.privi < privi
+  end
 end

@@ -41,6 +41,7 @@ Amber::Server.configure do
     delete "/books/:bslug", CV::NvinfoCtrl, :delete
 
     get "/seeds/:nv_id", CV::NvseedCtrl, :index
+    put "/seeds/:nv_id/", CV::NvseedCtrl, :create
     get "/seeds/:nv_id/:sname", CV::NvseedCtrl, :show
     get "/seeds/:nv_id/:sname/:page", CV::NvseedCtrl, :chaps
     put "/seeds/:nv_id/:sname/patch", CV::NvseedCtrl, :patch

@@ -6,7 +6,6 @@ module CV::SiteLink
     case sname
     when "sdyfcm"   then "https://www.sdyfcm.com/#{snvid}/"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
-    when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
     when "69shu"    then "https://www.69shu.com/txt/#{snvid}.htm"
     when "zxcs_me"  then "http://www.zxcs.me/post/#{snvid}/"
     when "rengshu"  then "http://www.rengshu.com/book/#{snvid}"

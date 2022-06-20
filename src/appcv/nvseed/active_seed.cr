@@ -32,7 +32,7 @@ class CV::Nvseed
   end
 
   def update_remote!(mode : Int32) : Nil
-    self.reset_cache!(raws: false)
+    self.reset_cache!(raws: true)
     self.refresh_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
 
     nslist = self.nvinfo.seed_list

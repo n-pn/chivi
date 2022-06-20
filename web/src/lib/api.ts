@@ -15,15 +15,6 @@ interface Cached<T> {
   ttl: number
 }
 
-// type CachedMap<T> = Map<string, Cached<T>>
-
-function load_cached<T>(map: Map<string, Cached<T>>, key: string, ttl: number) {
-  // if (!browser) return null
-
-  let cached = map.get(key)
-  return cached && cached.ttl > ttl ? cached : null
-}
-
 export class API {
   fetch: CV.Fetch
   uname: string

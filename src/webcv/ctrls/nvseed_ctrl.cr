@@ -18,6 +18,18 @@ class CV::NvseedCtrl < CV::BaseCtrl
     serv_json(NvseedView.new(nvseed, full: true, fresh: fresh))
   end
 
+  def create
+    assert_privi 2
+
+    nvinfo = load_nvinfo
+
+    sname = params["sname"]
+    snvid = params["snvid"]
+
+    Nvseed.upsert!(nvinfo, sname, snvid, force: true)
+    serv_json({sname: sname, snvid: snvid})
+  end
+
   private def can_refresh?(nvseed : Nvseed)
     return false if _cvuser.privi < 0
     return true unless nvseed.sname[0] == '@'
