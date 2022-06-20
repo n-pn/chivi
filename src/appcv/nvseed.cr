@@ -48,10 +48,10 @@ class CV::Nvseed
     self.stime = Time.utc.to_unix
 
     case sname
-    when "=base" then self.upgrade_base!(mode: mode)
-    when "=user" then self.upgrade_user!(mode: mode)
+    when "=base" then self.reload_base!(mode: mode)
+    when "=user" then self.reload_user!(mode: mode)
     when .starts_with?('@')
-      self.upgrade_self!(mode: mode)
+      self.reload_self!(mode: mode)
     else
       if remote?(force: mode > 0)
         self.update_remote!(mode: mode)
@@ -74,19 +74,6 @@ class CV::Nvseed
     CACHED.get("#{nvinfo.id}/#{sname}") do
       upsert!(nvinfo, sname, nvinfo.bhash, force: force)
     end
-  end
-
-  def self.load!(sname : String, snvid : String, force = false)
-    unless nvseed = find({sname: sname, snvid: snvid})
-      if nvinfo = Nvinfo.find({bhash: snvid})
-        nvseed = init!(nvinfo, sname, snvid)
-      else
-        raise NotFound.new("Quyển sách không tồn tại (#{snvid})")
-      end
-    end
-
-    CACHED.set("#{nvseed.nvinfo_id}/#{nvseed.sname}", nvseed)
-    nvseed
   end
 
   def self.upsert!(nvinfo : Nvinfo, sname : String, snvid : String, force = true)

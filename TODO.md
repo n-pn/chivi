@@ -7,13 +7,13 @@
 
 - fix nvseed update action:
 
-  - add `last_sname` to nvseed table
+  - rename `last_sname` to `pull_sname`
+  - add `pull_chmax` to nvseed table
+
   - check for mirror seed base on latest chapter
 
-- manual import mirrors
-
-- improve `=base` seed auto generation
-  - ...
+- improve update flows
+- add add nvseed functions
 
 ## Pending
 

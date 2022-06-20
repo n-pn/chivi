@@ -19,10 +19,12 @@ class CV::Nvseed
       chmin = self.clone_remote!(other, chmin: chmin)
     end
 
-    _user = seeds._user || Nvseed.load!(self.nvinfo, "=user")
-    chmin = self.clone_range!(_user, chmin: 1)
+    if others.empty?
+      _user = seeds._user || Nvseed.load!(self.nvinfo, "=user")
+      chmin = self.clone_range!(_user, chmin: 1)
+    end
 
-    self.reset_cache!(raws: false)
+    self.reset_cache!(raws: true)
     self.save!
   rescue err
     Log.error { err.inspect_with_backtrace }
@@ -51,17 +53,17 @@ class CV::Nvseed
     chmin
   end
 
-  def upgrade_base!(mode = 1)
+  def reload_base!(mode = 1)
     if mode > 1 || self.chap_count == 0 || self.last_sname.empty?
-      return autogen_base!(mode: mode)
+      return self.autogen_base!(mode: mode)
     end
 
     return if self.last_sname == self.sname
 
-    upstream = Nvseed.load!(self.nvinfo, self.last_sname)
-    upstream.refresh!(mode: mode)
+    source = Nvseed.load!(self.nvinfo, self.last_sname)
+    source.refresh!(mode: mode)
 
-    self.refresh_mirror!(upstream)
+    self.refresh_mirror!(source)
   end
 
   ###################
@@ -79,18 +81,18 @@ class CV::Nvseed
     self.save!
   end
 
-  def upgrade_user!(mode = 1)
+  def reload_user!(mode = 1)
     if mode > 1 || self.chap_count == 0 || self.last_sname.empty?
       return autogen_user!(mode: mode)
     end
 
-    upstream = Nvseed.load!(self.nvinfo, self.last_sname)
-    self.refresh_mirror!(upstream)
+    source = Nvseed.load!(self.nvinfo, self.last_sname)
+    self.refresh_mirror!(source)
   end
 
   ##############
 
-  def upgrade_self!(mode = 1)
+  def reload_self!(mode = 1)
     return if self.last_sname.empty? || self.last_sname == self.sname
     upstream = Nvseed.load!(self.nvinfo, self.last_sname)
     self.refresh_mirror!(upstream)
