@@ -1,7 +1,5 @@
-require "./punct"
-
-module MtlV2
-  class TitleOp < PunctNode
+module MtlV2::AST
+  class TitleOp
     def fold! : BaseNode
       end_key = match_title_end(@key[0]?)
       tail = self

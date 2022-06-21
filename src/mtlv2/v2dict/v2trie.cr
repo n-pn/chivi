@@ -1,7 +1,7 @@
-require "./vp_term"
+require "./v2term"
 
-class MtlV2::VpTrie
-  alias Trie = Hash(Char, VpTrie)
+class MtlV2::V2Trie
+  alias Trie = Hash(Char, V2Trie)
 
   property base : V2Term? = nil
   getter privs = {} of String => V2Term
@@ -16,19 +16,19 @@ class MtlV2::VpTrie
     end
   end
 
-  def find!(input : String) : VpTrie
+  def find!(input : String) : V2Trie
     node = self
-    input.each_char { |c| node = node._next[c] ||= VpTrie.new }
+    input.each_char { |c| node = node._next[c] ||= V2Trie.new }
     node
   end
 
-  def find(input : String) : VpTrie?
+  def find(input : String) : V2Trie?
     node = self
     input.each_char { |c| return unless node = node._next[c]? }
     node
   end
 
-  def find(chars : Array(Char)) : VpTrie?
+  def find(chars : Array(Char)) : V2Trie?
     node = self
     chars.each { |c| return unless node = node._next[c]? }
     node

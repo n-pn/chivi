@@ -99,7 +99,7 @@ class MtlV2::Engine
   def cv_plain(input : String, cap_first = true, offset = 0)
     list = tokenize(input.chars, offset: offset)
     list.fold!
-    list.apply_cap!(cap: cap_first)
+    list.capitalize!(cap: cap_first)
     list.pad_spaces!
   end
 
@@ -129,7 +129,7 @@ class MtlV2::Engine
 
         if cost >= costs[jump]
           dic = term.is_priv ? dic &+ 2 : dic
-          nodes[jump] = BaseNode.new(term, dic, idx + offset)
+          nodes[jump] = term.node.dup!(idx + offset, dic)
           costs[jump] = cost
         end
       end
