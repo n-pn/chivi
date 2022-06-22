@@ -1,4 +1,4 @@
-module CV::POS
+module MtlV2::AST
   class Auxil < BaseNode; end
 
   class Ule < Auxil; end
@@ -23,13 +23,15 @@ module CV::POS
 
   class Udeng < Auxil; end
 
-  class Udeng1 < Uyy; end
+  class Udeng1 < Udeng; end
 
-  class Udeng2 < Uyy; end
+  class Udeng2 < Udeng; end
 
   ##########
 
   class Uyy < Auxil; end
+
+  class Uyy1 < Uyy; end
 
   #####
 
@@ -43,7 +45,7 @@ module CV::POS
 
   # ameba:disable Metrics/CyclomaticComplexity
   def self.auxil_from_term(term : V2Term)
-    case key
+    case term.key
     when "了", "喽"               then Ule.new(term)
     when "之"                    then Uzhi.new(term)
     when "着"                    then Uzhe.new(term)

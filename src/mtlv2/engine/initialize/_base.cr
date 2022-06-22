@@ -84,4 +84,7 @@ module MtlV2::AST
       end
     end
   end
+
+  class Mixed < BaseNode
+  end
 end

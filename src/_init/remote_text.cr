@@ -129,7 +129,7 @@ class CV::RemoteText
       lines = extract_paras("#contentbox")
 
       lines.map! do |line|
-        line.gsub(/\s*[UＵ]{2}看书.+\.com\s*/i, "")
+        line.gsub(/\s*[uＵ][uＵ]看书\P{Han}+[ｃc][oｏ][ｍm]\s*/i, "")
       end
 
       lines.reject!(&.empty?)

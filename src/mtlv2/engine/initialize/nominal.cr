@@ -1,7 +1,7 @@
 require "./nominal/*"
 
 module MtlV2::AST
-  # ameba:disable Metrics/CyclomaticComplexity
+  # -ameba:disable Metrics/CyclomaticComplexity
   def self.noun_from_term(term : V2term)
     case term.tags[0][1]?
     when nil then BaseNoun.new(term)

@@ -13,6 +13,13 @@ module CV::TlRule
       return fold_verbs!(node) if node.verb?
       # when .key?("要")
       # node.set!("phải") if succ.try(&.maybe_verb?)
+    when .key?("可")
+      if nega
+        node.val = "thể"
+        node = fold!(nega, node, node.tag, dic: 6)
+      else
+        node.val = "có thể"
+      end
     else
       node.tag = PosTag::Noun if vmodal_is_noun?(node)
       node = fold!(nega, node, node.tag, dic: 6) if nega

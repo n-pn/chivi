@@ -1,7 +1,7 @@
 module MtlV2::AST
   # ameba:disable Metrics/CyclomaticComplexity
   def self.punct_from_term(term : V2Term)
-    case key
+    case term.key
     when "・", "‧", "•", "·"      then Middot.new(term)
     when "﹐", "，", ","           then Comma.new(term)
     when "﹑", "、", "､"           then EnumComma.new(term)

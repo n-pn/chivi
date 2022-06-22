@@ -27,8 +27,8 @@ module MtlV2::AST
     DIR_RE = /.+[下上出进回过起来去]/
     RES_RE = /[好完错晚坏饱清到走会懂见掉]/
 
-    def initialize(term : V2Term, dic = 0, idx = 1)
-      super(term, dic, idx)
+    def initialize(term : V2Term)
+      super(term)
       return if key.size < 2
 
       @flag |= Flag::HasPzai if key.includes?('在')
@@ -64,8 +64,8 @@ module MtlV2::AST
     getter noun_val : String? = nil
     getter noun_tag : String = "n"
 
-    def initialize(term : V2Term, @dic = 0, @idx = 0)
-      super(term, dic, idx)
+    def initialize(term : V2Term)
+      super(term)
 
       @adjt_val = term.vals[1]?
       @adjt_tag = term.tags[1]? || "v"
@@ -85,8 +85,8 @@ module MtlV2::AST
     getter advb_val : String? = nil
     getter advb_tag : String = "a"
 
-    def initialize(term : V2Term, @dic = 0, @idx = 0)
-      super(term, dic, idx)
+    def initialize(term : V2Term)
+      super(term)
 
       @adjt_val = term.vals[1]?
       @adjt_tag = term.tags[1]? || "v"
@@ -120,30 +120,30 @@ module MtlV2::AST
     when 'x' then VCombine.new(term)
     when 'p' then VCompare.new(term)
     when 'f' then VDircomp.new(term)
-    when 'm' then init_vmodal(term)
-    when '!' then initverb_special(term)
+    when 'm' then vmodal_from_term(term)
+    when '!' then special_verb_from_term(term)
     else          Verb.new(term)
     end
   end
 
-  def self.init_vmodal(key : ::String)
-    case key
-    when "会" then VmHui.new
-    when "能" then VmNeng.new
-    when "想" then VmXiang.new
-    else          Vmodal.new
+  def self.vmodal_from_term(term : V2Term)
+    case term.key
+    when "会" then VmHui.new(term)
+    when "能" then VmNeng.new(term)
+    when "想" then VmXiang.new(term)
+    else          Vmodal.new(term)
     end
   end
 
   def self.init_verb_special(key : String)
     case
-    when key.ends_with?('是')            then VShi.new
-    when key.ends_with?('有')            then VYou.new
-    when MtDict.v2_objs.has_key?(key)   then Verb2Obj.new
-    when MtDict.verb_dir.has_key?(key)  then VDircomp.new
-    when MtDict.v_combine.has_key?(key) then VCombine.new
-    when MtDict.v_compare.has_key?(key) then VCompare.new
-    else                                     Verb.new
+    when key.ends_with?('是')            then VShi.new(term)
+    when key.ends_with?('有')            then VYou.new(term)
+    when MtDict.v2_objs.has_key?(key)   then Verb2Obj.new(term)
+    when MtDict.verb_dir.has_key?(key)  then VDircomp.new(term)
+    when MtDict.v_combine.has_key?(key) then VCombine.new(term)
+    when MtDict.v_compare.has_key?(key) then VCompare.new(term)
+    else                                     Verb.new(term)
     end
   end
 end

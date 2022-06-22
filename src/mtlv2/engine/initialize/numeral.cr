@@ -20,6 +20,19 @@ module MtlV2::AST
     end
   end
 
+  NUMCHR_RE = /[零〇一二两三四五六七八九十百千万亿兆多每]/
+
+  def self.nquant_from_term(term : V2Term)
+    key = term.key.sub(NUMCHR_RE, "")
+
+    case
+    when Qttime.has_key?(key) then Nqtime.new(term)
+    when Qtverb.has_key?(key) then Nqverb.new(term)
+    when Qtnoun.has_key?(key) then Nqtime.new(term)
+    else                           Nquant.new(term)
+    end
+  end
+
   class Numeral < BaseNode
   end
 

@@ -1,4 +1,4 @@
-require "./v2dict"
+require "../v2dict"
 require "./initialize/*"
 
 module MtlV2::AST
@@ -26,7 +26,7 @@ module MtlV2::AST
     when '~' then extra_from_term(term)
     when '-' then BaseNode.new(term)
     when nil then BaseNode.new(term)
-    else          miscs_from_term(term)
+    else          other_from_term(term)
     end
   end
 
