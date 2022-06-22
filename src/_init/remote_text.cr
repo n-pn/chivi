@@ -126,7 +126,13 @@ class CV::RemoteText
       #     lines.shift if lines.first.starts_with?("最快更新")
       #   end
     when "uukanshu"
-      extract_paras("#contentbox")
+      lines = extract_paras("#contentbox")
+
+      lines.map! do |line|
+        line.gsub(/\s*[UＵ]{2}看书.+\.com\s*/i, "")
+      end
+
+      lines.reject!(&.empty?)
     else
       extract_paras("#content")
     end
