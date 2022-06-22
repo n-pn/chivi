@@ -16,15 +16,15 @@ module MtlV2::AST
       @key = @val = char.to_s
     end
 
-    def initialize(term : V2Term, @dic = 0, @idx = 0)
+    def initialize(term : V2Term)
       @key = term.key
       @val = term.vals.first
     end
 
-    def dup!(idx : Int32, dic = self.dic) : BaseNode
+    def dup!(idx : Int32, dic : Int32 = 1) : BaseNode
       target = self.dup
-      target.dic = dic
       target.idx = idx
+      target.dic = dic
       target
     end
 
@@ -55,6 +55,33 @@ module MtlV2::AST
     end
   end
 
-  class BaseList
+  class BaseList < BaseNode
+    property! head : BaseNode
+    property! tail : BaseNode
+
+    def add_head(node : BaseNode)
+      node.set_succ(@head)
+      self.set_prev(node.prev?)
+      node.set_prev(nil)
+
+      @tail ||= node
+      @head = node
+    end
+
+    def add_tail(node : BaseNode)
+      node.set_prev(@tail)
+      self.set_succ(node.succ?)
+      node.set_succ(nil)
+
+      @head ||= node
+      @tail = node
+    end
+
+    def each(node = @head)
+      while node
+        yield node
+        node = node.succ?
+      end
+    end
   end
 end

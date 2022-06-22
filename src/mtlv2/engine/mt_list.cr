@@ -31,36 +31,8 @@ module MtlV2
       end
     end
 
-    def to_s : String
-      String.build { |io| to_s(io) }
-    end
-
-    def to_s(io : IO) : Nil
-      @head.try(&.print_val(io))
-    end
-
-    def to_mtl : String
-      String.build { |io| to_mtl(io) }
-    end
-
-    def to_mtl(io : IO) : Nil
-      @head.try(&.serialize(io))
-    end
-
-    def inspect(io : IO) : Nil
-      @head.try(&.deep_inspect(io))
-    end
-
     def apply_cap!(cap = true) : Bool
       @head.try(&.apply_cap!(cap)) || true
-    end
-
-    def pad_spaces! : self
-      if (head = @head) && (succ = head.succ?)
-        succ.pad_spaces!(head)
-      end
-
-      self
     end
 
     def fold!

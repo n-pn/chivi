@@ -14,8 +14,8 @@ module MtlV2::AST
     getter noun_val : String? = nil
     getter noun_tag : String = "n"
 
-    def initialize(term : V2Term, @idx = 0)
-      super(term, idx)
+    def initialize(term : V2Term)
+      super(term)
 
       @adjt_val = term.vals[1]?
       @adjt_tag = term.tags[1]? || "a"
@@ -25,15 +25,15 @@ module MtlV2::AST
     end
   end
 
-  struct AdjtAdvb < Mixed
+  class AdjtAdvb < Mixed
     getter adjt_val : String? = nil
     getter adjt_tag : String = "a"
 
     getter advb_val : String? = nil
     getter advb_tag : String = "d"
 
-    def initialize(term : V2Term, @idx = 0)
-      super(term, idx)
+    def initialize(term : V2Term)
+      super(term)
 
       @adjt_val = term.vals[1]?
       @adjt_tag = term.tags[1]? || "a"
@@ -43,13 +43,14 @@ module MtlV2::AST
     end
   end
 
-  struct AdjtHao < Mixed
+  class AdjtHao < Mixed
     getter adjt_val = "tốt"
     getter advb_val = "thật"
   end
 
   ##################
-  def self.init_adjt(tag : String, key : String, val = [] of String)
+
+  def self.adjt_from_term(term : V2Term)
     case tag[1]?
     when 'n' then AdjtNoun.new(key, val)
     when 'd' then AdjtAdvb.new(key, val)

@@ -53,4 +53,26 @@ module MtlV2::AST
       @succ.try(&.deep_inspect(io, pad))
     end
   end
+
+  class BaseList
+    def to_s : String
+      String.build { |io| to_s(io) }
+    end
+
+    def to_s(io : IO) : Nil
+      @head.try(&.print_val(io))
+    end
+
+    def to_mtl : String
+      String.build { |io| to_mtl(io) }
+    end
+
+    def to_mtl(io : IO) : Nil
+      @head.try(&.serialize(io))
+    end
+
+    def inspect(io : IO) : Nil
+      @head.try(&.deep_inspect(io))
+    end
+  end
 end

@@ -3,7 +3,7 @@ require "./nominal/*"
 module MtlV2::AST
   # ameba:disable Metrics/CyclomaticComplexity
   def self.noun_from_term(term : V2term)
-    case term.attr[0]?
+    case term.tags[0][1]?
     when nil then BaseNoun.new(term)
     when 'r' then HumanName.new(term)
     when 'n' then AffilName.new(term)
