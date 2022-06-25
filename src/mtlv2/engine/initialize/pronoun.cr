@@ -1,6 +1,6 @@
 module MtlV2::AST
   # 代词 - pronoun - đại từ chưa phân loại
-  class Pronoun < Objects; end
+  class Pronoun < BaseNode; end
 
   # 人称代词 - personal pronoun - đại từ nhân xưng
   class PerPron < Pronoun; end
@@ -37,7 +37,7 @@ module MtlV2::AST
     end
   end
 
-  def self.parse_proint(term : V2Term)
+  def self.proint_from_term(term : V2Term)
     case term.key
     when "哪" then ProNa2.new(term)
     else          IntPron.new(term)

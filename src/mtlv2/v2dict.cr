@@ -90,7 +90,7 @@ class MtlV2::V2Dict
   getter file : String
   getter flog : String
 
-  getter trie = VpTrie.new
+  getter trie = V2Trie.new
   getter list = [] of V2Term
 
   getter kind : Kind
@@ -140,7 +140,7 @@ class MtlV2::V2Dict
   def set(term : V2Term) : V2Term?
     @list << term
     return unless @trie.find!(term.key).push!(term)
-    @size += 1 if term.state == "Thêm"
+    @size += 1 unless term._prev
     term
   end
 

@@ -4,12 +4,12 @@ require "./initialize/*"
 module MtlV2::AST
   # ameba:disable Metrics/CyclomaticComplexity
   def self.from_term(term : V2Term)
-    case term.attr[0]?
+    case term.tags[0][0]?
     when 'n' then noun_from_term(term)
     when 'v' then verb_from_term(term)
     when 'a' then adjt_from_term(term)
     when 'b' then Modi.new(term)
-    when 'd' then adverb_from_term(key)
+    when 'd' then adverb_from_term(term)
     when 'm' then number_from_term(term)
     when 'q' then quanti_from_term(term)
     when 'r' then pronoun_from_term(term)

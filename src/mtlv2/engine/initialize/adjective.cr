@@ -38,8 +38,8 @@ module MtlV2::AST
       @adjt_val = term.vals[1]?
       @adjt_tag = term.tags[1]? || "a"
 
-      @noun_val = term.vals[2]?
-      @noun_tag = term.tags[2]? || "d"
+      @advb_val = term.vals[2]?
+      @advb_tag = term.tags[2]? || "d"
     end
   end
 
@@ -48,17 +48,23 @@ module MtlV2::AST
     getter advb_val = "thật"
   end
 
+  class AdjtPhrase < Adjt
+  end
+
+  class AMeasure < Adjt
+  end
+
   ##################
 
   def self.adjt_from_term(term : V2Term)
-    case tag[1]?
-    when 'n' then AdjtNoun.new(key, val)
-    when 'd' then AdjtAdvb.new(key, val)
-    when 'b' then Modi.new
-    when 'l' then AdjtPhrase.new
-    when 'z' then AdjtPhrase.new
-    when 'm' then AMeasure.new
-    else          Adjt.new
+    case term.tags[0][1]?
+    when 'n' then AdjtNoun.new(term)
+    when 'd' then AdjtAdvb.new(term)
+    when 'b' then Modi.new(term)
+    when 'l' then AdjtPhrase.new(term)
+    when 'z' then AdjtPhrase.new(term)
+    when 'm' then AMeasure.new(term)
+    else          Adjt.new(term)
     end
   end
 end

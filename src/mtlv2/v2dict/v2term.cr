@@ -42,7 +42,7 @@ class MtlV2::V2Term
   property _prev : V2Term? = nil
   property _flag : UInt8 = 0_u8 # 0 => keep, 1 => overwritten, 2 => to be removed
 
-  def initialize(@key, @val = [""], @tags = [""], @rank = 3_i8,
+  def initialize(@key, @vals = [""], @tags = [""], @rank = 3_i8,
                  @mtime = V2Term.mtime, @uname = "~")
   end
 

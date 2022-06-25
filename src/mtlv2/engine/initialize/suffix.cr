@@ -1,4 +1,4 @@
-module Mtlv2::AST
+module MtlV2::AST
   class Suffix < BaseNode; end
 
   class SufAdjt < Suffix; end

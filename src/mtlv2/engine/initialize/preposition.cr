@@ -1,5 +1,5 @@
 module MtlV2::AST
-  class Prepos < FunctionWord; end
+  class Prepos < BaseNode; end
 
   class PreBa3 < Prepos; end
 

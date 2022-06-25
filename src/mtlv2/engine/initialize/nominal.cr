@@ -1,14 +1,12 @@
-require "./nominal/*"
-
 module MtlV2::AST
   # -ameba:disable Metrics/CyclomaticComplexity
-  def self.noun_from_term(term : V2term)
+  def self.noun_from_term(term : V2Term)
     case term.tags[0][1]?
     when nil then BaseNoun.new(term)
     when 'r' then HumanName.new(term)
     when 'n' then AffilName.new(term)
     when 's' then PlaceName.new(term)
-    when 't' then IntsiName.new(term)
+    when 't' then InstiName.new(term)
     when 'z' then OtherName.new(term)
     when 'x' then BookTitle.new(term)
     when 'a' then AttriNoun.new(term)
@@ -44,6 +42,11 @@ module MtlV2::AST
   end
 
   class Honorific < BaseNoun
+  end
+
+  #####
+
+  class AttriNoun < BaseNoun
   end
 
   class Temporal < BaseNoun

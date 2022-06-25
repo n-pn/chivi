@@ -20,6 +20,9 @@ module MtlV2::AST
 
       HasBu4
       HasUle
+
+      Need0Obj
+      Need2Obj
     end
 
     getter flag = Flag::None
@@ -38,20 +41,88 @@ module MtlV2::AST
       @flag |= Flag::HasBu4 if key.includes?('不')
       @flag |= Flag::HasUle if key.includes?('了')
 
-      @flag |= Flag::DirComp if key =~ DIR_RE
-      @flag |= Flag::ResComp if key =~ RES_RE
+      @flag |= Flag::DirCompl if key =~ DIR_RE
+      @flag |= Flag::ResCompl if key =~ RES_RE
     end
   end
 
-  class VCombine < Verb; end
+  class VLinking < Verb
+    MAP_VAL = {
+      "爱"   => "yêu",
+      "喜欢"  => "thích",
+      "避免"  => "tránh",
+      "忍不住" => "không nhịn được",
+      "加以"  => "tiến hành",
+      "进行"  => "tiến hành",
+      "予以"  => "ban cho",
+      "着手"  => "lấy tay",
+      "舍得"  => "nỡ bỏ",
+    }
 
-  class VCompare < Verb; end
+    def self.has_key?(key : String)
+      MAP_VAL.has_key?(key)
+    end
+  end
 
-  class VDircomp < Verb; end
+  class VCompare < Verb
+    MAP_VAL = {
+      "如"  => "tựa",
+      "像"  => "giống",
+      "仿佛" => "giống",
+      "宛若" => "giống",
+      "好像" => "thật giống",
+      "和"  => "giống",
+    }
 
-  class Verb2Obj < Verb; end
+    def self.has_key?(key : String)
+      MAP_VAL.has_key?(key)
+    end
+  end
 
-  class IntrVerb < Verb; end
+  class VDircomp < Verb
+    MAP_VAL = {
+      "上"  => "lên",
+      "下"  => "xuống",
+      "进"  => "vào",
+      "出"  => "ra",
+      "过"  => "qua",
+      "去"  => "đi",
+      "回"  => "trở về",
+      "起"  => "lên",
+      "来"  => "tới",
+      "上来" => "đi đến",
+      "上去" => "đi lên",
+      "下来" => "lại",
+      "下去" => "xuống",
+      "进来" => "tiến đến",
+      "进去" => "đi vào",
+      "出来" => "đi ra",
+      "出去" => "ra ngoài",
+      "过来" => "qua tới",
+      "过去" => "qua",
+      "回来" => "trở về",
+      "回去" => "trở lại",
+      "起来" => "lên",
+    }
+
+    def self.has_key?(key : String)
+      MAP_VAL.has_key?(key)
+    end
+  end
+
+  class Verb2Obj < Verb
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= Flag::Need2Obj
+    end
+  end
+
+  class IntrVerb < Verb
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= Flag::Need0Obj
+    end
+  end
 
   class VerbObject < IntrVerb; end
 
@@ -67,8 +138,8 @@ module MtlV2::AST
     def initialize(term : V2Term)
       super(term)
 
-      @adjt_val = term.vals[1]?
-      @adjt_tag = term.tags[1]? || "v"
+      @verb_val = term.vals[1]?
+      @verb_tag = term.tags[1]? || "v"
 
       @noun_val = term.vals[2]?
       @noun_tag = term.tags[2]? || "n"
@@ -78,7 +149,7 @@ module MtlV2::AST
     # end
   end
 
-  struct VerbAdvb < Mixed
+  class VerbAdvb < Mixed
     getter verb_val : String? = nil
     getter verb_tag : String = "v"
 
@@ -88,23 +159,23 @@ module MtlV2::AST
     def initialize(term : V2Term)
       super(term)
 
-      @adjt_val = term.vals[1]?
-      @adjt_tag = term.tags[1]? || "v"
+      @verb_val = term.vals[1]?
+      @verb_tag = term.tags[1]? || "v"
 
-      @noun_val = term.vals[2]?
-      @noun_tag = term.tags[2]? || "d"
+      @advb_val = term.vals[2]?
+      @advb_tag = term.tags[2]? || "d"
     end
   end
 
   #################
 
-  struct Vmodal < BaseNode; end
+  class Vmodal < BaseNode; end
 
-  struct VmHui < Vmodal; end # động từ `hội`
+  class VmHui < Vmodal; end # động từ `hội`
 
-  struct VmNeng < Vmodal; end # động từ `năng`
+  class VmNeng < Vmodal; end # động từ `năng`
 
-  struct VmXiang < Vmodal; end # động từ `tưởng`
+  class VmXiang < Vmodal; end # động từ `tưởng`
 
   #################
 
@@ -117,7 +188,7 @@ module MtlV2::AST
     when 'd' then VerbAdvb.new(term)
     when 'i' then IntrVerb.new(term)
     when '2' then Verb2Obj.new(term)
-    when 'x' then VCombine.new(term)
+    when 'x' then VLinking.new(term)
     when 'p' then VCompare.new(term)
     when 'f' then VDircomp.new(term)
     when 'm' then vmodal_from_term(term)
@@ -135,15 +206,14 @@ module MtlV2::AST
     end
   end
 
-  def self.init_verb_special(key : String)
+  def self.special_verb_from_term(term : V2Term)
     case
-    when key.ends_with?('是')            then VShi.new(term)
-    when key.ends_with?('有')            then VYou.new(term)
-    when MtDict.v2_objs.has_key?(key)   then Verb2Obj.new(term)
-    when MtDict.verb_dir.has_key?(key)  then VDircomp.new(term)
-    when MtDict.v_combine.has_key?(key) then VCombine.new(term)
-    when MtDict.v_compare.has_key?(key) then VCompare.new(term)
-    else                                     Verb.new(term)
+    when term.key.ends_with?('是')    then VShi.new(term)
+    when term.key.ends_with?('有')    then VYou.new(term)
+    when VLinking.has_key?(term.key) then VLinking.new(term)
+    when VCompare.has_key?(term.key) then VCompare.new(term)
+    when VDircomp.has_key?(term.key) then VDircomp.new(term)
+    else                                  Verb2Obj.new(term)
     end
   end
 end

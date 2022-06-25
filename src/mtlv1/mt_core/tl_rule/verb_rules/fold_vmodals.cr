@@ -18,7 +18,7 @@ module CV::TlRule
         node.val = "thể"
         node = fold!(nega, node, node.tag, dic: 6)
       else
-        node.val = "có thể"
+        node.val = "có thể" if succ.try(&.verbal?)
       end
     else
       node.tag = PosTag::Noun if vmodal_is_noun?(node)

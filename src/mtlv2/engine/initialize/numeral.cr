@@ -3,7 +3,7 @@ module MtlV2::AST
   NUMHAN_RE = /^[零〇一二两三四五六七八九十百千万亿兆]+$/
 
   def self.number_from_term(term : V2Term)
-    return nquant_from_term(term) if term.attr == "mq"
+    return nquant_from_term(term) if term.tags[0] == "mq"
     case term.key
     when .matches?(NUMLAT_RE) then Ndigit.new(term)
     when .matches?(NUMHAN_RE) then Nhanzi.new(term)
