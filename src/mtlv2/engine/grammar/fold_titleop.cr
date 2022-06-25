@@ -14,7 +14,7 @@ module MtlV2::AST
       list = list.fold!
       return self unless tail && tail != head.succ?
 
-      BtitleForm.new(head, tail, list).fold!
+      BookTitleForm.new(head, tail, list).fold!
     end
 
     private def match_title_end(char : Char)
@@ -28,15 +28,13 @@ module MtlV2::AST
     end
   end
 
-  class BtitleForm < Btitle
+  class BookTitleForm < BookTitle
     def initialize(@head : TitleOp, @tail : TitleCl, @body : BaseList)
       @key = ""
       @val = ""
 
       @dic = 0
       @idx = @head.idx
-
-      @tag = PosTag::Btitle
 
       self.set_prev(@head.prev?)
       self.set_succ(@tail.succ?)

@@ -12,7 +12,7 @@ module MtlV2::AST
   class PreBi3 < Prepos; end
 
   def self.prepos_from_term(term : V2Term)
-    case key
+    case term.key
     when "把"  then PreBa3.new(term)
     when "被"  then PreBei.new(term)
     when "对"  then PreDui.new(term)

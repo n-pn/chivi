@@ -1,5 +1,7 @@
 require "./v2dict"
 require "./engine/*"
+require "./engine/grammar/*"
+require "./engine/finalize/*"
 
 class MtlV2::Engine
   class_getter hanviet_mtl : self { new([V2Dict.essence, V2Dict.hanviet]) }
@@ -98,7 +100,7 @@ class MtlV2::Engine
 
   def cv_plain(input : String, cap_first = true, offset = 0)
     list = tokenize(input.chars, offset: offset)
-    list.fold!
+    list.fold_inner!
     list.capitalize!(cap: cap_first)
     list.pad_spaces!
   end

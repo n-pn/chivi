@@ -2,10 +2,10 @@ module MtlV2::AST
   class BaseNode
     def capitalize!(cap : Bool = false) : Bool
       if cap
-        res = String::Builder.new(input.size)
+        res = String::Builder.new(@val.size)
         nocap = true
 
-        input.each_char do |char|
+        @val.each_char do |char|
           if nocap && char.alphanumeric?
             res << char.upcase
             nocap = false

@@ -1,19 +1,11 @@
 module MtlV2::AST
   class BaseNode
-    def space_before?(prev : Nil)
-      false
+    def space_before?(prev = self.prev?)
+      prev ? true : false
     end
 
-    def space_before?(prev = self.prev)
-      true
-    end
-
-    def space_after?(prev : Nil)
-      false
-    end
-
-    def space_after?(prev = self.prev)
-      true
+    def space_after?(prev = self.prev?)
+      prev ? true : false
     end
   end
 

@@ -7,7 +7,7 @@ module MtlV2::AST
 
   class SufVerb < Suffix; end
 
-  def self.suffix_from_term(term : VpTerm)
+  def self.suffix_from_term(term : V2Term)
     case term.tags[0][1]?
     when 'a' then SufAdjt.new(term)
     when 'n' then SufNoun.new(term)
