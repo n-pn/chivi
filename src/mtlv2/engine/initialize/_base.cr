@@ -87,4 +87,7 @@ module MtlV2::AST
 
   class Mixed < BaseNode
   end
+
+  class UnknNode < BaseNode
+  end
 end

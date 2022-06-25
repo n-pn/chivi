@@ -56,7 +56,7 @@ module MtlV2::AST
 
   #######
 
-  class Whitespace < BaseNode; end # punctuation
+  class Whitespace < Punct; end # punctuation
   class Middot < Punct; end
 
   class Comma < Punct; end

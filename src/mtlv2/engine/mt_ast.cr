@@ -25,7 +25,7 @@ module MtlV2::AST
     when 'x' then literal_from_term(term)
     when '~' then extra_from_term(term)
     when '-' then BaseNode.new(term)
-    when nil then BaseNode.new(term)
+    when nil then UnknNode.new(term)
     else          other_from_term(term)
     end
   end

@@ -4,7 +4,7 @@ require "../../src/mtlv2/engine"
 MTL = MtlV2::Engine.generic_mtl("combine")
 
 def convert(input : String)
-  MTL.cv_plain(input, cap_first: false).to_s
+  MTL.cv_plain(input, cap_first: false).to_txt
 end
 
 DIR = "spec/engine/cases"

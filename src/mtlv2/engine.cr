@@ -25,24 +25,24 @@ class MtlV2::Engine
   end
 
   def self.cv_pin_yin(input : String) : String
-    pin_yin_mtl.translit(input).to_s
+    pin_yin_mtl.translit(input).to_txt
   end
 
   def self.cv_hanviet(input : String, apply_cap = true) : String
     return input unless input =~ /\p{Han}/
-    hanviet_mtl.translit(input, apply_cap: apply_cap).to_s
+    hanviet_mtl.translit(input, apply_cap: apply_cap).to_txt
   end
 
   def self.trad_to_simp(input : String) : String
-    tradsim_mtl.tokenize(input.chars).to_s
+    tradsim_mtl.tokenize(input.chars).to_txt
   end
 
   def self.convert(input : String, dname = "combine") : String
     case dname
-    when "hanviet" then hanviet_mtl.translit(input).to_s
-    when "pin_yin" then pin_yin_mtl.translit(input).to_s
-    when "tradsim" then tradsim_mtl.tokenize(input.chars).to_s
-    else                generic_mtl(dname).cv_plain(input).to_s
+    when "hanviet" then hanviet_mtl.translit(input).to_txt
+    when "pin_yin" then pin_yin_mtl.translit(input).to_txt
+    when "tradsim" then tradsim_mtl.tokenize(input.chars).to_txt
+    else                generic_mtl(dname).cv_plain(input).to_txt
     end
   end
 
@@ -55,8 +55,9 @@ class MtlV2::Engine
 
   def translit(input : String, apply_cap : Bool = false) : AST::BaseList
     list = tokenize(input.chars)
-    list.apply_cap!(cap: true) if apply_cap
-    list.pad_spaces!
+    list.capitalize!(cap: true) if apply_cap
+    # list.pad_spaces!
+    list
   end
 
   def cv_title_full(title : String) : AST::BaseList
@@ -95,14 +96,15 @@ class MtlV2::Engine
   end
 
   def translate(input : String) : String
-    cv_plain(input).to_s
+    cv_plain(input).to_txt
   end
 
-  def cv_plain(input : String, cap_first = true, offset = 0)
+  def cv_plain(input : String, cap_first = true, offset = 0) : AST::BaseList
     list = tokenize(input.chars, offset: offset)
     list.fold_inner!
     list.capitalize!(cap: cap_first)
-    list.pad_spaces!
+    # list.pad_spaces!
+    list
   end
 
   def tokenize(input : Array(Char), offset = 0) : AST::BaseList
@@ -136,7 +138,7 @@ class MtlV2::Engine
     end
 
     res = AST::BaseList.new("", idx: 0)
-    idx = nodes.size - 1
+    idx = nodes.size &- 1
 
     lst = nodes.unsafe_fetch(idx)
     res.add_head(lst)
