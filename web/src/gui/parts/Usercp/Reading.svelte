@@ -17,7 +17,7 @@
     const api_url = `/api/_self/books/access?kind=${kind}&pg=${pg}&lm=15`
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
-    if (api_res.ok) chaps = payload.props
+    if (api_res.ok) chaps = payload
   }
 </script>
 

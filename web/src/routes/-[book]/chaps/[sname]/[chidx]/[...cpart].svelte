@@ -2,7 +2,7 @@
   import { nvinfo_bar } from '$utils/topbar_utils'
   import { seed_url, to_pgidx } from '$utils/route_utils'
 
-  import { get } from 'svelte/store'
+  import { get, type Writable } from 'svelte/store'
   import { config } from '$lib/stores'
 
   export async function load({ params, stuff }) {
@@ -15,7 +15,7 @@
     if (api_res.error) return api_res
 
     const topbar = gen_topbar(nvinfo, sname, chidx)
-    const props = Object.assign(api_res, { nvinfo, ubmemo, nslist })
+    const props = Object.assign(api_res, { nvinfo, nslist })
 
     props.redirect = slug == ''
     return { props, stuff: { topbar } }
@@ -48,8 +48,8 @@
 </script>
 
 <script lang="ts">
+  import { getContext } from 'svelte'
   import { page, session } from '$app/stores'
-  import { invalidate } from '$app/navigation'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
@@ -57,15 +57,10 @@
   import Footer from '$gui/sects/Footer.svelte'
   import CvPage from '$gui/sects/MtPage.svelte'
   import Chtabs from './_tabs.svelte'
-  import { call_api } from '$lib/api_call'
 
   export let nvinfo: CV.Nvinfo
   export let nslist: CV.Nvseed[]
-
-  export let ubmemo: CV.Ubmemo
-
-  // $: nvinfo = $page.stuff.nvinfo
-  // $: ubmemo = $page.stuff.ubmemo
+  export let chmemo: CV.Ubmemo
 
   export let chmeta: CV.Chmeta
   export let chinfo: CV.Chinfo
@@ -76,6 +71,9 @@
 
   export let min_privi = -1
   export let chidx_max = 0
+
+  let ubmemo: Writable<CV.Ubmemo> = getContext('ubmemos')
+  $: ubmemo.set(chmemo)
 
   $: paths = gen_paths(nvinfo, chmeta, chinfo)
 
@@ -130,21 +128,17 @@
     const { chidx, title, uslug } = chinfo
 
     const url = `/api/_self/books/${nvinfo.id}/access`
-    const params = { sname, cpart, chidx, title, uslug, locked: lock }
+    const body = { sname, cpart, chidx, title, uslug, locked: lock }
 
-    const [status, payload] = await call_api(url, 'PUT', params, fetch)
+    const res = await $page.stuff.api.call(url, 'PUT', body)
 
-    if (status >= 400) {
-      console.error(`Error update history: ${payload}`)
-    } else {
-      ubmemo = payload
-      invalidate(`/api/books/${nvinfo.bslug}`)
-    }
+    if (res.error) alert(res.error)
+    else $ubmemo = res
   }
 
-  $: on_memory = check_memo(ubmemo)
+  $: on_memory = check_memo($ubmemo)
   // prettier-ignore
-  $: memo_icon = !ubmemo.locked ? 'menu-2' : on_memory ? 'bookmark' : 'bookmark-off'
+  $: memo_icon = !$ubmemo.locked ? 'menu-2' : on_memory ? 'bookmark' : 'bookmark-off'
 
   function check_memo(ubmemo: CV.Ubmemo) {
     if (ubmemo.sname != chmeta.sname) return false
@@ -217,7 +211,7 @@
             <span>Dịch lại</span>
           </button>
 
-          {#if on_memory && ubmemo.locked}
+          {#if on_memory && $ubmemo.locked}
             <button
               class="gmenu-item"
               disabled={$session.privi < 0}

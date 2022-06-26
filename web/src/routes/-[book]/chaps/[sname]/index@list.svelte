@@ -1,4 +1,7 @@
 <script context="module" lang="ts">
+  import { getContext } from 'svelte'
+  import type { Writable } from 'svelte/store'
+
   import { session, page } from '$app/stores'
 
   export async function load({ stuff, url, params: { sname } }) {
@@ -25,7 +28,8 @@
   import { invalidate } from '$app/navigation'
 
   export let nvinfo: CV.Nvinfo
-  export let ubmemo: CV.Ubmemo
+
+  let ubmemo: Writable<CV.Ubmemo> = getContext('ubmemos')
 
   export let nvseed: CV.Nvseed
   export let chlist: CV.Chlist
@@ -45,6 +49,7 @@
       _error = res.error
     } else {
       nvseed = res
+      $page.stuff.api.uncache('nslists', nvinfo.id.toString())
       invalidate($page.url.toString())
     }
 
@@ -129,7 +134,7 @@
         sname={nvseed.sname}
         total={nvseed.chaps}
         chaps={nvseed.lasts}
-        track={ubmemo}
+        track={$ubmemo}
         privi={$session.privi}
         stype={nvseed.stype} />
 
@@ -140,7 +145,7 @@
         sname={nvseed.sname}
         total={nvseed.chaps}
         chaps={chlist.chaps}
-        track={ubmemo}
+        track={$ubmemo}
         privi={$session.privi}
         stype={nvseed.stype} />
 

@@ -48,7 +48,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
         jb.field "chmeta" { ChmetaView.new(nvseed, chinfo, cpart).to_json(jb) }
         jb.field "chinfo" { ChinfoView.new(chinfo).to_json(jb) }
-        jb.field "ubmemo" { UbmemoView.new(ubmemo).to_json(jb) }
+        jb.field "chmemo" { UbmemoView.new(ubmemo).to_json(jb) }
       }
     end
   end

@@ -31,7 +31,9 @@ export class API {
   }
 
   uncache(map_name: string, key: string) {
-    this.maps[map_name].delete(key)
+    const map = this.maps[map_name]
+    if (map) map.delete(key)
+    else console.error(`map_name : ${map_name} not found!`)
   }
 
   async nvbook(bslug: string) {

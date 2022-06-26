@@ -1,16 +1,8 @@
 <script context="module" lang="ts">
   import { page, session } from '$app/stores'
-  import { invalidate } from '$app/navigation'
 
   import { nvinfo_bar } from '$utils/topbar_utils'
-
-  import { suggest_read, update_status } from '$utils/ubmemo_utils'
-  import {
-    status_types,
-    status_names,
-    status_icons,
-    status_colors,
-  } from '$lib/constants'
+  import { suggest_read } from '$utils/ubmemo_utils'
 
   import { map_status } from '$utils/nvinfo_utils'
 
@@ -27,14 +19,11 @@
 
 <script lang="ts">
   import { SIcon } from '$gui'
-
   import RTime from '$gui/atoms/RTime.svelte'
   import BCover from '$gui/atoms/BCover.svelte'
-  import Gmenu from '$gui/molds/Gmenu.svelte'
-  import { getContext } from 'svelte'
+  import BookTrack from '$gui/parts/BookTrack.svelte'
 
   export let nvinfo = $page.stuff.nvinfo
-  export let ubmemo = $page.stuff.ubmemo
 
   $: nv_tab = $page.stuff.nv_tab || gen_nv_tab($page.routeId)
 
@@ -42,22 +31,6 @@
     if (path.includes('crits')) return 'crits'
     if (path.includes('board')) return 'board'
     return 'index'
-  }
-
-  async function update_memo(status: string) {
-    if ($session.privi < 0) return
-
-    if (status == ubmemo.status) status = 'default'
-    else ubmemo.status = status
-
-    const [stt, payload] = await update_status(nvinfo.id, status)
-
-    if (stt >= 400) {
-      return console.error(`Lỗi cập nhật trạng thái sách: ${payload}`)
-    } else {
-      ubmemo = payload
-      invalidate(`/api/books/${nvinfo.bslug}`)
-    }
   }
 </script>
 
@@ -153,26 +126,9 @@
   {/if}
 
   <div class="line">
-    <Gmenu class="navi-item" loc="bottom">
-      <button
-        class="m-btn _fill _{status_colors[ubmemo.status]}"
-        slot="trigger">
-        <SIcon name={status_icons[ubmemo.status]} />
-        <span>{status_names[ubmemo.status]}</span>
-      </button>
-
-      <svelte:fragment slot="content">
-        {#each status_types as status}
-          <button class="gmenu-item" on:click={() => update_memo(status)}>
-            <SIcon name={status_icons[status]} />
-            <span>{status_names[status]}</span>
-            {#if status == ubmemo.status}
-              <span class="-right"><SIcon name="check" /></span>
-            {/if}
-          </button>
-        {/each}
-      </svelte:fragment>
-    </Gmenu>
+    <div class="book-track">
+      <BookTrack {nvinfo} />
+    </div>
 
     <a class="m-btn" href="/dicts/-{nvinfo.bhash}" data-kbd="p">
       <SIcon name="package" />
@@ -261,6 +217,7 @@
   .line {
     // float: right;
     padding-left: var(--gutter);
+    gap: 0.5rem;
 
     @include bps(width, 60%, $pm: 65%, $pl: 70%, $ts: 75%);
 
@@ -271,11 +228,6 @@
     margin-top: var(--gutter-pm);
     @include fgcolor(tert);
     @include flex($wrap: true);
-
-    &._chap {
-      @include bps(width, 100%, $tm: 75%);
-      @include bps(padding-left, 0, $tm: var(--gutter));
-    }
   }
 
   .stat {
@@ -313,13 +265,6 @@
   .label {
     font-weight: 500;
     // @include fgcolor(neutral, 8);
-  }
-
-  .label._chap {
-    display: block;
-    width: 100%;
-    // margin-top: var(--gutter-small);
-    margin-bottom: 0.25rem;
   }
 
   .section {
@@ -386,9 +331,5 @@
     padding: 0.75rem 0;
     display: block;
     min-height: 50vh;
-  }
-
-  .m-btn {
-    margin-right: 0.5rem;
   }
 </style>

@@ -35,6 +35,8 @@
 
 <script lang="ts">
   import { dtlist_data } from '$lib/stores'
+  import { setContext } from 'svelte'
+  import { writable } from 'svelte/store'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
 
@@ -52,6 +54,8 @@
     }
     return x
   })
+
+  $: setContext('ubmemos', writable($page.stuff.ubmemo))
 </script>
 
 <svelte:head>

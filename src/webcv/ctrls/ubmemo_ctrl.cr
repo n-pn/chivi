@@ -13,7 +13,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
     end
 
     query = query.order_by(utime: :desc).limit(limit).offset(offset)
-    send_json(query.with_nvinfo.map { |x| UbmemoView.new(x, true) })
+    serv_json(query.with_nvinfo.map { |x| UbmemoView.new(x, true) })
   end
 
   def show : Nil
@@ -23,7 +23,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
 
     nvinfo_id = params["book_id"].to_i64
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
-    send_json(UbmemoView.new(ubmemo))
+    serv_json(UbmemoView.new(ubmemo))
   end
 
   def update_access
@@ -40,7 +40,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
       params.fetch_str("uslug"),
       params["locked"]? == "true" ? 1 : 0
     )
-    send_json(UbmemoView.new(ubmemo))
+    serv_json(UbmemoView.new(ubmemo))
   end
 
   def update_status
