@@ -57,28 +57,28 @@
   function change_focus(index: number) {
     if (index != $zfrom && index < $zupto) $zfrom = index
     if (index >= $zfrom) $zupto = index + 1
+    copy_to_clipboard()
   }
 
-  function shift_lower(evt: MouseEvent, value = 0) {
+  function shift_lower(value = 0) {
     value += $zfrom
     if (value < 0 || value >= $ztext.length) return
 
     $zfrom = value
     if ($zupto <= value) $zupto = value + 1
-    copy_to_clipboard(evt)
+    copy_to_clipboard()
   }
 
-  function shift_upper(evt: MouseEvent, value = 0) {
+  function shift_upper(value = 0) {
     value += $zupto
     if (value < 1 || value > $ztext.length) return
 
     $zupto = value
     if ($zfrom >= value) $zfrom = value - 1
-    copy_to_clipboard(evt)
+    copy_to_clipboard()
   }
 
-  function copy_to_clipboard(evt: MouseEvent) {
-    if (evt.clientX == 0) return
+  function copy_to_clipboard() {
     navigator.clipboard.writeText($ztext.substring($zfrom, $zupto))
   }
 
@@ -128,7 +128,7 @@
     class="btn _left _hide"
     data-kbd="←"
     disabled={$zfrom == 0}
-    on:click={(e) => shift_lower(e, -1)}>
+    on:click={() => shift_lower(-1)}>
     <SIcon name="chevron-left" />
   </button>
 
@@ -136,7 +136,7 @@
     class="btn _left"
     data-kbd="⇧←"
     disabled={$zfrom == $ztext.length - 1}
-    on:click={(e) => shift_lower(e, 1)}>
+    on:click={() => shift_lower(1)}>
     <SIcon name="chevron-right" />
   </button>
 
@@ -144,9 +144,9 @@
     <div class="key-txt">
       <div class="key-pre">
         {#each Array.from(prefix) as chr, idx}
-          <button
-            class="key-btn"
-            on:click={() => ($zfrom -= prefix.length - idx)}>{chr}</button>
+          {@const offset = prefix.length - idx}
+          <button class="key-btn" on:click={() => shift_lower(-offset)}
+            >{chr}</button>
         {/each}
       </div>
 
@@ -163,7 +163,8 @@
 
       <div class="key-suf">
         {#each Array.from(suffix) as chr, idx}
-          <button class="key-btn" on:click={() => ($zupto += idx + 1)}
+          {@const offset = idx + 1}
+          <button class="key-btn" on:click={() => shift_upper(offset)}
             >{chr}</button>
         {/each}
       </div>
@@ -178,7 +179,7 @@
     class="btn _right"
     data-kbd="⇧→"
     disabled={$zupto == 1}
-    on:click={(e) => shift_upper(e, -1)}>
+    on:click={(e) => shift_upper(-1)}>
     <SIcon name="chevron-left" />
   </button>
 
@@ -186,7 +187,7 @@
     class="btn _right _hide"
     data-kbd="→"
     disabled={$zupto == $ztext.length}
-    on:click={(e) => shift_upper(e, 1)}>
+    on:click={(e) => shift_upper(1)}>
     <SIcon name="chevron-right" />
   </button>
 </div>
