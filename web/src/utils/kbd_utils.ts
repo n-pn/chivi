@@ -38,9 +38,14 @@ function prefix_key({ shiftKey, ctrlKey }, key: string) {
   return key
 }
 
-export function trigger_click(evt: KeyboardEvent, selector: string) {
-  const elem: HTMLElement = document.querySelector(selector)
-  if (!elem) return
+export function trigger_click(
+  evt: KeyboardEvent,
+  query: string,
+  query_alt: string
+) {
+  const elem: HTMLElement =
+    document.querySelector(query) || document.querySelector(query_alt)
+  if (!elem) return false
 
   evt.preventDefault()
   evt.stopPropagation()

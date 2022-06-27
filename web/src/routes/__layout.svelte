@@ -57,12 +57,9 @@
     }
 
     const scope = $layers[0]
-    if (evt.key == '"') {
-      trigger_click(evt, `${scope} [data-kbd='${kbd}']`)
-    } else {
-      trigger_click(evt, `${scope} [data-kbd="${kbd}"]`)
-      trigger_click(evt, `${scope} [data-key="${evt.code}"]`)
-    }
+    const query = evt.key == '"' ? `[data-kbd='${kbd}']` : `[data-kbd="${kbd}"]`
+    const query_alt = `[data-key="${evt.code}"]`
+    trigger_click(evt, `${scope} ${query}`, `${scope} ${query_alt}`)
   }
 
   function handle_scroll() {

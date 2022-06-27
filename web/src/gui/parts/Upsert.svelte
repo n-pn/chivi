@@ -181,7 +181,7 @@
         <button
           class="m-btn _lg _left {btn_state}"
           data-kbd="\"
-          data-key="220"
+          data-key="Backslash"
           use:hint={vpterm._priv
             ? 'Đổi sang từ điển chung'
             : 'Đổi sang từ điển cá nhân'}

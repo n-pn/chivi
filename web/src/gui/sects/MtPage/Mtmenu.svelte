@@ -318,7 +318,7 @@
     <cv-item
       class="umami--click-mtmenu-lookup"
       data-kbd="\"
-      data-key="220"
+      data-key="Backslash"
       data-tip="Tra từ"
       on:click|capture={() => lookup.show(true)}>
       <SIcon name="search" />

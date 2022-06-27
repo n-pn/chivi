@@ -140,7 +140,7 @@
     class="cap _show-pl"
     disabled={vpterm.val == vpterm.val.toLowerCase()}
     data-kbd="0"
-    data-key="192"
+    data-key="Backquote"
     use:upcase_val={0}
     use:hint={'Viết thường tất cả các chữ'}>
     <span>Không v. hoa</span>
