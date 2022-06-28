@@ -110,6 +110,7 @@
     use:hint={'Viết hoa một chữ đầu'}>
     <span>V. hoa 1</span>
   </button>
+
   <button
     class="cap"
     class:_actived={capped == 2}
@@ -118,6 +119,7 @@
     use:hint={'Viết hoa hai chữ đầu'}>
     <span>V. hoa 2</span>
   </button>
+
   <button
     class="cap _show-ts"
     data-kbd="3"
@@ -131,7 +133,7 @@
     class="cap _show-pl"
     data-kbd="4"
     disabled={capped == length}
-    use:upcase_val={20}
+    use:upcase_val={99}
     use:hint={'Viết hoa tất cả các chữ'}>
     <span>V.hoa tất</span>
   </button>

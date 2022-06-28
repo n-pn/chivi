@@ -1,4 +1,5 @@
 require "../shared/bootstrap"
+require "../../src/_init/books/book_info"
 
 module CV::FixIntros
   extend self
@@ -51,14 +52,37 @@ module CV::FixIntros
     end
   end
 
+  def load_zinfo(sname : String, snvid : String)
+    BookInfo.new("var/books/infos/#{sname}/#{snvid}.tsv")
+  end
+
+  def reconvert!(nvinfo : Nvinfo)
+    bintro = load_zinfo("=base", nvinfo.bhash).bintro
+
+    if DEBUG
+      title = "#{nvinfo.bslug}\t#{nvinfo.bhash}\n"
+      File.write("tmp/fix-intro.log", "#{title}\n#{bintro.join('\n')}")
+    end
+
+    nvinfo.bintro = BookUtil.cv_lines(bintro, nvinfo.dname, :text)
+    nvinfo.save!
+  rescue err
+    puts err
+  end
+
   def fix_all!
-    redo = ARGV.includes?("--redo")
+    # redo = ARGV.includes?("--redo")
     count = 0
 
     Nvinfo.query.order_by(weight: :desc).each do |nvinfo|
       count += 1
       puts "- <#{count}> #{nvinfo.bslug}" if count % 1000 == 0
-      fix_intro!(nvinfo, redo: redo)
+
+      # if redo
+      #   fix_intro!(nvinfo)
+      # else
+      reconvert!(nvinfo)
+      # end
     end
   end
 
