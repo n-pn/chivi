@@ -80,10 +80,16 @@ module CV::NvinfoInner
 
   def fix_names!(bdict : String? = self.dname)
     self.btitle.regen!(bdict) if bdict
-
-    self.bslug = bhash[0..5] + self.btitle.hslug[..-2]
     self.vname = self.btitle.vname
 
+    tokens = self.btitle.hslug[..-2].split("-")
+
+    if tokens.size > 8
+      tokens.truncate(0, 8)
+      tokens[7] = ""
+    end
+
+    self.bslug = bhash[0..5] + tokens.join("-")
     self.save!
   end
 end

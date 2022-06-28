@@ -8,12 +8,11 @@ def fix_all_entries
   books.each_with_index(1) do |nvinfo, index|
     next if nvinfo.id <= 0
 
-    bslug = nvinfo.bslug
-    nvinfo.fix_scores!(nvinfo.voters, nvinfo.voters * nvinfo.rating)
+    old_bslug = nvinfo.bslug
     nvinfo.fix_names!
 
-    next unless nvinfo.bslug != bslug
-    puts "- <#{index}/#{books.size}> #{bslug} => #{nvinfo.bslug}".colorize.blue
+    next unless nvinfo.bslug != old_bslug
+    puts "- <#{index.colorize.blue}/#{books.size}> #{old_bslug} => #{nvinfo.bslug.colorize.blue}"
   end
 end
 
