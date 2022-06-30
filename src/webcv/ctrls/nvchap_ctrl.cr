@@ -10,6 +10,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
       raise NotFound.new("Chương tiết không tồn tại")
     end
 
+    Nvstat.inc_chap_view(nvinfo.id)
+
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvseed.nvinfo_id)
     ubmemo.mark_chap!(chinfo, nvseed.sname, cpart) if _cvuser.privi > -1
 
