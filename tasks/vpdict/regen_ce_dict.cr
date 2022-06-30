@@ -87,10 +87,12 @@ class CeInput
     new(entries)
   end
 
+  TLS = OpenSSL::SSL::Context::Client.insecure
+
   def self.extract_zip(expiry = 24.hours) : String
     if file_outdated?(ZIP_FILE, expiry)
       puts "- fetching latest CC_CEDICT from internet... ".colorize.light_cyan
-      HTTP::Client.get(CEDICT_URL) { |res| File.write(ZIP_FILE, res.body_io) }
+      HTTP::Client.get(CEDICT_URL, tls: TLS) { |res| File.write(ZIP_FILE, res.body_io) }
     end
 
     Compress::Zip::File.open(ZIP_FILE) do |zip|
@@ -120,7 +122,7 @@ class CeInput
     end
 
     input.each do |key, vals|
-      output.add(key, vals)
+      output.append(key, vals)
     end
 
     output.save!
@@ -155,7 +157,7 @@ class CeInput
       end
     end
 
-    output = CV::VpDict.load("tradsim", mode: -1)
+    output = CV::VpDict.load("tradsim", mode: :none)
 
     counter.each do |trad, counts|
       next if HANZIDB.has_key?(trad) || counts.has_key?(trad)
@@ -205,7 +207,7 @@ class CeInput
       end
     end
 
-    output = CV::VpDict.load("pin_yin", mode: -1)
+    output = CV::VpDict.load("pin_yin", mode: :none)
 
     HANZIDB.each do |key, vals|
       next if vals.empty? || vals.first.empty?
