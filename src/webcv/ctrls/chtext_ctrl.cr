@@ -25,12 +25,12 @@ class CV::ChtextCtrl < CV::BaseCtrl
     return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
     nvseed = load_nvseed
 
-    uname = "@" + _cvuser.uname
+    self_sname = "@" + _cvuser.uname
 
-    if nvseed.sname != uname
+    if nvseed.sname != self_sname
       target = nvseed
       nvinfo = target.nvinfo
-      nvseed = Nvseed.load!(nvinfo, uname, force: true)
+      nvseed = Nvseed.load!(nvinfo, self_sname, force: true)
     end
 
     file_path = save_text(nvseed)
@@ -85,20 +85,11 @@ class CV::ChtextCtrl < CV::BaseCtrl
   private def sync_changes(nvseed : Nvseed, chmin : Int32, chmax : Int32, target = Nvseed?)
     infos = nvseed._repo.clone!(chmin, chmax)
 
-    if target && target.sname[0]? != '@'
+    if !target || target.sname[0]? == '@'
+      user_seed = Nvseed.load!(nvseed.nvinfo, "=user", force: true)
+      user_seed.patch_chaps!(infos, nvseed.utime, save: true)
+    else
       target.patch_chaps!(infos, nvseed.utime, save: true)
-    end
-
-    sname = target ? target.sname : nvseed.sname
-
-    if sname != "=user"
-      _user = Nvseed.load!(nvseed.nvinfo, "=user", force: true)
-      _user.patch_chaps!(infos, nvseed.utime, save: true)
-    end
-
-    if sname != "=base"
-      _base = Nvseed.load!(nvseed.nvinfo, "=base", force: true)
-      _base.patch_chaps!(infos, nvseed.utime, save: true)
     end
   end
 
