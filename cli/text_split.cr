@@ -12,7 +12,9 @@ class Chapter
   getter chars = 0
   getter parts = 1
 
-  def <<(line : String)
+  def add(line : String) : Nil
+    return if line.blank?
+
     size = line.size
     @chars += size
     @sizes << size
@@ -180,19 +182,20 @@ class Splitter
 
       if !mark_new_chap
         prev_was_chvol = false
-        chapter << line unless line.empty?
+        chapter.add(line)
       elsif chapter.lines.size != 1
         # previous chapter do not contain just a single line
         prev_was_chvol = false
         save_chapter(chapter)
 
         chapter = Chapter.new
-        chapter << line unless line.empty?
+        chapter.add(line)
       elsif prev_was_chvol
         message = "Lỗi: Chương phía trước không có nội dung. Phát hiện lỗi ở dòng #{idx}: #{line}."
         log_state(message, abort: true)
       else
-        @chvol = chapter.lines[0]
+        @chvol = chapter.lines.shift
+        chapter.add(line)
         prev_was_chvol = true
       end
     end
@@ -224,7 +227,7 @@ class Splitter
         @chvol = chvol unless chvol.empty?
       else
         line = clean_text(line)
-        chapter << line unless line.empty?
+        chapter.add(line)
       end
     end
 
