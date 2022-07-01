@@ -116,21 +116,6 @@
     <seed-stats><strong>{_base.chaps}</strong> chương</seed-stats>
   </a>
 
-  {#if _self.chaps > 0 || $session.privi > 0}
-    <a
-      href={seed_url(nvinfo.bslug, _self.sname, pgidx)}
-      class="seed-name umami--click---swap-seed"
-      class:_active={_self.sname == _curr.sname}
-      data-tip="Danh sách chương của cá nhân bạn">
-      <seed-label>
-        <span>=self</span>
-        <SIcon name="rss" />
-      </seed-label>
-
-      <seed-stats><strong>{_self.chaps}</strong> chương</seed-stats>
-    </a>
-  {/if}
-
   {#if _user.chaps > 0}
     <a
       href={seed_url(nvinfo.bslug, _user.sname, pgidx)}
@@ -222,6 +207,28 @@
       </a>
     {/each}
   {/if}
+
+  {#if _self.chaps > 0 || $session.privi > 0}
+    <a
+      href={seed_url(nvinfo.bslug, _self.sname, pgidx)}
+      class="seed-name umami--click---swap-seed"
+      class:_active={_self.sname == _curr.sname}
+      data-tip="Danh sách chương của cá nhân bạn">
+      <seed-label>
+        <span>=self</span>
+        <SIcon name="rss" />
+      </seed-label>
+
+      <seed-stats><strong>{_self.chaps}</strong> chương</seed-stats>
+    </a>
+  {/if}
+
+  <a
+    href={seed_url(nvinfo.bslug, '+seed')}
+    class="seed-name"
+    data-tip="Thêm nguồn ngoài">
+    <SIcon name="plus" />
+  </a>
 </seed-list>
 
 <slot />

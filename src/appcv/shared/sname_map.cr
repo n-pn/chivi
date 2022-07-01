@@ -16,15 +16,15 @@ module CV::SnameMap
     "bqxs520",
 
     "biqugee",
+    "shubaow",
+
+    "duokan8",
     "paoshu8",
 
     "ptwxz",
 
     "biqu5200",
     "5200",
-
-    "shubaow",
-    "duokan8",
 
     "uukanshu",
     "133txt",

@@ -18,9 +18,8 @@
 </script>
 
 <script lang="ts">
-  import { page, session } from '$app/stores'
+  import { page } from '$app/stores'
   import { goto } from '$app/navigation'
-  import AddSeed from '../_AddSeed.svelte'
 
   import { SIcon } from '$gui'
 
@@ -59,6 +58,7 @@
 <svelte:head>
   <title>Tinh chỉnh - {nvseed.sname} - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
+
 <article class="article">
   <h2>Tinh chỉnh nguồn truyện</h2>
 
@@ -119,13 +119,6 @@
       </div>
     </div>
   </details>
-
-  {#if nvseed.sname == '=base' && $session.privi > 1}
-    <details open>
-      <summary>Thêm nguồn truyện</summary>
-      <AddSeed {nvinfo} />
-    </details>
-  {/if}
 </article>
 
 <style lang="scss">
