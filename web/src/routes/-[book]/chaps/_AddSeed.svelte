@@ -41,6 +41,7 @@
       case 'biqugee':
       case 'ptwxz':
       case '133txt':
+      case 'uuks':
         return [name, slugs[1]]
 
       case 'biqugse':
@@ -84,7 +85,7 @@
       name="href"
       class="m-input _url"
       bind:value={url}
-      placeholder="https://" />
+      placeholder="https://link-to-book-index-page.com" />
   </div>
 
   <div class="form-field">

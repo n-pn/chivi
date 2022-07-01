@@ -37,14 +37,14 @@ class CV::RemoteText
 
   def extract_title
     case @sname
-    when "duokan8"
-      extract_title("#read-content > h2")
-        .sub(/^章节目录\s*/, "")
-        .sub(/《.+》正文\s/, "")
     when "ptwxz"
       node = page.css("h1").first
       node.css("a").each(&.remove!)
       TextUtil.fix_spaces(node.inner_text).sub("正文 ", "").strip
+    when "duokan8"
+      extract_title("#read-content > h2")
+        .sub(/^章节目录\s*/, "")
+        .sub(/《.+》正文\s/, "")
     when "hetushu"
       page.text("#content .h2")
     when "zhwenpg"
@@ -64,78 +64,73 @@ class CV::RemoteText
     case @sname
     when "hetushu" then extract_hetushu_paras
     when "69shu"
-      paras = extract_paras(".txtnav")
-      paras.empty? ? extract_paras(".yd_text2") : paras
+      lines = extract_paras(".txtnav")
+      lines.empty? ? extract_paras(".yd_text2") : lines
+    when "uukanshu"
+      lines = extract_paras("#contentbox")
+      lines.map! do |line|
+        line.gsub(/\s*[uＵ][uＵ]看书\P{Han}+[ｃc][oｏ][ｍm]\s*/i, "")
+      end
+      lines.reject!(&.empty?)
+    when "uuks"
+      extract_paras("#contentbox")
+    when "ptwxz"
+      paras = extract_paras("body")
+      paras.shift if paras.first.includes?(title)
+      paras
+    when "bxwxio"
+      lines = extract_paras("#content")
+      lines.shift if lines[0].includes?("bxwx")
+      lines
+    when "xbiquge"
+      lines = extract_paras("#content")
+      lines.shift if lines[0].includes?("笔趣阁")
+      lines
+    when "duokan8"
+      lines = extract_paras("#htmlContent > p")
+      lines.shift if lines.first == "<b></b>"
+      lines.update(0, &.sub(/.+<\/h1>\s*/, ""))
+      lines.map!(&.sub("</div>", "").sub("<r />", "")).reject!(&.empty?)
+      lines
+    when "biqu5200"
+      lines = extract_paras("#content")
+      trash = Regex.escape(title.tr(" ", "").sub(/\(|（.+）|\)/, "").strip)
+      lines[0] = lines[0].gsub(/^.*#{trash}\s*/, "")
+      lines.shift if lines[0]?.try(&.starts_with?("恋上你看书网"))
+
+      lines.map! do |line|
+        line
+          .gsub(/厺厽\s.+\s厺厽。?/, "")
+          .gsub(/攫欝攫欝?。?/, "")
+          .gsub(/巘戅.+戅。?/, "")
+      end
+    when "5200"
+      lines = extract_paras("#content")
+      lines.pop if lines.last.ends_with?("更新速度最快。")
+      lines
+    when "bxwxorg"
+      lines = extract_paras("#content")
+
+      lines.shift if lines.first =~ /bxwx66|bxwxorg/
+      lines.pop if lines.last =~ /bxwx66|bxwxorg/
+      lines.clear if lines.first == "抱歉！..."
+
+      lines
+    when "sdyfcm"
+      lines = extract_paras("#content")
+      3.times { lines.shift } if lines[1].includes?("eqeq.net")
+      lines.pop if lines.last.includes?("eqeq.net")
+      lines
+    when "jx_la"
+      lines = extract_paras("#content")
+      lines.pop if lines.last.starts_with?("正在手打中")
+      lines
     when "biqugee"
       paras = extract_paras("#content")
       paras.empty? ? extract_paras(".box_con") : paras
     when "zhwenpg"
-      extract_paras("#tdcontent .content").tap do |lines|
-        title.split(/\s+/).each { |x| lines[0] = lines[0].sub(/^#{x}\s*/, "") }
-      end
-    when "duokan8"
-      extract_paras("#htmlContent > p").tap do |lines|
-        lines.shift if lines.first == "<b></b>"
-        lines.update(0, &.sub(/.+<\/h1>\s*/, ""))
-        lines.map!(&.sub("</div>", "").sub("<r />", "")).reject!(&.empty?)
-      end
-    when "biqu5200"
-      extract_paras("#content").tap do |lines|
-        trash = Regex.escape(title.tr(" ", "").sub(/\(|（.+）|\)/, "").strip)
-        lines[0] = lines[0].gsub(/^.*#{trash}\s*/, "")
-
-        lines.map! do |line|
-          line
-            .gsub(/厺厽\s.+\s厺厽。?/, "")
-            .gsub(/攫欝攫欝?。?/, "")
-            .gsub(/巘戅.+戅。?/, "")
-        end
-
-        lines.shift if lines[0]?.try(&.starts_with?("恋上你看书网"))
-      end
-    when "5200"
-      extract_paras("#content").tap do |lines|
-        lines.pop if lines.last.ends_with?("更新速度最快。")
-      end
-    when "bxwxorg"
-      extract_paras("#content").tap do |lines|
-        lines.shift if lines.first =~ /bxwx66|bxwxorg/
-        lines.pop if lines.last.includes?("bxwxorg.com")
-        lines.clear if lines.first == "抱歉！..."
-      end
-    when "ptwxz"
-      extract_paras("body").tap do |lines|
-        lines.shift if lines.first.includes?(title)
-      end
-    when "sdyfcm"
-      extract_paras("#content").tap do |lines|
-        3.times { lines.shift } if lines[1].includes?("eqeq.net")
-        lines.pop if lines.last.includes?("eqeq.net")
-      end
-    when "jx_la"
-      extract_paras("#content").tap do |lines|
-        lines.pop if lines.last.starts_with?("正在手打中")
-      end
-    when "xbiquge"
-      extract_paras("#content").tap do |lines|
-        lines.shift if lines.first.starts_with?("笔趣阁")
-      end
-      # when "xswang"
-      #   extract_paras("#content").tap do |lines|
-      #     lines.shift if lines.first.starts_with?("天才一秒记住")
-      #     lines.shift if lines.first.starts_with?("最快更新")
-      #   end
-    when "uukanshu"
-      lines = extract_paras("#contentbox")
-
-      lines.map! do |line|
-        line.gsub(/\s*[uＵ][uＵ]看书\P{Han}+[ｃc][oｏ][ｍm]\s*/i, "")
-      end
-
-      lines.reject!(&.empty?)
-    when "bxwxio"
-      lines = extract_paras("#content")
-      lines.shift if lines[0].includes?("bxwx")
+      lines = extract_paras("#tdcontent .content")
+      title.split(/\s+/).each { |x| lines[0] = lines[0].sub(/^#{x}\s*/, "") }
       lines
     else
       extract_paras("#content")

@@ -32,6 +32,11 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
       desc: 'Text nguồn này thường thiếu dấu câu, tốc độ đổi mới chậm, nhưng text khá sạch.',
     },
     {
+      site: 'uuks.org',
+      href: 'https://www.uuks.org',
+      desc: 'Nguồn mới thêm, có text các trang hiếm như youdubook hay tadu.',
+    },
+    {
       site: '133txt.com',
       href: 'https://www.133txt.com',
       desc: 'Nguồn mới thêm, nhiều truyện, có cả truyện từ ciweimao.',

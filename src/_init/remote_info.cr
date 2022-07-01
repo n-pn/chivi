@@ -53,12 +53,13 @@ class CV::RemoteInfo
 
   getter btitle : String do
     case @sname
-    when "ptwxz"   then info.text("h1")
-    when "hetushu" then info.text("h2")
-    when "zhwenpg" then info.text(".cbooksingle h2")
+    when "ptwxz" then info.text("h1")
     when "69shu"
       info.text("h1 > a") { info.text(".weizhi > a:last-child") }
     when "uukanshu" then info.text("h1").sub(/最新章节\s*/, "")
+    when "uuks"     then info.text("h1 > a")
+    when "hetushu"  then info.text("h2")
+    when "zhwenpg"  then info.text(".cbooksingle h2")
     else
       info.meta("og:novel:book_name").sub(/作\s+者[：:].+$/, "")
     end
@@ -71,11 +72,12 @@ class CV::RemoteInfo
   getter author : String do
     case @sname
     when "ptwxz"    then info.inner_text(ptwxz_info.css("tr:nth-child(2) > td")[1])
-    when "hetushu"  then info.text(".book_info a:first-child")
-    when "zhwenpg"  then info.text(".fontwt")
     when "uukanshu" then info.text("h2 > a")
     when "69shu"
       info.text(".booknav2 > p:nth-child(2) > a") { info.text(".mu_beizhu > a[target]") }
+    when "uuks"    then info.text("h2").sub("作者：", "")
+    when "hetushu" then info.text(".book_info a:first-child")
+    when "zhwenpg" then info.text(".fontwt")
     else
       info.meta("og:novel:author")
     end
@@ -83,7 +85,6 @@ class CV::RemoteInfo
 
   getter genres : Array(String) do
     case @sname
-    when "zhwenpg" then [] of String
     when "ptwxz"
       [info.inner_text(ptwxz_info.css("tr:nth-child(2) > td")[0])]
     when "69shu"
@@ -92,8 +93,9 @@ class CV::RemoteInfo
     when "hetushu"
       bgenre = info.text(".title > a:last-child")
       info.text_list(".tag a").tap(&.unshift(bgenre)).uniq!
-    when "uukanshu"
+    when "uukanshu", "uuks"
       [info.text(".path > a:nth-child(2)").sub("小说", "")]
+    when "zhwenpg" then [] of String
     else
       [info.meta("og:novel:category")]
     end
@@ -107,12 +109,8 @@ class CV::RemoteInfo
       TextUtil.split_html(node.inner_text)
     when "69shu"
       info.text_para(".navtxt > p:first-child")
-    when "bxwxorg"
-      info.text_para("#intro > p:first-child")
     when "hetushu"
       info.text_list(".intro > p")
-    when "zhwenpg"
-      info.text_para("tr:nth-of-type(3)")
     when "uukanshu"
       intro = info.text_para("h3")
       intro[0] = intro[0].sub(/^.+www\.uukanshu\.com\s*/, "")
@@ -121,6 +119,15 @@ class CV::RemoteInfo
       intro[-1] = intro[-1].sub(/\s*https:\/\/www\.uukanshu\.com.*$/, "")
       intro.pop if intro.last.empty?
       intro
+    when "uuks"
+      intro = info.text_para("h3")
+      intro[0] = intro[0].sub(/^简介：/, "")
+      intro.pop if intro.last =~ /^－+$/
+      intro
+    when "bxwxorg"
+      info.text_para("#intro > p:first-child")
+    when "zhwenpg"
+      info.text_para("tr:nth-of-type(3)")
     else
       info.meta_para("og:description")
     end
@@ -133,29 +140,29 @@ class CV::RemoteInfo
       "https://www.69shu.com/files/article/image/#{image_path}"
     when "hetushu"
       "https://www.hetushu.com" + info.attr(".book_info img", "src")
-    when "zhwenpg"  then info.attr(".cover_wrapper_m img", "data-src")
     when "ptwxz"    then info.attr("img[width=\"100\"]", "src")
-    when "bxwxorg"  then "https:" + info.meta("og:image")
     when "uukanshu" then "https:" + info.attr(".bookImg > img", "src")
+    when "uuks"
+      "https://www.uuks.org" + info.attr(".bookImg > img", "src")
     when "133txt"
       info.meta("og:image").sub("https://www.133txt.comhttps://", "https://")
     when "biqugse"
       "http://www.biqugse.com" + info.meta("og:image")
-    else info.meta("og:image")
+    when "zhwenpg" then info.attr(".cover_wrapper_m img", "data-src")
+    when "bxwxorg" then "https:" + info.meta("og:image")
+    else                info.meta("og:image")
     end
   end
 
   getter status_str : String do
     case @sname
-    when "zhwenpg" then "0"
     when "ptwxz"
       info.inner_text(ptwxz_info.css("tr:nth-child(3) > td").to_a[1])
     when "69shu"
       info.text(".booknav2 > p:nth-child(4)").split("  |  ").last
-    when "xswang"
-      info.text("#info > p:nth-child(6)").split(/\s+/).last
     when "hetushu"
       info.attr(".book_info", "class").includes?("finish") ? "1" : "0"
+    when "uukanshu", "uuks" then "0"
     else
       info.meta("og:novel:status")
     end
@@ -180,11 +187,13 @@ class CV::RemoteInfo
       info.inner_text(ptwxz_info.css("tr:nth-child(3) > td").to_a[0])
     when "69shu"
       info.text(".booknav2 > p:nth-child(5)").sub("更新：", "")
+    when "uukanshu"
+      info.text(".shijian").split(" ", 2).first.sub("更新时间：", "")
+    when "uuks"
+      info.text(".shijian").sub("更新时间：", "")
     when "biqu5200"
       info.text("#info > p:last-child").sub("最后更新：", "")
     when "hetushu", "zhwenpg" then ""
-    when "uukanshu"
-      info.text(".shijian").split(" ", 2).first.sub("更新时间：", "")
     else
       info.meta("og:novel:update_time")
     end
@@ -220,14 +229,14 @@ class CV::RemoteInfo
       info.css(".grid a[target]") { |x| x[0].attributes["href"]? || "" }
     when "69shu"
       info.attr(".qustime a:first-child", "href")
+    when "uukanshu", "uuks"
+      info.attr(".zuixin > a", "href")
     when "biqu5200"
       info.attr("#list a:first-of-type", "href")
     when "hetushu"
       info.attr("#dir :last-child a:last-of-type", "href")
     when "zhwenpg"
       info.attr(".fontwt0 + a", "href")
-    when "uukanshu"
-      info.attr(".zuixin > a", "href")
     else
       info.meta("og:novel:latest_chapter_url")
     end
@@ -237,10 +246,13 @@ class CV::RemoteInfo
     case @sname
     when "ptwxz"    then extract_chapters_plain(".centent li > a")
     when "69shu"    then extract_chapters_plain("#catalog li > a")
-    when "duokan8"  then extract_chapters_plain(".chapter-list a")
+    when "uukanshu" then extract_chapters_uukanshu
+    when "uuks"     then extract_chapters_plain(".box_con li > a")
     when "5200"     then extract_chapters_chvol(".listmain > dl")
     when "hetushu"  then extract_chapters_chvol("#dir")
-    when "uukanshu" then extract_chapters_uukanshu
+    when "duokan8"  then extract_chapters_plain(".chapter-list a")
+    when "133txt"
+      extract_chapters_chvol(".box_con:last-of-type > div:last-of-type > dl")
     when "zhwenpg"
       chaps = extract_chapters_plain(".clistitem > a")
 
@@ -251,8 +263,6 @@ class CV::RemoteInfo
       end
 
       chaps
-    when "133txt"
-      extract_chapters_chvol(".box_con:last-of-type > div:last-of-type > dl")
     else
       extract_chapters_chvol("#list > dl")
     end
