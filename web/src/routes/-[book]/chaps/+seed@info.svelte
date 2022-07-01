@@ -116,43 +116,46 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
 
   <AddSeed {nvinfo} />
 
-  <h3>Các nguồn đang hỗ trợ</h3>
+  <details open>
+    <summary>Các nguồn đang được hỗ trợ</summary>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Đường dẫn</th>
-        <th class="search">Tìm nhanh</th>
-        <th>Chú thích</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each sources as { site, href, desc }}
+    <table>
+      <thead>
         <tr>
-          <td class="href"
-            ><a {href} rel="noopener noreferrer" target="_blank">{href}</a></td>
-          <td class="search">
-            <a
-              href="{google_url} site:{site}"
-              rel="noopener noreferrer"
-              target="_blank">Google</a>
-            <!-- {#if custom_search}
+          <th>Đường dẫn</th>
+          <th class="search">Tìm nhanh</th>
+          <th>Chú thích</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each sources as { site, href, desc }}
+          <tr>
+            <td class="href"
+              ><a {href} rel="noopener noreferrer" target="_blank">{href}</a
+              ></td>
+            <td class="search">
+              <a
+                href="{google_url} site:{site}"
+                rel="noopener noreferrer"
+                target="_blank">Google</a>
+              <!-- {#if custom_search}
                   <a
                     href={custom_search}
                     rel="noopener noreferrer"
                     target="_blank">{site}</a>
                 {/if} -->
-          </td>
+            </td>
 
-          <td class="desc">{desc}</td>
-        </tr>
-        <div class="source">
-          <div class="name" />
-          <div class="search" />
-        </div>
-      {/each}
-    </tbody>
-  </table>
+            <td class="desc">{desc}</td>
+          </tr>
+          <div class="source">
+            <div class="name" />
+            <div class="search" />
+          </div>
+        {/each}
+      </tbody>
+    </table>
+  </details>
 
   <p class="protip">
     Muốn thêm nguồn mới, hãy liên hệ ban quản trị thông qua kênh <a
@@ -161,11 +164,11 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
 
   <h3>Chú thích thêm</h3>
 
-  <p class="protip">
+  <p class="extra">
     Một số nguồn khác như <code>bxwxorg.com</code>, <code>biqugee.com</code>,
     <code>zhwenpg.com</code> hiện tại đã ngừng hoạt động.
   </p>
-  <p class="protip">
+  <p class="extra">
     Các nguồn <code>jx.la</code>, <code>sdyfcm.com</code> tuy còn sống nhưng đã đổi
     format khá khó chịu, cho nên cũng không được hỗ trợ.
   </p>
@@ -174,9 +177,15 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
 <style lang="scss">
   section {
     padding-bottom: 1rem;
+
     > :global(* + *) {
       margin-top: 1rem;
     }
+  }
+
+  summary {
+    @include ftsize(lg);
+    margin-bottom: 0.75rem;
   }
 
   .source {
@@ -205,8 +214,14 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
 
   .protip {
     // margin: 1.5rem 0;
+    // line-height: 1rem;
+    font-style: italic;
+    @include fgcolor(warning, 5);
+  }
+
+  .extra {
+    @include ftsize(sm);
     line-height: 1rem;
     @include fgcolor(tert);
-    font-style: italic;
   }
 </style>

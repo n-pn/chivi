@@ -223,12 +223,14 @@
     </a>
   {/if}
 
-  <a
-    href={seed_url(nvinfo.bslug, '+seed')}
-    class="seed-name"
-    data-tip="Thêm nguồn ngoài">
-    <SIcon name="plus" />
-  </a>
+  {#if $session.privi >= 0}
+    <a
+      href={seed_url(nvinfo.bslug, '+seed')}
+      class="seed-name _icon"
+      data-tip="Thêm nguồn ngoài">
+      <SIcon name="folder-plus" />
+    </a>
+  {/if}
 </seed-list>
 
 <slot />
@@ -267,6 +269,13 @@
     // prettier-ignore
     &._active, &:hover, &:active {
       > seed-label { @include fgcolor(primary, 5); }
+    }
+
+    &._icon {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+
+      @include fgcolor(tert);
     }
   }
 
