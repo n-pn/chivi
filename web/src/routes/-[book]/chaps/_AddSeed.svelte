@@ -54,6 +54,9 @@
       case 'shubaow':
         return [name, slugs[0].split('_').pop()]
 
+      case 'bxwx.io':
+        return ['bxwxio', slugs[0].split('_').pop()]
+
       case 'duokanba':
         return ['duokan8', slugs[0].split('_').pop()]
 

@@ -133,6 +133,10 @@ class CV::RemoteText
       end
 
       lines.reject!(&.empty?)
+    when "bxwxio"
+      lines = extract_paras("#content")
+      lines.shift if lines[0].includes?("bxwx")
+      lines
     else
       extract_paras("#content")
     end

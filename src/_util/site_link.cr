@@ -25,6 +25,7 @@ module CV::SiteLink
     when "biqugse"  then "http://www.biqugse.com/#{snvid}/"
     when "bqxs520"  then "http://www.bqxs520.com/#{snvid}/"
     when "b5200"    then "http://www.b5200.org/#{group(snvid)}/"
+    when "bxwxio"   then "https://www.bxwx.io/#{group(snvid)}/"
     else                 "/"
     end
   end
@@ -60,6 +61,7 @@ module CV::SiteLink
     when "biqugse"  then "http://www.biqugse.com/#{snvid}/#{schid}.html"
     when "bqxs520"  then "http://www.bqxs520.com/#{snvid}/#{schid}.html"
     when "b5200"    then "http://www.b5200.org/#{group(snvid)}/#{schid}.html"
+    when "bxwxio"   then "https://www.bxwx.io/#{group(snvid)}/#{schid}.html"
     else                 "/"
     end
   end

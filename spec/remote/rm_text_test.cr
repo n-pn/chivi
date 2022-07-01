@@ -78,3 +78,4 @@ fetch_text("biqugse", "69761", "95223327", fresh: false)
 fetch_text("bqxs520", "122958", "95416098", fresh: false)
 
 fetch_text("b5200", "160872", "183484031", fresh: false)
+fetch_text("bxwxio", "127400", "52941263", fresh: false)
