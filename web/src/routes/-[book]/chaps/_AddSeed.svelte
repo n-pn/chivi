@@ -44,10 +44,12 @@
         return [name, slugs[1]]
 
       case 'biqugse':
+      case 'bqxs520':
         return [name, slugs[0]]
 
       case 'paoshu8':
       case '5200':
+      case 'b5200':
       case 'biqu5200':
       case 'shubaow':
         return [name, slugs[0].split('_').pop()]
@@ -66,7 +68,7 @@
 
   function clean_hostname(host: string) {
     host = host.replace('www.', '')
-    return host.replace(/\.(com|net|so|me|tv)$/, '')
+    return host.replace(/\.(com|org|net|so|me|tv)$/, '')
   }
 </script>
 

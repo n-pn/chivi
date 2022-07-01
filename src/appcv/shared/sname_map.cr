@@ -11,7 +11,9 @@ module CV::SnameMap
     "xbiquge",
     "rengshu",
 
+    "b5200",
     "biqugse",
+    "bqxs520",
 
     "biqugee",
     "paoshu8",

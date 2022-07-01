@@ -75,3 +75,6 @@ fetch_text("biqu5200", "153174", "180388551", fresh: false)
 fetch_text("133txt", "9", "5900", fresh: false)
 
 fetch_text("biqugse", "69761", "95223327", fresh: false)
+fetch_text("bqxs520", "122958", "95416098", fresh: false)
+
+fetch_text("b5200", "160872", "183484031", fresh: false)

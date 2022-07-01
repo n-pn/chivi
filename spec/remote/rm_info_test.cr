@@ -105,6 +105,9 @@ tests = [
   {"133txt", "9", false},
 
   {"biqugse", "69761", false},
+  {"bqxs520", "122958", false},
+
+  {"b5200", "160872", false},
 ]
 
 tests.each do |sname, snvid, fresh|
