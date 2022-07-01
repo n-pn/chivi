@@ -144,9 +144,9 @@
     margin-left: auto;
   }
 
-  details + details {
-    margin-top: 1rem;
-  }
+  // details + details {
+  //   margin-top: 1rem;
+  // }
 
   summary {
     font-weight: 500;

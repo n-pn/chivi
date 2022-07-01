@@ -62,6 +62,11 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
       desc: 'Nguồn mới thêm, chưa kiểm tra.',
     },
     {
+      site: 'yannuozw.com',
+      href: 'https://www.yannuozw.com',
+      desc: 'Nguồn mới thêm, có text faloo.',
+    },
+    {
       site: 'rengshu.com',
       href: 'http://www.rengshu.com',
       desc: `Nguồn text sạch, nhưng ít truyện.`,

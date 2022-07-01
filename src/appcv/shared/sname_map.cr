@@ -16,18 +16,19 @@ module CV::SnameMap
     "bqxs520",
 
     "biqugee",
+    "paoshu8",
+    "duokan8",
     "shubaow",
 
-    "duokan8",
-    "paoshu8",
-
     "ptwxz",
-
-    "biqu5200",
-    "5200",
+    "uuks",
+    "yannuozw",
 
     "uukanshu",
     "133txt",
+
+    "biqu5200",
+    "5200",
 
     "sdyfcm",
     "jx_la",
@@ -44,7 +45,7 @@ module CV::SnameMap
          "bxwxorg"
       2 # dead remote
     when "paoshu8", "hetushu", "5200", "biqu5200", "ptwxz",
-         "duokan8"
+         "duokan8", "uukanshu"
       3  # slow but still alive
     else # "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee"
       4  # fast remote

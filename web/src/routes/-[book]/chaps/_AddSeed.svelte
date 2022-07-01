@@ -44,6 +44,9 @@
       case 'uuks':
         return [name, slugs[1]]
 
+      case 'yannuozw':
+        return [name, slugs[1].replace('.html', '')]
+
       case 'biqugse':
       case 'bqxs520':
         return [name, slugs[0]]

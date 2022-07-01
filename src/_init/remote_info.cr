@@ -248,9 +248,11 @@ class CV::RemoteInfo
     when "69shu"    then extract_chapters_plain("#catalog li > a")
     when "uukanshu" then extract_chapters_uukanshu
     when "uuks"     then extract_chapters_plain(".box_con li > a")
-    when "5200"     then extract_chapters_chvol(".listmain > dl")
-    when "hetushu"  then extract_chapters_chvol("#dir")
-    when "duokan8"  then extract_chapters_plain(".chapter-list a")
+    when "yannuozw"
+      extract_chapters_plain(".booklist .book > a")
+    when "5200"    then extract_chapters_chvol(".listmain > dl")
+    when "hetushu" then extract_chapters_chvol("#dir")
+    when "duokan8" then extract_chapters_plain(".chapter-list a")
     when "133txt"
       extract_chapters_chvol(".box_con:last-of-type > div:last-of-type > dl")
     when "zhwenpg"
