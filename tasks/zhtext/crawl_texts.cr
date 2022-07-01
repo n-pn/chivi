@@ -134,7 +134,7 @@ class CV::CrawlText
 
     workers = map_workers(sname) if workers < 1
 
-    snvids = load_nvnids(SnameMap.map_int(sname)) if snvids.empty?
+    snvids = load_nvnids(sname) if snvids.empty?
     puts "TOTAL BOOKS: #{snvids.size}".colorize.yellow
 
     snvids.each_with_index(1) do |snvid, idx|
@@ -157,12 +157,10 @@ class CV::CrawlText
     end
   end
 
-  def self.load_nvnids(zseed : Int32, distant = 1) : Array(String)
+  def self.load_nvnids(sname : String, distant = 1) : Array(String)
     output = [] of String
 
-    query = Nvinfo.query
-      .where("zseeds @> ?", [zseed])
-      .order_by(weight: :desc)
+    query = Nvinfo.filter_nvseed(sname).order_by(weight: :desc)
 
     query.each_with_cursor(20) do |nvinfo|
       seeds = nvinfo.nvseeds.to_a.sort_by!(&.zseed)

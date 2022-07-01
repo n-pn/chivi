@@ -1,39 +1,35 @@
 module CV::SnameMap
   extend self
 
-  MAP_INT = {
-    "=base" => 0,
+  ORDERS = {
+    "zxcs_me",
+    "hetushu",
 
-    "zxcs_me" => 2,
-    "hetushu" => 4,
+    "bxwxorg",
+    "69shu",
 
-    "bxwxorg" => 8,
-    "69shu"   => 10,
+    "xbiquge",
+    "rengshu",
 
-    "xbiquge" => 16,
-    "rengshu" => 18,
+    "biqugse",
 
-    "biqugee" => 20,
-    "paoshu8" => 22,
+    "biqugee",
+    "paoshu8",
 
-    "biquyue" => 24,
-    "ptwxz"   => 26,
-    "xswang"  => 28,
+    "ptwxz",
 
-    "biqu5200" => 32,
-    "5200"     => 34,
+    "biqu5200",
+    "5200",
 
-    "shubaow" => 38,
-    "duokan8" => 40,
+    "shubaow",
+    "duokan8",
 
-    "uukanshu" => 42,
-    "133txt"   => 44,
+    "uukanshu",
+    "133txt",
 
-    "sdyfcm"  => 50,
-    "jx_la"   => 56,
-    "zhwenpg" => 60,
-
-    "users" => 63,
+    "sdyfcm",
+    "jx_la",
+    "zhwenpg",
   }
 
   def map_type(sname : String)
@@ -58,28 +54,10 @@ module CV::SnameMap
   end
 
   def alive_snames : Array(String)
-    MAP_INT.keys.select { |sname| map_type(sname) > 2 }
+    ORDERS.select { |sname| map_type(sname) > 2 }
   end
 
-  def map_int(sname : Array(String))
-    sname.map { |x| map_int(x) }.uniq!
-  end
-
-  def map_int(sname : String)
-    MAP_INT[sname]? || 100
-  end
-
-  MAP_STR = MAP_INT.invert
-
-  def map_str(int : Int32)
-    MAP_STR[int] || "=base"
-  end
-
-  def map_str(ints : Array(Int32))
-    ints.map { |id| map_str(id) }
-  end
-
-  def map_uid(nvinfo_id : Int64, zseed = 0)
-    (nvinfo_id << 6) | zseed
+  def zseed(sname : String)
+    ORDERS.index(sname) || 100
   end
 end

@@ -28,7 +28,6 @@ struct CV::NvinfoView
       if @full
         jb.field "bhash", @data.bhash
 
-        jb.field "snames", @data.snames
         jb.field "bintro", @data.bintro
         jb.field "labels", @data.vlabels
 

@@ -10,7 +10,7 @@ Dir.children(DIR).each do |bhash|
   end
 
   next unless nvinfo = CV::Nvinfo.find({bhash: bhash})
-  nvseed = CV::Nvseed.load!(nvinfo, CV::SnameMap.map_int("users"))
+  nvseed = CV::Nvseed.load!(nvinfo, "users")
 
   list_file = idx_files.sort_by { |x| File.basename(x, ".tsv").to_i }.last
   last_chap = CV::ChList.new(list_file).data.max_by(&.[0])[1]

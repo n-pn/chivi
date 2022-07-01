@@ -82,7 +82,7 @@ class CV::Nvseed
 
   def self.init!(nvinfo : Nvinfo, sname : String, snvid = nvinfo.bhash)
     model = new({nvinfo: nvinfo, sname: sname, snvid: snvid})
-    model.zseed = SnameMap.map_int(sname)
+    model.zseed = SnameMap.zseed(sname)
 
     case sname
     when "=base"

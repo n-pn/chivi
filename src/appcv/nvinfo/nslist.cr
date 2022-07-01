@@ -16,7 +16,7 @@ class CV::Nslist
       end
     end
 
-    @other.sort_by! { |x| SnameMap.map_int(x.sname) }
+    @other.sort_by!(&.zseed)
     @users.sort_by!(&.utime.-)
   end
 end

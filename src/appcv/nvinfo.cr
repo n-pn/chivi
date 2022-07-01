@@ -34,7 +34,6 @@ class CV::Nvinfo
 
   # TODO: remove zseeds and let snames real database column
   column zseeds : Array(Int32) = [] of Int32
-  getter snames : Array(String) { SnameMap.map_str(zseeds) }
 
   column igenres : Array(Int32) = [] of Int32
   property vgenres : Array(String) { GenreMap.to_str(igenres) }
