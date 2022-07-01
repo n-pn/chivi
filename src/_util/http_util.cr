@@ -9,6 +9,7 @@ module CV::HttpUtil
     "jx_la", "zxcs_me", "xswang",
     "hetushu", "paoshu8", "zhwenpg",
     "bxwxorg", "sdyfcm", "133txt",
+    "biqugse",
   }
 
   def encoding_for(sname : String) : String

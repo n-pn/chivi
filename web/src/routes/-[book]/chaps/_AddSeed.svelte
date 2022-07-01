@@ -43,6 +43,9 @@
       case '133txt':
         return [name, slugs[1]]
 
+      case 'biqugse':
+        return [name, slugs[0]]
+
       case 'paoshu8':
       case '5200':
       case 'biqu5200':

@@ -7,31 +7,32 @@ require "../appcv/nvchap/ch_info"
 require "../appcv/shared/sname_map"
 
 class CV::RemoteInfo
-  DIR = "_db/.cache"
+  DIR = "var/books/.html"
   TTL = 10.years
 
   def self.mkdir!(sname : String)
-    Dir.mkdir_p(DIR % sname)
+    Dir.mkdir_p(File.join(DIR, sname))
   end
 
-  getter dir : String
+  getter root_dir : String
   @ttl : Time::Span | Time::MonthSpan
 
-  getter info_file : String { "#{DIR}/#{@sname}/infos/#{@snvid}.html.gz" }
+  getter info_file : String { "#{@root_dir}/#{@snvid}.html.gz" }
   getter info_link : String { SiteLink.info_url(@sname, @snvid) }
 
   getter mulu_link : String { SiteLink.mulu_url(@sname, @snvid) }
-  getter mulu_file : String { "#{DIR}/#{@sname}/infos/#{@snvid}-mulu.html.gz" }
+  getter mulu_file : String { "#{@root_dir}/#{@snvid}-mulu.html.gz" }
 
   def initialize(@sname : String, @snvid : String, @ttl = TTL, @lbl = "-/-")
-    @dir = DIR % @sname
+    @root_dir = File.join(DIR, @sname)
+
     @ttl = 10.years if SnameMap.map_type(@sname) < 3
     @encoding = HttpUtil.encoding_for(@sname)
   end
 
   def changed?(last_schid : String, update_int : Int64)
     return true if self.last_schid != last_schid
-    return false if @sname.in?("69shu", "biqu5200", "ptwxz")
+    return true if @sname.in?("69shu", "biqu5200", "ptwxz")
     self.update_int != update_int
   end
 
@@ -138,6 +139,8 @@ class CV::RemoteInfo
     when "uukanshu" then "https:" + info.attr(".bookImg > img", "src")
     when "133txt"
       info.meta("og:image").sub("https://www.133txt.comhttps://", "https://")
+    when "biqugse"
+      "http://www.biqugse.com" + info.meta("og:image")
     else info.meta("og:image")
     end
   end

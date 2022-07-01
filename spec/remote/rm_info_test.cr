@@ -2,6 +2,8 @@ require "json"
 require "../../src/_init/remote_info.cr"
 
 def fetch_info(sname, snvid, fresh = false) : Void
+  CV::RemoteInfo.mkdir!(sname)
+
   puts "\n[#{CV::SiteLink.info_url(sname, snvid)}]".colorize.green.bold
   parser = CV::RemoteInfo.new(sname, snvid, ttl: fresh ? 10.seconds : 10.years)
 
@@ -101,6 +103,8 @@ tests = [
 
   {"uukanshu", "33933", false},
   {"133txt", "9", false},
+
+  {"biqugse", "69761", false},
 ]
 
 tests.each do |sname, snvid, fresh|
