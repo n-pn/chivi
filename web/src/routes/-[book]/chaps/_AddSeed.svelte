@@ -105,9 +105,10 @@
   <button
     class="m-btn _success _fill"
     on:click={submit}
-    disabled={!sname || !snvid}>
-    <SIcon name="folder-plus" />
+    disabled={!sname || !snvid}
+    data-tip="Yêu cầu quyền hạn: 2">
     <span>Thêm nguồn</span>
+    <SIcon name="privi-2" iset="sprite" />
   </button>
 </div>
 

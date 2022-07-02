@@ -97,7 +97,7 @@
     cvdata = res.cvdata
     chmeta = res.chmeta
     chinfo = res.chinfo
-    ubmemo = res.ubmemo
+    $ubmemo = res.chmemo
     _reloading = false
   }
 
@@ -136,13 +136,16 @@
     else $ubmemo = res
   }
 
-  $: on_memory = check_memo($ubmemo)
-  // prettier-ignore
-  $: memo_icon = !$ubmemo.locked ? 'menu-2' : on_memory ? 'bookmark' : 'bookmark-off'
+  $: [on_memory, memo_icon] = check_memo($ubmemo)
 
   function check_memo(ubmemo: CV.Ubmemo) {
-    if (ubmemo.sname != chmeta.sname) return false
-    return ubmemo.chidx == chinfo.chidx && ubmemo.cpart == chmeta.cpart
+    let on_memory = false
+    if (ubmemo.sname == chmeta.sname) {
+      on_memory = ubmemo.chidx == chinfo.chidx && ubmemo.cpart == chmeta.cpart
+    }
+
+    if (!ubmemo.locked) return [on_memory, 'menu-2']
+    return on_memory ? [true, 'bookmark'] : [false, 'bookmark-off']
   }
 </script>
 
