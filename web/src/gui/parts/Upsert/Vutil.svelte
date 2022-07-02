@@ -30,7 +30,7 @@
 
 <script lang="ts">
   import { hint } from './_shared'
-  import { gtran } from '$lib/gtran'
+  import { gtran, btran } from '$lib/trans'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
@@ -43,8 +43,12 @@
 
   $: [capped, length] = check_capped(vpterm.val)
 
-  let lang = [0, 0, 0]
-  $: if (key) lang = [0, 0, 0] // lang index for each tab
+  let gtran_lang = [0, 0, 0] // gtran lang index for each tab
+  let btran_lang = [0, 0, 0] // bing tran lang index for each tab
+  $: if (key) {
+    gtran_lang = [0, 0, 0]
+    btran_lang = [0, 0, 0]
+  }
 
   function upcase_val(node: Element, count: number) {
     const action = (_: any) => {
@@ -77,7 +81,7 @@
     vpterm.val = '...'
 
     try {
-      const res = await gtran(text, lang[tab])
+      const res = await gtran(text, gtran_lang[tab])
       const [capped, length] = check_capped(res)
 
       if (tab == 2 && capped == 2 && length == 2) {
@@ -91,13 +95,22 @@
         vpterm.val = res.toLowerCase()
       }
 
-      lang[tab] = (lang[tab] + 1) % 3
-      lang = lang
+      gtran_lang[tab] = (gtran_lang[tab] + 1) % 3
+      gtran_lang = gtran_lang
 
       // vpterm = vpterm
     } catch (err) {
       alert(err)
     }
+  }
+
+  async function load_btran(text: string) {
+    vpterm.val = '...'
+
+    const res = await btran(text, btran_lang[tab])
+    vpterm.val = res
+
+    btran_lang[tab] = (btran_lang[tab] + 1) % 2
   }
 </script>
 
@@ -150,11 +163,19 @@
 
   <div class="right">
     <button
-      class="btn _{lang[tab]}"
+      class="btn _{gtran_lang[tab]}"
       data-kbd="t"
       on:click={() => load_gtran(key)}
       use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>
       <SIcon name="language" />
+    </button>
+
+    <button
+      class="btn _{btran_lang[tab]}"
+      data-kbd="y"
+      on:click={() => load_btran(key)}
+      use:hint={'Dịch bằng Bing Translate sang Anh/Việt'}>
+      <SIcon name="brand-bing" />
     </button>
 
     <button

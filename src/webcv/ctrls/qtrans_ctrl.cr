@@ -127,4 +127,24 @@ class CV::QtransCtrl < CV::BaseCtrl
       cvmtl.cv_plain(line, cap_first: true).to_s(response)
     end
   end
+
+  BING_API = "https://www.bing.com/ttranslatev3"
+
+  def bing_tran
+    form = {
+      "from" => "zh-Hans",
+      "to"   => params["to"],
+      "text" => params["text"],
+    }
+
+    headers = HTTP::Headers{
+      "Content-Type" => "application/x-www-form-urlencoded",
+    }
+
+    set_headers content_type: :json
+
+    HTTP::Client.post(BING_API, headers: headers, form: form) do |res|
+      response.puts res.body_io.gets_to_end
+    end
+  end
 end

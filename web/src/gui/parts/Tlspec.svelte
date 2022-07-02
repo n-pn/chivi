@@ -34,7 +34,7 @@
 </script>
 
 <script lang="ts">
-  import { gtran } from '$lib/gtran'
+  import { gtran } from '$lib/trans'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
