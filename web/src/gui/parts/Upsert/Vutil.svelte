@@ -81,18 +81,18 @@
     vpterm.val = '...'
 
     try {
-      const res = await gtran(text, gtran_lang[tab])
-      const [capped, length] = check_capped(res)
+      const tran = await gtran(text, gtran_lang[tab])
+      const [capped, length] = check_capped(tran)
 
       if (tab == 2 && capped == 2 && length == 2) {
         // swap first name and last name if result is a japanese name
-        const [fname, lname] = res.split(' ')
+        const [fname, lname] = tran.split(' ')
         vpterm.val = lname + ' ' + fname
-      } else if (capped > 1 || tab == 0) {
-        // keep res format if it is a name or in book dict tab
-        vpterm.val = res
+      } else if (capped == length || tab == 0) {
+        // keep tran format if it is a name or in book dict tab
+        vpterm.val = tran
       } else {
-        vpterm.val = detitle(res, 1)
+        vpterm.val = lower_case(tran)
       }
 
       gtran_lang[tab] = (gtran_lang[tab] + 1) % 3
@@ -104,14 +104,14 @@
     }
   }
 
+  function lower_case(text: string) {
+    return text.charAt(0).toLowerCase() + text.substring(1)
+  }
+
   async function load_btran(text: string) {
-    vpterm.val = '...'
-
-    const res = await btran(text, btran_lang[tab])
-    if (!res) return
-
-    vpterm.val = tab > 0 ? detitle(res, 1) : res
+    vpterm.val = await btran(text, btran_lang[tab])
     btran_lang[tab] = (btran_lang[tab] + 1) % 2
+    btran_lang = btran_lang
   }
 </script>
 

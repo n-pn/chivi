@@ -25,15 +25,21 @@ export async function gtran(text: string, lang: number) {
   return gtran_cached[key]
 }
 
+const btran_cached = {}
+
 export async function btran(text: string, lang: number) {
+  const key = `${text}-${lang}`
+  const val = btran_cached[key]
+  if (val) return val
+
   const body = { text, to: lang == 0 ? 'vi' : 'en' }
   const res = await fetch('/qtran/bing', {
     method: 'POST',
     body: JSON.stringify(body),
   })
-  const data = await res.json()
-  if (res.ok) return data.translation
 
-  console.log(data)
-  return ''
+  if (!res.ok) return ''
+  const { translation } = await res.json()
+  btran_cached[key] = translation
+  return translation
 }
