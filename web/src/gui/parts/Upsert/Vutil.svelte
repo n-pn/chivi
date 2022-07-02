@@ -109,7 +109,11 @@
   }
 
   async function load_btran(text: string) {
-    vpterm.val = await btran(text, btran_lang[tab])
+    const tran = await btran(text, btran_lang[tab])
+    const [capped, length] = check_capped(tran)
+
+    vpterm.val = tab == 0 || capped == length ? tran : lower_case(tran)
+
     btran_lang[tab] = (btran_lang[tab] + 1) % 2
     btran_lang = btran_lang
   }
