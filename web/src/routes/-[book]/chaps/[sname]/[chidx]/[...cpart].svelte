@@ -138,7 +138,7 @@
 
   $: [on_memory, memo_icon] = check_memo($ubmemo)
 
-  function check_memo(ubmemo: CV.Ubmemo) {
+  function check_memo(ubmemo: CV.Ubmemo): [boolean, string] {
     let on_memory = false
     if (ubmemo.sname == chmeta.sname) {
       on_memory = ubmemo.chidx == chinfo.chidx && ubmemo.cpart == chmeta.cpart

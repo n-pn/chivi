@@ -43,17 +43,17 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
     },
     {
       site: 'biqugse.com',
-      href: 'https://www.biqugse.com',
+      href: 'http://www.biqugse.com',
       desc: 'Nguồn mới thêm, chưa kiểm tra.',
     },
     {
       site: 'bqxs520.com',
-      href: 'https://www.bqxs520.com',
+      href: 'http://www.bqxs520.com',
       desc: 'Nguồn mới thêm, chứa nhiều rác.',
     },
     {
       site: 'b5200.org',
-      href: 'https://www.b5200.org',
+      href: 'http://www.b5200.org',
       desc: 'Nguồn mới thêm, chưa kiểm tra.',
     },
     {
@@ -63,7 +63,7 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
     },
     {
       site: 'yannuozw.com',
-      href: 'https://www.yannuozw.com',
+      href: 'http://www.yannuozw.com',
       desc: 'Nguồn mới thêm, có text faloo.',
     },
     {
