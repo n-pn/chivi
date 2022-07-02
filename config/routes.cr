@@ -81,7 +81,6 @@ Amber::Server.configure do
     post "/qtran", CV::QtransCtrl, :webpage # to make the extension works
     get "/qtran/:type/:name", CV::QtransCtrl, :convert
     post "/qtran/posts", CV::QtransCtrl, :posts_upsert
-    post "/qtran/bing", CV::QtransCtrl, :bing_tran
 
     get "/boards/", CV::DboardCtrl, :index
     get "/boards/:bslug", CV::DboardCtrl, :show

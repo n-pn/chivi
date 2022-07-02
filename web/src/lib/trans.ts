@@ -26,23 +26,14 @@ export async function gtran(text: string, lang: number) {
 }
 
 export async function btran(text: string, lang: number) {
-  const body = new FormData()
-
-  body.append('from', 'zh-Hans')
-  body.append('to', lang == 0 ? 'vi' : 'en')
-  body.append('text', text)
-
-  const headers = {
-    'sec-fetch-site': 'same-origin',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-dest': 'empty',
-    'content-type': 'application/x-www-form-urlencoded',
-  }
-
-  const url = 'https://www.bing.com/ttranslatev3'
-  const res = await fetch(url, { method: 'POST', headers, body })
-
+  const body = { text, to: lang == 0 ? 'vi' : 'en' }
+  const res = await fetch('/qtran/bing', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  })
   const data = await res.json()
+  if (res.ok) return data.translation
+
   console.log(data)
-  return '?'
+  return ''
 }

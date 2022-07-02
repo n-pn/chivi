@@ -92,7 +92,7 @@
         // keep res format if it is a name or in book dict tab
         vpterm.val = res
       } else {
-        vpterm.val = res.toLowerCase()
+        vpterm.val = detitle(res, 1)
       }
 
       gtran_lang[tab] = (gtran_lang[tab] + 1) % 3
@@ -108,8 +108,9 @@
     vpterm.val = '...'
 
     const res = await btran(text, btran_lang[tab])
-    vpterm.val = res
+    if (!res) return
 
+    vpterm.val = tab > 0 ? detitle(res, 1) : res
     btran_lang[tab] = (btran_lang[tab] + 1) % 2
   }
 </script>
@@ -168,6 +169,14 @@
       on:click={() => load_gtran(key)}
       use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>
       <SIcon name="language" />
+    </button>
+
+    <button
+      class="btn _{btran_lang[tab]}"
+      data-kbd="y"
+      on:click={() => load_btran(key)}
+      use:hint={'Dịch bằng Bing Translate sang Anh/Việt'}>
+      <SIcon name="brand-bing" />
     </button>
 
     <button

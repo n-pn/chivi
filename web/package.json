@@ -32,5 +32,8 @@
     "> 1%",
     "last 2 versions"
   ],
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "bing-translate-api": "^2.6.0"
+  }
 }
