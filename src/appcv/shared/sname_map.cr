@@ -19,6 +19,7 @@ module CV::SnameMap
     "paoshu8",
     "duokan8",
     "shubaow",
+    "kanshu8",
 
     "ptwxz",
     "uuks",

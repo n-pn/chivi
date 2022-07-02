@@ -42,6 +42,7 @@
       case 'ptwxz':
       case '133txt':
       case 'uuks':
+      case 'kanshu8':
         return [name, slugs[1]]
 
       case 'yannuozw':

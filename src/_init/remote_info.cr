@@ -148,6 +148,8 @@ class CV::RemoteInfo
       info.meta("og:image").sub("https://www.133txt.comhttps://", "https://")
     when "biqugse"
       "http://www.biqugse.com" + info.meta("og:image")
+    when "kanshu8"
+      "http://www.kanshu8.net" + info.meta("og:image")
     when "zhwenpg" then info.attr(".cover_wrapper_m img", "data-src")
     when "bxwxorg" then "https:" + info.meta("og:image")
     else                info.meta("og:image")
@@ -219,6 +221,7 @@ class CV::RemoteInfo
     case @sname
     when "zhwenpg" then href.sub("r.php?id=", "")
     when "69shu"   then File.basename(href)
+    when "kanshu8" then File.basename(href, ".html").sub("read_", "")
     else                File.basename(href, ".html")
     end
   end
@@ -233,6 +236,8 @@ class CV::RemoteInfo
       info.attr(".zuixin > a", "href")
     when "biqu5200"
       info.attr("#list a:first-of-type", "href")
+    when "kanshu8"
+      info.attr(".pt-bookdetail-intro + div a:first-of-type", "href")
     when "hetushu"
       info.attr("#dir :last-child a:last-of-type", "href")
     when "zhwenpg"
@@ -252,7 +257,8 @@ class CV::RemoteInfo
       extract_chapters_plain(".booklist .book > a")
     when "5200"    then extract_chapters_chvol(".listmain > dl")
     when "hetushu" then extract_chapters_chvol("#dir")
-    when "duokan8" then extract_chapters_plain(".chapter-list a")
+    when "kanshu8"
+      extract_chapters_plain(".pt-chapter-cont-detail.full > a")
     when "133txt"
       extract_chapters_chvol(".box_con:last-of-type > div:last-of-type > dl")
     when "zhwenpg"
@@ -265,6 +271,8 @@ class CV::RemoteInfo
       end
 
       chaps
+    when "duokan8"
+      extract_chapters_plain(".chapter-list a")
     else
       extract_chapters_chvol("#list > dl")
     end

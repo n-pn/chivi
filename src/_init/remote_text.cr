@@ -47,6 +47,8 @@ class CV::RemoteText
         .sub(/《.+》正文\s/, "")
     when "hetushu"
       page.text("#content .h2")
+    when "kanshu8"
+      page.attr("h1 > a", "title")
     when "zhwenpg"
       extract_title("h2")
     else
@@ -81,6 +83,15 @@ class CV::RemoteText
     when "bxwxio"
       lines = extract_paras("#content")
       lines.shift if lines[0].includes?("bxwx")
+      lines
+    when "kanshu8"
+      lines = extract_paras(".pt-read-text")
+
+      (8..12).each do |idx|
+        break unless line = lines[idx]?
+        lines[idx] = line.sub(/\s*(记住|首发|一秒).+[nｎ][eｅ][tｔ]\s*/, "")
+      end
+
       lines
     when "xbiquge"
       lines = extract_paras("#content")

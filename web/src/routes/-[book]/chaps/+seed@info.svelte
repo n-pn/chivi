@@ -67,6 +67,11 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
       desc: 'Nguồn mới thêm, có text faloo.',
     },
     {
+      site: 'kanshu8.net',
+      href: 'http://www.kanshu8.net',
+      desc: 'Nguồn mới thêm, chưa kiểm tra.',
+    },
+    {
       site: 'rengshu.com',
       href: 'http://www.rengshu.com',
       desc: `Nguồn text sạch, nhưng ít truyện.`,
