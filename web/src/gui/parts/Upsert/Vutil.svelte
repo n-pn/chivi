@@ -171,14 +171,6 @@
     </button>
 
     <button
-      class="btn _{btran_lang[tab]}"
-      data-kbd="y"
-      on:click={() => load_btran(key)}
-      use:hint={'Dịch bằng Bing Translate sang Anh/Việt'}>
-      <SIcon name="brand-bing" />
-    </button>
-
-    <button
       class="btn"
       data-kbd="r"
       disabled={vpterm.val == vpterm.o_val && vpterm.ptag == vpterm.o_ptag}
