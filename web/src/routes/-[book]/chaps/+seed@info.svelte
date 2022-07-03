@@ -112,8 +112,8 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
       desc: 'Nguồn chậm dễ đột tử, có một vài truyện hiếm',
     },
     {
-      site: 'shubaow.com',
-      href: 'http://www.shubaow.com',
+      site: 'shubaow.net',
+      href: 'http://www.shubaow.net',
       desc: 'Nguồn này chứa nhiều truyện độc, nhưng ban IP nước ngoài/server, hiện tại chỉ truy cập được từ TQ hoặc Hàn Quốc.',
     },
     {
