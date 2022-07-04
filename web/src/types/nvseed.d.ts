@@ -14,4 +14,11 @@ declare namespace CV {
 
     lasts: Chinfo[]
   }
+
+  interface Nslist {
+    _base: Nvseed
+    _user: Nvseed
+    users: Array<Nvseed>
+    other: Array<Nvseed>
+  }
 }

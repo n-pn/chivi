@@ -14,21 +14,20 @@
   function map_info({ sname, slink }) {
     switch (sname) {
       case 'users':
-        return 'Chương tiết do người dùng Chivi đăng tải'
+        return 'Chương tiết do người dùng Chivi đăng tải (phiên bản cũ).'
 
       case 'zxcs_me':
-        return 'Nguồn text tải bằng tay từ trang zxcs.me (bản đẹp)'
+        return 'Nguồn text tải bằng tay từ trang zxcs.me (bản đẹp).'
 
       case 'hetushu':
         return 'Nguồn truyện từ trang hetushu.com (phần lớn là bản đẹp)'
 
       default:
-        if (sname.startsWith('@')) return `Nguồn truyện của ${sname}`
-        if (!slink || slink == '/') return `Nguồn truyện đặc biệt`
+        if (sname.startsWith('@')) return `Danh sách chương của ${sname}`
+        if (!slink || slink == '/') return `Nguồn truyện chưa có chú thích.`
 
         const hostname = new URL(slink).hostname.replace('www.', '')
-
-        return `Nguồn truyện từ trang ${hostname} `
+        return `Nguồn truyện tải ngoài từ trang ${hostname}`
     }
   }
 </script>
@@ -37,7 +36,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let nvinfo: CV.Nvinfo
-  export let nslist: CV.Nvseed[]
+  export let nslist: CV.Nslist
 
   export let _curr: CV.Nvseed
   export let pgidx = 1
@@ -53,45 +52,13 @@
     }
   }
 
-  let uname = '@' + $session.uname
+  $: uname = '@' + $session.uname
+  $: _self = nslist.users.find((x) => x.sname == uname) || make_seed(uname)
 
-  let _base = make_seed('=base')
-  let _user = make_seed('=user')
-  let _self = make_seed(uname)
-
-  $: base_snames = ['=base', '=user', uname]
-
-  let users: CV.Nvseed[] = []
-  let other: CV.Nvseed[] = []
-
-  $: map_nslist(nslist)
+  $: base_snames = ['=base', uname]
 
   let show_users = false
   let show_other = false
-
-  function map_nslist(nslist: CV.Nvseed[]) {
-    users = []
-    other = []
-    show_users = false
-    show_other = false
-
-    for (const nvseed of nslist) {
-      switch (nvseed.sname.charAt(0)) {
-        case '@':
-          if (nvseed.sname == _self.sname) _self = nvseed
-          else users.push(nvseed)
-          break
-
-        case '=':
-          if (nvseed.sname == '=base') _base = nvseed
-          else if (nvseed.sname == '=user') _user = nvseed
-          break
-
-        default:
-          other.push(nvseed)
-      }
-    }
-  }
 </script>
 
 <nav class="bread">
@@ -103,109 +70,45 @@
 </nav>
 
 <seed-list>
-  <a
-    href={seed_url(nvinfo.bslug, _base.sname, pgidx)}
-    class="seed-name umami--click---swap-seed"
-    class:_active={_base.sname == _curr.sname}
-    data-tip="Danh sách chương tổng hợp từ các nguồn khác">
-    <seed-label>
-      <span>{_base.sname}</span>
-      <SIcon name="affiliate" />
-    </seed-label>
-
-    <seed-stats><strong>{_base.chaps}</strong> chương</seed-stats>
-  </a>
-
-  {#if _user.chaps > 0}
-    <a
-      href={seed_url(nvinfo.bslug, _user.sname, pgidx)}
-      class="seed-name umami--click---swap-seed"
-      class:_active={_user.sname == _curr.sname}
-      data-tip="Danh sách chương tổng hợp từ người dùng Chivi">
-      <seed-label>
-        <span>{_user.sname}</span>
-        <SIcon name="rss" />
-      </seed-label>
-
-      <seed-stats><strong>{_self.chaps}</strong> chương</seed-stats>
-    </a>
-  {/if}
-
   {#if !base_snames.includes(_curr.sname)}
     <a
       href={seed_url(nvinfo.bslug, _curr.sname, pgidx)}
       class="seed-name umami--click---swap-seed"
       class:_active={true}
       data-tip={map_info(_curr)}>
-      <seed-label>
-        <span>{_curr.sname}</span>
-        <SIcon name={icon_types[_curr.stype]} />
-      </seed-label>
-
+      <seed-label>{_curr.sname}</seed-label>
       <seed-stats><strong>{_curr.chaps}</strong> chương</seed-stats>
     </a>
   {/if}
 
-  {#if users.length > 0}
+  <a
+    href={seed_url(nvinfo.bslug, nslist._base.sname, pgidx)}
+    class="seed-name umami--click---swap-seed"
+    class:_active={nslist._base.sname == _curr.sname}
+    data-tip="Danh sách chương trộn tổng hợp miễn phí">
+    <seed-label>Cơ bản</seed-label>
+    <seed-stats><strong>{nslist._base.chaps}</strong> chương</seed-stats>
+  </a>
+
+  <button
+    class="seed-name _btn"
+    data-tip="Chương tiết cập nhật tự động từ các trang web truyện lậu"
+    on:click={() => (show_other = !show_other)}>
+    <seed-label>Tải ngoài</seed-label>
+    <seed-stats><strong>{nslist.other.length}</strong> nguồn</seed-stats>
+  </button>
+
+  {#if nslist.users.length > 0}
     <button
       class="seed-name _btn"
-      data-tip="Các danh sách chương từ người dùng Chivi"
+      data-tip="Các danh sách chương của mỗi người dùng Chivi"
       on:click={() => (show_users = !show_users)}>
       <seed-label>
-        <span>users</span>
-        <SIcon name="users" />
+        <span>Người dùng</span>
       </seed-label>
 
-      <seed-stats><strong>{users.length}</strong> người</seed-stats>
+      <seed-stats><strong>{nslist.users.length}</strong> người</seed-stats>
     </button>
-  {/if}
-
-  {#if show_users}
-    {#each users as nvseed}
-      <a
-        href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
-        class="seed-name umami--click---swap-seed"
-        class:_active={nvseed.sname == _curr.sname}
-        data-tip={map_info(nvseed)}>
-        <seed-label>
-          <span>{nvseed.sname}</span>
-          <SIcon name={icon_types[nvseed.stype]} />
-        </seed-label>
-
-        <seed-stats><strong>{nvseed.chaps}</strong> chương</seed-stats>
-      </a>
-    {/each}
-  {/if}
-
-  {#if other.length > 0}
-    <button
-      class="seed-name _btn"
-      data-tip="Các nguồn chương tiết khác"
-      on:click={() => (show_other = !show_other)}>
-      <seed-label>
-        <span>Khác</span>
-        <SIcon name="archive" />
-      </seed-label>
-
-      <seed-stats><strong>{other.length}</strong> nguồn</seed-stats>
-    </button>
-  {/if}
-
-  {#if show_other}
-    {#each other as nvseed}
-      <a
-        href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
-        class="seed-name umami--click---swap-seed"
-        class:_active={nvseed.sname == _curr.sname}
-        data-tip={map_info(nvseed)}>
-        <seed-label>
-          <span>{nvseed.sname}</span>
-          <SIcon name={icon_types[nvseed.stype]} />
-        </seed-label>
-
-        <seed-stats><strong>{nvseed.chaps}</strong> chương</seed-stats>
-      </a>
-    {/each}
   {/if}
 
   {#if _self.chaps > 0 || $session.privi > 0}
@@ -214,24 +117,74 @@
       class="seed-name umami--click---swap-seed"
       class:_active={_self.sname == _curr.sname}
       data-tip="Danh sách chương của cá nhân bạn">
-      <seed-label>
-        <span>=self</span>
-        <SIcon name="rss" />
-      </seed-label>
-
+      <seed-label>Của bạn</seed-label>
       <seed-stats><strong>{_self.chaps}</strong> chương</seed-stats>
     </a>
   {/if}
+</seed-list>
 
-  {#if $session.privi >= 0}
+{#if show_other}
+  <seed-list class="extra">
+    {#each nslist.other as nvseed}
+      <a
+        href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
+        class="seed-name umami--click---swap-seed"
+        class:_active={nvseed.sname == _curr.sname}
+        data-tip={map_info(nvseed)}>
+        <seed-label>
+          <span>{nvseed.sname}</span>
+          <SIcon name={icon_types[nvseed.stype]} />
+        </seed-label>
+
+        <seed-stats><strong>{nvseed.chaps}</strong> chương</seed-stats>
+      </a>
+    {/each}
+  </seed-list>
+
+  <div class="seed-task">
     <a
       href={seed_url(nvinfo.bslug, '+seed')}
-      class="seed-name _icon"
-      data-tip="Thêm nguồn ngoài">
+      class="m-btn _xs _success"
+      class:_disable={$session.privi < 2}
+      data-tip="Thêm nguồn truyện tải tự động">
       <SIcon name="folder-plus" />
+      <span class="label">Thêm nguồn tải ngoài</span>
     </a>
-  {/if}
-</seed-list>
+
+    <a
+      href={seed_url(nvinfo.bslug, 'prune')}
+      class="m-btn _xs"
+      class:_disable={$session.privi < 3}
+      data-tip="Sửa/xoá các nguồn truyện ngoài">
+      <SIcon name="tools" />
+      <span class="label">Quản lý nguồn ngoài</span>
+    </a>
+  </div>
+{/if}
+
+{#if show_users}
+  <seed-list class="extra">
+    <a
+      href={seed_url(nvinfo.bslug, nslist._user.sname, pgidx)}
+      class="seed-name umami--click---swap-seed"
+      class:_active={nslist._user.sname == _curr.sname}
+      data-tip="Danh sách chương tổng hợp từ các người dùng">
+      <seed-label>Trộn chung</seed-label>
+      <seed-stats><strong>{_self.chaps}</strong> chương</seed-stats>
+    </a>
+
+    {#each nslist.users as nvseed}
+      <a
+        href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
+        class="seed-name umami--click---swap-seed"
+        class:_active={nvseed.sname == _curr.sname}
+        data-tip={map_info(nvseed)}>
+        <seed-label>{nvseed.sname}</seed-label>
+        <seed-stats><strong>{nvseed.chaps}</strong> chương</seed-stats>
+      </a>
+    {/each}
+  </seed-list>
+{/if}
 
 <slot />
 
@@ -240,7 +193,14 @@
     @include flex-cx($gap: 0.25rem);
     flex-wrap: wrap;
     padding: 0 var(--gutter);
-    margin-bottom: 0.75rem;
+
+    & + & {
+      margin-top: 0.5rem;
+    }
+
+    &:last-of-type {
+      margin-bottom: 0.5rem;
+    }
   }
 
   @mixin label {
@@ -270,13 +230,6 @@
     &._active, &:hover, &:active {
       > seed-label { @include fgcolor(primary, 5); }
     }
-
-    &._icon {
-      padding-left: 0.75rem;
-      padding-right: 0.75rem;
-
-      @include fgcolor(tert);
-    }
   }
 
   seed-label {
@@ -284,9 +237,9 @@
     @include label();
 
     line-height: 1rem;
-    font-size: rem(13px);
+    @include bps(font-size, rem(12px), $ts: rem(13px));
 
-    :global(svg) {
+    > :global(svg) {
       width: 1rem;
       height: 1rem;
     }
@@ -299,8 +252,18 @@
   seed-stats {
     display: block;
     text-align: center;
-    @include fgcolor(tert);
-    font-size: rem(11px);
     line-height: 100%;
+    @include fgcolor(tert);
+    @include bps(font-size, rem(11px), $ts: rem(12px));
+  }
+
+  .seed-task {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+    // text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 </style>

@@ -14,8 +14,7 @@ class CV::Nvinfo
 
   belongs_to ysbook : Ysbook?
 
-  has_many nvseeds : Nvseed, foreign_key: "nvinfo_id"
-  getter seed_list : Nslist { Nslist.new(nvseeds.to_a) }
+  getter seed_list : Nslist { Nslist.new(self) }
 
   column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
 

@@ -44,19 +44,13 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     nvinfo.bump! if _cvuser.privi >= 0
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
 
-    nvseeds = nvinfo.nvseeds.to_a.sort_by!(&.zseed)
+    if ubmemo.lr_sname.empty?
+      ubmemo.lr_sname = "=base"
 
-    if nvseeds.empty? || nvseeds.first.sname != "=base"
-      nvseeds.unshift(Nvseed.load!(nvinfo, "=base", force: true))
-    end
-
-    if (ubmemo.lr_sname.empty?) && (nvseed = nvseeds.first?)
-      if chinfo = nvseed.chinfo(0)
-        ubmemo.lr_sname = nvseed.sname
+      if chinfo = nvinfo.seed_list._base.chinfo(0)
         ubmemo.lr_chidx = -1
         ubmemo.lc_uslug = chinfo.trans.uslug
       else
-        ubmemo.lr_sname = "=base"
         ubmemo.lc_uslug = "thieu-chuong"
       end
     end

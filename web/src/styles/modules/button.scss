@@ -106,13 +106,14 @@ $-colors: (primary, success, warning, harmful, private);
     @include hover { cursor: text; }
   }
 
-   .m-icon, .-ico {
+  .m-icon,
+  .-ico {
     display: block;
     --icon-size: var(--innerh, 1.25em);
   }
 
   > span,
-   .-txt {
+  .-txt {
     margin: 0 calc(var(--gutter) * 0.5);
   }
 }
@@ -140,7 +141,7 @@ $-colors: (primary, success, warning, harmful, private);
 
 .m-btn._xs {
   --height: #{$-btn-height-xs};
-  --gutter: var(--gutter-pm);
+  --gutter: 0.375rem;
   --ftsize: #{ftsize(xs)};
 }
 

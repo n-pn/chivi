@@ -1,7 +1,7 @@
 class CV::NvseedCtrl < CV::BaseCtrl
   def index
-    nslist = load_nvinfo.nvseeds.to_a.uniq!(&.sname).sort_by!(&.zseed)
-    serv_json(nslist.map { |x| NvseedView.new(x) })
+    nslist = load_nvinfo.seed_list
+    serv_json(NslistView.new(nslist))
   end
 
   def show
@@ -48,11 +48,34 @@ class CV::NvseedCtrl < CV::BaseCtrl
     })
   end
 
-  def patch
-    sname = params["sname"]
-    raise Unauthorized.new("Bạn không đủ quyền hạn") unless can_patch_seed?(sname)
+  getter nvseed : Nvseed { load_nvseed(params["sname"]) }
 
-    nvseed = load_nvseed(sname)
+  before_action do
+    only [:patch, :trunc, :prune] do
+      sname = params["sname"]
+      unless action_allowed?(sname)
+        raise Unauthorized.new("Bạn không đủ quyền hạn")
+      end
+
+      @nvseed = load_nvseed(sname)
+    end
+  end
+
+  private def action_allowed?(sname : String)
+    privi = _cvuser.privi
+
+    case sname
+    when .starts_with?('=')
+      privi > 1
+    when .starts_with?('@')
+      privi > 0 && sname == '@' + _cvuser.uname
+    else
+      false
+    end
+  end
+
+  def patch
+    nvseed = self.nvseed
     target = Nvseed.load!(nvseed.nvinfo, params["o_sname"])
 
     chmin = params.fetch_int("chmin", min: 1)
@@ -67,14 +90,14 @@ class CV::NvseedCtrl < CV::BaseCtrl
     serv_json({from: i_chmin})
   end
 
-  def can_patch_seed?(sname : String)
-    case sname = params["sname"]
-    when .starts_with?('=') then _cvuser.privi > 1
-    when .starts_with?('@')
-      return false if sname != '@' + _cvuser.uname
-      _cvuser.privi - 1
-    else
-      false
-    end
+  def trunc
+    sname = params["sname"]
+    raise Unauthorized.new("Bạn không đủ quyền hạn") unless can_patch_seed?(sname)
+  end
+
+  def prune
+    nvseed = self.nvseed
+    nvseed.update({shield: _cvuser.privi > 2 ? 4 : 3})
+    serv_json({shield: nvseed.shield})
   end
 end

@@ -35,7 +35,7 @@ declare namespace App {
     api: API
     nvinfo: CV.Nvinfo
     ubmemo: CV.Ubmemo
-    nslist: CV.Chseed[]
+    nslist: CV.Nslist
 
     nv_tab: 'index' | 'board' | 'crits' | 'chaps'
     topbar: Topbar
