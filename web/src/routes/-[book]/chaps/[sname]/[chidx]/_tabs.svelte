@@ -1,99 +1,150 @@
 <script lang="ts">
-  import { page } from '$app/stores'
-  import SIcon from '$gui/atoms/SIcon.svelte'
+  import { session } from '$app/stores'
+  import { SIcon } from '$gui'
 
-  // import {chap_url} from "$utils/route_utils"
   export let nvinfo: CV.Nvinfo
-  export let nslist: CV.Nvseed[]
+  export let nslist: CV.Nslist
+  export let nvseed: CV.Nvseed
 
   export let chmeta: CV.Chmeta
   export let chinfo: CV.Chinfo
 
-  let show_less = true
+  $: self_seed = nslist.users.find((x) => x.sname == '@' + $session.uname)
 
-  function chap_url(sname: string) {
+  let show_users = false
+  let show_other = false
+
+  function chap_href(sname: string) {
     return `/-${nvinfo.bslug}/chaps/${sname}/${chinfo.chidx}`
-  }
-
-  $: snames = nslist.map((x) => x.sname) || []
-  $: hidden_seeds = calculate_hidden_seeds(snames, chmeta.sname)
-
-  function calculate_hidden_seeds(snames: string[], sname: string) {
-    if (snames.length < 5) return 0
-    if (snames.slice(0, 5).includes(sname)) return snames.length - 5
-    return snames.length - 4
   }
 </script>
 
-<chap-seed>
-  {#each nslist as nvseed, idx}
-    {#if nvseed.chaps >= chinfo.chidx}
-      <a
-        class="seed-name umami--click-chtext-switch"
-        class:_hidden={idx > 3 && show_less}
-        class:_active={nvseed.sname == chmeta.sname}
-        href={chap_url(nvseed.sname)}
-        rel={nvseed.sname != 'union' ? 'nofollow' : ''}>
-        <seed-label>{nvseed.sname}</seed-label>
-      </a>
-    {/if}
-  {/each}
-
-  {#if show_less && hidden_seeds > 0}
-    <button class="seed-name _btn" on:click={() => (show_less = false)}>
-      <seed-label><SIcon name="dots" /></seed-label>
-    </button>
+<nav class="nslist">
+  {#if nvseed.sname != '=base' && nvseed.sname != self_seed.sname}
+    <a
+      class="nvseed umami--click-chtext-switch"
+      class:_active={nvseed.sname == chmeta.sname}
+      class:_hidden={nvseed.chaps < chinfo.chidx}
+      href={chap_href(nvseed.sname)}
+      rel="nofollow">
+      <span class="nvseed-name">{nvseed.sname}</span>
+    </a>
   {/if}
-</chap-seed>
+
+  <a
+    class="nvseed umami--click-chtext-switch"
+    class:_active={nslist._base.sname == chmeta.sname}
+    class:_hidden={nslist._base.chaps < chinfo.chidx}
+    href={chap_href(nslist._base.sname)}>
+    <span class="nvseed-name">Mặc định</span>
+  </a>
+
+  <button class="nvseed _btn" on:click={() => (show_other = !show_other)}>
+    <span class="nvseed-name">Tải ngoài</span>
+    <span class="nvseed-more">({nslist.other.length})</span>
+  </button>
+
+  <button class="nvseed _btn" on:click={() => (show_users = !show_users)}>
+    <span class="nvseed-name">Người dùng</span>
+    <span class="nvseed-more">({nslist.users.length})</span>
+  </button>
+
+  {#if self_seed}
+    <a
+      class="nvseed umami--click-chtext-switch"
+      class:_active={self_seed.sname == chmeta.sname}
+      class:_hidden={self_seed.chaps < chinfo.chidx}
+      href={chap_href(self_seed.sname)}
+      rel="nofollow">
+      <span class="nvseed-name">Của bạn</span>
+    </a>
+  {/if}
+</nav>
+
+{#if show_other}
+  <nav class="nslist">
+    {#each nslist.other as nvseed}
+      <a
+        class="nvseed umami--click-chtext-switch"
+        class:_active={nvseed.sname == chmeta.sname}
+        class:_hidden={nvseed.chaps < chinfo.chidx}
+        href={chap_href(nvseed.sname)}
+        rel="nofollow">
+        <span class="nvseed-name">{nvseed.sname}</span>
+      </a>
+    {/each}
+  </nav>
+{/if}
+
+{#if show_users}
+  <nav class="nslist">
+    {#each nslist.users as nvseed}
+      <a
+        class="nvseed umami--click-chtext-switch"
+        class:_active={nvseed.sname == chmeta.sname}
+        class:_hidden={nvseed.chaps < chinfo.chidx}
+        href={chap_href(nvseed.sname)}
+        rel="nofollow">
+        <span class="nvseed-name">{nvseed.sname}</span>
+      </a>
+    {/each}
+  </nav>
+{/if}
 
 <style lang="scss">
-  chap-seed {
+  .nslist {
     @include flex-cx($gap: 0.375rem);
     flex-wrap: wrap;
+    margin-bottom: 0.5rem;
   }
 
-  @mixin label {
-    font-weight: 500;
-    text-transform: uppercase;
-    @include fgcolor(tert);
-  }
-
-  .seed-name {
-    padding: 0.375rem;
+  .nvseed {
+    display: flex;
     @include bdradi();
     @include linesd(--bd-main);
-
-    &._btn {
-      background-color: transparent;
-      padding-left: 0.75rem !important;
-      padding-right: 0.75rem !important;
-    }
-
-    &._hidden {
-      display: none;
-    }
+    padding: 0 0.375rem;
+    line-height: 1.75rem;
 
     &._active {
-      display: inline-block;
       @include linesd(primary, 5, $ndef: true);
+    }
+
+    &._btn {
+      background: transparent;
     }
 
     // prettier-ignore
     &._active, &:hover, &:active {
-      > seed-label { @include fgcolor(primary, 5); }
+      > .nvseed-name { @include fgcolor(primary, 5); }
+    }
+
+    &._hidden {
+      @include linesd(--bd-soft, $ndef: true);
+
+      > .nvseed-name {
+        @include fgcolor(mute);
+      }
     }
   }
 
-  seed-label {
+  .nvseed-name {
     @include flex($center: both);
-    @include label();
+    font-weight: 500;
+    text-transform: uppercase;
+    @include fgcolor(tert);
 
-    line-height: 1.25rem;
-    font-size: rem(13px);
+    font-size: rem(12px);
 
     :global(svg) {
       width: 1rem;
       height: 1rem;
     }
+  }
+
+  .nvseed-more {
+    font-weight: 500;
+    @include fgcolor(secd);
+    font-size: rem(13px);
+    margin-left: 0.25rem;
   }
 </style>

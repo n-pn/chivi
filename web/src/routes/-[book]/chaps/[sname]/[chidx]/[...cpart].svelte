@@ -6,7 +6,7 @@
   import { config } from '$lib/stores'
 
   export async function load({ params, stuff }) {
-    const { api, nvinfo, ubmemo, nslist } = stuff
+    const { api, nvinfo, nvseed, ubmemo, nslist } = stuff
     const { sname, chidx, cpart: slug } = params
     const cpart = +slug.split('/')[1] || 1
 
@@ -15,7 +15,7 @@
     if (api_res.error) return api_res
 
     const topbar = gen_topbar(nvinfo, sname, chidx)
-    const props = Object.assign(api_res, { nvinfo, nslist })
+    const props = Object.assign(api_res, { nvinfo, nvseed, nslist })
 
     props.redirect = slug == ''
     return { props, stuff: { topbar } }
@@ -59,7 +59,8 @@
   import Chtabs from './_tabs.svelte'
 
   export let nvinfo: CV.Nvinfo
-  export let nslist: CV.Nvseed[]
+  export let nslist: CV.Nslist
+  export let nvseed: CV.Nvseed
   export let chmemo: CV.Ubmemo
 
   export let chmeta: CV.Chmeta
@@ -162,11 +163,9 @@
   <span class="crumb _text">{chinfo.chvol}</span>
 </nav>
 
-<CvPage {cvdata} {zhtext} on_change={retranslate}>
-  <svelte:fragment slot="header">
-    <Chtabs {nvinfo} {nslist} {chmeta} {chinfo} />
-  </svelte:fragment>
+<Chtabs {nvinfo} {nslist} {nvseed} {chmeta} {chinfo} />
 
+<CvPage {cvdata} {zhtext} on_change={retranslate}>
   <svelte:fragment slot="notext">
     <Notext {chmeta} {min_privi} {chidx_max} />
   </svelte:fragment>

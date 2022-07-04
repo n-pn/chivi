@@ -20,14 +20,14 @@
         return 'Nguồn text tải bằng tay từ trang zxcs.me (bản đẹp).'
 
       case 'hetushu':
-        return 'Nguồn truyện từ trang hetushu.com (phần lớn là bản đẹp)'
+        return 'Chương tiết từ trang hetushu.com (phần lớn là bản đẹp)'
 
       default:
         if (sname.startsWith('@')) return `Danh sách chương của ${sname}`
         if (!slink || slink == '/') return `Nguồn truyện chưa có chú thích.`
 
         const hostname = new URL(slink).hostname.replace('www.', '')
-        return `Nguồn truyện tải ngoài từ trang ${hostname}`
+        return `Chương tiết tải ngoài từ trang ${hostname}`
     }
   }
 </script>
@@ -55,8 +55,6 @@
   $: uname = '@' + $session.uname
   $: _self = nslist.users.find((x) => x.sname == uname) || make_seed(uname)
 
-  $: base_snames = ['=base', uname]
-
   let show_users = false
   let show_other = false
 </script>
@@ -70,7 +68,7 @@
 </nav>
 
 <seed-list>
-  {#if !base_snames.includes(_curr.sname)}
+  {#if _curr.sname != '=base' && _curr.sname != _self.sname}
     <a
       href={seed_url(nvinfo.bslug, _curr.sname, pgidx)}
       class="seed-name umami--click---swap-seed"
@@ -86,7 +84,7 @@
     class="seed-name umami--click---swap-seed"
     class:_active={nslist._base.sname == _curr.sname}
     data-tip="Danh sách chương trộn tổng hợp miễn phí">
-    <seed-label>Cơ bản</seed-label>
+    <seed-label>Mặc định</seed-label>
     <seed-stats><strong>{nslist._base.chaps}</strong> chương</seed-stats>
   </a>
 
