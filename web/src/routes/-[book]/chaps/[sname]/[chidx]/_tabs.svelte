@@ -39,12 +39,18 @@
     <span class="nvseed-name">Mặc định</span>
   </a>
 
-  <button class="nvseed _btn" on:click={() => (show_other = !show_other)}>
+  <button
+    class="nvseed _btn"
+    class:_focus={show_other}
+    on:click={() => (show_other = !show_other)}>
     <span class="nvseed-name">Tải ngoài</span>
     <span class="nvseed-more">({nslist.other.length})</span>
   </button>
 
-  <button class="nvseed _btn" on:click={() => (show_users = !show_users)}>
+  <button
+    class="nvseed _btn"
+    class:_focus={show_users}
+    on:click={() => (show_users = !show_users)}>
     <span class="nvseed-name">Người dùng</span>
     <span class="nvseed-more">({nslist.users.length})</span>
   </button>
@@ -105,21 +111,30 @@
     padding: 0 0.375rem;
     line-height: 1.75rem;
 
-    &._active {
-      @include linesd(primary, 5, $ndef: true);
-    }
+    @include fgcolor(tert);
+    font-size: rem(12px);
+    font-weight: 500;
+    text-transform: uppercase;
 
     &._btn {
       background: transparent;
     }
 
+    &._active {
+      @include linesd(primary, 5, $ndef: false);
+    }
+
     // prettier-ignore
     &._active, &:hover, &:active {
-      > .nvseed-name { @include fgcolor(primary, 5); }
+      @include fgcolor(primary, 5);
+    }
+
+    &._focus {
+      @include fgcolor(secd);
     }
 
     &._hidden {
-      @include linesd(--bd-soft, $ndef: true);
+      @include linesd(--bd-soft, $ndef: false);
 
       > .nvseed-name {
         @include fgcolor(mute);
@@ -127,23 +142,7 @@
     }
   }
 
-  .nvseed-name {
-    @include flex($center: both);
-    font-weight: 500;
-    text-transform: uppercase;
-    @include fgcolor(tert);
-
-    font-size: rem(12px);
-
-    :global(svg) {
-      width: 1rem;
-      height: 1rem;
-    }
-  }
-
   .nvseed-more {
-    font-weight: 500;
-    @include fgcolor(secd);
     font-size: rem(13px);
     margin-left: 0.25rem;
   }
