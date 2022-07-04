@@ -73,7 +73,7 @@
     <span class="stats" data-tip="Phiên bản máy dịch">
       <span class="stats-label">Máy dịch:</span>
       <SIcon name="versions" />
-      <span class="stats-value">v{$config.engine}</span>
+      <span class="stats-value">v{$config.engine || 1}</span>
     </span>
     <span class="stats" data-tip="Số ký tự tiếng Trung">
       <span class="stats-label">Số ký tự:</span>

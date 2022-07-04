@@ -24,13 +24,13 @@
   import { SIcon } from '$gui'
 
   export let nvinfo: CV.Nvinfo
-  export let nslist: CV.Nvseed[]
+  export let nslist: CV.Nslist
   export let nvseed: CV.Nvseed
 
   let patch_form = {
     chmin: 1,
-    chmax: nslist[0].chaps,
-    o_sname: nslist[0].sname,
+    chmax: nslist._base.chaps,
+    o_sname: nslist._base.sname,
     i_chmin: 1,
   }
 
@@ -73,9 +73,30 @@
           name="nvseed"
           id="nvseed"
           bind:value={patch_form.o_sname}>
-          {#each nslist as nvseed}
-            <option value={nvseed.sname} on:click={() => update_patch(nvseed)}
-              >[{nvseed.sname}] ({nvseed.chaps} chương)</option>
+          {#if nslist._base.chaps > 0}
+            <option
+              value={nslist._base.sname}
+              on:click={() => update_patch(nslist._base)}
+              >[{nslist._base.sname}] ({nslist._base.chaps} chương)</option>
+          {/if}
+          {#if nslist._user.chaps > 0}
+            <option
+              value={nslist._user.sname}
+              on:click={() => update_patch(nslist._user)}
+              >[{nslist._user.sname}] ({nslist._user.chaps} chương)</option>
+          {/if}
+          {#each nslist.other as nvseed}
+            {#if nvseed.chaps > 0}
+              <option value={nvseed.sname} on:click={() => update_patch(nvseed)}
+                >[{nvseed.sname}] ({nvseed.chaps} chương)</option>
+            {/if}
+          {/each}
+
+          {#each nslist.users as nvseed}
+            {#if nvseed.chaps > 0}
+              <option value={nvseed.sname} on:click={() => update_patch(nvseed)}
+                >[{nvseed.sname}] ({nvseed.chaps} chương)</option>
+            {/if}
           {/each}
         </select>
       </div>
