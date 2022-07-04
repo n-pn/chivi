@@ -71,26 +71,25 @@
   bind:this={article}>
   <header>
     <span class="stats" data-tip="Phiên bản máy dịch">
-      Máy dịch: <span class="stats-value">V{$config.engine}</span>
+      <span class="stats-label">Máy dịch:</span>
+      <SIcon name="versions" />
+      <span class="stats-value">v{$config.engine}</span>
     </span>
-
+    <span class="stats" data-tip="Số ký tự tiếng Trung">
+      <span class="stats-label">Số ký tự:</span>
+      <SIcon name="file-text" />
+      <span class="stats-value">{chars}</span>
+    </span>
+    <span class="stats" data-tip="Thời gian máy dịch">
+      <span class="stats-label">Thời gian dịch:</span>
+      <SIcon name="report" />
+      <span class="stats-value">{tspan}ms</span>
+    </span>
     <span class="stats _dname" data-tip="Từ điển bộ truyện">
-      <span class="stats-label">Từ điển: </span>
+      <span class="stats-label">Từ điển riêng:</span>
       <SIcon name="package" />
       <a href="/dicts/{$vdict.dname}" class="stats-value _link"
         >{$vdict.d_dub}</a>
-    </span>
-
-    <span class="stats" data-tip="Số ký tự tiếng Trung">
-      <span class="stats-label">Số ký tự: </span>
-      <SIcon name="pencil" />
-      <span class="stats-value">{chars}</span>
-    </span>
-
-    <span class="stats" data-tip="Thời gian máy dịch">
-      <span class="stats-label">Thời gian dịch:</span>
-      <SIcon name="clock" />
-      <span class="stats-value">{tspan}ms</span>
     </span>
   </header>
 
@@ -302,8 +301,10 @@
       margin: 0 0.25rem;
     }
 
-    &._dname > a {
-      @include clamp($width: minmax(30vw, 10rem));
+    &._dname {
+      > a {
+        @include clamp($width: 25vw);
+      }
     }
   }
 
