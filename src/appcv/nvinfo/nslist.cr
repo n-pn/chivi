@@ -24,6 +24,9 @@ class CV::Nslist
       end
     end
 
+    @_base ||= Nvseed.load!(@nvinfo, "=base", force: true)
+    @_user ||= Nvseed.load!(@nvinfo, "=user", force: true)
+
     @other.sort_by! { |x| SnameMap.zseed(x.sname) }
     @users.sort_by!(&.utime.-)
   end

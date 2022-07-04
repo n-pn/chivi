@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { session } from '$app/stores'
-  import { SIcon } from '$gui'
+  import { page, session } from '$app/stores'
 
   export let nvinfo: CV.Nvinfo
   export let nslist: CV.Nslist
@@ -9,7 +8,8 @@
   export let chmeta: CV.Chmeta
   export let chinfo: CV.Chinfo
 
-  $: self_seed = nslist.users.find((x) => x.sname == '@' + $session.uname)
+  $: self_name = '@' + $session.uname
+  $: self_seed = nslist.users.find((x) => x.sname == self_name)
 
   let show_users = false
   let show_other = false
@@ -20,7 +20,7 @@
 </script>
 
 <nav class="nslist">
-  {#if nvseed.sname != '=base' && nvseed.sname != self_seed.sname}
+  {#if nvseed.sname != '=base' && nvseed.sname != self_name}
     <a
       class="nvseed umami--click-chtext-switch"
       class:_active={nvseed.sname == chmeta.sname}
@@ -39,21 +39,25 @@
     <span class="nvseed-name">Mặc định</span>
   </a>
 
-  <button
-    class="nvseed _btn"
-    class:_focus={show_other}
-    on:click={() => (show_other = !show_other)}>
-    <span class="nvseed-name">Tải ngoài</span>
-    <span class="nvseed-more">({nslist.other.length})</span>
-  </button>
+  {#if nslist.other.length > 0}
+    <button
+      class="nvseed _btn"
+      class:_focus={show_other}
+      on:click={() => (show_other = !show_other)}>
+      <span class="nvseed-name">Tải ngoài</span>
+      <span class="nvseed-more">({nslist.other.length})</span>
+    </button>
+  {/if}
 
-  <button
-    class="nvseed _btn"
-    class:_focus={show_users}
-    on:click={() => (show_users = !show_users)}>
-    <span class="nvseed-name">Người dùng</span>
-    <span class="nvseed-more">({nslist.users.length})</span>
-  </button>
+  {#if nslist.users.length > 0}
+    <button
+      class="nvseed _btn"
+      class:_focus={show_users}
+      on:click={() => (show_users = !show_users)}>
+      <span class="nvseed-name">Người dùng</span>
+      <span class="nvseed-more">({nslist.users.length})</span>
+    </button>
+  {/if}
 
   {#if self_seed}
     <a

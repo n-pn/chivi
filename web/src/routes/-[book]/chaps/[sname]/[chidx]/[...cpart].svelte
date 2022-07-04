@@ -14,6 +14,7 @@
     const api_res = await api.call(api_url)
     if (api_res.error) return api_res
 
+    console.log(nvseed)
     const topbar = gen_topbar(nvinfo, sname, chidx)
     const props = Object.assign(api_res, { nvinfo, nvseed, nslist })
 
