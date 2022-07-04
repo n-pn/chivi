@@ -10,10 +10,7 @@ struct CV::NslistView
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "_base" { NvseedView.new(@data._base).to_json(jb) }
-
-      if _user = @data._user
-        jb.field "_user" { NvseedView.new(_user).to_json(jb) }
-      end
+      jb.field "_user" { NvseedView.new(@data._user).to_json(jb) }
 
       jb.field "users" do
         jb.array do

@@ -5,23 +5,15 @@
 class CV::Nvseed
   # auto generate `=base` seed
 
-  def autogen_base!(mode : Int32 = 0) : Nil
-    seeds = self.nvinfo.seed_list
+  def autogen_base!(seeds = self.nvinfo.seed_list.other, mode : Int32 = 0) : Nil
     chmin = 0
 
-    others = seeds.other.first(5)
-
-    others.each_with_index(1) do |other, idx|
+    seeds.first(5).each_with_index(1) do |other, idx|
       if mode > 0 && other.remote?(force: mode > 1)
-        other.refresh_remote!(1.days * idx, lbl: "#{idx}/#{others.size}")
+        other.refresh_remote!(1.days * idx, lbl: "#{idx}/#{seeds.size}")
       end
 
       chmin = self.clone_remote!(other, chmin: chmin)
-    end
-
-    if others.empty?
-      _user = seeds._user || Nvseed.load!(self.nvinfo, "=user")
-      chmin = self.clone_range!(_user, chmin: 1)
     end
 
     self.reset_cache!(raws: true)
@@ -68,11 +60,10 @@ class CV::Nvseed
 
   ###################
 
-  def autogen_user!(mode : Int32 = 0)
-    seeds = self.nvinfo.seed_list
+  def autogen_user!(seeds = self.nvinfo.seed_list.users, mode : Int32 = 0)
     exist = Set(Int32).new
 
-    seeds.users.first(5).each do |other|
+    seeds.first(5).each do |other|
       infos = other.clone_chaps.reject! { |x| exist.includes?(x.chidx) }
       infos.each { |x| exist << x.chidx }
       self.patch_chaps!(infos, other.utime, save: false)

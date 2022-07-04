@@ -83,16 +83,6 @@ class CV::Nvseed
   def self.init!(nvinfo : Nvinfo, sname : String, snvid = nvinfo.bhash)
     model = new({nvinfo: nvinfo, sname: sname, snvid: snvid})
     model.zseed = SnameMap.zseed(sname)
-
-    case sname
-    when "=base"
-      model.autogen_base!(mode: 0)
-    when "=user"
-      model.autogen_user!(mode: 0)
-    else
-      model.save!
-    end
-
-    model
+    model.tap(&.save!)
   end
 end

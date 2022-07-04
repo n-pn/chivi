@@ -24,10 +24,15 @@ class CV::Nslist
       end
     end
 
-    @_base ||= Nvseed.load!(@nvinfo, "=base", force: true)
-    @_user ||= Nvseed.load!(@nvinfo, "=user", force: true)
-
     @other.sort_by! { |x| SnameMap.zseed(x.sname) }
     @users.sort_by!(&.utime.-)
+
+    @_base ||= begin
+      seed = Nvseed.load!(@nvinfo, "=base", force: true)
+      seed.autogen_base!(@other, mode: 0)
+      seed
+    end
+
+    @_user ||= Nvseed.load!(@nvinfo, "=user", force: true)
   end
 end

@@ -2,6 +2,7 @@
   import { navigating } from '$app/stores'
   import { config, vdict } from '$lib/stores'
 
+  import { SIcon } from '$gui'
   import MtData from '$lib/mt_data'
 
   import Mtmenu, { ctrl as mtmenu } from './MtPage/Mtmenu.svelte'
@@ -69,7 +70,28 @@
   on:blur={mtmenu.hide}
   bind:this={article}>
   <header>
-    <slot name="header">Dịch nhanh</slot>
+    <span class="stats" data-tip="Phiên bản máy dịch">
+      Máy dịch: <span class="stats-value">V{$config.engine}</span>
+    </span>
+
+    <span class="stats _dname" data-tip="Từ điển bộ truyện">
+      <span class="stats-label">Từ điển: </span>
+      <SIcon name="package" />
+      <a href="/dicts/{$vdict.dname}" class="stats-value _link"
+        >{$vdict.d_dub}</a>
+    </span>
+
+    <span class="stats" data-tip="Số ký tự tiếng Trung">
+      <span class="stats-label">Số ký tự: </span>
+      <SIcon name="pencil" />
+      <span class="stats-value">{chars}</span>
+    </span>
+
+    <span class="stats" data-tip="Thời gian máy dịch">
+      <span class="stats-label">Thời gian dịch:</span>
+      <SIcon name="clock" />
+      <span class="stats-value">{tspan}ms</span>
+    </span>
   </header>
 
   {#each zhtext as ztext, index (index)}
@@ -95,10 +117,6 @@
 
   <slot name="footer" />
 </article>
-
-<section class="stats">
-  Số ký tự: {chars} - Thời gian dịch: {tspan}ms
-</section>
 
 <div hidden>
   <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
@@ -222,13 +240,14 @@
   }
 
   header {
-    @include border(--bd-main, $loc: bottom);
+    display: flex;
     padding: var(--gutter-pm) 0;
     line-height: 1.25rem;
 
     // @include flow();
     @include ftsize(sm);
     @include fgcolor(secd);
+    @include border(--bd-main, $loc: bottom);
   }
 
   .cv-line {
@@ -272,11 +291,43 @@
   }
 
   .stats {
-    text-align: center;
-    margin-top: calc(-1 * var(--gutter));
-    padding: 0.5rem 0;
-    font-style: italic;
-    @include fgcolor(tert);
+    display: flex;
+    align-items: center;
+
     @include ftsize(sm);
+    @include fgcolor(tert);
+
+    &:not(:first-child):before {
+      content: '·';
+      margin: 0 0.25rem;
+    }
+
+    &._dname > a {
+      @include clamp($width: minmax(30vw, 10rem));
+    }
+  }
+
+  .stats-label {
+    display: none;
+    font-style: italic;
+    @include bp-min(ts) {
+      display: inline-block;
+      & + :global(svg) {
+        display: none;
+      }
+    }
+  }
+
+  .stats-value {
+    font-style: normal;
+    margin-left: 0.125rem;
+    // font-weight: 500;
+    @include fgcolor(secd);
+
+    &._link {
+      &:hover {
+        @include fgcolor(primary, 5);
+      }
+    }
   }
 </style>
