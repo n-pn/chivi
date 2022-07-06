@@ -45,7 +45,7 @@
     return {
       sname,
       snvid: nvinfo.bhash,
-      chaps: 0,
+      chmax: 0,
       utime: 0,
       stype: 0,
       slink: '/',
@@ -75,7 +75,7 @@
       class:_active={true}
       data-tip={map_info(_curr)}>
       <seed-label>{_curr.sname}</seed-label>
-      <seed-stats><strong>{_curr.chaps}</strong> chương</seed-stats>
+      <seed-stats><strong>{_curr.chmax}</strong> chương</seed-stats>
     </a>
   {/if}
 
@@ -85,7 +85,7 @@
     class:_active={nslist._base.sname == _curr.sname}
     data-tip="Danh sách chương trộn tổng hợp miễn phí">
     <seed-label>Mặc định</seed-label>
-    <seed-stats><strong>{nslist._base.chaps}</strong> chương</seed-stats>
+    <seed-stats><strong>{nslist._base.chmax}</strong> chương</seed-stats>
   </a>
 
   <button
@@ -109,14 +109,14 @@
     </button>
   {/if}
 
-  {#if _self.chaps > 0 || $session.privi > 0}
+  {#if _self.chmax > 0 || $session.privi > 0}
     <a
       href={seed_url(nvinfo.bslug, _self.sname, pgidx)}
       class="seed-name umami--click---swap-seed"
       class:_active={_self.sname == _curr.sname}
       data-tip="Danh sách chương của cá nhân bạn">
       <seed-label>Của bạn</seed-label>
-      <seed-stats><strong>{_self.chaps}</strong> chương</seed-stats>
+      <seed-stats><strong>{_self.chmax}</strong> chương</seed-stats>
     </a>
   {/if}
 </seed-list>
@@ -134,7 +134,7 @@
           <SIcon name={icon_types[nvseed.stype]} />
         </seed-label>
 
-        <seed-stats><strong>{nvseed.chaps}</strong> chương</seed-stats>
+        <seed-stats><strong>{nvseed.chmax}</strong> chương</seed-stats>
       </a>
     {/each}
   </seed-list>
@@ -168,7 +168,7 @@
       class:_active={nslist._user.sname == _curr.sname}
       data-tip="Danh sách chương tổng hợp từ các người dùng">
       <seed-label>Trộn chung</seed-label>
-      <seed-stats><strong>{_self.chaps}</strong> chương</seed-stats>
+      <seed-stats><strong>{_self.chmax}</strong> chương</seed-stats>
     </a>
 
     {#each nslist.users as nvseed}
@@ -178,7 +178,7 @@
         class:_active={nvseed.sname == _curr.sname}
         data-tip={map_info(nvseed)}>
         <seed-label>{nvseed.sname}</seed-label>
-        <seed-stats><strong>{nvseed.chaps}</strong> chương</seed-stats>
+        <seed-stats><strong>{nvseed.chmax}</strong> chương</seed-stats>
       </a>
     {/each}
   </seed-list>
@@ -212,7 +212,7 @@
     align-items: center;
     flex-direction: column;
     background-color: transparent;
-    padding: 0.375em;
+    padding: 0.375rem;
 
     @include bdradi();
     @include linesd(--bd-main);

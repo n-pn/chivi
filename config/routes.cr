@@ -40,17 +40,25 @@ Amber::Server.configure do
     get "/books/:bslug/front", CV::NvinfoCtrl, :front
     delete "/books/:bslug", CV::NvinfoCtrl, :delete
 
+    # nvseed actions
+
     get "/seeds/:nv_id", CV::NvseedCtrl, :index
     put "/seeds/:nv_id/", CV::NvseedCtrl, :create
     get "/seeds/:nv_id/:sname", CV::NvseedCtrl, :show
     get "/seeds/:nv_id/:sname/:page", CV::NvseedCtrl, :chaps
     put "/seeds/:nv_id/:sname/patch", CV::NvseedCtrl, :patch
+    put "/seeds/:nv_id/:sname/trunc", CV::NvseedCtrl, :trunc
+    delete "/seeds/:nv_id/:sname", CV::NvseedCtrl, :prune
+
+    # nvchap actions
 
     # get "/chaps/:nv_id/:sname/:chidx", CV::NvchapCtrl, :ch_info
     get "/chaps/:nv_id/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info
 
     get "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :zhtext
     post "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :upload
+
+    # # yousuu
 
     get "/yscrits", CV::YscritCtrl, :index
     get "/yscrits/:crit", CV::YscritCtrl, :show
@@ -60,12 +68,16 @@ Amber::Server.configure do
     get "/yslists/:list", CV::YslistCtrl, :show
     # get "/yslists/:list/books", CV::YslistCtrl, :books
 
+    # # member
+
     get "/_self/books", CV::UbmemoCtrl, :cvbook
     get "/_self/books/access", CV::UbmemoCtrl, :access
 
     get "/_self/books/:book_id", CV::UbmemoCtrl, :show
     put "/_self/books/:book_id/status", CV::UbmemoCtrl, :update_status
     put "/_self/books/:book_id/access", CV::UbmemoCtrl, :update_access
+
+    # # dicts
 
     get "/dicts", CV::VpdictCtrl, :index
     get "/dicts/:dname", CV::VpdictCtrl, :show
@@ -76,11 +88,15 @@ Amber::Server.configure do
     put "/terms/entry", CV::VptermCtrl, :upsert_entry
     post "/terms/batch", CV::VptermCtrl, :upsert_batch
 
+    # # quick trans
+
     put "/qtran/hanviet", CV::QtransCtrl, :hanviet
     put "/qtran/mterror", CV::QtransCtrl, :mterror
     post "/qtran", CV::QtransCtrl, :webpage # to make the extension works
     get "/qtran/:type/:name", CV::QtransCtrl, :convert
     post "/qtran/posts", CV::QtransCtrl, :posts_upsert
+
+    # # board
 
     get "/boards/", CV::DboardCtrl, :index
     get "/boards/:bslug", CV::DboardCtrl, :show
@@ -99,6 +115,8 @@ Amber::Server.configure do
     get "/tposts/:cvrepl/detail", CV::CvreplCtrl, :detail
     post "/tposts/:cvrepl", CV::CvreplCtrl, :update
     delete "/tposts/:cvrepl", CV::CvreplCtrl, :delete
+
+    # # report
 
     get "/tlspecs/", CV::TlspecCtrl, :index
     get "/tlspecs/:ukey", CV::TlspecCtrl, :show

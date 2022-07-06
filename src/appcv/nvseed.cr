@@ -76,6 +76,10 @@ class CV::Nvseed
     end
   end
 
+  def self.cache!(nvseed : Nvseed)
+    CACHED.get("#{nvseed.nvinfo_id}/#{nvseed.sname}") { nvseed }
+  end
+
   def self.upsert!(nvinfo : Nvinfo, sname : String, snvid : String, force = true)
     find({nvinfo_id: nvinfo.id, sname: sname}) || init!(nvinfo, sname, snvid)
   end

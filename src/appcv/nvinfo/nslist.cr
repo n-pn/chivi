@@ -12,15 +12,13 @@ class CV::Nslist
         .where("shield < 3")
 
     seeds.each do |nvseed|
+      nvseed = Nvseed.cache!(nvseed)
+
       case nvseed.sname
-      when "=base"
-        @_base = nvseed
-      when "=user"
-        @_user = nvseed
-      when "users", .starts_with?('@')
-        @users << nvseed
-      else
-        @other << nvseed
+      when "=base"                     then @_base = nvseed
+      when "=user"                     then @_user = nvseed
+      when "users", .starts_with?('@') then @users << nvseed
+      else                                  @other << nvseed
       end
     end
 

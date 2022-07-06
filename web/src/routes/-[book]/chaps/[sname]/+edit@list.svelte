@@ -19,7 +19,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
-  import { goto } from '$app/navigation'
+  import { goto, invalidate } from '$app/navigation'
 
   import { SIcon } from '$gui'
 
@@ -29,41 +29,53 @@
 
   let patch_form = {
     chmin: 1,
-    chmax: nslist._base.chaps,
+    chmax: nslist._base.chmax,
     o_sname: nslist._base.sname,
     i_chmin: 1,
-  }
-
-  function update_patch(nvseed: CV.Nvseed) {
-    patch_form.chmax = nvseed.chaps
   }
 
   async function submit_patch() {
     const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}/patch`
     const res = await $page.stuff.api.call(url, 'PUT', patch_form)
 
-    if (res.error) {
-      alert(res.error)
-      return
-    }
+    if (res.error) return alert(res.error)
+    else clean_jump(res.pgidx)
+  }
 
-    const pgidx = Math.floor((res.from - 1) / 128) + 1
+  let trunc_chidx = 1
 
+  async function trunc_source() {
+    const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}/trunc`
+    const res = await $page.stuff.api.call(url, 'PUT', { chidx: trunc_chidx })
+
+    if (res.error) return alert(res.error)
+    else clean_jump(res.pgidx)
+  }
+
+  function clean_jump(pgidx: number) {
     $page.stuff.api.uncache('nslists', nvinfo.id)
     $page.stuff.api.uncache('nvseeds', `${nvinfo.id}/${nvseed.sname}`)
-    goto(`/-${nvinfo.bslug}/chaps/${nvseed.sname}?pg=${pgidx}`)
+
+    const root_href = `/-${nvinfo.bslug}/chaps`
+    const page_href = root_href + '/' + nvseed.sname
+
+    // invalidate(root_href)
+    // invalidate(page_href)
+    goto(pgidx > 1 ? `${page_href}?pg=${pgidx}` : page_href)
   }
+
+  $: seeds = [nslist._base, nslist._user, ...nslist.other, ...nslist.users]
 </script>
 
 <svelte:head>
-  <title>Tinh chỉnh - {nvseed.sname} - {nvinfo.btitle_vi} - Chivi</title>
+  <title>Nguồn truyện: {nvseed.sname} - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
 
 <article class="article">
-  <h2>Tinh chỉnh nguồn truyện</h2>
+  <h2>Cài đặt nguồn truyện</h2>
 
   <details open>
-    <summary>Thừa kế từ nguồn khác</summary>
+    <summary>Sao chép từ nguồn khác</summary>
 
     <div class="form-group">
       <div class="form-field">
@@ -73,29 +85,12 @@
           name="nvseed"
           id="nvseed"
           bind:value={patch_form.o_sname}>
-          {#if nslist._base.chaps > 0}
-            <option
-              value={nslist._base.sname}
-              on:click={() => update_patch(nslist._base)}
-              >[{nslist._base.sname}] ({nslist._base.chaps} chương)</option>
-          {/if}
-          {#if nslist._user.chaps > 0}
-            <option
-              value={nslist._user.sname}
-              on:click={() => update_patch(nslist._user)}
-              >[{nslist._user.sname}] ({nslist._user.chaps} chương)</option>
-          {/if}
-          {#each nslist.other as nvseed}
-            {#if nvseed.chaps > 0}
-              <option value={nvseed.sname} on:click={() => update_patch(nvseed)}
-                >[{nvseed.sname}] ({nvseed.chaps} chương)</option>
-            {/if}
-          {/each}
-
-          {#each nslist.users as nvseed}
-            {#if nvseed.chaps > 0}
-              <option value={nvseed.sname} on:click={() => update_patch(nvseed)}
-                >[{nvseed.sname}] ({nvseed.chaps} chương)</option>
+          {#each seeds as nvseed}
+            {#if nvseed.chmax > 0}
+              <option
+                value={nvseed.sname}
+                on:click={() => (patch_form.chmax = nvseed.chmax)}
+                >[{nvseed.sname}] ({nvseed.chmax} chương)</option>
             {/if}
           {/each}
         </select>
@@ -134,8 +129,35 @@
           type="button"
           class="m-btn _primary _fill"
           on:click={submit_patch}>
-          <SIcon name="send" />
-          <span>Thực hiện</span>
+          <SIcon name="copy" />
+          <span>Sao chép</span>
+        </button>
+      </div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Xoá chương thừa</summary>
+    <div class="form-group">
+      <div class="form-field">
+        <label class="form-label _inline" for="trunc_chidx"
+          >Xoá các chương từ vị trí</label>
+
+        <input
+          type="number"
+          id="trunc_chidx"
+          class="m-input"
+          min="1"
+          max={nvseed.chmax}
+          bind:value={trunc_chidx} />
+      </div>
+      <div class="form-field _button">
+        <button
+          type="button"
+          class="m-btn _warning _fill"
+          on:click={trunc_source}>
+          <SIcon name="cut" />
+          <span>Xoá chương</span>
         </button>
       </div>
     </div>
@@ -165,9 +187,9 @@
     margin-left: auto;
   }
 
-  // details + details {
-  //   margin-top: 1rem;
-  // }
+  details + details {
+    margin-top: 1rem;
+  }
 
   summary {
     font-weight: 500;

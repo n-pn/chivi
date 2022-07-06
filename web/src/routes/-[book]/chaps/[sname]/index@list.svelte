@@ -68,11 +68,11 @@
   }
 </script>
 
-<chap-page>
+<article class="article">
   <page-info>
     <info-left>
       <info-text>{nvseed.sname}</info-text>
-      <info-span>{nvseed.chaps} chương</info-span>
+      <info-span>{nvseed.chmax} chương</info-span>
       <info-span><RTime mtime={nvseed.utime} /></info-span>
     </info-left>
 
@@ -90,7 +90,7 @@
         <a
           class="m-btn _primary _fill"
           class:_disable={$session.privi < 1}
-          href="/-{nvinfo.bslug}/chaps/{nvseed.sname}/+chap?chidx={nvseed.chaps +
+          href="/-{nvinfo.bslug}/chaps/{nvseed.sname}/+chap?chidx={nvseed.chmax +
             1}"
           data-tip="Yêu cầu quyền hạn: 1">
           <SIcon name="upload" />
@@ -132,7 +132,7 @@
       <Chlist
         bslug={nvinfo.bslug}
         sname={nvseed.sname}
-        total={nvseed.chaps}
+        total={nvseed.chmax}
         chaps={nvseed.lasts}
         track={$ubmemo}
         privi={$session.privi}
@@ -143,7 +143,7 @@
       <Chlist
         bslug={nvinfo.bslug}
         sname={nvseed.sname}
-        total={nvseed.chaps}
+        total={nvseed.chmax}
         chaps={chlist.chaps}
         track={$ubmemo}
         privi={$session.privi}
@@ -158,7 +158,7 @@
       <p class="empty">Không có nội dung :(</p>
     {/if}
   </chap-list>
-</chap-page>
+</article>
 
 <style lang="scss">
   @mixin label {
@@ -167,23 +167,8 @@
     @include fgcolor(tert);
   }
 
-  chap-page {
-    display: block;
-    margin: 0;
-    margin-bottom: var(--gutter);
-    @include padding-x(var(--gutter));
-
-    @include shadow(2);
-    @include bgcolor(tert);
-
-    @include bp-min(tm) {
-      @include margin-x(var(--gutter));
-      border-radius: 1rem;
-    }
-
-    @include tm-dark {
-      @include linesd(--bd-soft, $ndef: false, $inset: false);
-    }
+  .article {
+    @include padding-y(0);
   }
 
   page-info {
@@ -200,7 +185,7 @@
     flex: 1;
     margin: 0.25rem 0;
     line-height: 1.75rem;
-    transform: translateX(1px);
+    // transform: translateX(1px);
     @include bps(font-size, 13px, 14px);
   }
 

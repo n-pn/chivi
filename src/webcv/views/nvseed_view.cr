@@ -9,10 +9,9 @@ struct CV::NvseedView
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "sname", @data.sname
-      jb.field "zseed", @data.zseed
       jb.field "snvid", @data.snvid
 
-      jb.field "chaps", @data.chap_count
+      jb.field "chmax", @data.chap_count
       jb.field "utime", @data.utime
 
       jb.field "stype", SnameMap.map_type(@data.sname)

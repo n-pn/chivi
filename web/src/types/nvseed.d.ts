@@ -3,7 +3,7 @@ declare namespace CV {
     sname: string
     snvid: string
 
-    chaps: number // chap_count
+    chmax: number // chap_count
     utime: number
 
     stype: number

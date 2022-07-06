@@ -11,6 +11,9 @@
   $: self_name = '@' + $session.uname
   $: self_seed = nslist.users.find((x) => x.sname == self_name)
 
+  $: user_seeds = nslist.users.filter((x) => x.chmax >= chinfo.chidx)
+  $: misc_seeds = nslist.other.filter((x) => x.chmax >= chinfo.chidx)
+
   let show_users = false
   let show_other = false
 
@@ -24,7 +27,7 @@
     <a
       class="nvseed umami--click-chtext-switch"
       class:_active={nvseed.sname == chmeta.sname}
-      class:_hidden={nvseed.chaps < chinfo.chidx}
+      class:_hidden={nvseed.chmax < chinfo.chidx}
       href={chap_href(nvseed.sname)}
       rel="nofollow">
       <span class="nvseed-name">{nvseed.sname}</span>
@@ -34,28 +37,28 @@
   <a
     class="nvseed umami--click-chtext-switch"
     class:_active={nslist._base.sname == chmeta.sname}
-    class:_hidden={nslist._base.chaps < chinfo.chidx}
+    class:_hidden={nslist._base.chmax < chinfo.chidx}
     href={chap_href(nslist._base.sname)}>
     <span class="nvseed-name">Mặc định</span>
   </a>
 
-  {#if nslist.other.length > 0}
+  {#if misc_seeds.length > 0}
     <button
       class="nvseed _btn"
       class:_focus={show_other}
       on:click={() => (show_other = !show_other)}>
       <span class="nvseed-name">Tải ngoài</span>
-      <span class="nvseed-more">({nslist.other.length})</span>
+      <span class="nvseed-more">({misc_seeds.length})</span>
     </button>
   {/if}
 
-  {#if nslist.users.length > 0}
+  {#if user_seeds.length > 0}
     <button
       class="nvseed _btn"
       class:_focus={show_users}
       on:click={() => (show_users = !show_users)}>
       <span class="nvseed-name">Người dùng</span>
-      <span class="nvseed-more">({nslist.users.length})</span>
+      <span class="nvseed-more">({user_seeds.length})</span>
     </button>
   {/if}
 
@@ -63,7 +66,6 @@
     <a
       class="nvseed umami--click-chtext-switch"
       class:_active={self_seed.sname == chmeta.sname}
-      class:_hidden={self_seed.chaps < chinfo.chidx}
       href={chap_href(self_seed.sname)}
       rel="nofollow">
       <span class="nvseed-name">Của bạn</span>
@@ -73,11 +75,10 @@
 
 {#if show_other}
   <nav class="nslist">
-    {#each nslist.other as nvseed}
+    {#each misc_seeds as nvseed}
       <a
         class="nvseed umami--click-chtext-switch"
         class:_active={nvseed.sname == chmeta.sname}
-        class:_hidden={nvseed.chaps < chinfo.chidx}
         href={chap_href(nvseed.sname)}
         rel="nofollow">
         <span class="nvseed-name">{nvseed.sname}</span>
@@ -88,11 +89,10 @@
 
 {#if show_users}
   <nav class="nslist">
-    {#each nslist.users as nvseed}
+    {#each user_seeds as nvseed}
       <a
         class="nvseed umami--click-chtext-switch"
         class:_active={nvseed.sname == chmeta.sname}
-        class:_hidden={nvseed.chaps < chinfo.chidx}
         href={chap_href(nvseed.sname)}
         rel="nofollow">
         <span class="nvseed-name">{nvseed.sname}</span>

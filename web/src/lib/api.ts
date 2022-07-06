@@ -21,7 +21,7 @@ export class API {
 
   maps = {
     nvinfos: new Map<string, Cached<CV.Nvinfo>>(),
-    nslists: new Map<number, Cached<CV.Nvseed[]>>(),
+    nslists: new Map<number, Cached<CV.Nslist>>(),
     nvseeds: new Map<string, Cached<CV.Nvseed>>(),
   }
 
@@ -37,16 +37,17 @@ export class API {
   }
 
   async nvbook(bslug: string) {
-    bslug = bslug.slice(0, 8)
+    const bhash = bslug.slice(0, 8)
+
     const map = this.maps.nvinfos
-    const url = `/api/books/${bslug}`
-    return await this.get<CV.Nvinfo>(map, bslug, url, 300)
+    const url = `/api/books/${bhash}`
+    return await this.get<CV.Nvinfo>(map, bhash, url, 300)
   }
 
   async nslist(nv_id: number) {
     const map = this.maps.nslists
     const url = `/api/seeds/${nv_id}`
-    return await this.get<CV.Nvseed[]>(map, nv_id, url, 300)
+    return await this.get<CV.Nslist>(map, nv_id, url, 300)
   }
 
   async nvseed(nv_id: number, sname: string, mode = 0) {
@@ -79,7 +80,7 @@ export class API {
     if (cached && cached.ttl > now) return cached.val
 
     const res = await this.call(url, 'GET')
-    map.set(key, { val: res, ttl: now + (browser ? ttl : ttl / 60) })
+    map.set(key, { val: res, ttl: now + (browser ? ttl : 5) })
 
     return res
   }

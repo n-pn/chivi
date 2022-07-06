@@ -55,6 +55,11 @@ form-field {
 
   user-select: none;
   @include fgcolor(secd);
+
+  &._inline {
+    display: inline-block;
+    margin-right: 0.5rem;
+  }
 }
 
 label.m-label {
