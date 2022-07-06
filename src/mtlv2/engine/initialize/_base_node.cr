@@ -1,32 +1,7 @@
 module MtlV2::AST
   class BaseNode
-    property idx : Int32 = 0
-    property dic : Int32 = 0
-
-    property key : String = ""
-    property val : String = ""
-
     property! prev : BaseNode
     property! succ : BaseNode
-
-    def initialize(@key = "", @val = @key, @dic = 0, @idx = 0)
-    end
-
-    def initialize(char : Char, @idx = 0)
-      @key = @val = char.to_s
-    end
-
-    def initialize(term : V2Term)
-      @key = term.key
-      @val = term.vals.first
-    end
-
-    def dup!(idx : Int32, dic : Int32 = 1) : BaseNode
-      target = self.dup
-      target.idx = idx
-      target.dic = dic
-      target
-    end
 
     def set_prev(@prev : BaseNode) : BaseNode
       prev.succ = self
@@ -52,6 +27,49 @@ module MtlV2::AST
 
     def succ?
       @succ.try { |x| yield x }
+    end
+  end
+
+  class BaseWord < BaseNode
+    property idx : Int32 = 0
+    property dic : Int32 = 0
+
+    property key : String = ""
+    property val : String = ""
+
+    def initialize(@key = "", @val = @key, @dic = 0, @idx = 0)
+    end
+
+    def initialize(char : Char, @idx = 0)
+      @key = @val = char.to_s
+    end
+
+    def initialize(term : V2Term)
+      @key = term.key
+      @val = term.vals.first
+    end
+
+    def dup!(idx : Int32, dic : Int32 = 1) : BaseNode
+      target = self.dup
+      target.idx = idx
+      target.dic = dic
+      target
+    end
+  end
+
+  class BasePair < BaseNode
+    property left : BaseNode
+    property right : BaseNode
+
+    def initialize(left : BaseNode, right : BaseNode, @flip = false)
+      self.set_prev(left.prev?)
+      self.set_succ(right.succ?)
+
+      if flip
+        @left, @right = right, left
+      else
+        @left, @right = left, right
+      end
     end
   end
 
@@ -83,11 +101,5 @@ module MtlV2::AST
         node = node.succ?
       end
     end
-  end
-
-  class Mixed < BaseNode
-  end
-
-  class UnknNode < BaseNode
   end
 end

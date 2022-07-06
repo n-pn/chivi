@@ -21,6 +21,13 @@ module MtlV2::AST
     end
   end
 
+  class BasePair
+    def capitalize!(cap : Bool = true)
+      @left.capitalize! if cap
+      false
+    end
+  end
+
   class BaseList
     def capitalize!(cap : Bool = true)
       node = @head
@@ -40,18 +47,9 @@ module MtlV2::AST
     end
   end
 
-  class Punct
-
-    # private def cap_after_punct?(prev = false) : Bool
-    #   case @tag
-    #   when .quoteop?, .exmark?, .qsmark?,
-    #        .pstop?, .colon?, .middot?, .titleop?
-    #     true
-    #   when .pdeci?   then @prev.try { |x| x.ndigit? || x.litstr? } || prev
-    #   when .brackop? then true
-    #     # when .parenop? then  prev
-    #   else prev
-    #   end
-    # end
+  class PunctWord
+    def capitalize!(cap : Bool = false) : Bool
+      @flag.cap_after?
+    end
   end
 end

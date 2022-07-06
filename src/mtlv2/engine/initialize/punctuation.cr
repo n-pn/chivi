@@ -1,109 +1,204 @@
+require "./_base_node"
+require "./_node_flag"
+
 module MtlV2::AST
+  module Puntuation
+    getter flag : PunctFlag
+  end
+
+  class PunctWord < BaseWord
+    include Puntuation
+
+    def initialize(term : V2Term)
+      super(term)
+      @flag = PunctFlag::Ascii if term.key[0].ascii?
+    end
+  end
+
+  class Whitespace < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag::CapAfter
+    end
+  end
+
+  class Middot < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag::CapAfter
+    end
+  end
+
+  class Comma < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag::SpaceAfter
+    end
+  end
+
+  class EnumComma < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag::SpaceAfter
+    end
+  end
+
+  class Colon < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(CapAfter, SpaceAfter, Boundary)
+    end
+  end
+
+  class Ellipsis < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(SpaceAfter)
+    end
+  end
+
+  class DashMark < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(CapAfter, SpaceBefore, SpaceAfter)
+    end
+  end
+
+  class PeriodMark < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(CapAfter, SpaceAfter, Boundary)
+    end
+  end
+
+  class ExclaimMark < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(CapAfter, SpaceAfter, Boundary)
+    end
+  end
+
+  class QuestionMark < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(CapAfter, SpaceAfter, Boundary)
+    end
+  end
+
+  class AtSign < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(SpaceBefore, SpaceAfter)
+    end
+  end
+
+  class Semicolon < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(SpaceAfter, Boundary)
+    end
+  end
+
+  class TildMark < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(SpaceAfter)
+    end
+  end
+
+  class PlusSign < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(SpaceBefore, SpaceAfter)
+    end
+  end
+
+  class MinusSign < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(SpaceBefore, SpaceAfter)
+    end
+  end
+
+  class QuantiMark < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(SpaceAfter)
+    end
+  end
+
+  class PercentMark < PunctWord
+    def initialize(term : V2Term)
+      super(term)
+      @flag |= PunctFlag.flag(SpaceAfter)
+    end
+  end
+
+  class SingleQuote < PunctWord
+  end
+
+  class DoubleQuote < PunctWord
+  end
+
+  class OpenPunct < PunctWord
+    getter open_char : Char
+
+    def initialize(term : V2Term)
+      super(term)
+
+      @open_char = term.key[0]
+      @flag |= PunctFlag.flag(SpaceBefore, Boundary)
+    end
+  end
+
+  class ClosePunct < PunctWord
+    getter open_char : Char
+
+    def initialize(term : V2Term)
+      super(term)
+
+      @open_char = term.key[0]
+      @flag |= PunctFlag.flag(SpaceBefore, Boundary)
+    end
+
+    def map_open_char(char : Char)
+    end
+  end
+
   # ameba:disable Metrics/CyclomaticComplexity
   def self.punct_from_term(term : V2Term)
     case term.key
+    when " ", "　"                then Whitespace.new(term)
     when "・", "‧", "•", "·"      then Middot.new(term)
+    when "。", "｡", "．", "."      then PeriodMark.new(term)
+    when "！", "﹗", "!"           then ExclaimMark.new(term)
+    when "？", "﹖", "?"           then QuestionMark.new(term)
     when "﹐", "，", ","           then Comma.new(term)
     when "﹑", "、", "､"           then EnumComma.new(term)
     when "︰", "∶", "﹕", "：", ":" then Colon.new(term)
     when "⋯", "…", "···", "...",
          "....", ".....", "......" then Ellipsis.new(term)
     when "－", "—", "--", "---" then DashMark.new(term)
-    when "."                   then DeciStop.new(term)
-    when "。", "｡", "．"         then FullStop.new(term)
-    when "！", "﹗", "!"         then ExclaimMark.new(term)
-    when "？", "﹖", "?"         then QuestionMark.new(term)
     when "＠", "﹫", "@"         then AtSign.new(term)
     when "；", "﹔", ";"         then Semicolon.new(term)
     when "～", "~"              then TildeMark.new(term)
-      # plus sign +
-    when "﹢", "＋", "+" then PlusSign.new(term)
-      # minus sign -
-    when "﹣", "-" then MinusSign.new(term)
-      # percentage and permillle signs: ％ and ‰ of full length; % of half length
-    when "％", "﹪", "‰", "%" then PercentMark.new(term)
-      # full or half-length unit symbol ￥ ＄ ￡ ° ℃  $
+    when "﹢", "＋", "+"         then PlusSign.new(term)
+    when "﹣", "-"              then MinusSign.new(term)
     when "￥", "﹩", "＄", "$",
-         "￡", "°", "℃" then QuantiMark.new(term)
-      # full-length single or double opening quote: “ ‘ 『
-    when "『", "「", "“", "‘" then QuoteOpen.new(term)
-      # full-length single or double closing quote: ” ’ 』
-    when "』", "”", "」", "’" then QuoteStop.new(term)
-      # opening parentheses: （ 〔 of full length; ( of half length
-    when "｟", "（", "﹙", "(", "〔" then ParenthOpen.new(term)
-      # closing parentheses: ） 〕 of full length; ) of half length
-    when "｠", "﹚", "）", "〕", ")" then ParenthStop.new(term)
-      # opening brackets: （ 〔 ［ ｛ 【 〖 of full length; ( [ { of half length
+         "￡", "°", "℃"
+    when "％", "﹪", "‰", "%"      then PercentMark.new(term)
+    when "\""                    then DoubleQuote.new(term)
+    when "『", "「", "“", "‘"      then QuoteOpen.new(term)
+    when "』", "”", "」", "’"      then QuoteClose.new(term)
+    when "｟", "（", "﹙", "〔", "(" then ParentOpen.new(term)
+    when "｠", "）", "﹚", "〕", ")" then ParentClose.new(term)
     when "﹝", "［", "[", "【",
          "〖", "｛", "﹛", "{" then BracketOpen.new(term)
-      # closing brackets: ］ ｝ 】 〗 of full length; ] } of half length
     when "﹞", "］", "】", "〗",
-         "]", "﹜", "｝", "}" then BracketStop.new(term)
-      # open book title《〈 ⟨
+         "]", "﹜", "｝", "}" then BracketClose.new(term)
     when "《", "〈", "⟨" then TitleOpen.new(term)
-      # close book title 》〉⟩
-    when "》", "〉", "⟩" then TitleStop.new(term)
+    when "》", "〉", "⟩" then TitleClose.new(term)
     else                    Punct.new(term)
     end
   end
-
-  class Punct < BaseNode
-  end
-
-  class OpenPunct < Punct; end
-
-  class StopPunct < Punct; end
-
-  #######
-
-  class Whitespace < Punct; end # punctuation
-  class Middot < Punct; end
-
-  class Comma < Punct; end
-
-  class EnumComma < Punct; end
-
-  class Colon < Punct; end
-
-  class Ellipsis < Punct; end
-
-  class DashMark < Punct; end
-
-  class DeciStop < Punct; end
-
-  class FullStop < StopPunct; end
-
-  class Semicolon < StopPunct; end
-
-  class ExclaimMark < StopPunct; end
-
-  class QuestionMark < StopPunct; end
-
-  class AtSign < Punct; end
-
-  class TildeMark < Punct; end
-
-  class PlusSign < Punct; end
-
-  class MinusSign < Punct; end
-
-  class PercentMark < Punct; end
-
-  class QuantiMark < Punct; end
-
-  class QuoteOpen < OpenPunct; end
-
-  class QuoteStop < StopPunct; end
-
-  class ParenthOpen < OpenPunct; end
-
-  class ParenthStop < StopPunct; end
-
-  class BracketOpen < OpenPunct; end
-
-  class BracketStop < StopPunct; end
-
-  class TitleOpen < OpenPunct; end
-
-  class TitleStop < StopPunct; end
 end
