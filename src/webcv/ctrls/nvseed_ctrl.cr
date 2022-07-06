@@ -18,18 +18,6 @@ class CV::NvseedCtrl < CV::BaseCtrl
     serv_json(NvseedView.new(nvseed, full: true, fresh: fresh))
   end
 
-  def create
-    assert_privi 2
-
-    nvinfo = load_nvinfo
-
-    sname = params["sname"]
-    snvid = params["snvid"]
-
-    Nvseed.upsert!(nvinfo, sname, snvid, force: true)
-    serv_json({sname: sname, snvid: snvid})
-  end
-
   private def can_refresh?(nvseed : Nvseed)
     return false if _cvuser.privi < 0
     return true unless nvseed.sname[0] == '@'
@@ -46,6 +34,20 @@ class CV::NvseedCtrl < CV::BaseCtrl
       pgmax: CtrlUtil.pgmax(nvseed.chap_count, 32),
       chaps: ChinfoView.list(chaps),
     })
+  end
+
+  def create
+    assert_privi 2
+
+    nvinfo = load_nvinfo
+
+    sname = params["sname"]
+    snvid = params["snvid"]
+
+    nvseed = Nvseed.upsert!(nvinfo, sname, snvid, force: true)
+    nvinfo.seed_list.other.push(nvseed).sort! { |x| SnameMap.zseed(x.sname) }
+
+    serv_json({sname: sname, snvid: snvid})
   end
 
   getter nvseed : Nvseed { load_nvseed(params["sname"]) }
