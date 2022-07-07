@@ -205,9 +205,9 @@ class CV::RemoteInfo
     time = TimeUtil.parse_time(update_str)
 
     if @sname.in?("69shu", "biqu5200", "ptwxz")
-      time += 24.hours
+      time += 1.day
       tnow = Time.utc - 1.minutes
-      time < tnow ? time : tnow
+      time = tnow if time > tnow
     end
 
     time.to_unix

@@ -96,18 +96,16 @@
     <seed-stats><strong>{nslist.other.length}</strong> nguồn</seed-stats>
   </button>
 
-  {#if nslist.users.length > 0}
-    <button
-      class="seed-name _btn"
-      data-tip="Các danh sách chương của mỗi người dùng Chivi"
-      on:click={() => (show_users = !show_users)}>
-      <seed-label>
-        <span>Người dùng</span>
-      </seed-label>
+  <button
+    class="seed-name _btn"
+    data-tip="Các danh sách chương của mỗi người dùng Chivi"
+    on:click={() => (show_users = !show_users)}>
+    <seed-label>
+      <span>Người dùng</span>
+    </seed-label>
 
-      <seed-stats><strong>{nslist.users.length}</strong> người</seed-stats>
-    </button>
-  {/if}
+    <seed-stats><strong>{nslist.users.length}</strong> người</seed-stats>
+  </button>
 
   {#if _self.chmax > 0 || $session.privi > 0}
     <a

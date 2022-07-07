@@ -28,7 +28,6 @@ class CV::Nvseed
   def set_mftime(utime : Int64 = Time.utc.to_unix, force : Bool = false) : Nil
     return unless force || self.utime < utime
     self.utime = utime
-    self.nvinfo.set_utime(utime)
   end
 
   def set_status(status : Int32, mode : Int32 = 0) : Nil

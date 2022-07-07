@@ -44,16 +44,16 @@
     _error = ''
 
     const res = await $page.stuff.api.nvseed(nvinfo.id, nvseed.sname, 1)
+    _refresh = false
 
     if (res.error) {
       _error = res.error
     } else {
       nvseed = res
-      $page.stuff.api.uncache('nslists', nvinfo.id.toString())
+      $page.stuff.api.uncache('nslists', nvinfo.id)
+      invalidate(`/-${nvinfo.bslug}/chaps`)
       invalidate($page.url.toString())
     }
-
-    _refresh = false
   }
 
   function internal_seed(sname: string) {

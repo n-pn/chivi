@@ -59,6 +59,8 @@ class CV::Nvseed
         self.reset_cache!
       end
     end
+
+    self.nvinfo.set_utime(self.utime, force: false)
   end
 
   ########
