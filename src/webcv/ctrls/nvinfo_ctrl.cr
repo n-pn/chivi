@@ -39,11 +39,11 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     bslug = TextUtil.slugify(params["bslug"])
 
     unless nvinfo = Nvinfo.load!(bslug[0..7])
-      unless nvinfo = load_prev_book(bslug)
-        raise NotFound.new("Quyển sách không tồn tại!")
+      if nvinfo = load_prev_book(bslug)
+        return serv_text(nvinfo.bslug, 301)
       end
 
-      return serv_text(nvinfo.bslug, 301)
+      raise NotFound.new("Quyển sách không tồn tại!")
     end
 
     nvinfo.bump! if _cvuser.privi >= 0

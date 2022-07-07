@@ -18,6 +18,8 @@ class CV::Nvseed
 
     if parser.update_str.empty?
       mftime = changed ? self.stime : self.utime
+    elsif sname.in?("69shu", "biqu5200", "ptwxz")
+      mftime = changed ? parser.update_int : self.utime
     else
       mftime = parser.update_int
     end

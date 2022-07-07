@@ -61,6 +61,7 @@ class CV::Nvseed
     end
 
     self.nvinfo.save! if self.nvinfo.changed?
+    Nvinfo.cache!(self.nvinfo)
   end
 
   ########

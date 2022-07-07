@@ -157,7 +157,7 @@ class CV::Nvinfo
   end
 
   CACHE_INT = RamCache(Int64, self).new
-  CACHE_STR = RamCache(String, self).new
+  CACHE_STR = {} of String => Int64
 
   def self.find(sql : String) : self | Nil
     query.where(sql).limit(1).first
@@ -165,7 +165,6 @@ class CV::Nvinfo
 
   def self.cache!(nvinfo : self)
     CACHE_INT.set(nvinfo.id, nvinfo)
-    CACHE_STR.set(nvinfo.bslug[0..7], nvinfo)
   end
 
   def self.load!(id : Int64)
@@ -173,9 +172,11 @@ class CV::Nvinfo
   end
 
   def self.load!(bslug : String)
-    CACHE_STR.get(bslug) do
-      return unless item = find("bslug like '#{bslug}%'")
-      item.tap { |x| CACHE_INT.set(x.id, x) }
+    if nvinfo_id = CACHE_STR[bslug]?
+      load!(nvinfo_id)
+    elsif model = find("bslug like '#{bslug}%'")
+      CACHE_STR[model.bslug] = model.id
+      CACHE_INT.get(model.id) { model }
     end
   end
 
