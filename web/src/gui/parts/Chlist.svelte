@@ -1,104 +1,96 @@
 <script lang="ts">
-  import { chap_url } from '$utils/route_utils'
-  import SIcon from '$gui/atoms/SIcon.svelte'
+  import { session } from '$app/stores'
   import { get_rtime } from '$gui/atoms/RTime.svelte'
+  import { SIcon } from '$gui'
 
-  export let bslug = ''
-  export let sname = ''
+  export let nvinfo: CV.Nvinfo
+  export let nvseed: CV.Nvseed
+  export let ubmemo: CV.Ubmemo
+  export let chlist: CV.Chinfo[]
+  export let mark_chidx = ubmemo.chidx
 
-  export let total = 0
-  export let stype = 0
-  export let privi = -1
+  $: same_sname = nvseed.sname == ubmemo.sname
 
-  export let chaps = []
-  export let track: CV.Ubmemo
-
-  $: same_sname = sname == track.sname
-  $: chmax = max_free(total)
-
-  function is_marked(chap: CV.Chinfo) {
-    return chap.chidx == track.chidx
+  function check_privi({ chidx, chars }): number {
+    if (chidx <= nvseed.free_chap) return nvseed.privi_map[0]
+    else if (chars > 0) return nvseed.privi_map[1]
+    else return nvseed.privi_map[2]
   }
 
-  function track_cpart(chap: CV.Chinfo) {
-    return same_sname && is_marked(chap) ? track.cpart : 0
-  }
-
-  function max_free(total: number) {
-    const third = Math.round(total / 3)
-    return third < 40 ? 40 : third
-  }
-
-  function check_privi(chap: CV.Chinfo, chmax = 1): number {
-    let min_privi = stype == 0 ? -1 : stype < 3 || chap.chars > 0 ? 0 : 1
-    return min_privi + (chap.chidx > chmax ? 1 : 0)
-  }
+  $: base_url = `/-${nvinfo.bslug}/chaps/${nvseed.sname}`
+  $: saved_icon = nvseed.stype > 2 ? 'cloud-download' : 'device-floppy'
 </script>
 
-<list-grid>
-  {#each chaps as chap}
-    {@const min_privi = check_privi(chap, chmax)}
-    <list-item>
-      <a
-        href={chap_url(bslug, { ...chap, sname, cpart: track_cpart(chap) })}
-        class="chap umami--click--chlist-toread"
-        class:_active={is_marked(chap)}
-        rel={sname != 'union' ? 'nofollow' : null}>
-        <div class="chap-text">
-          <chap-title>{chap.title}</chap-title>
-          <chap-chidx>{chap.chidx}.</chap-chidx>
-        </div>
-        <chap-meta>
-          <chap-chvol>
-            {#if chap.sname}{chap.sname} - {/if}{chap.chvol}
-          </chap-chvol>
-          {#if chap.chars > 0}
-            <chap-track
-              data-tip="Lưu: {get_rtime(chap.utime)} bởi {chap.uname || '??'}">
-              <SIcon name={stype > 2 ? 'cloud-download' : 'device-floppy'} />
-            </chap-track>
-          {/if}
+<div class="chlist">
+  {#each chlist as chinfo}
+    {@const min_privi = check_privi(chinfo)}
 
-          {#if same_sname && is_marked(chap)}
-            <chap-mark data-tip="Xem: {get_rtime(track.utime)}">
-              <SIcon name={track.locked ? 'bookmark' : 'eye'} />
-            </chap-mark>
-          {/if}
+    <a
+      href="{base_url}/{chinfo.chidx}/{chinfo.uslug}"
+      class="chinfo umami--click--chlist-toread"
+      class:_active={chinfo.chidx == mark_chidx}
+      rel={nvseed.sname != '=base' ? 'nofollow' : null}>
+      <div class="chap-text">
+        <chap-title>{chinfo.title}</chap-title>
+        <chap-chidx>{chinfo.chidx}.</chap-chidx>
+      </div>
+      <div class="chap-meta">
+        <chap-chvol>
+          {#if chinfo.o_sname}{chinfo.o_sname} - {/if}{chinfo.chvol}
+        </chap-chvol>
+        {#if chinfo.chars > 0}
+          <chap-track
+            data-tip="Lưu: {get_rtime(chinfo.utime)} bởi {chinfo.uname || '?'}">
+            <SIcon name={saved_icon} />
+          </chap-track>
+        {/if}
 
-          {#if privi >= min_privi}
-            {#if min_privi > -1}<chap-mark data-tip="Bạn đủ quyền xem chương"
-                ><SIcon name="lock-open" /></chap-mark>
-            {/if}
+        {#if same_sname && chinfo.chidx == ubmemo.chidx}
+          <chap-mark data-tip="Xem: {get_rtime(ubmemo.utime)}">
+            <SIcon name={ubmemo.locked ? 'bookmark' : 'eye'} />
+          </chap-mark>
+        {/if}
+
+        {#if $session.privi >= min_privi}
+          {#if min_privi > -1}
+            <chap-mark data-tip="Bạn đủ quyền xem chương"
+              ><SIcon name="lock-open" /></chap-mark>
           {:else}
-            <chap-mark
-              data-tip={min_privi > 0
-                ? `Cần quyền hạn ${min_privi} để xem chương`
-                : 'Bạn cần đăng nhập để xem chương'}
-              ><SIcon name="lock" /></chap-mark>
+            <chap-mark data-tip="Chương tiết miễn phí"
+              ><SIcon name="gift" /></chap-mark>
           {/if}
-        </chap-meta>
-      </a>
-    </list-item>
+        {:else if min_privi == 0}
+          <chap-mark data-tip={'Bạn cần đăng nhập để xem chương'}
+            ><SIcon name="lock" /></chap-mark>
+        {:else}
+          <chap-mark data-tip={`Cần quyền hạn ${min_privi} để xem chương`}
+            ><SIcon name="privi-{min_privi}" iset="sprite" /></chap-mark>
+        {/if}
+      </div>
+    </a>
   {/each}
-</list-grid>
+</div>
 
 <style lang="scss">
   $chap-size: 17.5rem;
   // $chap-break: $chap-size * 2 + 0.75 * 5;
 
-  list-grid {
+  .chlist {
     display: grid;
     width: 100%;
+    grid-gap: 0 var(--gutter-pl);
+
     @include bps(
       grid-template-columns,
       100%,
       $tm: repeat(auto-fill, minmax(20rem, 1fr))
     );
-
-    grid-gap: 0 var(--gutter-pl);
   }
 
-  list-item {
+  .chinfo {
+    display: block;
+    padding: 0.375rem 0.5rem;
+
     @include border(--bd-main, $loc: bottom);
     $bg-dark: color(neutral, 8);
 
@@ -125,11 +117,6 @@
         @include bgcolor(tert);
       }
     }
-  }
-
-  .chap {
-    display: block;
-    padding: 0.375rem 0.5rem;
 
     // prettier-ignore
     &._active {
@@ -143,7 +130,7 @@
     line-height: 1.5rem;
   }
 
-  chap-meta {
+  .chap-meta {
     display: flex;
     padding: 0;
     height: 1rem;
@@ -159,8 +146,8 @@
     @include clamp($width: null);
     @include fgcolor(secd);
 
-    .chap:visited & { @include fgcolor(tert); }
-    .chap:hover & { @include fgcolor(primary, 5); }
+    .chinfo:visited & { @include fgcolor(tert); }
+    .chinfo:hover & { @include fgcolor(primary, 5); }
   }
 
   chap-chidx {

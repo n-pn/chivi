@@ -67,11 +67,7 @@
   export let chinfo: CV.Chinfo
 
   export let cvdata: string
-  export let zhtext: string[]
   export let rl_key: string
-
-  export let min_privi = -1
-  export let chidx_max = 0
 
   let ubmemo: Writable<CV.Ubmemo> = getContext('ubmemos')
   $: ubmemo.set(chmemo)
@@ -165,9 +161,9 @@
 
 <Chtabs {nvinfo} {nslist} {nvseed} {chmeta} {chinfo} />
 
-<CvPage {cvdata} {zhtext} on_change={retranslate}>
+<CvPage {cvdata} on_change={retranslate}>
   <svelte:fragment slot="notext">
-    <Notext {chmeta} {min_privi} {chidx_max} />
+    <Notext {nvseed} {chmeta} {chinfo} />
   </svelte:fragment>
 
   <Footer slot="footer">

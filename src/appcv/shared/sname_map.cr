@@ -38,9 +38,9 @@ module CV::SnameMap
 
   def map_type(sname : String)
     case sname
-    when "=base", "=user", "users"
+    when "=base", "=user"
       0 # act as mirror
-    when "zxcs_me", .starts_with?('@')
+    when "zxcs_me", .starts_with?('@'), "users"
       1 # manual update
     when "jx_la", "zhwenpg", "shubaow", "sdyfcm", "biqugee",
          "bxwxorg"

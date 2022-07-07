@@ -89,7 +89,7 @@
       <span class="stats-label">Từ điển riêng:</span>
       <SIcon name="package" />
       <a href="/dicts/{$vdict.dname}" class="stats-value _link"
-        >{$vdict.d_dub}</a>
+        >[{$vdict.dname}]</a>
     </span>
   </header>
 
@@ -245,8 +245,8 @@
 
     // @include flow();
     @include ftsize(sm);
-    @include fgcolor(secd);
-    @include border(--bd-main, $loc: bottom);
+    // @include fgcolor(secd);
+    @include border(--bd-soft, $loc: bottom);
   }
 
   .cv-line {
@@ -294,23 +294,17 @@
     align-items: center;
 
     @include ftsize(sm);
-    @include fgcolor(tert);
+    @include fgcolor(mute);
 
     &:not(:first-child):before {
       content: '·';
       margin: 0 0.25rem;
     }
-
-    &._dname {
-      > a {
-        @include clamp($width: 25vw);
-      }
-    }
   }
 
   .stats-label {
     display: none;
-    font-style: italic;
+    // font-style: italic;
     @include bp-min(ts) {
       display: inline-block;
       & + :global(svg) {
@@ -323,7 +317,7 @@
     font-style: normal;
     margin-left: 0.125rem;
     // font-weight: 500;
-    @include fgcolor(secd);
+    @include fgcolor(tert);
 
     &._link {
       &:hover {

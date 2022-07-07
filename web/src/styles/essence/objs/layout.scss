@@ -10,7 +10,6 @@
 // prettier-ignore
 @mixin flow($modern: false, $gap: null, $child: '*') {
   display: flow-root;
-
   @if $gap { @include gap($gap, $child); }
 }
 

@@ -49,14 +49,6 @@ class CV::QtranData
     File.delete(file) if File.exists?(file)
   end
 
-  def self.clear_chaps_cache(seed_id : Int64, chidx : Int32, parts : Int32, disk = true)
-    ukey = nvchap_ukey(seed_id, chidx)
-
-    parts.times do |cpart|
-      clear_cache("chaps", "#{ukey}-#{cpart}", disk: disk)
-    end
-  end
-
   @@counter = 0
 
   def self.qtpost_ukey : String

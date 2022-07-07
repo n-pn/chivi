@@ -38,6 +38,33 @@ class CV::Nvseed
 
   timestamps
 
+  getter seed_type : Int32 { SnameMap.map_type(sname) }
+
+  getter privi_map : {Int32, Int32, Int32} do
+    case self.seed_type
+    when 0 then {-1, 0, 0}
+    when 3 then {0, 1, 2}
+    else        {0, 1, 1}
+    end
+  end
+
+  def min_privi(chidx : Int32, chars : Int32 = 0)
+    privi_map = self.privi_map
+    case
+    when chidx <= self.free_chap then privi_map[0]
+    when chars > 0               then privi_map[1]
+    else                              privi_map[2]
+    end
+  end
+
+  def free_chap
+    case chap_count
+    when .< 120 then 40
+    when .> 360 then 120
+    else             chap_count // 3
+    end
+  end
+
   def clink(schid : String) : String
     SiteLink.text_url(sname, snvid, schid)
   end

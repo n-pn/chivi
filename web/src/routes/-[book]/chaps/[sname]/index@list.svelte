@@ -129,25 +129,9 @@
 
   <chap-list>
     {#if chlist.pgmax > 0}
-      <Chlist
-        bslug={nvinfo.bslug}
-        sname={nvseed.sname}
-        total={nvseed.chmax}
-        chaps={nvseed.lasts}
-        track={$ubmemo}
-        privi={$session.privi}
-        stype={nvseed.stype} />
-
+      <Chlist {nvinfo} {nvseed} ubmemo={$ubmemo} chlist={nvseed.lasts} />
       <div class="chlist-sep" />
-
-      <Chlist
-        bslug={nvinfo.bslug}
-        sname={nvseed.sname}
-        total={nvseed.chmax}
-        chaps={chlist.chaps}
-        track={$ubmemo}
-        privi={$session.privi}
-        stype={nvseed.stype} />
+      <Chlist {nvinfo} {nvseed} ubmemo={$ubmemo} chlist={chlist.chaps} />
 
       <Footer>
         <div class="foot">

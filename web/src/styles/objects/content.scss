@@ -137,20 +137,18 @@ cv-user,
 }
 
 .bread {
+  display: flow-root;
+
   padding: 0.5rem 0;
   line-height: 1.25rem;
   margin: 0.25rem 0;
 
-  // display: inline-flex;
-  // @include flow();
   @include ftsize(sm);
   @include fgcolor(secd);
 }
 
 .crumb {
   @include fgcolor(tert);
-  display: inline-block;
-  // float: left;
 
   &._caps {
     text-transform: uppercase;
@@ -158,7 +156,6 @@ cv-user,
   }
 
   &._link {
-    color: inherit;
     &:hover {
       @include fgcolor(primary, 5);
     }

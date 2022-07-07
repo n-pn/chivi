@@ -2,67 +2,63 @@
   import { session } from '$app/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
+  export let nvseed: CV.Nvseed
   export let chmeta: CV.Chmeta
+  export let chinfo: CV.Chinfo
 
-  export let min_privi: number
-  export let chidx_max: number
+  function check_privi({ chidx, chars }): number {
+    if (chidx <= nvseed.free_chap) return nvseed.privi_map[0]
+    else if (chars > 0) return nvseed.privi_map[1]
+    else return nvseed.privi_map[2]
+  }
 </script>
 
 <div class="notext cv-line">
-  {#if min_privi > $session.privi}
+  {#if $session.privi < check_privi(chinfo)}
     <h1>Bạn không đủ quyền hạn để xem chương.</h1>
-    {#if $session.privi < 0}
-      <p class="warn">
-        <em
-          >Bạn chưa đăng nhập, hãy bấm biểu tượng <SIcon name="user" /> bên phải
-          màn hình để đăng nhập hoặc đăng ký tài khoản mới.</em>
-      </p>
-    {:else}
-      <p>Nâng cấp quyền hạn của bạn ngay hôm nay để mở khoá các tính năng.</p>
-    {/if}
+
+    <p class="warn">
+      <em>
+        {#if $session.privi < 0}
+          Bạn chưa đăng nhập, hãy bấm biểu tượng <SIcon name="user" /> bên phải màn
+          hình để đăng nhập hoặc đăng ký tài khoản mới.
+        {:else}
+          Nâng cấp quyền hạn của bạn ngay hôm nay để mở khoá các tính năng.
+        {/if}
+      </em>
+    </p>
+
+    <h2>Quy ước quyền hạn xem chương:</h2>
 
     <ul>
       <li>
-        Với nguồn <x-seed>=base</x-seed> (<SIcon name="share" />), bạn cần phải
-        đăng nhập để xem các chương từ <x-chap>#{chidx_max + 1}</x-chap>.
+        Với các nguồn <x-seed>Mặc định</x-seed> và <x-seed>Trộn chung</x-seed>,
+        bạn cần thiết đăng nhập để xem nội dung chương.
       </li>
       <li>
-        Với các nguồn dạng lưu trữ (ký hiệu <SIcon name="archive" />, <SIcon
-          name="cloud-off" />) như <x-seed>zxcs_me</x-seed> hay
-        <x-seed>users</x-seed>, bạn cần đăng nhập để xem các chương từ
-        <x-chap>#1</x-chap>
-        tới <x-chap>#{chidx_max}</x-chap>, và cần quyền hạn tối thiểu là
-        <x-bold>1</x-bold>
-        để xem các chương từ <x-chap>#{chidx_max + 1}</x-chap> trở đi.
+        Với các nguồn tải ngoài (ký hiệu <SIcon name="cloud" />), bạn cần quyền
+        hạn tối thiểu là <x-chap>1</x-chap>.
       </li>
-
       <li>
-        Với các nguồn truyện ngoài hiện còn đang sống (ký hiệu <SIcon
-          name="cloud" />), bạn cần quyền hạn tối thiểu là <x-bold>1</x-bold>
-        xem các chương từ
-        <x-chap>#1</x-chap>
-        tới <x-chap>#{chidx_max}</x-chap>, và cần quyền hạn tối thiểu là
-        <x-bold>2</x-bold>
-        để xem các chương từ <x-chap>#{chidx_max + 1}</x-chap> trở đi.
-        <p>
-          <em
-            >* Với các chương tiết đã được lưu tạm trên hệ thống (có biểu tượng <SIcon
-              name="cloud-download" />), tạm thời áp dụng các quy tắc tương tự
-            các nguồn dạng lưu trữ.
-          </em>
-        </p>
+        Một số nguồn tải ngoài nhưng tốc độ hạn chế (ký hiệu <SIcon
+          name="cloud-fog" />), bạn cần thiết quyền hạn tối thiểu là
+        <x-chap>2</x-chap> để tải xuống các chương chưa được lưu trên máy chủ.
+      </li>
+      <li>
+        Với các danh sách chương tạo bởi người dùng, thông thường bạn cần quyền
+        hạn là <x-chap>1</x-chap>, nhưng thông số này có thể sẽ được thay đổi
+        bởi cá nhân người sử dụng.
       </li>
     </ul>
-
     <p>
-      <strong
-        >Con số đặc biệt <x-chap>{chidx_max}</x-chap> được tính bằng tổng số chương
-        của nguồn truyện chia cho 3, và luôn lớn hơn 40.</strong>
+      Bổ sung: Với các chương nhỏ hơn giá trị đặc biệt là <x-chap
+        >{nvseed.free_chap}</x-chap
+      >, yêu cầu quyền hạn được giảm xuống 1 mức độ.
     </p>
   {:else}
     <h1>Chương tiết không có nội dung.</h1>
 
-    {#if chmeta.sname == 'users'}
+    {#if nvseed.sname == 'users'}
       <p>
         Chương tiết nguồn <x-seed>users</x-seed> được đăng tải bởi người dùng của
         Chivi.
@@ -71,22 +67,25 @@
         Các chương có tựa là "Thiếu chương" là các chương chưa được đăng tải.
       </p>
       <p>
-        Bạn có thể liên hệ với các bạn có quyền hạn từ 2 trở lên để khắc phục
-        các chương bị thiếu.
+        Bạn có thể liên hệ với các bạn có quyền hạn từ <x-chap>2</x-chap> trở lên
+        để khắc phục các chương bị thiếu.
       </p>
-    {:else if chmeta.sname == 'zxcs_me'}
+    {:else if nvseed.sname == 'zxcs_me'}
       <p>
         Nguồn <x-seed>zxcs.me</x-seed> được tải thủ công từ trang
         <a href="http://www.zxcs.me/" rel="noopener noferrer">zxcs.me</a><br />
         Không có nội dung nghĩa là có lỗi hệ thống. Hãy liên hệ ban quản trị.
       </p>
-    {:else if chmeta.sname == 'shubaow'}
+    {:else if nvseed.sname == 'shubaow'}
       <p>
         Nguồn <x-seed>shubaow</x-seed> không cho phép các IP server truy cập.
       </p>
       <p>
         Liên hệ với ban quản trị nếu bạn thực sự muốn đọc truyện từ nguồn này.
       </p>
+    {:else if nvseed.stype < 3}
+      <p>Nguồn truyện này hiện tại đã chết hoặc ngừng được hỗ trợ.</p>
+      <p>Bạn hãy đổi sang nguồn khác còn sống để xem nội dung chương.</p>
     {:else}
       <p>
         Bạn có quyền xem chương tiết từ nguồn này, nhưng vì lý do nào đó chương
@@ -108,9 +107,10 @@
 
 <style lang="scss">
   .notext {
-    margin: 1rem auto;
-    max-width: 42rem;
+    max-width: 48rem;
     min-height: 30vh;
+    margin: 0 auto;
+    padding: 1rem;
 
     font-size: var(--para-fs);
 
@@ -126,14 +126,23 @@
       @include fgcolor(secd);
     }
 
+    h2 {
+      @include ftsize(x3);
+      text-align: center;
+
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+
     p {
       margin: 1em;
       line-height: var(--textlh);
       text-align: justify;
     }
 
-    strong {
-      font-weight: 500;
+    li {
+      line-height: var(--textlh);
+      text-align: justify;
     }
 
     :global(svg) {
@@ -148,32 +157,33 @@
     }
   }
 
+  ul {
+    margin-left: 1.5rem;
+  }
+
+  li + li {
+    margin-top: 1rem;
+  }
+
   .warn {
     @include fgcolor(warning, 5);
     margin-bottom: 1.5rem;
-    font-weight: 500;
   }
 
   x-seed {
-    display: inline-block;
+    display: inline;
     text-transform: uppercase;
     font-weight: 500;
-    padding: 0.25em 0.5em;
+    padding: 0.125em 0.25em;
     font-size: em(12, 16);
-    line-height: 1em;
+
     @include fgcolor(primary, 5);
-    // @include bgcolor(primary, 5, 1);
     @include border(primary, 5);
     @include bdradi();
   }
 
   x-chap {
     @include fgcolor(primary, 5);
-    font-weight: 500;
-  }
-
-  x-bold {
-    @include fgcolor(main);
     font-weight: 500;
   }
 </style>

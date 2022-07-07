@@ -26,6 +26,9 @@ struct CV::NvseedView
             @data.lastpg.each { |x| ChinfoView.new(x).to_json(jb) }
           end
         end
+
+        jb.field "free_chap", @data.free_chap
+        jb.field "privi_map", @data.privi_map
       end
     end
   end
