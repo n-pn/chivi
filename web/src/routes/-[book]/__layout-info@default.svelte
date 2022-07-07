@@ -230,10 +230,6 @@
     @include flex($wrap: true);
   }
 
-  .stat {
-    margin-right: 0.5rem;
-  }
-
   .trim {
     @include bps(display, none, $tm: inline);
   }

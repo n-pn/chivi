@@ -42,9 +42,8 @@ module CV::NvinfoInner
 
   def set_utime(utime : Int64, force = false) : Int64?
     return unless force || utime > self.utime
-
-    self.atime = utime if self.atime < utime
     self.utime = utime
+    self.atime = utime if self.atime < utime
   end
 
   def update_utime(utime : Int64, force = false) : Nil

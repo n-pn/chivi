@@ -39,9 +39,12 @@
   let _refresh = false
   let _error: string
 
-  async function refresh_seed() {
+  async function reload_source() {
     _refresh = true
     _error = ''
+
+    $page.stuff.api.uncache('nvbooks', nvinfo.bslug)
+    $page.stuff.api.uncache('nslists', nvinfo.id)
 
     const res = await $page.stuff.api.nvseed(nvinfo.id, nvseed.sname, 1)
     _refresh = false
@@ -49,9 +52,6 @@
     if (res.error) {
       _error = res.error
     } else {
-      nvseed = res
-      $page.stuff.api.uncache('nslists', nvinfo.id)
-      invalidate(`/-${nvinfo.bslug}/chaps`)
       invalidate($page.url.toString())
     }
   }
@@ -81,7 +81,7 @@
         class="m-btn _primary umami--click--chaps-force-update"
         disabled={$session.privi < 1}
         data-tip="Yêu cầu quyền hạn: Đăng nhập"
-        on:click={refresh_seed}>
+        on:click={reload_source}>
         <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
         <span class="-hide">Đổi mới</span>
       </button>

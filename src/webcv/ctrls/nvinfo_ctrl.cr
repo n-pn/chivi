@@ -29,15 +29,20 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     })
   end
 
+  def load_prev_book(bslug : String)
+    frags = bslug.split('-')
+    return unless (last = frags.last?) && last.size == 4
+    Nvinfo.find("bslug like '#{last}%'")
+  end
+
   def show : Nil
     bslug = TextUtil.slugify(params["bslug"])
 
-    unless nvinfo = Nvinfo.load!(bslug)
-      frags = bslug.split('-')
-
-      unless nvinfo = Nvinfo.find("bhash like '#{frags.last}%'")
+    unless nvinfo = Nvinfo.load!(bslug[0..7])
+      unless nvinfo = load_prev_book(bslug)
         raise NotFound.new("Quyển sách không tồn tại!")
       end
+
       return serv_text(nvinfo.bslug, 301)
     end
 

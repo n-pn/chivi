@@ -23,6 +23,7 @@ class CV::Nvseed
   end
 
   def patch_chaps!(chaps : Array(ChInfo), utime : Int64, save = true) : Nil
+    return if chaps.empty?
     _repo.patch!(chaps)
 
     self.set_mftime(utime, force: false)

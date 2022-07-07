@@ -2,22 +2,15 @@
   import { page } from '$app/stores'
   import { map_status } from '$utils/nvinfo_utils'
 
-  import { wrap_get } from '$lib/api_call'
+  export async function load({ params, stuff, url }) {
+    const bslug = params.book
 
-  export async function load({ params, fetch, url }) {
-    const slug = params.book.substr(0, 8)
+    const res = await stuff.api.nvbook(bslug)
+    if (!res.error) return { props: res, stuff: res }
+    if (res.status != 301) return res
 
-    const api_url = `/api/books/${slug}`
-    const api_res = await wrap_get(fetch, api_url)
-
-    if (api_res.status < 300) {
-      api_res['stuff'] = api_res.props
-    } else if (api_res.status == 301) {
-      const redirect = url.pathname.replace(slug, api_res.redirect)
-      api_res.redirect = encodeURI(redirect)
-    }
-
-    return api_res
+    const redirect = url.pathname.replace(bslug, res.error).trim()
+    return { status: 301, redirect: encodeURI(redirect) }
   }
 
   function gen_keywords(nvinfo: CV.Nvinfo) {

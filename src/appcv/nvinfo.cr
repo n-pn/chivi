@@ -163,13 +163,13 @@ class CV::Nvinfo
     query.where(sql).limit(1).first
   end
 
-  def self.load!(id : Int64)
-    CACHE_INT.get(id) { find!({id: id}) }
-  end
-
   def self.cache!(nvinfo : self)
     CACHE_INT.set(nvinfo.id, nvinfo)
     CACHE_STR.set(nvinfo.bslug[0..7], nvinfo)
+  end
+
+  def self.load!(id : Int64)
+    CACHE_INT.get(id) { find!({id: id}) }
   end
 
   def self.load!(bslug : String)

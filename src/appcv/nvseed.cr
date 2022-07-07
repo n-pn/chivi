@@ -60,7 +60,7 @@ class CV::Nvseed
       end
     end
 
-    self.nvinfo.set_utime(self.utime, force: false)
+    self.nvinfo.save! if self.nvinfo.changed?
   end
 
   ########

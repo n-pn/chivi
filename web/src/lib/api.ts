@@ -37,11 +37,9 @@ export class API {
   }
 
   async nvbook(bslug: string) {
-    const bhash = bslug.slice(0, 8)
-
     const map = this.maps.nvinfos
-    const url = `/api/books/${bhash}`
-    return await this.get<CV.Nvinfo>(map, bhash, url, 300)
+    const url = `/api/books/${bslug}`
+    return await this.get<CV.Nvinfo>(map, bslug, url, 300)
   }
 
   async nslist(nv_id: number) {
