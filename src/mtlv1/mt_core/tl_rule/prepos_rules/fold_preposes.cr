@@ -16,10 +16,9 @@ module CV::TlRule
   def fold_other_preposes!(node : MtNode, succ : MtNode, mode : Int32)
     case node.key
     when "将"
-      if succ.maybe_verb?
-        succ = fold_adverbs!(succ) if succ.adverbial?
-        return fold_verbs!(succ, node.set!("sẽ"))
-      end
+      fold = fold_prepos_inner!(node, succ, mode: mode)
+      return fold unless (fold.succ? == succ) && succ.verbal?
+      return fold_verbs!(succ, prev: node.set!("sẽ"))
     when "与", "和"
       return fold_compare(node) || fold_prepos_inner!(node)
     when "同", "跟"
