@@ -28,6 +28,13 @@ module MtlV2::AST
     def succ?
       @succ.try { |x| yield x }
     end
+
+    def tranfer(new_node : BaseNode) : BaseNode
+      new_node.set_prev(@prev)
+      new_node.set_succ(@succ)
+      @prev = @succ = nil
+      new_node
+    end
   end
 
   class BaseWord < BaseNode
@@ -101,5 +108,8 @@ module MtlV2::AST
         node = node.succ?
       end
     end
+  end
+
+  class UniqWord < BaseWord
   end
 end

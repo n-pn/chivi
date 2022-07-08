@@ -1,13 +1,36 @@
+require "./_generic"
+
 module MtlV2::AST
-  class Adjt < BaseNode; end
+  @[Flags]
+  enum AdjtFlag : UInt8
+    Adverbial # adjective that can act as verb adverb without de2
+    Modifier  # adjective that can act as noun modifier without de1
+    Adjtform  # word that act like adjective but do not combine with adverbs
+    Measure   # can combine with measurement numeral after
+  end
 
-  class Modi < Adjt; end
+  class AdjtWord < BaseWord
+    getter flag = AdjtFlag::None
 
-  class AdjtForm < Adjt; end
+    def initialize(term : V2Term)
+      super(term)
+
+      case term.tags[0][1]?
+      when 'b'
+        @flag |= AdjtFlag::Modifier
+      when 'z', 'f'
+        @flag |= AdjtFlag::Adjtform
+      else
+        # TODO: add words directly
+        @flag |= AdjtFlag::Modifier if term.key.size < 3
+        @flag |= AdjtFlag::Adverbial if term.key.size < 2
+      end
+    end
+  end
 
   #########
 
-  class AdjtNoun < Mixed
+  class AdjtNoun < BaseWord
     getter adjt_val : String? = nil
     getter adjt_tag : String = "a"
 
@@ -25,7 +48,7 @@ module MtlV2::AST
     end
   end
 
-  class AdjtAdvb < Mixed
+  class AdjtAdvb < BaseWord
     getter adjt_val : String? = nil
     getter adjt_tag : String = "a"
 
@@ -43,15 +66,9 @@ module MtlV2::AST
     end
   end
 
-  class AdjtHao < Mixed
+  class Hao3Word < BaseWord
     getter adjt_val = "tốt"
     getter advb_val = "thật"
-  end
-
-  class AdjtPhrase < Adjt
-  end
-
-  class AMeasure < Adjt
   end
 
   ##################
@@ -60,11 +77,7 @@ module MtlV2::AST
     case term.tags[0][1]?
     when 'n' then AdjtNoun.new(term)
     when 'd' then AdjtAdvb.new(term)
-    when 'b' then Modi.new(term)
-    when 'l' then AdjtPhrase.new(term)
-    when 'z' then AdjtPhrase.new(term)
-    when 'm' then AMeasure.new(term)
-    else          Adjt.new(term)
+    else          AdjtWord.new(term)
     end
   end
 end
