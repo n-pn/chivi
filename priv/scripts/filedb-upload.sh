@@ -7,10 +7,10 @@ SSH=nipin@ssh.chivi.app:srv/chivi
 if [[ $* == "all" || $* == *dict* ]]
 then
   echo upload dicts!
-  rsync -azi --no-p "var/vpdicts/v1/basic/fixture.tsv" "$SSH/var/vpdicts/v1/basic"
-  rsync -azi --no-p "var/vpdicts/v1/basic/essence.tsv" "$SSH/var/vpdicts/v1/basic"
+  rsync -azi --no-p "var/dicts/v1/basic/fixture.tsv" "$SSH/var/dicts/v1/basic"
+  rsync -azi --no-p "var/dicts/v1/basic/essence.tsv" "$SSH/var/dicts/v1/basic"
 
-  rsync -azi --no-p --delete "var/vphints/postag/bd_lac" "$SSH/var/vphints/postag"
+  rsync -azi --no-p --delete "var/dicts/vx" "$SSH/var/dicts"
 fi
 
 ## upload parsed seed data
@@ -36,13 +36,13 @@ fi
 if [[ $* == "all" || $* == "misc" ]]
 then
   echo upload misc!
-  # rsync -azi --no-p "var/vpdicts/v0/_init" "$SSH/var/vpdicts/v0"
-  # rsync -azi --no-p "var/vpdicts/v1/basic/hanviet.tsv" "$SSH/var/vpdicts/v1/basic"
-  # rsync -azi --no-p "var/vpdicts/v1/basic/hanviet.tab" "$SSH/var/vpdicts/v1/basic"
+  # rsync -azi --no-p "var/dicts/v0/_init" "$SSH/var/dicts/v0"
+  # rsync -azi --no-p "var/dicts/v1/basic/hanviet.tsv" "$SSH/var/dicts/v1/basic"
+  # rsync -azi --no-p "var/dicts/v1/basic/hanviet.tab" "$SSH/var/dicts/v1/basic"
 
   # rsync -azi --no-p "var/_common" "$SSH/var"
-  rsync -azi "var/vphints/tlname" "$SSH/var/vphints"
-  # rsync -azi --exclude="*.tab" "var/vpdicts/v1/novel" "$SSH/var/vpdicts/v1"
+  rsync -azi "var/dicts/vx/tlname" "$SSH/var/dicts/vx"
+  # rsync -azi --exclude="*.tab" "var/dicts/v1/novel" "$SSH/var/dicts/v1"
   # rsync -azi --no-p --delete "priv/static/covers/" "$SSH/priv/static/covers/"
 fi
 

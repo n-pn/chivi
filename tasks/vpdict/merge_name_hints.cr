@@ -1,9 +1,9 @@
 require "tabkv"
 require "../../src/mtlv1/mt_core"
 
-output = Tabkv(Array(String)).new "var/vphints/names.tsv", mode: :reset
+output = Tabkv(Array(String)).new "var/dicts/vx/names.tsv", mode: :reset
 
-manual = Tabkv(Array(String)).new "var/vphints/names-manual.tsv"
+manual = Tabkv(Array(String)).new "var/dicts/vx/names-manual.tsv"
 
 INP = "_db/vpinit/qtrans/outerqt/names"
 

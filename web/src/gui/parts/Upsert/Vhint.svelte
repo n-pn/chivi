@@ -13,32 +13,29 @@
       case 'np':
         return ['n']
 
-      case 'nz':
-        return ['nr', 'nn']
+      case 'Nz':
+        return ['Nr', 'Na']
 
-      case 'nn':
-        return ['nr', 'nz']
+      case 'Na':
+        return ['Nr', 'Nz']
 
       case 'n':
-        return ['na', 't']
+        return ['na', 'nt']
 
       case 'na':
         return ['n', 'an']
 
       case 'a':
-        return ['b', 'an']
+        return ['ab', 'an']
 
-      case 'b':
-        return ['a', 'n']
+      case 'ab':
+        return ['a', 'al']
 
       case 'an':
         return ['a', 'na']
 
       case 'ad':
         return ['a', 'd']
-
-      case 'ag':
-        return ['a', 'k']
 
       case 'v':
         return ['vi', 'vn']
@@ -68,6 +65,7 @@
         return ['al', 'nl']
 
       case 'i':
+      case 'il':
         return ['nl', 'al']
 
       case 'm':
@@ -80,10 +78,10 @@
       case 'd':
         return ['d', 'c', 'cc']
 
-      case 'e':
-      case 'y':
-      case 'o':
-        return ['e', 'y', 'o']
+      case 'xe':
+      case 'xy':
+      case 'xo':
+        return ['xe', 'xy', 'xo']
 
       case 'k':
       case 'ka':
@@ -132,7 +130,7 @@
     const output = vpterm.init.h_tags || []
     const curr_ptag = vpterm.ptag
 
-    if (dname.startsWith('-')) output.push('nr', 'nn')
+    if (dname.startsWith('-')) output.push('Nr', 'Na')
     if (output.length < 3) output.push(...similar_tags(curr_ptag))
     return output.filter((x, i, s) => x && x != curr_ptag && s.indexOf(x) == i)
   }
@@ -146,10 +144,10 @@
 
 <div hidden={true}>
   <button data-kbd="~" on:click={() => (vpterm.val = vpterm.o_val)} />
-  <button data-kbd="[" on:click={() => (vpterm.ptag = 'nr')} />
-  <button data-kbd="]" on:click={() => (vpterm.ptag = 'nn')} />
-  <button data-kbd="." on:click={() => (vpterm.ptag = 'nz')} />
-  <button data-kbd="/" on:click={() => (vpterm.ptag = 'nw')} />
+  <button data-kbd="[" on:click={() => (vpterm.ptag = 'Nr')} />
+  <button data-kbd="]" on:click={() => (vpterm.ptag = 'Na')} />
+  <button data-kbd="." on:click={() => (vpterm.ptag = 'Nz')} />
+  <button data-kbd="/" on:click={() => (vpterm.ptag = 'Nw')} />
   <button data-kbd=";" on:click={() => (vpterm.ptag = 'al')} />
   <button data-kbd="'" on:click={() => (vpterm.ptag = 'vl')} />
   <button data-kbd="n" on:click={() => (vpterm.ptag = 'n')} />

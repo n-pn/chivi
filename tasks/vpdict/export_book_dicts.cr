@@ -9,7 +9,7 @@ EPOCH = CV::VpTerm.mtime(Time.local(2021, 10, 1))
 
 def similar_tag?(attr : String, ptag : String)
   return true if attr == ptag || attr.empty?
-  return true if attr == "nn" && ptag.in?("nt", "ns")
+  return true if attr == "Na" && ptag.in?("nt", "ns")
   return true if attr == "nz" && ptag == "nx"
 
   false

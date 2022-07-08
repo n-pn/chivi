@@ -2,7 +2,7 @@ require "json"
 require "../../mtlv1/*"
 
 struct CV::VpTermView
-  DIR = "var/vphints/detect"
+  DIR = "var/dicts/vx/detect"
 
   getter dname : String
   getter vdict : VpDict

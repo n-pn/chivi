@@ -8,7 +8,7 @@
     // prettier-ignore
     [
       'Nr','Nal', 'Nag',
-      'Na', 'Nx', 'Nz',
+      'Na', 'Nw', 'Nz',
       '-',
       'n', 'nh', 'na',
       'nt', 'ns', 'nf',

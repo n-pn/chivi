@@ -40,7 +40,7 @@ class CV::TlName
 
     ##############
 
-    DIR = "var/vphints/tlname"
+    DIR = "var/dicts/vx/tlname"
 
     class_getter human : self { new("#{DIR}/human.tsv") }
     class_getter affil : self { new("#{DIR}/affil.tsv") }
@@ -179,7 +179,7 @@ class CV::TlName
     TextUtil.titleize(mt_list.to_s)
   end
 
-  NAMES = Tabkv(Array(String)).new("var/vphints/names-common.tsv")
+  NAMES = Tabkv(Array(String)).new("var/dicts/vx/names-common.tsv")
 
   def find_defined(input : String, tags : Array(String))
     NAMES[input]? || find_defined(@vdict, input, tags) || find_defined(@bdict, input, tags)
@@ -190,7 +190,7 @@ class CV::TlName
     term.val if tags.includes?(term.attr)
   end
 
-  DIR = "var/vphints/detect"
+  DIR = "var/dicts/vx/detect"
 
   LASTNAMES = load_chars("#{DIR}/lastnames.txt")
   ATTRIBUTE = load_chars("#{DIR}/attribute.txt")
