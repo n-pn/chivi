@@ -11,7 +11,7 @@ module CV::TlRule
     case tail.key
     when "时候"
       noun = fold!(noun, succ.set!(""), PosTag::DefnPhrase, dic: 7)
-      return fold!(noun, tail.set!("lúc"), PosTag::Temporal, dic: 9, flip: true)
+      return fold!(noun, tail.set!("lúc"), PosTag::Ntime, dic: 9, flip: true)
     end
 
     # if verb.verb_no_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?

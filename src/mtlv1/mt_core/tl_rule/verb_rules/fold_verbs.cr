@@ -51,7 +51,7 @@ module CV::TlRule
         verb = fold!(verb, succ, PosTag::Verb, dic: 4)
       when .verbal?
         verb = fold_verb_verb!(verb, succ)
-      when .adjective?, .preposes?, .specials?, .locality?
+      when .adjective?, .preposes?, .specials?, .locat?
         break unless flag == 0
         fold_verb_compl!(verb, succ).try { |x| verb = x } || break
       when .adv_bu4?

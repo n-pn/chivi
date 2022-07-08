@@ -15,12 +15,12 @@ module MtlV2::TlRule
     when .pdash? # case 3-4
       fold_ndigit_extra!(node, succ, tail, PosTag::Number)
     when .colon? # for 5:6 format
-      node = fold_ndigit_extra!(node, succ, tail, PosTag::Temporal)
+      node = fold_ndigit_extra!(node, succ, tail, PosTag::Ntime)
 
       # for 5:6:7 format
       return node unless (succ = tail.succ?) && (tail = succ.succ?)
       return node unless succ.colon? && tail.ndigit?
-      fold_ndigit_extra!(node, succ, tail, PosTag::Temporal)
+      fold_ndigit_extra!(node, succ, tail, PosTag::Ntime)
     else
       node
     end

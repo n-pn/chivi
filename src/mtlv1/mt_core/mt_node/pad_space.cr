@@ -42,9 +42,6 @@ module CV::MTL::PadSpace
     when .mnsgn?  then return false if prev.tag.ndigit?
     when .colon?  then return false
     when .middot? then return true
-    when .ptitle?
-      return false if prev.popens?
-      return @key[0] == '-' ? false : true
     when .popens? then return !prev.popens?
     when .puncts?
       case @tag

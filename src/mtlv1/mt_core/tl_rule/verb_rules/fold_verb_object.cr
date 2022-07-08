@@ -19,7 +19,7 @@ module CV::TlRule
 
     return verb unless (noun = scan_noun!(succ)) && noun.object?
 
-    if noun.position? && verb.ends_with?('在')
+    if noun.posit? && verb.ends_with?('在')
       return fold!(verb, noun, PosTag::VerbObject, dic: 4)
     end
 
@@ -33,7 +33,7 @@ module CV::TlRule
     return verb_object unless succ = verb_object.succ?
 
     if succ.suf_noun? && succ.key == "时"
-      fold!(verb_object, succ.set!("khi"), tag: PosTag::Temporal, dic: 5, flip: true)
+      fold!(verb_object, succ.set!("khi"), tag: PosTag::Ntime, dic: 5, flip: true)
     elsif succ.junction?
       fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
     else

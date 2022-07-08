@@ -42,7 +42,7 @@ module CV::TlRule
         node.set!(vals[2], PosTag::Noun)
       end
     when .noun?, .naffil?
-      node.set!(vals[1], PosTag::Locality)
+      node.set!(vals[1], PosTag::Locat)
     when .verb?, .vintr?
       node.set!(vals[0], PosTag::Vdir)
     else

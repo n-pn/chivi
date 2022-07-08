@@ -6,7 +6,7 @@ struct CV::PosTag
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
   {% begin %}
-    TYPES = {{ NOUNS + NOUNS_2 + VERBS + ADJTS + SUFFIXES + MISCS }}
+    TYPES = {{ NOUNS + NAMES + VERBS + ADJTS + SUFFIXES + MISCS }}
   {% end %}
 
   enum Tag
@@ -102,7 +102,7 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def property?
-    @tag.naffil? || @tag.nattr? || @tag.position?
+    @tag.naffil? || @tag.nattr? || @tag.posit?
   end
 
   @[AlwaysInline]
@@ -122,7 +122,7 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def spaces?
-    @tag.locality? || @tag.v_shang? || @tag.v_xia?
+    @tag.locat? || @tag.v_shang? || @tag.v_xia?
   end
 
   # ameba:disable Metrics/CyclomaticComplexity

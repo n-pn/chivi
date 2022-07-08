@@ -59,7 +59,7 @@ module CV::POS
     end
   end
 
-  struct Temporal < Noun
+  struct Ntime < Noun
     include Attribute
   end
 

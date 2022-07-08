@@ -139,7 +139,7 @@ class CV::MtCore
       if can_merge?(cur, lst)
         lst.idx = cur.idx
 
-        lst.val = should_locality?(cur, lst) ? "#{cur.val} #{fix_val!(cur, lst)}" : "#{cur.val}#{lst.val}"
+        lst.val = should_space?(cur, lst) ? "#{cur.val} #{fix_val!(cur, lst)}" : "#{cur.val}#{lst.val}"
         lst.key = "#{cur.key}#{lst.key}"
       else
         if cur.key == "\""
@@ -157,7 +157,7 @@ class CV::MtCore
   end
 
   @[AlwaysInline]
-  def should_locality?(left : MtNode, right : MtNode) : Bool
+  def should_space?(left : MtNode, right : MtNode) : Bool
     left.nhanzi? || right.nhanzi?
   end
 

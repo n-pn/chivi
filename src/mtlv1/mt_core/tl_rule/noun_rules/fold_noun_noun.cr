@@ -4,15 +4,15 @@ module CV::TlRule
     return unless node.nattr? || noun_can_combine?(node.prev?, succ.succ?)
 
     case succ.tag
-    when .ptitle?
-      if node.names? || node.ptitle?
+    when .honor?
+      if node.names? || node.honor?
         fold!(node, succ, PosTag::Person, dic: 3)
       else
         fold!(node, succ, PosTag::Person, dic: 3, flip: true)
       end
     when .names?
       fold!(node, succ, succ.tag, dic: 4)
-    when .position?
+    when .posit?
       fold!(node, succ, PosTag::DefnPhrase, dic: 3, flip: true)
       # when .locality?
       #   fold_noun_space!(node, succ) if mode == 0

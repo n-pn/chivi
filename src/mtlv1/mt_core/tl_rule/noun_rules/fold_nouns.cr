@@ -41,12 +41,8 @@ module CV::TlRule
       when .junction?
         break unless should_fold_noun_concoord?(noun, succ)
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
-      when .temporal?
-        break
-      when .temporal?
-        # TODO: check can combine?
-        break
       when .nominal?
+        break if succ.ntime?
         return noun unless fold = fold_noun_noun!(noun, succ, mode: mode)
         noun = fold
       when .suf_verb?

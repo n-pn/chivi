@@ -42,7 +42,7 @@ module MtlV2::TlRule
       return fold!(year_num, year, PosTag::Nqtime, dic: 2)
     end
 
-    year = fold!(year_num, year, PosTag::Temporal, dic: 2, flip: true)
+    year = fold!(year_num, year, PosTag::Ntime, dic: 2, flip: true)
     month ? fold!(year, month, year.tag, dic: 3, flip: true) : year
   end
 
@@ -63,7 +63,7 @@ module MtlV2::TlRule
       return fold!(mo_num, mo, PosTag::Nqtime, dic: 2)
     end
 
-    month = fold!(mo_num, mo, PosTag::Temporal, dic: 2, flip: true)
+    month = fold!(mo_num, mo, PosTag::Ntime, dic: 2, flip: true)
     day ? fold!(month, day, month.tag, dic: 3, flip: true) : month
   end
 
@@ -76,7 +76,7 @@ module MtlV2::TlRule
     when "号" then qti.val = num.to_int?.try(&.< 11) ? "mồng" : "ngày"
     end
 
-    fold!(num, qti, PosTag::Temporal, dic: 3, flip: mode == 1)
+    fold!(num, qti, PosTag::Ntime, dic: 3, flip: mode == 1)
   end
 
   def fold_hour!(node : BaseNode, succ : BaseNode, appro : Int32 = 0)

@@ -33,10 +33,10 @@ module CV::TlRule
       end
     when "前"
       # space.val = "trước khi" if noun.verbal?
-      flip = !noun.temporal?
+      flip = !noun.ntime?
     end
 
-    fold!(noun, space, PosTag::Position, dic: 5, flip: flip)
+    fold!(noun, space, PosTag::Posit, dic: 5, flip: flip)
   end
 
   def fix_space_val!(node : MtNode)

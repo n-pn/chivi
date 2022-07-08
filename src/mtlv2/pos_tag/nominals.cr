@@ -31,11 +31,11 @@ struct MtlV2::PosTag
 
   NOUNS_2 = {
     # 处所词 - place word - nơi chốn
-    {"s", "Position", Pos::Nominal | Pos::Contws},
+    {"s", "Posit", Pos::Nominal | Pos::Contws},
     # 方位词 - space word - phương vị
     {"f", "Locative", Pos::Nominal | Pos::Contws},
     # 时间词 - time word - thời gian
-    {"t", "Temporal", Pos::Nominal | Pos::Contws},
+    {"t", "Ntime", Pos::Nominal | Pos::Contws},
   }
 
   {% for type in NOUNS %}

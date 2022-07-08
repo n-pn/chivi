@@ -21,7 +21,7 @@ module MtlV2::TlRule
       when "的时候" then suff.val = "lúc"
       end
 
-      ptag = PosTag::Temporal
+      ptag = PosTag::Ntime
     when "性"
       if (tail = suff.succ?) && tail.ude2?
         adverb = fold!(base, suff, PosTag::Adverb, dic: 4, flip: true)

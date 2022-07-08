@@ -67,7 +67,7 @@ module MtlV2::TlRule
     return if !right || right.ends?
 
     if noun.prev?(&.pro_per?)
-      return if noun.position? || noun.locative? || noun.temporal?
+      return if noun.position? || noun.locative? || noun.ntime?
     end
 
     right = fold_once!(right)

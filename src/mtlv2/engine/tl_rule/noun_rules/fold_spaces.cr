@@ -35,7 +35,7 @@ module MtlV2::TlRule
       flip = !noun.temporal?
     end
 
-    fold!(noun, locality, PosTag::Position, dic: 5, flip: flip)
+    fold!(noun, locality, PosTag::Posit, dic: 5, flip: flip)
   end
 
   def fix_locality_val!(node : BaseNode)

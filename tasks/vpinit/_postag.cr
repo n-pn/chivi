@@ -53,7 +53,7 @@ struct CV::PosTag
     when "PER"  then new(Tag::Nper)
     when "LOC"  then new(Tag::Nloc)
     when "ORG"  then new(Tag::Norg)
-    when "TIME" then new(Tag::Temporal)
+    when "TIME" then new(Tag::Ntime)
     else             parse(tag)
     end
   end

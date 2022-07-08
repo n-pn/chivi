@@ -33,7 +33,7 @@ module MtlV2::TlRule
     when "凌晨" then flip = false
     end
 
-    time = fold!(prev, node, PosTag::Temporal, dic: 2, flip: flip)
+    time = fold!(prev, node, PosTag::Ntime, dic: 2, flip: flip)
     fold_time_after!(time)
   end
 
@@ -53,22 +53,22 @@ module MtlV2::TlRule
   end
 
   def fold_number_hour!(node : BaseNode, succ : BaseNode) : BaseNode
-    node = fold!(node, succ.set!("giờ"), PosTag::Temporal, dic: 1)
+    node = fold!(node, succ.set!("giờ"), PosTag::Ntime, dic: 1)
 
     return node unless (succ = node.succ?)
 
     case succ.key
     when "半"
-      return fold!(node, succ.set!("rưỡi"), PosTag::Temporal, dic: 1)
+      return fold!(node, succ.set!("rưỡi"), PosTag::Ntime, dic: 1)
     when "前后"
-      return fold!(node, succ.set!("tầm"), PosTag::Temporal, dic: 1, flip: true)
+      return fold!(node, succ.set!("tầm"), PosTag::Ntime, dic: 1, flip: true)
     end
 
     return node unless minute = read_minute_quanti?(succ)
-    node = fold!(node, minute.set!("phút"), PosTag::Temporal, dic: 1)
+    node = fold!(node, minute.set!("phút"), PosTag::Ntime, dic: 1)
 
     return node unless second = read_second_quanti?(minute.succ?)
-    fold!(node, second.set!("giây"), PosTag::Temporal, dic: 1)
+    fold!(node, second.set!("giây"), PosTag::Ntime, dic: 1)
   end
 
   def read_minute_quanti?(node : BaseNode?)
@@ -84,14 +84,14 @@ module MtlV2::TlRule
   def fold_number_minute!(node : BaseNode, succ : BaseNode, is_time = false) : BaseNode
     if (succ_2 = succ.succ?) && succ_2.key == "半"
       succ.val = "phút"
-      return fold!(node, succ_2.set!("rưỡi"), PosTag::Temporal, dic: 1)
+      return fold!(node, succ_2.set!("rưỡi"), PosTag::Ntime, dic: 1)
     end
 
     return node unless is_time || (second = read_second_quanti?(succ.succ?))
 
-    node = fold!(node, succ.set!("phút"), PosTag::Temporal, dic: 1)
+    node = fold!(node, succ.set!("phút"), PosTag::Ntime, dic: 1)
     return node unless second
 
-    fold!(node, second.set!("giây"), PosTag::Temporal, dic: 1)
+    fold!(node, second.set!("giây"), PosTag::Ntime, dic: 1)
   end
 end

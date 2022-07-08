@@ -3,9 +3,9 @@ struct CV::PosTag
     # 动词 - verb - động từ
     {"v", "Verb", Pos::Verbal | Pos::Contws},
     # 名动词 - nominal use of verb - danh động từ
-    {"vn", "Veno", Pos::Verbal | Pos::Nominal | Pos::Contws},
+    {"vn", "Veno", Pos::Mixed | Pos::Verbal | Pos::Nominal | Pos::Contws},
     # 副动词 - verb | adverb
-    {"vd", "Vead", Pos::Verbal | Pos::Adverbial | Pos::Contws},
+    {"vd", "Vead", Pos::Mixed | Pos::Verbal | Pos::Adverbial | Pos::Contws},
 
     # 趋向动词 - directional verb
     {"vf", "Vdir", Pos::Verbal | Pos::Vdirs | Pos::Contws},

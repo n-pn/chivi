@@ -7,7 +7,7 @@ module MtlV2::AST
   end
 
   enum NounType
-    Position
+    Posit
     Locative
 
     Timeword
@@ -31,6 +31,7 @@ module MtlV2::AST
   end
 
   class NounWord < BaseWord
+    def initialize()
   end
 
   class NameWord < BaseWord
@@ -49,7 +50,7 @@ module MtlV2::AST
     Honorific
     Attribute
 
-    Temporal
+    Ntime
 
     Space
     Locat
@@ -87,7 +88,7 @@ module MtlV2::AST
   class AttriNoun < BaseNoun
   end
 
-  class Temporal < BaseNoun
+  class Ntime < BaseNoun
   end
 
   class Space < BaseNoun

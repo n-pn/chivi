@@ -15,7 +15,7 @@ module MtlV2::AST
     when 'r' then pronoun_from_term(term)
     when 'f' then locat_from_term(term)
     when 's' then Space.new(term)
-    when 't' then Temporal.new(term)
+    when 't' then Ntime.new(term)
     when 'w' then punct_from_term(term)
     when 'u' then auxil_from_term(term)
     when 'p' then prepos_from_term(term)

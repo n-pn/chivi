@@ -89,7 +89,7 @@ struct MtlV2::PosTag
     when .nquants?   then "mq"
     when .adverbial? then "d"
     when .special?
-      return "f" if @tag.locative?
+      return "f" if @tag.locat?
       return "!" unless @pos.verbal?
       return "!vshi" if @tag.v_shi?
       return "!vyou" if @tag.v_you?
@@ -118,7 +118,7 @@ struct MtlV2::PosTag
 
   @[AlwaysInline]
   def property?
-    @tag.naffil? || @tag.nattr? || @tag.position? || @tag.locative?
+    @tag.naffil? || @tag.nattr? || @tag.posit? || @tag.locat?
   end
 
   @[AlwaysInline]
@@ -147,8 +147,8 @@ struct MtlV2::PosTag
     when 'x' then parse_other(tag)
     when '~' then parse_extra(tag)
     when 'b' then Modi
-    when 't' then Temporal
-    when 's' then Position
+    when 't' then Ntime
+    when 's' then Posit
     when 'f' then parse_locative(key)
     else          parse_miscs(tag)
     end

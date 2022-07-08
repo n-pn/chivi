@@ -58,7 +58,7 @@ module CV::POS
   #   # human names, human title or personal pronoun
   # end
 
-  # module Temporal
+  # module Ntime
   # end
 
   # ##########

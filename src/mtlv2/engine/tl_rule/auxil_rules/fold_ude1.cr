@@ -30,6 +30,6 @@ module MtlV2::TlRule
 
   def is_tangible?(node : BaseNode)
     return node.pro_per? unless node.nominal?
-    !(node.property? || node.temporal? || node.nqtime?)
+    !(node.property? || node.ntime? || node.nqtime?)
   end
 end
