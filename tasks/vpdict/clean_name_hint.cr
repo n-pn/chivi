@@ -21,7 +21,7 @@ def hanviet(key : String, cap = false)
   CV::MtCore.cv_hanviet(key, cap)
 end
 
-def translate(key : String, tag : String = "nr")
+def translate(key : String, tag : String = "Nr")
   CV::TlUtil.translate(key, tag)
 end
 
@@ -38,7 +38,7 @@ dict.reject! do |k, v|
   v.reject!(&.=~ /{/)
   next true if v.empty?
 
-  v.first.in? translate(k, "nr"), translate(k, "nn"), translate(k, "nz")
+  v.first.in? translate(k, "Nr"), translate(k, "Na"), translate(k, "Nz")
 end
 
 write_dict("#{INP}/mixed-common.txt", dict)

@@ -9,21 +9,21 @@ struct CV::PosTag
     {"nl", "Nform", Pos::Nominal | Pos::Contws},
 
     # 人名 - person name - tên người
-    {"nr", "Person", Pos::Nominal | Pos::Human | Pos::Names | Pos::Contws},
+    {"Nr", "Person", Pos::Nominal | Pos::Human | Pos::Names | Pos::Contws},
     # 姓氏 - family name - dòng họ
     # {"nf", "Linage", Pos::Nominal | Pos::Human | Pos::Names | Pos::Contws},
 
     # 地名 - location name - địa danh |  机构团体名 - organization name - tổ chức
-    {"nn", "Naffil", Pos::Nominal | Pos::Names | Pos::Contws},
+    {"Na", "Naffil", Pos::Nominal | Pos::Names | Pos::Contws},
 
     # danh xưng: chức danh, nghề nghiệp, địa vị
     {"nw", "Ptitle", Pos::Nominal | Pos::Human | Pos::Contws},
 
     # tựa sách
-    {"nx", "Btitle", Pos::Nominal | Pos::Names | Pos::Contws},
+    {"Nw", "Btitle", Pos::Nominal | Pos::Names | Pos::Contws},
 
     # 其它专名 - other proper noun - tên riêng khác
-    {"nz", "Nother", Pos::Nominal | Pos::Names | Pos::Contws},
+    {"Nz", "Nother", Pos::Nominal | Pos::Names | Pos::Contws},
 
     # attributes
     {"na", "Nattr", Pos::Nominal | Pos::Contws},
@@ -31,11 +31,11 @@ struct CV::PosTag
 
   NOUNS_2 = {
     # 处所词 - place word - nơi chốn
-    {"s", "Position", Pos::Nominal | Pos::Contws},
+    {"ns", "Position", Pos::Nominal | Pos::Contws},
     # 方位词 - space word - phương vị
-    {"f", "Locality", Pos::Nominal | Pos::Contws},
+    {"nf", "Locality", Pos::Nominal | Pos::Contws},
     # 时间词 - time word - thời gian
-    {"t", "Temporal", Pos::Nominal | Pos::Contws},
+    {"nt", "Temporal", Pos::Nominal | Pos::Contws},
   }
 
   {% for type in NOUNS %}
@@ -51,23 +51,24 @@ struct CV::PosTag
     @tag.naffil? || @tag.position?
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
-  def self.parse_noun(tag : String, key : String)
+  def self.parse_noun(tag : String)
     case tag[1]?
-    when nil then Noun
-    when 'g' then Noun
-    when 'l' then Nform
     when 'a' then Nattr
-    when 'r' then Person
-    when 'f' then Person
-    when 'x' then Btitle
-    when 'z' then Nother
-    when 'w' then Ptitle
-    when 'n' then Naffil
-    when 's' then Naffil
-    when 't' then Naffil
+    when 't' then Temporal
+    when 's' then Position
+    when 'f' then Locality
+    when 'h' then Ptitle
     when 'd' then AdvNoun
     else          Noun
+    end
+  end
+
+  def self.parse_name(tag : String)
+    case tag[1]?
+    when 'r' then Person
+    when 'a' then Naffil
+    when 'b' then Btitle
+    else          Nother
     end
   end
 end

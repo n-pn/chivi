@@ -1,4 +1,60 @@
 module MtlV2::AST
+  @[Flags]
+  enum NounFlag
+    Human
+    Place
+    Attrb
+  end
+
+  enum NounType
+    Position
+    Locative
+
+    Timeword
+    Timespan
+
+    Honorific
+    Attribute
+
+    Generic
+  end
+
+  enum NameType
+    Human
+    Place # countries, areas, landscapes names
+
+    Insti # organization
+    Affil # combine of Place and Insti
+
+    Title # book title
+    Other # other name
+  end
+
+  class NounWord < BaseWord
+  end
+
+  class NameWord < BaseWord
+  end
+
+  enum NounType
+    HumanName
+
+    AffilName
+    PlaceName
+    InstiName
+
+    OtherName
+    BookTitle
+
+    Honorific
+    Attribute
+
+    Temporal
+
+    Space
+    Locat
+  end
+
   class BaseNoun < BaseNode
   end
 

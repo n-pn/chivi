@@ -142,7 +142,7 @@ struct CV::VpTermView
         @first_tag = term.attr
       else
         @first_val = TextUtil.titleize(@val_hints.first)
-        @first_tag = "nr"
+        @first_tag = "Nr"
       end
     end
 
@@ -167,7 +167,7 @@ struct CV::VpTermView
       case dname
       when "fix_adjts" then @tag_hints << "a" << "b"
       when "fix_verbs" then @tag_hints << "v" << "vi" << "vo"
-      when "fix_nouns" then @tag_hints << "n" << "na" << "nr"
+      when "fix_nouns" then @tag_hints << "n" << "na" << "Nr"
       when "fix_u_zhi" then @tag_hints << "nl" << "al" << "m"
       when "v_compl"   then @tag_hints << "v" << "vi"
       when "v2_objs"   then @tag_hints << "v"
@@ -179,13 +179,13 @@ struct CV::VpTermView
 
     def hint_tags_by_word
       if TlName.is_human?(@word)
-        @tag_hints << "nr"
-        @first_tag = "nr" if @vdict.kind.novel? || !@first_tag
+        @tag_hints << "Nr"
+        @first_tag = "Nr" if @vdict.kind.novel? || !@first_tag
       end
 
       if TlName.is_affil?(@word)
-        @tag_hints << "nn"
-        @first_tag ||= "nn" if @vdict.kind.novel? || !@first_tag
+        @tag_hints << "Na"
+        @first_tag ||= "Na" if @vdict.kind.novel? || !@first_tag
       end
 
       if TlName::ATTRIBUTE.includes?(@word[-1]?) || @word[0]? == '姓'
@@ -210,24 +210,24 @@ struct CV::VpTermView
     end
 
     def add_hints_by_tags : Nil
-      if @tag_hints.includes?("nr")
+      if @tag_hints.includes?("Nr")
         list = @name_mtl.tl_human(@word)
         @val_hints.concat list
-        @first_val = list.first if @first_tag == "nr"
+        @first_val = list.first if @first_tag == "Nr"
       end
 
-      if @tag_hints.includes?("nn")
+      if @tag_hints.includes?("Na")
         list = @name_mtl.tl_affil(@word)
         @val_hints.concat list
-        @first_val ||= list.first if @first_tag == "nn"
+        @first_val ||= list.first if @first_tag == "Na"
       end
 
-      if @tag_hints.includes?("nz")
+      if @tag_hints.includes?("Nz")
         list = @name_mtl.tl_other(@word)
         @val_hints.concat list
       end
 
-      if @tag_hints.includes?("nx")
+      if @tag_hints.includes?("Nw")
         title_val = @name_mtl.tl_name(@word)
         @val_hints << title_val
       end

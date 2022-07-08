@@ -12,7 +12,7 @@ class CV::VpTerm
   getter key : String
   getter val : Array(String)
 
-  getter attr : String = ""
+  property attr : String = ""
   getter rank : Int8 = 3_i8
 
   getter mtime : Int32 = 0
@@ -80,8 +80,6 @@ class CV::VpTerm
   def to_s(io : IO, dtype = 0) : Nil
     io << key << '\t'
     @val.join(io, SPLIT)
-
-    return if dtype < 0 # skip printing if dict type is lookup
     io << '\t' << @attr << '\t' << (@rank == 3_i8 ? "" : @rank)
     io << '\t' << @mtime << '\t' << @uname if @mtime > 0
   end

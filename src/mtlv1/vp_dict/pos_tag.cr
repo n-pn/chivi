@@ -130,7 +130,8 @@ struct CV::PosTag
     case tag[0]?
     when nil then Unkn
     when '-' then None
-    when 'n' then parse_noun(tag, key)
+    when 'N' then parse_name(tag)
+    when 'n' then parse_noun(tag)
     when 'v' then parse_verb(tag, key)
     when 'a' then parse_adjt(tag, key)
     when 'w' then parse_punct(key)
@@ -144,10 +145,6 @@ struct CV::PosTag
     when '!' then parse_special(key)
     when 'x' then parse_other(tag)
     when '~' then parse_extra(tag)
-    when 'b' then Modi
-    when 't' then Temporal
-    when 's' then Position
-    when 'f' then Locality
     else          parse_miscs(tag)
     end
   end

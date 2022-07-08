@@ -15,7 +15,7 @@ class CV::VpDict
     None # do not preload any existing files
   end
 
-  DIR = "var/vpdicts/v1"
+  DIR = "var/dicts/v1"
 
   class_getter hanviet : self { load_other("hanviet") }
   class_getter surname : self { load_other("surname") }

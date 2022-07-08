@@ -108,7 +108,7 @@ class CV::VpinitCtrl < CV::BaseCtrl
       return ptag if attr.in?("v", "vd")
     when "vn"
       return ptag if attr.in?("v", "n")
-    when "nr"
+    when "Nr"
       return not_name ? nil : ptag
       # when "v"
       # return "vn" if attr.in?("n")

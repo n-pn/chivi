@@ -26,11 +26,10 @@ struct CV::PosTag
 
   def self.parse_adjt(tag : String, key : String)
     case tag[1]?
-    when nil then Adjt
     when 'n' then Ajno
     when 'd' then Ajad
-    when 'l' then Aform
     when 'b' then Modi
+    when 'l' then Aform
     when 'z' then Aform
     else          Adjt
     end

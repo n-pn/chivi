@@ -21,7 +21,7 @@ def hanviet(key : String, cap = false)
   CV::MtCore.cv_hanviet(key, cap)
 end
 
-def translate(key : String, tag : String = "nr")
+def translate(key : String, tag : String = "Nr")
   CV::TlUtil.translate(key, tag)
 end
 
@@ -106,9 +106,9 @@ def extract_cases(input : Dict, prefix = "")
     hv_a = {
       hv,
       CV::TextUtil.titleize(hv),
-      translate(k, "nn"),
-      translate(k, "nr"),
-      translate(k, "nz"),
+      translate(k, "Na"),
+      translate(k, "Nr"),
+      translate(k, "Nz"),
     }
 
     vf = v.first

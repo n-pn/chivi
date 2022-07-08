@@ -59,15 +59,15 @@ class CV::TlName
 
   def tl_by_ptag(input : String, ptag : String)
     case ptag
-    when "nr"             then tl_human(input)
-    when "nn", "ns", "nt" then tl_affil(input)
-    when "nx"             then tl_title(input)
-    else                       tl_other(input)
+    when "Nr"               then tl_human(input)
+    when "Na", "Nal", "Nag" then tl_affil(input)
+    when "nx"               then tl_title(input)
+    else                         tl_other(input)
     end
   end
 
-  NAMES_TAGS = ["nr", "nn", "nt", "ns"]
-  OTHER_TAGS = ["nz", "nx"]
+  NAMES_TAGS = ["Nr", "Na", "Nal", "Nag"]
+  OTHER_TAGS = ["Nz", "Nw"]
 
   def tl_human(input : String)
     if input.size == 2 && input[0] == '老'

@@ -8,7 +8,7 @@ def fix_terms(file : String, dry_mode = true)
 
   vdict.list.each do |term|
     next if term._flag > 0 || term.uname != "~" || term.key.size == 1
-    next unless term.attr == "nn"
+    next unless term.attr == "Na"
 
     old_val = term.val.first
     new_val = translate(term.key)

@@ -7,11 +7,11 @@
   const groups = [
     // prettier-ignore
     [
-      'nr','ns', 'nt',
-      'nn', 'nx', 'nz',
+      'Nr','Nal', 'Nag',
+      'Na', 'Nx', 'Nz',
       '-',
-      'n', 'nw', 'na',
-      't', 's', 'f',
+      'n', 'nh', 'na',
+      'nt', 'ns', 'nf',
       '-',
       'a', 'ab', 'al',
       'an', 'ad',
@@ -32,7 +32,7 @@
       '-',
       'vx', 'vm', 'vf',
       '-',
-      'e', 'y', 'o',
+      'xe', 'xy', 'xo',
     ],
     // prettier-ignore
     [
@@ -63,10 +63,10 @@
 
     // prettier-ignore
     switch (tag) {
-      case 'nr': return '['
-      case 'nn': return ']'
-      case 'nz': return '.'
-      case 'nw': return '/'
+      case 'Nr': return '['
+      case 'Na': return ']'
+      case 'Nz': return '.'
+      case 'Nw': return '/'
 
       case 'al': return ';'
       case 'vo': return '\''
