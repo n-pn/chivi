@@ -2,9 +2,9 @@ import preprocess from 'svelte-preprocess'
 import adapter from '@sveltejs/adapter-node'
 import { mdsvex } from 'mdsvex'
 import breaks from 'remark-breaks'
+
 import path from 'path'
 import { fileURLToPath } from 'url'
-
 const _cwd = path.dirname(fileURLToPath(import.meta.url))
 
 const mdsvexConfig = {
@@ -31,21 +31,6 @@ export default {
   ],
   kit: {
     adapter: adapter(),
-    methodOverride: {
-      allowed: ['PATCH', 'DELETE'],
-    },
-    vite: {
-      resolve: {
-        alias: {
-          $api: path.resolve(_cwd, 'src/api'),
-          $gui: path.resolve(_cwd, 'src/gui'),
-          $utils: path.resolve(_cwd, 'src/utils'),
-          $types: path.resolve(_cwd, 'src/types'),
-        },
-      },
-      server: {
-        proxy: { '/covers': 'http://localhost:5010' },
-      },
-    },
+    methodOverride: { allowed: ['PUT', 'PATCH', 'DELETE'] },
   },
 }
