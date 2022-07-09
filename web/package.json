@@ -35,7 +35,6 @@
   ],
   "type": "module",
   "dependencies": {
-    "bing-translate-api": "^2.6.0",
-    "node-fetch": "^3.2.6"
+    "bing-translate-api": "^2.6.0"
   }
 }
