@@ -7,8 +7,8 @@ export async function handle({ event, resolve }) {
   let api_host = 'localhost:5010'
   if (path.startsWith('/_v2')) api_host = 'localhost:5502'
 
-  const { method, headers: req_headers, body } = event.request
-  const headers = Object.fromEntries(req_headers)
+  const { method, headers: req_header, body } = event.request
+  const headers = Object.fromEntries(req_header)
   delete headers.connection
 
   const url = `http://${api_host}${path}${event.url.search}`
