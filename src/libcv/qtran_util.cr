@@ -1,5 +1,21 @@
-module MtlV2::MtUtil
+module QtranUtil
   extend self
+
+  def capitalize(inp : String)
+    res = String::Builder.new(inp.size)
+    cap = true
+
+    inp.each_char do |char|
+      if cap && char.alphanumeric?
+        res << char.upcase
+        cap = false
+      else
+        res << char
+      end
+    end
+
+    res.to_s
+  end
 
   NUMS = "零〇一二两三四五六七八九十百千"
   SEPS = ".，,、：:"
@@ -12,10 +28,10 @@ module MtlV2::MtUtil
   TITLE_RE_3 = /^(\d+)([#{SEPS}\s]*)(.*)$/
   TITLE_RE_4 = /^楔\s+子(\s+)(.+)$/
 
-  def tl_title(title : String)
+  def tl_ch_title(title : String)
     if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
       _, pre_zh, num, lbl, pad, title = match
-      pre_cv = "#{tl_label(lbl)} #{to_integer(num)}"
+      pre_cv = "#{tl_marker(lbl)} #{to_integer(num)}"
       {pre_zh, pre_cv, pad, title}
     elsif match = TITLE_RE_3.match(title)
       _, num, pad, title = match
@@ -28,8 +44,8 @@ module MtlV2::MtUtil
     end
   end
 
-  def tl_label(label = "")
-    case label
+  def tl_marker(marker = "")
+    case marker
     when "季" then "Mùa"
     when "章" then "Chương"
     when "卷" then "Quyển"
@@ -42,9 +58,3 @@ module MtlV2::MtUtil
     end
   end
 end
-
-# puts MtlV2::MtUtil.normalize("０")
-# puts MtlV2::MtUtil.normalize('０')
-
-# puts MtlV2::MtUtil.to_integer("1245")
-# puts MtlV2::MtUtil.to_integer("四")
