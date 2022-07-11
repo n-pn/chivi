@@ -158,10 +158,19 @@ module MtlV2::AST
     getter type : PunctType
     getter flag : PunctFlag
 
-    def initialize(term : V2Term)
+    def initialize(
+      term : V2Term,
+      @type : PunctType = PunctType.from_key(term.key),
+      @flag : PunctFlag = PunctFlag.from(term.key, type)
+    )
       super(term)
-      @type = PunctType.from_key(term.key)
-      @flag = PunctFlag.from(term.key, @type)
+    end
+
+    def initialize(
+      @key : String, @val = key, @idx = 0,
+      @type : PunctType = PunctType.from_key(term.key),
+      @flag : PunctFlag = PunctFlag.from(term.key, type)
+    )
     end
   end
 end

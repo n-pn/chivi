@@ -1,13 +1,6 @@
 module MtlV2::AST
-  @[Flags]
-  enum NounFlag
-    Human
-    Place
-    Attrb
-  end
-
   enum NounType
-    Posit
+    Position
     Locative
 
     Timeword
@@ -16,117 +9,125 @@ module MtlV2::AST
     Honorific
     Attribute
 
-    Generic
+    Common
+    Proper
+
+    def self.from_tag(tag : String)
+      case tag[1]?
+      when 't' then Timeword
+      when 'f' then Locative
+      when 's' then Position
+      when 'h' then Honorific
+      when 'a' then Attribute
+      else          Common
+      end
+    end
   end
 
   enum NameType
     Human
-    Place # countries, areas, landscapes names
 
-    Insti # organization
     Affil # combine of Place and Insti
+    Place # countries, areas, landscapes names
+    Insti # organization
 
     Title # book title
     Other # other name
-  end
 
-  class NounWord < BaseWord
-    def initialize()
-  end
+    def self.from_tag(tag : String)
+      case tag[1]?
+      when 'r' then Human
+      when 'w' then Title
+      when 'a' then Affil
+      else          Other
+      end
+    end
 
-  class NameWord < BaseWord
-  end
-
-  enum NounType
-    HumanName
-
-    AffilName
-    PlaceName
-    InstiName
-
-    OtherName
-    BookTitle
-
-    Honorific
-    Attribute
-
-    Ntime
-
-    Space
-    Locat
-  end
-
-  class BaseNoun < BaseNode
-  end
-
-  class HumanName < BaseNoun
-  end
-
-  class FamilyName < HumanName
-  end
-
-  class AffilName < BaseNoun
-  end
-
-  class PlaceName < AffilName
-  end
-
-  class InstiName < AffilName
-  end
-
-  class OtherName < BaseNoun
-  end
-
-  class BookTitle < OtherName
-  end
-
-  class Honorific < BaseNoun
-  end
-
-  #####
-
-  class AttriNoun < BaseNoun
-  end
-
-  class Ntime < BaseNoun
-  end
-
-  class Space < BaseNoun
-  end
-
-  class Locat < BaseNoun
-  end
-
-  class LocatShang < Locat; end
-
-  class LocatXia < Locat; end
-
-  class LocatZhong < Locat; end
-
-  # -ameba:disable Metrics/CyclomaticComplexity
-  def self.noun_from_term(term : V2Term)
-    case term.tags[0][1]?
-    when nil then BaseNoun.new(term)
-    when 'r' then HumanName.new(term)
-    when 'n' then AffilName.new(term)
-    when 's' then PlaceName.new(term)
-    when 't' then InstiName.new(term)
-    when 'z' then OtherName.new(term)
-    when 'x' then BookTitle.new(term)
-    when 'a' then AttriNoun.new(term)
-    when 'w' then Honorific.new(term)
-      # when 'f' then FamilyName.new(term)
-      # when 'l' then NounForm.new(term)
-    else BaseNoun.new(term)
+    def self.affil_from_tag(tag : String)
+      case tags[2]?
+      when 'l' then Place
+      when 'g' then Insti
+      else          Affil
+      end
     end
   end
 
-  def self.locat_from_term(term : V2Term)
-    case term.key
-    when "上" then LocatShang.new(term)
-    when "下" then LocatXia.new(term)
-    when "中" then LocatZhong.new(term)
-    else          Locat.new(term)
+  @[Flags]
+  enum NounFlag
+    Human
+    Place
+    Attrb
+
+    def self.from(type : NounType)
+      case type
+      when .timeword?, .timespan?, .locative?, .attribute?
+        Attrb
+      when .position?
+        Attrb | Place
+      when .honorific?
+        Human
+      else
+        None
+      end
+    end
+
+    def self.from(type : NameType)
+      case type
+      when .human?
+        Human
+      when .affil?, .place?, .insti?
+        Attrb | Place
+      else
+        None
+      end
+    end
+  end
+
+  class NounWord < BaseWord
+    getter type : NounType
+    getter flag : NounFlag
+
+    def initialize(
+      term : V2Term,
+      @type : NounType = NounType.from_tag(term.tags[0]),
+      @flag : NounFlag = NounFlag.from(type)
+    )
+    end
+  end
+
+  class NameWord < BaseWord
+    getter type : NameType
+    getter flag : NounFlag
+
+    def initialize(
+      term : V2Term,
+      @type : NameType = NameType.from_tag(term.tags[0]),
+      @kind : NounFlag = NounFlag.from(type)
+    )
+    end
+  end
+
+  enum LocatType
+    Shang
+    Zhong
+    Xia
+    Other
+
+    def self.from_key(key : String)
+      case term.key
+      when "上" then Shang
+      when "中" then Zhong
+      when "下" then Xia
+      else          Other
+      end
+    end
+  end
+
+  class LocatVerb < NounWord
+    getter kind : LocatType
+
+    def initialize(term : V2Term, kind : LocatType = LocatType.from(term.key))
+      super(term, type: :locative)
     end
   end
 end

@@ -1,4 +1,5 @@
 require "./_generic"
+require "./nominal"
 
 module MtlV2::AST
   @[Flags]
@@ -7,44 +8,41 @@ module MtlV2::AST
     Modifier  # adjective that can act as noun modifier without de1
     Adjtform  # word that act like adjective but do not combine with adverbs
     Measure   # can combine with measurement numeral after
+
+    def self.from(tag : String, key : String) : AdjtFlag
+      case tag[1]?
+      when 'b'      then Modifier
+      when 'z', 'f' then Adjtform
+      else
+        # TODO: map flag per words
+        flag = term.key.size < 3 ? Modifier : None
+        term.key.size < 2 ? flag | Adverbial : flag
+      end
+    end
   end
 
   class AdjtWord < BaseWord
     getter flag = AdjtFlag::None
 
-    def initialize(term : V2Term)
+    def initialize(term : V2Term, tag = term.tags[0])
       super(term)
-
-      case term.tags[0][1]?
-      when 'b'
-        @flag |= AdjtFlag::Modifier
-      when 'z', 'f'
-        @flag |= AdjtFlag::Adjtform
-      else
-        # TODO: add words directly
-        @flag |= AdjtFlag::Modifier if term.key.size < 3
-        @flag |= AdjtFlag::Adverbial if term.key.size < 2
-      end
+      @flag = AdjtFlag.from(term.tags, term.key)
     end
   end
 
   #########
 
   class AdjtNoun < BaseWord
-    getter adjt_val : String? = nil
-    getter adjt_tag : String = "a"
-
-    getter noun_val : String? = nil
-    getter noun_tag : String = "n"
+    getter adjt : AdjtWord
+    getter noun : NounWord
 
     def initialize(term : V2Term)
       super(term)
 
-      @adjt_val = term.vals[1]?
-      @adjt_tag = term.tags[1]? || "a"
+      @adjt = AdjtWord.new(term, term.tags[2]? || "a")
 
-      @noun_val = term.vals[2]?
-      @noun_tag = term.tags[2]? || "n"
+      noun_tag = term.tags[1]? || "n"
+      @noun = noun_tag[0]? == 'n' ? NounWord.new(term, noun_tag) : NameWord.new(term, noun_tag)
     end
   end
 
@@ -69,15 +67,5 @@ module MtlV2::AST
   class Hao3Word < BaseWord
     getter adjt_val = "tốt"
     getter advb_val = "thật"
-  end
-
-  ##################
-
-  def self.adjt_from_term(term : V2Term)
-    case term.tags[0][1]?
-    when 'n' then AdjtNoun.new(term)
-    when 'd' then AdjtAdvb.new(term)
-    else          AdjtWord.new(term)
-    end
   end
 end

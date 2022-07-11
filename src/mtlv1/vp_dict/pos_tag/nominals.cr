@@ -66,7 +66,7 @@ struct CV::PosTag
     case tag[1]?
     when 'r' then Person
     when 'a' then Naffil
-    when 'b' then Btitle
+    when 'w' then Btitle
     else          Nother
     end
   end

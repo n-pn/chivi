@@ -57,4 +57,14 @@ module QtranUtil
     else          "#"
     end
   end
+
+  def read_tsv(file : String)
+    output = {} of String => String
+    return output unless File.exists?(file)
+
+    File.read_lines(file).each_with_object(output) do |line, hash|
+      key, val = line.split('\t', 2)
+      hash[key] = val
+    end
+  end
 end
