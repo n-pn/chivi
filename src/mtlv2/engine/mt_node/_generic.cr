@@ -1,9 +1,18 @@
 require "../../../libcv/qtran_util"
 
 module MtlV2::AST
+  @[Flags]
+  enum BasePtag
+    Adjective
+    Nominal
+    Verbal
+  end
+
   class BaseNode
     property! prev : BaseNode
     property! succ : BaseNode
+
+    getter ptag = BasePtag::None
 
     def set_prev(@prev : BaseNode) : BaseNode
       prev.succ = self

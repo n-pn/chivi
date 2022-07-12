@@ -1,20 +1,64 @@
 module MtlV2::TlRule
-  def fold_adjts!(adjt : BaseNode, adverb : BaseNode? = nil) : BaseNode
-    while (succ = adjt.succ?) && !succ.ends?
-      case succ
-      when .v_dircomp?
-        return fold_verbs!(MtDict.fix_verb!(adjt), adverb: adverb)
-      when .junction?
-        fold_adjt_junction!(junc: succ, prev: adjt).try { |x| adjt = x } || return adjt
-      else
-        break if !(succ.adjective?) || succ.key == "多"
-        # TODO: check edge cases, like ajno
-        adjt = fold!(adjt, succ, PosTag::Adjt, dic: 4)
-      end
-    end
+  def fold_adjt!(adjt : BaseNode, succ : Nil) : BaseNode
+    adjt
+  end
 
-    adjt = fold_adverb_node!(adverb, adjt, PosTag::AdjtPhrase) if adverb
-    fold_adjt_after!(adjt)
+  def fold_adjt!(adjt : BaseNode, succ : Conjunct)
+    return adjt unless succ.type.phrase? && (adjt_2 = cast_adjt(succ.succ?))
+    adjt = AdjtTuple.new(adjt, succ, adjt_2, mark: 4)
+    fold_adjt!(adjt, ajdt.succ?)
+  end
+
+  def fold_adjt!(adjt : BaseNode, succ : AdjtWord)
+    adjt = AdjtTuple.new(adjt, succ, mark: 3)
+    fold_adjt!(adjt)
+  end
+
+  def fold_adjt!(adjt : BaseNode, succ : VdirWord)
+    verb = VerbPhrase.from_adjt(adjt, vdir: succ)
+    fold_verb!(verb)
+  end
+
+  def fold_adjt!(adjt : BaseNode, succ : VerbNoun)
+    node = succ.resolve!
+
+    case node
+    in VerbWord
+      verb = VerbPhrase.new(node, adav: adjt)
+      fold_verb!(verb, verb.succ?)
+    in NounWord
+      noun = NounPhrase.new(node, modi: adjt)
+      fold_noun!(noun, noun.succ?)
+    end
+  end
+
+  def fold_adjt!(adjt : BaseNode, succ : VerbWord)
+    return fold_adjt_dao4!(adjt, succ) if succ.key == "到"
+    return adjt unless adjt.flag.adverbial?
+
+    verb = VerbPhrase.new(node, adav: adjt)
+    fold_verb!(verb, verb.succ?)
+  end
+
+  def fold_adjt_dao4!(adjt : BaseNode, dao4 : VerbWord)
+    return adjt unless (tail = dao4.succ?) && tail.ptag.adjective?
+    adjt = AdjtTuple.new(adjt, dao4, succ)
+    fold_adjt!(adjt, adjt.succ?)
+  end
+
+  def fold_adjt!(adjt : BaseNode, succ : NounWord | NounTuple | NounPhrase)
+    return adjt unless adjt.modifier?
+    noun = NounPhrase.new(node, modi: adjt)
+    fold_noun!(noun, noun.succ?)
+  end
+
+  def fold_adjt!(adjt : BaseNode, succ : AuxilWord)
+    case succ.kind
+    when .ude1? then fold_adjt_ude1!(adjt, succ)
+    when .ude2? then fold_adjt_ude2!(adjt, succ)
+    else
+      adjt
+    end
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
