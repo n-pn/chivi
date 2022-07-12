@@ -1,6 +1,9 @@
 require "./_generic"
 
 module MtlV2::AST
+  # references:
+  # - https://chinemaster.com/pho-tu-trong-tieng-trung/
+
   ADVB_TYPES = QtranUtil.read_tsv("etc/cvmtl/advb-types.tsv")
 
   @[Flags]
@@ -29,19 +32,17 @@ module MtlV2::AST
     Freque
 
     # 关联副词 correlative or conjunctive adverbs
+    # A correlative o conjunctive adverb is an adverb used in a phrase or sentence
+    # for correlating two parts. Although correlative adverbs are used in the position
+    # of an adverbial, it plays a significant role in correlating two parts. The
+    # function of correlative adverbs is similar to that of 连词 conjunction.
     Correl
 
+    # 情态副词/情状副词 adverbs of manner
+    # Adverbs of manner describe the manner of doing an activity.     Manner
+
     def self.from(key : String)
-      case ADVB_TYPES[key]?
-      when "Ne" then Nega
-      when "Ti" then Time
-      when "Mo" then Mood
-      when "Sc" then Scoop
-      when "De" then Degree
-      when "Fr" then Freque
-      when "Co" then Correl
-      else           None
-      end
+      ADVB_TYPES[key]?.try.reduce(val, None) { |flag, x| flag | parse(x) } || None
     end
   end
 
