@@ -41,7 +41,11 @@ module MtlV2::AST
   class AuxilWord < BaseWord
     getter type : AuxilType
 
-    def initialize(term : V2Term, type : AuxilType = AuxilType.from_key(term.key))
+    def initialize(
+      term : V2Term,
+      type : AuxilType = AuxilType.from_key(term.key)
+    )
+      super(term)
     end
   end
 end

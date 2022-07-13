@@ -40,11 +40,15 @@ module MtlV2::AST
       @succ.try { |x| yield x }
     end
 
-    def tranfer(new_node : BaseNode) : BaseNode
-      new_node.set_prev(@prev)
-      new_node.set_succ(@succ)
+    def replace(target : BaseNode) : self
+      set_prev(target.prev?)
+      set_succ(target.succ?)
+      target.unlink!
+      self
+    end
+
+    def unlink!
       @prev = @succ = nil
-      new_node
     end
 
     def apply_cap!

@@ -94,9 +94,6 @@ module MtlV2::AST
     }
   end
 
-  class Nmixed < Number
-  end
-
   class Quanti < Numeral
   end
 
@@ -104,22 +101,7 @@ module MtlV2::AST
   end
 
   class Qttime < Quanti
-    MAP_VAL = {
-      "个月" => "tháng",
-      "小时" => "giờ",
-      "分钟" => "phút",
-      "秒"  => "giây",
-      "秒钟" => "giây",
-      "日"  => "ngày",
-      "月"  => "tháng",
-      "年"  => "năm",
-      "岁"  => "tuổi",
-      "周"  => "tuần",
-      "席"  => "bữa",
-      "晚"  => "đêm",
-      "刻"  => "khắc",
-      "载"  => "năm",
-    }
+    MAP_VAL = QtranUtil.load_tsv("etc/cvmtl/qttimes.tsv")
 
     def self.has_key?(key : String)
       MAP_VAL.has_key?(key)
@@ -127,19 +109,7 @@ module MtlV2::AST
   end
 
   class Qtverb < Quanti
-    MAP_VAL = {
-      "次"  => "lần", # ǀlượtǀchuyến
-      "回"  => "hồi",
-      "遍"  => "lượt",
-      "趟"  => "chuyến", # ǀlầnǀhàngǀdãy
-      "下"  => "phát",
-      "顿"  => "chầu", # ǀhồiǀtrận
-      "番"  => "phen", # ǀloạiǀdạngǀhồiǀlần
-      "阵"  => "trận",
-      "会"  => "lúc",
-      "下儿" => "phát",
-      "会儿" => "lát",
-    }
+    MAP_VAL = QtranUtil.load_tsv("etc/cvmtl/vers.tsv")
 
     def self.has_key?(key : String)
       MAP_VAL.has_key?(key)

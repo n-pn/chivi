@@ -63,8 +63,8 @@ module QtranUtil
     return output unless File.exists?(file)
 
     File.read_lines(file).each_with_object(output) do |line, hash|
-      next unless (char = lines[0]?) && char != '#'
-      vals = lines.split('\t')
+      next unless (char = line[0]?) && char != '#'
+      vals = line.split('\t')
       key = vals.shift
       hash[key] = vals
     end

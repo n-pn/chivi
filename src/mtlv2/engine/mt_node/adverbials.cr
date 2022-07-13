@@ -4,7 +4,7 @@ module MtlV2::AST
   # references:
   # - https://chinemaster.com/pho-tu-trong-tieng-trung/
 
-  ADVB_TYPES = QtranUtil.read_tsv("etc/cvmtl/advb-types.tsv")
+  ADVB_TYPES = QtranUtil.read_tsv("etc/cvmtl/adverbs.tsv")
 
   @[Flags]
   enum AdvbType
