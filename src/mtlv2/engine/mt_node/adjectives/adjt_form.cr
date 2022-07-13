@@ -1,17 +1,12 @@
-require "../adjectives"
+require "./adjt_word"
 
 module MtlV2::MTL
-  module Adjective
-    getter flag = AdjtFlag::None
-    forward_missing_to @flag
-  end
-
-  class AdjtWord < BaseWord
+  class AdjtExpr < BaseExpr
     include Adjective
 
-    def initialize(term : V2Term, ptag = term.tags[0])
-      super(term)
-      @flag = AdjtFlag.from(term.tags[0], term.key)
+    def initialize(left : BaseNode, right : BaseNode, flip = false,
+                   kind : AdjtFlag = :none)
+      super(left, right, flip: flip)
     end
   end
 
@@ -35,8 +30,8 @@ module MtlV2::MTL
       end
     end
 
-    def to_list
-      [@advb, @adjt]
+    def to_list : Array(BaseNode)
+      @advb.adjt_suffix? ? [@adjt, @advb] : [@advb, @adjt]
     end
   end
 end

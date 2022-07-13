@@ -1,56 +1,33 @@
-module MtlV2::AST
-  enum NounType
-    Position
-    Locative
+require "./nominals/*"
 
-    Timeword
-    Timespan
-
-    Honorific
-    Attribute
-
-    Common
-    Proper
-
-    def self.from_tag(tag : String)
-      case tag[1]?
-      when 't' then Timeword
-      when 'f' then Locative
-      when 's' then Position
-      when 'h' then Honorific
-      when 'a' then Attribute
-      else          Common
-      end
+module MtlV2::MTL
+  def self.noun_from_term(term : V2Term, tag = term.tags[0])
+    case tag[1]?
+    when 'a' then TraitWord.new(term)
+    when 's' then PositWord.new(term)
+    when 'h' then HonorWord.new(term)
+    when 'f' then LocatWord.new(term)
+    when 't' then TimeWord.new(term)
+    else          NounWord.new(term)
     end
   end
 
-  enum NameType
-    Human
-
-    Affil # combine of Place and Insti
-    Place # countries, areas, landscapes names
-    Insti # organization
-
-    Title # book title
-    Other # other name
-
-    def self.from_tag(tag : String)
-      case tag[1]?
-      when 'r' then Human
-      when 'w' then Title
-      when 'a' then Affil
-      else          Other
-      end
-    end
-
-    def self.affil_from_tag(tag : String)
-      case tags[2]?
-      when 'l' then Place
-      when 'g' then Insti
-      else          Affil
-      end
+  def self.name_from_term(term : V2Term, tag = term.tags[0])
+    case tag[1]?
+    when 'r' then HumanName.new(term)
+    when 'a' then AffilName.new(term)
+      # when 'w' then OtherName.new(term)
+    else OtherName.new(term)
     end
   end
+
+  # def self.affil_from_tag(tag : String)
+  #   case tags[2]?
+  #   when 'l' then Place
+  #   when 'g' then Insti
+  #   else          Affil
+  #   end
+  # end
 
   @[Flags]
   enum NounFlag

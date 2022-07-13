@@ -4,24 +4,18 @@ require "./adjectives"
 require "./adverbials"
 
 module MtlV2::AST
-  module MaybeNoun
-    getter noun : NounWord
+  module MaybeAdvb
+    getter adav : AdvbWord
 
-    def init_noun(term : V2Term, idx : Int32 = 1)
-      noun_tag = term.tags[idx]? || "n"
+    def init_noun(term : V2Term, idx : Int32 = 2)
+      adav = AdvbWord.new(term, flag: AdvbFlag.from(term.key))
+      term.vals[idx].try { |x| adav.val = x }
 
-      if noun_tag[0]? == 'n'
-        noun = NounWord.new(term, type: NounType.from_tag(noun_tag))
-      else
-        noun = NameWord.new(term, type: NameType.from_tag(noun_tag))
-      end
-
-      term.vals[idx].try { |x| noun.val = x }
-      noun
+      adav
     end
 
-    def as_noun!
-      @noun.tap(&.replace(self))
+    def as_adav!
+      @adav.tap(&.replace(self))
     end
   end
 
@@ -41,18 +35,19 @@ module MtlV2::AST
     end
   end
 
-  module MaybeAdav
-    getter adav : AdavWord
+  module MaybeVerb
+    getter verb : VerbWord
 
-    def init_noun(term : V2Term, idx : Int32 = 2)
-      adav = AdavWord.new(term, flag: AdavFlag.from(term.key))
-      term.vals[idx].try { |x| adav.val = x }
+    def init_verb(term : V2Term, idx : Int32 = 2)
+      verb_tag = term.tags[idx]? || "v"
+      verb = VerbWord.new(term, flag: VerbFlag.from(verb_tag, term.key))
+      term.vals[idx].try { |x| verb.val = x }
 
-      adav
+      verb
     end
 
-    def as_adav!
-      @adav.tap(&.replace(self))
+    def as_verb!
+      @verb.tap(&.replace(self))
     end
   end
 
@@ -68,10 +63,38 @@ module MtlV2::AST
   end
 
   class AdjtAdvb < BaseWord
+    include MaybeAdjt
+    include MaybeAdvb
+
     def initialize(term : V2Term)
       super(term)
       @adjt = init_adjt(term, idx: 2)
       @adav = init_adav(term, idx: 1)
     end
+  end
+
+  class VerbNoun < BaseWord
+    include MaybeVerb
+    include MaybeNoun
+
+    def initialize(term : V2Term)
+      super(term)
+      @verb = init_verb(term, idx: 2)
+      @noun = init_noun(term, idx: 1)
+    end
+  end
+
+  class VerbAdvb < BaseWord
+    include MaybeVerb
+    include MaybeAdvb
+
+    def initialize(term : V2Term)
+      super(term)
+      @adjt = init_adjt(term, idx: 2)
+      @adav = init_adav(term, idx: 1)
+    end
+  end
+
+  class SuffNoun < BaseWord
   end
 end
