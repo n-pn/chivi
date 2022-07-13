@@ -25,7 +25,7 @@ module MtlV2::AST
     when 'q' then quanti_from_term(term)
     when 'r' then pronoun_from_term(term)
     when 'w' then punct_from_term(term)
-    when 'u' then AuxilWord.new(term)
+    when 'u' then PtclWord.new(term)
     when 'p' then prepos_from_term(term)
     when 'k' then suffix_from_term(term)
     when 'c' then conjunct_from_term(term)
@@ -42,5 +42,19 @@ module MtlV2::AST
     when 'd' then AdjtAdvb.new(term)
     else          AdjtWord.new(term)
     end
+  end
+
+  def self.number_from_term(term : V2Term)
+    return NquantWord.new(term) if term.tags[0] == "mq"
+
+    case
+    when NdigitWord.matches?(term.key) then NdigitWord.new(term)
+    when NhanziWord.matches?(term.key) then NhanziWord.new(term)
+    else                                    NumberWord.new(term)
+    end
+  end
+
+  def self.quanti_from_term(term : V2Term)
+    QuantiWord.new(term)
   end
 end

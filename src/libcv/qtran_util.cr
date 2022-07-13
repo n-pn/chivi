@@ -69,4 +69,48 @@ module QtranUtil
       hash[key] = vals
     end
   end
+
+  HAN_INT = {
+    '零' => 0,
+    '〇' => 0,
+    '一' => 1,
+    '两' => 2,
+    '二' => 2,
+    '三' => 3,
+    '四' => 4,
+    '五' => 5,
+    '六' => 6,
+    '七' => 7,
+    '八' => 8,
+    '九' => 9,
+    '十' => 10,
+    '百' => 100,
+    '千' => 1000,
+    '万' => 10_000,
+    '亿' => 100_000_000,
+    '兆' => 1_000_000_000_000,
+  }
+
+  def to_int(inp : String)
+    res = 0_i64
+    mod = 1_i64
+    acc = 0_i64
+
+    inp.chars.reverse_each do |char|
+      int = HAN_INT[char]? || 0
+
+      case char
+      when '兆', '亿', '万', '千', '百', '十'
+        res += acc
+        mod = int if mod < int
+        acc = int
+      else
+        res += int * mod
+        mod *= 10
+        acc = 0
+      end
+    end
+
+    res + acc
+  end
 end
