@@ -1,4 +1,4 @@
-require "../adjectives"
+require "./adjectives/*"
 
 module MtlV2::MTL
   module Adjective

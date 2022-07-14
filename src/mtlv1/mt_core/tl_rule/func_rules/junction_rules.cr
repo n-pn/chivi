@@ -8,13 +8,13 @@ module CV::TlRule
   def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
     return unless verb && succ && succ.maybe_verb? && is_concoord?(junc)
 
+    succ = fold_mixed!(succ) if succ.mixed?
+
     case succ
     when .preposes?
       succ = fold_preposes!(succ)
     when .adverbial?
       succ = fold_adverbs!(succ)
-    when .veno?
-      succ = fold_veno!(succ)
     when .verbal?
       tag = verb.tag if succ.key == "过"
       succ = fold_verbs!(succ)

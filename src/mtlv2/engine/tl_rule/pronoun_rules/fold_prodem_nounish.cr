@@ -1,13 +1,13 @@
 module MtlV2::TlRule
-  def fold_prodem_nominal!(prodem : Nil, norminal : Nil)
+  def fold_prodem_nominal!(prodem : Nil, nominal : Nil)
     nil
   end
 
-  def fold_prodem_nominal!(prodem : Nil, norminal : BaseNode)
-    norminal
+  def fold_prodem_nominal!(prodem : Nil, nominal : BaseNode)
+    nominal
   end
 
-  def fold_prodem_nominal!(prodem : BaseNode, norminal : Nil)
+  def fold_prodem_nominal!(prodem : BaseNode, nominal : Nil)
     prodem
   end
 

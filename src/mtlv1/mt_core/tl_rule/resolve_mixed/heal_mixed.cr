@@ -1,5 +1,5 @@
 module CV::TlRule
-  def heal_mixed(node : MtNode, prev = node.prev, succ = node.succ?)
+  def heal_mixed!(node : MtNode, prev = node.prev, succ = node.succ?)
     case node.tag
     when .vead? then heal_vead!(node, prev, succ)
     when .veno? then heal_veno!(node, prev, succ)
@@ -15,7 +15,7 @@ module CV::TlRule
     when .nil?, .puncts?
       return MtDict.fix_verb!(node)
     when .veno?
-      succ = heal_veno!(succ)
+      succ = heal_veno!(succ, node, succ.succ?)
       return succ.nominal? ? MtDict.fix_verb!(node) : MtDict.fix_adverb!(node)
     when .vdir?, .adj_hao?
       return MtDict.fix_verb!(node)
@@ -36,7 +36,7 @@ module CV::TlRule
     end
   end
 
-  def not_verb_auxil?(node : MtNode)
+  private def not_verb_auxil?(node : MtNode)
     case node.tag
     when .ulian?, .uls?, .udh?, .uyy?, .udeng?, .usuo?
       true
@@ -64,43 +64,31 @@ module CV::TlRule
 
     case prev
     when .nil?, .ends?
-      succ.nominal? ? MtDict.fix_verb!(node) : node
+      return (succ && succ.nominal?) ? MtDict.fix_verb!(node) : node
     when .pre_zai?, .pre_bei?, .vmodal?, .vpro?,
          .adverbial?, .ude2?, .ude3?, .object?
-      MtDict.fix_verb!(node)
+      return MtDict.fix_verb!(node)
     when .adjective?
-      prev.modifier? ? MtDict.fix_noun!(node) : MtDict.fix_verb!(node)
+      return prev.modifier? ? MtDict.fix_noun!(node) : MtDict.fix_verb!(node)
     when .ude1?
       # TODO: check for adjt + ude1 + verb (grammar error)
-      prev.prev?(&..adverbial?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
+      return prev.prev?(&.adverbial?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
     when .nhanzi?
-      prev.key == "一" ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
+      return prev.key == "一" ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
     when .preposes?
-      succ.nominal? ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
-      # when .numeral?
-      #   if (succ = node.succ?) && !(succ.nominal? || succ.pronouns?)
-      #     return MtDict.fix_noun!(node)
-      #   end
-    when .junction?
-      return MtDict.fix_verb!(node) if prev.key == "而"
-
-      prev.prev? do |prev_2|
-        return MtDict.fix_noun!(node) if prev_2.nominal?
-        return MtDict.fix_verb!(node) if prev_2.verbal?
-      end
+      return succ.try(&.nominal?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
     when .pro_dems?, .qtnoun?, .verbal?
       case succ
-      when .nil?, .ends?, .auxils? then MtDict.fix_noun!(node)
+      when .nil?, .ends?, .auxils?
+        return MtDict.fix_noun!(node)
       when .nominal?
-        succ.succ?(&.ude1?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
+        return succ.succ?(&.ude1?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
       when .ude1?
-        MtDict.fix_noun!(node)
-      else
-        node
+        return MtDict.fix_noun!(node)
       end
-    else
-      node
     end
+
+    node
   end
 
   def heal_ajno!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
@@ -114,7 +102,7 @@ module CV::TlRule
       return MtDict.fix_adjt!(node)
     when .verbal?, .preposes?, .spaces?
       return MtDict.fix_noun!(node)
-    when .norminal?
+    when .nominal?
       node = MtDict.fix_adjt!(node)
       return node.set!(PosTag::Modi)
     else
@@ -122,7 +110,7 @@ module CV::TlRule
     end
 
     case prev
-    when .nil?, ends, .adverbial?
+    when .nil?, .ends?, .adverbial?
       MtDict.fix_adjt!(node)
     when .modifier?
       MtDict.fix_noun!(node)
@@ -137,7 +125,7 @@ module CV::TlRule
     end
 
     case prev
-    when .nil?, .ends?, .adverbial?, .norminal?
+    when .nil?, .ends?, .adverbial?, .nominal?
       MtDict.fix_adjt!(node)
     else
       node

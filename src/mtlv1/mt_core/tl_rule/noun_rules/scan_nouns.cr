@@ -11,6 +11,9 @@ module CV::TlRule
     # puts [node, prodem, nquant, "scan_noun"]
 
     while node
+      node = fold_mixed!(node) if node.mixed?
+      break if node.mixed?
+
       case node
       when .pro_per?
         if prodem || nquant
@@ -92,9 +95,8 @@ module CV::TlRule
         elsif node.adjective?
           node = fold_adjt_as_noun!(node)
         end
-      when .veno?
-        node = fold_veno!(node)
-        node = fold_verb_as_noun!(node, mode: mode) if node.verbal?
+      when .v_shi?
+        break
       when .verbal?
         node = fold_verb_as_noun!(node, mode: mode)
       when .onomat?
@@ -103,7 +105,6 @@ module CV::TlRule
         node = fold_modifier!(node)
         node = fold_adjt_as_noun!(node)
       when .adjective?
-        node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
         node = fold_adjt_as_noun!(node)
       when .nominal?
         case node = fold_nouns!(node)
@@ -179,17 +180,7 @@ module CV::TlRule
   end
 
   def fold_verb_as_noun!(node : MtNode, mode = 0)
-    # puts [node, node.succ?]
-
-    case node
-    when .v_shi?
-      return fold_v_shi!(node)
-    when .veno?
-      node = fold_veno!(node)
-    else
-      node = fold_verbs!(node)
-    end
-
+    node = fold_verbs!(node)
     return node if node.nominal? || mode == 3 || !(succ = node.succ?)
 
     unless succ.ude1? || node.verb_object? || node.vintr?

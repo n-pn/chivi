@@ -3,7 +3,8 @@
   "scripts": {
     "test": "crystal spec --error-trace spec/engine/cvmtl_spec.cr",
     "push": "bash priv/scripts/server-deploy.sh",
-    "debug": "crystal run --error-trace spec/manual/debug_engine.cr -- ",
+    "cv1": "crystal run --error-trace spec/manual/debug_v1.cr -- ",
+    "cv2": "crystal run --error-trace spec/manual/debug_v2.cr -- ",
     "db-up": "bash priv/scripts/filedb-upload.sh",
     "db-bk": "bash priv/scripts/filedb-backup.sh",
     "ys-up": "bash priv/scripts/yousuu-upload.sh",

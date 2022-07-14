@@ -5,17 +5,13 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_pro_per!(proper : MtNode, succ : MtNode) : MtNode
+    succ = fold_mixed!(succ) if succ.mixed?
+
     case succ.tag
     when .concoord?, .penum?
       fold_noun_concoord!(succ, proper) || proper
-    when .veno?
-      succ = heal_veno!(succ)
-      succ.noun? ? fold_proper_nominal!(proper, succ) : fold_noun_verb!(proper, succ)
     when .verbal?, .vmodals?
       fold_noun_verb!(proper, succ)
-    when .ajno?
-      succ = heal_ajno!(succ)
-      succ.noun? ? fold_proper_nominal!(proper, succ) : proper
     when .pro_per?
       if tail = succ.succ?
         succ = fold_pro_per!(succ, tail)

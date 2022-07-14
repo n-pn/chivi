@@ -10,6 +10,8 @@ module CV::TlRule
     while noun.nominal?
       break unless succ = noun.succ?
 
+      succ = fold_mixed!(succ) if succ.mixed?
+
       case succ
       when .maybe_adjt?
         break if succ.adv_bu4?
@@ -34,10 +36,6 @@ module CV::TlRule
         noun = fold_noun_space!(noun, succ)
       when .verbal?
         return fold_noun_verb!(noun, succ)
-      when .veno?
-        succ = heal_veno!(succ)
-        return fold_noun_verb!(noun, succ) if succ.verbal?
-        noun = fold!(noun, succ, PosTag::Noun, dic: 7, flip: true)
       when .junction?
         break unless should_fold_noun_concoord?(noun, succ)
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break

@@ -183,7 +183,7 @@ class CV::MtNode
 
   def modifier?
     return false unless @tag.adjective?
-    @tag.modi || @key.size < 2
+    @tag.modi? || @key.size < 3
   end
 
   def lit_str?

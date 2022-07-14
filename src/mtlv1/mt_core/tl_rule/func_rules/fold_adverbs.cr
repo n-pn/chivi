@@ -55,10 +55,10 @@ module CV::TlRule
   end
 
   def fold_adv_mei!(node : MtNode, succ = node.succ) : MtNode
+    succ = fold_mixed!(succ) if succ.mixed?
+
     case succ.tag
     when .verbal?
-      succ = heal_veno!(succ) if succ.veno?
-      # TODO: add more cases
       node.val = succ.succ?(&.uzhe?) ? "không" : node.prev?(&.subject?) ? "chưa" : "không có"
       fold_verbs!(succ, prev: node)
     when .adjt?, .ajad?, .ajno?

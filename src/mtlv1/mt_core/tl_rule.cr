@@ -13,7 +13,7 @@ module CV::TlRule
 
   def fold_list!(head : MtNode, tail : MtNode? = nil) : Nil
     while head = head.succ?
-      head = fold_once!(succ)
+      head = fold_once!(head)
       break if head == tail
     end
   end

@@ -49,49 +49,49 @@ module CV::TlRule
     PosTag::Unkn
   end
 
-  def fold_btitle!(head : MtNode) : MtNode
-    return head unless start_key = head.key[0]?
-    end_key = match_title_end(start_key)
+  # def fold_btitle!(head : MtNode) : MtNode
+  #   return head unless start_key = head.key[0]?
+  #   end_key = match_title_end(start_key)
 
-    tail = head
+  #   tail = head
 
-    while tail = tail.succ?
-      break if tail.titlecl? && tail.key[0]? == end_key
-    end
+  #   while tail = tail.succ?
+  #     break if tail.titlecl? && tail.key[0]? == end_key
+  #   end
 
-    return head unless tail && tail != head.succ?
-    root = fold!(head, tail, PosTag::Nother, dic: 0)
+  #   return head unless tail && tail != head.succ?
+  #   root = fold!(head, tail, PosTag::Nother, dic: 0)
 
-    fix_grammar!(head)
-    root
-  end
+  #   fix_grammar!(head)
+  #   root
+  # end
 
-  def fold_quoted!(head : MtNode) : MtNode
-    return head unless char = head.val[0]?
-    end_tag, end_val = match_end(char)
+  # def fold_quoted!(head : MtNode) : MtNode
+  #   return head unless char = head.val[0]?
+  #   end_tag, end_val = match_end(char)
 
-    tail = head
-    while tail = tail.succ?
-      # return head if tail.pstop? && !tag.quotecl?
-      break if tail.tag.tag == end_tag && tail.val[0] == end_val
-    end
+  #   tail = head
+  #   while tail = tail.succ?
+  #     # return head if tail.pstop? && !tag.quotecl?
+  #     break if tail.tag.tag == end_tag && tail.val[0] == end_val
+  #   end
 
-    return head unless tail && tail != head.succ?
+  #   return head unless tail && tail != head.succ?
 
-    root = fold!(head, tail, tag: PosTag::Unkn, dic: 0)
-    fix_grammar!(root.body, level: 1)
+  #   root = fold!(head, tail, tag: PosTag::Unkn, dic: 0)
+  #   fix_grammar!(root.body, level: 1)
 
-    succ = head.succ
-    if succ.succ? == tail
-      root.dic = 1
-      root.tag = succ.tag
-    elsif root.prev? { |x| x.ude1? || x.pro_dems? || x.numeral? }
-      root.tag = PosTag::NounPhrase
-    end
+  #   succ = head.succ
+  #   if succ.succ? == tail
+  #     root.dic = 1
+  #     root.tag = succ.tag
+  #   elsif root.prev? { |x| x.ude1? || x.pro_dems? || x.numeral? }
+  #     root.tag = PosTag::NounPhrase
+  #   end
 
-    root.noun? ? fold_nouns!(root, mode: 1) : root
-  end
+  #   root.noun? ? fold_nouns!(root, mode: 1) : root
+  # end
 
-  private def match_end(char : Char)
-  end
+  # private def match_end(char : Char)
+  # end
 end

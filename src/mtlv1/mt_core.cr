@@ -1,5 +1,5 @@
 require "./vp_dict"
-require "./mtdata"
+require "./mt_data"
 
 class CV::MtCore
   class_getter hanviet_mtl : self { new([VpDict.essence, VpDict.hanviet]) }
@@ -16,9 +16,10 @@ class CV::MtCore
     when "pin_yin" then pin_yin_mtl
     when "hanviet" then hanviet_mtl
     when "tradsim" then tradsim_mtl
-    when "combine", .starts_with?('-')
+    when .starts_with?('-')
       generic_mtl(dname, uname)
-    else generic_mtl("combine", uname)
+    else
+      generic_mtl("combine", uname)
     end
   end
 
@@ -49,46 +50,43 @@ class CV::MtCore
   def initialize(@dicts : Array(VpDict), @uname : String = "")
   end
 
-  def translit(input : String, apply_cap : Bool = false) : MtList
-    list = tokenize(input.chars)
-    list.capitalize!(cap: true) if apply_cap
-    list.pad_spaces!
+  def translit(input : String, apply_cap : Bool = false) : MtData
+    data = tokenize(input.chars)
+    data.capitalize!(cap: true) if apply_cap
+    data.pad_spaces!
+    data
   end
 
-  def cv_title_full(title : String) : MtList
-    title, label = TextUtil.format_title(title)
+  def cv_title_full(title : String) : MtData
+    title, chvol = TextUtil.format_title(title)
 
-    title_res = cv_title(title, offset: label.size)
-    return title_res if label.empty?
+    mt_data = cv_title(title, offset: chvol.size)
+    return mt_data if chvol.empty?
 
-    title_res.prepend!(MtNode.new("", " - ", idx: label.size))
-    label_res = cv_title(label)
-    label_res.concat!(title_res)
+    mt_data.add_head(MtNode.new("", " - ", idx: chvol.size))
+    cv_title(chvol).concat(mt_data)
   end
 
   def cv_title(title : String, offset = 0) : MtList
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
     offset_2 = offset + pre_zh.size + pad.size
 
-    res = title.empty? ? MtList.new : cv_plain(title, offset: offset_2)
+    mt_data = MtData.new(MtNode.new(pre_zh, pre_vi, dic: 1, idx: offset))
+    mt_data.add_tail(MtNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
 
-    unless pre_zh.empty?
-      res.prepend!(MtNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
-      res.prepend!(MtNode.new(pre_zh, pre_vi, dic: 1, idx: offset))
-    end
-
-    res
+    mt_data.concat(cv_plain(title, offset: offset_2))
   end
 
   def translate(input : String) : String
     cv_plain(input).to_s
   end
 
-  def cv_plain(input : String, cap_first = true, offset = 0)
-    list = tokenize(input.chars, offset: offset)
-    list.fix_grammar!
-    list.capitalize!(cap: cap_first)
-    list.pad_spaces!
+  def cv_plain(input : String, cap_first = true, offset = 0) : MtData
+    data = tokenize(input.chars, offset: offset)
+    data.fix_grammar!
+    data.capitalize!(cap: cap_first)
+    data.pad_spaces!
+    data
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtData
@@ -123,13 +121,13 @@ class CV::MtCore
       end
     end
 
-    idx = input.size - 1
-    cur = input.unsafe_fetch(idx)
+    idx = nodes.size - 1
+    cur = nodes.unsafe_fetch(idx)
     res = MtData.new(cur)
 
     while idx > 0
       idx -= cur.key.size
-      cur = input.unsafe_fetch(idx)
+      cur = nodes.unsafe_fetch(idx)
       res.add_node(cur)
     end
 
