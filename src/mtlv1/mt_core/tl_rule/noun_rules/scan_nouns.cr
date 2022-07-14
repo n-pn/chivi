@@ -11,8 +11,10 @@ module CV::TlRule
     # puts [node, prodem, nquant, "scan_noun"]
 
     while node
-      node = fold_mixed!(node) if node.mixed?
-      break if node.mixed?
+      if node.mixed?
+        node = heal_mixed!(node)
+        break if node.mixed?
+      end
 
       case node
       when .pro_per?

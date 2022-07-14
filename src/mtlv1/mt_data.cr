@@ -31,10 +31,10 @@ class CV::MtData
     if can_nest?(node)
       @nestable << node
     elsif can_meld?(node, @head)
-      @head.dic = 0
-      @head.idx = node.idx
-      @head.key = node.key + @head.key
       @head.val = join_val(node, @head)
+      @head.key = node.key + @head.key
+      @head.idx = node.idx
+      @head.dic = 0
     else
       add_head(node)
     end

@@ -8,7 +8,7 @@ module CV::TlRule
   def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
     return unless verb && succ && succ.maybe_verb? && is_concoord?(junc)
 
-    succ = fold_mixed!(succ) if succ.mixed?
+    succ = heal_mixed!(succ) if succ.mixed?
 
     case succ
     when .preposes?

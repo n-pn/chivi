@@ -7,7 +7,7 @@ uname = ARGV[1]? || ""
 mtl = CV::MtCore.generic_mtl(dname, uname)
 res = mtl.cv_plain(input)
 
-res.inspect(STDOUT, 0)
+res.inspect(STDOUT)
 puts "------"
 puts input
 puts "------"

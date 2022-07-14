@@ -5,7 +5,7 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_pro_per!(proper : MtNode, succ : MtNode) : MtNode
-    succ = fold_mixed!(succ) if succ.mixed?
+    succ = heal_mixed!(succ) if succ.mixed?
 
     case succ.tag
     when .concoord?, .penum?

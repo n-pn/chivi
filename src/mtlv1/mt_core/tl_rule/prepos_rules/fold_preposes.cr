@@ -20,7 +20,7 @@ module CV::TlRule
       return fold unless (fold.succ? == succ) && succ.verbal?
       return fold_verbs!(succ, prev: node.set!("sẽ"))
     when "与", "和"
-      return fold_compare(node) || fold_prepos_inner!(node)
+      return fold_compare(node, succ) || fold_prepos_inner!(node)
     when "同", "跟"
       if fold = fold_compare(node, succ)
         node.val = fold.dic == 0 ? "giống" : ""
@@ -64,7 +64,7 @@ module CV::TlRule
   end
 
   def fold_pre_zai!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
-    succ = fold_mixed!(succ) if succ.mixed?
+    succ = heal_mixed!(succ) if succ.mixed?
 
     if succ.verb? || succ.verb_object?
       # TODO: check conditions when prezai can be translated at "đang"

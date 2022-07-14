@@ -1,20 +1,22 @@
 module CV::TlRule
   def fold_verb_compare(head : MtNode) : MtNode?
+    return nil unless succ = head.succ?
+
     case head.key
     when "如", "像"
-      fold_compare(head.set!("tựa"))
+      fold_compare(head, succ, "tựa")
     when "仿佛", "宛若"
-      fold_compare(head.set!("giống"))
+      fold_compare(head, succ, "giống")
     when "好像"
-      fold_compare(head.set!("thật giống"))
+      fold_compare(head, succ, "thật giống")
     else
       nil
     end
   end
 
-  def fold_compare(head : MtNode, tail = head.succ?)
+  def fold_compare(head : MtNode, tail : MtNode, head_val = head.val)
     while tail
-      return if tail.puncts? || tail.key == "像"
+      return if tail.puncts? || tail.key == head.key
 
       if tail.uyy?
         break unless tail.key == "一样"
@@ -26,6 +28,7 @@ module CV::TlRule
 
     return unless tail && tail != head.succ?
 
+    head.val = head_val
     tail.val = "như" if tail.key.in?("一样", "似的", "一般", "般")
 
     root = fold!(head, tail, tag: PosTag::Aform, dic: 0)

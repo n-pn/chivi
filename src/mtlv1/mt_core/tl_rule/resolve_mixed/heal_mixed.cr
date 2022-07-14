@@ -47,6 +47,8 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def heal_veno!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
+    # puts [node, prev, succ]
+
     case succ
     when .nil?, .ends?, .ule?, .ude1?
       # do nothing
@@ -54,6 +56,8 @@ module CV::TlRule
       return MtDict.fix_verb!(node) unless not_verb_auxil?(succ)
     when .v_shi?, .v_you?
       return MtDict.fix_noun!(node)
+    when .suffixes?
+      return MtDict.fix_noun!(node) if succ.key == "们"
     when .pronouns?, .verbal?, .pre_zai?
       return MtDict.fix_verb!(node)
       # when .nominal?
@@ -65,6 +69,15 @@ module CV::TlRule
     case prev
     when .nil?, .ends?
       return (succ && succ.nominal?) ? MtDict.fix_verb!(node) : node
+    when .pro_dems?, .qtnoun?, .verbal?
+      case succ
+      when .nil?, .ends?, .auxils?
+        return MtDict.fix_noun!(node)
+      when .nominal?
+        return succ.succ?(&.ude1?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
+      when .ude1?
+        return MtDict.fix_noun!(node)
+      end
     when .pre_zai?, .pre_bei?, .vmodal?, .vpro?,
          .adverbial?, .ude2?, .ude3?, .object?
       return MtDict.fix_verb!(node)
@@ -77,15 +90,6 @@ module CV::TlRule
       return prev.key == "一" ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
     when .preposes?
       return succ.try(&.nominal?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
-    when .pro_dems?, .qtnoun?, .verbal?
-      case succ
-      when .nil?, .ends?, .auxils?
-        return MtDict.fix_noun!(node)
-      when .nominal?
-        return succ.succ?(&.ude1?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
-      when .ude1?
-        return MtDict.fix_noun!(node)
-      end
     end
 
     node

@@ -55,7 +55,7 @@ module CV::TlRule
   end
 
   def fold_adv_mei!(node : MtNode, succ = node.succ) : MtNode
-    succ = fold_mixed!(succ) if succ.mixed?
+    succ = heal_mixed!(succ) if succ.mixed?
 
     case succ.tag
     when .verbal?

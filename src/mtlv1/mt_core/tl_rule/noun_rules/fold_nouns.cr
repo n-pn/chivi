@@ -9,8 +9,7 @@ module CV::TlRule
 
     while noun.nominal?
       break unless succ = noun.succ?
-
-      succ = fold_mixed!(succ) if succ.mixed?
+      succ = heal_mixed!(succ) if succ.mixed?
 
       case succ
       when .maybe_adjt?
