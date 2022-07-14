@@ -4,14 +4,14 @@ class MtlV2::MTL::MtCore
   def initialize(@dicts, @uname : String = "")
   end
 
-  def translit(input : String, apply_cap : Bool = false) : AST::BaseList
+  def translit(input : String, apply_cap : Bool = false) : MtData
     list = tokenize(input.chars)
     list.capitalize!(cap: true) if apply_cap
     # list.pad_spaces!
     list
   end
 
-  def cv_title_full(title : String) : AST::BaseList
+  def cv_title_full(title : String) : MtData
     # tokens = TextUtil.split_spaces(title)
 
     # tokens.each do |token|
@@ -32,11 +32,11 @@ class MtlV2::MTL::MtCore
     output.add_tail(title_res)
   end
 
-  def cv_title(title : String, offset = 0) : AST::BaseList
+  def cv_title(title : String, offset = 0) : MtData
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
     offset_2 = offset + pre_zh.size + pad.size
 
-    output = title.empty? ? AST::BaseList.new("") : cv_plain(title, offset: offset_2)
+    output = title.empty? ? MtData.new("") : cv_plain(title, offset: offset_2)
 
     unless pre_zh.empty?
       output.add_head(AST::BaseNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
@@ -50,7 +50,7 @@ class MtlV2::MTL::MtCore
     cv_plain(input).to_txt
   end
 
-  def cv_plain(input : String, cap_first = true, offset = 0) : AST::BaseList
+  def cv_plain(input : String, cap_first = true, offset = 0) : MtData
     list = tokenize(input.chars, offset: offset)
     list.fold_inner!
     list.capitalize!(cap: cap_first)
@@ -58,7 +58,7 @@ class MtlV2::MTL::MtCore
     list
   end
 
-  def tokenize(input : Array(Char), offset = 0) : AST::BaseList
+  def tokenize(input : Array(Char), offset = 0) : MtData
     nodes = [AST::BaseNode.new("")]
     costs = [0]
 
@@ -88,7 +88,7 @@ class MtlV2::MTL::MtCore
       end
     end
 
-    res = AST::BaseList.new("", idx: 0)
+    res = MtData.new("", idx: 0)
     idx = nodes.size &- 1
 
     lst = nodes.unsafe_fetch(idx)
