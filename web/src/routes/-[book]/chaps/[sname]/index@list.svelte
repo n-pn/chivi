@@ -79,7 +79,7 @@
     <info-right>
       <button
         class="m-btn _primary umami--click--chaps-force-update"
-        disabled={$session.privi < 1}
+        disabled={$session.privi < 0}
         data-tip="Yêu cầu quyền hạn: Đăng nhập"
         on:click={reload_source}>
         <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />

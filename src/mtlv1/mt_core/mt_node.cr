@@ -181,6 +181,15 @@ class CV::MtNode
     end
   end
 
+  def modifier?
+    return false unless @tag.adjective?
+    @tag.modi || @key.size < 2
+  end
+
+  def lit_str?
+    @key.matches?(/^[a-zA-Z0-9_.-]+$/)
+  end
+
   include MTL::Serialize
   include MTL::ApplyCap
   include MTL::PadSpace

@@ -1,17 +1,12 @@
 class CV::Nslist
-  getter _base : Nvseed { Nvseed.load!(@nvinfo, "=base", force: true) }
-  getter _user : Nvseed { Nvseed.load!(@nvinfo, "=user", force: true) }
+  getter _base : Nvseed { init_base }
+  getter _user : Nvseed { init_user }
 
   getter users = [] of Nvseed
   getter other = [] of Nvseed
 
   def initialize(@nvinfo : Nvinfo)
-    seeds =
-      Nvseed.query
-        .where("nvinfo_id = #{nvinfo.id}")
-        .where("shield < 3")
-
-    seeds.each do |nvseed|
+    Nvseed.query.filter_nvinfo(@nvinfo.id).each do |nvseed|
       nvseed = Nvseed.cache!(nvseed)
 
       case nvseed.sname
@@ -25,12 +20,16 @@ class CV::Nslist
     @other.sort_by! { |x| SnameMap.zseed(x.sname) }
     @users.sort_by!(&.utime.-)
 
-    @_base ||= begin
-      seed = Nvseed.load!(@nvinfo, "=base", force: true)
-      seed.autogen_base!(@other, mode: 0)
-      seed
-    end
-
+    @_base ||= init_base
     @_user ||= Nvseed.load!(@nvinfo, "=user", force: true)
+  end
+
+  def init_base
+    seed = Nvseed.load!(@nvinfo, "=base", force: true)
+    seed.tap(&.autogen_base!(@other, mode: 0))
+  end
+
+  def init_user
+    Nvseed.load!(@nvinfo, "=user", force: true)
   end
 end

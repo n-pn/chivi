@@ -1,5 +1,5 @@
 require "./vp_dict"
-require "./mt_core/*"
+require "./mtdata"
 
 class CV::MtCore
   class_getter hanviet_mtl : self { new([VpDict.essence, VpDict.hanviet]) }
@@ -91,7 +91,7 @@ class CV::MtCore
     list.pad_spaces!
   end
 
-  def tokenize(input : Array(Char), offset = 0) : MtList
+  def tokenize(input : Array(Char), offset = 0) : MtData
     nodes = [MtNode.new("", "")]
     costs = [0.0]
 
@@ -123,77 +123,16 @@ class CV::MtCore
       end
     end
 
-    res = MtList.new
-    idx = nodes.size - 1
-
-    lst = nodes.unsafe_fetch(idx)
-    res.prepend!(lst)
-    idx -= lst.key.size
-
-    in_quote = false
+    idx = input.size - 1
+    cur = input.unsafe_fetch(idx)
+    res = MtData.new(cur)
 
     while idx > 0
-      cur = nodes.unsafe_fetch(idx)
       idx -= cur.key.size
-
-      if can_merge?(cur, lst)
-        lst.idx = cur.idx
-
-        lst.val = should_space?(cur, lst) ? "#{cur.val} #{fix_val!(cur, lst)}" : "#{cur.val}#{lst.val}"
-        lst.key = "#{cur.key}#{lst.key}"
-      else
-        if cur.key == "\""
-          cur.val = in_quote ? "“" : "”"
-          cur.tag = PosTag.parse_punct(cur.val)
-          in_quote = !in_quote
-        end
-
-        res.prepend!(cur)
-        lst = cur
-      end
+      cur = input.unsafe_fetch(idx)
+      res.add_node(cur)
     end
 
     res
-  end
-
-  @[AlwaysInline]
-  def should_space?(left : MtNode, right : MtNode) : Bool
-    left.nhanzi? || right.nhanzi?
-  end
-
-  private def fix_val!(left : MtNode, right : MtNode)
-    val = right.val
-    case right.key[0]?
-    when '五'
-      left.key.ends_with?('十') ? val.sub("năm", "lăm") : val
-    when '十'
-      return val unless left.key =~ /[一二两三四五六七八九]$/
-      val.sub("mười một", "mươi mốt").sub("mười", "mươi")
-    when '零' then val.sub("linh", "lẻ")
-    else          val
-    end
-  end
-
-  private def can_merge?(left : MtNode, right : MtNode) : Bool
-    case right.tag
-    when .puncts? then left.tag == right.tag
-    when .litstr? then left.tag.litstr? || left.tag.ndigit?
-    when .ndigit?
-      case left.tag
-      when .litstr?
-        right.tag = left.tag
-        true
-      when .pdeci?  then true
-      when .ndigit? then true
-      else               false
-      end
-    when .nhanzi?
-      return false unless left.numbers?
-      return true unless right.key == "两"
-      right.set!("lượng", PosTag::Qtnoun)
-      false
-    else
-      false
-    end
   end
 end

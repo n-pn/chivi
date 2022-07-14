@@ -91,6 +91,10 @@ class CV::Nvseed
     Nvinfo.cache!(self.nvinfo)
   end
 
+  scope :filter_nvinfo do |nvinfo_id|
+    where("nvinfo_id = #{nvinfo_id}").where("shield < 3")
+  end
+
   ########
 
   CACHED = RamCache(String, self).new(1024)

@@ -11,12 +11,18 @@ module CV::TlRule
     end
   end
 
+  def fold_list!(head : MtNode, tail : MtNode? = nil) : Nil
+    while head = head.succ?
+      head = fold_once!(succ)
+      break if head == tail
+    end
+  end
+
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_once!(node : MtNode) : MtNode
     case node.tag
     when .mixed?     then fold_mixed!(node)
     when .specials?  then fold_specials!(node)
-    when .puncts?    then fold_puncts!(node)
     when .strings?   then fold_strings!(node)
     when .adverbial? then fold_adverbs!(node)
     when .preposes?  then fold_preposes!(node)
@@ -31,17 +37,8 @@ module CV::TlRule
     when .locat?     then fold_space!(node)
     when .nominal?   then fold_nouns!(node)
     when .onomat?    then fold_onomat!(node)
+    when .atsign?    then fold_atsign!(node)
     else                  node
-    end
-  end
-
-  def fold_mixed!(node)
-    case node.tag
-    when .veno? then fold_veno!(node)
-    when .ajno? then fold_ajno!(node)
-    when .ajad? then fold_ajad!(node)
-      # when .adv_noun? then fold_adv_noun!(node)
-    else node
     end
   end
 end
