@@ -25,7 +25,7 @@ module CV::TlRule
     # puts [node, node.succ?, node.prev?]
 
     case node.tag
-    when .mixed?     then fold_mixed!(node)
+    when .mixed?     then fold_mixed!(node.as(MtTerm))
     when .specials?  then fold_specials!(node)
     when .strings?   then fold_strings!(node)
     when .adverbial? then fold_adverbs!(node)

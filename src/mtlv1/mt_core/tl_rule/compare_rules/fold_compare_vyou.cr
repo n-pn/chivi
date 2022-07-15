@@ -32,9 +32,11 @@ module CV::TlRule
       return fold!(vyou, tail, PosTag::Unkn, 1)
     end
 
-    output = MtNode.new("", "", PosTag::Unkn, dic: 1, idx: vyou.idx)
-    output.fix_prev!(vyou.prev?)
-    output.fix_succ!(tail.succ?)
+    # output = MtList.new(vyou)
+
+    # output = MtTerm.new("", "", PosTag::Unkn, dic: 1, idx: vyou.idx)
+    # output.fix_prev!(vyou.prev?)
+    # output.fix_succ!(tail.succ?)
 
     noun.fix_succ!(nil)
     if adverb
@@ -44,16 +46,15 @@ module CV::TlRule
 
     case vyou.key
     when "有"
-      output.set_body!(tail)
-      tail.fix_succ!(vyou.set!("có"))
+      output = MtList.new(vyou, tail, PosTag::Unkn, dic: 1, idx: vyou.idx)
     when "没有"
-      adv_bu = MtNode.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
-      output.set_body!(adv_bu)
-      adv_bu.fix_succ!(tail)
+      adv_bu = MtTerm.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
+      vyou = MtTerm.new("有", "bằng", PosTag::VYou, 1, vyou.idx + 1)
 
-      vyou = MtNode.new("有", "bằng", PosTag::VYou, 1, vyou.idx + 1)
       tail.fix_succ!(vyou)
       vyou.fix_succ!(noun)
+
+      output = MtList.new(adv_bu, noun, dic: 1, idx: adv_bu.idx)
     else
       return vyou
     end

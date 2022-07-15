@@ -6,7 +6,7 @@ module CV::TlRule
          .numeral?, .verb_clause? # , .prep_clause?, .defn_phrase?
       ude1.val = ""
     when .pro_dem?
-      if node = noun.dig_key?('样')
+      if node = noun.find_by_key('样')
         ude1.val = ""
         node.val = "thế"
       else

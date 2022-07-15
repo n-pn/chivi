@@ -19,7 +19,7 @@ class CV::MtData
   end
 
   def add_head(node : MtTerm)
-    node.fix_succ!(@head)
+    @head.fix_prev!(node)
     @head = node
   end
 
@@ -32,12 +32,14 @@ class CV::MtData
     if can_nest?(node)
       @nestable << node
       add_head(node)
-    elsif can_meld?(node, @head)
-      @head.val = join_val(node, @head)
-      @head.key = node.key + @head.key
-      @head.idx = node.idx
-      @head.dic = 0
-    elsif fold = TlRule.fold_left!(@head, node)
+      return
+    elsif @head.is_a?(MtTerm) && can_meld?(node, @head)
+      head = @head.as(MtTerm)
+      head.val = join_val(node, head)
+      head.key = node.key + head.key
+      head.idx = node.idx
+      head.dic = 0
+    elsif fold = TlRule.fold_left!(right: @head, left: node)
       fold.fix_succ!(@head)
       @head = fold
     else
@@ -56,8 +58,12 @@ class CV::MtData
     end
   end
 
+  private def can_meld?(left : MtTerm, right : MtList) : Bool
+    false
+  end
+
   # ameba:disable Metrics/CyclomaticComplexity
-  private def can_meld?(left : MtNode, right : MtNode) : Bool
+  private def can_meld?(left : MtTerm, right : MtTerm) : Bool
     case right.tag
     when .puncts? then left.tag == right.tag
     when .litstr?
@@ -81,12 +87,12 @@ class CV::MtData
     end
   end
 
-  private def join_val(left : MtNode, right : MtNode)
+  private def join_val(left : MtTerm, right : MtTerm)
     return left.val + right.val unless right.nhanzi?
     left.val + " " + fix_hanzi_val(left, right)
   end
 
-  private def fix_hanzi_val(left : MtNode, right : MtNode)
+  private def fix_hanzi_val(left : MtTerm, right : MtTerm)
     val = right.val
 
     case right.key[0]?
@@ -157,7 +163,14 @@ class CV::MtData
   end
 
   def to_txt(io : IO) : Nil
-    each(&.to_txt(io))
+    left = head
+    left.to_txt(io)
+
+    while node = left.succ?
+      io << ' ' if node.space_before?(left)
+      node.to_txt(io)
+      left = node
+    end
   end
 
   def to_mtl : String
@@ -165,7 +178,14 @@ class CV::MtData
   end
 
   def to_mtl(io : IO) : Nil
-    each(&.to_mtl(io))
+    left = head
+    left.to_mtl(io)
+
+    while node = left.succ?
+      io << '\t' if node.space_before?(left)
+      node.to_mtl(io)
+      left = node
+    end
   end
 
   def inspect(io : IO) : Nil

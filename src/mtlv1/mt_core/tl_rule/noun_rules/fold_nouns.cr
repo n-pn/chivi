@@ -42,17 +42,6 @@ module CV::TlRule
         break if succ.ntime?
         return noun unless fold = fold_noun_noun!(noun, succ, mode: mode)
         noun = fold
-      when .suf_verb?
-        return fold_suf_verb!(noun, succ)
-      when .suf_noun?
-        if succ.key == "时"
-          break if noun.prev?(&.verb?)
-        end
-
-        noun = fold_suf_noun!(noun, succ)
-      when .usuo?
-        break if succ.succ?(&.verbal?)
-        noun = fold_suf_noun!(noun, succ)
       when .specials?
         case succ.key
         when "第"

@@ -38,7 +38,7 @@ module CV::TlRule
   end
 
   def fold_time_appro!(node : MtNode)
-    return node unless succ = node.succ?
+    return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
     case succ.key
     when "前后"
       fold!(node, succ.set!("tầm"), PosTag::Ntime, dic: 2, flip: true)
@@ -54,7 +54,7 @@ module CV::TlRule
   def fold_number_hour!(node : MtNode, succ : MtNode) : MtNode
     node = fold!(node, succ.set!("giờ"), PosTag::Ntime, dic: 1)
 
-    return node unless (succ = node.succ?)
+    return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
 
     case succ.key
     when "半"
@@ -70,14 +70,18 @@ module CV::TlRule
     fold!(node, second.set!("giây"), PosTag::Ntime, dic: 1)
   end
 
-  def read_minute_quanti?(node : MtNode?)
-    return unless node && (succ = node.succ?) && node.numbers?
+  def read_minute_quanti?(node : MtNode?) : MtTerm?
+    return unless node && node.numbers?
+    return unless (succ = node.succ?) && succ.is_a?(MtTerm)
+
     succ.key == "分" || succ.key == "分钟" ? succ : nil
   end
 
-  def read_second_quanti?(node : MtNode?)
-    return unless node && (succ = node.succ?) && node.numbers?
-    succ.key == "秒" || succ.key == "秒钟" ? succ : nil
+  def read_second_quanti?(node : MtNode?) : MtTerm?
+    return unless node && node.numbers?
+    return unless (succ = node.succ?) && succ.is_a?(MtTerm)
+
+    succ.key == "秒" || succ.key == "秒钟" ? succ.as(MtTerm) : nil
   end
 
   def fold_number_minute!(node : MtNode, succ : MtNode, is_time = false) : MtNode

@@ -1,16 +1,17 @@
-require "../../vp_dict/vp_term"
+require "../vp_dict/vp_term"
 
 abstract class CV::MtNode
   forward_missing_to @tag
 
-  property dic : Int32 = 0
+  property key : String = ""
+  property val : String = ""
+
   property tag : PosTag = PosTag::None
+  property dic : Int32 = 0
+  property idx : Int32 = 0
 
   property! prev : MtNode
   property! succ : MtNode
-
-  def initialize(@tag = PosTag::None, @dic = 0, @idx = -1)
-  end
 
   def prev?
     @prev.try { |x| yield x }
@@ -20,17 +21,19 @@ abstract class CV::MtNode
     @succ.try { |x| yield x }
   end
 
-  def fix_prev!(@prev : Nil) : Nil
+  def fix_prev!(prev : Nil) : Nil
+    @prev = nil
   end
 
-  def fix_prev!(@prev : self) : Nil
+  def fix_prev!(@prev : MtNode) : Nil
     prev.succ = self
   end
 
-  def fix_succ!(@succ : Nil) : Nil
+  def fix_succ!(succ : Nil) : Nil
+    @succ = nil
   end
 
-  def fix_succ!(@succ : self) : Nil
+  def fix_succ!(@succ : MtNode) : Nil
     succ.prev = self
   end
 
@@ -54,12 +57,32 @@ abstract class CV::MtNode
     @tag.adjective? || @tag.adverbial? && @succ.try(&.maybe_adjt?) || false
   end
 
+  def set!(@val : String) : self
+    self
+  end
+
+  def set!(@tag : PosTag) : self
+    self
+  end
+
+  def set!(@val : String, @tag : PosTag) : self
+    self
+  end
+
   abstract def starts_with?(key : String | Char)
   abstract def ends_with?(key : String | Char)
-  abstract def find_key?(key : String | Char)
+  abstract def find_by_key(key : String | Char)
   abstract def apply_cap!(cap : Bool)
 
   abstract def to_txt(io : IO)
   abstract def to_mtl(io : IO)
   abstract def inspect(io : IO)
+
+  def key_is?(key : String)
+    false
+  end
+
+  def key_in?(*keys : String)
+    false
+  end
 end

@@ -33,14 +33,14 @@ module CV::TlRule
     end
 
     head = fold!(prepos, noun, PosTag::PrepClause, dic: 4)
+    return head unless verb
+    verb = heal_mixed!(verb) if verb.mixed?
 
     case verb
-    when .nil?, .v_shi?, .v_you?
-      return head
-    when .adverbial? then verb = fold_adverbs!(verb)
-    when .veno?      then verb = fold_verbs!(MtDict.fix_verb!(verb))
-    when .verbal?    then verb = fold_verbs!(verb)
-    else                  return head
+    when .v_shi?, .v_you? then return head
+    when .verbal?         then verb = fold_verbs!(verb)
+    when .adverbial?      then verb = fold_adverbs!(verb)
+    else                       return head
     end
 
     return head unless verb.verbal?

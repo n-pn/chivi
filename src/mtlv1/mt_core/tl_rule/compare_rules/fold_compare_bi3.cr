@@ -21,24 +21,28 @@ module CV::TlRule
     return prepos unless tail = scan_adjt!(noun.succ?)
     return prepos unless tail.adjective? || tail.verb_object?
 
-    output = MtNode.new("", "", PosTag::Unkn, dic: 1, idx: prepos.idx)
+    output = MtTerm.new("", "", PosTag::Unkn, dic: 1, idx: prepos.idx)
     output.fix_prev!(prepos.prev?)
     output.fix_succ!(tail.succ?)
 
     noun.fix_succ!(nil)
 
     if prepos.key == "不比"
-      adv_bu = MtNode.new("不", "không", PosTag::AdvBu4, 1, prepos.idx)
-      output.set_body!(adv_bu)
-      adv_bu.fix_succ!(tail)
+      adv_bu = MtTerm.new("不", "không", PosTag::AdvBu4, 1, prepos.idx)
 
-      prepos = MtNode.new("比", "bằng", PosTag::PreBi3, 1, prepos.idx + 1)
+      adv_bu.fix_succ!(prepos.succ?)
+      adv_bu.fix_prev!(prepos.prev?)
+
+      prepos = MtTerm.new("比", "bằng", PosTag::PreBi3, 1, prepos.idx + 1)
+
+      prepos.fix_succ!(tail.succ?)
       tail.fix_succ!(prepos)
-      prepos.fix_succ!(noun)
+      prepos = tail
+
+      output = MtList.new(adv_bu, prepos, dic: 0, idx: adv_bu.idx)
     else
-      output.set_body!(tail)
-      tail.fix_prev!(nil)
-      tail.fix_succ!(prepos.set!("hơn"))
+      prepos.set!("hơn")
+      output = MtList.new(prepos, tail, dic: 0, idx: prepos.idx, flip: true)
     end
 
     fold_compare_bi3_after!(output, noun)

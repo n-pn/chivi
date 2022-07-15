@@ -78,20 +78,13 @@ module CV::TlRule
     end
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
   def fold_uniqs_by_key!(node : MtNode, succ = node.succ?)
     case node.key
     when "第" then fold_第!(node)
-    when "完"
-      case node.succ?
-      when .nil?, .ends?, .ule?
-        node.set!("hết")
-      else
-        fold_verbs!(MtDict.fix_verb!(node))
-      end
     when "对不起"
       return node if boundary?(succ)
-      fold_verbs!(MtDict.fix_verb!(node))
+      node = MtDict.fix_verb!(node.as(MtTerm))
+      fold_verbs!(node)
     when "原来"
       if succ.try(&.ude1?) || node.prev?(&.contws?)
         node.set!("ban đầu", tag: PosTag::Modi)

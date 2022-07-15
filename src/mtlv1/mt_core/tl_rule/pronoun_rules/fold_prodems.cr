@@ -70,19 +70,20 @@ module CV::TlRule
     node.key == "此"
   end
 
-  def split_prodem!(node : MtNode?, succ : MtNode? = node.succ?)
+  def split_prodem!(node : MtNode, succ : MtNode? = node.succ?)
     if succ && prodem_shoud_split?(node)
       succ = heal_quanti!(succ)
       return succ.quantis? ? {node, succ, succ.succ?} : {node, nil, succ}
     end
 
-    if (left = node.body?) && (right = left.succ?)
-      left.fix_root!(nil)
+    if node.is_a?(MtList)
+      left = node.list.first
+      right = node.list.last
 
       if right.pronouns?
         # flip back if swapped before
-        right.fix_prev!(node.prev?)
         left.fix_succ!(node.succ?)
+        right.fix_prev!(node.prev?)
         right.fix_succ!(left)
         return {right, left, succ}
       else
@@ -103,7 +104,7 @@ module CV::TlRule
     qt_val = node.val.sub(" " + pro_val, "")
     node.val = pro_val
 
-    qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
+    qtnoun = MtTerm.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
     qtnoun.fix_succ!(succ)
     node.fix_succ!(qtnoun)
 

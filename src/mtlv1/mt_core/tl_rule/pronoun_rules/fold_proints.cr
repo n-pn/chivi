@@ -1,12 +1,15 @@
 module CV::TlRule
   def fold_pro_ints!(proint : MtNode, succ = node.succ?)
+    if succ.is_a?(MtTerm) && succ.mixed?
+      succ = heal_mixed!(succ)
+    end
+
     case succ
     when .nil?, .v_shi?, .v_you?
       return proint
-    when .veno?
-      succ = fold_verbs!(MtDict.fix_verb!(succ))
     when .verbal?
       succ = fold_verbs!(succ)
+      return proint unless succ.verbal?
     when .nominal?
       return proint unless succ = scan_noun!(succ)
     else

@@ -2,7 +2,7 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_vmodals!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     return node.set!(PosTag::Noun) if vmodal_is_noun?(node)
-    succ = MtDict.fix_verb!(succ) if succ && (succ.veno? || succ.vead?)
+    succ = heal_mixed!(succ) if succ && succ.mixed?
 
     case node
     when .vm_hui?
@@ -13,7 +13,7 @@ module CV::TlRule
       return fold_verbs!(node) if node.verb?
       # when .key?("要")
       # node.set!("phải") if succ.try(&.maybe_verb?)
-    when .key?("可")
+    when .key_is?("可")
       if nega
         node.val = "thể"
         node = fold!(nega, node, node.tag, dic: 6)
@@ -108,7 +108,7 @@ module CV::TlRule
         node.val = "muốn"
       end
     else
-      if succ.vdirs? || MtDict.fix_vcompl(succ)
+      if succ.vdirs? || MtDict.fix_vcompl(succ.as(MtTerm))
         node.set!("nhớ") if succ.succ?(&.human?)
       end
     end

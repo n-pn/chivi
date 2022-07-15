@@ -1,6 +1,10 @@
 module CV::TlRule
-  def heal_quanti!(node : MtNode) : MtNode
+  def heal_quanti!(node : MtTerm) : MtTerm
     not_quanti?(node) ? node : MtDict.fix_quanti(node)
+  end
+
+  def heal_quanti!(node : MtList) : MtList
+    node
   end
 
   def not_quanti?(node : MtNode)
@@ -37,6 +41,7 @@ module CV::TlRule
   end
 
   def is_pre_quanti_appro?(node : MtNode)
+    return false unless node.is_a?(MtTerm)
     node.to_int?.try { |x| x > 10 && x % 10 == 0 } || false
   end
 

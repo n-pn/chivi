@@ -10,16 +10,18 @@ module CV::TlRule
   BA3_HANDLERS = {'剑', '刀', '枪'}
   BA3_IN_HANDS = {'米', '花', '盐', '糖', '麦', '谷'}
 
-  def guess_pre_ba3_defn(noun : MtNode) : String?
-    noun.each do |x|
-      if body = noun.body?
-        guess_pre_ba3_defn(body).try { |y| return y }
-      else
-        x.key.each_char do |char|
-          return "thanh" if BA3_HANDLERS.includes?(char)
-          return "nắm" if BA3_IN_HANDS.includes?(char)
-        end
+  def guess_pre_ba3_defn(noun : MtList) : String?
+    noun.list.each do |node|
+      if val = guess_pre_ba3_defn(node)
+        return val
       end
+    end
+  end
+
+  def guess_pre_ba3_defn(noun : MtTerm) : String?
+    noun.key.each_char do |char|
+      return "thanh" if BA3_HANDLERS.includes?(char)
+      return "nắm" if BA3_IN_HANDS.includes?(char)
     end
   end
 

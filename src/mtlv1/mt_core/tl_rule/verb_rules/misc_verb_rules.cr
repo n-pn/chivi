@@ -5,6 +5,7 @@ module CV::TlRule
     return true if !succ || succ.starts_with?('不')
 
     head.each do |node|
+      next unless node.is_a?(MtTerm)
       next unless char = node.key[0]?
       return true if {'来', '去', '到', '有', '上', '想', '出'}.includes?(char)
     end
@@ -61,16 +62,12 @@ module CV::TlRule
     end
   end
 
-  def need_2_objects?(node : MtNode)
-    node.each do |x|
-      if body = x.body?
-        return true if need_2_objects?(body)
-      else
-        return true if MtDict.has_key?(:v2_objs, x.key)
-      end
-    end
+  def need_2_objects?(node : MtTerm)
+    MtDict.has_key?(:v2_objs, node.key)
+  end
 
-    false
+  def need_2_objects?(node : MtList)
+    node.list.any? { |x| need_2_objects?(x) }
   end
 
   def need_2_objects?(key : String)

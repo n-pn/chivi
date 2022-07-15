@@ -1,13 +1,13 @@
 require "log"
-require "./mt_node"
+require "../mt_node/*"
 require "../vp_dict"
 
 module CV::MtDict
   extend self
 
-  alias MtTerm = Tuple(String, PosTag)
+  alias VxTerm = Tuple(String, PosTag)
 
-  class MtHash < Hash(String, MtTerm)
+  class MtHash < Hash(String, VxTerm)
     getter df_ptag : PosTag
 
     def initialize(@df_ptag, @fixed_tag = false, initial_capacity = 0)
@@ -79,7 +79,7 @@ module CV::MtDict
     get(dict).upsert(term)
   end
 
-  def fix_noun!(node : MtNode) : MtNode
+  def fix_noun!(node : MtTerm) : MtTerm
     if term = get(:fix_nouns)[node.key]?
       node.set!(term[0], term[1])
     else
@@ -87,7 +87,7 @@ module CV::MtDict
     end
   end
 
-  def fix_verb!(node : MtNode) : MtNode
+  def fix_verb!(node : MtTerm) : MtTerm
     if term = get(:fix_verbs)[node.key]?
       node.set!(term[0], term[1])
     else
@@ -95,7 +95,7 @@ module CV::MtDict
     end
   end
 
-  def fix_adjt!(node : MtNode) : MtNode
+  def fix_adjt!(node : MtTerm) : MtTerm
     if term = get(:fix_adjts)[node.key]?
       node.set!(term[0], term[1])
     else
@@ -103,7 +103,7 @@ module CV::MtDict
     end
   end
 
-  def fix_adverb!(node : MtNode) : MtNode
+  def fix_adverb!(node : MtTerm) : MtTerm
     if term = get(:fix_adverbs)[node.key]?
       node.set!(term[0], term[1])
     else
@@ -111,18 +111,18 @@ module CV::MtDict
     end
   end
 
-  def fix_uzhi(node : MtNode)
+  def fix_uzhi(node : MtTerm)
     return unless term = get(:fix_u_zhi)[node.key]?
     node.val = term[0]
     term[1]
   end
 
-  def fix_vcompl(node : MtNode)
+  def fix_vcompl(node : MtTerm)
     return unless term = get(:v_compl)[node.key]?
     node.set!(term[0], term[1])
   end
 
-  def fix_quanti(node : MtNode)
+  def fix_quanti(node : MtTerm)
     key = node.key
 
     {get(:qt_times), get(:qt_verbs), get(:qt_nouns)}.each do |hash|

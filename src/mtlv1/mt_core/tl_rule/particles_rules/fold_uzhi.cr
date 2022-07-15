@@ -6,18 +6,20 @@ module CV::TlRule
     if succ.nhanzi? && is_percent?(prev, uzhi)
       # TODO: handle this in fold_number!
       tag = PosTag::Number
-    elsif !(tag = MtDict.fix_uzhi(succ))
-      return prev if succ.adjt?
-      tag = PosTag::Nform
+    elsif succ.is_a?(MtTerm)
+      unless tag = MtDict.fix_uzhi(succ)
+        return prev if succ.adjt?
+      end
     end
 
+    tag ||= PosTag::Nform
     fold!(prev, succ, tag, dic: 3, flip: true)
   end
 
   def is_percent?(prev : MtNode, uzhi : MtNode)
-    if body = prev.body?
-      return false unless body.nhanzi?
-      return false unless succ = body.succ?
+    if prev.is_a?(MtList)
+      body = prev.list.first
+      return false unless body.nhanzi? && (succ = body.succ?)
 
       case succ.key
       when "分"

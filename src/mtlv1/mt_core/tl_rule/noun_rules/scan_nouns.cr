@@ -11,7 +11,7 @@ module CV::TlRule
     # puts [node, prodem, nquant, "scan_noun"]
 
     while node
-      if node.mixed?
+      if node.is_a?(MtTerm) && node.mixed?
         node = heal_mixed!(node)
         break if node.mixed?
       end
@@ -154,7 +154,7 @@ module CV::TlRule
   end
 
   def clean_nquant(nquant : MtNode, prodem : MtNode?)
-    return nquant unless prodem || nquant.body? || nquant.key.size > 1
+    return nquant unless prodem || nquant.is_a?(MtList) || nquant.key.size > 1
 
     nquant.each do |node|
       case node.key

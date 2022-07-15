@@ -52,8 +52,7 @@ class CV::MtCore
 
   def translit(input : String, apply_cap : Bool = false) : MtData
     data = tokenize(input.chars)
-    data.capitalize!(cap: true) if apply_cap
-    data.pad_spaces!
+    data.apply_cap!(cap: true) if apply_cap
     data
   end
 
@@ -63,7 +62,7 @@ class CV::MtCore
     mt_data = cv_title(title, offset: chvol.size)
     return mt_data if chvol.empty?
 
-    mt_data.add_head(MtNode.new("", " - ", idx: chvol.size))
+    mt_data.add_head(MtTerm.new("", " - ", idx: chvol.size))
     cv_title(chvol).concat(mt_data)
   end
 
@@ -71,8 +70,8 @@ class CV::MtCore
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
     offset_2 = offset + pre_zh.size + pad.size
 
-    mt_data = MtData.new(MtNode.new(pre_zh, pre_vi, dic: 1, idx: offset))
-    mt_data.add_tail(MtNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
+    mt_data = MtData.new(MtTerm.new(pre_zh, pre_vi, dic: 1, idx: offset))
+    mt_data.add_tail(MtTerm.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
 
     mt_data.concat(cv_plain(title, offset: offset_2))
   end
@@ -84,17 +83,16 @@ class CV::MtCore
   def cv_plain(input : String, cap_first = true, offset = 0) : MtData
     data = tokenize(input.chars, offset: offset)
     data.fix_grammar!
-    data.capitalize!(cap: cap_first)
-    data.pad_spaces!
+    data.apply_cap!(cap: cap_first)
     data
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtData
-    nodes = [MtNode.new("", "")]
+    nodes = [MtTerm.new("", "")]
     costs = [0.0]
 
     input.each_with_index(1) do |char, idx|
-      nodes << MtNode.new(char, idx: idx - 1 + offset)
+      nodes << MtTerm.new(char, idx: idx - 1 + offset)
       costs << idx - 0.5
     end
 
@@ -115,7 +113,7 @@ class CV::MtCore
 
         if cost >= costs[jump]
           dic = term.is_priv ? dic &+ 2 : dic
-          nodes[jump] = MtNode.new(term, dic, idx + offset)
+          nodes[jump] = MtTerm.new(term, dic, idx + offset)
           costs[jump] = cost
         end
       end

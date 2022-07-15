@@ -4,8 +4,8 @@ class CV::MtList < CV::MtNode
   getter list = [] of MtTerm | MtList
 
   def initialize(
-    head : MtTerm | MtList,
-    tail : MtTerm | MtList,
+    head : MtNode,
+    tail : MtNode,
     @tag : PosTag = PosTag::None,
     @dic = 0,
     @idx = 1,
@@ -28,6 +28,15 @@ class CV::MtList < CV::MtNode
     end
   end
 
+  def modifier?
+    false
+  end
+
+  def add_head!(node : MtList)
+    self.fix_prev!(node.prev?)
+    @list.unshift(node)
+  end
+
   def add_head!(node : MtTerm)
     self.fix_prev!(node.prev?)
 
@@ -38,6 +47,18 @@ class CV::MtList < CV::MtNode
     end
   end
 
+  ######
+
+  def each
+    @list.each do |node|
+      yield node
+    end
+  end
+
+  def to_int?
+    nil
+  end
+
   def starts_with?(key : String | Char)
     @list.any?(&.starts_with?(key))
   end
@@ -46,8 +67,16 @@ class CV::MtList < CV::MtNode
     @list.any?(&.ends_with?(key))
   end
 
-  def find?(key : String | Char)
-    @list.find(&.find?(key))
+  def find_by_key(key : String | Char)
+    @list.find(&.find_by_key(key))
+  end
+
+  def space_before?(prev : MtList)
+    true
+  end
+
+  def space_before?(prev : MtTerm)
+    !(prev.val.blank? || prev.popens?)
   end
 
   ###
@@ -57,32 +86,29 @@ class CV::MtList < CV::MtNode
   end
 
   def to_txt(io : IO) : Nil
-    node = @head
+    @list.first.to_txt(io)
 
-    while node
+    @list.each_cons_pair do |prev, node|
+      io << ' ' if node.space_before?(prev)
       node.to_txt(io)
-      node = node.succ?
     end
   end
 
   def to_mtl(io : IO = STDOUT) : Nil
-    node = @head
+    io << '〈' << @dic << '\t'
+    @list.first.to_mtl(io)
 
-    while node
+    @list.each_cons_pair do |prev, node|
+      io << '\t' if node.space_before?(prev)
       node.to_mtl(io)
-      node = node.succ?
     end
+
+    io << '〉'
   end
 
   def inspect(io : IO = STDOUT, pad = 0) : Nil
     io << " " * pad << "{" << @tag.tag << "/" << @dic << "}" << "\n"
-
-    node = @head
-    while node
-      node.inspect(io, pad + 2)
-      node = node.succ?
-    end
-
+    @list.each(&.inspect(io, pad &+ 2))
     io << " " * pad << "{/" << @tag.tag << "/" << @dic << "}" << "\n"
   end
 end

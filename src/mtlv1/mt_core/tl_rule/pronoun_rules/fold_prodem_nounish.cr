@@ -30,7 +30,7 @@ module CV::TlRule
     case pro_dem
     when .pro_zhe?
       case succ = pro_dem.succ?
-      when .nil?, .preposes?, .body?
+      when .nil?, .preposes?, MtList
         pro_dem.set!("cái này")
       when .verbal?
         pro_dem.set!("đây")

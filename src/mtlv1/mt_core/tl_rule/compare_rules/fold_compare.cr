@@ -33,7 +33,7 @@ module CV::TlRule
 
     root = fold!(head, tail, tag: PosTag::Aform, dic: 0)
     tail.prev.fix_succ!(nil)
-    fix_grammar!(head)
+    fold_list!(head, tail)
 
     head.fix_prev!(tail.prev?)
     head.fix_succ!(tail)

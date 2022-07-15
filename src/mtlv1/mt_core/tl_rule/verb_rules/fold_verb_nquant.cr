@@ -4,23 +4,26 @@ module CV::TlRule
     return verb unless tail.nquants?
 
     if tail.nqiffy? || tail.nqnoun?
-      return verb if has_ule || !is_temp_nqverb?(tail)
+      return verb if has_ule || !nquant_is_compl?(tail)
     end
 
     fold!(verb, tail, verb.tag, dic: 6)
   end
 
-  def is_temp_nqverb?(tail : MtNode)
-    tail.each do |x|
-      case x.key[-1]?
-      when '把'
-        return false if tail.succ?(&.noun?)
-        x.val = x.val.sub(/bả|chiếc/, "phát")
-      when '脚', '眼', '圈', '次' # , '口'
-        return true
-      end
+  def nquant_is_compl?(node : MtTerm) : Bool
+    case node.key[-1]?
+    when '脚', '眼', '圈', '次' # , '口'
+      true
+    when '把'
+      return false if node.succ?(&.nominal?)
+      node.val = node.val.sub(/bả|chiếc/, "phát")
+      true
+    else
+      false
     end
+  end
 
-    false
+  def nquant_is_compl?(node : MtList) : Bool
+    node.list.any? { |x| nquant_is_compl?(x) }
   end
 end

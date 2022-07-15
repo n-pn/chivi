@@ -7,25 +7,27 @@ module CV::TlRule
     "重" => "nặng",
   }
 
-  def fold_measurement!(adjt : MtNode, succ = adjt.succ?)
+  def fold_adjt_measure(adjt : MtTerm, succ = adjt.succ?)
     return unless succ
-    return unless adjt_val = MEASURES[adjt.key]?
-    return unless succ_val = PRE_NUM_APPROS[succ.key]?
 
-    adjt.val = adjt_val
-    succ.val = succ_val
-
-    if (succ_2 = succ.succ?) && succ_2.numeral?
-      succ_2 = fuse_number!(succ_2)
-      return fold!(adjt, succ_2, PosTag::Aform, dic: 7)
+    if succ.numeral?
+      succ = fuse_number!(succ)
+      return fold!(adjt, succ, PosTag::Aform, dic: 7)
     end
 
-    fold!(adjt, succ, PosTag::VerbPhrase, dic: 7)
+    return unless succ.is_a?(MtTerm) && (tail = succ.succ?) && tail.numeral?
+    return unless succ_val = PRE_NUM_APPROS[succ.key]?
+    succ.val = succ_val
+
+    tail = fuse_number!(tail)
+    fold!(adjt, tail, PosTag::Aform, dic: 7)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_adjts!(adjt : MtNode, prev : MtNode? = nil) : MtNode
-    fold_measurement!(adjt).try { |x| return x }
+    if adjt.is_a?(MtTerm) && MEASURES.has_key?(adjt.key)
+      fold_adjt_measure(adjt).try { |x| return x }
+    end
 
     while adjt.adjective?
       break unless succ = adjt.succ?
@@ -46,7 +48,8 @@ module CV::TlRule
       when .adjt?
         adjt = fold!(adjt, succ, PosTag::Adjt, dic: 4)
       when .vdir?
-        return fold_verbs!(MtDict.fix_verb!(adjt))
+        adjt = MtDict.fix_verb!(adjt) if adjt.is_a?(MtTerm)
+        return fold_verbs!(adjt)
       when .verb?
         break unless succ.key == "到"
         adjt = fold!(adjt, succ, PosTag::Adverb)
@@ -90,12 +93,6 @@ module CV::TlRule
       when .uzhi?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_uzhi!(succ, adjt)
-      when .suf_noun?
-        adjt = fold_adj_adv!(adjt, prev)
-        return fold_suf_noun!(adjt, succ)
-      when .suf_verb?
-        adjt = fold_adj_adv!(adjt, prev)
-        return fold_suf_verb!(adjt, succ)
       when .adv_bu4?
         fold_adjt_adv_bu!(adjt, succ, prev).try { |x| return x } || break
       else
@@ -114,10 +111,11 @@ module CV::TlRule
     # puts [node, succ, nega].colorize.green
 
     node = fold!(nega, node, node.tag, dic: 4) if nega
-    return node unless succ = node.succ?
+    return node if !(succ = node.succ?) || succ.ends?
 
-    MtDict.fix_noun!(succ) if succ.veno? || succ.ajno?
-    # puts [node, succ]
+    if succ.is_a?(MtTerm) && succ.mixed?
+      succ = heal_mixed!(succ, prev: node)
+    end
 
     succ.nominal? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
   end

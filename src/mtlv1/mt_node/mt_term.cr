@@ -1,6 +1,6 @@
 require "./mt_node"
-require "../mt_util"
-require "../../../_util/text_util"
+require "../mt_core/mt_util"
+require "../../_util/text_util"
 
 class CV::MtTerm < CV::MtNode
   def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = 0)
@@ -27,18 +27,6 @@ class CV::MtTerm < CV::MtNode
     @key.empty? || @val.blank?
   end
 
-  def set!(@val : String) : self
-    self
-  end
-
-  def set!(@tag : PosTag) : self
-    self
-  end
-
-  def set!(@val : String, @tag : PosTag) : self
-    self
-  end
-
   def to_int?
     case @tag
     when .ndigit? then @val.to_i64?
@@ -57,7 +45,7 @@ class CV::MtTerm < CV::MtNode
     @key.ends_with?(key)
   end
 
-  def find?(key : String | Char)
+  def find_by_key(key : String | Char)
     return self if @key.includes?(key)
   end
 
@@ -77,10 +65,14 @@ class CV::MtTerm < CV::MtNode
     @key.matches?(/^[a-zA-Z0-9_.-]+$/)
   end
 
+  def each
+    yield self
+  end
+
   #########
 
   def apply_cap!(cap : Bool = false) : Bool
-    return cap if @val.blank? || @tag.none
+    return cap if @val.blank? || @tag.none?
     return cap_after_punct?(cap) if @tag.puncts?
 
     @val = TextUtil.capitalize(@val) if cap && !@tag.fixstr?
@@ -99,9 +91,47 @@ class CV::MtTerm < CV::MtNode
     end
   end
 
+  def space_before?(prev : Nil) : Bool
+    true
+  end
+
+  def space_before?(prev : MtList) : Bool
+    return true unless @tag.puncts?
+
+    case @tag
+    when .colon?, .pstop?, .pstops?, .comma?, .penum?,
+         .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
+      false
+    else
+      false
+    end
+  end
+
+  def space_before?(prev : MtTerm) : Bool
+    return false if @tag.ndigit? && prev.plsgn? || prev.mnsgn?
+    return false if prev.popens?
+    return true unless @tag.puncts?
+
+    case @tag
+    when .plsgn?, .mnsgn? then !prev.tag.ndigit?
+    when .middot?         then true
+    when .colon?          then false
+    when .pstops?, .comma?, .penum?, .pdeci?,
+         .ellip?, .tilde?, .perct?, .squanti?
+      prev.tag.colon?
+    else
+      case prev.tag
+      when .colon?, .comma?, .pstop? then true
+      else                                false
+      end
+    end
+  end
+
   #######
 
   def to_txt(io : IO) : Nil
+    # puts [self, self.prev?, self.succ?]
+
     io << @val
   end
 

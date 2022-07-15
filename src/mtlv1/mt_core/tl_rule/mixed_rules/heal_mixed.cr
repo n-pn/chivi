@@ -1,5 +1,5 @@
 module CV::TlRule
-  def heal_mixed!(node : MtNode, prev = node.prev, succ = node.succ?)
+  def heal_mixed!(node : MtTerm, prev = node.prev, succ = node.succ?)
     case node.tag
     when .vead? then heal_vead!(node, prev, succ)
     when .veno? then heal_veno!(node, prev, succ)
@@ -9,12 +9,17 @@ module CV::TlRule
     end
   end
 
+  def heal_mixed!(node : MtList, prev = node.prev, succ = node.succ?)
+    node
+  end
+
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_vead!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
+  def heal_vead!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtTerm
     case succ
     when .nil?, .puncts?
       return MtDict.fix_verb!(node)
     when .veno?
+      return node unless succ.is_a?(MtTerm)
       succ = heal_veno!(succ, node, succ.succ?)
       return succ.nominal? ? MtDict.fix_verb!(node) : MtDict.fix_adverb!(node)
     when .vdir?, .adj_hao?
@@ -28,9 +33,10 @@ module CV::TlRule
     end
 
     case prev
-    when .nil?    then node
-    when .adverb? then MtDict.fix_verb!(node)
+    when .nil?       then node
+    when .adverbial? then MtDict.fix_verb!(node)
     when .nhanzi?
+      return node unless prev.is_a?(MtTerm)
       prev.key == "一" ? MtDict.fix_verb!(node) : node
     else node
     end
@@ -46,7 +52,7 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_veno!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
+  def heal_veno!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtTerm
     # puts [node, prev, succ]
 
     case succ
@@ -56,8 +62,6 @@ module CV::TlRule
       return MtDict.fix_verb!(node) unless not_verb_auxil?(succ)
     when .v_shi?, .v_you?
       return MtDict.fix_noun!(node)
-    when .suffixes?
-      return MtDict.fix_noun!(node) if succ.key == "们"
     when .pronouns?, .verbal?, .pre_zai?
       return MtDict.fix_verb!(node)
       # when .nominal?
@@ -82,6 +86,7 @@ module CV::TlRule
          .adverbial?, .ude2?, .ude3?, .object?
       return MtDict.fix_verb!(node)
     when .adjective?
+      return MtDict.fix_verb!(node) unless prev.is_a?(MtTerm)
       return prev.modifier? ? MtDict.fix_noun!(node) : MtDict.fix_verb!(node)
     when .ude1?
       # TODO: check for adjt + ude1 + verb (grammar error)
@@ -95,6 +100,7 @@ module CV::TlRule
     node
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def heal_ajno!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
     # puts [node, prev, succ, "heal_ajno"]
 
@@ -111,7 +117,9 @@ module CV::TlRule
       node = MtDict.fix_adjt!(node)
       return node.set!(PosTag::Modi)
     else
-      return MtDict.fix_adjt!(node) if {"到"}.includes?(succ.key)
+      if succ.is_a?(MtTerm) && succ.key == "到"
+        return MtDict.fix_adjt!(node)
+      end
     end
 
     case prev

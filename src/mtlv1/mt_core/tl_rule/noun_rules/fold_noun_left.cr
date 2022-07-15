@@ -36,7 +36,7 @@ module CV::TlRule
   # end
 
   def fold_什么_noun!(prev : MtNode, node : MtNode)
-    succ = MtNode.new("么", "gì", prev.tag, 1, prev.idx + 1)
+    succ = MtTerm.new("么", "gì", prev.tag, 1, prev.idx + 1)
 
     prev.key = "什"
     prev.val = "cái"

@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
-    return if verb.v_you? || verb.v_shi?
+    return if verb.v_you? || verb.v_shi? || !compl.is_a?(MtTerm)
 
     unless MtDict.fix_vcompl(compl)
       case compl.tag

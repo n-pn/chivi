@@ -15,9 +15,10 @@ module CV::TlRule
     case tail = succ.succ?
     when .nil?
       fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)
-    when .key?("住")
+    when .key_is?("住")
       succ.val = ""
-      fold!(MtDict.fix_verb!(node), tail.set!("nổi"), PosTag::Verb, dic: 5)
+      node = MtDict.fix_verb!(node) if node.is_a?(MtTerm)
+      fold!(node, tail.set!("nổi"), PosTag::Verb, dic: 5)
     when .verbal?
       node = fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)
       fold_verbs!(tail, prev: node)

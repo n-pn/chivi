@@ -1,6 +1,7 @@
 module CV::TlRule
   def fold_nhanzi!(node : MtNode, prev : MtNode? = nil) : MtNode
-    return node unless succ = node.succ?
+    return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
+
     case succ.key
     when "点"  then fold_nhanzi_dian!(node, succ, prev)
     when "分"  then fold_number_minute!(node, succ)
@@ -22,10 +23,11 @@ module CV::TlRule
   end
 
   def keep_pure_numeral?(node : MtNode?) : Bool | MtNode
-    return false unless node
+    return false unless node && node.is_a?(MtTerm)
     return true if node.key == "半" || node.key == "前后"
+
     return false unless node.numbers?
-    return node unless succ = node.succ?
+    return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
     succ.key == "分" || succ.key == "分钟" ? true : node
   end
 end

@@ -43,7 +43,8 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)
-    return false if verb.body?(&.pre_bei?) || need_2_objects?(verb)
+    return false if verb.is_a?(MtList) && verb.list.any?(&.pre_bei?)
+    return false if need_2_objects?(verb)
 
     while prev && prev.adverb?
       prev = prev.prev?
