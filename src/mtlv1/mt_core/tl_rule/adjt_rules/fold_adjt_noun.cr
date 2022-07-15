@@ -1,5 +1,7 @@
 module CV::TlRule
   def fold_adjt_noun!(adjt : MtNode, noun : MtNode?, ude1 : MtNode? = nil)
+    # puts [adjt, noun, ude1, "fold_adjt_noun"]
+
     return adjt unless noun
     flip = true
 
@@ -9,18 +11,19 @@ module CV::TlRule
 
     case adjt.tag
     when .aform? then return adjt
-    when .adjt?  then return adjt if adjt.key.size > 1
-    when .modi?  then flip = !do_not_flip?(adjt.key)
+    when .adjt?  then return adjt if adjt.key.size > 2
+    when .modi?  then flip = adjt.key != "原"
     end
 
-    noun = fold_nouns!(noun, mode: 1)
+    noun = fold_nouns!(noun, mode: 0)
     return adjt unless noun.nominal?
+
+    # puts [noun, noun.prev?, noun.succ?, adjt.succ?]
 
     noun = fold!(adjt, noun, noun.tag, dic: 6, flip: flip)
     fold_noun_after!(noun)
   end
 
   def do_not_flip?(key : String)
-    {"原"}.includes?(key)
   end
 end

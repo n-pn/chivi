@@ -62,35 +62,18 @@ class CV::MtNode
     @body.try { |x| yield x }
   end
 
-  def set_prev!(node : MtNode) : Nil
-    node.fix_prev!(@prev)
-    self.fix_prev!(node)
-  end
-
-  def set_prev!(@prev : Nil) : Nil
-  end
-
-  def set_succ!(node : MtNode) : Nil
-    node.fix_succ!(@succ)
-    self.fix_succ!(node)
-  end
-
-  def set_succ!(@succ : Nil) : Nil
+  def fix_prev!(@prev : Nil) : Nil
   end
 
   def fix_prev!(@prev : self) : Nil
     prev.succ = self
   end
 
-  def fix_prev!(@prev : Nil) : Nil
+  def fix_succ!(@succ : Nil) : Nil
   end
 
   def fix_succ!(@succ : self) : Nil
     succ.prev = self
-  end
-
-  def fix_succ!(@succ : Nil) : Nil
-    self
   end
 
   def set!(@val : String) : self

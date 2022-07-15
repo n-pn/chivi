@@ -1,36 +1,26 @@
-module CV::MTL::Serialize
-  def print_val(io : IO = STDOUT) : Nil
-    if body = @body
-      body.print_val(io)
-    else
-      io << @val
-    end
-
-    @succ.try(&.print_val(io))
+class CV::MtNode
+  def to_txt : String
+    String.build { |io| to_txt(io) }
   end
 
-  def to_str : String
-    String.build { |io| to_str(io) }
+  def to_txt(io : IO)
+    raise "Implement by inherited class!"
+  end
+end
+
+class CV::MtTerm
+  def to_txt(io : IO) : Nil
+    io << @val
   end
 
-  def to_str(io : IO) : Nil
+  def to_mtl(io : IO) : Nil
     io << "\t" << @val
-    return if @key == "" && @val == " " # skip rendering if node is empty space
+
+    # skip rendering if node is empty space
+    return if @key == "" && @val == " "
 
     dic = @tag.puncts? || @val == "" ? 0 : @dic
     io << 'ǀ' << dic << 'ǀ' << @idx << 'ǀ' << @key.size
-  end
-
-  def serialize(io : IO = STDOUT) : Nil
-    if body = @body
-      io << '〈' << @dic
-      body.serialize(io)
-      io << '〉'
-    else
-      to_str(io)
-    end
-
-    @succ.try(&.serialize(io))
   end
 
   def inspect(io : IO = STDOUT, pad = -1) : Nil
@@ -39,16 +29,36 @@ module CV::MTL::Serialize
     io << "[#{@key}/#{@val}/#{@tag.tag}/#{@dic}/#{@idx}]"
     io << "\n" if pad >= 0
   end
+end
 
-  def deep_inspect(io : IO = STDOUT, pad = 0) : Nil
-    if body = @body
-      io << " " * pad << "{" << @tag.tag << "/" << @dic << "}" << "\n"
-      body.deep_inspect(io, pad &+ 2)
-      io << " " * pad << "{/" << @tag.tag << "/" << @dic << "}" << "\n"
-    else
-      self.inspect(io, pad: pad)
+class CV::MtList
+  def to_txt(io : IO) : Nil
+    node = @head
+
+    while node
+      node.to_txt(io)
+      node = node.succ?
+    end
+  end
+
+  def to_mtl(io : IO = STDOUT) : Nil
+    node = @head
+
+    while node
+      node.to_mtl(io)
+      node = node.succ?
+    end
+  end
+
+  def inspect(io : IO = STDOUT, pad = 0) : Nil
+    io << " " * pad << "{" << @tag.tag << "/" << @dic << "}" << "\n"
+
+    node = @head
+    while node
+      node.inspect(io, pad + 2)
+      node = node.succ?
     end
 
-    @succ.try(&.deep_inspect(io, pad))
+    io << " " * pad << "{/" << @tag.tag << "/" << @dic << "}" << "\n"
   end
 end

@@ -106,15 +106,25 @@ class CV::QtranData
     lines = trad ? self.simps : @input
     stime = Time.monotonic
 
-    tokens = title ? engine.cv_title_full(lines[0]) : engine.cv_plain(lines[0])
-    format.text? ? tokens.to_s(output) : tokens.to_str(output)
+    header = lines[0]
+
+    begin
+      tokens = title ? engine.cv_title_full(header) : engine.cv_plain(header)
+      format.text? ? tokens.to_s(output) : tokens.to_str(output)
+    rescue err
+      Log.error(exception: err) { header }
+      output << "Lỗi máy dịch, mời liên hệ ban quản trị!"
+    end
+
     output << '\t' << @label unless @label.empty?
 
-    1.upto(lines.size - 1) do |i|
-      line = lines.unsafe_fetch(i)
+    lines[1..].each do |line|
       output << '\n'
       tokens = engine.cv_plain(line)
       format.text? ? tokens.to_s(output) : tokens.to_str(output)
+    rescue err
+      Log.error(exception: err) { line }
+      output << "Lỗi máy dịch, mời liên hệ ban quản trị!"
     end
 
     output << '\n' << SEP << '\n'

@@ -96,10 +96,11 @@ module CV::TlRule
   end
 
   def heal_ajno!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
-    # puts [node, node.prev?, node.succ?]
+    # puts [node, prev, succ, "heal_ajno"]
+
     case succ
-    when .nil?, .puncts?
-      return node.prev?(&.object?) ? MtDict.fix_adjt!(node) : MtDict.fix_noun!(node)
+    when .nil?, .ends?
+      return prev.try(&.object?) ? MtDict.fix_adjt!(node) : MtDict.fix_noun!(node)
     when .vdir?
       return MtDict.fix_verb!(node)
     when .ude1?, .ude2?, .ude3?, .mopart?

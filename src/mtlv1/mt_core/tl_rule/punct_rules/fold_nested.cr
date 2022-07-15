@@ -21,8 +21,6 @@ module CV::TlRule
   end
 
   def guess_nested_tag(head : MtNode, tail : MtNode)
-    return PosTag::Punct if head.succ? == tail
-
     case head.tag
     when .titleop? then PosTag::Btitle
     when .brackop? then PosTag::Nother

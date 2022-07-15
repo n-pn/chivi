@@ -33,8 +33,11 @@ module CV::TlRule
 
     root = fold!(head, tail, tag: PosTag::Aform, dic: 0)
     tail.prev.fix_succ!(nil)
-    fix_grammar!(head, level: 1)
-    head.set_succ!(tail)
+    fix_grammar!(head)
+
+    head.fix_prev!(tail.prev?)
+    head.fix_succ!(tail)
+    # head.set_succ!(tail)
 
     return root unless succ = scan_adjt!(root.succ?)
     return root unless succ.adjective? || succ.verb_object?

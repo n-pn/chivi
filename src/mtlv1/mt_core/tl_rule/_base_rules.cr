@@ -7,17 +7,16 @@ module CV::TlRule
     # Create new common root
     root = MtNode.new("", "", tag, dic, head.idx)
 
-    if flip
-      root.set_body!(tail)
-      head.fix_root!(nil)
-    else
-      root.set_body!(head)
-    end
-
     root.fix_prev!(head.prev?)
     root.fix_succ!(tail.succ?)
 
+    head.fix_prev!(nil)
+    tail.fix_succ!(nil)
+
     if flip
+      root.set_body!(tail)
+      head.fix_root!(nil)
+
       # check if there is some node in between
       # if there is then flip their prev and succ node to current head and tail
       if tail != head.succ?
@@ -27,11 +26,11 @@ module CV::TlRule
         tail.fix_succ!(head)
       end
 
-      tail.fix_prev!(nil)
       head.fix_succ!(nil)
-    else
-      head.fix_prev!(nil)
       tail.fix_succ!(nil)
+    else
+      root.set_body!(head)
+      tail.fix_root!(nil)
     end
 
     root

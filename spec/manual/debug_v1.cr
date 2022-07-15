@@ -11,6 +11,6 @@ res.inspect(STDOUT)
 puts "------"
 puts input
 puts "------"
-puts res.to_s
+puts res.to_txt
 puts "------"
 puts CV::MtCore.cv_hanviet(input)

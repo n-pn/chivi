@@ -2,12 +2,10 @@ require "./mt_dict"
 require "./tl_rule/**"
 
 module CV::TlRule
-  def fix_grammar!(node : MtNode, level = 0) : Nil
-    # puts [node, node.idx, node.succ?, "level: #{level}"].colorize.blue
-
-    while node = node.succ?
+  def fix_grammar!(node : MtNode) : Nil
+    while node
       node = fold_once!(node)
-      # TODO: split fold methods to compound phrase and pattern phrase
+      node = node.succ?
     end
   end
 
@@ -20,6 +18,8 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_once!(node : MtNode) : MtNode
+    # puts [node, node.succ?, node.prev?]
+
     case node.tag
     when .mixed?     then fold_mixed!(node)
     when .specials?  then fold_specials!(node)

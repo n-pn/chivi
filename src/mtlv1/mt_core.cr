@@ -24,24 +24,24 @@ class CV::MtCore
   end
 
   def self.cv_pin_yin(input : String) : String
-    pin_yin_mtl.translit(input).to_s
+    pin_yin_mtl.translit(input).to_txt
   end
 
   def self.cv_hanviet(input : String, apply_cap = true) : String
     return input unless input =~ /\p{Han}/
-    hanviet_mtl.translit(input, apply_cap: apply_cap).to_s
+    hanviet_mtl.translit(input, apply_cap: apply_cap).to_txt
   end
 
   def self.trad_to_simp(input : String) : String
-    tradsim_mtl.tokenize(input.chars).to_s
+    tradsim_mtl.tokenize(input.chars).to_txt
   end
 
   def self.convert(input : String, dname = "combine") : String
     case dname
-    when "hanviet" then hanviet_mtl.translit(input).to_s
-    when "pin_yin" then pin_yin_mtl.translit(input).to_s
-    when "tradsim" then tradsim_mtl.tokenize(input.chars).to_s
-    else                generic_mtl(dname).cv_plain(input).to_s
+    when "hanviet" then hanviet_mtl.translit(input).to_txt
+    when "pin_yin" then pin_yin_mtl.translit(input).to_txt
+    when "tradsim" then tradsim_mtl.tokenize(input.chars).to_txt
+    else                generic_mtl(dname).cv_plain(input).to_txt
     end
   end
 
@@ -67,7 +67,7 @@ class CV::MtCore
     cv_title(chvol).concat(mt_data)
   end
 
-  def cv_title(title : String, offset = 0) : MtList
+  def cv_title(title : String, offset = 0) : MtData
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
     offset_2 = offset + pre_zh.size + pad.size
 
@@ -78,7 +78,7 @@ class CV::MtCore
   end
 
   def translate(input : String) : String
-    cv_plain(input).to_s
+    cv_plain(input).to_txt
   end
 
   def cv_plain(input : String, cap_first = true, offset = 0) : MtData
@@ -123,11 +123,13 @@ class CV::MtCore
 
     idx = nodes.size - 1
     cur = nodes.unsafe_fetch(idx)
+    idx -= cur.key.size
+
     res = MtData.new(cur)
 
     while idx > 0
-      idx -= cur.key.size
       cur = nodes.unsafe_fetch(idx)
+      idx -= cur.key.size
       res.add_node(cur)
     end
 

@@ -196,13 +196,13 @@ struct CV::VpTermView
     end
 
     def add_hint_from_mtl : Nil
-      mt_list = @word_mtl.cv_plain(@word, cap_first: false)
-      mtl_val = mt_list.to_s
+      mt_data = @word_mtl.cv_plain(@word, cap_first: false)
+      mtl_val = mt_data.to_s
 
       @val_hints << mtl_val
-      return if !(first = mt_list.first?) || first.succ?
+      return if mt_data.head.succ?
 
-      mtl_tag = first.tag
+      mtl_tag = mt_data.head.tag
       return if @vdict.kind.novel? && (mtl_tag.unkn? || mtl_tag.none?)
 
       @tag_hints << mtl_tag.to_str

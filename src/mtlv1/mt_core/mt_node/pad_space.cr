@@ -27,7 +27,8 @@ module CV::MTL::PadSpace
       root.prepend_space!
     else
       space = MtNode.new("", val: " ", idx: @idx)
-      self.set_prev!(space)
+      space.fix_prev!(@prev)
+      self.fix_prev!(space)
     end
   end
 

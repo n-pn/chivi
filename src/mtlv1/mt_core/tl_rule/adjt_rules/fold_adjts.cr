@@ -29,6 +29,8 @@ module CV::TlRule
 
     while adjt.adjective?
       break unless succ = adjt.succ?
+      # puts [adjt, succ, "fold_adjt"]
+      succ = heal_mixed!(succ, prev: adjt) if succ.mixed?
 
       case succ.tag
       when .adverb?
@@ -43,15 +45,6 @@ module CV::TlRule
         adjt = fold!(adjt, succ, PosTag::Aform, dic: 4)
       when .adjt?
         adjt = fold!(adjt, succ, PosTag::Adjt, dic: 4)
-      when .ajno?
-        return fold!(adjt, succ, PosTag::Noun, dic: 7, flip: true)
-      when .veno?
-        if !prev && adjt.key.size == 1
-          succ = MtDict.fix_verb!(succ)
-        else
-          succ = fold_nouns!(MtDict.fix_noun!(succ))
-          return fold!(adjt, succ, PosTag::NounPhrase, dic: 5, flip: true)
-        end
       when .vdir?
         return fold_verbs!(MtDict.fix_verb!(adjt))
       when .verb?

@@ -22,7 +22,7 @@ class CV::MtData
     @head = node
   end
 
-  def tail_head(node : MtNode)
+  def add_tail(node : MtNode)
     node.fix_prev!(@tail)
     @tail = node
   end
@@ -30,6 +30,7 @@ class CV::MtData
   def add_node(node : MtNode)
     if can_nest?(node)
       @nestable << node
+      add_head(node)
     elsif can_meld?(node, @head)
       @head.val = join_val(node, @head)
       @head.key = node.key + @head.key
@@ -96,23 +97,23 @@ class CV::MtData
   end
 
   def resolve_nested!
-    tail = nil
+    head = nil
     char = 'x'
 
-    @nestable.reverse_each do |head|
-      if tail
-        next unless head.val[0] == char
+    @nestable.reverse_each do |tail|
+      if head
+        next unless tail.val[0] == char
 
         if char == '"'
-          head.val = "“"
-          tail.val = "”"
+          tail.val = "“"
+          head.val = "”"
         end
 
-        TlRule.fold_nested!(head, tail)
-        tail = nil
+        TlRule.fold_nested!(head, tail) if tail.succ? != head
+        head = nil
       else
-        tail = head
-        char = TlRule.map_closer_char(tail.val[0])
+        head = tail
+        char = TlRule.map_closer_char(head.val[0])
       end
     end
 
@@ -131,31 +132,47 @@ class CV::MtData
   end
 
   def fix_grammar!
+    # puts @nestable
     resolve_nested! if @nestable.size > 1
-    TlRule.fold_list!(@head, @tail)
+    TlRule.fix_grammar!(@head)
   end
 
   ##########
 
-  include MTL::PadSpace
+  # include MTL::PadSpace
 
-  def to_s : String
-    String.build { |io| to_s(io) }
+  def to_txt : String
+    String.build { |io| to_txt(io) }
   end
 
-  def to_s(io : IO) : Nil
-    @head.print_val(io)
+  def to_txt(io : IO) : Nil
+    node = @head
+
+    while node
+      node.to_txt(io)
+      node = node.succ?
+    end
   end
 
-  def to_str : String
-    String.build { |io| to_str(io) }
+  def to_mtl : String
+    String.build { |io| to_mtl(io) }
   end
 
-  def to_str(io : IO) : Nil
-    @head.serialize(io)
+  def to_mtl(io : IO) : Nil
+    node = @head
+
+    while node
+      node.to_mtl(io)
+      node = node.succ?
+    end
   end
 
   def inspect(io : IO) : Nil
-    @head.deep_inspect(io)
+    node = @head
+
+    while node
+      node.inspect(io, pad + 2)
+      node = node.succ?
+    end
   end
 end

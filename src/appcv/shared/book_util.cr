@@ -127,12 +127,12 @@ module CV::BookUtil
         case mode
         when .html?
           io << "<p>"
-          mt_list.to_s(io)
+          mt_list.to_str(io)
           io << "</p>"
         when .text?
-          mt_list.to_s(io)
-        else
           mt_list.to_str(io)
+        else
+          mt_list.to_mtl(io)
         end
       end
     end

@@ -8,8 +8,8 @@ module MtlV2::TlRule
       head = BaseNode.new("不", "không", PosTag::AdvBu4, 1, adv.idx)
       tail = BaseNode.new("太", "lắm", PosTag::Adverb, 1, adv.idx + 1)
 
-      node.set_prev!(head)
-      node.set_succ!(tail)
+      node.fix_prev!(head)
+      node.fix_succ!(tail)
 
       return fold!(head, tail, tag, dic: 4)
     when "最", "最为", "那么", "这么", "非常", "如此"

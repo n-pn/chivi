@@ -37,7 +37,10 @@ module CV::TlRule
     output.fix_succ!(tail.succ?)
 
     noun.fix_succ!(nil)
-    noun.set_succ!(adverb) if adverb
+    if adverb
+      noun.fix_prev!(adverb.prev?)
+      noun.fix_succ!(adverb)
+    end
 
     case vyou.key
     when "有"
