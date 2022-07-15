@@ -84,8 +84,12 @@ class CV::MtList < CV::MtNode
     @list.find(&.find_by_key(key))
   end
 
+  def space_before?(prev : Nil) : Bool
+    false
+  end
+
   def space_before?(prev : MtList)
-    true
+    !(prev.popens? || prev.none?)
   end
 
   def space_before?(prev : MtTerm)

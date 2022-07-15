@@ -53,8 +53,8 @@ module CV::TlRule
     when .nominal?   then fold_nouns!(node)
     when .onomat?    then fold_onomat!(node)
     when .atsign?    then fold_atsign!(node)
-      # when .ude1?      then fold_ude1!(node)
-    else node
+    when .ude1?      then fold_ude1!(node)
+    else                  node
     end
   end
 end

@@ -92,13 +92,12 @@ class CV::MtTerm < CV::MtNode
   end
 
   def space_before?(prev : Nil) : Bool
-    true
+    false
   end
 
   def space_before?(prev : MtList) : Bool
-    unless @tag.puncts?
-      return !@val.empty?
-    end
+    return false if @val.blank?
+    return !(prev.popens? || prev.none?) unless @tag.puncts?
 
     case @tag
     when .colon?, .pdeci?, .pstops?, .comma?, .penum?,
@@ -110,13 +109,11 @@ class CV::MtTerm < CV::MtNode
   end
 
   def space_before?(prev : MtTerm) : Bool
+    return false if @val.blank?
+    return !(prev.popens? || prev.none?) unless @tag.puncts?
+
     return false if @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
     return false if prev.popens? || prev.none?
-
-    unless @tag.puncts?
-      return true unless @val.empty?
-      return !@succ.nil?
-    end
 
     case @tag
     when .plsgn?, .mnsgn? then !prev.tag.ndigit?
@@ -133,8 +130,6 @@ class CV::MtTerm < CV::MtNode
   #######
 
   def to_txt(io : IO) : Nil
-    # puts [self, self.prev?, self.succ?]
-
     io << @val
   end
 
