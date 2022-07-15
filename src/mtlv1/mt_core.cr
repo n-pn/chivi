@@ -33,7 +33,15 @@ class CV::MtCore
   end
 
   def self.trad_to_simp(input : String) : String
-    tradsim_mtl.tokenize(input.chars).to_txt
+    data = tradsim_mtl.tokenize(input.chars)
+
+    String.build do |io|
+      head = data.head
+      while head
+        io << head.val
+        head = head.succ?
+      end
+    end
   end
 
   def self.convert(input : String, dname = "combine") : String

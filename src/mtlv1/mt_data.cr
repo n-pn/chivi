@@ -168,7 +168,12 @@ class CV::MtData
     prev.to_txt(io)
 
     while node = prev.succ?
-      io << ' ' if node.space_before?(prev)
+      if prev.is_a?(MtTerm) && prev.val.empty?
+        io << ' ' if node.space_before?(prev.prev?)
+      else
+        io << ' ' if node.space_before?(prev)
+      end
+
       node.to_txt(io)
       prev = node
     end
@@ -178,18 +183,19 @@ class CV::MtData
     String.build { |io| to_mtl(io) }
   end
 
-  def to_s(io : IO)
-    raise "!!!"
-  end
-
   def to_mtl(io : IO) : Nil
     prev = head
     prev.to_mtl(io)
 
     while node = prev.succ?
-      io << "\t " if node.space_before?(prev)
+      if prev.is_a?(MtTerm) && prev.val.empty?
+        io << "\t " if node.space_before?(prev.prev?)
+      else
+        io << "\t " if node.space_before?(prev)
+      end
+
       node.to_mtl(io)
-      prev = node
+      prev = node unless node.is_a?(MtTerm) && node.val.empty?
     end
   end
 
