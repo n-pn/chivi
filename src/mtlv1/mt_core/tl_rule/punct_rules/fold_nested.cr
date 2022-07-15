@@ -17,7 +17,9 @@ module CV::TlRule
   def fold_nested!(head : MtNode, tail : MtNode)
     fold_list!(head, tail)
     ptag = guess_nested_tag(head, tail)
-    fold!(head, tail, tag: ptag, dic: 0)
+    list = fold!(head, tail, tag: ptag, dic: 0)
+    # list.inspect
+    list
   end
 
   def guess_nested_tag(head : MtNode, tail : MtNode)

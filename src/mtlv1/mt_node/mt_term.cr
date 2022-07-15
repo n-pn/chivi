@@ -106,7 +106,7 @@ class CV::MtTerm < CV::MtNode
          .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
       false
     else
-      false
+      true
     end
   end
 
@@ -127,10 +127,7 @@ class CV::MtTerm < CV::MtNode
          .ellip?, .tilde?, .perct?, .squanti?
       prev.tag.colon?
     else
-      case prev.tag
-      when .colon?, .comma?, .pstop? then true
-      else                                false
-      end
+      !prev.popens?
     end
   end
 

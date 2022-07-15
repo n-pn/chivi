@@ -145,7 +145,11 @@ class CV::MtData
 
   def fix_grammar!
     resolve_nested! if @nestable.size > 1
-    TlRule.fix_grammar!(@head)
+
+    head = MtTerm.new("", tag: PosTag::None, dic: 0, idx: @head.idx)
+    add_head(head)
+
+    TlRule.fix_grammar!(head)
   end
 
   ##########

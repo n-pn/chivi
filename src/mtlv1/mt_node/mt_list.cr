@@ -14,7 +14,11 @@ class CV::MtList < CV::MtNode
     self.fix_prev!(head.prev?)
     self.fix_succ!(tail.succ?)
 
-    node = head
+    head.fix_prev!(nil)
+    tail.fix_succ!(nil)
+
+    @list << head
+    node = head.succ?
 
     while node && node != tail
       @list << node
@@ -22,12 +26,19 @@ class CV::MtList < CV::MtNode
     end
 
     if flip
-      tail.fix_succ!(head)
       @list.last.fix_succ!(nil)
+      tail.fix_succ!(head)
       @list.unshift(tail)
     else
       @list << tail
     end
+
+    # puts "==#fold_list=="
+    # pp head
+    # pp tail
+    # puts "==:fold_list=="
+    # pp self
+    # puts "==/fold_list=="
   end
 
   def modifier?
