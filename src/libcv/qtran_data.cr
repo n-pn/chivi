@@ -109,8 +109,8 @@ class CV::QtranData
     header = lines[0]
 
     begin
-      tokens = title ? engine.cv_title_full(header) : engine.cv_plain(header)
-      format.text? ? tokens.to_s(output) : tokens.to_str(output)
+      mtdata = title ? engine.cv_title_full(header) : engine.cv_plain(header)
+      format.text? ? mtdata.to_txt(output) : mtdata.to_mtl(output)
     rescue err
       Log.error(exception: err) { header }
       output << "Lỗi máy dịch, mời liên hệ ban quản trị!"
@@ -120,8 +120,8 @@ class CV::QtranData
 
     lines[1..].each do |line|
       output << '\n'
-      tokens = engine.cv_plain(line)
-      format.text? ? tokens.to_s(output) : tokens.to_str(output)
+      mtdata = engine.cv_plain(line)
+      format.text? ? mtdata.to_txt(output) : mtdata.to_mtl(output)
     rescue err
       Log.error(exception: err) { line }
       output << "Lỗi máy dịch, mời liên hệ ban quản trị!"

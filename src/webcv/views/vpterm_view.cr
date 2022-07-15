@@ -46,7 +46,7 @@ struct CV::VpTermView
     end
 
     if @dname[0] == '~'
-      fval = @core_mtl.cv_plain(word, cap_first: false).to_s
+      fval = @core_mtl.cv_plain(word, cap_first: false).to_txt
       ptag = ""
     elsif @vdict.type > 0
       fval, ptag = add_hints_by_ctx(word, vals, tags)
@@ -197,7 +197,7 @@ struct CV::VpTermView
 
     def add_hint_from_mtl : Nil
       mt_data = @word_mtl.cv_plain(@word, cap_first: false)
-      mtl_val = mt_data.to_s
+      mtl_val = mt_data.to_txt
 
       @val_hints << mtl_val
       return if mt_data.head.succ?

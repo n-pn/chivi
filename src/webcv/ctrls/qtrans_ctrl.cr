@@ -2,7 +2,7 @@ class CV::QtransCtrl < CV::BaseCtrl
   def hanviet
     set_headers content_type: :text
     output = hv_translit(params["input"], true)
-    params["mode"]? == "text" ? output.to_s(response) : output.to_str(response)
+    params["mode"]? == "text" ? output.to_txt(response) : output.to_mtl(response)
   end
 
   def mterror
@@ -13,9 +13,9 @@ class CV::QtransCtrl < CV::BaseCtrl
     set_headers content_type: :text
 
     cvmtl = MtCore.generic_mtl(dname, uname)
-    cvmtl.cv_plain(input, cap_first: false).to_s(response)
+    cvmtl.cv_plain(input, cap_first: false).to_txt(response)
     response << '\n'
-    hv_translit(input, false).to_s(response)
+    hv_translit(input, false).to_txt(response)
   end
 
   private def hv_translit(input : String, apply_cap = true)
@@ -124,7 +124,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     lines.each_with_index do |line, idx|
       response << '\n' if idx > 0
-      cvmtl.cv_plain(line, cap_first: true).to_s(response)
+      cvmtl.cv_plain(line, cap_first: true).to_txt(response)
     end
   end
 end

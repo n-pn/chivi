@@ -2,18 +2,19 @@ require "../../src/mtlv1/mt_core"
 MTL = CV::MtCore.generic_mtl("combine")
 
 def convert(input : String)
-  MTL.cv_plain(input, cap_first: false).to_s
+  MTL.cv_plain(input, cap_first: false).to_txt
 end
 
-files = Dir.glob("var/tlspecs/*.tsv")
+DIR = "spec/engine/cases"
+
+files = Dir.glob("#{DIR}/**/*.tsv")
 
 files.each do |file|
-  suite_name = File.basename(file, ".tsv")
-  next if suite_name.starts_with?("_")
-
-  lines = File.read_lines(file).reject(&.empty?)
+  lines = File.read_lines(file)
 
   lines.each do |line|
+    next if line.empty? || line.starts_with?('#')
+
     left, _right = line.split('\t')
     File.write("tmp/test.txt", left)
     puts [left, convert(left)]

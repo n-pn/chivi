@@ -143,12 +143,6 @@ class CV::MtData
     each { |node| cap = node.apply_cap!(cap) }
   end
 
-  def pad_spaces! : self
-    return self unless succ = @head.succ?
-    succ.pad_spaces!(@head)
-    self
-  end
-
   def fix_grammar!
     resolve_nested! if @nestable.size > 1
     TlRule.fix_grammar!(@head)
@@ -163,13 +157,13 @@ class CV::MtData
   end
 
   def to_txt(io : IO) : Nil
-    left = head
-    left.to_txt(io)
+    prev = head
+    prev.to_txt(io)
 
-    while node = left.succ?
-      io << ' ' if node.space_before?(left)
+    while node = prev.succ?
+      io << ' ' if node.space_before?(prev)
       node.to_txt(io)
-      left = node
+      prev = node
     end
   end
 
@@ -177,18 +171,25 @@ class CV::MtData
     String.build { |io| to_mtl(io) }
   end
 
-  def to_mtl(io : IO) : Nil
-    left = head
-    left.to_mtl(io)
+  def to_s(io : IO)
+    raise "!!!"
+  end
 
-    while node = left.succ?
-      io << '\t' if node.space_before?(left)
+  def to_mtl(io : IO) : Nil
+    prev = head
+    prev.to_mtl(io)
+
+    while node = prev.succ?
+      io << "\t " if node.space_before?(prev)
       node.to_mtl(io)
-      left = node
+      prev = node
     end
   end
 
   def inspect(io : IO) : Nil
-    each(&.inspect(io))
+    each do |node|
+      node.inspect(io)
+      io.puts
+    end
   end
 end

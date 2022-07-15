@@ -12,7 +12,7 @@ class CV::MtList < CV::MtNode
     flip = false
   )
     self.fix_prev!(head.prev?)
-    self.fix_succ!(head.succ?)
+    self.fix_succ!(tail.succ?)
 
     node = head
 
@@ -22,6 +22,8 @@ class CV::MtList < CV::MtNode
     end
 
     if flip
+      tail.fix_succ!(head)
+      @list.last.fix_succ!(nil)
       @list.unshift(tail)
     else
       @list << tail
@@ -99,7 +101,7 @@ class CV::MtList < CV::MtNode
     @list.first.to_mtl(io)
 
     @list.each_cons_pair do |prev, node|
-      io << '\t' if node.space_before?(prev)
+      io << "\t " if node.space_before?(prev)
       node.to_mtl(io)
     end
 
@@ -107,8 +109,9 @@ class CV::MtList < CV::MtNode
   end
 
   def inspect(io : IO = STDOUT, pad = 0) : Nil
-    io << " " * pad << "{" << @tag.tag << "/" << @dic << "}" << "\n"
+    io << " " * pad << "{" << @tag.tag << "/" << @dic << "}" << '\n'
     @list.each(&.inspect(io, pad &+ 2))
-    io << " " * pad << "{/" << @tag.tag << "/" << @dic << "}" << "\n"
+    io << " " * pad << "{/" << @tag.tag << "/" << @dic << "}"
+    io << '\n' if pad > 0
   end
 end

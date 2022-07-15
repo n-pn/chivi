@@ -96,10 +96,13 @@ class CV::MtTerm < CV::MtNode
   end
 
   def space_before?(prev : MtList) : Bool
-    return true unless @tag.puncts?
+    unless @tag.puncts?
+      return true unless @val.empty?
+      return !@succ.nil?
+    end
 
     case @tag
-    when .colon?, .pstop?, .pstops?, .comma?, .penum?,
+    when .colon?, .pdeci?, .pstops?, .comma?, .penum?,
          .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
       false
     else
@@ -110,7 +113,11 @@ class CV::MtTerm < CV::MtNode
   def space_before?(prev : MtTerm) : Bool
     return false if @tag.ndigit? && prev.plsgn? || prev.mnsgn?
     return false if prev.popens?
-    return true unless @tag.puncts?
+
+    unless @tag.puncts?
+      return true unless @val.empty?
+      return !@succ.nil?
+    end
 
     case @tag
     when .plsgn?, .mnsgn? then !prev.tag.ndigit?
@@ -136,20 +143,14 @@ class CV::MtTerm < CV::MtNode
   end
 
   def to_mtl(io : IO) : Nil
-    io << "\t" << @val
-
-    # skip rendering if node is empty space
-    return if @key == "" && @val == " "
-
+    io << '\t' << @val
     dic = @tag.puncts? || @val == "" ? 0 : @dic
     io << 'ǀ' << dic << 'ǀ' << @idx << 'ǀ' << @key.size
   end
 
   def inspect(io : IO = STDOUT, pad = -1) : Nil
-    return if @key == "" && @val == " "
-
     io << " " * pad if pad >= 0
     io << "[#{@key}/#{@val}/#{@tag.tag}/#{@dic}/#{@idx}]"
-    io << "\n" if pad >= 0
+    io << '\n' if pad >= 0
   end
 end

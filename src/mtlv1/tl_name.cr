@@ -176,7 +176,7 @@ class CV::TlName
   def tl_name(input : String) : String
     return input unless input =~ /\p{Han}/
     mt_list = HV_MTL.translit(input, apply_cap: false)
-    TextUtil.titleize(mt_list.to_s)
+    TextUtil.titleize(mt_list.to_txt)
   end
 
   NAMES = Tabkv(Array(String)).new("var/dicts/vx/names-common.tsv")

@@ -5,6 +5,11 @@ module CV::TlRule
   def fix_grammar!(node : MtNode) : Nil
     while node
       node = fold_once!(node)
+      # if node.is_a?(MtList)
+      #   puts node.list
+      #   puts [node.succ?, node.prev?]
+      # end
+
       node = node.succ?
     end
   end
@@ -30,7 +35,6 @@ module CV::TlRule
     when .strings?   then fold_strings!(node)
     when .adverbial? then fold_adverbs!(node)
     when .preposes?  then fold_preposes!(node)
-    when .auxils?    then heal_auxils!(node)
     when .pronouns?  then fold_pronouns!(node)
     when .ntime?     then fold_timeword!(node)
     when .numeral?   then fold_number!(node)
@@ -42,6 +46,7 @@ module CV::TlRule
     when .nominal?   then fold_nouns!(node)
     when .onomat?    then fold_onomat!(node)
     when .atsign?    then fold_atsign!(node)
+    when .ude1?      then fold_ude1!(node)
     else                  node
     end
   end

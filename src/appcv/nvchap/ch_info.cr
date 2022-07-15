@@ -88,8 +88,8 @@ class CV::ChInfo
 
   def trans!(cvmtl : MtCore) : self
     @trans = Trans.new(
-      title: @title.empty? ? "Thiếu chương" : cvmtl.cv_title(@title).to_s,
-      chvol: @chvol.empty? ? "Chính văn" : cvmtl.cv_title(@chvol).to_s
+      title: @title.empty? ? "Thiếu chương" : cvmtl.cv_title(@title).to_txt,
+      chvol: @chvol.empty? ? "Chính văn" : cvmtl.cv_title(@chvol).to_txt
     )
 
     self
