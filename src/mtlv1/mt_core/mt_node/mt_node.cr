@@ -1,3 +1,5 @@
+require "../../vp_dict/vp_term"
+
 abstract class CV::MtNode
   forward_missing_to @tag
 

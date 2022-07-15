@@ -28,6 +28,16 @@ class CV::MtList < CV::MtNode
     end
   end
 
+  def add_head!(node : MtTerm)
+    self.fix_prev!(node.prev?)
+
+    if fold = TlRule.fold_left(@list.first, node)
+      @list[0] = fold
+    else
+      @list.unshift(node)
+    end
+  end
+
   def starts_with?(key : String | Char)
     @list.any?(&.starts_with?(key))
   end

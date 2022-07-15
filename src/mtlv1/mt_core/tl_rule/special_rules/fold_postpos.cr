@@ -38,8 +38,14 @@ module CV::TlRule
   end
 
   def fold_postpos!(head : MtTerm, suff : MtList) : MtList?
-    return false if head.adjective? || head.v_shi? || head.v_you?
-    suff.add_head(head)
-    suff
+    return if head.adjective? || head.v_shi? || head.v_you?
+
+    case suff.list[0]
+    when .nominal?            then return unless head.verbal? || head.preposes? || head.modifier?
+    when .verbal?, .preposes? then return unless head.subject? || head.adverbial?
+    when .subject?            then return unless head.nominal?
+    end
+
+    suff.tap(&.add_head!(head))
   end
 end

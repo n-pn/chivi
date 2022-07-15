@@ -1,6 +1,5 @@
 require "./mt_node"
 require "../mt_util"
-require ".../vp_dict/vp_term"
 require "../../../_util/text_util"
 
 class CV::MtTerm < CV::MtNode
