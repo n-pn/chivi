@@ -4,36 +4,7 @@ module CV::TlRule
   def fold!(head : MtNode, tail : MtNode,
             tag : PosTag = PosTag::Unkn, dic : Int32 = 9,
             flip : Bool = false)
-    # Create new common root
-    root = MtNode.new("", "", tag, dic, head.idx)
-
-    root.fix_prev!(head.prev?)
-    root.fix_succ!(tail.succ?)
-
-    head.fix_prev!(nil)
-    tail.fix_succ!(nil)
-
-    if flip
-      root.set_body!(tail)
-      head.fix_root!(nil)
-
-      # check if there is some node in between
-      # if there is then flip their prev and succ node to current head and tail
-      if tail != head.succ?
-        tail.fix_succ!(head.succ?)
-        head.fix_prev!(tail.prev?)
-      else
-        tail.fix_succ!(head)
-      end
-
-      head.fix_succ!(nil)
-      tail.fix_succ!(nil)
-    else
-      root.set_body!(head)
-      tail.fix_root!(nil)
-    end
-
-    root
+    MtList.new(head, tail, tag, dic, idx: head.idx, flip: flip)
   end
 
   def end_sentence?(node : Nil)
@@ -49,6 +20,6 @@ module CV::TlRule
   end
 
   def boundary?(node : MtNode)
-    node == node.tag.none? || node.tag.puncts? || node.tag.exclam?
+    node.tag.none? || node.tag.pstops? || node.tag.exclam?
   end
 end

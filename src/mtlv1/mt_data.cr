@@ -1,10 +1,11 @@
 require "./mt_core/*"
+require "./mt_node/*"
 
 class CV::MtData
   getter head : MtNode
   getter tail : MtNode
 
-  @nestable = [] of MtNode
+  @nestable = [] of MtTerm
 
   def initialize(@head)
     @tail = head
@@ -17,17 +18,17 @@ class CV::MtData
     self
   end
 
-  def add_head(node : MtNode)
+  def add_head(node : MtTerm)
     node.fix_succ!(@head)
     @head = node
   end
 
-  def add_tail(node : MtNode)
+  def add_tail(node : MtTerm)
     node.fix_prev!(@tail)
     @tail = node
   end
 
-  def add_node(node : MtNode)
+  def add_node(node : MtTerm)
     if can_nest?(node)
       @nestable << node
       add_head(node)
@@ -36,12 +37,15 @@ class CV::MtData
       @head.key = node.key + @head.key
       @head.idx = node.idx
       @head.dic = 0
+    elsif fold = TlRule.fold_left!(@head, node)
+      fold.fix_succ!(@head)
+      @head = fold
     else
       add_head(node)
     end
   end
 
-  private def can_nest?(node : MtNode)
+  private def can_nest?(node : MtTerm)
     return unless node.puncts?
 
     case node.tag
@@ -120,9 +124,17 @@ class CV::MtData
     @nestable.clear
   end
 
-  def capitalize!(cap = true) : self
-    @head.apply_cap!(cap)
-    self
+  def each
+    node = @head
+
+    while node
+      yield node
+      node = node.succ?
+    end
+  end
+
+  def apply_cap!(cap = true) : Nil
+    each { |node| cap = node.apply_cap!(cap) }
   end
 
   def pad_spaces! : self
@@ -132,7 +144,6 @@ class CV::MtData
   end
 
   def fix_grammar!
-    # puts @nestable
     resolve_nested! if @nestable.size > 1
     TlRule.fix_grammar!(@head)
   end
@@ -146,12 +157,7 @@ class CV::MtData
   end
 
   def to_txt(io : IO) : Nil
-    node = @head
-
-    while node
-      node.to_txt(io)
-      node = node.succ?
-    end
+    each(&.to_txt(io))
   end
 
   def to_mtl : String
@@ -159,20 +165,10 @@ class CV::MtData
   end
 
   def to_mtl(io : IO) : Nil
-    node = @head
-
-    while node
-      node.to_mtl(io)
-      node = node.succ?
-    end
+    each(&.to_mtl(io))
   end
 
   def inspect(io : IO) : Nil
-    node = @head
-
-    while node
-      node.inspect(io, pad + 2)
-      node = node.succ?
-    end
+    each(&.inspect(io))
   end
 end

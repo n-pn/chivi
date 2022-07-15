@@ -16,6 +16,10 @@ module CV::TlRule
     end
   end
 
+  def fold_left!(right : MtNode, left : MtTerm) : MtTerm?
+    nil
+  end
+
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_once!(node : MtNode) : MtNode
     # puts [node, node.succ?, node.prev?]
