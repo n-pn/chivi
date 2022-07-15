@@ -10,11 +10,14 @@ module CV::TlRule
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
     # puts [node, prodem, nquant, "scan_noun"]
 
+    if node && node.ude1?
+      return node unless left = fold_prodem_nominal!(prodem, nquant)
+      # puts [left, node]
+      return fold_ude1!(ude1: node, prev: left)
+    end
+
     while node
-      if node.is_a?(MtTerm) && node.mixed?
-        node = heal_mixed!(node)
-        break if node.mixed?
-      end
+      node = heal_mixed!(node) if node.is_a?(MtTerm) && node.mixed?
 
       case node
       when .pro_per?

@@ -97,8 +97,7 @@ class CV::MtTerm < CV::MtNode
 
   def space_before?(prev : MtList) : Bool
     unless @tag.puncts?
-      return true unless @val.empty?
-      return !@succ.nil?
+      return !@val.empty?
     end
 
     case @tag

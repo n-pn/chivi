@@ -46,7 +46,7 @@ module CV::TlRule
       return head_succ.tag
     end
 
-    PosTag::Unkn
+    head.prev?(&.ude1?) ? PosTag::NounPhrase : PosTag::Unkn
   end
 
   # def fold_btitle!(head : MtNode) : MtNode

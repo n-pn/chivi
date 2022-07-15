@@ -20,8 +20,8 @@ module CV::TlRule
         succ.val = ""
         noun = fold!(noun, succ_2, PosTag::Person, dic: 3)
       when .ude1?
-        noun = fold_ude1!(ude1: succ, prev: noun) if noun.nattr?
-        return noun
+        return noun if noun.prev?(&.verb?) && !noun.nattr?
+        return fold_ude1!(ude1: succ, prev: noun)
       when .uzhi?
         # TODO: check with prev to group
         return mode == 0 ? fold_uzhi!(succ, noun) : noun
