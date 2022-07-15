@@ -1,6 +1,6 @@
 struct CV::PosTag
   @[Flags]
-  enum Pos
+  enum Pos : UInt64
     # content words - functional words - punctuations
     Contws; Funcws
     Puncts; Pstops; Popens
@@ -17,7 +17,7 @@ struct CV::PosTag
     Numbers; Quantis; Nquants; Numeral
 
     Auxils; Preposes
-    Strings; Specials
+    Strings; Specials; Suffixes
   end
 
   delegate mixed?, to: @pos

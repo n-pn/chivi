@@ -10,7 +10,7 @@ struct CV::PosTag
   {% end %}
 
   enum Tag
-    None; Unkn; ParenExpr
+    None; Unkn; ParenExpr; SuffixExpr
 
     {% for type in TYPES %}
       {{ type[1].id }}
@@ -62,7 +62,8 @@ struct CV::PosTag
   None = new(Tag::None, Pos::Puncts)
   Unkn = new(Tag::Unkn, Pos::Contws)
 
-  ParenExpr = new(Tag::ParenExpr, Pos::Contws)
+  ParenExpr  = new(Tag::ParenExpr, Pos::Contws)
+  SuffixExpr = new(Tag::SuffixExpr, Pos::Contws)
 
   getter pos : Pos
   getter tag : Tag
