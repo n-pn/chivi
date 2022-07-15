@@ -106,7 +106,7 @@
     const txt = await res.text()
 
     if (res.ok) cvdata = txt
-    else alert(res)
+    else alert(txt)
   }
 
   function gen_paths({ bslug }, { sname, _prev, _next }, { chidx }) {

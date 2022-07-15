@@ -34,10 +34,10 @@ module CV::MtDict
 
   DICTS = {
     load("fix_u_zhi", PosTag::Nform),
+    load("fix_adverbs", PosTag::Adverb),
     load("fix_nouns", PosTag::Noun),
     load("fix_verbs", PosTag::Verb),
     load("fix_adjts", PosTag::Adjt),
-    load("fix_adverbs", PosTag::Adverb),
     load("qt_times", PosTag::Qttime, true),
     load("qt_verbs", PosTag::Qtverb, true),
     load("qt_nouns", PosTag::Qtnoun, true),

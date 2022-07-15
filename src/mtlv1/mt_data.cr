@@ -39,11 +39,15 @@ class CV::MtData
       head.key = node.key + head.key
       head.idx = node.idx
       head.dic = 0
-    elsif fold = TlRule.fold_left!(right: @head, left: node)
-      fold.fix_succ!(@head)
-      @head = fold
     else
-      add_head(node)
+      succ = @head.succ?
+
+      if fold = TlRule.fold_left!(right: @head, left: node)
+        fold.fix_succ!(succ)
+        @head = fold
+      else
+        add_head(node)
+      end
     end
   end
 

@@ -56,8 +56,10 @@ module CV::TlRule
     # puts [node, prev, succ]
 
     case succ
-    when .nil?, .ends?, .ule?, .ude1?
+    when .nil?, .ends?, .ude1?
       # do nothing
+    when .ule?
+      return MtDict.fix_verb!(node) if succ.succ?(&.object?)
     when .auxils?
       return MtDict.fix_verb!(node) unless not_verb_auxil?(succ)
     when .v_shi?, .v_you?

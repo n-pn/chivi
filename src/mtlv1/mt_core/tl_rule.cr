@@ -15,8 +15,21 @@ module CV::TlRule
     end
   end
 
-  def fold_left!(right : MtNode, left : MtTerm) : MtTerm?
-    nil
+  def fold_left!(right : MtNode, left : MtNode) : MtNode?
+    case right
+    when .suffixes?
+      fold_suffix!(suff: right, left: left) if right.is_a?(MtTerm)
+    when .postpos?
+      return unless right.is_a?(MtList)
+
+      fold_postpos!(postpos: right, left: left) || begin
+        # reset postag if can not fold futher
+        right.set!(right.list.first.tag)
+        nil
+      end
+    else
+      nil
+    end
   end
 
   # ameba:disable Metrics/CyclomaticComplexity

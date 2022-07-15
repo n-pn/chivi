@@ -11,7 +11,7 @@
   const cvmtl = [
     '~fix_nouns', '~fix_verbs', '~fix_adjts',
     '~qt_times', '~qt_verbs', '~qt_nouns',
-    '~verb_com', '~verb_dir', `~v_group`,
+    '~v_compl', '~verb_dir', `~v_group`,
     '~v2_objs', '~fix_u_zhi', '~fix_adverbs'
   ]
 

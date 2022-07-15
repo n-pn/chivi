@@ -200,9 +200,11 @@ struct CV::VpTermView
       mtl_val = mt_data.to_txt
 
       @val_hints << mtl_val
-      return if mt_data.head.succ?
 
-      mtl_tag = mt_data.head.tag
+      head = mt_data.head.succ
+      return if head.succ?
+
+      mtl_tag = head.tag
       return if @vdict.kind.novel? && (mtl_tag.unkn? || mtl_tag.none?)
 
       @tag_hints << mtl_tag.to_str

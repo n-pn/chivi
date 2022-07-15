@@ -77,8 +77,7 @@
       on_change()
       ctrl.hide()
     } else {
-      const { error } = await res.json()
-      alert(error)
+      alert(await res.text())
     }
   }
 

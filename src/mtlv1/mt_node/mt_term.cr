@@ -111,8 +111,8 @@ class CV::MtTerm < CV::MtNode
   end
 
   def space_before?(prev : MtTerm) : Bool
-    return false if @tag.ndigit? && prev.plsgn? || prev.mnsgn?
-    return false if prev.popens?
+    return false if @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
+    return false if prev.popens? || prev.none?
 
     unless @tag.puncts?
       return true unless @val.empty?

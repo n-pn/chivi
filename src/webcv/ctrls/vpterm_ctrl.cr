@@ -29,7 +29,10 @@ class CV::VptermCtrl < CV::BaseCtrl
 
     ch_set = VpTermForm.new(params, vpdict, _cvuser)
     ch_set.validate.try { |error| return halt!(403, error) }
-    return halt!(401, "Nội dung không thay đổi!") unless vpterm = ch_set.save?
+
+    unless vpterm = ch_set.save?
+      return halt!(401, "Nội dung không thay đổi!")
+    end
 
     spawn do
       if vpdict.kind.cvmtl?
@@ -48,7 +51,7 @@ class CV::VptermCtrl < CV::BaseCtrl
       Log.error { err }
     end
 
-    send_json(vpterm, 201)
+    serv_json(vpterm, 201)
   end
 
   def upsert_batch
