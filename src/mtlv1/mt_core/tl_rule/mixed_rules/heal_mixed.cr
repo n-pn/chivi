@@ -108,7 +108,8 @@ module CV::TlRule
 
     case succ
     when .nil?, .ends?
-      return prev.try(&.object?) ? MtDict.fix_adjt!(node) : MtDict.fix_noun!(node)
+      return node if !prev || prev.ends?
+      return prev.object? || prev.ude3? ? MtDict.fix_adjt!(node) : MtDict.fix_noun!(node)
     when .vdir?
       return MtDict.fix_verb!(node)
     when .ude1?, .ude2?, .ude3?, .mopart?
