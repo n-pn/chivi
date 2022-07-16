@@ -124,8 +124,8 @@ class CV::MtTerm < CV::MtNode
       true
     when .plsgn?, .mnsgn?
       !prev.tag.ndigit?
-    when .colon?, .pstops?,
-         .comma?, .penum?
+    when .colon?, .pdeci?, .pstops?, .comma?, .penum?,
+         .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
       false
     else
       !prev.popens?
