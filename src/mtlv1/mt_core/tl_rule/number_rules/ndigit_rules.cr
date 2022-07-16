@@ -1,6 +1,6 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_ndigit!(node : MtTerm, prev : MtNode? = nil)
+  def fold_ndigit!(node : MtNode, prev : MtNode? = nil)
     return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
     return fold_ndigit_nhanzi!(node, succ) if succ.nhanzi?
 
@@ -23,20 +23,20 @@ module CV::TlRule
       return node unless (succ_3 = succ_2.succ?) && (succ_4 = succ_3.succ?)
       return node unless succ_3.colon? && succ_4.ndigit?
 
-      fold_ndigit_succs!(node, succ_3.as(MtTerm), succ_4.as(MtTerm), PosTag::Ntime)
+      fold_ndigit_succs!(node, succ_3, succ_4, PosTag::Ntime)
     else
       return node unless succ.key == "点" || succ.key == "时"
       fold_number_hour!(node, succ)
     end
   end
 
-  private def fold_ndigit_succs!(node : MtTerm, succ : MtTerm, tail : MtTerm, tag : PosTag)
+  private def fold_ndigit_succs!(node : MtNode, succ : MtNode, tail : MtNode, tag : PosTag)
     node.key = "#{node.key}#{succ.key}#{tail.key}"
     node.set!("#{node.val}#{succ.val}#{tail.val}", tag)
     node.tap(&.fix_succ!(tail.succ?))
   end
 
-  def fold_ndigit_nhanzi!(node : MtTerm, succ : MtTerm) : MtTerm
+  def fold_ndigit_nhanzi!(node : MtNode, succ : MtNode) : MtNode
     key_io = String::Builder.new(node.key)
     val_io = String::Builder.new(node.val)
 

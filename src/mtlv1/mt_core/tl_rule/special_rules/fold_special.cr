@@ -83,8 +83,7 @@ module CV::TlRule
     when "第" then fold_第!(node)
     when "对不起"
       return node if boundary?(succ)
-      node = MtDict.fix_verb!(node.as(MtTerm))
-      fold_verbs!(node)
+      fold_verbs!(node.set!("có lỗi với"))
     when "原来"
       if succ.try(&.ude1?) || node.prev?(&.contws?)
         node.set!("ban đầu", tag: PosTag::Modi)

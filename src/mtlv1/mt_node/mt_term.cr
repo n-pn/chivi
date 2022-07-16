@@ -109,21 +109,22 @@ class CV::MtTerm < CV::MtNode
   end
 
   def space_before?(prev : MtTerm) : Bool
-    return false if @val.blank?
-    return !(prev.popens? || prev.none?) unless @tag.puncts?
+    return space_before?(prev.prev?) if prev.val.empty?
 
-    return false if @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
-    return false if prev.popens? || prev.none?
+    case
+    when @val.blank?, prev.popens? || prev.none?,
+         @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
+      return false
+    else
+      return true unless @tag.puncts?
+    end
 
     case @tag
     when .plsgn?, .mnsgn? then !prev.tag.ndigit?
     when .middot?         then true
     when .colon?          then false
-    when .pstops?, .comma?, .penum?, .pdeci?,
-         .ellip?, .tilde?, .perct?, .squanti?
-      prev.tag.colon?
     else
-      !prev.popens?
+      prev.tag.colon?
     end
   end
 

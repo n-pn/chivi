@@ -108,7 +108,7 @@ module CV::TlRule
         node.val = "muốn"
       end
     else
-      if succ.vdirs? || MtDict.fix_vcompl(succ.as(MtTerm))
+      if succ.vdirs? || (succ.is_a?(MtTerm) && MtDict.fix_vcompl(succ))
         node.set!("nhớ") if succ.succ?(&.human?)
       end
     end

@@ -37,10 +37,10 @@ module CV::TlRule
   def fuse_number!(node : MtNode, prev : MtNode? = nil) : MtNode
     case node.tag
     when .ndigit?
-      node = fold_ndigit!(node.as(MtTerm), prev: prev)
+      node = fold_ndigit!(node, prev: prev)
       return fold_time_appro!(node) if node.ntime?
     when .nhanzi?
-      node = fold_nhanzi!(node.as(MtTerm), prev: prev)
+      node = fold_nhanzi!(node, prev: prev)
       return fold_time_appro!(node) if node.ntime?
     when .quantis?, .nquants?
       # TODO: combine number with nquant?

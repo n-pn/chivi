@@ -81,7 +81,7 @@ module CV::TlRule
     return unless node && node.numbers?
     return unless (succ = node.succ?) && succ.is_a?(MtTerm)
 
-    succ.key == "秒" || succ.key == "秒钟" ? succ.as(MtTerm) : nil
+    succ.key == "秒" || succ.key == "秒钟" ? succ : nil
   end
 
   def fold_number_minute!(node : MtNode, succ : MtNode, is_time = false) : MtNode

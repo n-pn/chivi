@@ -93,6 +93,7 @@ class CV::MtList < CV::MtNode
   end
 
   def space_before?(prev : MtTerm)
+    return space_before?(prev.prev?) if prev.val.empty?
     !(prev.val.blank? || prev.popens? || prev.none?)
   end
 

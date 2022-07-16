@@ -34,11 +34,10 @@ class CV::MtData
       add_head(node)
       return
     elsif @head.is_a?(MtTerm) && can_meld?(node, @head)
-      head = @head.as(MtTerm)
-      head.val = join_val(node, head)
-      head.key = node.key + head.key
-      head.idx = node.idx
-      head.dic = 0
+      @head.val = join_val(node, head)
+      @head.key = node.key + head.key
+      @head.idx = node.idx
+      @head.dic = 0
     else
       succ = @head.succ?
 
@@ -91,12 +90,12 @@ class CV::MtData
     end
   end
 
-  private def join_val(left : MtTerm, right : MtTerm)
+  private def join_val(left : MtNode, right : MtNode)
     return left.val + right.val unless right.nhanzi?
     left.val + " " + fix_hanzi_val(left, right)
   end
 
-  private def fix_hanzi_val(left : MtTerm, right : MtTerm)
+  private def fix_hanzi_val(left : MtNode, right : MtNode)
     val = right.val
 
     case right.key[0]?
@@ -188,14 +187,9 @@ class CV::MtData
     prev.to_mtl(io)
 
     while node = prev.succ?
-      if prev.is_a?(MtTerm) && prev.val.empty?
-        io << "\t " if node.space_before?(prev.prev?)
-      else
-        io << "\t " if node.space_before?(prev)
-      end
-
+      io << "\t " if node.space_before?(prev)
       node.to_mtl(io)
-      prev = node unless node.is_a?(MtTerm) && node.val.empty?
+      prev = node
     end
   end
 
