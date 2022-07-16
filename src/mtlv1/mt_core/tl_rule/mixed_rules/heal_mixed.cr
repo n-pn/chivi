@@ -22,7 +22,7 @@ module CV::TlRule
     case succ
     when .vdir?, .adj_hao?
       return MtDict.fix_verb!(node)
-    when .verbal?, .vmodals?, .preposes?
+    when .verbal?, .vmodals?, .preposes?, .adjective?
       return MtDict.fix_adverb!(node)
     when .auxils?
       return MtDict.fix_verb!(node) unless not_verb_auxil?(succ)
@@ -133,7 +133,7 @@ module CV::TlRule
   end
 
   def heal_ajad!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
-    if succ && (succ.adjective? || succ.verbal?)
+    if succ && (succ.adjective? || succ.verbal? || succ.preposes? || succ.vmodals?)
       return MtDict.fix_adverb!(node)
     end
 

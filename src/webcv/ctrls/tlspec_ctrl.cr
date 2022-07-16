@@ -22,7 +22,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
             uname: entry.edits.first.uname,
             privi: entry.edits.first.privi,
             match: last_edit.match,
-            cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_s,
+            cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_txt,
           }
         rescue
           nil
