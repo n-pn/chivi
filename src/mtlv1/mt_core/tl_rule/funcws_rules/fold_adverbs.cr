@@ -74,6 +74,7 @@ module CV::TlRule
   def fold_adverb_base!(node : MtNode, succ = node.succ) : MtNode
     node, succ = fix_adverb!(node, succ)
     return node unless succ
+    succ = heal_mixed!(succ) if succ.mixed?
 
     case succ.tag
     when .v_you?
@@ -109,10 +110,8 @@ module CV::TlRule
   def fix_adverb!(node : MtNode, succ = node.succ) : {MtNode, MtNode?}
     case succ
     when .v_shi?
-      node = fold!(node, succ, PosTag::Adverb, dic: 8)
+      node = fold!(node, succ, PosTag::Vead, dic: 8)
       succ = node.succ?
-    when .mixed?
-      succ = heal_mixed!(succ)
     when .adj_hao?
       succ = heal_adj_hao!(succ)
     when .concoord?
@@ -125,10 +124,11 @@ module CV::TlRule
 
   def heal_adj_hao!(node : MtNode)
     case node.succ?
-    when .nil?       then node
-    when .adjective? then node.set!("thật")
-    when .verbal?    then node.set!("dễ")
-    else                  node.set!("tốt")
+    when .nil? then node
+    when .adjective?, .verbal?
+      node.set!("thật", PosTag::Adverb)
+    else
+      node.set!("tốt")
     end
   end
 

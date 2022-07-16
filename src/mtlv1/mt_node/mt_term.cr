@@ -73,16 +73,16 @@ class CV::MtTerm < CV::MtNode
 
   def apply_cap!(cap : Bool = false) : Bool
     return cap if @val.blank? || @tag.none?
-    return cap_after_punct?(cap) if @tag.puncts?
+    return cap_after?(cap) if @tag.puncts?
 
     @val = TextUtil.capitalize(@val) if cap && !@tag.fixstr?
     false
   end
 
-  private def cap_after_punct?(prev = false) : Bool
+  private def cap_after?(prev = false) : Bool
     case @tag
     when .exmark?, .qsmark?, .pstop?, .colon?,
-         .middot?, .titleop?, .quoteop?
+         .middot?, .titleop?, .brackop?
       true
     when .pdeci?
       @prev.try { |x| x.ndigit? || x.litstr? } || prev
@@ -120,11 +120,10 @@ class CV::MtTerm < CV::MtNode
     end
 
     case @tag
-    when .plsgn?, .mnsgn? then !prev.tag.ndigit?
-    when .middot?         then true
-    when .colon?          then false
-    else
-      prev.tag.colon?
+    when .middot?                   then true
+    when .plsgn?, .mnsgn?           then !prev.tag.ndigit?
+    when .colon?, .pstops?, .comma? then false
+    else                                 !prev.popens?
     end
   end
 

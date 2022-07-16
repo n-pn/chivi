@@ -28,10 +28,9 @@ module CV::TlRule
     when .noun?, .human?, .nother?
       ude1.val = "của"
       flip = true
-    when .numeral?
-      flip = false
     else
-      flip = true
+      ude1.val = ""
+      flip = !left.numeral?
     end
 
     left = fold!(left, ude1, tag: PosTag::DefnPhrase, dic: 2, flip: true)

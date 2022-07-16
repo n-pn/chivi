@@ -1,12 +1,12 @@
 module CV::TlRule
   def fold_specials!(node : MtNode)
     case node
-    when .adj_hao? then fix_adj_hao(node)
+    when .adj_hao? then fold_adjt_hao!(node)
     when .v_shang? then fix_上下(node, MAP_上)
     when .v_xia?   then fix_上下(node, MAP_下)
     when .key_in?("和", "跟")
       if node.prev? { |x| x.ends? || x.adverb? } || concoord_is_prepos?(node.succ?)
-        node.set!(PosTag::Prepos)
+        fold_preposes!(node)
       else
         val = node.key == "和" ? "và" : node.val
         node.set!(val, PosTag::Concoord)
@@ -50,14 +50,16 @@ module CV::TlRule
     end
   end
 
-  def fix_adj_hao(node : MtNode) : MtNode
+  def fold_adjt_hao!(node : MtNode) : MtNode
     case succ = node.succ?
     when .nil?, .puncts?, .ule?
       node.set!("tốt", PosTag::Adjt)
     when .adjective?, .verbal?, .vmodals?, .adverbial?
       node.set!(succ.verbal? ? "dễ" : "thật", PosTag::Adverb)
+      fold_adverb_base!(node, succ)
     when .nominal?
       node.set!("tốt", PosTag::Adjt)
+      fold_adjt_noun!(node, succ)
     else
       node
     end

@@ -24,6 +24,8 @@ module CV::TlRule
       return MtDict.fix_verb!(node)
     when .verbal?, .vmodals?, .preposes?, .adjective?
       return MtDict.fix_adverb!(node)
+    when .ude3?
+      return succ.succ?(&.verbal?) ? MtDict.fix_adverb!(node) : MtDict.fix_verb!(node)
     when .auxils?
       return MtDict.fix_verb!(node) unless not_verb_auxil?(succ)
     when .subject?

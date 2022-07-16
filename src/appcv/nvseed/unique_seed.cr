@@ -30,10 +30,11 @@ class CV::Nvseed
       return self.clone_range!(remote, chmin: chmin)
     end
 
-    start = chmin > 10 ? chmin &- 10 : chmin
+    start = chmin > 5 ? chmin &- 5 : chmin
     infos = remote.clone_chaps(start)
+    return chmin if infos.empty?
 
-    20.times do
+    10.times do
       break unless chap_info = infos.shift?
       next unless chap_info.title == last_chap.title
 

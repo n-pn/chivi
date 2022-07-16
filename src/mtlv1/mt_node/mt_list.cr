@@ -28,16 +28,17 @@ class CV::MtList < CV::MtNode
     if flip
       @list.last.fix_succ!(nil)
       tail.fix_succ!(head)
+      tail.fix_prev!(nil)
       @list.unshift(tail)
     else
       @list << tail
     end
 
     # puts "==#fold_list=="
-    # pp head
-    # pp tail
+    # puts head.colorize.blue
+    # puts tail.colorize.blue
     # puts "==:fold_list=="
-    # pp self
+    # puts self.colorize.blue
     # puts "==/fold_list=="
   end
 
@@ -100,7 +101,8 @@ class CV::MtList < CV::MtNode
   ###
 
   def apply_cap!(cap : Bool = true) : Bool
-    @list.reduce(cap) { |memo, node| node.apply_cap!(memo) }
+    cap = @list.reduce(cap) { |memo, node| node.apply_cap!(memo) }
+    cap || @tag.paren_expr?
   end
 
   def to_txt(io : IO) : Nil

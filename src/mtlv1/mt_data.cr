@@ -54,7 +54,8 @@ class CV::MtData
     return unless node.puncts?
 
     case node.tag
-    when .popens?, .quotecl?, .parencl?, .brackcl?, .titlecl?
+    when .quoteop?, .parenop?, .brackop?, .titleop?,
+         .quotecl?, .parencl?, .brackcl?, .titlecl?
       true
     else
       node.key == "\""
@@ -109,28 +110,26 @@ class CV::MtData
     end
   end
 
-  def resolve_nested!
-    head = nil
-    char = 'x'
+  def resolve_nested!(upper = @nestable.size - 1, lower = 0)
+    i = upper
 
-    @nestable.reverse_each do |tail|
-      if head
+    while i > lower
+      head = @nestable[i]
+      char = TlRule.map_closer_char(head.val[0])
+
+      (i - 1).downto(lower) do |j|
+        tail = @nestable[j]
         next unless tail.val[0] == char
 
-        if char == '"'
-          tail.val = "“"
-          head.val = "”"
-        end
-
+        resolve_nested!(i - 1, j + 1)
         TlRule.fold_nested!(head, tail) if tail.succ? != head
-        head = nil
-      else
-        head = tail
-        char = TlRule.map_closer_char(head.val[0])
-      end
-    end
 
-    @nestable.clear
+        i = j
+        break
+      end
+
+      i -= 1
+    end
   end
 
   def each
@@ -150,7 +149,7 @@ class CV::MtData
     head = MtTerm.new("", tag: PosTag::None, dic: 0, idx: @head.idx)
     add_head(head)
 
-    resolve_nested! if @nestable.size > 1
+    resolve_nested!(@nestable.size - 1, 0) if @nestable.size > 1
     TlRule.fix_grammar!(head)
   end
 
