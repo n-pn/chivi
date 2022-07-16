@@ -1,5 +1,5 @@
 module CV::TlRule
-  def heal_auxils!(node : MtNode, mode = 1) : MtNode
+  def fold_auxils!(node : MtNode, mode = 1) : MtNode
     case node.tag
     when .ule?  then heal_ule!(node)  # 了
     when .ude1? then fold_ude1!(node) # 的

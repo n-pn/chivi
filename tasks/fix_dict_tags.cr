@@ -1,6 +1,6 @@
 require "../src/mtlv1/vp_dict"
 
-INP = "var/vpdicts/v1"
+INP = "var/dicts/v1"
 OUT = "var/dicts/v1"
 
 {"basic", "cvmtl", "novel", "other"}.each do |kind|
@@ -18,7 +18,9 @@ OUT = "var/dicts/v1"
 end
 
 def fix_dict_tags(inp_file : String, out_file : String)
+  utime = File.info(inp_file).modification_time + 1.minutes
   input = CV::VpDict.new(inp_file, type: 2, mode: :main)
+
   puts [input.file, input.size]
   return if input.size == 0
 
@@ -33,7 +35,6 @@ def fix_dict_tags(inp_file : String, out_file : String)
   end
 
   out_io.close
-  utime = File.info(inp_file).modification_time + 1.minutes
   File.utime(utime, utime, out_file)
 end
 

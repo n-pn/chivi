@@ -14,17 +14,17 @@ struct CV::PosTag
     # 非语素字 - for ascii art like emoji...
     {"xx", "Fixstr", Pos::Strings},
 
+    # 叹词 - interjection/exclamation - thán từ
+    {"xe", "Exclam", Pos::Funcws},
+    # 语气词 - modal particle - ngữ khí
+    {"xy", "Mopart", Pos::Funcws},
+    # 拟声词 - onomatopoeia - tượng thanh
+    {"xo", "Onomat", Pos::Funcws},
+
     # 连词 - conjunction - liên từ
     {"c", "Conjunct", Pos::Funcws},
     # 并列连词 - coordinating conjunction - liên từ kết hợp
     {"cc", "Concoord", Pos::Funcws},
-
-    # 叹词 - interjection/exclamation - thán từ
-    {"e", "Exclam", Pos::Funcws},
-    # 语气词 - modal particle - ngữ khí
-    {"y", "Mopart", Pos::Funcws},
-    # 拟声词 - onomatopoeia - tượng thanh
-    {"o", "Onomat", Pos::Funcws},
 
     # complex phrase ac as verb
     {"~vp", "VerbPhrase", Pos::Verbal | Pos::Contws},
