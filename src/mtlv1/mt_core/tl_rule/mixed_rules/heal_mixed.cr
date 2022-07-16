@@ -1,5 +1,7 @@
 module CV::TlRule
   def heal_mixed!(node : MtTerm, prev = node.prev, succ = node.succ?)
+    succ = heal_mixed!(succ, prev: node) if succ && succ.mixed?
+
     case node.tag
     when .vead? then heal_vead!(node, prev, succ)
     when .veno? then heal_veno!(node, prev, succ)
@@ -15,13 +17,9 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def heal_vead!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtTerm
+    return MtDict.fix_verb!(node) if succ.nil? || succ.ends?
+
     case succ
-    when .nil?, .puncts?
-      return MtDict.fix_verb!(node)
-    when .veno?
-      return node unless succ.is_a?(MtTerm)
-      succ = heal_veno!(succ, node, succ.succ?)
-      return succ.nominal? ? MtDict.fix_verb!(node) : MtDict.fix_adverb!(node)
     when .vdir?, .adj_hao?
       return MtDict.fix_verb!(node)
     when .verbal?, .vmodals?, .preposes?
