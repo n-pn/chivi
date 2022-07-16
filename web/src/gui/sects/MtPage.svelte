@@ -85,9 +85,9 @@
       <span class="stats-value">v{$config.engine || 1}</span>
     </span>
 
-    <span class="stats" data-tip="Thời gian máy dịch">
+    <span class="stats" data-tip="Thời gian chạy máy dịch">
       <span class="stats-label">Thời gian dịch:</span>
-      <SIcon name="file-power" />
+      <SIcon name="clock" />
       <span class="stats-value">{tspan}ms</span>
     </span>
     <span class="stats _dname" data-tip="Từ điển bộ truyện">
