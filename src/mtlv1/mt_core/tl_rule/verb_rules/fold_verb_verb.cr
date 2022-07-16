@@ -11,7 +11,7 @@ module CV::TlRule
         count += 1
       end
 
-      tag = count == 0 ? verb_1.tag : PosTag::None
+      tag = count == 0 ? verb_1.tag : PosTag::Unkn
       return fold!(verb_1, verb_2, tag, dic: 0)
     end
 

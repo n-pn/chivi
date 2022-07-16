@@ -6,7 +6,7 @@ class CV::MtList < CV::MtNode
   def initialize(
     head : MtNode,
     tail : MtNode,
-    @tag : PosTag = PosTag::None,
+    @tag : PosTag = PosTag::Unkn,
     @dic = 0,
     @idx = 1,
     flip = false
@@ -90,19 +90,28 @@ class CV::MtList < CV::MtNode
   end
 
   def space_before?(prev : MtList)
-    !(prev.popens? || prev.none?)
+    !prev.popens?
   end
 
   def space_before?(prev : MtTerm)
-    return space_before?(prev.prev?) if prev.val.empty?
-    !(prev.val.blank? || prev.popens? || prev.none?)
+    if prev.val.empty? && prev.key.size > 0
+      puts [prev, prev.prev?].colorize.cyan
+      return space_before?(prev.prev?)
+    end
+
+    !(prev.val.blank? || prev.popens?)
+  end
+
+  def full_sentence? : Bool
+    list.last.prev?(&.pstops?) || list.size > 3
   end
 
   ###
 
   def apply_cap!(cap : Bool = true) : Bool
-    cap = @list.reduce(cap) { |memo, node| node.apply_cap!(memo) }
-    cap || @tag.paren_expr?
+    cap_after = @tag.unkn? && list.first.quoteop? && full_sentence?
+    cap = @list.reduce(cap || cap_after) { |a, x| x.apply_cap!(a) }
+    cap || @tag.paren_expr? || cap_after
   end
 
   def to_txt(io : IO) : Nil

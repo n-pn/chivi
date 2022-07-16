@@ -64,7 +64,9 @@ module CV::TlRule
       return MtDict.fix_verb!(node) unless not_verb_auxil?(succ)
     when .v_shi?, .v_you?
       return MtDict.fix_noun!(node)
-    when .pronouns?, .verbal?, .pre_zai?
+    when .nquants?
+      return MtDict.fix_verb!(node) unless succ.nqtime?
+    when .pronouns?, .verbal?, .pre_zai?, .number?
       return MtDict.fix_verb!(node)
       # when .nominal?
       #   node = MtDict.fix_verb!(node)
@@ -114,9 +116,9 @@ module CV::TlRule
       return MtDict.fix_verb!(node)
     when .ude1?, .ude2?, .ude3?, .mopart?
       return MtDict.fix_adjt!(node)
-    when .verbal?, .preposes?, .spaces?
-      return MtDict.fix_noun!(node)
-    when .nominal?
+    when .verbal?, .preposes?
+      return node.key.size > 2 ? MtDict.fix_noun!(node) : MtDict.fix_adjt!(node)
+    when .nominal?, .spaces?
       node = MtDict.fix_adjt!(node)
       return node.set!(PosTag::Modi)
     else

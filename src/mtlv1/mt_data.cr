@@ -166,12 +166,7 @@ class CV::MtData
     prev.to_txt(io)
 
     while node = prev.succ?
-      if prev.is_a?(MtTerm) && prev.val.empty?
-        io << ' ' if node.space_before?(prev.prev?)
-      else
-        io << ' ' if node.space_before?(prev)
-      end
-
+      io << ' ' if node.space_before?(prev)
       node.to_txt(io)
       prev = node
     end
