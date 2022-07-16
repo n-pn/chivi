@@ -161,7 +161,11 @@
 
 <Chtabs {nvinfo} {nslist} {nvseed} {chmeta} {chinfo} />
 
-<CvPage {cvdata} on_change={retranslate}>
+<CvPage
+  {cvdata}
+  mftime={chinfo.utime}
+  source={chmeta.clink}
+  on_change={retranslate}>
   <svelte:fragment slot="notext">
     <Notext {nvseed} {chmeta} {chinfo} />
   </svelte:fragment>

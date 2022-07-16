@@ -113,7 +113,7 @@ class CV::QtranData
       format.text? ? mtdata.to_txt(output) : mtdata.to_mtl(output)
     rescue err
       Log.error(exception: err) { header }
-      output << "Lỗi máy dịch, mời liên hệ ban quản trị!"
+      output << "[[Lỗi máy dịch, mời liên hệ ban quản trị!]]"
     end
 
     output << '\t' << @label unless @label.empty?
@@ -124,13 +124,13 @@ class CV::QtranData
       format.text? ? mtdata.to_txt(output) : mtdata.to_mtl(output)
     rescue err
       Log.error(exception: err) { line }
-      output << "Lỗi máy dịch, mời liên hệ ban quản trị!"
+      output << "[[Lỗi máy dịch, mời liên hệ ban quản trị!]]"
     end
 
     output << '\n' << SEP << '\n'
 
     tspan = (Time.monotonic - stime).total_milliseconds.round.to_i
-    {@dname, @d_lbl, @count, tspan}.join(output, '\t')
+    {@dname, @d_lbl, @count, tspan, engine.dicts.last.size}.join(output, '\t')
   end
 
   def print_raw(output : IO)

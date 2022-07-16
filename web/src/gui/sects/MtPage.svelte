@@ -9,15 +9,24 @@
 
   import Cvline from './MtPage/Cvline.svelte'
   import Zhline from './MtPage/Zhline.svelte'
+  import { rel_time } from '$utils/time_utils'
 </script>
 
 <script lang="ts">
   export let cvdata = ''
-  export let zhtext = []
-
   export let on_change = () => {}
 
-  $: [mtdata, zhtext, dname, d_dub, chars, tspan] = parse_data(cvdata, zhtext)
+  export let mftime = 0
+  export let mficon = 'file-download'
+  export let source = ''
+
+  let zhtext = []
+
+  $: [mtdata, zhtext, dname, d_dub, chars, tspan, dsize] = parse_data(
+    cvdata,
+    zhtext
+  )
+
   $: vdict.put(dname, d_dub)
 
   let article = null
@@ -30,17 +39,17 @@
     mtmenu.hide()
   }
 
-  type Output = [MtData[], string[], string, string, number, number]
+  type Output = [MtData[], string[], string, string, number, number, number]
 
-  function parse_data(input: string, rawzh: string[]): Output {
+  function parse_data(input: string, rawzh): Output {
     const [cvdata, stats = '', zhtext] = input.split('\n$\t$\t$\n')
 
-    const [d_name, d_dub, chars = '0', tspan = '0'] = stats.split('\t')
+    const [d_name, d_dub, chars, tspan = '0', dsize = '0'] = stats.split('\t')
 
     const mt_data = MtData.parse_lines(cvdata)
     const zh_data = zhtext ? zhtext.split('\n') : rawzh || []
 
-    return [mt_data, zh_data, d_name, d_dub, +chars, +tspan]
+    return [mt_data, zh_data, d_name, d_dub, +chars, +tspan, +dsize]
   }
 
   function render_html(
@@ -75,22 +84,43 @@
       <SIcon name="versions" />
       <span class="stats-value">v{$config.engine || 1}</span>
     </span>
-    <span class="stats" data-tip="Số ký tự tiếng Trung">
-      <span class="stats-label">Số ký tự:</span>
-      <SIcon name="file-text" />
-      <span class="stats-value">{chars}</span>
-    </span>
+
     <span class="stats" data-tip="Thời gian máy dịch">
       <span class="stats-label">Thời gian dịch:</span>
-      <SIcon name="report" />
+      <SIcon name="file-power" />
       <span class="stats-value">{tspan}ms</span>
     </span>
     <span class="stats _dname" data-tip="Từ điển bộ truyện">
       <span class="stats-label">Từ điển riêng:</span>
       <SIcon name="package" />
-      <a href="/dicts/{$vdict.dname}" class="stats-value _link"
-        >[{$vdict.dname}]</a>
+      <a href="/dicts/{$vdict.dname}" class="stats-value _link">{dsize} từ</a>
     </span>
+
+    <div class="header-right">
+      {#if mftime > 0}
+        <span class="stats" data-tip="Thời gian lưu văn bản gốc">
+          <SIcon name={mficon} />
+          <span class="stats-value"
+            >{rel_time(mftime).replace(' trước', ' tr.')}</span>
+        </span>
+      {/if}
+
+      <span class="stats" data-tip="Số ký tự tiếng Trung">
+        <SIcon name="file-analytics" />
+        <span class="stats-value">{chars}</span>
+        <span class="stats-label"> chữ</span>
+      </span>
+
+      {#if source && source != '/'}
+        <a
+          class="stats"
+          href={source}
+          rel="noopener noreferrer nofollow"
+          target="_blank">
+          <SIcon name="external-link" />
+        </a>
+      {/if}
+    </div>
   </header>
 
   {#each zhtext as ztext, index (index)}
@@ -249,6 +279,12 @@
     @include border(--bd-soft, $loc: bottom);
   }
 
+  .header-right {
+    display: flex;
+    margin-left: auto;
+    padding-left: 0.25rem;
+  }
+
   .cv-line {
     display: block;
 
@@ -290,14 +326,14 @@
   }
 
   .stats {
-    display: flex;
+    display: inline-flex;
     align-items: center;
 
     @include ftsize(sm);
     @include fgcolor(mute);
 
-    &:not(:first-child):before {
-      content: '·';
+    & + &:before {
+      content: ' ';
       margin: 0 0.25rem;
     }
   }
@@ -305,8 +341,13 @@
   .stats-label {
     display: none;
     // font-style: italic;
+
     @include bp-min(ts) {
       display: inline-block;
+
+      .stats-value + & {
+        margin-left: 0.125rem;
+      }
       & + :global(svg) {
         display: none;
       }

@@ -2,6 +2,7 @@ const minute_span = 60 // 60 seconds
 const hour_span = minute_span * 60 // 3600 seconds
 const day_span = hour_span * 24
 const month_span = day_span * 30
+const year_span = month_span * 12
 
 export function rel_time(lower: number, upper: Date = new Date()) {
   if (lower < 100000) return 'Không rõ thời gian'
@@ -13,7 +14,7 @@ export function rel_time_diff(diff: number, suffix = ' trước') {
   if (diff < hour_span) return `${round(diff, minute_span)} phút${suffix}`
   if (diff < day_span * 2) return `${round(diff, hour_span)} giờ${suffix}`
   if (diff < month_span * 3) return `${round(diff, day_span)} ngày${suffix}`
-  if (diff < month_span * 12) return `${round(diff, month_span)} tháng${suffix}`
+  if (diff < year_span) return `${round(diff, month_span)} tháng${suffix}`
   return null
 }
 

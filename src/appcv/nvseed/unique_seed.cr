@@ -24,6 +24,8 @@ class CV::Nvseed
 
   # clone remote seed, return chmax
   def clone_remote!(remote : self, chmin = self.chap_count) : Int32
+    return chmin if remote.chap_count == 0
+
     if chmin == 0 || !(last_chap = self.chinfo(chmin - 1))
       return self.clone_range!(remote, chmin: chmin)
     end
@@ -35,7 +37,7 @@ class CV::Nvseed
       break unless chap_info = infos.shift?
       next unless chap_info.title == last_chap.title
 
-      offset = last_chap.chidx &- chap_info.chidx
+      offset = chap_info.chidx &- last_chap.chidx
       infos.each(&.chidx.&+ offset) if offset != 0
 
       self.patch_chaps!(infos, remote.utime, save: false)
