@@ -109,7 +109,7 @@ class CV::MtCore
 
       naive_ner(input, idx, offset).try do |term|
         size = term.key.size
-        jump = term.idx &+ size
+        jump = idx &+ size
         cost = base_cost + VpTerm.worth(size, 0)
 
         if cost > costs[jump]

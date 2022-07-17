@@ -71,7 +71,7 @@ class CV::MtData
     when .puncts? then left.tag == right.tag
     when .nhanzi?
       return false unless left.nhanzi?
-      return true if right.key != "两" || left.key != "一"
+      return true if right.key != "两" || left.key == "一"
       right.set!("lượng", PosTag::Qtnoun)
       false
     else

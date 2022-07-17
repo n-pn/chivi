@@ -36,14 +36,6 @@ module MtlV2::AST
     end
   end
 
-  def self.adjt_from_term(term : V2Term)
-    case term.tags[0][1]?
-    when 'n' then AdjtNoun.new(term)
-    when 'd' then AdjtAdvb.new(term)
-    else          AdjtWord.new(term)
-    end
-  end
-
   def self.number_from_term(term : V2Term)
     return NquantWord.new(term) if term.tags[0] == "mq"
 

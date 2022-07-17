@@ -4,9 +4,9 @@ module MtlV2::MTL
   class AdjtExpr < BaseExpr
     include Adjective
 
-    def initialize(left : BaseNode, right : BaseNode, flip = false,
-                   kind : AdjtFlag = :none)
-      super(left, right, flip: flip)
+    def initialize(head : BaseNode, tail : BaseNode, flip = false,
+                   kind : AdjtKind = :none)
+      super(head, tail, flip: flip)
     end
   end
 
