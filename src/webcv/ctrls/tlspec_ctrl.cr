@@ -74,7 +74,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
         _ukey: ukey,
         match: last_edit.match,
         extra: last_edit.extra,
-        cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_s,
+        cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_txt,
       },
       # edits: entry.edits,
     })

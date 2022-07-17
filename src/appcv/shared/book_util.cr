@@ -98,7 +98,7 @@ module CV::BookUtil
   def hanviet(input : String, caps : Bool = true) : String
     return input unless input =~ /\p{Han}/ # return if no hanzi found
 
-    output = MtCore.hanviet_mtl.translit(input, false).to_s
+    output = MtCore.hanviet_mtl.translit(input, false).to_txt
     caps ? TextUtil.titleize(output) : output
   end
 

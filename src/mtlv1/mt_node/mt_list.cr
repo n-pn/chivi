@@ -94,11 +94,7 @@ class CV::MtList < CV::MtNode
   end
 
   def space_before?(prev : MtTerm)
-    if prev.val.empty? && prev.key.size > 0
-      puts [prev, prev.prev?].colorize.cyan
-      return space_before?(prev.prev?)
-    end
-
+    return space_before?(prev.prev?) if prev.val.empty?
     !(prev.val.blank? || prev.popens?)
   end
 
