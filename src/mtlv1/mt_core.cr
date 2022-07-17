@@ -104,17 +104,19 @@ class CV::MtCore
       costs << idx
     end
 
-    costs[..-2].each do |base_cost, idx|
-      # MtTerm.naive_ner(input, idx, offset).try do |term|
-      #   size = term.key.size
-      #   jump = term.idx &+ size
-      #   cost = base_cost + VpTerm.worth(size, 0)
+    input.size.times do |idx|
+      base_cost = costs.unsafe_fetch(idx)
 
-      #   if cost > costs[jump]
-      #     nodes[jump] = term
-      #     costs[jump] = cost
-      #   end
-      # end
+      naive_ner(input, idx, offset).try do |term|
+        size = term.key.size
+        jump = term.idx &+ size
+        cost = base_cost + VpTerm.worth(size, 0)
+
+        if cost > costs[jump]
+          nodes[jump] = term
+          costs[jump] = cost
+        end
+      end
 
       terms = {} of Int32 => Tuple(Int32, VpTerm)
 
@@ -150,5 +152,54 @@ class CV::MtCore
     end
 
     res
+  end
+
+  def naive_ner(input : Array(Char), index = 0, offset = 0)
+    key_io = String::Builder.new
+    chars = digits = puncts = spaces = caps = letters = 0
+
+    input[index..].each do |char|
+      case char
+      when .number?
+        digits += 1
+      when .ascii_letter?
+        letters += 1
+        caps += 1 if char.uppercase?
+      when '_'
+        letters += 1
+      when ' '
+        spaces += 1
+      when ':', '/', '.', '?', '@', '=', '%', '+', '-', '~'
+        break unless chars > 0
+        puncts += 1
+      else
+        break
+      end
+
+      chars += 1
+      key_io << char
+    end
+
+    return if chars == 0
+    key = key_io.to_s
+
+    case
+    when letters == chars then tag = PosTag::Noun
+    when letters > 0      then tag = litstr_tag(key, spaces, caps, puncts)
+    when puncts == 0      then tag = PosTag::Ndigit
+    else                       tag = PosTag.from_numlit(key)
+    end
+
+    MtTerm.new(key, val: key, tag: tag, idx: index + offset, dic: 0)
+  end
+
+  def litstr_tag(key : String, spaces = 0, caps = 0, puncts = 0)
+    case
+    when spaces > 0  then PosTag::Litstr
+    when caps > 0    then PosTag::Nother
+    when puncts == 0 then PosTag::Nother
+    else
+      key =~ /https?\:|www\./ ? PosTag::Urlstr : PosTag::Litstr
+    end
   end
 end

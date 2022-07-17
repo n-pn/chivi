@@ -66,26 +66,14 @@ class CV::MtData
     false
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
   private def can_meld?(left : MtTerm, right : MtTerm) : Bool
     case right.tag
     when .puncts? then left.tag == right.tag
-    when .litstr?
-      left.tag.litstr? || left.tag.ndigit? || left.lit_str?
     when .nhanzi?
       return false unless left.nhanzi?
       return true if right.key != "两" || left.key != "一"
       right.set!("lượng", PosTag::Qtnoun)
       false
-    when .ndigit?
-      case left.tag
-      when .ndigit?, .pdeci? then true
-      when .litstr?
-        right.tag = left.tag
-        true
-      else
-        false
-      end
     else
       false
     end

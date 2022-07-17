@@ -1,4 +1,5 @@
 require "json"
+
 require "./pos_tag"
 
 class CV::VpTerm

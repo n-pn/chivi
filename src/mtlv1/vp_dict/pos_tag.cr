@@ -12,7 +12,9 @@ struct CV::PosTag
   enum Tag
     None; Unkn; ParenExpr; Postpos
 
-    {% for type in TYPES %}{{ type[1].id }}{% end %}
+    {% for type in TYPES %}
+      {{ type[1].id }}
+    {% end %}
 
     ProUkn; ProPer
     ProDem; ProZhe; ProNa1
@@ -147,6 +149,18 @@ struct CV::PosTag
     when 'x' then parse_other(tag)
     when '~' then parse_extra(tag)
     else          parse_miscs(tag)
+    end
+  end
+
+  def self.from_numlit(key : String)
+    case key
+    when /^[0-9０-９]+:[0-9０-９]+(:[0-9０-９]+)*$/,
+         /^[0-9０-９]+\/[0-9０-９]+\/[0-9０-９]+$/
+      Ntime
+    when /^[0-9０-９]+[~\-.][0-9０-９]+$/
+      Number
+    else
+      Litstr
     end
   end
 end

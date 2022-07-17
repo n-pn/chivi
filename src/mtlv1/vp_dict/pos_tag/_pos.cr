@@ -7,7 +7,7 @@ struct CV::PosTag
 
     Mixed
 
-    Nominal; Names; Human; Object
+    Nominal; Names; Human
 
     Pronouns; ProDems; ProInts
 
@@ -20,14 +20,12 @@ struct CV::PosTag
     Strings; Specials; Suffixes
   end
 
+  delegate contws?, to: @pos
   delegate mixed?, to: @pos
-
   delegate nominal?, to: @pos
 
-  delegate times?, to: @pos
   delegate names?, to: @pos
   delegate human?, to: @pos
-  delegate object?, to: @pos
 
   delegate numbers?, to: @pos
   delegate quantis?, to: @pos
@@ -48,9 +46,7 @@ struct CV::PosTag
   delegate preposes?, to: @pos
   delegate auxils?, to: @pos
 
-  delegate junction?, to: @pos
-  delegate strings?, to: @pos
-
-  delegate contws?, to: @pos
   delegate specials?, to: @pos
+  delegate suffixes?, to: @pos
+  delegate strings?, to: @pos
 end
