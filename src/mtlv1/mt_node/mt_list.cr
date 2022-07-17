@@ -99,15 +99,14 @@ class CV::MtList < CV::MtNode
   end
 
   def full_sentence? : Bool
-    list.last.prev?(&.pstops?) || list.size > 3
+    list.first.popens? && list.last.prev?(&.pstops?) || false
   end
 
   ###
 
   def apply_cap!(cap : Bool = true) : Bool
-    cap_after = @tag.unkn? && list.first.quoteop? && full_sentence?
-    cap = @list.reduce(cap || cap_after) { |a, x| x.apply_cap!(a) }
-    cap || @tag.paren_expr? || cap_after
+    cap_2 = @list.reduce(cap || full_sentence?) { |a, x| x.apply_cap!(a) }
+    cap_2 || (cap && @tag.paren_expr?)
   end
 
   def to_txt(io : IO) : Nil

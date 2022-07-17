@@ -9,10 +9,10 @@ module CV::TlRule
   def scan_noun!(node : MtNode?, mode : Int32 = 0,
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
     # puts [node, prodem, nquant, "scan_noun"]
+    return fold_prodem_nominal!(prodem, nquant) unless node
 
-    if node && node.ude1?
+    if node.ude1?
       return node unless left = fold_prodem_nominal!(prodem, nquant)
-      # puts [left, node]
       return fold_ude1!(ude1: node, prev: left)
     end
 
@@ -141,7 +141,8 @@ module CV::TlRule
     node = fold_prodem_nominal!(prodem, node) if prodem
     # node = fold_proper_nominal!(proper, node) if proper
 
-    return node unless mode == 0 && (succ = node.succ?)
+    return node if mode != 0 || !(succ = node.succ?) || succ.ends?
+
     node = fold_noun_after!(node, succ)
     return node if node.prev?(&.preposes?) && !node.property?
 

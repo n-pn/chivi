@@ -2,7 +2,7 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
     return fold_verb_object!(verb, verb.succ?) if verb.is_a?(MtList)
-    # puts [verb, prev].colorize.yellow
+    # puts [verb, verb.prev?].colorize.yellow
 
     case verb
     when .v_shi?, .v_you?

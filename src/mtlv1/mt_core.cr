@@ -96,27 +96,37 @@ class CV::MtCore
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtData
-    nodes = [MtTerm.new("", "")]
-    costs = [0.0]
+    nodes = [MtTerm.new("", idx: offset)]
+    costs = [0]
 
-    input.each_with_index(1) do |char, idx|
-      nodes << MtTerm.new(char, idx: idx - 1 + offset)
-      costs << idx - 0.5
+    input.each_with_index do |char, idx|
+      nodes << MtTerm.new(char, idx: idx &+ offset)
+      costs << idx
     end
 
-    input.size.times do |idx|
+    costs[..-2].each do |base_cost, idx|
+      # MtTerm.naive_ner(input, idx, offset).try do |term|
+      #   size = term.key.size
+      #   jump = term.idx &+ size
+      #   cost = base_cost + VpTerm.worth(size, 0)
+
+      #   if cost > costs[jump]
+      #     nodes[jump] = term
+      #     costs[jump] = cost
+      #   end
+      # end
+
       terms = {} of Int32 => Tuple(Int32, VpTerm)
 
       @dicts.each do |dict|
         dict.scan(input, @uname, idx) do |term|
+          next if term.val[0]? == "[[pass]]"
           terms[term.key.size] = {dict.type, term}
         end
       end
 
       terms.each do |key, (dic, term)|
-        next if term.val[0]? == "[[pass]]"
-
-        cost = costs[idx] + term.point
+        cost = base_cost &+ term.point
         jump = idx &+ key
 
         if cost >= costs[jump]

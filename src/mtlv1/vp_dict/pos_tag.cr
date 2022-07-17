@@ -12,9 +12,7 @@ struct CV::PosTag
   enum Tag
     None; Unkn; ParenExpr; Postpos
 
-    {% for type in TYPES %}
-      {{ type[1].id }}
-    {% end %}
+    {% for type in TYPES %}{{ type[1].id }}{% end %}
 
     ProUkn; ProPer
     ProDem; ProZhe; ProNa1

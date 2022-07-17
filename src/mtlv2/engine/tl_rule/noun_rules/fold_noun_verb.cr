@@ -1,6 +1,8 @@
 module MtlV2::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_noun_verb!(noun : BaseNode, verb : BaseNode)
+    # puts [noun, verb].colorize.green
+
     if (prev = noun.prev?) && do_not_fold_noun_verb?(prev)
       return noun.flag!(:checked)
     end

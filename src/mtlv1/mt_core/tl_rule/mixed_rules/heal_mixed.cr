@@ -111,7 +111,15 @@ module CV::TlRule
     case succ
     when .nil?, .ends?
       return node if !prev || prev.ends?
-      return prev.object? || prev.ude3? ? MtDict.fix_adjt!(node) : MtDict.fix_noun!(node)
+      case prev
+      when .nil?, .ends? then return node
+      when .modi?
+        return MtDict.fix_noun!(node)
+      when .object?, .ude3?, .adjective?, .adverbial?
+        return MtDict.fix_adjt!(node)
+      else
+        return MtDict.fix_noun!(node)
+      end
     when .vdir?
       return MtDict.fix_verb!(node)
     when .ude1?, .ude2?, .ude3?, .mopart?

@@ -5,6 +5,7 @@ module CV::TlRule
   def fix_grammar!(node : MtNode) : Nil
     while node = node.succ?
       node = fold_once!(node)
+      # puts [node, node.succ?, node.prev?].colorize.blue
     end
   end
 
@@ -34,7 +35,7 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_once!(node : MtNode) : MtNode
-    # puts [node, node.succ?, node.prev?]
+    # puts [node, node.succ?, node.prev?].colorize.red
 
     case node.tag
     when .mixed?     then fold_mixed!(node)

@@ -10,17 +10,18 @@ module CV::TlRule
     end
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
-  def heal_ule!(node : MtNode) : MtNode
-    return node unless (prev = node.prev?) && (succ = node.succ?)
+  def heal_ule!(node : MtNode, prev = node.prev?, succ = node.succ?) : MtNode
+    return node unless prev && succ
 
-    return node.set!(val: "") if succ.tag.quoteop? || prev.tag.quotecl?
-    return node.set!(val: "") if prev.tag.quotecl? && !succ.tag.ends?
-
-    return node if succ.tag.ends? || prev.tag.ends? || succ.key == prev.key
-    return node if prev.tag.adjective? && prev.prev?(&.tag.ends?)
-
-    node.set!(val: "")
+    case
+    when !prev.puncts?, !succ.puncts?,
+         succ.popens?, prev.pstops?
+      node.set!(val: "")
+    when prev.ends?, succ.ends?, succ.key == prev.key
+      node
+    else
+      node.set!(val: "")
+    end
   end
 
   def heal_ude2!(node : MtNode) : MtNode

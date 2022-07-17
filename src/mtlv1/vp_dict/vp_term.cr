@@ -9,6 +9,19 @@ class CV::VpTerm
     (rtime.to_unix - EPOCH).//(60).to_i
   end
 
+  WORTH = {
+    3, 6, 9,
+    14, 18, 26,
+    25, 31, 40,
+    40, 45, 55,
+    58, 66, 78,
+  }
+
+  def self.worth(size : Int32, rank : Int8 = 0) : Int32
+    return 0 if rank < 0 || rank > 2
+    WORTH[(size &- 1) &* 3 &+ rank]? || size &* (rank &* 2 &+ 7) &* 2
+  end
+
   getter key : String
   getter val : Array(String)
 
@@ -20,20 +33,7 @@ class CV::VpTerm
 
   # auto generated fields
   getter ptag : PosTag { PosTag.parse(@attr, @key) }
-
-  SCORES = {
-    3, 6, 9,
-    14, 18, 26,
-    25, 31, 40,
-    40, 45, 55,
-    58, 66, 78,
-  }
-
-  getter point : Int32 do
-    size = @key.size  # cache result because String#size is O(n) for utf8 string
-    rank = @rank &- 2 # rank nows is 2 3 4
-    SCORES[(size &- 1) &* 3 &+ rank]? || size &* (rank &* 2 &+ 7) &* 2
-  end
+  getter point : Int32 { VpTerm.worth(@key.size, @rank &- 2_i8) }
 
   getter is_priv : Bool { @uname[0]? == '!' }
 
