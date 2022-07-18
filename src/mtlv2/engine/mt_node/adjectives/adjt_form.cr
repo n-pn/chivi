@@ -8,6 +8,10 @@ module MtlV2::MTL
                    kind : AdjtKind = :none)
       super(head, tail, flip: flip)
     end
+
+    def initialize(orig : BaseExpr, kind : AdjtKind = :none)
+      super(orig)
+    end
   end
 
   class AdjtForm < BaseForm

@@ -76,12 +76,15 @@ class CV::MtCore
 
   def cv_title(title : String, offset = 0) : MtData
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
-    offset_2 = offset + pre_zh.size + pad.size
+    return cv_plain(title, offset: offset) if pre_zh.empty?
 
     mt_data = MtData.new(MtTerm.new(pre_zh, pre_vi, dic: 1, idx: offset))
-    mt_data.add_tail(MtTerm.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
 
-    mt_data.concat(cv_plain(title, offset: offset_2))
+    offset += pre_zh.size
+    mt_data.add_tail(MtTerm.new(pad, title.empty? ? "" : ": ", idx: offset))
+
+    offset += pad.size
+    mt_data.concat(cv_plain(title, offset: offset))
   end
 
   def translate(input : String) : String

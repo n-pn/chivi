@@ -133,7 +133,7 @@ module CV::TlRule
   end
 
   def fold_yi_verb!(node : MtNode, succ : MtNode)
-    return node unless node.key == "一" && succ.verb? || succ.vintr?
+    return node unless node.key == "一" && (succ.verb? || succ.vintr?)
     fold!(node.set!("vừa"), succ, succ.tag, dic: 4)
   end
 
