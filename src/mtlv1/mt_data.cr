@@ -111,6 +111,11 @@ class CV::MtData
         tail = @nestable[j]
         next unless tail.val[0] == char
 
+        if char == '"'
+          head.set!("“", PosTag::Quoteop)
+          tail.set!("”", PosTag::Quotecl)
+        end
+
         resolve_nested!(i - 1, j + 1)
         TlRule.fold_nested!(head, tail) if tail.succ? != head
 

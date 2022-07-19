@@ -113,15 +113,19 @@ module CV::TlRule
       return node if !prev || prev.ends?
       case prev
       when .nil?, .ends? then return node
-      when .modi?
+      when .modi?, .pro_dems?, .quantis?, .nqnoun?
         return MtDict.fix_noun!(node)
       when .object?, .ude3?, .adjective?, .adverbial?
         return MtDict.fix_adjt!(node)
+      when .conjunct?
+        return prev.prev?(&.nominal?) ? MtDict.fix_adjt!(node) : node
       else
         return MtDict.fix_noun!(node)
       end
     when .vdir?
       return MtDict.fix_verb!(node)
+    when .v_xia?, .v_shang?
+      return MtDict.fix_noun!(node)
     when .ude1?, .ude2?, .ude3?, .mopart?
       return MtDict.fix_adjt!(node)
     when .verbal?, .preposes?

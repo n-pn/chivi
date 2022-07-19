@@ -14,13 +14,10 @@ module CV::TlRule
     return node unless prev && succ
 
     case
-    when !prev.puncts?, !succ.puncts?,
-         succ.popens?, prev.pstops?
-      node.set!(val: "")
     when prev.ends?, succ.ends?, succ.key == prev.key
-      node
+      node.set!("rồi")
     else
-      node.set!(val: "")
+      node.set!("")
     end
   end
 

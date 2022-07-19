@@ -19,7 +19,7 @@ class CV::VpTerm
   }
 
   def self.worth(size : Int32, rank : Int8 = 0) : Int32
-    return 0 if rank < 0 || rank > 2
+    return size &- 1 if rank < 0 || rank > 2
     WORTH[(size &- 1) &* 3 &+ rank]? || size &* (rank &* 2 &+ 7) &* 2
   end
 

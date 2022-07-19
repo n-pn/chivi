@@ -8,9 +8,6 @@ module MtlV2::MTL
       set_prev(head.prev?)
       set_succ(tail.succ?)
 
-      head.fix_prev!(nil)
-      tail.fix_succ!(nil)
-
       @list << head
       node = head.succ?
 
@@ -21,17 +18,20 @@ module MtlV2::MTL
 
       if flip
         @list.unshift(tail)
-        tail.fix_succ!(head)
+        tail.set_succ(head)
 
-        @list.last.fix_succ!(nil)
-        tail.fix_prev!(nil)
+        @list.last.set_succ(nil)
+        tail.set_prev(nil)
       else
         @list << tail
+        tail.set_succ(nil)
+        head.set_prev(nil)
       end
     end
 
     def add_head(node : BaseNode) : Nil
-      self.fix_prev!(node.prev?)
+      self.set_prev(node.prev?)
+      node.set_succ(@list.first?)
       @list.unshift(node)
     end
 

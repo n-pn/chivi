@@ -78,13 +78,13 @@ class CV::MtCore
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
     return cv_plain(title, offset: offset) if pre_zh.empty?
 
+    pre_zh += pad
+    pre_vi += title.empty? ? "" : ":"
+
     mt_data = MtData.new(MtTerm.new(pre_zh, pre_vi, dic: 1, idx: offset))
+    return mt_data if title.empty?
 
-    offset += pre_zh.size
-    mt_data.add_tail(MtTerm.new(pad, title.empty? ? "" : ": ", idx: offset))
-
-    offset += pad.size
-    mt_data.concat(cv_plain(title, offset: offset))
+    mt_data.concat(cv_plain(title, offset: offset + pre_zh.size))
   end
 
   def translate(input : String) : String
@@ -104,7 +104,7 @@ class CV::MtCore
 
     input.each_with_index do |char, idx|
       nodes << MtTerm.new(char, idx: idx &+ offset)
-      costs << idx
+      costs << idx &+ 1
     end
 
     input.size.times do |idx|
@@ -142,7 +142,7 @@ class CV::MtCore
       end
     end
 
-    idx = nodes.size - 1
+    idx = nodes.size &- 1
     cur = nodes.unsafe_fetch(idx)
     idx -= cur.key.size
 
@@ -164,22 +164,23 @@ class CV::MtCore
     input[index..].each do |char|
       case char
       when .number?
-        digits += 1
+        digits &+= 1
       when .ascii_letter?
-        letters += 1
-        caps += 1 if char.uppercase?
+        letters &+= 1
+        caps &+= 1 if char.uppercase?
       when '_'
-        letters += 1
+        letters &+= 1
       when ' '
-        spaces += 1
+        break unless letters > 0 || digits > 0
+        spaces &+= 1
       when ':', '/', '.', '?', '@', '=', '%', '+', '-', '~'
-        break unless chars > 0
-        puncts += 1
+        break unless letters > 0 || digits > 0
+        puncts &+= 1
       else
         break
       end
 
-      chars += 1
+      chars &+= 1
       key_io << char
     end
 

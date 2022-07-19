@@ -1,4 +1,5 @@
 require "../../../libcv/qtran_util"
+require "./base_node"
 
 module MtlV2::AST
   class BaseList < BaseNode

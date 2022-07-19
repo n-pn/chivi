@@ -112,11 +112,11 @@ class CV::MtTerm < CV::MtNode
   end
 
   def space_before?(prev : MtTerm) : Bool
+    return false if @val.blank?
     return space_before?(prev.prev?) if prev.val.empty?
 
     case
-    when @val.blank?, prev.popens?,
-         @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
+    when prev.popens?, @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
       return false
     else
       return true unless @tag.puncts?

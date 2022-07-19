@@ -65,6 +65,9 @@ struct CV::PosTag
   ParenExpr = new(Tag::ParenExpr, Pos::Contws)
   Postpos   = new(Tag::Postpos, Pos::Contws)
 
+  Quoteop = new(Tag::Quoteop, Pos.flags(Popens, Puncts))
+  Quotecl = new(Tag::Quotecl, Pos.flags(Pstops, Puncts))
+
   getter pos : Pos
   getter tag : Tag
   forward_missing_to tag
