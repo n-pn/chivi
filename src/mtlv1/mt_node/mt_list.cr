@@ -21,6 +21,7 @@ class CV::MtList < CV::MtNode
     node = head.succ?
 
     while node && node != tail
+      @list.last.fix_succ!(node)
       @list << node
       node = node.succ?
     end
@@ -31,6 +32,7 @@ class CV::MtList < CV::MtNode
       tail.fix_prev!(nil)
       @list.unshift(tail)
     else
+      @list.last.fix_succ!(tail)
       @list << tail
     end
 
@@ -109,21 +111,28 @@ class CV::MtList < CV::MtNode
     cap_2 || (cap && @tag.paren_expr?)
   end
 
-  def to_txt(io : IO) : Nil
-    @list.first.to_txt(io)
+  def regen_list!
+    head = @list.first
+    @list.clear
 
-    @list.each_cons_pair do |prev, node|
-      io << ' ' if node.space_before?(prev)
+    while head
+      @list << head
+      head = head.succ?
+    end
+  end
+
+  def to_txt(io : IO) : Nil
+    @list.each do |node|
+      io << ' ' if node.space_before?(node.prev?)
       node.to_txt(io)
     end
   end
 
   def to_mtl(io : IO = STDOUT) : Nil
     io << '〈' << @dic << '\t'
-    @list.first.to_mtl(io)
 
-    @list.each_cons_pair do |prev, node|
-      io << "\t " if node.space_before?(prev)
+    @list.each do |node|
+      io << "\t " if node.space_before?(node.prev?)
       node.to_mtl(io)
     end
 
@@ -132,8 +141,12 @@ class CV::MtList < CV::MtNode
 
   def inspect(io : IO = STDOUT, pad = 0) : Nil
     io << " " * pad << "{" << @tag.tag << "/" << @dic << "}" << '\n'
-    @list.each(&.inspect(io, pad &+ 2))
+
+    @list.each(&.inspect(io, pad + 2))
+
     io << " " * pad << "{/" << @tag.tag << "/" << @dic << "}"
     io << '\n' if pad > 0
+
+    # gets
   end
 end

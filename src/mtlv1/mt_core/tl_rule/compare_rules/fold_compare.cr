@@ -31,13 +31,14 @@ module CV::TlRule
     head.val = head_val
     tail.val = "như" if tail.key.in?("一样", "似的", "一般", "般")
 
-    root = fold!(head, tail, tag: PosTag::Aform, dic: 0)
-    tail.prev.fix_succ!(nil)
-    fold_list!(head, tail)
-
-    head.fix_prev!(tail.prev?)
+    tail_2 = tail.prev
+    tail_2.fix_succ!(tail.succ?)
+    tail.fix_succ!(head.succ?)
     head.fix_succ!(tail)
-    # head.set_succ!(tail)
+
+    root = fold!(head, tail_2, tag: PosTag::Aform, dic: 0)
+    fix_grammar!(tail)
+    root.regen_list!
 
     return root unless succ = scan_adjt!(root.succ?)
     return root unless succ.adjective? || succ.verb_object?

@@ -20,10 +20,11 @@ module MtlV2::TlRule
     when "不一样"                 then tail.val = "không giống"
     end
 
+    fold_list!(head, tail)
     root = fold!(head, tail, tag: PosTag::AdjtPhrase, dic: 0)
     tail.prev.fix_succ!(nil)
-    fix_grammar!(head.succ)
-    head.set_succ!(tail)
+    tail.fix_succ!(head.succ?)
+    head.fix_succ!(tail)
 
     return root unless succ = scan_adjt!(root.succ?)
     return root unless succ.adjective? || succ.verb_object?

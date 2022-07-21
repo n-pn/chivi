@@ -8,7 +8,7 @@ module CV::TlRule
     "性"   => {"tính", PosTag::Ajno, true},
     "所"   => {"nơi", PosTag::Posit, true},
     "界"   => {"giới", PosTag::Posit, false},
-    "化"   => {"giới", PosTag::Verb, false},
+    "化"   => {"hoá", PosTag::Verb, false},
     "级"   => {"cấp", PosTag::Nattr, true},
     "型"   => {"hình", PosTag::Nattr, true},
     "状"   => {"dạng", PosTag::Nattr, true},
@@ -59,6 +59,7 @@ module CV::TlRule
 
     left.fix_prev!(postpos.list[0])
     left.fix_succ!(postpos.list[1])
+    postpos.list.insert(1, left)
 
     postpos
   end
