@@ -24,10 +24,10 @@ class CV::VpTerm
   end
 
   getter key : String
-  getter val : Array(String)
+  property val : Array(String)
 
   property attr : String = ""
-  getter rank : Int8 = 3_i8
+  property rank : Int8 = 3_i8
 
   getter mtime : Int32 = 0
   getter uname : String = "~"
