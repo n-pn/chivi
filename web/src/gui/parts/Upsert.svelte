@@ -90,6 +90,10 @@
   $: if (vpterm) refocus()
 
   const refocus = () => val_inp && val_inp.focus()
+
+  function copy_key() {
+    navigator.clipboard.writeText(key)
+  }
 </script>
 
 <Dialog
@@ -97,7 +101,7 @@
   on_close={ctrl.hide}
   class="upsert"
   _size="lg">
-  <upsert-head class="head">
+  <upsert-head class="head" on:click={refocus}>
     <Gmenu dir="left" loc="bottom">
       <button class="m-btn _text" slot="trigger">
         <SIcon name="menu-2" />
@@ -111,6 +115,11 @@
         <button class="gmenu-item" on:click={tlspec.show}>
           <SIcon name="flag" />
           <span>Báo lỗi</span>
+        </button>
+
+        <button class="gmenu-item" data-kbd="⌃c" on:click={copy_key}>
+          <SIcon name="copy" />
+          <span>Copy text</span>
         </button>
       </svelte:fragment>
     </Gmenu>
@@ -126,7 +135,7 @@
     </button>
   </upsert-head>
 
-  <upsert-tabs>
+  <upsert-tabs on:click={refocus}>
     {#each vpdicts as { d_dub, d_tip }, tab}
       {@const infos = tabs[tab]}
 
@@ -204,7 +213,9 @@
     </upsert-foot>
   </upsert-body>
 
-  <Links {key} />
+  <footer class="foot" on:click={refocus}>
+    <Links {key} />
+  </footer>
 </Dialog>
 
 <Vdict vdict={extra} bind:state={$ctrl.state} on_close={swap_dict} />
@@ -407,5 +418,10 @@
     @include bps(padding-right, 0.25rem, $pl: 0.5rem);
     // prettier-ignore
     > span { width: 2rem; }
+  }
+
+  .foot {
+    position: relative;
+    @include border(--bd-main, $loc: top);
   }
 </style>

@@ -1,4 +1,5 @@
 export { default as SIcon } from './atoms/SIcon.svelte'
+export { default as OLink } from './atoms/OLink.svelte'
 export { default as Stars } from './atoms/Stars.svelte'
 
 export { default as Crumb } from './molds/Crumb.svelte'

@@ -57,7 +57,6 @@
   function change_focus(index: number) {
     if (index != $zfrom && index < $zupto) $zfrom = index
     if (index >= $zfrom) $zupto = index + 1
-    copy_to_clipboard()
   }
 
   function shift_lower(value = 0) {
@@ -66,7 +65,6 @@
 
     $zfrom = value
     if ($zupto <= value) $zupto = value + 1
-    copy_to_clipboard()
   }
 
   function shift_upper(value = 0) {
@@ -75,11 +73,6 @@
 
     $zupto = value
     if ($zfrom >= value) $zfrom = value - 1
-    copy_to_clipboard()
-  }
-
-  function copy_to_clipboard() {
-    navigator.clipboard.writeText($ztext.substring($zfrom, $zupto))
   }
 
   async function update_cached(words: string[], dicts: CV.VpDict[]) {

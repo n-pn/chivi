@@ -1,6 +1,7 @@
 <script lang="ts">
-  export let href = ''
-  export let text = ''
+  export let href: string
+  export let text: string
 </script>
 
-<a {href} target="_blank" rel="noopener noreferer">{text}</a>
+<a {href} class={$$props.class} target="_blank" rel="noopener noreferer"
+  >{text}</a>
