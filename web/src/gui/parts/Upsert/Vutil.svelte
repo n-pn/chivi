@@ -77,137 +77,195 @@
     return [capped, words.length]
   }
 
-  async function load_gtran(text: string) {
+  async function load_gtran(g_tab = 0) {
     vpterm.val = '...'
 
-    try {
-      const tran = await gtran(text, gtran_lang[tab])
-      const [capped, length] = check_capped(tran)
+    const tran = await gtran(key, g_tab)
+    if (!tran) return
 
-      if (tab == 2 && capped == 2 && length == 2) {
-        // swap first name and last name if result is a japanese name
-        const [fname, lname] = tran.split(' ')
-        vpterm.val = lname + ' ' + fname
-      } else if (capped == length || tab == 0) {
-        // keep tran format if it is a name or in book dict tab
-        vpterm.val = tran
-      } else {
-        vpterm.val = lower_case(tran)
-      }
+    const [capped, length] = check_capped(tran)
 
-      gtran_lang[tab] = (gtran_lang[tab] + 1) % 3
-      gtran_lang = gtran_lang
-
-      // vpterm = vpterm
-    } catch (err) {
-      alert(err)
+    if (tab == 2 && capped == 2 && length == 2) {
+      // swap first name and last name if result is a japanese name
+      const [fname, lname] = tran.split(' ')
+      vpterm.val = lname + ' ' + fname
+    } else if (capped == length || tab == 0) {
+      // keep tran format if it is a name or in book dict tab
+      vpterm.val = tran
+    } else {
+      vpterm.val = lower_case(tran)
     }
+
+    gtran_lang[tab] = g_tab
+    gtran_lang = gtran_lang
   }
 
   function lower_case(text: string) {
     return text.charAt(0).toLowerCase() + text.substring(1)
   }
 
-  async function load_btran(text: string) {
-    const tran = await btran(text, btran_lang[tab])
+  async function load_btran(b_tab = 0) {
+    vpterm.val = '...'
+
+    const tran = await btran(key, b_tab)
     const [capped, length] = check_capped(tran)
 
     vpterm.val = tab == 0 || capped == length ? tran : lower_case(tran)
 
-    btran_lang[tab] = (btran_lang[tab] + 1) % 2
+    btran_lang[tab] = b_tab
     btran_lang = btran_lang
   }
+
+  let show_trans = true
 </script>
 
-<div class="vutil">
-  <button
-    class="cap"
-    class:_actived={capped == 1}
-    data-kbd="1"
-    use:upcase_val={1}
-    use:hint={'Viết hoa một chữ đầu'}>
-    <span>V. hoa 1</span>
-  </button>
+<div class="wrap">
+  <div class="vutil">
+    <span class="cap _show-pl">Viết hoa:</span>
 
-  <button
-    class="cap"
-    class:_actived={capped == 2}
-    data-kbd="2"
-    use:upcase_val={2}
-    use:hint={'Viết hoa hai chữ đầu'}>
-    <span>V. hoa 2</span>
-  </button>
+    {#each [1, 2, 3] as num}
+      {@const icon = 'letter-case' + (capped == num ? '-toggle' : '')}
+      <button
+        class="btn"
+        data-kbd={num}
+        use:upcase_val={num}
+        use:hint={`Viết hoa ${num} chữ đầu`}>
+        <SIcon name={icon} />
+        <span>{num}</span>
+      </button>
+    {/each}
 
-  <button
-    class="cap _show-ts"
-    data-kbd="3"
-    class:_actived={capped == 3}
-    use:upcase_val={3}
-    use:hint={'Viết hoa ba chữ đầu'}>
-    <span>V. hoa 3</span>
-  </button>
-
-  <button
-    class="cap _show-pl"
-    data-kbd="4"
-    disabled={capped == length}
-    use:upcase_val={99}
-    use:hint={'Viết hoa tất cả các chữ'}>
-    <span>V.hoa tất</span>
-  </button>
-
-  <button
-    class="cap _show-pl"
-    disabled={vpterm.val == vpterm.val.toLowerCase()}
-    data-kbd="0"
-    data-key="Backquote"
-    use:upcase_val={0}
-    use:hint={'Viết thường tất cả các chữ'}>
-    <span>Không v. hoa</span>
-  </button>
-
-  <div class="right">
     <button
-      class="btn _{gtran_lang[tab]}"
-      data-kbd="t"
-      on:click={() => load_gtran(key)}
-      use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>
-      <SIcon name="language" />
+      class="btn _show-pl"
+      data-kbd="4"
+      disabled={capped == length}
+      use:upcase_val={99}
+      use:hint={'Viết hoa tất cả các chữ'}>
+      <SIcon name="letter-case-upper" />
     </button>
 
     <button
-      class="btn _{btran_lang[tab]}"
-      data-kbd="y"
-      on:click={() => load_btran(key)}
-      use:hint={'Dịch bằng Bing Translate sang Anh/Việt'}>
-      <SIcon name="brand-bing" />
+      class="btn _show-pl"
+      disabled={vpterm.val == vpterm.val.toLowerCase()}
+      data-kbd="0"
+      data-key="Backquote"
+      use:upcase_val={0}
+      use:hint={'Viết thường tất cả các chữ'}>
+      <SIcon name="letter-case-lower" />
     </button>
 
-    <button
-      class="btn"
-      data-kbd="r"
-      disabled={vpterm.val == vpterm.o_val && vpterm.ptag == vpterm.o_ptag}
-      on:click={() => (vpterm = vpterm.reset())}
-      use:hint={'Phục hồi lại nghĩa + phân loại ban đầu'}>
-      <SIcon name="corner-up-left" />
-    </button>
+    <div class="right">
+      <button
+        class="btn"
+        class:_active={show_trans}
+        data-kbd="t"
+        on:click={() => (show_trans = !show_trans)}
+        use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>
+        <SIcon name="language" />
+      </button>
 
-    <button
-      class="btn"
-      data-kbd="e"
-      on:click={() => (vpterm = vpterm.clear())}
-      use:hint={'Bấm hai lần nếu bạn muốn xoá đè.'}>
-      <SIcon name="eraser" />
-    </button>
+      <button
+        class="btn"
+        data-kbd="r"
+        disabled={vpterm.val == vpterm.o_val && vpterm.ptag == vpterm.o_ptag}
+        on:click={() => (vpterm = vpterm.reset())}
+        use:hint={'Phục hồi lại nghĩa + phân loại ban đầu'}>
+        <SIcon name="corner-up-left" />
+      </button>
+
+      <button
+        class="btn"
+        data-kbd="e"
+        on:click={() => (vpterm = vpterm.clear())}
+        use:hint={'Bấm hai lần nếu bạn muốn xoá đè.'}>
+        <SIcon name="eraser" />
+      </button>
+    </div>
   </div>
+
+  {#if show_trans}
+    <div class="trans">
+      <button
+        class="btn"
+        data-kbd="5"
+        on:click={() => load_gtran(0)}
+        use:hint={'Dịch bằng Google từ Trung sang Anh'}>
+        <SIcon name="brand-google" />
+        <span class="lang">Anh</span>
+      </button>
+
+      <button
+        class="btn"
+        data-kbd="6"
+        on:click={() => load_gtran(1)}
+        use:hint={'Dịch bằng Google từ Trung sang Việt'}>
+        <SIcon name="brand-google" />
+        <span class="lang">Việt</span>
+      </button>
+
+      <button
+        class="btn"
+        data-kbd="7"
+        on:click={() => load_gtran(2)}
+        use:hint={'Dịch tên riêng tiếng Nhật bằng Google Dịch'}>
+        <SIcon name="brand-google" />
+        <span class="lang">Nhật</span>
+      </button>
+
+      <button
+        class="btn"
+        data-kbd="8"
+        on:click={() => load_btran(0)}
+        use:hint={'Dịch bằng Bing từ Trung sang Việt'}>
+        <SIcon name="brand-bing" />
+        <span class="lang">Việt</span>
+      </button>
+
+      <button
+        class="btn"
+        data-kbd="9"
+        on:click={() => load_btran(1)}
+        use:hint={'Dịch bằng Bing từ Trung sang Anh'}>
+        <SIcon name="brand-bing" />
+        <span class="lang">Anh</span>
+      </button>
+    </div>
+  {/if}
 </div>
 
 <style lang="scss">
   $height: 2.25rem;
 
+  .wrap {
+    position: relative;
+  }
+
   .vutil {
     padding: 0 0.375rem;
     @include flex($gap: 0);
+    min-width: 280px;
+  }
+
+  .trans {
+    @include flex($gap: 0);
+    @include bgcolor(secd);
+    @include border();
+    @include bdradi($loc: bottom);
+    left: 0;
+    right: 0;
+    top: 2rem;
+    position: absolute;
+    justify-content: end;
+
+    padding: 0 0.375rem;
+
+    > .btn {
+      height: 2rem;
+
+      :global(svg) {
+        @include ftsize(sm);
+      }
+    }
   }
 
   .right {
@@ -218,38 +276,40 @@
   .btn,
   .cap {
     background: transparent;
+    font-weight: 500;
     @include fgcolor(tert);
   }
 
   // prettier-ignore
   .cap {
     line-height: $height;
-    font-weight: 500;
 
-    @include bps(font-size, rem(13px), rem(14px));
-    @include bps(padding, 0 0.25rem, 0 0.375rem);
-
-    @include bp-max(pl) { @include ftsize(xs); }
-
-    > span { @include clamp($width: null); }
-
-    &:disabled { @include fgcolor(mute); }
-    &._actived { @include fgcolor(primary, 5); }
-    &._show-ts { @include bps(display, none, $ts: inline-block); }
-    &._show-pl:disabled { @include bps(display, none, $pl: inline-block); }
+    @include bps(font-size, rem(13px), $ts: rem(14px));
+    &._show-pl { @include bps(display, none, $pl: inline-block); }
   }
 
   // prettier-ignore
   .btn {
-    margin-left: auto;
-    width: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 .25rem;
+
+    gap: .125rem;
+
     height: $height;
-    position: relative;
+    // position: relative;
     // padding: 0;
     // padding-bottom: 0.125rem;
-    @include ftsize(lg);
+    :global(svg) {
+      font-size: 1rem;
+    }
+    span {
+      font-size: rem(14px);
+    }
+
 
     &[disabled] { @include fgcolor(mute); }
+    &._active { @include fgcolor(primary, 5); }
     &._1 { @include fgcolor(primary, 5); }
     &._2 { @include fgcolor(harmful, 5); }
   }

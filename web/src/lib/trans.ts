@@ -17,12 +17,18 @@ export async function gtran(text: string, lang: number) {
   const [sl, tl] = gtran_langs[lang]
 
   const url = `${gtran_api}&sl=${sl}&tl=${tl}&q=${text}`
-  const res = await fetch(url)
 
-  const data = JSON.parse(await res.text())
+  try {
+    const res = await fetch(url)
 
-  gtran_cached[key] = data[0][0][0]
-  return gtran_cached[key]
+    const data = JSON.parse(await res.text())
+
+    gtran_cached[key] = data[0][0][0]
+    return gtran_cached[key]
+  } catch (err) {
+    console.log(err)
+    return null
+  }
 }
 
 const btran_cached = {}
