@@ -188,8 +188,9 @@
       <button
         class="btn"
         data-kbd="e"
+        disabled={!vpterm.val && !vpterm.ptag}
         on:click={() => (vpterm = vpterm.clear())}
-        use:hint={'Bấm hai lần nếu bạn muốn xoá đè.'}>
+        use:hint={'Xoá nghĩa từ / Xoá phân loại'}>
         <SIcon name="eraser" />
       </button>
     </div>

@@ -26,9 +26,17 @@
       class:_curr={rank == 4 - idx}
       data-kbd={keys[idx]}
       on:click={() => (rank = 4 - idx)}
-      use:hint={'Độ ưu tiên của từ trong câu văn: ' + labels[idx]}
-      >{lbl}</button>
+      use:hint={'Mức độ ưu tiên: ' + labels[idx]}>{lbl}</button>
   {/each}
+
+  <button
+    class="btn _del"
+    class:_base={vpterm.init.b_rank < 2}
+    class:_priv={vpterm.init.b_rank < 2}
+    class:_curr={rank < 2}
+    data-kbd={keys[4]}
+    on:click={() => (rank = 0)}
+    use:hint={'Đảm bảo cụm từ không được áp dụng khi dịch'}>Xoá</button>
 </div>
 
 <style lang="scss">
@@ -74,5 +82,9 @@
     &:hover {
       @include bgcolor(tert);
     }
+  }
+
+  ._del {
+    margin-left: 0.375rem;
   }
 </style>
