@@ -2,9 +2,20 @@
 title: Ưu tiên cụm từ trong câu
 ---
 
-Khi bạn thêm/sửa từ vựng thông qua [Hộp thoại thêm sửa từ](/guide/tu-vung/them-sua-tu), phần [phía dưới bên phải](/imgs/uu-tien-cum-tu.png) sẽ cho phép bạn thay đổi độ ưu tiên của cụm từ khi phân tích câu văn. Bài viết này sẽ hướng dẫn bạn việc lựa chọn độ ưu tiên cho phù hợp, và giải thích chi tiết tính năng này cho bạn nào còn chưa rõ.
+<p><em>Cập nhật: 22/07/2022</em></p>
 
-# Hướng dẫn tham khảo
+Khi bạn thêm/sửa từ vựng thông qua [Hộp thoại thêm sửa từ](/guide/tu-vung/them-sua-tu), phần <a href="/imgs/uu-tien-cum-tu.png" rel="external">phía dưới bên phải</a> sẽ cho phép bạn thay đổi độ ưu tiên của cụm từ khi phân tích câu văn. Bài viết này sẽ hướng dẫn bạn việc lựa chọn độ ưu tiên cho phù hợp, và giải thích chi tiết tính năng này cho bạn nào còn chưa rõ.
+
+## Trường hợp đặc biệt: Độ ưu tiên là `Xoá`
+
+Khi bạn để chế độ ưu tiên của cụm từ là `Xoá` ở từ điển ưu tiên cao (e.g từ điển riêng bộ truyện), máy dịch sẽ bỏ qua nghĩa của cụm từ này thay vì dùng nghĩa của cụm từ đó nếu có ở từ điển thấp hơn (e.g từ điển thông dụng).
+
+Áp dụng trong hai trường hợp:
+
+- Bạn muốn máy dịch bỏ qua một từ đang được định nghĩa trong từ điển Thông dụng vì nó không hợp với văn cảnh bộ truyện.
+- Bạn muốn xoá từ trong từ điển cá nhân, nhưng không muốn xoá trong từ điển cộng đồng.
+
+## Hướng dẫn tham khảo
 
 Phần lớn trường hợp thì bạn nên để độ ưu tiên ở mức mặc định, nghĩa là `Bình`, nhưng trong một vài trường hợp thì bạn nên đổi độ ưu tiên cho phù hợp.
 

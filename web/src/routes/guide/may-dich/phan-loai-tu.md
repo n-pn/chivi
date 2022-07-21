@@ -1,0 +1,249 @@
+---
+title: Hướng dẫn phân loại từ
+---
+
+Cập nhật: 22/07/2022
+
+**Tài liệu đang trong quá trình hoàn thiện.**
+
+_Lưu ý: hiện tại từ loại trong các từ điển của Chivi độ chính xác chưa cao, một phần là vì chưa có hướng dẫn cụ thể cho các loại từ, một phần là vì công cụ phân loại tự động Chivi dùng lúc đầu độ chính xác chưa cao. Cho nên các ví dụ liên kết chỉ nên dùng để tham khảo._
+
+## 1. DANH TỪ 名詞
+
+Danh từ dùng biểu thị người hay sự vật gọi là Danh từ. Nói chung ở trước Danh từ ta có thể thêm vào số từ hay Lượng từ nhưng Danh từ không thể nhận Phó từ làm bổ nghĩa.
+
+### 1.1 Danh từ riêng
+
+Các danh từ thường được viết hoa.
+
+- **Tên người**: Tên riêng của người, bao gồm cả tên/họ tiếng Anh/Nhật, hoặc là họ tiếng Trung nếu hợp với văn cảnh.
+
+  _Không khuyến khích thêm họ tiếng Trung một ký tự vì thường nó là từ mang nhiều nghĩa_
+
+  Tên/họ người có thể kết hợp với danh xưng đằng sau, ví dụ "Vũ Nhu tiên tử", "Lâm tiểu thư"...
+
+  Ví dụ từ: [Tên người trong từ điển thông dụng](/dicts/regular?ptag=Nr)
+
+- **Nơi sở thuộc**: Tên riêng của các địa danh, tổ chức như Hoa Sơn, phái Thiếu Lâm.
+
+  _Tên địa danh/tổ chức khác với tên người là không kết hợp được với danh xưng đằng sau._
+
+  **Địa danh** và **Tổ chức** là phân loại riêng của **Nơi sở thuộc**, hiện tại thì về mặt ngữ pháp thì 3 từ loại này chức năng tương tự, việc tách riêng chỉ mang tính chất dự phnfg.
+
+  Ví dụ từ: [Địa danh/tổ chức trong từ điển thông dụng](/dicts/regular?ptag=Na)
+
+- **Tác phẩm**: Tên bộ truyện, tiểu thuyết, phim ảnh, bài hát....
+  Tên tác phẩm thường nằm trong dấu ngoặc `《》`, `⟨⟩`.
+
+  Ví dụ từ: [Tên tác phẩm trong từ điển thông dụng](/dicts/regular?ptag=Nw)
+
+- **Tên riêng khác**: Những loại tên riêng khác không hợp với các loại trên, ví dụ tên chiêu thức, hoá chất...
+
+  _Tên riêng khác với danh từ thông dụng là nó đứng độc lập, không ghép với các danh từ chung tạo thành cụm danh từ._
+
+  Ví dụ từ: [Tên riêng khác trong từ điển thông dụng](/dicts/regular?ptag=Nz)
+
+### Danh từ chung
+
+- **Danh từ thông dụng**: Các từ chỉ đồ vật, hiện tượng.
+  Danh từ thông dụng nếu đứng liền kề nhau có thể kết hợp được.
+
+  Ví dụ từ: [Danh từ thường trong từ điển thông dụng](/dicts/regular?ptag=n)
+
+- **Danh xưng**: các danh từ dùng để xưng hô người như "tỷ tỷ", "muội muội", "lão sư", "chưởng môn", "tiên tử"...
+
+  Trong ngữ pháp thì danh từ nhân xưng có thể gộp với **Tên/họ người** đằng trước tạo thành tên người.
+
+  Ví dụ từ: [Danh xưng trong từ điển thông dụng](/dicts/regular?ptag=nh)
+
+- **Thuộc tính**: các từ có mang tính chất mô tả nhưng không phải là tính từ, ví dụ:
+
+  - các màu sắc: màu đỏ, màu xanh nhạt....
+  - đặc điểm nhận dạng như: tóc dài, áo trắng...
+  - các từ chỉ cấp độ như nguyên anh, hợp thể, trúc cơ...
+  - từ chỉ họ người như họ Tống, họ Phạm...
+  - một số biến thể của số từ/lượng từ
+
+  Đặc điểm chung của **danh từ thuộc tính** là nếu làm định ngữ (đằng sau là "đích") thì không cần thêm "của".
+
+  Ví dụ từ: [Từ thuộc tính trong từ điển thông dụng](/dicts/regular?ptag=na)
+
+- **Phương vị**:
+  Phương vị từ là những danh từ chỉ phương hướng, được sử dụng rất nhiều trong giao tiếp tiếng Trung, nhất là chủ đề giao tiếp liên quan tới xác định phương hướng, hỏi thăm đường xá.
+
+  Ví dụ phương vị: 上面 (phía trên), 下面 (phía dưới), 前边 (đằng trước), 后边 (đằng sau)
+
+  Phương vị đứng đằng sau danh từ thường sẽ tạo thành cụm từ chỉ nơi chốn.
+
+  Ví dụ từ: [Từ phương vị trong từ điển thông dụng](/dicts/regular?ptag=nf)
+
+- **Nơi chốn**: Thường thì nơi chốn là kết quả của việc ghép danh từ + phương vị từ.
+
+  Khác biệt lớn nhất giữa _danh từ thường_ và _nơi chốn_ là khi _nơi chốn_ làm định ngữ thì không thêm "của".
+
+  ví dụ: "桌上的本" dịch là "sách trên bàn" thay vì là "sách của trên bàn".
+
+  Ví dụ từ: [Từ chỉ nơi chốn trong từ điển thông dụng](/dicts/regular?ptag=ns)
+
+- **Thời gian**: các từ mang nghĩa thời gian như "hôm nay", "4 giờ chiều", "12 tiếng"...
+
+  Danh từ thời gian có thể làm bổ ngữ hoặc trạng ngữ cho động từ.
+
+  Ví dụ từ: [Từ chỉ thời gian trong từ điển thông dụng](/dicts/regular?ptag=nt)
+
+## 2. TÍNH TỪ 形容詞 - 状态词 - 区别词
+
+Tính từ là từ mô tả hình trạng và tính chất của sự vật hay người, hoặc mô tả trạng thái của hành vi hay động tác.
+
+Các loại tính từ trong Chivi
+
+### Hình dung từ
+
+- Hình dung từ miêu tả hình trạng của người hay sự vật: 高，小，大，高，短
+- Hình dung từ miêu tả tính chất của người hay sự vật: 对，错，骄傲，坚强， 好，坏
+- Hình dung từ miêu tả trạng thái của một động tác, hành vi: 快，慢，顺利，紧张
+
+  Ví dụ từ: [Hình dung từ trong từ điển thông dụng](/dicts/regular?ptag=a)
+
+### Khu biệt từ
+
+Khu biệt từ là các tính từ đặc biệt không thể đứng độc lập làm vị ngữ trong câu.
+Đằng sau khu biệt từ luôn luôn là danh từ.
+
+Chi tiết về khu biệt từ: [Khu biệt từ](/guid/ngu-phap/khu-biet-tu)
+
+Ví dụ từ: [Từ khu biệt trong từ điển thông dụng](/dicts/regular?ptag=ab)
+
+### Cụm tính từ
+
+Các cụm từ đóng vai trò là tính từ trong câu, nhưng thường không kết hợp được với phó từ phía trước.
+
+Trong chivi thì `Cụm tính từ` hiện tại là tổng hợp cho vài loại từ khác nhau:
+
+- **Từ trạng thái**: https://zhidao.baidu.com/question/81172770.html
+- **Cụm danh + tính**
+- **Thành ngữ đóng vai trò tính từ**
+- **Cụm phó từ + tính từ**
+
+Trong tương lai thì các loại từ này sẽ được tách riêng ra cho phù hợp.
+
+Ví dụ từ: [Cụm tính từ trong từ điển thông dụng](/dicts/regular?ptag=al)
+
+### Danh hình từ
+
+Các từ có thể làm tính từ cũng có thể làm danh từ.
+
+Ví dụ từ: [Danh hình từ trong từ điển thông dụng](/dicts/regular?ptag=an)
+
+### Phó hình từ
+
+Các từ có thể làm tính từ cũng có thể làm phó từ.
+
+Ví dụ từ: [Phó hình từ trong từ điển thông dụng](/dicts/regular?ptag=ad)
+
+## 3. ĐỘNG TỪ 動詞
+
+Động từ là từ biểu thị động tác, hành vi, hoạt động tâm lý, sự phát triển biến hoá, v.v… Động từ có thể phân thành “cập vật động từ” 及物動詞 (động từ có kèm tân ngữ) và “bất cập vật động từ” 不及物動詞 (động từ không kèm tân ngữ). Dạng phủ định của động từ có chữ «不» hay «沒» hay «沒有».
+
+Các loại động từ đang được phân loại ở Chivi:
+
+### Động từ thường
+
+Các động từ cần thiết tân ngữ (đối tượng) ở phía sau.
+Ví dụ từ: [Động từ thường trong từ điển thông dụng](/dicts/regular?ptag=v)
+
+### Nội động từ
+
+Các động từ không thiết tân ngữ (đối tượng) ở phía sau.
+Ví dụ từ: [Nội động từ trong từ điển thông dụng](/dicts/regular?ptag=vi)
+
+### Cụm động tân
+
+Cụm động từ + đối tượng của động từ kết hợp.
+Khác biệt với nội động từ là cụm động tân có thể đóng vai trò là chủ ngữ, hoặc là danh từ trung tâm trong cụm danh từ có `的`.
+
+Ví dụ từ: [Cụm động tân trong từ điển thông dụng](/dicts/regular?ptag=vo)
+
+### Danh động từ
+
+Các từ có thể làm động từ cũng có thể làm danh từ.
+
+Ví dụ từ: [Danh động từ trong từ điển thông dụng](/dicts/regular?ptag=an)
+
+### Phó động từ
+
+Các từ có thể làm động từ cũng có thể làm phó từ.
+
+Ví dụ từ: [Phó động từ trong từ điển thông dụng](/dicts/regular?ptag=ad)
+
+### Động từ xu hướng
+
+Động từ xu hướng là những động từ biểu thị xu hướng của động tác. Biểu thị được mối tương quan giữa xu hướng của động tác và vị trí của người nói. Thông qua cách dùng động từ xu hướng thì chúng ta có thể nhận biết được vị trí người nói ở đâu.
+
+Động từ xu hướng có thể kết hợp với động từ/tính từ ở đằng trước để thành cụm động từ.
+
+Tham khảo: https://tiengtrungtoandien.com/dong-tu-xu-huong
+
+Ví dụ từ: [Động từ xu hướng](/dicts/regular?ptag=vf)
+
+### Động từ hình thức
+
+Động từ hình thức có thể kết hợp trực tiếp với động từ phía sau.
+
+Ví dụ từ: [Động từ hình thức](/dicts/regular?ptag=vx)
+
+## 4. ĐỘNG TỪ NĂNG NGUYỆN 助動詞
+
+Động từ năng nguyện là từ giúp động từ để diễn tả nhu cầu, khả năng, nguyện vọng. Trợ động từ cũng có thể bổ sung cho hình dung từ. Danh từ không được gắn vào phía sau trợ động từ. Dạng phủ định của trợ động từ có phó từ phủ định «不».
+
+Tham khảo: https://khoahoctiengtrung.com/dong-tu-nang-nguyen/
+
+Ví dụ từ: [Động từ năng nguyện](/dicts/regular?ptag=vm)
+
+# Chưa hoàn thiện:
+
+## 5. ĐẠI TỪ
+
+我、你、他、我们、你们、他们、这、那、这样、谁、什么…
+
+3 loại đại từ:
+
+- Đại từ nhân xưng
+- Đại từ chỉ thị
+- Đại từ nghi vấn
+
+## 6. LƯỢNG TỪ 量詞
+
+Lượng từ dùng để biểu thị đơn vị của sự vật hoặc động tác. Trong tiếng hán thì lượng từ còn có thể được phân ra làm danh lượng từ và động lượng từ.
+
+## 7 . PHÓ TỪ 副詞
+
+Phó từ thường được đặt trước động từ, tính từ để làm trạng ngữ như: 很、才、也、十分、就、都、马上、立刻、曾经、只、不、已经…
+
+## 8. GIỚI TỪ 介詞
+
+Giới từ thường tổ hợp với các loại từ khác để tạo thành cụm giới từ làm định ngữ hoặc trạng ngữ như: 把、從、向、朝、為、為了、往、於、比、被、在、對、以、通過、隨著、作為.
+
+## 9. LIÊN TỪ 連詞
+
+Liên từ có thể liên kết từ, cụm từ, câu hoặc thậm chí 1 đoạn văn như “和、及、或者、或、又、既”.
+
+Từ nối thì cũng có thể được coi là liên từ như ”因為……所以、不但……而且、雖然……但是”.
+
+## 10. TRỢ TỪ 助詞
+
+Trợ từ thường được đi kèm với từ, cụm từ hoặc câu để bổ trợ cho tác dụng của từ.
+
+Trợ từ có thể phân làm 3 loại:
+
+- Trợ từ kết cấu gồm: 的、地、得、所、似的
+- Trợ từ động thái gồm: 著、了、過.
+- Trợ từ ngữ khí gồm: 啊、嗎、呢、吧、吶、呀、了、麼、哇
+
+## 11. THÁN TỪ 嘆詞
+
+Thán từ là từ biểu thị cảm thán, kêu gọi, hò hét, đối đáp như :喂、喲、嗨、哼、哦、哎呀. Thán từ thường có thể độc lập tạo thành 1 câu.
+
+## 12. TỪ TƯỢNG THANH 擬聲詞
+
+Từ tượng thanh là những từ mô phổng âm thanh như: 嗚、汪汪、轟隆、咯咯、沙沙沙、呼啦啦

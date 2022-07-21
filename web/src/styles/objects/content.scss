@@ -34,30 +34,31 @@ article {
     @include padding-x(2rem);
   }
 
-  > h1 {
-    padding-top: 0.5rem;
-    margin-bottom: 1.5rem;
+  > * + * {
+    margin-top: 1.5rem;
   }
 
-  > h1,
-  > h2 {
-    font-weight: 400;
+  h1 {
+    padding-top: 0.5rem;
+    margin-bottom: 1.5rem;
     @include border(--bd-main, $loc: bottom);
   }
 
-  > h2,
-  > h3 {
+  h1,
+  h2 {
+    font-weight: 400;
+  }
+
+  h2,
+  h3 {
     padding-top: 0.5rem;
     @include fgcolor(secd);
+    @include border(--bd-soft, $loc: bottom);
   }
 
-  > h4,
-  > h5 {
+  h4,
+  h5 {
     @include fgcolor(tert);
-  }
-
-  > * + * {
-    margin-top: 1.25rem;
   }
 
   ul > * + *,
@@ -65,17 +66,12 @@ article {
     margin-top: 1rem;
   }
 
-  li > * + * {
+  li > * {
     margin-top: 0.75rem;
   }
 
   a {
     @include fgcolor(primary, 5);
-  }
-
-  code {
-    @include bgcolor(tert);
-    font-family: var(--ff-mono);
   }
 
   .sm {
