@@ -153,77 +153,101 @@
   <button data-kbd="n" on:click={() => (vpterm.ptag = 'n')} />
 </div>
 
-<div class="hints" class:_expand={show_mode > 0}>
-  {#each val_hints as val, idx (val)}
-    {@const _hide =
-      show_mode == 0 ? idx > val_limit : show_mode == 2 ? idx > 0 : false}
-    <button
-      class="hint"
-      class:_base={val == vpterm.init.b_val}
-      class:_priv={val == vpterm.init.u_val}
-      class:_hide
-      data-kbd={v_kbd[idx]}
-      on:click={() => (vpterm.val = val)}>{val}</button>
-  {/each}
-
-  {#if val_hints.length > val_limit || show_mode == 2}
-    <button
-      class="hint _icon"
-      on:click={() => (show_mode = show_mode == 1 ? 0 : 1)}
-      use:hint={'Ẩn/hiện các gợi ý nghĩa cụm từ'}
-      ><SIcon name="chevron-{show_mode == 1 ? 'left' : 'right'}" /></button>
-  {/if}
-
-  <div class="right">
-    {#each tag_hints as tag, idx (tag)}
-      {@const _hide =
-        show_mode == 0
-          ? idx > 1
-          : show_mode == 2
-          ? false
-          : val_hints.length == val_limit
-          ? idx > 0
-          : true}
+<div class="wrap">
+  <div class="hints" class:_expand={show_mode > 0}>
+    {#each val_hints.slice(0, val_limit) as val, idx}
       <button
-        class="hint _ptag"
-        class:_base={tag == vpterm.init.b_ptag}
-        class:_priv={tag == vpterm.init.u_ptag}
-        class:_hide
-        data-kbd={p_kbd[idx]}
-        on:click={() => (vpterm.ptag = tag)}>{pt_labels[tag] || tag}</button>
+        class="hint"
+        class:_base={val == vpterm.init.b_val}
+        class:_priv={val == vpterm.init.u_val}
+        data-kbd={v_kbd[idx]}
+        on:click={() => (vpterm.val = val)}>{val}</button>
     {/each}
 
-    {#if tag_hints.length > 2 || show_mode == 1}
+    {#if val_hints.length > val_limit}
       <button
         class="hint _icon"
-        on:click={() => (show_mode = show_mode == 2 ? 0 : 2)}
-        use:hint={'Ẩn/hiện các gợi ý thể loại'}
-        ><SIcon name="chevron-{show_mode == 2 ? 'left' : 'right'}" /></button>
+        on:click={() => (show_mode = show_mode == 1 ? 0 : 1)}
+        use:hint={'Ẩn/hiện các gợi ý nghĩa cụm từ'}
+        ><SIcon name={show_mode == 1 ? 'minus' : 'plus'} /></button>
     {/if}
+
+    <div class="right">
+      {#each tag_hints.slice(0, 2) as tag, idx (tag)}
+        <button
+          class="hint _ptag"
+          class:_base={tag == vpterm.init.b_ptag}
+          class:_priv={tag == vpterm.init.u_ptag}
+          data-kbd={p_kbd[idx]}
+          on:click={() => (vpterm.ptag = tag)}>{pt_labels[tag] || tag}</button>
+      {/each}
+
+      {#if tag_hints.length > 2}
+        <button
+          class="hint _icon"
+          on:click={() => (show_mode = show_mode == 2 ? 0 : 2)}
+          use:hint={'Ẩn/hiện các gợi ý thể loại'}
+          ><SIcon name={show_mode == 2 ? 'minus' : 'plus'} /></button>
+      {/if}
+    </div>
   </div>
+
+  {#if show_mode == 1}
+    <div class="extra">
+      {#each val_hints.slice(val_limit) as val}
+        <button
+          class="hint"
+          class:_base={val == vpterm.init.b_val}
+          class:_priv={val == vpterm.init.u_val}
+          on:click={() => (vpterm.val = val)}>{val}</button>
+      {/each}
+    </div>
+  {:else if show_mode == 2}
+    <div class="extra _tag">
+      {#each tag_hints.slice(2) as tag}
+        <button
+          class="hint _ptag"
+          class:_base={tag == vpterm.init.b_ptag}
+          class:_priv={tag == vpterm.init.u_ptag}
+          on:click={() => (vpterm.ptag = tag)}>{pt_labels[tag] || tag}</button>
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <style lang="scss">
-  .hints {
-    padding: 0.25rem 0.5rem;
-    height: 2rem;
+  .wrap {
     position: relative;
+  }
 
+  .hints {
     @include flex();
     @include ftsize(sm);
 
-    &._expand {
-      height: auto;
-      display: flex;
-      flex-wrap: wrap;
-    }
+    padding: 0.25rem 0.5rem;
+    height: 2rem;
   }
 
-  // .extra {
-  //   position: absolute;
-  //   left: 0;
-  //   top: 100%;
-  // }
+  .extra {
+    @include flex();
+    @include ftsize(xs);
+
+    padding: 0.125rem 0.5rem;
+
+    height: auto;
+    flex-wrap: wrap;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    @include border($loc: bottom);
+    @include bdradi($loc: bottom);
+    @include bgcolor(secd);
+
+    &._tag {
+      justify-content: end;
+    }
+  }
 
   .right {
     margin-left: auto;
@@ -245,7 +269,7 @@
     @include clamp($width: null, $style: '-');
 
     &._ptag {
-      font-size: rem(13px);
+      font-size: em(13px, 14px);
     }
 
     &._priv, &._base { @include fgcolor(secd); }
@@ -253,10 +277,6 @@
     &._base { font-style: italic; }
 
     @include hover { @include fgcolor(primary, 5); }
-
-    &._hide {
-      display: none;
-    }
 
     &._icon {
       margin-left: -.25rem;
