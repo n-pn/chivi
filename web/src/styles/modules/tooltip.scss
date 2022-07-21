@@ -15,6 +15,11 @@
 
 tool-tip {
   @include tooltip();
+
+  @media (pointer: coarse) {
+    display: none;
+  }
+
   width: 10rem;
   z-index: 10;
   position: absolute;

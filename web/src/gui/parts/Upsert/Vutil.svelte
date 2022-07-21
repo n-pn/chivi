@@ -255,6 +255,8 @@
     @include bgcolor(secd);
     @include border();
     @include bdradi($loc: bottom);
+
+    z-index: 99999;
     left: 0;
     right: 0;
     top: 2rem;
@@ -265,6 +267,7 @@
 
     > .btn {
       height: 2rem;
+      font-size: rem(13px);
 
       :global(svg) {
         @include ftsize(sm);
