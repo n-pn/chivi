@@ -11,12 +11,12 @@
   ]
   // prettier-ignore
   $: links = [
-
-    ['G.Search', `//www.google.com/search?q=${key}`],
+    ['Google', `//www.google.com/search?q=${key}`],
     ['Baidu', `//www.baidu.com/s?wd=${key}`],
+    ['Baike', `//baike.baidu.com/item/${key}`],
+    ['Moegirl', `//mzh.moegirl.org.cn/zh-hans/${key}`],
+    ['Wiki', `//zh.m.wikipedia.org/zh-hans/${key}`],
     ['Thivien', `//hvdic.thivien.net/whv/${key}`],
-    ['Moegirl', `//zh.moegirl.org.cn/zh-hans/${key}`],
-    ['Wiki', `//zh.m.wikipedia.org/zh-hans/${key}`]
   ]
 
   // prettier-ignore
