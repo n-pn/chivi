@@ -170,7 +170,7 @@
         {/if}
       </div>
 
-      <Vutil {key} tab={$ctrl.tab} bind:vpterm />
+      <Vutil {key} {val_inp} tab={$ctrl.tab} bind:vpterm />
     </upsert-main>
 
     <upsert-foot>

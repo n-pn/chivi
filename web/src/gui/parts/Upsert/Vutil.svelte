@@ -37,6 +37,7 @@
   export let key: string
   export let tab = 0
   export let vpterm: VpTerm
+  export let val_inp
 
   let capped = 0
   let length = 0
@@ -49,6 +50,11 @@
   $: if (key) {
     gtran_lang = [0, 0, 0]
     btran_lang = [0, 0, 0]
+  }
+
+  function trigger_trans_submenu() {
+    show_trans = !show_trans
+    if (val_inp) val_inp.focus()
   }
 
   function upcase_val(node: Element, count: number) {
@@ -80,6 +86,7 @@
 
   async function load_gtran(g_tab = 0) {
     vpterm.val = '...'
+    if (val_inp) val_inp.focus()
 
     const tran = await gtran(key, g_tab)
     if (!tran) return
@@ -108,6 +115,7 @@
 
   async function load_btran(b_tab = 0) {
     vpterm.val = '...'
+    if (val_inp) val_inp.focus()
 
     const tran = await btran(key, b_tab)
     const [capped, length] = check_capped(tran)
@@ -163,7 +171,7 @@
         class="btn"
         class:_active={show_trans}
         data-kbd="t"
-        on:click={() => (show_trans = !show_trans)}
+        on:click={trigger_trans_submenu}
         use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>
         <SIcon name="language" />
       </button>
