@@ -37,7 +37,7 @@
   export let key: string
   export let tab = 0
   export let vpterm: VpTerm
-  export let val_inp
+  export let refocus = () => {}
 
   let capped = 0
   let length = 0
@@ -54,7 +54,7 @@
 
   function trigger_trans_submenu() {
     show_trans = !show_trans
-    if (val_inp) val_inp.focus()
+    refocus()
   }
 
   function upcase_val(node: Element, count: number) {
@@ -86,7 +86,7 @@
 
   async function load_gtran(g_tab = 0) {
     vpterm.val = '...'
-    if (val_inp) val_inp.focus()
+    refocus()
 
     const tran = await gtran(key, g_tab)
     if (!tran) return
@@ -115,7 +115,7 @@
 
   async function load_btran(b_tab = 0) {
     vpterm.val = '...'
-    if (val_inp) val_inp.focus()
+    refocus()
 
     const tran = await btran(key, b_tab)
     const [capped, length] = check_capped(tran)

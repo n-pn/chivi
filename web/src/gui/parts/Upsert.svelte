@@ -87,7 +87,9 @@
   }
 
   let val_inp: HTMLInputElement
-  $: if (vpterm) val_inp && val_inp.focus()
+  $: if (vpterm) refocus()
+
+  const refocus = () => val_inp && val_inp.focus()
 </script>
 
 <Dialog
@@ -148,7 +150,7 @@
     </button>
   </upsert-tabs>
 
-  <upsert-body>
+  <upsert-body on:click={refocus}>
     <Emend {vpterm} />
 
     <upsert-main>
@@ -170,7 +172,7 @@
         {/if}
       </div>
 
-      <Vutil {key} {val_inp} tab={$ctrl.tab} bind:vpterm />
+      <Vutil {key} tab={$ctrl.tab} bind:vpterm />
     </upsert-main>
 
     <upsert-foot>
@@ -322,10 +324,9 @@
 
   upsert-main {
     display: block;
-    position: relative;
     @include bdradi;
 
-    @include linesd(--bd-main, $inset: false);
+    @include linesd(--bd-main, $inset: true);
     @include bgcolor(main);
 
     &:focus-within {
@@ -342,7 +343,7 @@
     height: $h-outer;
     padding: math.div($h-outer - $h-inner, 2);
 
-    @include linesd(--bd-main, $inset: false);
+    @include linesd(--bd-main, $inset: true);
 
     &:focus-within {
       @include linesd(primary, 4, $ndef: false);

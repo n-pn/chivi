@@ -103,6 +103,7 @@
 
   export let vpterm: VpTerm
   export let dname = 'combine'
+  export let refocus = () => {}
 
   $: val_hints = gen_val_hints(vpterm.init.h_vals || [], vpterm.val.trim())
   $: val_limit = gen_val_limit(val_hints)
@@ -153,7 +154,7 @@
   <button data-kbd="n" on:click={() => (vpterm.ptag = 'n')} />
 </div>
 
-<div class="wrap">
+<div class="wrap" on:click={refocus}>
   <div class="hints" class:_expand={show_mode > 0}>
     {#each val_hints.slice(0, val_limit) as val, idx}
       <button
@@ -237,10 +238,10 @@
     height: auto;
     flex-wrap: wrap;
     position: absolute;
-    top: 100%;
+    top: 1.875rem;
     left: 0;
     right: 0;
-    @include border($loc: bottom);
+    @include border;
     @include bdradi($loc: bottom);
     @include bgcolor(secd);
 
@@ -270,6 +271,7 @@
 
     &._ptag {
       font-size: em(13px, 14px);
+      max-width: 5rem;
     }
 
     &._priv, &._base { @include fgcolor(secd); }
