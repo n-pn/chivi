@@ -43,6 +43,7 @@
 
   $: [capped, length] = check_capped(vpterm.val)
 
+  let show_trans = false
   let gtran_lang = [0, 0, 0] // gtran lang index for each tab
   let btran_lang = [0, 0, 0] // bing tran lang index for each tab
   $: if (key) {
@@ -98,6 +99,7 @@
 
     gtran_lang[tab] = g_tab
     gtran_lang = gtran_lang
+    show_trans = false
   }
 
   function lower_case(text: string) {
@@ -114,15 +116,12 @@
 
     btran_lang[tab] = b_tab
     btran_lang = btran_lang
+    show_trans = false
   }
-
-  let show_trans = true
 </script>
 
 <div class="wrap">
   <div class="vutil">
-    <span class="cap _show-pl">Viết hoa:</span>
-
     {#each [1, 2, 3] as num}
       {@const icon = 'letter-case' + (capped == num ? '-toggle' : '')}
       <button
@@ -131,27 +130,32 @@
         use:upcase_val={num}
         use:hint={`Viết hoa ${num} chữ đầu`}>
         <SIcon name={icon} />
-        <span>{num}</span>
+        <span class="cap">{num}</span>
+        <span class="lbl">chữ</span>
       </button>
     {/each}
 
     <button
-      class="btn _show-pl"
+      class="btn"
       data-kbd="4"
       disabled={capped == length}
       use:upcase_val={99}
       use:hint={'Viết hoa tất cả các chữ'}>
       <SIcon name="letter-case-upper" />
+      <span class="lbl">V.hoa</span>
+      <span class="cap">tất</span>
     </button>
 
     <button
-      class="btn _show-pl"
+      class="btn"
       disabled={vpterm.val == vpterm.val.toLowerCase()}
       data-kbd="0"
       data-key="Backquote"
       use:upcase_val={0}
       use:hint={'Viết thường tất cả các chữ'}>
       <SIcon name="letter-case-lower" />
+      <span class="lbl">Viết</span>
+      <span class="cap">thường</span>
     </button>
 
     <div class="right">
@@ -268,24 +272,25 @@
     }
   }
 
+  .lbl {
+    display: none;
+    font-size: rem(14px);
+    // @include fgcolor(mute);
+    @include bps(display, none, $ts: inline-block);
+  }
+
   .right {
     @include flex();
     margin-left: auto;
   }
 
-  .btn,
-  .cap {
+  .btn {
     background: transparent;
-    font-weight: 500;
     @include fgcolor(tert);
   }
 
-  // prettier-ignore
   .cap {
-    line-height: $height;
-
-    @include bps(font-size, rem(13px), $ts: rem(14px));
-    &._show-pl { @include bps(display, none, $pl: inline-block); }
+    font-size: rem(14px);
   }
 
   // prettier-ignore
@@ -293,6 +298,7 @@
     display: inline-flex;
     align-items: center;
     padding: 0 .25rem;
+    font-weight: 500;
 
     gap: .125rem;
 
@@ -303,15 +309,12 @@
     :global(svg) {
       font-size: 1rem;
     }
-    span {
-      font-size: rem(14px);
-    }
+
+
 
 
     &[disabled] { @include fgcolor(mute); }
     &._active { @include fgcolor(primary, 5); }
-    &._1 { @include fgcolor(primary, 5); }
-    &._2 { @include fgcolor(harmful, 5); }
   }
 
   // .lang {
