@@ -9,6 +9,11 @@ module CV::R2Client
     res.status_code < 400
   end
 
+  def delete(path : String) : Bool
+    res = HTTP::Client.put("#{R2_ROOT}#{path}", HEADERS)
+    res.status_code < 400
+  end
+
   def download(path : String, file : String) : Bool
     # TODO: replace with internal http/client?
     `curl "#{R2_ROOT}#{path}" -o "#{file}"`

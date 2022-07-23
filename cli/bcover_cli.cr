@@ -46,7 +46,7 @@ module CV
           info = BookInfo.new(workers.receive)
           single(info.bcover, force: force) unless info.bcover.empty?
         rescue err
-          Log.error(err) { err.message }
+          Log.error(exception: err) { err.message }
         ensure
           results.send(nil)
         end

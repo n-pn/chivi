@@ -20,7 +20,8 @@ struct CV::NvinfoView
       jb.field "btitle_vi", @data.vname
 
       jb.field "genres", @data.vgenres
-      jb.field "bcover", book_cover(@data.bcover, @data.scover)
+      jb.field "bcover", @data.bcover
+      jb.field "scover", @data.scover
 
       jb.field "status", @data.status
       jb.field "mftime", @data.utime

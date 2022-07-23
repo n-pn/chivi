@@ -18,7 +18,7 @@ class CV::Bcover
   property width : Int32 = 0    # image width
   property on_r2 : Bool = false # uploaded to cloudflare r2
 
-  getter webp_name : String { @name + "@1.webp" }
+  getter webp_name : String { @name + ".webp" }
   getter webp_path : String { File.join(DIR, webp_name) }
 
   def valid?
@@ -82,20 +82,9 @@ class CV::Bcover
   end
 
   private def gif_to_webp(inp_path : String, out_path : String, resize = false)
-    unless resize
-      `gif2webp -quiet "#{inp_path}" -o "#{out_path}"`
-      return false unless $?.success?
-    end
-
-    out_temp = File.join(DIR, @name + ".webp")
-    `gif2webp -quiet "#{inp_path}" -o "#{out_temp}"`
+    `gif2webp -quiet "#{inp_path}" -o "#{out_path}"`
     return false unless $?.success?
-
-    unless img_to_webp(out_temp, out_path, resize: true)
-      File.delete(out_path) if File.exists?(out_path)
-      File.rename(out_temp, out_path)
-      true
-    end
+    resize ? img_to_webp(out_path, out_path, resize: true) : true
   end
 
   private def img_to_webp(inp_file : String, out_file : String, resize = false)
