@@ -14,12 +14,13 @@ module CV
     return puts "Uploaded, skipping!" if !force && cover.on_r2
 
     if force || !cover.exists?
+      raise "Dead site [#{link}]" if link =~ /bxwxorg|biqugee/
+
       raise "Fetch failed! for #{cover.link}" unless cover.fetch!(force: force)
       raise "Invalid format #{cover.format}" unless cover.valid?
       raise "Can't convert to webp" unless cover.to_webp!(force: force)
+      cover.atomic_save!
     end
-
-    cover.atomic_save!
 
     raise "Upload to Cloudflare R2 unsucessful" unless cover.to_r2!
     puts "[#{cover.name}] saved and uploaded to cloudflare r2!"
@@ -29,12 +30,30 @@ module CV
   def batch(sname = "=base", force = false)
     files = Dir.glob("var/books/infos/#{sname}/*.tsv")
 
-    files.each do |file|
-      info = BookInfo.new(file)
-      single(info.bcover, force: force) unless info.bcover.empty?
-    rescue err
-      puts err
+    q_size = files.size
+    w_size = 8
+
+    workers = Channel(String).new(q_size)
+    results = Channel(Nil).new(w_size)
+
+    spawn do
+      files.each { |file| workers.send(file) }
     end
+
+    w_size.times do
+      spawn do
+        loop do
+          info = BookInfo.new(workers.receive)
+          single(info.bcover, force: force) unless info.bcover.empty?
+        rescue err
+          Log.error(err) { err.message }
+        ensure
+          results.send(nil)
+        end
+      end
+    end
+
+    q_size.times { results.receive }
   end
 
   def run!(argv = ARGV)
