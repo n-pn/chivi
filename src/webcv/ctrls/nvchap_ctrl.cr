@@ -15,7 +15,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvseed.nvinfo_id)
     ubmemo.mark_chap!(chinfo, nvseed.sname, cpart) if _cvuser.privi > -1
 
-    redo = params["redo"]? == "true"
+    redo = _cvuser.privi > 0 && params["redo"]? == "true"
     cvdata, rl_key = load_cvdata(nvseed, chinfo, cpart, redo)
 
     serv_json do |jb|
@@ -54,6 +54,11 @@ class CV::NvchapCtrl < CV::BaseCtrl
       QtranData.nvchap(lines, nvseed.nvinfo, chinfo.stats, cpart)
     end
 
+    if qtran.input.empty?
+      spawn log_convert_error(nvseed, chinfo, cpart, "No text loaded")
+      return {"", ukey}
+    end
+
     cvdata = String.build do |io|
       engine = qtran.make_engine(_cvuser.uname)
       trad = params["trad"]? == "true"
@@ -63,7 +68,20 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     {cvdata, ukey}
   rescue ex
-    Log.error(exception: ex) { "Error: #{ex.message}" }
+    spawn log_convert_error(nvseed, chinfo, cpart, ex.message)
     {"", ""}
+  end
+
+  private def log_convert_error(nvseed, chinfo, cpart, error)
+    File.open("tmp/load_chap_error.log", "a") do |io|
+      data = {
+        time: Time.local,
+        book: "#{nvseed.nvinfo.bslug}  #{nvseed.sname}  #{nvseed.snvid}",
+        chap: "#{chinfo.chidx}  #{chinfo.schid}  #{cpart}",
+        _err: error,
+      }
+
+      io.puts(data.to_json)
+    end
   end
 end

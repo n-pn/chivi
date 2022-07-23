@@ -1,4 +1,4 @@
-require "./adjt_word"
+require "./adjt_base"
 
 module MtlV2::MTL
   class AdjtExpr < BaseExpr
