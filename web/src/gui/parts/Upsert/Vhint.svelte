@@ -246,7 +246,7 @@
     @include bgcolor(secd);
 
     &._tag {
-      justify-content: end;
+      justify-content: flex-end;
     }
   }
 

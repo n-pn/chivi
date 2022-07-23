@@ -270,7 +270,7 @@
     right: 0;
     top: 2rem;
     position: absolute;
-    justify-content: end;
+    justify-content: flex-end;
 
     padding: 0 0.375rem;
 
