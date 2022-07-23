@@ -8,6 +8,7 @@ declare namespace CV {
 
     bgenre: string
     bcover: string
+    scover: string
 
     rating: number
     voters: number

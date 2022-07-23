@@ -18,9 +18,8 @@
 </script>
 
 <script lang="ts">
-  import { SIcon } from '$gui'
+  import { SIcon, BCover } from '$gui'
   import RTime from '$gui/atoms/RTime.svelte'
-  import BCover from '$gui/atoms/BCover.svelte'
   import BookTrack from '$gui/parts/BookTrack.svelte'
 
   export let nvinfo = $page.stuff.nvinfo
@@ -50,7 +49,7 @@
   </div>
 
   <div class="cover">
-    <BCover bcover={nvinfo.bcover} />
+    <BCover bcover={nvinfo.bcover} scover={nvinfo.scover} />
   </div>
 
   <div class="line">

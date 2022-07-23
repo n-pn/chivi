@@ -5,6 +5,7 @@ class CV::YslistCtrl < CV::BaseCtrl
     query = Yslist.sort_by(params["_s"]? || "utime")
       .filter_ysuser(params.fetch_i64("by"))
       .filter_string(params["qs"]?)
+      .where("book_count > 0")
 
     params["class"]?.try { |klass| query.where("klass = ?", klass) }
 

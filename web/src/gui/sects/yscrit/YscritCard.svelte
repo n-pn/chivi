@@ -2,7 +2,7 @@
   import { rel_time } from '$utils/time_utils'
   import { map_status } from '$utils/nvinfo_utils'
 
-  import { SIcon, Stars } from '$gui'
+  import { SIcon, Stars, BCover } from '$gui'
   import Replies from './Replies.svelte'
 
   export let crit: CV.Yscrit
@@ -51,10 +51,7 @@
   {#if show_book && book}
     <section class="book">
       <a class="bcover" href="/-{book.bslug}">
-        <picture>
-          <source srcset={book.bcover} />
-          <img src="/imgs/empty.png" alt="" />
-        </picture>
+        <BCover bcover={book.bcover} scover={book.scover} class="square" />
       </a>
 
       <div class="book-info">
@@ -228,12 +225,6 @@
   .bcover {
     height: 100%;
     width: 4rem;
-
-    img {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
   }
 
   crit-item {

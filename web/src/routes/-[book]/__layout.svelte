@@ -33,6 +33,7 @@
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
 
+  $: bcover = nvinfo.bcover || 'blank.webp'
   $: bintro = nvinfo.bintro.substring(0, 300)
   $: update = new Date(nvinfo.mftime || 0).toISOString()
   $: genres = nvinfo.genres || []
@@ -59,7 +60,7 @@
   <meta property="og:type" content="novel" />
   <meta property="og:description" content={bintro} />
   <meta property="og:url" content="https://chivi.app/-{nvinfo.bslug}" />
-  <meta property="og:image" content="https://chivi.app/{nvinfo.bcover}" />
+  <meta property="og:image" content="https://r2.chivi.app/covers/{bcover}" />
 
   <meta property="og:novel:category" content={genres[0]} />
   <meta property="og:novel:author" content={nvinfo.author_vi} />

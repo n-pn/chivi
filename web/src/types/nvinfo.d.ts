@@ -17,8 +17,10 @@ declare namespace CV {
     author_zh: string
     author_vi: string
 
-    bintro: string
     bcover: string
+    scover: string
+
+    bintro: string
     genres: string[]
     labels: string[]
 

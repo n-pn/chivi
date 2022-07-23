@@ -34,7 +34,9 @@ struct CV::YscritView
         btitle: @data.nvinfo.vname,
 
         bgenre: @data.nvinfo.vgenres.first? || "Loại khác",
+
         bcover: @data.nvinfo.bcover,
+        scover: @data.nvinfo.scover,
 
         voters: @data.nvinfo.voters,
         rating: @data.nvinfo.rating / 10,
