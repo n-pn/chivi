@@ -3,7 +3,7 @@
 </script>
 
 <picture>
-  <source srcset="/covers/{bcover || 'blank.webp'}" type="image/webp" />
+  <source srcset={bcover} />
   <img src="/imgs/empty.png" alt="" />
 </picture>
 

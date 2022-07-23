@@ -6,6 +6,11 @@ struct CV::NvinfoView
   def initialize(@data : Nvinfo, @full = true)
   end
 
+  def book_cover(bcover : String, scover : String)
+    return "/covers/" + bcover unless bcover.empty?
+    scover.empty? ? "/covers/blank.webp" : scover
+  end
+
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "id", @data.id
@@ -15,9 +20,7 @@ struct CV::NvinfoView
       jb.field "btitle_vi", @data.vname
 
       jb.field "genres", @data.vgenres
-
-      jb.field "scover", @data.scover
-      jb.field "bcover", @data.bcover
+      jb.field "bcover", book_cover(@data.bcover, @data.scover)
 
       jb.field "status", @data.status
       jb.field "mftime", @data.utime

@@ -1,79 +1,75 @@
 require "log"
-require "http/client"
 require "colorize"
-require "../src/_util/ukey_util"
+require "option_parser"
+require "../src/appcv/inits/bcover"
+require "../src/_init/books/book_info"
 
-def save_image(link : String, file : String, webp_file : String)
-  return if File.exists?(webp_file) || link.blank?
-  return unless img_file = fetch_image(link, file)
+module CV
+  extend self
 
-  if img_file.ends_with?(".gif")
-    gif_to_webp(img_file, webp_file)
-  elsif img_width = image_width(img_file)
-    img_to_webp(img_file, webp_file, img_width)
+  def single(link : String, name : String = "", force = false) : Nil
+    raise "Empty link" if link.empty?
+
+    cover = Bcover.init(link, name)
+    return puts "Uploaded, skipping!" if !force && cover.on_r2
+
+    if force || !cover.exists?
+      raise "Fetch failed! for #{cover.link}" unless cover.fetch!(force: force)
+      raise "Invalid format #{cover.format}" unless cover.valid?
+      raise "Can't convert to webp" unless cover.to_webp!(force: force)
+    end
+
+    cover.atomic_save!
+
+    raise "Upload to Cloudflare R2 unsucessful" unless cover.to_r2!
+    puts "[#{cover.name}] saved and uploaded to cloudflare r2!"
+    cover.clean_save!
   end
-end
 
-def fetch_image(link : String, img_file : String) : String?
-  return img_file if File.exists?(img_file)
-  Log.info { "Fetch image: #{link}" }
+  def batch(sname = "=base", force = false)
+    files = Dir.glob("var/books/infos/#{sname}/*.tsv")
 
-  HTTP::Client.get(link) do |res|
-    ext = map_extension(res.content_type)
-    img_file = img_file.sub(".jpg", ext)
-
-    Dir.mkdir_p(File.dirname(img_file))
-    File.write(img_file, res.body_io)
+    files.each do |file|
+      info = BookInfo.new(file)
+      single(info.bcover, force: force) unless info.bcover.empty?
+    rescue err
+      puts err
+    end
   end
 
-  Log.info { "[#{link}] saved to [#{img_file}]".colorize.yellow }
-  img_file
-rescue err
-  Log.error { err.colorize.red }
-end
+  def run!(argv = ARGV)
+    mode = 0
+    force = false
 
-def map_extension(mime : String?) : String
-  case mime
-  when .nil?        then ".raw"
-  when "image/jpeg" then ".jpg"
-  when "image/png"  then ".png"
-  when "image/gif"  then ".gif"
-  when "image/webp" then ".webp"
-  when "text/html"  then ".html"
-  else
-    exts = MIME.extensions(mime)
-    exts.empty? ? ".jpg" : exts.first
+    image_link = ""
+    image_name = ""
+
+    seed_name = "=base"
+
+    OptionParser.parse(argv) do |parser|
+      parser.on("-f", "Force redo") { force = true }
+
+      parser.on("single", "Work with a single book cover") do
+        mode = 1
+        parser.on("-i LINK", "image link") { |i| image_link = i }
+        parser.on("-n NAME", "image name") { |i| image_name = i }
+      end
+
+      parser.on("batch", "Fetch all covers") do
+        mode = 2
+        parser.on("-s SEED", "seed folder") { |s| seed_name = s }
+      end
+    end
+
+    case mode
+    when 1 then single(image_link, image_name, force)
+    when 2 then batch(seed_name, force)
+    else        raise "Unsupported mode"
+    end
+  rescue err
+    puts err.message
+    exit 1
   end
+
+  run!(ARGV)
 end
-
-def image_width(file : String, delete = false) : Int32?
-  return unless File.exists?(file)
-  `identify -format '%w %h' "#{file}"`.split(" ").first.to_i?
-rescue err
-  Log.error { [file, err].colorize.red }
-  File.delete(file) if delete
-end
-
-def gif_to_webp(inp_file : String, out_file : String)
-  `gif2webp -quiet "#{inp_file}" -o "#{out_file}"`
-  return unless width = image_width(out_file)
-  img_to_webp(out_file, out_file, width)
-end
-
-def img_to_webp(inp_file : String, out_file : String, width = 300)
-  webp_cmd = "cwebp -quiet -q 100 -mt"
-  webp_cmd += " -resize 300 0" if width > 300
-  webp_cmd += %{ "#{inp_file}" -o "#{out_file}"}
-  `#{webp_cmd}`
-end
-
-image_url = ARGV[0]
-
-webm_name = ARGV[1]? || CV::UkeyUtil.digest32(image_url, 8) + ".webp"
-webm_path = "priv/static/covers/#{webm_name}"
-
-image_dir = ARGV[2]? || "users"
-image_name = ARGV[3]? || webm_name.sub(".webp", ".jpg")
-image_path = "_db/bcover/#{image_dir}/#{image_name}"
-
-save_image(image_url, image_path, webm_path)

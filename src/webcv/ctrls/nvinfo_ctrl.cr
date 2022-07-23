@@ -129,7 +129,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       Nvinfo.cache!(nvinfo)
 
       spawn do
-        `bin/bcover_cli "#{nvinfo.scover}" #{nvinfo.bcover} users`
+        `bin/bcover_cli single -i "#{nvinfo.scover}" -n #{nvinfo.bcover}`
         body = params.to_unsafe_h.tap(&.delete("_json"))
         CtrlUtil.log_user_action("nvinfo-upsert", body, _cvuser.uname)
       end
