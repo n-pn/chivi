@@ -43,4 +43,10 @@ struct CV::NvinfoView
       end
     end
   end
+
+  def self.map(inp : Enumerable(Nvinfo), full = false)
+    res = [] of NvinfoView
+    inp.each { |obj| res << new(obj, full) }
+    res
+  end
 end

@@ -32,6 +32,8 @@ Amber::Server.configure do
 
     # get "/authors/:author_id/books", CV::AuthorCtrl, :books
 
+    get "/ranks/brief", CV::NvrankCtrl, :brief
+
     get "/books", CV::NvinfoCtrl, :index
     post "/books", CV::NvinfoCtrl, :upsert
     get "/books/:bslug/+edit", CV::NvinfoCtrl, :edit

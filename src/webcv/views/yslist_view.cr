@@ -34,4 +34,10 @@ struct CV::YslistView
       jb.field "utime", @data.utime
     end
   end
+
+  def self.map(inp : Enumerable(Yslist), full = false)
+    res = [] of YslistView
+    inp.each { |obj| res << new(obj, full) }
+    res
+  end
 end

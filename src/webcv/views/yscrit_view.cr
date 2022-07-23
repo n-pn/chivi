@@ -1,7 +1,7 @@
 require "json"
 
 struct CV::YscritView
-  def initialize(@data : Yscrit)
+  def initialize(@data : Yscrit, @full = false)
   end
 
   def to_json(io : IO)
@@ -53,5 +53,11 @@ struct CV::YscritView
         jb.field "yslist_count", yslist.book_count
       end
     end
+  end
+
+  def self.map(inp : Enumerable(Yscrit), full = false)
+    res = [] of YscritView
+    inp.each { |obj| res << new(obj, full) }
+    res
   end
 end

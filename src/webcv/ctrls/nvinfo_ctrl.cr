@@ -25,7 +25,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       total: total,
       pgidx: pgidx,
       pgmax: (total - 1) // limit + 1,
-      books: query.map { |x| NvinfoView.new(x, false) },
+      books: NvinfoView.map(query),
     })
   end
 
