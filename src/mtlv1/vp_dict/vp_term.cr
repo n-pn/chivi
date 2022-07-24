@@ -11,16 +11,15 @@ class CV::VpTerm
   end
 
   WORTH = {
-    3, 6, 9,
-    14, 18, 26,
-    25, 31, 40,
-    40, 45, 55,
-    58, 66, 78,
+    0, 3, 6, 9,
+    0, 14, 18, 26,
+    0, 25, 31, 40,
+    0, 40, 45, 55,
+    0, 58, 66, 78,
   }
 
   def self.worth(size : Int32, rank : Int8 = 0) : Int32
-    return size &- 1 if rank < 0 || rank > 2
-    WORTH[(size &- 1) &* 3 &+ rank]? || size &* (rank &* 2 &+ 7) &* 2
+    WORTH[(size &- 1) &* 4 &+ rank]? || size &* (rank &* 2 &+ 7) &* 2
   end
 
   getter key : String
@@ -34,7 +33,7 @@ class CV::VpTerm
 
   # auto generated fields
   getter ptag : PosTag { PosTag.parse(@attr, @key) }
-  getter point : Int32 { VpTerm.worth(@key.size, @rank &- 2_i8) }
+  getter point : Int32 { VpTerm.worth(@key.size, @rank &- 1_i8) }
 
   getter is_priv : Bool { @uname[0]? == '!' }
 
@@ -51,7 +50,6 @@ class CV::VpTerm
 
     @attr = cols[2]? || ""
     @rank = cols[3]?.try(&.to_i8?) || 3_i8
-    @rank = 2_i8 if @rank < 2
 
     if mtime = cols[4]?.try(&.to_i?)
       @mtime = mtime

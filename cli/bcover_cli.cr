@@ -11,7 +11,7 @@ module CV
     raise "Empty link" if link.empty?
 
     cover = Bcover.init(link, name)
-    return puts "Uploaded, skipping!" if !force && cover.on_r2
+    return puts "[#{name}] uploaded, skipping!" if !force && cover.on_r2
 
     if force || !cover.exists?
       raise "Dead site [#{link}]" if link =~ /bxwxorg|biqugee/
@@ -28,7 +28,7 @@ module CV
   end
 
   def batch(sname = "=base", force = false)
-    files = Dir.glob("var/books/infos/#{sname}/*.tsv")
+    files = Dir.glob("var/books/infos/#{sname}/*.tsv").shuffle
 
     q_size = files.size
     w_size = 8

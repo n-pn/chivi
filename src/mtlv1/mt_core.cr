@@ -113,7 +113,7 @@ class CV::MtCore
       naive_ner(input, idx, offset).try do |term|
         size = term.key.size
         jump = idx &+ size
-        cost = base_cost + VpTerm.worth(size, 0)
+        cost = base_cost + VpTerm.worth(size, 1_i8)
 
         if cost > costs[jump]
           nodes[jump] = term
@@ -125,12 +125,13 @@ class CV::MtCore
 
       @dicts.each do |dict|
         dict.scan(input, @uname, idx) do |term|
-          next if term.val[0]? == "[[pass]]"
           terms[term.key.size] = {dict.type, term}
         end
       end
 
       terms.each do |key, (dic, term)|
+        next if term.rank < 1
+
         cost = base_cost &+ term.point
         jump = idx &+ key
 
