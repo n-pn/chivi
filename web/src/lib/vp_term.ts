@@ -33,7 +33,7 @@ export class VpTerm {
   state: number = 0
   _priv: boolean = false
 
-  rank: number = 3
+  rank: number = 2
 
   constructor(init?: VpTermInit) {
     if (!init) {
@@ -49,11 +49,11 @@ export class VpTerm {
     if (init.u_val) {
       this._priv = true
       this.ptag = this.o_ptag = init.u_ptag || ''
-      this.rank = init.u_rank || 3
+      this.rank = init.u_rank || 2
     } else {
       this._priv = false
       this.ptag = this.o_ptag = init.b_ptag || init.h_ptag || ''
-      this.rank = init.b_rank || 3
+      this.rank = init.b_rank || 2
     }
   }
 

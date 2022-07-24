@@ -10,7 +10,7 @@
   import { hint } from './_shared'
 
   export let vpterm: VpTerm
-  export let rank = 3
+  export let rank = 2
 </script>
 
 <div class="prio">
@@ -21,19 +21,19 @@
   {#each lbls as lbl, idx}
     <button
       class="btn"
-      class:_base={vpterm.init.b_rank == 4 - idx}
-      class:_priv={vpterm.init.b_rank == 4 - idx}
-      class:_curr={rank == 4 - idx}
+      class:_base={vpterm.init.b_rank == 3 - idx}
+      class:_priv={vpterm.init.b_rank == 3 - idx}
+      class:_curr={rank == 3 - idx}
       data-kbd={keys[idx]}
-      on:click={() => (rank = 4 - idx)}
+      on:click={() => (rank = 3 - idx)}
       use:hint={'Mức độ ưu tiên: ' + labels[idx]}>{lbl}</button>
   {/each}
 
   <button
     class="btn _del"
-    class:_base={vpterm.init.b_rank < 2}
-    class:_priv={vpterm.init.b_rank < 2}
-    class:_curr={rank < 2}
+    class:_base={vpterm.init.b_rank == 0}
+    class:_priv={vpterm.init.b_rank == 0}
+    class:_curr={rank == 0}
     data-kbd={keys[4]}
     on:click={() => (rank = 0)}
     use:hint={'Đảm bảo cụm từ không được áp dụng khi dịch'}>Xoá</button>

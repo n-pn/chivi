@@ -22,25 +22,34 @@ class CV::VpTerm
     WORTH[(size &- 1) &* 4 &+ rank]? || size &* (rank &* 2 &+ 7) &* 2
   end
 
+  def self.parse_rank(str : String?)
+    case str
+    when "x", "0" then 0_i8
+    when "v", "2" then 1_i8
+    when "^", "4" then 3_i8
+    else               2_i8
+    end
+  end
+
   getter key : String
   property val : Array(String)
 
   property attr : String = ""
-  property rank : Int8 = 3_i8
+  property rank : Int8 = 2_i8
 
   getter mtime : Int32 = 0
   getter uname : String = "~"
 
   # auto generated fields
   getter ptag : PosTag { PosTag.parse(@attr, @key) }
-  getter point : Int32 { VpTerm.worth(@key.size, @rank &- 1_i8) }
+  getter point : Int32 { VpTerm.worth(@key.size, @rank) }
 
   getter is_priv : Bool { @uname[0]? == '!' }
 
   property _prev : VpTerm? = nil
   property _flag : UInt8 = 0_u8 # 0 => keep, 1 => overwritten, 2 => to be removed
 
-  def initialize(@key, @val = [""], @attr = "", @rank = 3_i8,
+  def initialize(@key, @val = [""], @attr = "", @rank = 2_i8,
                  @mtime = VpTerm.mtime, @uname = "~")
   end
 
@@ -49,8 +58,7 @@ class CV::VpTerm
     @val = cols.fetch(1, "").split(SPLIT)
 
     @attr = cols[2]? || ""
-    @rank = cols[3]?.try(&.to_i8?) || 3_i8
-
+    @rank = VpTerm.parse_rank(cols[3]?)
     if mtime = cols[4]?.try(&.to_i?)
       @mtime = mtime
       @uname = cols[5]? || "~"
@@ -79,7 +87,7 @@ class CV::VpTerm
   def to_s(io : IO, dtype = 0) : Nil
     io << key << '\t'
     @val.join(io, SPLIT)
-    io << '\t' << @attr << '\t' << (@rank == 3_i8 ? "" : @rank)
+    io << '\t' << @attr << '\t' << {"x", "v", "", "^"}[@rank]
     io << '\t' << @mtime << '\t' << @uname if @mtime > 0
   end
 
@@ -88,7 +96,8 @@ class CV::VpTerm
     @val.join(io, ',')
 
     io << '/' << @attr << ' '
-    io << @rank == 3 ? "" : @rank
+
+    io << @rank == 2_i8 ? "" : @rank
 
     if @mtime > 0
       io << '/' << @mtime << '/' << @uname

@@ -32,7 +32,7 @@ struct CV::VpTermForm
     val = @params.fetch_str("val").tr("", "").split(" | ").map(&.strip)
 
     attr = @params.fetch_str("attr", "")
-    rank = @params.fetch_str("rank", "").to_i8? || 3_i8
+    rank = @params.fetch_str("rank", "").to_i8? || 2_i8
 
     uname = @_priv ? "!" + @user.uname : @user.uname
     vpterm = VpTerm.new(@key, val, attr, rank, uname: uname)
