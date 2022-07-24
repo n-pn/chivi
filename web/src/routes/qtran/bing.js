@@ -1,6 +1,6 @@
 import { translate } from 'bing-translate-api'
 
-export async function post({ request }) {
+export async function POST({ request }) {
   const data = await request.json()
   console.log(data)
 

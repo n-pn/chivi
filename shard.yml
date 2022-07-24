@@ -111,6 +111,9 @@ dependencies:
     github: spider-gazelle/action-controller
     version: ~> 5.1
 
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+
 development_dependencies:
   garnet_spec:
     github: amberframework/garnet-spec
