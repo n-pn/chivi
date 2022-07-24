@@ -115,7 +115,7 @@ class CV::VpTerm
       jb.field "key", @key
       jb.field "val", @val
 
-      jb.field "ptag", ptag.naffil? ? @attr : ptag.to_str
+      jb.field "ptag", @attr
       jb.field "rank", @rank
 
       jb.field "mtime", self.utime
