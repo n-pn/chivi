@@ -1,4 +1,5 @@
-require "../shared/bootstrap"
+# require "../shared/bootstrap"
+require "tabkv"
 
 module CV
   record Bindex, stime : Int64, btitle : String, author : String do
@@ -37,7 +38,7 @@ module CV
 
   record Chsize, chap_count : Int32, last_schid : String do
     def self.from_tsv(rows : Array(String))
-      new(rows[0].to_i, rows[1].to_i)
+      new(rows[0].to_i, rows[1])
     end
 
     def to_tsv
@@ -56,52 +57,52 @@ module CV
   end
 end
 
-module CV::NvinfoUtil
-  extend self
+# module CV::NvinfoUtil
+#   extend self
 
-  class_getter authors : Hash(String, Author) do
-    output = {} of String => Author
+#   class_getter authors : Hash(String, Author) do
+#     output = {} of String => Author
 
-    Author.query.select("id", "zname").each do |author|
-      output[author.zname] = author
-    end
+#     Author.query.select("id", "zname").each do |author|
+#       output[author.zname] = author
+#     end
 
-    output
-  end
+#     output
+#   end
 
-  class_getter btitles : Hash(String, Btitle) do
-    output = {} of String => Btitle
+#   class_getter btitles : Hash(String, Btitle) do
+#     output = {} of String => Btitle
 
-    Btitle.query.select("id", "zname").each do |btitle|
-      output[btitle.zname] = btitle
-    end
+#     Btitle.query.select("id", "zname").each do |btitle|
+#       output[btitle.zname] = btitle
+#     end
 
-    output
-  end
+#     output
+#   end
 
-  def get_author(zname : String, force = false)
-    self.authors[zname] ||= Author.find({zname: zname}) || begin
-      return unless force
-      Author.upsert!(zname)
-    end
-  end
+#   def get_author(zname : String, force = false)
+#     self.authors[zname] ||= Author.find({zname: zname}) || begin
+#       return unless force
+#       Author.upsert!(zname)
+#     end
+#   end
 
-  def get_btitle(zname : String, force = false)
-    self.btitles[zname] ||= Btitle.find({zname: zname}) || begin
-      return unless force
-      Btitle.upsert!(zname)
-    end
-  end
+#   def get_btitle(zname : String, force = false)
+#     self.btitles[zname] ||= Btitle.find({zname: zname}) || begin
+#       return unless force
+#       Btitle.upsert!(zname)
+#     end
+#   end
 
-  def mtime(file : String)
-    File.info?(file).try(&.modification_time.to_unix)
-  end
+#   def mtime(file : String)
+#     File.info?(file).try(&.modification_time.to_unix)
+#   end
 
-  def print_stats(label : String)
-    puts "- <#{label.colorize.cyan}>, \
-          authors: #{authors.size.colorize.cyan}, \
-          nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
-          ysbooks: #{Ysbook.query.count.colorize.cyan}, \
-          nvseeds: #{Nvseed.query.where("zseed > 0").count.colorize.cyan}"
-  end
-end
+#   def print_stats(label : String)
+#     puts "- <#{label.colorize.cyan}>, \
+#           authors: #{authors.size.colorize.cyan}, \
+#           nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
+#           ysbooks: #{Ysbook.query.count.colorize.cyan}, \
+#           nvseeds: #{Nvseed.query.where("zseed > 0").count.colorize.cyan}"
+#   end
+# end

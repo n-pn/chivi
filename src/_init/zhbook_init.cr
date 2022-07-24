@@ -1,92 +1,64 @@
 require "sqlite3"
+require "./utils/crorm"
 
 module CV::ZhbookInit
   class Entry
+    include Crorm::Model
+
     include DB::Serializable
 
-    property id : Int32? = nil
+    column id : Int32
 
-    property snvid : String
+    column snvid : String
 
-    property btitle : String? = nil
-    property author : String? = nil
+    column btitle : String = ""
+    column author : String = ""
 
-    property genres : String? = nil
-    property bintro : String? = nil
-    property bcover : String? = nil
+    column genres : String = ""
+    column bintro : String = ""
+    column bcover : String = ""
 
-    property status_str : String? = nil
-    property status_int : Int32? = nil
+    column status_str : String = ""
+    column status_int : Int32 = 0
 
-    property update_str : String? = nil
-    property update_int : Int64? = nil
+    column update_str : String = ""
+    column update_int : Int64 = 0_i64
 
-    property chap_count : Int32? = nil
-    property chap_total : Int32? = nil
+    column chap_count : Int32 = 0
+    column chap_total : Int32 = 0
 
-    property last_schid : String? = nil
+    column last_schid : String = ""
 
-    property created_at : Int64? = nil
-    property updated_at : Int64? = nil
+    column created_at : Int64
+    column updated_at : Int64
 
-    def initialize(@snvid, @btitle = "", @author = "")
+    def initialize(snvid, btitle = "", author = "")
+      self.snvid = snvid
+      self.btitle = btitle
+      self.author = author
     end
 
-    def upsert!(db : DB::Database)
-      cols = [] of String
-      vals = [] of DB::Any
-
-      self.created_at = Time.utc.to_unix unless id
-      self.updated_at = Time.utc.to_unix
-
-      {% for ivar in @type.instance_vars %}
-          if val = @{{ivar.id}}
-            cols << {{ivar.id.stringify}}
-            vals << val
-          end
-      {% end %}
-
-      return self if cols.empty?
-
-      values = Array(String).new(size: cols.size, value: "?").join(", ")
-      update = cols.map { |x| "#{x} = excluded.#{x}" }.join(", ")
-
-      rs = db.exec <<-SQL, args: vals
-        insert into zhbooks (#{cols.join(", ")})
-        values (#{values})
-        on conflict(snvid) do update set #{update};
-      SQL
-
-      self.id = rs.last_insert_id.to_i if rs.last_insert_id > 0
-
-      self.id ||= begin
-        value = db.scalar "select id from zhbooks where snvid = ?", self.snvid
-        value.to_i if value.is_a?(Int)
-      end
-
-      self
+    def on_db?
+      @id.defined?
     end
   end
 
-  class Table
+  class Table < Crorm::Repo(Entry)
     DIR = "var/books/infos"
 
     getter sname : String
-    getter db : DB::Database
 
     def initialize(@sname, reset = false)
       db_path = File.join(DIR, @sname + ".db")
       existed = File.exists?(db_path)
-      @db = DB.open("sqlite3:#{db_path}")
+
+      super(db_path, "zhbooks")
       migrate_db if !existed || reset
     end
 
-    def count
-      @db.scalar "select count(*) from zhbooks"
-    end
-
     def upsert(entry : Entry)
-      entry.upsert!(@db)
+      changes = entry.changes(on_create: !entry.on_db?)
+      upsert(changes)
     end
 
     private def migrate_db
@@ -118,8 +90,12 @@ module CV::ZhbookInit
 
         created_at bigint default 0 not null,
         updated_at bigint default 0 not null
-    );
-    SQL
+      );
+      SQL
+
+      db.exec "create index author_idx on zhbooks (author)"
+      db.exec "create index btitle_idx on zhbooks (btitle)"
+      db.exec "create index update_idx on zhbooks (updated_at)"
     end
   end
 end
