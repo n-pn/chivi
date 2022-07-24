@@ -11,10 +11,12 @@ module CV
     raise "Empty link" if link.empty?
 
     cover = Bcover.init(link, name)
-    return puts "[#{name}] uploaded, skipping!" if !force && cover.on_r2
+    if !force && cover.on_r2
+      return puts "[#{cover.name}] uploaded, skipping!".colorize.cyan
+    end
 
     if force || !cover.exists?
-      raise "Dead site [#{link}]" if link =~ /bxwxorg|biqugee/
+      raise "Dead site [#{link}]" if link =~ /bxwxorg|biqugee|jx_la|zhwenpg/
 
       raise "Fetch failed! for #{cover.link}" unless cover.fetch!(force: force)
       raise "Invalid format #{cover.format}" unless cover.valid?
@@ -23,7 +25,7 @@ module CV
     end
 
     raise "Upload to Cloudflare R2 unsucessful" unless cover.to_r2!
-    puts "[#{cover.name}] saved and uploaded to cloudflare r2!"
+    puts "[#{cover.name}] saved and uploaded to cloudflare r2!".colorize.yellow
     cover.clean_save!
   end
 
@@ -46,7 +48,7 @@ module CV
           info = BookInfo.new(workers.receive)
           single(info.bcover, force: force) unless info.bcover.empty?
         rescue err
-          Log.error(exception: err) { err.message }
+          Log.error(exception: err) { err.message.colorize.red }
         ensure
           results.send(nil)
         end
@@ -86,7 +88,7 @@ module CV
     else        raise "Unsupported mode"
     end
   rescue err
-    puts err.message
+    puts err.message.colorize.red
     exit 1
   end
 
