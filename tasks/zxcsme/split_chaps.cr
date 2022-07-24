@@ -3,7 +3,6 @@ require "file_utils"
 require "compress/zip"
 
 require "../../src/_util/file_util"
-
 require "../../src/appcv/nvchap/*"
 
 class CV::Zxcs::SplitText
@@ -16,8 +15,8 @@ class CV::Zxcs::SplitText
     end
   end
 
-  INP_RAR = "_db/.keeps/zxcs_me/_rars"
-  INP_TXT = "_db/.keeps/zxcs_me/texts"
+  INP_RAR = "var/chaps/.zips/zxcs_me"
+  INP_TXT = "var/chaps/inits/zxcs_me"
 
   OUT_DIR = "var/chtexts/zxcs_me"
 
@@ -46,7 +45,7 @@ class CV::Zxcs::SplitText
     return out_txt if File.exists?(out_txt)
     puts "\n- <#{label}> extracting #{rar_file.colorize.blue}"
 
-    tmp_dir = "tmp/#{snvid}"
+    tmp_dir = "tmp/zxcs_me/#{snvid}"
     Dir.mkdir_p(tmp_dir)
 
     `unrar e -o+ "#{rar_file}" #{tmp_dir}`
@@ -117,7 +116,7 @@ class CV::Zxcs::SplitText
     snvid = File.basename(inp_file, ".txt")
     return if File.exists?("#{OUT_DIR}/#{snvid}/0.zip")
 
-    global_idx = File.join(OUT_DIR, "_", "#{snvid}.tsv")
+    global_idx = File.join("var/chmetas/seeds/zxcs_me", "#{snvid}.tsv")
 
     input = File.read(inp_file).split(/\r\n?|\n/)
     out_dir = File.join(OUT_DIR, snvid)

@@ -29,13 +29,13 @@ then
   echo backup books data!
   # rsync -aiz --no-p "$SSH/var/nvinfos/autos" "var/nvinfos"
 
-  rsync -aiz --no-p "$SSH/var/books" "var"
+  rsync -aiz --no-p "$SSH/var/books/.html" "var/books"
+  rsync -aiz --no-p "$SSH/var/books/infos" "var/books"
+  rsync -aiz --no-p "$SSH/var/books/cover" "var/books"
   rsync -aiz --no-p "$SSH/var/chseeds" "var"
 
   rsync -aiz --no-p "$SSH/var/chtexts/@*" "var/chtexts"
   # rsync -aiz --no-p "$SSH/var/chtexts/users" "var/chtexts"
-
-  rsync -aiz --no-p "$SSH/_db/bcover/" "_db/bcover/"
 
   rsync -aiz --no-p "$SSH/var/chmetas/.html" "var/chmetas"
   rsync -aiz --no-p "$SSH/var/chmetas/stats" "var/chmetas"

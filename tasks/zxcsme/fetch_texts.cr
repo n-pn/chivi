@@ -1,12 +1,12 @@
 require "file_utils"
-require "compress/gzip"
-require "myhtml"
+require "http/client"
 
+require "lexbor"
 require "../../src/_util/http_util"
 
 class CV::Seeds::ZxcsText
-  DLPG_DIR = File.join("_db/.cache/zxcs_me/dlpgs")
-  RARS_DIR = File.join("_db/.keeps/zxcs_me/_rars")
+  DLPG_DIR = File.join("var/books/.html/zxcs_me/dlpgs")
+  RARS_DIR = File.join("var/chaps/.zips/zxcs_me")
 
   FileUtils.mkdir_p(DLPG_DIR)
   FileUtils.mkdir_p(RARS_DIR)
@@ -24,15 +24,13 @@ class CV::Seeds::ZxcsText
     end
   end
 
-  TTL = Time.utc - 7.days # invalid cached html in 7 days
-
   def get_rar_urls(snvid : Int32, lbl = "1/1") : Array(String)
     out_file = File.join(DLPG_DIR, "#{snvid}.html.gz")
     dlpg_url = "http://www.zxcs.me/download.php?id=#{snvid}"
 
-    html = HttpUtil.load_html(dlpg_url, out_file, ttl: TTL, lbl: lbl)
+    html = HttpUtil.cache(out_file, dlpg_url, ttl: 7.days, lbl: lbl)
 
-    doc = Myhtml::Parser.new(html)
+    doc = Lexbor::Parser.new(html)
     doc.css(".downfile > a").to_a.map do |node|
       node.attributes["href"].not_nil!
     end
@@ -51,5 +49,7 @@ class CV::Seeds::ZxcsText
   end
 end
 
+max = ARGV.fetch(0, "14000").to_i
+min = ARGV.fetch(1, "10000").to_i
 worker = CV::Seeds::ZxcsText.new
-worker.fetch!(max: 13655, min: 10000)
+worker.fetch!(max: max, min: min)
