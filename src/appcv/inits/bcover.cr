@@ -5,7 +5,7 @@ require "../../_util/ukey_util"
 
 class CV::Bcover
   DIR = ENV["COVER_DIR"]? || "var/books/cover"
-  Dir.mkdir_p(DIR)
+  # Dir.mkdir_p(DIR)
 
   MAX_WIDTH = 300
 

@@ -1,4 +1,4 @@
-require "../_generics"
+require "../mt_base/*"
 
 module MtlV2::MTL
   @[Flags]
@@ -42,14 +42,6 @@ module MtlV2::MTL
     def initialize(term : V2Term, pos = 0)
       super(term, term.vals[pos])
       @kind = AdjtKind.from(term.tags[pos]? || "a", term.key)
-    end
-  end
-
-  module MaybeAdjt
-    getter adjt : AdjtWord
-
-    def as_adjt!
-      @adjt.replace!(self)
     end
   end
 end

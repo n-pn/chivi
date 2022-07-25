@@ -73,6 +73,6 @@ module CV::SiteLink
   end
 
   private def group(snvid : String, sep = "_")
-    "#{snvid.to_i // 1000}#{sep}#{snvid}"
+    "#{(snvid.to_i? || 0) // 1000}#{sep}#{snvid}"
   end
 end

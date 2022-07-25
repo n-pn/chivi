@@ -35,7 +35,8 @@ class CV::Nvseed
     return chmin if infos.empty?
 
     10.times do
-      break unless chap_info = infos.shift?
+      break if infos.size < 2
+      chap_info = infos.shift
       next unless chap_info.title == last_chap.title
 
       offset = chap_info.chidx &- last_chap.chidx

@@ -1,6 +1,6 @@
-require "./_generic"
+require "../mt_base/*"
 
-module MtlV2::AST
+module MtlV2::MTL
   # references:
   # - https://chinemaster.com/pho-tu-trong-tieng-trung/
 
@@ -42,39 +42,34 @@ module MtlV2::AST
     # Adverbs of manner describe the manner of doing an activity.     Manner
 
     def self.from(key : String)
-      ADVB_TYPES[key]?.try.reduce(val, None) { |flag, x| flag | parse(x) } || None
+      return None unless types = ADVB_TYPES[key]?
+      types.reduce(val, None) { |flag, x| flag | parse(x) }
     end
   end
 
-  enum AdvbKind
-    Bu4
-    Fei
-    Mei
-    Other
+  module Adverbial
+    getter type : AdvbType
+    forward_missing_to @type
 
-    def self.from_key(key : String)
-      case term.key
-      when "不" then Bu4
-      when "没" then Mei
-      when "非" then Fei
-      else          Other
-      end
+    def postpos?
+      false
     end
   end
 
   class AdvbWord < BaseWord
-    getter flag : AdvbType
-    getter kind : AdvbKind
+    include Adverbial
 
-    def initialize(
-      term : V2Term,
-      kind : AdvbKind = AdvbKind.from(term.key),
-      flag : AdvbType = AdvbType.from(term.key)
-    )
+    def initialize(term : V2Term, type : AdvbType = AdvbType.from(term.key))
       super(term)
     end
   end
 
-  def self.adverb_from_term(term : V2Term)
+  class AdvbBu4 < AdvbWord
+  end
+
+  class AdvbFei < AdvbWord
+  end
+
+  class AdvbMei < AdvbWord
   end
 end
