@@ -15,7 +15,7 @@ class CV::VMatch
   end
 
   def initialize(@key : Regex? = nil, @val : Regex? = nil,
-                 @rank : Int32? = nil, @attr : String? = nil,
+                 @rank : Int8? = nil, @attr : Regex? = nil,
                  @uname : String? = nil)
   end
 

@@ -35,6 +35,7 @@ then
   rsync -aiz --no-p "$SSH/var/chseeds" "var"
 
   rsync -aiz --no-p "$SSH/var/chtexts/@*" "var/chtexts"
+  rsync -aiz --no-p "$SSH/var/chtexts/hetushu" "var/chtexts"
   # rsync -aiz --no-p "$SSH/var/chtexts/users" "var/chtexts"
 
   rsync -aiz --no-p "$SSH/var/chmetas/.html" "var/chmetas"

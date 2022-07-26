@@ -1,30 +1,25 @@
-require "./_generics"
+require "../mt_base/*"
 
 module MtlV2::AST
   @[Flags]
-  enum ConjunctType
-    Phrase
-    Clause
+  enum ConjType
+    Coordi # coordinating conjunction
+    Correl # correlative conjunction
+    Subord # subordinating conjunction
 
-    def self.from(tag : String, key : String = "")
-      case
-      when tag[1]? == 'c'
-        Phrase
-      when {"但", "又", "或", "或是"}.includes?(key)
-        Phrase | Clause
+    def self.from(key : String = "")
+      if {"但", "又", "或", "或是"}.includes?(key)
+        Coordi | Subord
       else
-        Clause
+        Subord
       end
     end
   end
 
-  class Conjunct < BaseWord
-    getter type : ConjunctType
+  class ConjWord < BaseWord
+    getter type : ConjType
 
-    def initialize(
-      term : V2Term,
-      @type : ConjunctType = ConjunctType.from(term.tags[0], term.key)
-    )
+    def initialize(term : V2Term, @type : ConjType = :clause)
       super(term)
     end
   end

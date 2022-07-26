@@ -21,6 +21,7 @@ module MtlV2::MTL
     when '!' then special_from_term(term, tag)
     when 'w' then punct_from_term(term, tag)
     when '~' then extra_from_term(term, tag)
+    when 'i' then IdiomWord.new(term)
     else          BaseWord.new(term)
     end
   end
@@ -55,12 +56,28 @@ module MtlV2::MTL
   #   end
   # end
 
+  def self.adjt_from_term(term : V2Term, tag = term.tags[0])
+    case term.key
+    when "不" then AdvbBu4.new(term)
+    when "没" then AdvbMei.new(term)
+    when "非" then AdvbFei.new(term)
+    else          AdvbWord.new(term)
+    end
+  end
+
   def self.advb_from_term(term : V2Term, tag = term.tags[0])
     case term.key
     when "不" then AdvbBu4.new(term)
     when "没" then AdvbMei.new(term)
     when "非" then AdvbFei.new(term)
     else          AdvbWord.new(term)
+    end
+  end
+
+  def self.conj_from_term(term : V2Term, tag = term.tags[0])
+    case tag[1]?
+    when 'c' then ConjWord.new(term, :coordi)
+    else          ConjWord.new(term, ConjType.from(term.key))
     end
   end
 
@@ -81,6 +98,38 @@ module MtlV2::MTL
     when "来讲", "来说", "而言", "说来" then PtclLs.new(term)
     when "连"                    then PtclLian.new(term)
     else                             PtclWord.new(term)
+    end
+  end
+
+  def self.pronoun_from_term(term : V2Term, tag = term.tags[0])
+    case tag[1]?
+    when 'z' then demspro_from_term(term, tag)
+    when 'y' then intrpro_from_term(term, tag)
+    when 'r' then perspro_from_term(term, tag)
+    else          PronounWord.new(term)
+    end
+  end
+
+  def self.demspro_from_term(term : V2Term, tag = term.tags[0])
+    case term.key
+    when "这" then ProZhe.new(term)
+    when "那" then ProNa1.new(term)
+    when "几" then ProJi3.new(term)
+    else          DemsproWord.new(term)
+    end
+  end
+
+  def self.intrpro_from_term(term : V2Term, tag = term.tags[0])
+    case term.key
+    when "哪" then ProNa2.new(term)
+    else          IntrproWord.new(term)
+    end
+  end
+
+  def self.perspro_from_term(term : V2Term, tag = term.tags[0])
+    case term.key
+    when "自己" then ProZiji.new(term)
+    else           PersproWord.new(term)
     end
   end
 
@@ -113,9 +162,36 @@ module MtlV2::MTL
 
   def self.literal_from_term(term : V2Term, tag = term.tags[0])
     case tag[1]?
+    when 'e' then Exclam.new(term)
+    when 'y' then Mopart.new(term)
+    when 'o' then Onomat.new(term)
     when 'x' then Fixstr.new(term)
     when 'l' then Urlstr.new(term)
     else          Litstr.new(term)
+    end
+  end
+
+  def self.prepos_from_term(term : V2Term, tag : String)
+    case term.key
+    when "把" then PreBa3.new(term)
+    when "被" then PreBei.new(term)
+    when "对" then PreDui.new(term)
+    when "在" then PreZai.new(term)
+    when "比" then PreBi3.new(term)
+    else          PreposWord.new(term)
+    end
+  end
+
+  def self.extra_from_term(term : V2Term, tag = term.tags[0])
+    case tag
+    when "~np" then NounPhrase.new(term)
+    when "~vp" then VerbPhrase.new(term)
+    when "~ap" then AdjtPhrase.new(term)
+    when "~dp" then DefnPhrase.new(term)
+    when "~pp" then PrepClause.new(term)
+    when "~sv" then VerbClause.new(term)
+    when "~sa" then AdjtClause.new(term)
+    else            BaseWord.new(term)
     end
   end
 end

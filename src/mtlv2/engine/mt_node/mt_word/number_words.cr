@@ -1,4 +1,6 @@
-module MtlV2::AST
+require "../mt_base/*"
+
+module MtlV2::MTL
   module Numeral
   end
 
@@ -75,9 +77,5 @@ module MtlV2::AST
     def initialize(term : V2Term, @kind : QuantiKind = QuantiKind.from(term.key, dirty: true))
       super(term)
     end
-  end
-
-  class NquantPair < BaseList
-    getter number : Number
   end
 end

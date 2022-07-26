@@ -17,7 +17,7 @@ module CV::R2Client
   end
 
   def download(path : String, file : String) : Bool
-    Http::Client.get("#{R2_ROOT}#{path}") do |res|
+    HTTP::Client.get("#{R2_ROOT}#{path}") do |res|
       if res.status_code < 300
         File.write(file, res.body_io)
         true
