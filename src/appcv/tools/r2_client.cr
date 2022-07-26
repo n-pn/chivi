@@ -1,3 +1,5 @@
+require "http/client"
+
 module CV::R2Client
   extend self
 
@@ -15,8 +17,13 @@ module CV::R2Client
   end
 
   def download(path : String, file : String) : Bool
-    # TODO: replace with internal http/client?
-    `curl "#{R2_ROOT}#{path}" -o "#{file}"`
-    $?.success?
+    Http::Client.get("#{R2_ROOT}#{path}") do |res|
+      if res.status_code < 300
+        File.write(file, res.body_io)
+        true
+      else
+        false
+      end
+    end
   end
 end
