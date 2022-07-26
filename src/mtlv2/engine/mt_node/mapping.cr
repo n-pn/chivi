@@ -3,24 +3,24 @@ require "./mt_forms/*"
 
 module MtlV2::MTL
   # ameba:disable Metrics/CyclomaticComplexity
-  def self.from_term(term : V2Term)
-    case term.tags[0][0]?
-    when 'N' then name_from_term(term)
-    when 'n' then noun_from_term(term)
-    when 'd' then advb_from_term(term)
-    when 'v' then verb_from_term(term)
-    when 'a' then adjt_from_term(term)
-    when 'm' then number_from_term(term)
-    when 'q' then quanti_from_term(term)
-    when 'r' then pronoun_from_term(term)
-    when 'p' then prepos_from_term(term)
-    when 'k' then suffix_from_term(term)
-    when 'c' then conj_from_term(term)
-    when '!' then special_from_term(term)
-    when 'x' then literal_from_term(term)
-    when '~' then extra_from_term(term)
-    when 'w' then punct_from_term(term)
-    when 'u' then ptcl_from_term(term)
+  def self.from_term(term : V2Term, tag = term.tags[0])
+    case tag[0]?
+    when 'N' then name_from_term(term, tag)
+    when 'n' then noun_from_term(term, tag)
+    when 'd' then advb_from_term(term, tag)
+    when 'v' then verb_from_term(term, tag)
+    when 'a' then adjt_from_term(term, tag)
+    when 'c' then conj_from_term(term, tag)
+    when 'u' then ptcl_from_term(term, tag)
+    when 'm' then number_from_term(term, tag)
+    when 'q' then quanti_from_term(term, tag)
+    when 'r' then pronoun_from_term(term, tag)
+    when 'p' then prepos_from_term(term, tag)
+    when 'k' then suffix_from_term(term, tag)
+    when 'x' then literal_from_term(term, tag)
+    when '!' then special_from_term(term, tag)
+    when 'w' then punct_from_term(term, tag)
+    when '~' then extra_from_term(term, tag)
     else          BaseWord.new(term)
     end
   end
@@ -47,7 +47,15 @@ module MtlV2::MTL
     end
   end
 
-  def self.advb_from_term(term : V2Term)
+  # def self.affil_from_term(term : V2Term, tag = term.tags[0])
+  #   case tags[2]?
+  #   when 'l' then PlaceName.new(term)
+  #   when 'g' then InstiName.new(term)
+  #   else          AffilName.new(term)
+  #   end
+  # end
+
+  def self.advb_from_term(term : V2Term, tag = term.tags[0])
     case term.key
     when "不" then AdvbBu4.new(term)
     when "没" then AdvbMei.new(term)
@@ -76,12 +84,38 @@ module MtlV2::MTL
     end
   end
 
-  # def self.affil_from_tag(term : V2Term, tag = term.tags[0])
-  #   case tags[2]?
-  #   when 'l' then PlaceName.new(term)
-  #   when 'g' then InstiName.new(term)
-  #   else          AffilName.new(term)
-  #   end
-  # end
+  def self.number_from_term(term : V2Term)
+    return NquantWord.new(term) if term.tags[0] == "mq"
 
+    case
+    when NdigitWord.matches?(term.key)
+      NdigitWord.new(term)
+    when NhanziWord.matches?(term.key)
+      NhanziWord.new(term)
+    else
+      NumberWord.new(term)
+    end
+  end
+
+  def self.quanti_from_term(term : V2Term)
+    # TODO: add QuantiVerb, QuantiTime...
+    QuantiWord.new(term)
+  end
+
+  def self.suffix_from_term(term : V2Term)
+    case term.tags[0][1]?
+    when 'a' then SuffAdjt.new(term)
+    when 'n' then SuffNoun.new(term)
+    when 'v' then SuffVerb.new(term)
+    else          SuffWord.new(term)
+    end
+  end
+
+  def self.literal_from_term(term : V2Term, tag = term.tags[0])
+    case tag[1]?
+    when 'x' then Fixstr.new(term)
+    when 'l' then Urlstr.new(term)
+    else          Litstr.new(term)
+    end
+  end
 end
