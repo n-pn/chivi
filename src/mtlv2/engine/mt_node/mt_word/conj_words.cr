@@ -1,6 +1,6 @@
 require "../mt_base/*"
 
-module MtlV2::AST
+module MtlV2::MTL
   @[Flags]
   enum ConjType
     Coordi # coordinating conjunction

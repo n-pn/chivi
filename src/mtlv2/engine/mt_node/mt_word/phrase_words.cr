@@ -7,6 +7,9 @@ module MtlV2::MTL
   class VerbPhrase < BaseWord
   end
 
+  class AdjtPhrase < BaseWord
+  end
+
   class DefnPhrase < BaseWord
   end
 

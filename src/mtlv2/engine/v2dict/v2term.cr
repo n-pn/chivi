@@ -1,5 +1,5 @@
 require "json"
-require "../engine/mt_node"
+require "../mt_node/mapping"
 
 class MtlV2::V2Term
   SPLIT = "ǀ"
@@ -14,7 +14,7 @@ class MtlV2::V2Term
   getter tags : Array(String)
 
   # auto generated fields
-  getter node : AST::BaseNode { AST.from_term(self) }
+  getter node : MTL::BaseWord { MTL.from_term(self) }
 
   getter rank : Int8 = 3_i8
 

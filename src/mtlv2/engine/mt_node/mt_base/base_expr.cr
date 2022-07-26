@@ -1,11 +1,14 @@
 require "./_abstract"
 
 module MtlV2::MTL
-  class BaseExpr < BaseSeri
-    property head : BaseNode
-    property tail : BaseNode
+  class BaseExpr
+    include MtNode
+    include MtSeri
 
-    def initialize(head : BaseNode, tail : BaseNode,
+    property head : MtNode
+    property tail : MtNode
+
+    def initialize(head : MtNode, tail : MtNode,
                    flip = false, @tab = 0)
       set_prev(head.prev?)
       set_succ(tail.succ?)
@@ -26,14 +29,14 @@ module MtlV2::MTL
       set_succ(orig.succ?)
     end
 
-    def add_head(node : BaseNode) : Nil
+    def add_head(node : MtNode) : Nil
       self.set_prev(node.prev?)
       node.prev = nil
       @head.set_prev(node)
       @head = node
     end
 
-    def add_tail(node : BaseNode) : Nil
+    def add_tail(node : MtNode) : Nil
       self.set_succ(node.succ?)
       node.succ = nil
       @tail.set_succ(node)

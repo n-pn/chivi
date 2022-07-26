@@ -39,8 +39,8 @@ class MtlV2::MTL::MtCore
     output = title.empty? ? MtData.new("") : cv_plain(title, offset: offset_2)
 
     unless pre_zh.empty?
-      output.add_head(AST::BaseNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
-      output.add_head(AST::BaseNode.new(pre_zh, pre_vi, dic: 1, idx: offset))
+      output.add_head(BaseWord.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
+      output.add_head(BaseWord.new(pre_zh, pre_vi, dic: 1, idx: offset))
     end
 
     output
@@ -59,11 +59,11 @@ class MtlV2::MTL::MtCore
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtData
-    nodes = [AST::BaseNode.new("")]
+    nodes = [BaseWord.new("")]
     costs = [0]
 
     input.each_with_index(1) do |char, idx|
-      nodes << AST::BaseNode.new(char, idx: idx &- 1 &+ offset)
+      nodes << BaseWord.new(char.to_s, idx: idx &- 1 &+ offset)
       costs << idx
     end
 
@@ -81,8 +81,8 @@ class MtlV2::MTL::MtCore
         jump = idx &+ key
 
         if cost >= costs[jump]
-          dic = term.is_priv ? dic &+ 2 : dic
-          nodes[jump] = term.node.dup!(idx + offset, dic)
+          tab = term.is_priv ? dic &+ 2 : dic
+          nodes[jump] = term.node.dup!(idx + offset, tab)
           costs[jump] = cost
         end
       end
@@ -124,11 +124,11 @@ class MtlV2::MTL::MtCore
   end
 
   # @[AlwaysInline]
-  # def should_space?(left : AST::BaseNode, right : AST::BaseNode) : Bool
+  # def should_space?(left : BaseWord, right : BaseWord) : Bool
   #   left.nhanzi? || right.nhanzi?
   # end
 
-  # private def fix_val!(left : AST::BaseNode, right : AST::BaseNode)
+  # private def fix_val!(left : BaseWord, right : BaseWord)
   #   val = right.val
   #   case right.key[0]?
   #   when '五'
@@ -141,7 +141,7 @@ class MtlV2::MTL::MtCore
   #   end
   # end
 
-  # private def can_merge?(left : AST::BaseNode, right : AST::BaseNode) : Bool
+  # private def can_merge?(left : BaseWord, right : BaseWord) : Bool
   #   case right
   #   when .puncts? then left.tag == right.tag
   #   when .litstr? then left.litstr? || left.ndigit?

@@ -1,7 +1,7 @@
 require "../mt_base/*"
 
 module MtlV2::MTL
-  class PreppWord < BaseWord
+  class PrepWord < BaseWord
   end
 
   class PrepBa3 < PrepWord
@@ -17,5 +17,13 @@ module MtlV2::MTL
   end
 
   class PrepBi3 < PrepWord
+  end
+
+  # "和"
+  class PrepHe2 < PrepWord
+  end
+
+  # 跟
+  class PrepGen < PrepWord
   end
 end

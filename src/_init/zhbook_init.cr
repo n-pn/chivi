@@ -5,8 +5,6 @@ module CV::ZhbookInit
   class Entry
     include Crorm::Model
 
-    include DB::Serializable
-
     column id : Int32
 
     column snvid : String
@@ -58,7 +56,7 @@ module CV::ZhbookInit
 
     def upsert(entry : Entry)
       changes = entry.changes(on_create: !entry.on_db?)
-      upsert(changes)
+      upsert(changes, conflict: "snvid")
     end
 
     private def migrate_db

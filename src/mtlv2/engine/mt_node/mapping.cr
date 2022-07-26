@@ -1,5 +1,5 @@
-require "./mt_words/*"
-require "./mt_forms/*"
+require "./mt_word/*"
+require "./mt_form/*"
 
 module MtlV2::MTL
   # ameba:disable Metrics/CyclomaticComplexity
@@ -8,17 +8,17 @@ module MtlV2::MTL
     when 'N' then name_from_term(term, tag)
     when 'n' then noun_from_term(term, tag)
     when 'd' then advb_from_term(term, tag)
-    when 'v' then verb_from_term(term, tag)
+      # when 'v' then verb_from_term(term, tag)
     when 'a' then adjt_from_term(term, tag)
     when 'c' then conj_from_term(term, tag)
     when 'u' then ptcl_from_term(term, tag)
-    when 'm' then number_from_term(term, tag)
-    when 'q' then quanti_from_term(term, tag)
+      # when 'm' then number_from_term(term, tag)
+      # when 'q' then quanti_from_term(term, tag)
     when 'r' then pronoun_from_term(term, tag)
     when 'p' then prep_from_term(term, tag)
     when 'k' then suffix_from_term(term, tag)
     when 'x' then literal_from_term(term, tag)
-    when '!' then special_from_term(term, tag)
+      # when '!' then uniq_from_term(term, tag)
     when 'w' then punct_from_term(term, tag)
     when '~' then extra_from_term(term, tag)
     when 'i' then IdiomWord.new(term)
@@ -33,7 +33,7 @@ module MtlV2::MTL
     when 's' then PositNoun.new(term)
     when 'h' then HonorNoun.new(term)
     when 'b' then AbstrNoun.new(term)
-    when 'f' then LocatWord.new(term)
+    when 'f' then LocatNoun.new(term)
     when 't' then TimeWord.new(term)
     else          NounWord.new(term)
     end
@@ -82,7 +82,7 @@ module MtlV2::MTL
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def self.ptcl_from_term(term : V2Term)
+  def self.ptcl_from_term(term : V2Term, tag : String = "")
     case term.key
     when "了", "喽"               then PtclLe.new(term)
     when "之"                    then PtclZhi.new(term)
@@ -94,7 +94,7 @@ module MtlV2::MTL
     when "所"                    then PtclSuo.new(term)
     when "的话"                   then PtclDehua.new(term)
     when "云云", "等", "等等"        then PtclDeng.new(term)
-    when "一样", "一般", "似的", "般"  then PtctYy.new(term)
+    when "一样", "一般", "似的", "般"  then PtclYy.new(term)
     when "来讲", "来说", "而言", "说来" then PtclLs.new(term)
     when "连"                    then PtclLian.new(term)
     else                             PtclWord.new(term)
@@ -151,12 +151,11 @@ module MtlV2::MTL
     QuantiWord.new(term)
   end
 
-  def self.suffix_from_term(term : V2Term)
-    case term.tags[0][1]?
-    when 'a' then SuffAdjt.new(term)
-    when 'n' then SuffNoun.new(term)
-    when 'v' then SuffVerb.new(term)
-    else          SuffWord.new(term)
+  def self.suffix_from_term(term : V2Term, tag : String = "")
+    case tag[1]?
+    when 'x' then SuffElse.new(term)
+      # when '!' then # parse speical suffix here
+    else SuffWord.new(term)
     end
   end
 
@@ -165,9 +164,9 @@ module MtlV2::MTL
     when 'e' then Exclam.new(term)
     when 'y' then Mopart.new(term)
     when 'o' then Onomat.new(term)
-    when 'x' then Fixstr.new(term)
-    when 'l' then Urlstr.new(term)
-    else          Litstr.new(term)
+    when 'l' then UrlLit.new(term)
+    when 'x' then PreLit.new(term)
+    else          RawLit.new(term)
     end
   end
 
@@ -193,5 +192,39 @@ module MtlV2::MTL
     when "~sa" then AdjtClause.new(term)
     else            BaseWord.new(term)
     end
+  end
+
+  # ameba:disable Metrics/CyclomaticComplexity
+  def self.punct_from_term(term : V2Term, tag : String = "")
+    case term.vals[0]
+    when "."           then StopMark.new(term)
+    when "!"           then ExclMark.new(term)
+    when "?"           then QuesMark.new(term)
+    when "“", "‘"      then OpenQuote.new(term)
+    when "”", "’"      then CloseQuote.new(term)
+    when "⟨", "<", "‹" then OpenTitle.new(term)
+    when "⟩", ">", "›" then CloseTitle.new(term)
+    when "("           then OpenParenth.new(term)
+    when ")"           then CloseParenth.new(term)
+    when "[", "{"      then OpenBracket.new(term)
+    when "]", "}"      then CloseBracket.new(term)
+    when "\""          then DoubleQuote.new(term)
+    when " "           then Wspace.new(term)
+    when "·"           then Middot.new(term)
+    when ":"           then Colon.new(term)
+    when ";"           then Smcln.new(term)
+    when "@"           then Atsign.new(term)
+    when "–", "—"      then DashMark.new(term)
+    when "~"           then TildeSign.new(term)
+    when ","           then Comma.new(term)
+    when "､"           then Cenum.new(term)
+    when "…", "……"     then Ellips.new(term)
+    else                    PunctWord.new(term)
+    end
+    # disabled:
+    # when "+" then PlusSign.new(term)
+    # when "-" then MinusSign.new(term)
+    # when "‰", "%" then Perct.new(term)
+    # when "￥", "﹩", "＄", "$", "￡", "°", "℃" then Pquanti.new(term)
   end
 end

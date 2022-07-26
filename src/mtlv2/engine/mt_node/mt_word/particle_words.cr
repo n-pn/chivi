@@ -31,10 +31,10 @@ module MtlV2::MTL
   class PtclDeng < PtclWord
   end
 
-  class PtclYy < PtclWord
+  class PtclDehua < PtclWord
   end
 
-  class PtclDh < PtclWord
+  class PtclYy < PtclWord
   end
 
   class PtclLs < PtclWord

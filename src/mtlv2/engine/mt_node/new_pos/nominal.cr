@@ -1,31 +1,4 @@
-require "./_base"
-
 module CV::MtlV3::POS
-  extend self
-
-  class Nominal < BaseNode
-    @[Flags]
-    enum Kind
-      Names
-      Human
-      Place
-      Attri
-    end
-
-    getter kind = Kind::None
-  end
-
-  class NounForm < Nominal
-    getter prodem : Prodem? = nil
-    getter nquant : Nquant? = nil
-
-    getter defn : DefnPhrase? = nil
-
-    getter noun : Nominal
-
-    getter locat : Locat
-  end
-
   class Ptitle < BaseNode
     getter template : String = ""
     getter sub_title : Ptitle? = nil

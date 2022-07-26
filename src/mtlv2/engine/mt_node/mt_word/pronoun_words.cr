@@ -1,6 +1,8 @@
+require "../mt_base/*"
+
 module MtlV2::MTL
   # 代词 - pronoun - đại từ chưa phân loại
-  class PronounWord < BaseNode
+  class PronounWord < BaseWord
   end
 
   # 人称代词 - personal pronoun - đại từ nhân xưng
@@ -12,7 +14,7 @@ module MtlV2::MTL
   end
 
   # 指示代词 - demonstrative pronoun - đại từ chỉ thị
-  class DemsproWord < Pronoun
+  class DemsproWord < PronounWord
   end
 
   class ProZhe < DemsproWord

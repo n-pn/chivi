@@ -43,12 +43,12 @@ module MtlV2::MTL
 
     def self.from(key : String)
       return None unless types = ADVB_TYPES[key]?
-      types.reduce(val, None) { |flag, x| flag | parse(x) }
+      types.reduce(None) { |flag, x| flag | parse(x) }
     end
   end
 
   module Adverbial
-    getter type : AdvbType
+    getter type = AdvbType::None
     forward_missing_to @type
 
     def postpos?

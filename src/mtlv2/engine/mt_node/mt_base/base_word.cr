@@ -1,9 +1,12 @@
 require "./_abstract"
 
 module MtlV2::MTL
-  class BaseWord < BaseNode
+  class BaseWord
+    include MtNode
+
     property key : String = ""
     property val : String = ""
+    property idx : Int32 = 0
 
     def initialize(@key = "", @val = @key, @tab = 0, @idx = 0)
     end
@@ -13,7 +16,7 @@ module MtlV2::MTL
       @key = val || term.vals[0]
     end
 
-    def dup!(idx : Int32, tab : Int32 = 1) : BaseNode
+    def dup!(idx : Int32, tab : Int32 = 1) : MtNode
       res = self.dup
       res.idx = idx
       res.tab = tab

@@ -1,10 +1,10 @@
-require "../mt_words/*"
+require "../mt_word/*"
 
 module MtlV2::MTL
   class AdjtExpr < BaseExpr
     include Adjective
 
-    def initialize(head : BaseNode, tail : BaseNode, flip = false,
+    def initialize(head : MtNode, tail : MtNode, flip = false,
                    @kind : AdjtKind = :none)
       super(head, tail, flip: flip)
     end
@@ -14,14 +14,17 @@ module MtlV2::MTL
     end
   end
 
-  class AdjtForm < BaseSeri
+  class AdjtForm
+    include MtNode
+    include MtSeri
+
     include Adjective
 
-    getter adjt : BaseNode
-    getter advb_prep : BaseNode? = nil # place advb before
-    getter advb_post : BaseNode? = nil # place advb after
+    getter adjt : MtNode
+    getter advb_prep : MtNode? = nil # place advb before
+    getter advb_post : MtNode? = nil # place advb after
 
-    def initialize(@adjt, advb : BaseNode?)
+    def initialize(@adjt, advb : MtNode?)
       self.set_succ(adjt.succ?)
 
       if advb
@@ -32,7 +35,7 @@ module MtlV2::MTL
       end
     end
 
-    def add_advb(advb : BaseNode)
+    def add_advb(advb : MtNode)
       if advb.is_a?(AdvbWord) && advb.postpos?
         add_advb_post(advb)
       else
@@ -40,7 +43,7 @@ module MtlV2::MTL
       end
     end
 
-    def add_advb_prep(advb : BaseNode)
+    def add_advb_prep(advb : MtNode)
       self.set_prev(advb.prev?)
       advb.prev = nil
 
@@ -51,7 +54,7 @@ module MtlV2::MTL
       end
     end
 
-    def add_advb_post(advb : BaseNode)
+    def add_advb_post(advb : MtNode)
       self.set_prev(advb.prev?)
       advb.prev = nil
 

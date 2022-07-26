@@ -1,25 +1,25 @@
 require "../../../../libcv/*"
 
 module MtlV2::MTL
-  abstract class BaseNode
+  module MtNode
     property tab : Int32 = 0
 
-    property! prev : BaseNode
-    property! succ : BaseNode
+    property! prev : MtNode
+    property! succ : MtNode
 
     # getter ptag = BasePtag::None
 
     def set_prev(@prev : Nil) : Nil
     end
 
-    def set_prev(@prev : BaseNode) : Nil
+    def set_prev(@prev : MtNode) : Nil
       prev.succ = self
     end
 
     def set_succ(@succ : Nil) : Nil
     end
 
-    def set_succ(@succ : BaseNode) : Nil
+    def set_succ(@succ : MtNode) : Nil
       succ.prev = self
     end
 
@@ -31,7 +31,7 @@ module MtlV2::MTL
       @succ.try { |x| yield x }
     end
 
-    def as!(target : BaseNode)
+    def as!(target : MtNode)
       target.set_prev(@prev)
       target.set_succ(@succ)
       @prev = @succ = nil
@@ -42,13 +42,21 @@ module MtlV2::MTL
       @prev = @succ = nil
     end
 
-    abstract def apply_cap! : Nil
+    abstract def apply_cap! : Bool
     abstract def to_txt(io : IO) : Nil
     abstract def to_mtl(io : IO) : Nil
     abstract def inspect(io : IO) : Nil
 
-    def add_space?(prev : BaseNode)
+    def add_space?(prev : BaseWord)
+      prev.val != ""
+    end
+
+    def add_space?(prev : MtNode)
       true
+    end
+
+    def add_space?(prev : Nil)
+      false
     end
 
     def to_txt : String
@@ -64,10 +72,10 @@ module MtlV2::MTL
     end
   end
 
-  abstract class BaseSeri < BaseNode
-    abstract def each(&block : BaseNode ->)
+  module MtSeri
+    abstract def each(&block : MtNode ->)
 
-    def apply_cap!(cap : Bool = true)
+    def apply_cap!(cap : Bool = true) : Bool
       each { |x| cap = x.apply_cap!(cap) }
       cap
     end

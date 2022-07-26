@@ -1,4 +1,6 @@
-module MtlV2::AST
+require "../mt_base/*"
+
+module MtlV2::MTL
   class SuffWord < BaseWord
   end
 
@@ -8,6 +10,6 @@ module MtlV2::AST
   class UzhiSuff < SuffWord
   end
 
-  class Postposi < SuffWord
+  class PostWord < SuffWord
   end
 end

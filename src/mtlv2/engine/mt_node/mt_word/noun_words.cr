@@ -1,4 +1,4 @@
-require "../_generics/*"
+require "../mt_base/*"
 
 module MtlV2::MTL
   @[Flags]
@@ -92,6 +92,12 @@ module MtlV2::MTL
     # end
   end
 
+  class AbstrNoun < NounWord
+    def abstract?
+      true
+    end
+  end
+
   class TraitNoun < NounWord
     def abstract?
       true
@@ -119,14 +125,18 @@ module MtlV2::MTL
   end
 
   class LocatNoun < NounWord
-    getter locale? { @key.size > 1 }
+    def locale?
+      @key.size > 1
+    end
   end
 
   class HonorNoun < NounWord
+    getter mold : String
+
     def initialize(term : V2Term, pos : Int32 = 1)
       super(term)
 
-      if (alt = term.val[pos]?) && alt.includes?("?")
+      if (alt = term.vals[pos]?) && alt.includes?("?")
         @mold = alt
       else
         @mold = "? " + @val

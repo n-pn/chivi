@@ -1,7 +1,7 @@
 require "../mt_base/*"
 
 module MtlV2::MTL
-  class Idiom < BaseWord
+  class IdiomWord < BaseWord
   end
 
   class Exclam < BaseWord
@@ -19,6 +19,6 @@ module MtlV2::MTL
   class UrlLit < RawLit
   end
 
-  class FixLit < RawLit
+  class PreLit < RawLit
   end
 end

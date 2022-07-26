@@ -1,11 +1,14 @@
 require "./_abstract"
 
 module MtlV2::MTL
-  class BasePair < BaseSeri
-    property left : BaseNode
-    property right : BaseNode
+  class BasePair
+    include MtNode
+    include MtSeri
 
-    def initialize(left : BaseNode, right : BaseNode, @flip = false)
+    property left : MtNode
+    property right : MtNode
+
+    def initialize(left : MtNode, right : MtNode, @flip = false)
       set_prev(left.prev?)
       set_right(right.succ?)
 

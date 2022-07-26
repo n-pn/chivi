@@ -138,15 +138,21 @@ module Crorm
       end
     end
 
-    def upsert(changes : Hash(String, DB::Any))
+    def query(query : String) : Array(T)
+      @db.query "select * from #{@table} where #{query}" do |rs|
+        T.from_rs(rs)
+      end
+    end
+
+    def upsert(changes : Hash(String, DB::Any), cnn = @db, conflict = "id")
       columns = changes.keys
       holders = Array(String).new(size: columns.size, value: "?")
       updates = columns.map { |x| "#{x} = excluded.#{x}" }
 
-      rs = @db.exec(<<-SQL, args: changes.values)
+      rs = cnn.exec(<<-SQL, args: changes.values)
         insert into #{@table} (#{columns.join(", ")})
         values (#{holders.join(", ")})
-        on conflict(snvid) do update set #{updates.join(", ")};
+        on conflict(#{conflict}) do update set #{updates.join(", ")};
       SQL
 
       rs.last_insert_id
