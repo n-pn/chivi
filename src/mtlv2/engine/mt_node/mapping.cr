@@ -15,7 +15,7 @@ module MtlV2::MTL
     when 'm' then number_from_term(term, tag)
     when 'q' then quanti_from_term(term, tag)
     when 'r' then pronoun_from_term(term, tag)
-    when 'p' then prepos_from_term(term, tag)
+    when 'p' then prep_from_term(term, tag)
     when 'k' then suffix_from_term(term, tag)
     when 'x' then literal_from_term(term, tag)
     when '!' then special_from_term(term, tag)
@@ -171,14 +171,14 @@ module MtlV2::MTL
     end
   end
 
-  def self.prepos_from_term(term : V2Term, tag : String)
+  def self.prep_from_term(term : V2Term, tag : String)
     case term.key
-    when "把" then PreBa3.new(term)
-    when "被" then PreBei.new(term)
-    when "对" then PreDui.new(term)
-    when "在" then PreZai.new(term)
-    when "比" then PreBi3.new(term)
-    else          PreposWord.new(term)
+    when "把" then PrepBa3.new(term)
+    when "被" then PrepBei.new(term)
+    when "对" then PrepDui.new(term)
+    when "在" then PrepZai.new(term)
+    when "比" then PrepBi3.new(term)
+    else          PrepWord.new(term)
     end
   end
 
