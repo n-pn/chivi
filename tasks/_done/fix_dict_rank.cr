@@ -1,4 +1,4 @@
-require "../src/mtlv1/vp_dict"
+require "../../src/mtlv1/vp_dict"
 
 INP = "var/dicts/v1"
 OUT = "var/dicts/v1.fix"
@@ -32,5 +32,5 @@ def fix_dict(inp_file : String, out_file : String)
   end
 
   out_io.close
-  File.utime(utime, utime, file)
+  File.utime(utime, utime, out_file)
 end
