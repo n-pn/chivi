@@ -2,7 +2,7 @@ version: 2.0
 shards:
   action-controller:
     git: https://github.com/spider-gazelle/action-controller.git
-    version: 5.1.3
+    version: 5.1.8
 
   admiral:
     git: https://github.com/jwaldrip/admiral.cr.git
@@ -10,7 +10,7 @@ shards:
 
   amber:
     git: https://github.com/np-nam/amber.git
-    version: 1.2.1+git.commit.891c9f5c90fc66446358f3cd72a7a8fec3758549
+    version: 1.2.1+git.commit.bfad5080615c3ae2638456c68921621c5f5fe99f
 
   amber_router:
     git: https://github.com/amberframework/amber-router.git
@@ -29,8 +29,8 @@ shards:
     version: 0.9.2
 
   clear:
-    git: https://github.com/np-nam/clear.git
-    version: 0.9+git.commit.bc1d06c6e92d1d7ab819b9fec5e67061f12ee394
+    git: https://github.com/chi-vi/clear.git
+    version: 0.9+git.commit.6f91142a037f82e018ea098fb2590663e96ff55f
 
   cli:
     git: https://github.com/amberframework/cli.git
@@ -72,6 +72,10 @@ shards:
     git: https://github.com/luckyframework/habitat.git
     version: 0.4.7
 
+  hot_topic:
+    git: https://github.com/jgaskins/hot_topic.git
+    version: 0.1.0+git.commit.c4577d949221d535f29162343bf503b578308954
+
   icu:
     git: https://github.com/olbat/icu.cr.git
     version: 0.1.0+git.commit.fdf870c29d02694cc6414563970cabe00da6544d
@@ -90,7 +94,7 @@ shards:
 
   lexbor:
     git: https://github.com/kostya/lexbor.git
-    version: 3.0.3
+    version: 3.0.4
 
   liquid:
     git: https://github.com/dare892/liquid.cr.git
@@ -114,7 +118,7 @@ shards:
 
   pg:
     git: https://github.com/will/crystal-pg.git
-    version: 0.23.2
+    version: 0.24.0
 
   pool:
     git: https://github.com/ysbaddaden/pool.git

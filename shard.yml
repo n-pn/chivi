@@ -94,7 +94,7 @@ dependencies:
     version: ~> 0.8.0
 
   clear:
-    github: np-nam/clear
+    github: chi-vi/clear
     branch: master
 
   lexbor:
