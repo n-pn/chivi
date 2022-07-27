@@ -3,89 +3,110 @@ require "../mt_base/*"
 module MtlV2::MTL
   # ## generic
 
-  module Boundary
+  @[Flags]
+  enum PunctAttr
+    # ## generic
+
+    Break # seperate sentence
+
+    Final # mark end of sentence
+
+    Start # open nested group
+    Close # close nested group
+
+    Alone # usually punctutation can combine, but for special case they shouldn't
+
+    CapAfter
+
+    NoWspace
+
+    # # singular
+
+    Period
+    Exclam
+    Questm
+
+    DbQuote
+    QuoteSt
+    QuoteCl
+    TitleSt
+    TitleCl
+    ParenSt
+    ParenCl
+    BrackSt
+    BrackCl
+
+    Wspace
+    Middot
+
+    Colon
+    Smcln
+
+    Atsign
+    Dashes
+    Ellips
+
+    Tilde
+    Comma
+    Cenum
+
+    # ameba:disable Metrics/CyclomaticComplexity
+    def self.from_str(str : String)
+      case str
+      when "."           then Period | Final | Break | CapAfter | NoWspace
+      when "!"           then Exclam | Final | Break | CapAfter | NoWspace
+      when "?"           then Questm | Final | Break | CapAfter | NoWspace
+      when "“", "‘"      then Start | Break
+      when "”", "’"      then QuoteCl | Close | Break | NoWspace
+      when "⟨", "<", "‹" then TitleSt | Start | CapAfter
+      when "⟩", ">", "›" then TitleCl | Close | NoWspace
+      when "[", "{"      then BrackSt | Start | CapAfter
+      when "]", "}"      then BrackCl | Close | NoWspace
+      when "("           then ParenSt | Start
+      when ")"           then ParenCl | Close | NoWspace
+      when "\""          then DbQuote | Start | Close | NoWspace
+      when " "           then Wspace | NoWspace
+      when ","           then Comma | NoWspace
+      when "､"           then Cenum | NoWspace
+      when ":"           then Colon | Break | CapAfter
+      when ";"           then Smcln | Break
+      when "·"           then Middot
+      when "@"           then Atsign
+      when "~"           then Tilde
+      when "–", "—"      then Dashes
+      when "…", "……"     then Ellips | NoWspace
+      else                    None
+      end
+    end
   end
 
   class PunctWord < BaseWord
-    def cap_after?(cap : Bool) : Bool
-      cap
-    end
-  end
+    getter attr : PunctAttr
+    forward_missing_to @attr
 
-  # #### end sentence
-
-  class StopMark < PunctWord
-    include Boundary
-
-    def add_space?(prev : MtNode?)
-      false
+    def initialize(term : V2Term, pos : Int32 = 0)
+      super(term, pos)
+      @attr = PunctAttr.from(term.vals[pos])
+      @val = ',' if @attr.cenum?
     end
 
     def cap_after?(cap : Bool) : Bool
-      true
+      @attr.cap_after?
     end
-  end
 
-  # class DeciStop < StopMark
-  # end
+    def add_space?
+      return !@attr.no_wspace? unless @attr.tilde? && (succ = @succ)
+      !succ.attr.includes?(PunctAttr.flags(Final, Close))
+    end
 
-  class ExclMark < StopMark
-  end
-
-  class QuesMark < StopMark
-  end
-
-  # ### open nested structure
-
-  module OpenPunct
-    getter match_char : Char { @val[0] }
-  end
-
-  class OpenQuote < PunctWord
-    include OpenPunct
-
-    getter match_char : Char do
+    def match_char
       case char = @val[0]
       when '“' then '”'
       when '‘' then '’'
-      else          char
-      end
-    end
-  end
-
-  class OpenTitle < PunctWord
-    include OpenPunct
-
-    # NOTE:
-    # 〈	‹
-    # 〉	›
-
-    getter match_char : Char do
-      case char = @val[0]
       when '⟨' then '⟩'
       when '<' then '>'
       when '‹' then '›'
-      else          char
-      end
-    end
-  end
-
-  class OpenParenth < PunctWord
-    include OpenPunct
-
-    getter match_char : Char do
-      case char = @val[0]
       when '(' then ')'
-      else          char
-      end
-    end
-  end
-
-  class OpenBracket < PunctWord
-    include OpenPunct
-
-    getter match_char : Char do
-      case char = @val[0]
       when '[' then ']'
       when '{' then '}'
       else          char
@@ -93,113 +114,9 @@ module MtlV2::MTL
     end
   end
 
-  # ######### close nested structure
-
-  module ClosePunct
-    getter match_char : Char { @val[0] }
-
-    def add_space?(prev : MtNode?)
-      false
-    end
-  end
-
-  class CloseQuote < PunctWord
-  end
-
-  class CloseTitle < PunctWord
-  end
-
-  class CloseParenth < PunctWord
-  end
-
-  class CloseBracket < PunctWord
-  end
-
-  # ## both open and close
-  class DoubleQuote < PunctWord
-    include OpenPunct
-    include ClosePunct
-
-    getter match_char = '"'
-  end
-
-  # ########### inner sentence
-
-  class Wspace < PunctWord
-    def add_space?(prev : MtNode?)
-      false
-    end
-  end
-
-  class Middot < PunctWord
-  end
-
-  class Comma < PunctWord
-    def add_space?(prev : MtNode?)
-      false
-    end
-  end
-
-  class Cenum < PunctWord
-    def add_space?(prev : MtNode?)
-      false
-    end
-
-    def to_txt(io : IO) : Nil
-      io << ','
-    end
-
-    def to_mtl(io : IO) : Nil
-      io << ','
-    end
-  end
-
-  class Colon < PunctWord
-    include Boundary
-
-    def cap_after?(cap : Bool) : Bool
-      true
-    end
-  end
-
-  class Smcln < PunctWord
-    include Boundary
-  end
-
-  class Ellips < PunctWord
-  end
-
-  class Atsign < PunctWord
-  end
-
-  class DashMark < PunctWord
-  end
-
-  class TildeSign < PunctWord
-    def add_space?(prev : MtNode?)
-      return false unless succ = @succ
-      case succ
-      when FullStop, StopPunct then false
-      else                          true
-      end
-    end
-  end
-
-  # class PlusSign < PunctWord
-  # end
-
-  # class MinusSign < PunctWord
-  # end
-
-  ######
-
   module MtNode
-    def add_space?(prev : Wspace)
-      false
-    end
-
-    def add_space?(prev : Colon)
-      true
+    def add_space?(prev : PunctWord)
+      !prev.attr.includes?(PunctAttr.flags(Wspace | Start))
     end
   end
 end

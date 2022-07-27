@@ -25,6 +25,7 @@ module MtlV2::MTL
       case tag[1]?
       when 'b'      then NounMod
       when 'z', 'f' then Express
+      when 'm'      then Measure
       else
         term.key.size < 2 ? Nounmod | VerbAdv : None
       end

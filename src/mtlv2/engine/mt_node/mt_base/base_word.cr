@@ -11,9 +11,15 @@ module MtlV2::MTL
     def initialize(@key = "", @val = @key, @tab = 0, @idx = 0)
     end
 
-    def initialize(term : V2Term, val : String? = nil)
+    def initialize(term : V2Term, pos : Int32 = 0)
       @key = term.key
-      @key = val || term.vals[0]
+
+      while pos > 0
+        break if val = terms.vals[pos]?
+        pos = (pos &- 1) // 2
+      end
+
+      @val = val || term.vals[0]
     end
 
     def dup!(idx : Int32, tab : Int32 = 1) : MtNode
