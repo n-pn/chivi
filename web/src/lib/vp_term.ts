@@ -49,11 +49,11 @@ export class VpTerm {
     if (init.u_val) {
       this._priv = true
       this.ptag = this.o_ptag = init.u_ptag || ''
-      this.prio = init.u_prio
+      this.prio = init.u_prio || ''
     } else {
       this._priv = false
       this.ptag = this.o_ptag = init.b_ptag || init.h_ptag || ''
-      this.prio = init.b_prio
+      this.prio = init.b_prio || ''
     }
   }
 

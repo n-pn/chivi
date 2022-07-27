@@ -50,7 +50,7 @@
 
   export let terms = []
   export let start = 1
-  export let query = { key: '', val: '', ptag: '', rank: '', uname: '' }
+  export let query = { key: '', val: '', ptag: '', prio: '', uname: '' }
 
   $: vdict.put(dname, d_dub)
 
@@ -68,18 +68,16 @@
 
   $: pager = new Pager($page.url)
 
-  function render_rank(rank: number) {
-    switch (rank) {
-      case 1:
-        return '-2'
-      case 2:
-        return '-1'
-      case 4:
-        return '+1'
-      case 5:
-        return '+2'
+  function render_prio(prio: string) {
+    switch (prio) {
+      case '^':
+        return 'Cao'
+      case 'v':
+        return 'Thấp'
+      case 'x':
+        return 'Ẩn'
       default:
-        return '~'
+        return 'Bình'
     }
   }
 
@@ -129,7 +127,7 @@
           <th>Trung</th>
           <th>Nghĩa Việt</th>
           <th>Phân loại</th>
-          <th class="rank">Ư.t</th>
+          <th class="prio">Ư.t</th>
           <th class="uname">Người dùng</th>
           <th>Cập nhật</th>
         </tr>
@@ -142,8 +140,8 @@
             <button class="m-btn _sm" on:click={() => (postag_state = 2)}
               >{pt_labels[query.ptag] || '-'}</button>
           </td>
-          <td class="rank"
-            ><input type="text" placeholder="-" bind:value={query.rank} /></td>
+          <td class="prio"
+            ><input type="text" placeholder="-" bind:value={query.prio} /></td>
           <td class="uname"
             ><input type="text" placeholder="-" bind:value={query.uname} /></td>
           <td>
@@ -161,7 +159,7 @@
       </thead>
 
       <tbody>
-        {#each terms as { key, val, ptag, rank, mtime, uname, _flag }, idx}
+        {#each terms as { key, val, ptag, prio, mtime, uname, _flag }, idx}
           <tr class="term _{_flag}">
             <td class="-idx">{start + idx}</td>
             <td class="-key" on:click={() => show_lookup(key)}>
@@ -180,10 +178,10 @@
             </td>
             <td
               class="-val"
-              class:_del={!val[0]}
+              class:_del={!val}
               on:click={() => show_upsert(key, 1)}>
               <span>
-                {val[0] || 'Đã xoá'}
+                {val || 'Đã xoá'}
               </span>
 
               <div class="hover">
@@ -192,7 +190,7 @@
                 </span>
                 <button
                   class="m-btn _xs"
-                  on:click|stopPropagation={() => (query.val = val[0])}>
+                  on:click|stopPropagation={() => (query.val = val)}>
                   <SIcon name="search" />
                 </button>
               </div>
@@ -214,8 +212,9 @@
                 </a>
               </div>
             </td>
-            <td class="rank">
-              <a href="{$page.url.pathname}?rank={rank}">{render_rank(rank)}</a>
+            <td class="prio">
+              <a href="{$page.url.pathname}?prio={prio || '-'}"
+                >{render_prio(prio)}</a>
             </td>
             <td class="uname _{special_type(uname)}">
               <a href="{$page.url.pathname}?uname={uname}">{uname}</a>
@@ -313,13 +312,13 @@
   }
 
   .-idx,
-  .rank,
+  .prio,
   .mtime,
   .uname {
     @include fgcolor(tert);
   }
 
-  .rank {
+  .prio {
     width: 3rem;
   }
 

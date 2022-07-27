@@ -83,7 +83,7 @@ struct CV::VpTermView
         if u_term
           jb.field "u_val", u_term.vals.first
           jb.field "u_ptag", u_term.tags.first
-          jb.field "u_prio", u_term.prio
+          jb.field "u_prio", u_term.prio_str
 
           jb.field "u_mtime", u_term.mtime
           # jb.field "u_uname", u_term.uname
@@ -93,7 +93,7 @@ struct CV::VpTermView
         if b_term
           jb.field "b_val", b_term.vals.first
           jb.field "b_ptag", b_term.tags.first
-          jb.field "b_prio", b_term.prio
+          jb.field "b_prio", b_term.prio_str
 
           jb.field "b_mtime", b_term.mtime
           jb.field "b_uname", b_term.uname
