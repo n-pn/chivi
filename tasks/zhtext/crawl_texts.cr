@@ -2,7 +2,7 @@ require "option_parser"
 require "../shared/bootstrap"
 
 class CV::CrawlText
-  INP_DIR = "var/chmetas/.html"
+  INP_DIR = "var/chaps/.html"
 
   DIR = "var/chtexts"
 
@@ -117,6 +117,19 @@ class CV::CrawlText
 
   ######################
 
+  def self.map_workers(sname : String)
+    case sname
+    when "zhwenpg", "shubaow"  then 1
+    when "paoshu8", "biqu5200" then 2
+    when "duokan8", "69shu"    then 4
+    else                            6
+    end
+  end
+
+  def self.load_snvids(sname : String) : Array(String)
+    Dir.children("var/chtexts/#{sname}")
+  end
+
   def self.run!(argv = ARGV)
     workers = 0
     sname = "hetushu"
@@ -134,7 +147,7 @@ class CV::CrawlText
 
     workers = map_workers(sname) if workers < 1
 
-    snvids = load_nvnids(sname) if snvids.empty?
+    snvids = load_snvids(sname) if snvids.empty?
     puts "TOTAL BOOKS: #{snvids.size}".colorize.yellow
 
     snvids.each_with_index(1) do |snvid, idx|
@@ -148,37 +161,5 @@ class CV::CrawlText
     end
   end
 
-  def self.map_workers(sname : String)
-    case sname
-    when "zhwenpg", "shubaow"  then 1
-    when "paoshu8", "biqu5200" then 2
-    when "duokan8", "69shu"    then 4
-    else                            6
-    end
-  end
-
-  def self.load_nvnids(sname : String, distant = 1) : Array(String)
-    output = [] of String
-
-    query = Nvinfo.filter_nvseed(sname).order_by(weight: :desc)
-
-    query.each_with_cursor(20) do |nvinfo|
-      seeds = nvinfo.nvseeds.to_a.sort_by!(&.zseed)
-      seeds.each do |nvseed|
-        case nvseed.zseed
-        when 0 then next
-        when zseed
-          output << nvseed.snvid
-          break
-        else
-          distant -= 1
-          break if distant == 0
-        end
-      end
-    end
-
-    output
-  end
-
-  run!
+  run!(ARGV)
 end

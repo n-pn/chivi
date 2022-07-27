@@ -11,7 +11,7 @@ class CV::FetchText
 
     @nvinfo.nvseeds.each do |nvseed|
       next if SnameMap.map_type(nvseed.sname) < 2
-      FileUtils.mkdir_p("var/chmetas/.html/#{nvseed.sname}/#{nvseed.snvid}")
+      FileUtils.mkdir_p("var/chaps/.html/#{nvseed.sname}/#{nvseed.snvid}")
     end
 
     refresh_list!

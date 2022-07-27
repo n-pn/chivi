@@ -149,12 +149,13 @@ module Crorm
       holders = Array(String).new(size: columns.size, value: "?")
       updates = columns.map { |x| "#{x} = excluded.#{x}" }
 
-      rs = cnn.exec(<<-SQL, args: changes.values)
-        insert into #{@table} (#{columns.join(", ")})
+      sql = <<-SQL
+        insert or replace into #{@table} (#{columns.join(", ")})
         values (#{holders.join(", ")})
         on conflict(#{conflict}) do update set #{updates.join(", ")};
       SQL
 
+      rs = cnn.exec(sql, args: changes.values)
       rs.last_insert_id
     end
   end

@@ -8,7 +8,7 @@ require "./shared/html_parser"
 
 class CV::RemoteText
   # cache folder path
-  PATH = "var/chmetas/.html/%s/%s/%s.html.gz"
+  PATH = "var/chaps/.html/%s/%s/%s.html.gz"
 
   getter sname : String
   getter snvid : String

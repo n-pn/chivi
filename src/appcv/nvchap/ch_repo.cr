@@ -44,7 +44,7 @@ class CV::ChRepo
     return unless @is_remote
 
     Dir.mkdir_p("var/books/.html/#{@sname}")
-    Dir.mkdir_p("var/chmetas/.html/#{@sname}/#{@snvid}")
+    Dir.mkdir_p("var/chaps/.html/#{@sname}/#{@snvid}")
   end
 
   ZH_PSIZE = 128

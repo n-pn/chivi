@@ -115,6 +115,7 @@ tests = [
 
   {"kanshu8", "59127", false},
 
+  {"hetushu", "4442", false},
 ]
 
 tests.each do |sname, snvid, fresh|

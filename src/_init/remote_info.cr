@@ -292,6 +292,12 @@ class CV::RemoteInfo
       when :dt
         inner = node.css("b").first? || node
         chvol = clean_chvol(inner.inner_text)
+
+        next unless link = node.css("a").first?
+        next unless href = link.attributes["href"]?
+
+        chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text, chvol)
+        chaps << chap unless chap.invalid?
       when :dd
         next if chvol.includes?("最新章节")
         next unless link = node.css("a").first?
