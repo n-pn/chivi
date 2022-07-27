@@ -100,24 +100,24 @@ class CV::MtCore
 
   def tokenize(input : Array(Char), offset = 0) : MtData
     nodes = [MtTerm.new("", idx: offset)]
-    costs = [0]
+    fares = [0]
 
     input.each_with_index do |char, idx|
       nodes << MtTerm.new(char, idx: idx &+ offset)
-      costs << idx &+ 1
+      fares << idx &+ 1
     end
 
     input.size.times do |idx|
-      base_cost = costs.unsafe_fetch(idx)
+      base_fare = fares.unsafe_fetch(idx)
 
       naive_ner(input, idx, offset).try do |term|
         size = term.key.size
         jump = idx &+ size
-        cost = base_cost + VpTerm.worth(size, 1_i8)
+        fare = base_fare + VpTerm.fare(size, 1_i8)
 
-        if cost > costs[jump]
+        if fare > fares[jump]
           nodes[jump] = term
-          costs[jump] = cost
+          fares[jump] = fare
         end
       end
 
@@ -130,15 +130,15 @@ class CV::MtCore
       end
 
       terms.each do |key, (dic, term)|
-        next if term.rank < 1
+        next if term.prio < 1
 
-        cost = base_cost &+ term.point
+        fare = base_fare &+ term.fare
         jump = idx &+ key
 
-        if cost >= costs[jump]
+        if fare >= fares[jump]
           dic = term.is_priv ? dic &+ 2 : dic
           nodes[jump] = MtTerm.new(term, dic, idx + offset)
-          costs[jump] = cost
+          fares[jump] = fare
         end
       end
     end

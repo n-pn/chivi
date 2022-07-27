@@ -1,7 +1,10 @@
 <script context="module" lang="ts">
-  const keys = ['a', 's', 'd', 'f']
-  const lbls = ['Cao', 'Bình', 'Thấp']
-  const labels = ['Hơi cao', 'Trung bình', ' Hơi thấp']
+  const prios = [
+    ['v', 'a', 'Thấp', 'Không được ưu tiên khi phân tách câu văn'],
+    ['', 's', 'Bình', 'Độ ưu tiên trung bình, giá trị mặc định'],
+    ['^', 'd', 'Cao', 'Được ưu tiên cao khi phân tách câu văn'],
+    ['x', 'f', 'Ẩn', 'Không dùng cụm từ khi phân tách câu văn'],
+  ]
 </script>
 
 <script lang="ts">
@@ -10,7 +13,7 @@
   import { hint } from './_shared'
 
   export let vpterm: VpTerm
-  export let rank = 2
+  export let prio = ''
 </script>
 
 <div class="prio">
@@ -18,25 +21,17 @@
     Độ ưu tiên:
   </div>
 
-  {#each lbls as lbl, idx}
+  {#each prios as [val, kbd, lbl, tip], idx}
     <button
       class="btn"
-      class:_base={vpterm.init.b_rank == 3 - idx}
-      class:_priv={vpterm.init.b_rank == 3 - idx}
-      class:_curr={rank == 3 - idx}
-      data-kbd={keys[idx]}
-      on:click={() => (rank = 3 - idx)}
-      use:hint={'Mức độ ưu tiên: ' + labels[idx]}>{lbl}</button>
+      class:_del={idx == 3}
+      class:_base={vpterm.init.b_prio == val}
+      class:_priv={vpterm.init.b_prio == val}
+      class:_curr={prio == val}
+      data-kbd={kbd}
+      on:click={() => (prio = val)}
+      use:hint={tip}>{lbl}</button>
   {/each}
-
-  <button
-    class="btn _del"
-    class:_base={vpterm.init.b_rank == 0}
-    class:_priv={vpterm.init.b_rank == 0}
-    class:_curr={rank == 0}
-    data-kbd={keys[4]}
-    on:click={() => (rank = 0)}
-    use:hint={'Đảm bảo cụm từ không được áp dụng khi dịch'}>Xoá</button>
 </div>
 
 <style lang="scss">

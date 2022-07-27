@@ -11,7 +11,7 @@ class CV::MtTerm < CV::MtNode
 
   def initialize(term : VpTerm, @dic : Int32 = 0, @idx = 0)
     @key = term.key
-    @val = term.val.first
+    @val = term.vals.first
     @tag = term.ptag
   end
 

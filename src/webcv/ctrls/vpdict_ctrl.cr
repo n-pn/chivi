@@ -90,7 +90,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
         dict.scan(chars, "!#{_cvuser.uname}", idx) do |term|
           dic = term.is_priv ? dict.type &+ 2 : dict.type
 
-          value = "#{term.val.join("/")}\t#{term.ptag.to_str}\t#{dic}"
+          value = "#{term.vals.join("/")}\t#{term.ptag.to_str}\t#{dic}"
           entry[term.key.size][:vietphrase] << value
         end
       end

@@ -9,15 +9,15 @@ struct CV::VpTermForm
   end
 
   def validate : String?
-    return "Không đủ quyền hạn để sửa từ!" unless has_privi?
+    return "Không đủ quyền hạn để sửa từ!" unless can_add_term?
 
-    if @dict.type == 2 && VpDict.fixture.find(@key).try(&.val.first.empty?.!)
+    if @dict.type == 2 && VpDict.fixture.find(@key).try(&.vals.first.empty?.!)
       return "Không thể sửa được từ khoá cứng!"
     end
   end
 
   # check if user has privilege to add new term for this dict
-  def has_privi? : Bool
+  def can_add_term? : Bool
     privi = @user.privi
     privi += 1 if @_priv
 
@@ -29,13 +29,13 @@ struct CV::VpTermForm
   end
 
   def save? : VpTerm?
-    val = @params.fetch_str("val").tr("", "").split(" | ").map(&.strip)
+    vals = @params.fetch_str("val").tr("", "").split(" | ").map(&.strip)
 
-    attr = @params.fetch_str("attr", "")
-    rank = @params.fetch_str("rank", "").to_i8? || 2_i8
+    tags = @params.fetch_str("tags", "").strip.split(" ")
+    prio = VpTerm.parse_prio(@params.fetch_str("prio", ""))
 
     uname = @_priv ? "!" + @user.uname : @user.uname
-    vpterm = VpTerm.new(@key, val, attr, rank, uname: uname)
+    vpterm = VpTerm.new(@key, vals, tags, prio, uname: uname)
 
     @dict.set!(vpterm)
   end

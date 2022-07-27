@@ -187,7 +187,7 @@ class CV::TlName
 
   def find_defined(vdict : VpDict, input : String, tags : Array(String))
     return if !(term = vdict.find(input)) || term.deleted?
-    term.val if tags.includes?(term.attr)
+    term.vals if tags.includes?(term.tags.first)
   end
 
   DIR = "var/dicts/vx/detect"

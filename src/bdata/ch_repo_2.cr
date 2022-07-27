@@ -1,7 +1,7 @@
 require "./ch_info_2"
-require "./ch_list"
-require "../shared/sname_map"
-require "../../_init/remote_info"
+require "../appcv/nvchap/ch_list"
+require "../appcv/shared/sname_map"
+require "../_init/remote_info"
 
 module CV
   class ChRepo2 < Crorm::Repo(ChInfo2)
@@ -54,7 +54,7 @@ module CV
         Dir.mkdir_p("var/chaps/.html/#{@sname}/#{@snvid}")
       end
 
-      `sqlite3 "#{@index_path}" < ./src/_init/sqls/chinfos.sql`
+      `sqlite3 "#{@index_path}" < ./sr/store/sqls/chinfos.sql`
       raise "Can't create sqlite file" unless $?.success?
     end
 

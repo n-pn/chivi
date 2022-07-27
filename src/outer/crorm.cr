@@ -1,4 +1,4 @@
-require "sqlite3"
+# require "sqlite3"
 
 module Crorm
   class Field(T)

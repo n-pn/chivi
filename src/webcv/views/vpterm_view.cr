@@ -81,9 +81,9 @@ struct CV::VpTermView
 
       jb.object do
         if u_term
-          jb.field "u_val", u_term.val.first
-          jb.field "u_ptag", u_term.ptag.to_str
-          jb.field "u_rank", u_term.rank
+          jb.field "u_val", u_term.vals.first
+          jb.field "u_ptag", u_term.tags.first
+          jb.field "u_prio", u_term.prio
 
           jb.field "u_mtime", u_term.mtime
           # jb.field "u_uname", u_term.uname
@@ -91,9 +91,9 @@ struct CV::VpTermView
         end
 
         if b_term
-          jb.field "b_val", b_term.val.first
-          jb.field "b_ptag", b_term.ptag.to_str
-          jb.field "b_rank", b_term.rank
+          jb.field "b_val", b_term.vals.first
+          jb.field "b_ptag", b_term.tags.first
+          jb.field "b_prio", b_term.prio
 
           jb.field "b_mtime", b_term.mtime
           jb.field "b_uname", b_term.uname
@@ -138,8 +138,8 @@ struct CV::VpTermView
       return if @first_val || !@vdict.kind.novel?
 
       if term = VpDict.regular.find(@word)
-        @first_val = term.val.first
-        @first_tag = term.attr
+        @first_val = term.vals.first
+        @first_tag = term.tags.first
       else
         @first_val = TextUtil.titleize(@val_hints.first)
         @first_tag = "Nr"
@@ -155,12 +155,12 @@ struct CV::VpTermView
     end
 
     private def add_hints_by_term(term : VpTerm)
-      @val_hints.concat(term.val.reject(&.empty?))
-      @tag_hints << term.ptag.to_str unless term.attr.empty?
+      @val_hints.concat(term.vals.reject(&.empty?))
+      @tag_hints << term.ptag.to_str unless term.ptag.unkn?
 
       return unless prev = term._prev
-      @val_hints.concat(prev.val.reject(&.empty?))
-      @tag_hints << term.ptag.to_str unless term.attr.empty?
+      @val_hints.concat(prev.vals.reject(&.empty?))
+      @tag_hints << term.ptag.to_str unless term.ptag.unkn?
     end
 
     def fill_tags_for_cvmtl_dicts(dname : String)

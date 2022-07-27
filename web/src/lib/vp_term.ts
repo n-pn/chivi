@@ -5,8 +5,8 @@ export interface VpTermInit {
   u_ptag?: string
   b_ptag?: string
 
-  u_rank?: number
-  b_rank?: number
+  u_prio?: string
+  b_prio?: string
 
   u_mtime?: number
   u_state?: string
@@ -33,7 +33,7 @@ export class VpTerm {
   state: number = 0
   _priv: boolean = false
 
-  rank: number = 2
+  prio: string = ''
 
   constructor(init?: VpTermInit) {
     if (!init) {
@@ -49,11 +49,11 @@ export class VpTerm {
     if (init.u_val) {
       this._priv = true
       this.ptag = this.o_ptag = init.u_ptag || ''
-      this.rank = init.u_rank || 2
+      this.prio = init.u_prio
     } else {
       this._priv = false
       this.ptag = this.o_ptag = init.b_ptag || init.h_ptag || ''
-      this.rank = init.b_rank || 2
+      this.prio = init.b_prio
     }
   }
 
@@ -90,11 +90,11 @@ export class VpTerm {
     if (this._priv) {
       if (this.val != this.init.u_val) return true
       if (this.ptag != this.init.u_ptag) return true
-      if (this.rank != this.init.u_rank) return true
+      if (this.prio != this.init.u_prio) return true
     } else {
       if (this.val != this.init.b_val) return true
       if (this.ptag != this.init.b_ptag) return true
-      if (this.rank != this.init.b_rank) return true
+      if (this.prio != this.init.b_prio) return true
     }
 
     return false

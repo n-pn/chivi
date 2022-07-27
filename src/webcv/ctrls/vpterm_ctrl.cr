@@ -38,8 +38,8 @@ class CV::VptermCtrl < CV::BaseCtrl
       if vpdict.kind.cvmtl?
         MtDict.upsert(dname[1..], vpterm)
       elsif vpdict.kind.novel?
-        VpHint.user_vals.append!(vpterm.key, vpterm.val)
-        VpHint.user_tags.append!(vpterm.key, vpterm.attr.split(" "))
+        VpHint.user_vals.append!(vpterm.key, vpterm.vals)
+        VpHint.user_tags.append!(vpterm.key, vpterm.tags)
       end
     end
 

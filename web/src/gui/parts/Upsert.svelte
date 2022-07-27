@@ -39,7 +39,7 @@
   import Emend from './Upsert/Emend.svelte'
   import Vhint from './Upsert/Vhint.svelte'
   import Vutil from './Upsert/Vutil.svelte'
-  import Vrank from './Upsert/Vrank.svelte'
+  import Vprio from './Upsert/Vprio.svelte'
   import Links from './Upsert/Links.svelte'
 
   import Postag from '$gui/parts/Postag.svelte'
@@ -65,12 +65,12 @@
 
   async function submit_val() {
     const { dname } = vpdicts[$ctrl.tab]
-    const { val, rank, ptag: attr, _priv } = vpterm
+    const { val, prio, ptag: attr, _priv } = vpterm
 
     const res = await fetch('/api/terms/entry', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key, val, rank, attr, _priv, dname }),
+      body: JSON.stringify({ key, val, prio, attr, _priv, dname }),
     })
 
     if (res.ok) {
@@ -185,7 +185,7 @@
     </upsert-main>
 
     <upsert-foot>
-      <Vrank {vpterm} bind:rank={vpterm.rank} />
+      <Vprio {vpterm} bind:prio={vpterm.prio} />
 
       <btn-group>
         <button

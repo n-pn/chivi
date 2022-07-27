@@ -18,11 +18,7 @@ class CV::VpTerm
     0, 58, 66, 78,
   }
 
-  def self.worth(size : Int32, rank : Int8 = 0) : Int32
-    WORTH[(size &- 1) &* 4 &+ rank]? || size &* (rank &* 2 &+ 7) &* 2
-  end
-
-  def self.parse_rank(str : String?)
+  def self.parse_prio(str : String?)
     case str
     when "x", "0" then 0_i8
     when "v", "2" then 1_i8
@@ -31,49 +27,55 @@ class CV::VpTerm
     end
   end
 
-  getter key : String
-  property val : Array(String)
+  def self.fare(size : Int32, prio : Int8 = 0) : Int32
+    WORTH[(size &- 1) &* 4 &+ prio]? || size &* (prio &* 2 &+ 7) &* 2
+  end
 
-  property attr : String = ""
-  property rank : Int8 = 2_i8
+  getter key : String
+
+  property vals : Array(String)
+  property tags : Array(String)
+  property prio : Int8 = 2_i8
 
   getter mtime : Int32 = 0
   getter uname : String = "~"
 
   # auto generated fields
-  getter ptag : PosTag { PosTag.parse(@attr, @key) }
-  getter point : Int32 { VpTerm.worth(@key.size, @rank) }
+  getter ptag : PosTag { PosTag.parse(@tags[0], @key) }
+  getter fare : Int32 { VpTerm.fare(@key.size, @prio) }
 
+  # # for mantainment
   getter is_priv : Bool { @uname[0]? == '!' }
-
   property _prev : VpTerm? = nil
   property _flag : UInt8 = 0_u8 # 0 => keep, 1 => overwritten, 2 => to be removed
 
-  def initialize(@key, @val = [""], @attr = "", @rank = 2_i8,
+  def initialize(@key, @vals = [""], @tags = [""], @prio = 2_i8,
                  @mtime = VpTerm.mtime, @uname = "~")
   end
 
   def initialize(cols : Array(String), dtype = 0)
     @key = cols[0]
-    @val = cols.fetch(1, "").split(SPLIT)
 
-    @attr = cols[2]? || ""
-    @rank = VpTerm.parse_rank(cols[3]?)
-    if mtime = cols[4]?.try(&.to_i?)
-      @mtime = mtime
+    @vals = cols[1]?.try(&.split(SPLIT)) || [""]
+    @tags = cols[2]?.try(&.split(" ")) || [""]
+
+    @prio = VpTerm.parse_prio(cols[3]?)
+
+    if mtime = cols[4]?
+      @mtime = mtime.to_i
       @uname = cols[5]? || "~"
     end
   end
 
-  def deleted?
-    @_flag > 0_u8 || @val.empty? || @val.first.empty?
-  end
-
-  def force_fix!(@val, @attr = "", @mtime = @mtime &+ 1, @_flag = 0_u8)
+  def force_fix!(@vals, @tags = [""], @mtime = @mtime &+ 1, @_flag = 0_u8)
   end
 
   def empty? : Bool
-    @val.empty? || @val.first.empty?
+    @vals.empty? || @vals.first.empty?
+  end
+
+  def deleted?
+    @_flag > 0_u8 || empty?
   end
 
   def to_priv!
@@ -84,25 +86,20 @@ class CV::VpTerm
     self.empty? ? "Xoá" : (self._prev ? "Sửa" : "Thêm")
   end
 
+  def prio_str
+    {"x", "v", "", "^"}[@prio]
+  end
+
   def to_s(io : IO, dtype = 0) : Nil
-    io << key << '\t'
-    @val.join(io, SPLIT)
-    io << '\t' << @attr << '\t' << {"x", "v", "", "^"}[@rank]
+    io << key << '\t' << @vals.join(SPLIT)
+    io << '\t' << @tags.join(" ") << '\t' << prio_str
     io << '\t' << @mtime << '\t' << @uname if @mtime > 0
   end
 
   def inspect(io : IO) : Nil
-    io << '[' << key << '/'
-    @val.join(io, ',')
-
-    io << '/' << @attr << ' '
-
-    io << @rank == 2_i8 ? "" : @rank
-
-    if @mtime > 0
-      io << '/' << @mtime << '/' << @uname
-    end
-
+    io << '[' << key << '/' << @vals.join(", ")
+    io << '/' << @tags.join(" ") << "/" << @prio
+    io << '/' << @mtime << '/' << @uname if @mtime > 0
     io << ']'
   end
 
@@ -113,10 +110,10 @@ class CV::VpTerm
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "key", @key
-      jb.field "val", @val
+      jb.field "val", @vals.first
 
-      jb.field "ptag", @attr
-      jb.field "rank", @rank
+      jb.field "ptag", @tags.first
+      jb.field "prio", self.prio_str
 
       jb.field "mtime", self.utime
       jb.field "uname", @uname

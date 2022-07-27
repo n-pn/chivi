@@ -1,6 +1,7 @@
 require "../src/appcv/nvchap/ch_repo_2"
-test = CV::ChRepo2.new("hetushu", "4442", reset: true)
 
-puts test.count
-test.update!
-puts test.count
+1.upto(6235).each do |idx|
+  repo = CV::ChRepo2.new("hetushu", idx.to_s, reset: false)
+  repo.update!
+  puts repo.count
+end
