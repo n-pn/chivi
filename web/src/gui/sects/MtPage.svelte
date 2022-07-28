@@ -20,37 +20,31 @@
   export let mficon = 'file-download'
   export let source = ''
 
+  let mtdata = []
   let zhtext = []
+  let cached = false // reloading chapter do not need zhtext anymore
 
-  $: [mtdata, zhtext, dname, d_dub, chars, tspan, dsize] = parse_data(
-    cvdata,
-    zhtext
-  )
-
-  $: vdict.put(dname, d_dub)
+  $: [chars, tspan, dsize] = parse_data(cvdata)
 
   let article = null
-
   let l_hover = 0
   let l_focus = 0
 
   beforeNavigate(() => {
     l_focus = 0
-    zhtext = []
+    cached = false
     mtmenu.hide()
   })
 
-  type Output = [MtData[], string[], string, string, number, number, number]
+  function parse_data(input: string) {
+    const [cvdata, stats = '', rawtxt] = input.split('\n$\t$\t$\n')
 
-  function parse_data(input: string, rawzh): Output {
-    const [cvdata, stats = '', zhtext] = input.split('\n$\t$\t$\n')
+    mtdata = MtData.parse_lines(cvdata)
+    zhtext = rawtxt ? rawtxt.split('\n') : cached ? zhtext : []
 
-    const [d_name, d_dub, chars, tspan = '0', dsize = '0'] = stats.split('\t')
-
-    const mt_data = MtData.parse_lines(cvdata)
-    const zh_data = zhtext ? zhtext.split('\n') : rawzh || []
-
-    return [mt_data, zh_data, d_name, d_dub, +chars, +tspan, +dsize]
+    const [dname, d_dub, chars = '', tspan = '', dsize = ''] = stats.split('\t')
+    if (dname) vdict.put(dname, d_dub)
+    return [+chars, +tspan, +dsize]
   }
 
   function render_html(
@@ -124,7 +118,7 @@
     </div>
   </header>
 
-  {#each zhtext as ztext, index (index)}
+  {#each mtdata as input, index (index)}
     <svelte:element
       this={index > 0 || $$props.no_title ? 'p' : 'h1'}
       id="L{index}"
@@ -132,9 +126,11 @@
       class:debug={$config.render == 1}
       class:focus={index == l_focus}
       on:mouseenter={() => (l_hover = index)}>
-      {#if $config.showzh}<Zhline {ztext} plain={$config.render < 0} />{/if}
+      {#if $config.showzh}
+        <Zhline ztext={zhtext[index]} plain={$config.render < 0} />
+      {/if}
       <Cvline
-        input={mtdata[index]}
+        {input}
         focus={render_html($config.render, index, l_hover, l_focus)} />
     </svelte:element>
   {:else}

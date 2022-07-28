@@ -5,8 +5,8 @@ module CV::SnameMap
     "zxcs_me",
     "hetushu",
 
-    "bxwxorg",
     "69shu",
+    "uukanshu",
 
     "xbiquge",
     "rengshu",
@@ -15,22 +15,20 @@ module CV::SnameMap
     "biqugse",
     "bqxs520",
 
+    "bxwxorg",
     "biqugee",
     "paoshu8",
     "duokan8",
     "shubaow",
     "kanshu8",
 
-    "ptwxz",
     "uuks",
-    "yannuozw",
-
-    "uukanshu",
+    "ptwxz",
     "133txt",
-
+    "yannuozw",
     "biqu5200",
-    "5200",
 
+    "5200",
     "sdyfcm",
     "jx_la",
     "zhwenpg",

@@ -1,5 +1,7 @@
 <script lang="ts">
-  export let input
+  import MtData from '$lib/mt_data'
+
+  export let input: MtData = new MtData('')
   export let focus = false
 </script>
 

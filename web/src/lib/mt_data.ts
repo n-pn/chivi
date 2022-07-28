@@ -10,6 +10,7 @@ export default class MtData {
   _text: string
 
   static parse_lines(input = '') {
+    if (!input) return []
     return input.split('\n').map((x) => new MtData(x))
   }
 
