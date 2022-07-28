@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-  import { navigating } from '$app/stores'
   import { config, vdict } from '$lib/stores'
 
   import { SIcon } from '$gui'
@@ -10,6 +9,7 @@
   import Cvline from './MtPage/Cvline.svelte'
   import Zhline from './MtPage/Zhline.svelte'
   import { rel_time } from '$utils/time_utils'
+  import { beforeNavigate } from '$app/navigation'
 </script>
 
 <script lang="ts">
@@ -34,10 +34,11 @@
   let l_hover = 0
   let l_focus = 0
 
-  $: if ($navigating) {
+  beforeNavigate(() => {
     l_focus = 0
+    zhtext = []
     mtmenu.hide()
-  }
+  })
 
   type Output = [MtData[], string[], string, string, number, number, number]
 
