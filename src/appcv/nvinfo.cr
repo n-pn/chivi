@@ -121,6 +121,22 @@ class CV::Nvinfo
     input ? where("vlabels @> ?", input.split("+").map(&.strip)) : self
   end
 
+  scope :filter_status do |input|
+    if input && (status = input.to_i?) && status < 5
+      where("status = ?", status &- 1)
+    else
+      self
+    end
+  end
+
+  scope :filter_voters do |input|
+    input ? where("voters >= ?", input.to_i? || 0) : self
+  end
+
+  scope :filter_rating do |input|
+    input ? where("rating >= ?", (input.to_i? || 0) * 10) : self
+  end
+
   scope :filter_origin do |input|
     input ? where("ysbook_id in (select id from ysbooks where pub_name = ?)", input) : self
   end

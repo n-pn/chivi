@@ -69,24 +69,24 @@ export const bgenres: Array<[string, string, boolean]> = [
 ]
 
 export const snames = [
-  '5200',
-  'biqu5200',
-  'biqugee',
-  'bxwxorg',
   'hetushu',
+  'zxcs_me',
+  '69shu',
+  'ptwxz',
+  'users',
+  '=user',
   'rengshu',
   'xbiquge',
+  'paoshu8',
+  '5200',
+  'biqu5200',
+  'bxwxorg',
+  'biqugee',
   'zhwenpg',
   'sdyfcm',
-  '69shu',
   'duokan8',
-  'paoshu8',
   'shubaow',
   'jx_la',
-  'zxcs_me',
-  'ptwxz',
-  'xswang',
-  'users',
 ]
 
 export const book_origins = [
