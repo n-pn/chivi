@@ -78,4 +78,24 @@ module MtlV2::MTL
       super(term)
     end
   end
+
+  ###
+
+  def self.number_from_term(term : V2Term)
+    return NquantWord.new(term, pos: pos) if term.tags[0] == "mq"
+
+    case
+    when NdigitWord.matches?(term.key)
+      NdigitWord.new(term, pos: pos)
+    when NhanziWord.matches?(term.key)
+      NhanziWord.new(term, pos: pos)
+    else
+      NumberWord.new(term, pos: pos)
+    end
+  end
+
+  def self.quanti_from_term(term : V2Term)
+    # TODO: add QuantiVerb, QuantiTime...
+    QuantiWord.new(term, pos: pos)
+  end
 end

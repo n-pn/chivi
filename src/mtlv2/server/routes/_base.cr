@@ -1,4 +1,4 @@
-require "../../engine/*"
+require "../../engine"
 
 module MtlV2
   abstract class BaseCtrl < ActionController::Base

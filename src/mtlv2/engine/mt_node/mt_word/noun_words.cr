@@ -2,10 +2,10 @@ require "../mt_base/*"
 
 module MtlV2::MTL
   @[Flags]
-  enum NounKind
+  enum NounAttr
     # https://khoahoctiengtrung.com/danh-tu-trong-tieng-trung/
 
-    # # in rules
+    # generic
 
     Ktetic # possessives noun
     Locale # place or location
@@ -34,99 +34,71 @@ module MtlV2::MTL
     # 物质名词
     # https://baike.baidu.com/item/%E7%89%A9%E8%B4%A8%E5%90%8D%E8%AF%8D/10670685
     Material
+
+    # Specific
+
+    # norrmal
+    Honor
+    Trait
+    Abstr
+
+    Place
+    Posit
+    Locat
+
+    # proper
+
+    Human
+    Affil
+    Title
+    Other
+
+    def self.from_tag(tag : String)
+      tag[0] == 'n' ? common_tag(tag) : proper_tag(tag)
+    end
+
+    def self.common_tag(tag : String)
+      case tag[1]?
+      when 'h' then Honor | Person | Ktetic | Material
+      when 'p' then Place | Locale | Ktetic | Material
+      when 's' then Posit | Locale
+      when 'f' then Locat
+      when 'a' then Trait | Abstract
+      when 'b' then Abstr | Abstract
+      else          Ktetic | Material
+      end
+    end
+
+    def self.proper_tag(tag : String)
+      case tag[1]?
+      when 'r' then Human | Person | Ktetic | Proper
+      when 'a' then Human | Locale | Ktetic | Proper
+      when 'w' then Title | Ktetic | Proper
+      else          Other | Ktetic | Proper
+      end
+    end
+
+    # def self.affil_from_term(term : V2Term, pos : Int32 = 0)
+    #   case tags[2]?
+    #   when 'l' then PlaceName.new(term, pos: pos)
+    #   when 'g' then InstiName.new(term, pos: pos)
+    #   else          AffilName.new(term, pos: pos)
+    #   end
+    # end
   end
 
   #########
 
   module Nominal
-    # getter kind : NounKind
-
-    def ktetic? : Bool
-      false
-    end
-
-    def locale? : Bool
-      false
-    end
-
-    def proper? : Bool
-      false
-    end
-
-    def person? : Bool
-      false
-    end
-
-    def living? : Bool
-      false
-    end
-
-    def abstract? : Bool
-      false
-    end
-
-    def material? : Bool
-      false
-    end
+    getter attr : NounAttr = NounAttr::Ktetic
+    forward_missing_to @attr
   end
 
   class NounWord < BaseWord
     include Nominal
-  end
 
-  module MaybeNoun
-    getter noun : NounWord
-
-    def as_noun!
-      @noun.tap(&.replace!(self))
-    end
-  end
-
-  class BasicNoun < NounWord
-    def ktetic?
-      true
-    end
-
-    # def material?
-    #   true
-    # end
-  end
-
-  class AbstrNoun < NounWord
-    def abstract?
-      true
-    end
-  end
-
-  class TraitNoun < NounWord
-    def abstract?
-      true
-    end
-  end
-
-  class PlaceNoun < NounWord
-    def ktetic?
-      true
-    end
-
-    def locale?
-      true
-    end
-
-    def material?
-      true
-    end
-  end
-
-  class PositNoun < NounWord
-    def locale?
-      true
-    end
-  end
-
-  class LocatNoun < NounWord
-    def locale?
-      @key.size > 1
+    def initialize(term : V2Term, pos : Int32 = 0)
+      @attr = NounAttr.from_tag(term.tags[pos]? || "n")
     end
   end
 
@@ -146,64 +118,40 @@ module MtlV2::MTL
     def apply_honor(name : String)
       @mold.sub("?", name)
     end
+  end
 
-    def ktetic?
-      true
+  class LocatNoun < NounWord
+    def initialize(term : V2Term, pos : Int32 = 1)
+      super(term)
+      @attr |= NounAttr::Locale if @key.size > 1
     end
+  end
 
-    def person?
-      true
-    end
-
-    def material?
-      true
-    end
+  @[Flags]
+  enum TimeType
+    When # datetime
+    Span # duration
+    Else # other type
   end
 
   class TimeWord < NounWord
-    def adverb?
-      @succ.try(&.is_a?(Verbal))
+    getter type : TimeType = TimeType::None
+
+    def initialize(term : V2Term, pos : Int32 = 1)
+      super(term)
+      # TODO: map time type
     end
   end
 
-  class HumanName < NounWord
-    def ktetic?
-      true
-    end
+  ######
 
-    def person?
-      true
+  def self.noun_from_term(term : V2Term, pos : Int32 = 0)
+    tag = term.tags[pos]? || ""
+    case tag
+    when "nh" then HonorNoun.new(term, pos)
+    when "nf" then LocatNoun.new(term, pos)
+    when "nt" then TimeWord.new(term, pos)
+    else           NounWord.new(term, pos)
     end
-
-    def proper?
-      true
-    end
-  end
-
-  class AffilName < NounWord
-    def ktetic?
-      true
-    end
-
-    def locale?
-      true
-    end
-
-    def proper?
-      true
-    end
-  end
-
-  class OtherName < NounWord
-    def ktetic?
-      true
-    end
-
-    def proper?
-      true
-    end
-  end
-
-  class TitleName < OtherName
   end
 end

@@ -15,7 +15,7 @@ module MtlV2::MTL
       @key = term.key
 
       while pos > 0
-        break if val = terms.vals[pos]?
+        break if val = term.vals[pos]?
         pos = (pos &- 1) // 2
       end
 

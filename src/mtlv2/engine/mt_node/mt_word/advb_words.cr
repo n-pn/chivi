@@ -7,7 +7,7 @@ module MtlV2::MTL
   ADVB_TYPES = QtranUtil.read_tsv("etc/cvmtl/adverbs.tsv")
 
   @[Flags]
-  enum AdvbType
+  enum AdvbAttr
     # 否定副词 negative adverbs 否定 (fǒudìng) – An adverb that denies or negates
     # the action
     Nega
@@ -41,26 +41,25 @@ module MtlV2::MTL
     # 情态副词/情状副词 adverbs of manner
     # Adverbs of manner describe the manner of doing an activity.     Manner
 
-    def self.from(key : String)
-      return None unless types = ADVB_TYPES[key]?
-      types.reduce(None) { |flag, x| flag | parse(x) }
+    Postpos
+
+    def self.from_str(key : String)
+      return None unless attrs = ADVB_TYPES[key]?
+      attrs.reduce(None) { |flag, x| flag | parse(x) }
     end
   end
 
   module Adverbial
-    getter type = AdvbType::None
-    forward_missing_to @type
-
-    def postpos?
-      false
-    end
+    getter attr = AdvbAttr::None
+    forward_missing_to @attr
   end
 
   class AdvbWord < BaseWord
     include Adverbial
 
-    def initialize(term : V2Term, type : AdvbType = AdvbType.from(term.key))
-      super(term)
+    def initialize(term : V2Term, pos : Int32 = 0)
+      super(term, pos)
+      @attr = AdvbAttr.from_str(term.key)
     end
   end
 
@@ -71,5 +70,14 @@ module MtlV2::MTL
   end
 
   class AdvbMei < AdvbWord
+  end
+
+  def self.advb_from_term(term : V2Term, pos : Int32 = 0)
+    case term.key
+    when "不" then AdvbBu4.new(term, pos: pos)
+    when "没" then AdvbMei.new(term, pos: pos)
+    when "非" then AdvbFei.new(term, pos: pos)
+    else          AdvbWord.new(term, pos: pos)
+    end
   end
 end

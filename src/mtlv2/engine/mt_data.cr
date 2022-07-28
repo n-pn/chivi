@@ -3,8 +3,8 @@ require "./grammar/*"
 
 module MtlV2::MTL
   class MtData
-    getter head = StopMark.new("")
-    getter tail = StopMark.new("")
+    getter head = PunctWord.new("")
+    getter tail = PunctWord.new("")
 
     def initialize
       head.set_succ = tail

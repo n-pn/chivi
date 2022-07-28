@@ -22,33 +22,23 @@ module MtlV2::MTL
 
     # # singular
 
-    Period
-    Exclam
-    Questm
+    Period; Exclam; Questm
 
-    DbQuote
-    QuoteSt
-    QuoteCl
-    TitleSt
-    TitleCl
-    ParenSt
-    ParenCl
-    BrackSt
-    BrackCl
+    DbQuote # plain double quote
+
+    QuoteSt; QuoteCl
+    TitleSt; TitleCl
+    ParenSt; ParenCl
+    BrackSt; BrackCl
 
     Wspace
     Middot
-
-    Colon
-    Smcln
-
     Atsign
     Dashes
-    Ellips
 
-    Tilde
-    Comma
-    Cenum
+    Colon; Smcln
+    Comma; Cenum
+    Ellip; Tilde
 
     # ameba:disable Metrics/CyclomaticComplexity
     def self.from_str(str : String)
@@ -72,9 +62,9 @@ module MtlV2::MTL
       when ";"           then Smcln | Break
       when "·"           then Middot
       when "@"           then Atsign
-      when "~"           then Tilde
-      when "–", "—"      then Dashes
-      when "…", "……"     then Ellips | NoWspace
+      when "~"           then Tilde | Break
+      when "–", "—"      then Dashes | Break
+      when "…", "……"     then Ellip | NoWspace
       else                    None
       end
     end
@@ -88,6 +78,11 @@ module MtlV2::MTL
       super(term, pos)
       @attr = PunctAttr.from(term.vals[pos])
       @val = ',' if @attr.cenum?
+    end
+
+    def initialize(key : String)
+      super(key)
+      @attr = PunctAttr::None
     end
 
     def cap_after?(cap : Bool) : Bool

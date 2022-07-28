@@ -50,4 +50,40 @@ module MtlV2::MTL
 
   class ProNa2 < IntrproWord
   end
+
+  ####
+
+  def self.pronoun_from_term(term : V2Term, pos : Int32 = 0)
+    tag = term.tags[pos]? || ""
+
+    case tag[1]?
+    when 'z' then demspro_from_term(term, tag)
+    when 'y' then intrpro_from_term(term, tag)
+    when 'r' then perspro_from_term(term, tag)
+    else          PronounWord.new(term, pos: pos)
+    end
+  end
+
+  def self.demspro_from_term(term : V2Term, pos : Int32 = 0)
+    case term.key
+    when "这" then ProZhe.new(term, pos: pos)
+    when "那" then ProNa1.new(term, pos: pos)
+    when "几" then ProJi3.new(term, pos: pos)
+    else          DemsproWord.new(term, pos: pos)
+    end
+  end
+
+  def self.intrpro_from_term(term : V2Term, pos : Int32 = 0)
+    case term.key
+    when "哪" then ProNa2.new(term, pos: pos)
+    else          IntrproWord.new(term, pos: pos)
+    end
+  end
+
+  def self.perspro_from_term(term : V2Term, pos : Int32 = 0)
+    case term.key
+    when "自己" then ProZiji.new(term, pos: pos)
+    else           PersproWord.new(term, pos: pos)
+    end
+  end
 end

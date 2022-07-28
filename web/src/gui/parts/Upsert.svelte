@@ -65,12 +65,12 @@
 
   async function submit_val() {
     const { dname } = vpdicts[$ctrl.tab]
-    const { val, prio, ptag: attr, _priv } = vpterm
+    const { val: vals, ptag: tags, prio, _priv } = vpterm
 
     const res = await fetch('/api/terms/entry', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key, val, prio, attr, _priv, dname }),
+      body: JSON.stringify({ key, vals, tags, prio, _priv, dname }),
     })
 
     if (res.ok) {

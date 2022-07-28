@@ -45,4 +45,15 @@ module MtlV2::MTL
       @kind = AdjtKind.from(term.tags[pos]? || "a", term.key)
     end
   end
+
+  #####
+
+  def self.adjt_from_term(term : V2Term, pos : Int32 = 0)
+    tag = term.tags[pos]? || ""
+    case tag[1]?
+    when 'n' then AjnoWord.new(term, pos: pos)
+    when 'd' then AjadWord.new(term, pos: pos)
+    else          AdjtWord.new(term, pos: pos)
+    end
+  end
 end

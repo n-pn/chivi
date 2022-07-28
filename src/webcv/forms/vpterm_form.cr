@@ -29,7 +29,7 @@ struct CV::VpTermForm
   end
 
   def save? : VpTerm?
-    vals = @params.fetch_str("val").tr("", "").split(" | ").map(&.strip)
+    vals = @params.fetch_str("vals").tr("", "").split(" | ").map(&.strip)
 
     tags = @params.fetch_str("tags", "").strip.split(" ")
     prio = VpTerm.parse_prio(@params.fetch_str("prio", ""))
