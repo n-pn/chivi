@@ -83,4 +83,5 @@ fetch_text("bxwxio", "127400", "52941263", fresh: false)
 fetch_text("uuks", "23389", "292361", fresh: false)
 fetch_text("yannuozw", "147108", "69474701", fresh: false)
 
-fetch_text("kanshu8", "59127", "47845259", fresh: false)
+# fetch_text("kanshu8", "59127", "47845259", fresh: false)
+fetch_text("69shu", "37960", "29004701", fresh: false)

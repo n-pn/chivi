@@ -97,8 +97,6 @@ class CV::Nvseed
   end
 
   def chtext(chinfo : ChInfo, cpart = 0, mode = 0, uname = "")
-    return [] of String if chinfo.invalid?
-
     chtext = ChText.new(sname, snvid, chinfo)
     chdata = chtext.load!(cpart)
 

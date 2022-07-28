@@ -37,12 +37,13 @@
   import Dboard from '$gui/sects/dboard/Dboard.svelte'
 
   import '../styles/generic.scss'
+  import { browser } from '$app/env'
 
   onMount(() => {
     if (!$config.wtheme) config.put('wtheme', $session.wtheme || 'light')
   })
 
-  $: wtheme = $config.wtheme || 'light'
+  $: wtheme = (browser ? $config.wtheme : $session.wtheme) || 'light'
 
   let kbd_hint = false
 
