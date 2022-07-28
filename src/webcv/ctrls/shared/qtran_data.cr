@@ -34,10 +34,10 @@ class CV::QtranData
     new(lines, dname, d_lbl, count.to_i, label)
   end
 
-  def self.load_crit(ukey : String) : QtranData
+  def self.load_crit(name : String) : QtranData
     crit_id = UkeyUtil.decode32(name)
     unless yscrit = Yscrit.find({id: crit_id})
-      raise NotFound.new("Bình luận không tồn tại")
+      raise NotFound.new("Bình luận không tồn tại!")
     end
 
     nvinfo = yscrit.nvinfo
@@ -47,7 +47,7 @@ class CV::QtranData
   def self.load_repl(name : String) : QtranData
     repl_id = UkeyUtil.decode32(name)
     unless ysrepl = Ysrepl.find({id: repl_id})
-      raise NotFound.new("Phản hồi không tồn tại")
+      raise NotFound.new("Phản hồi không tồn tại!")
     end
 
     nvinfo = ysrepl.yscrit.nvinfo
