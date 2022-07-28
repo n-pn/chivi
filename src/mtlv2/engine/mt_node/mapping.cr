@@ -28,24 +28,6 @@ module MtlV2::MTL
     end
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
-  def self.verb_from_term(term : V2Term)
-    case term.tags[0][1]?
-    # when nil then Verb.new(term, pos: pos)
-    # when 'o' then VerbObject.new(term, pos: pos)
-    # when 'n' then VerbNoun.new(term, pos: pos)
-    # when 'd' then VerbAdvb.new(term, pos: pos)
-    # when 'i' then IntrVerb.new(term, pos: pos)
-    # when '2' then Verb2Obj.new(term, pos: pos)
-    # when 'x' then VLinking.new(term, pos: pos)
-    # when 'p' then VCompare.new(term, pos: pos)
-    # when 'f' then VDircomp.new(term, pos: pos)
-    when 'm' then vmodal_from_term(term)
-    when '!' then uniq_verb_from_term(term)
-    else          VerbWord.new(term, pos: pos)
-    end
-  end
-
   def self.conj_from_term(term : V2Term, pos : Int32 = 0)
     tag = term.tags[pos]? || ""
     case tag[1]?
