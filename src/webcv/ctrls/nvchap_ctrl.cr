@@ -31,27 +31,20 @@ class CV::NvchapCtrl < CV::BaseCtrl
   end
 
   private def load_cvdata(nvseed : Nvseed, chinfo : ChInfo, cpart = 0, redo = false)
-    min_privi = nvseed.min_privi(chinfo.chidx, chinfo.stats.chars)
+    stats = chinfo.stats
+
+    min_privi = nvseed.min_privi(chinfo.chidx, stats.chars)
     return {"", ""} if min_privi > _cvuser.privi
 
     if proxy = chinfo.proxy
-      nvseed_id = Nvseed.load!(nvseed.nvinfo, proxy.sname).id
+      ukey = {proxy.sname, proxy.snvid, chinfo.chidx, cpart}.join(":")
     else
-      nvseed_id = nvseed.id
+      ukey = {nvseed.sname, nvseed.snvid, chinfo.chidx, cpart}.join(":")
     end
 
-    ukey = QtranData.nvchap_ukey(nvseed_id, chinfo.chidx, cpart)
-
-    if redo
-      chinfo.stats.parts.times do |idx|
-        QtranData.clear_cache("chaps", ukey.sub(cpart.to_s, idx.to_s), disk: true)
-      end
-    end
-
-    qtran = QtranData.load_cached(ukey, "chaps") do
-      fetch_mode = nvseed.seed_type < 3 ? 0 : (redo ? 2 : 1)
-      lines = nvseed.chtext(chinfo, cpart, mode: fetch_mode, uname: _cvuser.uname)
-      QtranData.nvchap(lines, nvseed.nvinfo, chinfo.stats, cpart)
+    if redo || !(qtran = QtranData::CACHE.get?(ukey, Time.unix(stats.utime) + 10.minutes))
+      qtran = QtranData.load_chap(nvseed, chinfo, cpart, redo: redo, uname: _cvuser.uname)
+      QtranData::CACHE.set(ukey, qtran)
     end
 
     if qtran.input.empty?

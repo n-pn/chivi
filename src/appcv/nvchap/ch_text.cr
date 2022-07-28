@@ -1,7 +1,6 @@
 require "file_utils"
 require "compress/zip"
 
-require "../../_util/ram_cache"
 require "../../_init/remote_text"
 
 require "./ch_info"
@@ -55,7 +54,7 @@ class CV::ChText
       return R2Client.download(@store.sub("var/chtexts", "texts"), @store)
     end
 
-    return false unless @sname.in?("hetushu", "zxcs_me", "jx_la")
+    return false unless @sname == "jx_la"
     remote_path = @store.sub(/^var/, "s3://chivi-bak")
 
     `aws s3 cp #{remote_path} #{@store}`

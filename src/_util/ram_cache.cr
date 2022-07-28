@@ -17,25 +17,19 @@ class CV::RamCache(K, V)
     @cache.has_key?(key)
   end
 
-  def get? : V | Nil
-    @cache[key]?
+  def get?(key : K, stale = Time.utc) : V | Nil
+    return unless entry = @cache[key]?
+    return entry.value if entry.stale >= stale
   end
 
   def get(key : K, stale = Time.utc) : V
-    if entry = @cache[key]?
-      return entry.value if entry.stale >= stale
-    end
-
-    @cache.clear if @cache.size >= @limit
-
-    value = yield
-    set(key, value)
-
-    value
+    get?(key, stale).try { |x| return x }
+    yield.tap { |x| set(key, x) }
   end
 
-  def set(key : K, value : V) : Entry(V)
-    @cache[key] = Entry(V).new(value, Time.utc + @ttl)
+  def set(key : K, value : V, utime = Time.utc) : Entry(V)
+    @cache.clear if @cache.size >= @limit
+    @cache[key] = Entry(V).new(value, utime + @ttl)
   end
 
   def delete(key : K)

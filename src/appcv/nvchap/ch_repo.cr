@@ -1,22 +1,17 @@
 require "../../mtlv1/mt_core"
 
+require "./ch_text"
+
 class CV::ChRepo
   DIR = "var/chtexts"
 
   # CACHE = RamCache(String, self).new(512, 3.hours)
 
-  # def self.load!(sname : String, snvid : String)
-  #   CACHE.get("#{sname}/#{snvid}") { new(sname, snvid) }
-  # end
+  REPOS = {} of String => ChRepo
 
-  # def self.load!(seed : Nvseed)
-  #   CACHE.get("#{seed.sname}/#{seed.snvid}") do
-  #     new(seed.sname, seed.snvid).tap do |x|
-  #       x.chmax = seed.chap_count
-  #       x.utime = seed.utime
-  #     end
-  #   end
-  # end
+  def self.load!(sname : String, snvid : String)
+    REPOS[sname + "/" + snvid] ||= new(sname, snvid)
+  end
 
   ###############
 
@@ -132,5 +127,50 @@ class CV::ChRepo
     end
 
     chaps
+  end
+
+  def chinfo(chidx : Int32)
+    self.chlist((chidx &- 1)//128).data[chidx]?
+  end
+
+  def chtext(chidx : Int32, cpart = 0, redo = false, uname = "")
+    unless chinfo = self.chinfo(chidx)
+      return [] of String
+    end
+
+    chtext(chinfo, cpart, redo, uname)
+  end
+
+  def chtext(chinfo : ChInfo, cpart = 0, redo = false, uname = "")
+    if proxy = chinfo.proxy
+      return chtext_from_mirror(chinfo, proxy, cpart, redo, uname)
+    end
+
+    chtext = ChText.new(sname, snvid, chinfo)
+    chdata = chtext.load!(cpart)
+
+    if @is_remote && (redo || chdata.lines.empty?)
+      chdata = chtext.fetch!(cpart, ttl: redo ? 1.minutes : 10.years)
+      chinfo.stats.uname = uname
+      self.patch!([chinfo])
+    elsif chinfo.stats.parts == 0
+      # check if text existed in zip file but not stored in index
+      chtext.remap!
+      self.patch!([chinfo])
+    end
+
+    chdata.lines
+  rescue
+    [] of String
+  end
+
+  def chtext_from_mirror(chinfo, proxy, cpart, redo, uname)
+    mirror_repo = ChRepo.load!(proxy.sname, proxy.snvid)
+    return [] of String unless mirror_info = mirror_repo.chinfo(proxy.chidx)
+
+    chtext = mirror_repo.chtext(mirror_info, cpart, redo, uname)
+    chinfo.stats = mirror_info.stats
+    patch!([chinfo])
+    chtext
   end
 end

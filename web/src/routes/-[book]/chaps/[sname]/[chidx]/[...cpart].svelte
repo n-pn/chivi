@@ -10,7 +10,7 @@
     const { sname, chidx, cpart: slug } = params
     const cpart = +slug.split('/')[1] || 1
 
-    const api_url = gen_api_url(nvinfo, sname, chidx, cpart - 1)
+    const api_url = gen_api_url(nvinfo, sname, chidx, cpart - 1, false)
     const api_res = await api.call(api_url)
     if (api_res.error) return api_res
 
@@ -82,7 +82,6 @@
 
   let _reloading = false
   async function reload_chap() {
-    if ($session.privi < 1) return
     _reloading = true
 
     const { sname, cpart } = chmeta
@@ -198,7 +197,7 @@
 
           <button
             class="gmenu-item umami--click--reload-rmtext"
-            disabled={$session.privi < 0}
+            disabled={$session.privi < 1}
             on:click={reload_chap}>
             <SIcon name="rotate-rectangle" spin={_reloading} />
             <span>Tải lại nguồn</span>

@@ -12,12 +12,20 @@ struct CV::ChmetaView
       jb.field "total", @seed.chap_count
 
       jb.field "cpart", @cpart
-      jb.field "clink", @seed.clink(@chap.schid)
+      jb.field "clink", chap_link
 
       jb.field "_curr", chap_url(@chap, @cpart)
       jb.field "_prev", prev_url
       jb.field "_next", next_url
     }
+  end
+
+  def chap_link
+    if proxy = @chap.proxy
+      SiteLink.text_url(proxy.sname, proxy.snvid, @chap.schid)
+    else
+      SiteLink.text_url(@seed.sname, @seed.snvid, @chap.schid)
+    end
   end
 
   def prev_url

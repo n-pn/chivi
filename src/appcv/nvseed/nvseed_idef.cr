@@ -52,8 +52,9 @@ class CV::Nvseed
   end
 
   getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }
-  getter _repo : ChRepo { ChRepo.new(self.sname, self.snvid) }
+  getter _repo : ChRepo { ChRepo.load!(self.sname, self.snvid) }
   delegate chlist, to: _repo
+  delegate chtext, to: _repo
 
   VI_PSIZE = 32
 
@@ -94,25 +95,5 @@ class CV::Nvseed
 
   def chinfo(index : Int32) : ChInfo?
     self.chpage(index // VI_PSIZE)[index % VI_PSIZE]?
-  end
-
-  def chtext(chinfo : ChInfo, cpart = 0, mode = 0, uname = "")
-    chtext = ChText.new(sname, snvid, chinfo)
-    chdata = chtext.load!(cpart)
-
-    if mode > 1 || (mode == 1 && chdata.lines.empty?)
-      # reset mode or text do not exist
-      chdata = chtext.fetch!(cpart, ttl: mode > 1 ? 1.minutes : 10.years)
-      chinfo.stats.uname = uname
-      self.patch_chaps!(chinfo)
-    elsif chinfo.stats.parts == 0
-      # check if text existed in zip file but not stored in index
-      chinfo.set_title!(chtext.remap!)
-      self.patch_chaps!(chinfo)
-    end
-
-    chdata.lines
-  rescue
-    [] of String
   end
 end

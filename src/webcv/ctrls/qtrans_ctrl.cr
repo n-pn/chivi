@@ -26,17 +26,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     type = params["type"]
     name = params["name"]
 
-    data = QtranData.load_cached(name, type) do
-      case type
-      when "chaps" then load_nvchap(name)
-      when "crits" then load_yscrit(name)
-      when "repls" then load_ysrepl(name)
-      when "notes" then load_qtnote(name)
-      when "posts" then raise NotFound.new("Địa chỉ không tồn tại")
-      else              raise BadRequest.new("Thể loại #{type} không được hỗ trợ")
-      end
-    end
-
+    data = QtranData.load!(type, name)
     return halt! 404, "Not found!" if data.input.empty?
 
     mode = QtranData::Format.parse(params.fetch_str("mode", "node"))
@@ -48,69 +38,22 @@ class CV::QtransCtrl < CV::BaseCtrl
     data.print_raw(response) if params["_raw"]?
   end
 
-  private def load_qtnote(name : String) : QtranData
-    file_path = "var/qtnotes/#{name}.txt"
-    raise NotFound.new("Tệp tin không tồn tại") unless File.exists?(file_path)
-    QtranData.new(File.read_lines(file_path), "combine", "Tổng hợp")
-  end
-
-  private def load_yscrit(name : String) : QtranData
-    crit_id = UkeyUtil.decode32(name)
-    unless yscrit = Yscrit.find({id: crit_id})
-      raise NotFound.new("Bình luận không tồn tại")
-    end
-
-    nvinfo = yscrit.nvinfo
-    QtranData.new(parse_lines(yscrit.ztext), nvinfo.dname, nvinfo.vname)
-  end
-
-  private def load_ysrepl(name : String) : QtranData
-    repl_id = UkeyUtil.decode32(name)
-    unless ysrepl = Ysrepl.find({id: repl_id})
-      raise NotFound.new("Phản hồi không tồn tại")
-    end
-
-    nvinfo = ysrepl.yscrit.nvinfo
-    QtranData.new(parse_lines(ysrepl.ztext), nvinfo.dname, nvinfo.vname)
-  end
-
-  private def load_nvchap(name : String) : QtranData
-    nvseed_id, chidx, cpart = QtranData.nvchap_ukey_decode(name)
-
-    unless nvseed = Nvseed.find({id: nvseed_id})
-      raise NotFound.new("Nguồn truyện không tồn tại")
-    end
-
-    unless chinfo = nvseed.chinfo(chidx - 1)
-      raise NotFound.new("Chương tiết không tồn tại")
-    end
-
-    chtext = ChText.new(nvseed.sname, nvseed.snvid, chinfo)
-    chdata = chtext.load!(cpart)
-    QtranData.nvchap(chdata.lines, nvseed.nvinfo, chinfo.stats, cpart)
-  end
-
   def posts_upsert
     # TODO: save posts
     input = params.fetch_str("input")
     raise BadRequest.new("Dữ liệu quá lớn") if input.size > 10000
 
-    lines = parse_lines(input)
+    lines = QtranData.parse_lines(input)
     dname = params.fetch_str("dname", "combine")
     d_lbl = QtranData.get_d_lbl(dname)
 
     data = QtranData.new(lines, dname, d_lbl)
-    ukey = params["ukey"]? || QtranData.qtpost_ukey
+    ukey = params["ukey"]? || QtranData.post_ukey
 
-    data.save!(QtranData.path(ukey, "posts"))
-    QtranData::CACHE["posts"].set(ukey, data)
+    data.save!(ukey)
+    QtranData::CACHE.set("posts/" + ukey, data)
 
     serv_json({ukey: ukey})
-  end
-
-  private def parse_lines(ztext : String) : Array(String)
-    ztext = ztext.gsub("\t", "  ")
-    TextUtil.split_text(ztext, spaces_as_newline: false)
   end
 
   def webpage

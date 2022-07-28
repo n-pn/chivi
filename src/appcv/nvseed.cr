@@ -65,10 +65,6 @@ class CV::Nvseed
     end
   end
 
-  def clink(schid : String) : String
-    SiteLink.text_url(sname, snvid, schid)
-  end
-
   # ------------------------
 
   def refresh!(mode : Int32 = 1) : Nil

@@ -40,8 +40,6 @@ class CV::ChtextCtrl < CV::BaseCtrl
     last_chidx, last_schid = message.split('\t')
     last_chidx = last_chidx.to_i
 
-    spawn clear_cache(nvseed, from_chidx, last_chidx)
-
     spawn do
       trunc = params["trunc_after"]? == "true"
       update_nvseed(nvseed, last_chidx, last_schid, trunc: trunc)
@@ -91,14 +89,6 @@ class CV::ChtextCtrl < CV::BaseCtrl
     else
       target.patch_chaps!(infos, nvseed.utime, save: true)
     end
-  end
-
-  private def clear_cache(nvseed, from_chidx : Int32, upto_chidx : Int32)
-    # TODO: pinpoint clear cache
-    QtranData.clear_cache("chaps", disk: true)
-    spawn HTTP::Client.delete("localhost:5502/_v2/purge/chaps")
-  rescue err
-    puts err
   end
 
   # -ameba:disable Metrics/CyclomaticComplexity
