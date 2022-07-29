@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
   const prios = [
-    ['v', 'a', 'Thấp', 'Không được ưu tiên khi phân tách câu văn'],
-    ['', 's', 'Bình', 'Độ ưu tiên trung bình, giá trị mặc định'],
     ['^', 'd', 'Cao', 'Được ưu tiên cao khi phân tách câu văn'],
+    ['', 's', 'Bình', 'Độ ưu tiên trung bình, giá trị mặc định'],
+    ['v', 'a', 'Thấp', 'Không được ưu tiên khi phân tách câu văn'],
     ['x', 'f', 'Ẩn', 'Không dùng cụm từ khi phân tách câu văn'],
   ]
 </script>

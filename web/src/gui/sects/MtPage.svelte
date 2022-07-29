@@ -40,7 +40,12 @@
     const [cvdata, stats = '', rawtxt] = input.split('\n$\t$\t$\n')
 
     mtdata = MtData.parse_lines(cvdata)
-    zhtext = rawtxt ? rawtxt.split('\n') : cached ? zhtext : []
+    if (rawtxt) {
+      cached = true
+      zhtext = rawtxt.split('\n')
+    } else if (!cached) {
+      zhtext = []
+    }
 
     const [dname, d_dub, chars = '', tspan = '', dsize = ''] = stats.split('\t')
     if (dname) vdict.put(dname, d_dub)
