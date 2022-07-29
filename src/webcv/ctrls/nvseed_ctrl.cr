@@ -6,7 +6,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   def show
     nvseed = load_nvseed
-    mode = params.fetch_int("mode", 0)
+    mode = params.read_i8("mode", 0_i8)
 
     if mode > 0 && can_refresh?(nvseed)
       nvseed.refresh!(mode: mode)
@@ -26,8 +26,8 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   def chaps
     nvseed = load_nvseed
-    pgidx = params.fetch_int("page", min: 1)
-    chaps = nvseed.chpage(pgidx - 1)
+    pgidx = params.read_i16("page", min: 1_i16)
+    chaps = nvseed.chpage(pgidx &- 1)
 
     serv_json({
       pgidx: pgidx,
@@ -78,10 +78,10 @@ class CV::NvseedCtrl < CV::BaseCtrl
     nvseed = load_guarded_nvseed(min_privi: 1)
     target = Nvseed.load!(nvseed.nvinfo, params["o_sname"])
 
-    chmin = params.fetch_int("chmin", min: 1)
-    chmax = params.fetch_int("chmax", min: chmin, max: target.chap_count)
+    chmin = params.read_i16("chmin", min: 1_i16)
+    chmax = params.read_i16("chmax", min: chmin, max: target.chap_count.to_i16)
 
-    i_chmin = params.fetch_int("i_chmin")
+    i_chmin = params.read_i16("i_chmin", min: 1_i16)
     offset = i_chmin &- chmin
 
     nvseed.clone_range!(target, chmin, chmax, offset)
@@ -92,7 +92,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   def trunc
     nvseed = load_guarded_nvseed(min_privi: 2)
-    trunc_chidx = params.fetch_int("chidx", min: 1, max: nvseed.chap_count)
+    trunc_chidx = params.read_i16("chidx", min: 1_i16, max: nvseed.chap_count.to_i16)
 
     if chinfo = nvseed.chinfo(trunc_chidx &- 2)
       last_sname = chinfo.proxy.try(&.sname) || ""

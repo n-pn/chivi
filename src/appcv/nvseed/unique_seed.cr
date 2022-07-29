@@ -5,8 +5,8 @@
 class CV::Nvseed
   # auto generate `=base` seed
 
-  def autogen_base!(seeds = self.nvinfo.seed_list.other, mode : Int32 = 0) : Nil
-    chmin = 0
+  def autogen_base!(seeds = self.nvinfo.seed_list.other, mode : Int8 = 0) : Nil
+    chmin = 0_i16
 
     seeds.first(5).each_with_index(1) do |other, idx|
       if mode > 0 && other.remote?(force: mode > 1)
@@ -23,10 +23,10 @@ class CV::Nvseed
   end
 
   # clone remote seed, return chmax
-  def clone_remote!(remote : self, chmin = self.chap_count) : Int32
+  def clone_remote!(remote : self, chmin : Int16 = self.chap_count.to_i16) : Int16
     return chmin if remote.chap_count == 0
 
-    if chmin == 0 || !(last_chap = self.chinfo(chmin - 1))
+    if chmin == 0 || !(last_chap = self.chinfo(chmin.to_i16 &- 1))
       return self.clone_range!(remote, chmin: chmin)
     end
 

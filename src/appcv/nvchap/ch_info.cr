@@ -3,17 +3,17 @@ require "../../_util/text_util"
 class CV::ChInfo
   class Stats
     property utime : Int64
-    property chars : Int32
-    property parts : Int32
+    property chars : Int16
+    property parts : Int16
     property uname : String
 
-    def initialize(@utime = 0_i64, @chars = 0, @parts = 0, @uname = "")
+    def initialize(@utime = 0_i64, @chars = 0_i16, @parts = 0_i16, @uname = "")
     end
 
     def initialize(utime : String, chars : String, parts : String, @uname = "")
       @utime = utime.to_i64? || 0_i64
-      @chars = chars.to_i? || 0
-      @parts = parts.to_i? || 0
+      @chars = chars.to_i16? || 0_i16
+      @parts = parts.to_i16? || 0_i16
     end
 
     def to_s(io : IO)
@@ -22,7 +22,7 @@ class CV::ChInfo
     end
   end
 
-  record Proxy, sname : String, snvid : String, chidx : Int32 do
+  record Proxy, sname : String, snvid : String, chidx : Int16 do
     def to_s(io : IO)
       io << '\t' << @sname << '\t' << @snvid << '\t' << @chidx
     end
@@ -44,7 +44,7 @@ class CV::ChInfo
     end
   end
 
-  property chidx : Int32
+  property chidx : Int16
   property schid : String
 
   property title = ""
@@ -55,7 +55,7 @@ class CV::ChInfo
   property trans = Trans.new("-", "-")
 
   def initialize(argv : Array(String))
-    @chidx = argv[0].to_i
+    @chidx = argv[0].to_i16
     @schid = argv[1]
 
     return if argv.size < 4
@@ -66,7 +66,7 @@ class CV::ChInfo
     @stats = Stats.new(argv[4], argv[5], argv[6], argv[7]? || "")
 
     return if argv.size < 10
-    @proxy = Proxy.new(argv[8], argv[9], argv[10]?.try(&.to_i?) || @chidx)
+    @proxy = Proxy.new(argv[8], argv[9], argv[10]?.try(&.to_i16?) || @chidx)
   end
 
   def initialize(@chidx, @schid = chidx.to_s)

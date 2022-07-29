@@ -5,7 +5,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     raise Unauthorized.new("Quyền hạn không đủ!") if _cvuser.privi < 1
 
     nvseed = load_nvseed
-    chidx = params.fetch_int("chidx", min: 1)
+    chidx = params.read_i16("chidx", min: 1_i16)
 
     unless chinfo = nvseed.chinfo(chidx - 1)
       raise NotFound.new("Chương tiết không tồn tại")
@@ -38,7 +38,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     raise BadRequest.new(message) unless success
 
     last_chidx, last_schid = message.split('\t')
-    last_chidx = last_chidx.to_i
+    last_chidx = last_chidx.to_i16
 
     spawn do
       trunc = params["trunc_after"]? == "true"
@@ -80,7 +80,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     nvseed.save!
   end
 
-  private def sync_changes(nvseed : Nvseed, chmin : Int32, chmax : Int32, target = Nvseed?)
+  private def sync_changes(nvseed : Nvseed, chmin : Int16, chmax : Int16, target = Nvseed?)
     infos = nvseed._repo.clone!(chmin, chmax)
 
     if !target || target.sname[0]? == '@'
@@ -92,12 +92,12 @@ class CV::ChtextCtrl < CV::BaseCtrl
   end
 
   # -ameba:disable Metrics/CyclomaticComplexity
-  private def invoke_splitter(nvseed : Nvseed, file_path : String) : {Bool, Int32, String}
+  private def invoke_splitter(nvseed : Nvseed, file_path : String) : {Bool, Int16, String}
     args = ["-i", file_path]
     args << "-u" << _cvuser.uname
     params["chvol"]?.try { |x| args << "-v" << x.strip }
 
-    from_chidx = params.fetch_int("chidx", min: 1)
+    from_chidx = params.read_i16("chidx", min: 1_i16)
     args << "-f" << from_chidx.to_s
 
     args << "--tosimp" if params["tosimp"]? == "true"

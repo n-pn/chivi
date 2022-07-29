@@ -71,13 +71,13 @@ class CV::BdLacInvoke
     end
   end
 
-  def calc_max_size(chap_count : Int32)
+  def calc_max_size(chap_count : Int16)
     return chap_count if chap_count < 256
     return 384 if chap_count > 768
     chap_count < 512 ? 256 : chap_count // 2
   end
 
-  def should_parse?(chidx : Int32)
+  def should_parse?(chidx : Int16)
     return true if chidx <= 128
     chidx % (chidx // 128 &+ 1) == 0
   end

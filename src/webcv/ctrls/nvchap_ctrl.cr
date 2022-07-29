@@ -3,8 +3,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
     nvseed = load_nvseed
     nvinfo = nvseed.nvinfo
 
-    chidx = params.fetch_int("chidx")
-    cpart = params.fetch_int("cpart", min: 0)
+    chidx = params.read_i16("chidx", min: 1_i16)
+    cpart = params.read_i16("cpart")
 
     unless chinfo = nvseed.chinfo(chidx - 1)
       raise NotFound.new("Chương tiết không tồn tại")
@@ -30,7 +30,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  private def load_cvdata(nvseed : Nvseed, chinfo : ChInfo, cpart = 0, redo = false)
+  private def load_cvdata(nvseed : Nvseed, chinfo : ChInfo, cpart = 0_i16, redo = false)
     stats = chinfo.stats
 
     min_privi = nvseed.min_privi(chinfo.chidx, stats.chars)

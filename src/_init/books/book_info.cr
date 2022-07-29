@@ -26,6 +26,10 @@ class BookInfo
       def {{name.var.id}}=(value : Array(String))
         @{{name.var.id}} = value[0]
       end
+    {% elsif name.type.stringify == "Int16" %}
+      def {{name.var.id}}=(value : Array(String))
+        @{{name.var.id}} = value[0].to_i16
+      end
     {% elsif name.type.stringify == "Int32" %}
       def {{name.var.id}}=(value : Array(String))
         @{{name.var.id}} = value[0].to_i
@@ -47,7 +51,7 @@ class BookInfo
   property status : Int32 = 0
   property mftime : Int64 = 0_i64
 
-  property last_chidx : Int32 = 0
+  property last_chidx : Int16 = 0
   property last_schid : String = ""
 
   def initialize(@file, reset = false)

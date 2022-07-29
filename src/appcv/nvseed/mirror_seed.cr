@@ -3,7 +3,8 @@
 # from other sources
 
 class CV::Nvseed
-  def clone_range!(other : self, chmin = 1, chmax = other.chap_count, offset = 0) : Int32
+  def clone_range!(other : self, chmin : Int16 = 1_i16,
+                   chmax : Int16 = other.chap_count.to_i16, offset = 0_i16) : Int16
     return chmin if other.chap_count < chmin
 
     infos = other.clone_chaps(chmin, chmax, offset: offset)
@@ -16,8 +17,8 @@ class CV::Nvseed
   # proxy seeds like =base, =user, @username can have blank chapters
   getter can_have_gaps : Bool { sname[0].in?('@', '=') || sname == "users" }
 
-  def clone_chaps(chmin = 1, chmax = self.chap_count, offset = 0)
-    infos = _repo.clone!(chmin, chmax, offset: offset)
+  def clone_chaps(chmin = 1_i16, chmax = self.chap_count.to_i16, offset = 0_i16)
+    infos = _repo.clone!(chmin.to_i16, chmax.to_i16, offset: offset.to_i16)
     infos.reject!(&.title.empty?) if can_have_gaps
     infos
   end
@@ -56,7 +57,7 @@ class CV::Nvseed
   end
 
   def refresh_mirror!(upstream : Nvseed, force : Bool = false) : Nil
-    return unless last_chap = self.chinfo(self.chap_count &- 1)
+    return unless last_chap = self.chinfo(self.chap_count.to_i16 &- 1)
     return unless proxy = last_chap.proxy
 
     offset = last_chap.chidx &- proxy.chidx

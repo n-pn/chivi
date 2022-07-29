@@ -25,7 +25,7 @@ class CV::Nvseed
     end
 
     self.set_mftime(mftime)
-    self.set_status(parser.status_int)
+    self.set_status(parser.status_int.to_i)
     self.set_latest(chinfos.last, force: true)
 
     self.save!
@@ -33,7 +33,7 @@ class CV::Nvseed
     puts err.inspect_with_backtrace
   end
 
-  def update_remote!(mode : Int32) : Nil
+  def update_remote!(mode : Int8) : Nil
     self.reset_cache!(raws: true)
     self.refresh_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
 

@@ -39,7 +39,7 @@ class CV::Nvseed
 
   ############
 
-  def get_chvol(chidx : Int32, limit = 4)
+  def get_chvol(chidx : Int16, limit : Int16 = 4)
     chmin = chidx - limit
     chmin = 1 if chmin > 1
 
@@ -58,19 +58,19 @@ class CV::Nvseed
 
   VI_PSIZE = 32
 
-  @vpages = Hash(Int32, Array(ChInfo)).new
+  @vpages = Hash(Int16, Array(ChInfo)).new
 
-  def reset_cache!(chmin = 1, chmax = self.chap_count, raws : Bool = true)
+  def reset_cache!(chmin = 1_i16, chmax = self.chap_count, raws : Bool = true)
     @lastpg = nil
     @vpages.clear
     @_repo.try(&.zpages.clear) if raws
   end
 
-  def pg_vi(chidx : Int32)
+  def pg_vi(chidx : Int16)
     (chidx &- 1) // VI_PSIZE
   end
 
-  def chpage(vi_pg : Int32)
+  def chpage(vi_pg : Int16)
     @vpages[vi_pg] ||= begin
       chmin = vi_pg * VI_PSIZE + 1
       chmax = chmin + VI_PSIZE - 1
@@ -82,8 +82,8 @@ class CV::Nvseed
   end
 
   getter lastpg : Array(ChInfo) do
-    chmax = self.chap_count - 1
-    chmin = chmax > 3 ? chmax - 3 : 0
+    chmax = self.chap_count.to_i16 &- 1
+    chmin = chmax > 3 ? chmax &- 3 : 0_i16
 
     output = [] of ChInfo
     chmax.downto(chmin) do |index|
@@ -93,7 +93,7 @@ class CV::Nvseed
     output
   end
 
-  def chinfo(index : Int32) : ChInfo?
+  def chinfo(index : Int16) : ChInfo?
     self.chpage(index // VI_PSIZE)[index % VI_PSIZE]?
   end
 end

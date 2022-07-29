@@ -34,8 +34,8 @@ class CV::UbmemoCtrl < CV::BaseCtrl
 
     ubmemo.mark!(
       params.fetch_str("sname"),
-      params.fetch_int("chidx"),
-      params.fetch_int("cpart"),
+      params.read_i16("chidx", min: 1_i16),
+      params.read_i16("cpart"),
       params.fetch_str("title"),
       params.fetch_str("uslug"),
       params["locked"]? == "true" ? 1 : 0

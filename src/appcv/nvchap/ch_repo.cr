@@ -42,15 +42,15 @@ class CV::ChRepo
     Dir.mkdir_p("var/chaps/.html/#{@sname}/#{@snvid}")
   end
 
-  ZH_PSIZE = 128
+  ZH_PSIZE = 128_i16
 
-  def map_pg(chidx : Int32)
+  def map_pg(chidx : Int16) : Int16
     (chidx &- 1) // ZH_PSIZE
   end
 
-  getter zpages = {} of Int32 => ChList
+  getter zpages = {} of Int16 => ChList
 
-  def reset_cache!(chmin = 1, chmax = 8096)
+  def reset_cache!(chmin = 1_16, chmax = 8096_i16)
     return if @zpages.empty?
 
     pgmin = map_pg(chmin)
@@ -58,7 +58,7 @@ class CV::ChRepo
     (pgmin..pgmax).each { |x| @zpages.delete(x) }
   end
 
-  def chlist(pg_zh : Int32)
+  def chlist(pg_zh : Int16)
     @zpages[pg_zh] ||= ChList.new("#{@chdir}/#{pg_zh}.tsv")
   end
 
@@ -85,7 +85,7 @@ class CV::ChRepo
     return if infos.empty?
     spawn { ChList.save!(@fseed, infos, mode: "w") }
 
-    pgmax = self.map_pg(infos.size)
+    pgmax = self.map_pg(infos.size.to_i16)
     pgmax.downto(0).each do |pgidx|
       chlist = self.chlist(pgidx)
       update = false
@@ -110,7 +110,7 @@ class CV::ChRepo
     end
   end
 
-  def clone!(chmin : Int32, chmax : Int32, offset = 0) : Array(ChInfo)
+  def clone!(chmin : Int16, chmax : Int16, offset = 0_i16) : Array(ChInfo)
     pgmin = map_pg(chmin)
     pgmax = map_pg(chmax)
 
@@ -129,11 +129,11 @@ class CV::ChRepo
     chaps
   end
 
-  def chinfo(chidx : Int32)
+  def chinfo(chidx : Int16)
     self.chlist((chidx &- 1)//128).data[chidx]?
   end
 
-  def chtext(chidx : Int32, cpart = 0, redo = false, uname = "")
+  def chtext(chidx : Int16, cpart = 0_i16, redo = false, uname = "")
     unless chinfo = self.chinfo(chidx)
       return [] of String
     end
@@ -141,7 +141,7 @@ class CV::ChRepo
     chtext(chinfo, cpart, redo, uname)
   end
 
-  def chtext(chinfo : ChInfo, cpart = 0, redo = false, uname = "")
+  def chtext(chinfo : ChInfo, cpart = 0_i16, redo = false, uname = "")
     if proxy = chinfo.proxy
       return chtext_from_mirror(chinfo, proxy, cpart, redo, uname)
     end

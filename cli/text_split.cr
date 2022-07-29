@@ -60,7 +60,7 @@ class Splitter
 
   property uname = ""
   property chvol = ""
-  property chidx = 1
+  property chidx = 1_i16
 
   getter lines = [] of String
   getter infos = [] of CV::ChInfo

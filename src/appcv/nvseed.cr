@@ -67,7 +67,7 @@ class CV::Nvseed
 
   # ------------------------
 
-  def refresh!(mode : Int32 = 1) : Nil
+  def refresh!(mode : Int8 = 1_i8) : Nil
     self.stime = Time.utc.to_unix
 
     case sname

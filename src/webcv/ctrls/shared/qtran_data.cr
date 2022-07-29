@@ -17,7 +17,7 @@ class CV::QtranData
   end
 
   def self.reload!(type : String, ukey : String)
-    puts "reload: #{type}/#{ukey}"
+    # puts "reload: #{type}/#{ukey}"
 
     case type
     when "posts" then load_file(File.join(DIR, ukey + ".txt"))
@@ -61,19 +61,19 @@ class CV::QtranData
       raise NotFound.new("Nguồn truyện không tồn tại")
     end
 
-    unless chinfo = nvseed.chinfo(chidx.to_i - 1)
+    unless chinfo = nvseed.chinfo(chidx.to_i16 - 1)
       raise NotFound.new("Chương tiết không tồn tại")
     end
 
-    load_chap(nvseed, chinfo, cpart.to_i, redo, uname)
+    load_chap(nvseed, chinfo, cpart.to_i16, redo, uname)
   end
 
-  def self.load_chap(nvseed : Nvseed, chinfo : ChInfo, cpart = 0, redo = false, uname = "")
+  def self.load_chap(nvseed : Nvseed, chinfo : ChInfo, cpart = 0_i16, redo = false, uname = "")
     lines = nvseed.chtext(chinfo, cpart, redo: redo, uname: uname)
     stats = chinfo.stats
 
     parts = stats.parts
-    label = parts > 1 ? " [#{cpart + 1}/#{parts}]" : ""
+    label = parts > 1 ? " [#{cpart &+ 1}/#{parts}]" : ""
 
     nvinfo = nvseed.nvinfo
     new(lines, nvinfo.dname, nvinfo.vname, label: label)

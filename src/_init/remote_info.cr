@@ -2,9 +2,8 @@ require "../_util/http_util"
 require "../_util/site_link"
 require "../_util/time_util"
 
-require "./shared/html_parser"
-require "../appcv/nvchap/ch_info"
 require "../appcv/shared/sname_map"
+require "./remote_mulu"
 
 class CV::RemoteInfo
   DIR = "var/books/.html"
@@ -43,7 +42,11 @@ class CV::RemoteInfo
     HtmlParser.new("")
   end
 
-  getter mulu : HtmlParser do
+  getter mulu : RemoteMulu do
+    RemoteMulu.new(load_mulu_parser, @sname)
+  end
+
+  private def load_mulu_parser
     return info unless @sname.in?("69shu", "ptwxz")
     html = HttpUtil.cache(mulu_file, mulu_link, @ttl, @lbl, @encoding)
     HtmlParser.new(html)
@@ -170,16 +173,16 @@ class CV::RemoteInfo
     end
   end
 
-  getter status_int : Int32 do
+  getter status_int : Int8 do
     case status_str
     when "暂停", "暂 停", "暂　停"
-      2
+      2_i8
     when "完成", "完本", "已经完结", "已经完本",
          "完结", "已完结", "此书已完成", "已完本", "全本",
          "完结申请", "已完成", "1"
-      1
+      1_i8
     else
-      0
+      0_i8
     end
   end
 
@@ -215,17 +218,6 @@ class CV::RemoteInfo
     0_i64
   end
 
-  getter last_schid : String { extract_schid(last_schid_href) }
-
-  def extract_schid(href : String)
-    case @sname
-    when "zhwenpg" then href.sub("r.php?id=", "")
-    when "69shu"   then File.basename(href)
-    when "kanshu8" then File.basename(href, ".html").sub("read_", "")
-    else                File.basename(href, ".html")
-    end
-  end
-
   def last_schid_href : String
     case @sname
     when "ptwxz"
@@ -247,105 +239,6 @@ class CV::RemoteInfo
     end
   end
 
-  getter chap_infos : Array(ChInfo) do
-    case @sname
-    when "ptwxz"    then extract_chapters_plain(".centent li > a")
-    when "69shu"    then extract_chapters_plain("#catalog li > a")
-    when "uukanshu" then extract_chapters_uukanshu
-    when "uuks"     then extract_chapters_plain(".box_con li > a")
-    when "yannuozw"
-      extract_chapters_plain(".booklist .book > a")
-    when "5200"    then extract_chapters_chvol(".listmain > dl")
-    when "hetushu" then extract_chapters_chvol("#dir")
-    when "kanshu8"
-      extract_chapters_plain(".pt-chapter-cont-detail.full > a")
-    when "133txt"
-      extract_chapters_chvol(".box_con:last-of-type > div:last-of-type > dl")
-    when "zhwenpg"
-      chaps = extract_chapters_plain(".clistitem > a")
-
-      # reverse the list if chap list is reversed
-      if chaps.first.schid == last_schid
-        chaps.reverse!
-        chaps.each_with_index(1) { |chinfo, chidx| chinfo.chidx = chidx }
-      end
-
-      chaps
-    when "duokan8"
-      extract_chapters_plain(".chapter-list a")
-    else
-      extract_chapters_chvol("#list > dl")
-    end
-  end
-
-  def clean_chvol(chvol : String)
-    chvol.gsub(/《.*》/, "").gsub(/\n|\t|\s{3,}/, "  ").strip
-  end
-
-  def extract_chapters_chvol(selector : String)
-    chaps = [] of ChInfo
-    return chaps unless body = mulu.find(selector)
-
-    chvol = ""
-    body.children.each do |node|
-      case node.tag_sym
-      when :dt
-        inner = node.css("b").first? || node
-        chvol = clean_chvol(inner.inner_text)
-
-        next unless link = node.css("a").first?
-        next unless href = link.attributes["href"]?
-
-        chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text, chvol)
-        chaps << chap unless chap.invalid?
-      when :dd
-        next if chvol.includes?("最新章节")
-        next unless link = node.css("a").first?
-        next unless href = link.attributes["href"]?
-
-        chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text, chvol)
-        chaps << chap unless chap.invalid?
-      end
-    rescue err
-      puts err.colorize.red
-    end
-
-    chaps
-  end
-
-  def extract_chapters_plain(selector : String)
-    chaps = [] of ChInfo
-
-    mulu.css(selector).each do |link|
-      href = link.attributes["href"]
-      chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text)
-      chaps << chap unless chap.invalid?
-    rescue err
-      puts err.colorize.red
-    end
-
-    chaps
-  end
-
-  def extract_chapters_uukanshu(selector = "#chapterList")
-    chaps = [] of ChInfo
-    return chaps unless body = mulu.find(selector)
-
-    chvol = ""
-    body.children.to_a.reverse_each do |node|
-      if node.attributes["class"]? == "volume"
-        chvol = node.inner_text.strip
-      else
-        next unless link = node.css("a").first?
-        next unless href = link.attributes["href"]?
-
-        chap = ChInfo.new(chaps.size + 1, extract_schid(href), link.inner_text, chvol)
-        chaps << chap unless chap.invalid?
-      end
-    rescue err
-      puts err.colorize.red
-    end
-
-    chaps
-  end
+  getter last_schid : String { mulu.extract_schid(last_schid_href) }
+  getter chap_infos : Array(ChInfo) { mulu.tap(&.extract_chaps!).chaps }
 end

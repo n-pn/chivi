@@ -56,12 +56,12 @@ class CV::QtranData
     CV::UkeyUtil.encode32(Time.local.to_unix_ms &+ @@counter)
   end
 
-  def self.nvchap_ukey(seed_id : Int64, chidx : Int32) : String
+  def self.nvchap_ukey(seed_id : Int64, chidx : Int16) : String
     number = chidx.to_i64.unsafe_shl(21) | seed_id
     CV::UkeyUtil.encode32(number)
   end
 
-  def self.nvchap_ukey(seed_id : Int64, chidx : Int32, cpart : Int32) : String
+  def self.nvchap_ukey(seed_id : Int64, chidx : Int16, cpart : Int16) : String
     "#{nvchap_ukey(seed_id, chidx)}-#{cpart}"
   end
 

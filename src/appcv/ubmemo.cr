@@ -15,9 +15,9 @@ class CV::Ubmemo
   column utime : Int64 = 0_i64 # update when new reading history saved
 
   column lr_sname : String = ""
-  column lr_zseed : Int32 = 0
-  column lr_chidx : Int32 = 0
-  column lr_cpart : Int32 = 0
+  # column lr_zseed : Int32 = 0
+  column lr_chidx : Int16 = 0_i16
+  column lr_cpart : Int16 = 0_i16
 
   column lc_title : String = ""
   column lc_uslug : String = ""
@@ -36,7 +36,7 @@ class CV::Ubmemo
     @status_s = nil
   end
 
-  def mark!(sname : String, chidx : Int32, cpart = 0,
+  def mark!(sname : String, chidx : Int16, cpart : Int16 = 0_i16,
             title = "", uslug = "", tolock = -1)
     if tolock >= 0
       self.locked = tolock > 0
@@ -56,7 +56,7 @@ class CV::Ubmemo
     self.save!
   end
 
-  def mark_chap!(chinfo : ChInfo, sname : String, cpart = 0)
+  def mark_chap!(chinfo : ChInfo, sname : String, cpart : Int16 = 0_i16)
     mark!(sname, chinfo.chidx, cpart, chinfo.trans.title, chinfo.trans.uslug)
   end
 

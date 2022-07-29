@@ -43,7 +43,7 @@
     _refresh = true
     _error = ''
 
-    $page.stuff.api.uncache('nvbooks', nvinfo.bslug)
+    $page.stuff.api.uncache('nvinfos', nvinfo.bslug)
     $page.stuff.api.uncache('nslists', nvinfo.id)
 
     const res = await $page.stuff.api.nvseed(nvinfo.id, nvseed.sname, 1)

@@ -3,7 +3,7 @@ require "./_base_view"
 struct CV::ChmetaView
   include BaseView
 
-  def initialize(@seed : Nvseed, @chap : ChInfo, @cpart = 0, @full = false)
+  def initialize(@seed : Nvseed, @chap : ChInfo, @cpart = 0_i16, @full = false)
   end
 
   def to_json(jb : JSON::Builder)
@@ -29,13 +29,13 @@ struct CV::ChmetaView
   end
 
   def prev_url
-    return chap_url(@chap, @cpart - 1) if @cpart > 0
+    return chap_url(@chap, @cpart &- 1) if @cpart > 0
     return if @chap.chidx == 1
     @seed.chinfo(@chap.chidx - 2).try { |prev| chap_url(prev, -1) }
   end
 
   def next_url
-    return chap_url(@chap, @cpart + 1) if @cpart < @chap.stats.parts - 1
+    return chap_url(@chap, @cpart &+ 1) if @cpart < @chap.stats.parts - 1
     return if @chap.chidx == @seed.chap_count
     @seed.chinfo(@chap.chidx).try { |succ| chap_url(succ, 0) }
   end

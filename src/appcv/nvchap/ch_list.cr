@@ -1,7 +1,7 @@
 require "./ch_info"
 
 class CV::ChList
-  getter data = Hash(Int32, ChInfo).new(initial_capacity: 128)
+  getter data = Hash(Int16, ChInfo).new(initial_capacity: 128)
 
   # forward_missing_to @data
 
@@ -22,7 +22,7 @@ class CV::ChList
     @data.values.sort_by!(&.chidx)
   end
 
-  def get(chidx : Int32)
+  def get(chidx : Int16)
     @data[chidx]? || ChInfo.new(chidx)
   end
 

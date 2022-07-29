@@ -6,7 +6,7 @@ module CV
   class ChTran2
     include Crorm::Model
 
-    column chidx : Int32
+    column chidx : Int16
 
     column title_cv : String = ""
     column chvol_cv : String = ""
@@ -29,7 +29,7 @@ module CV
   class ChInfo2
     include Crorm::Model
 
-    column chidx : Int32
+    column chidx : Int16
     column schid : String
 
     column title : String = ""
@@ -39,21 +39,21 @@ module CV
     column uname : String = ""
 
     # column ctime : Int64 = 0
-    # column privi : Int32 = 0
+    # column privi : Int16 = 0
 
     column w_count : Int32 = 0
-    column p_count : Int32 = 0
+    column p_count : Int16 = 0
 
     column o_sname : String = ""
     column o_snvid : String = ""
-    column o_chidx : Int32 = 0
+    column o_chidx : Int16 = 0
 
-    def initialize(chidx : Int32, schid : String = chidx.to_s)
+    def initialize(chidx : Int16, schid : String = chidx.to_s)
       self.chidx = chidx
       self.schid = schid
     end
 
-    def initialize(chidx : Int32, schid : String, title : String, chvol : String = "")
+    def initialize(chidx : Int16, schid : String, title : String, chvol : String = "")
       self.chidx = chidx
       self.schid = schid
       set_title!(title, chvol)
@@ -63,7 +63,7 @@ module CV
       self.title, self.chvol = TextUtil.format_title(title, chvol)
     end
 
-    def as_mirror!(sname : String, snvid : String, offset = 0)
+    def as_mirror!(sname : String, snvid : String, offset = 0_i16)
       if self.o_sname.empty?
         self.o_sname = sname
         self.o_snvid = snvid
@@ -74,21 +74,21 @@ module CV
     end
 
     def parse_seeds(rows : Array(String))
-      self.chidx = rows[0].to_i
+      self.chidx = rows[0].to_i16
       self.schid = rows[1]
       self.title = rows[2]
       self.chvol = rows[3]
     end
 
     def parse_stats(rows : Array(String))
-      self.chidx = rows[0].to_i
+      self.chidx = rows[0].to_i16
       self.schid = rows[1]
 
       self.utime = rows[2].to_i64
       self.uname = rows[3]
 
-      self.w_count = rows[4].to_i
-      self.p_count = rows[4].to_i
+      self.w_count = rows[4].to_i32
+      self.p_count = rows[4].to_i16
     end
 
     def parse_origs(rows : Array(String))
@@ -97,7 +97,7 @@ module CV
 
       self.o_sname = rows[2]
       self.o_snvid = rows[3]
-      self.o_chidx = rows[4].to_i
+      self.o_chidx = rows[4].to_i16
     end
 
     def print_seeds(io : IO = STDOUT)

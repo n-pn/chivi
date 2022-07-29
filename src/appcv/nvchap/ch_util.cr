@@ -3,19 +3,19 @@ module CV::ChUtil
 
   LIMIT = 3000
 
-  def split_parts(lines : Array(String)) : {Int32, Array(String)}
+  def split_parts(lines : Array(String)) : {Int16, Array(String)}
     sizes = lines.map(&.size)
-    chars = sizes.sum
+    chars = sizes.sum.to_i16
 
     return {chars, [lines.join('\n')]} if chars <= LIMIT * 1.5
 
-    parts = (chars / LIMIT).round.to_i
+    parts = (chars / LIMIT).round.to_i8
     limit = chars // parts
 
     title = lines[0]
     strio = String::Builder.new(title)
 
-    count, cpart = 0, 0
+    count, cpart = 0, 0_i16
     chaps = [] of String
 
     1.upto(lines.size - 1) do |idx|
@@ -25,7 +25,7 @@ module CV::ChUtil
       next if count < limit
 
       chaps << strio.to_s
-      cpart += 1
+      cpart += 1_i16
 
       strio = String::Builder.new(title)
       count = 0

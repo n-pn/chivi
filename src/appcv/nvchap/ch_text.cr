@@ -80,7 +80,9 @@ class CV::ChText
   def remap! : String
     stats = @chinfo.stats
 
-    stats.parts = stats.chars = 0
+    stats.chars = 0_i16
+    stats.parts = 0_i8
+
     title = nil
 
     loop do
@@ -90,8 +92,8 @@ class CV::ChText
       title ||= chdata.lines[0]?
 
       stats.utime = chdata.utime if stats.utime < chdata.utime
-      stats.chars += chdata.lines.sum(&.size)
-      stats.parts += 1
+      stats.chars += chdata.lines.sum(&.size).to_i16
+      stats.parts += 1_i8
     end
 
     title || ""
@@ -103,7 +105,7 @@ class CV::ChText
 
     stats.utime = Time.utc.to_unix
     stats.chars, chaps = ChUtil.split_parts(input)
-    stats.parts = chaps.size
+    stats.parts = chaps.size.to_i8
 
     FileUtils.mkdir_p(@chdir) if mkdir
 

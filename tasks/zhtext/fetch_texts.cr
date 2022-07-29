@@ -62,12 +62,12 @@ class CV::FetchText
 
   @cache = {} of String => ChList
 
-  def chlist(sname : String, snvid : String, pgidx : Int32)
+  def chlist(sname : String, snvid : String, pgidx : Int16)
     label = "#{sname}/#{snvid}/#{pgidx}"
     @cache[label] ||= ChList.new("#{ChRepo::DIR}/#{label}.tsv")
   end
 
-  def pgidx(chidx : Int32)
+  def pgidx(chidx : Int16)
     (chidx - 1) // ChRepo::PSIZE
   end
 

@@ -12,6 +12,20 @@ class Amber::Validators::Params
     val < min ? min : (val > max ? max : val)
   end
 
+  def read_i8(name : String, df = 0_i8)
+    self[name]?.try(&.to_i8?) || df
+  end
+
+  def read_i16(name : String, min : Int16 = 0_i16) : Int16
+    val = self[name]?.try(&.to_i16?) || return min
+    val < min ? min : val
+  end
+
+  def read_i16(name : String, min : Int16, max : Int16) : Int16
+    val = self[name]?.try(&.to_i16?) || return min
+    val < min ? min : (val > max ? max : val)
+  end
+
   def fetch_int(name : String | Symbol, &block : -> Int32) : Int32
     self[name]?.try(&.to_i?) || yield
   end
