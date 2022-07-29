@@ -3,16 +3,16 @@ require "../../_util/text_util"
 class CV::ChInfo
   class Stats
     property utime : Int64
-    property chars : Int16
+    property chars : Int32
     property parts : Int16
     property uname : String
 
-    def initialize(@utime = 0_i64, @chars = 0_i16, @parts = 0_i16, @uname = "")
+    def initialize(@utime = 0_i64, @chars = 0, @parts = 0_i16, @uname = "")
     end
 
     def initialize(utime : String, chars : String, parts : String, @uname = "")
       @utime = utime.to_i64? || 0_i64
-      @chars = chars.to_i16? || 0_i16
+      @chars = chars.to_i32? || 0_i32
       @parts = parts.to_i16? || 0_i16
     end
 

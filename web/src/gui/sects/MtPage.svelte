@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { config, vdict } from '$lib/stores'
+  import { config, vdict, zfrom } from '$lib/stores'
 
   import { SIcon } from '$gui'
   import MtData from '$lib/mt_data'
@@ -7,7 +7,9 @@
   import Mtmenu, { ctrl as mtmenu } from './MtPage/Mtmenu.svelte'
 
   import Cvline from './MtPage/Cvline.svelte'
+  import Fixraw from './MtPage/Fixraw.svelte'
   import Zhline from './MtPage/Zhline.svelte'
+
   import { rel_time } from '$utils/time_utils'
   import { beforeNavigate } from '$app/navigation'
 </script>
@@ -15,6 +17,7 @@
 <script lang="ts">
   export let cvdata = ''
   export let on_change = () => {}
+  export let on_fixraw = (_n: number, _s: string, _s2: string) => {}
 
   export let mftime = 0
   export let mficon = 'file-download'
@@ -29,6 +32,8 @@
   let article = null
   let l_hover = 0
   let l_focus = 0
+
+  let fix_raw = false
 
   beforeNavigate(() => {
     l_focus = 0
@@ -111,7 +116,7 @@
         <span class="stats-label"> chữ</span>
       </span>
 
-      {#if source && source != '/'}
+      {#if source}
         <a
           class="stats"
           href={source}
@@ -143,7 +148,23 @@
   {/each}
 
   {#if $config.render >= 0}
-    <Mtmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />
+    <Mtmenu
+      {article}
+      lines={zhtext}
+      bind:l_focus
+      bind:fix_raw
+      {l_hover}
+      {on_change} />
+  {/if}
+
+  {#if fix_raw}
+    <Fixraw
+      bind:rawtxt={zhtext[l_focus]}
+      bind:fix_raw
+      {on_fixraw}
+      lineid={l_focus}
+      caret={$zfrom}
+      dname={$vdict.dname} />
   {/if}
 
   <slot name="footer" />

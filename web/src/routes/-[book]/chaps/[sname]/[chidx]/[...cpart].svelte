@@ -98,7 +98,8 @@
   }
 
   async function retranslate() {
-    const base = $config.engine == 2 ? '/_v2/qtran/chaps' : '/api/qtran/chaps'
+    // const base = $config.engine == 2 ? '/_v2/qtran/chaps' : '/api/qtran/chaps'
+    const base = '/api/qtran/chaps'
 
     const url = `${base}/${rl_key}?trad=${$config.tosimp}&user=${$session.uname}`
     const res = await fetch(url)
@@ -143,6 +144,14 @@
     if (!ubmemo.locked) return [on_memory, 'menu-2']
     return on_memory ? [true, 'bookmark'] : [false, 'bookmark-off']
   }
+
+  async function on_fixraw(l_id: number, orig: string, edit: string) {
+    const url = `/api/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}/${chmeta.cpart}`
+    const params = { l_id, orig, edit }
+    const res = await $page.stuff.api.call(url, 'POST', params)
+    if (res.error) alert(res.error)
+    else reload_chap()
+  }
 </script>
 
 <svelte:head>
@@ -164,7 +173,8 @@
   {cvdata}
   mftime={chinfo.utime}
   source={chmeta.clink}
-  on_change={retranslate}>
+  on_change={retranslate}
+  {on_fixraw}>
   <svelte:fragment slot="notext">
     <Notext {nvseed} {chmeta} {chinfo} />
   </svelte:fragment>

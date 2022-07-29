@@ -29,7 +29,7 @@ module CV::SiteLink
     when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
     when "sdyfcm"   then "https://www.sdyfcm.com/#{snvid}/"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
-    else                 "/"
+    else                 ""
     end
   end
 
@@ -68,7 +68,7 @@ module CV::SiteLink
     when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
     when "sdyfcm"   then "https://www.sdyfcm.com/#{snvid}/#{schid}/"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/#{schid}.html"
-    else                 "/"
+    else                 ""
     end
   end
 

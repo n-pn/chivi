@@ -173,4 +173,19 @@ class CV::ChRepo
     patch!([chinfo])
     chtext
   end
+
+  def save_part_to_zip(chinfo, parts : Hash(Int16, Array(String)))
+    zh_pg = self.map_pg(chinfo.chidx)
+    text_dir = "#{@chdir}/#{zh_pg}"
+    Dir.mkdir_p(text_dir)
+
+    zip_path = "#{@chdir}/#{zh_pg}.zip"
+
+    parts.each do |cpart, content|
+      File.write(File.join(text_dir, "#{chinfo.schid}-#{cpart}.txt"), content.join('\n'))
+    end
+
+    `zip --include=\\*.txt -rjmq "#{zip_path}" "#{text_dir}"`
+    File.open("#{text_dir}.tsv", "a") { |io| io << '\n' << chinfo }
+  end
 end

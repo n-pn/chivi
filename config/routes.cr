@@ -59,7 +59,7 @@ Amber::Server.configure do
 
     get "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :zhtext
     post "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :upload
-
+    post "/texts/:nv_id/:sname/:chidx/:cpart", CV::ChtextCtrl, :change
     # # yousuu
 
     get "/yscrits", CV::YscritCtrl, :index
@@ -131,7 +131,6 @@ Amber::Server.configure do
 
     # get "/vpinits/fixtag/:source/:target", CV::VpinitCtrl, :fixtag
     # put "/vpinits/upsert/:target", CV::VpinitCtrl, :upsert
-
   end
 
   routes :static do

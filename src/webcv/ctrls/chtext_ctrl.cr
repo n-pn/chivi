@@ -27,7 +27,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
     self_sname = "@" + _cvuser.uname
 
-    if nvseed.sname != self_sname
+    if (nvseed.sname != self_sname) && params["dup"]?
       target = nvseed
       nvinfo = target.nvinfo
       nvseed = Nvseed.load!(nvinfo, self_sname, force: true)
@@ -127,5 +127,51 @@ class CV::ChtextCtrl < CV::BaseCtrl
     when 4
       params["regex"]?.try { |x| args << "--regex" << x.strip }
     end
+  end
+
+  def change
+    return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
+    nvseed = load_nvseed
+
+    chidx = params.read_i16("chidx", min: 1_i16)
+    cpart = params.read_i16("cpart", min: 0_i16)
+
+    unless chinfo = nvseed.chinfo(chidx &- 1)
+      raise NotFound.new("Chương tiết không tồn tại")
+    end
+
+    l_id = params.read_i16("l_id", min: 1_i16)
+    orig = params["orig"]?
+    edit = params["edit"]
+
+    spawn do
+      Chedit.new({
+        cvuser: _cvuser, nvseed: nvseed,
+        chidx: chidx, schid: chinfo.schid, cpart: cpart,
+        l_id: l_id, orig: orig, edit: edit, flag: 0_i16,
+      }).save!
+    end
+
+    parts = chinfo.proxy ? (0_i16..chinfo.stats.parts).to_a : [cpart]
+    texts = {} of Int16 => Array(String)
+    parts.each do |i|
+      texts[i] = nvseed.chtext(chinfo, i, redo: false, uname: _cvuser.uname)
+    end
+
+    chap_part = texts[cpart]
+    orig_size = (orig || chap_part[l_id]?).try(&.size) || 0
+
+    chap_part[l_id] = edit
+
+    chinfo.proxy = nil
+
+    chinfo.stats.utime = Time.utc.to_unix
+    chinfo.stats.uname = _cvuser.uname
+    chinfo.stats.chars += (edit.size - orig_size)
+
+    nvseed._repo.save_part_to_zip(chinfo, texts)
+    nvseed.reset_cache!
+
+    serv_text("ok")
   end
 end

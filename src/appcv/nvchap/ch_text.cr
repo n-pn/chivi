@@ -22,7 +22,6 @@ class CV::ChText
     end
 
     dir = "#{DIR}/#{@sname}/#{@snvid}"
-    @c_key = "#{@sname}/#{@snvid}/#{@chinfo.chidx}"
 
     pgidx = (chidx &- 1) // 128
     @chdir = "#{dir}/#{pgidx}"

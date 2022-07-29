@@ -12,10 +12,12 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     set_headers content_type: :text
 
+    caps = params["caps"]? == "t"
+
     cvmtl = MtCore.generic_mtl(dname, uname)
-    cvmtl.cv_plain(input, cap_first: false).to_txt(response)
+    cvmtl.cv_plain(input, cap_first: caps).to_txt(response)
     response << '\n'
-    hv_translit(input, false).to_txt(response)
+    hv_translit(input, caps).to_txt(response)
   end
 
   private def hv_translit(input : String, apply_cap = true)

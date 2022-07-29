@@ -61,6 +61,7 @@
   import Tlspec, { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
 
   export let article: HTMLElement
+  export let fix_raw = false
 
   export let lines: string[]
   export let l_focus: number
@@ -86,7 +87,7 @@
   onDestroy(() => article?.removeEventListener('mouseup', handle_mouse))
 
   function handle_mouse({ target, which }) {
-    if (which == 3) return // return if is right click
+    if (which == 3 || fix_raw) return // return if is right click
     let nodes = read_selection()
 
     switch (target.nodeName) {
@@ -327,9 +328,17 @@
     <cv-item
       class="umami--click-mtmenu-upsert"
       data-kbd="↵"
-      data-tip="Sửa từ"
+      data-tip="Thêm sửa từ"
       on:click|capture={show_upsert}>
-      <SIcon name="pencil" />
+      <SIcon name="pencil-plus" />
+    </cv-item>
+
+    <cv-item
+      class="umami--click-mtmenu-upsert"
+      data-kbd="-"
+      data-tip="Sửa text gốc"
+      on:click|capture={() => (fix_raw = true)}>
+      <SIcon name="edit" />
     </cv-item>
 
     <cv-item
