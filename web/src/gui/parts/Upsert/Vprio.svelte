@@ -14,8 +14,6 @@
 
   export let vpterm: VpTerm
   export let prio = ''
-
-  $: console.log({ prio })
 </script>
 
 <div class="prio">
