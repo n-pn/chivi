@@ -308,16 +308,17 @@
 <svelte:window on:keydown={handle_keydown} />
 
 {#if $ctrl.actived}
+  <!-- <cv-item
+    class="navi"
+    data-kbd="⇧←"
+    data-tip="Mở sang trái"
+    on:click|capture={() => move_left(true, 500)}>
+    <SIcon name="arrow-left-square" />
+  </cv-item> -->
+
   <cv-menu style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
     <cv-item
-      data-kbd="⇧←"
-      data-tip="Mở sang trái"
-      on:click|capture={() => move_left(true, 500)}>
-      <SIcon name="arrow-left-square" />
-    </cv-item>
-
-    <cv-item
-      class="umami--click-mtmenu-lookup"
+      class="umami--click--mtmenu-lookup"
       data-kbd="\"
       data-key="Backslash"
       data-tip="Tra từ"
@@ -326,15 +327,7 @@
     </cv-item>
 
     <cv-item
-      class="umami--click-mtmenu-upsert"
-      data-kbd="↵"
-      data-tip="Thêm sửa từ"
-      on:click|capture={show_upsert}>
-      <SIcon name="pencil-plus" />
-    </cv-item>
-
-    <cv-item
-      class="umami--click-mtmenu-upsert"
+      class="umami--click--mtmenu-fixraw"
       data-kbd="-"
       data-tip="Sửa text gốc"
       on:click|capture={() => (fix_raw = true)}>
@@ -342,20 +335,37 @@
     </cv-item>
 
     <cv-item
-      class="umami--click-mtmenu-report"
+      class="umami--click--mtmenu-upsert"
+      data-kbd="↵"
+      data-tip="Thêm sửa từ"
+      on:click|capture={show_upsert}>
+      <SIcon name="circle-plus" />
+    </cv-item>
+
+    <cv-item
+      class="umami--click--mtmenu-refine"
+      data-kbd="/"
+      data-tip="Thêm nghĩa việt"
+      on:click|capture={() => alert('Đang hoàn thiện')}>
+      <SIcon name="language" />
+    </cv-item>
+
+    <cv-item
+      class="umami--click--mtmenu-report"
       data-kbd="p"
       data-tip="Báo lỗi"
       on:click|capture={tlspec.show}>
       <SIcon name="flag" />
     </cv-item>
-
-    <cv-item
-      data-kbd="⇧→"
-      data-tip="Mở sang phải"
-      on:click|capture={() => move_right(true, 500)}>
-      <SIcon name="arrow-right-square" />
-    </cv-item>
   </cv-menu>
+
+  <!-- <cv-item
+    class="navi"
+    data-kbd="⇧→"
+    data-tip="Mở sang phải"
+    on:click|capture={() => move_right(true, 500)}>
+    <SIcon name="arrow-right-square" />
+  </cv-item> -->
 {/if}
 
 <div hidden>

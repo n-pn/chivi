@@ -313,11 +313,13 @@
   tlspec-body {
     display: block;
     margin: 0.75rem;
+    margin-top: 0.5rem;
     @include bgcolor(secd);
   }
 
   form-group {
     display: block;
+    margin-top: 0.5rem;
   }
 
   form-error {
@@ -388,7 +390,7 @@
     display: flex;
     width: 100%;
     font-weight: 500;
-    margin-top: 0.5rem;
+    // margin-top: 0.5rem;
     margin-bottom: 0.25rem;
     @include ftsize(sm);
   }
