@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE cvusers (
-  id bigserial primary key,
+  id serial,
 
   uname citext unique not null,
   email citext unique not null,
@@ -19,6 +19,9 @@ CREATE TABLE cvusers (
   last_loggedin_at timestamptz not null default CURRENT_TIMESTAMP,
   reply_checked_at timestamptz not null default CURRENT_TIMESTAMP,
   notif_checked_at timestamptz not null default CURRENT_TIMESTAMP,
+
+  pwtemp text not null default '',
+  pwtemp_until bigint not null default 0,
 
   created_at timestamptz not null default CURRENT_TIMESTAMP,
   updated_at timestamptz not null default CURRENT_TIMESTAMP

@@ -2,7 +2,7 @@
 CREATE TABLE user_posts (
   id bigserial primary key,
 
-  cvuser_id bigint not null,
+  viuser_id int not null,
   cvpost_id bigint not null,
 
   liked boolean not null default false,
@@ -16,8 +16,8 @@ CREATE TABLE user_posts (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX user_post_unique_idx ON user_posts (cvpost_id, cvuser_id);
-CREATE INDEX user_post_cvuser_idx ON user_posts (cvuser_id, liked);
+CREATE UNIQUE INDEX user_post_unique_idx ON user_posts (cvpost_id, viuser_id);
+CREATE INDEX user_post_cvuser_idx ON user_posts (viuser_id, liked);
 
 -- +micrate Down
 DROP TABLE IF EXISTS user_posts;

@@ -12,6 +12,15 @@ CREATE TABLE ysbooks (
 
   -- book info
 
+  bcover text not null default '',
+  bintro text not null default '',
+  bgenre text not null default '',
+
+  shield int not null default 0,
+  status int not null default 0,
+
+  --
+
   utime bigint not null default 0,
   stime bigint not null default 0, -- stime: crawled at
 
@@ -25,6 +34,7 @@ CREATE TABLE ysbooks (
 
   -- counters
 
+  word_count int not null default 0,
   crit_count int not null default 0,
   list_count int not null default 0,
 

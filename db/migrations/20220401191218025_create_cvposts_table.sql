@@ -4,7 +4,7 @@ CREATE TABLE cvposts (
   id bigserial primary key,
   ii bigint not null default 1,
 
-  cvuser_id bigint not null default 0,
+  viuser_id int not null default 0,
   nvinfo_id bigint not null default 0,
 
   rpbody_id bigint not null default 0,
@@ -35,7 +35,7 @@ CREATE TABLE cvposts (
 );
 
 
-CREATE INDEX cvpost_cvuser_idx ON cvposts (cvuser_id);
+CREATE INDEX cvpost_cvuser_idx ON cvposts (viuser_id);
 CREATE INDEX cvpost_nvinfo_idx ON cvposts (nvinfo_id);
 
 CREATE INDEX cvpost_stars_idx ON cvposts (stars);

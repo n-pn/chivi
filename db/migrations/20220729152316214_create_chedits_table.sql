@@ -3,7 +3,7 @@
 CREATE TABLE chedits (
   id serial,
 
-  cvuser_id bigint not null,
+  viuser_id int not null,
   nvseed_id bigint not null,
 
   chidx smallint not null,
@@ -20,7 +20,7 @@ CREATE TABLE chedits (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-create index chedits_cvuser_idx on chedits(cvuser_id);
+create index chedits_cvuser_idx on chedits(viuser_id);
 create index chedits_nvseed_idx on chedits(nvseed_id, chidx, flag);
 
 -- +micrate Down

@@ -2,7 +2,7 @@
 CREATE TABLE ubmemos (
   id bigserial primary key,
 
-  cvuser_id bigint not null,
+  viuser_id int not null,
   nvinfo_id bigint not null,
 
   status int not null default 0,
@@ -24,9 +24,9 @@ CREATE TABLE ubmemos (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX ubmemo_unique_idx ON ubmemos (nvinfo_id, cvuser_id);
-CREATE INDEX ubmemo_cvuser_idx ON ubmemos (status, cvuser_id);
-CREATE INDEX ubmemo_viewed_idx ON ubmemos (cvuser_id, atime);
+CREATE UNIQUE INDEX ubmemo_unique_idx ON ubmemos (nvinfo_id, viuser_id);
+CREATE INDEX ubmemo_cvuser_idx ON ubmemos (status, viuser_id);
+CREATE INDEX ubmemo_viewed_idx ON ubmemos (viuser_id, atime);
 
 -- +micrate Down
 DROP TABLE IF EXISTS ubmemos;

@@ -4,7 +4,7 @@
 CREATE TABLE donates (
   id bigserial primary key,
 
-  cvuser_id bigint not null,
+  viuser_id int not null,
 
   amount int not null default 0,
   medium text not null default '',
@@ -15,7 +15,7 @@ CREATE TABLE donates (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE INDEX donate_cvuser_idx ON donates (cvuser_id);
+CREATE INDEX donate_cvuser_idx ON donates (viuser_id);
 CREATE INDEX donate_ctime_idx ON donates (ctime, medium);
 
 -- +micrate Down

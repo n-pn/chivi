@@ -4,7 +4,7 @@
 CREATE TABLE chtrans (
   id serial,
 
-  cvuser_id bigint not null,
+  viuser_id int not null,
   nvseed_id bigint not null,
 
   chidx smallint not null,
@@ -22,7 +22,7 @@ CREATE TABLE chtrans (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-create index chtrans_cvuser_idx on chtrans(cvuser_id);
+create index chtrans_cvuser_idx on chtrans(viuser_id);
 create index chtrans_nvseed_idx on chtrans(nvseed_id, chidx, flag);
 
 
