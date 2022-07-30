@@ -1,7 +1,7 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 
-CREATE TABLE uqueues (
+CREATE TABLE u_queues (
   id bigserial primary key,
   kind int not null default 0,
 
@@ -16,9 +16,9 @@ CREATE TABLE uqueues (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE INDEX uqueue_cvuser_idx ON uqueues (viuser_id, status);
-CREATE INDEX uqueue_notice_idx ON uqueues (kind, mailing);
+CREATE INDEX uqueue_cvuser_idx ON u_queues (viuser_id, status);
+CREATE INDEX uqueue_notice_idx ON u_queues (kind, mailing);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-DROP TABLE IF EXISTS uqueues;
+DROP TABLE IF EXISTS u_queues;

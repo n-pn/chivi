@@ -9,6 +9,9 @@ CREATE TABLE cvusers (
   vcoin_avail int default 0 NOT NULL,
   vcoin_total int default 0 NOT NULL,
 
+  karma_avail int default 0 NOT NULL,
+  karma_total int default 0 NOT NULL,
+
   privi int default 0 NOT NULL,
   privi_1_until bigint not null default '0',
   privi_2_until bigint not null default '0',

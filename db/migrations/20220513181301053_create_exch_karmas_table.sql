@@ -1,10 +1,7 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 
-ALTER TABLE cvusers ADD COLUMN karma_total int not null default 0;
-ALTER TABLE cvusers ADD COLUMN karma_avail int not null default 0;
-
-CREATE TABLE ukarmas (
+CREATE TABLE exch_karmas (
   id bigserial primary key,
   kind int not null default 0,
 
@@ -18,12 +15,9 @@ CREATE TABLE ukarmas (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE INDEX ukarma_receiver_idx ON ukarmas (receiver_id, kind);
-CREATE INDEX ukarma_sender_idx ON ukarmas (kind, sender_id);
+CREATE INDEX exch_karma_receiver_idx ON exch_karmas (receiver_id, kind);
+CREATE INDEX exch_karma_sender_idx ON exch_karmas (kind, sender_id);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-DROP TABLE IF EXISTS ukarmas;
-
-ALTER TABLE cvusers DROP COLUMN karma_total;
-ALTER TABLE cvusers DROP COLUMN karma_avail;
+DROP TABLE IF EXISTS exch_karmas;

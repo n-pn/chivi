@@ -1,7 +1,7 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 
-CREATE TABLE unotifs (
+CREATE TABLE u_notifs (
   id bigserial primary key,
   kind int not null default 0,
 
@@ -16,9 +16,9 @@ CREATE TABLE unotifs (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE INDEX unotif_cvuser_idx ON unotifs (viuser_id, status);
-CREATE INDEX unotif_notice_idx ON unotifs (kind, mailing);
+CREATE INDEX unotif_cvuser_idx ON u_notifs (viuser_id, status);
+CREATE INDEX unotif_notice_idx ON u_notifs (kind, mailing);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-DROP TABLE IF EXISTS unotifs;
+DROP TABLE IF EXISTS u_notifs;

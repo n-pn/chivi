@@ -42,7 +42,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
       raise BadRequest.new("Bạn không thể gửi vcoin cho chính mình")
     end
 
-    entry = Uvcoin.new({
+    entry = ExchVcoin.new({
       receiver: receiver, sender: sender,
       amount: amount, reason: reason,
     })
@@ -52,7 +52,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
       receiver.update(vcoin_avail: receiver.vcoin_avail + amount)
 
       entry.save!
-      spawn UvcoinMailer.new(entry).deliver
+      spawn ExchVcoinMailer.new(entry).deliver
 
       sender.cache!
       receiver.cache!
