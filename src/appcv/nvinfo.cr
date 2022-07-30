@@ -141,9 +141,9 @@ class CV::Nvinfo
     input ? where("ysbook_id in (select id from ysbooks where pub_name = ?)", input) : self
   end
 
-  scope :filter_cvuser do |uname, bmark|
-    if uname && (cvuser = Cvuser.load!(uname))
-      where_clause = "cvuser_id=#{cvuser.id}"
+  scope :filter_viuser do |uname, bmark|
+    if uname && (viuser = Viuser.load!(uname))
+      where_clause = "viuser_id=#{viuser.id}"
       where_clause += " and status=#{Ubmemo.status(bmark)}" if bmark
       where("id IN (SELECT nvinfo_id from ubmemos where #{where_clause})")
     else

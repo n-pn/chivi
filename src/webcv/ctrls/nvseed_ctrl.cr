@@ -12,16 +12,16 @@ class CV::NvseedCtrl < CV::BaseCtrl
       nvseed.refresh!(mode: mode)
       fresh = true
     else
-      fresh = nvseed.fresh?(_cvuser.privi, force: false)
+      fresh = nvseed.fresh?(_viuser.privi, force: false)
     end
 
     serv_json(NvseedView.new(nvseed, full: true, fresh: fresh))
   end
 
   private def can_refresh?(nvseed : Nvseed)
-    return false if _cvuser.privi < 0
+    return false if _viuser.privi < 0
     return true unless nvseed.sname[0] == '@'
-    nvseed.sname == '@' + _cvuser.uname
+    nvseed.sname == '@' + _viuser.uname
   end
 
   def chaps
@@ -64,12 +64,12 @@ class CV::NvseedCtrl < CV::BaseCtrl
   # modes: 0 => patch, 1 => trunc, 2 => prune
 
   private def action_allowed?(sname : String, min_privi = 1)
-    privi = _cvuser.privi
+    privi = _viuser.privi
     return true if privi > 3
 
     case sname[0]?
     when '=' then privi >= min_privi
-    when '@' then privi >= min_privi && sname == '@' + _cvuser.uname
+    when '@' then privi >= min_privi && sname == '@' + _viuser.uname
     else          privi > min_privi
     end
   end
@@ -120,7 +120,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
       chap_count: 0,
       last_sname: "",
       last_schid: "",
-      shield:     _cvuser.privi > 2 ? 4 : 3,
+      shield:     _viuser.privi > 2 ? 4 : 3,
     })
 
     serv_json({shield: nvseed.shield})

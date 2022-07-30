@@ -15,7 +15,7 @@ class CV::Tlspec
     property match = "" # spec type expected result/translation note
     property extra = "" # spec detail
 
-    def initialize(user : Cvuser, @mtime = Time.utc.to_unix)
+    def initialize(user : Viuser, @mtime = Time.utc.to_unix)
       @uname = user.uname
       @privi = user.privi
     end
@@ -46,8 +46,8 @@ class CV::Tlspec
     end
   end
 
-  def add_edit!(params, cvuser)
-    edit = Tlspec::Edit.new(cvuser)
+  def add_edit!(params, viuser)
+    edit = Tlspec::Edit.new(viuser)
 
     edit.lower = params.fetch_int("lower", min: 0)
     edit.upper = params.fetch_int("upper", min: 1, max: @ztext.size)

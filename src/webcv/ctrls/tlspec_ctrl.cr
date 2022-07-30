@@ -32,7 +32,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
   end
 
   def create
-    return halt! 403, "Quyền hạn của bạn không đủ." if _cvuser.privi < 0
+    return halt! 403, "Quyền hạn của bạn không đủ." if _viuser.privi < 0
 
     ztext = params.fetch_str("ztext")
 
@@ -43,7 +43,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     entry.dname = params.fetch_str("dname", "combine")
     entry.d_dub = params.fetch_str("d_dub", "Tổng hợp")
 
-    entry.add_edit!(params, _cvuser)
+    entry.add_edit!(params, _viuser)
     entry.save!
 
     serv_text(_ukey)
@@ -83,11 +83,11 @@ class CV::TlspecCtrl < CV::BaseCtrl
   def update
     entry = Tlspec.load!(params["ukey"])
 
-    unless _cvuser.privi > 2 || entry.edits.first.uname == _cvuser.uname
+    unless _viuser.privi > 2 || entry.edits.first.uname == _viuser.uname
       return halt! 403, "Bạn không đủ quyền hạn để sửa!"
     end
 
-    entry.add_edit!(params, _cvuser)
+    entry.add_edit!(params, _viuser)
     entry.save!
 
     send_json(["ok"])
@@ -96,7 +96,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
   def delete
     entry = Tlspec.load!(params["ukey"])
 
-    unless _cvuser.privi > 2 || entry.edits.first.uname == _cvuser.uname
+    unless _viuser.privi > 2 || entry.edits.first.uname == _viuser.uname
       return halt! 403, "Bạn không đủ quyền hạn để xoá!"
     end
 

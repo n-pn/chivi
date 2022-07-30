@@ -12,10 +12,10 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     spawn Nvstat.inc_chap_view(nvinfo.id)
 
-    ubmemo = Ubmemo.find_or_new(_cvuser.id, nvseed.nvinfo_id)
-    ubmemo.mark_chap!(chinfo, nvseed.sname, cpart) if _cvuser.privi > -1
+    ubmemo = Ubmemo.find_or_new(_viuser.id, nvseed.nvinfo_id)
+    ubmemo.mark_chap!(chinfo, nvseed.sname, cpart) if _viuser.privi > -1
 
-    redo = _cvuser.privi > 0 && params["redo"]? == "true"
+    redo = _viuser.privi > 0 && params["redo"]? == "true"
     cvdata, rl_key = load_cvdata(nvseed, chinfo, cpart, redo)
 
     serv_json do |jb|
@@ -34,7 +34,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     stats = chinfo.stats
 
     min_privi = nvseed.min_privi(chinfo.chidx, stats.chars)
-    return {"", ""} if min_privi > _cvuser.privi
+    return {"", ""} if min_privi > _viuser.privi
 
     if proxy = chinfo.proxy
       ukey = {proxy.sname, proxy.snvid, chinfo.chidx, cpart}.join(":")
@@ -43,7 +43,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
 
     if redo || !(qtran = QtranData::CACHE.get?(ukey, Time.unix(stats.utime) + 10.minutes))
-      qtran = QtranData.load_chap(nvseed, chinfo, cpart, redo: redo, uname: _cvuser.uname)
+      qtran = QtranData.load_chap(nvseed, chinfo, cpart, redo: redo, uname: _viuser.uname)
       QtranData::CACHE.set(ukey, qtran)
     end
 
@@ -53,7 +53,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
 
     cvdata = String.build do |io|
-      engine = qtran.make_engine(_cvuser.uname)
+      engine = qtran.make_engine(_viuser.uname)
       trad = params["trad"]? == "true"
       qtran.print_mtl(engine, io, format: :node, title: true, trad: trad)
       qtran.print_raw(io)

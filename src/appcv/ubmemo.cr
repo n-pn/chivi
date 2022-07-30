@@ -4,7 +4,7 @@ class CV::Ubmemo
   self.table = "ubmemos"
   primary_key
 
-  belongs_to cvuser : Cvuser, foreign_key: "cvuser_id"
+  belongs_to viuser : Viuser, foreign_key_type: Int32
   belongs_to nvinfo : Nvinfo, foreign_key: "nvinfo_id"
 
   # bookmark types: default, reading, finished, onhold, dropped, pending
@@ -66,25 +66,25 @@ class CV::Ubmemo
 
   CACHE = {} of String => self
 
-  def self.find_or_new(cvuser_id : Int64, nvinfo_id : Int64) : self
-    CACHE["#{cvuser_id}-#{nvinfo_id}"] ||= begin
-      params = {cvuser_id: cvuser_id, nvinfo_id: nvinfo_id}
+  def self.find_or_new(viuser_id : Int64, nvinfo_id : Int64) : self
+    CACHE["#{viuser_id}-#{nvinfo_id}"] ||= begin
+      params = {viuser_id: viuser_id, nvinfo_id: nvinfo_id}
       find(params) || new(params)
     end
   end
 
-  def self.find_or_new(cvuser : Cvuser, nvinfo : Nvinfo) : self
-    find_or_new(cvuser.id, nvinfo.id)
+  def self.find_or_new(viuser : Viuser, nvinfo : Nvinfo) : self
+    find_or_new(viuser.id, nvinfo.id)
   end
 
-  def self.upsert!(cvuser : Cvuser, nvinfo : Nvinfo) : self
-    ubmemo = find_or_new(cvuser, nvinfo)
+  def self.upsert!(viuser : Viuser, nvinfo : Nvinfo) : self
+    ubmemo = find_or_new(viuser, nvinfo)
     yield ubmemo
     ubmemo.save!
   end
 
-  def self.upsert!(cvuser_id : Int64, nvinfo_id : Int64) : self
-    ubmemo = find_or_new(cvuser_id, nvinfo_id)
+  def self.upsert!(viuser_id : Int64, nvinfo_id : Int64) : self
+    ubmemo = find_or_new(viuser_id, nvinfo_id)
     yield ubmemo
     ubmemo.save!
   end

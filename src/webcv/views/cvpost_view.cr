@@ -30,15 +30,15 @@ struct CV::CvpostView
         jb.field "bhtml", @data.rpbody.ohtml
       end
 
-      jb.field "op_uname", @data.cvuser.uname
-      jb.field "op_privi", @data.cvuser.privi
+      jb.field "op_uname", @data.viuser.uname
+      jb.field "op_privi", @data.viuser.privi
 
       if lastrp = Cvrepl.find({id: @data.lastrp_id})
         jb.field "brief", lastrp.brief
         jb.field "utime", lastrp.utime
 
-        jb.field "lp_uname", lastrp.cvuser.uname
-        jb.field "lp_privi", lastrp.cvuser.privi
+        jb.field "lp_uname", lastrp.viuser.uname
+        jb.field "lp_privi", lastrp.viuser.privi
       else
         jb.field "brief", @data.brief
         jb.field "utime", @data.utime

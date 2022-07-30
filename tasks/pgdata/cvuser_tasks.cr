@@ -31,7 +31,7 @@ module CV::CvuserTasks
     end
 
     Clear::SQL.execute <<-SQL
-      SELECT pg_catalog.setval(pg_get_serial_sequence('cvusers', 'id'), MAX(id)) FROM cvusers;
+      SELECT pg_catalog.setval(pg_get_serial_sequence('viusers', 'id'), MAX(id)) FROM viusers;
     SQL
   end
 

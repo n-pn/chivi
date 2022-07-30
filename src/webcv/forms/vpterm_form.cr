@@ -3,7 +3,7 @@ struct CV::VpTermForm
   @key : String
   @_priv : Bool
 
-  def initialize(@params, @dict : VpDict, @user : Cvuser)
+  def initialize(@params, @dict : VpDict, @user : Viuser)
     @key = @params["key"].tr("\t\n", " ").strip
     @_priv = @params["_priv"]? == "true"
   end

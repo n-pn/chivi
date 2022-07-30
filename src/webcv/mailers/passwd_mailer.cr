@@ -1,7 +1,7 @@
 require "./base_mailer"
 
 class CV::PasswdMailer < CV::BaseMailer
-  def initialize(user : Cvuser)
+  def initialize(user : Viuser)
     user.set_pwtemp!
 
     to email: user.email, name: user.uname

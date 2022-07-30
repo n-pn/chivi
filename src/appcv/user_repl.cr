@@ -4,7 +4,7 @@ class CV::UserRepl
   self.table = "user_repls"
   primary_key
 
-  belongs_to cvuser : Cvuser, foreign_key: "cvuser_id"
+  belongs_to viuser : Viuser, foreign_key_type: Int32
   belongs_to cvrepl : Cvrepl, foreign_key: "cvrepl_id"
 
   column liked : Bool = false
@@ -27,32 +27,32 @@ class CV::UserRepl
 
   ############
 
-  def self.find_or_new(cvuser_id : Int64, cvrepl_id : Int64) : self
-    params = {cvuser_id: cvuser_id, cvrepl_id: cvrepl_id}
+  def self.find_or_new(viuser_id : Int64, cvrepl_id : Int64) : self
+    params = {viuser_id: viuser_id, cvrepl_id: cvrepl_id}
     self.find(params) || self.new(params)
   end
 
-  def self.find_or_new(cvuser : Cvuser, cvrepl : Cvrepl) : self
-    self.find_or_new(cvuser.id, cvrepl.id)
+  def self.find_or_new(viuser : Viuser, cvrepl : Cvrepl) : self
+    self.find_or_new(viuser.id, cvrepl.id)
   end
 
-  def self.upsert!(cvuser : Cvuser, cvrepl : Cvrepl) : self
-    user_repl = self.find_or_new(cvuser, cvrepl)
+  def self.upsert!(viuser : Viuser, cvrepl : Cvrepl) : self
+    user_repl = self.find_or_new(viuser, cvrepl)
     yield user_repl
     user_repl.save!
   end
 
-  def self.upsert!(cvuser_id : Int64, cvrepl_id : Int64) : self
-    user_repl = self.find_or_new(cvuser_id, cvrepl_id)
+  def self.upsert!(viuser_id : Int64, cvrepl_id : Int64) : self
+    user_repl = self.find_or_new(viuser_id, cvrepl_id)
     yield user_repl
     user_repl.save!
   end
 
-  def self.glob(cvuser : Cvuser, cvrepl_ids : Array(Int64))
+  def self.glob(viuser : Viuser, cvrepl_ids : Array(Int64))
     output = {} of Int64 => self
-    return output if cvuser.privi < 0
+    return output if viuser.privi < 0
 
-    result = self.query.where({cvuser_id: cvuser.id})
+    self.query.where({viuser_id: viuser.id})
       .where { cvrepl_id.in? cvrepl_ids }
       .each { |x| output[x.cvrepl_id] = x }
 

@@ -8,7 +8,7 @@ class CV::QtransCtrl < CV::BaseCtrl
   def mterror
     input = params.fetch_str("input")
     dname = params.fetch_str("dname", "combine")
-    uname = params.fetch_str("uname", _cvuser.uname)
+    uname = params.fetch_str("uname", _viuser.uname)
 
     set_headers content_type: :text
 
@@ -33,7 +33,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     mode = QtranData::Format.parse(params.fetch_str("mode", "node"))
     trad = params["trad"]? == "true"
-    user = params["user"]? || _cvuser.uname
+    user = params["user"]? || _viuser.uname
 
     set_headers content_type: :text
     engine = data.make_engine(user)
@@ -64,7 +64,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     lines = input.split("\n").map! { |x| MtCore.trad_to_simp(x) }
 
     dname = params.fetch_str("dname", "combine")
-    cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
+    cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
 
     set_headers content_type: :text
 

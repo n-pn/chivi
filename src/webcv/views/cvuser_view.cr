@@ -1,9 +1,9 @@
 require "./_base_view"
 
-struct CV::CvuserView
+struct CV::ViuserView
   include BaseView
 
-  def initialize(@data : Cvuser, @full = false)
+  def initialize(@data : Viuser, @full = false)
   end
 
   def to_json(jb : JSON::Builder)

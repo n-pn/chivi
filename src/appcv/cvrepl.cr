@@ -6,13 +6,13 @@ class CV::Cvrepl
   self.table = "cvrepls"
   primary_key
 
-  belongs_to cvuser : Cvuser
+  belongs_to viuser : Viuser, foreign_key_type: Int32
   belongs_to cvpost : Cvpost
 
   column ii : Int32 = 0 # post index in the thread
 
   column repl_cvrepl_id : Int64 = 0 # replied to cvrepl.id
-  column repl_cvuser_id : Int64 = 0 # replied to cvrepl's cvuser.id
+  column repl_viuser_id : Int64 = 0 # replied to cvrepl's viuser.id
   getter parent : Cvrepl { Cvrepl.load!(repl_cvrepl_id) }
 
   column tagged_ids : Array(Int64) = [] of Int64
@@ -39,7 +39,7 @@ class CV::Cvrepl
   end
 
   scope :filter_owner do |owner|
-    owner ? where({cvuser_id: owner.id}) : with_cvuser
+    owner ? where({viuser_id: owner.id}) : with_viuser
   end
 
   scope :sort_by do |order|
@@ -66,7 +66,7 @@ class CV::Cvrepl
     users = [] of Int64
 
     output = input.gsub(/@\[(.+?)\]/) do |str|
-      user = Cvuser.load!($1)
+      user = Viuser.load!($1)
       users << user.id
       "<cv-user>@[#{user.uname}]</cv-user>"
     rescue
@@ -78,7 +78,7 @@ class CV::Cvrepl
 
   def set_dtrepl_id(dtrepl_id : Int64)
     self.repl_cvrepl_id = dtrepl_id
-    self.repl_cvuser_id = Cvrepl.load!(dtrepl_id).cvuser_id
+    self.repl_viuser_id = Cvrepl.load!(dtrepl_id).viuser_id
   end
 
   def update_content!(params)

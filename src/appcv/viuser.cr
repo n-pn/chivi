@@ -1,10 +1,10 @@
 require "crypto/bcrypt/password"
 
-class CV::Cvuser
+class CV::Viuser
   include Clear::Model
 
-  self.table = "cvusers"
-  primary_key
+  self.table = "viusers"
+  primary_key type: :serial
 
   column uname : String
   column email : String
@@ -146,12 +146,12 @@ class CV::Cvuser
     raise "Mật khẩu quá ngắn (cần ít nhất 7 ký tự)" if upass.size < 7
 
     begin
-      Cvuser.new({email: email, uname: uname, upass: upass}).tap(&.save!)
+      new({email: email, uname: uname, upass: upass}).tap(&.save!)
     rescue err
       case err.message || ""
-      when .includes?("cvusers_uname_key")
+      when .includes?("viusers_uname_key")
         raise "Tên người dùng đã được sử dụng"
-      when .includes?("cvusers_email_key")
+      when .includes?("viusers_email_key")
         raise "Địa chỉ hòm thư đã được sử dụng"
       else
         raise "Không rõ lỗi, mời thử lại!"

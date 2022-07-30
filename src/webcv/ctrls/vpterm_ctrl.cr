@@ -15,7 +15,7 @@ class CV::VptermCtrl < CV::BaseCtrl
             jb.field(dname, words.map { |w| {w, MtCore.cv_pin_yin(w)} }.to_h)
           else
             jb.field(dname) do
-              VpTermView.new(dname, words, hvmap, _cvuser.uname).to_json(jb)
+              VpTermView.new(dname, words, hvmap, _viuser.uname).to_json(jb)
             end
           end
         end
@@ -27,7 +27,7 @@ class CV::VptermCtrl < CV::BaseCtrl
     dname = params["dname"]
     vpdict = VpDict.load(dname)
 
-    ch_set = VpTermForm.new(params, vpdict, _cvuser)
+    ch_set = VpTermForm.new(params, vpdict, _viuser)
     ch_set.validate.try { |error| return halt!(403, error) }
 
     unless vpterm = ch_set.save?

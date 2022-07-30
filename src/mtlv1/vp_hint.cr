@@ -6,10 +6,10 @@ class CV::VpHint
   class_getter trich_dan : self { new("#{DIR}/lookup/trich_dan", 128) }
 
   class_getter seed_vals : self { new("#{DIR}/phrase/legacy", 256) }
-  class_getter user_vals : self { new("#{DIR}/phrase/cvuser", 256) }
+  class_getter user_vals : self { new("#{DIR}/phrase/viuser", 256) }
 
   class_getter seed_tags : self { new("#{DIR}/postag/bd_lac", 256) }
-  class_getter user_tags : self { new("#{DIR}/postag/cvuser", 256) }
+  class_getter user_tags : self { new("#{DIR}/postag/viuser", 256) }
 
   ##########
 

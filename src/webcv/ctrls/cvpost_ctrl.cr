@@ -14,18 +14,18 @@ class CV::CvpostCtrl < CV::BaseCtrl
       query.where("_sort > 0")
     end
 
-    if cvuser = params["cvuser"]?.try { |x| Cvuser.load!(x) }
-      query.filter_owner(cvuser)
+    if viuser = params["viuser"]?.try { |x| Viuser.load!(x) }
+      query.filter_owner(viuser)
     end
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count
 
     query.with_nvinfo unless nvinfo
-    query.with_cvuser unless cvuser
-    query.with_rpbody.with_lastrp(&.with_cvuser)
+    query.with_viuser unless viuser
+    query.with_rpbody.with_lastrp(&.with_viuser)
 
     items = query.limit(limit).offset(offset).to_a
-    memos = UserPost.glob(_cvuser, items.map(&.id))
+    memos = UserPost.glob(_viuser, items.map(&.id))
 
     send_json({
       dtlist: {
@@ -34,7 +34,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
         pgmax: (total - 1) // limit + 1,
         items: items.map { |x|
           x.nvinfo = nvinfo if nvinfo
-          x.cvuser = cvuser if cvuser
+          x.viuser = viuser if viuser
           CvpostView.new(x, full: false, memo: memos[x.id]?)
         },
       },
@@ -49,8 +49,8 @@ class CV::CvpostCtrl < CV::BaseCtrl
 
     # TODO: load user trace
 
-    if _cvuser.privi >= 0
-      memo = UserPost.find({cvuser_id: _cvuser.id, cvpost_id: cvpost.id})
+    if _viuser.privi >= 0
+      memo = UserPost.find({viuser_id: _viuser.id, cvpost_id: cvpost.id})
     end
 
     send_json({cvpost: CvpostView.new(cvpost, full: true, memo: memo)})
@@ -77,12 +77,12 @@ class CV::CvpostCtrl < CV::BaseCtrl
 
   def create
     nvinfo = Nvinfo.load!(params["dboard"].to_i64)
-    unless DboardACL.cvpost_create?(nvinfo, _cvuser)
+    unless DboardACL.cvpost_create?(nvinfo, _viuser)
       return halt!(403, "Bạn không có quyền tạo chủ đề")
     end
 
     count = nvinfo.post_count + 1
-    cvpost = Cvpost.new({cvuser: _cvuser, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
+    cvpost = Cvpost.new({viuser: _viuser, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
 
     cvpost.update_content!(params)
     nvinfo.update!({post_count: count, board_bump: cvpost.utime})
@@ -93,7 +93,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
   def update
     cvpost = Cvpost.load!(params["cvpost"])
 
-    unless DboardACL.cvpost_update?(cvpost, _cvuser)
+    unless DboardACL.cvpost_update?(cvpost, _viuser)
       return halt!(403, "Bạn không có quyền sửa chủ đề")
     end
 
@@ -104,9 +104,9 @@ class CV::CvpostCtrl < CV::BaseCtrl
   def delete
     cvpost = Cvpost.load!(params["cvpost"])
 
-    if _cvuser.privi == cvpost.cvuser_id
+    if _viuser.privi == cvpost.viuser_id
       admin = false
-    elsif _cvuser.privi > 2
+    elsif _viuser.privi > 2
       admin = true
     else
       return halt!(403, "Bạn không có quyền xoá chủ đề")

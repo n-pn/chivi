@@ -5,7 +5,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
 
   def access
     _pgidx, limit, offset = params.page_info(min: 15, max: 30)
-    query = Ubmemo.query.where("cvuser_id = #{_cvuser.id}")
+    query = Ubmemo.query.where("viuser_id = #{_viuser.id}")
 
     case params["kind"]?
     when "marked" then query.where("locked = true")
@@ -17,20 +17,20 @@ class CV::UbmemoCtrl < CV::BaseCtrl
   end
 
   def show : Nil
-    if _cvuser.privi < 0
+    if _viuser.privi < 0
       return halt! 403, "Người dùng chưa đăng nhập!"
     end
 
     nvinfo_id = params["book_id"].to_i64
-    ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
+    ubmemo = Ubmemo.find_or_new(_viuser.id, nvinfo_id)
     serv_json(UbmemoView.new(ubmemo))
   end
 
   def update_access
-    raise "Người dùng chưa đăng nhập!" if _cvuser.privi < 0
+    raise "Người dùng chưa đăng nhập!" if _viuser.privi < 0
 
     nvinfo_id = params["book_id"].to_i64
-    ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
+    ubmemo = Ubmemo.find_or_new(_viuser.id, nvinfo_id)
 
     ubmemo.mark!(
       params.fetch_str("sname"),
@@ -44,14 +44,14 @@ class CV::UbmemoCtrl < CV::BaseCtrl
   end
 
   def update_status
-    if _cvuser.privi < 0
+    if _viuser.privi < 0
       raise Unauthorized.new("Người dùng chưa đăng nhập!")
     end
 
     nvinfo_id = params["book_id"].to_i64
     status = params.fetch_str("status", "default")
 
-    ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
+    ubmemo = Ubmemo.find_or_new(_viuser.id, nvinfo_id)
     ubmemo.update!({status: status})
     serv_json(UbmemoView.new(ubmemo))
   end

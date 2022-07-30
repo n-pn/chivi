@@ -4,7 +4,7 @@ class CV::UserPost
   self.table = "user_posts"
   primary_key
 
-  belongs_to cvuser : Cvuser, foreign_key: "cvuser_id"
+  belongs_to viuser : Viuser, foreign_key_type: Int32
   belongs_to cvpost : Cvpost, foreign_key: "cvpost_id"
 
   column liked : Bool = false
@@ -27,32 +27,32 @@ class CV::UserPost
 
   ############
 
-  def self.find_or_new(cvuser_id : Int64, cvpost_id : Int64) : self
-    params = {cvuser_id: cvuser_id, cvpost_id: cvpost_id}
+  def self.find_or_new(viuser_id : Int64, cvpost_id : Int64) : self
+    params = {viuser_id: viuser_id, cvpost_id: cvpost_id}
     self.find(params) || self.new(params)
   end
 
-  def self.find_or_new(cvuser : Cvuser, cvpost : Cvpost) : self
-    self.find_or_new(cvuser.id, cvpost.id)
+  def self.find_or_new(viuser : Viuser, cvpost : Cvpost) : self
+    self.find_or_new(viuser.id, cvpost.id)
   end
 
-  def self.upsert!(cvuser : Cvuser, cvpost : Cvpost) : self
-    user_post = find_or_new(cvuser, cvpost)
+  def self.upsert!(viuser : Viuser, cvpost : Cvpost) : self
+    user_post = find_or_new(viuser, cvpost)
     yield user_post
     user_post.save!
   end
 
-  def self.upsert!(cvuser_id : Int64, cvpost_id : Int64) : self
-    user_post = find_or_new(cvuser_id, cvpost_id)
+  def self.upsert!(viuser_id : Int64, cvpost_id : Int64) : self
+    user_post = find_or_new(viuser_id, cvpost_id)
     yield user_post
     user_post.save!
   end
 
-  def self.glob(cvuser : Cvuser, cvpost_ids : Array(Int64))
+  def self.glob(viuser : Viuser, cvpost_ids : Array(Int64))
     output = {} of Int64 => self
-    return output if cvuser.privi < 0
+    return output if viuser.privi < 0
 
-    result = self.query.where({cvuser_id: cvuser.id})
+    self.query.where({viuser_id: viuser.id})
       .where { cvpost_id.in? cvpost_ids }
       .each { |x| output[x.cvpost_id] = x }
 

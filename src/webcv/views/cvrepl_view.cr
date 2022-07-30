@@ -19,16 +19,16 @@ struct CV::CvreplView
         jb.field "dt_tslug", @data.cvpost.tslug
       end
 
-      jb.field "u_dname", @data.cvuser.uname
-      jb.field "u_privi", @data.cvuser.privi
+      jb.field "u_dname", @data.viuser.uname
+      jb.field "u_privi", @data.viuser.privi
 
       if @data.repl_cvrepl_id > 0
         repl = Cvrepl.load!(@data.repl_cvrepl_id)
 
         jb.field "rp_id", repl.id
         jb.field "rp_no", repl.ii
-        jb.field "ru_dname", repl.cvuser.uname
-        jb.field "ru_privi", repl.cvuser.privi
+        jb.field "ru_dname", repl.viuser.uname
+        jb.field "ru_privi", repl.viuser.privi
       end
 
       jb.field "ohtml", @data.ohtml

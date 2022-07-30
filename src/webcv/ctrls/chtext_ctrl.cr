@@ -2,7 +2,7 @@ require "json"
 
 class CV::ChtextCtrl < CV::BaseCtrl
   def zhtext
-    raise Unauthorized.new("Quyền hạn không đủ!") if _cvuser.privi < 1
+    raise Unauthorized.new("Quyền hạn không đủ!") if _viuser.privi < 1
 
     nvseed = load_nvseed
     chidx = params.read_i16("chidx", min: 1_i16)
@@ -22,10 +22,10 @@ class CV::ChtextCtrl < CV::BaseCtrl
   end
 
   def upload
-    return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
+    return halt!(500, "Quyền hạn không đủ!") if _viuser.privi < 1
     nvseed = load_nvseed
 
-    self_sname = "@" + _cvuser.uname
+    self_sname = "@" + _viuser.uname
 
     if (nvseed.sname != self_sname) && params["dup"]?
       target = nvseed
@@ -60,7 +60,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
       File.copy(form_file.file.path, file_path)
     elsif !(text = params["text"]?)
       raise BadRequest.new("Thiếu file hoặc text") unless File.exists?(file_path)
-    elsif text.size < 30_000 || _cvuser.privi > 1
+    elsif text.size < 30_000 || _viuser.privi > 1
       File.write(file_path, text)
     else
       raise BadRequest.new("Chương quá dài #{text.size} ký tự, tối đa: 30k ký tự")
@@ -94,7 +94,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
   # -ameba:disable Metrics/CyclomaticComplexity
   private def invoke_splitter(nvseed : Nvseed, file_path : String) : {Bool, Int16, String}
     args = ["-i", file_path]
-    args << "-u" << _cvuser.uname
+    args << "-u" << _viuser.uname
     params["chvol"]?.try { |x| args << "-v" << x.strip }
 
     from_chidx = params.read_i16("chidx", min: 1_i16)
@@ -130,7 +130,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
   end
 
   def change
-    return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 1
+    return halt!(500, "Quyền hạn không đủ!") if _viuser.privi < 1
     nvseed = load_nvseed
 
     chidx = params.read_i16("chidx", min: 1_i16)
@@ -146,7 +146,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
     spawn do
       Chedit.new({
-        cvuser: _cvuser, nvseed: nvseed,
+        viuser: _viuser, nvseed: nvseed,
         chidx: chidx, schid: chinfo.schid, cpart: cpart,
         l_id: l_id, orig: orig, edit: edit, flag: 0_i16,
       }).save!
@@ -155,7 +155,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     parts = chinfo.proxy ? (0_i16..chinfo.stats.parts).to_a : [cpart]
     texts = {} of Int16 => Array(String)
     parts.each do |i|
-      texts[i] = nvseed.chtext(chinfo, i, redo: false, uname: _cvuser.uname)
+      texts[i] = nvseed.chtext(chinfo, i, redo: false, uname: _viuser.uname)
     end
 
     chap_part = texts[cpart]
@@ -166,7 +166,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chinfo.proxy = nil
 
     chinfo.stats.utime = Time.utc.to_unix
-    chinfo.stats.uname = _cvuser.uname
+    chinfo.stats.uname = _viuser.uname
     chinfo.stats.chars += (edit.size - orig_size)
 
     nvseed._repo.save_part_to_zip(chinfo, texts)

@@ -14,7 +14,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .filter_status(params["status"]?)
         .filter_voters(params["voters"]?)
         .filter_rating(params["rating"]?)
-        .filter_cvuser(params["uname"]?, params["bmark"]?)
+        .filter_viuser(params["uname"]?, params["bmark"]?)
 
     query.sort_by(params.fetch_str("order", "access"))
     total = query.dup.limit(offset + limit * 3).offset(0).count
@@ -49,8 +49,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       raise NotFound.new("Quyển sách không tồn tại!")
     end
 
-    nvinfo.bump! if _cvuser.privi >= 0
-    ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
+    nvinfo.bump! if _viuser.privi >= 0
+    ubmemo = Ubmemo.find_or_new(_viuser.id, nvinfo.id)
 
     if ubmemo.lr_sname.empty?
       ubmemo.lr_sname = "=base"
@@ -93,7 +93,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       Ubmemo.query
         .where("nvinfo_id = #{nvinfo.id} AND status > 0")
         .order_by(utime: :desc)
-        .with_cvuser
+        .with_viuser
         .limit(100)
 
     send_json({
@@ -101,8 +101,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       books: nvinfos.map { |x| NvinfoView.new(x, false) },
       users: ubmemos.map do |x|
         {
-          u_dname: x.cvuser.uname,
-          u_privi: x.cvuser.privi,
+          u_dname: x.viuser.uname,
+          u_privi: x.viuser.privi,
           _status: x.status_s,
         }
       end,
@@ -122,11 +122,11 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   end
 
   def upsert
-    if _cvuser.privi < 2
+    if _viuser.privi < 2
       raise Unauthorized.new("Cần quyền hạn tối thiểu là 2")
     end
 
-    form = NvinfoForm.new(params, "@" + _cvuser.uname)
+    form = NvinfoForm.new(params, "@" + _viuser.uname)
 
     if nvinfo = form.save
       Nvinfo.cache!(nvinfo)
@@ -134,7 +134,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       spawn do
         `bin/bcover_cli single -i "#{nvinfo.scover}" -n #{nvinfo.bcover}`
         body = params.to_unsafe_h.tap(&.delete("_json"))
-        CtrlUtil.log_user_action("nvinfo-upsert", body, _cvuser.uname)
+        CtrlUtil.log_user_action("nvinfo-upsert", body, _viuser.uname)
       end
 
       serv_json({bslug: nvinfo.bslug})
@@ -144,7 +144,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   end
 
   def delete
-    return halt!(403, "Quyền hạn không đủ!") if _cvuser.privi < 4
+    return halt!(403, "Quyền hạn không đủ!") if _viuser.privi < 4
     unless nvinfo = Nvinfo.load!(params["bslug"])
       return halt!(404, "Quyển sách không tồn tại!")
     end

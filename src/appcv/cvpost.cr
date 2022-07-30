@@ -10,8 +10,8 @@ class CV::Cvpost
   column ii : Int32 = 1 # increase for each board
   getter oid : String { UkeyUtil.encode32(ii) }
 
-  belongs_to cvuser : Cvuser
-  getter cvuser : Cvuser { Cvuser.load!(self.cvuser_id) }
+  belongs_to viuser : Viuser, foreign_key_type: Int32
+  getter viuser : Viuser { Viuser.load!(self.viuser_id) }
 
   belongs_to nvinfo : Nvinfo
   getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
@@ -54,7 +54,7 @@ class CV::Cvpost
   end
 
   scope :filter_owner do |owner|
-    owner ? where({cvuser_id: owner.id}) : with_cvuser
+    owner ? where({viuser_id: owner.id}) : with_viuser
   end
 
   def set_title(title : String)
@@ -137,7 +137,7 @@ class CV::Cvpost
     if self.rpbody_id_column.defined?
       Cvrepl.find!({id: self.rpbody_id})
     else
-      Cvrepl.new({cvuser_id: self.cvuser_id, cvpost_id: 0_i64})
+      Cvrepl.new({viuser_id: self.viuser_id, cvpost_id: 0_i64})
     end
   end
 
@@ -157,7 +157,7 @@ class CV::Cvpost
     cvpost = find({ii: nvinfo.dt_ii}) || new({
       ii:        nvinfo.dt_ii,
       state:     1,
-      cvuser_id: -2,
+      viuser_id: -2,
       nvinfo_id: nvinfo.id,
       labels:    "thao-luan",
     })

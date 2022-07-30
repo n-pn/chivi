@@ -4,7 +4,7 @@ class CV::Chtran
   self.table = "chtrans"
   primary_key type: :serial
 
-  belongs_to cvuser : Cvuser
+  belongs_to viuser : Viuser, foreign_key_type: Int32
   belongs_to nvseed : Nvseed
 
   column chidx : Int16

@@ -4,14 +4,14 @@ class CV::SigninCtrl < CV::BaseCtrl
     uname = params["uname"].strip
     upass = params["upass"].strip
 
-    cvuser = Cvuser.create!(email, uname, upass)
+    viuser = Viuser.create!(email, uname, upass)
 
     spawn do
-      body = {email: email, uname: uname, cpass: cvuser.cpass}
+      body = {email: email, uname: uname, cpass: viuser.cpass}
       CtrlUtil.log_user_action("user-signup", body, uname)
     end
 
-    login_user!(cvuser)
+    login_user!(viuser)
   rescue err
     raise BadRequest.new(err.message)
   end
@@ -31,7 +31,7 @@ class CV::SigninCtrl < CV::BaseCtrl
   end
 
   private def validate_user(email : String, upass : String)
-    if user = Cvuser.find({email: email})
+    if user = Viuser.find({email: email})
       user.authentic?(upass) ? user : nil
     else
       DUMMY_PASS.verify(upass) # prevent timing attack
@@ -39,17 +39,17 @@ class CV::SigninCtrl < CV::BaseCtrl
     end
   end
 
-  private def login_user!(user : Cvuser)
-    @_cvuser = user
+  private def login_user!(user : Viuser)
+    @_viuser = user
     session["uname"] = user.uname
     save_session!
-    serv_json(CvuserView.new(user))
+    serv_json(ViuserView.new(user))
   end
 
   def pwtemp
     email = params["email"].strip
 
-    if user = Cvuser.find({email: email})
+    if user = Viuser.find({email: email})
       PasswdMailer.new(user).deliver
     else
       Log.error { email + " not found!" }
@@ -59,7 +59,7 @@ class CV::SigninCtrl < CV::BaseCtrl
   end
 
   def logout
-    @_cvuser = nil
+    @_viuser = nil
     session.delete("uname")
     save_session!
     serv_text("Đã đăng xuất", 201)

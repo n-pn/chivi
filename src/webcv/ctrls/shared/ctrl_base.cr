@@ -2,7 +2,7 @@ class CV::BaseCtrl < Amber::Controller::Base
   LAYOUT = false
 
   protected getter u_dname : String { session["uname"]? || "Khách" }
-  protected getter _cvuser : Cvuser { Cvuser.load!(u_dname) }
+  protected getter _viuser : Viuser { Viuser.load!(u_dname) }
 
   enum CacheType
     Private; Public
@@ -86,14 +86,14 @@ class CV::BaseCtrl < Amber::Controller::Base
     case sname
     when "=base", "=user"
       Nvseed.load!(load_nvinfo, sname, force: true)
-    when "=self", "@" + _cvuser.uname
-      Nvseed.load!(load_nvinfo, "@" + _cvuser.uname, force: true)
+    when "=self", "@" + _viuser.uname
+      Nvseed.load!(load_nvinfo, "@" + _viuser.uname, force: true)
     else
       Nvseed.load!(load_nvinfo, sname, force: false)
     end
   end
 
   def assert_privi(privi : Int32 = 1)
-    raise Unauthorized.new("Bạn không đủ quyền hạn") if _cvuser.privi < privi
+    raise Unauthorized.new("Bạn không đủ quyền hạn") if _viuser.privi < privi
   end
 end

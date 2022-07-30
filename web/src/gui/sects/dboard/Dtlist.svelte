@@ -5,7 +5,7 @@
     let api_url = `/api/topics?pg=${query.pg}&lm=10`
 
     if (query.lb) api_url += '&labels=' + query.lb
-    if (query.op) api_url += '&cvuser=' + query.op
+    if (query.op) api_url += '&viuser=' + query.op
 
     switch (tab) {
       case 'book':

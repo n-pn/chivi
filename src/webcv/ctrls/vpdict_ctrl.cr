@@ -87,7 +87,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
       end
 
       vdict.each do |dict|
-        dict.scan(chars, "!#{_cvuser.uname}", idx) do |term|
+        dict.scan(chars, "!#{_viuser.uname}", idx) do |term|
           dic = term.is_priv ? dict.type &+ 2 : dict.type
 
           value = "#{term.vals.join("/")}\t#{term.ptag.to_str}\t#{dic}"

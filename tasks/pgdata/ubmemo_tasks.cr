@@ -10,7 +10,7 @@ module CV::UbmemoTasks
       file = "#{DIR}/#{user.id}.txt"
 
       File.open(file, "w") do |io|
-        Ubmemo.query.where({cvuser_id: user.id}).with_nvinfo.each do |entry|
+        Ubmemo.query.where({viuser_id: user.id}).with_nvinfo.each do |entry|
           io << entry.nvinfo.bhash << '\t' << entry.to_json << '\n'
         end
       end
