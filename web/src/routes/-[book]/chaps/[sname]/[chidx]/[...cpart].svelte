@@ -97,11 +97,14 @@
     _reloading = false
   }
 
-  async function retranslate() {
+  async function retranslate(with_raw = false) {
     // const base = $config.engine == 2 ? '/_v2/qtran/chaps' : '/api/qtran/chaps'
     const base = '/api/qtran/chaps'
 
-    const url = `${base}/${rl_key}?trad=${$config.tosimp}&user=${$session.uname}`
+    let url = `${base}/${rl_key}?trad=${$config.tosimp}`
+    url += `&user=${$session.uname}`
+    if (with_raw) url += '&_raw'
+
     const res = await fetch(url)
     const txt = await res.text()
 
@@ -150,7 +153,7 @@
     const params = { l_id, orig, edit }
     const res = await $page.stuff.api.call(url, 'POST', params)
     if (res.error) alert(res.error)
-    else reload_chap()
+    else retranslate(true)
   }
 </script>
 
@@ -173,7 +176,7 @@
   {cvdata}
   mftime={chinfo.utime}
   source={chmeta.clink}
-  on_change={retranslate}
+  on_change={() => retranslate(false)}
   {on_fixraw}>
   <svelte:fragment slot="notext">
     <Notext {nvseed} {chmeta} {chinfo} />
@@ -216,7 +219,7 @@
           <button
             class="gmenu-item umami--click-reconvert-chap"
             disabled={$session.privi < 0}
-            on:click={retranslate}
+            on:click={() => retranslate(false)}
             data-kbd="r">
             <SIcon name="rotate-clockwise" />
             <span>Dịch lại</span>

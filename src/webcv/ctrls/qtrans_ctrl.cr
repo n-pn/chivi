@@ -33,9 +33,10 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     mode = QtranData::Format.parse(params.fetch_str("mode", "node"))
     trad = params["trad"]? == "true"
+    user = params["user"]? || _cvuser.uname
 
     set_headers content_type: :text
-    engine = data.make_engine(_cvuser.uname)
+    engine = data.make_engine(user)
     data.print_mtl(engine, response, format: mode, title: type == "chaps", trad: trad)
     data.print_raw(response) if params["_raw"]?
   end

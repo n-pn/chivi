@@ -181,9 +181,12 @@ class CV::ChRepo
 
     zip_path = "#{@chdir}/#{zh_pg}.zip"
 
-    parts.each do |cpart, content|
-      File.write(File.join(text_dir, "#{chinfo.schid}-#{cpart}.txt"), content.join('\n'))
+    parts.each do |cpart, files|
+      file = File.join(text_dir, "#{chinfo.schid}-#{cpart}.txt")
+      File.write(file, files.join('\n'))
     end
+
+    puts chinfo, parts.keys
 
     `zip --include=\\*.txt -rjmq "#{zip_path}" "#{text_dir}"`
     File.open("#{text_dir}.tsv", "a") { |io| io << '\n' << chinfo }
