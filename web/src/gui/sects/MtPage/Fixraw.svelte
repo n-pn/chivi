@@ -1,6 +1,6 @@
 <!-- @hmr:keep-all -->
 <script context="module" lang="ts">
-  import { onDestroy, onMount } from 'svelte'
+  import { onDestroy } from 'svelte'
 
   const suggest_maps = {
     '的': [
@@ -15,8 +15,11 @@
       ['得', '的'],
       ['得', '地'],
     ],
-
     '"': [
+      ['"', '“'],
+      ['"', '”'],
+    ],
+    '＂': [
       ['"', '“'],
       ['"', '”'],
     ],

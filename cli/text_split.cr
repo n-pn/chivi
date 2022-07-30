@@ -10,7 +10,7 @@ class Chapter
 
   getter sizes = [] of Int32
   getter chars = 0
-  getter parts = 1
+  getter parts = 1_i16
 
   def add(line : String) : Nil
     return if line.blank?
@@ -315,7 +315,7 @@ OptionParser.parse do |parser|
 
   parser.on("-u UNAME", "user name") { |u| cmd.uname = u }
   parser.on("-v CHVOL", "default chapter volume name") { |v| cmd.chvol = v }
-  parser.on("-f CHIDX", "start chap index") { |f| cmd.chidx = f.to_i }
+  parser.on("-f CHIDX", "start chap index") { |f| cmd.chidx = f.to_i16 }
   parser.on("-d CHAP_DIR", "output folder") { |i| cmd.chap_dir = i }
 
   parser.on("-m SPLIT_MODE", "text split mode") { |m| split_mode = m.to_i }
