@@ -58,9 +58,9 @@ class CV::Nvseed
 
   def refresh_mirror!(upstream : Nvseed, force : Bool = false) : Nil
     return unless last_chap = self.chinfo(self.chap_count.to_i16 &- 1)
-    return unless proxy = last_chap.proxy
+    return unless (mirror_id = last_chap.mirror_id) && (mirror = Chinfo.find({id: mirror_id}))
 
-    offset = last_chap.chidx &- proxy.chidx
+    offset = last_chap.chidx &- mirror.chidx
     self.clone_range!(upstream, last_chap.chidx, offset: offset)
   end
 end

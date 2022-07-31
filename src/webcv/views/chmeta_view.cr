@@ -3,7 +3,7 @@ require "./_base_view"
 struct CV::ChmetaView
   include BaseView
 
-  def initialize(@seed : Nvseed, @chap : ChInfo, @cpart = 0_i16, @full = false)
+  def initialize(@seed : Nvseed, @chap : Chinfo, @cpart = 0_i16, @full = false)
   end
 
   def to_json(jb : JSON::Builder)
@@ -21,8 +21,8 @@ struct CV::ChmetaView
   end
 
   def chap_link
-    if proxy = @chap.proxy
-      SiteLink.text_url(proxy.sname, proxy.snvid, @chap.schid)
+    if mirror = @chap.mirror.try(&.chroot)
+      SiteLink.text_url(mirror.sname, mirror.snvid, @chap.schid)
     else
       SiteLink.text_url(@seed.sname, @seed.snvid, @chap.schid)
     end
@@ -35,7 +35,7 @@ struct CV::ChmetaView
   end
 
   def next_url
-    return chap_url(@chap, @cpart &+ 1) if @cpart < @chap.stats.parts - 1
+    return chap_url(@chap, @cpart &+ 1) if @cpart < @chap.p_count - 1
     return if @chap.chidx == @seed.chap_count
     @seed.chinfo(@chap.chidx).try { |succ| chap_url(succ, 0) }
   end
@@ -44,8 +44,8 @@ struct CV::ChmetaView
     String.build do |io|
       io << chap.chidx << '/' << chap.trans.uslug
 
-      if cpart != 0 && chap.stats.parts > 1
-        io << '/' << (cpart % chap.stats.parts &+ 1)
+      if cpart != 0 && chap.p_count > 1
+        io << '/' << (cpart % chap.p_count &+ 1)
       end
     end
   end

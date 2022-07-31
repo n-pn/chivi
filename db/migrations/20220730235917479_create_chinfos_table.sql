@@ -12,16 +12,17 @@ create table chinfos (
   title varchar not null default '',
   chvol varchar not null default '',
 
-  parts text[][],
+  parts text[],
 
   w_count int not null default 0,
   p_count smallint not null default 0,
 
+  changed_at timestamptz,
   created_at timestamptz not null default CURRENT_TIMESTAMP,
-  updated_at timestamptz not null default CURRENT_TIMESTAMP
-);
+  updated_at timestamptz not null default CURRENT_TIMESTAMP,
 
-create unique index chinfos_unique_idx on chinfos (chroot_id, chidx);
+  constraint chinfos_unique_key unique (chroot_id, chidx)
+);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

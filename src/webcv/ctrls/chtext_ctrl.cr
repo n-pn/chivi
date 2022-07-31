@@ -14,10 +14,10 @@ class CV::ChtextCtrl < CV::BaseCtrl
     set_headers content_type: :text
 
     response << "/// #{chinfo.chvol}\n#{chinfo.title}\n"
-
-    chinfo.stats.parts.times do |cpart|
-      lines = nvseed.chtext(chinfo, cpart)
-      1.upto(lines.size - 1) { |i| response << '\n' << lines.unsafe_fetch(i) }
+    response << '\n' << chinfo.text(0_i16)
+    1_i16.upto(chinfo.p_count &- 1) do |cpart|
+      text = chinfo.text(cpart)
+      response << '\n' << text.sub(/.+?\n/, "")
     end
   end
 
@@ -152,25 +152,29 @@ class CV::ChtextCtrl < CV::BaseCtrl
       }).save!
     end
 
-    parts = chinfo.proxy ? (0_i16..chinfo.stats.parts).to_a : [cpart]
-    texts = {} of Int16 => Array(String)
-    parts.each do |i|
-      texts[i] = nvseed.chtext(chinfo, i, redo: false, uname: _viuser.uname)
+    parts = [] of String
+
+    chinfo.p_count.times do |index|
+      text = chinfo.text(index.to_i16, redo: false, viuser: _viuser)
+      if index == cpart
+        lines = text.split('\n')
+
+        chinfo.w_count &+= edit.size
+        chinfo.w_count &-= (orig || lines[l_id]?).try(&.size) || 0
+
+        lines[l_id] = text
+        text = lines.join('\n')
+      end
+
+      parts << text
     end
 
-    chap_part = texts[cpart]
-    orig_size = (orig || chap_part[l_id]?).try(&.size) || 0
+    chinfo.parts = parts
+    chinfo.mirror_id = nil
+    chinfo.changed_at = Time.utc
 
-    chap_part[l_id] = edit
-
-    chinfo.proxy = nil
-
-    chinfo.stats.utime = Time.utc.to_unix
-    chinfo.stats.uname = _viuser.uname
-    chinfo.stats.chars += (edit.size - orig_size)
-
-    nvseed._repo.save_part_to_zip(chinfo, texts)
-    nvseed.reset_cache!
+    chinfo.viuser = _viuser
+    chinfo.save!
 
     serv_text("ok")
   end

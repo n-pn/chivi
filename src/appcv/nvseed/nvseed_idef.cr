@@ -51,14 +51,12 @@ class CV::Nvseed
     ""
   end
 
-  getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.dname) }
   getter _repo : ChRepo { ChRepo.load!(self.sname, self.snvid) }
   delegate chlist, to: _repo
-  delegate chtext, to: _repo
 
   VI_PSIZE = 32
 
-  @vpages = Hash(Int16, Array(ChInfo)).new
+  @vpages = Hash(Int16, Array(Chinfo)).new
 
   def reset_cache!(chmin = 1_i16, chmax = self.chap_count, raws : Bool = true)
     @lastpg = nil
@@ -72,28 +70,85 @@ class CV::Nvseed
 
   def chpage(vi_pg : Int16)
     @vpages[vi_pg] ||= begin
-      chmin = vi_pg * VI_PSIZE + 1
-      chmax = chmin + VI_PSIZE - 1
-      chmax = self.chap_count if chmax > self.chap_count
+      chmin = vi_pg * VI_PSIZE
 
-      chlist = _repo.chlist(vi_pg // 4)
-      (chmin..chmax).map { |chidx| chlist.get(chidx).trans!(cvmtl) }
+      Chinfo.query.filter_chroot(self.id)
+        .where("chidx > #{chmin} and chidx <= #{chmin + VI_PSIZE}")
+        .order_by(chidx: :asc).to_a.tap(&.each(&.chroot = self))
     end
   end
 
-  getter lastpg : Array(ChInfo) do
-    chmax = self.chap_count.to_i16 &- 1
-    chmin = chmax > 3 ? chmax &- 3 : 0_i16
+  getter is_remote : Bool { SnameMap.remote?(self.sname) }
 
-    output = [] of ChInfo
-    chmax.downto(chmin) do |index|
-      output << (self.chinfo(index) || ChInfo.new(index + 1))
-    end
-
-    output
+  getter lastpg : Array(Chinfo) do
+    Chinfo.query.filter_chroot(self.id)
+      .where("chidx <= #{self.chap_count}")
+      .limit(4).order_by(chidx: :desc)
+      .to_a.tap(&.each(&.chroot = self))
   end
 
-  def chinfo(index : Int16) : ChInfo?
-    self.chpage(index // VI_PSIZE)[index % VI_PSIZE]?
+  def chinfo(index : Int16) : Chinfo?
+    self.chpage(index // VI_PSIZE).find(&.chidx.==(index + 1))
   end
+
+  # def chtext(chidx : Int16, cpart = 0_i16, redo = false, uname = "")
+  #   unless chinfo = self.chinfo(chidx)
+  #     return [] of String
+  #   end
+
+  #   chtext(chinfo, cpart, redo, uname)
+  # end
+
+  # def chtext(chinfo : Chinfo, cpart = 0_i16, redo = false, viuser = nil)
+  #   if mirror = chinfo.mirror.try(&.chroot)
+  #     return mirror.chtext()
+  #   if proxy = chinfo.proxy
+  #     return chtext_from_mirror(chinfo, proxy, cpart, redo, uname)
+  #   end
+
+  #   chtext = ChText.new(sname, snvid, chinfo)
+  #   chdata = chtext.load!(cpart)
+
+  #   if @is_remote && (redo || chdata.lines.empty?)
+  #     chdata = chtext.fetch!(cpart, ttl: redo ? 1.minutes : 10.years)
+  #     chinfo.stats.uname = uname
+  #     self.patch!([chinfo])
+  #   elsif chinfo.stats.parts == 0
+  #     # check if text existed in zip file but not stored in index
+  #     chtext.remap!
+  #     self.patch!([chinfo])
+  #   end
+
+  #   chdata.lines
+  # rescue
+  #   [] of String
+  # end
+
+  # def chtext_from_mirror(chinfo, proxy, cpart, redo, uname)
+  #   mirror_repo = ChRepo.load!(proxy.sname, proxy.snvid)
+  #   return [] of String unless mirror_info = mirror_repo.chinfo(proxy.chidx)
+
+  #   chtext = mirror_repo.chtext(mirror_info, cpart, redo, uname)
+  #   chinfo.stats = mirror_info.stats
+  #   patch!([chinfo])
+  #   chtext
+  # end
+
+  # def save_part_to_zip(chinfo, parts : Hash(Int16, Array(String)))
+  #   zh_pg = self.map_pg(chinfo.chidx)
+  #   text_dir = "#{@chdir}/#{zh_pg}"
+  #   Dir.mkdir_p(text_dir)
+
+  #   zip_path = "#{@chdir}/#{zh_pg}.zip"
+
+  #   parts.each do |cpart, files|
+  #     file = File.join(text_dir, "#{chinfo.schid}-#{cpart}.txt")
+  #     File.write(file, files.join('\n'))
+  #   end
+
+  #   puts chinfo, parts.keys
+
+  #   `zip --include=\\*.txt -rjmq "#{zip_path}" "#{text_dir}"`
+  #   File.open("#{text_dir}.tsv", "a") { |io| io << '\n' << chinfo }
+  # end
 end

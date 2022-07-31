@@ -36,6 +36,8 @@ class CV::Nvseed
   column last_schid : String = "" # seed's latest chap id
   column chap_count : Int32 = 0   # total chapters
 
+  column seeded : Bool = false
+
   timestamps
 
   getter seed_type : Int32 { SnameMap.map_type(sname) }
@@ -63,6 +65,43 @@ class CV::Nvseed
     when .> 360 then 120
     else             chap_count // 3
     end
+  end
+
+  TXT_DIR = "var/chtexts"
+
+  def seed_chaps_from_disk!
+    on_conflict = ->(req : Clear::SQL::InsertQuery) do
+      req.on_conflict("ON CONSTRAINT chinfos_unique_key").do_update do |upd|
+        upd.set(<<-SQL).where("excluded.changed_at is not null")
+          schid = excluded.schid,
+          title = excluded.title,
+          chvol = excluded.chvol,
+          w_count = excluded.w_count,
+          p_count = excluded.p_count,
+          viuser_id = excluded.viuser_id,
+          mirror_id = excluded.mirror_id,
+          changed_at = excluded.changed_at
+        SQL
+      end
+    end
+
+    files = Dir.glob("#{TXT_DIR}/#{self.sname}/#{self.snvid}/*.tsv")
+    files.each do |file|
+      input = {} of Int16 => Chinfo
+      File.read_lines(file).each do |line|
+        next if line.empty?
+        entry = Chinfo.new(self, line.split('\t'))
+        input[entry.chidx] = entry
+      end
+
+      puts "- #{input.size} chapters to import!"
+
+      Clear::SQL.transaction do
+        input.values.sort_by!(&.chidx).each(&.save(on_conflict: on_conflict))
+      end
+    end
+
+    self.update!({seeded: true})
   end
 
   # ------------------------

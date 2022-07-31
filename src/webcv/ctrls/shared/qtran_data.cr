@@ -54,7 +54,7 @@ class CV::QtranData
     new(parse_lines(ysrepl.ztext), nvinfo.dname, nvinfo.vname)
   end
 
-  def self.load_chap(name : String, redo = false, uname = "") : QtranData
+  def self.load_chap(name : String, redo = false, viuser : Viuser? = nil) : QtranData
     sname, snvid, chidx, cpart = name.split(":")
 
     unless nvseed = Nvseed.find({sname: sname, snvid: snvid})
@@ -65,17 +65,16 @@ class CV::QtranData
       raise NotFound.new("Chương tiết không tồn tại")
     end
 
-    load_chap(nvseed, chinfo, cpart.to_i16, redo, uname)
+    load_chap(chinfo, cpart.to_i16, redo, viuser)
   end
 
-  def self.load_chap(nvseed : Nvseed, chinfo : ChInfo, cpart = 0_i16, redo = false, uname = "")
-    lines = nvseed.chtext(chinfo, cpart, redo: redo, uname: uname)
-    stats = chinfo.stats
+  def self.load_chap(chinfo : Chinfo, cpart = 0_i16, redo = false, viuser : Viuser? = nil)
+    lines = chinfo.text(cpart, redo: redo, viuser: viuser).split('\n')
 
-    parts = stats.parts
+    parts = chinfo.p_count
     label = parts > 1 ? " [#{cpart &+ 1}/#{parts}]" : ""
 
-    nvinfo = nvseed.nvinfo
+    nvinfo = chinfo.chroot.nvinfo
     new(lines, nvinfo.dname, nvinfo.vname, label: label)
   end
 

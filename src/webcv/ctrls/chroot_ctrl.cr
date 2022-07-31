@@ -95,7 +95,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     trunc_chidx = params.read_i16("chidx", min: 1_i16, max: nvseed.chap_count.to_i16)
 
     if chinfo = nvseed.chinfo(trunc_chidx &- 2)
-      last_sname = chinfo.proxy.try(&.sname) || ""
+      last_sname = chinfo.mirror.try(&.chroot.sname) || ""
       last_schid = chinfo.schid
     else
       last_sname = last_schid = ""

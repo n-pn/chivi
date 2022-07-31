@@ -1,21 +1,21 @@
 class CV::NvchapCtrl < CV::BaseCtrl
   def ch_info
     nvseed = load_nvseed
-    nvinfo = nvseed.nvinfo
 
     chidx = params.read_i16("chidx", min: 1_i16)
-    cpart = params.read_i16("cpart")
+    cpart = params.read_i16("cpart", min: 0_i16)
 
     unless chinfo = nvseed.chinfo(chidx - 1)
       raise NotFound.new("Chương tiết không tồn tại")
     end
 
-    spawn Nvstat.inc_chap_view(nvinfo.id)
+    # spawn Nvstat.inc_chap_view(nvseed.nvinfo.id)
 
     ubmemo = Ubmemo.find_or_new(_viuser.id, nvseed.nvinfo_id)
     ubmemo.mark_chap!(chinfo, nvseed.sname, cpart) if _viuser.privi > -1
 
     redo = _viuser.privi > 0 && params["redo"]? == "true"
+
     cvdata, rl_key = load_cvdata(nvseed, chinfo, cpart, redo)
 
     serv_json do |jb|
@@ -30,27 +30,24 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  private def load_cvdata(nvseed : Nvseed, chinfo : ChInfo, cpart = 0_i16, redo = false)
-    stats = chinfo.stats
-
-    min_privi = nvseed.min_privi(chinfo.chidx, stats.chars)
+  private def load_cvdata(nvseed : Nvseed, chinfo : Chinfo,
+                          cpart : Int16 = 0_i16, redo : Bool = false)
+    min_privi = nvseed.min_privi(chinfo.chidx, chinfo.w_count)
     return {"", ""} if min_privi > _viuser.privi
 
-    if proxy = chinfo.proxy
-      ukey = {proxy.sname, proxy.snvid, chinfo.chidx, cpart}.join(":")
+    if mirror = chinfo.mirror.try(&.chroot)
+      ukey = {mirror.sname, mirror.snvid, chinfo.chidx, cpart}.join(":")
     else
       ukey = {nvseed.sname, nvseed.snvid, chinfo.chidx, cpart}.join(":")
     end
 
-    if redo || !(qtran = QtranData::CACHE.get?(ukey, Time.unix(stats.utime) + 10.minutes))
-      qtran = QtranData.load_chap(nvseed, chinfo, cpart, redo: redo, uname: _viuser.uname)
+    utime = chinfo.changed_at.try(&.+ 10.minutes) || Time.utc + 10.minutes
+    if redo || !(qtran = QtranData::CACHE.get?(ukey, utime))
+      qtran = QtranData.load_chap(chinfo, cpart, redo: redo, viuser: _viuser)
       QtranData::CACHE.set(ukey, qtran)
     end
 
-    if qtran.input.empty?
-      spawn log_convert_error(nvseed, chinfo, cpart, "No text loaded")
-      return {"", ukey}
-    end
+    return {"", ukey} if qtran.input.empty?
 
     cvdata = String.build do |io|
       engine = qtran.make_engine(_viuser.uname)
@@ -61,7 +58,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     {cvdata, ukey}
   rescue ex
-    spawn log_convert_error(nvseed, chinfo, cpart, ex.message)
+    Log.error(exception: ex) { ex.message.colorize.red }
     {"", ""}
   end
 
