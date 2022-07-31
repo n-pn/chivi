@@ -1,7 +1,7 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE cttrans (
-  chinfo_id int not null primary key,
+  chinfo_id int not null primary key references chinfos (id) on update cascade on delete cascade,
 
   title varchar not null default '',
   chvol varchar not null default '',

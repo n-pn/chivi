@@ -2,7 +2,7 @@
 -- SQL in section 'Up' is executed when this migration is applied
 
 CREATE TABLE chap_trans (
-  id serial,
+  id serial primary key,
 
   viuser_id int not null,
   chroot_id int not null,

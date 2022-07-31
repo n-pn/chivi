@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE cvusers (
-  id serial,
+  id serial primary key,
 
   uname citext unique not null,
   email citext unique not null,

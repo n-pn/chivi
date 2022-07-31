@@ -1,15 +1,16 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 create table chinfos (
-  id serial,
-  chroot_id int not null,
-  viuser_id int,
+  id serial primary key,
+
+  chroot_id int not null references chroots (id) on update cascade on delete cascade,
+  viuser_id int references viusers (id) on update cascade on delete cascade,
 
   chidx smallint not null,
   schid varchar not null,
 
-  title varchar not null default '';
-  chvol varchar not null default '';
+  title varchar not null default '',
+  chvol varchar not null default '',
 
   parts text[][],
 
@@ -17,22 +18,10 @@ create table chinfos (
   p_count smallint not null default 0,
 
   created_at timestamptz not null default CURRENT_TIMESTAMP,
-  updated_at timestamptz not null default CURRENT_TIMESTAMP,
-
-constraint fk_viuser_chinfo
-      foreign key(viuser_id)
-      references viusers(id)
-      on update cascade
-      on delete set null,
-
-  constraint fk_chroot_chinfo
-      foreign key(chroot_id)
-      references chroots(id)
-      on update cascade
-      on delete cascade
+  updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-create unique index chinfo_unique_idx chinfos(chroot_id, chidx);
+create unique index chinfos_unique_idx on chinfos (chroot_id, chidx);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
