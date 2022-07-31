@@ -145,8 +145,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
     edit = params["edit"]
 
     spawn do
-      Chedit.new({
-        viuser: _viuser, nvseed: nvseed,
+      ChapEdit.new({
+        viuser: _viuser, chroot: nvseed,
         chidx: chidx, schid: chinfo.schid, cpart: cpart,
         l_id: l_id, orig: orig, edit: edit, flag: 0_i16,
       }).save!

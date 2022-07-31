@@ -1,11 +1,11 @@
-class CV::Chedit
+class CV::ChapEdit
   include Clear::Model
 
-  self.table = "chedits"
+  self.table = "chap_edits"
   primary_key type: :serial
 
   belongs_to viuser : Viuser, foreign_key_type: Int32
-  belongs_to nvseed : Nvseed
+  belongs_to chroot : Nvseed, foreign_key_type: Int32
 
   column chidx : Int16
   column schid : String

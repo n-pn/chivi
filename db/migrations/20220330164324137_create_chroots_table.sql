@@ -1,5 +1,5 @@
 -- +micrate Up
-CREATE TABLE nvseeds (
+CREATE TABLE chroots (
   id bigserial primary key,
 
   nvinfo_id bigint not null default 0,
@@ -22,10 +22,10 @@ CREATE TABLE nvseeds (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE INDEX nvseed_unique_idx ON nvseeds (sname, snvid);
-CREATE INDEX nvseed_nvinfo_idx ON nvseeds (nvinfo_id, sname);
-CREATE INDEX nvseed_stime_idx ON nvseeds (stime);
+CREATE INDEX chroot_unique_idx ON chroots (sname, snvid);
+CREATE INDEX chroot_nvinfo_idx ON chroots (nvinfo_id, sname);
+CREATE INDEX chroot_stime_idx ON chroots (stime);
 
 
 -- +micrate Down
-DROP TABLE IF EXISTS nvseeds;
+DROP TABLE IF EXISTS chroots;

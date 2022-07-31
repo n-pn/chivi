@@ -1,11 +1,11 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 
-CREATE TABLE chtrans (
+CREATE TABLE chap_trans (
   id serial,
 
   viuser_id int not null,
-  nvseed_id bigint not null,
+  chroot_id int not null,
 
   chidx smallint not null,
   schid varchar not null,
@@ -22,10 +22,10 @@ CREATE TABLE chtrans (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-create index chtrans_cvuser_idx on chtrans(viuser_id);
-create index chtrans_nvseed_idx on chtrans(nvseed_id, chidx, flag);
+create index chap_trans_viuser_idx on chap_trans(viuser_id);
+create index chap_trans_chroot_idx on chap_trans(chroot_id, chidx, flag);
 
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-DROP TABLE chtrans;
+DROP TABLE chap_trans;

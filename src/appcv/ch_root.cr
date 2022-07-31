@@ -10,8 +10,8 @@ require "./nvseed/*"
 class CV::Nvseed
   include Clear::Model
 
-  self.table = "nvseeds"
-  primary_key
+  self.table = "chroots"
+  primary_key type: :serial
 
   # column uid : Int64 = 0_i64 # alternative unique index
 
