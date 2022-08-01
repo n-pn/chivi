@@ -61,7 +61,7 @@ class CV::QtranData
       raise NotFound.new("Nguồn truyện không tồn tại")
     end
 
-    unless chinfo = nvseed.chinfo(chidx.to_i16 - 1)
+    unless chinfo = nvseed.chinfo(chidx.to_i16)
       raise NotFound.new("Chương tiết không tồn tại")
     end
 
@@ -69,7 +69,8 @@ class CV::QtranData
   end
 
   def self.load_chap(chinfo : Chinfo, cpart = 0_i16, redo = false, viuser : Viuser? = nil)
-    lines = chinfo.text(cpart, redo: redo, viuser: viuser).split('\n')
+    input = chinfo.text(cpart, redo: redo, viuser: viuser)
+    lines = input.empty? ? [] of String : input.split('\n')
 
     parts = chinfo.p_count
     label = parts > 1 ? " [#{cpart &+ 1}/#{parts}]" : ""

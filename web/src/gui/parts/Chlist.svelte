@@ -36,7 +36,9 @@
       </div>
       <div class="chap-meta">
         <chap-chvol>
-          {#if chinfo.o_sname}{chinfo.o_sname} - {/if}{chinfo.chvol}
+          {#if chinfo.sname != nvseed.sname}
+            <chap-mark class="sm">{chinfo.sname} - </chap-mark>{/if}
+          {chinfo.chvol}
         </chap-chvol>
         {#if chinfo.chars > 0}
           <chap-track
@@ -57,7 +59,7 @@
               ><SIcon name="lock-open" /></chap-mark>
           {:else}
             <chap-mark data-tip="Chương tiết miễn phí"
-              ><SIcon name="gift" /></chap-mark>
+              ><SIcon name="lock-open" /></chap-mark>
           {/if}
         {:else if min_privi == 0}
           <chap-mark data-tip={'Bạn cần đăng nhập để xem chương'}
@@ -170,6 +172,9 @@
 
   chap-mark {
     font-size: 1rem;
-    @include fgcolor(neutral, 5);
+    @include fgcolor(mute);
+    &.sm {
+      font-size: rem(12px);
+    }
   }
 </style>

@@ -55,11 +55,11 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     if ubmemo.lr_sname.empty?
       ubmemo.lr_sname = "=base"
 
-      if chinfo = nvinfo.seed_list._base.chinfo(0)
+      if chinfo = nvinfo.seed_list._base.chinfo(1)
         ubmemo.lr_chidx = -1
-        ubmemo.lc_uslug = chinfo.trans.uslug
+        ubmemo.lc_uslug = chinfo.url_slug
       else
-        ubmemo.lc_uslug = "thieu-chuong"
+        ubmemo.lc_uslug = "-"
       end
     end
 

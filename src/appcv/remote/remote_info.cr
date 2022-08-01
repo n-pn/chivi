@@ -1,8 +1,8 @@
-require "../_util/http_util"
-require "../_util/site_link"
-require "../_util/time_util"
+require "../../_util/http_util"
+require "../../_util/site_link"
+require "../../_util/time_util"
 
-require "../appcv/shared/sname_map"
+require "../ch_root"
 require "./remote_mulu"
 
 class CV::RemoteInfo
@@ -24,8 +24,6 @@ class CV::RemoteInfo
 
   def initialize(@sname : String, @snvid : String, @ttl = TTL, @lbl = "-/-")
     @root_dir = File.join(DIR, @sname)
-
-    @ttl = 10.years if SnameMap.map_type(@sname) < 3
     @encoding = HttpUtil.encoding_for(@sname)
   end
 
@@ -240,5 +238,5 @@ class CV::RemoteInfo
   end
 
   getter last_schid : String { mulu.extract_schid(last_schid_href) }
-  getter chap_infos : Array(ChInfo) { mulu.tap(&.extract_chaps!).chaps }
+  getter chap_infos : Array(RemoteMulu::Chinfo) { mulu.tap(&.extract_chaps!).chaps }
 end

@@ -5,7 +5,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     chidx = params.read_i16("chidx", min: 1_i16)
     cpart = params.read_i16("cpart", min: 0_i16)
 
-    unless chinfo = nvseed.chinfo(chidx - 1)
+    unless chinfo = nvseed.chinfo(chidx)
       raise NotFound.new("Chương tiết không tồn tại")
     end
 

@@ -23,7 +23,7 @@ struct CV::NvseedView
 
         jb.field "lasts" do
           jb.array do
-            @data.lastpg.each { |x| ChinfoView.new(x).to_json(jb) }
+            ChinfoView.list(@data.lastpg).each(&.to_json(jb))
           end
         end
 

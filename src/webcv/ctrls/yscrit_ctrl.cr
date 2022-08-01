@@ -31,7 +31,7 @@ class CV::YscritCtrl < CV::BaseCtrl
 
     send_json({
       pgidx: pgidx,
-      pgmax: CtrlUtil.pgmax(total, limit),
+      pgmax: CtrlUtil.pgmax(total.to_i, limit),
       crits: crits.map { |x| YscritView.new(x) },
     })
   end

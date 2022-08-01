@@ -18,18 +18,15 @@ class CV::Nslist
     end
 
     @other.sort_by! { |x| SnameMap.zseed(x.sname) }
-    @other.each { |x| x.seed_chaps_from_disk! unless x.seeded }
-
     @users.sort_by!(&.utime.-)
-    @users.each { |x| x.seed_chaps_from_disk! unless x.seeded }
 
     @_base ||= init_base
-    @_user ||= Nvseed.load!(@nvinfo, "=user", force: true)
+    @_user ||= init_user
   end
 
   def init_base
     seed = Nvseed.load!(@nvinfo, "=base", force: true)
-    seed.tap(&.autogen_base!(@other, mode: 0))
+    seed.tap(&.reload_base!(mode: 0_i8))
   end
 
   def init_user

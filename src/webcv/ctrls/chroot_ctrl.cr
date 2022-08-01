@@ -8,8 +8,8 @@ class CV::NvseedCtrl < CV::BaseCtrl
     nvseed = load_nvseed
     mode = params.read_i8("mode", 0_i8)
 
-    if mode > 0 && can_refresh?(nvseed)
-      nvseed.refresh!(mode: mode)
+    if mode > 0 && can_reload?(nvseed)
+      nvseed.reload!(mode: mode)
       fresh = true
     else
       fresh = nvseed.fresh?(_viuser.privi, force: false)
@@ -18,7 +18,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     serv_json(NvseedView.new(nvseed, full: true, fresh: fresh))
   end
 
-  private def can_refresh?(nvseed : Nvseed)
+  private def can_reload?(nvseed : Nvseed)
     return false if _viuser.privi < 0
     return true unless nvseed.sname[0] == '@'
     nvseed.sname == '@' + _viuser.uname
@@ -31,7 +31,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
     serv_json({
       pgidx: pgidx,
-      pgmax: CtrlUtil.pgmax(nvseed.chap_count, 32),
+      pgmax: CtrlUtil.pgmax(nvseed.chap_count, 32_i16),
       chaps: ChinfoView.list(chaps),
     })
   end
@@ -79,29 +79,24 @@ class CV::NvseedCtrl < CV::BaseCtrl
     target = Nvseed.load!(nvseed.nvinfo, params["o_sname"])
 
     chmin = params.read_i16("chmin", min: 1_i16)
-    chmax = params.read_i16("chmax", min: chmin, max: target.chap_count.to_i16)
+    chmax = params.read_i16("chmax", min: chmin, max: target.chap_count)
 
-    i_chmin = params.read_i16("i_chmin", min: 1_i16)
-    offset = i_chmin &- chmin
+    new_chmin = params.read_i16("i_chmin", min: 1_i16)
+    nvseed.mirror_other(target, chmin, chmax, new_chmin)
 
-    nvseed.clone_range!(target, chmin, chmax, offset)
-    nvseed.save!
-
-    serv_json({pgidx: (i_chmin - 1) // 128 + 1})
+    serv_json({pgidx: (new_chmin &- 1) // 128 &+ 1})
   end
 
   def trunc
     nvseed = load_guarded_nvseed(min_privi: 2)
-    trunc_chidx = params.read_i16("chidx", min: 1_i16, max: nvseed.chap_count.to_i16)
+    trunc_chidx = params.read_i16("chidx", min: 1_i16, max: nvseed.chap_count)
 
-    if chinfo = nvseed.chinfo(trunc_chidx &- 2)
+    if chinfo = nvseed.chinfo(trunc_chidx &- 1)
       last_sname = chinfo.mirror.try(&.chroot.sname) || ""
       last_schid = chinfo.schid
     else
       last_sname = last_schid = ""
     end
-
-    nvseed.reset_cache!(chmin: trunc_chidx, raws: false)
 
     nvseed.update({
       chap_count: trunc_chidx &- 1,
@@ -114,10 +109,9 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   def prune
     nvseed = load_guarded_nvseed(min_privi: 2)
-    nvseed.reset_cache!
 
     nvseed.update({
-      chap_count: 0,
+      chap_count: 0_i16,
       last_sname: "",
       last_schid: "",
       shield:     _viuser.privi > 2 ? 4 : 3,

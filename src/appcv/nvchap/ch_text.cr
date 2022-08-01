@@ -1,11 +1,11 @@
 require "file_utils"
 require "compress/zip"
 
-require "../../_init/remote_text"
+require "../tools/r2_client"
+require "../remote/remote_text"
 
 require "./ch_info"
 require "./ch_util"
-require "../tools/r2_client"
 
 class CV::ChText
   DIR = "var/chtexts"

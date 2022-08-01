@@ -1,8 +1,8 @@
 module CV::CtrlUtil
   extend self
 
-  def pgmax(total : Int32 | Int64, limit : Int32)
-    (total - 1) // limit + 1
+  def pgmax(total : Int, limit : Int)
+    (total &- 1) // limit &+ 1
   end
 
   LOG_DIR = "var/pg_data/weblogs"

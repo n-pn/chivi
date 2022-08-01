@@ -7,7 +7,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     nvseed = load_nvseed
     chidx = params.read_i16("chidx", min: 1_i16)
 
-    unless chinfo = nvseed.chinfo(chidx - 1)
+    unless chinfo = nvseed.chinfo(chidx)
       raise NotFound.new("Chương tiết không tồn tại")
     end
 
@@ -76,19 +76,18 @@ class CV::ChtextCtrl < CV::BaseCtrl
     end
 
     nvseed.utime = Time.utc.to_unix
-    nvseed.reset_cache!(raws: true)
     nvseed.save!
   end
 
   private def sync_changes(nvseed : Nvseed, chmin : Int16, chmax : Int16, target = Nvseed?)
-    infos = nvseed._repo.clone!(chmin, chmax)
-
-    if !target || target.sname[0]? == '@'
-      user_seed = Nvseed.load!(nvseed.nvinfo, "=user", force: true)
-      user_seed.patch_chaps!(infos, nvseed.utime, save: true)
-    else
-      target.patch_chaps!(infos, nvseed.utime, save: true)
-    end
+    raise "refactoring!"
+    # infos = nvseed._repo.clone!(chmin, chmax)
+    # if !target || target.sname[0]? == '@'
+    #   user_seed = Nvseed.load!(nvseed.nvinfo, "=user", force: true)
+    #   user_seed.patch_chaps!(infos, nvseed.utime, save: true)
+    # else
+    #   target.patch_chaps!(infos, nvseed.utime, save: true)
+    # end
   end
 
   # -ameba:disable Metrics/CyclomaticComplexity
@@ -152,7 +151,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
       }).save!
     end
 
-    parts = [] of String
+    content = [] of String
 
     chinfo.p_count.times do |index|
       text = chinfo.text(index.to_i16, redo: false, viuser: _viuser)
@@ -166,15 +165,16 @@ class CV::ChtextCtrl < CV::BaseCtrl
         text = lines.join('\n')
       end
 
-      parts << text
+      content << text
     end
 
-    chinfo.parts = parts
     chinfo.mirror_id = nil
     chinfo.changed_at = Time.utc
 
     chinfo.viuser = _viuser
     chinfo.save!
+
+    Chtext.find(chinfo).tap(&.content = content).save!
 
     serv_text("ok")
   end

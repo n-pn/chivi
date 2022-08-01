@@ -1,24 +1,36 @@
-require "../../_init/remote_info"
+require "../remote/remote_info"
 
 # for source like `hetushu` or `69shu` that can download book info/book text form
 # internet
 
 class CV::Nvseed
-  def refresh_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
+  def reload_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
     parser = RemoteInfo.new(sname, snvid, ttl: ttl, lbl: lbl)
     changed = parser.changed?(self.last_schid, self.utime)
 
-    return unless force || changed
+    return reload_frozen! unless force || changed
 
     chinfos = parser.chap_infos
     return if chinfos.empty?
 
-    _repo.store!(chinfos, reset: force)
+    # chmin = force || self.chap_count < 28 ? 0 : self.chap_count &- 28
+
+    output = chinfos.map do |entry|
+      Chinfo.new({
+        chroot: self,
+        chidx: entry.chidx, schid: entry.schid,
+        title: entry.title, chvol: entry.chvol,
+      })
+    end
+
+    Chinfo.bulk_upsert(output, cvmtl: self.nvinfo.cvmtl)
+
+    # _repo.store!(chinfos, reset: force)
     self.stime = FileUtil.mtime_int(parser.info_file)
 
     if parser.update_str.empty?
       mftime = changed ? self.stime : self.utime
-    elsif sname.in?("69shu", "biqu5200", "ptwxz")
+    elsif sname.in?("69shu", "biqu5200", "ptwxz", "uukanshu")
       mftime = changed ? parser.update_int : self.utime
     else
       mftime = parser.update_int
@@ -26,27 +38,19 @@ class CV::Nvseed
 
     self.set_mftime(mftime)
     self.set_status(parser.status_int.to_i)
-    self.set_latest(chinfos.last, force: true)
-
+    self.set_latest(output.last, self, force: true)
     self.save!
   rescue err
     puts err.inspect_with_backtrace
   end
 
   def update_remote!(mode : Int8) : Nil
-    self.reset_cache!(raws: true)
-    self.refresh_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
+    self.reload_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
 
-    nslist = self.nvinfo.seed_list
-
-    nslist._base.try do |base|
-      next unless base.last_sname == self.sname
-      base.refresh_mirror!(self, force: mode > 0)
-    end
-
-    nslist.users.each do |user|
-      next unless user.last_sname == self.sname
-      user.refresh_mirror!(self, force: mode > 0)
+    childs = Nvseed.query.filter_nvinfo(self.nvinfo_id).where("last_sname = ?", self.sname)
+    childs.each do |other|
+      other.reseed_from_disk! if !other.seeded
+      other.mirror_other!(self, other.chap_count)
     end
   end
 

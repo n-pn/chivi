@@ -10,9 +10,7 @@ declare namespace CV {
     utime: number
     uname: string
 
-    o_sname?: string
-    o_snvid?: string
-    o_chidx?: number
+    sname: string
   }
 
   interface Chlist extends Paginate {

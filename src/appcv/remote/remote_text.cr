@@ -1,10 +1,10 @@
 require "http/client"
 
-require "../_util/site_link"
-require "../_util/time_util"
-require "../_util/text_util"
-require "../_util/http_util"
-require "./shared/html_parser"
+require "../../_util/site_link"
+require "../../_util/time_util"
+require "../../_util/text_util"
+require "../../_util/http_util"
+require "./html_parser"
 
 class CV::RemoteText
   # cache folder path

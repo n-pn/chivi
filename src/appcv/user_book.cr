@@ -57,7 +57,7 @@ class CV::Ubmemo
   end
 
   def mark_chap!(chinfo : Chinfo, sname : String, cpart : Int16 = 0_i16)
-    mark!(sname, chinfo.chidx, cpart, chinfo.trans.title, chinfo.trans.uslug)
+    mark!(sname, chinfo.chidx, cpart, chinfo.vi_title, chinfo.url_slug)
   end
 
   def self.status(status_s : String)

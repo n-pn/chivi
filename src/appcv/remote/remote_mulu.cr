@@ -1,10 +1,13 @@
-require "./shared/html_parser"
-require "../appcv/nvchap/ch_info"
+require "./html_parser"
+require "../ch_info"
 
 class CV::RemoteMulu
-  getter chaps : Array(ChInfo)
+  record Chinfo, chidx : Int16, schid : String, title : String, chvol : String
 
-  def initialize(@doc : HtmlParser, @sname : String, @chaps = [] of ChInfo)
+  getter chaps : Array(Chinfo)
+
+  def initialize(@doc : HtmlParser, @sname : String)
+    @chaps = [] of Chinfo
   end
 
   def extract_schid(href : String)
@@ -16,33 +19,28 @@ class CV::RemoteMulu
     end
   end
 
-  def extract_chaps! : Nil
-    case @sname
-    when "ptwxz"    then extract_chapters_plain(".centent li > a")
-    when "69shu"    then extract_chapters_plain("#catalog li > a")
-    when "uukanshu" then extract_chapters_uukanshu
-    when "uuks"     then extract_chapters_plain(".box_con li > a")
-    when "yannuozw"
-      extract_chapters_plain(".booklist .book > a")
-    when "5200"    then extract_chapters_chvol(".listmain > dl")
-    when "hetushu" then extract_chapters_chvol("#dir")
-    when "kanshu8"
-      extract_chapters_plain(".pt-chapter-cont-detail.full > a")
-    when "133txt"
-      extract_chapters_chvol(".box_con:last-of-type > div:last-of-type > dl")
-    when "zhwenpg"
-      extract_chapters_plain(".clistitem > a")
+  STRATEGIES = {
+    "ptwxz"    => {:plain, ".centent li > a"},
+    "69shu"    => {:plain, "#catalog li > a"},
+    "uuks"     => {:plain, ".box_con li > a"},
+    "duokan8"  => {:plain, ".chapter-list a"},
+    "yannuozw" => {:plain, ".booklist .book > a"},
+    "5200"     => {:chvol, ".listmain > dl"},
+    "hetushu"  => {:chvol, "#dir"},
+    "kanshu8"  => {:plain, ".pt-chapter-cont-detail.full > a"},
+    "133txt"   => {:plain, ".box_con:last-of-type > div:last-of-type > dl"},
 
-      # reverse the list if chap list is reversed
-      last_schid = extract_schid(@doc.attr(".fontwt0 + a", "href"))
-      if @chaps.first.schid == last_schid
-        chaps.reverse!
-        chaps.each_with_index(1) { |chinfo, chidx| chinfo.chidx = chidx.to_i16 }
-      end
-    when "duokan8"
-      extract_chapters_plain(".chapter-list a")
-    else
-      extract_chapters_chvol("#list > dl")
+    "uukanshu" => {:uukanshu, "#chapterList"},
+    "zhwenpg"  => {:plain, ".clistitem > a"},
+
+  }
+
+  def extract_chaps! : Nil
+    strategy, selector = STRATEGIES[@sname]? || {:chvol, "#list > dl"}
+    case strategy
+    when :plain    then extract_chapters_plain(selector)
+    when :chvol    then extract_chapters_chvol(selector)
+    when :uukanshu then extract_chapters_uukanshu(selector)
     end
   end
 
@@ -55,10 +53,12 @@ class CV::RemoteMulu
 
     chidx = @chaps.size.to_i16 &+ 1
     schid = extract_schid(href)
-    title = node.inner_text
 
-    chap = ChInfo.new(chidx, schid, title, chvol)
-    @chaps << chap unless chap.invalid?
+    title = node.inner_text
+    return if title.empty?
+
+    title, chvol = TextUtil.format_title(title, chvol)
+    @chaps << Chinfo.new(chidx, schid, title, chvol)
   rescue err
     puts err, err.message.colorize.red
   end
@@ -85,7 +85,7 @@ class CV::RemoteMulu
     @doc.css(selector).each { |link| add_chap(link) }
   end
 
-  def extract_chapters_uukanshu(selector = "#chapterList")
+  def extract_chapters_uukanshu(selector : String)
     return unless body = @doc.find(selector)
     chvol = ""
 
