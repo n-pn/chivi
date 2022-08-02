@@ -4,7 +4,19 @@ require "../remote/remote_info"
 # internet
 
 class CV::Chroot
-  def reload_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
+  def reload_remote!(mode : Int8) : Nil
+    self.update_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
+
+    # childs = Chroot.query.filter_nvinfo(self.nvinfo_id)
+    #   .where("last_sname = ?", self.sname)
+
+    # childs.each do |other|
+    #   other.reseed_from_disk! if !other.seeded
+    #   other.mirror_other!(self, other.chap_count)
+    # end
+  end
+
+  def update_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
     parser = RemoteInfo.new(sname, snvid, ttl: ttl, lbl: lbl)
     changed = parser.changed?(self.last_schid, self.utime)
 
@@ -42,16 +54,6 @@ class CV::Chroot
     self.save!
   rescue err
     puts err.inspect_with_backtrace
-  end
-
-  def update_remote!(mode : Int8) : Nil
-    self.reload_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
-
-    childs = Chroot.query.filter_nvinfo(self.nvinfo_id).where("last_sname = ?", self.sname)
-    childs.each do |other|
-      other.reseed_from_disk! if !other.seeded
-      other.mirror_other!(self, other.chap_count)
-    end
   end
 
   ############

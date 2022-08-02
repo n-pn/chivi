@@ -5,6 +5,8 @@ module CV
 
   def upload(dir : String, reupload = false, purge_zip = false, sync_data = false)
     files = Dir.glob("#{dir}/*.zip")
+    return if files.empty?
+
     puts "\n uploading [#{dir}]: #{files.size} files"
 
     workers = files.size

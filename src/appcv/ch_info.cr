@@ -1,5 +1,5 @@
 require "../_util/text_util"
-require "./tools/r2_client"
+require "../tools/r2_client"
 require "./nvchap/ch_util"
 
 # storing book names
@@ -153,8 +153,8 @@ class CV::Chinfo
     return chidx unless title = get_title(chroot.id, chidx)
 
     query.where(chroot_id: chroot.id).where(title: title)
-      .where("chidx >= #{chidx &- 20}")
-      .where("chidx <= #{chidx &+ 20}")
+      .where("chidx >= #{chidx &- 30}")
+      .where("chidx <= #{chidx &+ 30}")
       .order_by(chidx: :desc)
       .select("chidx").first
       .try(&.chidx) || chidx

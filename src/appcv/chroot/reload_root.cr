@@ -1,8 +1,46 @@
-# method releted to primary (zseed == 0) nvseed type
-# this nvseed type do not store text file in storage, it will instead reuse texts
+# method releted to primary (zseed == 0) chroot type
+# this chroot type do not store text file in storage, it will instead reuse texts
 # from other sources
 
 class CV::Chroot
+  def reload!(mode : Int8 = 0_i8) : Nil
+    self.stime = Time.utc.to_unix if mode > 0
+    return reseed!(mode: mode) if !seeded
+
+    case
+    when sname == "=base" then self.reload_base!(mode: mode)
+    when sname == "=user" then self.reload_user!(mode: mode)
+    when sname.starts_with?('@')
+      self.reload_self!(mode: mode)
+    when self.is_remote
+      self.reload_remote!(mode: mode)
+    else
+      self.reload_frozen!(mode: mode)
+    end
+
+    self.nvinfo.save! if self.nvinfo.changed?
+    Nvinfo.cache!(self.nvinfo)
+  end
+
+  def reseed!(mode : Int8 = 0)
+    case sname
+    when "=base" then self.reseed_base!(mode: mode)
+    else              self.reseed_from_disk!(force: mode > 0)
+    end
+  end
+
+  def reload_frozen!(mode : Int8 = 1_i8)
+    return if mode < 1
+
+    cvmtl = self.nvinfo.cvmtl
+    infos = Chinfo.query
+      .where("chroot_id = #{self.id} and mirror_id is null")
+      # .select("id, chroot_id, mirror_id, chidx, title, chvol, tl_fixed")
+      .to_a
+
+    Chinfo.retranslate(infos, cvmtl: cvmtl)
+  end
+
   # auto generate `=base` seed
 
   def reseed_base!(mode : Int8 = 0) : Nil
@@ -15,7 +53,7 @@ class CV::Chroot
       other.reseed_from_disk! if !other.seeded
 
       if mode > 0 && other.remote?(force: mode > 1)
-        other.reload_remote!(1.days * idx, lbl: "#{idx}/#{others.size}")
+        other.update_remote!(1.days * (idx**2), lbl: "#{idx}/#{others.size}")
       end
 
       next if other.chap_count == 0
@@ -27,27 +65,6 @@ class CV::Chroot
     self.save!
   rescue err
     Log.error { err.inspect_with_backtrace }
-  end
-
-  # clone remote seed, return chmax
-  def mirror_other!(other : self, chmin : Int16 = self.chap_count.to_i16) : Int16
-    start = chmin > 0 ? Chinfo.match_chidx(other, chmin) : 0_i16
-    infos = [] of Chinfo
-
-    Chinfo.query.range(other.id, start + 1, nil).each do |input|
-      chmin += 1
-
-      infos << Chinfo.new({
-        chroot: self, chidx: chmin, schid: input.schid,
-        mirror_id: input.mirror_id || input.id,
-      })
-    end
-
-    return chmin unless last = infos.last?
-    Chinfo.bulk_upsert(infos, trans: false)
-    self.set_latest(last, other)
-
-    chmin
   end
 
   def reload_base!(mode = 1_i8)
@@ -104,5 +121,38 @@ class CV::Chroot
 
     source = Chroot.load!(self.nvinfo, self.last_sname)
     self.mirror_other!(source)
+  end
+
+  ####
+
+  TXT_DIR = "var/chtexts"
+
+  def reseed_from_disk!(force : Bool = false)
+    return if !force && self.seeded
+
+    # Log.info { "load #{self.sname}/#{self.snvid} infos from disk".colorize.yellow }
+
+    input = {} of Int16 => Chinfo
+    files = Dir.glob("#{TXT_DIR}/#{self.sname}/#{self.snvid}/*.tsv")
+
+    files.each do |file|
+      File.read_lines(file).each do |line|
+        next if line.empty?
+
+        entry = Chinfo.new(self, line.split('\t'))
+        input[entry.chidx] = entry
+      end
+    end
+
+    batch = input.values.sort_by!(&.chidx)
+
+    if last = batch.last?
+      cvmtl = self.nvinfo.cvmtl
+      Chinfo.bulk_upsert(batch, cvmtl: cvmtl)
+      self.set_latest(last, last.mirror.try(&.chroot) || self)
+    end
+
+    self.seeded = true
+    self.save!
   end
 end

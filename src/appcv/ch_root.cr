@@ -5,7 +5,7 @@ require "./nvchap/ch_list"
 require "./shared/sname_map"
 require "./remote/remote_info"
 
-require "./nvseed/*"
+require "./chroot/*"
 
 class CV::Chroot
   include Clear::Model
@@ -88,8 +88,10 @@ class CV::Chroot
     end
   end
 
-  def self.cache!(nvseed : Chroot)
-    CACHED.get("#{nvseed.nvinfo_id}/#{nvseed.sname}") { nvseed }
+  def self.cache!(chroot : Chroot)
+    CACHED.get("#{chroot.nvinfo_id}/#{chroot.sname}") do
+      chroot.tap(&.reload!(mode: 0_i8))
+    end
   end
 
   def self.upsert!(nvinfo : Nvinfo, sname : String, snvid : String, force = true)

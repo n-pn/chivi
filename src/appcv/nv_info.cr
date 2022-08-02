@@ -62,7 +62,7 @@ class CV::Nvinfo
   column shield : Int32 = 0 # default to 0
 
   column atime : Int64 = 0 # value by minute from the epoch, update whenever an registered user viewing book info
-  column utime : Int64 = 0 # value by minute from the epoch, max value of nvseed utime and ys_utime
+  column utime : Int64 = 0 # value by minute from the epoch, max value of chroot utime and ys_utime
 
   # ranking
 
@@ -111,8 +111,8 @@ class CV::Nvinfo
     where("author_id IN (SELECT id FROM authors WHERE #{query})")
   end
 
-  scope :filter_nvseed do |input|
-    input ? where("id IN (SELECT nvinfo_id FROM nvseeds WHERE sname = ? AND chap_count > 0)", input) : self
+  scope :filter_chroot do |input|
+    input ? where("id IN (SELECT nvinfo_id FROM chroots WHERE sname = ? AND chap_count > 0)", input) : self
   end
 
   scope :filter_genres do |input|

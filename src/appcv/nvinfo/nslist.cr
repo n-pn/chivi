@@ -6,14 +6,14 @@ class CV::Nslist
   getter other = [] of Chroot
 
   def initialize(@nvinfo : Nvinfo)
-    Chroot.query.filter_nvinfo(@nvinfo.id).each do |nvseed|
-      nvseed = Chroot.cache!(nvseed)
+    Chroot.query.filter_nvinfo(@nvinfo.id).each do |chroot|
+      chroot = Chroot.cache!(chroot)
 
-      case nvseed.sname
-      when "=base"                     then @_base = nvseed
-      when "=user"                     then @_user = nvseed
-      when "users", .starts_with?('@') then @users << nvseed
-      else                                  @other << nvseed
+      case chroot.sname
+      when "=base"                     then @_base = chroot
+      when "=user"                     then @_user = chroot
+      when "users", .starts_with?('@') then @users << chroot
+      else                                  @other << chroot
       end
     end
 
