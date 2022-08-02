@@ -7,24 +7,26 @@ struct CV::ChinfoView
   end
 
   def to_json(jb : JSON::Builder)
+    info = @data.mirror || @data
+
     {
       chidx: @data.chidx,
       schid: @data.schid,
 
-      title: @data.vi_title.empty? ? "Thiếu tựa" : @data.vi_title,
-      chvol: @data.vi_chvol.empty? ? "Chính văn" : @data.vi_chvol,
-      uslug: @data.url_slug,
+      title: info.vi_title.empty? ? "Thiếu tựa" : info.vi_title,
+      chvol: info.vi_chvol.empty? ? "Chính văn" : info.vi_chvol,
+      uslug: info.url_slug,
 
-      utime: @data.changed_at.try(&.to_unix) || 0_i64,
-      chars: @data.w_count,
-      parts: @data.p_count,
-      uname: @data.viuser.try(&.uname) || "?",
+      utime: info.changed_at.try(&.to_unix) || 0_i64,
+      chars: info.w_count,
+      parts: info.p_count,
+      uname: info.viuser.try(&.uname) || "?",
 
-      sname: @data.chroot.sname,
+      sname: info.chroot.sname,
     }.to_json(jb)
   end
 
   def self.list(list : Enumerable(Chinfo))
-    list.map { |x| new(x.mirror || x) }
+    list.map { |x| new(x) }
   end
 end

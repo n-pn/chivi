@@ -21,7 +21,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     serv_json do |jb|
       jb.object {
         jb.field "chmeta" { ChmetaView.new(nvseed, chinfo, cpart).to_json(jb) }
-        jb.field "chinfo" { ChinfoView.new(chinfo).to_json(jb) }
+        jb.field "chinfo" { ChinfoView.new(chinfo.mirror || chinfo).to_json(jb) }
         jb.field "chmemo" { UbmemoView.new(ubmemo).to_json(jb) }
 
         jb.field "cvdata", cvdata

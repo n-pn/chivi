@@ -4,6 +4,7 @@ class CV::Chtext
   include Clear::Model
 
   self.table = "chtexts"
+  primary_key type: :serial
 
   belongs_to chroot : Chroot, foreign_key_type: Int32
 
@@ -27,6 +28,7 @@ class CV::Chtext
   DIR = "var/chtexts"
 
   def load_text_from_disk(cpart : Int16) : String?
+    Log.info { "load from disk".colorize.red }
     chroot = self.chroot
 
     pgidx = (self.chidx &- 1) // 128
@@ -118,7 +120,7 @@ class CV::Chtext
 
   def self.text(chroot_id : Int32, chidx : Int16, cpart : Int16) : String
     Clear::SQL.select("content[#{cpart &+ 1}]")
-      .from("chtexts").where("chroot_id = #{chroot_id} and chidx = #{chidx}")
+      .from("chtexts").where("chroot_id = #{chroot_id} AND chidx = #{chidx}")
       .scalar(String)
   end
 end

@@ -35,11 +35,7 @@
         <chap-chidx>{chinfo.chidx}.</chap-chidx>
       </div>
       <div class="chap-meta">
-        <chap-chvol>
-          {#if chinfo.sname != nvseed.sname}
-            <chap-mark class="sm">{chinfo.sname} - </chap-mark>{/if}
-          {chinfo.chvol}
-        </chap-chvol>
+        <chap-chvol>{chinfo.sname} - {chinfo.chvol}</chap-chvol>
         {#if chinfo.chars > 0}
           <chap-track
             data-tip="Lưu: {get_rtime(chinfo.utime)} bởi {chinfo.uname || '?'}">

@@ -124,7 +124,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
     zhtext = String.build do |io|
       0_i16.upto(chinfo.p_count &- 1_i16) do |cpart|
-        ctext = chinfo.text(cpart)
+        ctext = chinfo.text(cpart, viuser: _viuser)
         cpart == 0 ? io << ctext : io << '\n' << ctext.sub(/.+?\n/, "")
       end
     end
@@ -139,39 +139,38 @@ class CV::ChtextCtrl < CV::BaseCtrl
   end
 
   def change
-    return halt!(500, "Quyền hạn không đủ!") if _viuser.privi < 1
-    chroot = load_chroot
+    sname = params["sname"]
+    guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
 
-    chidx = params.read_i16("chidx", min: 1_i16)
-    cpart = params.read_i16("cpart", min: 0_i16)
+    chroot = load_chroot(sname, :find)
+    chinfo = load_chinfo(chroot)
 
-    unless chinfo = chroot.chinfo(chidx &- 1)
-      raise NotFound.new("Chương tiết không tồn tại")
-    end
+    part_no = params.read_i16("cpart", min: 0_i16)
+    line_no = params.read_i16("l_id", min: 0_i16)
 
-    l_id = params.read_i16("l_id", min: 1_i16)
     orig = params["orig"]?
     edit = params["edit"]
 
     spawn do
       ChapEdit.new({
         viuser: _viuser, chroot: chroot,
-        chidx: chidx, schid: chinfo.schid, cpart: cpart,
-        l_id: l_id, orig: orig, edit: edit, flag: 0_i16,
+        chidx: chinfo.chidx, schid: chinfo.schid,
+        cpart: part_no, l_id: line_no,
+        orig: orig, edit: edit, flag: 0_i16,
       }).save!
     end
 
     content = [] of String
+    chinfo.w_count &+= edit.size
 
-    chinfo.p_count.times do |index|
-      text = chinfo.text(index.to_i16, redo: false, viuser: _viuser)
-      if index == cpart
+    0_i16.upto(chinfo.p_count &- 1_i16) do |index|
+      text = chinfo.text(index, viuser: _viuser)
+
+      if index == part_no
         lines = text.split('\n')
+        chinfo.w_count &-= (orig || lines[line_no]).size
 
-        chinfo.w_count &+= edit.size
-        chinfo.w_count &-= (orig || lines[l_id]?).try(&.size) || 0
-
-        lines[l_id] = text
+        lines[line_no] = edit
         text = lines.join('\n')
       end
 
@@ -180,11 +179,11 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
     chinfo.mirror_id = nil
     chinfo.changed_at = Time.utc
-
     chinfo.viuser = _viuser
     chinfo.save!
 
-    Chtext.upsert(chroot, chinfo.chidx, chinfo.schid).tap(&.content = content).save!
+    chtext = Chtext.upsert(chroot, chinfo.chidx, chinfo.schid)
+    chtext.update!({content: content})
 
     serv_text("ok")
   end

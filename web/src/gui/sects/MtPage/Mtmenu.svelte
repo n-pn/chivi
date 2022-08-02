@@ -327,11 +327,11 @@
     </cv-item>
 
     <cv-item
-      class="umami--click--mtmenu-fixraw"
-      data-kbd="-"
-      data-tip="Sửa text gốc"
-      on:click|capture={() => (fix_raw = true)}>
-      <SIcon name="edit" />
+      class="umami--click--mtmenu-report"
+      data-kbd="p"
+      data-tip="Báo lỗi"
+      on:click|capture={tlspec.show}>
+      <SIcon name="flag" />
     </cv-item>
 
     <cv-item
@@ -343,19 +343,19 @@
     </cv-item>
 
     <cv-item
+      class="umami--click--mtmenu-fixraw"
+      data-kbd="-"
+      data-tip="Sửa text gốc"
+      on:click|capture={() => (fix_raw = true)}>
+      <SIcon name="edit" />
+    </cv-item>
+
+    <cv-item
       class="umami--click--mtmenu-refine"
       data-kbd="/"
       data-tip="Thêm nghĩa việt"
       on:click|capture={() => alert('Đang hoàn thiện')}>
       <SIcon name="language" />
-    </cv-item>
-
-    <cv-item
-      class="umami--click--mtmenu-report"
-      data-kbd="p"
-      data-tip="Báo lỗi"
-      on:click|capture={tlspec.show}>
-      <SIcon name="flag" />
     </cv-item>
   </cv-menu>
 
@@ -386,16 +386,16 @@
 {/if}
 
 <style lang="scss">
-  $size: 2.25rem;
+  $width: 1.875rem;
+  $height: 2.25rem;
 
   cv-menu {
     @include flex();
 
-    height: $size;
+    height: $height;
     z-index: 40;
     position: absolute;
-    height: $size;
-    width: 9.375rem;
+    width: $width * 5;
     padding: 0;
 
     top: var(--top, 20vw);
@@ -429,8 +429,8 @@
   cv-item {
     @include flex-ca;
     cursor: pointer;
-    width: 1.875rem;
     height: 100%;
+    width: $width;
     @include fgcolor(white);
 
     &:hover { @include fgcolor(primary, 2); }

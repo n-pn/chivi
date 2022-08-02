@@ -1,6 +1,6 @@
 <!-- @hmr:keep-all -->
 <script context="module" lang="ts">
-  import { onDestroy } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
 
   const suggest_maps = {
     '的': [
@@ -45,17 +45,16 @@
   export let on_destroy = () => {}
 
   onDestroy(() => {
-    // windows.removeEventListener('selectionchange', editing)
+    document.removeEventListener('selectionchange', change_focus)
     on_destroy()
   })
 
-  // onMount(() =>
-  // window.addEventListener('selectionchange', '')
-  // )
+  onMount(() => document.addEventListener('selectionchange', change_focus))
 
   let oldraw = rawtxt
-  let field: HTMLElement
+  let underlay: HTMLElement
   let on_focus: HTMLElement
+  let overlay: HTMLElement
 
   let hanviet = ''
   let convert = ''
@@ -64,7 +63,7 @@
 
   $: update_preview(rawtxt)
 
-  $: if (field && rawtxt) on_update_caret()
+  $: if (underlay && rawtxt) on_update_caret()
 
   function render_rawtxt(input: String) {
     return Array.from(input)
@@ -72,10 +71,10 @@
       .join('')
   }
 
-  function change_focus({ target }) {
-    if (target.nodeName != 'X-C') return
-    caret = +target.getAttribute('i')
-    on_update_caret(target)
+  function change_focus() {
+    const range = window.getSelection().getRangeAt(0)
+    caret = range.endOffset
+    on_update_caret()
   }
 
   function update_rawtxt(e: Event) {
@@ -104,22 +103,24 @@
     const pre = rawtxt.substring(0, caret)
     const suf = rawtxt.substring(caret + from.length)
     rawtxt = pre + to + suf
+
+    setTimeout(() => {
+      const selection = window.getSelection()
+      const startNode = overlay.firstChild
+      selection.collapse(startNode, caret)
+    }, 20)
   }
 
   function on_update_caret(new_focus?: HTMLElement) {
     if (on_focus) on_focus.classList.remove('active')
     suggests = suggest_maps[rawtxt[caret]] || []
-    const selection = window.getSelection()
 
     if (new_focus) {
       on_focus = new_focus
       on_focus.classList.add('active')
     } else {
-      setTimeout(() => {
-        on_focus = field && field.querySelector(`[i="${caret}"]`)
-        if (on_focus) on_focus.classList.add('active')
-        selection.collapse(on_focus, 1)
-      }, 20)
+      on_focus = underlay && underlay.querySelector(`[i="${caret}"]`)
+      if (on_focus) on_focus.classList.add('active')
     }
   }
 </script>
@@ -146,14 +147,17 @@
       </div>
     </section>
 
-    <section class="rawtxt">
-      <div
-        class="m-input"
-        contenteditable="true"
-        bind:this={field}
-        on:click={change_focus}
-        on:input={update_rawtxt}>
+    <section class="rawtxt m-input ">
+      <div class="underlay" bind:this={underlay}>
         {@html render_rawtxt(rawtxt)}
+      </div>
+
+      <div
+        class="overlay"
+        bind:this={overlay}
+        on:input={update_rawtxt}
+        contenteditable="true">
+        {rawtxt}
       </div>
     </section>
 
@@ -197,7 +201,10 @@
       <SIcon name="arrow-back-up" />
     </button>
 
-    <button class="m-btn _primary _fill" on:click={save_change}>
+    <button
+      class="m-btn _primary _fill"
+      on:click={save_change}
+      disabled={oldraw == rawtxt}>
       <span>Lưu thay đổi</span>
       <SIcon name="send" />
     </button>
@@ -206,19 +213,36 @@
 
 <style lang="scss">
   .rawtxt {
-    :global(x-c) {
-      display: inline-block;
-      width: 1em;
-      text-align: center;
-      cursor: pointer;
-    }
+    position: relative;
+    padding: 0;
+  }
+
+  .overlay,
+  .underlay {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .overlay {
+    position: relative;
+    color: transparent;
+    caret-color: color(primary, 5);
+    background: transparent;
+  }
+
+  .underlay {
+    position: absolute;
+    // top: 0;
+    // left: 0;
+
+    // bottom: 0;
+    // right: 0;
+    // user-select: none;
 
     :global(x-c.active) {
       font-weight: 500;
       @include fgcolor(primary, 5);
     }
   }
-
   // div.m-input {
   //   display: flex;
   //   flex-wrap: wrap;
@@ -232,6 +256,7 @@
   .suggest {
     display: flex;
     align-items: center;
+    height: 1.5rem;
     margin-bottom: 0.25rem;
   }
 

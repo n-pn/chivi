@@ -149,9 +149,9 @@
   }
 
   async function on_fixraw(l_id: number, orig: string, edit: string) {
-    const url = `/api/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}/${chmeta.cpart}`
-    const params = { l_id, orig, edit }
-    const res = await $page.stuff.api.call(url, 'POST', params)
+    const url = `/api/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}`
+    const params = { cpart: chmeta.cpart, l_id, orig, edit }
+    const res = await $page.stuff.api.call(url, 'PATCH', params)
     if (res.error) alert(res.error)
     else retranslate(true)
   }
