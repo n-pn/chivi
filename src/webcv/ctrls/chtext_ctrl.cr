@@ -10,14 +10,13 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot = load_chroot(sname, :auto)
     text, path = read_chtext(chroot)
 
-    chinfos, chtexts = split_chaps(chroot, path, text)
+    chinfos = split_chaps(chroot, path, text)
 
     if chinfos.size == 1 && (title = params["title"]?)
       chinfos.first.title = TextUtil.trim_spaces(title)
     end
 
     Chinfo.bulk_upsert(chinfos, cvmtl: chroot.nvinfo.cvmtl)
-    Chtext.bulk_upsert(chtexts)
     update_chroot(chroot, chinfos.last, trunc: params["trunc_after"]? == "true")
 
     self_sname = '@' + _viuser.uname
@@ -62,25 +61,16 @@ class CV::ChtextCtrl < CV::BaseCtrl
     spawn splitter.save_chinfos!(uname: _viuser.uname)
 
     changed_at = Time.utc
-    chinfos = [] of Chinfo
-    chtexts = [] of Chtext
 
-    splitter.chapters.each do |input|
-      chinfos << Chinfo.new({
+    splitter.chapters.map do |input|
+      Chinfo.new({
         chroot: chroot, viuser: _viuser, mirror_id: nil,
         chidx: input.chidx, schid: input.schid,
         title: input.title, chvol: input.chvol,
         w_count: input.w_count, p_count: input.p_count,
         changed_at: changed_at,
       })
-
-      chtexts << Chtext.new({
-        chroot: chroot, chidx: input.chidx, schid: input.schid,
-        content: input.content,
-      })
     end
-
-    {chinfos, chtexts}
   end
 
   private def read_options(chroot : Chroot, params)
@@ -182,8 +172,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chinfo.viuser = _viuser
     chinfo.save!
 
-    chtext = Chtext.upsert(chroot, chinfo.chidx, chinfo.schid)
-    chtext.update!({content: content})
+    ChPack.load(chroot, chinfo.chidx).save(chinfo.schid, content)
 
     serv_text("ok")
   end

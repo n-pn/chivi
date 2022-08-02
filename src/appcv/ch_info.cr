@@ -82,10 +82,17 @@ class CV::Chinfo
   end
 
   def text(cpart : Int16 = 0, redo : Bool = false, viuser : Viuser? = nil) : String
-    self.mirror.try(&.text(cpart, redo, viuser)) || Chtext.text(self.chroot_id, self.chidx, cpart)
-  rescue
-    Chtext.upsert(self.chroot, self.chidx, self.schid).get(cpart, redo, viuser)
+    self.mirror.try(&.text(cpart, redo, viuser)) || begin
+      Chtext.new(self, self.chroot).read(cpart, redo, viuser)
+    end
   end
+
+  def fix_utime(time : Time)
+    return if self.changed_at.try(&.> time)
+    update({changed_at: time})
+  end
+
+  #############
 
   FIELDS = {
     "schid", "title", "chvol", "w_count", "p_count",

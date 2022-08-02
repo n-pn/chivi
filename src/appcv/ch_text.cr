@@ -1,126 +1,113 @@
 require "./remote/remote_text"
 
-class CV::Chtext
-  include Clear::Model
-
-  self.table = "chtexts"
-  primary_key type: :serial
-
-  belongs_to chroot : Chroot, foreign_key_type: Int32
-
-  column chidx : Int16
-  column schid : String
-
-  column content : Array(String)?
-
-  timestamps
-
-  def get(cpart : Int16 = 0, redo : Bool = false, viuser : Viuser? = nil) : String
-    if content_column.defined?
-      text = content.try(&.[cpart]?)
-    else
-      text = load_text_from_disk(cpart)
-    end
-
-    !redo && text ? text : load_text_from_remote(cpart, redo, viuser) || text || ""
-  end
-
+class CV::ChPack
   DIR = "var/chtexts"
 
-  def load_text_from_disk(cpart : Int16) : String?
-    Log.info { "load from disk".colorize.red }
-    chroot = self.chroot
+  PSIZE = 128_i16
 
-    pgidx = (self.chidx &- 1) // 128
-    store = "#{DIR}/#{chroot.sname}/#{chroot.snvid}/#{pgidx}.zip"
+  def self.pgidx(chidx : Int16)
+    (chidx &- 1) // PSIZE
+  end
 
-    return unless File.exists?(store) || load_store_from_remote(store)
+  CACHE = {} of Int32 => self
 
-    Compress::Zip::File.open(store) do |zip|
-      content = [] of String
+  def self.load(chroot : Chroot, chidx : Int16)
+    pgidx = self.pgidx(chidx)
+    h_key = chroot.id.unsafe_shl(8) | pgidx
+    CACHE[h_key] ||= new(chroot.sname, chroot.snvid, pgidx)
+  end
 
-      40.times do |index|
-        file_name = "#{self.schid}-#{index}.txt"
-        break unless entry = zip[file_name]?
-        content << entry.open(&.gets_to_end)
-      end
+  #####
 
-      return if content.empty?
-      update({content: content})
-      content[cpart]?
+  def initialize(@sname : String, @snvid : String, @pgidx : Int16)
+    @txt_path = "#{DIR}/#{sname}/#{snvid}/#{pgidx}"
+    @zip_path = @txt_path + ".zip"
+    @has_file = File.exists?(@zip_path) || download_from_cdn(@zip_path)
+  end
+
+  @[AlwaysInline]
+  def text_name(schid : String, cpart : Int = 0)
+    "#{schid}-#{cpart}.txt"
+  end
+
+  def read(schid : String, cpart : Int16 = 0)
+    return unless @has_file
+
+    Compress::Zip::File.open(@zip_path) do |zip|
+      return unless entry = zip[text_name(schid, cpart)]?
+      {entry.open(&.gets_to_end), entry.time}
     end
   end
 
-  def load_store_from_remote(store : String) : Bool
-    if File.exists?(store.sub(".zip", ".tab"))
-      return R2Client.download(store.sub(DIR, "texts"), store)
+  def save(schid : String, parts : Array(String), no_zip : Bool = false, upload : Bool = false)
+    return if parts.empty?
+    Dir.mkdir_p(@txt_path)
+
+    parts.each_with_index do |text, cpart|
+      File.write("#{@txt_path}/#{text_name(schid, cpart)}", text)
     end
 
-    return false unless self.chroot.sname == "jx_la"
-    `aws s3 cp "#{store.sub(/^var/, "s3://chivi-bak")}" "#{store}"`
-    $?.success?
+    pack! unless no_zip
   end
 
-  def load_text_from_remote(cpart : Int16, redo : Bool = false, viuser : Viuser? = nil) : String?
-    chroot = self.chroot
-    return unless chroot.is_remote
+  def pack!
+    message = `zip -rjmq "#{@zip_path}" "#{@txt_path}"`
+    raise message unless $?.success?
+    Dir.delete(@txt_path)
+    @has_file = true
+  end
+
+  ###
+  def download_from_cdn(zip_path : String)
+    return false unless File.exists?(zip_path.sub(".zip", ".tab"))
+    R2Client.download(zip_path.sub(DIR, "texts"), zip_path)
+  end
+end
+
+class CV::Chtext
+  getter chpack : ChPack
+
+  def initialize(@chinfo : Chinfo, @chroot : Chroot = chinfo.chroot)
+    @chpack = ChPack.load(chroot, chinfo.chidx)
+  end
+
+  def read(cpart : Int16 = 0, redo : Bool = false, viuser : Viuser? = nil)
+    if cached = @chpack.read(@chinfo.schid, cpart)
+      text, time = cached
+      @chinfo.fix_utime(time)
+    end
+
+    !redo && text ? text : load_text_from_remote(redo, viuser).try(&.[cpart]?) || text || ""
+  end
+
+  def load_text_from_remote(redo : Bool = false, viuser : Viuser? = nil)
+    return unless @chroot.is_remote
+
+    Log.info { "fetch from remote" }
 
     ttl = redo ? 1.minutes : 10.years
-    remote = RemoteText.new(chroot.sname, chroot.snvid, self.schid, ttl: ttl)
+    remote = RemoteText.new(@chroot.sname, @chroot.snvid, @chinfo.schid, ttl: ttl)
 
     # TODO: check for empty title in parser
 
     lines = remote.paras
     lines.unshift(remote.title) unless remote.title.empty?
-    w_count, content = ChUtil.split_parts(lines)
 
-    spawn do
-      update!({content: content})
+    w_count, output = ChUtil.split_parts(lines)
 
-      if chinfo = Chinfo.find({chroot_id: self.chroot_id, chidx: self.chidx})
-        chinfo.update!({
-          viuser:     viuser,
-          w_count:    w_count,
-          p_count:    content.size,
-          changed_at: Time.utc,
-        })
-      end
-    end
+    @chpack.save(@chinfo.schid, output)
+    @chinfo.update!({viuser: viuser, changed_at: Time.utc,
+                     w_count: w_count, p_count: output.size})
 
-    content[cpart]?
+    output
   rescue err
-    Log.error(exception: err) { [self.schid, self.chidx] }
-  end
-
-  #####
-
-  def self.bulk_upsert(batch : Array(self)) : Nil
-    on_conflict = ->(req : Clear::SQL::InsertQuery) do
-      req.on_conflict("ON CONSTRAINT chtexts_unique_key").do_update do |upd|
-        upd.set(<<-SQL)
-          schid = excluded.schid,
-          content = excluded.content,
-          updated_at = excluded.updated_at
-        SQL
-      end
+    Log.error(exception: err) do
+      {
+        sname: @chroot.sname,
+        snvid: @chroot.snvid,
+        schid: @chinfo.schid,
+        chidx: @chinfo.chidx,
+      }
     end
-
-    Clear::SQL.transaction do
-      batch.each(&.save!(on_conflict: on_conflict))
-    end
-  end
-
-  def self.upsert(chinfo : Chinfo)
-    upsert(chroot, chinfo.chidx, chinfo.schid)
-  end
-
-  def self.upsert(chroot : Chroot, chidx : Int16, schid : String)
-    find({chroot_id: chroot.id, chidx: chidx}) || new({chroot: chroot, chidx: chidx, schid: schid})
-  end
-
-  def self.text(chroot_id : Int32, chidx : Int16, cpart : Int16) : String
-    Clear::SQL.select("content[#{cpart &+ 1}]")
-      .from("chtexts").where("chroot_id = #{chroot_id} AND chidx = #{chidx}")
-      .scalar(String)
   end
 end

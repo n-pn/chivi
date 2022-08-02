@@ -41,6 +41,17 @@ class CV::Chroot
     Chinfo.retranslate(infos, cvmtl: cvmtl)
   end
 
+  ###################
+
+  def reload_base!(mode = 0_i8)
+    return self.reseed_base!(mode: mode) if mode > 1 || !seeded
+    return if mode < 1 || self.last_sname.empty?
+
+    Log.info { "reload_base" }
+    source = Chroot.load!(self.nvinfo, self.last_sname).tap(&.reload!(mode: mode))
+    self.mirror_other!(source)
+  end
+
   # auto generate `=base` seed
 
   def reseed_base!(mode : Int8 = 0) : Nil
@@ -53,7 +64,7 @@ class CV::Chroot
       other.reseed_from_disk! if !other.seeded
 
       if mode > 0 && other.remote?(force: mode > 1)
-        other.update_remote!(1.days * (idx**2), lbl: "#{idx}/#{others.size}")
+        other.reseed_remote!(1.days * (idx**2), lbl: "#{idx}/#{others.size}")
       end
 
       next if other.chap_count == 0
@@ -67,15 +78,15 @@ class CV::Chroot
     Log.error { err.inspect_with_backtrace }
   end
 
-  def reload_base!(mode = 1_i8)
-    return self.reseed_base!(mode: mode) if mode > 1 || !seeded
+  ##############
+
+  def reload_user!(mode : Int8 = 0)
+    return reseed_user!(mode: mode) if mode > 1 || !seeded
     return if self.last_sname.empty?
 
-    source = Chroot.load!(self.nvinfo, self.last_sname).tap(&.reload!(mode: mode))
+    source = Chroot.load!(self.nvinfo, self.last_sname)
     self.mirror_other!(source)
   end
-
-  ###################
 
   def reseed_user!(mode : Int8 = 0) : Nil
     others = Chroot.query.filter_nvinfo(self.nvinfo_id).to_a
@@ -105,15 +116,7 @@ class CV::Chroot
     self.save!
   end
 
-  def reload_user!(mode : Int8 = 1)
-    return reseed_user!(mode: mode) if mode > 1 || !seeded
-    return if self.last_sname.empty?
-
-    source = Chroot.load!(self.nvinfo, self.last_sname)
-    self.mirror_other!(source)
-  end
-
-  ##############
+  #####
 
   def reload_self!(mode = 1)
     return reseed_from_disk! if mode > 1 || !seeded

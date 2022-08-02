@@ -67,7 +67,7 @@
 
   function render_rawtxt(input: String) {
     return Array.from(input)
-      .map((x, i) => `<x-c i=${i}>${x == ' ' ? ' ' : x}</x-c>`)
+      .map((x, i) => `<x-c i=${i}>${x}</x-c>`)
       .join('')
   }
 

@@ -5,7 +5,9 @@ require "../remote/remote_info"
 
 class CV::Chroot
   def reload_remote!(mode : Int8) : Nil
-    self.update_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
+    return unless mode > 0 || Time.unix(self.stime) + map_ttl(false) > Time.utc
+
+    self.reseed_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
 
     # childs = Chroot.query.filter_nvinfo(self.nvinfo_id)
     #   .where("last_sname = ?", self.sname)
@@ -16,7 +18,7 @@ class CV::Chroot
     # end
   end
 
-  def update_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
+  def reseed_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
     parser = RemoteInfo.new(sname, snvid, ttl: ttl, lbl: lbl)
     changed = parser.changed?(self.last_schid, self.utime)
 
