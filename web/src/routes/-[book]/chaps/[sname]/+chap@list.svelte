@@ -39,14 +39,14 @@
         return /^\/{3,}/mu
 
       case 1:
-        return new RegExp(`\\n{${opts.min_blank + 1},}`, 'mu')
+        return new RegExp(`\\n{${opts.min_blanks + 1},}`, 'mu')
 
       case 2:
-        const count = opts.blank_before ? 2 : 1
+        const count = opts.need_blank ? 2 : 1
         return new RegExp(`\\n{${count},}[^\\s]`, 'mu')
 
       case 3:
-        return new RegExp(`^\\s*第[\\d${numbers}]+[${opts.suffix}]`, 'mu')
+        return new RegExp(`^\\s*第[\\d${numbers}]+[${opts.label}]`, 'mu')
 
       case 4:
         return new RegExp(opts.regex, 'mu')
@@ -79,10 +79,10 @@
   }
 
   let opts = {
-    min_blank: 2,
+    min_blanks: 2,
     trim_space: false,
-    blank_before: false,
-    suffix: '章节回幕折集卷季',
+    need_blank: false,
+    label: '章节回幕折集卷季',
     regex: `^\\s*第?[\\d${numbers}]+[章节回]`,
   }
 
@@ -243,8 +243,8 @@
             >Số dòng trắng tối thiểu: <input
               class="m-input _xs"
               type="number"
-              name="min_blank"
-              bind:value={opts.min_blank}
+              name="min_blanks"
+              bind:value={opts.min_blanks}
               min={1}
               max={4} /></label>
 
@@ -260,15 +260,15 @@
           ><input
             class="m-input"
             type="checkbox"
-            name="blank_before"
-            bind:checked={opts.blank_before} /> Phía trước phải là dòng trắng</label>
+            name="need_blank"
+            bind:checked={opts.need_blank} /> Phía trước phải là dòng trắng</label>
       {:else if form.split_mode == 3}
         <label class="label"
           >Đằng sau <code>第[số từ]+</code> là:
           <input
             class="m-input _xs"
-            name="suffix"
-            bind:value={opts.suffix} /></label>
+            name="label"
+            bind:value={opts.label} /></label>
       {:else if form.split_mode == 4}
         <label class="label"
           >Custom regex:
@@ -295,15 +295,15 @@
         </p>
         <pre>/// 第二十四集 今当升云<br />chương 1<br />nội dung chương 1<br />///<br />chương hai sẽ thừa kế tên tập phía trên<br />xxxxxxxx</pre>
       {:else if form.split_mode == 1}
-        {@const min_blank = opts.min_blank}
+        {@const min_blanks = opts.min_blanks}
 
         <p>
-          Cách chương tiết sẽ được tách nếu giữa chúng có ít nhất {min_blank} khoảng
+          Cách chương tiết sẽ được tách nếu giữa chúng có ít nhất {min_blanks} khoảng
           trắng:
         </p>
         <pre>第1章.这位同学，等等<br />“我们出生在一个好时代，却不是一个最好的时代。”
-{#each Array.from( { length: min_blank } ) as _}<br />{/each}第2章.正确的开门方式<br />“喂，让你等等你怎么还走那么快啊。”<br />沈童在心中无奈的叹了一口气，望着拦在自己面前的“非主流”，说道：“同学有什么事情吗？”
-{#each Array.from( { length: min_blank } ) as _}<br />{/each}第3章.非主流进化……网红！<br />“所以说，我们现在处于一个很奇怪的空间里，我开门，就是回到了我的2007年。你开门，就是回到了你的2017年，而我们两个又可以跟着对方去双方的时空……”</pre>
+{#each Array.from( { length: min_blanks } ) as _}<br />{/each}第2章.正确的开门方式<br />“喂，让你等等你怎么还走那么快啊。”<br />沈童在心中无奈的叹了一口气，望着拦在自己面前的“非主流”，说道：“同学有什么事情吗？”
+{#each Array.from( { length: min_blanks } ) as _}<br />{/each}第3章.非主流进化……网红！<br />“所以说，我们现在处于一个很奇怪的空间里，我开门，就是回到了我的2007年。你开门，就是回到了你的2017年，而我们两个又可以跟着对方去双方的时空……”</pre>
       {:else if form.split_mode == 2}
         <p>Nội dung của chương sẽ lùi vào phía trong so với tên chương</p>
         <pre>第1章.我是一个只喜欢兽耳娘的咸鱼挂哔<br />　　“哈欠。”<br />　　随着一声响亮的哈欠在流水线上响起，不少穿着白色工作服，带着头套的老员工都转过头看了一眼那个睡眼朦胧的年轻男子。<br /><br />第2章.挂机途中的异常<br />　　女朋友，在沈项眼里是一个很麻烦的东西。<br />　　因为她们的行为，举措，说辞都没有任何的规律可言，这种无规律，心情化的存在，让沈项没办法用自动代理系统来挂机处理。</pre>
@@ -408,7 +408,7 @@
     }
   }
 
-  [name='min_blank'] {
+  [name='min_blanks'] {
     width: 2rem;
     text-align: center;
   }

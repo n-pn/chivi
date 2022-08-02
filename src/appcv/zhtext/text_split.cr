@@ -19,6 +19,9 @@ module CV::Zhtext
 
     property split_mode = 1
 
+    # for mode 0
+    property repeating = 3
+
     # for mode 1
     property trim_space = false
     property min_blanks = 2
@@ -169,7 +172,7 @@ module CV::Zhtext
       File.write(@inp_file.sub(".txt", ".json"), options.to_pretty_json)
 
       case split_mode
-      when 0 then split_mode_0
+      when 0 then split_mode_0(options.repeating)
       when 1 then split_mode_1(options.trim_space, options.min_blanks)
       when 2 then split_mode_2(options.need_blank)
       when 3 then split_mode_3(options.title_suffix)
@@ -181,8 +184,8 @@ module CV::Zhtext
     end
 
     # split by manually putting `///` between chaps
-    private def split_mode_0
-      delimit_re = /^\s*\/{3,}(.*)$/
+    private def split_mode_0(repeating = 3)
+      delimit_re = /^\s*\/{#{repeating},}(.*)$/
       chapter = new_chapter
 
       @raw_data.each do |line|

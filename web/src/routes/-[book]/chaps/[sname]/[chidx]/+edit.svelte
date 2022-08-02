@@ -11,7 +11,7 @@
 
     if (api_res.error) return api_res
 
-    const props = { nvinfo, chidx, input: api_res, sname }
+    const props = { nvinfo, chidx, sname, ...api_res }
     const topbar = gen_topbar(nvinfo, sname, chidx)
 
     return { props, stuff: { topbar } }
@@ -40,6 +40,10 @@
 
   export let sname = ''
   export let chidx = 1
+
+  export let chvol = ''
+  export let title = ''
+
   export let input = ''
 
   let form = {
@@ -50,18 +54,21 @@
 
   $: privi = $session.privi || -1
   $: disabled = (privi == 1 && input.length > 30000) || privi < 1
-  $: action_url = `/api/texts/${nvinfo.id}/${sname}/${chidx}`
+  $: action_url = `/api/texts/${nvinfo.id}/${sname}`
 
   async function submit(evt: SubmitEvent) {
     const body = new FormData()
 
     body.append('text', input)
+    body.append('title', title)
+    body.append('chvol', chvol)
     body.append('hash', hash_str(input))
     body.append('encoding', 'UTF-8')
     body.append('split_mode', '0')
+    body.append('repeating', '9')
 
     for (const key in form) body.append(key, form[key].toString())
-    const res = await fetch(action_url, { method: 'POST', body })
+    const res = await fetch(action_url, { method: 'PUT', body })
 
     if (res.ok) {
       await res.json()
@@ -91,9 +98,26 @@
   <h2>Sửa chương</h2>
 
   <form action={action_url} method="POST" on:submit|preventDefault={submit}>
+    <div class="form-group">
+      <span class="form-field">
+        <label class="label" for="chvol">Tên tập truyện</label>
+        <input
+          class="m-input"
+          name="chvol"
+          lang="zh"
+          bind:value={chvol}
+          placeholder="Có thể để trắng" />
+      </span>
+
+      <span class="form-field">
+        <label class="label" for="title">Tên chương tiết</label>
+        <input class="m-input" name="title" lang="zh" bind:value={title} />
+      </span>
+    </div>
+
     <div class="form-field">
-      <label class="label" for="text">Nhập văn bản</label>
-      <textarea class="m-input" name="text" lang="zh" bind:value={input} />
+      <label class="label" for="input">Nhập nội dung</label>
+      <textarea class="m-input" name="input" lang="zh" bind:value={input} />
     </div>
 
     <div class="form-field">
@@ -160,6 +184,12 @@
       }
     }
 
+    .label {
+      @include bgcolor(tert);
+      height: 100%;
+      // height: 2rem;
+    }
+
     .m-btn {
       margin-left: auto;
     }
@@ -170,6 +200,36 @@
     font-weight: 500;
     @include ftsize(sm);
     @include fgcolor(tert);
+  }
+
+  .form-group {
+    display: flex;
+    gap: 0.75rem;
+
+    > .form-field {
+      display: flex;
+      gap: 0.5rem;
+      position: relative;
+      align-items: center;
+
+      &:first-child {
+        width: 40%;
+      }
+
+      &:last-child {
+        width: 60%;
+      }
+    }
+
+    label {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+    }
+
+    input {
+      flex: 1;
+    }
   }
 
   .options {

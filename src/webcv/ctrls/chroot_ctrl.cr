@@ -5,7 +5,7 @@ class CV::ChrootCtrl < CV::BaseCtrl
   end
 
   def show
-    nvseed = load_nvseed
+    nvseed = load_chroot
     mode = params.read_i8("mode", 0_i8)
 
     if mode > 0 && can_reload?(nvseed)
@@ -25,7 +25,7 @@ class CV::ChrootCtrl < CV::BaseCtrl
   end
 
   def chaps
-    nvseed = load_nvseed
+    nvseed = load_chroot
     pgidx = params.read_i16("page", min: 1_i16)
     chaps = nvseed.chpage(pgidx &- 1)
 
@@ -57,7 +57,7 @@ class CV::ChrootCtrl < CV::BaseCtrl
 
   private def load_guarded_nvseed(min_privi = 1) : Chroot
     sname = params["sname"]
-    return load_nvseed(sname) if action_allowed?(sname, min_privi)
+    return load_chroot(sname) if action_allowed?(sname, min_privi)
     raise Unauthorized.new("Bạn không đủ quyền hạn")
   end
 

@@ -1,6 +1,6 @@
 class CV::NvchapCtrl < CV::BaseCtrl
   def ch_info
-    nvseed = load_nvseed
+    nvseed = load_chroot
 
     chidx = params.read_i16("chidx", min: 1_i16)
     cpart = params.read_i16("cpart", min: 0_i16)

@@ -17,7 +17,7 @@ class CV::Chroot
     self.nvinfo.set_status(status, force: mode > 1)
   end
 
-  def set_latest(chap : Chinfo, other : self = chap.other, force : Bool = false) : Nil
+  def set_latest(chap : Chinfo, other : self = chap.chroot, force : Bool = false) : Nil
     return if !force && chap.chidx < self.chap_count
 
     self.last_schid = chap.schid
@@ -43,8 +43,11 @@ class CV::Chroot
 
   def chpage(vi_pg : Int16)
     chmin = vi_pg * VI_PSIZE
+    chmax = chmin + VI_PSIZE
+    chmax = self.chap_count if chmax > self.chap_count
+
     Chinfo.query.where(chroot_id: self.id)
-      .where("chidx > #{chmin} and chidx <= #{chmin + VI_PSIZE}")
+      .where("chidx > #{chmin} and chidx <= #{chmax}")
       .order_by(chidx: :asc).with_mirror(&.with_chroot).with_viuser
       .to_a.tap(&.each(&.chroot = self))
   end

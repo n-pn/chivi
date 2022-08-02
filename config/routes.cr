@@ -57,9 +57,9 @@ Amber::Server.configure do
     # get "/chaps/:nv_id/:sname/:chidx", CV::NvchapCtrl, :ch_info
     get "/chaps/:nv_id/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info
 
-    put "/texts/:nv_id/:sname", CV::ChtextCtrl, :create
+    put "/texts/:nv_id/:sname", CV::ChtextCtrl, :upsert
     get "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :rawtxt
-    put "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :update
+    # put "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :update
     patch "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :change
     # # yousuu
 

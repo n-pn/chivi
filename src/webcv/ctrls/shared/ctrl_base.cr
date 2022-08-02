@@ -93,7 +93,7 @@ class CV::BaseCtrl < Amber::Controller::Base
     Find # raise missing if not exist
   end
 
-  private def load_nvseed(sname : String = params["sname"],
+  private def load_chroot(sname : String = params["sname"],
                           mode : ChrootLoadMode = :auto)
     case sname
     when "=base", "=user"
