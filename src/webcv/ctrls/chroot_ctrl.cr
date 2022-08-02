@@ -88,35 +88,40 @@ class CV::ChrootCtrl < CV::BaseCtrl
   end
 
   def trunc
-    nvseed = load_guarded_nvseed(min_privi: 2)
-    trunc_chidx = params.read_i16("chidx", min: 1_i16, max: nvseed.chap_count)
+    sname = params["sname"]
+    guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
 
-    if chinfo = nvseed.chinfo(trunc_chidx &- 1)
+    chroot = load_chroot(sname, mode: :find)
+    trunc_from = params.read_i16("chidx", min: 1_i16, max: chroot.chap_count)
+
+    if chinfo = chroot.chinfo(trunc_from &- 1)
       last_sname = chinfo.mirror.try(&.chroot.sname) || ""
       last_schid = chinfo.schid
     else
       last_sname = last_schid = ""
     end
 
-    nvseed.update({
-      chap_count: trunc_chidx &- 1,
+    chroot.update({
+      chap_count: trunc_from &- 1,
       last_sname: last_sname,
       last_schid: last_schid,
     })
 
-    serv_json({pgidx: (trunc_chidx - 1) // 128 + 1})
+    serv_json({pgidx: (trunc_from - 1) // 128 + 1})
   end
 
   def prune
-    nvseed = load_guarded_nvseed(min_privi: 2)
+    sname = params["sname"]
+    guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
 
-    nvseed.update({
+    chroot = load_chroot(sname, mode: :find)
+
+    chroot.update({
       chap_count: 0_i16,
-      last_sname: "",
-      last_schid: "",
-      shield:     _viuser.privi > 2 ? 4 : 3,
+      last_sname: "", last_schid: "",
+      shield: _viuser.privi > 2 ? 4 : 3,
     })
 
-    serv_json({shield: nvseed.shield})
+    serv_json({shield: chroot.shield})
   end
 end

@@ -76,9 +76,10 @@ module CV
 
   def upload_dir(dir_name : String, reupload = false, purge_zip = false, sync_data = false)
     root = "var/chtexts/#{dir_name}"
-    dirs = Dir.children(root).sort_by! { |x| x.to_i64? || x.to_i64(base: 36) }
+    dirs = Dir.children(root).map { |x| x.to_i64? || x.to_i64(base: 36) }
+    # dirs.reject! { |x| x < 128740 }
 
-    dirs.each do |book_name|
+    dirs.sort!.each do |book_name|
       dir_path = "#{root}/#{book_name}"
       upload(dir_path, reupload: reupload, purge_zip: purge_zip, sync_data: sync_data)
     end

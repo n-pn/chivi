@@ -10,10 +10,6 @@
     'voters',
   ]
 
-  class Query {
-    change_query(text: string, type: string) {}
-  }
-
   const status_values = ['Tất cả', 'Còn tiếp', 'Hoàn thành', 'Thái giám']
 </script>
 
@@ -86,7 +82,7 @@
     voters: true,
     rating: true,
     genres: true,
-    nvseed: !!query.nvseed,
+    chroot: !!query.chroot,
     origin: !!query.origin,
   }
 </script>
@@ -224,24 +220,24 @@
     </div>
   </details>
 
-  <details class="content" bind:open={triggers.nvseed}>
+  <details class="content" bind:open={triggers.chroot}>
     <summary class="summary">
       <span class="type">Nguồn text: </span>
-      <span class="data _caps" class:_caps={query.nvseed}
-        >{query.nvseed || 'Tất cả'}</span>
+      <span class="data _caps" class:_caps={query.chroot}
+        >{query.chroot || 'Tất cả'}</span>
     </summary>
 
     <div class="choices">
-      <label class="m-chip _caps" class:_active={!query.nvseed}>
-        <input type="radio" bind:group={query.nvseed} value="" />
+      <label class="m-chip _caps" class:_active={!query.chroot}>
+        <input type="radio" bind:group={query.chroot} value="" />
         <span class="radio-text">Tất cả</span>
-        {#if !query.nvseed}<SIcon name="check" />{/if}
+        {#if !query.chroot}<SIcon name="check" />{/if}
       </label>
 
       {#each snames as name}
-        {@const actived = name == query.nvseed}
+        {@const actived = name == query.chroot}
         <label class="m-chip _caps" class:_active={actived}>
-          <input type="radio" bind:group={query.nvseed} value={name} />
+          <input type="radio" bind:group={query.chroot} value={name} />
           <span class="radio-text">{name}</span>
           {#if actived}<SIcon name="check" />{/if}
         </label>
