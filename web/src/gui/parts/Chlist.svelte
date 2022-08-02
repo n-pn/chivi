@@ -169,8 +169,5 @@
   chap-mark {
     font-size: 1rem;
     @include fgcolor(mute);
-    &.sm {
-      font-size: rem(12px);
-    }
   }
 </style>
