@@ -28,7 +28,9 @@ class CV::QtransCtrl < CV::BaseCtrl
     type = params["type"]
     name = params["name"]
 
-    data = QtranData.load!(type, name)
+    stale = params["reload"]? ? Time.utc + 10.minutes : Time.utc
+    data = QtranData.load!(type, name, stale: stale)
+
     return halt! 404, "Not found!" if data.input.empty?
 
     mode = QtranData::Format.parse(params.fetch_str("mode", "node"))

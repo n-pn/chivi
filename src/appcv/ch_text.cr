@@ -39,14 +39,29 @@ class CV::ChPack
     end
   end
 
+  def read_full(schid : String)
+    return unless @has_file
+
+    Compress::Zip::File.open(@zip_path) do |zip|
+      parts = [] of String
+      utime = Time.utc(2000, 1, 1)
+
+      30.times do |cpart|
+        break unless entry = zip[text_name(schid, cpart)]?
+        utime = entry.time if utime < entry.time
+        parts << entry.open(&.gets_to_end)
+      end
+
+      {parts, utime} unless parts.empty?
+    end
+  end
+
   def save(schid : String, parts : Array(String), no_zip : Bool = false, upload : Bool = false)
-    Log.info { parts.size }
     return if parts.empty?
     Dir.mkdir_p(@txt_path)
 
     parts.each_with_index do |text, cpart|
       file_path = "#{@txt_path}/#{text_name(schid, cpart)}"
-      Log.info { file_path }
       File.write(file_path, text)
     end
 
@@ -80,13 +95,20 @@ class CV::Chtext
       @chinfo.fix_utime(time)
     end
 
-    !redo && text ? text : load_text_from_remote(redo, viuser).try(&.[cpart]?) || text || ""
+    !redo && text ? text : remote_reseed(redo, viuser).try(&.[cpart]?) || text || ""
   end
 
-  def load_text_from_remote(redo : Bool = false, viuser : Viuser? = nil)
-    return unless @chroot.is_remote
+  def read_full(redo : Bool = false, viuser : Viuser? = nil) : Array(String)
+    if cached = @chpack.read_full(@chinfo.schid)
+      parts, utime = cached
+      @chinfo.update({p_count: parts.size, changed_at: utime})
+    end
 
-    Log.info { "fetch from remote" }
+    !redo && parts ? parts : remote_reseed(redo, viuser) || parts || [] of String
+  end
+
+  def remote_reseed(redo : Bool = false, viuser : Viuser? = nil)
+    return unless @chroot.is_remote
 
     ttl = redo ? 1.minutes : 10.years
     remote = RemoteText.new(@chroot.sname, @chroot.snvid, @chinfo.schid, ttl: ttl)

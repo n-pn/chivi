@@ -298,7 +298,6 @@ module CV::Zhtext
     end
 
     def save_content!
-      Log.info { save_dir }
       groups = @chapters.group_by { |x| (x.chidx &- 1) // 128 }
 
       groups.each do |group, chaps|

@@ -64,7 +64,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
     splitter.chapters.map do |input|
       Chinfo.new({
-        chroot: chroot, viuser: _viuser, mirror_id: nil,
+        chroot: chroot, viuser: _viuser, mirror: nil,
         chidx: input.chidx, schid: input.schid,
         title: input.title, chvol: input.chvol,
         w_count: input.w_count, p_count: input.p_count,
@@ -111,16 +111,10 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot = load_chroot
     chinfo = load_chinfo(chroot)
 
-    Log.info { {chinfo.to_json, chinfo.mirror.try(&.to_json)} }
     chinfo = chinfo.mirror || chinfo
+    chtext = Chtext.new(chinfo, chinfo.chroot)
 
-    zhtext = String.build do |io|
-      0_i16.upto(chinfo.p_count &- 1_i16) do |cpart|
-        ctext = chinfo.text(cpart, viuser: _viuser)
-        cpart == 0 ? io << ctext : io << '\n' << ctext.sub(/.+?\n/, "")
-      end
-    end
-
+    zhtext = chtext.read_full(viuser: _viuser).join('\n')
     serv_json({chvol: chinfo.chvol, title: chinfo.title, input: zhtext})
   end
 
@@ -137,10 +131,10 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot = load_chroot(sname, :find)
     chinfo = load_chinfo(chroot)
 
-    part_no = params.read_i16("cpart", min: 0_i16)
-    line_no = params.read_i16("l_id", min: 0_i16)
+    part_no = params.read_i16("part_no", min: 0_i16)
+    line_no = params.read_i16("line_no", min: 0_i16)
 
-    orig = params["orig"]?.try { |x| TextUtil.clean_spaces(x) }
+    orig = TextUtil.clean_spaces(params["orig"]? || "")
     edit = TextUtil.clean_spaces(params["edit"])
 
     spawn do
@@ -153,34 +147,33 @@ class CV::ChtextCtrl < CV::BaseCtrl
     end
 
     if mirror = chinfo.mirror
+      chtext = Chtext.new(mirror, mirror.chroot)
       chinfo.inherit(mirror)
-      chinfo.mirror_id = nil
       chinfo.schid = "#{chinfo.chidx}_0"
+    else
+      chtext = Chtext.new(chinfo, chroot)
     end
 
-    content = [] of String
-    chinfo.w_count &+= edit.size
+    content = chtext.read_full(viuser: _viuser)
 
-    0_i16.upto(chinfo.p_count &- 1_i16) do |index|
-      text = chinfo.text(index, viuser: _viuser)
+    chinfo.w_count &+= edit.size &- orig.size if line_no > 0
+    chinfo.p_count = content.size
 
-      if index == part_no || line_no == 0
-        lines = text.split('\n')
-        chinfo.w_count &-= (orig || lines[line_no]).size
+    content.each_with_index do |part, idx|
+      next unless idx == part_no || line_no == 0
 
-        lines[line_no] = edit
-        text = lines.join('\n')
-      end
-
-      content << text
+      lines = part.split('\n')
+      lines[line_no] = edit
+      content[idx] = lines.join('\n')
     end
 
     chinfo.changed_at = Time.utc
     chinfo.viuser = _viuser
+    chinfo.mirror = nil
     chinfo.save!
 
     ChPack.load(chroot, chinfo.chidx).save(chinfo.schid, content)
 
-    serv_text("ok")
+    serv_text({chroot.sname, chroot.snvid, chinfo.chidx, part_no}.join(":"))
   end
 end

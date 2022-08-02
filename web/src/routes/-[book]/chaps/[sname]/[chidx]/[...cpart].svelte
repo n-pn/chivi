@@ -97,13 +97,13 @@
     _reloading = false
   }
 
-  async function retranslate(with_raw = false) {
+  async function retranslate(reload = false) {
     // const base = $config.engine == 2 ? '/_v2/qtran/chaps' : '/api/qtran/chaps'
     const base = '/api/qtran/chaps'
 
     let url = `${base}/${rl_key}?trad=${$config.tosimp}`
     url += `&user=${$session.uname}`
-    if (with_raw) url += '&_raw'
+    if (reload) url += '&_raw&reload'
 
     const res = await fetch(url)
     const txt = await res.text()
@@ -148,12 +148,17 @@
     return on_memory ? [true, 'bookmark'] : [false, 'bookmark-off']
   }
 
-  async function on_fixraw(l_id: number, orig: string, edit: string) {
+  async function on_fixraw(line_no: number, orig: string, edit: string) {
     const url = `/api/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}`
-    const params = { cpart: chmeta.cpart, l_id, orig, edit }
+    const params = { part_no: chmeta.cpart, line_no, orig, edit }
     const res = await $page.stuff.api.call(url, 'PATCH', params)
-    if (res.error) alert(res.error)
-    else retranslate(true)
+
+    if (res.error) {
+      alert(res.error)
+    } else {
+      rl_key = res.trim()
+      retranslate(true)
+    }
   }
 </script>
 

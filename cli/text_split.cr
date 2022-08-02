@@ -63,7 +63,7 @@ class Splitter
   property chidx = 1_i16
 
   getter lines = [] of String
-  getter infos = [] of CV::ChInfo
+  getter infos = [] of Chapter
 
   def log_state(message : String, abort = false)
     File.open(log_file, "a", &.puts(message))

@@ -88,9 +88,14 @@ class CV::Chinfo
     end
   end
 
+  def p_count
+    mirror.try(&.p_count) || self.p_count_column.value
+  end
+
   def fix_utime(time : Time)
     return if self.changed_at.try(&.> time)
-    update({changed_at: time})
+    self.changed_at = time
+    self.save!
   end
 
   FIELDS = {

@@ -49,9 +49,10 @@
     on_destroy()
   })
 
-  onMount(() => document.addEventListener('selectionchange', change_focus))
+  onMount(() => {
+    document.addEventListener('selectionchange', change_focus)
+  })
 
-  let oldraw = rawtxt
   let underlay: HTMLElement
   let on_focus: HTMLElement
   let overlay: HTMLElement
@@ -61,9 +62,10 @@
   let suggests = []
   let preview_mode = 0
 
-  $: update_preview(rawtxt)
-
-  $: if (underlay && rawtxt) on_update_caret()
+  $: newtxt = rawtxt
+  $: update_preview(newtxt)
+  $: if (underlay && newtxt) on_update_caret()
+  $: if (overlay) overlay.focus()
 
   function render_rawtxt(input: String) {
     return Array.from(input)
@@ -77,8 +79,8 @@
     on_update_caret()
   }
 
-  function update_rawtxt(e: Event) {
-    rawtxt = (<HTMLElement>e.target).innerText
+  function update_input(e: Event) {
+    newtxt = (<HTMLElement>e.target).innerText
   }
 
   async function update_preview(input: string) {
@@ -95,14 +97,17 @@
   }
 
   function save_change() {
-    if (rawtxt != oldraw) on_fixraw(lineid, oldraw, rawtxt)
+    if (rawtxt != newtxt) {
+      on_fixraw(lineid, rawtxt, newtxt)
+      rawtxt = newtxt
+    }
     fix_raw = false
   }
 
   function replace_text(from: string, to: string) {
-    const pre = rawtxt.substring(0, caret)
-    const suf = rawtxt.substring(caret + from.length)
-    rawtxt = pre + to + suf
+    const pre = newtxt.substring(0, caret)
+    const suf = newtxt.substring(caret + from.length)
+    newtxt = pre + to + suf
 
     setTimeout(() => {
       const selection = window.getSelection()
@@ -113,7 +118,7 @@
 
   function on_update_caret(new_focus?: HTMLElement) {
     if (on_focus) on_focus.classList.remove('active')
-    suggests = suggest_maps[rawtxt[caret]] || []
+    suggests = suggest_maps[newtxt[caret]] || []
 
     if (new_focus) {
       on_focus = new_focus
@@ -122,6 +127,10 @@
       on_focus = underlay && underlay.querySelector(`[i="${caret}"]`)
       if (on_focus) on_focus.classList.add('active')
     }
+  }
+
+  function on_keypress(e: KeyboardEvent) {
+    if (e.code == 'Enter') e.preventDefault()
   }
 </script>
 
@@ -149,15 +158,16 @@
 
     <section class="rawtxt m-input ">
       <div class="underlay" bind:this={underlay}>
-        {@html render_rawtxt(rawtxt)}
+        {@html render_rawtxt(newtxt)}
       </div>
 
       <div
         class="overlay"
         bind:this={overlay}
-        on:input={update_rawtxt}
+        on:keypress={on_keypress}
+        on:input={update_input}
         contenteditable="true">
-        {rawtxt}
+        {newtxt}
       </div>
     </section>
 
@@ -196,7 +206,7 @@
   </div>
 
   <footer>
-    <button class="m-btn" data-kbd="r" on:click={() => (rawtxt = oldraw)}>
+    <button class="m-btn" data-kbd="r" on:click={() => (rawtxt = newtxt)}>
       <span>Phục hồi</span>
       <SIcon name="arrow-back-up" />
     </button>
@@ -204,7 +214,7 @@
     <button
       class="m-btn _primary _fill"
       on:click={save_change}
-      disabled={oldraw == rawtxt}>
+      disabled={newtxt == rawtxt}>
       <span>Lưu thay đổi</span>
       <SIcon name="send" />
     </button>
@@ -215,11 +225,18 @@
   .rawtxt {
     position: relative;
     padding: 0;
+
+    min-height: 4rem;
+    max-height: 10rem;
+    overflow-y: scroll;
+    resize: vertical;
   }
 
   .overlay,
   .underlay {
     padding: 0.25rem 0.5rem;
+    width: 100%;
+    height: 100%;
   }
 
   .overlay {
@@ -307,6 +324,7 @@
   .convert {
     @include border();
     @include bdradi();
+    min-height: 5rem;
     padding: 0.25rem 0.75rem;
     margin-top: 0.25rem;
     line-height: 1.25rem;

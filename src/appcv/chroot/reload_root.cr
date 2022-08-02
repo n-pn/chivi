@@ -47,7 +47,6 @@ class CV::Chroot
     return self.reseed_base!(mode: mode) if mode > 1 || !seeded
     return if mode < 1 || self.last_sname.empty?
 
-    Log.info { "reload_base" }
     source = Chroot.load!(self.nvinfo, self.last_sname).tap(&.reload!(mode: mode))
     self.mirror_other!(source)
   end
@@ -132,8 +131,6 @@ class CV::Chroot
 
   def reseed_from_disk!(force : Bool = false)
     return if !force && self.seeded
-
-    # Log.info { "load #{self.sname}/#{self.snvid} infos from disk".colorize.yellow }
 
     input = {} of Int16 => Chinfo
     files = Dir.glob("#{TXT_DIR}/#{self.sname}/#{self.snvid}/*.tsv")

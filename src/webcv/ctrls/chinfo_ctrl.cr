@@ -37,7 +37,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
       ukey = {chroot.sname, chroot.snvid, chinfo.chidx, cpart}.join(":")
     end
 
-    utime = chinfo.changed_at.try(&.+ 10.minutes) || Time.utc + 10.minutes
+    utime = (chinfo.changed_at || Time.utc) + 10.minutes
     if redo || !(qtran = QtranData::CACHE.get?(ukey, utime))
       qtran = QtranData.load_chap(chinfo, cpart, redo: redo, viuser: _viuser)
       QtranData::CACHE.set(ukey, qtran)

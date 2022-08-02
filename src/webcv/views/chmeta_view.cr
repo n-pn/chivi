@@ -21,8 +21,8 @@ struct CV::ChmetaView
   end
 
   def chap_link
-    if mirror = @chap.mirror.try(&.chroot)
-      SiteLink.text_url(mirror.sname, mirror.snvid, @chap.schid)
+    if (mirror = @chap.mirror) && (origin = mirror.chroot)
+      SiteLink.text_url(origin.sname, origin.snvid, mirror.schid)
     else
       SiteLink.text_url(@seed.sname, @seed.snvid, @chap.schid)
     end

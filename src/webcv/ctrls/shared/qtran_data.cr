@@ -72,7 +72,7 @@ class CV::QtranData
     input = chinfo.text(cpart, redo: redo, viuser: viuser)
     lines = input.empty? ? [] of String : input.split('\n')
 
-    parts = chinfo.p_count
+    parts = chinfo.mirror.try(&.p_count) || chinfo.p_count
     label = parts > 1 ? " [#{cpart &+ 1}/#{parts}]" : ""
 
     nvinfo = chinfo.chroot.nvinfo

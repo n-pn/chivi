@@ -1,7 +1,7 @@
 require "log"
 require "colorize"
 require "option_parser"
-require "../src/appcv/inits/bcover"
+require "../src/_init/books/bcover"
 require "../src/_init/books/book_info"
 
 module CV

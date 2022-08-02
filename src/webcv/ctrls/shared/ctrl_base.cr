@@ -110,7 +110,13 @@ class CV::BaseCtrl < Amber::Controller::Base
   end
 
   private def load_chinfo(chroot : Chroot, chidx : Int16 = read_chidx)
-    chroot.chinfo(chidx) || raise NotFound.new("Chương tiết không tồn tại")
+    chinfo = Chinfo.query
+      .where({chroot_id: chroot.id, chidx: chidx})
+      .with_mirror(&.with_chroot).with_viuser
+      .first
+
+    raise NotFound.new("Chương tiết không tồn tại") unless chinfo
+    chinfo.tap(&.chroot = chroot)
   end
 
   def assert_privi(privi : Int32 = 1)
