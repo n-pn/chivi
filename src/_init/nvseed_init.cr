@@ -1,6 +1,6 @@
 require "json"
 
-class CV::NvseedInit
+class CV::ChrootInit
   INP_DIR = "_db/.cache/%s/infos"
   OUT_DIR = "db/seed_data/nvseeds/%s"
 
@@ -76,7 +76,7 @@ class CV::NvseedInit
   end
 
   def save!
-    out_file = NvseedInit.out_path(@sname, @snvid)
+    out_file = ChrootInit.out_path(@sname, @snvid)
     FileUtils.mkdir_p(File.dirname(out_file))
     File.write(out_file, self.to_pretty_json)
   end

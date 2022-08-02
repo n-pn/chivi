@@ -77,20 +77,40 @@ class CV::BaseCtrl < Amber::Controller::Base
     response.puts({status: status, error: error}.to_json)
   end
 
+  private def read_chidx(param : String = "chidx", max : Int16? = nil) : Int16
+    idx = params.read_i16(param, min: 1_i16)
+    max && max < idx ? max : idx
+  end
+
   private def load_nvinfo : Nvinfo
     nv_id = params["nv_id"].to_i64
     Nvinfo.load!(nv_id) || raise NotFound.new("Quyển sách không tồn tại")
   end
 
-  private def load_nvseed(sname : String = params["sname"])
+  enum ChrootLoadMode
+    Auto # guess from type
+    Init # create new one if not exist
+    Find # raise missing if not exist
+  end
+
+  private def load_nvseed(sname : String = params["sname"],
+                          mode : ChrootLoadMode = :auto)
     case sname
     when "=base", "=user"
-      Nvseed.load!(load_nvinfo, sname, force: true)
+      Chroot.load!(load_nvinfo, sname, force: !mode.find?)
     when "=self", "@" + _viuser.uname
-      Nvseed.load!(load_nvinfo, "@" + _viuser.uname, force: true)
+      Chroot.load!(load_nvinfo, "@" + _viuser.uname, force: !mode.find?)
     else
-      Nvseed.load!(load_nvinfo, sname, force: false)
+      Chroot.load!(load_nvinfo, sname, force: mode.init?)
     end
+  end
+
+  private def guard_privi(min : Int8 = 0)
+    raise Unauthorized.new("Quyền hạn không đủ!") if _viuser.privi < min
+  end
+
+  private def load_chinfo(chroot : Chroot, chidx : Int16 = read_chidx)
+    chroot.chinfo(chidx) || raise NotFound.new("Chương tiết không tồn tại")
   end
 
   def assert_privi(privi : Int32 = 1)

@@ -22,7 +22,7 @@ export class API {
   maps = {
     nvinfos: new Map<string, Cached<CV.Nvinfo>>(),
     nslists: new Map<number, Cached<CV.Nslist>>(),
-    nvseeds: new Map<string, Cached<CV.Nvseed>>(),
+    nvseeds: new Map<string, Cached<CV.Chroot>>(),
   }
 
   constructor(fetch: CV.Fetch, session: App.Session) {

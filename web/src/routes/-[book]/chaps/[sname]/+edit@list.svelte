@@ -25,7 +25,7 @@
 
   export let nvinfo: CV.Nvinfo
   export let nslist: CV.Nslist
-  export let nvseed: CV.Nvseed
+  export let nvseed: CV.Chroot
 
   let patch_form = {
     chmin: 1,

@@ -4,7 +4,7 @@ require "../nvchap/ch_list"
 require "../nvchap/ch_repo"
 require "../../mtlv1/mt_core"
 
-class CV::Nvseed
+class CV::Chroot
   def set_mftime(utime : Int64 = Time.utc.to_unix, force : Bool = false) : Nil
     return unless force || utime > self.utime
     self.utime = utime
@@ -51,7 +51,7 @@ class CV::Nvseed
 
   def lastpg : Array(Chinfo)
     Chinfo.query.where(chroot_id: self.id)
-      # .where("chidx <= #{self.chap_count}")
+      .where("chidx <= #{self.chap_count}")
       .order_by(chidx: :desc).with_mirror(&.with_chroot).with_viuser
       .limit(4).to_a.tap(&.each(&.chroot = self))
   end
@@ -85,7 +85,7 @@ class CV::Nvseed
   def reseed!(mode : Int8 = 1)
     case sname
     when "=base" then self.reseed_base!(mode: mode)
-    else              self.reseed_from_disk!
+    else              self.reseed_from_disk!(force: mode > 0)
     end
   end
 
@@ -105,26 +105,32 @@ class CV::Nvseed
 
   TXT_DIR = "var/chtexts"
 
-  def reseed_from_disk!
+  def reseed_from_disk!(force : Bool = false)
+    return if !force && self.seeded
+
     Log.info { "load #{self.sname}/#{self.snvid} infos from disk".colorize.yellow }
 
-    files = Dir.glob("#{TXT_DIR}/#{self.sname}/#{self.snvid}/*.tsv")
-    cvmtl = self.nvinfo.cvmtl
-
     input = {} of Int16 => Chinfo
+
+    files = Dir.glob("#{TXT_DIR}/#{self.sname}/#{self.snvid}/*.tsv")
+
     files.each do |file|
       File.read_lines(file).each do |line|
         next if line.empty?
+
         entry = Chinfo.new(self, line.split('\t'))
         input[entry.chidx] = entry
       end
     end
 
     batch = input.values.sort_by!(&.chidx)
-    return unless last = batch.last?
-    Chinfo.bulk_upsert(batch, cvmtl: cvmtl)
 
-    self.set_latest(last, last.mirror.try(&.chroot) || self)
+    if last = batch.last?
+      cvmtl = self.nvinfo.cvmtl
+      Chinfo.bulk_upsert(batch, cvmtl: cvmtl)
+      self.set_latest(last, last.mirror.try(&.chroot) || self)
+    end
+
     self.seeded = true
     self.save!
   end

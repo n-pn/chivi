@@ -25,10 +25,10 @@ class CV::BdLacInvoke
   def load_chap_count(nvinfo : Nvinfo)
     return 0 if nvinfo.subdue_id > 0
 
-    if nvseed = Nvseed.find(nvinfo.id, 0)
+    if nvseed = Chroot.find(nvinfo.id, 0)
       nvseed.refresh!(force: false)
     else
-      nvseed = Nvseed.init!(nvinfo, 0)
+      nvseed = Chroot.init!(nvinfo, 0)
     end
 
     nvseed.chap_count

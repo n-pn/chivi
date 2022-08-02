@@ -38,7 +38,7 @@
   export let nvinfo: CV.Nvinfo
   export let nslist: CV.Nslist
 
-  export let _curr: CV.Nvseed
+  export let _curr: CV.Chroot
   export let pgidx = 1
 
   function make_seed(sname: string) {

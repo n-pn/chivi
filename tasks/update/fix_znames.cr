@@ -9,7 +9,7 @@ def transfer(old_nvinfo, new_nvinfo)
   zseeds = old_nvinfo.zseeds - new_nvinfo.zseeds
   return if zseeds.empty?
 
-  query = CV::Nvseed.query
+  query = CV::Chroot.query
     .where(nvinfo_id: old_bid)
     .where("zseed in ?", zseeds)
 

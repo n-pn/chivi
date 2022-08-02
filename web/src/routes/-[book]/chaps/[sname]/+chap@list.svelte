@@ -64,7 +64,7 @@
   import { page } from '$app/stores'
 
   export let nvinfo: CV.Nvinfo
-  export let nvseed: CV.Nvseed
+  export let nvseed: CV.Chroot
 
   export let input = ''
   export let chidx = 1
@@ -89,7 +89,7 @@
   let encoding = 'GBK'
   $: if (encoding && files) read_to_input(files[0], encoding)
 
-  $: action_url = `/api/texts/${nvinfo.id}/${nvseed.sname}/${chidx}`
+  $: action_url = `/api/texts/${nvinfo.id}/${nvseed.sname}`
 
   let loading = false
   let changed = false
@@ -143,31 +143,31 @@
 
     const text_hash = hash_str(input)
     body.append('hash', text_hash)
+
+    body.append('chidx', chidx.toString())
     body.append('encoding', 'UTF-8')
 
     if (text_hash != file_hash) {
-      body.append('file', new Blob([input], { type: 'text/plain' }))
       file_hash = text_hash
+      body.append('file', new Blob([input], { type: 'text/plain' }))
     }
 
-    for (const key in form) {
-      body.append(key, form[key].toString())
+    for (const key in form) body.append(key, form[key].toString())
+    for (const key in opts) body.append(key, opts[key].toString())
+
+    const res = await fetch(action_url, { method: 'PUT', body })
+
+    if (!res.ok) {
+      err_msg = await res.text()
+      return
     }
 
-    for (const key in opts) {
-      body.append(key, opts[key].toString())
-    }
+    const { from } = await res.json()
+    const pgidx = Math.floor((from - 1) / 128) + 1
 
-    const res = await fetch(action_url, { method: 'POST', body })
-
-    if (!res.ok) err_msg = await res.text()
-    else {
-      const { from } = await res.json()
-      const pgidx = Math.floor((from - 1) / 128) + 1
-      $page.stuff.api.uncache('nslists', nvinfo.id)
-      $page.stuff.api.uncache('nvseeds', `${nvinfo.id}/${nvseed.sname}`)
-      goto(`/-${nvinfo.bslug}/chaps/${nvseed.sname}?pg=${pgidx}`)
-    }
+    $page.stuff.api.uncache('nslists', nvinfo.id)
+    $page.stuff.api.uncache('nvseeds', `${nvinfo.id}/${nvseed.sname}`)
+    goto(`/-${nvinfo.bslug}/chaps/${nvseed.sname}?pg=${pgidx}`)
   }
 </script>
 

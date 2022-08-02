@@ -4,7 +4,7 @@
   import { SIcon } from '$gui'
 
   export let nvinfo: CV.Nvinfo
-  export let nvseed: CV.Nvseed
+  export let nvseed: CV.Chroot
   export let ubmemo: CV.Ubmemo
   export let chlist: CV.Chinfo[]
   export let mark_chidx = ubmemo.chidx

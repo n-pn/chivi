@@ -18,10 +18,10 @@ class CV::FetchText
   end
 
   def refresh_list!
-    if nvseed = Nvseed.find(@nvinfo.id, 0)
+    if nvseed = Chroot.find(@nvinfo.id, 0)
       nvseed.refresh!(force: Time.utc - 4.weeks > Time.unix(nvseed.atime))
     else
-      Nvseed.init!(@nvinfo, 0)
+      Chroot.init!(@nvinfo, 0)
     end
   end
 

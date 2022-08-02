@@ -1,5 +1,5 @@
 declare namespace CV {
-  interface Nvseed {
+  interface Chroot {
     sname: string
     snvid: string
 
@@ -19,9 +19,9 @@ declare namespace CV {
   }
 
   interface Nslist {
-    _base: Nvseed
-    _user: Nvseed
-    users: Array<Nvseed>
-    other: Array<Nvseed>
+    _base: Chroot
+    _user: Chroot
+    users: Array<Chroot>
+    other: Array<Chroot>
   }
 }

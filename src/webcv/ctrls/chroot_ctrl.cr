@@ -1,4 +1,4 @@
-class CV::NvseedCtrl < CV::BaseCtrl
+class CV::ChrootCtrl < CV::BaseCtrl
   def index
     nslist = load_nvinfo.seed_list
     serv_json(NslistView.new(nslist))
@@ -15,10 +15,10 @@ class CV::NvseedCtrl < CV::BaseCtrl
       fresh = nvseed.fresh?(_viuser.privi, force: false)
     end
 
-    serv_json(NvseedView.new(nvseed, full: true, fresh: fresh))
+    serv_json(ChrootView.new(nvseed, full: true, fresh: fresh))
   end
 
-  private def can_reload?(nvseed : Nvseed)
+  private def can_reload?(nvseed : Chroot)
     return false if _viuser.privi < 0
     return true unless nvseed.sname[0] == '@'
     nvseed.sname == '@' + _viuser.uname
@@ -44,7 +44,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     sname = params["sname"]
     snvid = params["snvid"]
 
-    nvseed = Nvseed.upsert!(nvinfo, sname, snvid, force: true)
+    nvseed = Chroot.upsert!(nvinfo, sname, snvid, force: true)
     nvinfo.seed_list.other.push(nvseed).sort! { |x| SnameMap.zseed(x.sname) }
 
     serv_json({sname: sname, snvid: snvid})
@@ -55,7 +55,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     end
   end
 
-  private def load_guarded_nvseed(min_privi = 1) : Nvseed
+  private def load_guarded_nvseed(min_privi = 1) : Chroot
     sname = params["sname"]
     return load_nvseed(sname) if action_allowed?(sname, min_privi)
     raise Unauthorized.new("Bạn không đủ quyền hạn")
@@ -76,7 +76,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   def patch
     nvseed = load_guarded_nvseed(min_privi: 1)
-    target = Nvseed.load!(nvseed.nvinfo, params["o_sname"])
+    target = Chroot.load!(nvseed.nvinfo, params["o_sname"])
 
     chmin = params.read_i16("chmin", min: 1_i16)
     chmax = params.read_i16("chmax", min: chmin, max: target.chap_count)

@@ -3,7 +3,7 @@
 
   export let nvinfo: CV.Nvinfo
   export let nslist: CV.Nslist
-  export let nvseed: CV.Nvseed
+  export let nvseed: CV.Chroot
 
   export let chmeta: CV.Chmeta
   export let chinfo: CV.Chinfo

@@ -103,10 +103,10 @@ module CV::SeedZxcsme
   PREVS = Hash(String, ZxcsmeJson).from_json(File.read("#{OUT_DIR}/prevs.json"))
   STIME = Time.utc(2019, 1, 1).to_unix
 
-  CACHE = {} of Int32 => NvseedData
+  CACHE = {} of Int32 => ChrootData
 
   def load_seed(group : Int32)
-    CACHE[group] ||= NvseedData.new("zxcs_me", "#{OUT_DIR}/#{group}")
+    CACHE[group] ||= ChrootData.new("zxcs_me", "#{OUT_DIR}/#{group}")
   end
 
   def init!(redo = false)

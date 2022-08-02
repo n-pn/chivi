@@ -31,7 +31,7 @@
 
   let ubmemo: Writable<CV.Ubmemo> = getContext('ubmemos')
 
-  export let nvseed: CV.Nvseed
+  export let nvseed: CV.Chroot
   export let chlist: CV.Chlist
 
   $: pager = new Pager($page.url, { pg: 1 })

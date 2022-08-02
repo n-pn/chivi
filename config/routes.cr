@@ -44,22 +44,23 @@ Amber::Server.configure do
 
     # nvseed actions
 
-    get "/seeds/:nv_id", CV::NvseedCtrl, :index
-    put "/seeds/:nv_id/", CV::NvseedCtrl, :create
-    get "/seeds/:nv_id/:sname", CV::NvseedCtrl, :show
-    get "/seeds/:nv_id/:sname/:page", CV::NvseedCtrl, :chaps
-    put "/seeds/:nv_id/:sname/patch", CV::NvseedCtrl, :patch
-    put "/seeds/:nv_id/:sname/trunc", CV::NvseedCtrl, :trunc
-    delete "/seeds/:nv_id/:sname", CV::NvseedCtrl, :prune
+    get "/seeds/:nv_id", CV::ChrootCtrl, :index
+    put "/seeds/:nv_id/", CV::ChrootCtrl, :create
+    get "/seeds/:nv_id/:sname", CV::ChrootCtrl, :show
+    get "/seeds/:nv_id/:sname/:page", CV::ChrootCtrl, :chaps
+    put "/seeds/:nv_id/:sname/patch", CV::ChrootCtrl, :patch
+    put "/seeds/:nv_id/:sname/trunc", CV::ChrootCtrl, :trunc
+    delete "/seeds/:nv_id/:sname", CV::ChrootCtrl, :prune
 
     # nvchap actions
 
     # get "/chaps/:nv_id/:sname/:chidx", CV::NvchapCtrl, :ch_info
     get "/chaps/:nv_id/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info
 
-    get "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :zhtext
-    post "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :upload
-    post "/texts/:nv_id/:sname/:chidx/:cpart", CV::ChtextCtrl, :change
+    put "/texts/:nv_id/:sname", CV::ChtextCtrl, :create
+    get "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :rawtxt
+    put "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :update
+    patch "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :change
     # # yousuu
 
     get "/yscrits", CV::YscritCtrl, :index

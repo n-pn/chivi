@@ -202,6 +202,10 @@ module CV::TextUtil
     output << buffer.to_s
     output
   end
+
+  def clean_spaces(input : String)
+    input.tr("\t\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000", " ").strip
+  end
 end
 
 # pp CV::TextUtil.format_title("第二十集 红粉骷髅 第八章")

@@ -57,7 +57,7 @@ class CV::QtranData
   def self.load_chap(name : String, redo = false, viuser : Viuser? = nil) : QtranData
     sname, snvid, chidx, cpart = name.split(":")
 
-    unless nvseed = Nvseed.find({sname: sname, snvid: snvid})
+    unless nvseed = Chroot.find({sname: sname, snvid: snvid})
       raise NotFound.new("Nguồn truyện không tồn tại")
     end
 

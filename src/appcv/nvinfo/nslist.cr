@@ -1,13 +1,13 @@
 class CV::Nslist
-  getter _base : Nvseed { init_base }
-  getter _user : Nvseed { init_user }
+  getter _base : Chroot { init_base }
+  getter _user : Chroot { init_user }
 
-  getter users = [] of Nvseed
-  getter other = [] of Nvseed
+  getter users = [] of Chroot
+  getter other = [] of Chroot
 
   def initialize(@nvinfo : Nvinfo)
-    Nvseed.query.filter_nvinfo(@nvinfo.id).each do |nvseed|
-      nvseed = Nvseed.cache!(nvseed)
+    Chroot.query.filter_nvinfo(@nvinfo.id).each do |nvseed|
+      nvseed = Chroot.cache!(nvseed)
 
       case nvseed.sname
       when "=base"                     then @_base = nvseed
@@ -25,11 +25,11 @@ class CV::Nslist
   end
 
   def init_base
-    seed = Nvseed.load!(@nvinfo, "=base", force: true)
+    seed = Chroot.load!(@nvinfo, "=base", force: true)
     seed.tap(&.reload_base!(mode: 0_i8))
   end
 
   def init_user
-    Nvseed.load!(@nvinfo, "=user", force: true)
+    Chroot.load!(@nvinfo, "=user", force: true)
   end
 end

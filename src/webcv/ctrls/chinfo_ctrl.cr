@@ -30,7 +30,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  private def load_cvdata(nvseed : Nvseed, chinfo : Chinfo,
+  private def load_cvdata(nvseed : Chroot, chinfo : Chinfo,
                           cpart : Int16 = 0_i16, redo : Bool = false)
     min_privi = nvseed.min_privi(chinfo.chidx, chinfo.w_count)
     return {"", ""} if min_privi > _viuser.privi

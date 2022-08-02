@@ -60,7 +60,7 @@
 
   export let nvinfo: CV.Nvinfo
   export let nslist: CV.Nslist
-  export let nvseed: CV.Nvseed
+  export let nvseed: CV.Chroot
   export let chmemo: CV.Ubmemo
 
   export let chmeta: CV.Chmeta

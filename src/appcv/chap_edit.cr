@@ -5,7 +5,7 @@ class CV::ChapEdit
   primary_key type: :serial
 
   belongs_to viuser : Viuser, foreign_key_type: Int32
-  belongs_to chroot : Nvseed, foreign_key_type: Int32
+  belongs_to chroot : Chroot, foreign_key_type: Int32
 
   column chidx : Int16
   column schid : String

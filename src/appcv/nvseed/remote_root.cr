@@ -3,7 +3,7 @@ require "../remote/remote_info"
 # for source like `hetushu` or `69shu` that can download book info/book text form
 # internet
 
-class CV::Nvseed
+class CV::Chroot
   def reload_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
     parser = RemoteInfo.new(sname, snvid, ttl: ttl, lbl: lbl)
     changed = parser.changed?(self.last_schid, self.utime)
@@ -47,7 +47,7 @@ class CV::Nvseed
   def update_remote!(mode : Int8) : Nil
     self.reload_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
 
-    childs = Nvseed.query.filter_nvinfo(self.nvinfo_id).where("last_sname = ?", self.sname)
+    childs = Chroot.query.filter_nvinfo(self.nvinfo_id).where("last_sname = ?", self.sname)
     childs.each do |other|
       other.reseed_from_disk! if !other.seeded
       other.mirror_other!(self, other.chap_count)

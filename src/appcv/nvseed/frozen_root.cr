@@ -3,6 +3,6 @@
 # chapter list and info of this seed source can be regenerate by using files in
 # `var/chmetas/seeds` and `var/chmetas/stats` folders
 
-class CV::Nvseed
+class CV::Chroot
   # TODO!
 end

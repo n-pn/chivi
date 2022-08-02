@@ -11,9 +11,8 @@ class CV::Chinfo
   primary_key type: :serial
 
   belongs_to viuser : Viuser?, foreign_key_type: Int32
-  belongs_to chroot : Nvseed, foreign_key_type: Int32
+  belongs_to chroot : Chroot, foreign_key_type: Int32
   belongs_to mirror : Chinfo?, foreign_key_type: Int32
-  has_one chtext : Chtext?, foreign_key_type: Int32
 
   column chidx : Int16
   column schid : String
@@ -41,7 +40,7 @@ class CV::Chinfo
     query.order_by(chidx: :asc)
   end
 
-  def initialize(chroot : Nvseed, argv : Array(String))
+  def initialize(chroot : Chroot, argv : Array(String))
     @persisted = false
     self.chroot = chroot
 
@@ -61,7 +60,10 @@ class CV::Chinfo
 
     return if argv.size < 10
 
-    mirror_chroot = Nvseed.find!({sname: argv[8], snvid: argv[9]})
+    sname, snvid = argv[8], argv[9]
+    return if sname == chroot.sname
+
+    mirror_chroot = Chroot.find!({sname: sname, snvid: snvid})
     mirror_chroot.reseed_from_disk! unless mirror_chroot.seeded
 
     mirror_chidx = argv[10]?.try(&.to_i16) || self.chidx
@@ -80,9 +82,9 @@ class CV::Chinfo
   end
 
   def text(cpart : Int16 = 0, redo : Bool = false, viuser : Viuser? = nil) : String
-    self.mirror.try(&.text(cpart, redo, viuser)) || Chtext.text(self.id, cpart)
+    self.mirror.try(&.text(cpart, redo, viuser)) || Chtext.text(self.chroot_id, self.chidx, cpart)
   rescue
-    Chtext.find(self).get(cpart, redo, viuser)
+    Chtext.upsert(self.chroot, self.chidx, self.schid).get(cpart, redo, viuser)
   end
 
   FIELDS = {
@@ -93,7 +95,7 @@ class CV::Chinfo
 
   ####
 
-  def self.fetch_as_mirror(old_root : Nvseed, new_root : Nvseed,
+  def self.fetch_as_mirror(old_root : Chroot, new_root : Chroot,
                            chmin : Int16 = 0, chmax : Int16? = nil,
                            new_chmin = chmin)
     query = self.query
@@ -115,20 +117,20 @@ class CV::Chinfo
     output
   end
 
-  def self.bulk_upsert(batch : Array(self), trans : Bool = true, cvmtl : MtCore? = nil)
+  def self.bulk_upsert(batch : Array(self), trans : Bool = true, cvmtl : MtCore? = nil) : Nil
     cvmtl ||= batch.first.chroot.nvinfo.cvmtl
 
     on_conflict = ->(req : Clear::SQL::InsertQuery) do
       req.on_conflict("ON CONSTRAINT chinfos_unique_key").do_update do |upd|
         set = FIELDS.map { |x| "#{x} = excluded.#{x}" }.join(", ")
-        upd.set("tl_fixed = 'f', #{set}").where("chinfos.schid <> excluded.schid")
+        upd.set("tl_fixed = 'f', #{set}")
       end
     end
 
     Clear::SQL.transaction do
       batch.each do |entry|
         entry.translate!(cvmtl: cvmtl) if trans
-        entry.save(on_conflict: on_conflict)
+        entry.save!(on_conflict: on_conflict)
       end
     end
   end
@@ -140,14 +142,14 @@ class CV::Chinfo
     end
   end
 
-  def self.nearby_chvol(chroot : Nvseed, chidx : Int16) : String
+  def self.nearby_chvol(chroot : Chroot, chidx : Int16) : String
     query.where
       .where("idx <= #{chidx} and chvol <> ''")
       .order_by(chidx: :desc).select("chvol")
       .first.try(&.chvol) || ""
   end
 
-  def self.match_chidx(chroot : Nvseed, chidx : Int16) : Int16
+  def self.match_chidx(chroot : Chroot, chidx : Int16) : Int16
     return chidx unless title = get_title(chroot.id, chidx)
 
     query.where(chroot_id: chroot.id).where(title: title)

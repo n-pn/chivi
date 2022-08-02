@@ -1,28 +1,116 @@
 require "json"
+require "../../appcv/zhtext/text_split"
 
 class CV::ChtextCtrl < CV::BaseCtrl
-  def zhtext
-    raise Unauthorized.new("Quyền hạn không đủ!") if _viuser.privi < 1
+  def create
+    # upload batch text
 
-    nvseed = load_nvseed
-    chidx = params.read_i16("chidx", min: 1_i16)
+    sname = params["sname"]
+    guard_privi min: ACL.min_create_chtext(sname, _viuser.uname)
 
-    unless chinfo = nvseed.chinfo(chidx)
-      raise NotFound.new("Chương tiết không tồn tại")
+    chroot = load_nvseed(sname, :auto)
+    text, path = read_chtext(chroot)
+
+    options = read_options(chroot, params)
+    splitter = CV::Zhtext::Splitter.new(path, options, content: text)
+
+    splitter.split!(options.split_mode)
+    splitter.save_content!
+
+    spawn splitter.save_chinfos!(uname: _viuser.uname)
+
+    changed_at = Time.utc
+    chinfos = [] of Chinfo
+    chtexts = [] of Chtext
+
+    splitter.chapters.each do |input|
+      chinfos << Chinfo.new({
+        chroot: chroot, viuser: _viuser, mirror_id: nil,
+        chidx: input.chidx, schid: input.schid,
+        title: input.title, chvol: input.chvol,
+        w_count: input.w_count, p_count: input.p_count,
+        changed_at: changed_at,
+      })
+
+      chtexts << Chtext.new({
+        chroot: chroot, chidx: input.chidx, schid: input.schid,
+        content: input.content,
+      })
     end
 
-    set_headers content_type: :text
+    Chinfo.bulk_upsert(chinfos, cvmtl: chroot.nvinfo.cvmtl)
+    Chtext.bulk_upsert(chtexts)
 
-    response << "/// #{chinfo.chvol}\n#{chinfo.title}\n"
-    response << '\n' << chinfo.text(0_i16)
-    1_i16.upto(chinfo.p_count &- 1) do |cpart|
-      text = chinfo.text(cpart)
-      response << '\n' << text.sub(/.+?\n/, "")
+    serv_json({from: chinfos.first.chidx, upto: chinfos.last.chidx})
+  end
+
+  private def read_options(chroot : Chroot, params)
+    Zhtext::Options.new do |x|
+      x.init_chidx = params.read_i16("chidx", min: 1_i16)
+      x.init_chvol = params["chvol"]? || Chinfo.nearby_chvol(chroot, x.init_chidx)
+
+      x.to_simp = params["tosimp"]? == "true"
+      x.un_wrap = params["unwrap"]? == "true"
+      x.encoding = params["encoding"]? || "UTF-8"
+
+      x.split_mode = params["split_mode"].to_i
+
+      case x.split_mode
+      when 1
+        x.trim_space = params["trim_space"]? == "true"
+        x.min_blanks = params["min_blank"]?.try(&.to_i?) || 2
+      when 2
+        x.need_blank = params["blank_before"]? == "true"
+      when 3
+        params["suffix"]?.try { |r| x.title_suffix = r.strip }
+      when 4
+        params["regex"]?.try { |r| x.custom_regex = r.strip }
+      end
     end
   end
 
-  def upload
-    return halt!(500, "Quyền hạn không đủ!") if _viuser.privi < 1
+  private def read_chtext(chroot : Chroot) : {String, String}
+    save_dir = "var/chaps/users/#{chroot.sname}/#{chroot.snvid}"
+    Dir.mkdir_p(save_dir)
+
+    name = params["hash"]? || Time.local.to_unix.to_s(base: 32)
+    path = File.join(save_dir, name + ".txt")
+
+    if form_file = params.files["file"]?
+      File.copy(form_file.file.path, path)
+      return {File.read(path), path}
+    end
+
+    if !(text = params["text"]?)
+      raise BadRequest.new("Thiếu file hoặc text") unless File.exists?(path)
+      text = File.read(path)
+    elsif _viuser.privi < 2 && text.size > 40_000
+      raise BadRequest.new("Chương quá dài: #{text.size}/40_000 ký tự")
+    end
+
+    spawn File.write(path, text)
+    {text, path}
+  end
+
+  def rawtxt
+    guard_privi min: 1
+
+    chroot = load_nvseed
+    chinfo = load_chinfo(chroot)
+    chinfo = chinfo.mirror || chinfo
+
+    zhtext = String.build do |io|
+      0_i16.upto(chinfo.p_count &- 1_i16) do |cpart|
+        ctext = chinfo.text(cpart)
+        cpart == 0 ? io << ctext : io << '\n' << ctext.sub(/.+?\n/, "")
+      end
+    end
+
+    serv_json({chvol: chinfo.chvol, title: chinfo.title, input: zhtext})
+  end
+
+  def update
+    raise "refactoring!"
     nvseed = load_nvseed
 
     self_sname = "@" + _viuser.uname
@@ -30,46 +118,11 @@ class CV::ChtextCtrl < CV::BaseCtrl
     if (nvseed.sname != self_sname) && params["dup"]?
       target = nvseed
       nvinfo = target.nvinfo
-      nvseed = Nvseed.load!(nvinfo, self_sname, force: true)
+      chroot = Chroot.load!(nvinfo, self_sname, force: true)
     end
-
-    file_path = save_text(nvseed)
-    success, from_chidx, message = invoke_splitter(nvseed, file_path)
-    raise BadRequest.new(message) unless success
-
-    last_chidx, last_schid = message.split('\t')
-    last_chidx = last_chidx.to_i16
-
-    spawn do
-      trunc = params["trunc_after"]? == "true"
-      update_nvseed(nvseed, last_chidx, last_schid, trunc: trunc)
-      sync_changes(nvseed, from_chidx, last_chidx, target)
-    end
-
-    serv_json({from: from_chidx, upto: last_chidx})
   end
 
-  private def save_text(nvseed : Nvseed) : String
-    save_dir = "var/chseeds/#{nvseed.sname}/#{nvseed.snvid}"
-
-    file_name = params["hash"]? || Time.local.to_unix.to_s(base: 32)
-    file_path = File.join(save_dir, "#{file_name}.txt")
-    Dir.mkdir_p(save_dir)
-
-    if form_file = params.files["file"]?
-      File.copy(form_file.file.path, file_path)
-    elsif !(text = params["text"]?)
-      raise BadRequest.new("Thiếu file hoặc text") unless File.exists?(file_path)
-    elsif text.size < 30_000 || _viuser.privi > 1
-      File.write(file_path, text)
-    else
-      raise BadRequest.new("Chương quá dài #{text.size} ký tự, tối đa: 30k ký tự")
-    end
-
-    file_path
-  end
-
-  private def update_nvseed(nvseed : Nvseed, last_chidx, last_schid, trunc = false)
+  private def update_nvseed(nvseed : Chroot, last_chidx, last_schid, trunc = false)
     if last_chidx >= nvseed.chap_count || trunc
       nvseed.chap_count = last_chidx
       nvseed.last_schid = last_schid
@@ -79,53 +132,15 @@ class CV::ChtextCtrl < CV::BaseCtrl
     nvseed.save!
   end
 
-  private def sync_changes(nvseed : Nvseed, chmin : Int16, chmax : Int16, target = Nvseed?)
+  private def sync_changes(nvseed : Chroot, chmin : Int16, chmax : Int16, target = Chroot?)
     raise "refactoring!"
     # infos = nvseed._repo.clone!(chmin, chmax)
     # if !target || target.sname[0]? == '@'
-    #   user_seed = Nvseed.load!(nvseed.nvinfo, "=user", force: true)
+    #   user_seed = Chroot.load!(nvseed.nvinfo, "=user", force: true)
     #   user_seed.patch_chaps!(infos, nvseed.utime, save: true)
     # else
     #   target.patch_chaps!(infos, nvseed.utime, save: true)
     # end
-  end
-
-  # -ameba:disable Metrics/CyclomaticComplexity
-  private def invoke_splitter(nvseed : Nvseed, file_path : String) : {Bool, Int16, String}
-    args = ["-i", file_path]
-    args << "-u" << _viuser.uname
-    params["chvol"]?.try { |x| args << "-v" << x.strip }
-
-    from_chidx = params.read_i16("chidx", min: 1_i16)
-    args << "-f" << from_chidx.to_s
-
-    args << "--tosimp" if params["tosimp"]? == "true"
-    args << "--unwrap" if params["unwrap"]? == "true"
-    args << "-e" << "UTF-8"
-
-    split_mode = params["split_mode"]? || "0"
-    args << "-m" << split_mode
-    add_args_for_split_mode(args, split_mode.to_i)
-
-    output = IO::Memory.new
-    status = Process.run("bin/text_split", args, output: output, error: output)
-    output.close
-
-    {status.success?, from_chidx, output.to_s.strip}
-  end
-
-  private def add_args_for_split_mode(args : Array(String), split_mode : Int32)
-    case split_mode
-    when 1
-      args << "--trim" if params["trim_space"]? == "true"
-      params["min_blank"]?.try { |x| args << "--min-blank" << x }
-    when 2
-      args << "--blank-before" if params["blank_before"]? == "true"
-    when 3
-      params["suffix"]?.try { |x| args << "--suffix" << x.strip }
-    when 4
-      params["regex"]?.try { |x| args << "--regex" << x.strip }
-    end
   end
 
   def change
@@ -174,7 +189,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chinfo.viuser = _viuser
     chinfo.save!
 
-    Chtext.find(chinfo).tap(&.content = content).save!
+    Chtext.upsert(nvseed, chinfo.chidx, chinfo.schid).tap(&.content = content).save!
 
     serv_text("ok")
   end

@@ -130,7 +130,7 @@ abstract class CV::NvinfoData
     puts "- [seed #{sname}] <#{label.colorize.cyan}>, \
             authors: #{authors.size.colorize.cyan}, \
             nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
-            nvseeds: #{Nvseed.query.count.colorize.cyan}"
+            nvseeds: #{Chroot.query.count.colorize.cyan}"
   end
 
   abstract def seed_entry!(snvid : String, bindex : Bindex, force : Bool)
@@ -141,7 +141,7 @@ abstract class CV::NvinfoData
     entry.author = bindex.author
   end
 
-  def update_common(entry : Ysbook | Nvseed, snvid : String)
+  def update_common(entry : Ysbook | Chroot, snvid : String)
     entry.utime = self.utimes[snvid].utime
 
     entry.bcover = self.covers[snvid]
@@ -149,7 +149,7 @@ abstract class CV::NvinfoData
     entry.bintro = self.intros[snvid].join('\t')
   end
 
-  def update_nvinfo(nvinfo : Nvinfo, entry : Ysbook | Nvseed)
+  def update_nvinfo(nvinfo : Nvinfo, entry : Ysbook | Chroot)
     nvinfo.set_genres(entry.bgenre.split('\t'))
     nvinfo.set_bintro(entry.bintro.split('\t'))
 

@@ -2,7 +2,7 @@
 # this nvseed type do not store text file in storage, it will instead reuse texts
 # from other sources
 
-class CV::Nvseed
+class CV::Chroot
   def mirror_other(other : self, chmin : Int16, chmax : Int16, new_chmin : Int16)
     return if other.id == self.id
 

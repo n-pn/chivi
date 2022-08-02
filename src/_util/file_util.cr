@@ -4,23 +4,19 @@ require "compress/gzip"
 module CV::FileUtil
   extend self
 
-  CSDET = ICU::CharsetDetector.new
+  def read_utf8(file : String | Path, encoding : String? = nil, csdet_limit = 1024)
+    File.open(file, "r") do |io|
+      encoding ||= begin
+        sample = io.read_string(csdet_limit)
+        io.rewind
 
-  def read_utf8(file : String | Path, encoding : String? = nil)
-    File.open(file, "r") { |io| read_utf8(io, encoding: encoding) }
-  end
+        icu = ICU::CharsetDetector.new
+        icu.detect(sample).name
+      end
 
-  def read_utf8(io : IO, encoding : String? = nil, csdet_limit = 500)
-    unless encoding
-      str = io.read_string(csdet_limit)
-      csm = CSDET.detect(str)
-
-      encoding = csm.name
-      io.rewind
+      io.set_encoding(encoding, invalid: :skip)
+      io.gets_to_end
     end
-
-    io.set_encoding(encoding, invalid: :skip)
-    io.gets_to_end
   end
 
   def save_gz!(file : String, data : String)

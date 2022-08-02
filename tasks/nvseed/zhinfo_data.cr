@@ -70,7 +70,7 @@ class CV::ZhinfoData
     btitle_zh, author_zh = bindex.fix_names
     return unless nvinfo = get_nvinfo(author_zh, btitle_zh)
 
-    nvseed = Nvseed.upsert!(nvinfo, @sname, snvid)
+    nvseed = Chroot.upsert!(nvinfo, @sname, snvid)
     return unless mode > 0 || nvseed.stime < bindex.stime
 
     nvseed.stime = bindex.stime

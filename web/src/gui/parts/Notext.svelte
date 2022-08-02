@@ -2,7 +2,7 @@
   import { session } from '$app/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let nvseed: CV.Nvseed
+  export let nvseed: CV.Chroot
   export let chmeta: CV.Chmeta
   export let chinfo: CV.Chinfo
 

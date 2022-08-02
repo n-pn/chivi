@@ -7,7 +7,7 @@ require "./remote/remote_info"
 
 require "./nvseed/*"
 
-class CV::Nvseed
+class CV::Chroot
   include Clear::Model
 
   self.table = "chroots"
@@ -88,21 +88,19 @@ class CV::Nvseed
     end
   end
 
-  def self.cache!(nvseed : Nvseed)
+  def self.cache!(nvseed : Chroot)
     CACHED.get("#{nvseed.nvinfo_id}/#{nvseed.sname}") { nvseed }
   end
 
   def self.upsert!(nvinfo : Nvinfo, sname : String, snvid : String, force = true)
     if chroot = find({nvinfo_id: nvinfo.id, sname: sname})
       chroot.tap(&.reload!(mode: 0_i8))
+    elsif force
+      model = new({nvinfo: nvinfo, sname: sname, snvid: snvid})
+      model.zseed = SnameMap.zseed(sname)
+      model.tap(&.save!)
     else
-      init!(nvinfo, sname, snvid)
+      raise "Nguồn truyện không tồn tại"
     end
-  end
-
-  def self.init!(nvinfo : Nvinfo, sname : String, snvid = nvinfo.bhash)
-    model = new({nvinfo: nvinfo, sname: sname, snvid: snvid})
-    model.zseed = SnameMap.zseed(sname)
-    model.tap(&.save!)
   end
 end

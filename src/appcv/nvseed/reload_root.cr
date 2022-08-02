@@ -2,13 +2,13 @@
 # this nvseed type do not store text file in storage, it will instead reuse texts
 # from other sources
 
-class CV::Nvseed
+class CV::Chroot
   # auto generate `=base` seed
 
   def reseed_base!(mode : Int8 = 0) : Nil
     chmin = 0_i16
 
-    others = Nvseed.query.filter_nvinfo(self.nvinfo_id).to_a
+    others = Chroot.query.filter_nvinfo(self.nvinfo_id).to_a
     others.sort_by! { |x| SnameMap.zseed(x.sname) }
 
     others.first(5).each_with_index(1) do |other, idx|
@@ -54,14 +54,14 @@ class CV::Nvseed
     return self.reseed_base!(mode: mode) if mode > 1 || !seeded
     return if self.last_sname.empty?
 
-    source = Nvseed.load!(self.nvinfo, self.last_sname).tap(&.reload!(mode: mode))
+    source = Chroot.load!(self.nvinfo, self.last_sname).tap(&.reload!(mode: mode))
     self.mirror_other!(source)
   end
 
   ###################
 
   def reseed_user!(mode : Int8 = 0) : Nil
-    others = Nvseed.query.filter_nvinfo(self.nvinfo_id).to_a
+    others = Chroot.query.filter_nvinfo(self.nvinfo_id).to_a
     others.select!(&.sname.starts_with?('@')).sort_by!(&.utime.-)
 
     checks = Set(Int16).new
@@ -92,7 +92,7 @@ class CV::Nvseed
     return reseed_user!(mode: mode) if mode > 1 || !seeded
     return if self.last_sname.empty?
 
-    source = Nvseed.load!(self.nvinfo, self.last_sname)
+    source = Chroot.load!(self.nvinfo, self.last_sname)
     self.mirror_other!(source)
   end
 
@@ -102,7 +102,7 @@ class CV::Nvseed
     return reseed_from_disk! if mode > 1 || !seeded
     return if self.last_sname.empty?
 
-    source = Nvseed.load!(self.nvinfo, self.last_sname)
+    source = Chroot.load!(self.nvinfo, self.last_sname)
     self.mirror_other!(source)
   end
 end

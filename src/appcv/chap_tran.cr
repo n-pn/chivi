@@ -5,7 +5,7 @@ class CV::Chtran
   primary_key type: :serial
 
   belongs_to viuser : Viuser, foreign_key_type: Int32
-  belongs_to chroot : Nvseed, foreign_key_type: Int32
+  belongs_to chroot : Chroot, foreign_key_type: Int32
 
   column chidx : Int16
   column schid : String
@@ -29,7 +29,7 @@ class CV::Chtran
 
   # ## load all translation for this chapter part
 
-  def self.trans(chroot : Nvseed, chidx : Int16, cpart : Int16, flag : Int16 = 0)
+  def self.trans(chroot : Chroot, chidx : Int16, cpart : Int16, flag : Int16 = 0)
     query.where({chroot_id: chroot.id, chidx: chidx, cpart: cpart, flag: flag})
 
     trans = {} of Int16 => Chtran
