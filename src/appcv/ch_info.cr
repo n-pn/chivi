@@ -13,6 +13,7 @@ class CV::Chinfo
   belongs_to viuser : Viuser?, foreign_key_type: Int32
   belongs_to chroot : Chroot, foreign_key_type: Int32
   belongs_to mirror : Chinfo?, foreign_key_type: Int32
+  has_many clones : Chinfo, foreign_key_type: Int32, foreign_key: "mirror_id"
 
   column chidx : Int16
   column schid : String
@@ -92,13 +93,26 @@ class CV::Chinfo
     update({changed_at: time})
   end
 
-  #############
-
   FIELDS = {
     "schid", "title", "chvol", "w_count", "p_count",
     "viuser_id", "mirror_id", "changed_at",
     "vi_title", "vi_chvol", "url_slug",
   }
+
+  def inherit(other : self = self.mirror.not_nil!)
+    {% for field in FIELDS %}
+      self.{{field.id}} = other.{{field.id}}
+    {% end %}
+  end
+
+  # after :update, :sync_clones
+
+  # def sync_clones
+  #   set = FIELDS.map { |x| "#{x} = excluded.#{x}" }.join(", ")
+  #   Chinfo.query.where("mirror_id = ?", self.id).to_update.set(set).execute
+  # end
+
+  #############
 
   ####
 

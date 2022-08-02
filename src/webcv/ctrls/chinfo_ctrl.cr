@@ -1,27 +1,23 @@
 class CV::NvchapCtrl < CV::BaseCtrl
   def ch_info
-    nvseed = load_chroot
+    chroot = load_chroot
+    chinfo = load_chinfo(chroot)
 
-    chidx = params.read_i16("chidx", min: 1_i16)
     cpart = params.read_i16("cpart", min: 0_i16)
 
-    unless chinfo = nvseed.chinfo(chidx)
-      raise NotFound.new("Chương tiết không tồn tại")
-    end
+    # spawn Nvstat.inc_chap_view(chroot.nvinfo.id)
 
-    # spawn Nvstat.inc_chap_view(nvseed.nvinfo.id)
-
-    ubmemo = Ubmemo.find_or_new(_viuser.id, nvseed.nvinfo_id)
-    ubmemo.mark_chap!(chinfo, nvseed.sname, cpart) if _viuser.privi > -1
+    ubmemo = Ubmemo.find_or_new(_viuser.id, chroot.nvinfo_id)
+    ubmemo.mark_chap!(chinfo, chroot.sname, cpart) if _viuser.privi > -1
 
     redo = _viuser.privi > 0 && params["redo"]? == "true"
 
-    cvdata, rl_key = load_cvdata(nvseed, chinfo, cpart, redo)
+    cvdata, rl_key = load_cvdata(chroot, chinfo, cpart, redo)
 
     serv_json do |jb|
       jb.object {
-        jb.field "chmeta" { ChmetaView.new(nvseed, chinfo, cpart).to_json(jb) }
-        jb.field "chinfo" { ChinfoView.new(chinfo.mirror || chinfo).to_json(jb) }
+        jb.field "chmeta" { ChmetaView.new(chroot, chinfo, cpart).to_json(jb) }
+        jb.field "chinfo" { ChinfoView.new(chinfo).to_json(jb) }
         jb.field "chmemo" { UbmemoView.new(ubmemo).to_json(jb) }
 
         jb.field "cvdata", cvdata
@@ -30,15 +26,15 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  private def load_cvdata(nvseed : Chroot, chinfo : Chinfo,
+  private def load_cvdata(chroot : Chroot, chinfo : Chinfo,
                           cpart : Int16 = 0_i16, redo : Bool = false)
-    min_privi = nvseed.min_privi(chinfo.chidx, chinfo.w_count)
+    min_privi = chroot.min_privi(chinfo.chidx, chinfo.w_count)
     return {"", ""} if min_privi > _viuser.privi
 
     if mirror = chinfo.mirror.try(&.chroot)
       ukey = {mirror.sname, mirror.snvid, chinfo.chidx, cpart}.join(":")
     else
-      ukey = {nvseed.sname, nvseed.snvid, chinfo.chidx, cpart}.join(":")
+      ukey = {chroot.sname, chroot.snvid, chinfo.chidx, cpart}.join(":")
     end
 
     utime = chinfo.changed_at.try(&.+ 10.minutes) || Time.utc + 10.minutes
@@ -62,11 +58,11 @@ class CV::NvchapCtrl < CV::BaseCtrl
     {"", ""}
   end
 
-  private def log_convert_error(nvseed, chinfo, cpart, error)
+  private def log_convert_error(chroot, chinfo, cpart, error)
     File.open("tmp/load_chap_error.log", "a") do |io|
       data = {
         time: Time.local,
-        book: "#{nvseed.nvinfo.bslug}  #{nvseed.sname}  #{nvseed.snvid}",
+        book: "#{chroot.nvinfo.bslug}  #{chroot.sname}  #{chroot.snvid}",
         chap: "#{chinfo.chidx}  #{chinfo.schid}  #{cpart}",
         _err: error,
       }

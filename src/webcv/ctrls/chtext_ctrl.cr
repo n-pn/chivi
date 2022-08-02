@@ -110,6 +110,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
     chroot = load_chroot
     chinfo = load_chinfo(chroot)
+
+    Log.info { {chinfo.to_json, chinfo.mirror.try(&.to_json)} }
     chinfo = chinfo.mirror || chinfo
 
     zhtext = String.build do |io|
@@ -138,8 +140,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
     part_no = params.read_i16("cpart", min: 0_i16)
     line_no = params.read_i16("l_id", min: 0_i16)
 
-    orig = params["orig"]?
-    edit = params["edit"]
+    orig = params["orig"]?.try { |x| TextUtil.clean_spaces(x) }
+    edit = TextUtil.clean_spaces(params["edit"])
 
     spawn do
       ChapEdit.new({
@@ -150,13 +152,19 @@ class CV::ChtextCtrl < CV::BaseCtrl
       }).save!
     end
 
+    if mirror = chinfo.mirror
+      chinfo.inherit(mirror)
+      chinfo.mirror_id = nil
+      chinfo.schid = "#{chinfo.chidx}_0"
+    end
+
     content = [] of String
     chinfo.w_count &+= edit.size
 
     0_i16.upto(chinfo.p_count &- 1_i16) do |index|
       text = chinfo.text(index, viuser: _viuser)
 
-      if index == part_no
+      if index == part_no || line_no == 0
         lines = text.split('\n')
         chinfo.w_count &-= (orig || lines[line_no]).size
 
@@ -167,7 +175,6 @@ class CV::ChtextCtrl < CV::BaseCtrl
       content << text
     end
 
-    chinfo.mirror_id = nil
     chinfo.changed_at = Time.utc
     chinfo.viuser = _viuser
     chinfo.save!

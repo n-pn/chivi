@@ -60,6 +60,7 @@
     const body = new FormData()
 
     body.append('text', input)
+    body.append('chidx', chidx.toString())
     body.append('title', title)
     body.append('chvol', chvol)
     body.append('hash', hash_str(input))

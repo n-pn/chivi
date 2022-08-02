@@ -40,11 +40,14 @@ class CV::ChPack
   end
 
   def save(schid : String, parts : Array(String), no_zip : Bool = false, upload : Bool = false)
+    Log.info { parts.size }
     return if parts.empty?
     Dir.mkdir_p(@txt_path)
 
     parts.each_with_index do |text, cpart|
-      File.write("#{@txt_path}/#{text_name(schid, cpart)}", text)
+      file_path = "#{@txt_path}/#{text_name(schid, cpart)}"
+      Log.info { file_path }
+      File.write(file_path, text)
     end
 
     pack! unless no_zip
