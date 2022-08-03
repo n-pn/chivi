@@ -1,3 +1,6 @@
+require "./noun_words"
+require "./advb_words"
+
 module MtlV2::MTL
   module VerbUtil
     COMPARE = {
@@ -155,7 +158,7 @@ module MtlV2::MTL
 
   #########
 
-  class VerbNoun < BaseWord
+  class VenoWord < BaseWord
     getter verb : VerbWord { VerbWord.new(@key, @val, @tab, @idx) }
     getter noun : NounWord { NounWord.new(@key, @val, @tab, @idx) }
 
@@ -175,7 +178,7 @@ module MtlV2::MTL
     end
   end
 
-  class VerbAdvb < BaseWord
+  class VeadWord < BaseWord
     getter verb : VerbWord { VerbWord.new(@key, @val, @tab, @idx) }
     getter advb : AdvbWord { NounWord.new(@key, @val, @tab, @idx) }
 
@@ -215,13 +218,13 @@ module MtlV2::MTL
     tag = term.tags[pos]? || "v"
     return VerbWord.new(term, pos: pos) unless tag[1]? == '!'
 
-    case term.key
-    when "会"                      then VmHui.new(term, pos)
-    when "能"                      then VmNeng.new(term, pos)
-    when "想"                      then VmXiang.new(term, pos)
-    when term.key.ends_with?('是') then VShiWord.new(term, pos)
-    when term.key.ends_with?('有') then VYouWord.new(term, pos)
-    else                               VerbWord.new(term, pos)
+    case key = term.key
+    when "会"                 then VmHui.new(term, pos)
+    when "能"                 then VmNeng.new(term, pos)
+    when "想"                 then VmXiang.new(term, pos)
+    when key.ends_with?('是') then VShiWord.new(term, pos)
+    when key.ends_with?('有') then VYouWord.new(term, pos)
+    else                          VerbWord.new(term, pos)
     end
   end
 end

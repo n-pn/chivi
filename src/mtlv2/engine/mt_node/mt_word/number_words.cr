@@ -85,12 +85,9 @@ module MtlV2::MTL
     return NquantWord.new(term, pos: pos) if term.tags[0] == "mq"
 
     case
-    when NdigitWord.matches?(term.key)
-      NdigitWord.new(term, pos: pos)
-    when NhanziWord.matches?(term.key)
-      NhanziWord.new(term, pos: pos)
-    else
-      NumberWord.new(term, pos: pos)
+    when NdigitWord.matches?(term.key) then NdigitWord.new(term, pos: pos)
+    when NhanziWord.matches?(term.key) then NhanziWord.new(term, pos: pos)
+    else                                    NumberWord.new(term, pos: pos)
     end
   end
 

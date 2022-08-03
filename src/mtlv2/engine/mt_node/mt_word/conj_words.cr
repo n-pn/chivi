@@ -23,4 +23,14 @@ module MtlV2::MTL
       super(term)
     end
   end
+
+  ###
+
+  def self.conj_from_term(term : V2Term, pos : Int32 = 0)
+    tag = term.tags[pos]? || ""
+    case tag[1]?
+    when 'c' then ConjWord.new(term, :coordi)
+    else          ConjWord.new(term, ConjType.from(term.key))
+    end
+  end
 end

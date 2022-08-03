@@ -1,4 +1,6 @@
 require "../mt_base/*"
+require "./noun_words"
+require "./advb_words"
 
 module MtlV2::MTL
   @[Flags]
@@ -41,8 +43,30 @@ module MtlV2::MTL
     include Adjective
 
     def initialize(term : V2Term, pos = 0)
-      super(term, term.vals[pos])
+      super(term, pos)
       @kind = AdjtKind.from(term.tags[pos]? || "a", term.key)
+    end
+  end
+
+  class AjnoWord < BaseWord
+    getter adjt : AdjtWord { AdjtWord.new(@key, @val, @tab, @idx) }
+    getter noun : NounWord { NounWord.new(@key, @val, @tab, @idx) }
+
+    def initialize(term : V2Term, pos = 0)
+      super(term, pos)
+      @noun = NounWord.new(term, pos &* 2 &+ 1)
+      @adjt = AdjtWord.new(term, pos &* 2 &+ 2)
+    end
+  end
+
+  class AjadWord < BaseWord
+    getter adjt : AdjtWord { AdjtWord.new(@key, @val, @tab, @idx) }
+    getter advb : AdvbWord { AdvbWord.new(@key, @val, @tab, @idx) }
+
+    def initialize(term : V2Term, pos = 0)
+      super(term, pos)
+      @advb = AdvbWord.new(term, pos &* 2 &+ 1)
+      @adjt = AdjtWord.new(term, pos &* 2 &+ 2)
     end
   end
 
