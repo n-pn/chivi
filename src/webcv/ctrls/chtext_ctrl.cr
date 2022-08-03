@@ -112,9 +112,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chinfo = load_chinfo(chroot)
 
     chinfo = chinfo.mirror || chinfo
-    chtext = Chtext.new(chinfo, chinfo.chroot)
+    zhtext = chinfo.full_text(viuser: _viuser).join('\n')
 
-    zhtext = chtext.read_full(viuser: _viuser).join('\n')
     serv_json({chvol: chinfo.chvol, title: chinfo.title, input: zhtext})
   end
 
@@ -147,17 +146,13 @@ class CV::ChtextCtrl < CV::BaseCtrl
     end
 
     if mirror = chinfo.mirror
-      chtext = Chtext.new(mirror, mirror.chroot)
       chinfo.inherit(mirror)
       chinfo.schid = "#{chinfo.chidx}_0"
-    else
-      chtext = Chtext.new(chinfo, chroot)
+      chinfo.mirror = nil
     end
 
-    content = chtext.read_full(viuser: _viuser)
-
+    content = chinfo.full_text(viuser: _viuser)
     chinfo.w_count &+= edit.size &- orig.size if line_no > 0
-    chinfo.p_count = content.size
 
     content.each_with_index do |part, idx|
       next unless idx == part_no || line_no == 0
@@ -167,12 +162,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
       content[idx] = lines.join('\n')
     end
 
-    chinfo.changed_at = Time.utc
-    chinfo.viuser = _viuser
-    chinfo.mirror = nil
-    chinfo.save!
-
-    ChPack.load(chroot, chinfo.chidx).save(chinfo.schid, content)
+    chinfo.save_text(content, _viuser)
 
     serv_text({chroot.sname, chroot.snvid, chinfo.chidx, part_no}.join(":"))
   end

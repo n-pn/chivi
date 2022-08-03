@@ -78,6 +78,22 @@ module CV::UkeyUtil
     {% end %}
   end
 
+  BASIS = 0x811c9dc5_u32
+  PRIME =   16777619_u32
+  MASK  = 4294967295_u32
+
+  def fnv_1a(inp : String)
+    hash = BASIS
+
+    inp.each_byte do |byte|
+      hash ^= byte
+      hash = hash &* PRIME
+      hash &= MASK
+    end
+
+    hash
+  end
+
   # B32_ZH = {
   #   '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b',
   #   'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm',

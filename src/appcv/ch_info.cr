@@ -82,20 +82,71 @@ class CV::Chinfo
     self
   end
 
+  getter chtext : ChText { ChText.load(self.chroot, self.chidx) }
+
   def text(cpart : Int16 = 0, redo : Bool = false, viuser : Viuser? = nil) : String
-    self.mirror.try(&.text(cpart, redo, viuser)) || begin
-      Chtext.new(self, self.chroot).read(cpart, redo, viuser)
+    self.mirror.try { |x| return x.text(cpart, redo, viuser) }
+    return self.full_text(redo, viuser)[cpart]? || "" unless self.changed_at
+
+    if cached = self.chtext.read(self.schid, cpart)
+      text, utime = cached
+      self.heal_stats(cpart &+ 1, utime)
     end
+
+    !redo && text ? text : remote_text(redo, viuser).try(&.[cpart]?) || text || ""
+  end
+
+  def full_text(redo : Bool = false, viuser : Viuser? = nil) : Array(String)
+    if cached = self.chtext.read_full(self.schid)
+      parts, utime, w_count = cached
+      self.heal_stats(parts.size.to_i16, utime, w_count)
+    end
+
+    !redo && parts ? parts : remote_text(redo, viuser) || parts || [] of String
+  end
+
+  def save_text(content : Array(String), viuser : Viuser? = nil)
+    self.chtext.save(self.schid, content)
+    self.p_count = content.size.to_i16
+    self.changed_at = Time.utc
+    self.viuser = viuser
+
+    self.save!
+  end
+
+  def remote_text(redo : Bool = false, viuser : Viuser? = nil)
+    chroot = self.chroot
+    return unless chroot.is_remote
+
+    ttl = redo ? 1.minutes : 10.years
+
+    remote = RemoteText.new(chroot.sname, chroot.snvid, self.schid, ttl: ttl)
+
+    lines = remote.paras
+    lines.unshift(remote.title) unless remote.title.empty?
+
+    self.w_count, output = ChUtil.split_parts(lines)
+    self.p_count = output.size
+    self.changed_at = Time.utc
+    self.viuser = viuser
+    self.save!
+
+    self.chtext.save(self.schid, output)
+    output
+  rescue err
+    Log.error(exception: err) { [self.chroot.sname, self.chidx] }
+  end
+
+  def heal_stats(p_count : Int16, utime : Time?, w_count = 0)
+    self.p_count = p_count if p_count > self.p_count
+    self.w_count = w_count if w_count > self.w_count
+
+    self.changed_at = utime if utime && !self.changed_at.try(&.> utime)
+    self.save! if self.changed?
   end
 
   def p_count
     mirror.try(&.p_count) || self.p_count_column.value
-  end
-
-  def fix_utime(time : Time)
-    return if self.changed_at.try(&.> time)
-    self.changed_at = time
-    self.save!
   end
 
   FIELDS = {

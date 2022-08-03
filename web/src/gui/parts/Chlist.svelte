@@ -36,7 +36,7 @@
       </div>
       <div class="chap-meta">
         <chap-chvol>{chinfo.sname} - {chinfo.chvol}</chap-chvol>
-        {#if chinfo.chars > 0}
+        {#if chinfo.utime > 0}
           <chap-track
             data-tip="Lưu: {get_rtime(chinfo.utime)} bởi {chinfo.uname || '?'}">
             <SIcon name={saved_icon} />

@@ -30,7 +30,7 @@ shards:
 
   clear:
     git: https://github.com/chi-vi/clear.git
-    version: 0.9+git.commit.6f91142a037f82e018ea098fb2590663e96ff55f
+    version: 0.9+git.commit.cd5576a08f54531e1dbeaa165264f212c7a28630
 
   cli:
     git: https://github.com/amberframework/cli.git
