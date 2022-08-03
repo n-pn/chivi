@@ -9,7 +9,7 @@
   function generate_urls(bcover: string, scover: string): [string[], number] {
     const res = []
 
-    if (bcover) res.push(cdn_base + bcover, '/covers/' + bcover)
+    if (bcover) res.push(cdn_base + bcover)
     if (scover) res.push(scover)
 
     return [res, 0]
