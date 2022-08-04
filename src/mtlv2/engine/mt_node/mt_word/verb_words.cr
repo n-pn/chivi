@@ -80,7 +80,7 @@ module MtlV2::MTL
     VDircomp
     VCompare
 
-    def self.from_tag(tag : String)
+    def self.from_tag(tag : String) : self
       case tag[1]
       when 'o' then VerbObjt | Need0Obj
       when 'i' then IntrVerb | Need0Obj
@@ -89,8 +89,7 @@ module MtlV2::MTL
       when 'p' then VCompare
       when 'f' then VDircomp
       when 'm' then MoodVerb | HelpVerb
-      when '!'
-      else None
+      else          None
       end
     end
 

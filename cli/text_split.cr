@@ -56,7 +56,7 @@ end
 class Splitter
   property inp_file = ""
   property log_file : String { @inp_file.sub(".txt", ".log") }
-  property chap_dir : String { File.dirname(@inp_file).sub("chseeds", "chtexts") }
+  property chap_dir : String { File.dirname(@inp_file).sub("chaps/users", "chtexts") }
 
   property uname = ""
   property chvol = ""

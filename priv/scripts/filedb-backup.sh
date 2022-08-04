@@ -32,15 +32,12 @@ then
   rsync -aiz --no-p "$SSH/var/books/.html" "var/books"
   rsync -aiz --no-p "$SSH/var/books/infos" "var/books"
   rsync -aiz --no-p "$SSH/var/books/cover" "var/books"
-  rsync -aiz --no-p "$SSH/var/chseeds" "var"
 
   rsync -aiz --no-p "$SSH/var/chtexts/@*" "var/chtexts"
-  rsync -aiz --no-p "$SSH/var/chtexts/hetushu" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/users" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/*/*.tsv" "var/chtexts"
 
-  rsync -aiz --no-p "$SSH/var/chmetas/.html" "var/chmetas"
-  rsync -aiz --no-p "$SSH/var/chmetas/stats" "var/chmetas"
-  rsync -aiz --no-p "$SSH/var/chmetas/seeds" "var/chmetas"
+  rsync -aiz --no-p "$SSH/var/chaps/.html" "var/chaps"
+  rsync -aiz --no-p "$SSH/var/chaps/users" "var/chaps"
 fi
 
 ## backup crit data

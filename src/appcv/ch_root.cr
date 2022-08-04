@@ -1,7 +1,7 @@
 require "../_util/site_link"
 require "../_util/file_util"
 
-require "./nvchap/ch_list"
+# require "./nvchap/ch_list"
 require "./shared/sname_map"
 require "./remote/remote_info"
 
@@ -84,7 +84,7 @@ class CV::Chroot
 
   def self.load!(nvinfo : Nvinfo, sname : String, force = false) : self
     CACHED.get("#{nvinfo.id}/#{sname}") do
-      upsert!(nvinfo, sname, nvinfo.bhash, force: force)
+      upsert!(nvinfo, sname, nvinfo.id.to_s, force: force)
     end
   end
 

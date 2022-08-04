@@ -1,7 +1,7 @@
 # Method required for all chroot types
 
-require "../nvchap/ch_list"
-require "../nvchap/ch_repo"
+# require "../nvchap/ch_list"
+# require "../nvchap/ch_repo"
 require "../../mtlv1/mt_core"
 
 class CV::Chroot

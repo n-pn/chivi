@@ -204,8 +204,7 @@ class CV::Chinfo
   def self.bulk_upsert(batch : Array(self)) : Nil
     on_conflict = ->(req : Clear::SQL::InsertQuery) do
       req.on_conflict("ON CONSTRAINT chinfos_unique_key").do_update do |upd|
-        set = FIELDS.map { |x| "#{x} = excluded.#{x}" }.join(", ")
-        upd.set("tl_fixed = 'f', #{set}")
+        upd.set(FIELDS.map { |x| "#{x} = excluded.#{x}" }.join(", "))
       end
     end
 
