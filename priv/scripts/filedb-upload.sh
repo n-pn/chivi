@@ -41,7 +41,7 @@ then
   # rsync -azi --no-p "var/dicts/v1/basic/hanviet.tab" "$SSH/var/dicts/v1/basic"
 
   # rsync -azi --no-p "var/_common" "$SSH/var"
-  rsync -azi "var/dicts/vx/tlname" "$SSH/var/dicts/vx"
+  rsync -azi "var/fixed" "$SSH/var"
   # rsync -azi --exclude="*.tab" "var/dicts/v1/novel" "$SSH/var/dicts/v1"
   # rsync -azi --no-p --delete "priv/static/covers/" "$SSH/priv/static/covers/"
 fi
