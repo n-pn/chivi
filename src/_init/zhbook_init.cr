@@ -1,5 +1,5 @@
 require "sqlite3"
-require "./utils/crorm"
+require "../tools/crorm/*"
 
 module CV::ZhbookInit
   class Entry

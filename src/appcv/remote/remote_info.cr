@@ -2,7 +2,6 @@ require "../../_util/http_util"
 require "../../_util/site_link"
 require "../../_util/time_util"
 
-require "../ch_root"
 require "./remote_mulu"
 
 class CV::RemoteInfo

@@ -34,6 +34,18 @@ module CV::SnameMap
     "zhwenpg",
   }
 
+  MAP_SN_ID = {
+    "=base", "=user", "miscs",
+    "zxcs_me", "hetushu", "jx_la",
+    "bxwxorg", "xbiquge", "69shu",
+    "rengshu", "biqugee", "shubaow",
+    "sdyfcm", "paoshu8", "duokan8",
+  }
+
+  def sn_id(sname : String) : Int32
+    MAP_SN_ID.index(sname).try { |x| x &* 2 &+ 1 } || raise "Invalid seed name"
+  end
+
   def map_type(sname : String)
     case sname
     when "=base", "=user"
