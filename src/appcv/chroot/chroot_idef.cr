@@ -40,6 +40,7 @@ class CV::Chroot
   end
 
   VI_PSIZE = 32
+  @vpages = {} of Int16 => Array(Chinfo)
 
   def chpage(vi_pg : Int16)
     chmin = vi_pg * VI_PSIZE
@@ -52,7 +53,7 @@ class CV::Chroot
       .to_a.tap(&.each(&.chroot = self))
   end
 
-  def lastpg : Array(Chinfo)
+  getter lastpg : Array(Chinfo) do
     Chinfo.query.where(chroot_id: self.id)
       .where("chidx <= #{self.chap_count}")
       .order_by(chidx: :desc).with_mirror(&.with_chroot).with_viuser

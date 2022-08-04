@@ -3,7 +3,7 @@ require "colorize"
 require "option_parser"
 
 require "../src/mtlv1/mt_core"
-require "../src/appcv/nvchap/ch_list"
+require "../src/bdata/ch_repo_2"
 
 class Chapter
   getter lines = [] of String
@@ -130,7 +130,7 @@ class Splitter
 
     entry.save!("#{group_dir}/#{schid}")
 
-    chinfo = CV::ChInfo.new(index, schid, entry.lines[0], @chvol)
+    chinfo = CV::ChInfo2.new(index, schid, entry.lines[0], @chvol)
 
     stats = chinfo.stats
     stats.utime = Time.utc.to_unix

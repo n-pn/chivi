@@ -57,7 +57,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
       if chinfo = nvinfo.seed_list._base.chinfo(1)
         ubmemo.lr_chidx = -1
-        ubmemo.lc_uslug = chinfo.url_slug
+        ubmemo.lc_uslug = chinfo.trans.uslug
       else
         ubmemo.lc_uslug = "-"
       end

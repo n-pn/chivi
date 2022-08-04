@@ -4,6 +4,16 @@ require "./nvchap/ch_util"
 
 # storing book names
 
+class CV::ChTran
+  property title : String
+  property chvol : String
+  property uslug : String
+
+  def initialize(@title = "", @chvol = "")
+    @uslug = TextUtil.tokenize(title)[0..7].join('-')
+  end
+end
+
 class CV::Chinfo
   include Clear::Model
 
@@ -24,13 +34,6 @@ class CV::Chinfo
   column w_count : Int32 = 0
   column p_count : Int32 = 0
   column changed_at : Time?
-
-  # # translation
-
-  column vi_title : String = ""
-  column vi_chvol : String = ""
-  column url_slug : String = ""
-  column tl_fixed : Bool = false
 
   timestamps
 
@@ -71,15 +74,20 @@ class CV::Chinfo
     self.mirror = Chinfo.find({chroot_id: mirror_chroot.id, chidx: mirror_chidx})
   end
 
-  def translate!(force : Bool = false, cvmtl : MtCore? = nil)
-    return if (!force && self.tl_fixed) || (mirror_id_column.defined? && self.mirror_id)
+  getter trans : ChTran { trans! }
+
+  def trans!(cvmtl : MtCore? = nil)
+    if mirror = self.mirror
+      zh_title, zh_chvol = mirror.title, mirror.chvol
+    else
+      zh_title, zh_chvol = self.title, self.chvol
+    end
+
     cvmtl ||= self.chroot.nvinfo.cvmtl
-
-    self.vi_title = cvmtl.cv_title(self.title).to_txt unless self.title.empty?
-    self.vi_chvol = cvmtl.cv_title(self.chvol).to_txt unless self.chvol.empty?
-    self.url_slug = TextUtil.tokenize(self.vi_title)[0..7].join('-')
-
-    self
+    ChTran.new(
+      zh_title.empty? ? "Thiếu tựa" : cvmtl.cv_title(zh_title).to_txt,
+      zh_chvol.empty? ? "Chính Văn" : cvmtl.cv_title(zh_chvol).to_txt,
+    )
   end
 
   getter chtext : ChText { ChText.load(self.chroot, self.chidx) }
@@ -152,7 +160,6 @@ class CV::Chinfo
   FIELDS = {
     "schid", "title", "chvol", "w_count", "p_count",
     "viuser_id", "mirror_id", "changed_at",
-    "vi_title", "vi_chvol", "url_slug",
   }
 
   def inherit(other : self = self.mirror.not_nil!)
@@ -194,9 +201,7 @@ class CV::Chinfo
     output
   end
 
-  def self.bulk_upsert(batch : Array(self), trans : Bool = true, cvmtl : MtCore? = nil) : Nil
-    cvmtl ||= batch.first.chroot.nvinfo.cvmtl
-
+  def self.bulk_upsert(batch : Array(self)) : Nil
     on_conflict = ->(req : Clear::SQL::InsertQuery) do
       req.on_conflict("ON CONSTRAINT chinfos_unique_key").do_update do |upd|
         set = FIELDS.map { |x| "#{x} = excluded.#{x}" }.join(", ")
@@ -206,16 +211,8 @@ class CV::Chinfo
 
     Clear::SQL.transaction do
       batch.each do |entry|
-        entry.translate!(cvmtl: cvmtl) if trans
         entry.save!(on_conflict: on_conflict)
       end
-    end
-  end
-
-  def self.retranslate(batch : Array(self), cvmtl : MtCore? = nil)
-    cvmtl ||= batch.first.chroot.nvinfo.cvmtl
-    Clear::SQL.transaction do
-      batch.each(&.translate!(cvmtl: cvmtl).try(&.save!))
     end
   end
 

@@ -16,7 +16,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
       chinfos.first.title = TextUtil.trim_spaces(title)
     end
 
-    Chinfo.bulk_upsert(chinfos, cvmtl: chroot.nvinfo.cvmtl)
+    Chinfo.bulk_upsert(chinfos)
+    chroot.clear_cache!
     update_chroot(chroot, chinfos.last, trunc: params["trunc_after"]? == "true")
 
     self_sname = '@' + _viuser.uname
@@ -147,7 +148,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
     if mirror = chinfo.mirror
       chinfo.inherit(mirror)
-      chinfo.schid = "#{chinfo.chidx}_0"
+      chinfo.schid = chinfo.chidx.to_s
       chinfo.mirror = nil
     end
 
@@ -163,6 +164,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     end
 
     chinfo.save_text(content, _viuser)
+    chroot.clear_cache!
 
     serv_text({chroot.sname, chroot.snvid, chinfo.chidx, part_no}.join(":"))
   end

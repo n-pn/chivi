@@ -15,11 +15,6 @@ create table chinfos (
   w_count int not null default 0,
   p_count smallint not null default 0,
 
-  vi_title varchar default '',
-  vi_chvol varchar default '',
-  url_slug varchar default '',
-  tl_fixed boolean not null default 'f',
-
   changed_at timestamptz,
   created_at timestamptz not null default CURRENT_TIMESTAMP,
   updated_at timestamptz not null default CURRENT_TIMESTAMP,

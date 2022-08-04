@@ -13,9 +13,9 @@ struct CV::ChinfoView
       chidx: @data.chidx,
       schid: @data.schid,
 
-      title: info.vi_title.empty? ? "Thiếu tựa" : info.vi_title,
-      chvol: info.vi_chvol.empty? ? "Chính văn" : info.vi_chvol,
-      uslug: info.url_slug,
+      title: info.trans.title,
+      chvol: info.trans.chvol,
+      uslug: info.trans.uslug,
 
       utime: info.changed_at.try(&.to_unix) || 0_i64,
       chars: info.w_count,

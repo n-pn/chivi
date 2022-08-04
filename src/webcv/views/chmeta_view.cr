@@ -42,7 +42,7 @@ struct CV::ChmetaView
 
   def chap_url(chap = @chap, cpart = 0)
     String.build do |io|
-      io << chap.chidx << '/' << chap.url_slug
+      io << chap.chidx << '/' << chap.trans.uslug
 
       if cpart != 0 && chap.p_count > 1
         io << '/' << (cpart % chap.p_count &+ 1)

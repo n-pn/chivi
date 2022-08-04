@@ -191,6 +191,8 @@ module CV::Zhtext
       @raw_data.each do |line|
         if match = line.match(delimit_re)
           add_chapter(chapter) # add orevious chapter if any
+          chapter = new_chapter
+
           suffix = clean_spaces(match[1])
           @chvol = suffix unless suffix.empty?
         else

@@ -126,7 +126,7 @@ module MtlV2::MTL
   class VerbWord < BaseWord
     include Verbal
 
-    def initialize(term : V2Term, pos : String)
+    def initialize(term : V2Term, pos : Int32 = 0)
       super(term, pos)
 
       @attr = VerbAttr.from_tag(term.tags[pos]? || "v")

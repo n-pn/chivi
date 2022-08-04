@@ -4,6 +4,7 @@
 
 class CV::Chroot
   def reload!(mode : Int8 = 0_i8) : Nil
+    self.clear_cache!
     self.stime = Time.utc.to_unix if mode > 0
     return reseed!(mode: mode) if !seeded
 
@@ -29,16 +30,13 @@ class CV::Chroot
     end
   end
 
+  def clear_cache!
+    @lastpg = nil
+    @vpages.clear
+  end
+
   def reload_frozen!(mode : Int8 = 1_i8)
-    return if mode < 1
-
-    cvmtl = self.nvinfo.cvmtl
-    infos = Chinfo.query
-      .where("chroot_id = #{self.id} and mirror_id is null")
-      # .select("id, chroot_id, mirror_id, chidx, title, chvol, tl_fixed")
-      .to_a
-
-    Chinfo.retranslate(infos, cvmtl: cvmtl)
+    clear_cache!
   end
 
   ###################
@@ -106,7 +104,7 @@ class CV::Chroot
       end
 
       next unless last = infos.last?
-      Chinfo.bulk_upsert(infos, trans: false)
+      Chinfo.bulk_upsert(infos)
 
       self.set_latest(last, other)
     end
@@ -147,8 +145,7 @@ class CV::Chroot
     batch = input.values.sort_by!(&.chidx)
 
     if last = batch.last?
-      cvmtl = self.nvinfo.cvmtl
-      Chinfo.bulk_upsert(batch, cvmtl: cvmtl)
+      Chinfo.bulk_upsert(batch)
       self.set_latest(last, last.mirror.try(&.chroot) || self)
     end
 

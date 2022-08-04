@@ -37,7 +37,7 @@ class CV::Chroot
       })
     end
 
-    Chinfo.bulk_upsert(output, cvmtl: self.nvinfo.cvmtl)
+    Chinfo.bulk_upsert(output)
 
     # _repo.store!(chinfos, reset: force)
     self.stime = FileUtil.mtime_int(parser.info_file)

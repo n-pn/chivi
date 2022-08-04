@@ -9,7 +9,7 @@ class CV::Chroot
     infos = Chinfo.fetch_as_mirror(other, self, chmin, chmax, new_chmin)
     return chmin unless last = infos.last?
 
-    Chinfo.bulk_upsert(infos, trans: false)
+    Chinfo.bulk_upsert(infos)
     self.set_latest(last, other)
 
     self.save!
@@ -30,7 +30,7 @@ class CV::Chroot
     end
 
     return chmin unless last = infos.last?
-    Chinfo.bulk_upsert(infos, trans: false)
+    Chinfo.bulk_upsert(infos)
     self.set_latest(last, other)
 
     chmin

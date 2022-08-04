@@ -57,13 +57,7 @@ class CV::Ubmemo
   end
 
   def mark_chap!(chinfo : Chinfo, sname : String, cpart : Int16 = 0_i16)
-    if mirror = chinfo.mirror
-      vi_title, url_slug = mirror.vi_title, mirror.url_slug
-    else
-      vi_title, url_slug = chinfo.vi_title, chinfo.url_slug
-    end
-
-    mark!(sname, chinfo.chidx, cpart, vi_title, url_slug)
+    mark!(sname, chinfo.chidx, cpart, chinfo.trans.title, chinfo.trans.uslug)
   end
 
   def self.status(status_s : String)
