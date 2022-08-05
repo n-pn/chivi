@@ -11,7 +11,7 @@ class CV::RemoteText
   PATH = "var/chaps/.html/%s/%s/%s.html.gz"
 
   getter sname : String
-  getter snvid : String
+  getter s_bid : Int32
   getter schid : String
   getter title : String
 
@@ -20,9 +20,9 @@ class CV::RemoteText
   getter file : String
   getter link : String
 
-  def initialize(@sname, @snvid, @schid, @ttl = 10.years, @lbl = "-/-")
-    @file = PATH % {@sname, @snvid, @schid}
-    @link = SiteLink.text_url(sname, snvid, schid)
+  def initialize(@sname, @s_bid, @schid, @ttl = 10.years, @lbl = "-/-")
+    @file = PATH % {@sname, @s_bid, @schid}
+    @link = SiteLink.text_url(sname, s_bid, schid)
 
     @title = extract_title
   end
@@ -167,7 +167,7 @@ class CV::RemoteText
 
     lines
   rescue err
-    Log.error { "[#{@sname}/#{@snvid}/#{@schid}] remote text error: #{err}" }
+    Log.error { "[#{@sname}/#{@s_bid}/#{@schid}] remote text error: #{err}" }
     [] of String
   end
 

@@ -23,6 +23,7 @@ CREATE TABLE chroots (
 );
 
 CREATE INDEX chroot_unique_idx ON chroots (sname, snvid);
+CREATE INDEX chroot_origin_idx ON chroots (sname, s_bid);
 CREATE INDEX chroot_nvinfo_idx ON chroots (nvinfo_id, sname);
 CREATE INDEX chroot_stime_idx ON chroots (stime);
 

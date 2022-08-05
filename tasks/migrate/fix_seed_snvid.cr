@@ -62,3 +62,11 @@ ARGV.each do |sname|
   rename_seed_dirs(sname)
   rename_snvids(sname)
 end
+
+Dir.children(TEXT_DIR).each do |sname|
+  next unless sname[0] == '@'
+
+  rename_text_dirs(sname)
+  rename_seed_dirs(sname)
+  rename_snvids(sname)
+end

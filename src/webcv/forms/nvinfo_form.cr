@@ -21,12 +21,12 @@ class CV::NvinfoForm
     author_zh = get_param("author_zh").not_nil!
     @nvinfo = init!(btitle_zh, author_zh)
 
-    @user_log = book_info_log(@uname, nvinfo.bhash, btitle_zh, author_zh)
-    @base_log = book_info_log("=base", nvinfo.bhash, btitle_zh, author_zh)
+    @user_log = book_info_log(@uname, nvinfo.id.to_i, btitle_zh, author_zh)
+    @base_log = book_info_log("=base", nvinfo.id.to_i, btitle_zh, author_zh)
   end
 
-  def book_info_log(sname : String, snvid : String, btitle : String, author : String)
-    info = BookInfo.new("#{LOG_DIR}/#{sname}/#{snvid}.tsv")
+  def book_info_log(sname : String, s_bid : Int32, btitle : String, author : String)
+    info = BookInfo.new("#{LOG_DIR}/#{sname}/#{s_bid}.tsv")
 
     info.set_btitle(btitle)
     info.set_author(author)

@@ -42,12 +42,12 @@ class CV::ChrootCtrl < CV::BaseCtrl
     nvinfo = load_nvinfo
 
     sname = params["sname"]
-    snvid = params["snvid"]
+    s_bid = params["snvid"].to_i
 
-    nvseed = Chroot.upsert!(nvinfo, sname, snvid, force: true)
+    nvseed = Chroot.upsert!(nvinfo, sname, s_bid, force: true)
     nvinfo.seed_list.other.push(nvseed).sort! { |x| SnameMap.zseed(x.sname) }
 
-    serv_json({sname: sname, snvid: snvid})
+    serv_json({sname: sname, snvid: s_bid})
   end
 
   before_action do

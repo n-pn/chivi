@@ -30,7 +30,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
   end
 
   private def read_chtext(chroot : Chroot) : {String, String}
-    save_dir = "var/chaps/users/#{chroot.sname}/#{chroot.snvid}"
+    save_dir = "var/chaps/users/#{chroot.sname}/#{chroot.s_bid}"
     Dir.mkdir_p(save_dir)
 
     name = params["hash"]? || Time.local.to_unix.to_s(base: 32)
@@ -166,6 +166,6 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chinfo.save_text(content, _viuser)
     chroot.clear_cache!
 
-    serv_text({chroot.sname, chroot.snvid, chinfo.chidx, part_no}.join(":"))
+    serv_text({chroot.sname, chroot.s_bid, chinfo.chidx, part_no}.join(":"))
   end
 end

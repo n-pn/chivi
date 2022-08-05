@@ -15,13 +15,13 @@ class CV::RemoteInfo
   getter root_dir : String
   @ttl : Time::Span | Time::MonthSpan
 
-  getter info_file : String { "#{@root_dir}/#{@snvid}.html.gz" }
-  getter info_link : String { SiteLink.info_url(@sname, @snvid) }
+  getter info_file : String { "#{@root_dir}/#{@s_bid}.html.gz" }
+  getter info_link : String { SiteLink.info_url(@sname, @s_bid) }
 
-  getter mulu_link : String { SiteLink.mulu_url(@sname, @snvid) }
-  getter mulu_file : String { "#{@root_dir}/#{@snvid}-mulu.html.gz" }
+  getter mulu_link : String { SiteLink.mulu_url(@sname, @s_bid) }
+  getter mulu_file : String { "#{@root_dir}/#{@s_bid}-mulu.html.gz" }
 
-  def initialize(@sname : String, @snvid : String, @ttl = TTL, @lbl = "-/-")
+  def initialize(@sname : String, @s_bid : Int32, @ttl = TTL, @lbl = "-/-")
     @root_dir = File.join(DIR, @sname)
     @encoding = HttpUtil.encoding_for(@sname)
   end
@@ -136,7 +136,7 @@ class CV::RemoteInfo
   getter bcover : String do
     case @sname
     when "69shu"
-      image_path = "/#{@snvid.to_i // 1000}/#{@snvid}/#{@snvid}s.jpg"
+      image_path = "/#{@s_bid // 1000}/#{@s_bid}/#{@s_bid}s.jpg"
       "https://www.69shu.com/files/article/image/#{image_path}"
     when "hetushu"
       "https://www.hetushu.com" + info.attr(".book_info img", "src")

@@ -9,13 +9,13 @@ struct CV::ChrootView
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "sname", @data.sname
-      jb.field "snvid", @data.snvid
+      jb.field "snvid", @data.s_bid
 
       jb.field "chmax", @data.chap_count
       jb.field "utime", @data.utime
 
       jb.field "stype", SnameMap.map_type(@data.sname)
-      jb.field "slink", SiteLink.info_url(@data.sname, @data.snvid)
+      jb.field "slink", SiteLink.info_url(@data.sname, @data.s_bid)
 
       if @full
         jb.field "stime", @data.stime

@@ -32,9 +32,9 @@ class CV::NvchapCtrl < CV::BaseCtrl
     return {"", ""} if min_privi > _viuser.privi
 
     if mirror = chinfo.mirror.try(&.chroot)
-      ukey = {mirror.sname, mirror.snvid, chinfo.chidx, cpart}.join(":")
+      ukey = {mirror.sname, mirror.s_bid, chinfo.chidx, cpart}.join(":")
     else
-      ukey = {chroot.sname, chroot.snvid, chinfo.chidx, cpart}.join(":")
+      ukey = {chroot.sname, chroot.s_bid, chinfo.chidx, cpart}.join(":")
     end
 
     utime = (chinfo.changed_at || Time.utc) + 10.minutes
@@ -62,7 +62,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     File.open("tmp/load_chap_error.log", "a") do |io|
       data = {
         time: Time.local,
-        book: "#{chroot.nvinfo.bslug}  #{chroot.sname}  #{chroot.snvid}",
+        book: "#{chroot.nvinfo.bslug}  #{chroot.sname}  #{chroot.s_bid}",
         chap: "#{chinfo.chidx}  #{chinfo.schid}  #{cpart}",
         _err: error,
       }

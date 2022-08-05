@@ -19,7 +19,9 @@ class CV::Chroot
   getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
   column sname : String = ""
-  column snvid : String # seed book id
+  column s_bid : Int32 # seed book id
+
+  # column snvid : String = ""
   column zseed : Int32 = 0
 
   # seed data
@@ -84,7 +86,7 @@ class CV::Chroot
 
   def self.load!(nvinfo : Nvinfo, sname : String, force = false) : self
     CACHED.get("#{nvinfo.id}/#{sname}") do
-      upsert!(nvinfo, sname, nvinfo.id.to_s, force: force)
+      upsert!(nvinfo, sname, nvinfo.id.to_i, force: force)
     end
   end
 
@@ -94,11 +96,11 @@ class CV::Chroot
     end
   end
 
-  def self.upsert!(nvinfo : Nvinfo, sname : String, snvid : String, force = true)
+  def self.upsert!(nvinfo : Nvinfo, sname : String, s_bid : Int32, force = true)
     if chroot = find({nvinfo_id: nvinfo.id, sname: sname})
       chroot.tap(&.reload!(mode: 0_i8))
     elsif force
-      model = new({nvinfo: nvinfo, sname: sname, snvid: snvid})
+      model = new({nvinfo: nvinfo, sname: sname, s_bid: s_bid})
       model.zseed = SnameMap.zseed(sname)
       model.tap(&.save!)
     else

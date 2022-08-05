@@ -131,7 +131,7 @@ class CV::Chroot
     return if !force && self.seeded
 
     input = {} of Int16 => Chinfo
-    files = Dir.glob("#{TXT_DIR}/#{self.sname}/#{self.snvid}/*.tsv")
+    files = Dir.glob("#{TXT_DIR}/#{self.sname}/#{self.s_bid}/*.tsv")
 
     files.each do |file|
       File.read_lines(file).each do |line|

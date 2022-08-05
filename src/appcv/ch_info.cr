@@ -64,10 +64,10 @@ class CV::Chinfo
 
     return if argv.size < 10
 
-    sname, snvid = argv[8], argv[9]
+    sname = argv[8]
     return if sname == chroot.sname
 
-    mirror_chroot = Chroot.find!({sname: sname, snvid: snvid})
+    mirror_chroot = Chroot.load!(chroot.nvinfo, sname, force: true)
     mirror_chroot.reseed_from_disk! unless mirror_chroot.seeded
 
     mirror_chidx = argv[10]?.try(&.to_i16) || self.chidx
@@ -128,7 +128,7 @@ class CV::Chinfo
 
     ttl = redo ? 1.minutes : 10.years
 
-    remote = RemoteText.new(chroot.sname, chroot.snvid, self.schid, ttl: ttl)
+    remote = RemoteText.new(chroot.sname, chroot.s_bid, self.schid, ttl: ttl)
 
     lines = remote.paras
     lines.unshift(remote.title) unless remote.title.empty?
