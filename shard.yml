@@ -21,9 +21,6 @@ targets:
   text_split:
     main: cli/text_split.cr
 
-  zhwenpg_seed:
-    main: tasks/nvseed/zhwenpg_seed.cr
-
   ysbook_seed:
     main: tasks/nvseed/ysbook_seed.cr
 

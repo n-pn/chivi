@@ -82,7 +82,7 @@ export const snames = [
   'biqu5200',
   'bxwxorg',
   'biqugee',
-  'zhwenpg',
+  'miscs',
   'sdyfcm',
   'duokan8',
   'shubaow',

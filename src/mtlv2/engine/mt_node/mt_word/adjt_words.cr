@@ -28,8 +28,7 @@ module MtlV2::MTL
       when 'b'      then NounMod
       when 'z', 'f' then Express
       when 'm'      then Measure
-      else
-        term.key.size < 2 ? Nounmod | VerbAdv : None
+      else               key.size < 2 ? Nounmod | VerbAdv : None
       end
     end
   end
