@@ -4,7 +4,6 @@ require "../../appcv/zhtext/text_split"
 class CV::ChtextCtrl < CV::BaseCtrl
   # upload batch text
   def upsert
-    raise BadRequest.new("Chức năng tạm thời khoá!")
     sname = params["sname"]
     guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
 
@@ -126,7 +125,6 @@ class CV::ChtextCtrl < CV::BaseCtrl
   end
 
   def change
-    raise BadRequest.new("Chức năng tạm thời khoá!")
     sname = params["sname"]
     guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
 

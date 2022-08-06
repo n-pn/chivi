@@ -25,6 +25,15 @@ class CV::Chroot
     return reload_frozen! unless force || changed
 
     chinfos = parser.chap_infos
+
+    spawn do
+      File.open("var/chtexts/#{self.sname}/#{self.s_bid}/sauce.tab", "w") do |io|
+        chinfos.each do |x|
+          io.puts [x.chidx, x.schid, x.title, x.chvol].join('\t')
+        end
+      end
+    end
+
     return if chinfos.empty?
 
     # chmin = force || self.chap_count < 28 ? 0 : self.chap_count &- 28
