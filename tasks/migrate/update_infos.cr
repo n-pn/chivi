@@ -45,7 +45,7 @@ def update(sname, s_bid, book_dir)
       next if line.empty?
 
       cols = line.split('\t')
-      next if cols.empty?
+      next if cols.size < 3
 
       infos << CV::Chinfo.new(chroot, cols)
     rescue err

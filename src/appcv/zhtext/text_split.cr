@@ -315,19 +315,19 @@ module CV::Zhtext
     end
 
     def save_chinfos!(mtime : Int64 = Time.utc.to_unix, uname : String = "")
-      info_file = File.open("#{@save_dir}/infos.tsv", "a")
-      stat_file = File.open("#{@save_dir}/stats.tsv", "a")
+      info_file = File.open("#{@save_dir}/patch.tab", "a")
 
       @chapters.each do |chap|
-        {chap.chidx, chap.schid, chap.title, chap.chvol}.join(info_file, '\t')
+        data = {
+          chap.chidx, chap.schid,
+          chap.title, chap.chvol, chap.chidx,
+          mtime, chap.w_count, chap.p_count, uname,
+        }
         info_file << '\n'
-
-        {chap.chidx, mtime, chap.w_count, chap.p_count, uname}.join(stat_file, '\t')
-        stat_file << '\n'
+        info_file.puts(data.join('\t'))
       end
 
       info_file.close
-      stat_file.close
     end
   end
 end
