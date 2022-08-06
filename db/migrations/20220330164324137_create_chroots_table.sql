@@ -5,7 +5,7 @@ CREATE TABLE chroots (
   nvinfo_id bigint not null default 0,
 
   sname text not null default '',
-  snvid text not null default '',
+  s_bid int not null default 0,
   zseed int not null default 0,
 
   status int not null default 0,
@@ -22,7 +22,6 @@ CREATE TABLE chroots (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE INDEX chroot_unique_idx ON chroots (sname, snvid);
 CREATE INDEX chroot_origin_idx ON chroots (sname, s_bid);
 CREATE INDEX chroot_nvinfo_idx ON chroots (nvinfo_id, sname);
 CREATE INDEX chroot_stime_idx ON chroots (stime);

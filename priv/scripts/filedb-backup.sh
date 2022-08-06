@@ -34,6 +34,18 @@ then
   rsync -aiz --no-p "$SSH/var/books/cover" "var/books"
 
   rsync -aiz --no-p "$SSH/var/chtexts/@*" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/xbiquge" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/uukanshu" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/paoshu8" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/duokan8" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/rengshu" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/biqu5200" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/biqugse" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/133txt" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/69shu" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/b5200" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/ptwxz" "var/chtexts"
+  # rsync -aiz --no-p "$SSH/var/chtexts/uuks" "var/chtexts"
   # rsync -aiz --no-p "$SSH/var/chtexts/*/*.tsv" "var/chtexts"
 
   rsync -aiz --no-p "$SSH/var/chaps/.html" "var/chaps"

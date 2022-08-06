@@ -31,7 +31,6 @@ module CV::SnameMap
     "5200",
     "sdyfcm",
     "jx_la",
-    "zhwenpg",
   }
 
   MAP_SN_ID = {
@@ -40,6 +39,10 @@ module CV::SnameMap
     "bxwxorg", "xbiquge", "69shu",
     "rengshu", "biqugee", "shubaow",
     "sdyfcm", "paoshu8", "duokan8",
+    "uukanshu", "ptwxz", "biqugse",
+    "yannuozw", "uuks", "bqxs520",
+    "biqu5200", "133txt", "b5200",
+    "kanshu8", "5200",
   }
 
   def sn_id(sname : String) : Int32
@@ -48,17 +51,16 @@ module CV::SnameMap
 
   def map_type(sname : String)
     case sname
-    when "=base", "=user"
+    when "=base", "=user", "users"
       0 # act as mirror
-    when "zxcs_me", .starts_with?('@'), "users"
+    when "zxcs_me", "miscs", .starts_with?('@')
       1 # manual update
-    when "jx_la", "zhwenpg", "shubaow", "sdyfcm", "biqugee",
-         "bxwxorg"
+    when "jx_la", "shubaow", "sdyfcm", "biqugee",
+         "bxwxorg", "5200"
       2 # dead remote
-    when "paoshu8", "hetushu", "5200", "biqu5200", "ptwxz",
-         "duokan8", "uukanshu"
+    when "paoshu8", "hetushu", "ptwxz", "duokan8", "kanshu8"
       3  # slow but still alive
-    else # "bxwxorg", "69shu", "xbiquge", "rengshu", "biqugee"
+    else # "69shu", "xbiquge", "rengshu"
       4  # fast remote
     end
   end

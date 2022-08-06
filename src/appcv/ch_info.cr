@@ -68,7 +68,7 @@ class CV::Chinfo
     return if sname == chroot.sname
 
     mirror_chroot = Chroot.load!(chroot.nvinfo, sname, force: true)
-    mirror_chroot.reseed_from_disk! unless mirror_chroot.seeded
+    # mirror_chroot.reseed_from_disk! unless mirror_chroot.seeded
 
     mirror_chidx = argv[10]?.try(&.to_i16) || self.chidx
     self.mirror = Chinfo.find({chroot_id: mirror_chroot.id, chidx: mirror_chidx})

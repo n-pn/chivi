@@ -1,5 +1,6 @@
 require "../_util/site_link"
 require "../_util/file_util"
+require "../_util/ram_cache"
 
 # require "./nvchap/ch_list"
 require "./shared/sname_map"
