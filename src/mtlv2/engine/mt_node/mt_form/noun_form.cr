@@ -21,9 +21,9 @@ module MtlV2::MTL
 
     getter noun : MtNode
 
-    property dem_mod : MtNode | Nil = nil # prodem modidifer
-    property num_mod : MtNode | Nil = nil # number modidifer
-    property qti_mod : MtNode | Nil = nil # quanti/nquant modifier
+    property dem_mod : DemsproWord | ProNa2 | Nil = nil    # prodem modidifer
+    property num_mod : NumberWord | Nil = nil              # number modidifer
+    property qti_mod : QuantiWord | NquantWord | Nil = nil # quanti/nquant modifier
 
     property de1_mod : Ude1Expr | Nil = nil # modifier phrase with 的
     property adj_mod : AdjtWord | Nil = nil # adjective modifier
@@ -34,37 +34,35 @@ module MtlV2::MTL
     end
 
     # ameba:disable Metrics/CyclomaticComplexity
-    def each
+    def each : Nil
       if (dem_mod = @dem_mod) && dem_mod.noun_prefix?
         yield dem_mod
-        dem_mode = nil
+        dem_mod = nil
       end
 
       if (num_mod = @num_mod) && num_mod.noun_prefix?
         yield num_mod
-        num_mode = nil
+        num_mod = nil
       end
 
       @qti_mod.try { |x| yield x }
 
       if (de1_mod = @de1_mod) && de1_mod.noun_prefix?
-        yield de1_mode
+        yield de1_mod
         de1_mod = nil
       end
 
       if (adj_mod = @adj_mod) && adj_mod.noun_prefix?
-        yield adj_mode
+        yield adj_mod
         adj_mod = nil
       end
 
       yield noun
 
-      yield adj_mode if adj_mod
-      yield de1_mode if de1_mod
-      yield num_mode if num_mod
-      yield dem_mode if dem_mod
-
-      list
+      yield adj_mod if adj_mod
+      yield de1_mod if de1_mod
+      yield num_mod if num_mod
+      yield dem_mod if dem_mod
     end
   end
 end

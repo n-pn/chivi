@@ -10,6 +10,10 @@ module MtlV2::MTL
     def to_int
       0_i64
     end
+
+    def noun_prefix?
+      true
+    end
   end
 
   class NdigitWord < NumberWord
@@ -69,6 +73,9 @@ module MtlV2::MTL
     def initialize(term : V2Term, pos : Int32 = 0)
       super(term)
       @kind = QuantiKind.from(term.key)
+    end
+
+    def initialize(@key = "", @val = @key, @tab = 0, @idx = 0)
     end
   end
 

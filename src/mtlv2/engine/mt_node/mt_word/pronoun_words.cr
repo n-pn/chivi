@@ -3,6 +3,9 @@ require "../mt_base/*"
 module MtlV2::MTL
   # 代词 - pronoun - đại từ chưa phân loại
   class PronounWord < BaseWord
+    def noun_prefix?
+      true
+    end
   end
 
   # 人称代词 - personal pronoun - đại từ nhân xưng
@@ -15,6 +18,9 @@ module MtlV2::MTL
 
   # 指示代词 - demonstrative pronoun - đại từ chỉ thị
   class DemsproWord < PronounWord
+    def noun_prefix?
+      true
+    end
   end
 
   class ProZhe < DemsproWord
@@ -33,11 +39,19 @@ module MtlV2::MTL
         @val = "giờ" if @prev.is_a?(Nominal)
       end
     end
+
+    def noun_prefix?
+      false
+    end
   end
 
   class ProNa1 < DemsproWord
     def heal!(succ = @succ) : Nil
       @val = "vậy" unless succ.is_a?(Verbal)
+    end
+
+    def noun_prefix?
+      false
     end
   end
 
@@ -49,6 +63,9 @@ module MtlV2::MTL
   end
 
   class ProNa2 < IntrproWord
+    def noun_prefix?
+      false
+    end
   end
 
   ####

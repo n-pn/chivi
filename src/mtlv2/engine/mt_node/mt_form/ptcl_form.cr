@@ -5,5 +5,9 @@ module MtlV2::MTL
     def initialize(left : MtNode, ude1 : Ude1Word)
       super(left, ude1, flip: true)
     end
+
+    def noun_prefix?
+      false
+    end
   end
 end

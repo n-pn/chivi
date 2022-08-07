@@ -6,8 +6,7 @@ class MtlV2::MTL::MtCore
 
   def translit(input : String, apply_cap : Bool = false) : MtData
     list = tokenize(input.chars)
-    list.capitalize!(cap: true) if apply_cap
-    # list.pad_spaces!
+    list.apply_cap!(cap: true) if apply_cap
     list
   end
 
@@ -52,9 +51,7 @@ class MtlV2::MTL::MtCore
 
   def cv_plain(input : String, cap_first = true, offset = 0) : MtData
     list = tokenize(input.chars, offset: offset)
-    list.fold_inner!
-    list.capitalize!(cap: cap_first)
-    # list.pad_spaces!
+    list.apply_cap!(cap: cap_first)
     list
   end
 
@@ -88,79 +85,15 @@ class MtlV2::MTL::MtCore
       end
     end
 
-    res = MtData.new("", idx: 0)
+    res = MtData.new
     idx = nodes.size &- 1
-
-    lst = nodes.unsafe_fetch(idx)
-    res.add_head(lst)
-
-    idx -= lst.key.size
-
-    # in_quote = false
 
     while idx > 0
       cur = nodes.unsafe_fetch(idx)
       idx -= cur.key.size
-      res.add_head(cur)
-
-      # if can_merge?(cur, lst)
-      #   lst.idx = cur.idx
-
-      #   lst.val = should_space?(cur, lst) ? "#{cur.val} #{fix_val!(cur, lst)}" : "#{cur.val}#{lst.val}"
-      #   lst.key = "#{cur.key}#{lst.key}"
-      # else
-      #   if cur.key == "\""
-      #     cur.val = in_quote ? "“" : "”"
-      #     cur.tag = PosTag.parse_punct(cur.val)
-      #     in_quote = !in_quote
-      #   end
-
-      #   res.add_head(cur)
-      #   lst = cur
-      # end
+      res.add_node(cur)
     end
 
     res
   end
-
-  # @[AlwaysInline]
-  # def should_space?(left : BaseWord, right : BaseWord) : Bool
-  #   left.nhanzi? || right.nhanzi?
-  # end
-
-  # private def fix_val!(left : BaseWord, right : BaseWord)
-  #   val = right.val
-  #   case right.key[0]?
-  #   when '五'
-  #     left.key.ends_with?('十') ? val.sub("năm", "lăm") : val
-  #   when '十'
-  #     return val unless left.key =~ /[一二两三四五六七八九]$/
-  #     val.sub("mười một", "mươi mốt").sub("mười", "mươi")
-  #   when '零' then val.sub("linh", "lẻ")
-  #   else          val
-  #   end
-  # end
-
-  # private def can_merge?(left : BaseWord, right : BaseWord) : Bool
-  #   case right
-  #   when .puncts? then left.tag == right.tag
-  #   when .litstr? then left.litstr? || left.ndigit?
-  #   when .ndigit?
-  #     case left
-  #     when .litstr?
-  #       right.tag = left.tag
-  #       true
-  #     when .pdeci?  then true
-  #     when .ndigit? then true
-  #     else               false
-  #     end
-  #   when .nhanzi?
-  #     return false unless left.nhanzi?
-  #     return true unless right.key == "两" && right.succ? { |x| !x.nominal? }
-  #     right.set!("lượng", PosTag::Qtnoun)
-  #     false
-  #   else
-  #     false
-  #   end
-  # end
 end
