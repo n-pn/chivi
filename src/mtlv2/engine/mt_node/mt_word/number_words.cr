@@ -36,9 +36,9 @@ module MtlV2::MTL
     end
   end
 
-  QTTIMES = QtranUtil.load_tsv("etc/cvmtl/qttimes.tsv")
-  QTVERBS = QtranUtil.load_tsv("etc/cvmtl/qtverbs.tsv")
-  QTNOUNS = QtranUtil.load_tsv("etc/cvmtl/qtverbs.tsv")
+  QTTIMES = QtranUtil.read_tsv("etc/cvmtl/qttimes.tsv")
+  QTVERBS = QtranUtil.read_tsv("etc/cvmtl/qtverbs.tsv")
+  QTNOUNS = QtranUtil.read_tsv("etc/cvmtl/qtverbs.tsv")
 
   @[Flags]
   enum QuantiKind
@@ -64,24 +64,26 @@ module MtlV2::MTL
   end
 
   class QuantiWord < BaseWord
-    getter kind : QuantiKind
+    getter kind : QuantiKind = :noun
 
-    def initialize(term : V2Term, @kind : QuantiKind = QuantiKind.from(term.key))
+    def initialize(term : V2Term, pos : Int32 = 0)
       super(term)
+      @kind = QuantiKind.from(term.key)
     end
   end
 
   class NquantWord < BaseWord
-    getter kind : QuantiKind
+    getter kind : QuantiKind = :noun
 
-    def initialize(term : V2Term, @kind : QuantiKind = QuantiKind.from(term.key, dirty: true))
-      super(term)
+    def initialize(term : V2Term, pos : Int32 = 0)
+      super(term, pos)
+      @kind = QuantiKind.from(term.key, dirty: true)
     end
   end
 
   ###
 
-  def self.number_from_term(term : V2Term)
+  def self.number_from_term(term : V2Term, pos : Int32 = 0)
     return NquantWord.new(term, pos: pos) if term.tags[0] == "mq"
 
     case
@@ -91,7 +93,7 @@ module MtlV2::MTL
     end
   end
 
-  def self.quanti_from_term(term : V2Term)
+  def self.quanti_from_term(term : V2Term, pos : Int32 = 0)
     # TODO: add QuantiVerb, QuantiTime...
     QuantiWord.new(term, pos: pos)
   end

@@ -57,9 +57,9 @@ module MtlV2::MTL
     tag = term.tags[pos]? || ""
 
     case tag[1]?
-    when 'z' then demspro_from_term(term, tag)
-    when 'y' then intrpro_from_term(term, tag)
-    when 'r' then perspro_from_term(term, tag)
+    when 'z' then demspro_from_term(term, pos: pos)
+    when 'y' then intrpro_from_term(term, pos: pos)
+    when 'r' then perspro_from_term(term, pos: pos)
     else          PronounWord.new(term, pos: pos)
     end
   end

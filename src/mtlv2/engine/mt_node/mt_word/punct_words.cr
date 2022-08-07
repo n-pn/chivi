@@ -76,8 +76,8 @@ module MtlV2::MTL
 
     def initialize(term : V2Term, pos : Int32 = 0)
       super(term, pos)
-      @attr = PunctAttr.from(term.vals[pos])
-      @val = ',' if @attr.cenum?
+      @attr = PunctAttr.from_str(term.vals[pos])
+      @val = "," if @attr.cenum?
     end
 
     def initialize(key : String)
