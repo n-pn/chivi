@@ -56,9 +56,9 @@ module CV::SnameMap
     when "zxcs_me", "miscs", .starts_with?('@')
       1 # manual update
     when "jx_la", "shubaow", "sdyfcm", "biqugee",
-         "bxwxorg", "5200"
+         "bxwxorg", "5200", "duokan8"
       2 # dead remote
-    when "paoshu8", "hetushu", "ptwxz", "duokan8", "kanshu8"
+    when "paoshu8", "hetushu", "ptwxz", "kanshu8"
       3  # slow but still alive
     else # "69shu", "xbiquge", "rengshu"
       4  # fast remote

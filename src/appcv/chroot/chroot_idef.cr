@@ -3,6 +3,7 @@
 # require "../nvchap/ch_list"
 # require "../nvchap/ch_repo"
 require "../../mtlv1/mt_core"
+require "../ch_repo_2"
 
 class CV::Chroot
   def set_mftime(utime : Int64 = Time.utc.to_unix, force : Bool = false) : Nil
@@ -31,9 +32,23 @@ class CV::Chroot
     end
   end
 
+  getter _repo : ChRepo2 do
+    repo = ChRepo2.new(self.sname, self.s_bid)
+
+    if self.stage == 1 && repo.stype != 2
+      repo.sync_db!
+      self.stage = 2
+    else
+      self.stage = 3
+    end
+
+    self.save!
+    repo
+  end
+
   ############
 
-  getter is_remote : Bool { SnameMap.remote?(self.sname) }
+  getter is_remote : Bool { _repo.stype > 2 }
 
   def pg_vi(chidx : Int16)
     (chidx &- 1) // VI_PSIZE

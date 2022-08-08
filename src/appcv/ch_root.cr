@@ -39,6 +39,7 @@ class CV::Chroot
   column last_schid : String = ""   # seed's latest chap id
   column chap_count : Int16 = 0_i16 # total chapters
 
+  column stage : Int16 = 0
   column seeded : Bool = false
 
   timestamps

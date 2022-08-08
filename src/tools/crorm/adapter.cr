@@ -37,6 +37,12 @@ class Crorm::Adapter
     String.build { |io| quote(io, name) }
   end
 
+  def query(query_str : String, args : Enumerable(DB::Any), as_class : Class)
+    open do |db|
+      db.query query_str, args, as: as_class
+    end
+  end
+
   # :ditto:
   def quote(io : IO, name : String) : IO
     io << QUOTING_CHAR << name << QUOTING_CHAR

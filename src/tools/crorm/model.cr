@@ -6,8 +6,10 @@ module Crorm
 end
 
 module Crorm::Model
-  include DB::Serializable
-  include JSON::Serializable
+  macro included
+    include DB::Serializable
+    include JSON::Serializable
+  end
 
   # All database fields
   def fields : Array(String)
@@ -41,6 +43,10 @@ module Crorm::Model
 
   def changed?
     !@__changed.empty?
+  end
+
+  def mark_as_saved
+    @__changed.clear
   end
 
   def changes
