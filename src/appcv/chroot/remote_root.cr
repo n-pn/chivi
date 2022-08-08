@@ -18,6 +18,8 @@ class CV::Chroot
     # end
   end
 
+  getter text_dir : String { "var/chtexts/#{self.sname}/#{self.s_bid}" }
+
   def reseed_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
     parser = RemoteInfo.new(sname, s_bid, ttl: ttl, lbl: lbl)
     changed = parser.changed?(self.last_schid, self.utime)
@@ -27,9 +29,12 @@ class CV::Chroot
     chinfos = parser.chap_infos
 
     spawn do
-      File.open("var/chtexts/#{self.sname}/#{self.s_bid}/sauce.tab", "w") do |io|
+      Dir.mkdir_p(text_dir)
+
+      File.open(File.join(text_dir, "sauce.tab"), "w") do |io|
         chinfos.each do |x|
-          io.puts [x.chidx, x.schid, x.title, x.chvol].join('\t')
+          infos = {x.chidx, x.schid, x.title, x.chvol}
+          io.puts (infos).join('\t')
         end
       end
     end

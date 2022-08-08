@@ -24,9 +24,9 @@ module MtlV2
       when "hanviet"
         apply_cap = params["apply_cap"]? == "true"
         tokens = Engine.hanviet_mtl.translit(input, apply_cap)
-        render text: rmode == "text" ? tokens.to_s : token.to_str
+        render text: rmode == "text" ? tokens.to_txt : tokens.to_mtl
       when "tradsim"
-        render text: Engine.tradsim_mtl.translit(input).to_s
+        render text: Engine.tradsim_mtl.translit(input).to_txt
       else
         raise "Unsupported"
       end

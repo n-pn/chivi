@@ -67,18 +67,23 @@ class CV::ChText
     return if parts.empty?
     Dir.mkdir_p(@txt_path)
 
+    files = [] of String
     parts.each_with_index do |text, cpart|
-      file_path = "#{@txt_path}/#{text_name(schid, cpart)}"
+      file_path = File.join(@txt_path, text_name(schid, cpart))
       File.write(file_path, text)
+      files << file_path
     end
 
-    pack! unless no_zip
+    return if no_zip
+    @has_file = true
+    return if system("zip", ["-rjmq", @zip_path].concat(files))
+    raise "Can't zip texts for some reason!"
   end
 
   def pack!
-    message = `zip -rjmq "#{@zip_path}" "#{@txt_path}"`
-    raise message unless $?.success?
-    Dir.delete(@txt_path)
+    system("zip", {"--include='*.txt'", "-rjmq", @zip_path, @txt_path})
+    raise "Can't zip texts" unless $?.success?
+    Dir.delete?(@txt_path)
     @has_file = true
   end
 

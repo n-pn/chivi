@@ -23,6 +23,8 @@ class CV::RemoteInfo
 
   def initialize(@sname : String, @s_bid : Int32, @ttl = TTL, @lbl = "-/-")
     @root_dir = File.join(DIR, @sname)
+    Dir.mkdir_p(@root_dir)
+
     @encoding = HttpUtil.encoding_for(@sname)
   end
 
