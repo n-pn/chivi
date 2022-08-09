@@ -20,6 +20,11 @@ class Amber::Validators::Params
     self[name]?.try(&.to_i8?) || df
   end
 
+  def read_i8(name : String, min : Int8, max : Int8) : Int8
+    val = self[name]?.try(&.to_i8?) || return min
+    val < min ? min : (val > max ? max : val)
+  end
+
   def read_i16(name : String, min : Int16 = 0_i16) : Int16
     val = self[name]?.try(&.to_i16?) || return min
     val < min ? min : val

@@ -42,10 +42,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     bslug = TextUtil.slugify(params["bslug"])
 
     unless nvinfo = Nvinfo.load!(bslug[0..7])
-      if nvinfo = load_prev_book(bslug)
-        return serv_text(nvinfo.bslug, 301)
-      end
-
+      load_prev_book(bslug).try { |x| return serv_text(x.bslug, 301) }
       raise NotFound.new("Quyển sách không tồn tại!")
     end
 
@@ -54,8 +51,10 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     if ubmemo.lr_sname.empty?
       ubmemo.lr_sname = "=base"
+      base_seed = Chroot.load!(nvinfo, "=base", force: true)
+      base_seed.reload_base! if base_seed.stage < 2
 
-      if chinfo = nvinfo.seed_list._base.chinfo(1)
+      if chinfo = base_seed.chinfo(1)
         ubmemo.lr_chidx = -1
         ubmemo.lc_uslug = chinfo.trans.uslug
       else

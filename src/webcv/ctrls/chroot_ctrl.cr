@@ -6,22 +6,36 @@ class CV::ChrootCtrl < CV::BaseCtrl
 
   def show
     chroot = load_chroot
-    mode = params.read_i8("mode", 0_i8)
 
-    if mode > 0 && can_reload?(chroot)
-      chroot.reload!(mode: mode)
-      fresh = true
-    else
-      fresh = chroot.fresh?(_viuser.privi, force: false)
-    end
+    mode = params.read_i8("mode", min: 0_i8, max: max_mode_by_privi)
+    reload_chroot(chroot, mode: mode)
 
+    fresh = chroot.fresh?(_viuser.privi, force: false)
     serv_json(ChrootView.new(chroot, full: true, fresh: fresh))
   end
 
-  private def can_reload?(chroot : Chroot)
-    return false if _viuser.privi < 0
-    return true unless chroot.sname[0] == '@'
-    chroot.sname == '@' + _viuser.uname
+  private def max_mode_by_privi : Int8
+    privi = _viuser.privi
+    privi < 0 ? 0_i8 : privi > 1 ? 2_i8 : 1_i8
+  end
+
+  private def reload_chroot(chroot : Chroot, mode : Int8 = 0) : Nil
+    case chroot._repo.stype
+    when -2_i8 then chroot.reload_base!(mode: mode)
+    when -1_i8 then chroot.reload_user!(mode: mode)
+    when 0_i8 # @users
+      return unless chroot.sname == "@" + _viuser.uname
+      chroot.reload_self!(mode: mode) if mode > 0
+    when 3_i8 # slow source
+      chroot.reload_remote!(mode: mode) if mode > 0
+    when 4_i8 # fast souce
+      chroot.reload_remote!(mode: mode)
+    else # miscs, zxcs_me, bxwxorg
+      chroot.reload_frozen!(mode: mode)
+    end
+
+    chroot.stime = Time.utc.to_unix if mode > 0
+    chroot.save! if chroot.changed?
   end
 
   def chaps

@@ -4,7 +4,7 @@
   export async function load({ stuff }) {
     const { nvinfo, ubmemo } = stuff
     const { sname, chidx } = ubmemo
-    const redirect = seed_url(nvinfo.bslug, sname, to_pgidx(chidx))
+    const redirect = seed_url(nvinfo.bslug, sname || '=base', to_pgidx(chidx))
     return { status: 303, redirect: redirect }
   }
 </script>

@@ -159,16 +159,15 @@ class CV::ChtextCtrl < CV::BaseCtrl
     end
 
     content = chinfo.all_text(mode: 0, uname: _viuser.uname)
+
     chinfo.c_len &+= edit.size &- orig.size if line_no > 0
 
-    content.each_with_index do |part, idx|
+    content.each_with_index do |part_text, idx|
       next unless idx == part_no || line_no == 0
-
-      lines = part.split('\n')
-      lines[line_no] = edit
-      content[idx] = lines.join('\n')
+      content[idx] = part_text.split('\n').tap(&.[line_no] = edit).join('\n')
     end
 
+    chinfo.change_root!(chroot) if chinfo.sn_id != chroot._repo.sn_id
     chinfo.save_text(content, uname: _viuser.uname)
     chroot._repo.upsert(chinfo)
     chroot.clear_cache!

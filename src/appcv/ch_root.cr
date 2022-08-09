@@ -23,7 +23,7 @@ class CV::Chroot
   column s_bid : Int32 # seed book id
 
   # column snvid : String = ""
-  column zseed : Int32 = 0
+  # column zseed : Int32 = 0
 
   # seed data
 
@@ -40,7 +40,7 @@ class CV::Chroot
   column chap_count : Int32 = 0   # total chapters
 
   column stage : Int16 = 0
-  column seeded : Bool = false
+  # column seeded : Bool = false
 
   timestamps
 
@@ -82,8 +82,11 @@ class CV::Chroot
   CACHED = RamCache(String, self).new(1024)
 
   def self.load!(nvinfo_id : Int64, sname : String, force = false)
-    raise "Quyển sách không tồn tại" unless nvinfo = Nvinfo.load!(nvinfo_id)
-    load!(nvinfo, sname, force: force)
+    if nvinfo = Nvinfo.load!(nvinfo_id)
+      load!(nvinfo, sname, force: force)
+    else
+      raise "Quyển sách không tồn tại"
+    end
   end
 
   def self.load!(nvinfo : Nvinfo, sname : String, force = false) : self
@@ -93,18 +96,14 @@ class CV::Chroot
   end
 
   def self.cache!(chroot : Chroot)
-    CACHED.get("#{chroot.nvinfo_id}/#{chroot.sname}") do
-      chroot.tap(&.reload!(mode: 0_i8))
-    end
+    CACHED.get("#{chroot.nvinfo_id}/#{chroot.sname}") { chroot }
   end
 
   def self.upsert!(nvinfo : Nvinfo, sname : String, s_bid : Int32, force = true)
-    if chroot = find({nvinfo_id: nvinfo.id, sname: sname})
-      chroot.tap(&.reload!(mode: 0_i8))
+    if model = find({nvinfo_id: nvinfo.id, sname: sname})
+      model.tap(&.nvinfo = nvinfo)
     elsif force
-      model = new({nvinfo: nvinfo, sname: sname, s_bid: s_bid})
-      model.zseed = SnameMap.zseed(sname)
-      model.tap(&.save!)
+      new({nvinfo: nvinfo, sname: sname, s_bid: s_bid}).tap(&.save!)
     else
       raise "Nguồn truyện không tồn tại"
     end

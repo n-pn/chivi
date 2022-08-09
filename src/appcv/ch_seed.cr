@@ -1,3 +1,5 @@
+require "./vi_user"
+
 class CV::ChSeed
   class_getter stats_map : Hash(String, {Int32, Int8}) do
     output = {} of String => {Int32, Int8}
@@ -14,7 +16,7 @@ class CV::ChSeed
   def self.map_sname(sname : String) : {Int32, Int8}
     stats_map[sname] ||= begin
       user_id = Viuser.load!(sname[1..]).id
-      {user_id &* 2 &+ 20, 1_i8}
+      {user_id &* 2 &+ 20, 0_i8}
     end
   end
 

@@ -19,10 +19,9 @@ class CV::Chroot
   end
 
   def set_latest(chap : ChInfo2, force : Bool = false) : Nil
+    # Log.info { "set latest [#{sname}] #{s_bid}, chmax: #{chap.ch_no}, force: #{force}" }
+
     return if !force && chap.ch_no! < self.chap_count
-
-    Log.info { [chap.ch_no, self.chap_count, force] }
-
     self.last_schid = chap.s_cid.to_s
     self.chap_count = chap.ch_no!
     self.last_sname = self.sname != chap.sname ? chap.sname : ""
@@ -31,15 +30,15 @@ class CV::Chroot
   getter _repo : ChRepo2 do
     repo = ChRepo2.new(self.sname, self.s_bid)
 
-    if self.stage == 1 && repo.stype != 2
-      repo.sync_db!
+    if self.stage == 1 && repo.stype > 2
+      repo.sync_db! if repo.stype.in?(0, 3, 4)
       self.stage = 2_i16
-    elsif self.stage < 1
+    elsif self.stage < 1 && repo.stype > 0
       repo.get(self.chap_count).try { |x| self.set_latest(x) }
       self.stage = 3_i16
     end
 
-    self.save!
+    self.save! if self.changed?
     repo
   end
 
@@ -91,26 +90,28 @@ class CV::Chroot
   #####
 
   def chinfo(ch_no : Int32) : ChInfo2?
-    vpage = self.chpage(self.pg_vi(ch_no))
+    return unless info = self._repo.get(ch_no)
+    info.tap(&.trans!(self.nvinfo.cvmtl))
 
-    min = 0
-    max = vpage.size &- 1
+    # vpage = self.chpage(self.pg_vi(ch_no))
+    # min = 0
+    # max = vpage.size &- 1
 
-    while min < max
-      mid = (min &+ max) // 2
+    # while min < max
+    #   mid = (min &+ max) // 2
 
-      chap = vpage.unsafe_fetch(mid)
-      c_id = chap.ch_no!
+    #   chap = vpage.unsafe_fetch(mid)
+    #   c_id = chap.ch_no!
 
-      case
-      when c_id < ch_no then min = mid &+ 1
-      when c_id > ch_no then max = mid
-      else                   return chap
-      end
-    end
+    #   case
+    #   when c_id < ch_no then min = mid &+ 1
+    #   when c_id > ch_no then max = mid
+    #   else                   return chap
+    #   end
+    # end
 
-    chap = vpage.unsafe_fetch(max)
-    return chap if chap.ch_no! == ch_no
+    # chap = vpage.unsafe_fetch(max)
+    # return chap if chap.ch_no! == ch_no
   end
 
   # def chtext(chinfo : ChInfo2, cpart : Int16, redo : Bool = false, uname : String = "")

@@ -1,4 +1,4 @@
-class CV::NvchapCtrl < CV::BaseCtrl
+class CV::ChinfoCtrl < CV::BaseCtrl
   def ch_info
     chroot = load_chroot
     chinfo = load_chinfo(chroot)

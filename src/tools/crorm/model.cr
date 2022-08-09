@@ -53,13 +53,13 @@ module Crorm::Model
     columns.each { |column| @__changed[column] = true }
   end
 
-  def changes
+  def changes(keeps : Enumerable(String))
     fields = [] of String
     values = [] of DB::Any
 
     {% for column in @type.instance_vars.select(&.annotation(Crorm::Column)) %}
       {% ann = column.annotation(Crorm::Column) %}
-      if @__changed[{{column.name.stringify}}]?
+      if  @__changed[{{column.name.stringify}}]? || keeps.includes?({{column.name.stringify}})
         fields << {{ column.name.stringify }}
         {% if converter = ann[:converter] %}
           values << {{ann[:converter]}}.to_db({{column.name.id}})

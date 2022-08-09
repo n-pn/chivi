@@ -38,10 +38,12 @@ class CV::ChRepo2
     @repo.scalar("chinfos", "count (ch_no)")
   end
 
+  KEEP_FIELDS = {"ch_no", "sn_id", "s_bid", "s_cid"}
+
   def bulk_upsert(infos : Array(ChInfo2))
     @repo.transaction do |cnn|
       infos.each do |entry|
-        fields, values = entry.changes
+        fields, values = entry.changes(keeps: KEEP_FIELDS)
         next if fields.empty?
 
         @repo.upsert(cnn, "chinfos", fields, values, "(ch_no)", nil) do
@@ -53,7 +55,7 @@ class CV::ChRepo2
   end
 
   def upsert(entry : ChInfo2)
-    fields, values = entry.changes
+    fields, values = entry.changes(keeps: KEEP_FIELDS)
     @repo.open do |db|
       @repo.upsert(db, "chinfos", fields, values, "(ch_no)", nil) do
         keep_fields = fields.reject(&.== "ch_no")
@@ -160,6 +162,8 @@ class CV::ChRepo2
 
     infos = hash.values.sort_by!(&.ch_no.not_nil!)
     bulk_upsert(infos) unless infos.empty?
+  rescue err
+    Log.error(exception: err) { "error seeding [#{@sname}/#{@s_bid}]".colorize.yellow }
   end
 
   def sync_db!

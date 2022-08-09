@@ -5,9 +5,11 @@ require "../remote/remote_info"
 
 class CV::Chroot
   def reload_remote!(mode : Int8) : Nil
-    return if mode < 1
+    # Log.info { "reload [#{sname}] #{s_bid}, mode: #{mode}, stage: #{stage}".colorize.cyan }
+    self.clear_cache! if mode > 0
 
     ttl = map_ttl(force: mode > 0)
+    return if mode < 1 && Time.unix(self.stime) >= Time.utc - ttl
     self.reseed_remote!(ttl: ttl, force: mode > 1)
   end
 
@@ -35,6 +37,7 @@ class CV::Chroot
       entry = ChInfo2.new(sn_id, self.s_bid, input.chidx, input.schid.to_i)
       entry.title = input.title
       entry.chvol = input.chvol
+
       entry
     end
 
@@ -48,6 +51,7 @@ class CV::Chroot
     self.set_status(parser.status_int.to_i) if force
     self.set_latest(infos.last, force: true)
 
+    self.stage = 3_i16 if self.stage < 3
     self.save!
   rescue err
     puts err.inspect_with_backtrace
@@ -60,10 +64,8 @@ class CV::Chroot
   end
 
   def fresh?(privi : Int32 = 4, force : Bool = false)
-    return false if self.chap_count == 0
-
-    ttl = map_ttl(force)
-    Time.unix(self.stime) > Time.utc - ttl * (4 &- privi)
+    return true if _repo.stype < 3
+    Time.unix(self.stime) >= Time.utc - map_ttl(force) * (5 &- privi)
   end
 
   TTL = {1.days, 5.days, 10.days, 30.days}

@@ -143,6 +143,13 @@ class CV::ChInfo2
     self.utime = utime if utime > self.utime
   end
 
+  def change_root!(chroot : Chroot, s_cid = self.ch_no!) : Nil
+    self.s_cid = s_cid
+    self.sn_id = chroot._repo.sn_id
+    self.s_bid = chroot.s_bid
+    @chtext = nil
+  end
+
   ####
 
   struct Trans

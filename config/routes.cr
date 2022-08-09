@@ -54,8 +54,7 @@ Amber::Server.configure do
 
     # nvchap actions
 
-    # get "/chaps/:nv_id/:sname/:chidx", CV::NvchapCtrl, :ch_info
-    get "/chaps/:nv_id/:sname/:chidx/:cpart", CV::NvchapCtrl, :ch_info
+    get "/chaps/:nv_id/:sname/:chidx/:cpart", CV::ChinfoCtrl, :ch_info
 
     put "/texts/:nv_id/:sname", CV::ChtextCtrl, :upsert
     get "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :rawtxt
