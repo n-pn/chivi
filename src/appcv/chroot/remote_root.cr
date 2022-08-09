@@ -34,7 +34,7 @@ class CV::Chroot
     sn_id = _repo.sn_id
 
     infos = raw_infos.map do |input|
-      entry = ChInfo2.new(sn_id, self.s_bid, input.chidx, input.schid.to_i)
+      entry = Chinfo.new(sn_id, self.s_bid, input.chidx, input.schid.to_i)
       entry.title = input.title
       entry.chvol = input.chvol
 

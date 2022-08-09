@@ -3,7 +3,7 @@ require "./_base_view"
 struct CV::ChmetaView
   include BaseView
 
-  def initialize(@seed : Chroot, @chap : ChInfo2, @cpart = 0_i16, @full = false)
+  def initialize(@seed : Chroot, @chap : Chinfo, @cpart = 0_i16, @full = false)
   end
 
   def to_json(jb : JSON::Builder)

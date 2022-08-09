@@ -3,7 +3,7 @@
 # require "../nvchap/ch_list"
 # require "../nvchap/ch_repo"
 require "../../mtlv1/mt_core"
-require "../ch_repo_2"
+require "../ch_repo"
 
 class CV::Chroot
   def set_mftime(utime : Int64 = Time.utc.to_unix, force : Bool = false) : Nil
@@ -18,7 +18,7 @@ class CV::Chroot
     self.nvinfo.set_status(status, force: mode > 1)
   end
 
-  def set_latest(chap : ChInfo2, force : Bool = false) : Nil
+  def set_latest(chap : Chinfo, force : Bool = false) : Nil
     # Log.info { "set latest [#{sname}] #{s_bid}, chmax: #{chap.ch_no}, force: #{force}" }
 
     return if !force && chap.ch_no! < self.chap_count
@@ -27,8 +27,8 @@ class CV::Chroot
     self.last_sname = self.sname != chap.sname ? chap.sname : ""
   end
 
-  getter _repo : ChRepo2 do
-    repo = ChRepo2.new(self.sname, self.s_bid)
+  getter _repo : ChRepo do
+    repo = ChRepo.new(self.sname, self.s_bid)
 
     if self.stage == 1 && repo.stype > 2
       repo.sync_db! if repo.stype.in?(0, 3, 4)
@@ -58,7 +58,7 @@ class CV::Chroot
   end
 
   VI_PSIZE = 32
-  @vpages = {} of Int32 => Array(ChInfo2)
+  @vpages = {} of Int32 => Array(Chinfo)
 
   def chpage(vi_pg : Int32)
     @vpages[vi_pg] ||= begin
@@ -76,7 +76,7 @@ class CV::Chroot
     end
   end
 
-  getter lastpg : Array(ChInfo2) do
+  getter lastpg : Array(Chinfo) do
     chmax = self.chap_count
     chmin = chmax &- 3
     infos = self._repo.all(chmin, chmax, "desc")
@@ -89,7 +89,7 @@ class CV::Chroot
 
   #####
 
-  def chinfo(ch_no : Int32) : ChInfo2?
+  def chinfo(ch_no : Int32) : Chinfo?
     return unless info = self._repo.get(ch_no)
     info.tap(&.trans!(self.nvinfo.cvmtl))
 
@@ -114,7 +114,7 @@ class CV::Chroot
     # return chap if chap.ch_no! == ch_no
   end
 
-  # def chtext(chinfo : ChInfo2, cpart : Int16, redo : Bool = false, uname : String = "")
+  # def chtext(chinfo : Chinfo, cpart : Int16, redo : Bool = false, uname : String = "")
   #   chtext = ChText.load(self.chroot, self.chidx)
   # end
 end

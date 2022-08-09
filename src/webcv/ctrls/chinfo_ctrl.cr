@@ -26,7 +26,7 @@ class CV::ChinfoCtrl < CV::BaseCtrl
     end
   end
 
-  private def load_cvdata(chroot : Chroot, chinfo : ChInfo2,
+  private def load_cvdata(chroot : Chroot, chinfo : Chinfo,
                           cpart : Int16 = 0_i16, redo : Bool = false)
     min_privi = chroot.min_privi(chinfo.ch_no!, chinfo.utime)
     return {"", ""} if min_privi > _viuser.privi

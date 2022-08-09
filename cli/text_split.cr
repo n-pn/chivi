@@ -130,7 +130,7 @@ class Splitter
 
     entry.save!("#{group_dir}/#{schid}")
 
-    chinfo = CV::ChInfo2.new(index, schid, entry.lines[0], @chvol)
+    chinfo = CV::Chinfo.new(index, schid, entry.lines[0], @chvol)
 
     stats = chinfo.stats
     stats.utime = Time.utc.to_unix

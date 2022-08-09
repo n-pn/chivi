@@ -1,10 +1,10 @@
-require "./ch_info_2"
+require "./ch_info"
 require "../tools/r2_client"
 
 # require "../appcv/remote/remote_info"
 
-class CV::ChRepo2
-  # include Crorm::Query(ChInfo2)
+class CV::ChRepo
+  # include Crorm::Query(Chinfo)
 
   DIR = "var/chtexts"
 
@@ -40,7 +40,7 @@ class CV::ChRepo2
 
   KEEP_FIELDS = {"ch_no", "sn_id", "s_bid", "s_cid"}
 
-  def bulk_upsert(infos : Array(ChInfo2))
+  def bulk_upsert(infos : Array(Chinfo))
     @repo.transaction do |cnn|
       infos.each do |entry|
         fields, values = entry.changes(keeps: KEEP_FIELDS)
@@ -54,7 +54,7 @@ class CV::ChRepo2
     end
   end
 
-  def upsert(entry : ChInfo2)
+  def upsert(entry : Chinfo)
     fields, values = entry.changes(keeps: KEEP_FIELDS)
     @repo.open do |db|
       @repo.upsert(db, "chinfos", fields, values, "(ch_no)", nil) do
@@ -64,9 +64,9 @@ class CV::ChRepo2
     end
   end
 
-  def get(ch_no : Int32) : ChInfo2?
+  def get(ch_no : Int32) : Chinfo?
     query = "select * from chinfos where ch_no = ? limit 1"
-    @repo.open(&.query_one? query, ch_no, as: ChInfo2)
+    @repo.open(&.query_one? query, ch_no, as: Chinfo)
   end
 
   def all(min : Int32, max : Int32, order : String = "asc")
@@ -76,7 +76,7 @@ class CV::ChRepo2
       order by ch_no #{order}
     SQL
 
-    @repo.open(&.query_all(query, min, max, as: ChInfo2))
+    @repo.open(&.query_all(query, min, max, as: Chinfo))
   end
 
   def get_title(ch_no : Int32) : String?
@@ -154,7 +154,7 @@ class CV::ChRepo2
   end
 
   def seed_db!
-    hash = {} of Int32 => ChInfo2
+    hash = {} of Int32 => Chinfo
 
     pages = Dir.glob(File.join(@root_dir, "*.tsv"))
     pages.sort_by! { |x| File.basename(x, ".tsv").to_i }
@@ -167,7 +167,7 @@ class CV::ChRepo2
   end
 
   def sync_db!
-    hash = {} of Int32 => ChInfo2
+    hash = {} of Int32 => Chinfo
 
     hash = read_file(sauce_path, hash) if File.exists?(sauce_path)
     hash = read_file(patch_path, hash) if File.exists?(patch_path)
@@ -181,7 +181,7 @@ class CV::ChRepo2
       cols = line.split('\t')
       next if cols.size < 4
 
-      entry = ChInfo2.new(@sn_id, @s_bid, cols)
+      entry = Chinfo.new(@sn_id, @s_bid, cols)
       hash[entry.ch_no!] = entry
     end
 

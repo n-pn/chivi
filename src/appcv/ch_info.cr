@@ -1,239 +1,170 @@
+require "../tools/crorm/*"
 require "../_util/text_util"
-require "../tools/r2_client"
-require "./nvchap/ch_util"
+require "./ch_seed"
+require "./ch_text"
 
-# storing book names
+class CV::ChTran2
+  include Crorm::Model
 
-class CV::ChTran
-  property title : String
-  property chvol : String
-  property uslug : String
+  column ch_no : Int32, primary: true
+  column title : String = ""
+  column chvol : String = ""
+  column uslug : String = ""
+  column fixed : Bool = false
 
-  def initialize(@title = "", @chvol = "")
-    @uslug = TextUtil.tokenize(title)[0..7].join('-')
+  def convert!(cvmtl, title : String, chvol : String = "")
+    self.title = title.empty? "Thiếu tựa": cvmtl.cv_title(title).to_txt
+    self.chvol = chvol.empty? "Chính văn": cvmtl.cv_title(chvol).to_txt
   end
 end
 
 class CV::Chinfo
-  include Clear::Model
+  include Crorm::Model
 
-  self.table = "chinfos"
-  primary_key type: :serial
-
-  belongs_to viuser : Viuser?, foreign_key_type: Int32
-  belongs_to chroot : Chroot, foreign_key_type: Int32
-  belongs_to mirror : Chinfo?, foreign_key_type: Int32
-  has_many clones : Chinfo, foreign_key_type: Int32, foreign_key: "mirror_id"
-
-  column chidx : Int16
-  column schid : String
+  column ch_no : Int32, primary: true # chap number
 
   column title : String = ""
   column chvol : String = ""
 
-  column w_count : Int32 = 0
-  column p_count : Int32 = 0
-  column changed_at : Time?
+  column p_len : Int32 = 0 # part count
+  column c_len : Int32 = 0 # char count
 
-  timestamps
+  column utime : Int64 = 0
+  column uname : String = ""
 
-  scope :range do |chroot_id, chmin, chmax|
-    query = where("chroot_id = ?", chroot_id)
-    query.where("chidx >= ?", chmin) if chmin
-    query.where("chidx <= ?", chmax) if chmax
-    query.order_by(chidx: :asc)
+  column sn_id : Int32 = 0 # index of seed name
+  column s_bid : Int32 = 0 # book original id
+  column s_cid : Int32 = 0 # chap original id
+
+  def initialize(sn_id : Int32, s_bid : Int32, cols : Array(String))
+    self.sn_id = sn_id
+    self.s_bid = s_bid
+
+    ch_no = cols[0].to_i
+    self.ch_no = ch_no
+    self.s_cid = cols[1].to_i? || ch_no
+
+    self.title = cols[2]
+    self.chvol = cols[3]
+
+    return if cols.size < 7
+
+    self.utime = cols[4].to_i64
+    self.c_len = cols[5].to_i
+    self.p_len = cols[6].to_i
+    self.uname = cols[7]? || ""
+
+    return if cols.size < 10
+
+    self.sn_id, _ = ChSeed.map_sname(cols[8])
+
+    s_bid = cols[9]
+    self.s_bid = s_bid.to_i? || Nvinfo.find!({bhash: s_bid}).id.to_i
   end
 
-  def initialize(chroot : Chroot, argv : Array(String))
-    @persisted = false
-    self.chroot = chroot
+  def initialize(sn_id : Int32, s_bid : Int32, ch_no : Int32, s_cid : Int32 = ch_no)
+    self.sn_id = sn_id
+    self.s_bid = s_bid
 
-    self.chidx = argv[0].to_i16
-    self.schid = argv[1]
-
-    return if argv.size < 4
-    self.title = argv[2]
-    self.chvol = argv[3]
-
-    return if argv.size < 7
-
-    self.changed_at = argv[4].to_i64?.try { |x| Time.unix(x) }
-    self.w_count = argv[5].to_i
-    self.p_count = argv[6].to_i16
-    self.viuser = Viuser.find({uname: argv[7]? || ""})
-
-    return if argv.size < 10
-
-    sname = argv[8]
-    return if sname == chroot.sname
-
-    mirror_chroot = Chroot.load!(chroot.nvinfo, sname, force: true)
-
-    mirror_chidx = argv[10]?.try(&.to_i16) || self.chidx
-    self.mirror = Chinfo.find({chroot_id: mirror_chroot.id, chidx: mirror_chidx})
+    self.ch_no = ch_no
+    self.s_cid = s_cid
   end
 
-  getter trans : ChTran { trans! }
-
-  def trans!(cvmtl : MtCore? = nil)
-    if mirror = self.mirror
-      zh_title, zh_chvol = mirror.title, mirror.chvol
-    else
-      zh_title, zh_chvol = self.title, self.chvol
-    end
-
-    cvmtl ||= self.chroot.nvinfo.cvmtl
-    ChTran.new(
-      zh_title.empty? ? "Thiếu tựa" : cvmtl.cv_title(zh_title).to_txt,
-      zh_chvol.empty? ? "Chính Văn" : cvmtl.cv_title(zh_chvol).to_txt,
-    )
+  def set_title!(title : String, chvol : String = "")
+    self.title, self.chvol = TextUtil.format_title(title, chvol)
   end
 
-  getter chtext : ChText { ChText.load(self.chroot, self.chidx) }
+  getter trans : Trans { trans!(MtCore.generic_mtl("combine")) }
 
-  def text(cpart : Int16 = 0, redo : Bool = false, viuser : Viuser? = nil) : String
-    self.mirror.try { |x| return x.text(cpart, redo, viuser) }
-    return self.full_text(redo, viuser)[cpart]? || "" unless self.changed_at
+  def trans!(cmvtl : MtCore) : Trans
+    @trans = Trans.new(cmvtl, self.title, self.chvol)
+  end
 
-    if cached = self.chtext.read(self.schid, cpart)
+  def sname
+    ChSeed.get_sname(self.sn_id)
+  end
+
+  getter chtext : ChText { ChText.load(self.sname, self.s_bid, self.ch_no!) }
+
+  def text(cpart : Int16 = 0, mode : Int8 = 0, uname = "") : String
+    return self.all_text(mode, uname)[cpart]? || "" if self.utime == 0
+
+    if cached = self.chtext.read(self.s_cid, cpart)
       text, utime = cached
       self.heal_stats(cpart &+ 1, utime)
+    elsif mode < 1
+      return ""
     end
 
-    !redo && text ? text : remote_text(redo, viuser).try(&.[cpart]?) || text || ""
+    return text if mode < 2 && text
+    pull_text(mode, uname).try(&.[cpart]?) || text || ""
   end
 
-  def full_text(redo : Bool = false, viuser : Viuser? = nil) : Array(String)
-    if cached = self.chtext.read_full(self.schid)
-      parts, utime, w_count = cached
-      self.heal_stats(parts.size.to_i16, utime, w_count)
+  def all_text(mode : Int8 = 0, uname = "") : Array(String)
+    if cached = self.chtext.read_all(self.s_cid)
+      parts, utime, c_len = cached
+      self.heal_stats(parts.size, utime, c_len)
+    elsif mode < 1
+      return [] of String
     end
 
-    !redo && parts ? parts : remote_text(redo, viuser) || parts || [] of String
+    return parts if mode < 2 && parts
+    pull_text(mode, uname) || parts || [] of String
   end
 
-  def save_text(content : Array(String), viuser : Viuser? = nil)
-    self.chtext.save(self.schid, content)
-    self.p_count = content.size.to_i16
-    self.changed_at = Time.utc
-    self.viuser = viuser
+  def save_text(content : Array(String), uname = "")
+    self.chtext.save(self.s_cid, content)
 
-    self.save!
+    self.c_len = content.sum(&.size)
+    self.p_len = content.size
+
+    self.utime = Time.utc.to_unix
+    self.uname = uname
   end
 
-  def remote_text(redo : Bool = false, viuser : Viuser? = nil)
-    chroot = self.chroot
-    return unless chroot.is_remote
-
-    ttl = redo ? 1.minutes : 10.years
-
-    remote = RemoteText.new(chroot.sname, chroot.s_bid, self.schid.to_i, ttl: ttl)
+  def pull_text(mode : Int8 = 1, uname = "")
+    ttl = mode > 1 ? 1.minutes : 10.years
+    remote = RemoteText.new(self.sname, self.s_bid, self.s_cid, ttl: ttl)
 
     lines = remote.paras
     lines.unshift(remote.title) unless remote.title.empty?
 
-    self.w_count, output = ChUtil.split_parts(lines)
-    self.p_count = output.size
-    self.changed_at = Time.utc
-    self.viuser = viuser
-    self.save!
+    self.c_len, output = ChUtil.split_parts(lines)
+    self.chtext.save(self.s_cid, output)
 
-    self.chtext.save(self.schid, output)
+    self.p_len = output.size
+    self.utime = Time.utc.to_unix
+    self.uname = uname
+
     output
   rescue err
-    Log.error(exception: err) { [self.chroot.sname, self.chidx] }
+    Log.error(exception: err) { [self.sname, self.s_bid, self.s_cid, self.ch_no] }
   end
 
-  def heal_stats(p_count : Int16, utime : Time?, w_count = 0)
-    self.p_count = p_count if p_count > self.p_count
-    self.w_count = w_count if w_count > self.w_count
-
-    self.changed_at = utime if utime && !self.changed_at.try(&.> utime)
-    self.save! if self.changed?
+  def heal_stats(p_len : Int32, utime : Int64, c_len = 0)
+    self.p_len = p_len if p_len > self.p_len
+    self.c_len = c_len if c_len > self.c_len
+    self.utime = utime if utime > self.utime
   end
 
-  def p_count
-    mirror.try(&.p_count) || self.p_count_column.value
+  def change_root!(chroot : Chroot, s_cid = self.ch_no!) : Nil
+    self.s_cid = s_cid
+    self.sn_id = chroot._repo.sn_id
+    self.s_bid = chroot.s_bid
+    @chtext = nil
   end
-
-  FIELDS = {
-    "schid", "title", "chvol", "w_count", "p_count",
-    "viuser_id", "mirror_id", "changed_at",
-  }
-
-  def inherit(other : self = self.mirror.not_nil!)
-    {% for field in FIELDS %}
-      self.{{field.id}} = other.{{field.id}}
-    {% end %}
-  end
-
-  # after :update, :sync_clones
-
-  # def sync_clones
-  #   set = FIELDS.map { |x| "#{x} = excluded.#{x}" }.join(", ")
-  #   Chinfo.query.where("mirror_id = ?", self.id).to_update.set(set).execute
-  # end
-
-  #############
 
   ####
 
-  def self.fetch_as_mirror(old_root : Chroot, new_root : Chroot,
-                           chmin : Int16 = 0, chmax : Int16? = nil,
-                           new_chmin = chmin)
-    query = self.query
-      .where({chroot_id: old_root.id}).where("chidx >= ?", chmin)
-      .order_by(chidx: :asc).select("id, mirror_id, chidx, schid")
+  struct Trans
+    getter title : String
+    getter chvol : String
+    getter uslug : String
 
-    query = query.where("chidx <= ?", chmax) if chmax
-
-    output = [] of self
-
-    query.each do |entry|
-      output << new({chroot: new_root,
-                     chidx: new_chmin, schid: entry.schid,
-                     mirror_id: entry.mirror_id || entry.id})
-
-      new_chmin &+= 1
+    def initialize(cvmtl, title : String, chvol : String = "")
+      @title = title.empty? ? "Thiếu tựa" : cvmtl.cv_title(title).to_txt
+      @chvol = chvol.empty? ? "Chính văn" : cvmtl.cv_title(chvol).to_txt
+      @uslug = TextUtil.tokenize(@title)[0..7].join('-')
     end
-
-    output
-  end
-
-  def self.bulk_upsert(batch : Array(self)) : Nil
-    on_conflict = ->(req : Clear::SQL::InsertQuery) do
-      req.on_conflict("ON CONSTRAINT chinfos_unique_key").do_update do |upd|
-        upd.set(FIELDS.map { |x| "#{x} = excluded.#{x}" }.join(", "))
-      end
-    end
-
-    Clear::SQL.transaction do
-      batch.each do |entry|
-        entry.save!(on_conflict: on_conflict)
-      end
-    end
-  end
-
-  def self.nearby_chvol(chroot : Chroot, chidx : Int16) : String
-    query.where
-      .where("idx <= #{chidx} and chvol <> ''")
-      .order_by(chidx: :desc).select("chvol")
-      .first.try(&.chvol) || ""
-  end
-
-  def self.match_chidx(chroot : Chroot, chidx : Int16) : Int16
-    return chidx unless title = get_title(chroot.id, chidx)
-
-    query.where(chroot_id: chroot.id).where(title: title)
-      .where("chidx >= #{chidx &- 30}")
-      .where("chidx <= #{chidx &+ 30}")
-      .order_by(chidx: :desc)
-      .select("chidx").first
-      .try(&.chidx) || chidx
-  end
-
-  def self.get_title(chroot_id : Int64, chidx : Int16)
-    return false unless entry = find({chroot_id: chroot_id, chidx: chidx})
-    entry.mirror.try(&.title) || entry.title
   end
 end

@@ -72,7 +72,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     spawn splitter.save_chinfos!(uname: uname)
 
     splitter.chapters.map do |input|
-      entry = ChInfo2.new(sn_id, chroot.s_bid, input.chidx)
+      entry = Chinfo.new(sn_id, chroot.s_bid, input.chidx)
 
       entry.title = input.title
       entry.chvol = input.chvol
@@ -130,7 +130,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     serv_json({chvol: chinfo.chvol, title: chinfo.title, input: zhtext})
   end
 
-  private def update_chroot(chroot : Chroot, chinfo : ChInfo2, trunc = false)
+  private def update_chroot(chroot : Chroot, chinfo : Chinfo, trunc = false)
     chroot.set_latest(chinfo, force: trunc)
     chroot.stime = chroot.utime = Time.utc.to_unix
     chroot.save!

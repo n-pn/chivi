@@ -1,4 +1,4 @@
-require "./ch_info"
+require "./ch_info_0"
 
 class CV::ChRepo0
   getter data = Hash(Int16, ChInfo0).new(initial_capacity: 128)

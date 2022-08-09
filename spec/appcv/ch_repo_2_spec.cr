@@ -2,15 +2,15 @@ require "spec"
 
 require "../../src/appcv/ch_repo_2"
 
-describe CV::ChRepo2 do
-  repo = CV::ChRepo2.new("zxcs_me", 308)
+describe CV::ChRepo do
+  repo = CV::ChRepo.new("zxcs_me", 308)
 
   it "loads correctly" do
     repo.count.should eq 1316
   end
 
   it "find a single entry" do
-    repo.get(1).should be_a(CV::ChInfo2)
+    repo.get(1).should be_a(CV::Chinfo)
   end
 
   it "return nil on missing entry" do

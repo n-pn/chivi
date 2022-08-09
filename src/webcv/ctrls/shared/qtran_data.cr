@@ -68,7 +68,7 @@ class CV::QtranData
     load_chap(chroot, chinfo, cpart.to_i16, mode, uname)
   end
 
-  def self.load_chap(chroot : Chroot, chinfo : ChInfo2,
+  def self.load_chap(chroot : Chroot, chinfo : Chinfo,
                      cpart = 0_i16, mode : Int8 = 0, uname = "")
     input = chinfo.text(cpart, mode: mode, uname: uname)
     lines = input.empty? ? [] of String : input.split('\n')

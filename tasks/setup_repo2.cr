@@ -19,7 +19,7 @@ def init_repo(sname : String)
   w_size.times do
     spawn do
       loop do
-        repo = CV::ChRepo2.new(sname, inp_ch.receive, reset: true)
+        repo = CV::ChRepo.new(sname, inp_ch.receive, reset: true)
         Log.info { [sname, repo.s_bid, repo.count] }
       ensure
         res_ch.send(nil)

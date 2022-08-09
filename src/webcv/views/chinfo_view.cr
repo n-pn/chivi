@@ -3,7 +3,7 @@ require "./_base_view"
 struct CV::ChinfoView
   include BaseView
 
-  def initialize(@data : ChInfo2, @full = true)
+  def initialize(@data : Chinfo, @full = true)
   end
 
   def to_json(jb : JSON::Builder)
@@ -25,7 +25,7 @@ struct CV::ChinfoView
     }.to_json(jb)
   end
 
-  def self.list(list : Enumerable(ChInfo2))
+  def self.list(list : Enumerable(Chinfo))
     list.map { |x| new(x) }
   end
 end
