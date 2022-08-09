@@ -77,8 +77,8 @@ class CV::BaseCtrl < Amber::Controller::Base
     response.puts({status: status, error: error}.to_json)
   end
 
-  private def read_chidx(param : String = "chidx", max : Int16? = nil) : Int16
-    idx = params.read_i16(param, min: 1_i16)
+  private def read_chidx(param : String = "chidx", max : Int32? = nil) : Int32
+    idx = params.read_int(param, min: 1)
     max && max < idx ? max : idx
   end
 
@@ -109,14 +109,8 @@ class CV::BaseCtrl < Amber::Controller::Base
     raise Unauthorized.new("Quyền hạn không đủ!") if _viuser.privi < min
   end
 
-  private def load_chinfo(chroot : Chroot, chidx : Int16 = read_chidx)
-    chinfo = Chinfo.query
-      .where({chroot_id: chroot.id, chidx: chidx})
-      .with_mirror(&.with_chroot).with_viuser
-      .first
-
-    raise NotFound.new("Chương tiết không tồn tại") unless chinfo
-    chinfo.tap(&.chroot = chroot)
+  private def load_chinfo(chroot : Chroot, chidx : Int32 = read_chidx)
+    chroot.chinfo(chidx) || raise NotFound.new("Chương tiết không tồn tại")
   end
 
   def assert_privi(privi : Int32 = 1)

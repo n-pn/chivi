@@ -24,7 +24,7 @@ class Crorm::Adapter
 
   # remove all rows from a table and reset the counter on the id.
   def clear(table : String)
-    statement = "DELETE FROM #{quote(table)}"
+    statement = "DELETE FROM #{table}"
     elapsed_time = Time.measure { open(&.exec(statement)) }
     log(statement, elapsed_time)
   end
@@ -50,11 +50,11 @@ class Crorm::Adapter
 
   def insert_stmt(table : String, fields : Array(String), values : Array(DB::Any))
     String.build do |stmt|
-      stmt << "INSERT INTO " << quote(table) << " ("
+      stmt << "INSERT INTO " << table << " ("
 
       fields.each_with_index do |field, i|
         stmt << ", " if i > 0
-        quote(stmt, field)
+        stmt << field
       end
 
       stmt << ") VALUES ("
@@ -70,11 +70,11 @@ class Crorm::Adapter
 
   def update_stmt(fields : Array(String), table : String, where_clause : String? = nil)
     String.build do |stmt|
-      stmt << "UPDATE " << quote(table) << " SET "
+      stmt << "UPDATE " << table << " SET "
 
       fields.each_with_index do |field, i|
         stmt << ", " if i > 0
-        stmt << quote(field) << " = ?"
+        stmt << field << " = ?"
       end
 
       stmt << " WHERE " << where_clause if where_clause
@@ -97,7 +97,7 @@ class Crorm::Adapter
     String.build do |stmt|
       fields.each_with_index do |field, i|
         stmt << ", " if i > 0
-        stmt << quote(field) << " = " << yield(field)
+        stmt << field << " = " << yield(field)
       end
 
       stmt << " WHERE " << where_clause if where_clause
@@ -105,22 +105,16 @@ class Crorm::Adapter
   end
 
   # Insert or update
-  def upsert(
-    cnn : DB::Connection, table : String,
-    fields : Array(String), values : Array(DB::Any),
-    conflict_stmt : String, where_clause : String?, update_stmt : String
-  )
-    upsert(cnn,
-      table, fields, values, conflict_stmt) { update_stmt }
+  def upsert(cnn : DB::Connection | DB::Database, table : String,
+             fields : Array(String), values : Array(DB::Any),
+             conflict_stmt : String, where_clause : String?, update_stmt : String)
+    upsert(cnn, table, fields, values, conflict_stmt) { update_stmt }
   end
 
   # :ditto:
-  def upsert(
-    cnn : DB::Connection,
-    table : String,
-    fields : Array(String), values : Array(DB::Any),
-    conflict_stmt : String, where_clause : String? = nil, &block
-  )
+  def upsert(cnn : DB::Connection | DB::Database,
+             table : String, fields : Array(String), values : Array(DB::Any),
+             conflict_stmt : String, where_clause : String? = nil, &block) : Nil
     statement = String.build do |stmt|
       stmt << insert_stmt(table, fields, values)
       stmt << " ON CONFLICT #{conflict_stmt} DO UPDATE SET " << yield
@@ -146,7 +140,7 @@ class Crorm::Adapter
 
   def scalar(table : String, select_stmt : String, params = [] of DB::Any, query_stmt : String? = nil)
     statement = String.build do |stmt|
-      stmt << "SELECT " << select_stmt << " FROM " << quote(table)
+      stmt << "SELECT " << select_stmt << " FROM " << table
       stmt << " WHERE " << query_stmt if query_stmt
     end
 
@@ -168,7 +162,7 @@ class Crorm::Adapter
         selects.join(stmt, ", ")
       end
 
-      stmt << " FROM " << quote(table) << " WEHRE " << query_stmt
+      stmt << " FROM " << table << " WHERE " << query_stmt
     end
 
     model = nil

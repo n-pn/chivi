@@ -55,7 +55,7 @@ class CV::ChrootInit
   getter update_int = 0_i64
 
   getter last_snvid = ""
-  getter chap_count = 0_i16
+  getter chap_count = 0
 
   def initialize(@sname, @snvid)
   end

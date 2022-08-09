@@ -3,79 +3,82 @@ require "sqlite3"
 require "./remote/remote_text"
 
 class CV::ChText
-  DIR = "var/chtexts"
+  DIR   = "var/chtexts"
+  PSIZE = 128
 
-  PSIZE = 128_i16
-
-  def self.pgidx(chidx : Int16)
-    (chidx &- 1) // PSIZE
+  def self.pgidx(ch_no : Int32) : Int32
+    (ch_no &- 1) // PSIZE
   end
 
-  CACHE = {} of Int32 => self
+  CACHE = {} of String => self
 
-  def self.load(chroot : Chroot, chidx : Int16)
-    pgidx = self.pgidx(chidx)
-    h_key = chroot.id.unsafe_shl(8) | pgidx
-    CACHE[h_key] ||= new(chroot.sname, chroot.s_bid, pgidx)
+  def self.load(sname : String, s_bid : Int32, ch_no : Int32)
+    pg_no = self.pgidx(ch_no)
+    CACHE["#{sname}/#{s_bid}/#{pg_no}"] ||= new(sname, s_bid, pg_no)
   end
 
   #####
 
-  def initialize(@sname : String, @s_bid : Int32, @pgidx : Int16)
-    @txt_path = "#{DIR}/#{sname}/#{s_bid}/#{pgidx}"
+  def initialize(sname : String, s_bid : Int32, pg_no : Int32)
+    @txt_path = "#{DIR}/#{sname}/#{s_bid}/#{pg_no}"
     @zip_path = @txt_path + ".zip"
-    @has_file = File.exists?(@zip_path) || download_from_cdn(@zip_path)
+
+    @has_file = File.exists?(@zip_path) || pull_r2!(@zip_path)
   end
 
   @[AlwaysInline]
-  def text_name(schid : String, cpart : Int = 0)
-    "#{schid}-#{cpart}.txt"
+  def text_name(s_cid : Int32, cpart : Int = 0)
+    "#{s_cid}-#{cpart}.txt"
   end
 
-  def read(schid : String, cpart : Int16 = 0)
+  def read(s_cid : Int32, cpart : Int16 = 0) : {String, Int64}?
     return unless @has_file
 
     Compress::Zip::File.open(@zip_path) do |zip|
-      return unless entry = zip[text_name(schid, cpart)]?
-      {entry.open(&.gets_to_end), entry.time}
+      return unless entry = zip[text_name(s_cid, cpart)]?
+      {entry.open(&.gets_to_end), entry.time.to_unix}
     end
   end
 
-  def read_full(schid : String)
+  def read_all(s_cid : Int32) : {Array(String), Int64, Int32}?
     return unless @has_file
 
     Compress::Zip::File.open(@zip_path) do |zip|
       parts = [] of String
-      utime = nil
-      w_count = 0
+      utime = 0_i64
+      w_len = 0
 
-      30.times do |cpart|
-        break unless entry = zip[text_name(schid, cpart)]?
-        utime = entry.time unless utime.try(&.> entry.time)
+      32.times do |cpart|
+        break unless entry = zip[text_name(s_cid, cpart)]?
+
+        etime = entry.time.to_unix
+        utime = etime if etime > utime
 
         ptext = entry.open(&.gets_to_end)
-        parts << ptext
+        w_len += ptext.size
 
-        w_count += ptext.size
+        parts << ptext
       end
 
-      {parts, utime, w_count} unless parts.empty?
+      {parts, utime, w_len} unless parts.empty?
     end
   end
 
-  def save(schid : String, parts : Array(String), no_zip : Bool = false, upload : Bool = false)
+  def save(s_cid : Int32, parts : Array(String), no_zip : Bool = false)
     return if parts.empty?
     Dir.mkdir_p(@txt_path)
 
     files = [] of String
+
     parts.each_with_index do |text, cpart|
-      file_path = File.join(@txt_path, text_name(schid, cpart))
+      file_path = File.join(@txt_path, text_name(s_cid, cpart))
       File.write(file_path, text)
       files << file_path
     end
 
     return if no_zip
     @has_file = true
+
     return if system("zip", ["-rjmq", @zip_path].concat(files))
     raise "Can't zip texts for some reason!"
   end
@@ -87,9 +90,8 @@ class CV::ChText
     @has_file = true
   end
 
-  ###
-  def download_from_cdn(zip_path : String)
-    return false unless File.exists?(zip_path.sub(".zip", ".tab"))
+  def pull_r2!(zip_path : String)
+    return false unless File.exists?(@txt_path + ".tab")
     R2Client.download(zip_path.sub(DIR, "texts"), zip_path)
   end
 end

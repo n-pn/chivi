@@ -35,9 +35,9 @@ class CV::Chroot
   column utime : Int64 = 0 # seed page update time as total seconds since the epoch
   column stime : Int64 = 0 # last crawled at
 
-  column last_sname : String = ""   # seed's latest chap id
-  column last_schid : String = ""   # seed's latest chap id
-  column chap_count : Int16 = 0_i16 # total chapters
+  column last_sname : String = "" # seed's latest chap id
+  column last_schid : String = "" # seed's latest chap id
+  column chap_count : Int32 = 0   # total chapters
 
   column stage : Int16 = 0
   column seeded : Bool = false
@@ -60,11 +60,11 @@ class CV::Chroot
     end
   end
 
-  def min_privi(chidx : Int16, chars : Int32 = 0)
+  def min_privi(chidx : Int32, utime : Int64 = 0)
     privi_map = self.privi_map
     case
     when chidx <= self.free_chap then privi_map[0]
-    when chars > 0               then privi_map[1]
+    when utime > 0               then privi_map[1]
     else                              privi_map[2]
     end
   end

@@ -49,6 +49,10 @@ module Crorm::Model
     @__changed.clear
   end
 
+  def mark_as_changed(columns = self.fields)
+    columns.each { |column| @__changed[column] = true }
+  end
+
   def changes
     fields = [] of String
     values = [] of DB::Any

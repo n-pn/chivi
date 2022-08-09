@@ -26,20 +26,17 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  private def load_cvdata(chroot : Chroot, chinfo : Chinfo,
+  private def load_cvdata(chroot : Chroot, chinfo : ChInfo2,
                           cpart : Int16 = 0_i16, redo : Bool = false)
-    min_privi = chroot.min_privi(chinfo.chidx, chinfo.w_count)
+    min_privi = chroot.min_privi(chinfo.ch_no!, chinfo.utime)
     return {"", ""} if min_privi > _viuser.privi
 
-    if mirror = chinfo.mirror.try(&.chroot)
-      ukey = {mirror.sname, mirror.s_bid, chinfo.chidx, cpart}.join(":")
-    else
-      ukey = {chroot.sname, chroot.s_bid, chinfo.chidx, cpart}.join(":")
-    end
+    ukey = {chinfo.sname, chinfo.s_bid, chinfo.ch_no!, cpart}.join(":")
+    utime = Time.unix(chinfo.utime) + 10.minutes
 
-    utime = (chinfo.changed_at || Time.utc) + 10.minutes
     if redo || !(qtran = QtranData::CACHE.get?(ukey, utime))
-      qtran = QtranData.load_chap(chinfo, cpart, redo: redo, viuser: _viuser)
+      mode = chroot.is_remote ? (redo ? 2_i8 : 1_i8) : 0_i8
+      qtran = QtranData.load_chap(chroot, chinfo, cpart, mode: mode, uname: _viuser.uname)
       QtranData::CACHE.set(ukey, qtran)
     end
 

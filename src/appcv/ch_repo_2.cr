@@ -12,7 +12,7 @@ class CV::ChRepo2
   getter s_bid : Int32
   getter stype : Int8
 
-  getter origs_path : String { File.join(@root_dir, "origs.tab") }
+  getter sauce_path : String { File.join(@root_dir, "sauce.tab") }
   getter patch_path : String { File.join(@root_dir, "patch.tab") }
 
   def initialize(@sname : String, @s_bid)
@@ -20,7 +20,7 @@ class CV::ChRepo2
     @sn_id, @stype = ChSeed.map_sname(sname)
 
     db_path = File.join(@root_dir, "index.db")
-    existed = File.exists?(db_path) || pull_r2!
+    existed = File.exists?(db_path) || pull_r2!(db_path)
 
     @repo = Crorm::Adapter.new("sqlite3://#{db_path}")
     return if existed
@@ -29,24 +29,22 @@ class CV::ChRepo2
     seed_db!
   end
 
-  def pull_r2! : Bool
-    r2_path = File.join(@root_dir, "index.r2")
-    return false unless File.exists?(r2_path)
-
-    r2_href = r2_path.sub("var/chtexts", "/texts")
-    R2Client.download(r2_href, r2_path)
+  def pull_r2!(db_path : String) : Bool
+    return false unless File.exists?(File.join(@root_dir, "index.r2"))
+    R2Client.download(db_path.sub(DIR, "texts"), db_path)
   end
 
   def count
-    @repo.scalar("chinfos", "count (*)")
+    @repo.scalar("chinfos", "count (ch_no)")
   end
 
   def bulk_upsert(infos : Array(ChInfo2))
     @repo.transaction do |cnn|
       infos.each do |entry|
         fields, values = entry.changes
+        next if fields.empty?
 
-        @repo.upsert(cnn, "chinfos", fields, values, "(ch_no)", "chinfos.utime < excluded.utime") do
+        @repo.upsert(cnn, "chinfos", fields, values, "(ch_no)", nil) do
           keep_fields = fields.reject(&.in?("ch_no"))
           @repo.upsert_stmt(keep_fields) { |field| "excluded.#{field}" }
         end
@@ -56,7 +54,7 @@ class CV::ChRepo2
 
   def upsert(entry : ChInfo2)
     fields, values = entry.changes
-    @redo.open do |db|
+    @repo.open do |db|
       @repo.upsert(db, "chinfos", fields, values, "(ch_no)", nil) do
         keep_fields = fields.reject(&.== "ch_no")
         @repo.upsert_stmt(keep_fields) { |field| "excluded.#{field}" }
@@ -67,6 +65,16 @@ class CV::ChRepo2
   def get(ch_no : Int32) : ChInfo2?
     query = "select * from chinfos where ch_no = ? limit 1"
     @repo.open(&.query_one? query, ch_no, as: ChInfo2)
+  end
+
+  def all(min : Int32, max : Int32, order : String = "asc")
+    query = <<-SQL
+      select * from "chinfos"
+      where ch_no >= ? and ch_no <= ?
+      order by ch_no #{order}
+    SQL
+
+    @repo.open(&.query_all(query, min, max, as: ChInfo2))
   end
 
   def get_title(ch_no : Int32) : String?
@@ -157,7 +165,7 @@ class CV::ChRepo2
   def sync_db!
     hash = {} of Int32 => ChInfo2
 
-    hash = read_file(origs_path, hash) if File.exists?(origs_path)
+    hash = read_file(sauce_path, hash) if File.exists?(sauce_path)
     hash = read_file(patch_path, hash) if File.exists?(patch_path)
 
     infos = hash.values.sort_by!(&.ch_no.not_nil!)

@@ -16,16 +16,22 @@ class CV::ChtextCtrl < CV::BaseCtrl
       chinfos.first.title = TextUtil.trim_spaces(title)
     end
 
-    Chinfo.bulk_upsert(chinfos)
+    chroot._repo.bulk_upsert(chinfos)
     chroot.clear_cache!
+
     update_chroot(chroot, chinfos.last, trunc: params["trunc_after"]? == "true")
 
-    self_sname = '@' + _viuser.uname
-    mirror_sname = chroot.sname == self_sname ? self_sname : "=user"
-    mirror = Chroot.load!(chroot.nvinfo_id, mirror_sname, force: true)
+    chmin = chinfos.first.ch_no!
+    chmax = chinfos.last.ch_no!
 
-    chmin, chmax = chinfos.first.chidx, chinfos.last.chidx
-    mirror.mirror_other(chroot, chmin, chmax, chmin)
+    spawn do
+      self_sname = '@' + _viuser.uname
+      mirror_sname = chroot.sname == self_sname ? self_sname : "=user"
+
+      mirror = Chroot.load!(chroot.nvinfo_id, mirror_sname, force: true)
+      mirror.mirror_other!(chroot, chmin, chmax, chmin)
+    end
+
     serv_json({from: chmin, upto: chmax})
   end
 
@@ -59,18 +65,24 @@ class CV::ChtextCtrl < CV::BaseCtrl
     splitter.split!(options.split_mode)
     splitter.save_content!
 
-    spawn splitter.save_chinfos!(uname: _viuser.uname)
+    uname = _viuser.uname
+    utime = Time.utc.to_unix
+    sn_id = chroot._repo.sn_id
 
-    changed_at = Time.utc
+    spawn splitter.save_chinfos!(uname: uname)
 
     splitter.chapters.map do |input|
-      Chinfo.new({
-        chroot: chroot, viuser: _viuser, mirror: nil,
-        chidx: input.chidx, schid: input.schid,
-        title: input.title, chvol: input.chvol,
-        w_count: input.w_count, p_count: input.p_count,
-        changed_at: changed_at,
-      })
+      entry = ChInfo2.new(sn_id, chroot.s_bid, input.chidx)
+
+      entry.title = input.title
+      entry.chvol = input.chvol
+      entry.c_len = input.c_len
+      entry.p_len = input.p_len
+
+      entry.utime = utime
+      entry.uname = uname
+
+      entry
     end
   end
 
@@ -112,13 +124,13 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot = load_chroot
     chinfo = load_chinfo(chroot)
 
-    chinfo = chinfo.mirror || chinfo
-    zhtext = chinfo.full_text(viuser: _viuser).join('\n')
+    mode = chroot.is_remote ? 1_i8 : 0_i8
+    zhtext = chinfo.all_text(mode: mode, uname: _viuser.uname).join('\n')
 
     serv_json({chvol: chinfo.chvol, title: chinfo.title, input: zhtext})
   end
 
-  private def update_chroot(chroot : Chroot, chinfo : Chinfo, trunc = false)
+  private def update_chroot(chroot : Chroot, chinfo : ChInfo2, trunc = false)
     chroot.set_latest(chinfo, force: trunc)
     chroot.stime = chroot.utime = Time.utc.to_unix
     chroot.save!
@@ -140,20 +152,14 @@ class CV::ChtextCtrl < CV::BaseCtrl
     spawn do
       ChapEdit.new({
         viuser: _viuser, chroot: chroot,
-        chidx: chinfo.chidx, schid: chinfo.schid,
+        chidx: chinfo.ch_no, schid: chinfo.s_cid,
         cpart: part_no, l_id: line_no,
         orig: orig, edit: edit, flag: 0_i16,
       }).save!
     end
 
-    if mirror = chinfo.mirror
-      chinfo.inherit(mirror)
-      chinfo.schid = chinfo.chidx.to_s
-      chinfo.mirror = nil
-    end
-
-    content = chinfo.full_text(viuser: _viuser)
-    chinfo.w_count &+= edit.size &- orig.size if line_no > 0
+    content = chinfo.all_text(mode: 0, uname: _viuser.uname)
+    chinfo.c_len &+= edit.size &- orig.size if line_no > 0
 
     content.each_with_index do |part, idx|
       next unless idx == part_no || line_no == 0
@@ -163,9 +169,10 @@ class CV::ChtextCtrl < CV::BaseCtrl
       content[idx] = lines.join('\n')
     end
 
-    chinfo.save_text(content, _viuser)
+    chinfo.save_text(content, uname: _viuser.uname)
+    chroot._repo.upsert(chinfo)
     chroot.clear_cache!
 
-    serv_text({chroot.sname, chroot.s_bid, chinfo.chidx, part_no}.join(":"))
+    serv_text({chroot.sname, chroot.s_bid, chinfo.ch_no, part_no}.join(":"))
   end
 end

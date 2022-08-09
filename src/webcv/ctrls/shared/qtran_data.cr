@@ -54,28 +54,29 @@ class CV::QtranData
     new(parse_lines(ysrepl.ztext), nvinfo.dname, nvinfo.vname)
   end
 
-  def self.load_chap(name : String, redo = false, viuser : Viuser? = nil) : QtranData
-    sname, s_bid, chidx, cpart = name.split(":")
+  def self.load_chap(name : String, mode : Int8 = 0, uname = "") : QtranData
+    sname, s_bid, ch_no, cpart = name.split(":")
 
-    unless nvseed = Chroot.find({sname: sname, s_bid: s_bid.to_i})
+    unless chroot = Chroot.find({sname: sname, s_bid: s_bid.to_i})
       raise NotFound.new("Nguồn truyện không tồn tại")
     end
 
-    unless chinfo = nvseed.chinfo(chidx.to_i16)
+    unless chinfo = chroot.chinfo(ch_no.to_i)
       raise NotFound.new("Chương tiết không tồn tại")
     end
 
-    load_chap(chinfo, cpart.to_i16, redo, viuser)
+    load_chap(chroot, chinfo, cpart.to_i16, mode, uname)
   end
 
-  def self.load_chap(chinfo : Chinfo, cpart = 0_i16, redo = false, viuser : Viuser? = nil)
-    input = chinfo.text(cpart, redo: redo, viuser: viuser)
+  def self.load_chap(chroot : Chroot, chinfo : ChInfo2,
+                     cpart = 0_i16, mode : Int8 = 0, uname = "")
+    input = chinfo.text(cpart, mode: mode, uname: uname)
     lines = input.empty? ? [] of String : input.split('\n')
 
-    parts = chinfo.mirror.try(&.p_count) || chinfo.p_count
-    label = parts > 1 ? " [#{cpart &+ 1}/#{parts}]" : ""
+    p_len = chinfo.p_len
+    label = p_len > 1 ? " [#{cpart &+ 1}/#{p_len}]" : ""
 
-    nvinfo = chinfo.chroot.nvinfo
+    nvinfo = chroot.nvinfo
     new(lines, nvinfo.dname, nvinfo.vname, label: label)
   end
 

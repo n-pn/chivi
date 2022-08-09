@@ -16,7 +16,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .filter_rating(params["rating"]?)
         .filter_viuser(params["uname"]?, params["bmark"]?)
 
-    query.sort_by(params.fetch_str("order", "access"))
+    query.sort_by(params.read_str("order", "access"))
     total = query.dup.limit(offset + limit * 3).offset(0).count
 
     limit = limit == 24 ? 25 : limit

@@ -5,33 +5,33 @@ class CV::ChrootCtrl < CV::BaseCtrl
   end
 
   def show
-    nvseed = load_chroot
+    chroot = load_chroot
     mode = params.read_i8("mode", 0_i8)
 
-    if mode > 0 && can_reload?(nvseed)
-      nvseed.reload!(mode: mode)
+    if mode > 0 && can_reload?(chroot)
+      chroot.reload!(mode: mode)
       fresh = true
     else
-      fresh = nvseed.fresh?(_viuser.privi, force: false)
+      fresh = chroot.fresh?(_viuser.privi, force: false)
     end
 
-    serv_json(ChrootView.new(nvseed, full: true, fresh: fresh))
+    serv_json(ChrootView.new(chroot, full: true, fresh: fresh))
   end
 
-  private def can_reload?(nvseed : Chroot)
+  private def can_reload?(chroot : Chroot)
     return false if _viuser.privi < 0
-    return true unless nvseed.sname[0] == '@'
-    nvseed.sname == '@' + _viuser.uname
+    return true unless chroot.sname[0] == '@'
+    chroot.sname == '@' + _viuser.uname
   end
 
   def chaps
-    nvseed = load_chroot
+    chroot = load_chroot
     pgidx = params.read_i16("page", min: 1_i16)
-    chaps = nvseed.chpage(pgidx &- 1)
+    chaps = chroot.chpage(pgidx &- 1)
 
     serv_json({
       pgidx: pgidx,
-      pgmax: CtrlUtil.pgmax(nvseed.chap_count, 32_i16),
+      pgmax: CtrlUtil.pgmax(chroot.chap_count, 32_i16),
       chaps: ChinfoView.list(chaps),
     })
   end
@@ -44,8 +44,8 @@ class CV::ChrootCtrl < CV::BaseCtrl
     sname = params["sname"]
     s_bid = params["snvid"].to_i
 
-    nvseed = Chroot.upsert!(nvinfo, sname, s_bid, force: true)
-    nvinfo.seed_list.other.push(nvseed).sort! { |x| SnameMap.zseed(x.sname) }
+    chroot = Chroot.upsert!(nvinfo, sname, s_bid, force: true)
+    nvinfo.seed_list.other.push(chroot).sort! { |x| SnameMap.zseed(x.sname) }
 
     serv_json({sname: sname, snvid: s_bid})
   end
@@ -55,7 +55,7 @@ class CV::ChrootCtrl < CV::BaseCtrl
     end
   end
 
-  private def load_guarded_nvseed(min_privi = 1) : Chroot
+  private def load_guarded_chroot(min_privi = 1) : Chroot
     sname = params["sname"]
     return load_chroot(sname) if action_allowed?(sname, min_privi)
     raise Unauthorized.new("Bạn không đủ quyền hạn")
@@ -75,14 +75,15 @@ class CV::ChrootCtrl < CV::BaseCtrl
   end
 
   def patch
-    nvseed = load_guarded_nvseed(min_privi: 1)
-    target = Chroot.load!(nvseed.nvinfo, params["o_sname"])
+    chroot = load_guarded_chroot(min_privi: 1)
+    target = Chroot.load!(chroot.nvinfo, params["o_sname"])
 
-    chmin = params.read_i16("chmin", min: 1_i16)
-    chmax = params.read_i16("chmax", min: chmin, max: target.chap_count)
+    chmin = params.read_int("chmin", min: 1)
+    chmax = params.read_int("chmax", min: chmin, max: target.chap_count)
 
-    new_chmin = params.read_i16("i_chmin", min: 1_i16)
-    nvseed.mirror_other(target, chmin, chmax, new_chmin)
+    new_chmin = params.read_int("i_chmin", min: 1)
+    chroot.mirror_other!(target, chmin, chmax, new_chmin)
+    chroot.clear_cache!
 
     serv_json({pgidx: (new_chmin &- 1) // 128 &+ 1})
   end
@@ -92,13 +93,14 @@ class CV::ChrootCtrl < CV::BaseCtrl
     guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
 
     chroot = load_chroot(sname, mode: :find)
-    trunc_from = params.read_i16("chidx", min: 1_i16, max: chroot.chap_count)
+    trunc_from = params.read_int("chidx", min: 1, max: chroot.chap_count)
 
     if chinfo = chroot.chinfo(trunc_from &- 1)
-      last_sname = chinfo.mirror.try(&.chroot.sname) || ""
-      last_schid = chinfo.schid
+      last_sname = chinfo.sname
+      last_schid = chinfo.s_cid.to_s
     else
-      last_sname = last_schid = ""
+      last_sname = ""
+      last_schid = ""
     end
 
     chroot.update({

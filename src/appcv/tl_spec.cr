@@ -49,11 +49,11 @@ class CV::Tlspec
   def add_edit!(params, viuser)
     edit = Tlspec::Edit.new(viuser)
 
-    edit.lower = params.fetch_int("lower", min: 0)
-    edit.upper = params.fetch_int("upper", min: 1, max: @ztext.size)
+    edit.lower = params.read_int("lower", min: 0)
+    edit.upper = params.read_int("upper", min: 1, max: @ztext.size)
 
-    edit.match = params.fetch_str("match", "").strip
-    edit.extra = params.fetch_str("extra", "").strip
+    edit.match = params.read_str("match", "").strip
+    edit.extra = params.read_str("extra", "").strip
 
     @edits << edit
   end

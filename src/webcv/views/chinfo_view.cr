@@ -3,30 +3,29 @@ require "./_base_view"
 struct CV::ChinfoView
   include BaseView
 
-  def initialize(@data : Chinfo, @full = true)
+  def initialize(@data : ChInfo2, @full = true)
   end
 
   def to_json(jb : JSON::Builder)
-    info = @data.mirror || @data
+    trans = @data.trans
 
     {
-      chidx: @data.chidx,
-      schid: @data.schid,
+      sname: @data.sname,
+      chidx: @data.ch_no,
+      schid: @data.s_cid,
 
-      title: info.trans.title,
-      chvol: info.trans.chvol,
-      uslug: info.trans.uslug,
+      title: trans.title,
+      chvol: trans.chvol,
+      uslug: trans.uslug,
 
-      utime: info.changed_at.try(&.to_unix) || 0_i64,
-      chars: info.w_count,
-      parts: info.p_count,
-      uname: info.viuser.try(&.uname) || "?",
-
-      sname: info.chroot.sname,
+      utime: @data.utime,
+      chars: @data.c_len,
+      parts: @data.p_len,
+      uname: @data.uname,
     }.to_json(jb)
   end
 
-  def self.list(list : Enumerable(Chinfo))
+  def self.list(list : Enumerable(ChInfo2))
     list.map { |x| new(x) }
   end
 end

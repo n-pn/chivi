@@ -33,11 +33,11 @@ class CV::UbmemoCtrl < CV::BaseCtrl
     ubmemo = Ubmemo.find_or_new(_viuser.id, nvinfo_id)
 
     ubmemo.mark!(
-      params.fetch_str("sname"),
+      params.read_str("sname"),
       params.read_i16("chidx", min: 1_i16),
       params.read_i16("cpart"),
-      params.fetch_str("title"),
-      params.fetch_str("uslug"),
+      params.read_str("title"),
+      params.read_str("uslug"),
       params["locked"]? == "true" ? 1 : 0
     )
     serv_json(UbmemoView.new(ubmemo))
@@ -49,7 +49,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
     end
 
     nvinfo_id = params["book_id"].to_i64
-    status = params.fetch_str("status", "default")
+    status = params.read_str("status", "default")
 
     ubmemo = Ubmemo.find_or_new(_viuser.id, nvinfo_id)
     ubmemo.update!({status: status})

@@ -1,6 +1,6 @@
 require "spec"
 
-require "../../src/bdata/ch_repo_2"
+require "../../src/appcv/ch_repo_2"
 
 describe CV::ChRepo2 do
   repo = CV::ChRepo2.new("zxcs_me", 308)

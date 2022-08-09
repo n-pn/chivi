@@ -50,8 +50,8 @@ module CV::Zhtext
     property chvol = ""
     property title : String { @lines[0] }
 
-    getter w_count = 0
-    getter p_count : Int16 { content.size.to_i16 }
+    getter c_len = 0
+    getter p_len : Int32 { content.size }
     getter content : Array(String) { split_parts }
 
     getter lines = [] of String
@@ -66,7 +66,7 @@ module CV::Zhtext
 
     def set_first_as_chvol!(new_title : String) : String
       new_size = new_title.size
-      @w_count, @sizes[0] = @w_count &- @sizes[0] &+ new_size, new_size
+      @c_len, @sizes[0] = @c_len &- @sizes[0] &+ new_size, new_size
 
       @chvol, lines[0] = @lines[0], new_title
       @chvol
@@ -78,18 +78,18 @@ module CV::Zhtext
 
       char_count = line.size
       @sizes << char_count
-      @w_count &+= char_count
+      @c_len &+= char_count
     end
 
-    CHAR_LIMIT = 3000_i16
+    CHAR_LIMIT = 3000
 
     private def split_parts : Array(String)
-      return [@lines.join('\n')] if @w_count <= CHAR_LIMIT * 1.5
+      return [@lines.join('\n')] if @c_len <= CHAR_LIMIT * 1.5
 
       output = [] of String
 
-      p_count = (@w_count // CHAR_LIMIT &+ 1_i16).to_i16
-      char_limit = @w_count // p_count
+      p_len = @c_len // CHAR_LIMIT &+ 1
+      char_limit = @c_len // p_len
 
       title = @lines[0]
 
@@ -285,7 +285,7 @@ module CV::Zhtext
     private def add_chapter(chapter : Chapter)
       return if chapter.lines.empty?
 
-      count = chapter.p_count
+      count = chapter.p_len
       raise "Chương số #{chapter.chidx} có quá nhiều phần (#{count})" if count > 30
 
       if @chapters.size > 4000
@@ -321,7 +321,7 @@ module CV::Zhtext
         data = {
           chap.chidx, chap.schid,
           chap.title, chap.chvol, chap.chidx,
-          mtime, chap.w_count, chap.p_count, uname,
+          mtime, chap.c_len, chap.p_len, uname,
         }
         info_file << '\n'
         info_file.puts(data.join('\t'))

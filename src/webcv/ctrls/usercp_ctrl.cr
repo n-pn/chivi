@@ -7,8 +7,8 @@ class CV::UsercpCtrl < CV::BaseCtrl
   end
 
   def upgrade_privi
-    privi = params.fetch_int("privi", min: 1, max: 3)
-    tspan = params.fetch_int("tspan", min: 0, max: 3)
+    privi = params.read_int("privi", min: 1, max: 3)
+    tspan = params.read_int("tspan", min: 0, max: 3)
     _viuser.upgrade!(privi, tspan)
 
     spawn do
@@ -22,8 +22,8 @@ class CV::UsercpCtrl < CV::BaseCtrl
   end
 
   def send_vcoin
-    amount = params.fetch_int("amount", min: 1)
-    reason = params.fetch_str("reason").strip
+    amount = params.read_int("amount", min: 1)
+    reason = params.read_str("reason").strip
 
     receiver_name = params["receiver"].strip
     unless receiver = Viuser.query.where("uname = ? OR email = ?", receiver_name, receiver_name).first
@@ -70,7 +70,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
   def update_config
     if _viuser.privi >= 0
-      wtheme = params.fetch_str("wtheme", "light")
+      wtheme = params.read_str("wtheme", "light")
       _viuser.update!({wtheme: wtheme})
     end
 
@@ -80,10 +80,10 @@ class CV::UsercpCtrl < CV::BaseCtrl
   def update_passwd
     raise "Quyền hạn không đủ" if _viuser.privi < 0
 
-    oldpw = params.fetch_str("oldpw").strip
+    oldpw = params.read_str("oldpw").strip
     raise "Mật khẩu cũ không đúng" unless _viuser.authentic?(oldpw)
 
-    newpw = params.fetch_str("newpw").strip
+    newpw = params.read_str("newpw").strip
     raise "Mật khẩu mới quá ngắn" if newpw.size < 8
 
     _viuser.upass = newpw

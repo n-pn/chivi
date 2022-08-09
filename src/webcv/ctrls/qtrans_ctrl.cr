@@ -6,9 +6,9 @@ class CV::QtransCtrl < CV::BaseCtrl
   end
 
   def mterror
-    input = params.fetch_str("input")
-    dname = params.fetch_str("dname", "combine")
-    uname = params.fetch_str("uname", _viuser.uname)
+    input = params.read_str("input")
+    dname = params.read_str("dname", "combine")
+    uname = params.read_str("uname", _viuser.uname)
 
     set_headers content_type: :text
 
@@ -33,7 +33,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     return halt! 404, "Not found!" if data.input.empty?
 
-    mode = QtranData::Format.parse(params.fetch_str("mode", "node"))
+    mode = QtranData::Format.parse(params.read_str("mode", "node"))
     trad = params["trad"]? == "true"
     user = params["user"]? || _viuser.uname
 
@@ -45,11 +45,11 @@ class CV::QtransCtrl < CV::BaseCtrl
 
   def posts_upsert
     # TODO: save posts
-    input = params.fetch_str("input")
+    input = params.read_str("input")
     raise BadRequest.new("Dữ liệu quá lớn") if input.size > 10000
 
     lines = QtranData.parse_lines(input)
-    dname = params.fetch_str("dname", "combine")
+    dname = params.read_str("dname", "combine")
     d_lbl = QtranData.get_d_lbl(dname)
 
     data = QtranData.new(lines, dname, d_lbl)
@@ -65,7 +65,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     input = params["input"].gsub("\t", "  ")
     lines = input.split("\n").map! { |x| MtCore.trad_to_simp(x) }
 
-    dname = params.fetch_str("dname", "combine")
+    dname = params.read_str("dname", "combine")
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
 
     set_headers content_type: :text

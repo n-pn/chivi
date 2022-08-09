@@ -12,7 +12,7 @@ class CV::RemoteText
 
   getter sname : String
   getter s_bid : Int32
-  getter schid : String
+  getter s_cid : Int32
   getter title : String
 
   @ttl : Time::Span | Time::MonthSpan
@@ -20,9 +20,9 @@ class CV::RemoteText
   getter file : String
   getter link : String
 
-  def initialize(@sname, @s_bid, @schid, @ttl = 10.years, @lbl = "-/-")
-    @file = PATH % {@sname, @s_bid, @schid}
-    @link = SiteLink.text_url(sname, s_bid, schid)
+  def initialize(@sname, @s_bid, @s_cid, @ttl = 10.years, @lbl = "-/-")
+    @file = PATH % {@sname, @s_bid, @s_cid}
+    @link = SiteLink.text_url(sname, s_bid, s_cid)
 
     @title = extract_title
   end
@@ -167,7 +167,7 @@ class CV::RemoteText
 
     lines
   rescue err
-    Log.error { "[#{@sname}/#{@s_bid}/#{@schid}] remote text error: #{err}" }
+    Log.error { "[#{@sname}/#{@s_bid}/#{@s_cid}] remote text error: #{err}" }
     [] of String
   end
 
@@ -208,7 +208,7 @@ class CV::RemoteText
 
   private def hetushu_encrypt_string(meta_file : String)
     return File.read(meta_file) if File.exists?(meta_file)
-    json_link = @link.sub("#{@schid}.html", "r#{@schid}.json")
+    json_link = @link.sub("#{@s_cid}.html", "r#{@s_cid}.json")
 
     headers = HTTP::Headers{
       "Referer"          => @link,

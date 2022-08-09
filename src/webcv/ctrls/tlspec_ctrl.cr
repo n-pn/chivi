@@ -34,14 +34,14 @@ class CV::TlspecCtrl < CV::BaseCtrl
   def create
     return halt! 403, "Quyền hạn của bạn không đủ." if _viuser.privi < 0
 
-    ztext = params.fetch_str("ztext")
+    ztext = params.read_str("ztext")
 
     _ukey = UkeyUtil.gen_ukey(Time.utc)
     entry = Tlspec.new(_ukey, fresh: true)
 
     entry.ztext = ztext.strip
-    entry.dname = params.fetch_str("dname", "combine")
-    entry.d_dub = params.fetch_str("d_dub", "Tổng hợp")
+    entry.dname = params.read_str("dname", "combine")
+    entry.d_dub = params.read_str("d_dub", "Tổng hợp")
 
     entry.add_edit!(params, _viuser)
     entry.save!

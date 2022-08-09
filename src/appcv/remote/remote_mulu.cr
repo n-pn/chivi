@@ -2,7 +2,7 @@ require "./html_parser"
 require "../ch_info"
 
 class CV::RemoteMulu
-  record Chinfo, chidx : Int16, schid : String, title : String, chvol : String
+  record Chinfo, chidx : Int32, schid : String, title : String, chvol : String
 
   getter chaps : Array(Chinfo)
 
@@ -51,7 +51,7 @@ class CV::RemoteMulu
   def add_chap(node : Lexbor::Node?, chvol = "")
     return unless node && (href = node.attributes["href"]?)
 
-    chidx = @chaps.size.to_i16 &+ 1
+    chidx = @chaps.size &+ 1
     schid = extract_schid(href)
 
     title = node.inner_text

@@ -6,7 +6,7 @@ class CV::VpinitCtrl < CV::BaseCtrl
   def fixtag
     source = params["source"]
     target = params["target"]
-    limit = params.fetch_int("limit", min: 50, max: 200)
+    limit = params.read_int("limit", min: 50, max: 200)
 
     init_data = PostagInit.new("#{DIR}/_init/#{source}")
     conflicts = extract_conflicts(init_data, VpDict.load(target), limit)

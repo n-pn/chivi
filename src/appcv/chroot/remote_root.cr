@@ -5,68 +5,49 @@ require "../remote/remote_info"
 
 class CV::Chroot
   def reload_remote!(mode : Int8) : Nil
-    return unless mode > 0 || Time.unix(self.stime) + map_ttl(false) > Time.utc
+    return if mode < 1
 
-    self.reseed_remote!(ttl: map_ttl(force: mode > 0), force: mode > 1)
-
-    # childs = Chroot.query.filter_nvinfo(self.nvinfo_id)
-    #   .where("last_sname = ?", self.sname)
-
-    # childs.each do |other|
-    #   other.reseed_from_disk! if !other.seeded
-    #   other.mirror_other!(self, other.chap_count)
-    # end
+    ttl = map_ttl(force: mode > 0)
+    self.reseed_remote!(ttl: ttl, force: mode > 1)
   end
 
-  getter text_dir : String { "var/chtexts/#{self.sname}/#{self.s_bid}" }
-
   def reseed_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
-    parser = RemoteInfo.new(sname, s_bid, ttl: ttl, lbl: lbl)
+    parser = RemoteInfo.new(self.sname, self.s_bid, ttl: ttl, lbl: lbl)
+
     changed = parser.changed?(self.last_schid, self.utime)
+    return unless force || changed
 
-    return reload_frozen! unless force || changed
-
-    chinfos = parser.chap_infos
+    raw_infos = parser.chap_infos
+    return if raw_infos.empty?
 
     spawn do
-      Dir.mkdir_p(text_dir)
-
-      File.open(File.join(text_dir, "sauce.tab"), "w") do |io|
-        chinfos.each do |x|
-          infos = {x.chidx, x.schid, x.title, x.chvol}
-          io.puts (infos).join('\t')
+      File.open(self._repo.sauce_path, "w") do |io|
+        raw_infos.each do |x|
+          {x.chidx, x.schid, x.title, x.chvol}.join(io, '\t')
+          io << '\n'
         end
       end
     end
 
-    return if chinfos.empty?
+    sn_id = _repo.sn_id
 
-    # chmin = force || self.chap_count < 28 ? 0 : self.chap_count &- 28
-
-    output = chinfos.map do |entry|
-      Chinfo.new({
-        chroot: self,
-        chidx: entry.chidx, schid: entry.schid,
-        title: entry.title, chvol: entry.chvol,
-      })
+    infos = raw_infos.map do |input|
+      entry = ChInfo2.new(sn_id, self.s_bid, input.chidx, input.schid.to_i)
+      entry.title = input.title
+      entry.chvol = input.chvol
+      entry
     end
 
-    Chinfo.bulk_upsert(output)
-
-    # _repo.store!(chinfos, reset: force)
+    self._repo.bulk_upsert(infos)
     self.stime = FileUtil.mtime_int(parser.info_file)
 
-    if parser.update_str.empty?
-      mftime = changed ? self.stime : self.utime
-    elsif sname.in?("69shu", "biqu5200", "ptwxz", "uukanshu")
-      mftime = changed ? parser.update_int : self.utime
-    else
-      mftime = parser.update_int
-    end
+    mftime = parser.update_int
+    mftime = changed ? self.stime : self.utime if mftime == 0
 
     self.set_mftime(mftime)
-    self.set_status(parser.status_int.to_i)
-    self.set_latest(output.last, self, force: true)
+    self.set_status(parser.status_int.to_i) if force
+    self.set_latest(infos.last, force: true)
+
     self.save!
   rescue err
     puts err.inspect_with_backtrace
@@ -75,8 +56,7 @@ class CV::Chroot
   ############
 
   def remote?(force : Bool = true)
-    type = SnameMap.map_type(sname)
-    type == 4 || (force && type == 3)
+    _repo.stype == 4 || (force && _repo.stype == 3)
   end
 
   def fresh?(privi : Int32 = 4, force : Bool = false)
