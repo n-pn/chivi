@@ -20,18 +20,26 @@ class CV::ChSeed
     end
   end
 
-  class_getter sname_map : Hash(Int32, String) do
-    output = {} of Int32 => String
-    stats_map.each do |sname, (ns_id, _)|
-      output[ns_id] = sname
+  class_getter sname_map : Hash(Int32, Tuple(String, Int8)) do
+    output = {} of Int32 => {String, Int8}
+    stats_map.each do |sname, (ns_id, stype)|
+      output[ns_id] = {sname, stype}
     end
 
     output
   end
 
-  def self.get_sname(nv_id : Int32) : String
-    sname_map[nv_id] ||= begin
-      "@" + Viuser.load!(nv_id // 2).uname
+  def self.is_remote?(sn_id : Int32) : Bool
+    return false if sn_id % 2 == 0
+    sname_map[sn_id]?.try(&.[1].> 2) || false
+  end
+
+  def self.get_sname(sn_id : Int32) : String
+    info = sname_map[sn_id] ||= begin
+      uname = "@" + Viuser.load!(sn_id // 2).uname
+      {uname, 0_i8}
     end
+
+    info[0]
   end
 end

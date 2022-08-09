@@ -50,30 +50,19 @@ class CV::Chroot
     where("nvinfo_id = #{nvinfo_id}").where("shield < 3")
   end
 
-  getter seed_type : Int32 { SnameMap.map_type(sname) }
-
   getter privi_map : {Int8, Int8, Int8} do
-    case self.seed_type
-    when 0 then {-1_i8, 0_i8, 0_i8}
-    when 3 then {0_i8, 1_i8, 2_i8}
-    else        {0_i8, 1_i8, 1_i8}
+    case self._repo.stype
+    when -2 then {-1_i8, 0_i8, 0_i8}
+    when  3 then {0_i8, 1_i8, 2_i8}
+    else         {0_i8, 1_i8, 1_i8}
     end
   end
 
-  def min_privi(chidx : Int32, utime : Int64 = 0)
-    privi_map = self.privi_map
-    case
-    when chidx <= self.free_chap then privi_map[0]
-    when utime > 0               then privi_map[1]
-    else                              privi_map[2]
-    end
-  end
-
-  def free_chap
-    case chap_count
-    when .< 120 then 40_i16
-    when .> 360 then 120_i16
-    else             chap_count // 3
+  def free_chap : Int32
+    case self.chap_count
+    when .< 120 then 40
+    when .> 360 then 120
+    else             self.chap_count // 3
     end
   end
 

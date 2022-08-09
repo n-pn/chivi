@@ -3,14 +3,14 @@ require "colorize"
 require "option_parser"
 
 require "../src/mtlv1/mt_core"
-require "../src/bdata/ch_repo_2"
+require "../src/appcv/ch_repo"
 
 class Chapter
   getter lines = [] of String
 
   getter sizes = [] of Int32
   getter chars = 0
-  getter parts = 1_i16
+  getter parts = 1
 
   def add(line : String) : Nil
     return if line.blank?
@@ -60,7 +60,7 @@ class Splitter
 
   property uname = ""
   property chvol = ""
-  property chidx = 1_i16
+  property chidx = 1
 
   getter lines = [] of String
   getter infos = [] of Chapter

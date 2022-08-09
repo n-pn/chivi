@@ -17,7 +17,7 @@ module CV::HttpUtil
     UTF8.includes?(sname) ? "UTF-8" : "GBK"
   end
 
-  def cache(file : String, url : String, ttl = 10.years, lbl = "-/-", encoding = "UTF-8")
+  def cache(file : String, url : String, ttl = 10.years, lbl = "-", encoding = "UTF-8")
     return read_gzip(file) if File.info?(file).try(&.modification_time.> Time.utc - ttl)
     fetch(url, lbl, encoding).tap { |data| save_gzip(file, data) }
   rescue
@@ -32,7 +32,7 @@ module CV::HttpUtil
     File.open(file, "w") { |io| Compress::Gzip::Writer.open(io, &.print(data)) }
   end
 
-  def fetch(url : String, lbl = "-/-", encoding = "UTF-8") : String
+  def fetch(url : String, lbl : String = "-", encoding = "UTF-8") : String
     try = 1
     cmd = "curl -L -k -s -m 30 '#{url}'"
 

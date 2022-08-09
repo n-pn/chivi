@@ -56,6 +56,7 @@ class CV::ChRepo
 
   def upsert(entry : Chinfo)
     fields, values = entry.changes(keeps: KEEP_FIELDS)
+
     @repo.open do |db|
       @repo.upsert(db, "chinfos", fields, values, "(ch_no)", nil) do
         keep_fields = fields.reject(&.== "ch_no")
@@ -82,10 +83,6 @@ class CV::ChRepo
   def get_title(ch_no : Int32) : String?
     query = "select title from chinfos where ch_no = ? limit 1"
     @repo.open(&.query_one? query, ch_no, as: String)
-  end
-
-  def get_text(ch_no : Int32, pg_no : Int32) : String
-    raise "Chương tiết không tồn tại"
   end
 
   def match_ch_no(title : String, ch_no : Int32) : Int32

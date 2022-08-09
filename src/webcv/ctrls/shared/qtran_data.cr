@@ -71,6 +71,7 @@ class CV::QtranData
   def self.load_chap(chroot : Chroot, chinfo : Chinfo,
                      cpart = 0_i16, mode : Int8 = 0, uname = "")
     input = chinfo.text(cpart, mode: mode, uname: uname)
+    chroot._repo.upsert(chinfo) if chinfo.changed?
     lines = input.empty? ? [] of String : input.split('\n')
 
     p_len = chinfo.p_len

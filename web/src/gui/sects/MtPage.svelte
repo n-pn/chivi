@@ -128,24 +128,26 @@
     </div>
   </header>
 
-  {#each mtdata as input, index (index)}
-    <svelte:element
-      this={index > 0 || $$props.no_title ? 'p' : 'h1'}
-      id="L{index}"
-      class="cv-line"
-      class:debug={$config.render == 1}
-      class:focus={index == l_focus}
-      on:mouseenter={() => (l_hover = index)}>
-      {#if $config.showzh}
-        <Zhline ztext={zhtext[index]} plain={$config.render < 0} />
-      {/if}
-      <Cvline
-        {input}
-        focus={render_html($config.render, index, l_hover, l_focus)} />
-    </svelte:element>
-  {:else}
-    <slot name="notext" />
-  {/each}
+  <section>
+    {#each mtdata as input, index (index)}
+      <svelte:element
+        this={index > 0 || $$props.no_title ? 'p' : 'h1'}
+        id="L{index}"
+        class="cv-line"
+        class:debug={$config.render == 1}
+        class:focus={index == l_focus}
+        on:mouseenter={() => (l_hover = index)}>
+        {#if $config.showzh}
+          <Zhline ztext={zhtext[index]} plain={$config.render < 0} />
+        {/if}
+        <Cvline
+          {input}
+          focus={render_html($config.render, index, l_hover, l_focus)} />
+      </svelte:element>
+    {:else}
+      <slot name="notext" />
+    {/each}
+  </section>
 
   {#if $config.render >= 0}
     <Mtmenu

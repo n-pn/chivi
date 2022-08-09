@@ -1,7 +1,6 @@
 require "http/client"
 
 require "../../_util/site_link"
-require "../../_util/time_util"
 require "../../_util/text_util"
 require "../../_util/http_util"
 require "./html_parser"
@@ -20,7 +19,7 @@ class CV::RemoteText
   getter file : String
   getter link : String
 
-  def initialize(@sname, @s_bid, @s_cid, @ttl = 10.years, @lbl = "-/-")
+  def initialize(@sname, @s_bid, @s_cid, @ttl = 10.years, @lbl = "-")
     @file = PATH % {@sname, @s_bid, @s_cid}
     @link = SiteLink.text_url(sname, s_bid, s_cid)
 

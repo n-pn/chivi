@@ -91,7 +91,7 @@ class CV::Chinfo
 
     if cached = self.chtext.read(self.s_cid, cpart)
       text, utime = cached
-      self.heal_stats(cpart &+ 1, utime)
+      self.heal_stats(cpart &+ 1, utime) if self.utime < utime
     elsif mode < 1
       return ""
     end
@@ -124,7 +124,7 @@ class CV::Chinfo
 
   def pull_text(mode : Int8 = 1, uname = "")
     ttl = mode > 1 ? 1.minutes : 10.years
-    remote = RemoteText.new(self.sname, self.s_bid, self.s_cid, ttl: ttl)
+    remote = RemoteText.new(self.sname, self.s_bid, self.s_cid, ttl: ttl, lbl: uname)
 
     lines = remote.paras
     lines.unshift(remote.title) unless remote.title.empty?
