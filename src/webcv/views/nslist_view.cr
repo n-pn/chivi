@@ -1,5 +1,5 @@
 require "./_base_view"
-require "./nvseed_view"
+require "./chroot_view"
 
 struct CV::NslistView
   include BaseView

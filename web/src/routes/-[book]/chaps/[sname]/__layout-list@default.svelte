@@ -13,9 +13,6 @@
 
   function map_info({ sname, slink }) {
     switch (sname) {
-      case 'users':
-        return 'Chương tiết do người dùng Chivi đăng tải (phiên bản cũ).'
-
       case 'zxcs_me':
         return 'Nguồn text tải bằng tay từ trang zxcs.me (bản đẹp).'
 
@@ -55,8 +52,8 @@
   $: uname = '@' + $session.uname
   $: _self = nslist.users.find((x) => x.sname == uname) || make_seed(uname)
 
-  let show_users = false
-  let show_other = false
+  $: show_users = _curr.stype == 0 || _curr.stype == -1
+  $: show_other = _curr.stype > 0
 </script>
 
 <nav class="bread">
@@ -68,17 +65,6 @@
 </nav>
 
 <seed-list>
-  {#if _curr.sname != '=base' && _curr.sname != _self.sname}
-    <a
-      href={seed_url(nvinfo.bslug, _curr.sname, pgidx)}
-      class="seed-name umami--click---swap-seed"
-      class:_active={true}
-      data-tip={map_info(_curr)}>
-      <seed-label>{_curr.sname}</seed-label>
-      <seed-stats><strong>{_curr.chmax}</strong> chương</seed-stats>
-    </a>
-  {/if}
-
   <a
     href={seed_url(nvinfo.bslug, nslist._base.sname, pgidx)}
     class="seed-name umami--click---swap-seed"
@@ -90,6 +76,7 @@
 
   <button
     class="seed-name _btn"
+    class:_active={_curr.stype > 0}
     data-tip="Chương tiết cập nhật tự động từ các trang web truyện lậu"
     on:click={() => (show_other = !show_other)}>
     <seed-label>Tải ngoài</seed-label>
@@ -98,10 +85,11 @@
 
   <button
     class="seed-name _btn"
+    class:_active={_curr.stype == 0 || _curr.stype == -1}
     data-tip="Các danh sách chương của mỗi người dùng Chivi"
     on:click={() => (show_users = !show_users)}>
     <seed-label>
-      <span>Người dùng</span>
+      <span>Cá nhân</span>
     </seed-label>
 
     <seed-stats><strong>{nslist.users.length}</strong> người</seed-stats>
@@ -124,14 +112,13 @@
     {#each nslist.other as nvseed}
       <a
         href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
-        class="seed-name umami--click---swap-seed"
+        class="seed-name _sub umami--click---swap-seed"
         class:_active={nvseed.sname == _curr.sname}
         data-tip={map_info(nvseed)}>
         <seed-label>
           <span>{nvseed.sname}</span>
           <SIcon name={icon_types[nvseed.stype]} />
         </seed-label>
-
         <seed-stats><strong>{nvseed.chmax}</strong> chương</seed-stats>
       </a>
     {/each}
@@ -144,7 +131,7 @@
       class:_disable={$session.privi < 2}
       data-tip="Thêm nguồn truyện tải tự động">
       <SIcon name="folder-plus" />
-      <span class="label">Thêm nguồn tải ngoài</span>
+      <span class="label">Thêm nguồn</span>
     </a>
 
     <a
@@ -153,7 +140,7 @@
       class:_disable={$session.privi < 3}
       data-tip="Sửa/xoá các nguồn truyện ngoài">
       <SIcon name="tools" />
-      <span class="label">Quản lý nguồn ngoài</span>
+      <span class="label">Quản lý nguồn</span>
     </a>
   </div>
 {/if}
@@ -162,7 +149,7 @@
   <seed-list class="extra">
     <a
       href={seed_url(nvinfo.bslug, nslist._user.sname, pgidx)}
-      class="seed-name umami--click---swap-seed"
+      class="seed-name _sub umami--click---swap-seed"
       class:_active={nslist._user.sname == _curr.sname}
       data-tip="Danh sách chương tổng hợp từ các người dùng">
       <seed-label>Nhiều người</seed-label>
@@ -172,7 +159,7 @@
     {#each nslist.users as nvseed}
       <a
         href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
-        class="seed-name umami--click---swap-seed"
+        class="seed-name _sub umami--click---swap-seed"
         class:_active={nvseed.sname == _curr.sname}
         data-tip={map_info(nvseed)}>
         <seed-label>{nvseed.sname}</seed-label>
@@ -226,6 +213,10 @@
     &._active, &:hover, &:active {
       > seed-label { @include fgcolor(primary, 5); }
     }
+
+    &._sub {
+      padding: 0.25rem 0.375rem;
+    }
   }
 
   seed-label {
@@ -235,12 +226,17 @@
     line-height: 1rem;
     @include bps(font-size, rem(12px), $ts: rem(13px));
 
-    > :global(svg) {
-      width: 1rem;
-      height: 1rem;
+    ._sub > & {
+      line-height: 0.875rem;
+      @include bps(font-size, rem(11px), $ts: rem(12px));
     }
 
-    span {
+    > :global(svg) {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    > span {
       margin-right: 0.125em;
     }
   }
@@ -248,9 +244,15 @@
   seed-stats {
     display: block;
     text-align: center;
-    line-height: 100%;
+    line-height: 0.875rem;
     @include fgcolor(tert);
     @include bps(font-size, rem(11px), $ts: rem(12px));
+
+    ._sub > & {
+      line-height: 1rem;
+      line-height: 0.75rem;
+      @include bps(font-size, rem(10px), $ts: rem(11px));
+    }
   }
 
   .seed-task {

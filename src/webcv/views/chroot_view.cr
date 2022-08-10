@@ -14,7 +14,7 @@ struct CV::ChrootView
       jb.field "chmax", @data.chap_count
       jb.field "utime", @data.utime
 
-      jb.field "stype", SnameMap.map_type(@data.sname)
+      jb.field "stype", @data._repo.stype
       jb.field "slink", SiteLink.info_url(@data.sname, @data.s_bid)
 
       if @full
