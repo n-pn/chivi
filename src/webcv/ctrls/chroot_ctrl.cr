@@ -123,6 +123,7 @@ class CV::ChrootCtrl < CV::BaseCtrl
       last_schid: last_schid,
     })
 
+    chroot.clear_cache!
     serv_json({pgidx: (trunc_from - 1) // 128 + 1})
   end
 
@@ -138,6 +139,7 @@ class CV::ChrootCtrl < CV::BaseCtrl
       shield: _viuser.privi > 2 ? 4 : 3,
     })
 
+    chroot.clear_cache!
     serv_json({shield: chroot.shield})
   end
 end
