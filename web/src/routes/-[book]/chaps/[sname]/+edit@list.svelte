@@ -27,10 +27,12 @@
   export let nslist: CV.Nslist
   export let nvseed: CV.Chroot
 
-  let patch_form = {
+  $: seeds = [...nslist.other, ...nslist.users]
+
+  $: patch_form = {
     chmin: 1,
-    chmax: nslist._base.chmax,
-    o_sname: nslist._base.sname,
+    chmax: seeds[0]?.chmax || 0,
+    o_sname: seeds[0]?.sname || '',
     i_chmin: 1,
   }
 
@@ -63,8 +65,6 @@
     // invalidate(page_href)
     goto(pgidx > 1 ? `${page_href}?pg=${pgidx}` : page_href)
   }
-
-  $: seeds = [nslist._base, nslist._user, ...nslist.other, ...nslist.users]
 </script>
 
 <svelte:head>
@@ -85,53 +85,57 @@
           name="nvseed"
           id="nvseed"
           bind:value={patch_form.o_sname}>
-          {#each seeds as nvseed}
-            {#if nvseed.chmax > 0}
+          {#each seeds as mirror}
+            {#if mirror.chmax > 0 && mirror.sname != nvseed.sname}
               <option
-                value={nvseed.sname}
-                on:click={() => (patch_form.chmax = nvseed.chmax)}
-                >[{nvseed.sname}] ({nvseed.chmax} chương)</option>
+                value={mirror.sname}
+                on:click={() => (patch_form.chmax = mirror.chmax)}
+                >[{mirror.sname}] ({mirror.chmax} chương)</option>
             {/if}
           {/each}
         </select>
       </div>
 
-      <div class="form-field">
-        <label class="form-label" for="patch_chmin">Từ chương</label>
-        <input
-          type="number"
-          id="patch_chmin"
-          class="m-input"
-          bind:value={patch_form.chmin}
-          on:change={() => (patch_form.i_chmin = patch_form.chmin)} />
+      <div class="group">
+        <div class="form-field">
+          <label class="form-label" for="patch_chmin">Từ chương</label>
+          <input
+            type="number"
+            id="patch_chmin"
+            class="m-input"
+            bind:value={patch_form.chmin}
+            on:change={() => (patch_form.i_chmin = patch_form.chmin)} />
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="patch_chmax">Tới chương</label>
+          <input
+            type="number"
+            id="patch_chmax"
+            class="m-input"
+            bind:value={patch_form.chmax} />
+        </div>
       </div>
 
-      <div class="form-field">
-        <label class="form-label" for="patch_chmax">Tới chương</label>
-        <input
-          type="number"
-          id="patch_chmax"
-          class="m-input"
-          bind:value={patch_form.chmax} />
-      </div>
+      <div class="group">
+        <div class="form-field">
+          <label class="form-label" for="patch_i_chmin">Vị trí mới</label>
+          <input
+            type="number"
+            id="patch_i_chmin"
+            class="m-input"
+            bind:value={patch_form.i_chmin} />
+        </div>
 
-      <div class="form-field">
-        <label class="form-label" for="patch_i_chmin">Vị trí mới</label>
-        <input
-          type="number"
-          id="patch_i_chmin"
-          class="m-input"
-          bind:value={patch_form.i_chmin} />
-      </div>
-
-      <div class="form-field _button">
-        <button
-          type="button"
-          class="m-btn _primary _fill"
-          on:click={submit_patch}>
-          <SIcon name="copy" />
-          <span>Sao chép</span>
-        </button>
+        <div class="form-field _button">
+          <button
+            type="button"
+            class="m-btn _primary _fill"
+            on:click={submit_patch}>
+            <SIcon name="copy" />
+            <span>Sao chép</span>
+          </button>
+        </div>
       </div>
     </div>
   </details>
@@ -165,10 +169,32 @@
 </article>
 
 <style lang="scss">
+  select {
+    width: 12rem;
+    height: 2.25rem;
+  }
+
   .form-group {
     display: flex;
     gap: 0.75rem;
+
+    flex-direction: column;
+
+    @include bp-min(ts) {
+      flex-direction: row;
+      align-items: flex-end;
+    }
+  }
+
+  .group {
+    display: flex;
+    gap: 0.75rem;
+    // justify-content: space-around;
     align-items: flex-end;
+
+    .form-field {
+      margin-top: 0;
+    }
   }
 
   h2 {
@@ -176,15 +202,11 @@
   }
 
   .m-input {
-    height: 2rem;
+    height: 2.25rem;
     &[type='number'] {
-      width: 5rem;
+      width: 4.5rem;
       text-align: center;
     }
-  }
-
-  ._button {
-    margin-left: auto;
   }
 
   details + details {

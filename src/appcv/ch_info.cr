@@ -101,7 +101,7 @@ class CV::Chinfo
   end
 
   def all_text(mode : Int8 = 0, uname = "") : Array(String)
-    if cached = self.chtext.read_all(self.s_cid)
+    if cached = self.chtext.read_all(self.s_cid, self.p_len)
       parts, utime, c_len = cached
       self.heal_stats(parts.size, utime, c_len)
     elsif mode < 1

@@ -23,8 +23,7 @@
       left: [
         [btitle_vi, 'book', { href: `/-${bslug}`, kind: 'title', show: 'tm' }],
         [sname, 'list', { href: chap_href, show: 'ts', kind: 'zseed' }],
-        [`Ch. ${chidx}`, '', { href: `${chap_href}/${chidx}` }],
-        [`Sửa`, 'edit', { href: '+edit', show: 'pl' }],
+        [`#${chidx}`, 'edit', { href: `${chap_href}/${chidx}` }],
       ],
     }
   }
@@ -83,7 +82,7 @@
 </script>
 
 <svelte:head>
-  <title>Sửa text gốc - {nvinfo.btitle_vi} - Chivi</title>
+  <title>Sửa text gốc chương #{chidx} - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
 
 <nav class="bread">
@@ -96,10 +95,10 @@
 </nav>
 
 <section class="article">
-  <h2>Sửa chương</h2>
+  <h2>Sửa text chương #{chidx}</h2>
 
   <form action={action_url} method="POST" on:submit|preventDefault={submit}>
-    <div class="form-group">
+    <div class="form-group _fluid">
       <span class="form-field">
         <label class="label" for="chvol">Tên tập truyện</label>
         <input
@@ -117,7 +116,7 @@
     </div>
 
     <div class="form-field">
-      <label class="label" for="input">Nhập nội dung</label>
+      <label class="label" for="input">Nội dung chương</label>
       <textarea class="m-input" name="input" lang="zh" bind:value={input} />
     </div>
 
@@ -158,7 +157,7 @@
     display: block;
     width: 100%;
     min-height: 10rem;
-    height: calc(100vh - 20rem);
+    height: calc(100vh - 25rem);
     padding: 0.75rem;
     font-size: rem(18px);
     margin-bottom: 0.5rem;
@@ -197,15 +196,27 @@
   }
 
   .label {
+    display: block;
     // text-transform: uppercase;
     font-weight: 500;
     @include ftsize(sm);
     @include fgcolor(tert);
+    // margin-bottom: 0.25rem;
   }
 
   .form-group {
     display: flex;
     gap: 0.75rem;
+
+    flex-direction: column;
+
+    > .form-field {
+      width: 100%;
+    }
+
+    @include bp-min(ts) {
+      flex-direction: row;
+    }
 
     > .form-field {
       display: flex;
@@ -213,12 +224,14 @@
       position: relative;
       align-items: center;
 
-      &:first-child {
-        width: 40%;
-      }
+      @include bp-min(ts) {
+        &:first-child {
+          width: 40%;
+        }
 
-      &:last-child {
-        width: 60%;
+        &:last-child {
+          width: 60%;
+        }
       }
     }
 
@@ -229,7 +242,7 @@
     }
 
     input {
-      flex: 1;
+      width: 100%;
     }
   }
 

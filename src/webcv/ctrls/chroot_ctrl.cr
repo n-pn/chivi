@@ -88,6 +88,17 @@ class CV::ChrootCtrl < CV::BaseCtrl
     end
   end
 
+  def preview_patch
+    chroot = load_guarded_chroot(min_privi: 1)
+    target = Chroot.load!(chroot.nvinfo, params["o_sname"])
+
+    chmin = params.read_int("chmin", min: 1)
+    chmax = params.read_int("chmax", min: chmin, max: target.chap_count)
+
+    new_chmin = params.read_int("i_chmin", min: 1)
+    new_chmax = chmax + new_chmin - chmin
+  end
+
   def patch
     chroot = load_guarded_chroot(min_privi: 1)
     target = Chroot.load!(chroot.nvinfo, params["o_sname"])

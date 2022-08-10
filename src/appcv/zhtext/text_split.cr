@@ -320,7 +320,7 @@ module CV::Zhtext
       @chapters.each do |chap|
         data = {
           chap.chidx, chap.schid,
-          chap.title, chap.chvol, chap.chidx,
+          chap.title, chap.chvol,
           mtime, chap.c_len, chap.p_len, uname,
         }
         info_file << '\n'

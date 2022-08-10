@@ -161,6 +161,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     content = chinfo.all_text(mode: 0, uname: _viuser.uname)
 
     chinfo.c_len &+= edit.size &- orig.size if line_no > 0
+    chinfo.p_len = content.size
 
     content.each_with_index do |part_text, idx|
       next unless idx == part_no || line_no == 0
