@@ -40,7 +40,6 @@ class CV::Chroot
   column chap_count : Int32 = 0   # total chapters
 
   column stage : Int16 = 0
-  # column seeded : Bool = false
 
   timestamps
 

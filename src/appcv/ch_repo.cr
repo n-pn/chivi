@@ -15,7 +15,7 @@ class CV::ChRepo
   getter sauce_path : String { File.join(@root_dir, "sauce.tab") }
   getter patch_path : String { File.join(@root_dir, "patch.tab") }
 
-  def initialize(@sname : String, @s_bid)
+  def initialize(sname : String, @s_bid : Int32)
     @root_dir = "#{DIR}/#{sname}/#{s_bid}"
     @sn_id, @stype = ChSeed.map_sname(sname)
 
@@ -107,23 +107,6 @@ class CV::ChRepo
     @repo.open(&.query_one? query, ch_no, as: String) || ""
   end
 
-  # def update!(ttl = 1.hours)
-  #   chaps = fetch_remote(ttl)
-  #   return if chaps.empty?
-
-  #   @db.transaction do |tx|
-  #     cnn = tx.connection
-  #     chaps.each do |input|
-  #       self.upsert(get_changes(input), cnn, "ch_no")
-  #     end
-  #   end
-  # end
-
-  # private def fetch_remote(ttl = 10.years)
-  #   chaps = RemoteInfo.new(@sname, @s_bid, ttl: ttl).chap_infos
-  #   (chaps.size > 0 || !@remote || ttl == 1.hours) ? chaps : fetch_remote(1.hours)
-  # end
-
   private def init_db! : Nil
     Dir.mkdir_p(@root_dir)
 
@@ -160,7 +143,7 @@ class CV::ChRepo
     infos = hash.values.sort_by!(&.ch_no.not_nil!)
     bulk_upsert(infos) unless infos.empty?
   rescue err
-    Log.error(exception: err) { "error seeding [#{@sname}/#{@s_bid}]".colorize.yellow }
+    Log.error(exception: err) { "error seeding [#{@sn_id}/#{@s_bid}]".colorize.yellow }
   end
 
   def sync_db!

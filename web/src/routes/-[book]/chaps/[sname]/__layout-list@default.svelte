@@ -84,7 +84,7 @@
     class="seed-name umami--click---swap-seed"
     class:_active={nslist._base.sname == _curr.sname}
     data-tip="Danh sách chương trộn tổng hợp miễn phí">
-    <seed-label>Mặc định</seed-label>
+    <seed-label>Tổng hợp</seed-label>
     <seed-stats><strong>{nslist._base.chmax}</strong> chương</seed-stats>
   </a>
 
@@ -165,7 +165,7 @@
       class="seed-name umami--click---swap-seed"
       class:_active={nslist._user.sname == _curr.sname}
       data-tip="Danh sách chương tổng hợp từ các người dùng">
-      <seed-label>Trộn chung</seed-label>
+      <seed-label>Nhiều người</seed-label>
       <seed-stats><strong>{_self.chmax}</strong> chương</seed-stats>
     </a>
 

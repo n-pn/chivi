@@ -68,13 +68,24 @@ class CV::Chroot
     others = Chroot.query.filter_nvinfo(self.nvinfo_id).to_a
     others.select!(&.sname.starts_with?('@')).sort_by!(&.utime.-)
 
-    checks = Set(Int32).new
+    utimes = {} of Int32 => Int64
 
-    others.first(5).each do |other|
-      infos = other._repo.all(0, other.chap_count)
+    others.each do |other|
+      input = other._repo.all(0, other.chap_count)
 
-      infos.reject! { |x| checks.includes?(x.ch_no!) }
-      checks.concat(infos.map(&.ch_no!))
+      infos = input.compact_map do |entry|
+        next if entry.sn_id != other._repo.sn_id # skip mirror source
+
+        ch_no = entry.ch_no!
+
+        if old_utime = utimes[ch_no]?
+          next if old_utime >= entry.utime
+        else
+          utimes[ch_no] = entry.utime
+        end
+
+        entry.dup.tap(&.mark_as_changed)
+      end
 
       next unless last = infos.last?
       self._repo.bulk_upsert(infos)

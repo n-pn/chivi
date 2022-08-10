@@ -32,7 +32,7 @@
 
     <ul>
       <li>
-        Với các nguồn <x-seed>Mặc định</x-seed> và <x-seed>Trộn chung</x-seed>,
+        Với các nguồn <x-seed>Tổng hợp</x-seed> và <x-seed>Nhiều người</x-seed>,
         bạn cần thiết đăng nhập để xem nội dung chương.
       </li>
       <li>

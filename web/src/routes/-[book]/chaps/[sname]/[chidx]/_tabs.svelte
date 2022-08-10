@@ -25,7 +25,7 @@
 <nav class="nslist">
   {#if nvseed.sname != '=base' && nvseed.sname != self_name}
     <a
-      class="nvseed umami--click-chtext-switch"
+      class="nvseed umami--click--chtext-switch"
       class:_active={nvseed.sname == chmeta.sname}
       class:_hidden={nvseed.chmax < chinfo.chidx}
       href={chap_href(nvseed.sname)}
@@ -35,11 +35,11 @@
   {/if}
 
   <a
-    class="nvseed umami--click-chtext-switch"
+    class="nvseed umami--click--chtext-switch"
     class:_active={nslist._base.sname == chmeta.sname}
     class:_hidden={nslist._base.chmax < chinfo.chidx}
     href={chap_href(nslist._base.sname)}>
-    <span class="nvseed-name">Mặc định</span>
+    <span class="nvseed-name">Tổng hợp</span>
   </a>
 
   {#if misc_seeds.length > 0}
@@ -64,7 +64,7 @@
 
   {#if self_seed}
     <a
-      class="nvseed umami--click-chtext-switch"
+      class="nvseed umami--click--chtext-switch"
       class:_active={self_seed.sname == chmeta.sname}
       href={chap_href(self_seed.sname)}
       rel="nofollow">
@@ -77,7 +77,7 @@
   <nav class="nslist">
     {#each misc_seeds as nvseed}
       <a
-        class="nvseed umami--click-chtext-switch"
+        class="nvseed umami--click--chtext-switch"
         class:_active={nvseed.sname == chmeta.sname}
         href={chap_href(nvseed.sname)}
         rel="nofollow">
@@ -91,7 +91,7 @@
   <nav class="nslist">
     {#each user_seeds as nvseed}
       <a
-        class="nvseed umami--click-chtext-switch"
+        class="nvseed umami--click--chtext-switch"
         class:_active={nvseed.sname == chmeta.sname}
         href={chap_href(nvseed.sname)}
         rel="nofollow">

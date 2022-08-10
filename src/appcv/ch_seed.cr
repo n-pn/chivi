@@ -36,7 +36,8 @@ class CV::ChSeed
 
   def self.get_sname(sn_id : Int32) : String
     info = sname_map[sn_id] ||= begin
-      uname = "@" + Viuser.load!(sn_id // 2).uname
+      user_id = (sn_id &- 20) // 2
+      uname = "@" + Viuser.load!(user_id).uname
       {uname, 0_i8}
     end
 

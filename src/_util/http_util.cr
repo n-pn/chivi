@@ -42,7 +42,7 @@ module CV::HttpUtil
     end
 
     loop do
-      Log.info { "<#{lbl}> [GET: #{url.colorize.magenta} (try: #{try})]" }
+      Log.debug { "<#{lbl}> [GET: #{url.colorize.magenta} (try: #{try})]" }
       html = `#{cmd}`
       return html if $?.success?
     ensure
