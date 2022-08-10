@@ -101,7 +101,9 @@ class CV::Chroot
   #####
 
   def reload_self!(mode : Int8 = 1)
-    self.reload_mirror!(mode: mode) if mode > 0
+    return if mode < 1
+    self._repo.sync_db!
+    self.reload_mirror!(mode: mode)
   end
 
   ###

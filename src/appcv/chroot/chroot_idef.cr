@@ -30,15 +30,14 @@ class CV::Chroot
   getter _repo : ChRepo do
     repo = ChRepo.new(self.sname, self.s_bid)
 
-    if self.stage == 1 && repo.stype > 2
-      repo.sync_db! if repo.stype.in?(0, 3, 4)
-      self.stage = 2_i16
-    elsif self.stage < 1 && repo.stype > 0
+    if self.stage < 2 && repo.stype >= 0
+      repo.sync_db! unless repo.stype.in?(1, 2) # do not try to sync for frozen seed
       repo.get(self.chap_count).try { |x| self.set_latest(x) }
-      self.stage = 3_i16
+
+      self.stage = (repo.stype > 2 && self.stage == 1) ? 2_i16 : 3_i16
+      self.save! if self.changed?
     end
 
-    self.save! if self.changed?
     repo
   end
 

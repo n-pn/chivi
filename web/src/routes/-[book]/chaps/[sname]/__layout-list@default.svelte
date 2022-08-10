@@ -52,8 +52,18 @@
   $: uname = '@' + $session.uname
   $: _self = nslist.users.find((x) => x.sname == uname) || make_seed(uname)
 
-  $: show_users = _curr.stype == 0 || _curr.stype == -1
-  $: show_other = _curr.stype > 0
+  $: show_subtype = init_show_subtype(_curr)
+
+  function init_show_subtype(curr: CV.Chroot) {
+    if (curr.stype < -1 || curr.sname == uname) return 0
+    return curr.stype > 0 ? 1 : 2
+  }
+
+  function change_subtype(subtype: number) {
+    if (show_subtype == subtype) show_subtype = 0
+    else show_subtype = subtype
+    console.log({ subtype, show_subtype })
+  }
 </script>
 
 <nav class="bread">
@@ -76,18 +86,18 @@
 
   <button
     class="seed-name _btn"
-    class:_active={_curr.stype > 0}
+    class:_active={show_subtype == 1}
     data-tip="Chương tiết cập nhật tự động từ các trang web truyện lậu"
-    on:click={() => (show_other = !show_other)}>
+    on:click={() => change_subtype(1)}>
     <seed-label>Tải ngoài</seed-label>
     <seed-stats><strong>{nslist.other.length}</strong> nguồn</seed-stats>
   </button>
 
   <button
     class="seed-name _btn"
-    class:_active={_curr.stype == 0 || _curr.stype == -1}
+    class:_active={show_subtype == 2}
     data-tip="Các danh sách chương của mỗi người dùng Chivi"
-    on:click={() => (show_users = !show_users)}>
+    on:click={() => change_subtype(2)}>
     <seed-label>
       <span>Cá nhân</span>
     </seed-label>
@@ -107,7 +117,7 @@
   {/if}
 </seed-list>
 
-{#if show_other}
+{#if show_subtype == 1}
   <seed-list class="extra">
     {#each nslist.other as nvseed}
       <a
@@ -143,9 +153,7 @@
       <span class="label">Quản lý nguồn</span>
     </a>
   </div>
-{/if}
-
-{#if show_users}
+{:else if show_subtype == 2}
   <seed-list class="extra">
     <a
       href={seed_url(nvinfo.bslug, nslist._user.sname, pgidx)}
