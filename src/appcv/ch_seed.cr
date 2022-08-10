@@ -15,6 +15,7 @@ class CV::ChSeed
 
   def self.map_sname(sname : String) : {Int32, Int8}
     stats_map[sname] ||= begin
+      raise "Invalid sname [#{sname}]" unless sname.starts_with?('@')
       user_id = Viuser.load!(sname[1..]).id
       {user_id &* 2 &+ 20, 0_i8}
     end

@@ -24,6 +24,7 @@ module CV::SnameMap
 
     "uuks",
     "ptwxz",
+    "bxwxio",
     "133txt",
     "yannuozw",
     "biqu5200",
@@ -42,7 +43,7 @@ module CV::SnameMap
     "uukanshu", "ptwxz", "biqugse",
     "yannuozw", "uuks", "bqxs520",
     "biqu5200", "133txt", "b5200",
-    "kanshu8", "5200",
+    "kanshu8", "5200", "bxwxio",
   }
 
   def sn_id(sname : String) : Int32
