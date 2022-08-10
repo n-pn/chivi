@@ -19,11 +19,11 @@
       <slot name="content" />
     </div>
   </menu-body>
-</menu-wrap>
 
-{#if active}
-  <div class="hidden" on:click={() => (active = false)} />
-{/if}
+  {#if active}
+    <div class="hidden" on:click={() => (active = false)} />
+  {/if}
+</menu-wrap>
 
 <style lang="scss">
   .hidden {
@@ -32,7 +32,7 @@
     left: 0;
     bottom: 0;
     right: 0;
-    z-index: 998;
+    z-index: 99998;
   }
 
   menu-wrap {
@@ -43,7 +43,7 @@
   menu-body {
     display: none;
     position: absolute;
-    z-index: 999;
+    z-index: 99999;
     width: var(--menu-width, 11rem);
 
     &.top {

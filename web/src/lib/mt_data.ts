@@ -81,13 +81,12 @@ export default class MtData {
     return this._text
   }
 
-  render_cv(data = this.data, text = true) {
+  render_cv(data = this.data, text = true, lvl = 0) {
     let res = ''
-    let lvl = 0
 
     for (const [val, dic, idx, len] of data) {
       if (Array.isArray(val)) {
-        const inner = this.render_cv(val, text)
+        const inner = this.render_cv(val, text, lvl)
 
         if (text) res += inner
         else res += `<v-g data-d=${dic}>${inner}</v-g>`
@@ -99,14 +98,6 @@ export default class MtData {
         continue
       }
 
-      const fval = val.charAt(0)
-      if (fval == '“' || fval == '‘') {
-        lvl += 1
-        res += '<em>'
-      } else if (fval == '⟨') {
-        res += '<cite>'
-      }
-
       const esc = escape_html(val)
 
       if (text) res += esc
@@ -115,25 +106,30 @@ export default class MtData {
         const u = +idx + +len
         res += `<v-n data-d=${dic} data-l=${l} data-u=${u}>${esc}</v-n>`
       }
+    }
 
-      const lval = val.charAt(val.length - 1)
+    const first_val = data[0][0]
+
+    if (typeof first_val == 'string') {
+      const fval = first_val[0]
+
+      if (fval == '“' || fval == '‘') {
+        return '<em>' + res + '</em>'
+      } else if (fval == '⟨') {
+        return '<cite>' + res + '</cite>'
+      }
+    }
+
+    const last_val = data[data.length - 1][0]
+    if (typeof last_val == 'string') {
+      const lval = last_val[last_val.length - 1]
 
       if (lval == '”' || lval == '’') {
         lvl -= 1
         res += '</em>'
-      } else if (fval == '⟩') {
+      } else if (lval == '⟩') {
         res += '</cite>'
       }
-    }
-
-    while (lvl < 0) {
-      res = '<em>' + res
-      lvl += 1
-    }
-
-    while (lvl > 0) {
-      res = res + '</em>'
-      lvl -= 1
     }
 
     return res
