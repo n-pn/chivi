@@ -3,27 +3,43 @@
   export let dir = 'center'
 
   export let lbl = ''
+  export let active = false
+
+  const trigger = () => {
+    active = !active
+  }
 </script>
 
-<menu-wrap class={$$props.class || ''}>
-  <slot name="trigger" />
+<menu-wrap class={$$props.class || ''} class:_active={active}>
+  <slot name="trigger" {trigger} />
 
   <menu-body class="{loc} {dir}">
     <div class="content">
       {#if lbl}<header class="header">{lbl}</header>{/if}
-
       <slot name="content" />
     </div>
   </menu-body>
 </menu-wrap>
 
+{#if active}
+  <div class="hidden" on:click={() => (active = false)} />
+{/if}
+
 <style lang="scss">
+  .hidden {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 998;
+  }
+
   menu-wrap {
     display: block;
     position: relative;
   }
 
-  // prettier-ignore
   menu-body {
     display: none;
     position: absolute;
@@ -32,20 +48,27 @@
 
     &.top {
       bottom: 100%;
+      // prettier-ignore
       .content { margin-bottom: 0.5rem; }
     }
 
     &.bottom {
       top: 100%;
+      // prettier-ignore
       .content { margin-top: 0.5rem; }
     }
 
+    // prettier-ignore
     &.left { left: 0; }
+    // prettier-ignore
     &.right { right: 0; }
+    // prettier-ignore
     &.center { left: 50%; transform: translateX(-50%);}
 
-    // prettier-ignore
-    menu-wrap:hover > &, menu-wrap._active > & { display: block; }
+    menu-wrap:hover > &,
+    menu-wrap._active > & {
+      display: block;
+    }
   }
 
   .content {

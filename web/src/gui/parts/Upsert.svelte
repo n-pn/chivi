@@ -102,8 +102,8 @@
   class="upsert"
   _size="lg">
   <upsert-head class="head" on:click={refocus}>
-    <Gmenu dir="left" loc="bottom">
-      <button class="m-btn _text" slot="trigger">
+    <Gmenu dir="left" loc="bottom" let:trigger>
+      <button class="m-btn _text" slot="trigger" on:click={trigger}>
         <SIcon name="menu-2" />
       </button>
       <svelte:fragment slot="content">

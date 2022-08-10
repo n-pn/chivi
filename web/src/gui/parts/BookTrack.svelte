@@ -28,12 +28,16 @@
     if (res.error) alert(res.error)
     else $ubmemo = res
   }
+
+  $: color = status_colors[book_status]
+  $: icon = status_icons[book_status]
+  $: name = status_names[book_status]
 </script>
 
-<Gmenu class="navi-item" loc="bottom">
-  <button class="m-btn _fill _{status_colors[book_status]}" slot="trigger">
-    <SIcon name={status_icons[book_status]} />
-    <span>{status_names[book_status]}</span>
+<Gmenu class="navi-item" loc="bottom" let:trigger>
+  <button class="m-btn _fill _{color}" slot="trigger" on:click={trigger}>
+    <SIcon name={icon} />
+    <span>{name}</span>
   </button>
 
   <svelte:fragment slot="content">

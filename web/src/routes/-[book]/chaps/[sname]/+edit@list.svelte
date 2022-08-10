@@ -19,7 +19,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
-  import { goto, invalidate } from '$app/navigation'
+  import { goto } from '$app/navigation'
 
   import { SIcon } from '$gui'
 
@@ -35,6 +35,8 @@
     o_sname: seeds[0]?.sname || '',
     i_chmin: 1,
   }
+
+  let prune = ''
 
   async function submit_patch() {
     const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}/patch`
@@ -52,6 +54,14 @@
 
     if (res.error) return alert(res.error)
     else clean_jump(res.pgidx)
+  }
+
+  async function prune_source() {
+    const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}`
+    const res = await $page.stuff.api.call(url, 'DELETE')
+
+    if (res.error) return alert(res.error)
+    else goto(`/-${nvinfo.bslug}/chaps/=base`)
   }
 
   function clean_jump(pgidx: number) {
@@ -162,6 +172,28 @@
           on:click={trunc_source}>
           <SIcon name="cut" />
           <span>Xoá chương</span>
+        </button>
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>Xoá danh sách</summary>
+    <div class="form-group">
+      <div class="form-field">
+        <label class="form-label" for="prune"
+          >Gõ vào <em>{nvseed.sname}</em> để đảm bảo</label>
+        <input type="text" id="prune" class="m-input" bind:value={prune} />
+      </div>
+
+      <div class="form-field _button">
+        <button
+          type="button"
+          class="m-btn _harmful _fill"
+          on:click={prune_source}
+          disabled={prune != nvseed.sname}>
+          <SIcon name="trash" />
+          <span>Xoá danh sách</span>
         </button>
       </div>
     </div>

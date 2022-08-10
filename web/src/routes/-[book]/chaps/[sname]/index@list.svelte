@@ -26,6 +26,7 @@
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import { rel_time } from '$utils/time_utils'
   import { invalidate } from '$app/navigation'
+  import Gmenu from '$gui/molds/Gmenu.svelte'
 
   export let nvinfo: CV.Nvinfo
 
@@ -77,16 +78,7 @@
     </info-left>
 
     <info-right>
-      <button
-        class="m-btn _primary umami--click--chaps-force-update"
-        disabled={$session.privi < 0}
-        data-tip="Yêu cầu quyền hạn: Đăng nhập"
-        on:click={reload_source}>
-        <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
-        <span class="-hide">Đổi mới</span>
-      </button>
-
-      {#if internal_seed(nvseed.sname)}
+      {#if nvseed.stype == 0 && can_edit(nvseed.sname)}
         <a
           class="m-btn _primary _fill"
           class:_disable={$session.privi < 1}
@@ -97,24 +89,51 @@
           <span class="-hide">Thêm chương</span>
         </a>
       {:else}
-        <a
-          class="m-btn"
-          href={nvseed.slink}
-          target="_blank"
-          rel="external noopener noreferer">
-          <SIcon name="external-link" />
-          <span class="-hide">Liên kết ngoài</span>
-        </a>
+        <button
+          class="m-btn _primary umami--click--chaps-force-update"
+          disabled={$session.privi < 0}
+          data-tip="Yêu cầu quyền hạn: Đăng nhập"
+          on:click={reload_source}>
+          <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
+          <span class="-hide">Cập nhật</span>
+        </button>
       {/if}
 
-      {#if can_edit(nvseed.sname)}
-        <a
-          class="m-btn"
-          class:_disable={$session.privi < 1}
-          href="/-{nvinfo.bslug}/chaps/{nvseed.sname}/+edit">
-          <SIcon name="settings" />
-        </a>
-      {/if}
+      <Gmenu dir="right" let:trigger>
+        <button class="m-btn" slot="trigger" on:click={trigger}>
+          <SIcon name="menu-2" />
+          <span class="-hide">Nâng cao</span>
+        </button>
+
+        <svelte:fragment slot="content">
+          {#if nvseed.stype == 0 && can_edit(nvseed.sname)}
+            <button
+              class="gmenu-item umami--click--chaps-force-update"
+              disabled={$session.privi < 0}
+              on:click={reload_source}>
+              <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
+              <span class="-hide">Đổi mới</span>
+            </button>
+          {:else}
+            <a
+              class="gmenu-item"
+              href={nvseed.slink}
+              target="_blank"
+              rel="external noopener noreferer">
+              <SIcon name="external-link" />
+              <span>Liên kết</span>
+            </a>
+          {/if}
+
+          <a
+            class="gmenu-item"
+            class:_disable={$session.privi < 1}
+            href="/-{nvinfo.bslug}/chaps/{nvseed.sname}/+edit">
+            <SIcon name="settings" />
+            <span>Cài đặt</span>
+          </a>
+        </svelte:fragment>
+      </Gmenu>
     </info-right>
   </page-info>
 
