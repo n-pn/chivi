@@ -60,6 +60,10 @@ Amber::Server.configure do
     get "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :rawtxt
     # put "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :update
     patch "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :change
+
+    get "/trans/:nv_id/:sname/:chidx/:part_no/:line_no", CV::ChtranCtrl, :list
+    post "/trans/:nv_id/:sname/:chidx", CV::ChtranCtrl, :create
+
     # # yousuu
 
     get "/yscrits", CV::YscritCtrl, :index

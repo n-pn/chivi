@@ -1,75 +1,19 @@
 module CV::TlRule
-  # ameba:disable Metrics/CyclomaticComplexity
-  def fold_compare_vyou!(vyou : MtNode, succ = vyou.succ?, mode = 0)
-    return vyou unless noun = scan_noun!(succ, mode: mode)
+  def fold_vyou!(vyou : MtNode, succ : MtNode)
+    not_meiyou = vyou.key != "没有"
 
-    case succ = noun.succ?
-    when .nil?     then return vyou
-    when .adv_bu4? then return vyou
-    when .ude1?
-      return fold_vyou_ude1(vyou, succ, noun)
-    when .adverb?
-      if succ.key == "这么" || succ.key == "那么"
-        adverb, succ = succ, succ.succ?
-        return vyou if succ.try(&.nominal?)
-      end
-    else
-      if vyou.key == "有"
-        if noun.key == "些" || noun.key == "点"
-          node = fold!(vyou, noun, PosTag::Adverb, dic: 4)
-          return fold_adverbs!(node)
-        end
-
-        return fold!(vyou, noun, PosTag::VerbObject, dic: 6)
-      end
+    if not_meiyou && succ.key_in?("些", "点")
+      node = fold!(vyou, succ, PosTag::Adverb, dic: 4)
+      return fold_adverbs!(node)
     end
 
-    unless (tail = scan_adjt!(succ)) && (tail.adjective? || adverb && tail.verb_object?)
-      return fold!(vyou, noun, PosTag::VerbObject, dic: 7)
-    end
+    return vyou unless (noun = scan_noun!(succ)) && (tail = noun.succ?)
+    return fold_vyou_ude1!(vyou, ude1: tail, noun: noun) if tail.ude1?
 
-    if tail.starts_with?("不")
-      return fold!(vyou, tail, PosTag::Unkn, 1)
-    end
-
-    # output = MtList.new(vyou)
-
-    # output = MtTerm.new("", "", PosTag::Unkn, dic: 1, idx: vyou.idx)
-    # output.fix_prev!(vyou.prev?)
-    # output.fix_succ!(tail.succ?)
-
-    noun.fix_succ!(nil)
-    if adverb
-      noun.fix_prev!(adverb.prev?)
-      noun.fix_succ!(adverb)
-    end
-
-    case vyou.key
-    when "有"
-      output = MtList.new(vyou, tail, PosTag::Unkn, dic: 1, idx: vyou.idx)
-    when "没有"
-      adv_bu = MtTerm.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
-      vyou = MtTerm.new("有", "bằng", PosTag::VYou, 1, vyou.idx + 1)
-
-      tail.fix_succ!(vyou)
-      vyou.fix_succ!(noun)
-
-      output = MtList.new(adv_bu, noun, dic: 1, idx: adv_bu.idx)
-    else
-      return vyou
-    end
-
-    return output unless (succ = output.succ?) && (succ.ude1? || succ.ude3?)
-    return output unless (tail = succ.succ?) && tail.key == "多"
-
-    noun.fix_succ!(succ.set!(""))
-    output.fix_succ!(tail.succ?)
-    tail.fix_succ!(nil)
-
-    output
+    fold_compare_vyou!(vyou, noun, tail)
   end
 
-  def fold_vyou_ude1(vyou : MtNode, ude1 : MtNode, noun : MtNode)
+  def fold_vyou_ude1!(vyou : MtNode, ude1 : MtNode, noun : MtNode)
     unless tail = scan_noun!(ude1.succ?)
       return fold!(vyou, noun, PosTag::VerbObject, dic: 6)
     end
@@ -83,5 +27,61 @@ module CV::TlRule
       noun = fold!(defn, tail, tail.tag, dic: 4, flip: true)
       fold!(vyou, noun, PosTag::VerbObject, dic: 6)
     end
+  end
+
+  # ameba:disable Metrics/CyclomaticComplexity
+  def fold_compare_vyou!(vyou : MtNode, noun : MtNode, tail : MtNode)
+    not_meiyou = vyou.key != "没有"
+    adverb = nil
+
+    case tail
+    when .adv_bu4? then return vyou
+    when .adverbial?
+      if tail.key_in?("这么", "那么")
+        adverb = tail
+      elsif not_meiyou
+        return vyou
+      end
+
+      tail = fold_adverbs!(tail)
+    when .adjective?
+      tail = fold_adjts!(tail)
+    when .verbal?
+      tail = fold_verbs!(tail)
+    end
+
+    unless tail.adjective? || tail.verb_object?
+      return fold!(vyou, noun, PosTag::VerbObject, dic: 7)
+    end
+
+    adverb.val = "" if adverb
+    noun.fix_succ!(tail.succ?)
+
+    if not_meiyou
+      vyou.val = vyou.val.sub("có", "như")
+
+      head = tail
+      head.fix_prev!(vyou.prev?)
+      head.fix_succ!(vyou)
+    else
+      head = MtTerm.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
+      head.fix_prev!(vyou.prev?)
+      head.fix_succ!(tail)
+
+      temp = MtTerm.new("有", "như", PosTag::VYou, 1, vyou.idx + 1)
+      temp.fix_prev!(tail)
+      temp.fix_succ!(noun)
+    end
+
+    output = MtList.new(head, noun, dic: 1, idx: head.idx)
+
+    return output unless (succ = output.succ?) && (succ.ude1? || succ.ude3?)
+    return output unless (tail = succ.succ?) && tail.key == "多"
+
+    noun.fix_succ!(succ.set!(""))
+    output.fix_succ!(tail.succ?)
+    tail.fix_succ!(nil)
+
+    output
   end
 end

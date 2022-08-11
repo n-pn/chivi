@@ -111,7 +111,7 @@ module MtlV2::MTL
 
   module MtNode
     def add_space?(prev : PunctWord)
-      !prev.attr.includes?(PunctAttr.flags(Wspace | Start))
+      !prev.attr.includes?(PunctAttr.flags(Wspace, Start))
     end
   end
 end

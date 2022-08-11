@@ -81,7 +81,7 @@ module MtlV2::MTL
     VCompare
 
     def self.from_tag(tag : String) : self
-      case tag[1]
+      case tag[1]?
       when 'o' then VerbObjt | Need0Obj
       when 'i' then IntrVerb | Need0Obj
       when '2' then Need2Obj

@@ -70,8 +70,7 @@ module CV::TlRule
 
     case node.tag
     when .v_shi? then fold_v_shi!(node, succ)
-    when .v_you?
-      fold_compare_vyou!(node, succ)
+    when .v_you? then succ ? fold_vyou!(node, succ) : node
     when .v_shang?, .v_xia?
       # puts [node, succ, "fold_noun_space"]
       fold_verbs!(node)

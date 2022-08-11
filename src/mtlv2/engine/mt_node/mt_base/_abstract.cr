@@ -47,16 +47,16 @@ module MtlV2::MTL
     abstract def to_mtl(io : IO) : Nil
     abstract def inspect(io : IO) : Nil
 
+    def add_space?(prev : Nil)
+      false
+    end
+
     def add_space?(prev : BaseWord)
       prev.val != ""
     end
 
-    def add_space?(prev : MtNode)
+    def add_space?(prev)
       true
-    end
-
-    def add_space?(prev : Nil)
-      false
     end
 
     def to_txt : String
@@ -73,6 +73,8 @@ module MtlV2::MTL
   end
 
   module MtSeri
+    include MtNode
+
     abstract def each(&block : MtNode ->)
 
     def apply_cap!(cap : Bool = true) : Bool
@@ -85,7 +87,7 @@ module MtlV2::MTL
 
       each do |node|
         io << ' ' if node.add_space?(prev)
-        node.to_txt(node)
+        node.to_txt(io)
         prev = node
       end
     end
@@ -96,7 +98,7 @@ module MtlV2::MTL
 
       each do |node|
         io << "\t " if node.add_space?(prev)
-        node.to_mtl(node)
+        node.to_mtl(io)
         prev = node
       end
 

@@ -6,7 +6,7 @@ module MtlV2::MTL
   def self.from_term(term : V2Term, pos : Int32 = 0)
     tag = term.tags[pos]? || ""
 
-    case tag[0]
+    case tag[0]?
     when 'N' then NounWord.new(term, pos)
     when 'n' then noun_from_term(term, pos)
     when 'd' then advb_from_term(term, pos)

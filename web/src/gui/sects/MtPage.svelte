@@ -6,9 +6,10 @@
 
   import Mtmenu, { ctrl as mtmenu } from './MtPage/Mtmenu.svelte'
 
-  import Cvline from './MtPage/Cvline.svelte'
-  import Fixraw from './MtPage/Fixraw.svelte'
   import Zhline from './MtPage/Zhline.svelte'
+  import Cvline from './MtPage/Cvline.svelte'
+
+  import LineEdit from './MtPage/LineEdit.svelte'
 
   import { rel_time } from '$utils/time_utils'
   import { beforeNavigate } from '$app/navigation'
@@ -160,7 +161,7 @@
   {/if}
 
   {#if fix_raw}
-    <Fixraw
+    <LineEdit
       bind:rawtxt={zhtext[l_focus]}
       bind:fix_raw
       {on_fixraw}

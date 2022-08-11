@@ -1,4 +1,4 @@
-class CV::Chtran
+class CV::ChapTran
   include Clear::Model
 
   self.table = "chap_trans"
@@ -7,11 +7,10 @@ class CV::Chtran
   belongs_to viuser : Viuser, foreign_key_type: Int32
   belongs_to chroot : Chroot, foreign_key_type: Int32
 
-  column chidx : Int16
-  column schid : String
-  column cpart : Int16 = 0_i16
+  column ch_no : Int32
 
-  column l_id : Int16 = 0_i16 # line id
+  column part_no : Int16 = 0_i16
+  column line_no : Int16 = 0_i16 # line id
 
   column orig : String = "" # original text line
   column tran : String      # translation
@@ -29,11 +28,11 @@ class CV::Chtran
 
   # ## load all translation for this chapter part
 
-  def self.trans(chroot : Chroot, chidx : Int16, cpart : Int16, flag : Int16 = 0)
-    query.where({chroot_id: chroot.id, chidx: chidx, cpart: cpart, flag: flag})
+  def self.trans(chroot : Chroot, ch_no : Int16, part_no : Int16, flag : Int16 = 0)
+    query.where({chroot_id: chroot.id, ch_no: ch_no, part_no: part_no, flag: flag})
 
-    trans = {} of Int16 => Chtran
-    query.each { |x| trans[x.l_id] = x }
+    trans = {} of Int16 => ChapTran
+    query.each { |x| trans[x.line_no] = x }
     trans
   end
 end
