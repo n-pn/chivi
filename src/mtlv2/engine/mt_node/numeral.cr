@@ -1,4 +1,4 @@
-require "../mt_base/*"
+require "./_generic"
 
 module MtlV2::MTL
   module Numeral
@@ -45,19 +45,19 @@ module MtlV2::MTL
   QTNOUNS = QtranUtil.read_tsv("etc/cvmtl/qtverbs.tsv")
 
   @[Flags]
-  enum QuantiKind
-    Time
-    Verb
-    Noun
+  enum QuantiAttr
+    ForTime
+    ForVerb
+    ForNoun
 
     def self.from(key : String, dirty = false)
       key = clear_key(key) if dirty
 
       flag = None
 
-      flag |= Time if QTTIMES.has_key?(key)
-      flag |= Verb if QTVERBS.has_key?(key)
-      flag |= Noun if QTNOUNS.has_key?(key)
+      flag |= ForTime if QTTIMES.has_key?(key)
+      flag |= ForVerb if QTVERBS.has_key?(key)
+      flag |= ForNoun if QTNOUNS.has_key?(key)
 
       flag
     end
@@ -68,40 +68,35 @@ module MtlV2::MTL
   end
 
   class QuantiWord < BaseWord
-    getter kind : QuantiKind = :noun
+    getter attr : QuantiAttr = :for_noun
+    forward_missing_to @attr
 
     def initialize(term : V2Term, pos : Int32 = 0)
       super(term)
-      @kind = QuantiKind.from(term.key)
+      @attr = QuantiAttr.from(term.key)
     end
 
     def initialize(@key = "", @val = @key, @tab = 0, @idx = 0)
     end
+
+    def as_quanti!
+      self
+    end
   end
 
   class NquantWord < BaseWord
-    getter kind : QuantiKind = :noun
+    getter attr : QuantiAttr = :for_noun
+    forward_missing_to @attr
 
     def initialize(term : V2Term, pos : Int32 = 0)
       super(term, pos)
-      @kind = QuantiKind.from(term.key, dirty: true)
+      @attr = QuantiAttr.from(term.key, dirty: true)
+    end
+
+    def as_quanti!
+      self
     end
   end
 
   ###
-
-  def self.number_from_term(term : V2Term, pos : Int32 = 0)
-    return NquantWord.new(term, pos: pos) if term.tags[0] == "mq"
-
-    case
-    when NdigitWord.matches?(term.key) then NdigitWord.new(term, pos: pos)
-    when NhanziWord.matches?(term.key) then NhanziWord.new(term, pos: pos)
-    else                                    NumberWord.new(term, pos: pos)
-    end
-  end
-
-  def self.quanti_from_term(term : V2Term, pos : Int32 = 0)
-    # TODO: add QuantiVerb, QuantiTime...
-    QuantiWord.new(term, pos: pos)
-  end
 end

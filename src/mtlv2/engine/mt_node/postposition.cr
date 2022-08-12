@@ -1,4 +1,4 @@
-require "../mt_base/*"
+require "./_generic"
 
 module MtlV2::MTL
   class SuffWord < BaseWord

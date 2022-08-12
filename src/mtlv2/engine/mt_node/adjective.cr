@@ -1,10 +1,9 @@
-require "../mt_base/*"
-require "./noun_words"
-require "./advb_words"
+require "./nominal"
+require "./adverbial"
 
 module MtlV2::MTL
   @[Flags]
-  enum AdjtKind : UInt8
+  enum AdjtAttr : UInt8
     VerbAdv # adjective that can act as verb adverb without de2
     NounMod # adjective that can act as noun modifier without de1
 
@@ -34,7 +33,7 @@ module MtlV2::MTL
   end
 
   module Adjective
-    getter kind = AdjtKind::None
+    getter kind = AdjtAttr::None
     forward_missing_to @kind
   end
 
@@ -43,7 +42,7 @@ module MtlV2::MTL
 
     def initialize(term : V2Term, pos = 0)
       super(term, pos)
-      @kind = AdjtKind.from(term.tags[pos]? || "a", term.key)
+      @kind = AdjtAttr.from(term.tags[pos]? || "a", term.key)
     end
   end
 
@@ -71,12 +70,74 @@ module MtlV2::MTL
 
   #####
 
-  def self.adjt_from_term(term : V2Term, pos : Int32 = 0)
-    tag = term.tags[pos]? || ""
-    case tag[1]?
-    when 'n' then AjnoWord.new(term, pos: pos)
-    when 'd' then AjadWord.new(term, pos: pos)
-    else          AdjtWord.new(term, pos: pos)
+  class AdjtExpr < BaseExpr
+    include Adjective
+
+    def initialize(head : BaseNode, tail : BaseNode, flip = false,
+                   @kind : AdjtAttr = :none)
+      super(head, tail, flip: flip)
+    end
+
+    def initialize(orig : BaseExpr, tab = 0, @kind : AdjtAttr = :none)
+      super(orig, tab)
+    end
+  end
+
+  class AdjtForm
+    include BaseNode
+    include BaseSeri
+
+    include Adjective
+
+    getter adjt : BaseNode
+    getter advb_prep : BaseNode? = nil # place advb before
+    getter advb_post : BaseNode? = nil # place advb after
+
+    def initialize(@adjt, advb : BaseNode?)
+      self.set_succ(adjt.succ?)
+
+      if advb
+        self.add_advb(advb)
+      else
+        self.set_prev?(adjt.prev?)
+        adjt.prev = nil
+      end
+    end
+
+    def add_advb(advb : BaseNode)
+      if advb.is_a?(AdvbWord) && advb.postpos?
+        add_advb_post(advb)
+      else
+        add_advb_prep(advb)
+      end
+    end
+
+    def add_advb_prep(advb : BaseNode)
+      self.set_prev(advb.prev?)
+      advb.prev = nil
+
+      if prep = @advb_prep
+        @advb_prep = AdvbPair.new(advb, prep)
+      else
+        @advb_prep = advb
+      end
+    end
+
+    def add_advb_post(advb : BaseNode)
+      self.set_prev(advb.prev?)
+      advb.prev = nil
+
+      if post = @advb_post
+        @advb_post = AdvbPair.new(advb, post, flip: true)
+      else
+        @advb_post = advb
+      end
+    end
+
+    def each
+      @advb_prep.try { |x| yield x }
+      yield adjt
+      @advb_post.try { |x| yield x }
     end
   end
 end

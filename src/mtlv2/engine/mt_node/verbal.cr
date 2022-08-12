@@ -1,5 +1,5 @@
-require "./noun_words"
-require "./advb_words"
+require "./nominal"
+require "./adverbial"
 
 module MtlV2::MTL
   module VerbUtil
@@ -212,18 +212,4 @@ module MtlV2::MTL
   end
 
   #################
-
-  def self.verb_from_term(term : V2Term, pos = 0)
-    tag = term.tags[pos]? || "v"
-    return VerbWord.new(term, pos: pos) unless tag[1]? == '!'
-
-    case key = term.key
-    when "会"                 then VmHui.new(term, pos)
-    when "能"                 then VmNeng.new(term, pos)
-    when "想"                 then VmXiang.new(term, pos)
-    when key.ends_with?('是') then VShiWord.new(term, pos)
-    when key.ends_with?('有') then VYouWord.new(term, pos)
-    else                          VerbWord.new(term, pos)
-    end
-  end
 end

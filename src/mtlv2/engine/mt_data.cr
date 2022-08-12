@@ -1,10 +1,11 @@
-require "./mt_node/*"
-require "./grammar/*"
+require "./mt_node"
+# require "./grammar/*"
+require "./grammar/fold_left"
 
 module MtlV2::MTL
   class MtData
-    getter head : MtNode
-    getter tail : MtNode
+    getter head : BaseNode
+    getter tail : BaseNode
 
     def initialize
       @head = @tail = PunctWord.new("")
@@ -88,14 +89,20 @@ module MtlV2::MTL
       root = PunctWord.new("")
       root.set_succ(@head)
 
-      # TODO: apply grammar here
+      fold_left!(@tail, root)
+      @head = root.succ
+    end
 
-      @head = root.succ?
+    def fold_left!(tail : BaseNode, head : BaseNode) : Nil
+      while tail = tail.prev?
+        break if tail == head
+        tail = MTL.fold_left!(tail, tail.prev?)
+      end
     end
 
     ##########
 
-    include MtSeri
+    include BaseSeri
 
     def to_txt : String
       String.build { |io| to_txt(io) }

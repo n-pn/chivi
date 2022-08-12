@@ -1,4 +1,4 @@
-require "../mt_base/*"
+require "./_generic"
 
 module MtlV2::MTL
   # references:
@@ -70,14 +70,5 @@ module MtlV2::MTL
   end
 
   class AdvbMei < AdvbWord
-  end
-
-  def self.advb_from_term(term : V2Term, pos : Int32 = 0)
-    case term.key
-    when "不" then AdvbBu4.new(term, pos: pos)
-    when "没" then AdvbMei.new(term, pos: pos)
-    when "非" then AdvbFei.new(term, pos: pos)
-    else          AdvbWord.new(term, pos: pos)
-    end
   end
 end

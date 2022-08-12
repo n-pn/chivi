@@ -1,4 +1,4 @@
-require "../mt_base/*"
+require "./_generic"
 
 module MtlV2::MTL
   @[Flags]
@@ -42,6 +42,7 @@ module MtlV2::MTL
     Trait
     Abstr
 
+    Basic
     Place
     Posit
     Locat
@@ -65,7 +66,7 @@ module MtlV2::MTL
       when 'f' then Locat
       when 'a' then Trait | Abstract
       when 'b' then Abstr | Abstract
-      else          Ktetic | Material
+      else          Basic | Ktetic | Material
       end
     end
 
@@ -92,6 +93,10 @@ module MtlV2::MTL
   module Nominal
     getter attr : NounAttr = NounAttr::Ktetic
     forward_missing_to @attr
+
+    def human?
+      @attr.includes?(NounAttr.flags(Honor, Human, Affil, Basic))
+    end
   end
 
   class NounWord < BaseWord
@@ -145,13 +150,78 @@ module MtlV2::MTL
 
   ######
 
-  def self.noun_from_term(term : V2Term, pos : Int32 = 0)
-    tag = term.tags[pos]? || ""
-    case tag
-    when "nh" then HonorNoun.new(term, pos)
-    when "nf" then LocatNoun.new(term, pos)
-    when "nt" then TimeWord.new(term, pos)
-    else           NounWord.new(term, pos)
+  class NounPair < BasePair
+    include Nominal
+
+    def initialize(left : BaseNode, right : Nominal, flip = false, @attr = right.attr)
+      super(left, right, flip)
+    end
+  end
+
+  class TimePair < BasePair
+  end
+
+  class NounExpr < BaseExpr
+    include Nominal
+
+    def initialize(head : BaseNode, tail : BaseNode, flip = false)
+      super(head, tail, flip: flip)
+    end
+  end
+
+  class NounForm
+    include BaseSeri
+    include Nominal
+
+    getter noun : BaseNode
+
+    property dem_mod : DemsproWord | ProNa2 | Nil = nil    # prodem modidifer
+    property num_mod : NumberWord | Nil = nil              # number modidifer
+    property qti_mod : QuantiWord | NquantWord | Nil = nil # quanti/nquant modifier
+
+    property de1_mod : Ude1Expr | Nil = nil # modifier phrase with 的
+    property adj_mod : AdjtWord | Nil = nil # adjective modifier
+
+    def initialize(@noun)
+      self.set_succ(@noun.succ?)
+      self.set_prev(@noun.prev?)
+    end
+
+    def add_quanti(node : QuantiWord | NquantWord)
+      self.set_prev(node.prev?)
+      @qti_mod = node.as_quanti!
+    end
+
+    # ameba:disable Metrics/CyclomaticComplexity
+    def each : Nil
+      if (dem_mod = @dem_mod) && dem_mod.noun_prefix?
+        yield dem_mod
+        dem_mod = nil
+      end
+
+      if (num_mod = @num_mod) && num_mod.noun_prefix?
+        yield num_mod
+        num_mod = nil
+      end
+
+      @qti_mod.try { |x| yield x }
+
+      if (de1_mod = @de1_mod) && de1_mod.noun_prefix?
+        yield de1_mod
+        de1_mod = nil
+      end
+
+      if (adj_mod = @adj_mod) && adj_mod.noun_prefix?
+        yield adj_mod
+        adj_mod = nil
+      end
+
+      yield noun
+
+      yield adj_mod if adj_mod
+      yield de1_mod if de1_mod
+      yield num_mod if num_mod
+      yield dem_mod if dem_mod
     end
   end
 end

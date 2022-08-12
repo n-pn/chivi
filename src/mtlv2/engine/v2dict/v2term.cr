@@ -1,5 +1,5 @@
 require "json"
-require "../mt_node/mapping"
+require "../mt_node"
 
 class MtlV2::V2Term
   SPLIT = "ǀ"

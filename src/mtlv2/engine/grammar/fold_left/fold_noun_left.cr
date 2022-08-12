@@ -1,46 +1,53 @@
 module MtlV2::MTL
-  def fold_noun_left!(curr : HonorWord, left : NounWord)
-    case left
-    when HonorWord, HumanName, AffilName, BasicNoun
-      left.set_succ(curr.succ?)
-      left.key += succ.key
-      left.val = succ.apply_honor(left.val)
-      left
-    else
-      NounPair.new(left, curr, flip: false)
+  def fold_noun_left!(curr : Nominal, left : TimeWord)
+    case curr.attr
+    when .locat? then TimePair.new(left, curr, flip: true)
+    when .posit? then NounPair.new(left, curr, flip: false)
+    else              curr
     end
   end
 
-  def fold_noun_left!(curr : LocatNoun, left : NounWord)
-    case left
-    when TimeWord
-      TimePair.new(left, curr, flip: true)
-    else
-      PositPair.new(left, curr, flip: true)
-    end
-  end
+  # def fold_noun_left!(curr : HonorNoun, left : NounWord)
+  #   if left.human?
+  #     left.set_succ(curr.succ?)
+  #     left.key += succ.key
+  #     left.val = succ.apply_honor(left.val)
+  #     left
+  #   else
+  #     NounPair.new(left, curr, flip: false)
+  #   end
+  # end
 
-  def fold_noun_left!(curr : PositPair | PositNoun, left : NounWord)
-    case left
-    when TimeWord
-      NounPair.new(left, curr, flip: false)
-    else
-      PositPair.new(left, curr)
-    end
-  end
+  # def fold_noun_left!(curr : LocatNoun, left : NounWord)
+  #   case left
+  #   when TimeWord
+  #     TimePair.new(left, curr, flip: true)
+  #   else
+  #     PositPair.new(left, curr, flip: true)
+  #   end
+  # end
 
-  def fold_noun_left!(curr : TraitNoun | TraitPair, left : NounWord)
-    TraitPair.new(left, curr, flip: true)
-  end
+  # def fold_noun_left!(curr : PositPair | PositNoun, left : NounWord)
+  #   case left
+  #   when TimeWord
+  #     NounPair.new(left, curr, flip: false)
+  #   else
+  #     PositPair.new(left, curr)
+  #   end
+  # end
 
-  def fold_noun_left!(curr : BaseNode, left : NounWord)
-    case left
-    when TraitNoun, PositNoun
-      NounPair.new(left, curr, flip: true)
-    else
-      NounPair.new(left, curr, flip: false)
-    end
-  end
+  # def fold_noun_left!(curr : TraitNoun | TraitPair, left : NounWord)
+  #   TraitPair.new(left, curr, flip: true)
+  # end
+
+  # def fold_noun_left!(curr : BaseNode, left : NounWord)
+  #   case left
+  #   when TraitNoun, PositNoun
+  #     NounPair.new(left, curr, flip: true)
+  #   else
+  #     NounPair.new(left, curr, flip: false)
+  #   end
+  # end
 
   def fold_noun_left!(curr : BaseNode, left : NquantWord | QuantiWord)
     return left unless left.for_noun?
@@ -51,11 +58,7 @@ module MtlV2::MTL
       return NounPair.new(left, curr, flip: false)
     end
 
-    left = left.as_quanti!
-    curr.set_prev?(left.prev?)
-    curr.qti_mod = left
-
-    curr
+    curr.tap(&.add_quanti(left))
   end
 
   def fold_noun_left!(curr : BaseNode, left : NumberWord | NumberExpr)
@@ -69,7 +72,7 @@ module MtlV2::MTL
       return NounPair.new(left, curr, flip: false) if !nquant.is_a?(QuantiWord)
     end
 
-    curr.set_prev?(left.prev?)
+    curr.set_prev(left.prev?)
     curr.num_mod = left
 
     curr
@@ -93,6 +96,6 @@ module MtlV2::MTL
   end
 
   def fold_noun_left!(curr : BaseNode, left : BaseNode)
-    left
+    curr
   end
 end
