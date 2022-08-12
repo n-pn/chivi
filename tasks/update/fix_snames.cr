@@ -5,8 +5,6 @@ def rename_seed(from source : String, to target : String)
     "_db/.cache/#{source}",
     "_db/bcover/#{source}",
     "var/chaps/.html/#{source}",
-    "var/chmetas/seeds/#{source}",
-    "var/chmetas/stats/#{source}",
     "var/chtexts/#{source}",
     "var/zhinfos/#{source}",
   }

@@ -52,6 +52,7 @@ class MtlV2::MTL::MtCore
   def cv_plain(input : String, cap_first = true, offset = 0) : MtData
     list = tokenize(input.chars, offset: offset)
     list.apply_cap!(cap: cap_first)
+    list.translate!
     list
   end
 

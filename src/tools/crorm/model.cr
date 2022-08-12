@@ -9,6 +9,18 @@ module Crorm::Model
   macro included
     include DB::Serializable
     include JSON::Serializable
+
+    def initialize
+    end
+
+    def initialize(input : NamedTuple)
+      {% for column in @type.instance_vars.select(&.annotation(Crorm::Column)) %}
+        if value = input[:{{column.name.id}}]?
+          @{{column.name.id}} = value
+          @__changed[{{column.name.stringify}}] = true
+        end
+      {% end %}
+    end
   end
 
   # All database fields
@@ -121,7 +133,7 @@ module Crorm::Model
     {% if nilable || primary %}
       {% bare_type = nilable ? type.types.reject(&.nilable?).first : type %}
       def {{decl.var.id}}=(value : {{bare_type}}?)
-        @__changed[{{decl.var.stringify}}] = true if value != @{{decl.var.id}}
+        @__changed[{{decl.var.stringify}}] = true
         @{{decl.var.id}} = value
       end
 
@@ -135,7 +147,7 @@ module Crorm::Model
       end
     {% else %}
       def {{decl.var.id}}=(value : {{type.id}})
-        @__changed[{{decl.var.stringify}}] = true if value != @{{decl.var.id}}
+        @__changed[{{decl.var.stringify}}] = true
         @{{decl.var.id}} = value
       end
 
@@ -150,17 +162,5 @@ module Crorm::Model
   macro timestamps
     column created_at : Time?
     column updated_at : Time?
-  end
-
-  def initialize(**input)
-    {% for column in @type.instance_vars.select(&.annotation(Crorm::Column)) %}
-      if value = input[{{column.name.stringify}}]?
-        @{{column.name.id}} = value
-        @__changed[{{column.name.stringify}}] = true
-      end
-    {% end %}
-  end
-
-  def initialize
   end
 end

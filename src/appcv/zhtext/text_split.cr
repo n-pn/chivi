@@ -11,7 +11,7 @@ module CV::Zhtext
 
     property encoding : String? = nil
 
-    property init_chidx = 1_i16
+    property init_ch_no = 1
     property init_chvol = ""
 
     property to_simp = false
@@ -44,7 +44,7 @@ module CV::Zhtext
   end
 
   class Chapter
-    property chidx = 0_i16
+    property ch_no = 0
     property schid = ""
 
     property chvol = ""
@@ -57,7 +57,7 @@ module CV::Zhtext
     getter lines = [] of String
     getter sizes = [] of Int32
 
-    def initialize(@chvol, @chidx = 0_i16, @schid = chidx.to_s)
+    def initialize(@chvol, @ch_no = 0, @schid = ch_no.to_s)
     end
 
     def empty?
@@ -113,7 +113,7 @@ module CV::Zhtext
 
     def save!(base : String) : Nil
       content.each_with_index do |text, part|
-        File.write("#{base}/#{@chidx}-#{part}.txt", text)
+        File.write("#{base}/#{@ch_no}-#{part}.txt", text)
       end
     end
   end
@@ -125,7 +125,7 @@ module CV::Zhtext
     getter raw_data : Array(String)
     getter chapters = [] of Chapter
 
-    getter chmin : Int16
+    getter chmin : Int32
     getter chvol : String
 
     def initialize(@inp_file, @options = Options.new,
@@ -135,7 +135,7 @@ module CV::Zhtext
       content ||= FileUtil.read_utf8(inp_file, options.encoding)
       @raw_data = format_input(content, options.un_wrap, options.to_simp)
 
-      @chmin = options.init_chidx
+      @chmin = options.init_ch_no
       @chvol = options.init_chvol
     end
 
@@ -191,10 +191,9 @@ module CV::Zhtext
       @raw_data.each do |line|
         if match = line.match(delimit_re)
           add_chapter(chapter) # add orevious chapter if any
-          chapter = new_chapter
-
           suffix = clean_spaces(match[1])
           @chvol = suffix unless suffix.empty?
+          chapter = new_chapter
         else
           chapter.add_line(clean_spaces(line))
         end
@@ -278,15 +277,15 @@ module CV::Zhtext
     end
 
     private def new_chapter(title : String? = nil)
-      chidx = @chmin &+ @chapters.size
-      Chapter.new(@chvol, chidx).tap { |x| x.add_line(title) if title }
+      ch_no = @chmin &+ @chapters.size
+      Chapter.new(@chvol, ch_no).tap { |x| x.add_line(title) if title }
     end
 
     private def add_chapter(chapter : Chapter)
       return if chapter.lines.empty?
 
       count = chapter.p_len
-      raise "Chương số #{chapter.chidx} có quá nhiều phần (#{count})" if count > 30
+      raise "Chương số #{chapter.ch_no} có quá nhiều phần (#{count})" if count > 30
 
       if @chapters.size > 4000
         raise "Lỗi chia: Số lượng chương quá nhiều (#{@chapters.size} chương)"
@@ -300,7 +299,7 @@ module CV::Zhtext
     end
 
     def save_content!
-      groups = @chapters.group_by { |x| (x.chidx &- 1) // 128 }
+      groups = @chapters.group_by { |x| (x.ch_no &- 1) // 128 }
 
       groups.each do |group, chaps|
         base_path = "#{save_dir}/#{group}"
@@ -319,7 +318,7 @@ module CV::Zhtext
 
       @chapters.each do |chap|
         data = {
-          chap.chidx, chap.schid,
+          chap.ch_no, chap.schid,
           chap.title, chap.chvol,
           mtime, chap.c_len, chap.p_len, uname,
         }

@@ -55,5 +55,4 @@ then
 
   rsync -azi --no-p "var/_common" "$SSH/var"
   rsync -azi --no-p "var/zhinfos" "$SSH/var"
-  # rsync -azi --no-p "var/chmetas/seeds/biquyue" "$SSH/var/chmetas/seeds"
 fi

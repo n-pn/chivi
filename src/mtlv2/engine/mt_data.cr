@@ -83,6 +83,16 @@ module MtlV2::MTL
       end
     end
 
+    def translate!
+      # add anchor so the connection do not lost when @head replaced by other node
+      root = PunctWord.new("")
+      root.set_succ(@head)
+
+      # TODO: apply grammar here
+
+      @head = root.succ?
+    end
+
     ##########
 
     include MtSeri

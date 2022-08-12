@@ -10,19 +10,19 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot = load_chroot(sname, :auto)
     text, path = read_chtext(chroot)
 
-    chinfos = split_chaps(chroot, path, text)
+    infos = split_chaps(chroot, path, text)
 
-    if chinfos.size == 1 && (title = params["title"]?)
-      chinfos.first.title = TextUtil.trim_spaces(title)
+    if infos.size == 1 && (title = params["title"]?)
+      infos.first.title = TextUtil.trim_spaces(title)
     end
 
-    chroot._repo.bulk_upsert(chinfos)
+    chroot._repo.bulk_upsert(infos)
     chroot.clear_cache!
 
-    update_chroot(chroot, chinfos.last, trunc: params["trunc_after"]? == "true")
+    update_chroot(chroot, infos.last, trunc: params["trunc_after"]? == "true")
 
-    chmin = chinfos.first.ch_no!
-    chmax = chinfos.last.ch_no!
+    chmin = infos.first.ch_no!
+    chmax = infos.last.ch_no!
 
     spawn do
       self_sname = '@' + _viuser.uname
@@ -65,36 +65,27 @@ class CV::ChtextCtrl < CV::BaseCtrl
     splitter.split!(options.split_mode)
     splitter.save_content!
 
+    sn_id = chroot._repo.sn_id
+    s_bid = chroot.s_bid
     uname = _viuser.uname
     utime = Time.utc.to_unix
-    sn_id = chroot._repo.sn_id
 
     spawn splitter.save_chinfos!(uname: uname)
 
     splitter.chapters.map do |input|
-      entry = Chinfo.new(sn_id, chroot.s_bid, input.chidx)
-
-      entry.title = input.title
-      entry.chvol = input.chvol
-      entry.c_len = input.c_len
-      entry.p_len = input.p_len
-
-      entry.utime = utime
-      entry.uname = uname
-
-      entry
+      Chinfo.new({
+        sn_id: sn_id, s_bid: s_bid, ch_no: input.ch_no,
+        title: input.title, chvol: input.chvol,
+        c_len: input.c_len, p_len: input.p_len,
+        utime: utime, uname: uname,
+      })
     end
   end
 
   private def read_options(chroot : Chroot, params)
     Zhtext::Options.new do |x|
-      x.init_chidx = params.read_i16("chidx", min: 1_i16)
-
-      if chvol = params["chvol"]?
-        x.init_chvol = TextUtil.trim_spaces(chvol)
-      else
-        x.init_chvol = "" # Chinfo.nearby_chvol(chroot, x.init_chidx)
-      end
+      x.init_ch_no = params.read_int("chidx", min: 1)
+      x.init_chvol = params["chvol"]?.try { |s| TextUtil.trim_spaces(s) } || ""
 
       x.to_simp = params["tosimp"]? == "true"
       x.un_wrap = params["unwrap"]? == "true"
