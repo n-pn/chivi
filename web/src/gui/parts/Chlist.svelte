@@ -26,7 +26,7 @@
     {@const min_privi = check_privi(chinfo)}
     <a
       href="{base_url}/{chinfo.chidx}/{chinfo.uslug}"
-      class="chinfo umami--click--chlist-toread"
+      class="chinfo"
       class:_active={chinfo.chidx == mark_chidx}
       rel={nvseed.sname != '=base' ? 'nofollow' : null}>
       <div class="chap-text">
