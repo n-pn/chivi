@@ -1,5 +1,5 @@
 require "spec"
-require "../../../src/mtlv2/engine/mt_node/mt_word/*"
+require "../../../src/mtlv2/engine/mt_node/*"
 
 module MtlV2::MTL
   extend self

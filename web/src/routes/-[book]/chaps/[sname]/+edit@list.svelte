@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-  /** @type {import('./[slug]').Load} */
-  export async function load({ stuff, url }) {
+  export async function load({ stuff }) {
     const { nvinfo, nslist, nvseed } = stuff
 
     stuff.topbar = gen_topbar(nvinfo)
@@ -15,6 +14,13 @@
       ],
     }
   }
+
+  interface PatchForm {
+    chmin: number
+    chmax: number
+    o_sname: string
+    i_chmin: number
+  }
 </script>
 
 <script lang="ts">
@@ -27,13 +33,22 @@
   export let nslist: CV.Nslist
   export let nvseed: CV.Chroot
 
-  $: seeds = [...nslist.other, ...nslist.users]
+  $: [seeds, patch_form] = init_data(nslist)
+  $: console.log({ nslist })
 
-  $: patch_form = {
-    chmin: 1,
-    chmax: seeds[0]?.chmax || 0,
-    o_sname: seeds[0]?.sname || '',
-    i_chmin: 1,
+  function init_data(nslist: CV.Nslist): [CV.Chroot[], PatchForm] {
+    // console.log({ nslist })
+    const seeds = [...nslist.other, ...nslist.users]
+    const fseed = seeds[0]
+
+    const form = {
+      chmin: 1,
+      i_chmin: 1,
+      chmax: fseed?.chmax ?? 0,
+      o_sname: fseed?.sname ?? '',
+    }
+
+    return [seeds, form]
   }
 
   let prune = ''
@@ -75,6 +90,11 @@
     // invalidate(page_href)
     goto(pgidx > 1 ? `${page_href}?pg=${pgidx}` : page_href)
   }
+
+  function change_mirror(mirror: CV.Chroot) {
+    patch_form.o_sname = mirror.sname
+    patch_form.chmax = mirror.chmax
+  }
 </script>
 
 <svelte:head>
@@ -89,19 +109,14 @@
 
     <div class="form-group">
       <div class="form-field">
-        <label for="nvseed" class="form-label">Chọn nguồn</label>
-        <select
-          class="m-input"
-          name="nvseed"
-          id="nvseed"
-          bind:value={patch_form.o_sname}>
+        <label for="mirror" class="form-label">Chọn nguồn</label>
+        <select class="m-input" id="mirror" value={patch_form.o_sname}>
           {#each seeds as mirror}
-            {#if mirror.chmax > 0 && mirror.sname != nvseed.sname}
-              <option
-                value={mirror.sname}
-                on:click={() => (patch_form.chmax = mirror.chmax)}
-                >[{mirror.sname}] ({mirror.chmax} chương)</option>
-            {/if}
+            <option
+              disabled={mirror.chmax == 0 || mirror.sname == nvseed.sname}
+              value={mirror.sname}
+              on:click={() => change_mirror(mirror)}
+              >[{mirror.sname}] ({mirror.chmax} chương)</option>
           {/each}
         </select>
       </div>
