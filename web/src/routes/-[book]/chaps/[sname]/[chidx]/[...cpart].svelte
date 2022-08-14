@@ -191,7 +191,7 @@
     <div class="navi">
       <a
         href={paths.prev}
-        class="m-btn navi-item umami--click--prev-chap"
+        class="m-btn navi-item"
         class:_disable={!chmeta._prev}
         data-kbd="j">
         <SIcon name="chevron-left" />
@@ -214,7 +214,7 @@
           </a>
 
           <button
-            class="gmenu-item umami--click--reload-rmtext"
+            class="gmenu-item"
             disabled={$session.privi < 1}
             on:click={reload_chap}>
             <SIcon name="rotate-rectangle" spin={_reloading} />
@@ -222,7 +222,7 @@
           </button>
 
           <button
-            class="gmenu-item umami--click-reconvert-chap"
+            class="gmenu-item"
             disabled={$session.privi < 0}
             on:click={() => retranslate(false)}
             data-kbd="r">
@@ -241,7 +241,7 @@
             </button>
           {:else}
             <button
-              class="gmenu-item umami--click--bookmark"
+              class="gmenu-item"
               disabled={$session.privi < 0}
               on:click={() => update_history(true)}
               data-kbd="p">
@@ -259,7 +259,7 @@
 
       <a
         href={paths.next}
-        class="m-btn _fill navi-item umami--click--next-chap"
+        class="m-btn _fill navi-item"
         class:_primary={chmeta._next}
         data-kbd="k">
         <span>Kế tiếp</span>

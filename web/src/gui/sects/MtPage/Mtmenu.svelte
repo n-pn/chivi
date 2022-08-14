@@ -318,7 +318,6 @@
 
   <cv-menu style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
     <cv-item
-      class="umami--click--mtmenu-lookup"
       data-kbd="\"
       data-key="Backslash"
       data-tip="Tra từ"
@@ -326,24 +325,15 @@
       <SIcon name="search" />
     </cv-item>
 
-    <cv-item
-      class="umami--click--mtmenu-report"
-      data-kbd="p"
-      data-tip="Báo lỗi"
-      on:click|capture={tlspec.show}>
+    <cv-item data-kbd="p" data-tip="Báo lỗi" on:click|capture={tlspec.show}>
       <SIcon name="flag" />
     </cv-item>
 
-    <cv-item
-      class="umami--click--mtmenu-upsert"
-      data-kbd="↵"
-      data-tip="Thêm sửa từ"
-      on:click|capture={show_upsert}>
+    <cv-item data-kbd="↵" data-tip="Thêm sửa từ" on:click|capture={show_upsert}>
       <SIcon name="circle-plus" />
     </cv-item>
 
     <cv-item
-      class="umami--click--mtmenu-fixraw"
       data-kbd="-"
       data-tip="Sửa text gốc"
       on:click|capture={() => (fix_raw = true)}>
@@ -351,7 +341,6 @@
     </cv-item>
 
     <cv-item
-      class="umami--click--mtmenu-refine"
       data-kbd="/"
       data-tip="Thêm nghĩa việt"
       on:click|capture={() => alert('Đang hoàn thiện')}>

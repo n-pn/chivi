@@ -94,8 +94,7 @@
 
   <footer>
     <div class="">
-      <a href="/guide/donation" class="foot-link umami--click--check-donation"
-        >Ủng hộ trang</a>
+      <a href="/guide/donation" class="foot-link">Ủng hộ trang</a>
     </div>
     <div class="foot-links">
       <strong>Liên kết: </strong>

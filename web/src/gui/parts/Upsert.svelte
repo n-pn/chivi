@@ -200,7 +200,7 @@
         </button>
 
         <button
-          class="m-btn _lg _right {btn_state} umami--click--upsert-term"
+          class="m-btn _lg _right {btn_state}"
           data-kbd="↵"
           disabled={!vpterm.changed}
           on:click={submit_val}

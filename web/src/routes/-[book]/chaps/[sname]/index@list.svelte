@@ -90,7 +90,7 @@
         </a>
       {:else}
         <button
-          class="m-btn _primary umami--click--chaps-force-update"
+          class="m-btn _primary"
           disabled={$session.privi < 0}
           data-tip="Yêu cầu quyền hạn: Đăng nhập"
           on:click={reload_source}>
@@ -108,7 +108,7 @@
         <svelte:fragment slot="content">
           {#if nvseed.stype == 0 && can_edit(nvseed.sname)}
             <button
-              class="gmenu-item umami--click--chaps-force-update"
+              class="gmenu-item"
               disabled={$session.privi < 0}
               on:click={reload_source}>
               <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />

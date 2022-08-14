@@ -29,7 +29,7 @@
 </details>
 
 <div class="form-action">
-  <button class="m-btn btn-back umami--click--logout" on:click={logout}>
+  <button class="m-btn btn-back" on:click={logout}>
     <SIcon name="logout" />
     <span>Đăng xuất</span>
   </button>

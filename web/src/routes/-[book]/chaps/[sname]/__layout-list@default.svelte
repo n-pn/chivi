@@ -77,7 +77,7 @@
 <seed-list>
   <a
     href={seed_url(nvinfo.bslug, nslist._base.sname, pgidx)}
-    class="seed-name umami--click---swap-seed"
+    class="seed-name"
     class:_active={nslist._base.sname == _curr.sname}
     data-tip="Danh sách chương trộn tổng hợp miễn phí">
     <seed-label>Tổng hợp</seed-label>
@@ -108,7 +108,7 @@
   {#if _self.chmax > 0 || $session.privi > 0}
     <a
       href={seed_url(nvinfo.bslug, _self.sname, pgidx)}
-      class="seed-name umami--click---swap-seed"
+      class="seed-name"
       class:_active={_self.sname == _curr.sname}
       data-tip="Danh sách chương của cá nhân bạn">
       <seed-label>Của bạn</seed-label>
@@ -122,7 +122,7 @@
     {#each nslist.other as nvseed}
       <a
         href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
-        class="seed-name _sub umami--click---swap-seed"
+        class="seed-name _sub"
         class:_active={nvseed.sname == _curr.sname}
         data-tip={map_info(nvseed)}>
         <seed-label>
@@ -157,7 +157,7 @@
   <seed-list class="extra">
     <a
       href={seed_url(nvinfo.bslug, nslist._user.sname, pgidx)}
-      class="seed-name _sub umami--click---swap-seed"
+      class="seed-name _sub"
       class:_active={nslist._user.sname == _curr.sname}
       data-tip="Danh sách chương tổng hợp từ các người dùng">
       <seed-label>Nhiều người</seed-label>
@@ -167,7 +167,7 @@
     {#each nslist.users as nvseed}
       <a
         href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
-        class="seed-name _sub umami--click---swap-seed"
+        class="seed-name _sub"
         class:_active={nvseed.sname == _curr.sname}
         data-tip={map_info(nvseed)}>
         <seed-label>{nvseed.sname}</seed-label>

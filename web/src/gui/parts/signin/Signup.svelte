@@ -62,7 +62,7 @@
   {#if error}<div class="form-msg _err">{error}</div> {/if}
 
   <footer class="form-btns">
-    <button type="submit" class="m-btn _fill _lg _success umami--click--signup">
+    <button type="submit" class="m-btn _fill _lg _success">
       <SIcon name="user-plus" />
       <span class="-text">Tạo tài khoản</span>
     </button>
