@@ -12,6 +12,7 @@ class ConfigData {
   showzh = false
   tosimp = false
   engine = 1
+  w_temp = false
 }
 
 function load_config(): ConfigData {

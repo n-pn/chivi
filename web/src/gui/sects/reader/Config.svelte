@@ -132,6 +132,13 @@
 
   <config-item>
     <label class="switch">
+      <input type="checkbox" bind:checked={$data.w_temp} />
+      <span class="switch-label">Hiển thị từ điển tạm thời:</span>
+    </label>
+  </config-item>
+
+  <config-item>
+    <label class="switch">
       <input type="checkbox" bind:checked={$lookup.enabled} />
       <span class="switch-label">Luôn bật ô giải nghĩa:</span>
     </label>

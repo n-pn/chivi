@@ -43,8 +43,8 @@ class CV::ChinfoCtrl < CV::BaseCtrl
     return {"", ukey} if qtran.input.empty?
 
     cvdata = String.build do |io|
-      engine = qtran.make_engine(_viuser.uname)
-      trad = params["trad"]? == "true"
+      engine = qtran.make_engine(_viuser.uname, with_temp: params["temp"]? == "t")
+      trad = params["trad"]? == "t"
       qtran.print_mtl(engine, io, format: :node, title: true, trad: trad)
       qtran.print_raw(io)
     end

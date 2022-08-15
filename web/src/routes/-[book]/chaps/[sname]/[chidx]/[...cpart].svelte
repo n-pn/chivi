@@ -42,7 +42,11 @@
     redo = false
   ) {
     let api_url = `/api/chaps/${book}/${sname}/${chidx}/${cpart}?redo=${redo}`
-    if (get(config).tosimp) api_url += '&trad=true'
+
+    const { tosimp, w_temp } = get(config)
+    if (tosimp) api_url += '&trad=t'
+    if (w_temp) api_url += '&temp=t'
+
     return api_url
   }
 </script>
@@ -99,13 +103,16 @@
 
   async function retranslate(reload = false) {
     // const base = $config.engine == 2 ? '/_v2/qtran/chaps' : '/api/qtran/chaps'
-    const base = '/api/qtran/chaps'
+    let api_url = `/api/qtran/chaps/${rl_key}`
 
-    let url = `${base}/${rl_key}?trad=${$config.tosimp}`
-    url += `&user=${$session.uname}`
-    if (reload) url += '&_raw&reload'
+    const { tosimp, w_temp } = get(config)
+    if (tosimp) api_url += '&trad=t'
+    if (w_temp) api_url += '&temp=t'
 
-    const res = await fetch(url)
+    api_url += `&user=${$session.uname}`
+    if (reload) api_url += '&_raw&_new'
+
+    const res = await fetch(api_url)
     const txt = await res.text()
 
     if (res.ok) cvdata = txt

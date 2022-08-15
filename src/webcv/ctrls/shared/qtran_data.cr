@@ -133,8 +133,8 @@ class CV::QtranData
     @input.map { |x| MtCore.trad_to_simp(x) }
   end
 
-  def make_engine(uname : String) : MtCore
-    MtCore.generic_mtl(@dname, uname)
+  def make_engine(user : String = "", with_temp : Bool = false) : MtCore
+    MtCore.generic_mtl(@dname, user, with_temp)
   end
 
   def print_mtl(engine, output : IO,

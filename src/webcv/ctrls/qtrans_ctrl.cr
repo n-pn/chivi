@@ -28,17 +28,17 @@ class CV::QtransCtrl < CV::BaseCtrl
     type = params["type"]
     name = params["name"]
 
-    stale = params["reload"]? ? Time.utc + 10.minutes : Time.utc
+    stale = params["_new"]? ? Time.utc + 10.minutes : Time.utc
     data = QtranData.load!(type, name, stale: stale)
 
     return halt! 404, "Not found!" if data.input.empty?
 
     mode = QtranData::Format.parse(params.read_str("mode", "node"))
-    trad = params["trad"]? == "true"
+    trad = params["trad"]? == "t"
     user = params["user"]? || _viuser.uname
 
     set_headers content_type: :text
-    engine = data.make_engine(user)
+    engine = data.make_engine(user, with_temp: params["temp"]? == "t")
     data.print_mtl(engine, response, format: mode, title: type == "chaps", trad: trad)
     data.print_raw(response) if params["_raw"]?
   end
