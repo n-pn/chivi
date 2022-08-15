@@ -6,6 +6,8 @@ class CV::VptermCtrl < CV::BaseCtrl
       h[k] = MtCore.cv_hanviet(k, apply_cap: false)
     end
 
+    w_temp = params["temp"]? == "t"
+
     send_json do |jb|
       jb.object do
         input.each do |dname, words|
@@ -15,7 +17,8 @@ class CV::VptermCtrl < CV::BaseCtrl
             jb.field(dname, words.map { |w| {w, MtCore.cv_pin_yin(w)} }.to_h)
           else
             jb.field(dname) do
-              VpTermView.new(dname, words, hvmap, _viuser.uname).to_json(jb)
+              entry = VpTermView.new(dname, words, hvmap, user: _viuser.uname, temp: w_temp)
+              entry.to_json(jb)
             end
           end
         end

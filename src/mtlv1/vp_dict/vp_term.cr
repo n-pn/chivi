@@ -82,9 +82,14 @@ class CV::VpTerm
     @uname = cols[5]? || "~"
 
     case @uname[0]?
-    when '!' then @_mode = 2_u8
-    when '~' then @_mode = 1_u8
-    else          @_mode = 0_u8
+    when '!'
+      @_mode = 2_u8
+      @uname = @uname[1..]
+    when '~'
+      @_mode = 1_u8
+      @uname = @uname[1..]
+    else
+      @_mode = 0_u8
     end
   end
 

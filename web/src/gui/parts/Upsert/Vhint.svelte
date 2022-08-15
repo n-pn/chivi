@@ -129,7 +129,7 @@
   function gen_tag_hints(dname: string, vpterm: VpTerm): string[] {
     if (dname == 'hanviet' || dname == 'tradsim') return []
     const output = vpterm.init.h_tags || []
-    const curr_ptag = vpterm.ptag
+    const curr_ptag = vpterm.tag
 
     if (dname.startsWith('-')) output.push('Nr', 'Na')
     if (output.length < 3) output.push(...similar_tags(curr_ptag))
@@ -145,13 +145,13 @@
 
 <div hidden={true}>
   <button data-kbd="~" on:click={() => (vpterm.val = vpterm.o_val)} />
-  <button data-kbd="[" on:click={() => (vpterm.ptag = 'Nr')} />
-  <button data-kbd="]" on:click={() => (vpterm.ptag = 'Na')} />
-  <button data-kbd="." on:click={() => (vpterm.ptag = 'Nz')} />
-  <button data-kbd="/" on:click={() => (vpterm.ptag = 'Nw')} />
-  <button data-kbd=";" on:click={() => (vpterm.ptag = 'al')} />
-  <button data-kbd="'" on:click={() => (vpterm.ptag = 'vl')} />
-  <button data-kbd="n" on:click={() => (vpterm.ptag = 'n')} />
+  <button data-kbd="[" on:click={() => (vpterm.tag = 'Nr')} />
+  <button data-kbd="]" on:click={() => (vpterm.tag = 'Na')} />
+  <button data-kbd="." on:click={() => (vpterm.tag = 'Nz')} />
+  <button data-kbd="/" on:click={() => (vpterm.tag = 'Nw')} />
+  <button data-kbd=";" on:click={() => (vpterm.tag = 'al')} />
+  <button data-kbd="'" on:click={() => (vpterm.tag = 'vl')} />
+  <button data-kbd="n" on:click={() => (vpterm.tag = 'n')} />
 </div>
 
 <div class="wrap" on:click={refocus}>
@@ -159,8 +159,7 @@
     {#each val_hints.slice(0, val_limit) as val, idx}
       <button
         class="hint"
-        class:_base={val == vpterm.init.b_val}
-        class:_priv={val == vpterm.init.u_val}
+        class:_prev={val == vpterm.o_val}
         data-kbd={v_kbd[idx]}
         on:click={() => (vpterm.val = val)}>{val}</button>
     {/each}
@@ -177,10 +176,9 @@
       {#each tag_hints.slice(0, 2) as tag, idx (tag)}
         <button
           class="hint _ptag"
-          class:_base={tag == vpterm.init.b_ptag}
-          class:_priv={tag == vpterm.init.u_ptag}
+          class:_prev={tag == vpterm.o_tag}
           data-kbd={p_kbd[idx]}
-          on:click={() => (vpterm.ptag = tag)}>{pt_labels[tag] || tag}</button>
+          on:click={() => (vpterm.tag = tag)}>{pt_labels[tag] || tag}</button>
       {/each}
 
       {#if tag_hints.length > 2}
@@ -198,8 +196,7 @@
       {#each val_hints.slice(val_limit) as val}
         <button
           class="hint"
-          class:_base={val == vpterm.init.b_val}
-          class:_priv={val == vpterm.init.u_val}
+          class:_prev={val == vpterm.o_val}
           on:click={() => (vpterm.val = val)}>{val}</button>
       {/each}
     </div>
@@ -208,9 +205,8 @@
       {#each tag_hints.slice(2) as tag}
         <button
           class="hint _ptag"
-          class:_base={tag == vpterm.init.b_ptag}
-          class:_priv={tag == vpterm.init.u_ptag}
-          on:click={() => (vpterm.ptag = tag)}>{pt_labels[tag] || tag}</button>
+          class:_prev={tag == vpterm.o_tag}
+          on:click={() => (vpterm.tag = tag)}>{pt_labels[tag] || tag}</button>
       {/each}
     </div>
   {/if}
@@ -256,12 +252,11 @@
     @include flex();
   }
 
-  // prettier-ignore
   .hint {
     // display: inline-flex;
     // align-items: center;
     cursor: pointer;
-    padding: 0 .2rem;
+    padding: 0 0.2rem;
     line-height: 1.5rem;
     background-color: inherit;
     @include fgcolor(tert);
@@ -269,20 +264,23 @@
     @include bdradi;
     @include clamp($width: null, $style: '-');
 
+    @include hover {
+      @include fgcolor(primary, 5);
+    }
+
     &._ptag {
       font-size: em(13px, 14px);
       max-width: 5rem;
     }
 
-    &._priv, &._base { @include fgcolor(secd); }
-    &._priv { font-weight: 500; }
-    &._base { font-style: italic; }
-
-    @include hover { @include fgcolor(primary, 5); }
+    &._prev {
+      @include fgcolor(secd);
+      font-weight: 500;
+    }
 
     &._icon {
-      margin-left: -.25rem;
-      margin-right: -.25rem;
+      margin-left: -0.25rem;
+      margin-right: -0.25rem;
       @include fgcolor(mute);
     }
 

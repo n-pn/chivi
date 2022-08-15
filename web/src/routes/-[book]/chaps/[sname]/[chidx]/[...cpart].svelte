@@ -103,16 +103,20 @@
 
   async function retranslate(reload = false) {
     // const base = $config.engine == 2 ? '/_v2/qtran/chaps' : '/api/qtran/chaps'
-    let api_url = `/api/qtran/chaps/${rl_key}`
+    const api_url = `/api/qtran/chaps/${rl_key}`
+    const params = new URLSearchParams()
 
     const { tosimp, w_temp } = get(config)
-    if (tosimp) api_url += '&trad=t'
-    if (w_temp) api_url += '&temp=t'
+    if (tosimp) params.set('trad', 't')
+    if (w_temp) params.set('temp', 't')
+    params.set('user', $session.uname)
 
-    api_url += `&user=${$session.uname}`
-    if (reload) api_url += '&_raw&_new'
+    if (reload) {
+      params.set('_raw', 't')
+      params.set('_new', 't')
+    }
 
-    const res = await fetch(api_url)
+    const res = await fetch(api_url + '?' + params.toString())
     const txt = await res.text()
 
     if (res.ok) cvdata = txt

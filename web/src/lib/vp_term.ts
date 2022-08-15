@@ -22,6 +22,9 @@ export class VpTerm {
   tags: string[]
   prio: string = ''
 
+  o_val: string = ''
+  o_tag: string = ''
+
   _mode: number = 0
   _slot: number = 0
 
@@ -33,16 +36,16 @@ export class VpTerm {
       h_ftag: '',
     }
 
-    this.vals = Array.from(this.init.vals ?? [this.init.h_fval])
-    this.tags = Array.from(this.init.tags ?? [this.init.h_ftag])
+    this.vals = Array.from(this.init.vals || [this.init.h_fval])
+    this.tags = Array.from(this.init.tags || [this.init.h_ftag])
+
     this.prio = this.init.prio || ''
 
     this._mode = this.init._mode || 0
     this._slot = 0
-  }
 
-  get o_val() {
-    return this.init.vals
+    this.o_val = this.vals[0]
+    this.o_tag = this.tags[0]
   }
 
   get val(): string {

@@ -22,6 +22,8 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
+  import { config } from '$lib/stores'
+
   export let vpdicts = []
   export let vpterms = []
 
@@ -86,12 +88,13 @@
     }
 
     if (input_is_empty(input)) return
+    const temp = $config.w_temp ? 't' : 'f'
 
     const api_url = `/api/terms/query`
     const api_res = await fetch(api_url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input }),
+      body: JSON.stringify({ input, temp }),
     })
 
     const payload = await api_res.json()

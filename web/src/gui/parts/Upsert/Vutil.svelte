@@ -179,7 +179,7 @@
       <button
         class="btn"
         data-kbd="r"
-        disabled={vpterm.val == vpterm.o_val && vpterm.ptag == vpterm.o_ptag}
+        disabled={vpterm.val == vpterm.o_val && vpterm.tag == vpterm.o_tag}
         on:click={() => (vpterm = vpterm.reset())}
         use:hint={'Phục hồi lại nghĩa + phân loại ban đầu'}>
         <SIcon name="corner-up-left" />
@@ -188,7 +188,7 @@
       <button
         class="btn"
         data-kbd="e"
-        disabled={!vpterm.val && !vpterm.ptag}
+        disabled={!vpterm.val && !vpterm.tag}
         on:click={() => (vpterm = vpterm.clear())}
         use:hint={'Xoá nghĩa từ / Xoá phân loại'}>
         <SIcon name="eraser" />
@@ -305,14 +305,13 @@
     font-size: rem(14px);
   }
 
-  // prettier-ignore
   .btn {
     display: inline-flex;
     align-items: center;
-    padding: 0 .25rem;
+    padding: 0 0.25rem;
     font-weight: 500;
 
-    gap: .125rem;
+    gap: 0.125rem;
 
     height: $height;
     // position: relative;
@@ -322,11 +321,12 @@
       font-size: 1rem;
     }
 
-
-
-
-    &[disabled] { @include fgcolor(mute); }
-    &._active { @include fgcolor(primary, 5); }
+    &[disabled] {
+      @include fgcolor(mute);
+    }
+    &._active {
+      @include fgcolor(primary, 5);
+    }
   }
 
   // .lang {

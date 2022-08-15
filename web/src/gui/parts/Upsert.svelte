@@ -136,17 +136,17 @@
 
   const save_modes = [
     {
-      text: 'Lưu ngay',
+      text: 'Cộng đồng',
       desc: 'Ngay lập tức cập nhật nghĩa dịch cho tất cả mọi người. Ghi đè lên nghĩa "Lưu tạm" nếu có.',
       pmin: 1,
     },
     {
-      text: 'Lưu tạm',
+      text: 'Lưu nháp',
       desc: 'Tạm thời chỉ áp dụng nghĩa dịch cho riêng bạn cho tới khi nghĩa được kiểm tra kỹ.',
       pmin: 0,
     },
     {
-      text: 'Lưu riêng',
+      text: 'Riêng bạn',
       desc: 'Chỉ áp dụng cho riêng bạn, không bị ảnh hưởng khi người khác cập nhật nghĩa của từ.',
       pmin: 2,
     },
