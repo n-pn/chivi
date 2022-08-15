@@ -159,7 +159,7 @@
       </thead>
 
       <tbody>
-        {#each terms as { key, val, ptag, prio, mtime, uname, _flag }, idx}
+        {#each terms as { key, vals, tags, prio, mtime, uname, _flag }, idx}
           <tr class="term _{_flag}">
             <td class="-idx">{start + idx}</td>
             <td class="-key" on:click={() => show_lookup(key)}>
@@ -178,10 +178,10 @@
             </td>
             <td
               class="-val"
-              class:_del={!val}
+              class:_del={!vals[0]}
               on:click={() => show_upsert(key, 1)}>
               <span>
-                {val || 'Đã xoá'}
+                {vals.join(' | ') || 'Đã xoá'}
               </span>
 
               <div class="hover">
@@ -190,14 +190,14 @@
                 </span>
                 <button
                   class="m-btn _xs"
-                  on:click|stopPropagation={() => (query.val = val)}>
+                  on:click|stopPropagation={() => (query.val = vals[0])}>
                   <SIcon name="search" />
                 </button>
               </div>
             </td>
             <td class="-ptag">
               <span on:click={() => show_upsert(key, 2)}>
-                {pt_labels[ptag] || '~'}
+                {tags.map((x) => pt_labels[x]).join(' ') || '~'}
               </span>
               <div class="hover">
                 <button
@@ -207,7 +207,7 @@
                 </button>
                 <a
                   class="m-btn _xs"
-                  href={pager.gen_url({ ptag: ptag || '~' })}>
+                  href={pager.gen_url({ ptag: tags[0] || '~' })}>
                   <SIcon name="search" />
                 </a>
               </div>
