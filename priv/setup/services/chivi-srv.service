@@ -12,6 +12,8 @@ Environment=PORT=5010
 Environment=AMBER_ENV=production
 WorkingDirectory=/home/nipin/srv/chivi.app
 ExecStart=/home/nipin/srv/chivi.app/bin/chivi
+StandardOutput=file:/home/nipin/log/chivi-srv.log
+StandardError=append:/home/nipin/log/chivi-srv-err.log
 
 [Install]
 WantedBy=multi-user.target

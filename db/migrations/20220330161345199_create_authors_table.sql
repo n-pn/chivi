@@ -1,11 +1,11 @@
 -- +micrate Up
 CREATE TABLE authors (
-  id bigserial primary key,
+  id serial primary key,
 
-  zname text not null unique,
+  zname varchar not null unique,
 
-  vname text not null default '',
-  vslug text not null default '',
+  vname varchar not null default '',
+  vslug varchar not null default '',
 
   vdesc text not null default '',
   book_count int not null default 0,

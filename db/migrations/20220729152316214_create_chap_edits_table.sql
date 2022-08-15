@@ -3,8 +3,8 @@
 CREATE TABLE chap_edits (
   id serial,
 
-  viuser_id int not null,
-  chroot_id int not null,
+  viuser_id int not null references viusers (id) on delete cascade on update cascade,
+  chroot_id int not null references chroots (id) on delete cascade on update cascade,
 
   chidx smallint not null,
   schid varchar not null,

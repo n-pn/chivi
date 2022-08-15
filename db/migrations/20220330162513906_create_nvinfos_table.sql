@@ -2,27 +2,27 @@
 CREATE TABLE nvinfos (
   id bigserial primary key,
 
-  author_id bigint not null default 0,
-  btitle_id bigint not null default 0,
+  author_id int not null references authors (id) on update cascade on delete cascade,
+  btitle_id int not null references btitles (id) on update cascade on delete cascade,
 
   ysbook_id bigint not null default 0,
   subdue_id bigint not null default 0,
 
   -- title
 
-  vname text not null default '',
-  bhash text unique not null,
-  bslug text unique not null,
+  vname varchar not null default '',
+  bhash varchar unique not null,
+  bslug varchar unique not null,
 
   -- extra
 
   zseeds int[] not null default '{}',
 
   igenres int[] not null default '{}',
-  vlabels text[] not null default '{}',
+  vlabels varchar[] not null default '{}',
 
-  scover text not null default '', -- local cover name
-  bcover text not null default '', -- local cover name
+  scover varchar not null default '', -- local cover name
+  bcover varchar not null default '', -- local cover name
 
   zintro text not null default '', -- origin book intro
   bintro text not null default '', -- book intro converted

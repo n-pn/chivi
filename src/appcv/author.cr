@@ -4,7 +4,7 @@ class CV::Author
   include Clear::Model
 
   self.table = "authors"
-  primary_key
+  primary_key type: :serial
 
   # has_many nvinfos : Nvinfo
 

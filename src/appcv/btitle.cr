@@ -6,7 +6,7 @@ class CV::Btitle
   include Clear::Model
 
   self.table = "btitles"
-  primary_key
+  primary_key type: :serial
 
   column zname : String = "" # chinese title
   column hname : String = "" # hanviet title

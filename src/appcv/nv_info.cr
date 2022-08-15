@@ -9,8 +9,8 @@ class CV::Nvinfo
 
   getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
 
-  belongs_to author : Author
-  belongs_to btitle : Btitle
+  belongs_to author : Author, foreign_key_type: Int32
+  belongs_to btitle : Btitle, foreign_key_type: Int32
 
   belongs_to ysbook : Ysbook?
 

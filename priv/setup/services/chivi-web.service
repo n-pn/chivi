@@ -11,6 +11,8 @@ User=nipin
 Environment=PORT=5000
 WorkingDirectory=/home/nipin/srv/chivi.app/web
 ExecStart=/usr/bin/node build/index.js
+StandardOutput=file:/home/nipin/log/chivi-web.log
+StandardError=append:/home/nipin/log/chivi-web-err.log
 
 [Install]
 WantedBy=multi-user.target

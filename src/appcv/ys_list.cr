@@ -74,7 +74,7 @@ class CV::Yslist
 
   def fix_vname
     vdict = MTL.dicts.last
-    vdict.set(ysuser.zname, [ysuser.vname], "nr")
+    vdict.set(ysuser.zname, [ysuser.vname], ["nr"])
 
     self.vname = MTL.translate(self.zname)
     self.vslug = "-" + BookUtil.scrub_vname(self.vname, "-") + "-"

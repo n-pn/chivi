@@ -133,8 +133,8 @@ class CV::VpDict
     {node.base, node.privs[uname]?}
   end
 
-  def set(key : String, vals : Array(String), attr = "")
-    set(VpTerm.new(key, vals, attr, mtime: 0))
+  def set(key : String, vals : Array(String), tags : Array(String) = [""])
+    set(VpTerm.new(key, vals, tags, mtime: 0))
   end
 
   def set(term : VpTerm) : VpTerm?
