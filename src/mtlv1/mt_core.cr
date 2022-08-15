@@ -6,20 +6,22 @@ class CV::MtCore
   class_getter pin_yin_mtl : self { new([VpDict.essence, VpDict.pin_yin]) }
   class_getter tradsim_mtl : self { new([VpDict.tradsim]) }
 
-  def self.generic_mtl(bname : String = "combine", uname : String = "") : self
+  def self.generic_mtl(bname : String = "combine",
+                       uname : String = "",
+                       temp : Bool = true) : self
     dicts = [VpDict.essence, VpDict.regular, VpDict.fixture, VpDict.load(bname)]
-    new(dicts, "!#{uname}")
+    new(dicts, uname, temp: temp)
   end
 
-  def self.load(dname : String, uname : String = "") : self
+  def self.load(dname : String, uname : String = "", temp : Bool = false) : self
     case dname
     when "pin_yin" then pin_yin_mtl
     when "hanviet" then hanviet_mtl
     when "tradsim" then tradsim_mtl
     when .starts_with?('-')
-      generic_mtl(dname, uname)
+      generic_mtl(dname, uname, temp: temp)
     else
-      generic_mtl("combine", uname)
+      generic_mtl("combine", uname, temp: temp)
     end
   end
 
@@ -55,7 +57,7 @@ class CV::MtCore
 
   getter dicts
 
-  def initialize(@dicts : Array(VpDict), @uname : String = "")
+  def initialize(@dicts : Array(VpDict), @uname : String = "", @temp : Bool = false)
   end
 
   def translit(input : String, apply_cap : Bool = false) : MtData
@@ -124,7 +126,7 @@ class CV::MtCore
       terms = {} of Int32 => Tuple(Int32, VpTerm)
 
       @dicts.each do |dict|
-        dict.scan(input, @uname, idx) do |term|
+        dict.scan_best(input, idx, user: @uname, temp: @temp) do |term|
           terms[term.key.size] = {dict.type, term}
         end
       end
@@ -136,8 +138,7 @@ class CV::MtCore
         jump = idx &+ key
 
         if fare >= fares[jump]
-          dic = term.is_priv ? dic &+ 2 : dic
-          nodes[jump] = MtTerm.new(term, dic, idx + offset)
+          nodes[jump] = MtTerm.new(term, dic &+ term._mode &* 2, idx &+ offset)
           fares[jump] = fare
         end
       end

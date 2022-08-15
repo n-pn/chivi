@@ -3,7 +3,7 @@ require "json"
 require "./pos_tag"
 
 class CV::VpTerm
-  SPLIT = "ǀ"
+  SPLIT = 'ǀ'
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
 
   def self.mtime(rtime : Time = Time.utc) : Int32
@@ -31,6 +31,8 @@ class CV::VpTerm
     WORTH[(size &- 1) &* 4 &+ prio]? || size &* (prio &* 2 &+ 7) &* 2
   end
 
+  ####
+
   getter key : String
 
   property vals : Array(String)
@@ -44,65 +46,100 @@ class CV::VpTerm
   getter ptag : PosTag { PosTag.parse(@tags[0], @key) }
   getter fare : Int32 { VpTerm.fare(@key.size, @prio) }
 
-  # # for mantainment
-  getter is_priv : Bool { @uname[0]? == '!' }
+  # flags:
+  # 0 => active
+  # 1 => mark as deleted
+  # 2 => overwritten
+  # 3 => mark as duplicate
+  property _flag : UInt8 = 0_u8
+
+  # modes:
+  # 0 => normal
+  # 1 => draft
+  # 2 => private
+  property _mode : UInt8 = 0_u8
+
+  # previous entry that this one overwrite
   property _prev : VpTerm? = nil
-  property _flag : UInt8 = 0_u8 # 0 => keep, 1 => overwritten, 2 => to be removed
 
   def initialize(@key, @vals = [""], @tags = [""], @prio = 2_i8,
                  @mtime = VpTerm.mtime, @uname = "~")
+    @_flag = @vals.first.empty? ? 1_u8 : 0_u8
   end
 
   def initialize(cols : Array(String), dtype = 0)
     @key = cols[0]
 
     @vals = cols[1]?.try(&.split(SPLIT)) || [""]
-    @tags = cols[2]?.try(&.split(" ")) || [""]
-
+    @tags = cols[2]?.try(&.split(' ')) || [""]
     @prio = VpTerm.parse_prio(cols[3]?)
 
-    if mtime = cols[4]?
-      @mtime = mtime.to_i
-      @uname = cols[5]? || "~"
+    @_flag = @vals.first.empty? ? 1_u8 : 0_u8
+
+    return unless mtime = cols[4]?
+
+    @mtime = mtime.to_i
+    @uname = cols[5]? || "~"
+
+    case @uname[0]?
+    when '!' then @_mode = 2_u8
+    when '~' then @_mode = 1_u8
+    else          @_mode = 0_u8
     end
   end
 
   def force_fix!(@vals, @tags = [""], @mtime = @mtime &+ 1, @_flag = 0_u8)
   end
 
+  @[AlwaysInline]
   def empty? : Bool
-    @vals.empty? || @vals.first.empty?
+    @vals.first.empty?
   end
 
+  @[AlwaysInline]
   def deleted?
-    @_flag > 0_u8 || empty?
+    @_flag > 0_u8
   end
 
-  def to_priv!
-    @uname = "!" + uname
+  @[AlwaysInline]
+  def prio_str
+    {"x", "v", "", "^"}[@prio]
+  end
+
+  @[AlwaysInline]
+  def mode_str
+    {"", "~", "!"}[@_mode]
+  end
+
+  @[AlwaysInline]
+  def temp?
+    @_mode == 1_u8
+  end
+
+  @[AlwaysInline]
+  def priv?
+    @_mode == 2_u8
   end
 
   def state : String
-    self.empty? ? "Xoá" : (self._prev ? "Sửa" : "Thêm")
-  end
-
-  def prio_str
-    {"x", "v", "", "^"}[@prio]
+    @_flag == 1_i8 ? "Xoá" : (self._prev ? "Sửa" : "Thêm")
   end
 
   def to_s(io : IO, dtype = 0) : Nil
     io << key << '\t' << @vals.join(SPLIT)
     io << '\t' << @tags.join(" ") << '\t' << prio_str
-    io << '\t' << @mtime << '\t' << @uname if @mtime > 0
+    return unless @mtime > 0 || @_mode > 0
+    io << '\t' << @mtime << '\t' << mode_str << @uname
   end
 
   def inspect(io : IO) : Nil
     io << '[' << key << '/' << @vals.join(", ")
-    io << '/' << @tags.join(" ") << "/" << @prio
-    io << '/' << @mtime << '/' << @uname if @mtime > 0
+    io << '/' << @tags.join(" ") << "/" << prio_str
+    io << '/' << @mtime << '/' << mode_str << @uname if @mtime > 0
     io << ']'
   end
 
+  @[AlwaysInline]
   def utime : Int64
     EPOCH &+ @mtime &* 60
   end
@@ -110,16 +147,40 @@ class CV::VpTerm
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "key", @key
-      jb.field "val", @vals.first
 
-      jb.field "ptag", @tags.first
+      jb.field "vals", @vals
+      jb.field "tags", @tags
+
       jb.field "prio", self.prio_str
 
       jb.field "mtime", self.utime
       jb.field "uname", @uname
 
-      jb.field "state", self.state
       jb.field "_flag", @_flag
+      jb.field "_mode", @_mode
+      jb.field "state", self.state
     end
+  end
+
+  # checking if new term can overwrite current term
+  def newer?(prev : VpTerm?) : Bool
+    return true unless prev
+    time_diff = self.mtime &- prev.mtime
+
+    # do not record if self is outdated
+    return false if time_diff < 0
+
+    if self.uname == prev.uname && time_diff <= 5
+      prev._flag = 3_u8
+      self._prev = prev._prev
+    elsif prev._flag == 1_u8
+      prev._flag = 2_u8
+      self._prev = prev._prev
+    else
+      prev._flag = 2_u8
+      self._prev = prev
+    end
+
+    true
   end
 end

@@ -19,7 +19,7 @@ CREATE TABLE nvinfos (
   zseeds int[] not null default '{}',
 
   igenres int[] not null default '{}',
-  vlabels varchar[] not null default '{}',
+  vlabels citext[] not null default '{}',
 
   scover varchar not null default '', -- local cover name
   bcover varchar not null default '', -- local cover name

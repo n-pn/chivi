@@ -1,11 +1,34 @@
 require "./vp_term"
 
+class V1::VpLeaf
+  property base : CV::VpTerm? = nil
+  property temp : CV::VpTerm? = nil
+
+  getter privs = {} of String => CV::VpTerm
+
+  def add(term : CV::VpTerm) : CV::VpTerm?
+    # term is a user private entry if uname is prefixed with a "!"
+    case term
+    when .priv?
+      uname = term.uname
+      @privs[uname] = term if newer?(term, @privs[uname]?)
+    when .temp?
+      @temp = term if newer?(term, @temp)
+    else
+      @temp = term if newer?(term, @temp)
+      @base = term if newer?(term, @base)
+    end
+  end
+end
+
 class CV::VpTrie
   alias Trie = Hash(Char, VpTrie)
 
-  property base : VpTerm? = nil
-  getter privs = {} of String => VpTerm
   getter _next = Trie.new
+  property base : VpTerm? = nil
+  property temp : VpTerm? = nil
+
+  getter privs = {} of String => VpTerm
 
   def each
     queue = [self]
@@ -45,7 +68,7 @@ class CV::VpTrie
     end
   end
 
-  def scan(chars : Array(Char), uname : String = "", idx : Int32 = 0) : Nil
+  def scan_best(chars : Array(Char), idx : Int32 = 0, user : String = "", temp : Bool = false) : Nil
     node = self
 
     idx.upto(chars.size - 1) do |i|
@@ -53,36 +76,23 @@ class CV::VpTrie
       break unless node = node._next[char]?
 
       node.base.try { |term| yield term unless term.empty? }
-      node.privs[uname]?.try { |term| yield term unless term.empty? }
+      node.temp.try { |term| yield term unless term.empty? } if temp
+      node.privs[user]?.try { |term| yield term unless term.empty? }
     end
   end
 
   def push!(term : VpTerm) : VpTerm?
     # term is a user private entry if uname is prefixed with a "!"
-    if term.is_priv
-      uname = term.uname
-      @privs[uname] = term if newer?(term, @privs[uname]?)
+    case term
+    when .priv?
+      @privs[term.uname] = term if term.newer?(@privs[term.uname]?)
+    when .temp?
+      @privs[term.uname] = term if term.newer?(@privs[term.uname]?)
+      @temp = term if term.newer?(@temp)
     else
-      @base = term if newer?(term, @base)
+      @privs[term.uname] = term if term.newer?(@privs[term.uname]?)
+      @temp = term if term.newer?(@temp)
+      @base = term if term.newer?(@base)
     end
-  end
-
-  # checking if new term can overwrite current term
-  def newer?(term : VpTerm, prev : VpTerm?) : Bool
-    return true unless prev
-    time_diff = term.mtime - prev.mtime
-
-    # do not record if term is outdated
-    return false if time_diff < 0
-
-    if term.uname == prev.uname && time_diff <= 5
-      prev._flag = 2_u8
-      term._prev = prev._prev
-    else
-      prev._flag = 1_u8
-      term._prev = prev
-    end
-
-    true
   end
 end

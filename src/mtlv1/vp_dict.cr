@@ -99,6 +99,7 @@ class CV::VpDict
 
   # forward_missing_to @list
   delegate scan, to: @trie
+  delegate scan_best, to: @trie
 
   # mode
   # -1: ignore existing dict file
@@ -147,7 +148,7 @@ class CV::VpDict
   def set!(term : VpTerm) : VpTerm?
     return unless set(term)
 
-    # File.open(@file, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
+    File.open(@file, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
     File.open(@flog, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
 
     term
@@ -158,14 +159,12 @@ class CV::VpDict
   # 2: delete shadowed entries (update in under 5 minutes)
   # 3: do not delete anything
 
-  def save!(file = @file, prune : Int8 = 2_u8, save_log = false) : Nil
-    return if prune < 1
-
+  def save!(file = @file, prune : Int8 = 3_u8, save_log = false) : Nil
+    return if prune < 2_u8
     data = @list.reject { |x| x.key.empty? || x._flag >= prune }
     do_save!(@file, data) if data.size > 0
 
     return unless save_log
-
     logs = data.select(&.mtime.> 0)
     do_save!(@flog, logs) if logs.size > 0
   end

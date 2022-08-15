@@ -25,28 +25,26 @@ class CV::VptermCtrl < CV::BaseCtrl
 
   def upsert_entry
     dname = params["dname"]
-    vpdict = VpDict.load(dname)
+    vdict = VpDict.load(dname)
 
-    ch_set = VpTermForm.new(params, vpdict, _viuser)
-    ch_set.validate.try { |error| return halt!(403, error) }
+    chset = VpTermForm.new(params, vdict, _viuser)
+    chset.validate.try { |error| return halt!(403, error) }
 
-    unless vpterm = ch_set.save?
-      return halt!(401, "Nội dung không thay đổi!")
-    end
+    return halt!(401, "Nội dung không thay đổi!") unless vpterm = chset.save
 
     spawn do
-      if vpdict.kind.cvmtl?
+      if vdict.kind.cvmtl?
         MtDict.upsert(dname[1..], vpterm)
-      elsif vpdict.kind.novel?
+      elsif vdict.kind.novel?
         VpHint.user_vals.append!(vpterm.key, vpterm.vals)
         VpHint.user_tags.append!(vpterm.key, vpterm.tags)
       end
     end
 
     spawn do
-      next unless vpdict.kind.novel? && dname[0] == '-'
+      next unless vdict.kind.novel? && dname[0] == '-'
       nvdict = Nvdict.load!(dname[1..])
-      nvdict.update(dsize: vpdict.size, utime: vpterm.utime)
+      nvdict.update(dsize: vdict.size, utime: vpterm.utime)
     rescue err
       Log.error { err }
     end

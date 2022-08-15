@@ -87,11 +87,14 @@ class CV::VpdictCtrl < CV::BaseCtrl
       end
 
       vdict.each do |dict|
-        dict.scan(chars, "!#{_viuser.uname}", idx) do |term|
-          dic = term.is_priv ? dict.type &+ 2 : dict.type
-
-          value = "#{term.vals.join("/")}\t#{term.ptag.to_str}\t#{dic}"
-          entry[term.key.size][:vietphrase] << value
+        dict.scan_best(chars, idx, user: _viuser.uname, temp: true) do |term|
+          entry[term.key.size][:vietphrase] << String.build do |io|
+            term.vals.reject(&.empty?).join(io, '/')
+            io << '\t'
+            term.tags.join(io, ' ')
+            io << '\t'
+            io << dict.type &+ term._mode &* 2_u8
+          end
         end
       end
 

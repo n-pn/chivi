@@ -24,6 +24,8 @@
 </script>
 
 <script lang="ts">
+  import { session } from '$app/stores'
+
   import pt_labels from '$lib/consts/postag_labels.json'
 
   import { upsert_dicts } from '$utils/vpdict_utils'
@@ -52,25 +54,37 @@
 
   let key = ''
 
+  let show_opts = $session.privi < 1
+
   let extra = make_vdict('$hanviet')
   $: vpdicts = upsert_dicts($vdict, extra)
 
   let vpterms: VpTerm[] = []
-  $: vpterm = vpterms[$ctrl.tab] || new VpTerm()
+  $: [vpterm, show_opts] = init_term(vpterms, $ctrl.tab)
+
+  function init_term(vpterms: VpTerm[], tab: number): [VpTerm, boolean] {
+    const term = vpterms[tab] || new VpTerm()
+    if ($session.privi > tab) {
+      return [term, term._mode > 0 || show_opts]
+    } else {
+      term._mode = 1
+      return [term, true]
+    }
+  }
 
   let dname = $vdict.dname
   $: if (extra) dname = vpdicts[$ctrl.tab].dname
 
-  $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
+  $: [lbl_state, btn_state] = vpterm.state
 
   async function submit_val() {
     const { dname } = vpdicts[$ctrl.tab]
-    const { val: vals, ptag: tags, prio, _priv } = vpterm
+    const { vals, tags, prio, _mode } = vpterm
 
     const res = await fetch('/api/terms/entry', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key, vals, tags, prio, _priv, dname }),
+      body: JSON.stringify({ key, vals, tags, prio, _mode, dname }),
     })
 
     if (res.ok) {
@@ -86,14 +100,57 @@
     if (entry) extra = entry
   }
 
-  let val_inp: HTMLInputElement
+  let inputs: HTMLInputElement[] = []
+
   $: if (vpterm) refocus()
 
-  const refocus = () => val_inp && val_inp.focus()
+  const refocus = () => {
+    const field = inputs[vpterm._slot]
+    if (field) field.focus()
+  }
 
   function copy_key() {
     navigator.clipboard.writeText(key)
   }
+
+  function changed(term: VpTerm) {
+    if (term._mode != term.init._mode) return true
+    if (term.prio != term.init.prio) return true
+
+    const init_vals = term.init.vals || []
+    if (term.vals.length != init_vals.length) return true
+
+    const init_tags = term.init.tags || []
+    if (term.tags.length != init_tags.length) return true
+
+    for (let i = 0; i < term.vals.length; i++) {
+      if (term.vals[i] != init_vals[i]) return true
+    }
+
+    for (let i = 0; i < term.tags.length; i++) {
+      if (term.tags[i] != init_tags[i]) return true
+    }
+
+    return false
+  }
+
+  const save_modes = [
+    {
+      text: 'Lưu ngay',
+      desc: 'Ngay lập tức cập nhật nghĩa dịch cho tất cả mọi người. Ghi đè lên nghĩa "Lưu tạm" nếu có.',
+      pmin: 1,
+    },
+    {
+      text: 'Lưu tạm',
+      desc: 'Tạm thời chỉ áp dụng nghĩa dịch cho riêng bạn cho tới khi nghĩa được kiểm tra kỹ.',
+      pmin: 0,
+    },
+    {
+      text: 'Lưu riêng',
+      desc: 'Chỉ áp dụng cho riêng bạn, không bị ảnh hưởng khi người khác cập nhật nghĩa của từ.',
+      pmin: 2,
+    },
+  ]
 </script>
 
 <Dialog
@@ -142,7 +199,7 @@
       <button
         class="tab-item _{infos.class}"
         class:_active={$ctrl.tab == tab}
-        class:_edited={vpterms[tab]?.state > 0}
+        class:_edited={vpterms[tab]?.init.state}
         data-kbd={infos.kbd}
         on:click={() => ctrl.set_tab(tab)}
         use:hint={d_tip}>
@@ -165,18 +222,18 @@
     <upsert-main>
       <Vhint {dname} bind:vpterm />
 
-      <div class="value" class:_fresh={vpterm.state == 0}>
+      <div class="value" class:_fresh={!vpterm.init.state}>
         <input
           type="text"
           class="-input"
-          bind:this={val_inp}
-          bind:value={vpterm.val}
+          bind:this={inputs[0]}
+          bind:value={vpterm.vals[vpterm._slot]}
           autocomplete="off"
           autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
 
         {#if !dname.startsWith('$')}
           <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
-            {pt_labels[vpterm.ptag] || 'Phân loại'}
+            {pt_labels[vpterm.tags[0]] || 'Phân loại'}
           </button>
         {/if}
       </div>
@@ -184,29 +241,45 @@
       <Vutil {key} tab={$ctrl.tab} bind:vpterm />
     </upsert-main>
 
+    {#if show_opts}
+      <section class="opts">
+        {#each save_modes as { text, desc, pmin }, index}
+          {@const privi = $ctrl.tab + pmin}
+          <label class="label" class:_active={vpterm._mode == index}
+            ><input
+              type="radio"
+              name="_mode"
+              bind:group={vpterm._mode}
+              disabled={$session.privi < privi}
+              value={index} />
+            <span class="-text" use:hint={desc}>{text}</span>
+            <span class="-icon" use:hint={'Yêu cần quyền hạn: ' + privi}>
+              <SIcon name="privi-{privi}" iset="sprite" />
+            </span>
+          </label>
+        {/each}
+      </section>
+    {/if}
+
     <upsert-foot>
       <Vprio {vpterm} bind:prio={vpterm.prio} />
 
       <btn-group>
         <button
-          class="m-btn _lg _left {btn_state}"
+          class="m-btn _lg"
+          class:_active={show_opts}
           data-kbd="\"
           data-key="Backslash"
-          use:hint={vpterm._priv
-            ? 'Đổi sang từ điển chung'
-            : 'Đổi sang từ điển cá nhân'}
-          on:click={() => (vpterm = vpterm.swap_dict())}>
-          <SIcon name={vpterm._priv ? 'user' : 'share'} />
+          use:hint={'Thay dổi chế độ lưu trữ'}
+          on:click={() => (show_opts = !show_opts)}>
+          <SIcon name="tools" />
         </button>
 
         <button
-          class="m-btn _lg _right {btn_state}"
+          class="m-btn _lg _fill {btn_state}"
           data-kbd="↵"
-          disabled={!vpterm.changed}
-          on:click={submit_val}
-          use:hint={vpterm._priv
-            ? 'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'
-            : 'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}>
+          disabled={!changed(vpterm)}
+          on:click={submit_val}>
           <span class="submit-text">{lbl_state}</span>
         </button>
       </btn-group>
@@ -219,7 +292,7 @@
 </Dialog>
 
 <Vdict vdict={extra} bind:state={$ctrl.state} on_close={swap_dict} />
-<Postag bind:ptag={vpterm.ptag} bind:state={$ctrl.state} />
+<Postag bind:ptag={vpterm.tags[vpterm._slot]} bind:state={$ctrl.state} />
 
 <style lang="scss">
   $gutter: 0.75rem;
@@ -405,19 +478,34 @@
 
   btn-group {
     @include flex();
+    gap: 0.5rem;
   }
 
-  .m-btn._left {
-    @include bdradi(0, $loc: right);
-  }
+  .opts {
+    display: flex;
+    justify-content: right;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: -0.25rem;
 
-  .m-btn._right {
-    margin-left: -1px;
-    @include bdradi(0, $loc: left);
-    @include bps(padding-left, 0.25rem, $pl: 0.5rem);
-    @include bps(padding-right, 0.25rem, $pl: 0.5rem);
-    // prettier-ignore
-    > span { width: 2rem; }
+    > .label {
+      display: inline-flex;
+      cursor: pointer;
+      align-items: center;
+      gap: 0.25rem;
+
+      line-height: 1.25rem;
+      font-weight: 500;
+      @include ftsize(sm);
+      @include fgcolor(tert);
+      &._active {
+        @include fgcolor(secd);
+      }
+    }
+
+    .-icon {
+      display: inline-flex;
+    }
   }
 
   .foot {

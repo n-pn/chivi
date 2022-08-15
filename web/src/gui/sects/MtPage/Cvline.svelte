@@ -50,14 +50,24 @@
       @include cv-node(orange);
     }
 
-    // regular + private
+    // regular + temp
     &[data-d='4'] {
       @include cv-node(teal);
     }
 
-    // unique + private
+    // unique + temp
     &[data-d='5'] {
       @include cv-node(red);
+    }
+
+    // regular + private
+    &[data-d='6'] {
+      @include cv-node(green);
+    }
+
+    // unique + private
+    &[data-d='7'] {
+      @include cv-node(purple);
     }
 
     &:hover,

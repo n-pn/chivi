@@ -1,10 +1,10 @@
 -- +micrate Up
 CREATE TABLE chroots (
-  id bigserial primary key,
+  id serial primary key,
 
   nvinfo_id bigint not null default 0,
 
-  sname text not null default '',
+  sname varchar not null default '',
   s_bid int not null default 0,
   zseed int not null default 0,
 
@@ -14,8 +14,8 @@ CREATE TABLE chroots (
   utime bigint not null default 0,
   stime bigint not null default 0,
 
-  last_sname text not null default '',
-  last_schid text not null default '',
+  last_sname varchar not null default '',
+  last_schid varchar not null default '',
   chap_count int not null default 0,
 
   created_at timestamptz not null default CURRENT_TIMESTAMP,
