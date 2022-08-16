@@ -83,7 +83,7 @@
       <p>
         Liên hệ với ban quản trị nếu bạn thực sự muốn đọc truyện từ nguồn này.
       </p>
-    {:else if nvseed.stype < 3}
+    {:else if nvseed.stype == 2}
       <p>Nguồn truyện này hiện tại đã chết hoặc ngừng được hỗ trợ.</p>
       <p>Bạn hãy đổi sang nguồn khác còn sống để xem nội dung chương.</p>
     {:else}

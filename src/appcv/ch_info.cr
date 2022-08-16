@@ -74,6 +74,7 @@ class CV::Chinfo
     self.title, self.chvol = TextUtil.format_title(title, chvol)
   end
 
+  @[JSON::Field(ignore: true)]
   getter trans : Trans { trans!(MtCore.generic_mtl("combine")) }
 
   def trans!(cmvtl : MtCore) : Trans
@@ -84,6 +85,7 @@ class CV::Chinfo
     ChSeed.get_sname(self.sn_id)
   end
 
+  @[JSON::Field(ignore: true)]
   getter chtext : ChText { ChText.load(self.sname, self.s_bid, self.ch_no!) }
 
   def text(cpart : Int16 = 0, mode : Int8 = 0, uname = "") : String

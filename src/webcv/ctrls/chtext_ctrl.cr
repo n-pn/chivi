@@ -58,7 +58,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     {text, path}
   end
 
-  private def split_chaps(chroot : Chroot, path : String, text : String)
+  private def split_chaps(chroot : Chroot, path : String, text : String) : Array(Chinfo)
     options = read_options(chroot, self.params)
     splitter = Zhtext::Splitter.new(path, options, content: text)
 
@@ -74,7 +74,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
     splitter.chapters.map do |input|
       Chinfo.new({
-        sn_id: sn_id, s_bid: s_bid, ch_no: input.ch_no,
+        sn_id: sn_id, s_bid: s_bid,
+        ch_no: input.ch_no, s_cid: input.ch_no,
         title: input.title, chvol: input.chvol,
         c_len: input.c_len, p_len: input.p_len,
         utime: utime, uname: uname,

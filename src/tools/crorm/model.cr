@@ -7,18 +7,20 @@ end
 
 module Crorm::Model
   macro included
-    include DB::Serializable
-    include JSON::Serializable
+    include ::DB::Serializable
+    include ::JSON::Serializable
 
     def initialize
     end
 
-    def initialize(input : NamedTuple)
-      {% for column in @type.instance_vars.select(&.annotation(Crorm::Column)) %}
-        if value = input[:{{column.name.id}}]?
-          @{{column.name.id}} = value
-          @__changed[{{column.name.stringify}}] = true
-        end
+    def initialize(tuple : NamedTuple)
+      {% verbatim do %}
+        {% for column in @type.instance_vars.select(&.annotation(::Crorm::Column)) %}
+          if value = tuple[:{{column.name.stringify}}]?
+            @{{column.name.id}} = value
+            @__changed[{{column.name.stringify}}] = true
+          end
+        {% end %}
       {% end %}
     end
   end
@@ -26,7 +28,7 @@ module Crorm::Model
   # All database fields
   def fields : Array(String)
     {% begin %}
-      {% columns = @type.instance_vars.select(&.annotation(Crorm::Column)) %}
+      {% columns = @type.instance_vars.select(&.annotation(::Crorm::Column)) %}
       {{ columns.empty? ? [] of String : columns.map(&.name.stringify) }}
     {% end %}
   end
@@ -127,7 +129,7 @@ module Crorm::Model
     {% end %}
 
 
-    @[Crorm::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto || primary}}, primary: {{primary}}, nilable: {{nilable}})]
+    @[::Crorm::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto || primary}}, primary: {{primary}}, nilable: {{nilable}})]
     @{{decl.var}} : {{decl.type}}? {% unless decl.value.is_a? Nop %} = {{decl.value}} {% end %}
 
     {% if nilable || primary %}
