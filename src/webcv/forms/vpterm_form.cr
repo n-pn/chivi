@@ -26,9 +26,8 @@ struct CV::VpTermForm
   end
 
   def save : VpTerm?
-    vals = @params.json("vals").as_a.map(&.as_s.tr("", "").strip)
-    tags = @params.json("tags").as_a.map(&.as_s.strip)
-
+    vals = @params.read_str("vals").split('ǀ').map!(&.tr("", "").strip)
+    tags = @params.read_str("tags").split(' ').map!(&.strip)
     prio = VpTerm.parse_prio(@params.read_str("prio", ""))
 
     vpterm = VpTerm.new(@key, vals, tags, prio, uname: @user.uname)

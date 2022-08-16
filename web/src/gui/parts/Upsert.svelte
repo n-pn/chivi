@@ -79,7 +79,10 @@
 
   async function submit_val() {
     const { dname } = vpdicts[$ctrl.tab]
-    const { vals, tags, prio, _mode } = vpterm
+    const { vals: vals_ary, tags: tags_ary, prio, _mode } = vpterm
+
+    const vals = vals_ary.join('ǀ')
+    const tags = tags_ary.join(' ')
 
     const res = await fetch('/api/terms/entry', {
       method: 'PUT',
