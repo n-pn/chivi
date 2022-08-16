@@ -202,7 +202,7 @@
       <button
         class="tab-item _{infos.class}"
         class:_active={$ctrl.tab == tab}
-        class:_edited={vpterms[tab]?.init.state}
+        class:_edited={vpterms[tab]?.init.state != 'Xoá'}
         data-kbd={infos.kbd}
         on:click={() => ctrl.set_tab(tab)}
         use:hint={d_tip}>
@@ -225,7 +225,7 @@
     <upsert-main>
       <Vhint {dname} bind:vpterm />
 
-      <div class="value" class:_fresh={!vpterm.init.state}>
+      <div class="value" class:_fresh={vpterm.init.state == 'Xoá'}>
         <input
           type="text"
           class="-input"

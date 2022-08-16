@@ -36,8 +36,13 @@ export class VpTerm {
       h_ftag: '',
     }
 
-    this.vals = Array.from(this.init.vals || [this.init.h_fval])
-    this.tags = Array.from(this.init.tags || [this.init.h_ftag])
+    this.init.state = this.init.state || 'Xoá'
+
+    this.vals = Array.from(this.init.vals || [])
+    this.tags = Array.from(this.init.tags || [])
+
+    if (!this.vals[0]) this.vals[0] = this.init.h_fval
+    if (!this.tags[0]) this.tags[0] = this.init.h_ftag
 
     this.prio = this.init.prio || ''
 
@@ -78,6 +83,6 @@ export class VpTerm {
 
   get state() {
     if (!this.vals[0]) return ['Xoá', `_harmful`]
-    return this.init.state ? ['Sửa', `_primary`] : ['Lưu', `_success`]
+    return this.init.state != 'Xoá' ? ['Sửa', `_primary`] : ['Lưu', `_success`]
   }
 }
