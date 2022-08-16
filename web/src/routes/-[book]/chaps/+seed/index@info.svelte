@@ -1,6 +1,4 @@
 <script context="module" lang="ts">
-  import { page, session } from '$app/stores'
-
   import { nvinfo_bar } from '$utils/topbar_utils'
   import { suggest_read } from '$utils/ubmemo_utils'
 
@@ -95,16 +93,6 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
       site: 'biqu5200.net',
       href: 'http://www.biqu5200.net',
       desc: 'Nguồn rác, hay đứt kết nối, dùng tạm.',
-    },
-    {
-      site: '5200.tv',
-      href: 'https://www.5200.tv',
-      desc: 'Nguồn rác, có tiền án đổi database dẫn tới liên kết sai nội dung, thận dùng',
-    },
-    {
-      site: 'duokanba.com',
-      href: 'http://www.duokanba.com',
-      desc: 'Nguồn chậm và hay chết, có một vài truyện hiếm',
     },
     {
       site: 'paoshu8.com',

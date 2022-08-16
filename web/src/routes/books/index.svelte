@@ -8,7 +8,7 @@
 
     const topbar = {
       right: [
-        ['Thêm truyện', 'file-plus', { href: '/books/+new', show: 'tm' }],
+        ['Thêm truyện', 'file-plus', { href: '/books/+book', show: 'tm' }],
       ],
       search: '',
     }

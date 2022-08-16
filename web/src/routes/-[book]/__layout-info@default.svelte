@@ -134,7 +134,7 @@
     </a>
 
     {#if $session.privi > 0}
-      <a class="m-btn _harmful" href="/-{nvinfo.bslug}/+edit">
+      <a class="m-btn _harmful" href="/-{nvinfo.bslug}/+info">
         <SIcon name="edit" />
       </a>
     {/if}

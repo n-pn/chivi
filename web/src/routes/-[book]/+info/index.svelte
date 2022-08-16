@@ -10,7 +10,7 @@
     const topbar = {
       left: [
         nvinfo_bar(nvinfo, { show: 'tm' }),
-        ['Sửa thông tin', 'pencil', { href: './edit' }],
+        ['Sửa thông tin', 'pencil', { href: './+info' }],
       ],
     }
 
