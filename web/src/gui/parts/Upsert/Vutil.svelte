@@ -126,6 +126,25 @@
     btran_lang = btran_lang
     show_trans = false
   }
+
+  async function load_deepl(b_tab = 0) {
+    vpterm.val = '...'
+    refocus()
+
+    const res = await fetch('/qtran/deepl', {
+      method: 'POST',
+      body: JSON.stringify({ text: key }),
+    })
+
+    if (res.ok) {
+      const data = await res.json()
+      vpterm.val = data.text
+    } else {
+      console.log(await res.json())
+    }
+
+    show_trans = false
+  }
 </script>
 
 <div class="wrap">
@@ -223,6 +242,14 @@
         use:hint={'Dịch tên riêng tiếng Nhật bằng Google Dịch'}>
         <SIcon name="brand-google" />
         <span class="lang">Nhật</span>
+      </button>
+
+      <button
+        class="btn"
+        data-kbd="9"
+        on:click={() => load_deepl()}
+        use:hint={'Dịch bằng DeepL từ Trung sang Anh'}>
+        <span class="lang">DeepL</span>
       </button>
 
       <button
