@@ -206,7 +206,7 @@
   </div>
 
   <footer>
-    <button class="m-btn" data-kbd="r" on:click={() => (rawtxt = newtxt)}>
+    <button class="m-btn" data-kbd="r" on:click={() => (newtxt = rawtxt)}>
       <span>Phục hồi</span>
       <SIcon name="arrow-back-up" />
     </button>

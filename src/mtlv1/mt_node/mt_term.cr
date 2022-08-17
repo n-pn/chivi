@@ -1,4 +1,5 @@
 require "./mt_node"
+require "../vp_dict/vp_term"
 require "../mt_core/mt_util"
 require "../../_util/text_util"
 
