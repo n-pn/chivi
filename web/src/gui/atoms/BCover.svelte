@@ -2,7 +2,7 @@
   export let bcover: string = ''
   export let scover: string = ''
 
-  const cdn_base = '//r2.chivi.app/covers/'
+  const cdn_base = 'https://r2.chivi.app/covers/'
 
   $: [images, cursor] = generate_urls(bcover, scover)
 

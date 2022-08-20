@@ -68,7 +68,7 @@ module MtlV2::MTL
     end
 
     def klass
-      self.class.to_s.sub("", "")
+      self.class.to_s.sub("MtlV2::MTL::", "")
     end
   end
 
@@ -159,7 +159,7 @@ module MtlV2::MTL
 
     def inspect(io : IO = STDOUT, pad = -1) : Nil
       io << " " * pad if pad > 0
-      io << "[#{@key}/#{@val}/#{self.klass}/#{@tab}/#{@idx}]"
+      io << "(#{self.klass}: #{@key} = #{@val})"
       io << '\n' if pad >= 0
     end
   end
