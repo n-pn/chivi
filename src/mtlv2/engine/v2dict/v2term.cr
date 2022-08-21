@@ -9,55 +9,83 @@ class MtlV2::V2Term
     (rtime.to_unix - EPOCH).//(60).to_i
   end
 
+  def self.parse_prio(str : String?)
+    case str
+    when "x", "0" then 0_i8
+    when "v", "2" then 1_i8
+    when "^", "4" then 3_i8
+    else               2_i8
+    end
+  end
+
+  WORTH = {
+    0, 3, 6, 9,
+    0, 14, 18, 26,
+    0, 25, 31, 40,
+    0, 40, 45, 55,
+    0, 58, 66, 78,
+  }
+
+  def self.fare(size : Int32, prio : Int8 = 0) : Int32
+    WORTH[(size &- 1) &* 4 &+ prio]? || size &* (prio &* 2 &+ 7) &* 2
+  end
+
   getter key : String
   getter vals : Array(String)
   getter tags : Array(String)
-
-  # auto generated fields
-  getter node : MTL::BaseWord { MTL.from_term(self) }
-
-  getter rank : Int8 = 3_i8
+  getter prio : Int8 = 3_i8
 
   getter mtime : Int32 = 0
   getter uname : String = "~"
 
-  WEIGHS = {
-    3, 6, 9,
-    14, 18, 26,
-    25, 31, 40,
-    40, 45, 55,
-    58, 66, 78,
-  }
+  # auto generated fields
+  getter fare : Int32 { V2Term.fare(@key.size, @prio) }
+  getter node : MTL::BaseWord { MTL.from_term(self, 0) }
 
-  getter worth : Int32 do
-    rank = @rank &- 2 # legacy rank is 1 2 3 4
-    return 0 if rank < 0
+  # flags:
+  # 0 => active
+  # 1 => mark as deleted
+  # 2 => overwritten
+  # 3 => mark as duplicate
+  property _flag : UInt8 = 0_u8
 
-    size = @key.size # cache result because String#size is O(n) for utf8 string
-    WEIGHS[(size &- 1) &* 3 &+ rank]? || size &* (rank &* 2 &+ 7) &* 2
-  end
+  # modes:
+  # 0 => normal
+  # 1 => draft
+  # 2 => private
+  property _mode : UInt8 = 0_u8
 
-  getter is_priv : Bool { @uname[0]? == '!' }
-
+  # previous entry that this one overwrite
   property _prev : V2Term? = nil
-  property _flag : UInt8 = 0_u8 # 0 => keep, 1 => overwritten, 2 => to be removed
 
-  def initialize(@key, @vals = [""], @tags = [""], @rank = 3_i8,
+  def initialize(@key, @vals = [""], @tags = [""], @prio = 2_i8,
                  @mtime = V2Term.mtime, @uname = "~")
+    @_flag = @vals.first.empty? ? 1_u8 : 0_u8
   end
 
   def initialize(cols : Array(String), dtype = 0)
     @key = cols[0]
 
-    @vals = cols.fetch(1, "").split(SPLIT)
-    @tags = cols[2]?.try(&.split(" ")) || [""]
+    @vals = cols[1]?.try(&.split(SPLIT)) || [""]
+    @tags = cols[2]?.try(&.split(' ')) || [""]
+    @prio = V2Term.parse_prio(cols[3]?)
 
-    @rank = cols[3]?.try(&.to_i8?) || 3_i8
-    @rank = 2_i8 if @rank < 2
+    @_flag = @vals.first.empty? ? 1_u8 : 0_u8
 
-    if mtime = cols[4]?.try(&.to_i?)
-      @mtime = mtime
-      @uname = cols[5]? || "~"
+    return unless mtime = cols[4]?
+
+    @mtime = mtime.to_i
+    @uname = cols[5]? || "~"
+
+    case @uname[0]?
+    when '!'
+      @_mode = 2_u8
+      @uname = @uname[1..]
+    when '~'
+      @_mode = 1_u8
+      @uname = @uname[1..]
+    else
+      @_mode = 0_u8
     end
   end
 
@@ -68,31 +96,50 @@ class MtlV2::V2Term
   def force_fix!(@vals, @attr = "", @mtime = @mtime &+ 1, @_flag = 0_u8)
   end
 
-  def empty? : Bool
-    @vals.empty? || @vals.first.empty?
+  @[AlwaysInline]
+  def deleted?
+    @_flag > 0_u8
   end
 
-  def to_priv!
-    @uname = "!" + uname
+  @[AlwaysInline]
+  def prio_str
+    {"x", "v", "", "^"}[@prio]
+  end
+
+  @[AlwaysInline]
+  def mode_str
+    {"", "~", "!"}[@_mode]
+  end
+
+  @[AlwaysInline]
+  def temp?
+    @_mode == 1_u8
+  end
+
+  @[AlwaysInline]
+  def priv?
+    @_mode == 2_u8
+  end
+
+  def state : String
+    @_flag == 1_i8 ? "Xoá" : (self._prev ? "Sửa" : "Thêm")
   end
 
   def to_s(io : IO, dtype = 0) : Nil
-    io << key << '\t'
-    @vals.join(io, SPLIT)
-
-    io << '\t' << @tags.join(' ') << '\t'
-    io << (@rank == 3_i8 ? "" : @rank)
-
-    io << '\t' << @mtime << '\t' << @uname if @mtime > 0
+    io << key << '\t' << @vals.join(SPLIT)
+    io << '\t' << @tags.join(" ") << '\t' << prio_str
+    return unless @mtime > 0 || @_mode > 0
+    io << '\t' << @mtime << '\t' << mode_str << @uname
   end
 
   def inspect(io : IO) : Nil
-    io << '[' << key << '/' << @vals.join(';') << '/' << @tags.join(':')
-    io << ' ' << @rank == 3 ? "" : @rank
-    io << '/' << @mtime << '/' << @uname if @mtime > 0
+    io << '[' << key << '/' << @vals.join(", ")
+    io << '/' << @tags.join(" ") << "/" << prio_str
+    io << '/' << @mtime << '/' << mode_str << @uname if @mtime > 0
     io << ']'
   end
 
+  @[AlwaysInline]
   def utime : Int64
     EPOCH &+ @mtime &* 60
   end
@@ -104,13 +151,36 @@ class MtlV2::V2Term
       jb.field "vals", @vals
       jb.field "tags", @tags
 
-      jb.field "rank", @rank
+      jb.field "prio", self.prio_str
 
       jb.field "mtime", self.utime
       jb.field "uname", @uname
 
-      jb.field "state", self.empty? ? "Xoá" : (self._prev ? "Sửa" : "Thêm")
       jb.field "_flag", @_flag
+      jb.field "_mode", @_mode
+      jb.field "state", self.state
     end
+  end
+
+  # checking if new term can overwrite current term
+  def newer?(prev : self | Nil) : Bool
+    return true unless prev
+    time_diff = self.mtime &- prev.mtime
+
+    # do not record if self is outdated
+    return false if time_diff < 0
+
+    if self.uname == prev.uname && time_diff <= 5
+      prev._flag = 3_u8
+      self._prev = prev._prev
+    elsif prev._flag == 1_u8
+      prev._flag = 2_u8
+      self._prev = prev._prev
+    else
+      prev._flag = 2_u8
+      self._prev = prev
+    end
+
+    true
   end
 end

@@ -58,7 +58,7 @@ module MtlV2::MTL
       when " "           then Wspace | NoWspace
       when ","           then Comma | NoWspace
       when "､"           then Cenum | NoWspace
-      when ":"           then Colon | Break | CapAfter
+      when ":"           then Colon | Break | CapAfter | NoWspace
       when ";"           then Smcln | Break
       when "·"           then Middot
       when "@"           then Atsign
@@ -85,12 +85,13 @@ module MtlV2::MTL
       @attr = PunctAttr::None
     end
 
-    def cap_after?(cap : Bool) : Bool
-      @attr.cap_after?
+    def apply_cap!(cap : Bool) : Bool
+      cap || @attr.cap_after?
     end
 
-    def add_space?
-      return !@attr.no_wspace? unless @attr.tilde? && (succ = @succ)
+    def add_space?(prev : BaseNode)
+      return !@attr.no_wspace? unless @attr.tilde?
+      return true if !(succ = @succ) || !succ.is_a?(PunctWord)
       !succ.attr.includes?(PunctAttr.flags(Final, Close))
     end
 
@@ -109,7 +110,7 @@ module MtlV2::MTL
     end
   end
 
-  module MtNode
+  module BaseNode
     def add_space?(prev : PunctWord)
       !prev.attr.includes?(PunctAttr.flags(Wspace, Start))
     end

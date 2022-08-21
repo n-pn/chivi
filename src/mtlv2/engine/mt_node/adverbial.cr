@@ -73,12 +73,12 @@ module MtlV2::MTL
 
     def initialize(head : Adverbial, tail : Adverbial, flip : Bool = false, tab : Int32 = 0)
       super(head, tail, flip: flip, tab: tab)
-      @attr = head.attr & tail.attr
+      @attr = head.attr | tail.attr
     end
 
     def add_head(node : Adverbial)
       super(node)
-      @attr = @attr & node.attr
+      @attr = @attr | node.attr
     end
   end
 end

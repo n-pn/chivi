@@ -38,15 +38,15 @@
 到底	mood
 
 # 范围副词 scope adverbs
-全	scoop
-只	scoop
-都	scoop
-共	scoop
-总	scoop
-就	scoop
-光	scoop
-总共	scoop
-仅仅	scoop
+全	scope
+只	scope
+都	scope
+共	scope
+总	scope
+就	scope
+光	scope
+总共	scope
+仅仅	scope
 
 # 频度副词 adverbs of frequency
 再	freque
@@ -88,10 +88,10 @@
 逐步	manner
 
 # multiple types
-总	time	scoop
-就	mood	scoop
+总	time	scope
+就	mood	scope
 却	mood	correl
-都	scoop	correl
+都	scope	correl
 再	freque	correl
 又	freque	correl
 也	freque	correl

@@ -64,7 +64,7 @@ class CV::VpTrie
       char = chars.unsafe_fetch(i)
       break unless node = node._next[char]?
 
-      node.base.try { |term| yield term unless term.empty? }
+      node.base.try { |term| yield term unless term.deleted? }
     end
   end
 
@@ -75,9 +75,9 @@ class CV::VpTrie
       char = chars.unsafe_fetch(i)
       break unless node = node._next[char]?
 
-      node.base.try { |term| yield term unless term.empty? }
-      node.temp.try { |term| yield term unless term.empty? } if temp
-      node.privs[user]?.try { |term| yield term unless term.empty? }
+      node.base.try { |term| yield term unless term.deleted? }
+      node.temp.try { |term| yield term unless term.deleted? } if temp
+      node.privs[user]?.try { |term| yield term unless term.deleted? }
     end
   end
 

@@ -36,18 +36,11 @@ module MtlV2::MTL
 
     @nests = [] of PunctWord
 
-    def fuse_head(head : BaseWord, node : BaseWord, joiner = "")
-      head.key = node.key + head.key
-      head.val = node.val + joiner + head.val
-      head.idx = node.idx
-      head
-    end
-
     def add_node(node : PunctWord)
       if node.attr.start? || node.attr.close?
         @nests << node
         add_head(node)
-      elsif (head = @head) && head.is_a?(PunctWord) && node.key[0] == head.key[0]
+      elsif (head = @head.succ?) && head.is_a?(PunctWord) && node.key[0] == head.key[0]
         fuse_head(head, node)
       else
         add_head(node)
@@ -55,7 +48,7 @@ module MtlV2::MTL
     end
 
     def add_node(node : NhanziWord)
-      head = @head
+      head = @head.succ
 
       if !head.is_a?(NhanziWord)
         add_head(node)
@@ -68,12 +61,19 @@ module MtlV2::MTL
         node.set_succ(new_head)
 
         head.unlink!
-        @head = node
+        @head.set_succ(node)
       end
     end
 
     def add_node(node : BaseWord)
       add_head(node)
+    end
+
+    private def fuse_head(head : BaseWord, node : BaseWord, joiner = "")
+      head.key = node.key + head.key
+      head.val = node.val + joiner + head.val
+      head.idx = node.idx
+      head
     end
 
     private def fix_hanzi_val(left : NhanziWord, right : NhanziWord)
@@ -97,6 +97,7 @@ module MtlV2::MTL
 
     def fold_left!(tail : BaseNode, head : BaseNode) : Nil
       while (tail = tail.prev?) && tail != head
+        puts [tail, tail.prev]
         tail = MTL.fold_left!(tail, tail.prev)
       end
     end

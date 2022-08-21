@@ -40,8 +40,7 @@ class MtlV2::V2Trie
     idx.upto(chars.size - 1) do |i|
       char = chars.unsafe_fetch(i)
       break unless node = node._next[char]?
-
-      node.base.try { |term| yield term unless term.empty? }
+      node.base.try { |term| yield term unless term.deleted? }
     end
   end
 
@@ -52,18 +51,23 @@ class MtlV2::V2Trie
       char = chars.unsafe_fetch(i)
       break unless node = node._next[char]?
 
-      node.base.try { |term| yield term unless term.empty? }
-      node.privs[uname]?.try { |term| yield term unless term.empty? }
+      node.base.try { |term| yield term unless term.deleted? }
+      node.privs[uname]?.try { |term| yield term unless term.deleted? }
     end
   end
 
   def push!(term : V2Term) : V2Term?
     # term is a user private entry if uname is prefixed with a "!"
-    if term.is_priv
-      uname = term.uname
-      @privs[uname] = term if newer?(term, @privs[uname]?)
+    case term
+    when .priv?
+      @privs[term.uname] = term if term.newer?(@privs[term.uname]?)
+    when .temp?
+      @privs[term.uname] = term if term.newer?(@privs[term.uname]?)
+      @temp = term if term.newer?(@temp)
     else
-      @base = term if newer?(term, @base)
+      @privs[term.uname] = term if term.newer?(@privs[term.uname]?)
+      @temp = term if term.newer?(@temp)
+      @base = term if term.newer?(@base)
     end
   end
 

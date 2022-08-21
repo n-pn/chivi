@@ -9,7 +9,7 @@ module MtlV2::MTL
     when 'N' then NounWord.new(term, pos)
     when 'n' then noun_from_term(term, pos)
     when 'd' then AdvbWord.new(term, pos: pos)
-    when 'v' then verb_from_term(term, pos)
+    when 'v' then Verbal.from_term(term, pos)
     when 'a' then adjt_from_term(term, pos)
     when 'c' then conj_from_term(term, pos)
     when 'u' then ptcl_from_term(term, pos)
@@ -43,20 +43,6 @@ module MtlV2::MTL
     when 'n' then AjnoWord.new(term, pos: pos)
     when 'd' then AjadWord.new(term, pos: pos)
     else          AdjtWord.new(term, pos: pos)
-    end
-  end
-
-  def self.verb_from_term(term : V2Term, pos = 0)
-    tag = term.tags[pos]? || "v"
-    return VerbWord.new(term, pos: pos) unless tag[1]? == '!'
-
-    case key = term.key
-    when "会"                 then VmHui.new(term, pos)
-    when "能"                 then VmNeng.new(term, pos)
-    when "想"                 then VmXiang.new(term, pos)
-    when key.ends_with?('是') then VShiWord.new(term, pos)
-    when key.ends_with?('有') then VYouWord.new(term, pos)
-    else                          VerbWord.new(term, pos)
     end
   end
 

@@ -1,6 +1,6 @@
 require "../../src/mtlv2/engine"
 
-inp = ARGV[0]? || "这种“大聪明”"
+inp = ARGV[0]? || "“不能接受关乎身体的交易？”"
 dic = ARGV[1]? || "-mvttgmnj"
 
 mtl = MtlV2::Engine.generic_mtl(dic)

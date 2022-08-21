@@ -115,7 +115,7 @@ module MtlV2::MTL
 
     def inspect(io : IO = STDOUT, pad : Int32 = -1) : Nil
       io << " " * pad if pad > 0
-      io << "#{self.klass}[#{@key}/#{@val}]"
+      io << "#{self.klass}[#{@key}/#{@val}/#{@idx}]"
       io << '\n' if pad >= 0
     end
   end

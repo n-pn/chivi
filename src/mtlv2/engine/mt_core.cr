@@ -57,7 +57,7 @@ class MtlV2::MTL::MtCore
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtData
-    nodes = [BaseWord.new("")]
+    nodes = [PunctWord.new("")] of BaseWord
     costs = [0]
 
     input.each_with_index(1) do |char, idx|
@@ -74,25 +74,28 @@ class MtlV2::MTL::MtCore
         end
       end
 
-      terms.each do |key, (dic, term)|
-        cost = costs[idx] &+ term.worth
-        jump = idx &+ key
+      terms.each do |size, (type, term)|
+        next if term.prio < 1
+
+        cost = costs[idx] &+ term.fare
+        jump = idx &+ size
 
         if cost >= costs[jump]
-          tab = term.is_priv ? dic &+ 2 : dic
-          nodes[jump] = term.node.dup!(idx + offset, tab)
+          node = term.node.dup!(idx &+ offset, type &+ term._mode &* 2)
+
+          nodes[jump] = node
           costs[jump] = cost
         end
       end
     end
 
     res = MtData.new
-    idx = nodes.size &- 1
+    idx = input.size
 
     while idx > 0
       cur = nodes.unsafe_fetch(idx)
+      res.add_head(cur)
       idx -= cur.key.size
-      res.add_node(cur)
     end
 
     res

@@ -103,6 +103,7 @@ module MtlV2::MTL
     include Nominal
 
     def initialize(term : V2Term, pos : Int32 = 0)
+      super(term, pos)
       @attr = NounAttr.from_tag(term.tags[pos]? || "n")
     end
   end
@@ -111,7 +112,7 @@ module MtlV2::MTL
     getter mold : String
 
     def initialize(term : V2Term, pos : Int32 = 1)
-      super(term)
+      super(term, pos)
 
       if (alt = term.vals[pos]?) && alt.includes?("?")
         @mold = alt
@@ -127,7 +128,7 @@ module MtlV2::MTL
 
   class LocatNoun < NounWord
     def initialize(term : V2Term, pos : Int32 = 1)
-      super(term)
+      super(term, pos)
       @attr |= NounAttr::Locale if @key.size > 1
     end
   end
@@ -143,7 +144,7 @@ module MtlV2::MTL
     getter type : TimeType = TimeType::None
 
     def initialize(term : V2Term, pos : Int32 = 1)
-      super(term)
+      super(term, pos)
       # TODO: map time type
     end
   end
