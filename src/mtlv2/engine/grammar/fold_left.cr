@@ -1,14 +1,18 @@
 require "./fold_left/*"
 
 module MtlV2::MTL
-  def fold_left!(curr : BaseNode, left : BaseNode?) : BaseNode
-    return curr unless left
+  extend self
 
+  def fold_left!(curr : BaseNode, left : BaseNode) : BaseNode
     case curr
-    when Nominal then MTL.fold_noun_left!(curr, left)
-    else              curr
+    # when Nominal   then fold_noun_left!(curr, left)
+    when Adjective then fold_adjt_left!(curr, left)
+    when Adverbial then fold_advb_left!(curr, left)
+    else                curr
     end
   end
 
-  extend self
+  def fold_left!(curr : BaseNode, left : Nil) : BaseNode
+    curr
+  end
 end

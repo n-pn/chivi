@@ -1,6 +1,3 @@
-require "./nominal"
-require "./adverbial"
-
 module MtlV2::MTL
   @[Flags]
   enum AdjtAttr : UInt8
@@ -46,28 +43,6 @@ module MtlV2::MTL
     end
   end
 
-  class AjnoWord < BaseWord
-    getter adjt : AdjtWord { AdjtWord.new(@key, @val, @tab, @idx) }
-    getter noun : NounWord { NounWord.new(@key, @val, @tab, @idx) }
-
-    def initialize(term : V2Term, pos = 0)
-      super(term, pos)
-      @noun = NounWord.new(term, pos &* 2 &+ 1)
-      @adjt = AdjtWord.new(term, pos &* 2 &+ 2)
-    end
-  end
-
-  class AjadWord < BaseWord
-    getter adjt : AdjtWord { AdjtWord.new(@key, @val, @tab, @idx) }
-    getter advb : AdvbWord { AdvbWord.new(@key, @val, @tab, @idx) }
-
-    def initialize(term : V2Term, pos = 0)
-      super(term, pos)
-      @advb = AdvbWord.new(term, pos &* 2 &+ 1)
-      @adjt = AdjtWord.new(term, pos &* 2 &+ 2)
-    end
-  end
-
   #####
 
   class AdjtExpr < BaseExpr
@@ -84,60 +59,21 @@ module MtlV2::MTL
   end
 
   class AdjtForm
-    include BaseNode
     include BaseSeri
-
     include Adjective
 
     getter adjt : BaseNode
-    getter advb_prep : BaseNode? = nil # place advb before
-    getter advb_post : BaseNode? = nil # place advb after
+    getter advb : Adverbial
 
-    def initialize(@adjt, advb : BaseNode?)
+    def initialize(@adjt, @advb : Adverbial)
       self.set_succ(adjt.succ?)
-
-      if advb
-        self.add_advb(advb)
-      else
-        self.set_prev?(adjt.prev?)
-        adjt.prev = nil
-      end
-    end
-
-    def add_advb(advb : BaseNode)
-      if advb.is_a?(AdvbWord) && advb.postpos?
-        add_advb_post(advb)
-      else
-        add_advb_prep(advb)
-      end
-    end
-
-    def add_advb_prep(advb : BaseNode)
       self.set_prev(advb.prev?)
-      advb.prev = nil
-
-      if prep = @advb_prep
-        @advb_prep = AdvbPair.new(advb, prep)
-      else
-        @advb_prep = advb
-      end
-    end
-
-    def add_advb_post(advb : BaseNode)
-      self.set_prev(advb.prev?)
-      advb.prev = nil
-
-      if post = @advb_post
-        @advb_post = AdvbPair.new(advb, post, flip: true)
-      else
-        @advb_post = advb
-      end
     end
 
     def each
-      @advb_prep.try { |x| yield x }
-      yield adjt
-      @advb_post.try { |x| yield x }
+      yield @advb unless @advb.postpos?
+      yield @adjt
+      yield @advb if @advb.postpos?
     end
   end
 end

@@ -8,19 +8,25 @@ module MtlV2::MTL
     getter tail : BaseNode
 
     def initialize
-      @head = @tail = PunctWord.new("")
+      @head = PunctWord.new("")
+      @tail = PunctWord.new("")
+      @head.set_succ(@tail)
     end
 
     def concat(other : MtData) : self
-      other.head.set_prev(@tail.prev?)
+      other_head = other.head.succ
+
+      other_head.set_prev(@tail.prev?)
+      other.head.unlink!
+
       @tail.unlink!
       @tail = other.tail
       self
     end
 
     def add_head(node : BaseWord)
-      node.set_succ(@head)
-      @head = node
+      node.set_succ(@head.succ?)
+      @head.set_succ(node)
     end
 
     def add_tail(node : BaseWord)
@@ -86,17 +92,12 @@ module MtlV2::MTL
 
     def translate!
       # add anchor so the connection do not lost when @head replaced by other node
-      root = PunctWord.new("")
-      root.set_succ(@head)
-
-      fold_left!(@tail, root)
-      @head = root.succ
+      fold_left!(@tail, @head)
     end
 
     def fold_left!(tail : BaseNode, head : BaseNode) : Nil
-      while tail = tail.prev?
-        break if tail == head
-        tail = MTL.fold_left!(tail, tail.prev?)
+      while (tail = tail.prev?) && tail != head
+        tail = MTL.fold_left!(tail, tail.prev)
       end
     end
 
@@ -104,19 +105,11 @@ module MtlV2::MTL
 
     include BaseSeri
 
-    def to_txt : String
-      String.build { |io| to_txt(io) }
-    end
-
-    def to_mtl : String
-      String.build { |io| to_mtl(io) }
-    end
-
     def each
       node = @head
-      while node = node.succ?
+
+      while (node = node.succ?) && node != @tail
         yield node
-        break if node == @tail
       end
     end
   end

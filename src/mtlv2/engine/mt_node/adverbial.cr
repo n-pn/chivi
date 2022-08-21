@@ -43,6 +43,11 @@ module MtlV2::MTL
 
     Postpos
 
+    # adverb that has special meanings
+    Special
+
+    Bu4; Fei; Mei
+
     def self.from_str(key : String)
       return None unless attrs = ADVB_TYPES[key]?
       attrs.reduce(None) { |flag, x| flag | parse(x) }
@@ -63,12 +68,17 @@ module MtlV2::MTL
     end
   end
 
-  class AdvbBu4 < AdvbWord
-  end
+  class AdvbExpr < BaseExpr
+    include Adverbial
 
-  class AdvbFei < AdvbWord
-  end
+    def initialize(head : Adverbial, tail : Adverbial, flip : Bool = false, tab : Int32 = 0)
+      super(head, tail, flip: flip, tab: tab)
+      @attr = head.attr & tail.attr
+    end
 
-  class AdvbMei < AdvbWord
+    def add_head(node : Adverbial)
+      super(node)
+      @attr = @attr & node.attr
+    end
   end
 end

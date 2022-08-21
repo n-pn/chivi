@@ -9,18 +9,18 @@ module MtlV2::MTL
 
     # getter ptag = BasePtag::None
 
-    def set_prev(@prev : Nil) : Nil
-    end
-
     def set_prev(@prev : BaseNode) : Nil
       prev.succ = self
     end
 
-    def set_succ(@succ : Nil) : Nil
+    def set_prev(@prev : Nil) : Nil
     end
 
     def set_succ(@succ : BaseNode) : Nil
       succ.prev = self
+    end
+
+    def set_succ(@succ : Nil) : Nil
     end
 
     def prev?
@@ -72,50 +72,6 @@ module MtlV2::MTL
     end
   end
 
-  module BaseSeri
-    include BaseNode
-
-    abstract def each(&block : BaseNode ->)
-
-    def apply_cap!(cap : Bool = true) : Bool
-      each { |x| cap = x.apply_cap!(cap) }
-      cap
-    end
-
-    def to_txt(io : IO) : Nil
-      prev = nil
-
-      each do |node|
-        io << ' ' if node.add_space?(prev)
-        node.to_txt(io)
-        prev = node
-      end
-    end
-
-    def to_mtl(io : IO) : Nil
-      io << '〈' << @tab << '\t'
-      prev = nil
-
-      each do |node|
-        io << "\t " if node.add_space?(prev)
-        node.to_mtl(io)
-        prev = node
-      end
-
-      io << '〉'
-    end
-
-    def inspect(io : IO, pad = -1) : Nil
-      pad_space = pad > 0 ? " " * pad : ""
-
-      io << pad_space << '{' << self.klass << '/' << @tab << '}' << '\n'
-      each(&.inspect(io, pad + 2))
-      io << pad_space << '{' << '/' << self.klass << '}'
-
-      io << '\n' if pad >= 0
-    end
-  end
-
   class BaseWord
     include BaseNode
 
@@ -123,7 +79,7 @@ module MtlV2::MTL
     property val : String = ""
     property idx : Int32 = 0
 
-    def initialize(@key = "", @val = @key, @tab = 0, @idx = 0)
+    def initialize(@key = "", @val = @key, @tab : Int32 = 0, @idx : Int32 = 0)
     end
 
     def initialize(term : V2Term, pos : Int32 = 0)
@@ -157,9 +113,53 @@ module MtlV2::MTL
       io << @val << 'ǀ' << @tab << 'ǀ' << @idx << 'ǀ' << @key.size
     end
 
-    def inspect(io : IO = STDOUT, pad = -1) : Nil
+    def inspect(io : IO = STDOUT, pad : Int32 = -1) : Nil
       io << " " * pad if pad > 0
-      io << "(#{self.klass}: #{@key} = #{@val})"
+      io << "#{self.klass}[#{@key}/#{@val}]"
+      io << '\n' if pad >= 0
+    end
+  end
+
+  #####
+
+  module BaseSeri
+    include BaseNode
+
+    abstract def each(&block : BaseNode -> Nil)
+
+    def apply_cap!(cap : Bool = true) : Bool
+      each { |x| cap = x.apply_cap!(cap) }
+      cap
+    end
+
+    def to_txt(io : IO) : Nil
+      prev = nil
+
+      each do |node|
+        io << ' ' if node.add_space?(prev)
+        node.to_txt(io)
+        prev = node
+      end
+    end
+
+    def to_mtl(io : IO) : Nil
+      io << '〈' << @tab << '\t'
+      prev = nil
+
+      each do |node|
+        io << "\t " if node.add_space?(prev)
+        node.to_mtl(io)
+        prev = node
+      end
+
+      io << '〉'
+    end
+
+    def inspect(io : IO, pad : Int32 = -1) : Nil
+      pad_space = pad > 0 ? " " * pad : ""
+      io << pad_space << '{' << self.klass << '/' << @tab << '}' << '\n'
+      each(&.inspect(io, pad &+ 2))
+      io << pad_space << '{' << '/' << self.klass << '}'
       io << '\n' if pad >= 0
     end
   end
@@ -171,18 +171,17 @@ module MtlV2::MTL
     property right : BaseNode
 
     def initialize(@left : BaseNode, @right : BaseNode, @flip = false)
-      set_prev(left.prev?)
-      set_succ(right.succ?)
+      self.set_prev(left.prev?)
+      self.set_succ(right.succ?)
 
       if flip
-        @left, @right = right, left
-        left.set_succ(nil)
-        right.set_prev(nil)
-        right.succ, left.prev = left, right
-      else
-        left.set_prev(nil)
-        right.set_succ(nil)
+        @left = right
+        @right = left
+        @left.set_succ(@right)
       end
+
+      @left.set_prev(nil)
+      @right.set_succ(nil)
     end
 
     def each
@@ -194,9 +193,9 @@ module MtlV2::MTL
       left, right = flip ? {@right, @left} : {@left, @right}
 
       right.set_succ(@succ)
-      left.set_succ(right)
       left.set_prev(@prev)
 
+      left.set_succ(right)
       @prev = @succ = nil
 
       {left, right}
@@ -204,28 +203,26 @@ module MtlV2::MTL
   end
 
   class BaseExpr
-    include BaseNode
     include BaseSeri
 
     property head : BaseNode
     property tail : BaseNode
 
-    def initialize(head : BaseNode, tail : BaseNode,
-                   flip = false, @tab = 0)
-      set_prev(head.prev?)
-      set_succ(tail.succ?)
+    def initialize(@head : BaseNode, @tail : BaseNode, flip : Bool = false, @tab : Int32 = 0)
+      self.set_prev(head.prev?)
+      self.set_succ(tail.succ?)
 
       if flip
-        @head, @tail = tail, tail.prev
-        @tail.succ = tail.prev = nil
-        head.succ, tail.prev = tail, head
-      else
-        @head, @tail = head, tail
-        head.prev = tail.succ = nil
+        @tail = tail.prev
+        @head = tail
+        @head.set_succ(head)
       end
+
+      @head.set_prev(nil)
+      @tail.set_succ(nil)
     end
 
-    def initialize(orig : BaseExpr, @tab = orig.tab)
+    def initialize(orig : BaseExpr, @tab : Int32 = orig.tab)
       @head, @tail = orig.head, orig.tail
       set_prev(orig.prev?)
       set_succ(orig.succ?)
@@ -233,24 +230,26 @@ module MtlV2::MTL
 
     def add_head(node : BaseNode) : Nil
       self.set_prev(node.prev?)
-      node.prev = nil
-      @head.set_prev(node)
+      node.set_prev(nil)
+
+      node.set_succ(@head)
       @head = node
     end
 
     def add_tail(node : BaseNode) : Nil
       self.set_succ(node.succ?)
-      node.succ = nil
-      @tail.set_succ(node)
+      node.set_succ(nil)
+
+      node.set_prev(@tail)
       @tail = node
     end
 
     def each
+      yield @head
       node = @head
 
-      while node
+      while node = node.succ?
         yield node
-        node = node.succ?
       end
     end
   end

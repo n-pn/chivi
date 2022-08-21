@@ -8,7 +8,7 @@ module MtlV2::MTL
     case tag[0]?
     when 'N' then NounWord.new(term, pos)
     when 'n' then noun_from_term(term, pos)
-    when 'd' then advb_from_term(term, pos)
+    when 'd' then AdvbWord.new(term, pos: pos)
     when 'v' then verb_from_term(term, pos)
     when 'a' then adjt_from_term(term, pos)
     when 'c' then conj_from_term(term, pos)
@@ -43,15 +43,6 @@ module MtlV2::MTL
     when 'n' then AjnoWord.new(term, pos: pos)
     when 'd' then AjadWord.new(term, pos: pos)
     else          AdjtWord.new(term, pos: pos)
-    end
-  end
-
-  def self.advb_from_term(term : V2Term, pos : Int32 = 0)
-    case term.key
-    when "不" then AdvbBu4.new(term, pos: pos)
-    when "没" then AdvbMei.new(term, pos: pos)
-    when "非" then AdvbFei.new(term, pos: pos)
-    else          AdvbWord.new(term, pos: pos)
     end
   end
 
