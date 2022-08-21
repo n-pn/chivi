@@ -45,12 +45,6 @@
   $: [capped, length] = check_capped(vpterm.val)
 
   let show_trans = false
-  let gtran_lang = [0, 0, 0] // gtran lang index for each tab
-  let btran_lang = [0, 0, 0] // bing tran lang index for each tab
-  $: if (key) {
-    gtran_lang = [0, 0, 0]
-    btran_lang = [0, 0, 0]
-  }
 
   function trigger_trans_submenu() {
     show_trans = !show_trans
@@ -84,63 +78,48 @@
     return [capped, words.length]
   }
 
+  const PREFIX = ', '
+
   async function load_gtran(g_tab = 0) {
     vpterm.val = '...'
     refocus()
 
-    const tran = await gtran(key, g_tab)
-    if (!tran) return
+    const res = await gtran(PREFIX + key, g_tab)
+    const tran = res.replace(PREFIX, '')
 
-    const [capped, length] = check_capped(tran)
-
-    if (tab == 2 && capped == 2 && length == 2) {
-      // swap first name and last name if result is a japanese name
+    if (tab == 2) {
       const [fname, lname] = tran.split(' ')
       vpterm.val = lname + ' ' + fname
-    } else if (capped == length || tab == 0) {
-      // keep tran format if it is a name or in book dict tab
-      vpterm.val = tran
     } else {
-      vpterm.val = lower_case(tran)
+      vpterm.val = tran
     }
 
-    gtran_lang[tab] = g_tab
-    gtran_lang = gtran_lang
     show_trans = false
-  }
-
-  function lower_case(text: string) {
-    return text.charAt(0).toLowerCase() + text.substring(1)
   }
 
   async function load_btran(b_tab = 0) {
     vpterm.val = '...'
     refocus()
 
-    const tran = await btran(key, b_tab)
-    const [capped, length] = check_capped(tran)
+    const tran = await btran(PREFIX + key, b_tab)
+    vpterm.val = tran.replace(PREFIX, '')
 
-    vpterm.val = tab == 0 || capped == length ? tran : lower_case(tran)
-
-    btran_lang[tab] = b_tab
-    btran_lang = btran_lang
     show_trans = false
   }
 
-  async function load_deepl(b_tab = 0) {
+  async function load_deepl() {
     vpterm.val = '...'
     refocus()
 
+    const PREFIX = ', '
     const res = await fetch('/qtran/deepl', {
       method: 'POST',
-      body: JSON.stringify({ text: key }),
+      body: JSON.stringify({ text: PREFIX + key }),
     })
 
     if (res.ok) {
       const data = await res.json()
-      vpterm.val = data.text
-    } else {
-      console.log(await res.json())
+      vpterm.val = data.text.replace(PREFIX, '')
     }
 
     show_trans = false

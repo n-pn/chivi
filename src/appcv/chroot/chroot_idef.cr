@@ -60,19 +60,19 @@ class CV::Chroot
   @vpages = {} of Int32 => Array(Chinfo)
 
   def chpage(vi_pg : Int32)
-    @vpages[vi_pg] ||= begin
-      chmin = VI_PSIZE &* vi_pg
+    # @vpages[vi_pg] ||= begin
+    chmin = VI_PSIZE &* vi_pg
 
-      chmax = VI_PSIZE &+ chmin
-      chmax = self.chap_count if chmax > self.chap_count
+    chmax = VI_PSIZE &+ chmin
+    chmax = self.chap_count if chmax > self.chap_count
 
-      infos = self._repo.all(chmin &+ 1, chmax)
+    infos = self._repo.all(chmin &+ 1, chmax)
 
-      cvmtl = self.nvinfo.cvmtl
-      infos.each(&.trans!(cvmtl))
+    cvmtl = self.nvinfo.cvmtl
+    infos.each(&.trans!(cvmtl))
 
-      infos
-    end
+    infos
+    # end
   end
 
   getter lastpg : Array(Chinfo) do
