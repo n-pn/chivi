@@ -31,7 +31,7 @@ module MtlV2::MTL
       @succ.try { |x| yield x }
     end
 
-    def as!(target : BaseNode)
+    def bequest!(target : BaseNode)
       target.set_prev(@prev)
       target.set_succ(@succ)
       @prev = @succ = nil
@@ -79,7 +79,7 @@ module MtlV2::MTL
     property val : String = ""
     property idx : Int32 = 0
 
-    def initialize(@key = "", @val = @key, @tab : Int32 = 0, @idx : Int32 = 0)
+    def initialize(@key : String, @val = @key, @tab : Int32 = 0, @idx : Int32 = 0)
     end
 
     def initialize(term : V2Term, pos : Int32 = 0)

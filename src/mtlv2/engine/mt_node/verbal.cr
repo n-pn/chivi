@@ -241,4 +241,48 @@ module MtlV2::MTL
   class VYouWord < BaseWord
     include Verbal
   end
+
+  ####
+
+  class VerbPair < BasePair
+    include Verbal
+  end
+
+  class VerbForm
+    include BaseSeri
+    include Verbal
+
+    getter verb : Verbal
+    getter advb : BaseNode? = nil # advebial form
+    getter prep : PrepForm? = nil # prepos phrase
+
+    def initialize(@verb : Verbal, @attr = verb.attr)
+      verb.bequest!(self)
+    end
+
+    def add_advb(@advb : BaseNode) : Nil
+      self.set_prev(advb.prev?)
+      advb.set_prev(nil)
+    end
+
+    def add_prep(@prep : BaseNode) : Nil
+      self.set_prev(prep.prev?)
+      prep.set_prev(nil)
+    end
+
+    def each
+      if (prep = @prep) && !prep.postpos?
+        yield prep
+        prep = nil
+      end
+
+      if advb = @advb
+        # TODO: check if advb should place after
+        yield advb
+      end
+
+      yield verb
+      yield prep if prep
+    end
+  end
 end

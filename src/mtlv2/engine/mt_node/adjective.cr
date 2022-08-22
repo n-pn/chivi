@@ -30,8 +30,8 @@ module MtlV2::MTL
   end
 
   module Adjective
-    getter kind = AdjtAttr::None
-    forward_missing_to @kind
+    getter attr = AdjtAttr::None
+    forward_missing_to @attr
   end
 
   class AdjtWord < BaseWord
@@ -39,7 +39,7 @@ module MtlV2::MTL
 
     def initialize(term : V2Term, pos = 0)
       super(term, pos)
-      @kind = AdjtAttr.from(term.tags[pos]? || "a", term.key)
+      @attr = AdjtAttr.from(term.tags[pos]? || "a", term.key)
     end
   end
 
@@ -49,11 +49,11 @@ module MtlV2::MTL
     include Adjective
 
     def initialize(head : BaseNode, tail : BaseNode, flip = false,
-                   @kind : AdjtAttr = :none)
+                   @attr : AdjtAttr = :none)
       super(head, tail, flip: flip)
     end
 
-    def initialize(orig : BaseExpr, tab = 0, @kind : AdjtAttr = :none)
+    def initialize(orig : BaseExpr, tab = 0, @attr : AdjtAttr = :none)
       super(orig, tab)
     end
   end
@@ -68,6 +68,8 @@ module MtlV2::MTL
     def initialize(@adjt, @advb : Adverbial)
       self.set_succ(adjt.succ?)
       self.set_prev(advb.prev?)
+      adjt.set_succ(nil)
+      advb.set_prev(nil)
     end
 
     def each

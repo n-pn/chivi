@@ -97,7 +97,7 @@ module MtlV2::MTL
 
     def fold_left!(tail : BaseNode, head : BaseNode) : Nil
       while (tail = tail.prev?) && tail != head
-        puts [tail, tail.prev]
+        # puts [tail, tail.prev]
         tail = MTL.fold_left!(tail, tail.prev)
       end
     end

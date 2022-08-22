@@ -97,6 +97,18 @@ module MtlV2::MTL
     def human?
       @attr.includes?(NounAttr.flags(Honor, Human, Affil, Basic))
     end
+
+    def self.from_term(term : V2Term, pos : Int32 = 0)
+      tag = term.tags[pos]? || "n"
+      return NameWord.new(term, pos) if tag[0]? == 'N'
+
+      case tag[1]?
+      when 'h' then HonorNoun.new(term, pos)
+      when 'f' then LocatNoun.new(term, pos)
+      when 't' then TimeWord.new(term, pos)
+      else          NounWord.new(term, pos)
+      end
+    end
   end
 
   class NounWord < BaseWord
@@ -105,6 +117,16 @@ module MtlV2::MTL
     def initialize(term : V2Term, pos : Int32 = 0)
       super(term, pos)
       @attr = NounAttr.from_tag(term.tags[pos]? || "n")
+    end
+
+    def initialize(@key : String, @val : String, @tab : Int32 = 0, @idx : Int32 = 0)
+    end
+  end
+
+  class NameWord < NounWord
+    def initialize(term : V2Term, pos : Int32 = 0)
+      super(term, pos)
+      @attr = NounAttr.proper_tag(term.tags[pos]? || "N")
     end
   end
 
@@ -180,7 +202,7 @@ module MtlV2::MTL
     property num_mod : NumberWord | Nil = nil              # number modidifer
     property qti_mod : QuantiWord | NquantWord | Nil = nil # quanti/nquant modifier
 
-    property de1_mod : Ude1Expr | Nil = nil # modifier phrase with 的
+    property de1_mod : Ude1Pair | Nil = nil # modifier phrase with 的
     property adj_mod : AdjtWord | Nil = nil # adjective modifier
 
     def initialize(@noun)

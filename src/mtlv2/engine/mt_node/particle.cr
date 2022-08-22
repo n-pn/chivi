@@ -23,6 +23,10 @@ module MtlV2::MTL
   end
 
   class PtclDe2 < PtclWord
+    def as_noun!
+      noun = NounWord.new(key: @key, val: "đất", tab: 0, idx: @idx)
+      self.bequest!(noun)
+    end
   end
 
   class PtclDe3 < PtclWord
@@ -43,9 +47,19 @@ module MtlV2::MTL
   class PtclLian < PtclWord
   end
 
-  class Ude1Expr < BasePair
-    def initialize(left : BaseNode, ude1 : Ude1Word)
+  class Ude1Pair < BasePair
+    def initialize(left : BaseNode, ude1 : PtclDe1)
       super(left, ude1, flip: true)
+    end
+
+    def noun_prefix?
+      false
+    end
+  end
+
+  class Ude2Pair < BasePair
+    def initialize(left : BaseNode, ude2 : PtclDe2)
+      super(left, ude2, flip: true)
     end
 
     def noun_prefix?

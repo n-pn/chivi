@@ -6,8 +6,8 @@ module MtlV2::MTL
     tag = term.tags[pos]? || ""
 
     case tag[0]?
-    when 'N' then NounWord.new(term, pos)
-    when 'n' then noun_from_term(term, pos)
+    when 'N' then NameWord.new(term, pos)
+    when 'n' then Nominal.from_term(term, pos)
     when 'd' then AdvbWord.new(term, pos: pos)
     when 'v' then Verbal.from_term(term, pos)
     when 'a' then adjt_from_term(term, pos)
@@ -28,13 +28,6 @@ module MtlV2::MTL
   end
 
   def self.noun_from_term(term : V2Term, pos : Int32 = 0)
-    tag = term.tags[pos]? || ""
-    case tag[1]?
-    when 'h' then HonorNoun.new(term, pos)
-    when 'f' then LocatNoun.new(term, pos)
-    when 't' then TimeWord.new(term, pos)
-    else          NounWord.new(term, pos)
-    end
   end
 
   def self.adjt_from_term(term : V2Term, pos : Int32 = 0)
