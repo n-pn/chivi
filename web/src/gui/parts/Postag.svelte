@@ -2,60 +2,106 @@
   import pt_labels from '$lib/consts/postag_labels.json'
   import pt_briefs from '$lib/consts/postag_briefs.json'
 
-  const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt']
-
-  const groups = [
-    // prettier-ignore
-    [
-      'Nr','Nal', 'Nag',
-      'Na', 'Nw', 'Nz',
-      '-',
-      'n', 'nh', 'na',
-      'nt', 'ns', 'nf',
-      '-',
-      'a', 'ab', 'al',
-      'an', 'ad',
-      '-',
-      'v', 'vi', 'vo',
-      'vn', 'vd',
-      '-',
-    ],
-    // prettier-ignore
-    [
-      'm', 'q', 'mq',
-      '-',
-      'rr', 'rz', 'ry',
-      'r',
-      '-',
-      'd', 'p', 'u',
-      'c', 'cc',
-      '-',
-      'vx', 'vm', 'vf',
-      '-',
-      'xe', 'xy', 'xo',
-    ],
-    // prettier-ignore
-    [
-      '-',
-      'kn', 'ka', 'kv',
-      'k',
-      '-',
-      'x', 'xx', 'xl',
-      'w',
-      '-',
-      '!', '~sv', '~sa',
-      '-',
-      '~vp', '~ap', 'nl',
-      '~pn', '~dp', 'i'
-    ],
+  // prettier-ignore
+  const names = [
+    'Nr', 'Nh', 'Nt',
+    'Na', 'Nal', 'Nag',
+    'Nw', 'Nl', 'Nz'
   ]
 
-  function find_group(tag: string) {
-    for (const [idx, group] of groups.entries()) {
-      if (group.includes(tag)) return idx
-    }
+  // prettier-ignore
+  const nouns = [
+    'n', 'nh', 'na',
+    'nt', 'ns', 'nf',
+    'nv', 'no', 'nc'
+  ]
 
-    return -1
+  // prettier-ignore
+  const adjts = [
+    'a', 'ab', 'az',
+    'an', 'ad', 'av',
+    'al', '~na'
+  ]
+
+  // prettier-ignore
+  const verbs = [
+    'v', 'vi', 'vo',
+    'vn', 'vd', 'vj',
+    'vc', 'vm', 'vf'
+  ]
+
+  // prettier-ignore
+  const pronouns = [
+    'rr', 'rz', 'ry',
+    'r'
+  ]
+
+  // prettier-ignore
+  const numbers = [
+    'm', 'q', 'mq',
+    'qx', 'mqx'
+  ]
+
+  // prettier-ignore
+  const extras = [
+    'k', 'kx', 'kl',
+    '!', 'i', ''
+  ]
+
+  // prettier-ignore
+  const adverbs = [
+    'd', 'ad', 'vd'
+  ]
+
+  // prettier-ignore
+  const functions = [
+    'c', 'p', 'u',
+    'xe', 'xo', 'xy'
+  ]
+
+  // prettier-ignore
+  const literals = [
+    'x', 'xx', 'xl',
+    'xq', 'xt', 'w'
+  ]
+
+  // prettier-ignore
+  const phrases = [
+    '~nl', '~al', '~vl',
+    '~dv', '~da', '~dp',
+    '~pn', '~na', '~sv',
+  ]
+
+  // const labels = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt']
+
+  const tabs = [
+    {
+      label: 'Danh từ riêng/chung',
+      ptags: [names, nouns],
+    },
+    {
+      label: 'Tính từ / Động từ',
+      ptags: [adjts, verbs],
+    },
+    {
+      label: 'Số từ / Đại từ / Thực từ khác',
+      ptags: [numbers, pronouns, extras],
+    },
+    {
+      label: 'Phó từ / Liên từ / Trợ từ / Giới từ',
+      ptags: [adverbs, functions],
+    },
+    {
+      label: 'Từ ngoại lai / Dấu câu / Cấu trúc',
+      ptags: [literals, phrases],
+    },
+  ]
+
+  function in_group(groups: string[][], ptag: string): boolean {
+    for (const group of groups) {
+      if (group.includes(ptag)) return true
+    }
+    return false
   }
 
   function map_kbd(tag: string) {
@@ -67,97 +113,86 @@
       case 'Na': return ']'
       case 'Nz': return '.'
       case 'Nw': return '/'
-
       case 'al': return ';'
       case 'vo': return '\''
-
       default: return ''
     }
   }
 </script>
 
 <script lang="ts">
-  import { onMount } from 'svelte'
   import { tooltip } from '$lib/actions'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
   export let ptag = ''
   export let state = 1
 
-  let active_tab = 0
-  let origin_tab = 0
-
-  let modal: HTMLElement | null = null
-
-  onMount(() => {
-    if (!ptag) return
-    origin_tab = find_group(ptag)
-    active_tab = origin_tab > 0 ? origin_tab : 0
-    scroll_to_tag(ptag)
-  })
-
   // prettier-ignore
   const on_close = (_?: any) => { state = 1 }
 
   const pick_tag = (ntag: string) => {
-    ptag = ptag == ntag ? '' : ntag
+    ptag = ntag
     on_close()
   }
 
-  function scroll_to_tab(tab: number) {
-    sections[tab]?.scrollIntoView({ behavior: 'smooth' })
-    active_tab = tab
-  }
+  let open_tab = 0
 
-  function scroll_to_tag(tag: string) {
-    modal
-      ?.querySelector(`.pos-tag[data-tag="${tag}"]`)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }
+  $: map_open_tab(ptag)
 
-  let sections = []
+  function map_open_tab(ptag: string) {
+    for (let i = 0; i < tabs.length; i++) {
+      if (in_group(tabs[i].ptags, ptag)) {
+        open_tab = i
+        return
+      }
+    }
+    open_tab = 0
+  }
 </script>
 
 <Dialog actived={state == 2} --z-idx={80} class="postag" {on_close}>
   <postag-head slot="header">
     <postag-tabs>
-      {#each gnames as gname, tab}
+      {#each tabs as { label }, tab}
         <button
           class="postag-tab"
-          class:_active={tab == active_tab}
-          class:_origin={tab == origin_tab}
-          on:click={() => scroll_to_tab(tab)}>
-          <span>{gname}</span>
+          class:_active={tab == open_tab}
+          data-tip={label}
+          data-kbd={tab + 1}
+          on:click={() => (open_tab = tab)}>
+          <span>Nhóm {tab + 1}</span>
         </button>
       {/each}
     </postag-tabs>
   </postag-head>
 
   <postag-body>
-    {#each groups as tags, tab}
-      <section class="tags" bind:this={sections[tab]}>
-        {#each tags as ntag}
-          {#if ntag != '-'}
-            <button
-              class="pos-tag"
-              class:_active={ntag == ptag}
-              data-tag={ntag}
-              data-kbd={map_kbd(ntag)}
-              use:tooltip={pt_briefs[ntag]}
-              data-anchor=".postag"
-              on:click={() => pick_tag(ntag)}>
-              <span>{pt_labels[ntag]}</span>
-              {#if ntag == ptag}
-                <SIcon name="check" />
-              {/if}
-            </button>
-          {:else}
-            <div class="-sep" />
-          {/if}
+    {#each tabs as { label, ptags }, index}
+      {@const open = index == open_tab}
+      <details id="ptg-{index}" {open}>
+        <summary class:active={open}>{label}</summary>
+        {#each ptags as tags, pi}
+          {#if pi > 0}<section class="sep" />{/if}
+
+          <section class="tags">
+            {#each tags as itag}
+              {@const active = itag == ptag}
+              <button
+                class="pos-tag"
+                class:_active={active}
+                data-tag={itag}
+                data-kbd={map_kbd(itag)}
+                use:tooltip={pt_briefs[itag]}
+                data-anchor=".postag"
+                on:click={() => pick_tag(itag)}>
+                <span>{pt_labels[itag]}</span>
+                {#if active}<SIcon name="check" />{/if}
+              </button>
+            {/each}
+          </section>
         {/each}
-      </section>
+      </details>
     {/each}
   </postag-body>
 </Dialog>
@@ -175,19 +210,19 @@
   postag-tabs {
     flex: 1;
     padding-top: 0.375rem;
-    @include flex-cx($gap: 0.375rem);
+    @include flex-cx($gap: 0.25rem);
   }
 
   .postag-tab {
     font-weight: 500;
-    padding: 0 0.5rem;
+    padding: 0 0.375rem;
     background-color: transparent;
 
     height: $tab-height;
     line-height: $tab-height;
     flex-shrink: 0;
 
-    @include ftsize(sm);
+    @include ftsize(xs);
     @include fgcolor(tert);
 
     @include bdradi($loc: top);
@@ -195,10 +230,6 @@
 
     &:hover {
       @include bgcolor(secd);
-    }
-
-    &._origin {
-      @include fgcolor(secd);
     }
 
     &._active {
@@ -211,17 +242,30 @@
   postag-body {
     display: block;
     position: relative;
-    padding-top: 0.25rem;
+    // padding-top: 0.25rem;
+    padding-bottom: 0.75rem;
     height: 22rem;
     max-height: calc(100vh - 6.5rem);
     @include scroll();
     @include bgcolor(secd);
   }
 
+  summary {
+    font-weight: 500;
+    line-height: 2.25rem;
+    margin: 0rem 0.75rem;
+    font-size: rem(15px);
+    @include fgcolor(tert);
+
+    &.active {
+      @include fgcolor(primary);
+    }
+  }
+
   .tags {
     @include grid(null, $gap: 0.375rem);
     grid-template-columns: 1fr 1fr 1fr;
-    padding: 0.5rem 0.75rem;
+    padding: 0 0.75rem;
   }
 
   .pos-tag {
@@ -253,10 +297,23 @@
     }
   }
 
-  .-sep {
-    width: 50%;
-    grid-column: 1 / -1;
-    margin: 0.125rem auto;
-    @include border(--bd-main, $loc: top);
+  .sep {
+    display: block;
+    margin: 0.375rem 0;
+
+    &::after {
+      display: block;
+      content: '';
+      width: 66%;
+      margin: 0 auto;
+      @include border(--bd-main, $loc: top);
+    }
   }
+
+  // .-sep {
+  //   width: 50%;
+  //   grid-column: 1 / -1;
+  //   margin: 0.125rem auto;
+  //   @include border(--bd-main, $loc: top);
+  // }
 </style>

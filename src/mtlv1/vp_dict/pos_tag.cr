@@ -108,7 +108,7 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def property?
-    @tag.naffil? || @tag.nattr? || @tag.posit?
+    @tag.nlabel? || @tag.nattr? || @tag.posit?
   end
 
   @[AlwaysInline]

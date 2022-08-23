@@ -27,16 +27,16 @@ struct CV::PosTag
 
   def self.parse_verb(tag : String, key : String)
     case tag[1]?
-    when nil then Verb
     when 'n' then Veno
     when 'd' then Vead
     when 'f' then Vdir
-    when 'x' then Vpro
+    when 'c' then Vcmp
     when 'i' then Vintr
-    when 'l' then VerbObject
+    when 'l' then Vintr
     when 'o' then VerbObject
-    when 'm' then parse_vmodal(key)
-    else          Verb
+    when 'm', 'x'
+      parse_vmodal(key)
+    else Verb
     end
   end
 end

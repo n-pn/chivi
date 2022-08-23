@@ -2,8 +2,6 @@ struct CV::PosTag
   NOUNS = {
     # 名词 - noun - danh từ chung
     {"n", "Noun", Pos::Nominal | Pos::Contws},
-    # 抽象概念 - abstract concept - danh từ trừu tượng
-    # {"nc", "Ncon", Pos::Nominal | Pos::Contws},
 
     # 名词性语素 - nominal formulaic expression
     {"nl", "Nform", Pos::Nominal | Pos::Contws},
@@ -18,6 +16,13 @@ struct CV::PosTag
     {"nt", "Ntime", Pos::Nominal | Pos::Contws},
     # attributes
     {"na", "Nattr", Pos::Nominal | Pos::Contws},
+
+    # animate noun
+    {"nv", "Nlive", Pos::Nominal | Pos::Contws},
+    # inanimate noun
+    {"no", "Nobjt", Pos::Nominal | Pos::Contws},
+    # 抽象概念 - abstract concept - danh từ trừu tượng
+    {"nc", "Nabst", Pos::Nominal | Pos::Contws},
   }
 
   NAMES = {
@@ -30,7 +35,10 @@ struct CV::PosTag
     # 地名 - location name - địa danh |  机构团体名 - organization name - tổ chức
     {"Na", "Naffil", Pos::Nominal | Pos::Names | Pos::Contws},
 
-    # tựa sách
+    # brand/label
+    {"Nl", "Nlabel", Pos::Nominal | Pos::Names | Pos::Contws},
+
+    # tác phẩm
     {"Nw", "Btitle", Pos::Nominal | Pos::Names | Pos::Contws},
 
     # 其它专名 - other proper noun - tên riêng khác
@@ -47,18 +55,20 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def places?
-    @tag.naffil? || @tag.posit?
+    @tag.naffil? || @tag.posit? || @tag.nlabel?
   end
 
   def self.parse_noun(tag : String)
     case tag[1]?
     when 'a' then Nattr
     when 't' then Ntime
-    when 'd' then AdvNoun
     when 's' then Posit
     when 'f' then Locat
     when 'h' then Honor
-    else          Noun
+      # when 'v' then Nlive
+      # when 'o' then Nobjt
+      # when 'c' then Nabst
+    else Noun
     end
   end
 
@@ -67,6 +77,7 @@ struct CV::PosTag
     when 'r' then Person
     when 'a' then Naffil
     when 'w' then Btitle
+    when 'l' then Nlabel
     else          Nother
     end
   end
