@@ -17,11 +17,19 @@ module CV::HttpUtil
     UTF8.includes?(sname) ? "UTF-8" : "GBK"
   end
 
-  def cache(file : String, url : String, ttl = 10.years, lbl = "-", encoding = "UTF-8")
-    return read_gzip(file) if File.info?(file).try(&.modification_time.> Time.utc - ttl)
+  def cache(file : String, url : String,
+            ttl : Time::Span | Time::MonthSpan = 10.years,
+            lbl : String = "-", encoding : String = "UTF-8")
+    return read_gzip(file) if fresh?(file, ttl)
     fetch(url, lbl, encoding).tap { |data| save_gzip(file, data) }
-  rescue
+  rescue err
+    Log.error(exception: err) { url.colorize.red }
     read_gzip(file)
+  end
+
+  private def fresh?(file : String, ttl)
+    return false unless info = File.info?(file)
+    Time.utc - ttl < info.modification_time
   end
 
   def read_gzip(file : String)

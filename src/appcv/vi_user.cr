@@ -1,3 +1,4 @@
+require "clear"
 require "crypto/bcrypt/password"
 
 class CV::Viuser

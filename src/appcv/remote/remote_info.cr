@@ -6,14 +6,15 @@ require "./remote_mulu"
 
 class CV::RemoteInfo
   DIR = "var/books/.html"
-  TTL = 10.years
 
   def self.mkdir!(sname : String)
     Dir.mkdir_p(File.join(DIR, sname))
   end
 
   getter root_dir : String
-  @ttl : Time::Span | Time::MonthSpan
+
+  alias Tspan = Time::Span | Time::MonthSpan
+  @ttl : Tspan
 
   getter info_file : String { "#{@root_dir}/#{@s_bid}.html.gz" }
   getter info_link : String { SiteLink.info_url(@sname, @s_bid) }
@@ -21,10 +22,10 @@ class CV::RemoteInfo
   getter mulu_link : String { SiteLink.mulu_url(@sname, @s_bid) }
   getter mulu_file : String { "#{@root_dir}/#{@s_bid}-mulu.html.gz" }
 
-  def initialize(@sname : String, @s_bid : Int32, @ttl = TTL, @lbl = "-/-")
+  def initialize(@sname : String, @s_bid : Int32,
+                 @ttl : Tspan = 10.years, @lbl = "-/-")
     @root_dir = File.join(DIR, @sname)
     Dir.mkdir_p(@root_dir)
-
     @encoding = HttpUtil.encoding_for(@sname)
   end
 
@@ -49,7 +50,8 @@ class CV::RemoteInfo
     return info unless @sname.in?("69shu", "ptwxz")
     html = HttpUtil.cache(mulu_file, mulu_link, @ttl, @lbl, @encoding)
     HtmlParser.new(html)
-  rescue
+  rescue err
+    Log.error(exception: err) { mulu_link }
     HtmlParser.new("")
   end
 

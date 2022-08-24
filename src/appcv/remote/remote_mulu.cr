@@ -28,11 +28,9 @@ class CV::RemoteMulu
     "5200"     => {:chvol, ".listmain > dl"},
     "hetushu"  => {:chvol, "#dir"},
     "kanshu8"  => {:plain, ".pt-chapter-cont-detail.full > a"},
-    "133txt"   => {:plain, ".box_con:last-of-type > div:last-of-type > dl"},
-
+    "133txt"   => {:plain, ".box_con > #list:last-of-type a"},
     "uukanshu" => {:uukanshu, "#chapterList"},
     "zhwenpg"  => {:plain, ".clistitem > a"},
-
   }
 
   def extract_chaps! : Nil

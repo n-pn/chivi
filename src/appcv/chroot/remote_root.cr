@@ -5,7 +5,6 @@ require "../remote/remote_info"
 
 class CV::Chroot
   def reload_remote!(mode : Int8) : Nil
-    # Log.info { "reload [#{sname}] #{s_bid}, mode: #{mode}, stage: #{stage}".colorize.cyan }
     self.clear_cache! if mode > 0
 
     ttl = map_ttl(force: mode > 0)
@@ -15,7 +14,6 @@ class CV::Chroot
 
   def reseed_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
     parser = RemoteInfo.new(self.sname, self.s_bid, ttl: ttl, lbl: lbl)
-
     changed = parser.changed?(self.last_schid, self.utime)
     return unless force || changed
 

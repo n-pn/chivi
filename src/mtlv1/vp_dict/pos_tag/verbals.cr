@@ -12,6 +12,9 @@ struct CV::PosTag
     # 形式动词 - pro-verb - động từ hình thái
     {"vx", "Vpro", Pos::Verbal | Pos::Contws},
 
+    # so sánh
+    {"vx", "Vcmp", Pos::Verbal | Pos::Contws},
+
     # 不及物动词（内动词）- intransitive verb - nội động từ
     {"vi", "Vintr", Pos::Verbal | Pos::Contws},
     # 动词性语素 - verbal morpheme
@@ -32,7 +35,6 @@ struct CV::PosTag
     when 'f' then Vdir
     when 'c' then Vcmp
     when 'i' then Vintr
-    when 'l' then Vintr
     when 'o' then VerbObject
     when 'm', 'x'
       parse_vmodal(key)
