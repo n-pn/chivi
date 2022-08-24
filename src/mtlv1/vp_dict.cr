@@ -15,7 +15,7 @@ class CV::VpDict
     None # do not preload any existing files
   end
 
-  DIR = "var/dicts/v1"
+  class_property root = "var/dicts/v1"
 
   class_getter hanviet : self { load_other("hanviet") }
   class_getter surname : self { load_other("surname") }
@@ -31,12 +31,12 @@ class CV::VpDict
   class_getter suggest : self { load_basic("suggest") }
 
   class_getter nvdicts : Array(String) do
-    files = Dir.glob("#{DIR}/novel/*.tsv")
+    files = Dir.glob("#{@@root}/novel/*.tsv")
     files.map! { |f| File.basename(f, ".tsv") }
   end
 
   class_getter qtdicts : Array(String) do
-    files = Dir.glob("#{DIR}/cvmtl/*.tsv")
+    files = Dir.glob("#{@@root}/cvmtl/*.tsv")
     files.map { |f| "~" + File.basename(f, ".tsv") }
   end
 
@@ -82,7 +82,7 @@ class CV::VpDict
   end
 
   def self.path(label : String, group : String = ".")
-    File.join(DIR, group, label + ".tsv")
+    File.join(@@root, group, label + ".tsv")
   end
 
   #########################
@@ -122,7 +122,7 @@ class CV::VpDict
       Log.error { "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red }
     end
 
-    # Log.info { "<vp_dict> [#{file.sub(DIR, "")}] loaded: #{lines.size} lines".colorize.green }
+    # Log.info { "<vp_dict> [#{file.sub(@@root, "")}] loaded: #{lines.size} lines".colorize.green }
   end
 
   def find(key : String | Array(Char)) : VpTerm?
@@ -181,6 +181,6 @@ class CV::VpDict
     end
 
     File.write(file, data)
-    Log.info { "<vp_dict> [#{file.sub(DIR, "")}] saved, items: #{list.size}".colorize.yellow }
+    Log.info { "<vp_dict> [#{file.sub(@@root, "")}] saved, items: #{list.size}".colorize.yellow }
   end
 end
