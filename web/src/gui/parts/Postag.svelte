@@ -4,16 +4,15 @@
 
   // prettier-ignore
   const names = [
-    'Nr', 'Nh', 'Nt',
-    'Na', 'Nal', 'Nag',
-    'Nw', 'Nl', 'Nz'
+    'Nr', 'Na', 'Nl',
+    'Nw', 'Nz'
   ]
 
   // prettier-ignore
   const nouns = [
-    'n', 'nh', 'na',
+    'nv', 'no', 'nc',
     'nt', 'ns', 'nf',
-    'nv', 'no', 'nc'
+    'nh', 'na', 'n'
   ]
 
   // prettier-ignore
