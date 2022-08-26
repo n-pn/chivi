@@ -50,7 +50,14 @@
 
   export let terms = []
   export let start = 1
-  export let query = { key: '', val: '', ptag: '', prio: '', uname: '' }
+  export let query = {
+    key: '',
+    val: '',
+    tag: '',
+    prio: '',
+    uname: '',
+    _mode: '',
+  }
 
   $: vdict.put(dname, d_dub)
 
@@ -86,12 +93,6 @@
     query = query
   }
 
-  function special_type(uname?: string) {
-    if (!uname) return 'a'
-    if (uname.charAt(0) != '!') return uname == $session.uname ? 'b' : 'c'
-    return uname == '!' + $session.uname ? 'd' : 'e'
-  }
-
   function show_lookup(key: string) {
     ztext.put(key)
     lookup.show(true)
@@ -100,6 +101,15 @@
   function show_upsert(key: string, state = 1) {
     ztext.put(key)
     upsert.show(d_tab, state)
+  }
+
+  const modes = ['Cộng đồng', 'Lưu nháp', 'Cá nhân']
+  function map_mode(_mode: number) {
+    return modes[_mode] || modes[0]
+  }
+
+  function map_uname_class(uname: string) {
+    return uname == $session.uname ? '_self' : '_other'
   }
 </script>
 
@@ -129,6 +139,7 @@
           <th>Phân loại</th>
           <th class="prio">Ư.t</th>
           <th class="uname">Người dùng</th>
+          <th class="_mode">Cách lưu</th>
           <th>Cập nhật</th>
         </tr>
 
@@ -138,12 +149,14 @@
           <td><input type="text" placeholder="-" bind:value={query.val} /></td>
           <td>
             <button class="m-btn _sm" on:click={() => (postag_state = 2)}
-              >{pt_labels[query.ptag] || '-'}</button>
+              >{pt_labels[query.tag] || '-'}</button>
           </td>
           <td class="prio"
             ><input type="text" placeholder="-" bind:value={query.prio} /></td>
           <td class="uname"
             ><input type="text" placeholder="-" bind:value={query.uname} /></td>
+          <td class="_mode"
+            ><input type="text" placeholder="-" bind:value={query._mode} /></td>
           <td>
             <button class="m-btn _sm" on:click={reset_query}>
               <SIcon name="eraser" />
@@ -159,7 +172,7 @@
       </thead>
 
       <tbody>
-        {#each terms as { key, vals, tags, prio, mtime, uname, _flag }, idx}
+        {#each terms as { key, vals, tags, prio, mtime, uname, _flag, _mode }, idx}
           <tr class="term _{_flag}">
             <td class="-idx">{start + idx}</td>
             <td class="-key" on:click={() => show_lookup(key)}>
@@ -195,7 +208,7 @@
                 </button>
               </div>
             </td>
-            <td class="-ptag">
+            <td class="-tag">
               <span on:click={() => show_upsert(key, 2)}>
                 {tags.map((x) => pt_labels[x]).join(' ') || '~'}
               </span>
@@ -207,7 +220,7 @@
                 </button>
                 <a
                   class="m-btn _xs"
-                  href={pager.gen_url({ ptag: tags[0] || '~' })}>
+                  href={pager.gen_url({ tag: tags[0] || '~' })}>
                   <SIcon name="search" />
                 </a>
               </div>
@@ -216,9 +229,10 @@
               <a href="{$page.url.pathname}?prio={prio || '-'}"
                 >{render_prio(prio)}</a>
             </td>
-            <td class="uname _{special_type(uname)}">
+            <td class="uname {map_uname_class(uname)}">
               <a href="{$page.url.pathname}?uname={uname}">{uname}</a>
             </td>
+            <td class="_mode _{_mode}">{map_mode(_mode)} </td>
             <td class="mtime">{rel_time_vp(mtime)} </td>
           </tr>
         {/each}
@@ -239,7 +253,7 @@
   {/if}
 
   {#if postag_state > 1}
-    <Postag bind:state={postag_state} bind:ptag={query.ptag} />
+    <Postag bind:state={postag_state} bind:ptag={query.tag} />
   {/if}
 {/if}
 
@@ -308,6 +322,7 @@
   }
 
   .-key {
+    max-width: 4rem;
     @include ftsize(md);
   }
 
@@ -324,6 +339,31 @@
 
   .uname {
     width: 6rem;
+
+    &._self {
+      @include fgcolor(harmful);
+    }
+
+    &._other {
+      @include fgcolor(primary);
+    }
+  }
+
+  ._mode {
+    width: 4rem;
+    @include ftsize(xs);
+
+    &._0 {
+      @include fgcolor(success);
+    }
+
+    &._1 {
+      @include fgcolor(neutral);
+    }
+
+    &._2 {
+      @include fgcolor(private);
+    }
   }
 
   .-val {
@@ -364,22 +404,6 @@
       text-decoration: line-through;
       font-style: italic;
     }
-  }
-
-  ._b {
-    @include fgcolor(success);
-  }
-
-  ._c {
-    @include fgcolor(primary);
-  }
-
-  ._d {
-    @include fgcolor(warning);
-  }
-
-  ._e {
-    @include fgcolor(harmful);
   }
 
   thead .m-btn {
