@@ -21,6 +21,16 @@
     o_sname: string
     i_chmin: number
   }
+
+  function init_data(nslist: CV.Nslist, { sname }): [CV.Chroot[], PatchForm] {
+    let seeds = [...nslist.other, ...nslist.users]
+    seeds = seeds.filter((x) => x.sname != sname)
+
+    const { chmax, sname: o_sname } = seeds[0] || { chmax: 0, sname: '' }
+
+    const form = { chmin: 1, i_chmin: 1, chmax: chmax, o_sname }
+    return [seeds, form]
+  }
 </script>
 
 <script lang="ts">
@@ -33,24 +43,7 @@
   export let nslist: CV.Nslist
   export let nvseed: CV.Chroot
 
-  $: [seeds, patch_form] = init_data(nslist)
-  $: console.log({ nslist })
-
-  function init_data(nslist: CV.Nslist): [CV.Chroot[], PatchForm] {
-    // console.log({ nslist })
-    const seeds = [...nslist.other, ...nslist.users]
-    const fseed = seeds[0]
-
-    const form = {
-      chmin: 1,
-      i_chmin: 1,
-      chmax: fseed?.chmax ?? 0,
-      o_sname: fseed?.sname ?? '',
-    }
-
-    return [seeds, form]
-  }
-
+  let [seeds, patch_form] = init_data(nslist, nvseed)
   let prune = ''
 
   async function submit_patch() {
