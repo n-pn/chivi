@@ -116,6 +116,8 @@ tests = [
 
   {"133txt", 9, false},
   {"133txt", 93974878, false},
+
+  {"uuks", 56862, false},
 ]
 
 tests.each do |sname, s_bid, fresh|

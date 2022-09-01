@@ -116,10 +116,14 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot = load_chroot
     chinfo = load_chinfo(chroot)
 
-    mode = chroot.is_remote ? 1_i8 : 0_i8
-    zhtext = chinfo.all_text(mode: mode, uname: _viuser.uname).join('\n')
+    input = String.build do |io|
+      mode = chroot.is_remote ? 1_i8 : 0_i8
+      texts = chinfo.all_text(mode: mode, uname: _viuser.uname)
+      io << texts.shift?
+      texts.each { |text| io << text.split('\n', 2).last }
+    end
 
-    serv_json({chvol: chinfo.chvol, title: chinfo.title, input: zhtext})
+    serv_json({chvol: chinfo.chvol, title: chinfo.title, input: input})
   end
 
   private def update_chroot(chroot : Chroot, chinfo : Chinfo, trunc = false)

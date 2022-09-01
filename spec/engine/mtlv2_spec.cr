@@ -1,16 +1,14 @@
 # require "spec"
 # require "../../src/mtlv2/engine"
 
-# MTL = MtlV2::Engine.generic_mtl("combine")
+# ENGINE = MtlV2::Engine.generic_mtl("combine")
 
 # def convert(input : String)
-#   MTL.cv_plain(input, cap_first: false).to_txt
+#   ENGINE.cv_plain(input, cap_first: false).to_txt
 # end
 
-# DIR = "spec/engine/cases"
-
 # describe MtlV2::Engine do
-#   files = Dir.glob("#{DIR}/**/*.tsv")
+#   files = Dir.glob("spec/engine/cases/**/*.tsv")
 
 #   files.each do |file|
 #     suite_name = File.basename(file, ".tsv")

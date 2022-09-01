@@ -9,7 +9,7 @@ module MtlV2
     class_getter tradsim_mtl : MTL::MtCore { init([V2Dict.tradsim]) }
 
     def generic_mtl(bname = "combine", uname = "") : MTL::MtCore
-      dicts = [V2Dict.essence, V2Dict.regular, V2Dict.load(bname)]
+      dicts = [V2Dict.essence, V2Dict.regular, V2Dict.fixture, V2Dict.load(bname)]
       init(dicts, uname)
     end
 
