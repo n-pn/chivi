@@ -62,7 +62,6 @@
   function change_subtype(subtype: number) {
     if (show_subtype == subtype) show_subtype = 0
     else show_subtype = subtype
-    console.log({ subtype, show_subtype })
   }
 </script>
 

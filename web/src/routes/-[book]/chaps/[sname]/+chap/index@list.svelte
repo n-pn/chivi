@@ -71,7 +71,6 @@
   let files: FileList
 
   let form = {
-    chvol: '',
     tosimp: false,
     unwrap: false,
     split_mode: 1,
