@@ -44,15 +44,6 @@
   export let on_fixraw = (_n: number, _s: string, _s2: string) => {}
   export let on_destroy = () => {}
 
-  onDestroy(() => {
-    document.removeEventListener('selectionchange', change_focus)
-    on_destroy()
-  })
-
-  onMount(() => {
-    document.addEventListener('selectionchange', change_focus)
-  })
-
   let underlay: HTMLElement
   let on_focus: HTMLElement
   let overlay: HTMLElement
@@ -63,9 +54,11 @@
   let preview_mode = 0
 
   $: newtxt = rawtxt
-  $: update_preview(newtxt)
-  $: if (underlay && newtxt) on_update_caret()
-  $: if (overlay) overlay.focus()
+  $: {
+    update_preview(newtxt)
+    if (underlay) on_update_caret()
+    if (overlay) overlay.focus()
+  }
 
   function render_rawtxt(input: String) {
     return Array.from(input)
@@ -73,9 +66,23 @@
       .join('')
   }
 
+  onDestroy(() => {
+    document.removeEventListener('selectionchange', change_focus)
+    on_destroy()
+  })
+
+  onMount(() => {
+    const selection = window.getSelection()
+    const startNode = overlay.firstChild
+    selection.collapse(startNode, caret)
+    document.addEventListener('selectionchange', change_focus)
+  })
+
   function change_focus() {
-    const range = window.getSelection().getRangeAt(0)
-    caret = range.endOffset
+    const selection = window.getSelection()
+
+    const range = selection.getRangeAt(0)
+    caret = range.startOffset
     on_update_caret()
   }
 

@@ -86,7 +86,12 @@ class CV::ChtextCtrl < CV::BaseCtrl
   private def read_options(chroot : Chroot, params)
     Zhtext::Options.new do |x|
       x.init_ch_no = params.read_int("chidx", min: 1)
-      x.init_chvol = params["chvol"]?.try { |s| TextUtil.trim_spaces(s) } || ""
+
+      if chvol = params["chvol"]?
+        x.init_chvol = TextUtil.trim_spaces(chvol)
+      else
+        x.init_chvol = chroot._repo.nearby_chvol(x.init_ch_no)
+      end
 
       x.to_simp = params["tosimp"]? == "true"
       x.un_wrap = params["unwrap"]? == "true"

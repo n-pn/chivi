@@ -189,10 +189,10 @@ class CV::Zxcs::SplitText
 
     snvid = File.basename(nv_dir)
 
-    global = [] of ChInfo
+    global = [] of ChInfo0
 
     chaps.each_slice(128).with_index do |slice, idx|
-      chlist = [] of ChInfo
+      chlist = [] of ChInfo0
 
       out_dir = File.join(nv_dir, idx.to_s)
       Dir.mkdir_p(out_dir)
@@ -203,7 +203,7 @@ class CV::Zxcs::SplitText
       slice.each_with_index(1) do |chap, chidx|
         chidx = (chidx + 128 &* idx)
 
-        chinfo = ChInfo.new(chidx, chidx.to_s, chap.title, chap.label)
+        chinfo = ChInfo0.new(chidx, chidx.to_s, chap.title, chap.label)
         chinfo.stats.utime = utime
 
         chtext = ChText.new("zxcs_me", snvid, chinfo)

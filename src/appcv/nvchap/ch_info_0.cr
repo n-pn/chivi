@@ -44,7 +44,7 @@ class CV::ChInfo0
     end
   end
 
-  property chidx : Int16
+  property chidx : Int32
   property schid : String
 
   property title = ""
@@ -55,7 +55,7 @@ class CV::ChInfo0
   property trans = Trans.new("-", "-")
 
   def initialize(argv : Array(String))
-    @chidx = argv[0].to_i16
+    @chidx = argv[0].to_i
     @schid = argv[1]
 
     return if argv.size < 4

@@ -27,7 +27,6 @@ class CV::Seeds::ZxcsText
   def get_rar_urls(snvid : Int32, lbl = "1/1") : Array(String)
     out_file = File.join(DLPG_DIR, "#{snvid}.html.gz")
     dlpg_url = "http://www.zxcs.me/download.php?id=#{snvid}"
-
     html = HttpUtil.cache(out_file, dlpg_url, ttl: 7.days, lbl: lbl)
 
     doc = Lexbor::Parser.new(html)
