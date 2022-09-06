@@ -135,11 +135,13 @@
     }
   }
 
-  function show_upsert() {
-    const is_base = +focused[0].dataset.d % 2 == 0
-    const dic = focused.length == 1 && is_base ? 1 : 0
-
-    return setTimeout(() => upsert.show(dic), 20)
+  function show_upsert(no_guess = true) {
+    let tab = 0
+    if (!no_guess && focused.length == 1) {
+      const dic = +focused[0].dataset.d
+      if (dic % 2 == 0) tab = 1
+    }
+    return setTimeout(() => upsert.show(tab), 20)
   }
 
   function find_nearest_nodes(line: HTMLElement, idx: number, max: number) {
@@ -198,7 +200,7 @@
     lookup.show(false)
 
     if (target && focused.includes(target)) {
-      upsert.show(0)
+      show_upsert(false)
     } else {
       update_hovered(line, $zfrom, $zupto)
       update_focused(nodes)
