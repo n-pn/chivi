@@ -8,13 +8,15 @@ module YS
 
     # list revies
     @[AC::Route::GET("/crits")]
-    def query(sort : String = "utime", user : Int64? = nil,
+    def query(sort : String = "utime", user : String? = nil,
               smin : Int32 = 0, smax : Int32 = 6,
               book : Int64? = nil, list : String? = nil,
               tags : String? = nil)
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 24)
 
-      query = Yscrit.sort_by(sort).filter_ysuser(user).filter_labels(tags)
+      query = Yscrit.sort_by(sort).filter_labels(tags)
+      query = query.filter_ysuser(user.split('-', 2).first?) if user
+
       query.where("stars >= ?", smin) if smin > 1
       query.where("stars <= ?", smax) if smax < 5
       query.limit(limit).offset(offset)

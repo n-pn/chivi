@@ -26,12 +26,6 @@ export async function get_crits(
   return await res.json()
 }
 
-function make_crit_query(opts = {}) {
-  const query = new URLSearchParams()
-
-  return query.toString()
-}
-
 export async function view_crit(crit_id: string, fetch = globalThis.fetch) {
   const url = `/_ys/crits/${crit_id}`
   const res = await fetch(url)

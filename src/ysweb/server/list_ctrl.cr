@@ -8,12 +8,14 @@ module YS
 
     # get all lists
     @[AC::Route::GET("/lists")]
-    def query(_s : String = "utime", by : Int64? = nil, qs : String? = nil)
+    def query(sort : String = "utime", user : String? = nil,
+              type : String? = nil, qs : String? = nil)
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 24)
-      query = Yslist.sort_by(_s).filter_ysuser(by).filter_string(qs)
-      query.where("book_count > 0")
 
-      params["class"]?.try { |klass| query.where("klass = ?", klass) }
+      query = Yslist.sort_by(sort).filter_string(qs)
+      query.filter_ysuser(user.split('-', 2).first) if user
+      query.where("klass = ?", type) if type
+      query.where("book_count > 0")
 
       total = query.dup.limit((pgidx &+ 2) * limit).count
       lists = query.limit(limit).offset(offset).with_ysuser

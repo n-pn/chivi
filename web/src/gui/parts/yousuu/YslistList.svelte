@@ -1,6 +1,6 @@
 <script context="module">
-  const sorts = { score: 'Nổi bật', likes: 'Ưa thích', utime: 'Đổi mới' }
-  const klass = { male: 'Nam tần', female: 'Nữ tần', both: 'Tất cả' }
+  const sort_lbls = { score: 'Nổi bật', likes: 'Ưa thích', utime: 'Đổi mới' }
+  const type_lbls = { male: 'Nam tần', female: 'Nữ tần', both: 'Tất cả' }
 </script>
 
 <script lang="ts">
@@ -14,27 +14,29 @@
   export let pgmax = 1
   export let _sort = 'utime'
 
-  $: pager = new Pager($page.url, { _s: _sort, pg: 1, class: 'both' })
-  $: _s = pager.get('_s') || _sort
-  $: _c = pager.get('class') || 'both'
+  $: pager = new Pager($page.url, { sort: _sort, page: 1, type: 'both' })
+  $: opts = {
+    sort: $page.url.searchParams.get('sort') || _sort,
+    type: $page.url.searchParams.get('type') || 'both',
+  }
 </script>
 
 <div class="filter">
   <div class="sorts">
     <span class="label">Sắp xếp:</span>
-    {#each Object.entries(sorts) as [sort, name]}
-      {@const href = pager.gen_url({ _s: sort, pg: 1, class: 'both' })}
-      <a {href} class="m-chip _sort" class:_active={sort == _s}>
+    {#each Object.entries(sort_lbls) as [sort, name]}
+      {@const href = pager.gen_url({ sort, page: 1, type: 'both' })}
+      <a {href} class="m-chip _sort" class:_active={sort == opts.sort}>
         <span>{name}</span>
       </a>
     {/each}
   </div>
 
-  <div class="klass">
+  <div class="type">
     <span class="label">Phân loại:</span>
-    {#each Object.entries(klass) as [klass, label]}
-      {@const href = pager.gen_url({ _s, pg: 1, class: klass })}
-      <a {href} class="m-chip _sort" class:_active={klass == _c}>
+    {#each Object.entries(type_lbls) as [type, label]}
+      {@const href = pager.gen_url({ sort: opts.sort, page: 1, type })}
+      <a {href} class="m-chip _sort" class:_active={type == opts.type}>
         <span>{label}</span>
       </a>
     {/each}
@@ -76,7 +78,7 @@
     }
   }
 
-  .klass {
+  .type {
     @include flex-cx($gap: 0.5rem);
     margin-top: 0.5rem;
     @include bp-min(ts) {

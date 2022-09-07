@@ -28,7 +28,7 @@
 
 <crit-item>
   <header>
-    <a class="meta _user" href="/crits?by={crit.op_id}-{crit.uslug}"
+    <a class="meta _user" href="/crits?user={crit.op_id}-{crit.uslug}"
       >{crit.uname}</a>
     <x-sep>·</x-sep>
     <a class="meta _time" href="/qtran/crits/{crit.id}"

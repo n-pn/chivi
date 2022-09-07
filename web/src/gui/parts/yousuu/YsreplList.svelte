@@ -20,7 +20,7 @@
         {#each replies as repl}
           <div class="repl">
             <header class="repl-head">
-              <a class="-user" href="/crits?by={repl.uslug}">{repl.uname}</a>
+              <a class="-user" href="/crits?user={repl.uslug}">{repl.uname}</a>
               <span class="-sep">·</span>
               <time class="-time">{get_rtime(repl.mftime)}</time>
 
