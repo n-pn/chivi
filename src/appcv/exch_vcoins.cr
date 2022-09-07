@@ -1,3 +1,5 @@
+require "./_base"
+
 class CV::ExchVcoin
   include Clear::Model
 

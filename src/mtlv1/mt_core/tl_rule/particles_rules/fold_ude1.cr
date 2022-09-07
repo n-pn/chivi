@@ -25,7 +25,7 @@ module CV::TlRule
     # puts [left, right]
 
     case left
-    when .noun?, .human?, .nother?
+    when .noun?, .human?, .nother?, .naffil?
       ude1.val = "của"
       flip = true
     else

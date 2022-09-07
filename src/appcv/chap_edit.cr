@@ -1,3 +1,5 @@
+require "./_base"
+
 class CV::ChapEdit
   include Clear::Model
 

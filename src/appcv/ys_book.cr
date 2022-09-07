@@ -1,4 +1,6 @@
+require "./_base"
 require "./shared/seed_data"
+require "./nv_info"
 
 class CV::Ysbook
   include Clear::Model

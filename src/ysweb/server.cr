@@ -1,8 +1,7 @@
-require "./server/config"
-require "./server/routes"
+require "./server/*"
 
-port = ENV["M2_PORT"]?.try(&.to_i?) || 5502
-host = ENV["M2_HOST"]? || "127.0.0.1"
+port = ENV["YS_PORT"]?.try(&.to_i?) || 5509
+host = ENV["YS_HOST"]? || "127.0.0.1"
 server = AC::Server.new(port, host)
 
 # terminate = Proc(Signal, Nil).new do |signal|
@@ -18,8 +17,8 @@ server = AC::Server.new(port, host)
 
 # Start the server
 server.run do
-  puts "MtlV2 listening on #{server.print_addresses}"
+  puts "Server listening on #{server.print_addresses}"
 end
 
 # Shutdown message
-puts "MtlV2 server terminated\n"
+puts "Server terminated\n"

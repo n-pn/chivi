@@ -1,3 +1,5 @@
+require "./_base"
+
 class CV::UserRepl
   include Clear::Model
 

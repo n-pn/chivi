@@ -1,5 +1,9 @@
 require "./shared/*"
 require "./nvinfo/*"
+require "./_base"
+
+require "./author"
+require "./btitle"
 
 class CV::Nvinfo
   include Clear::Model

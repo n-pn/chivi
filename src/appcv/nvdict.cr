@@ -1,3 +1,5 @@
+require "./_base"
+
 class CV::Nvdict
   include Clear::Model
 

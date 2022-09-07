@@ -1,5 +1,6 @@
 require "cmark"
 require "../_util/ukey_util"
+require "./_base"
 
 class CV::Cvpost
   include Clear::Model

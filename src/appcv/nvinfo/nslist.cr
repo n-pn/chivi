@@ -1,3 +1,5 @@
+require "../ch_root"
+
 class CV::Nslist
   getter _base : Chroot { Chroot.load!(@nvinfo, "=base", force: true) }
   getter _user : Chroot { Chroot.load!(@nvinfo, "=user", force: true) }

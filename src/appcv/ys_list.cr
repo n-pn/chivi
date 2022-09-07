@@ -1,3 +1,7 @@
+require "./_base"
+require "./ys_user"
+require "./ys_crit"
+
 class CV::Yslist
   include Clear::Model
 

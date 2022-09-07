@@ -1,4 +1,5 @@
 require "../_util/post_util"
+require "./_base"
 
 class CV::Cvrepl
   include Clear::Model

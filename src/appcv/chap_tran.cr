@@ -1,3 +1,5 @@
+require "./_base"
+
 class CV::ChapTran
   include Clear::Model
 

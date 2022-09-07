@@ -1,3 +1,5 @@
+require "./_base"
+
 class CV::Ysuser
   include Clear::Model
 

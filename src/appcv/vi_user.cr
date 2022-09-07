@@ -1,5 +1,5 @@
-require "clear"
 require "crypto/bcrypt/password"
+require "./_base"
 
 class CV::Viuser
   include Clear::Model

@@ -1,3 +1,5 @@
+require "./_base"
+
 class CV::Ubmemo
   include Clear::Model
 

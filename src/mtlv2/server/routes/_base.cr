@@ -13,10 +13,7 @@ module MtlV2
     @[AC::Route::Filter(:before_action)]
     def set_request_id
       request_id = UUID.random.to_s
-      Log.context.set(
-        client_ip: client_ip,
-        request_id: request_id
-      )
+      Log.context.set(client_ip: client_ip, request_id: request_id)
       response.headers["X-Request-ID"] = request_id
 
       # If this is an upstream service, the ID should be extracted from a request header.

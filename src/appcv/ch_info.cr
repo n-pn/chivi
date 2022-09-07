@@ -1,22 +1,23 @@
 require "../tools/crorm/*"
 require "../_util/text_util"
+require "./_base"
 require "./ch_seed"
 require "./ch_text"
 
-class CV::ChTran2
-  include Crorm::Model
+# class CV::ChTran2
+#   include Crorm::Model
 
-  column ch_no : Int32, primary: true
-  column title : String = ""
-  column chvol : String = ""
-  column uslug : String = ""
-  column fixed : Bool = false
+#   column ch_no : Int32, primary: true
+#   column title : String = ""
+#   column chvol : String = ""
+#   column uslug : String = ""
+#   column fixed : Bool = false
 
-  def convert!(cvmtl, title : String, chvol : String = "")
-    self.title = title.empty? "Thiếu tựa": cvmtl.cv_title(title).to_txt
-    self.chvol = chvol.empty? "Chính văn": cvmtl.cv_title(chvol).to_txt
-  end
-end
+#   def convert!(cvmtl, title : String, chvol : String = "")
+#     self.title = title.empty? "Thiếu tựa": cvmtl.cv_title(title).to_txt
+#     self.chvol = chvol.empty? "Chính văn": cvmtl.cv_title(chvol).to_txt
+#   end
+# end
 
 class CV::Chinfo
   include Crorm::Model

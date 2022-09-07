@@ -1,3 +1,8 @@
+require "./_base"
+require "./ys_user"
+require "./ys_book"
+require "./ys_list"
+
 class CV::Yscrit
   include Clear::Model
   self.table = "yscrits"

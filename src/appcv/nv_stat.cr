@@ -1,3 +1,5 @@
+require "./_base"
+
 class CV::Nvstat
   enum Klass
     # ## combine of chivi, yousuu, ... stats
