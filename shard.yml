@@ -1,10 +1,10 @@
 name: chivi
-version: 0.8.0
+version: 0.9.0
 
 authors:
   - NP Nam <me@npn.am>
 
-crystal: 1.2.0
+crystal: 1.5.0
 
 license: MIT
 
@@ -14,6 +14,9 @@ targets:
 
   mtlv2-srv:
     main: src/mtlv2/server.cr
+
+  ysweb-srv:
+    main: src/ysweb/server.cr
 
   bcover_cli:
     main: cli/bcover_cli.cr

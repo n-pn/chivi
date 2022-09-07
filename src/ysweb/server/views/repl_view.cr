@@ -1,9 +1,8 @@
-require "./_base_view"
+require "json"
+require "../../../appcv/ys_repl"
 
-struct CV::YsreplView
-  include BaseView
-
-  def initialize(@data : Ysrepl)
+struct YS::ReplView
+  def initialize(@data : CV::Ysrepl)
   end
 
   def to_json(jb = JSON::Builder.new)

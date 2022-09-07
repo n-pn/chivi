@@ -1,17 +1,14 @@
-require "../../appcv/ys_list"
-require "../../appcv/ys_crit"
-
-require "./views/yslist_view"
-require "./views/yscrit_view"
+require "./views/list_view"
+require "./views/crit_view"
 require "./_ctrl_base"
 
 module YS
-  class YslistCtrl < BaseCtrl
+  class ListCtrl < BaseCtrl
     base "/_ys"
 
     # get all lists
     @[AC::Route::GET("/lists")]
-    def index(_s : String = "utime", by : Int64? = nil, qs : String? = nil)
+    def query(_s : String = "utime", by : Int64? = nil, qs : String? = nil)
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 24)
       query = CV::Yslist.sort_by(_s).filter_ysuser(by).filter_string(qs)
       query.where("book_count > 0")
@@ -24,23 +21,23 @@ module YS
       render json: {
         pgidx: pgidx,
         pgmax: CtrlUtil.pgmax(total, limit),
-        lists: lists.map { |x| YslistView.new(x) },
+        lists: lists.map { |x| ListView.new(x) },
       }
     end
 
-    @[AC::Route::GET("/lists/:list_id")]
-    def show(list_id : String, _s : String = "utime")
-      yslist = CV::Yslist.find!({id: CV::UkeyUtil.decode32(list_id)})
+    @[AC::Route::GET("/lists/:list")]
+    def entry(list : String, sort : String = "utime")
+      yslist = CV::Yslist.find!({id: CV::UkeyUtil.decode32(list)})
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 20)
 
-      crits = CV::Yscrit.sort_by(_s).where("yslist_id = ?", yslist.id)
+      crits = CV::Yscrit.sort_by(sort).where("yslist_id = ?", yslist.id)
 
-      if min_stars = params["gt"]?.try(&.to_i?)
+      if min_stars = params["smin"]?.try(&.to_i?)
         min_stars = 5 if min_stars > 5
         crits.where("stars >= ?", min_stars)
       end
 
-      if max_stars = params["lt"]?.try(&.to_i?)
+      if max_stars = params["smax"]?.try(&.to_i?)
         max_stars = 1 if max_stars < 1
         crits.where("stars <= ?", max_stars)
       end
@@ -49,9 +46,9 @@ module YS
       crits.each(&.ysuser = yslist.ysuser)
 
       render json: {
-        ylist: YslistView.new(yslist),
+        ylist: ListView.new(yslist),
         yl_id: yslist.origin_id,
-        crits: crits.map { |x| YscritView.new(x) },
+        crits: crits.map { |x| CritView.new(x) },
         pgmax: CtrlUtil.pgmax(yslist.book_count, limit),
         pgidx: pgidx,
       }

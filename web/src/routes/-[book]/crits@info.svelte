@@ -1,13 +1,12 @@
 <script context="module" lang="ts">
   export async function load({ fetch, stuff, url }) {
-    const _sort = url.searchParams.get('_s') || 'score'
+    const sort = url.searchParams.get('_s') || 'score'
 
     const api_url = new URL(url)
-    api_url.pathname = '/api/yscrits'
-
+    api_url.pathname = '/_ys/crits'
     api_url.searchParams.set('book', stuff.nvinfo.id)
-    api_url.searchParams.set('lm', '10')
-    api_url.searchParams.set('_s', _sort)
+    api_url.searchParams.set('take', '10')
+    api_url.searchParams.set('sort', sort)
 
     const api_res = await fetch(api_url.toString())
     const payload = api_res.json()

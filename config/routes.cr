@@ -64,16 +64,6 @@ Amber::Server.configure do
     get "/trans/:nv_id/:sname/:chidx/:part_no/:line_no", CV::ChtranCtrl, :list
     post "/trans/:nv_id/:sname/:chidx", CV::ChtranCtrl, :create
 
-    # # yousuu
-
-    get "/yscrits", CV::YscritCtrl, :index
-    get "/yscrits/:crit", CV::YscritCtrl, :show
-    get "/yscrits/:crit/replies", CV::YscritCtrl, :replies
-
-    get "/yslists", CV::YslistCtrl, :index
-    get "/yslists/:list", CV::YslistCtrl, :show
-    # get "/yslists/:list/books", CV::YslistCtrl, :books
-
     # # member
 
     get "/_self/books", CV::UbmemoCtrl, :cvbook

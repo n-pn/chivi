@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { list_repls } from '$lib/ys_api'
+
   import { rel_time } from '$utils/time_utils'
   import { map_status } from '$utils/nvinfo_utils'
 
   import { SIcon, Stars, BCover } from '$gui'
-  import Replies from './Replies.svelte'
+  import YsreplList from './YsreplList.svelte'
 
   export let crit: CV.Yscrit
 
@@ -13,24 +15,15 @@
   export let view_all = crit.vhtml.length < 600
   export let big_text = false
 
-  let active_repls = false
+  $: book = crit.book
+
+  let show_repls = false
   let replies = []
 
   async function show_replies() {
-    const res = await fetch(`/api/yscrits/${crit.id}/replies`, {
-      headers: { 'Content-Type': 'application/json' },
-    })
-
-    const data = await res.json()
-    if (!res.ok) {
-      alert(data.error)
-    } else {
-      replies = data.props
-      active_repls = true
-    }
+    replies = await list_repls(crit.id)
+    show_repls = true
   }
-
-  $: book = crit.book
 </script>
 
 <crit-item>
@@ -153,8 +146,8 @@
   {/if}
 </crit-item>
 
-{#if active_repls}
-  <Replies {replies} bind:_active={active_repls} />
+{#if show_repls}
+  <YsreplList {replies} bind:_active={show_repls} />
 {/if}
 
 <style lang="scss">

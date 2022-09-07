@@ -20,14 +20,14 @@ module YS::CtrlUtil
   extend self
 
   def page_params(params, max_limit : Int32 = 24)
-    if page = params["pg"]?.try(&.to_i?)
+    if page = params["page"]?.try(&.to_i?)
       pgidx = page > 1 ? page &- 1 : 0
     else
       pgidx = 0
     end
 
-    if lm = params["lm"]?.try(&.to_i)
-      limit = lm > max_limit ? max_limit : (lm < 0 ? max_limit // 2 : lm)
+    if take = params["take"]?.try(&.to_i)
+      limit = take > max_limit ? max_limit : (take < 0 ? max_limit // 2 : take)
     else
       limit = max_limit // 2
     end
