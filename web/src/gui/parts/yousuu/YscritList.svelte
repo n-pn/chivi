@@ -17,7 +17,7 @@
   export let show_book = true
   export let show_list = true
 
-  $: pager = new Pager($page.url, { sort: _sort, smin: 1, smax: 5, page: 1 })
+  $: pager = new Pager($page.url, { sort: _sort, smin: 1, smax: 5, pg: 1 })
 
   $: opts = {
     sort: $page.url.searchParams.get('sort') || _sort,
@@ -30,7 +30,7 @@
   <div class="sorts">
     <span class="label">Sắp xếp:</span>
     {#each Object.entries(sort_trans) as [sort, name]}
-      {@const href = pager.gen_url({ sort, smin: 1, smax: 5, page: 1 })}
+      {@const href = pager.gen_url({ sort, smin: 1, smax: 5, pg: 1 })}
       <a {href} class="m-chip _sort" class:_active={sort == opts.sort}>
         <span>{name}</span>
       </a>
@@ -44,7 +44,7 @@
       {@const _active = star >= opts.smin && star <= opts.smax}
       {@const smin = _active || star < opts.smin ? star : opts.smin}
       {@const smax = _active || star > opts.smax ? star : opts.smax}
-      {@const href = pager.gen_url({ sort: opts.sort, smin, smax, page: 1 })}
+      {@const href = pager.gen_url({ sort: opts.sort, smin, smax, pg: 1 })}
 
       <a {href} class="m-star" class:_active>
         <span>{star}</span>

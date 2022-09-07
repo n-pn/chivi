@@ -3,9 +3,7 @@
 
   export async function load({ fetch, stuff, url }) {
     const sort = url.searchParams.get('sort') || 'score'
-
     const opts = { book: stuff.nvinfo.id, take: 10, sort }
-
     const props = await get_crits(url.searchParams, opts, fetch)
 
     return { props }

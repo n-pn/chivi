@@ -14,7 +14,7 @@
   export let pgmax = 1
   export let _sort = 'utime'
 
-  $: pager = new Pager($page.url, { sort: _sort, page: 1, type: 'both' })
+  $: pager = new Pager($page.url, { sort: _sort, pg: 1, type: 'both' })
   $: opts = {
     sort: $page.url.searchParams.get('sort') || _sort,
     type: $page.url.searchParams.get('type') || 'both',
@@ -25,7 +25,7 @@
   <div class="sorts">
     <span class="label">Sắp xếp:</span>
     {#each Object.entries(sort_lbls) as [sort, name]}
-      {@const href = pager.gen_url({ sort, page: 1, type: 'both' })}
+      {@const href = pager.gen_url({ sort, type: 'both', pg: 1 })}
       <a {href} class="m-chip _sort" class:_active={sort == opts.sort}>
         <span>{name}</span>
       </a>
@@ -35,7 +35,7 @@
   <div class="type">
     <span class="label">Phân loại:</span>
     {#each Object.entries(type_lbls) as [type, label]}
-      {@const href = pager.gen_url({ sort: opts.sort, page: 1, type })}
+      {@const href = pager.gen_url({ sort: opts.sort, type, pg: 1 })}
       <a {href} class="m-chip _sort" class:_active={type == opts.type}>
         <span>{label}</span>
       </a>

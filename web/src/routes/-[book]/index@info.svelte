@@ -11,13 +11,13 @@
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
 
-    payload.props.crits = await load_crits(stuff.nvinfo_id, fetch)
+    payload.props.crits = await load_crits(stuff.nvinfo.id, fetch)
     payload.props.nvinfo = stuff.nvinfo
     return payload
   }
 
   async function load_crits(book_id: number, fetch = globalThis.fetch) {
-    const opts = { book: book_id, take: 3 }
+    const opts = { book: book_id, take: 3, sort: 'score' }
     const { crits } = await get_crits(null, opts, fetch)
     return crits
   }
