@@ -1,9 +1,9 @@
 require "json"
-require "../../../_util/ukey_util"
-require "../../../appcv/ys_crit"
+
+require "../../models/ys_crit"
 
 struct YS::CritView
-  def initialize(@data : CV::Yscrit, @full = false)
+  def initialize(@data : Yscrit, @full = false)
   end
 
   def to_json(io : IO)
@@ -59,7 +59,7 @@ struct YS::CritView
     end
   end
 
-  def self.map(inp : Enumerable(CV::Yscrit), full = false)
+  def self.map(inp : Enumerable(Yscrit), full = false)
     res = [] of CritView
     inp.each { |obj| res << new(obj, full) }
     res

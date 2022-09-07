@@ -35,23 +35,21 @@ class CV::QtranData
   end
 
   def self.load_crit(name : String) : QtranData
-    crit_id = UkeyUtil.decode32(name)
-    unless yscrit = Yscrit.find({id: crit_id})
-      raise NotFound.new("Bình luận không tồn tại!")
-    end
+    url = "localhost:5509/_ys/crits/"
+    res = HTTP::Client.get(url + "#{name}/raw")
 
-    nvinfo = yscrit.nvinfo
-    new(parse_lines(yscrit.ztext), nvinfo.dname, nvinfo.vname)
+    raise NotFound.new("Bình luận không tồn tại!") unless res.success?
+    dname, vname, ztext = res.body.split('\t', 3)
+    new(parse_lines(ztext), dname, vname)
   end
 
   def self.load_repl(name : String) : QtranData
-    repl_id = UkeyUtil.decode32(name)
-    unless ysrepl = Ysrepl.find({id: repl_id})
-      raise NotFound.new("Phản hồi không tồn tại!")
-    end
+    url = "localhost:5509/_ys/crits/"
+    res = HTTP::Client.get(url + "#{name}/raw")
 
-    nvinfo = ysrepl.yscrit.nvinfo
-    new(parse_lines(ysrepl.ztext), nvinfo.dname, nvinfo.vname)
+    raise NotFound.new("Phản hồi không tồn tại!") unless res.success?
+    dname, vname, ztext = res.body.split('\t', 3)
+    new(parse_lines(ztext), dname, vname)
   end
 
   def self.load_chap(name : String, mode : Int8 = 0, uname = "") : QtranData

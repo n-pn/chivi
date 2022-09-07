@@ -10,7 +10,7 @@ module YS
     @[AC::Route::GET("/lists")]
     def query(_s : String = "utime", by : Int64? = nil, qs : String? = nil)
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 24)
-      query = CV::Yslist.sort_by(_s).filter_ysuser(by).filter_string(qs)
+      query = Yslist.sort_by(_s).filter_ysuser(by).filter_string(qs)
       query.where("book_count > 0")
 
       params["class"]?.try { |klass| query.where("klass = ?", klass) }
@@ -27,10 +27,10 @@ module YS
 
     @[AC::Route::GET("/lists/:list")]
     def entry(list : String, sort : String = "utime")
-      yslist = CV::Yslist.find!({id: CV::UkeyUtil.decode32(list)})
+      yslist = Yslist.find!({id: CV::UkeyUtil.decode32(list)})
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 20)
 
-      crits = CV::Yscrit.sort_by(sort).where("yslist_id = ?", yslist.id)
+      crits = Yscrit.sort_by(sort).where("yslist_id = ?", yslist.id)
       crits.limit(limit).offset(offset).with_nvinfo
       crits.each(&.ysuser = yslist.ysuser)
 

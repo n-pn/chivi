@@ -14,7 +14,7 @@ module YS
               tags : String? = nil)
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 24)
 
-      query = CV::Yscrit.sort_by(sort).filter_ysuser(user).filter_labels(tags)
+      query = Yscrit.sort_by(sort).filter_ysuser(user).filter_labels(tags)
       query.where("stars >= ?", smin) if smin > 1
       query.where("stars <= ?", smax) if smax < 5
       query.limit(limit).offset(offset)
@@ -26,7 +26,7 @@ module YS
         crits = query.filter_nvinfo(book).with_yslist.with_ysuser.to_a
         crits.each(&.nvinfo = nvinfo)
       elsif list
-        yslist = CV::Yslist.find!({id: CV::UkeyUtil.decode32(list)})
+        yslist = Yslist.find!({id: CV::UkeyUtil.decode32(list)})
         total = yslist.book_count
 
         crits = query.where("yslist_id = ?", yslist.id).with_nvinfo.to_a
@@ -45,13 +45,22 @@ module YS
 
     @[AC::Route::GET("/crits/:crit")]
     def entry(crit : String)
-      ycrit = CV::Yscrit.find!({id: CV::UkeyUtil.decode32(crit)})
-      repls = CV::Ysrepl.query.where("yscrit_id = ?", ycrit.id)
+      ycrit = Yscrit.find!({id: CV::UkeyUtil.decode32(crit)})
+      repls = Ysrepl.query.where("yscrit_id = ?", ycrit.id)
 
       render json: {
         entry: CritView.new(ycrit),
         repls: repls.with_ysuser.map { |x| ReplView.new(x) },
       }
+    rescue err
+      render :not_found, text: "Đánh giá không tồn tại"
+    end
+
+    @[AC::Route::GET("/crits/:crit/raw")]
+    def rawzh(crit : String)
+      ycrit = Yscrit.find!({id: CV::UkeyUtil.decode32(crit)})
+      binfo = ycrit.nvinfo
+      render text: "#{binfo.dname}\t#{binfo.vname}\t#{ycrit.ztext}"
     rescue err
       render :not_found, text: "Đánh giá không tồn tại"
     end

@@ -1,6 +1,6 @@
 require "./_base"
 
-class CV::Ysuser
+class YS::Ysuser
   include Clear::Model
 
   self.table = "ysusers"
@@ -30,8 +30,8 @@ class CV::Ysuser
   timestamps
 
   def fix_name : Nil
-    self.vname = BookUtil.hanviet(self.zname, caps: true)
-    self.vslug = BookUtil.scrub_vname(self.vname, "-")
+    self.vname = CV::BookUtil.hanviet(self.zname, caps: true)
+    self.vslug = CV::BookUtil.scrub_vname(self.vname, "-")
   end
 
   ###############

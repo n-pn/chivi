@@ -1,8 +1,7 @@
-require "./_base"
-require "./ys_user"
 require "./ys_crit"
+require "./ys_user"
 
-class CV::Ysrepl
+class YS::Ysrepl
   include Clear::Model
 
   self.table = "ysrepls"
@@ -45,7 +44,7 @@ class CV::Ysrepl
   end
 
   def fix_vhtml(dname = self.yscrit.nvinfo.dname)
-    self.vhtml = BookUtil.cv_lines(ztext, dname, mode: :html)
+    self.vhtml = CV::BookUtil.cv_lines(ztext, dname, mode: :html)
   end
 
   ##############

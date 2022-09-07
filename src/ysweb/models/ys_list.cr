@@ -1,16 +1,15 @@
-require "./_base"
 require "./ys_user"
 require "./ys_crit"
 
-class CV::Yslist
+class YS::Yslist
   include Clear::Model
 
   self.table = "yslists"
   primary_key
 
   belongs_to ysuser : Ysuser
-  has_many yscrits : Yscrit, foreign_key: "yslist_id"
-  has_many nvinfos : Nvinfo, through: "yscrits"
+  # has_many yscrits : Yscrit, foreign_key: "yslist_id"
+  # has_many nvinfos : CV::Nvinfo, through: "yscrits"
 
   column origin_id : String = ""
 
@@ -47,7 +46,7 @@ class CV::Yslist
   end
 
   scope :filter_string do |qs|
-    qs ? where("vslug LIKE '%-#{BookUtil.scrub_vname(qs, '-')}-%'") : self
+    qs ? where("vslug LIKE '%-#{CV::BookUtil.scrub_vname(qs, '-')}-%'") : self
   end
 
   scope :sort_by do |order|
@@ -63,8 +62,6 @@ class CV::Yslist
 
   ####################
 
-  MTL = MtCore.generic_mtl("!yousuu")
-
   def set_name(zname : String) : Nil
     self.zname = zname
     self.fix_vname
@@ -76,17 +73,17 @@ class CV::Yslist
     self.fix_vdesc
   end
 
-  def fix_vname
-    vdict = MTL.dicts.last
+  def fix_vname(mtl = CV::MtCore.generic_mtl("!yousuu"))
+    vdict = mtl.dicts.last
     vdict.set(ysuser.zname, [ysuser.vname], ["nr"])
 
-    self.vname = MTL.translate(self.zname)
-    self.vslug = "-" + BookUtil.scrub_vname(self.vname, "-") + "-"
+    self.vname = mtl.translate(self.zname)
+    self.vslug = "-" + CV::BookUtil.scrub_vname(self.vname, "-") + "-"
     vdict.set(ysuser.zname, [""])
   end
 
   def fix_vdesc
-    self.vdesc = BookUtil.cv_lines(zdesc, "combine", mode: :text)
+    self.vdesc = CV::BookUtil.cv_lines(zdesc, "combine", mode: :text)
   end
 
   def fix_sort!
@@ -108,7 +105,7 @@ class CV::Yslist
     })
   end
 
-  CACHE_INT = RamCache(Int64, self).new
+  CACHE_INT = CV::RamCache(Int64, self).new
 
   def self.load!(id : Int64)
     CACHE_INT.get(id) { find!({id: id}) }

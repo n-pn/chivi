@@ -1,17 +1,14 @@
-require "./_base"
-require "./ys_user"
-require "./ys_book"
 require "./ys_list"
 
-class CV::Yscrit
+class YS::Yscrit
   include Clear::Model
   self.table = "yscrits"
 
   primary_key
   column origin_id : String = ""
 
-  belongs_to nvinfo : Nvinfo
-  belongs_to ysbook : Ysbook
+  belongs_to nvinfo : CV::Nvinfo
+  belongs_to ysbook : CV::Ysbook
   belongs_to ysuser : Ysuser
   belongs_to yslist : Yslist?
 
@@ -59,7 +56,7 @@ class CV::Yscrit
   end
 
   #############
-  #
+
   def fix_sort!
     self._sort = self.stars &* self.stars &* self.like_count
     self._sort &+ self.repl_count &* self.stars
@@ -78,13 +75,11 @@ class CV::Yscrit
   end
 
   def fix_vhtml(dname = self.nvinfo.dname)
-    self.vhtml = BookUtil.cv_lines(ztext, dname, mode: :html)
+    self.vhtml = CV::BookUtil.cv_lines(ztext, dname, mode: :html)
   end
 
-  MTL = MtCore.generic_mtl("!labels")
-
-  def fix_vtags
-    self.vtags = self.ztags.map { |x| MTL.translate(x) }
+  def fix_vtags(mtl = CV::MtCore.generic_mtl("!labels"))
+    self.vtags = self.ztags.map { |x| mtl.translate(x) }
   end
 
   ###################

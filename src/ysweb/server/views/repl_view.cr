@@ -1,8 +1,8 @@
 require "json"
-require "../../../appcv/ys_repl"
+require "../../models/ys_repl"
 
 struct YS::ReplView
-  def initialize(@data : CV::Ysrepl)
+  def initialize(@data : Ysrepl)
   end
 
   def to_json(jb = JSON::Builder.new)
