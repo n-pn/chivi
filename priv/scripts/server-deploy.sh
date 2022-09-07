@@ -1,6 +1,6 @@
 SSH=nipin@ssh.chivi.app:srv/chivi
 
-if [[ $1 == "all" || $1 == "chivi" ]]
+if [[ $1 == "all" || $* == "chivi" ]]
 then
   echo push server!
   # shards build -s --release bcover_cli && rsync -aiz --no-p bin/bcover_cli $SSH/bin
@@ -13,7 +13,7 @@ then
   ssh nipin@ssh.chivi.app "sudo service chivi-srv restart"
 fi
 
-if [[ $1 == "all" || $1 == "ysweb" ]]
+if [[ $1 == "all" || $* == "ysweb" ]]
 then
   echo push ysweb!
 
@@ -21,7 +21,7 @@ then
   ssh nipin@ssh.chivi.app "sudo service ysweb-srv restart"
 fi
 
-if [[ $1 == "all" || $1 == "web" ]]
+if [[ $1 == "all" || $* == "svkit" ]]
 then
   echo push webapp!
   cd web
@@ -30,7 +30,7 @@ then
 fi
 
 
-if [[ $1 == "all" || $1 == "ysbook" ]]
+if [[ $1 == "all" || $* == "ysbook" ]]
 then
   echo push ysbook seed!
 
@@ -39,7 +39,7 @@ then
   rsync -azi --no-p "var/ysinfos/ysbooks" "$SSH/var/ysinfos"
 fi
 
-if [[ $1 == "all" || $1 == "ysrepl" ]]
+if [[ $1 == "all" || $* == "ysrepl" ]]
 then
   echo push ysrepl seed!
 
@@ -49,7 +49,7 @@ then
   rsync -azi --no-p "var/ysinfos/ysrepls" "$SSH/var/ysinfo"
 fi
 
-if [[ $1 == "all" || $1 == "zhinfo" ]]
+if [[ $1 == "all" || $* == "zhinfo" ]]
 then
   echo push zhinfo seed!
 
@@ -58,16 +58,16 @@ then
   rsync -azi --no-p "var/zhinfos" "$SSH/var"
 fi
 
-if [[ $1 == "all" || $1 == "fixes" ]]
+if [[ $1 == "all" || $* == "fixes" ]]
 then
-  echo push fixes binaries!
+  echo push fixes!
   shards build -s --release fix_genres && rsync -aiz --no-p bin/fix_genres $SSH/bin
   shards build -s --release fix_intros && rsync -aiz --no-p bin/fix_intros $SSH/bin
 fi
 
-if [[ $1 == "all" || $1 == "binary" ]]
+if [[ $1 == "all" || $* == "extra" ]]
 then
-  echo push binaries!
+  echo push extra!
   shards build -s --release ysbook_seed && rsync -aiz --no-p bin/ysbook_seed $SSH/bin
   shards build -s --release zhinfo_seed && rsync -aiz --no-p bin/zhinfo_seed $SSH/bin
 fi
