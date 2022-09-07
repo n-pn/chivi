@@ -1,22 +1,21 @@
 <script context="module" lang="ts">
+  import { get_crits } from '$lib/ys_api'
+
   export async function load({ fetch, url: { searchParams } }) {
-    const api_url = `/api/yscrits?${searchParams.toString()}&lm=10`
-    const api_res = await fetch(api_url)
+    const props = await get_crits(searchParams, { take: 10 }, fetch)
 
     const topbar = {
       left: [['Đánh giá', 'stars', { href: '/crits' }]],
       right: [['Thư đơn', 'bookmarks', { href: '/lists', show: 'tm' }]],
     }
 
-    const payload = await api_res.json()
-    return { ...payload, stuff: { topbar } }
+    return { props, stuff: { topbar } }
   }
 </script>
 
 <script lang="ts">
+  import YscritList from '$gui/parts/yousuu/YscritList.svelte'
   import { Crumb } from '$gui'
-
-  import YscritList from '$gui/sects/yscrit/YscritList.svelte'
 
   export let crits = []
   export let pgidx = 1

@@ -20,21 +20,15 @@ module YS::CtrlUtil
   extend self
 
   def page_params(params, max_limit : Int32 = 24)
-    if page = params["page"]?.try(&.to_i?)
-      pgidx = page > 1 ? page &- 1 : 0
-    else
-      pgidx = 0
-    end
+    pgidx = params["page"]?.try(&.to_i?) || 1
 
     if take = params["take"]?.try(&.to_i)
-      limit = take > max_limit ? max_limit : (take < 0 ? max_limit // 2 : take)
+      limit = take > max_limit ? max_limit : take
     else
       limit = max_limit // 2
     end
 
-    offset = pgidx &* limit
-
-    {pgidx, limit, offset}
+    {pgidx, limit, (pgidx &- 1) &* limit}
   end
 
   def pgmax(total : Int, limit : Int)

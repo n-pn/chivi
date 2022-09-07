@@ -1,21 +1,19 @@
 <script context="module" lang="ts">
+  import { get_crits } from '$lib/ys_api'
+
   export async function load({ fetch, stuff, url }) {
-    const sort = url.searchParams.get('_s') || 'score'
+    const sort = url.searchParams.get('sort') || 'score'
 
-    const api_url = new URL(url)
-    api_url.pathname = '/_ys/crits'
-    api_url.searchParams.set('book', stuff.nvinfo.id)
-    api_url.searchParams.set('take', '10')
-    api_url.searchParams.set('sort', sort)
+    const opts = { book: stuff.nvinfo.id, take: 10, sort }
 
-    const api_res = await fetch(api_url.toString())
-    const payload = api_res.json()
-    return payload
+    const props = await get_crits(url.searchParams, opts, fetch)
+
+    return { props }
   }
 </script>
 
 <script lang="ts">
-  import YscritList from '$gui/sects/yscrit/YscritList.svelte'
+  import YscritList from '$gui/parts/yousuu/YscritList.svelte'
   export let crits: CV.Yscrit[] = []
   export let pgidx = 1
   export let pgmax = 1

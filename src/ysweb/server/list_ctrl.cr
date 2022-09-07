@@ -31,19 +31,16 @@ module YS
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 20)
 
       crits = CV::Yscrit.sort_by(sort).where("yslist_id = ?", yslist.id)
+      crits.limit(limit).offset(offset).with_nvinfo
+      crits.each(&.ysuser = yslist.ysuser)
 
       if min_stars = params["smin"]?.try(&.to_i?)
-        min_stars = 5 if min_stars > 5
-        crits.where("stars >= ?", min_stars)
+        crits.where("stars >= ?", min_stars) if min_stars > 1
       end
 
       if max_stars = params["smax"]?.try(&.to_i?)
-        max_stars = 1 if max_stars < 1
-        crits.where("stars <= ?", max_stars)
+        crits.where("stars <= ?", max_stars) if max_stars < 5
       end
-
-      crits.limit(limit).offset(offset).with_nvinfo
-      crits.each(&.ysuser = yslist.ysuser)
 
       render json: {
         ylist: ListView.new(yslist),

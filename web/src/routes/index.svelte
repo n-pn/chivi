@@ -1,8 +1,7 @@
 <script context="module" lang="ts">
   export async function load({ stuff }) {
-    const res = await stuff.api.call('/api/ranks/brief')
-
-    if (res.error) return res
+    const books = await stuff.api.call('/api/ranks/brief')
+    const { ycrits, ylists } = await stuff.api.call('/_ys')
 
     const topbar = {
       right: [
@@ -12,14 +11,14 @@
       search: '',
     }
 
-    return { props: res, stuff: { topbar } }
+    return { props: { ...books, ycrits, ylists }, stuff: { topbar } }
   }
 </script>
 
 <script lang="ts">
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
-  import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
-  import YslistCard from '$gui/parts/yslist/YslistCard.svelte'
+  import YscritCard from '$gui/parts/yousuu/YscritCard.svelte'
+  import YslistCard from '$gui/parts/yousuu/YslistCard.svelte'
 
   export let recent: CV.Nvinfo[] = []
   export let update: CV.Nvinfo[] = []

@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
+  import { get_crits } from '$lib/ys_api'
 
   import { status_icons, status_names, status_colors } from '$lib/constants'
 
@@ -10,15 +11,22 @@
     const api_res = await fetch(api_url)
     const payload = await api_res.json()
 
+    payload.props.crits = await load_crits(stuff.nvinfo_id, fetch)
     payload.props.nvinfo = stuff.nvinfo
     return payload
+  }
+
+  async function load_crits(book_id: number, fetch = globalThis.fetch) {
+    const opts = { book: book_id, take: 3 }
+    const { crits } = await get_crits(null, opts, fetch)
+    return crits
   }
 </script>
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
-  import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
+  import YscritCard from '$gui/parts/yousuu/YscritCard.svelte'
 
   export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
 

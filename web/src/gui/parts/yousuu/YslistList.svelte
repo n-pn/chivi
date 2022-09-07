@@ -7,7 +7,7 @@
   import { page } from '$app/stores'
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-  import YslistCard from '$gui/parts/yslist/YslistCard.svelte'
+  import YslistCard from './YslistCard.svelte'
 
   export let lists = []
   export let pgidx = 1

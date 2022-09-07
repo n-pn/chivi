@@ -15,8 +15,8 @@ module YS
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 24)
 
       query = CV::Yscrit.sort_by(sort).filter_ysuser(user).filter_labels(tags)
-      query.where("stars >= ?", smin) if smin > 0
-      query.where("stars <= ?", smax) if smax < 6
+      query.where("stars >= ?", smin) if smin > 1
+      query.where("stars <= ?", smax) if smax < 5
       query.limit(limit).offset(offset)
 
       if book
@@ -49,7 +49,7 @@ module YS
       repls = CV::Ysrepl.query.where("yscrit_id = ?", ycrit.id)
 
       render json: {
-        ycrit: CritView.new(ycrit),
+        entry: CritView.new(ycrit),
         repls: repls.with_ysuser.map { |x| ReplView.new(x) },
       }
     rescue err

@@ -1,29 +1,27 @@
 <script context="module" lang="ts">
   export async function load({ fetch, params, url }) {
     const id = params.list.split('-')[0]
-    const api_url = `/api/yslists/${id}${url.search}`
+    const api_url = `/_ys/lists/${id}${url.search}`
     const api_res = await fetch(api_url)
 
-    const payload = await api_res.json()
+    const props = await api_res.json()
 
     const topbar = {
       left: [
         ['Thư đơn', 'bookmarks', { href: '/lists' }],
-        [payload.props.ylist.vname, null, { href: '.', kind: 'title' }],
+        [props.ylist.vname, null, { href: '.', kind: 'title' }],
       ],
 
       right: [['Đánh giá', 'stars', { href: '/crits', show: 'tm' }]],
     }
-    payload.stuff = { topbar }
-    return payload
+    return { props, stuff: { topbar } }
   }
 </script>
 
 <script lang="ts">
   import { rel_time } from '$utils/time_utils'
   import { SIcon } from '$gui'
-
-  import YscritList from '$gui/sects/yscrit/YscritList.svelte'
+  import YscritList from '$gui/parts/yousuu/YscritList.svelte'
 
   export let ylist: CV.Yslist
   export let yl_id = ''

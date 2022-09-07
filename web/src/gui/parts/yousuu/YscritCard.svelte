@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { list_repls } from '$lib/ys_api'
+  import { get_repls } from '$lib/ys_api'
 
   import { rel_time } from '$utils/time_utils'
   import { map_status } from '$utils/nvinfo_utils'
@@ -21,7 +21,7 @@
   let replies = []
 
   async function show_replies() {
-    replies = await list_repls(crit.id)
+    replies = await get_repls(crit.id)
     show_repls = true
   }
 </script>

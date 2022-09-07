@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   export async function load({ fetch, params: { crit } }) {
-    const api_res = await fetch(`/api/yscrits/${crit}`)
-    const payload = await api_res.json()
+    const api_res = await fetch(`/_ys/crits/${crit}`)
+    const { entry } = await api_res.json()
 
     const topbar = {
       left: [
@@ -10,16 +10,15 @@
       ],
     }
 
-    payload['stuff'] = { topbar }
-    return payload
+    return { props: { entry }, stuff: { topbar } }
   }
 </script>
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
+  import YscritCard from '$gui/parts/yousuu/YscritCard.svelte'
 
-  export let yscrit: CV.Yscrit
+  export let entry: CV.Yscrit
 </script>
 
 <svelte:head>
@@ -35,11 +34,11 @@
     <span>Đánh giá</span>
   </a>
   <span class="-sep">/</span>
-  <a class="crumb _link" href="/crits?book={yscrit.book.id}">
-    <span>{yscrit.book.btitle}</span>
+  <a class="crumb _link" href="/crits?book={entry.book.id}">
+    <span>{entry.book.btitle}</span>
   </a>
 </nav>
 
 <article class="article _narrow">
-  <YscritCard crit={yscrit} view_all={true} big_text={true} />
+  <YscritCard crit={entry} view_all={true} big_text={true} />
 </article>

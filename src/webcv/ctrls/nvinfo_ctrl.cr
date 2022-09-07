@@ -78,11 +78,6 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     Nvstat.inc_info_view(nvinfo.id)
 
-    # yscrits =
-    #   Yscrit.query
-    #     .where("nvinfo_id = #{nvinfo.id}")
-    #     .sort_by("score").limit(3)
-
     nvinfos =
       Nvinfo.query
         .where("author_id = #{nvinfo.author_id} AND id != #{nvinfo.id}")

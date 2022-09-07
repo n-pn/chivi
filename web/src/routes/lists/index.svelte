@@ -1,22 +1,22 @@
 <script context="module" lang="ts">
   export async function load({ fetch, url: { searchParams } }) {
-    const api_url = `/api/yslists?${searchParams.toString()}&lm=10`
+    const api_url = `/_ys/lists?${searchParams.toString()}&take=10`
     const api_res = await fetch(api_url)
-    const payload = await api_res.json()
+
+    const props = await api_res.json()
 
     const topbar = {
       left: [['Thư đơn', 'bookmarks', { href: '/lists' }]],
       right: [['Đánh giá', 'stars', { href: '/crits', show: 'tm' }]],
     }
-    payload.stuff = { topbar }
-    return payload
+    return { props, stuff: { topbar } }
   }
 </script>
 
 <script lang="ts">
   import { Crumb } from '$gui'
 
-  import YslistList from '$gui/parts/yslist/YslistList.svelte'
+  import YslistList from '$gui/parts/yousuu/YslistList.svelte'
 
   export let lists = []
   export let pgidx = 1

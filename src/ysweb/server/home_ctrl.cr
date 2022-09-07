@@ -8,13 +8,12 @@ module YS
 
     @[AC::Route::GET("/")]
     def index
-      limit = 3
       crits = CV::Yscrit.query.order_by(utime: :desc).offset(0)
       lists = CV::Yslist.query.where("book_count > 0").order_by(utime: :desc).offset(0)
 
       render json: {
-        ycrits: CritView.map(crits.limit(limit)),
-        ylists: ListView.map(lists.limit(limit)),
+        ycrits: CritView.map(crits.limit(2)),
+        ylists: ListView.map(lists.limit(3)),
       }
     end
   end

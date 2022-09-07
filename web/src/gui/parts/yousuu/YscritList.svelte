@@ -1,14 +1,14 @@
 <script lang="ts" context="module">
-  const sorts = { score: 'Tổng hợp', likes: 'Ưa thích', utime: 'Gần nhất' }
-</script>
-
-<script lang="ts">
   import { page } from '$app/stores'
   import { SIcon } from '$gui'
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-  import YscritCard from '$gui/sects/yscrit/YscritCard.svelte'
+  import YscritCard from './YscritCard.svelte'
 
+  const sort_trans = { score: 'Tổng hợp', likes: 'Ưa thích', utime: 'Gần nhất' }
+</script>
+
+<script lang="ts">
   export let crits: CV.Yscrit[] = []
   export let pgidx = 1
   export let pgmax = 1
@@ -17,19 +17,21 @@
   export let show_book = true
   export let show_list = true
 
-  $: pager = new Pager($page.url, { _s: _sort, pg: 1 })
+  $: pager = new Pager($page.url, { sort: _sort, smin: 1, smax: 5, page: 1 })
 
-  $: _s = $page.url.searchParams.get('_s') || _sort
-  $: gt = $page.url.searchParams.get('gt') || 1
-  $: lt = $page.url.searchParams.get('lt') || 5
+  $: opts = {
+    sort: $page.url.searchParams.get('sort') || _sort,
+    smin: $page.url.searchParams.get('smin') || 1,
+    smax: $page.url.searchParams.get('smax') || 5,
+  }
 </script>
 
 <div class="filter">
   <div class="sorts">
     <span class="label">Sắp xếp:</span>
-    {#each Object.entries(sorts) as [sort, name]}
-      {@const href = pager.gen_url({ _s: sort, gt: null, lt: null, pg: 1 })}
-      <a {href} class="m-chip _sort" class:_active={sort == _s}>
+    {#each Object.entries(sort_trans) as [sort, name]}
+      {@const href = pager.gen_url({ sort, smin: 1, smax: 5, page: 1 })}
+      <a {href} class="m-chip _sort" class:_active={sort == opts.sort}>
         <span>{name}</span>
       </a>
     {/each}
@@ -39,10 +41,11 @@
     <span class="label">Số sao:</span>
 
     {#each [1, 2, 3, 4, 5] as star}
-      {@const _active = star >= gt && star <= lt}
-      {@const _gt = _active || star < gt ? star : gt}
-      {@const _lt = _active || star > lt ? star : lt}
-      {@const href = pager.gen_url({ _s, gt: _gt, lt: _lt, pg: 1 })}
+      {@const _active = star >= opts.smin && star <= opts.smax}
+      {@const smin = _active || star < opts.smin ? star : opts.smin}
+      {@const smax = _active || star > opts.smax ? star : opts.smax}
+      {@const href = pager.gen_url({ sort: opts.sort, smin, smax, page: 1 })}
+
       <a {href} class="m-star" class:_active>
         <span>{star}</span>
         <SIcon name="star" iset="sprite" />
@@ -53,11 +56,8 @@
 
 <div class="crits">
   {#each crits as crit}
-    <YscritCard
-      {crit}
-      {show_book}
-      {show_list}
-      view_all={crit.vhtml.length < 640} />
+    {@const view_all = crit.vhtml.length < 600}
+    <YscritCard {crit} {show_book} {show_list} {view_all} />
   {/each}
 
   <footer class="pagi">
