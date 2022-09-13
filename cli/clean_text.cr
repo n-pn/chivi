@@ -32,7 +32,7 @@ OptionParser.parse(ARGV) do |parser|
   end
 end
 
-input = File.exists?(inp_file) ? File.read(inp_file) : STDIN.gets_to_end
+input = inp_file.blank? ? STDIN.gets_to_end : File.read(inp_file)
 output = fix_broken_lines(input, min_invalid: min_invalid)
 
 if out_file.blank?
