@@ -27,8 +27,8 @@ targets:
   trad2sim:
     main: cli/trad2sim.cr
 
-  clean_text:
-    main: cli/clean_text.cr
+  fix_text:
+    main: cli/fix_text.cr
 
   ysbook_seed:
     main: tasks/nvseed/ysbook_seed.cr
