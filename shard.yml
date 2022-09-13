@@ -24,6 +24,9 @@ targets:
   text_split:
     main: cli/text_split.cr
 
+  trad2sim:
+    main: cli/trad2sim.cr
+
   ysbook_seed:
     main: tasks/nvseed/ysbook_seed.cr
 
