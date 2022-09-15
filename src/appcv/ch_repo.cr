@@ -1,11 +1,7 @@
 require "./ch_info"
 require "../tools/r2_client"
 
-# require "../appcv/remote/remote_info"
-
 class CV::ChRepo
-  # include Crorm::Query(Chinfo)
-
   DIR = "var/chtexts"
 
   getter sn_id : Int32
@@ -156,7 +152,7 @@ class CV::ChRepo
     bulk_upsert(infos) unless infos.empty?
   end
 
-  def read_file(file : String | Path, hash = {} of Int32 => self)
+  def read_file(file : String | Path, hash = {} of Int32 => Chinfo)
     File.read_lines(file).each do |line|
       cols = line.split('\t')
       next if cols.size < 4
@@ -166,5 +162,11 @@ class CV::ChRepo
     end
 
     hash
+  end
+
+  def load_from_tsv(file : String)
+    input = read_file(file).values.sort_by!(&.ch_no.not_nil!)
+    bulk_upsert(input) unless input.empty?
+    input.last
   end
 end

@@ -87,17 +87,12 @@ class ChapData
 
   private def split_parts : Array(String)
     if @c_len <= CHAR_LIMIT * 1.5
-      text = String.build do |io|
-        io << @title
-        paras.each { |para| io << '\n' << para }
-      end
-
-      return [text]
+      @p_len = 1
+    else
+      @p_len = (@c_len - 1) // CHAR_LIMIT + 1
     end
 
     output = [] of String
-
-    @p_len = (@c_len - 1) // CHAR_LIMIT + 1
     char_limit = @c_len // @p_len
 
     buffer = String::Builder.new(@title)
@@ -146,15 +141,16 @@ class SplitText
     @save_dir = extract_save_dir_from_txt_file(txt_file)
     @raw_data = read_and_clean_text(txt_file)
 
-    @curr_chvol = @args.init_chvol
+    @curr_chvol = clean_text(@args.init_chvol)
   end
 
   private def extract_save_dir_from_txt_file(txt_file : String) : String
     paths = txt_file.split('/')
-    sname = paths[-2]
-    snvid = paths[-1].split(/[-\.]/, 2).first
 
-    File.join("chtexts", sname, snvid)
+    sname = paths[-2]
+    s_bid = paths[-1].split(/[\-\.]/, 2).first
+
+    File.join("var/chtexts", sname, s_bid)
   end
 
   private def read_and_clean_text(inp_file : String) : Array(String)
@@ -261,7 +257,7 @@ class SplitText
         prev_was_chvol = false
       elsif prev_was_chvol
         raise "Lỗi dòng: #{idx} [#{line[0..10]}]: Chương phía trước không có nội dung."
-      else
+      elsif !pending_chap.title.empty?
         @curr_chvol = pending_chap.chvol = pending_chap.title
         pending_chap.title = line
         prev_was_chvol = true
@@ -339,8 +335,8 @@ class SplitText
 
   def self.run!(argv = ARGV)
     input = argv[0]
-    mtime = argv[1]?.try(&.to_i64?) || Time.utc.to_unix
-    uname = argv[2]? || ""
+    uname = argv[1]? || ""
+    mtime = argv[2]?.try(&.to_i64?) || Time.utc.to_unix
 
     task = new(input)
     task.split_text!

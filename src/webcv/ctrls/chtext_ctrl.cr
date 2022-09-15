@@ -1,5 +1,4 @@
 require "json"
-require "../../appcv/zhtext/text_split"
 
 class CV::ChtextCtrl < CV::BaseCtrl
   # upload batch text
@@ -8,9 +7,11 @@ class CV::ChtextCtrl < CV::BaseCtrl
     guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
 
     chroot = load_chroot(sname, :auto)
-    text, path = read_chtext(chroot)
 
-    infos = split_chaps(chroot, path, text)
+    txt_path = save_upload_text(chroot)
+    tsv_path = split_chaps(chroot, txt_path)
+
+    infos = chroot._repo.read_file(tsv_path).values.sort_by!(&.ch_no.not_nil!)
 
     if infos.size == 1 && (title = params["title"]?)
       infos.first.title = TextUtil.trim_spaces(title)
@@ -35,84 +36,102 @@ class CV::ChtextCtrl < CV::BaseCtrl
     serv_json({from: chmin, upto: chmax})
   end
 
-  private def read_chtext(chroot : Chroot) : {String, String}
-    save_dir = "var/chaps/users/#{chroot.sname}/#{chroot.s_bid}"
+  private def save_upload_text(chroot : Chroot) : String
+    save_dir = "var/chaps/users/#{chroot.sname}"
     Dir.mkdir_p(save_dir)
 
-    name = params["hash"]? || Time.local.to_unix.to_s(base: 32)
-    path = File.join(save_dir, name + ".txt")
+    file_hash = params["hash"]? || Time.utc.to_unix.to_s(base: 32)
+    file_path = "#{save_dir}/#{chroot.s_bid}-#{file_hash}.txt"
 
     if form_file = params.files["file"]?
-      File.copy(form_file.file.path, path)
-      return {File.read(path), path}
+      File.copy(form_file.file.path, file_path)
+      return file_path
     end
 
-    if !(text = params["text"]?)
-      raise BadRequest.new("Thiếu file hoặc text") unless File.exists?(path)
-      text = File.read(path)
-    elsif _viuser.privi < 2 && text.size > 40_000
+    unless text = params["text"]?
+      return file_path if File.exists?(file_path)
+      raise BadRequest.new("Thiếu file hoặc text")
+    end
+
+    if _viuser.privi < 2 && text.size > 40_000
       raise BadRequest.new("Chương quá dài: #{text.size}/40_000 ký tự")
     end
 
-    spawn File.write(path, text)
-    {text, path}
+    File.write(file_path, text)
+    file_path
   end
 
-  private def split_chaps(chroot : Chroot, path : String, text : String) : Array(Chinfo)
-    options = read_options(chroot, self.params)
-    splitter = Zhtext::Splitter.new(path, options, content: text)
+  private def split_chaps(chroot : Chroot, txt_path : String) : String
+    txt_path = clean_input(txt_path)
+    save_split_args(chroot, txt_path)
 
-    splitter.split!(options.split_mode)
-    splitter.save_content!
+    res = `./bin/text_split "#{txt_path}" #{_viuser.uname}`
+    raise BadRequest.new(res.strip) unless $?.success?
 
-    sn_id = chroot._repo.sn_id
-    s_bid = chroot.s_bid
-    uname = _viuser.uname
-    utime = Time.utc.to_unix
-
-    spawn splitter.save_chinfos!(uname: uname)
-
-    splitter.chapters.map do |input|
-      Chinfo.new({
-        sn_id: sn_id, s_bid: s_bid,
-        ch_no: input.ch_no, s_cid: input.ch_no,
-        title: input.title, chvol: input.chvol,
-        c_len: input.c_len, p_len: input.p_len,
-        utime: utime, uname: uname,
-      })
-    end
+    txt_path.sub(".txt", ".tsv")
   end
 
-  private def read_options(chroot : Chroot, params)
-    Zhtext::Options.new do |x|
-      x.init_ch_no = params.read_int("chidx", min: 1)
+  private def clean_input(txt_path : String)
+    fix_path = txt_path.sub(".txt", ".fix.txt")
 
-      if chvol = params["chvol"]?
-        x.init_chvol = TextUtil.trim_spaces(chvol)
-      else
-        x.init_chvol = chroot._repo.nearby_chvol(x.init_ch_no)
-      end
-
-      x.to_simp = params["tosimp"]? == "true"
-      x.un_wrap = params["unwrap"]? == "true"
-
-      x.encoding = params["encoding"]? || "UTF-8"
-      x.split_mode = params["split_mode"].to_i
-
-      case x.split_mode
-      when 0
-        x.repeating = params["repeating"]?.try(&.to_i) || 3
-      when 1
-        x.trim_space = params["trim_space"]? == "true"
-        x.min_blanks = params["min_blanks"]?.try(&.to_i?) || 2
-      when 2
-        x.need_blank = params["need_blank"]? == "true"
-      when 3
-        params["label"]?.try { |r| x.title_suffix = r.strip }
-      when 4
-        params["regex"]?.try { |r| x.custom_regex = r.strip }
-      end
+    if params["tosimp"]? == "true"
+      res = `./bin/trad2sim -i "#{txt_path}" -o #{fix_path}`
+      raise BadRequest.new(res) unless $?.success?
+      txt_path = fix_path
     end
+
+    if params["unwrap"]? == "true"
+      res = `./bin/fix_text -i "#{txt_path}" -o #{fix_path}`
+      raise BadRequest.new(res) unless $?.success?
+      txt_path = fix_path
+    end
+
+    txt_path
+  end
+
+  private def save_split_args(chroot : Chroot, txt_path : String) : Nil
+    arg_path = txt_path.sub(".txt", ".arg")
+    arg_file = File.open(arg_path, "w")
+
+    ch_no = params.read_int("chidx", min: 1)
+    save_arg(arg_file, "init_ch_no", ch_no, &.> 1)
+
+    chvol = params["chvol"]? || chroot._repo.nearby_chvol(ch_no)
+    save_arg(arg_file, "init_chvol", chvol, &.empty?.!)
+
+    split_mode = params["split_mode"].to_i
+    save_arg(arg_file, "split_mode", split_mode)
+
+    case split_mode
+    when 0
+      min_repeat = params["repeating"]?.try(&.to_i?)
+      save_arg(arg_file, "min_repeat", min_repeat, &.!= 3)
+    when 1
+      trim_space = params["trim_space"]? == "true"
+      save_arg(arg_file, "trim_space", trim_space)
+
+      min_blanks = params["min_blanks"]?.try(&.to_i?)
+      save_arg(arg_file, "min_blanks", min_blanks)
+    when 2
+      need_blank = params["need_blank"]? == "true"
+      save_arg(arg_file, "need_blank", need_blank)
+    when 3
+      title_suffix = params["label"]?
+      save_arg(arg_file, "title_suffix", title_suffix)
+    when 4
+      custom_regex = params["regex"]?
+      save_arg(arg_file, "custom_regex", custom_regex)
+    end
+
+    arg_file.close
+  end
+
+  private def save_arg(io : IO, key : String, val)
+    save_arg(io, key, val) { val }
+  end
+
+  private def save_arg(io : IO, key : String, val)
+    io << key << '\t' << val << '\n' if yield val
   end
 
   def rawtxt
