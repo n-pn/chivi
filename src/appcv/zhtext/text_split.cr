@@ -298,7 +298,7 @@ module CV::Zhtext
       input.tr("\t\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000", " ").strip
     end
 
-    def save_content!
+    def save_texts!
       groups = @chapters.group_by { |x| (x.ch_no &- 1) // 128 }
 
       groups.each do |group, chaps|
@@ -313,7 +313,7 @@ module CV::Zhtext
       end
     end
 
-    def save_chinfos!(mtime : Int64 = Time.utc.to_unix, uname : String = "")
+    def save_infos!(mtime : Int64 = Time.utc.to_unix, uname : String = "")
       info_file = File.open("#{@save_dir}/patch.tab", "a")
 
       @chapters.each do |chap|

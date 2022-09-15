@@ -1,252 +1,210 @@
-require "icu"
-require "colorize"
 require "option_parser"
 
-require "../src/mtlv1/mt_core"
-require "../src/appcv/ch_repo"
+class SplitArgs
+  property init_ch_no = 1
+  property init_chvol = ""
 
-class Chapter
-  getter lines = [] of String
+  property split_mode = 1
 
+  # for mode 0
+  property min_repeat = 3
+
+  # for mode 1
+  property trim_space = false
+  property min_blanks = 2
+
+  # for mode 2
+  property need_blank = false
+
+  # for mode 3
+  property title_suffix = "章节回幕折集卷季"
+
+  # for mode 4
+  property custom_regex = "^\\s*第?[\\d+零〇一二两三四五六七八九十百千]+章"
+
+  def initialize
+  end
+
+  def self.from_file(file : String)
+    new.tap(&.load_file(file))
+  end
+
+  # ameba:disable Metrics/CyclomaticComplexity
+  def load_file(file : String)
+    File.each_line(file) do |line|
+      data = line.split('\t', 2)
+      next if data.size < 2
+
+      key, val = data
+
+      case key
+      when "init_ch_no"   then @init_ch_no = val.to_i
+      when "init_chvol"   then @init_chvol = val
+      when "split_mode"   then @split_mode = val.to_i
+      when "min_repeat"   then @min_repeat = val.to_i
+      when "trim_space"   then @trim_space = val[0] == 't'
+      when "min_blanks"   then @min_blanks = val.to_i
+      when "need_blank"   then @need_blank = val[0] == 't'
+      when "title_suffix" then @title_suffix = val
+      when "custom_regex" then @custom_regex = val
+      end
+    end
+  end
+end
+
+class ChapData
+  property ch_no = 0
+
+  property chvol = ""
+  property title = ""
+
+  getter paras = [] of String
   getter sizes = [] of Int32
-  getter chars = 0
-  getter parts = 1
 
-  def add(line : String) : Nil
+  getter c_len : Int32 = 0
+  getter p_len : Int32 = 0
+
+  getter parts : Array(String) { split_parts }
+
+  def initialize(@ch_no, @chvol = "")
+  end
+
+  def add_line(line : String) : Nil
     return if line.blank?
 
-    size = line.size
-    @chars += size
-    @sizes << size
-    @lines << line
+    if @title.empty?
+      @title = line
+    else
+      @paras << line
+
+      c_len = line.size
+      @sizes << c_len
+      @c_len += c_len
+    end
   end
 
   CHAR_LIMIT = 3000
 
-  def save!(base_path : String) : Nil
-    if @chars <= CHAR_LIMIT * 1.5
-      return File.write("#{base_path}-0.txt", @lines.join('\n'))
+  private def split_parts : Array(String)
+    if @c_len <= CHAR_LIMIT * 1.5
+      text = String.build do |io|
+        io << @title
+        paras.each { |para| io << '\n' << para }
+      end
+
+      return [text]
     end
 
-    @parts = (@chars / CHAR_LIMIT).round.to_i
-    break_point = @chars // @parts
+    output = [] of String
 
-    title = @lines[0]
-    buffer = String::Builder.new(title)
+    @p_len = (@c_len - 1) // CHAR_LIMIT + 1
+    char_limit = @c_len // @p_len
 
-    char_count, chap_part = 0, 0
+    buffer = String::Builder.new(@title)
+    char_count = 0
 
-    1.upto(@lines.size &- 1) do |idx|
-      buffer << '\n' << @lines.unsafe_fetch(idx)
+    @paras.each_with_index do |para, idx|
+      buffer << '\n' << para
 
       char_count += @sizes.unsafe_fetch(idx)
-      next if char_count < break_point
+      next if char_count < char_limit
 
-      File.write("#{base_path}-#{chap_part}.txt", buffer.to_s)
-      chap_part &+= 1
-
-      buffer = String::Builder.new(title)
+      output << buffer.to_s
+      buffer = String::Builder.new(@title)
       char_count = 0
     end
 
-    File.write("#{base_path}-#{chap_part}.txt", buffer.to_s) if char_count > 0
+    output << buffer.to_s if char_count > 0
+
+    raise "wrong output" if output.size != @p_len
+    output
+  end
+
+  def save!(save_dir : String) : Nil
+    parts.each_with_index do |text, part|
+      file_path = "#{save_dir}/#{@ch_no}-#{part}.txt"
+      File.write(file_path, text)
+    end
   end
 end
 
-class Splitter
-  property inp_file = ""
-  property log_file : String { @inp_file.sub(".txt", ".log") }
-  property chap_dir : String { File.dirname(@inp_file).sub("chaps/users", "chtexts") }
+class SplitText
+  getter args : SplitArgs
 
-  property uname = ""
-  property chvol = ""
-  property chidx = 1
+  getter txt_file : String
+  getter save_dir : String
 
-  getter lines = [] of String
-  getter infos = [] of Chapter
+  getter raw_data : Array(String)
+  getter out_data = [] of ChapData
 
-  def log_state(message : String, abort = false)
-    File.open(log_file, "a", &.puts(message))
-    return unless abort
-    puts message
-    exit 1
+  @curr_chvol : String
+
+  def initialize(@txt_file)
+    args_file = txt_file.sub(".txt", ".arg")
+    @args = SplitArgs.from_file(args_file)
+
+    @save_dir = extract_save_dir_from_txt_file(txt_file)
+    @raw_data = read_and_clean_text(txt_file)
+
+    @curr_chvol = @args.init_chvol
   end
 
-  def load_input!(to_simp = false, un_wrap = false, encoding : String? = nil)
-    input = read_utf8(@inp_file, encoding)
+  private def extract_save_dir_from_txt_file(txt_file : String) : String
+    paths = txt_file.split('/')
+    sname = paths[-2]
+    snvid = paths[-1].split(/[-\.]/, 2).first
 
-    input = CV::MtCore.trad_to_simp(input) if to_simp
-    input = fix_linebreaks(input) if un_wrap
+    File.join("chtexts", sname, snvid)
+  end
 
-    @lines = input.split('\n')
-
-    log_state("\n#{Time.local}\n- #{@lines.size} lines loaded")
+  private def read_and_clean_text(inp_file : String) : Array(String)
+    lines = File.read(inp_file).gsub(/\r\n?/, '\n').split('\n')
     lines[0] = lines[0].tr("\uFEFF", "")
+    lines
   end
 
-  def fix_linebreaks(input : String)
-    output = String::Builder.new
-
-    invalid = false
-    input.each_line do |line|
-      output << line unless line.empty?
-
-      if (line.size > 10 || invalid) && line !~ /^第|[。！#\p{Pe}\p{Pf}]\s*$/
-        invalid = true
-      else
-        invalid = false
-        output << '\n'
-      end
-    end
-
-    output.to_s
-  end
-
-  def read_utf8(inp_file : String, encoding : String? = nil, chardet_limit = 1000) : String
-    File.open(inp_file, "r") do |io|
-      unless encoding
-        chunk = io.read_string(chardet_limit)
-        io.rewind
-
-        chardet = ICU::CharsetDetector.new
-        encoding = chardet.detect(chunk).name
-      end
-
-      io.set_encoding(encoding, invalid: :skip)
-      io.gets_to_end.gsub(/\r?\n|\r/, '\n')
+  def split_text! : Nil
+    case @args.split_mode
+    when 0 then split_mode_0(@args.min_repeat)
+    when 1 then split_mode_1(@args.trim_space, @args.min_blanks)
+    when 2 then split_mode_2(@args.need_blank)
+    when 3 then split_mode_3(@args.title_suffix)
+    when 4 then split_mode_4(@args.custom_regex)
+    else        raise "Chế độ chia chưa được hỗ trợ!"
     end
   end
-
-  def save_chapter(entry : Chapter) : Nil
-    return if entry.lines.empty?
-
-    schid = "#{@chidx}_#{@infos.size + 1}"
-
-    index = @chidx &+ @infos.size
-    group = (index &- 1) // 128
-
-    group_dir = "#{chap_dir}/#{group}"
-    Dir.mkdir_p(group_dir)
-
-    entry.save!("#{group_dir}/#{schid}")
-
-    chinfo = CV::Chinfo.new(index, schid, entry.lines[0], @chvol)
-
-    stats = chinfo.stats
-    stats.utime = Time.utc.to_unix
-    stats.uname = @uname
-
-    stats.chars = entry.chars
-    stats.parts = entry.parts
-
-    @infos << chinfo
-  end
-
-  def save_chlists(chlist = @infos) : Nil
-    if message = invalid_chlist?
-      # groups = chlist.map(&.chidx.&-(1).// 128).to_set
-      # groups.each { |group| `rm -rf "#{chap_dir}/#{group}"` }
-
-      return log_state(message, abort: true)
-    end
-
-    chlist.group_by(&.chidx.&-(1).// 128).each do |group, slice|
-      group_dir = "#{chap_dir}/#{group}"
-
-      message = `zip --include=\\*.txt -rjmq "#{group_dir}.zip" "#{group_dir}" && rm -rf #{group_dir}`
-      log_state(message, abort: true) unless $?.success?
-
-      chlist = CV::ChList.new("#{group_dir}.tsv")
-      chlist.patch!(slice)
-    end
-  end
-
-  def invalid_chlist?(chlist = @infos)
-    if chlist.size > 4000
-      return "Lỗi chia: số lượng chương quá nhiều (#{chlist.size} chương)"
-    end
-
-    chlist.each do |chinfo|
-      parts = chinfo.stats.parts
-      return "Lỗi chia: chương số #{chinfo.chidx} có quá nhiều phần (#{parts} phần)" if parts > 30
-    end
-  end
-
-  def split_chap
-    chapter = Chapter.new
-    prev_was_chvol = false
-
-    @lines.each_with_index(1) do |line, idx|
-      mark_new_chap = yield line # check if this is the mark of new chapter
-      line = clean_text(line)
-
-      if !mark_new_chap
-        prev_was_chvol = false
-        chapter.add(line)
-      elsif chapter.lines.size != 1
-        # previous chapter do not contain just a single line
-        prev_was_chvol = false
-        save_chapter(chapter)
-
-        chapter = Chapter.new
-        chapter.add(line)
-      elsif prev_was_chvol
-        message = "Lỗi: Chương phía trước không có nội dung. Phát hiện lỗi ở dòng #{idx}: #{line}."
-        log_state(message, abort: true)
-      else
-        @chvol = chapter.lines.shift
-        chapter.add(line)
-        prev_was_chvol = true
-      end
-    end
-
-    save_chapter(chapter)
-    save_chlists(@infos)
-  end
-
-  def clean_text(input : String)
-    input.tr("\t\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000", " ").strip
-  end
-
-  # SPLIT_RE_0 = /^\/{3,}/m
-  # SPLIT_RE_1 = /(\r?\n|\r){2,}(?=\P{Zs})/m
-  # SPLIT_RE_2 = /(\r?\n|\r)(?=\P{Zs})/m
-  # SPLIT_RE_3 = /^\s*(?=第[零〇一二两三四五六七八九十百千]+章\s)/m
 
   # split by manually putting `///` between chaps
-  def split_mode_0
-    log_state("- Split mode: 0")
-    chapter = Chapter.new
+  private def split_mode_0(min_repeat = 3)
+    split_mark_regex = /^\/{#{min_repeat},}(.*)$/
+    pending_chap = init_chap
 
-    @lines.each do |line|
-      if match = line.match(/^\s*\/{3,}(.*)$/)
-        save_chapter(chapter)
-        chapter = Chapter.new
+    @raw_data.each do |line|
+      line = clean_text(line)
 
-        chvol = clean_text(match[1])
-        @chvol = chvol unless chvol.empty?
+      if match = line.match(split_mark_regex)
+        push_chap(pending_chap) # add previous chapter
+
+        @curr_chvol = match[1] unless match[1].empty?
+        pending_chap = init_chap
       else
-        line = clean_text(line)
-        chapter.add(line)
+        pending_chap.add_line(line)
       end
     end
 
-    save_chapter(chapter)
-    save_chlists(@infos)
+    push_chap(pending_chap)
   end
 
-  # split if there is `min_blank_line` number of adjacent blank lines
-  def split_mode_1(min_blank_line = 2, ignore_whitespace = false)
-    log_state("- Split mode: 1, min_blank: #{min_blank_line}, no_space: #{ignore_whitespace}")
-
+  # split if there is `min_blanks` number of adjacent blank lines
+  private def split_mode_1(trim_space = false, min_blanks = 2)
     blank_count = 0
 
-    split_chap do |line|
-      line = clean_text(line) if ignore_whitespace
+    split_text do |line|
+      line = clean_text(line) if trim_space
 
       if line.empty?
-        blank_count &+= 1
-        blank_count >= min_blank_line
+        blank_count += 1
+        blank_count >= min_blanks
       else
         blank_count = 0
         false
@@ -255,100 +213,144 @@ class Splitter
   end
 
   # split if body is padded with spaces
-  def split_mode_2(require_blank_line = false)
-    log_state("- Split mode: 2, require_blank_before: #{require_blank_line}")
+  private def split_mode_2(need_blank = false)
+    prev_was_blank = true
+    nested_regex = /^[ 　\t]/
 
-    was_blank_line = true
-
-    split_chap do |line|
-      if line =~ /^[ 　\t]/ || line.empty?
-        was_blank_line = line.blank?
-        next false
+    split_text do |line|
+      if line.blank?
+        prev_was_blank = true
+        false
+      elsif line =~ nested_regex
+        false
+      else
+        is_new_chap = prev_was_blank || !need_blank
+        prev_was_blank = false
+        is_new_chap
       end
-
-      is_new_chap = !require_blank_line || was_blank_line
-      was_blank_line = false
-      is_new_chap
     end
   end
 
-  def split_mode_3(suffixes : String)
-    log_state("- Split mode: 3, suffixes: #{suffixes}")
-    log_state("Lỗi nhập: Không có nhãn chương", abort: true) if suffixes.empty?
-
-    regex = Regex.new("^[ 　]*第[\\d零〇一二两三四五六七八九十百千]+[#{suffixes}]")
-    split_by_regex(regex)
+  # split by chapter
+  private def split_mode_3(suffixes : String)
+    split_mode_4("^[ 　]*第[\\d零〇一二两三四五六七八九十百千]+[#{suffixes}]")
   end
 
-  def split_mode_4(regex : String)
-    log_state("- Split mode: 4, regex: #{regex}")
-    split_by_regex(Regex.new(regex))
+  private def split_mode_4(regex_str : String)
+    regex = Regex.new(regex_str)
+    split_text { |line| line =~ regex }
   end
 
-  def split_by_regex(regex : Regex)
-    log_state("- Regex used: #{regex}")
-    split_chap { |line| line =~ regex }
+  private def split_text
+    prev_was_chvol = false
+    pending_chap = init_chap
+
+    @raw_data.each_with_index(1) do |line, idx|
+      mark_new_chap = yield line # check if this is the mark of new pending_chap
+      line = clean_text(line)
+
+      if !mark_new_chap
+        pending_chap.add_line(line)
+        prev_was_chvol = false
+      elsif pending_chap.paras.size > 0
+        push_chap(pending_chap)
+
+        pending_chap = init_chap
+        pending_chap.title = line
+
+        prev_was_chvol = false
+      elsif prev_was_chvol
+        raise "Lỗi dòng: #{idx} [#{line[0..10]}]: Chương phía trước không có nội dung."
+      else
+        @curr_chvol = pending_chap.chvol = pending_chap.title
+        pending_chap.title = line
+        prev_was_chvol = true
+      end
+    end
+
+    push_chap(pending_chap)
   end
+
+  ####
+
+  private def clean_text(input : String)
+    input.tr("\t\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000", " ").strip
+  end
+
+  private def init_chap
+    ch_no = @args.init_ch_no + @out_data.size
+    ChapData.new(ch_no, @curr_chvol)
+  end
+
+  MAX_CHAP_CHARS = 100000 # aroudn 30 parts
+  MAX_CHAP_COUNT =   4000
+
+  private def push_chap(chapter : ChapData)
+    return if chapter.title.empty?
+
+    if chapter.c_len > MAX_CHAP_CHARS
+      p_len = chapter.c_len // 3000 + 1
+      raise "Só lượng phần của chương số #{chapter.ch_no} vượt quá giới hạn (#{p_len}/30)"
+    end
+
+    if @out_data.size > MAX_CHAP_COUNT
+      raise "Số lượng chương vượt quá giới hạn (#{@out_data.size}/#{MAX_CHAP_COUNT})"
+    end
+
+    @out_data << chapter
+  end
+
+  ###
+
+  def save_texts!
+    groups = @out_data.group_by { |x| (x.ch_no &- 1) // 128 }
+
+    groups.each do |group, chaps|
+      base_path = "#{@save_dir}/#{group}"
+      Dir.mkdir_p(base_path)
+
+      chaps.each(&.save!(base_path))
+      message = `zip -rjmq "#{base_path}.zip" "#{base_path}"`
+
+      raise message unless $?.success?
+      Dir.delete(base_path)
+    end
+  end
+
+  def save_infos!(mtime : Int64, uname : String)
+    split_out = File.open(@txt_file.sub(".txt", ".tsv"), "w")
+    patch_out = File.open(File.join(@save_dir, "patch.tab"), "a")
+
+    @out_data.each do |chap|
+      info = {
+        chap.ch_no, chap.ch_no, chap.title, chap.chvol,
+        mtime, chap.c_len, chap.p_len, uname,
+      }
+
+      split_out.puts(info.join('\t'))
+      patch_out.puts(info.join('\t'))
+    end
+
+    split_out.close
+    patch_out.close
+  end
+
+  ###
+
+  def self.run!(argv = ARGV)
+    input = argv[0]
+    mtime = argv[1]?.try(&.to_i64?) || Time.utc.to_unix
+    uname = argv[2]? || ""
+
+    task = new(input)
+    task.split_text!
+
+    task.save_texts!
+    task.save_infos!(mtime, uname)
+
+    last_chap = task.out_data.last
+    STDOUT.puts last_chap.ch_no
+  end
+
+  run!
 end
-
-cmd = Splitter.new
-
-to_simp = false
-un_wrap = false
-encoding = nil
-split_mode = 1
-
-min_blank_line = 2
-
-trim_whitespace = false
-need_blank_before = false
-
-title_suffixes = "章节回幕折集卷季"
-
-custom_regex = "^\\s*第?[\\d+零〇一二两三四五六七八九十百千]+章"
-
-OptionParser.parse do |parser|
-  parser.on("-i INPUT", "input file") { |i| cmd.inp_file = i }
-  parser.on("--tosimp", "trad to simp") { to_simp = true }
-  parser.on("--unwrap", "fix line breaking") { un_wrap = true }
-  parser.on("-e ENCODING", "file encoding") { |e| encoding = e }
-
-  parser.on("-u UNAME", "user name") { |u| cmd.uname = u }
-  parser.on("-v CHVOL", "default chapter volume name") { |v| cmd.chvol = v }
-  parser.on("-f CHIDX", "start chap index") { |f| cmd.chidx = f.to_i16 }
-  parser.on("-d CHAP_DIR", "output folder") { |i| cmd.chap_dir = i }
-
-  parser.on("-m SPLIT_MODE", "text split mode") { |m| split_mode = m.to_i }
-
-  # for mode 2
-  parser.on("--trim", "ignore whitespace on mode 2") { trim_whitespace = true }
-  parser.on("--min-blank MIN", "minimum blank line to seperate") { |min| min_blank_line = min.to_i }
-
-  # for mode 3
-  parser.on("--blank-before", "require blank line before new chap") { need_blank_before = true }
-
-  # for mode 4
-  parser.on("--suffix SUFFIXES", "title suffixes indication") { |x| title_suffixes = x }
-
-  # for mode 5
-  parser.on("--regex REGEX", "custom regex for splitting") { |x| custom_regex = x }
-end
-
-cmd.load_input!(to_simp, un_wrap, encoding)
-
-case split_mode
-when 0 then cmd.split_mode_0
-when 1 then cmd.split_mode_1(min_blank_line, trim_whitespace)
-when 2 then cmd.split_mode_2(need_blank_before)
-when 3 then cmd.split_mode_3(title_suffixes)
-when 4 then cmd.split_mode_4(custom_regex)
-else
-  puts "Chế độ chia #{split_mode} chưa được hỗ trợ"
-  exit(1)
-end
-
-last = cmd.infos.last
-cmd.log_state("\nSuccess! chap_count: #{cmd.infos.size}, \
-                from_idx: #{cmd.chidx}, \
-                last_idx: #{last.chidx}")
-puts "#{last.chidx}\t#{last.schid}"
