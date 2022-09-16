@@ -1,47 +1,57 @@
-require "./vi_user"
+module CV::ChSeed
+  alias HashMap = Hash(String, Tuple(Int32, Int8))
 
-class CV::ChSeed
-  class_getter stats_map : Hash(String, {Int32, Int8}) do
-    output = {} of String => {Int32, Int8}
+  INFO_DIR = "var/fixed/seeds"
+  class_getter stats_map : HashMap do
+    hash = HashMap.new
 
-    File.read_lines("var/fixed/sn_id.tsv").each do |line|
-      next if line.empty? || line.starts_with?('#')
-      cols = line.split('\t')
-      output[cols[0]] = {cols[1].to_i, cols[2].to_i8}
+    files = {"common.tsv", "viuser-live.tsv", "viuser.tsv"}
+
+    files.each do |file|
+      File.each_line("#{INFO_DIR}/#{file}") do |line|
+        next if line.empty? || line.starts_with?('#')
+        cols = line.split('\t')
+
+        sname, sn_id, stype = cols
+        hash[sname] = {sn_id.to_i, stype.to_i8}
+      end
     end
 
-    output
+    hash
+  end
+
+  def self.has_sname?(sname : String)
+    stats_map.has_key?(sname)
+  end
+
+  def self.add_user(sname : String, sn_id : Int32) : Nil
+    stats_map[sname] = {sn_id, 0_i8}
+
+    File.open("#{INFO_DIR}/viuser-live.tsv", "a") do |io|
+      io << sname << '\t' << sn_id << '\t' << 0 << '\n'
+    end
   end
 
   def self.map_sname(sname : String) : {Int32, Int8}
-    stats_map[sname] ||= begin
-      raise "Invalid sname [#{sname}]" unless sname.starts_with?('@')
-      user_id = Viuser.load!(sname[1..]).id
-      {user_id &* 2 &+ 20, 0_i8}
-    end
+    stats_map[sname] ||= raise "Invalid sname [#{sname}]"
   end
 
   class_getter sname_map : Hash(Int32, Tuple(String, Int8)) do
-    output = {} of Int32 => {String, Int8}
-    stats_map.each do |sname, (ns_id, stype)|
-      output[ns_id] = {sname, stype}
+    hash = {} of Int32 => {String, Int8}
+
+    stats_map.each do |sname, (sn_id, stype)|
+      hash[sn_id] = {sname, stype}
     end
 
-    output
+    hash
   end
 
   def self.is_remote?(sn_id : Int32) : Bool
     return false if sn_id % 2 == 0
-    sname_map[sn_id]?.try(&.[1].> 2) || false
+    sname_map[sn_id].last > 2
   end
 
   def self.get_sname(sn_id : Int32) : String
-    info = sname_map[sn_id] ||= begin
-      user_id = (sn_id &- 20) // 2
-      uname = "@" + Viuser.load!(user_id).uname
-      {uname, 0_i8}
-    end
-
-    info[0]
+    sname_map[sn_id].first
   end
 end

@@ -16,6 +16,12 @@ class CV::UsercpCtrl < CV::BaseCtrl
       CtrlUtil.log_user_action("upgrade-privi", body, _viuser.uname)
     end
 
+    sname = "@" + _viuser.uname
+    unless ChSeed.has_sname?(sname)
+      sn_id = _viuser.id * 2 + 20
+      ChSeed.add_user(sname, sn_id)
+    end
+
     serv_json(ViuserView.new(_viuser))
   rescue err
     halt! 403, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
