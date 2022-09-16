@@ -9,7 +9,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot = load_chroot(sname, :auto)
 
     txt_path = save_upload_text(chroot)
-    tsv_path = split_chaps(chroot, txt_path)
+    tsv_path = split_chap_texts(chroot, txt_path)
 
     infos = chroot._repo.read_file(tsv_path).values.sort_by!(&.ch_no.not_nil!)
 
@@ -61,8 +61,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
     file_path
   end
 
-  private def split_chaps(chroot : Chroot, txt_path : String) : String
-    txt_path = clean_input(txt_path)
+  private def split_chap_texts(chroot : Chroot, txt_path : String) : String
+    txt_path = fix_text_input(txt_path)
     save_split_args(chroot, txt_path)
 
     res = `./bin/text_split "#{txt_path}" #{_viuser.uname}`
@@ -71,7 +71,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     txt_path.sub(".txt", ".tsv")
   end
 
-  private def clean_input(txt_path : String)
+  private def fix_text_input(txt_path : String)
     fix_path = txt_path.sub(".txt", ".fix.txt")
 
     if params["tosimp"]? == "true"
