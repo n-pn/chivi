@@ -1,4 +1,4 @@
-require "./shared/bootstrap"
+require "../shared/bootstrap"
 
 users = CV::Viuser.query.where("privi > 0")
 
