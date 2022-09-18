@@ -104,8 +104,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
     case split_mode
     when 0
-      min_repeat = params["repeating"]?.try(&.to_i?)
-      save_arg(arg_file, "min_repeat", min_repeat, &.!= 3)
+      min_repeat = params["min_repeat"]?.try(&.to_i?)
+      save_arg(arg_file, "min_repeat", min_repeat) { min_repeat && min_repeat != 3 }
     when 1
       trim_space = params["trim_space"]? == "true"
       save_arg(arg_file, "trim_space", trim_space)

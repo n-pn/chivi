@@ -55,17 +55,17 @@
   $: disabled = (privi == 1 && input.length > 30000) || privi < 1
   $: action_url = `/api/texts/${nvinfo.id}/${sname}`
 
-  async function submit(evt: SubmitEvent) {
+  async function submit() {
     const body = new FormData()
 
     body.append('text', input)
-    body.append('chidx', chidx.toString())
+    body.append('hash', hash_str(input))
+
     body.append('title', title)
     body.append('chvol', chvol)
-    body.append('hash', hash_str(input))
-    body.append('encoding', 'UTF-8')
+    body.append('chidx', chidx.toString())
     body.append('split_mode', '0')
-    body.append('repeating', '9')
+    body.append('min_repeat', '9')
 
     for (const key in form) body.append(key, form[key].toString())
     const res = await fetch(action_url, { method: 'PUT', body })
