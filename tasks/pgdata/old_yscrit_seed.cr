@@ -105,7 +105,7 @@ module CV::YscritSeed
 
       yscrit = Yscrit.get!(yscrit_id, Time.unix(mtime))
       next unless nvinfo = Nvinfo.find({ysbook_id: ysbook_id})
-      next unless ysuser = Ysuser.upsert!(infos[2])
+      next unless ysuser = YS::Ysuser.upsert!(infos[2])
 
       yscrit.ysuser = ysuser
       yscrit.nvinfo_id = nvinfo.id

@@ -15,7 +15,7 @@ module CV
   end
 
   def self.update!
-    Ysuser.query.each do |ysuser|
+    YS::Ysuser.query.each do |ysuser|
       ysuser.fix_name
 
       ysuser.list_count = Yslist.query.where("ysuser_id = ?", ysuser.id).count.to_i

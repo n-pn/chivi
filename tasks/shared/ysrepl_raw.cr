@@ -1,5 +1,6 @@
 require "json"
 require "./bootstrap"
+require "../../src/ysweb/models/*"
 
 class CV::YsreplRaw
   class User
@@ -33,10 +34,10 @@ class CV::YsreplRaw
   getter created_at : Time
 
   def seed!(stime : Int64 = Time.utc.to_unix)
-    ysrepl = Ysrepl.upsert!(self._id, self.created_at)
+    ysrepl = YS::Ysrepl.upsert!(self._id, self.created_at)
 
-    ysrepl.yscrit = Yscrit.find!({origin_id: self.yscrit_id})
-    ysrepl.ysuser = Ysuser.upsert!(self.user.name, self.user._id)
+    ysrepl.yscrit = YS::Yscrit.find!({origin_id: self.yscrit_id})
+    ysrepl.ysuser = YS::Ysuser.upsert!(self.user.name, self.user._id)
 
     ysrepl.stime = stime
     ysrepl.set_ztext(self.ztext)

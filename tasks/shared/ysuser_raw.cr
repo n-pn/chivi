@@ -1,6 +1,7 @@
 require "log"
 require "json"
 require "./bootstrap"
+require "../../src/ysweb/models/*"
 
 class CV::YsuserRaw
   struct User
@@ -32,7 +33,7 @@ class CV::YsuserRaw
   getter crit_total : Int32 = 0
 
   def seed!(stime : Int64 = Time.utc.to_unix)
-    ysuser = Ysuser.upsert!(self.name, self._id)
+    ysuser = YS::Ysuser.upsert!(self.name, self._id)
 
     ysuser.stime = stime
 

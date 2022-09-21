@@ -10,11 +10,11 @@ class CV::YslistCrawl
   end
 
   @http = HttpClient.new(ARGV.includes?("--refresh-proxy"))
-  @data : Array(Yslist)
+  @data : Array(YS::Yslist)
 
   def initialize(crmode : CrMode = :tail, @reseed = false)
     fresh = Time.utc - 3.days
-    @data = Yslist.query.where("stime < #{fresh.to_unix}").to_a
+    @data = YS::Yslist.query.where("stime < #{fresh.to_unix}").to_a
 
     case crmode
     when .rand? then @data.shuffle!
@@ -31,15 +31,15 @@ class CV::YslistCrawl
 
     until queue.empty?
       qsize = queue.size
-      qnext = [] of Yslist
+      qnext = [] of YS::Yslist
 
       Log.info { "[loop: #{loops}, size: #{qsize}]".colorize.cyan }
 
-      qnext = [] of Yslist
+      qnext = [] of YS::Yslist
 
       workers = qsize
       workers = 10 if workers > 10
-      channel = Channel(Yslist?).new(workers)
+      channel = Channel(YS::Yslist?).new(workers)
 
       queue.each_with_index(1) do |yslist, idx|
         exit(0) if @http.no_proxy?
@@ -62,7 +62,7 @@ class CV::YslistCrawl
     end
   end
 
-  def do_crawl!(yslist : Yslist, label : String = "-/-") : Yslist?
+  def do_crawl!(yslist : YS::Yslist, label : String = "-/-") : YS::Yslist?
     y_lid = yslist.origin_id
     ofile = "#{DIR}/#{y_lid}.json"
 
@@ -75,7 +75,7 @@ class CV::YslistCrawl
     stime = FileUtil.mtime_int(ofile)
     YslistRaw.from_info(File.read(ofile)).seed!(stime)
 
-    Log.info { "yslists: #{Yslist.query.where("zdesc != ''").count}".colorize.cyan }
+    Log.info { "yslists: #{YS::Yslist.query.where("zdesc != ''").count}".colorize.cyan }
   rescue err
     puts err
   end

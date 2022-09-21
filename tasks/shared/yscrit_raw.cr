@@ -1,5 +1,6 @@
 require "json"
 require "./seed_util"
+require "../../src/ysweb/models/*"
 
 class CV::YscritRaw
   class Book
@@ -57,11 +58,14 @@ class CV::YscritRaw
   @[JSON::Field(key: "createrId")]
   getter user : User
 
-  def seed!(stime : Int64 = Time.utc.to_unix, yslist_id : Int64? = nil)
-    yscrit = Yscrit.upsert!(self._id, self.created_at)
+  def seed!(stime : Int64 = Time.utc.to_unix, yslist_id : Int64? = nil) : Nil
+    self.save_ztext
+    # TODO: also save infos
+
+    yscrit = YS::Yscrit.upsert!(self._id, self.created_at)
 
     yscrit.ysbook, yscrit.nvinfo = upsert_ysbook(self.book)
-    yscrit.ysuser = Ysuser.upsert!(self.user.name, self.user._id)
+    yscrit.ysuser = YS::Ysuser.upsert!(self.user.name, self.user._id)
     yscrit.yslist_id = yslist_id if yslist_id
 
     yscrit.stars = self.stars
@@ -78,6 +82,33 @@ class CV::YscritRaw
     yscrit.save!
   rescue err
     puts err.inspect_with_backtrace.colorize.red
+  end
+
+  ZTEXT_DIR = "var/ys_db/crits"
+
+  def save_ztext
+    # save crit body to disk instead of db
+    # work in progress
+    # TODO: remove ztext field in db and use zip files insteads
+
+    # do not write file if content is hidden in yousuu
+    return if ztext == "请登录查看评论内容" || ztext.empty?
+
+    # write crit body to {yousuu_id}.zip
+    # NOTE: were are using yousuu_id instead of yscrit id prefix
+    # so that we can easy look for the custom dict name for the machine translation
+    # also to detect some garbage spam reviews (which is already removed from yousuu)
+
+    ztext_dir = "#{ZTEXT_DIR}/#{book.id}"
+    Dir.mkdir_p(ztext_dir)
+
+    text_path = "#{ztext_dir}/#{_id}.txt"
+    File.write(text_path, ztext)
+
+    # add file to zip
+    # do not delete added file yet in case the zip file is overridded
+    # TODO: delete file
+    `zip -jq "#{ztext_dir}.zip" "#{text_path}"`
   end
 
   ZTEXTS = Hash(String, Tabkv(String)).new do |h, k|

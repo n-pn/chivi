@@ -73,10 +73,10 @@ class CV::YscritCrawlByBook
     crits.each(&.seed!(stime: stime))
 
     total = ysbook.crit_total if ysbook.crit_total > total
-    count = Yscrit.query.where(ysbook_id: ysbook.id).count.to_i
+    count = YS::Yscrit.query.where(ysbook_id: ysbook.id).count.to_i
 
     ysbook.update(crit_total: total, crit_count: count)
-    Log.info { "- yscrits: #{Yscrit.query.count}".colorize.cyan }
+    Log.info { "- yscrits: #{YS::Yscrit.query.count}".colorize.cyan }
   rescue err
     Log.error { err }
   end

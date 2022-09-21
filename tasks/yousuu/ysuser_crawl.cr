@@ -10,11 +10,11 @@ class CV::YsuserCrawl
   end
 
   @http = HttpClient.new(false)
-  @data : Array(Ysuser)
+  @data : Array(YS::Ysuser)
 
   def initialize(crmode : CrMode = :tail, @reseed = false)
     fresh = Time.utc - 7.days
-    @data = Ysuser.query.where("origin_id > 0 AND stime < ?", fresh.to_unix).to_a
+    @data = YS::Ysuser.query.where("origin_id > 0 AND stime < ?", fresh.to_unix).to_a
 
     case crmode
     when .rand? then @data.shuffle!
@@ -31,15 +31,15 @@ class CV::YsuserCrawl
 
     until queue.empty?
       qsize = queue.size
-      qnext = [] of Ysuser
+      qnext = [] of YS::Ysuser
 
       Log.info { "[loop: #{loops}, size: #{qsize}]".colorize.cyan }
 
-      qnext = [] of Ysuser
+      qnext = [] of YS::Ysuser
 
       workers = qsize
       workers = 10 if workers > 10
-      channel = Channel(Ysuser?).new(workers)
+      channel = Channel(YS::Ysuser?).new(workers)
 
       queue.each_with_index(1) do |ysuser, idx|
         exit(0) if @http.no_proxy?
@@ -62,7 +62,7 @@ class CV::YsuserCrawl
     end
   end
 
-  def do_crawl!(ysuser : Ysuser, label : String = "-/-") : Ysuser?
+  def do_crawl!(ysuser : YS::Ysuser, label : String = "-/-") : YS::Ysuser?
     y_uid = ysuser.origin_id
     ofile = "#{DIR}/#{y_uid}.json"
 
@@ -75,7 +75,7 @@ class CV::YsuserCrawl
     stime = FileUtil.mtime_int(ofile)
     YsuserRaw.from_info(File.read(ofile)).seed!(stime)
 
-    Log.info { "ysusers: #{Ysuser.query.where("crit_total > 0").count}".colorize.cyan }
+    Log.info { "ysusers: #{YS::Ysuser.query.where("crit_total > 0").count}".colorize.cyan }
   rescue err
     puts err
   end

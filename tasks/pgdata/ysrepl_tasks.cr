@@ -29,7 +29,7 @@ module CV
   end
 
   def update!
-    Ysrepl.query.order_by(id: :asc)
+    YS::Ysrepl.query.order_by(id: :asc)
       .with_yscrit(&.with_nvinfo)
       .each_with_cursor(20) do |ysrepl|
         ysrepl.tap(&.fix_vhtml).save!

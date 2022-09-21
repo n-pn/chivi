@@ -38,7 +38,7 @@ module CV
       yscrit.fix_vhtml
       yscrit.fix_vtags
 
-      yscrit.repl_count = Ysrepl.query.where(yscrit_id: yscrit.id).count.to_i
+      yscrit.repl_count = YS::Ysrepl.query.where(yscrit_id: yscrit.id).count.to_i
 
       yscrit.fix_sort!
       yscrit.save!

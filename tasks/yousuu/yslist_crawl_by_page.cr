@@ -3,7 +3,7 @@ require "option_parser"
 
 require "../shared/bootstrap"
 require "../shared/http_client"
-require "../shared/yslist_raw"
+require "../shared/YS::Yslist_raw"
 
 class CV::YslistCrawl
   DIR = "_db/yousuu/lists-by-page"
@@ -67,12 +67,12 @@ class CV::YslistCrawl
       return page
     end
 
-    lists, _ = YslistRaw.from_list(File.read(file))
+    lists, _ = YS::YslistRaw.from_list(File.read(file))
 
     stime = FileUtil.mtime_int(file)
     lists.each(&.seed!(stime))
 
-    Log.info { "yslists: #{Yslist.query.count}".colorize.cyan }
+    Log.info { "yslists: #{YS::Yslist.query.count}".colorize.cyan }
   end
 
   private def api_url(page = 1)

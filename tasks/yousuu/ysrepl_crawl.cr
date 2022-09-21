@@ -10,10 +10,10 @@ class CV::YsreplCrawl
   end
 
   @http = HttpClient.new(false)
-  @data : Array(Yscrit)
+  @data : Array(YS::Yscrit)
 
   def initialize(crmode : CrMode, @reseed = false)
-    @data = Yscrit.query.where("repl_count < repl_total").to_a
+    @data = YS::Yscrit.query.where("repl_count < repl_total").to_a
 
     case crmode
     when .rand? then @data.shuffle!
@@ -30,13 +30,13 @@ class CV::YsreplCrawl
 
     until queue.empty?
       qsize = queue.size
-      qnext = [] of Yscrit
+      qnext = [] of YS::Yscrit
 
       Log.info { "<#{page}> [loop: #{loops}, size: #{qsize}]".colorize.cyan }
 
       workers = qsize
       workers = 10 if workers > 10
-      channel = Channel(Yscrit?).new(workers)
+      channel = Channel(YS::Yscrit?).new(workers)
 
       queue.each_with_index(1) do |yscrit, idx|
         spawn do
@@ -57,7 +57,7 @@ class CV::YsreplCrawl
     end
   end
 
-  def do_crawl!(yscrit : Yscrit, page = 1, label = "-/-") : Yscrit?
+  def do_crawl!(yscrit : YS::Yscrit, page = 1, label = "-/-") : YS::Yscrit?
     y_cid = yscrit.origin_id
     ofile = "#{DIR}/#{y_cid[0..3]}/#{y_cid}-#{page}.json"
 
@@ -75,10 +75,10 @@ class CV::YsreplCrawl
     crits.each(&.seed!(stime: stime))
 
     total = yscrit.repl_total if yscrit.repl_total > total
-    count = Ysrepl.query.where(yscrit_id: yscrit.id).count.to_i
+    count = YS::Ysrepl.query.where(yscrit_id: yscrit.id).count.to_i
 
     yscrit.update(repl_total: total, repl_count: count)
-    Log.info { "ysrepls: #{Ysrepl.query.count}".colorize.cyan }
+    Log.info { "ysrepls: #{YS::Ysrepl.query.count}".colorize.cyan }
   rescue err
     puts err
   end

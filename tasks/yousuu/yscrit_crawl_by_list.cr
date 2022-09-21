@@ -10,10 +10,10 @@ class CV::YscritCrawlByList
   end
 
   @http = HttpClient.new(ARGV.includes?("--refresh-proxy"))
-  @data : Array(Yslist)
+  @data : Array(YS::Yslist)
 
   def initialize(@crmode : CrMode, @reseed = false)
-    @data = Yslist.query.where("book_count < book_total").to_a
+    @data = YS::Yslist.query.where("book_count < book_total").to_a
 
     case crmode
     when .rand? then @data.shuffle!
@@ -30,13 +30,13 @@ class CV::YscritCrawlByList
 
     until queue.empty?
       qsize = queue.size
-      qnext = [] of Yslist
+      qnext = [] of YS::Yslist
 
       Log.info { "<#{page}> [loop: #{loops}, size: #{qsize}]".colorize.cyan }
 
       workers = qsize
       workers = 10 if workers > 10
-      channel = Channel(Yslist?).new(workers)
+      channel = Channel(YS::Yslist?).new(workers)
 
       queue.each_with_index(1) do |yslist, idx|
         spawn do
@@ -57,7 +57,7 @@ class CV::YscritCrawlByList
     end
   end
 
-  def do_crawl!(yslist : Yslist, page = 1, label = "-/-") : Yslist?
+  def do_crawl!(yslist : YS::Yslist, page = 1, label = "-/-") : YS::Yslist?
     y_lid = yslist.origin_id
     ofile = "#{DIR}/#{y_lid[0..3]}/#{y_lid}-#{page}.json"
 
@@ -73,10 +73,10 @@ class CV::YscritCrawlByList
     crits.each(&.seed!(stime, yslist.id))
 
     total = yslist.book_total if yslist.book_total > total
-    count = Yscrit.query.where(yslist_id: yslist.id).count.to_i
+    count = YS::Yscrit.query.where(yslist_id: yslist.id).count.to_i
 
     yslist.update(book_total: total, book_count: count)
-    Log.info { "yscrits: #{Yscrit.query.count}".colorize.cyan }
+    Log.info { "yscrits: #{YS::Yscrit.query.count}".colorize.cyan }
   rescue err
     Log.error { err }
   end

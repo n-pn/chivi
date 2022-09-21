@@ -9,11 +9,11 @@ class CV::YslistCrawlByUser
     Head; Tail; Rand
   end
 
-  @data : Array(Ysuser)
+  @data : Array(YS::Ysuser)
 
   def initialize(crmode : CrMode, @reseed = false, refresh_proxy = fase)
     @http = HttpClient.new(refresh_proxy)
-    @data = Ysuser.query.where("origin_id > 0 AND list_count < list_total").to_a
+    @data = YS::Ysuser.query.where("origin_id > 0 AND list_count < list_total").to_a
 
     case crmode
     when .rand? then @data.shuffle!
@@ -30,13 +30,13 @@ class CV::YslistCrawlByUser
 
     until queue.empty?
       qsize = queue.size
-      qnext = [] of Ysuser
+      qnext = [] of YS::Ysuser
 
       Log.info { "<#{page}> [loop: #{loops}, size: #{qsize}]".colorize.cyan }
 
       workers = qsize
       workers = 10 if workers > 10
-      channel = Channel(Ysuser?).new(workers)
+      channel = Channel(YS::Ysuser?).new(workers)
 
       queue.each_with_index(1) do |ysuser, idx|
         spawn do
@@ -57,7 +57,7 @@ class CV::YslistCrawlByUser
     end
   end
 
-  def do_crawl!(ysuser : Ysuser, page = 0, label = "-/-") : Ysuser?
+  def do_crawl!(ysuser : YS::Ysuser, page = 0, label = "-/-") : YS::Ysuser?
     y_uid = ysuser.origin_id
     ofile = "#{DIR}/#{y_uid}/#{page}.json"
 
@@ -73,10 +73,10 @@ class CV::YslistCrawlByUser
     lists.each(&.seed!(stime, ysuser: ysuser))
 
     total = ysuser.list_total if ysuser.list_total > total
-    count = Yslist.query.where(ysuser_id: ysuser.id).count.to_i
+    count = YS::Yslist.query.where(ysuser_id: ysuser.id).count.to_i
 
     ysuser.update(list_total: total, list_count: count)
-    Log.info { "yslists: #{Yslist.query.count}".colorize.cyan }
+    Log.info { "yslists: #{YS::Yslist.query.count}".colorize.cyan }
   end
 
   def api_url(y_uid : Int32, page = 1)

@@ -73,10 +73,10 @@ class CV::YslistCrawlByBook
     lists.each(&.seed!(stime))
 
     total = ysbook.list_total if ysbook.list_total > total
-    count = Yscrit.query.where("ysbook_id = #{y_bid} AND yslist_id > 0").count.to_i
+    count = YS::Yscrit.query.where("ysbook_id = #{y_bid} AND YS::Yslist_id > 0").count.to_i
 
     ysbook.update(list_total: total, list_count: count)
-    Log.info { "yslists: #{Yslist.query.count}".colorize.cyan }
+    Log.info { "yslists: #{YS::Yslist.query.count}".colorize.cyan }
   end
 
   def api_url(y_bid : Int64, page = 1)

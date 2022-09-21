@@ -1,6 +1,7 @@
 require "uri"
 
 require "./bootstrap"
+require "../../src/ysweb/models/*"
 
 class CV::YsbookRaw
   include JSON::Serializable
@@ -126,8 +127,8 @@ class CV::YsbookRaw
     ysbook.save!
 
     self.blists.each do |yblist|
-      next if Yslist.find({origin_id: yblist._id})
-      Yslist.new({
+      next if YS::Yslist.find({origin_id: yblist._id})
+      YS::Yslist.new({
         id:        yblist.id,
         origin_id: yblist._id,
         zname:     yblist.title,

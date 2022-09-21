@@ -1,6 +1,7 @@
 require "log"
 require "json"
 require "./bootstrap"
+require "../../src/ysweb/models/*"
 
 class CV::YslistRaw
   class User
@@ -53,12 +54,12 @@ class CV::YslistRaw
   @[JSON::Field(key: "listType")]
   getter klass : String = "male"
 
-  def seed!(stime : Int64 = Time.utc.to_unix, ysuser : Ysuser? = nil)
-    yslist = Yslist.upsert!(self.oid, self.created_at || self.updated_at)
+  def seed!(stime : Int64 = Time.utc.to_unix, ysuser : YS::Ysuser? = nil)
+    yslist = YS::Yslist.upsert!(self.oid, self.created_at || self.updated_at)
 
     yslist.ysuser = ysuser || begin
       user = self.user.not_nil!
-      Ysuser.upsert!(user.name, user._id)
+      YS::Ysuser.upsert!(user.name, user._id)
     end
 
     yslist.set_name(self.zname)
