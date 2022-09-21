@@ -72,7 +72,9 @@ struct CV::PosTag
   getter tag : Tag
   forward_missing_to tag
 
-  def initialize(@tag = Tag::Unkn, @pos = Pos::Contws)
+  getter attr : PunctAttr | Nil = nil
+
+  def initialize(@tag = Tag::Unkn, @pos = Pos::Contws, @attr = nil)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
@@ -132,7 +134,7 @@ struct CV::PosTag
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def self.parse(tag : String, key : String = "") : self
+  def self.parse(tag : String, key : String = "", val : String = "") : self
     case tag[0]?
     when nil then Unkn
     when '-' then None
@@ -140,7 +142,7 @@ struct CV::PosTag
     when 'n' then parse_noun(tag)
     when 'v' then parse_verb(tag, key)
     when 'a' then parse_adjt(tag, key)
-    when 'w' then parse_punct(key)
+    when 'w' then parse_punct(val)
     when 'u' then parse_auxil(key)
     when 'p' then parse_prepos(key)
     when 'd' then parse_adverb(key)

@@ -1,8 +1,6 @@
-require "./mt_term"
-
 @[Flags]
-enum CV::PunctAttr
-  # ## generic
+enum CV::MTL::PunctAttr
+  # ## shared
 
   Break # seperate sentence
 
@@ -17,11 +15,12 @@ enum CV::PunctAttr
 
   NoWspace
 
-  # # singular
+  # # unique
 
   Period; Exclam; Questm
 
-  DbQuote # plain double quote
+  # generic double quote/single quote
+  DbQuote; SgQuote
 
   QuoteSt; QuoteCl
   TitleSt; TitleCl
@@ -68,5 +67,5 @@ enum CV::PunctAttr
 end
 
 class CV::PunctTerm < CV::MtTerm
-  getter attr : PunctAttr { PunctAttr.from_str(@key) }
+  getter attr : MTL::PunctAttr { MTL::PunctAttr.from_str(@key) }
 end

@@ -1,11 +1,33 @@
 require "./mt_node"
+require "./pos_tag"
+
 require "../vp_dict/vp_term"
 require "../mt_core/mt_util"
 require "../../_util/text_util"
 
+module CV::MtUtil
+  COSTS = {
+    0, 3, 6, 9,
+    0, 14, 18, 26,
+    0, 25, 31, 40,
+    0, 40, 45, 55,
+    0, 58, 66, 78,
+  }
+
+  def self.cost(size : Int32, prio : Int8 = 0) : Int32
+    COSTS[(size &- 1) &* 4 &+ prio]? || size &* (prio &* 2 &+ 7) &* 2
+  end
+end
+
+# reopen class VpTerm
+class CV::VpTerm
+  # auto generated fields
+  getter ptag : PosTag { PosTag.parse(@tags[0], @key, @vals[0]) }
+  getter cost : Int32 { MtUtil.cost(@key.size, @prio) }
+end
+
 class CV::MtTerm < CV::MtNode
   ###########
-  #
 
   def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = 0)
   end
@@ -14,6 +36,11 @@ class CV::MtTerm < CV::MtNode
     @key = term.key
     @val = term.vals.first
     @tag = term.ptag
+
+    case attr = @tag.attr
+    when PosTag::PunctAttr
+      @val = "," if attr.cenum?
+    end
   end
 
   def initialize(char : Char, @idx = 0)
@@ -84,15 +111,7 @@ class CV::MtTerm < CV::MtNode
   end
 
   private def cap_after?(prev = false) : Bool
-    case @tag
-    when .exmark?, .qsmark?, .pstop?, .colon?,
-         .middot?, .titleop?, .brackop?
-      true
-    when .pdeci?
-      @prev.try { |x| x.ndigit? || x.litstr? } || prev
-    else
-      prev
-    end
+    self.tag.puncts?(&.cap_after?) || prev
   end
 
   def space_before?(prev : Nil) : Bool
@@ -118,23 +137,13 @@ class CV::MtTerm < CV::MtNode
     return space_before?(prev.prev?) if prev.val.empty?
 
     case
-    when prev.popens?, @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
+    when prev.popens?, @tag.ndigit?
       return false
     else
       return true unless @tag.puncts?
     end
 
-    case @tag
-    when .middot?
-      true
-    when .plsgn?, .mnsgn?
-      !prev.tag.ndigit?
-    when .colon?, .pdeci?, .pstops?, .comma?, .penum?,
-         .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
-      false
-    else
-      !prev.popens?
-    end
+    self.tag.puncts?(&.no_wspace?.!) || true
   end
 
   #######

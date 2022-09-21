@@ -77,7 +77,7 @@ class MtlV2::MTL::MtCore
       terms.each do |size, (type, term)|
         next if term.prio < 1
 
-        cost = costs[idx] &+ term.fare
+        cost = costs[idx] &+ term.cost
         jump = idx &+ size
 
         if cost >= costs[jump]

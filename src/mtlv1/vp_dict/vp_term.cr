@@ -1,7 +1,5 @@
 require "json"
 
-require "./pos_tag"
-
 class CV::VpTerm
   SPLIT = 'ǀ'
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
@@ -10,25 +8,13 @@ class CV::VpTerm
     (rtime.to_unix - EPOCH).//(60).to_i
   end
 
-  WORTH = {
-    0, 3, 6, 9,
-    0, 14, 18, 26,
-    0, 25, 31, 40,
-    0, 40, 45, 55,
-    0, 58, 66, 78,
-  }
-
   def self.parse_prio(str : String?)
     case str
-    when "x", "0" then 0_i8
-    when "v", "2" then 1_i8
-    when "^", "4" then 3_i8
-    else               2_i8
+    when "x", "0"      then 0_i8
+    when "v", "2", "1" then 1_i8
+    when "^", "4", "5" then 3_i8
+    else                    2_i8
     end
-  end
-
-  def self.fare(size : Int32, prio : Int8 = 0) : Int32
-    WORTH[(size &- 1) &* 4 &+ prio]? || size &* (prio &* 2 &+ 7) &* 2
   end
 
   ####
@@ -41,10 +27,6 @@ class CV::VpTerm
 
   getter mtime : Int32 = 0
   getter uname : String = "~"
-
-  # auto generated fields
-  getter ptag : PosTag { PosTag.parse(@tags[0], @key) }
-  getter fare : Int32 { VpTerm.fare(@key.size, @prio) }
 
   # flags:
   # 0 => active
