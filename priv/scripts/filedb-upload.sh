@@ -10,7 +10,7 @@ then
   rsync -azi --no-p "var/dicts/v1/basic/fixture.tsv" "$SSH/var/dicts/v1/basic"
   rsync -azi --no-p "var/dicts/v1/basic/essence.tsv" "$SSH/var/dicts/v1/basic"
 
-  rsync -azi --no-p --delete "var/dicts/vx" "$SSH/var/dicts"
+  rsync -azi --no-p --delete "var/vhint/*" "$SSH/var/vhint/*"
 fi
 
 ## upload parsed seed data
@@ -36,7 +36,6 @@ fi
 if [[ $* == "all" || $* == "misc" ]]
 then
   echo upload misc!
-  # rsync -azi --no-p "var/dicts/v0/_init" "$SSH/var/dicts/v0"
   # rsync -azi --no-p "var/dicts/v1/basic/hanviet.tsv" "$SSH/var/dicts/v1/basic"
   # rsync -azi --no-p "var/dicts/v1/basic/hanviet.tab" "$SSH/var/dicts/v1/basic"
 

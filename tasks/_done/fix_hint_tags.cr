@@ -1,5 +1,5 @@
 INP = "var/vphints/postag"
-OUT = "var/dicts/vx/postag"
+OUT = "var/vhint/postag"
 
 {"bd_lac", "cvuser"}.each do |folder|
   inp_dir = File.join(INP, folder)

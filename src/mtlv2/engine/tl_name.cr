@@ -40,7 +40,7 @@
 
 #     ##############
 
-#     DIR = "var/dicts/vx/tlname"
+#     DIR = "var/vhint/tlname"
 
 #     class_getter human : self { new("#{DIR}/human.tsv") }
 #     class_getter affil : self { new("#{DIR}/affil.tsv") }

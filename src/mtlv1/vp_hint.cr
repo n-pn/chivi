@@ -1,5 +1,5 @@
 class CV::VpHint
-  DIR = "var/dicts/vx"
+  DIR = "var/vhint"
 
   class_getter cc_cedict : self { new("#{DIR}/lookup/cc_cedict", 128) }
   class_getter trungviet : self { new("#{DIR}/lookup/trungviet", 128) }

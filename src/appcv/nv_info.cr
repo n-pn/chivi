@@ -4,6 +4,7 @@ require "./_base"
 
 require "./author"
 require "./btitle"
+require "./ys_book"
 
 class CV::Nvinfo
   include Clear::Model

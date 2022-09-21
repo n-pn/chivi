@@ -3,7 +3,7 @@ require "../../src/mtlv1/vp_hint"
 
 input = CV::PostagInit.new("_db/vpinit/bd_lac/out/top25-all.tsv")
 
-out_name = "var/dicts/vx/postag/bd_lac"
+out_name = "var/vhint/postag/bd_lac"
 FileUtils.rm_rf(out_name)
 
 NUMHAN_RE = /^[零〇一二两三四五六七八九十百千万亿兆多余米来]+$/

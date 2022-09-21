@@ -1,7 +1,7 @@
 require "../../_init/postag_init"
 
 class CV::VpinitCtrl < CV::BaseCtrl
-  DIR = "var/vpdicts/v0"
+  DIR = "var/inits/dicts"
 
   def fixtag
     source = params["source"]

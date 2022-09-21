@@ -26,8 +26,6 @@ def extract_book(file : String)
   input = CV::PostagInit.new(file).data
   input = input.to_a.sort_by!(&.[0].size)
 
-  # vdict_diff = CV::VpDict.new("var/vpdicts/v0/books/#{bslug}.tsv")
-
   input.each do |key, counts|
     count_nn = counts["ns"] + counts["nt"]
     main_tag = count_nn > counts.first_value ? "nn" : counts.first_key

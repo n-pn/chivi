@@ -1,8 +1,10 @@
 require "../tools/crorm/*"
 require "../_util/text_util"
+
 require "./_base"
 require "./ch_seed"
 require "./ch_text"
+require "./nv_info"
 
 # class CV::ChTran2
 #   include Crorm::Model

@@ -1,6 +1,6 @@
 require "../../src/mtlv1/vp_dict"
 
-INP = "var/vpdicts/v0/patch"
+INP = "var/inits/dicts/patch"
 
 def patch_dict(source : String, target : CV::VpDict, dry_run = false)
   CV::VpDict.new(source).list.each do |term|

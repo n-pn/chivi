@@ -19,7 +19,7 @@ end
 
 class CV::CeDict
   def self.load
-    @@instance ||= new("var/vhint/gloss/cc_cedict.tsv")
+    @@instance ||= new("var/vhint/lookup/cc_cedict.tsv")
   end
 
   @trie = ZhTrie(CeTerm).new
