@@ -11,14 +11,12 @@ module CV::TlRule
       break unless succ = noun.succ?
       succ = heal_mixed!(succ) if succ.mixed?
 
-      case attr = succ.tag.attr
-      when PosTag::PunctAttr
-        break unless node = fold_noun_punct(noun, succ, attr)
-        noun = node
-        next
-      end
-
       case succ
+      when .middot?
+        break unless (tail = succ.succ?) && succ.human?
+
+        succ.val = ""
+        noun = fold!(noun, tail, PosTag::Person, dic: 3)
       when .maybe_adjt?
         break if succ.adv_bu4?
         return fold_noun_adjt!(noun, succ)
@@ -61,17 +59,5 @@ module CV::TlRule
     end
 
     noun
-  end
-
-  def fold_noun_punct(noun : MtNode, punct : MtNode, punct_attr : PosTag::PunctAttr)
-    case punct_attr
-    when .middot?
-      return unless (tail = punct.succ?) && punct.human?
-
-      punct.val = ""
-      fold!(noun, tail, PosTag::Person, dic: 3)
-    else
-      nil
-    end
   end
 end

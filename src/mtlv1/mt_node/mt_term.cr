@@ -22,7 +22,7 @@ end
 # reopen class VpTerm
 class CV::VpTerm
   # auto generated fields
-  getter ptag : PosTag { PosTag.parse(@tags[0], @key, @vals[0]) }
+  getter ptag : PosTag { PosTag.parse(@tags[0], @key) }
   getter cost : Int32 { MtUtil.cost(@key.size, @prio) }
 end
 
@@ -36,11 +36,6 @@ class CV::MtTerm < CV::MtNode
     @key = term.key
     @val = term.vals.first
     @tag = term.ptag
-
-    case attr = @tag.attr
-    when PosTag::PunctAttr
-      @val = "," if attr.cenum?
-    end
   end
 
   def initialize(char : Char, @idx = 0)
@@ -111,7 +106,15 @@ class CV::MtTerm < CV::MtNode
   end
 
   private def cap_after?(prev = false) : Bool
-    self.tag.puncts?(&.cap_after?) || prev
+    case @tag
+    when .exmark?, .qsmark?, .pstop?, .colon?,
+         .middot?, .titleop?, .brackop?
+      true
+    when .pdeci?
+      @prev.try { |x| x.ndigit? || x.litstr? } || prev
+    else
+      prev
+    end
   end
 
   def space_before?(prev : Nil) : Bool
@@ -137,13 +140,23 @@ class CV::MtTerm < CV::MtNode
     return space_before?(prev.prev?) if prev.val.empty?
 
     case
-    when prev.popens?, @tag.ndigit?
+    when prev.popens?, @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
       return false
     else
       return true unless @tag.puncts?
     end
 
-    self.tag.puncts?(&.no_wspace?.!) || true
+    case @tag
+    when .middot?
+      true
+    when .plsgn?, .mnsgn?
+      !prev.tag.ndigit?
+    when .colon?, .pdeci?, .pstops?, .comma?, .penum?,
+         .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
+      false
+    else
+      !prev.popens?
+    end
   end
 
   #######
