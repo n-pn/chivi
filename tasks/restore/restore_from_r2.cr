@@ -24,7 +24,7 @@ files.each_with_index(1) do |file, idx|
     channel.send(nil)
   end
 
-  channel.receive if idx >= workers
+  channel.receive if idx > workers
 end
 
 workers.times { channel.receive }

@@ -1,6 +1,6 @@
 require "lexbor"
 require "colorize"
-INP = "var/archive"
+INP = "var/.cached/archive"
 
 dirs = Dir.children(INP).sort_by(&.to_i64.-)
 

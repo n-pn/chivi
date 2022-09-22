@@ -99,7 +99,7 @@ class CV::YscritRaw
     # so that we can easy look for the custom dict name for the machine translation
     # also to detect some garbage spam reviews (which is already removed from yousuu)
 
-    ztext_dir = "#{ZTEXT_DIR}/#{book.id}"
+    ztext_dir = "#{ZTEXT_DIR}/#{book.id}-zh"
     Dir.mkdir_p(ztext_dir)
 
     text_path = "#{ztext_dir}/#{_id}.txt"
@@ -108,7 +108,7 @@ class CV::YscritRaw
     # add file to zip
     # do not delete added file yet in case the zip file is overridded
     # TODO: delete file
-    `zip -jq "#{ztext_dir}.zip" "#{text_path}"`
+    `zip -jqm "#{ztext_dir}.zip" "#{text_path}"`
   end
 
   ZTEXTS = Hash(String, Tabkv(String)).new do |h, k|
