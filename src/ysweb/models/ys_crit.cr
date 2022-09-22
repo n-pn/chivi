@@ -16,6 +16,9 @@ class YS::Yscrit
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
   column _sort : Int32 = 0
 
+  column ztext : String = "" # translated comment
+  column vhtml : String = "" # translated comment
+
   getter ztext : String { load_ztext_from_disk }
 
   def load_ztext_from_disk : String
@@ -28,8 +31,6 @@ class YS::Yscrit
   rescue err
     ""
   end
-
-  column vhtml : String = "" # translated comment
 
   column ztags : Array(String) = [] of String
   column vtags : Array(String) = [] of String
