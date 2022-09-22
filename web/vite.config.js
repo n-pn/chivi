@@ -17,7 +17,9 @@ const config = {
     },
   },
   server: {
-    proxy: { '/covers': 'http://localhost:5010' },
+    proxy: { '/api': 'http://localhost:5010' },
+    proxy: { '/_ys': 'http://localhost:5509' },
+    proxy: { '/_v2': 'http://localhost:5502' },
   },
 }
 

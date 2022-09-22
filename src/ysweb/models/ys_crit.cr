@@ -1,3 +1,4 @@
+require "compress/zip"
 require "./ys_list"
 
 class YS::Yscrit
@@ -14,6 +15,18 @@ class YS::Yscrit
 
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
   column _sort : Int32 = 0
+
+  getter ztext : String { load_ztext_from_disk }
+
+  def load_ztext_from_disk : String
+    zip_file = "var/ys_db/crits/#{ysbook.id}-zh.zip"
+
+    Compress::Zip::File.open(zip_file) do |zip|
+      zip[origin_id + ".txt"]?.try(&.open(&.gets_to_end)) || ""
+    end
+  rescue err
+    ""
+  end
 
   column ztext : String = "" # orginal comment
   column vhtml : String = "" # translated comment
