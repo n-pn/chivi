@@ -15,13 +15,13 @@ class CV::Zxcs::SplitText
     end
   end
 
-  INP_RAR = "var/chaps/.zips/zxcs_me"
-  INP_TXT = "var/chaps/inits/zxcs_me"
+  RARS_DIR = "var/seeds/zxcs_me/_rars"
+  TEXT_DIR = "var/seeds/zxcs_me/texts"
 
-  OUT_DIR = "var/chtexts/zxcs_me"
+  SAVE_DIR = "var/chtexts/zxcs_me"
 
   def extract_all!
-    input = Dir.glob("#{INP_RAR}/*.rar")
+    input = Dir.glob("#{RARS_DIR}/*.rar")
     output = [] of String
 
     input.each_with_index(1) do |rar_file, idx|
@@ -37,25 +37,23 @@ class CV::Zxcs::SplitText
   end
 
   def extract_rar!(rar_file : String, label = "1/1")
-    return if File.size(rar_file) < 1000
+    s_bid = File.basename(rar_file, ".rar")
+    out_path = "#{TEXT_DIR}/#{s_bid}.txt"
 
-    snvid = File.basename(rar_file, ".rar")
-    out_txt = "#{INP_TXT}/#{snvid}.txt"
-
-    return out_txt if File.exists?(out_txt)
+    return out_path if File.exists?(out_path)
     puts "\n- <#{label}> extracting #{rar_file.colorize.blue}"
 
-    tmp_dir = "tmp/zxcs_me/#{snvid}"
+    tmp_dir = "tmp/zxcs_me/#{s_bid}"
     Dir.mkdir_p(tmp_dir)
 
     `unrar e -o+ "#{rar_file}" #{tmp_dir}`
-    inp_txt = Dir.glob("#{tmp_dir}/*.txt").first? || Dir.glob("#{tmp_dir}/*.TXT").first
+    txt_path = Dir.glob("#{tmp_dir}/*.{txt,TXT}").first
 
-    lines = read_clean(inp_txt)
-    File.write(out_txt, lines.join("\n"))
+    lines = read_clean(txt_path)
+    File.write(out_path, lines.join("\n"))
 
     FileUtils.rm_rf(tmp_dir)
-    out_txt
+    out_path
   rescue err
     puts err
   end
@@ -68,7 +66,6 @@ class CV::Zxcs::SplitText
 
     if lines.first.starts_with?("===")
       3.times { lines.shift; lines.pop }
-
       lines.shift if lines.first.starts_with?("===")
       lines.pop if lines.last.starts_with?("===")
     end
@@ -113,20 +110,20 @@ class CV::Zxcs::SplitText
   SKIP_CHOICE = ARGV.includes?("--skip")
 
   def split_chaps!(inp_file : String, label = "1/1")
-    snvid = File.basename(inp_file, ".txt")
-    return if File.exists?("#{OUT_DIR}/#{snvid}/0.zip")
+    s_bid = File.basename(inp_file, ".txt")
+    return if File.exists?("#{SAVE_DIR}/#{s_bid}/0.zip")
 
-    global_idx = File.join("var/chmetas/seeds/zxcs_me", "#{snvid}.tsv")
+    global_idx = File.join("var/chmetas/seeds/zxcs_me", "#{s_bid}.tsv")
 
     input = File.read(inp_file).split(/\r\n?|\n/)
-    out_dir = File.join(OUT_DIR, snvid)
+    out_dir = File.join(SAVE_DIR, s_bid)
 
     # TODO: remove these hacks
     # input = reclean_text!(inp_file, input)
 
-    puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
+    puts "\n- <#{label}> [#{TEXT_DIR}/#{s_bid}.txt] #{input.size} lines".colorize.yellow
 
-    return unless chaps = split_chapters(snvid, input)
+    return unless chaps = split_chapters(s_bid, input)
     chaps = cleanup_chaps(chaps)
 
     index = chaps.map_with_index(1) do |chap, idx|
@@ -138,7 +135,7 @@ class CV::Zxcs::SplitText
       return
     end
 
-    puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
+    puts "\n- <#{label}> [#{TEXT_DIR}/#{s_bid}.txt] #{input.size} lines".colorize.yellow
     return puts "  Skipped".colorize.red if SKIP_CHOICE
 
     print "\nChoice (r: redo, d: delete, s: delete + exit, else: keep): "
@@ -156,7 +153,7 @@ class CV::Zxcs::SplitText
       end
     else
       save_texts!(chaps, out_dir, inp_file, global_idx)
-      puts "\n\n- Entries [#{snvid}] saved!".colorize.yellow
+      puts "\n\n- Entries [#{s_bid}] saved!".colorize.yellow
     end
   end
 
@@ -187,7 +184,7 @@ class CV::Zxcs::SplitText
   def save_texts!(chaps, nv_dir : String, text_file : String, global_file : String)
     utime = File.info(text_file).modification_time.to_unix
 
-    snvid = File.basename(nv_dir)
+    s_bid = File.basename(nv_dir)
 
     global = [] of ChInfo0
 
@@ -206,7 +203,7 @@ class CV::Zxcs::SplitText
         chinfo = ChInfo0.new(chidx, chidx.to_s, chap.title, chap.label)
         chinfo.stats.utime = utime
 
-        chtext = ChText.new("zxcs_me", snvid, chinfo)
+        chtext = ChText.new("zxcs_me", s_bid, chinfo)
         chtext.save!(chap.lines, zipping: false)
 
         chlist << chinfo
@@ -224,8 +221,8 @@ class CV::Zxcs::SplitText
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  private def split_chapters(snvid : String, lines : Array(String))
-    case snvid
+  private def split_chapters(s_bid : String, lines : Array(String))
+    case s_bid
     when "4683", "3868", "4314", "3199", "4942", "1552"
       return split_blanks(lines)
     when "3401"
