@@ -59,18 +59,21 @@ class CV::YscritRaw
   getter user : User
 
   def seed!(stime : Int64 = Time.utc.to_unix, yslist_id : Int64? = nil) : Nil
-    self.save_ztext
-    # TODO: also save infos
-
     yscrit = YS::Yscrit.upsert!(self._id, self.created_at)
 
-    yscrit.ysbook, yscrit.nvinfo = upsert_ysbook(self.book)
+    yscrit.nvinfo_id = upsert_ysbook(self.book)
+    yscrit.ysbook_id = self.book.id
+
     yscrit.ysuser = YS::Ysuser.upsert!(self.user.name, self.user._id)
     yscrit.yslist_id = yslist_id if yslist_id
 
     yscrit.stars = self.stars
     yscrit.set_tags(self.tags, force: true) unless self.tags.empty?
-    yscrit.set_ztext(fix_ztext(ztext))
+
+    unless ztext == "请登录查看评论内容" || ztext.empty?
+      self.save_ztext
+      yscrit.fix_vhtml(ztext)
+    end
 
     yscrit.stime = stime
     yscrit.utime = (self.updated_at || self.created_at).to_unix
@@ -109,15 +112,8 @@ class CV::YscritRaw
     # do not delete added file yet in case the zip file is overridded
     # TODO: delete file
     `zip -jqm "#{ztext_dir}.zip" "#{text_path}"`
-  end
-
-  ZTEXTS = Hash(String, Tabkv(String)).new do |h, k|
-    h[k] = Tabkv(String).new("var/ysinfos/yscrits/#{k}-ztext.tsv")
-  end
-
-  def fix_ztext(input : String)
-    return input unless input == "请登录查看评论内容"
-    ZTEXTS[_id[0..3]][_id]? || "$$$"
+  rescue err
+    puts err
   end
 
   def upsert_ysbook(book : Book)
@@ -127,18 +123,16 @@ class CV::YscritRaw
       ysbook = Ysbook.new({id: ysbook_id})
       ysbook.btitle = book.title
       ysbook.author = book.author
+      ysbook.save!
     end
 
     btitle_zh, author_zh = BookUtil.fix_names(book.title, book.author)
     nvinfo = Nvinfo.upsert!(author_zh, btitle_zh)
 
-    unless ysbook.nvinfo_id_column.defined?
-      ysbook.nvinfo = nvinfo
-      ysbook.save!
-    end
+    ysbook.nvinfo = nvinfo
+    nvinfo.ysbook_id = ysbook_id if nvinfo.ysbook_id == 0
 
-    nvinfo.ysbook_id = ysbook_id unless nvinfo.ysbook_id == 0
-    {ysbook, nvinfo}
+    nvinfo.id
   end
 
   #############

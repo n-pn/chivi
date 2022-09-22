@@ -19,7 +19,8 @@ class YS::Yscrit
   getter ztext : String { load_ztext_from_disk }
 
   def load_ztext_from_disk : String
-    zip_file = "var/ys_db/crits/#{ysbook.id}-zh.zip"
+    return "" if self.ysbook_id < 1
+    zip_file = "var/ys_db/crits/#{self.ysbook_id}-zh.zip"
 
     Compress::Zip::File.open(zip_file) do |zip|
       zip[origin_id + ".txt"]?.try(&.open(&.gets_to_end)) || ""
@@ -28,7 +29,6 @@ class YS::Yscrit
     ""
   end
 
-  column ztext : String = "" # orginal comment
   column vhtml : String = "" # translated comment
 
   column ztags : Array(String) = [] of String
@@ -75,19 +75,13 @@ class YS::Yscrit
     self._sort &+ self.repl_count &* self.stars
   end
 
-  def set_ztext(ztext : String)
-    return if ztext.empty?
-    self.ztext = ztext
-    self.fix_vhtml
-  end
-
   def set_tags(tags : Array(String), force : Bool = false)
     return unless force || self.ztags.empty?
     self.ztags = tags
     self.fix_vtags
   end
 
-  def fix_vhtml(dname = self.nvinfo.dname)
+  def fix_vhtml(ztext : String, dname = self.nvinfo.dname)
     self.vhtml = CV::BookUtil.cv_lines(ztext, dname, mode: :html)
   end
 
