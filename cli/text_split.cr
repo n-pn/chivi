@@ -92,6 +92,8 @@ class ChapData
       @p_len = (@c_len - 1) // CHAR_LIMIT + 1
     end
 
+    return [@paras.join('\n')] if @p_len == 1
+
     output = [] of String
     char_limit = @c_len // @p_len
 
@@ -211,13 +213,13 @@ class SplitText
   # split if body is padded with spaces
   private def split_mode_2(need_blank = false)
     prev_was_blank = true
-    nested_regex = /^[ 　\t]/
+    blank_chars = {' ', '　', '\t'}
 
     split_text do |line|
       if line.blank?
         prev_was_blank = true
         false
-      elsif line =~ nested_regex
+      elsif line[0].in?(blank_chars)
         false
       else
         is_new_chap = prev_was_blank || !need_blank
@@ -242,10 +244,10 @@ class SplitText
     pending_chap = init_chap
 
     @raw_data.each_with_index(1) do |line, idx|
-      mark_new_chap = yield line # check if this is the mark of new pending_chap
+      is_new_chap = yield line # check if this is the mark of new pending_chap
       line = clean_text(line)
 
-      if !mark_new_chap
+      if !is_new_chap
         pending_chap.add_line(line)
         prev_was_chvol = false
       elsif pending_chap.paras.size > 0
@@ -257,7 +259,10 @@ class SplitText
         prev_was_chvol = false
       elsif prev_was_chvol
         raise "Lỗi dòng: #{idx} [#{line[0..10]}]: Chương phía trước không có nội dung."
-      elsif !pending_chap.title.empty?
+      elsif pending_chap.title.empty?
+        pending_chap.title = line
+        prev_was_chvol = false
+      else
         @curr_chvol = pending_chap.chvol = pending_chap.title
         pending_chap.title = line
         prev_was_chvol = true
