@@ -1,5 +1,16 @@
 SSH=nipin@ssh.chivi.app:srv/chivi
 
+if [[ $1 == "all" || $* == "svkit" ]]
+then
+  echo push webapp!
+
+  cd web && pnpm i && pnpm run build
+  rsync -azi --no-p build nipin@ssh.chivi.app:srv/chivi/web
+  ssh nipin@ssh.chivi.app "sudo service chivi-web restart"
+
+  cd ..
+fi
+
 if [[ $1 == "all" || $* == "chivi" ]]
 then
   echo push server!
@@ -22,14 +33,6 @@ then
 
   shards build -s --release ysweb-srv && rsync -aiz --no-p bin/ysweb-srv $SSH/bin
   ssh nipin@ssh.chivi.app "sudo service ysweb-srv restart"
-fi
-
-if [[ $1 == "all" || $* == "svkit" ]]
-then
-  echo push webapp!
-  cd web
-  yarn build
-  rsync -aiz --no-p build $SSH/web
 fi
 
 
