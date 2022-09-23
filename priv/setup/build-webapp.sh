@@ -1,3 +1,5 @@
 #! /bin/sh
 
-cd web && yarn && yarn build && sudo service chivi-web restart
+cd web
+pnpm i
+pnpm run build && sudo service chivi-web restart
