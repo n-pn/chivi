@@ -7,7 +7,7 @@ def convert(input : String)
   MTL.cv_plain(input, cap_first: false).to_txt
 end
 
-DIR = "spec/engine/cases"
+DIR = "var/cvmtl/cases"
 
 describe CV::MtCore do
   files = Dir.glob("#{DIR}/**/*.tsv")
