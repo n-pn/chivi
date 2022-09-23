@@ -36,10 +36,6 @@ module MtlV2
       hanviet_mtl.translit(input, apply_cap: apply_cap).to_txt
     end
 
-    def trad_to_simp(input : String) : String
-      tradsim_mtl.tokenize(input.chars).to_txt
-    end
-
     def convert(input : String, dname = "combine") : String
       case dname
       when "hanviet" then hanviet_mtl.translit(input).to_txt

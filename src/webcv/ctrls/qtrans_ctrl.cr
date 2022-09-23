@@ -63,7 +63,12 @@ class CV::QtransCtrl < CV::BaseCtrl
 
   def webpage
     input = params["input"].gsub("\t", "  ")
-    lines = input.split("\n").map! { |x| MtCore.trad_to_simp(x) }
+
+    lines = Process.run("./bin/trad2sim", shell: false) do |proc|
+      proc.input.print(input)
+      proc.input.close
+      proc.output.gets_to_end.split("\n")
+    end
 
     dname = params.read_str("dname", "combine")
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
