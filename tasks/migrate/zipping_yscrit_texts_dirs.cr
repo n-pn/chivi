@@ -5,4 +5,6 @@ Dir.glob("var/ys_db/crits/*/").each do |text_dir|
 
   `zip --include=\\*.txt -rjmq "#{zip_file}" "#{text_dir}"`
   Dir.delete(text_dir)
+rescue err
+  puts err
 end

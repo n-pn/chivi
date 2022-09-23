@@ -33,7 +33,7 @@ module CV
 
     system("rsync", {
       "-ai", "--no-p",
-      "--incldue='*.r2'",
+      "--include='*.r2'",
       "--include='*/'",
       "--exclude='*'",
       s_dir, SSH,

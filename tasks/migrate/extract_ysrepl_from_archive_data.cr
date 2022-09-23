@@ -1,15 +1,16 @@
 require "json"
+require "compress/zip"
 
 class YS::RawCrit
   class Book
     include JSON::Serializable
 
-    getter _id : Int64 = 0_i64
+    getter _id : Int64?
 
     @[JSON::Field(key: "bookId")]
-    getter book_id : Int64 = 0_i64
+    getter book_id : Int64?
 
-    getter id : Int64 { _id > 0 ? _id : book_id }
+    getter id : Int64 { _id || book_id || 0_i64 }
 
     getter title : String
     getter author : String
@@ -88,23 +89,45 @@ def save_crit_body(crit : YS::RawCrit, skip_if_exists = true)
   # so that we can easy look for the custom dict name for the machine translation
   # also to detect some garbage spam reviews (which is already removed from yousuu)
 
-  text_path = "#{save_dir}/#{crit._id}.txt"
-  return if skip_if_exists && File.exists?(text_path)
+  return if skip_if_exists && in_zip?(save_dir + ".zip", crit._id)
 
+  text_path = "#{save_dir}/#{crit._id}.txt"
   File.write(text_path, crit.ztext)
+  puts " file: #{text_path} saved!"
+end
+
+def in_zip?(zip_file : String, crit_id : String)
+  return false unless File.exists?(zip_file)
+  Compress::Zip::File.open(zip_file) do |zip|
+    !!zip[crit_id + ".txt"]?
+  end
 end
 
 #############
 
-alias BookData = NamedTuple(Book: NamedTuple(commentsResult: NamedTuple(comments: Array(YS::RawCrit))))
+# alias BookData = NamedTuple(Book: NamedTuple(commentsResult: NamedTuple(comments: Array(YS::RawCrit))))
 
-files = Dir.glob("var/ysinfos/archive/books/*.json")
+# files = Dir.glob("var/ysinfos/archive/books/*.json")
+
+# files.each do |file|
+#   puts file
+#   data = BookData.from_json(File.read(file))
+
+#   crits = data[:Book][:commentsResult][:comments]
+#   crits.each { |crit| save_crit_body(crit, skip_if_exists: true) }
+# rescue err
+#   puts file, err
+# end
+
+alias ListData = NamedTuple(Booklist: NamedTuple(books: Array(YS::RawCrit)))
+
+files = Dir.glob("var/ysinfos/archive/booklists/*.json")
 
 files.each do |file|
   puts file
-  data = BookData.from_json(File.read(file))
 
-  crits = data[:Book][:commentsResult][:comments]
+  data = ListData.from_json(File.read(file))
+  crits = data[:Booklist][:books]
   crits.each { |crit| save_crit_body(crit, skip_if_exists: true) }
 rescue err
   puts file, err
