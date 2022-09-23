@@ -16,20 +16,19 @@ class YS::Yscrit
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
   column _sort : Int32 = 0
 
-  column ztext : String = "" # translated comment
+  # column ztext : String = "" # translated comment
   column vhtml : String = "" # translated comment
 
   getter ztext : String { load_ztext_from_disk }
 
   def load_ztext_from_disk : String
-    return "" if self.ysbook_id < 1
     zip_file = "var/ys_db/crits/#{self.ysbook_id}-zh.zip"
 
     Compress::Zip::File.open(zip_file) do |zip|
-      zip[origin_id + ".txt"]?.try(&.open(&.gets_to_end)) || ""
+      zip[origin_id + ".txt"]?.try(&.open(&.gets_to_end)) || "$$$"
     end
   rescue err
-    ""
+    "XXX"
   end
 
   column ztags : Array(String) = [] of String
