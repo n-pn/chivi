@@ -1,5 +1,6 @@
 require "./vp_dict"
 require "./mt_data"
+require "./mt_core/*"
 
 class CV::MtCore
   class_getter hanviet_mtl : self { new([VpDict.essence, VpDict.hanviet]) }
@@ -100,7 +101,21 @@ class CV::MtCore
     data
   end
 
-  def tokenize(input : Array(Char), offset = 0) : MtData
+  # def greedy_scan(input : Array(Char)) : MtData
+
+  #   nodes = [] of MtNode
+
+  #   input.size.times do |idx|
+  #     @dicts.each do |dict|
+
+  #       dict.scan_best(input, idx) do |term|
+  #         terms[term.key.size] = {dict.type, term}
+  #       end
+  #     end
+  #   end
+  # end
+
+  def tokenize(input : Array(Char), offset = 0, mode : Int8 = 1_i8) : MtData
     nodes = [MtTerm.new("", idx: offset)]
     costs = [0]
 
@@ -109,16 +124,21 @@ class CV::MtCore
       costs << idx &+ 1
     end
 
+    ner_idx = 0
+
     input.size.times do |idx|
       base_cost = costs.unsafe_fetch(idx)
 
-      naive_ner(input, idx, offset).try do |term|
-        size = term.key.size
+      if idx >= ner_idx && (ner_term = MTL.ner_recog(input, idx, mode))
+        ner_idx = idx &+ ner_term.key.size
+
+        size = ner_term.key.size
         jump = idx &+ size
         cost = base_cost + MtUtil.cost(size, 1_i8)
 
         if cost > costs[jump]
-          nodes[jump] = term
+          ner_term.idx = idx &+ offset
+          nodes[jump] = ner_term
           costs[jump] = cost
         end
       end
@@ -144,6 +164,10 @@ class CV::MtCore
       end
     end
 
+    extract_result(nodes)
+  end
+
+  def extract_result(nodes : Array(MtTerm))
     idx = nodes.size &- 1
     cur = nodes.unsafe_fetch(idx)
     idx -= cur.key.size
@@ -157,55 +181,5 @@ class CV::MtCore
     end
 
     res
-  end
-
-  def naive_ner(input : Array(Char), index = 0, offset = 0)
-    key_io = String::Builder.new
-    chars = digits = puncts = spaces = caps = letters = 0
-
-    input[index..].each do |char|
-      case char
-      when .number?
-        digits &+= 1
-      when .ascii_letter?
-        letters &+= 1
-        caps &+= 1 if char.uppercase?
-      when '_'
-        letters &+= 1
-      when ' '
-        break unless letters > 0 || digits > 0
-        spaces &+= 1
-      when ':', '/', '.', '?', '@', '=', '%', '+', '-', '~'
-        break unless letters > 0 || digits > 0
-        puncts &+= 1
-      else
-        break
-      end
-
-      chars &+= 1
-      key_io << char
-    end
-
-    return if chars == 0
-    key = key_io.to_s
-
-    case
-    when letters == chars then tag = PosTag::Noun
-    when letters > 0      then tag = litstr_tag(key, spaces, caps, puncts)
-    when puncts == 0      then tag = PosTag::Ndigit
-    else                       tag = PosTag.from_numlit(key)
-    end
-
-    MtTerm.new(key, val: key, tag: tag, idx: index + offset, dic: 0)
-  end
-
-  def litstr_tag(key : String, spaces = 0, caps = 0, puncts = 0)
-    case
-    when spaces > 0  then PosTag::Litstr
-    when caps > 0    then PosTag::Nother
-    when puncts == 0 then PosTag::Nother
-    else
-      key =~ /https?\:|www\./ ? PosTag::Urlstr : PosTag::Litstr
-    end
   end
 end
