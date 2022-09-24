@@ -89,15 +89,19 @@ class ChapData
     if @c_len <= CHAR_LIMIT * 1.5
       @p_len = 1
     else
-      @p_len = (@c_len - 1) // CHAR_LIMIT + 1
+      @p_len = (@c_len &- 1) // CHAR_LIMIT &+ 1
     end
 
-    return [@paras.join('\n')] if @p_len == 1
+    buffer = String::Builder.new(@title)
+
+    if @p_len == 1
+      @paras.each { |line| buffer << '\n' << line }
+      return [buffer.to_s]
+    end
 
     output = [] of String
     char_limit = @c_len // @p_len
 
-    buffer = String::Builder.new(@title)
     char_count = 0
 
     @paras.each_with_index do |para, idx|
@@ -112,7 +116,6 @@ class ChapData
     end
 
     output << buffer.to_s if char_count > 0
-
     raise "wrong output" if output.size != @p_len
     output
   end
