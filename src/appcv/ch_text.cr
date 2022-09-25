@@ -19,6 +19,9 @@ class CV::ChText
 
   #####
 
+  @txt_path : String
+  @zip_path : String
+
   def initialize(sname : String, s_bid : Int32, pg_no : Int32)
     @txt_path = "#{DIR}/#{sname}/#{s_bid}/#{pg_no}"
     @zip_path = @txt_path + ".zip"
