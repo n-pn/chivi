@@ -40,8 +40,10 @@ module CV::MTL
         val_io << char
       when ':'
         break unless input[index]? == '/' && input[index + 1]? == '/'
-        break unless val_io.to_s =~ /^https?/
+        val = val_io.to_s
+        break unless val =~ /^https?/
 
+        val_io = String::Builder.new(val)
         key_io << input[index] << input[index + 1]
         val_io << "//"
         return recog_anchor(input, key_io, val_io, index + 2)
