@@ -8,7 +8,6 @@
 /doc/
 /lib/
 /node_modules
-/tmp/
 .env
 .encryption_key
 production.yml
