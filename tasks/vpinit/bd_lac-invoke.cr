@@ -1,6 +1,5 @@
 require "colorize"
 require "compress/zip"
-require "file_utils"
 require "option_parser"
 require "../shared/bootstrap"
 
@@ -10,6 +9,8 @@ class CV::BdLacInvoke
 
   getter chap_count = 0
   getter to_parse = 0
+
+  @dir_name : String
 
   def initialize(@nvinfo : Nvinfo, @parse_all = false)
     @inp_dir = File.join(INP_DIR, "=base", @nvinfo.bhash)

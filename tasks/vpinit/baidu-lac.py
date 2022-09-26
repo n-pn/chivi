@@ -2,33 +2,22 @@
 import os, sys, glob
 from LAC import LAC
 
-DIR = "_db/vpinit/bd_lac/raw"
+DIR = "var/inits/bdlac"
 lac = LAC(mode='lac')
 
-FIX = {
-  'PER': 'NR',
-  'ORG': 'NT',
-  'LOC': 'NS',
-  'TIME': 't',
-  'nw': 'nx'
-}
+def parse_book(folder_path):
+  path = os.path.join(DIR, folder_path, "*.txt")
+  print(path)
 
-def parse_book(bname):
-  nvdir = os.path.join(DIR,  bname)
-  files = glob.glob(os.path.join(nvdir, "*.txt"))
-
+  files = glob.glob(path)
   count = len(files)
-  index = 0
-  # label = "- [" + bname + "] <{}/" + str(count) + "> {},"
 
   for inp_path in files:
-    index += 1
-
     inp_file = open(inp_path, 'r')
     lines = inp_file.read().splitlines()
     inp_file.close()
 
-    out_path = inp_path.replace('.txt', '.tsv')
+    out_path = inp_path.replace('.txt', '.lac')
     out_file = open(out_path, 'w')
 
     result = lac.run(lines)
@@ -38,20 +27,17 @@ def parse_book(bname):
       tags = res_line[1]
 
       for idx, raw in enumerate(raws):
-        if idx > 0:
-          out_file.write("\t")
-
-        out_file.write(raw.replace("\t", " ") + "¦")
-
-        tag = tags[idx]
-        out_file.write(FIX.get(tag, tag))
+        out_file.write('\t')
+        out_file.write(raw.replace('\t', ' '))
+        out_file.write('‖')
+        out_file.write(tags[idx])
 
       out_file.write("\n")
 
     out_file.close()
     os.remove(inp_path)
 
-bname = sys.argv[1]
+folder_path = sys.argv[1]
 
-if bname:
-  parse_book(bname)
+if folder_path:
+  parse_book(folder_path)
