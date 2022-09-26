@@ -21,16 +21,16 @@ module MtlV2::MTL
     Req2O # need 2 objects
 
     # Auxil
-    Intrv # intransitive
-    Mixed # both intra + trans
-    Vobjt # verb + object pair
+    Intrv    # intransitive
+    Polysemy # both intra + trans
+    Vobjt    # verb + object pair
 
     def needs_obj?
       value & (Intrv | Vobjt) == 0
     end
 
     def not_needs_obj?
-      value & (Intrv | Mixed | Vobjt) != 0
+      value & (Intrv | Polysemy | Vobjt) != 0
     end
 
     def self.from(tag : String, key : String) : self
@@ -38,7 +38,7 @@ module MtlV2::MTL
       when nil then from_key(key)
       when 'o' then Vobjt
       when 'i' then Intrv
-      when 'j' then Mixed
+      when 'j' then Polysemy
       when '2' then Req2O
       else          None
       end

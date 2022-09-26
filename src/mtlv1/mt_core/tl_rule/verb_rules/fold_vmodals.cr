@@ -2,7 +2,7 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_vmodals!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     return node.set!(PosTag::Noun) if vmodal_is_noun?(node)
-    succ = heal_mixed!(succ) if succ && succ.mixed?
+    succ = heal_mixed!(succ) if succ && succ.polysemy?
 
     case node
     when .vm_hui?

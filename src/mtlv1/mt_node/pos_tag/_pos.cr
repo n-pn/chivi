@@ -5,7 +5,7 @@ struct CV::PosTag
     Contws; Funcws
     Puncts; Pstops; Popens
 
-    Mixed
+    Polysemy
 
     Nominal; Names; Human
 
@@ -21,7 +21,7 @@ struct CV::PosTag
   end
 
   delegate contws?, to: @pos
-  delegate mixed?, to: @pos
+  delegate polysemy?, to: @pos
   delegate nominal?, to: @pos
 
   delegate names?, to: @pos

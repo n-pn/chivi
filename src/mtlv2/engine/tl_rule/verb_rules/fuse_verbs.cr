@@ -105,7 +105,7 @@ module MtlV2::TlRule
   end
 
   def fuse_verb_verb!(verb_1 : BaseNode, verb_2 : BaseNode) : BaseNode
-    verb_2 = MtDict.fix_verb!(verb_2) if verb_2.mixed?
+    verb_2 = MtDict.fix_verb!(verb_2) if verb_2.polysemy?
 
     fold!(verb_1, verb_2, verb_2.tag, dic: 5).flag!(:checked)
   end

@@ -34,7 +34,7 @@ module CV::TlRule
 
     head = fold!(prepos, noun, PosTag::PrepClause, dic: 4)
     return head unless verb
-    verb = heal_mixed!(verb) if verb.mixed?
+    verb = heal_mixed!(verb) if verb.polysemy?
 
     case verb
     when .v_shi?, .v_you? then return head

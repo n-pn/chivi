@@ -32,7 +32,7 @@ module CV::TlRule
     while adjt.adjective?
       break unless succ = adjt.succ?
       # puts [adjt, succ, "fold_adjt"]
-      succ = heal_mixed!(succ, prev: adjt) if succ.mixed?
+      succ = heal_mixed!(succ, prev: adjt) if succ.polysemy?
 
       case succ.tag
       when .adverb?
@@ -113,7 +113,7 @@ module CV::TlRule
     node = fold!(nega, node, node.tag, dic: 4) if nega
     return node if !(succ = node.succ?) || succ.ends?
 
-    if succ.is_a?(MtTerm) && succ.mixed?
+    if succ.is_a?(MtTerm) && succ.polysemy?
       succ = heal_mixed!(succ, prev: node)
     end
 

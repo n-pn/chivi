@@ -1,8 +1,8 @@
 struct CV::PosTag
   # 副词 - adverb - phó từ (trạng từ)
 
-  AdvNoun = new(Tag::AdvNoun, Pos::Mixed | Pos::Nominal | Pos::Adverbial)
-  AdvUniq = new(Tag::AdvUniq, Pos::Mixed | Pos::Nominal | Pos::Adverbial)
+  AdvNoun = new(Tag::AdvNoun, Pos::Polysemy | Pos::Nominal | Pos::Adverbial)
+  AdvUniq = new(Tag::AdvUniq, Pos::Polysemy | Pos::Nominal | Pos::Adverbial)
 
   Adverb = new(Tag::Adverb, Pos::Adverbial)
   AdvBu4 = new(Tag::AdvBu4, Pos::Adverbial)

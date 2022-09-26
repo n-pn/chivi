@@ -1,6 +1,6 @@
 module CV::TlRule
   def scan_verbs!(node : MtNode)
-    node = heal_mixed!(node) if node.mixed?
+    node = heal_mixed!(node) if node.polysemy?
 
     case node
     when .v_shi?     then node

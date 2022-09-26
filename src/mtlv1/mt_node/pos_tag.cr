@@ -89,7 +89,7 @@ struct CV::PosTag
     when .quantis?  then "q"
     when .nquants?  then "mq"
     when .adverbial?
-      @pos.mixed? ? @tag.to_str : "d"
+      @pos.polysemy? ? @tag.to_str : "d"
     else
       @tag.to_str
     end

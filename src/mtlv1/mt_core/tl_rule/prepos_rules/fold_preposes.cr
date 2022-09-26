@@ -64,7 +64,7 @@ module CV::TlRule
   end
 
   def fold_pre_zai!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
-    succ = heal_mixed!(succ) if succ.mixed?
+    succ = heal_mixed!(succ) if succ.polysemy?
 
     if succ.verb? || succ.verb_object?
       # TODO: check conditions when prezai can be translated at "đang"

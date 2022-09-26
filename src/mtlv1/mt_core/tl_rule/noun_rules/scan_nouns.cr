@@ -17,7 +17,7 @@ module CV::TlRule
     end
 
     while node
-      node = heal_mixed!(node) if node.is_a?(MtTerm) && node.mixed?
+      node = heal_mixed!(node) if node.is_a?(MtTerm) && node.polysemy?
 
       case node
       when .pro_per?

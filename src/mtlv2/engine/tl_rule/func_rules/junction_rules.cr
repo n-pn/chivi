@@ -20,7 +20,7 @@ module MtlV2::TlRule
 
     if (prev.tag == succ.tag)
       noun = fold!(prev, succ, tag: prev.tag, dic: 4)
-    elsif similar_tag?(prev, succ) || (junc.penum? && succ.mixed?)
+    elsif similar_tag?(prev, succ) || (junc.penum? && succ.polysemy?)
       noun = fold!(prev, succ, tag: PosTag::NounPhrase, dic: 4)
     else
       return nil

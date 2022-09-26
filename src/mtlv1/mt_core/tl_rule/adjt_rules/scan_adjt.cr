@@ -1,7 +1,7 @@
 module CV::TlRule
   def scan_adjt!(node : MtNode?) : MtNode?
     return unless node
-    node = heal_mixed!(node) if node.mixed?
+    node = heal_mixed!(node) if node.polysemy?
 
     case node
     when .modi?      then fold_modifier!(node)

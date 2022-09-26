@@ -19,9 +19,9 @@ module MtlV2::TlRule
 
         noun = fold_noun_locality!(noun, succ)
         break if noun.succ? == succ
-      when .mixed?
+      when .polysemy?
         succ = heal_mixed!(succ)
-        break if succ.mixed?
+        break if succ.polysemy?
       when .nominal?
         unless noun.nattr? || fold_mode.fold_all?
           break if noun_is_subject?(succ)

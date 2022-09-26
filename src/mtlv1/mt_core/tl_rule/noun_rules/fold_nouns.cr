@@ -9,7 +9,7 @@ module CV::TlRule
 
     while noun.nominal?
       break unless succ = noun.succ?
-      succ = heal_mixed!(succ) if succ.mixed?
+      succ = heal_mixed!(succ) if succ.polysemy?
 
       case succ
       when .middot?

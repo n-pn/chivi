@@ -2,7 +2,7 @@ module CV::TlRule
   def fold_usuo!(usuo : MtNode, succ = usuo.succ?)
     return usuo unless succ
 
-    succ = heal_mixed!(succ) if succ.mixed?
+    succ = heal_mixed!(succ) if succ.polysemy?
     return usuo unless succ.verbal?
 
     usuo.val = "chỗ"

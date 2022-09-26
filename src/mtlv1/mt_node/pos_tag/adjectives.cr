@@ -3,9 +3,9 @@ struct CV::PosTag
     # 形容词 - adjective - hình dung từ (tính từ)
     {"a", "Adjt", Pos::Adjective | Pos::Contws},
     # 名形词 nominal use of adjective - danh hình từ (danh + tính từ)
-    {"an", "Ajno", Pos::Mixed | Pos::Adjective | Pos::Nominal | Pos::Contws},
+    {"an", "Ajno", Pos::Polysemy | Pos::Adjective | Pos::Nominal | Pos::Contws},
     # 副形词 - adverbial use of adjective - phó hình từ (phó + tính từ)
-    {"ad", "Ajad", Pos::Mixed | Pos::Adjective | Pos::Adverbial | Pos::Contws},
+    {"ad", "Ajad", Pos::Polysemy | Pos::Adjective | Pos::Adverbial | Pos::Contws},
 
     # 形容词性惯用语 - adjectival formulaic expression -
     {"al", "Aform", Pos::Adjective | Pos::Contws},

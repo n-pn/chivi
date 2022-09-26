@@ -1,6 +1,6 @@
 module CV::TlRule
   def heal_mixed!(node : MtTerm, prev = node.prev, succ = node.succ?)
-    succ = heal_mixed!(succ, prev: node) if succ && succ.mixed?
+    succ = heal_mixed!(succ, prev: node) if succ && succ.polysemy?
 
     case node.tag
     when .vead? then heal_vead!(node, prev, succ)

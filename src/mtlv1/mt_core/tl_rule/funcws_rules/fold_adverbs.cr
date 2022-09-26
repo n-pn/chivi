@@ -16,7 +16,7 @@ module CV::TlRule
   end
 
   def fold_adv_bu!(node : MtNode, succ = node.succ) : MtNode
-    succ = heal_mixed!(succ) if succ.mixed?
+    succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
     when .vmodals?
@@ -42,7 +42,7 @@ module CV::TlRule
   end
 
   def fold_adv_mei!(node : MtNode, succ = node.succ) : MtNode
-    succ = heal_mixed!(succ) if succ.mixed?
+    succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
     when .verbal?
@@ -74,7 +74,7 @@ module CV::TlRule
   def fold_adverb_base!(node : MtNode, succ = node.succ) : MtNode
     node, succ = fix_adverb!(node, succ)
     return node unless succ
-    succ = heal_mixed!(succ) if succ.mixed?
+    succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
     when .v_you?

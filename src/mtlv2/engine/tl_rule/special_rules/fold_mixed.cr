@@ -36,7 +36,7 @@ module MtlV2::TlRule
   def heal_vead!(node : BaseNode) : BaseNode
     return MtDict.fix_verb!(node) if !(succ = node.succ?) || succ.ends?
 
-    succ = heal_mixed!(succ) if succ.mixed?
+    succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ
     when .adverbial?, .adjective?, .verbal?, .vmodals?, .preposes?

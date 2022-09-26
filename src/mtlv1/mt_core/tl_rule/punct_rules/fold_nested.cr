@@ -36,7 +36,7 @@ module CV::TlRule
     tail_prev = tail.prev
 
     if head_succ == tail_prev
-      return head_succ.tag unless head_succ.tag.mixed?
+      return head_succ.tag unless head_succ.tag.polysemy?
       return heal_mixed!(head_succ, head.prev?, tail.succ?).tag
     end
 

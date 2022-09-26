@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_pro_ints!(proint : MtNode, succ = node.succ?)
-    if succ.is_a?(MtTerm) && succ.mixed?
+    if succ.is_a?(MtTerm) && succ.polysemy?
       succ = heal_mixed!(succ)
     end
 
