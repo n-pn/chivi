@@ -1,5 +1,6 @@
 module CV::TlRule
-  def heal_mixed!(node : MtTerm, prev = node.prev, succ = node.succ?)
+  def heal_mixed!(node : MtNode, prev = node.prev, succ = node.succ?)
+    return node unless node.is_a?(MtTerm)
     succ = heal_mixed!(succ, prev: node) if succ && succ.polysemy?
 
     case node.tag
@@ -9,10 +10,6 @@ module CV::TlRule
     when .ajad? then heal_ajad!(node, prev, succ)
     else             node
     end
-  end
-
-  def heal_mixed!(node : MtList, prev = node.prev, succ = node.succ?)
-    node
   end
 
   # ameba:disable Metrics/CyclomaticComplexity

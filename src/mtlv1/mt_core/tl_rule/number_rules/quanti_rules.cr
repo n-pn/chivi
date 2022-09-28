@@ -1,10 +1,7 @@
 module CV::TlRule
-  def heal_quanti!(node : MtTerm) : MtTerm
+  def heal_quanti!(node : MtNode) : MtNode
+    return node unless node.is_a?(MtTerm)
     not_quanti?(node) ? node : MtDict.fix_quanti(node)
-  end
-
-  def heal_quanti!(node : MtList) : MtList
-    node
   end
 
   def not_quanti?(node : MtNode)

@@ -48,11 +48,6 @@ class CV::MtList < CV::MtNode
     false
   end
 
-  def add_head!(node : MtList)
-    self.fix_prev!(node.prev?)
-    @list.unshift(node)
-  end
-
   def add_head!(node : MtTerm)
     self.fix_prev!(node.prev?)
 
@@ -61,6 +56,11 @@ class CV::MtList < CV::MtNode
     else
       @list.unshift(node)
     end
+  end
+
+  def add_head!(node : MtNode)
+    self.fix_prev!(node.prev?)
+    @list.unshift(node)
   end
 
   ######
@@ -85,19 +85,6 @@ class CV::MtList < CV::MtNode
 
   def find_by_key(key : String | Char)
     @list.find(&.find_by_key(key))
-  end
-
-  def space_before?(prev : Nil) : Bool
-    false
-  end
-
-  def space_before?(prev : MtList)
-    !prev.popens?
-  end
-
-  def space_before?(prev : MtTerm)
-    return space_before?(prev.prev?) if prev.val.empty?
-    !(prev.val.blank? || prev.popens?)
   end
 
   def full_sentence? : Bool

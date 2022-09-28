@@ -84,6 +84,16 @@ abstract class CV::MtNode
   abstract def to_mtl(io : IO)
   abstract def inspect(io : IO)
 
+  def space_before?(prev : Nil) : Bool
+    false
+  end
+
+  def space_before?(prev : MtNode)
+    return !prev.popens? unless prev.is_a?(MtTerm)
+    return space_before?(prev.prev?) if prev.val.empty?
+    !(prev.val.blank? || prev.popens?)
+  end
+
   def key_is?(key : String)
     false
   end

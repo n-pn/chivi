@@ -17,7 +17,7 @@ module CV::TlRule
       # when .locality?
       #   fold_noun_space!(node, succ) if mode == 0
     else
-      if (prev = node.prev?) && need_2_objects?(prev)
+      if (prev = node.prev?) && prev.v2_obj?
         flip = succ.succ?(&.subject?) || false
       else
         flip = true

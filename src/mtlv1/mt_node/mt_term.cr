@@ -117,23 +117,6 @@ class CV::MtTerm < CV::MtNode
     end
   end
 
-  def space_before?(prev : Nil) : Bool
-    false
-  end
-
-  def space_before?(prev : MtList) : Bool
-    return false if @val.blank?
-    return !prev.popens? unless @tag.puncts?
-
-    case @tag
-    when .colon?, .pdeci?, .pstops?, .comma?, .penum?,
-         .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
-      false
-    else
-      true
-    end
-  end
-
   def space_before?(prev : MtTerm) : Bool
     return false if @val.blank? || prev.val == " "
 
@@ -156,6 +139,19 @@ class CV::MtTerm < CV::MtNode
       false
     else
       !prev.popens?
+    end
+  end
+
+  def space_before?(prev : MtNode) : Bool
+    return false if @val.blank?
+    return !prev.popens? unless @tag.puncts?
+
+    case @tag
+    when .colon?, .pdeci?, .pstops?, .comma?, .penum?,
+         .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
+      false
+    else
+      true
     end
   end
 

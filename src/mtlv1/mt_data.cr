@@ -64,10 +64,6 @@ class CV::MtData
     end
   end
 
-  private def can_meld?(left : MtTerm, right : MtList) : Bool
-    false
-  end
-
   private def can_meld?(left : MtTerm, right : MtTerm) : Bool
     case right.tag
     when .puncts? then left.tag == right.tag
@@ -79,6 +75,10 @@ class CV::MtData
     else
       false
     end
+  end
+
+  private def can_meld?(left : MtTerm, right : MtNode) : Bool
+    false
   end
 
   private def join_val(left : MtNode, right : MtNode)

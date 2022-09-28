@@ -20,6 +20,10 @@ struct CV::PosTag
   Nqverb = new(Tag::Nqverb, NQ_POS)
   Nqiffy = new(Tag::Nqiffy, NQ_POS) # unknown nquants
 
+  def nqvcpl?
+    @tag.nqtime? || @tag.nqverb?
+  end
+
   NUMLAT_RE = /^[0-9０-９]+$/
   NUMHAN_RE = /^[零〇一二两三四五六七八九十百千万亿兆]+$/
 

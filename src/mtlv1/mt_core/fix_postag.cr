@@ -13,13 +13,8 @@ module CV::MTL
   end
 
   def fix_polysemy(node : MtNode)
-    if prev = node.prev?
-      prev = prev.prev? if prev.quoteop?
-    end
-
-    if succ = node.succ?
-      succ = succ.succ? if succ.quotecl?
-    end
+    prev = prev_node(node)
+    succ = succ_node(node)
 
     case node.tag
     when .vead? then fix_vead(node, prev, succ)
@@ -30,16 +25,35 @@ module CV::MTL
     end
   end
 
+  def prev_node(node : MtNode)
+    return unless prev = node.prev?
+    prev.quoteop? ? prev.prev? : prev
+  end
+
+  def succ_node(node : MtNode)
+    return unless succ = node.succ?
+    succ.quotecl? ? succ.succ? : succ
+  end
+
   def fix_vead(node, prev, succ)
     case succ
     when .nil?, .ends?, .nominal?
       MtDict.fix_verb!(node)
     when .aspect?, .vcompl?
       MtDict.fix_adverb!(node)
-    when .verbal?, .vmodals?, .preposes?
+    when .verbal?, .vmodals?, .preposes?, .adjective?
       MtDict.fix_adverb!(node)
     else
       MtDict.fix_verb!(node)
+    end
+  end
+
+  def fix_ajad(node, prev, succ)
+    case succ
+    when .verbal?, .vmodals?, .preposes?, .adjective?
+      MtDict.fix_adverb!(node)
+    else
+      MtDict.fix_adjt!(node)
     end
   end
 
@@ -135,19 +149,6 @@ module CV::MTL
       MtDict.fix_adjt!(node)
     when .modifier?
       MtDict.fix_noun!(node)
-    else
-      node
-    end
-  end
-
-  def heal_ajad!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
-    if succ && (succ.adjective? || succ.verbal? || succ.preposes? || succ.vmodals?)
-      return MtDict.fix_adverb!(node)
-    end
-
-    case prev
-    when .nil?, .ends?, .adverbial?, .nominal?
-      MtDict.fix_adjt!(node)
     else
       node
     end

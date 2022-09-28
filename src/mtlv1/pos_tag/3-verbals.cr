@@ -20,6 +20,8 @@ struct CV::PosTag
     # 动词性语素 - verbal morpheme
     # {"vg", "Vmorp", Pos::Verbal | Pos::Contws},
 
+    {"v2", "V2Obj", Pos::Verbal | Pos::Contws},
+
     # verb + object phrase
     {"vo", "VerbObject", Pos::Verbal | Pos::Contws},
   }
@@ -35,6 +37,7 @@ struct CV::PosTag
     when 'f' then Vdir
     when 'c' then Vcmp
     when 'i' then Vintr
+    when '2' then V2Obj
     when 'o' then VerbObject
     when 'm', 'x'
       parse_vmodal(key)

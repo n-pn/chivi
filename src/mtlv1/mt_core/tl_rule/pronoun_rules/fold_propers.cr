@@ -39,7 +39,7 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_proper_nominal!(proper : MtNode, nominal : MtNode) : MtNode
     return proper unless noun_can_combine?(proper.prev?, nominal.succ?)
-    if (prev = proper.prev?) && need_2_objects?(prev)
+    if (prev = proper.prev?) && prev.v2_obj?
       flip = false
 
       if (succ = nominal.succ?) && (succ.ude1?)
