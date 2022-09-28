@@ -1,4 +1,4 @@
-require "../../mt_core/mt_dict"
+require "../mt_core/mt_dict"
 
 struct CV::PosTag
   # 数词 - numeral - số từ

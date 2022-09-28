@@ -1,6 +1,6 @@
 require "./mt_node"
-require "./pos_tag"
 
+require "../pos_tag"
 require "../vp_dict/vp_term"
 require "../mt_core/mt_util"
 require "../../_util/text_util"
