@@ -148,8 +148,8 @@ class CV::VpDict
   def set!(term : VpTerm) : VpTerm?
     return unless set(term)
 
-    File.open(@file, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
-    File.open(@flog, "a") { |io| io << '\n'; term.to_s(io, dtype: @type) }
+    File.open(@file, "a") { |io| io << '\n'; term.to_s(io) }
+    File.open(@flog, "a") { |io| io << '\n'; term.to_s(io) }
 
     term
   end
@@ -176,7 +176,7 @@ class CV::VpDict
     data = String.build do |io|
       list.each_with_index do |term, i|
         io << "\n" unless i == 0
-        term.to_s(io, dtype: @type)
+        term.to_s(io)
       end
     end
 

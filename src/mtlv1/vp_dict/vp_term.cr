@@ -26,7 +26,7 @@ class CV::VpTerm
   property prio : Int8 = 2_i8
 
   getter mtime : Int32 = 0
-  getter uname : String = "~"
+  getter uname : String = ""
 
   # flags:
   # 0 => active
@@ -45,7 +45,7 @@ class CV::VpTerm
   property _prev : VpTerm? = nil
 
   def initialize(@key, @vals = [""], @tags = [""], @prio = 2_i8,
-                 @mtime = VpTerm.mtime, @uname = "~")
+                 @mtime = VpTerm.mtime, @uname = "")
     @_flag = @vals.first.empty? ? 1_u8 : 0_u8
   end
 
@@ -112,7 +112,7 @@ class CV::VpTerm
     @_flag == 1_i8 ? "Xoá" : (self._prev ? "Sửa" : "Thêm")
   end
 
-  def to_s(io : IO, dtype = 0) : Nil
+  def to_s(io : IO) : Nil
     io << key << '\t' << @vals.join(SPLIT)
     io << '\t' << @tags.join(" ") << '\t' << prio_str
     return unless @mtime > 0 || @_mode > 0

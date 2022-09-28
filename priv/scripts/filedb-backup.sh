@@ -18,9 +18,6 @@ then
   echo backup dicts data!
 
   rsync -aiz --no-p --include="*.tab" "$SSH/var/dicts/v1/basic" "var/dicts/v1"
-  rsync -aiz --no-p --include="*.tab" "$SSH/var/dicts/v1/novel" "var/dicts/v1"
-  rsync -aiz --no-p --include="*.tab" "$SSH/var/dicts/v1/cvmtl" "var/dicts/v1"
-  rsync -aiz --no-p --include="*.tab" "$SSH/var/dicts/v1/theme" "var/dicts/v1"
 fi
 
 ## backup book data
