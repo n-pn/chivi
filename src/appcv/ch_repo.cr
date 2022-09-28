@@ -76,6 +76,16 @@ class CV::ChRepo
     @repo.open(&.query_all(query, min, max, as: Chinfo))
   end
 
+  def empty_chaps
+    query = <<-SQL
+      select * from "chinfos"
+      where c_len = 0
+      order by ch_no asc
+    SQL
+
+    @repo.open(&.query_all(query, as: Chinfo))
+  end
+
   def get_title(ch_no : Int32) : String?
     query = "select title from chinfos where ch_no = ? limit 1"
     @repo.open(&.query_one? query, ch_no, as: String)
