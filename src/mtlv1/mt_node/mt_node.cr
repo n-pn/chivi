@@ -50,6 +50,14 @@ abstract class CV::MtNode
     false
   end
 
+  def aspect?
+    @tag.ule? || @tag.uguo? || @tag.uzhe?
+  end
+
+  def vcompl?
+    @tag.adj_hao? || @tag.vdir? || MtDict.get(:v_compl).has_key?(@key)
+  end
+
   def maybe_adjt? : Bool
     return !@succ.try(&.maybe_verb?) if @tag.ajad?
     @tag.adjective? || @tag.adverbial? && @succ.try(&.maybe_adjt?) || false
