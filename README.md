@@ -1,11 +1,7 @@
 # Chivi
 
-source code for https://chivi.app
-
-## Changelog
-
-See [Changelog](/web/src/routes/notes/changelog.md)
+Source code for https://chivi.app
 
 ## LICENSE
 
-MIT
+AGPL 3.0
