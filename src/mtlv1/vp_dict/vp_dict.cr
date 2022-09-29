@@ -2,7 +2,7 @@ require "log"
 require "colorize"
 require "file_utils"
 
-require "./vp_dict/*"
+require "./*"
 
 class CV::VpDict
   enum Kind
