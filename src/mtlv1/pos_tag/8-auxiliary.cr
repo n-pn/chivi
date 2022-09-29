@@ -23,10 +23,6 @@ struct CV::PosTag
     {{ type[0].id }} = new(Tag::{{type[0].id}}, Pos::None)
   {% end %}
 
-  def auxils?
-    tag >= Tag::Auxil && tag <= Tag::Ulian
-  end
-
   def self.parse_auxil(key : String)
     {% begin %}
     case key
