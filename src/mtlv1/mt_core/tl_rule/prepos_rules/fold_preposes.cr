@@ -44,10 +44,8 @@ module CV::TlRule
       fold!(node.set!("đúng"), succ, PosTag::Unkn, dic: 7)
     when .ends?, .conjunct?, .concoord?
       node.set!("đúng", PosTag::Adjt)
-    when .contws?, .popens?
-      fold_prepos_inner!(node.set!("đối với"), succ, mode: mode)
     else
-      node
+      fold_prepos_inner!(node.set!("đối với"), succ, mode: mode)
     end
   end
 

@@ -1,23 +1,23 @@
 struct CV::PosTag
   ADJTS = {
     # 形容词 - adjective - hình dung từ (tính từ)
-    {"a", "Adjt", Pos::Adjective | Pos::Contws},
+    {"a", "Adjt", Pos::Adjective},
     # 名形词 nominal use of adjective - danh hình từ (danh + tính từ)
-    {"an", "Ajno", Pos::Polysemy | Pos::Adjective | Pos::Nominal | Pos::Contws},
+    {"an", "Ajno", Pos::Polysemy | Pos::Adjective | Pos::Nominal},
     # 副形词 - adverbial use of adjective - phó hình từ (phó + tính từ)
-    {"ad", "Ajad", Pos::Polysemy | Pos::Adjective | Pos::Adverbial | Pos::Contws},
+    {"ad", "Ajad", Pos::Polysemy | Pos::Adjective | Pos::Adverbial},
 
     # 形容词性惯用语 - adjectival formulaic expression -
-    {"al", "Aform", Pos::Adjective | Pos::Contws},
+    {"al", "Aform", Pos::Adjective},
     # 形容词性语素 - adjectival morpheme -
-    # {"ag", "Amorp", Pos::Adjective | Pos::Contws},
+    # {"ag", "Amorp", Pos::Adjective},
 
     # 状态词 - stative verb - trạng thái
-    # {"az", "Adesc", Pos::Adjective | Pos::Contws},
+    # {"az", "Adesc", Pos::Adjective},
     # modifier (non-predicate noun modifier) - 区别词 - từ khu biệt
-    {"ab", "Modi", Pos::Adjective | Pos::Contws},
+    {"ab", "Modi", Pos::Adjective},
     # 区别词性惯用语 - noun modifier morpheme
-    # {"bl", "Modiform", Pos::Adjective | Pos::Contws},
+    # {"bl", "Modiform", Pos::Adjective},
   }
 
   {% for type in ADJTS %}

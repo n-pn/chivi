@@ -16,7 +16,7 @@ module CV::TlRule
   }
 
   def fold_suffix!(suff : MtTerm, left : MtNode) : MtList?
-    return unless left.contws?
+    return unless left.nominal? || left.adjective? || left.verbal?
     return if left.v_shi? || left.v_you?
 
     postpos = false

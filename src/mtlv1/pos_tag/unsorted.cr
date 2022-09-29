@@ -1,11 +1,11 @@
 struct CV::PosTag
   MISCS = {
     # 成语 - idiom - thành ngữ
-    {"i", "Idiom", Pos::Contws},
+    {"i", "Idiom", Pos::None},
     # 简称 - abbreviation - viết tắt
-    # {"j", "Abbre", Pos::Contws},
+    # {"j", "Abbre", Pos::None},
     # 习惯用语 - Locution - quán ngữ
-    # {"l", "Locut", Pos::Contws},
+    # {"l", "Locut", Pos::None},
 
     # 字符串 - non-word character string - hư từ khác
     {"x", "Litstr", Pos::Strings},
@@ -15,31 +15,31 @@ struct CV::PosTag
     {"xx", "Fixstr", Pos::Strings},
 
     # 叹词 - interjection/exclamation - thán từ
-    {"xe", "Exclam", Pos::Funcws},
+    {"xe", "Exclam", Pos::None},
     # 语气词 - modal particle - ngữ khí
-    {"xy", "Mopart", Pos::Funcws},
+    {"xy", "Mopart", Pos::None},
     # 拟声词 - onomatopoeia - tượng thanh
-    {"xo", "Onomat", Pos::Funcws},
+    {"xo", "Onomat", Pos::None},
 
     # 连词 - conjunction - liên từ
-    {"c", "Conjunct", Pos::Funcws},
+    {"c", "Conjunct", Pos::None},
     # 并列连词 - coordinating conjunction - liên từ kết hợp
-    {"cc", "Concoord", Pos::Funcws},
+    {"cc", "Concoord", Pos::None},
 
     # complex phrase ac as verb
-    {"~vp", "VerbPhrase", Pos::Verbal | Pos::Contws},
+    {"~vp", "VerbPhrase", Pos::Verbal},
     # complex phrase act as adjective
-    {"~ap", "AdjtPhrase", Pos::Verbal | Pos::Contws},
+    {"~ap", "AdjtPhrase", Pos::Verbal},
     # complex phrase act as noun
-    {"~np", "NounPhrase", Pos::Nominal | Pos::Contws},
+    {"~np", "NounPhrase", Pos::Nominal},
     # definition phrase
-    {"~dp", "DefnPhrase", Pos::Contws},
+    {"~dp", "DefnPhrase", Pos::None},
     # prepos phrase
-    {"~pn", "PrepClause", Pos::Contws},
+    {"~pn", "PrepClause", Pos::None},
     # subject + verb clause
-    {"~sv", "VerbClause", Pos::Contws},
+    {"~sv", "VerbClause", Pos::None},
     # subject + adjt clause
-    {"~sa", "AdjtClause", Pos::Contws},
+    {"~sa", "AdjtClause", Pos::None},
   }
 
   {% for type in MISCS %}

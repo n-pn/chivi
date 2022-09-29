@@ -86,10 +86,11 @@ module CV::TlRule
       return node if boundary?(succ)
       fold_verbs!(node.set!("có lỗi với"))
     when "原来"
-      if succ.try(&.ude1?) || node.prev?(&.contws?)
-        node.set!("ban đầu", tag: PosTag::Modi)
+      case node.prev?
+      when .nil?, .ends?, .puncts?
+        node.set!("thì ra", PosTag::Conjunct)
       else
-        node.set!("thì ra")
+        node.set!("ban đầu", tag: PosTag::Modi)
       end
     when "行"
       succ.nil? || succ.ends? ? node.set!("được") : node

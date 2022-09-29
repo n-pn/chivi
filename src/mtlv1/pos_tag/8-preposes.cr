@@ -1,6 +1,6 @@
 struct CV::PosTag
   # 介词 - preposition - giới từ
-  POSPRE = Pos::Preposes | Pos::Funcws
+  POSPRE = Pos::Preposes
 
   PreBa3 = new(Tag::PreBa3, POSPRE)
   PreBei = new(Tag::PreBei, POSPRE)

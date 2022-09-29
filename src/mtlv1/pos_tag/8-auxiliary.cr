@@ -17,7 +17,7 @@ struct CV::PosTag
     {"Ulian", ["连"]},
   }
 
-  AUPOS = Pos::Auxils | Pos::Funcws
+  AUPOS = Pos::Auxils
   Auxil = new(Tag::Auxil, AUPOS)
 
   {% for type in AUXILS %}

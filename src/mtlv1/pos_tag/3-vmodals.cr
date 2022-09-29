@@ -1,7 +1,7 @@
 struct CV::PosTag
   # 能愿动词 - modal verb - động từ năng nguyện
 
-  VMODPOS = Pos::Vmodals | Pos::Contws
+  VMODPOS = Pos::Vmodals
   Vmodal  = new(Tag::Vmodal, VMODPOS)
   VmHui   = new(Tag::VmHui, VMODPOS)
   VmNeng  = new(Tag::VmNeng, VMODPOS)

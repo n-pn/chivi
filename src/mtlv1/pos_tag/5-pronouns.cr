@@ -1,5 +1,5 @@
 struct CV::PosTag
-  PROPOS = Pos::Pronouns | Pos::Contws
+  PROPOS = Pos::Pronouns
 
   # 代词 - pronoun - đại từ chưa phân loại
   ProUkn = new(Tag::ProUkn, PROPOS | Pos::Nominal)
@@ -8,14 +8,14 @@ struct CV::PosTag
   ProPer = new(Tag::ProPer, Pos::Human | PROPOS)
 
   # 指示代词 - demonstrative pronoun - đại từ chỉ thị
-  DEMPOS = Pos::ProDems | Pos::Pronouns | Pos::Contws
+  DEMPOS = Pos::ProDems | Pos::Pronouns
   ProDem = new(Tag::ProDem, DEMPOS)
   ProZhe = new(Tag::ProZhe, DEMPOS)
   ProNa1 = new(Tag::ProNa1, DEMPOS)
   ProJi  = new(Tag::ProJi, DEMPOS)
 
   # 疑问代词 - interrogative pronoun - đại từ nghi vấn
-  INTPOS = Pos::ProInts | Pos::Pronouns | Pos::Contws
+  INTPOS = Pos::ProInts | Pos::Pronouns
   ProInt = new(Tag::ProInt, INTPOS)
   ProNa2 = new(Tag::ProNa2, INTPOS)
 

@@ -1,11 +1,11 @@
 struct CV::PosTag
-  Special = new(Tag::Special, Pos::Specials | Pos::Contws)
+  Special = new(Tag::Special, Pos::Specials)
 
-  AdjHao = new(Tag::AdjHao, Pos::Adjective | Pos::Specials | Pos::Contws)
-  VShang = new(Tag::VShang, Pos::Specials | Pos::Contws)
-  VXia   = new(Tag::VXia, Pos::Specials | Pos::Contws)
-  VShi   = new(Tag::VShi, Pos::Verbal | Pos::Specials | Pos::Contws)
-  VYou   = new(Tag::VYou, Pos::Verbal | Pos::Specials | Pos::Contws)
+  AdjHao = new(Tag::AdjHao, Pos::Adjective | Pos::Specials)
+  VShang = new(Tag::VShang, Pos::Specials)
+  VXia   = new(Tag::VXia, Pos::Specials)
+  VShi   = new(Tag::VShi, Pos::Verbal | Pos::Specials)
+  VYou   = new(Tag::VYou, Pos::Verbal | Pos::Specials)
 
   def self.parse_special(key : ::String)
     case key

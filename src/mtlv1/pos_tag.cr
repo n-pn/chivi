@@ -60,10 +60,10 @@ struct CV::PosTag
   end
 
   None = new(Tag::None, Pos::Puncts)
-  Unkn = new(Tag::Unkn, Pos::Contws)
+  Unkn = new(Tag::Unkn, Pos::None)
 
-  ParenExpr = new(Tag::ParenExpr, Pos::Contws)
-  Postpos   = new(Tag::Postpos, Pos::Contws)
+  ParenExpr = new(Tag::ParenExpr, Pos::None)
+  Postpos   = new(Tag::Postpos, Pos::None)
 
   Quoteop = new(Tag::Quoteop, Pos.flags(Popens, Puncts))
   Quotecl = new(Tag::Quotecl, Pos.flags(Pstops, Puncts))
@@ -72,7 +72,7 @@ struct CV::PosTag
   getter tag : Tag
   forward_missing_to tag
 
-  def initialize(@tag = Tag::Unkn, @pos = Pos::Contws)
+  def initialize(@tag = Tag::Unkn, @pos = Pos::None)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity

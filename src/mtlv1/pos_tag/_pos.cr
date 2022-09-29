@@ -2,7 +2,6 @@ struct CV::PosTag
   @[Flags]
   enum Pos : UInt64
     # content words - functional words - punctuations
-    Contws; Funcws
     Puncts; Pstops; Popens
 
     Polysemy
@@ -20,7 +19,6 @@ struct CV::PosTag
     Strings; Specials; Suffixes
   end
 
-  delegate contws?, to: @pos
   delegate polysemy?, to: @pos
   delegate nominal?, to: @pos
 

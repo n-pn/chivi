@@ -2,19 +2,19 @@ require "../mt_core/mt_dict"
 
 struct CV::PosTag
   # 数词 - numeral - số từ
-  NB_POS = Pos::Numbers | Pos::Numeral | Pos::Contws
+  NB_POS = Pos::Numbers | Pos::Numeral
   Ndigit = new(Tag::Ndigit, NB_POS)
   Nhanzi = new(Tag::Nhanzi, NB_POS)
   Number = new(Tag::Number, NB_POS)
 
   # # 量词 - quantifier - lượng từ
-  QT_POS = Pos::Quantis | Pos::Numeral | Pos::Contws
+  QT_POS = Pos::Quantis | Pos::Numeral
   Qtnoun = new(Tag::Qtnoun, QT_POS | Pos::Nominal)
   Qttime = new(Tag::Qttime, QT_POS | Pos::Nominal)
   Qtverb = new(Tag::Qtverb, QT_POS)
 
   # 数量词 - numeral and quantifier - số lượng từ
-  NQ_POS = Pos::Nquants | Pos::Numeral | Pos::Contws
+  NQ_POS = Pos::Nquants | Pos::Numeral
   Nqnoun = new(Tag::Nqnoun, NQ_POS | Pos::Nominal)
   Nqtime = new(Tag::Nqtime, NQ_POS | Pos::Nominal)
   Nqverb = new(Tag::Nqverb, NQ_POS)

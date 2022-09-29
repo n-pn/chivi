@@ -1,48 +1,48 @@
 struct CV::PosTag
   NOUNS = {
     # 名词 - noun - danh từ chung
-    {"n", "Noun", Pos::Nominal | Pos::Contws},
+    {"n", "Noun", Pos::Nominal},
 
     # 名词性语素 - nominal formulaic expression
-    {"nl", "Nform", Pos::Nominal | Pos::Contws},
+    {"nl", "Nform", Pos::Nominal},
 
     # danh xưng: chức danh, nghề nghiệp, địa vị
-    {"nh", "Honor", Pos::Nominal | Pos::Human | Pos::Contws},
+    {"nh", "Honor", Pos::Nominal | Pos::Human},
     # 处所词 - place word - nơi chốn
-    {"ns", "Posit", Pos::Nominal | Pos::Contws},
+    {"ns", "Posit", Pos::Nominal},
     # 方位词 - space word - phương vị
-    {"nf", "Locat", Pos::Nominal | Pos::Contws},
+    {"nf", "Locat", Pos::Nominal},
     # 时间词 - time word - thời gian
-    {"nt", "Ntime", Pos::Nominal | Pos::Contws},
+    {"nt", "Ntime", Pos::Nominal},
     # attributes
-    {"na", "Nattr", Pos::Nominal | Pos::Contws},
+    {"na", "Nattr", Pos::Nominal},
 
     # animate noun
-    {"nv", "Nlive", Pos::Nominal | Pos::Contws},
+    {"nv", "Nlive", Pos::Nominal},
     # inanimate noun
-    {"no", "Nobjt", Pos::Nominal | Pos::Contws},
+    {"no", "Nobjt", Pos::Nominal},
     # 抽象概念 - abstract concept - danh từ trừu tượng
-    {"nc", "Nabst", Pos::Nominal | Pos::Contws},
+    {"nc", "Nabst", Pos::Nominal},
   }
 
   NAMES = {
 
     # 人名 - person name - tên người
-    {"Nr", "Person", Pos::Nominal | Pos::Human | Pos::Names | Pos::Contws},
+    {"Nr", "Person", Pos::Nominal | Pos::Human | Pos::Names},
     # 姓氏 - family name - dòng họ
-    # {"nf", "Linage", Pos::Nominal | Pos::Human | Pos::Names | Pos::Contws},
+    # {"nf", "Linage", Pos::Nominal | Pos::Human | Pos::Names},
 
     # 地名 - location name - địa danh |  机构团体名 - organization name - tổ chức
-    {"Na", "Naffil", Pos::Nominal | Pos::Names | Pos::Contws},
+    {"Na", "Naffil", Pos::Nominal | Pos::Names},
 
     # brand/label
-    {"Nl", "Nlabel", Pos::Nominal | Pos::Names | Pos::Contws},
+    {"Nl", "Nlabel", Pos::Nominal | Pos::Names},
 
     # tác phẩm
-    {"Nw", "Btitle", Pos::Nominal | Pos::Names | Pos::Contws},
+    {"Nw", "Btitle", Pos::Nominal | Pos::Names},
 
     # 其它专名 - other proper noun - tên riêng khác
-    {"Nz", "Nother", Pos::Nominal | Pos::Names | Pos::Contws},
+    {"Nz", "Nother", Pos::Nominal | Pos::Names},
   }
 
   {% for type in NOUNS %}
