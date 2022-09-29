@@ -16,8 +16,19 @@ module CV::TlRule
     end
   end
 
+  def fold_left!(tail : MtNode)
+    while tail
+      break unless prev = tail.prev?
+      tail = fold_left!(tail, prev).try(&.prev?) || tail.prev?
+    end
+  end
+
   def fold_left!(right : MtNode, left : MtNode) : MtNode?
+    right = heal_mixed!(right) if right.polysemy?
+
     case right
+    when .ntime?   then fold_time_left!(right)
+    when .nominal? then fold_noun_left!(right, level: 0)
     when .suffixes?
       fold_suffix!(suff: right, left: left) if right.is_a?(MtTerm)
     when .postpos?

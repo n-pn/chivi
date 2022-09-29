@@ -2,7 +2,7 @@ module CV::TlRule
   def fold_noun_after!(noun : MtNode, succ = noun.succ?) : MtNode
     return noun unless succ
 
-    if succ.pro_per? && succ.key == "自己"
+    if succ.pro_ziji?
       noun = fold!(noun, succ, noun.tag, dic: 6, flip: true)
       return noun unless succ = noun.succ?
     end

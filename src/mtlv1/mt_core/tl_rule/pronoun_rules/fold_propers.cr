@@ -12,7 +12,7 @@ module CV::TlRule
       fold_noun_concoord!(succ, proper) || proper
     when .verbal?, .vmodals?
       fold_noun_verb!(proper, succ)
-    when .pro_per?
+    when .pro_pers?
       if tail = succ.succ?
         succ = fold_pro_per!(succ, tail)
       end
@@ -39,14 +39,18 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_proper_nominal!(proper : MtNode, nominal : MtNode) : MtNode
     return proper unless noun_can_combine?(proper.prev?, nominal.succ?)
-    if (prev = proper.prev?) && prev.v2_obj?
+
+    if nominal.pro_ziji?
+      nominal.val = "chính"
+      flip = false
+    elsif (prev = proper.prev?) && prev.v2_obj?
       flip = false
 
       if (succ = nominal.succ?) && (succ.ude1?)
         nominal = fold_ude1!(ude1: succ, prev: nominal)
       end
     else
-      flip = !nominal.pro_per? || nominal.key == "自己"
+      flip = !nominal.pro_per?
     end
 
     case nominal.tag

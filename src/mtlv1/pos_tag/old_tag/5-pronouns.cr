@@ -5,7 +5,8 @@ struct CV::PosTag
   ProUkn = new(Tag::ProUkn, PROPOS | Pos::Nominal)
 
   # 人称代词 - personal pronoun - đại từ nhân xưng
-  ProPer = new(Tag::ProPer, Pos::Human | PROPOS)
+  ProPer = new(Tag::ProPer, Pos.flags(Pronouns, ProPers, Human))
+  ProZiji = new(Tag::ProZiji, Pos.flags(Pronouns, ProPers, Human))
 
   # 指示代词 - demonstrative pronoun - đại từ chỉ thị
   DEMPOS = Pos::ProDems | Pos::Pronouns
@@ -20,10 +21,11 @@ struct CV::PosTag
   ProNa2 = new(Tag::ProNa2, INTPOS)
 
   def self.parse_pronoun(tag : String, key : String)
+
     case tag[1]?
     when 'z' then parse_prodem(key)
     when 'y' then parse_proint(key)
-    when 'r' then ProPer
+    when 'r' then key == "自己" ? ProZiji : ProPer
     else          ProUkn
     end
   end

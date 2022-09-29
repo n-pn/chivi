@@ -6,17 +6,18 @@ struct CV::PosTag
   Ndigit = new(Tag::Ndigit, NB_POS)
   Nhanzi = new(Tag::Nhanzi, NB_POS)
   Number = new(Tag::Number, NB_POS)
+  Numord = new(Tag::Numord, NB_POS)
 
   # # 量词 - quantifier - lượng từ
   QT_POS = Pos::Quantis | Pos::Numeral
-  Qtnoun = new(Tag::Qtnoun, QT_POS | Pos::Nominal)
-  Qttime = new(Tag::Qttime, QT_POS | Pos::Nominal)
+  Qtnoun = new(Tag::Qtnoun, QT_POS)
+  Qttime = new(Tag::Qttime, QT_POS)
   Qtverb = new(Tag::Qtverb, QT_POS)
 
   # 数量词 - numeral and quantifier - số lượng từ
   NQ_POS = Pos::Nquants | Pos::Numeral
-  Nqnoun = new(Tag::Nqnoun, NQ_POS | Pos::Nominal)
-  Nqtime = new(Tag::Nqtime, NQ_POS | Pos::Nominal)
+  Nqnoun = new(Tag::Nqnoun, NQ_POS)
+  Nqtime = new(Tag::Nqtime, NQ_POS)
   Nqverb = new(Tag::Nqverb, NQ_POS)
   Nqiffy = new(Tag::Nqiffy, NQ_POS) # unknown nquants
 
@@ -31,6 +32,7 @@ struct CV::PosTag
     return parse_nquant(key) if tag == "mq"
 
     case key
+    when .starts_with?('第')   then Numord
     when .matches?(NUMLAT_RE) then Ndigit
     when .matches?(NUMHAN_RE) then Nhanzi
     else                           Number

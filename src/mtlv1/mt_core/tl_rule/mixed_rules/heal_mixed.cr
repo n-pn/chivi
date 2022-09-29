@@ -1,7 +1,6 @@
 module CV::TlRule
   def heal_mixed!(node : MtNode, prev = node.prev, succ = node.succ?)
     return node unless node.is_a?(MtTerm)
-    succ = heal_mixed!(succ, prev: node) if succ && succ.polysemy?
 
     case node.tag
     when .vead? then heal_vead!(node, prev, succ)
@@ -12,30 +11,27 @@ module CV::TlRule
     end
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
   def heal_vead!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtTerm
-    return MtDict.fix_verb!(node) if succ.nil? || succ.ends?
-
     case succ
-    when .vdir?, .adj_hao?
-      return MtDict.fix_verb!(node)
+    when .nil?, .ends?, .nominal?
+      MtDict.fix_verb!(node)
+    when .aspect?, .vcompl?, .adverbial?
+      MtDict.fix_adverb!(node)
     when .verbal?, .vmodals?, .preposes?, .adjective?
-      return MtDict.fix_adverb!(node)
-    when .ude3?
-      return succ.succ?(&.verbal?) ? MtDict.fix_adverb!(node) : MtDict.fix_verb!(node)
-    when .auxils?
-      return MtDict.fix_verb!(node) unless not_verb_auxil?(succ)
-    when .subject?
-      return MtDict.fix_verb!(node)
+      MtDict.fix_adverb!(node)
+    else
+      MtDict.fix_verb!(node)
     end
+  end
 
-    case prev
-    when .nil?       then node
-    when .adverbial? then MtDict.fix_verb!(node)
-    when .nhanzi?
-      return node unless prev.is_a?(MtTerm)
-      prev.key == "一" ? MtDict.fix_verb!(node) : node
-    else node
+  def heal_ajad!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
+    case succ
+    when .nil?, .ends?, .nominal?
+      MtDict.fix_adjt!(node)
+    when .verbal?, .vmodals?, .preposes?, .adjective?, .adverbial?
+      MtDict.fix_adverb!(node)
+    else
+      MtDict.fix_adjt!(node)
     end
   end
 
@@ -53,12 +49,10 @@ module CV::TlRule
     # puts [node, prev, succ]
 
     case succ
-    when .nil?, .ends?, .ude1?
-      # do nothing
-    when .ule?
-      return MtDict.fix_verb!(node) if succ.succ?(&.object?)
-    when .auxils?
-      return MtDict.fix_verb!(node) unless not_verb_auxil?(succ)
+    when .nil?, .ends?
+      # to fixed by prev?
+    when .aspect?, .vcompl?
+      return MtDict.fix_verb!(node)
     when .v_shi?, .v_you?
       return MtDict.fix_noun!(node)
     when .nquants?
@@ -141,19 +135,6 @@ module CV::TlRule
       MtDict.fix_adjt!(node)
     when .modifier?
       MtDict.fix_noun!(node)
-    else
-      node
-    end
-  end
-
-  def heal_ajad!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
-    if succ && (succ.adjective? || succ.verbal? || succ.preposes? || succ.vmodals?)
-      return MtDict.fix_adverb!(node)
-    end
-
-    case prev
-    when .nil?, .ends?, .adverbial?, .nominal?
-      MtDict.fix_adjt!(node)
     else
       node
     end

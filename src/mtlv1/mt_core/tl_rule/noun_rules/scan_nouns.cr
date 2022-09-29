@@ -20,7 +20,7 @@ module CV::TlRule
       node = heal_mixed!(node) if node.is_a?(MtTerm) && node.polysemy?
 
       case node
-      when .pro_per?
+      when .pro_pers?
         if prodem || nquant
           node = nil
         else

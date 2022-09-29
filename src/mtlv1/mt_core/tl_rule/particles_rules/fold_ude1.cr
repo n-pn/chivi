@@ -25,7 +25,10 @@ module CV::TlRule
     # puts [left, right]
 
     case left
-    when .noun?, .human?, .nother?, .naffil?
+    when .nlabel?
+      ude1.val = ""
+      flip = true
+    when .noun?, .nform?, .names?, .pro_pers?
       ude1.val = "của"
       flip = true
     else
@@ -34,6 +37,6 @@ module CV::TlRule
     end
 
     left = fold!(left, ude1, tag: PosTag::DefnPhrase, dic: 2, flip: true)
-    fold!(left, right, tag: PosTag::NounPhrase, dic: 6, flip: flip)
+    fold!(left, right, tag: PosTag::Nform, dic: 6, flip: flip)
   end
 end

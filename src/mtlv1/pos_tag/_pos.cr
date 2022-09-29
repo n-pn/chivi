@@ -8,7 +8,7 @@ struct CV::PosTag
 
     Nominal; Names; Human
 
-    Pronouns; ProDems; ProInts
+    Pronouns; ProPers; ProDems; ProInts
 
     Verbal; Vdirs; Vmodals
     Adjective; Adverbial
@@ -31,6 +31,7 @@ struct CV::PosTag
   delegate numeral?, to: @pos
 
   delegate pronouns?, to: @pos
+  delegate pro_pers?, to: @pos
   delegate pro_dems?, to: @pos
   delegate pro_ints?, to: @pos
 

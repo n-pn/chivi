@@ -15,7 +15,7 @@ module CV::TlRule
     adv_bu.val = "hay"
     verb_2.val = "không"
 
-    if (tail = verb_2.succ?) && (tail.noun? || tail.pro_per?)
+    if (tail = verb_2.succ?) && (tail.noun? || tail.pro_pers?)
       verb_2.fix_succ!(tail.succ?)
       tail.fix_succ!(adv_bu)
       tail.fix_prev!(verb)

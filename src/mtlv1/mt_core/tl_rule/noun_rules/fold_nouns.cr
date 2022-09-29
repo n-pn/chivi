@@ -39,18 +39,6 @@ module CV::TlRule
       when .junction?
         break unless should_fold_noun_concoord?(noun, succ)
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
-      when .nominal?
-        break if succ.ntime?
-        return noun unless fold = fold_noun_noun!(noun, succ, mode: mode)
-        noun = fold
-      when .specials?
-        case succ.key
-        when "第"
-          succ = fold_第!(succ)
-          noun = fold!(noun, succ, succ.tag, dic: 6, flip: true) unless succ.nquants?
-        end
-
-        break
       else
         break
       end

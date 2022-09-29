@@ -17,7 +17,7 @@ struct CV::PosTag
       {{ type[1].id }}
     {% end %}
 
-    ProUkn; ProPer
+    ProUkn; ProPer; ProZiji
     ProDem; ProZhe; ProNa1
     ProInt; ProNa2; ProJi
 
@@ -28,7 +28,7 @@ struct CV::PosTag
 
     Prepos; PreBei; PreDui; PreZai; PreBa3; PreBi3
 
-    Number; Ndigit; Nhanzi
+    Number; Ndigit; Nhanzi; Numord
     Qtnoun; Qttime; Qtverb
     Nqnoun; Nqtime; Nqverb; Nqiffy
 

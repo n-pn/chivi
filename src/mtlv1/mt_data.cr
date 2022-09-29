@@ -41,14 +41,7 @@ class CV::MtData
       @head.idx = node.idx
       @head.dic = 0
     else
-      succ = @head.succ?
-
-      if fold = TlRule.fold_left!(right: @head, left: node)
-        fold.fix_succ!(succ)
-        @head = fold
-      else
-        add_head(node)
-      end
+      add_head(node)
     end
   end
 
@@ -144,7 +137,9 @@ class CV::MtData
     head = MtTerm.new("", tag: PosTag::None, dic: 0, idx: @head.idx)
     add_head(head)
 
+    TlRule.fold_left!(@tail)
     resolve_nested!(@nestable.size - 1, 0) if @nestable.size > 1
+
     TlRule.fix_grammar!(head)
   end
 
