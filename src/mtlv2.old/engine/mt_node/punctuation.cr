@@ -46,7 +46,7 @@ module MtlV2::MTL
       when "."           then Period | Final | Break | CapAfter | NoWspace
       when "!"           then Exclam | Final | Break | CapAfter | NoWspace
       when "?"           then Questm | Final | Break | CapAfter | NoWspace
-      when "“", "‘"      then Start | Break
+      when "“", "‘"      then QuoteSt | Start | Break
       when "”", "’"      then QuoteCl | Close | Break | NoWspace
       when "⟨", "<", "‹" then TitleSt | Start | CapAfter
       when "⟩", ">", "›" then TitleCl | Close | NoWspace
