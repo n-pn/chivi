@@ -77,7 +77,7 @@ struct CV::PosTag
 
   # ameba:disable Metrics/CyclomaticComplexity
   def to_str
-    case @pos
+    case self
     when .puncts?   then "w"
     when .auxils?   then "u"
     when .vmodals?  then "vm"
@@ -93,6 +93,26 @@ struct CV::PosTag
     else
       @tag.to_str
     end
+  end
+
+  def preposes?
+    tag >= Tag::Prepos && tag <= Tag::PreBi3
+  end
+
+  def self.parse_prepos(key : ::String)
+    case key
+    when "把"  then PreBa3
+    when "被"  then PreBei
+    when "对"  then PreDui
+    when "在"  then PreZai
+    when "比"  then PreBi3
+    when "不比" then PreBi3
+    else           Prepos
+    end
+  end
+
+  def auxils?
+    tag >= Tag::Auxil && tag <= Tag::Ulian
   end
 
   # words that can act as noun

@@ -15,7 +15,7 @@ struct CV::PosTag
 
     Numbers; Quantis; Nquants; Numeral
 
-    Auxils; Preposes
+    Preposes
     Strings; Specials; Suffixes
   end
 
@@ -42,7 +42,6 @@ struct CV::PosTag
   delegate adverbial?, to: @pos
 
   delegate preposes?, to: @pos
-  delegate auxils?, to: @pos
 
   delegate specials?, to: @pos
   delegate suffixes?, to: @pos

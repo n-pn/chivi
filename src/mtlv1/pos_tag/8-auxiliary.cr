@@ -17,12 +17,15 @@ struct CV::PosTag
     {"Ulian", ["连"]},
   }
 
-  AUPOS = Pos::Auxils
-  Auxil = new(Tag::Auxil, AUPOS)
+  Auxil = new(Tag::Auxil, Pos::None)
 
   {% for type in AUXILS %}
-    {{ type[0].id }} = new(Tag::{{type[0].id}}, AUPOS)
+    {{ type[0].id }} = new(Tag::{{type[0].id}}, Pos::None)
   {% end %}
+
+  def auxils?
+    tag >= Tag::Auxil && tag <= Tag::Ulian
+  end
 
   def self.parse_auxil(key : String)
     {% begin %}
