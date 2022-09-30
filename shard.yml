@@ -24,6 +24,9 @@ targets:
   text_split:
     main: cli/text_split.cr
 
+  text_fetch:
+    main: cli/text_fetch.cr
+
   trad2sim:
     main: cli/trad2sim.cr
 
