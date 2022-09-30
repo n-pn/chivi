@@ -1,4 +1,4 @@
-require "./_pos"
+require "./mtl_pos"
 require "./old_tag/*"
 
 struct CV::PosTag

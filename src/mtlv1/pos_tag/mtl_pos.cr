@@ -1,24 +1,32 @@
+@[Flags]
+enum CV::MtlPos : UInt64
+  # content words - functional words - punctuations
+  Puncts; Pstops; Popens
+
+  Ktetic
+
+  Polysemy
+
+  Proper
+  People
+
+  Nominal; Names; Human
+
+  Pronouns; ProPers; ProDems; ProInts
+
+  Verbal; Vdirs; Vmodals
+  Adjective; Adverbial
+
+  Numbers; Quantis; Nquants; Numeral
+
+  Preposes
+
+  Strings
+  Specials
+  Suffixes
+end
+
 struct CV::PosTag
-  @[Flags]
-  enum Pos : UInt64
-    # content words - functional words - punctuations
-    Puncts; Pstops; Popens
-
-    Polysemy
-
-    Nominal; Names; Human
-
-    Pronouns; ProPers; ProDems; ProInts
-
-    Verbal; Vdirs; Vmodals
-    Adjective; Adverbial
-
-    Numbers; Quantis; Nquants; Numeral
-
-    Preposes
-    Strings; Specials; Suffixes
-  end
-
   delegate polysemy?, to: @pos
   delegate nominal?, to: @pos
 

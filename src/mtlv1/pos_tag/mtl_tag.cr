@@ -5,4 +5,16 @@ enum CV::MtlTag
     {{ line.id }}
     {% end %}
   {% end %}
+
+  def human_name?
+    @tag >= Human0 && @tag <= Human6
+  end
+
+  def affil_name?
+    @tag >= Affil0 && @tag <= Affil5
+  end
+
+  def other_name?
+    @tag >= Xother && @tag <= XSkill
+  end
 end
