@@ -1,18 +1,11 @@
 Amber::Server.configure do
   pipeline :api do
-    plug Amber::Pipe::PoweredByAmber.new
-    plug CV::Pipe::ClientIp.new("X-Forwarded-For")
+    # plug Amber::Pipe::PoweredByAmber.new
+    # plug CV::Pipe::ClientIp.new("X-Forwarded-For")
     plug CV::Pipe::Error.new
     plug Amber::Pipe::Logger.new(filter: ["upass"])
     # plug Amber::Pipe::Session.new # do it manually
-    plug Amber::Pipe::CORS.new
-  end
-
-  # All static content will run these transformations
-  pipeline :static do
-    plug Amber::Pipe::PoweredByAmber.new
-    # plug Amber::Pipe::Error.new
-    plug Amber::Pipe::Static.new("./priv/static")
+    # plug Amber::Pipe::CORS.new
   end
 
   routes :api, "/api" do
