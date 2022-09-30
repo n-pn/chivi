@@ -51,7 +51,6 @@ module CV::TlRule
     case node.tag
     when .polysemy?  then fold_mixed!(node)
     when .specials?  then fold_specials!(node)
-    when .strings?   then fold_strings!(node)
     when .adverbial? then fold_adverbs!(node)
     when .preposes?  then fold_preposes!(node)
     when .pronouns?  then fold_pronouns!(node)

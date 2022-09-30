@@ -1,9 +1,11 @@
 # polysemy
 
-PlVeno = 1201 # verb or noun
-PlVead = 1201 # verb or adjective
+PlVeno = 601 # verb or noun
+PlVead = 601 # verb or adjective
 
-PlAjno = 1210 # adjective or noun
-PlAjad = 1211 # adjective or
+PlAjno = 610 # adjective or noun
+PlAjad = 611 # adjective or
 
-PlAjvb = 1220
+PlAjvb = 620 # adjective or verb
+
+PlAdno = 630 # adverb or noun

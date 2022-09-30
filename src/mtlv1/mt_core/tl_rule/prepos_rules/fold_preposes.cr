@@ -14,14 +14,14 @@ module CV::TlRule
   end
 
   def fold_other_preposes!(node : MtNode, succ : MtNode, mode : Int32)
-    case node.key
-    when "将"
+    case node.tag
+    when .pre_jiang?
       fold = fold_prepos_inner!(node, succ, mode: mode)
       return fold unless (fold.succ? == succ) && succ.verbal?
       return fold_verbs!(succ, prev: node.set!("sẽ"))
-    when "与", "和"
+    when .pre_he2?, .pre_yu3?
       return fold_compare(node, succ) || fold_prepos_inner!(node)
-    when "同", "跟"
+    when .pre_tong?, .pre_gen1?
       if fold = fold_compare(node, succ)
         node.val = fold.dic == 0 ? "giống" : ""
         return fold

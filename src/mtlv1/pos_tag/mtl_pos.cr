@@ -1,58 +1,61 @@
 @[Flags]
 enum CV::MtlPos : UInt64
-  # content words - functional words - punctuations
-  Puncts; Pstops; Popens
+  # rendering
+  CapAfter
+  NoSpaceL
+  NoSpaceR
 
-  Ktetic
+  # placement
 
-  Polysemy
+  AdvPre # adverb phrase put before center verb
+  AdvSuf # adverb phrase put after center verb
 
-  Proper
-  People
+  ModPre # modifier stays before center noun
+  ModSub # modifier stays after center noun
 
-  Nominal; Names; Human
+  Ktetic # possessive determiner
+  # demonstrative determiner
 
-  Pronouns; ProPers; ProDems; ProInts
+  Redup # reduplication
 
-  Verbal; Vdirs; Vmodals
-  Adjective; Adverbial
+  # context
 
-  Numbers; Quantis; Nquants; Numeral
+  Person # all words that refer to human beings
+  Locale # all words that can be placement
 
-  Preposes
+  # # groups
 
-  Strings
-  Specials
-  Suffixes
+  Names   # proper nouns
+  Nouns   # common nouns
+  Nominal # all nouns
+  Nounish # word can act as noun
+
+  Verbs   # all regular verb
+  Verbal  # regular verb + special verbs
+  Verbish # word can act as verb
+
+  Adjts   # all regular adjt
+  Adjtval # adjectival, word can act as adjective
+
+  ###
+
+  Polysemy # words that have multi meaning/part-of-speech
+  Singular # special words that need to be check before build semantic tree
+  Nebulous # words need to be fix (including singular and polysemy)
 end
 
 struct CV::PosTag
-  delegate polysemy?, to: @pos
-  delegate nominal?, to: @pos
+  getter pos = MtlPos::None
 
-  delegate names?, to: @pos
-  delegate human?, to: @pos
+  delegate cap_after?, to: @pos
+  delegate no_space_l?, to: @pos
+  delegate no_space_r?, to: @pos
 
-  delegate numbers?, to: @pos
-  delegate quantis?, to: @pos
-  delegate nquants?, to: @pos
-  delegate numeral?, to: @pos
+  delegate adv_pre?, to: @pos
+  delegate adv_suf?, to: @pos
 
-  delegate pronouns?, to: @pos
-  delegate pro_pers?, to: @pos
-  delegate pro_dems?, to: @pos
-  delegate pro_ints?, to: @pos
+  delegate mod_pre?, to: @pos
+  delegate mod_suf?, to: @pos
 
-  delegate verbal?, to: @pos
-  delegate vdirs?, to: @pos
-  delegate vmodals?, to: @pos
-
-  delegate adjective?, to: @pos
-  delegate adverbial?, to: @pos
-
-  delegate preposes?, to: @pos
-
-  delegate specials?, to: @pos
-  delegate suffixes?, to: @pos
-  delegate strings?, to: @pos
+  delegate ktetic?, to: @pos
 end

@@ -39,7 +39,7 @@ struct CV::PosTag
     {"Titlecl", Pos::Pstops | Pos::Puncts, {"》", "〉", "⟩"}}, # wwy
   }
 
-  Punct = new(Tag::Punct, Pos::Puncts)
+  Punct = new(Tag::Punct, :none)
 
   def self.parse_punct(str : ::String)
     {% begin %}
@@ -49,7 +49,7 @@ struct CV::PosTag
         new(Tag::{{item[0].id}}, {{item[1]}})
       {% end %}
       else
-        new(Tag::Punct, Pos::Puncts)
+        new(Tag::Punct, :none)
       end
     {% end %}
   end

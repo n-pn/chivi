@@ -1,85 +1,74 @@
 # nominal
 
 # proper nouns
-Human0 = 100 # generic human name
-Human1 = 101 # nick name/handle name
-
-Human2 = 102 # chinese full name/chinese first name
-Human3 = 103 # chinese family name
-Human4 = 104 # special chinese family name(has other roles)
-
-Human5 = 106 # foreign human name
-Human6 = 107 # japanese human name
-
-Affil0 = 110 # place name or organization
-Affil1 = 111 # place name
-Affil2 = 112 # organization
-
-Affil3 = 113 # foreign affil
-Affil4 = 114 # foreign place
-Affil5 = 115 # foreign institute
+CapHuman = 100 # generic human name
+CapAffil = 105
 
 # other proper nouns
-XOther = 120 # other proper noun
-XTitle = 121 # book title, work name
-XBrand = 122 # brand name
-XSkill = 123 # skill name
+CapOther = 110 # other proper noun
+CapTitle = 111 # book title, work name
+CapBrand = 112 # brand name
+CapSkill = 113 # skill name
 
 # honoric
-Nhonor0 = 130 # right honorific
-Nhonor1 = 131 # right honorific, no space padding
-Nhonor2 = 132 # left honorific
-Nhonor3 = 133 # left honorific, no space padding
+HonorR  = 120 # right honorific
+HonorRN = 121 # right honorific, no space padding
+HonorL  = 122 # left honorific
+HonorLN = 123 # left honorific, no space padding
 
 # human related noun
-Nkinsh = 135 # kinship, family member
-Noccup = 136 # occupational
+Kinsh = 125 # kinship, family member
+Occup = 126 # occupational
 
-Nncall = 137 # name calling
-Nhuman = 138 # generic human word
+Nncall = 127 # name calling
+Nhuman = 128 # generic human word
 
 # attribute
-Nattr0 = 140 # generic attribute
-Nattr1 = 141 # color names
-Nattr2 = 142 # clothing
-Nattr3 = 143 # characteristic (hair, nose, skin...)
+Nattr = 130 # generic attribute
+# Nattr1 = 131 # color names
+# Nattr2 = 132 # clothing
+# Nattr3 = 133 # characteristic (hair, nose, skin...)
 
 # generic noun
-Nbase = 150 # generic noun
-Nform = 151 # noun phrase
+Nbase = 140 # generic noun
+Nform = 141 # noun phrase
 
 # abstract
-Nabst0 = 155 # astract concept
-Nabst1 = 156 # can be concrete
-
-# animate noun
-Nanim0 = 160 # animate noun
-Nanim1 = 161 # animals
-Nanim2 = 162 # plants
+Nabst = 142 # astract concept
+Nanim = 143 # animate noun
 
 # inanimate noun
-Ninan0 = 170 # generic
-Ninan1 = 171 # weapon
+Ninan0 = 145 # generic
+Ninan1 = 146 # weapon
+
 # TODO: add more types
 
 # placement
-Nplace = 180 # generic place
-Npsuff = 182 # combine with prev noun to place
-
-Nposit = 184 # place + locat
+Place = 150 # generic place
+Psuff = 151 # combine with prev noun to place
+# -- reserved --
+Posit = 155 # place + locat
 
 # locative
-Locat0 = 186 # can act as place
-Locat1 = 187 # can not act as place
-Locat2 = 188 # special locative words
+LocatP = 160 # can act as place
+LocatK = 161 # can not act as place
+
+LocQian = 163 # "前"
+LocHou4 = 164 # "后"
+
+# special locative words
+LocShang = 170 # "上"
+LocZhong = 171 # "中"
+LocXia   = 172 # "下"
 
 # temporal
-Tword = 190 # unsorted timeword
-Tform = 191 # temporal expression
-Tspan = 192 # time span, duration
-Tmark = 193 # can mark succ term as time
+Tword = 180 # unsorted timeword
+Tform = 181 # temporal expression
+Tspan = 182 # time span, duration
+Tmark = 183 # can mark succ term as time
 
-Tdate  = 195 # date
-Ttime  = 196 # time
-TdateX = 197 # date or mquant
-TtimeX = 198 # time or mquant
+Tdate = 185 # date
+Ttime = 186 # time
+
+TdateM = 187 # date or mquant
+TtimeM = 188 # time or mquant

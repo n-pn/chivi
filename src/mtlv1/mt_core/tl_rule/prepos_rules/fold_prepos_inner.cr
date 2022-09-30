@@ -48,12 +48,12 @@ module CV::TlRule
     flip = false
 
     # fix prepos meaning
-    case prepos.key
-    when "自" then prepos.val = "từ"
-    when "让" then prepos.val = "khiến"
-    when "令" then prepos.val = "làm" if head.prev?(&.subject?)
-    when "给" then prepos.val = "cho" if head.prev?(&.subject?)
-    when "对"
+    case prepos.tag
+    when .pre_zi4?   then prepos.val = "từ"
+    when .pre_rang4? then prepos.val = "khiến"
+    when .pre_ling?  then prepos.val = "làm" if head.prev?(&.subject?)
+    when .pre_gei3?  then prepos.val = "làm" if head.prev?(&.subject?)
+    when .pre_dui?
       prepos.val = "với"
       flip = true
     end

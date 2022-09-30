@@ -1,79 +1,25 @@
 require "./mtl_pos"
-require "./old_tag/*"
+require "./mtl_tag"
 
 struct CV::PosTag
   # source: https://gist.github.com/luw2007/6016931
   # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
-  {% begin %}
-    TYPES = {{ NOUNS + NAMES + VERBS + ADJTS + SUFFIXES + MISCS }}
-  {% end %}
+  None = new(:lit_blank, :none)
+  Unkn = new(:lit_trans, :none)
 
-  enum Tag
-    None; Unkn; ParenExpr; Postpos
+  # ParenExpr = new(Tag::ParenExpr, :none)
+  # Postpos   = new(Tag::Postpos, :none)
 
-    {% for type in TYPES %}
-      {{ type[1].id }}
-    {% end %}
+  # Quoteop = new(Tag::Quoteop, MtlPos.flags(Popens, Puncts))
+  # Quotecl = new(Tag::Quotecl, MtlPos.flags(Pstops, Puncts))
 
-    ProUkn; ProPer; ProZiji
-    ProDem; ProZhe; ProNa1
-    ProInt; ProNa2; ProJi
-
-    Vmodal; VmHui; VmNeng; VmXiang
-
-    Adverb; AdvBu4; AdvMei; AdvFei
-    AdvNoun; AdvUniq
-
-    Prepos; PreBei; PreDui; PreZai; PreBa3; PreBi3
-
-    Number; Ndigit; Nhanzi; Numord
-    Qtnoun; Qttime; Qtverb
-    Nqnoun; Nqtime; Nqverb; Nqiffy
-
-    Auxil; Punct
-
-    Special; AdjHao; VShang; VXia; VShi; VYou
-
-    {% for type in PUNCTS %}
-      {{ type[0].id }}
-    {% end %}
-
-    {% for type in AUXILS %}
-      {{ type[0].id }}
-    {% end %}
-
-    def to_str
-      {% begin %}
-      case self
-      when None then "-"
-      when ProPer then "rr"
-      when ProUkn then "r"
-      when Special then "!"
-      {% for type in TYPES %}
-        when {{ type[1].id }} then {{ type[0] }}
-      {% end %}
-      else ""
-      end
-      {% end %}
-    end
-  end
-
-  None = new(Tag::None, Pos::Puncts)
-  Unkn = new(Tag::Unkn, Pos::None)
-
-  ParenExpr = new(Tag::ParenExpr, Pos::None)
-  Postpos   = new(Tag::Postpos, Pos::None)
-
-  Quoteop = new(Tag::Quoteop, Pos.flags(Popens, Puncts))
-  Quotecl = new(Tag::Quotecl, Pos.flags(Pstops, Puncts))
-
-  getter pos : Pos
-  getter tag : Tag
+  getter pos : MtlPos
+  getter tag : MtlTag
   forward_missing_to tag
 
-  def initialize(@tag = Tag::Unkn, @pos = Pos::None)
+  def initialize(@tag : MtlTag = :lit_blank, @pos : MtlPos = :none)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
@@ -94,10 +40,6 @@ struct CV::PosTag
     else
       @tag.to_str
     end
-  end
-
-  def preposes?
-    tag >= Tag::Prepos && tag <= Tag::PreBi3
   end
 
   def self.parse_prepos(key : ::String)

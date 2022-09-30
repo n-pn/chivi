@@ -28,15 +28,15 @@ ProNa2 = 245 # "哪"
 
 # # numbers
 # numeral
-Number = 250 # 基数词 generic cardinal number
+Numcar = 250 # 基数词 generic cardinal number
 Numord = 251 # 序数词 generic ordinal number
 
 Ndigit1 = 251 # all digits
 Ndigit2 = 252 # digits with '-', '/', '~' between
 
-Numhan0 = 254 # all chinese number, unknown state
-Numhan1 = 255 # chinese number, can convert to number
-Numhan2 = 256 # chinese number, approximate
+Nhanzi0 = 254 # all chinese number, unknown state
+Nhanzi1 = 255 # chinese number, can convert to number
+Nhanzi2 = 256 # chinese number, approximate
 
 NumHan = 257 # "半"
 NumYi1 = 258 # "一"

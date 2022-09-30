@@ -3,9 +3,9 @@
 Wempty = 0 # ""
 Wspace = 1 # " "
 
-Period = 3 # "."
-Exclam = 4 # "!"
-Questm = 5 # "?"
+Period = 4 # "."
+Exclam = 5 # "!"
+Questm = 6 # "?"
 
 ###########
 
@@ -58,6 +58,8 @@ Qtmark = 44 # "￥", "$", "￡", "°", "℃"
 
 PlMark = 47 # "+"
 MnMark = 48 # "-"
+
+Pother = 49 # other punctuations
 
 # idioms, locutions
 
