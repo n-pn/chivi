@@ -28,8 +28,7 @@ AdvMannel = 550 # 情态副词/情状副词 adverbs of manner
 
 # conjuctions
 
-ConJunct = 570 # subordinating conjunction
-ConMixed = 575 # both
-ConCoord = 570 # coordinating conjunction
-
-ConjAdvb = 580 # conjuction or adverbial
+ConjAdvb = 569 # conjuction or adverbial
+Conjunct = 570 # subordinating conjunction
+Conmixed = 575 # both
+Concoord = 580 # coordinating conjunction

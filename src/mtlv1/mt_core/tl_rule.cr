@@ -64,7 +64,7 @@ module CV::TlRule
     when .nominal?   then fold_nouns!(node)
     when .onomat?    then fold_onomat!(node)
     when .atsign?    then fold_atsign!(node)
-    when .auxils?    then fold_auxils!(node)
+    when .particles? then fold_auxils!(node)
     else                  node
     end
   end

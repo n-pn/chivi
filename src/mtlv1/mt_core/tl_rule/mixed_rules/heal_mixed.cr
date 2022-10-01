@@ -70,7 +70,7 @@ module CV::TlRule
       return (succ && succ.nominal?) ? MtDict.fix_verb!(node) : node
     when .pro_dems?, .qtnoun?, .verbal?
       case succ
-      when .nil?, .ends?, .auxils?
+      when .nil?, .ends?, .particles?
         return MtDict.fix_noun!(node)
       when .nominal?
         return succ.succ?(&.ude1?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)

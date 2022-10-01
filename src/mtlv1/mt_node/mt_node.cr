@@ -89,9 +89,9 @@ abstract class CV::MtNode
   end
 
   def space_before?(prev : MtNode)
-    return !prev.popens? unless prev.is_a?(MtTerm)
+    return !prev.pstart? unless prev.is_a?(MtTerm)
     return space_before?(prev.prev?) if prev.val.empty?
-    !(prev.val.blank? || prev.popens?)
+    !(prev.val.blank? || prev.pstart?)
   end
 
   def key_is?(key : String)

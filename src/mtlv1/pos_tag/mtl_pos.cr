@@ -1,8 +1,9 @@
 @[Flags]
 enum CV::MtlPos : UInt64
+  Boundary # make structure boundary
+
   # rendering
   CapAfter
-  NoSpaceL
   NoSpaceR
 
   # placement
@@ -25,27 +26,23 @@ enum CV::MtlPos : UInt64
 
   # # groups
 
-  Names   # proper nouns
-  Nouns   # common nouns
-  Nominal # all nouns
   Nounish # word can act as noun
-
-  Verbs   # all regular verb
-  Verbal  # regular verb + special verbs
   Verbish # word can act as verb
+  Adjtish # word can act as adjective
 
-  Adjts   # all regular adjt
-  Adjtval # adjectival, word can act as adjective
+  # specific
 
-  ###
+  LinkVerb # can link verbs
 
-  Polysemy # words that have multi meaning/part-of-speech
-  Singular # special words that need to be check before build semantic tree
-  Nebulous # words need to be fix (including singular and polysemy)
+  JoinWord # can be use to link two words/two phraes
+
+  CanSplit # can split to other structure
 end
 
 struct CV::PosTag
   getter pos = MtlPos::None
+
+  delegate boundary?, to: @pos
 
   delegate cap_after?, to: @pos
   delegate no_space_l?, to: @pos
@@ -58,4 +55,16 @@ struct CV::PosTag
   delegate mod_suf?, to: @pos
 
   delegate ktetic?, to: @pos
+  delegate redup?, to: @pos
+
+  delegate person?, to: @pos
+  delegate locale?, to: @pos
+
+  delegate nounish?, to: @pos
+  delegate verbish?, to: @pos
+  delegate adjtish?, to: @pos
+
+  delegate link_verb?, to: @pos
+  delegate join_word?, to: @pos
+  delegate can_split?, to: @pos
 end

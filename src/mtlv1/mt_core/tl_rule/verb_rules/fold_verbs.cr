@@ -30,7 +30,7 @@ module CV::TlRule
         return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
         return adjt unless (succ = scan_adjt!(succ)) && succ.adjective?
         return fold!(adjt, succ, PosTag::Aform, dic: 8)
-      when .auxils?
+      when .particles?
         verb = fold_verb_auxils!(verb, succ)
         break if verb.succ? == succ
       when .vdirs?

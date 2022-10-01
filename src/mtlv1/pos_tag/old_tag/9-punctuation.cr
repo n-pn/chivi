@@ -55,6 +55,6 @@ struct CV::PosTag
   end
 
   delegate puncts?, to: @pos
-  delegate popens?, to: @pos
-  delegate pstops?, to: @pos
+  delegate pstart?, to: @pos
+  delegate pclose?, to: @pos
 end

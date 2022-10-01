@@ -49,7 +49,7 @@ module CV::TlRule
   end
 
   def fold_compare_bi3_after!(node : MtNode, last : MtNode)
-    return node unless (succ = node.succ?) && succ.auxils? && (tail = succ.succ?)
+    return node unless (succ = node.succ?) && succ.particles? && (tail = succ.succ?)
 
     case succ
     when .ule?

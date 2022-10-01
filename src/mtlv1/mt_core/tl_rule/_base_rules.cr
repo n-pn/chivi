@@ -12,7 +12,7 @@ module CV::TlRule
   end
 
   def end_sentence?(node : MtNode)
-    node.pstops?
+    node.pclose?
   end
 
   def boundary?(node : Nil)
@@ -20,6 +20,6 @@ module CV::TlRule
   end
 
   def boundary?(node : MtNode)
-    node.tag.none? || node.tag.pstops? || node.tag.exclam?
+    node.tag.none? || node.tag.pclose? || node.tag.exclam?
   end
 end

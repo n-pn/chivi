@@ -28,11 +28,11 @@ PreZi4 = 430 # "自"
 # particles
 
 PtCl = 450 # unknown particle
-PtLe = 451 # "了", "喽"
+PtLe = 452 # "了", "喽"
 
 PtZhe = 454 # "着"
 PtGuo = 455 # "过"
-PtSuo = 456 # "所"
+PtSuo = 457 # "所"
 
 PtLs0 = 460 # "来讲"
 PtLs1 = 461 # "来说"

@@ -25,16 +25,16 @@ struct CV::PosTag
   # ameba:disable Metrics/CyclomaticComplexity
   def to_str
     case self
-    when .puncts?   then "w"
-    when .auxils?   then "u"
-    when .vmodals?  then "vm"
-    when .preposes? then "p"
-    when .pro_dems? then "rz"
-    when .pro_ints? then "ry"
-    when .specials? then "!"
-    when .numbers?  then "m"
-    when .quantis?  then "q"
-    when .nquants?  then "mq"
+    when .puncts?    then "w"
+    when .particles? then "u"
+    when .vmodals?   then "vm"
+    when .preposes?  then "p"
+    when .pro_dems?  then "rz"
+    when .pro_ints?  then "ry"
+    when .specials?  then "!"
+    when .numbers?   then "m"
+    when .quantis?   then "q"
+    when .nquants?   then "mq"
     when .adverbial?
       @pos.polysemy? ? @tag.to_str : "d"
     else
@@ -54,7 +54,7 @@ struct CV::PosTag
     end
   end
 
-  def auxils?
+  def particles?
     tag >= Tag::Auxil && tag <= Tag::Ulian
   end
 

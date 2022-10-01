@@ -68,8 +68,8 @@ module CV::TlRule
     when .subject?
       return true unless head = prev.prev?
       return false if head.v_shi?
-      return true if head.none? || head.unkn? || head.pstops?
-    when .none?, .pstops?, .unkn?
+      return true if head.none? || head.unkn? || head.pclose?
+    when .none?, .pclose?, .unkn?
       return !find_verb_after(right)
     end
 

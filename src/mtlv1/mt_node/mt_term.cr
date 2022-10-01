@@ -22,7 +22,7 @@ end
 # reopen class VpTerm
 class CV::VpTerm
   # auto generated fields
-  getter ptag : PosTag { PosTag.parse(@tags[0], @key) }
+  getter ptag : PosTag { PosTag.parse(@tags[0], @key, @vals[0]) }
   getter cost : Int32 { MtUtil.cost(@key.size, @prio) }
 end
 
@@ -40,13 +40,7 @@ class CV::MtTerm < CV::MtNode
 
   def initialize(char : Char, @idx = 0)
     @key = @val = char.to_s
-    @tag =
-      case char
-      when ' ' then PosTag::Punct
-      when '_' then PosTag::Litstr
-      else
-        char.alphanumeric? ? PosTag::Litstr : PosTag::None
-      end
+    @tag = PosTag::None
   end
 
   def blank?
@@ -123,7 +117,7 @@ class CV::MtTerm < CV::MtNode
     return space_before?(prev.prev?) if prev.val.empty?
 
     case
-    when prev.popens?, @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
+    when prev.pstart?, @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
       return false
     else
       return true unless @tag.puncts?
@@ -134,20 +128,20 @@ class CV::MtTerm < CV::MtNode
       true
     when .plsgn?, .mnsgn?
       !prev.tag.ndigit?
-    when .colon?, .pdeci?, .pstops?, .comma?, .penum?,
+    when .colon?, .pdeci?, .pclose?, .comma?, .penum?,
          .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
       false
     else
-      !prev.popens?
+      !prev.pstart?
     end
   end
 
   def space_before?(prev : MtNode) : Bool
     return false if @val.blank?
-    return !prev.popens? unless @tag.puncts?
+    return !prev.pstart? unless @tag.puncts?
 
     case @tag
-    when .colon?, .pdeci?, .pstops?, .comma?, .penum?,
+    when .colon?, .pdeci?, .pclose?, .comma?, .penum?,
          .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
       false
     else

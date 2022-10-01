@@ -75,13 +75,3 @@ StrMail  = 82 # email string (can act as object)
 StrHash  = 83 # hash tag (can act as object)
 StrEmoji = 84 # emotions
 StrOther = 85 # other raw string
-
-# phrases
-
-# VerbPhrase = 51 # noun + verb (can act as determiner)
-# AdjtPhrase = 52 # noun + adjt (can act as determiner)
-# DedePhrase = 53 # demonstrate determiner
-# PodePhrase = 54 # possessive determiner
-
-# AdavPhrase = 71 # phrase that can act as manner adverb
-# PrepPhrase = 72 # prepos + noun phrase

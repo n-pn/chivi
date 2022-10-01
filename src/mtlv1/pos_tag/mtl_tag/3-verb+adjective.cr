@@ -25,10 +25,11 @@ VmXiang = 322 # "想"
 
 # special verbs
 
-VShi   = 330
-VYou   = 331
-VShang = 332
-VXia   = 333
+VShang = 330 # '下'
+VXia   = 331 # '上'
+
+VYou = 340 # '有'
+VShi = 345 # '是'
 
 # adjectives
 
