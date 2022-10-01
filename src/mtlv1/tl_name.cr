@@ -26,7 +26,7 @@ class CV::TlName
       end
     end
 
-    def has_ends?(input : String)
+    def has_boundary?(input : String)
       node = @root
       chars = input.chars
 
@@ -208,10 +208,10 @@ class CV::TlName
       return LASTNAMES.includes?(input[1]?)
     end
 
-    Trie.human.has_ends?(input)
+    Trie.human.has_boundary?(input)
   end
 
   def self.is_affil?(input : String)
-    Trie.affil.has_ends?(input)
+    Trie.affil.has_boundary?(input)
   end
 end

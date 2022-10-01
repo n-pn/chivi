@@ -1,3 +1,3 @@
 # special characters
 
-SlHao = 1301
+SglHao = 901

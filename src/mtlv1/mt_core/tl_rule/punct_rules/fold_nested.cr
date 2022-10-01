@@ -42,7 +42,7 @@ module CV::TlRule
 
     if (tail_prev.exmark? || tail_prev.ude1?) &&
        (head_succ.onomat? || head_succ.exclam?) &&
-       (head.prev?(&.ends?.!) || tail.succ?(&.ude1?))
+       (head.prev?(&.boundary?.!) || tail.succ?(&.ude1?))
       return head_succ.tag
     end
 

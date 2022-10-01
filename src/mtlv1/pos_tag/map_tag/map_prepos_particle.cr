@@ -1,0 +1,50 @@
+struct CV::PosTag
+  def self.parse_prepos(key : String)
+    case key
+    when "把"  then new(:pre_ba3)
+    when "对"  then new(:pre_dui)
+    when "被"  then new(:pre_bei)
+    when "在"  then new(:pre_zai)
+    when "比"  then new(:pre_bi3)
+    when "不比" then new(:pre_bubi)
+    when "将"  then new(:pre_jiang)
+    when "和"  then new(:pre_he2)
+    when "与"  then new(:pre_yu3)
+    when "同"  then new(:pre_tong)
+    when "跟"  then new(:pre_gen1)
+    when "让"  then new(:pre_rang)
+    when "令"  then new(:pre_ling)
+    when "给"  then new(:pre_gei3)
+    when "自"  then new(:pre_zi4)
+    else           new(:prepos)
+    end
+  end
+
+  def self.parse_particle(key : String)
+    case key
+    when "了"  then new(:pt_le, :aspect)
+    when "喽"  then new(:pt_le, :aspect)
+    when "着"  then new(:pt_zhe, :aspect)
+    when "过"  then new(:pt_guo, :aspect)
+    when "所"  then new(:pt_suo, :vauxil)
+    when "来说" then new(:pt_laishuo)
+    when "说来" then new(:pt_shuolai)
+    when "来讲" then new(:pt_laijiang)
+    when "而言" then new(:pt_eryan)
+    when "的话" then new(:pt_dehua)
+    when "之"  then new(:pt_zhi)
+    when "的"  then new(:pt_dep)
+    when "得"  then new(:pt_der)
+    when "地"  then new(:pt_dev)
+    when "云云" then new(:pt_yunyun)
+    when "等"  then new(:pt_deng1)
+    when "等等" then new(:pt_deng2)
+    when "等人" then new(:pt_deng3)
+    when "一样" then new(:pt_yiyang)
+    when "一般" then new(:pt_yiban)
+    when "似的" then new(:pt_shide)
+    when "般"  then new(:pt_ban)
+    else           new(:pl_cl)
+    end
+  end
+end

@@ -5,7 +5,7 @@ module CV::TlRule
     ude1.val = ""
 
     # ameba:disable Style/NegatedConditionsInUnless
-    return ude1 unless prev && succ && !(prev.ends?)
+    return ude1 unless prev && succ && !(prev.boundary?)
 
     if (succ.pro_dems? || succ.pro_na2?) && (tail = succ.succ?)
       right = fold_pro_dems!(succ, tail)

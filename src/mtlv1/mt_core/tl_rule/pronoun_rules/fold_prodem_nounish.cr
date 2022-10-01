@@ -40,7 +40,7 @@ module CV::TlRule
         else
           pro_dem.set!("cái này")
         end
-      when .ends?
+      when .boundary?
         pro_dem.set!("cái này")
       else
         if pro_dem.prev?(&.nominal?)

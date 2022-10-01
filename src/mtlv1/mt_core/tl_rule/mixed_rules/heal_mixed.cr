@@ -13,7 +13,7 @@ module CV::TlRule
 
   def heal_vead!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtTerm
     case succ
-    when .nil?, .ends?, .nominal?
+    when .nil?, .boundary?, .nominal?
       MtDict.fix_verb!(node)
     when .aspect?, .vcompl?, .adverbial?
       MtDict.fix_adverb!(node)
@@ -26,7 +26,7 @@ module CV::TlRule
 
   def heal_ajad!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
     case succ
-    when .nil?, .ends?, .nominal?
+    when .nil?, .boundary?, .nominal?
       MtDict.fix_adjt!(node)
     when .verbal?, .vmodals?, .preposes?, .adjective?, .adverbial?
       MtDict.fix_adverb!(node)
@@ -49,7 +49,7 @@ module CV::TlRule
     # puts [node, prev, succ]
 
     case succ
-    when .nil?, .ends?
+    when .nil?, .boundary?
       # to fixed by prev?
     when .aspect?, .vcompl?
       return MtDict.fix_verb!(node)
@@ -66,11 +66,11 @@ module CV::TlRule
     end
 
     case prev
-    when .nil?, .ends?
+    when .nil?, .boundary?
       return (succ && succ.nominal?) ? MtDict.fix_verb!(node) : node
     when .pro_dems?, .qtnoun?, .verbal?
       case succ
-      when .nil?, .ends?, .particles?
+      when .nil?, .boundary?, .particles?
         return MtDict.fix_noun!(node)
       when .nominal?
         return succ.succ?(&.ude1?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
@@ -100,10 +100,10 @@ module CV::TlRule
     # puts [node, prev, succ, "heal_ajno"]
 
     case succ
-    when .nil?, .ends?
-      return node if !prev || prev.ends?
+    when .nil?, .boundary?
+      return node if !prev || prev.boundary?
       case prev
-      when .nil?, .ends? then return node
+      when .nil?, .boundary? then return node
       when .modi?, .pro_dems?, .quantis?, .nqnoun?
         return MtDict.fix_noun!(node)
       when .object?, .ude3?, .adjective?, .adverbial?
@@ -131,7 +131,7 @@ module CV::TlRule
     end
 
     case prev
-    when .nil?, .ends?, .adverbial?
+    when .nil?, .boundary?, .adverbial?
       MtDict.fix_adjt!(node)
     when .modifier?
       MtDict.fix_noun!(node)

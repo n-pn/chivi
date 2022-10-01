@@ -26,20 +26,6 @@ struct CV::PosTag
     # 并列连词 - coordinating conjunction - liên từ kết hợp
     {"cc", "Concoord", Pos::None},
 
-    # complex phrase ac as verb
-    {"~vp", "VerbPhrase", Pos::Verbal},
-    # complex phrase act as adjective
-    {"~ap", "AdjtPhrase", Pos::Verbal},
-    # complex phrase act as noun
-    {"~np", "NounPhrase", Pos::Nominal},
-    # definition phrase
-    {"~dp", "DefnPhrase", Pos::None},
-    # prepos phrase
-    {"~pn", "PrepClause", Pos::None},
-    # subject + verb clause
-    {"~sv", "VerbClause", Pos::None},
-    # subject + adjt clause
-    {"~sa", "AdjtClause", Pos::None},
   }
 
   {% for type in MISCS %}
@@ -70,19 +56,6 @@ struct CV::PosTag
     when 'l' then Urlstr
     when 'x' then Fixstr
     else          Litstr
-    end
-  end
-
-  def self.parse_extra(tag : String) : self
-    case tag
-    when "~np" then NounPhrase
-    when "~vp" then VerbPhrase
-    when "~ap" then AdjtPhrase
-    when "~dp" then DefnPhrase
-    when "~pp" then PrepClause
-    when "~sv" then VerbClause
-    when "~sa" then AdjtClause
-    else            Unkn
     end
   end
 end

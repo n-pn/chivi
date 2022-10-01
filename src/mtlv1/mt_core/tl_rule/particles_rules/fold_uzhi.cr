@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_uzhi!(uzhi : MtNode, prev : MtNode = uzhi.prev, succ = uzhi.succ?) : MtNode
-    return prev if !succ || succ.ends?
+    return prev if !succ || succ.boundary?
     uzhi.val = ""
 
     if succ.nhanzi? && is_percent?(prev, uzhi)

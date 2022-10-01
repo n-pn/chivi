@@ -59,7 +59,7 @@ module CV::TlRule
     when .person?
       fold!(proper, nominal, proper.tag, dic: 4, flip: false)
     when .nqtime?
-      flip = !nominal.succ?(&.ends?) if flip
+      flip = !nominal.succ?(&.boundary?) if flip
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
     when .posit?
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)

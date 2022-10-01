@@ -6,6 +6,10 @@ enum CV::MtlPos : UInt64
   CapAfter
   NoSpaceR
 
+  # charisteric
+
+  Redup # reduplication
+
   # placement
 
   AdvPre # adverb phrase put before center verb
@@ -15,12 +19,16 @@ enum CV::MtlPos : UInt64
   ModSub # modifier stays after center noun
 
   Ktetic # possessive determiner
-  # demonstrative determiner
 
-  Redup # reduplication
+  Aspect # aspect marker
+  Vauxil # put before verb
+
+  Vcompl # verb complement
+  Object # act as object complement for verb
 
   # context
 
+  Proper # proper nouns
   Person # all words that refer to human beings
   Locale # all words that can be placement
 
@@ -40,13 +48,13 @@ enum CV::MtlPos : UInt64
 end
 
 struct CV::PosTag
-  getter pos = MtlPos::None
-
   delegate boundary?, to: @pos
 
   delegate cap_after?, to: @pos
   delegate no_space_l?, to: @pos
   delegate no_space_r?, to: @pos
+
+  delegate redup?, to: @pos
 
   delegate adv_pre?, to: @pos
   delegate adv_suf?, to: @pos
@@ -55,8 +63,11 @@ struct CV::PosTag
   delegate mod_suf?, to: @pos
 
   delegate ktetic?, to: @pos
-  delegate redup?, to: @pos
+  delegate aspect?, to: @pos
+  delegate vcompl?, to: @pos
+  delegate object?, to: @pos
 
+  delegate proper?, to: @pos
   delegate person?, to: @pos
   delegate locale?, to: @pos
 

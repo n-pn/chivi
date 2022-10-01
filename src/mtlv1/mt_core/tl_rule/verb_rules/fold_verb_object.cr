@@ -3,13 +3,13 @@ module CV::TlRule
   def fold_verb_object!(verb : MtNode, succ : MtNode?)
     # puts [verb, succ].colorize.red
 
-    return verb if !succ || succ.ends? || verb.verb_object? || verb.vintr?
+    return verb if !succ || succ.boundary? || verb.verb_object? || verb.vintr?
 
     if succ.ude1?
       return verb if verb.prev? { |x| x.object? || x.prep_clause? }
       return verb unless (object = scan_noun!(succ.succ?)) && object.object?
 
-      return verb if !(verb_2 = object.succ?) || verb_2.ends?
+      return verb if !(verb_2 = object.succ?) || verb_2.boundary?
       verb_2 = fold_once!(verb_2)
       return verb if !verb_2.verb_no_obj? && verb.prev?(&.object?)
 
@@ -55,7 +55,7 @@ module CV::TlRule
     # in case after ude1 is adverb
     if {"时候", "时", "打算", "方法"}.includes?(right.key)
       return false
-    elsif right.succ? { |x| x.ends? || x.ule? }
+    elsif right.succ? { |x| x.boundary? || x.ule? }
       return true
     end
 

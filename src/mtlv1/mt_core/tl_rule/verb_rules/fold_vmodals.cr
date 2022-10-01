@@ -48,7 +48,7 @@ module CV::TlRule
   def vmodal_is_noun?(node : MtNode)
     return false unless node.key == "可能"
     return true unless succ = node.succ?
-    succ.ends? || succ.v_shi? || succ.v_you?
+    succ.boundary? || succ.v_shi? || succ.v_you?
   end
 
   def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
@@ -67,7 +67,7 @@ module CV::TlRule
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
-    when .nil?, .ends?, .nominal?, .ude1?, .ule?
+    when .nil?, .boundary?, .nominal?, .ude1?, .ule?
       true
     when .preposes? then false
     when .verb_object?

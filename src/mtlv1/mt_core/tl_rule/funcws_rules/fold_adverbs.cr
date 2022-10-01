@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_adverbs!(node : MtNode, succ = node.succ?) : MtNode
-    if !succ || succ.ends?
+    if !succ || succ.boundary?
       node.val = "vậy" if node.key == "也"
       return node
     end

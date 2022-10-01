@@ -5,7 +5,7 @@ module CV::TlRule
     when .v_shang? then fix_上下(node, MAP_上)
     when .v_xia?   then fix_上下(node, MAP_下)
     when .key_in?("和", "跟")
-      if node.prev? { |x| x.ends? || x.adverb? } || concoord_is_prepos?(node.succ?)
+      if node.prev? { |x| x.boundary? || x.adverb? } || concoord_is_prepos?(node.succ?)
         fold_preposes!(node)
       else
         val = node.key == "和" ? "và" : node.val
@@ -87,13 +87,13 @@ module CV::TlRule
       fold_verbs!(node.set!("có lỗi với"))
     when "原来"
       case node.prev?
-      when .nil?, .ends?, .puncts?
+      when .nil?, .boundary?, .puncts?
         node.set!("thì ra", PosTag::Conjunct)
       else
         node.set!("ban đầu", tag: PosTag::Modi)
       end
     when "行"
-      succ.nil? || succ.ends? ? node.set!("được") : node
+      succ.nil? || succ.boundary? ? node.set!("được") : node
     else
       node
     end

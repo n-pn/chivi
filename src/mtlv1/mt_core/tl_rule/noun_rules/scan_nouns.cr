@@ -141,7 +141,7 @@ module CV::TlRule
     node = fold_prodem_nominal!(prodem, node) if prodem
     # node = fold_proper_nominal!(proper, node) if proper
 
-    return node if mode != 0 || !(succ = node.succ?) || succ.ends?
+    return node if mode != 0 || !(succ = node.succ?) || succ.boundary?
 
     node = fold_noun_after!(node, succ)
     return node if node.prev?(&.preposes?) && !node.property?

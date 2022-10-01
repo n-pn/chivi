@@ -14,7 +14,7 @@ module CV::TlRule
     return node unless prev && succ
 
     case
-    when prev.ends?, succ.ends?, succ.key == prev.key
+    when prev.boundary?, succ.boundary?, succ.key == prev.key
       node.set!("rồi")
     else
       node.set!("")
@@ -30,7 +30,7 @@ module CV::TlRule
   end
 
   def fold_verb_ule!(verb : MtNode, node : MtNode, succ = node.succ?)
-    if succ && !(succ.ends? || succ.succ?(&.ule?))
+    if succ && !(succ.boundary? || succ.succ?(&.ule?))
       node.val = ""
     end
 
@@ -44,6 +44,6 @@ module CV::TlRule
   def keep_ule?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool
     return true unless succ
     return false if succ.pstart?
-    succ.ends? || succ.succ?(&.ule?) || false
+    succ.boundary? || succ.succ?(&.ule?) || false
   end
 end

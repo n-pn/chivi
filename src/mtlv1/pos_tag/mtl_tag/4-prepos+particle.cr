@@ -32,12 +32,13 @@ PtLe = 452 # "了", "喽"
 
 PtZhe = 454 # "着"
 PtGuo = 455 # "过"
+
 PtSuo = 457 # "所"
 
-PtLs0 = 460 # "来讲"
-PtLs1 = 461 # "来说"
-PtLs2 = 462 # "而言"
-PtLs3 = 463 #  "说来"
+PtLaishuo  = 460 # "来说"
+PtShuolai  = 461 # "说来"
+PtLaijiang = 462 # "来讲"
+PtEryan    = 463 # "而言"
 
 PtDehua = 468 # "的话"
 PtLian2 = 469 # "连"
@@ -50,12 +51,12 @@ PtDeg = 473 # de as a genitive marker and an associative marker
 PtDer = 475 # "得" resultative de, de in V-de const and V-de-R
 PtDev = 477 # "地" manner de, de before VP
 
-PtEtc0 = 480 # "云云"
-PtEtc1 = 481 # "等"
-PtEtc2 = 482 # "等等"
-PtEtc3 = 485 # "等人"
+PtYunyun = 480 # "云云"
+PtDeng1  = 481 # "等"
+PtDeng2  = 482 # "等等"
+PtDeng3  = 485 # "等人"
 
-PtCmp0 = 490 # "一样"
-PtCmp1 = 491 # "一般"
-PtCmp2 = 492 # "似的"
-PtCmp3 = 493 #  "般"
+PtYiyang = 490 # "一样"
+PtYiban  = 491 # "一般"
+PtShide  = 492 # "似的"
+PtBan    = 493 #  "般"
