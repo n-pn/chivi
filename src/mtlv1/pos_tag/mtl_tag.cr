@@ -1,19 +1,4 @@
 enum CV::MtlTag
-  def self.load_map(file : String)
-    output = {} of String => self
-
-    File.each_line(file) do |line|
-      next if line.empty? || line.starts_with?('#')
-      args = line.split('\t')
-      key, tag = args
-      output[key] = self.parse(tag)
-    end
-
-    output
-  end
-
-  ########
-
   {% begin %}
     {% files = {
          "0-lit+str+punct",
@@ -23,9 +8,9 @@ enum CV::MtlTag
          "4-prepos+particle",
          "5-adverb+conjunct",
          "6-phrase+catena",
-         "7-morpheme",
+         "7-sound+morp",
          "8-polysemy",
-         "9-singular",
+         "9-uniqword",
        } %}
     {% for file in files %}
       {% lines = read_file("#{__DIR__}/mtl_tag/#{file.id}.cr").split("\n") %}
@@ -54,7 +39,7 @@ enum CV::MtlTag
   end
 
   def literal?
-    value >= 60 && value < 100
+    value >= 60 && value < 90
   end
 
   def strings?
@@ -69,6 +54,10 @@ enum CV::MtlTag
 
   def nouns?
     value >= 120 && value < 155
+  end
+
+  def nobjs?
+    value >= 140 && value <= 150
   end
 
   def nominal?
@@ -190,7 +179,7 @@ enum CV::MtlTag
   # adverb
 
   def adverbs?
-    value >= 500 && value < 570
+    value >= 500 && value < 560
   end
 
   def nega_advs?
@@ -218,17 +207,17 @@ enum CV::MtlTag
   end
 
   def manner_advs?
-    value >= 550 && value < 570
+    value >= 550 && value < 560
   end
 
   ###
 
   def conjuncts?
-    value >= 569 && value < 600
+    value >= 559 && value < 600
   end
 
   def concoords?
-    value >= 575 && value <= 580
+    value >= 570 && value < 600
   end
 
   # phrases
@@ -238,7 +227,7 @@ enum CV::MtlTag
   end
 
   def morpheme?
-    value >= 700 && value < 800
+    value >= 730 && value < 800
   end
 
   # words that have multi meaning/part-of-speech
@@ -247,11 +236,11 @@ enum CV::MtlTag
   end
 
   # special words that need to be check before build semantic tree
-  def singular?
+  def uniqword?
     value >= 900
   end
 
-  # words need to be fix (including singular and polysemy)
+  # words need to be fix (including uniqword and polysemy)
   def nebulous?
     value >= 800
   end

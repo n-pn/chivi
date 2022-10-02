@@ -134,7 +134,7 @@ class CV::MtData
   end
 
   def fix_grammar!
-    head = MtTerm.new("", tag: PosTag::None, dic: 0, idx: @head.idx)
+    head = MtTerm.new("", tag: PosTag::Empty, dic: 0, idx: @head.idx)
     add_head(head)
 
     TlRule.fold_left!(@tail)

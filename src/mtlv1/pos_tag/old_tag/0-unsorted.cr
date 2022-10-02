@@ -7,20 +7,6 @@ struct CV::PosTag
     # 习惯用语 - Locution - quán ngữ
     # {"l", "Locut", Pos::None},
 
-    # 字符串 - non-word character string - hư từ khác
-    {"x", "Litstr", Pos::Strings},
-    # 网址URL - url string | 非语素字 - for ascii art like emoji...
-    {"xl", "Urlstr", Pos::Strings},
-    # 非语素字 - for ascii art like emoji...
-    {"xx", "Fixstr", Pos::Strings},
-
-    # 叹词 - interjection/exclamation - thán từ
-    {"xe", "Exclam", Pos::None},
-    # 语气词 - modal particle - ngữ khí
-    {"xy", "Mopart", Pos::None},
-    # 拟声词 - onomatopoeia - tượng thanh
-    {"xo", "Onomat", Pos::None},
-
     # 连词 - conjunction - liên từ
     {"c", "Conjunct", Pos::None},
     # 并列连词 - coordinating conjunction - liên từ kết hợp

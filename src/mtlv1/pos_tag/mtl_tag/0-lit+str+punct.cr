@@ -1,7 +1,7 @@
 # punctuation
 
-Wempty = 0 # ""
-Wspace = 1 # " "
+Empty = 0 # ""
+Space = 1 # " "
 
 Period = 4 # "."
 Exclam = 5 # "!"

@@ -8,7 +8,7 @@ struct CV::PosTag
   DrPhrase = new(:dr_phrase, pos(AdvPre))
   DvPhrase = new(:dv_phrase, pos(Vcompl))
 
-  def self.parse_phrase(tag : String) : self
+  def self.map_phrase(tag : String) : self
     case tag
     when "+sv" then SubjVerb
     when "+sa" then SubjAdjt
@@ -16,7 +16,7 @@ struct CV::PosTag
     when "+dc" then DcPhrase
     when "+dg" then DgPhrase
     when "+dr" then DrPhrase
-    when "+dv" then DvPhrase #
+    when "+dv" then DvPhrase
     else            LitTrans
     end
   end

@@ -1,5 +1,9 @@
 @[Flags]
 enum CV::MtlPos : UInt64
+  def self.parse(values : Array(String))
+    values.reduce(None) { |flags, value| flags | parse(value) }
+  end
+
   Boundary # make structure boundary
 
   # rendering

@@ -10,38 +10,26 @@ CapTitle = 111 # book title, work name
 CapBrand = 112 # brand name
 CapSkill = 113 # skill name
 
-# honoric
-HonorR  = 120 # right honorific
-HonorRN = 121 # right honorific, no space padding
-HonorL  = 122 # left honorific
-HonorLN = 123 # left honorific, no space padding
-
 # human related noun
-Kinsh = 125 # kinship, family member
-Occup = 126 # occupational
-
-Nncall = 127 # name calling
-Nhuman = 128 # generic human word
-
-# attribute
-Nattr = 130 # generic attribute
-# Nattr1 = 131 # color names
-# Nattr2 = 132 # clothing
-# Nattr3 = 133 # characteristic (hair, nose, skin...)
+Honor  = 120 # honorific
+Kinsh  = 123 # kinship, family member
+Occup  = 124 # occupational
+Nncall = 125 # name calling
+Nhuman = 126 # generic human word
 
 # generic noun
-Nbase = 140 # generic noun
-Nform = 141 # noun phrase
+Nbase = 130 # generic noun
+Nform = 131 # noun phrase
 
-# abstract
-Nabst = 142 # astract concept
-Nanim = 143 # animate noun
+# Nabst = 133 # astract concept
+# attribute
+Nattr = 135 # generic attribute
 
-# inanimate noun
-Ninan0 = 145 # generic
-Ninan1 = 146 # weapon
+# concrete nouns
+Nobjt = 140 # concrete noun
 
-# TODO: add more types
+Nweapon = 141
+Ninhand = 142
 
 # placement
 Place = 150 # generic place

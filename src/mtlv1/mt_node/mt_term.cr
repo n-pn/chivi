@@ -29,7 +29,7 @@ end
 class CV::MtTerm < CV::MtNode
   ###########
 
-  def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = 0)
+  def initialize(@key, @val = @key, @tag = PosTag::LitTrans, @dic = 0, @idx = 0)
   end
 
   def initialize(term : VpTerm, @dic : Int32 = 0, @idx = 0)
@@ -40,7 +40,7 @@ class CV::MtTerm < CV::MtNode
 
   def initialize(char : Char, @idx = 0)
     @key = @val = char.to_s
-    @tag = PosTag::None
+    @tag = PosTag::LitTrans
   end
 
   def blank?

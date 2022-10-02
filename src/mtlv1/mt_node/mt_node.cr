@@ -4,7 +4,7 @@ abstract class CV::MtNode
   property key : String = ""
   property val : String = ""
 
-  property tag : PosTag = PosTag::None
+  property tag : PosTag = PosTag::LitTrans
   property dic : Int32 = 0
   property idx : Int32 = 0
 

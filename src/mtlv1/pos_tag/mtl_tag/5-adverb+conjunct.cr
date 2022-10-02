@@ -28,7 +28,19 @@ AdvMannel = 550 # 情态副词/情状副词 adverbs of manner
 
 # conjuctions
 
-ConjAdvb = 569 # conjuction or adverbial
-Conjunct = 570 # subordinating conjunction
-Conmixed = 575 # both
+ConjAdvb = 559 # conjuction or adverbial
+Conjunct = 560 # subordinating conjunction
+
+# both correl or concoord
+ConDan4   = 571 # "但"
+ConYou4   = 572 # "又"
+ConHuo4   = 573 # "或"
+ConHuoshi = 574 # "或是"
+
 Concoord = 580 # coordinating conjunction
+
+# special conjunctions
+ConHe2  = 581 # "和"
+ConYu3  = 582 # "与"
+ConTong = 583 # "同"
+ConGen1 = 584 # "跟"

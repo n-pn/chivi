@@ -1,5 +1,5 @@
 struct CV::PosTag
-  def self.parse_verb(tag : String, key : String)
+  def self.map_verb(tag : String, key : String)
     case tag[1]?
     when 'n' then Veno
     when 'd' then Vead
