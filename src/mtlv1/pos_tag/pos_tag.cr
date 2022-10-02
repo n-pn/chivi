@@ -2,7 +2,7 @@ require "./mtl_pos"
 require "./mtl_tag"
 
 struct CV::PosTag
-  def self.load_map(file : String)
+  def self.load_map(file : String, init_pos : MtlPos = :none)
     lines = File.read_lines(file)
 
     output = Hash(String, self).new(initial_capacity: lines.size)
@@ -12,7 +12,9 @@ struct CV::PosTag
       args = line.split('\t')
       tag = MtlTag.parse(args[1])
 
-      pos = args[2]?.try { |x| MtlPos.parse(x.split(" | ")) } || MtlPos::None
+      str = args[2]?.try(&.split(" | "))
+      pos = str ? MtlPos.parse(str, init_pos) : init_pos
+
       hash[args[0]] = new(tag, pos)
     end
   end

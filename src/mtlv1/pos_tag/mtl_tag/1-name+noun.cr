@@ -38,8 +38,7 @@ Psuff = 151 # combine with prev noun to place
 Posit = 155 # place + locat
 
 # locative
-LocatP = 160 # can act as place
-LocatK = 161 # can not act as place
+Locat = 160 # can act as place
 
 LocQian = 163 # "前"
 LocHou4 = 164 # "后"
