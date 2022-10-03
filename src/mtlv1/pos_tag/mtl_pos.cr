@@ -21,12 +21,6 @@ enum CV::MtlPos : UInt64
 
   # placement
 
-  AdvPre # adverb phrase put before center verb
-  AdvSuf # adverb phrase put after center verb
-
-  ModPre # modifier stays before center noun
-  ModSub # modifier stays after center noun
-
   Ktetic # possessive determiner
 
   Aspect # aspect marker
@@ -35,25 +29,25 @@ enum CV::MtlPos : UInt64
   Vcompl # verb complement
   Object # act as object complement for verb
 
-  # context
+  # chararistic
 
   Proper # proper nouns
+
+  Plural # plural nouns/pronouns
   People # all words that refer to human beings
   Locale # all words that can be placement
 
-  # # groups
+  # part in speech
 
   Nounish # word can act as noun
   Verbish # word can act as verb
   Adjtish # word can act as adjective
-  Advbial # adverbial
+  Advbial # adverbial, word can act as adverb
 
   # specific
 
   LinkVerb # can link verbs
-
   JoinWord # can be use to link two words/two phraes
-
   CanSplit # can split to other structure
 end
 
@@ -69,24 +63,20 @@ struct CV::PosTag
 
   delegate redup?, to: @pos
 
-  delegate adv_pre?, to: @pos
-  delegate adv_suf?, to: @pos
-
-  delegate mod_pre?, to: @pos
-  delegate mod_suf?, to: @pos
-
   delegate ktetic?, to: @pos
   delegate aspect?, to: @pos
   delegate vcompl?, to: @pos
   delegate object?, to: @pos
 
   delegate proper?, to: @pos
-  delegate person?, to: @pos
+  delegate plural?, to: @pos
+  delegate people?, to: @pos
   delegate locale?, to: @pos
 
   delegate nounish?, to: @pos
   delegate verbish?, to: @pos
   delegate adjtish?, to: @pos
+  delegate advbial?, to: @pos
 
   delegate link_verb?, to: @pos
   delegate join_word?, to: @pos

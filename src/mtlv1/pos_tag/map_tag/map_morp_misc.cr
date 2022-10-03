@@ -1,2 +1,0 @@
-struct CV::PosTag
-end

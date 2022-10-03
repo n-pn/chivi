@@ -8,8 +8,16 @@ Mopart = 708 # modal particle - ngữ khí
 
 # morpheme
 
-# prefixes
+SufNoun = 740
+SufAttr = 742
+SufTime = 743 # make whole structure as time expression
 
+SufVerb = 747
+SufAdjt = 749
+
+SufZhi = 750 #
+
+# prefixes
 # infixes
 
 # suffixes

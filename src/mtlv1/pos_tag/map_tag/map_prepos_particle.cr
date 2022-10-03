@@ -47,6 +47,6 @@ struct CV::PosTag
   }
 
   def self.map_particle(key : String)
-    PARTICLE_MAP[key] || new(:pl_cl)
+    PARTICLE_MAP[key] || new(:pt_cl)
   end
 end

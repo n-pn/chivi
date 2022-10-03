@@ -1,3 +1,5 @@
 # special characters
 
-SglHao = 901
+Uniqword = 900
+
+UqHao = 901

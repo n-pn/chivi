@@ -1,5 +1,5 @@
 struct CV::PosTag
-  def map_literal(tag : String)
+  def self.map_literal(tag : String)
     case tag[1]?
     when 'i' then new(:lit_idiom)
     when 'q' then new(:lit_quote)
@@ -14,7 +14,7 @@ struct CV::PosTag
   StrEmoji = new(:str_emoji, :ktetic)
   StrOther = new(:str_other, :ktetic)
 
-  def map_strings(key : String = "")
+  def self.map_strings(key : String = "")
     case key
     when .starts_with?('#')    then StrHash
     when .starts_with?("http") then StrLink

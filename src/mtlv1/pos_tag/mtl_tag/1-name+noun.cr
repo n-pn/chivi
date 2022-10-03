@@ -50,9 +50,10 @@ LocXia   = 172 # "下"
 
 # temporal
 Tword = 180 # unsorted timeword
-Tform = 181 # temporal expression
+Texpr = 181 # temporal expression
+
 Tspan = 182 # time span, duration
-Tmark = 183 # can mark succ term as time
+Tmark = 183 # can mark successor term as time
 
 Tdate = 185 # date
 Ttime = 186 # time
