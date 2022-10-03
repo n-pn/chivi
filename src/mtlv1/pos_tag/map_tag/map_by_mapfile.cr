@@ -1,7 +1,7 @@
 struct CV::PosTag
-  SOUND_MAP    = load_map("var/cvmtl/postag/sounds.tsv")
-  ADVERB_MAP   = load_map("src/cvmtl/mapping/adverbs.tsv")
-  CONJUNCT_MAP = load_map("src/cvmtl/mapping/conjunts.tsv")
+  SOUND_MAP    = load_map("sounds")
+  ADVERB_MAP   = load_map("adverbs")
+  CONJUNCT_MAP = load_map("conjunts")
 
   def self.map_sound(key : String)
     SOUND_MAP[key] || new(:onomat)

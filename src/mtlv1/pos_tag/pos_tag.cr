@@ -2,8 +2,8 @@ require "./mtl_pos"
 require "./mtl_tag"
 
 struct CV::PosTag
-  def self.load_map(file : String, init_pos : MtlPos = :none)
-    lines = File.read_lines(file)
+  def self.load_map(name : String, init_pos : MtlPos = :none)
+    lines = File.read_lines("var/cvmtl/mapping/#{name}.tsv")
 
     output = Hash(String, self).new(initial_capacity: lines.size)
 
@@ -57,8 +57,8 @@ struct CV::PosTag
     when 'd' then map_adverb(key)
     when 'm' then map_number(tag, key)
     when 'q' then map_quanti(key)
-    when 'k' then map_suffix(tag, key)
     when 'r' then map_pronoun(tag, key)
+    when 'k' then map_suffix(key)
     when 'x' then map_strings(tag)
     when 'l' then map_literal(tag)
     when 'u' then map_particle(key)

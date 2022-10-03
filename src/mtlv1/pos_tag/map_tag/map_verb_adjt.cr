@@ -5,8 +5,8 @@ struct CV::PosTag
   Adjt = new(:adjt, :adjtish)
   Amod = new(:amod, :adjtish)
 
-  ADJTMOD_MAP = load_map("var/cvmtl/mapping/adjtmods.tsv", :adjtish)
-  ADJTVAL_MAP = load_map("var/cvmtl/mapping/adjtvals.tsv", :adjtish)
+  ADJTMOD_MAP = load_map("adjtmods", :adjtish)
+  ADJTVAL_MAP = load_map("adjtvals", :adjtish)
 
   def self.map_adjt(tag : String, key : String = "", vals = [] of String)
     case tag[1]?
@@ -18,9 +18,9 @@ struct CV::PosTag
     end
   end
 
-  VINTRA_MAP = load_map("var/cvmtl/mapping/vintras.tsv", :verbish)
-  VAUXIL_MAP = load_map("var/cvmtl/mapping/vauxils.tsv", :verbish)
-  VERBAL_MAP = load_map("var/cvmtl/mapping/verbals.tsv", :verbish)
+  VINTRA_MAP = load_map("vintras", :verbish)
+  VAUXIL_MAP = load_map("vauxils", :verbish)
+  VERBAL_MAP = load_map("verbals", :verbish)
 
   Vmod = new(:vmod, :verbish)
   Verb = new(:verb, :verbish)

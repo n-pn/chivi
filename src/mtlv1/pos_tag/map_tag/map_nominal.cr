@@ -52,7 +52,7 @@ struct CV::PosTag
     new(tag, pos)
   end
 
-  PLACE_MAP = load_map("var/cvmtl/mapping/places.tsv", :locale)
+  PLACE_MAP = load_map("places", :locale)
 
   def self.map_place(key : String)
     PLACE_MAP[key] || begin

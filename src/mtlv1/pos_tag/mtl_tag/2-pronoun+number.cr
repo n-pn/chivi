@@ -10,18 +10,21 @@ ProPerX = 204 # other personal pronoun
 
 # special personal pronouns
 ProZiji = 206 # "自己"
+ProQu2  = 207 # "其"
 
 # 指示代词 - demonstrative pronoun - đại từ chỉ thị
 ProDem = 210 # generic
 
 # special cases
-ProZhe = 215 # "这"
-ProNa1 = 216 # "那"
-ProJi  = 217 # "几"
+ProZhe = 214 # "这"
+ProNa1 = 215 # "那"
+ProMei = 216 # "每"
 
+ProJi  = 228 # "几"
 ProNa2 = 229 # "哪"
 # 疑问代词 - interrogative pronoun
-ProInt = 230 # generic
+ProInt  = 230 # generic
+ProShei = 231
 
 # # numbers
 # numeral
