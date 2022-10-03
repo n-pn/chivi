@@ -39,39 +39,38 @@ NumYi1 = 247 # "一"
 NumHan = 249 # "半"
 
 # quantifier
-Qtnoun  = 260 # quantifier for noun phrase
-Qttime1 = 261 # verb complement, can be subject
-Qttime2 = 262 # verb complement or adverb, can be subject
+Qtnoun = 260 # quantifier for noun phrase
+Qtmass = 261
+Qtwght = 263 # weight
+Qtdist = 264 # distance
+Qtcash = 265 # currency
 
-Qtverb1 = 263 # verb complement
-Qtverb2 = 264 # verb complement or adverb
+Qttime = 269 # verb complement, can be subject
+Qtverb = 270 # verb complement
 
-QtGe4 = 266 # "个"
-QtBa3 = 267 # "把"
-QtDui = 268 # "对"
+# QtGe4 = 266 # "个"
+# QtBa3 = 267 # "把"
+# QtDui = 268 # "对"
 
-QtLiang = 269 # "两"
+# QtLiang = 269 # "两"
 
-QtDian = 270 # "点"
-QtFen1 = 271 # "分"
-QtMiao = 272 # "秒", "秒钟"
+# QtDian = 270 # "点"
+# QtFen1 = 271 # "分"
+# QtMiao = 272 # "秒", "秒钟"
 
-QtNian = 275 # "年"
-QtYue4 = 276 # "月"
+# QtNian = 275 # "年"
+# QtYue4 = 276 # "月"
 
-QtRi4 = 277 # "日"
-QtHao = 278 # "号"
+# QtRi4 = 277 # "日"
+# QtHao = 278 # "号"
 
 # number + quantifier
 Nqnoun = 280
+Nqmass = 281
 
-Nqtime1 = 281
-Nqtime2 = 282
+Nqwght = 283
+Nqdist = 284
+Nqcash = 285
 
-Nqverb1 = 283
-Nqverb2 = 284
-
-Nqredup = 285
-
-NqtimeX = 286 # can be timeword
-NqverbX = 287 # can be verbal
+Nqtime = 289
+Nqverb = 290
