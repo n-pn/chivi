@@ -22,7 +22,8 @@ end
 # reopen class VpTerm
 class CV::VpTerm
   # auto generated fields
-  getter ptag : PosTag { PosTag.parse(@tags[0], @key, @vals[0]) }
+  getter ptag : PosTag { PosTag.init(@tags[0], @key, @vals) }
+
   getter cost : Int32 { MtUtil.cost(@key.size, @prio) }
 end
 

@@ -3,43 +3,40 @@
 ProUnkn = 200
 
 # 人称代词 - personal pronoun - đại từ nhân xưng
-ProPer0 = 210 # generic
-ProPer1 = 211 # first person
-ProPer2 = 212 # second person
-ProPer3 = 213 # third person
+ProPer1 = 201 # first person
+ProPer2 = 202 # second person
+ProPer3 = 203 # third person
+ProPerX = 204 # other personal pronoun
 
 # special personal pronouns
-ProZiji = 216 # "自己"
+ProZiji = 206 # "自己"
 
 # 指示代词 - demonstrative pronoun - đại từ chỉ thị
-ProDem0 = 220 # generic
-ProDem1 = 221 # Det+M phrase
+ProDem = 210 # generic
 
 # special cases
-ProZhe = 235 # "这"
-ProNa1 = 236 # "那"
-ProJi  = 237 # "几"
+ProZhe = 215 # "这"
+ProNa1 = 216 # "那"
+ProJi  = 217 # "几"
 
+ProNa2 = 229 # "哪"
 # 疑问代词 - interrogative pronoun
-ProInt0 = 240 # generic
-ProInt1 = 241 # can split
-
-ProNa2 = 245 # "哪"
+ProInt = 230 # generic
 
 # # numbers
 # numeral
-Numcar = 250 # 基数词 generic cardinal number
-Numord = 251 # 序数词 generic ordinal number
+Ordinal = 240 # 序数词 ordinal number
+Numeric = 241 # 基数词 generic cardinal number
 
-Ndigit1 = 251 # all digits
-Ndigit2 = 252 # digits with '-', '/', '~' between
+Ndigit1 = 242 # all digits
+Ndigit2 = 243 # digits with '-', '/', '~' between
 
-Nhanzi0 = 254 # all chinese number, unknown state
-Nhanzi1 = 255 # chinese number, can convert to number
-Nhanzi2 = 256 # chinese number, approximate
+Nhanzi0 = 244 # all chinese number, unknown state
+Nhanzi1 = 245 # chinese number, can convert to number
+Nhanzi2 = 246 # chinese number, approximate
 
-NumHan = 257 # "半"
-NumYi1 = 258 # "一"
+NumYi1 = 247 # "一"
+NumHan = 249 # "半"
 
 # quantifier
 Qtnoun  = 260 # quantifier for noun phrase
@@ -48,8 +45,6 @@ Qttime2 = 262 # verb complement or adverb, can be subject
 
 Qtverb1 = 263 # verb complement
 Qtverb2 = 264 # verb complement or adverb
-
-Qtredup = 265 # redupication
 
 QtGe4 = 266 # "个"
 QtBa3 = 267 # "把"

@@ -1,7 +1,3 @@
 *
 !.gitignore
-!qtnotes
-!tlspecs
-!vphints
-!cvmtl/cases
-!cvmtl/attrs
+!cvmtl/

@@ -24,8 +24,5 @@
     "build-mt": "shards build -s --release -Dpreview_mt",
     "mtlv2": "nodemon -L --watch ./src/mtlv2 --exec crystal run src/mtlv2/server.cr",
     "ysweb": "nodemon -L --watch ./src/ysweb --exec crystal run src/ysweb/server.cr"
-  },
-  "dependencies": {
-    "crypto-js": "^4.1.1"
   }
 }

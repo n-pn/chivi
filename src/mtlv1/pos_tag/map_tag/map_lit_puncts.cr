@@ -8,14 +8,20 @@ struct CV::PosTag
     end
   end
 
+  StrHash  = new(:str_hash, :ktetic)
+  StrLink  = new(:str_link, :ktetic)
+  StrMail  = new(:str_mail, :ktetic)
+  StrEmoji = new(:str_emoji, :ktetic)
+  StrOther = new(:str_other, :ktetic)
+
   def map_strings(key : String = "")
     case key
-    when .starts_with?('#')    then new(:str_hash)
-    when .starts_with?("http") then new(:str_link)
-    when .starts_with?("www.") then new(:str_link)
-    when .includes?("@")       then new(:str_mail)
-    when .matches?(/[\w\d]/)   then new(:str_other)
-    else                            new(:str_emoji)
+    when .starts_with?('#')    then StrHash
+    when .starts_with?("http") then StrLink
+    when .starts_with?("www.") then StrLink
+    when .includes?("@")       then StrMail
+    when .matches?(/[\w\d]/)   then StrOther
+    else                            StrEmoji
     end
   end
 end

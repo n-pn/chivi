@@ -34,15 +34,14 @@ VShi = 345 # '是'
 # adjectives
 
 # normal adjective
-Adjt    = 350
-AdjtMed = 351 # measurement adjective
+Adjt = 350
+Amed = 351 # measurement adjective
 
 # special adjectives
 # TODO
 
 # modifier 区别词
-ModiSuf = 370 # modifier place after center noun
-ModiPre = 371 # modifier that place before center noun
+Amod = 370 # modifier place after center noun
 
 # special modifier
 # TODO

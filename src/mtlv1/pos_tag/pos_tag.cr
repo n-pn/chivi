@@ -37,34 +37,35 @@ struct CV::PosTag
   LitBlank = new(:lit_blank, :none)
   LitTrans = new(:lit_trans, :none)
 
-  getter pos : MtlPos
-  getter tag : MtlTag
+  property tag : MtlTag
+  property pos : MtlPos
+
   forward_missing_to tag
 
   def initialize(@tag : MtlTag = :lit_blank, @pos : MtlPos = :none)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def self.init(tag : String, key : String = "", val : String = "") : self
+  def self.init(tag : String, key : String = "", vals = [] of String) : self
     case tag[0]?
     when nil then LitTrans
     when 'N' then map_name(tag, key)
-    when 'n' then map_noun(tag, key)
-    when 'v' then map_verb(tag, key)
-    when 'a' then map_adjt(tag, key)
-    when 'u' then map_ptcl(key)
+    when 'n' then map_noun(tag, key, vals)
+    when 'v' then map_verb(tag, key, vals)
+    when 'a' then map_adjt(tag, key, vals)
     when 'p' then map_prepos(key)
     when 'd' then map_adverb(key)
     when 'm' then map_number(tag, key)
     when 'q' then map_quanti(key)
-    when 'k' then map_suffix(tag, key, val)
+    when 'k' then map_suffix(tag, key)
     when 'r' then map_pronoun(tag, key)
     when 'x' then map_strings(tag)
     when 'l' then map_literal(tag)
+    when 'u' then map_particle(key)
     when '!' then map_uniqword(key)
     when '~' then map_polysemy(key)
     when '+' then map_phrase(tag)
-    when 'w' then map_punct(val)
+    when 'w' then map_punct(vals[0])
     else          map_other(tag)
     end
   end
@@ -72,7 +73,7 @@ end
 
 require "./map_tag/*"
 
-# puts CV::PosTag.parse("n").tag
+puts CV::PosTag.init("n").tag
 # puts CV::PosTag.parse("na").tag
 # puts CV::PosTag.parse("vm", "").tag
 # puts CV::PosTag.parse("vd").tag

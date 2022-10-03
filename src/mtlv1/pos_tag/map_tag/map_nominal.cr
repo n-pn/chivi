@@ -15,17 +15,41 @@ struct CV::PosTag
     end
   end
 
-  def self.map_noun(tag : String, key = "")
+  Nform = new(:nform, :nounish)
+  Nbase = new(:nbase, :nounish)
+  Tword = new(:tword, :nounish)
+
+  def self.map_noun(tag : String, key = "", vals = [] of String)
     case tag[1]?
     when 'a' then new(:nattr, :nounish)
-    when 't' then new(:ntime, :nounish)
-    when 'h' then new(:honor, :nounish)
+    when 'h' then map_honor(vals[1]?)
     when 's' then map_place(key)
     when 'f' then map_place(key)
     when 'o' then map_nobjt(key)
-    when 'l' then new(:nform, :nounish)
-    else          new(:nbase, :nounish)
+    when 't' then Tword
+    when 'l' then Nform
+    else          Nbase
     end
+  end
+
+  def self.map_honor(val : String?)
+    tag = MtlTag::Honor
+    pos = MtlPos.flags(Nounish, People, Ktetic)
+
+    case val
+    when .nil?
+      pos |= MtlPos::AtTail
+    when .starts_with?('?')
+      pos |= MtlPos::AtHead
+      pos |= MtlPos::NoWsAfter if val[1] != ' '
+    when .ends_with?('?')
+      pos |= MtlPos::AtTail
+      pos |= MtlPos::NoWsBefore if val[-2] != ' '
+    else
+      pos |= MtlPos::AtTail
+    end
+
+    new(tag, pos)
   end
 
   PLACE_MAP = load_map("var/cvmtl/mapping/places.tsv", :locale)
@@ -45,6 +69,6 @@ struct CV::PosTag
   end
 
   def self.map_nobjt(key : String)
-    new(:nobt, :nounish)
+    new(:nobjt, :nounish)
   end
 end

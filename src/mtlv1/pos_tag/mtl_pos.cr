@@ -7,8 +7,13 @@ enum CV::MtlPos : UInt64
   Boundary # make structure boundary
 
   # rendering
+
   CapAfter
-  NoSpaceR
+  NoWsAfter
+  NoWsBefore
+
+  AtHead
+  AtTail
 
   # charisteric
 
@@ -33,7 +38,7 @@ enum CV::MtlPos : UInt64
   # context
 
   Proper # proper nouns
-  Person # all words that refer to human beings
+  People # all words that refer to human beings
   Locale # all words that can be placement
 
   # # groups
@@ -41,6 +46,7 @@ enum CV::MtlPos : UInt64
   Nounish # word can act as noun
   Verbish # word can act as verb
   Adjtish # word can act as adjective
+  Advbial # adverbial
 
   # specific
 
@@ -55,8 +61,11 @@ struct CV::PosTag
   delegate boundary?, to: @pos
 
   delegate cap_after?, to: @pos
-  delegate no_space_l?, to: @pos
-  delegate no_space_r?, to: @pos
+  delegate no_ws_before?, to: @pos
+  delegate no_ws_after?, to: @pos
+
+  delegate at_head?, to: @pos
+  delegate at_tail?, to: @pos
 
   delegate redup?, to: @pos
 

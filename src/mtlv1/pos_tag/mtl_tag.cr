@@ -83,19 +83,19 @@ enum CV::MtlTag
   # pronouns
 
   def pronouns?
-    value >= 200 && value < 250
+    value >= 200 && value < 240
   end
 
   def pro_pers?
-    value >= 210 && value < 220
+    value >= 201 && value < 210
   end
 
   def pro_dems?
-    value >= 220 && value < 240
+    value >= 210 && value < 230
   end
 
   def pro_ints?
-    value >= 240 && value < 250
+    value >= 229 && value < 240
   end
 
   # numbers

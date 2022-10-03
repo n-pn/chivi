@@ -8,7 +8,7 @@ PreBei = 403 # "被"
 PreZai = 404 # "在"
 
 PreBi3  = 405 # "比"
-PreBuBi = 406 # "不比"
+PreBubi = 406 # "不比"
 
 PreJiang = 407 # "将"
 

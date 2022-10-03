@@ -1,17 +1,39 @@
 struct CV::PosTag
-  def self.map_verb(tag : String, key : String)
+  Aform = new(:aform, :adjtish)
+  Adesc = new(:adesc, :adjtish)
+
+  Adjt = new(:adjt, :adjtish)
+  Amod = new(:amod, :adjtish)
+
+  ADJTMOD_MAP = load_map("var/cvmtl/mapping/adjtmods.tsv", :adjtish)
+  ADJTVAL_MAP = load_map("var/cvmtl/mapping/adjtvals.tsv", :adjtish)
+
+  def self.map_adjt(tag : String, key : String = "", vals = [] of String)
     case tag[1]?
-    when 'n' then Veno
-    when 'd' then Vead
-    when 'f' then Vdir
-    when 'c' then Vcmp
-    when 'i' then Vint
-    when 'j' then Vinx
-    when '2' then Vtwo
-    when 'o' then Vobj
-    when 'm', 'x'
-      parse_vmodal(key)
-    else Verb
+    when 'f' then Aform
+    when 'z' then Adesc
+    when 'b' then Amod
+    when '!' then ADJTMOD_MAP[key] || Amod
+    else          ADJTVAL_MAP[key] || Adjt
+    end
+  end
+
+  VINTRA_MAP = load_map("var/cvmtl/mapping/vintras.tsv", :verbish)
+  VAUXIL_MAP = load_map("var/cvmtl/mapping/vauxils.tsv", :verbish)
+  VERBAL_MAP = load_map("var/cvmtl/mapping/verbals.tsv", :verbish)
+
+  Vmod = new(:vmod, :verbish)
+  Verb = new(:verb, :verbish)
+
+  Vform = new(:vform, :verbish)
+
+  def self.map_verb(tag : String, key : String = "", vals = [] of String)
+    case tag[1]?
+    when 'n' then new(:pl_veno, MtlPos.flags(Nounish, Verbish))
+    when 'd' then new(:pl_vead, MtlPos.flags(Advbial, Verbish))
+    when '!' then VAUXIL_MAP[key] || new(:vmod, :verbish)
+    when 'i' then VINTRA_MAP[key] || (vals.size > 1 ? new(:vinx) : new(:vint))
+    else          VERBAL_MAP[key] || (vals.size > 1 ? new(:verb) : new(:vcmp))
     end
   end
 end
