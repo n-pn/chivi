@@ -35,12 +35,12 @@ module CV::TlRule
     adverb = nil
 
     if not_meiyou
-      return vyou unless tail.adverbial? && tail.key_in?("这么", "那么")
+      return vyou unless tail.advbial? && tail.key_in?("这么", "那么")
       adverb = tail
     end
 
     case tail
-    when .adverbial?
+    when .advbial?
       tail = fold_adverbs!(tail)
     when .adjective?
       tail = fold_adjts!(tail)

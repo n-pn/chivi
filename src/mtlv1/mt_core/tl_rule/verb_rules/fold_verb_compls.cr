@@ -16,7 +16,7 @@ module CV::TlRule
         compl.val = "ở"
       when .locat?
         return unless compl.key == "中"
-        if compl.succ?(&.ule?)
+        if compl.succ?(&.pt_le?)
           compl.val = "trúng"
         else
           compl.val = "đang"

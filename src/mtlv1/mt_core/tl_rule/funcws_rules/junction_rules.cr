@@ -13,7 +13,7 @@ module CV::TlRule
     case succ
     when .preposes?
       succ = fold_preposes!(succ)
-    when .adverbial?
+    when .advbial?
       succ = fold_adverbs!(succ)
     when .verbal?
       tag = verb.tag if succ.key == "过"

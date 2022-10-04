@@ -23,17 +23,17 @@ module CV::TlRule
     flip = true
     case space.key
     when "上", "下"
-      return noun if noun.human? || space.succ?(&.ule?)
+      return noun if noun.human? || space.succ?(&.pt_le?)
       space.val = fix_space_val!(space)
     when "中"
-      return noun if space.succ?(&.ule?)
+      return noun if space.succ?(&.pt_le?)
       space.val = "trong"
       if (succ = space.succ?) && succ.nominal?
         return fold!(noun, succ, PosTag::NounPhrase, dic: 6, flip: true)
       end
     when "前"
       # space.val = "trước khi" if noun.verbal?
-      flip = !noun.ntime?
+      flip = !noun.timeword?
     end
 
     fold!(noun, space, PosTag::Posit, dic: 5, flip: flip)

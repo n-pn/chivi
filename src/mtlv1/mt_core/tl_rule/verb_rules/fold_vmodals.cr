@@ -31,7 +31,7 @@ module CV::TlRule
       return node if succ.pre_bi3?
       node = fold!(node, succ, succ.tag, dic: 6)
       fold_preposes!(node)
-    when .adverbial?
+    when .advbial?
       succ = fold_adverbs!(succ)
       succ.verb? ? fold!(node, succ, succ.tag, dic: 6) : node
     when .verbal?
@@ -67,7 +67,7 @@ module CV::TlRule
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
-    when .nil?, .boundary?, .nominal?, .ude1?, .ule?
+    when .nil?, .boundary?, .nominal?, .ude1?, .pt_le?
       true
     when .preposes? then false
     when .verb_object?
@@ -99,7 +99,7 @@ module CV::TlRule
       else
         node.set!("nhớ", PosTag::Verb)
       end
-    when .adverbial?
+    when .advbial?
       if succ.key == "也" && !succ.succ?(&.maybe_verb?)
         node.val = "nhớ"
       elsif succ.key == "越"

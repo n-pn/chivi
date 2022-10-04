@@ -9,18 +9,22 @@ struct CV::PosTag
   Nhanzi1 = new(:nhanzi1)
   Nhanzi2 = new(:nhanzi2)
 
+  NUMBER_MAP = load_map("nquants")
+
   def self.map_number(tag : String, key : String) : self
     return map_nquant(key) if tag[1]? == 'q'
 
-    case key
-    when .starts_with?('第')
-      Ordinal
-    when .matches?(/\d/)
-      key.matches?(/\D/) ? Ndigit2 : Ndigit1
-    when .matches?(/[零〇一二两三四五六七八九十百千万亿兆]/)
-      Nhanzi0
-    else
-      Numeric
+    NUMBER_MAP[key] ||= begin
+      case key
+      when .starts_with?('第')
+        Ordinal
+      when .matches?(/\d/)
+        key.matches?(/\D/) ? Ndigit2 : Ndigit1
+      when .matches?(/[零〇一二两三四五六七八九十百千万亿兆]/)
+        Nhanzi0
+      else
+        Numeric
+      end
     end
   end
 

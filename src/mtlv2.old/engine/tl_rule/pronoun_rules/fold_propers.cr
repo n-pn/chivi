@@ -10,12 +10,12 @@ module MtlV2::TlRule
     case succ.tag
     when .junction?
       fold_noun_junction!(succ, proper) || proper
-    when .veno?
+    when .pl_veno?
       succ = heal_veno!(succ)
       succ.noun? ? fold_proper_nominal!(proper, succ) : fold_noun_verb!(proper, succ)
     when .verbal?, .vmodals?
       fold_noun_verb!(proper, succ)
-    when .ajno?
+    when .pl_ajno?
       succ = heal_ajno!(succ)
       succ.noun? ? fold_proper_nominal!(proper, succ) : proper
     when .pro_per?

@@ -38,7 +38,7 @@ module MtlV2::TlRule
     when .nil?, .v_shi?, .v_you?
       return head
     when .adverbial? then verb = fold_adverbs!(verb)
-    when .veno?      then verb = fold_verbs!(MtDict.fix_verb!(verb))
+    when .pl_veno?   then verb = fold_verbs!(MtDict.fix_verb!(verb))
     when .verbal?    then verb = fold_verbs!(verb)
     else                  return head
     end

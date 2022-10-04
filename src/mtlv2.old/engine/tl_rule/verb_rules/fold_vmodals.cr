@@ -2,7 +2,7 @@ module MtlV2::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_vmodals!(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil) : BaseNode
     return node.set!(PosTag::Noun) if vmodal_is_noun?(node)
-    succ = MtDict.fix_verb!(succ) if succ && (succ.veno? || succ.vead?)
+    succ = MtDict.fix_verb!(succ) if succ && (succ.pl_veno? || succ.pl_vead?)
 
     case node
     when .vm_hui?

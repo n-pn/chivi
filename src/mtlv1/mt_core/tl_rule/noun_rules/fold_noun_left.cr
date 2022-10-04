@@ -5,7 +5,7 @@ module CV::TlRule
   #   while prev = node.prev?
   #     case prev
   #     when .numeral?
-  #       break if node.veno? || node.ajno?
+  #       break if node.pl_veno? || node.pl_ajno?
   #       node = fold_nquant_noun!(prev, node)
   #       flag = 1
   #     when .pro_ji?
@@ -13,13 +13,13 @@ module CV::TlRule
   #     when .pro_ints?
   #       return fold_什么_noun!(prev, node) if prev.key == "什么"
   #       return fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
-  #     when .ajno?, .modi?
+  #     when .pl_ajno?, .modi?
   #       break if flag > 0
   #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
   #     when .position?
   #       break if flag > 0
   #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
-  #     when .ajad?, .adjective?
+  #     when .pl_ajad?, .adjective?
   #       break if flag > 0 || prev.key.size > 1
   #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 8)
   #     when .ude1?

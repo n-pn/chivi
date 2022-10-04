@@ -39,7 +39,7 @@ module CV::TlRule
     case verb
     when .v_shi?, .v_you? then return head
     when .verbal?         then verb = fold_verbs!(verb)
-    when .adverbial?      then verb = fold_adverbs!(verb)
+    when .advbial?        then verb = fold_adverbs!(verb)
     else                       return head
     end
 

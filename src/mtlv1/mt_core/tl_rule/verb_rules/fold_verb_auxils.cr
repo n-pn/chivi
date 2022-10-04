@@ -1,7 +1,7 @@
 module CV::TlRule
   def fold_verb_auxils!(verb : MtNode, auxil : MtNode) : MtNode
     case auxil.tag
-    when .ule?
+    when .pt_le?
       verb = fold_verb_ule!(verb, auxil)
       return verb unless (succ = verb.succ?) && succ.numeral?
 
@@ -19,7 +19,7 @@ module CV::TlRule
       fold!(node, succ_2, succ_2.tag, dic: 5)
     when .ude3?
       fold_verb_ude3!(verb, auxil)
-    when .uguo?
+    when .pt_guo?
       fold!(verb, auxil, PosTag::Verb, dic: 6)
     else
       verb

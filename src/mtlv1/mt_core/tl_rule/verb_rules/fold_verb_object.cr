@@ -55,7 +55,7 @@ module CV::TlRule
     # in case after ude1 is adverb
     if {"时候", "时", "打算", "方法"}.includes?(right.key)
       return false
-    elsif right.succ? { |x| x.boundary? || x.ule? }
+    elsif right.succ? { |x| x.boundary? || x.pt_le? }
       return true
     end
 

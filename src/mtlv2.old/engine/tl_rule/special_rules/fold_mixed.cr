@@ -13,10 +13,10 @@ module MtlV2::TlRule
 
   def heal_mixed!(node : BaseNode) : BaseNode
     case node.tag
-    when .veno? then heal_veno!(node)
-    when .vead? then heal_vead!(node)
-    when .ajno? then heal_ajno!(node)
-    when .ajad? then heal_ajad!(node)
+    when .pl_veno? then heal_veno!(node)
+    when .pl_vead? then heal_vead!(node)
+    when .pl_ajno? then heal_ajno!(node)
+    when .pl_ajad? then heal_ajad!(node)
     else
       node
       #  raise "Unsupported mixed tag #{node.tag}"
@@ -140,7 +140,7 @@ module MtlV2::TlRule
     when .penum?
       case tail = succ.succ?
       when .nil? then node
-      when .veno?, .nominal?, .verbal?
+      when .pl_veno?, .nominal?, .verbal?
         tail = heal_veno!(tail)
         fold!(node, tail, tail.tag, dic: 4)
       else

@@ -20,7 +20,7 @@ module CV::TlRule
       case succ
       when .junction?
         fold_verb_junction!(junc: succ, verb: verb).try { |x| verb = x } || break
-      when .uzhe?
+      when .pt_zhe?
         verb = fold_verb_uzhe!(verb, uzhe: succ)
         break
       when .uyy?
@@ -38,7 +38,7 @@ module CV::TlRule
         flag = 1
       when .adj_hao?
         case succ.succ?
-        when .nil?, .ule?
+        when .nil?, .pt_le?
           succ.val = "tốt"
         when .maybe_adjt?, .maybe_verb?, .preposes?
           break
@@ -87,7 +87,7 @@ module CV::TlRule
 
     fold_verb_compare(verb).try { |x| return x }
 
-    return fold_uzhi!(uzhi: succ, prev: verb) if succ.uzhi?
+    return fold_uzhi!(uzhi: succ, prev: verb) if succ.pt_zhi?
     fold_verb_object!(verb, succ)
   end
 end

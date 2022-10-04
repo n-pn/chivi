@@ -17,11 +17,11 @@ module CV::MTL
     succ = succ_node(node)
 
     case node.tag
-    when .vead? then fix_vead(node, prev, succ)
-    when .veno? then fix_veno(node, prev, succ)
-    when .ajno? then fix_ajno(node, prev, succ)
-    when .ajad? then fix_ajad(node, prev, succ)
-    else             node
+    when .pl_vead? then fix_vead(node, prev, succ)
+    when .pl_veno? then fix_veno(node, prev, succ)
+    when .pl_ajno? then fix_ajno(node, prev, succ)
+    when .pl_ajad? then fix_ajad(node, prev, succ)
+    else                node
     end
   end
 
@@ -92,14 +92,14 @@ module CV::MTL
         return MtDict.fix_noun!(node)
       end
     when .pre_zai?, .pre_bei?, .vmodal?, .vpro?,
-         .adverbial?, .ude2?, .ude3?, .object?
+         .advbial?, .ude2?, .ude3?, .object?
       return MtDict.fix_verb!(node)
     when .adjective?
       return MtDict.fix_verb!(node) unless prev.is_a?(MtTerm)
       return prev.modifier? ? MtDict.fix_noun!(node) : MtDict.fix_verb!(node)
     when .ude1?
       # TODO: check for adjt + ude1 + verb (grammar error)
-      return prev.prev?(&.adverbial?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
+      return prev.prev?(&.advbial?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
     when .nhanzi?
       return prev.key == "一" ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
     when .preposes?
@@ -120,7 +120,7 @@ module CV::MTL
       when .nil?, .boundary? then return node
       when .modi?, .pro_dems?, .quantis?, .nqnoun?
         return MtDict.fix_noun!(node)
-      when .object?, .ude3?, .adjective?, .adverbial?
+      when .object?, .ude3?, .adjective?, .advbial?
         return MtDict.fix_adjt!(node)
       when .conjunct?
         return prev.prev?(&.nominal?) ? MtDict.fix_adjt!(node) : node
@@ -145,7 +145,7 @@ module CV::MTL
     end
 
     case prev
-    when .nil?, .boundary?, .adverbial?
+    when .nil?, .boundary?, .advbial?
       MtDict.fix_adjt!(node)
     when .modifier?
       MtDict.fix_noun!(node)

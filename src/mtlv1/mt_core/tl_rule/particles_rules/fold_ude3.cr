@@ -36,7 +36,7 @@ module CV::TlRule
     when .pre_bi3?
       tail = fold_compare_bi3!(tail)
       fold!(node, tail, PosTag::VerbObject, dic: 7)
-    when .adverbial?
+    when .advbial?
       tail = fold_adverbs!(tail)
 
       if tail.adjective?

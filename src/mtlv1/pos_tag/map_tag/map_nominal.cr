@@ -73,7 +73,18 @@ struct CV::PosTag
     }.includes?(char)
   end
 
+  OBJECT_MAP = load_map("objects", :nounish)
+
   def self.map_nobjt(key : String)
-    new(:nobjt, :nounish)
+    OBJECT_MAP[key] || begin
+      # TODO: map objects
+      new(:nobjt, :nounish)
+    end
+  end
+
+  NOUNISH_MAP = load_map("nounishs", :nounish)
+
+  def self.map_nounish(key : String)
+    NOUNISH_MAP[key] || Nword
   end
 end

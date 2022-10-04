@@ -1,29 +1,15 @@
 require "./mt_term"
 
 class CV::MtPair < CV::MtNode
-  @[Flags]
-  enum Opts
-    Left # left is main
-    Flip # when render, swap order of values
-
-    NoSpace
-  end
-
   def initialize(
-    @head : MtNode,
-    @tail : MtNode,
-    @tag : PosTag = PosTag::Unkn,
-    @dic = 0,
-    @idx = 1,
-    @opts = Opts::None
+    @head : MtNode, @tail : MtNode,
+    @tag : PosTag = PosTag::LitBlank,
+    @dic = 0, @idx = 1,
+    flip = @head.at_tail?
   )
     self.fix_prev!(head.prev?)
     self.fix_succ!(tail.succ?)
-    @head, @tail = tail, head if @opts.flip?
-
-    if is_empty?(head) || is_empty?(tail)
-      @opts |= Opts::NoSpace
-    end
+    @head, @tail = tail, head if flip
   end
 
   private def is_empty?(node : MtNode)
@@ -71,7 +57,7 @@ class CV::MtPair < CV::MtNode
 
   def to_txt(io : IO) : Nil
     @head.to_txt(io)
-    io << ' ' unless @opts.no_space?
+    io << ' ' unless @head.no_space_after? || @tail.no_space_before?
     @tail.to_txt(io)
   end
 
@@ -79,7 +65,7 @@ class CV::MtPair < CV::MtNode
     io << '〈' << @dic << '\t'
 
     @head.to_mtl(io)
-    io << "\t " unless @opts.no_space?
+    io << "\t " unless @head.no_space_after? || @tail.no_space_before?
     @tail.to_mtl(io)
 
     io << '〉'

@@ -25,7 +25,7 @@ module CV::TlRule
       noun = fold_proper_nominal!(proper, succ)
       return noun unless (succ = noun.succ?) && succ.maybe_verb?
       fold_noun_verb!(noun, succ)
-    when .uzhi?
+    when .pt_zhi?
       fold_uzhi!(uzhi: succ, prev: proper)
     when .ude1?
       return proper if proper.prev? { |x| x.verbal? || x.preposes? }

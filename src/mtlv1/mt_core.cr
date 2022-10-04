@@ -120,7 +120,7 @@ class CV::MtCore
     costs = [0]
 
     input.each_with_index do |char, idx|
-      nodes << MtTerm.new(char, idx: idx &+ offset)
+      nodes << MtTerm.from(char, idx: idx &+ offset)
       costs << idx &+ 1
     end
 
@@ -158,7 +158,7 @@ class CV::MtCore
         jump = idx &+ key
 
         if cost >= costs[jump]
-          nodes[jump] = MtTerm.new(term, dic &+ term._mode &* 2, idx &+ offset)
+          nodes[jump] = MtTerm.from(term, dic &+ term._mode &* 2, idx &+ offset)
           costs[jump] = cost
         end
       end

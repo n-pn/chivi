@@ -6,7 +6,7 @@ module CV::TlRule
     when .adjective? then fold_adjts!(node)
     when .nominal?   then fold_nouns!(node)
     when .verbal?    then fold_verbs!(node)
-    when .adverbial? then fold_adverbs!(node)
+    when .advbial?   then fold_adverbs!(node)
     else                  node
     end
   end

@@ -51,7 +51,7 @@ module MtlV2::TlRule
   end
 
   def fold_pre_zai!(node : BaseNode, succ = node.succ?) : BaseNode
-    succ = heal_veno!(succ) if succ.veno?
+    succ = heal_veno!(succ) if succ.pl_veno?
 
     if succ.verb? || succ.verb_object?
       # TODO: check conditions when prezai can be translated at "đang"

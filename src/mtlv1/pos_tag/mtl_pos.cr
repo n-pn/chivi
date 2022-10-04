@@ -42,7 +42,7 @@ enum CV::MtlPos : UInt64
   Nounish # word can act as noun
   Verbish # word can act as verb
   Adjtish # word can act as adjective
-  Advbial # adverbial, word can act as adverb
+  Advbial # advbial, word can act as adverb
 
   # specific
 

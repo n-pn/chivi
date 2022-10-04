@@ -24,11 +24,9 @@ module CV::TlRule
   end
 
   def fold_left!(right : MtNode, left : MtNode) : MtNode?
-    right = heal_mixed!(right) if right.polysemy?
-
     case right
-    when .ntime?   then fold_time_left!(right)
-    when .nominal? then fold_noun_left!(right, level: 0)
+    when .timeword? then fold_time_left!(right)
+    when .nominal?  then fold_noun_left!(right, level: 0)
     when .suffixes?
       fold_suffix!(suff: right, left: left) if right.is_a?(MtTerm)
     when .postpos?
@@ -51,10 +49,10 @@ module CV::TlRule
     case node.tag
     when .polysemy?  then fold_mixed!(node)
     when .specials?  then fold_specials!(node)
-    when .adverbial? then fold_adverbs!(node)
+    when .advbial?   then fold_adverbs!(node)
     when .preposes?  then fold_preposes!(node)
     when .pronouns?  then fold_pronouns!(node)
-    when .ntime?     then fold_timeword!(node)
+    when .timeword?  then fold_timeword!(node)
     when .numeral?   then fold_number!(node)
     when .modi?      then fold_modifier!(node)
     when .adjective? then fold_adjts!(node, prev: nil)

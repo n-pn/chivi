@@ -39,8 +39,8 @@ module CV::TlRule
     case succ.tag
     when .ude1?
       fold!(node.set!("đúng"), succ.set!(""), PosTag::Unkn, dic: 7)
-    when .ule?
-      # succ.val = "" unless keep_ule?(node, succ)
+    when .pt_le?
+      # succ.val = "" unless keep_pt_le?(node, succ)
       fold!(node.set!("đúng"), succ, PosTag::Unkn, dic: 7)
     when .boundary?, .conjunct?, .concoord?
       node.set!("đúng", PosTag::Adjt)

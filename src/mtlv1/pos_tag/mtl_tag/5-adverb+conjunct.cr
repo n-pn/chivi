@@ -1,7 +1,7 @@
 # adverbs
 
 AdvTerm = 500 # unmapped adverb
-AdvForm = 501 # adverbial phrase
+AdvForm = 501 # advbial phrase
 
 AdvNega = 510 # 否定副词 negative adverbs
 AdvBu4  = 511 # "不"
@@ -28,7 +28,7 @@ AdvManner = 550 # 情态副词/情状副词 adverbs of manner
 
 # conjuctions
 
-ConjAdvb = 559 # conjuction or adverbial
+ConjAdvb = 559 # conjuction or advbial
 Conjunct = 560 # subordinating conjunction
 
 # both correl or concoord

@@ -4,11 +4,11 @@ module CV::TlRule
     node = fuse_number!(node, prev: prev) # if head.numbers?
 
     case node
-    when .ntime?
+    when .timeword?
       # puts [node, node.succ?, node.prev?]
-      node = fold_time_prev!(node, prev: prev) if prev && prev.ntime?
+      node = fold_time_prev!(node, prev: prev) if prev && prev.timeword?
 
-      if (prev = node.prev?) && prev.ntime?
+      if (prev = node.prev?) && prev.timeword?
         # TODO: do not do this but calling fold_number a second time instead
         node = fold!(prev, node, node.tag, dic: 6, flip: true)
       end
@@ -19,7 +19,7 @@ module CV::TlRule
     when .noun?
       fold_nouns!(node)
     else
-      if (succ = node.succ?) && succ.uzhi?
+      if (succ = node.succ?) && succ.pt_zhi?
         fold_uzhi!(succ, node)
       else
         scan_noun!(node.succ?, nquant: node) || node
@@ -38,10 +38,10 @@ module CV::TlRule
     case node.tag
     when .ndigit?
       node = fold_ndigit!(node, prev: prev)
-      return fold_time_appro!(node) if node.ntime?
+      return fold_time_appro!(node) if node.timeword?
     when .nhanzi?
       node = fold_nhanzi!(node, prev: prev)
-      return fold_time_appro!(node) if node.ntime?
+      return fold_time_appro!(node) if node.timeword?
     when .quantis?, .nquants?
       # TODO: combine number with nquant?
       return node

@@ -24,7 +24,7 @@ module CV::TlRule
     when .pre_dui?
       succ = fold_pre_dui!(succ)
       fold!(node, succ, succ.tag, dic: 9)
-    when .adverbial?
+    when .advbial?
       node = fold!(node, succ, succ.tag, dic: 4)
       return node unless succ = node.succ?
       fold_adverb_base!(node, succ)
@@ -46,9 +46,9 @@ module CV::TlRule
 
     case succ.tag
     when .verbal?
-      node.val = succ.succ?(&.uzhe?) ? "không" : node.prev?(&.subject?) ? "chưa" : "không có"
+      node.val = succ.succ?(&.pt_zhe?) ? "không" : node.prev?(&.subject?) ? "chưa" : "không có"
       fold_verbs!(succ, prev: node)
-    when .adjt?, .ajad?, .ajno?
+    when .adjt?, .pl_ajad?, .pl_ajno?
       fold!(node.set!("không"), succ, PosTag::Adjt, dic: 2)
     else
       node
@@ -57,7 +57,7 @@ module CV::TlRule
 
   def fold_adv_fei!(node : MtNode, succ = node.succ) : MtNode
     case succ
-    when .modi?, .noun?, .ajno?, .veno?
+    when .modi?, .noun?, .pl_ajno?, .pl_veno?
       node = fold!(node, succ, PosTag::Modi, dic: 7)
       fold_adjts!(node)
     when .verbal?
@@ -86,7 +86,7 @@ module CV::TlRule
     when .verbal?
       fold_adverb_verb!(node, succ)
     when .adjective?
-      succ.tag = PosTag::Adjt if succ.ajno?
+      succ.tag = PosTag::Adjt if succ.pl_ajno?
       fold_adjts!(succ, prev: node)
     when .adv_bu4?
       succ.succ? { |tail| succ = fold_adv_bu!(succ, tail) }
@@ -148,7 +148,7 @@ module CV::TlRule
       case node
       when .comma?
         return false unless node = node.succ?
-      when .plsgn?, .mnsgn?, .verbal?, .preposes?, .adjective?, .adverbial?, .vmodals?
+      when .plsgn?, .mnsgn?, .verbal?, .preposes?, .adjective?, .advbial?, .vmodals?
         return true
       when .concoord?
         return false unless node.key == "和"

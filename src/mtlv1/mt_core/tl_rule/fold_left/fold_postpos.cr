@@ -52,7 +52,7 @@ module CV::TlRule
     when .nominal?
       return unless left.verbal? || left.preposes? || left.modifier?
     when .verbal?, .preposes?
-      return unless left.subject? || left.adverbial?
+      return unless left.subject? || left.advbial?
     when .subject?
       return unless left.nominal?
     end

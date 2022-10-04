@@ -9,7 +9,7 @@ class CV::MtData
 
   def initialize(@head)
     @tail = head
-    @nestable << head if can_nest?(head)
+    @nestable << head if head.pgroup?
   end
 
   def concat(other : MtData) : self
@@ -30,8 +30,8 @@ class CV::MtData
     @tail = node
   end
 
-  def add_node(node : MtTerm)
-    if can_nest?(node)
+  def add_node(node : MtTerm) : Nil
+    if node.pgroup?
       @nestable << node
       add_head(node)
       return
@@ -45,25 +45,13 @@ class CV::MtData
     end
   end
 
-  private def can_nest?(node : MtTerm)
-    return unless node.puncts?
-
-    case node.tag
-    when .quoteop?, .parenop?, .brackop?, .titleop?,
-         .quotecl?, .parencl?, .brackcl?, .titlecl?
-      true
-    else
-      node.key == "\""
-    end
-  end
-
   private def can_meld?(left : MtTerm, right : MtTerm) : Bool
     case right.tag
     when .puncts? then left.tag == right.tag
-    when .nhanzi?
-      return false unless left.nhanzi?
+    when .nhanzis?
+      return false unless left.nhanzis?
       return true if right.key != "两" || left.key == "一"
-      right.set!("lượng", PosTag::Qtnoun)
+      right.set!("lượng", PosTag.map_quanti("两"))
       false
     else
       false
@@ -75,7 +63,7 @@ class CV::MtData
   end
 
   private def join_val(left : MtNode, right : MtNode)
-    return left.val + right.val unless right.nhanzi?
+    return left.val + right.val unless right.nhanzis?
     left.val + " " + fix_hanzi_val(left, right)
   end
 

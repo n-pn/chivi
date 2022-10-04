@@ -49,7 +49,7 @@ module CV::MTL
       end
     end
 
-    MtTerm.new(key_io.to_s, val_io.to_s, PosTag::Nform, 0)
+    MtTerm.new(key_io.to_s, val_io.to_s, tag: PosTag::Nform)
   end
 
   def recog_anchor(input : Array(Char), key_io, val_io, index)
@@ -72,7 +72,7 @@ module CV::MTL
       end
     end
 
-    MtTerm.new(key_io.to_s, val_io.to_s, PosTag::StrLink, 0)
+    MtTerm.new(key_io.to_s, val_io.to_s, tag: PosTag::StrLink)
   end
 
   FULLWIDTH_GAP = 65248 # different in code point between half width and full width characters
@@ -174,7 +174,7 @@ module CV::MTL
       end
     end
 
-    MtTerm.new(key_io.to_s, val_io.to_s, map_ptag(char_half, count), 0)
+    MtTerm.new(key_io.to_s, val_io.to_s, tag: map_ptag(char_half, count))
   end
 
   def map_ptag(char : Char, count = 1)

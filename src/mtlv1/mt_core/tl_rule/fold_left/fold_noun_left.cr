@@ -2,7 +2,7 @@ module CV::TlRule
   def fold_noun_left!(noun : MtNode, level = 0) : MtNode
     while prev = noun.prev?
       case prev
-      when .veno?, .ajno?
+      when .pl_veno?, .pl_ajno?
         prev = heal_mixed!(prev)
       when .locat?, .posit?
         prev = fold_noun_left!(prev, level: 1)
@@ -81,7 +81,7 @@ module CV::TlRule
 
   def fold_honor_noun_left!(noun, prev)
     case prev
-    when .ntime?, .nform?, .locat?, .posit?
+    when .timeword?, .nform?, .locat?, .posit?
       ptag = PosTag::Nform
     else
       ptag = PosTag::Person

@@ -23,13 +23,13 @@ module CV::TlRule
       when .ude1?
         return noun if noun.prev?(&.verb?) && !noun.nattr?
         return fold_ude1!(ude1: succ, prev: noun)
-      when .uzhi?
+      when .pt_zhi?
         # TODO: check with prev to group
         return mode == 0 ? fold_uzhi!(succ, noun) : noun
       when .uyy?
         adjt = fold!(noun, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
         return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
-        succ = succ.adverbial? ? fold_adverbs!(succ) : fold_adjts!(succ)
+        succ = succ.advbial? ? fold_adverbs!(succ) : fold_adjts!(succ)
         return fold!(adjt, succ, PosTag::Aform, dic: 8)
       when .spaces?
         return noun if noun.prev? { |x| x.numeral? || x.pronouns? || x.adjective? }

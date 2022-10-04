@@ -36,7 +36,7 @@ module CV::TlRule
   def fix_上下(node : MtNode, vals = node.key == "上" ? MAP_上 : MAP_下) : MtNode
     case node.prev?
     when .nil?, .none?, .puncts?
-      if node.succ? { |x| x.subject? || x.ule? }
+      if node.succ? { |x| x.subject? || x.pt_le? }
         node.set!(vals[0], PosTag::Verb)
       else
         node.set!(vals[2], PosTag::Noun)
@@ -52,9 +52,9 @@ module CV::TlRule
 
   def fold_adjt_hao!(node : MtNode) : MtNode
     case succ = node.succ?
-    when .nil?, .puncts?, .ule?
+    when .nil?, .puncts?, .pt_le?
       node.set!("tốt", PosTag::Adjt)
-    when .adjective?, .verbal?, .vmodals?, .adverbial?
+    when .adjective?, .verbal?, .vmodals?, .advbial?
       node.set!(succ.verbal? ? "dễ" : "thật", PosTag::Adverb)
       fold_adverb_base!(node, succ)
     when .nominal?

@@ -53,7 +53,7 @@ module CV::TlRule
         succ = fold_nouns!(succ)
         node = fold!(node, succ, PosTag::Aform, dic: 4)
         node = fold_head_ude1_noun!(node)
-      when .adverbial?
+      when .advbial?
         node = fold_adverbs!(node)
 
         case node.tag

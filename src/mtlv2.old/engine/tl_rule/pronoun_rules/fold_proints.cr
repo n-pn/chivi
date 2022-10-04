@@ -3,7 +3,7 @@ module MtlV2::TlRule
     case succ
     when .nil?, .v_shi?, .v_you?
       return proint
-    when .veno?
+    when .pl_veno?
       succ = fold_verbs!(MtDict.fix_verb!(succ))
     when .verbal?
       succ = fold_verbs!(succ)

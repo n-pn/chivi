@@ -15,7 +15,7 @@ module CV::TlRule
     end
 
     # if verb.verb_no_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?
-    #   verb_2 = verb_2.adverbial? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
+    #   verb_2 = verb_2.advbial? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
 
     #   if !verb_2.verb_no_obj? && verb.prev?(&.object?)
     #     tail = fold!(tail, verb_2, PosTag::VerbClause, dic: 8)

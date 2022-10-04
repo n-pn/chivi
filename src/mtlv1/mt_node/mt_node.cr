@@ -41,7 +41,7 @@ abstract class CV::MtNode
       # puts [succ, "maybe_verb", succ.verbal?]
       case succ
       when .verbal?, .vmodals? then return true
-      when .adverbial?, .comma?, pro_ints?, .conjunct?, .ntime?
+      when .advbial?, .comma?, pro_ints?, .conjunct?, .timeword?
         succ = succ.succ?
       else return false
       end
@@ -50,17 +50,9 @@ abstract class CV::MtNode
     false
   end
 
-  def aspect?
-    @tag.ule? || @tag.uguo? || @tag.uzhe?
-  end
-
-  def vcompl?
-    @tag.adj_hao? || @tag.vdir? || MtDict.get(:v_compl).has_key?(@key)
-  end
-
   def maybe_adjt? : Bool
-    return !@succ.try(&.maybe_verb?) if @tag.ajad?
-    @tag.adjective? || @tag.adverbial? && @succ.try(&.maybe_adjt?) || false
+    return !@succ.try(&.maybe_verb?) if @tag.pl_ajad?
+    @tag.adjective? || @tag.advbial? && @succ.try(&.maybe_adjt?) || false
   end
 
   def set!(@val : String) : self

@@ -11,9 +11,17 @@ struct CV::PosTag
   def self.map_adjt(tag : String, key : String = "", vals = [] of String)
     case tag[1]?
     when 'f' then Aform
-    when '!' then ADJTMOD_MAP[key] ||= Amod
-    else          ADJTVAL_MAP[key] ||= Adjt
+    when '!' then map_adjtmod(key)
+    else          map_adjtval(key)
     end
+  end
+
+  def self.map_adjtmod(key : String)
+    ADJTMOD_MAP[key] ||= Amod
+  end
+
+  def self.map_adjtval(key : String)
+    ADJTVAL_MAP[key] ||= Adjt
   end
 
   VINTRA_MAP = load_map("vintras", :verbish)

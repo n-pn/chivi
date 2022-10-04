@@ -65,7 +65,7 @@ module MtlV2::TlRule
   def fold_adjt_after!(adjt : BaseNode)
     case succ = adjt.succ?
     when .nil? then adjt
-    when .veno?
+    when .pl_veno?
       succ = MtDict.fix_noun!(succ)
       fold_nouns!(noun: succ, defn: adjt)
     when .nominal?
@@ -92,7 +92,7 @@ module MtlV2::TlRule
     modi = fold!(nega, modi, modi.tag, dic: 4) if nega
     return modi unless succ = modi.succ?
 
-    MtDict.fix_noun!(succ) if succ.veno? || succ.ajno? || succ.adv_noun?
+    MtDict.fix_noun!(succ) if succ.pl_veno? || succ.pl_ajno? || succ.adv_noun?
     # puts [modi, succ]
 
     return fold_adjts!(modi) unless succ.nominal?

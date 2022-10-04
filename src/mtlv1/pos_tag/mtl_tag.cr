@@ -38,6 +38,10 @@ enum CV::MtlTag
     value >= 20 && value < 30
   end
 
+  def pgroup?
+    value >= 8 && value < 30
+  end
+
   def dashes?
     value == Dash1 || value == Dash2
   end
@@ -116,6 +120,10 @@ enum CV::MtlTag
 
   def numbers?
     value >= 250 && value < 260
+  end
+
+  def nhanzis?
+    value >= 244 && value <= 246
   end
 
   def quantis?

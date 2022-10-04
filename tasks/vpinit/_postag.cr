@@ -251,7 +251,7 @@ class CV::Merger
     return false unless vals.has_key?(PosTag::Veno)
     vals.each_key do |postag|
       case postag
-      when .veno?, .verb?, .vintr?, .vead?
+      when .pl_veno?, .verb?, .vintr?, .pl_vead?
         next
       else
         return false

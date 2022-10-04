@@ -16,8 +16,9 @@ fi
 if [[ $1 == "all" || $* == *dict* ]]
 then
   echo backup dicts data!
-
-  rsync -aiz --no-p --include="*.tab" "$SSH/var/dicts/v1/basic" "var/dicts/v1"
+  # rsync -aiz --no-p --exclude="*.tsv" "$SSH/var/dicts/v1/" "var/dicts/v1/"
+  rsync -aiz --no-p "$SSH/var/dicts/v1/" "var/dicts/v1/"
+  rsync -aiz --no-p "$SSH/var/vdict/" "var/vdict/"
 fi
 
 ## backup book data

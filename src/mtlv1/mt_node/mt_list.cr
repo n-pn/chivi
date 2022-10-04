@@ -88,8 +88,7 @@ class CV::MtList < CV::MtNode
   end
 
   def full_sentence? : Bool
-    return false unless list.first.pstart?
-    list.last.prev? { |x| x.pclose? || x.tilde? || x.ellip? } || false
+    list.first.pstart? && (list.last.prev?(&.boundary?) || false)
   end
 
   ###

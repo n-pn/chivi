@@ -7,7 +7,7 @@ module CV::TlRule
       return noun unless succ = noun.succ?
     end
 
-    noun = fold_uzhi!(uzhi: succ, prev: noun) if succ.uzhi?
+    noun = fold_uzhi!(uzhi: succ, prev: noun) if succ.pt_zhi?
     noun = fold_noun_space!(noun: noun)
 
     return noun unless (succ = noun.succ?) && succ.junction?

@@ -1,7 +1,7 @@
 module CV::TlRule
   def fold_noun_ude1!(noun : MtNode, ude1 : MtNode, right : MtNode, mode = 0) : MtNode
     case noun.tag
-    when .ntime?, .nattr?,
+    when .timeword?, .nattr?,
          .posit?, .locat?,
          .numeral?, .verb_clause? # , .prep_clause?, .defn_phrase?
       ude1.val = ""
@@ -62,7 +62,7 @@ module CV::TlRule
       case right.tag
       when .plsgn?, .mnsgn?, .verbal?, .preposes?
         return true
-      when .adverbial?, .comma?, .pro_ints?
+      when .advbial?, .comma?, .pro_ints?
         next
       else return false
       end

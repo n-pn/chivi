@@ -28,20 +28,42 @@ class CV::VpTerm
 end
 
 class CV::MtTerm < CV::MtNode
-  ###########
-
-  def initialize(@key, @val = @key, @tag = PosTag::LitTrans, @dic = 0, @idx = 0)
+  def self.from(term : VpTerm, dic = 0, idx = 0)
+    new(term.key, term.vals[0], term.ptag, dic, idx, alt: term.vals[1]?)
   end
 
-  def initialize(term : VpTerm, @dic : Int32 = 0, @idx = 0)
-    @key = term.key
-    @val = term.vals.first
-    @tag = term.ptag
+  def self.from(char : Char, dic = 0, idx = 0)
+    str = char.to_s
+    new(str, str, dic: dic, idx: idx)
   end
 
-  def initialize(char : Char, @idx = 0)
-    @key = @val = char.to_s
-    @tag = PosTag::LitTrans
+  getter alt : String? = nil
+
+  def initialize(@key, @val = @key, @tag = PosTag::LitBlank, @dic = 0, @idx = 0, @alt = nil)
+  end
+
+  def as_verb!(val = @alt)
+    @val = val if val
+    @pos = PosTag.map_verbal(@key)
+    self
+  end
+
+  def as_adjt!(val = @alt)
+    @val = val if val
+    @pos = PosTag.map_adjtval(@key)
+    self
+  end
+
+  def as_noun!(val : String | Nil = @alt)
+    @val = val if val
+    @pos = PosTag.map_nounish(@key)
+    self
+  end
+
+  def as_advb!(val : String | Nil = @alt)
+    @val = val if val
+    @pos = PosTag.map_adverb(@key)
+    self
   end
 
   def blank?
@@ -113,41 +135,14 @@ class CV::MtTerm < CV::MtNode
   end
 
   def space_before?(prev : MtTerm) : Bool
-    return false if @val.blank? || prev.val == " "
-
+    return false if @val.blank? || prev.tag.space?
     return space_before?(prev.prev?) if prev.val.empty?
-
-    case
-    when prev.pstart?, @tag.ndigit? && (prev.plsgn? || prev.mnsgn?)
-      return false
-    else
-      return true unless @tag.puncts?
-    end
-
-    case @tag
-    when .middot?
-      true
-    when .plsgn?, .mnsgn?
-      !prev.tag.ndigit?
-    when .colon?, .pdeci?, .pclose?, .comma?, .penum?,
-         .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
-      false
-    else
-      !prev.pstart?
-    end
+    !(prev.tag.no_ws_after? || !@tag.no_ws_before?)
   end
 
   def space_before?(prev : MtNode) : Bool
     return false if @val.blank?
-    return !prev.pstart? unless @tag.puncts?
-
-    case @tag
-    when .colon?, .pdeci?, .pclose?, .comma?, .penum?,
-         .pdeci?, .ellip?, .tilde?, .perct?, .squanti?
-      false
-    else
-      true
-    end
+    !(prev.tag.no_ws_after? || !@tag.no_ws_before?)
   end
 
   #######

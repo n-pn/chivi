@@ -52,7 +52,7 @@ module CV::TlRule
     return node unless (succ = node.succ?) && succ.particles? && (tail = succ.succ?)
 
     case succ
-    when .ule?
+    when .pt_le?
       return node unless tail.key == "点"
       last.fix_succ!(succ.set!(""))
       node.fix_succ!(tail.succ?)
