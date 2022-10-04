@@ -61,19 +61,20 @@ struct CV::PosTag
     when 'k' then map_suffix(key)
     when 'x' then map_strings(key)
     when 'l' then map_literal(tag)
+    when 'c' then map_conjunct(key)
     when 'u' then map_particle(key)
     when '!' then map_uniqword(key)
     when '~' then map_polysemy(key)
     when '+' then map_phrase(tag)
     when 'w' then map_punct(vals[0])
-    else          map_other(tag)
+    else          LitBlank
     end
   end
 end
 
 require "./map_tag/*"
 
-puts CV::PosTag.init("n").tag
+# puts CV::PosTag.init("n").tag
 # puts CV::PosTag.parse("na").tag
 # puts CV::PosTag.parse("vm", "").tag
 # puts CV::PosTag.parse("vd").tag

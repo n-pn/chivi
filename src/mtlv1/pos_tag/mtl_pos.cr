@@ -49,6 +49,11 @@ enum CV::MtlPos : UInt64
   LinkVerb # can link verbs
   JoinWord # can be use to link two words/two phraes
   CanSplit # can split to other structure
+
+  # complements
+  HasAsmCom # has aspect marker
+  HasDirCom # has directional complement
+  HasResCom # has result complement
 end
 
 struct CV::PosTag

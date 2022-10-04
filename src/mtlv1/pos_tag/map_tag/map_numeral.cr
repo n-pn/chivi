@@ -24,7 +24,7 @@ struct CV::PosTag
     end
   end
 
-  NQUANT_MAP = load_map("var/cvmtl/mapping/nquants.tsv")
+  NQUANT_MAP = load_map("nquants")
 
   def self.map_nquant(key : String)
     NQUANT_MAP[key] ||= begin
@@ -58,7 +58,7 @@ struct CV::PosTag
     chars[index..upper].join
   end
 
-  QUANTI_MAP = load_map("var/cvmtl/mapping/quantis.tsv")
+  QUANTI_MAP = load_map("quantis")
 
   def self.map_quanti(key : String)
     QUANTI_MAP[key] ||= new(:qtnoun)

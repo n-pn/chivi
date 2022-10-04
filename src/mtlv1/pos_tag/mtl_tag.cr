@@ -38,6 +38,16 @@ enum CV::MtlTag
     value >= 20 && value < 30
   end
 
+  def dashes?
+    value == Dash1 || value == Dash2
+  end
+
+  def ellipsis?
+    value == Ellip1 || value == Ellip2
+  end
+
+  ####
+
   def literal?
     value >= 60 && value < 90
   end
@@ -190,7 +200,7 @@ enum CV::MtlTag
     value >= 520 && value < 525
   end
 
-  def scoop_advs?
+  def scope_advs?
     (value > 520 && value < 530) || value == AdvDu1
   end
 
@@ -208,6 +218,10 @@ enum CV::MtlTag
 
   def manner_advs?
     value >= 550 && value < 560
+  end
+
+  def serial_advs? # linking verbs
+    value.in?(AdvJiu3, AdvZai4, AdvCai)
   end
 
   ###

@@ -17,6 +17,9 @@ SufAdjt = 749
 
 SufZhi = 750 #
 
+SufMen5 = 760
+SufXing = 761
+
 # prefixes
 # infixes
 

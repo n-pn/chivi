@@ -9,7 +9,7 @@ Questm = 6 # "?"
 
 ###########
 
-QbQuote = 8 # "\""
+DbQuote = 8 # "\""
 SgQuote = 9 # "'"
 
 QuoteSt1 = 10 # "“"
@@ -47,8 +47,10 @@ Cenum = 34 # "､"
 Dash1 = 35 # "–"
 Dash2 = 36 # "—"
 
-Ellip = 37 # "…"
-Tilde = 38 # "~"
+Ellip1 = 37 # "…"
+Ellip2 = 38 # "……"
+
+Tilde = 39 # "~"
 
 Middot = 41 # "·"
 Atsign = 42 # "@"
@@ -59,7 +61,7 @@ Qtmark = 44 # "￥", "$", "￡", "°", "℃"
 PlMark = 47 # "+"
 MnMark = 48 # "-"
 
-Pother = 49 # other punctuations
+Punct = 49 # other punctuations
 
 # idioms, locutions
 
