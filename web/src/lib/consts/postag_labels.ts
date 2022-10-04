@@ -20,7 +20,7 @@ export default {
   // động từ
   'v': 'Ngoại động từ',
   'vi': 'Nội động từ',
-  'vo': 'Cụm động + tân',
+  'vo': 'Cụm động tân',
   'v!': 'Động từ đặc biệt',
   // thực từ khác
   'r': 'Đại từ',
@@ -36,7 +36,7 @@ export default {
   'u': 'Trợ từ',
   'k': 'Hậu tố',
   // đặc biệt
-  'o': 'Âm thanh | Ngữ khí',
+  'o': 'Âm thanh',
   'x': 'Ký tự ngoại lai',
   'w': 'Dấu câu',
   // cụm từ
@@ -47,11 +47,11 @@ export default {
   'vl': 'Cụm động từ',
   'al': 'Cụm tính từ',
   // đa nghĩa
-  'an': 'Danh | Tính từ',
-  'ad': 'Phó | Tính từ',
-  'vd': 'Phó | Động từ',
-  'vn': 'Danh | Động từ',
-  'nd': 'Danh | Phó từ',
+  'an': 'Danh | Tính',
+  'ad': 'Phó | Tính',
+  'vd': 'Phó | Động',
+  'vn': 'Danh | Động',
+  'nd': 'Danh | Phó',
   '!': 'Từ đặc biệt',
   // cấu trúc ngữ pháp
   '+pn': 'Cụm giới + danh',

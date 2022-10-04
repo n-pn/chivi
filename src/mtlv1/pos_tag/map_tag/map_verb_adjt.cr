@@ -38,7 +38,7 @@ struct CV::PosTag
       case key[-1]
       when '是' then new(:v_shi, MtlPos.flags(Verbish))
       when '有' then new(:v_you, MtlPos.flags(LinkVerb, Verbish))
-      else          new(:vmod, MtlPos.flags(Verbish, Vauxil))
+      else          new(:vpro, MtlPos.flags(Verbish, Vauxil))
       end
     end
   end

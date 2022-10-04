@@ -11,6 +11,9 @@ Vinx = 309 # intra | trans
 Verb = 310 # normal verb
 Vtwo = 311 # verbs with two object
 
+Vexi = 312 # existential verbs
+Vcau = 313 # causative verbs
+
 Vcmp = 313 # verbs using for comparision
 Vdir = 314 # directional verb
 
