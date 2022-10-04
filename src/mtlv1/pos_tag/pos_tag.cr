@@ -3,7 +3,7 @@ require "./mtl_tag"
 
 struct CV::PosTag
   def self.load_map(name : String, init_pos : MtlPos = :none)
-    lines = File.read_lines("var/cvmtl/mapping/#{name}.tsv")
+    lines = File.read_lines("var/cvmtl/inits/#{name}.tsv")
 
     output = Hash(String, self).new(initial_capacity: lines.size)
 
