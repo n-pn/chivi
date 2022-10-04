@@ -11,13 +11,13 @@ module CV::TlRule
       end
 
       fold_verb_nquant!(verb, succ, has_ule: true)
-    when .ude2?
+    when .pd_dev?
       return verb unless (succ_2 = auxil.succ?) && (succ_2.verbal? || succ_2.preposes?)
       node = fold!(verb, auxil.set!("mà"), PosTag::Adverb, dic: 6)
 
       succ_2 = fold_verbs!(succ_2)
       fold!(node, succ_2, succ_2.tag, dic: 5)
-    when .ude3?
+    when .pt_der?
       fold_verb_ude3!(verb, auxil)
     when .pt_guo?
       fold!(verb, auxil, PosTag::Verb, dic: 6)

@@ -54,8 +54,8 @@ module MtlV2::TlRule
 
   def fold_adjt!(adjt : BaseNode, succ : AuxilWord)
     case succ.kind
-    when .ude1? then fold_adjt_ude1!(adjt, succ)
-    when .ude2? then fold_adjt_ude2!(adjt, succ)
+    when .pt_dep? then fold_adjt_ude1!(adjt, succ)
+    when .pt_dev? then fold_adjt_ude2!(adjt, succ)
     else
       adjt
     end
@@ -72,7 +72,7 @@ module MtlV2::TlRule
       fold_nouns!(noun: succ, defn: adjt)
     when .verbal?
       fold_adjt_verb!(adjt, succ)
-    when .ude1?
+    when .pt_dep?
       if prev = adjt.prev?
         return adjt if prev.nominal? || prev.junction? # ||  (prev.comma? && prev.prev?(&.adjective?))
       end
@@ -118,7 +118,7 @@ module MtlV2::TlRule
       return adjt unless tail.key == "点"
       auxil.val = ""
       fold!(adjt, tail.set!("chút"), PosTag::AdjtPhrase, dic: 6)
-    when .ude2?
+    when .pt_dev?
       fold_adjt_ude2!(adjt, auxil)
     when .uzhe?
       verb = MtDict.fix_verb!(adjt)

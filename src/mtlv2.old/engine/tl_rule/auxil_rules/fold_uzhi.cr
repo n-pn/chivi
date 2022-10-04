@@ -3,7 +3,7 @@ module MtlV2::TlRule
     return prev if !succ || succ.ends?
     uzhi.val = ""
 
-    if succ.nhanzi? && is_percent?(prev, uzhi)
+    if succ.nhanzis? && is_percent?(prev, uzhi)
       # TODO: handle this in fold_number!
       tag = PosTag::Number
     elsif !(tag = MtDict.fix_uzhi(succ))
@@ -16,7 +16,7 @@ module MtlV2::TlRule
 
   def is_percent?(prev : BaseNode, uzhi : BaseNode)
     if body = prev.body?
-      return false unless body.nhanzi?
+      return false unless body.nhanzis?
       return false unless succ = body.succ?
 
       case succ.key

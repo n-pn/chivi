@@ -1,13 +1,13 @@
 module MtlV2::TlRule
   # -ameba:disable Metrics/CyclomaticComplexity
   def fold_ndigit!(node : BaseNode, succ = node.succ, prev : BaseNode? = nil)
-    return fold_ndigit_nhanzi!(node, succ) if succ.nhanzi?
+    return fold_ndigit_nhanzi!(node, succ) if succ.nhanzis?
 
     if time = fold_number_as_temporal(num: node, qti: succ, prev: prev)
       return time
     end
 
-    return node unless (tail = succ.succ?) && tail.ndigit?
+    return node unless (tail = succ.succ?) && tail.ndigits?
 
     case succ.tag
     when .pdeci? # case 1.2
@@ -15,12 +15,12 @@ module MtlV2::TlRule
     when .pdash? # case 3-4
       fold_ndigit_extra!(node, succ, tail, PosTag::Number)
     when .colon? # for 5:6 format
-      node = fold_ndigit_extra!(node, succ, tail, PosTag::Ntime)
+      node = fold_ndigit_extra!(node, succ, tail, PosTag::Texpr)
 
       # for 5:6:7 format
       return node unless (succ = tail.succ?) && (tail = succ.succ?)
-      return node unless succ.colon? && tail.ndigit?
-      fold_ndigit_extra!(node, succ, tail, PosTag::Ntime)
+      return node unless succ.colon? && tail.ndigits?
+      fold_ndigit_extra!(node, succ, tail, PosTag::Texpr)
     else
       node
     end

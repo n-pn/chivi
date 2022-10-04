@@ -18,7 +18,7 @@ module MtlV2::TlRule
     if succ.succ? == tail
       root.dic = 1
       root.tag = succ.tag
-    elsif root.prev? { |x| x.ude1? || x.pro_dems? || x.numeral? }
+    elsif root.prev? { |x| x.pd_dep? || x.pro_dems? || x.numeral? }
       root.tag = PosTag::NounPhrase
     end
 

@@ -2,11 +2,11 @@ module MtlV2::TlRule
   def fold_auxils!(node : BaseNode, mode = 1) : BaseNode
     case node.tag
     # when .ule?  then heal_ule!(node)  # 了
-    when .ude1? then heal_ude1!(node) # 的
-    when .ude2? then fold_ude2!(node) # 地
-    when .ude3? then fold_ude3!(node) # 得
-    when .usuo? then fold_usuo!(node) # 所
-    else             node
+    when .pt_dep? then heal_ude1!(node) # 的
+    when .pt_dev? then fold_ude2!(node) # 地
+    when .pt_der? then fold_ude3!(node) # 得
+    when .usuo?   then fold_usuo!(node) # 所
+    else               node
     end
   end
 

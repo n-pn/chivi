@@ -93,8 +93,8 @@ class CV::MtData
         next unless tail.val[0] == char
 
         if char == '"'
-          head.set!("“", PosTag::Quoteop)
-          tail.set!("”", PosTag::Quotecl)
+          head.set!("“", PosTag.map_punct("“"))
+          tail.set!("”", PosTag.map_punct("”"))
         end
 
         resolve_nested!(i - 1, j + 1)

@@ -11,7 +11,7 @@ module MtlV2::TlRule
     #   return fold!(verb, noun, PosTag::VerbObject, dic: 4)
     # end
 
-    # if (ude1 = noun.succ?) && ude1.ude1? && (right = ude1.succ?)
+    # if (ude1 = noun.succ?) && ude1.pd_dep? && (right = ude1.succ?)
     #   if (right = scan_noun!(right)) && should_apply_ude1_after_verb?(verb, right)
     #     noun = fold_ude1!(ude1: ude1, left: noun, right: right)
     #   end

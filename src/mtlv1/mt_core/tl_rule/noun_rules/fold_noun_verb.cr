@@ -4,14 +4,14 @@ module CV::TlRule
     return noun if noun.prev? { |x| x.pro_pers? || x.preposes? && !x.pre_bi3? }
 
     verb = verb.vmodals? ? fold_vmodals!(verb) : fold_verbs!(verb)
-    return noun unless (succ = verb.succ?) && succ.ude1?
+    return noun unless (succ = verb.succ?) && succ.pd_dep?
 
     # && (verb.verb? || verb.vmodals?)
     return noun unless tail = scan_noun!(succ.succ?)
     case tail.key
     when "时候"
       noun = fold!(noun, succ.set!(""), PosTag::DefnPhrase, dic: 7)
-      return fold!(noun, tail.set!("lúc"), PosTag::Ntime, dic: 9, flip: true)
+      return fold!(noun, tail.set!("lúc"), PosTag::Texpr, dic: 9, flip: true)
     end
 
     # if verb.verb_no_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?

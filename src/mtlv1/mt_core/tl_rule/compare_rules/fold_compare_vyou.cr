@@ -8,7 +8,7 @@ module CV::TlRule
     end
 
     return vyou unless (noun = scan_noun!(succ)) && (tail = noun.succ?)
-    return fold_vyou_ude1!(vyou, ude1: tail, noun: noun) if tail.ude1?
+    return fold_vyou_ude1!(vyou, ude1: tail, noun: noun) if tail.pd_dep?
 
     fold_compare_vyou!(vyou, noun, tail)
   end
@@ -73,7 +73,7 @@ module CV::TlRule
 
     output = MtList.new(head, noun, dic: 1, idx: head.idx)
 
-    return output unless (succ = output.succ?) && (succ.ude1? || succ.ude3?)
+    return output unless (succ = output.succ?) && (succ.pd_dep? || succ.pt_der?)
     return output unless (tail = succ.succ?) && tail.key == "多"
 
     noun.fix_succ!(succ.set!(""))

@@ -3,7 +3,7 @@ module CV::TlRule
     return prev if !succ || succ.boundary?
     uzhi.val = ""
 
-    if succ.nhanzi? && is_percent?(prev, uzhi)
+    if succ.nhanzis? && is_percent?(prev, uzhi)
       # TODO: handle this in fold_number!
       tag = PosTag::Number
     elsif succ.is_a?(MtTerm)
@@ -19,7 +19,7 @@ module CV::TlRule
   def is_percent?(prev : MtNode, uzhi : MtNode)
     if prev.is_a?(MtList)
       body = prev.list.first
-      return false unless body.nhanzi? && (succ = body.succ?)
+      return false unless body.nhanzis? && (succ = body.succ?)
 
       case succ.key
       when "分"

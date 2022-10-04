@@ -52,7 +52,7 @@ module MtlV2::TlRule
 
     # puts [noun, succ, noun.prev?, fold_mode, "fold_noun"]
 
-    if succ.ude1?
+    if succ.pd_dep?
       return noun unless right = fold_right_of_ude1(noun, fold_mode, succ.succ?)
       noun = fold_ude1!(ude1: succ, left: noun, right: right)
       return noun unless succ = noun.succ?
@@ -72,7 +72,7 @@ module MtlV2::TlRule
 
     right = fold_once!(right)
     # puts [mode, right]
-    return right if right.object? && !mode.no_ude1?
+    return right if right.object? && !mode.no_pd_dep?
 
     return unless tail = right.succ?
     return right if tail.suffixes?
@@ -114,7 +114,7 @@ module MtlV2::TlRule
 
     # puts [noun, succ, mode, "fold_noun"]
 
-    if succ.ude1?
+    if succ.pd_dep?
       mode ||= NounMode.init(noun, noun.prev?)
       return noun unless right = fold_right_of_ude1(noun, mode, succ.succ?)
       noun = fold_ude1!(ude1: succ, left: noun, right: right)

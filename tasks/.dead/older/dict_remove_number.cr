@@ -17,8 +17,8 @@ def remove_numbers(dname : String)
 end
 
 def should_remove?(term)
-  return true if term.ptag.nhanzi?
-  return true if term.ptag.ndigit?
+  return true if term.ptag.nhanzis?
+  return true if term.ptag.ndigits?
   return true if term.key.starts_with?("百分之")
 
   return false unless term.ptag.number? || term.ptag.nqiffy?

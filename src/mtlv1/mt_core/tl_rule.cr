@@ -23,22 +23,14 @@ module CV::TlRule
     end
   end
 
-  def fold_left!(right : MtNode, left : MtNode) : MtNode?
+  def fold_left!(right : MtNode, left : MtNode) : MtNode
     case right
     when .timeword? then fold_time_left!(right)
     when .nominal?  then fold_noun_left!(right, level: 0)
     when .suffixes?
-      fold_suffix!(suff: right, left: left) if right.is_a?(MtTerm)
-    when .postpos?
-      return unless right.is_a?(MtList)
-
-      fold_postpos!(postpos: right, left: left) || begin
-        # reset postag if can not fold futher
-        right.set!(right.list.first.tag)
-        nil
-      end
+      fold_suffix!(suff: right, left: left)
     else
-      nil
+      right
     end
   end
 

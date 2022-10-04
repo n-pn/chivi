@@ -5,7 +5,7 @@ module MtlV2::TlRule
 
       if tail.uyy?
         break unless tail.key == "一样" || tail.key == "不一样"
-        break unless tail.succ?(&.ude1?)
+        break unless tail.succ?(&.pt_dep?)
       end
 
       tail = tail.succ?
@@ -37,7 +37,7 @@ module MtlV2::TlRule
       return if tail.puncts?
 
       if tail.key.in?("相同", "一样")
-        tail.succ?(&.ude1?) ? return : break
+        tail.succ?(&.pt_dep?) ? return : break
       end
 
       tail = tail.succ?

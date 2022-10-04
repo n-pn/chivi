@@ -2,13 +2,13 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_ndigit!(node : MtNode, prev : MtNode? = nil)
     return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
-    return fold_ndigit_nhanzi!(node, succ) if succ.nhanzi?
+    return fold_ndigit_nhanzi!(node, succ) if succ.nhanzis?
 
     if prev && (succ.key == "点" || succ.key == "时")
       return fold_number_hour!(node, succ)
     end
 
-    return node unless (succ_2 = succ.succ?) && succ_2.ndigit?
+    return node unless (succ_2 = succ.succ?) && succ_2.ndigits?
     return node unless succ_2.is_a?(MtTerm)
 
     case succ.tag
@@ -17,13 +17,13 @@ module CV::TlRule
     when .pdash? # case 3-4
       fold_ndigit_succs!(node, succ, succ_2, PosTag::Number)
     when .colon? # for 5:6 format
-      node = fold_ndigit_succs!(node, succ, succ_2, PosTag::Ntime)
+      node = fold_ndigit_succs!(node, succ, succ_2, PosTag::Texpr)
 
       # for 5:6:7 format
       return node unless (succ_3 = succ_2.succ?) && (succ_4 = succ_3.succ?)
-      return node unless succ_3.colon? && succ_4.ndigit?
+      return node unless succ_3.colon? && succ_4.ndigits?
 
-      fold_ndigit_succs!(node, succ_3, succ_4, PosTag::Ntime)
+      fold_ndigit_succs!(node, succ_3, succ_4, PosTag::Texpr)
     else
       return node unless succ.key == "点" || succ.key == "时"
       fold_number_hour!(node, succ)
@@ -40,19 +40,19 @@ module CV::TlRule
     key_io = String::Builder.new(node.key)
     val_io = String::Builder.new(node.val)
 
-    match_tag = PosTag::Nhanzi
+    match_tag = PosTag.new(:nhanzi0)
 
     while succ.tag == match_tag
       key_io << succ.key
       val_io << " " << succ.val
       break unless (succ = succ.succ?) && succ.is_a?(MtTerm)
-      match_tag = PosTag::Ndigit
+      match_tag = PosTag::Ndigit1
     end
 
     node.key = key_io.to_s
     node.val = val_io.to_s # TODO: correct unit system
 
-    node.tag = PosTag::Number
+    node.tag = PosTag::Numeric
     node.tap(&.fix_succ!(succ))
   end
 end

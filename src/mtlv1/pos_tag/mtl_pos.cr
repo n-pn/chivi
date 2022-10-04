@@ -68,6 +68,9 @@ struct CV::PosTag
 
   delegate redup?, to: @pos
 
+  delegate aspect?, to: @pos
+  delegate vauxil?, to: @pos
+
   delegate ktetic?, to: @pos
   delegate aspect?, to: @pos
   delegate vcompl?, to: @pos

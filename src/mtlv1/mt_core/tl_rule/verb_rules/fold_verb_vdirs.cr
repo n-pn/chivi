@@ -4,7 +4,7 @@ module CV::TlRule
     if verb.verb? && vdir.key == "过去"
       if (succ = vdir.succ?)
         # puts [verb, vdir, succ]
-        if succ.ude1? && (noun = scan_noun!(succ.succ?))
+        if succ.pd_dep? && (noun = scan_noun!(succ.succ?))
           vdir.set!("quá khứ", PosTag::Noun)
           node = fold_ude1_left!(ude1: succ, left: vdir, right: noun)
           return fold!(verb, node, PosTag::VerbObject, dic: 6)

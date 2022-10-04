@@ -2,10 +2,10 @@ module MtlV2::TlRule
   def fold_number!(node : BaseNode, prev : BaseNode? = nil)
     return node if !(succ = node.succ?) || succ.ends?
 
-    if node.ndigit?
+    if node.ndigits?
       node = fold_ndigit!(node, succ: succ, prev: prev)
       return fold_time_prev!(node, prev: prev) if node.temporal?
-    elsif node.nhanzi?
+    elsif node.nhanzis?
       node = fold_nhanzi!(node, succ: succ, prev: prev)
       return fold_time_prev!(node, prev: prev) if node.temporal?
     end
@@ -142,15 +142,15 @@ module MtlV2::TlRule
 
     succ = node
     while succ = succ.try(&.succ?)
-      if succ.ndigit? || succ.ndigit? # only combine if succ is hanzi or latin numbers
+      if succ.ndigits? || succ.ndigits? # only combine if succ is hanzi or latin numbers
         node.tag = PosTag::Number
         key_io << succ.key
         val_io << " " << succ.val
         next
       end
 
-      if node.nhanzi?
-        break unless (succ_2 = succ.succ?) && succ_2.nhanzi?
+      if node.nhanzis?
+        break unless (succ_2 = succ.succ?) && succ_2.nhanzis?
         break unless succ.key == "点"
         break if succ_2.succ?(&.key.== "分")
 
@@ -160,7 +160,7 @@ module MtlV2::TlRule
         next
       end
 
-      break unless node.ndigit? && (succ_2 = succ.succ?) && succ_2.ndigit?
+      break unless node.ndigits? && (succ_2 = succ.succ?) && succ_2.ndigits?
 
       case succ.tag
       when .pdeci? # case 1.2
@@ -181,7 +181,7 @@ module MtlV2::TlRule
 
         # for 5:6:7 format
         break unless (succ_3 = succ_2.succ?) && succ_3.colon?
-        break unless (succ_4 = succ_3.succ?) && succ_4.ndigit?
+        break unless (succ_4 = succ_3.succ?) && succ_4.ndigits?
 
         key_io << succ_3.key << succ_4.key
         val_io << ":" << succ_4.val

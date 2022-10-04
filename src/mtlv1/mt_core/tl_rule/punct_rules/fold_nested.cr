@@ -40,13 +40,13 @@ module CV::TlRule
       return heal_mixed!(head_succ, head.prev?, tail.succ?).tag
     end
 
-    if (tail_prev.exmark? || tail_prev.ude1?) &&
+    if (tail_prev.exmark? || tail_prev.pd_dep?) &&
        (head_succ.onomat? || head_succ.exclam?) &&
-       (head.prev?(&.boundary?.!) || tail.succ?(&.ude1?))
+       (head.prev?(&.boundary?.!) || tail.succ?(&.pd_dep?))
       return head_succ.tag
     end
 
-    head.prev?(&.ude1?) ? PosTag::NounPhrase : PosTag::Unkn
+    head.prev?(&.pd_dep?) ? PosTag::NounPhrase : PosTag::Unkn
   end
 
   # def fold_btitle!(head : MtNode) : MtNode
@@ -85,7 +85,7 @@ module CV::TlRule
   #   if succ.succ? == tail
   #     root.dic = 1
   #     root.tag = succ.tag
-  #   elsif root.prev? { |x| x.ude1? || x.pro_dems? || x.numeral? }
+  #   elsif root.prev? { |x| x.pd_dep? || x.pro_dems? || x.numeral? }
   #     root.tag = PosTag::NounPhrase
   #   end
 

@@ -48,7 +48,7 @@ module MtlV2::TlRule
     case prev = node.prev?
     when .nil?    then node
     when .adverb? then MtDict.fix_verb!(node)
-    when .nhanzi?
+    when .nhanzis?
       prev.key == "一" ? MtDict.fix_verb!(node) : node
     else node
     end
@@ -76,7 +76,7 @@ module MtlV2::TlRule
       MtDict.fix_noun!(node)
     when .noun?
       node.set!(PosTag::Modi)
-    when .ude1?, .mopart?
+    when .pd_dep?, .mopart?
       MtDict.fix_adjt!(node)
     else
       if {"到"}.includes?(succ.key)
@@ -94,14 +94,14 @@ module MtlV2::TlRule
     case prev = node.prev?
     when .nil?
       # nothing
-    when .ude1?
+    when .pd_dep?
       case prev.prev?
       when .nil?       then return node
       when .adverbial? then return MtDict.fix_verb!(node)
         # TODO: check for adjt + ude1 + verb (grammar error)
       else return MtDict.fix_noun!(node)
       end
-    when .nhanzi?
+    when .nhanzis?
       return MtDict.fix_verb!(node) if prev.key == "一"
     when .adverbial?, .vmodals?, .pre_zai?, .pre_bei?
       return MtDict.fix_verb!(node)
@@ -124,7 +124,7 @@ module MtlV2::TlRule
         return MtDict.fix_noun!(node)
       when .nominal?
         return MtDict.fix_verb!(node)
-      when .ude1?
+      when .pd_dep?
         if {"扭曲"}.includes?(node.key)
           return node.set!(PosTag::Vintr)
         end
@@ -132,7 +132,7 @@ module MtlV2::TlRule
     when .subject?
       return MtDict.fix_verb!(node) if prev.prev?(&.preposes?)
     when .verb?
-      return MtDict.fix_noun!(node) if node.succ?(&.ude1?)
+      return MtDict.fix_noun!(node) if node.succ?(&.pd_dep?)
     end
 
     case succ = node.succ?

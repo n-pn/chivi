@@ -31,7 +31,7 @@ module MtlV2::TlRule
     case succ
     when .nil?, .ends?, .ule?
       node.set!("đúng", PosTag::Adjt)
-    when .ude1?
+    when .pd_dep?
       fold!(node, succ.set!(""), PosTag::Adjt, dic: 2)
     else
       fold_prepos_inner!(node.set!("đối với"), succ)

@@ -100,7 +100,7 @@ module CV::TlRule
     when .preposes?
       succ = fold_preposes!(succ)
       fold!(node, succ, succ.tag, dic: 2)
-    when .ude3?
+    when .pt_der?
       fold_adverb_ude3!(node, succ)
     else
       node
@@ -155,7 +155,7 @@ module CV::TlRule
         node.set!(PosTag::Prepos)
         # TODO: deep checking
         return true
-      when .ude3?
+      when .pt_der?
         return node.succ?(&.verbal?) || false
       else
         return false

@@ -36,10 +36,10 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fuse_number!(node : MtNode, prev : MtNode? = nil) : MtNode
     case node.tag
-    when .ndigit?
+    when .ndigits?
       node = fold_ndigit!(node, prev: prev)
       return fold_time_appro!(node) if node.timeword?
-    when .nhanzi?
+    when .nhanzis?
       node = fold_nhanzi!(node, prev: prev)
       return fold_time_appro!(node) if node.timeword?
     when .quantis?, .nquants?
@@ -155,53 +155,21 @@ module CV::TlRule
 
     succ = node
     while succ = succ.try(&.succ?)
-      if succ.ndigit? || succ.ndigit? # only combine if succ is hanzi or latin numbers
+      if succ.ndigits? || succ.ndigits? # only combine if succ is hanzi or latin numbers
         node.tag = PosTag::Number
         key_io << succ.key
         val_io << " " << succ.val
         next
       end
 
-      if node.nhanzi?
-        break unless (succ_2 = succ.succ?) && succ_2.nhanzi?
-        break unless succ.key == "点"
-        break if succ_2.succ?(&.key.== "分")
+      break unless node.nhanzis?
+      break unless (succ_2 = succ.succ?) && succ_2.nhanzis?
+      break unless succ.key == "点"
+      break if succ_2.succ?(&.key.== "分")
 
-        key_io << succ.key << succ_2.key
-        val_io << " chấm " << succ_2.val
-        succ = succ_2
-        next
-      end
-
-      break unless node.ndigit? && (succ_2 = succ.succ?) && succ_2.ndigit?
-
-      case succ.tag
-      when .pdeci? # case 1.2
-        key_io << succ.key << succ_2.key
-        val_io << "." << succ_2.val
-        succ = succ_2.succ?
-      when .pdash? # case 3-4
-        node.tag = PosTag::Number
-        key_io << succ.key << succ_2.key
-        val_io << "-" << succ_2.val
-        succ = succ_2.succ?
-      when .colon? # for 5:6 format
-
-        node.tag = PosTag::Time
-        key_io << succ.key << succ_2.key
-        val_io << ":" << succ_2.val
-        succ = succ_2.succ?
-
-        # for 5:6:7 format
-        break unless (succ_3 = succ_2.succ?) && succ_3.colon?
-        break unless (succ_4 = succ_3.succ?) && succ_4.ndigit?
-
-        key_io << succ_3.key << succ_4.key
-        val_io << ":" << succ_4.val
-        succ = succ_4.succ?
-      end
-
-      break
+      key_io << succ.key << succ_2.key
+      val_io << " chấm " << succ_2.val
+      succ = succ_2
     end
 
     # TODO: correct translate unit system

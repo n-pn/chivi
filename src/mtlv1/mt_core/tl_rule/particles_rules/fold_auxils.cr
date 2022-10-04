@@ -1,12 +1,13 @@
 module CV::TlRule
   def fold_auxils!(node : MtNode, mode = 1) : MtNode
     case node.tag
-    when .pt_le? then heal_ule!(node)  # 了
-    when .ude1?  then fold_ude1!(node) # 的
-    when .ude2?  then heal_ude2!(node) # 地
-    when .ude3?  then heal_ude3!(node) # 得
-    when .usuo?  then fold_usuo!(node) # 所
-    else              node
+    when .pt_le?  then heal_ule!(node)  # 了
+    when .pt_dep? then fold_ude1!(node) # 的
+    when .SPACE
+      heal_ude2!(node)                  # 地
+    when .pt_der? then heal_ude3!(node) # 得
+    when .usuo?   then fold_usuo!(node) # 所
+    else               node
     end
   end
 

@@ -5,7 +5,7 @@ module MtlV2::TlRule
 
   # -ameba:disable Metrics/CyclomaticComplexity
   def scan_noun!(node : BaseNode, prodem : BaseNode? = nil, nquant : BaseNode? = nil)
-    if node.ude1?
+    if node.pd_dep?
       return node unless left = fold_prodem_nominal!(prodem, nquant)
       # puts [left, node]
       return fold_ude1!(ude1: node, left: left)
@@ -64,7 +64,7 @@ module MtlV2::TlRule
   #   verb = scan_verbs!(verb)
 
   #   return node if verb.v0_obj?
-  #   return node unless (ude1 = verb.succ?) && ude1.ude1?
+  #   return node unless (ude1 = verb.succ?) && ude1.pd_dep?
   #   return node unless (tail = scan_noun!(ude1.succ?)) && tail.object?
 
   #   node = fold!(node, ude1.set!(""), PosTag::DefnPhrase, dic: 4)

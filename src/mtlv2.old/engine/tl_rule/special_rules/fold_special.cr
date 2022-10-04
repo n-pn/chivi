@@ -72,7 +72,7 @@ module MtlV2::TlRule
       else
         node.set!(vals[2], PosTag::Noun)
       end
-    when .noun?, .naffil?
+    when .noun?, .affil?
       node.set!(vals[1], PosTag::Locative)
     when .verb?, .vintr?
       node.set!(vals[0], PosTag::VDircomp)

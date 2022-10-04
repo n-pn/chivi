@@ -5,7 +5,7 @@ module MtlV2::TlRule
     return fold!(prepos, noun, PosTag::PrepClause, dic: 2) unless verb = noun.succ?
 
     # combine with noun after ude1 if there exists verb right after
-    if verb.ude1? && (tail = scan_noun!(verb.succ?))
+    if verb.pd_dep? && (tail = scan_noun!(verb.succ?))
       # TODO: combine this part with `fold_prepos_left`
 
       unless verb_2 = find_verb_after_for_prepos(tail, skip_comma: false)
@@ -59,7 +59,7 @@ module MtlV2::TlRule
     end
 
     node = fold!(head, verb, verb.tag, dic: 8, flip: flip)
-    return node unless (ude1 = node.succ?) && ude1.ude1?
+    return node unless (ude1 = node.succ?) && ude1.pd_dep?
 
     # if !node.v0_obj? && (prev = node.prev?) && prev.subject?
     #   node = fold!(prev, node, PosTag::VerbClause, dic: 7) unless mode == 3

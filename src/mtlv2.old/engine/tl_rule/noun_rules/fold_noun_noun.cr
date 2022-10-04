@@ -31,7 +31,7 @@ module MtlV2::TlRule
       case prev
       when .preposes? then mode.with_prepos(noun, prev)
       when .verbal?   then mode.with_verbal(noun, prev)
-      when .ude1?     then mode.with_ude1(noun, prev)
+      when .pt_dep?   then mode.with_ude1(noun, prev)
       else                 mode
       end
     end
@@ -87,8 +87,8 @@ module MtlV2::TlRule
       else
         fold!(node, succ, PosTag::Person, dic: 3, flip: true)
       end
-    when .naffil?
-      fold!(node, succ, succ.tag, dic: 4, flip: node.naffil?)
+    when .affil?
+      fold!(node, succ, succ.tag, dic: 4, flip: node.affil?)
     when .names?
       fold!(node, succ, succ.tag, dic: 4, flip: false)
     when .position?
@@ -113,10 +113,10 @@ module MtlV2::TlRule
   #   # puts [prev, succ, "noun_can_combine"]
   #   case succ
   #   when .maybe_adjt?
-  #     return false unless (tail = succ.succ?) && tail.ude1?
+  #     return false unless (tail = succ.succ?) && tail.pt_dep?
   #     tail.succ? { |x| x.ends? || x.verbal? } || false
   #   when .preposes?, .verbal?
-  #     return true if succ.succ? { |x| x.ude1? || x.ends? }
+  #     return true if succ.succ? { |x| x.pt_dep? || x.ends? }
   #     return false if prev.ends?
   #     false
   #     # is_linking_verb?(prev, succ)

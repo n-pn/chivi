@@ -37,7 +37,7 @@ module CV::TlRule
     # TODO: combine grammar
 
     case succ.tag
-    when .ude1?
+    when .pd_dep?
       fold!(node.set!("đúng"), succ.set!(""), PosTag::Unkn, dic: 7)
     when .pt_le?
       # succ.val = "" unless keep_pt_le?(node, succ)

@@ -2,7 +2,8 @@
 
 # proper nouns
 CapHuman = 100 # generic human name
-CapAffil = 105
+CapPlace = 105
+CapInsti = 106
 
 # other proper nouns
 CapOther = 110 # other proper noun

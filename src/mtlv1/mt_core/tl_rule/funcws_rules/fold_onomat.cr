@@ -3,7 +3,7 @@ module CV::TlRule
     case succ
     when .nil?    then node
     when .verbal? then fold_verbs!(succ, prev: node)
-    when .ude1?
+    when .pd_dep?
       succ.set!("mà")
       return node unless (succ_2 = succ.succ?) && succ_2.verbal?
       succ_2 = fold_verbs!(succ_2)

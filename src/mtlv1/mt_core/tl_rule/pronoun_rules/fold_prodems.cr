@@ -5,7 +5,7 @@ module CV::TlRule
     return heal_pro_dem!(node) if succ.key.in?({"就"})
 
     if succ.pro_ji? && (tail = succ.succ?)
-      if tail.nhanzi?
+      if tail.nhanzis?
         succ = fold_proji_nhanzi!(succ, tail)
         return fold_prodem_nominal!(node, succ)
       elsif node.pro_zhe? || node.pro_na1? || node.pro_na2?
@@ -27,7 +27,7 @@ module CV::TlRule
           return scan_noun!(succ, prodem: node, nquant: nil) || node
         end
       end
-    elsif node.pro_ji? && succ.nhanzi?
+    elsif node.pro_ji? && succ.nhanzis?
       return fold_proji_nhanzi!(node, succ)
     end
 

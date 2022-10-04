@@ -22,7 +22,7 @@ module MtlV2::TlRule
       noun = fold
     end
 
-    return noun unless (ude1 = noun.succ?) && ude1.ude1?
+    return noun unless (ude1 = noun.succ?) && ude1.pd_dep?
     fold_ude1!(ude1: ude1, left: noun)
   end
 end

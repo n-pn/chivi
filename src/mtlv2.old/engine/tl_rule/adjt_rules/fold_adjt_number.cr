@@ -20,7 +20,7 @@ module MtlV2::TlRule
 
     adjt = fold!(adjt, succ, PosTag::AdjtPhrase, dic: 7)
 
-    return adjt unless (ude1 = adjt.succ?) && ude1.ude1?
+    return adjt unless (ude1 = adjt.succ?) && ude1.pd_dep?
     return adjt if !(tail = ude1.succ?) || tail.puncts?
 
     tail = fold_once!(tail)

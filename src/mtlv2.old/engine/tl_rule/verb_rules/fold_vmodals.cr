@@ -60,7 +60,7 @@ module MtlV2::TlRule
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
-    when .nil?, .ends?, .nominal?, .ude1?, .ule?
+    when .nil?, .ends?, .nominal?, .pd_dep?, .ule?
       true
     when .preposes? then false
     when .verb_object?

@@ -1,6 +1,7 @@
 struct CV::PosTag
   CapHuman = new(:cap_human, MtlPos.flags(Nounish, Proper, People, Ktetic))
-  CapAffil = new(:cap_affil, MtlPos.flags(Nounish, Proper, Locale, Ktetic))
+  CapPlace = new(:cap_place, MtlPos.flags(Nounish, Proper, Locale, Ktetic))
+  CapInsti = new(:cap_insti, MtlPos.flags(Nounish, Proper, Locale, Ktetic))
   CapBrand = new(:cap_brand, MtlPos.flags(Nounish, Proper))
   CapTitle = new(:cap_title, MtlPos.flags(Nounish, Proper, Ktetic))
   CapOther = new(:cap_other, MtlPos.flags(Nounish, Proper, Ktetic))
@@ -8,15 +9,24 @@ struct CV::PosTag
   def self.map_name(tag : String, key = "")
     case tag[1]?
     when 'r' then CapHuman
-    when 'a' then CapAffil
+    when 's' then CapPlace
+    when 't' then CapInsti
     when 'l' then CapBrand
     when 'w' then CapTitle
     else          CapOther
     end
   end
 
-  Nform = new(:nform, MtlPos.flags(Nounish, Ktetic))
   Nword = new(:nword, MtlPos.flags(Nounish, Ktetic))
+  Nform = new(:nform, MtlPos.flags(Nounish, Ktetic))
+  Nobjt = new(:nobjt, MtlPos.flags(Nounish, Ktetic))
+
+  Place = new(:place, MtlPos.flags(Nounish, Ktetic, Locale))
+  Posit = new(:posit, MtlPos.flags(Nounish, Locale))
+
+  Nattr = new(:nattr, MtlPos.flags(Nounish))
+  Tword = new(:tword, MtlPos.flags(Nounish))
+  Texpr = new(:texpr, MtlPos.flags(Nounish))
 
   def self.map_noun(tag : String, key = "", vals = [] of String)
     case tag[1]?
@@ -49,16 +59,13 @@ struct CV::PosTag
   end
 
   PLACE_MAP = load_map("locations", MtlPos.flags(Nounish, Locale))
+  TWORD_MAP = load_map("timewords", :nounish)
 
   def self.map_place(key : String)
     PLACE_MAP[key] ||= begin
       is_locat?(key[-1]) ? new(:posit, :locale) : new(:place, MtlPos.flags(Locale, Ktetic))
     end
   end
-
-  TWORD_MAP = load_map("timewords", :nounish)
-
-  Tword = new(:tword, :nounish)
 
   def self.map_tword(key : String)
     # TODO: map time by key

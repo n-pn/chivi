@@ -27,7 +27,7 @@ module CV::TlRule
       fold_noun_verb!(noun, succ)
     when .pt_zhi?
       fold_uzhi!(uzhi: succ, prev: proper)
-    when .ude1?
+    when .pd_dep?
       return proper if proper.prev? { |x| x.verbal? || x.preposes? }
       fold_ude1!(ude1: succ, prev: proper)
     else
@@ -43,10 +43,10 @@ module CV::TlRule
     if nominal.pro_ziji?
       nominal.val = "chính"
       flip = false
-    elsif (prev = proper.prev?) && prev.v2_obj?
+    elsif (prev = proper.prev?) && prev.vtwo?
       flip = false
 
-      if (succ = nominal.succ?) && (succ.ude1?)
+      if (succ = nominal.succ?) && (succ.pd_dep?)
         nominal = fold_ude1!(ude1: succ, prev: nominal)
       end
     else

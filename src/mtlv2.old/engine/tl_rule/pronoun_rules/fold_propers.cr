@@ -41,7 +41,7 @@ module MtlV2::TlRule
       fold_noun_verb!(noun, succ)
     when .uzhi?
       fold_uzhi!(uzhi: succ, prev: proper)
-    when .ude1?
+    when .pd_dep?
       fold_mode = NounMode.init(proper, proper.prev?)
       return proper unless right = fold_right_of_ude1(proper, fold_mode, succ.succ?)
       fold_ude1!(ude1: succ, left: proper, right: right)
@@ -63,7 +63,7 @@ module MtlV2::TlRule
     if (prev = proper.prev?) && prev.flag.need2_obj?
       flip = false
 
-      if (succ = nominal.succ?) && (succ.ude1?)
+      if (succ = nominal.succ?) && (succ.pd_dep?)
         nominal = fold_ude1!(ude1: succ, left: nominal)
       end
     else

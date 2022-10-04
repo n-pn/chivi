@@ -45,7 +45,7 @@ module CV::TlRule
   def should_fold_noun_concoord?(noun : MtNode, concoord : MtNode) : Bool
     return true unless (prev = noun.prev?) && (succ = concoord.succ?)
     return false if prev.numeral? || prev.pronouns?
-    return true unless prev.ude1? && (prev = prev.prev?)
+    return true unless prev.pd_dep? && (prev = prev.prev?)
 
     case prev.tag
     when .nform? then true

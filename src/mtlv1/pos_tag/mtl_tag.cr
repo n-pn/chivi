@@ -66,6 +66,10 @@ enum CV::MtlTag
     value >= 100 && value < 120
   end
 
+  def affil?
+    value >= 105 && value < 110
+  end
+
   def nouns?
     value >= 120 && value < 155
   end
@@ -115,11 +119,15 @@ enum CV::MtlTag
   # numbers
 
   def numeral?
-    value >= 250 && value < 300
+    value >= 240 && value < 300
   end
 
   def numbers?
-    value >= 250 && value < 260
+    value >= 240 && value < 260
+  end
+
+  def ndigits?
+    value >= 242 && value <= 243
   end
 
   def nhanzis?
@@ -172,6 +180,10 @@ enum CV::MtlTag
 
   def modis?
     value >= 370 && value < 400
+  end
+
+  def content?
+    value < 400
   end
 
   # 4 prepos + particle
@@ -254,6 +266,10 @@ enum CV::MtlTag
 
   def morpheme?
     value >= 730 && value < 800
+  end
+
+  def suffixes?
+    value >= 740 && value < 780
   end
 
   # words that have multi meaning/part-of-speech

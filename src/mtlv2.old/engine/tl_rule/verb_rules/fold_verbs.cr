@@ -18,7 +18,7 @@ module MtlV2::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_verb_other!(verb : BaseNode, succ : BaseNode = verb.succ)
-    unless verb.v0_obj? || succ.ude1? || succ.ends? || succ.junction?
+    unless verb.v0_obj? || succ.pd_dep? || succ.ends? || succ.junction?
       verb = fold_verb_object!(verb, succ)
       return verb.flag!(:resolved) unless succ = verb.succ?
     end
@@ -34,7 +34,7 @@ module MtlV2::TlRule
     end
 
     case succ
-    when .ude1?
+    when .pd_dep?
       verb.v0_obj? && (tail = succ.succ?) ? fold_verb_ude1!(verb, succ, tail) : verb
     when .uzhi?
       fold_uzhi!(uzhi: succ, prev: verb)

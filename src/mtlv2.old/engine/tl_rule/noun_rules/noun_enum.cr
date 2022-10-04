@@ -6,7 +6,7 @@ module MtlV2::TlRule
 
       break unless join = node.succ?
 
-      if join.ude1?
+      if join.pd_dep?
         break unless (succ = join.succ?) && succ.nominal?
         join.val = "của"
         node = fold!(node, succ, succ.tag, dic: 7, flip: true)

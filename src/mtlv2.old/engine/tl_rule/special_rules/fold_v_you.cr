@@ -7,7 +7,7 @@ module MtlV2::TlRule
     case succ = noun.succ?
     when .nil?     then return vyou
     when .adv_bu4? then return vyou
-    when .ude1?
+    when .pd_dep?
       return fold_vyou_ude1(vyou, succ, noun)
     when .adverb?
       if succ.key == "这么" || succ.key == "那么"
@@ -56,7 +56,7 @@ module MtlV2::TlRule
       return vyou
     end
 
-    return output unless (succ = output.succ?) && (succ.ude1? || succ.ude3?)
+    return output unless (succ = output.succ?) && (succ.pd_dep? || succ.pt_der?)
     return output unless (tail = succ.succ?) && tail.key == "多"
 
     noun.fix_succ!(succ.set!(""))

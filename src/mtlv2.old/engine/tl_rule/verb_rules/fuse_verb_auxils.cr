@@ -3,9 +3,9 @@ module MtlV2::TlRule
     case auxil.tag
     when .ule?
       fuse_verb_ule!(verb, auxil)
-    when .ude2?
+    when .pd_dev?
       fuse_verb_ude2!(verb, auxil)
-    when .ude3?
+    when .pt_der?
       fuse_verb_ude3!(verb, auxil)
     when .uguo?
       fold!(verb, auxil, PosTag::Verb, dic: 6)

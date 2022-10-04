@@ -1,6 +1,6 @@
 module MtlV2::TlRule
   def fold_第!(node : BaseNode)
-    return node unless (succ = node.succ?) && (succ.nhanzi? || succ.ndigit?)
+    return node unless (succ = node.succ?) && (succ.nhanzis? || succ.ndigits?)
 
     if succ.key == "一"
       succ.val = "nhất"
@@ -13,7 +13,7 @@ module MtlV2::TlRule
     tail = heal_quanti!(tail)
 
     case tail.tag
-    when .noun?, .temporal?, .ptitle?, .nattr?, .naffil?
+    when .noun?, .temporal?, .ptitle?, .nattr?, .affil?
       fold!(head, tail, tail.tag, dic: 8, flip: true)
     when .quantis?
       if (tail_2 = tail.succ?) && tail_2.nominal?

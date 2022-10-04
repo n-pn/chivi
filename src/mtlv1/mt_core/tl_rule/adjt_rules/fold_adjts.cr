@@ -77,14 +77,14 @@ module CV::TlRule
         #   succ.val = ""
         #   adjt = fold!(adjt, tail.set!("chút"), PosTag::Aform, dic: 6)
         #   break
-      when .ude1?
+      when .pt_dep?
         break unless (tail = succ.succ?) && tail.key == "很"
         break if tail.succ?(&.boundary?.!)
 
         succ.val = ""
         adjt = fold!(adjt, tail.set!("cực kỳ"), PosTag::Aform, dic: 4)
         break
-      when .ude2?
+      when .
         adjt = fold_adj_adv!(adjt, prev)
         return fold_adjt_ude2!(adjt, succ)
       when .pt_zhe?

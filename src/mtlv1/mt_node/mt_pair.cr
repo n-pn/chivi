@@ -4,8 +4,8 @@ class CV::MtPair < CV::MtNode
   def initialize(
     @head : MtNode, @tail : MtNode,
     @tag : PosTag = PosTag::LitBlank,
-    @dic = 0, @idx = 1,
-    flip = @head.at_tail?
+    @dic : Int32 = 0, @idx : Int32 = head.idx,
+    flip : Bool = head.at_tail?
   )
     self.fix_prev!(head.prev?)
     self.fix_succ!(tail.succ?)

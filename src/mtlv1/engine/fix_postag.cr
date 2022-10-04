@@ -87,20 +87,19 @@ module CV::MTL
       when .nil?, .boundary?, .particles?
         return MtDict.fix_noun!(node)
       when .nominal?
-        return succ.succ?(&.ude1?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
-      when .ude1?
+        return succ.succ?(&.pt_dep?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
+      when .pt_dep?
         return MtDict.fix_noun!(node)
       end
-    when .pre_zai?, .pre_bei?, .vmodal?, .vpro?,
-         .advbial?, .ude2?, .ude3?, .object?
+    when .pre_zai?, .pre_bei?, .vauxil?, .advbial?, .pt_dev?, .pt_der?, .object?
       return MtDict.fix_verb!(node)
     when .adjts?
       return MtDict.fix_verb!(node) unless prev.is_a?(MtTerm)
       return prev.modifier? ? MtDict.fix_noun!(node) : MtDict.fix_verb!(node)
-    when .ude1?
+    when .pt_dep?
       # TODO: check for adjt + ude1 + verb (grammar error)
       return prev.prev?(&.advbial?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
-    when .nhanzi?
+    when .nhanzis?
       return prev.key == "一" ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
     when .preposes?
       return succ.try(&.nominal?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
@@ -120,7 +119,7 @@ module CV::MTL
       when .nil?, .boundary? then return node
       when .modi?, .pro_dems?, .quantis?, .nqnoun?
         return MtDict.fix_noun!(node)
-      when .object?, .ude3?, .adjts?, .advbial?
+      when .object?, .pt_der?, .adjts?, .advbial?
         return MtDict.fix_adjt!(node)
       when .conjunct?
         return prev.prev?(&.nominal?) ? MtDict.fix_adjt!(node) : node
@@ -131,7 +130,7 @@ module CV::MTL
       return MtDict.fix_verb!(node)
     when .v_xia?, .v_shang?
       return MtDict.fix_noun!(node)
-    when .ude1?, .ude2?, .ude3?, .mopart?
+    when .pt_dep?, ., .pt_der?, .mopart?
       return MtDict.fix_adjt!(node)
     when .verbal?, .preposes?
       return node.key.size > 2 ? MtDict.fix_noun!(node) : MtDict.fix_adjt!(node)

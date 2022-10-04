@@ -22,7 +22,7 @@ module CV::TlRule
   #     when .pl_ajad?, .adjts?
   #       break if flag > 0 || prev.key.size > 1
   #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 8)
-  #     when .ude1?
+  #     when .pd_dep?
   #       break if mode < 1
   #       node = fold_ude1_left!(ude1: node, left: prev, right: ude1.succ?)
   #     else

@@ -5,7 +5,7 @@ module CV::TlRule
 
     return verb if !succ || succ.boundary? || verb.verb_object? || verb.vintr?
 
-    if succ.ude1?
+    if succ.pd_dep?
       return verb if verb.prev? { |x| x.object? || x.prep_clause? }
       return verb unless (object = scan_noun!(succ.succ?)) && object.object?
 
@@ -23,7 +23,7 @@ module CV::TlRule
       return fold!(verb, noun, PosTag::VerbObject, dic: 4)
     end
 
-    if (ude1 = noun.succ?) && ude1.ude1? && (right = ude1.succ?)
+    if (ude1 = noun.succ?) && ude1.pd_dep? && (right = ude1.succ?)
       if (right = scan_noun!(right)) && should_apply_ude1_after_verb?(verb, right)
         noun = fold_ude1_left!(ude1: ude1, left: noun, right: right)
       end
@@ -33,7 +33,7 @@ module CV::TlRule
     return verb_object unless succ = verb_object.succ?
 
     if succ.suf_noun? && succ.key == "时"
-      fold!(verb_object, succ.set!("khi"), tag: PosTag::Ntime, dic: 5, flip: true)
+      fold!(verb_object, succ.set!("khi"), tag: PosTag::Texpr, dic: 5, flip: true)
     elsif succ.junction?
       fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
     else
@@ -44,7 +44,7 @@ module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)
     return false if verb.is_a?(MtList) && verb.list.any?(&.pre_bei?)
-    return false if verb.v2_obj?
+    return false if verb.vtwo?
 
     while prev && prev.adverb?
       prev = prev.prev?

@@ -28,7 +28,7 @@ module MtlV2::TlRule
       noun = fold!(noun, succ, PosTag::VerbClause, dic: 6) unless succ.v0_obj?
     end
 
-    if (tail = noun.succ?) && tail.ude1? && tail.succ?(&.maybe_adjt?)
+    if (tail = noun.succ?) && tail.pt_dep? && tail.succ?(&.maybe_adjt?)
       if noun.verb_clause?
         flip = false
         tail.set!("")
@@ -80,7 +80,7 @@ module MtlV2::TlRule
       node.fix_succ!(tail.succ?)
       tail.fix_succ!(nil)
       node.set!(PosTag::Aform)
-    when .ude1?, .ude3?
+    when .pt_dep?, .pt_der?
       return node unless tail.key == "多"
       last.fix_succ!(succ.set!(""))
       node.fix_succ!(tail.succ?)

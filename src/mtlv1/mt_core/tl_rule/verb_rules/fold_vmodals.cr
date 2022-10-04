@@ -67,7 +67,7 @@ module CV::TlRule
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
-    when .nil?, .boundary?, .nominal?, .ude1?, .pt_le?
+    when .nil?, .boundary?, .nominal?, .pd_dep?, .pt_le?
       true
     when .preposes? then false
     when .verb_object?

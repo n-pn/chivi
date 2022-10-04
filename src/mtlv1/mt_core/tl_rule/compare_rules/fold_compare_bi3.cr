@@ -6,7 +6,7 @@ module CV::TlRule
       noun = fold!(noun, succ, PosTag::VerbClause, dic: 6)
     end
 
-    if (tail = noun.succ?) && tail.ude1? && tail.succ?(&.maybe_adjt?)
+    if (tail = noun.succ?) && tail.pd_dep? && tail.succ?(&.maybe_adjt?)
       if noun.verb_clause?
         flip = false
         tail.set!("")
@@ -58,7 +58,7 @@ module CV::TlRule
       node.fix_succ!(tail.succ?)
       tail.fix_succ!(nil)
       node.set!(PosTag::Aform)
-    when .ude1?, .ude3?
+    when .pd_dep?, .pt_der?
       return node unless tail.key == "多"
       last.fix_succ!(succ.set!(""))
       node.fix_succ!(tail.succ?)

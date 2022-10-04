@@ -72,9 +72,9 @@ class CV::MtTerm < CV::MtNode
 
   def to_int?
     case @tag
-    when .ndigit? then @val.to_i64?
-    when .nhanzi? then MtUtil.to_integer(@key)
-    else               nil
+    when .ndigits? then @val.to_i64?
+    when .nhanzis? then MtUtil.to_integer(@key)
+    else                nil
     end
   rescue err
     nil
@@ -101,7 +101,7 @@ class CV::MtTerm < CV::MtNode
   end
 
   def modifier?
-    @tag.modi? || (@tag.adjt? && @key.size < 3)
+    @tag.modis? || (@tag.adjts? && @key.size < 3)
   end
 
   def lit_str?
@@ -128,7 +128,7 @@ class CV::MtTerm < CV::MtNode
          .middot?, .titleop?, .brackop?
       true
     when .pdeci?
-      @prev.try { |x| x.ndigit? || x.litstr? } || prev
+      @prev.try { |x| x.ndigits? || x.litstr? } || prev
     else
       prev
     end

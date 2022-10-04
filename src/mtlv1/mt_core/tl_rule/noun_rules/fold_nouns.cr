@@ -20,7 +20,7 @@ module CV::TlRule
       when .maybe_adjt?
         break if succ.adv_bu4?
         return fold_noun_adjt!(noun, succ)
-      when .ude1?
+      when .pd_dep?
         return noun if noun.prev?(&.verb?) && !noun.nattr?
         return fold_ude1!(ude1: succ, prev: noun)
       when .pt_zhi?

@@ -64,20 +64,19 @@ module CV::TlRule
       when .nil?, .boundary?, .particles?
         return node.as_noun!
       when .nominal?
-        return succ.succ?(&.ude1?) ? node.as_verb!(nil) : node.as_noun!
-      when .ude1?
+        return succ.succ?(&.pt_dep?) ? node.as_verb!(nil) : node.as_noun!
+      when .pt_dep?
         return node.as_noun!
       end
-    when .pre_zai?, .pre_bei?, .vmodal?, .vpro?,
-         .advbial?, .ude2?, .ude3?, .object?
+    when .pre_zai?, .pre_bei?, .vauxil?, .advbial?, .pt_dev?, .pt_der?, .object?
       return node.as_verb!(nil)
     when .adjts?
       return node.as_verb!(nil) unless prev.is_a?(MtTerm)
       return prev.modifier? ? node.as_noun! : node.as_verb!(nil)
-    when .ude1?
+    when .pt_dep?
       # TODO: check for adjt + ude1 + verb (grammar error)
       return prev.prev?(&.advbial?) ? node.as_verb!(nil) : node.as_noun!
-    when .nhanzi?
+    when .nhanzis?
       return prev.key == "一" ? node.as_verb!(nil) : node.as_noun!
     when .preposes?
       return succ.try(&.nominal?) ? node.as_verb!(nil) : node.as_noun!
@@ -95,9 +94,9 @@ module CV::TlRule
       return node if !prev || prev.boundary?
       case prev
       when .nil?, .boundary? then return node
-      when .modi?, .pro_dems?, .quantis?, .nqnoun?
+      when .modis?, .pro_dems?, .quantis?, .nqnoun?
         return node.as_noun!
-      when .object?, .ude3?, .adjts?, .advbial?
+      when .object?, .pt_der?, .adjts?, .advbial?
         return node.as_adjt!(nil)
       when .conjunct?
         return prev.prev?(&.nominal?) ? node.as_adjt!(nil) : node
@@ -108,13 +107,12 @@ module CV::TlRule
       return node.as_verb!(nil)
     when .v_xia?, .v_shang?
       return node.as_noun!
-    when .ude1?, .ude2?, .ude3?, .mopart?
+    when .pt_dep?, .pt_dev?, .pt_der?, .mopart?
       return node.as_adjt!(nil)
     when .verbal?, .preposes?
       return node.key.size > 2 ? node.as_noun! : node.as_adjt!(nil)
-    when .nominal?, .spaces?
-      node = node.as_adjt!(nil)
-      return node.set!(PosTag::Modi)
+    when .nominal?
+      return node.as_adjt!(nil)
     else
       if succ.is_a?(MtTerm) && succ.key == "到"
         return node.as_adjt!(nil)
@@ -127,7 +125,7 @@ module CV::TlRule
     when .modifier?
       node.as_noun!
     else
-      node
+      node.as_adjt!(nil)
     end
   end
 end

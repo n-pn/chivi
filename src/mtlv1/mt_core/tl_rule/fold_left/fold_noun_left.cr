@@ -30,7 +30,7 @@ module CV::TlRule
     end
 
     if prev.numbers?
-      noun = fold!(prev, noun, ptag, flip: prev.numord?)
+      noun = fold!(prev, noun, ptag, flip: prev.ordinal?)
       return noun unless prev = noun.prev?
     end
 
@@ -66,7 +66,7 @@ module CV::TlRule
 
   def should_flip_noun?(prev, succ)
     return true unless succ && prev && prev.verbal?
-    return false if prev.v2_obj?
+    return false if prev.vtwo?
     succ.verbal?
   end
 
@@ -84,7 +84,7 @@ module CV::TlRule
     when .timeword?, .nform?, .locat?, .posit?
       ptag = PosTag::Nform
     else
-      ptag = PosTag::Person
+      ptag = PosTag::CapHuman
     end
 
     fold!(prev, noun, ptag, dic: 4, flip: false)
@@ -92,10 +92,10 @@ module CV::TlRule
 
   def fold_name_noun_left!(name, prev)
     case prev
-    when .naffil?
+    when .affil?
       return fold!(prev, name, name.tag, flip: true)
-    when .person?
-      return fold!(prev, name, name.tag, flip: false) if name.person?
+    when .cap_human?
+      return fold!(prev, name, name.tag, flip: false) if name.cap_human?
     end
 
     fold!(prev, name, PosTag::Nform, dic: 5, flip: false)
