@@ -1,0 +1,21 @@
+# suffix
+
+# suffix for whole subj+verb structure
+时	suf_time
+的时候	suf_time
+的日子	suf_time
+
+# suffix that make nattr
+色	suf_attr
+级	suf_attr
+型	suf_attr
+状	suf_attr
+
+# suffix that make verb
+化	suf_verb
+
+# suffix that make plural noun
+们	suf_men5
+
+# suffix that make noun/adjt
+性	suf_xing

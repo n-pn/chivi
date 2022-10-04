@@ -74,7 +74,7 @@ def get_upper(page : Lexbor::Parser, query : String, clean = "")
   File.basename(node.attributes["href"].sub(clean, ""))
 end
 
-output = Tabkv(String).new("var/_common/upper.tsv")
+output = Tabkv(String).new("var/books/upper.tsv")
 snames = ARGV.empty? ? ["yousuu"].concat(CV::SnameMap.alive_snames) : ARGV
 
 snames.each do |sname|

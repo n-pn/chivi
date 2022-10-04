@@ -1,0 +1,76 @@
+# nominal classifiers
+
+## Measurement units
+
+### Time
+秒	qttime
+分	qttime
+刻	qttime
+天	qttime
+日	qttime
+年	qttime
+载	qttime
+岁	qttime
+月	qttime
+周	qttime
+席	qttime
+晚	qttime
+秒钟	qttime
+分钟	qttime
+小时 	qttime
+个月	qttime
+时辰	qttime
+点	qttime
+
+### weight/mass
+克	qtwght
+两	qtwght
+加仑	qtwght
+斤	qtwght
+公斤	qtwght
+千克	qtwght
+吨	qtwght
+
+### length/distance
+公分	qtdist
+厘米	qtdist
+寸	qtdist
+吋	qtdist
+尺	qtdist
+呎	qtdist
+英尺	qtdist
+公尺	qtdist
+米	qtdist
+里	qtdist
+哩	qtdist
+英里	qtdist
+海里	qtdist
+公里	qtdist
+天文单位	qtdist
+光年	qtdist
+秒差距	qtdist
+
+### money classifiers
+圆	qtcash
+元	qtcash
+块	qtcash
+角	qtcash
+毛	qtcash
+毫	qtcash
+分	qtcash
+
+
+## verbal classifiers - động lượng từ
+遍	qtverb
+场	qtverb
+次	qtverb
+顿	qtverb
+回	qtverb
+声	qtverb
+趟	qtverb
+下	qtverb
+下儿	qtverb
+番	qtverb
+阵	qtverb
+会	qtverb
+会儿	qtverb

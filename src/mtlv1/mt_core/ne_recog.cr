@@ -125,7 +125,7 @@ module CV::MTL
       end
     end
 
-    MtTerm.new(key_io.to_s, val_io.to_s, PosTag::Number, 0)
+    MtTerm.new(key_io.to_s, val_io.to_s, PosTag::Numeric, 0)
   end
 
   def match_half_width(char : Char)

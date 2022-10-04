@@ -20,7 +20,7 @@ module CV::UbmemoTasks
   end
 
   def restore
-    # hashes = Tabkv(String).new("_common/nv_hash.tsv")
+    # hashes = Tabkv(String).new("var/books/nv_hash.tsv")
 
     Clear::SQL.execute <<-SQL
       truncate ubmemos restart identity;

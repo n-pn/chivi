@@ -195,7 +195,7 @@ class CV::RemoteSeed
       end
     end
 
-    upper_map = Tabkv(Int32).new("var/_common/upper.tsv")
+    upper_map = Tabkv(Int32).new("var/books/upper.tsv")
 
     snames.each do |sname|
       next unless upper = upper_map[sname]?

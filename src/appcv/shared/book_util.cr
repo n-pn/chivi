@@ -1,10 +1,12 @@
 require "json"
 require "tabkv"
 
+require "../../_util/text_util"
+
 module CV::BookUtil
   extend self
 
-  DIR = "var/_common/fixes"
+  DIR = "var/books/fixes"
 
   class_getter zh_authors : Tabkv(String) { load_tsv("authors_zh") }
   class_getter vi_authors : Tabkv(String) { load_tsv("authors_vi") }
@@ -32,19 +34,12 @@ module CV::BookUtil
   end
 
   def clean_name(name : String, type = :btitle)
-    name = name.chars.map { |x| NORMALIZE[x]? || x }.join
+    name = TextUtil.normalize(name)
     name = name.sub(/\s*(ˇ第.+章ˇ)?\s*(最新更新.+)?$/, "")
     name = name.sub(/^\s*(.+?)\s*[（【\(\[].*?[）】\)\]]$/) { |_, x| x[1] }
 
     return name unless type == :author
     name.sub(/\.(QD|CS)$/, "").sub(/^·+(.+)·+$/) { |_, x| x[1] }
-  end
-
-  NORMALIZE = begin
-    lines = File.read_lines("var/_common/normalize.tsv")
-    lines.each_with_object({} of Char => Char) do |line, hash|
-      hash[line[0]] = line[2]
-    end
   end
 
   def scrub(name : String, delimit = "-")
