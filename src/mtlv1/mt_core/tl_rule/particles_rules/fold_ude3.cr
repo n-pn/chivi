@@ -39,7 +39,7 @@ module CV::TlRule
     when .advbial?
       tail = fold_adverbs!(tail)
 
-      if tail.adjective?
+      if tail.adjts?
         fold!(node, tail, PosTag::Aform, dic: 5)
       elsif tail.key == "很"
         tail.val = "cực kỳ"
@@ -50,7 +50,7 @@ module CV::TlRule
       else
         node
       end
-    when .adjective?
+    when .adjts?
       fold!(node, tail, PosTag::Aform, dic: 6)
     when .verbal?
       node = fold!(node, succ, PosTag::Verb, dic: 6)

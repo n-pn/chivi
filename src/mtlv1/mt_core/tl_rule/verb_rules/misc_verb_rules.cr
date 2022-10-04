@@ -41,7 +41,7 @@ module CV::TlRule
       when .v_shang?, .v_xia?
         return node if node.succ?(&.pt_le?)
       when .vmodals?, .verbal? then return node
-      when .adjective?
+      when .adjts?
         return nil unless {"相同", "类似"}.includes?(node.key)
         return node.set!(PosTag::Vintr)
       else

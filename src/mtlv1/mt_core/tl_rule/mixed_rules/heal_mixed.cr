@@ -17,7 +17,7 @@ module CV::TlRule
       node.as_verb!(nil)
     when .aspect?, .vcompl?, .advbial?
       node.as_advb!
-    when .verbal?, .vmodals?, .preposes?, .adjective?
+    when .verbal?, .vmodals?, .preposes?, .adjts?
       node.as_advb!
     else
       node.as_verb!(nil)
@@ -28,7 +28,7 @@ module CV::TlRule
     case succ
     when .nil?, .boundary?, .nominal?
       node.as_adjt!(nil)
-    when .verbal?, .vmodals?, .preposes?, .adjective?, .advbial?
+    when .verbal?, .vmodals?, .preposes?, .adjts?, .advbial?
       node.as_advb!
     else
       node.as_adjt!(nil)
@@ -48,7 +48,7 @@ module CV::TlRule
       return node.as_noun!
     when .nquants?
       return node.as_verb!(nil) unless succ.nqtime?
-    when .pronouns?, .verbal?, .pre_zai?, .number?
+    when .pronouns?, .verbal?, .pre_zai?, .numbers?
       return node.as_verb!(nil)
       # when .nominal?
       #   node = node.as_verb!(nil)
@@ -71,7 +71,7 @@ module CV::TlRule
     when .pre_zai?, .pre_bei?, .vmodal?, .vpro?,
          .advbial?, .ude2?, .ude3?, .object?
       return node.as_verb!(nil)
-    when .adjective?
+    when .adjts?
       return node.as_verb!(nil) unless prev.is_a?(MtTerm)
       return prev.modifier? ? node.as_noun! : node.as_verb!(nil)
     when .ude1?
@@ -97,7 +97,7 @@ module CV::TlRule
       when .nil?, .boundary? then return node
       when .modi?, .pro_dems?, .quantis?, .nqnoun?
         return node.as_noun!
-      when .object?, .ude3?, .adjective?, .advbial?
+      when .object?, .ude3?, .adjts?, .advbial?
         return node.as_adjt!(nil)
       when .conjunct?
         return prev.prev?(&.nominal?) ? node.as_adjt!(nil) : node

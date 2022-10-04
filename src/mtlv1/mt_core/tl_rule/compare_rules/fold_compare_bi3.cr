@@ -19,7 +19,7 @@ module CV::TlRule
     end
 
     return prepos unless tail = scan_adjt!(noun.succ?)
-    return prepos unless tail.adjective? || tail.verb_object?
+    return prepos unless tail.adjts? || tail.verb_object?
 
     output = MtTerm.new("", "", PosTag::Unkn, dic: 1, idx: prepos.idx)
     output.fix_prev!(prepos.prev?)

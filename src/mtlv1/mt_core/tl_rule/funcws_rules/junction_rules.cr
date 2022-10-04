@@ -1,7 +1,7 @@
 module CV::TlRule
   def can_combine_adjt?(left : MtNode, right : MtNode?)
     # TODO
-    right.adjective?
+    right.adjts?
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
@@ -26,7 +26,7 @@ module CV::TlRule
 
   def fold_adjt_junction!(node : MtNode, prev = node.prev?, succ = node.succ?)
     return unless prev && succ && is_concoord?(node)
-    return unless (succ = scan_adjt!(succ)) && succ.adjective?
+    return unless (succ = scan_adjt!(succ)) && succ.adjts?
 
     fold!(prev, succ, tag: PosTag::Aform, dic: 4)
   end

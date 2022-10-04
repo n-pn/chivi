@@ -31,7 +31,7 @@ module CV::TlRule
     when .verbal?
       node = fold!(node, succ, succ.tag, dic: 4)
       fold_verbs!(node)
-    when .adjective?
+    when .adjts?
       node = fold!(node, succ, succ.tag, dic: 5)
       fold_adjts!(node)
     else
@@ -85,7 +85,7 @@ module CV::TlRule
       fold_vmodals!(succ, nega: node)
     when .verbal?
       fold_adverb_verb!(node, succ)
-    when .adjective?
+    when .adjts?
       succ.tag = PosTag::Adjt if succ.pl_ajno?
       fold_adjts!(succ, prev: node)
     when .adv_bu4?
@@ -125,7 +125,7 @@ module CV::TlRule
   def heal_adj_hao!(node : MtNode)
     case node.succ?
     when .nil? then node
-    when .adjective?, .verbal?
+    when .adjts?, .verbal?
       node.set!("thật", PosTag::Adverb)
     else
       node.set!("tốt")
@@ -148,7 +148,7 @@ module CV::TlRule
       case node
       when .comma?
         return false unless node = node.succ?
-      when .plsgn?, .mnsgn?, .verbal?, .preposes?, .adjective?, .advbial?, .vmodals?
+      when .plsgn?, .mnsgn?, .verbal?, .preposes?, .adjts?, .advbial?, .vmodals?
         return true
       when .concoord?
         return false unless node.key == "和"

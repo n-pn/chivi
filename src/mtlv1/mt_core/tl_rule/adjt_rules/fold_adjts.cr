@@ -29,7 +29,7 @@ module CV::TlRule
       fold_adjt_measure(adjt).try { |x| return x }
     end
 
-    while adjt.adjective?
+    while adjt.adjts?
       break unless succ = adjt.succ?
       # puts [adjt, succ, "fold_adjt"]
       succ = heal_mixed!(succ, prev: adjt) if succ.polysemy?
@@ -60,7 +60,7 @@ module CV::TlRule
       when .vpro?, .verb?
         case succ.key
         when "到"
-          if (tail = succ.succ?) && tail.adjective?
+          if (tail = succ.succ?) && tail.adjts?
             adjt = fold!(adjt, tail, PosTag::Aform, dic: 7)
           else
             adjt = fold!(adjt, succ, PosTag::Verb, dic: 6)

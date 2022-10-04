@@ -42,13 +42,13 @@ module CV::TlRule
     case tail
     when .advbial?
       tail = fold_adverbs!(tail)
-    when .adjective?
+    when .adjts?
       tail = fold_adjts!(tail)
     when .verbal?
       tail = fold_verbs!(tail)
     end
 
-    unless tail.adjective? || tail.verb_object?
+    unless tail.adjts? || tail.verb_object?
       return fold!(vyou, noun, PosTag::VerbObject, dic: 7)
     end
 

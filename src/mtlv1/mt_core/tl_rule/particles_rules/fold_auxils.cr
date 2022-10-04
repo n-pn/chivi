@@ -22,7 +22,7 @@ module CV::TlRule
   end
 
   def heal_ude2!(node : MtNode) : MtNode
-    return node if node.prev? { |x| x.tag.adjective? || x.tag.adverb? }
+    return node if node.prev? { |x| x.tag.adjts? || x.tag.adverb? }
     return node unless succ = node.succ?
     return node.set!("đất", PosTag::Noun) if succ.v_shi? || succ.v_you?
     return node if succ.verbal? || succ.preposes? || succ.concoord?

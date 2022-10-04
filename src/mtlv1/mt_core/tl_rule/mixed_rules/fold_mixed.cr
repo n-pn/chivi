@@ -3,11 +3,11 @@ module CV::TlRule
     node = heal_mixed!(node, prev, succ)
 
     case node.tag
-    when .adjective? then fold_adjts!(node)
-    when .nominal?   then fold_nouns!(node)
-    when .verbal?    then fold_verbs!(node)
-    when .advbial?   then fold_adverbs!(node)
-    else                  node
+    when .adjts?   then fold_adjts!(node)
+    when .nominal? then fold_nouns!(node)
+    when .verbal?  then fold_verbs!(node)
+    when .advbial? then fold_adverbs!(node)
+    else                node
     end
   end
 end

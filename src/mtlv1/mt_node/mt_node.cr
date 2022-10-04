@@ -52,7 +52,7 @@ abstract class CV::MtNode
 
   def maybe_adjt? : Bool
     return !@succ.try(&.maybe_verb?) if @tag.pl_ajad?
-    @tag.adjective? || @tag.advbial? && @succ.try(&.maybe_adjt?) || false
+    @tag.adjts? || @tag.advbial? && @succ.try(&.maybe_adjt?) || false
   end
 
   def set!(@val : String) : self

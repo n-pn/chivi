@@ -54,7 +54,7 @@ module CV::TlRule
     case succ = node.succ?
     when .nil?, .puncts?, .pt_le?
       node.set!("tốt", PosTag::Adjt)
-    when .adjective?, .verbal?, .vmodals?, .advbial?
+    when .adjts?, .verbal?, .vmodals?, .advbial?
       node.set!(succ.verbal? ? "dễ" : "thật", PosTag::Adverb)
       fold_adverb_base!(node, succ)
     when .nominal?

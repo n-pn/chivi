@@ -18,7 +18,7 @@ module CV::TlRule
   def fold_noun_left_2!(noun : MtNode, prev = noun.prev) : MtNode
     ptag = noun.tag.posit? ? noun.tag : PosTag::Nform
 
-    if prev.adjective?
+    if prev.adjts?
       noun = fold_noun_adjt_left!(noun, prev)
       return noun unless prev = noun.prev?
     end

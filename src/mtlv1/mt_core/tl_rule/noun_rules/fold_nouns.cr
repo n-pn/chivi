@@ -32,7 +32,7 @@ module CV::TlRule
         succ = succ.advbial? ? fold_adverbs!(succ) : fold_adjts!(succ)
         return fold!(adjt, succ, PosTag::Aform, dic: 8)
       when .spaces?
-        return noun if noun.prev? { |x| x.numeral? || x.pronouns? || x.adjective? }
+        return noun if noun.prev? { |x| x.numeral? || x.pronouns? || x.adjts? }
         noun = fold_noun_space!(noun, succ)
       when .verbal?
         return fold_noun_verb!(noun, succ)

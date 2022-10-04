@@ -4,12 +4,12 @@ module CV::TlRule
     node = heal_mixed!(node) if node.polysemy?
 
     case node
-    when .modi?      then fold_modifier!(node)
-    when .verbal?    then fold_verbs!(node)
-    when .advbial?   then fold_adverbs!(node)
-    when .adjective? then fold_adjts!(node)
-    when .nominal?   then fold_nouns!(node)
-    else                  node
+    when .modi?    then fold_modifier!(node)
+    when .verbal?  then fold_verbs!(node)
+    when .advbial? then fold_adverbs!(node)
+    when .adjts?   then fold_adjts!(node)
+    when .nominal? then fold_nouns!(node)
+    else                node
     end
   end
 end

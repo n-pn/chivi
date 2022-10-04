@@ -160,7 +160,11 @@ enum CV::MtlTag
     value >= 316 && value < 330
   end
 
-  # adjective?
+  def vmodals?
+    value >= 318 && value < 330
+  end
+
+  # adjts?
 
   def adjts?
     value >= 350 && value < 400

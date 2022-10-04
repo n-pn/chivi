@@ -16,19 +16,19 @@ module CV::TlRule
   }
 
   def fold_suffix!(suff : MtTerm, left : MtNode) : MtList?
-    return unless left.nominal? || left.adjective? || left.verbal?
+    return unless left.nominal? || left.adjts? || left.verbal?
     return if left.v_shi? || left.v_you?
 
     postpos = false
 
     case suff.key
     when "时", "的时候", "的日子"
-      return if left.adjective?
+      return if left.adjts?
       postpos = true
       # when "们", "所", "级", "型", "状", "色", "性"
       #   # do nothing
       # else
-      #   return if left.adjective?
+      #   return if left.adjts?
     end
 
     if tuple = SUFFIXES[suff.key]?
@@ -46,7 +46,7 @@ module CV::TlRule
   end
 
   def fold_postpos!(postpos : MtList, left : MtNode) : MtList?
-    return if left.adjective? || left.v_shi? || left.v_you?
+    return if left.adjts? || left.v_shi? || left.v_you?
 
     case postpos.list[1]
     when .nominal?
