@@ -18,7 +18,7 @@ Nncall = 125 # name calling
 Nhuman = 126 # generic human word
 
 # generic noun
-Nbase = 130 # generic noun
+Nword = 130 # generic noun
 Nform = 131 # noun phrase
 
 # Nabst = 133 # astract concept

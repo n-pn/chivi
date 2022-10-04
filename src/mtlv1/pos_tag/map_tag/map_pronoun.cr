@@ -2,7 +2,7 @@ struct CV::PosTag
   PRONOUN_MAP = load_map("pronouns")
 
   def self.map_pronoun(key : String, tag : String = "")
-    PRONOUN_MAP[key] || begin
+    PRONOUN_MAP[key] ||= begin
       case key[0]
       when '这', '那', '每'
         new(:pro_dem, :can_split)

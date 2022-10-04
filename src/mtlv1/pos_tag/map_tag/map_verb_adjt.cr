@@ -11,10 +11,8 @@ struct CV::PosTag
   def self.map_adjt(tag : String, key : String = "", vals = [] of String)
     case tag[1]?
     when 'f' then Aform
-    when 'z' then Adesc
-    when 'b' then Amod
-    when '!' then ADJTMOD_MAP[key] || Amod
-    else          ADJTVAL_MAP[key] || Adjt
+    when '!' then ADJTMOD_MAP[key] ||= Amod
+    else          ADJTVAL_MAP[key] ||= Adjt
     end
   end
 
@@ -36,7 +34,7 @@ struct CV::PosTag
   end
 
   def self.map_vauxil(key : String) : self
-    VAUXIL_MAP[key] || begin
+    VAUXIL_MAP[key] ||= begin
       case key[-1]
       when '是' then new(:v_shi, MtlPos.flags(Verbish))
       when '有' then new(:v_you, MtlPos.flags(LinkVerb, Verbish))
@@ -46,13 +44,13 @@ struct CV::PosTag
   end
 
   def self.map_vintra(key : String, poly = false)
-    VINTRA_MAP[key] || (poly ? new(:vinx, :verbish) : new(:vint, :verbish))
+    VINTRA_MAP[key]? || (poly ? new(:vinx, :verbish) : new(:vint, :verbish))
   end
 
   LINKVERB_CHARS = {'来', '去', '到', '出'}
 
   def self.map_verbal(key : String, poly = false) : self
-    VERBAL_MAP[key] || begin
+    VERBAL_MAP[key] ||= begin
       tag = poly ? MtlTag::Vcmp : MtlTag::Verb
       pos = MtlPos::Verbish
 

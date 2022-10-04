@@ -36,6 +36,6 @@ struct CV::PosTag
   }
 
   def self.map_punct(str : String)
-    PUNCT_MAP[str] || new(:punct, :boundary)
+    PUNCT_MAP[str] ||= new(:punct, :boundary)
   end
 end

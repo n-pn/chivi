@@ -23,6 +23,9 @@ VmHui   = 320 # "会"
 VmNeng  = 321 # "能"
 VmXiang = 322 # "想"
 
+VmKe3 = 323 # "可"
+VmYao = 324 # "要"
+
 # special verbs
 
 VShang = 330 # "下"

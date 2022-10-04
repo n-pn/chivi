@@ -16,6 +16,8 @@ struct CV::PosTag
       pos = str ? MtlPos.parse(str, init_pos) : init_pos
 
       hash[args[0]] = new(tag, pos)
+    rescue err
+      puts [name, line]
     end
   end
 
@@ -51,12 +53,15 @@ struct CV::PosTag
     when nil then LitTrans
     when 'N' then map_name(tag, key)
     when 'n' then map_noun(tag, key, vals)
+    when 't' then map_tword(key)
+    when 's' then map_place(key)
     when 'v' then map_verb(tag, key, vals)
     when 'a' then map_adjt(tag, key, vals)
     when 'p' then map_prepos(key)
     when 'd' then map_adverb(key)
     when 'm' then map_number(tag, key)
     when 'q' then map_quanti(key)
+    when 'o' then map_sound(key)
     when 'r' then map_pronoun(key)
     when 'k' then map_suffix(key)
     when 'x' then map_strings(key)
@@ -64,7 +69,7 @@ struct CV::PosTag
     when 'c' then map_conjunct(key)
     when 'u' then map_particle(key)
     when '!' then map_uniqword(key)
-    when '~' then map_polysemy(key)
+    when '~' then map_polysemy(tag, key)
     when '+' then map_phrase(tag)
     when 'w' then map_punct(vals[0])
     else          LitBlank
@@ -75,12 +80,12 @@ end
 require "./map_tag/*"
 
 # puts CV::PosTag.init("n").tag
-# puts CV::PosTag.parse("na").tag
-# puts CV::PosTag.parse("vm", "").tag
-# puts CV::PosTag.parse("vd").tag
-# puts CV::PosTag.parse("w", "﹑").tag
-# puts CV::PosTag.parse("w", ":").tag
-# puts CV::PosTag.parse("w", "：").tag
-# puts CV::PosTag.parse("vm", "会").tag
-# puts CV::PosTag.parse("w", "《").tag
-# puts CV::PosTag.parse("w", "“").tag
+# puts CV::PosTag.init("na").tag
+# puts CV::PosTag.init("vm", "").tag
+# puts CV::PosTag.init("~vd").tag
+# puts CV::PosTag.init("w", "﹑").tag
+# puts CV::PosTag.init("w", ":").tag
+# puts CV::PosTag.init("w", "：").tag
+# puts CV::PosTag.init("v!", "会").tag
+# puts CV::PosTag.init("w", "《").tag
+# puts CV::PosTag.init("w", "“").tag

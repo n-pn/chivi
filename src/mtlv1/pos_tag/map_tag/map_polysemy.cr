@@ -1,5 +1,5 @@
 struct CV::PosTag
-  def self.map_polysemy(tag : String)
+  def self.map_polysemy(tag : String, key = "")
     case tag
     when "~vn" then new(:pl_veno, MtlPos.flags(Verbish, Nounish))
     when "~vd" then new(:pl_veno, MtlPos.flags(Verbish, Advbial))

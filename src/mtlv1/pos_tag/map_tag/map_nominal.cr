@@ -15,20 +15,16 @@ struct CV::PosTag
     end
   end
 
-  Nform = new(:nform, :nounish)
-  Nbase = new(:nbase, :nounish)
-  Tword = new(:tword, :nounish)
+  Nform = new(:nform, MtlPos.flags(Nounish, Ktetic))
+  Nword = new(:nword, MtlPos.flags(Nounish, Ktetic))
 
   def self.map_noun(tag : String, key = "", vals = [] of String)
     case tag[1]?
     when 'a' then new(:nattr, :nounish)
     when 'h' then map_honor(vals[1]?)
-    when 's' then map_place(key)
-    when 'f' then map_place(key)
     when 'o' then map_nobjt(key)
-    when 't' then Tword
     when 'l' then Nform
-    else          Nbase
+    else          Nword
     end
   end
 
@@ -52,12 +48,21 @@ struct CV::PosTag
     new(tag, pos)
   end
 
-  PLACE_MAP = load_map("places", :locale)
+  PLACE_MAP = load_map("locations", MtlPos.flags(Nounish, Locale))
 
   def self.map_place(key : String)
-    PLACE_MAP[key] || begin
+    PLACE_MAP[key] ||= begin
       is_locat?(key[-1]) ? new(:posit, :locale) : new(:place, MtlPos.flags(Locale, Ktetic))
     end
+  end
+
+  TWORD_MAP = load_map("timewords", :nounish)
+
+  Tword = new(:tword, :nounish)
+
+  def self.map_tword(key : String)
+    # TODO: map time by key
+    TWORD_MAP[key] ||= Tword
   end
 
   def self.is_locat?(char : Char)
