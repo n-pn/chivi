@@ -8,7 +8,7 @@ module CV::TlRule
     succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
-    when .concoord?, .penum?
+    when .concoord?, .cenum?
       fold_noun_concoord!(succ, proper) || proper
     when .verbal?, .vmodals?
       fold_noun_verb!(proper, succ)
@@ -27,7 +27,7 @@ module CV::TlRule
       fold_noun_verb!(noun, succ)
     when .pt_zhi?
       fold_uzhi!(uzhi: succ, prev: proper)
-    when .pd_dep?
+    when .pt_dep?
       return proper if proper.prev? { |x| x.verbal? || x.preposes? }
       fold_ude1!(ude1: succ, prev: proper)
     else
@@ -46,7 +46,7 @@ module CV::TlRule
     elsif (prev = proper.prev?) && prev.vtwo?
       flip = false
 
-      if (succ = nominal.succ?) && (succ.pd_dep?)
+      if (succ = nominal.succ?) && (succ.pt_dep?)
         nominal = fold_ude1!(ude1: succ, prev: nominal)
       end
     else

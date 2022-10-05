@@ -6,14 +6,14 @@ module CV::TlRule
       fold_verbs!(node)
     when "右", "左"
       node.tag = PosTag::Modi
-      fold_modifier!(node)
+      fold_modis?(node)
     else
       node
     end
   end
 
   def fold_noun_space!(noun : MtNode) : MtNode
-    return noun unless (space = noun.succ?) && space.spaces?
+    return noun unless (space = noun.succ?) && space.position?
     fold_noun_space!(noun, space)
   end
 
@@ -23,13 +23,13 @@ module CV::TlRule
     flip = true
     case space.key
     when "上", "下"
-      return noun if noun.human? || space.succ?(&.pt_le?)
+      return noun if noun.cap_human? || space.succ?(&.pt_le?)
       space.val = fix_space_val!(space)
     when "中"
       return noun if space.succ?(&.pt_le?)
       space.val = "trong"
       if (succ = space.succ?) && succ.nominal?
-        return fold!(noun, succ, PosTag::NounPhrase, dic: 6, flip: true)
+        return fold!(noun, succ, succ.tag, dic: 6, flip: true)
       end
     when "前"
       # space.val = "trước khi" if noun.verbal?

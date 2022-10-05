@@ -200,7 +200,7 @@ class CV::TlName
     Set(Char).new(lines.map(&.[0]))
   end
 
-  def self.is_human?(input : String)
+  def self.is_cap_human?(input : String)
     return false unless first_char = input[0]?
     return true if LASTNAMES.includes?(first_char)
 

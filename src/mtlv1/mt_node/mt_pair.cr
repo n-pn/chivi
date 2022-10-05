@@ -17,10 +17,6 @@ class CV::MtPair < CV::MtNode
     node.val.empty?
   end
 
-  def modifier?
-    false
-  end
-
   def list
     raise "invalid!"
   end

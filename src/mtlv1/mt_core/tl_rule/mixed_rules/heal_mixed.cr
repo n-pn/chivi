@@ -52,7 +52,7 @@ module CV::TlRule
       return node.as_verb!(nil)
       # when .nominal?
       #   node = node.as_verb!(nil)
-      #   return node unless node.vintr? || node.verb_object?
+      #   return node unless node.vintr? || node.vobj?
       #   node.as_noun!
     end
 
@@ -72,7 +72,7 @@ module CV::TlRule
       return node.as_verb!(nil)
     when .adjts?
       return node.as_verb!(nil) unless prev.is_a?(MtTerm)
-      return prev.modifier? ? node.as_noun! : node.as_verb!(nil)
+      return prev.modis? ? node.as_noun! : node.as_verb!(nil)
     when .pt_dep?
       # TODO: check for adjt + ude1 + verb (grammar error)
       return prev.prev?(&.advbial?) ? node.as_verb!(nil) : node.as_noun!
@@ -122,7 +122,7 @@ module CV::TlRule
     case prev
     when .nil?, .boundary?, .advbial?
       node.as_adjt!(nil)
-    when .modifier?
+    when .modis?
       node.as_noun!
     else
       node.as_adjt!(nil)

@@ -1,14 +1,14 @@
 module CV::TlRule
-  def heal_quanti!(node : MtNode) : MtNode
-    return node unless node.is_a?(MtTerm)
-    not_quanti?(node) ? node : MtDict.fix_quanti(node)
-  end
+  # def heal_quanti!(node : MtNode) : MtNode
+  #   return node unless node.is_a?(MtTerm)
+  #   not_quanti?(node) ? node : MtDict.fix_quanti(node)
+  # end
 
-  def not_quanti?(node : MtNode)
-    # abort transform if node is certainly a verb
-    return false unless node.verbal? && (succ = node.succ?)
-    succ.pt_le? || succ.comma? || succ.colon? || succ.pstop?
-  end
+  # def not_quanti?(node : MtNode)
+  #   # abort transform if node is certainly a verb
+  #   return false unless node.verbal? && (succ = node.succ?)
+  #   succ.aspect? || succ.comma? || succ.boundary?
+  # end
 
   QUANTI_PRE_APPRO = {
     "多" => "hơn",

@@ -35,18 +35,16 @@ module CV::TlRule
       succ = heal_mixed!(succ, prev: adjt) if succ.polysemy?
 
       case succ.tag
-      when .adverb?
+      when .adverbs?
         if succ.key == "又"
           fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
         else
           break
         end
-      when .junction?
+      when .join_word?
         fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
-      when .aform?
-        adjt = fold!(adjt, succ, PosTag::Aform, dic: 4)
-      when .adjt?
-        adjt = fold!(adjt, succ, PosTag::Adjt, dic: 4)
+      when .adjts?
+        adjt = fold!(adjt, succ, succ.tag, dic: 4)
       when .vdir?
         adjt = MtDict.fix_verb!(adjt) if adjt.is_a?(MtTerm)
         return fold_verbs!(adjt)
@@ -107,7 +105,7 @@ module CV::TlRule
     fold_adj_adv!(adjt, prev)
   end
 
-  def fold_modifier!(node : MtNode, succ = node.succ?, nega : MtNode? = nil)
+  def fold_modis?(node : MtNode, succ = node.succ?, nega : MtNode? = nil)
     # puts [node, succ, nega].colorize.green
 
     node = fold!(nega, node, node.tag, dic: 4) if nega

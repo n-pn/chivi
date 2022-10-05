@@ -4,20 +4,20 @@ module CV::TlRule
     if verb.verb? && vdir.key == "过去"
       if (succ = vdir.succ?)
         # puts [verb, vdir, succ]
-        if succ.pd_dep? && (noun = scan_noun!(succ.succ?))
-          vdir.set!("quá khứ", PosTag::Noun)
+        if succ.pt_dep? && (noun = scan_noun!(succ.succ?))
+          vdir.set!("quá khứ", PosTag::Tword)
           node = fold_ude1_left!(ude1: succ, left: vdir, right: noun)
-          return fold!(verb, node, PosTag::VerbObject, dic: 6)
+          return fold!(verb, node, PosTag::Vobj, dic: 6)
         end
 
         if noun = scan_noun!(succ)
           verb = fold!(verb, vdir.set!("qua"), PosTag::Verb, dic: 5)
-          return fold!(verb, noun, PosTag::VerbObject, dic: 6)
+          return fold!(verb, noun, PosTag::Vobj, dic: 6)
         end
       end
 
-      vdir.set!("quá khứ", PosTag::Noun)
-      return fold!(verb, vdir, PosTag::VerbObject, dic: 6)
+      vdir.set!("quá khứ", PosTag::Tword)
+      return fold!(verb, vdir, PosTag::Vobj, dic: 6)
     end
 
     case vdir.key

@@ -13,7 +13,7 @@ module CV::TlRule
     when .names?
       fold!(node, succ, succ.tag, dic: 4)
     when .posit?
-      fold!(node, succ, PosTag::DefnPhrase, dic: 3, flip: true)
+      fold!(node, succ, PosTag::DcPhrase, dic: 3, flip: true)
       # when .locality?
       #   fold_noun_space!(node, succ) if mode == 0
     else
@@ -41,10 +41,10 @@ module CV::TlRule
     # puts [prev, succ, "noun_can_combine"]
     case succ
     when .maybe_adjt?
-      return false unless (tail = succ.succ?) && tail.pd_dep?
+      return false unless (tail = succ.succ?) && tail.pt_dep?
       tail.succ? { |x| x.boundary? || x.verbal? } || false
     when .preposes?, .verbal?
-      return true if succ.succ? { |x| x.pd_dep? || x.boundary? }
+      return true if succ.succ? { |x| x.pt_dep? || x.boundary? }
       return false if prev.boundary?
       is_linking_verb?(prev, succ)
     else

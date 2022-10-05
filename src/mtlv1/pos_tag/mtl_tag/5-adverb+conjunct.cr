@@ -13,7 +13,7 @@ AdvTime  = 520 # 时间副词 adverbs of time
 AdvZong  = 523 # "总": both time and scoop
 AdvScope = 525 # 范围副词 scope adverbs
 AdvJiu3  = 527 # "就": both scoop and mood
-AdvMood  = 530 # 语气副词 modal adverbs/adverbs of mood
+AdvMood  = 530 # 语气副词 modi??al adverbs/adverbs of mood
 
 AdvFreque = 535 # 频度副词 adverbs of frequency
 AdvZai4   = 537 # "再": both frequency or correlative

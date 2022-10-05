@@ -45,12 +45,12 @@ module CV::TlRule
   def should_fold_noun_concoord?(noun : MtNode, concoord : MtNode) : Bool
     return true unless (prev = noun.prev?) && (succ = concoord.succ?)
     return false if prev.numeral? || prev.pronouns?
-    return true unless prev.pd_dep? && (prev = prev.prev?)
+    return true unless prev.pt_dep? && (prev = prev.prev?)
 
     case prev.tag
-    when .nform? then true
-    when .human? then !succ.human?
-    else              false
+    when .nform?     then true
+    when .cap_human? then !succ.cap_human?
+    else                  false
     end
   end
 
@@ -60,7 +60,7 @@ module CV::TlRule
 
   def is_concoord?(node : MtNode)
     case node
-    when .penum?, .concoord? then true
+    when .cenum?, .concoord? then true
     else
       {"但", "又", "或", "或是"}.includes?(node.key)
     end
@@ -68,9 +68,9 @@ module CV::TlRule
 
   def similar_tag?(left : MtNode, right : MtNode)
     case left.tag
-    when .nform? then true
-    when .human? then right.human?
-    when .noun?  then right.noun? || right.pro_dem?
+    when .nform?     then true
+    when .cap_human? then right.cap_human?
+    when .noun?      then right.noun? || right.pro_dem?
     else
       right.nform? || right.tag == left.tag
     end
@@ -82,7 +82,7 @@ module CV::TlRule
 
     # TODO: add more white list?
     # puts [verb, node]
-    node = fold!(node, succ, PosTag::PrepClause, dic: 6)
+    node = fold!(node, succ, PosTag::PrepForm, dic: 6)
     fold!(node, scan_verb!(verb), verb.tag, dic: 6)
 
     # TOD: fold as subject + verb structure?

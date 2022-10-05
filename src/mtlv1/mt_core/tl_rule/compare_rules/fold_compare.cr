@@ -18,7 +18,7 @@ module CV::TlRule
     while tail
       return if tail.puncts? || tail.key == head.key
 
-      if tail.uyy?
+      if tail.pt_cmps?
         break unless tail.key == "一样"
         break unless tail.prev?(&.adv_bu4?)
       end
@@ -41,7 +41,7 @@ module CV::TlRule
     root.regen_list!
 
     return root unless succ = scan_adjt!(root.succ?)
-    return root unless succ.adjts? || succ.verb_object?
+    return root unless succ.adjts? || succ.vobj?
 
     fold!(root, succ, PosTag::Aform, dic: 1, flip: true)
   end

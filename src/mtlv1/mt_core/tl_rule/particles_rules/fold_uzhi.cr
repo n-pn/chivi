@@ -5,11 +5,7 @@ module CV::TlRule
 
     if succ.nhanzis? && is_percent?(prev, uzhi)
       # TODO: handle this in fold_number!
-      tag = PosTag::Number
-    elsif succ.is_a?(MtTerm)
-      unless tag = MtDict.fix_uzhi(succ)
-        return prev if succ.adjt?
-      end
+      tag = PosTag::Numeric
     end
 
     tag ||= PosTag::Nform

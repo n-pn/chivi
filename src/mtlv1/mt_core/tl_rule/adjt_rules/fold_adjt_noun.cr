@@ -12,7 +12,7 @@ module CV::TlRule
     case adjt.tag
     when .aform? then return adjt
     when .adjt?  then return adjt if adjt.key.size > 2
-    when .modi?  then flip = adjt.key != "原"
+    when .modis? then flip = adjt.key != "原"
     end
 
     noun = fold_nouns!(noun, mode: 0)

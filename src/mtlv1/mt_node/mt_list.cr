@@ -44,10 +44,6 @@ class CV::MtList < CV::MtNode
     # puts "==/fold_list=="
   end
 
-  def modifier?
-    false
-  end
-
   def add_head!(node : MtTerm)
     self.fix_prev!(node.prev?)
 

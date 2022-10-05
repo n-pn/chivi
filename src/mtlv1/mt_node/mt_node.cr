@@ -1,6 +1,4 @@
 abstract class CV::MtNode
-  forward_missing_to @tag
-
   property key : String = ""
   property val : String = ""
 
@@ -10,6 +8,8 @@ abstract class CV::MtNode
 
   property! prev : MtNode
   property! succ : MtNode
+
+  forward_missing_to @tag
 
   def prev?
     @prev.try { |x| yield x }

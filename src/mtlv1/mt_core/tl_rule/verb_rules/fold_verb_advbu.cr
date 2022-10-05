@@ -4,7 +4,7 @@ module CV::TlRule
 
     if succ.key == verb.key
       fold_verb_advbu_verb!(verb, adv_bu, succ)
-    elsif succ.vdirs?
+    elsif succ.vdir?
       fold_verb_vdirs!(verb, succ)
     else
       fold_verb_compl!(verb, succ).try { |x| verb = x } || verb
@@ -15,11 +15,11 @@ module CV::TlRule
     adv_bu.val = "hay"
     verb_2.val = "không"
 
-    if (tail = verb_2.succ?) && (tail.noun? || tail.pro_pers?)
+    if (tail = verb_2.succ?) && (tail.nominal? || tail.pro_pers?)
       verb_2.fix_succ!(tail.succ?)
       tail.fix_succ!(adv_bu)
       tail.fix_prev!(verb)
-      tag = PosTag::Vintr
+      tag = PosTag::Vint
     else
       tag = PosTag::Verb
     end

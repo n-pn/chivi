@@ -22,7 +22,7 @@ module CV::TlRule
       # puts ["find_verb", right]
 
       case right
-      when .plsgn?, .mnsgn?, .verbal?, .preposes?
+      when .pl_mark?, .mn_mark?, .verbal?, .preposes?
         return right
       when .advbial?, .comma?
         next
@@ -36,20 +36,20 @@ module CV::TlRule
   def find_verb_after_for_prepos(node : MtNode, skip_comma = true) : MtNode?
     while node = node.succ?
       case node
-      when .plsgn?, .mnsgn? then return node
-      when .comma?          then return nil if skip_comma
+      when .pl_mark?, .mn_mark? then return node
+      when .comma?              then return nil if skip_comma
       when .v_shang?, .v_xia?
         return node if node.succ?(&.pt_le?)
       when .vmodals?, .verbal? then return node
       when .adjts?
         return nil unless {"相同", "类似"}.includes?(node.key)
-        return node.set!(PosTag::Vintr)
+        return node.set!(PosTag::Vint)
       else
         if node.key == "一" && (succ = node.succ?) && succ.verb?
           return fold!(node.set!("một phát"), succ, succ.tag, dic: 5, flip: true)
         end
 
-        return nil unless node.advbial? || node.pdash?
+        return nil unless node.advbial?
       end
     end
   end

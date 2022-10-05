@@ -33,8 +33,8 @@ module CV::TlRule
           # TODO: call scan_noun here then fold
           node = nil
         else
-          prodem, nquant, node = split_prodem!(node, node.succ?)
-          next
+          prodem = node
+          node = node.succ?
         end
       when .pro_ints?
         node = fold_pro_ints!(node, node.succ?)
@@ -80,13 +80,13 @@ module CV::TlRule
         end
 
         break
-      when .verb_object?
+      when .vobj?
         break unless succ = node.succ?
 
         case succ
         when .nominal?
           succ = fold_nouns!(succ, mode: 1)
-          node = fold!(node, succ, PosTag::NounPhrase, dic: 5, flip: true)
+          node = fold!(node, succ, PosTag::Nform, dic: 5, flip: true)
         when .pt_dep?
           node = fold_ude1!(ude1: succ, prev: node)
         end
@@ -106,8 +106,8 @@ module CV::TlRule
         node = fold_verb_as_noun!(node, mode: mode)
       when .onomat?
         node = fold_adjt_as_noun!(node)
-      when .modi?
-        node = fold_modifier!(node)
+      when .modis?
+        node = fold_modis?(node)
         node = fold_adjt_as_noun!(node)
       when .adjts?
         node = fold_adjt_as_noun!(node)
@@ -123,7 +123,7 @@ module CV::TlRule
           node = scan_noun!(node) || node unless node.nominal?
         end
       when .pt_dev?
-        if node.prev? { |x| x.pre_zai? || x.verbal? } || node.succ?(&.spaces?)
+        if node.prev? { |x| x.pre_zai? || x.verbal? } || node.succ?(&.position?)
           node.set!("đất", PosTag::Noun)
         end
       end
@@ -153,8 +153,8 @@ module CV::TlRule
     return node unless (ude1 = verb.succ?) && ude1.pt_dep?
     return node unless (tail = scan_noun!(ude1.succ?)) && tail.object?
 
-    node = fold!(node, ude1.set!(""), PosTag::DefnPhrase, dic: 4)
-    fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
+    node = fold!(node, ude1.set!(""), PosTag::DcPhrase, dic: 4)
+    fold!(node, tail, PosTag::Nform, dic: 9, flip: true)
   end
 
   def clean_nquant(nquant : MtNode, prodem : MtNode?)
@@ -175,7 +175,7 @@ module CV::TlRule
     ude1.val = "" unless head.noun? || head.names?
 
     return head unless tail = scan_noun!(ude1.succ?)
-    fold!(head, tail, PosTag::NounPhrase, dic: 8, flip: true)
+    fold!(head, tail, PosTag::Nform, dic: 8, flip: true)
   end
 
   def fold_adjt_as_noun!(node : MtNode)
@@ -189,9 +189,9 @@ module CV::TlRule
     node = fold_verbs!(node)
     return node if node.nominal? || mode == 3 || !(succ = node.succ?)
 
-    unless succ.pt_dep? || node.verb_object? || node.vintr?
+    unless succ.pt_dep? || node.vobj? || node.vintr?
       return node unless succ = scan_noun!(succ, mode: 0)
-      node = fold!(node, succ, PosTag::VerbObject, dic: 6)
+      node = fold!(node, succ, PosTag::Vobj, dic: 6)
     end
 
     fold_verb_ude1!(node)
@@ -201,9 +201,9 @@ module CV::TlRule
     return node unless succ && succ.pt_dep?
     return node unless (noun = scan_noun!(succ.succ?, mode: 1)) && noun.object?
 
-    node = fold!(node, succ.set!(""), PosTag::DefnPhrase, dic: 7)
+    node = fold!(node, succ.set!(""), PosTag::DcPhrase, dic: 7)
 
-    tag = noun.names? || noun.human? ? noun.tag : PosTag::NounPhrase
+    tag = noun.names? || noun.cap_human? ? noun.tag : PosTag::Nform
     fold!(node, noun, tag, dic: 6, flip: true)
   end
 end

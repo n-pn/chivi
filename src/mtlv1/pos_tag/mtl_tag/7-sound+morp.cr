@@ -4,7 +4,7 @@
 
 Onomat = 700 # onomatopoeia - tượng thanh
 Interj = 704 # interjection/exclamation - thán từ
-Mopart = 708 # modal particle - ngữ khí
+Mopart = 708 # modi??al particle - ngữ khí
 
 # morpheme
 

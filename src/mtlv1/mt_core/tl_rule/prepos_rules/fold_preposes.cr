@@ -8,8 +8,8 @@ module CV::TlRule
     when .pre_dui? then fold_pre_dui!(node, succ, mode: mode)
     when .pre_bei? then fold_pre_bei!(node, succ, mode: mode)
     when .pre_zai? then fold_pre_zai!(node, succ, mode: mode)
-    when .pre_bi3? then fold_compare_bi3!(node, succ, mode: mode)
-    else                fold_other_preposes!(node, succ, mode)
+      # when .pre_bi3? then fold_compare_bi3!(node, succ, mode: mode)
+    else fold_other_preposes!(node, succ, mode)
     end
   end
 
@@ -32,16 +32,16 @@ module CV::TlRule
   end
 
   def fold_pre_dui!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
-    return node.set!("đúng", PosTag::Unkn) if !succ || succ.boundary?
+    return node.set!("đúng", PosTag::Adjt) if !succ || succ.boundary?
 
     # TODO: combine grammar
 
     case succ.tag
-    when .pd_dep?
-      fold!(node.set!("đúng"), succ.set!(""), PosTag::Unkn, dic: 7)
+    when .pt_dep?
+      fold!(node.set!("đúng"), succ.set!(""), PosTag::Adjt, dic: 7)
     when .pt_le?
       # succ.val = "" unless keep_pt_le?(node, succ)
-      fold!(node.set!("đúng"), succ, PosTag::Unkn, dic: 7)
+      fold!(node.set!("đúng"), succ, PosTag::Adjt, dic: 7)
     when .boundary?, .conjunct?, .concoord?
       node.set!("đúng", PosTag::Adjt)
     else
@@ -64,7 +64,7 @@ module CV::TlRule
   def fold_pre_zai!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
     succ = heal_mixed!(succ) if succ.polysemy?
 
-    if succ.verb? || succ.verb_object?
+    if succ.verb? || succ.vobj?
       # TODO: check conditions when prezai can be translated at "đang"
       # node.set!("đang")
 
@@ -75,13 +75,13 @@ module CV::TlRule
     fold_prepos_inner!(node, succ, mode: mode)
   end
 
-  def fold_prezai_places?(node : MtNode, noun : MtNode, ude1 : MtNode, tail : MtNode) : MtNode?
-    return nil if noun.places?
+  def fold_prezai_locale?(node : MtNode, noun : MtNode, ude1 : MtNode, tail : MtNode) : MtNode?
+    return nil if noun.locale?
 
-    unless tail.places?
+    unless tail.locale?
       return nil unless tail = fold_noun_space!(noun: tail)
     end
 
-    fold_noun_ude1!(noun, ude1, tail)
+    fold_ude1_left!(ude1: ude1, left: noun, right: tail)
   end
 end

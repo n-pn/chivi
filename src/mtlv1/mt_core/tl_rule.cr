@@ -1,4 +1,3 @@
-require "./mt_dict"
 require "./tl_rule/**"
 
 module CV::TlRule
@@ -46,7 +45,7 @@ module CV::TlRule
     when .pronouns?  then fold_pronouns!(node)
     when .timeword?  then fold_timeword!(node)
     when .numeral?   then fold_number!(node)
-    when .modi?      then fold_modifier!(node)
+    when .modis?     then fold_modis?(node)
     when .adjts?     then fold_adjts!(node, prev: nil)
     when .vmodals?   then fold_vmodals!(node)
     when .verbal?    then fold_verbs!(node)

@@ -24,20 +24,30 @@ struct CV::PosTag
     ADJTVAL_MAP[key] ||= Adjt
   end
 
+  VAUXIL_MAP = load_map("vauxils", :verbish)
+  VOFORM_MAP = load_map("voforms", :verbish)
   VINTRA_MAP = load_map("vintras", :verbish)
-  VAUXIL_MAP = load_map("vauxils", MtlPos.flags(Verbish, Vauxil))
   VERBAL_MAP = load_map("verbals", :verbish)
 
   Vmod = new(:vmod, :verbish)
   Verb = new(:verb, :verbish)
+  Vint = new(:vint, :verbish)
+  Vobj = new(:vobj, :verbish)
 
   Vform = new(:vform, :verbish)
 
   def self.map_verb(tag : String, key : String = "", vals = [] of String) : self
     case tag[1]?
+    when 'o' then map_voform(key)
     when '!' then map_vauxil(key)
     when 'i' then map_vintra(key, poly: vals.size > 1)
     else          map_verbal(key, poly: vals.size > 1)
+    end
+  end
+
+  def self.map_voform(key : String)
+    VOFORM_MAP[key] ||= begin
+      Vobj
     end
   end
 

@@ -8,24 +8,24 @@ module CV::TlRule
     end
 
     return vyou unless (noun = scan_noun!(succ)) && (tail = noun.succ?)
-    return fold_vyou_ude1!(vyou, ude1: tail, noun: noun) if tail.pd_dep?
+    return fold_vyou_ude1!(vyou, ude1: tail, noun: noun) if tail.pt_dep?
 
     fold_compare_vyou!(vyou, noun, tail)
   end
 
   def fold_vyou_ude1!(vyou : MtNode, ude1 : MtNode, noun : MtNode)
     unless tail = scan_noun!(ude1.succ?)
-      return fold!(vyou, noun, PosTag::VerbObject, dic: 6)
+      return fold!(vyou, noun, PosTag::Vobj, dic: 6)
     end
 
     if find_verb_after(tail)
       ude1.set!("")
-      head = fold!(vyou, noun, PosTag::VerbObject, dic: 7)
+      head = fold!(vyou, noun, PosTag::Vobj, dic: 7)
       fold!(head, tail, tail.tag, dic: 8, flip: true)
     else
-      defn = fold!(noun, ude1.set!("của"), PosTag::DefnPhrase, dic: 3, flip: true)
+      defn = fold!(noun, ude1.set!("của"), PosTag::DcPhrase, dic: 3, flip: true)
       noun = fold!(defn, tail, tail.tag, dic: 4, flip: true)
-      fold!(vyou, noun, PosTag::VerbObject, dic: 6)
+      fold!(vyou, noun, PosTag::Vobj, dic: 6)
     end
   end
 
@@ -48,8 +48,8 @@ module CV::TlRule
       tail = fold_verbs!(tail)
     end
 
-    unless tail.adjts? || tail.verb_object?
-      return fold!(vyou, noun, PosTag::VerbObject, dic: 7)
+    unless tail.adjts? || tail.vobj?
+      return fold!(vyou, noun, PosTag::Vobj, dic: 7)
     end
 
     adverb.val = "" if adverb
@@ -73,7 +73,7 @@ module CV::TlRule
 
     output = MtList.new(head, noun, dic: 1, idx: head.idx)
 
-    return output unless (succ = output.succ?) && (succ.pd_dep? || succ.pt_der?)
+    return output unless (succ = output.succ?) && (succ.pt_dep? || succ.pt_der?)
     return output unless (tail = succ.succ?) && tail.key == "多"
 
     noun.fix_succ!(succ.set!(""))

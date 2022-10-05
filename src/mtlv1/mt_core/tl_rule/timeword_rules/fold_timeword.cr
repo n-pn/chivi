@@ -7,7 +7,7 @@ module CV::TlRule
       case succ.tag
       when .nhanzis?, .ndigits?
         fold_number!(succ, prev: node)
-      when .adj_hao?
+      when .wd_hao?
         fold!(node, succ.set!("chào"), PosTag::VerbPhrase, dic: 8, flip: true)
       else
         node

@@ -14,7 +14,7 @@ class CV::MtData
 
   def concat(other : MtData) : self
     other_head = other.head
-    other_head = other_head.succ if other_head.none?
+    other_head = other_head.succ if other_head.empty?
     @tail.fix_succ!(other_head)
     @tail = other.tail
     self

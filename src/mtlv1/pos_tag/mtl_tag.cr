@@ -116,6 +116,10 @@ enum CV::MtlTag
     value >= 229 && value < 240
   end
 
+  def pro_split?
+    value >= 214 && value < 229
+  end
+
   # numbers
 
   def numeral?
@@ -143,6 +147,10 @@ enum CV::MtlTag
   end
 
   # verbal
+
+  def vobjs?
+    value >= 300 && value < 305
+  end
 
   def verbs?
     value >= 300 && value < 340

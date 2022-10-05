@@ -3,9 +3,9 @@ module CV::TlRule
     return nominal unless prodem
 
     if nominal
-      if nominal.verb_object?
+      if nominal.vobj?
         prodem = heal_pro_dem!(prodem)
-        return fold!(prodem, nominal, PosTag::VerbClause, dic: 8)
+        return fold!(prodem, nominal, PosTag::SubjVerb, dic: 8)
       end
 
       # puts [prodem.prev?, prodem.succ?]

@@ -9,20 +9,20 @@ module CV::TlRule
   #       node = fold_nquant_noun!(prev, node)
   #       flag = 1
   #     when .pro_ji?
-  #       return fold!(prev, node, PosTag::NounPhrase, dic: 3)
+  #       return fold!(prev, node, PosTag::Nform, dic: 3)
   #     when .pro_ints?
   #       return fold_什么_noun!(prev, node) if prev.key == "什么"
-  #       return fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
-  #     when .pl_ajno?, .modi?
+  #       return fold_flip!(prev, node, PosTag::Nform, dic: 3)
+  #     when .pl_ajno?, .modis?
   #       break if flag > 0
-  #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
+  #       node = fold_flip!(prev, node, PosTag::Nform, dic: 3)
   #     when .position?
   #       break if flag > 0
-  #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
+  #       node = fold_flip!(prev, node, PosTag::Nform, dic: 3)
   #     when .pl_ajad?, .adjts?
   #       break if flag > 0 || prev.key.size > 1
-  #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 8)
-  #     when .pd_dep?
+  #       node = fold_flip!(prev, node, PosTag::Nform, dic: 8)
+  #     when .pt_dep?
   #       break if mode < 1
   #       node = fold_ude1_left!(ude1: node, left: prev, right: ude1.succ?)
   #     else
@@ -44,6 +44,6 @@ module CV::TlRule
     succ.fix_succ!(node.succ?)
     node.fix_succ!(succ)
 
-    fold!(prev, succ, PosTag::NounPhrase, dic: 3)
+    fold!(prev, succ, PosTag::Nform, dic: 3)
   end
 end

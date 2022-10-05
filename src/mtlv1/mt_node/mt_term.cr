@@ -66,8 +66,14 @@ class CV::MtTerm < CV::MtNode
     self
   end
 
-  def blank?
+  def blank? : Bool
     @key.empty? || @val.blank?
+  end
+
+  def empty!(flip = true) : self
+    @val = ""
+    @tag.pos |= (flip ? MtlPos::NoWsAfter : MtlPos::NoWsBefore)
+    self
   end
 
   def to_int?
@@ -100,10 +106,6 @@ class CV::MtTerm < CV::MtNode
     keys.includes?(@key)
   end
 
-  def modifier?
-    @tag.modis? || (@tag.adjts? && @key.size < 3)
-  end
-
   def lit_str?
     @key.matches?(/^[a-zA-Z0-9_.-]+$/)
   end
@@ -115,7 +117,7 @@ class CV::MtTerm < CV::MtNode
   #########
 
   def apply_cap!(cap : Bool = false) : Bool
-    return cap if @val.blank? || @tag.none?
+    return cap if @val.blank? || @tag.empty?
     return cap_after?(cap) if @tag.puncts?
 
     @val = TextUtil.capitalize(@val) if cap && !@tag.fixstr?

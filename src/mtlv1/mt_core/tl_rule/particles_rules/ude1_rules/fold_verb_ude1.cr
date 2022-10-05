@@ -7,15 +7,15 @@ module CV::TlRule
     case prev.tag
     when .nominal?
       if verb.verb?
-        head = fold!(prev, ude1, PosTag::DefnPhrase, dic: 7)
+        head = fold!(prev, ude1, PosTag::DcPhrase, dic: 7)
       else
-        head = fold!(verb, ude1, PosTag::DefnPhrase, dic: 7)
+        head = fold!(verb, ude1, PosTag::DcPhrase, dic: 7)
       end
 
-      fold!(head, right, PosTag::NounPhrase, dic: 6, flip: true)
+      fold!(head, right, PosTag::Nform, dic: 6, flip: true)
     when .quantis?, .nquants?
-      verb = fold!(verb, right, PosTag::NounPhrase, dic: 8, flip: true)
-      fold!(prev, verb, PosTag::NounPhrase, 3)
+      verb = fold!(verb, right, PosTag::Nform, dic: 8, flip: true)
+      fold!(prev, verb, PosTag::Nform, 3)
     else
       ude1
     end

@@ -14,7 +14,7 @@ module CV::TlRule
       fold!(head, tail, tail.tag, dic: 8, flip: true)
     when .quantis?
       if (tail_2 = tail.succ?) && tail_2.nominal?
-        tail = fold!(tail, tail_2, PosTag::NounPhrase, dic: 7)
+        tail = fold!(tail, tail_2, PosTag::Nform, dic: 7)
         fold!(head, tail, tail.tag, dic: 6, flip: true)
       else
         fold!(head, tail, PosTag::Nqnoun, flip: true)

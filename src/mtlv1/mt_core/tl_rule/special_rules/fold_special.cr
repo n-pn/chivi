@@ -1,7 +1,7 @@
 module CV::TlRule
   def fold_specials!(node : MtNode)
     case node
-    when .adj_hao? then fold_adjt_hao!(node)
+    when .wd_hao?  then fold_wd_hao!(node)
     when .v_shang? then fix_上下(node, MAP_上)
     when .v_xia?   then fix_上下(node, MAP_下)
     when .key_in?("和", "跟")
@@ -25,7 +25,7 @@ module CV::TlRule
       elsif node.specials?
         return true if node.key_in?("上", "下") && fix_上下(node).verb?
       elsif node.puncts?
-        return false unless node.penum?
+        return false unless node.cenum?
       end
     end
   end
@@ -35,22 +35,22 @@ module CV::TlRule
 
   def fix_上下(node : MtNode, vals = node.key == "上" ? MAP_上 : MAP_下) : MtNode
     case node.prev?
-    when .nil?, .none?, .puncts?
+    when .nil?, .empty?, .puncts?
       if node.succ? { |x| x.subject? || x.pt_le? }
         node.set!(vals[0], PosTag::Verb)
       else
         node.set!(vals[2], PosTag::Noun)
       end
-    when .noun?, .affil?
+    when .nouns?
       node.set!(vals[1], PosTag::Locat)
-    when .verb?, .vintr?
+    when .verbs?
       node.set!(vals[0], PosTag::Vdir)
     else
       node
     end
   end
 
-  def fold_adjt_hao!(node : MtNode) : MtNode
+  def fold_wd_hao!(node : MtNode) : MtNode
     case succ = node.succ?
     when .nil?, .puncts?, .pt_le?
       node.set!("tốt", PosTag::Adjt)

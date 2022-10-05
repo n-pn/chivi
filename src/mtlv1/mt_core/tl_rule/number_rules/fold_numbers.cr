@@ -29,7 +29,7 @@ module CV::TlRule
 
   def fold_nquant_noun!(prev : MtNode, node : MtNode)
     prev = clean_个!(prev)
-    node = fold!(prev, node, PosTag::NounPhrase, dic: 3)
+    node = fold!(prev, node, PosTag::Nform, dic: 3)
     node
   end
 
@@ -55,44 +55,44 @@ module CV::TlRule
 
     appro = 0
 
-    case tail
-    when .pre_dui?
-      if (succ_2 = tail.succ?) && succ_2.numbers?
-        tail.val = "đối"
-        return fold!(node, succ_2, PosTag::Aform, dic: 2)
-      end
+    # case tail
+    # when .pre_dui?
+    #   if (succ_2 = tail.succ?) && succ_2.numbers?
+    #     tail.val = "đối"
+    #     return fold!(node, succ_2, PosTag::Aform, dic: 2)
+    #   end
 
-      tail.set!("đôi", PosTag::Qtnoun)
-    when .pre_ba3?
-      tail = fold_pre_ba3!(tail)
+    #   tail.set!("đôi", PosTag::Qtnoun)
+    # when .pre_ba3?
+    #   tail = fold_pre_ba3!(tail)
 
-      if tail.nominal?
-        return fold!(node, tail, tail.tag, dic: 3)
-      elsif node.prev? { |x| x.verbal? || x.prev?(&.verbal?) }
-        tail.set!("phát", PosTag::Qtverb)
-        return fold!(node, tail, PosTag::Nqverb, dic: 5)
-      else
-        tail.set!("chiếc", PosTag::Qtnoun)
-        return fold!(node, tail, PosTag::Nqnoun, dic: 5)
-      end
-    when .pro_ji?
-      node = fold!(node, tail, PosTag::Number, dic: 5)
+    #   if tail.nominal?
+    #     return fold!(node, tail, tail.tag, dic: 3)
+    #   elsif node.prev? { |x| x.verbal? || x.prev?(&.verbal?) }
+    #     tail.set!("phát", PosTag::Qtverb)
+    #     return fold!(node, tail, PosTag::Nqverb, dic: 5)
+    #   else
+    #     tail.set!("chiếc", PosTag::Qtnoun)
+    #     return fold!(node, tail, PosTag::Nqnoun, dic: 5)
+    #   end
+    # when .pro_ji?
+    #   node = fold!(node, tail, PosTag::Numeric, dic: 5)
 
-      # TODO: handle appros
-      return fold_proji_right!(node)
-    else
-      if tail.key == "号"
-        return fold!(node, tail, PosTag::Noun, dic: 9, flip: true)
-      end
+    #   # TODO: handle appros
+    #   return fold_proji_right!(node)
+    # else
+    #   if tail.key == "号"
+    #     return fold!(node, tail, PosTag::Noun, dic: 9, flip: true)
+    #   end
 
-      node, appro = fold_pre_quanti_appro!(node, tail)
-      if appro > 0
-        return node unless tail = node.succ?
-      end
+    #   node, appro = fold_pre_quanti_appro!(node, tail)
+    #   if appro > 0
+    #     return node unless tail = node.succ?
+    #   end
 
-      tail = heal_quanti!(tail)
-      return fold_yi_verb!(node, tail) unless tail.quantis?
-    end
+    #   tail = heal_quanti!(tail)
+    #   return fold_yi_verb!(node, tail) unless tail.quantis?
+    # end
 
     has_ge4 = tail if tail.key.ends_with?('个')
     appro = 1 if is_pre_appro_num?(node.prev?)
@@ -103,25 +103,16 @@ module CV::TlRule
     when "点" then node = fold_hour!(node, tail, appro)
     when "分" then node = fold_minute!(node, tail, appro)
     else
-      node = fold!(node, tail, map_nqtype(tail), dic: 3)
+      node = fold!(node, tail, tail.tag.qt_to_nq!, dic: 3)
       node = fold_suf_quanti_appro!(node) if has_ge4
     end
 
     if has_ge4 && (tail = node.succ?) && tail.quantis?
       heal_has_ge4!(has_ge4)
-      node = fold!(node, tail, map_nqtype(tail), dic: 3)
+      node = fold!(node, tail, tail.tag.qt_to_nq!, dic: 3)
     end
 
     fold_suf_quanti_appro!(node)
-  end
-
-  def map_nqtype(node : MtNode)
-    case node.tag
-    when .qtnoun? then PosTag::Nqnoun
-    when .qttime? then PosTag::Nqtime
-    when .qtverb? then PosTag::Nqverb
-    else               PosTag::Nqiffy
-    end
   end
 
   def heal_has_ge4!(node : MtNode)
@@ -133,7 +124,7 @@ module CV::TlRule
   end
 
   def fold_yi_verb!(node : MtNode, succ : MtNode)
-    return node unless node.key == "一" && (succ.verb? || succ.vintr?)
+    return node unless node.key == "一" && succ.verbs?
     fold!(node.set!("vừa"), succ, succ.tag, dic: 4)
   end
 
@@ -156,7 +147,7 @@ module CV::TlRule
     succ = node
     while succ = succ.try(&.succ?)
       if succ.ndigits? || succ.ndigits? # only combine if succ is hanzi or latin numbers
-        node.tag = PosTag::Number
+        node.tag = PosTag::Numeric
         key_io << succ.key
         val_io << " " << succ.val
         next

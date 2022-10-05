@@ -1,9 +1,10 @@
 # verbs
 
-Vobj = 300 # verb + pobject phrase
+Vobj = 300 # verb + object phrase
 Vsep = 301 # verb object seperatable
+Vset = 302 # verb + object as skill
 
-Vform = 304 # verb phrase need no object
+Vform = 305 # verb phrase need no object
 
 Vint = 308 # intransitive verb
 Vinx = 309 # intra | trans

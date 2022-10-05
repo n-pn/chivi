@@ -33,9 +33,9 @@ module CV::TlRule
     succ.val = ""
 
     case tail
-    when .pre_bi3?
-      tail = fold_compare_bi3!(tail)
-      fold!(node, tail, PosTag::VerbObject, dic: 7)
+    # when .pre_bi3?
+    # tail = fold_compare_bi3!(tail)
+    # fold!(node, tail, PosTag::Vobj, dic: 7)
     when .advbial?
       tail = fold_adverbs!(tail)
 

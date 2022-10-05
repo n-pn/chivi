@@ -5,6 +5,7 @@ enum CV::MtlPos : UInt64
   end
 
   Boundary # make structure boundary
+  Nebulous # word not tagged
 
   # rendering
 
@@ -25,7 +26,6 @@ enum CV::MtlPos : UInt64
 
   Aspect # aspect marker
   Vauxil # put before verb
-
   Vcompl # verb complement
   Object # act as object complement for verb
 
@@ -57,6 +57,10 @@ enum CV::MtlPos : UInt64
 end
 
 struct CV::PosTag
+  def nebulous?
+    @pos.nebulous? || @tag.nebulous?
+  end
+
   delegate boundary?, to: @pos
 
   delegate cap_after?, to: @pos

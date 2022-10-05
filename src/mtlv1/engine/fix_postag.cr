@@ -75,7 +75,7 @@ module CV::MTL
       return MtDict.fix_verb!(node)
       # when .nominal?
       #   node = MtDict.fix_verb!(node)
-      #   return node unless node.vintr? || node.verb_object?
+      #   return node unless node.vintr? || node.vobj?
       #   MtDict.fix_noun!(node)
     end
 
@@ -95,7 +95,7 @@ module CV::MTL
       return MtDict.fix_verb!(node)
     when .adjts?
       return MtDict.fix_verb!(node) unless prev.is_a?(MtTerm)
-      return prev.modifier? ? MtDict.fix_noun!(node) : MtDict.fix_verb!(node)
+      return prev.modis? ? MtDict.fix_noun!(node) : MtDict.fix_verb!(node)
     when .pt_dep?
       # TODO: check for adjt + ude1 + verb (grammar error)
       return prev.prev?(&.advbial?) ? MtDict.fix_verb!(node) : MtDict.fix_noun!(node)
@@ -117,7 +117,7 @@ module CV::MTL
       return node if !prev || prev.boundary?
       case prev
       when .nil?, .boundary? then return node
-      when .modi?, .pro_dems?, .quantis?, .nqnoun?
+      when .modis?, .pro_dems?, .quantis?, .nqnoun?
         return MtDict.fix_noun!(node)
       when .object?, .pt_der?, .adjts?, .advbial?
         return MtDict.fix_adjt!(node)
@@ -130,11 +130,11 @@ module CV::MTL
       return MtDict.fix_verb!(node)
     when .v_xia?, .v_shang?
       return MtDict.fix_noun!(node)
-    when .pt_dep?, ., .pt_der?, .mopart?
+    when .pt_dep?, .pt_dev?, .pt_der?, .mopart?
       return MtDict.fix_adjt!(node)
     when .verbal?, .preposes?
       return node.key.size > 2 ? MtDict.fix_noun!(node) : MtDict.fix_adjt!(node)
-    when .nominal?, .spaces?
+    when .nouns?
       node = MtDict.fix_adjt!(node)
       return node.set!(PosTag::Modi)
     else
@@ -146,7 +146,7 @@ module CV::MTL
     case prev
     when .nil?, .boundary?, .advbial?
       MtDict.fix_adjt!(node)
-    when .modifier?
+    when .modis?
       MtDict.fix_noun!(node)
     else
       node

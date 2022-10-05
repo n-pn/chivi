@@ -4,13 +4,13 @@ module CV::TlRule
     return noun if noun.prev? { |x| x.pro_pers? || x.preposes? && !x.pre_bi3? }
 
     verb = verb.vmodals? ? fold_vmodals!(verb) : fold_verbs!(verb)
-    return noun unless (succ = verb.succ?) && succ.pd_dep?
+    return noun unless (succ = verb.succ?) && succ.pt_dep?
 
     # && (verb.verb? || verb.vmodals?)
     return noun unless tail = scan_noun!(succ.succ?)
     case tail.key
     when "时候"
-      noun = fold!(noun, succ.set!(""), PosTag::DefnPhrase, dic: 7)
+      noun = fold!(noun, succ.set!(""), PosTag::DcPhrase, dic: 7)
       return fold!(noun, tail.set!("lúc"), PosTag::Texpr, dic: 9, flip: true)
     end
 
@@ -18,16 +18,16 @@ module CV::TlRule
     #   verb_2 = verb_2.advbial? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
 
     #   if !verb_2.verb_no_obj? && verb.prev?(&.object?)
-    #     tail = fold!(tail, verb_2, PosTag::VerbClause, dic: 8)
-    #     noun = fold!(noun, verb, PosTag::VerbClause, dic: 7)
+    #     tail = fold!(tail, verb_2, PosTag::SubjVerb, dic: 8)
+    #     noun = fold!(noun, verb, PosTag::SubjVerb, dic: 7)
     #     return fold!(noun, succ.set!(""), dic: 9, flip: true)
     #   end
     # end
 
     left = fold!(noun, verb, PosTag::VerbPhrase, dic: 4)
 
-    defn = fold!(left, succ.set!(""), PosTag::DefnPhrase, dic: 6, flip: true)
-    tag = tail.names? || tail.human? ? tail.tag : PosTag::NounPhrase
+    defn = fold!(left, succ.set!(""), PosTag::DcPhrase, dic: 6, flip: true)
+    tag = tail.names? || tail.cap_human? ? tail.tag : PosTag::Nform
 
     fold!(defn, tail, tag, dic: 5, flip: true)
   end

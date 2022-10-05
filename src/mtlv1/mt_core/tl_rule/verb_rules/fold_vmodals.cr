@@ -1,7 +1,6 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_vmodals!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    return node.set!(PosTag::Noun) if vmodal_is_noun?(node)
+  def fold_modals!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     succ = heal_mixed!(succ) if succ && succ.polysemy?
 
     case node
@@ -21,7 +20,6 @@ module CV::TlRule
         node.val = "có thể" if succ.try(&.verbal?)
       end
     else
-      node.tag = PosTag::Noun if vmodal_is_noun?(node)
       node = fold!(nega, node, node.tag, dic: 6) if nega
     end
 
@@ -45,12 +43,6 @@ module CV::TlRule
     end
   end
 
-  def vmodal_is_noun?(node : MtNode)
-    return false unless node.key == "可能"
-    return true unless succ = node.succ?
-    succ.boundary? || succ.v_shi? || succ.v_you?
-  end
-
   def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
     if vmhui_before_skill?(prev, succ)
       node.val = "biết"
@@ -67,11 +59,10 @@ module CV::TlRule
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
-    when .nil?, .boundary?, .nominal?, .pd_dep?, .pt_le?
+    when .nil?, .boundary?, .nominal?, .pt_dep?, .pt_le?
       true
-    when .preposes? then false
-    when .verb_object?
-      MtDict.has_key?(:v_group, succ.key)
+    when .preposes?     then false
+    when .vsep?, .vset? then true
     else
       case succ.key
       when "生气"
@@ -93,7 +84,7 @@ module CV::TlRule
       node.val = "nghĩ"
     when .verbal?, .preposes?
       node.val = "muốn"
-    when .human?
+    when .cap_human?
       if has_verb_after?(succ)
         node.set!("muốn")
       else
@@ -108,8 +99,8 @@ module CV::TlRule
         node.val = "muốn"
       end
     else
-      if succ.vdirs? || (succ.is_a?(MtTerm) && MtDict.fix_vcompl(succ))
-        node.set!("nhớ") if succ.succ?(&.human?)
+      if succ.vcompl?
+        node.set!("nhớ") if succ.succ?(&.cap_human?)
       end
     end
 

@@ -30,11 +30,15 @@ struct CV::PosTag
 
   NQUANT_MAP = load_map("nquants")
 
+  Nqnoun = new(:nqnoun, :nounish)
+  Nqtime = new(:nqtime, :nounish)
+
   def self.map_nquant(key : String)
-    NQUANT_MAP[key] ||= begin
-      quanti = map_quanti(clean_nquant(key))
-      new(quanti.tag + 20, quanti.pos)
-    end
+    NQUANT_MAP[key] ||= map_quanti(clean_nquant(key)).qt_to_nq!
+  end
+
+  def qt_to_nq! : self
+    PosTag.new(@tag + 20, @pos)
   end
 
   NUM_CHARS = {

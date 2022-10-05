@@ -1,17 +1,12 @@
 module CV::TlRule
   # do not return left when fail to prevent infinity loop!
-  def fold_ude1!(ude1 : MtNode,
-                 prev = ude1.prev?, succ = ude1.succ?) : MtNode
+  def fold_ude1!(ude1 : MtNode, prev = ude1.prev?, succ = ude1.succ?) : MtNode
     ude1.val = ""
 
     # ameba:disable Style/NegatedConditionsInUnless
     return ude1 unless prev && succ && !(prev.boundary?)
 
-    if (succ.pro_dems? || succ.pro_na2?) && (tail = succ.succ?)
-      right = fold_pro_dems!(succ, tail)
-    else
-      right = scan_noun!(succ, mode: 3)
-    end
+    right = scan_noun!(succ, mode: 3)
 
     return ude1 unless right
     node = fold_ude1_left!(ude1: ude1, left: prev, right: right)
@@ -20,23 +15,25 @@ module CV::TlRule
 
   # do not return left when fail to prevent infinity loop
   def fold_ude1_left!(ude1 : MtNode, left : MtNode, right : MtNode?) : MtNode
-    return ude1 unless right && right.object?
+    case right
+    when nil then return ude1
+    when .vobjs?
+      right.tag = PosTag::Nform
+    else
+      return ude1 unless right.nounish?
+    end
 
     # puts [left, right]
 
-    case left
-    when .nlabel?
-      ude1.val = ""
-      flip = true
-    when .noun?, .nform?, .names?, .pro_pers?
+    if left.ktetic?
       ude1.val = "của"
-      flip = true
+      ptag = PosTag::DgPhrase
     else
-      ude1.val = ""
-      flip = !left.numeral?
+      ude1.as(MtTerm).empty!(true)
+      ptag = PosTag::DcPhrase
     end
 
-    left = fold!(left, ude1, tag: PosTag::DefnPhrase, dic: 2, flip: true)
-    fold!(left, right, tag: PosTag::Nform, dic: 6, flip: flip)
+    left = fold!(left, ude1, tag: ptag, dic: 2, flip: true)
+    fold!(left, right, tag: right.tag, dic: 6, flip: true)
   end
 end

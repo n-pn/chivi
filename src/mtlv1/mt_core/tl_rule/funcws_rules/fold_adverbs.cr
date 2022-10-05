@@ -20,7 +20,7 @@ module CV::TlRule
 
     case succ.tag
     when .vmodals?
-      fold_vmodals!(succ, nega: node)
+      fold_modals!(succ, nega: node)
     when .pre_dui?
       succ = fold_pre_dui!(succ)
       fold!(node, succ, succ.tag, dic: 9)
@@ -57,7 +57,7 @@ module CV::TlRule
 
   def fold_adv_fei!(node : MtNode, succ = node.succ) : MtNode
     case succ
-    when .modi?, .noun?, .pl_ajno?, .pl_veno?
+    when .modis?, .noun?, .pl_ajno?, .pl_veno?
       node = fold!(node, succ, PosTag::Modi, dic: 7)
       fold_adjts!(node)
     when .verbal?
@@ -82,7 +82,7 @@ module CV::TlRule
       succ = fold!(succ, noun, PosTag::Aform, dic: 5)
       fold_adverb_node!(node, succ)
     when .vmodals?
-      fold_vmodals!(succ, nega: node)
+      fold_modals!(succ, nega: node)
     when .verbal?
       fold_adverb_verb!(node, succ)
     when .adjts?
@@ -112,8 +112,8 @@ module CV::TlRule
     when .v_shi?
       node = fold!(node, succ, PosTag::Vead, dic: 8)
       succ = node.succ?
-    when .adj_hao?
-      succ = heal_adj_hao!(succ)
+    when .wd_hao?
+      succ = heal_wd_hao!(succ)
     when .concoord?
       return {node, nil} unless succ.key == "和"
       succ.set!(PosTag::Prepos)
@@ -122,7 +122,7 @@ module CV::TlRule
     {node, succ}
   end
 
-  def heal_adj_hao!(node : MtNode)
+  def heal_wd_hao!(node : MtNode)
     case node.succ?
     when .nil? then node
     when .adjts?, .verbal?
@@ -148,7 +148,7 @@ module CV::TlRule
       case node
       when .comma?
         return false unless node = node.succ?
-      when .plsgn?, .mnsgn?, .verbal?, .preposes?, .adjts?, .advbial?, .vmodals?
+      when .pl_mark?, .mn_mark?, .verbal?, .preposes?, .adjts?, .advbial?, .vmodals?
         return true
       when .concoord?
         return false unless node.key == "和"

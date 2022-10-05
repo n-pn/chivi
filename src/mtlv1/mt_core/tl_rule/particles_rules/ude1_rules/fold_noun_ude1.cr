@@ -1,31 +1,31 @@
 module CV::TlRule
-  def fold_noun_ude1!(noun : MtNode, ude1 : MtNode, right : MtNode, mode = 0) : MtNode
-    case noun.tag
-    when .timeword?, .nattr?,
-         .posit?, .locat?,
-         .numeral?, .verb_clause? # , .prep_clause?, .defn_phrase?
-      ude1.val = ""
-    when .pro_dem?
-      if node = noun.find_by_key('样')
-        ude1.val = ""
-        node.val = "thế"
-      else
-        ude1.val = "của"
-      end
-    else
-      ude1.val = "của"
-    end
+  # def fold_noun_ude1!(noun : MtNode, ude1 : MtNode, right : MtNode, mode = 0) : MtNode
+  #   case noun.tag
+  #   when .timeword?, .nattr?,
+  #        .posit?, .locat?,
+  #        .numeral?, .vform? # , .prep_form?, .defn_phrase?
+  #     ude1.val = ""
+  #   when .pro_dem?
+  #     if node = noun.find_by_key('样')
+  #       ude1.val = ""
+  #       node.val = "thế"
+  #     else
+  #       ude1.val = "của"
+  #     end
+  #   else
+  #     ude1.val = "của"
+  #   end
 
-    noun = fold!(noun, ude1, PosTag::DefnPhrase, dic: 3, flip: true)
-    fold!(noun, right, PosTag::NounPhrase, dic: 5, flip: true)
-  end
+  #   noun = fold!(noun, ude1, PosTag::DcPhrase, dic: 3, flip: true)
+  #   fold!(noun, right, PosTag::Nform, dic: 5, flip: true)
+  # end
 
   # def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, right : MtNode) : MtNode
   #   case right.key
   #   when "时候", "时", "打算"
   #     head = verb.try { |x| x if x.subject? } || verb
-  #     node = fold!(head, ude1, PosTag::DefnPhrase)
-  #     return fold!(node, right, PosTag::NounPhrase, dic: 6, flip: true)
+  #     node = fold!(head, ude1, PosTag::DcPhrase)
+  #     return fold!(node, right, PosTag::Nform, dic: 6, flip: true)
   #   end
 
   #   # puts [verb, noun, ude1, right]
@@ -35,7 +35,7 @@ module CV::TlRule
   #   end
 
   #   case prev = verb.prev?
-  #   when .nil?, .none?
+  #   when .nil?, .empty?
   #     head = verb if need_2_objects?(verb.key) || has_verb_after?(right)
   #   when .v_you?
   #     head = prev.subject? ? prev : verb
@@ -53,14 +53,14 @@ module CV::TlRule
 
   #   return fold_noun_ude1_noun!(noun, ude1, right) unless head
 
-  #   node = fold!(head, ude1, PosTag::DefnPhrase)
-  #   fold!(node, right, PosTag::NounPhrase, dic: 6, flip: true)
+  #   node = fold!(head, ude1, PosTag::DcPhrase)
+  #   fold!(node, right, PosTag::Nform, dic: 6, flip: true)
   # end
 
   def has_verb_after?(right : MtNode) : Bool
     while right = right.succ?
       case right.tag
-      when .plsgn?, .mnsgn?, .verbal?, .preposes?
+      when .pl_mark?, .mn_mark?, .verbal?, .preposes?
         return true
       when .advbial?, .comma?, .pro_ints?
         next

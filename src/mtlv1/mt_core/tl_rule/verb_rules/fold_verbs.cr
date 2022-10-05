@@ -16,14 +16,14 @@ module CV::TlRule
 
     flag = 0
 
-    while !verb.verb_object? && (succ = verb.succ?)
+    while !verb.vobj? && (succ = verb.succ?)
       case succ
-      when .junction?
+      when .join_word?
         fold_verb_junction!(junc: succ, verb: verb).try { |x| verb = x } || break
       when .pt_zhe?
         verb = fold_verb_uzhe!(verb, uzhe: succ)
         break
-      when .uyy?
+      when .pt_cmps?
         adjt = fold!(verb, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
         adjt = fold_adverb_node!(prev, adjt) if prev
 
@@ -33,16 +33,16 @@ module CV::TlRule
       when .particles?
         verb = fold_verb_auxils!(verb, succ)
         break if verb.succ? == succ
-      when .vdirs?
+      when .vdir?
         verb = fold_verb_vdirs!(verb, succ)
         flag = 1
-      when .adj_hao?
+      when .wd_hao?
         case succ.succ?
         when .nil?, .pt_le?
           succ.val = "tốt"
         when .maybe_adjt?, .maybe_verb?, .preposes?
           break
-        when .noun?
+        when .nouns?
           break unless flag == 0
         else
           succ.val = "xong"
@@ -51,29 +51,13 @@ module CV::TlRule
         verb = fold!(verb, succ, PosTag::Verb, dic: 4)
       when .verbal?
         verb = fold_verb_verb!(verb, succ)
-      when .adjts?, .preposes?, .specials?, .locat?
-        break unless flag == 0
-        fold_verb_compl!(verb, succ).try { |x| verb = x } || break
+        # when .adjts?, .preposes?, .locat?
+        #   break unless flag == 0
+        #   fold_verb_compl!(verb, succ).try { |x| verb = x } || break
       when .adv_bu4?
         verb = fold_verb_advbu!(verb, succ)
-      when .numeral?
-        fold_verb_compare(verb).try { |x| return x }
-
-        if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
-          verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
-          break # TODO: still keep folding?
-        end
-
-        if val = PRE_NUM_APPROS[verb.key]?
-          succ = fold_number!(succ) if succ.numbers?
-
-          verb = fold_left_verb!(verb.set!(val), prev)
-          return verb unless succ.nquants?
-          return fold!(verb, succ, succ.tag, dic: 8)
-        end
-
-        verb = fold_verb_nquant!(verb, succ)
-        prev = nil
+      when .qtverb?, .qttime?
+        verb = fold!(verb, succ, verb.tag, dic: 2)
         break
       else
         break

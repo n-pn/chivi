@@ -33,19 +33,22 @@ struct CV::PosTag
   # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
-  Empty = new(:empty)
-  Space = new(:space)
+  Empty = new(:empty, :boundary)
+  Space = new(:space, :boundary)
 
-  LitBlank = new(:lit_blank, :none)
-  LitTrans = new(:lit_trans, :none)
+  LitBlank = new(:lit_blank, :nebulous)
+  LitTrans = new(:lit_trans, :nebulous)
 
   property tag : MtlTag
   property pos : MtlPos
 
   forward_missing_to tag
 
-  def initialize(@tag : MtlTag = :lit_blank, @pos : MtlPos = :none)
+  def initialize(@tag : MtlTag = :lit_blank, @pos : MtlPos = :nebulous)
   end
+
+  ########
+  ###
 
   # ameba:disable Metrics/CyclomaticComplexity
   def self.init(tag : String, key : String = "", vals = [] of String) : self
