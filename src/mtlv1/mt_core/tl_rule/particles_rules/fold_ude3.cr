@@ -14,17 +14,17 @@ module CV::TlRule
   def fold_adverb_ude3!(node : MtNode, succ : MtNode) : MtNode
     case tail = succ.succ?
     when .nil?
-      fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)
+      fold!(node, succ.set!("phải"), PosTag::DrPhrase, dic: 4)
     when .key_is?("住")
       succ.val = ""
-      node = MtDict.fix_verb!(node) if node.is_a?(MtTerm)
+      node.as_verb!(nil) if node.is_a?(MtTerm)
       fold!(node, tail.set!("nổi"), PosTag::Verb, dic: 5)
     when .verbal?
-      node = fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)
+      node = fold!(node, succ.set!("phải"), PosTag::DrPhrase, dic: 4)
       fold_verbs!(tail, prev: node)
     else
       # TODO: add case here
-      fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)
+      fold!(node, succ.set!("phải"), PosTag::DrPhrase, dic: 4)
     end
   end
 

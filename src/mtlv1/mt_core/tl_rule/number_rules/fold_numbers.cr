@@ -16,7 +16,7 @@ module CV::TlRule
       fold_nouns!(node)
     when .verbal?
       fold_verbs!(node)
-    when .noun?
+    when .nouns?
       fold_nouns!(node)
     else
       if (succ = node.succ?) && succ.pt_zhi?

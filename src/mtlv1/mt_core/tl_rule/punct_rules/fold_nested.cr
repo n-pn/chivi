@@ -24,10 +24,10 @@ module CV::TlRule
 
   def guess_nested_tag(head : MtNode, tail : MtNode)
     case head.tag
-    when .titleop? then PosTag::Btitle
-    when .brackop? then PosTag::Nother
-    when .parenop? then PosTag::ParenExpr
-    else                guess_quoted_tag(head, tail)
+    when .title_sts? then PosTag::CapTitle
+    when .brack_sts? then PosTag::CapOther
+    when .paren_st1? then PosTag::ParenExp
+    else                  guess_quoted_tag(head, tail)
     end
   end
 
@@ -40,13 +40,13 @@ module CV::TlRule
       return heal_mixed!(head_succ, head.prev?, tail.succ?).tag
     end
 
-    if (tail_prev.exmark? || tail_prev.pt_dep?) &&
-       (head_succ.onomat? || head_succ.exclam?) &&
+    if (tail_prev.interj? || tail_prev.pt_dep?) &&
+       (head_succ.onomat? || head_succ.interj?) &&
        (head.prev?(&.boundary?.!) || tail.succ?(&.pt_dep?))
       return head_succ.tag
     end
 
-    head.prev?(&.pt_dep?) ? PosTag::Nform : PosTag::Unkn
+    head.prev?(&.pt_dep?) ? PosTag::Nform : PosTag::LitBlank
   end
 
   # def fold_btitle!(head : MtNode) : MtNode
@@ -89,7 +89,7 @@ module CV::TlRule
   #     root.tag = PosTag::Nform
   #   end
 
-  #   root.noun? ? fold_nouns!(root, mode: 1) : root
+  #   root.nouns? ? fold_nouns!(root, mode: 1) : root
   # end
 
   # private def match_end(char : Char)

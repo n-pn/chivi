@@ -9,7 +9,7 @@ module CV::TlRule
       return if scan_noun!(compl.succ?)
       compl.val = "đúng"
     when .pre_zai?
-      # if (succ = scan_noun!(compl.succ?)) && succ.subject?
+      # if (succ = scan_noun!(compl.succ?)) && succ.content?
       #   # puts [succ, "pre_zai"]
       #   return if find_verb_after_for_prepos(succ, skip_comma: true)
       # end

@@ -120,20 +120,12 @@ class CV::MtTerm < CV::MtNode
     return cap if @val.blank? || @tag.empty?
     return cap_after?(cap) if @tag.puncts?
 
-    @val = TextUtil.capitalize(@val) if cap && !@tag.fixstr?
+    @val = TextUtil.capitalize(@val) if cap && !@tag.str_emoji?
     false
   end
 
   private def cap_after?(prev = false) : Bool
-    case @tag
-    when .exmark?, .qsmark?, .pstop?, .colon?,
-         .middot?, .titleop?, .brackop?
-      true
-    when .pdeci?
-      @prev.try { |x| x.ndigits? || x.litstr? } || prev
-    else
-      prev
-    end
+    @tag.cap_after?
   end
 
   def space_before?(prev : MtTerm) : Bool

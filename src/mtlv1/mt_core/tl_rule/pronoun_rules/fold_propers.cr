@@ -50,20 +50,20 @@ module CV::TlRule
         nominal = fold_ude1!(ude1: succ, prev: nominal)
       end
     else
-      flip = !nominal.pro_per?
+      flip = !nominal.pro_pers?
     end
 
     case nominal.tag
     when .locat?
       fold_noun_space!(proper, nominal)
-    when .person?
+    when .people?
       fold!(proper, nominal, proper.tag, dic: 4, flip: false)
     when .nqtime?
       flip = !nominal.succ?(&.boundary?) if flip
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
     when .posit?
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
-    when .names?, .honor?, .noun?
+    when .names?, .honor?, .nouns?
       # TODO: add pseudo proper
       proper.val = "của #{proper.val}" if flip
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)

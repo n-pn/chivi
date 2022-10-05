@@ -5,7 +5,7 @@ module CV::TlRule
     when .v_shang? then fix_上下(node, MAP_上)
     when .v_xia?   then fix_上下(node, MAP_下)
     when .key_in?("和", "跟")
-      if node.prev? { |x| x.boundary? || x.adverb? } || concoord_is_prepos?(node.succ?)
+      if node.prev? { |x| x.boundary? || x.adverbs? } || concoord_is_prepos?(node.succ?)
         fold_preposes!(node)
       else
         val = node.key == "和" ? "và" : node.val
@@ -21,8 +21,8 @@ module CV::TlRule
 
     while node = node.succ?
       if node.verbal?
-        return !node.specials?
-      elsif node.specials?
+        return !node.uniqword?
+      elsif node.uniqword?
         return true if node.key_in?("上", "下") && fix_上下(node).verb?
       elsif node.puncts?
         return false unless node.cenum?
@@ -36,7 +36,7 @@ module CV::TlRule
   def fix_上下(node : MtNode, vals = node.key == "上" ? MAP_上 : MAP_下) : MtNode
     case node.prev?
     when .nil?, .empty?, .puncts?
-      if node.succ? { |x| x.subject? || x.pt_le? }
+      if node.succ? { |x| x.content? || x.pt_le? }
         node.set!(vals[0], PosTag::Verb)
       else
         node.set!(vals[2], PosTag::Noun)

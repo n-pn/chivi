@@ -43,11 +43,23 @@ enum CV::MtlTag
   end
 
   def dashes?
-    value == Dash1 || value == Dash2
+    value == Dash1.value || value == Dash2.value
+  end
+
+  def brack_sts?
+    value == BrackSt1.value || value == BrackSt2.value
+  end
+
+  def title_sts?
+    value >= TitleSt1.value && value <= TitleSt3.value
+  end
+
+  def title_cls?
+    value >= TitleCl1.value && value <= TitleCl3.value
   end
 
   def ellipsis?
-    value == Ellip1 || value == Ellip2
+    value == Ellip1.value || value == Ellip2.value
   end
 
   ####

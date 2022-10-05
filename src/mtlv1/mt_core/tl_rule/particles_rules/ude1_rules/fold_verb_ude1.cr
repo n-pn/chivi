@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, right : MtNode, mode = 0)
-    return ude1 unless (prev = verb.prev?) && prev.subject?
+    return ude1 unless (prev = verb.prev?) && prev.content?
     # puts [prev, verb, "fold_verb_ude1!"]
     # TODO: fix this shit!
 

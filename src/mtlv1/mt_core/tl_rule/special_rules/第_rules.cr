@@ -9,7 +9,7 @@ module CV::TlRule
     tail = heal_quanti!(tail)
 
     case tail.tag
-    when .noun?, .timeword?, .honor?, .nattr?, .affil?
+    when .nouns?, .timeword?, .honor?, .nattr?, .affil?
       node.val = "đệ" if head.prev?(&.nominal?)
       fold!(head, tail, tail.tag, dic: 8, flip: true)
     when .quantis?

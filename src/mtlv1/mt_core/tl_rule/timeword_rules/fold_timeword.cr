@@ -8,7 +8,7 @@ module CV::TlRule
       when .nhanzis?, .ndigits?
         fold_number!(succ, prev: node)
       when .wd_hao?
-        fold!(node, succ.set!("chào"), PosTag::VerbPhrase, dic: 8, flip: true)
+        fold!(node, succ.set!("chào"), PosTag::Vform, dic: 8, flip: true)
       else
         node
       end

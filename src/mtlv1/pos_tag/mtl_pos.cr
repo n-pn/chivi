@@ -44,6 +44,7 @@ enum CV::MtlPos : UInt64
   Adjtish # word can act as adjective
   Advbial # advbial, word can act as adverb
 
+  Modifier # word can act as noun direct modifier
   # specific
 
   LinkVerb # can link verbs

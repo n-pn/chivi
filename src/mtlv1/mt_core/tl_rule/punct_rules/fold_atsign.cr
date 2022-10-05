@@ -21,7 +21,7 @@ module CV::TlRule
       key = prev.key + key
     end
 
-    tag = PosTag::Person
+    tag = PosTag::CapHuman
 
     MtTerm.new(key, "@#{val}", tag, dic: 2, idx: head.idx).tap do |new_node|
       new_node.fix_prev!(head.prev?)

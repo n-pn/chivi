@@ -11,4 +11,6 @@ DvPhrase = 625 # phrase that can act as verb complement
 
 PrepForm = 640 # prepos + noun phrase
 
+ParenExp = 650 # parenthetical expression
+
 # catenae

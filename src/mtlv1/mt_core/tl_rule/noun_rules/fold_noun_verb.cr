@@ -3,7 +3,7 @@ module CV::TlRule
   def fold_noun_verb!(noun : MtNode, verb : MtNode)
     return noun if noun.prev? { |x| x.pro_pers? || x.preposes? && !x.pre_bi3? }
 
-    verb = verb.vmodals? ? fold_vmodals!(verb) : fold_verbs!(verb)
+    verb = verb.vmodals? ? fold_vmodal!(verb) : fold_verbs!(verb)
     return noun unless (succ = verb.succ?) && succ.pt_dep?
 
     # && (verb.verb? || verb.vmodals?)
@@ -24,7 +24,7 @@ module CV::TlRule
     #   end
     # end
 
-    left = fold!(noun, verb, PosTag::VerbPhrase, dic: 4)
+    left = fold!(noun, verb, PosTag::Vform, dic: 4)
 
     defn = fold!(left, succ.set!(""), PosTag::DcPhrase, dic: 6, flip: true)
     tag = tail.names? || tail.cap_human? ? tail.tag : PosTag::Nform

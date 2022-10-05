@@ -91,7 +91,7 @@ class CV::MtList < CV::MtNode
 
   def apply_cap!(cap : Bool = true) : Bool
     cap_2 = @list.reduce(cap || full_sentence?) { |a, x| x.apply_cap!(a) }
-    cap_2 || (cap && @tag.paren_expr?)
+    cap_2 || (cap && @tag.paren_exp?)
   end
 
   def regen_list!

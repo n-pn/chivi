@@ -46,12 +46,8 @@ module CV::TlRule
       when .adjts?
         adjt = fold!(adjt, succ, succ.tag, dic: 4)
       when .vdir?
-        adjt = MtDict.fix_verb!(adjt) if adjt.is_a?(MtTerm)
+        adjt.as_verb! if adjt.is_a?(MtTerm)
         return fold_verbs!(adjt)
-      when .verb?
-        break unless succ.key == "到"
-        adjt = fold!(adjt, succ, PosTag::Adverb)
-        return fold_adverbs!(adjt)
       when .nominal?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_adjt_noun!(adjt, succ)
@@ -82,7 +78,7 @@ module CV::TlRule
         succ.val = ""
         adjt = fold!(adjt, tail.set!("cực kỳ"), PosTag::Aform, dic: 4)
         break
-      when .
+      when .pt_dev?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_adjt_ude2!(adjt, succ)
       when .pt_zhe?

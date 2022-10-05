@@ -53,7 +53,7 @@ class CV::MtPair < CV::MtNode
 
   def to_txt(io : IO) : Nil
     @head.to_txt(io)
-    io << ' ' unless @head.no_space_after? || @tail.no_space_before?
+    io << ' ' unless @head.no_ws_after? || @tail.no_ws_before?
     @tail.to_txt(io)
   end
 
@@ -61,7 +61,7 @@ class CV::MtPair < CV::MtNode
     io << '〈' << @dic << '\t'
 
     @head.to_mtl(io)
-    io << "\t " unless @head.no_space_after? || @tail.no_space_before?
+    io << "\t " unless @head.no_ws_after? || @tail.no_ws_before?
     @tail.to_mtl(io)
 
     io << '〉'

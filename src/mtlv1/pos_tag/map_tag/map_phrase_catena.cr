@@ -8,16 +8,19 @@ struct CV::PosTag
   DrPhrase = new(:dr_phrase, MtlPos.flags(Advbial, AtHead))
   DvPhrase = new(:dv_phrase, MtlPos.flags(Vcompl, AtTail))
 
+  ParenExp = new(:paren_exp, :none)
+
   def self.map_phrase(tag : String) : self
     case tag
-    when "+sv" then SubjVerb
-    when "+sa" then SubjAdjt
-    when "+pp" then PrepForm
-    when "+dc" then DcPhrase
-    when "+dg" then DgPhrase
-    when "+dr" then DrPhrase
-    when "+dv" then DvPhrase
-    else            LitTrans
+    when "+sv"  then SubjVerb
+    when "+sa"  then SubjAdjt
+    when "+pp"  then PrepForm
+    when "+dc"  then DcPhrase
+    when "+dg"  then DgPhrase
+    when "+dr"  then DrPhrase
+    when "+dv"  then DvPhrase
+    when "+par" then ParenExp
+    else             LitTrans
     end
   end
 end

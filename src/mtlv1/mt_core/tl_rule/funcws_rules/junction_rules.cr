@@ -70,7 +70,7 @@ module CV::TlRule
     case left.tag
     when .nform?     then true
     when .cap_human? then right.cap_human?
-    when .noun?      then right.noun? || right.pro_dem?
+    when .nouns?     then right.nouns? || right.pro_dem?
     else
       right.nform? || right.tag == left.tag
     end
@@ -78,7 +78,7 @@ module CV::TlRule
 
   def he2_is_prepos?(node : MtNode, succ = node.succ?) : Bool
     return false unless succ && (verb = find_verb_after_for_prepos(succ))
-    return false if verb.specials?
+    return false if verb.uniqword?
 
     # TODO: add more white list?
     # puts [verb, node]

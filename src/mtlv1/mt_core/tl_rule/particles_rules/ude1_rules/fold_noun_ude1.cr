@@ -23,7 +23,7 @@ module CV::TlRule
   # def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, right : MtNode) : MtNode
   #   case right.key
   #   when "时候", "时", "打算"
-  #     head = verb.try { |x| x if x.subject? } || verb
+  #     head = verb.try { |x| x if x.content? } || verb
   #     node = fold!(head, ude1, PosTag::DcPhrase)
   #     return fold!(node, right, PosTag::Nform, dic: 6, flip: true)
   #   end
@@ -38,12 +38,12 @@ module CV::TlRule
   #   when .nil?, .empty?
   #     head = verb if need_2_objects?(verb.key) || has_verb_after?(right)
   #   when .v_you?
-  #     head = prev.subject? ? prev : verb
+  #     head = prev.content? ? prev : verb
   #   when .v_shi?
   #     head = verb unless has_verb_after?(right)
   #   when .comma?
   #     # TODO: check before comma?
-  #   when .subject?
+  #   when .content?
   #     head = prev if need_2_objects?(verb.key)
   #   else
   #     unless is_linking_verb?(prev, right.succ?)

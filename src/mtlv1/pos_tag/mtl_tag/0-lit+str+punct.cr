@@ -4,8 +4,8 @@ Empty = 0 # ""
 Space = 1 # " "
 
 Period = 4 # "."
-Exclam = 5 # "!"
-Questm = 6 # "?"
+Exclpm = 5 # "!"
+Quespm = 6 # "?"
 
 ###########
 

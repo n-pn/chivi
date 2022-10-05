@@ -5,7 +5,7 @@ module CV::TlRule
       node.set!("trúng", PosTag::Verb)
       fold_verbs!(node)
     when "右", "左"
-      node.tag = PosTag::Modi
+      node.tag = PosTag::Amod
       fold_modis?(node)
     else
       node

@@ -3,10 +3,9 @@ module CV::TlRule
     case node.tag
     when .pt_le?  then heal_ule!(node)  # 了
     when .pt_dep? then fold_ude1!(node) # 的
-    when .SPACE
-      heal_ude2!(node)                  # 地
+    when .pt_dev? then heal_ude2!(node) # 地
     when .pt_der? then heal_ude3!(node) # 得
-    when .usuo?   then fold_usuo!(node) # 所
+    when .pt_suo? then fold_usuo!(node) # 所
     else               node
     end
   end
@@ -23,11 +22,11 @@ module CV::TlRule
   end
 
   def heal_ude2!(node : MtNode) : MtNode
-    return node if node.prev? { |x| x.tag.adjts? || x.tag.adverb? }
+    return node if node.prev? { |x| x.tag.adjts? || x.tag.adverbs? }
     return node unless succ = node.succ?
-    return node.set!("đất", PosTag::Noun) if succ.v_shi? || succ.v_you?
+    return node.set!("đất", PosTag::Nword) if succ.v_shi? || succ.v_you?
     return node if succ.verbal? || succ.preposes? || succ.concoord?
-    node.set!(val: "địa", tag: PosTag::Noun)
+    node.set!(val: "địa", tag: PosTag::Nword)
   end
 
   def fold_verb_ule!(verb : MtNode, node : MtNode, succ = node.succ?)

@@ -1,8 +1,8 @@
 struct CV::PosTag
   PUNCT_MAP = {
     "."  => new(:period, MtlPos.flags(Boundary, CapAfter, NoWsBefore)),
-    "!"  => new(:exclam, MtlPos.flags(Boundary, CapAfter, NoWsBefore)),
-    "?"  => new(:questm, MtlPos.flags(Boundary, CapAfter, NoWsBefore)),
+    "!"  => new(:exclpm, MtlPos.flags(Boundary, CapAfter, NoWsBefore)),
+    "?"  => new(:quespm, MtlPos.flags(Boundary, CapAfter, NoWsBefore)),
     "“"  => new(:quote_st1, MtlPos.flags(Boundary, NoWsAfter)),
     "‘"  => new(:quote_st2, MtlPos.flags(Boundary, NoWsAfter)),
     "”"  => new(:quote_cl1, MtlPos.flags(Boundary, NoWsBefore)),

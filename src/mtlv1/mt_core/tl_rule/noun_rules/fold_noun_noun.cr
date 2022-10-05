@@ -18,7 +18,7 @@ module CV::TlRule
       #   fold_noun_space!(node, succ) if mode == 0
     else
       if (prev = node.prev?) && prev.vtwo?
-        flip = succ.succ?(&.subject?) || false
+        flip = succ.succ?(&.content?) || false
       else
         flip = true
       end
@@ -36,7 +36,7 @@ module CV::TlRule
     end
 
     return true if !prev || prev.preposes?
-    return true if !succ || succ.subject? || succ.boundary? || succ.v_shi? || succ.v_you?
+    return true if !succ || succ.content? || succ.boundary? || succ.v_shi? || succ.v_you?
 
     # puts [prev, succ, "noun_can_combine"]
     case succ
