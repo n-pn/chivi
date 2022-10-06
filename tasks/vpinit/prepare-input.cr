@@ -3,11 +3,11 @@ require "compress/zip"
 require "option_parser"
 
 INP_DIR = "var/chtexts"
-OUT_DIR = "var/inits/bdlac"
+OUT_DIR = "/mnt/d/hanlp/data/inp"
 
-SCRIPT = "tasks/vpinit/baidu-lac.py"
+def extract(inp_path : String)
+  puts inp_path
 
-def analyze(inp_path : String)
   zip_file = File.join(INP_DIR, inp_path, "0.zip")
   return unless File.exists?(zip_file)
 
@@ -29,7 +29,7 @@ def analyze(inp_path : String)
 end
 
 Dir.children(INP_DIR + "/zxcs_me").each do |dir|
-  analyze("zxcs_me/#{dir}")
+  extract("zxcs_me/#{dir}")
 rescue
   puts dir
 end

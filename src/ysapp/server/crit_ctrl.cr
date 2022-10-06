@@ -11,10 +11,11 @@ module YS
     def query(sort : String = "utime", user : String? = nil,
               smin : Int32 = 0, smax : Int32 = 6,
               book : Int64? = nil, list : String? = nil,
-              tags : String? = nil)
+              lb : String? = nil)
+      # TODO: Rename lb to tags
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 24)
 
-      query = Yscrit.sort_by(sort).filter_labels(tags)
+      query = Yscrit.sort_by(sort).filter_labels(lb)
       query = query.filter_ysuser(user.split('-', 2).first?) if user
 
       query.where("stars >= ?", smin) if smin > 1

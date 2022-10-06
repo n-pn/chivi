@@ -9,14 +9,14 @@ crystal: 1.5.0
 license: MIT
 
 targets:
-  chivi:
+  chivi-srv:
     main: src/chivi.cr
 
   mtlv2-srv:
     main: src/mtlv2/server.cr
 
-  ysweb-srv:
-    main: src/ysweb/server.cr
+  ysapp-srv:
+    main: src/ysapp/server.cr
 
   bcover_cli:
     main: cli/bcover_cli.cr
