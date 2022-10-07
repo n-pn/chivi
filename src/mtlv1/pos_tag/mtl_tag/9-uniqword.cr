@@ -10,6 +10,9 @@ WdShang = 910
 WdZhong = 911
 WdXia   = 912
 
+# # prefixes
+WdZui = 980 # "最"
+
 # resolved special words:
 
 # # bonding words
