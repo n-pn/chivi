@@ -3,7 +3,7 @@
 Uniqword = 900
 
 # # special adjectives
-WdHao = 901
+WdHao = 901 # "好"
 
 # # special locative words
 WdShang = 910

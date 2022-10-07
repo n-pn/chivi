@@ -13,4 +13,12 @@ PrepForm = 640 # prepos + noun phrase
 
 ParenExp = 650 # parenthetical expression
 
-# catenae
+# vcompls
+
+Dircmpl = 680 # direction complement
+Potcmpl = 682 # potential complement
+Degcmpl = 683 # degree complement
+Sttcmpl = 684 # state complement
+
+ResCmpl = 686 # generic result complemnt
+CmplHao = 687 #

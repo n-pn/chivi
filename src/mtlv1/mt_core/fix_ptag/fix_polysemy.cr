@@ -1,15 +1,4 @@
-module CV::MTL
-  extend self
-
-  def fix_polysemy!(node : BaseNode)
-    return node unless node.is_a?(BaseTerm)
-
-    fixer = FixPolysemy.new(node)
-    fixer = fixer.guess_by_succ
-    fixer = fixer.guess_by_prev
-    fixer.resolve!
-  end
-
+module CV::FixPtag
   struct FixPolysemy
     getter noun_pct = 0 # percentage of node being noun
     getter advb_pct = 0 # percentage of node being advb
@@ -51,23 +40,9 @@ module CV::MTL
       end
     end
 
-    @[AlwaysInline]
-    private def get_prev_node : BaseNode?
-      # TODO: skip parenthesis
-      return unless prev = @node.prev?
-      prev.pstart? || prev.pclose ? prep.prev? : prev
-    end
-
-    @[AlwaysInline]
-    private def get_succ_node : BaseNode?
-      # TODO: skip parenthesis
-      return unless succ = @node.succ?
-      succ.pstart? || succ.pclose ? prep.succ? : prev
-    end
-
     # ameba:disable Metrics/CyclomaticComplexity
     def guess_by_succ
-      case self.get_succ_node
+      case node.real_succ
       when .nil?, .boundary?
         @advb_pct -= 10
       when .nominal?, .pronouns?
@@ -121,7 +96,7 @@ module CV::MTL
 
     # ameba:disable Metrics/CyclomaticComplexity
     def guess_by_prev : self
-      case self.get_prev_node
+      case self.real_prev
       when .nil?, .boundary?
         @advb -= 10
       when .modis?

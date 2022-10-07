@@ -35,24 +35,18 @@ abstract class CV::BaseNode
     succ.prev = self
   end
 
-  def maybe_verb? : Bool
-    succ = self
-    while succ
-      # puts [succ, "maybe_verb", succ.verbal?]
-      case succ
-      when .verbal?, .vmodals? then return true
-      when .advbial?, .comma?, pro_ints?, .conjunct?, .timeword?
-        succ = succ.succ?
-      else return false
-      end
-    end
-
-    false
+  @[AlwaysInline]
+  def real_prev : BaseNode?
+    # TODO: skip parenthesis
+    return unless prev = @node.prev?
+    prev.pstart? || prev.pclose ? prep.prev? : prev
   end
 
-  def maybe_adjt? : Bool
-    return !@succ.try(&.maybe_verb?) if @tag.pl_ajad?
-    @tag.adjts? || @tag.advbial? && @succ.try(&.maybe_adjt?) || false
+  @[AlwaysInline]
+  def real_succ : BaseNode?
+    # TODO: skip parenthesis
+    return unless succ = @node.succ?
+    succ.pstart? || succ.pclose ? prep.succ? : prev
   end
 
   def set!(@val : String) : self

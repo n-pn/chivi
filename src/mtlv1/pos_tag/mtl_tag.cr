@@ -184,6 +184,10 @@ enum CV::MtlTag
     value >= 309 && value < 350
   end
 
+  def verb_take_res_cmpl?
+    value >= 308 && value <= 314
+  end
+
   def verb_take_verb?
     value >= 316 && value < 330
   end
@@ -281,7 +285,7 @@ enum CV::MtlTag
   # phrases
 
   def phrases?
-    value >= 600 && value < 700
+    value >= 600 && value < 680
   end
 
   def morpheme?

@@ -52,6 +52,8 @@ Amed = 351 # measurement adjective
 # modifier 区别词
 Amod = 370 # modifier place after center noun
 
+Ahao = 372 # "好"
+
 # special modifier
 # TODO
 
