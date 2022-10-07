@@ -1,11 +1,11 @@
 struct CV::PosTag
-  SubjVerb = new(:subj_verb, MtlPos.flags(Advbial, Adjtish))
-  SubjAdjt = new(:subj_adjt, MtlPos.flags(Advbial, Adjtish))
-  PrepForm = new(:prep_form, MtlPos.flags(Advbial, AtHead))
+  SubjVerb = new(:subj_verb, MtlPos.flags(MaybeAdvb, MaybeAdjt))
+  SubjAdjt = new(:subj_adjt, MtlPos.flags(MaybeAdvb, MaybeAdjt))
+  PrepForm = new(:prep_form, MtlPos.flags(MaybeAdvb, AtHead))
 
-  DcPhrase = new(:dc_phrase, MtlPos.flags(Advbial, Adjtish))
-  DgPhrase = new(:dg_phrase, MtlPos.flags(Advbial, Adjtish))
-  DrPhrase = new(:dr_phrase, MtlPos.flags(Advbial, AtHead))
+  DcPhrase = new(:dc_phrase, MtlPos.flags(MaybeAdvb, MaybeAdjt))
+  DgPhrase = new(:dg_phrase, MtlPos.flags(MaybeAdvb, MaybeAdjt))
+  DrPhrase = new(:dr_phrase, MtlPos.flags(MaybeAdvb, AtHead))
   DvPhrase = new(:dv_phrase, MtlPos.flags(Vcompl, AtTail))
 
   ParenExp = new(:paren_exp, :none)

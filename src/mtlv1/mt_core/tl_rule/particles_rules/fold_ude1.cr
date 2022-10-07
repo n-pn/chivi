@@ -29,7 +29,7 @@ module CV::TlRule
       ude1.val = "của"
       ptag = PosTag::DgPhrase
     else
-      ude1.as(MtTerm).empty!(true)
+      ude1.as(BaseTerm).empty!(true)
       ptag = PosTag::DcPhrase
     end
 

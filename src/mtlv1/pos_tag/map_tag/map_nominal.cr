@@ -1,10 +1,10 @@
 struct CV::PosTag
-  CapHuman = new(:cap_human, MtlPos.flags(Nounish, Proper, People, Ktetic))
-  CapPlace = new(:cap_place, MtlPos.flags(Nounish, Proper, Locale, Ktetic))
-  CapInsti = new(:cap_insti, MtlPos.flags(Nounish, Proper, Locale, Ktetic))
-  CapBrand = new(:cap_brand, MtlPos.flags(Nounish, Proper))
-  CapTitle = new(:cap_title, MtlPos.flags(Nounish, Proper, Ktetic))
-  CapOther = new(:cap_other, MtlPos.flags(Nounish, Proper, Ktetic))
+  CapHuman = new(:cap_human, MtlPos.flags(Object, Proper, People, Ktetic))
+  CapPlace = new(:cap_place, MtlPos.flags(Object, Proper, Locale, Ktetic))
+  CapInsti = new(:cap_insti, MtlPos.flags(Object, Proper, Locale, Ktetic))
+  CapBrand = new(:cap_brand, MtlPos.flags(Object, Proper))
+  CapTitle = new(:cap_title, MtlPos.flags(Object, Proper, Ktetic))
+  CapOther = new(:cap_other, MtlPos.flags(Object, Proper, Ktetic))
 
   def self.map_name(tag : String, key = "")
     case tag[1]?
@@ -17,20 +17,20 @@ struct CV::PosTag
     end
   end
 
-  Nword = new(:nword, MtlPos.flags(Nounish, Ktetic))
-  Nform = new(:nform, MtlPos.flags(Nounish, Ktetic))
-  Nobjt = new(:nobjt, MtlPos.flags(Nounish, Ktetic))
+  Nword = new(:nword, MtlPos.flags(Object, Ktetic))
+  Nform = new(:nform, MtlPos.flags(Object, Ktetic))
+  Nobjt = new(:nobjt, MtlPos.flags(Object, Ktetic))
 
-  Place = new(:place, MtlPos.flags(Nounish, Ktetic, Locale))
-  Posit = new(:posit, MtlPos.flags(Nounish, Locale))
+  Place = new(:place, MtlPos.flags(Object, Ktetic, Locale))
+  Posit = new(:posit, MtlPos.flags(Object, Locale))
 
-  Nattr = new(:nattr, MtlPos.flags(Nounish))
-  Tword = new(:tword, MtlPos.flags(Nounish))
-  Texpr = new(:texpr, MtlPos.flags(Nounish))
+  Nattr = new(:nattr, MtlPos.flags(Object))
+  Tword = new(:tword, MtlPos.flags(Object))
+  Texpr = new(:texpr, MtlPos.flags(Object))
 
   def self.map_noun(tag : String, key = "", vals = [] of String)
     case tag[1]?
-    when 'a' then new(:nattr, :nounish)
+    when 'a' then new(:nattr, :object)
     when 'h' then map_honor(vals[1]?)
     when 'o' then map_nobjt(key)
     when 'l' then Nform
@@ -40,7 +40,7 @@ struct CV::PosTag
 
   def self.map_honor(val : String?)
     tag = MtlTag::Honor
-    pos = MtlPos.flags(Nounish, People, Ktetic)
+    pos = MtlPos.flags(Object, People, Ktetic)
 
     case val
     when .nil?
@@ -58,12 +58,16 @@ struct CV::PosTag
     new(tag, pos)
   end
 
-  PLACE_MAP = load_map("locations", MtlPos.flags(Nounish, Locale))
-  TWORD_MAP = load_map("timewords", :nounish)
+  PLACE_MAP = load_map("place_words", MtlPos.flags(Object, Locale))
+  TWORD_MAP = load_map("time_words", MtlPos.flags(Object))
 
   def self.map_place(key : String)
     PLACE_MAP[key] ||= begin
-      is_locat?(key[-1]) ? new(:posit, :locale) : new(:place, MtlPos.flags(Locale, Ktetic))
+      if is_locat?(key[-1])
+        new(:posit, MtlPos.flags(Object, Locale))
+      else
+        new(:place, MtlPos.flags(Object, Locale, Ktetic))
+      end
     end
   end
 
@@ -80,18 +84,12 @@ struct CV::PosTag
     }.includes?(char)
   end
 
-  OBJECT_MAP = load_map("objects", :nounish)
+  OBJECT_MAP = load_map("objt_nouns", MtlPos.flags(Object, Ktetic))
 
   def self.map_nobjt(key : String)
     OBJECT_MAP[key] || begin
-      # TODO: map objects
-      new(:nobjt, :nounish)
+      # TODO: map objects by zh patterns
+      new(:nobjt, MtlPos.flags(Object, Ktetic))
     end
-  end
-
-  NOUNISH_MAP = load_map("nounishs", :nounish)
-
-  def self.map_nounish(key : String)
-    NOUNISH_MAP[key] || Nword
   end
 end

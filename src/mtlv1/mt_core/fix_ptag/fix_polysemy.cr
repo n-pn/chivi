@@ -33,19 +33,19 @@ module CV::FixPtag
         @noun_pct = 40
         @noun_alt = node.alt
       else
-        @noun_pct = @node.maybe_noun ? 40 : 20
-        @verb_pct = @node.maybe_verb ? 40 : 20
-        @adjt_pct = @node.maybe_adjt ? 40 : 20
-        @advb_pct = @node.maybe_advb ? 20 : 0
+        @noun_pct = @node.maybe_noun? ? 40 : 20
+        @verb_pct = @node.maybe_verb? ? 40 : 20
+        @adjt_pct = @node.maybe_adjt? ? 40 : 20
+        @advb_pct = @node.maybe_advb? ? 20 : 0
       end
     end
 
     # ameba:disable Metrics/CyclomaticComplexity
     def guess_by_succ
-      case node.real_succ
+      case @node.real_succ
       when .nil?, .boundary?
         @advb_pct -= 10
-      when .nominal?, .pronouns?
+      when .noun_words?, .pronouns?
         @advb_pct -= 20
         @noun_pct += 10
         @verb_pct += 20
@@ -69,25 +69,25 @@ module CV::FixPtag
       when .pre_zai?
         @verb_pct += 30
         @noun_pct += 10
-      when .adverbs?, .preposes?
+      when .advb_words?, .preposes?
         @advb_pct += 40
       when .vauxil?
         @advb_pct += 60
-      when .adjts?
+      when .adjt_words?
         @advb_pct += 40
         @adjt_pct += 30
-      when .pl_dev?
+      when .pt_dev?
         @verb_pct += 30
         @adjt_pct += 30
         @noun_pct += 10
-      when .pl_der?
+      when .pt_der?
         @verb_pct += 20
         @adjt_pct += 20
-      when .pl_dep?, .pl_dec?
+      when .pt_dep?, .pt_dec?
         @verb_pct += 20
         @adjt_pct += 20
         @noun_pct += 5
-      when .pl_deg?
+      when .pt_deg?
         @noun_pct += 100
       end
 
@@ -96,13 +96,13 @@ module CV::FixPtag
 
     # ameba:disable Metrics/CyclomaticComplexity
     def guess_by_prev : self
-      case self.real_prev
+      case @node.real_prev
       when .nil?, .boundary?
-        @advb -= 10
-      when .modis?
+        @advb_pct -= 10
+      when .amod_words?
         @noun_pct += 50
         @adjt_pct += 40
-      when .adjts?
+      when .adjt_words?
         @noun_pct += 40
         @adjt_pct += 50
       when .pt_dev?
@@ -112,48 +112,48 @@ module CV::FixPtag
         @noun_pct += 60
         @verb_pct += 10
         @adjt_pct += 10
+      when .pt_der?
+        @advb_pct += 20
+        @adjt_pct += 30
+        @verb_pct += 10
       when .vauxil?
         @verb_pct += 40
         @noun_pct += 10
-      when .verbs?
+      when .common_verbs?
         @noun_pct += 40
         @adjt_pct += 5
-      when .nominal?, .pro_pers?, .pro_int?
+      when .noun_words?, .pro_pers?, .pro_int?
         @verb_pct += 50
         @adjt_pct += 40
       when .pre_zai?
         @verb_pct += 30
         @noun_pct += 5
-      when .pt_der?
-        @advb_pct += 20
-        @adjt_pct += 30
-        @verb_pct += 10
       end
 
       self
     end
 
     def resolve! : BaseTerm
-      _, type = {
+      _, type = [
         {-@noun_pct, 0},
         {-@verb_pct, 1},
         {-@adjt_pct, 2},
         {-@advb_pct, 3},
-      }.sort.first
+      ].sort.first
 
       case type
       when 0
         @noun_alt.try { |x| @node.val = x }
-        @node.ptag = PosTag.map_nounish(@node.key)
+        @node.tag = PosTag.cast_noun(@node.key)
       when 1
         @verb_alt.try { |x| @node.val = x }
-        @node.ptag = PosTag.map_verbal(@node.key)
+        @node.tag = PosTag.cast_verb(@node.key)
       when 2
         @adjt_alt.try { |x| @node.val = x }
-        @node.ptag = PosTag.map_adjtval(@node.key)
+        @node.tag = PosTag.cast_adjt(@node.key)
       else
         @advb_alt.try { |x| @node.val = x }
-        @node.ptag = PosTag.map_adverb(@node.key)
+        @node.tag = PosTag.cast_advb(@node.key)
       end
 
       @node

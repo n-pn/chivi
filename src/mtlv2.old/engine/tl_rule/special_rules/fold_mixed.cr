@@ -6,7 +6,7 @@ module MtlV2::TlRule
     when .adverb?    then fold_adverb_base!(node)
     when .adjective? then fold_adjts!(node)
     when .verbal?    then fold_verbs!(node)
-    when .nominal?   then fold_nouns!(node)
+    when .noun_words?   then fold_nouns!(node)
     else                  node
     end
   end
@@ -41,7 +41,7 @@ module MtlV2::TlRule
     case succ
     when .adverbial?, .adjective?, .verbal?, .vmodals?, .preposes?
       return MtDict.fix_adverb!(node)
-    when .nominal?, .numeral?, .pronouns?
+    when .noun_words?, .numeral?, .pronouns?
       return MtDict.fix_verb!(node)
     end
 
@@ -66,7 +66,7 @@ module MtlV2::TlRule
 
     # puts [node, node.prev?, node.succ?]
     case succ = node.succ?
-    when .nil?, .puncts?
+    when .nil?, .punctuations?
       if node.prev?(&.object?)
         MtDict.fix_adjt!(node)
       else
@@ -108,21 +108,21 @@ module MtlV2::TlRule
     when .auxils?, .preposes?, .modi?
       return MtDict.fix_noun!(node)
       # when .numeral?
-      #   if (succ = node.succ?) && !(succ.nominal? || succ.pronouns?)
+      #   if (succ = node.succ?) && !(succ.noun_words? || succ.pronouns?)
       #     return MtDict.fix_noun!(node)
       #   end
     when .junction?
       return MtDict.fix_verb!(node) if prev.key == "而"
 
       prev.prev? do |prev_2|
-        return MtDict.fix_noun!(node) if prev_2.nominal?
+        return MtDict.fix_noun!(node) if prev_2.noun_words?
         return MtDict.fix_verb!(node) if prev_2.verbal?
       end
     when .pro_dems?, .qtnoun?
       case node.succ?
       when .nil?, .ends?
         return MtDict.fix_noun!(node)
-      when .nominal?
+      when .noun_words?
         return MtDict.fix_verb!(node)
       when .pd_dep?
         if {"扭曲"}.includes?(node.key)
@@ -140,7 +140,7 @@ module MtlV2::TlRule
     when .penum?
       case tail = succ.succ?
       when .nil? then node
-      when .pl_veno?, .nominal?, .verbal?
+      when .pl_veno?, .noun_words?, .verbal?
         tail = heal_veno!(tail)
         fold!(node, tail, tail.tag, dic: 4)
       else
@@ -148,7 +148,7 @@ module MtlV2::TlRule
       end
     when .pronouns?
       MtDict.fix_verb!(node)
-    when .nominal?
+    when .noun_words?
       node = MtDict.fix_verb!(node)
       return node unless node.v0_obj?
       MtDict.fix_noun!(node)

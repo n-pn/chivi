@@ -10,7 +10,7 @@ module CV::TlRule
     case succ.tag
     when .concoord?, .cenum?
       fold_noun_concoord!(succ, proper) || proper
-    when .verbal?, .vmodals?
+    when .common_verbs?, .vauxil?
       fold_noun_verb!(proper, succ)
     when .pro_pers?
       if tail = succ.succ?
@@ -63,7 +63,7 @@ module CV::TlRule
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
     when .posit?
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
-    when .names?, .honor?, .nouns?
+    when .proper_nouns?, .common_noun?
       # TODO: add pseudo proper
       proper.val = "của #{proper.val}" if flip
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)

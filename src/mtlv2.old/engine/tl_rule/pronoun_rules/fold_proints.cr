@@ -7,7 +7,7 @@ module MtlV2::TlRule
       succ = fold_verbs!(MtDict.fix_verb!(succ))
     when .verbal?
       succ = fold_verbs!(succ)
-    when .nominal?
+    when .noun_words?
       return proint unless succ = scan_noun!(succ)
     else
       return proint
@@ -17,10 +17,10 @@ module MtlV2::TlRule
 
     case proint.key
     when "什么"
-      flip = succ.nominal?
+      flip = succ.noun_words?
       val = "gì"
     when "哪个"
-      flip = succ.nominal?
+      flip = succ.noun_words?
       val = "nào"
     when "怎么"
       val = "làm sao"

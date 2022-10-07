@@ -1,7 +1,7 @@
 # module CV::TlRule
 
 #   # ameba:disable Metrics/CyclomaticComplexity
-#   def heal_veno!(node : MtTerm, prev : BaseNode?, succ : BaseNode?) : MtTerm
+#   def heal_veno!(node : BaseTerm, prev : BaseNode?, succ : BaseNode?) : BaseTerm
 #     # puts [node, prev, succ]
 
 #     case succ
@@ -13,9 +13,9 @@
 #       return node.as_noun!
 #     when .nquants?
 #       return node.as_verb!(nil) unless succ.nqtime?
-#     when .pronouns?, .verbal?, .pre_zai?, .numbers?
+#     when .pronouns?, .verb_words?, .pre_zai?, .numbers?
 #       return node.as_verb!(nil)
-#       # when .nominal?
+#       # when .noun_words?
 #       #   node = node.as_verb!(nil)
 #       #   return node unless node.vintr? || node.vobj?
 #       #   node.as_noun!
@@ -23,35 +23,35 @@
 
 #     case prev
 #     when .nil?, .boundary?
-#       return (succ && succ.nominal?) ? node.as_verb!(nil) : node
-#     when .pro_dems?, .qtnoun?, .verbal?
+#       return (succ && succ.noun_words?) ? node.as_verb!(nil) : node
+#     when .pro_dems?, .qtnoun?, .verb_words?
 #       case succ
 #       when .nil?, .boundary?, .particles?
 #         return node.as_noun!
-#       when .nominal?
+#       when .noun_words?
 #         return succ.succ?(&.pt_dep?) ? node.as_verb!(nil) : node.as_noun!
 #       when .pt_dep?
 #         return node.as_noun!
 #       end
-#     when .pre_zai?, .pre_bei?, .vauxil?, .advbial?, .pt_dev?, .pt_der?, .object?
+#     when .pre_zai?, .pre_bei?, .vauxil?, .advb_words?, .pt_dev?, .pt_der?, .object?
 #       return node.as_verb!(nil)
-#     when .adjts?
-#       return node.as_verb!(nil) unless prev.is_a?(MtTerm)
-#       return prev.modis? ? node.as_noun! : node.as_verb!(nil)
+#     when .adjt_words?
+#       return node.as_verb!(nil) unless prev.is_a?(BaseTerm)
+#       return prev.amod_words? ? node.as_noun! : node.as_verb!(nil)
 #     when .pt_dep?
 #       # TODO: check for adjt + ude1 + verb (grammar error)
-#       return prev.prev?(&.advbial?) ? node.as_verb!(nil) : node.as_noun!
+#       return prev.prev?(&.advb_words?) ? node.as_verb!(nil) : node.as_noun!
 #     when .nhanzis?
 #       return prev.key == "一" ? node.as_verb!(nil) : node.as_noun!
 #     when .preposes?
-#       return succ.try(&.nominal?) ? node.as_verb!(nil) : node.as_noun!
+#       return succ.try(&.noun_words?) ? node.as_verb!(nil) : node.as_noun!
 #     end
 
 #     node
 #   end
 
 #   # ameba:disable Metrics/CyclomaticComplexity
-#   def heal_ajno!(node : MtTerm, prev : BaseNode?, succ : BaseNode?) : BaseNode
+#   def heal_ajno!(node : BaseTerm, prev : BaseNode?, succ : BaseNode?) : BaseNode
 #     # puts [node, prev, succ, "heal_ajno"]
 
 #     case succ
@@ -59,12 +59,12 @@
 #       return node if !prev || prev.boundary?
 #       case prev
 #       when .nil?, .boundary? then return node
-#       when .modis?, .pro_dems?, .quantis?, .nqnoun?
+#       when .amod_words?, .pro_dems?, .quantis?, .nqnoun?
 #         return node.as_noun!
-#       when .object?, .pt_der?, .adjts?, .advbial?
+#       when .object?, .pt_der?, .adjt_words?, .advb_words?
 #         return node.as_adjt!(nil)
 #       when .conjunct?
-#         return prev.prev?(&.nominal?) ? node.as_adjt!(nil) : node
+#         return prev.prev?(&.noun_words?) ? node.as_adjt!(nil) : node
 #       else
 #         return node.as_noun!
 #       end
@@ -74,20 +74,20 @@
 #       return node.as_noun!
 #     when .pt_dep?, .pt_dev?, .pt_der?, .mopart?
 #       return node.as_adjt!(nil)
-#     when .verbal?, .preposes?
+#     when .verb_words?, .preposes?
 #       return node.key.size > 2 ? node.as_noun! : node.as_adjt!(nil)
-#     when .nominal?
+#     when .noun_words?
 #       return node.as_adjt!(nil)
 #     else
-#       if succ.is_a?(MtTerm) && succ.key == "到"
+#       if succ.is_a?(BaseTerm) && succ.key == "到"
 #         return node.as_adjt!(nil)
 #       end
 #     end
 
 #     case prev
-#     when .nil?, .boundary?, .advbial?
+#     when .nil?, .boundary?, .advb_words?
 #       node.as_adjt!(nil)
-#     when .modis?
+#     when .amod_words?
 #       node.as_noun!
 #     else
 #       node.as_adjt!(nil)

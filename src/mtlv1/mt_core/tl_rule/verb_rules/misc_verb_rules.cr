@@ -1,30 +1,30 @@
 module CV::TlRule
-  def is_linking_verb?(head : BaseNode, succ : BaseNode?) : Bool
-    # puts [node, succ, "check linking verb"]
-    return true if head.vmodals?
-    return true if !succ || succ.starts_with?('不')
+  # def is_linking_verb?(head : BaseNode, succ : BaseNode?) : Bool
+  #   # puts [node, succ, "check linking verb"]
+  #   return true if head.modal_verbs?
+  #   return true if !succ || succ.starts_with?('不')
 
-    head.each do |node|
-      next unless node.is_a?(MtTerm)
-      next unless char = node.key[0]?
-      return true if {'来', '去', '到', '有', '上', '想', '出'}.includes?(char)
-    end
+  #   head.each do |node|
+  #     next unless node.is_a?(BaseTerm)
+  #     next unless char = node.key[0]?
+  #     return true if {'来', '去', '到', '有', '上', '想', '出'}.includes?(char)
+  #   end
 
-    {'了', '过'}.each do |char|
-      return {'就', '才', '再'}.includes?(succ.key) if head.ends_with?(char)
-    end
+  #   {'了', '过'}.each do |char|
+  #     return {'就', '才', '再'}.includes?(succ.key) if head.ends_with?(char)
+  #   end
 
-    false
-  end
+  #   false
+  # end
 
   def find_verb_after(right : BaseNode)
     while right = right.succ?
       # puts ["find_verb", right]
 
       case right
-      when .pl_mark?, .mn_mark?, .verbal?, .preposes?
+      when .pl_mark?, .mn_mark?, .verb_words?, .preposes?
         return right
-      when .advbial?, .comma?
+      when .advb_words?, .comma?
         next
       else
         return nil
@@ -40,8 +40,8 @@ module CV::TlRule
       when .comma?              then return nil if skip_comma
       when .v_shang?, .v_xia?
         return node if node.succ?(&.pt_le?)
-      when .vmodals?, .verbal? then return node
-      when .adjts?
+      when .modal_verbs?, .verb_words? then return node
+      when .adjt_words?
         return nil unless {"相同", "类似"}.includes?(node.key)
         return node.set!(PosTag::Vint)
       else
@@ -49,33 +49,13 @@ module CV::TlRule
           return fold!(node.set!("một phát"), succ, succ.tag, dic: 5, flip: true)
         end
 
-        return nil unless node.advbial?
+        return nil unless node.advb_words?
       end
     end
   end
 
-  def scan_verb!(node : BaseNode)
-    case node
-    when .advbial?  then fold_adverbs!(node)
-    when .preposes? then fold_preposes!(node)
-    else                 fold_verbs!(node)
-    end
-  end
-
-  def need_2_objects?(node : MtTerm)
-    MtDict.has_key?(:v2_objs, node.key)
-  end
-
-  def need_2_objects?(node : BaseList)
-    node.list.any? { |x| need_2_objects?(x) }
-  end
-
-  def need_2_objects?(key : String)
-    MtDict.get(:v2_objs).has_key?(key)
-  end
-
   def fold_left_verb!(node : BaseNode, prev : BaseNode?)
-    return node unless prev && prev.advbial?
+    return node unless prev && prev.advb_words?
     fold_adverb_node!(prev, node)
   end
 end

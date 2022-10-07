@@ -1,7 +1,7 @@
 module MtlV2::TlRule
   def fold_compare(head : BaseNode, tail = head.succ?)
     while tail
-      return if tail.puncts? || tail.key == "像"
+      return if tail.punctuations? || tail.key == "像"
 
       if tail.uyy?
         break unless tail.key == "一样" || tail.key == "不一样"
@@ -34,7 +34,7 @@ module MtlV2::TlRule
 
   def fold_compare_prepos(head : BaseNode, tail = head.succ?)
     while tail
-      return if tail.puncts?
+      return if tail.punctuations?
 
       if tail.key.in?("相同", "一样")
         tail.succ?(&.pt_dep?) ? return : break

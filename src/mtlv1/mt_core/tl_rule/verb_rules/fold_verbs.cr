@@ -1,16 +1,16 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_verbs!(verb : BaseNode, prev : BaseNode? = nil) : BaseNode
-    return verb unless verb.verbal?
+    return verb unless verb.verb_words?
     return fold_verb_object!(verb, verb.succ?) if verb.is_a?(BaseList)
 
     case verb
     when .v_shi?, .v_you?
       return fold_left_verb!(verb, prev)
     when .vpro?
-      return verb unless (succ = verb.succ?) && succ.verbal?
+      return verb unless (succ = verb.succ?) && succ.verb_words?
       verb = fold!(verb, succ, succ.tag, dic: 5)
-    when .vmodals?
+    when .modal_verbs?
       verb.tag = PosTag::Verb
     end
 
@@ -28,7 +28,7 @@ module CV::TlRule
         adjt = fold_adverb_node!(prev, adjt) if prev
 
         return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
-        return adjt unless (succ = scan_adjt!(succ)) && succ.adjts?
+        return adjt unless (succ = scan_adjt!(succ)) && succ.adjt_words?
         return fold!(adjt, succ, PosTag::Aform, dic: 8)
       when .particles?
         verb = fold_verb_auxils!(verb, succ)
@@ -42,16 +42,16 @@ module CV::TlRule
           succ.val = "tốt"
         when .maybe_adjt?, .maybe_verb?, .preposes?
           break
-        when .nouns?
+        when .common_nouns?
           break unless flag == 0
         else
           succ.val = "xong"
         end
 
         verb = fold!(verb, succ, PosTag::Verb, dic: 4)
-      when .verbal?
+      when .verb_words?
         verb = fold_verb_verb!(verb, succ)
-        # when .adjts?, .preposes?, .locat?
+        # when .adjt_words?, .preposes?, .locat?
         #   break unless flag == 0
         #   fold_verb_compl!(verb, succ).try { |x| verb = x } || break
       when .adv_bu4?

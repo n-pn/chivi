@@ -7,7 +7,7 @@ module CV::TlRule
     "重" => "nặng",
   }
 
-  def fold_adjt_measure(adjt : MtTerm, succ = adjt.succ?)
+  def fold_adjt_measure(adjt : BaseTerm, succ = adjt.succ?)
     return unless succ
 
     if succ.numeral?
@@ -15,7 +15,7 @@ module CV::TlRule
       return fold!(adjt, succ, PosTag::Aform, dic: 7)
     end
 
-    return unless succ.is_a?(MtTerm) && (tail = succ.succ?) && tail.numeral?
+    return unless succ.is_a?(BaseTerm) && (tail = succ.succ?) && tail.numeral?
     return unless succ_val = PRE_NUM_APPROS[succ.key]?
     succ.val = succ_val
 
@@ -25,17 +25,17 @@ module CV::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_adjts!(adjt : BaseNode, prev : BaseNode? = nil) : BaseNode
-    if adjt.is_a?(MtTerm) && MEASURES.has_key?(adjt.key)
+    if adjt.is_a?(BaseTerm) && MEASURES.has_key?(adjt.key)
       fold_adjt_measure(adjt).try { |x| return x }
     end
 
-    while adjt.adjts?
+    while adjt.adjt_words?
       break unless succ = adjt.succ?
       # puts [adjt, succ, "fold_adjt"]
       succ = heal_mixed!(succ, prev: adjt) if succ.polysemy?
 
       case succ.tag
-      when .adverbs?
+      when .advb_words?
         if succ.key == "又"
           fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
         else
@@ -43,18 +43,18 @@ module CV::TlRule
         end
       when .bond_word?
         fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
-      when .adjts?
+      when .adjt_words?
         adjt = fold!(adjt, succ, succ.tag, dic: 4)
       when .vdir?
-        adjt.as_verb! if adjt.is_a?(MtTerm)
+        adjt.as_verb! if adjt.is_a?(BaseTerm)
         return fold_verbs!(adjt)
-      when .nominal?
+      when .noun_words?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_adjt_noun!(adjt, succ)
       when .vpro?, .verb?
         case succ.key
         when "到"
-          if (tail = succ.succ?) && tail.adjts?
+          if (tail = succ.succ?) && tail.adjt_words?
             adjt = fold!(adjt, tail, PosTag::Aform, dic: 7)
           else
             adjt = fold!(adjt, succ, PosTag::Verb, dic: 6)
@@ -101,21 +101,21 @@ module CV::TlRule
     fold_adj_adv!(adjt, prev)
   end
 
-  def fold_modis?(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil)
+  def fold_amod_words?(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil)
     # puts [node, succ, nega].colorize.green
 
     node = fold!(nega, node, node.tag, dic: 4) if nega
     return node if !(succ = node.succ?) || succ.boundary?
 
-    if succ.is_a?(MtTerm) && succ.polysemy?
+    if succ.is_a?(BaseTerm) && succ.polysemy?
       succ = heal_mixed!(succ, prev: node)
     end
 
-    succ.nominal? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
+    succ.noun_words? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
   end
 
   def fold_adj_adv!(node : BaseNode, prev = node.prev?)
-    return node unless prev && prev.advbial?
+    return node unless prev && prev.advb_words?
     fold_adverb_node!(prev, node, tag: PosTag::Aform, dic: 4)
   end
 end

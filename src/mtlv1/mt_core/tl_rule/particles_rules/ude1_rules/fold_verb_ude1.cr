@@ -5,7 +5,7 @@ module CV::TlRule
     # TODO: fix this shit!
 
     case prev.tag
-    when .nominal?
+    when .noun_words?
       if verb.verb?
         head = fold!(prev, ude1, PosTag::DcPhrase, dic: 7)
       else

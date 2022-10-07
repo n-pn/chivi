@@ -288,7 +288,7 @@ def export_book(bhash, regular_set)
     rank = term.key.size == 1 ? 2 : 3
     new_term = book_out.new_term(term.key, [val], tag, rank, mtime, uname, privi)
 
-    if new_term.ptag.nominal? || new_term.ptag.adjective?
+    if new_term.ptag.noun_words? || new_term.ptag.adjective?
       book_out.set(new_term)
     elsif !regular_set.includes?(term.key)
       book_pleb.set(new_term)
@@ -310,8 +310,8 @@ def export_book(bhash, regular_set)
     end
 
     postag = CV::PosTag.parse(tag)
-    next unless postag.nominal?
-    cap_mode = postag.names? ? 2 : 0
+    next unless postag.noun_words?
+    cap_mode = postag.proper_nouns? ? 2 : 0
 
     val = HANVIET_MTL.translit(key, cap_mode: cap_mode).to_s
     rank = key.size == 1 ? 2 : 3

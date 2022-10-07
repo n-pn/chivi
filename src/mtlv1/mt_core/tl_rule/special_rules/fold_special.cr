@@ -5,7 +5,7 @@ module CV::TlRule
     when .v_shang? then fix_上下(node, MAP_上)
     when .v_xia?   then fix_上下(node, MAP_下)
     when .key_in?("和", "跟")
-      if node.prev? { |x| x.boundary? || x.adverbs? } || concoord_is_prepos?(node.succ?)
+      if node.prev? { |x| x.boundary? || x.advb_words? } || concoord_is_prepos?(node.succ?)
         fold_preposes!(node)
       else
         val = node.key == "和" ? "và" : node.val
@@ -20,11 +20,11 @@ module CV::TlRule
     return false unless node
 
     while node = node.succ?
-      if node.verbal?
+      if node.verb_words?
         return !node.uniqword?
       elsif node.uniqword?
         return true if node.key_in?("上", "下") && fix_上下(node).verb?
-      elsif node.puncts?
+      elsif node.punctuations?
         return false unless node.cenum?
       end
     end
@@ -35,15 +35,15 @@ module CV::TlRule
 
   def fix_上下(node : BaseNode, vals = node.key == "上" ? MAP_上 : MAP_下) : BaseNode
     case node.prev?
-    when .nil?, .empty?, .puncts?
+    when .nil?, .empty?, .punctuations?
       if node.succ? { |x| x.content? || x.pt_le? }
         node.set!(vals[0], PosTag::Verb)
       else
         node.set!(vals[2], PosTag::Noun)
       end
-    when .nouns?
+    when .common_nouns?
       node.set!(vals[1], PosTag::Locat)
-    when .verbs?
+    when .common_verbs?
       node.set!(vals[0], PosTag::Vdir)
     else
       node
@@ -52,12 +52,12 @@ module CV::TlRule
 
   def fold_wd_hao!(node : BaseNode) : BaseNode
     case succ = node.succ?
-    when .nil?, .puncts?, .pt_le?
+    when .nil?, .punctuations?, .pt_le?
       node.set!("tốt", PosTag::Adjt)
-    when .adjts?, .verbal?, .vmodals?, .advbial?
-      node.set!(succ.verbal? ? "dễ" : "thật", PosTag::Adverb)
+    when .adjt_words?, .verb_words?, .modal_verbs?, .advb_words?
+      node.set!(succ.verb_words? ? "dễ" : "thật", PosTag::Adverb)
       fold_adverb_base!(node, succ)
-    when .nominal?
+    when .noun_words?
       node.set!("tốt", PosTag::Adjt)
       fold_adjt_noun!(node, succ)
     else
@@ -87,7 +87,7 @@ module CV::TlRule
       fold_verbs!(node.set!("có lỗi với"))
     when "原来"
       case node.prev?
-      when .nil?, .boundary?, .puncts?
+      when .nil?, .boundary?, .punctuations?
         node.set!("thì ra", PosTag::Conjunct)
       else
         node.set!("ban đầu", tag: PosTag::Modi)

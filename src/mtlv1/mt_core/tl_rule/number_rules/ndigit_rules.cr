@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_ndigit!(node : BaseNode, prev : BaseNode? = nil)
-    return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
+    return node unless (succ = node.succ?) && succ.is_a?(BaseTerm)
     return fold_ndigit_nhanzi!(node, succ) if succ.nhanzis?
 
     return node unless prev && (succ.key == "点" || succ.key == "时")
@@ -16,7 +16,7 @@ module CV::TlRule
     while succ.tag == match_tag
       key_io << succ.key
       val_io << " " << succ.val
-      break unless (succ = succ.succ?) && succ.is_a?(MtTerm)
+      break unless (succ = succ.succ?) && succ.is_a?(BaseTerm)
       match_tag = PosTag::Ndigit1
     end
 

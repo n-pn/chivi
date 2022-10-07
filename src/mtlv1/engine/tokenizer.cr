@@ -31,20 +31,20 @@ class MTL::Tokenizer
   getter mtl_chars = [] of Char
 
   @costs : Array(Int32)
-  @terms : Array(MtTerm)
+  @terms : Array(BaseTerm)
 
   def initialize(input : String)
     @raw_chars = input.chars
     @limit = @raw_chars.size
 
     @costs = Array(Int32).new(@limit &+ 1, 0)
-    @terms = Array(MtTerm).new(@limit &+ 1)
-    @terms << MtTerm.new("", idx: -1)
+    @terms = Array(BaseTerm).new(@limit &+ 1)
+    @terms << BaseTerm.new("", idx: -1)
 
     @keys.each_with_index do |raw_char, idx|
       mtl_char = raw_char.fullwidth? ? raw_char.halfwidth : raw_char
       @mtl_chars << mtl_char
-      @terms << MtTerm.new(raw_char.to_s, mtl_char.to_s, idx: idx)
+      @terms << BaseTerm.new(raw_char.to_s, mtl_char.to_s, idx: idx)
     end
   end
 
@@ -65,7 +65,7 @@ class MTL::Tokenizer
     end
   end
 
-  private def apply_term(term : MtTerm, idx : Int32, new_idx : Int32, size = new_idx &- idx)
+  private def apply_term(term : BaseTerm, idx : Int32, new_idx : Int32, size = new_idx &- idx)
     @nodes[new_idx] = term
     @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtUtil.cost(size, 1_i8)
   end
@@ -73,7 +73,7 @@ class MTL::Tokenizer
   def result
     idx = @raw_chars.size
 
-    output = [] of MtTerm
+    output = [] of BaseTerm
 
     idx = nodes.size &- 1
     cur = nodes.unsafe_fetch(idx)

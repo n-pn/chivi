@@ -40,7 +40,7 @@ module MtlV2::TlRule
       case succ = pro_dem.succ?
       when .nil?, .preposes?, .body?
         pro_dem.set!("cái này")
-      when .verbal?
+      when .verb_words?
         pro_dem.set!("đây")
       when .comma?
         if (succ_2 = succ.succ?) && succ_2.pro_zhe? # && succ_2.succ?(&.maybe_verb?)
@@ -51,7 +51,7 @@ module MtlV2::TlRule
       when .ends?
         pro_dem.set!("cái này")
       else
-        if pro_dem.prev?(&.nominal?)
+        if pro_dem.prev?(&.noun_words?)
           pro_dem.set!("giờ")
         else
           pro_dem.set!("cái này")

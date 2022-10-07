@@ -5,12 +5,12 @@ module CV::TlRule
 
     case succ.tag
     when .honor?
-      if node.names? || node.honor?
+      if node.proper_nouns? || node.honor?
         fold!(node, succ, PosTag::Person, dic: 3)
       else
         fold!(node, succ, PosTag::Person, dic: 3, flip: true)
       end
-    when .names?
+    when .proper_nouns?
       fold!(node, succ, succ.tag, dic: 4)
     when .posit?
       fold!(node, succ, PosTag::DcPhrase, dic: 3, flip: true)

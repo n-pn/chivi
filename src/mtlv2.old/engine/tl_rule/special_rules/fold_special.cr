@@ -55,7 +55,7 @@ module MtlV2::TlRule
         return !node.special?
       elsif node.special?
         return true if node.key_in?("上", "下") && fix_上下(node).verb?
-      elsif node.puncts?
+      elsif node.punctuations?
         return false unless node.penum?
       end
     end
@@ -66,13 +66,13 @@ module MtlV2::TlRule
 
   def fix_上下(node : BaseNode, vals = node.key == "上" ? MAP_上 : MAP_下) : BaseNode
     case node.prev?
-    when .nil?, .none?, .puncts?
+    when .nil?, .none?, .punctuations?
       if node.succ? { |x| x.subject? || x.ule? }
         node.set!(vals[0], PosTag::Verb)
       else
         node.set!(vals[2], PosTag::Noun)
       end
-    when .noun?, .affil?
+    when .noun?, .cap_affil?
       node.set!(vals[1], PosTag::Locative)
     when .verb?, .vintr?
       node.set!(vals[0], PosTag::VDircomp)
@@ -83,12 +83,12 @@ module MtlV2::TlRule
 
   def fold_adj_hao!(node : BaseNode, succ : BaseNode) : BaseNode
     case succ
-    when .puncts?, .ule?
+    when .punctuations?, .ule?
       node.set!("tốt", PosTag::Adjt)
     when .adjective?, .verbal?, .vmodals?, .adverbial?
       node.set!(succ.verbal? ? "dễ" : "thật", PosTag::Adverb)
       fold_adverb_base!(node)
-    when .nominal?
+    when .noun_words?
       node.set!("tốt", PosTag::Adjt)
       fold_nouns!(noun: succ, defn: node)
     else
@@ -111,7 +111,7 @@ module MtlV2::TlRule
       return node if boundary?(succ)
       fold_verbs!(MtDict.fix_verb!(node))
     when "原来"
-      if node.prev? { |x| x.puncts? || x.none? }
+      if node.prev? { |x| x.punctuations? || x.none? }
         node.set!("thì ra", PosTag::Conjunct)
       else
         node.set!("ban đầu", tag: PosTag::Modi)
@@ -121,7 +121,7 @@ module MtlV2::TlRule
       case succ
       when .nil?, .pstop?
         node.set!("hành")
-      when .ends?, .puncts?
+      when .ends?, .punctuations?
         node.set!("được")
       else
         fold_verbs!(node.set!(PosTag::Verb))

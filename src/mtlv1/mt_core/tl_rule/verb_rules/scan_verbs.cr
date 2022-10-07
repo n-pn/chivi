@@ -5,8 +5,8 @@ module CV::TlRule
     case node
     when .v_shi?   then node
     when .v_you?   then node
-    when .advbial? then fold_adverbs!(node)
-    when .verbal?  then fold_verbs!(node)
+    when .advb_words? then fold_adverbs!(node)
+    when .verb_words?  then fold_verbs!(node)
     else                node
     end
   end

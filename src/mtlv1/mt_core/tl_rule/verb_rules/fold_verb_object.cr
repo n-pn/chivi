@@ -46,7 +46,7 @@ module CV::TlRule
     return false if verb.is_a?(BaseList) && verb.list.any?(&.pre_bei?)
     return false if verb.vtwo?
 
-    while prev && prev.advbial?
+    while prev && prev.advb_words?
       prev = prev.prev?
     end
 
@@ -63,7 +63,7 @@ module CV::TlRule
     when .comma?   then return true
     when .v_shi?   then return false
     when .v_you?   then return false
-    when .verbal?  then return is_linking_verb?(prev, verb)
+    when .verb_words?  then return is_linking_verb?(prev, verb)
     when .nquants? then return false
     when .nounish?
       return true unless head = prev.prev?

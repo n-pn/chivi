@@ -211,7 +211,7 @@ class CV::TlName
     Trie.human.has_boundary?(input)
   end
 
-  def self.is_affil?(input : String)
+  def self.is_cap_affil?(input : String)
     Trie.affil.has_boundary?(input)
   end
 end

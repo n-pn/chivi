@@ -19,19 +19,19 @@ module CV::TlRule
     succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
-    when .vmodals?
+    when .modal_verbs?
       fold_vmodal!(succ, nega: node)
     when .pre_dui?
       succ = fold_pre_dui!(succ)
       fold!(node, succ, succ.tag, dic: 9)
-    when .advbial?
+    when .advb_words?
       node = fold!(node, succ, succ.tag, dic: 4)
       return node unless succ = node.succ?
       fold_adverb_base!(node, succ)
-    when .verbal?
+    when .verb_words?
       node = fold!(node, succ, succ.tag, dic: 4)
       fold_verbs!(node)
-    when .adjts?
+    when .adjt_words?
       node = fold!(node, succ, succ.tag, dic: 5)
       fold_adjts!(node)
     else
@@ -45,7 +45,7 @@ module CV::TlRule
     succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
-    when .verbal?
+    when .verb_words?
       node.val = succ.succ?(&.pt_zhe?) ? "không" : node.prev?(&.nounish?) ? "chưa" : "không có"
       fold_verbs!(succ, prev: node)
     when .adjt?, .pl_ajad?, .pl_ajno?
@@ -57,10 +57,10 @@ module CV::TlRule
 
   def fold_adv_fei!(node : BaseNode, succ = node.succ) : BaseNode
     case succ
-    when .modis?, .nouns?, .pl_ajno?, .pl_veno?
+    when .amod_words?, .common_nouns?, .pl_ajno?, .pl_veno?
       node = fold!(node, succ, PosTag::Amod, dic: 7)
       fold_adjts!(node)
-    when .verbal?
+    when .verb_words?
       node = fold!(node, succ, succ.tag, dic: 6)
       fold_verbs!(node)
     else
@@ -74,20 +74,20 @@ module CV::TlRule
   def fold_adverb_base!(node : BaseNode, succ = node.succ) : BaseNode
     case succ.tag
     when .v_you?
-      return node unless (noun = succ.succ?) && noun.nouns?
+      return node unless (noun = succ.succ?) && noun.common_nouns?
       succ = fold!(succ, noun, PosTag::Aform, dic: 5)
       fold_adverb_node!(node, succ)
-    when .vmodals?
+    when .modal_verbs?
       fold_vmodal!(succ, nega: node)
-    when .verbal?
+    when .verb_words?
       fold_adverb_verb!(node, succ)
-    when .adjts?
+    when .adjt_words?
       succ.tag = PosTag::Adjt if succ.pl_ajno?
       fold_adjts!(succ, prev: node)
     when .adv_bu4?
       succ.succ? { |tail| succ = fold_adv_bu!(succ, tail) }
       fold!(node, succ, succ.tag, dic: 2)
-    when .adverbs?
+    when .advb_words?
       succ = fold_adverbs!(succ)
       node = fold!(node, succ, succ.tag, dic: 6)
     when .locat?
@@ -121,7 +121,7 @@ module CV::TlRule
   def heal_wd_hao!(node : BaseNode)
     case node.succ?
     when .nil? then node
-    when .adjts?, .verbal?
+    when .adjt_words?, .verb_words?
       node.set!("thật", PosTag::Adverb)
     else
       node.set!("tốt")
@@ -144,7 +144,7 @@ module CV::TlRule
       case node
       when .comma?
         return false unless node = node.succ?
-      when .pl_mark?, .mn_mark?, .verbal?, .preposes?, .adjts?, .advbial?, .vmodals?
+      when .pl_mark?, .mn_mark?, .verb_words?, .preposes?, .adjt_words?, .advb_words?, .modal_verbs?
         return true
       when .concoord?
         return false unless node.key == "和"
@@ -152,7 +152,7 @@ module CV::TlRule
         # TODO: deep checking
         return true
       when .pt_der?
-        return node.succ?(&.verbal?) || false
+        return node.succ?(&.verb_words?) || false
       else
         return false
       end

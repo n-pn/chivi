@@ -1,6 +1,8 @@
 require "./base_node"
 
 class CV::BasePair < CV::BaseNode
+  include BaseExpr
+
   getter head : BaseNode
   getter tail : BaseNode
 
@@ -17,22 +19,6 @@ class CV::BasePair < CV::BaseNode
   def each
     yield @head
     yield @tail
-  end
-
-  def to_int?
-    nil
-  end
-
-  def starts_with?(key : String | Char)
-    {@head, @tail}.any?(&.starts_with?(key))
-  end
-
-  def ends_with?(key : String | Char)
-    {@head, @tail}.any?(&.ends_with?(key))
-  end
-
-  def find_by_key(key : String | Char)
-    {@head, @tail}.find(&.find_by_key(key))
   end
 
   ###

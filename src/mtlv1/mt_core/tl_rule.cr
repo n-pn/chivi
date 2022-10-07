@@ -1,64 +1,50 @@
 require "./tl_rule/**"
+require "./con_join/**"
 
 module CV::TlRule
-  def fold_left!(tail : BaseNode)
-    while tail
-      break unless prev = tail.prev?
-      tail = fold_left!(tail, prev).try(&.prev?) || tail.prev?
+  def left_join!(tail : BaseNode, head : BaseNode) : Nil
+    while tail = tail.prev?
+      break if tail == head
+      tail = join_word!(tail)
     end
   end
 
-  def fold_left!(right : BaseNode, left : BaseNode) : BaseNode
-    case right
-    when .timeword? then join_time!(right, left)
-    when .nominal?  then fold_noun_left!(right, level: 0)
-    when .suffixes?
-      fold_suffix!(suff: right, left: left)
-    else
-      right
+  def join_word!(node : BaseNode) : BaseNode
+    case node
+    when .time_words? then join_time!(node)
+    when .noun_words? then join_noun!(node, level: 0)
+    when .verb_words? then join_verb!(node)
+    else                   node
     end
   end
 
-  def fix_grammar!(node : BaseNode) : Nil
-    while node = node.succ?
-      node = fold_once!(node)
-      # puts [node, node.succ?, node.prev?].colorize.blue
+  def join_group!(pstart : BaseTerm, pclose : BaseTerm) : Nil
+    left_join!(pclose, pstart)
+    ptag = guess_group_tag(pstart, pclose)
+    BaseSeri.new(pstart, pclose, tag: ptag)
+  end
+
+  def guess_group_tag(head : BaseNode, tail : BaseNode)
+    case head.tag
+    when .title_sts? then PosTag::CapTitle
+    when .brack_sts? then PosTag::CapOther
+    when .paren_st1? then PosTag::ParenExp
+    else                  guess_quote_group(head, tail)
     end
   end
 
-  def fold_list!(head : BaseNode, tail : BaseNode? = nil) : Nil
-    while head = head.succ?
-      break if head == tail
-      head = fold_once!(head)
+  def guess_quote_group(head : BaseNode, tail : BaseNode)
+    head_succ = head.succ
+    tail_prev = tail.prev
+
+    return head_succ.tag if head_succ == tail_prev
+
+    if (tail_prev.interj? || tail_prev.pt_dep?) &&
+       (head_succ.onomat? || head_succ.interj?) &&
+       (head.prev?(&.boundary?.!) || tail.succ?(&.pt_dep?))
+      return head_succ.tag
     end
-  end
 
-  # ameba:disable Metrics/CyclomaticComplexity
-  def fold_once!(node : BaseNode) : BaseNode
-    # puts [node, node.succ?, node.prev?].colorize.red
-
-    case node.tag
-    # when .polysemy?  then fold_mixed!(node)
-    # when .uniqword?  then fold_specials!(node)
-    when .advbial?  then fold_adverbs!(node)
-    when .preposes? then fold_preposes!(node)
-    when .pronouns? then fold_pronouns!(node)
-    when .timeword? then fold_timeword!(node)
-    when .numeral?  then fold_number!(node)
-    when .modis?    then fold_modis?(node)
-    when .adjts?    then fold_adjts!(node, prev: nil)
-    when .vmodals?  then fold_vmodal!(node)
-    when .verbal?   then fold_verbs!(node)
-      # when .locat?     then fold_space!(node)
-    when .nominal?   then fold_nouns!(node)
-    when .onomat?    then fold_onomat!(node)
-    when .atsign?    then fold_atsign!(node)
-    when .particles? then fold_auxils!(node)
-    else                  node
-    end
-  end
-
-  def pair!(left : BaseNode, right : BaseNode, ptag = right.tag, dic = 0, flip = left.at_tail? || right.at_head?)
-    BasePair.new(left, right, ptag, dic: dic, idx: left.idx, flip: flip)
+    head.prev?(&.pt_dep?) ? PosTag::Nform : PosTag::LitBlank
   end
 end

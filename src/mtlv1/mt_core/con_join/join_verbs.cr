@@ -12,7 +12,7 @@ module CV::TlRule
       return verb if verb.succ.tag.pt_dep?
     when .pro_pers?
       prev = join_pro_per!(prev)
-    when .nominal?
+    when .noun_words?
       prev = join_noun!(prev)
     else
       return verb
@@ -29,9 +29,9 @@ module CV::TlRule
     has_advb = true
 
     case advb
-    when .timeword?
+    when .time_words?
       advb = join_time!(advb)
-    when .advbial?
+    when .advb_words?
       advb = join_advb!(advb)
     when .pt_dev?
       advb = join_udev!(advb)

@@ -26,9 +26,9 @@ module MtlV2::TlRule
       noun = fold_proper_nominal!(proper, succ)
       return noun unless (succ = noun.succ?) && succ.maybe_verb?
       fold_noun_verb!(noun, succ)
-    when .nominal?
+    when .noun_words?
       succ = fold_nouns!(succ)
-      return proper unless succ.nominal?
+      return proper unless succ.noun_words?
       fold_proper_nominal!(proper, succ)
     when .numeral?
       succ = fold_number!(succ)
@@ -80,7 +80,7 @@ module MtlV2::TlRule
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
     when .position?
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
-    when .names?, .ptitle?, .noun?
+    when .proper_nouns?, .ptitle?, .noun?
       # TODO: add pseudo proper
       proper.val = "của #{proper.val}" if flip
       fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)

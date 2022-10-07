@@ -50,7 +50,7 @@ module MtlV2::TlRule
   def fold_number_nquant!(node : BaseNode, prev : BaseNode? = nil) : BaseNode
     return node if !(tail = node.succ?) || tail.ends?
 
-    return node if tail.puncts? && !tail.quantis?
+    return node if tail.punctuations? && !tail.quantis?
 
     appro = 0
     # puts [node, tail]
@@ -66,7 +66,7 @@ module MtlV2::TlRule
     when .pre_ba3?
       tail = fold_pre_ba3!(tail)
 
-      if tail.nominal?
+      if tail.noun_words?
         return fold!(node, tail, tail.tag, dic: 3)
       elsif node.prev? { |x| x.verbal? || x.prev?(&.verbal?) }
         tail.set!("phát", PosTag::Qtverb)

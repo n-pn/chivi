@@ -5,7 +5,7 @@ module CV::TlRule
     tail = head
     while tail = tail.succ?
       break if tail.key == " "
-      return head if tail.puncts?
+      return head if tail.punctuations?
       key_io << tail.key
     end
 
@@ -23,7 +23,7 @@ module CV::TlRule
 
     tag = PosTag::CapHuman
 
-    MtTerm.new(key, "@#{val}", tag, dic: 2, idx: head.idx).tap do |new_node|
+    BaseTerm.new(key, "@#{val}", tag, dic: 2, idx: head.idx).tap do |new_node|
       new_node.fix_prev!(head.prev?)
       new_node.fix_succ!(tail.succ?)
     end

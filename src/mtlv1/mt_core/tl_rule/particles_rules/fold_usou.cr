@@ -3,7 +3,7 @@ module CV::TlRule
     return usuo unless succ
 
     succ = heal_mixed!(succ) if succ.polysemy?
-    return usuo unless succ.verbal?
+    return usuo unless succ.verb_words?
 
     usuo.val = "chỗ"
     verb = fold!(usuo, succ, succ.tag, dic: 6)

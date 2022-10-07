@@ -1,8 +1,6 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_vmodal!(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil) : BaseNode
-    succ = heal_mixed!(succ) if succ && succ.polysemy?
-
     case node
     when .vm_hui?
       node = heal_vm_hui!(node, succ, nega)
@@ -35,7 +33,7 @@ module CV::TlRule
     when .verbal?
       verb = fold!(node, succ, succ.tag, dic: 6)
       fold_verbs!(verb)
-    when .nominal?
+    when .noun_words?
       # return node unless node.vm_neng?
       fold_verb_object!(node, succ)
     else
@@ -59,7 +57,7 @@ module CV::TlRule
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
-    when .nil?, .boundary?, .nominal?, .pt_dep?, .pt_le?
+    when .nil?, .boundary?, .noun_words?, .pt_dep?, .pt_le?
       true
     when .preposes?     then false
     when .vsep?, .vset? then true

@@ -1,6 +1,8 @@
-require "../base_expr"
+require "../base_node"
 
-class CV::BaseList < CV::BaseExpr
+class CV::VerbForm < CV::BaseNode
+  include BaseExpr
+
   property advb : BaseNode? = nil
   property verb : BaseNode
   property cmpl : BaseNode? = nil # complement

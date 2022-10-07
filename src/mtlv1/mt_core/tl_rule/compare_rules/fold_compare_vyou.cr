@@ -35,20 +35,20 @@ module CV::TlRule
     adverb = nil
 
     if not_meiyou
-      return vyou unless tail.advbial? && tail.key_in?("这么", "那么")
+      return vyou unless tail.advb_words? && tail.key_in?("这么", "那么")
       adverb = tail
     end
 
     case tail
-    when .advbial?
+    when .advb_words?
       tail = fold_adverbs!(tail)
-    when .adjts?
+    when .adjt_words?
       tail = fold_adjts!(tail)
-    when .verbal?
+    when .verb_words?
       tail = fold_verbs!(tail)
     end
 
-    unless tail.adjts? || tail.vobj?
+    unless tail.adjt_words? || tail.vobj?
       return fold!(vyou, noun, PosTag::Vobj, dic: 7)
     end
 
@@ -62,11 +62,11 @@ module CV::TlRule
       head.fix_prev!(vyou.prev?)
       head.fix_succ!(vyou)
     else
-      head = MtTerm.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
+      head = BaseTerm.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
       head.fix_prev!(vyou.prev?)
       head.fix_succ!(tail)
 
-      temp = MtTerm.new("有", "như", PosTag::VYou, 1, vyou.idx + 1)
+      temp = BaseTerm.new("有", "như", PosTag::VYou, 1, vyou.idx + 1)
       temp.fix_prev!(tail)
       temp.fix_succ!(noun)
     end

@@ -16,7 +16,7 @@ module CV::TlRule
   # }
 
   def fold_suffix!(suff : BaseNode, left = suff.prev?) : BaseNode
-    return suff unless suff.is_a?(MtTerm) && left
+    return suff unless suff.is_a?(BaseTerm) && left
     return suff unless left.tag.content?
 
     case suff

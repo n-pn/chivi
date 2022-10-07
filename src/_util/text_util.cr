@@ -41,7 +41,7 @@ module CV::TextUtil
   # - don't downcase extra characters
   # - treat unicode alphanumeric chars as upcase-able
   def capitalize(input : String) : String
-    # TODO: handle punctuation?
+    # TODO: handle punctuations?
     res = String::Builder.new(input.size)
     uncap = true
 

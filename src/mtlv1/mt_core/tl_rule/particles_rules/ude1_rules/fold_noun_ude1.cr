@@ -1,7 +1,7 @@
 module CV::TlRule
   # def fold_noun_ude1!(noun : BaseNode, ude1 : BaseNode, right : BaseNode, mode = 0) : BaseNode
   #   case noun.tag
-  #   when .timeword?, .nattr?,
+  #   when .time_words?, .nattr?,
   #        .posit?, .locat?,
   #        .numeral?, .vform? # , .prep_form?, .defn_phrase?
   #     ude1.val = ""
@@ -60,9 +60,9 @@ module CV::TlRule
   def has_verb_after?(right : BaseNode) : Bool
     while right = right.succ?
       case right.tag
-      when .pl_mark?, .mn_mark?, .verbal?, .preposes?
+      when .pl_mark?, .mn_mark?, .verb_words?, .preposes?
         return true
-      when .advbial?, .comma?, .pro_ints?
+      when .advb_words?, .comma?, .pro_ints?
         next
       else return false
       end

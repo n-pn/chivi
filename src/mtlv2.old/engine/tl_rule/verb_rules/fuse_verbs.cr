@@ -52,7 +52,7 @@ module MtlV2::TlRule
       flag |= MtFlag::HasUzhe
     when .adj_hao?
       # TODO: check pronouns and numerals?
-      return verb.flag!(flag) if succ.succ?(&.nominal?)
+      return verb.flag!(flag) if succ.succ?(&.noun_words?)
       succ.val = succ.succ? { |x| x.ule? || x.ends? } ? "tốt" : "xong"
     when .locative?
       return fuse_verb_locality!(verb, succ, flag)

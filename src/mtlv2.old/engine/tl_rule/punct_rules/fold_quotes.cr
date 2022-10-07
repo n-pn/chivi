@@ -22,7 +22,7 @@ module MtlV2::TlRule
       root.tag = PosTag::NounPhrase
     end
 
-    root.nominal? ? fold_nouns!(root) : root
+    root..noun_words? ? fold_nouns!(root) : root
   end
 
   private def match_end(char : Char)

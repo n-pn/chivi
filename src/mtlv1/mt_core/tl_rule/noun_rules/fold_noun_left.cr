@@ -13,13 +13,13 @@ module CV::TlRule
   #     when .pro_ints?
   #       return fold_什么_noun!(prev, node) if prev.key == "什么"
   #       return fold_flip!(prev, node, PosTag::Nform, dic: 3)
-  #     when .pl_ajno?, .modis?
+  #     when .pl_ajno?, .amod_words?
   #       break if flag > 0
   #       node = fold_flip!(prev, node, PosTag::Nform, dic: 3)
   #     when .position?
   #       break if flag > 0
   #       node = fold_flip!(prev, node, PosTag::Nform, dic: 3)
-  #     when .pl_ajad?, .adjts?
+  #     when .pl_ajad?, .adjt_words?
   #       break if flag > 0 || prev.key.size > 1
   #       node = fold_flip!(prev, node, PosTag::Nform, dic: 8)
   #     when .pt_dep?
@@ -36,7 +36,7 @@ module CV::TlRule
   # end
 
   def fold_什么_noun!(prev : BaseNode, node : BaseNode)
-    succ = MtTerm.new("么", "gì", prev.tag, 1, prev.idx + 1)
+    succ = BaseTerm.new("么", "gì", prev.tag, 1, prev.idx + 1)
 
     prev.key = "什"
     prev.val = "cái"

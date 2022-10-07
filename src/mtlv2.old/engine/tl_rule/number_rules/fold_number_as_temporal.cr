@@ -23,7 +23,7 @@ module MtlV2::TlRule
   end
 
   def map_temporal_mode(prev : BaseNode?)
-    return 1 if !prev || prev.puncts? || prev.none?
+    return 1 if !prev || prev.punctuations? || prev.none?
     return prev.pre_zai? ? 1 : 2 if prev.prepos?
     return prev.flag.has_pre_zai? ? 1 : 2 if prev.verbal?
     return 1 if prev.pro_per?

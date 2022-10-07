@@ -58,7 +58,7 @@
 #   #   qt_val = node.val.sub(" " + pro_val, "")
 #   #   node.val = pro_val
 
-#   #   qtnoun = MtTerm.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
+#   #   qtnoun = BaseTerm.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
 #   #   qtnoun.fix_succ!(succ)
 #   #   node.fix_succ!(qtnoun)
 

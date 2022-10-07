@@ -11,7 +11,7 @@ module CV::TlRule
       # puts [prodem.prev?, prodem.succ?]
       # puts [nominal.prev?, nominal.succ?]
 
-      flip = nominal.nominal? && should_flip_prodem?(prodem)
+      flip = nominal.noun_words? && should_flip_prodem?(prodem)
       tag = !prodem.pro_dem? && nominal.qtnoun? ? PosTag::ProDem : nominal.tag
       return fold!(prodem, nominal, tag, dic: 3, flip: flip)
     end
@@ -32,7 +32,7 @@ module CV::TlRule
       case succ = pro_dem.succ?
       when .nil?, .preposes?, BaseList
         pro_dem.set!("cái này")
-      when .verbal?
+      when .verb_words?
         pro_dem.set!("đây")
       when .comma?
         if (succ_2 = succ.succ?) && succ_2.pro_zhe? # && succ_2.succ?(&.maybe_verb?)
@@ -43,7 +43,7 @@ module CV::TlRule
       when .boundary?
         pro_dem.set!("cái này")
       else
-        if pro_dem.prev?(&.nominal?)
+        if pro_dem.prev?(&.noun_words?)
           pro_dem.set!("giờ")
         else
           pro_dem.set!("cái này")

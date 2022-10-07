@@ -68,13 +68,13 @@ module MtlV2::TlRule
     when .pl_veno?
       succ = MtDict.fix_noun!(succ)
       fold_nouns!(noun: succ, defn: adjt)
-    when .nominal?
+    when .noun_words?
       fold_nouns!(noun: succ, defn: adjt)
     when .verbal?
       fold_adjt_verb!(adjt, succ)
     when .pt_dep?
       if prev = adjt.prev?
-        return adjt if prev.nominal? || prev.junction? # ||  (prev.comma? && prev.prev?(&.adjective?))
+        return adjt if prev.noun_words? || prev.junction? # ||  (prev.comma? && prev.prev?(&.adjective?))
       end
 
       fold_adjt_ude1!(adjt, succ)
@@ -95,7 +95,7 @@ module MtlV2::TlRule
     MtDict.fix_noun!(succ) if succ.pl_veno? || succ.pl_ajno? || succ.adv_noun?
     # puts [modi, succ]
 
-    return fold_adjts!(modi) unless succ.nominal?
+    return fold_adjts!(modi) unless succ.noun_words?
     fold_nouns!(succ, defn: modi)
   end
 

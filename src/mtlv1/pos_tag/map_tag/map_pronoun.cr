@@ -1,20 +1,20 @@
 struct CV::PosTag
   PRONOUN_MAP = load_map("pronouns")
 
-  ProDem = new(:pro_dem, :nounish)
-  ProInt = new(:pro_int, :nounish)
+  ProDem = new(:pro_dem, :object)
+  ProInt = new(:pro_int, :object)
 
   def self.map_pronoun(key : String, tag : String = "")
     PRONOUN_MAP[key] ||= begin
       case key[0]
       when '这', '那', '每'
-        new(:pro_dem, MtlPos.flags(Nounish, CanSplit))
+        new(:pro_dem, MtlPos.flags(Object, CanSplit))
       when '几', '哪'
-        new(:pro_int, MtlPos.flags(Nounish, CanSplit))
+        new(:pro_int, MtlPos.flags(Object, CanSplit))
       when '本', '令', '贵', '舍', '爱'
-        new(:pro_per_x, :nounish)
+        new(:pro_per_x, :object)
       else
-        new(:pro_unkn, :nounish)
+        new(:pro_unkn, :object)
       end
     end
 

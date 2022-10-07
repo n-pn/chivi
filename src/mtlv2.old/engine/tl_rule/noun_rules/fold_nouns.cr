@@ -10,7 +10,7 @@ module MtlV2::TlRule
         succ.val = ""
         noun = fold!(noun, tail, PosTag::Person, dic: 3)
       when .locative?
-        unless succ.succ? { |x| x.nominal? || x.key == "第" }
+        unless succ.succ? { |x| x..noun_words? || x.key == "第" }
           break if fold_mode.no_locat?
         end
 
@@ -22,7 +22,7 @@ module MtlV2::TlRule
       when .polysemy?
         succ = heal_mixed!(succ)
         break if succ.polysemy?
-      when .nominal?
+      when ..noun_words?
         unless noun.nattr? || fold_mode.fold_all?
           break if noun_is_subject?(succ)
         end

@@ -89,7 +89,7 @@ module CV::TlRule
   #     root.tag = PosTag::Nform
   #   end
 
-  #   root.nouns? ? fold_nouns!(root, mode: 1) : root
+  #   root.common_nouns? ? fold_nouns!(root, mode: 1) : root
   # end
 
   # private def match_end(char : Char)

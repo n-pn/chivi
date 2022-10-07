@@ -37,24 +37,24 @@ abstract class CV::BaseNode
 
   @[AlwaysInline]
   def real_prev : BaseNode?
-    # TODO: skip parenthesis
-    return unless prev = @node.prev?
-    prev.pstart? || prev.pclose ? prep.prev? : prev
+    # TODO: read beyond parenthesis
+    return unless node = @prev
+    node.start_puncts? || node.close_puncts? ? node.prev? : node
   end
 
   @[AlwaysInline]
   def real_succ : BaseNode?
-    # TODO: skip parenthesis
-    return unless succ = @node.succ?
-    succ.pstart? || succ.pclose ? prep.succ? : prev
-  end
-
-  def set!(@val : String) : self
-    self
+    # TODO: read beyond parenthesis
+    return unless node = @succ
+    node.start_puncts? || node.close_puncts? ? node.succ? : node
   end
 
   @[AlwaysInline]
   def swap_val!
+    self
+  end
+
+  def set!(@val : String) : self
     self
   end
 
@@ -66,30 +66,51 @@ abstract class CV::BaseNode
     self
   end
 
-  abstract def starts_with?(key : String | Char)
-  abstract def ends_with?(key : String | Char)
-  abstract def find_by_key(key : String | Char)
-  abstract def apply_cap!(cap : Bool)
-
   abstract def to_txt(io : IO)
   abstract def to_mtl(io : IO)
   abstract def inspect(io : IO)
 
-  def space_before?(prev : Nil) : Bool
-    false
+  def add_space?(prev = self.prev) : Bool
+    !(prev.tag.no_ws_after? || @tag.no_ws_before?)
   end
 
-  def space_before?(prev : BaseNode)
-    return !prev.pstart? unless prev.is_a?(MtTerm)
-    return space_before?(prev.prev?) if prev.val.empty?
-    !(prev.val.blank? || prev.pstart?)
-  end
-
-  def key_is?(key : String)
+  def apply_cap!(cap : Bool = false) : Bool
+    return cap || @tag.cap_after? if @tag.cap_relay?
+    @val = TextUtil.capitalize(@val) if cap
     false
   end
+end
 
-  def key_in?(*keys : String)
-    false
+module CV::BaseExpr
+  abstract def each(&block : BaseNode -> Nil)
+
+  def to_txt(io : IO = STDOUT) : Nil
+    prev = nil
+
+    each do |node|
+      io << ' ' if prev && node.add_space?(prev)
+      node.to_txt(io)
+      prev = node
+    end
+  end
+
+  def to_mtl(io : IO = STDOUT) : Nil
+    io << '〈' << @dic << '\t'
+    prev = nil
+
+    each do |node|
+      io << "\t " if prev && node.add_space?(prev)
+      node.to_mtl(io)
+      prev = node
+    end
+
+    io << '〉'
+  end
+
+  def inspect(io : IO = STDOUT, pad = 0) : Nil
+    io << " " * pad << "{" << @tag.tag << "/" << @dic << "}" << '\n'
+    self.each(&.inspect(io, pad + 2))
+    io << " " * pad << "{/" << @tag.tag << "/" << @dic << "}"
+    io << '\n' if pad > 0
   end
 end

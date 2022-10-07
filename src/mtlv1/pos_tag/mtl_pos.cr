@@ -9,7 +9,9 @@ enum CV::MtlPos : UInt64
 
   # rendering
 
-  CapAfter
+  CapAfter # add capitalizion after this node
+  CapRelay # relay capitalization
+
   NoWsAfter
   NoWsBefore
 
@@ -23,30 +25,27 @@ enum CV::MtlPos : UInt64
   # placement
 
   Ktetic # possessive determiner
+  Object # act as object complement for verb
 
   Aspect # aspect marker
   Vauxil # put before verb
   Vcompl # verb complement
-  Object # act as object complement for verb
 
   # chararistic
 
   Proper # proper nouns
-
   Plural # plural nouns/pronouns
   People # all words that refer to human beings
   Locale # all words that can be placement
 
   # part in speech
 
-  Nounish # word can act as noun
-  Verbish # word can act as verb
-  Adjtish # word can act as adjective
-  Advbial # advbial, word can act as adverb
+  MaybeNoun # word can act as noun
+  MaybeVerb # word can act as verb
+  MaybeAdjt # word can act as adjective
+  MaybeAdvb # word can act as adverb
 
   Modifier # word can act as noun direct modifier
-  # specific
-
   LinkVerb # can link verbs
   CanSplit # can split to other structure
 
@@ -90,10 +89,10 @@ struct CV::PosTag
   delegate people?, to: @pos
   delegate locale?, to: @pos
 
-  delegate nounish?, to: @pos
-  delegate verbish?, to: @pos
-  delegate adjtish?, to: @pos
-  delegate advbial?, to: @pos
+  delegate maybe_noun?, to: @pos
+  delegate maybe_verb?, to: @pos
+  delegate maybe_adjt?, to: @pos
+  delegate maybe_advb?, to: @pos
 
   delegate can_split?, to: @pos
   delegate link_verb?, to: @pos

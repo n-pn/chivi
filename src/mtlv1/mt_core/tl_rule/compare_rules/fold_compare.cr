@@ -16,7 +16,7 @@ module CV::TlRule
 
   def fold_compare(head : BaseNode, tail : BaseNode, head_val = head.val)
     while tail
-      return if tail.puncts? || tail.key == head.key
+      return if tail.punctuations? || tail.key == head.key
 
       if tail.pt_cmps?
         break unless tail.key == "一样"
@@ -41,7 +41,7 @@ module CV::TlRule
     root.regen_list!
 
     return root unless succ = scan_adjt!(root.succ?)
-    return root unless succ.adjts? || succ.vobj?
+    return root unless succ.adjt_words? || succ.vobj?
 
     fold!(root, succ, PosTag::Aform, dic: 1, flip: true)
   end

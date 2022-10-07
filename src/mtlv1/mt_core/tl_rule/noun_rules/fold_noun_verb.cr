@@ -3,10 +3,10 @@ module CV::TlRule
   def fold_noun_verb!(noun : BaseNode, verb : BaseNode)
     return noun if noun.prev? { |x| x.pro_pers? || x.preposes? && !x.pre_bi3? }
 
-    verb = verb.vmodals? ? fold_vmodal!(verb) : fold_verbs!(verb)
+    verb = verb.modal_verbs? ? fold_vmodal!(verb) : fold_verbs!(verb)
     return noun unless (succ = verb.succ?) && succ.pt_dep?
 
-    # && (verb.verb? || verb.vmodals?)
+    # && (verb.verb? || verb.modal_verbs?)
     return noun unless tail = scan_noun!(succ.succ?)
     case tail.key
     when "时候"
@@ -15,7 +15,7 @@ module CV::TlRule
     end
 
     # if verb.verb_no_obj? && (verb_2 = tail.succ?) && verb_2.maybe_verb?
-    #   verb_2 = verb_2.advbial? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
+    #   verb_2 = verb_2.advb_words? ? fold_adverbs!(verb_2) : fold_verbs!(verb_2)
 
     #   if !verb_2.verb_no_obj? && verb.prev?(&.object?)
     #     tail = fold!(tail, verb_2, PosTag::SubjVerb, dic: 8)
@@ -27,7 +27,7 @@ module CV::TlRule
     left = fold!(noun, verb, PosTag::Vform, dic: 4)
 
     defn = fold!(left, succ.set!(""), PosTag::DcPhrase, dic: 6, flip: true)
-    tag = tail.names? || tail.cap_human? ? tail.tag : PosTag::Nform
+    tag = tail.proper_nouns? || tail.cap_human? ? tail.tag : PosTag::Nform
 
     fold!(defn, tail, tag, dic: 5, flip: true)
   end

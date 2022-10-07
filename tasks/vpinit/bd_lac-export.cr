@@ -214,11 +214,11 @@ module CV
       TlName.is_human?(key) ? "nr" : "nz"
     else
       if counts["nt"]?.try(&.> 10)
-        return TlName.is_affil?(key) ? "nt" : "nz"
+        return TlName.is_cap_affil?(key) ? "nt" : "nz"
       end
 
       return "nr" unless counts["ns"]?.try(&.> 10)
-      TlName.is_affil?(key) ? "ns" : "nr"
+      TlName.is_cap_affil?(key) ? "ns" : "nr"
     end
   end
 
@@ -247,11 +247,11 @@ module CV
       end
 
       if counts["nt"]?.try(&.> 5)
-        return TlName.is_affil?(key) ? "nt" : "nz"
+        return TlName.is_cap_affil?(key) ? "nt" : "nz"
       end
 
       return "nz" unless counts["ns"]?.try(&.> 5)
-      TlName.is_affil?(key) ? "ns" : "nz"
+      TlName.is_cap_affil?(key) ? "ns" : "nz"
     end
   end
 

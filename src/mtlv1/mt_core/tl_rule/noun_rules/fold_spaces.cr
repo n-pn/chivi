@@ -6,7 +6,7 @@ module CV::TlRule
       fold_verbs!(node)
     when "右", "左"
       node.tag = PosTag::Amod
-      fold_modis?(node)
+      fold_amod_words?(node)
     else
       node
     end
@@ -28,12 +28,12 @@ module CV::TlRule
     when "中"
       return noun if space.succ?(&.pt_le?)
       space.val = "trong"
-      if (succ = space.succ?) && succ.nominal?
+      if (succ = space.succ?) && succ.noun_words?
         return fold!(noun, succ, succ.tag, dic: 6, flip: true)
       end
     when "前"
-      # space.val = "trước khi" if noun.verbal?
-      flip = !noun.timeword?
+      # space.val = "trước khi" if noun.verb_words?
+      flip = !noun.time_words?
     end
 
     fold!(noun, space, PosTag::Posit, dic: 5, flip: flip)

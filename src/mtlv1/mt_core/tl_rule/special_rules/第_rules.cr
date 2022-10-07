@@ -9,11 +9,11 @@ module CV::TlRule
     tail = heal_quanti!(tail)
 
     case tail.tag
-    when .nouns?, .timeword?, .honor?, .nattr?, .affil?
-      node.val = "đệ" if head.prev?(&.nominal?)
+    when .common_nouns?, .time_words?, .honor?, .nattr?, .cap_affil?
+      node.val = "đệ" if head.prev?(&.noun_words?)
       fold!(head, tail, tail.tag, dic: 8, flip: true)
     when .quantis?
-      if (tail_2 = tail.succ?) && tail_2.nominal?
+      if (tail_2 = tail.succ?) && tail_2.noun_words?
         tail = fold!(tail, tail_2, PosTag::Nform, dic: 7)
         fold!(head, tail, tail.tag, dic: 6, flip: true)
       else

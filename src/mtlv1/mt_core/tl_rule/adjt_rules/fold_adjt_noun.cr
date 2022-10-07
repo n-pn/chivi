@@ -10,13 +10,13 @@ module CV::TlRule
     end
 
     case adjt.tag
-    when .aform? then return adjt
-    when .adjt?  then return adjt if adjt.key.size > 2
-    when .modis? then flip = adjt.key != "原"
+    when .aform?      then return adjt
+    when .adjt?       then return adjt if adjt.key.size > 2
+    when .amod_words? then flip = adjt.key != "原"
     end
 
     noun = fold_nouns!(noun, mode: 0)
-    return adjt unless noun.nominal?
+    return adjt unless noun.noun_words?
 
     # puts [noun, noun.prev?, noun.succ?, adjt.succ?]
 

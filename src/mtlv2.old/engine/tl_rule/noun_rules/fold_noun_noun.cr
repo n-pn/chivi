@@ -82,14 +82,14 @@ module MtlV2::TlRule
   def fold_noun_noun!(node : BaseNode, succ : BaseNode, mode : NounMode) : BaseNode
     case succ.tag
     when .ptitle?
-      if node.names? || node.ptitle?
+      if node.proper_nouns? || node.ptitle?
         fold!(node, succ, PosTag::Person, dic: 3)
       else
         fold!(node, succ, PosTag::Person, dic: 3, flip: true)
       end
-    when .affil?
-      fold!(node, succ, succ.tag, dic: 4, flip: node.affil?)
-    when .names?
+    when .cap_affil?
+      fold!(node, succ, succ.tag, dic: 4, flip: node.cap_affil?)
+    when .proper_nouns?
       fold!(node, succ, succ.tag, dic: 4, flip: false)
     when .position?
       fold!(node, succ, succ.tag, dic: 3, flip: true)

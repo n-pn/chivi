@@ -29,7 +29,7 @@ module MtlV2::TlRule
   end
 
   def is_tangible?(node : BaseNode)
-    return node.pro_per? unless node.nominal?
+    return node.pro_per? unless node.noun_words?
     !(node.property? || node.ntime? || node.nqtime?)
   end
 end

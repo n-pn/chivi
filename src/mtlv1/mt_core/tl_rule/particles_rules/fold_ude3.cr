@@ -2,7 +2,7 @@ module CV::TlRule
   def heal_ude3!(node : BaseNode, succ = node.succ?) : BaseNode
     return node unless succ
 
-    if succ.verbal? && succ.key != "到"
+    if succ.verb_words? && succ.key != "到"
       node = fold!(node.set!("phải"), succ, succ.tag, dic: 6)
     else
       node.val = "được"
@@ -17,9 +17,9 @@ module CV::TlRule
       fold!(node, succ.set!("phải"), PosTag::DrPhrase, dic: 4)
     when .key_is?("住")
       succ.val = ""
-      node.as_verb!(nil) if node.is_a?(MtTerm)
+      node.as_verb!(nil) if node.is_a?(BaseTerm)
       fold!(node, tail.set!("nổi"), PosTag::Verb, dic: 5)
-    when .verbal?
+    when .verb_words?
       node = fold!(node, succ.set!("phải"), PosTag::DrPhrase, dic: 4)
       fold_verbs!(tail, prev: node)
     else
@@ -36,23 +36,23 @@ module CV::TlRule
     # when .pre_bi3?
     # tail = fold_compare_bi3!(tail)
     # fold!(node, tail, PosTag::Vobj, dic: 7)
-    when .advbial?
+    when .advb_words?
       tail = fold_adverbs!(tail)
 
-      if tail.adjts?
+      if tail.adjt_words?
         fold!(node, tail, PosTag::Aform, dic: 5)
       elsif tail.key == "很"
         tail.val = "cực kỳ"
         fold!(node, tail, PosTag::Aform, dic: 5)
-      elsif tail.verbal?
+      elsif tail.verb_words?
         succ.set!("đến")
         fold!(node, tail, tail.tag, dic: 8)
       else
         node
       end
-    when .adjts?
+    when .adjt_words?
       fold!(node, tail, PosTag::Aform, dic: 6)
-    when .verbal?
+    when .verb_words?
       node = fold!(node, succ, PosTag::Verb, dic: 6)
       fold_verb_compl!(node, tail) || node
     else

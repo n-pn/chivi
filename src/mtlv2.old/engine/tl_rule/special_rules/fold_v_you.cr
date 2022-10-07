@@ -12,7 +12,7 @@ module MtlV2::TlRule
     when .adverb?
       if succ.key == "这么" || succ.key == "那么"
         adverb, succ = succ, succ.succ?
-        return vyou if succ.try(&.nominal?)
+        return vyou if succ.try(&..noun_words?)
       end
     else
       if vyou.key == "有"

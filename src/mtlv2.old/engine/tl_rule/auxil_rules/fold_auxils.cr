@@ -11,9 +11,9 @@ module MtlV2::TlRule
   end
 
   def heal_ude1!(ude1 : BaseNode) : BaseNode
-    if (prev = ude1.prev?) && !prev.puncts?
+    if (prev = ude1.prev?) && !prev.punctuations?
       ude1.set!("")
-    elsif (succ = ude1.succ?) && !succ.puncts?
+    elsif (succ = ude1.succ?) && !succ.punctuations?
       ude1.set!("")
     else
       ude1

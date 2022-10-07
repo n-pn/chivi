@@ -15,7 +15,7 @@ module MtlV2::TlRule
     # puts [node, prodem, nquant, "scan_noun"]
 
     case node.tag
-    when .nominal?, .numeral?, .verb_object?
+    when ..noun_words?, .numeral?, .verb_object?
       node = fold_nquant_nominal!(nquant, node) if nquant
       prodem ? fold_prodem_nominal!(prodem, node) : fold_noun_other!(node)
     when .pronouns?

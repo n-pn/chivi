@@ -1,12 +1,12 @@
 module CV::TlRule
   # def heal_quanti!(node : BaseNode) : BaseNode
-  #   return node unless node.is_a?(MtTerm)
+  #   return node unless node.is_a?(BaseTerm)
   #   not_quanti?(node) ? node : MtDict.fix_quanti(node)
   # end
 
   # def not_quanti?(node : BaseNode)
   #   # abort transform if node is certainly a verb
-  #   return false unless node.verbal? && (succ = node.succ?)
+  #   return false unless node.verb_words? && (succ = node.succ?)
   #   succ.aspect? || succ.comma? || succ.boundary?
   # end
 
@@ -38,7 +38,7 @@ module CV::TlRule
   end
 
   def is_pre_quanti_appro?(node : BaseNode)
-    return false unless node.is_a?(MtTerm)
+    return false unless node.is_a?(BaseTerm)
     node.to_int?.try { |x| x > 10 && x % 10 == 0 } || false
   end
 

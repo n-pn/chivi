@@ -73,7 +73,7 @@ class CV::MtCore
     mt_data = cv_title(title, offset: chvol.size)
     return mt_data if chvol.empty?
 
-    mt_data.add_head(MtTerm.new("", " - ", idx: chvol.size))
+    mt_data.add_head(BaseTerm.new("", " - ", idx: chvol.size))
     cv_title(chvol).concat(mt_data)
   end
 
@@ -84,7 +84,7 @@ class CV::MtCore
     pre_zh += pad
     pre_vi += title.empty? ? "" : ":"
 
-    mt_data = MtData.new(MtTerm.new(pre_zh, pre_vi, dic: 1, idx: offset))
+    mt_data = MtData.new(BaseTerm.new(pre_zh, pre_vi, dic: 1, idx: offset))
     return mt_data if title.empty?
 
     mt_data.concat(cv_plain(title, offset: offset + pre_zh.size))
@@ -116,11 +116,11 @@ class CV::MtCore
   # end
 
   def tokenize(input : Array(Char), offset = 0, mode : Int8 = 1_i8) : MtData
-    nodes = [MtTerm.new("", idx: offset)]
+    nodes = [BaseTerm.new("", idx: offset)]
     costs = [0]
 
     input.each_with_index do |char, idx|
-      nodes << MtTerm.from(char, idx: idx &+ offset)
+      nodes << BaseTerm.from(char, idx: idx &+ offset)
       costs << idx &+ 1
     end
 
@@ -158,7 +158,7 @@ class CV::MtCore
         jump = idx &+ key
 
         if cost >= costs[jump]
-          nodes[jump] = MtTerm.from(term, dic &+ term._mode &* 2, idx &+ offset)
+          nodes[jump] = BaseTerm.from(term, dic &+ term._mode &* 2, idx &+ offset)
           costs[jump] = cost
         end
       end
@@ -167,12 +167,9 @@ class CV::MtCore
     extract_result(nodes)
   end
 
-  def extract_result(nodes : Array(MtTerm))
+  def extract_result(nodes : Array(BaseTerm))
     idx = nodes.size &- 1
-    cur = nodes.unsafe_fetch(idx)
-    idx -= cur.key.size
-
-    res = MtData.new(cur)
+    res = MtData.new
 
     while idx > 0
       cur = nodes.unsafe_fetch(idx)

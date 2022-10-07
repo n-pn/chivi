@@ -32,10 +32,10 @@ module MtlV2::TlRule
     when "所"
       suff.val = "nơi"
     when "语"
-      return base unless base.nominal?
+      return base unless base..noun_words?
       suff.val = "tiếng"
     when "界"
-      return base unless base.nominal?
+      return base unless base..noun_words?
       flip = false
     end
 

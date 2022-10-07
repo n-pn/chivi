@@ -19,21 +19,21 @@
 #     end
 
 #     return prepos unless tail = scan_adjt!(noun.succ?)
-#     return prepos unless tail.adjts? || tail.vobjs?
+#     return prepos unless tail.adjt_words? || tail.vobjs?
 
-#     output = MtTerm.new("", "", PosTag::LitBlank, dic: 1, idx: prepos.idx)
+#     output = BaseTerm.new("", "", PosTag::LitBlank, dic: 1, idx: prepos.idx)
 #     output.fix_prev!(prepos.prev?)
 #     output.fix_succ!(tail.succ?)
 
 #     noun.fix_succ!(nil)
 
 #     if prepos.key == "不比"
-#       adv_bu = MtTerm.new("不", "không", PosTag::AdvBu4, 1, prepos.idx)
+#       adv_bu = BaseTerm.new("不", "không", PosTag::AdvBu4, 1, prepos.idx)
 
 #       adv_bu.fix_succ!(prepos.succ?)
 #       adv_bu.fix_prev!(prepos.prev?)
 
-#       prepos = MtTerm.new("比", "bằng", PosTag::PreBi3, 1, prepos.idx + 1)
+#       prepos = BaseTerm.new("比", "bằng", PosTag::PreBi3, 1, prepos.idx + 1)
 
 #       prepos.fix_succ!(tail.succ?)
 #       tail.fix_succ!(prepos)

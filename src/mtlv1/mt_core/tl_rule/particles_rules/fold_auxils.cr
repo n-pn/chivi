@@ -22,10 +22,10 @@ module CV::TlRule
   end
 
   def heal_ude2!(node : BaseNode) : BaseNode
-    return node if node.prev? { |x| x.tag.adjts? || x.tag.adverbs? }
+    return node if node.prev? { |x| x.tag.adjt_words? || x.tag.advb_words? }
     return node unless succ = node.succ?
     return node.set!("đất", PosTag::Nword) if succ.v_shi? || succ.v_you?
-    return node if succ.verbal? || succ.preposes? || succ.concoord?
+    return node if succ.verb_words? || succ.preposes? || succ.concoord?
     node.set!(val: "địa", tag: PosTag::Nword)
   end
 
@@ -43,7 +43,7 @@ module CV::TlRule
 
   def keep_pt_le?(prev : BaseNode, node : BaseNode, succ = node.succ?) : Bool
     return true unless succ
-    return false if succ.pstart?
+    return false if succ.start_puncts?
     succ.boundary? || succ.succ?(&.pt_le?) || false
   end
 end

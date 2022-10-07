@@ -3,9 +3,8 @@ require "./fix_ptag/*"
 module CV::MTL
   extend self
 
-  def fix_ptag(tail : BaseNode, head : BaseNode) : Nil
+  def fix_ptag!(tail : BaseNode) : Nil
     while tail = tail.prev?
-      break if tail == head
       next unless tail.is_a?(BaseTerm)
 
       case tail
@@ -27,5 +26,10 @@ module CV::MTL
   end
 
   def fix_uniqword!(node : BaseTerm)
+    node
+  end
+
+  def fix_baseterm!(node : BaseTerm)
+    node
   end
 end

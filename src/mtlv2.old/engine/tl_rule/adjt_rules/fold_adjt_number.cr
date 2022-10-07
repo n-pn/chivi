@@ -21,7 +21,7 @@ module MtlV2::TlRule
     adjt = fold!(adjt, succ, PosTag::AdjtPhrase, dic: 7)
 
     return adjt unless (ude1 = adjt.succ?) && ude1.pd_dep?
-    return adjt if !(tail = ude1.succ?) || tail.puncts?
+    return adjt if !(tail = ude1.succ?) || tail.punctuations?
 
     tail = fold_once!(tail)
     defn = fold!(adjt, ude1.set!(""), PosTag::DefnPhrase, dic: 4)

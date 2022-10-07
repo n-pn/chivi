@@ -17,7 +17,7 @@ module CV::TlRule
     case node.tag
     when .pre_jiang?
       fold = fold_prepos_inner!(node, succ, mode: mode)
-      return fold unless (fold.succ? == succ) && succ.verbal?
+      return fold unless (fold.succ? == succ) && succ.verb_words?
       return fold_verbs!(succ, prev: node.set!("sẽ"))
     when .pre_he2?, .pre_yu3?
       return fold_compare(node, succ) || fold_prepos_inner!(node)

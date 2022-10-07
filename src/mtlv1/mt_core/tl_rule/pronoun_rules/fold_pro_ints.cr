@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_pro_ints!(proint : BaseNode, succ = node.succ?)
-    if succ.is_a?(MtTerm) && succ.polysemy?
+    if succ.is_a?(BaseTerm) && succ.polysemy?
       succ = heal_mixed!(succ)
     end
 
@@ -10,7 +10,7 @@ module CV::TlRule
     when .verbal?
       succ = fold_verbs!(succ)
       return proint unless succ.verbal?
-    when .nominal?
+    when .noun_words?
       return proint unless succ = scan_noun!(succ)
     else
       return proint
@@ -20,10 +20,10 @@ module CV::TlRule
 
     case proint.key
     when "什么"
-      flip = succ.nominal?
+      flip = succ.noun_words?
       val = "gì"
     when "哪个"
-      flip = succ.nominal?
+      flip = succ.noun_words?
       val = "nào"
     when "怎么"
       val = "làm sao"

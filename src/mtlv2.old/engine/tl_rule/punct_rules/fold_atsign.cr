@@ -5,7 +5,7 @@ module MtlV2::TlRule
     tail = head
     while tail = tail.succ?
       break if tail.key == " "
-      return head if tail.puncts?
+      return head if tail.punctuations?
       key_io << tail.key
     end
 

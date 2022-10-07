@@ -3,7 +3,7 @@ module CV::TlRule
     uzhe.val = ""
 
     if succ && succ.maybe_verb?
-      succ = succ.advbial? ? fold_adverbs!(succ) : fold_verbs!(succ)
+      succ = succ.advb_words? ? fold_adverbs!(succ) : fold_verbs!(succ)
       fold!(prev, succ, succ.tag, dic: 3)
     else
       fold!(prev, uzhe, prev.tag, dic: 3)

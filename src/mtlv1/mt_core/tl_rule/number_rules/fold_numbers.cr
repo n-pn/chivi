@@ -4,19 +4,19 @@ module CV::TlRule
     node = fuse_number!(node, prev: prev) # if head.numbers?
 
     case node
-    when .timeword?
+    when .time_words?
       # puts [node, node.succ?, node.prev?]
-      node = fold_time_prev!(node, prev: prev) if prev && prev.timeword?
+      node = fold_time_prev!(node, prev: prev) if prev && prev.time_words?
 
-      if (prev = node.prev?) && prev.timeword?
+      if (prev = node.prev?) && prev.time_words?
         # TODO: do not do this but calling fold_number a second time instead
         node = fold!(prev, node, node.tag, dic: 6, flip: true)
       end
 
       fold_nouns!(node)
-    when .verbal?
+    when .verb_words?
       fold_verbs!(node)
-    when .nouns?
+    when .noun_words?
       fold_nouns!(node)
     else
       if (succ = node.succ?) && succ.pt_zhi?
@@ -38,17 +38,17 @@ module CV::TlRule
     case node.tag
     when .ndigits?
       node = fold_ndigit!(node, prev: prev)
-      return fold_time_appro!(node) if node.timeword?
+      return fold_time_appro!(node) if node.time_words?
     when .nhanzis?
       node = fold_nhanzi!(node, prev: prev)
-      return fold_time_appro!(node) if node.timeword?
+      return fold_time_appro!(node) if node.time_words?
     when .quantis?, .nquants?
       # TODO: combine number with nquant?
       return node
     end
 
     return node unless node.numbers? && (tail = node.succ?)
-    if tail.puncts?
+    if tail.punctuations?
       node = fold!(node, tail, PosTag::Nattr, dic: 5) if tail.quantis?
       return node
     end
@@ -66,7 +66,7 @@ module CV::TlRule
     # when .pre_ba3?
     #   tail = fold_pre_ba3!(tail)
 
-    #   if tail.nominal?
+    #   if tail.noun_words?
     #     return fold!(node, tail, tail.tag, dic: 3)
     #   elsif node.prev? { |x| x.verbal? || x.prev?(&.verbal?) }
     #     tail.set!("phát", PosTag::Qtverb)
@@ -124,7 +124,7 @@ module CV::TlRule
   end
 
   def fold_yi_verb!(node : BaseNode, succ : BaseNode)
-    return node unless node.key == "一" && succ.verbs?
+    return node unless node.key == "一" && succ.common_verbs?
     fold!(node.set!("vừa"), succ, succ.tag, dic: 4)
   end
 

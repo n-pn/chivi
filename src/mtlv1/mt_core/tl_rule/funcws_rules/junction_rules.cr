@@ -1,7 +1,7 @@
 module CV::TlRule
   def can_combine_adjt?(left : BaseNode, right : BaseNode?)
     # TODO
-    right.adjts?
+    right.adjt_words?
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
@@ -13,20 +13,20 @@ module CV::TlRule
     case succ
     when .preposes?
       succ = fold_preposes!(succ)
-    when .advbial?
+    when .advb_words?
       succ = fold_adverbs!(succ)
-    when .verbal?
+    when .verb_words?
       tag = verb.tag if succ.key == "过"
       succ = fold_verbs!(succ)
     end
 
-    return unless tag || succ.verbal?
+    return unless tag || succ.verb_words?
     fold!(verb, succ, tag: tag || succ.tag, dic: 4)
   end
 
   def fold_adjt_junction!(node : BaseNode, prev = node.prev?, succ = node.succ?)
     return unless prev && succ && is_concoord?(node)
-    return unless (succ = scan_adjt!(succ)) && succ.adjts?
+    return unless (succ = scan_adjt!(succ)) && succ.adjt_words?
 
     fold!(prev, succ, tag: PosTag::Aform, dic: 4)
   end
@@ -68,9 +68,9 @@ module CV::TlRule
 
   def similar_tag?(left : BaseNode, right : BaseNode)
     case left.tag
-    when .nform?     then true
-    when .cap_human? then right.cap_human?
-    when .nouns?     then right.nouns? || right.pro_dem?
+    when .nform?        then true
+    when .cap_human?    then right.cap_human?
+    when .common_nouns? then right.common_nouns? || right.pro_dem?
     else
       right.nform? || right.tag == left.tag
     end

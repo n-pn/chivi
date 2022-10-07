@@ -38,7 +38,7 @@ module CV::TlRule
   end
 
   def fold_time_appro!(node : BaseNode)
-    return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
+    return node unless (succ = node.succ?) && succ.is_a?(BaseTerm)
     case succ.key
     when "前后"
       fold!(node, succ.set!("tầm"), PosTag::Texpr, dic: 2, flip: true)
@@ -54,7 +54,7 @@ module CV::TlRule
   def fold_number_hour!(node : BaseNode, succ : BaseNode) : BaseNode
     node = fold!(node, succ.set!("giờ"), tag: PosTag::Texpr, dic: 1)
 
-    return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
+    return node unless (succ = node.succ?) && succ.is_a?(BaseTerm)
 
     case succ.key
     when "半"
@@ -70,16 +70,16 @@ module CV::TlRule
     fold!(node, second.set!("giây"), PosTag::Texpr, dic: 1)
   end
 
-  def read_minute_quanti?(node : BaseNode?) : MtTerm?
+  def read_minute_quanti?(node : BaseNode?) : BaseTerm?
     return unless node && node.numbers?
-    return unless (succ = node.succ?) && succ.is_a?(MtTerm)
+    return unless (succ = node.succ?) && succ.is_a?(BaseTerm)
 
     succ.key == "分" || succ.key == "分钟" ? succ : nil
   end
 
-  def read_second_quanti?(node : BaseNode?) : MtTerm?
+  def read_second_quanti?(node : BaseNode?) : BaseTerm?
     return unless node && node.numbers?
-    return unless (succ = node.succ?) && succ.is_a?(MtTerm)
+    return unless (succ = node.succ?) && succ.is_a?(BaseTerm)
 
     succ.key == "秒" || succ.key == "秒钟" ? succ : nil
   end

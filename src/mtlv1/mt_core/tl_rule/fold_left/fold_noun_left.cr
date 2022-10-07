@@ -8,7 +8,7 @@ module CV::TlRule
         prev = fold_noun_left!(prev, level: 1)
       end
 
-      break unless prev.nominal?
+      break unless prev.noun_words?
       noun = fold_noun_noun_left!(noun, prev)
     end
 
@@ -18,7 +18,7 @@ module CV::TlRule
   def fold_noun_left_2!(noun : BaseNode, prev = noun.prev) : BaseNode
     ptag = noun.tag.posit? ? noun.tag : PosTag::Nform
 
-    if prev.adjts?
+    if prev.adjt_words?
       noun = fold_noun_adjt_left!(noun, prev)
       return noun unless prev = noun.prev?
     end
@@ -47,7 +47,7 @@ module CV::TlRule
   def fold_noun_noun_left!(noun : BaseNode, prev : BaseNode)
     case noun
     when .honor?          then return fold_honor_noun_left!(noun, prev)
-    when .names?          then return fold_name_noun_left!(noun, prev)
+    when .proper_nouns?   then return fold_name_noun_left!(noun, prev)
     when .locat?, .posit? then return fold!(prev, noun, PosTag::Posit, flip: true)
     when .nattr?
       return fold!(prev, noun, noun.tag, flip: true) if prev.nattr?
@@ -81,7 +81,7 @@ module CV::TlRule
 
   def fold_honor_noun_left!(noun, prev)
     case prev
-    when .timeword?, .nform?, .locat?, .posit?
+    when .time_words?, .nform?, .locat?, .posit?
       ptag = PosTag::Nform
     else
       ptag = PosTag::CapHuman
@@ -92,7 +92,7 @@ module CV::TlRule
 
   def fold_name_noun_left!(name, prev)
     case prev
-    when .affil?
+    when .cap_affil?
       return fold!(prev, name, name.tag, flip: true)
     when .cap_human?
       return fold!(prev, name, name.tag, flip: false) if name.cap_human?

@@ -7,7 +7,7 @@ module CV::TlRule
   def fold_nouns!(noun : BaseNode, mode : Int32 = 0) : BaseNode
     # return node if node.nform?
 
-    while noun.nominal?
+    while noun.noun_words?
       break unless succ = noun.succ?
       succ = heal_mixed!(succ) if succ.polysemy?
 
@@ -28,12 +28,12 @@ module CV::TlRule
       when .pt_cmps?
         adjt = fold!(noun, succ.set!("như"), PosTag::Aform, dic: 7, flip: true)
         return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
-        succ = succ.advbial? ? fold_adverbs!(succ) : fold_adjts!(succ)
+        succ = succ.advb_words? ? fold_adverbs!(succ) : fold_adjts!(succ)
         return fold!(adjt, succ, PosTag::Aform, dic: 8)
       when .position?
-        return noun if noun.prev? { |x| x.numeral? || x.pronouns? || x.adjts? }
+        return noun if noun.prev? { |x| x.numeral? || x.pronouns? || x.adjt_words? }
         noun = fold_noun_space!(noun, succ)
-      when .verbal?
+      when .verb_words?
         return fold_noun_verb!(noun, succ)
       when .bond_word?
         break unless should_fold_noun_concoord?(noun, succ)

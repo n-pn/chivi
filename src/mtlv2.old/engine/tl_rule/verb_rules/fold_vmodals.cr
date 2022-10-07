@@ -30,7 +30,7 @@ module MtlV2::TlRule
     when .verbal?
       verb = fold!(node, succ, succ.tag, dic: 6)
       fold_verbs!(verb)
-    when .nominal?
+    when ..noun_words?
       # return node unless node.vm_neng?
       fold_verb_object!(node, succ)
     else
@@ -60,7 +60,7 @@ module MtlV2::TlRule
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
-    when .nil?, .ends?, .nominal?, .pd_dep?, .ule?
+    when .nil?, .ends?, ..noun_words?, .pd_dep?, .ule?
       true
     when .preposes? then false
     when .verb_object?

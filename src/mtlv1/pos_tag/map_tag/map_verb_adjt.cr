@@ -1,12 +1,12 @@
 struct CV::PosTag
-  Aform = new(:aform, :adjtish)
-  Adesc = new(:adesc, :adjtish)
+  Aform = new(:aform, :none)
+  Adesc = new(:adesc, :none)
 
-  Adjt = new(:adjt, :adjtish)
-  Amod = new(:amod, :adjtish)
+  Adjt = new(:adjt, :none)
+  Amod = new(:amod, :none)
 
-  ADJTMOD_MAP = load_map("adjtmods", :adjtish)
-  ADJTVAL_MAP = load_map("adjtvals", :adjtish)
+  ADJTMOD_MAP = load_map("adjtmods", :none)
+  ADJTVAL_MAP = load_map("adjtvals", :none)
 
   def self.map_adjt(tag : String, key : String = "", vals = [] of String)
     case tag[1]?
@@ -24,29 +24,30 @@ struct CV::PosTag
     ADJTVAL_MAP[key] ||= Adjt
   end
 
-  VAUXIL_MAP = load_map("vauxils", :verbish)
-  VOFORM_MAP = load_map("voforms", :verbish)
-  VINTRA_MAP = load_map("vintras", :verbish)
-  VERBAL_MAP = load_map("verbals", :verbish)
+  VAUXIL_MAP = load_map("vauxils", :none)
+  VOFORM_MAP = load_map("voforms", :none)
+  VINTRA_MAP = load_map("vintras", :none)
+  VERBAL_MAP = load_map("verbals", :none)
 
-  Vmod = new(:vmod, :verbish)
-  Verb = new(:verb, :verbish)
-  Vint = new(:vint, :verbish)
-  Vobj = new(:vobj, :verbish)
+  Vmod = new(:vmod, :none)
+  Verb = new(:verb, :none)
+  Vint = new(:vint, :none)
+  Vobj = new(:vobj, :none)
 
-  Vform = new(:vform, :verbish)
+  Vform = new(:vform, :none)
 
   def self.map_verb(tag : String, key : String = "", vals = [] of String) : self
     case tag[1]?
     when 'o' then map_voform(key)
     when '!' then map_vauxil(key)
-    when 'i' then map_vintra(key, poly: vals.size > 1)
-    else          map_verbal(key, poly: vals.size > 1)
+    when 'i' then map_vintra(key, has_alt: vals.size > 1)
+    else          map_verbal(key, has_alt: vals.size > 1)
     end
   end
 
   def self.map_voform(key : String)
     VOFORM_MAP[key] ||= begin
+      # TODO: detect type by patterns
       Vobj
     end
   end
@@ -54,23 +55,23 @@ struct CV::PosTag
   def self.map_vauxil(key : String) : self
     VAUXIL_MAP[key] ||= begin
       case key[-1]
-      when '是' then new(:v_shi, MtlPos.flags(Verbish))
-      when '有' then new(:v_you, MtlPos.flags(LinkVerb, Verbish))
-      else          new(:vpro, MtlPos.flags(Verbish, Vauxil))
+      when '是' then new(:v_shi, MtlPos.flags(None))
+      when '有' then new(:v_you, MtlPos.flags(LinkVerb))
+      else          new(:vpro, MtlPos.flags(Vauxil))
       end
     end
   end
 
-  def self.map_vintra(key : String, poly = false)
-    VINTRA_MAP[key]? || (poly ? new(:vinx, :verbish) : new(:vint, :verbish))
+  def self.map_vintra(key : String, has_alt = false)
+    VINTRA_MAP[key]? || (has_alt ? new(:vinx, :none) : new(:vint, :none))
   end
 
   LINKVERB_CHARS = {'来', '去', '到', '出'}
 
-  def self.map_verbal(key : String, poly = false) : self
+  def self.map_verbal(key : String, has_alt = false) : self
     VERBAL_MAP[key] ||= begin
-      tag = poly ? MtlTag::Vcmp : MtlTag::Verb
-      pos = MtlPos::Verbish
+      tag = has_alt ? MtlTag::Vcmp : MtlTag::Verb
+      pos = MtlPos::None
 
       last_char = key[-1]
 

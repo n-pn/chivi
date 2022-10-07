@@ -7,7 +7,7 @@ enum CV::MtlTag
          "3-verb+adjective",
          "4-prepos+particle",
          "5-adverb+conjunct",
-         "6-phrase+catena",
+         "6-phrase+vcompl",
          "7-sound+morp",
          "8-polysemy",
          "9-uniqword",
@@ -22,23 +22,23 @@ enum CV::MtlTag
 
   # 0 lit + str + punct
 
-  def puncts?
+  def punctuations?
     value < 50
   end
 
-  def pfinal?
+  def final_puncts?
     value >= 4 && value <= 6
   end
 
-  def pstart?
+  def start_puncts?
     value >= 8 && value < 20
   end
 
-  def pclose?
+  def close_puncts?
     value >= 20 && value < 30
   end
 
-  def pgroup?
+  def group_puncts?
     value >= 8 && value < 30
   end
 
@@ -74,39 +74,35 @@ enum CV::MtlTag
 
   # 1 name + noun
 
-  def names?
+  def proper_nouns?
     value >= 100 && value < 120
   end
 
-  def affil?
+  def cap_affil?
     value >= 105 && value < 110
   end
 
-  def nouns?
+  def common_nouns?
     value >= 120 && value < 155
   end
 
-  def nobjs?
+  def object_nouns?
     value >= 140 && value <= 150
   end
 
-  def nominal?
+  def noun_words?
     value >= 100 && value < 200
   end
 
-  def honorific?
-    value >= 120 && value < 125
-  end
-
-  def position?
+  def place_words?
     value >= 150 && value < 180
   end
 
-  def locative?
+  def locat_words?
     value >= 160 && value < 180
   end
 
-  def timeword?
+  def time_words?
     value >= 180 && value < 200
   end
 
@@ -134,7 +130,7 @@ enum CV::MtlTag
 
   # numbers
 
-  def numeral?
+  def numqti_words?
     value >= 240 && value < 300
   end
 
@@ -160,19 +156,19 @@ enum CV::MtlTag
 
   # verbal
 
-  def vobjs?
+  def vobj_words?
     value >= 300 && value < 305
   end
 
-  def verbs?
+  def common_verbs?
     value >= 300 && value < 340
   end
 
-  def verbal?
+  def verb_words?
     value >= 300 && value < 350
   end
 
-  def special_verb?
+  def marked_verbs?
     value >= 330 && value < 350
   end
 
@@ -192,21 +188,21 @@ enum CV::MtlTag
     value >= 316 && value < 330
   end
 
-  def vmodals?
+  def modal_verbs?
     value >= 318 && value < 330
   end
 
-  # adjts?
+  # adjts
 
-  def adjts?
+  def adjt_words?
     value >= 350 && value < 400
   end
 
-  def modis?
+  def amod_words?
     value >= 370 && value < 400
   end
 
-  def content?
+  def content_words?
     value < 400
   end
 
@@ -222,7 +218,7 @@ enum CV::MtlTag
     value >= 450 && value < 500
   end
 
-  def aspect?
+  def aspect_marker?
     value >= 452 && value <= 455
   end
 
@@ -236,7 +232,7 @@ enum CV::MtlTag
 
   # adverb
 
-  def adverbs?
+  def advb_words?
     value >= 500 && value < 560
   end
 
@@ -317,7 +313,7 @@ enum CV::MtlTag
     value >= 1000 && value < 1050
   end
 
-  def bond_names?
+  def bond_proper_nouns?
     value >= 1000 && value < 1010
   end
 
@@ -329,7 +325,7 @@ enum CV::MtlTag
     value >= 1020 && value < 1030
   end
 
-  def bond_verbs?
+  def bond_common_verbs?
     value >= 1030 && value < 1040
   end
 end
