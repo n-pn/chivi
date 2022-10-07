@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_adverbs!(node : MtNode, succ = node.succ?) : MtNode
+  def fold_adverbs!(node : BaseNode, succ = node.succ?) : BaseNode
     if !succ || succ.boundary?
       node.val = "vậy" if node.key == "也"
       return node
@@ -15,7 +15,7 @@ module CV::TlRule
     end
   end
 
-  def fold_adv_bu!(node : MtNode, succ = node.succ) : MtNode
+  def fold_adv_bu!(node : BaseNode, succ = node.succ) : BaseNode
     succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
@@ -41,7 +41,7 @@ module CV::TlRule
     end
   end
 
-  def fold_adv_mei!(node : MtNode, succ = node.succ) : MtNode
+  def fold_adv_mei!(node : BaseNode, succ = node.succ) : BaseNode
     succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
@@ -55,7 +55,7 @@ module CV::TlRule
     end
   end
 
-  def fold_adv_fei!(node : MtNode, succ = node.succ) : MtNode
+  def fold_adv_fei!(node : BaseNode, succ = node.succ) : BaseNode
     case succ
     when .modis?, .nouns?, .pl_ajno?, .pl_veno?
       node = fold!(node, succ, PosTag::Amod, dic: 7)
@@ -71,7 +71,7 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_adverb_base!(node : MtNode, succ = node.succ) : MtNode
+  def fold_adverb_base!(node : BaseNode, succ = node.succ) : BaseNode
     case succ.tag
     when .v_you?
       return node unless (noun = succ.succ?) && noun.nouns?
@@ -103,7 +103,7 @@ module CV::TlRule
     end
   end
 
-  # def fix_adverb!(node : MtNode, succ = node.succ) : {MtNode, MtNode?}
+  # def fix_adverb!(node : BaseNode, succ = node.succ) : {BaseNode, BaseNode?}
   #   case succ
   #   when .v_shi?
   #     node = fold!(node, succ, PosTag::Vead, dic: 8)
@@ -118,7 +118,7 @@ module CV::TlRule
   #   {node, succ}
   # end
 
-  def heal_wd_hao!(node : MtNode)
+  def heal_wd_hao!(node : BaseNode)
     case node.succ?
     when .nil? then node
     when .adjts?, .verbal?
@@ -128,7 +128,7 @@ module CV::TlRule
     end
   end
 
-  def fold_adverb_verb!(adverb : MtNode, verb : MtNode)
+  def fold_adverb_verb!(adverb : BaseNode, verb : BaseNode)
     case adverb.key
     when "老" then adverb.val = "luôn"
     when "光" then adverb.val = "chỉ riêng"
@@ -139,7 +139,7 @@ module CV::TlRule
     fold_verbs!(verb, prev: adverb)
   end
 
-  def is_adverb?(node : MtNode) : Bool
+  def is_adverb?(node : BaseNode) : Bool
     while node = node.succ?
       case node
       when .comma?

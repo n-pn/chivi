@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_adjt_adv_bu!(adjt : MtNode, adv : MtNode, prev : MtNode?)
+  def fold_adjt_adv_bu!(adjt : BaseNode, adv : BaseNode, prev : BaseNode?)
     return unless tail = adv.succ?
 
     if prev && prev.adv_bu4?

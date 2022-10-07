@@ -1,5 +1,5 @@
 module CV::TlRule
-  def heal_mixed!(node : MtNode, prev = node.prev?, succ = node.succ?)
+  def heal_mixed!(node : BaseNode, prev = node.prev?, succ = node.succ?)
     return node unless node.is_a?(MtTerm)
 
     case node.tag
@@ -11,7 +11,7 @@ module CV::TlRule
     end
   end
 
-  def heal_vead!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtTerm
+  def heal_vead!(node : MtTerm, prev : BaseNode?, succ : BaseNode?) : MtTerm
     case succ
     when .nil?, .boundary?, .nominal?
       node.as_verb!(nil)
@@ -24,7 +24,7 @@ module CV::TlRule
     end
   end
 
-  def heal_ajad!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtNode
+  def heal_ajad!(node : MtTerm, prev : BaseNode?, succ : BaseNode?) : BaseNode
     case succ
     when .nil?, .boundary?, .nominal?
       node.as_adjt!(nil)
@@ -36,7 +36,7 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_veno!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtTerm
+  def heal_veno!(node : MtTerm, prev : BaseNode?, succ : BaseNode?) : MtTerm
     # puts [node, prev, succ]
 
     case succ
@@ -86,7 +86,7 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_ajno!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtNode
+  def heal_ajno!(node : MtTerm, prev : BaseNode?, succ : BaseNode?) : BaseNode
     # puts [node, prev, succ, "heal_ajno"]
 
     case succ

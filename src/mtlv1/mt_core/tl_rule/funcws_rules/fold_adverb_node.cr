@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_adverb_node!(adv : MtNode, node = adv.succ, tag = node.tag, dic = 4) : MtNode
+  def fold_adverb_node!(adv : BaseNode, node = adv.succ, tag = node.tag, dic = 4) : BaseNode
     flip = false
 
     case adv.key

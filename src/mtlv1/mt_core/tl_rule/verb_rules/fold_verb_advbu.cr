@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_verb_advbu!(verb : MtNode, adv_bu : MtNode, succ = adv_bu.succ?) : MtNode
+  def fold_verb_advbu!(verb : BaseNode, adv_bu : BaseNode, succ = adv_bu.succ?) : BaseNode
     return verb unless succ
 
     if succ.key == verb.key
@@ -11,7 +11,7 @@ module CV::TlRule
     end
   end
 
-  def fold_verb_advbu_verb!(verb : MtNode, adv_bu : MtNode, verb_2 : MtNode)
+  def fold_verb_advbu_verb!(verb : BaseNode, adv_bu : BaseNode, verb_2 : BaseNode)
     adv_bu.val = "hay"
     verb_2.val = "không"
 

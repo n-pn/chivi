@@ -1,10 +1,10 @@
 module CV::TlRule
-  def fold_pro_per!(node : MtNode, succ : Nil) : MtNode
+  def fold_pro_per!(node : BaseNode, succ : Nil) : BaseNode
     node
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_pro_per!(proper : MtNode, succ : MtNode) : MtNode
+  def fold_pro_per!(proper : BaseNode, succ : BaseNode) : BaseNode
     succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
@@ -37,7 +37,7 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_proper_nominal!(proper : MtNode, nominal : MtNode) : MtNode
+  def fold_proper_nominal!(proper : BaseNode, nominal : BaseNode) : BaseNode
     return proper unless noun_can_combine?(proper.prev?, nominal.succ?)
 
     if nominal.pro_ziji?
@@ -72,7 +72,7 @@ module CV::TlRule
     end
   end
 
-  def flip_proper_noun?(proper : MtNode, noun : MtNode) : Bool
+  def flip_proper_noun?(proper : BaseNode, noun : BaseNode) : Bool
     return !noun.nqtime? unless (prev = proper.prev?) && prev.verbal?
     !need_2_objects?(prev)
   end

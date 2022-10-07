@@ -1,5 +1,5 @@
 module CV::TlRule
-  def is_linking_verb?(head : MtNode, succ : MtNode?) : Bool
+  def is_linking_verb?(head : BaseNode, succ : BaseNode?) : Bool
     # puts [node, succ, "check linking verb"]
     return true if head.vmodals?
     return true if !succ || succ.starts_with?('不')
@@ -17,7 +17,7 @@ module CV::TlRule
     false
   end
 
-  def find_verb_after(right : MtNode)
+  def find_verb_after(right : BaseNode)
     while right = right.succ?
       # puts ["find_verb", right]
 
@@ -33,7 +33,7 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def find_verb_after_for_prepos(node : MtNode, skip_comma = true) : MtNode?
+  def find_verb_after_for_prepos(node : BaseNode, skip_comma = true) : BaseNode?
     while node = node.succ?
       case node
       when .pl_mark?, .mn_mark? then return node
@@ -54,7 +54,7 @@ module CV::TlRule
     end
   end
 
-  def scan_verb!(node : MtNode)
+  def scan_verb!(node : BaseNode)
     case node
     when .advbial?  then fold_adverbs!(node)
     when .preposes? then fold_preposes!(node)
@@ -66,7 +66,7 @@ module CV::TlRule
     MtDict.has_key?(:v2_objs, node.key)
   end
 
-  def need_2_objects?(node : MtList)
+  def need_2_objects?(node : BaseList)
     node.list.any? { |x| need_2_objects?(x) }
   end
 
@@ -74,7 +74,7 @@ module CV::TlRule
     MtDict.get(:v2_objs).has_key?(key)
   end
 
-  def fold_left_verb!(node : MtNode, prev : MtNode?)
+  def fold_left_verb!(node : BaseNode, prev : BaseNode?)
     return node unless prev && prev.advbial?
     fold_adverb_node!(prev, node)
   end

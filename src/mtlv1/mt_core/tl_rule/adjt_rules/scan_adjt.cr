@@ -1,5 +1,5 @@
 module CV::TlRule
-  def scan_adjt!(node : MtNode?) : MtNode?
+  def scan_adjt!(node : BaseNode?) : BaseNode?
     return unless node
     node = heal_mixed!(node) if node.polysemy?
 

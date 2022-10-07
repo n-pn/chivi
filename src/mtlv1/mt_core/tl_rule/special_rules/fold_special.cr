@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_specials!(node : MtNode)
+  def fold_specials!(node : BaseNode)
     case node
     when .wd_hao?  then fold_wd_hao!(node)
     when .v_shang? then fix_上下(node, MAP_上)
@@ -16,7 +16,7 @@ module CV::TlRule
     end
   end
 
-  def concoord_is_prepos?(node : MtNode?)
+  def concoord_is_prepos?(node : BaseNode?)
     return false unless node
 
     while node = node.succ?
@@ -33,7 +33,7 @@ module CV::TlRule
   MAP_上 = {"lên", "trên", "thượng"}
   MAP_下 = {"xuống", "dưới", "hạ"}
 
-  def fix_上下(node : MtNode, vals = node.key == "上" ? MAP_上 : MAP_下) : MtNode
+  def fix_上下(node : BaseNode, vals = node.key == "上" ? MAP_上 : MAP_下) : BaseNode
     case node.prev?
     when .nil?, .empty?, .puncts?
       if node.succ? { |x| x.content? || x.pt_le? }
@@ -50,7 +50,7 @@ module CV::TlRule
     end
   end
 
-  def fold_wd_hao!(node : MtNode) : MtNode
+  def fold_wd_hao!(node : BaseNode) : BaseNode
     case succ = node.succ?
     when .nil?, .puncts?, .pt_le?
       node.set!("tốt", PosTag::Adjt)
@@ -65,7 +65,7 @@ module CV::TlRule
     end
   end
 
-  private def fold_uniqs!(node : MtNode, succ = node.succ?) : MtNode
+  private def fold_uniqs!(node : BaseNode, succ = node.succ?) : BaseNode
     # puts [node, succ, "fold_uniq"]
 
     case node.tag
@@ -79,7 +79,7 @@ module CV::TlRule
     end
   end
 
-  def fold_uniqs_by_key!(node : MtNode, succ = node.succ?)
+  def fold_uniqs_by_key!(node : BaseNode, succ = node.succ?)
     case node.key
     when "第" then fold_第!(node)
     when "对不起"

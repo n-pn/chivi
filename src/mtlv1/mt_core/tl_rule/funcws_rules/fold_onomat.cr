@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_onomat!(node : MtNode, succ = node.succ?)
+  def fold_onomat!(node : BaseNode, succ = node.succ?)
     case succ
     when .nil?    then node
     when .verbal? then fold_verbs!(succ, prev: node)

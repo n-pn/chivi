@@ -1,30 +1,16 @@
 require "./tl_rule/**"
 
 module CV::TlRule
-  def fix_grammar!(node : MtNode) : Nil
-    while node = node.succ?
-      node = fold_once!(node)
-      # puts [node, node.succ?, node.prev?].colorize.blue
-    end
-  end
-
-  def fold_list!(head : MtNode, tail : MtNode? = nil) : Nil
-    while head = head.succ?
-      break if head == tail
-      head = fold_once!(head)
-    end
-  end
-
-  def fold_left!(tail : MtNode)
+  def fold_left!(tail : BaseNode)
     while tail
       break unless prev = tail.prev?
       tail = fold_left!(tail, prev).try(&.prev?) || tail.prev?
     end
   end
 
-  def fold_left!(right : MtNode, left : MtNode) : MtNode
+  def fold_left!(right : BaseNode, left : BaseNode) : BaseNode
     case right
-    when .timeword? then fold_time_left!(right)
+    when .timeword? then join_time!(right, left)
     when .nominal?  then fold_noun_left!(right, level: 0)
     when .suffixes?
       fold_suffix!(suff: right, left: left)
@@ -33,8 +19,22 @@ module CV::TlRule
     end
   end
 
+  def fix_grammar!(node : BaseNode) : Nil
+    while node = node.succ?
+      node = fold_once!(node)
+      # puts [node, node.succ?, node.prev?].colorize.blue
+    end
+  end
+
+  def fold_list!(head : BaseNode, tail : BaseNode? = nil) : Nil
+    while head = head.succ?
+      break if head == tail
+      head = fold_once!(head)
+    end
+  end
+
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_once!(node : MtNode) : MtNode
+  def fold_once!(node : BaseNode) : BaseNode
     # puts [node, node.succ?, node.prev?].colorize.red
 
     case node.tag
@@ -56,5 +56,9 @@ module CV::TlRule
     when .particles? then fold_auxils!(node)
     else                  node
     end
+  end
+
+  def pair!(left : BaseNode, right : BaseNode, ptag = right.tag, dic = 0, flip = left.at_tail? || right.at_head?)
+    BasePair.new(left, right, ptag, dic: dic, idx: left.idx, flip: flip)
   end
 end

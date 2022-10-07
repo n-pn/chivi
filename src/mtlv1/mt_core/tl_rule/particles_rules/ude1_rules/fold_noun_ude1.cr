@@ -1,5 +1,5 @@
 module CV::TlRule
-  # def fold_noun_ude1!(noun : MtNode, ude1 : MtNode, right : MtNode, mode = 0) : MtNode
+  # def fold_noun_ude1!(noun : BaseNode, ude1 : BaseNode, right : BaseNode, mode = 0) : BaseNode
   #   case noun.tag
   #   when .timeword?, .nattr?,
   #        .posit?, .locat?,
@@ -20,7 +20,7 @@ module CV::TlRule
   #   fold!(noun, right, PosTag::Nform, dic: 5, flip: true)
   # end
 
-  # def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, right : MtNode) : MtNode
+  # def fold_verb_ude1!(verb : BaseNode, ude1 : BaseNode, right : BaseNode) : BaseNode
   #   case right.key
   #   when "时候", "时", "打算"
   #     head = verb.try { |x| x if x.content? } || verb
@@ -57,7 +57,7 @@ module CV::TlRule
   #   fold!(node, right, PosTag::Nform, dic: 6, flip: true)
   # end
 
-  def has_verb_after?(right : MtNode) : Bool
+  def has_verb_after?(right : BaseNode) : Bool
     while right = right.succ?
       case right.tag
       when .pl_mark?, .mn_mark?, .verbal?, .preposes?

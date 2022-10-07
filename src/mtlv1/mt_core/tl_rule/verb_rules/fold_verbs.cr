@@ -1,8 +1,8 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
+  def fold_verbs!(verb : BaseNode, prev : BaseNode? = nil) : BaseNode
     return verb unless verb.verbal?
-    return fold_verb_object!(verb, verb.succ?) if verb.is_a?(MtList)
+    return fold_verb_object!(verb, verb.succ?) if verb.is_a?(BaseList)
 
     case verb
     when .v_shi?, .v_you?
@@ -18,7 +18,7 @@ module CV::TlRule
 
     while !verb.vobj? && (succ = verb.succ?)
       case succ
-      when .join_word?
+      when .bond_word?
         fold_verb_junction!(junc: succ, verb: verb).try { |x| verb = x } || break
       when .pt_zhe?
         verb = fold_verb_uzhe!(verb, uzhe: succ)

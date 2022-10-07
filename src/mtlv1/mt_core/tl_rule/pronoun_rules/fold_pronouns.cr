@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_pronouns!(pronoun : MtNode, succ = pronoun.succ?) : MtNode
+  def fold_pronouns!(pronoun : BaseNode, succ = pronoun.succ?) : BaseNode
     return pronoun unless succ
 
     case pronoun.tag

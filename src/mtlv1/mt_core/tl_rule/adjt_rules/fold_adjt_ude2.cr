@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_adjt_ude2!(adjt : MtNode, ude2 : MtNode)
+  def fold_adjt_ude2!(adjt : BaseNode, ude2 : BaseNode)
     return adjt if adjt.prev?(&.nouns?)
     return adjt unless (succ = ude2.succ?) && succ.verbal?
 

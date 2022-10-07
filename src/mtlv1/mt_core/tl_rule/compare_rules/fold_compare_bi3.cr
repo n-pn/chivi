@@ -1,5 +1,5 @@
 # module CV::TlRule
-#   def fold_compare_bi3!(prepos : MtNode, succ = prepos.succ?, mode = 0)
+#   def fold_compare_bi3!(prepos : BaseNode, succ = prepos.succ?, mode = 0)
 #     return prepos unless (noun = scan_noun!(succ, mode: mode)) && noun.object?
 
 #     if (succ = noun.succ?) && succ.verb_no_obj?
@@ -39,16 +39,16 @@
 #       tail.fix_succ!(prepos)
 #       prepos = tail
 
-#       output = MtList.new(adv_bu, prepos, dic: 0, idx: adv_bu.idx)
+#       output = BaseList.new(adv_bu, prepos, dic: 0, idx: adv_bu.idx)
 #     else
 #       prepos.set!("hơn")
-#       output = MtList.new(prepos, tail, dic: 0, idx: prepos.idx, flip: true)
+#       output = BaseList.new(prepos, tail, dic: 0, idx: prepos.idx, flip: true)
 #     end
 
 #     fold_compare_bi3_after!(output, noun)
 #   end
 
-#   def fold_compare_bi3_after!(node : MtNode, last : MtNode)
+#   def fold_compare_bi3_after!(node : BaseNode, last : BaseNode)
 #     return node unless (succ = node.succ?) && succ.particles? && (tail = succ.succ?)
 
 #     case succ

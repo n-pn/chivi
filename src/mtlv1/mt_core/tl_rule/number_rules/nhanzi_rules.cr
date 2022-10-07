@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_nhanzi!(node : MtNode, prev : MtNode? = nil) : MtNode
+  def fold_nhanzi!(node : BaseNode, prev : BaseNode? = nil) : BaseNode
     return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
 
     case succ.key
@@ -10,10 +10,10 @@ module CV::TlRule
     end
   end
 
-  def fold_nhanzi_dian!(node : MtNode, succ : MtNode, prev : MtNode?) : MtNode
+  def fold_nhanzi_dian!(node : BaseNode, succ : BaseNode, prev : BaseNode?) : BaseNode
     result = keep_pure_numeral?(succ.succ?)
 
-    if result.is_a?(MtNode)
+    if result.is_a?(BaseNode)
       node.key = "#{node.key}#{succ.key}#{result.key}"
       node.val = "#{node.val} chấm #{result.val}" # TODO: correcting unit system
       return node.tap(&.fix_succ!(result.succ?))
@@ -22,7 +22,7 @@ module CV::TlRule
     prev || result ? fold_number_hour!(node, succ) : node
   end
 
-  def keep_pure_numeral?(node : MtNode?) : Bool | MtNode
+  def keep_pure_numeral?(node : BaseNode?) : Bool | BaseNode
     return false unless node && node.is_a?(MtTerm)
     return true if node.key == "半" || node.key == "前后"
 

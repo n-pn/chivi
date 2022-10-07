@@ -14,7 +14,7 @@ module CV::TlRule
     end
   end
 
-  def fold_nested!(head : MtNode, tail : MtNode)
+  def fold_nested!(head : BaseNode, tail : BaseNode)
     fold_list!(head, tail)
     ptag = guess_nested_tag(head, tail)
     list = fold!(head, tail, tag: ptag, dic: 0)
@@ -22,7 +22,7 @@ module CV::TlRule
     list
   end
 
-  def guess_nested_tag(head : MtNode, tail : MtNode)
+  def guess_nested_tag(head : BaseNode, tail : BaseNode)
     case head.tag
     when .title_sts? then PosTag::CapTitle
     when .brack_sts? then PosTag::CapOther
@@ -31,7 +31,7 @@ module CV::TlRule
     end
   end
 
-  def guess_quoted_tag(head : MtNode, tail : MtNode)
+  def guess_quoted_tag(head : BaseNode, tail : BaseNode)
     head_succ = head.succ
     tail_prev = tail.prev
 
@@ -49,7 +49,7 @@ module CV::TlRule
     head.prev?(&.pt_dep?) ? PosTag::Nform : PosTag::LitBlank
   end
 
-  # def fold_btitle!(head : MtNode) : MtNode
+  # def fold_btitle!(head : BaseNode) : BaseNode
   #   return head unless start_key = head.key[0]?
   #   end_key = match_title_end(start_key)
 
@@ -66,7 +66,7 @@ module CV::TlRule
   #   root
   # end
 
-  # def fold_quoted!(head : MtNode) : MtNode
+  # def fold_quoted!(head : BaseNode) : BaseNode
   #   return head unless char = head.val[0]?
   #   end_tag, end_val = match_end(char)
 

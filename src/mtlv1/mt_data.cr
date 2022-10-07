@@ -1,9 +1,9 @@
+require "./mt_node/**"
 require "./mt_core/*"
-require "./mt_node/*"
 
 class CV::MtData
-  getter head : MtNode
-  getter tail : MtNode
+  getter head : BaseNode
+  getter tail : BaseNode
 
   @nestable = [] of MtTerm
 
@@ -58,16 +58,16 @@ class CV::MtData
     end
   end
 
-  private def can_meld?(left : MtTerm, right : MtNode) : Bool
+  private def can_meld?(left : MtTerm, right : BaseNode) : Bool
     false
   end
 
-  private def join_val(left : MtNode, right : MtNode)
+  private def join_val(left : BaseNode, right : BaseNode)
     return left.val + right.val unless right.nhanzis?
     left.val + " " + fix_hanzi_val(left, right)
   end
 
-  private def fix_hanzi_val(left : MtNode, right : MtNode)
+  private def fix_hanzi_val(left : BaseNode, right : BaseNode)
     val = right.val
 
     case right.key[0]?

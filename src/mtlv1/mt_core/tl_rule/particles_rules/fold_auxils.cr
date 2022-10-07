@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_auxils!(node : MtNode, mode = 1) : MtNode
+  def fold_auxils!(node : BaseNode, mode = 1) : BaseNode
     case node.tag
     when .pt_le?  then heal_ule!(node)  # 了
     when .pt_dep? then fold_ude1!(node) # 的
@@ -10,7 +10,7 @@ module CV::TlRule
     end
   end
 
-  def heal_ule!(node : MtNode, prev = node.prev?, succ = node.succ?) : MtNode
+  def heal_ule!(node : BaseNode, prev = node.prev?, succ = node.succ?) : BaseNode
     return node unless prev && succ
 
     case
@@ -21,7 +21,7 @@ module CV::TlRule
     end
   end
 
-  def heal_ude2!(node : MtNode) : MtNode
+  def heal_ude2!(node : BaseNode) : BaseNode
     return node if node.prev? { |x| x.tag.adjts? || x.tag.adverbs? }
     return node unless succ = node.succ?
     return node.set!("đất", PosTag::Nword) if succ.v_shi? || succ.v_you?
@@ -29,7 +29,7 @@ module CV::TlRule
     node.set!(val: "địa", tag: PosTag::Nword)
   end
 
-  def fold_verb_ule!(verb : MtNode, node : MtNode, succ = node.succ?)
+  def fold_verb_ule!(verb : BaseNode, node : BaseNode, succ = node.succ?)
     if succ && !(succ.boundary? || succ.succ?(&.pt_le?))
       node.val = ""
     end
@@ -41,7 +41,7 @@ module CV::TlRule
     fold!(verb, node, PosTag::Verb, dic: 5)
   end
 
-  def keep_pt_le?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool
+  def keep_pt_le?(prev : BaseNode, node : BaseNode, succ = node.succ?) : Bool
     return true unless succ
     return false if succ.pstart?
     succ.boundary? || succ.succ?(&.pt_le?) || false

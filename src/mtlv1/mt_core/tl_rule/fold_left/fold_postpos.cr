@@ -15,7 +15,7 @@ module CV::TlRule
   #   "色"   => {"màu", PosTag::Nattr, true},
   # }
 
-  def fold_suffix!(suff : MtNode, left = suff.prev?) : MtNode
+  def fold_suffix!(suff : BaseNode, left = suff.prev?) : BaseNode
     return suff unless suff.is_a?(MtTerm) && left
     return suff unless left.tag.content?
 
@@ -23,21 +23,21 @@ module CV::TlRule
     when .suf_men5?
       suff.val = "các"
       ptag = PosTag.new(:nobjt, MtlPos.flags(Nounish, Ktetic, Plural))
-      MtPair.new(left.not_nil!, suff, ptag, dic: 1, flip: true)
+      BasePair.new(left.not_nil!, suff, ptag, dic: 1, flip: true)
     when .suf_time?
       left = fold_left!(left)
-      MtPair.new(left.not_nil!, suff, PosTag::Texpr, dic: 1, flip: true)
+      BasePair.new(left.not_nil!, suff, PosTag::Texpr, dic: 1, flip: true)
     when .suf_zhi?
       suff.alt.try { |x| suff.val = x }
       left = fold_left!(left).not_nil!
-      MtPair.new(left.not_nil!, suff, PosTag::Nform, dic: 2, flip: true)
+      BasePair.new(left.not_nil!, suff, PosTag::Nform, dic: 2, flip: true)
     when .suf_verb?
       ptag = PosTag.map_verbal(left.key)
-      MtPair.new(left, suff, ptag, dic: 1, flip: false)
+      BasePair.new(left, suff, ptag, dic: 1, flip: false)
     when .suf_xing?
-      MtPair.new(left, suff, PosTag::Nattr, dic: 2, flip: true)
+      BasePair.new(left, suff, PosTag::Nattr, dic: 2, flip: true)
     else
-      MtPair.new(left, suff, PosTag::Nform, dic: 2, flip: !suff.tag.at_tail?)
+      BasePair.new(left, suff, PosTag::Nform, dic: 2, flip: !suff.tag.at_tail?)
     end
   end
 end

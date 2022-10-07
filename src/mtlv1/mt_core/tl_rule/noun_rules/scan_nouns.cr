@@ -6,8 +6,8 @@ module CV::TlRule
   #   can return non nominal node
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def scan_noun!(node : MtNode?, mode : Int32 = 0,
-                 prodem : MtNode? = nil, nquant : MtNode? = nil)
+  def scan_noun!(node : BaseNode?, mode : Int32 = 0,
+                 prodem : BaseNode? = nil, nquant : BaseNode? = nil)
     raise "dead code!"
     # puts [node, prodem, nquant, "scan_noun"]
     # return fold_prodem_nominal!(prodem, nquant) unless node
@@ -156,8 +156,8 @@ module CV::TlRule
     # fold!(node, tail, PosTag::Nform, dic: 9, flip: true)
   end
 
-  def clean_nquant(nquant : MtNode, prodem : MtNode?)
-    return nquant unless prodem || nquant.is_a?(MtList) || nquant.key.size > 1
+  def clean_nquant(nquant : BaseNode, prodem : BaseNode?)
+    return nquant unless prodem || nquant.is_a?(BaseList) || nquant.key.size > 1
 
     nquant.each do |node|
       case node.key
@@ -169,7 +169,7 @@ module CV::TlRule
     nquant
   end
 
-  def fold_head_ude1_noun!(head : MtNode)
+  def fold_head_ude1_noun!(head : BaseNode)
     return head unless (ude1 = head.succ?) && ude1.pt_dep?
     ude1.val = "" unless head.nouns? || head.names?
 
@@ -177,14 +177,14 @@ module CV::TlRule
     fold!(head, tail, PosTag::Nform, dic: 8, flip: true)
   end
 
-  def fold_adjt_as_noun!(node : MtNode)
+  def fold_adjt_as_noun!(node : BaseNode)
     return node if node.nominal? || !(succ = node.succ?)
 
     noun, ude1 = succ.pt_dep? ? {succ.succ?, succ} : {succ, nil}
     fold_adjt_noun!(node, noun, ude1)
   end
 
-  def fold_verb_as_noun!(node : MtNode, mode = 0)
+  def fold_verb_as_noun!(node : BaseNode, mode = 0)
     node = fold_verbs!(node)
     return node if node.nominal? || mode == 3 || !(succ = node.succ?)
 
@@ -196,7 +196,7 @@ module CV::TlRule
     fold_verb_ude1!(node)
   end
 
-  def fold_verb_ude1!(node : MtNode, succ = node.succ?)
+  def fold_verb_ude1!(node : BaseNode, succ = node.succ?)
     return node unless succ && succ.pt_dep?
     return node unless (noun = scan_noun!(succ.succ?, mode: 1)) && noun.object?
 

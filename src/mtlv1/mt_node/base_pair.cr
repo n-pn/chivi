@@ -1,27 +1,18 @@
-require "./mt_term"
+require "./base_node"
 
-class CV::MtPair < CV::MtNode
+class CV::BasePair < CV::BaseNode
+  getter head : BaseNode
+  getter tail : BaseNode
+
   def initialize(
-    @head : MtNode, @tail : MtNode,
-    @tag : PosTag = PosTag::LitBlank,
-    @dic : Int32 = 0, @idx : Int32 = head.idx,
-    flip : Bool = head.at_tail?
+    @head : BaseNode, @tail : BaseNode,
+    @tag : PosTag = @tail.tag, @dic : Int32 = 0, @idx : Int32 = head.idx,
+    flip : Bool = head.at_tail? || tail.at_head?
   )
     self.fix_prev!(head.prev?)
     self.fix_succ!(tail.succ?)
     @head, @tail = tail, head if flip
   end
-
-  private def is_empty?(node : MtNode)
-    return false unless node.is_a?(MtTerm)
-    node.val.empty?
-  end
-
-  def list
-    raise "invalid!"
-  end
-
-  ######
 
   def each
     yield @head

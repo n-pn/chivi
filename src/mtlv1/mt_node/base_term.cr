@@ -1,4 +1,4 @@
-require "./mt_node"
+require "./base_node"
 
 require "../pos_tag"
 require "../vp_dict/vp_term"
@@ -27,7 +27,7 @@ class CV::VpTerm
   getter cost : Int32 { MtUtil.cost(@key.size, @prio) }
 end
 
-class CV::MtTerm < CV::MtNode
+class CV::MtTerm < CV::BaseNode
   def self.from(term : VpTerm, dic = 0, idx = 0)
     new(term.key, term.vals[0], term.ptag, dic, idx, alt: term.vals[1]?)
   end
@@ -40,6 +40,14 @@ class CV::MtTerm < CV::MtNode
   getter alt : String? = nil
 
   def initialize(@key, @val = @key, @tag = PosTag::LitBlank, @dic = 0, @idx = 0, @alt = nil)
+  end
+
+  def swap_val!
+    if alt = @alt
+      @val = alt
+    end
+
+    self
   end
 
   def as_verb!(val = @alt)
@@ -134,7 +142,7 @@ class CV::MtTerm < CV::MtNode
     !(prev.tag.no_ws_after? || !@tag.no_ws_before?)
   end
 
-  def space_before?(prev : MtNode) : Bool
+  def space_before?(prev : BaseNode) : Bool
     return false if @val.blank?
     !(prev.tag.no_ws_after? || !@tag.no_ws_before?)
   end

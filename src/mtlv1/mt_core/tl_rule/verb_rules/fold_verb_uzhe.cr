@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_verb_uzhe!(prev : MtNode, uzhe : MtNode, succ = uzhe.succ?) : MtNode
+  def fold_verb_uzhe!(prev : BaseNode, uzhe : BaseNode, succ = uzhe.succ?) : BaseNode
     uzhe.val = ""
 
     if succ && succ.maybe_verb?

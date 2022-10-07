@@ -289,7 +289,7 @@ enum CV::MtlTag
   end
 
   def suffixes?
-    value >= 740 && value < 780
+    value >= 730 && value < 750
   end
 
   # words that have multi meaning/part-of-speech
@@ -299,11 +299,33 @@ enum CV::MtlTag
 
   # special words that need to be check before build semantic tree
   def uniqword?
-    value >= 900
+    value >= 900 && value < 1000
   end
 
   # words need to be fix (including uniqword and polysemy)
   def nebulous?
-    value >= 800
+    value >= 800 && value < 1000
+  end
+
+  # words that can link two content words
+
+  def bond_words?
+    value >= 1000 && value < 1050
+  end
+
+  def bond_names?
+    value >= 1000 && value < 1010
+  end
+
+  def bond_nouns?
+    value >= 1010 && value < 1020
+  end
+
+  def bond_adts?
+    value >= 1020 && value < 1030
+  end
+
+  def bond_verbs?
+    value >= 1030 && value < 1040
   end
 end

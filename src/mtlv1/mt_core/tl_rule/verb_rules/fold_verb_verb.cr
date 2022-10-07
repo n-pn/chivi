@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_verb_verb!(verb_1 : MtNode, verb_2 : MtNode) : MtNode
+  def fold_verb_verb!(verb_1 : BaseNode, verb_2 : BaseNode) : BaseNode
     return verb_1 unless verb_2.is_a?(MtTerm)
 
     if verb_1.key == verb_2.key

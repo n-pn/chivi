@@ -1,11 +1,11 @@
 module CV::TlRule
-  def can_combine_adjt?(left : MtNode, right : MtNode?)
+  def can_combine_adjt?(left : BaseNode, right : BaseNode?)
     # TODO
     right.adjts?
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
+  def fold_verb_junction!(junc : BaseNode, verb = junc.prev, succ = junc.succ?)
     return unless verb && succ && succ.maybe_verb? && is_concoord?(junc)
 
     succ = heal_mixed!(succ) if succ.polysemy?
@@ -24,14 +24,14 @@ module CV::TlRule
     fold!(verb, succ, tag: tag || succ.tag, dic: 4)
   end
 
-  def fold_adjt_junction!(node : MtNode, prev = node.prev?, succ = node.succ?)
+  def fold_adjt_junction!(node : BaseNode, prev = node.prev?, succ = node.succ?)
     return unless prev && succ && is_concoord?(node)
     return unless (succ = scan_adjt!(succ)) && succ.adjts?
 
     fold!(prev, succ, tag: PosTag::Aform, dic: 4)
   end
 
-  def fold_noun_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)
+  def fold_noun_concoord!(node : BaseNode, prev = node.prev?, succ = node.succ?)
     return unless prev && succ
     return if node.key == "而" || !is_concoord?(node)
 
@@ -42,7 +42,7 @@ module CV::TlRule
     end
   end
 
-  def should_fold_noun_concoord?(noun : MtNode, concoord : MtNode) : Bool
+  def should_fold_noun_concoord?(noun : BaseNode, concoord : BaseNode) : Bool
     return true unless (prev = noun.prev?) && (succ = concoord.succ?)
     return false if prev.numeral? || prev.pronouns?
     return true unless prev.pt_dep? && (prev = prev.prev?)
@@ -58,7 +58,7 @@ module CV::TlRule
     false
   end
 
-  def is_concoord?(node : MtNode)
+  def is_concoord?(node : BaseNode)
     case node
     when .cenum?, .concoord? then true
     else
@@ -66,7 +66,7 @@ module CV::TlRule
     end
   end
 
-  def similar_tag?(left : MtNode, right : MtNode)
+  def similar_tag?(left : BaseNode, right : BaseNode)
     case left.tag
     when .nform?     then true
     when .cap_human? then right.cap_human?
@@ -76,7 +76,7 @@ module CV::TlRule
     end
   end
 
-  def he2_is_prepos?(node : MtNode, succ = node.succ?) : Bool
+  def he2_is_prepos?(node : BaseNode, succ = node.succ?) : Bool
     return false unless succ && (verb = find_verb_after_for_prepos(succ))
     return false if verb.uniqword?
 

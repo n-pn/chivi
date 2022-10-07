@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_uzhi!(uzhi : MtNode, prev : MtNode = uzhi.prev, succ = uzhi.succ?) : MtNode
+  def fold_uzhi!(uzhi : BaseNode, prev : BaseNode = uzhi.prev, succ = uzhi.succ?) : BaseNode
     return prev if !succ || succ.boundary?
     uzhi.val = ""
 
@@ -12,8 +12,8 @@ module CV::TlRule
     fold!(prev, succ, tag, dic: 3, flip: true)
   end
 
-  def is_percent?(prev : MtNode, uzhi : MtNode)
-    if prev.is_a?(MtList)
+  def is_percent?(prev : BaseNode, uzhi : BaseNode)
+    if prev.is_a?(BaseList)
       body = prev.list.first
       return false unless body.nhanzis? && (succ = body.succ?)
 

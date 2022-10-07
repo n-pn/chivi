@@ -1,6 +1,6 @@
 module CV::TlRule
   # do not return left when fail to prevent infinity loop!
-  def fold_ude1!(ude1 : MtNode, prev = ude1.prev?, succ = ude1.succ?) : MtNode
+  def fold_ude1!(ude1 : BaseNode, prev = ude1.prev?, succ = ude1.succ?) : BaseNode
     ude1.val = ""
 
     # ameba:disable Style/NegatedConditionsInUnless
@@ -14,7 +14,7 @@ module CV::TlRule
   end
 
   # do not return left when fail to prevent infinity loop
-  def fold_ude1_left!(ude1 : MtNode, left : MtNode, right : MtNode?) : MtNode
+  def fold_ude1_left!(ude1 : BaseNode, left : BaseNode, right : BaseNode?) : BaseNode
     case right
     when nil then return ude1
     when .vobjs?

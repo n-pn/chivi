@@ -1,7 +1,7 @@
 require "../../mt_util"
 
 module CV::TlRule
-  def fold_year!(prev : MtNode, node : MtNode, appro : Int32 = 0)
+  def fold_year!(prev : BaseNode, node : BaseNode, appro : Int32 = 0)
     node.val = "năm"
 
     if (number = node.succ?) && (quanti = number.succ?)
@@ -18,7 +18,7 @@ module CV::TlRule
     fold!(prev, node, PosTag::Nqtime, dic: 2)
   end
 
-  def exact_year?(node : MtNode, appro : Int32 = 0) : Bool
+  def exact_year?(node : BaseNode, appro : Int32 = 0) : Bool
     return appro < 0 if appro != 0
 
     case node.tag
@@ -32,7 +32,7 @@ module CV::TlRule
     end
   end
 
-  def fold_month!(prev : MtNode, node : MtNode, appro : Int32 = 0)
+  def fold_month!(prev : BaseNode, node : BaseNode, appro : Int32 = 0)
     node.val = "tháng"
     date = fold_day?(node.succ?)
 
@@ -49,7 +49,7 @@ module CV::TlRule
     fold!(prev, node, PosTag::Nqtime, dic: 2)
   end
 
-  def fold_day?(num : MtNode?) : MtNode?
+  def fold_day?(num : BaseNode?) : BaseNode?
     return unless num && (day = num.succ?) && num.is_a?(MtTerm)
     return unless num.numbers? && day.key == "日" || day.key == "号"
 
@@ -62,15 +62,15 @@ module CV::TlRule
     fold!(num, day, PosTag::Texpr, dic: 3, flip: true)
   end
 
-  def fold_hour!(node : MtNode, succ : MtNode, appro : Int32 = 0)
+  def fold_hour!(node : BaseNode, succ : BaseNode, appro : Int32 = 0)
     fold!(node, succ, PosTag::Nqtime, dic: 2)
   end
 
-  def fold_minute!(node : MtNode, succ : MtNode, appro : Int32 = 0)
+  def fold_minute!(node : BaseNode, succ : BaseNode, appro : Int32 = 0)
     fold!(node, succ, PosTag::Nqtime, dic: 3)
   end
 
-  def clean_个!(node : MtNode) : MtNode
+  def clean_个!(node : BaseNode) : BaseNode
     if body = node.body?
       deep_clean_个!(body)
     elsif node.key.ends_with?('个')
@@ -82,7 +82,7 @@ module CV::TlRule
     node
   end
 
-  def deep_clean_个!(node : MtNode) : Nil
+  def deep_clean_个!(node : BaseNode) : Nil
     loop do
       return node.set!("") if node.key == "个"
       break unless node = node.succ?

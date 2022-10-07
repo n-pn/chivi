@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_verb_compare(head : MtNode) : MtNode?
+  def fold_verb_compare(head : BaseNode) : BaseNode?
     return nil unless succ = head.succ?
 
     case head.key
@@ -14,7 +14,7 @@ module CV::TlRule
     end
   end
 
-  def fold_compare(head : MtNode, tail : MtNode, head_val = head.val)
+  def fold_compare(head : BaseNode, tail : BaseNode, head_val = head.val)
     while tail
       return if tail.puncts? || tail.key == head.key
 

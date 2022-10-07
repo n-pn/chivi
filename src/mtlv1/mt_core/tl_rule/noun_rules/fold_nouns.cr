@@ -4,7 +4,7 @@ module CV::TlRule
   # 2: stop at concoords
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_nouns!(noun : MtNode, mode : Int32 = 0) : MtNode
+  def fold_nouns!(noun : BaseNode, mode : Int32 = 0) : BaseNode
     # return node if node.nform?
 
     while noun.nominal?
@@ -35,7 +35,7 @@ module CV::TlRule
         noun = fold_noun_space!(noun, succ)
       when .verbal?
         return fold_noun_verb!(noun, succ)
-      when .join_word?
+      when .bond_word?
         break unless should_fold_noun_concoord?(noun, succ)
         fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
       else

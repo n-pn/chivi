@@ -1,6 +1,6 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_verb_vdirs!(verb : MtNode, vdir : MtNode) : MtNode
+  def fold_verb_vdirs!(verb : BaseNode, vdir : BaseNode) : BaseNode
     if verb.verb? && vdir.key == "过去"
       if (succ = vdir.succ?)
         # puts [verb, vdir, succ]

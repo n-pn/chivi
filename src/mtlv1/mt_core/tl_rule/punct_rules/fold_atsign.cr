@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_atsign!(head : MtNode)
+  def fold_atsign!(head : BaseNode)
     key_io = String::Builder.new
 
     tail = head

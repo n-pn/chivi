@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
+  def fold_verb_compl!(verb : BaseNode, compl : BaseNode) : BaseNode?
     raise "Should implement on fold_left!"
 
     return if verb.v_you? || verb.v_shi? || !compl.vcompl?

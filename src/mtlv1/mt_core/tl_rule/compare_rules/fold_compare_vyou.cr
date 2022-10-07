@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_vyou!(vyou : MtNode, succ : MtNode)
+  def fold_vyou!(vyou : BaseNode, succ : BaseNode)
     not_meiyou = vyou.key != "没有"
 
     if not_meiyou && succ.key_in?("些", "点")
@@ -13,7 +13,7 @@ module CV::TlRule
     fold_compare_vyou!(vyou, noun, tail)
   end
 
-  def fold_vyou_ude1!(vyou : MtNode, ude1 : MtNode, noun : MtNode)
+  def fold_vyou_ude1!(vyou : BaseNode, ude1 : BaseNode, noun : BaseNode)
     unless tail = scan_noun!(ude1.succ?)
       return fold!(vyou, noun, PosTag::Vobj, dic: 6)
     end
@@ -30,7 +30,7 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_compare_vyou!(vyou : MtNode, noun : MtNode, tail : MtNode)
+  def fold_compare_vyou!(vyou : BaseNode, noun : BaseNode, tail : BaseNode)
     not_meiyou = vyou.key != "没有"
     adverb = nil
 
@@ -71,7 +71,7 @@ module CV::TlRule
       temp.fix_succ!(noun)
     end
 
-    output = MtList.new(head, noun, dic: 1, idx: head.idx)
+    output = BaseList.new(head, noun, dic: 1, idx: head.idx)
 
     return output unless (succ = output.succ?) && (succ.pt_dep? || succ.pt_der?)
     return output unless (tail = succ.succ?) && tail.key == "多"

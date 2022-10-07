@@ -24,7 +24,7 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_adjts!(adjt : MtNode, prev : MtNode? = nil) : MtNode
+  def fold_adjts!(adjt : BaseNode, prev : BaseNode? = nil) : BaseNode
     if adjt.is_a?(MtTerm) && MEASURES.has_key?(adjt.key)
       fold_adjt_measure(adjt).try { |x| return x }
     end
@@ -41,7 +41,7 @@ module CV::TlRule
         else
           break
         end
-      when .join_word?
+      when .bond_word?
         fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
       when .adjts?
         adjt = fold!(adjt, succ, succ.tag, dic: 4)
@@ -101,7 +101,7 @@ module CV::TlRule
     fold_adj_adv!(adjt, prev)
   end
 
-  def fold_modis?(node : MtNode, succ = node.succ?, nega : MtNode? = nil)
+  def fold_modis?(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil)
     # puts [node, succ, nega].colorize.green
 
     node = fold!(nega, node, node.tag, dic: 4) if nega
@@ -114,7 +114,7 @@ module CV::TlRule
     succ.nominal? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
   end
 
-  def fold_adj_adv!(node : MtNode, prev = node.prev?)
+  def fold_adj_adv!(node : BaseNode, prev = node.prev?)
     return node unless prev && prev.advbial?
     fold_adverb_node!(prev, node, tag: PosTag::Aform, dic: 4)
   end

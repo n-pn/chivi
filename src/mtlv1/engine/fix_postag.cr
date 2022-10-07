@@ -3,7 +3,7 @@ require "./mt_dict"
 module CV::MTL
   extend self
 
-  def fix_postag(node : MtNode)
+  def fix_postag(node : BaseNode)
     while node = node.prev?
       case node
       when .polysemy? then fix_polysemy(node)
@@ -12,7 +12,7 @@ module CV::MTL
     end
   end
 
-  def fix_polysemy(node : MtNode)
+  def fix_polysemy(node : BaseNode)
     prev = prev_node(node)
     succ = succ_node(node)
 
@@ -25,12 +25,12 @@ module CV::MTL
     end
   end
 
-  def prev_node(node : MtNode)
+  def prev_node(node : BaseNode)
     return unless prev = node.prev?
     prev.quoteop? ? prev.prev? : prev
   end
 
-  def succ_node(node : MtNode)
+  def succ_node(node : BaseNode)
     return unless succ = node.succ?
     succ.quotecl? ? succ.succ? : succ
   end
@@ -109,7 +109,7 @@ module CV::MTL
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_ajno!(node : MtNode, prev : MtNode?, succ : MtNode?) : MtNode
+  def heal_ajno!(node : BaseNode, prev : BaseNode?, succ : BaseNode?) : BaseNode
     # puts [node, prev, succ, "heal_ajno"]
 
     case succ

@@ -1,21 +1,21 @@
 # both
 
-但	con_dan4	join_word
-又	con_you4	join_word
-或	con_huo4	join_word
-或是	con_huoshi	join_word
+但	con_dan4	bond_word
+又	con_you4	bond_word
+或	con_huo4	bond_word
+或是	con_huoshi	bond_word
 
 # concoords
 
-及	concoord	join_word
-况且	concoord	join_word
-以及	concoord	join_word
-乃至	concoord	join_word
+及	concoord	bond_word
+况且	concoord	bond_word
+以及	concoord	bond_word
+乃至	concoord	bond_word
 
 # special concoords
 
-和	con_he2	join_word
-与	con_yu3	join_word
+和	con_he2	bond_word
+与	con_yu3	bond_word
 
-同	con_tong	join_word
-跟	con_gen1	join_word
+同	con_tong	bond_word
+跟	con_gen1	bond_word

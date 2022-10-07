@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_prodem_nominal!(prodem : MtNode?, nominal : MtNode?)
+  def fold_prodem_nominal!(prodem : BaseNode?, nominal : BaseNode?)
     return nominal unless prodem
 
     if nominal
@@ -19,18 +19,18 @@ module CV::TlRule
     heal_pro_dem!(prodem)
   end
 
-  def should_flip_prodem?(prodem : MtNode)
+  def should_flip_prodem?(prodem : BaseNode)
     return false if prodem.pro_ji?
     return true unless prodem.pro_dem? # pro_ji, pro_na1, pro_na2
     {"另", "其他", "此", "某个", "某些"}.includes?(prodem.key)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_pro_dem!(pro_dem : MtNode) : MtNode
+  def heal_pro_dem!(pro_dem : BaseNode) : BaseNode
     case pro_dem
     when .pro_zhe?
       case succ = pro_dem.succ?
-      when .nil?, .preposes?, MtList
+      when .nil?, .preposes?, BaseList
         pro_dem.set!("cái này")
       when .verbal?
         pro_dem.set!("đây")

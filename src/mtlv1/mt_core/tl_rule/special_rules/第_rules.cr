@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_第!(node : MtNode)
+  def fold_第!(node : BaseNode)
     return node unless (succ = node.succ?) && (succ.nhanzis? || succ.ndigits?)
 
     succ.val = "nhất" if succ.key == "一"

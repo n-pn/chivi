@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_space!(node : MtNode) : MtNode
+  def fold_space!(node : BaseNode) : BaseNode
     case node.key
     when "中"
       node.set!("trúng", PosTag::Verb)
@@ -12,12 +12,12 @@ module CV::TlRule
     end
   end
 
-  def fold_noun_space!(noun : MtNode) : MtNode
+  def fold_noun_space!(noun : BaseNode) : BaseNode
     return noun unless (space = noun.succ?) && space.position?
     fold_noun_space!(noun, space)
   end
 
-  def fold_noun_space!(noun : MtNode, space : MtNode) : MtNode
+  def fold_noun_space!(noun : BaseNode, space : BaseNode) : BaseNode
     # puts [noun, space, "noun_space"]
 
     flip = true
@@ -39,7 +39,7 @@ module CV::TlRule
     fold!(noun, space, PosTag::Posit, dic: 5, flip: flip)
   end
 
-  def fix_space_val!(node : MtNode)
+  def fix_space_val!(node : BaseNode)
     case node.tag
     when .v_shang? then "trên"
     when .v_xia?   then "dưới"

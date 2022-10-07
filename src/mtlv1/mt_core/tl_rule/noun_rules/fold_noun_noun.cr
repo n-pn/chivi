@@ -1,6 +1,6 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_noun_noun!(node : MtNode, succ : MtNode, mode = 0)
+  def fold_noun_noun!(node : BaseNode, succ : BaseNode, mode = 0)
     return unless node.nattr? || noun_can_combine?(node.prev?, succ.succ?)
 
     case succ.tag
@@ -29,7 +29,7 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def noun_can_combine?(prev : MtNode?, succ : MtNode?) : Bool
+  def noun_can_combine?(prev : BaseNode?, succ : BaseNode?) : Bool
     while prev && (prev.numeral? || prev.pronouns?)
       # puts [prev, succ, "noun_can_combine"]
       prev = prev.prev?

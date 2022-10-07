@@ -1,5 +1,5 @@
 module CV::TlRule
-  def heal_ude3!(node : MtNode, succ = node.succ?) : MtNode
+  def heal_ude3!(node : BaseNode, succ = node.succ?) : BaseNode
     return node unless succ
 
     if succ.verbal? && succ.key != "到"
@@ -11,7 +11,7 @@ module CV::TlRule
     fold_verbs!(node)
   end
 
-  def fold_adverb_ude3!(node : MtNode, succ : MtNode) : MtNode
+  def fold_adverb_ude3!(node : BaseNode, succ : BaseNode) : BaseNode
     case tail = succ.succ?
     when .nil?
       fold!(node, succ.set!("phải"), PosTag::DrPhrase, dic: 4)
@@ -28,7 +28,7 @@ module CV::TlRule
     end
   end
 
-  def fold_verb_ude3!(node : MtNode, succ : MtNode) : MtNode
+  def fold_verb_ude3!(node : BaseNode, succ : BaseNode) : BaseNode
     return node unless tail = succ.succ?
     succ.val = ""
 

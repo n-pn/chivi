@@ -1,11 +1,11 @@
-require "./mt_term"
+require "./base_term"
 
-class CV::MtList < CV::MtNode
-  getter list = [] of MtTerm | MtList
+class CV::BaseList < CV::BaseNode
+  getter list = [] of MtTerm | BaseList
 
   def initialize(
-    head : MtNode,
-    tail : MtNode,
+    head : BaseNode,
+    tail : BaseNode,
     @tag : PosTag = PosTag::Unkn,
     @dic = 0,
     @idx = 1,
@@ -54,7 +54,7 @@ class CV::MtList < CV::MtNode
     end
   end
 
-  def add_head!(node : MtNode)
+  def add_head!(node : BaseNode)
     self.fix_prev!(node.prev?)
     @list.unshift(node)
   end

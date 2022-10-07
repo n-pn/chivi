@@ -1,5 +1,18 @@
 module CV::TlRule
-  def fold_noun_left!(noun : BaseNode, level = 0) : BaseNode
+  # join noun modes:
+  # - mode 0: join all adjacent nouns, resulting nouns
+  # - mode 1: join nouns linked by junction nodes, resulting nouns
+  # - mode 2: join nouns with modifiers, resulting nouns
+  # - mode 3: join nouns with verbs/preposes, resulting prep_form or verb_object
+
+  def join_noun!(noun : BaseNode, prev = noun.prev, level = 0) : BaseNode
+    if prev.nominal?
+      noun = join_noun_0!(noun, prev)
+      prev = noun.prev
+    end
+
+    break if level > 0
+
     while prev = noun.prev?
       case prev
       when .pl_veno?, .pl_ajno?

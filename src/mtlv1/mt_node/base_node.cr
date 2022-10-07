@@ -1,4 +1,4 @@
-abstract class CV::MtNode
+abstract class CV::BaseNode
   property key : String = ""
   property val : String = ""
 
@@ -6,8 +6,8 @@ abstract class CV::MtNode
   property dic : Int32 = 0
   property idx : Int32 = 0
 
-  property! prev : MtNode
-  property! succ : MtNode
+  property! prev : BaseNode
+  property! succ : BaseNode
 
   forward_missing_to @tag
 
@@ -23,7 +23,7 @@ abstract class CV::MtNode
     @prev = nil
   end
 
-  def fix_prev!(@prev : MtNode) : Nil
+  def fix_prev!(@prev : BaseNode) : Nil
     prev.succ = self
   end
 
@@ -31,7 +31,7 @@ abstract class CV::MtNode
     @succ = nil
   end
 
-  def fix_succ!(@succ : MtNode) : Nil
+  def fix_succ!(@succ : BaseNode) : Nil
     succ.prev = self
   end
 
@@ -59,6 +59,11 @@ abstract class CV::MtNode
     self
   end
 
+  @[AlwaysInline]
+  def swap_val!
+    self
+  end
+
   def set!(@tag : PosTag) : self
     self
   end
@@ -80,7 +85,7 @@ abstract class CV::MtNode
     false
   end
 
-  def space_before?(prev : MtNode)
+  def space_before?(prev : BaseNode)
     return !prev.pstart? unless prev.is_a?(MtTerm)
     return space_before?(prev.prev?) if prev.val.empty?
     !(prev.val.blank? || prev.pstart?)

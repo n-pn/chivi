@@ -103,7 +103,7 @@ class CV::MtCore
 
   # def greedy_scan(input : Array(Char)) : MtData
 
-  #   nodes = [] of MtNode
+  #   nodes = [] of BaseNode
 
   #   input.size.times do |idx|
   #     @dicts.each do |dict|

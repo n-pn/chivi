@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_noun_cenum!(head : MtNode, join : MtNode)
+  def fold_noun_cenum!(head : BaseNode, join : BaseNode)
     while node = join.succ?
       break unless node.nominal? || node.pronouns?
       tail = node

@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_preposes!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
+  def fold_preposes!(node : BaseNode, succ = node.succ?, mode = 0) : BaseNode
     return node unless succ
 
     # TODO!
@@ -13,7 +13,7 @@ module CV::TlRule
     end
   end
 
-  def fold_other_preposes!(node : MtNode, succ : MtNode, mode : Int32)
+  def fold_other_preposes!(node : BaseNode, succ : BaseNode, mode : Int32)
     case node.tag
     when .pre_jiang?
       fold = fold_prepos_inner!(node, succ, mode: mode)
@@ -31,7 +31,7 @@ module CV::TlRule
     fold_prepos_inner!(node, succ, mode: mode)
   end
 
-  def fold_pre_dui!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
+  def fold_pre_dui!(node : BaseNode, succ = node.succ?, mode = 0) : BaseNode
     return node.set!("đúng", PosTag::Adjt) if !succ || succ.boundary?
 
     # TODO: combine grammar
@@ -49,7 +49,7 @@ module CV::TlRule
     end
   end
 
-  def fold_pre_bei!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
+  def fold_pre_bei!(node : BaseNode, succ = node.succ?, mode = 0) : BaseNode
     return node unless succ
 
     if succ.verb?
@@ -61,7 +61,7 @@ module CV::TlRule
     end
   end
 
-  def fold_pre_zai!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
+  def fold_pre_zai!(node : BaseNode, succ = node.succ?, mode = 0) : BaseNode
     succ = heal_mixed!(succ) if succ.polysemy?
 
     if succ.verb? || succ.vobj?
@@ -75,7 +75,7 @@ module CV::TlRule
     fold_prepos_inner!(node, succ, mode: mode)
   end
 
-  def fold_prezai_locale?(node : MtNode, noun : MtNode, ude1 : MtNode, tail : MtNode) : MtNode?
+  def fold_prezai_locale?(node : BaseNode, noun : BaseNode, ude1 : BaseNode, tail : BaseNode) : BaseNode?
     return nil if noun.locale?
 
     unless tail.locale?

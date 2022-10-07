@@ -1,6 +1,6 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_verb_object!(verb : MtNode, succ : MtNode?)
+  def fold_verb_object!(verb : BaseNode, succ : BaseNode?)
     # puts [verb, succ].colorize.red
 
     return verb if verb.verb_no_obj? || !succ || succ.boundary?
@@ -34,7 +34,7 @@ module CV::TlRule
 
     if succ.suf_noun? && succ.key == "时"
       fold!(verb_object, succ.set!("khi"), tag: PosTag::Texpr, dic: 5, flip: true)
-    elsif succ.join_word?
+    elsif succ.bond_word?
       fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
     else
       verb_object
@@ -42,8 +42,8 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)
-    return false if verb.is_a?(MtList) && verb.list.any?(&.pre_bei?)
+  def should_apply_ude1_after_verb?(verb : BaseNode, right : BaseNode?, prev = verb.prev?)
+    return false if verb.is_a?(BaseList) && verb.list.any?(&.pre_bei?)
     return false if verb.vtwo?
 
     while prev && prev.advbial?

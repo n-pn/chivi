@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_ndigit!(node : MtNode, prev : MtNode? = nil)
+  def fold_ndigit!(node : BaseNode, prev : BaseNode? = nil)
     return node unless (succ = node.succ?) && succ.is_a?(MtTerm)
     return fold_ndigit_nhanzi!(node, succ) if succ.nhanzis?
 
@@ -7,7 +7,7 @@ module CV::TlRule
     fold_number_hour!(node, succ)
   end
 
-  def fold_ndigit_nhanzi!(node : MtNode, succ : MtNode) : MtNode
+  def fold_ndigit_nhanzi!(node : BaseNode, succ : BaseNode) : BaseNode
     key_io = String::Builder.new(node.key)
     val_io = String::Builder.new(node.val)
 

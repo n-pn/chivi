@@ -1,6 +1,6 @@
 # module CV::TlRule
 #   # ameba:disable Metrics/CyclomaticComplexity
-#   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
+#   def fold_pro_dems!(node : BaseNode, succ : BaseNode) : BaseNode
 #     return node if node.key == "这儿" || node.key == "那儿"
 #     return heal_pro_dem!(node) if succ.key.in?({"就"})
 
@@ -31,20 +31,20 @@
 #     fold_prodem_nominal!(node, quanti)
 #   end
 
-#   def fold_proji_nhanzi!(node : MtNode, succ : MtNode)
+#   def fold_proji_nhanzi!(node : BaseNode, succ : BaseNode)
 #     succ.val = succ.val.sub("mười", "chục")
 #     node = fold!(node, succ, succ.tag, dic: 4)
 #     fold_proji_right!(node)
 #   end
 
-#   def fold_proji_right!(node : MtNode)
+#   def fold_proji_right!(node : BaseNode)
 #     return node unless (tail = node.succ?) && tail.quantis?
 
 #     node = fold!(node, tail, tag: tail.tag.qt_to_nq!, dic: 6)
 #     scan_noun!(node.succ?, prodem: nil, nquant: node) || node
 #   end
 
-#   # def split_prodem!(node : MtNode, succ : MtNode? = node.succ?)
+#   # def split_prodem!(node : BaseNode, succ : BaseNode? = node.succ?)
 #   #   if succ && succ.quantis?
 #   #     return {node, succ, succ.succ?}
 #   #   end

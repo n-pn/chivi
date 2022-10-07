@@ -1,6 +1,6 @@
 module CV::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_vmodal!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
+  def fold_vmodal!(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil) : BaseNode
     succ = heal_mixed!(succ) if succ && succ.polysemy?
 
     case node
@@ -43,7 +43,7 @@ module CV::TlRule
     end
   end
 
-  def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
+  def heal_vm_hui!(node : BaseNode, succ = node.succ?, prev = node.prev?) : BaseNode
     if vmhui_before_skill?(prev, succ)
       node.val = "biết"
       flip = false
@@ -55,7 +55,7 @@ module CV::TlRule
     prev ? fold!(prev, node, node.tag, dic: 6, flip: flip) : node
   end
 
-  private def vmhui_before_skill?(prev : MtNode?, succ : MtNode?) : Bool
+  private def vmhui_before_skill?(prev : BaseNode?, succ : BaseNode?) : Bool
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
@@ -77,7 +77,7 @@ module CV::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
+  def heal_vm_xiang!(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil) : BaseNode
     case succ
     when .nil? # do nothing
     when .v_shi?

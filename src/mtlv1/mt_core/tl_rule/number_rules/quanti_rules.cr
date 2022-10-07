@@ -1,10 +1,10 @@
 module CV::TlRule
-  # def heal_quanti!(node : MtNode) : MtNode
+  # def heal_quanti!(node : BaseNode) : BaseNode
   #   return node unless node.is_a?(MtTerm)
   #   not_quanti?(node) ? node : MtDict.fix_quanti(node)
   # end
 
-  # def not_quanti?(node : MtNode)
+  # def not_quanti?(node : BaseNode)
   #   # abort transform if node is certainly a verb
   #   return false unless node.verbal? && (succ = node.succ?)
   #   succ.aspect? || succ.comma? || succ.boundary?
@@ -17,7 +17,7 @@ module CV::TlRule
     "几" => "mấy",
   }
 
-  def fold_pre_quanti_appro!(node : MtNode, succ : MtNode) : Tuple(MtNode, Int32)
+  def fold_pre_quanti_appro!(node : BaseNode, succ : BaseNode) : Tuple(BaseNode, Int32)
     case succ.key
     when "多"
       return {node, 0} unless is_pre_quanti_appro?(node)
@@ -37,7 +37,7 @@ module CV::TlRule
     {node, 1}
   end
 
-  def is_pre_quanti_appro?(node : MtNode)
+  def is_pre_quanti_appro?(node : BaseNode)
     return false unless node.is_a?(MtTerm)
     node.to_int?.try { |x| x > 10 && x % 10 == 0 } || false
   end
@@ -72,7 +72,7 @@ module CV::TlRule
     "后中" => "trong",
   }
 
-  def fold_suf_quanti_appro!(node : MtNode, succ = node.succ?) : MtNode
+  def fold_suf_quanti_appro!(node : BaseNode, succ = node.succ?) : BaseNode
     return node unless succ && (val = QUANTI_SUF_APPRO[succ.key]?)
 
     case succ.key
