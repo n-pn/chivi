@@ -71,13 +71,17 @@ abstract class CV::BaseNode
   abstract def inspect(io : IO)
 
   def add_space?(prev = self.prev) : Bool
-    !(prev.tag.no_ws_after? || @tag.no_ws_before?)
+    !(prev.tag.no_ws_after? || @tag.no_ws_before? || @tag.inactive?)
   end
 
   def apply_cap!(cap : Bool = false) : Bool
-    return cap || @tag.cap_after? if @tag.cap_relay?
-    @val = TextUtil.capitalize(@val) if cap
-    false
+    case tag
+    when .inactive?     then cap
+    when .punctuations? then cap || @tag.cap_after?
+    else
+      @val = TextUtil.capitalize(@val) if cap
+      false
+    end
   end
 end
 
@@ -90,7 +94,7 @@ module CV::BaseExpr
     each do |node|
       io << ' ' if prev && node.add_space?(prev)
       node.to_txt(io)
-      prev = node
+      prev = node unless node.inactive?
     end
   end
 
@@ -101,7 +105,7 @@ module CV::BaseExpr
     each do |node|
       io << "\t " if prev && node.add_space?(prev)
       node.to_mtl(io)
-      prev = node
+      prev = node unless node.inactive?
     end
 
     io << '〉'

@@ -5,6 +5,7 @@ enum CV::MtlPos : UInt64
   end
 
   Boundary # make structure boundary
+  Overlook # for word that marked empty
   Nebulous # word not tagged
 
   # rendering
@@ -66,6 +67,7 @@ struct CV::PosTag
   end
 
   delegate boundary?, to: @pos
+  delegate inactive?, to: @pos
 
   delegate cap_after?, to: @pos
   delegate no_ws_before?, to: @pos

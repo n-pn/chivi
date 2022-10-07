@@ -51,9 +51,9 @@ class CV::BaseTerm < CV::BaseNode
     @key.empty? || @val.blank?
   end
 
-  def as_empty!(flip = true) : self
+  def inactivate!
     @val = ""
-    @tag.pos |= (flip ? MtlPos::NoWsAfter : MtlPos::NoWsBefore)
+    @tag = PosTag.new(@tag.tag, @tag.pos | MtlPos::Overlook)
     self
   end
 
