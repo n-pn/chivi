@@ -8,7 +8,7 @@ class CV::BasePair < CV::BaseNode
 
   def initialize(
     @head : BaseNode, @tail : BaseNode,
-    @tag : PosTag = @tail.tag, @dic : Int32 = 0, @idx : Int32 = head.idx,
+    @tag : PosTag = tail.tag, @dic : Int32 = 0, @idx : Int32 = head.idx,
     flip : Bool = head.at_tail? || tail.at_head?
   )
     self.fix_prev!(head.prev?)

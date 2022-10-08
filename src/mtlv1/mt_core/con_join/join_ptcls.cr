@@ -1,5 +1,7 @@
 module CV::TlRule
   def join_udev!(udev : BaseNode)
+    raise "udev should be BaseTerm" unless udev.is_a?(BaseTerm)
+
     tag = MtlTag::DvPhrase
     pos = MtlPos::AtTail
 
@@ -13,14 +15,14 @@ module CV::TlRule
       udev.val = "một cách"
       inactive = false
     when .onomat?, .nquants?
-      udev.as_empty!
-    when .common_noun?
+      udev.inactivate!
+    when .common_nouns?
       raise "Expected v_you!" unless (vyou = head.prev?) && vyou.v_you?
       head = BasePair.new(vyou, head, PosTag::Adjt, dic: 4, flip: false)
     end
 
     udev.inactivate! if inactive # mark udev as invisible
 
-    BasePair.new(head, udev, ptag: PosTag.new(tag, pos), dic: 6, flip: true)
+    BasePair.new(head, udev, tag: PosTag.new(tag, pos), dic: 6, flip: true)
   end
 end

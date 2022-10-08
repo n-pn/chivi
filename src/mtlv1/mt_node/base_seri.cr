@@ -5,7 +5,7 @@ class CV::BaseSeri < CV::BaseNode
 
   def initialize(@head : BaseNode, @tail : BaseNode,
                  @tag : PosTag = PosTag::LitBlank,
-                 @dic = 0, @idx = @head.idx, flip = false)
+                 @dic = 0, @idx = head.idx, flip = false)
     self.fix_prev!(head.prev?)
     self.fix_succ!(tail.succ?)
 

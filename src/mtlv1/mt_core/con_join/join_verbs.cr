@@ -11,7 +11,7 @@ module CV::TlRule
     when .quantis?, .pro_dems?
       return verb if verb.succ.tag.pt_dep?
     when .pro_pers?
-      prev = join_pro_per!(prev)
+      # prev = join_pro_per!(prev)
     when .noun_words?
       prev = join_noun!(prev)
     else
@@ -44,8 +44,8 @@ module CV::TlRule
     if has_advb
       verb.add_advb(advb)
       prev = verb.prev
-    elsif prev.wd_zui?
-      verb.add_tail(prev)
+    elsif advb.wd_zui?
+      verb.add_tail(advb)
       prev = verb.prev
     else
       prev = advb

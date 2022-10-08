@@ -5,7 +5,7 @@ enum CV::MtlPos : UInt64
   end
 
   Boundary # make structure boundary
-  Overlook # for word that marked empty
+  Inactive # for word that marked empty
   Nebulous # word not tagged
 
   # rendering

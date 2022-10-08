@@ -53,7 +53,7 @@ class CV::BaseTerm < CV::BaseNode
 
   def inactivate!
     @val = ""
-    @tag = PosTag.new(@tag.tag, @tag.pos | MtlPos::Overlook)
+    @tag = PosTag.new(@tag.tag, @tag.pos | MtlPos::Inactive)
     self
   end
 

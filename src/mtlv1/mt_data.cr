@@ -115,6 +115,8 @@ class CV::MtData
     each { |node| cap = node.apply_cap!(cap) }
   end
 
+  include BaseExpr
+
   def to_txt : String
     String.build { |io| to_txt(io) }
   end

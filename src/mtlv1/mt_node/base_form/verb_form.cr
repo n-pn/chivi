@@ -12,26 +12,26 @@ class CV::VerbForm < CV::BaseNode
   forward_missing_to @verb
 
   def initialize(@verb, @tag = verb.tag)
-    self.set_prev!(@verb.prev?)
-    self.set_succ!(@verb.succ?)
+    self.fix_prev!(@verb.prev?)
+    self.fix_succ!(@verb.succ?)
   end
 
   def add_advb(advb : BaseNode)
-    self.set_prev!(advb.prev?)
+    self.fix_prev!(advb.prev?)
     if prev_advb = @advb
-      @advb = BasePair.new(advb, prev_advb, tag: prev_advb, dic: 8)
+      @advb = BasePair.new(advb, prev_advb, tag: PosTag::DvPhrase, dic: 8)
     else
-      @advb = @advb
+      @advb = advb
     end
   end
 
   def add_tail(tail : BaseNode)
-    self.set_prev!(tail.prev?)
+    self.fix_prev!(tail.prev?)
 
     if prev_tail = @tail
-      @tail = BasePair.new(tail, prev_tail, tag: prev_tail, dic: 8, flip: true)
+      @tail = BasePair.new(tail, prev_tail, tag: PosTag::DvPhrase, dic: 8, flip: true)
     else
-      @tail = @tail
+      @tail = tail
     end
   end
 
