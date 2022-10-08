@@ -18,7 +18,7 @@ struct CV::PosTag
   }
 
   def self.map_prepos(key : String)
-    PREPOS_MAP[key] || new(:prepos)
+    PREPOS_MAP[key] ||= new(:prepos)
   end
 
   PARTICLE_MAP = {

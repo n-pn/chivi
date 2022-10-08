@@ -1,14 +1,15 @@
+{{ skip_file }}
 require "./_helper"
 
 macro assert_eq(left, right)
-  CV::PosTag.parse("m", {{left}}).should eq(CV::PosTag::{{right}})
+  CV::PosTag.init("m", {{left}}).should eq(CV::PosTag::{{right}})
 end
 
 describe CV::PosTag do
   describe "mapping numbers" do
     it "correcty map latin numbers" do
-      assert_eq "1", Ndigit
-      assert_eq "12", Ndigit
+      assert_eq "1", Ndigit1
+      assert_eq "12", Ndigit1
       assert_eq "12.4", Number
     end
 

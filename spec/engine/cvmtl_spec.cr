@@ -7,7 +7,7 @@ def convert(input : String)
   MTL.cv_plain(input, cap_first: false).to_txt
 end
 
-DIR = "var/cvmtl/cases"
+DIR = "var/cvmtl/tests"
 
 describe CV::MtCore do
   files = Dir.glob("#{DIR}/**/*.tsv")
@@ -26,7 +26,7 @@ describe CV::MtCore do
     tags = ["mtlv1", suite_name]
 
     dir_name = File.basename(File.dirname(file))
-    tags << dir_name == "cases" ? "unsorted" : dir_name
+    tags << dir_name == "tests" ? "unsorted" : dir_name
 
     # ameba:disable Lint/SpecFocus
     describe suite_name, focus: focus, tags: tags do
