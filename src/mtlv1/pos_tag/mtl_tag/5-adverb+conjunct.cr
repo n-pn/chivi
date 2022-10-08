@@ -32,6 +32,8 @@ ConjAdvb = 559 # conjuction or advbial
 Conjunct = 560 # subordinating conjunction
 
 # both correl or concoord
+Conmixed = 570
+
 ConDan4   = 571 # "但"
 ConYou4   = 572 # "又"
 ConHuo4   = 573 # "或"

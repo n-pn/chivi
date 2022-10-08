@@ -17,7 +17,7 @@ struct CV::PosTag
     "{"  => new(:brack_st2, MtlPos.flags(Boundary, CapAfter)),
     "]"  => new(:brack_cl1, MtlPos.flags(Boundary, NoWsBefore)),
     "}"  => new(:brack_cl2, MtlPos.flags(Boundary, NoWsBefore)),
-    "("  => new(:paren_st1, MtlPos.flags(Boundary)),
+    "("  => new(:paren_st1, MtlPos.flags(Boundary, NoWsAfter)),
     ")"  => new(:paren_cl1, MtlPos.flags(Boundary, NoWsBefore)),
     "\"" => new(:db_quote, MtlPos.flags(Boundary, NoWsBefore)),
     "'"  => new(:sg_quote, MtlPos.flags(Boundary, NoWsBefore)),

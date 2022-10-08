@@ -22,7 +22,22 @@ module CV::TlRule
     end
 
     udev.inactivate! if inactive # mark udev as invisible
-
     BasePair.new(head, udev, tag: PosTag.new(tag, pos), dic: 6, flip: true)
+  end
+
+  def join_udep!(udep : BaseNode)
+    raise "udep should be BaseTerm" unless udep.is_a?(BaseTerm)
+
+    tag = MtlTag::DcPhrase
+    pos = MtlPos::AtTail
+
+    head = join_word!(udep.prev)
+    if head.ktetic?
+      udep.val = "của"
+    else
+      udep.inactivate!
+    end
+
+    BasePair.new(head, udep, PosTag.new(tag, pos), flip: true)
   end
 end

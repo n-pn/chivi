@@ -49,11 +49,7 @@ enum CV::MtlPos : UInt64
   Modifier # word can act as noun direct modifier
   LinkVerb # can link verbs
   CanSplit # can split to other structure
-
   BondWord # can be use to link two words/two phraes
-  BondVerb # links two verbs
-  BondAdjt # links tow adjts
-  BondNoun # links two nouns
 
   # complements
   HasAsmCom # has aspect marker
@@ -98,9 +94,5 @@ struct CV::PosTag
 
   delegate can_split?, to: @pos
   delegate link_verb?, to: @pos
-
   delegate bond_word?, to: @pos
-  delegate bond_noun?, to: @pos
-  delegate bond_verb?, to: @pos
-  delegate bond_adjt?, to: @pos
 end

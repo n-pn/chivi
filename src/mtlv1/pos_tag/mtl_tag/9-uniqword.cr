@@ -2,13 +2,18 @@
 
 Uniqword = 900
 
+Vctemp = 901 # can be verb complement
+
+Qttemp = 903 # can be quanti or other
+Nqtemp = 904 # can be nquant or other
+
 # # special adjectives
-WdHao = 901 # "好"
+WdHao = 911 # "好"
 
 # # special locative words
-WdShang = 910
-WdZhong = 911
-WdXia   = 912
+WdShang = 920
+WdZhong = 921
+WdXia   = 922
 
 # # prefixes
 WdZui = 980 # "最"

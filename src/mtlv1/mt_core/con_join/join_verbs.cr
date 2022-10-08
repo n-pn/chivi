@@ -1,11 +1,6 @@
 module CV::TlRule
   def join_verb!(verb : BaseNode, prev = verb.prev)
-    if prev.vauxil?
-      verb = BasePair.new(prev, verb, tag: verb.tag, dic: 3, flip: false)
-      prev = verb.prev
-    end
-
-    verb, prev = join_verb_advb!(verb, prev)
+    verb = join_verb_1!(verb)
 
     case prev
     when .quantis?, .pro_dems?
@@ -25,7 +20,16 @@ module CV::TlRule
     end
   end
 
-  private def join_verb_advb!(verb : BaseNode, advb : BaseNode)
+  def join_verb_0!(verb : BaseNode, prev = verb.prev)
+    return verb unless prev.vauxil?
+    # FIXME: fix auxil values
+    BasePair.new(prev, verb, tag: verb.tag, dic: 3, flip: false)
+  end
+
+  private def join_verb_1!(verb : BaseNode)
+    verb = join_verb_0!(verb)
+    advb = verb.prev
+
     has_advb = true
 
     case advb
@@ -42,15 +46,11 @@ module CV::TlRule
     verb = VerbForm.new(verb) unless verb.is_a?(VerbForm)
 
     if has_advb
-      verb.add_advb(advb)
-      prev = verb.prev
+      advb.at_tail? ? verb.add_tail(advb) : verb.add_advb(advb)
     elsif advb.wd_zui?
       verb.add_tail(advb)
-      prev = verb.prev
-    else
-      prev = advb
     end
 
-    {verb, prev}
+    verb
   end
 end

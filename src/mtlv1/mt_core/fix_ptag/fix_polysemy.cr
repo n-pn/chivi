@@ -1,4 +1,4 @@
-module CV::FixPtag
+module CV::MTL
   struct FixPolysemy
     getter noun_pct = 0 # percentage of node being noun
     getter advb_pct = 0 # percentage of node being advb

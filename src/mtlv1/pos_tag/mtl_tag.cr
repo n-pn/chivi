@@ -222,6 +222,10 @@ enum CV::MtlTag
     value >= 452 && value <= 455
   end
 
+  def pt_deps?
+    value >= PtDep.value && value <= PtDeg.value
+  end
+
   def pt_ects?
     value >= 480 && value < 490
   end

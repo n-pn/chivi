@@ -52,11 +52,11 @@ Qtcash = 265 # currency
 Qttime = 269 # verb complement, can be subject
 Qtverb = 270 # verb complement
 
-# QtGe4 = 266 # "个"
-# QtBa3 = 267 # "把"
-# QtDui = 268 # "对"
+QtGe4 = 266 # "个"
+QtBa3 = 267 # "把"
+QtDui = 268 # "对"
 
-# QtLiang = 269 # "两"
+QtLiang = 269 # "两"
 
 # QtDian = 270 # "点"
 # QtFen1 = 271 # "分"

@@ -1,4 +1,4 @@
-module CV::FixPtag
+module CV::MTL
   def self.fix_hao_word!(haow : BaseTerm)
     case haow.succ
     when .common_nouns?

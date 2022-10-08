@@ -25,15 +25,6 @@ module CV::TlRule
     succ.verb_words?
   end
 
-  def should_flip_pro_dems?(prodem)
-    case prodem
-    when .pro_zhe?, .pro_na1?, .pro_na2?
-      true
-    else
-      false
-    end
-  end
-
   def join_honor!(noun, prev)
     case prev
     when .time_words?, .nform?, .locat?, .posit?
@@ -54,10 +45,5 @@ module CV::TlRule
     end
 
     fold!(prev, name, PosTag::Nform, dic: 5, flip: false)
-  end
-
-  def fold_noun_adjt_left!(noun, adjt)
-    flip = adjt.key != "原"
-    fold!(adjt, noun, PosTag::Nform, dic: 3, flip: flip)
   end
 end

@@ -18,6 +18,7 @@ class CV::VerbForm < CV::BaseNode
 
   def add_advb(advb : BaseNode)
     self.fix_prev!(advb.prev?)
+
     if prev_advb = @advb
       @advb = BasePair.new(advb, prev_advb, tag: PosTag::DvPhrase, dic: 8)
     else

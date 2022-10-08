@@ -1,7 +1,9 @@
-require "./tl_rule/**"
+# require "./tl_rule/**"
 require "./con_join/**"
 
 module CV::TlRule
+  extend self
+
   def left_join!(tail : BaseNode, head : BaseNode) : Nil
     while tail = tail.prev?
       break if tail == head
@@ -12,7 +14,8 @@ module CV::TlRule
   def join_word!(node : BaseNode) : BaseNode
     case node
     when .time_words? then join_time!(node)
-    when .noun_words? then join_noun!(node, level: 0)
+    when .noun_words? then join_noun!(node)
+    when .adjt_words? then join_adjt!(node)
     when .verb_words? then join_verb!(node)
     else                   node
     end
@@ -46,5 +49,12 @@ module CV::TlRule
     end
 
     head.prev?(&.pt_dep?) ? PosTag::Nform : PosTag::LitBlank
+  end
+
+  def fold!(head : BaseNode, tail : BaseNode,
+            tag : PosTag = PosTag::LitBlank, dic : Int32 = 9,
+            flip : Bool = false)
+    # FIXME: remove this helper and using proper structures
+    BaseSeri.new(head, tail, tag, dic, idx: head.idx, flip: flip)
   end
 end

@@ -66,22 +66,23 @@ abstract class CV::BaseNode
     self
   end
 
-  abstract def to_txt(io : IO)
-  abstract def to_mtl(io : IO)
-  abstract def inspect(io : IO)
-
-  def add_space?(prev = self.prev) : Bool
-    !(prev.tag.no_ws_after? || @tag.no_ws_before? || @tag.inactive?)
+  def set_pos!(pos : MtlPos) : self
+    @tag = PosTag.new(@tag.tag, pos)
+    self
   end
 
-  def apply_cap!(cap : Bool = false) : Bool
-    case tag
-    when .inactive?     then cap
-    when .punctuations? then cap || @tag.cap_after?
-    else
-      @val = TextUtil.capitalize(@val) if cap
-      false
-    end
+  def set_tag!(tag : MtlTag) : self
+    @tag = PosTag.new(tag, @tag.pos)
+    self
+  end
+
+  abstract def to_txt(io : IO) : Nil
+  abstract def to_mtl(io : IO) : Nil
+  abstract def inspect(io : IO) : Nil
+  abstract def apply_cap!(cap : Bool) : Bool
+
+  def add_space?(prev = self.prev) : Bool
+    !(prev.tag.inactive? || prev.tag.no_ws_after? || @tag.no_ws_before? || @tag.inactive?)
   end
 end
 
@@ -91,30 +92,38 @@ module CV::BaseExpr
   def to_txt(io : IO = STDOUT) : Nil
     prev = nil
 
-    each do |node|
+    self.each do |node|
       io << ' ' if prev && node.add_space?(prev)
       node.to_txt(io)
-      prev = node unless node.inactive?
+      prev = node unless node.tag.inactive?
     end
+  end
+
+  def apply_cap!(cap : Bool = false) : Bool
+    each do |node|
+      cap = node.apply_cap!(cap)
+    end
+
+    cap
   end
 
   def to_mtl(io : IO = STDOUT) : Nil
     io << '〈' << @dic << '\t'
     prev = nil
 
-    each do |node|
+    self.each do |node|
       io << "\t " if prev && node.add_space?(prev)
       node.to_mtl(io)
-      prev = node unless node.inactive?
+      prev = node unless node.tag.inactive?
     end
 
     io << '〉'
   end
 
   def inspect(io : IO = STDOUT, pad = 0) : Nil
-    io << " " * pad << "{" << @tag.tag << "/" << @dic << "}" << '\n'
+    io << " " * pad << "{" << @tag.tag.colorize.cyan << " " << @dic << "}" << '\n'
     self.each(&.inspect(io, pad + 2))
-    io << " " * pad << "{/" << @tag.tag << "/" << @dic << "}"
+    io << " " * pad << "{/" << @tag.tag.colorize.cyan << "}"
     io << '\n' if pad > 0
   end
 end

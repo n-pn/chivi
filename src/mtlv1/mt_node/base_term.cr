@@ -57,6 +57,16 @@ class CV::BaseTerm < CV::BaseNode
     self
   end
 
+  def apply_cap!(cap : Bool = false) : Bool
+    case tag
+    when .inactive?     then cap
+    when .punctuations? then cap || @tag.cap_after?
+    else
+      @val = TextUtil.capitalize(@val) if cap
+      false
+    end
+  end
+
   def to_txt(io : IO) : Nil
     io << @val
   end
@@ -67,7 +77,7 @@ class CV::BaseTerm < CV::BaseNode
 
   def inspect(io : IO = STDOUT, pad = -1) : Nil
     io << " " * pad if pad >= 0
-    io << "[#{@key}/#{@val}/#{@tag.tag}/#{@dic}/#{@idx}]"
+    io << "[#{@val.colorize.light_yellow.bold}] #{@key.colorize.blue} #{@tag.tag.colorize.light_cyan} #{@dic} #{@idx.colorize.dark_gray}"
     io << '\n' if pad >= 0
   end
 end
