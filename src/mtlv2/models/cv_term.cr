@@ -13,11 +13,7 @@ class MT::CvTerm
   property alt_val : String?
 
   property ptag : String = ""
-  property epos : Int64 = 0
-  property etag : Int32 = 0
-
-  property seg_r : Int32 = 2
-  property seg_w : Int32 = 0
+  property prio : Int32 = 2
 
   property uname : String = ""
   property mtime : Int64 = 0_i64

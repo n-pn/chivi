@@ -1,7 +1,7 @@
 # require "./tl_rule/**"
 require "./con_join/**"
 
-module MT::TlRule
+module MT::Core
   extend self
 
   def left_join!(tail : BaseNode, head : BaseNode) : Nil
@@ -52,9 +52,10 @@ module MT::TlRule
   end
 
   def fold!(head : BaseNode, tail : BaseNode,
-            tag : PosTag = MapTag::LitBlank, dic : Int32 = 9,
+            tag : {MtlTag, MtlPos} = MapTag::LitBlank, dic : Int32 = 9,
             flip : Bool = false)
     # FIXME: remove this helper and using proper structures
-    BaseSeri.new(head, tail, tag, dic, idx: head.idx, flip: flip)
+
+    BaseSeri.new(head, tail, tag[0], tag[1], flip: flip)
   end
 end

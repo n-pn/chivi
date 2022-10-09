@@ -53,9 +53,11 @@ abstract class MT::BaseNode
   end
 
   def set!(@tag : MtlTag) : self
+    self
   end
 
   def set!(@pos : MtlPos) : self
+    self
   end
 
   abstract def to_txt(io : IO) : Nil

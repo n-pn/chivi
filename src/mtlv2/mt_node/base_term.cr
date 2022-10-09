@@ -17,8 +17,8 @@ class MT::BaseTerm < MT::BaseNode
     @val = term.val
     @alt = term.alt_val
 
-    @tag = MtlTag.new(term.etag)
-    @pos = MtlPos.new(term.epos)
+    @tag = term.tag
+    @pos = term.pos
   end
 
   def initialize(@key, @val, @tag : MtlTag, @pos : MtlPos,

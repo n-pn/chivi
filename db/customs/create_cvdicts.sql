@@ -41,12 +41,9 @@ create table terms (
 
   -- postag marking
   ptag varchar, -- generic postag label
-  epos int not null default 0, -- mtl_pos enum value
-  etag int not null default 0, -- mtl_tag enum value
 
   -- priority rank for word segmentation
-  seg_r int not null default 2, -- user input
-  seg_w int not null default 0, -- map priority rank to term weight
+  prio int not null default 2, -- user input
 
   -- user metadata
   uname varchar not null default "",

@@ -29,7 +29,7 @@ class MT::MtData
   end
 
   def add_node(node : BaseTerm) : Nil
-    @pgroup << node if node.tag.group_puncts?
+    @pgroup << node if node.group_puncts?
     add_head(node)
   end
 
@@ -43,14 +43,14 @@ class MT::MtData
       idx += 1
 
       next unless pclose.close_puncts?
-      match_tag = pclose.tag.tag - 10
+      match_tag = pclose.tag - 10
       jdx = jdx_upper >= idx ? idx &- 1 : jdx_upper
 
       while jdx >= 0
         pstart = @pgroup.unsafe_fetch(jdx)
         jdx &-= 1
 
-        next unless pstart.tag.tag == match_tag
+        next unless pstart.tag == match_tag
 
         Core.join_group!(pclose, pstart)
         jdx_upper = jdx

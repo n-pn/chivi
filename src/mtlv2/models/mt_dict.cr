@@ -5,7 +5,7 @@ require "colorize"
 require "./mt_trie"
 
 class MT::MtDict
-  DICT_PATH = "var/dicts/cvdicts.db"
+  DICT_PATH = "var/dicts/cvdicts.test.db"
 
   getter dicts = [] of MtTrie
 
@@ -54,7 +54,7 @@ class MT::MtDict
   private def load_terms(dict_id : Int32) : Array(MtTerm)?
     open_db do |db|
       db.query_all <<-SQL, args: [dict_id], as: MtTerm
-        select key, val, alt_val, epos, etag, seg_w
+        select key, val, alt_val, ptag, prio
         from terms where dict_id = ? and _flag = 0
       SQL
     end
@@ -63,7 +63,7 @@ class MT::MtDict
   private def load_terms(dict_id : Int32, dname_as_uname : String) : Array(MtTerm)
     open_db do |db|
       db.query_all <<-SQL, args: [dict_id, dname_as_uname], as: MtTerm
-        select key, val, alt_val, epos, etag, seg_w
+        select key, val, alt_val, ptag, prio
         from terms where dict_id = ? and _flag = 0 and uname = ?
       SQL
     end
@@ -100,7 +100,7 @@ class MT::MtDict
         flag = 1.unsafe_shl(size)
 
         if (bits & flag) == 0
-          yield term, size, i if term.seg_w > 0
+          yield term, size, i if term.seg > 0
           bits |= flag
         end
       end

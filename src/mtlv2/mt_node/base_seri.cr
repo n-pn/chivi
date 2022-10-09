@@ -4,8 +4,7 @@ class MT::BaseSeri < MT::BaseNode
   include BaseExpr
 
   def initialize(@head : BaseNode, @tail : BaseNode,
-                 @tag : PosTag = MapTag::LitBlank,
-                 @dic = 0, @idx = head.idx, flip = false)
+                 @tag : MtlTag, @pos : MtlPos, flip = false)
     self.fix_prev!(head.prev?)
     self.fix_succ!(tail.succ?)
 

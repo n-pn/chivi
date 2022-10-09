@@ -144,16 +144,16 @@ module MT::Core
       case type
       when 0
         @noun_alt.try { |x| @node.val = x }
-        @node.tag = MapTag.cast_noun(@node.key)
+        @node.tag, @node.pos = MapTag.cast_noun(@node.key)
       when 1
         @verb_alt.try { |x| @node.val = x }
-        @node.tag = MapTag.cast_verb(@node.key)
+        @node.tag, @node.pos = MapTag.cast_verb(@node.key)
       when 2
         @adjt_alt.try { |x| @node.val = x }
-        @node.tag = MapTag.cast_adjt(@node.key)
+        @node.tag, @node.pos = MapTag.cast_adjt(@node.key)
       else
         @advb_alt.try { |x| @node.val = x }
-        @node.tag = MapTag.cast_advb(@node.key)
+        @node.tag, @node.pos = MapTag.cast_advb(@node.key)
       end
 
       @node

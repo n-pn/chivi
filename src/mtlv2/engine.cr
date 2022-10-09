@@ -44,7 +44,7 @@ class MT::Engine
       end
 
       @dicts.scan(input, start) do |term, key_size, dict_id|
-        cost = base_cost &+ term.seg_w
+        cost = base_cost &+ term.seg
         jump = idx &+ key_size
 
         if cost >= costs[jump]

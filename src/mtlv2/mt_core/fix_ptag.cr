@@ -28,7 +28,7 @@ module MT::Core
   end
 
   def fix_uniqword!(node : BaseTerm)
-    case node.tag
+    case node
     when .qttemp? then fix_qttemp!(node)
     when .vauxil? then fix_vauxil!(node)
     when .vcompl? then fix_vcompl!(node)
@@ -38,7 +38,7 @@ module MT::Core
   end
 
   def fix_baseterm!(node : BaseTerm)
-    case node.tag
+    case node
     when .pt_dep? then fix_pt_dep!(node)
     when .pt_dev? then fix_pt_dev!(node)
     when .pt_der? then fix_pt_der!(node)
@@ -52,16 +52,16 @@ module MT::Core
 
     case prev.tag
     when .noun_words?
-      node.set_tag!(MtlTag::BondNoun)
+      node.set!(MtlTag::BondNoun)
     when .adjt_words?
       case succ.tag
       when .adjt_words?
-        node.set_tag!(MtlTag::BondAdjt)
+        node.set!(MtlTag::BondAdjt)
       else
-        node.set_tag!(MtlTag::BondDmod)
+        node.set!(MtlTag::BondDmod)
       end
     when .verb_words?
-      node.set_tag!(MtlTag::BondVerb)
+      node.set!(MtlTag::BondVerb)
     else
       node
     end

@@ -18,11 +18,12 @@ module MT::Core
       udev.inactivate!
     when .common_nouns?
       raise "Expected v_you!" unless (vyou = head.prev?) && vyou.v_you?
-      head = BasePair.new(vyou, head, MapTag::Adjt, dic: 4, flip: false)
+      tag, pos = MapTag::Adjt
+      head = BasePair.new(vyou, head, tag, pos, flip: false)
     end
 
     udev.inactivate! if inactive # mark udev as invisible
-    BasePair.new(head, udev, tag: PosTag.new(tag, pos), dic: 6, flip: true)
+    BasePair.new(head, udev, tag, pos, flip: true)
   end
 
   def join_udep!(udep : BaseNode)
@@ -38,6 +39,6 @@ module MT::Core
       udep.inactivate!
     end
 
-    BasePair.new(head, udep, PosTag.new(tag, pos), flip: true)
+    BasePair.new(head, udep, tag, pos, flip: true)
   end
 end
