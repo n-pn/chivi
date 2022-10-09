@@ -11,7 +11,7 @@ struct CV::PosTag
     when 'r' then CapHuman
     when 's' then CapPlace
     when 't' then CapInsti
-    when 'l' then CapBrand
+    when 'b' then CapBrand
     when 'w' then CapTitle
     else          CapOther
     end
@@ -28,10 +28,10 @@ struct CV::PosTag
   Tword = new(:tword, MtlPos.flags(Object))
   Texpr = new(:texpr, MtlPos.flags(Object))
 
-  def self.map_noun(tag : String, key = "", vals = [] of String)
+  def self.map_noun(tag : String, key = "", alt : String? = nil)
     case tag[1]?
     when 'a' then new(:nattr, :object)
-    when 'h' then map_honor(vals[1]?)
+    when 'h' then map_honor(alt)
     when 'o' then map_nobjt(key)
     when 'l' then Nform
     else          Nword
@@ -87,7 +87,7 @@ struct CV::PosTag
   OBJECT_MAP = load_map("objt_nouns", MtlPos.flags(Object, Ktetic))
 
   def self.map_nobjt(key : String)
-    OBJECT_MAP[key] || begin
+    OBJECT_MAP[key] ||= begin
       # TODO: map objects by zh patterns
       new(:nobjt, MtlPos.flags(Object, Ktetic))
     end

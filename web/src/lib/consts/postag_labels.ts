@@ -36,7 +36,7 @@ export default {
   'u': 'Trợ từ',
   'k': 'Hậu tố',
   // đặc biệt
-  'o': 'Âm thanh',
+  'e': 'Âm thanh',
   'x': 'Ký tự ngoại lai',
   'w': 'Dấu câu',
   // cụm từ
@@ -54,10 +54,10 @@ export default {
   'nd': 'Danh | Phó',
   '!': 'Từ đặc biệt',
   // cấu trúc ngữ pháp
-  '+pn': 'Cụm giới + danh',
-  '+sv': 'Cụm chủ + động từ',
-  '+sa': 'Cụm chủ + tính từ',
-  '+dm': 'Cụm định ngữ',
+  '+pp': 'Cụm giới + danh',
+  '+sv': 'Cụm chủ + động',
+  '+sa': 'Cụm chủ + tính',
+  '+dp': 'Cụm định ngữ',
   '+dr': 'Cụm trạng ngữ',
   '+dv': 'Cụm bổ ngữ',
 }

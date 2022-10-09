@@ -37,7 +37,7 @@ export default {
   'u': 'Các từ đi kèm với từ, cụm từ hoặc câu để bổ trợ cho tác dụng của từ',
   'k': 'Các từ/cụm từ đứng sau từ/cụm từ khác tạo thành tổ hợp từ ghép mới',
   // đặc biệt
-  'o': 'Các từ miêu tả thanh âm, cảm thán, ngữ khí',
+  'e': 'Các từ miêu tả thanh âm, cảm thán, ngữ khí',
   'x': 'Các ký tự ngoại lai, emoji, đường link, hashtag',
   'w': 'Các loại dấu câu như chấm hỏi, chấm than, hai chấm...',
   // cụm từ
@@ -53,10 +53,9 @@ export default {
   '~vd': 'Những từ vừa có vai trò là động từ vừa có thể làm phó từ (trạng ngữ)',
   '~vn': 'Từ vừa đóng vai trò động từ vừa có thể là danh từ',
   // cấu trúc ngữ pháp
-  '+pn': 'Dùng trong máy dịch: Cụm giới từ + danh từ',
+  '+pp': 'Dùng trong máy dịch: Cụm giới từ + danh từ',
   '+sv': 'Dùng trong máy dịch: Cụm chủ ngữ + cụm động tân',
-  '+na': 'Dùng trong máy dịch: Cụm chủ ngữ + cụm tính từ',
-  '+dm': 'Cụm từ làm định ngữ cho trung tâm ngữ phía sau',
+  '+dp': 'Cụm từ làm định ngữ cho trung tâm ngữ phía sau',
   '+dr': 'Cụm từ làm trạng ngữ cho động từ phía sau',
   '+dv': 'Cụm từ làm bổ ngữ cho động từ phía trước',
 }

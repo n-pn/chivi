@@ -4,7 +4,7 @@ struct CV::PosTag
     when 'i' then new(:lit_idiom)
     when 'q' then new(:lit_quote)
     when 't' then new(:lit_trans)
-    else          new(:lit_blank) # when 'o'
+    else          new(:lit_blank)
     end
   end
 

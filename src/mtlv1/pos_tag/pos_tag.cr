@@ -51,20 +51,20 @@ struct CV::PosTag
   ###
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def self.init(tag : String, key : String = "", vals = [] of String) : self
+  def self.init(tag : String, key : String = "", val : String = "", alt : String? = nil) : self
     case tag[0]?
     when nil then LitTrans
     when 'N' then map_name(tag, key)
-    when 'n' then map_noun(tag, key, vals)
+    when 'n' then map_noun(tag, key, alt)
     when 't' then map_tword(key)
     when 's' then map_place(key)
-    when 'v' then map_verb(tag, key, vals)
-    when 'a' then map_adjt(tag, key, vals)
+    when 'v' then map_verb(tag, key, !!alt)
+    when 'a' then map_adjt(tag, key, !!alt)
     when 'p' then map_prepos(key)
     when 'd' then map_adverb(key)
     when 'm' then map_number(tag, key)
     when 'q' then map_quanti(key)
-    when 'o' then map_sound(key)
+    when 'e' then map_sound(key)
     when 'r' then map_pronoun(key)
     when 'k' then map_suffix(key)
     when 'x' then map_strings(key)
@@ -74,7 +74,7 @@ struct CV::PosTag
     when '!' then map_uniqword(key)
     when '~' then map_polysemy(tag, key)
     when '+' then map_phrase(tag)
-    when 'w' then map_punct(vals[0])
+    when 'w' then map_punct(val)
     else          LitBlank
     end
   end

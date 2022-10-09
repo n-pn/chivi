@@ -8,9 +8,9 @@ struct CV::PosTag
   ADJTMOD_MAP = load_map("adjtmods", :none)
   ADJTVAL_MAP = load_map("adjtvals", :none)
 
-  def self.map_adjt(tag : String, key : String = "", vals = [] of String)
+  def self.map_adjt(tag : String, key : String = "", has_alt = false)
     case tag[1]?
-    when 'f' then Aform
+    when 'l' then Aform
     when '!' then map_adjtmod(key)
     else          map_adjtval(key)
     end
@@ -36,12 +36,12 @@ struct CV::PosTag
 
   Vform = new(:vform, :none)
 
-  def self.map_verb(tag : String, key : String = "", vals = [] of String) : self
+  def self.map_verb(tag : String, key : String = "", has_alt = false) : self
     case tag[1]?
     when 'o' then map_voform(key)
     when '!' then map_vauxil(key)
-    when 'i' then map_vintra(key, has_alt: vals.size > 1)
-    else          map_verbal(key, has_alt: vals.size > 1)
+    when 'i' then map_vintra(key, has_alt: has_alt)
+    else          map_verbal(key, has_alt: has_alt)
     end
   end
 
