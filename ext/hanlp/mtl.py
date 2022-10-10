@@ -2,9 +2,11 @@
 import os, sys, glob
 import json
 import hanlp
-
+import gc
+import torch
 
 MTL = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH) # 世界最大中文语料库
+TOK = hanlp.load(hanlp.pretrained.tok.MSR_TOK_ELECTRA_BASE_CRF) # 世界最大中文语料库
 
 def write_file(lines, out_path):
   out_file = open(out_path, 'w')
@@ -30,20 +32,34 @@ def write_file(lines, out_path):
 
   out_file.close()
 
-def parse_book(inp_dir_path):
-  out_dir_path = inp_dir_path.replace("inp/", "tmp/")
+def ran_mtl(lines, out_path):
+
+count = 0
+
+def tokenize(inp_dir_path, ext = '.msr.tsv'):
+  global count
+
+  out_dir_path = inp_dir_path.replace('inp/', 'tok/')
   os.makedirs(out_dir_path, exist_ok=True)
 
-  inp_paths = glob.glob(os.path.join(inp_dir_path, ".txt"))
+  inp_paths = glob.glob(os.path.join(inp_dir_path, '*.txt'))
   # count = len(files)
 
   for inp_path in inp_paths:
-    print(inp_path)
-    out_path = inp_path.replace("inp/", "tmp/")
+    print('- ', count, ': ', inp_path)
+    count += 1
+    out_path = inp_path.replace('inp/', 'tok/').replace('.txt', ext)
+
+    if os.path.isfile(out_path):
+      print('- Parsed, skipping!')
+      continue
 
     inp_file = open(inp_path, 'r')
     lines = inp_file.read().splitlines()
     inp_file.close()
+
+    gc.collect()
+    torch.cuda.empty_cache()
 
     result = MTL(lines)
 
@@ -60,7 +76,9 @@ def parse_book(inp_dir_path):
     write_file(result["sdp"], out_path.replace('.txt', '.sdp'))
     write_file(result["con"], out_path.replace('.txt', '.con'))
 
-folder_path = sys.argv[1]
 
-if folder_path:
-  parse_book(folder_path)
+folders = glob.glob(os.path.join("var/inits/hanlp/inp/zxcs_me/*"))
+
+for folder in folders:
+  print(folder)
+  tokenize(folder)
