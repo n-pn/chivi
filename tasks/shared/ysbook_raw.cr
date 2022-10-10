@@ -1,7 +1,7 @@
 require "uri"
 
 require "./bootstrap"
-require "../../src/ysweb/models/*"
+require "../../src/ysapp/models/*"
 
 class CV::YsbookRaw
   include JSON::Serializable

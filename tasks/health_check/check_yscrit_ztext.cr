@@ -1,5 +1,5 @@
 require "compress/zip"
-require "../../src/ysweb/models/*"
+require "../../src/ysapp/models/*"
 
 # def saved_crit_list(ysbook_id : Int64)
 #   zip_file = "var/ys_db/crits/#{ysbook_id}-zh.zip"

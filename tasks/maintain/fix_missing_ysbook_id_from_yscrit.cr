@@ -1,4 +1,4 @@
-require "../../src/ysweb/models/*"
+require "../../src/ysapp/models/*"
 
 crits =
   YS::Yscrit.query

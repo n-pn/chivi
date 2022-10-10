@@ -1,6 +1,6 @@
 require "json"
 require "./bootstrap"
-require "../../src/ysweb/models/*"
+require "../../src/ysapp/models/*"
 
 class CV::YsreplRaw
   class User

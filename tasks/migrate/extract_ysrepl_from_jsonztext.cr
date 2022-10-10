@@ -1,4 +1,4 @@
-require "../../src/ysweb/inputs/raw_crit"
+require "../../src/ysapp/inputs/raw_crit"
 
 def save_crit_body(crit : YS::RawCrit, skip_if_exists = false)
   # save crit body to disk instead of db

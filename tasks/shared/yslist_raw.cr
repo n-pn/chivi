@@ -1,7 +1,7 @@
 require "log"
 require "json"
 require "./bootstrap"
-require "../../src/ysweb/models/*"
+require "../../src/ysapp/models/*"
 
 class CV::YslistRaw
   class User

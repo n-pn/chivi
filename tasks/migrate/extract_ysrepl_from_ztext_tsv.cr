@@ -1,4 +1,4 @@
-require "../../src/ysweb/inputs/raw_crit"
+require "../../src/ysapp/inputs/raw_crit"
 
 def read_book_id_map(file : String)
   File.read_lines(file).each_with_object({} of String => String) do |line, hash|

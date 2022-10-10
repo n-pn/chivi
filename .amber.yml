@@ -17,7 +17,7 @@ watch:
       - ./src/**/*.cr
     exclude:
       - ./src/mtlv2/**/*.cr
-      - ./src/ysweb/**/*.cr
+      - ./src/ysapp/**/*.cr
 
   spec:
     run_commands:

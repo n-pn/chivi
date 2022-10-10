@@ -1,4 +1,4 @@
-require "../../src/ysweb/models/*"
+require "../../src/ysapp/models/*"
 require "compress/zip"
 
 def saved_crit_list(ysbook_id : Int64)

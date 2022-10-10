@@ -1,6 +1,6 @@
 require "json"
 require "./seed_util"
-require "../../src/ysweb/models/*"
+require "../../src/ysapp/models/*"
 
 class CV::YscritRaw
   class Book
