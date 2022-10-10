@@ -46,8 +46,12 @@ def tokenize(inp_dir_path, ext = '.msr.tsv'):
     gc.collect()
     torch.cuda.empty_cache()
 
-    result = TOK(lines)
-    write_file(result, out_path)
+    try:
+      result = TOK(lines)
+      write_file(result, out_path)
+
+    except:
+      print(f'{inp_path} failed!')
 
 folders = glob.glob(os.path.join("var/inits/hanlp/inp/zxcs_me/*"))
 

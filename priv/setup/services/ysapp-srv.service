@@ -1,5 +1,5 @@
 [Unit]
-Description=ysweb server
+Description=ysapp server
 After=network.target
 StartLimitIntervalSec=0
 
@@ -11,7 +11,7 @@ User=nipin
 Environment=PORT=5509
 Environment=AMBER_ENV=production
 WorkingDirectory=/home/nipin/srv/chivi.app
-ExecStart=/home/nipin/srv/chivi.app/bin/ysweb-srv
+ExecStart=/home/nipin/srv/chivi.app/bin/ysapp-srv
 
 [Install]
 WantedBy=multi-user.target

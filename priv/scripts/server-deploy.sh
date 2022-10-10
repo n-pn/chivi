@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 SSH=nipin@ssh.chivi.app:srv/chivi
 GC_INITIAL_HEAP_SIZE=3G

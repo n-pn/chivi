@@ -22,12 +22,13 @@ class YS::Yscrit
   getter ztext : String { load_ztext_from_disk }
 
   def load_ztext_from_disk : String
-    zip_file = "var/ys_db/crits/#{self.ysbook_id}-zh.zip"
+    zip_file = "var/ysapp/crits/#{self.ysbook_id}-zh.zip"
 
     Compress::Zip::File.open(zip_file) do |zip|
       zip[origin_id + ".txt"]?.try(&.open(&.gets_to_end)) || "$$$"
     end
   rescue err
+    Log.error(exception: err) { "error loading #{origin_id} of #{ysbook_id}" }
     "XXX"
   end
 
