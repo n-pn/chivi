@@ -21,14 +21,14 @@ module MT::TlRule
     end
 
     return unless tag || succ.verb_words?
-    fold!(verb, succ, tag: tag || succ.tag, dic: 4)
+    fold!(verb, succ, tag: tag || succ.tag)
   end
 
   def fold_adjt_junction!(node : BaseNode, prev = node.prev?, succ = node.succ?)
     return unless prev && succ && is_concoord?(node)
     return unless (succ = scan_adjt!(succ)) && succ.adjt_words?
 
-    fold!(prev, succ, tag: MapTag::Aform, dic: 4)
+    fold!(prev, succ, tag: MapTag::Aform)
   end
 
   def fold_noun_concoord!(node : BaseNode, prev = node.prev?, succ = node.succ?)
@@ -36,9 +36,9 @@ module MT::TlRule
     return if node.key == "而" || !is_concoord?(node)
 
     if prev.tag == succ.tag
-      fold!(prev, succ, tag: prev.tag, dic: 4)
+      fold!(prev, succ, tag: prev.tag)
     elsif (succ = scan_noun!(succ)) && similar_tag?(prev, succ)
-      fold!(prev, succ, tag: MapTag::Nform, dic: 4)
+      fold!(prev, succ, tag: MapTag::Nform)
     end
   end
 
@@ -82,8 +82,8 @@ module MT::TlRule
 
     # TODO: add more white list?
     # puts [verb, node]
-    node = fold!(node, succ, MapTag::PrepForm, dic: 6)
-    fold!(node, scan_verb!(verb), verb.tag, dic: 6)
+    node = fold!(node, succ, MapTag::PrepForm)
+    fold!(node, scan_verb!(verb), verb.tag)
 
     # TOD: fold as subject + verb structure?
     true

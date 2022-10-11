@@ -16,8 +16,8 @@ module MT::TlRule
   #     ude1.val = "của"
   #   end
 
-  #   noun = fold!(noun, ude1, MapTag::DcPhrase, dic: 3, flip: true)
-  #   fold!(noun, right, MapTag::Nform, dic: 5, flip: true)
+  #   noun = fold!(noun, ude1, MapTag::DcPhrase, flip: true)
+  #   fold!(noun, right, MapTag::Nform, flip: true)
   # end
 
   # def fold_verb_ude1!(verb : BaseNode, ude1 : BaseNode, right : BaseNode) : BaseNode
@@ -25,7 +25,7 @@ module MT::TlRule
   #   when "时候", "时", "打算"
   #     head = verb.try { |x| x if x.content? } || verb
   #     node = fold!(head, ude1, MapTag::DcPhrase)
-  #     return fold!(node, right, MapTag::Nform, dic: 6, flip: true)
+  #     return fold!(node, right, MapTag::Nform, flip: true)
   #   end
 
   #   # puts [verb, noun, ude1, right]
@@ -54,7 +54,7 @@ module MT::TlRule
   #   return fold_noun_ude1_noun!(noun, ude1, right) unless head
 
   #   node = fold!(head, ude1, MapTag::DcPhrase)
-  #   fold!(node, right, MapTag::Nform, dic: 6, flip: true)
+  #   fold!(node, right, MapTag::Nform, flip: true)
   # end
 
   def has_verb_after?(right : BaseNode) : Bool

@@ -23,11 +23,11 @@ module MT::Core
 
   def join_group!(pstart : BaseTerm, pclose : BaseTerm) : Nil
     left_join!(pclose, pstart)
-    ptag = guess_group_tag(pstart, pclose)
-    BaseSeri.new(pstart, pclose, tag: ptag)
+    tag, pos = guess_group_tag(pstart, pclose)
+    BaseSeri.new(pstart, pclose, tag: tag, pos: pos)
   end
 
-  def guess_group_tag(head : BaseNode, tail : BaseNode)
+  def guess_group_tag(head : BaseNode, tail : BaseNode) : {MtlTag, MtlPos}
     case head.tag
     when .title_sts? then MapTag::CapTitle
     when .brack_sts? then MapTag::CapOther
@@ -36,26 +36,27 @@ module MT::Core
     end
   end
 
-  def guess_quote_group(head : BaseNode, tail : BaseNode)
+  def guess_quote_group(head : BaseNode, tail : BaseNode) : {MtlTag, MtlPos}
     head_succ = head.succ
     tail_prev = tail.prev
 
-    return head_succ.tag if head_succ == tail_prev
+    if head_succ == tail_prev
+      return {head_succ.tag, head_succ.pos}
+    end
 
     if (tail_prev.interj? || tail_prev.pt_dep?) &&
        (head_succ.onomat? || head_succ.interj?) &&
        (head.prev?(&.boundary?.!) || tail.succ?(&.pt_dep?))
-      return head_succ.tag
+      return {head_succ.tag, head_succ.pos}
     end
 
     head.prev?(&.pt_dep?) ? MapTag::Nform : MapTag::LitBlank
   end
 
   def fold!(head : BaseNode, tail : BaseNode,
-            tag : {MtlTag, MtlPos} = MapTag::LitBlank, dic : Int32 = 9,
-            flip : Bool = false)
+            tag : {MtlTag, MtlPos}? = nil, flip : Bool = false)
+    tag ||= {tail.tag, tail.pos}
     # FIXME: remove this helper and using proper structures
-
     BaseSeri.new(head, tail, tag[0], tag[1], flip: flip)
   end
 end

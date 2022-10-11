@@ -5,7 +5,7 @@ module MT::TlRule
     if nominal
       if nominal.vobj?
         prodem = heal_pro_dem!(prodem)
-        return fold!(prodem, nominal, MapTag::SubjVerb, dic: 8)
+        return fold!(prodem, nominal, MapTag::SubjVerb)
       end
 
       # puts [prodem.prev?, prodem.succ?]
@@ -13,7 +13,7 @@ module MT::TlRule
 
       flip = nominal.noun_words? && should_flip_prodem?(prodem)
       tag = !prodem.pro_dem? && nominal.qtnoun? ? MapTag::ProDem : nominal.tag
-      return fold!(prodem, nominal, tag, dic: 3, flip: flip)
+      return fold!(prodem, nominal, tag, flip: flip)
     end
 
     heal_pro_dem!(prodem)

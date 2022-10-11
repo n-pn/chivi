@@ -29,14 +29,14 @@ module MT::TlRule
       return noun if space.succ?(&.pt_le?)
       space.val = "trong"
       if (succ = space.succ?) && succ.noun_words?
-        return fold!(noun, succ, succ.tag, dic: 6, flip: true)
+        return fold!(noun, succ, succ.tag, flip: true)
       end
     when "前"
       # space.val = "trước khi" if noun.verb_words?
       flip = !noun.time_words?
     end
 
-    fold!(noun, space, MapTag::Posit, dic: 5, flip: flip)
+    fold!(noun, space, MapTag::Posit, flip: flip)
   end
 
   def fix_space_val!(node : BaseNode)

@@ -25,6 +25,6 @@ module MT::TlRule
     else
       return
     end
-    fold!(verb, compl, MapTag::Verb, dic: 6)
+    fold!(verb, compl, MapTag::Verb)
   end
 end

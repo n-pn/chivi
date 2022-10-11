@@ -9,19 +9,19 @@ module MT::TlRule
   #       node = fold_nquant_noun!(prev, node)
   #       flag = 1
   #     when .pro_ji?
-  #       return fold!(prev, node, MapTag::Nform, dic: 3)
+  #       return fold!(prev, node, MapTag::Nform)
   #     when .pro_ints?
   #       return fold_什么_noun!(prev, node) if prev.key == "什么"
-  #       return fold_flip!(prev, node, MapTag::Nform, dic: 3)
+  #       return fold_flip!(prev, node, MapTag::Nform)
   #     when .pl_ajno?, .amod_words?
   #       break if flag > 0
-  #       node = fold_flip!(prev, node, MapTag::Nform, dic: 3)
+  #       node = fold_flip!(prev, node, MapTag::Nform)
   #     when .position?
   #       break if flag > 0
-  #       node = fold_flip!(prev, node, MapTag::Nform, dic: 3)
+  #       node = fold_flip!(prev, node, MapTag::Nform)
   #     when .pl_ajad?, .adjt_words?
   #       break if flag > 0 || prev.key.size > 1
-  #       node = fold_flip!(prev, node, MapTag::Nform, dic: 8)
+  #       node = fold_flip!(prev, node, MapTag::Nform)
   #     when .pt_dep?
   #       break if mode < 1
   #       node = fold_ude1_left!(ude1: node, left: prev, right: ude1.succ?)
@@ -44,6 +44,6 @@ module MT::TlRule
     succ.fix_succ!(node.succ?)
     node.fix_succ!(succ)
 
-    fold!(prev, succ, MapTag::Nform, dic: 3)
+    fold!(prev, succ, MapTag::Nform)
   end
 end

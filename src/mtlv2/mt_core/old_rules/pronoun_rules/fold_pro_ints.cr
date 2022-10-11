@@ -30,6 +30,6 @@ module MT::TlRule
     end
 
     proint.set!(val) if val
-    fold!(proint, succ, succ.tag, dic: 3, flip: flip)
+    fold!(proint, succ, succ.tag, flip: flip)
   end
 end

@@ -3,7 +3,7 @@
 #     return prepos unless (noun = scan_noun!(succ, mode: mode)) && noun.object?
 
 #     if (succ = noun.succ?) && succ.verb_no_obj?
-#       noun = fold!(noun, succ, MapTag::SubjVerb, dic: 6)
+#       noun = fold!(noun, succ, MapTag::SubjVerb)
 #     end
 
 #     if (tail = noun.succ?) && tail.pt_dep? && tail.succ?(&.maybe_adjt?)
@@ -15,13 +15,13 @@
 #         tail.set!("của")
 #       end
 
-#       noun = fold!(noun, tail, MapTag::DcPhrase, dic: 7, flip: flip)
+#       noun = fold!(noun, tail, MapTag::DcPhrase, flip: flip)
 #     end
 
 #     return prepos unless tail = scan_adjt!(noun.succ?)
 #     return prepos unless tail.adjt_words? || tail.vobjs?
 
-#     output = BaseTerm.new("", "", MapTag::LitBlank, dic: 1, idx: prepos.idx)
+#     output = BaseTerm.new("", "", MapTag::LitBlank, idx: prepos.idx)
 #     output.fix_prev!(prepos.prev?)
 #     output.fix_succ!(tail.succ?)
 
@@ -39,10 +39,10 @@
 #       tail.fix_succ!(prepos)
 #       prepos = tail
 
-#       output = BaseList.new(adv_bu, prepos, dic: 0, idx: adv_bu.idx)
+#       output = BaseList.new(adv_bu, prepos, idx: adv_bu.idx)
 #     else
 #       prepos.set!("hơn")
-#       output = BaseList.new(prepos, tail, dic: 0, idx: prepos.idx, flip: true)
+#       output = BaseList.new(prepos, tail, idx: prepos.idx, flip: true)
 #     end
 
 #     fold_compare_bi3_after!(output, noun)

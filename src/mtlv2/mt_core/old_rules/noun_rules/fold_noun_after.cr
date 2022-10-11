@@ -3,7 +3,7 @@ module MT::TlRule
     return noun unless succ
 
     if succ.pro_ziji?
-      noun = fold!(noun, succ, noun.tag, dic: 6, flip: true)
+      noun = fold!(noun, succ, noun.tag, flip: true)
       return noun unless succ = noun.succ?
     end
 

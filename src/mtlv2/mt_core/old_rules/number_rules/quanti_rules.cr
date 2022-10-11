@@ -21,14 +21,14 @@ module MT::TlRule
     case succ.key
     when "多"
       return {node, 0} unless is_pre_quanti_appro?(node)
-      node = fold!(node, succ.set!("hơn"), node.tag, dic: 5, flip: true)
+      node = fold!(node, succ.set!("hơn"), node.tag, flip: true)
     when "来"
       return {node, 0} unless is_pre_quanti_appro?(node)
-      node = fold!(node, succ.set!("chừng"), node.tag, dic: 5, flip: true)
+      node = fold!(node, succ.set!("chừng"), node.tag, flip: true)
     when "余"
-      node = fold!(node, succ.set!("trên"), node.tag, dic: 5, flip: true)
+      node = fold!(node, succ.set!("trên"), node.tag, flip: true)
     when "几"
-      node = fold!(node, succ.set!("mấy"), node.tag, dic: 5)
+      node = fold!(node, succ.set!("mấy"), node.tag)
     else
       return {node, 0}
     end
@@ -80,6 +80,6 @@ module MT::TlRule
       return node unless succ.to_int?.try { |x| x == 10 || x % 10 != 0 }
     end
 
-    fold!(node, succ.set!(val), node.tag, dic: 6, flip: true)
+    fold!(node, succ.set!(val), node.tag, flip: true)
   end
 end

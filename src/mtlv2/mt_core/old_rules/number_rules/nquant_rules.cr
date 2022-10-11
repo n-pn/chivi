@@ -11,11 +11,11 @@ module MT::TlRule
     end
 
     if month || exact_year?(node, appro)
-      prev = fold!(prev, node, MapTag::Texpr, dic: 2, flip: true)
-      return month ? fold!(prev, month, prev.tag, dic: 3, flip: true) : prev
+      prev = fold!(prev, node, MapTag::Texpr, flip: true)
+      return month ? fold!(prev, month, prev.tag, flip: true) : prev
     end
 
-    fold!(prev, node, MapTag::Nqtime, dic: 2)
+    fold!(prev, node, MapTag::Nqtime)
   end
 
   def exact_year?(node : BaseNode, appro : Int32 = 0) : Bool
@@ -37,16 +37,16 @@ module MT::TlRule
     date = fold_day?(node.succ?)
 
     if date || appro == -1
-      prev = fold!(prev, node, MapTag::Texpr, dic: 2, flip: true)
-      return date ? fold!(prev, date, prev.tag, dic: 3, flip: true) : prev
+      prev = fold!(prev, node, MapTag::Texpr, flip: true)
+      return date ? fold!(prev, date, prev.tag, flip: true) : prev
     end
 
     if appro == 0 && prev.to_int?.try(&.< 13)
       # TODO: check more cases
-      return fold!(prev, node, MapTag::Texpr, dic: 2, flip: true)
+      return fold!(prev, node, MapTag::Texpr, flip: true)
     end
 
-    fold!(prev, node, MapTag::Nqtime, dic: 2)
+    fold!(prev, node, MapTag::Nqtime)
   end
 
   def fold_day?(num : BaseNode?) : BaseNode?
@@ -59,15 +59,15 @@ module MT::TlRule
     else          return
     end
 
-    fold!(num, day, MapTag::Texpr, dic: 3, flip: true)
+    fold!(num, day, MapTag::Texpr, flip: true)
   end
 
   def fold_hour!(node : BaseNode, succ : BaseNode, appro : Int32 = 0)
-    fold!(node, succ, MapTag::Nqtime, dic: 2)
+    fold!(node, succ, MapTag::Nqtime)
   end
 
   def fold_minute!(node : BaseNode, succ : BaseNode, appro : Int32 = 0)
-    fold!(node, succ, MapTag::Nqtime, dic: 3)
+    fold!(node, succ, MapTag::Nqtime)
   end
 
   def clean_个!(node : BaseNode) : BaseNode

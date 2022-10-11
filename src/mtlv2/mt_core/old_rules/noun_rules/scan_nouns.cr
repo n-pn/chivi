@@ -50,7 +50,7 @@ module MT::TlRule
     #   when .v_you?
     #     break unless (succ = node.succ?) && succ.common_nouns?
     #     succ = fold_nouns!(succ)
-    #     node = fold!(node, succ, MapTag::Aform, dic: 4)
+    #     node = fold!(node, succ, MapTag::Aform)
     #     node = fold_head_ude1_noun!(node)
     #   when .advb_words?
     #     node = fold_adverbs!(node)
@@ -85,7 +85,7 @@ module MT::TlRule
     #     case succ
     #     when .noun_words?
     #       succ = fold_nouns!(succ, mode: 1)
-    #       node = fold!(node, succ, MapTag::Nform, dic: 5, flip: true)
+    #       node = fold!(node, succ, MapTag::Nform, flip: true)
     #     when .pt_dep?
     #       node = fold_ude1!(ude1: succ, prev: node)
     #     end
@@ -134,7 +134,7 @@ module MT::TlRule
 
     # if nquant
     #   nquant = clean_nquant(nquant, prodem)
-    #   node = fold!(nquant, node, MapTag::Nform, dic: 4)
+    #   node = fold!(nquant, node, MapTag::Nform)
     # end
 
     # node = fold_prodem_nominal!(prodem, node) if prodem
@@ -152,8 +152,8 @@ module MT::TlRule
     # return node unless (ude1 = verb.succ?) && ude1.pt_dep?
     # return node unless (tail = scan_noun!(ude1.succ?)) && tail.object?
 
-    # node = fold!(node, ude1.set!(""), MapTag::DcPhrase, dic: 4)
-    # fold!(node, tail, MapTag::Nform, dic: 9, flip: true)
+    # node = fold!(node, ude1.set!(""), MapTag::DcPhrase)
+    # fold!(node, tail, MapTag::Nform, flip: true)
   end
 
   def clean_nquant(nquant : BaseNode, prodem : BaseNode?)
@@ -174,7 +174,7 @@ module MT::TlRule
     ude1.val = "" unless head.common_nouns? || head.proper_nouns?
 
     return head unless tail = scan_noun!(ude1.succ?)
-    fold!(head, tail, MapTag::Nform, dic: 8, flip: true)
+    fold!(head, tail, MapTag::Nform, flip: true)
   end
 
   def fold_adjt_as_noun!(node : BaseNode)
@@ -190,7 +190,7 @@ module MT::TlRule
 
     unless succ.pt_dep? || node.verb_no_obj?
       return node unless succ = scan_noun!(succ, mode: 0)
-      node = fold!(node, succ, MapTag::Vobj, dic: 6)
+      node = fold!(node, succ, MapTag::Vobj)
     end
 
     fold_verb_ude1!(node)
@@ -200,9 +200,9 @@ module MT::TlRule
     return node unless succ && succ.pt_dep?
     return node unless (noun = scan_noun!(succ.succ?, mode: 1)) && noun.object?
 
-    node = fold!(node, succ.set!(""), MapTag::DcPhrase, dic: 7)
+    node = fold!(node, succ.set!(""), MapTag::DcPhrase)
 
     tag = noun.proper_nouns? || noun.cap_human? ? noun.tag : MapTag::Nform
-    fold!(node, noun, tag, dic: 6, flip: true)
+    fold!(node, noun, tag, flip: true)
   end
 end

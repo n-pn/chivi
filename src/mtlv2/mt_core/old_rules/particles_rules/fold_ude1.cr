@@ -33,7 +33,7 @@ module MT::TlRule
       ptag = MapTag::DcPhrase
     end
 
-    left = fold!(left, ude1, tag: ptag, dic: 2, flip: true)
-    fold!(left, right, tag: right.tag, dic: 6, flip: true)
+    left = fold!(left, ude1, tag: ptag, flip: true)
+    fold!(left, right, tag: right.tag, flip: true)
   end
 end

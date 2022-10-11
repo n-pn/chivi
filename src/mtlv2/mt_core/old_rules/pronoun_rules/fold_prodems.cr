@@ -11,7 +11,7 @@
 #       elsif node.pro_zhe? || node.pro_na1? || node.pro_na2?
 
 #         if tag
-#           succ = fold!(succ, tail, tag, dic: 6)
+#           succ = fold!(succ, tail, tag)
 #           return scan_noun!(succ.succ?, prodem: node, nquant: succ) || node
 #         else
 #           return scan_noun!(succ, prodem: node, nquant: nil) || node
@@ -33,14 +33,14 @@
 
 #   def fold_proji_nhanzi!(node : BaseNode, succ : BaseNode)
 #     succ.val = succ.val.sub("mười", "chục")
-#     node = fold!(node, succ, succ.tag, dic: 4)
+#     node = fold!(node, succ, succ.tag)
 #     fold_proji_right!(node)
 #   end
 
 #   def fold_proji_right!(node : BaseNode)
 #     return node unless (tail = node.succ?) && tail.quantis?
 
-#     node = fold!(node, tail, tag: tail.tag.qt_to_nq!, dic: 6)
+#     node = fold!(node, tail, tag: tail.tag.qt_to_nq!)
 #     scan_noun!(node.succ?, prodem: nil, nquant: node) || node
 #   end
 

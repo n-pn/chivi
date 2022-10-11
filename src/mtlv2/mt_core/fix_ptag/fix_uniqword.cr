@@ -2,12 +2,12 @@ module MT::Core
   def self.fix_hao_word!(haow : BaseTerm)
     case haow.succ
     when .common_nouns?
-      haow.set!("tốt", PosTag.new(:adj_hao, :adjtish))
+      haow.set!("tốt", MapTag.make(:adj_hao, :adjtish))
     when .common_verbs?, .adjt_words?, .preposes?
-      haow.set!("thật", PosTag.new(:adv_hao, :advbial))
+      haow.set!("thật", MapTag.make(:adv_hao, :advbial))
     else
       if haow.real_prev.try(&.verb_take_res_cmpl?)
-        haow.set!("tốt", PosTag.new(:cmpl_hao, :vcompl))
+        haow.set!("tốt", MapTag.make(:cmpl_hao, :vcompl))
       else
         haow
       end

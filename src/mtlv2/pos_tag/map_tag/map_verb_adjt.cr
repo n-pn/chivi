@@ -36,7 +36,7 @@ module MT::MapTag
 
   Vform = make(:vform, :none)
 
-  def self.map_verb(tag : String, key : String = "", has_alt = false) : self
+  def self.map_verb(tag : String, key : String = "", has_alt = false) : {MtlTag, MtlPos}
     case tag[1]?
     when 'o' then map_voform(key)
     when '!' then map_vauxil(key)
@@ -52,7 +52,7 @@ module MT::MapTag
     end
   end
 
-  def self.map_vauxil(key : String) : self
+  def self.map_vauxil(key : String) : {MtlTag, MtlPos}
     VAUXIL_MAP[key] ||= begin
       case key[-1]
       when '是' then make(:v_shi, MtlPos.flags(None))
@@ -68,7 +68,7 @@ module MT::MapTag
 
   LINKVERB_CHARS = {'来', '去', '到', '出'}
 
-  def self.map_verbal(key : String, has_alt = false) : self
+  def self.map_verbal(key : String, has_alt = false) : {MtlTag, MtlPos}
     VERBAL_MAP[key] ||= begin
       tag = has_alt ? MtlTag::Vcmp : MtlTag::Verb
       pos = MtlPos::None

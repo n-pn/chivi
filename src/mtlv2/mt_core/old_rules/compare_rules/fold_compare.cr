@@ -36,13 +36,13 @@ module MT::TlRule
     tail.fix_succ!(head.succ?)
     head.fix_succ!(tail)
 
-    root = fold!(head, tail_2, tag: MapTag::Aform, dic: 0)
+    root = fold!(head, tail_2, tag: MapTag::Aform)
     fix_grammar!(tail)
     root.regen_list!
 
     return root unless succ = scan_adjt!(root.succ?)
     return root unless succ.adjt_words? || succ.vobj?
 
-    fold!(root, succ, MapTag::Aform, dic: 1, flip: true)
+    fold!(root, succ, MapTag::Aform, flip: true)
   end
 end

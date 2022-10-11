@@ -5,7 +5,7 @@ require "colorize"
 require "./mt_trie"
 
 class MT::MtDict
-  DICT_PATH = "var/dicts/cvdicts.test.db"
+  DICT_PATH = "var/dicts/cvdicts.db"
 
   getter dicts = [] of MtTrie
 
@@ -41,13 +41,11 @@ class MT::MtDict
       terms = load_terms(dict_id, dname)
     elsif dict_id = get_dict_id(dname)
       terms = load_terms(dict_id)
+    else
+      return trie
     end
 
-    if terms
-      Log.info { "input: #{terms.size}" }
-      terms.each { |x| trie.push!(x) }
-    end
-
+    terms.each { |x| trie.push!(x) }
     trie
   end
 
@@ -100,22 +98,22 @@ class MT::MtDict
         flag = 1.unsafe_shl(size)
 
         if (bits & flag) == 0
-          yield term, size, i if term.seg > 0
           bits |= flag
+          yield term, size, i if term.seg > 0
         end
       end
     end
   end
 end
 
-span = Time.measure do
-  test = MT::MtDict.new
-  test.scan("汉语大辞典".chars) do |term|
-    puts [term.key, term.val]
-  end
-end
+# span = Time.measure do
+#   test = MT::MtDict.new
+#   test.scan("汉语大辞典".chars) do |term|
+#     puts [term.key, term.val]
+#   end
+# end
 
-puts span.total_milliseconds
+# puts span.total_milliseconds
 
 # test.find("汉语") do |term|
 #   puts [term.key, term.val]

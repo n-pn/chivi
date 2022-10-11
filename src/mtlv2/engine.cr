@@ -8,19 +8,19 @@ class MT::Engine
     @dicts = MtDict.new(dname, uname)
   end
 
-  def cv_plain(input : String, cap_first = true, start = 0) : MtData
-    data = tokenize(input.chars, start: start)
+  def cv_plain(input : String, cap_first = true, offset = 0) : MtData
+    data = tokenize(input.chars, offset: offset)
     data.fix_grammar!
     data.apply_cap!(cap: cap_first)
     data
   end
 
-  def tokenize(input : Array(Char), start = 0) : MtData
-    nodes = [BaseTerm.new("", idx: start)]
+  def tokenize(input : Array(Char), offset = 0) : MtData
+    nodes = [BaseTerm.new("", idx: offset)]
     costs = [0]
 
     input.each_with_index do |char, idx|
-      nodes << BaseTerm.new(char, idx: idx &+ start)
+      nodes << BaseTerm.new(char, idx: idx &+ offset)
       costs << idx &+ 1
     end
 
@@ -37,18 +37,18 @@ class MT::Engine
         cost = base_cost + Utils.seg_weight(size, 1_i8)
 
         if cost > costs[jump]
-          ner_term.offset_idx!(start)
+          ner_term.offset_idx!(offset)
           nodes[jump] = ner_term
           costs[jump] = cost
         end
       end
 
-      @dicts.scan(input, start) do |term, key_size, dict_id|
+      @dicts.scan(input, idx) do |term, key_size, dict_id|
         cost = base_cost &+ term.seg
         jump = idx &+ key_size
 
         if cost >= costs[jump]
-          nodes[jump] = BaseTerm.new(term, dict_id)
+          nodes[jump] = BaseTerm.new(term, dic: dict_id, idx: idx &+ offset)
           costs[jump] = cost
         end
       end

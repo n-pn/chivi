@@ -20,7 +20,7 @@ module MT::TlRule
 
     # puts [noun, noun.prev?, noun.succ?, adjt.succ?]
 
-    noun = fold!(adjt, noun, noun.tag, dic: 6, flip: flip)
+    noun = fold!(adjt, noun, noun.tag, flip: flip)
     fold_noun_after!(noun)
   end
 

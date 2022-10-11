@@ -3,7 +3,7 @@ module MT::TlRule
     not_meiyou = vyou.key != "没有"
 
     if not_meiyou && succ.key_in?("些", "点")
-      node = fold!(vyou, succ, MapTag::Adverb, dic: 4)
+      node = fold!(vyou, succ, MapTag::Adverb)
       return fold_adverbs!(node)
     end
 
@@ -15,17 +15,17 @@ module MT::TlRule
 
   def fold_vyou_ude1!(vyou : BaseNode, ude1 : BaseNode, noun : BaseNode)
     unless tail = scan_noun!(ude1.succ?)
-      return fold!(vyou, noun, MapTag::Vobj, dic: 6)
+      return fold!(vyou, noun, MapTag::Vobj)
     end
 
     if find_verb_after(tail)
       ude1.set!("")
-      head = fold!(vyou, noun, MapTag::Vobj, dic: 7)
-      fold!(head, tail, tail.tag, dic: 8, flip: true)
+      head = fold!(vyou, noun, MapTag::Vobj)
+      fold!(head, tail, tail.tag, flip: true)
     else
-      defn = fold!(noun, ude1.set!("của"), MapTag::DcPhrase, dic: 3, flip: true)
-      noun = fold!(defn, tail, tail.tag, dic: 4, flip: true)
-      fold!(vyou, noun, MapTag::Vobj, dic: 6)
+      defn = fold!(noun, ude1.set!("của"), MapTag::DcPhrase, flip: true)
+      noun = fold!(defn, tail, tail.tag, flip: true)
+      fold!(vyou, noun, MapTag::Vobj)
     end
   end
 
@@ -49,7 +49,7 @@ module MT::TlRule
     end
 
     unless tail.adjt_words? || tail.vobj?
-      return fold!(vyou, noun, MapTag::Vobj, dic: 7)
+      return fold!(vyou, noun, MapTag::Vobj)
     end
 
     adverb.val = "" if adverb
@@ -71,7 +71,7 @@ module MT::TlRule
       temp.fix_succ!(noun)
     end
 
-    output = BaseList.new(head, noun, dic: 1, idx: head.idx)
+    output = BaseList.new(head, noun, idx: head.idx)
 
     return output unless (succ = output.succ?) && (succ.pt_dep? || succ.pt_der?)
     return output unless (tail = succ.succ?) && tail.key == "多"

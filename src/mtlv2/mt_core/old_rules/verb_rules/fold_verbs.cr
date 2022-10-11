@@ -9,7 +9,7 @@ module MT::TlRule
       return fold_left_verb!(verb, prev)
     when .vpro?
       return verb unless (succ = verb.succ?) && succ.verb_words?
-      verb = fold!(verb, succ, succ.tag, dic: 5)
+      verb = fold!(verb, succ, succ.tag)
     when .modal_verbs?
       verb.tag = MapTag::Verb
     end
@@ -24,12 +24,12 @@ module MT::TlRule
         verb = fold_verb_uzhe!(verb, uzhe: succ)
         break
       when .pt_cmps?
-        adjt = fold!(verb, succ.set!("như"), MapTag::Aform, dic: 7, flip: true)
+        adjt = fold!(verb, succ.set!("như"), MapTag::Aform, flip: true)
         adjt = fold_adverb_node!(prev, adjt) if prev
 
         return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
         return adjt unless (succ = scan_adjt!(succ)) && succ.adjt_words?
-        return fold!(adjt, succ, MapTag::Aform, dic: 8)
+        return fold!(adjt, succ, MapTag::Aform)
       when .particles?
         verb = fold_verb_auxils!(verb, succ)
         break if verb.succ? == succ
@@ -48,7 +48,7 @@ module MT::TlRule
           succ.val = "xong"
         end
 
-        verb = fold!(verb, succ, MapTag::Verb, dic: 4)
+        verb = fold!(verb, succ, MapTag::Verb)
       when .verb_words?
         verb = fold_verb_verb!(verb, succ)
         # when .adjt_words?, .preposes?, .locat?
@@ -57,7 +57,7 @@ module MT::TlRule
       when .adv_bu4?
         verb = fold_verb_advbu!(verb, succ)
       when .qtverb?, .qttime?
-        verb = fold!(verb, succ, verb.tag, dic: 2)
+        verb = fold!(verb, succ, verb.tag)
         break
       else
         break

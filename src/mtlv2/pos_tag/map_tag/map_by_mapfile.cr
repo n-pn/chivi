@@ -33,18 +33,18 @@ module MT::MapTag
   ADVB_CAST = load_map("cast_advbs", MtlPos.flags(None))
 
   def self.cast_noun(key : String)
-    NOUN_CAST[key] || Nword
+    NOUN_CAST[key] ||= Nword
   end
 
   def self.cast_verb(key : String)
-    VERB_CAST[key] || Verb
+    VERB_CAST[key] ||= Verb
   end
 
   def self.cast_adjt(key : String)
-    ADJT_CAST[key] || Adjt
+    ADJT_CAST[key] ||= Adjt
   end
 
   def self.cast_advb(key : String)
-    ADVB_CAST[key] || make(:adv_term)
+    ADVB_CAST[key] ||= make(:adv_term)
   end
 end

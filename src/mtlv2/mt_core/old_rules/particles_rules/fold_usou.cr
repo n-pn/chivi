@@ -6,7 +6,7 @@ module MT::TlRule
     return usuo unless succ.verb_words?
 
     usuo.val = "chỗ"
-    verb = fold!(usuo, succ, succ.tag, dic: 6)
+    verb = fold!(usuo, succ, succ.tag)
     fold_verbs!(verb)
   end
 end

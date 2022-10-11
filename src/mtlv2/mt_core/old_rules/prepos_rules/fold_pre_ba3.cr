@@ -6,7 +6,7 @@ module MT::TlRule
     # return node unless noun = scan_noun!(succ)
 
     # node.set!(guess_pre_ba3_defn(noun) || "chiếc", MapTag::Qtnoun)
-    # fold!(node, noun, noun.tag, dic: 5)
+    # fold!(node, noun, noun.tag)
   end
 
   BA3_HANDLERS = {'剑', '刀', '枪'}

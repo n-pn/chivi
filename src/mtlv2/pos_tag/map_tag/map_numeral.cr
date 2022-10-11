@@ -11,7 +11,7 @@ module MT::MapTag
 
   NUMBER_MAP = load_map("nquants")
 
-  def self.map_number(tag : String, key : String) : self
+  def self.map_number(tag : String, key : String) : {MtlTag, MtlPos}
     return map_nquant(key) if tag[1]? == 'q'
 
     NUMBER_MAP[key] ||= begin
@@ -34,11 +34,10 @@ module MT::MapTag
   Nqtime = make(:nqtime, :nounish)
 
   def self.map_nquant(key : String)
-    NQUANT_MAP[key] ||= map_quanti(clean_nquant(key)).qt_to_nq!
-  end
-
-  def qt_to_nq! : self
-    PosTag.new(@tag + 20, @pos)
+    NQUANT_MAP[key] ||= begin
+      tag, pos = map_quanti(clean_nquant(key))
+      {tag + 20, pos}
+    end
   end
 
   NUM_CHARS = {

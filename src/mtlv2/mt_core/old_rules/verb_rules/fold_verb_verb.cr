@@ -12,10 +12,10 @@ module MT::TlRule
       end
 
       tag = count == 0 ? verb_1.tag : MapTag::Verb
-      return fold!(verb_1, verb_2, tag, dic: 0)
+      return fold!(verb_1, verb_2, tag)
     end
 
     return verb_1 unless verb_1.tag.vauxil?
-    fold!(verb_1, verb_2, verb_2.tag, dic: 5)
+    fold!(verb_1, verb_2, verb_2.tag)
   end
 end

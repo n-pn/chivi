@@ -7,7 +7,7 @@ module MT::Core
   end
 
   def join_adjt_1!(adjt : BaseNode) : BaseNode
-    ptag = PosTag.new(:aform)
+    ptag = MapTag.make(:aform)
     adjt = join_adjt_0!(adjt)
 
     while (prev = adjt.prev?) && prev.adjt_words?
@@ -20,7 +20,7 @@ module MT::Core
 
   def join_adjt_0!(adjt : BaseNode)
     return adjt unless prev = adjt.prev?
-    ptag = PosTag.new(:aform)
+    ptag = MapTag.make(:aform)
 
     while prev.adjt_words?
       adjt = BasePair.new(prev, adjt, tag: ptag, flip: false)

@@ -60,7 +60,7 @@ module MT::TlRule
       flip = should_flip_noun?(prev.prev?, noun.succ?)
     end
 
-    fold!(prev, noun, MapTag::Nform, dic: 5, flip: flip)
+    fold!(prev, noun, MapTag::Nform, flip: flip)
     # next_is_verb = noun.succ? { |x| x.verbal? || x.preposes? }
   end
 
@@ -87,7 +87,7 @@ module MT::TlRule
       ptag = MapTag::CapHuman
     end
 
-    fold!(prev, noun, ptag, dic: 4, flip: false)
+    fold!(prev, noun, ptag, flip: false)
   end
 
   def fold_name_noun_left!(name, prev)
@@ -98,11 +98,11 @@ module MT::TlRule
       return fold!(prev, name, name.tag, flip: false) if name.cap_human?
     end
 
-    fold!(prev, name, MapTag::Nform, dic: 5, flip: false)
+    fold!(prev, name, MapTag::Nform, flip: false)
   end
 
   def fold_noun_adjt_left!(noun, adjt)
     flip = adjt.key != "原"
-    fold!(adjt, noun, MapTag::Nform, dic: 3, flip: flip)
+    fold!(adjt, noun, MapTag::Nform, flip: flip)
   end
 end

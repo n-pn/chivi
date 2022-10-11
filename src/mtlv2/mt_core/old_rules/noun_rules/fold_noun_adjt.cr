@@ -8,13 +8,13 @@ module MT::TlRule
     case succ = adjt.succ?
     when .nil? then noun
     when .bond_word?
-      fold!(noun, adjt, MapTag::Aform, dic: 6)
+      fold!(noun, adjt, MapTag::Aform)
     when .pt_dep?
       return noun if succ.succ? { |x| x.verb_words? || x.boundary? }
-      fold!(noun, adjt, MapTag::Aform, dic: 7)
+      fold!(noun, adjt, MapTag::Aform)
     when .pt_dev?
       return noun unless (prev = noun.prev?) && (prev.object? || prev.bond_word?)
-      adjt = fold!(noun, adjt, MapTag::Aform, dic: 8)
+      adjt = fold!(noun, adjt, MapTag::Aform)
       fold_adjt_ude2!(adjt, succ)
     else
       noun

@@ -4,9 +4,9 @@ module MT::TlRule
 
     if succ && succ.maybe_verb?
       succ = succ.advb_words? ? fold_adverbs!(succ) : fold_verbs!(succ)
-      fold!(prev, succ, succ.tag, dic: 3)
+      fold!(prev, succ, succ.tag)
     else
-      fold!(prev, uzhe, prev.tag, dic: 3)
+      fold!(prev, uzhe, prev.tag)
     end
   end
 end

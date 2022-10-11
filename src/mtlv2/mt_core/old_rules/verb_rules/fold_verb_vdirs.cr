@@ -7,17 +7,17 @@ module MT::TlRule
         if succ.pt_dep? && (noun = scan_noun!(succ.succ?))
           vdir.set!("quá khứ", MapTag::Tword)
           node = fold_ude1_left!(ude1: succ, left: vdir, right: noun)
-          return fold!(verb, node, MapTag::Vobj, dic: 6)
+          return fold!(verb, node, MapTag::Vobj)
         end
 
         if noun = scan_noun!(succ)
-          verb = fold!(verb, vdir.set!("qua"), MapTag::Verb, dic: 5)
-          return fold!(verb, noun, MapTag::Vobj, dic: 6)
+          verb = fold!(verb, vdir.set!("qua"), MapTag::Verb)
+          return fold!(verb, noun, MapTag::Vobj)
         end
       end
 
       vdir.set!("quá khứ", MapTag::Tword)
-      return fold!(verb, vdir, MapTag::Vobj, dic: 6)
+      return fold!(verb, vdir, MapTag::Vobj)
     end
 
     case vdir.key
@@ -31,6 +31,6 @@ module MT::TlRule
     end
 
     return verb if vdir.succ?(&.verb_words?) && verb.ends_with?('了')
-    fold!(verb, vdir, MapTag::Verb, dic: 5)
+    fold!(verb, vdir, MapTag::Verb)
   end
 end

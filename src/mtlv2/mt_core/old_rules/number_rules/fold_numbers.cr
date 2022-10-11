@@ -10,7 +10,7 @@ module MT::TlRule
 
       if (prev = node.prev?) && prev.time_words?
         # TODO: do not do this but calling fold_number a second time instead
-        node = fold!(prev, node, node.tag, dic: 6, flip: true)
+        node = fold!(prev, node, node.tag, flip: true)
       end
 
       fold_nouns!(node)
@@ -29,7 +29,7 @@ module MT::TlRule
 
   def fold_nquant_noun!(prev : BaseNode, node : BaseNode)
     prev = clean_个!(prev)
-    node = fold!(prev, node, MapTag::Nform, dic: 3)
+    node = fold!(prev, node, MapTag::Nform)
     node
   end
 
@@ -49,7 +49,7 @@ module MT::TlRule
 
     return node unless node.numbers? && (tail = node.succ?)
     if tail.punctuations?
-      node = fold!(node, tail, MapTag::Nattr, dic: 5) if tail.quantis?
+      node = fold!(node, tail, MapTag::Nattr) if tail.quantis?
       return node
     end
 
@@ -59,7 +59,7 @@ module MT::TlRule
     # when .pre_dui?
     #   if (succ_2 = tail.succ?) && succ_2.numbers?
     #     tail.val = "đối"
-    #     return fold!(node, succ_2, MapTag::Aform, dic: 2)
+    #     return fold!(node, succ_2, MapTag::Aform)
     #   end
 
     #   tail.set!("đôi", MapTag::Qtnoun)
@@ -67,22 +67,22 @@ module MT::TlRule
     #   tail = fold_pre_ba3!(tail)
 
     #   if tail.noun_words?
-    #     return fold!(node, tail, tail.tag, dic: 3)
+    #     return fold!(node, tail, tail.tag)
     #   elsif node.prev? { |x| x.verbal? || x.prev?(&.verbal?) }
     #     tail.set!("phát", MapTag::Qtverb)
-    #     return fold!(node, tail, MapTag::Nqverb, dic: 5)
+    #     return fold!(node, tail, MapTag::Nqverb)
     #   else
     #     tail.set!("chiếc", MapTag::Qtnoun)
-    #     return fold!(node, tail, MapTag::Nqnoun, dic: 5)
+    #     return fold!(node, tail, MapTag::Nqnoun)
     #   end
     # when .pro_ji?
-    #   node = fold!(node, tail, MapTag::Numeric, dic: 5)
+    #   node = fold!(node, tail, MapTag::Numeric)
 
     #   # TODO: handle appros
     #   return fold_proji_right!(node)
     # else
     #   if tail.key == "号"
-    #     return fold!(node, tail, MapTag::Noun, dic: 9, flip: true)
+    #     return fold!(node, tail, MapTag::Noun, flip: true)
     #   end
 
     #   node, appro = fold_pre_quanti_appro!(node, tail)
@@ -103,13 +103,13 @@ module MT::TlRule
     when "点" then node = fold_hour!(node, tail, appro)
     when "分" then node = fold_minute!(node, tail, appro)
     else
-      node = fold!(node, tail, tail.tag.qt_to_nq!, dic: 3)
+      node = fold!(node, tail, tail.tag.qt_to_nq!)
       node = fold_suf_quanti_appro!(node) if has_ge4
     end
 
     if has_ge4 && (tail = node.succ?) && tail.quantis?
       heal_has_ge4!(has_ge4)
-      node = fold!(node, tail, tail.tag.qt_to_nq!, dic: 3)
+      node = fold!(node, tail, tail.tag.qt_to_nq!)
     end
 
     fold_suf_quanti_appro!(node)
@@ -125,7 +125,7 @@ module MT::TlRule
 
   def fold_yi_verb!(node : BaseNode, succ : BaseNode)
     return node unless node.key == "一" && succ.common_verbs?
-    fold!(node.set!("vừa"), succ, succ.tag, dic: 4)
+    fold!(node.set!("vừa"), succ, succ.tag)
   end
 
   PRE_NUM_APPROS = {

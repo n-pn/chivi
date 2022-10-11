@@ -11,7 +11,7 @@ module MT::TlRule
     key_io = String::Builder.new(node.key)
     val_io = String::Builder.new(node.val)
 
-    match_tag = PosTag.new(:nhanzi0)
+    match_tag = MapTag.make(:nhanzi0)
 
     while succ.tag == match_tag
       key_io << succ.key

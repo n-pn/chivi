@@ -2,17 +2,21 @@ require "tabkv"
 require "lexbor"
 require "../src/appcv/shared/sname_map"
 
-DIR = "var/.cached/index"
+DIR = "var/books/.html"
 Dir.mkdir_p(DIR)
 
 def fresh?(file : String, ttl = 1.days) : Bool
-  return false unless mtime >= Time.utc - ttl
+  return false unless info = File.info?(file)
+  info.modification_time + ttl >= Time.utc
 end
 
 def get_page(file : String, link : String, ttl = 1.days)
-  unless File.info?(file).try(&.modification_time.>= Time.utc - ttl)
+  unless fresh?(file, ttl)
+    try = 0
+
     loop do
-      puts "- Fetching #{file}".colorize.cyan
+      try += 1
+      puts "- Fetching #{link} (try: #{try})".colorize.cyan
       `curl -L -k -s -f -m 30 '#{link}' -o #{file}`
       break if $?.success?
     end
@@ -49,33 +53,33 @@ def extract_upper(sname : String) : String
 
   case sname
   when "yousuu"
-    get_upper(page, ".book-info > .book-name")
+    parser_elem(page, ".book-info > .book-name")
   when "duokan8"
-    get_upper(page, ".recommend-list ul:not([class]) a:first-of-type").split("_").last
+    parser_elem(page, ".recommend-list ul:not([class]) a:first-of-type").split("_").last
   when "69shu"
-    get_upper(page, ".mybox > .ranking .active > a", ".htm")
+    parser_elem(page, ".mybox > .ranking .active > a", ".htm")
   when "hetushu"
-    get_upper(page, "#list a:first-of-type", "/index.html")
+    parser_elem(page, "#list a:first-of-type", "/index.html")
   when "biqu5200", "paoshu8", "shubaow", "biquyue"
-    get_upper(page, "#newscontent > .r .s2 > a").split("_").last
+    parser_elem(page, "#newscontent > .r .s2 > a").split("_").last
   when "sdyfcm"
-    get_upper(page, "#newscontent_n .s2 > a")
+    parser_elem(page, "#newscontent_n .s2 > a")
   when "xswang"
-    get_upper(page, "#newscontent .s2 > a")
+    parser_elem(page, "#newscontent .s2 > a")
   when "5200"
-    get_upper(page, ".up > .r .s2 > a").split("_").last
+    parser_elem(page, ".up > .r .s2 > a").split("_").last
   else
-    get_upper(page, "#newscontent > .r .s2 > a")
+    parser_elem(page, "#newscontent > .r .s2 > a")
   end
 end
 
-def get_upper(page : Lexbor::Parser, query : String, clean = "")
+def parser_elem(page : Lexbor::Parser, query : String, clean = "")
   node = page.css(query).first
   File.basename(node.attributes["href"].sub(clean, ""))
 end
 
 output = Tabkv(String).new("var/books/upper.tsv")
-snames = ARGV.empty? ? ["yousuu"].concat(CV::SnameMap.alive_snames) : ARGV
+snames = ARGV.reject(&.starts_with?('-'))
 
 snames.each do |sname|
   upper = extract_upper(sname)

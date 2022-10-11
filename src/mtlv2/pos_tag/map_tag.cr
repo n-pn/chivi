@@ -43,7 +43,7 @@ module MT::MapTag
   ###
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def self.init(tag : String, key : String = "", val : String = "", alt : String? = nil) : self
+  def self.init(tag : String, key : String = "", val : String = "", alt : String? = nil) : {MtlTag, MtlPos}
     case tag[0]?
     when nil then LitTrans
     when 'N' then map_name(tag, key)

@@ -56,9 +56,9 @@ class MT::BaseTerm < MT::BaseNode
   end
 
   def apply_cap!(cap : Bool = false) : Bool
-    case tag
-    when .inactive?     then cap
-    when .punctuations? then cap || @tag.cap_after?
+    case
+    when @pos.inactive?     then cap
+    when @tag.punctuations? then cap || @pos.cap_after?
     else
       @val = CV::TextUtil.capitalize(@val) if cap
       false
@@ -75,7 +75,7 @@ class MT::BaseTerm < MT::BaseNode
 
   def inspect(io : IO = STDOUT, pad = -1) : Nil
     io << " " * pad if pad >= 0
-    io << "[#{@val.colorize.light_yellow.bold}] #{@key.colorize.blue} #{@tag.tag.colorize.light_cyan} #{@dic} #{@idx.colorize.dark_gray}"
+    io << "[#{@val.colorize.light_yellow.bold}] #{@key.colorize.blue} #{@tag.colorize.light_cyan} #{@dic} #{@idx.colorize.dark_gray}"
     io << '\n' if pad >= 0
   end
 end

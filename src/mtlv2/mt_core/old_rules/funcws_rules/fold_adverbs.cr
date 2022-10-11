@@ -23,16 +23,16 @@ module MT::TlRule
       fold_vmodal!(succ, nega: node)
     when .pre_dui?
       succ = fold_pre_dui!(succ)
-      fold!(node, succ, succ.tag, dic: 9)
+      fold!(node, succ, succ.tag)
     when .advb_words?
-      node = fold!(node, succ, succ.tag, dic: 4)
+      node = fold!(node, succ, succ.tag)
       return node unless succ = node.succ?
       fold_adverb_base!(node, succ)
     when .verb_words?
-      node = fold!(node, succ, succ.tag, dic: 4)
+      node = fold!(node, succ, succ.tag)
       fold_verbs!(node)
     when .adjt_words?
-      node = fold!(node, succ, succ.tag, dic: 5)
+      node = fold!(node, succ, succ.tag)
       fold_adjts!(node)
     else
       return node unless succ.key == "一样"
@@ -49,7 +49,7 @@ module MT::TlRule
       node.val = succ.succ?(&.pt_zhe?) ? "không" : node.prev?(&.nounish?) ? "chưa" : "không có"
       fold_verbs!(succ, prev: node)
     when .adjt?, .pl_ajad?, .pl_ajno?
-      fold!(node.set!("không"), succ, MapTag::Adjt, dic: 2)
+      fold!(node.set!("không"), succ, MapTag::Adjt)
     else
       node
     end
@@ -58,10 +58,10 @@ module MT::TlRule
   def fold_adv_fei!(node : BaseNode, succ = node.succ) : BaseNode
     case succ
     when .amod_words?, .common_nouns?, .pl_ajno?, .pl_veno?
-      node = fold!(node, succ, MapTag::Amod, dic: 7)
+      node = fold!(node, succ, MapTag::Amod)
       fold_adjts!(node)
     when .verb_words?
-      node = fold!(node, succ, succ.tag, dic: 6)
+      node = fold!(node, succ, succ.tag)
       fold_verbs!(node)
     else
       node.set!("không phải là")
@@ -75,7 +75,7 @@ module MT::TlRule
     case succ.tag
     when .v_you?
       return node unless (noun = succ.succ?) && noun.common_nouns?
-      succ = fold!(succ, noun, MapTag::Aform, dic: 5)
+      succ = fold!(succ, noun, MapTag::Aform)
       fold_adverb_node!(node, succ)
     when .modal_verbs?
       fold_vmodal!(succ, nega: node)
@@ -86,16 +86,16 @@ module MT::TlRule
       fold_adjts!(succ, prev: node)
     when .adv_bu4?
       succ.succ? { |tail| succ = fold_adv_bu!(succ, tail) }
-      fold!(node, succ, succ.tag, dic: 2)
+      fold!(node, succ, succ.tag)
     when .advb_words?
       succ = fold_adverbs!(succ)
-      node = fold!(node, succ, succ.tag, dic: 6)
+      node = fold!(node, succ, succ.tag)
     when .locat?
       return node unless node.key = "最"
-      fold!(node, succ, succ.tag, dic: 7, flip: true)
+      fold!(node, succ, succ.tag, flip: true)
     when .preposes?
       succ = fold_preposes!(succ)
-      fold!(node, succ, succ.tag, dic: 2)
+      fold!(node, succ, succ.tag)
     when .pt_der?
       fold_adverb_ude3!(node, succ)
     else
@@ -106,7 +106,7 @@ module MT::TlRule
   # def fix_adverb!(node : BaseNode, succ = node.succ) : {BaseNode, BaseNode?}
   #   case succ
   #   when .v_shi?
-  #     node = fold!(node, succ, MapTag::Vead, dic: 8)
+  #     node = fold!(node, succ, MapTag::Vead)
   #     succ = node.succ?
   #   when .wd_hao?
   #     succ = heal_wd_hao!(succ)

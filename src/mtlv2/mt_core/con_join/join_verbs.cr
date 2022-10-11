@@ -16,14 +16,14 @@ module MT::Core
     if prev.prep_form?
       verb.tap(&.add_prep(prev))
     else
-      BasePair.new(prev, verb, tag: MapTag::SubjVerb, dic: 4)
+      BasePair.new(prev, verb, tag: MapTag::SubjVerb)
     end
   end
 
   def join_verb_0!(verb : BaseNode, prev = verb.prev)
     return verb unless prev.vauxil?
     # FIXME: fix auxil values
-    BasePair.new(prev, verb, tag: verb.tag, dic: 3, flip: false)
+    BasePair.new(prev, verb, tag: verb.tag, flip: false)
   end
 
   private def join_verb_1!(verb : BaseNode)

@@ -38,10 +38,10 @@ module MT::TlRule
 
     case succ.tag
     when .pt_dep?
-      fold!(node.set!("đúng"), succ.set!(""), MapTag::Adjt, dic: 7)
+      fold!(node.set!("đúng"), succ.set!(""), MapTag::Adjt)
     when .pt_le?
       # succ.val = "" unless keep_pt_le?(node, succ)
-      fold!(node.set!("đúng"), succ, MapTag::Adjt, dic: 7)
+      fold!(node.set!("đúng"), succ, MapTag::Adjt)
     when .boundary?, .conjunct?, .concoord?
       node.set!("đúng", MapTag::Adjt)
     else
@@ -54,7 +54,7 @@ module MT::TlRule
 
     if succ.verb?
       # todo: change "bị" to "được" if suitable
-      node = fold!(node, succ, succ.tag, dic: 5)
+      node = fold!(node, succ, succ.tag)
       fold_verbs!(node)
     else
       fold_prepos_inner!(node, succ, mode: mode)
@@ -68,7 +68,7 @@ module MT::TlRule
       # TODO: check conditions when prezai can be translated at "đang"
       # node.set!("đang")
 
-      node = fold!(node, succ, succ.tag, dic: 6)
+      node = fold!(node, succ, succ.tag)
       return fold_verbs!(node)
     end
 

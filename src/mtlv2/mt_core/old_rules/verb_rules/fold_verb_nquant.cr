@@ -7,6 +7,6 @@ module MT::TlRule
   #     return verb if has_ule || tail.tag.nqvcpl?
   #   end
 
-  #   fold!(verb, tail, verb.tag, dic: 6)
+  #   fold!(verb, tail, verb.tag)
   # end
 end

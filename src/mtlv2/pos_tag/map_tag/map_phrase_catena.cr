@@ -11,7 +11,7 @@ module MT::MapTag
 
   ParenExp = make(:paren_exp, :none)
 
-  def self.map_phrase(tag : String) : self
+  def self.map_phrase(tag : String) : {MtlTag, MtlPos}
     case tag
     when "+sv"  then SubjVerb
     when "+sa"  then SubjAdjt

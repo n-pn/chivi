@@ -1,6 +1,6 @@
 @[Flags]
 enum MT::MtlPos : UInt64
-  def self.parse(values : Array(String), init : self = :none)
+  def self.parse(values : Array(String), init : MtlPos = :none)
     values.reduce(init) { |flags, value| flags | parse(value) }
   end
 

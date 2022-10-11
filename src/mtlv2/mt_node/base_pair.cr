@@ -15,6 +15,17 @@ class MT::BasePair < MT::BaseNode
     self.fix_succ!(tail.succ?)
   end
 
+  def initialize(
+    @head : BaseNode, @tail : BaseNode,
+    tag : {MtlTag, MtlPos},
+    @flip : Bool = head.at_tail? || tail.at_head?
+  )
+    # Log.warn { "resolve this!" }
+    @tag, @pos = tag
+    self.fix_prev!(head.prev?)
+    self.fix_succ!(tail.succ?)
+  end
+
   def each
     yield @tail if @flip
     yield @head

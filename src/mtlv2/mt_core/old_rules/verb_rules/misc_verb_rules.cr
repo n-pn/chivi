@@ -46,7 +46,7 @@ module MT::TlRule
         return node.set!(MapTag::Vint)
       else
         if node.key == "一" && (succ = node.succ?) && succ.verb?
-          return fold!(node.set!("một phát"), succ, succ.tag, dic: 5, flip: true)
+          return fold!(node.set!("một phát"), succ, succ.tag, flip: true)
         end
 
         return nil unless node.advb_words?

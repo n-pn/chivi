@@ -13,14 +13,14 @@ module MT::TlRule
       verb_2 = fold_once!(verb_2)
       return verb if !verb_2.verb_no_obj? && verb.prev?(&.object?)
 
-      node = fold!(verb, succ.set!(""), MapTag::DcPhrase, dic: 6)
-      return fold!(node, object, object.tag, dic: 8, flip: true)
+      node = fold!(verb, succ.set!(""), MapTag::DcPhrase)
+      return fold!(node, object, object.tag, flip: true)
     end
 
     return verb unless (noun = scan_noun!(succ)) && noun.object?
 
     if noun.posit? && verb.ends_with?('在')
-      return fold!(verb, noun, MapTag::Vobj, dic: 4)
+      return fold!(verb, noun, MapTag::Vobj)
     end
 
     if (ude1 = noun.succ?) && ude1.pt_dep? && (right = ude1.succ?)
@@ -29,11 +29,11 @@ module MT::TlRule
       end
     end
 
-    verb_object = fold!(verb, noun, MapTag::Vobj, dic: 8)
+    verb_object = fold!(verb, noun, MapTag::Vobj)
     return verb_object unless succ = verb_object.succ?
 
     if succ.suf_noun? && succ.key == "时"
-      fold!(verb_object, succ.set!("khi"), tag: MapTag::Texpr, dic: 5, flip: true)
+      fold!(verb_object, succ.set!("khi"), tag: MapTag::Texpr, flip: true)
     elsif succ.bond_word?
       fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
     else

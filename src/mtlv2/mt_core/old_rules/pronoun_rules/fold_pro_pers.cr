@@ -57,18 +57,18 @@ module MT::TlRule
     when .locat?
       fold_noun_space!(proper, nominal)
     when .people?
-      fold!(proper, nominal, proper.tag, dic: 4, flip: false)
+      fold!(proper, nominal, proper.tag, flip: false)
     when .nqtime?
       flip = !nominal.succ?(&.boundary?) if flip
-      fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
+      fold!(proper, nominal, nominal.tag, flip: flip)
     when .posit?
-      fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
+      fold!(proper, nominal, nominal.tag, flip: flip)
     when .proper_nouns?, .common_noun?
       # TODO: add pseudo proper
       proper.val = "của #{proper.val}" if flip
-      fold!(proper, nominal, nominal.tag, dic: 4, flip: flip)
+      fold!(proper, nominal, nominal.tag, flip: flip)
     else
-      fold!(proper, nominal, MapTag::Nform, dic: 8, flip: false)
+      fold!(proper, nominal, MapTag::Nform, flip: false)
     end
   end
 

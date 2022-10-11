@@ -6,7 +6,7 @@ module MT::TlRule
     tail = fold_verbs!(tail) if tail.verb_words?
     if tail.verb_words? && tail.succ?(&.pt_dep?)
       tag = succ.vobj? ? tail.tag : MapTag::SubjVerb
-      fold!(succ, tail, tag: tag, dic: 8)
+      fold!(succ, tail, tag: tag)
     end
 
     vshi

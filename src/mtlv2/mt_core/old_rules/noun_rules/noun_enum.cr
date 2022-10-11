@@ -9,13 +9,13 @@ module MT::TlRule
       if join.pt_dep?
         break unless (succ = join.succ?) && succ.noun_words?
         join.val = "của"
-        node = fold!(node, succ, succ.tag, dic: 7, flip: true)
+        node = fold!(node, succ, succ.tag, flip: true)
         break unless join = node.succ?
       end
 
       break unless join.cenum?
     end
 
-    tail ? fold!(head, tail, MapTag::Nform, dic: 8) : head
+    tail ? fold!(head, tail, MapTag::Nform) : head
   end
 end

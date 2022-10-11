@@ -17,7 +17,7 @@ module MT::TlRule
   def fold_nested!(head : BaseNode, tail : BaseNode)
     fold_list!(head, tail)
     ptag = guess_nested_tag(head, tail)
-    list = fold!(head, tail, tag: ptag, dic: 0)
+    list = fold!(head, tail, tag: ptag)
     # list.inspect
     list
   end
@@ -60,7 +60,7 @@ module MT::TlRule
   #   end
 
   #   return head unless tail && tail != head.succ?
-  #   root = fold!(head, tail, MapTag::Nother, dic: 0)
+  #   root = fold!(head, tail, MapTag::Nother)
 
   #   fix_grammar!(head)
   #   root
@@ -78,7 +78,7 @@ module MT::TlRule
 
   #   return head unless tail && tail != head.succ?
 
-  #   root = fold!(head, tail, tag: MapTag::Unkn, dic: 0)
+  #   root = fold!(head, tail, tag: MapTag::Unkn)
   #   fix_grammar!(root.body, level: 1)
 
   #   succ = head.succ

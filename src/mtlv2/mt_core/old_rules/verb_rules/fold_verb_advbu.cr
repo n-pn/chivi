@@ -24,6 +24,6 @@ module MT::TlRule
       tag = MapTag::Verb
     end
 
-    fold!(verb, verb_2, tag: tag, dic: 5)
+    fold!(verb, verb_2, tag: tag)
   end
 end

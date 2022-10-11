@@ -6,14 +6,14 @@ module MT::TlRule
     case succ.tag
     when .honor?
       if node.proper_nouns? || node.honor?
-        fold!(node, succ, MapTag::Person, dic: 3)
+        fold!(node, succ, MapTag::Person)
       else
-        fold!(node, succ, MapTag::Person, dic: 3, flip: true)
+        fold!(node, succ, MapTag::Person, flip: true)
       end
     when .proper_nouns?
-      fold!(node, succ, succ.tag, dic: 4)
+      fold!(node, succ, succ.tag)
     when .posit?
-      fold!(node, succ, MapTag::DcPhrase, dic: 3, flip: true)
+      fold!(node, succ, MapTag::DcPhrase, flip: true)
       # when .locality?
       #   fold_noun_space!(node, succ) if mode == 0
     else
@@ -24,7 +24,7 @@ module MT::TlRule
       end
 
       tag = node.tag == succ.tag ? node.tag : MapTag::Noun
-      fold!(node, succ, tag, dic: 3, flip: flip)
+      fold!(node, succ, tag, flip: flip)
     end
   end
 

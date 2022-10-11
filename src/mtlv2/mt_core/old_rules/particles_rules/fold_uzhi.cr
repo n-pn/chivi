@@ -9,7 +9,7 @@ module MT::TlRule
     end
 
     tag ||= MapTag::Nform
-    fold!(prev, succ, tag, dic: 3, flip: true)
+    fold!(prev, succ, tag, flip: true)
   end
 
   def is_percent?(prev : BaseNode, uzhi : BaseNode)

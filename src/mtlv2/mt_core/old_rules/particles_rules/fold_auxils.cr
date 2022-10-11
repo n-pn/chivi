@@ -38,7 +38,7 @@ module MT::TlRule
       node = succ
     end
 
-    fold!(verb, node, MapTag::Verb, dic: 5)
+    fold!(verb, node, MapTag::Verb)
   end
 
   def keep_pt_le?(prev : BaseNode, node : BaseNode, succ = node.succ?) : Bool

@@ -13,25 +13,25 @@ module MT::TlRule
     when .key_is?("可")
       if nega
         node.val = "thể"
-        node = fold!(nega, node, node.tag, dic: 6)
+        node = fold!(nega, node, node.tag)
       else
         node.val = "có thể" if succ.try(&.verbal?)
       end
     else
-      node = fold!(nega, node, node.tag, dic: 6) if nega
+      node = fold!(nega, node, node.tag) if nega
     end
 
     case succ
     when .nil? then node
     when .preposes?
       return node if succ.pre_bi3?
-      node = fold!(node, succ, succ.tag, dic: 6)
+      node = fold!(node, succ, succ.tag)
       fold_preposes!(node)
     when .advbial?
       succ = fold_adverbs!(succ)
-      succ.verb? ? fold!(node, succ, succ.tag, dic: 6) : node
+      succ.verb? ? fold!(node, succ, succ.tag) : node
     when .verbal?
-      verb = fold!(node, succ, succ.tag, dic: 6)
+      verb = fold!(node, succ, succ.tag)
       fold_verbs!(verb)
     when .noun_words?
       # return node unless node.vm_neng?
@@ -50,7 +50,7 @@ module MT::TlRule
       flip = prev.try(&.adv_bu4?)
     end
 
-    prev ? fold!(prev, node, node.tag, dic: 6, flip: flip) : node
+    prev ? fold!(prev, node, node.tag, flip: flip) : node
   end
 
   private def vmhui_before_skill?(prev : BaseNode?, succ : BaseNode?) : Bool
@@ -102,6 +102,6 @@ module MT::TlRule
       end
     end
 
-    nega ? fold!(nega, node, node.tag, dic: 2) : node
+    nega ? fold!(nega, node, node.tag) : node
   end
 end

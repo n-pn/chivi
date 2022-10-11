@@ -15,7 +15,7 @@ module MT::TlRule
       when .middot?
         break unless (tail = succ.succ?) && succ.cap_human?
         succ.val = ""
-        noun = fold!(noun, tail, tail.tag, dic: 3)
+        noun = fold!(noun, tail, tail.tag)
       when .maybe_adjt?
         break if succ.adv_bu4?
         return fold_noun_adjt!(noun, succ)
@@ -26,10 +26,10 @@ module MT::TlRule
         # TODO: check with prev to group
         return mode == 0 ? fold_uzhi!(succ, noun) : noun
       when .pt_cmps?
-        adjt = fold!(noun, succ.set!("như"), MapTag::Aform, dic: 7, flip: true)
+        adjt = fold!(noun, succ.set!("như"), MapTag::Aform, flip: true)
         return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
         succ = succ.advb_words? ? fold_adverbs!(succ) : fold_adjts!(succ)
-        return fold!(adjt, succ, MapTag::Aform, dic: 8)
+        return fold!(adjt, succ, MapTag::Aform)
       when .position?
         return noun if noun.prev? { |x| x.numeral? || x.pronouns? || x.adjt_words? }
         noun = fold_noun_space!(noun, succ)

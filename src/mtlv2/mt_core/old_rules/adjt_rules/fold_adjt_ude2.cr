@@ -3,7 +3,7 @@ module MT::TlRule
     return adjt if adjt.prev?(&.common_nouns?)
     return adjt unless (succ = ude2.succ?) && succ.verb_words?
 
-    adjt = fold!(adjt, ude2.set!("mà"), MapTag::DrPhrase, dic: 3)
-    fold!(adjt, fold_verbs!(succ), MapTag::Vform, dic: 5)
+    adjt = fold!(adjt, ude2.set!("mà"), MapTag::DrPhrase)
+    fold!(adjt, fold_verbs!(succ), MapTag::Vform)
   end
 end

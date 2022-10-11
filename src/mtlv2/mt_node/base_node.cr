@@ -66,7 +66,7 @@ abstract class MT::BaseNode
   abstract def apply_cap!(cap : Bool) : Bool
 
   def add_space?(prev = self.prev) : Bool
-    !(prev.tag.no_ws_after? || @tag.no_ws_before?)
+    !(prev.pos.no_ws_after? || @pos.no_ws_before?)
   end
 end
 
@@ -79,7 +79,7 @@ module MT::BaseExpr
     self.each do |node|
       io << ' ' if prev && node.add_space?(prev)
       node.to_txt(io)
-      prev = node unless node.tag.inactive?
+      prev = node unless node.pos.inactive?
     end
   end
 
@@ -98,16 +98,16 @@ module MT::BaseExpr
     self.each do |node|
       io << "\t " if prev && node.add_space?(prev)
       node.to_mtl(io)
-      prev = node unless node.tag.inactive?
+      prev = node unless node.pos.inactive?
     end
 
     io << '〉'
   end
 
   def inspect(io : IO = STDOUT, pad = 0) : Nil
-    io << " " * pad << "{" << @tag.tag.colorize.cyan << " " << "}" << '\n'
+    io << " " * pad << "{" << @tag.colorize.cyan << " " << "}" << '\n'
     self.each(&.inspect(io, pad + 2))
-    io << " " * pad << "{/" << @tag.tag.colorize.cyan << "}"
+    io << " " * pad << "{/" << @tag.colorize.cyan << "}"
     io << '\n' if pad > 0
   end
 end

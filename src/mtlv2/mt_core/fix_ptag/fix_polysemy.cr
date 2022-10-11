@@ -134,29 +134,49 @@ module MT::Core
     end
 
     def resolve! : BaseTerm
-      _, type = [
-        {-@noun_pct, 0},
-        {-@verb_pct, 1},
-        {-@adjt_pct, 2},
-        {-@advb_pct, 3},
-      ].sort.first
-
-      case type
-      when 0
+      case resolve_type!
+      when .noun?
         @noun_alt.try { |x| @node.val = x }
         @node.tag, @node.pos = MapTag.cast_noun(@node.key)
-      when 1
+      when .verb?
         @verb_alt.try { |x| @node.val = x }
         @node.tag, @node.pos = MapTag.cast_verb(@node.key)
-      when 2
+      when .adjt?
         @adjt_alt.try { |x| @node.val = x }
         @node.tag, @node.pos = MapTag.cast_adjt(@node.key)
-      else
+      when .advb?
         @advb_alt.try { |x| @node.val = x }
         @node.tag, @node.pos = MapTag.cast_advb(@node.key)
       end
 
       @node
+    end
+
+    enum Type
+      Noun; Verb; Adjt; Advb
+    end
+
+    # ameba:disable Metrics/CyclomaticComplexity
+    private def resolve_type! : Type
+      case @node.tag
+      when .pl_noad?
+        @noun_pct >= @advb_pct ? Type::Noun : Type::Advb
+      when .pl_vead?
+        @verb_pct >= @advb_pct ? Type::Verb : Type::Advb
+      when .pl_ajad?
+        @adjt_pct >= @advb_pct ? Type::Adjt : Type::Advb
+      when .pl_veno?
+        @verb_pct >= @noun_pct ? Type::Verb : Type::Noun
+      when .pl_ajno?
+        @adjt_pct >= @noun_pct ? Type::Adjt : Type::Noun
+      else
+        [
+          {-@noun_pct, Type::Noun},
+          {-@verb_pct, Type::Verb},
+          {-@adjt_pct, Type::Adjt},
+          {-@advb_pct, Type::Advb},
+        ].sort.first.last
+      end
     end
   end
 end

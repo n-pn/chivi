@@ -7,14 +7,14 @@ module MT::TlRule
     case prev.tag
     when .noun_words?
       if verb.verb?
-        head = fold!(prev, ude1, MapTag::DcPhrase, dic: 7)
+        head = fold!(prev, ude1, MapTag::DcPhrase)
       else
-        head = fold!(verb, ude1, MapTag::DcPhrase, dic: 7)
+        head = fold!(verb, ude1, MapTag::DcPhrase)
       end
 
-      fold!(head, right, MapTag::Nform, dic: 6, flip: true)
+      fold!(head, right, MapTag::Nform, flip: true)
     when .quantis?, .nquants?
-      verb = fold!(verb, right, MapTag::Nform, dic: 8, flip: true)
+      verb = fold!(verb, right, MapTag::Nform, flip: true)
       fold!(prev, verb, MapTag::Nform, 3)
     else
       ude1

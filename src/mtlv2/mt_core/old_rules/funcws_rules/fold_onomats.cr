@@ -7,7 +7,7 @@ module MT::TlRule
       succ.set!("mà")
       return node unless (succ_2 = succ.succ?) && succ_2.verbal?
       succ_2 = fold_verbs!(succ_2)
-      fold!(node, succ_2, succ_2.tag, dic: 5)
+      fold!(node, succ_2, succ_2.tag)
     else
       node
     end
