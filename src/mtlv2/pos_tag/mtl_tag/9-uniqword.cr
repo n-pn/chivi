@@ -15,15 +15,20 @@ WdShang = 920
 WdZhong = 921
 WdXia   = 922
 
+###
+WdHe2 = 930 # "和"
+WdYu3 = 931 # "与"
+
 # # prefixes
 WdZui = 980 # "最"
 
 # resolved special words:
 
 # # bonding words
+BondWord = 1000
 
 # ## join names
-BondName = 1000
+BondName = 1005
 
 # ## join nouns
 BondNoun = 1010

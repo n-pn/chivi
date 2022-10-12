@@ -59,7 +59,6 @@ class MT::MtData
   end
 
   def fix_grammar!
-    Core.fix_ptag!(@tail)
     fold_groups! if @pgroup.size > 1
     Core.left_join!(@tail, @head)
   end

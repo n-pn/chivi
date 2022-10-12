@@ -78,4 +78,28 @@ class MT::BaseTerm < MT::BaseNode
     io << "[#{@val.colorize.light_yellow.bold}] #{@key.colorize.blue} #{@tag.colorize.light_cyan} #{@dic} #{@idx.colorize.dark_gray}"
     io << '\n' if pad >= 0
   end
+
+  def as_advb!(val : String? = nil)
+    @val = val if val
+    @tag, @pos = MapTag.cast_advb(@key)
+    self
+  end
+
+  def as_adjt!(val : String? = nil)
+    @val = val if val
+    @tag, @pos = MapTag.cast_adjt(@key)
+    self
+  end
+
+  def as_noun!(val : String? = nil)
+    @val = val if val
+    @tag, @pos = MapTag.cast_noun(@key)
+    self
+  end
+
+  def as_verb!(val : String? = nil)
+    @val = val if val
+    @tag, @pos = MapTag.cast_verb(@key)
+    self
+  end
 end
