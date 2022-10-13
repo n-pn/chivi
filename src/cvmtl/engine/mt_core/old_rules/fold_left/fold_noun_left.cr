@@ -100,9 +100,4 @@ module MT::TlRule
 
     fold!(prev, name, MapTag::Nform, flip: false)
   end
-
-  def fold_noun_adjt_left!(noun, adjt)
-    flip = adjt.key != "原"
-    fold!(adjt, noun, MapTag::Nform, flip: flip)
-  end
 end
