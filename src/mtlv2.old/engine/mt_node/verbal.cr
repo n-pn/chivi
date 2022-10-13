@@ -1,7 +1,7 @@
 require "./nominal"
 require "./adverbial"
 
-module MtlV2::MTL
+module MT::MTL
   @[Flags]
   enum VerbAttr
     # shared

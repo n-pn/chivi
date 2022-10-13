@@ -1,5 +1,5 @@
 require "tabkv"
-require "../../src/mtlv1/mt_core"
+require "../../src/cvmtl/mt_core"
 
 output = Tabkv(Array(String)).new "var/vhint/names.tsv", mode: :reset
 

@@ -1,6 +1,6 @@
 require "../../mt_util"
 
-module MtlV2::TlRule
+module MT::TlRule
   def clean_个!(node : BaseNode) : BaseNode
     if body = node.body?
       deep_clean_个!(body)

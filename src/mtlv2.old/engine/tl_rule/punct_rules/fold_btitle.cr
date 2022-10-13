@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_btitle!(head : BaseNode) : BaseNode
     return head unless start_key = head.key[0]?
     end_key = match_title_end(start_key)

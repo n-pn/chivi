@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_preposes!(node : BaseNode, succ = node.succ?) : BaseNode
     return node unless succ
     return fold_verbs!(node) if succ.ule?

@@ -1,6 +1,6 @@
 require "./_generic"
 
-module MtlV2::MTL
+module MT::MTL
   # 代词 - pronoun - đại từ chưa phân loại
   class PronounWord < BaseWord
     def noun_prefix?

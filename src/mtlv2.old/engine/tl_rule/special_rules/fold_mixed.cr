@@ -1,13 +1,13 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_mixed!(node : BaseNode) : BaseNode
     node = heal_mixed!(node)
 
     case node
-    when .adverb?    then fold_adverb_base!(node)
-    when .adjective? then fold_adjts!(node)
-    when .verbal?    then fold_verbs!(node)
-    when .noun_words?   then fold_nouns!(node)
-    else                  node
+    when .adverb?     then fold_adverb_base!(node)
+    when .adjective?  then fold_adjts!(node)
+    when .verbal?     then fold_verbs!(node)
+    when .noun_words? then fold_nouns!(node)
+    else                   node
     end
   end
 

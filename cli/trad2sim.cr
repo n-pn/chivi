@@ -1,5 +1,5 @@
 require "option_parser"
-require "../src/mtlv1/mt_core"
+require "../src/cvmtl/mt_core"
 
 def convert(inp_text : String, out_file : String? = nil)
   output = CV::MtCore.trad_to_simp(inp_text)

@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   # def fold_noun_left!(node : BaseNode, mode = 1)
   #   flag = 0
 

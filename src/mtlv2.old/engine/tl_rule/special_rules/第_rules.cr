@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_第!(node : BaseNode)
     return node unless (succ = node.succ?) && (succ.nhanzis? || succ.ndigits?)
 

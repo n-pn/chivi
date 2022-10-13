@@ -1,4 +1,4 @@
-require "../../src/mtlv1/mt_core"
+require "../../src/cvmtl/mt_core"
 MTL = CV::MtCore.generic_mtl("combine")
 
 def convert(input : String)

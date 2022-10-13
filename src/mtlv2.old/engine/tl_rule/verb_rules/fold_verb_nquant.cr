@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_verb_nquant!(verb : BaseNode, tail : BaseNode, has_ule = false)
     tail = fold_number!(tail) if tail.numbers?
     return verb unless tail.nquants?

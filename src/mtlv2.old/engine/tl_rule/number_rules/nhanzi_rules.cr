@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_nhanzi!(node : BaseNode, succ = node.succ, prev : BaseNode? = nil) : BaseNode
     if time = fold_number_as_temporal(num: node, qti: succ, prev: prev)
       return time

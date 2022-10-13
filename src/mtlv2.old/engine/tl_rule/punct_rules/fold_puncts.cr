@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_puncts!(node : BaseNode)
     case node.tag
     when .titleop? then fold_btitle!(node)

@@ -1,4 +1,4 @@
-module MtlV2::MTL
+module MT::MTL
   def fold_noun_left!(curr : Nominal, left : TimeWord)
     case curr.attr
     when .locat? then TimePair.new(left, curr, flip: true)

@@ -1,4 +1,4 @@
-module MtlV2::AST::Rules
+module MT::AST::Rules
   def fold_atsign!(head : PunctWord, tail : BaseNode) : BaseNode
     key_io = String::Builder.new
 

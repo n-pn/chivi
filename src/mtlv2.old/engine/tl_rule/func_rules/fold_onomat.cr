@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_onomat!(node : BaseNode, succ = node.succ?)
     case succ
     when .nil?    then node

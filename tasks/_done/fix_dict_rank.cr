@@ -1,4 +1,4 @@
-require "../../src/mtlv1/vp_dict"
+require "../../src/cvmtl/vp_dict"
 
 INP = "var/dicts/v1"
 OUT = "var/dicts/v1.fix"

@@ -2,8 +2,8 @@ require "colorize"
 require "tabkv"
 
 require "../../src/_init/postag_init"
-require "../../src/mtlv1/mt_core"
-require "../../src/mtlv1/tl_name"
+require "../../src/cvmtl/mt_core"
+require "../../src/cvmtl/tl_name"
 
 module CV
   extend self

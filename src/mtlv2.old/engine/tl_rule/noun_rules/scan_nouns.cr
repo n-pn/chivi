@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def scan_noun!(node : Nil, prodem : BaseNode? = nil, nquant : BaseNode? = nil)
     fold_prodem_nominal!(prodem, nquant)
   end

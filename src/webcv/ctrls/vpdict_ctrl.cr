@@ -1,4 +1,4 @@
-require "../../mtlv1/vp_hint"
+require "../../cvmtl/vp_hint"
 
 class CV::VpdictCtrl < CV::BaseCtrl
   alias VdInfo = Tuple(String, String, Int32) # dict name, label, entries count

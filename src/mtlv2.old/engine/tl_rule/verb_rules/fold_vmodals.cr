@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_vmodals!(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil) : BaseNode
     return node.set!(PosTag::Noun) if vmodal_is_noun?(node)

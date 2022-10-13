@@ -1,7 +1,7 @@
 require "spec"
-require "../../src/mtlv1/mt_core"
+require "../../src/cvmtl/engine"
 
-MTL = CV::MtCore.generic_mtl("combine")
+MTL = MT::Engine.new("combine")
 
 def convert(input : String)
   MTL.cv_plain(input, cap_first: false).to_txt
@@ -9,7 +9,7 @@ end
 
 DIR = "var/cvmtl/tests"
 
-describe CV::MtCore do
+describe MT::Engine do
   files = Dir.glob("#{DIR}/**/*.tsv")
 
   files.each do |file|
@@ -23,7 +23,7 @@ describe CV::MtCore do
       focus = false
     end
 
-    tags = ["mtlv1", suite_name]
+    tags = ["cvmtl", suite_name]
 
     dir_name = File.basename(File.dirname(file))
     tags << dir_name == "tests" ? "unsorted" : dir_name

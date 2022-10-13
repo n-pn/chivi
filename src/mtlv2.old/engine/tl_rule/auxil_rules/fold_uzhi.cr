@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_uzhi!(uzhi : BaseNode, prev : BaseNode = uzhi.prev, succ = uzhi.succ?) : BaseNode
     return prev if !succ || succ.ends?
     uzhi.val = ""

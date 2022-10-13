@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_verbs!(verb : BaseNode, adverb : BaseNode? = nil) : BaseNode
     # puts [verb, adverb, "fold_verb"]
 

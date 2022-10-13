@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_temporal!(node : BaseNode, succ = node.succ?) : BaseNode
     return node if !succ || succ.ends?
 

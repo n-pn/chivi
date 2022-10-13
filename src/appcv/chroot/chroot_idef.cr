@@ -2,7 +2,7 @@
 
 # require "../nvchap/ch_list"
 # require "../nvchap/ch_repo"
-require "../../mtlv1/mt_core"
+require "../../cvmtl/mt_core"
 require "../ch_repo"
 
 class CV::Chroot

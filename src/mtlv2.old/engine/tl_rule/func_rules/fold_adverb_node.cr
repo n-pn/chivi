@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_adverb_node!(adv : BaseNode, node = adv.succ, tag = node.tag) : BaseNode
     flip = false
 

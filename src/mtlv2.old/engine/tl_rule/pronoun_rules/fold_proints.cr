@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_pro_ints!(proint : BaseNode, succ = node.succ?)
     case succ
     when .nil?, .v_shi?, .v_you?

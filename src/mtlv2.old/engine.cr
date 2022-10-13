@@ -1,6 +1,6 @@
 require "./engine/*"
 
-module MtlV2
+module MT
   module Engine
     extend self
 

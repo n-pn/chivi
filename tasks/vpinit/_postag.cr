@@ -1,4 +1,4 @@
-require "../../src/mtlv1/*"
+require "../../src/cvmtl/*"
 
 struct CV::PosTag
   # ameba:disable Metrics/CyclomaticComplexity

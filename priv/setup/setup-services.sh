@@ -2,8 +2,8 @@
 
 DIR=/home/nipin/srv/chivi.app/setup/services
 
-sudo rm /etc/systemd/system/mtlv2-srv.service
-sudo cp "$DIR/mtlv2-srv.service" /etc/systemd/system/mtlv2-srv.service
+sudo rm /etc/systemd/system/cvmtl-srv.service
+sudo cp "$DIR/cvmtl-srv.service" /etc/systemd/system/cvmtl-srv.service
 
 sudo rm /etc/systemd/system/chivi-srv.service
 sudo cp "$DIR/chivi-srv.service" /etc/systemd/system/chivi-srv.service
@@ -13,8 +13,8 @@ sudo cp "$DIR/chivi-web.service" /etc/systemd/system/chivi-web.service
 
 sudo systemctl daemon-reload
 
-sudo systemctl enable mtlv2-srv.service
-sudo service mtlv2-srv start
+sudo systemctl enable cvmtl-srv.service
+sudo service cvmtl-srv start
 
 sudo systemctl enable chivi-srv.service
 sudo service chivi-srv start

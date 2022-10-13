@@ -1,6 +1,6 @@
 require "../../../libcv/*"
 
-module MtlV2::MTL
+module MT::MTL
   module BaseNode
     property tab : Int32 = 0
 
@@ -68,7 +68,7 @@ module MtlV2::MTL
     end
 
     def klass
-      self.class.to_s.sub("MtlV2::MTL::", "")
+      self.class.to_s.sub("MT::MTL::", "")
     end
   end
 

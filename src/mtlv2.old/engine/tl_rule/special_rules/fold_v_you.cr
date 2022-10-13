@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_v_you!(vyou : BaseNode, succ = vyou.succ?)
     return vyou unless noun = scan_noun!(succ)

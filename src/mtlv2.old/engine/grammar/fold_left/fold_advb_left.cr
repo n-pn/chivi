@@ -1,4 +1,4 @@
-module MtlV2::MTL
+module MT::MTL
   def fold_advb_left!(curr : Adverbial, left : Adverbial)
     curr = AdvbExpr.new(left, curr)
     # puts [curr, curr.prev?].colorize.yellow

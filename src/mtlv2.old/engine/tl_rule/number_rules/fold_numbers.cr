@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_number!(node : BaseNode, prev : BaseNode? = nil)
     return node if !(succ = node.succ?) || succ.ends?
 

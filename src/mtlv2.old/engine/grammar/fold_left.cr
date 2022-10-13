@@ -1,6 +1,6 @@
 require "./fold_left/*"
 
-module MtlV2::MTL
+module MT::MTL
   extend self
 
   def fold_left!(curr : BaseNode, left : BaseNode) : BaseNode

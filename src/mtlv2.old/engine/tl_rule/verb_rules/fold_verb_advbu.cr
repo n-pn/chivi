@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_verb_advbu!(verb : BaseNode, adv_bu : BaseNode, tail = adv_bu.succ?) : BaseNode
     return verb.flag!(:resolved) unless tail
 

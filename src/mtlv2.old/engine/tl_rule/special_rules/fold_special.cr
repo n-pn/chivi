@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_specials!(node : BaseNode, succ = node.succ?)
     return node.flag!(:resolved) unless succ
 

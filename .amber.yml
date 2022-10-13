@@ -16,7 +16,7 @@ watch:
       - ./config/environments/*.yml
       - ./src/**/*.cr
     exclude:
-      - ./src/mtlv2/**/*.cr
+      - ./src/cvmtl/**/*.cr
       - ./src/ysapp/**/*.cr
 
   spec:

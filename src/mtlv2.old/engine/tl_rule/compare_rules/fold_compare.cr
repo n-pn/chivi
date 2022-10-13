@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_compare(head : BaseNode, tail = head.succ?)
     while tail
       return if tail.punctuations? || tail.key == "像"

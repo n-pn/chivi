@@ -1,4 +1,4 @@
-module MtlV2::MTL
+module MT::MTL
   def fold_noun!(base : BaseNode, succ : Middot)
     return succ unless (tail = succ.succ?) && is_human_name?(head, tail)
 

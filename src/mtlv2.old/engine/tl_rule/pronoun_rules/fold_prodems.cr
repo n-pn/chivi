@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_pro_dems!(node : BaseNode, succ : BaseNode) : BaseNode
     return node if node.key == "这儿" || node.key == "那儿"

@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_nouns!(noun : BaseNode, defn : BaseNode? = nil) : BaseNode
     fold_mode = NounMode.init(noun, prev: defn ? defn.prev? : noun.prev?)

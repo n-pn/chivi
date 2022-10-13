@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def heal_quanti!(node : BaseNode) : BaseNode
     not_quanti?(node) ? node : MtDict.fix_quanti(node)
   end

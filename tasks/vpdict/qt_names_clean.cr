@@ -1,5 +1,5 @@
-require "../../src/mtlv1/tl_util"
-require "../../src/mtlv1/mt_core"
+require "../../src/cvmtl/tl_util"
+require "../../src/cvmtl/mt_core"
 
 alias Dict = Hash(String, Array(String))
 

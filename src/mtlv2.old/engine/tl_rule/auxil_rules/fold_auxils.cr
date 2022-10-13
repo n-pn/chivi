@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_auxils!(node : BaseNode, mode = 1) : BaseNode
     case node.tag
     # when .ule?  then heal_ule!(node)  # 了

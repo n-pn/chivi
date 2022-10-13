@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_pronouns!(pronoun : BaseNode, succ = pronoun.succ?) : BaseNode
     return pronoun unless succ
 

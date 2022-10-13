@@ -1,6 +1,6 @@
 require "./fold_advb_left"
 
-module MtlV2::MTL
+module MT::MTL
   def fold_adjt_left!(curr : Adjective, left : BaseNode, lvl = 0)
     while left.is_a?(Adjective)
       if curr.is_a?(AdjtExpr)

@@ -1,2 +1,2 @@
-module MtlV2::MTL::Rules
+module MT::MTL::Rules
 end

@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   @[Flags]
   enum NounMode
     NoLocat # if before of noun still remains potential combinable node

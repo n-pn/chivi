@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   # MEASURES = {
   #   "宽" => "rộng",
   #   "高" => "cao",

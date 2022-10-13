@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_usuo!(usuo : BaseNode)
     case succ = usuo.succ?
     when .nil? then usuo

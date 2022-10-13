@@ -1,4 +1,4 @@
-require "../../src/mtlv1/*"
+require "../../src/cvmtl/*"
 
 def cleanup(vdict : CV::VpDict)
   count = 0

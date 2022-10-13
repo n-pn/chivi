@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   # modes:
   # 0 : to be determined
   # 1 : exact date

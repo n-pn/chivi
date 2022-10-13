@@ -1,4 +1,4 @@
-require "../../src/mtlv1/*"
+require "../../src/cvmtl/*"
 
 DIR = "_db/vpinit/legacy"
 

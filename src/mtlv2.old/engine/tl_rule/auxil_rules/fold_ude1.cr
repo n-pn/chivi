@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   # do not return left when fail to prevent infinity loop!
   def fold_ude1!(ude1 : BaseNode, left = ude1.prev, right : BaseNode? = nil) : BaseNode
     # puts [left, right]

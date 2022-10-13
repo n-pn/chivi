@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_adjt!(adjt : BaseNode, succ : Nil) : BaseNode
     adjt
   end

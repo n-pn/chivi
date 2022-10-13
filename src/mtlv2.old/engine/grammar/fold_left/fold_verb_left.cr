@@ -1,6 +1,6 @@
 require "./fold_advb_left"
 
-module MtlV2::MTL
+module MT::MTL
   def fold_verb_left!(curr : Verbal, left : BaseNode, lvl = 0)
     if advb = fold_verb_advb(left)
       curr = VerbForm.new(curr)

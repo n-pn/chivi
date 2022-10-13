@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   # -ameba:disable Metrics/CyclomaticComplexity
   def fold_verb_object!(verb : BaseNode, succ = verb.succ)
     noun = fold_once!(succ) # unless noun.flag.checked

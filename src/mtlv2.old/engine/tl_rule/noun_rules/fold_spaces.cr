@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   LOCALITY_VERBS = {
     "中" => "trúng",
     "上" => "lên",

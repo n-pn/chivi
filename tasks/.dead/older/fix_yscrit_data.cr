@@ -1,6 +1,6 @@
 require "tabkv"
 require "../src/_util/time_utils"
-require "../src/mtlv1/mt_core"
+require "../src/cvmtl/mt_core"
 
 DIR = "var/ysinfos/yscrits"
 

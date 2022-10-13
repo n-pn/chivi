@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   # def fold_verb_ude1!(verb : BaseNode, ude1 : BaseNode, right : BaseNode) : BaseNode
   #   case right.key
   #   when "时候", "时", "打算"

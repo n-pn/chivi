@@ -1,4 +1,4 @@
-module MtlV2::TlRule
+module MT::TlRule
   def fold_pre_ba3!(node : BaseNode, succ = node.succ?) : BaseNode
     return fold_prepos_inner!(node, succ) unless pre_ba3_is_qtnoun?(node, succ)
     return node unless noun = scan_noun!(succ)

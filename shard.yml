@@ -12,8 +12,8 @@ targets:
   chivi-srv:
     main: src/chivi.cr
 
-  mtlv2-srv:
-    main: src/mtlv2/server.cr
+  cvmtl-srv:
+    main: src/cvmtl/server.cr
 
   ysapp-srv:
     main: src/ysapp/server.cr

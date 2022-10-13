@@ -31,13 +31,14 @@ def tokenize(inp_dir_path, ext = '.msr.tsv'):
   inp_paths = glob.glob(os.path.join(inp_dir_path, '*.txt'))
 
   for inp_path in inp_paths:
-    print('- ', count, ': ', inp_path)
     count += 1
     out_path = inp_path.replace('inp/', 'tok/').replace('.txt', ext)
 
     if os.path.isfile(out_path):
-      print('- Parsed, skipping!')
+      print(f'- {count}: [{inp_path}] parsed, skipping')
       continue
+
+    print(f'- {count}: [{inp_path}] parsing')
 
     inp_file = open(inp_path, 'r')
     lines = inp_file.read().splitlines()
@@ -51,7 +52,7 @@ def tokenize(inp_dir_path, ext = '.msr.tsv'):
       write_file(result, out_path)
 
     except:
-      print(f'{inp_path} failed!')
+      print(f'\033[91m {inp_path} failed!\033[0m')
 
 folders = glob.glob(os.path.join("var/inits/hanlp/inp/zxcs_me/*"))
 
