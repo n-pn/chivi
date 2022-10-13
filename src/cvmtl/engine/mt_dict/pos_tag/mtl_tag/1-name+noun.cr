@@ -27,10 +27,9 @@ Nform = 131 # noun phrase
 Nattr = 135 # generic attribute
 
 # concrete nouns
-Nobjt = 140 # concrete noun
-
-Nweapon = 141
-Ninhand = 142
+NormalObj = 140
+WeaponObj = 141
+InhandObj = 142
 
 # placement
 Place = 150 # generic place

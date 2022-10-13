@@ -86,10 +86,28 @@ module MT::PosTag
 
   OBJECT_MAP = load_map("objt_nouns", MtlPos.flags(Object, Ktetic))
 
+  WEAPON_CHARS = {'剑', '刀', '枪'}
+
   def self.map_nobjt(key : String)
     OBJECT_MAP[key] ||= begin
-      # TODO: map objects by zh patterns
-      make(:nobjt, MtlPos.flags(Object, Ktetic))
+      pos = MtlPos.flags(Object, Ktetic)
+
+      # guess type of object by last character
+
+      char = key[-1]
+      # skipp common suffixes `子`, `儿`
+      if char.size > 1 && (char == '子' || char == '儿')
+        char = key[-2]
+      end
+
+      case char
+      when '剑', '刀', '枪'
+        make(:weapon_obj, pos)
+      when '米', '花', '盐', '糖', '麦', '谷'
+        make(:inhand_obj, pos)
+      else
+        make(:normal_obj, pos)
+      end
     end
   end
 end

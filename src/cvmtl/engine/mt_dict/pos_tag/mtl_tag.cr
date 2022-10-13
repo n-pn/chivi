@@ -64,10 +64,12 @@ enum MT::MtlTag : UInt32
 
   ####
 
+  # is untagged words
   def literal?
     value >= 60 && value < 90
   end
 
+  # is foreign entities
   def strings?
     value >= 80 && value < 90
   end
@@ -78,62 +80,76 @@ enum MT::MtlTag : UInt32
     value >= 100 && value < 120
   end
 
+  # is place name or oraganization
   def cap_affil?
     value >= 105 && value < 110
   end
 
+  # is not proper nouns
   def common_nouns?
     value >= 120 && value < 155
   end
 
+  # noun is objects
   def object_nouns?
     value >= 140 && value <= 150
   end
 
+  # all kind of nouns
   def noun_words?
     value >= 100 && value < 200
   end
 
+  # common noun that refer to placement/location
   def place_words?
     value >= 150 && value < 180
   end
 
+  # all locative words
   def locat_words?
     value >= 160 && value < 180
   end
 
+  # all time words
   def time_words?
     value >= 180 && value < 200
   end
 
   # pronouns
 
+  # all kind of pronouns
   def pronouns?
     value >= 200 && value < 240
   end
 
+  # personal pronouns
   def pro_pers?
     value >= 201 && value < 210
   end
 
+  # demostrate pronouns
   def pro_dems?
     value >= 210 && value < 230
   end
 
+  # interrogative pronouns
   def pro_ints?
     value >= 229 && value < 240
   end
 
+  # pronoun is a prefix, can combine with quantifier to form another pronoun
   def pro_split?
     value >= 214 && value < 229
   end
 
   # numbers
 
+  # all numbers and quantifiers
   def numqti_words?
     value >= 240 && value < 300
   end
 
+  # all kind of numbers
   def numbers?
     value >= 240 && value < 260
   end
@@ -156,18 +172,22 @@ enum MT::MtlTag : UInt32
 
   # verbal
 
+  # word that combined verbs with objects
   def vobj_words?
     value >= 300 && value < 305
   end
 
+  # verb is not copular shi or existent you
   def common_verbs?
     value >= 300 && value < 340
   end
 
+  # all kind of verbs
   def verb_words?
     value >= 300 && value < 350
   end
 
+  # special verbs
   def marked_verbs?
     value >= 330 && value < 350
   end
@@ -180,14 +200,17 @@ enum MT::MtlTag : UInt32
     value >= 309 && value < 350
   end
 
+  # verb that can combine with result complement
   def verb_take_res_cmpl?
     value >= 308 && value <= 314
   end
 
+  # verb can combine with verb
   def verb_take_verb?
     value >= 316 && value < 330
   end
 
+  # all kind of modal verbs
   def modal_verbs?
     value >= 318 && value < 330
   end

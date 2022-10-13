@@ -1,4 +1,3 @@
-require "sqlite3"
 require "crorm"
 
 module CV::ZhbookInit
