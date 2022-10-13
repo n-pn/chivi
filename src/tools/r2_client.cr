@@ -3,7 +3,7 @@ require "http/client"
 module CV::R2Client
   extend self
 
-  R2_ROOT = ENV["R2_ROOT"]? || "https://r2.chivi.app/"
+  R2_ROOT = ENV["R2_ROOT"]? || "https://cr2.chivi.app/"
   HEADERS = HTTP::Headers{"X-Custom-Auth-Key" => ENV["R2_AUTH"]}
 
   def upload(path : String, file : String) : Bool

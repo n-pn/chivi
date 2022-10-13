@@ -44,6 +44,10 @@ shards:
     git: https://github.com/elorest/compiled_license.git
     version: 1.2.2
 
+  crorm:
+    git: https://github.com/chi-vi/crorm.git
+    version: 0.0.1+git.commit.eead2b18cac7ecffa5ed99c647743401ae1eb8ba
+
   db:
     git: https://github.com/crystal-lang/crystal-db.git
     version: 0.10.1

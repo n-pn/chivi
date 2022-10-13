@@ -94,6 +94,9 @@ dependencies:
   tabkv:
     github: chi-vi/tabkv
 
+  crorm:
+    github: chi-vi/crorm
+
   amber:
     github: np-nam/amber
     branch: master

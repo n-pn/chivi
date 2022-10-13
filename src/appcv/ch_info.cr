@@ -1,4 +1,4 @@
-require "../tools/crorm/*"
+require "crorm"
 require "../_util/text_util"
 
 require "./_base"
