@@ -1,6 +1,6 @@
 require "./base_node/*"
 
-class MT::BaseSeri < MT::BaseNode
+class MT::SeriNode < MT::BaseNode
   include BaseExpr
 
   def initialize(@head : BaseNode, @tail : BaseNode,

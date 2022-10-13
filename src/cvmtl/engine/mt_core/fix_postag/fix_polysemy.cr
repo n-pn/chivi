@@ -1,5 +1,5 @@
 module MT::Core
-  def fix_polysemy!(node : BaseTerm)
+  def fix_polysemy!(node : MonoNode)
     fixer = FixPolysemy.new(node)
     fixer = fixer.guess_by_succ
     fixer = fixer.guess_by_prev
@@ -17,7 +17,7 @@ module MT::Core
     getter verb_alt : String? = nil
     getter adjt_alt : String? = nil
 
-    def initialize(@node : BaseTerm)
+    def initialize(@node : MonoNode)
       case node.tag
       when .pl_noad?
         @noun_pct = 50
@@ -140,7 +140,7 @@ module MT::Core
       self
     end
 
-    def resolve! : BaseTerm
+    def resolve! : MonoNode
       case resolve_type!
       when .noun?
         @noun_alt.try { |x| @node.val = x }

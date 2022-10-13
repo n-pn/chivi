@@ -17,7 +17,7 @@ module MT::TlRule
       fold!(node, succ.set!("phải"), MapTag::DrPhrase)
     when .key_is?("住")
       succ.val = ""
-      node.as_verb!(nil) if node.is_a?(BaseTerm)
+      node.as_verb!(nil) if node.is_a?(MonoNode)
       fold!(node, tail.set!("nổi"), MapTag::Verb)
     when .verb_words?
       node = fold!(node, succ.set!("phải"), MapTag::DrPhrase)

@@ -122,7 +122,7 @@ module MT::MTL
 
   #####
 
-  module BaseSeri
+  module SeriNode
     include BaseNode
 
     abstract def each(&block : BaseNode -> Nil)
@@ -164,8 +164,8 @@ module MT::MTL
     end
   end
 
-  class BasePair
-    include BaseSeri
+  class PairNode
+    include SeriNode
 
     property left : BaseNode
     property right : BaseNode
@@ -203,7 +203,7 @@ module MT::MTL
   end
 
   class BaseExpr
-    include BaseSeri
+    include SeriNode
 
     property head : BaseNode
     property tail : BaseNode

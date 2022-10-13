@@ -1,6 +1,6 @@
 module MT::TlRule
   def fold_pro_ints!(proint : BaseNode, succ = node.succ?)
-    if succ.is_a?(BaseTerm) && succ.polysemy?
+    if succ.is_a?(MonoNode) && succ.polysemy?
       succ = heal_mixed!(succ)
     end
 

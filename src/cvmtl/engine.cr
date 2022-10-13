@@ -13,11 +13,11 @@ class MT::Engine
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtData
-    nodes = [BaseTerm.new("", idx: offset)]
+    nodes = [MonoNode.new("", idx: offset)]
     costs = [0]
 
     input.each_with_index do |char, idx|
-      nodes << BaseTerm.new(char, idx: idx &+ offset)
+      nodes << MonoNode.new(char, idx: idx &+ offset)
       costs << idx &+ 1
     end
 
@@ -45,7 +45,7 @@ class MT::Engine
         jump = idx &+ key_size
 
         if cost >= costs[jump]
-          nodes[jump] = BaseTerm.new(term, dic: dict_id, idx: idx &+ offset)
+          nodes[jump] = MonoNode.new(term, dic: dict_id, idx: idx &+ offset)
           costs[jump] = cost
         end
       end
@@ -54,7 +54,7 @@ class MT::Engine
     extract_result(nodes)
   end
 
-  def extract_result(nodes : Array(BaseTerm))
+  def extract_result(nodes : Array(MonoNode))
     idx = nodes.size &- 1
     res = MtData.new
 

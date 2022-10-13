@@ -1,6 +1,6 @@
 module MT::TlRule
   # def heal_quanti!(node : BaseNode) : BaseNode
-  #   return node unless node.is_a?(BaseTerm)
+  #   return node unless node.is_a?(MonoNode)
   #   not_quanti?(node) ? node : MtDict.fix_quanti(node)
   # end
 
@@ -38,7 +38,7 @@ module MT::TlRule
   end
 
   def is_pre_quanti_appro?(node : BaseNode)
-    return false unless node.is_a?(BaseTerm)
+    return false unless node.is_a?(MonoNode)
     node.to_int?.try { |x| x > 10 && x % 10 == 0 } || false
   end
 

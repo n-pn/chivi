@@ -4,7 +4,7 @@ module MT::Core
       return time unless prev.time_words?
 
       tag, pos = MapTag::Texpr
-      time = BasePair.new(prev.swap_val!, time, tag, pos, flip: true)
+      time = PairNode.new(prev.swap_val!, time, tag, pos, flip: true)
     end
 
     time

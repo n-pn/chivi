@@ -49,7 +49,7 @@ module MT::Core
       end
     end
 
-    BaseTerm.new(key_io.to_s, val_io.to_s, tag: MapTag::Nform)
+    MonoNode.new(key_io.to_s, val_io.to_s, tag: MapTag::Nform)
   end
 
   def recog_anchor(input : Array(Char), key_io, val_io, index)
@@ -72,7 +72,7 @@ module MT::Core
       end
     end
 
-    BaseTerm.new(key_io.to_s, val_io.to_s, tag: MapTag::StrLink)
+    MonoNode.new(key_io.to_s, val_io.to_s, tag: MapTag::StrLink)
   end
 
   FULLWIDTH_GAP = 65248 # different in code point between half width and full width characters
@@ -125,7 +125,7 @@ module MT::Core
       end
     end
 
-    BaseTerm.new(key_io.to_s, val_io.to_s, MapTag::Numeric, 0)
+    MonoNode.new(key_io.to_s, val_io.to_s, MapTag::Numeric, 0)
   end
 
   def match_half_width(char : Char)
@@ -174,7 +174,7 @@ module MT::Core
       end
     end
 
-    BaseTerm.new(key_io.to_s, val_io.to_s, tag: map_ptag(char_half, count))
+    MonoNode.new(key_io.to_s, val_io.to_s, tag: map_ptag(char_half, count))
   end
 
   def map_ptag(char : Char, count = 1)

@@ -36,7 +36,7 @@ module MT::TlRule
   # end
 
   def fold_什么_noun!(prev : BaseNode, node : BaseNode)
-    succ = BaseTerm.new("么", "gì", prev.tag, 1, prev.idx + 1)
+    succ = MonoNode.new("么", "gì", prev.tag, 1, prev.idx + 1)
 
     prev.key = "什"
     prev.val = "cái"

@@ -29,7 +29,7 @@ module MT::TlRule
       ude1.val = "của"
       ptag = MapTag::DgPhrase
     else
-      ude1.as(BaseTerm).empty!(true)
+      ude1.as(MonoNode).empty!(true)
       ptag = MapTag::DcPhrase
     end
 

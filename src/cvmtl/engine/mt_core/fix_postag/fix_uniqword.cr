@@ -1,5 +1,5 @@
 module MT::Core
-  def fix_uniqword!(node : BaseTerm)
+  def fix_uniqword!(node : MonoNode)
     case node
     when .qttemp? then fix_qttemp!(node)
     when .vauxil? then fix_vauxil!(node)
@@ -9,7 +9,7 @@ module MT::Core
     end
   end
 
-  def self.fix_hao_word!(haow : BaseTerm)
+  def self.fix_hao_word!(haow : MonoNode)
     case haow.succ
     when .common_nouns?
       haow.set!("tốt", MapTag.make(:adj_hao, :adjtish))
@@ -24,7 +24,7 @@ module MT::Core
     end
   end
 
-  def self.fix_res_cmpl!(cmpl : BaseTerm)
+  def self.fix_res_cmpl!(cmpl : MonoNode)
     if cmpl.real_prev.try(&.verb_take_res_cmpl?)
       cmpl.swap_val!
     else
@@ -32,7 +32,7 @@ module MT::Core
     end
   end
 
-  def self.fix_dir_cmpl!(cmpl : BaseTerm)
+  def self.fix_dir_cmpl!(cmpl : MonoNode)
     case cmpl.tag
     when .adjt_words?, .common_verbs?
       cmpl.swap_val!

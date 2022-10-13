@@ -1,6 +1,6 @@
 module MT::Core
   def join_udev!(udev : BaseNode)
-    raise "udev should be BaseTerm" unless udev.is_a?(BaseTerm)
+    raise "udev should be MonoNode" unless udev.is_a?(MonoNode)
 
     tag = MtlTag::DvPhrase
     pos = MtlPos::AtTail
@@ -20,15 +20,15 @@ module MT::Core
       head = join_noun_1!(head)
       raise "Expected v_you!" unless (vyou = head.prev?) && vyou.v_you?
       tag, pos = MapTag::Adjt
-      head = BasePair.new(vyou, head, tag, pos, flip: false)
+      head = PairNode.new(vyou, head, tag, pos, flip: false)
     end
 
     udev.inactivate! if passive # mark udev as invisible
-    BasePair.new(head, udev, tag, pos, flip: true)
+    PairNode.new(head, udev, tag, pos, flip: true)
   end
 
   def join_udep!(udep : BaseNode)
-    raise "udep should be BaseTerm" unless udep.is_a?(BaseTerm)
+    raise "udep should be MonoNode" unless udep.is_a?(MonoNode)
 
     tag = MtlTag::DcPhrase
     pos = MtlPos::AtTail
@@ -40,6 +40,6 @@ module MT::Core
       udep.inactivate!
     end
 
-    BasePair.new(head, udep, tag, pos, flip: true)
+    PairNode.new(head, udep, tag, pos, flip: true)
   end
 end

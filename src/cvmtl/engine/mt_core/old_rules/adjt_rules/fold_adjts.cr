@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_adjt_measure(adjt : BaseTerm, succ = adjt.succ?)
+  def fold_adjt_measure(adjt : MonoNode, succ = adjt.succ?)
     return unless succ
 
     if succ.numeral?
@@ -7,7 +7,7 @@ module MT::TlRule
       return fold!(adjt, succ, MapTag::Aform)
     end
 
-    return unless succ.is_a?(BaseTerm) && (tail = succ.succ?) && tail.numeral?
+    return unless succ.is_a?(MonoNode) && (tail = succ.succ?) && tail.numeral?
     return unless succ_val = PRE_NUM_APPROS[succ.key]?
     succ.val = succ_val
 
@@ -17,7 +17,7 @@ module MT::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_adjts!(adjt : BaseNode, prev : BaseNode? = nil) : BaseNode
-    if adjt.is_a?(BaseTerm) && MEASURES.has_key?(adjt.key)
+    if adjt.is_a?(MonoNode) && MEASURES.has_key?(adjt.key)
       fold_adjt_measure(adjt).try { |x| return x }
     end
 
@@ -38,7 +38,7 @@ module MT::TlRule
       when .adjt_words?
         adjt = fold!(adjt, succ, succ.tag)
       when .vdir?
-        adjt.as_verb! if adjt.is_a?(BaseTerm)
+        adjt.as_verb! if adjt.is_a?(MonoNode)
         return fold_verbs!(adjt)
       when .noun_words?
         adjt = fold_adj_adv!(adjt, prev)
@@ -99,7 +99,7 @@ module MT::TlRule
     node = fold!(nega, node, node.tag) if nega
     return node if !(succ = node.succ?) || succ.boundary?
 
-    if succ.is_a?(BaseTerm) && succ.polysemy?
+    if succ.is_a?(MonoNode) && succ.polysemy?
       succ = heal_mixed!(succ, prev: node)
     end
 

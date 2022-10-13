@@ -4,7 +4,7 @@ require "../mt_data/mt_term"
 require "../mt_core/mt_util"
 require "../../../_util/text_util"
 
-class MT::BaseTerm < MT::BaseNode
+class MT::MonoNode < MT::BaseNode
   property key : String
   property val : String
 

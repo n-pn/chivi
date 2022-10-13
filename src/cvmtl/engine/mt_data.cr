@@ -3,13 +3,13 @@ require "./mt_core/*"
 require "./mt_data/*"
 
 class MT::MtData
-  getter head : BaseTerm
-  getter tail : BaseTerm
-  @pgroup = [] of BaseTerm
+  getter head : MonoNode
+  getter tail : MonoNode
+  @pgroup = [] of MonoNode
 
   def initialize
-    @head = BaseTerm.new("", "", tag: MapTag::Empty)
-    @tail = BaseTerm.new("", "", tag: MapTag::Empty)
+    @head = MonoNode.new("", "", tag: MapTag::Empty)
+    @tail = MonoNode.new("", "", tag: MapTag::Empty)
     @head.fix_succ!(@tail)
   end
 
@@ -19,17 +19,17 @@ class MT::MtData
     self
   end
 
-  def add_head(node : BaseTerm) : Nil
+  def add_head(node : MonoNode) : Nil
     node.fix_succ!(@head.succ)
     node.fix_prev!(@head)
   end
 
-  def add_tail(node : BaseTerm) : Nil
+  def add_tail(node : MonoNode) : Nil
     node.fix_prev!(@tail.prev)
     node.fix_succ!(@tail)
   end
 
-  def add_node(node : BaseTerm) : Nil
+  def add_node(node : MonoNode) : Nil
     @pgroup << node if node.group_puncts?
     add_head(node)
   end

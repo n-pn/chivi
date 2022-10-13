@@ -62,11 +62,11 @@ module MT::TlRule
       head.fix_prev!(vyou.prev?)
       head.fix_succ!(vyou)
     else
-      head = BaseTerm.new("没", "không", MapTag::AdvBu4, 1, vyou.idx)
+      head = MonoNode.new("没", "không", MapTag::AdvBu4, 1, vyou.idx)
       head.fix_prev!(vyou.prev?)
       head.fix_succ!(tail)
 
-      temp = BaseTerm.new("有", "như", MapTag::VYou, 1, vyou.idx + 1)
+      temp = MonoNode.new("有", "như", MapTag::VYou, 1, vyou.idx + 1)
       temp.fix_prev!(tail)
       temp.fix_succ!(noun)
     end

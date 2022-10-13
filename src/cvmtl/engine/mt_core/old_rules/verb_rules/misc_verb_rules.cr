@@ -5,7 +5,7 @@ module MT::TlRule
   #   return true if !succ || succ.starts_with?('不')
 
   #   head.each do |node|
-  #     next unless node.is_a?(BaseTerm)
+  #     next unless node.is_a?(MonoNode)
   #     next unless char = node.key[0]?
   #     return true if {'来', '去', '到', '有', '上', '想', '出'}.includes?(char)
   #   end

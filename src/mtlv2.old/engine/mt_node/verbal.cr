@@ -244,12 +244,12 @@ module MT::MTL
 
   ####
 
-  class VerbPair < BasePair
+  class VerbPair < PairNode
     include Verbal
   end
 
   class VerbForm
-    include BaseSeri
+    include SeriNode
     include Verbal
 
     getter verb : Verbal

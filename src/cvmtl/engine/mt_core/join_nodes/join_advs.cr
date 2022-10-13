@@ -4,7 +4,7 @@ module MT::Core
       return advb unless prev.advb_words?
 
       ptag = MapTag.make(:adv_form)
-      advb = BasePair.new(prev.swap_val!, advb, tag: ptag, flip: true)
+      advb = PairNode.new(prev.swap_val!, advb, tag: ptag, flip: true)
     end
 
     advb

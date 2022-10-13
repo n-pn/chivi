@@ -1,7 +1,7 @@
 # module MT::TlRule
 
 #   # ameba:disable Metrics/CyclomaticComplexity
-#   def heal_veno!(node : BaseTerm, prev : BaseNode?, succ : BaseNode?) : BaseTerm
+#   def heal_veno!(node : MonoNode, prev : BaseNode?, succ : BaseNode?) : MonoNode
 #     # puts [node, prev, succ]
 
 #     case succ
@@ -36,7 +36,7 @@
 #     when .pre_zai?, .pre_bei?, .vauxil?, .advb_words?, .pt_dev?, .pt_der?, .object?
 #       return node.as_verb!(nil)
 #     when .adjt_words?
-#       return node.as_verb!(nil) unless prev.is_a?(BaseTerm)
+#       return node.as_verb!(nil) unless prev.is_a?(MonoNode)
 #       return prev.amod_words? ? node.as_noun! : node.as_verb!(nil)
 #     when .pt_dep?
 #       # TODO: check for adjt + ude1 + verb (grammar error)
@@ -51,7 +51,7 @@
 #   end
 
 #   # ameba:disable Metrics/CyclomaticComplexity
-#   def heal_ajno!(node : BaseTerm, prev : BaseNode?, succ : BaseNode?) : BaseNode
+#   def heal_ajno!(node : MonoNode, prev : BaseNode?, succ : BaseNode?) : BaseNode
 #     # puts [node, prev, succ, "heal_ajno"]
 
 #     case succ
@@ -79,7 +79,7 @@
 #     when .noun_words?
 #       return node.as_adjt!(nil)
 #     else
-#       if succ.is_a?(BaseTerm) && succ.key == "到"
+#       if succ.is_a?(MonoNode) && succ.key == "到"
 #         return node.as_adjt!(nil)
 #       end
 #     end

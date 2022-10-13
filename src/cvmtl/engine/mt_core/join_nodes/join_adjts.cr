@@ -12,11 +12,11 @@ module MT::Core
 
     tag, pos = MapTag::Aform
 
-    while (prev = adjt.prev?) && prev.is_a?(BaseTerm)
+    while (prev = adjt.prev?) && prev.is_a?(MonoNode)
       if prev.adjt_words?
         prev = fuse_adjt!(prev)
         pos |= MtlPos::AtHead if prev.at_tail?
-        adjt = BasePair.new(prev, adjt, tag, pos, flip: prev.at_tail?)
+        adjt = PairNode.new(prev, adjt, tag, pos, flip: prev.at_tail?)
 
         next
       end
@@ -40,8 +40,8 @@ module MT::Core
       end
 
       pos |= MtlPos::AtHead if prev.at_tail? || adjt.at_head?
-      head = BasePair.new(head, prev, tag, pos, flip: pos.at_head?)
-      adjt = BasePair.new(head, adjt, tag, pos, flip: pos.at_head?)
+      head = PairNode.new(head, prev, tag, pos, flip: pos.at_head?)
+      adjt = PairNode.new(head, adjt, tag, pos, flip: pos.at_head?)
     end
 
     adjt
@@ -54,13 +54,13 @@ module MT::Core
 
     tag, pos = MapTag.make(:aform)
 
-    while prev.is_a?(BaseTerm)
+    while prev.is_a?(MonoNode)
       break unless prev.adjt_words? || prev.maybe_adjt?
-      adjt = BasePair.new(prev, adjt, tag: tag, pos: pos, flip: !prev.at_head?)
+      adjt = PairNode.new(prev, adjt, tag: tag, pos: pos, flip: !prev.at_head?)
       prev = prev.prev
     end
 
-    while prev.is_a?(BaseTerm)
+    while prev.is_a?(MonoNode)
       case prev
       when .adv_bu4?
         adjt = join_adjt_bu4!(adjt, prev)
@@ -74,7 +74,7 @@ module MT::Core
         break unless prev.advb_words?
       end
 
-      adjt = BasePair.new(prev, adjt, tag: tag, pos: pos, flip: prev.at_tail?)
+      adjt = PairNode.new(prev, adjt, tag: tag, pos: pos, flip: prev.at_tail?)
       prev = adjt.prev
     end
 
@@ -85,18 +85,18 @@ module MT::Core
     tag, pos = MapTag.make(:aform)
 
     if (prev.adjt_words? || prev.maybe_adjt?) && (head = prev.prev) && head.tag.adv_bu4?
-      prev = BasePair.new(head, prev, tag, pos)
-      adjt = BasePair.new(bu4, adjt, tag, pos)
-      return BasePair.new(prev, adjt, tag, pos)
+      prev = PairNode.new(head, prev, tag, pos)
+      adjt = PairNode.new(bu4, adjt, tag, pos)
+      return PairNode.new(prev, adjt, tag, pos)
     end
 
-    unless adjt.is_a?(BaseTerm) && prev.is_a?(BaseTerm) && adjt.key == prev.key
-      return BasePair.new(bu4, adjt, tag, pos)
+    unless adjt.is_a?(MonoNode) && prev.is_a?(MonoNode) && adjt.key == prev.key
+      return PairNode.new(bu4, adjt, tag, pos)
     end
 
-    prev.as(BaseTerm).val = "hay"
-    prev = BasePair.new(prev, bu4, flip: true)
+    prev.as(MonoNode).val = "hay"
+    prev = PairNode.new(prev, bu4, flip: true)
 
-    BasePair.new(prev, adjt, tag, pos, flip: true)
+    PairNode.new(prev, adjt, tag, pos, flip: true)
   end
 end

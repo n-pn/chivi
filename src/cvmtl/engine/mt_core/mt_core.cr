@@ -13,9 +13,9 @@ module MT::Core
 
   def join_word!(node : BaseNode) : BaseNode
     if node.polysemy?
-      node = fix_polysemy!(node.as(BaseTerm))
+      node = fix_polysemy!(node.as(MonoNode))
     elsif node.uniqword?
-      node = fix_uniqword!(node.as(BaseTerm))
+      node = fix_uniqword!(node.as(MonoNode))
     end
 
     case node
@@ -27,10 +27,10 @@ module MT::Core
     end
   end
 
-  def join_group!(pstart : BaseTerm, pclose : BaseTerm) : Nil
+  def join_group!(pstart : MonoNode, pclose : MonoNode) : Nil
     left_join!(pclose, pstart)
     tag, pos = guess_group_tag(pstart, pclose)
-    BaseSeri.new(pstart, pclose, tag: tag, pos: pos)
+    SeriNode.new(pstart, pclose, tag: tag, pos: pos)
   end
 
   def guess_group_tag(head : BaseNode, tail : BaseNode) : {MtlTag, MtlPos}
@@ -63,6 +63,6 @@ module MT::Core
             tag : {MtlTag, MtlPos}? = nil, flip : Bool = false)
     tag ||= {tail.tag, tail.pos}
     # FIXME: remove this helper and using proper structures
-    BaseSeri.new(head, tail, tag[0], tag[1], flip: flip)
+    SeriNode.new(head, tail, tag[0], tag[1], flip: flip)
   end
 end

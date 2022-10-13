@@ -16,28 +16,28 @@ module MT::TlRule
   # }
 
   def fold_suffix!(suff : BaseNode, left = suff.prev?) : BaseNode
-    return suff unless suff.is_a?(BaseTerm) && left
+    return suff unless suff.is_a?(MonoNode) && left
     return suff unless left.tag.content?
 
     case suff
     when .suf_men5?
       suff.val = "các"
       ptag = MapTag.make(:nobjt, MtlPos.flags(Nounish, Ktetic, Plural))
-      BasePair.new(left.not_nil!, suff, ptag, flip: true)
+      PairNode.new(left.not_nil!, suff, ptag, flip: true)
     when .suf_time?
       left = fold_left!(left)
-      BasePair.new(left.not_nil!, suff, MapTag::Texpr, flip: true)
+      PairNode.new(left.not_nil!, suff, MapTag::Texpr, flip: true)
     when .suf_zhi?
       suff.alt.try { |x| suff.val = x }
       left = fold_left!(left).not_nil!
-      BasePair.new(left.not_nil!, suff, MapTag::Nform, flip: true)
+      PairNode.new(left.not_nil!, suff, MapTag::Nform, flip: true)
     when .suf_verb?
       ptag = PosTag.map_verbal(left.key)
-      BasePair.new(left, suff, ptag, flip: false)
+      PairNode.new(left, suff, ptag, flip: false)
     when .suf_xing?
-      BasePair.new(left, suff, MapTag::Nattr, flip: true)
+      PairNode.new(left, suff, MapTag::Nattr, flip: true)
     else
-      BasePair.new(left, suff, MapTag::Nform, flip: !suff.tag.at_tail?)
+      PairNode.new(left, suff, MapTag::Nform, flip: !suff.tag.at_tail?)
     end
   end
 end

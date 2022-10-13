@@ -7,6 +7,6 @@ module MT::Core
       tag, pos = MapTag::CapHuman
     end
 
-    BasePair.new(prev, noun, tag, pos)
+    PairNode.new(prev, noun, tag, pos)
   end
 end

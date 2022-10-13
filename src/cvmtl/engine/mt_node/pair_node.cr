@@ -1,6 +1,6 @@
 require "./base_node/*"
 
-class MT::BasePair < MT::BaseNode
+class MT::PairNode < MT::BaseNode
   include BaseExpr
 
   getter head : BaseNode

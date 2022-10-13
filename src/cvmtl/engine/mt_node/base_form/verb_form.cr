@@ -20,7 +20,7 @@ class MT::VerbForm < MT::BaseNode
     self.fix_prev!(advb.prev?)
 
     if prev_advb = @advb
-      @advb = BasePair.new(advb, prev_advb, tag: MapTag::DvPhrase)
+      @advb = PairNode.new(advb, prev_advb, tag: MapTag::DvPhrase)
     else
       @advb = advb
     end
@@ -30,7 +30,7 @@ class MT::VerbForm < MT::BaseNode
     self.fix_prev!(tail.prev?)
 
     if prev_tail = @tail
-      @tail = BasePair.new(tail, prev_tail, tag: MapTag::DvPhrase, flip: true)
+      @tail = PairNode.new(tail, prev_tail, tag: MapTag::DvPhrase, flip: true)
     else
       @tail = tail
     end

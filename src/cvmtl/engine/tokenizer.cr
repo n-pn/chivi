@@ -31,20 +31,20 @@
 #   getter mtl_chars = [] of Char
 
 #   @costs : Array(Int32)
-#   @terms : Array(BaseTerm)
+#   @terms : Array(MonoNode)
 
 #   def initialize(input : String)
 #     @raw_chars = input.chars
 #     @limit = @raw_chars.size
 
 #     @costs = Array(Int32).new(@limit &+ 1, 0)
-#     @terms = Array(BaseTerm).new(@limit &+ 1)
-#     @terms << BaseTerm.new("", idx: -1)
+#     @terms = Array(MonoNode).new(@limit &+ 1)
+#     @terms << MonoNode.new("", idx: -1)
 
 #     @keys.each_with_index do |raw_char, idx|
 #       mtl_char = raw_char.fullwidth? ? raw_char.halfwidth : raw_char
 #       @mtl_chars << mtl_char
-#       @terms << BaseTerm.new(raw_char.to_s, mtl_char.to_s, idx: idx)
+#       @terms << MonoNode.new(raw_char.to_s, mtl_char.to_s, idx: idx)
 #     end
 #   end
 
@@ -65,7 +65,7 @@
 #     end
 #   end
 
-#   private def apply_term(term : BaseTerm, idx : Int32, new_idx : Int32, size = new_idx &- idx)
+#   private def apply_term(term : MonoNode, idx : Int32, new_idx : Int32, size = new_idx &- idx)
 #     @nodes[new_idx] = term
 #     @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtUtil.cost(size, 1_i8)
 #   end
@@ -73,7 +73,7 @@
 #   def result
 #     idx = @raw_chars.size
 
-#     output = [] of BaseTerm
+#     output = [] of MonoNode
 
 #     idx = nodes.size &- 1
 #     cur = nodes.unsafe_fetch(idx)

@@ -38,7 +38,7 @@ module MT::TlRule
   end
 
   def fold_time_appro!(node : BaseNode)
-    return node unless (succ = node.succ?) && succ.is_a?(BaseTerm)
+    return node unless (succ = node.succ?) && succ.is_a?(MonoNode)
     case succ.key
     when "前后"
       fold!(node, succ.set!("tầm"), MapTag::Texpr, flip: true)
@@ -54,7 +54,7 @@ module MT::TlRule
   def fold_number_hour!(node : BaseNode, succ : BaseNode) : BaseNode
     node = fold!(node, succ.set!("giờ"), tag: MapTag::Texpr)
 
-    return node unless (succ = node.succ?) && succ.is_a?(BaseTerm)
+    return node unless (succ = node.succ?) && succ.is_a?(MonoNode)
 
     case succ.key
     when "半"
@@ -70,16 +70,16 @@ module MT::TlRule
     fold!(node, second.set!("giây"), MapTag::Texpr)
   end
 
-  def read_minute_quanti?(node : BaseNode?) : BaseTerm?
+  def read_minute_quanti?(node : BaseNode?) : MonoNode?
     return unless node && node.numbers?
-    return unless (succ = node.succ?) && succ.is_a?(BaseTerm)
+    return unless (succ = node.succ?) && succ.is_a?(MonoNode)
 
     succ.key == "分" || succ.key == "分钟" ? succ : nil
   end
 
-  def read_second_quanti?(node : BaseNode?) : BaseTerm?
+  def read_second_quanti?(node : BaseNode?) : MonoNode?
     return unless node && node.numbers?
-    return unless (succ = node.succ?) && succ.is_a?(BaseTerm)
+    return unless (succ = node.succ?) && succ.is_a?(MonoNode)
 
     succ.key == "秒" || succ.key == "秒钟" ? succ : nil
   end

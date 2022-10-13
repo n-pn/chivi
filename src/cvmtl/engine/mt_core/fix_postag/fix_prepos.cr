@@ -1,5 +1,5 @@
 module MT::Core
-  def fix_he3yu2!(node : BaseTerm, succ = node.succ) : BaseTerm
+  def fix_he3yu2!(node : MonoNode, succ = node.succ) : MonoNode
     # FIXME: add more cases here
     if he3yu2_is_prepos?(succ)
       node.tag = node.wd_he2? ? MtlTag::PreHe2 : MtlTag::PreYu3
@@ -17,12 +17,12 @@ module MT::Core
     tail.preposes? || tail.pt_cmps? || tail.common_verbs?
   end
 
-  def fix_pt_dev!(node : BaseTerm)
+  def fix_pt_dev!(node : MonoNode)
     Log.info { "TODO fix pt_dev!".colorize.yellow }
     node
   end
 
-  def fix_pt_der!(node : BaseTerm)
+  def fix_pt_der!(node : MonoNode)
     Log.info { "TODO fix pd_der!".colorize.yellow }
     node
   end

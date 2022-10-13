@@ -21,19 +21,19 @@
 #     return prepos unless tail = scan_adjt!(noun.succ?)
 #     return prepos unless tail.adjt_words? || tail.vobjs?
 
-#     output = BaseTerm.new("", "", MapTag::LitBlank, idx: prepos.idx)
+#     output = MonoNode.new("", "", MapTag::LitBlank, idx: prepos.idx)
 #     output.fix_prev!(prepos.prev?)
 #     output.fix_succ!(tail.succ?)
 
 #     noun.fix_succ!(nil)
 
 #     if prepos.key == "不比"
-#       adv_bu = BaseTerm.new("不", "không", MapTag::AdvBu4, 1, prepos.idx)
+#       adv_bu = MonoNode.new("不", "không", MapTag::AdvBu4, 1, prepos.idx)
 
 #       adv_bu.fix_succ!(prepos.succ?)
 #       adv_bu.fix_prev!(prepos.prev?)
 
-#       prepos = BaseTerm.new("比", "bằng", MapTag::PreBi3, 1, prepos.idx + 1)
+#       prepos = MonoNode.new("比", "bằng", MapTag::PreBi3, 1, prepos.idx + 1)
 
 #       prepos.fix_succ!(tail.succ?)
 #       tail.fix_succ!(prepos)

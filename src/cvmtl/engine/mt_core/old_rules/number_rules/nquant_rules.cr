@@ -50,7 +50,7 @@ module MT::TlRule
   end
 
   def fold_day?(num : BaseNode?) : BaseNode?
-    return unless num && (day = num.succ?) && num.is_a?(BaseTerm)
+    return unless num && (day = num.succ?) && num.is_a?(MonoNode)
     return unless num.numbers? && day.key == "日" || day.key == "号"
 
     case day.key

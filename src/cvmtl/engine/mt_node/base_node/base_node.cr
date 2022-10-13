@@ -45,11 +45,11 @@ abstract class MT::BaseNode
   end
 
   def swap_val!
-    raise "only available for BaseTerm"
+    raise "only available for MonoNode"
   end
 
   def set!(val : String) : self
-    raise "only available for BaseTerm"
+    raise "only available for MonoNode"
   end
 
   def set!(@tag : MtlTag) : self

@@ -23,7 +23,7 @@ module MT::TlRule
 
     tag = MapTag::CapHuman
 
-    BaseTerm.new(key, "@#{val}", tag, idx: head.idx).tap do |new_node|
+    MonoNode.new(key, "@#{val}", tag, idx: head.idx).tap do |new_node|
       new_node.fix_prev!(head.prev?)
       new_node.fix_succ!(tail.succ?)
     end
