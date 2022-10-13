@@ -5,7 +5,7 @@ module MT::Core
     tag = MtlTag::DvPhrase
     pos = MtlPos::AtTail
 
-    inactive = true
+    passive = true
 
     case head = udev.prev
     when .adjt_words?
@@ -13,7 +13,7 @@ module MT::Core
     when .verb_words?
       # TODO: convert verb to advb
       udev.val = "một cách"
-      inactive = false
+      passive = false
     when .onomat?, .nquants?
       udev.inactivate!
     when .common_nouns?
@@ -23,7 +23,7 @@ module MT::Core
       head = BasePair.new(vyou, head, tag, pos, flip: false)
     end
 
-    udev.inactivate! if inactive # mark udev as invisible
+    udev.inactivate! if passive # mark udev as invisible
     BasePair.new(head, udev, tag, pos, flip: true)
   end
 

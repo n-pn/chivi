@@ -18,7 +18,7 @@ class MT::MtDict
   getter dicts = [] of MtTrie
 
   def initialize(nv_dict : String = "combine", tm_dict : String? = nil, vi_user : String? = nil)
-    add_dict(vi_user, nv_dict) if vi_user
+    add_dict(vi_user, nv_dict) if vi_user # user vi_user as dict name
     add_dict(nv_dict)
     add_dict(vi_user, "regular") if vi_user
     add_dict(tm_dict) if tm_dict
@@ -32,20 +32,21 @@ class MT::MtDict
     @dicts << (CACHE[dname] ||= load_trie(dname))
   end
 
-  def add_dict(uname : String, dname : String)
-    @dicts << (CACHE["#{uname}/#{dname}"] ||= load_trie(dname, uname))
+  def add_dict(dname : String, uname : String)
+    @dicts << (CACHE["#{dname}/#{uname}"] ||= load_trie(dname, uname))
   end
 
   private def load_trie(dname : String, uname : String? = nil)
     trie = MtTrie.new
 
     open_db do |db|
-      query = "select id from dicts where dname = ?"
-      break unless dict_id = db.query_one?(query, args: [uname || dname], as: Int32)
+      dict_id_query = "select id from dicts where dname = ?"
+      break unless dict_id = db.query_one?(dict_id_query, args: [dname], as: Int32)
 
+      uname_query = uname ? "uname = '#{uname}'" : "true"
       terms = db.query_all(<<-SQL, args: [dict_id], as: MtTerm)
         select key, val, alt_val, ptag, prio
-        from terms where dict_id = ? and _flag = 0 and #{uname ? "uname = #{dname}" : "true"}
+        from terms where dict_id = ? and _flag = 0 and #{uname_query}
       SQL
 
       terms.each { |x| trie.push!(x) }

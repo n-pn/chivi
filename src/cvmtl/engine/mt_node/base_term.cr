@@ -50,13 +50,13 @@ class MT::BaseTerm < MT::BaseNode
 
   def inactivate!
     @val = ""
-    @pos = MtlPos.flags(Inactive, NoWsBefore)
+    @pos = MtlPos.flags(Passive, NoWsBefore)
     self
   end
 
   def apply_cap!(cap : Bool = false) : Bool
     case
-    when @pos.inactive?     then cap
+    when @pos.passive?      then cap
     when @tag.punctuations? then cap || @pos.cap_after?
     else
       @val = CV::TextUtil.capitalize(@val) if cap

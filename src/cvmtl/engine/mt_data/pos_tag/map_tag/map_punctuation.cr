@@ -21,7 +21,7 @@ module MT::MapTag
     ")"  => make(:paren_cl1, MtlPos.flags(Boundary, NoWsBefore)),
     "\"" => make(:db_quote, MtlPos.flags(Boundary, NoWsBefore)),
     "'"  => make(:sg_quote, MtlPos.flags(Boundary, NoWsBefore)),
-    " "  => make(:space, MtlPos.flags(NoWsBefore)),
+    " "  => make(:space, MtlPos.flags(NoWsBefore, NoWsAfter)),
     ","  => make(:comma, MtlPos.flags(NoWsBefore)),
     "､"  => make(:cenum, MtlPos.flags(NoWsBefore, BondWord)),
     ":"  => make(:colon, MtlPos.flags(Boundary, CapAfter, NoWsBefore)),

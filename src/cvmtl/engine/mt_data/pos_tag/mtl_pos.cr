@@ -5,7 +5,7 @@ enum MT::MtlPos : UInt64
   end
 
   Boundary # make structure boundary
-  Inactive # for word that marked empty
+  Passive  # for word that marked empty
   Nebulous # word not tagged
 
   # rendering

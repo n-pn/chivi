@@ -38,7 +38,7 @@ class MT::BasePair < MT::BaseNode
   # end
 
   # def no_space_between?
-  #   @head.inactive? || @head.no_ws_after? || @tail.no_ws_before? || @tail.inactive?
+  #   @head.passive? || @head.no_ws_after? || @tail.no_ws_before? || @tail.passive?
   # end
 
   # def to_txt(io : IO) : Nil

@@ -1,11 +1,11 @@
-require "../../src/cvmtl/mt_core"
-MTL = CV::MtCore.generic_mtl("combine")
+require "../../src/cvmtl/engine"
+MTL = MT::Engine.new("combine")
 
 def convert(input : String)
   MTL.cv_plain(input, cap_first: false).to_txt
 end
 
-DIR = "spec/engine/cases"
+DIR = "var/cvmtl/tests"
 
 files = Dir.glob("#{DIR}/**/*.tsv")
 
@@ -15,8 +15,8 @@ files.each do |file|
   lines.each do |line|
     next if line.empty? || line.starts_with?('#')
 
-    left, _right = line.split('\t')
+    left, right = line.split('\t')
     File.write("tmp/test.txt", left)
-    puts [left, convert(left)]
+    puts [left, convert(left), right]
   end
 end

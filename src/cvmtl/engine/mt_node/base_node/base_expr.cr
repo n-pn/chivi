@@ -9,7 +9,7 @@ module MT::BaseExpr
     self.each do |node|
       io << ' ' if prev && node.add_space?(prev)
       node.to_txt(io)
-      prev = node unless node.pos.inactive?
+      prev = node unless node.pos.passive?
     end
   end
 
@@ -28,7 +28,7 @@ module MT::BaseExpr
     self.each do |node|
       io << "\t " if prev && node.add_space?(prev)
       node.to_mtl(io)
-      prev = node unless node.pos.inactive?
+      prev = node unless node.pos.passive?
     end
 
     io << '〉'

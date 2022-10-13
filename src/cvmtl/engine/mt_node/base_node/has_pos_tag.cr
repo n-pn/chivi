@@ -11,7 +11,7 @@ module MT::HasPosTag
   end
 
   delegate boundary?, to: @pos
-  delegate inactive?, to: @pos
+  delegate passive?, to: @pos
 
   delegate cap_after?, to: @pos
   delegate no_ws_before?, to: @pos
