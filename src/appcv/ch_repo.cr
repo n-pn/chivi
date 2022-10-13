@@ -1,5 +1,5 @@
 require "./ch_info"
-require "../tools/r2_client"
+require "../_util/r2_client"
 
 class CV::ChRepo
   DIR = "var/chtexts"

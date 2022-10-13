@@ -1,6 +1,6 @@
 require "http/client"
 require "./_store"
-require "../../tools/r2_client"
+require "../../_util/r2_client"
 require "../../_util/ukey_util"
 
 class CV::Bcover
