@@ -1,7 +1,7 @@
 module MT::TlRule
   COMPL_TAILS = {'完', '到', '着', '上', '下', '起', '好'}
 
-  def fuse_verb!(verb : BaseNode, succ = verb.succ?)
+  def fuse_verb!(verb : MtNode, succ = verb.succ?)
     # puts [verb, succ]
 
     case verb.key[-1]?
@@ -25,7 +25,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fuse_verb_compl!(verb : BaseNode, succ : BaseNode) : BaseNode
+  def fuse_verb_compl!(verb : MtNode, succ : MtNode) : MtNode
     flag = verb.flag | MtFlag::Checked
 
     if succ.key == verb.key
@@ -72,7 +72,7 @@ module MT::TlRule
     verb.flag!(flag)
   end
 
-  def fuse_verb_locality!(verb : BaseNode, succ : BaseNode, flag = verb.flag)
+  def fuse_verb_locality!(verb : MtNode, succ : MtNode, flag = verb.flag)
     return verb unless succ.key == "中"
 
     if (tail = succ.succ?) && tail.ule?
@@ -87,7 +87,7 @@ module MT::TlRule
     verb.flag!(flag)
   end
 
-  def fuse_verb_compl_extra!(verb : BaseNode, succ = verb.succ?) : BaseNode
+  def fuse_verb_compl_extra!(verb : MtNode, succ = verb.succ?) : MtNode
     case succ
     when nil then verb.flag!(:resolved)
     when .auxils?
@@ -104,13 +104,13 @@ module MT::TlRule
     end
   end
 
-  def fuse_verb_verb!(verb_1 : BaseNode, verb_2 : BaseNode) : BaseNode
+  def fuse_verb_verb!(verb_1 : MtNode, verb_2 : MtNode) : MtNode
     verb_2 = MtDict.fix_verb!(verb_2) if verb_2.polysemy?
 
     fold!(verb_1, verb_2, verb_2.tag, dic: 5).flag!(:checked)
   end
 
-  def fuse_verb_numeral!(verb : BaseNode, succ : BaseNode) : BaseNode
+  def fuse_verb_numeral!(verb : MtNode, succ : MtNode) : MtNode
     if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
       verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
     end

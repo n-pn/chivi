@@ -1,4 +1,4 @@
-module MT::MapTag
+module MT::PosTag
   CapHuman = make(:cap_human, MtlPos.flags(Object, Proper, People, Ktetic))
   CapPlace = make(:cap_place, MtlPos.flags(Object, Proper, Locale, Ktetic))
   CapInsti = make(:cap_insti, MtlPos.flags(Object, Proper, Locale, Ktetic))

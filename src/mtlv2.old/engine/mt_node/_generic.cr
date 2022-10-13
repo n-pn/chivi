@@ -1,22 +1,22 @@
 require "../../../libcv/*"
 
 module MT::MTL
-  module BaseNode
+  module MtNode
     property tab : Int32 = 0
 
-    property! prev : BaseNode
-    property! succ : BaseNode
+    property! prev : MtNode
+    property! succ : MtNode
 
     # getter ptag = BasePtag::None
 
-    def set_prev(@prev : BaseNode) : Nil
+    def set_prev(@prev : MtNode) : Nil
       prev.succ = self
     end
 
     def set_prev(@prev : Nil) : Nil
     end
 
-    def set_succ(@succ : BaseNode) : Nil
+    def set_succ(@succ : MtNode) : Nil
       succ.prev = self
     end
 
@@ -31,7 +31,7 @@ module MT::MTL
       @succ.try { |x| yield x }
     end
 
-    def bequest!(target : BaseNode)
+    def bequest!(target : MtNode)
       target.set_prev(@prev)
       target.set_succ(@succ)
       @prev = @succ = nil
@@ -73,7 +73,7 @@ module MT::MTL
   end
 
   class BaseWord
-    include BaseNode
+    include MtNode
 
     property key : String = ""
     property val : String = ""
@@ -93,7 +93,7 @@ module MT::MTL
       @val = val || term.vals[0]
     end
 
-    def dup!(idx : Int32, tab : Int32 = 1) : BaseNode
+    def dup!(idx : Int32, tab : Int32 = 1) : MtNode
       res = self.dup
       res.idx = idx
       res.tab = tab
@@ -123,9 +123,9 @@ module MT::MTL
   #####
 
   module SeriNode
-    include BaseNode
+    include MtNode
 
-    abstract def each(&block : BaseNode -> Nil)
+    abstract def each(&block : MtNode -> Nil)
 
     def apply_cap!(cap : Bool = true) : Bool
       each { |x| cap = x.apply_cap!(cap) }
@@ -167,10 +167,10 @@ module MT::MTL
   class PairNode
     include SeriNode
 
-    property left : BaseNode
-    property right : BaseNode
+    property left : MtNode
+    property right : MtNode
 
-    def initialize(@left : BaseNode, @right : BaseNode, @flip = false)
+    def initialize(@left : MtNode, @right : MtNode, @flip = false)
       self.set_prev(left.prev?)
       self.set_succ(right.succ?)
 
@@ -205,10 +205,10 @@ module MT::MTL
   class BaseExpr
     include SeriNode
 
-    property head : BaseNode
-    property tail : BaseNode
+    property head : MtNode
+    property tail : MtNode
 
-    def initialize(@head : BaseNode, @tail : BaseNode, flip : Bool = false, @tab : Int32 = 0)
+    def initialize(@head : MtNode, @tail : MtNode, flip : Bool = false, @tab : Int32 = 0)
       self.set_prev(head.prev?)
       self.set_succ(tail.succ?)
 
@@ -228,7 +228,7 @@ module MT::MTL
       set_succ(orig.succ?)
     end
 
-    def add_head(node : BaseNode) : Nil
+    def add_head(node : MtNode) : Nil
       self.set_prev(node.prev?)
       node.set_prev(nil)
 
@@ -236,7 +236,7 @@ module MT::MTL
       @head = node
     end
 
-    def add_tail(node : BaseNode) : Nil
+    def add_tail(node : MtNode) : Nil
       self.set_succ(node.succ?)
       node.set_succ(nil)
 

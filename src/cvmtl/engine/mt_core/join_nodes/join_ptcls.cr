@@ -1,5 +1,5 @@
 module MT::Core
-  def join_udev!(udev : BaseNode)
+  def join_udev!(udev : MtNode)
     raise "udev should be MonoNode" unless udev.is_a?(MonoNode)
 
     tag = MtlTag::DvPhrase
@@ -19,7 +19,7 @@ module MT::Core
     when .common_nouns?
       head = join_noun_1!(head)
       raise "Expected v_you!" unless (vyou = head.prev?) && vyou.v_you?
-      tag, pos = MapTag::Adjt
+      tag, pos = PosTag::Adjt
       head = PairNode.new(vyou, head, tag, pos, flip: false)
     end
 
@@ -27,7 +27,7 @@ module MT::Core
     PairNode.new(head, udev, tag, pos, flip: true)
   end
 
-  def join_udep!(udep : BaseNode)
+  def join_udep!(udep : MtNode)
     raise "udep should be MonoNode" unless udep.is_a?(MonoNode)
 
     tag = MtlTag::DcPhrase

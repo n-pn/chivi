@@ -1,13 +1,13 @@
-require "./base_node/*"
+require "../mt_node"
 
-class MT::PairNode < MT::BaseNode
+class MT::PairNode < MT::MtNode
   include BaseExpr
 
-  getter head : BaseNode
-  getter tail : BaseNode
+  getter head : MtNode
+  getter tail : MtNode
 
   def initialize(
-    @head : BaseNode, @tail : BaseNode,
+    @head : MtNode, @tail : MtNode,
     @tag : MtlTag = tail.tag, @pos : MtlPos = tail.pos,
     @flip : Bool = head.at_tail? || tail.at_head?
   )
@@ -16,7 +16,7 @@ class MT::PairNode < MT::BaseNode
   end
 
   def initialize(
-    @head : BaseNode, @tail : BaseNode,
+    @head : MtNode, @tail : MtNode,
     tag : {MtlTag, MtlPos},
     @flip : Bool = head.at_tail? || tail.at_head?
   )

@@ -1,6 +1,6 @@
 module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_nouns!(noun : BaseNode, defn : BaseNode? = nil) : BaseNode
+  def fold_nouns!(noun : MtNode, defn : MtNode? = nil) : MtNode
     fold_mode = NounMode.init(noun, prev: defn ? defn.prev? : noun.prev?)
 
     while succ = noun.succ?
@@ -63,7 +63,7 @@ module MT::TlRule
     fold_noun_other!(noun, succ, fold_mode)
   end
 
-  def fold_right_of_ude1(noun : BaseNode, mode : NounMode, right : BaseNode?) : BaseNode?
+  def fold_right_of_ude1(noun : MtNode, mode : NounMode, right : MtNode?) : MtNode?
     return if !right || right.ends?
 
     if noun.prev?(&.pro_per?)
@@ -79,13 +79,13 @@ module MT::TlRule
   end
 
   @[AlwaysInline]
-  def fold_defn_noun!(noun : BaseNode, defn : BaseNode) : BaseNode
+  def fold_defn_noun!(noun : MtNode, defn : MtNode) : MtNode
     flip = !defn.modi? || !defn.key.in?("原", "所有", "所有的")
     fold!(defn, noun, noun.tag, dic: 6, flip: flip)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_noun_other!(noun : BaseNode, succ = noun.succ?, mode : NounMode? = nil) : BaseNode
+  def fold_noun_other!(noun : MtNode, succ = noun.succ?, mode : NounMode? = nil) : MtNode
     return noun if !succ || succ.ends?
     return fold_suffix!(noun, succ) if succ.suffixes?
 

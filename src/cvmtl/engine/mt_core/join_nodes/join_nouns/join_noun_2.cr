@@ -1,5 +1,5 @@
 module MT::Core
-  def join_noun_2!(noun : BaseNode, prev = noun.prev) : BaseNode
+  def join_noun_2!(noun : MtNode, prev = noun.prev) : MtNode
     if prev.adjt_words?
       noun = PairNode.new(prev, noun, flip: !prev.at_head?)
       prev = noun.prev

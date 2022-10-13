@@ -253,19 +253,19 @@ module MT::MTL
     include Verbal
 
     getter verb : Verbal
-    getter advb : BaseNode? = nil # advebial form
+    getter advb : MtNode? = nil   # advebial form
     getter prep : PrepForm? = nil # prepos phrase
 
     def initialize(@verb : Verbal, @attr = verb.attr)
       verb.bequest!(self)
     end
 
-    def add_advb(@advb : BaseNode) : Nil
+    def add_advb(@advb : MtNode) : Nil
       self.set_prev(advb.prev?)
       advb.set_prev(nil)
     end
 
-    def add_prep(@prep : BaseNode) : Nil
+    def add_prep(@prep : MtNode) : Nil
       self.set_prev(prep.prev?)
       prep.set_prev(nil)
     end

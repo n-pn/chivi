@@ -1,10 +1,10 @@
 module MT::TlRule
-  def fold_proper!(node : BaseNode, succ : Nil) : BaseNode
+  def fold_proper!(node : MtNode, succ : Nil) : MtNode
     node
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_proper!(proper : BaseNode, succ : BaseNode) : BaseNode
+  def fold_proper!(proper : MtNode, succ : MtNode) : MtNode
     # puts [proper, succ]
 
     case succ.tag
@@ -52,7 +52,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_proper_nominal!(proper : BaseNode, nominal : BaseNode) : BaseNode
+  def fold_proper_nominal!(proper : MtNode, nominal : MtNode) : MtNode
     # puts [proper, nominal]
 
     if nominal.position?
@@ -89,7 +89,7 @@ module MT::TlRule
     end
   end
 
-  def flip_proper_noun?(proper : BaseNode, noun : BaseNode) : Bool
+  def flip_proper_noun?(proper : MtNode, noun : MtNode) : Bool
     return !noun.nqtime? unless (prev = proper.prev?) && prev.verbal?
     !need_2_objects?(prev)
   end

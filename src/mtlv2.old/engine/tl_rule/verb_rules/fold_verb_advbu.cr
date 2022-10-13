@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_verb_advbu!(verb : BaseNode, adv_bu : BaseNode, tail = adv_bu.succ?) : BaseNode
+  def fold_verb_advbu!(verb : MtNode, adv_bu : MtNode, tail = adv_bu.succ?) : MtNode
     return verb.flag!(:resolved) unless tail
 
     unless tail.key == verb.key

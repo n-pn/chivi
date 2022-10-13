@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_noun_after!(noun : BaseNode, succ = noun.succ?) : BaseNode
+  def fold_noun_after!(noun : MtNode, succ = noun.succ?) : MtNode
     return noun if !succ || succ.ends?
 
     if succ.pro_per? && succ.key == "自己"

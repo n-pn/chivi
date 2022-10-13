@@ -1,10 +1,10 @@
 module MT::TlRule
-  def scan_noun!(node : Nil, prodem : BaseNode? = nil, nquant : BaseNode? = nil)
+  def scan_noun!(node : Nil, prodem : MtNode? = nil, nquant : MtNode? = nil)
     fold_prodem_nominal!(prodem, nquant)
   end
 
   # -ameba:disable Metrics/CyclomaticComplexity
-  def scan_noun!(node : BaseNode, prodem : BaseNode? = nil, nquant : BaseNode? = nil)
+  def scan_noun!(node : MtNode, prodem : MtNode? = nil, nquant : MtNode? = nil)
     if node.pd_dep?
       return node unless left = fold_prodem_nominal!(prodem, nquant)
       # puts [left, node]
@@ -25,7 +25,7 @@ module MT::TlRule
     end
   end
 
-  def fold_nquant_nominal!(nquant : BaseNode, nominal : BaseNode)
+  def fold_nquant_nominal!(nquant : MtNode, nominal : MtNode)
     case nquant.key
     when "些"
       nquant.val = "những"
@@ -42,7 +42,7 @@ module MT::TlRule
     fold!(nquant, nominal, PosTag::NounPhrase, dic: 3).flag!(:checked)
   end
 
-  def clean_nquant!(nquant : BaseNode) : Nil
+  def clean_nquant!(nquant : MtNode) : Nil
     nquant.each do |node|
       if body = node.body?
         clean_nquant!(body)
@@ -54,7 +54,7 @@ module MT::TlRule
     end
   end
 
-  # def scan_noun_after!(node : BaseNode, succ = node.succ?) : BaseNode
+  # def scan_noun_after!(node : MtNode, succ = node.succ?) : MtNode
   #   return noun if !succ || succ.ends?
 
   #   node = fold_noun_after!(node, succ)

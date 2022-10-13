@@ -1,6 +1,6 @@
 module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_v_you!(vyou : BaseNode, succ = vyou.succ?)
+  def fold_v_you!(vyou : MtNode, succ = vyou.succ?)
     return vyou unless noun = scan_noun!(succ)
     return fold_verb_other!(vyou) if vyou.prev?(&.verb?)
 
@@ -33,7 +33,7 @@ module MT::TlRule
       return fold!(vyou, tail, PosTag::Unkn, 1)
     end
 
-    output = BaseNode.new("", "", PosTag::Unkn, dic: 1, idx: vyou.idx)
+    output = MtNode.new("", "", PosTag::Unkn, dic: 1, idx: vyou.idx)
     output.fix_prev!(vyou.prev?)
     output.fix_succ!(tail.succ?)
 
@@ -45,11 +45,11 @@ module MT::TlRule
       output.set_body!(tail)
       tail.fix_succ!(vyou.set!("có"))
     when "没有"
-      adv_bu = BaseNode.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
+      adv_bu = MtNode.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
       output.set_body!(adv_bu)
       adv_bu.fix_succ!(tail)
 
-      vyou = BaseNode.new("有", "bằng", PosTag::VYou, 1, vyou.idx + 1)
+      vyou = MtNode.new("有", "bằng", PosTag::VYou, 1, vyou.idx + 1)
       tail.fix_succ!(vyou)
       vyou.fix_succ!(noun)
     else
@@ -66,7 +66,7 @@ module MT::TlRule
     output
   end
 
-  def fold_vyou_ude1(vyou : BaseNode, ude1 : BaseNode, noun : BaseNode)
+  def fold_vyou_ude1(vyou : MtNode, ude1 : MtNode, noun : MtNode)
     unless tail = scan_noun!(ude1.succ?)
       return fold!(vyou, noun, PosTag::VerbObject, dic: 6)
     end

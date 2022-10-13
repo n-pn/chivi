@@ -1,4 +1,4 @@
 module MT::Core
-  def fuse_verb!(verb : BaseNode, prev = verb.prev)
+  def fuse_verb!(verb : MtNode, prev = verb.prev)
   end
 end

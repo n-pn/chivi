@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_noun_penum!(head : BaseNode, join : BaseNode)
+  def fold_noun_penum!(head : MtNode, join : MtNode)
     while node = join.succ?
       break unless node.noun_words? || node.pronouns?
       tail = node

@@ -1,6 +1,6 @@
 module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_noun_verb!(noun : BaseNode, verb : BaseNode)
+  def fold_noun_verb!(noun : MtNode, verb : MtNode)
     return noun if noun.prev? { |x| x.pro_pers? || x.preposes? && !x.pre_bi3? }
 
     verb = verb.modal_verbs? ? fold_vmodal!(verb) : fold_verbs!(verb)

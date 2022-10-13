@@ -12,7 +12,7 @@ module MT::Core
     node
   end
 
-  private def he3yu2_is_prepos?(noun : BaseNode)
+  private def he3yu2_is_prepos?(noun : MtNode)
     return false unless noun.tag.noun_words? && (tail = noun.succ?)
     tail.preposes? || tail.pt_cmps? || tail.common_verbs?
   end

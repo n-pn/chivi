@@ -1,6 +1,6 @@
 module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_suffix!(base : BaseNode, suff : BaseNode) : BaseNode
+  def fold_suffix!(base : MtNode, suff : MtNode) : MtNode
     if suff.key == "化"
       verb = fold!(base, suff, tag: PosTag::Verb, dic: 3, flip: false)
       return fold_verbs!(verb)
@@ -44,7 +44,7 @@ module MT::TlRule
     fold_nouns!(head)
   end
 
-  def do_not_fold_suffixes?(base : BaseNode)
+  def do_not_fold_suffixes?(base : MtNode)
     return false if base.adjective?
     return base.prev?(&.subject?) if base.verbal?
     return true unless prev = base.prev?

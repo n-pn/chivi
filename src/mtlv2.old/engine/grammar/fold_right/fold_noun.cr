@@ -1,5 +1,5 @@
 module MT::MTL
-  def fold_noun!(base : BaseNode, succ : Middot)
+  def fold_noun!(base : MtNode, succ : Middot)
     return succ unless (tail = succ.succ?) && is_human_name?(head, tail)
 
     if base.is_a?(HumanForm)
@@ -9,11 +9,11 @@ module MT::MTL
     end
   end
 
-  def fold_noun!(base : BaseNode, succ : Nominal)
+  def fold_noun!(base : MtNode, succ : Nominal)
     NounPair.new(base, succ, flip: false)
   end
 
-  def is_human_name?(head : BaseNode, tail : BaseNode)
+  def is_human_name?(head : MtNode, tail : MtNode)
     case tail
     when HumanName, AffilName then true
     else

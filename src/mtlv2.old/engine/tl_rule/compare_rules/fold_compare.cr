@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_compare(head : BaseNode, tail = head.succ?)
+  def fold_compare(head : MtNode, tail = head.succ?)
     while tail
       return if tail.punctuations? || tail.key == "像"
 
@@ -32,7 +32,7 @@ module MT::TlRule
     fold!(root, succ, PosTag::Aform, dic: 1, flip: true)
   end
 
-  def fold_compare_prepos(head : BaseNode, tail = head.succ?)
+  def fold_compare_prepos(head : MtNode, tail = head.succ?)
     while tail
       return if tail.punctuations?
 

@@ -1,11 +1,11 @@
 module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_vmodal!(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil) : BaseNode
+  def fold_vmodal!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     case node
     when .vm_hui?
       node = heal_vm_hui!(node, succ, nega)
     when .vm_xiang?
-      return fold_verbs!(node.set!(MapTag::Verb)) if succ.try(&.adv_bu4?)
+      return fold_verbs!(node.set!(PosTag::Verb)) if succ.try(&.adv_bu4?)
       node = heal_vm_xiang!(node, succ, nega)
       return fold_verbs!(node) if node.verb?
       # when .key?("要")
@@ -41,7 +41,7 @@ module MT::TlRule
     end
   end
 
-  def heal_vm_hui!(node : BaseNode, succ = node.succ?, prev = node.prev?) : BaseNode
+  def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
     if vmhui_before_skill?(prev, succ)
       node.val = "biết"
       flip = false
@@ -53,7 +53,7 @@ module MT::TlRule
     prev ? fold!(prev, node, node.tag, flip: flip) : node
   end
 
-  private def vmhui_before_skill?(prev : BaseNode?, succ : BaseNode?) : Bool
+  private def vmhui_before_skill?(prev : MtNode?, succ : MtNode?) : Bool
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
@@ -75,7 +75,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_vm_xiang!(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil) : BaseNode
+  def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     case succ
     when .nil? # do nothing
     when .v_shi?
@@ -86,7 +86,7 @@ module MT::TlRule
       if has_verb_after?(succ)
         node.set!("muốn")
       else
-        node.set!("nhớ", MapTag::Verb)
+        node.set!("nhớ", PosTag::Verb)
       end
     when .advbial?
       if succ.key == "也" && !succ.succ?(&.maybe_verb?)

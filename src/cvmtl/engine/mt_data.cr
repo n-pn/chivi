@@ -1,6 +1,5 @@
 require "./mt_node/**"
 require "./mt_core/*"
-require "./mt_data/*"
 
 class MT::MtData
   getter head : MonoNode
@@ -8,8 +7,8 @@ class MT::MtData
   @pgroup = [] of MonoNode
 
   def initialize
-    @head = MonoNode.new("", "", tag: MapTag::Empty)
-    @tail = MonoNode.new("", "", tag: MapTag::Empty)
+    @head = MonoNode.new("", "", tag: PosTag::Empty)
+    @tail = MonoNode.new("", "", tag: PosTag::Empty)
     @head.fix_succ!(@tail)
   end
 

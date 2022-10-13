@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_v_shi!(vshi : BaseNode, succ = vshi.succ?)
+  def fold_v_shi!(vshi : MtNode, succ = vshi.succ?)
     return vshi unless succ
 
     # puts [vshi, succ]

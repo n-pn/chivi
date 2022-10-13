@@ -1,4 +1,4 @@
-module MT::MapTag
+module MT::PosTag
   PRONOUN_MAP = load_map("pronouns")
 
   ProDem = make(:pro_dem, :object)

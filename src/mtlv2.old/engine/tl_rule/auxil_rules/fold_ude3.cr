@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_ude3!(node : BaseNode, succ = node.succ?) : BaseNode
+  def fold_ude3!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
 
     if succ.verbal? && succ.key != "到"
@@ -11,7 +11,7 @@ module MT::TlRule
     fold_verbs!(node)
   end
 
-  def fold_adverb_ude3!(node : BaseNode, succ : BaseNode) : BaseNode
+  def fold_adverb_ude3!(node : MtNode, succ : MtNode) : MtNode
     case tail = succ.succ?
     when .nil?
       fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)

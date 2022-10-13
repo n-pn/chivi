@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fuse_verb_auxils!(verb : BaseNode, auxil : BaseNode) : BaseNode
+  def fuse_verb_auxils!(verb : MtNode, auxil : MtNode) : MtNode
     case auxil.tag
     when .ule?
       fuse_verb_ule!(verb, auxil)
@@ -21,7 +21,7 @@ module MT::TlRule
     end
   end
 
-  def fuse_verb_ule!(verb : BaseNode, ule : BaseNode) : BaseNode
+  def fuse_verb_ule!(verb : MtNode, ule : MtNode) : MtNode
     return verb.flag!(:resolved) unless succ = ule.succ?
 
     tail = succ.key == verb.key ? succ : ule
@@ -40,7 +40,7 @@ module MT::TlRule
     fold_verb_nquant!(verb, succ, has_ule: true)
   end
 
-  def fuse_verb_ude2!(verb : BaseNode, ude2 : BaseNode) : BaseNode
+  def fuse_verb_ude2!(verb : MtNode, ude2 : MtNode) : MtNode
     succ = ude2.succ? { |x| fold_once!(x) }
 
     unless succ && (succ.verbal? || succ.preposes?)
@@ -58,7 +58,7 @@ module MT::TlRule
     verb.flag!(flag)
   end
 
-  def fuse_verb_ude3!(verb : BaseNode, ude3 : BaseNode) : BaseNode
+  def fuse_verb_ude3!(verb : MtNode, ude3 : MtNode) : MtNode
     return verb unless tail = ude3.succ?
     flag = verb.flag | MtFlag::HasUde3
 

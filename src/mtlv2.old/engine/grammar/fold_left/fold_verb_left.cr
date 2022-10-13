@@ -1,7 +1,7 @@
 require "./fold_advb_left"
 
 module MT::MTL
-  def fold_verb_left!(curr : Verbal, left : BaseNode, lvl = 0)
+  def fold_verb_left!(curr : Verbal, left : MtNode, lvl = 0)
     if advb = fold_verb_advb(left)
       curr = VerbForm.new(curr)
       curr.add_advb(advb)
@@ -12,7 +12,7 @@ module MT::MTL
     curr
   end
 
-  def fold_verb_advb(left : BaseNode)
+  def fold_verb_advb(left : MtNode)
     case left
     when Adverbial then fold_advb_left!(left, left.prev?)
     when Adjective
@@ -36,7 +36,7 @@ module MT::MTL
     end
   end
 
-  def can_be_advb?(prev : BaseNode)
+  def can_be_advb?(prev : MtNode)
     case prev
     when Adjective, Adverbial, Onomat
       true

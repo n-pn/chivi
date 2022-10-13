@@ -1,9 +1,9 @@
 module MT::Core
-  def join_time!(time : BaseNode)
+  def join_time!(time : MtNode)
     while prev = time.prev?
       return time unless prev.time_words?
 
-      tag, pos = MapTag::Texpr
+      tag, pos = PosTag::Texpr
       time = PairNode.new(prev.swap_val!, time, tag, pos, flip: true)
     end
 

@@ -1,6 +1,6 @@
 module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_verbs!(verb : BaseNode, prev : BaseNode? = nil) : BaseNode
+  def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
     return verb unless verb.verb_words?
     return fold_verb_object!(verb, verb.succ?) if verb.is_a?(BaseList)
 

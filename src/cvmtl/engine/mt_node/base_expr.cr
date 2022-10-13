@@ -1,7 +1,7 @@
-require "./base_node"
+require "./mt_node"
 
 module MT::BaseExpr
-  abstract def each(&block : BaseNode -> Nil)
+  abstract def each(&block : MtNode -> Nil)
 
   def to_txt(io : IO = STDOUT) : Nil
     prev = nil
@@ -35,9 +35,9 @@ module MT::BaseExpr
   end
 
   def inspect(io : IO = STDOUT, pad = 0) : Nil
-    io << " " * pad << "{" << @tag.colorize.cyan << " " << "}" << '\n'
+    io << " " * pad << '{' << @tag.colorize.cyan << "}\n"
     self.each(&.inspect(io, pad + 2))
-    io << " " * pad << "{/" << @tag.colorize.cyan << "}"
+    io << " " * pad << "{/" << @tag.colorize.cyan << '}'
     io << '\n' if pad > 0
   end
 end

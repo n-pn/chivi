@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_atsign!(head : BaseNode)
+  def fold_atsign!(head : MtNode)
     key_io = String::Builder.new
 
     tail = head
@@ -23,7 +23,7 @@ module MT::TlRule
 
     tag = PosTag::Person
 
-    BaseNode.new(key, "@#{val}", tag, dic: 2, idx: head.idx).tap do |new_node|
+    MtNode.new(key, "@#{val}", tag, dic: 2, idx: head.idx).tap do |new_node|
       new_node.fix_prev!(head.prev?)
       new_node.fix_succ!(tail.succ?)
     end

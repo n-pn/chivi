@@ -1,6 +1,6 @@
 module MT::TlRule
   # -ameba:disable Metrics/CyclomaticComplexity
-  def fold_verb_object!(verb : BaseNode, succ = verb.succ)
+  def fold_verb_object!(verb : MtNode, succ = verb.succ)
     noun = fold_once!(succ) # unless noun.flag.checked
 
     # puts [verb, succ, "fold_verb_object"]
@@ -21,7 +21,7 @@ module MT::TlRule
     fold!(verb, noun, PosTag::VerbObject, dic: 3)
   end
 
-  def fix_auxil_in_verb_phrase!(verb : BaseNode)
+  def fix_auxil_in_verb_phrase!(verb : MtNode)
     verb.each do |node|
       if body = node.body?
         fix_auxil_in_verb_phrase!(body)
@@ -39,7 +39,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def should_apply_ude1_after_verb?(verb : BaseNode, right : BaseNode?, prev = verb.prev?)
+  def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)
     return false if verb.body?(&.pre_bei?) || need_2_objects?(verb)
 
     while prev && prev.adverb?

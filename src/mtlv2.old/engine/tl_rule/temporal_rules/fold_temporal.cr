@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_temporal!(node : BaseNode, succ = node.succ?) : BaseNode
+  def fold_temporal!(node : MtNode, succ = node.succ?) : MtNode
     return node if !succ || succ.ends?
 
     if succ.adj_hao? && node.key.in?("早上", "下午", "凌晨", "早晨", "中午", "晚上")
@@ -18,7 +18,7 @@ module MT::TlRule
     end
   end
 
-  def fold_time_prev!(node : BaseNode, prev : BaseNode?) : BaseNode
+  def fold_time_prev!(node : MtNode, prev : MtNode?) : MtNode
     return fold_time_after!(node) unless prev
 
     flip = true
@@ -37,7 +37,7 @@ module MT::TlRule
     fold_time_after!(time)
   end
 
-  def fold_time_after!(time : BaseNode, succ = time.succ?)
+  def fold_time_after!(time : MtNode, succ = time.succ?)
     return time if !succ || succ.ends?
 
     case succ.key
@@ -52,7 +52,7 @@ module MT::TlRule
     fold_noun_other!(time)
   end
 
-  def fold_number_hour!(node : BaseNode, succ : BaseNode) : BaseNode
+  def fold_number_hour!(node : MtNode, succ : MtNode) : MtNode
     node = fold!(node, succ.set!("giờ"), PosTag::Texpr, dic: 1)
 
     return node unless (succ = node.succ?)
@@ -71,17 +71,17 @@ module MT::TlRule
     fold!(node, second.set!("giây"), PosTag::Texpr, dic: 1)
   end
 
-  def read_minute_quanti?(node : BaseNode?)
+  def read_minute_quanti?(node : MtNode?)
     return unless node && (succ = node.succ?) && node.numbers?
     succ.key == "分" || succ.key == "分钟" ? succ : nil
   end
 
-  def read_second_quanti?(node : BaseNode?)
+  def read_second_quanti?(node : MtNode?)
     return unless node && (succ = node.succ?) && node.numbers?
     succ.key == "秒" || succ.key == "秒钟" ? succ : nil
   end
 
-  def fold_number_minute!(node : BaseNode, succ : BaseNode, is_time = false) : BaseNode
+  def fold_number_minute!(node : MtNode, succ : MtNode, is_time = false) : MtNode
     if (succ_2 = succ.succ?) && succ_2.key == "半"
       succ.val = "phút"
       return fold!(node, succ_2.set!("rưỡi"), PosTag::Texpr, dic: 1)

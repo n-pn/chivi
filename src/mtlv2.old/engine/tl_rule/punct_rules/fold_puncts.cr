@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_puncts!(node : BaseNode)
+  def fold_puncts!(node : MtNode)
     case node.tag
     when .titleop? then fold_btitle!(node)
     when .popens?  then fold_quoted!(node)

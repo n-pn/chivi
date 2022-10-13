@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_verb_verb!(verb_1 : BaseNode, verb_2 : BaseNode) : BaseNode
+  def fold_verb_verb!(verb_1 : MtNode, verb_2 : MtNode) : MtNode
     return verb_1 unless verb_2.is_a?(MonoNode)
 
     if verb_1.key == verb_2.key
@@ -11,7 +11,7 @@ module MT::TlRule
         count += 1
       end
 
-      tag = count == 0 ? verb_1.tag : MapTag::Verb
+      tag = count == 0 ? verb_1.tag : PosTag::Verb
       return fold!(verb_1, verb_2, tag)
     end
 

@@ -4,7 +4,7 @@ module MT::TlRule
   # 2: stop at concoords
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_nouns!(noun : BaseNode, mode : Int32 = 0) : BaseNode
+  def fold_nouns!(noun : MtNode, mode : Int32 = 0) : MtNode
     # return node if node.nform?
 
     while noun.noun_words?
@@ -26,10 +26,10 @@ module MT::TlRule
         # TODO: check with prev to group
         return mode == 0 ? fold_uzhi!(succ, noun) : noun
       when .pt_cmps?
-        adjt = fold!(noun, succ.set!("như"), MapTag::Aform, flip: true)
+        adjt = fold!(noun, succ.set!("như"), PosTag::Aform, flip: true)
         return adjt unless (succ = adjt.succ?) && succ.maybe_adjt?
         succ = succ.advb_words? ? fold_adverbs!(succ) : fold_adjts!(succ)
-        return fold!(adjt, succ, MapTag::Aform)
+        return fold!(adjt, succ, PosTag::Aform)
       when .position?
         return noun if noun.prev? { |x| x.numeral? || x.pronouns? || x.adjt_words? }
         noun = fold_noun_space!(noun, succ)

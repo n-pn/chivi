@@ -1,25 +1,25 @@
 module MT::TlRule
-  def fold_adjt!(adjt : BaseNode, succ : Nil) : BaseNode
+  def fold_adjt!(adjt : MtNode, succ : Nil) : MtNode
     adjt
   end
 
-  def fold_adjt!(adjt : BaseNode, succ : Conjunct)
+  def fold_adjt!(adjt : MtNode, succ : Conjunct)
     return adjt unless succ.type.phrase? && (adjt_2 = cast_adjt(succ.succ?))
     adjt = AdjtTuple.new(adjt, succ, adjt_2, mark: 4)
     fold_adjt!(adjt, ajdt.succ?)
   end
 
-  def fold_adjt!(adjt : BaseNode, succ : AdjtWord)
+  def fold_adjt!(adjt : MtNode, succ : AdjtWord)
     adjt = AdjtTuple.new(adjt, succ, mark: 3)
     fold_adjt!(adjt)
   end
 
-  def fold_adjt!(adjt : BaseNode, succ : VdirWord)
+  def fold_adjt!(adjt : MtNode, succ : VdirWord)
     verb = VerbPhrase.from_adjt(adjt, vdir: succ)
     fold_verb!(verb)
   end
 
-  def fold_adjt!(adjt : BaseNode, succ : VerbNoun)
+  def fold_adjt!(adjt : MtNode, succ : VerbNoun)
     node = succ.resolve!
 
     case node
@@ -32,7 +32,7 @@ module MT::TlRule
     end
   end
 
-  def fold_adjt!(adjt : BaseNode, succ : VerbWord)
+  def fold_adjt!(adjt : MtNode, succ : VerbWord)
     return fold_adjt_dao4!(adjt, succ) if succ.key == "到"
     return adjt unless adjt.flag.adverbial?
 
@@ -40,19 +40,19 @@ module MT::TlRule
     fold_verb!(verb, verb.succ?)
   end
 
-  def fold_adjt_dao4!(adjt : BaseNode, dao4 : VerbWord)
+  def fold_adjt_dao4!(adjt : MtNode, dao4 : VerbWord)
     return adjt unless (tail = dao4.succ?) && tail.ptag.adjective?
     adjt = AdjtTuple.new(adjt, dao4, succ)
     fold_adjt!(adjt, adjt.succ?)
   end
 
-  def fold_adjt!(adjt : BaseNode, succ : NounWord | NounTuple | NounPhrase)
+  def fold_adjt!(adjt : MtNode, succ : NounWord | NounTuple | NounPhrase)
     return adjt unless adjt.modifier?
     noun = NounPhrase.new(node, modi: adjt)
     fold_noun!(noun, noun.succ?)
   end
 
-  def fold_adjt!(adjt : BaseNode, succ : AuxilWord)
+  def fold_adjt!(adjt : MtNode, succ : AuxilWord)
     case succ.kind
     when .pt_dep? then fold_adjt_ude1!(adjt, succ)
     when .pt_dev? then fold_adjt_ude2!(adjt, succ)
@@ -62,7 +62,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_adjt_after!(adjt : BaseNode)
+  def fold_adjt_after!(adjt : MtNode)
     case succ = adjt.succ?
     when .nil? then adjt
     when .pl_veno?
@@ -85,7 +85,7 @@ module MT::TlRule
     end
   end
 
-  def fold_modifier!(modi : BaseNode, succ = modi.succ?, nega : BaseNode? = nil) : BaseNode
+  def fold_modifier!(modi : MtNode, succ = modi.succ?, nega : MtNode? = nil) : MtNode
     # puts [modi, succ, nega].colorize.green
     modi.val = "tất cả" if modi.key == "所有"
 
@@ -99,7 +99,7 @@ module MT::TlRule
     fold_nouns!(succ, defn: modi)
   end
 
-  def fold_adjt_verb!(adjt : BaseNode, verb : BaseNode) : BaseNode
+  def fold_adjt_verb!(adjt : MtNode, verb : MtNode) : MtNode
     return adjt if verb.v_shi? || verb.v_you?
 
     if (verb.key == "到") && (tail = verb.succ?) && tail.adjective?
@@ -110,7 +110,7 @@ module MT::TlRule
     fold_verbs!(verb, adverb: adjt)
   end
 
-  def fold_adjt_auxil!(adjt : BaseNode, auxil : BaseNode) : BaseNode
+  def fold_adjt_auxil!(adjt : MtNode, auxil : MtNode) : MtNode
     return adjt unless tail = auxil.succ?
 
     case auxil
@@ -132,7 +132,7 @@ module MT::TlRule
     end
   end
 
-  def fold_adjt_ude1!(adjt : BaseNode, ude1 : BaseNode) : BaseNode
+  def fold_adjt_ude1!(adjt : MtNode, ude1 : MtNode) : MtNode
     adjt = fold!(adjt, ude1.set!(""), PosTag::DefnPhrase, dic: 3)
     return adjt if !(tail = adjt.succ?) || tail.ends?
 
@@ -154,7 +154,7 @@ module MT::TlRule
     fold!(adjt, tail, tag: ptag, flip: flip)
   end
 
-  def fold_adjt_ude2!(adjt : BaseNode, ude2 : BaseNode) : BaseNode
+  def fold_adjt_ude2!(adjt : MtNode, ude2 : MtNode) : MtNode
     return adjt if adjt.prev?(&.noun?)
     return adjt unless (succ = ude2.succ?) && succ.verbal?
 
@@ -162,7 +162,7 @@ module MT::TlRule
     fold!(adjt, fold_verbs!(succ), PosTag::VerbPhrase, dic: 5)
   end
 
-  def fold_adjt_adv_bu!(adjt : BaseNode, adv_bu4 : BaseNode, prev : BaseNode? = nil) : BaseNode
+  def fold_adjt_adv_bu!(adjt : MtNode, adv_bu4 : MtNode, prev : MtNode? = nil) : MtNode
     return adjt unless tail = adv_bu4.succ?
 
     if prev && prev.adv_bu4?

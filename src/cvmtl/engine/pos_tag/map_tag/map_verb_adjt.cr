@@ -1,4 +1,4 @@
-module MT::MapTag
+module MT::PosTag
   Aform = make(:aform, :none)
   Adesc = make(:adesc, :none)
 

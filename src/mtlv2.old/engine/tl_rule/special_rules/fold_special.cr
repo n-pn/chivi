@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_specials!(node : BaseNode, succ = node.succ?)
+  def fold_specials!(node : MtNode, succ = node.succ?)
     return node.flag!(:resolved) unless succ
 
     case node
@@ -17,7 +17,7 @@ module MT::TlRule
     end
   end
 
-  def fold_special_verbs!(node : BaseNode, succ : BaseNode)
+  def fold_special_verbs!(node : MtNode, succ : MtNode)
     case node
     when .v_shi? then fold_v_shi!(node, succ)
     when .v_you? then fold_v_you!(node, succ)
@@ -39,7 +39,7 @@ module MT::TlRule
     end
   end
 
-  def fold_special_adjt!(node : BaseNode, succ : BaseNode)
+  def fold_special_adjt!(node : MtNode, succ : MtNode)
     case node
     when .adj_hao? then fold_adj_hao!(node, succ)
     when .measure? then fold_adjt_number!(node, succ)
@@ -47,7 +47,7 @@ module MT::TlRule
     end
   end
 
-  def concoord_is_prepos?(node : BaseNode?)
+  def concoord_is_prepos?(node : MtNode?)
     return false unless node
 
     while node = node.succ?
@@ -64,7 +64,7 @@ module MT::TlRule
   MAP_上 = {"lên", "trên", "thượng"}
   MAP_下 = {"xuống", "dưới", "hạ"}
 
-  def fix_上下(node : BaseNode, vals = node.key == "上" ? MAP_上 : MAP_下) : BaseNode
+  def fix_上下(node : MtNode, vals = node.key == "上" ? MAP_上 : MAP_下) : MtNode
     case node.prev?
     when .nil?, .none?, .punctuations?
       if node.succ? { |x| x.subject? || x.ule? }
@@ -81,7 +81,7 @@ module MT::TlRule
     end
   end
 
-  def fold_adj_hao!(node : BaseNode, succ : BaseNode) : BaseNode
+  def fold_adj_hao!(node : MtNode, succ : MtNode) : MtNode
     case succ
     when .punctuations?, .ule?
       node.set!("tốt", PosTag::Adjt)
@@ -97,7 +97,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_uniqs_by_key!(node : BaseNode, succ = node.succ?)
+  def fold_uniqs_by_key!(node : MtNode, succ = node.succ?)
     case node.key
     when "第" then fold_第!(node)
     when "完"

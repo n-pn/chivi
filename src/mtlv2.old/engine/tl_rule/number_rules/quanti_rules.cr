@@ -1,9 +1,9 @@
 module MT::TlRule
-  def heal_quanti!(node : BaseNode) : BaseNode
+  def heal_quanti!(node : MtNode) : MtNode
     not_quanti?(node) ? node : MtDict.fix_quanti(node)
   end
 
-  def not_quanti?(node : BaseNode)
+  def not_quanti?(node : MtNode)
     # abort transform if node is certainly a verb
     return false unless node.verbal? && (succ = node.succ?)
     succ.ule? || succ.comma? || succ.colon? || succ.pstops?
@@ -16,7 +16,7 @@ module MT::TlRule
     "几" => "mấy",
   }
 
-  def fold_pre_quanti_appro!(node : BaseNode, succ : BaseNode) : Tuple(BaseNode, Int32)
+  def fold_pre_quanti_appro!(node : MtNode, succ : MtNode) : Tuple(MtNode, Int32)
     case succ.key
     when "多"
       return {node, 0} unless is_pre_quanti_appro?(node)
@@ -35,7 +35,7 @@ module MT::TlRule
     {node, 1}
   end
 
-  def is_pre_quanti_appro?(node : BaseNode)
+  def is_pre_quanti_appro?(node : MtNode)
     node.to_int?.try { |x| x > 10 && x % 10 == 0 } || false
   end
 
@@ -69,7 +69,7 @@ module MT::TlRule
     "后中" => "trong",
   }
 
-  def fold_suf_quanti_appro!(node : BaseNode, succ = node.succ?) : BaseNode
+  def fold_suf_quanti_appro!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ && (val = QUANTI_SUF_APPRO[succ.key]?)
 
     case succ.key

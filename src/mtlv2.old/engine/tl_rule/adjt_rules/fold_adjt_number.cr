@@ -7,7 +7,7 @@ module MT::TlRule
   #   "重" => "nặng",
   # }
 
-  def fold_adjt_number!(adjt : BaseNode, succ = adjt.succ)
+  def fold_adjt_number!(adjt : MtNode, succ = adjt.succ)
     if val = PRE_NUM_APPROS[succ.key]?
       adjt = fold!(adjt, succ.set!(val), adjt.tag, dic: 2)
       return adjt unless succ = adjt.succ?

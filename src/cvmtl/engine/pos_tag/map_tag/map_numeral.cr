@@ -1,4 +1,4 @@
-module MT::MapTag
+module MT::PosTag
   Ordinal = make(:ordinal)
   Numeric = make(:numeric)
 

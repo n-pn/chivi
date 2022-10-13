@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_verb_auxils!(verb : BaseNode, auxil : BaseNode) : BaseNode
+  def fold_verb_auxils!(verb : MtNode, auxil : MtNode) : MtNode
     case auxil.tag
     when .pt_le?
       fold_verb_ule!(verb, auxil)

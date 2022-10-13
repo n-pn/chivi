@@ -1,23 +1,23 @@
 module MT::TlRule
-  def fold_space!(node : BaseNode) : BaseNode
+  def fold_space!(node : MtNode) : MtNode
     case node.key
     when "中"
-      node.set!("trúng", MapTag::Verb)
+      node.set!("trúng", PosTag::Verb)
       fold_verbs!(node)
     when "右", "左"
-      node.tag = MapTag::Amod
+      node.tag = PosTag::Amod
       fold_amod_words?(node)
     else
       node
     end
   end
 
-  def fold_noun_space!(noun : BaseNode) : BaseNode
+  def fold_noun_space!(noun : MtNode) : MtNode
     return noun unless (space = noun.succ?) && space.position?
     fold_noun_space!(noun, space)
   end
 
-  def fold_noun_space!(noun : BaseNode, space : BaseNode) : BaseNode
+  def fold_noun_space!(noun : MtNode, space : MtNode) : MtNode
     # puts [noun, space, "noun_space"]
 
     flip = true
@@ -36,10 +36,10 @@ module MT::TlRule
       flip = !noun.time_words?
     end
 
-    fold!(noun, space, MapTag::Posit, flip: flip)
+    fold!(noun, space, PosTag::Posit, flip: flip)
   end
 
-  def fix_space_val!(node : BaseNode)
+  def fix_space_val!(node : MtNode)
     case node.tag
     when .v_shang? then "trên"
     when .v_xia?   then "dưới"

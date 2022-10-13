@@ -4,7 +4,7 @@ module MT::TlRule
   # 1 : exact date
   # 2 : time span
 
-  def fold_number_as_temporal(num : BaseNode, qti : BaseNode, prev : BaseNode? = nil) : BaseNode?
+  def fold_number_as_temporal(num : MtNode, qti : MtNode, prev : MtNode? = nil) : MtNode?
     mode = prev ? (prev.temporal? ? 1 : 2) : map_temporal_mode(num.prev?)
 
     # puts [num, qti, prev, mode, "fold_number_as_temporal"]
@@ -22,7 +22,7 @@ module MT::TlRule
     end
   end
 
-  def map_temporal_mode(prev : BaseNode?)
+  def map_temporal_mode(prev : MtNode?)
     return 1 if !prev || prev.punctuations? || prev.none?
     return prev.pre_zai? ? 1 : 2 if prev.prepos?
     return prev.flag.has_pre_zai? ? 1 : 2 if prev.verbal?
@@ -31,7 +31,7 @@ module MT::TlRule
     0
   end
 
-  def fold_year!(year_num : BaseNode, year : BaseNode, mode : Int32 = 0)
+  def fold_year!(year_num : MtNode, year : MtNode, mode : Int32 = 0)
     year.val = "năm"
 
     if (num = year.succ?) && num.numbers? && (mo = num.succ?) && mo.key == "月"
@@ -46,11 +46,11 @@ module MT::TlRule
     month ? fold!(year, month, year.tag, dic: 3, flip: true) : year
   end
 
-  private def exact_year?(year : BaseNode) : Bool
+  private def exact_year?(year : MtNode) : Bool
     year.tag.ndigits? || year.key !~ /[两百千万亿兆]/
   end
 
-  def fold_month!(mo_num : BaseNode, mo : BaseNode, mode : Int32 = 0)
+  def fold_month!(mo_num : MtNode, mo : MtNode, mode : Int32 = 0)
     # puts [mo_num, mo, mode, "fold_month"]
 
     mo.val = "tháng"
@@ -67,7 +67,7 @@ module MT::TlRule
     day ? fold!(month, day, month.tag, dic: 3, flip: true) : month
   end
 
-  def fold_day!(num : BaseNode, qti : BaseNode, mode : Int32 = 0) : BaseNode
+  def fold_day!(num : MtNode, qti : MtNode, mode : Int32 = 0) : MtNode
     # puts [num, qti, mode, "fold_day"]
 
     case qti.key
@@ -79,11 +79,11 @@ module MT::TlRule
     fold!(num, qti, PosTag::Texpr, dic: 3, flip: mode == 1)
   end
 
-  def fold_hour!(node : BaseNode, succ : BaseNode, appro : Int32 = 0)
+  def fold_hour!(node : MtNode, succ : MtNode, appro : Int32 = 0)
     fold!(node, succ, PosTag::Nqtime, dic: 2)
   end
 
-  def fold_minute!(node : BaseNode, succ : BaseNode, appro : Int32 = 0)
+  def fold_minute!(node : MtNode, succ : MtNode, appro : Int32 = 0)
     fold!(node, succ, PosTag::Nqtime, dic: 3)
   end
 end

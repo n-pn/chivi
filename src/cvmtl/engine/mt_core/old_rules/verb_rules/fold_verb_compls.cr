@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_verb_compl!(verb : BaseNode, compl : BaseNode) : BaseNode?
+  def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
     raise "Should implement on fold_left!"
 
     return if verb.v_you? || verb.v_shi? || !compl.vcompl?
@@ -25,6 +25,6 @@ module MT::TlRule
     else
       return
     end
-    fold!(verb, compl, MapTag::Verb)
+    fold!(verb, compl, PosTag::Verb)
   end
 end

@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_uzhi!(uzhi : BaseNode, prev : BaseNode = uzhi.prev, succ = uzhi.succ?) : BaseNode
+  def fold_uzhi!(uzhi : MtNode, prev : MtNode = uzhi.prev, succ = uzhi.succ?) : MtNode
     return prev if !succ || succ.ends?
     uzhi.val = ""
 
@@ -14,7 +14,7 @@ module MT::TlRule
     fold!(prev, succ, tag, dic: 3, flip: true)
   end
 
-  def is_percent?(prev : BaseNode, uzhi : BaseNode)
+  def is_percent?(prev : MtNode, uzhi : MtNode)
     if body = prev.body?
       return false unless body.nhanzis?
       return false unless succ = body.succ?

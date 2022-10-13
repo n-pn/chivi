@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_verb_advbu!(verb : BaseNode, adv_bu : BaseNode, succ = adv_bu.succ?) : BaseNode
+  def fold_verb_advbu!(verb : MtNode, adv_bu : MtNode, succ = adv_bu.succ?) : MtNode
     return verb unless succ
 
     if succ.key == verb.key
@@ -11,7 +11,7 @@ module MT::TlRule
     end
   end
 
-  def fold_verb_advbu_verb!(verb : BaseNode, adv_bu : BaseNode, verb_2 : BaseNode)
+  def fold_verb_advbu_verb!(verb : MtNode, adv_bu : MtNode, verb_2 : MtNode)
     adv_bu.val = "hay"
     verb_2.val = "không"
 
@@ -19,9 +19,9 @@ module MT::TlRule
       verb_2.fix_succ!(tail.succ?)
       tail.fix_succ!(adv_bu)
       tail.fix_prev!(verb)
-      tag = MapTag::Vint
+      tag = PosTag::Vint
     else
-      tag = MapTag::Verb
+      tag = PosTag::Verb
     end
 
     fold!(verb, verb_2, tag: tag)

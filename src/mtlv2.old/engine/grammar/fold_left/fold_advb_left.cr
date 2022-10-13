@@ -11,7 +11,7 @@ module MT::MTL
     curr
   end
 
-  def fold_advb_left!(curr : Adverbial, left : BaseNode?)
+  def fold_advb_left!(curr : Adverbial, left : MtNode?)
     curr
   end
 end

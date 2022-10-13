@@ -1,7 +1,7 @@
 require "../../mt_util"
 
 module MT::TlRule
-  def fold_year!(prev : BaseNode, node : BaseNode, appro : Int32 = 0)
+  def fold_year!(prev : MtNode, node : MtNode, appro : Int32 = 0)
     node.val = "năm"
 
     if (number = node.succ?) && (quanti = number.succ?)
@@ -11,14 +11,14 @@ module MT::TlRule
     end
 
     if month || exact_year?(node, appro)
-      prev = fold!(prev, node, MapTag::Texpr, flip: true)
+      prev = fold!(prev, node, PosTag::Texpr, flip: true)
       return month ? fold!(prev, month, prev.tag, flip: true) : prev
     end
 
-    fold!(prev, node, MapTag::Nqtime)
+    fold!(prev, node, PosTag::Nqtime)
   end
 
-  def exact_year?(node : BaseNode, appro : Int32 = 0) : Bool
+  def exact_year?(node : MtNode, appro : Int32 = 0) : Bool
     return appro < 0 if appro != 0
 
     case node.tag
@@ -32,24 +32,24 @@ module MT::TlRule
     end
   end
 
-  def fold_month!(prev : BaseNode, node : BaseNode, appro : Int32 = 0)
+  def fold_month!(prev : MtNode, node : MtNode, appro : Int32 = 0)
     node.val = "tháng"
     date = fold_day?(node.succ?)
 
     if date || appro == -1
-      prev = fold!(prev, node, MapTag::Texpr, flip: true)
+      prev = fold!(prev, node, PosTag::Texpr, flip: true)
       return date ? fold!(prev, date, prev.tag, flip: true) : prev
     end
 
     if appro == 0 && prev.to_int?.try(&.< 13)
       # TODO: check more cases
-      return fold!(prev, node, MapTag::Texpr, flip: true)
+      return fold!(prev, node, PosTag::Texpr, flip: true)
     end
 
-    fold!(prev, node, MapTag::Nqtime)
+    fold!(prev, node, PosTag::Nqtime)
   end
 
-  def fold_day?(num : BaseNode?) : BaseNode?
+  def fold_day?(num : MtNode?) : MtNode?
     return unless num && (day = num.succ?) && num.is_a?(MonoNode)
     return unless num.numbers? && day.key == "日" || day.key == "号"
 
@@ -59,18 +59,18 @@ module MT::TlRule
     else          return
     end
 
-    fold!(num, day, MapTag::Texpr, flip: true)
+    fold!(num, day, PosTag::Texpr, flip: true)
   end
 
-  def fold_hour!(node : BaseNode, succ : BaseNode, appro : Int32 = 0)
-    fold!(node, succ, MapTag::Nqtime)
+  def fold_hour!(node : MtNode, succ : MtNode, appro : Int32 = 0)
+    fold!(node, succ, PosTag::Nqtime)
   end
 
-  def fold_minute!(node : BaseNode, succ : BaseNode, appro : Int32 = 0)
-    fold!(node, succ, MapTag::Nqtime)
+  def fold_minute!(node : MtNode, succ : MtNode, appro : Int32 = 0)
+    fold!(node, succ, PosTag::Nqtime)
   end
 
-  def clean_个!(node : BaseNode) : BaseNode
+  def clean_个!(node : MtNode) : MtNode
     if body = node.body?
       deep_clean_个!(body)
     elsif node.key.ends_with?('个')
@@ -82,7 +82,7 @@ module MT::TlRule
     node
   end
 
-  def deep_clean_个!(node : BaseNode) : Nil
+  def deep_clean_个!(node : MtNode) : Nil
     loop do
       return node.set!("") if node.key == "个"
       break unless node = node.succ?

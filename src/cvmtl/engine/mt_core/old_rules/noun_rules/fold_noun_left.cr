@@ -1,5 +1,5 @@
 module MT::TlRule
-  # def fold_noun_left!(node : BaseNode, mode = 1)
+  # def fold_noun_left!(node : MtNode, mode = 1)
   #   flag = 0
 
   #   while prev = node.prev?
@@ -9,19 +9,19 @@ module MT::TlRule
   #       node = fold_nquant_noun!(prev, node)
   #       flag = 1
   #     when .pro_ji?
-  #       return fold!(prev, node, MapTag::Nform)
+  #       return fold!(prev, node, PosTag::Nform)
   #     when .pro_ints?
   #       return fold_什么_noun!(prev, node) if prev.key == "什么"
-  #       return fold_flip!(prev, node, MapTag::Nform)
+  #       return fold_flip!(prev, node, PosTag::Nform)
   #     when .pl_ajno?, .amod_words?
   #       break if flag > 0
-  #       node = fold_flip!(prev, node, MapTag::Nform)
+  #       node = fold_flip!(prev, node, PosTag::Nform)
   #     when .position?
   #       break if flag > 0
-  #       node = fold_flip!(prev, node, MapTag::Nform)
+  #       node = fold_flip!(prev, node, PosTag::Nform)
   #     when .pl_ajad?, .adjt_words?
   #       break if flag > 0 || prev.key.size > 1
-  #       node = fold_flip!(prev, node, MapTag::Nform)
+  #       node = fold_flip!(prev, node, PosTag::Nform)
   #     when .pt_dep?
   #       break if mode < 1
   #       node = fold_ude1_left!(ude1: node, left: prev, right: ude1.succ?)
@@ -35,7 +35,7 @@ module MT::TlRule
   #   node
   # end
 
-  def fold_什么_noun!(prev : BaseNode, node : BaseNode)
+  def fold_什么_noun!(prev : MtNode, node : MtNode)
     succ = MonoNode.new("么", "gì", prev.tag, 1, prev.idx + 1)
 
     prev.key = "什"
@@ -44,6 +44,6 @@ module MT::TlRule
     succ.fix_succ!(node.succ?)
     node.fix_succ!(succ)
 
-    fold!(prev, succ, MapTag::Nform)
+    fold!(prev, succ, PosTag::Nform)
   end
 end

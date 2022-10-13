@@ -12,7 +12,7 @@
 # - A 比 B + 早/晚/多/少 + verb + …
 
 module MT::TlRule
-  def fold_compare_bi3!(prepos : BaseNode, succ = prepos.succ?, mode = 0)
+  def fold_compare_bi3!(prepos : MtNode, succ = prepos.succ?, mode = 0)
     return prepos unless (noun = scan_noun!(succ)) && noun.object?
 
     unless succ = noun.succ?
@@ -43,18 +43,18 @@ module MT::TlRule
     return prepos unless tail = scan_adjt!(noun.succ?)
     return prepos unless tail.adjective? || tail.verb_object?
 
-    output = BaseNode.new("", "", PosTag::Unkn, dic: 1, idx: prepos.idx)
+    output = MtNode.new("", "", PosTag::Unkn, dic: 1, idx: prepos.idx)
     output.fix_prev!(prepos.prev?)
     output.fix_succ!(tail.succ?)
 
     noun.fix_succ!(nil)
 
     if prepos.key == "不比"
-      adv_bu = BaseNode.new("不", "không", PosTag::AdvBu4, 1, prepos.idx)
+      adv_bu = MtNode.new("不", "không", PosTag::AdvBu4, 1, prepos.idx)
       output.set_body!(adv_bu)
       adv_bu.fix_succ!(tail)
 
-      prepos = BaseNode.new("比", "bằng", PosTag::PreBi3, 1, prepos.idx + 1)
+      prepos = MtNode.new("比", "bằng", PosTag::PreBi3, 1, prepos.idx + 1)
       tail.fix_succ!(prepos)
       prepos.fix_succ!(noun)
     else
@@ -66,11 +66,11 @@ module MT::TlRule
     fold_compare_bi3_after!(output, noun)
   end
 
-  def fold_bi3_verbal(bi3 : BaseNode, noun : BaseNode, verb : BaseNode) : BaseNode
+  def fold_bi3_verbal(bi3 : MtNode, noun : MtNode, verb : MtNode) : MtNode
     # TODO!
   end
 
-  def fold_compare_bi3_after!(node : BaseNode, last : BaseNode)
+  def fold_compare_bi3_after!(node : MtNode, last : MtNode)
     return node unless (succ = node.succ?) && succ.auxils? && (tail = succ.succ?)
 
     case succ

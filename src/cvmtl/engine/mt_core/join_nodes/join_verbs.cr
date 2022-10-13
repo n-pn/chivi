@@ -1,7 +1,7 @@
 require "./join_verbs/**"
 
 module MT::Core
-  def join_verb!(verb : BaseNode, prev = verb.prev)
+  def join_verb!(verb : MtNode, prev = verb.prev)
     verb = join_verb_1!(verb)
 
     case prev
@@ -18,17 +18,17 @@ module MT::Core
     if prev.prep_form?
       verb.tap(&.add_prep(prev))
     else
-      PairNode.new(prev, verb, tag: MapTag::SubjVerb)
+      PairNode.new(prev, verb, tag: PosTag::SubjVerb)
     end
   end
 
-  def join_verb_0!(verb : BaseNode, prev = verb.prev)
+  def join_verb_0!(verb : MtNode, prev = verb.prev)
     return verb unless prev.vauxil?
     # FIXME: fix auxil values
     PairNode.new(prev, verb, tag: verb.tag, flip: false)
   end
 
-  private def join_verb_1!(verb : BaseNode)
+  private def join_verb_1!(verb : MtNode)
     verb = join_verb_0!(verb)
     advb = verb.prev
 

@@ -1,11 +1,11 @@
-require "./base_node/*"
+require "../mt_node"
 
-class MT::TrioNode < MT::BaseNode
+class MT::TrioNode < MT::MtNode
   include BaseExpr
 
-  getter head : BaseNode
-  getter body : BaseNode
-  getter tail : BaseNode
+  getter head : MtNode
+  getter body : MtNode
+  getter tail : MtNode
 
   enum RenderType
     Normal    # head -> bond -> tail
@@ -15,7 +15,7 @@ class MT::TrioNode < MT::BaseNode
   end
 
   def initialize(
-    @head : BaseNode, @body : BaseNode, @tail : BaseNode,
+    @head : MtNode, @body : MtNode, @tail : MtNode,
     @tag : MtlTag = tail.tag, @pos : MtlPos = tail.pos,
     @type : RenderType = :normal
   )

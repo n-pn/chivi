@@ -1,6 +1,6 @@
 module MT::TlRule
   # do not return left when fail to prevent infinity loop!
-  def fold_ude1!(ude1 : BaseNode, prev = ude1.prev?, succ = ude1.succ?) : BaseNode
+  def fold_ude1!(ude1 : MtNode, prev = ude1.prev?, succ = ude1.succ?) : MtNode
     ude1.val = ""
 
     # ameba:disable Style/NegatedConditionsInUnless
@@ -14,11 +14,11 @@ module MT::TlRule
   end
 
   # do not return left when fail to prevent infinity loop
-  def fold_ude1_left!(ude1 : BaseNode, left : BaseNode, right : BaseNode?) : BaseNode
+  def fold_ude1_left!(ude1 : MtNode, left : MtNode, right : MtNode?) : MtNode
     case right
     when nil then return ude1
     when .vobjs?
-      right.tag = MapTag::Nform
+      right.tag = PosTag::Nform
     else
       return ude1 unless right.nounish?
     end
@@ -27,10 +27,10 @@ module MT::TlRule
 
     if left.ktetic?
       ude1.val = "của"
-      ptag = MapTag::DgPhrase
+      ptag = PosTag::DgPhrase
     else
       ude1.as(MonoNode).empty!(true)
-      ptag = MapTag::DcPhrase
+      ptag = PosTag::DcPhrase
     end
 
     left = fold!(left, ude1, tag: ptag, flip: true)

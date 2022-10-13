@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_usuo!(usuo : BaseNode, succ = usuo.succ?)
+  def fold_usuo!(usuo : MtNode, succ = usuo.succ?)
     return usuo unless succ
 
     succ = heal_mixed!(succ) if succ.polysemy?

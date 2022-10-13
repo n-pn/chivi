@@ -1,7 +1,7 @@
 # module MT::TlRule
 
 #   # ameba:disable Metrics/CyclomaticComplexity
-#   def heal_veno!(node : MonoNode, prev : BaseNode?, succ : BaseNode?) : MonoNode
+#   def heal_veno!(node : MonoNode, prev : MtNode?, succ : MtNode?) : MonoNode
 #     # puts [node, prev, succ]
 
 #     case succ
@@ -51,7 +51,7 @@
 #   end
 
 #   # ameba:disable Metrics/CyclomaticComplexity
-#   def heal_ajno!(node : MonoNode, prev : BaseNode?, succ : BaseNode?) : BaseNode
+#   def heal_ajno!(node : MonoNode, prev : MtNode?, succ : MtNode?) : MtNode
 #     # puts [node, prev, succ, "heal_ajno"]
 
 #     case succ

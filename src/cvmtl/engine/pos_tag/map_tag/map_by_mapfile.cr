@@ -1,4 +1,4 @@
-module MT::MapTag
+module MT::PosTag
   SOUND_MAP    = load_map("sounds")
   ADVERB_MAP   = load_map("adverbs")
   SUFFIX_MAP   = load_map("suffixes")

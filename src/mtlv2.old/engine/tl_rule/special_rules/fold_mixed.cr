@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_mixed!(node : BaseNode) : BaseNode
+  def fold_mixed!(node : MtNode) : MtNode
     node = heal_mixed!(node)
 
     case node
@@ -11,7 +11,7 @@ module MT::TlRule
     end
   end
 
-  def heal_mixed!(node : BaseNode) : BaseNode
+  def heal_mixed!(node : MtNode) : MtNode
     case node.tag
     when .pl_veno? then heal_veno!(node)
     when .pl_vead? then heal_vead!(node)
@@ -23,7 +23,7 @@ module MT::TlRule
     end
   end
 
-  def heal_ajad!(node : BaseNode, succ = node.succ?) : BaseNode
+  def heal_ajad!(node : MtNode, succ = node.succ?) : MtNode
     return MtDict.fix_adjt!(node) unless succ
 
     if mixed_is_adverb?(node, succ)
@@ -33,7 +33,7 @@ module MT::TlRule
     end
   end
 
-  def heal_vead!(node : BaseNode) : BaseNode
+  def heal_vead!(node : MtNode) : MtNode
     return MtDict.fix_verb!(node) if !(succ = node.succ?) || succ.ends?
 
     succ = heal_mixed!(succ) if succ.polysemy?
@@ -55,7 +55,7 @@ module MT::TlRule
   end
 
   # -ameba:disable Metrics/CyclomaticComplexity
-  def heal_ajno!(node : BaseNode)
+  def heal_ajno!(node : MtNode)
     case node.prev?
     when .nil?
     when .adverbial?
@@ -88,7 +88,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_veno!(node : BaseNode, succ = node.succ?)
+  def heal_veno!(node : MtNode, succ = node.succ?)
     # puts [node, prev, "heal_veno"]
 
     case prev = node.prev?
@@ -168,7 +168,7 @@ module MT::TlRule
     end
   end
 
-  private def mixed_is_adverb?(node : BaseNode, succ : BaseNode) : Bool
+  private def mixed_is_adverb?(node : MtNode, succ : MtNode) : Bool
     return true if succ.adjective? || succ.preposes? || succ.verbal? || succ.vmodals?
     false
   end

@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_vyou!(vyou : BaseNode, succ : BaseNode)
+  def fold_vyou!(vyou : MtNode, succ : MtNode)
     not_meiyou = vyou.key != "没有"
 
     if not_meiyou && succ.key_in?("些", "点")
@@ -13,7 +13,7 @@ module MT::TlRule
     fold_compare_vyou!(vyou, noun, tail)
   end
 
-  def fold_vyou_ude1!(vyou : BaseNode, ude1 : BaseNode, noun : BaseNode)
+  def fold_vyou_ude1!(vyou : MtNode, ude1 : MtNode, noun : MtNode)
     unless tail = scan_noun!(ude1.succ?)
       return fold!(vyou, noun, MapTag::Vobj)
     end
@@ -30,7 +30,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_compare_vyou!(vyou : BaseNode, noun : BaseNode, tail : BaseNode)
+  def fold_compare_vyou!(vyou : MtNode, noun : MtNode, tail : MtNode)
     not_meiyou = vyou.key != "没有"
     adverb = nil
 

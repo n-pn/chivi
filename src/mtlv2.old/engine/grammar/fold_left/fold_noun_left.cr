@@ -40,7 +40,7 @@ module MT::MTL
   #   TraitPair.new(left, curr, flip: true)
   # end
 
-  # def fold_noun_left!(curr : BaseNode, left : NounWord)
+  # def fold_noun_left!(curr : MtNode, left : NounWord)
   #   case left
   #   when TraitNoun, PositNoun
   #     NounPair.new(left, curr, flip: true)
@@ -49,7 +49,7 @@ module MT::MTL
   #   end
   # end
 
-  def fold_noun_left!(curr : BaseNode, left : NquantWord | QuantiWord)
+  def fold_noun_left!(curr : MtNode, left : NquantWord | QuantiWord)
     return left unless left.for_noun?
 
     if !curr.is_a?(NounForm)
@@ -61,7 +61,7 @@ module MT::MTL
     curr.tap(&.add_quanti(left))
   end
 
-  def fold_noun_left!(curr : BaseNode, left : NumberWord | NumberExpr)
+  def fold_noun_left!(curr : MtNode, left : NumberWord | NumberExpr)
     curr = NounForm.new(curr) unless curr.is_a?(NounForm)
 
     if !curr.is_a?(NounForm)
@@ -78,7 +78,7 @@ module MT::MTL
     curr
   end
 
-  def fold_noun_left!(curr : BaseNode, left : ProdemWord)
+  def fold_noun_left!(curr : MtNode, left : ProdemWord)
     curr = NounForm.new(curr) unless curr.is_a?(NounForm)
 
     if !curr.is_a?(NounForm)
@@ -95,7 +95,7 @@ module MT::MTL
     curr
   end
 
-  def fold_noun_left!(curr : BaseNode, left : BaseNode)
+  def fold_noun_left!(curr : MtNode, left : MtNode)
     curr
   end
 end

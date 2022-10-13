@@ -1,7 +1,7 @@
 module MT::TlRule
   LINKING = {'来', '去', '到', '有', '上', '想', '出'}
 
-  def is_linking_verb?(head : BaseNode, succ : BaseNode?) : Bool
+  def is_linking_verb?(head : MtNode, succ : MtNode?) : Bool
     # puts [head.to_str, succ, "check linking verb"]
     return true if head.vmodals?
     return true if !succ || succ.starts_with?('不')
@@ -17,7 +17,7 @@ module MT::TlRule
     false
   end
 
-  def find_verb_after(right : BaseNode)
+  def find_verb_after(right : MtNode)
     while right = right.succ?
       # puts ["find_verb", right]
 
@@ -33,7 +33,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def find_verb_after_for_prepos(node : BaseNode, skip_comma = true) : BaseNode?
+  def find_verb_after_for_prepos(node : MtNode, skip_comma = true) : MtNode?
     while node = node.succ?
       case node
       when .plsgn?, .mnsgn? then return node
@@ -54,7 +54,7 @@ module MT::TlRule
     end
   end
 
-  def scan_verb!(node : BaseNode)
+  def scan_verb!(node : MtNode)
     case node
     when .adverbial? then fold_adverbs!(node)
     when .preposes?  then fold_preposes!(node)
@@ -62,7 +62,7 @@ module MT::TlRule
     end
   end
 
-  def need_2_objects?(node : BaseNode)
+  def need_2_objects?(node : MtNode)
     node.each do |x|
       if body = x.body?
         next true if need_2_objects?(body)
@@ -74,7 +74,7 @@ module MT::TlRule
     false
   end
 
-  def fold_left_verb!(node : BaseNode, prev : BaseNode?)
+  def fold_left_verb!(node : MtNode, prev : MtNode?)
     return node unless prev && prev.adverbial?
     fold_adverb_node!(prev, node)
   end

@@ -1,13 +1,13 @@
-require "../base_node"
+require "../mt_node"
 
-class MT::VerbForm < MT::BaseNode
+class MT::VerbForm < MT::MtNode
   include BaseExpr
 
-  property advb : BaseNode? = nil
-  property verb : BaseNode
-  property cmpl : BaseNode? = nil # complement
-  property dobj : BaseNode? = nil
-  property tail : BaseNode? = nil # put after objects
+  property advb : MtNode? = nil
+  property verb : MtNode
+  property cmpl : MtNode? = nil # complement
+  property dobj : MtNode? = nil
+  property tail : MtNode? = nil # put after objects
 
   forward_missing_to @verb
 
@@ -16,27 +16,27 @@ class MT::VerbForm < MT::BaseNode
     self.fix_succ!(@verb.succ?)
   end
 
-  def add_advb(advb : BaseNode)
+  def add_advb(advb : MtNode)
     self.fix_prev!(advb.prev?)
 
     if prev_advb = @advb
-      @advb = PairNode.new(advb, prev_advb, tag: MapTag::DvPhrase)
+      @advb = PairNode.new(advb, prev_advb, tag: PosTag::DvPhrase)
     else
       @advb = advb
     end
   end
 
-  def add_tail(tail : BaseNode)
+  def add_tail(tail : MtNode)
     self.fix_prev!(tail.prev?)
 
     if prev_tail = @tail
-      @tail = PairNode.new(tail, prev_tail, tag: MapTag::DvPhrase, flip: true)
+      @tail = PairNode.new(tail, prev_tail, tag: PosTag::DvPhrase, flip: true)
     else
       @tail = tail
     end
   end
 
-  def add_prep(prep_form : BaseNode)
+  def add_prep(prep_form : MtNode)
     if prep_form.at_tail?
       add_tail(prep_form)
     else

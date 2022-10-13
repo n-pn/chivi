@@ -1,6 +1,6 @@
 module MT::TlRule
   # do not return left when fail to prevent infinity loop!
-  def fold_ude1!(ude1 : BaseNode, left = ude1.prev, right : BaseNode? = nil) : BaseNode
+  def fold_ude1!(ude1 : MtNode, left = ude1.prev, right : MtNode? = nil) : MtNode
     # puts [left, right]
 
     if is_tangible?(left)
@@ -28,7 +28,7 @@ module MT::TlRule
     fold!(head, right, tag: right.tag, dic: 6, flip: true)
   end
 
-  def is_tangible?(node : BaseNode)
+  def is_tangible?(node : MtNode)
     return node.pro_per? unless node.noun_words?
     !(node.property? || node.ntime? || node.nqtime?)
   end

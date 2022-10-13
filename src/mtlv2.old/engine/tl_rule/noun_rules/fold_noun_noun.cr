@@ -7,7 +7,7 @@ module MT::TlRule
     VerbTwo
     LinkingVerb
 
-    def self.init(noun : BaseNode, prev = noun.prev?) : self
+    def self.init(noun : MtNode, prev = noun.prev?) : self
       mode = FoldAll
       return mode unless prev
 
@@ -36,12 +36,12 @@ module MT::TlRule
       end
     end
 
-    def with_prepos(noun : BaseNode, prepos : BaseNode)
+    def with_prepos(noun : MtNode, prepos : MtNode)
       # TODO: check prepos + noun as defn phrase
       self
     end
 
-    def with_verbal(noun : BaseNode, verb : BaseNode)
+    def with_verbal(noun : MtNode, verb : MtNode)
       # TODO: add checks for v_you
       return self if verb.v_shi?
 
@@ -65,21 +65,21 @@ module MT::TlRule
       mode
     end
 
-    def with_ude1(node : BaseNode, ude1 : BaseNode)
+    def with_ude1(node : MtNode, ude1 : MtNode)
       return self if !(prev = ude1.prev?) || prev.ends?
       # TODO: check for deep prev
       self | NoLocat
     end
   end
 
-  def noun_is_subject?(noun : BaseNode)
+  def noun_is_subject?(noun : MtNode)
     return false if !(succ = noun.succ?) || succ.ends?
     succ = fold_adverbs!(succ) if succ.adverbial?
     return succ.adjective? unless succ.verbal?
     !succ.v_shi? && !succ.v_you?
   end
 
-  def fold_noun_noun!(node : BaseNode, succ : BaseNode, mode : NounMode) : BaseNode
+  def fold_noun_noun!(node : MtNode, succ : MtNode, mode : NounMode) : MtNode
     case succ.tag
     when .ptitle?
       if node.proper_nouns? || node.ptitle?
@@ -101,7 +101,7 @@ module MT::TlRule
   end
 
   # # ameba:disable Metrics/CyclomaticComplexity
-  # def noun_can_combine?(prev : BaseNode?, succ : BaseNode?) : Bool
+  # def noun_can_combine?(prev : MtNode?, succ : MtNode?) : Bool
   #   while prev && (prev.numeral? || prev.pronouns?)
   #     # puts [prev, succ, "noun_can_combine"]
   #     prev = prev.prev?

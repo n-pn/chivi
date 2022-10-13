@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_nhanzi!(node : BaseNode, prev : BaseNode? = nil) : BaseNode
+  def fold_nhanzi!(node : MtNode, prev : MtNode? = nil) : MtNode
     return node unless (succ = node.succ?) && succ.is_a?(MonoNode)
 
     case succ.key
@@ -10,10 +10,10 @@ module MT::TlRule
     end
   end
 
-  def fold_nhanzi_dian!(node : BaseNode, succ : BaseNode, prev : BaseNode?) : BaseNode
+  def fold_nhanzi_dian!(node : MtNode, succ : MtNode, prev : MtNode?) : MtNode
     result = keep_pure_numeral?(succ.succ?)
 
-    if result.is_a?(BaseNode)
+    if result.is_a?(MtNode)
       node.key = "#{node.key}#{succ.key}#{result.key}"
       node.val = "#{node.val} chấm #{result.val}" # TODO: correcting unit system
       return node.tap(&.fix_succ!(result.succ?))
@@ -22,7 +22,7 @@ module MT::TlRule
     prev || result ? fold_number_hour!(node, succ) : node
   end
 
-  def keep_pure_numeral?(node : BaseNode?) : Bool | BaseNode
+  def keep_pure_numeral?(node : MtNode?) : Bool | MtNode
     return false unless node && node.is_a?(MonoNode)
     return true if node.key == "半" || node.key == "前后"
 

@@ -1,5 +1,5 @@
 module MT::TlRule
-  def scan_verbs!(node : BaseNode)
+  def scan_verbs!(node : MtNode)
     case node
     when .v_shi?     then node
     when .v_you?     then node

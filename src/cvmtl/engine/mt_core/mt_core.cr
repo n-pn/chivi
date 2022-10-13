@@ -4,14 +4,14 @@ require "./join_nodes/**"
 module MT::Core
   extend self
 
-  def left_join!(tail : BaseNode, head : BaseNode) : Nil
+  def left_join!(tail : MtNode, head : MtNode) : Nil
     while tail = tail.prev?
       break if tail == head
       tail = join_word!(tail)
     end
   end
 
-  def join_word!(node : BaseNode) : BaseNode
+  def join_word!(node : MtNode) : MtNode
     if node.polysemy?
       node = fix_polysemy!(node.as(MonoNode))
     elsif node.uniqword?
@@ -33,16 +33,16 @@ module MT::Core
     SeriNode.new(pstart, pclose, tag: tag, pos: pos)
   end
 
-  def guess_group_tag(head : BaseNode, tail : BaseNode) : {MtlTag, MtlPos}
+  def guess_group_tag(head : MtNode, tail : MtNode) : {MtlTag, MtlPos}
     case head.tag
-    when .title_sts? then MapTag::CapTitle
-    when .brack_sts? then MapTag::CapOther
-    when .paren_st1? then MapTag::ParenExp
+    when .title_sts? then PosTag::CapTitle
+    when .brack_sts? then PosTag::CapOther
+    when .paren_st1? then PosTag::ParenExp
     else                  guess_quote_group(head, tail)
     end
   end
 
-  def guess_quote_group(head : BaseNode, tail : BaseNode) : {MtlTag, MtlPos}
+  def guess_quote_group(head : MtNode, tail : MtNode) : {MtlTag, MtlPos}
     head_succ = head.succ
     tail_prev = tail.prev
 
@@ -56,10 +56,10 @@ module MT::Core
       return {head_succ.tag, head_succ.pos}
     end
 
-    head.prev?(&.pt_dep?) ? MapTag::Nform : MapTag::LitBlank
+    head.prev?(&.pt_dep?) ? PosTag::Nform : PosTag::LitBlank
   end
 
-  def fold!(head : BaseNode, tail : BaseNode,
+  def fold!(head : MtNode, tail : MtNode,
             tag : {MtlTag, MtlPos}? = nil, flip : Bool = false)
     tag ||= {tail.tag, tail.pos}
     # FIXME: remove this helper and using proper structures

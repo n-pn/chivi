@@ -3,7 +3,7 @@ require "./fold_left/*"
 module MT::MTL
   extend self
 
-  def fold_left!(curr : BaseNode, left : BaseNode) : BaseNode
+  def fold_left!(curr : MtNode, left : MtNode) : MtNode
     case curr
     # when Nominal   then fold_noun_left!(curr, left)
     when Adverbial then fold_advb_left!(curr, left)
@@ -13,7 +13,7 @@ module MT::MTL
     end
   end
 
-  def fold_left!(curr : BaseNode, left : Nil) : BaseNode
+  def fold_left!(curr : MtNode, left : Nil) : MtNode
     curr
   end
 end

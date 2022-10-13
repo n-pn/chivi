@@ -1,5 +1,5 @@
 module MT::TlRule
-  # def fold_noun_left!(node : BaseNode, mode = 1)
+  # def fold_noun_left!(node : MtNode, mode = 1)
   #   flag = 0
 
   #   while prev = node.prev?
@@ -35,8 +35,8 @@ module MT::TlRule
   #   node
   # end
 
-  def fold_什么_noun!(prev : BaseNode, node : BaseNode)
-    succ = BaseNode.new("么", "gì", prev.tag, 1, prev.idx + 1)
+  def fold_什么_noun!(prev : MtNode, node : MtNode)
+    succ = MtNode.new("么", "gì", prev.tag, 1, prev.idx + 1)
 
     prev.key = "什"
     prev.val = "cái"

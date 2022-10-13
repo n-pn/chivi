@@ -6,8 +6,8 @@ module MT::TlRule
   #   can return non nominal node
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def scan_noun!(node : BaseNode?, mode : Int32 = 0,
-                 prodem : BaseNode? = nil, nquant : BaseNode? = nil)
+  def scan_noun!(node : MtNode?, mode : Int32 = 0,
+                 prodem : MtNode? = nil, nquant : MtNode? = nil)
     raise "dead code!"
     # puts [node, prodem, nquant, "scan_noun"]
     # return fold_prodem_nominal!(prodem, nquant) unless node
@@ -156,7 +156,7 @@ module MT::TlRule
     # fold!(node, tail, MapTag::Nform, flip: true)
   end
 
-  def clean_nquant(nquant : BaseNode, prodem : BaseNode?)
+  def clean_nquant(nquant : MtNode, prodem : MtNode?)
     return nquant unless prodem || nquant.is_a?(BaseList) || nquant.key.size > 1
 
     nquant.each do |node|
@@ -169,7 +169,7 @@ module MT::TlRule
     nquant
   end
 
-  def fold_head_ude1_noun!(head : BaseNode)
+  def fold_head_ude1_noun!(head : MtNode)
     return head unless (ude1 = head.succ?) && ude1.pt_dep?
     ude1.val = "" unless head.common_nouns? || head.proper_nouns?
 
@@ -177,14 +177,14 @@ module MT::TlRule
     fold!(head, tail, MapTag::Nform, flip: true)
   end
 
-  def fold_adjt_as_noun!(node : BaseNode)
+  def fold_adjt_as_noun!(node : MtNode)
     return node if node.noun_words? || !(succ = node.succ?)
 
     noun, ude1 = succ.pt_dep? ? {succ.succ?, succ} : {succ, nil}
     fold_adjt_noun!(node, noun, ude1)
   end
 
-  def fold_verb_as_noun!(node : BaseNode, mode = 0)
+  def fold_verb_as_noun!(node : MtNode, mode = 0)
     node = fold_verbs!(node)
     return node if node.noun_words? || mode == 3 || !(succ = node.succ?)
 
@@ -196,7 +196,7 @@ module MT::TlRule
     fold_verb_ude1!(node)
   end
 
-  def fold_verb_ude1!(node : BaseNode, succ = node.succ?)
+  def fold_verb_ude1!(node : MtNode, succ = node.succ?)
     return node unless succ && succ.pt_dep?
     return node unless (noun = scan_noun!(succ.succ?, mode: 1)) && noun.object?
 

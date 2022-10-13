@@ -1,6 +1,6 @@
 module MT::TlRule
   # -ameba:disable Metrics/CyclomaticComplexity
-  def fold_ndigit!(node : BaseNode, succ = node.succ, prev : BaseNode? = nil)
+  def fold_ndigit!(node : MtNode, succ = node.succ, prev : MtNode? = nil)
     return fold_ndigit_nhanzi!(node, succ) if succ.nhanzis?
 
     if time = fold_number_as_temporal(num: node, qti: succ, prev: prev)
@@ -26,13 +26,13 @@ module MT::TlRule
     end
   end
 
-  private def fold_ndigit_extra!(node : BaseNode, succ : BaseNode, tail : BaseNode, tag : PosTag)
+  private def fold_ndigit_extra!(node : MtNode, succ : MtNode, tail : MtNode, tag : PosTag)
     node.key = "#{node.key}#{succ.key}#{tail.key}"
     node.set!("#{node.val}#{succ.val}#{tail.val}", tag)
     node.tap(&.fix_succ!(tail.succ?))
   end
 
-  def fold_ndigit_nhanzi!(node : BaseNode, succ : BaseNode) : BaseNode
+  def fold_ndigit_nhanzi!(node : MtNode, succ : MtNode) : MtNode
     key_io = String::Builder.new(node.key)
     val_io = String::Builder.new(node.val)
 

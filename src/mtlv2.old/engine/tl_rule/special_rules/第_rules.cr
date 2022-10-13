@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_第!(node : BaseNode)
+  def fold_第!(node : MtNode)
     return node unless (succ = node.succ?) && (succ.nhanzis? || succ.ndigits?)
 
     if succ.key == "一"

@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_pro_ints!(proint : BaseNode, succ = node.succ?)
+  def fold_pro_ints!(proint : MtNode, succ = node.succ?)
     case succ
     when .nil?, .v_shi?, .v_you?
       return proint

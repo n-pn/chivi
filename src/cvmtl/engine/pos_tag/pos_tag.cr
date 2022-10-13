@@ -1,7 +1,7 @@
 require "./mtl_pos"
 require "./mtl_tag"
 
-module MT::MapTag
+module MT::PosTag
   extend self
 
   def self.load_map(name : String, init_pos : MtlPos = :none)

@@ -1,5 +1,5 @@
 module MT::TlRule
-  def scan_verbs!(node : BaseNode)
+  def scan_verbs!(node : MtNode)
     node = heal_mixed!(node) if node.polysemy?
 
     case node

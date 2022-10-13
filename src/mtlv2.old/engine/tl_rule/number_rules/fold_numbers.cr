@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_number!(node : BaseNode, prev : BaseNode? = nil)
+  def fold_number!(node : MtNode, prev : MtNode? = nil)
     return node if !(succ = node.succ?) || succ.ends?
 
     if node.ndigits?
@@ -47,7 +47,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_number_nquant!(node : BaseNode, prev : BaseNode? = nil) : BaseNode
+  def fold_number_nquant!(node : MtNode, prev : MtNode? = nil) : MtNode
     return node if !(tail = node.succ?) || tail.ends?
 
     return node if tail.punctuations? && !tail.quantis?
@@ -110,7 +110,7 @@ module MT::TlRule
     node.flag!(flag)
   end
 
-  def map_nqtype(node : BaseNode)
+  def map_nqtype(node : MtNode)
     case node.tag
     when .qtnoun? then PosTag::Nqnoun
     when .qttime? then PosTag::Nqtime
@@ -119,7 +119,7 @@ module MT::TlRule
     end
   end
 
-  def fold_yi_verb!(node : BaseNode, succ : BaseNode)
+  def fold_yi_verb!(node : MtNode, succ : MtNode)
     return node unless node.key == "一" && succ.verb? || succ.vintr?
     fold!(node.set!("vừa"), succ, succ.tag, dic: 4)
   end
@@ -130,13 +130,13 @@ module MT::TlRule
     "小于" => "ít hơn",
   }
 
-  def is_pre_appro_num?(prev : BaseNode?)
+  def is_pre_appro_num?(prev : MtNode?)
     return false unless prev
     PRE_NUM_APPROS.has_key?(prev.key)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def meld_number!(node : BaseNode)
+  def meld_number!(node : MtNode)
     key_io = String::Builder.new(node.key)
     val_io = String::Builder.new(node.val)
 

@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_ndigit!(node : BaseNode, prev : BaseNode? = nil)
+  def fold_ndigit!(node : MtNode, prev : MtNode? = nil)
     return node unless (succ = node.succ?) && succ.is_a?(MonoNode)
     return fold_ndigit_nhanzi!(node, succ) if succ.nhanzis?
 
@@ -7,23 +7,23 @@ module MT::TlRule
     fold_number_hour!(node, succ)
   end
 
-  def fold_ndigit_nhanzi!(node : BaseNode, succ : BaseNode) : BaseNode
+  def fold_ndigit_nhanzi!(node : MtNode, succ : MtNode) : MtNode
     key_io = String::Builder.new(node.key)
     val_io = String::Builder.new(node.val)
 
-    match_tag = MapTag.make(:nhanzi0)
+    match_tag = PosTag.make(:nhanzi0)
 
     while succ.tag == match_tag
       key_io << succ.key
       val_io << " " << succ.val
       break unless (succ = succ.succ?) && succ.is_a?(MonoNode)
-      match_tag = MapTag::Ndigit1
+      match_tag = PosTag::Ndigit1
     end
 
     node.key = key_io.to_s
     node.val = val_io.to_s # TODO: correct unit system
 
-    node.tag = MapTag::Numeric
+    node.tag = PosTag::Numeric
     node.tap(&.fix_succ!(succ))
   end
 end

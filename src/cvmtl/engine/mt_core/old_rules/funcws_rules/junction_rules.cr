@@ -1,11 +1,11 @@
 module MT::TlRule
-  def can_combine_adjt?(left : BaseNode, right : BaseNode?)
+  def can_combine_adjt?(left : MtNode, right : MtNode?)
     # TODO
     right.adjt_words?
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_verb_junction!(junc : BaseNode, verb = junc.prev, succ = junc.succ?)
+  def fold_verb_junction!(junc : MtNode, verb = junc.prev, succ = junc.succ?)
     return unless verb && succ && succ.maybe_verb? && is_concoord?(junc)
 
     succ = heal_mixed!(succ) if succ.polysemy?
@@ -24,25 +24,25 @@ module MT::TlRule
     fold!(verb, succ, tag: tag || succ.tag)
   end
 
-  def fold_adjt_junction!(node : BaseNode, prev = node.prev?, succ = node.succ?)
+  def fold_adjt_junction!(node : MtNode, prev = node.prev?, succ = node.succ?)
     return unless prev && succ && is_concoord?(node)
     return unless (succ = scan_adjt!(succ)) && succ.adjt_words?
 
-    fold!(prev, succ, tag: MapTag::Aform)
+    fold!(prev, succ, tag: PosTag::Aform)
   end
 
-  def fold_noun_concoord!(node : BaseNode, prev = node.prev?, succ = node.succ?)
+  def fold_noun_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)
     return unless prev && succ
     return if node.key == "而" || !is_concoord?(node)
 
     if prev.tag == succ.tag
       fold!(prev, succ, tag: prev.tag)
     elsif (succ = scan_noun!(succ)) && similar_tag?(prev, succ)
-      fold!(prev, succ, tag: MapTag::Nform)
+      fold!(prev, succ, tag: PosTag::Nform)
     end
   end
 
-  def should_fold_noun_concoord?(noun : BaseNode, concoord : BaseNode) : Bool
+  def should_fold_noun_concoord?(noun : MtNode, concoord : MtNode) : Bool
     return true unless (prev = noun.prev?) && (succ = concoord.succ?)
     return false if prev.numeral? || prev.pronouns?
     return true unless prev.pt_dep? && (prev = prev.prev?)
@@ -58,7 +58,7 @@ module MT::TlRule
     false
   end
 
-  def is_concoord?(node : BaseNode)
+  def is_concoord?(node : MtNode)
     case node
     when .cenum?, .concoord? then true
     else
@@ -66,7 +66,7 @@ module MT::TlRule
     end
   end
 
-  def similar_tag?(left : BaseNode, right : BaseNode)
+  def similar_tag?(left : MtNode, right : MtNode)
     case left.tag
     when .nform?        then true
     when .cap_human?    then right.cap_human?
@@ -76,13 +76,13 @@ module MT::TlRule
     end
   end
 
-  def he2_is_prepos?(node : BaseNode, succ = node.succ?) : Bool
+  def he2_is_prepos?(node : MtNode, succ = node.succ?) : Bool
     return false unless succ && (verb = find_verb_after_for_prepos(succ))
     return false if verb.uniqword?
 
     # TODO: add more white list?
     # puts [verb, node]
-    node = fold!(node, succ, MapTag::PrepForm)
+    node = fold!(node, succ, PosTag::PrepForm)
     fold!(node, scan_verb!(verb), verb.tag)
 
     # TOD: fold as subject + verb structure?

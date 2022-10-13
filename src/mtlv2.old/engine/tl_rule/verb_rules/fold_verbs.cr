@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_verbs!(verb : BaseNode, adverb : BaseNode? = nil) : BaseNode
+  def fold_verbs!(verb : MtNode, adverb : MtNode? = nil) : MtNode
     # puts [verb, adverb, "fold_verb"]
 
     verb = fuse_verb!(verb) unless verb.verb_object?
@@ -17,7 +17,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_verb_other!(verb : BaseNode, succ : BaseNode = verb.succ)
+  def fold_verb_other!(verb : MtNode, succ : MtNode = verb.succ)
     unless verb.v0_obj? || succ.pd_dep? || succ.ends? || succ.junction?
       verb = fold_verb_object!(verb, succ)
       return verb.flag!(:resolved) unless succ = verb.succ?
@@ -51,7 +51,7 @@ module MT::TlRule
     end
   end
 
-  def fold_verb_ude1!(verb : BaseNode, ude1 : BaseNode, tail = ude1.succ)
+  def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, tail = ude1.succ)
     tail = fold_once!(tail)
 
     case tail

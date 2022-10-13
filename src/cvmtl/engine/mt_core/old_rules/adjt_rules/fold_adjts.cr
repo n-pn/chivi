@@ -4,7 +4,7 @@ module MT::TlRule
 
     if succ.numeral?
       succ = fuse_number!(succ)
-      return fold!(adjt, succ, MapTag::Aform)
+      return fold!(adjt, succ, PosTag::Aform)
     end
 
     return unless succ.is_a?(MonoNode) && (tail = succ.succ?) && tail.numeral?
@@ -12,11 +12,11 @@ module MT::TlRule
     succ.val = succ_val
 
     tail = fuse_number!(tail)
-    fold!(adjt, tail, MapTag::Aform)
+    fold!(adjt, tail, PosTag::Aform)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_adjts!(adjt : BaseNode, prev : BaseNode? = nil) : BaseNode
+  def fold_adjts!(adjt : MtNode, prev : MtNode? = nil) : MtNode
     if adjt.is_a?(MonoNode) && MEASURES.has_key?(adjt.key)
       fold_adjt_measure(adjt).try { |x| return x }
     end
@@ -47,9 +47,9 @@ module MT::TlRule
         case succ.key
         when "到"
           if (tail = succ.succ?) && tail.adjt_words?
-            adjt = fold!(adjt, tail, MapTag::Aform)
+            adjt = fold!(adjt, tail, PosTag::Aform)
           else
-            adjt = fold!(adjt, succ, MapTag::Verb)
+            adjt = fold!(adjt, succ, PosTag::Verb)
             return fold_verbs!(succ, prev: prev)
           end
         end
@@ -61,20 +61,20 @@ module MT::TlRule
         # when .pt_le?
         #   break unless (tail = succ.succ?) && tail.key == "点"
         #   succ.val = ""
-        #   adjt = fold!(adjt, tail.set!("chút"), MapTag::Aform)
+        #   adjt = fold!(adjt, tail.set!("chút"), PosTag::Aform)
         #   break
       when .pt_dep?
         break unless (tail = succ.succ?) && tail.key == "很"
         break if tail.succ?(&.boundary?.!)
 
         succ.val = ""
-        adjt = fold!(adjt, tail.set!("cực kỳ"), MapTag::Aform)
+        adjt = fold!(adjt, tail.set!("cực kỳ"), PosTag::Aform)
         break
       when .pt_dev?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_adjt_ude2!(adjt, succ)
       when .pt_zhe?
-        verb = fold!(adjt, succ.set!(""), MapTag::Verb)
+        verb = fold!(adjt, succ.set!(""), PosTag::Verb)
         return fold_verbs!(verb, prev: prev)
       when .pt_zhi?
         adjt = fold_adj_adv!(adjt, prev)
@@ -93,7 +93,7 @@ module MT::TlRule
     fold_adj_adv!(adjt, prev)
   end
 
-  def fold_amod_words?(node : BaseNode, succ = node.succ?, nega : BaseNode? = nil)
+  def fold_amod_words?(node : MtNode, succ = node.succ?, nega : MtNode? = nil)
     # puts [node, succ, nega].colorize.green
 
     node = fold!(nega, node, node.tag) if nega
@@ -106,8 +106,8 @@ module MT::TlRule
     succ.noun_words? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
   end
 
-  def fold_adj_adv!(node : BaseNode, prev = node.prev?)
+  def fold_adj_adv!(node : MtNode, prev = node.prev?)
     return node unless prev && prev.advb_words?
-    fold_adverb_node!(prev, node, tag: MapTag::Aform)
+    fold_adverb_node!(prev, node, tag: PosTag::Aform)
   end
 end

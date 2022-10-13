@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_number!(node : BaseNode, prev : BaseNode? = nil)
+  def fold_number!(node : MtNode, prev : MtNode? = nil)
     # puts ["number: ", node]
     node = fuse_number!(node, prev: prev) # if head.numbers?
 
@@ -27,14 +27,14 @@ module MT::TlRule
     end
   end
 
-  def fold_nquant_noun!(prev : BaseNode, node : BaseNode)
+  def fold_nquant_noun!(prev : MtNode, node : MtNode)
     prev = clean_个!(prev)
     node = fold!(prev, node, MapTag::Nform)
     node
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fuse_number!(node : BaseNode, prev : BaseNode? = nil) : BaseNode
+  def fuse_number!(node : MtNode, prev : MtNode? = nil) : MtNode
     case node.tag
     when .ndigits?
       node = fold_ndigit!(node, prev: prev)
@@ -115,7 +115,7 @@ module MT::TlRule
     fold_suf_quanti_appro!(node)
   end
 
-  def heal_has_ge4!(node : BaseNode)
+  def heal_has_ge4!(node : MtNode)
     if node.key.size == 1
       node.val = ""
     else
@@ -123,7 +123,7 @@ module MT::TlRule
     end
   end
 
-  def fold_yi_verb!(node : BaseNode, succ : BaseNode)
+  def fold_yi_verb!(node : MtNode, succ : MtNode)
     return node unless node.key == "一" && succ.common_verbs?
     fold!(node.set!("vừa"), succ, succ.tag)
   end
@@ -134,13 +134,13 @@ module MT::TlRule
     "小于" => "ít hơn",
   }
 
-  def is_pre_appro_num?(prev : BaseNode?)
+  def is_pre_appro_num?(prev : MtNode?)
     return false unless prev
     PRE_NUM_APPROS.has_key?(prev.key)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def meld_number!(node : BaseNode)
+  def meld_number!(node : MtNode)
     key_io = String::Builder.new(node.key)
     val_io = String::Builder.new(node.val)
 

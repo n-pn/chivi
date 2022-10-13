@@ -1,5 +1,5 @@
 module MT::AST::Rules
-  def fold_atsign!(head : PunctWord, tail : BaseNode) : BaseNode
+  def fold_atsign!(head : PunctWord, tail : MtNode) : MtNode
     key_io = String::Builder.new
 
     while tail && !tail.is_a?(PunctWord)

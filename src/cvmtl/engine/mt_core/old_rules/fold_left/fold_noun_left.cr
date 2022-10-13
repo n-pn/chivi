@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_noun_left!(noun : BaseNode, level = 0) : BaseNode
+  def fold_noun_left!(noun : MtNode, level = 0) : MtNode
     while prev = noun.prev?
       case prev
       when .pl_veno?, .pl_ajno?
@@ -15,7 +15,7 @@ module MT::TlRule
     level == 0 && prev ? fold_noun_left_2!(noun) : noun
   end
 
-  def fold_noun_left_2!(noun : BaseNode, prev = noun.prev) : BaseNode
+  def fold_noun_left_2!(noun : MtNode, prev = noun.prev) : MtNode
     ptag = noun.tag.posit? ? noun.tag : MapTag::Nform
 
     if prev.adjt_words?
@@ -44,7 +44,7 @@ module MT::TlRule
     fold!(prev, noun, ptag, flip: ptag.posit?)
   end
 
-  def fold_noun_noun_left!(noun : BaseNode, prev : BaseNode)
+  def fold_noun_noun_left!(noun : MtNode, prev : MtNode)
     case noun
     when .honor?          then return fold_honor_noun_left!(noun, prev)
     when .proper_nouns?   then return fold_name_noun_left!(noun, prev)

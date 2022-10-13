@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_verb_nquant!(verb : BaseNode, tail : BaseNode, has_ule = false)
+  def fold_verb_nquant!(verb : MtNode, tail : MtNode, has_ule = false)
     tail = fold_number!(tail) if tail.numbers?
     return verb unless tail.nquants?
 
@@ -10,7 +10,7 @@ module MT::TlRule
     fold!(verb, tail, verb.tag, dic: 6)
   end
 
-  def is_temp_nqverb?(tail : BaseNode)
+  def is_temp_nqverb?(tail : MtNode)
     case tail.key[-1]?
     when '把'
       return false if tail.succ?(&.noun?)

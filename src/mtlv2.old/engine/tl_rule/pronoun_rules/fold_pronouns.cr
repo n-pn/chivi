@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_pronouns!(pronoun : BaseNode, succ = pronoun.succ?) : BaseNode
+  def fold_pronouns!(pronoun : MtNode, succ = pronoun.succ?) : MtNode
     return pronoun unless succ
 
     case pronoun.tag

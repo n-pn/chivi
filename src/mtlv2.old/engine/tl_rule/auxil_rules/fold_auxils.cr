@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_auxils!(node : BaseNode, mode = 1) : BaseNode
+  def fold_auxils!(node : MtNode, mode = 1) : MtNode
     case node.tag
     # when .ule?  then heal_ule!(node)  # 了
     when .pt_dep? then heal_ude1!(node) # 的
@@ -10,7 +10,7 @@ module MT::TlRule
     end
   end
 
-  def heal_ude1!(ude1 : BaseNode) : BaseNode
+  def heal_ude1!(ude1 : MtNode) : MtNode
     if (prev = ude1.prev?) && !prev.punctuations?
       ude1.set!("")
     elsif (succ = ude1.succ?) && !succ.punctuations?
@@ -20,11 +20,11 @@ module MT::TlRule
     end
   end
 
-  def fold_ude2!(node : BaseNode) : BaseNode
+  def fold_ude2!(node : MtNode) : MtNode
     fold_nouns!(node.set!("đất", PosTag::Noun))
   end
 
-  def keep_ule?(prev : BaseNode, node : BaseNode, succ = node.succ?) : Bool
+  def keep_ule?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool
     return true unless succ
     return false if succ.popens?
     succ.ends? || succ.succ?(&.ule?) || false

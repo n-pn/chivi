@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_verb_uzhe!(prev : BaseNode, uzhe : BaseNode, succ = uzhe.succ?) : BaseNode
+  def fold_verb_uzhe!(prev : MtNode, uzhe : MtNode, succ = uzhe.succ?) : MtNode
     uzhe.val = ""
 
     if succ && succ.maybe_verb?

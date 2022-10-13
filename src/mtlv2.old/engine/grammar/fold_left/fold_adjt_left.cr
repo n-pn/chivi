@@ -1,7 +1,7 @@
 require "./fold_advb_left"
 
 module MT::MTL
-  def fold_adjt_left!(curr : Adjective, left : BaseNode, lvl = 0)
+  def fold_adjt_left!(curr : Adjective, left : MtNode, lvl = 0)
     while left.is_a?(Adjective)
       if curr.is_a?(AdjtExpr)
         curr.add_head(left)

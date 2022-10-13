@@ -49,7 +49,7 @@ module MT::Core
       end
     end
 
-    MonoNode.new(key_io.to_s, val_io.to_s, tag: MapTag::Nform)
+    MonoNode.new(key_io.to_s, val_io.to_s, tag: PosTag::Nform)
   end
 
   def recog_anchor(input : Array(Char), key_io, val_io, index)
@@ -72,7 +72,7 @@ module MT::Core
       end
     end
 
-    MonoNode.new(key_io.to_s, val_io.to_s, tag: MapTag::StrLink)
+    MonoNode.new(key_io.to_s, val_io.to_s, tag: PosTag::StrLink)
   end
 
   FULLWIDTH_GAP = 65248 # different in code point between half width and full width characters
@@ -125,7 +125,7 @@ module MT::Core
       end
     end
 
-    MonoNode.new(key_io.to_s, val_io.to_s, MapTag::Numeric, 0)
+    MonoNode.new(key_io.to_s, val_io.to_s, PosTag::Numeric, 0)
   end
 
   def match_half_width(char : Char)
@@ -180,9 +180,9 @@ module MT::Core
   def map_ptag(char : Char, count = 1)
     case char
     when '.', '-', '/'
-      count < 2 ? MapTag::Numeric : count < 3 ? MapTag::Tword : MapTag::StrOther
+      count < 2 ? PosTag::Numeric : count < 3 ? PosTag::Tword : PosTag::StrOther
     else # ':'
-      count < 3 ? MapTag::Tword : MapTag::StrOther
+      count < 3 ? PosTag::Tword : PosTag::StrOther
     end
   end
 

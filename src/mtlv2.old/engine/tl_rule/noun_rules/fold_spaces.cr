@@ -5,7 +5,7 @@ module MT::TlRule
     "下" => "xuống",
   }
 
-  def fold_space!(node : BaseNode) : BaseNode
+  def fold_space!(node : MtNode) : MtNode
     case node.key
     when "上", "下", "中"
       case succ = node.succ?
@@ -22,7 +22,7 @@ module MT::TlRule
     end
   end
 
-  def fold_noun_locality!(noun : BaseNode, locality : BaseNode) : BaseNode
+  def fold_noun_locality!(noun : MtNode, locality : MtNode) : MtNode
     # puts [noun, locality, "noun_locality"]
 
     flip = true
@@ -38,7 +38,7 @@ module MT::TlRule
     fold!(noun, locality, PosTag::Posit, dic: 5, flip: flip)
   end
 
-  def fix_locality_val!(node : BaseNode)
+  def fix_locality_val!(node : MtNode)
     case node.tag
     when .v_shang? then "trên"
     when .v_xia?   then "dưới"

@@ -1,4 +1,4 @@
-module MT::MapTag
+module MT::PosTag
   PREPOS_MAP = {
     "把"  => make(:pre_ba3),
     "对"  => make(:pre_dui),

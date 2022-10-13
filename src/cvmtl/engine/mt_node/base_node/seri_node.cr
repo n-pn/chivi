@@ -1,9 +1,9 @@
-require "./base_node/*"
+require "../mt_node"
 
-class MT::SeriNode < MT::BaseNode
+class MT::SeriNode < MT::MtNode
   include BaseExpr
 
-  def initialize(@head : BaseNode, @tail : BaseNode,
+  def initialize(@head : MtNode, @tail : MtNode,
                  @tag : MtlTag, @pos : MtlPos, flip = false)
     self.fix_prev!(head.prev?)
     self.fix_succ!(tail.succ?)

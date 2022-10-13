@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_adverbs!(node : BaseNode, succ = node.succ?) : BaseNode
+  def fold_adverbs!(node : MtNode, succ = node.succ?) : MtNode
     if !succ || succ.boundary?
       node.val = "vậy" if node.key == "也"
       return node
@@ -15,7 +15,7 @@ module MT::TlRule
     end
   end
 
-  def fold_adv_bu!(node : BaseNode, succ = node.succ) : BaseNode
+  def fold_adv_bu!(node : MtNode, succ = node.succ) : MtNode
     succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
@@ -36,12 +36,12 @@ module MT::TlRule
       fold_adjts!(node)
     else
       return node unless succ.key == "一样"
-      succ.set!("giống nhau", MapTag::Adjt)
+      succ.set!("giống nhau", PosTag::Adjt)
       fold_verbs!(succ, node)
     end
   end
 
-  def fold_adv_mei!(node : BaseNode, succ = node.succ) : BaseNode
+  def fold_adv_mei!(node : MtNode, succ = node.succ) : MtNode
     succ = heal_mixed!(succ) if succ.polysemy?
 
     case succ.tag
@@ -49,16 +49,16 @@ module MT::TlRule
       node.val = succ.succ?(&.pt_zhe?) ? "không" : node.prev?(&.nounish?) ? "chưa" : "không có"
       fold_verbs!(succ, prev: node)
     when .adjt?, .pl_ajad?, .pl_ajno?
-      fold!(node.set!("không"), succ, MapTag::Adjt)
+      fold!(node.set!("không"), succ, PosTag::Adjt)
     else
       node
     end
   end
 
-  def fold_adv_fei!(node : BaseNode, succ = node.succ) : BaseNode
+  def fold_adv_fei!(node : MtNode, succ = node.succ) : MtNode
     case succ
     when .amod_words?, .common_nouns?, .pl_ajno?, .pl_veno?
-      node = fold!(node, succ, MapTag::Amod)
+      node = fold!(node, succ, PosTag::Amod)
       fold_adjts!(node)
     when .verb_words?
       node = fold!(node, succ, succ.tag)
@@ -71,18 +71,18 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_adverb_base!(node : BaseNode, succ = node.succ) : BaseNode
+  def fold_adverb_base!(node : MtNode, succ = node.succ) : MtNode
     case succ.tag
     when .v_you?
       return node unless (noun = succ.succ?) && noun.common_nouns?
-      succ = fold!(succ, noun, MapTag::Aform)
+      succ = fold!(succ, noun, PosTag::Aform)
       fold_adverb_node!(node, succ)
     when .modal_verbs?
       fold_vmodal!(succ, nega: node)
     when .verb_words?
       fold_adverb_verb!(node, succ)
     when .adjt_words?
-      succ.tag = MapTag::Adjt if succ.pl_ajno?
+      succ.tag = PosTag::Adjt if succ.pl_ajno?
       fold_adjts!(succ, prev: node)
     when .adv_bu4?
       succ.succ? { |tail| succ = fold_adv_bu!(succ, tail) }
@@ -103,32 +103,32 @@ module MT::TlRule
     end
   end
 
-  # def fix_adverb!(node : BaseNode, succ = node.succ) : {BaseNode, BaseNode?}
+  # def fix_adverb!(node : MtNode, succ = node.succ) : {MtNode, MtNode?}
   #   case succ
   #   when .v_shi?
-  #     node = fold!(node, succ, MapTag::Vead)
+  #     node = fold!(node, succ, PosTag::Vead)
   #     succ = node.succ?
   #   when .wd_hao?
   #     succ = heal_wd_hao!(succ)
   #   when .concoord?
   #     return {node, nil} unless succ.key == "和"
-  #     succ.set!(MapTag::Prepos)
+  #     succ.set!(PosTag::Prepos)
   #   end
 
   #   {node, succ}
   # end
 
-  def heal_wd_hao!(node : BaseNode)
+  def heal_wd_hao!(node : MtNode)
     case node.succ?
     when .nil? then node
     when .adjt_words?, .verb_words?
-      node.set!("thật", MapTag::Adverb)
+      node.set!("thật", PosTag::Adverb)
     else
       node.set!("tốt")
     end
   end
 
-  def fold_adverb_verb!(adverb : BaseNode, verb : BaseNode)
+  def fold_adverb_verb!(adverb : MtNode, verb : MtNode)
     case adverb.key
     when "老" then adverb.val = "luôn"
     when "光" then adverb.val = "chỉ riêng"
@@ -139,7 +139,7 @@ module MT::TlRule
     fold_verbs!(verb, prev: adverb)
   end
 
-  def is_adverb?(node : BaseNode) : Bool
+  def is_adverb?(node : MtNode) : Bool
     while node = node.succ?
       case node
       when .comma?
@@ -148,7 +148,7 @@ module MT::TlRule
         return true
       when .concoord?
         return false unless node.key == "和"
-        node.set!(MapTag::Prepos)
+        node.set!(PosTag::Prepos)
         # TODO: deep checking
         return true
       when .pt_der?

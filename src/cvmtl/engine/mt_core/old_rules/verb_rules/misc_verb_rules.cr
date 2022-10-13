@@ -1,5 +1,5 @@
 module MT::TlRule
-  # def is_linking_verb?(head : BaseNode, succ : BaseNode?) : Bool
+  # def is_linking_verb?(head : MtNode, succ : MtNode?) : Bool
   #   # puts [node, succ, "check linking verb"]
   #   return true if head.modal_verbs?
   #   return true if !succ || succ.starts_with?('不')
@@ -17,7 +17,7 @@ module MT::TlRule
   #   false
   # end
 
-  def find_verb_after(right : BaseNode)
+  def find_verb_after(right : MtNode)
     while right = right.succ?
       # puts ["find_verb", right]
 
@@ -33,7 +33,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def find_verb_after_for_prepos(node : BaseNode, skip_comma = true) : BaseNode?
+  def find_verb_after_for_prepos(node : MtNode, skip_comma = true) : MtNode?
     while node = node.succ?
       case node
       when .pl_mark?, .mn_mark? then return node
@@ -43,7 +43,7 @@ module MT::TlRule
       when .modal_verbs?, .verb_words? then return node
       when .adjt_words?
         return nil unless {"相同", "类似"}.includes?(node.key)
-        return node.set!(MapTag::Vint)
+        return node.set!(PosTag::Vint)
       else
         if node.key == "一" && (succ = node.succ?) && succ.verb?
           return fold!(node.set!("một phát"), succ, succ.tag, flip: true)
@@ -54,7 +54,7 @@ module MT::TlRule
     end
   end
 
-  def fold_left_verb!(node : BaseNode, prev : BaseNode?)
+  def fold_left_verb!(node : MtNode, prev : MtNode?)
     return node unless prev && prev.advb_words?
     fold_adverb_node!(prev, node)
   end

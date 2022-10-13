@@ -1,6 +1,6 @@
 module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_pro_dems!(node : BaseNode, succ : BaseNode) : BaseNode
+  def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
     return node if node.key == "这儿" || node.key == "那儿"
     return heal_pro_dem!(node) if succ.key.in?({"就"})
 
@@ -42,13 +42,13 @@ module MT::TlRule
     quanti ? fold_prodem_nominal!(node, quanti) : heal_pro_dem!(node)
   end
 
-  def fold_proji_nhanzi!(node : BaseNode, succ : BaseNode)
+  def fold_proji_nhanzi!(node : MtNode, succ : MtNode)
     succ.val = succ.val.sub("mười", "chục")
     node = fold!(node, succ, PosTag::Number, dic: 4)
     fold_proji_right!(node)
   end
 
-  def fold_proji_right!(node : BaseNode)
+  def fold_proji_right!(node : MtNode)
     return node unless tail = node.succ?
     tail = heal_quanti!(tail)
 
@@ -66,12 +66,12 @@ module MT::TlRule
     scan_noun!(tail, prodem: nil, nquant: node) || node
   end
 
-  def prodem_shoud_split?(node : BaseNode)
+  def prodem_shoud_split?(node : MtNode)
     return true unless node.pro_dem? # is pro_zhe, pro_na1, pro_ji...
     node.key == "此"
   end
 
-  def split_prodem!(node : BaseNode?, succ : BaseNode? = node.succ?)
+  def split_prodem!(node : MtNode?, succ : MtNode? = node.succ?)
     if succ && prodem_shoud_split?(node)
       succ = heal_quanti!(succ)
       return succ.quantis? ? {node, succ, succ.succ?} : {node, nil, succ}
@@ -104,7 +104,7 @@ module MT::TlRule
     qt_val = node.val.sub(" " + pro_val, "")
     node.val = pro_val
 
-    qtnoun = BaseNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
+    qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
     qtnoun.fix_succ!(succ)
     node.fix_succ!(qtnoun)
 

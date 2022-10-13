@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_pre_ba3!(node : BaseNode, succ = node.succ?) : BaseNode
+  def fold_pre_ba3!(node : MtNode, succ = node.succ?) : MtNode
     return fold_prepos_inner!(node, succ) unless pre_ba3_is_qtnoun?(node, succ)
     return node unless noun = scan_noun!(succ)
 
@@ -10,7 +10,7 @@ module MT::TlRule
   BA3_HANDLERS = {'剑', '刀', '枪'}
   BA3_IN_HANDS = {'米', '花', '盐', '糖', '麦', '谷'}
 
-  def guess_pre_ba3_defn(noun : BaseNode) : String?
+  def guess_pre_ba3_defn(noun : MtNode) : String?
     noun.each do |x|
       if body = noun.body?
         if y = guess_pre_ba3_defn(body)
@@ -25,7 +25,7 @@ module MT::TlRule
     end
   end
 
-  def pre_ba3_is_qtnoun?(node : BaseNode, succ = node.succ?)
+  def pre_ba3_is_qtnoun?(node : MtNode, succ = node.succ?)
     return false unless prev = node.prev?
     return true if prev.numbers? || prev.v_shi? || prev.pro_ji?
     return false unless prev.pro_na1? || prev.pro_zhe?

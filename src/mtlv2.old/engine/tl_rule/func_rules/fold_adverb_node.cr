@@ -1,12 +1,12 @@
 module MT::TlRule
-  def fold_adverb_node!(adv : BaseNode, node = adv.succ, tag = node.tag) : BaseNode
+  def fold_adverb_node!(adv : MtNode, node = adv.succ, tag = node.tag) : MtNode
     flip = false
 
     case adv.key
     when "不太"
       # TODO: just delete this entry
-      head = BaseNode.new("不", "không", PosTag::AdvBu4, 1, adv.idx)
-      tail = BaseNode.new("太", "lắm", PosTag::Adverb, 1, adv.idx + 1)
+      head = MtNode.new("不", "không", PosTag::AdvBu4, 1, adv.idx)
+      tail = MtNode.new("太", "lắm", PosTag::Adverb, 1, adv.idx + 1)
 
       node.fix_prev!(head)
       node.fix_succ!(tail)

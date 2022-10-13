@@ -1,4 +1,4 @@
-module MT::MapTag
+module MT::PosTag
   PUNCT_MAP = {
     "."  => make(:period, MtlPos.flags(Boundary, CapAfter, NoWsBefore)),
     "!"  => make(:exclpm, MtlPos.flags(Boundary, CapAfter, NoWsBefore)),

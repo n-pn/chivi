@@ -1,4 +1,4 @@
-module MT::MapTag
+module MT::PosTag
   def self.map_polysemy(tag : String, key = "")
     case tag
     when "~vn" then make(:pl_veno, MtlPos.flags(MaybeVerb, MaybeNoun))

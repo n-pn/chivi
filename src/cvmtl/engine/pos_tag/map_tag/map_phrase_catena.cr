@@ -1,4 +1,4 @@
-module MT::MapTag
+module MT::PosTag
   SubjVerb = make(:subj_verb, MtlPos.flags(MaybeAdvb, MaybeAdjt))
   SubjAdjt = make(:subj_adjt, MtlPos.flags(MaybeAdvb, MaybeAdjt))
   PrepForm = make(:prep_form, MtlPos.flags(MaybeAdvb, AtHead))

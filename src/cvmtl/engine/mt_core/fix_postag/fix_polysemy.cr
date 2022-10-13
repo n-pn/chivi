@@ -144,16 +144,16 @@ module MT::Core
       case resolve_type!
       when .noun?
         @noun_alt.try { |x| @node.val = x }
-        @node.tag, @node.pos = MapTag.cast_noun(@node.key)
+        @node.tag, @node.pos = PosTag.cast_noun(@node.key)
       when .verb?
         @verb_alt.try { |x| @node.val = x }
-        @node.tag, @node.pos = MapTag.cast_verb(@node.key)
+        @node.tag, @node.pos = PosTag.cast_verb(@node.key)
       when .adjt?
         @adjt_alt.try { |x| @node.val = x }
-        @node.tag, @node.pos = MapTag.cast_adjt(@node.key)
+        @node.tag, @node.pos = PosTag.cast_adjt(@node.key)
       when .advb?
         @advb_alt.try { |x| @node.val = x }
-        @node.tag, @node.pos = MapTag.cast_advb(@node.key)
+        @node.tag, @node.pos = PosTag.cast_advb(@node.key)
       end
 
       @node

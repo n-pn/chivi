@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_usuo!(usuo : BaseNode)
+  def fold_usuo!(usuo : MtNode)
     case succ = usuo.succ?
     when .nil? then usuo
     when .pl_veno?

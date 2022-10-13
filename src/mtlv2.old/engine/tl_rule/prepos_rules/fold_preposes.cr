@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_preposes!(node : BaseNode, succ = node.succ?) : BaseNode
+  def fold_preposes!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
     return fold_verbs!(node) if succ.ule?
 
@@ -13,7 +13,7 @@ module MT::TlRule
     end
   end
 
-  def fold_other_preposes!(node : BaseNode, succ : BaseNode)
+  def fold_other_preposes!(node : MtNode, succ : MtNode)
     case node.key
     when "将"
       if succ.maybe_verb?
@@ -27,7 +27,7 @@ module MT::TlRule
     fold_prepos_inner!(node, succ)
   end
 
-  def fold_pre_dui!(node : BaseNode, succ = node.succ?) : BaseNode
+  def fold_pre_dui!(node : MtNode, succ = node.succ?) : MtNode
     case succ
     when .nil?, .ends?, .ule?
       node.set!("đúng", PosTag::Adjt)
@@ -38,7 +38,7 @@ module MT::TlRule
     end
   end
 
-  def fold_pre_bei!(node : BaseNode, succ = node.succ?) : BaseNode
+  def fold_pre_bei!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
 
     if succ.verb?
@@ -50,7 +50,7 @@ module MT::TlRule
     end
   end
 
-  def fold_pre_zai!(node : BaseNode, succ = node.succ?) : BaseNode
+  def fold_pre_zai!(node : MtNode, succ = node.succ?) : MtNode
     succ = heal_veno!(succ) if succ.pl_veno?
 
     if succ.verb? || succ.verb_object?
@@ -64,7 +64,7 @@ module MT::TlRule
     fold_prepos_inner!(node, succ)
   end
 
-  def fold_prezai_places?(node : BaseNode, noun : BaseNode, ude1 : BaseNode, tail : BaseNode) : BaseNode?
+  def fold_prezai_places?(node : MtNode, noun : MtNode, ude1 : MtNode, tail : MtNode) : MtNode?
     return nil if noun.places?
 
     unless tail.places?

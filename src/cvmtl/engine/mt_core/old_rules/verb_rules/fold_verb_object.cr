@@ -1,6 +1,6 @@
 module MT::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
-  def fold_verb_object!(verb : BaseNode, succ : BaseNode?)
+  def fold_verb_object!(verb : MtNode, succ : MtNode?)
     # puts [verb, succ].colorize.red
 
     return verb if verb.verb_no_obj? || !succ || succ.boundary?
@@ -13,14 +13,14 @@ module MT::TlRule
       verb_2 = fold_once!(verb_2)
       return verb if !verb_2.verb_no_obj? && verb.prev?(&.object?)
 
-      node = fold!(verb, succ.set!(""), MapTag::DcPhrase)
+      node = fold!(verb, succ.set!(""), PosTag::DcPhrase)
       return fold!(node, object, object.tag, flip: true)
     end
 
     return verb unless (noun = scan_noun!(succ)) && noun.object?
 
     if noun.posit? && verb.ends_with?('在')
-      return fold!(verb, noun, MapTag::Vobj)
+      return fold!(verb, noun, PosTag::Vobj)
     end
 
     if (ude1 = noun.succ?) && ude1.pt_dep? && (right = ude1.succ?)
@@ -29,11 +29,11 @@ module MT::TlRule
       end
     end
 
-    verb_object = fold!(verb, noun, MapTag::Vobj)
+    verb_object = fold!(verb, noun, PosTag::Vobj)
     return verb_object unless succ = verb_object.succ?
 
     if succ.suf_noun? && succ.key == "时"
-      fold!(verb_object, succ.set!("khi"), tag: MapTag::Texpr, flip: true)
+      fold!(verb_object, succ.set!("khi"), tag: PosTag::Texpr, flip: true)
     elsif succ.bond_word?
       fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
     else
@@ -42,7 +42,7 @@ module MT::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def should_apply_ude1_after_verb?(verb : BaseNode, right : BaseNode?, prev = verb.prev?)
+  def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)
     return false if verb.is_a?(BaseList) && verb.list.any?(&.pre_bei?)
     return false if verb.vtwo?
 

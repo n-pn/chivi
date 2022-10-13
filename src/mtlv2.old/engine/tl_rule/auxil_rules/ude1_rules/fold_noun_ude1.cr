@@ -1,5 +1,5 @@
 module MT::TlRule
-  # def fold_verb_ude1!(verb : BaseNode, ude1 : BaseNode, right : BaseNode) : BaseNode
+  # def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, right : MtNode) : MtNode
   #   case right.key
   #   when "时候", "时", "打算"
   #     head = verb.try { |x| x if x.subject? } || verb
@@ -36,7 +36,7 @@ module MT::TlRule
   #   fold!(node, right, PosTag::NounPhrase, dic: 6, flip: true)
   # end
 
-  def has_verb_after?(right : BaseNode) : Bool
+  def has_verb_after?(right : MtNode) : Bool
     while right = right.succ?
       case right.tag
       when .plsgn?, .mnsgn?, .verbal?, .preposes?

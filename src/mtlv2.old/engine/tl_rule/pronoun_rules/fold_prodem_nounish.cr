@@ -3,15 +3,15 @@ module MT::TlRule
     nil
   end
 
-  def fold_prodem_nominal!(prodem : Nil, nominal : BaseNode)
+  def fold_prodem_nominal!(prodem : Nil, nominal : MtNode)
     nominal
   end
 
-  def fold_prodem_nominal!(prodem : BaseNode, nominal : Nil)
+  def fold_prodem_nominal!(prodem : MtNode, nominal : Nil)
     prodem
   end
 
-  def fold_prodem_nominal!(prodem : BaseNode, nominal : BaseNode)
+  def fold_prodem_nominal!(prodem : MtNode, nominal : MtNode)
     # if nominal.verb_object?
     #   prodem = heal_pro_dem!(prodem)
     #   return fold!(prodem, nominal, PosTag::VerbClause, dic: 8)
@@ -27,14 +27,14 @@ module MT::TlRule
     fold_noun_other!(noun)
   end
 
-  def should_flip_prodem?(prodem : BaseNode)
+  def should_flip_prodem?(prodem : MtNode)
     return false if prodem.pro_ji?
     return true unless prodem.pro_dem? # pro_ji, pro_na1, pro_na2
     {"另", "其他", "此", "某个", "某些"}.includes?(prodem.key)
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_pro_dem!(pro_dem : BaseNode) : BaseNode
+  def heal_pro_dem!(pro_dem : MtNode) : MtNode
     case pro_dem
     when .pro_zhe?
       case succ = pro_dem.succ?

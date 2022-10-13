@@ -1,10 +1,10 @@
 require "./has_pos_tag"
 
-abstract class MT::BaseNode
+abstract class MT::MtNode
   include HasPosTag
 
-  property! prev : BaseNode
-  property! succ : BaseNode
+  property! prev : MtNode
+  property! succ : MtNode
 
   def prev?
     @prev.try { |x| yield x }
@@ -18,7 +18,7 @@ abstract class MT::BaseNode
     @prev = nil
   end
 
-  def fix_prev!(@prev : BaseNode) : Nil
+  def fix_prev!(@prev : MtNode) : Nil
     prev.succ = self
   end
 
@@ -26,19 +26,19 @@ abstract class MT::BaseNode
     @succ = nil
   end
 
-  def fix_succ!(@succ : BaseNode) : Nil
+  def fix_succ!(@succ : MtNode) : Nil
     succ.prev = self
   end
 
   @[AlwaysInline]
-  def real_prev : BaseNode?
+  def real_prev : MtNode?
     # TODO: read beyond parenthesis
     return unless node = @prev
     node.start_puncts? || node.close_puncts? ? node.prev? : node
   end
 
   @[AlwaysInline]
-  def real_succ : BaseNode?
+  def real_succ : MtNode?
     # TODO: read beyond parenthesis
     return unless node = @succ
     node.start_puncts? || node.close_puncts? ? node.succ? : node
@@ -71,7 +71,7 @@ abstract class MT::BaseNode
 end
 
 module MT::BaseExpr
-  abstract def each(&block : BaseNode -> Nil)
+  abstract def each(&block : MtNode -> Nil)
 
   def to_txt(io : IO = STDOUT) : Nil
     prev = nil
@@ -111,3 +111,6 @@ module MT::BaseExpr
     io << '\n' if pad > 0
   end
 end
+
+require "./base_node/*"
+require "./base_form/*"

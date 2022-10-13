@@ -1,10 +1,10 @@
 module MT::Core
-  def join_honor!(noun : BaseNode, prev : BaseNode)
+  def join_honor!(noun : MtNode, prev : MtNode)
     case prev
     when .time_words?, .nform?, .locat?, .posit?
-      tag, pos = MapTag::Nform
+      tag, pos = PosTag::Nform
     else
-      tag, pos = MapTag::CapHuman
+      tag, pos = PosTag::CapHuman
     end
 
     PairNode.new(prev, noun, tag, pos)

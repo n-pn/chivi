@@ -1,5 +1,5 @@
 module MT::TlRule
-  # def fold_verb_nquant!(verb : BaseNode, tail : BaseNode, has_ule = false)
+  # def fold_verb_nquant!(verb : MtNode, tail : MtNode, has_ule = false)
   #   tail = fuse_number!(tail) if tail.numbers?
   #   return verb unless tail.nquants?
 

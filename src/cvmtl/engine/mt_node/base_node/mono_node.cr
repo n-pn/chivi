@@ -1,10 +1,7 @@
-require "./base_node"
+require "../mt_node"
+require "../../mt_dict"
 
-require "../mt_data/mt_term"
-require "../mt_core/mt_util"
-require "../../../_util/text_util"
-
-class MT::MonoNode < MT::BaseNode
+class MT::MonoNode < MT::MtNode
   property key : String
   property val : String
 
@@ -36,7 +33,7 @@ class MT::MonoNode < MT::BaseNode
   def initialize(char : Char | String,
                  @dic = 0, @idx = 0)
     @key = @val = char.to_s
-    @tag, @pos = MapTag::LitBlank
+    @tag, @pos = PosTag::LitBlank
   end
 
   def swap_val! : self
@@ -50,7 +47,7 @@ class MT::MonoNode < MT::BaseNode
 
   def inactivate!
     @val = ""
-    @pos = MtlPos.flags(Passive, NoWsBefore)
+    @pos |= MtlPos.flags(Passive, NoWsBefore, NoWsAfter)
     self
   end
 
@@ -59,10 +56,37 @@ class MT::MonoNode < MT::BaseNode
     when @pos.passive?      then cap
     when @tag.punctuations? then cap || @pos.cap_after?
     else
-      @val = CV::TextUtil.capitalize(@val) if cap
+      @val = @val.capitalize if cap && !@tag.str_emoji?
       false
     end
   end
+
+  # private def capitalize!
+  #   chars = @val.chars
+  #   upper = chars.size
+
+  #   @val = String.build(upper) do |io|
+  #     i = 0
+
+  #     while i < upper
+  #       char = chars.unsafe_fetch(i)
+  #       i &+= 1
+
+  #       if char.alphanumeric?
+  #         io << char.upcase
+  #         break
+  #       end
+
+  #       io << char
+  #     end
+
+  #     while i < upper
+  #       char = chars.unsafe_fetch(i)
+  #       i &+= 1
+  #       io << char
+  #     end
+  #   end
+  # end
 
   def to_txt(io : IO) : Nil
     io << @val
@@ -80,25 +104,25 @@ class MT::MonoNode < MT::BaseNode
 
   def as_advb!(val : String? = nil)
     @val = val if val
-    @tag, @pos = MapTag.cast_advb(@key)
+    @tag, @pos = PosTag.cast_advb(@key)
     self
   end
 
   def as_adjt!(val : String? = nil)
     @val = val if val
-    @tag, @pos = MapTag.cast_adjt(@key)
+    @tag, @pos = PosTag.cast_adjt(@key)
     self
   end
 
   def as_noun!(val : String? = nil)
     @val = val if val
-    @tag, @pos = MapTag.cast_noun(@key)
+    @tag, @pos = PosTag.cast_noun(@key)
     self
   end
 
   def as_verb!(val : String? = nil)
     @val = val if val
-    @tag, @pos = MapTag.cast_verb(@key)
+    @tag, @pos = PosTag.cast_verb(@key)
     self
   end
 end

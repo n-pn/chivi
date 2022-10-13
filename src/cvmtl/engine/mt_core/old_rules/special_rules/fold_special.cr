@@ -1,5 +1,5 @@
 module MT::TlRule
-  def fold_specials!(node : BaseNode)
+  def fold_specials!(node : MtNode)
     case node
     when .wd_hao?  then fold_wd_hao!(node)
     when .v_shang? then fix_上下(node, MAP_上)
@@ -9,14 +9,14 @@ module MT::TlRule
         fold_preposes!(node)
       else
         val = node.key == "和" ? "và" : node.val
-        node.set!(val, MapTag::Concoord)
+        node.set!(val, PosTag::Concoord)
       end
     else
       fold_uniqs!(node)
     end
   end
 
-  def concoord_is_prepos?(node : BaseNode?)
+  def concoord_is_prepos?(node : MtNode?)
     return false unless node
 
     while node = node.succ?
@@ -33,39 +33,39 @@ module MT::TlRule
   MAP_上 = {"lên", "trên", "thượng"}
   MAP_下 = {"xuống", "dưới", "hạ"}
 
-  def fix_上下(node : BaseNode, vals = node.key == "上" ? MAP_上 : MAP_下) : BaseNode
+  def fix_上下(node : MtNode, vals = node.key == "上" ? MAP_上 : MAP_下) : MtNode
     case node.prev?
     when .nil?, .empty?, .punctuations?
       if node.succ? { |x| x.content? || x.pt_le? }
-        node.set!(vals[0], MapTag::Verb)
+        node.set!(vals[0], PosTag::Verb)
       else
-        node.set!(vals[2], MapTag::Noun)
+        node.set!(vals[2], PosTag::Noun)
       end
     when .common_nouns?
-      node.set!(vals[1], MapTag::Locat)
+      node.set!(vals[1], PosTag::Locat)
     when .common_verbs?
-      node.set!(vals[0], MapTag::Vdir)
+      node.set!(vals[0], PosTag::Vdir)
     else
       node
     end
   end
 
-  def fold_wd_hao!(node : BaseNode) : BaseNode
+  def fold_wd_hao!(node : MtNode) : MtNode
     case succ = node.succ?
     when .nil?, .punctuations?, .pt_le?
-      node.set!("tốt", MapTag::Adjt)
+      node.set!("tốt", PosTag::Adjt)
     when .adjt_words?, .verb_words?, .modal_verbs?, .advb_words?
-      node.set!(succ.verb_words? ? "dễ" : "thật", MapTag::Adverb)
+      node.set!(succ.verb_words? ? "dễ" : "thật", PosTag::Adverb)
       fold_adverb_base!(node, succ)
     when .noun_words?
-      node.set!("tốt", MapTag::Adjt)
+      node.set!("tốt", PosTag::Adjt)
       fold_adjt_noun!(node, succ)
     else
       node
     end
   end
 
-  private def fold_uniqs!(node : BaseNode, succ = node.succ?) : BaseNode
+  private def fold_uniqs!(node : MtNode, succ = node.succ?) : MtNode
     # puts [node, succ, "fold_uniq"]
 
     case node.tag
@@ -79,7 +79,7 @@ module MT::TlRule
     end
   end
 
-  def fold_uniqs_by_key!(node : BaseNode, succ = node.succ?)
+  def fold_uniqs_by_key!(node : MtNode, succ = node.succ?)
     case node.key
     when "第" then fold_第!(node)
     when "对不起"
@@ -88,9 +88,9 @@ module MT::TlRule
     when "原来"
       case node.prev?
       when .nil?, .boundary?, .punctuations?
-        node.set!("thì ra", MapTag::Conjunct)
+        node.set!("thì ra", PosTag::Conjunct)
       else
-        node.set!("ban đầu", tag: MapTag::Modi)
+        node.set!("ban đầu", tag: PosTag::Modi)
       end
     when "行"
       succ.nil? || succ.boundary? ? node.set!("được") : node

@@ -1,4 +1,4 @@
-module MT::MapTag
+module MT::PosTag
   def self.map_literal(tag : String)
     case tag[1]?
     when 'i' then make(:lit_idiom)

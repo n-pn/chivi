@@ -1,18 +1,18 @@
 module MT::TlRule
-  def fold_uzhi!(uzhi : BaseNode, prev : BaseNode = uzhi.prev, succ = uzhi.succ?) : BaseNode
+  def fold_uzhi!(uzhi : MtNode, prev : MtNode = uzhi.prev, succ = uzhi.succ?) : MtNode
     return prev if !succ || succ.boundary?
     uzhi.val = ""
 
     if succ.nhanzis? && is_percent?(prev, uzhi)
       # TODO: handle this in fold_number!
-      tag = MapTag::Numeric
+      tag = PosTag::Numeric
     end
 
-    tag ||= MapTag::Nform
+    tag ||= PosTag::Nform
     fold!(prev, succ, tag, flip: true)
   end
 
-  def is_percent?(prev : BaseNode, uzhi : BaseNode)
+  def is_percent?(prev : MtNode, uzhi : MtNode)
     if prev.is_a?(BaseList)
       body = prev.list.first
       return false unless body.nhanzis? && (succ = body.succ?)

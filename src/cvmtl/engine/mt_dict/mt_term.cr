@@ -1,4 +1,4 @@
-require "./pos_tag/*"
+require "../pos_tag/*"
 
 require "sqlite3"
 
@@ -30,7 +30,7 @@ class MT::MtTerm
 
   def after_initialize
     @seg = MtTerm.seg_weight(@key.size, @prio)
-    @tag, @pos = MapTag.init(@ptag, @key, @val, @alt_val)
+    @tag, @pos = PosTag.init(@ptag, @key, @val, @alt_val)
   end
 
   SEG_WEIGHT = {
