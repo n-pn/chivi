@@ -1,4 +1,4 @@
-require "../pos_tag"
+require "../mt_dict/pos_tag"
 
 module MT::HasPosTag
   property pos = MtlPos::None

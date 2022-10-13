@@ -2,7 +2,7 @@ require "log"
 require "sqlite3"
 require "colorize"
 
-require "./mt_dict/*"
+require "./mt_trie"
 
 class MT::MtDict
   DICT_PATH = "var/dicts/cvdicts.db"

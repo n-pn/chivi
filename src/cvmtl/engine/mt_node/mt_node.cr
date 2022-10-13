@@ -112,5 +112,6 @@ module MT::BaseExpr
   end
 end
 
-require "./base_node/*"
-require "./base_form/*"
+require "./node_base/*"
+require "./node_expr/*"
+require "./node_form/*"

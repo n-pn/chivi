@@ -1,4 +1,4 @@
-require "../mt_node"
+require "../node_expr/base_expr"
 
 class MT::VerbForm < MT::MtNode
   include BaseExpr

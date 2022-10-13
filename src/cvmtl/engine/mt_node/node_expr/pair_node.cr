@@ -1,4 +1,4 @@
-require "../mt_node"
+require "./base_expr"
 
 class MT::PairNode < MT::MtNode
   include BaseExpr

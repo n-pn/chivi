@@ -1,4 +1,4 @@
-require "../pos_tag/*"
+require "./pos_tag"
 
 require "sqlite3"
 

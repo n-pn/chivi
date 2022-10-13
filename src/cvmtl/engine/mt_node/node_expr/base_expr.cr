@@ -1,4 +1,4 @@
-require "./mt_node"
+require "../mt_node"
 
 module MT::BaseExpr
   abstract def each(&block : MtNode -> Nil)
