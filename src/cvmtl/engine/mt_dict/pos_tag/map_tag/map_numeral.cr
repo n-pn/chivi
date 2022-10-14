@@ -1,15 +1,15 @@
 module MT::PosTag
-  Ordinal = make(:ordinal)
-  Numeric = make(:numeric)
+  Ordinal = make(:ordinal, MtlPos.flag(Object))
+  Numeric = make(:numeric, MtlPos.flag(Object))
 
-  Ndigit1 = make(:ndigit1)
-  Ndigit2 = make(:ndigit2)
+  Ndigit1 = make(:ndigit1, MtlPos.flag(Object))
+  Ndigit2 = make(:ndigit2, MtlPos.flag(Object))
 
-  Nhanzi0 = make(:nhanzi0)
-  Nhanzi1 = make(:nhanzi1)
-  Nhanzi2 = make(:nhanzi2)
+  Nhanzi0 = make(:nhanzi0, MtlPos.flag(Object))
+  Nhanzi1 = make(:nhanzi1, MtlPos.flag(Object))
+  Nhanzi2 = make(:nhanzi2, MtlPos.flag(Object))
 
-  NUMBER_MAP = load_map("nquants")
+  NUMBER_MAP = load_map("nquants", MtlPos.flag(Object))
 
   def self.map_number(tag : String, key : String) : {MtlTag, MtlPos}
     return map_nquant(key) if tag[1]? == 'q'
@@ -30,8 +30,8 @@ module MT::PosTag
 
   NQUANT_MAP = load_map("nquants")
 
-  Nqnoun = make(:nqnoun, :nounish)
-  Nqtime = make(:nqtime, :nounish)
+  Nqnoun = make(:nqnoun, MtlPos.flag(Object))
+  Nqtime = make(:nqtime, MtlPos.flag(Object))
 
   def self.map_nquant(key : String)
     NQUANT_MAP[key] ||= begin
@@ -68,6 +68,6 @@ module MT::PosTag
   QUANTI_MAP = load_map("quantis")
 
   def self.map_quanti(key : String)
-    QUANTI_MAP[key] ||= make(:qtnoun)
+    QUANTI_MAP[key] ||= make(:qtnoun, MtlPos.flag(Object))
   end
 end

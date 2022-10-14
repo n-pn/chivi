@@ -22,14 +22,8 @@ module MT::Core
     end
   end
 
-  def join_verb_0!(verb : MtNode, prev = verb.prev)
-    return verb unless prev.vauxil?
-    # FIXME: fix auxil values
-    PairNode.new(prev, verb, tag: verb.tag, flip: false)
-  end
-
   private def join_verb_1!(verb : MtNode)
-    verb = join_verb_0!(verb)
+    verb = fuse_verb!(verb)
     advb = verb.prev
 
     has_advb = true

@@ -6,7 +6,7 @@ class MT::VerbForm < MT::MtNode
   property advb : MtNode? = nil
   property verb : MtNode
   property cmpl : MtNode? = nil # complement
-  property dobj : MtNode? = nil
+  property objt : MtNode? = nil
   property tail : MtNode? = nil # put after objects
 
   forward_missing_to @verb
@@ -44,15 +44,19 @@ class MT::VerbForm < MT::MtNode
     end
   end
 
+  def add_objt(@objt : MtNode) : Nil
+    self.fix_succ!(objt.succ?)
+  end
+
   def each
     @advb.try { |x| yield x }
     yield verb
     @cmpl.try { |x| yield x }
-    @dobj.try { |x| yield x }
+    @objt.try { |x| yield x }
     @tail.try { |x| yield x }
   end
 
   def need_obj? : Bool
-    !(@dobj || @verb.tag.verb_no_obj? || @succ.tag.object?)
+    !(@objt || @verb.tag.verb_no_obj? || @succ.tag.object?)
   end
 end

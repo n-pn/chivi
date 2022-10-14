@@ -10,6 +10,11 @@ module MT::HasPosTag
     @pos.nebulous? || @tag.nebulous?
   end
 
+  # words after this is most certainly noun words/noun phrases
+  def mark_noun_after?
+    @tag.quantis? || @tag.pro_split?
+  end
+
   delegate boundary?, to: @pos
   delegate passive?, to: @pos
 

@@ -177,7 +177,7 @@ enum MT::MtlTag : UInt32
     value >= 300 && value < 305
   end
 
-  # verb is not copular shi or existent you
+  # verb is not copula shi or existent you
   def common_verbs?
     value >= 300 && value < 340
   end

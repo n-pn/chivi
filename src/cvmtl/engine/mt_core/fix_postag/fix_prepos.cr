@@ -1,4 +1,32 @@
 module MT::Core
+  def fix_dui!(node : MonoNode, prev = node.prev)
+    case prev
+    when .advb_words?
+      node.val = "đúng"
+      node.tag = MtlTag::Adjt
+    when .verb_take_res_cmpl?
+      node.val = "đúng"
+      node.pos |= MtlPos::Vcompl
+    when .numbers?
+      node.val = "đôi"
+      node.tag = MttTag::Qtnoun
+    else
+      case node.succ
+      when .pt_dep?, .pt_le?
+        node.val = "đúng"
+        node.tag = MtlTag::Adjt
+      when .aspect?, .numbers?
+        node.val = "đối"
+        node.tag = MtlTag::Verb
+      else
+        node.val = "đối với"
+        node.tag = MtlTag::PreDui
+      end
+    end
+
+    node
+  end
+
   def fix_ba3!(node : MonoNode, prev = node.prev)
     case prev
     when .verb_take_verb?

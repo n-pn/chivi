@@ -17,14 +17,14 @@ module MT::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_adjts!(adjt : MtNode, prev : MtNode? = nil) : MtNode
-    if adjt.is_a?(MonoNode) && MEASURES.has_key?(adjt.key)
-      fold_adjt_measure(adjt).try { |x| return x }
-    end
+    # if adjt.is_a?(MonoNode) && MEASURES.has_key?(adjt.key)
+    #   fold_adjt_measure(adjt).try { |x| return x }
+    # end
 
     while adjt.adjt_words?
       break unless succ = adjt.succ?
       # puts [adjt, succ, "fold_adjt"]
-      succ = heal_mixed!(succ, prev: adjt) if succ.polysemy?
+      # succ = heal_mixed!(succ, prev: adjt) if succ.polysemy?
 
       case succ.tag
       when .advb_words?
@@ -33,10 +33,10 @@ module MT::TlRule
         else
           break
         end
-      when .bond_word?
-        fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
-      when .adjt_words?
-        adjt = fold!(adjt, succ, succ.tag)
+        # when .bond_word?
+        # fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
+        # when .adjt_words?
+        #   adjt = fold!(adjt, succ, succ.tag)
       when .vdir?
         adjt.as_verb! if adjt.is_a?(MonoNode)
         return fold_verbs!(adjt)
@@ -82,8 +82,7 @@ module MT::TlRule
       when .adv_bu4?
         fold_adjt_adv_bu!(adjt, succ, prev).try { |x| return x } || break
       else
-        break unless succ.key == "又"
-        fold_adjt_junction!(succ, prev: adjt).try { |x| adjt = x } || break
+        break
       end
 
       break if succ == adjt.succ?
@@ -91,23 +90,5 @@ module MT::TlRule
 
     # TODO: combine with nouns
     fold_adj_adv!(adjt, prev)
-  end
-
-  def fold_amod_words?(node : MtNode, succ = node.succ?, nega : MtNode? = nil)
-    # puts [node, succ, nega].colorize.green
-
-    node = fold!(nega, node, node.tag) if nega
-    return node if !(succ = node.succ?) || succ.boundary?
-
-    if succ.is_a?(MonoNode) && succ.polysemy?
-      succ = heal_mixed!(succ, prev: node)
-    end
-
-    succ.noun_words? ? fold_adjt_noun!(node, succ) : fold_adjts!(node)
-  end
-
-  def fold_adj_adv!(node : MtNode, prev = node.prev?)
-    return node unless prev && prev.advb_words?
-    fold_adverb_node!(prev, node, tag: PosTag::Aform)
   end
 end

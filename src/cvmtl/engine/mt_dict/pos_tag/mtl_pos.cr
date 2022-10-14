@@ -38,6 +38,10 @@ enum MT::MtlPos : UInt64
   Plural # plural nouns/pronouns
   People # all words that refer to human beings
   Locale # all words that can be placement
+  Desire # verb predicate expression a desire to do something
+
+  Compare # verb or prepos using in comparision
+  Measure # verb or adjective using in measurement
 
   # part in speech
 

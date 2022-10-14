@@ -21,6 +21,7 @@ WdYu3 = 931 # "与"
 
 # # prefixes
 WdZui = 980 # "最"
+WdZe3 = 981 # "也"
 
 # resolved special words:
 

@@ -20,15 +20,17 @@ Vdir = 314 # directional verb
 
 Vpro = 316 # performative verb
 Vpsy = 317 # psychological verb
+
 Vmod = 318 # modal verbs
 
 # special modal verbs
-VmHui   = 320 # "会"
-VmNeng  = 321 # "能"
-VmXiang = 322 # "想"
-
-VmKe3 = 323 # "可"
-VmYao = 324 # "要"
+VmHui     = 320 # "会"
+VmBuhui   = 321 # "不会"
+VmNeng    = 322 # "能"
+VmZaineng = 323 # "tai nang"
+VmXiang   = 324 # "想"
+VmKe3     = 325 # "可"
+VmYao     = 326 # "要"
 
 # special verbs
 

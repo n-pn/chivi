@@ -47,13 +47,13 @@ class MT::MonoNode < MT::MtNode
 
   def inactivate!
     @val = ""
-    @pos |= MtlPos.flags(Passive, NoWsBefore, NoWsAfter)
+    @pos |= MtlPos.flags(Passive, NoWsBefore, NoWsAfter, CapRelay)
     self
   end
 
   def apply_cap!(cap : Bool = false) : Bool
     case
-    when @pos.passive?      then cap
+    when @pos.cap_relay?    then cap
     when @tag.punctuations? then cap || @pos.cap_after?
     else
       @val = @val.capitalize if cap && !@tag.str_emoji?
