@@ -1,4 +1,4 @@
-require "./_ctrl_base"
+require "./_shared"
 require "../vh_dict"
 
 class VH::HomeCtrl < VH::BaseCtrl

@@ -17,11 +17,11 @@ class MT::MtDict
 
   getter dicts = [] of MtTrie
 
-  def initialize(nv_dict : String = "combine", tm_dict : String? = nil, vi_user : String? = nil)
-    add_dict(vi_user, nv_dict) if vi_user # user vi_user as dict name
-    add_dict(nv_dict)
-    add_dict(vi_user, "regular") if vi_user
-    add_dict(tm_dict) if tm_dict
+  def initialize(book : String = "combine", theme : String? = nil, user : String? = nil)
+    add_dict(user, book) if user # user user as dict name
+    add_dict(book)
+    add_dict(user, "regular") if user
+    add_dict(theme) if theme
     add_dict("fixture")
     add_dict("regular")
   end

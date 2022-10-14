@@ -1,5 +1,5 @@
 module MT::PosTag
-  PRONOUN_MAP = load_map("pronouns", MtlPos.flag(Object))
+  PRONOUN_MAP = load_map("pronouns", MtlPos.flags(Object))
 
   ProDem = make(:pro_dem, :object)
   ProInt = make(:pro_int, :object)
@@ -12,9 +12,9 @@ module MT::PosTag
       when '几', '哪'
         make(:pro_int, MtlPos.flags(Object, CanSplit))
       when '本', '令', '贵', '舍', '爱'
-        make(:pro_per_x, MtlPos.flag(Object, Ktetic, People))
+        make(:pro_per_x, MtlPos.flags(Object, Ktetic, People))
       else
-        make(:pro_unkn, MtlPos.flag(Object, Ktetic))
+        make(:pro_unkn, MtlPos.flags(Object, Ktetic))
       end
     end
 

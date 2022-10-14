@@ -1,4 +1,5 @@
 require "../../engine"
+require "action-controller"
 
 module MT
   abstract class BaseCtrl < ActionController::Base

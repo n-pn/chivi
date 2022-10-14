@@ -17,7 +17,7 @@ module MT::Core
     when .onomat?, .nquants?
       udev.inactivate!
     when .common_nouns?
-      head = join_noun_1!(head)
+      head = join_noun!(head)
       raise "Expected v_you!" unless (vyou = head.prev?) && vyou.v_you?
       tag, pos = PosTag::Adjt
       head = PairNode.new(vyou, head, tag, pos, flip: false)

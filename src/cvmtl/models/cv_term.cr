@@ -1,26 +1,34 @@
-require "sqlite3"
+require "./cv_repo"
 
 class MT::CvTerm
-  include DB::Serializable
+  include Crorm::Model
+  self.table = "terms"
+  @@repo : Crorm::Adapter = CvRepo.repo
 
-  property id : Int32
-  property dict_id : Int32
+  column id : Int32
+  column dict_id : Int32
 
-  property key : String
-  property key_raw : String?
+  column key : String
+  column key_raw : String = ""
 
-  property val : String
-  property alt_val : String?
+  column val : String
+  column alt_val : String = ""
 
-  property ptag : String = ""
-  property prio : Int32 = 2
+  column ptag : String = ""
+  column prio : Int32 = 2
 
-  property uname : String = ""
-  property mtime : Int64 = 0_i64
+  column uname : String = ""
+  column mtime : Int64 = 0_i64
 
-  property _prev : Int32?
-  property _flag : Int32 = 0
-  property _lock : Int32 = 0
+  column _prev : Int32 = 0
+  column _flag : Int32 = 0
+  column _lock : Int32 = 0
 
-  #####
+  def self.total
+    @@repo.open(&.scalar("select count(*) from #{self.table}"))
+  end
+
+  def self.total(dict_id : Int32)
+    @@repo.open(&.scalar("select count(*) from #{self.table} where dict_id = ?", args: [dict_id]))
+  end
 end

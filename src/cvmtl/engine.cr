@@ -1,8 +1,42 @@
 require "./engine/*"
+require "../_util/text_util"
 
 class MT::Engine
-  def initialize(dname : String, uname : String? = nil)
-    @dicts = MtDict.new(dname, uname)
+  def initialize(book : String, theme : String? = nil, user : String? = nil)
+    @dicts = MtDict.new(book: book, theme: theme, user: user)
+  end
+
+  def cv_title_full(title : String) : MtData
+    title, chvol = CV::TextUtil.format_title(title)
+
+    mt_data = cv_title(title, offset: chvol.size)
+    return mt_data if chvol.empty?
+
+    tag, pos = PosTag::Empty
+    pos |= MtlPos.flags(CapAfter, NoWsBefore)
+
+    mt_node = MonoNode.new("", "-", tag, pos, idx: chvol.size)
+    mt_data.add_head(mt_node)
+
+    cv_title(chvol).concat(mt_data)
+  end
+
+  def cv_title(title : String, offset = 0) : MtData
+    pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
+    return cv_plain(title, offset: offset) if pre_zh.empty?
+
+    pre_zh += pad
+    pre_vi += title.empty? ? "" : ":"
+
+    tag, pos = PosTag::LitTrans
+    pos |= MtlPos.flags(CapAfter, NoWsAfter)
+    mt_head = MonoNode.new(pre_zh, pre_vi, tag, pos, dic: 1, idx: offset)
+
+    mt_data = MtData.new
+    mt_data.add_head(mt_head)
+
+    return mt_data if title.empty?
+    mt_data.concat(cv_plain(title, offset: offset + pre_zh.size))
   end
 
   def cv_plain(input : String, cap_first = true, offset = 0) : MtData

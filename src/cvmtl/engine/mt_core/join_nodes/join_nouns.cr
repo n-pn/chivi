@@ -9,8 +9,9 @@ module MT::Core
 
   def join_noun!(noun : MtNode, prev = noun.prev) : MtNode
     noun = pair_noun!(noun, prev)
-    return noun unless prev = noun.prev?
 
-    level == 0 && prev ? join_noun_2!(noun) : noun
+    return noun unless prev = noun.prev?
+    noun
+    # level == 0 && prev ? join_noun_2!(noun) : noun
   end
 end

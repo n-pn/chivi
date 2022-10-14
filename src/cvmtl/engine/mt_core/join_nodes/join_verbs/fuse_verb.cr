@@ -16,7 +16,7 @@ module MT::Core
       prev.val = "phải"
       pos |= MtlPos::Desire
     when .verb_take_verb?
-      prev.val = fix_vauxil_val!(prev)
+      prev.val = fix_vauxil_val!(verb: verb, auxil: prev)
       prev.swap_val! # switch to alternative meaning
       pos |= MtlPos::Desire if prev.pos.desire?
     when .common_verbs?
@@ -53,6 +53,6 @@ module MT::Core
 
   def verb_is_skill?(verb : MtNode)
     return true if verb.vset?
-    verb.verb_take_objt? && verb.succ?(&.object?)
+    verb.verb_take_obj? && verb.succ?(&.object?)
   end
 end
