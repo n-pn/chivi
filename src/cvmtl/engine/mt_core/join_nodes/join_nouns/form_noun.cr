@@ -1,14 +1,18 @@
 module MT::Core
-  def join_noun_2!(noun : MtNode, prev = noun.prev) : MtNode
+  def form_noun!(noun : MtNode, prev = noun.prev) : MtNode
     if prev.adjt_words?
       noun = PairNode.new(prev, noun, flip: !prev.at_head?)
       prev = noun.prev
     end
 
     if prev.pt_deps?
-      prev = join_udep!(prev)
-      noun = PairNode.new(prev, noun, noun.tag, flip: true)
+      noun = form_noun_udep!(noun, udep: prev.as(MonoNode))
+      return noun unless noun.tag.noun_words?
       prev = noun.prev
+    end
+
+    if prev.can_split? # for nquant or pro_dem/pro_int that can be splitted
+      _, prev = split_mono!(prev)
     end
 
     if prev.quantis? || prev.nquants?
@@ -29,5 +33,20 @@ module MT::Core
 
     return noun unless prev.pronouns?
     PairNode.new(prev, noun, flip: noun.tag.posit?)
+  end
+
+  def form_noun_udep!(noun : MtNode, udep : MonoNode, head = udev.prev)
+    tag = MtlTag::DcPhrase
+    pos = MtlPos::AtTail
+
+    head = join_word!(head)
+
+    if head.ktetic?
+      udep.val = "của"
+    else
+      udep.inactivate!
+    end
+
+    TrioNode.new(head, udep, tail, tag: tag, pos: pos, render: :flip_all)
   end
 end

@@ -6,7 +6,7 @@ module MT::Core
       node.tag = MtlTag::Adjt
     when .verb_take_res_cmpl?
       node.val = "đúng"
-      node.pos |= MtlPos::Vcompl
+      node.pos = MtlPos::Vcompl
     when .numbers?
       node.val = "đôi"
       node.tag = MttTag::Qtnoun
@@ -20,7 +20,9 @@ module MT::Core
         node.tag = MtlTag::Verb
       else
         node.val = "đối với"
+        node.alt = "với"
         node.tag = MtlTag::PreDui
+        node.pos = MtlPos::AtTail
       end
     end
 
