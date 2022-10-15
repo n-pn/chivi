@@ -4,7 +4,7 @@ struct QT::QtNode
   getter idx : Int32
   getter tag : Tag
 
-  NONE = new("", idx: 0, tag: Tag.flags(NoSpaceL, NoSpaceR))
+  NONE = new(val: "", len: 0, idx: 0, tag: Tag.flags(NoSpaceL, NoSpaceR))
 
   def initialize(@val, @len, @idx, @tag = Tag::Content)
   end
@@ -16,14 +16,22 @@ struct QT::QtNode
   end
 
   def to_txt(io : IO, cap : Bool = false) : Bool
-    io << (cap && @tag.content? ? @val.capitalize : val)
-    tag.cap_after?
+    io << cap_val(cap)
+    !@tag.content? && cap || tag.cap_after?
   end
 
   def to_mtl(io : IO, cap : Bool = false) : Bool
-    io << '\t' << (cap && @tag.content? ? @val.capitalize : val)
+    io << '\t' << cap_val(cap)
     io << 'ǀ' << (@tag.content? ? 1 : 0) << 'ǀ' << @idx << 'ǀ' << @len
-    tag.cap_after?
+    !@tag.content? && cap || tag.cap_after?
+  end
+
+  def cap_val(cap : Bool = true)
+    return @val unless cap && @tag.content?
+
+    String.build(@val.size) do |io|
+      io << @val[0].upcase << @val[1..]
+    end
   end
 
   @[Flags]
@@ -43,22 +51,22 @@ struct QT::QtNode
     # ameba:disable Metrics/CyclomaticComplexity
     def self.map(char : Char)
       case char
-      when 'a'..'z', 'A'..'Z'                then StrPart | UrlPart
-      when '0'..'9'                          then IntPart | UrlPart
-      when '_'                               then StrPart | UrlPart | IntPart
-      when .letter?                          then Content
-      when '⟨', '<', '‹'                     then CapAfter | NoSpaceR
-      when '⟩', '>', '›'                     then CapAfter | NoSpaceL
-      when '“', '‘', '[', '{', '('           then NoSpaceR
-      when '”', '’', ']', '}', ')'           then NoSpaceL
-      when ',', ';', '…'                     then NoSpaceL
-      when '\'', '"', '·'                    then NoSpaceL | NoSpaceR
-      when '.', '!', '?'                     then CapAfter | NoSpaceL | UrlPart
-      when ':', '%'                          then NoSpaceL | UrlPart
-      when '#', '$', '@'                     then NoSpaceR | UrlPart
-      when '+', '-', '=', '/', '&', '~', '*' then NoSpaceL | NoSpaceR | UrlPart
-      when ' '                               then CapAfter | NoSpaceL | NoSpaceR | StrPart
-      else                                        None
+      when 'a'..'z', 'A'..'Z'           then StrPart | UrlPart
+      when '0'..'9'                     then IntPart | UrlPart
+      when '_'                          then StrPart | UrlPart | IntPart
+      when .letter?                     then Content
+      when '⟨', '<', '‹'                then CapAfter | NoSpaceR
+      when '⟩', '>', '›'                then CapAfter | NoSpaceL
+      when '“', '‘', '[', '{', '('      then NoSpaceR
+      when '”', '’', ']', '}', ')'      then NoSpaceL
+      when ',', ';', '…'                then NoSpaceL
+      when '\'', '"', '·'               then NoSpaceL | NoSpaceR
+      when '.', '!', '?'                then CapAfter | NoSpaceL | UrlPart
+      when ':', '%', '~'                then NoSpaceL | UrlPart
+      when '#', '$', '@'                then NoSpaceR | UrlPart
+      when '+', '-', '=', '/', '&', '*' then NoSpaceL | NoSpaceR | UrlPart
+      when ' '                          then NoSpaceL | NoSpaceR | CapRelay
+      else                                   None
       end
     end
   end

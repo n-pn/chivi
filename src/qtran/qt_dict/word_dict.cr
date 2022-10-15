@@ -79,6 +79,6 @@ class QT::WordDict
 
   class Trie
     property data : String? = nil
-    property leaf : Hash(Char, Trie)? = nil
+    property trie : Hash(Char, Trie)? = nil
   end
 end

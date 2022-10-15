@@ -1,1 +1,1 @@
-require "./ner_helper"
+require "../../../_util/char_util"
