@@ -1,30 +1,5 @@
-require "../mt_node/*"
-
-struct Char
-  def fullwidth?
-    (self.ord & 0xff00) == 0xff00
-  end
-
-  def fullwidth
-    (self.ord + 0xfee0).chr
-  end
-
-  def halfwidth
-    (self.ord - 0xfee0).chr
-  end
-
-  def is_number?
-    self.ord > 0x2F && self.ord < 0x3A
-  end
-
-  def is_letter?
-    'a' <= self <= 'z' || 'A' <= self <= 'Z'
-  end
-
-  def to_int
-    self.ord - 0x30
-  end
-end
+require "./mt_node/*"
+require "./txt_seg/*"
 
 class MT::TxtSeg
   getter raw_chars = [] of Char
@@ -42,23 +17,30 @@ class MT::TxtSeg
     @nodes << MonoNode.new("", idx: -1)
 
     @keys.each_with_index do |raw_char, idx|
-      mtl_char = raw_char.fullwidth? ? raw_char.halfwidth : raw_char
+      mtl_char = NerHelper.fullwidth?(raw_char) ? NerHelper.to_halfwidth(raw_char) : raw_char
       @mtl_chars << mtl_char
-      @nodes << MonoNode.new(raw_char.to_s, mtl_char.to_s, idx: idx)
+
+      @nodes << init_node(raw_char, mtl_char, idx)
     end
   end
 
-  def add_named_entities
+  private def init_node(raw_char : Char, mtl_char : Char, idx : Int32)
+    mtl_str = mtl_char.to_s
+    tag, pos = PosTag.map_punct(mtl_str)
+    MonoNode.new(raw_char.to_s, mtl_str, tag: tag, pos: pos, idx: idx)
+  end
+
+  def run_ner!
     idx = 0
 
     while idx < @upper
-      mtl_char = @raw_chars.unsafe_fetch(idx)
+      mtl_char = @mtl_chars.unsafe_fetch(idx)
 
       case mtl_char
       when .is_letter?
-        idx = add_string_entity(idx)
+        idx = add_string(idx)
       when .is_number?
-        idx = add_number_entity(idx)
+        idx = add_number(idx)
       else
         idx += 1
       end
@@ -67,7 +49,7 @@ class MT::TxtSeg
 
   private def apply_term(term : MonoNode, idx : Int32, new_idx : Int32, size = new_idx &- idx)
     @nodes[new_idx] = term
-    @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtUtil.cost(size, 1_i8)
+    @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtTerm.seg_weight(size: size, rank: 1_i8)
   end
 
   def result

@@ -1,9 +1,9 @@
 require "html"
 require "colorize"
 
-require "./text_util/*"
+require "./char_util"
 
-module CV::TextUtil
+module TextUtil
   extend self
 
   BR_RE = /\<br\s*\/?\>|\s{4,+}/i
@@ -190,9 +190,20 @@ module CV::TextUtil
   def clean_spaces(input : String)
     input.tr("\t\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000", " ").strip
   end
+
+  # Convert chinese punctuations to english punctuations
+  # and full width characters to ascii characters
+  def normalize(input : String) : String
+    normalize(input.chars).join
+  end
+
+  # :ditto:
+  def normalize(input : Array(Char)) : Array(Char)
+    input.map { |char| CharUtil.normalize(char) }
+  end
 end
 
-# pp CV::TextUtil.format_title("第二十集 红粉骷髅 第八章")
-# pp CV::TextUtil.format_title("9205.第9205章")
-# pp CV::TextUtil.format_title("340.番外：林薇实习（1）", trim: false)
-# pp CV::TextUtil.format_title("【第006章】我的美女死党")
+# pp TextUtil.format_title("第二十集 红粉骷髅 第八章")
+# pp TextUtil.format_title("9205.第9205章")
+# pp TextUtil.format_title("340.番外：林薇实习（1）", trim: false)
+# pp TextUtil.format_title("【第006章】我的美女死党")

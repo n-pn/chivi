@@ -1,7 +1,7 @@
 require "icu"
 require "compress/gzip"
 
-module CV::FileUtil
+module FileUtil
   extend self
 
   def read_utf8(file : String | Path, encoding : String? = nil, csdet_limit = 1024)

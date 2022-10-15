@@ -105,7 +105,7 @@ def extract_cases(input : Dict, prefix = "")
     hv = hanviet(k)
     hv_a = {
       hv,
-      CV::TextUtil.titleize(hv),
+      TextUtil.titleize(hv),
       translate(k, "Na"),
       translate(k, "Nr"),
       translate(k, "Nz"),
@@ -118,7 +118,7 @@ def extract_cases(input : Dict, prefix = "")
 
     if vf == vf.downcase
       lower[k] = v
-    elsif vf == CV::TextUtil.titleize(vf)
+    elsif vf == TextUtil.titleize(vf)
       upper[k] = v
     else
       mixed[k] = v # unless checked?(k, vf)

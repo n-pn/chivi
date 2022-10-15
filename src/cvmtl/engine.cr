@@ -7,7 +7,7 @@ class MT::Engine
   end
 
   def cv_title_full(title : String) : MtData
-    title, chvol = CV::TextUtil.format_title(title)
+    title, chvol = TextUtil.format_title(title)
 
     mt_data = cv_title(title, offset: chvol.size)
     return mt_data if chvol.empty?

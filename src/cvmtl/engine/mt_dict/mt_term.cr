@@ -41,7 +41,7 @@ class MT::MtTerm
     0, 58, 66, 78,
   }
 
-  def self.seg_weight(size : Int32, seg_r : Int32 = 0) : Int32
-    SEG_WEIGHT[(size &- 1) &* 4 &+ seg_r]? || size &* (seg_r &* 2 &+ 7) &* 2
+  def self.seg_weight(size : Int32, rank : Int32 = 0) : Int32
+    SEG_WEIGHT[(size &- 1) &* 4 &+ rank]? || size &* (rank &* 2 &+ 7) &* 2
   end
 end

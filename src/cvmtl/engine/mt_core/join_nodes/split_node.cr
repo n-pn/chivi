@@ -6,11 +6,16 @@ module MT::Core
 
     qt_key = node.key[1..]
     qt_val = node.val.sub("#{pronoun.val}", "").strip
-
     quanti = MonoNode.new(qt_key, qt_val, PosTag::Qtnoun, idx: node.idx + 1, dic: 1)
+
     {pronoun, quanti}
   end
 
+  PRONOUN_VAL = {
+    "" => "này",
+  }
+
   private def make_pronoun_node(key : String)
+    tag, pos = PosTag.map_pronoun(key)
   end
 end

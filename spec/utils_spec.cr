@@ -2,13 +2,13 @@ require "./spec_helper"
 
 require "../src/_util/*"
 
-describe CV::TextUtil do
+describe TextUtil do
   describe ".titleize" do
     it "works correctly" do
-      CV::TextUtil.titleize("xxx  x x").should eq("Xxx  X X")
+      TextUtil.titleize("xxx  x x").should eq("Xxx  X X")
     end
     it "can handle empty string" do
-      CV::TextUtil.titleize("").should eq("")
+      TextUtil.titleize("").should eq("")
     end
   end
 
