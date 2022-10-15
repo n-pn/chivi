@@ -1,16 +1,15 @@
 require "../../src/cvmtl/engine"
 
-input = ARGV[0]? || "第一章 屠龙之术"
-dname = ARGV[1]? || "-mvttgmnj"
-uname = ARGV[2]?
-
+text = ARGV[0]? || "第一章 屠龙之术"
+book = ARGV[1]? || "combine"
+user = ARGV[2]?
 time = Time.monotonic
 
-mtl = MT::Engine.new(dname, uname)
-res = mtl.cv_title(input)
+mtl = MT::Engine.new(book: book, user: user)
+res = mtl.cv_plain(text)
 
 res.inspect(STDOUT)
-puts input.colorize.blue
+puts text.colorize.blue
 puts "-----".colorize.dark_gray
 
 puts res.to_txt.colorize.light_yellow

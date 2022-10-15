@@ -1,10 +1,11 @@
 require "crorm"
 require "../_util/text_util"
 
-require "./_base"
+# require "./_base"
 require "./ch_seed"
 require "./ch_text"
-require "./nv_info"
+
+# require "./nv_info"
 
 # class CV::ChTran2
 #   include Crorm::Model
@@ -61,8 +62,7 @@ class CV::Chinfo
 
     self.sn_id, _ = ChSeed.map_sname(cols[8])
 
-    s_bid = cols[9]
-    self.s_bid = s_bid.to_i? || Nvinfo.find!({bhash: s_bid}).id.to_i
+    self.s_bid = cols[9].to_i
   end
 
   def initialize(sn_id : Int32, s_bid : Int32, ch_no : Int32, s_cid : Int32 = ch_no)

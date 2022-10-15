@@ -29,18 +29,18 @@ def tokenize(inp_dir_path, ext = '.pku.tsv'):
   inp_paths = glob.glob(os.path.join(inp_dir_path, '*.tsv'))
 
   for inp_path in inp_paths:
-    print('- ', count, ': ', inp_path)
-    count += 1
     out_path = inp_path.replace('tok/', 'pos/').replace('.tsv', ext)
+    count += 1
 
     if os.path.isfile(out_path):
-      print('- Parsed, skipping!')
+      print(f'- {count}: [{inp_path}] parsed, skipping!')
       continue
+
+    print(f'- {count}: [{inp_path}] parsing')
 
     inp_file = open(inp_path, 'r')
     lines = inp_file.read().splitlines()
     inp_file.close()
-
 
     gc.collect()
     torch.cuda.empty_cache()
@@ -54,7 +54,7 @@ def tokenize(inp_dir_path, ext = '.pku.tsv'):
         out_file.write('\t'.join(result))
 
     except:
-      print(f'{inp_path} failed!')
+      print(f'\033[91m {inp_path} failed!\033[0m')
 
     out_file.close()
 
