@@ -1,6 +1,5 @@
 require "../_util/char_util"
-require "./qt_dict/*"
-require "./qt_data/*"
+require "./qttool/*"
 
 class QT::Engine
   class_getter hanviet : self do

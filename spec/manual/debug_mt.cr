@@ -1,5 +1,5 @@
 require "../../src/cvmtl/engine"
-require "../../src/qtran/engine"
+require "../../src/cvmtl/qtcore"
 
 text = ARGV[0]? || "红龙M红~~~龙 MUV  LUV AL 红龙 http://test.com/test?q=1"
 book = ARGV[1]? || "combine"
