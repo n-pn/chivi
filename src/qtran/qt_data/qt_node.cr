@@ -37,7 +37,6 @@ struct QT::QtNode
   @[Flags]
   enum Tag
     CapAfter
-    CapRelay
 
     NoSpaceL
     NoSpaceR
@@ -48,26 +47,28 @@ struct QT::QtNode
 
     Content
 
+    @@map = Hash(Char, self).new(initial_capacity: 128)
+
     # ameba:disable Metrics/CyclomaticComplexity
     def self.map(char : Char)
-      case char
-      when 'a'..'z', 'A'..'Z'           then StrPart | UrlPart
-      when '0'..'9'                     then IntPart | UrlPart
-      when '_'                          then StrPart | UrlPart | IntPart
-      when .letter?                     then Content
-      when '⟨', '<', '‹'                then CapAfter | NoSpaceR
-      when '⟩', '>', '›'                then CapAfter | NoSpaceL
-      when '“', '‘', '[', '{', '('      then NoSpaceR
-      when '”', '’', ']', '}', ')'      then NoSpaceL
-      when ',', ';', '…'                then NoSpaceL
-      when '\'', '"', '·'               then NoSpaceL | NoSpaceR
-      when '.', '!', '?'                then CapAfter | NoSpaceL | UrlPart
-      when ':', '%', '~'                then NoSpaceL | UrlPart
-      when '#', '$', '@'                then NoSpaceR | UrlPart
-      when '+', '-', '=', '/', '&', '*' then NoSpaceL | NoSpaceR | UrlPart
-      when ' '                          then NoSpaceL | NoSpaceR | CapRelay
-      else                                   None
-      end
+      @@map[char] ||=
+        case char
+        when 'a'..'z', 'A'..'Z'           then StrPart | UrlPart
+        when '0'..'9', '_'                then IntPart | StrPart | UrlPart
+        when .letter?                     then Content
+        when ' '                          then NoSpaceL | NoSpaceR
+        when '.', '!', '?'                then CapAfter | NoSpaceL | UrlPart
+        when '⟨', '<', '‹'                then CapAfter | NoSpaceR
+        when '⟩', '>', '›'                then CapAfter | NoSpaceL
+        when '“', '‘', '[', '{', '('      then NoSpaceR
+        when '”', '’', ']', '}', ')'      then NoSpaceL
+        when ',', ';', '…'                then NoSpaceL
+        when '\'', '"', '·'               then NoSpaceL | NoSpaceR
+        when ':', '%', '~'                then NoSpaceL | UrlPart
+        when '#', '$', '@'                then NoSpaceR | UrlPart
+        when '+', '-', '=', '/', '&', '*' then NoSpaceL | NoSpaceR | UrlPart
+        else                                   None
+        end
     end
   end
 end
