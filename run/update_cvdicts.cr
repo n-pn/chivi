@@ -4,6 +4,42 @@ require "colorize"
 DIC = DB.open "sqlite3://./var/dicts/cvdicts.db"
 at_exit { DIC.close }
 
+def fix_ptag(file : String, ptag : String)
+  puts file.colorize.cyan
+
+  keys = File.read_lines(file).compact_map do |line|
+    next if line.blank? || line[0] == '#'
+    "'#{line.split('\t', 2).first}'"
+  end
+
+  DIC.exec <<-SQL
+    update terms set ptag = '#{ptag}' where key in (#{keys.join(", ")})
+  SQL
+end
+
+PTAG_DIR = "var/cvmtl/inits"
+
+def fix_ptags
+  fix_ptag("#{PTAG_DIR}/map_vabn.tsv", "v!")
+  fix_ptag("#{PTAG_DIR}/map_aabn.tsv", "a!")
+
+  fix_ptag("#{PTAG_DIR}/map_verb.tsv", "v")
+  fix_ptag("#{PTAG_DIR}/map_vint.tsv", "vi")
+
+  fix_ptag("#{PTAG_DIR}/map_pronoun.tsv", "r")
+
+  fix_ptag("#{PTAG_DIR}/map_advb.tsv", "d")
+  fix_ptag("#{PTAG_DIR}/map_conj.tsv", "d")
+
+  fix_ptag("#{PTAG_DIR}/map_place.tsv", "s")
+  fix_ptag("#{PTAG_DIR}/map_quanti.tsv", "r")
+  fix_ptag("#{PTAG_DIR}/map_sound.tsv", "r")
+
+  fix_ptag("#{PTAG_DIR}/map_suff.tsv", "r")
+
+  fix_ptag("#{PTAG_DIR}/map_uniq.tsv", "r")
+end
+
 # cvmtl_ids = DIC.query_all <<-SQL, as: Int32
 #   select id from dicts where dtype = 30
 # SQL

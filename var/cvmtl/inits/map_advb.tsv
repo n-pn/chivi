@@ -30,7 +30,7 @@
 特别	adv_degree
 十分	adv_degree
 
-# 时间副词 adverbs of time
+## 时间副词 adverbs of time
 已	adv_time
 正	adv_time
 将	adv_time
@@ -41,7 +41,7 @@
 曾经	adv_time
 马上	adv_time
 
-# 语气副词 modal adverbs/adverbs of mood
+## 语气副词 modal adverbs/adverbs of mood
 偏	adv_mood
 可	adv_mood
 就	adv_mood
@@ -53,7 +53,7 @@
 究竟	adv_mood
 到底	adv_mood
 
-# 范围副词 scope adverbs
+## 范围副词 scope adverbs
 全	adv_scope
 只	adv_scope
 共	adv_scope
@@ -61,7 +61,7 @@
 总共	adv_scope
 仅仅	adv_scope
 
-# 频度副词 adverbs of frequency
+## 频度副词 adverbs of frequency
 始终	adv_freque
 总是	adv_freque
 一向	adv_freque
@@ -74,14 +74,14 @@
 反复	adv_freque
 重新	adv_freque
 
-# 关联副词 correlative or conjunctive adverbs
+## 关联副词 correlative or conjunctive adverbs
 才	adv_cai
 便	adv_correl
 却	adv_correl
 既	adv_correl
 越	adv_correl
 
-# 情态副词/情状副词 adverbs of manner
+## 情态副词/情状副词 adverbs of manner
 特地	adv_manner
 百般	adv_manner
 互相	adv_manner
@@ -89,17 +89,17 @@
 亲自	adv_manner
 逐步	adv_manner
 
-# time or scoop
+## time or scoop
 总	adv_zong
 
-# scoop or mood
+## scoop or mood
 就	adv_jiu3
 
-# frequency or correlative
+## frequency or correlative
 再	adv_zai4
 又	adv_you4
 也	adv_ye3
 还	adv_hoan
 
-# scope or correl
+## scope or correl
 都	adv_du1
