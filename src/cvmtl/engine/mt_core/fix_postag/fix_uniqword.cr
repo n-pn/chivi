@@ -1,6 +1,7 @@
 module MT::Core
   def fix_uniqword!(node : MonoNode)
     case node
+    when .wd_hao? then fix_wd_hao!(node)
     when .qttemp? then fix_qttemp!(node)
     when .vauxil? then fix_vauxil!(node)
     when .vcompl? then fix_vcompl!(node)
@@ -9,35 +10,25 @@ module MT::Core
     end
   end
 
-  def self.fix_hao_word!(haow : MonoNode)
-    case haow.succ
+  def self.fix_wd_hao!(whao : MonoNode)
+    case whao.succ
     when .common_nouns?
-      haow.set!("tốt", PosTag.make(:adj_hao, :adjtish))
+      whao.val = "tốt"
+      whao.tag, whao.pos = PosTag::Amod
     when .common_verbs?, .adjt_words?, .preposes?
-      haow.set!("thật", PosTag.make(:adv_hao, :advbial))
+      whao.val = "thật"
+      whao.tag = MtlTag::AdvHao
     else
-      if haow.real_prev.try(&.verb_take_res_cmpl?)
-        haow.set!("tốt", PosTag.make(:cmpl_hao, :vcompl))
+      if whao.real_prev.try(&.verb_take_res_cmpl?)
+        whao.val = "tốt"
+        whao.pos = MtlPos::Vcompl
       else
-        haow
+        whao.val = "tốt"
+        whao.tag = MtlTag::Adjt
+        whao.pos = MtlPos::None
       end
     end
-  end
 
-  def self.fix_res_cmpl!(cmpl : MonoNode)
-    if cmpl.real_prev.try(&.verb_take_res_cmpl?)
-      cmpl.swap_val!
-    else
-      cmpl.set!(PosTag.not_vcompl(cmpl.key))
-    end
-  end
-
-  def self.fix_dir_cmpl!(cmpl : MonoNode)
-    case cmpl.tag
-    when .adjt_words?, .common_verbs?
-      cmpl.swap_val!
-    else
-      cmpl.set!(PosTag::Verb)
-    end
+    whao
   end
 end

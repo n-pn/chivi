@@ -1,9 +1,7 @@
 require "sqlite3"
 require "colorize"
-require "../src/cvmtl/vp_dict/vp_term"
 
-INP = "var/dicts"
-DIC = DB.open "sqlite3://./#{INP}/cvdicts.db"
+DIC = DB.open "sqlite3://./var/dicts/cvdicts.db"
 at_exit { DIC.close }
 
 # cvmtl_ids = DIC.query_all <<-SQL, as: Int32

@@ -4,17 +4,18 @@ enum MT::MtlPos : UInt64
     values.reduce(init) { |flags, value| flags | parse(value) }
   end
 
+  Passive # for word that marked empty
+
   Boundary # make structure boundary
-  Passive  # for word that marked empty
-  Nebulous # word not tagged
+  Mixedpos # word not tagged
 
   # rendering
 
   CapAfter # add capitalizion after this node
   CapRelay # relay capitalization
 
-  NoWsAfter
-  NoWsBefore
+  NoSpaceR
+  NoSpaceL
 
   AtHead
   AtTail

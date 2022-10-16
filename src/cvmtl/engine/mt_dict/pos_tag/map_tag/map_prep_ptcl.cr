@@ -18,7 +18,7 @@ module MT::PosTag
   }
 
   def self.map_prepos(key : String)
-    PREPOS_MAP[key] ||= make(:prepos)
+    PREPOS_MAP[key]? || make(:prepos)
   end
 
   PARTICLE_MAP = {
@@ -32,6 +32,7 @@ module MT::PosTag
     "来讲" => make(:pt_laijiang),
     "而言" => make(:pt_eryan),
     "的话" => make(:pt_dehua),
+    "连"  => make(:pt_lian2),
     "之"  => make(:pt_zhi),
     "的"  => make(:pt_dep),
     "得"  => make(:pt_der),
@@ -47,6 +48,6 @@ module MT::PosTag
   }
 
   def self.map_particle(key : String)
-    PARTICLE_MAP[key] ||= make(:pt_cl)
+    PARTICLE_MAP[key]? || make(:pt_cl)
   end
 end

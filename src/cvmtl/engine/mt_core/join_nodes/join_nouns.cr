@@ -8,10 +8,17 @@ module MT::Core
   # - mode 3: join nouns with verbs/preposes, resulting prep_form or verb_object
 
   def join_noun!(noun : MtNode, prev = noun.prev) : MtNode
-    noun = pair_noun!(noun, prev)
+    while prev.common_nouns?
+      noun = pair_noun!(noun, prev)
+      prev = noun.prev
+    end
 
-    return noun unless prev = noun.prev?
-    noun
-    # level == 0 && prev ? join_noun_2!(noun) : noun
+    if prev.adjt_words?
+      noun = PairNode.new(prev, noun, flip: !prev.at_head?)
+      prev = noun.prev
+    end
+
+    noun = form_noun!(noun, prev)
+    fold_noun!(noun)
   end
 end

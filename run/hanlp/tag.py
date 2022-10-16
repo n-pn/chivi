@@ -61,5 +61,4 @@ def tokenize(inp_dir_path, ext = '.pku.tsv'):
 folders = glob.glob(os.path.join("var/inits/hanlp/tok/zxcs_me/*"))
 
 for folder in folders:
-  print(folder)
   tokenize(folder)

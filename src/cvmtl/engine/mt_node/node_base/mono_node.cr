@@ -47,7 +47,7 @@ class MT::MonoNode < MT::MtNode
 
   def inactivate!
     @val = ""
-    @pos |= MtlPos.flags(Passive, NoWsBefore, NoWsAfter, CapRelay)
+    @pos |= MtlPos.flags(Passive, NoSpaceL, NoSpaceR, CapRelay)
     self
   end
 

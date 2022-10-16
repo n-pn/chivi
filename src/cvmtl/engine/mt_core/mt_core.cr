@@ -18,7 +18,7 @@ module MT::Core
       node = fix_uniqword!(node.as(MonoNode))
     end
 
-    case node
+    case node.tag
     when .time_words? then join_time!(node)
     when .noun_words? then join_noun!(node)
     when .adjt_words? then join_adjt!(node)

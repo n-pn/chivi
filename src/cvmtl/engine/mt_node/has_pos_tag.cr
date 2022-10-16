@@ -15,11 +15,13 @@ module MT::HasPosTag
     @tag.quantis? || @tag.pro_split?
   end
 
-  delegate boundary?, to: @pos
   delegate passive?, to: @pos
 
+  delegate mixedpos?, to: @pos
+  delegate boundary?, to: @pos
+
   delegate cap_after?, to: @pos
-  delegate no_ws_before?, to: @pos
+  delegate no_space_l?, to: @pos
   delegate no_ws_after?, to: @pos
 
   delegate at_head?, to: @pos

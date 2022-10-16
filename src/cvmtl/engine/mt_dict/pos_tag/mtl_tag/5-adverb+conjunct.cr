@@ -9,40 +9,46 @@ AdvFei  = 512 # "非"
 AdvMei  = 513 # "没"
 AdvBie  = 514 # "别"
 
-AdvTime  = 520 # 时间副词 adverbs of time
-AdvZong  = 523 # "总": both time and scoop
-AdvScope = 525 # 范围副词 scope adverbs
-AdvJiu3  = 527 # "就": both scoop and mood
-AdvMood  = 530 # 语气副词 modi??al adverbs/adverbs of mood
+AdvDegree = 520
 
-AdvFreque = 535 # 频度副词 adverbs of frequency
-AdvZai4   = 537 # "再": both frequency or correlative
-AdvYou4   = 538 # "又": both frequency or correlative
-AdvYe3    = 540 # "也": both frequency or correlative
-AdvHoan   = 541 # "还": both frequency or correlative
+AdvHen = 521 # "很"
+AdvZui = 522 # "最"
+AdvHao = 523 # "好"
 
-AdvCorrel = 545 # 关联副词 correlative or conjunctive adverbs
-AdvDu1    = 546 # "都": correlative or scoop
-AdvCai    = 547 # "才"
-AdvManner = 550 # 情态副词/情状副词 adverbs of manner
+AdvTime  = 530 # 时间副词 adverbs of time
+AdvZong  = 533 # "总": both time and scope
+AdvScope = 535 # 范围副词 scope adverbs
+AdvJiu3  = 537 # "就": both scope and mood
+AdvMood  = 540 # 语气副词 modal adverbs/adverbs of mood
+
+AdvFreque = 545 # 频度副词 adverbs of frequency
+AdvZai4   = 547 # "再": both frequency or correlative
+AdvYou4   = 548 # "又": both frequency or correlative
+AdvYe3    = 550 # "也": both frequency or correlative
+AdvHoan   = 551 # "还": both frequency or correlative
+
+AdvCorrel = 555 # 关联副词 correlative or conjunctive adverbs
+AdvDu1    = 556 # "都": correlative or scope
+AdvCai    = 557 # "才"
+AdvManner = 565 # 情态副词/情状副词 adverbs of manner
 
 # conjuctions
 
-ConjAdvb = 559 # conjuction or advbial
-Conjunct = 560 # subordinating conjunction
+ConjAdvb = 569 # conjuction or advbial
+Conjunct = 570 # subordinating conjunction
 
 # both correl or concoord
-Conmixed = 570
+Conmixed = 580
 
-ConDan4   = 571 # "但"
-ConYou4   = 572 # "又"
-ConHuo4   = 573 # "或"
-ConHuoshi = 574 # "或是"
+ConDan4   = 581 # "但"
+ConYou4   = 582 # "又"
+ConHuo4   = 583 # "或"
+ConHuoshi = 584 # "或是"
 
-Concoord = 580 # coordinating conjunction
+Concoord = 590 # coordinating conjunction
 
 # special conjunctions
-ConHe2  = 581 # "和"
-ConYu3  = 582 # "与"
-ConTong = 583 # "同"
-ConGen1 = 584 # "跟"
+ConHe2  = 591 # "和"
+ConYu3  = 592 # "与"
+ConTong = 593 # "同"
+ConGen1 = 594 # "跟"

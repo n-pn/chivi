@@ -47,10 +47,10 @@ module MT::PosTag
       pos |= MtlPos::AtTail
     when .starts_with?('?')
       pos |= MtlPos::AtHead
-      pos |= MtlPos::NoWsAfter if val[1] != ' '
+      pos |= MtlPos::NoSpaceR if val[1] != ' '
     when .ends_with?('?')
       pos |= MtlPos::AtTail
-      pos |= MtlPos::NoWsBefore if val[-2] != ' '
+      pos |= MtlPos::NoSpaceL if val[-2] != ' '
     else
       pos |= MtlPos::AtTail
     end
@@ -58,8 +58,8 @@ module MT::PosTag
     make(tag, pos)
   end
 
-  PLACE_MAP = load_map("place_words", MtlPos.flags(Object, Locale))
-  TWORD_MAP = load_map("time_words", MtlPos.flags(Object))
+  PLACE_MAP = load_map("map_place", MtlPos.flags(Object, Locale))
+  TWORD_MAP = load_map("map_tword", MtlPos.flags(Object))
 
   def self.map_place(key : String)
     PLACE_MAP[key] ||= begin
@@ -73,7 +73,7 @@ module MT::PosTag
 
   def self.map_tword(key : String)
     # TODO: map time by key
-    TWORD_MAP[key] ||= Tword
+    TWORD_MAP[key]? || Tword
   end
 
   def self.is_locat?(char : Char)
@@ -84,7 +84,7 @@ module MT::PosTag
     }.includes?(char)
   end
 
-  OBJECT_MAP = load_map("objt_nouns", MtlPos.flags(Object, Ktetic))
+  OBJECT_MAP = load_map("map_nobjt", MtlPos.flags(Object, Ktetic))
 
   WEAPON_CHARS = {'剑', '刀', '枪'}
 

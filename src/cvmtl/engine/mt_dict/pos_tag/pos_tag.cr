@@ -36,8 +36,8 @@ module MT::PosTag
   Empty = make(:empty, :boundary)
   Space = make(:space, :boundary)
 
-  LitBlank = make(:lit_blank, :nebulous)
-  LitTrans = make(:lit_trans, :nebulous)
+  LitBlank = make(:lit_blank, :mixedpos)
+  LitTrans = make(:lit_trans, :mixedpos)
 
   ########
   ###

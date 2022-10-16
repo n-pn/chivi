@@ -1,5 +1,5 @@
 module MT::PosTag
-  PRONOUN_MAP = load_map("pronouns", MtlPos.flags(Object))
+  PRONOUN_MAP = load_map("map_pronoun", MtlPos.flags(Object))
 
   ProDem = make(:pro_dem, :object)
   ProInt = make(:pro_int, :object)

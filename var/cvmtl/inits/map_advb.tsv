@@ -1,6 +1,8 @@
-# adverbs: https://chinemaster.com/pho-tu-trong-tieng-trung/
+# adverbs:
+# - https://chinemaster.com/pho-tu-trong-tieng-trung/
+# - https://www.decodemandarinchinese.com/grammar/adverbs/
 
-# 否定副词 negative adverbs
+## 否定副词 negative adverbs
 不	adv_bu4
 非	adv_fei
 没	adv_mei
@@ -14,6 +16,19 @@
 不用	adv_nega
 徒然	adv_nega
 枉自	adv_nega
+
+## 程度副词 adverbs of degree
+最	adv_zui	at_tail
+很	adv_hen
+太	adv_degree
+更	adv_degree
+极	adv_degree
+挺	adv_degree
+顶	adv_degree
+极其	adv_degree
+非常	adv_degree
+特别	adv_degree
+十分	adv_degree
 
 # 时间副词 adverbs of time
 已	adv_time
@@ -60,11 +75,11 @@
 重新	adv_freque
 
 # 关联副词 correlative or conjunctive adverbs
+才	adv_cai
 便	adv_correl
 却	adv_correl
 既	adv_correl
 越	adv_correl
-才	adv_cai
 
 # 情态副词/情状副词 adverbs of manner
 特地	adv_manner

@@ -13,7 +13,7 @@ class MT::Engine
     return mt_data if chvol.empty?
 
     tag, pos = PosTag::Empty
-    pos |= MtlPos.flags(CapAfter, NoWsBefore)
+    pos |= MtlPos.flags(CapAfter, NoSpaceL)
 
     mt_node = MonoNode.new("", "-", tag, pos, idx: chvol.size)
     mt_data.add_head(mt_node)
@@ -29,7 +29,7 @@ class MT::Engine
     pre_vi += title.empty? ? "" : ":"
 
     tag, pos = PosTag::LitTrans
-    pos |= MtlPos.flags(CapAfter, NoWsAfter)
+    pos |= MtlPos.flags(CapAfter, NoSpaceR)
     mt_head = MonoNode.new(pre_zh, pre_vi, tag, pos, dic: 1, idx: offset)
 
     mt_data = MtData.new

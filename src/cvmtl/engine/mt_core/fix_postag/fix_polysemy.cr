@@ -6,7 +6,7 @@ module MT::Core
     fixer.resolve!
   end
 
-  struct FixPolysemy
+  private struct FixPolysemy
     getter noun_pct = 0 # percentage of node being noun
     getter advb_pct = 0 # percentage of node being advb
     getter verb_pct = 0 # percentage of node being verb

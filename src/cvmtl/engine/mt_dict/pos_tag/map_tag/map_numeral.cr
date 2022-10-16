@@ -9,7 +9,7 @@ module MT::PosTag
   Nhanzi1 = make(:nhanzi1, MtlPos.flags(Object))
   Nhanzi2 = make(:nhanzi2, MtlPos.flags(Object))
 
-  NUMBER_MAP = load_map("nquants", MtlPos.flags(Object))
+  NUMBER_MAP = load_map("map_number", MtlPos.flags(Object))
 
   def self.map_number(tag : String, key : String) : {MtlTag, MtlPos}
     return map_nquant(key) if tag[1]? == 'q'
@@ -28,7 +28,7 @@ module MT::PosTag
     end
   end
 
-  NQUANT_MAP = load_map("nquants")
+  NQUANT_MAP = load_map("map_nquant", MtlPos.flags(Object))
 
   Nqnoun = make(:nqnoun, MtlPos.flags(Object))
   Nqtime = make(:nqtime, MtlPos.flags(Object))
@@ -65,9 +65,9 @@ module MT::PosTag
     chars[index..upper].join
   end
 
-  QUANTI_MAP = load_map("quantis")
+  QUANTI_MAP = load_map("map_quanti")
 
   def self.map_quanti(key : String)
-    QUANTI_MAP[key] ||= make(:qtnoun, MtlPos.flags(Object))
+    QUANTI_MAP[key]? || make(:qtnoun, MtlPos.flags(Object))
   end
 end

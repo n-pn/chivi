@@ -1,5 +1,5 @@
 require "../../src/cvmtl/engine"
-require "../../src/cvmtl/qtcore"
+require "../../src/cvmtl/qttool"
 
 text = ARGV[0]? || "红龙M红~~~龙 MUV  LUV AL 红龙 http://test.com/test?q=1"
 book = ARGV[1]? || "combine"
@@ -19,7 +19,7 @@ puts "-----".colorize.dark_gray
 puts QT::Engine.hanviet.convert(text).to_txt(cap: true).colorize.green
 puts "-----".colorize.dark_gray
 
-puts QT::Engine.binh_am.convert(text).to_txt(cap: false).colorize.green
-puts "-----".colorize.dark_gray
+# puts QT::Engine.binh_am.convert(text).to_txt(cap: false).colorize.green
+# puts "-----".colorize.dark_gray
 
 puts "Total time used (including loading dicts): #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red

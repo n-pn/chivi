@@ -66,7 +66,7 @@ abstract class MT::MtNode
   abstract def apply_cap!(cap : Bool) : Bool
 
   def add_space?(prev = self.prev) : Bool
-    !(prev.pos.no_ws_after? || @pos.no_ws_before?)
+    !(prev.pos.no_space_r? || @pos.no_space_l?)
   end
 end
 

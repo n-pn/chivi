@@ -267,6 +267,10 @@ enum MT::MtlTag : UInt32
     value >= 510 && value < 520
   end
 
+  def degree_advs?
+    value >= 520 && value < 530
+  end
+
   def time_advs?
     value >= 520 && value < 525
   end
@@ -280,15 +284,15 @@ enum MT::MtlTag : UInt32
   end
 
   def freque_advs?
-    value >= 535 && value < 545
+    value >= 545 && value < 555
   end
 
   def correl_advs?
-    value > 535 && value < 550
+    value > 545 && value < 560
   end
 
   def manner_advs?
-    value >= 550 && value < 560
+    value >= 560 && value < 569
   end
 
   def serial_advs? # linking verbs
@@ -298,7 +302,7 @@ enum MT::MtlTag : UInt32
   ###
 
   def conjuncts?
-    value >= 559 && value < 600
+    value >= 569 && value < 600
   end
 
   def concoords?

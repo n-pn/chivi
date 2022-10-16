@@ -38,7 +38,7 @@ class MT::PairNode < MT::MtNode
   # end
 
   # def no_space_between?
-  #   @head.passive? || @head.no_ws_after? || @tail.no_ws_before? || @tail.passive?
+  #   @head.passive? || @head.no_space_r? || @tail.no_space_l? || @tail.passive?
   # end
 
   # def to_txt(io : IO) : Nil
