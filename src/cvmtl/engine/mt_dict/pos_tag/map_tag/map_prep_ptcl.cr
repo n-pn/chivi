@@ -15,6 +15,7 @@ module MT::PosTag
     "令"  => make(:pre_ling),
     "给"  => make(:pre_gei3),
     "自"  => make(:pre_zi4),
+    "从"  => make(:pre_cong, :at_tail),
   }
 
   def self.map_prepos(key : String)

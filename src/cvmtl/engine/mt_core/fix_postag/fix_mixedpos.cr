@@ -9,4 +9,9 @@ module MT::Core
     else                 node
     end
   end
+
+  def fix_mixedpos!(node : MtNode)
+    Log.warn { "this should not happen!" }
+    node
+  end
 end

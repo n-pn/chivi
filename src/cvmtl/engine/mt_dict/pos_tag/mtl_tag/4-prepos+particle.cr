@@ -25,6 +25,8 @@ PreGei3 = 426 # "给"
 
 PreZi4 = 430 # "自"
 
+PreCong = 431 # "从"
+
 # particles
 
 PtCl = 450 # unknown particle

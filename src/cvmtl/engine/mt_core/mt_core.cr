@@ -22,7 +22,7 @@ module MT::Core
     when .time_words? then join_time!(node)
     when .noun_words? then join_noun!(node)
     when .adjt_words? then join_adjt!(node)
-    when .verb_words? then join_verb!(node)
+    when .verb_words? then fold_verb!(node)
     else                   node
     end
   end

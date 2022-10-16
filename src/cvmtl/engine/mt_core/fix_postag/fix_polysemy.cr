@@ -143,17 +143,13 @@ module MT::Core
     def resolve! : MonoNode
       case resolve_type!
       when .noun?
-        @noun_alt.try { |x| @node.val = x }
-        @node.tag, @node.pos = PosTag.cast_noun(@node.key)
+        @node.as_noun!(@noun_alt)
       when .verb?
-        @verb_alt.try { |x| @node.val = x }
-        @node.tag, @node.pos = PosTag.cast_verb(@node.key)
+        @node.as_verb!(@verb_alt)
       when .adjt?
-        @adjt_alt.try { |x| @node.val = x }
-        @node.tag, @node.pos = PosTag.cast_adjt(@node.key)
+        @node.as_adjt!(@adjt_alt)
       when .advb?
-        @advb_alt.try { |x| @node.val = x }
-        @node.tag, @node.pos = PosTag.cast_advb(@node.key)
+        @node.as_advb!(@advb_alt)
       end
 
       @node
