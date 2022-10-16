@@ -1,4 +1,4 @@
-require "./join_nouns/*"
+require "./*"
 
 module MT::Core
   # join noun modes:

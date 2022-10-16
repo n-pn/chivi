@@ -6,24 +6,24 @@
 没有	v_meiyou
 
 ## Bổ ngữ xu hướng
-来	vdir	vcompl | link_verb
-去	vdir	vcompl | link_verb
+来	vdir	vcompl | link_verb | mixedpos
+去	vdir	vcompl | link_verb | mixedpos
 
 ### Bổ ngữ xu hướng kép: https://khoahoctiengtrung.com/bo-ngu-xu-huong-kep/
-上来	vdir	vcompl
-下来	vdir	vcompl
-进来	vdir	vcompl
-出来	vdir	vcompl
-回来	vdir	vcompl
-过来	vdir	vcompl
-起来	vdir	vcompl
-开来	vdir	vcompl
-上去	vdir	vcompl
-下去	vdir	vcompl
-进去	vdir	vcompl
-出去	vdir	vcompl
-回去	vdir	vcompl
-过去	vdir	vcompl
+上来	vdir	vcompl | mixedpos
+下来	vdir	vcompl | mixedpos
+进来	vdir	vcompl | mixedpos
+出来	vdir	vcompl | mixedpos
+回来	vdir	vcompl | mixedpos
+过来	vdir	vcompl | mixedpos
+起来	vdir	vcompl | mixedpos
+开来	vdir	vcompl | mixedpos
+上去	vdir	vcompl | mixedpos
+下去	vdir	vcompl | mixedpos
+进去	vdir	vcompl | mixedpos
+出去	vdir	vcompl | mixedpos
+回去	vdir	vcompl | mixedpos
+过去	vdir	vcompl | mixedpos
 
 ## Động từ tâm lý
 爱	vpsy	vauxil

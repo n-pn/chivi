@@ -17,8 +17,8 @@ module MT::Core
   end
 
   def self.fix_dir_cmpl!(cmpl : MonoNode) : MonoNode
-    case cmpl.tag
-    when .adjt_words?, .common_verbs?
+    case cmpl.prev
+    when .adjt_words?, .common_verbs?, .maybe_adjt?, .maybe_verb?
       cmpl.swap_val!
     else
       cmpl.tag, cmpl.pos = PosTag::Verb

@@ -1,27 +1,43 @@
 module MT::Core
   def fold_noun!(noun : MtNode, prev = noun.prev)
-    prev = fix_uniqword!(prev.as(MonoNode)) if prev.uniqword?
+    if prev.is_a?(MonoNode) && prev.mixedpos?
+      prev = fix_mixedpos!(prev)
+    end
+
     return noun if noun_is_modifier?(noun, prev)
 
-    prev = fold_cmpl!(prev) if prev.vcompl?
-
     case prev
-    when .preposes?   then fold_prep_form!(noun: noun, prep: prev.as(MonoNode))
-    when .verb_words? then fold_noun_verb!(noun: noun, verb: prev)
-    else                   noun
+    when .preposes?
+      fold_prep_form!(noun: noun, prep: prev.as(MonoNode))
+    when .verb_words?
+      fold_noun_verb!(noun: noun, verb: prev)
+    when .vcompl?
+      prev = fold_cmpl!(prev)
+      fold_noun_verb!(noun: noun, verb: prev)
+    else
+      noun
     end
   end
 
   def fold_noun_verb!(noun : MtNode, verb : MtNode)
-    prev = join_verb!(verb)
+    verb = join_verb!(verb) if verb.is_a?(MonoNode)
 
-    case prev
-    when VerbForm then form = prev
-    when .subj_verb?
-      form = prev.as(PairNode).tail
+    case verb
+    when VerbForm
+      form = verb
+    when PairNode
+      raise "unexpected #{verb}" unless verb.tag.subj_verb?
+
+      subj = verb
+      form = verb.tail
       form = VerbForm.new(form) unless form.is_a?(VerbForm)
     else
-      form = VerbForm.new(prev)
+      form = VerbForm.new(verb)
+    end
+
+    if subj
+      subj.fix_succ!(noun.succ?)
+      noun.fix_succ!(nil)
     end
 
     form.add_objt(noun)

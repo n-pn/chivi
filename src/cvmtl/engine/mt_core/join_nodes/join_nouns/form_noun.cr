@@ -1,5 +1,7 @@
 module MT::Core
-  def form_noun!(noun : MtNode, prev = noun.prev) : MtNode
+  def form_noun!(noun : MtNode, prev = noun.prev?) : MtNode
+    return noun unless prev
+
     # if prev.adjt_words?
     #   noun = PairNode.new(prev, noun, flip: !prev.at_head?)
     #   prev = noun.prev

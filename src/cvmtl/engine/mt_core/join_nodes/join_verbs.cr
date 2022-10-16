@@ -1,8 +1,9 @@
 require "./join_verbs/**"
 
 module MT::Core
-  def join_verb!(verb : MtNode, prev = verb.prev)
+  def join_verb!(verb : MtNode)
     verb = join_verb_1!(verb)
+    prev = verb.prev
 
     case prev
     when .quantis?, .pro_dems?

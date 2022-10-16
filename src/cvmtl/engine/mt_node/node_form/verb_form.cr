@@ -18,6 +18,7 @@ class MT::VerbForm < MT::MtNode
 
   def add_advb(advb : MtNode)
     self.fix_prev!(advb.prev?)
+    advb.fix_prev!(nil)
 
     if prev_advb = @advb
       @advb = PairNode.new(advb, prev_advb, tag: PosTag::DvPhrase)
@@ -28,6 +29,7 @@ class MT::VerbForm < MT::MtNode
 
   def add_tail(tail : MtNode)
     self.fix_prev!(tail.prev?)
+    tail.fix_prev!(nil)
 
     if prev_tail = @tail
       @tail = PairNode.new(tail, prev_tail, tag: PosTag::DvPhrase, flip: true)
@@ -45,7 +47,9 @@ class MT::VerbForm < MT::MtNode
   end
 
   def add_objt(@objt : MtNode) : Nil
+    self.tag = MtlTag::Vobj
     self.fix_succ!(objt.succ?)
+    objt.fix_succ!(nil)
   end
 
   def each
