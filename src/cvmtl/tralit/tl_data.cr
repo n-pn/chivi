@@ -1,6 +1,6 @@
-require "./qt_node"
+require "./tl_node"
 
-class QT::QtList < Deque(QT::QtNode)
+class TL::TlData < Deque(TL::TlNode)
   def to_txt(cap : Bool = true) : String
     String.build { |io| to_txt(io, cap: cap) }
   end
@@ -29,7 +29,7 @@ class QT::QtList < Deque(QT::QtNode)
     end
   end
 
-  private def no_space?(prev : QtNode, node : QtNode)
+  private def no_space?(prev : TlNode, node : TlNode)
     prev.tag.no_space_r? || node.tag.no_space_l?
   end
 end

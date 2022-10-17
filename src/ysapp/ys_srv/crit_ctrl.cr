@@ -63,7 +63,10 @@ module YS
     def rawzh(crit : String)
       ycrit = Yscrit.find!({id: CV::UkeyUtil.decode32(crit)})
       binfo = ycrit.nvinfo
-      render text: "#{binfo.dname}\t#{binfo.vname}\t#{ycrit.ztext}"
+
+      response = @context.response
+      response.headers["Content-Type"] = "text/plain; charset=utf-8"
+      response.print "#{binfo.dname}\t#{binfo.vname}\t#{ycrit.ztext}"
     rescue err
       render :not_found, text: "Đánh giá không tồn tại"
     end

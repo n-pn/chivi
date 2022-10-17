@@ -1,5 +1,3 @@
 *
 !.gitignore
-!cvmtl/fixes
-!cvmtl/inits
-!cvmtl/tests
+!cvmtl

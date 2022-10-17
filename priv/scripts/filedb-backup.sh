@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 
 echo "Backup from chivi.app!"
-SSH=nipin@ssh.chivi.app:srv/chivi
+
+REMOTE=nipin@ssh.chivi.app
+SSH=$REMOTE:srv/chivi
 
 ## backup user data
 if [[ $1 == "all" || $* == *user* ]]
 then
   echo backup users data!
   rsync -aiz --no-p --delete "$SSH/var/_common" "var"
-  rsync -aiz --no-p --delete "$SSH/var/pg_data/" "var/pg_data/"
-  rsync -aiz --no-p --delete "$SSH/var/tlspecs/users" "var/tlspecs"
+  rsync -aiz --no-p --delete "$SSH/var/tlspecs/users" "var/cvmtl/users"
 fi
 
 ## backup dict data
@@ -63,6 +64,6 @@ fi
 if [[ $1 == "all" || $* == *pg_data* ]]
 then
   echo backup pg_data!
-  rsync -aiz --no-p --delete "nipin@ssh.chivi.app:var/wal_log" "var/.backup"
-  rsync -aiz --no-p --delete "nipin@ssh.chivi.app:var/pg_data" "var/.backup"
+  rsync -ai --no-p --delete "$REMOTE:var/wal_log" "var/.keep"
+  rsync -aiz --no-p --delete "$REMOTE:var/pg_data" "var/.keep"
 fi

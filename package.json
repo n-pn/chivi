@@ -21,7 +21,7 @@
     "fix-nvinfo": "./bin/fix_intros && ./bin/fix_genres",
     "build": "shards build -s --release",
     "build-mt": "shards build -s --release -Dpreview_mt",
-    "cvmtl": "nodemon -L --watch ./src/cvmtl --exec crystal run src/cvmtl/server.cr",
-    "ysapp": "nodemon -L --watch ./src/ysapp --exec crystal run src/ysapp/server.cr"
+    "cvmtl": "nodemon -L --watch ./src/cvmtl --exec \"crystal run\" src/cvmtl/mt_srv.cr",
+    "ysapp": "nodemon -L --watch ./src/ysapp --exec \"crystal run\" src/ysapp/ys_srv.cr"
   }
 }

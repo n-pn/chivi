@@ -40,6 +40,44 @@ def fix_ptags
   fix_ptag("#{PTAG_DIR}/map_uniq.tsv", "r")
 end
 
+def import_fixed(file : String, dict_id = 1)
+  puts file.colorize.blue
+
+  entries = File.read_lines(file).compact_map do |line|
+    next if line.blank? || line[0] == '#'
+    key, val, alt_val, ptag = line.split('\t')
+    {key, val, alt_val.empty? ? nil : alt_val, ptag}
+  end
+
+  DIC.exec "begin transaction"
+  entries.each do |key, val, alt, tag|
+    select_query = <<-SQL
+      select id from terms where dict_id = ? and key = ?
+      order by mtime desc limit 1
+    SQL
+
+    if term_id = DIC.query_one?(select_query, args: [dict_id, key], as: Int32)
+      DIC.exec <<-SQL, args: [val, alt, tag, term_id]
+        update terms set val = ?, alt_val = ?, ptag = ? where id = ?
+      SQL
+    else
+      DIC.exec <<-SQL, args: [dict_id, key, val, alt, tag]
+        insert into terms (dict_id, key, val, alt_val, ptag) values(?, ?, ?, ?, ?)
+      SQL
+    end
+  end
+
+  DIC.exec "commit"
+end
+
+FIX_DIR = "var/cvmtl/fixed"
+
+def import_fixeds
+  import_fixed("#{FIX_DIR}/poly_noad.tsv")
+end
+
+import_fixeds
+
 # cvmtl_ids = DIC.query_all <<-SQL, as: Int32
 #   select id from dicts where dtype = 30
 # SQL

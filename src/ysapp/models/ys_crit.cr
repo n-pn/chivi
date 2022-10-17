@@ -21,15 +21,28 @@ class YS::Yscrit
 
   getter ztext : String { load_ztext_from_disk }
 
+  ZTEXT_PATH = "var/ysapp/crits/%{yb_id}-zh.zip"
+  VHTML_PATH = "var/ysapp/crits/%{yb_id}-vi.zip"
+
   def load_ztext_from_disk : String
-    zip_file = "var/ysapp/crits/#{self.ysbook_id}-zh.zip"
+    zip_file = ZTEXT_PATH % {yb_id: self.ysbook_id}
 
     Compress::Zip::File.open(zip_file) do |zip|
       zip[origin_id + ".txt"]?.try(&.open(&.gets_to_end)) || "$$$"
     end
   rescue err
-    Log.error(exception: err) { "error loading #{origin_id} of #{ysbook_id}" }
-    "XXX"
+    "!!!"
+  end
+
+  def load_vhtml_from_disk : String
+    zip_file = VHTML_PATH % {yb_id: self.ysbook_id}
+
+    Compress::Zip::File.open(zip_file) do |zip|
+      zip[origin_id + ".htm"]?.try(&.open(&.gets_to_end)) || "$$$"
+    end
+  rescue err
+    Log.error(exception: err) { "error loading vhtml for #{origin_id} of #{ysbook_id}" }
+    "<p><em class=err>Lỗi: Không tìm được dữ liệu! Mời liên hệ ban quản trị.</em></p>"
   end
 
   column ztags : Array(String) = [] of String

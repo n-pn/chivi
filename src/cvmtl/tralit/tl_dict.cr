@@ -1,4 +1,4 @@
-class QT::CharDict
+class TL::CharDict
   DIR = "var/dicts/qtran/%{name}-chars.tsv"
 
   def self.load(name : String)
@@ -33,7 +33,7 @@ class QT::CharDict
   end
 end
 
-class QT::WordDict
+class TL::WordDict
   DIR = "var/dicts/qtran/%{name}-words.tsv"
 
   def self.load(name : String)

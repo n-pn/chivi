@@ -1,4 +1,4 @@
-require "./server/*"
+require "./ys_srv/*"
 
 port = ENV["YS_PORT"]?.try(&.to_i?) || 5509
 host = ENV["YS_HOST"]? || "127.0.0.1"
@@ -21,4 +21,4 @@ server.run do
 end
 
 # Shutdown message
-puts "Server terminated\n"
+puts "Server terminated.\n"

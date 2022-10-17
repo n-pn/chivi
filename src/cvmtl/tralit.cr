@@ -1,7 +1,7 @@
 require "../_util/char_util"
-require "./qttool/*"
+require "./tralit/*"
 
-class QT::Engine
+class TL::Engine
   class_getter hanviet : self do
     new(CharDict.load("hanviet"), WordDict.load("hanviet"))
   end
@@ -25,16 +25,16 @@ class QT::Engine
       char == '､' ? ',' : char
     end
 
-    bests = [QtNode::NONE]
+    bests = [TlNode::NONE]
     costs = [0]
 
     chars.each_with_index do |char, idx|
       costs << idx
 
       if val = @char_dict.find(char)
-        bests << QtNode.new(val, len: 1, idx: idx)
+        bests << TlNode.new(val, len: 1, idx: idx)
       else
-        bests << QtNode.new(char, idx: idx)
+        bests << TlNode.new(char, idx: idx)
       end
     end
 
@@ -64,7 +64,7 @@ class QT::Engine
         next if costs[jump_to] > word_cost
 
         costs[jump_to] = word_cost
-        bests[jump_to] = QtNode.new(val, idx: idx, len: len)
+        bests[jump_to] = TlNode.new(val, idx: idx, len: len)
       end
     end
 
@@ -82,7 +82,7 @@ class QT::Engine
       value <= Str.value
     end
 
-    def self.map(node : QtNode)
+    def self.map(node : TlNode)
       return Err if node.val.blank?
 
       case node.tag
@@ -93,7 +93,7 @@ class QT::Engine
       end
     end
 
-    def self.map(node : QtNode, prev : self)
+    def self.map(node : TlNode, prev : self)
       case node.tag
       when .content?  then Err
       when .int_part? then prev.is_url? ? prev : Err
@@ -104,7 +104,7 @@ class QT::Engine
     end
   end
 
-  private def combine_node(bests : Array(QtNode), idx = 1)
+  private def combine_node(bests : Array(TlNode), idx = 1)
     node = bests.unsafe_fetch(idx)
     kind = CombineKind.map(node)
     return if kind.err?
@@ -124,8 +124,8 @@ class QT::Engine
       tag =
         case kind
         when .mix? then tag
-        when .url? then QtNode::Tag::None
-        else            QtNode::Tag::Content
+        when .url? then TlNode::Tag::None
+        else            TlNode::Tag::Content
         end
     end
 
@@ -138,12 +138,12 @@ class QT::Engine
       end
     end
 
-    QtNode.new(val, idx: node.idx, len: len, tag: tag)
+    TlNode.new(val, idx: node.idx, len: len, tag: tag)
   end
 
-  private def extract_result(input : Array(QtNode))
+  private def extract_result(input : Array(TlNode))
     idx = input.size &- 1
-    res = QtList.new
+    res = TlData.new
 
     while idx > 0
       cur = input.unsafe_fetch(idx)
