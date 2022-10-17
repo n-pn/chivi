@@ -16,8 +16,8 @@ class MT::TxtSeg
     @nodes = Array(MonoNode).new(@upper &+ 1)
     @nodes << MonoNode.new("", idx: -1)
 
-    @keys.each_with_index do |raw_char, idx|
-      mtl_char = NerHelper.fullwidth?(raw_char) ? NerHelper.to_halfwidth(raw_char) : raw_char
+    @raw_chars.each_with_index do |raw_char, idx|
+      mtl_char = CharUtil.fullwidth?(raw_char) ? CharUtil.to_halfwidth(raw_char) : raw_char
       @mtl_chars << mtl_char
 
       @nodes << init_node(raw_char, mtl_char, idx)
@@ -30,34 +30,55 @@ class MT::TxtSeg
     MonoNode.new(raw_char.to_s, mtl_str, tag: tag, pos: pos, idx: idx)
   end
 
-  def run_ner!
+  def apply_ner!(offset : Int32 = 0)
     idx = 0
 
     while idx < @upper
       mtl_char = @mtl_chars.unsafe_fetch(idx)
 
       case mtl_char
-      when .is_letter?
-        idx = add_string(idx)
-      when .is_number?
-        idx = add_number(idx)
+      when .ascii_letter?
+        new_idx, tag = scan_string(idx)
       else
         idx += 1
+        next
+      end
+
+      key = @raw_chars[idx...new_idx].join
+      val = @mtl_chars[idx...new_idx].join
+
+      node = MonoNode.new(key, val, tag: tag, pos: :none, idx: idx &+ offset, dic: 2)
+      # puts ["ner_output", node]
+
+      @nodes[new_idx] = node
+      @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtTerm.seg_weight(size: new_idx &- idx, rank: 1_i8)
+
+      idx = new_idx
+    end
+  end
+
+  def feed_dict!(dicts : MtDict, offset = 0)
+    0.upto(@upper &- 1) do |idx|
+      base_cost = @costs.unsafe_fetch(idx)
+
+      dicts.scan(@mtl_chars, idx) do |term, key_size, dict_id|
+        cost = base_cost &+ term.seg
+        jump = idx &+ key_size
+
+        if cost >= @costs.unsafe_fetch(jump)
+          @nodes[jump] = MonoNode.new(term, dic: dict_id, idx: idx &+ offset)
+          @costs[jump] = cost
+        end
       end
     end
   end
 
-  private def apply_term(term : MonoNode, idx : Int32, new_idx : Int32, size = new_idx &- idx)
-    @nodes[new_idx] = term
-    @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtTerm.seg_weight(size: size, rank: 1_i8)
-  end
-
-  def result
-    idx = @raw_chars.size
+  def result : MtData
+    idx = @upper
     res = MtData.new
 
     while idx > 0
-      node = nodes.unsafe_fetch(idx)
+      node = @nodes.unsafe_fetch(idx)
       idx &-= node.key.size
       res.add_node(node)
     end

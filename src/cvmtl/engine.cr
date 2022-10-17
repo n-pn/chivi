@@ -40,10 +40,16 @@ class MT::Engine
   end
 
   def cv_plain(input : String, cap_first = true, offset = 0) : MtData
-    data = tokenize(input.chars, offset: offset)
-    data.fix_grammar!
-    data.apply_cap!(cap: cap_first)
-    data
+    # data = tokenize(input.chars, offset: offset)
+    txt_seg = TxtSeg.new(input)
+    txt_seg.apply_ner!(offset: offset)
+    txt_seg.feed_dict!(@dicts, offset: offset)
+
+    mt_data = txt_seg.result
+    mt_data.fix_grammar!
+    mt_data.apply_cap!(cap: cap_first)
+
+    mt_data
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtData

@@ -53,11 +53,18 @@ class MT::MonoNode < MT::MtNode
 
   def apply_cap!(cap : Bool = false) : Bool
     case
-    when @pos.cap_relay?    then cap
-    when @tag.punctuations? then cap || @pos.cap_after?
+    when @pos.cap_relay?                 then cap
+    when @tag.punctuations?              then cap || @pos.cap_after?
+    when @tag.str_link?, @tag.str_emoji? then false
     else
-      @val = @val.capitalize if cap && !@tag.str_emoji?
+      @val = capitalize! if cap
       false
+    end
+  end
+
+  private def capitalize!
+    String.build(@val.size) do |io|
+      io << @val[0].upcase << @val[1..]
     end
   end
 
