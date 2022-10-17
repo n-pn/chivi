@@ -97,9 +97,16 @@ dependencies:
   crorm:
     github: chi-vi/crorm
 
+  sqlite3:
+    github: chi-vi/crystal-sqlite3
+
   amber:
-    github: np-nam/amber
+    github: chi-vi/amber
     branch: master
+
+  kilt:
+    github: jeromegn/kilt
+    version: ~> 0.6.0
 
   quartz_mailer:
     github: amberframework/quartz-mailer
@@ -122,9 +129,6 @@ dependencies:
   action-controller:
     github: spider-gazelle/action-controller
     version: ~> 5.1
-
-  sqlite3:
-    github: crystal-lang/crystal-sqlite3
 
 development_dependencies:
   garnet_spec:
