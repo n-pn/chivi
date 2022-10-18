@@ -34,7 +34,7 @@ class MT::TxtSeg
   end
 
   private def match_num_tag(char : Char?, count : Int32)
-    puts ["match_tag", char, count]
+    # puts ["match_tag", char, count]
     case char
     when .nil? then MtlTag::Ndigit0
     when '.'   then tag_for_num_with_period(count)

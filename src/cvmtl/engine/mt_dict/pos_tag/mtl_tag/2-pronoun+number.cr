@@ -40,9 +40,14 @@ Nhanzi0 = 247 # all chinese number, unknown state
 Nhanzi1 = 248 # chinese number, can convert to number
 Nhanzi2 = 249 # chinese number, approximate
 
-NumYi1   = 251 # "一"
-NumLiang = 252 # "两"
-NumHan   = 253 # "半"
+Nmixed0 = 250 # mixed digits with hanzi units
+Nmixed1 = 251 # mixed approximate digits with hanzi units
+# Nmixed2 = 252 # to be determined
+# Nmixed3 = 253 # to be determined
+
+NumYi1   = 255 # "一"
+NumLiang = 256 # "两"
+NumHan   = 257 # "半"
 
 # quantifier
 Qtnoun = 260 # quantifier for noun phrase

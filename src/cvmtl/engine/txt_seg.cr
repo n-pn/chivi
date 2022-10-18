@@ -30,6 +30,8 @@ class MT::TxtSeg
     MonoNode.new(raw_char.to_s, mtl_str, tag: tag, pos: pos, idx: idx)
   end
 
+  HANNUM_CHARS = {'一', '两', '二', '三', '四', '五', '六', '七', '八', '九', '十', '百', '千', '万', '亿', '兆'}
+
   def apply_ner!(offset : Int32 = 0)
     idx = 0
 
@@ -41,13 +43,15 @@ class MT::TxtSeg
         new_idx, tag = scan_string(idx)
       when .ascii_number?
         new_idx, tag = scan_number(idx)
+      when .in?(HANNUM_CHARS)
+        new_idx, tag, new_val = scan_hannum(idx)
       else
         idx += 1
         next
       end
 
       key = @raw_chars[idx...new_idx].join
-      val = @mtl_chars[idx...new_idx].join
+      val = new_val || @mtl_chars[idx...new_idx].join
 
       node = MonoNode.new(key, val, tag: tag, pos: :none, idx: idx &+ offset, dic: 2)
       # puts ["ner_output", node]

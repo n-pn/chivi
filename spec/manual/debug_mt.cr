@@ -1,7 +1,7 @@
 require "../../src/cvmtl/engine"
 require "../../src/cvmtl/tralit"
 
-text = ARGV[0]? || "红龙M红~~~龙 MUV  LUV AL 红龙 http://test.com/test?q=1"
+text = ARGV[0]? || "十九万零二十五"
 book = ARGV[1]? || "combine"
 user = ARGV[2]?
 time = Time.monotonic
