@@ -39,6 +39,8 @@ class MT::TxtSeg
       case mtl_char
       when .ascii_letter?
         new_idx, tag = scan_string(idx)
+      when .ascii_number?
+        new_idx, tag = scan_number(idx)
       else
         idx += 1
         next
