@@ -31,10 +31,7 @@ module MT::Core
     return verb unless prev.time_words?
 
     advb = join_time!(prev)
-    verb.add_head(advb)
-
-    # if time was a part of prepos form then we can fold it again
-    advb.prep_form? ? make_verb!(verb) : verb
+    advb.prep_form? ? join_prep_form!(verb, prep_form: advb) : verb.tap(&.add_head(advb))
   end
 
   def pair_verb!(verb : MtNode, prev = verb.prev)

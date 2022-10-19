@@ -22,8 +22,8 @@ AdvJiu3  = 537 # "就": both scope and mood
 AdvMood  = 540 # 语气副词 modal adverbs/adverbs of mood
 
 AdvFreque = 545 # 频度副词 adverbs of frequency
-AdvZai4   = 547 # "再": both frequency or correlative
-AdvYou4   = 548 # "又": both frequency or correlative
+AdvZai    = 547 # "再": both frequency or correlative
+AdvYou    = 548 # "又": both frequency or correlative
 AdvYe3    = 550 # "也": both frequency or correlative
 AdvHoan   = 551 # "还": both frequency or correlative
 

@@ -4,6 +4,9 @@ module MT::Core
 
     # FIXME: handle more type of preposes
     case prep.tag
+    when .pre_bi3?
+      prep.val = prep.prev?(&.adv_bu4?) ? "bằng" : "hơn"
+      pos |= MtlPos::AtTail
     when .pre_ling?, .pre_gei3?
       prep.val = "làm" if prep.prev?(&.tag.content_words?)
     when .pre_zai?, .pre_cong?

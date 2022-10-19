@@ -10,8 +10,11 @@ class MT::TrioNode < MT::MtNode
   enum RenderType
     Normal    # head -> bond -> tail
     FlipAll   # tail -> bond -> head
+    FlipHead  # bond -> head -> tail
+    FlipTail  # head -> tail -> bond
     HeadLast  # bond -> tail -> head
     TailFirst # tail -> head -> bond
+
   end
 
   def initialize(
@@ -29,6 +32,14 @@ class MT::TrioNode < MT::MtNode
       yield @tail
       yield @body
       yield @head
+    when .flip_head?
+      yield @body
+      yield @head
+      yield @tail
+    when .flip_tail?
+      yield @head
+      yield @tail
+      yield @body
     when .head_last?
       yield @body
       yield @tail

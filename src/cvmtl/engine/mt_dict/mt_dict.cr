@@ -47,6 +47,7 @@ class MT::MtDict
       terms = db.query_all(<<-SQL, args: [dict_id], as: MtTerm)
         select key, val, alt_val, ptag, prio
         from terms where dict_id = ? and _flag = 0 and #{uname_query}
+        order by mtime asc
       SQL
 
       terms.each { |x| trie.push!(x) }

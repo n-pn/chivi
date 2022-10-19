@@ -1,3 +1,5 @@
+require "../../../_util/char_util"
+
 module MT::MtUtil
   extend self
 
@@ -28,31 +30,9 @@ module MT::MtUtil
     res + acc
   end
 
-  MAP_INT = {
-    '零' => 0,
-    '〇' => 0,
-    '一' => 1,
-    '两' => 2,
-    '二' => 2,
-    '三' => 3,
-    '四' => 4,
-    '五' => 5,
-    '六' => 6,
-    '七' => 7,
-    '八' => 8,
-    '九' => 9,
-    '十' => 10,
-    '百' => 100,
-    '千' => 1000,
-    '万' => 10_000,
-    '亿' => 100_000_000,
-    '兆' => 1_000_000_000_000,
-  }
-
   # :ditto:
   def to_integer(char : Char) : Int32 | Int64
-    return char.to_i if char.ascii_number?
-    MAP_INT[char]? || 0
+    CharUtil::HANNUM_VALUE[char]? || char.to_i? || 0
   end
 
   NUMS = "零〇一二两三四五六七八九十百千"
@@ -93,9 +73,3 @@ module MT::MtUtil
     end
   end
 end
-
-# puts MT::MtUtil.normalize("０")
-# puts MT::MtUtil.normalize('０')
-
-# puts MT::MtUtil.to_integer("1245")
-# puts MT::MtUtil.to_integer("四")

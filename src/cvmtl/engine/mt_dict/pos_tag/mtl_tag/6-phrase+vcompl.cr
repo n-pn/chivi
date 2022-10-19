@@ -12,6 +12,9 @@ DvPhrase = 625 # phrase that can act as verb complement
 
 PrepForm = 640 # prepos + noun phrase
 
+Cmp1Pair = 645 # compare with bi3
+Cmp1Trio = 646 # compare with bubi
+
 ParenExp = 650 # parenthetical expression
 
 # vcompls

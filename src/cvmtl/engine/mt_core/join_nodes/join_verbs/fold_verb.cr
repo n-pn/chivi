@@ -35,13 +35,13 @@ module MT::Core
   def fold_verb_noun!(verb : MtNode, noun : MtNode)
     noun = fold_noun!(noun)
 
-    unless noun.prep_form?
-      return PairNode.new(noun, verb, tag: PosTag::SubjVerb)
+    case noun
+    when .prep_form?
+      join_prep_form!(verb, prep_form: noun)
+    when .noun_words?
+      PairNode.new(noun, verb, tag: PosTag::SubjVerb)
+    else
+      raise "unsupported"
     end
-
-    verb = VerbForm.new(verb) unless verb.is_a?(VerbForm)
-
-    verb.add_head(noun)
-    make_verb!(verb)
   end
 end
