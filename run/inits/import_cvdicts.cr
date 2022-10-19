@@ -1,5 +1,5 @@
 require "sqlite3"
-require "../src/cvmtl/vp_dict/vp_term"
+require "../../src/cvmtl/cvdict/cv_term"
 
 INP = "var/dicts"
 DIC = DB.open "sqlite3://./#{INP}/cvdicts.db"
