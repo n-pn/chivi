@@ -6,7 +6,6 @@ import gc
 import torch
 
 MTL = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH) # 世界最大中文语料库
-TOK = hanlp.load(hanlp.pretrained.tok.MSR_TOK_ELECTRA_BASE_CRF) # 世界最大中文语料库
 
 def write_file(lines, out_path):
   out_file = open(out_path, 'w')
