@@ -1,5 +1,5 @@
 require "./fix_postag/**"
-require "./join_nodes/**"
+require "./cons_rules/**"
 
 module MT::Core
   extend self
