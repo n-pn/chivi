@@ -5,7 +5,7 @@ module MT::Core
     tag = MtlTag::DcPhrase
     pos = MtlPos::AtTail
 
-    head = join_word!(udep.prev)
+    head = fold_left!(udep.prev)
 
     if head.ktetic?
       udep.val = "của"

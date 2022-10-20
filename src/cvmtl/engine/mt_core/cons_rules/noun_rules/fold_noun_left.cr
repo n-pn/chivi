@@ -5,6 +5,12 @@ module MT::Core
     prev = noun.prev
     prev = fix_mixedpos!(prev) if prev.mixedpos?
 
+    if prev.bond_word?
+      noun = link_noun!(noun, junc: prev)
+      prev = noun.prev
+      prev = fix_mixedpos!(prev) if prev.mixedpos?
+    end
+
     case prev
     when .preposes?
       make_prep_form!(noun: noun, prep: prev.as(MonoNode))

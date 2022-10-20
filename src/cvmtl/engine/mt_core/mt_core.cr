@@ -7,11 +7,11 @@ module MT::Core
   def left_join!(tail : MtNode, head : MtNode) : Nil
     while tail = tail.prev?
       break if tail == head
-      tail = join_word!(tail)
+      tail = fold_left!(tail)
     end
   end
 
-  def join_word!(node : MtNode) : MtNode
+  def fold_left!(node : MtNode) : MtNode
     if node.polysemy?
       node = fix_polysemy!(node.as(MonoNode))
     elsif node.uniqword?
