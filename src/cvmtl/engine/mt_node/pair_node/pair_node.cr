@@ -1,7 +1,7 @@
-require "./base_expr"
+require "../mt_list"
 
 class MT::PairNode < MT::MtNode
-  include BaseExpr
+  include MtList
 
   getter head : MtNode
   getter tail : MtNode

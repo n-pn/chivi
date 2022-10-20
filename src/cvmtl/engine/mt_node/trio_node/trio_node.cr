@@ -1,7 +1,7 @@
-require "./base_expr"
+require "../mt_list"
 
 class MT::TrioNode < MT::MtNode
-  include BaseExpr
+  include MtList
 
   getter head : MtNode
   getter body : MtNode

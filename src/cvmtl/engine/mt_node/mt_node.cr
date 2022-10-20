@@ -70,7 +70,7 @@ abstract class MT::MtNode
   end
 end
 
-module MT::BaseExpr
+module MT::MtList
   abstract def each(&block : MtNode -> Nil)
 
   def to_txt(io : IO = STDOUT) : Nil
@@ -111,7 +111,3 @@ module MT::BaseExpr
     io << '\n' if pad > 0
   end
 end
-
-require "./node_base/*"
-require "./node_expr/*"
-require "./node_form/*"

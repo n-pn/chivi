@@ -78,7 +78,7 @@ class MT::MtData
     each { |node| cap = node.apply_cap!(cap) }
   end
 
-  include BaseExpr
+  include MtList
 
   def to_txt : String
     String.build { |io| to_txt(io) }

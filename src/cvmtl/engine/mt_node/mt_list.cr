@@ -1,6 +1,6 @@
-require "../mt_node"
+require "./mt_node"
 
-module MT::BaseExpr
+module MT::MtList
   abstract def each(&block : MtNode -> Nil)
 
   def to_txt(io : IO = STDOUT) : Nil

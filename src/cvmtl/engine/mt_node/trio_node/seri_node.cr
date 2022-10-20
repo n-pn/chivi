@@ -1,7 +1,7 @@
-require "./base_expr"
+require "../mt_list"
 
 class MT::SeriNode < MT::MtNode
-  include BaseExpr
+  include MtList
 
   def initialize(@head : MtNode, @tail : MtNode,
                  @tag : MtlTag, @pos : MtlPos, flip = false)

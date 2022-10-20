@@ -1,18 +1,18 @@
-require "../node_expr/base_expr"
+require "../mt_list"
 
 class MT::VerbForm < MT::MtNode
-  include BaseExpr
+  include MtList
 
-  property advb_head : MtNode? = nil
-  property prep_head : MtNode? = nil
+  property hd_advb : MtNode? = nil
+  property hd_prep : MtNode? = nil
 
-  property auxi : MtNode? = nil
-  property verb : MtNode
+  property auxi : MtNode? = nil # auxiliary
+  property verb : MtNode        # central verb
   property cmpl : MtNode? = nil # complement
-  property objt : MtNode? = nil
+  property objt : MtNode? = nil # object
 
-  property prep_tail : MtNode? = nil
-  property advb_tail : MtNode? = nil
+  property tl_prep : MtNode? = nil
+  property tl_advb : MtNode? = nil
 
   # property tail : MtNode? = nil # put after objects
 
@@ -52,17 +52,17 @@ class MT::VerbForm < MT::MtNode
   private def add_advb(advb : MtNode)
     tag, pos = PosTag::DvPhrase
 
-    if advb.at_tail?
-      if node = @advb_tail
-        @advb_tail = PairNode.new(advb, node, tag, pos, flip: true)
+    if advb.tl_tail?
+      if node = @tl_advb
+        @tl_advb = PairNode.new(advb, node, tag, pos, flip: true)
       else
-        @advb_tail = advb
+        @tl_advb = advb
       end
     else
-      if node = @advb_head
-        @advb_head = PairNode.new(advb, node, tag, pos, flip: false)
+      if node = @hd_advb
+        @hd_advb = PairNode.new(advb, node, tag, pos, flip: false)
       else
-        @advb_head = advb
+        @hd_advb = advb
       end
     end
   end
@@ -70,17 +70,17 @@ class MT::VerbForm < MT::MtNode
   private def add_prep(prep : MtNode)
     tag, pos = PosTag::PrepForm
 
-    if prep.at_tail?
-      if node = @prep_tail
-        @prep_tail = PairNode.new(prep, node, tag, pos, flip: true)
+    if prep.tl_tail?
+      if node = @tl_prep
+        @tl_prep = PairNode.new(prep, node, tag, pos, flip: true)
       else
-        @prep_tail = prep
+        @tl_prep = prep
       end
     else
-      if node = @prep_head
-        @prep_head = PairNode.new(prep, node, tag, pos, flip: false)
+      if node = @hd_prep
+        @hd_prep = PairNode.new(prep, node, tag, pos, flip: false)
       else
-        @prep_head = prep
+        @hd_prep = prep
       end
     end
   end
@@ -92,18 +92,18 @@ class MT::VerbForm < MT::MtNode
   end
 
   def each
-    @advb_head.try { |x| yield x }
+    @hd_advb.try { |x| yield x }
 
     @auxi.try { |x| yield x }
-    @prep_head.try { |x| yield x }
+    @hd_prep.try { |x| yield x }
 
     yield verb
 
     @cmpl.try { |x| yield x }
     @objt.try { |x| yield x }
 
-    @prep_tail.try { |x| yield x }
-    @advb_tail.try { |x| yield x }
+    @tl_prep.try { |x| yield x }
+    @tl_advb.try { |x| yield x }
   end
 
   def need_obj? : Bool

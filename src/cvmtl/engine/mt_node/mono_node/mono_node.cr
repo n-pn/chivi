@@ -41,10 +41,6 @@ class MT::MonoNode < MT::MtNode
     self
   end
 
-  def blank? : Bool
-    @key.empty? || @val.blank?
-  end
-
   def inactivate!
     @val = ""
     @pos |= MtlPos.flags(Passive, NoSpaceL, NoSpaceR, CapRelay)
