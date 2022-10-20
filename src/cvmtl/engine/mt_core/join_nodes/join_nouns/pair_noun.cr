@@ -1,30 +1,33 @@
 module MT::Core
-  def pair_noun!(noun : MtNode, prev = noun.prev)
+  def pair_noun!(noun : MtNode)
+    while prev = noun.prev
+      prev = fix_mixedpos!(prev) if prev.mixedpos?
+      break unless prev.noun_words?
+      tag, pos, flip = noun_pairing_type(noun, prev)
+      noun = PairNode.new(prev, noun, tag, pos, flip: flip)
+    end
+
+    return noun if !prev.adjt_words? || prev.aform?
+    return noun if prev.prev? { |x| x.advb_words? || x.maybe_advb? }
+
+    PairNode.new(prev, noun, flip: !prev.at_head?)
+  end
+
+  private def noun_pairing_type(noun : MtNode, prev : MtNode) : {MtlTag, MtlPos, Bool}
     case noun
-    when .honor?          then return pair_nhonor!(noun, prev)
-    when .proper_nouns?   then return pair_proper!(noun, prev)
-    when .locat?, .posit? then return fold!(prev, noun, PosTag::Posit, flip: true)
+    when .honor?        then honor_pairing_type(noun, prev)
+    when .proper_nouns? then named_pairing_type(noun, prev)
+    when .locat?, .posit?
+      tag, pos = PosTag::Posit
+      {tag, pos, true}
     when .nattr?
-      return fold!(prev, noun, {noun.tag, noun.pos}, flip: true) if prev.nattr?
-    end
-
-    case prev
-    when .posit?, .nattr?
-      flip = true
+      {noun.tag, noun.pos, prev.nattr?}
     else
-      flip = should_flip_noun?(prev.prev?, noun.succ?)
+      other_pairing_type(noun, prev)
     end
-
-    PairNode.new(prev, noun, PosTag::Nform, flip: flip)
   end
 
-  def should_flip_noun?(prev, succ)
-    return true unless succ && prev && prev.verb_words?
-    return false if prev.vtwo?
-    succ.verb_words?
-  end
-
-  def pair_nhonor!(noun : MtNode, prev : MtNode)
+  private def honor_pairing_type(noun : MtNode, prev : MtNode)
     case prev
     when .time_words?, .nform?, .locat?, .posit?
       tag, pos = PosTag::Nform
@@ -32,17 +35,32 @@ module MT::Core
       tag, pos = PosTag::CapHuman
     end
 
-    PairNode.new(prev, noun, tag, pos)
+    {tag, pos, false}
   end
 
-  def pair_proper!(name : MtNode, prev : MtNode)
+  private def named_pairing_type(name : MtNode, prev : MtNode)
+    tag, pos = PosTag::Nform
+
     case prev
     when .cap_affil?
-      return PairNode.new(prev, name, flip: true)
+      {name.tag, name.pos, true}
     when .cap_human?
-      return PairNode.new(prev, name, flip: false) if name.cap_human?
+      {name.tag, name.pos, name.cap_human?}
+    when .proper_nouns?
+      {MtlTag::CapOther, pos, true}
+    else
+      {tag, pos, false}
     end
+  end
 
-    PairNode.new(prev, name, PosTag::Nform)
+  private def other_pairing_type(noun : MtNode, prev : MtNode)
+    flip = prev.posit? || prev.nattr? || should_flip_noun?(prev.prev?, noun.succ?)
+    {noun.tag, noun.pos, flip}
+  end
+
+  private def should_flip_noun?(prev, succ)
+    return true unless succ && prev && prev.verb_words?
+    return false if prev.vtwo?
+    succ.verb_words?
   end
 end

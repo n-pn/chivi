@@ -1,39 +1,4 @@
-require "./*"
-
 module MT::Core
-  def make_verb!(verb : MtNode) : VerbForm
-    verb = pair_verb!(verb)
-    verb = VerbForm.new(verb) unless verb.is_a?(VerbForm)
-
-    # join verb with adverbs
-    while prev = verb.prev?
-      case prev
-      when .advb_words?
-        verb.add_head(prev)
-      when .maybe_advb?
-        prev = prev.as(MonoNode)
-        prev.as_advb!(prev.alt)
-      else
-        break
-      end
-    end
-
-    return verb unless prev
-
-    if prev.pt_dev?
-      prev = join_udev!(prev)
-      return verb unless prev.tag.dv_phrase?
-
-      verb.add_head(prev)
-      prev = verb.prev
-    end
-
-    return verb unless prev.time_words?
-
-    advb = join_time!(prev)
-    advb.prep_form? ? join_prep_form!(verb, prep_form: advb) : verb.tap(&.add_head(advb))
-  end
-
   def pair_verb!(verb : MtNode, prev = verb.prev)
     return verb unless prev.is_a?(MonoNode)
 
@@ -61,7 +26,7 @@ module MT::Core
       return verb
     end
 
-    verb = VerbForm.new(verb) unless verb.is_a?(VerbForm)
+    verb = VerbCons.new(verb) unless verb.is_a?(VerbCons)
     prev.pos |= MtlPos::Vauxil
     verb.pos |= MtlPos::Desire if prev.pos.desire?
     verb.add_head(prev)

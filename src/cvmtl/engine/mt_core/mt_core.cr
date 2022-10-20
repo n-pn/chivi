@@ -19,8 +19,8 @@ module MT::Core
     end
 
     case node.tag
-    when .time_words? then join_time!(node)
-    when .noun_words? then join_noun!(node)
+    when .time_words? then fold_time!(node)
+    when .noun_words? then fold_noun!(node)
     when .adjt_words? then join_adjt!(node)
     when .verb_words? then fold_verb!(node)
     else                   node

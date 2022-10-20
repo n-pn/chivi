@@ -15,7 +15,7 @@ class MT::SubjPred < MT::PairNode
 
     tail = @tail
     tail = tail.tail if tail.is_a?(VerbPair)
-    tail = VerbForm.new(tail) unless tail.is_a?(VerbForm)
+    tail = VerbCons.new(tail) unless tail.is_a?(VerbCons)
 
     tail.add_objt(objt)
   end

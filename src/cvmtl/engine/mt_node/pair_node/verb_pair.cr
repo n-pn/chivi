@@ -14,7 +14,7 @@ class MT::VerbPair < MT::PairNode
     objt.fix_cucc!(nil)
 
     tail = @tail
-    tail = VerbForm.new(tail) unless tail.is_a?(VerbForm)
+    tail = VerbCons.new(tail) unless tail.is_a?(VerbCons)
     tail.add_objt(objt)
   end
 end

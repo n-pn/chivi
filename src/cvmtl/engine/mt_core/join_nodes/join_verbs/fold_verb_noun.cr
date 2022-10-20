@@ -5,7 +5,7 @@ module MT::Core
     case head
     when SubjPred
       head.tap(&.add_verb(verb))
-    when VerbForm
+    when VerbCons
       VerbPair.new(head, verb)
     when .prep_form?
       join_prep_form!(verb, prep_form: head)

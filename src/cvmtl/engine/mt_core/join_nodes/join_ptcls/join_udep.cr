@@ -6,6 +6,7 @@ module MT::Core
     pos = MtlPos::AtTail
 
     head = join_word!(udep.prev)
+
     if head.ktetic?
       udep.val = "của"
     else

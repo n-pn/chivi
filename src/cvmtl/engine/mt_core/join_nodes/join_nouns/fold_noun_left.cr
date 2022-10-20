@@ -1,8 +1,9 @@
 module MT::Core
-  def fold_noun!(noun : MtNode, prev = noun.prev)
-    if prev.is_a?(MonoNode) && prev.mixedpos?
-      prev = fix_mixedpos!(prev)
-    end
+  def fold_noun!(noun : MtNode)
+    noun = cons_noun!(noun)
+
+    prev = noun.prev
+    prev = fix_mixedpos!(prev) if prev.mixedpos?
 
     case prev
     when .preposes?

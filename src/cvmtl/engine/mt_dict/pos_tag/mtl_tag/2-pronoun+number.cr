@@ -50,20 +50,20 @@ NumLiang = 256 # "两"
 NumHan   = 257 # "半"
 
 # quantifier
-Qtnoun = 260 # quantifier for noun phrase
-Qtmass = 261
-Qtwght = 263 # weight
-Qtdist = 264 # distance
-Qtcash = 265 # currency
+Qtverb = 260 # verb complement
+Qttime = 261 # verb complement, can be subject
 
-Qttime = 269 # verb complement, can be subject
-Qtverb = 270 # verb complement
+Qtnoun = 265 # quantifier for noun phrase
+Qtmass = 266
+Qtwght = 267 # weight
+Qtdist = 268 # distance
+Qtcash = 269 # currency
 
-QtGe4 = 266 # "个"
-QtBa3 = 267 # "把"
-QtDui = 268 # "对"
+QtGe4 = 270 # "个"
+QtBa3 = 271 # "把"
+QtDui = 272 # "对"
 
-QtLiang = 269 # "两"
+QtLiang = 273 # "两"
 
 # QtDian = 270 # "点"
 # QtFen1 = 271 # "分"
@@ -76,12 +76,11 @@ QtLiang = 269 # "两"
 # QtHao = 278 # "号"
 
 # number + quantifier
-Nqnoun = 280
-Nqmass = 281
+Nqverb = 280 # verb complement
+Nqtime = 281 # verb complement, can be subject
 
-Nqwght = 283
-Nqdist = 284
-Nqcash = 285
-
-Nqtime = 289
-Nqverb = 290
+Nqnoun = 285 # quantifier for noun phrase
+Nqmass = 286
+Nqwght = 287 # weight
+Nqdist = 288 # distance
+Nqcash = 289 # currency

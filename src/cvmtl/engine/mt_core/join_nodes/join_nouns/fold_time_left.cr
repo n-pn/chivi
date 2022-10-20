@@ -1,7 +1,7 @@
 require "./*"
 
 module MT::Core
-  def join_time!(time : MtNode)
+  def fold_time!(time : MtNode)
     while prev = time.prev?
       case prev
       when .time_words?

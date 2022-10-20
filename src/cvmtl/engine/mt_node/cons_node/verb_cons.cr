@@ -1,6 +1,6 @@
 require "../mt_list"
 
-class MT::VerbForm < MT::MtNode
+class MT::VerbCons < MT::MtNode
   include MtList
 
   property hd_advb : MtNode? = nil
@@ -18,7 +18,7 @@ class MT::VerbForm < MT::MtNode
 
   forward_missing_to @verb
 
-  def initialize(@verb, @tag = verb.tag)
+  def initialize(@verb, @tag = verb.tag, @pos = verb.pos)
     self.fix_prev!(@verb.prev?)
     self.fix_succ!(@verb.succ?)
   end

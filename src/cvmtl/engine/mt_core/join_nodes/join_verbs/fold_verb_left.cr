@@ -2,7 +2,7 @@ require "./*"
 
 module MT::Core
   def fold_verb!(verb : MtNode)
-    verb = make_verb!(verb)
+    verb = cons_verb!(verb)
     verb = link_verb!(verb)
 
     while prev = verb.prev?
@@ -11,7 +11,7 @@ module MT::Core
       case prev
       when .noun_words?
         verb = fold_verb_noun!(verb: verb, noun: prev)
-        verb.is_a?(VerbForm) ? next : return verb
+        verb.is_a?(VerbCons) ? next : return verb
       when .quantis?, .pro_dems?
         # do not combine if verb is a part of noun modifier
         # FIXME: check pass verb object

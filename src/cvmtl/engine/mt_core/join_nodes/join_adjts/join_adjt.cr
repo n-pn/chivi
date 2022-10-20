@@ -16,7 +16,7 @@ module MT::Core
   end
 
   def join_adjt_noun!(adjt : MtNode, noun : MtNode)
-    prev = join_noun!(noun)
+    prev = fold_noun!(noun)
 
     case prev
     when .noun_words?

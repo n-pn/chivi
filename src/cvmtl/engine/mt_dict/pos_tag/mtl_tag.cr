@@ -359,4 +359,8 @@ enum MT::MtlTag : UInt32
   def bond_common_verbs?
     value >= 1030 && value < 1040
   end
+
+  def qt_to_nq
+    value < 270 ? self + 20 : Qtnoun
+  end
 end
