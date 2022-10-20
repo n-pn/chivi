@@ -35,7 +35,7 @@ module MT::MtList
   end
 
   def inspect(io : IO = STDOUT, pad = 0) : Nil
-    io << " " * pad << '{' << @tag.colorize.cyan << "}\n"
+    io << " " * pad << '{' << @tag.colorize.cyan << ":" << self.class.to_s.sub("MT::", "") << "}\n"
     self.each(&.inspect(io, pad + 2))
     io << " " * pad << "{/" << @tag.colorize.cyan << '}'
     io << '\n' if pad > 0

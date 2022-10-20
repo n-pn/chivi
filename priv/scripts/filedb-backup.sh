@@ -33,20 +33,6 @@ then
   rsync -aiz --no-p "$SSH/var/books/cover" "var/books"
 
   rsync -aiz --no-p "$SSH/var/chtexts/@*" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/xbiquge" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/uukanshu" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/paoshu8" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/duokan8" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/rengshu" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/biqu5200" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/biqugse" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/133txt" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/69shu" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/b5200" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/ptwxz" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/uuks" "var/chtexts"
-  # rsync -aiz --no-p "$SSH/var/chtexts/*/*.tsv" "var/chtexts"
-
   rsync -aiz --no-p "$SSH/var/chaps/.html" "var/chaps"
   rsync -aiz --no-p "$SSH/var/chaps/users" "var/chaps"
 fi
@@ -57,7 +43,6 @@ then
   echo backup seeds data!
 
   rsync -aiz --no-p "$SSH/var/fixed" "var"
-  rsync -aiz --no-p "$SSH/var/ysinfos" "var"
 fi
 
 ## backup pg_data
@@ -66,4 +51,5 @@ then
   echo backup pg_data!
   rsync -ai --no-p --delete "$REMOTE:var/wal_log" "var/.keep"
   rsync -aiz --no-p --delete "$REMOTE:var/pg_data" "var/.keep"
+  rsync -aiz --no-p --delete "$SSH/var/pg_data/weblogs/" "var/.keep/web_log/"
 fi

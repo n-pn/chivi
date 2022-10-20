@@ -4,8 +4,6 @@ module MT::Core
       prev = fix_mixedpos!(prev)
     end
 
-    return noun if noun_is_modifier?(noun, prev)
-
     case prev
     when .preposes?
       make_prep_form!(noun: noun, prep: prev.as(MonoNode))
@@ -19,34 +17,9 @@ module MT::Core
     end
   end
 
-  def fold_noun_verb!(noun : MtNode, verb : MtNode)
-    verb = fold_verb!(verb) if verb.is_a?(MonoNode)
-
-    case verb
-    when VerbForm
-      form = verb
-    when PairNode
-      raise "unexpected #{verb}" unless verb.tag.subj_verb?
-
-      subj = verb
-      form = verb.tail
-      form = VerbForm.new(form) unless form.is_a?(VerbForm)
-    else
-      form = VerbForm.new(verb)
-    end
-
-    if subj
-      subj.fix_succ!(noun.succ?)
-      noun.fix_succ!(nil)
-    end
-
-    form.add_objt(noun)
-    form
-  end
-
-  private def noun_is_modifier?(noun : MtNode, prev = noun.prev)
-    return false unless (succ = noun.succ?) && succ.tag.pt_dev?
-    return false unless (center = succ.succ?) && center.object?
+  private def noun_is_modifier?(noun : MtNode, prev = noun.prev, succ = noun.succ)
+    return true if succ.adjt_words?
+    return false unless succ.tag.pt_dev? && (center = succ.succ?) && center.object?
     return false unless tail = center.succ?
 
     tail.verb_words? || tail.adjt_words? || tail.pt_cmps?

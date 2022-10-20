@@ -52,7 +52,7 @@ class MT::VerbForm < MT::MtNode
   private def add_advb(advb : MtNode)
     tag, pos = PosTag::DvPhrase
 
-    if advb.tl_tail?
+    if advb.at_tail?
       if node = @tl_advb
         @tl_advb = PairNode.new(advb, node, tag, pos, flip: true)
       else
@@ -70,7 +70,7 @@ class MT::VerbForm < MT::MtNode
   private def add_prep(prep : MtNode)
     tag, pos = PosTag::PrepForm
 
-    if prep.tl_tail?
+    if prep.at_tail?
       if node = @tl_prep
         @tl_prep = PairNode.new(prep, node, tag, pos, flip: true)
       else

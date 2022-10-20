@@ -13,6 +13,8 @@ module MT::Core
       prev = noun.prev
     end
 
+    return noun if noun_is_modifier?(noun, prev)
+
     # if prev.can_split? # for nquant or pro_dem/pro_int that can be splitted
     #   _, prev = split_mono!(prev)
     # end

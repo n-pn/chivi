@@ -7,10 +7,7 @@ SSH=nipin@ssh.chivi.app:srv/chivi
 if [[ $* == "all" || $* == *dict* ]]
 then
   echo upload dicts!
-  rsync -azi --no-p "var/dicts/v1/basic/fixture.tsv" "$SSH/var/dicts/v1/basic"
-  rsync -azi --no-p "var/dicts/v1/basic/essence.tsv" "$SSH/var/dicts/v1/basic"
-
-  rsync -azi --no-p --delete "var/vhint/*" "$SSH/var/vhint/*"
+  rsync -azi --no-p "var/dicts/*.db" "$SSH/var/dicts"
 fi
 
 ## upload parsed seed data
@@ -20,17 +17,8 @@ then
   # rsync -azi --no-p "var/nvinfos/autos" "$SSH/var/nvinfos"
   # rsync -azi --no-p "priv/static/covers/" "$SSH/priv/static/covers/"
 
-  # rsync -azi --no-p "var/_common" "$SSH/var"
-
-  rsync -azi --no-p "var/vpterms" "$SSH/var"
-  rsync -azi --no-p "var/qttexts" "$SSH/var"
-  rsync -azi --no-p "var/tlspecs" "$SSH/var"
-
-  rsync -azi --no-p "var/zhinfos" "$SSH/var"
-  rsync -azi --no-p "var/ysinfos" "$SSH/var"
-  rsync -azi --no-p "var/pg_data" "$SSH/var"
-
-  rsync -azi --no-p --exclude="*.zip" "var/chtexts/" "$SSH/var/chtexts/"
+  rsync -azi --no-p "var/chaps/infos" "$SSH/var/chaps"
+  rsync -azi --no-p --exclude="*.zip" "var/chaps/texts" "$SSH/var/chaps"
 fi
 
 if [[ $* == "all" || $* == "misc" ]]
@@ -40,19 +28,7 @@ then
   # rsync -azi --no-p "var/dicts/v1/basic/hanviet.tab" "$SSH/var/dicts/v1/basic"
 
   # rsync -azi --no-p "var/_common" "$SSH/var"
-  # rsync -azi "var/fixed" "$SSH/var"
-  rsync -azi "var/fixed/seeds" "$SSH/var/fixed"
+  rsync -azi "var/fixed" "$SSH/var"
   # rsync -azi --exclude="*.tab" "var/dicts/v1/novel" "$SSH/var/dicts/v1"
   # rsync -azi --no-p --delete "priv/static/covers/" "$SSH/priv/static/covers/"
-fi
-
-if [[ $* == "all" || $* == "zhinfo" ]]
-then
-  echo upload zhinfo!
-
-  yarn build remote_seed && rsync -azi --no-p "bin/remote_seed" "$SSH/bin"
-  yarn build ysbook_seed && rsync -azi --no-p "bin/ysbook_seed" "$SSH/bin"
-
-  rsync -azi --no-p "var/_common" "$SSH/var"
-  rsync -azi --no-p "var/zhinfos" "$SSH/var"
 fi

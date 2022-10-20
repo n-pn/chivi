@@ -25,23 +25,11 @@ module MT::Core
         break
       end
 
-      # return verb object form if
-      return PairNode.new(prev, verb, tag: PosTag::SubjVerb)
+      # return verb object form if prev is subject
+
+      return SubjPred.new(prev, verb, tag: MtlTag::SubjVerb)
     end
 
     verb
-  end
-
-  def fold_verb_noun!(verb : MtNode, noun : MtNode)
-    noun = fold_noun!(noun)
-
-    case noun
-    when .prep_form?
-      join_prep_form!(verb, prep_form: noun)
-    when .noun_words?
-      PairNode.new(noun, verb, tag: PosTag::SubjVerb)
-    else
-      raise "unsupported"
-    end
   end
 end
