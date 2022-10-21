@@ -3,6 +3,7 @@ require "./*"
 module MT::Core
   def fold_verb!(verb : MtNode)
     verb = cons_verb!(verb)
+    # puts [verb, verb.prev?]
     verb = link_verb!(verb)
 
     while prev = verb.prev?

@@ -1,33 +1,33 @@
 ## đại từ nhân xưng
 ### ngôi thứ nhất
-我	pro_per1	people
-我们	pro_per1	plural | people
-咱	pro_per1	people
-咱们	pro_per1	plural | people
-俺	pro_per1	people
-俺们	pro_per1	plural | people
-臣	pro_per1	people
-朕	pro_per1	people
+我	pro_per1	people | ktetic
+我们	pro_per1	plural | people | ktetic
+咱	pro_per1	people | ktetic
+咱们	pro_per1	plural | people | ktetic
+俺	pro_per1	people | ktetic
+俺们	pro_per1	plural | people | ktetic
+臣	pro_per1	people | ktetic
+朕	pro_per1	people | ktetic
 
 ### ngôi thứ hai
-你	pro_per2	people
-你们	pro_per2	plural | people
-您	pro_per2	people
-你们	pro_per2	plural | people
-伱	pro_per2	people
-伱们	pro_per2	plural | people
+你	pro_per2	people | ktetic
+你们	pro_per2	plural | people | ktetic
+您	pro_per2	people | ktetic
+你们	pro_per2	plural | people | ktetic
+伱	pro_per2	people | ktetic
+伱们	pro_per2	plural | people | ktetic
 
 ### ngôi thứ ba
-他	pro_per3	people
-他们	pro_per3	plural | people
-她	pro_per3	people
-她们	pro_per3	plural | people
-它	pro_per3	people
-它们	pro_per3	plural | people
+他	pro_per3	people | ktetic
+他们	pro_per3	plural | people | ktetic
+她	pro_per3	people | ktetic
+她们	pro_per3	plural | people | ktetic
+它	pro_per3	people | ktetic
+它们	pro_per3	plural | people | ktetic
 
-自己	pro_ziji	people
-其	pro_qu2	people
-其们	pro_qu2	plural | people
+自己	pro_ziji	people | ktetic
+其	pro_qu2	people | ktetic
+其们	pro_qu2	plural | people | ktetic
 
 ## đại từ chỉ thị
 这	pro_zhe	at_tail

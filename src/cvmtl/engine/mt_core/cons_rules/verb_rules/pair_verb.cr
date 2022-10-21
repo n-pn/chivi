@@ -29,7 +29,7 @@ module MT::Core
     verb = VerbCons.new(verb) unless verb.is_a?(VerbCons)
     prev.pos |= MtlPos::Vauxil
     verb.pos |= MtlPos::Desire if prev.pos.desire?
-    verb.add_head(prev)
+    verb.add_auxi(prev)
     verb
   end
 

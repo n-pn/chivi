@@ -16,6 +16,8 @@
 </script>
 
 <script lang="ts">
+  import { session } from '$app/stores'
+
   export let cvdata = ''
   export let on_change = () => {}
   export let on_fixraw = (_n: number, _s: string, _s2: string) => {}
@@ -29,6 +31,10 @@
   let cached = false // reloading chapter do not need zhtext anymore
 
   $: [chars, tspan, dsize] = parse_data(cvdata)
+  let datav2 = []
+
+  import { browser } from '$app/env'
+  $: if (browser) call_v2_engine(zhtext.join('\n'))
 
   let article = null
   let l_hover = 0
@@ -75,6 +81,24 @@
   function change_engine(engine: number) {
     config.set_engine(engine)
     on_change()
+  }
+
+  async function call_v2_engine(body: string) {
+    const book = $vdict.dname
+    const api = `/_mt/convert?rmode=mtl&has_title=true&book=${book}&user=${$session.uname}`
+    const res = await fetch(api, {
+      method: 'POST',
+      body: body,
+      headers: { 'Content-Type': 'text/plain' },
+    })
+
+    if (!res.ok) {
+      console.log(await res.text())
+      return []
+    }
+
+    const data = await res.text()
+    datav2 = MtData.parse_lines(data)
   }
 </script>
 
@@ -131,6 +155,7 @@
 
   <section>
     {#each mtdata as input, index (index)}
+      {@const mtlv2 = datav2[index]}
       <svelte:element
         this={index > 0 || $$props.no_title ? 'p' : 'h1'}
         id="L{index}"
@@ -141,9 +166,17 @@
         {#if $config.showzh}
           <Zhline ztext={zhtext[index]} plain={$config.render < 0} />
         {/if}
+
         <Cvline
           {input}
           focus={render_html($config.render, index, l_hover, l_focus)} />
+        {#if mtlv2}
+          <p class="v2">
+            <Cvline
+              input={mtlv2}
+              focus={render_html($config.render, index, l_hover, l_focus)} />
+          </p>
+        {/if}
       </svelte:element>
     {:else}
       <slot name="notext" />
@@ -391,5 +424,10 @@
         @include fgcolor(primary, 5);
       }
     }
+  }
+
+  .v2 {
+    // margin-top: -1rem;
+    @include fgcolor(teal, 6);
   }
 </style>

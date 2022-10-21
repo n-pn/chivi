@@ -1,7 +1,7 @@
 require "../../src/cvmtl/engine"
 require "../../src/cvmtl/tralit"
 
-text = ARGV[0]? || "十九万零二十五"
+text = ARGV[0]? || "刚开始传出去的消息是青帝"
 book = ARGV[1]? || "combine"
 user = ARGV[2]?
 time = Time.monotonic

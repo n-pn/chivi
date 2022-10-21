@@ -20,7 +20,7 @@ const config = {
     proxy: {
       '/api': 'http://localhost:5010',
       '/_ys': 'http://localhost:5509',
-      '/_v2': 'http://localhost:5502',
+      '/_mt': 'http://localhost:5502',
     },
   },
 }

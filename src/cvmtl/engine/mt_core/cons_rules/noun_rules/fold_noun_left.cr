@@ -2,6 +2,7 @@ module MT::Core
   def fold_noun!(noun : MtNode)
     noun = cons_noun!(noun)
 
+    # puts [noun, noun.prev?]
     prev = noun.prev
     prev = fix_mixedpos!(prev) if prev.mixedpos?
 
@@ -24,7 +25,7 @@ module MT::Core
     end
   end
 
-  private def noun_is_modifier?(noun : MtNode, prev = noun.prev, succ = noun.succ)
+  private def noun_is_modifier?(noun : MtNode, prev = noun.prev, succ = noun.succ) : Bool
     return true if succ.adjt_words?
     return false unless succ.tag.pt_dev? && (center = succ.succ?) && center.object?
     return false unless tail = center.succ?

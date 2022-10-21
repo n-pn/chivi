@@ -25,6 +25,8 @@ module MT::Core
     #   noun = PairNode.new(prev, noun, flip: prev.at_tail?)
     #   return noun unless prev = noun.prev?
     # end
+
+    noun
   end
 
   def fold_noun_number!(noun : NounCons, number : MtNode)
@@ -39,8 +41,8 @@ module MT::Core
         prev = noun.prev
       end
     else
-      # return {noun. prev} unless number.numqti_words?
-      noun.add_nqmod(noun)
+      return {noun, number} unless number.numqti_words?
+      noun.add_nqmod(number)
       prev = noun.prev
     end
 

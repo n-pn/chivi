@@ -1,5 +1,10 @@
 module MT::Core
   def fold_quanti!(quanti : MtNode, prev = quanti.prev) : MtNode
+    if quanti.qt_ge4? && quanti.is_a?(MonoNode) && quanti.succ.noun_words?
+      quanti.val = ""
+      quanti.pos |= MtlPos.flags(CapRelay, NoSpaceL, NoSpaceR, Passive)
+    end
+
     tag = quanti.tag.qt_to_nq
     pos = MtlPos.flags(Object)
 
@@ -20,11 +25,6 @@ module MT::Core
 
   def fold_quanti_number!(quanti : MtNode, number : MtNode, tag : MtlTag, pos : MtlPos)
     return quanti if number.ordinal?
-
-    if quanti.qt_ge4? && quanti.is_a?(MonoNode) && quanti.succ.noun_words?
-      quanti.val = ""
-      quanti.pos |= MtlPos.flags(CapRelay, NoSpaceL)
-    end
 
     nquant = PairNode.new(number, quanti, tag, pos)
 

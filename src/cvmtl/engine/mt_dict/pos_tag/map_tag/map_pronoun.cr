@@ -7,12 +7,12 @@ module MT::PosTag
   def self.map_pronoun(key : String, tag : String = "")
     PRONOUN_MAP[key] ||= begin
       case key[0]
-      when '这', '那', '每'
+      when '这', '那', '每', '本'
         make(:pro_dem, MtlPos.flags(Object, CanSplit))
+      when '令', '贵', '舍', '爱'
+        make(:pro_per_x, MtlPos.flags(Object, Ktetic, People))
       when '几', '哪'
         make(:pro_int, MtlPos.flags(Object, CanSplit))
-      when '本', '令', '贵', '舍', '爱'
-        make(:pro_per_x, MtlPos.flags(Object, Ktetic, People))
       else
         make(:pro_unkn, MtlPos.flags(Object, Ktetic))
       end

@@ -12,13 +12,11 @@ module MT::Core
   end
 
   def fold_left!(node : MtNode) : MtNode
-    if node.polysemy?
-      node = fix_polysemy!(node.as(MonoNode))
-    elsif node.uniqword?
-      node = fix_uniqword!(node.as(MonoNode))
-    end
+    node = fix_mixedpos!(node) if node.mixedpos?
+    # puts [node, node.prev?, node.tag, node.pos]
 
-    case node.tag
+    case node
+    when .vcompl?     then fold_cmpl!(node)
     when .time_words? then fold_time!(node)
     when .noun_words? then fold_noun!(node)
     when .adjt_words? then join_adjt!(node)

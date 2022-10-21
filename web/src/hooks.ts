@@ -10,7 +10,7 @@ export async function handle({ event, resolve }) {
 
   let host = api_host
   if (base == '_ys') host = 'localhost:5509'
-  else if (base == '_v2') host = 'localhost:5502'
+  else if (base == '_mt') host = 'localhost:5502'
 
   const { method, headers: req_header, body } = event.request
   const headers = Object.fromEntries(req_header)

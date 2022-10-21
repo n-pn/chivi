@@ -23,21 +23,44 @@ class MT::VerbCons < MT::MtNode
     self.fix_succ!(@verb.succ?)
   end
 
-  def add_head(head : MtNode)
-    self.fix_prev!(head.prev?)
-    head.fix_prev!(nil)
+  def add_advb(advb : MtNode)
+    add_head(advb)
 
-    case head
-    when .prep_form?
-      add_prep(head)
-    when .vauxil?
-      add_auxi(head)
+    tag = MtlTag::AdvForm
+    pos = advb.pos
+
+    if advb.at_tail?
+      if node = @tl_advb
+        @tl_advb = PairNode.new(advb, node, tag, pos | node.pos, flip: true)
+      else
+        @tl_advb = advb
+      end
+    elsif node = @hd_advb
+      @hd_advb = PairNode.new(advb, node, tag, pos: pos | node.pos, flip: false)
     else
-      add_advb(head)
+      @hd_advb = advb
     end
   end
 
-  private def add_auxi(auxi : MtNode)
+  def add_prep(prep : MtNode)
+    add_head(prep)
+    tag, pos = PosTag::PrepForm
+
+    if prep.at_tail?
+      if node = @tl_prep
+        @tl_prep = PairNode.new(prep, node, tag, pos | node.pos, flip: true)
+      else
+        @tl_prep = prep
+      end
+    elsif node = @hd_prep
+      @hd_prep = PairNode.new(prep, node, tag, pos | node.pos, flip: false)
+    else
+      @hd_prep = prep
+    end
+  end
+
+  def add_auxi(auxi : MtNode)
+    add_head(auxi)
     # TODO: fix auxi val here?
 
     if prev = @auxi
@@ -49,40 +72,10 @@ class MT::VerbCons < MT::MtNode
     end
   end
 
-  private def add_advb(advb : MtNode)
-    tag, pos = PosTag::DvPhrase
-
-    if advb.at_tail?
-      if node = @tl_advb
-        @tl_advb = PairNode.new(advb, node, tag, pos, flip: true)
-      else
-        @tl_advb = advb
-      end
-    else
-      if node = @hd_advb
-        @hd_advb = PairNode.new(advb, node, tag, pos, flip: false)
-      else
-        @hd_advb = advb
-      end
-    end
-  end
-
-  private def add_prep(prep : MtNode)
-    tag, pos = PosTag::PrepForm
-
-    if prep.at_tail?
-      if node = @tl_prep
-        @tl_prep = PairNode.new(prep, node, tag, pos, flip: true)
-      else
-        @tl_prep = prep
-      end
-    else
-      if node = @hd_prep
-        @hd_prep = PairNode.new(prep, node, tag, pos, flip: false)
-      else
-        @hd_prep = prep
-      end
-    end
+  private def add_head(node : MtNode) : Nil
+    self.fix_prev!(node.prev?)
+    node.fix_prev!(nil)
+    node.fix_succ!(nil)
   end
 
   def add_objt(@objt : MtNode) : Nil
