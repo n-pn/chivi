@@ -1,5 +1,5 @@
 module MT::Core
-  def make_prep_form!(noun : MtNode, prep : MonoNode)
+  def fold_objt_prep!(objt : MtNode, prep : MonoNode)
     tag, pos = PosTag::PrepForm
 
     # FIXME: handle more type of preposes
@@ -10,7 +10,7 @@ module MT::Core
     when .pre_ling?, .pre_gei3?
       prep.val = "làm" if prep.prev?(&.tag.content_words?)
     when .pre_zai?, .pre_cong?
-      if noun.time_words? || noun.locale?
+      if objt.time_words? || objt.locale?
         prep.swap_val!
         pos |= MtlPos::AtTail
       end
@@ -19,6 +19,6 @@ module MT::Core
       pos |= MtlPos::AtTail if prep.at_tail?
     end
 
-    PairNode.new(prep, noun, tag, pos, flip: false)
+    PairNode.new(prep, objt, tag, pos, flip: false)
   end
 end

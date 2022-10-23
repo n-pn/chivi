@@ -1,5 +1,5 @@
 module MT::Core
-  def fold_cmpl!(cmpl : MtNode)
+  def fold_vcompl!(cmpl : MtNode)
     # puts [cmpl, cmpl.tag, cmpl.pos, cmpl.prev?]
 
     verb = cmpl

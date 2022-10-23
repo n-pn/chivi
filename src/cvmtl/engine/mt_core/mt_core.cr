@@ -16,7 +16,8 @@ module MT::Core
     # puts [node, node.prev?, node.tag, node.pos]
 
     case node
-    when .vcompl?     then fold_cmpl!(node)
+    when .vcompl?     then fold_vcompl!(node)
+    when .suffixes?   then fold_suffix!(node)
     when .time_words? then fold_time!(node)
     when .noun_words? then fold_noun!(node)
     when .adjt_words? then join_adjt!(node)

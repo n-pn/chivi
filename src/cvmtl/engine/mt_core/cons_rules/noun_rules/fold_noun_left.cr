@@ -1,28 +1,15 @@
 module MT::Core
   def fold_noun!(noun : MtNode)
     noun = cons_noun!(noun)
-
     # puts [noun, noun.prev?]
+
+    # FIXME: since this only check for bond word, we can check for those exception in link_noun functon
+    # thus no need to resolve mixedpos in this step
     prev = noun.prev
     prev = fix_mixedpos!(prev) if prev.mixedpos?
+    noun = link_noun!(noun, junc: prev) if prev.bond_word?
 
-    if prev.bond_word?
-      noun = link_noun!(noun, junc: prev)
-      prev = noun.prev
-      prev = fix_mixedpos!(prev) if prev.mixedpos?
-    end
-
-    case prev
-    when .preposes?
-      make_prep_form!(noun: noun, prep: prev.as(MonoNode))
-    when .verb_words?
-      fold_noun_verb!(noun: noun, verb: prev)
-    when .vcompl?
-      prev = fold_cmpl!(prev)
-      fold_noun_verb!(noun: noun, verb: prev)
-    else
-      noun
-    end
+    fold_objt_left!(noun)
   end
 
   private def noun_is_modifier?(noun : MtNode, prev = noun.prev, succ = noun.succ) : Bool

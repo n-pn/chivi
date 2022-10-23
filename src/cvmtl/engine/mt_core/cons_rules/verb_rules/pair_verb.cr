@@ -14,6 +14,7 @@ module MT::Core
       prev.val = "chỗ"
     when .pre_jiang?, .pre_zai?, .pre_bei?
       return verb unless prepos_is_vauxil?(verb, prev)
+      prev.swap_val!
       # TODO: change meaning of pre_zai and pre_bei
     when .pt_der?
       prev.tag = MtlTag::Vmod

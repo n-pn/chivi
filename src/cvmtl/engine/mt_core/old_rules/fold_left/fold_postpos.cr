@@ -24,13 +24,6 @@ module MT::TlRule
       suff.val = "các"
       ptag = PosTag.make(:nobjt, MtlPos.flags(Nounish, Ktetic, Plural))
       PairNode.new(left.not_nil!, suff, ptag, flip: true)
-    when .suf_time?
-      left = fold_left!(left)
-      PairNode.new(left.not_nil!, suff, PosTag::Texpr, flip: true)
-    when .suf_zhi?
-      suff.alt.try { |x| suff.val = x }
-      left = fold_left!(left).not_nil!
-      PairNode.new(left.not_nil!, suff, PosTag::Nform, flip: true)
     when .suf_verb?
       ptag = PosTag.map_verbal(left.key)
       PairNode.new(left, suff, ptag, flip: false)

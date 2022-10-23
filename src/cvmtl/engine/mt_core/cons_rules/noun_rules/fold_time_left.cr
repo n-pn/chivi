@@ -2,18 +2,14 @@ require "./*"
 
 module MT::Core
   def fold_time!(time : MtNode)
-    while prev = time.prev?
-      case prev
-      when .time_words?
-        tag, pos = PosTag::Texpr
-        time = PairNode.new(prev.swap_val!, time, tag, pos, flip: true)
-      when .preposes?
-        return make_prep_form!(noun: time, prep: prev.as(MonoNode))
-      else
-        return time
-      end
+    tag, pos = PosTag::Texpr
+
+    while (prev = time.prev?) && prev.time_words?
+      prev.swap_val! if prev.is_a?(MonoNode)
+      time = PairNode.new(prev, time, tag, pos, flip: true)
     end
 
-    time
+    # FIXME: handle time as verb complement
+    time.succ.verb_words? ? time : fold_objt_left!(objt: time)
   end
 end
