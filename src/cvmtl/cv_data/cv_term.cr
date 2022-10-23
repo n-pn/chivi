@@ -1,4 +1,4 @@
-require "../_share/*"
+require "./open_db"
 
 class MT::CvTerm
   include Crorm::Model

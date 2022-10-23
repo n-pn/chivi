@@ -42,7 +42,7 @@ then
   # rsync -azi --no-p "var/_common" "$SSH/var"
   rsync -azi "var/cvmtl/inits" "$SSH/var/cvmtl"
   rsync -azi "var/cvmtl/fixed" "$SSH/var/cvmtl"
-  rsync -azi "var/dicts/*.db" "$SSH/var/dicts"
+  rsync -azi "var/dicts/" --include="*.db" "$SSH/var/dicts/"
   # rsync -azi --exclude="*.tab" "var/dicts/v1/novel" "$SSH/var/dicts/v1"
   # rsync -azi --no-p --delete "priv/static/covers/" "$SSH/priv/static/covers/"
 fi

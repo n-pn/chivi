@@ -1,4 +1,4 @@
-require "../_share/*"
+require "./open_db"
 
 class MT::CvDict
   include Crorm::Model
@@ -19,7 +19,7 @@ class MT::CvDict
 
   column last_mtime : Int64 = 0
 
-  def ininitialize(@id, @name, @type = 2, @label = "", @intro = "")
+  def ininitialize(@id, @name, @type = 0, @label = "", @intro = "")
   end
 
   # def save!(db : DB::Connection)

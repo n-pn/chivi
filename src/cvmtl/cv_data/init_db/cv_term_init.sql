@@ -9,7 +9,7 @@ CREATE TABLE terms (
   "wseg" int NOT NULL DEFAULT 2, -- priority rank for word segmentation
   "user" varchar NOT NULL DEFAULT '', -- user name
   "time" int NOT NULL DEFAULT 0, -- term update time
-  "flag" int NOT NULL DEFAULT 0, -- marking term as active or inactive
+  "flag" int NOT NULL DEFAULT 0 -- marking term as active or inactive
 );
 
 CREATE INDEX terms_scan_idx ON terms (dic, flag);

@@ -2,20 +2,29 @@ require "./open_db"
 require "./mt_trie"
 
 class MT::MtDict
-  getter dicts = [] of MtTrie
+  getter dicts = [] of Tuple(MtTrie, Int32)
 
-  def initialize(book : String = "combine", pack : String? = nil, user : String? = nil)
-    add_dict("user", "@#{user}/#{book}") if user
-    add_dict("book", book)
-    add_dict("user", "@#{user}/regular") if user
-    add_dict("pack", pack) if pack
-    add_dict("core", "regular")
+  def initialize(book : String = "shared", pack : String? = nil, user : String? = nil, temp : Bool = false)
+    # dicts for current book
+    add_dict("user", "@#{user}=#{book}", 6) if user
+    add_dict("temp", book, 6) if temp
+    add_dict("book", book, 4)
+
+    # dicts for shared theme
+    add_dict("user", "@#{user}=#{pack}", 9) if user && pack
+    add_dict("temp", pack, 8) if pack && temp
+    add_dict("pack", pack, 7) if pack
+
+    # common dicts used in all books
+    add_dict("user", "@#{user}=common", 3) if user
+    add_dict("temp", "common", 2) if temp
+    add_dict("core", "common", 1)
   end
 
-  MT_TRIES = {} of String => MtTrie
+  MT_DICTS = {} of String => {MtTrie, Int32}
 
-  def add_dict(dname : String)
-    @dicts << (MT_TRIES[dname] ||= load_trie(type, name))
+  def add_dict(dname : String, d_idx : Int32)
+    @dicts << (MT_DICTS[dname] ||= {load_trie(type, name), d_idx})
   end
 
   DICT_IDS = {} of String => Int32
@@ -31,12 +40,10 @@ class MT::MtDict
 
   private def load_trie(type : String, name : String)
     trie = MtTrie.new
+    dict_id = get_dict_id(type, name)
 
-    dic = get_dict_id(type, name)
-    return trie if dic < 0
-
-    MtTerm.load_all(type, dic) do |term|
-      trie.push!(term)
+    unless dict_id < 0
+      MtTerm.load_all(type, dict_id) { |term| trie.push!(term) }
     end
 
     trie
@@ -44,6 +51,7 @@ class MT::MtDict
 
   def find(input : String)
     chars = input.chars
+
     @dicts.each do |dict|
       if data = dict.find(chars).try(&.data)
         yield data
@@ -52,16 +60,16 @@ class MT::MtDict
   end
 
   def scan(input : Array(Char), start : Int32 = 0)
-    bits = 0_u32
+    bits = 0_u32 # only yield first entry found
 
-    @dicts.each_with_index do |dict, i|
+    @dicts.each do |dict, d_id|
       dict.scan(input, start) do |term|
-        size = term.key.size
-        flag = 1.unsafe_shl(size)
+        wlen = term.key.size
+        flag = 1.unsafe_shl(wlen)
 
         if (bits & flag) == 0
           bits |= flag
-          yield term, size, i if term.seg > 0
+          yield term, wlen, d_id if term.seg > 0
         end
       end
     end

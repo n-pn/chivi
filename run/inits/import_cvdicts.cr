@@ -1,21 +1,15 @@
-require "sqlite3"
-require "../../src/cvmtl/cvdict/*"
-
-INP      = "var/dicts"
-DIC_FILE = "#{INP}/cv_full.db"
-MT::CvRepo.init!(DIC_FILE) unless File.exists?(DIC_FILE)
-DIC = DB.open "sqlite3://./#{DIC_FILE}"
+require "../../src/cvmtl/cv_data/*"
 
 class Term
   getter key : String
   getter val : String = ""
   getter alt : String? = nil
 
-  getter pos : String
-  getter seg : Int32
+  getter ptag : String
+  getter wseg : Int32
 
-  getter uname : String
-  getter mtime : Int64
+  getter time : Int64
+  getter user : String
 
   property _keep = true
 
@@ -26,11 +20,11 @@ class Term
     @val = vals[0]
     @alt = vals[1]?
 
-    @pos = fix_pos(args[2]?, vals.join('|'))
-    @seg = map_seg(args[3]?)
+    @ptag = fix_ptag(args[2]?, vals.join('|'))
+    @wseg = map_wseg(args[3]?)
 
-    @mtime = args[4]?.try(&.to_i64) || 0_i64
-    @uname = args[5]? || ""
+    @time = args[4]?.try(&.to_i64) || 0_i64
+    @user = args[5]? || ""
   end
 
   NEW_POS = {
@@ -117,7 +111,7 @@ class Term
     "mq", "vl", "az", "no",
   }
 
-  def fix_pos(pos : String?, line : String)
+  def fix_ptag(pos : String?, line : String)
     return "" unless pos && pos != ""
     NEW_POS[pos]?.try { |x| return x }
 
@@ -135,7 +129,7 @@ class Term
     end
   end
 
-  def map_seg(seg : String?)
+  def map_wseg(seg : String?)
     case seg
     when nil then 2
     when ""  then 2
@@ -151,15 +145,15 @@ class Term
     end
   end
 
-  def changes(dict_id : Int32)
-    fields = ["dict_id"]
+  def changes(dic : Int32)
+    fields = ["dic"]
     values = [] of DB::Any
-    values << dict_id
+    values << dic
 
-    {% for ivar in @type.instance_variables %}
+    {% for ivar in @type.instance_vars %}
       {% if ivar.name.stringify != "_keep" %}
-        fields << {% ivar.name.stringify %}
-        values << @{% ivar.name.id %}
+        fields << {{ ivar.name.stringify }}
+        values << @{{ ivar.name.id }}
       {% end %}
     {% end %}
 
@@ -188,24 +182,24 @@ class Dict
   def remove_trash!
     dup = 0
 
-    @terms.sort_by!(&.mtime)
+    @terms.sort_by!(&.time)
 
     @terms.group_by(&.key).each do |_key, group|
       next if group.size < 2
-      # group.sort_by!(&.mtime)
+      # group.sort_by!(&.time)
 
       last = group.last
-      mtime = last.mtime - TIME_FRAME
+      time = last.time - TIME_FRAME
 
       (group.size - 2).downto(0) do |i|
         term = group[i]
 
-        if term.mtime >= mtime
+        if term.time >= time
           term._keep = false
           dup += 1
         else
           last = term
-          mtime = term.mtime - TIME_FRAME
+          time = term.time - TIME_FRAME
         end
       end
     end
@@ -213,63 +207,70 @@ class Dict
     puts "-<#{@file}> duplicate: #{dup}"
   end
 
-  def save!(db : DB::Connection, dict_id : Int32)
-    db.exec "begin transaction"
+  def save!(type : String)
+    dict_id = get_dict_id(type)
 
-    @terms.each do |term|
-      next unless term._keep
+    MT::DbRepo.open_term_db(type) do |db|
+      db.exec "begin transaction"
 
-      fields, values = term.changes(dict_id)
-      holder = Array.new(fields.size, "?").join(", ")
+      @terms.each do |term|
+        next unless term._keep
 
-      db.exec <<-SQL, args: values
+        fields, values = term.changes(dict_id)
+        holder = Array.new(fields.size, "?").join(", ")
+
+        db.exec <<-SQL, args: values
         replace into terms (#{fields.join(", ")}) values (#{holder})
       SQL
-    end
+      end
 
-    db.exec "commit"
-    puts "Total: #{db.scalar "select count(*) from terms"}"
-  end
-
-  def get_dict_id(db : DB::Connection)
-    dtype, prefix = map_dtype(File.basename(File.dirname(@file)))
-    dname = prefix + File.basename(@file, File.extname(@file))
-
-    db.query_one?("select id from dicts where dname = ?", dname, as: Int32) || begin
-      res = db.exec("insert into dicts (dname, dtype) values (?, ?)", args: [dname, dtype])
-      res.last_insert_id
+      db.exec "commit"
+      puts "Total: #{db.scalar "select count(*) from terms"}"
     end
   end
 
-  def map_dtype(label : String)
-    case label
-    when "theme" then {1, "!"}
-    when "novel" then {2, "-"}
-    when "cvmtl" then {3, "~"}
-    when "other" then {4, "$"}
-    else              {0, ""}
+  MAP_TYPE = {"core", "book", "pack", "user", "else"}
+
+  def get_dict_id(type : String)
+    name = File.basename(@file, File.extname(@file))
+
+    MT::DbRepo.open_dict_db(type) do |db|
+      if dict_id = db.query_one?("select id from dicts where name = ?", name, as: Int32)
+        return dict_id
+      end
+
+      query = "insert into dicts (name, type) values (?, ?)"
+      res = db.exec(query, args: [name, MAP_TYPE.index(name) || 0])
+      res.last_insert_id.to_i
     end
   end
 end
 
-def load_dict(file : String)
+def load_dict(file : String, type : String)
   dict = Dict.new(file)
   dict.remove_trash!
-
-  # dict_id = get_dict_id(file)
+  dict.save!(type)
 end
 
-def load_files(dir)
-  files = Dir.glob("#{INP}/v1/#{dir}/*")
+def load_files(dir_name : String, out_type : String)
+  files = Dir.glob("var/dicts/v1/#{dir_name}/*")
   files.map!(&.sub(".tab", ".tsv")).uniq!
 
   files.each do |file|
-    load_dict(file)
+    load_dict(file, out_type)
   end
 end
 
-load_files("basic")
-# load_files("cvmtl")
-# load_files("novel")
+DIR = "var/dicts/v1"
 
-DIC.close
+# Dict::MAP_TYPE.each do |type|
+#   MT::DbRepo.init_dict_db!(type)
+#   MT::DbRepo.init_term_db!(type)
+# end
+
+# load_dict("#{DIR}/basic/essence.tsv", "core")
+# load_dict("#{DIR}/basic/fixture.tsv", "core")
+# load_dict("#{DIR}/basic/regular.tsv", "core")
+
+# load_files("cvmtl", "else")
+load_files("novel", "book")
