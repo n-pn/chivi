@@ -34,7 +34,7 @@
   let datav2 = []
 
   import { browser } from '$app/env'
-  $: if (browser) call_v2_engine(zhtext.join('\n'))
+  $: if (browser && $config.render == 1) call_v2_engine(zhtext.join('\n'))
 
   let article = null
   let l_hover = 0
@@ -160,7 +160,6 @@
         this={index > 0 || $$props.no_title ? 'p' : 'h1'}
         id="L{index}"
         class="cv-line"
-        class:debug={$config.render == 1}
         class:focus={index == l_focus}
         on:mouseenter={() => (l_hover = index)}>
         {#if $config.showzh}
