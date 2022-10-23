@@ -18,7 +18,7 @@ module MT::Core
       tag, pos = PosTag::Nattr
       PairNode.new(prev, node, tag, pos, flip: true)
     when .suf_time?
-      node.swap_val!
+      node.fix_val!
       prev = fold_left!(prev)
       tag = MtlTag::Texpr
       pos = MtlPos.flags(Object)

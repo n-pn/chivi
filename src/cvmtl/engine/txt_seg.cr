@@ -58,7 +58,7 @@ class MT::TxtSeg
       # puts ["ner_output", node]
 
       @nodes[new_idx] = node
-      @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtTerm.seg_weight(size: new_idx &- idx, rank: 1_i8)
+      @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtTerm.seg_weight(wlen: new_idx &- idx, wseg: 1)
 
       idx = new_idx
     end

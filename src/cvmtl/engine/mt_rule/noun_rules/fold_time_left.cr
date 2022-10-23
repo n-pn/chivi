@@ -9,6 +9,8 @@ module MT::Core
       time = PairNode.new(prev, time, tag, pos, flip: true)
     end
 
+    return cons_noun!(time) if time.prev.pt_dep?
+
     # FIXME: handle time as verb complement
     time.succ.verb_words? ? time : fold_objt_left!(objt: time)
   end

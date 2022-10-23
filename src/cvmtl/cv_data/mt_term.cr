@@ -39,14 +39,10 @@ class MT::MtTerm
     DbRepo.open_term_db(type) do |db|
       query = <<-SQL
         select key, val, alt, ptag, wseg from terms
-        where dic = ? and flag = 0
+        where dic = ? and flag < 1
       SQL
 
-      db.query(query, args: [dic]) do |rs|
-        rs.each do
-          yield MtTerm.from_rs(rs)
-        end
-      end
+      db.query_all(query, args: [dic], as: MtTerm)
     end
   end
 

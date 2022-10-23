@@ -23,8 +23,8 @@ class MT::MtDict
 
   MT_DICTS = {} of String => {MtTrie, Int32}
 
-  def add_dict(dname : String, d_idx : Int32)
-    @dicts << (MT_DICTS[dname] ||= {load_trie(type, name), d_idx})
+  def add_dict(type : String, name : String, d_idx : Int32)
+    @dicts << (MT_DICTS["#{type}/#{name}"] ||= {load_trie(type, name), d_idx})
   end
 
   DICT_IDS = {} of String => Int32
@@ -43,7 +43,7 @@ class MT::MtDict
     dict_id = get_dict_id(type, name)
 
     unless dict_id < 0
-      MtTerm.load_all(type, dict_id) { |term| trie.push!(term) }
+      MtTerm.load_all(type, dict_id).each { |x| trie.push!(x) }
     end
 
     trie
@@ -52,7 +52,7 @@ class MT::MtDict
   def find(input : String)
     chars = input.chars
 
-    @dicts.each do |dict|
+    @dicts.each do |dict, _id|
       if data = dict.find(chars).try(&.data)
         yield data
       end
