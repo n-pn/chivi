@@ -1,9 +1,10 @@
 require "./engine/*"
+require "./cv_data/mt_dict"
 require "../_util/text_util"
 
 class MT::Engine
-  def initialize(book : String, theme : String? = nil, user : String? = nil)
-    @dicts = MtDict.new(book: book, theme: theme, user: user)
+  def initialize(book : String, pack : String? = nil, user : String? = nil)
+    @dicts = MtDict.new(book: book, pack: pack, user: user)
   end
 
   def cv_title_full(title : String) : MtData
@@ -50,60 +51,5 @@ class MT::Engine
     mt_data.apply_cap!(cap: cap_first)
 
     mt_data
-  end
-
-  def tokenize(input : Array(Char), offset = 0) : MtData
-    nodes = [MonoNode.new("", idx: offset)]
-    costs = [0]
-
-    input.each_with_index do |char, idx|
-      nodes << MonoNode.new(char, idx: idx &+ offset)
-      costs << idx &+ 1
-    end
-
-    ner_idx = 0
-
-    input.size.times do |idx|
-      base_cost = costs.unsafe_fetch(idx)
-
-      if idx >= ner_idx && (ner_term = Core.ner_recog(input, idx))
-        ner_idx = idx &+ ner_term.key.size
-
-        size = ner_term.key.size
-        jump = idx &+ size
-        cost = base_cost + MtTerm.seg_weight(size, 1_i8)
-
-        if cost > costs[jump]
-          ner_term.offset_idx!(offset)
-          nodes[jump] = ner_term
-          costs[jump] = cost
-        end
-      end
-
-      @dicts.scan(input, idx) do |term, key_size, dict_id|
-        cost = base_cost &+ term.seg
-        jump = idx &+ key_size
-
-        if cost >= costs[jump]
-          nodes[jump] = MonoNode.new(term, dic: dict_id, idx: idx &+ offset)
-          costs[jump] = cost
-        end
-      end
-    end
-
-    extract_result(nodes)
-  end
-
-  def extract_result(nodes : Array(MonoNode))
-    idx = nodes.size &- 1
-    res = MtData.new
-
-    while idx > 0
-      cur = nodes.unsafe_fetch(idx)
-      idx -= cur.key.size
-      res.add_node(cur)
-    end
-
-    res
   end
 end

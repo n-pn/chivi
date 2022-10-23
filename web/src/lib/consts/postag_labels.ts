@@ -27,8 +27,8 @@ export default {
   'm': 'Số từ',
   'q': 'Lượng từ',
   'mq': 'Số lượng từ',
-  '!q': 'Lượng từ đặc biệt',
-  '!mq': 'Số lượng đặc biệt',
+  '~q': 'Lượng từ / Khác',
+  '~m': 'Số lượng / Khác',
   // hư từ
   'd': 'Phó từ',
   'c': 'Liên từ',
@@ -36,8 +36,8 @@ export default {
   'u': 'Trợ từ',
   'k': 'Hậu tố',
   // đặc biệt
-  'e': 'Âm thanh',
-  'x': 'Ký tự ngoại lai',
+  'y': 'Âm thanh',
+  'x': 'Ký tự khác',
   'w': 'Dấu câu',
   // cụm từ
   'li': 'Ngữ cố định',

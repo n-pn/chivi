@@ -2,7 +2,7 @@
 
 SSH=nipin@ssh.chivi.app:srv/chivi
 
-DIR=_db/yousuu
+DIR=var/ysraw
 SSH_DIR="$SSH/$DIR"
 
 PROXY_DIR="$DIR/_proxy"
@@ -41,13 +41,6 @@ if [[ $1 == "all" || $* == *lists* ]]
 then
   echo upload raw reply jsons!
   rsync -azui --no-p "$DIR/lists" $SSH_DIR
-fi
-
-if [[ $1 == "all" || $* == *seeds* ]]
-then
-  echo upload seed data!
-  rsync -azui --no-p "var/ysinfos/ysusers.tsv" "$SSH/var/ysinfos"
-  rsync -azui --no-p "var/ysinfos/yscrits" "$SSH/var/ysinfos"
 fi
 
 SRC=tasks/yousuu

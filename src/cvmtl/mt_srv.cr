@@ -1,5 +1,5 @@
-require "./mt_srv/config"
-require "./mt_srv/routes"
+require "./srv_mt/config"
+require "./srv_mt/routes"
 
 port = ENV["MT_PORT"]?.try(&.to_i?) || 5502
 host = ENV["MT_HOST"]? || "127.0.0.1"

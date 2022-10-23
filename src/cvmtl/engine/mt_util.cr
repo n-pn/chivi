@@ -1,4 +1,4 @@
-require "../../../_util/char_util"
+require "../../_util/char_util"
 
 module MT::MtUtil
   extend self

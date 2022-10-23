@@ -1,5 +1,4 @@
 require "../mt_node"
-require "../../mt_dict"
 
 class MT::MonoNode < MT::MtNode
   property key : String
@@ -7,15 +6,6 @@ class MT::MonoNode < MT::MtNode
 
   getter alt : String?
   getter dic : Int32
-
-  def initialize(term : MtTerm, @dic = 0, @idx = 0)
-    @key = term.key
-    @val = term.val
-    @alt = term.alt_val
-
-    @tag = term.tag
-    @pos = term.pos
-  end
 
   def initialize(@key, @val, @tag : MtlTag, @pos : MtlPos,
                  @dic = 0, @idx = 0, @alt = nil)
@@ -25,19 +15,13 @@ class MT::MonoNode < MT::MtNode
     @idx += start
   end
 
-  def initialize(@key, @val, tag : {MtlTag, MtlPos}, @dic = 0, @idx = 0)
-    @tag = tag[0]
-    @pos = tag[1]
-  end
-
-  def initialize(char : Char | String,
-                 @dic = 0, @idx = 0)
+  def initialize(char : Char | String, @dic = 0, @idx = 0)
     @key = @val = char.to_s
     @tag, @pos = PosTag::LitBlank
   end
 
-  def swap_val! : self
-    @alt.try { |x| @val = x }
+  def fix_val!(val = @alt) : self
+    @val = val if val
     self
   end
 

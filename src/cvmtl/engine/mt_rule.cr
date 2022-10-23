@@ -1,5 +1,6 @@
-require "./fix_postag/**"
-require "./cons_rules/**"
+require "./mt_rule/**"
+
+# require "./mt_util"
 
 module MT::Core
   extend self

@@ -28,8 +28,8 @@ export default {
   'm': 'Các từ chỉ số lượng như một hai vạn ức, 1 2 3...',
   'q': 'Biểu thị đơn vị của sự vật hoặc động tác, ví dụ chiếc, con, quyển...',
   'mq': 'Các cụm từ là kết hợp của số từ và lượng từ',
-  'q!': 'Các từ có thể là lượng từ cũng có thể là từ loại khác',
-  'mq!': 'Các từ có thể là số lượng từ cũng có thể là từ loại khác',
+  '~q': 'Các từ có thể là lượng từ cũng có thể là từ loại khác',
+  '~m': 'Các từ có thể là số lượng từ cũng có thể là từ loại khác',
   // hư từ
   'd': 'Các từ đặt trước động từ, tính từ làm trạng ngữ cho động/tính từ phía sau',
   'c': 'Những từ dùng để liên kết từ với từ, cụm từ với cụm từ hoặc câu với câu',
@@ -37,7 +37,7 @@ export default {
   'u': 'Các từ đi kèm với từ, cụm từ hoặc câu để bổ trợ cho tác dụng của từ',
   'k': 'Các từ/cụm từ đứng sau từ/cụm từ khác tạo thành tổ hợp từ ghép mới',
   // đặc biệt
-  'e': 'Các từ miêu tả thanh âm, cảm thán, ngữ khí',
+  'y': 'Các từ miêu tả thanh âm, cảm thán, ngữ khí',
   'x': 'Các ký tự ngoại lai, emoji, đường link, hashtag',
   'w': 'Các loại dấu câu như chấm hỏi, chấm than, hai chấm...',
   // cụm từ

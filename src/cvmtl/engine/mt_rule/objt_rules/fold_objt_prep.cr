@@ -11,11 +11,11 @@ module MT::Core
       prep.val = "làm" if prep.prev?(&.tag.content_words?)
     when .pre_zai?, .pre_cong?
       if objt.time_words? || objt.locale?
-        prep.swap_val!
+        prep.fix_val!
         pos |= MtlPos::AtTail
       end
     else
-      prep.swap_val!
+      prep.fix_val!
       pos |= MtlPos::AtTail if prep.at_tail?
     end
 

@@ -5,7 +5,7 @@ module MT::Core
     tag, pos = PosTag::Texpr
 
     while (prev = time.prev?) && prev.time_words?
-      prev.swap_val! if prev.is_a?(MonoNode)
+      prev.fix_val! if prev.is_a?(MonoNode)
       time = PairNode.new(prev, time, tag, pos, flip: true)
     end
 

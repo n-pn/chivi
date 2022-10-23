@@ -1,5 +1,6 @@
 require "./mt_node/*"
 require "./txt_seg/*"
+require "../cv_data/mt_term"
 
 class MT::TxtSeg
   getter raw_chars = [] of Char
@@ -72,8 +73,12 @@ class MT::TxtSeg
         jump = idx &+ key_size
 
         if cost >= @costs.unsafe_fetch(jump)
-          @nodes[jump] = MonoNode.new(term, dic: dict_id, idx: idx &+ offset)
           @costs[jump] = cost
+
+          @nodes[jump] = MonoNode.new(
+            key: term.key, val: term.val, tag: term.tag, pos: term.pos,
+            dic: dict_id, idx: idx &+ offset, alt: term.alt,
+          )
         end
       end
     end

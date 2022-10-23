@@ -1,5 +1,6 @@
 require "./mt_node/**"
-require "./mt_core/**"
+require "./mt_rule/**"
+require "./txt_seg"
 
 class MT::MtData
   getter head : MonoNode

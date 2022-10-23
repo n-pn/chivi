@@ -8,7 +8,7 @@ module MT::Core
 
   def self.fix_res_cmpl!(cmpl : MonoNode) : MonoNode
     if cmpl.real_prev.try(&.verb_take_res_cmpl?)
-      cmpl.swap_val!
+      cmpl.fix_val!
     else
       cmpl.tag, cmpl.pos = PosTag.not_vcompl(cmpl.key)
     end
@@ -19,7 +19,7 @@ module MT::Core
   def self.fix_dir_cmpl!(cmpl : MonoNode) : MonoNode
     case cmpl.prev
     when .adjt_words?, .common_verbs?, .maybe_adjt?, .maybe_verb?
-      cmpl.swap_val!
+      cmpl.fix_val!
     else
       cmpl.tag, cmpl.pos = PosTag::Verb
     end
