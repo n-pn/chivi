@@ -35,7 +35,18 @@ class MT::MtTerm
 
   ####
 
-  def self.load_all(type : String, dic : Int32)
+  def self.load_all(type : String, dic : Int32, user : String)
+    DbRepo.open_db(type) do |db|
+      query = <<-SQL
+        select key, val, alt, ptag, wseg from terms
+        where dic = ? and flag < 1 and user = ?
+      SQL
+
+      db.query_all(query, args: [dic, user], as: MtTerm)
+    end
+  end
+
+  def self.load_all(type : String, dic : Int32, user : Nil = nil)
     DbRepo.open_db(type) do |db|
       query = <<-SQL
         select key, val, alt, ptag, wseg from terms

@@ -84,9 +84,12 @@
   }
 
   async function call_v2_engine(body: string) {
-    const book = $vdict.dname
-    const api = `/_mt/convert?rmode=mtl&has_title=true&book=${book}&user=${$session.uname}`
-    const res = await fetch(api, {
+    const book = $vdict.dname.substring(1)
+    const user = $session.uname
+    const temp = $config.w_temp
+
+    const url = `/_mt/convert?rmode=mtl&has_title=true&book=${book}&user=${user}&with_temp=${temp}`
+    const res = await fetch(url, {
       method: 'POST',
       body: body,
       headers: { 'Content-Type': 'text/plain' },

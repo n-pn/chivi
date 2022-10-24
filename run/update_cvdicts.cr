@@ -90,4 +90,4 @@ def import_fixeds
   import_fixed("#{FIX_DIR}/fixtures.tsv")
 end
 
-import_fixeds
+# import_fixeds
