@@ -19,18 +19,6 @@ module MT::Core
 
     def initialize(@node : MonoNode)
       case node.tag
-      when .pl_noad?
-        @noun_pct = 50
-        @advb_pct = 40
-        @advb_alt = node.alt
-      when .pl_vead?
-        @verb_pct = 50
-        @advb_pct = 40
-        @advb_alt = node.alt
-      when .pl_ajad?
-        @adjt_pct = 50
-        @advb_pct = 40
-        @advb_alt = node.alt
       when .pl_veno?
         @verb_pct = 50
         @noun_pct = 40
@@ -39,6 +27,18 @@ module MT::Core
         @adjt_pct = 50
         @noun_pct = 40
         @noun_alt = node.alt
+      when .pl_vead?
+        @verb_pct = 50
+        @advb_pct = 40
+        @advb_alt = node.alt
+      when .pl_ajad?
+        @adjt_pct = 50
+        @advb_pct = 40
+        @advb_alt = node.alt
+      when .pl_noad?
+        @noun_pct = 50
+        @advb_pct = 40
+        @advb_alt = node.alt
       else
         @noun_pct = @node.maybe_noun? ? 40 : 20
         @verb_pct = @node.maybe_verb? ? 40 : 20
@@ -50,7 +50,7 @@ module MT::Core
     # ameba:disable Metrics/CyclomaticComplexity
     def guess_by_succ
       case @node.real_succ
-      when .nil?, .boundary?
+      when .nil?, .boundary?, .empty?
         @advb_pct -= 10
       when .noun_words?, .pronouns?
         @advb_pct -= 20
@@ -161,6 +161,8 @@ module MT::Core
 
     # ameba:disable Metrics/CyclomaticComplexity
     private def resolve_type! : Type
+      puts [@noun_pct, @verb_pct, @adjt_pct, @advb_pct]
+
       case @node.tag
       when .pl_noad?
         @noun_pct >= @advb_pct ? Type::Noun : Type::Advb

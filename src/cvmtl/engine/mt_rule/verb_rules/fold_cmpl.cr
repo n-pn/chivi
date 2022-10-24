@@ -8,7 +8,7 @@ module MT::Core
       break unless verb.vcompl?
     end
 
-    raise "#{verb.inspect} is not verb!" unless verb.common_verbs?
+    raise "#{verb.inspect} is not verb!" unless verb.common_verbs? || verb.adjt?
 
     while cmpl = verb.succ
       break unless cmpl.vcompl?
