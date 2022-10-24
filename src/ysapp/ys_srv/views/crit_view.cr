@@ -28,24 +28,28 @@ struct YS::CritView
       jb.field "ctime", @data.created_at.to_unix
       jb.field "utime", @data.utime
 
-      jb.field "book", {
-        id:    @data.nvinfo.id,
-        bslug: @data.nvinfo.bslug,
+      if book = @data.nvinfo || CV::Nvinfo.find({id: @data.nvinfo_id})
+        jb.field "book", {
+          id:    book.id,
+          bslug: book.bslug,
 
-        author: @data.nvinfo.author.vname,
-        btitle: @data.nvinfo.vname,
+          author: book.author.vname,
+          btitle: book.vname,
 
-        bgenre: @data.nvinfo.vgenres.first? || "Loại khác",
+          bgenre: book.vgenres.first? || "Loại khác",
 
-        bcover: @data.nvinfo.bcover,
-        scover: @data.nvinfo.scover,
+          bcover: book.bcover,
+          scover: book.scover,
 
-        voters: @data.nvinfo.voters,
-        rating: @data.nvinfo.rating / 10,
+          voters: book.voters,
+          rating: book.rating / 10,
 
-        status: @data.nvinfo.status,
-        update: @data.nvinfo.utime,
-      }
+          status: book.status,
+          update: book.utime,
+        }
+      else
+        jb.field "book", {id: 0}
+      end
 
       if yslist = @data.yslist
         jb.field "yslist_id", CV::UkeyUtil.encode32(yslist.id)
@@ -56,6 +60,8 @@ struct YS::CritView
         jb.field "yslist_class", yslist.klass
         jb.field "yslist_count", yslist.book_count
       end
+    rescue err
+      puts err, @data.id
     end
   end
 

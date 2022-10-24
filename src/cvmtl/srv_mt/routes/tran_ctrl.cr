@@ -17,7 +17,7 @@ module MT
 
     @[AC::Route::POST("/convert")]
     def convert(book = "combine", pack : String? = nil, user : String? = nil,
-                rmode = "txt", apply_cap = true, has_title = false, use_temp = false)
+                rmode = "txt", apply_cap : Bool = true, has_title : Bool = false, use_temp : Bool = false)
       engine = Engine.new(book, pack, user, temp: use_temp)
       to_mtl = rmode == "mtl"
 

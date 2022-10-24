@@ -62,7 +62,7 @@ module YS
     @[AC::Route::GET("/crits/:crit/raw")]
     def rawzh(crit : String)
       ycrit = Yscrit.find!({id: CV::UkeyUtil.decode32(crit)})
-      binfo = ycrit.nvinfo
+      binfo = ycrit.nvinfo.not_nil!
 
       response = @context.response
       response.headers["Content-Type"] = "text/plain; charset=utf-8"

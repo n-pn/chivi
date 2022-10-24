@@ -8,7 +8,7 @@ class YS::Yscrit
   primary_key
   column origin_id : String = ""
 
-  belongs_to nvinfo : CV::Nvinfo
+  belongs_to nvinfo : CV::Nvinfo?
   belongs_to ysbook : CV::Ysbook
   belongs_to ysuser : Ysuser
   belongs_to yslist : Yslist?

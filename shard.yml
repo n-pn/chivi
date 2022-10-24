@@ -130,6 +130,18 @@ dependencies:
     github: spider-gazelle/action-controller
     version: ~> 5.1
 
+  redis:
+    github: stefanwille/crystal-redis
+    version: ~> 2.7.0
+
+  yaml_mapping:
+    github: crystal-lang/yaml_mapping.cr
+    version: ~> 0.1.0
+
+  json_mapping:
+    github: crystal-lang/json_mapping.cr
+    version: ~> 0.1.0
+
 development_dependencies:
   garnet_spec:
     github: amberframework/garnet-spec

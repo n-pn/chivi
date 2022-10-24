@@ -6,14 +6,14 @@ class MT::MtDict
 
   def initialize(book : String = "shared", pack : String? = nil, user : String? = nil, temp : Bool = false)
     # dicts for current book
-    add_dict("book", "#{book}:user", 6, user) if user
-    add_dict("book", "#{book}:temp", 5) if temp
-    add_dict("book", "#{pack}:base", 4)
+    add_dict("book", "#{book}:user", 9, user) if user
+    add_dict("book", "#{book}:temp", 8) if temp
+    add_dict("book", "#{pack}:base", 7)
 
     # dicts for shared theme
-    add_dict("pack", "#{pack}:user", 9, user) if user && pack
-    add_dict("pack", "#{pack}:temp", 8) if pack && temp
-    add_dict("pack", "#{pack}:base", 7) if pack
+    add_dict("pack", "#{pack}:user", 6, user) if user && pack
+    add_dict("pack", "#{pack}:temp", 5) if pack && temp
+    add_dict("pack", "#{pack}:base", 4) if pack
 
     # common dicts used in all books
     add_dict("core", "global:user", 3, user) if user
