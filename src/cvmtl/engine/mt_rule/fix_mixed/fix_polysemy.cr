@@ -161,7 +161,7 @@ module MT::Core
 
     # ameba:disable Metrics/CyclomaticComplexity
     private def resolve_type! : Type
-      puts [@noun_pct, @verb_pct, @adjt_pct, @advb_pct]
+      # puts [@noun_pct, @verb_pct, @adjt_pct, @advb_pct]
 
       case @node.tag
       when .pl_noad?

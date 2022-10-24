@@ -4,7 +4,7 @@ module MT::Core
   end
 
   def fold_suffix!(node : MonoNode, prev = node.prev)
-    return node unless prev.content_words?
+    return node unless prev.content_words? || prev.polysemy?
 
     case node
     when .suf_men5?
