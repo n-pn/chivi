@@ -23,10 +23,21 @@ class MT::CvTerm
   ###########
 
   def self.total(type : String, query = "true")
-    DbRepo.open_term_db(type, &.scalar("select count(*) from terms where #{query}"))
+    DbRepo.open_db(type, &.scalar("select count(*) from terms where #{query}"))
   end
 
   def self.total(type : String, dic : Int32)
     total(type, "dic = #{dic}")
+  end
+
+  def self.load_all(type : String, dic : Int32)
+    DbRepo.open_db(type) do |db|
+      query = <<-SQL
+        select * from terms
+        where dic = ?
+      SQL
+
+      db.query_all(query, args: [dic], as: CvTerm)
+    end
   end
 end

@@ -31,7 +31,7 @@ class MT::MtDict
 
   def get_dict_id(type : String, name : String) : Int32
     DICT_IDS["#{type}/#{name}"] ||= begin
-      DbRepo.open_dict_db(type) do |db|
+      DbRepo.open_db(type) do |db|
         query = "select id from dicts where name = ?"
         db.query_one?(query, args: [name], as: Int32) || -1
       end

@@ -36,7 +36,7 @@ class MT::MtTerm
   ####
 
   def self.load_all(type : String, dic : Int32)
-    DbRepo.open_term_db(type) do |db|
+    DbRepo.open_db(type) do |db|
       query = <<-SQL
         select key, val, alt, ptag, wseg from terms
         where dic = ? and flag < 1

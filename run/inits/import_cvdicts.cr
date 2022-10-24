@@ -210,7 +210,7 @@ class Dict
   def save!(type : String)
     dict_id = get_dict_id(type)
 
-    MT::DbRepo.open_term_db(type) do |db|
+    MT::DbRepo.open_db(type) do |db|
       db.exec "begin transaction"
 
       @terms.each do |term|
@@ -234,7 +234,7 @@ class Dict
   def get_dict_id(type : String)
     name = File.basename(@file, File.extname(@file))
 
-    MT::DbRepo.open_dict_db(type) do |db|
+    MT::DbRepo.open_db(type) do |db|
       if dict_id = db.query_one?("select id from dicts where name = ?", name, as: Int32)
         return dict_id
       end

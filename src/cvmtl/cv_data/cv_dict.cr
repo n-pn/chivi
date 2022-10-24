@@ -44,7 +44,7 @@ class MT::CvDict
   end
 
   def self.find!(type : String, name : String)
-    DbRepo.open_dict_db(type) do |db|
+    DbRepo.open_db(type) do |db|
       db.query_one(%{select * from "dicts" where name = ?}, args: [name], as: CvDict)
     end
   end

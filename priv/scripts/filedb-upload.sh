@@ -36,13 +36,11 @@ fi
 if [[ $* == "all" || $* == "mtv2" ]]
 then
   echo upload mtv2!
-  # rsync -azi --no-p "var/dicts/v1/basic/hanviet.tsv" "$SSH/var/dicts/v1/basic"
-  # rsync -azi --no-p "var/dicts/v1/basic/hanviet.tab" "$SSH/var/dicts/v1/basic"
 
-  # rsync -azi --no-p "var/_common" "$SSH/var"
   rsync -azi "var/cvmtl/inits" "$SSH/var/cvmtl"
   rsync -azi "var/cvmtl/fixed" "$SSH/var/cvmtl"
-  rsync -azi "var/dicts/" --include="*.db" "$SSH/var/dicts/"
-  # rsync -azi --exclude="*.tab" "var/dicts/v1/novel" "$SSH/var/dicts/v1"
-  # rsync -azi --no-p --delete "priv/static/covers/" "$SSH/priv/static/covers/"
+  rsync -azi "var/dicts/core.dic" "$SSH/var/dicts"
+  rsync -azi "var/dicts/book.dic" "$SSH/var/dicts"
+  rsync -azi "var/dicts/user.dic" "$SSH/var/dicts"
+  rsync -azi "var/dicts/pack.dic" "$SSH/var/dicts"
 fi
