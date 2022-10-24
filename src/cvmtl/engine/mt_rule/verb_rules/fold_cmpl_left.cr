@@ -8,7 +8,15 @@ module MT::Core
       break unless verb.vcompl?
     end
 
-    raise "#{verb.inspect} is not verb!" unless verb.common_verbs? || verb.adjt?
+    case verb
+    when .adjt?
+      verb.tag = MtlTag::Verb
+      verb.fix_val!
+    when .common_verbs?
+      # ok
+    else
+      return fold_verb!(cmpl)
+    end
 
     while cmpl = verb.succ
       break unless cmpl.vcompl?

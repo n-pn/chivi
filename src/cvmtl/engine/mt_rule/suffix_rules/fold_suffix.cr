@@ -22,7 +22,8 @@ module MT::Core
       prev = fold_left!(prev)
       tag = MtlTag::Texpr
       pos = MtlPos.flags(Object)
-      PairNode.new(prev, node, tag, pos, flip: true)
+      node = PairNode.new(prev, node, tag, pos, flip: true)
+      fold_objt_left!(node)
     when .suf_verb?
       tag = MtlTag::Verb
       pos = MtlPos.flags(None)
@@ -36,7 +37,9 @@ module MT::Core
 
       tag, pos = PosTag::Nword
       node = PairNode.new(prev, node, tag, pos, flip: true)
-      cons_noun!(node)
+      fold_objt_left!(node)
+
+      # cons_noun!(node)
     end
   end
 
@@ -46,6 +49,7 @@ module MT::Core
     tag = node.maybe_adjt? ? MtlTag::Aform : MtlTag::Nform
     pos = node.pos
 
-    PairNode.new(prev, node, tag, pos, flip: !node.at_tail?)
+    node = PairNode.new(prev, node, tag, pos, flip: !node.at_tail?)
+    fold_objt_left!(node)
   end
 end

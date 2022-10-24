@@ -7,7 +7,7 @@ module MT::Core
   def link_verb_bond!(verb, bond, head = bond.prev)
     case head
     when .common_verbs?
-      head = cons_verb!(head)
+      head = fold_verb_cons!(head)
     when .noun_words?
       head = fold_noun!(head)
     else

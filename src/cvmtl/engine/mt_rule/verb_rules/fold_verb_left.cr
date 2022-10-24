@@ -2,7 +2,7 @@ require "./*"
 
 module MT::Core
   def fold_verb!(verb : MtNode)
-    verb = cons_verb!(verb)
+    verb = fold_verb_cons!(verb)
     # puts [verb, verb.prev?]
     verb = link_verb!(verb)
 
@@ -14,6 +14,8 @@ module MT::Core
       # OK
     when .verb_words?, .adjt_words?
       return verb unless verb.v_shi?
+    when .prep_form?
+      return join_prep_form!(verb, prev)
     else
       # TODO: add more cases
       # - adjt as subject

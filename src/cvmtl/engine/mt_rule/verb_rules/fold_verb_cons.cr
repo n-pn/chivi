@@ -1,7 +1,7 @@
 require "./*"
 
 module MT::Core
-  def cons_verb!(verb : MtNode) : VerbCons
+  def fold_verb_cons!(verb : MtNode) : MtNode
     verb = pair_verb!(verb)
     # puts [verb, verb.prev?, "after pairing!"]
     verb = VerbCons.new(verb) unless verb.is_a?(VerbCons)
@@ -13,6 +13,16 @@ module MT::Core
       # puts [prev, prev.prev?, "prev_verb"]
       verb.add_advb(prev)
       # puts [verb, verb.prev?, "fold_verb_advb"]
+    end
+
+    if prev.qtverb?
+      prev = fold_quanti!(prev)
+      return verb unless prev.nqverb?
+    end
+
+    if prev.nqverb? || (prev.nquants? && prev.maybe_advb?)
+      verb.add_advb(prev)
+      prev = verb.prev
     end
 
     # puts [verb, prev, verb.prev, "construct_verb"]
