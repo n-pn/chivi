@@ -1,5 +1,5 @@
-require "./mt_node/*"
-require "./txt_seg/*"
+require "./mt_node/**"
+require "./txt_seg/**"
 require "../cv_data/mt_term"
 
 class MT::TxtSeg
@@ -43,9 +43,11 @@ class MT::TxtSeg
       when .ascii_letter?
         new_idx, tag = scan_string(idx)
       when .ascii_number?
-        new_idx, tag = scan_number(idx)
+        new_idx, tag = scan_ndigit(idx)
       when .in?(HANNUM_CHARS)
         new_idx, tag, new_val = scan_hannum(idx)
+      when '第'
+        new_idx, tag, new_val = scan_ordnum(idx)
       else
         idx += 1
         next

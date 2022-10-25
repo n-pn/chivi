@@ -23,3 +23,5 @@ SufMen5 = 744
 SufXing = 745
 
 # prefixes
+
+PreDi4 = 760 # 第

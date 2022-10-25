@@ -1,10 +1,10 @@
 module MT::Core
   def fix_uniqword!(node : MonoNode)
     case node
-    when .wd_hao? then fix_wd_hao!(node)
-    when .qttemp? then fix_qttemp!(node)
-    when .vauxil? then fix_vauxil!(node)
-    when .vcompl? then fix_vcompl!(node)
+    when .wd_hao?  then fix_wd_hao!(node)
+    when .qt_temp? then fix_qttemp!(node)
+    when .vauxil?  then fix_vauxil!(node)
+    when .vcompl?  then fix_vcompl!(node)
     else
       node
     end

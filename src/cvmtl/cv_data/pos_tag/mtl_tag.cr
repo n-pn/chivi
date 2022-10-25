@@ -333,33 +333,6 @@ enum MT::MtlTag : UInt32
     value >= 900 && value < 1000
   end
 
-  # words need to be fix (including uniqword and polysemy)
-  def nebulous?
-    value >= 800 && value < 1000
-  end
-
-  # words that can link two content words
-
-  def bond_words?
-    value >= 1000 && value < 1050
-  end
-
-  def bond_proper_nouns?
-    value >= 1000 && value < 1010
-  end
-
-  def bond_nouns?
-    value >= 1010 && value < 1020
-  end
-
-  def bond_adts?
-    value >= 1020 && value < 1030
-  end
-
-  def bond_common_verbs?
-    value >= 1030 && value < 1040
-  end
-
   def qt_to_nq
     value < 270 ? self + 20 : Qtnoun
   end

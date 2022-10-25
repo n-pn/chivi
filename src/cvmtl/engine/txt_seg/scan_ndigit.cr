@@ -1,7 +1,7 @@
 require "../../../_util/char_util"
 
 class MT::TxtSeg
-  def scan_number(index : Int32 = 0)
+  def scan_ndigit(index : Int32 = 0)
     match_char = nil
     char_count = 1
 
