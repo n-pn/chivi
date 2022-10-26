@@ -320,10 +320,14 @@ enum MT::MtlTag : UInt32
   end
 
   def morpheme?
-    self >= SufNoun && self < Prefix
+    self >= SufNoun && self < VerbOrNoun
   end
 
   def suffixes?
+    self >= SufNoun && self < Prefix
+  end
+
+  def prefixes?
     self >= Prefix && self < VerbOrNoun
   end
 

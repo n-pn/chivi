@@ -4,8 +4,6 @@ module MT::Core
   end
 
   def fold_suffix!(node : MonoNode, prev = node.prev)
-    puts [node, prev]
-
     return node if prev.unreal?
 
     case node
