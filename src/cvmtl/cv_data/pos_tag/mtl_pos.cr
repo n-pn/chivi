@@ -1,5 +1,3 @@
-require "./mtl_tag"
-
 @[Flags]
 enum MT::MtlPos : UInt64
   def self.parse(values : Array(String), init : MtlPos = :none)
