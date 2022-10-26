@@ -26,7 +26,7 @@ class MT::MonoNode < MT::MtNode
     self
   end
 
-  def inactivate!
+  def skipover!
     @val = ""
     @pos |= MtlPos.flags(Skipover, NoSpaceL, NoSpaceR, CapRelay)
     self

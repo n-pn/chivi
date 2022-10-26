@@ -5,7 +5,7 @@ class MT::SubjPred < MT::PairNode
 
   def initialize(head : MtNode, tail : MtNode, tag : MtlTag = MtlTag::SubjVerb)
     pos = tail.pos.volitive? ? MtlPos::Volitive : MtlPos::None
-    super(head, tail, tag: tag, pos: pos)
+    super(head, tail, tag: tag, pos: pos, flip: false)
   end
 
   def add_objt(objt : MtNode) : Nil

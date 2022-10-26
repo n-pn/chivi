@@ -2,6 +2,8 @@ require "./*"
 
 module MT::Core
   def fold_verb!(verb : MtNode)
+    # puts [verb, verb.prev?, "fold_verb"]
+
     verb = fold_verb_cons!(verb)
     # puts [verb, verb.prev?]
     verb = link_verb!(verb)
@@ -9,7 +11,7 @@ module MT::Core
     case prev = fold_left!(verb.prev)
     when .quantis?, .dem_prons?
       # FIXME: check pass verb object
-      return verb if verb.succ.tag.ptcl_dep?
+      return verb if verb.common_verbs? && verb.succ.tag.ptcl_dep?
     when .noun_words?, .all_prons?
       # OK
     when .verbal_words?, .adjt_words?

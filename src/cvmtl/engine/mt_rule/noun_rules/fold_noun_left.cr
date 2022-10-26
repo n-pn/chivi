@@ -8,12 +8,13 @@ module MT::Core
     prev = noun.prev
     prev = fix_mixedpos!(prev) if prev.mixedpos?
     noun = link_noun!(noun, junc: prev) if prev.bind_word?
+    return noun if noun_is_modifier?(noun, prev)
 
     fold_objt_left!(noun)
   end
 
   private def noun_is_modifier?(noun : MtNode, prev = noun.prev, succ = noun.succ) : Bool
-    return true if succ.adjt_words?
+    return true if succ.adjt_words? || prev.v_shi?
     return false unless succ.tag.ptcl_dev? && (center = succ.succ?) && center.object?
     return false unless tail = center.succ?
 

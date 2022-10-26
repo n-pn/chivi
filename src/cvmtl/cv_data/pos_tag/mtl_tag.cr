@@ -179,12 +179,12 @@ enum MT::MtlTag : UInt32
 
   # all kind of verbs
   def verbal_words?
-    self >= Verb && self < Adjt
+    self >= Vobj && self < Adjt
   end
 
   # verb is not copula shi or existent you
   def common_verbs?
-    self >= Verb && self < VYou
+    self >= Vobj && self < VYou
   end
 
   # special verbs

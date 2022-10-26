@@ -9,6 +9,7 @@ module MT::Core
     # join verb with adverbs
     while prev = verb.prev
       prev = fix_mixedpos!(prev) if prev.mixedpos?
+
       break unless prev.advb_words?
       # puts [prev, prev.prev?, "prev_verb"]
       verb.add_advb(prev)

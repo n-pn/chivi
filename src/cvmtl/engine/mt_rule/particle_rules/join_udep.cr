@@ -10,7 +10,7 @@ module MT::Core
     if head.ktetic?
       udep.val = "của"
     else
-      udep.inactivate!
+      udep.skipover!
     end
 
     PairNode.new(head, udep, tag, pos, flip: true)

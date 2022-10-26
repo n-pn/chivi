@@ -23,6 +23,7 @@ module MT::Core
     when .noun_words?   then fold_noun!(node)
     when .adjt_words?   then join_adjt!(node)
     when .verbal_words? then fold_verb!(node)
+    when .ptcl_dep?     then node.tap(&.as(MonoNode).skipover!)
     else                     node
     end
   end

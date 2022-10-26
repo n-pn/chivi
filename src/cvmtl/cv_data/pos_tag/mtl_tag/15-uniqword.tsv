@@ -8,7 +8,7 @@ QtverbOrX	Object, MaybeQuanti, Mixedpos
 QtnounOrX	Object, MaybeQuanti, Mixedpos
 QttimeOrX	Object, MaybeQuanti, Mixedpos
 
-VcomplOrX	Mixedpos	# can be verb complement
+VcomplOrX	MaybeCmpl, Mixedpos	# can be verb complement
 NquantOrX	Mixedpos	# can be nquant or other
 
 ## special locative words

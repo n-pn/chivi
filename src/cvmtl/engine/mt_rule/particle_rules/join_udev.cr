@@ -15,7 +15,7 @@ module MT::Core
       udev.val = "một cách"
       passive = false
     when .onomat?, .nquants?
-      udev.inactivate!
+      udev.skipover!
     when .common_nouns?
       head = fold_noun!(head)
       raise "Expected v_you!" unless (vyou = head.prev?) && vyou.v_you?
@@ -23,7 +23,7 @@ module MT::Core
       head = PairNode.new(vyou, head, tag, pos, flip: false)
     end
 
-    udev.inactivate! if passive # mark udev as invisible
+    udev.skipover! if passive # mark udev as invisible
     PairNode.new(head, udev, tag, pos, flip: true)
   end
 end

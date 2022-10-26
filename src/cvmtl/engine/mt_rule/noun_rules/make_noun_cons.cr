@@ -4,6 +4,7 @@ module MT::Core
     prev = noun.prev
 
     prev = fix_mixedpos!(prev) if prev.mixedpos?
+
     return noun if noun_is_modifier?(noun, prev)
 
     noun = NounCons.new(noun) unless noun.is_a?(NounCons)
