@@ -29,7 +29,7 @@ class MT::NounCons < MT::MtNode
     end
   end
 
-  def add_nqmod(node : MtNode)
+  def add_nqmod(node : MtNode) : Nil
     add_head(node)
 
     if node.at_tail?

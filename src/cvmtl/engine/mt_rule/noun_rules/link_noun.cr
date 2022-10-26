@@ -2,7 +2,7 @@ module MT::Core
   def link_noun!(noun : MtNode, junc = noun.prev, left = junc.prev)
     case left
     when .noun_words?
-      left = cons_noun!(left)
+      left = make_noun_cons!(left)
     when .all_prons?
       # FIXME: fold pronouns
     else

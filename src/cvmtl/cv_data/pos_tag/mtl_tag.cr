@@ -342,7 +342,7 @@ enum MT::MtlTag : UInt32
   end
 
   def qt_to_nq
-    (self >= Qtmass && self <= Qtcash) ? self + (Nqmass.value - Qtmass.value) : Qtnoun
+    (self >= Qtverb) && (self <= Qttime) ? self + (Nqverb.value - Qtverb.value) : Nqnoun
   end
 end
 
@@ -355,3 +355,5 @@ module MT::HasTag
     @tag.quantis? || @tag.mod_prons?
   end
 end
+
+# puts MT::MtlTag.values.size

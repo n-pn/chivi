@@ -4,8 +4,8 @@ require "../../src/cvmtl/tr_lit"
 text = ARGV[0]? || "刚开始传出去的消息是青帝"
 book = ARGV[1]? || "combine"
 user = ARGV[2]?
-time = Time.monotonic
 
+time = Time.monotonic
 mtl = MT::Engine.new(book: book, user: user)
 res = mtl.cv_plain(text)
 

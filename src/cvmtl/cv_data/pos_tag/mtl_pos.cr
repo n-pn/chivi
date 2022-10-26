@@ -41,13 +41,25 @@ enum MT::MtlPos : UInt64
   CanSplit # can split to other structure
   BindWord # can be use to link two words/two phraes
 
-  MaybeModi # word can act as noun modifier
-  MaybeAdvb # word can act as adverb
+  # mixed post
 
-  # verb flags
+  MaybeNoun # words can act as noun
+  MaybeVerb # words can act as verb
 
-  MaybeAuxi # can be verb auxiliary
-  MaybeCmpl # can be verb complement
+  MaybeAdjt # words can act as adjective
+  MaybeModi # words can act as modifier
+
+  MaybePrep # words can act as preposition
+  MaybeConj # words can act as conjunction
+
+  MaybeAdvb # words can act as adverb
+  MaybeAuxi # words can act as verb auxiliary
+  MaybeCmpl # words can act as verb complement
+
+  MaybeQuanti # words can act as quantifier
+  MaybeNquant # words can act as number + quanti form
+
+  # verb form
 
   Volitive # verb predicate expression a desire to do something
   Vlinking # can link verbs
@@ -92,12 +104,27 @@ module MT::HasPos
   delegate can_split?, to: @pos
   delegate bind_word?, to: @pos
 
+  delegate maybe_noun?, to: @pos
+  delegate maybe_verb?, to: @pos
+
+  delegate maybe_adjt?, to: @pos
   delegate maybe_modi?, to: @pos
+
+  delegate maybe_prep?, to: @pos
+  delegate maybe_conj?, to: @pos
+
   delegate maybe_advb?, to: @pos
 
   delegate maybe_auxi?, to: @pos
   delegate maybe_cmpl?, to: @pos
 
+  delegate maybe_quanti?, to: @pos
+  delegate maybe_nquant?, to: @pos
+
   delegate volitive?, to: @pos
   delegate vlinking?, to: @pos
+
+  delegate has_aspect?, to: @pos
+  delegate has_dircmpl?, to: @pos
+  delegate has_rescmpl?, to: @pos
 end

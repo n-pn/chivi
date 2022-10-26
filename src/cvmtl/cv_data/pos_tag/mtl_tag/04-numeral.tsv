@@ -56,7 +56,7 @@ QtBa3	Object, Peculiar	# "把"
 
 ## verb quantifiers
 Qtverb	Object	# verb quantifier
-Qtveno	Object, Ktetic, Mixedpos	# temporal quantifier that can be make verb complement
+Qtcmpl	Object, Ktetic, Mixedpos	# temporal quantifier that can be make verb complement
 
 ## noun quantifiers
 Qtnoun	Object	# generic noun quantifier
@@ -85,7 +85,7 @@ QtMiaozhong	Object, Peculiar	# "秒钟"
 
 ## for verb
 Nqverb	Object, MaybeAdvb	# can be verb complement or adverbial phrase
-Nqveno	Object, Ktetic, MaybeCmpl, Mixedpos	# temporal quantifier that can be verb complement
+Nqcmpl	Object, Ktetic, Mixedpos	# temporal quantifier that can be verb complement
 
 ## for nouns
 Nqnoun	Object, Ktetic	# generic noun quantifier

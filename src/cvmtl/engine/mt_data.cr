@@ -61,6 +61,7 @@ class MT::MtData
   end
 
   def fix_grammar!
+    Core::Step0.run!(@head, @tail)
     fold_groups! if @pgroup.size > 1
     Core.left_join!(@tail, @head)
   end

@@ -1,8 +1,14 @@
 # peculiar characters
 
 ## generic
+
+QuantiOrX	Object, MaybeQuanti, Mixedpos
+QtcmplOrX	Object, MaybeQuanti, Mixedpos
+QtverbOrX	Object, MaybeQuanti, Mixedpos
+QtnounOrX	Object, MaybeQuanti, Mixedpos
+QttimeOrX	Object, MaybeQuanti, Mixedpos
+
 VcomplOrX	Mixedpos	# can be verb complement
-QuantiOrX	Mixedpos	# can be quanti or other
 NquantOrX	Mixedpos	# can be nquant or other
 
 ## special locative words

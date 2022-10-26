@@ -1,6 +1,6 @@
 module MT::Core
   def fold_noun!(noun : MtNode)
-    noun = cons_noun!(noun)
+    noun = make_noun_cons!(noun)
     # puts [noun, noun.prev?]
 
     # FIXME: since this only check for bond word, we can check for those exception in link_noun functon

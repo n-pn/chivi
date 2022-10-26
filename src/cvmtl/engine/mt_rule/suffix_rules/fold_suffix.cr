@@ -37,7 +37,7 @@ module MT::Core
       node = PairNode.new(prev, node, tag, pos, flip: true)
       fold_objt_left!(node)
 
-      # cons_noun!(node)
+      # make_noun_cons!(node)
     end
   end
 

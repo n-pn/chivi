@@ -127,7 +127,7 @@ module MT::PosTag
       {% end %}
     {% end %}
       else
-        Log.info { "unknown particle #{str}"}
+        # Log.debug { "unknown particle #{str}"}
         {MtlTag::Prepos, MtlPos.flags(Unreal)}
       end
     {% end %}
