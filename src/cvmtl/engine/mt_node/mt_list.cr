@@ -28,7 +28,7 @@ module MT::MtList
     self.each do |node|
       io << "\t " if prev && node.add_space?(prev)
       node.to_mtl(io)
-      prev = node unless node.pos.passive?
+      prev = node unless node.pos.skipover?
     end
 
     io << '〉'

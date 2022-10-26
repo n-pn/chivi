@@ -13,7 +13,7 @@ class MT::Engine
     mt_data = cv_title(title, offset: chvol.size)
     return mt_data if chvol.empty?
 
-    tag, pos = PosTag::Empty
+    tag, pos = PosTag.make(:empty)
     pos |= MtlPos.flags(CapAfter, NoSpaceL)
 
     mt_node = MonoNode.new("", "-", tag, pos, idx: chvol.size)
@@ -29,7 +29,7 @@ class MT::Engine
     pre_zh += pad
     pre_vi += title.empty? ? "" : ":"
 
-    tag, pos = PosTag::LitTrans
+    tag, pos = PosTag.make(:lit_trans)
     pos |= MtlPos.flags(CapAfter, NoSpaceR)
     mt_head = MonoNode.new(pre_zh, pre_vi, tag, pos, dic: 1, idx: offset)
 
