@@ -1,0 +1,23 @@
+# pronouns
+
+Pronoun	Object, Ktetic	# unknown pronoun
+
+## 人称代词 - personal pronoun - đại từ nhân xưng
+PerPron	Object, Ktetic, Humankind	#
+
+PronZiji	Object, Ktetic, Humankind, Peculiar	# "自己"
+PronQu2	Object, Ktetic, Humankind, Peculiar	# "其"
+
+# 指示代词 - demonstrative pronoun - đại từ chỉ thị
+DemPron	Object, Ktetic	# generic
+
+PronZhe	Object, Peculiar, AtTail	# "这"
+PronNa1	Object, Peculiar, AtTail	# "那"
+PronMei	Object, Peculiar, AtTail	# "每"
+
+# 疑问代词 - interrogative pronoun
+IntPron	Object, Peculiar, AtTail	# generic
+
+PronJi	Object, Peculiar, AtTail	# "几"
+PronNa2	Object, Peculiar, AtTail	# "哪"
+PronShei	Humankind, Object, Peculiar	# 谁

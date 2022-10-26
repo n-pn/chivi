@@ -1,0 +1,20 @@
+# suffixes
+
+SufNoun	Unreal	# make noun words
+SufAttr	Unreal	# make noun attribute
+SufTime	Unreal	# make whole structure as time expression
+
+SufVerb	Unreal	# tranform adjt/noun to verb
+SufAdjt	Unreal	# transform verb/noun to adjt
+
+SufZhi	Unreal, Peculiar	# 之 + noun that can have alternative meaning
+
+SufMen5	Unreal, Peculiar	# "们"
+SufXing	Unreal, Peculiar	# "性"
+
+# prefixes
+
+Prefix 	Unreal	# placeholder
+
+PreKe3	Unreal, Peculiar	# "可"
+PreDi4	Unreal, Peculiar	# "第"

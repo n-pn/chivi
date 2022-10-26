@@ -1,0 +1,12 @@
+#tag	#pos	#desc
+
+LitBlank	Object, Ktetic	# unknown/untagged phrases
+LitIdiom	Object, Ktetic	# chinese idiom that have multi classes
+LitQuote	Object, Ktetic	# citations, quotes
+LitTrans	Object, Ktetic	# partial translations
+
+StrLink	Object	# hyper link (can act as object)
+StrMail	Object	# email string (can act as object)
+StrHash	Object	# hash tag (can act as object)
+StrEmoji	Object	# emoji, kaomoji
+StrOther	Object	# other raw string

@@ -1,0 +1,14 @@
+# adjectives
+
+Adjt	CanBePred	# normal adjective
+Amed	CanBePred	# measurement adjective
+
+## special adjectives
+Ahao	CanBePred, Peculiar	# "好"
+
+# modifier 区别词
+Amod	MaybeMod	# modifier place after center noun
+
+# words that act as adjective
+Ades	CanBePred 	# 状态词 stative verb
+Amix	CanBePred	# 形容词性惯用语 adjectival formulaic expression

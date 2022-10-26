@@ -1,339 +1,336 @@
 enum MT::MtlTag : UInt32
   {% begin %}
     {% files = {
-         "0-lit+str+punct",
-         "1-name+noun",
-         "2-pronoun+number",
-         "3-verb+adjective",
-         "4-prepos+particle",
-         "5-adverb+conjunct",
-         "6-phrase+vcompl",
-         "7-sound+morp",
-         "8-polysemy",
-         "9-uniqword",
+         "00-punct",
+         "01-literal",
+         "02-nominal",
+         "03-pronoun",
+         "04-numeral",
+         "05-verbal",
+         "06-adjective",
+         "07-adverb",
+         "08-conjunct",
+         "09-prepos",
+         "10-particle",
+         "11-phrase",
+         "12-soundword",
+         "13-morpheme",
+         "14-polysemy",
+         "15-uniqword",
        } %}
     {% for file in files %}
-      {% lines = read_file("#{__DIR__}/mtl_tag/#{file.id}.cr").split("\n") %}
-      {% for line in lines %}
-      {{ line.id }}
+      {% lines = read_file("#{__DIR__}/mtl_tag/#{file.id}.tsv").split('\n') %}
+      {% for line in lines.reject { |x| x.empty? || x.starts_with?('#') } %}
+        {{ line.split('\t').first.id }}
       {% end %}
     {% end %}
   {% end %}
 
-  # 0 lit + str + punct
-
   def punctuations?
-    value < 50
+    self <= Pmark
   end
 
   def final_puncts?
-    value >= 4 && value <= 6
+    self >= Period && self <= Quespm
   end
 
   def start_puncts?
-    value >= 8 && value < 20
+    self >= DbQuote && self <= ParenSt1
   end
 
   def close_puncts?
-    value >= 20 && value < 30
+    self >= TitleCl1 && self <= ParenCl1
   end
 
   def group_puncts?
-    value >= 8 && value < 30
+    self >= DbQuote && self <= ParenCl1
   end
 
   def dashes?
-    value == Dash1.value || value == Dash2.value
+    self == Dash1 || self == Dash2
   end
 
   def brack_sts?
-    value == BrackSt1.value || value == BrackSt2.value
+    self == BrackSt1 || self == BrackSt2
   end
 
   def title_sts?
-    value >= TitleSt1.value && value <= TitleSt3.value
+    self >= TitleSt1 && self <= TitleSt3
   end
 
   def title_cls?
-    value >= TitleCl1.value && value <= TitleCl3.value
+    self >= TitleCl1 && self <= TitleCl3
   end
 
   def ellipsis?
-    value == Ellip1.value || value == Ellip2.value
+    self == Ellip1 || self == Ellip2
   end
 
   ####
 
   # is untagged words
   def literal?
-    value >= 60 && value < 90
+    self >= LitBlank && self <= LitTrans
   end
 
   # is foreign entities
   def strings?
-    value >= 80 && value < 90
+    self >= StrLink && self <= StrOther
   end
 
   # 1 name + noun
+  # all kind of nouns
+  def noun_words?
+    self >= HumanName && self <= Timespan
+  end
 
-  def proper_nouns?
-    value >= 100 && value < 120
+  def name_words?
+    self >= HumanName && self <= SkillName
   end
 
   # is place name or oraganization
-  def cap_affil?
-    value >= 105 && value < 110
+  def place_name?
+    self >= PlaceName && self <= InstiName
   end
 
   # is not proper nouns
   def common_nouns?
-    value >= 120 && value < 155
+    self >= Honortitle && self <= Placesuff
   end
 
   # noun is objects
   def object_nouns?
-    value >= 140 && value <= 150
-  end
-
-  # all kind of nouns
-  def noun_words?
-    value >= 100 && value < 200
+    self >= Nsolid && self <= Plant
   end
 
   # common noun that refer to placement/location
   def place_words?
-    value >= 150 && value < 180
+    self >= Placeword && self < Timeword
   end
 
   # all locative words
   def locat_words?
-    value >= 160 && value < 180
+    self >= Locative && self < Timespan
   end
 
   # all time words
   def time_words?
-    value >= 180 && value < 200
+    self >= Timeword && self < Timespan
   end
 
   # pronouns
 
   # all kind of pronouns
-  def pronouns?
-    value >= 200 && value < 240
+  def all_prons?
+    self >= Pronoun && self < Ordinal
   end
 
   # personal pronouns
-  def pro_pers?
-    value >= 201 && value < 210
+  def per_prons?
+    self >= PerPron && self < DemPron
   end
 
   # demostrate pronouns
   def pro_dems?
-    value >= 210 && value < 230
+    self >= DemPron && self < IntPron
   end
 
   # interrogative pronouns
   def pro_ints?
-    value >= 229 && value < 240
+    self >= IntPron && self < Ordinal
   end
 
-  # pronoun is a prefix, can combine with quantifier to form another pronoun
-  def pro_split?
-    value >= 214 && value < 229
-  end
-
-  # numbers
+  # numberal
 
   # all numbers and quantifiers
-  def numqti_words?
-    value >= 240 && value < 300
+  def numerals?
+    self >= Ordinal && self <= Mqdate
   end
 
   # all kind of numbers
   def numbers?
-    value >= 240 && value < 260
+    self >= Ordinal && self < NumHan
   end
 
   def ndigits?
-    value >= 242 && value <= 243
+    self >= Ndigit0 && self <= Ndigit3
   end
 
   def nhanzis?
-    value >= 244 && value <= 246
+    self >= Nhanzi0 && self <= Nhanzi2
   end
 
   def quantis?
-    value >= 260 && value < 280
+    self >= QtGe4 && self < Mqverb
   end
 
   def nquants?
-    value >= 280 && value < 300
+    self >= Mqverb && self < Mqdate
   end
 
   # verbal
 
-  # word that combined verbs with objects
-  def vobj_words?
-    value >= 300 && value < 305
+  # all kind of verbs
+  def verbal_words?
+    self >= Verb && self < Adjt
   end
 
   # verb is not copula shi or existent you
   def common_verbs?
-    value >= 300 && value < 340
-  end
-
-  # all kind of verbs
-  def verb_words?
-    value >= 300 && value < 350
+    self >= Verb && self < VYou
   end
 
   # special verbs
   def marked_verbs?
-    value >= 330 && value < 350
+    self >= VShang && self <= VShi
   end
 
+  # verb no need object
   def verb_no_obj?
-    value < 310 && value >= 300
+    self < Verb && self >= Vobj
   end
 
+  # word that combined verbs with objects
+  def verb_has_obj?
+    self >= Vobj && self < Vmix
+  end
+
+  # verb that can consume objects
   def verb_take_obj?
-    value >= 309 && value < 350
-  end
-
-  # verb that can combine with result complement
-  def verb_take_res_cmpl?
-    value >= 308 && value <= 314
+    self >= Vinx && self < Adjt
   end
 
   # verb can combine with verb
   def verb_take_verb?
-    value >= 316 && value < 330
+    self >= Vpsy && self < VShang
+  end
+
+  # verb that can combine with result complement
+  def verb_take_res_cmpl?
+    self >= Vint && self <= Vdir
   end
 
   # all kind of modal verbs
   def modal_verbs?
-    value >= 318 && value < 330
+    self >= Vmod && self < VShang
   end
 
   # adjts
 
+  # all adjective kinds
   def adjt_words?
-    value >= 350 && value < 400
+    self >= Adjt && self < Adverb
   end
 
   def amod_words?
-    value >= 370 && value < 400
-  end
-
-  def content_words?
-    value < 400
-  end
-
-  # 4 prepos + particle
-
-  def preposes?
-    value >= 400 && value < 450
-  end
-
-  # particle
-
-  def particles?
-    value >= 450 && value < 500
-  end
-
-  def aspect_marker?
-    value >= 452 && value <= 455
-  end
-
-  def pt_deps?
-    value >= PtDep.value && value <= PtDeg.value
-  end
-
-  def pt_ects?
-    value >= 480 && value < 490
-  end
-
-  def pt_cmps?
-    value >= 490 && value < 500
+    self >= Amod && self < Ades
   end
 
   # adverb
 
   def advb_words?
-    value >= 500 && value < 560
+    self >= Adverb && self <= ConjAdvb
   end
 
   def nega_advs?
-    value >= 510 && value < 520
+    self >= AdvNega && self < AdvDegree
   end
 
   def degree_advs?
-    value >= 520 && value < 530
+    self >= AdvDegree && self < AdvTime
   end
 
   def time_advs?
-    value >= 520 && value < 525
+    self >= AdvTime && self < AdvScope
   end
 
   def scope_advs?
-    (value > 520 && value < 530) || value == AdvDu1
+    (self > AdvTime && self < AdvMood) || self == AdvDu1
   end
 
   def mood_advs?
-    value > 225 && value < 535
+    self > AdvMood && self < AdvFreque
   end
 
   def freque_advs?
-    value >= 545 && value < 555
+    self >= AdvFreque && self < AdvCorrel
   end
 
   def correl_advs?
-    value > 545 && value < 560
+    self > AdvFreque && self < AdvManner
   end
 
   def manner_advs?
-    value >= 560 && value < 569
+    self >= AdvManner && self < ConjAdvb
   end
 
   def serial_advs? # linking verbs
-    value.in?(AdvJiu3, AdvZai4, AdvCai)
+    self.in?(AdvJiu3, AdvZai4, AdvCai)
   end
 
   ###
 
   def conjuncts?
-    value >= 569 && value < 600
+    self >= ConjAdvb && self < Prepos
   end
 
   def concoords?
-    value >= 570 && value < 600
+    self >= Conmixed && self < Prepos
   end
 
-  # phrases
+  # preposes
+
+  def preposes?
+    self >= Prepos && self < PtclLe
+  end
+
+  # particle
+
+  def particles?
+    self >= PtclLe && self <= PtclBan
+  end
+
+  def aspect_marker?
+    self >= PtclLe && self <= PtclSuo
+  end
+
+  def ptcl_deps?
+    self >= PtDep && self <= PtDeg
+  end
+
+  def ptcl_ects?
+    self >= PtclYunyun && self <= PtclDeng3
+  end
+
+  def ptcl_cmps?
+    self >= PtclYiyang && self <= PtclBan
+  end
+
+  # phrase
 
   def phrases?
-    value >= 600 && value < 680
+    self >= SubjVerb && self < Onomat
   end
 
   def morpheme?
-    value >= 730 && value < 800
+    self >= SufNoun && self < Prefix
   end
 
   def suffixes?
-    value >= 730 && value < 750
+    self >= Prefix && self < VerbOrNoun
   end
 
   # words that have multi meaning/part-of-speech
   def polysemy?
-    value >= 800 && value < 900
+    self >= VerbOrNoun && self < ZhongWord
   end
 
   # special words that need to be check before build semantic tree
   def uniqword?
-    value >= 900 && value < 1000
+    self >= VcomplOrX
   end
 
   def qt_to_nq
-    value < 270 ? self + 20 : Qtnoun
+    (self >= Qtmass && self <= Qtcash) ? self + (Mqmass.value - Qtmass.value) : Qtnoun
   end
 end

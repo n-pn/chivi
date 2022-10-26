@@ -1,0 +1,41 @@
+# verbs
+
+Vobj	CanBePred	# verb + object phrase
+Vsep	CanBePred	# verb object seperatable
+Vset	CanBePred	# verb + object as skill
+
+Vmix	CanBePred	# verb phrase need no object
+Vint	CanBePred	# intransitive verb
+Vinx	CanBePred	# intra | trans
+
+Verb	CanBePred	# normal transitive verb
+Vtwo	CanBePred	# verbs need two objects
+Vcmp	CanBePred	# verbs using for comparision
+
+Vexi	CanBePred	# existential verbs
+Vcau	CanBePred	# causative verbs
+
+Vdir	CanBePred, MaybeCmpl	# directional verb
+
+Vpsy	CanBePred, MaybeAuxi	# psychological verb
+Vpro	CanBePred, MaybeAuxi	# performative verb
+Vmod	CanBePred, MaybeAuxi	# modal verbs
+
+## special modal verbs
+VmHui	CanBePred, MaybeAuxi, Peculiar	# "会"
+VmBuhui	CanBePred, MaybeAuxi, Peculiar	# "不会"
+VmXiang	CanBePred, MaybeAuxi, Peculiar	# "想"
+VmNeng	CanBePred, MaybeAuxi, Peculiar	# "能"
+VmYao	CanBePred, MaybeAuxi, Peculiar	# "要"
+#VmKe3	CanBePred, MaybeAuxi, Peculiar	# "可"
+
+## special verbs
+VShang	CanBePred, MaybeAuxi, Peculiar	# "下"
+VXia	CanBePred, MaybeAuxi, Peculiar	# "上"
+
+### existential/comparision
+VYou	CanBePred, MaybeAuxi, Peculiar, Vlinking	# "有"
+VMeiyou	CanBePred, MaybeAuxi, Peculiar, Vlinking	# "没有"
+
+### copula
+VShi	CanBePred, MaybeAuxi, Peculiar	# '是'

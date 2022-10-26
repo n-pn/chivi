@@ -1,18 +1,17 @@
+require "./mtl_tag"
+
 @[Flags]
 enum MT::MtlPos : UInt64
   def self.parse(values : Array(String), init : MtlPos = :none)
     values.reduce(init) { |flags, value| flags | parse(value) }
   end
 
-  Passive # for word that marked empty
-
-  Boundary # make structure boundary
-  Mixedpos # word not tagged
-
   # rendering
 
+  Boundary # make structure boundary
   CapAfter # add capitalizion after this node
   CapRelay # relay capitalization
+  Skipover # for word that marked empty
 
   NoSpaceR
   NoSpaceL
@@ -20,44 +19,46 @@ enum MT::MtlPos : UInt64
   AtHead
   AtTail
 
-  # charisteric
+  ###
 
-  Redup # reduplication
+  Peculiar # word has special meaning
+  Mixedpos # word has multi roles
 
-  # placement
-
+  Unreal # not a content word
   Ktetic # possessive determiner
   Object # act as object complement for verb
 
-  Aspect # aspect marker
-  Vauxil # put before verb
-  Vcompl # verb complement
-
   # chararistic
 
-  Proper # proper nouns
-  Plural # plural nouns/pronouns
-  People # all words that refer to human beings
-  Locale # all words that can be placement
-  Desire # verb predicate expression a desire to do something
+  # Plural # plural nouns/pronouns
 
-  Compare # verb or prepos using in comparision
-  Measure # verb or adjective using in measurement
+  Humankind # all words that refer to human beings
+  Placeword # all words that can be place or location
+
+  ToCompare # verb or prepos using in comparision
+  ToMeasure # verb or adjective using in measurement
 
   # part in speech
 
-  MaybeNoun # word can act as noun
-  MaybeVerb # word can act as verb
-  MaybeAdjt # word can act as adjective
-  MaybeAdvb # word can act as adverb
-
-  Modifier # word can act as noun direct modifier
-  LinkVerb # can link verbs
   CanSplit # can split to other structure
-  BondWord # can be use to link two words/two phraes
+  BindWord # can be use to link two words/two phraes
 
-  # complements
-  HasAsmCom # has aspect marker
-  HasDirCom # has directional complement
-  HasResCom # has result complement
+  MaybeMod # word can act as noun modifier
+  MaybeAdv # word can act as adverb
+
+  # verb flags
+
+  MaybeAuxi # can be verb auxiliary
+  MaybeCmpl # can be verb complement
+
+  Volitive # verb predicate expression a desire to do something
+  Vlinking # can link verbs
+
+  HasAspect # has aspect marker
+  HasDircom # has directional complement
+  HasRescom # has result complement
+
+  # grammar
+  CanBeSubj # can be subject
+  CanBePred # can be predicate
 end

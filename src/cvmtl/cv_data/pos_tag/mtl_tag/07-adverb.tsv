@@ -1,0 +1,48 @@
+# adverbs
+
+## uncategorized
+Adverb	Unreal	# unmapped adverb
+Adform	Unreal	# advbial phrase
+
+AdvNega	Unreal	# 否定副词 negative adverbs
+AdvBu4	Unreal, Peculiar	# "不"
+AdvFei	Unreal, Peculiar	# "非"
+AdvMei	Unreal, Peculiar	# "没"
+AdvBie	Unreal, Peculiar	# "别"
+
+## adverb of degree
+AdvDegree	Unreal
+
+AdvHen	Unreal, Peculiar	# "很"
+AdvZui	Unreal, Peculiar	# "最"
+AdvHao	Unreal, Peculiar	# "好"
+
+## 时间副词 adverbs of time
+AdvTime	Unreal	# regular
+
+AdvZong	Unreal, Peculiar	# "总": both time and scope
+
+## 范围副词 scope adverbs
+AdvScope	Unreal, Peculiar	# regular
+
+AdvJiu3	Unreal, Peculiar	# "就": both scope and mood
+
+## 语气副词 modal adverbs/adverbs of mood
+AdvMood	Unreal	# regular
+
+## 频度副词 adverbs of frequency
+AdvFreque	Unreal	# regular
+
+AdvZai	Unreal, Peculiar	# "再": both frequency or correlative
+AdvYou	Unreal, Peculiar	# "又": both frequency or correlative
+AdvYe3	Unreal, Peculiar	# "也": both frequency or correlative
+AdvHoan	Unreal, Peculiar	# "还": both frequency or correlative
+
+## 关联副词 correlative or conjunctive adverbs
+AdvCorrel	Unreal	# regular
+
+AdvDu1	Unreal, Peculiar	# "都": correlative or scope
+AdvCai	Unreal, Peculiar	# "才": correlative or ???
+
+# 情态副词/情状副词 adverbs of manner
+AdvManner	Unreal	# regular

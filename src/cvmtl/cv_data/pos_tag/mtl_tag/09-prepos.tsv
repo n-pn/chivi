@@ -1,0 +1,27 @@
+#tag	#pos	#key	#desc
+
+Prepos	Unreal		# generic
+
+PrepBa3	Unreal	"把"
+PrepDui	Unreal	"对"
+PrepBei	Unreal	"被"
+PrepZai	Unreal	"在"
+
+PrepBi3 	Unreal	"比"
+
+PrepJiang	Unreal	"将"
+
+PrepHe2	Unreal	"和"
+PrepYu3	Unreal	"与"
+
+PrepTong	Unreal	"同"
+PrepGen1	Unreal	"跟"
+
+PrepRang	Unreal	"让"
+
+PrepLing	Unreal	"令"
+PrepGei3	Unreal	"给"
+
+PrepZi4	Unreal	"自"
+
+PrepCong	Unreal, AtTail	"从"

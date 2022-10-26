@@ -1,0 +1,58 @@
+#tag	#pos	#key
+
+Period	Boundary, CapAfter, NoSpaceL	"."
+Exclpm	Boundary, CapAfter, NoSpaceL	"!"
+Quespm	Boundary, CapAfter, NoSpaceL	"?"
+
+DbQuote	Boundary, NoSpaceL	"\""
+SgQuote	Boundary, NoSpaceL	"'"
+
+TitleSt1	Boundary, NoSpaceR, CapAfter	"⟨"
+TitleSt2	Boundary, NoSpaceR, CapAfter	"<"
+TitleSt3	Boundary, NoSpaceR, CapAfter	"‹"
+
+QuoteSt1	Boundary, NoSpaceR	"“"
+QuoteSt2	Boundary, NoSpaceR	"‘"
+
+BrackSt1	Boundary, NoSpaceR, CapAfter	"["
+BrackSt2	Boundary, NoSpaceR, CapAfter	"{"
+
+ParenSt1	Boundary, NoSpaceR	"("
+
+TitleCl1	Boundary, NoSpaceL	"⟩"
+TitleCl2	Boundary, NoSpaceL	">"
+TitleCl3	Boundary, NoSpaceL	"›"
+
+QuoteCl1	Boundary, NoSpaceL	"”"
+QuoteCl2	Boundary, NoSpaceL	"’"
+
+BrackCl1	Boundary, NoSpaceL	"]"
+BrackCl2	Boundary, NoSpaceL	"}"
+
+ParenCl1	Boundary, NoSpaceL	")"
+
+Colon	Boundary, NoSpaceL, CapAfter	":"
+Smcln	Boundary, NoSpaceL	";"
+
+Comma	NoSpaceL	","
+Cenum	NoSpaceL, BindWord	"､"
+
+Dash1	Boundary, NoSpaceL, NoSpaceR	"–"
+Dash2	Boundary	"—"
+
+Ellip1	NoSpaceL	"…"
+Ellip2	NoSpaceL	…"…"
+
+Tilde	Boundary, NoSpaceL	"~"
+
+Middot	NoSpaceL, NoSpaceR, BindWord	"·"
+Atsign	NoSpaceR	"@"
+
+Pcmark	NoSpaceL	"‰", "%"
+Qtmark	NoSpaceL	"￥", "$", "￡", "°", "℃"
+
+PlMark	NoSpaceL, NoSpaceR	"+"
+MnMark	NoSpaceL, NoSpaceR	"-"
+
+Space	Boundary, NoSpaceL, NoSpaceR	" "
+Pmark	Boundary	""

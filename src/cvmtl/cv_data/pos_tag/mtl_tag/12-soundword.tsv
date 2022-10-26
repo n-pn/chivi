@@ -1,0 +1,10 @@
+# sound words
+
+# onomatopoeia - tượng thanh
+Onomat	CanBePred
+
+# interjection/exclamation - thán từ
+Interj	Boundary
+
+# modal particle - ngữ khí
+Mopart	Unreal, Boundary

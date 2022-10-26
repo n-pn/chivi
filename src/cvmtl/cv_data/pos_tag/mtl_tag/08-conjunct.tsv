@@ -1,0 +1,20 @@
+# conjuctions
+
+ConjAdvb	Unreal, MaybeAdv	# conjuction or adverbial
+Conjunct	Unreal	# subordinating conjunction
+
+# both correl or concoord
+Conmixed	Unreal, BindWord	# generic
+
+ConDan4	Unreal, BindWord, Peculiar	# "但"
+ConYou4	Unreal, BindWord, Peculiar	# "又"
+ConHuo4	Unreal, BindWord, Peculiar	# "或"
+ConHuoshi	Unreal, BindWord, Peculiar	# "或是"
+
+# coordinating conjunction
+Concoord	Unreal, BindWord	# geneirc
+
+#ConHe2	Unreal, BindWord, Peculiar	# "和"
+#ConYu3	Unreal, BindWord, Peculiar	# "与"
+#ConTong	Unreal, BindWord, Peculiar	# "同"
+#ConGen1	Unreal, BindWord, Peculiar	# "跟"

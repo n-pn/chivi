@@ -1,0 +1,96 @@
+# numbers
+
+# numeral
+Ordinal	Object, AtTail	# 序数词 ordinal number
+Numeric	Object	# 基数词 generic cardinal number
+
+Ndigit0	Object	# all digits
+Ndigit1	Object	# digits with decimal point
+Ndigit2	Object	# fractal number
+Ndigit3	Object	# approximate numbers (has `-`, `~` between)
+
+Nhanzi0	Object	# all chinese number, unknown state
+Nhanzi1	Object	# chinese number, can convert to number
+Nhanzi2	Object	# chinese number, approximate
+
+Nmixed0	Object	# mixed digits with hanzi units
+Nmixed1	Object	# mixed approximate digits with hanzi units
+Nmixed2	Object	# to be determined
+Nmixed3	Object	# to be determined
+
+NumYi1 	Object	# "一"
+NumHan 	Object	# "半"
+
+
+#############
+# quantifiers
+
+## proper quantifiers
+QtGe4	Object, Peculiar	# "个"
+QtBa3	Object, Peculiar	# "把"
+#QtBen	Object, Peculiar	# "本"
+#QtBu4	Object, Peculiar	# "部"
+#QtCe4	Object, Peculiar	# "册"
+#QtCeng	Object, Peculiar	# "层"
+#QtChang	Object, Peculiar	# "场"
+#QtChu4	Object, Peculiar	# "处"
+#QtChu1	Object, Peculiar	# "出"
+#QtCi4	Object, Peculiar	# "次"
+#QtDao	Object, Peculiar	# "道"
+#QtDing	Object, Peculiar	# "顶"
+#QtDong	Object, Peculiar	# "栋"
+#QtDu3	Object, Peculiar	# "堵"
+#QtDun	Object, Peculiar	# "顿"
+#QtDuo	Object, Peculiar	# "朵"
+#QtFa1	Object, Peculiar	# "发"
+#QtFen4	Object, Peculiar	# "份"
+#QtFeng	Object, Peculiar	# "封"
+#QtFu2	Object, Peculiar	# "幅"
+#QtGan3	Object, Peculiar	# "杆"
+#QtGen1	Object, Peculiar	# "根"
+#QtJia1	Object, Peculiar	# "家"
+#QtJia4	Object, Peculiar	# "架"
+#QtJian	Object, Peculiar	# "间"
+# more: https://en.wikipedia.org/wiki/List_of_Chinese_classifiers
+
+
+## verb quantifiers
+Qtverb	Object	# verb quantifier
+Qtveno	Object, Ktetic, Mixedpos	# temporal quantifier that can be make verb complement
+
+## noun quantifiers
+Qtnoun	Object	# generic noun quantifier
+Qtmass	Object	# mass
+Qtwght	Object	# weight
+Qtdist	Object	# distance
+Qtcash	Object	# currency
+
+
+## time quantifiers
+Qttime	Object	# combine with number to timespan / timeform / dateform
+QtDian	Object, Peculiar	# "点"
+QtFen1	Object, Peculiar	# "分"
+QtMiao	Object, Peculiar	# "秒", "秒钟"
+QtNian	Object, Peculiar	# "年"
+QtYue4	Object, Peculiar	# "月"
+QtRi4	Object, Peculiar	# "日"
+QtHao	Object, Peculiar	# "号"
+
+
+##########################
+# number + quantifier pair
+
+## for verb
+Mqverb	Object, MaybeAdv	# can be verb complement or adverbial phrase
+Mqveno	Object, Ktetic, MaybeCmpl, Mixedpos	# temporal quantifier that can be verb complement
+
+## for nouns
+Mqnoun	Object, Ktetic	# generic noun quantifier
+Mqmass	Object	# mass
+Mqwght	Object	# weight
+Mqdist	Object	# distance
+Mqcash	Object	# currency
+
+## temporal
+Mqtime	Object, MaybeAdv, Mixedpos	# can be verb complement or timeform
+Mqdate	Object, MaybeAdv, Mixedpos	# can be verb complement or dateform

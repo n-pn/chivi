@@ -1,0 +1,26 @@
+# phrases
+
+SubjVerb	Mixedpos	# noun + verb (can act as determiner)
+SubjAdjt	Mixedpos	# noun + adjt (can act as determiner)
+
+DpPhrase	Mixedpos	# generic 的 phrase
+DcPhrase	Mixedpos	# 的、之 as complementizer or a nominalize
+DgPhrase	Mixedpos	# genitive marker and an associative marker
+
+DrPhrase	Mixedpos	# phrase that can act as manner adverb
+DvPhrase	Mixedpos	# phrase that can act as verb complement
+
+PrepForm	Mixedpos	# prepos + noun phrase
+
+Cmp1Pair	Mixedpos	# compare with bi3
+Cmp1Trio	Mixedpos	# compare with bubi
+
+ParenExp	Mixedpos	# parenthetical expression
+
+#vcompls
+
+# Dircmpl	Mixedpos	# direction complement
+# ResCmpl	Mixedpos	# result complemnt
+# Potcmpl	Mixedpos	# potential complement
+# Degcmpl	Mixedpos	# degree complement
+# Sttcmpl	Mixedpos	# state complement

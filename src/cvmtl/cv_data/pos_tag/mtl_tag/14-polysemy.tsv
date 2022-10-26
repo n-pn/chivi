@@ -1,0 +1,10 @@
+# polysemy
+
+VerbOrNoun	Mixedpos	# verb or noun
+VerbOrAdvb	Mixedpos	# verb or adverb
+
+AdjtOrNoun	Mixedpos	# adjective or noun
+AdjtOrAdvb	Mixedpos	# adjective or adverb
+
+AdjtOrVerb	Mixedpos	# adjective or verb
+NounOrAdvb	Mixedpos	# noun or adverb

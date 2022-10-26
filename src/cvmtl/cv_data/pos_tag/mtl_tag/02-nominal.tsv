@@ -1,0 +1,57 @@
+# nominal
+
+# proper nouns
+HumanName	Humankind, Ktetic, Object	# human name
+PlaceName	Placeword, Ktetic, Object	# place name
+InstiName	Placeword, Ktetic, Object	# institute
+
+# other proper nouns
+OtherName	Ktetic, Object	# other proper noun
+TitleName	Ktetic, Object	# book title, work name
+BrandName	Object	# brand name
+SkillName	Ktetic, Object	# skill name
+
+# generic noun
+Noun	Ktetic, Object	# generic noun
+Nmix	Ktetic, Object	# noun phrase
+
+# human related noun
+Honor	Humankind, Ktetic, Object	# honorific
+Occup	Humankind, Ktetic, Object	# occupational title that can't be combine with human name
+Ftree	Humankind, Ktetic, Object	# kinship, family member
+Human	Humankind, Ktetic, Object	# generic human word
+
+Nabst	Object	# astract concept
+Nattr	Object	# generic attribute
+
+# concrete nouns
+Nsolid	Ktetic, Object	# generic concrete noun
+Weapon	Ktetic, Object	# all kind of weapons, for ba3 quantifier
+Inhand	Ktetic, Object	# can be measured by hand, for ba3 quantifier
+Animal	Ktetic, Object	# all kind of living animals
+Plant	Ktetic, Object	# all kind of plants
+
+# placement
+Place	Placeword, Ktetic, Object	# generic place
+Plsuf	Placeword, Ktetic, Object	# combine with prev noun to place
+
+# locative
+Posit	Placeword, Object	# place + locat
+Locat	Placeword, Object	# can act as place
+
+LocShang	Placeword, Object, MaybeMod, Peculiar	# "上"
+LocZhong	Placeword, Object, MaybeMod, Peculiar	# "中"
+LocXia	Placeword, Object, MaybeMod, Peculiar	# "下"
+LocQian	Placeword, Object, MaybeMod, Peculiar	# "前"
+LocHou4	Placeword, Object, MaybeMod, Peculiar	# "后"
+
+# temporal
+Timeword	Object, MaybeAdv	# generic temporal words
+Timemark	Object, MaybeAdv	# can mark successor term as time
+
+Dateform	Object, MaybeAdv	# date
+Timeform	Object, MaybeAdv	# time
+Timespan	Object, MaybeAdv	# time span, duration
+
+#Mqdate	Object, MaybeAdv, Mixedpos	# date or nquant
+#Mqtime	Object, MaybeAdv, Mixedpos	# time or nquant

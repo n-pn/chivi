@@ -1,0 +1,35 @@
+# particles
+
+PtclLe	Unreal	"了", "喽"
+
+PtclZhe	Unreal	"着"
+PtclGuo	Unreal	"过"
+
+PtclSuo	Unreal	"所"
+
+PtclLaishuo	Unreal	"来说"
+PtclShuolai	Unreal	"说来"
+PtclLaijiang	Unreal	"来讲"
+PtclEryan	Unreal	"而言"
+
+PtclDehua	Unreal	"的话"
+PtclLian2	Unreal	"连"
+
+PtclZhi	Unreal	"之"
+PtclDep	Unreal	"的", "底"	# generic
+
+PtclDec	Unreal		# 的、之 as complementizer or a nominalizer
+PtclDeg	Unreal		# 的、之 as a genitive marker and an associative marker
+
+PtclDer	Unreal	"得"	# resultative de, de in V-de const and V-de-R
+PtclDev	Unreal	"地"	# manner de, de before VP
+
+PtclYunyun	Unreal	"云云"
+PtclDeng1	Unreal	"等"
+PtclDeng2	Unreal	"等等"
+PtclDeng3	Unreal	"等人"
+
+PtclYiyang	Unreal	"一样"
+PtclYiban	Unreal	"一般"
+PtclShide	Unreal	"似的"
+PtclBan	Unreal	"般"
