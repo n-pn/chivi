@@ -1,7 +1,7 @@
 module MT::TlRule
   def fold_verb_auxils!(verb : MtNode, auxil : MtNode) : MtNode
     case auxil.tag
-    when .pt_le?
+    when .ptcl_le?
       fold_verb_ule!(verb, auxil)
       # return verb unless (succ = verb.succ?) && succ.numeral?
 
@@ -11,15 +11,15 @@ module MT::TlRule
       # end
 
       # fold_verb_nquant!(verb, succ, has_ule: true)
-    when .pt_dev?
+    when .ptcl_dev?
       return verb unless (succ_2 = auxil.succ?) && (succ_2.verb_words? || succ_2.preposes?)
       node = fold!(verb, auxil.set!("mà"), MapTag::DrPhrase)
 
       succ_2 = fold_verbs!(succ_2)
       fold!(node, succ_2, succ_2.tag)
-    when .pt_der?
+    when .ptcl_der?
       fold_verb_ude3!(verb, auxil)
-    when .pt_guo?
+    when .ptcl_guo?
       fold!(verb, auxil, verb.tag)
     else
       verb

@@ -70,27 +70,30 @@ Qtcash	Object	# currency
 Qttime	Object	# combine with number to timespan / timeform / dateform
 QtDian	Object, Peculiar	# "点"
 QtFen1	Object, Peculiar	# "分"
-QtMiao	Object, Peculiar	# "秒", "秒钟"
+QtMiao	Object, Peculiar	# "秒"
 QtNian	Object, Peculiar	# "年"
 QtYue4	Object, Peculiar	# "月"
 QtRi4	Object, Peculiar	# "日"
 QtHao	Object, Peculiar	# "号"
+
+QtFenzhong	Object, Peculiar	# "分钟"
+QtMiaozhong	Object, Peculiar	# "秒钟"
 
 
 ##########################
 # number + quantifier pair
 
 ## for verb
-Mqverb	Object, MaybeAdv	# can be verb complement or adverbial phrase
-Mqveno	Object, Ktetic, MaybeCmpl, Mixedpos	# temporal quantifier that can be verb complement
+Nqverb	Object, MaybeAdvb	# can be verb complement or adverbial phrase
+Nqveno	Object, Ktetic, MaybeCmpl, Mixedpos	# temporal quantifier that can be verb complement
 
 ## for nouns
-Mqnoun	Object, Ktetic	# generic noun quantifier
-Mqmass	Object	# mass
-Mqwght	Object	# weight
-Mqdist	Object	# distance
-Mqcash	Object	# currency
+Nqnoun	Object, Ktetic	# generic noun quantifier
+Nqmass	Object	# mass
+Nqwght	Object	# weight
+Nqdist	Object	# distance
+Nqcash	Object	# currency
 
 ## temporal
-Mqtime	Object, MaybeAdv, Mixedpos	# can be verb complement or timeform
-Mqdate	Object, MaybeAdv, Mixedpos	# can be verb complement or dateform
+Nqtime	Object, MaybeAdvb, Mixedpos	# can be verb complement or timeform
+Nqdate	Object, MaybeAdvb, Mixedpos	# can be verb complement or dateform

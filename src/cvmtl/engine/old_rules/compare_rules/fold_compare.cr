@@ -18,7 +18,7 @@ module MT::TlRule
     while tail
       return if tail.punctuations? || tail.key == head.key
 
-      if tail.pt_cmps?
+      if tail.ptcl_cmps?
         break unless tail.key == "一样"
         break unless tail.prev?(&.adv_bu4?)
       end

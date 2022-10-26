@@ -8,7 +8,7 @@ module MT::Core
 
     noun = NounCons.new(noun) unless noun.is_a?(NounCons)
 
-    if prev.pt_deps?
+    if prev.ptcl_deps?
       dpmod = join_udep!(udep: prev)
       noun.add_dpmod(dpmod)
 
@@ -16,12 +16,12 @@ module MT::Core
       prev = fix_mixedpos!(prev) if prev.mixedpos?
     end
 
-    noun, prev = fold_noun_number!(noun, prev) if prev.numqti_words?
-    return noun if !prev.pronouns? || prev.pro_pers?
+    noun, prev = fold_noun_number!(noun, prev) if prev.numerals?
+    return noun if !prev.all_prons? || prev.per_prons?
 
     # FIXME: handle special pronoun cases
     noun.add_pdmod(prev)
-    # if prev.pro_dems? || prev.pro_na2?
+    # if prev.dem_prons? || prev.pro_na2?
     #   noun = PairNode.new(prev, noun, flip: prev.at_tail?)
     #   return noun unless prev = noun.prev?
     # end
@@ -41,7 +41,7 @@ module MT::Core
         prev = noun.prev
       end
     else
-      return {noun, number} unless number.numqti_words?
+      return {noun, number} unless number.numerals?
       noun.add_nqmod(number)
       prev = noun.prev
     end

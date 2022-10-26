@@ -8,7 +8,7 @@ module MT::TlRule
     end
 
     return vyou unless (noun = scan_noun!(succ)) && (tail = noun.succ?)
-    return fold_vyou_ude1!(vyou, ude1: tail, noun: noun) if tail.pt_dep?
+    return fold_vyou_ude1!(vyou, ude1: tail, noun: noun) if tail.ptcl_dep?
 
     fold_compare_vyou!(vyou, noun, tail)
   end
@@ -44,7 +44,7 @@ module MT::TlRule
       tail = fold_adverbs!(tail)
     when .adjt_words?
       tail = fold_adjts!(tail)
-    when .verb_words?
+    when .verbal_words?
       tail = fold_verbs!(tail)
     end
 
@@ -73,7 +73,7 @@ module MT::TlRule
 
     output = BaseList.new(head, noun, idx: head.idx)
 
-    return output unless (succ = output.succ?) && (succ.pt_dep? || succ.pt_der?)
+    return output unless (succ = output.succ?) && (succ.ptcl_dep? || succ.ptcl_der?)
     return output unless (tail = succ.succ?) && tail.key == "多"
 
     noun.fix_succ!(succ.set!(""))

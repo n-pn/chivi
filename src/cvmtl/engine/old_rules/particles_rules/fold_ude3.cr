@@ -33,17 +33,17 @@ module MT::TlRule
     succ.val = ""
 
     case tail
-    # when .pre_bi3?
+    # when .prep_bi3?
     # tail = fold_compare_bi3!(tail)
     # fold!(node, tail, PosTag::Vobj)
     when .advb_words?
       tail = fold_adverbs!(tail)
 
       if tail.adjt_words?
-        fold!(node, tail, PosTag::Aform)
+        fold!(node, tail, PosTag.make(:amix))
       elsif tail.key == "很"
         tail.val = "cực kỳ"
-        fold!(node, tail, PosTag::Aform)
+        fold!(node, tail, PosTag.make(:amix))
       elsif tail.verb_words?
         succ.set!("đến")
         fold!(node, tail, tail.tag)
@@ -51,7 +51,7 @@ module MT::TlRule
         node
       end
     when .adjt_words?
-      fold!(node, tail, PosTag::Aform)
+      fold!(node, tail, PosTag.make(:amix))
     when .verb_words?
       node = fold!(node, succ, PosTag::Verb)
       fold_verb_compl!(node, tail) || node

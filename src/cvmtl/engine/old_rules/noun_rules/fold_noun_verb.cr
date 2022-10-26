@@ -1,10 +1,10 @@
 # module MT::TlRule
 #   # ameba:disable Metrics/CyclomaticComplexity
 #   def fold_noun_verb!(noun : MtNode, verb : MtNode)
-#     return noun if noun.prev? { |x| x.pro_pers? || x.preposes? && !x.pre_bi3? }
+#     return noun if noun.prev? { |x| x.per_prons? || x.preposes? && !x.pre_bi3? }
 
 #     verb = verb.modal_verbs? ? fold_vmodal!(verb) : fold_verbs!(verb)
-#     return noun unless (succ = verb.succ?) && succ.pt_dep?
+#     return noun unless (succ = verb.succ?) && succ.ptcl_dep?
 
 #     # && (verb.verb? || verb.modal_verbs?)
 #     return noun unless tail = scan_noun!(succ.succ?)

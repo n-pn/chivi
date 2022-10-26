@@ -12,7 +12,7 @@ module MT::Core
       node.tag = MttTag::Qtnoun
     else
       case node.succ
-      when .pt_dep?, .pt_le?
+      when .ptcl_dep?, .ptcl_le?
         node.val = "đúng"
         node.tag = MtlTag::Adjt
       when .aspect?, .numbers?
@@ -33,9 +33,9 @@ module MT::Core
     case prev
     when .verb_take_verb?
       is_prepos = word_is_prepos?(node.succ)
-    when .number_words?, .common_verbs?, .pro_split?
+    when .number_words?, .common_verbs?, .mod_prons?
       is_prepos = false
-    when .quanti_words?, .noun_words?, .pro_pers?
+    when .quanti_words?, .noun_words?, .per_prons?
       is_prepos = true
     else
       is_prepos = word_is_prepos?(node.succ)
@@ -66,11 +66,11 @@ module MT::Core
   def fix_he3yu2!(node : MonoNode, succ = node.succ) : MonoNode
     # FIXME: add more cases here
     if word_is_prepos?(succ)
-      node.tag = node.wd_he2? ? MtlTag::PreHe2 : MtlTag::PreYu3
+      node.tag = node.he2_word? ? MtlTag::PrepHe2 : MtlTag::PrepYu3
     else
-      node.val = "và" if node.tag.wd_he2?
+      node.val = "và" if node.tag.he2_word?
       node.tag = MtlTag::Concoord
-      node.pos = MtlPos::BondWord
+      node.pos = MtlPos::BindWord
     end
 
     node
@@ -78,15 +78,15 @@ module MT::Core
 
   private def word_is_prepos?(noun : MtNode)
     return false unless noun.tag.noun_words? && (tail = noun.succ?)
-    tail.preposes? || tail.pt_cmps? || tail.common_verbs?
+    tail.preposes? || tail.ptcl_cmps? || tail.common_verbs?
   end
 
-  def fix_pt_dev!(node : MonoNode)
-    Log.info { "TODO fix pt_dev!".colorize.yellow }
+  def fix_ptcl_dev!(node : MonoNode)
+    Log.info { "TODO fix ptcl_dev!".colorize.yellow }
     node
   end
 
-  def fix_pt_der!(node : MonoNode)
+  def fix_ptcl_der!(node : MonoNode)
     Log.info { "TODO fix pd_der!".colorize.yellow }
     node
   end

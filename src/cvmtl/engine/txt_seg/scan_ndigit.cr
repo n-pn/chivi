@@ -49,22 +49,22 @@ class MT::TxtSeg
 
   @[AlwaysInline]
   private def tag_for_num_with_period(count : Int32) : MtlTag
-    count < 2 ? MtlTag::Ndigit1 : count < 3 ? MtlTag::Tdate : MtlTag::StrOther
+    count < 2 ? MtlTag::Ndigit1 : count < 3 ? MtlTag::Dateform : MtlTag::StrOther
   end
 
   @[AlwaysInline]
   private def tag_for_num_with_slash(count : Int32) : MtlTag
-    count < 2 ? MtlTag::Ndigit2 : count < 3 ? MtlTag::Tdate : MtlTag::StrOther
+    count < 2 ? MtlTag::Ndigit2 : count < 3 ? MtlTag::Dateform : MtlTag::StrOther
   end
 
   @[AlwaysInline]
   private def tag_for_num_with_comma(count : Int32) : MtlTag
-    count < 3 ? MtlTag::Ttime : MtlTag::StrOther
+    count < 3 ? MtlTag::Timeform : MtlTag::StrOther
   end
 
   @[AlwaysInline]
   private def tag_for_num_with_minus(count : Int32) : MtlTag
-    count == 3 ? MtlTag::Tdate : MtlTag::StrOther
+    count == 3 ? MtlTag::Dateform : MtlTag::StrOther
   end
 
   @[AlwaysInline]

@@ -1,8 +1,13 @@
 require "./mtl_pos"
 require "./mtl_tag"
 
-module MT::MapTag
-  BASEMAP = {} of MtlTag => MtlPos
+module MT::PosTag
+  # source: https://gist.github.com/luw2007/6016931
+  # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
+  # extra: https://www.cnblogs.com/bushe/p/4635513.html
+
+  MAP_POS = {} of MtlTag => MtlPos
+  MAP_POS[MtlTag::Empty] = MtlPos.flags(Boundary, NoSpaceL, NoSpaceR, CapRelay, Unreal)
 
   {% begin %}
     {% files = {
@@ -27,49 +32,37 @@ module MT::MapTag
       {% lines = read_file("#{__DIR__}/mtl_tag/#{file.id}.tsv").split("\n") %}
       {% for line in lines.reject { |x| x.empty? || x.starts_with?('#') } %}
         {% tag, pos = line.split('\t') %}
-        BASEMAP[MtlTag::{{tag.id}}] = MtlPos.flags({{pos.id}})
+        MAP_POS[MtlTag::{{tag.id}}] = MtlPos.flags({{pos.id}})
       {% end %}
     {% end %}
   {% end %}
 
-  def self.map(tag : MtLTag)
-    BASEMAP[tag] || MtlPos::None
-  end
-end
-
-struct MT::PosTag
-  # source: https://gist.github.com/luw2007/6016931
-  # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
-  # extra: https://www.cnblogs.com/bushe/p/4635513.html
-
-  def initialize(@tag : MtlTag, @pos : MtlPos = MapTag.map(tag))
+  def self.map_pos(tag : MtlTag)
+    MAP_POS[tag] || MtlPos::None
   end
 
-  ########
-  ###
-
-  def self.load_map(name : String, init_pos : MtlPos = :content) : Hash(String, PosTag)
+  def self.load_map(name : String) : Hash(String, {MtlTag, MtlPos})
     lines = File.read_lines("var/cvmtl/inits/#{name}.tsv")
-    lines.each_with_object({} of String => PosTag) do |line, hash|
+    lines.each_with_object({} of String => {MtlTag, MtlPos}) do |line, hash|
       next if line.empty? || line.starts_with?('#')
       args = line.split('\t')
 
       key = args[0]
       tag = MtlTag.parse(args[1])
-
-      str = args[2]?.try(&.split(", "))
-      pos = str ? MtlPos.parse(str, init_pos) : init_pos
-
-      hash[key] = new(tag, pos)
+      hash[key] = make(tag)
     rescue err
       Log.error(exception: err) { "error parsing #{name} on line: #{line}" }
     end
   end
 
+  def self.make(tag : MtlTag, pos : MtlPos = map_pos(tag))
+    {tag, pos}
+  end
+
   # ameba:disable Metrics/CyclomaticComplexity
-  def self.init(tag : String, key : String = "", val : String = "", alt : String? = nil) : PosTag
+  def self.init(tag : String, key : String = "", val : String = "", alt : String? = nil)
     case tag[0]?
-    when nil then new(:lit_trans)
+    when nil then make(:lit_trans)
     when 'N' then map_name(tag, key)
     when 'n' then map_noun(tag, key, alt)
     when 't' then map_tword(key)
@@ -91,7 +84,7 @@ struct MT::PosTag
     when '!' then map_uniqword(key)
     when 'y' then map_sound(key)
     when 'w' then map_punct(val)
-    else          new(:lit_blank)
+    else          make(:lit_blank)
     end
   end
 
@@ -101,9 +94,9 @@ struct MT::PosTag
     {% lines = read_file("#{__DIR__}/mtl_tag/00-punct.tsv").split("\n") %}
     {% for line in lines.select { |x| !x.empty? && !x.starts_with?('#') } %}
       {% tag, pos, keys = line.split('\t') %}
-      when {{keys.id}} then new(MtlTag::{{tag.id}}, MtlPos.flags(Unreal, {{pos}}))
+      when {{keys.id}} then {MtlTag::{{tag.id}}, MtlPos.flags(Unreal, {{pos.id}})}
     {% end %}
-      else new(MtlTag::Pmark, MtlPos.flags(Unreal, Boundary))
+      else {MtlTag::Pmark, MtlPos.flags(Unreal, Boundary)}
       end
     {% end %}
   end
@@ -115,10 +108,10 @@ struct MT::PosTag
     {% for line in lines.select { |x| !x.empty? && !x.starts_with?('#') } %}
       {% tag, pos, key = line.split('\t') %}
       {% if !key.empty? %}
-      when {{keys.id}} then new(MtlTag::{{tag.id}}, MtlPos.flags({{pos}}))
+      when {{key.id}} then {MtlTag::{{tag.id}}, MtlPos.flags({{pos.id}})}
       {% end %}
     {% end %}
-      else new(MtlTag::Prepos, MtlPos.flags(Unreal))
+      else {MtlTag::Prepos, MtlPos.flags(Unreal)}
       end
     {% end %}
   end
@@ -130,12 +123,12 @@ struct MT::PosTag
     {% for line in lines.select { |x| !x.empty? && !x.starts_with?('#') } %}
       {% tag, pos, key = line.split('\t') %}
       {% if !key.empty? %}
-      when {{keys.id}} then new(MtlTag::{{tag.id}}, MtlPos.flags({{pos}}))
+      when {{key.id}} then {MtlTag::{{tag.id}}, MtlPos.flags({{pos.id}})}
       {% end %}
     {% end %}
       else
         Log.info { "unknown particle #{str}"}
-        new(MtlTag::Prepos, MtlPos.flags(Unreal))
+        {MtlTag::Prepos, MtlPos.flags(Unreal)}
       end
     {% end %}
   end

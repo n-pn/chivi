@@ -5,7 +5,7 @@ module MT::TlRule
 
     return verb if verb.verb_no_obj? || !succ || succ.boundary?
 
-    if succ.pt_dep?
+    if succ.ptcl_dep?
       return verb if verb.prev? { |x| x.object? || x.prep_form? }
       return verb unless (object = scan_noun!(succ.succ?)) && object.object?
 
@@ -23,7 +23,7 @@ module MT::TlRule
       return fold!(verb, noun, PosTag::Vobj)
     end
 
-    if (ude1 = noun.succ?) && ude1.pt_dep? && (right = ude1.succ?)
+    if (ude1 = noun.succ?) && ude1.ptcl_dep? && (right = ude1.succ?)
       if (right = scan_noun!(right)) && should_apply_ude1_after_verb?(verb, right)
         noun = fold_ude1_left!(ude1: ude1, left: noun, right: right)
       end
@@ -34,7 +34,7 @@ module MT::TlRule
 
     if succ.suf_noun? && succ.key == "时"
       fold!(verb_object, succ.set!("khi"), tag: PosTag::Texpr, flip: true)
-    elsif succ.bond_word?
+    elsif succ.bind_word?
       fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
     else
       verb_object
@@ -43,7 +43,7 @@ module MT::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def should_apply_ude1_after_verb?(verb : MtNode, right : MtNode?, prev = verb.prev?)
-    return false if verb.is_a?(BaseList) && verb.list.any?(&.pre_bei?)
+    return false if verb.is_a?(BaseList) && verb.list.any?(&.prep_bei?)
     return false if verb.vtwo?
 
     while prev && prev.advb_words?
@@ -55,16 +55,16 @@ module MT::TlRule
     # in case after ude1 is adverb
     if {"时候", "时", "打算", "方法"}.includes?(right.key)
       return false
-    elsif right.succ? { |x| x.boundary? || x.pt_le? }
+    elsif right.succ? { |x| x.boundary? || x.ptcl_le? }
       return true
     end
 
     case prev.tag
-    when .comma?      then return true
-    when .v_shi?      then return false
-    when .v_you?      then return false
-    when .verb_words? then return is_linking_verb?(prev, verb)
-    when .nquants?    then return false
+    when .comma?        then return true
+    when .v_shi?        then return false
+    when .v_you?        then return false
+    when .verbal_words? then return is_linking_verb?(prev, verb)
+    when .nquants?      then return false
     when .nounish?
       return true unless head = prev.prev?
       return false if head.v_shi?

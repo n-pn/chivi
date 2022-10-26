@@ -4,7 +4,7 @@ class MT::SubjPred < MT::PairNode
   include MtList
 
   def initialize(head : MtNode, tail : MtNode, tag : MtlTag = MtlTag::SubjVerb)
-    pos = tail.pos.desire? ? MtlPos::Desire : MtlPos::None
+    pos = tail.pos.volitive? ? MtlPos::Volitive : MtlPos::None
     super(head, tail, tag: tag, pos: pos)
   end
 

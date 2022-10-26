@@ -9,7 +9,7 @@ module MT::MtList
     self.each do |node|
       io << ' ' if prev && node.add_space?(prev)
       node.to_txt(io)
-      prev = node unless node.pos.passive?
+      prev = node unless node.pos.skipover?
     end
   end
 

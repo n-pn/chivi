@@ -1,9 +1,9 @@
 module MT::TlRule
   def fold_specials!(node : MtNode)
     case node
-    when .wd_hao?  then fold_wd_hao!(node)
-    when .v_shang? then fix_上下(node, MAP_上)
-    when .v_xia?   then fix_上下(node, MAP_下)
+    when .hao_word? then fold_wd_hao!(node)
+    when .v_shang?  then fix_上下(node, MAP_上)
+    when .v_xia?    then fix_上下(node, MAP_下)
     when .key_in?("和", "跟")
       if node.prev? { |x| x.boundary? || x.advb_words? } || concoord_is_prepos?(node.succ?)
         fold_preposes!(node)
@@ -20,7 +20,7 @@ module MT::TlRule
     return false unless node
 
     while node = node.succ?
-      if node.verb_words?
+      if node.verbal_words?
         return !node.uniqword?
       elsif node.uniqword?
         return true if node.key_in?("上", "下") && fix_上下(node).verb?
@@ -36,7 +36,7 @@ module MT::TlRule
   def fix_上下(node : MtNode, vals = node.key == "上" ? MAP_上 : MAP_下) : MtNode
     case node.prev?
     when .nil?, .empty?, .punctuations?
-      if node.succ? { |x| x.content? || x.pt_le? }
+      if node.succ? { |x| x.content? || x.ptcl_le? }
         node.set!(vals[0], PosTag::Verb)
       else
         node.set!(vals[2], PosTag::Noun)
@@ -52,13 +52,13 @@ module MT::TlRule
 
   def fold_wd_hao!(node : MtNode) : MtNode
     case succ = node.succ?
-    when .nil?, .punctuations?, .pt_le?
-      node.set!("tốt", PosTag::Adjt)
-    when .adjt_words?, .verb_words?, .modal_verbs?, .advb_words?
-      node.set!(succ.verb_words? ? "dễ" : "thật", PosTag::Adverb)
+    when .nil?, .punctuations?, .ptcl_le?
+      node.set!("tốt", PosTag.make(:adjt))
+    when .adjt_words?, .verbal_words?, .modal_verbs?, .advb_words?
+      node.set!(succ.verbal_words? ? "dễ" : "thật", PosTag::Adverb)
       fold_adverb_base!(node, succ)
     when .noun_words?
-      node.set!("tốt", PosTag::Adjt)
+      node.set!("tốt", PosTag.make(:adjt))
       fold_adjt_noun!(node, succ)
     else
       node

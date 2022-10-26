@@ -4,7 +4,7 @@ module MT::TlRule
 
     if succ.numeral?
       succ = fuse_number!(succ)
-      return fold!(adjt, succ, PosTag::Aform)
+      return fold!(adjt, succ, PosTag.make(:amix))
     end
 
     return unless succ.is_a?(MonoNode) && (tail = succ.succ?) && tail.numeral?
@@ -12,7 +12,7 @@ module MT::TlRule
     succ.val = succ_val
 
     tail = fuse_number!(tail)
-    fold!(adjt, tail, PosTag::Aform)
+    fold!(adjt, tail, PosTag.make(:amix))
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
@@ -47,7 +47,7 @@ module MT::TlRule
         case succ.key
         when "到"
           if (tail = succ.succ?) && tail.adjt_words?
-            adjt = fold!(adjt, tail, PosTag::Aform)
+            adjt = fold!(adjt, tail, PosTag.make(:amix))
           else
             adjt = fold!(adjt, succ, PosTag::Verb)
             return fold_verbs!(succ, prev: prev)
@@ -58,25 +58,25 @@ module MT::TlRule
 
         succ = fold_verbs!(succ)
         return fold!(adjt, succ, succ.tag, flip: true)
-        # when .pt_le?
+        # when .ptcl_le?
         #   break unless (tail = succ.succ?) && tail.key == "点"
         #   succ.val = ""
-        #   adjt = fold!(adjt, tail.set!("chút"), PosTag::Aform)
+        #   adjt = fold!(adjt, tail.set!("chút"), PosTag.make(:amix))
         #   break
-      when .pt_dep?
+      when .ptcl_dep?
         break unless (tail = succ.succ?) && tail.key == "很"
         break if tail.succ?(&.boundary?.!)
 
         succ.val = ""
-        adjt = fold!(adjt, tail.set!("cực kỳ"), PosTag::Aform)
+        adjt = fold!(adjt, tail.set!("cực kỳ"), PosTag.make(:amix))
         break
-      when .pt_dev?
+      when .ptcl_dev?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_adjt_ude2!(adjt, succ)
-      when .pt_zhe?
+      when .ptcl_zhe?
         verb = fold!(adjt, succ.set!(""), PosTag::Verb)
         return fold_verbs!(verb, prev: prev)
-      when .pt_zhi?
+      when .ptcl_zhi?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_uzhi!(succ, adjt)
       when .adv_bu4?

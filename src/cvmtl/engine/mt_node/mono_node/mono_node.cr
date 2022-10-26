@@ -7,7 +7,8 @@ class MT::MonoNode < MT::MtNode
   getter alt : String?
   getter dic : Int32
 
-  def initialize(@key, @val, @tag : MtlTag, @pos : MtlPos,
+  def initialize(@key, @val,
+                 @tag : MtlTag, @pos = PosTag.map_pos(tag),
                  @dic = 0, @idx = 0, @alt = nil)
   end
 
@@ -17,7 +18,7 @@ class MT::MonoNode < MT::MtNode
 
   def initialize(char : Char | String, @dic = 0, @idx = 0)
     @key = @val = char.to_s
-    @tag, @pos = PosTag::LitBlank
+    @tag, @pos = PosTag.make(:lit_blank)
   end
 
   def fix_val!(val = @alt) : self
@@ -27,7 +28,7 @@ class MT::MonoNode < MT::MtNode
 
   def inactivate!
     @val = ""
-    @pos |= MtlPos.flags(Passive, NoSpaceL, NoSpaceR, CapRelay)
+    @pos |= MtlPos.flags(Skipover, NoSpaceL, NoSpaceR, CapRelay)
     self
   end
 

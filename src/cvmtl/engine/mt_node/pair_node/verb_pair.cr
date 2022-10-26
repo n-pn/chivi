@@ -4,7 +4,7 @@ class MT::VerbPair < MT::PairNode
   include MtList
 
   def initialize(head : MtNode, tail : MtNode)
-    tag = MtlTag::Vform
+    tag = MtlTag::Vmix
     pos = head.pos | tail.pos
     super(head, tail, tag: tag, pos: pos)
   end

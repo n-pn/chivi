@@ -32,7 +32,7 @@
 #       case succ = pro_dem.succ?
 #       when .nil?, .preposes?, BaseList
 #         pro_dem.set!("cái này")
-#       when .verb_words?
+#       when .verbal_words?
 #         pro_dem.set!("đây")
 #       when .comma?
 #         if (succ_2 = succ.succ?) && succ_2.pro_zhe? # && succ_2.succ?(&.maybe_verb?)

@@ -1,21 +1,21 @@
 # suffix
 
 ## suffix for whole subj+verb structure
-时	suf_time
-的时候	suf_time
-的日子	suf_time
+时	SufTime
+的时候	SufTime
+的日子	SufTime
 
 ## suffix that make nattr
-色	suf_attr
-级	suf_attr
-型	suf_attr
-状	suf_attr
-
+色	SufAttr
+级	SufAttr
+型	SufAttr
+状	SufAttr
+.make(:noun).make(:noun)
 ## suffix that make verb
-化	suf_verb
+化	SufVerb
 
 ## suffix that make plural noun
-们	suf_men5
+们	SufMen5
 
 ## suffix that make noun/adjt
-性	suf_xing
+性	SufXing

@@ -5,7 +5,7 @@ module MT::Core
     verb = cmpl
     while verb = verb.prev
       verb = fix_mixedpos!(verb) if verb.mixedpos?
-      break unless verb.vcompl?
+      break unless verb.maybe_cmpl?
     end
 
     case verb
@@ -19,7 +19,7 @@ module MT::Core
     end
 
     while cmpl = verb.succ
-      break unless cmpl.vcompl?
+      break unless cmpl.maybe_cmpl?
       verb = pair_cmpl!(verb, cmpl)
     end
 

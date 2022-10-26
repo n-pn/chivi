@@ -27,11 +27,11 @@ class MT::TxtSeg
     end
 
     if cap_count > 0
-      tag = MtlTag::CapOther
+      tag = MtlTag::OtherName
     elsif num_count > 0
       tag = MtlTag::LitBlank
     else
-      tag = MtlTag::Nword
+      tag = MtlTag::Noun
     end
 
     # puts ["scan_string", index, url1_idx, url2_idx]

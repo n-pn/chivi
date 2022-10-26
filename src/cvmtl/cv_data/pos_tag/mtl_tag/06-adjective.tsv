@@ -7,7 +7,8 @@ Amed	CanBePred	# measurement adjective
 Ahao	CanBePred, Peculiar	# "好"
 
 # modifier 区别词
-Amod	MaybeMod	# modifier place after center noun
+Amod	MaybeModi, AtTail	# modifier place after center noun
+AmodL	MaybeModi, AtHead	# modifier put before noun
 
 # words that act as adjective
 Ades	CanBePred 	# 状态词 stative verb

@@ -5,8 +5,9 @@ Pronoun	Object, Ktetic	# unknown pronoun
 ## 人称代词 - personal pronoun - đại từ nhân xưng
 PerPron	Object, Ktetic, Humankind	#
 
-PronZiji	Object, Ktetic, Humankind, Peculiar	# "自己"
 PronQu2	Object, Ktetic, Humankind, Peculiar	# "其"
+PronQumen	Object, Ktetic, Humankind, Peculiar	# "其们"
+PronZiji	Object, Ktetic, Humankind, Peculiar	# "自己"
 
 # 指示代词 - demonstrative pronoun - đại từ chỉ thị
 DemPron	Object, Ktetic	# generic

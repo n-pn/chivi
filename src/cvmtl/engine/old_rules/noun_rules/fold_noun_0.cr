@@ -30,7 +30,7 @@ module MT::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def noun_can_combine?(prev : MtNode?, succ : MtNode?) : Bool
-    while prev && (prev.numeral? || prev.pronouns?)
+    while prev && (prev.numeral? || prev.all_prons?)
       # puts [prev, succ, "noun_can_combine"]
       prev = prev.prev?
     end
@@ -41,10 +41,10 @@ module MT::TlRule
     # puts [prev, succ, "noun_can_combine"]
     case succ
     when .maybe_adjt?
-      return false unless (tail = succ.succ?) && tail.pt_dep?
+      return false unless (tail = succ.succ?) && tail.ptcl_dep?
       tail.succ? { |x| x.boundary? || x.verbal? } || false
     when .preposes?, .verbal?
-      return true if succ.succ? { |x| x.pt_dep? || x.boundary? }
+      return true if succ.succ? { |x| x.ptcl_dep? || x.boundary? }
       return false if prev.boundary?
       is_linking_verb?(prev, succ)
     else

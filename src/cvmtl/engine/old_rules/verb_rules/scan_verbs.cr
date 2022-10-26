@@ -6,7 +6,7 @@ module MT::TlRule
     when .v_shi?      then node
     when .v_you?      then node
     when .advb_words? then fold_adverbs!(node)
-    when .verb_words? then fold_verbs!(node)
+    when .verbal_words? then fold_verbs!(node)
     else                   node
     end
   end

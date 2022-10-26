@@ -20,7 +20,7 @@ module MT::Core
 
     case prev
     when .noun_words?
-      PairNode.new(prev, adjt, MtlTag::SubjAdjt, MtlPos::MaybeAdjt)
+      PairNode.new(prev, adjt, MtlTag::SubjAdjt, MtlPos::MaybeModi)
     when .prep_form?
       join_prep_form!(tail: adjt, prep_form: prev.as(PairNode))
     else

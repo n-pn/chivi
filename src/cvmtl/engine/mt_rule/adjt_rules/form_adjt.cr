@@ -4,10 +4,10 @@ module MT::Core
     # TODO:
     # - mark adjective as reduplication
 
-    tag, pos = PosTag.make(:aform)
+    tag, pos = PosTag.make(:amix)
 
     while prev.is_a?(MonoNode)
-      break unless prev.adjt_words? || prev.maybe_adjt?
+      break unless prev.adjt_words? # amix?|| prev.maybe_adjt?
       adjt = PairNode.new(prev, adjt, tag: tag, pos: pos, flip: !prev.at_head?)
       prev = prev.prev
     end
@@ -20,7 +20,7 @@ module MT::Core
         adjt = fold_adjt_bu4!(adjt, prev)
         prev = adjt.prev
         next
-      when .wd_hao?
+      when .hao_word?
         prev.val = "thật"
       when .maybe_advb?
         prev.as_advb!(prev.alt)

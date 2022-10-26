@@ -1,15 +1,15 @@
 module MT::Core
-  def fix_pt_dep!(node : MonoNode)
+  def fix_ptcl_dep!(node : MonoNode)
     Log.info { "TODO!".colorize.yellow }
     node
   end
 
-  def fix_pt_dev!(node : MonoNode)
+  def fix_ptcl_dev!(node : MonoNode)
     Log.info { "TODO!".colorize.yellow }
     node
   end
 
-  def fix_pt_der!(node : MonoNode)
+  def fix_ptcl_der!(node : MonoNode)
     Log.info { "TODO!".colorize.yellow }
     node
   end

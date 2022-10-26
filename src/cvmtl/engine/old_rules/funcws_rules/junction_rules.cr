@@ -15,12 +15,12 @@ module MT::TlRule
       succ = fold_preposes!(succ)
     when .advb_words?
       succ = fold_adverbs!(succ)
-    when .verb_words?
+    when .verbal_words?
       tag = verb.tag if succ.key == "过"
       succ = fold_verbs!(succ)
     end
 
-    return unless tag || succ.verb_words?
+    return unless tag || succ.verbal_words?
     fold!(verb, succ, tag: tag || succ.tag)
   end
 
@@ -28,7 +28,7 @@ module MT::TlRule
     return unless prev && succ && is_concoord?(node)
     return unless (succ = scan_adjt!(succ)) && succ.adjt_words?
 
-    fold!(prev, succ, tag: PosTag::Aform)
+    fold!(prev, succ, tag: PosTag.make(:amix))
   end
 
   def fold_noun_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)
@@ -44,8 +44,8 @@ module MT::TlRule
 
   def should_fold_noun_concoord?(noun : MtNode, concoord : MtNode) : Bool
     return true unless (prev = noun.prev?) && (succ = concoord.succ?)
-    return false if prev.numeral? || prev.pronouns?
-    return true unless prev.pt_dep? && (prev = prev.prev?)
+    return false if prev.numeral? || prev.all_prons?
+    return true unless prev.ptcl_dep? && (prev = prev.prev?)
 
     case prev.tag
     when .nform?     then true

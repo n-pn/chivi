@@ -1,29 +1,28 @@
-struct MT::PosTag
-  NUMBER_MAP = load_map("map_number", MtlPos.flags(Object))
+module MT::PosTag
+  NUMBER_MAP = load_map("map_number")
 
-  def self.map_number(tag : String, key : String) : self
+  def self.map_number(tag : String, key : String)
     return map_nquant(key) if tag[1]? == 'q'
 
     NUMBER_MAP[key] ||= begin
       case key
-      when .starts_with?('第') then new(:ordinal)
+      when .starts_with?('第') then make(:ordinal)
       when .matches?(/\d/)
-        key.matches?(/\D/) ? new(:ndigit2) : new(:ndigit1)
+        key.matches?(/\D/) ? make(:ndigit2) : make(:ndigit1)
       when .matches?(/[零〇一二两三四五六七八九十百千万亿兆]/)
-        new(:nhanzi0)
+        make(:nhanzi0)
       else
-        new(:numeric)
+        make(:numeric)
       end
     end
   end
 
-  NQUANT_MAP = load_map("map_nquant", :object)
+  NQUANT_MAP = load_map("map_nquant")
 
   def self.map_nquant(key : String)
     NQUANT_MAP[key] ||= begin
-      res = map_quanti(clean_nquant(key))
-      res.tag = res.tag.qt_to_nq
-      res
+      tag, _ = map_quanti(clean_nquant(key))
+      make(tag.qt_to_nq)
     end
   end
 
@@ -55,6 +54,6 @@ struct MT::PosTag
   QUANTI_MAP = load_map("map_quanti")
 
   def self.map_quanti(key : String)
-    QUANTI_MAP[key]? || new(:qtnoun)
+    QUANTI_MAP[key]? || make(:qtnoun)
   end
 end

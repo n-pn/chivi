@@ -1,4 +1,6 @@
 enum MT::MtlTag : UInt32
+  Empty = 0
+
   {% begin %}
     {% files = {
          "00-punct",
@@ -95,7 +97,7 @@ enum MT::MtlTag : UInt32
 
   # is not proper nouns
   def common_nouns?
-    self >= Honortitle && self <= Placesuff
+    self >= Honor && self <= Plsuf
   end
 
   # noun is objects
@@ -105,12 +107,12 @@ enum MT::MtlTag : UInt32
 
   # common noun that refer to placement/location
   def place_words?
-    self >= Placeword && self < Timeword
+    self >= Place && self < Timeword
   end
 
   # all locative words
   def locat_words?
-    self >= Locative && self < Timespan
+    self >= Locativ && self < Timespan
   end
 
   # all time words
@@ -131,20 +133,25 @@ enum MT::MtlTag : UInt32
   end
 
   # demostrate pronouns
-  def pro_dems?
+  def dem_prons?
     self >= DemPron && self < IntPron
   end
 
   # interrogative pronouns
-  def pro_ints?
+  def int_prons?
     self >= IntPron && self < Ordinal
+  end
+
+  # pronouns that can be modifiers
+  def mod_prons?
+    self >= PronZhe && self <= PronShei
   end
 
   # numberal
 
   # all numbers and quantifiers
   def numerals?
-    self >= Ordinal && self <= Mqdate
+    self >= Ordinal && self <= Nqdate
   end
 
   # all kind of numbers
@@ -161,11 +168,11 @@ enum MT::MtlTag : UInt32
   end
 
   def quantis?
-    self >= QtGe4 && self < Mqverb
+    self >= QtGe4 && self < Nqverb
   end
 
   def nquants?
-    self >= Mqverb && self < Mqdate
+    self >= Nqverb && self < Nqdate
   end
 
   # verbal
@@ -295,7 +302,7 @@ enum MT::MtlTag : UInt32
   end
 
   def ptcl_deps?
-    self >= PtDep && self <= PtDeg
+    self >= PtclDep && self <= PtclDeg
   end
 
   def ptcl_ects?
@@ -331,6 +338,16 @@ enum MT::MtlTag : UInt32
   end
 
   def qt_to_nq
-    (self >= Qtmass && self <= Qtcash) ? self + (Mqmass.value - Qtmass.value) : Qtnoun
+    (self >= Qtmass && self <= Qtcash) ? self + (Nqmass.value - Qtmass.value) : Qtnoun
+  end
+end
+
+module MT::HasTag
+  property tag = MtlTag::LitBlank
+  forward_missing_to @tag
+
+  # words after this is most certainly noun words/noun phrases
+  def mark_noun_after?
+    @tag.quantis? || @tag.mod_prons?
   end
 end

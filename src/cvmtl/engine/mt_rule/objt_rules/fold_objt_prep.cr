@@ -1,16 +1,16 @@
 module MT::Core
   def fold_objt_prep!(objt : MtNode, prep : MonoNode)
-    tag, pos = PosTag::PrepForm
+    tag, pos = PosTag.make(:prep_form)
 
     # FIXME: handle more type of preposes
     case prep.tag
-    when .pre_bi3?
+    when .prep_bi3?
       prep.val = prep.prev?(&.adv_bu4?) ? "bằng" : "hơn"
       pos |= MtlPos::AtTail
-    when .pre_ling?, .pre_gei3?
-      prep.val = "làm" if prep.prev?(&.tag.content_words?)
-    when .pre_zai?, .pre_cong?
-      if objt.time_words? || objt.locale?
+    when .prep_ling?, .prep_gei3?
+      prep.val = "làm" if prep.prev?(&.unreal?.!)
+    when .prep_zai?, .prep_cong?
+      if objt.time_words? || objt.placeword?
         prep.fix_val!
         pos |= MtlPos::AtTail
       end

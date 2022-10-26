@@ -26,7 +26,7 @@ class MT::VerbCons < MT::MtNode
   def add_advb(advb : MtNode)
     add_head(advb)
 
-    tag = MtlTag::AdvForm
+    tag = MtlTag::Adform
     pos = advb.pos
 
     if advb.at_tail?
@@ -44,7 +44,7 @@ class MT::VerbCons < MT::MtNode
 
   def add_prep(prep : MtNode)
     add_head(prep)
-    tag, pos = PosTag::PrepForm
+    tag, pos = PosTag.make(:prep_form)
 
     if prep.at_tail?
       if node = @tl_prep

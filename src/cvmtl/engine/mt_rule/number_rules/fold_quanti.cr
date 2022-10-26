@@ -2,7 +2,7 @@ module MT::Core
   def fold_quanti!(quanti : MtNode, prev = quanti.prev) : MtNode
     if quanti.qt_ge4? && quanti.is_a?(MonoNode) && quanti.succ.noun_words?
       quanti.val = ""
-      quanti.pos |= MtlPos.flags(CapRelay, NoSpaceL, NoSpaceR, Passive)
+      quanti.pos |= MtlPos.flags(CapRelay, NoSpaceL, NoSpaceR, Skipover)
     end
 
     tag = quanti.tag.qt_to_nq
@@ -11,7 +11,7 @@ module MT::Core
     return fold_quanti_number!(quanti, number: prev, tag: tag, pos: pos) if prev.numbers?
     return quanti unless prev.quantis? && prev.is_a?(MonoNode)
 
-    pos |= MtlPos.flags(Redup, MaybeAdvb)
+    pos |= MtlPos.flags(MaybeAdvb)
 
     if (head = prev.prev?) && head.num_yi1?
       head = head.as(MonoNode)
@@ -35,7 +35,7 @@ module MT::Core
     head.as(MonoNode).val = "từng"
 
     redup = PairNode.new(head, prev, tag, pos)
-    pos |= MtlPos.flags(Redup, MaybeAdvb)
+    pos |= MtlPos.flags(MaybeAdvb)
 
     PairNode.new(redup, nquant, tag, pos)
   end

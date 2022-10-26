@@ -3,23 +3,23 @@ module MT::Core
     return verb unless prev.is_a?(MonoNode)
 
     if (prev.common_verbs? && verb.is_a?(MonoNode) && verb.key == prev.key)
-      pos = verb.pos | MtlPos::Redup
-      verb = PairNode.new(prev, verb, verb.tag, pos)
+      # pos = verb.pos | MtlPos::Redup
+      verb = PairNode.new(prev, verb, verb.tag, verb.pos)
       prev = verb.prev
       return verb unless prev.is_a?(MonoNode)
     end
 
     case prev
-    when .pt_suo?
+    when .ptcl_suo?
       prev.val = "chỗ"
-    when .pre_jiang?, .pre_zai?, .pre_bei?
+    when .prep_jiang?, .prep_zai?, .prep_bei?
       return verb unless prepos_is_vauxil?(verb, prev)
       prev.fix_val!
       # TODO: change meaning of pre_zai and pre_bei
-    when .pt_der?
+    when .ptcl_der?
       prev.tag = MtlTag::Vmod
       prev.val = "phải"
-      prev.pos |= MtlPos::Desire
+      prev.pos |= MtlPos::Volitive
     when .verb_take_verb?
       prev.val = fix_vauxil_val!(verb: verb, auxil: prev)
       prev.fix_val! # switch to alternative meaning
@@ -28,8 +28,8 @@ module MT::Core
     end
 
     verb = VerbCons.new(verb) unless verb.is_a?(VerbCons)
-    prev.pos |= MtlPos::Vauxil
-    verb.pos |= MtlPos::Desire if prev.pos.desire?
+    prev.pos |= MtlPos::MaybeAuxi
+    verb.pos |= MtlPos::Volitive if prev.pos.volitive?
     verb.add_auxi(prev)
     verb
   end

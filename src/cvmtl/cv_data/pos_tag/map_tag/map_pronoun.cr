@@ -1,5 +1,5 @@
-struct MT::PosTag
-  PRONOUN_MAP = load_map("map_pronoun", MtlPos.flags(Object))
+module MT::PosTag
+  PRONOUN_MAP = load_map("map_pronoun")
 
   def self.map_pronoun(key : String, tag : String = "")
     PRONOUN_MAP[key] ||= begin
@@ -7,7 +7,7 @@ struct MT::PosTag
       when '这', '那', '每', '本'
         make(:dem_pron, MtlPos.flags(Object, CanSplit))
       when '令', '贵', '舍', '爱'
-        make(:pre_pron, MtlPos.flags(Object, Ktetic, Humankind))
+        make(:per_pron, MtlPos.flags(Object, Ktetic, Humankind))
       when '几', '哪'
         make(:int_pron, MtlPos.flags(Object, CanSplit))
       else

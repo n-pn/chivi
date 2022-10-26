@@ -23,16 +23,16 @@ module MT::TlRule
     flip = true
     case space.key
     when "上", "下"
-      return noun if noun.cap_human? || space.succ?(&.pt_le?)
+      return noun if noun.cap_human? || space.succ?(&.ptcl_le?)
       space.val = fix_space_val!(space)
     when "中"
-      return noun if space.succ?(&.pt_le?)
+      return noun if space.succ?(&.ptcl_le?)
       space.val = "trong"
       if (succ = space.succ?) && succ.noun_words?
         return fold!(noun, succ, succ.tag, flip: true)
       end
     when "前"
-      # space.val = "trước khi" if noun.verb_words?
+      # space.val = "trước khi" if noun.verbal_words?
       flip = !noun.time_words?
     end
 

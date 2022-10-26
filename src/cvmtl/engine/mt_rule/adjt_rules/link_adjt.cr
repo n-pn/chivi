@@ -3,7 +3,7 @@ module MT::Core
   def link_adjt!(adjt : MtNode)
     adjt = form_adjt!(adjt)
 
-    tag, pos = PosTag::Aform
+    tag, pos = PosTag.make(:amix)
 
     while (prev = adjt.prev?) && prev.is_a?(MonoNode)
       if prev.adjt_words?
@@ -15,13 +15,13 @@ module MT::Core
       end
 
       case prev.tag
-      when .wd_he2?, .wd_yu3?
+      when .he2_word?, .yu3_word?
         prev = fix_he3yu2!(prev)
-        break unless prev.bond_word?
+        break unless prev.bind_word?
       when .cenum?
         prev.val = ","
       else
-        break unless prev.bond_word?
+        break unless prev.bind_word?
       end
 
       case head = prev.prev

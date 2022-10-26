@@ -56,7 +56,7 @@ class MT::TxtSeg
       key = @raw_chars[idx...new_idx].join
       val = new_val || @mtl_chars[idx...new_idx].join
 
-      node = MonoNode.new(key, val, tag: tag, pos: :none, idx: idx &+ offset, dic: 2)
+      node = MonoNode.new(key, val, tag: tag, idx: idx &+ offset, dic: 2)
       # puts ["ner_output", node]
 
       @nodes[new_idx] = node

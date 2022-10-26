@@ -41,7 +41,7 @@ Dash1	Boundary, NoSpaceL, NoSpaceR	"–"
 Dash2	Boundary	"—"
 
 Ellip1	NoSpaceL	"…"
-Ellip2	NoSpaceL	…"…"
+Ellip2	NoSpaceL	"……"
 
 Tilde	Boundary, NoSpaceL	"~"
 

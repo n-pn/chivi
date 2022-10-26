@@ -22,7 +22,7 @@ module MT::TlRule
       # puts ["find_verb", right]
 
       case right
-      when .pl_mark?, .mn_mark?, .verb_words?, .preposes?
+      when .pl_mark?, .mn_mark?, .verbal_words?, .preposes?
         return right
       when .advb_words?, .comma?
         next
@@ -39,8 +39,8 @@ module MT::TlRule
       when .pl_mark?, .mn_mark? then return node
       when .comma?              then return nil if skip_comma
       when .v_shang?, .v_xia?
-        return node if node.succ?(&.pt_le?)
-      when .modal_verbs?, .verb_words? then return node
+        return node if node.succ?(&.ptcl_le?)
+      when .modal_verbs?, .verbal_words? then return node
       when .adjt_words?
         return nil unless {"相同", "类似"}.includes?(node.key)
         return node.set!(PosTag::Vint)

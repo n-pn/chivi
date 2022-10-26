@@ -1,6 +1,6 @@
 module MT::Core
   def link_verb!(verb : MtNode, prev = verb.prev)
-    return link_verb_bond!(verb, prev) if prev.bond_word?
+    return link_verb_bond!(verb, prev) if prev.bind_word?
     verb
   end
 
@@ -14,7 +14,7 @@ module MT::Core
       return verb
     end
 
-    tag = MtlTag::Vform
+    tag = MtlTag::Vmix
     pos = head.pos | verb.pos
 
     TrioNode.new(head, bond, verb, tag: tag, pos: pos)

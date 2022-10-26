@@ -1,23 +1,23 @@
 # both
 
-甚至	con_mixed	bond_word
+甚至	ConMixed
 
-但	con_dan4	bond_word
-又	con_you4	bond_word
-或	con_huo4	bond_word
-或是	con_huoshi	bond_word
+但	ConDan4
+又	ConYou4
+或	ConHuo4
+或是	ConHuoshi
 
 # concoords
 
-及	concoord	bond_word
-况且	concoord	bond_word
-以及	concoord	bond_word
-乃至	concoord	bond_word
+及	Concoord
+况且	Concoord
+以及	Concoord
+乃至	Concoord
 
 # special concoords
 
-和	con_he2	bond_word
-与	con_yu3	bond_word
+和	ConHe2
+与	ConYu3
 
-同	con_tong	bond_word
-跟	con_gen1	bond_word
+同	ConTong
+跟	ConGen1

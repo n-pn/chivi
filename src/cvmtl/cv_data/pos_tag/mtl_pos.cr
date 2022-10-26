@@ -41,8 +41,8 @@ enum MT::MtlPos : UInt64
   CanSplit # can split to other structure
   BindWord # can be use to link two words/two phraes
 
-  MaybeMod # word can act as noun modifier
-  MaybeAdv # word can act as adverb
+  MaybeModi # word can act as noun modifier
+  MaybeAdvb # word can act as adverb
 
   # verb flags
 
@@ -59,4 +59,45 @@ enum MT::MtlPos : UInt64
   # grammar
   CanBeSubj # can be subject
   CanBePred # can be predicate
+end
+
+module MT::HasPos
+  property pos = MtlPos::None
+
+  delegate boundary?, to: @pos
+  delegate skipover?, to: @pos
+
+  delegate cap_after?, to: @pos
+  delegate cap_repay?, to: @pos
+
+  delegate no_space_l?, to: @pos
+  delegate no_space_r?, to: @pos
+
+  delegate at_head?, to: @pos
+  delegate at_tail?, to: @pos
+
+  delegate peculiar?, to: @pos
+  delegate mixedpos?, to: @pos
+
+  delegate unreal?, to: @pos
+  delegate ktetic?, to: @pos
+  delegate object?, to: @pos
+
+  delegate humankind?, to: @pos
+  delegate placeword?, to: @pos
+
+  delegate to_compare?, to: @pos
+  delegate to_measure?, to: @pos
+
+  delegate can_split?, to: @pos
+  delegate bind_word?, to: @pos
+
+  delegate maybe_modi?, to: @pos
+  delegate maybe_advb?, to: @pos
+
+  delegate maybe_auxi?, to: @pos
+  delegate maybe_cmpl?, to: @pos
+
+  delegate volitive?, to: @pos
+  delegate vlinking?, to: @pos
 end

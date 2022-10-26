@@ -1,12 +1,12 @@
 module MT::TlRule
   def fold_auxils!(node : MtNode, mode = 1) : MtNode
     case node.tag
-    when .pt_le?  then heal_ule!(node)  # 了
-    when .pt_dep? then fold_ude1!(node) # 的
-    when .pt_dev? then heal_ude2!(node) # 地
-    when .pt_der? then heal_ude3!(node) # 得
-    when .pt_suo? then fold_usuo!(node) # 所
-    else               node
+    when .ptcl_le?  then heal_ule!(node)  # 了
+    when .ptcl_dep? then fold_ude1!(node) # 的
+    when .ptcl_dev? then heal_ude2!(node) # 地
+    when .ptcl_der? then heal_ude3!(node) # 得
+    when .ptcl_suo? then fold_usuo!(node) # 所
+    else                 node
     end
   end
 
@@ -25,12 +25,12 @@ module MT::TlRule
     return node if node.prev? { |x| x.tag.adjt_words? || x.tag.advb_words? }
     return node unless succ = node.succ?
     return node.set!("đất", PosTag::Nword) if succ.v_shi? || succ.v_you?
-    return node if succ.verb_words? || succ.preposes? || succ.concoord?
+    return node if succ.verbal_words? || succ.preposes? || succ.concoord?
     node.set!(val: "địa", tag: PosTag::Nword)
   end
 
   def fold_verb_ule!(verb : MtNode, node : MtNode, succ = node.succ?)
-    if succ && !(succ.boundary? || succ.succ?(&.pt_le?))
+    if succ && !(succ.boundary? || succ.succ?(&.ptcl_le?))
       node.val = ""
     end
 
@@ -41,9 +41,9 @@ module MT::TlRule
     fold!(verb, node, PosTag::Verb)
   end
 
-  def keep_pt_le?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool
+  def keep_ptcl_le?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool
     return true unless succ
     return false if succ.start_puncts?
-    succ.boundary? || succ.succ?(&.pt_le?) || false
+    succ.boundary? || succ.succ?(&.ptcl_le?) || false
   end
 end

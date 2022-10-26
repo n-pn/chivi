@@ -5,9 +5,9 @@ module MT::Core
     case prev
     when .preposes?
       fold_objt_prep!(objt: objt, prep: prev.as(MonoNode))
-    when .verb_words?
+    when .verbal_words?
       fold_objt_verb!(objt: objt, verb: prev)
-    when .vcompl?
+    when .maybe_cmpl?
       prev = fold_vcompl!(prev)
       fold_objt_verb!(objt: objt, verb: prev)
     else

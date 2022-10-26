@@ -18,10 +18,10 @@ module MT::Core
 
   def self.fix_dir_cmpl!(cmpl : MonoNode) : MonoNode
     case cmpl.prev
-    when .adjt_words?, .common_verbs?, .maybe_adjt?, .maybe_verb?
+    when .adjt_words?, .common_verbs?
       cmpl.fix_val!
     else
-      cmpl.tag, cmpl.pos = PosTag::Verb
+      cmpl.tag, cmpl.pos = PosTag.make(:verb)
     end
 
     cmpl

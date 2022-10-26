@@ -14,12 +14,12 @@ module MT::TlRule
       end
 
       fold_nouns!(node)
-    when .verb_words?
+    when .verbal_words?
       fold_verbs!(node)
     when .noun_words?
       fold_nouns!(node)
     else
-      if (succ = node.succ?) && succ.pt_zhi?
+      if (succ = node.succ?) && succ.ptcl_zhi?
         fold_uzhi!(succ, node)
       else
         scan_noun!(node.succ?, nquant: node) || node
@@ -56,14 +56,14 @@ module MT::TlRule
     appro = 0
 
     # case tail
-    # when .pre_dui?
+    # when .prep_dui?
     #   if (succ_2 = tail.succ?) && succ_2.numbers?
     #     tail.val = "đối"
     #     return fold!(node, succ_2, MapTag::Aform)
     #   end
 
     #   tail.set!("đôi", MapTag::Qtnoun)
-    # when .pre_ba3?
+    # when .prep_ba3?
     #   tail = fold_pre_ba3!(tail)
 
     #   if tail.noun_words?

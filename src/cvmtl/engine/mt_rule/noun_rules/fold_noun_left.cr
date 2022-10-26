@@ -7,17 +7,17 @@ module MT::Core
     # thus no need to resolve mixedpos in this step
     prev = noun.prev
     prev = fix_mixedpos!(prev) if prev.mixedpos?
-    noun = link_noun!(noun, junc: prev) if prev.bond_word?
+    noun = link_noun!(noun, junc: prev) if prev.bind_word?
 
     fold_objt_left!(noun)
   end
 
   private def noun_is_modifier?(noun : MtNode, prev = noun.prev, succ = noun.succ) : Bool
     return true if succ.adjt_words?
-    return false unless succ.tag.pt_dev? && (center = succ.succ?) && center.object?
+    return false unless succ.tag.ptcl_dev? && (center = succ.succ?) && center.object?
     return false unless tail = center.succ?
 
-    tail.verb_words? || tail.adjt_words? || tail.pt_cmps?
+    tail.verbal_words? || tail.adjt_words? || tail.ptcl_cmps?
 
     # FIXME:
     # - check if before prepos has subject or not

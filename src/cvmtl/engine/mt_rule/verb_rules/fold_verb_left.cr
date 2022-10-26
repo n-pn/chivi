@@ -7,12 +7,12 @@ module MT::Core
     verb = link_verb!(verb)
 
     case prev = fold_left!(verb.prev)
-    when .quantis?, .pro_dems?
+    when .quantis?, .dem_prons?
       # FIXME: check pass verb object
-      return verb if verb.succ.tag.pt_dep?
-    when .noun_words?, .pronouns?
+      return verb if verb.succ.tag.ptcl_dep?
+    when .noun_words?, .all_prons?
       # OK
-    when .verb_words?, .adjt_words?
+    when .verbal_words?, .adjt_words?
       return verb unless verb.v_shi?
     when .prep_form?
       return join_prep_form!(verb, prev)

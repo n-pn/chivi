@@ -6,7 +6,7 @@ module MT::TlRule
 
       break unless join = node.succ?
 
-      if join.pt_dep?
+      if join.ptcl_dep?
         break unless (succ = join.succ?) && succ.noun_words?
         join.val = "của"
         node = fold!(node, succ, succ.tag, flip: true)

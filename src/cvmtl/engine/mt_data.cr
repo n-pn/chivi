@@ -8,7 +8,7 @@ class MT::MtData
   @pgroup = [] of MonoNode
 
   def initialize
-    tag, pos = PosTag::Empty
+    tag, pos = PosTag.make(:empty)
     @head = MonoNode.new("", "", tag, pos)
     @tail = MonoNode.new("", "", tag, pos)
     @head.fix_succ!(@tail)

@@ -9,7 +9,7 @@ module MT::Core
     # join verb with adverbs
     while prev = verb.prev
       prev = fix_mixedpos!(prev) if prev.mixedpos?
-      break unless prev.advb_words? || prev.maybe_advb?
+      break unless prev.advb_words?
       # puts [prev, prev.prev?, "prev_verb"]
       verb.add_advb(prev)
       # puts [verb, verb.prev?, "fold_verb_advb"]
@@ -27,7 +27,7 @@ module MT::Core
 
     # puts [verb, prev, verb.prev, "construct_verb"]
 
-    if prev.pt_dev?
+    if prev.ptcl_dev?
       prev = join_udev!(prev)
       return verb unless prev.tag.dv_phrase?
 

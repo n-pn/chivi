@@ -7,7 +7,7 @@ module MT::Core
       noun = PairNode.new(prev, noun, tag, pos, flip: flip)
     end
 
-    return noun if !prev.adjt_words? || prev.aform?
+    return noun if !prev.adjt_words? || prev.amix?
     return noun if prev.prev? { |x| x.advb_words? || x.maybe_advb? }
 
     PairNode.new(prev, noun, flip: !prev.at_head?)
@@ -15,10 +15,10 @@ module MT::Core
 
   private def noun_pairing_type(noun : MtNode, prev : MtNode) : {MtlTag, MtlPos, Bool}
     case noun
-    when .honor?        then honor_pairing_type(noun, prev)
-    when .proper_nouns? then named_pairing_type(noun, prev)
+    when .honor?      then honor_pairing_type(noun, prev)
+    when .name_words? then named_pairing_type(noun, prev)
     when .locat?, .posit?
-      tag, pos = PosTag::Posit
+      tag, pos = PosTag.make(:posit)
       {tag, pos, true}
     when .nattr?
       {noun.tag, noun.pos, prev.nattr?}
@@ -29,25 +29,25 @@ module MT::Core
 
   private def honor_pairing_type(noun : MtNode, prev : MtNode)
     case prev
-    when .time_words?, .nform?, .locat?, .posit?
-      tag, pos = PosTag::Nform
+    when .time_words?, .nmix?, .locat?, .posit?
+      tag, pos = PosTag.make(:nmix)
     else
-      tag, pos = PosTag::CapHuman
+      tag, pos = PosTag.make(:human_name)
     end
 
     {tag, pos, false}
   end
 
   private def named_pairing_type(name : MtNode, prev : MtNode)
-    tag, pos = PosTag::Nform
+    tag, pos = PosTag.make(:nmix)
 
     case prev
-    when .cap_affil?
+    when .place_name?
       {name.tag, name.pos, true}
-    when .cap_human?
-      {name.tag, name.pos, name.cap_human?}
-    when .proper_nouns?
-      {MtlTag::CapOther, pos, true}
+    when .human_name?
+      {name.tag, name.pos, name.human_name?}
+    when .name_words?
+      {MtlTag::OtherName, pos, true}
     else
       {tag, pos, false}
     end
@@ -59,8 +59,8 @@ module MT::Core
   end
 
   private def should_flip_noun?(prev, succ)
-    return true unless succ && prev && prev.verb_words?
+    return true unless succ && prev && prev.verbal_words?
     return false if prev.vtwo?
-    succ.verb_words?
+    succ.verbal_words?
   end
 end

@@ -39,19 +39,19 @@ Plsuf	Placeword, Ktetic, Object	# combine with prev noun to place
 Posit	Placeword, Object	# place + locat
 Locat	Placeword, Object	# can act as place
 
-LocShang	Placeword, Object, MaybeMod, Peculiar	# "上"
-LocZhong	Placeword, Object, MaybeMod, Peculiar	# "中"
-LocXia	Placeword, Object, MaybeMod, Peculiar	# "下"
-LocQian	Placeword, Object, MaybeMod, Peculiar	# "前"
-LocHou4	Placeword, Object, MaybeMod, Peculiar	# "后"
+LocShang	Placeword, Object, MaybeModi, Peculiar	# "上"
+LocZhong	Placeword, Object, MaybeModi, Peculiar	# "中"
+LocXia	Placeword, Object, MaybeModi, Peculiar	# "下"
+LocQian	Placeword, Object, MaybeModi, Peculiar	# "前"
+LocHou4	Placeword, Object, MaybeModi, Peculiar	# "后"
 
 # temporal
-Timeword	Object, MaybeAdv	# generic temporal words
-Timemark	Object, MaybeAdv	# can mark successor term as time
+Timeword	Object, MaybeAdvb	# generic temporal words
+Timemark	Object, MaybeAdvb	# can mark successor term as time
 
-Dateform	Object, MaybeAdv	# date
-Timeform	Object, MaybeAdv	# time
-Timespan	Object, MaybeAdv	# time span, duration
+Dateform	Object, MaybeAdvb	# date
+Timeform	Object, MaybeAdvb	# time
+Timespan	Object, MaybeAdvb	# time span, duration
 
-#Mqdate	Object, MaybeAdv, Mixedpos	# date or nquant
-#Mqtime	Object, MaybeAdv, Mixedpos	# time or nquant
+#Mqdate	Object, MaybeAdvb, Mixedpos	# date or nquant
+#Mqtime	Object, MaybeAdvb, Mixedpos	# time or nquant

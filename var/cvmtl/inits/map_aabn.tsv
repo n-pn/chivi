@@ -1,10 +1,10 @@
 # modifier
-原	amod	at_head
-所有	amod	at_head
+原	AmodL
+所有	AmodL
 
 # adjective for measurement
-宽	amed
-高	amed
-长	amed
-远	amed
-重	amed
+宽	Amed
+高	Amed
+长	Amed
+远	Amed
+重	Amed

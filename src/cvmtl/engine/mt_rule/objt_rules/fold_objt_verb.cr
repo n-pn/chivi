@@ -7,7 +7,7 @@ module MT::Core
       head.tap(&.add_objt(objt))
     when SubjPred
       head.tap(&.add_objt(objt))
-    when .verb_words?
+    when .verbal_words?
       VerbCons.new(verb).tap(&.add_objt(objt))
     else
       Log.info { "unsupported #{head.class}: #{head.inspect}" }

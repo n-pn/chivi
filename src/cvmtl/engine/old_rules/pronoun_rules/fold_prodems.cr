@@ -23,7 +23,7 @@
 
 #     node, quanti, succ = split_prodem!(node)
 
-#     if succ && !(succ.pro_dems? || succ.v_shi? || succ.v_you?)
+#     if succ && !(succ.dem_prons? || succ.v_shi? || succ.v_you?)
 #       return scan_noun!(succ, prodem: node, nquant: quanti).not_nil!
 #     end
 

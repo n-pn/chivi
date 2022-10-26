@@ -1,69 +1,70 @@
-## đại từ nhân xưng
-### ngôi thứ nhất
-我	pro_per1	people | ktetic
-我们	pro_per1	plural | people | ktetic
-咱	pro_per1	people | ktetic
-咱们	pro_per1	plural | people | ktetic
-俺	pro_per1	people | ktetic
-俺们	pro_per1	plural | people | ktetic
-臣	pro_per1	people | ktetic
-朕	pro_per1	people | ktetic
+# đại từ nhân xưng
 
-### ngôi thứ hai
-你	pro_per2	people | ktetic
-你们	pro_per2	plural | people | ktetic
-您	pro_per2	people | ktetic
-你们	pro_per2	plural | people | ktetic
-伱	pro_per2	people | ktetic
-伱们	pro_per2	plural | people | ktetic
+## ngôi thứ nhất
+我	PerPron
+我们	PerPron
+咱	PerPron
+咱们	PerPron
+俺	PerPron
+俺们	PerPron
+臣	PerPron
+朕	PerPron
 
-### ngôi thứ ba
-他	pro_per3	people | ktetic
-他们	pro_per3	plural | people | ktetic
-她	pro_per3	people | ktetic
-她们	pro_per3	plural | people | ktetic
-它	pro_per3	people | ktetic
-它们	pro_per3	plural | people | ktetic
+## ngôi thứ hai
+你	PerPron
+你们	PerPron
+您	PerPron
+你们	PerPron
+伱	PerPron
+伱们	PerPron
 
-自己	pro_ziji	people | ktetic
-其	pro_qu2	people | ktetic
-其们	pro_qu2	plural | people | ktetic
+## ngôi thứ ba
+他	PerPron
+他们	PerPron
+她	PerPron
+她们	PerPron
+它	PerPron
+它们	PerPron
 
-## đại từ chỉ thị
-这	pro_zhe	at_tail
-那	pro_na1	at_tail
-每	pro_mei
+其	PronQu2
+其们	PronQumen
+自己	PronZiji
 
-这里	pro_dem
-那儿	pro_dem
-这样	pro_dem
-那样	pro_dem
-那么	pro_dem
-其他	pro_dem
-别的	pro_dem
+# đại từ chỉ thị
+这	PronZhe
+那	PronNa1
+每	PronMei
 
-## đại từ nghi vấn
-几	pro_ji
-哪	pro_na2	at_tail
-谁	pro_shei
+这里	DemPron
+那儿	DemPron
+这样	DemPron
+那样	DemPron
+那么	DemPron
+其他	DemPron
+别的	DemPron
 
-多少	pro_int
-哪里	pro_int
-怎样	pro_int
-哪儿	pro_int
-哪里	pro_int
-什么	pro_int
-怎么	pro_int
-怎么样	pro_int
-怎能	pro_int
-怎的	pro_int
-几时	pro_int
-多少	pro_int
-若干	pro_int
-为何	pro_int
-为什么	pro_int
-何	pro_int
-如何	pro_int
-啥	pro_int
-为啥	pro_int
-咋	pro_int
+# đại từ nghi vấn
+几	PronJi
+哪	PronNa2
+谁	PronShei
+
+多少	IntPron
+哪里	IntPron
+怎样	IntPron
+哪儿	IntPron
+哪里	IntPron
+什么	IntPron
+怎么	IntPron
+怎么样	IntPron
+怎能	IntPron
+怎的	IntPron
+几时	IntPron
+多少	IntPron
+若干	IntPron
+为何	IntPron
+为什么	IntPron
+何	IntPron
+如何	IntPron
+啥	IntPron
+为啥	IntPron
+咋	IntPron

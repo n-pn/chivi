@@ -20,14 +20,14 @@ module MT::TlRule
       noun = fold_proper_nominal!(proper, succ)
       return noun unless (succ = noun.succ?) && succ.maybe_verb?
       fold_noun_verb!(noun, succ)
-    when .nominal?, .numbers?, .pro_dems?
-      return proper if !(succ = scan_noun!(succ)) || succ.pro_dems?
+    when .nominal?, .numbers?, .dem_prons?
+      return proper if !(succ = scan_noun!(succ)) || succ.dem_prons?
       noun = fold_proper_nominal!(proper, succ)
       return noun unless (succ = noun.succ?) && succ.maybe_verb?
       fold_noun_verb!(noun, succ)
-    when .pt_zhi?
+    when .ptcl_zhi?
       fold_uzhi!(uzhi: succ, prev: proper)
-    when .pt_dep?
+    when .ptcl_dep?
       return proper if proper.prev? { |x| x.verbal? || x.preposes? }
       fold_ude1!(ude1: succ, prev: proper)
     else
@@ -46,7 +46,7 @@ module MT::TlRule
     elsif (prev = proper.prev?) && prev.vtwo?
       flip = false
 
-      if (succ = nominal.succ?) && (succ.pt_dep?)
+      if (succ = nominal.succ?) && (succ.ptcl_dep?)
         nominal = fold_ude1!(ude1: succ, prev: nominal)
       end
     else

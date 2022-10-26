@@ -19,31 +19,31 @@ module MT::Core
 
     def initialize(@node : MonoNode)
       case node.tag
-      when .pl_veno?
+      when .verb_or_noun?
         @verb_pct = 50
         @noun_pct = 40
         @noun_alt = node.alt
-      when .pl_ajno?
+      when .adjt_or_noun?
         @adjt_pct = 50
         @noun_pct = 40
         @noun_alt = node.alt
-      when .pl_vead?
+      when .verb_or_advb?
         @verb_pct = 50
         @advb_pct = 40
         @advb_alt = node.alt
-      when .pl_ajad?
+      when .adjt_or_advb?
         @adjt_pct = 50
         @advb_pct = 40
         @advb_alt = node.alt
-      when .pl_noad?
+      when .noun_or_advb?
         @noun_pct = 50
         @advb_pct = 40
         @advb_alt = node.alt
       else
-        @noun_pct = @node.maybe_noun? ? 40 : 20
-        @verb_pct = @node.maybe_verb? ? 40 : 20
-        @adjt_pct = @node.maybe_adjt? ? 40 : 20
-        @advb_pct = @node.maybe_advb? ? 20 : 0
+        @noun_pct = 20
+        @verb_pct = 10
+        @adjt_pct = 0
+        @advb_pct = -10
       end
     end
 
@@ -52,7 +52,7 @@ module MT::Core
       case @node.real_succ
       when .nil?, .boundary?, .empty?
         @advb_pct -= 10
-      when .noun_words?, .pronouns?
+      when .noun_words?, .all_prons?
         @advb_pct -= 20
         @noun_pct += 10
         @verb_pct += 20
@@ -67,34 +67,34 @@ module MT::Core
       when .v_you?
         @noun_pct += 10
         @noun_pct += 10
-      when .aspect?, .vdir?
+      when .aspect_marker?, .vdir?
         @verb_pct += 50
         @adjt_pct += 30
-      when .vcompl?
+      when .maybe_cmpl?
         @verb_pct += 40
         @adjt_pct += 20
-      when .pre_zai?
+      when .prep_zai?
         @verb_pct += 30
         @noun_pct += 10
       when .advb_words?, .preposes?
         @advb_pct += 40
-      when .vauxil?
+      when .maybe_auxi?
         @advb_pct += 60
       when .adjt_words?
         @advb_pct += 40
         @adjt_pct += 30
-      when .pt_dev?
+      when .ptcl_dev?
         @verb_pct += 30
         @adjt_pct += 30
         @noun_pct += 10
-      when .pt_der?
+      when .ptcl_der?
         @verb_pct += 20
         @adjt_pct += 20
-      when .pt_dep?, .pt_dec?
+      when .ptcl_dep?, .ptcl_dec?
         @verb_pct += 20
         @adjt_pct += 20
         @noun_pct += 5
-      when .pt_deg?
+      when .ptcl_deg?
         @noun_pct += 100
       end
 
@@ -112,27 +112,27 @@ module MT::Core
       when .adjt_words?
         @noun_pct += 40
         @adjt_pct += 50
-      when .pt_dev?
+      when .ptcl_dev?
         @verb_pct += 80
         @adjt_pct += 50
-      when .pt_dep?
+      when .ptcl_dep?
         @noun_pct += 60
         @verb_pct += 10
         @adjt_pct += 10
-      when .pt_der?
+      when .ptcl_der?
         @advb_pct += 20
         @adjt_pct += 30
         @verb_pct += 10
-      when .vauxil?
+      when .maybe_auxi?
         @verb_pct += 40
         @noun_pct += 10
       when .common_verbs?
         @noun_pct += 40
         @adjt_pct += 5
-      when .noun_words?, .pro_pers?, .pro_int?
+      when .noun_words?, .per_prons?, .int_prons?
         @verb_pct += 50
         @adjt_pct += 40
-      when .pre_zai?
+      when .prep_zai?
         @verb_pct += 30
         @noun_pct += 5
       end
@@ -164,15 +164,15 @@ module MT::Core
       # puts [@noun_pct, @verb_pct, @adjt_pct, @advb_pct]
 
       case @node.tag
-      when .pl_noad?
+      when .noun_or_advb?
         @noun_pct >= @advb_pct ? Type::Noun : Type::Advb
-      when .pl_vead?
+      when .verb_or_advb?
         @verb_pct >= @advb_pct ? Type::Verb : Type::Advb
-      when .pl_ajad?
+      when .adjt_or_advb?
         @adjt_pct >= @advb_pct ? Type::Adjt : Type::Advb
-      when .pl_veno?
+      when .verb_or_noun?
         @verb_pct >= @noun_pct ? Type::Verb : Type::Noun
-      when .pl_ajno?
+      when .adjt_or_noun?
         @adjt_pct >= @noun_pct ? Type::Adjt : Type::Noun
       else
         [

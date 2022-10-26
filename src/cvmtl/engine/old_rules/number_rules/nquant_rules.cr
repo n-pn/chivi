@@ -74,7 +74,7 @@ module MT::TlRule
     if body = node.body?
       deep_clean_个!(body)
     elsif node.key.ends_with?('个')
-      if node.key.size > 1 || node.prev?(&.pro_dems?)
+      if node.key.size > 1 || node.prev?(&.dem_prons?)
         node.val = node.val.sub("cái", "").strip
       end
     end

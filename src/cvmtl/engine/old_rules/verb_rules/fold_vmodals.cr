@@ -24,7 +24,7 @@ module MT::TlRule
     case succ
     when .nil? then node
     when .preposes?
-      return node if succ.pre_bi3?
+      return node if succ.prep_bi3?
       node = fold!(node, succ, succ.tag)
       fold_preposes!(node)
     when .advbial?
@@ -57,7 +57,7 @@ module MT::TlRule
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
-    when .nil?, .boundary?, .noun_words?, .pt_dep?, .pt_le?
+    when .nil?, .boundary?, .noun_words?, .ptcl_dep?, .ptcl_le?
       true
     when .preposes?     then false
     when .vsep?, .vset? then true
@@ -97,7 +97,7 @@ module MT::TlRule
         node.val = "muốn"
       end
     else
-      if succ.vcompl?
+      if succ.maybe_cmpl?
         node.set!("nhớ") if succ.succ?(&.cap_human?)
       end
     end

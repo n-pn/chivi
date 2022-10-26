@@ -1,12 +1,12 @@
 module MT::TlRule
   def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
-    return if verb.v_you? || verb.v_shi? || !compl.vcompl?
+    return if verb.v_you? || verb.v_shi? || !compl.maybe_cmpl?
 
     case compl.tag
-    when .pre_dui?
+    when .prep_dui?
       return if scan_noun!(compl.succ?)
       compl.val = "đúng"
-    when .pre_zai?
+    when .prep_zai?
       # if (succ = scan_noun!(compl.succ?)) && succ.content?
       #   # puts [succ, "pre_zai"]
       #   return if find_verb_after_for_prepos(succ, skip_comma: true)
@@ -15,7 +15,7 @@ module MT::TlRule
       compl.val = "ở"
     when .locat?
       return unless compl.key == "中"
-      if compl.succ?(&.pt_le?)
+      if compl.succ?(&.ptcl_le?)
         compl.val = "trúng"
       else
         return fold!(verb, compl.set!("đang"), verb.tag, 9, flip: true)

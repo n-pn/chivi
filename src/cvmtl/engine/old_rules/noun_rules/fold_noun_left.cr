@@ -5,7 +5,7 @@ module MT::TlRule
   #   while prev = node.prev?
   #     case prev
   #     when .numeral?
-  #       break if node.pl_veno? || node.pl_ajno?
+  #       break if node.verb_or_noun? || node.adjt_or_noun?
   #       node = fold_nquant_noun!(prev, node)
   #       flag = 1
   #     when .pro_ji?
@@ -13,16 +13,16 @@ module MT::TlRule
   #     when .pro_ints?
   #       return fold_什么_noun!(prev, node) if prev.key == "什么"
   #       return fold_flip!(prev, node, PosTag::Nform)
-  #     when .pl_ajno?, .amod_words?
+  #     when .adjt_or_noun?, .amod_words?
   #       break if flag > 0
   #       node = fold_flip!(prev, node, PosTag::Nform)
   #     when .position?
   #       break if flag > 0
   #       node = fold_flip!(prev, node, PosTag::Nform)
-  #     when .pl_ajad?, .adjt_words?
+  #     when .adjt_or_advb?, .adjt_words?
   #       break if flag > 0 || prev.key.size > 1
   #       node = fold_flip!(prev, node, PosTag::Nform)
-  #     when .pt_dep?
+  #     when .ptcl_dep?
   #       break if mode < 1
   #       node = fold_ude1_left!(ude1: node, left: prev, right: ude1.succ?)
   #     else

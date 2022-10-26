@@ -40,7 +40,7 @@ module MT::TlRule
       return noun unless prev = noun.prev?
     end
 
-    return noun unless prev.pronouns?
+    return noun unless prev.all_prons?
     fold!(prev, noun, ptag, flip: ptag.posit?)
   end
 

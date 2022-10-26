@@ -6,7 +6,7 @@ module MT::TlRule
 
   # def not_quanti?(node : MtNode)
   #   # abort transform if node is certainly a verb
-  #   return false unless node.verb_words? && (succ = node.succ?)
+  #   return false unless node.verbal_words? && (succ = node.succ?)
   #   succ.aspect? || succ.comma? || succ.boundary?
   # end
 
