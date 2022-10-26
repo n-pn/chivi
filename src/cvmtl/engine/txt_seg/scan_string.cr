@@ -41,7 +41,7 @@ class MT::TxtSeg
     elsif str_is_url2?(index, url2_idx)
       scan_urlstr(index &+ 2)
     else
-      {index, tag}
+      {index, tag, nil}
     end
   end
 
@@ -89,6 +89,6 @@ class MT::TxtSeg
       end
     end
 
-    {index, MtlTag::StrLink}
+    {index, MtlTag::StrLink, nil}
   end
 end

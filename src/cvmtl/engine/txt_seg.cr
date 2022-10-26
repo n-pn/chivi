@@ -3,8 +3,8 @@ require "./txt_seg/**"
 require "../cv_data/mt_term"
 
 class MT::TxtSeg
-  getter raw_chars = [] of Char
-  getter mtl_chars = [] of Char
+  @raw_chars = [] of Char
+  @mtl_chars = [] of Char
 
   @costs : Array(Int32)
   @nodes : Array(MonoNode)
@@ -41,26 +41,40 @@ class MT::TxtSeg
 
       case mtl_char
       when .ascii_letter?
-        new_idx, tag = scan_string(idx)
+        new_idx, tag, val = scan_string(idx)
       when .ascii_number?
-        new_idx, tag = scan_ndigit(idx)
+        new_idx, tag, val = scan_ndigit(idx)
       when .in?(HANNUM_CHARS)
-        new_idx, tag, new_val = scan_hannum(idx)
+        new_idx, tag, val = scan_hannum(idx)
+      when '几'
+        idx += 1
+        mtl_char = @mtl_chars.unsafe_fetch(idx)
+        next unless mtl_char.in?(HANNUM_CHARS)
+
+        new_idx, tag, val = scan_hannum(idx, "mấy ")
+        idx -= 1
       when '第'
-        new_idx, tag, new_val = scan_ordnum(idx)
+        idx += 1
+        mtl_char = @mtl_chars.unsafe_fetch(idx)
+        next unless mtl_char.in?(HANNUM_CHARS)
+
+        new_idx, _tag, val = scan_hannum(idx)
+        tag = MtlTag::Ordinal
+        val = "thứ " + val
+        idx -= 1
       else
         idx += 1
         next
       end
 
       key = @raw_chars[idx...new_idx].join
-      val = new_val || @mtl_chars[idx...new_idx].join
+      val ||= @mtl_chars[idx...new_idx].join
 
       node = MonoNode.new(key, val, tag: tag, idx: idx &+ offset, dic: 2)
       # puts ["ner_output", node]
 
       @nodes[new_idx] = node
-      @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtTerm.seg_weight(wlen: new_idx &- idx, wseg: 1)
+      @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtTerm.seg_weight(wlen: new_idx &- idx, wseg: 2)
 
       idx = new_idx
     end

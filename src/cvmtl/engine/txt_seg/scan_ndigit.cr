@@ -4,6 +4,7 @@ class MT::TxtSeg
   def scan_ndigit(index : Int32 = 0)
     match_char = nil
     char_count = 1
+    start = index
 
     while index < @upper
       char = @mtl_chars.unsafe_fetch(index)
@@ -30,7 +31,19 @@ class MT::TxtSeg
     end
 
     tag = match_num_tag(match_char, char_count)
-    {index, tag}
+    return {index, tag, nil} unless tag.numbers?
+
+    char = @mtl_chars.unsafe_fetch(index)
+
+    if appro = APPRO_WORDS[char]?
+      val = appro + @mtl_chars[start...index].join
+      tag = MtlTag::Ndigit3
+      index += 1
+    end
+
+    # FIXME: handle mixed ndigit + hannum
+
+    {index, tag, val}
   end
 
   private def match_num_tag(char : Char?, count : Int32)
@@ -84,6 +97,6 @@ class MT::TxtSeg
       index += 1
     end
 
-    {index, MtlTag::StrOther}
+    {index, MtlTag::StrOther, nil}
   end
 end
