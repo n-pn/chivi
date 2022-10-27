@@ -8,7 +8,7 @@ class MT::MtDict
     # dicts for current book
     add_dict("book", "#{book}:user", 9, user) if user
     add_dict("book", "#{book}:temp", 8) if temp
-    add_dict("book", "#{pack}:base", 7)
+    add_dict("book", "#{book}:base", 7)
 
     # dicts for shared theme
     add_dict("pack", "#{pack}:user", 6, user) if user && pack

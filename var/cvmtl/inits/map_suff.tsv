@@ -10,7 +10,7 @@
 级	SufAttr
 型	SufAttr
 状	SufAttr
-.make(:noun).make(:noun)
+
 ## suffix that make verb
 化	SufVerb
 

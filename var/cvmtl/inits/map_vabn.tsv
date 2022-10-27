@@ -1,138 +1,139 @@
 # Động từ / trợ động từ
 
 ## Động từ đặc biệt
-是	v_shi
-有	v_you
-没有	v_meiyou
+是	VShi
+有	VYou
+没有	VMeiyou
 
 ## Bổ ngữ xu hướng
-来	vdir	vcompl | link_verb | mixedpos
-去	vdir	vcompl | link_verb | mixedpos
+来	Vdir
+去	Vdir
 
 ### Bổ ngữ xu hướng kép: https://khoahoctiengtrung.com/bo-ngu-xu-huong-kep/
-上来	vdir	vcompl | mixedpos
-下来	vdir	vcompl | mixedpos
-进来	vdir	vcompl | mixedpos
-出来	vdir	vcompl | mixedpos
-回来	vdir	vcompl | mixedpos
-过来	vdir	vcompl | mixedpos
-起来	vdir	vcompl | mixedpos
-开来	vdir	vcompl | mixedpos
-上去	vdir	vcompl | mixedpos
-下去	vdir	vcompl | mixedpos
-进去	vdir	vcompl | mixedpos
-出去	vdir	vcompl | mixedpos
-回去	vdir	vcompl | mixedpos
-过去	vdir	vcompl | mixedpos
+上来	Vdir
+下来	Vdir
+进来	Vdir
+出来	Vdir
+回来	Vdir
+过来	Vdir
+起来	Vdir
+开来	Vdir
+上去	Vdir
+下去	Vdir
+进去	Vdir
+出去	Vdir
+回去	Vdir
+过去	Vdir
 
 ## Động từ tâm lý
-爱	vpsy	vauxil
-怕	vpsy	vauxil
-喜欢	vpsy	vauxil
-讨厌	vpsy	vauxil
-盼望	vpsy	vauxil
-憎恨	vpsy	vauxil
-表扬	vpsy	vauxil
-成熟	vpsy	vauxil
-诚实	vpsy	vauxil
-吃惊	vpsy	vauxil
-粗心	vpsy	vauxil
-担心	vpsy	vauxil
-得意	vpsy	vauxil
-烦恼	vpsy	vauxil
-反对	vpsy	vauxil
-放弃	vpsy	vauxil
-放松	vpsy	vauxil
-放心	vpsy	vauxil
-感动	vpsy	vauxil
-感谢	vpsy	vauxil
-高兴	vpsy	vauxil
-孤单	vpsy	vauxil
-鼓励	vpsy	vauxil
-关心	vpsy	vauxil
-害怕	vpsy	vauxil
-害羞	vpsy	vauxil
-后悔	vpsy	vauxil
-怀疑	vpsy	vauxil
-激动	vpsy	vauxil
-骄傲	vpsy	vauxil
-紧张	vpsy	vauxil
-拒绝	vpsy	vauxil
-开心	vpsy	vauxil
-考虑	vpsy	vauxil
-可惜	vpsy	vauxil
-客气	vpsy	vauxil
-肯定	vpsy	vauxil
-恐怕	vpsy	vauxil
-快乐	vpsy	vauxil
-冷静	vpsy	vauxil
-耐心	vpsy	vauxil
-难过	vpsy	vauxil
-难受	vpsy	vauxil
-努力	vpsy	vauxil
-批评	vpsy	vauxil
-奇怪	vpsy	vauxil
-热情	vpsy	vauxil
-认真	vpsy	vauxil
-伤心	vpsy	vauxil
-生气	vpsy	vauxil
-失望	vpsy	vauxil
-讨厌	vpsy	vauxil
-同情	vpsy	vauxil
-喜欢	vpsy	vauxil
-羡慕	vpsy	vauxil
-信任	vpsy	vauxil
-兴奋	vpsy	vauxil
-幸福	vpsy	vauxil
-勇敢	vpsy	vauxil
-友好	vpsy	vauxil
-愉快	vpsy	vauxil
-愿意	vpsy	vauxil
-着急	vpsy	vauxil
-支持	vpsy	vauxil
+爱	Vpsy
+怕	Vpsy
+喜欢	Vpsy
+讨厌	Vpsy
+盼望	Vpsy
+憎恨	Vpsy
+表扬	Vpsy
+成熟	Vpsy
+诚实	Vpsy
+吃惊	Vpsy
+粗心	Vpsy
+担心	Vpsy
+得意	Vpsy
+烦恼	Vpsy
+反对	Vpsy
+放弃	Vpsy
+放松	Vpsy
+放心	Vpsy
+感动	Vpsy
+感谢	Vpsy
+高兴	Vpsy
+孤单	Vpsy
+鼓励	Vpsy
+关心	Vpsy
+害怕	Vpsy
+害羞	Vpsy
+后悔	Vpsy
+怀疑	Vpsy
+激动	Vpsy
+骄傲	Vpsy
+紧张	Vpsy
+拒绝	Vpsy
+开心	Vpsy
+考虑	Vpsy
+可惜	Vpsy
+客气	Vpsy
+肯定	Vpsy
+恐怕	Vpsy
+快乐	Vpsy
+冷静	Vpsy
+耐心	Vpsy
+难过	Vpsy
+难受	Vpsy
+努力	Vpsy
+批评	Vpsy
+奇怪	Vpsy
+热情	Vpsy
+认真	Vpsy
+伤心	Vpsy
+生气	Vpsy
+失望	Vpsy
+讨厌	Vpsy
+同情	Vpsy
+喜欢	Vpsy
+羡慕	Vpsy
+信任	Vpsy
+兴奋	Vpsy
+幸福	Vpsy
+勇敢	Vpsy
+友好	Vpsy
+愉快	Vpsy
+愿意	Vpsy
+着急	Vpsy
+支持	Vpsy
 
 # Động từ hình thức
-开始	vpro	vauxil
-停止	vpro	vauxil
-结束	vpro	vauxil
-加以	vpro	vauxil
-给予	vpro	vauxil
-决定	vpro	vauxil
+开始	Vpro
+停止	Vpro
+结束	Vpro
+加以	Vpro
+给予	Vpro
+决定	Vpro
 
 ## Động từ năng nguyện
-会	vm_hui	vauxil
-能	vm_neng	vauxil
-想	vm_xiang	vauxil
-可	vm_ke3	vauxil
-要	vm_yao	vauxil
-肯	vmod	vauxil
-可能	vmod	vauxil
-可以	vmod	vauxil
-希望	vmod	vauxil
-应该	vmod	vauxil
-愿意	vmod	vauxil
-能够	vmod	vauxil
-得以	vmod	vauxil
-乐意	vmod	vauxil
-情愿	vmod	vauxil
-愿	vmod	vauxil
-想要	vmod	vauxil
-敢	vmod	vauxil
-敢于	vmod	vauxil
-乐于	vmod	vauxil
-应	vmod	vauxil
-应该	vmod	vauxil
-应当	vmod	vauxil
-必须	vmod	vauxil
-得	vmod	vauxil
-该	vmod	vauxil
-当	vmod	vauxil
-须得	vmod	vauxil
-犯得着	vmod	vauxil
-犯不着	vmod	vauxil
-理当	vmod	vauxil
-值得	vmod	vauxil
-便于	vmod	vauxil
-难于	vmod	vauxil
-难以	vmod	vauxil
-易于	vmod	vauxil
+会	VmHui
+能	VmNeng
+想	VmXiang
+可	VmKe3
+要	VmYao
+
+肯	Vmod
+可能	Vmod
+可以	Vmod
+希望	Vmod
+应该	Vmod
+愿意	Vmod
+能够	Vmod
+得以	Vmod
+乐意	Vmod
+情愿	Vmod
+愿	Vmod
+想要	Vmod
+敢	Vmod
+敢于	Vmod
+乐于	Vmod
+应	Vmod
+应该	Vmod
+应当	Vmod
+必须	Vmod
+得	Vmod
+该	Vmod
+当	Vmod
+须得	Vmod
+犯得着	Vmod
+犯不着	Vmod
+理当	Vmod
+值得	Vmod
+便于	Vmod
+难于	Vmod
+难以	Vmod
+易于	Vmod

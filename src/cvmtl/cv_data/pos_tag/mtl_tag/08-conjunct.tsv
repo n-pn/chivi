@@ -14,7 +14,7 @@ ConHuoshi	Unreal, BindWord, Peculiar	# "或是"
 # coordinating conjunction
 Concoord	Unreal, BindWord	# geneirc
 
-#ConHe2	Unreal, BindWord, Peculiar	# "和"
-#ConYu3	Unreal, BindWord, Peculiar	# "与"
-#ConTong	Unreal, BindWord, Peculiar	# "同"
-#ConGen1	Unreal, BindWord, Peculiar	# "跟"
+ConHe2	Unreal, BindWord, Peculiar	# "和"
+ConYu3	Unreal, BindWord, Peculiar	# "与"
+ConTong	Unreal, BindWord, Peculiar	# "同"
+ConGen1	Unreal, BindWord, Peculiar	# "跟"

@@ -27,7 +27,7 @@ VmBuhui	CanBePred, MaybeAuxi, Peculiar	# "不会"
 VmXiang	CanBePred, MaybeAuxi, Peculiar	# "想"
 VmNeng	CanBePred, MaybeAuxi, Peculiar	# "能"
 VmYao	CanBePred, MaybeAuxi, Peculiar	# "要"
-#VmKe3	CanBePred, MaybeAuxi, Peculiar	# "可"
+VmKe3	CanBePred, MaybeAuxi, Peculiar	# "可"
 
 ## special verbs
 VShang	CanBePred, MaybeAuxi, Peculiar	# "下"
