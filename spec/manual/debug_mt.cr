@@ -1,8 +1,8 @@
 require "../../src/cvmtl/engine"
 require "../../src/cvmtl/tr_lit"
 
-text = ARGV[0]? || "刚开始传出去的消息是青帝"
-book = ARGV[1]? || "combine"
+text = ARGV[0]? || "在魏梦柔的目光下"
+book = ARGV[1]? || "t6wn9xe0"
 user = ARGV[2]?
 
 time = Time.monotonic

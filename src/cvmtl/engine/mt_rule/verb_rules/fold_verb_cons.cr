@@ -10,7 +10,11 @@ module MT::Core
     while prev = verb.prev
       case prev
       when .maybe_advb?
-        prev.as(MonoNode).fix_val!
+        if prev.is_a?(MonoNode)
+          prev.fix_val!
+        else
+          Log.error { prev.inspect }
+        end
       else
         break unless prev.advb_words?
       end

@@ -14,7 +14,7 @@ DemPron	Object, Ktetic	# generic
 
 PronZhe	Object, Peculiar, AtTail	# "这"
 PronNa1	Object, Peculiar, AtTail	# "那"
-PronMei	Object, Peculiar, AtTail	# "每"
+PronMei	Object, Peculiar	# "每"
 
 PronZheyang	Object, Peculiar, MaybeAdvb, MaybeConj, CanSplit	# "这样"
 PronNayang	Object, Peculiar, MaybeAdvb, MaybeConj, CanSplit	# "那样"
