@@ -112,7 +112,7 @@ enum MT::MtlTag : UInt32
 
   # all locative words
   def locat_words?
-    self >= Locat && self < Timespan
+    self >= Locat && self < Timeword
   end
 
   # all time words

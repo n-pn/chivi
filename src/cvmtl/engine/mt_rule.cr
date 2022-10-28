@@ -14,10 +14,8 @@ module MT::Core
 
   def fold_left!(node : MtNode) : MtNode
     node = fix_mixedpos!(node) if node.mixedpos?
-    # puts [node, node.prev?, node.tag, node.pos]
 
     case node
-    when .maybe_cmpl?   then fold_vcompl!(node)
     when .suffixes?     then fold_suffix!(node)
     when .time_words?   then fold_time!(node)
     when .noun_words?   then fold_noun!(node)

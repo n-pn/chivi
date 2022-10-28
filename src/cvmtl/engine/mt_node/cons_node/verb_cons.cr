@@ -82,22 +82,6 @@ class MT::VerbCons < MT::MtNode
     self.tag = MtlTag::Vobj
     self.fix_succ!(objt.succ?)
     objt.fix_succ!(nil)
-
-    self.fix_aspcmpl_val!(@verb)
-  end
-
-  private def fix_aspcmpl_val!(node : MtNode)
-    while node.is_a?(PairNode)
-      tail = node.tail
-
-      if tail.aspect_marker?
-        return tail.as(MonoNode).skipover!
-      else
-        node = node.head
-      end
-    end
-
-    node.val = node.val.sub(/ (rồi|lấy)/, "") if node.is_a?(MonoNode)
   end
 
   def each

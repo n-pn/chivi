@@ -2,6 +2,7 @@ require "./*"
 
 module MT::Core
   def fold_verb!(verb : MtNode)
+    fix_aspcmpl_val!(verb)
     # puts [verb, verb.prev?, "fold_verb"]
 
     verb = fold_verb_cons!(verb)
@@ -25,5 +26,21 @@ module MT::Core
     end
 
     SubjPred.new(prev, verb, tag: MtlTag::SubjVerb)
+  end
+
+  def fix_aspcmpl_val!(verb : MtNode) : Nil
+    return if verb.succ.boundary? || !verb.verb_take_obj?
+
+    while verb.is_a?(PairNode)
+      tail = verb.tail
+
+      if tail.aspect_marker?
+        return tail.as(MonoNode).skipover!
+      else
+        verb = verb.head
+      end
+    end
+
+    verb.val = verb.val.sub(/ rồi/, "") if verb.is_a?(MonoNode)
   end
 end

@@ -39,12 +39,12 @@ Plsuf	Placeword, Ktetic, Object	# combine with prev noun to place
 Posit	Placeword, Object	# place + locat
 Locat	Placeword, Object	# can act as place
 
-LocShang	Placeword, Object, MaybeModi, MaybeCmpl	# "上"
-LocXia	Placeword, Object, MaybeModi, MaybeCmpl	# "下"
-LocZhong	Placeword, Object, MaybeModi, MaybeCmpl, Peculiar	# "中"
+LocShang	Placeword, Object, MaybeCmpl	# "上"
+LocXia	Placeword, Object, MaybeCmpl	# "下"
+LocZhong	Placeword, Object, MaybeCmpl	# "中"
 
-LocQian	Placeword, Object, MaybeModi, Peculiar	# "前"
-LocHou4	Placeword, Object, MaybeModi, Peculiar	# "后"
+LocQian	Placeword, Object	# "前"
+LocHou4	Placeword, Object	# "后"
 
 # temporal
 Timeword	Object, MaybeAdvb	# generic temporal words

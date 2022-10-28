@@ -2,6 +2,7 @@ module MT::Core
   def pair_noun!(noun : MtNode)
     while prev = noun.prev
       prev = fix_mixedpos!(prev) if prev.mixedpos?
+
       break unless prev.noun_words?
       tag, pos, flip = noun_pairing_type(noun, prev)
       noun = PairNode.new(prev, noun, tag, pos, flip: flip)
@@ -17,7 +18,7 @@ module MT::Core
     case noun
     when .honor?      then honor_pairing_type(noun, prev)
     when .name_words? then named_pairing_type(noun, prev)
-    when .locat?, .posit?
+    when .posit?, .locat_words?
       tag, pos = PosTag.make(:posit)
       {tag, pos, true}
     when .nattr?
@@ -29,7 +30,7 @@ module MT::Core
 
   private def honor_pairing_type(noun : MtNode, prev : MtNode)
     case prev
-    when .time_words?, .nmix?, .locat?, .posit?
+    when .time_words?, .nmix?, .posit?, .locat_words?
       tag, pos = PosTag.make(:nmix)
     else
       tag, pos = PosTag.make(:human_name)

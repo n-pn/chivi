@@ -5,6 +5,8 @@ module MT::Core::Step0
 
   def run!(head : MtNode, tail : MtNode) : Nil
     while (head = head.succ?) && head.is_a?(MonoNode)
+      head = fix_mixedpos!(head) if head.mixedpos?
+
       case head
       when .numbers?      then head = fuse_number!(head)
       when .adjt_words?   then head = fuse_adjt!(head)
@@ -33,6 +35,7 @@ module MT::Core::Step0
       head.tap { |x| x.pos |= :maybe_modi }
     when .aspect_marker?
       return head if prev.noun_words?
+
       if head.loc_shang?
         head.val = "lên"
         head.tag, head.pos = PosTag.make(:v_shang)
@@ -40,6 +43,7 @@ module MT::Core::Step0
         head.val = "xuống"
         head.tag, head.pos = PosTag.make(:v_xia)
       end
+
       head
     else
       head

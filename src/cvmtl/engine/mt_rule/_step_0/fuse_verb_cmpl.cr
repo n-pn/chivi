@@ -4,25 +4,7 @@ module MT::Core::Step0
   def fuse_verb_cmpl!(verb : MtNode, cmpl : MonoNode) : {MtNode, MonoNode}
     case cmpl
     when .adv_bu4?, .ptcl_der?
-      # return verb if verb.has_dircmpl? || verb.has_rescmpl?
-      tail = cmpl.succ.as(MonoNode)
-
-      case tail
-      when .maybe_cmpl?
-        fix_cmpl_val!(verb, cmpl) if verb.is_a?(MonoNode)
-      when .adjt_words?
-        tail = fuse_adjt!(tail)
-      when .advb_words?, .maybe_advb?
-        return {verb, cmpl} unless tail = fuse_advb_adjt(tail)
-      else
-        return {verb, cmpl}
-      end
-
-      cmpl.skipover! if cmpl.ptcl_der?
-
-      pos = verb.pos | map_cmpl_pos(tail)
-      verb = TrioNode.new(verb, cmpl, tail, verb.tag, pos: pos)
-      {verb, verb.succ.as(MonoNode)}
+      fuse_verb_cmpl_infix!(verb, infix: cmpl)
     when .maybe_cmpl?
       return {verb, cmpl} if verb.has_dircmpl? || verb.has_rescmpl?
 
@@ -33,6 +15,28 @@ module MT::Core::Step0
     else
       {verb, cmpl}
     end
+  end
+
+  def fuse_verb_cmpl_infix!(verb, infix, cmpl = infix.succ.as(MonoNode))
+    # return {verbv, infix} if verb.has_dircmpl? || verb.has_rescmpl?
+
+    case cmpl
+    when .maybe_cmpl?
+      fix_cmpl_val!(verb, cmpl) if verb.is_a?(MonoNode)
+    when .adjt_words?
+      cmpl = fuse_adjt!(cmpl)
+    when .advb_words?, .maybe_advb?
+      return {verb, infix} unless cmpl = fuse_advb_adjt(cmpl)
+    else
+      return {verb, infix}
+    end
+
+    infix.skipover! if infix.ptcl_der?
+
+    pos = verb.pos | map_cmpl_pos(cmpl)
+    verb = TrioNode.new(verb, infix, cmpl, verb.tag, pos: pos)
+
+    {verb, verb.succ.as(MonoNode)}
   end
 
   private def fix_cmpl_val!(verb : MonoNode, cmpl : MonoNode)
