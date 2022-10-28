@@ -1,4 +1,4 @@
-CREATE TABLE dicts (
+CREATE TABLE IF NOT EXISTS dicts (
   id integer PRIMARY KEY,
   name varchar NOT NULL,
   type integer NOT NULL,
@@ -10,10 +10,10 @@ CREATE TABLE dicts (
   last_mtime int NOT NULL DEFAULT 0 -- latest time a term get added/updated
 );
 
-CREATE UNIQUE INDEX dicts_name_idx ON dicts (dname);
+CREATE UNIQUE INDEX IF NOT EXISTS dicts_name_idx ON dicts (name);
 
-CREATE INDEX dicts_type_idx ON dicts (dtype);
+CREATE INDEX IF NOT EXISTS dicts_type_idx ON dicts (type);
 
-CREATE INDEX dicts_size_idx ON dicts (term_total);
+CREATE INDEX IF NOT EXISTS dicts_size_idx ON dicts (term_total);
 
-CREATE INDEX dicts_time_idx ON dicts (last_mtime);
+CREATE INDEX IF NOT EXISTS dicts_time_idx ON dicts (last_mtime);

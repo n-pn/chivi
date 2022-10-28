@@ -2,8 +2,8 @@
 
 Prepos	Unreal		# generic
 
-PrepBa3	Unreal	"把"
-PrepDui	Unreal	"对"
+PrepBa3	Unreal, Mixedpos, MaybeQuanti	"把"
+PrepDui	Unreal, Mixedpos, MaybeCmpl	"对"
 PrepBei	Unreal	"被"
 PrepZai	Unreal	"在"
 

@@ -32,6 +32,14 @@ class MT::MonoNode < MT::MtNode
     self
   end
 
+  def key?(*keys : String)
+    @key.in?(keys)
+  end
+
+  def key?(key : String)
+    @key == key
+  end
+
   def apply_cap!(cap : Bool = false) : Bool
     case
     when @pos.cap_relay?                 then cap

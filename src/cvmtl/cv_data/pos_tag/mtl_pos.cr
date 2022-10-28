@@ -64,9 +64,9 @@ enum MT::MtlPos : UInt64
   Volitive # verb predicate expression a desire to do something
   Vlinking # can link verbs
 
-  HasAspect # has aspect marker
-  HasDircom # has directional complement
-  HasRescom # has result complement
+  HasAspcmpl # has aspect marker
+  HasDircmpl # has directional complement
+  HasRescmpl # has result complement
 
   # grammar
   CanBeSubj # can be subject
@@ -124,7 +124,7 @@ module MT::HasPos
   delegate volitive?, to: @pos
   delegate vlinking?, to: @pos
 
-  delegate has_aspect?, to: @pos
+  delegate has_aspcmpl?, to: @pos
   delegate has_dircmpl?, to: @pos
   delegate has_rescmpl?, to: @pos
 end

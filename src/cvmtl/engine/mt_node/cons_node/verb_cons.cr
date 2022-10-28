@@ -8,7 +8,7 @@ class MT::VerbCons < MT::MtNode
 
   property auxi : MtNode? = nil # auxiliary
   property verb : MtNode        # central verb
-  property cmpl : MtNode? = nil # complement
+  property cmpl : MtNode? = nil # time/frequency complement
   property objt : MtNode? = nil # object
 
   property tl_prep : MtNode? = nil
@@ -82,6 +82,26 @@ class MT::VerbCons < MT::MtNode
     self.tag = MtlTag::Vobj
     self.fix_succ!(objt.succ?)
     objt.fix_succ!(nil)
+
+    self.fix_aspcmpl_val!(@verb)
+  end
+
+  private def fix_aspcmpl_val!(node : MonoNode)
+    node.val = node.val.sub(/ (rồi|lấy)/, "")
+  end
+
+  private def fix_aspcmpl_val!(node : PairNode)
+    tail = node.tail
+
+    if tail.aspect_marker?
+      tail.skipover!
+    else
+      fix_aspcmpl_val!(node.head)
+    end
+  end
+
+  private def fix_aspcmpl_val!(node : MtNode)
+    Log.error { "unhandled <fix_aspcmpl> #{node}" }
   end
 
   def each

@@ -12,9 +12,9 @@ VcomplOrX	MaybeCmpl, Mixedpos	# can be verb complement
 NquantOrX	Mixedpos	# can be nquant or other
 
 ## special locative words
-ZhongWord	Mixedpos	"中" # can be locative or verb complement
-ShangWord	Mixedpos	"上" # can be locative or verb complement or verb
-XiaWord	Mixedpos	"下" # can be locative or verb complement or verb
+ZhongWord	Mixedpos, MaybeCmpl	"中" # can be locative or verb complement
+ShangWord	Mixedpos, MaybeCmpl	"上" # can be locative or verb complement or verb
+XiaWord	Mixedpos, MaybeCmpl	"下" # can be locative or verb complement or verb
 
 ## preposes or conjuncts
 He2Word	Mixedpos	"和"
@@ -23,4 +23,4 @@ TongWord	Mixedpos	"同"
 Gen1Word	Mixedpos	"跟"
 
 ## unique word
-HaoWord	Mixedpos	"好" # can be modifier, adjective, adverb, verb complement....
+HaoWord	Mixedpos, MaybeCmpl	"好" # can be modifier, adjective, adverb, verb complement....

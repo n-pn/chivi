@@ -45,7 +45,7 @@ module MT::PosTag
       pos = MtlPos::CanBePred
 
       pos |= MtlPos::Vlinking if key[0].in?(LINKVERB_CHARS) || last_char == '着'
-      pos |= MtlPos.flags(HasAspect) if last_char.in?('着', '了', '过', '所')
+      pos |= MtlPos.flags(HasAspcmpl) if last_char.in?('着', '了', '过', '所')
 
       make(tag, pos)
     end
