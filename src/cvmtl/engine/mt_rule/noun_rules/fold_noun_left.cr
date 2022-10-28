@@ -14,7 +14,9 @@ module MT::Core
   end
 
   private def noun_is_modifier?(noun : MtNode, prev = noun.prev, succ = noun.succ) : Bool
-    return true if succ.adjt_words? || prev.v_shi?
+    return true if prev.v_shi? && succ.ptcl_deps?
+    return true if succ.adjt_words? && succ.succ?(&.ptcl_deps?)
+
     return false unless succ.tag.ptcl_dev? && (center = succ.succ?) && center.object?
     return false unless tail = center.succ?
 

@@ -7,6 +7,7 @@ module MT::Core::Step0
     while (head = head.succ?) && head.is_a?(MonoNode)
       case head
       when .numbers?      then head = fuse_number!(head)
+      when .adjt_words?   then head = fuse_adjt!(head)
       when .verbal_words? then head = fuse_verb!(head)
       end
     end

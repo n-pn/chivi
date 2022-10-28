@@ -4,7 +4,7 @@ module MT::Core::Step0
 
     while succ = adjt.succ
       break unless succ.adjt_words? || succ.maybe_adjt?
-      adjt = PairNode.new(adjt, succ, tag, pos)
+      adjt = PairNode.new(adjt, succ, tag, pos, flip: false)
     end
 
     # FIXME: add suffix
