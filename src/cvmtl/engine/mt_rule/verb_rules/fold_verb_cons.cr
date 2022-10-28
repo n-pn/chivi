@@ -8,12 +8,14 @@ module MT::Core
 
     # join verb with adverbs
     while prev = verb.prev
-      prev = fix_mixedpos!(prev) if prev.mixedpos?
+      case prev
+      when .maybe_advb?
+        prev.as(MonoNode).fix_val!
+      else
+        break unless prev.advb_words?
+      end
 
-      break unless prev.advb_words?
-      # puts [prev, prev.prev?, "prev_verb"]
       verb.add_advb(prev)
-      # puts [verb, verb.prev?, "fold_verb_advb"]
     end
 
     if prev.qtverb?

@@ -1,16 +1,5 @@
 # peculiar characters
 
-## generic
-
-QuantiOrX	Object, MaybeQuanti, Mixedpos
-QtcmplOrX	Object, MaybeQuanti, Mixedpos
-QtverbOrX	Object, MaybeQuanti, Mixedpos
-QtnounOrX	Object, MaybeQuanti, Mixedpos
-QttimeOrX	Object, MaybeQuanti, Mixedpos
-
-VcomplOrX	MaybeCmpl, Mixedpos	# can be verb complement
-NquantOrX	Mixedpos	# can be nquant or other
-
 ## special locative words
 ZhongWord	Mixedpos, MaybeCmpl	"中" # can be locative or verb complement
 ShangWord	Mixedpos, MaybeCmpl	"上" # can be locative or verb complement or verb

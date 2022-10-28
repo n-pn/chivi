@@ -8,3 +8,21 @@ AdjtOrAdvb	Mixedpos, MaybeAdjt, MaybeAdvb	# adjective or adverb
 
 AdjtOrVerb	Mixedpos, MaybeAdjt, MaybeVerb	# adjective or verb
 NounOrAdvb	Mixedpos, MaybeNoun, MaybeAdvb	# noun or adverb
+
+# temporal quantifier
+
+QuantiOrX	Mixedpos, Object, MaybeQuanti
+QtcmplOrX	Mixedpos, Object, MaybeQuanti
+QtverbOrX	Mixedpos, Object, MaybeQuanti
+QtnounOrX	Mixedpos, Object, MaybeQuanti
+QttimeOrX	Mixedpos, Object, MaybeQuanti
+
+NquantOrX	Mixedpos, Object, MaybeNquant
+NqcmplOrX	Mixedpos, Object, MaybeNquant
+NqverbOrX	Mixedpos, Object, MaybeNquant
+NqnounOrX	Mixedpos, Object, MaybeNquant
+NqtimeOrX	Mixedpos, Object, MaybeNquant
+
+# verb complement or other
+
+VcomplOrX	MaybeCmpl, Mixedpos	# can be verb complement
