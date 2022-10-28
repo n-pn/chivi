@@ -1,6 +1,6 @@
 module MT::Core
   def fold_objt_verb!(objt : MtNode, verb : MtNode)
-    head = verb.is_a?(MonoNode) ? fold_verb!(verb) : verb
+    head = fold_verb!(verb)
 
     case head
     when VerbCons
