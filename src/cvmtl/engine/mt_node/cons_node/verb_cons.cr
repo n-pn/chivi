@@ -86,22 +86,18 @@ class MT::VerbCons < MT::MtNode
     self.fix_aspcmpl_val!(@verb)
   end
 
-  private def fix_aspcmpl_val!(node : MonoNode)
-    node.val = node.val.sub(/ (rồi|lấy)/, "")
-  end
-
-  private def fix_aspcmpl_val!(node : PairNode)
-    tail = node.tail
-
-    if tail.aspect_marker?
-      tail.skipover!
-    else
-      fix_aspcmpl_val!(node.head)
-    end
-  end
-
   private def fix_aspcmpl_val!(node : MtNode)
-    Log.error { "unhandled <fix_aspcmpl> #{node}" }
+    while node.is_a?(PairNode)
+      tail = node.tail
+
+      if tail.aspect_marker?
+        return tail.as(MonoNode).skipover!
+      else
+        node = node.head
+      end
+    end
+
+    node.val = node.val.sub(/ (rồi|lấy)/, "") if node.is_a?(MonoNode)
   end
 
   def each

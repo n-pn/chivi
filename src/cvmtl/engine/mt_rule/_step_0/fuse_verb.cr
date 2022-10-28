@@ -7,76 +7,38 @@ module MT::Core::Step0
     when .v_shi? then return verb
     end
 
-    if succ.key == verb.key
-      # reduplication
-      verb = PairNode.new(verb, succ)
-      succ = verb.succ.as(MonoNode)
-    end
+    # reduplication
+    verb, succ = fuse_verb_redup!(verb, succ)
+    verb, succ = fuse_verb_cmpl!(verb, cmpl: succ)
 
-    fuse_verb_cmpl!(verb, cmpl: succ)
+    # fuse verb with aspect marker
+    return verb if !succ.aspect_marker? || verb.has_aspcmpl?
+
+    pos = verb.pos | :has_aspcmpl
+    pos |= :vlinking if succ.ptcl_zhe?
+
+    PairNode.new(verb, succ, verb.tag, pos: pos)
   end
 
-  def fuse_verb_cmpl!(verb : MtNode, cmpl : MonoNode)
-    loop do
-      case cmpl
-      when .aspect_marker?
-        return verb if verb.has_aspcmpl?
+  def fuse_verb_redup!(verb : MonoNode, succ : MonoNode)
+    if succ.ptcl_le?
+      tail = succ.succ.as(MonoNode)
+      return {verb, succ} if verb.prev?(&.ptcl_le?) || !is_verb_redup?(verb, tail)
 
-        pos = verb.pos | :has_aspcmpl
-        pos |= :vlinking if cmpl.ptcl_zhe?
+      succ.skipover!
+      pos = tail.pos | :has_aspcmpl
 
-        verb = PairNode.new(verb, cmpl, verb.tag, pos: pos)
-      when .adv_bu4?, .ptcl_der?
-        # return verb if verb.has_dircmpl? || verb.has_rescmpl?
-        tail = cmpl.succ.as(MonoNode)
-        return verb unless tail.maybe_cmpl?
-
-        cmpl.skipover! if cmpl.ptcl_der?
-        tail.fix_val!
-
-        pos = verb.pos | map_cmpl_pos(tail)
-        verb = TrioNode.new(verb, cmpl, tail, verb.tag, pos: pos)
-      when .maybe_cmpl?
-        return verb if verb.has_dircmpl? || verb.has_rescmpl?
-
-        cmpl.fix_val!
-        pos = verb.pos | map_cmpl_pos(cmpl)
-        verb = PairNode.new(verb, cmpl, verb.tag, pos: pos)
-      else
-        return verb
-      end
-
-      cmpl = verb.succ.as(MonoNode)
-    end
-
-    verb
-  end
-
-  private def map_cmpl_pos(cmpl : MonoNode)
-    case cmpl
-    when .shang_word?, .xia_word?
-      MtlPos::HasDircmpl | MtlPos::HasRescmpl
-    when .vdir?
-      MtlPos::HasDircmpl
+      verb = TrioNode.new(verb, succ, tail, tail.tag, pos)
+      {verb, verb.succ.as(MonoNode)}
+    elsif is_verb_redup?(verb, succ)
+      verb = PairNode.new(verb, succ, succ.tag, succ.pos)
+      {verb, verb.succ.as(MonoNode)}
     else
-      MtlPos::HasRescmpl
+      {verb, succ}
     end
   end
 
-  def fuse_vyou!(vyou : MonoNode, succ : MonoNode)
-    case succ
-    when .nabst?, .nattr?
-      tag, pos = PosTag.make(:amix)
-      PairNode.new(vyou, succ, tag, pos)
-    when .key?("些", "点")
-      tail = succ.succ
-      # FIXME: as more case here
-      return vyou unless tail.adjt_words?
-      tag, pos = PosTag.make(:amix)
-
-      TrioNode.new(vyou, succ, tail, tag, pos)
-    else
-      vyou
-    end
+  private def is_verb_redup?(head : MonoNode, tail : MonoNode) : Bool
+    tail.key == head.key || tail.key[0, 1] == head.key
   end
 end
