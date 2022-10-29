@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fold_quanti!(quanti : MtNode, prev = quanti.prev) : MtNode
     if quanti.qt_ge4? && quanti.is_a?(MonoNode) && quanti.succ.noun_words?
       quanti.val = ""

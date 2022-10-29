@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fix_vcompl!(node : MonoNode) : MonoNode
     case node
     when .vdir? then fix_dir_cmpl!(node)

@@ -1,13 +1,13 @@
-module MT::Core::Step0
-  def fix_mixedpos!(head : MonoNode, prev = head.prev, succ = head.succ)
+module MT::Rules::LTR
+  def fixr_mixedpos!(head : MonoNode, prev = head.prev, succ = head.succ)
     case head
-    when .maybe_verb? then fix_maybe_verb!(head, prev, succ)
+    when .maybe_verb? then fixr_maybe_verb!(head, prev, succ)
     else                   head
     end
   end
 
-  def fix_maybe_verb!(head, prev, succ)
-    case maybeverb_tag(head, prev, succ)
+  def fixr_maybe_verb!(head, prev, succ)
+    case maybe_verb_tag(head, prev, succ)
     when .nil?          then head
     when .noun_words?   then head.as_noun!
     when .advb_words?   then head.as_advb!(head.alt)
@@ -16,7 +16,7 @@ module MT::Core::Step0
     end
   end
 
-  def maybeverb_tag(head, prev, succ)
+  def maybe_verb_tag(head, prev, succ)
     case succ
     when .aspect_marker?, .maybe_cmpl?
       return MtlTag::Verb

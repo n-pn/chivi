@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   # join adjective to larger non-adjectival structures
   def join_adjt!(adjt : MtNode) : MtNode
     adjt = link_adjt!(adjt)

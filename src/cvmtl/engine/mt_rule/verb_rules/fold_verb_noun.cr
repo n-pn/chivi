@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fold_verb_noun!(verb : MtNode, noun : MtNode)
     head = fold_noun!(noun)
 

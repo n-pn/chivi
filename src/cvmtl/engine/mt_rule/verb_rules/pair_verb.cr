@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def pair_verb!(verb : MtNode, prev = verb.prev)
     return verb unless prev.is_a?(MonoNode)
 

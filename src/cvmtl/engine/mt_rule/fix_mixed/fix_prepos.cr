@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fix_dui!(node : MonoNode, prev = node.prev)
     case prev
     when .advb_words?

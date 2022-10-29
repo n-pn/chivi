@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fold_noun!(noun : MtNode)
     noun = make_noun_cons!(noun)
     # puts [noun, noun.prev?]
@@ -10,7 +10,7 @@ module MT::Core
     noun = link_noun!(noun, junc: prev) if prev.bind_word?
     return noun if noun_is_modifier?(noun, prev)
 
-    fold_objt_left!(noun)
+    foldl_objt_full!(noun)
   end
 
   private def noun_is_modifier?(noun : MtNode, prev = noun.prev, succ = noun.succ) : Bool

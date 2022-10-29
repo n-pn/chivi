@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   # join multi adjective phrases together by bond words
   def link_adjt!(adjt : MtNode)
     adjt = form_adjt!(adjt)

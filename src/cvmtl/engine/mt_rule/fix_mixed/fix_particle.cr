@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fix_ptcl_dep!(node : MonoNode)
     Log.info { "TODO!".colorize.yellow }
     node

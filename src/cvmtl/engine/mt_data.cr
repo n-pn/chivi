@@ -54,16 +54,16 @@ class MT::MtData
 
         next unless pstart.tag == match_tag
 
-        Core.join_group!(pclose, pstart)
+        Rules.join_group!(pclose, pstart)
         jdx_upper = jdx
       end
     end
   end
 
   def fix_grammar!
-    Core::Step0.run!(@head, @tail)
+    Rules::LTR.run!(@head, @tail)
     fold_groups! if @pgroup.size > 1
-    Core.left_join!(@tail, @head)
+    Rules.foldl_all!(@tail, @head)
   end
 
   ##########

@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fold_adjt_bu4!(adjt : MtNode, bu4 = adjt.prev, prev = bu4.prev)
     tag, pos = PosTag.make(:amix)
 

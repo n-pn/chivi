@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fold_vcompl!(cmpl : MtNode)
     # puts [cmpl, cmpl.tag, cmpl.pos, cmpl.prev?]
 

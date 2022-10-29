@@ -1,5 +1,5 @@
-module MT::Core
-  def fold_objt_prep!(objt : MtNode, prep : MonoNode)
+module MT::Rules
+  def foldl_objt_prep!(objt : MtNode, prep : MonoNode)
     tag, pos = PosTag.make(:prep_form)
 
     # FIXME: handle more type of preposes

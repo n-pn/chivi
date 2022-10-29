@@ -1,5 +1,5 @@
-module MT::Core::Step0
-  def fix_qttemp!(node : MonoNode, prev = node.prev, succ = node.succ)
+module MT::Rules::LTR
+  def fixr_qttemp!(node : MonoNode, prev = node.prev, succ = node.succ)
     case node
     when .qtcmpl_or_x?
       # word that can be verb complement quantifier only if before is a verb

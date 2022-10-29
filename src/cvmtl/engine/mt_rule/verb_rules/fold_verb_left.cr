@@ -1,6 +1,6 @@
 require "./*"
 
-module MT::Core
+module MT::Rules
   def fold_verb!(verb : MtNode)
     fix_aspcmpl_val!(verb)
     # puts [verb, verb.prev?, "fold_verb"]

@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def link_noun!(noun : MtNode, junc = noun.prev, left = junc.prev)
     case left
     when .noun_words?

@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def join_udev!(udev : MtNode)
     raise "udev should be MonoNode" unless udev.is_a?(MonoNode)
 

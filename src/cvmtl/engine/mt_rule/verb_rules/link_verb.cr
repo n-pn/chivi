@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def link_verb!(verb : MtNode, prev = verb.prev)
     return link_verb_bond!(verb, prev) if prev.bind_word?
     verb

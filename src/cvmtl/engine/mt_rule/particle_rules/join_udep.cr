@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def join_udep!(udep : MtNode)
     raise "udep should be MonoNode" unless udep.is_a?(MonoNode)
 

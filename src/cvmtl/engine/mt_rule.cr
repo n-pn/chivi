@@ -1,11 +1,10 @@
+# require "./mt_util"
 require "./mt_rule/**"
 
-# require "./mt_util"
-
-module MT::Core
+module MT::Rules
   extend self
 
-  def left_join!(tail : MtNode, head : MtNode) : Nil
+  def foldl_all!(tail : MtNode, head : MtNode) : Nil
     while tail = tail.prev?
       break if tail == head
       tail = fold_left!(tail)
@@ -27,7 +26,7 @@ module MT::Core
   end
 
   def join_group!(pstart : MonoNode, pclose : MonoNode) : Nil
-    left_join!(pclose, pstart)
+    foldl_all!(pclose, pstart)
     tag, pos = guess_group_tag(pstart, pclose)
     SeriNode.new(pstart, pclose, tag: tag, pos: pos)
   end
@@ -56,12 +55,5 @@ module MT::Core
     end
 
     head.prev?(&.ptcl_dep?) ? PosTag.make(:nmix) : PosTag.make(:lit_blank)
-  end
-
-  def fold!(head : MtNode, tail : MtNode,
-            tag : {MtlTag, MtlPos}? = nil, flip : Bool = false)
-    tag ||= {tail.tag, tail.pos}
-    # FIXME: remove this helper and using proper structures
-    SeriNode.new(head, tail, tag[0], tag[1], flip: flip)
   end
 end

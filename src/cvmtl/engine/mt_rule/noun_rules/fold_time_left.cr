@@ -1,6 +1,6 @@
 require "./*"
 
-module MT::Core
+module MT::Rules
   def fold_time!(time : MtNode)
     tag, pos = PosTag.make(:timeword)
 
@@ -12,6 +12,6 @@ module MT::Core
     return make_noun_cons!(time) if time.prev.ptcl_dep?
 
     # FIXME: handle time as verb complement
-    time.succ.verbal_words? ? time : fold_objt_left!(objt: time)
+    time.succ.verbal_words? ? time : foldl_objt_full!(objt: time)
   end
 end

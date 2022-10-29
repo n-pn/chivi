@@ -1,10 +1,10 @@
 require "../../fix_dict/fix_cmpl"
 
-module MT::Core::Step0
-  def fuse_verb_cmpl!(verb : MtNode, cmpl : MonoNode) : {MtNode, MonoNode}
+module MT::Rules::LTR
+  def foldr_verb_cmpl!(verb : MtNode, cmpl : MonoNode) : {MtNode, MonoNode}
     case cmpl
     when .adv_bu4?, .ptcl_der?
-      fuse_verb_cmpl_infix!(verb, infix: cmpl)
+      foldr_verb_cmpl_infix!(verb, infix: cmpl)
     when .maybe_cmpl?
       return {verb, cmpl} if verb.has_dircmpl? || verb.has_rescmpl?
 
@@ -17,16 +17,16 @@ module MT::Core::Step0
     end
   end
 
-  def fuse_verb_cmpl_infix!(verb, infix, cmpl = infix.succ.as(MonoNode))
+  def foldr_verb_cmpl_infix!(verb, infix, cmpl = infix.succ.as(MonoNode))
     # return {verbv, infix} if verb.has_dircmpl? || verb.has_rescmpl?
 
     case cmpl
     when .maybe_cmpl?
       fix_cmpl_val!(verb, cmpl) if verb.is_a?(MonoNode)
     when .adjt_words?
-      cmpl = fuse_adjt!(cmpl)
+      cmpl = foldr_adjt_base!(cmpl)
     when .advb_words?, .maybe_advb?
-      return {verb, infix} unless cmpl = fuse_advb_adjt(cmpl)
+      return {verb, infix} unless cmpl = foldr_advb_adjt(cmpl)
     else
       return {verb, infix}
     end

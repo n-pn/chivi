@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fold_left_uzhi!(node : MtNode)
     case node
     when .noun_words?

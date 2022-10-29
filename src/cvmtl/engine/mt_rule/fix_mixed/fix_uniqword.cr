@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fix_uniqword!(node : MonoNode)
     case node
     when .hao_word?    then fix_wd_hao!(node)

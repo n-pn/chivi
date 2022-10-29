@@ -1,5 +1,5 @@
-module MT::Core::Step0
-  def fuse_adjt!(adjt : MtNode)
+module MT::Rules::LTR
+  def foldr_adjt_base!(adjt : MtNode)
     tag, pos = PosTag.make(:amix)
 
     while succ = adjt.succ
@@ -12,14 +12,14 @@ module MT::Core::Step0
     adjt
   end
 
-  def fuse_advb_adjt(head : MonoNode, succ = head.succ)
+  def foldr_advb_adjt(head : MonoNode, succ = head.succ)
     while succ.advb_words? || succ.maybe_advb?
       break if succ.maybe_adjt?
       succ = succ.succ
     end
 
     return unless succ.adjt_words? || succ.maybe_adjt?
-    adjt = fuse_adjt!(succ)
+    adjt = foldr_adjt_base!(succ)
 
     tag, pos = PosTag.make(:amix)
 

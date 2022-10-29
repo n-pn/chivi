@@ -1,6 +1,6 @@
 require "./*"
 
-module MT::Core
+module MT::Rules
   def fold_verb_cons!(verb : MtNode) : MtNode
     verb = pair_verb!(verb)
     # puts [verb, verb.prev?, "after pairing!"]

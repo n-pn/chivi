@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def split_mono!(node : MonoNode)
     raise "Only support split pronouns" unless node.tag.pronouns?
 

@@ -1,7 +1,7 @@
-module MT::Core
+module MT::Rules
   def fold_pronoun!(pronoun : MtNode)
     # FIXME: combine pronouns
 
-    fold_objt_left!(objt: pronoun)
+    foldl_objt_full!(objt: pronoun)
   end
 end

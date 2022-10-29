@@ -4,7 +4,8 @@ Adjt	CanBePred	# normal adjective
 Amed	CanBePred	# measurement adjective
 
 ## special adjectives
-Ahao	CanBePred, Peculiar	# "好"
+AHao	CanBePred, MaybeModi, MaybeAdvb, MaybeCmpl, Peculiar	# "好"
+ASi3	CanBePred, MaybeModi, MaybeCmpl, MaybeVerb, Peculiar	# "死"
 
 # modifier 区别词
 Amod	MaybeModi, AtTail	# modifier place after center noun

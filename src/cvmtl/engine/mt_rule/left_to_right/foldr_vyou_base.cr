@@ -1,5 +1,5 @@
-module MT::Core::Step0
-  def fuse_vyou!(vyou : MonoNode, succ : MonoNode)
+module MT::Rules::LTR
+  def foldr_vyou_base!(vyou : MonoNode, succ : MonoNode)
     case succ
     when .nabst?, .nattr?
       tag, pos = PosTag.make(:amix)

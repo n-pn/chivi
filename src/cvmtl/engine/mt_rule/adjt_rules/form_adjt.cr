@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   # join adjectives + adverbs together, resulting a single adjective form
   def form_adjt!(adjt : MtNode, prev = adjt.prev)
     # TODO:

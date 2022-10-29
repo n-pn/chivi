@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fix_polysemy!(node : MonoNode)
     fixer = FixPolysemy.new(node)
     fixer = fixer.guess_by_succ

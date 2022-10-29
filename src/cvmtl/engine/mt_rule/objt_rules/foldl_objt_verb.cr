@@ -1,5 +1,5 @@
-module MT::Core
-  def fold_objt_verb!(objt : MtNode, verb : MtNode)
+module MT::Rules
+  def foldl_objt_verb!(objt : MtNode, verb : MtNode)
     head = fold_verb!(verb)
 
     case head

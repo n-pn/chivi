@@ -1,35 +1,35 @@
-require "./_step_0/**"
+require "./left_to_right/**"
 
-module MT::Core::Step0
+module MT::Rules::LTR
   extend self
 
   def run!(head : MtNode, tail : MtNode) : Nil
     while (head = head.succ?) && head.is_a?(MonoNode)
-      head = fix_mixedpos!(head) if head.mixedpos?
+      head = fixr_mixedpos!(head) if head.mixedpos?
 
       case head
-      when .numbers?      then head = fuse_number!(head)
-      when .adjt_words?   then head = fuse_adjt!(head)
-      when .verbal_words? then head = fuse_verb!(head)
-      when .maybe_cmpl?   then head = fix_not_cmpl!(head)
+      when .numbers?      then head = foldr_number_base!(head)
+      when .adjt_words?   then head = foldr_adjt_base!(head)
+      when .verbal_words? then head = foldr_verb_base!(head)
+      when .maybe_cmpl?   then head = fixr_not_cmpl!(head)
       when .maybe_quanti? then head = as_not_quanti!(head)
       end
     end
   end
 
-  def fix_not_cmpl!(head : MonoNode)
+  def fixr_not_cmpl!(head : MonoNode)
     case head
     when .loc_zhong?
       head.tap(&.pos = head.pos & ~MtlPos::MaybeCmpl)
     when .loc_shang?, .loc_xia?
-      fix_shangxia!(head)
+      fixr_shangxia!(head)
     else
       head.tag, head.pos = PosTag.not_vcompl(head.key)
       head
     end
   end
 
-  def fix_shangxia!(head : MonoNode, succ = head.succ, prev = head.prev)
+  def fixr_shangxia!(head : MonoNode, succ = head.succ, prev = head.prev)
     case succ
     when .time_words?
       head.tap { |x| x.pos |= :maybe_modi }

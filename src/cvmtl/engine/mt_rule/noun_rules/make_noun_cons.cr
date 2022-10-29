@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def make_noun_cons!(noun : MtNode) : MtNode
     noun = pair_noun!(noun)
     prev = noun.prev

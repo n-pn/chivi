@@ -1,15 +1,15 @@
-module MT::Core::Step0
-  def fuse_verb!(verb : MonoNode)
+module MT::Rules::LTR
+  def foldr_verb_base!(verb : MonoNode)
     succ = verb.succ.as(MonoNode)
 
     case verb
-    when .v_you? then return fuse_vyou!(verb, succ)
+    when .v_you? then return foldr_vyou_base!(verb, succ)
     when .v_shi? then return verb
     end
 
     # reduplication
-    verb, succ = fuse_verb_redup!(verb, succ)
-    verb, succ = fuse_verb_cmpl!(verb, cmpl: succ)
+    verb, succ = foldr_verb_redup!(verb, succ)
+    verb, succ = foldr_verb_cmpl!(verb, cmpl: succ)
 
     # fuse verb with aspect marker
     return verb if !succ.aspect_marker? || verb.has_aspcmpl?
@@ -20,7 +20,7 @@ module MT::Core::Step0
     PairNode.new(verb, succ, verb.tag, pos: pos)
   end
 
-  def fuse_verb_redup!(verb : MonoNode, succ : MonoNode)
+  def foldr_verb_redup!(verb : MonoNode, succ : MonoNode)
     if succ.ptcl_le?
       tail = succ.succ.as(MonoNode)
       return {verb, succ} if verb.prev?(&.ptcl_le?) || !is_verb_redup?(verb, tail)

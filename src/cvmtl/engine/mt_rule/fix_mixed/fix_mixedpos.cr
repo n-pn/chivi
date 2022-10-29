@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fix_mixedpos!(node : MonoNode)
     case node
     when .polysemy?     then fix_polysemy!(node)

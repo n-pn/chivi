@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def fold_suffix!(node : MtNode, prev = node.prev)
     node
   end
@@ -12,7 +12,7 @@ module MT::Core
       tag, pos = PosTag.make(:noun)
       node = PairNode.new(prev, node, tag, pos, flip: true)
 
-      fold_objt_left!(node)
+      foldl_objt_full!(node)
     when .suf_xing?
       tag, pos = PosTag.make(:nattr)
       PairNode.new(prev, node, tag, pos, flip: true)
@@ -22,7 +22,7 @@ module MT::Core
       tag, pos = PosTag.make(:timeword)
       node = PairNode.new(prev, node, tag, pos, flip: true)
 
-      fold_objt_left!(node)
+      foldl_objt_full!(node)
     when .suf_verb?
       tag, pos = PosTag.make(:verb)
       node = PairNode.new(prev, node, tag, pos, flip: true)
@@ -35,7 +35,7 @@ module MT::Core
 
       tag, pos = PosTag.make(:noun)
       node = PairNode.new(prev, node, tag, pos, flip: true)
-      fold_objt_left!(node)
+      foldl_objt_full!(node)
 
       # make_noun_cons!(node)
     end
@@ -48,6 +48,6 @@ module MT::Core
     pos = node.pos
 
     node = PairNode.new(prev, node, tag, pos, flip: !node.at_tail?)
-    fold_objt_left!(node)
+    foldl_objt_full!(node)
   end
 end

@@ -1,12 +1,12 @@
-module MT::Core::Step0
-  def fuse_number!(number : MonoNode)
+module MT::Rules::LTR
+  def foldr_number_base!(number : MonoNode)
     return number if number.ordinal?
 
     quanti = number.succ.as(MonoNode)
-    quanti = fix_qttemp!(quanti, prev: number) if quanti.maybe_quanti?
+    quanti = fixr_qttemp!(quanti, prev: number) if quanti.maybe_quanti?
 
     return number unless quanti.quantis?
-    return make_nquant!(number, quanti) unless number.num_yi1?
+    return foldr_nquant_base!(number, quanti) unless number.num_yi1?
 
     # handle reduplication
 
@@ -32,11 +32,11 @@ module MT::Core::Step0
 
       PairNode.new(head, tail, tag, pos | MtlPos::MaybeAdvb)
     else
-      make_nquant!(number, quanti)
+      foldr_nquant_base!(number, quanti)
     end
   end
 
-  def make_nquant!(number : MonoNode, quanti : MonoNode)
+  def foldr_nquant_base!(number : MonoNode, quanti : MonoNode)
     tag = quanti.tag.qt_to_nq
     pos = PosTag.map_pos(tag)
 

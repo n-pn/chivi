@@ -1,4 +1,4 @@
-module MT::Core
+module MT::Rules
   def pair_noun!(noun : MtNode)
     while prev = noun.prev
       prev = fix_mixedpos!(prev) if prev.mixedpos?
