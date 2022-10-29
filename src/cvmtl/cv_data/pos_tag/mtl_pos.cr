@@ -39,7 +39,7 @@ enum MT::MtlPos : UInt64
   # part in speech
 
   CanSplit # can split to other structure
-  BindWord # can be use to link two words/two phraes
+  JoinWord # can be use to link two words/two phraes
 
   # mixed post
 
@@ -102,7 +102,7 @@ module MT::HasPos
   delegate to_measure?, to: @pos
 
   delegate can_split?, to: @pos
-  delegate bind_word?, to: @pos
+  delegate join_word?, to: @pos
 
   delegate maybe_noun?, to: @pos
   delegate maybe_verb?, to: @pos

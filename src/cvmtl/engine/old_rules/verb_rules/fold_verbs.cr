@@ -18,7 +18,7 @@ module MT::TlRule
 
     while !verb.vobj? && (succ = verb.succ?)
       case succ
-      when .bind_word?
+      when .join_word?
         fold_verb_junction!(junc: succ, verb: verb).try { |x| verb = x } || break
       when .ptcl_zhe?
         verb = fold_verb_uzhe!(verb, uzhe: succ)

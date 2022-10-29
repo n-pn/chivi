@@ -7,13 +7,13 @@ module MT::TlRule
 
     case succ = adjt.succ?
     when .nil? then noun
-    when .bind_word?
+    when .join_word?
       fold!(noun, adjt, PosTag.make(:amix))
     when .ptcl_dep?
       return noun if succ.succ? { |x| x.verbal_words? || x.boundary? }
       fold!(noun, adjt, PosTag.make(:amix))
     when .ptcl_dev?
-      return noun unless (prev = noun.prev?) && (prev.object? || prev.bind_word?)
+      return noun unless (prev = noun.prev?) && (prev.object? || prev.join_word?)
       adjt = fold!(noun, adjt, PosTag.make(:amix))
       fold_adjt_ude2!(adjt, succ)
     else

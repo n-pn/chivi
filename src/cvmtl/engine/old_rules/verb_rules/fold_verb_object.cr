@@ -34,7 +34,7 @@ module MT::TlRule
 
     if succ.suf_noun? && succ.key == "时"
       fold!(verb_object, succ.set!("khi"), tag: PosTag::Texpr, flip: true)
-    elsif succ.bind_word?
+    elsif succ.join_word?
       fold_verb_junction!(junc: succ, verb: verb_object) || verb_object
     else
       verb_object

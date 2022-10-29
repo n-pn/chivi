@@ -7,19 +7,19 @@ module MT::Rules
   def foldl_all!(tail : MtNode, head : MtNode) : Nil
     while tail = tail.prev?
       break if tail == head
-      tail = fold_left!(tail)
+      tail = foldl_once!(tail)
     end
   end
 
-  def fold_left!(node : MtNode) : MtNode
+  def foldl_once!(node : MtNode) : MtNode
     node = fix_mixedpos!(node) if node.mixedpos?
 
     case node
-    when .suffixes?     then fold_suffix!(node)
-    when .time_words?   then fold_time!(node)
-    when .noun_words?   then fold_noun!(node)
-    when .adjt_words?   then join_adjt!(node)
-    when .verbal_words? then fold_verb!(node)
+    when .suffixes?     then foldl_suffix_full!(node)
+    when .time_words?   then foldl_time_full!(node)
+    when .noun_words?   then foldl_noun_full!(node)
+    when .adjt_words?   then foldl_adjt_full!(node)
+    when .verbal_words? then foldl_verb_full!(node)
     when .ptcl_dep?     then node.tap(&.as(MonoNode).skipover!)
     else                     node
     end

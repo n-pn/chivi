@@ -1,7 +1,7 @@
 module MT::Rules
   def join_prep_form!(tail : MtNode, prep_form : MtNode)
-    tail = VerbCons.new(tail) unless tail.is_a?(VerbCons)
+    tail = VerbExpr.new(tail) unless tail.is_a?(VerbExpr)
     tail.add_prep(prep_form)
-    fold_verb!(tail)
+    foldl_verb_full!(tail)
   end
 end

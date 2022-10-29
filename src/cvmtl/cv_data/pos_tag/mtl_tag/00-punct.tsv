@@ -35,7 +35,7 @@ Colon	Boundary, NoSpaceL, CapAfter	":"
 Smcln	Boundary, NoSpaceL	";"
 
 Comma	NoSpaceL	","
-Cenum	NoSpaceL, BindWord	"､"
+Cenum	NoSpaceL, JoinWord	"､"
 
 Dash1	Boundary, NoSpaceL, NoSpaceR	"–"
 Dash2	Boundary	"—"
@@ -45,7 +45,7 @@ Ellip2	NoSpaceL	"……"
 
 Tilde	Boundary, NoSpaceL	"~"
 
-Middot	NoSpaceL, NoSpaceR, BindWord	"·"
+Middot	NoSpaceL, NoSpaceR, JoinWord	"·"
 Atsign	NoSpaceR	"@"
 
 Pcmark	NoSpaceL	"‰", "%"
