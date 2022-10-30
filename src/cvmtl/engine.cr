@@ -43,7 +43,6 @@ class MT::Engine
   def cv_plain(input : String, cap_first = true, offset = 0) : MtData
     # data = tokenize(input.chars, offset: offset)
     txt_seg = TxtSeg.new(input)
-    txt_seg.apply_ner!(offset: offset)
     txt_seg.feed_dict!(@dicts, offset: offset)
 
     mt_data = txt_seg.result

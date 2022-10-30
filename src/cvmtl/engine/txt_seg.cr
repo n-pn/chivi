@@ -20,7 +20,6 @@ class MT::TxtSeg
     @raw_chars.each_with_index do |raw_char, idx|
       mtl_char = CharUtil.fullwidth?(raw_char) ? CharUtil.to_halfwidth(raw_char) : raw_char
       @mtl_chars << mtl_char
-
       @nodes << init_node(raw_char, mtl_char, idx)
     end
   end
@@ -31,58 +30,18 @@ class MT::TxtSeg
     MonoNode.new(raw_char.to_s, mtl_str, tag: tag, pos: pos, idx: idx)
   end
 
-  HANNUM_CHARS = {'一', '两', '二', '三', '四', '五', '六', '七', '八', '九', '十', '百', '千', '万', '亿', '兆'}
-
-  def apply_ner!(offset : Int32 = 0)
-    idx = 0
-
-    while idx < @upper
-      mtl_char = @mtl_chars.unsafe_fetch(idx)
-
-      case mtl_char
-      when .ascii_letter?
-        new_idx, tag, val = scan_string(idx)
-      when .ascii_number?
-        new_idx, tag, val = scan_ndigit(idx)
-      when .in?(HANNUM_CHARS)
-        new_idx, tag, val = scan_hannum(idx)
-      when '几'
-        idx += 1
-        mtl_char = @mtl_chars.unsafe_fetch(idx)
-        next unless mtl_char.in?(HANNUM_CHARS)
-
-        new_idx, tag, val = scan_hannum(idx, "mấy ")
-        idx -= 1
-      when '第'
-        idx += 1
-        mtl_char = @mtl_chars.unsafe_fetch(idx)
-        next unless mtl_char.in?(HANNUM_CHARS)
-
-        new_idx, _tag, val = scan_hannum(idx)
-        tag = MtlTag::Ordinal
-        val = "thứ " + val
-        idx -= 1
-      else
-        idx += 1
-        next
-      end
-
-      key = @raw_chars[idx...new_idx].join
-      val ||= @mtl_chars[idx...new_idx].join
-
-      node = MonoNode.new(key, val, tag: tag, idx: idx &+ offset, dic: 2)
-      # puts ["ner_output", node]
-
-      @nodes[new_idx] = node
-      @costs[new_idx] = @costs.unsafe_fetch(idx) &+ MtTerm.seg_weight(wlen: new_idx &- idx, wseg: 2)
-
-      idx = new_idx
-    end
-  end
-
   def feed_dict!(dicts : MtDict, offset = 0)
+    ner_idx = 0
+
     0.upto(@upper &- 1) do |idx|
       base_cost = @costs.unsafe_fetch(idx)
+
+      if (idx >= ner_idx) && (ner_node = run_ner(idx, offset: offset))
+        wlen = ner_node.key.size
+        ner_idx = idx &+ wlen
+        @nodes[ner_idx] = ner_node
+        @costs[ner_idx] = base_cost &+ MtTerm.seg_weight(wlen: wlen, wseg: 2) &- 1
+      end
 
       dicts.scan(@mtl_chars, idx) do |term, key_size, dict_id|
         cost = base_cost &+ term.seg
@@ -98,6 +57,43 @@ class MT::TxtSeg
         end
       end
     end
+  end
+
+  HANNUM_CHARS = {'一', '两', '二', '三', '四', '五', '六', '七', '八', '九', '十', '百', '千', '万', '亿', '兆'}
+
+  private def run_ner(idx = 0, offset : Int32 = 0) : MonoNode?
+    case @mtl_chars.unsafe_fetch(idx)
+    when .ascii_letter?
+      new_idx, tag, val = scan_string(idx)
+    when .ascii_number?
+      new_idx, tag, val = scan_ndigit(idx)
+    when .in?(HANNUM_CHARS)
+      new_idx, tag, val = scan_hannum(idx)
+    when '几'
+      idx += 1
+      next_char = @mtl_chars.unsafe_fetch(idx)
+      return unless next_char.in?(HANNUM_CHARS)
+
+      new_idx, tag, val = scan_hannum(idx, "mấy ")
+      idx -= 1
+    when '第'
+      idx += 1
+
+      next_char = @mtl_chars.unsafe_fetch(idx)
+      return unless next_char.in?(HANNUM_CHARS)
+
+      new_idx, _tag, val = scan_hannum(idx)
+      tag = MtlTag::Ordinal
+      val = "thứ " + val
+      idx -= 1
+    else
+      return
+    end
+
+    key = @raw_chars[idx...new_idx].join
+    val ||= @mtl_chars[idx...new_idx].join
+
+    MonoNode.new(key, val, tag: tag, idx: idx &+ offset, dic: 2)
   end
 
   def result : MtData
