@@ -1,4 +1,4 @@
-// import { browser } from '$app/env'
+// import { browser } from '$app/environment'
 
 // class Error {
 //   status: number
@@ -102,19 +102,29 @@ import { error } from '@sveltejs/kit'
 
 type GetParams = Record<string, string>
 
-export async function api_get(
-  url: string,
-  params?: GetParams,
-  fetch = globalThis.fetch
-) {
-  if (params) url += '?' + new URLSearchParams(params).toString()
-  const res = await fetch(url, {
-    method: 'GET',
-    mode: 'cors',
-    credentials: 'include',
-  })
+// prettier-ignore
+export async function api_call( url: string, method = 'PUT', body?: object, fetch = globalThis.fetch ) {
+  const options = { method }
+
+  if (body) {
+    options['headers'] = { 'Content-Type': 'application/json' }
+    options['body'] = JSON.stringify(body)
+  }
+
+  const res = await fetch(url, options)
   if (!res.ok) throw error(res.status, await res.text())
 
   const type = res.headers.get('Content-Type')
   return type.startsWith('text') ? await res.text() : await res.json()
+}
+
+// prettier-ignore
+export async function api_get( url: string, params?: GetParams, fetch = globalThis.fetch ) {
+  if (params) url += '?' + new URLSearchParams(params).toString()
+  return await api_call(url, 'GET', null, fetch)
+}
+
+// prettier-ignore
+export async function api_put( url: string, body?: object, fetch = globalThis.fetch ) {
+  return await api_call(url, 'PUT', body, fetch)
 }

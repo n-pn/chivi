@@ -1,5 +1,5 @@
 <script lang="ts">
-  // import { session } from '$app/stores'
+  // import { session } from '$lib/stores'
 
   import { call_api } from '$lib/api_call'
   import SIcon from '$gui/atoms/SIcon.svelte'

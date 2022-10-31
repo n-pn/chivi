@@ -2,8 +2,8 @@
   import { getContext } from 'svelte'
   import type { Writable } from 'svelte/store'
 
-  import { page, session } from '$app/stores'
-  import { SIcon, Gmenu } from '$gui'
+  import { session } from '$lib/stores'
+  import { api_call } from '$lib/api'
 
   import {
     status_types,
@@ -11,6 +11,8 @@
     status_icons,
     status_colors,
   } from '$lib/constants'
+
+  import { SIcon, Gmenu } from '$gui'
 
   export let nvinfo: CV.Nvinfo
   let ubmemo: Writable<CV.Ubmemo> = getContext('ubmemos')
@@ -23,7 +25,7 @@
     if (status == book_status) status = 'default'
 
     const url = `/api/_self/books/${nvinfo.id}/status`
-    const res = await $page.stuff.api.call(url, 'PUT', { status })
+    const res = await api_call(url, 'PUT', { status })
 
     if (res.error) alert(res.error)
     else $ubmemo = res
@@ -34,8 +36,8 @@
   $: name = status_names[book_status]
 </script>
 
-<Gmenu class="navi-item" loc="bottom" let:trigger>
-  <button class="m-btn _fill _{color}" slot="trigger" on:click={trigger}>
+<Gmenu class="navi-item" loc="bottom" r>
+  <button class="m-btn _fill _{color}" slot="trigger">
     <SIcon name={icon} />
     <span>{name}</span>
   </button>

@@ -1,17 +1,23 @@
 <script lang="ts">
   export let loc = 'bottom'
   export let dir = 'center'
-
   export let lbl = ''
+
   export let active = false
 
-  const trigger = () => {
-    active = !active
-  }
+  const trigger = (_: any) => (active = !active)
+  const deactive = () => (active = false)
 </script>
 
-<menu-wrap class={$$props.class || ''} class:_active={active}>
-  <slot name="trigger" {trigger} />
+<menu-wrap
+  class={$$props.class || ''}
+  class:_active={active}
+  on:blur={deactive}
+  on:mouseleave={deactive}>
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div class="trigger" on:click={deactive}>
+    <slot name="trigger" {trigger} />
+  </div>
 
   <menu-body class="{loc} {dir}">
     <div class="content">
@@ -19,22 +25,9 @@
       <slot name="content" />
     </div>
   </menu-body>
-
-  {#if active}
-    <div class="hidden" on:click={() => (active = false)} />
-  {/if}
 </menu-wrap>
 
 <style lang="scss">
-  .hidden {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 99998;
-  }
-
   menu-wrap {
     display: block;
     position: relative;
@@ -119,5 +112,9 @@
     > :global(.-right) {
       margin-left: auto;
     }
+  }
+
+  .trigger {
+    display: contents;
   }
 </style>

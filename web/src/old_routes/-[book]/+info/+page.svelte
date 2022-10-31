@@ -1,5 +1,7 @@
 <script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
+  throw new Error(
+    '@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)'
+  )
 
   // import { nvinfo_bar } from '$utils/topbar_utils'
 
@@ -22,15 +24,13 @@
 </script>
 
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
   import { goto } from '$app/navigation'
-  import { page, session } from '$app/stores'
+  import { page } from '$app/stores'
+  import { session } from '$lib/stores'
   import { Crumb, SIcon } from '$gui'
-
   import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
-  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
 
+  $: nvinfo = $page.data.nvinfo
   $: nv_href = `/-${nvinfo.bslug}`
 
   async function delete_book() {

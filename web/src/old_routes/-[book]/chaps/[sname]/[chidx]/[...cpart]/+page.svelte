@@ -1,5 +1,7 @@
 <script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
+  throw new Error(
+    '@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)'
+  )
 
   // import { nvinfo_bar } from '$utils/topbar_utils'
   // import { seed_url, to_pgidx } from '$utils/route_utils'
@@ -54,10 +56,9 @@
 </script>
 
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
   import { getContext } from 'svelte'
-  import { page, session } from '$app/stores'
+  import { page } from '$app/stores'
+  import { session } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'

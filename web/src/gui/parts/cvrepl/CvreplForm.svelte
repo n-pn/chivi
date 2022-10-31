@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { session } from '$app/stores'
+  import { session } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import MdForm from '$gui/molds/MdForm.svelte'

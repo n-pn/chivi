@@ -1,4 +1,4 @@
-import { page, session } from '$app/stores'
+import { page, session } from '$lib/stores'
 import { invalidate } from '$app/navigation'
 
 import { make_vdict } from '$utils/vpdict_utils'
@@ -9,7 +9,9 @@ import pt_labels from '$lib/consts/postag_labels.json'
 
 import Postag from '$gui/parts/Postag.svelte'
 
-throw new Error("@migration task: Check if you need to migrate the load function input (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292693)");
+throw new Error(
+  '@migration task: Check if you need to migrate the load function input (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292693)'
+)
 export async function load({ fetch, url, params: { dict } }) {
   const api_url = `/api/dicts/${dict}${url.search}`
   const api_res = await fetch(api_url)
@@ -31,6 +33,8 @@ export async function load({ fetch, url, params: { dict } }) {
 
   payload.stuff = { topbar }
 
-  throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292693)");
+  throw new Error(
+    '@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292693)'
+  )
   return payload
 }

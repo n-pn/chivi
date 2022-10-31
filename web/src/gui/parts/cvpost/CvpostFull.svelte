@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { session } from '$app/stores'
+  import { session } from '$lib/stores'
   import { rel_time } from '$utils/time_utils'
   import { dlabels } from '$lib/constants'
 

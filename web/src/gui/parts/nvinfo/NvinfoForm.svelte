@@ -52,10 +52,13 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
+  // import { page } from '$app/stores'
+  import { session } from '$lib/stores'
+  import { api_call } from '$lib/api'
+
   import { book_status } from '$utils/nvinfo_utils'
 
   import { SIcon } from '$gui'
-  import { page, session } from '$app/stores'
 
   export let nvinfo: CV.Nvinfo = undefined
 
@@ -69,7 +72,7 @@
     }
 
     const url = '/api/books'
-    const res = await $page.stuff.api.call(url, 'POST', params.output)
+    const res = await api_call(url, 'POST', params.output)
 
     if (res.error) errors = res.error
     else await goto(`/-${res.bslug}`)

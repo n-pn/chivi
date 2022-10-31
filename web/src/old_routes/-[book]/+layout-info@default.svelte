@@ -1,7 +1,9 @@
 <script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
+  throw new Error(
+    '@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)'
+  )
 
-  // import { page, session } from '$app/stores'
+  // import { page, session } from '$lib/stores'
 
   // import { nvinfo_bar } from '$utils/topbar_utils'
   // import { suggest_read } from '$utils/ubmemo_utils'
@@ -20,7 +22,9 @@
 </script>
 
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
+  throw new Error(
+    '@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)'
+  )
 
   import { SIcon, BCover } from '$gui'
   import RTime from '$gui/atoms/RTime.svelte'

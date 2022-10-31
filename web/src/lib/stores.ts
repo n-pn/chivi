@@ -1,4 +1,5 @@
-import { writable } from 'svelte/store'
+import { writable, derived } from 'svelte/store'
+import { page } from '$app/stores'
 
 export const layers = {
   ...writable(['#svelte']),
@@ -6,6 +7,8 @@ export const layers = {
   remove: (l: string) => layers.update((x) => x.filter((i) => i != l)),
   toggle: (a: boolean, l: string) => (a ? layers.add(l) : layers.remove(l)),
 }
+
+export const session = derived(page, ($page) => $page.data._user)
 
 export * from './stores/config_stores'
 export * from './stores/cvdata_stores'

@@ -16,3 +16,4 @@ export { default as CvreplList } from './parts/cvrepl/CvreplList.svelte'
 export { default as CvreplCard } from './parts/cvrepl/CvreplCard.svelte'
 
 // export { default as Upsert } from './parts/Upsert.svelte'
+export { default as Footer } from './sects/Footer.svelte'

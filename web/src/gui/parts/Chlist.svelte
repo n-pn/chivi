@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { session } from '$app/stores'
+  import { page } from '$app/stores'
+  $: session = $page.data._user
+
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import { SIcon } from '$gui'
 
@@ -48,7 +50,7 @@
           </chap-mark>
         {/if}
 
-        {#if $session.privi >= min_privi}
+        {#if session.privi >= min_privi}
           {#if min_privi > -1}
             <chap-mark data-tip="Bạn đủ quyền xem chương"
               ><SIcon name="lock-open" /></chap-mark>

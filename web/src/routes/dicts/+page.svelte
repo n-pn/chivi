@@ -1,18 +1,11 @@
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
   import { page } from '$app/stores'
-
   import { Footer, Mpager } from '$gui'
   import { Pager } from '$gui/molds/Mpager.svelte'
   import { Crumb } from '$gui'
 
-  export let cores = []
-  export let books = []
-
-  export let total = 1
-  export let pgidx = 1
-  export let pgmax = 1
+  import type { PageData } from './$types'
+  export let data: PageData
 </script>
 
 <svelte:head>
@@ -27,7 +20,7 @@
   <h2>Hệ thống</h2>
 
   <div class="dicts">
-    {#each cores as [dname, label, dsize]}
+    {#each data.cores as [dname, label, dsize]}
       <a class="-dict" href="/dicts/{dname}">
         <div class="-name">{label}</div>
         <div class="-meta">
@@ -38,10 +31,10 @@
     {/each}
   </div>
 
-  <h2>Theo bộ ({total})</h2>
+  <h2>Theo bộ ({data.total})</h2>
 
   <div class="dicts">
-    {#each books as [dname, label, dsize]}
+    {#each data.books as [dname, label, dsize]}
       <a class="-dict" href="/dicts/-{dname}">
         <div class="-name">{label}</div>
         <div class="-meta">
@@ -54,7 +47,7 @@
 </article>
 
 <Footer>
-  <Mpager pager={new Pager($page.url)} {pgidx} {pgmax} />
+  <Mpager pager={new Pager($page.url)} pgidx={data.pgidx} pgmax={data.pgmax} />
 </Footer>
 
 <style lang="scss">

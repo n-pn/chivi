@@ -11,7 +11,7 @@ export async function load({ fetch }) {
 
   // prettier-ignore
   const _head_right = [
-    {text: 'Dịch nhanh', icon: 'bold', href: '/qtran', 'data-show': 'tm'},
+    {text: 'Dịch nhanh', icon: 'bolt', href: '/qtran', 'data-show': 'tm'},
     {text: 'Đánh giá', icon: 'stars', href: '/crits', 'data-show': 'tm'},
   ]
 

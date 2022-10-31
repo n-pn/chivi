@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
-  import { page, session } from '$app/stores'
+  import { page } from '$app/stores'
+  import { session } from '$lib/stores'
   import { dlabels } from '$lib/constants'
 
   import { dtlist_data, dboard_ctrl } from '$lib/stores'

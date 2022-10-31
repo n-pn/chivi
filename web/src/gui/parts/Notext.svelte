@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { session } from '$app/stores'
+  import { session } from '$lib/stores'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let nvseed: CV.Chroot
@@ -94,7 +95,7 @@
       <p>
         Hãy kiểm tra từ <a
           href={chmeta.clink}
-          rel="noopener noferrer"
+          rel="noopener noreferrer"
           target="_blank">trang gốc</a> xem có phải vấn đề từ bên đó hay không.
       </p>
       <p>

@@ -24,7 +24,7 @@
 </script>
 
 <script lang="ts">
-  import { session } from '$app/stores'
+  import { session } from '$lib/stores'
 
   import pt_labels from '$lib/consts/postag_labels.json'
 
@@ -161,13 +161,18 @@
   on_close={ctrl.hide}
   class="upsert"
   _size="lg">
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
   <upsert-head class="head" on:click={refocus}>
-    <Gmenu dir="left" loc="bottom" let:trigger>
-      <button class="m-btn _text" slot="trigger" on:click={trigger}>
+    <Gmenu dir="left" loc="bottom">
+      <button class="m-btn _text" slot="trigger">
         <SIcon name="menu-2" />
       </button>
       <svelte:fragment slot="content">
-        <a class="gmenu-item" href="/dicts/{$vdict.dname}" target="_blank">
+        <a
+          class="gmenu-item"
+          href="/dicts/{$vdict.dname}"
+          target="_blank"
+          rel="noreferrer">
           <SIcon name="package" />
           <span>Từ điển</span>
         </a>
@@ -195,6 +200,7 @@
     </button>
   </upsert-head>
 
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
   <upsert-tabs on:click={refocus}>
     {#each vpdicts as { d_dub, d_tip }, tab}
       {@const infos = tabs[tab]}
@@ -219,6 +225,7 @@
     </button>
   </upsert-tabs>
 
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
   <upsert-body on:click={refocus}>
     <Emend {vpterm} />
 
@@ -271,7 +278,7 @@
         <button
           class="m-btn _lg"
           class:_active={show_opts}
-          data-kbd="\"
+          data-kbd="&bsol;"
           data-key="Backslash"
           use:hint={'Thay dổi chế độ lưu trữ'}
           on:click={() => (show_opts = !show_opts)}>
@@ -289,6 +296,7 @@
     </upsert-foot>
   </upsert-body>
 
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
   <footer class="foot" on:click={refocus}>
     <Links {key} />
   </footer>

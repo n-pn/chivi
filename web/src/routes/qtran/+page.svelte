@@ -1,19 +1,17 @@
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
+  import { goto } from '$app/navigation'
 
   import { Footer, SIcon, Crumb } from '$gui'
 
-  import { goto } from '$app/navigation'
-
-  export let dname = 'combine'
-  export let input = ''
+  import type { PageData } from './$types'
+  export let data: PageData
 
   let error = ''
   async function submit() {
     // if ($session.privi < 0) return
 
-    if (input.length > 10000) {
-      error = `Số ký tự phải nhỏ hơn 10000, hiện tại: ${input.length}`
+    if (data.input.length > 10000) {
+      error = `Số ký tự phải nhỏ hơn 10000, hiện tại: ${data.input.length}`
       return
     }
 
@@ -21,7 +19,7 @@
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input, dname }),
+      body: JSON.stringify({ input: data.input, dname: data.dname }),
     })
 
     if (res.ok) {
@@ -33,10 +31,6 @@
   }
 </script>
 
-<svelte:head>
-  <title>Dịch nhanh - Chivi</title>
-</svelte:head>
-
 <Crumb tree={[['Dịch nhanh', '/qtran']]} />
 
 <div class="input">
@@ -44,7 +38,7 @@
     class="m-input"
     lang="zh"
     class:_error={error}
-    bind:value={input}
+    bind:value={data.input}
     placeholder="Nhập dữ liệu vào đây" />
 </div>
 
@@ -54,7 +48,7 @@
 
 <Footer>
   <div class="foot">
-    <button class="m-btn" on:click={() => (input = '')}>
+    <button class="m-btn" on:click={() => (data.input = '')}>
       <SIcon name="eraser" />
       <span>Xoá</span>
     </button>

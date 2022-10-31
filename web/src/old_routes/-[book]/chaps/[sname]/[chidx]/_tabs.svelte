@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { page, session } from '$app/stores'
+  // import { page } from '$app/stores'
+  import { session } from '$lib/stores'
 
   export let nvinfo: CV.Nvinfo
   export let nslist: CV.Nslist

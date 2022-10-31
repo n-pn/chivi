@@ -1,6 +1,4 @@
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
   import { invalidate } from '$app/navigation'
   import { page } from '$app/stores'
   import { Crumb } from '$gui'
@@ -9,18 +7,13 @@
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import Tlspec, { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
 
-  export let pgidx = 1
-  export let pgmax = 1
-  export let items = []
+  import type { PageData } from './$types'
+  export let data: PageData
 
   const on_destroy = () => invalidate(`/api/tlspecs${$page.url.search}`)
 
   $: pager = new Pager($page.url)
 </script>
-
-<svelte:head>
-  <title>Lỗi máy dịch - Chivi</title>
-</svelte:head>
 
 <Crumb tree={[['Dịch nhanh', '/qtran']]} />
 
@@ -38,11 +31,11 @@
       </tr>
     </thead>
     <tbody>
-      {#each items as { _ukey, ztext, d_dub, mtime, uname, match, cvmtl }, idx}
+      {#each data.items as { _ukey, ztext, d_dub, mtime, uname, match, cvmtl }, idx}
         <tr
           class={cvmtl == match ? 'ok' : 'err'}
           on:click={() => tlspec.load(_ukey)}>
-          <td class="id">{idx + 1 + (pgidx - 1) * 50}</td>
+          <td class="id">{idx + 1 + (data.pgidx - 1) * 50}</td>
           <td class="ztext">
             <div class="txt">{ztext}</div>
             <div class="dic">{d_dub}</div>
@@ -63,7 +56,7 @@
   </table>
 
   <footer class="pagi">
-    <Mpager {pager} {pgidx} {pgmax} />
+    <Mpager {pager} pgidx={data.pgidx} pgmax={data.pgmax} />
   </footer>
 </article>
 

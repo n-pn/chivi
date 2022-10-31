@@ -1,7 +1,9 @@
 <script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
+  throw new Error(
+    '@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)'
+  )
 
-  // import { page, session } from '$app/stores'
+  // import { page, session } from '$lib/stores'
   // import { seed_url } from '$utils/route_utils'
 
   // export async function load({ stuff, url }) {
@@ -32,7 +34,9 @@
 </script>
 
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
+  throw new Error(
+    '@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)'
+  )
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 

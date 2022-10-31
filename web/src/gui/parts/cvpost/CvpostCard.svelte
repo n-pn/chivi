@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { session } from '$app/stores'
+  import { session } from '$lib/stores'
   import { dboard_ctrl } from '$lib/stores'
   import { dlabels } from '$lib/constants'
 

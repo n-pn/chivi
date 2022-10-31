@@ -319,22 +319,26 @@
   </cv-item> -->
 
   <cv-menu style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <cv-item
-      data-kbd="\"
+      data-kbd="&bsol;"
       data-key="Backslash"
       data-tip="Tra từ"
       on:click|capture={() => lookup.show(true)}>
       <SIcon name="search" />
     </cv-item>
 
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <cv-item data-kbd="p" data-tip="Báo lỗi" on:click|capture={tlspec.show}>
       <SIcon name="flag" />
     </cv-item>
 
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <cv-item data-kbd="↵" data-tip="Thêm sửa từ" on:click|capture={show_upsert}>
       <SIcon name="circle-plus" />
     </cv-item>
 
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <cv-item
       data-kbd="-"
       data-tip="Sửa text gốc"
@@ -342,6 +346,7 @@
       <SIcon name="edit" />
     </cv-item>
 
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <cv-item
       data-kbd="/"
       data-tip="Thêm nghĩa việt"

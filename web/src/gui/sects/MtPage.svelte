@@ -16,7 +16,7 @@
 </script>
 
 <script lang="ts">
-  import { session } from '$app/stores'
+  import { session } from '$lib/stores'
 
   export let cvdata = ''
   export let on_change = () => {}
@@ -33,7 +33,7 @@
   $: [chars, tspan, dsize] = parse_data(cvdata)
   let datav2 = []
 
-  import { browser } from '$app/env'
+  import { browser } from '$app/environment'
   $: if (browser && $config.render == 1) call_v2_engine(zhtext.join('\n'))
 
   let article = null

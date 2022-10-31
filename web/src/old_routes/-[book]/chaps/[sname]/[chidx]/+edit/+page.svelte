@@ -1,5 +1,7 @@
 <script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
+  throw new Error(
+    '@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)'
+  )
 
   // /** @type {import('./[slug]').Load} */
   // export async function load({ stuff, params }) {
@@ -32,10 +34,9 @@
 </script>
 
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
   import { goto } from '$app/navigation'
-  import { page, session } from '$app/stores'
+  import { page } from '$app/stores'
+  import { session } from '$lib/stores'
   import { SIcon, Footer } from '$gui'
   import { hash_str } from '$utils/text_utils'
 
