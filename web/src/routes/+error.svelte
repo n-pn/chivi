@@ -1,25 +1,15 @@
-<script context="module" lang="ts">
-  export function load({ status, error }) {
-    const topbar = {
-      left: [[`Lỗi hệ thống: ${status}`, null, { href: '/' }]],
-    }
-    return { props: { status, error }, stuff: { topbar } }
-  }
-</script>
-
 <script lang="ts">
-  export let status: number
-  export let error: Error
+  import { page } from '$app/stores'
 </script>
 
 <svelte:head>
-  <title>{status} - Chivi</title>
+  <title>{$page.status} - Chivi</title>
 </svelte:head>
 
 <section class="wrapper">
   <article class="content">
-    <h1>{status}</h1>
-    <p>{error.message}</p>
+    <h1>{$page.status}</h1>
+    <p>{$page.error.message}</p>
   </article>
 </section>
 

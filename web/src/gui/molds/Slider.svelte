@@ -46,7 +46,7 @@
       data-kbd="esc"
       on:click={() => (actived = false)}
       data-tip="Đóng"
-      tip-loc="bottom">
+      data-tip-loc="bottom">
       <SIcon name="x" />
     </button>
   </header>

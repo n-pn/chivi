@@ -31,6 +31,5 @@ export default {
   ],
   kit: {
     adapter: adapter(),
-    methodOverride: { allowed: ['PUT', 'PATCH', 'DELETE'] },
   },
 }

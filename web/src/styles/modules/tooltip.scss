@@ -68,7 +68,7 @@ tool-tip {
   }
 }
 
-[data-tip][tip-loc='bottom']:after {
+[data-tip][data-tip-loc='bottom']:after {
   bottom: unset;
   top: 100%;
 }

@@ -80,7 +80,10 @@
       <div class="book-vote">
         {#if book.voters > 0}
           <div class="book-rating" data-tip="Đánh giá">{book.rating}</div>
-          <div class="book-voters" data-tip="Lượt đánh giá" tip-loc="bottom">
+          <div
+            class="book-voters"
+            data-tip="Lượt đánh giá"
+            data-tip-loc="bottom">
             {book.voters} lượt
           </div>
         {/if}

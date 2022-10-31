@@ -20,24 +20,30 @@ declare namespace App {
     privi_3_until: number
   }
 
-  type BarItem = [string, string | undefined, Record<string, any> | undefined]
-
-  interface Topbar {
-    left: BarItem[] = []
-    right: BarItem[] = []
-    config?: boolean = false
-    search?: string = ''
+  interface TopbarItem {
+    'text'?: string
+    'icon'?: string
+    'href'?: string
+    'data-show'?: string
+    'data-kind'?: string
   }
 
-  import type { API } from '$lib/api'
-
-  interface Stuff {
-    api: API
+  interface PageData {
     nvinfo: CV.Nvinfo
     ubmemo: CV.Ubmemo
     nslist: CV.Nslist
 
     nv_tab: 'index' | 'board' | 'crits' | 'chaps'
-    topbar: Topbar
+
+    _user: Sesssion
+
+    _meta?: {
+      title: string
+      desc?: string
+    }
+
+    _head_left?: TopbarItem[]
+    _head_right?: TopbarItem[]
+    _head_config?: boolean
   }
 }
