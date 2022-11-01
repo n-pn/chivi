@@ -1,53 +1,23 @@
-<script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-  // import { rel_time } from '$utils/time_utils'
-  // import { call_api } from '$lib/api_call'
-
-  // export async function load({ fetch, url }) {
-  //   const source = url.searchParams.get('source') || 'ptags-united'
-  //   const target = url.searchParams.get('target') || 'regular'
-
-  //   const api_url = `/api/vpinits/fixtag/${source}/${target}`
-  //   const api_res = await fetch(api_url)
-  //   const payload = await api_res.json()
-  //   const topbar = {
-  //     left: [['Phân loại', 'pencil', { href: '.' }]],
-  //   }
-
-  //   payload['stuff'] = { topbar }
-  //   return payload
-  // }
-
-  // export interface Data {
-  //   key: string
-  //   val: string
-
-  //   uname: string
-  //   mtime: number
-
-  //   attr: string
-  //   ptags: Record<string, number>
-  // }
-</script>
-
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
+  import type { Data } from './shared'
   import { ztext } from '$lib/stores'
+  import { api_call } from '$lib/api'
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
+
+  import { rel_time } from '$utils/time_utils'
   import Upsert from '$gui/parts/Upsert.svelte'
   import { SIcon } from '$gui'
 
-  export let source: string
-  export let target: string
-  export let data: Array<Data> = []
+  import type { PageData } from './$types'
+  export let data: PageData
+
+  $: ({ source, target, content } = data)
 
   const epoch = 1630429200
-  let value = map_tags(data)
+  let value = map_tags(content)
 
   function map_tags(data: Data[]) {
-    return data.map(({ ptags, attr }) => {
+    return content.map(({ ptags, attr }) => {
       if (attr == 'd' && ptags.v) return 'vd'
       if (attr == 'b' && ptags.n) return 'na'
       if (ptags.m) return 'mq'
@@ -60,12 +30,12 @@
   async function resolve(idx: number, tag: string) {
     if (!tag) return
 
-    const term = data[idx]
+    const term = content[idx]
     const params = { key: term.key, val: term.val, tag }
-    await call_api(`/api/vpinits/upsert/${target}`, 'PUT', params, fetch)
+    await api_call(`/api/vpinits/upsert/${target}`, 'PUT', params, fetch)
 
-    data = data.filter((_, i) => i != idx)
-    value = map_tags(data)
+    content = content.filter((_, i) => i != idx)
+    value = map_tags(content)
   }
 
   function show_lookup(key: string) {
@@ -99,12 +69,13 @@
     </thead>
 
     <tbody>
-      {#each data as { attr, key, val, uname, mtime, ptags }, idx (key)}
+      {#each content as { attr, key, val, uname, mtime, ptags }, idx (key)}
         {@const fresh = mtime > epoch}
         <tr>
           <td class="idx">{idx + 1}</td>
           <td class="uname">{uname}</td>
           <td class="mtime">{rel_time(mtime)}</td>
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
           <td class="key" on:click={() => show_lookup(key)}>{key}</td>
           <td class="val"><span>{val}</span></td>
           <td
