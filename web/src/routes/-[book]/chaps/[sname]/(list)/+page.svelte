@@ -1,26 +1,11 @@
-<script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
+<script lang="ts">
+  import { page } from '$app/stores'
+  import { session } from '$lib/stores'
+
+  import { get_nvseed, uncache } from '$lib/api'
 
   // import { getContext } from 'svelte'
   // import type { Writable } from 'svelte/store'
-
-  // import { session, page } from '$app/stores'
-
-  // export async function load({ stuff, url, params: { sname } }) {
-  //   const { api, nvinfo } = stuff
-
-  //   const pgidx = +url.searchParams.get('pg') || 1
-  //   const chlist = await api.chlist(nvinfo.id, sname, pgidx)
-  //   if (chlist.error) return chlist
-
-  //   const props = Object.assign(stuff, { chlist })
-
-  //   return { props }
-  // }
-</script>
-
-<script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
@@ -29,15 +14,13 @@
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import { rel_time } from '$utils/time_utils'
-  import { invalidate } from '$app/navigation'
+  import { invalidate, invalidateAll } from '$app/navigation'
   import Gmenu from '$gui/molds/Gmenu.svelte'
 
-  export let nvinfo: CV.Nvinfo
+  import type { PageData } from './$types'
+  export let data: PageData
 
-  let ubmemo: Writable<CV.Ubmemo> = getContext('ubmemos')
-
-  export let nvseed: CV.Chroot
-  export let chlist: CV.Chlist
+  $: ({ nvinfo, ubmemo, nvseed, chlist } = data)
 
   $: pager = new Pager($page.url, { pg: 1 })
 
@@ -48,21 +31,17 @@
     _refresh = true
     _error = ''
 
-    $page.stuff.api.uncache('nvinfos', nvinfo.bslug)
-    $page.stuff.api.uncache('nslists', nvinfo.id)
+    uncache('nvbooks', nvinfo.bslug)
+    uncache('nslists', nvinfo.id)
 
-    const res = await $page.stuff.api.nvseed(nvinfo.id, nvseed.sname, 1)
+    const res = await get_nvseed(nvinfo.id, nvseed.sname, 1, fetch)
     _refresh = false
 
     if (res.error) {
       _error = res.error
     } else {
-      invalidate($page.url.toString())
+      invalidateAll()
     }
-  }
-
-  function internal_seed(sname: string) {
-    return sname.match(/^=|@|users/)
   }
 
   function can_edit(sname: string) {
@@ -123,7 +102,7 @@
               class="gmenu-item"
               href={nvseed.slink}
               target="_blank"
-              rel="external noopener noreferer">
+              rel="external noopener noreferrer">
               <SIcon name="external-link" />
               <span>Liên kết</span>
             </a>
@@ -152,9 +131,9 @@
 
   <chap-list>
     {#if chlist.pgmax > 0}
-      <Chlist {nvinfo} {nvseed} ubmemo={$ubmemo} chlist={nvseed.lasts} />
+      <Chlist {nvinfo} {nvseed} {ubmemo} chlist={nvseed.lasts} />
       <div class="chlist-sep" />
-      <Chlist {nvinfo} {nvseed} ubmemo={$ubmemo} chlist={chlist.chaps} />
+      <Chlist {nvinfo} {nvseed} {ubmemo} chlist={chlist.chaps} />
 
       <Footer>
         <div class="foot">

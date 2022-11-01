@@ -18,9 +18,9 @@ export function last_read({ bslug }, ubmemo: CV.Ubmemo) {
 export function suggest_read(
   nvinfo: CV.Nvinfo,
   ubmemo: CV.Ubmemo
-): [string, string, Record<string, any>] {
+): App.HeadItem {
   const { text, icon, href, mute } = last_read(nvinfo, ubmemo)
-  return [text, icon, { href, show: 'tm', disable: mute ? true : null }]
+  return { text, icon, href, 'data-show': 'tm', 'disable': mute ? true : null }
 }
 
 export function update_memo(

@@ -27,6 +27,7 @@ declare namespace App {
     'text'?: string
     'icon'?: string
     'href'?: string
+    'disable'?: boolean
     'data-kbd'?: string
     'data-show'?: string
     'data-kind'?: string

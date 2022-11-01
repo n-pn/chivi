@@ -1,50 +1,34 @@
 <script context="module" lang="ts">
-  throw new Error(
-    '@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)'
-  )
+  const icon_types = ['affiliate', 'archive', 'cloud-off', 'cloud-fog', 'cloud']
 
-  // import { page, session } from '$lib/stores'
-  // import { seed_url } from '$utils/route_utils'
+  function map_info({ sname, slink }) {
+    switch (sname) {
+      case 'zxcs_me':
+        return 'Nguồn text tải bằng tay từ trang zxcs.me (bản đẹp).'
 
-  // export async function load({ stuff, url }) {
-  //   const { nvinfo, nslist, nvseed } = stuff
-  //   const pgidx = +url.searchParams.get('pg') || 1
+      case 'hetushu':
+        return 'Chương tiết từ trang hetushu.com (phần lớn là bản đẹp)'
 
-  //   return { props: { nvinfo, nslist, _curr: nvseed, pgidx } }
-  // }
+      default:
+        if (sname.startsWith('@')) return `Danh sách chương của ${sname}`
+        if (!slink || slink == '/') return `Nguồn truyện chưa có chú thích.`
 
-  // const icon_types = ['affiliate', 'archive', 'cloud-off', 'cloud-fog', 'cloud']
-
-  // function map_info({ sname, slink }) {
-  //   switch (sname) {
-  //     case 'zxcs_me':
-  //       return 'Nguồn text tải bằng tay từ trang zxcs.me (bản đẹp).'
-
-  //     case 'hetushu':
-  //       return 'Chương tiết từ trang hetushu.com (phần lớn là bản đẹp)'
-
-  //     default:
-  //       if (sname.startsWith('@')) return `Danh sách chương của ${sname}`
-  //       if (!slink || slink == '/') return `Nguồn truyện chưa có chú thích.`
-
-  //       const hostname = new URL(slink).hostname.replace('www.', '')
-  //       return `Chương tiết tải ngoài từ trang ${hostname}`
-  //   }
-  // }
+        const hostname = new URL(slink).hostname.replace('www.', '')
+        return `Chương tiết tải ngoài từ trang ${hostname}`
+    }
+  }
 </script>
 
 <script lang="ts">
-  throw new Error(
-    '@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)'
-  )
+  import { page } from '$app/stores'
+  import { session } from '$lib/stores'
+  import { seed_url } from '$utils/route_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let nvinfo: CV.Nvinfo
-  export let nslist: CV.Nslist
+  $: ({ nvinfo, nslist, nvseed: _curr } = $page.data)
 
-  export let _curr: CV.Chroot
-  export let pgidx = 1
+  $: pgidx = +$page.url.searchParams.get('pg') || 1
 
   function make_seed(sname: string) {
     return {

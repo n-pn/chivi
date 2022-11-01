@@ -1,25 +1,8 @@
-<script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-  // import { nvinfo_bar } from '$utils/topbar_utils'
-  // import { suggest_read } from '$utils/ubmemo_utils'
-
-  // export async function load({ stuff }) {
-  //   const { nvinfo, ubmemo } = stuff
-
-  //   const topbar = {
-  //     left: [nvinfo_bar(nvinfo)],
-  //     right: [suggest_read(nvinfo, ubmemo)],
-  //   }
-  //   return { props: stuff, stuff: { topbar, nv_tab: 'chaps' } }
-  // }
-</script>
-
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
+  import AddSeed from './AddSeed.svelte'
 
-  import AddSeed from './_AddSeed.svelte'
-  export let nvinfo: CV.Nvinfo
+  export let data
+  $: nvinfo = data.nvinfo
 
   const sources = [
     {

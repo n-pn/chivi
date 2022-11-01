@@ -1,22 +1,19 @@
 import { suggest_read } from '$utils/ubmemo_utils'
+import { get_nslist } from '$lib/api'
 
-throw new Error("@migration task: Migrate the load function input (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292693)");
-export async function load({ stuff, url }) {
-  const { api, nvinfo } = stuff
-  let nslist = await api.nslist(nvinfo.id)
+export async function load({ parent, fetch, url }) {
+  const { nvinfo, ubmemo } = await parent()
+  const nslist = await get_nslist(nvinfo.id, fetch)
 
-  const topbar = gen_topbar(nvinfo, stuff.ubmemo, url)
-  throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292693)");
-  return nslist.error ? nslist : { stuff: { nslist, topbar } }
-}
-
-function gen_topbar(nvinfo: CV.Nvinfo, ubmemo: CV.Ubmemo, { pathname }) {
-  const { btitle_vi, bslug } = nvinfo
-  return {
-    left: [
-      [btitle_vi, 'book', { href: `/-${bslug}`, show: 'tm', kind: 'title' }],
-      ['Chương tiết', 'list', { href: pathname, show: 'pm' }],
+  const _meta: App.PageMeta = {
+    title: 'Chương tiết truyện ' + nvinfo.btitle_vi,
+    // prettier-ignore
+    left_nav: [
+      { text: nvinfo.btitle_vi, icon: 'book', href: `/-${nvinfo.bslug}`, "data-show": 'tm', "data-kind": 'title' },
+      { text: 'Chương tiết', icon: 'list', href: url.pathname, "data-show": 'pm' },
     ],
-    right: [suggest_read(nvinfo, ubmemo)],
+    right_nav: [suggest_read(nvinfo, ubmemo)],
   }
+
+  return { nslist, _meta }
 }

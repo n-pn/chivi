@@ -1,86 +1,22 @@
-<script context="module" lang="ts">
-  throw new Error(
-    '@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)'
-  )
-
-  // import { nvinfo_bar } from '$utils/topbar_utils'
-  // import { seed_url, to_pgidx } from '$utils/route_utils'
-
-  // import { get, type Writable } from 'svelte/store'
-  // import { config } from '$lib/stores'
-
-  // export async function load({ params, stuff }) {
-  //   const { api, nvinfo, nvseed, ubmemo, nslist } = stuff
-  //   const { sname, chidx, cpart: slug } = params
-  //   const cpart = +slug.split('/')[1] || 1
-
-  //   const api_url = gen_api_url(nvinfo, sname, chidx, cpart - 1, false)
-  //   const api_res = await api.call(api_url)
-  //   if (api_res.error) return api_res
-
-  //   const topbar = gen_topbar(nvinfo, sname, chidx)
-  //   const props = Object.assign(api_res, { nvinfo, nvseed, nslist })
-
-  //   props.redirect = slug == ''
-  //   return { props, stuff: { topbar } }
-  // }
-
-  // function gen_topbar(nvinfo: CV.Nvinfo, sname: string, chidx: number) {
-  //   const list_url = seed_url(nvinfo.bslug, sname, to_pgidx(chidx))
-
-  //   return {
-  //     left: [
-  //       nvinfo_bar(nvinfo, { show: 'pl' }),
-  //       [sname, 'list', { href: list_url, kind: 'zseed' }],
-  //     ],
-  //     right: [],
-  //     config: true,
-  //   }
-  // }
-
-  // function gen_api_url(
-  //   { id: book },
-  //   sname: string,
-  //   chidx: number,
-  //   cpart = 0,
-  //   redo = false
-  // ) {
-  //   let api_url = `/api/chaps/${book}/${sname}/${chidx}/${cpart}?redo=${redo}`
-
-  //   const { tosimp, w_temp } = get(config)
-  //   if (tosimp) api_url += '&trad=t'
-  //   if (w_temp) api_url += '&temp=t'
-
-  //   return api_url
-  // }
-</script>
-
 <script lang="ts">
-  import { getContext } from 'svelte'
   import { page } from '$app/stores'
   import { session } from '$lib/stores'
+  import { api_get, api_put, api_call } from '$lib/api'
+  import { gen_api_url, gen_retran_url } from './shared'
+  import { seed_url, to_pgidx } from '$utils/route_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Notext from '$gui/parts/Notext.svelte'
   import Footer from '$gui/sects/Footer.svelte'
-  import CvPage from '$gui/sects/MtPage.svelte'
-  import Chtabs from '../_tabs.svelte'
+  import MtPage from '$gui/sects/MtPage.svelte'
 
-  export let nvinfo: CV.Nvinfo
-  export let nslist: CV.Nslist
-  export let nvseed: CV.Chroot
-  export let chmemo: CV.Ubmemo
+  import Chtabs from '../ChapTabs.svelte'
 
-  export let chmeta: CV.Chmeta
-  export let chinfo: CV.Chinfo
+  import type { PageData } from './$types'
+  export let data: PageData
 
-  export let cvdata: string
-  export let rl_key: string
-
-  let ubmemo: Writable<CV.Ubmemo> = getContext('ubmemos')
-  $: ubmemo.set(chmemo)
-
+  $: ({ nvinfo, nslist, nvseed, chmeta, chinfo, cvdata, rl_key } = data)
   $: paths = gen_paths(nvinfo, chmeta, chinfo)
 
   $: if ($$props.redirect) {
@@ -95,33 +31,21 @@
 
     const { sname, cpart } = chmeta
     const url = gen_api_url(nvinfo, sname, chinfo.chidx, cpart, true)
-    const res = await $page.stuff.api.call(url)
+    const res = await api_get(url, null, fetch)
 
     if (res.error) return alert(`Error: ${res.error}`)
 
     cvdata = res.cvdata
     chmeta = res.chmeta
     chinfo = res.chinfo
-    $ubmemo = res.chmemo
+    $page.data.ubmemo = res.chmemo
     _reloading = false
   }
 
   async function retranslate(reload = false) {
-    // const base = $config.engine == 2 ? '/_v2/qtran/chaps' : '/api/qtran/chaps'
-    const api_url = `/api/qtran/chaps/${rl_key}`
-    const params = new URLSearchParams()
+    const url = gen_retran_url(rl_key, $session.uname, reload)
 
-    const { tosimp, w_temp } = get(config)
-    if (tosimp) params.set('trad', 't')
-    if (w_temp) params.set('temp', 't')
-    params.set('user', $session.uname)
-
-    if (reload) {
-      params.set('_raw', 't')
-      params.set('_new', 't')
-    }
-
-    const res = await fetch(api_url + '?' + params.toString())
+    const res = await fetch(url)
     const txt = await res.text()
 
     if (res.ok) cvdata = txt
@@ -146,13 +70,13 @@
     const url = `/api/_self/books/${nvinfo.id}/access`
     const body = { sname, cpart, chidx, title, uslug, locked: lock }
 
-    const res = await $page.stuff.api.call(url, 'PUT', body)
+    const res = await api_put(url, body, fetch)
 
     if (res.error) alert(res.error)
-    else $ubmemo = res
+    else $page.data.ubmemo = res
   }
 
-  $: [on_memory, memo_icon] = check_memo($ubmemo)
+  $: [on_memory, memo_icon] = check_memo($page.data.ubmemo)
 
   function check_memo(ubmemo: CV.Ubmemo): [boolean, string] {
     let on_memory = false
@@ -167,7 +91,7 @@
   async function on_fixraw(line_no: number, orig: string, edit: string) {
     const url = `/api/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}`
     const params = { part_no: chmeta.cpart, line_no, orig, edit }
-    const res = await $page.stuff.api.call(url, 'PATCH', params)
+    const res = await api_call(url, 'PATCH', params, fetch)
 
     if (res.error) {
       alert(res.error)
@@ -177,10 +101,6 @@
     }
   }
 </script>
-
-<svelte:head>
-  <title>{chinfo.title} - {nvinfo.btitle_vi} - Chivi</title>
-</svelte:head>
 
 <nav class="bread">
   <a href="/-{nvinfo.bslug}" class="crumb _link">
@@ -193,7 +113,7 @@
 
 <Chtabs {nvinfo} {nslist} {nvseed} {chmeta} {chinfo} />
 
-<CvPage
+<MtPage
   {cvdata}
   mftime={chinfo.utime}
   source={chmeta.clink}
@@ -246,7 +166,7 @@
             <span>Dịch lại</span>
           </button>
 
-          {#if on_memory && $ubmemo.locked}
+          {#if on_memory && $page.data.ubmemo.locked}
             <button
               class="gmenu-item"
               disabled={$session.privi < 0}
@@ -283,7 +203,7 @@
       </a>
     </div>
   </Footer>
-</CvPage>
+</MtPage>
 
 <style lang="scss">
   .navi {

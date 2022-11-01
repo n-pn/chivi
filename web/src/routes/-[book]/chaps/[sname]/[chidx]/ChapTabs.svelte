@@ -1,7 +1,8 @@
 <script lang="ts">
-  // import { page } from '$app/stores'
+  import { page } from '$app/stores'
   import { session } from '$lib/stores'
 
+  // $: {nvinfo, nvlist, nvseed, chmeta, chinfo} = $page.data
   export let nvinfo: CV.Nvinfo
   export let nslist: CV.Nslist
   export let nvseed: CV.Chroot

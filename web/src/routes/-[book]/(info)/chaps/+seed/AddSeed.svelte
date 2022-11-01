@@ -2,6 +2,7 @@
   import { SIcon } from '$gui'
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
+  import { api_put } from '$lib/api'
 
   export let nvinfo: CV.Nvinfo
 
@@ -13,11 +14,10 @@
   async function submit() {
     err = ''
     const url = `/api/seeds/${nvinfo.id}`
-    const res = await $page.stuff.api.call(url, 'PUT', { sname, snvid })
+    const res = await api_put(url, { sname, snvid }, fetch)
+
     if (res.error) err = res.error
-    else {
-      goto(`/-${nvinfo.bslug}/chaps/${sname}`)
-    }
+    else goto(`/-${nvinfo.bslug}/chaps/${sname}`)
   }
 
   function extract_nvseed(href: string) {
