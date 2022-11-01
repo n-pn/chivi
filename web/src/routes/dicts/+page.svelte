@@ -6,11 +6,9 @@
 
   import type { PageData } from './$types'
   export let data: PageData
-</script>
 
-<svelte:head>
-  <title>Từ điển - Chivi</title>
-</svelte:head>
+  $: ({ cores = [], books = [] } = data)
+</script>
 
 <Crumb tree={[['Từ điển', '/dicts']]} />
 
@@ -20,7 +18,7 @@
   <h2>Hệ thống</h2>
 
   <div class="dicts">
-    {#each data.cores as [dname, label, dsize]}
+    {#each cores as [dname, label, dsize]}
       <a class="-dict" href="/dicts/{dname}">
         <div class="-name">{label}</div>
         <div class="-meta">
@@ -34,7 +32,7 @@
   <h2>Theo bộ ({data.total})</h2>
 
   <div class="dicts">
-    {#each data.books as [dname, label, dsize]}
+    {#each books as [dname, label, dsize]}
       <a class="-dict" href="/dicts/-{dname}">
         <div class="-name">{label}</div>
         <div class="-meta">

@@ -4,8 +4,7 @@
 
   import Item from './Header/HeaderItem.svelte'
 
-  $: left_nav = $page.data._head_left || []
-  $: right_nav = $page.data._head_right || []
+  $: ({ left_nav = [], right_nav = [], show_config = false } = $page.data._meta)
 </script>
 
 <header class="app-header" class:clear={$scroll > 0}>
@@ -34,7 +33,7 @@
         <Item {type} {...opts} />
       {/each}
 
-      {#if $page.data._head_config}
+      {#if show_config}
         <Item
           type="button"
           text="Cài đặt"

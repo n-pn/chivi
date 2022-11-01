@@ -3,10 +3,7 @@
 // See https://kit.svelte.dev/docs/typescript
 // for information about these interfaces
 declare namespace App {
-  interface Locals {}
-  interface Platform {}
-
-  interface Session {
+  interface CurrentUser {
     uname: string
     privi: number
 
@@ -20,12 +17,28 @@ declare namespace App {
     privi_3_until: number
   }
 
-  interface TopbarItem {
+  interface Locals {
+    _user: CurrentUser
+  }
+
+  interface Platform {}
+
+  interface HeadItem {
     'text'?: string
     'icon'?: string
     'href'?: string
+    'data-kbd'?: string
     'data-show'?: string
     'data-kind'?: string
+  }
+
+  interface PageMeta {
+    title: string
+    desc?: string
+
+    left_nav?: HeadItem[]
+    right_nav?: HeadItem[]
+    show_config?: boolean
   }
 
   interface PageData {
@@ -35,15 +48,7 @@ declare namespace App {
 
     nv_tab: 'index' | 'board' | 'crits' | 'chaps'
 
-    _user: Sesssion
-
-    _meta?: {
-      title: string
-      desc?: string
-    }
-
-    _head_left?: TopbarItem[]
-    _head_right?: TopbarItem[]
-    _head_config?: boolean
+    _user: CurrentUser
+    _meta?: PageMeta
   }
 }

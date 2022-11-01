@@ -1,7 +1,10 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { session } from '$lib/stores'
   import { invalidate } from '$app/navigation'
+  import { browser } from '$app/environment'
+
+  import { ztext, vdict, session } from '$lib/stores'
+  import { rel_time_vp } from '$utils/time_utils'
 
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
   import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
@@ -9,35 +12,20 @@
 
   import Postag from '$gui/parts/Postag.svelte'
 
-  import { browser } from '$app/environment'
-  import { ztext, vdict } from '$lib/stores'
-  import { rel_time_vp } from '$utils/time_utils'
-
   import { Crumb, SIcon } from '$gui'
-
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
-  export let dname = 'combine'
-  export let d_dub = dname
-  export let dsize = 1
+  import type { PageData } from './$types'
+  export let data: PageData
 
-  export let terms = []
-  export let start = 1
-  export let query = {
-    key: '',
-    val: '',
-    tag: '',
-    prio: '',
-    uname: '',
-    _mode: '',
-  }
+  $: ({ query, terms, start } = data)
 
-  $: vdict.put(dname, d_dub)
+  $: vdict.put(data.dname, data.d_dub)
 
   let d_tab = 2
   $: {
-    if (dname == 'generic') d_tab = 1
-    else if (dname == 'combine' || dname.startsWith('-')) d_tab = 0
+    if (data.dname == 'generic') d_tab = 1
+    else if (data.dname == 'combine' || data.dname.startsWith('-')) d_tab = 0
     else d_tab = 2
   }
 
@@ -48,17 +36,15 @@
 
   $: pager = new Pager($page.url)
 
+  const prio_labels = {
+    '^': 'Cao',
+    'v': 'Thấp',
+    'x': 'Ẩn',
+    '-': 'Bình',
+  }
+
   function render_prio(prio: string) {
-    switch (prio) {
-      case '^':
-        return 'Cao'
-      case 'v':
-        return 'Thấp'
-      case 'x':
-        return 'Ẩn'
-      default:
-        return 'Bình'
-    }
+    return prio_labels[prio] || 'Bình'
   }
 
   function reset_query() {
@@ -86,21 +72,17 @@
   }
 </script>
 
-<svelte:head>
-  <title>Từ điển: {d_dub} - Chivi</title>
-</svelte:head>
-
 <Crumb
   tree={[
     ['Từ điển', '/dicts'],
-    [d_dub, $page.url.pathname],
+    [data.d_dub, $page.url.pathname],
   ]} />
 
 <article class="article m-article">
-  <h1 class="h2">[{dname}] {d_dub}</h1>
-  <p class="d_tip">{$$props.d_tip}</p>
+  <h1 class="h2">[{data.dname}] {data.d_dub}</h1>
+  <p class="d_tip">{data.d_tip}</p>
 
-  <h2 class="h3">Số lượng từ: {dsize}</h2>
+  <h2 class="h3">Số lượng từ: {data.dsize}</h2>
 
   <div class="body">
     <table>
@@ -148,6 +130,7 @@
         {#each terms as { key, vals, tags, prio, mtime, uname, _flag, _mode }, idx}
           <tr class="term _{_flag}">
             <td class="-idx">{start + idx}</td>
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <td class="-key" on:click={() => show_lookup(key)}>
               <span>{key}</span>
               <div class="hover">
@@ -162,6 +145,7 @@
                 </button>
               </div>
             </td>
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <td
               class="-val"
               class:_del={!vals[0]}
@@ -182,6 +166,7 @@
               </div>
             </td>
             <td class="-tag">
+              <!-- svelte-ignore a11y-click-events-have-key-events -->
               <span on:click={() => show_upsert(key, 2)}>
                 {tags.map((x) => pt_labels[x]).join(' ') || '~'}
               </span>
@@ -214,7 +199,7 @@
   </div>
 
   <footer class="foot">
-    <Mpager {pager} pgidx={$$props.pgidx} pgmax={$$props.pgmax} />
+    <Mpager {pager} pgidx={data.pgidx} pgmax={data.pgmax} />
   </footer>
 </article>
 

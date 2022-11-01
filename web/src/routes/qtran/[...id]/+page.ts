@@ -17,15 +17,16 @@ export async function load({ fetch, url, params }) {
   const cvdata = await api_res.text()
   const [type, name] = params.id.split('/')
 
-  const _meta = {
+  // prettier-ignore
+  const _meta : App.PageMeta = {
     title: 'Dịch nhanh: ' + name,
     desc: 'Dịch nhanh từ tiếng Trung sang tiếng Việt',
+    left_nav: [
+      { text: 'Dịch nhanh', icon: 'bolt', href: '/qtran', 'data-show': 'ts' },
+      { text: `[${name}]`, icon: qtran_icons[type], href: name, 'data-kind': 'title' },
+    ],
+    show_config: true,
   }
 
-  const _head_left = [
-    { text: 'Dịch nhanh', icon: 'bolt', href: '/qtran', show: 'ts' },
-    { text: `[${name}]`, icon: qtran_icons[type], href: name, kind: 'title' },
-  ]
-
-  return { type, name, cvdata, _meta, _head_config: true, _head_left }
+  return { type, name, cvdata, _meta }
 }
