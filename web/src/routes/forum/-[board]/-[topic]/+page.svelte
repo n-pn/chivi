@@ -1,11 +1,10 @@
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
   import { CvpostFull, CvreplList } from '$gui'
 
-  export let dboard: CV.Dboard
-  export let cvpost: CV.Cvpost
-  export let tplist: CV.Tplist
+  import type { PageData } from './$types'
+  export let data: PageData
+
+  $: ({ dboard, cvpost, tplist } = data)
 </script>
 
 <svelte:head>
