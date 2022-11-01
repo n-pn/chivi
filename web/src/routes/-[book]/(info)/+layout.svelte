@@ -1,42 +1,20 @@
-<script context="module" lang="ts">
-  throw new Error(
-    '@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)'
-  )
-
-  // import { page, session } from '$lib/stores'
-
-  // import { nvinfo_bar } from '$utils/topbar_utils'
-  // import { suggest_read } from '$utils/ubmemo_utils'
-
-  // import { map_status } from '$utils/nvinfo_utils'
-
-  // export async function load({ stuff }) {
-  //   const { nvinfo, ubmemo } = stuff
-
-  //   const topbar = {
-  //     left: [nvinfo_bar(nvinfo)],
-  //     right: [suggest_read(nvinfo, ubmemo)],
-  //   }
-  //   return { props: stuff, stuff: { topbar } }
-  // }
-</script>
-
 <script lang="ts">
-  throw new Error(
-    '@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)'
-  )
+  import { page } from '$app/stores'
+  import { session } from '$lib/stores'
 
   import { SIcon, BCover } from '$gui'
+  import { map_status } from '$utils/nvinfo_utils'
+
   import RTime from '$gui/atoms/RTime.svelte'
   import BookTrack from '$gui/parts/BookTrack.svelte'
 
-  export let nvinfo = $page.stuff.nvinfo
-
-  $: nv_tab = $page.stuff.nv_tab || gen_nv_tab($page.routeId)
+  $: nvinfo = $page.data.nvinfo
+  $: nv_tab = $page.data.nv_tab || gen_nv_tab($page.routeId)
 
   function gen_nv_tab(path: string) {
     if (path.includes('crits')) return 'crits'
     if (path.includes('board')) return 'board'
+
     return 'index'
   }
 </script>
@@ -109,7 +87,7 @@
         <a
           class="stat link _outer"
           href="https://www.yousuu.com/book/{nvinfo.ys_snvid}"
-          rel="noopener noreferer"
+          rel="noopener noreferrer"
           target="_blank"
           data-tip="Đánh giá tiếng Trung">
           <span>yousuu</span>
@@ -118,7 +96,7 @@
         <a
           class="stat link _outer"
           href={nvinfo.pub_link}
-          rel="noopener noreferer"
+          rel="noopener noreferrer"
           target="_blank"
           data-tip="Trang xuất bản gốc">
           <span>{nvinfo.pub_name}</span>
@@ -149,7 +127,7 @@
   </div>
 </div>
 
-<section class="section">
+<section class="section island">
   <header class="section-header">
     <a
       href="/-{nvinfo.bslug}"
@@ -278,10 +256,6 @@
     @include padding-x(var(--gutter));
 
     @include bp-min(tl) {
-      @include margin-x(0.5rem);
-
-      margin: var(--gutter);
-
       border-radius: 1rem;
     }
 

@@ -1,41 +1,30 @@
 <script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
+  import { page } from '$app/stores'
+  import { map_status } from '$utils/nvinfo_utils'
 
-  // import { page } from '$app/stores'
-  // import { map_status } from '$utils/nvinfo_utils'
-
-  // export async function load({ params, stuff, url }) {
-  //   const bslug = params.book
-
-  //   const res = await stuff.api.nvbook(bslug)
-  //   if (!res.error) return { props: res, stuff: res }
-  //   if (res.status != 301) return res
-
-  //   const redirect = url.pathname.replace(bslug, res.error).trim()
-  //   return { status: 301, redirect: encodeURI(redirect) }
-  // }
-
-  // function gen_keywords(nvinfo: CV.Nvinfo) {
-  //   const kw = [
-  //     nvinfo.btitle_zh,
-  //     nvinfo.btitle_vi,
-  //     nvinfo.btitle_hv,
-  //     nvinfo.author_zh,
-  //     nvinfo.author_vi,
-  //     ...nvinfo.genres,
-  //   ]
-  //   return kw.filter((v, i, a) => i != a.indexOf(v)).join(',')
-  // }
+  function gen_keywords(nvinfo: CV.Nvinfo) {
+    const kw = [
+      nvinfo.btitle_zh,
+      nvinfo.btitle_vi,
+      nvinfo.btitle_hv,
+      nvinfo.author_zh,
+      nvinfo.author_vi,
+      ...nvinfo.genres,
+    ]
+    return kw.filter((v, i, a) => i != a.indexOf(v)).join(',')
+  }
 </script>
 
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
   import { dtlist_data } from '$lib/stores'
   import { setContext } from 'svelte'
   import { writable } from 'svelte/store'
 
-  export let nvinfo: CV.Nvinfo = $page.stuff.nvinfo
+  import type { PageData } from './$types'
+  export let data: PageData
+
+  $: ({ nvinfo, ubmemo } = data)
+  $: setContext('ubmemos', writable(ubmemo))
 
   $: bcover = nvinfo.bcover || 'blank.webp'
   $: bintro = nvinfo.bintro.substring(0, 300)
@@ -51,8 +40,6 @@
     }
     return x
   })
-
-  $: setContext('ubmemos', writable($page.stuff.ubmemo))
 </script>
 
 <svelte:head>
