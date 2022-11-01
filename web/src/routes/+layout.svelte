@@ -97,7 +97,7 @@
     padding-right: var(--gutter);
 
     > :global(.island) {
-      @include bp-max(tm) {
+      @include bp-max(tl) {
         margin-left: calc(var(--gutter) * -1);
         margin-right: calc(var(--gutter) * -1);
       }

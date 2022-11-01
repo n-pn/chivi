@@ -4,7 +4,9 @@
 
   import Item from './Header/HeaderItem.svelte'
 
-  $: ({ left_nav = [], right_nav = [], show_config = false } = $page.data._meta)
+  // prettier-ignore
+  $: meta = $page.data._meta || { left_nav: [], right_nav: [], show_config: false }
+  $: ({ left_nav = [], right_nav = [], show_config = false } = meta)
 </script>
 
 <header class="app-header" class:clear={$scroll > 0}>

@@ -1,22 +1,15 @@
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
   import { rel_time } from '$utils/time_utils'
   import { SIcon } from '$gui'
   import YscritList from '$gui/parts/yousuu/YscritList.svelte'
 
-  export let ylist: CV.Yslist
-  export let yl_id = ''
+  import type { PageData } from './$types'
+  export let data: PageData
 
-  export let crits: CV.Yscrit[] = []
-  export let pgidx = 1
-  export let pgmax = 1
+  $: ({ ylist, yl_id, crits, pgidx, pgmax } = data)
 </script>
 
 <svelte:head>
-  <title>Thư đơn: {ylist.vname} - Chivi</title>
-  <meta name="description" content={ylist.vdesc} />
-
   <meta property="og:title" content={ylist.vname} />
   <meta property="og:article" content="novel" />
   <meta property="og:description" content={ylist.vdesc} />
@@ -79,14 +72,14 @@
   <div class="origin">
     <a
       href="https://www.yousuu.com/booklist/{yl_id}"
-      rel="noopener noreferer"
+      rel="noopener noreferrer"
       target="_blank">
       <SIcon name="external-link" />
       <span>Nguồn</span></a>
   </div>
 </section>
 
-<article class="article">
+<article class="article island">
   <YscritList {crits} {pgidx} {pgmax} _sort="utime" show_list={false} />
 </article>
 
@@ -99,6 +92,11 @@
 
   .origin {
     margin-bottom: 1rem;
+    a {
+      display: inline-flex;
+      align-items: center;
+      @include fgcolor(primary);
+    }
   }
 
   .vname {
