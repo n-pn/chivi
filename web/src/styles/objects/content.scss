@@ -16,12 +16,10 @@ article {
 }
 
 .article.article {
-  @include margin-x(0);
   margin-bottom: var(--gutter);
 
   @include bp-min(tl) {
     border-radius: 1rem;
-    @include margin-x(var(--gutter));
   }
 }
 

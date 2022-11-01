@@ -7,18 +7,16 @@
 </script>
 
 <footer class="foot">
-  <div class="vessel">
-    <div class="foot-left">
-      <a href="/guide/donation" class="foot-link">Ủng hộ trang</a>
-    </div>
+  <div class="foot-left">
+    <a href="/guide/donation" class="foot-link">Ủng hộ trang</a>
+  </div>
 
-    <div class="foot-right">
-      <strong>Liên kết: </strong>
-      {#each links as [text, href]}
-        <a {href} class="foot-link" target="_blank" rel="noreferrer noopener"
-          >{text}</a>
-      {/each}
-    </div>
+  <div class="foot-right">
+    <strong>Liên kết: </strong>
+    {#each links as [text, href]}
+      <a {href} class="foot-link" target="_blank" rel="noreferrer noopener"
+        >{text}</a>
+    {/each}
   </div>
 </footer>
 
