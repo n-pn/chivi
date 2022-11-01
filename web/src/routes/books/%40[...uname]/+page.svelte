@@ -1,45 +1,18 @@
-<script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-  // import { status_types, status_names } from '$lib/constants'
-  // import { wrap_get } from '$lib/api_call'
-
-  // export async function load({ url, params, fetch }) {
-  //   const [uname, bmark = 'reading'] = params.uname.split('/')
-  //   const page = +url.searchParams.get('pg') || 1
-
-  //   const api_url = `/api/books?pg=${page}&lm=24&order=update&uname=${uname}&bmark=${bmark}`
-
-  //   const topbar = {
-  //     left: [[`Tủ truyện của [${uname}]`, 'notebook', { href: url.pathname }]],
-  //   }
-  //   return await wrap_get(fetch, api_url, null, { uname, bmark }, { topbar })
-  // }
-</script>
-
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
   import { page } from '$app/stores'
+  import { status_types, status_names } from '$lib/constants'
 
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
   import Footer from '$gui/sects/Footer.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
-  export let uname = ''
-  export let bmark = 'reading'
+  import type { PageData } from './$types'
+  export let data: PageData
 
-  export let books = []
-  export let pgidx = 1
-  export let pgmax = 1
-  // export let total = 1
+  $: ({ books, pgidx, pgmax, uname, bmark = 'reading' } = data)
 
   $: pager = new Pager($page.url)
 </script>
-
-<svelte:head>
-  <title>Tủ truyện của {uname} - Chivi</title>
-</svelte:head>
 
 <div class="tabs">
   {#each status_types as status}

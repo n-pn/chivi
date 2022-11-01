@@ -1,48 +1,24 @@
 <script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-  // import { wrap_get } from '$lib/api_call'
-
-  // export async function load({ url, fetch }) {
-  //   const api_url = new URL(url)
-  //   api_url.pathname = '/api/books'
-  //   api_url.searchParams.set('lm', '24')
-
-  //   const topbar = {
-  //     right: [
-  //       ['Thêm truyện', 'file-plus', { href: '/books/+book', show: 'tm' }],
-  //     ],
-  //     search: '',
-  //   }
-  //   return await wrap_get(fetch, api_url.toString(), null, null, { topbar })
-  // }
-
-  // const order_names = {
-  //   bumped: 'Vừa xem',
-  //   update: 'Đổi mới',
-  //   rating: 'Đánh giá',
-  //   weight: 'Tổng hợp',
-  // }
+  const order_names = {
+    bumped: 'Vừa xem',
+    update: 'Đổi mới',
+    rating: 'Đánh giá',
+    weight: 'Tổng hợp',
+  }
 </script>
 
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
   import { page } from '$app/stores'
   import Nvlist from '$gui/parts/nvinfo/NvinfoList.svelte'
   import Footer from '$gui/sects/Footer.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
-  export let books: CV.Nvinfo[] = []
-  export let pgidx = 1
-  export let pgmax = 1
+  import type { PageData } from './$types'
+  export let data: PageData
 
+  $: ({ books, pgidx, pgmax } = data)
   $: pager = new Pager($page.url, { order: 'bumped', pg: 1 })
 </script>
-
-<svelte:head>
-  <title>Chivi - Truyện tàu dịch máy</title>
-</svelte:head>
 
 <div class="order">
   {#each Object.entries(order_names) as [type, label]}
