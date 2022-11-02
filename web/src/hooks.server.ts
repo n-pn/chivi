@@ -10,20 +10,17 @@ const api_hosts = {
   _mt: 'localhost:5502',
   api: 'localhost:5010',
 }
-export async function handleFetch({ event, request }) {
+
+export async function handleFetch({ fetch, request }) {
   const url = new URL(request.url)
   const path = url.pathname
 
-  if (!path.match(/^\/api|_/)) return fetch(request)
+  if (path.match(/^\/api|_mt|_ys/)) {
+    url.host = api_hosts[path.split('/')[1]]
+    request = new Request(url, request)
+  }
 
-  const host = api_hosts[path.split('/')[1]]
-  if (host) url.host = host
-
-  const { body, headers: req_header, method } = event.request
-  const headers = Object.fromEntries(req_header)
-  delete headers.connection
-
-  return await globalThis.fetch(url, { body, headers, method })
+  return fetch(request)
 }
 
 export async function getSession({ request: { headers } }) {
