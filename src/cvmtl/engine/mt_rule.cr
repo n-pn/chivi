@@ -4,6 +4,25 @@ require "./mt_rule/**"
 module MT::Rules
   extend self
 
+  def foldr_all!(head : MtNode, tail : MtNode) : Nil
+    while (head = head.succ?)
+      head = foldr_once!(head) if head.is_a?(MonoNode)
+    end
+  end
+
+  def foldr_once!(node : MonoNode)
+    node = fixr_mixedpos!(node) if node.mixedpos?
+
+    case node
+    when .numbers?      then foldr_number_base!(node)
+    when .adjt_words?   then foldr_adjt_base!(node)
+    when .verbal_words? then foldr_verb_base!(node)
+    when .maybe_cmpl?   then fixr_not_cmpl!(node)
+      # when .maybe_quanti? then as_not_quanti!(node)
+    else node
+    end
+  end
+
   def foldl_all!(tail : MtNode, head : MtNode) : Nil
     while tail = tail.prev?
       break if tail == head
@@ -16,8 +35,8 @@ module MT::Rules
 
     case node
     when .suffixes?     then foldl_suffix_full!(node)
-    when .time_words?   then foldl_time_full!(node)
-    when .noun_words?   then foldl_noun_full!(node)
+    when .all_times?    then foldl_time_full!(node)
+    when .all_nouns?    then foldl_noun_full!(node)
     when .adjt_words?   then foldl_adjt_full!(node)
     when .verbal_words? then foldl_verb_full!(node)
     when .ptcl_dep?     then node.tap(&.as(MonoNode).skipover!)

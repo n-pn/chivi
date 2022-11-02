@@ -1,4 +1,4 @@
-module MT::Rules::LTR
+module MT::Rules
   def fixr_qttemp!(node : MonoNode, prev = node.prev, succ = node.succ)
     case node
     when .qtcmpl_or_x?

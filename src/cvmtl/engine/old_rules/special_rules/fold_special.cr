@@ -57,7 +57,7 @@ module MT::TlRule
     when .adjt_words?, .verbal_words?, .modal_verbs?, .advb_words?
       node.set!(succ.verbal_words? ? "dễ" : "thật", PosTag::Adverb)
       fold_adverb_base!(node, succ)
-    when .noun_words?
+    when .all_nouns?
       node.set!("tốt", PosTag.make(:adjt))
       fold_adjt_noun!(node, succ)
     else

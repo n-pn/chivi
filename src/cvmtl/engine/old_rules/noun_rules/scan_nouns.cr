@@ -83,7 +83,7 @@ module MT::TlRule
     #     break unless succ = node.succ?
 
     #     case succ
-    #     when .noun_words?
+    #     when .all_nouns?
     #       succ = fold_nouns!(succ, mode: 1)
     #       node = fold!(node, succ, MapTag::Nform, flip: true)
     #     when .ptcl_dep?
@@ -110,16 +110,16 @@ module MT::TlRule
     #     node = fold_adjt_as_noun!(node)
     #   when .adjt_words?
     #     node = fold_adjt_as_noun!(node)
-    #   when .noun_words?
+    #   when .all_nouns?
     #     case node = fold_nouns!(node)
     #     when .nattr?
     #       node = fold_head_ude1_noun!(node)
     #     when .cap_affil?, .posit?
     #       node = fold_head_ude1_noun!(node) if prodem || nquant
-    #     when .noun_words?
+    #     when .all_nouns?
     #       break
     #     else
-    #       node = scan_noun!(node) || node unless node.noun_words?
+    #       node = scan_noun!(node) || node unless node.all_nouns?
     #     end
     #   when .ptcl_dev?
     #     if node.prev? { |x| x.prep_zai? || x.verbal_words?? } || node.succ?(&.position?)
@@ -178,7 +178,7 @@ module MT::TlRule
   end
 
   def fold_adjt_as_noun!(node : MtNode)
-    return node if node.noun_words? || !(succ = node.succ?)
+    return node if node.all_nouns? || !(succ = node.succ?)
 
     noun, ude1 = succ.ptcl_dep? ? {succ.succ?, succ} : {succ, nil}
     fold_adjt_noun!(node, noun, ude1)
@@ -186,7 +186,7 @@ module MT::TlRule
 
   def fold_verb_as_noun!(node : MtNode, mode = 0)
     node = fold_verbs!(node)
-    return node if node.noun_words? || mode == 3 || !(succ = node.succ?)
+    return node if node.all_nouns? || mode == 3 || !(succ = node.succ?)
 
     unless succ.ptcl_dep? || node.verb_no_obj?
       return node unless succ = scan_noun!(succ, mode: 0)

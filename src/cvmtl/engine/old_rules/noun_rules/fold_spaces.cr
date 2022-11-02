@@ -28,7 +28,7 @@ module MT::TlRule
     when "中"
       return noun if space.succ?(&.ptcl_le?)
       space.val = "trong"
-      if (succ = space.succ?) && succ.noun_words?
+      if (succ = space.succ?) && succ.all_nouns?
         return fold!(noun, succ, succ.tag, flip: true)
       end
     when "前"

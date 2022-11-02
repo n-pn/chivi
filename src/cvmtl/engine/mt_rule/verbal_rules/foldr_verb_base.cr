@@ -1,4 +1,4 @@
-module MT::Rules::LTR
+module MT::Rules
   def foldr_verb_base!(verb : MonoNode)
     succ = verb.succ.as(MonoNode)
 

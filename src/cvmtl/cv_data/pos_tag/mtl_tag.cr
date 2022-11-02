@@ -82,7 +82,7 @@ enum MT::MtlTag : UInt32
 
   # 1 name + noun
   # all kind of nouns
-  def noun_words?
+  def all_nouns?
     self >= HumanName && self <= Timespan
   end
 
@@ -97,7 +97,7 @@ enum MT::MtlTag : UInt32
 
   # is not proper nouns
   def common_nouns?
-    self >= Honor && self <= Plsuf
+    self >= Honor && self <= OrgSf
   end
 
   # noun is objects
@@ -116,7 +116,7 @@ enum MT::MtlTag : UInt32
   end
 
   # all time words
-  def time_words?
+  def all_times?
     self >= Timeword && self < Timespan
   end
 

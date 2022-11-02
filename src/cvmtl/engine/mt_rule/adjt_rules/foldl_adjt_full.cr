@@ -6,25 +6,12 @@ module MT::Rules
     prev = fix_mixedpos!(prev) if prev.is_a?(MonoNode) && prev.mixedpos?
 
     case prev
-    when .noun_words?
+    when .all_nouns?
       foldl_adjt_noun!(adjt, noun: prev)
+    when .object?
+      foldl_adjt_objt!(adjt, objt: prev)
     else
       # TODO: join adjt with other type
-
-      adjt
-    end
-  end
-
-  def foldl_adjt_noun!(adjt : MtNode, noun : MtNode)
-    prev = foldl_noun_full!(noun)
-
-    case prev
-    when .noun_words?
-      PairNode.new(prev, adjt, MtlTag::SubjAdjt, MtlPos::MaybeModi)
-    when .prep_form?
-      join_prep_form!(tail: adjt, prep_form: prev.as(PairNode))
-    else
-      Log.info { "unhandled: #{prev}" }
       adjt
     end
   end

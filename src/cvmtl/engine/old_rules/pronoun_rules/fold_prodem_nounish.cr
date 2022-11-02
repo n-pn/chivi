@@ -11,7 +11,7 @@
 #       # puts [prodem.prev?, prodem.succ?]
 #       # puts [nominal.prev?, nominal.succ?]
 
-#       flip = nominal.noun_words? && should_flip_prodem?(prodem)
+#       flip = nominal.all_nouns? && should_flip_prodem?(prodem)
 #       tag = !prodem.pro_dem? && nominal.qtnoun? ? PosTag::ProDem : nominal.tag
 #       return fold!(prodem, nominal, tag, flip: flip)
 #     end
@@ -43,7 +43,7 @@
 #       when .boundary?
 #         pro_dem.set!("cái này")
 #       else
-#         if pro_dem.prev?(&.noun_words?)
+#         if pro_dem.prev?(&.all_nouns?)
 #           pro_dem.set!("giờ")
 #         else
 #           pro_dem.set!("cái này")

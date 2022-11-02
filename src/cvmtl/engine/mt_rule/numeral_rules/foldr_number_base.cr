@@ -1,4 +1,4 @@
-module MT::Rules::LTR
+module MT::Rules
   def foldr_number_base!(number : MonoNode)
     return number if number.ordinal?
 

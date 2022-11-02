@@ -31,7 +31,7 @@ enum MT::MtlPos : UInt64
   # Plural # plural nouns/pronouns
 
   Humankind # all words that refer to human beings
-  Placeword # all words that can be place or location
+  Spaceword # all words that can be place or location
 
   ToCompare # verb or prepos using in comparision
   ToMeasure # verb or adjective using in measurement
@@ -96,7 +96,7 @@ module MT::HasPos
   delegate object?, to: @pos
 
   delegate humankind?, to: @pos
-  delegate placeword?, to: @pos
+  delegate spaceword?, to: @pos
 
   delegate to_compare?, to: @pos
   delegate to_measure?, to: @pos

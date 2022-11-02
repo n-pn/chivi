@@ -4,11 +4,11 @@ module MT::TlRule
     node = fuse_number!(node, prev: prev) # if head.numbers?
 
     case node
-    when .time_words?
+    when .all_times?
       # puts [node, node.succ?, node.prev?]
-      node = fold_time_prev!(node, prev: prev) if prev && prev.time_words?
+      node = fold_time_prev!(node, prev: prev) if prev && prev.all_times?
 
-      if (prev = node.prev?) && prev.time_words?
+      if (prev = node.prev?) && prev.all_times?
         # TODO: do not do this but calling fold_number a second time instead
         node = fold!(prev, node, node.tag, flip: true)
       end
@@ -16,7 +16,7 @@ module MT::TlRule
       fold_nouns!(node)
     when .verbal_words?
       fold_verbs!(node)
-    when .noun_words?
+    when .nominals?
       fold_nouns!(node)
     else
       if (succ = node.succ?) && succ.ptcl_zhi?
@@ -38,10 +38,10 @@ module MT::TlRule
     case node.tag
     when .ndigits?
       node = fold_ndigit!(node, prev: prev)
-      return fold_time_appro!(node) if node.time_words?
+      return fold_time_appro!(node) if node.all_times?
     when .nhanzis?
       node = fold_nhanzi!(node, prev: prev)
-      return fold_time_appro!(node) if node.time_words?
+      return fold_time_appro!(node) if node.all_times?
     when .quantis?, .nquants?
       # TODO: combine number with nquant?
       return node
@@ -66,7 +66,7 @@ module MT::TlRule
     # when .prep_ba3?
     #   tail = fold_pre_ba3!(tail)
 
-    #   if tail.noun_words?
+    #   if tail.nominals?
     #     return fold!(node, tail, tail.tag)
     #   elsif node.prev? { |x| x.verbal? || x.prev?(&.verbal?) }
     #     tail.set!("phát", MapTag::Qtverb)

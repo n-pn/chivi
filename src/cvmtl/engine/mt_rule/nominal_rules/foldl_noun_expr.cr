@@ -1,6 +1,6 @@
 module MT::Rules
-  def foldl_noun_form!(noun : MtNode) : MtNode
-    noun = foldl_noun_pair!(noun)
+  def foldl_noun_expr!(noun : MtNode) : MtNode
+    noun = foldl_noun_base!(noun)
     prev = noun.prev
 
     prev = fix_mixedpos!(prev) if prev.mixedpos?
@@ -17,7 +17,7 @@ module MT::Rules
       prev = fix_mixedpos!(prev) if prev.mixedpos?
     end
 
-    noun, prev = fold_noun_number!(noun, number: prev) if prev.numerals?
+    noun, prev = foldl_noun_number!(noun, number: prev) if prev.numerals?
 
     return noun if !prev.all_prons? || prev.per_prons?
 
@@ -31,7 +31,7 @@ module MT::Rules
     noun
   end
 
-  def fold_noun_number!(noun : NounExpr, number : MtNode)
+  def foldl_noun_number!(noun : NounExpr, number : MtNode)
     fix_quanti_val!(quanti: number, nominal: noun.noun) unless number.numbers?
 
     noun.add_nqmod(number)

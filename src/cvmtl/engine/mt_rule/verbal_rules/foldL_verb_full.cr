@@ -19,7 +19,7 @@ module MT::Rules
     when .quantis?, .dem_prons?
       # FIXME: check pass verb object
       return verb if verb.common_verbs? && verb.succ.tag.ptcl_dep?
-    when .noun_words?, .all_prons?
+    when .all_nouns?, .all_prons?
       # OK
     when .verbal_words?, .adjt_words?
       return verb unless verb.v_shi?

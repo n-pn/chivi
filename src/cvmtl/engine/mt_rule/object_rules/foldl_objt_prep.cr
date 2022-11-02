@@ -10,7 +10,7 @@ module MT::Rules
     when .prep_ling?, .prep_gei3?
       prep.val = "làm" if prep.prev?(&.unreal?.!)
     when .prep_zai?, .prep_cong?
-      if objt.time_words? || objt.placeword?
+      if objt.all_times? || objt.spaceword?
         prep.fix_val!
         pos |= MtlPos::AtTail
       end

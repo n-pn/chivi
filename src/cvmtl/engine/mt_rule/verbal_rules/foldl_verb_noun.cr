@@ -9,7 +9,7 @@ module MT::Rules
       VerbPair.new(head, verb)
     when .prep_form?
       join_prep_form!(verb, prep_form: head)
-    when .noun_words?
+    when .all_nouns?
       SubjPred.new(head, verb, tag: MtlTag::SubjVerb)
     else
       raise "unsupported #{head.inspect} #{head.class}"

@@ -61,7 +61,7 @@ class MT::MtData
   end
 
   def fix_grammar!
-    Rules::LTR.run!(@head, @tail)
+    Rules.foldr_all!(@head, @tail)
     fold_groups! if @pgroup.size > 1
     Rules.foldl_all!(@tail, @head)
   end

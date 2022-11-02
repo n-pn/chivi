@@ -7,7 +7,7 @@ module MT::Rules
     case head
     when .common_verbs?
       head = foldl_verb_expr!(head)
-    when .noun_words?
+    when .all_nouns?
       head = foldl_noun_full!(head)
     else
       return verb

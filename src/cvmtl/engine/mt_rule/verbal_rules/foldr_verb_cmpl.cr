@@ -1,6 +1,6 @@
 require "../../fix_dict/fix_cmpl"
 
-module MT::Rules::LTR
+module MT::Rules
   def foldr_verb_cmpl!(verb : MtNode, cmpl : MonoNode) : {MtNode, MonoNode}
     case cmpl
     when .adv_bu4?, .ptcl_der?

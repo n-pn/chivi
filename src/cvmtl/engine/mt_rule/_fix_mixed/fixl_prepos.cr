@@ -35,7 +35,7 @@ module MT::Rules
       is_prepos = word_is_prepos?(node.succ)
     when .number_words?, .common_verbs?, .mod_prons?
       is_prepos = false
-    when .quanti_words?, .noun_words?, .per_prons?
+    when .quanti_words?, .all_nouns?, .per_prons?
       is_prepos = true
     else
       is_prepos = word_is_prepos?(node.succ)
@@ -59,7 +59,7 @@ module MT::Rules
     case noun
     when .weapon_obj? then "thanh"
     when .inhand_obj? then "nắm"
-    when .noun_words? then "chiếc"
+    when .all_nouns?  then "chiếc"
     end
   end
 
@@ -77,7 +77,7 @@ module MT::Rules
   end
 
   private def word_is_prepos?(noun : MtNode)
-    return false unless noun.tag.noun_words? && (tail = noun.succ?)
+    return false unless noun.tag.all_nouns? && (tail = noun.succ?)
     tail.preposes? || tail.ptcl_cmps? || tail.common_verbs?
   end
 

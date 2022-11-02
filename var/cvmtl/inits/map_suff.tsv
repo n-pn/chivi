@@ -5,7 +5,7 @@
 的时候	SufTime
 的日子	SufTime
 
-## suffix that make nattr
+## suffixes that make nattr
 色	SufAttr
 级	SufAttr
 型	SufAttr
@@ -19,3 +19,8 @@
 
 ## suffix that make noun/adjt
 性	SufXing
+
+## suffixes that make other name
+族	SufName
+语	SufName
+文	SufName

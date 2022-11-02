@@ -33,7 +33,7 @@ module MT::Rules
       node = PairNode.new(prev, node, tag, pos, flip: true)
       foldl_objt_full!(node)
 
-      # foldl_noun_form!(node)
+      # foldl_noun_expr!(node)
     end
   end
 

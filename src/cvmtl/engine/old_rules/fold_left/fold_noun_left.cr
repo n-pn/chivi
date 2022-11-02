@@ -8,7 +8,7 @@ module MT::TlRule
         prev = fold_noun_left!(prev, level: 1)
       end
 
-      break unless prev.noun_words?
+      break unless prev.all_nouns?
       noun = fold_noun_noun_left!(noun, prev)
     end
 

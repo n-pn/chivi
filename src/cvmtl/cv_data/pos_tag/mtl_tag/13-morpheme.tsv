@@ -1,5 +1,6 @@
 # suffixes
 
+SufName	Ktetic	# make other names
 SufNoun	Unreal	# make noun words
 SufAttr	Unreal	# make noun attribute
 SufTime	Unreal	# make whole structure as time expression

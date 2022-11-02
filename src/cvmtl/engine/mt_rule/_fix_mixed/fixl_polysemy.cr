@@ -52,7 +52,7 @@ module MT::Rules
       case @node.real_succ
       when .nil?, .boundary?, .empty?
         @advb_pct -= 10
-      when .noun_words?, .all_prons?
+      when .all_nouns?, .all_prons?
         @advb_pct -= 20
         @noun_pct += 10
         @verb_pct += 20
@@ -129,7 +129,7 @@ module MT::Rules
       when .common_verbs?
         @noun_pct += 40
         @adjt_pct += 5
-      when .noun_words?, .per_prons?, .int_prons?
+      when .all_nouns?, .per_prons?, .int_prons?
         @verb_pct += 50
         @adjt_pct += 40
       when .prep_zai?

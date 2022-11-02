@@ -1,9 +1,9 @@
 module MT::Rules
-  def foldl_noun_pair!(noun : MtNode)
+  def foldl_noun_base!(noun : MtNode)
     while prev = noun.prev
       prev = fix_mixedpos!(prev) if prev.mixedpos?
 
-      break unless prev.noun_words?
+      break unless prev.all_nouns?
       tag, pos, flip = noun_pairing_type(noun, prev)
       noun = PairNode.new(prev, noun, tag, pos, flip: flip)
     end
@@ -30,7 +30,7 @@ module MT::Rules
 
   private def honor_pairing_type(noun : MtNode, prev : MtNode)
     case prev
-    when .time_words?, .nmix?, .posit?, .locat_words?
+    when .all_times?, .nmix?, .posit?, .locat_words?
       tag, pos = PosTag.make(:nmix)
     else
       tag, pos = PosTag.make(:human_name)

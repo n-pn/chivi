@@ -1,6 +1,6 @@
 module MT::Rules
   def fold_quanti!(quanti : MtNode, prev = quanti.prev) : MtNode
-    if quanti.qt_ge4? && quanti.is_a?(MonoNode) && quanti.succ.noun_words?
+    if quanti.qt_ge4? && quanti.is_a?(MonoNode) && quanti.succ.all_nouns?
       quanti.val = ""
       quanti.pos |= MtlPos.flags(CapRelay, NoSpaceL, NoSpaceR, Skipover)
     end

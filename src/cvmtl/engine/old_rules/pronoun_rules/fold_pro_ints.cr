@@ -10,7 +10,7 @@ module MT::TlRule
     when .verbal?
       succ = fold_verbs!(succ)
       return proint unless succ.verbal?
-    when .noun_words?
+    when .all_nouns?
       return proint unless succ = scan_noun!(succ)
     else
       return proint
@@ -20,10 +20,10 @@ module MT::TlRule
 
     case proint.key
     when "什么"
-      flip = succ.noun_words?
+      flip = succ.all_nouns?
       val = "gì"
     when "哪个"
-      flip = succ.noun_words?
+      flip = succ.all_nouns?
       val = "nào"
     when "怎么"
       val = "làm sao"

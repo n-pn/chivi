@@ -40,7 +40,7 @@ module MT::TlRule
       when .vdir?
         adjt.as_verb! if adjt.is_a?(MonoNode)
         return fold_verbs!(adjt)
-      when .noun_words?
+      when .all_nouns?
         adjt = fold_adj_adv!(adjt, prev)
         return fold_adjt_noun!(adjt, succ)
       when .vpro?, .verb?

@@ -33,7 +33,7 @@ module MT::TlRule
     when .verbal?
       verb = fold!(node, succ, succ.tag)
       fold_verbs!(verb)
-    when .noun_words?
+    when .all_nouns?
       # return node unless node.vm_neng?
       fold_verb_object!(node, succ)
     else
@@ -57,7 +57,7 @@ module MT::TlRule
     return true if prev.try(&.key.in?({"只", "还", "都"}))
 
     case succ
-    when .nil?, .boundary?, .noun_words?, .ptcl_dep?, .ptcl_le?
+    when .nil?, .boundary?, .all_nouns?, .ptcl_dep?, .ptcl_le?
       true
     when .preposes?     then false
     when .vsep?, .vset? then true

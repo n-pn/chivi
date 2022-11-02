@@ -9,11 +9,11 @@ module MT::TlRule
     tail = heal_quanti!(tail)
 
     case tail.tag
-    when .common_nouns?, .time_words?, .honor?, .nattr?, .cap_affil?
-      node.val = "đệ" if head.prev?(&.noun_words?)
+    when .common_nouns?, .all_times?, .honor?, .nattr?, .cap_affil?
+      node.val = "đệ" if head.prev?(&.all_nouns?)
       fold!(head, tail, tail.tag, flip: true)
     when .quantis?
-      if (tail_2 = tail.succ?) && tail_2.noun_words?
+      if (tail_2 = tail.succ?) && tail_2.all_nouns?
         tail = fold!(tail, tail_2, PosTag::Nform)
         fold!(head, tail, tail.tag, flip: true)
       else

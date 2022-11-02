@@ -7,7 +7,7 @@ module MT::TlRule
   def fold_nouns!(noun : MtNode, mode : Int32 = 0) : MtNode
     # return node if node.nform?
 
-    while noun.noun_words?
+    while noun.all_nouns?
       break unless succ = noun.succ?
       succ = heal_mixed!(succ) if succ.polysemy?
 

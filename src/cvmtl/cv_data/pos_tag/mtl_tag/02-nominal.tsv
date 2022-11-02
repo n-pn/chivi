@@ -2,8 +2,8 @@
 
 # proper nouns
 HumanName	Humankind, Ktetic, Object	# human name
-PlaceName	Placeword, Ktetic, Object	# place name
-InstiName	Placeword, Ktetic, Object	# institute
+PlaceName	Spaceword, Ktetic, Object	# place name
+InstiName	Spaceword, Ktetic, Object	# institute
 
 # other proper nouns
 OtherName	Ktetic, Object	# other proper noun
@@ -32,19 +32,21 @@ Animal	Ktetic, Object	# all kind of living animals
 Plant	Ktetic, Object	# all kind of plants
 
 # placement
-Place	Placeword, Ktetic, Object	# generic place
-Plsuf	Placeword, Ktetic, Object	# combine with prev noun to place
+Place	Spaceword, Ktetic, Object	# generic place
+LocSf	Spaceword, Ktetic, Object	# combine with prev noun to placement
+#GreSf	Spaceword, Ktetic, Object	# combine with prev noun to placement
+OrgSf	Spaceword, Ktetic, Object	# combine with prev noun to organization
 
 # locative
-Posit	Placeword, Object	# place + locat
-Locat	Placeword, Object	# can act as place
+Posit	Spaceword, Object	# place + locat
+Locat	Spaceword, Object	# can act as place
 
-LocShang	Placeword, Object, MaybeCmpl	# "上"
-LocXia	Placeword, Object, MaybeCmpl	# "下"
-LocZhong	Placeword, Object, MaybeCmpl	# "中"
+LocShang	Spaceword, Object, MaybeCmpl	# "上"
+LocXia	Spaceword, Object, MaybeCmpl	# "下"
+LocZhong	Spaceword, Object, MaybeCmpl	# "中"
 
-LocQian	Placeword, Object	# "前"
-LocHou4	Placeword, Object	# "后"
+LocQian	Spaceword, Object	# "前"
+LocHou4	Spaceword, Object	# "后"
 
 # temporal
 Timeword	Object, MaybeAdvb	# generic temporal words

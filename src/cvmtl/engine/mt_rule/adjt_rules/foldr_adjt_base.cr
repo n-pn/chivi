@@ -1,4 +1,4 @@
-module MT::Rules::LTR
+module MT::Rules
   def foldr_adjt_base!(adjt : MtNode)
     tag, pos = PosTag.make(:amix)
 
