@@ -23,7 +23,7 @@ function page_meta( nvinfo: CV.Nvinfo, title: string, sname: string, chidx: numb
   return {
     title: `${title} - ${nvinfo.btitle_vi}`,
     left_nav: [
-      nvinfo_bar(nvinfo, { show: 'pl' }),
+      nvinfo_bar(nvinfo, { 'data-show': 'pl' }),
       { 'text': sname, 'icon': 'list', 'href': list_url, 'data-kind': 'zseed' },
     ],
     show_config: true,

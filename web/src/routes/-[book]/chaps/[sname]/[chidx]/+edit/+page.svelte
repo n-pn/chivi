@@ -1,54 +1,18 @@
-<script context="module" lang="ts">
-  throw new Error(
-    '@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)'
-  )
-
-  // /** @type {import('./[slug]').Load} */
-  // export async function load({ stuff, params }) {
-  //   const { api, nvinfo, nvseed } = stuff
-  //   const { sname } = nvseed
-
-  //   const chidx = params.chidx.split('-', 2)[0]
-
-  //   const api_url = `/api/texts/${nvinfo.id}/${sname}/${chidx}`
-  //   const api_res = await api.call(api_url, 'GET')
-
-  //   if (api_res.error) return api_res
-
-  //   const props = { nvinfo, chidx, sname, ...api_res }
-  //   const topbar = gen_topbar(nvinfo, sname, chidx)
-
-  //   return { props, stuff: { topbar } }
-  // }
-
-  // function gen_topbar({ bslug, btitle_vi }, sname: string, chidx: number) {
-  //   const chap_href = `/-${bslug}/chaps/${sname}`
-  //   return {
-  //     left: [
-  //       [btitle_vi, 'book', { href: `/-${bslug}`, kind: 'title', show: 'tm' }],
-  //       [sname, 'list', { href: chap_href, show: 'ts', kind: 'zseed' }],
-  //       [`#${chidx}`, 'edit', { href: `${chap_href}/${chidx}` }],
-  //     ],
-  //   }
-  // }
-</script>
-
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
+
   import { session } from '$lib/stores'
-  import { SIcon, Footer } from '$gui'
+  import { uncache } from '$lib/api'
+
   import { hash_str } from '$utils/text_utils'
 
-  export let nvinfo: CV.Nvinfo
+  import { SIcon, Footer } from '$gui'
 
-  export let sname = ''
-  export let chidx = 1
+  import type { PageData } from './$types'
+  export let data: PageData
 
-  export let chvol = ''
-  export let title = ''
-
-  export let input = ''
+  $: ({ nvinfo, sname, chidx, chvol, title, input } = data)
 
   let form = {
     tosimp: false,
@@ -77,8 +41,8 @@
 
     if (res.ok) {
       await res.json()
-      $page.stuff.api.uncache('nslists', nvinfo.id)
-      $page.stuff.api.uncache('nvseeds', `${nvinfo.id}/${sname}`)
+      uncache('nslists', nvinfo.id)
+      uncache('nvseeds', `${nvinfo.id}/${sname}`)
       goto(`/-${nvinfo.bslug}/chaps/${sname}/${chidx}`)
     } else {
       alert(await res.text())
