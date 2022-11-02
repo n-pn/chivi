@@ -10,7 +10,7 @@ const api_hosts = {
   _mt: 'localhost:5502',
   api: 'localhost:5010',
 }
-export async function handleFetch({ request }) {
+export async function handleFetch({ event, request }) {
   const url = new URL(request.url)
   const path = url.pathname
 
@@ -19,7 +19,10 @@ export async function handleFetch({ request }) {
   const host = api_hosts[path.split('/')[1]]
   if (host) url.host = host
 
-  const { body, headers, method } = request
+  const { body, headers: req_header, method } = event.request
+  const headers = Object.fromEntries(req_header)
+  delete headers.connection
+
   return await globalThis.fetch(url, { body, headers, method })
 }
 
