@@ -91,8 +91,12 @@ enum MT::MtlTag : UInt32
   end
 
   # is place name or oraganization
-  def place_name?
+  def space_name?
     self >= PlaceName && self <= InstiName
+  end
+
+  def other_names?
+    self >= OtherName && self <= InstiName
   end
 
   # is not proper nouns
@@ -305,7 +309,7 @@ enum MT::MtlTag : UInt32
     self >= PtclDep && self <= PtclDeg
   end
 
-  def ptcl_ects?
+  def ptcl_etcs?
     self >= PtclYunyun && self <= PtclDeng3
   end
 

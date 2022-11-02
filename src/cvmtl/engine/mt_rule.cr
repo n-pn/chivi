@@ -17,6 +17,7 @@ module MT::Rules
     when .numbers?      then foldr_number_base!(node)
     when .adjt_words?   then foldr_adjt_base!(node)
     when .verbal_words? then foldr_verb_base!(node)
+    when .name_words?   then foldr_name_base!(node)
     when .maybe_cmpl?   then fixr_not_cmpl!(node)
       # when .maybe_quanti? then as_not_quanti!(node)
     else node
