@@ -1,58 +1,40 @@
 <script context="module" lang="ts">
-  throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
+  interface PatchForm {
+    chmin: number
+    chmax: number
+    o_sname: string
+    i_chmin: number
+  }
 
-  // export async function load({ stuff }) {
-  //   const { nvinfo, nslist, nvseed } = stuff
+  function init_data(nslist: CV.Nslist, { sname }): [CV.Chroot[], PatchForm] {
+    let seeds = [...nslist.other, ...nslist.users]
+    seeds = seeds.filter((x) => x.sname != sname)
 
-  //   stuff.topbar = gen_topbar(nvinfo)
-  //   return { props: { nvinfo, nslist, nvseed }, stuff }
-  // }
+    const { chmax, sname: o_sname } = seeds[0] || { chmax: 0, sname: '' }
 
-  // function gen_topbar({ btitle_vi, bslug }) {
-  //   return {
-  //     left: [
-  //       [btitle_vi, 'book', { href: `/-${bslug}`, kind: 'title' }],
-  //       ['Tinh chỉnh', 'settings', { href: '.', show: 'pl' }],
-  //     ],
-  //   }
-  // }
-
-  // interface PatchForm {
-  //   chmin: number
-  //   chmax: number
-  //   o_sname: string
-  //   i_chmin: number
-  // }
-
-  // function init_data(nslist: CV.Nslist, { sname }): [CV.Chroot[], PatchForm] {
-  //   let seeds = [...nslist.other, ...nslist.users]
-  //   seeds = seeds.filter((x) => x.sname != sname)
-
-  //   const { chmax, sname: o_sname } = seeds[0] || { chmax: 0, sname: '' }
-
-  //   const form = { chmin: 1, i_chmin: 1, chmax: chmax, o_sname }
-  //   return [seeds, form]
-  // }
+    const form = { chmin: 1, i_chmin: 1, chmax: chmax, o_sname }
+    return [seeds, form]
+  }
 </script>
 
 <script lang="ts">
-  throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
-  import { page } from '$app/stores'
+  // import { page } from '$app/stores'
   import { goto } from '$app/navigation'
 
+  import { api_call, uncache } from '$lib/api'
   import { SIcon } from '$gui'
 
-  export let nvinfo: CV.Nvinfo
-  export let nslist: CV.Nslist
-  export let nvseed: CV.Chroot
+  import type { PageData } from './$types'
+  export let data: PageData
+
+  $: ({ nvinfo, nvseed, nslist } = data)
 
   let [seeds, patch_form] = init_data(nslist, nvseed)
   let prune = ''
 
   async function submit_patch() {
     const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}/patch`
-    const res = await $page.stuff.api.call(url, 'PUT', patch_form)
+    const res = await api_call(url, 'PUT', patch_form, fetch)
 
     if (res.error) return alert(res.error)
     else clean_jump(res.pgidx)
@@ -62,7 +44,7 @@
 
   async function trunc_source() {
     const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}/trunc`
-    const res = await $page.stuff.api.call(url, 'PUT', { chidx: trunc_chidx })
+    const res = await api_call(url, 'PUT', { chidx: trunc_chidx }, fetch)
 
     if (res.error) return alert(res.error)
     else clean_jump(res.pgidx)
@@ -70,15 +52,15 @@
 
   async function prune_source() {
     const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}`
-    const res = await $page.stuff.api.call(url, 'DELETE')
+    const res = await api_call(url, 'DELETE', null, fetch)
 
     if (res.error) return alert(res.error)
     else goto(`/-${nvinfo.bslug}/chaps/=base`)
   }
 
   function clean_jump(pgidx: number) {
-    $page.stuff.api.uncache('nslists', nvinfo.id)
-    $page.stuff.api.uncache('nvseeds', `${nvinfo.id}/${nvseed.sname}`)
+    uncache('nslists', nvinfo.id)
+    uncache('nvseeds', `${nvinfo.id}/${nvseed.sname}`)
 
     const root_href = `/-${nvinfo.bslug}/chaps`
     const page_href = root_href + '/' + nvseed.sname

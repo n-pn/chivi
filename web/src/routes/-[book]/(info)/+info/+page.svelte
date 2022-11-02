@@ -1,36 +1,14 @@
-<script context="module" lang="ts">
-  throw new Error(
-    '@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)'
-  )
-
-  // import { nvinfo_bar } from '$utils/topbar_utils'
-
-  // export async function load({ stuff, fetch }) {
-  //   const { nvinfo } = stuff
-  //   const api_url = `/api/books/${nvinfo.bslug.substr(0, 8)}/+edit`
-  //   const api_res = await fetch(api_url)
-  //   const payload = await api_res.json()
-
-  //   const topbar = {
-  //     left: [
-  //       nvinfo_bar(nvinfo, { show: 'tm' }),
-  //       ['Sửa thông tin', 'pencil', { href: './+info' }],
-  //     ],
-  //   }
-
-  //   Object.assign(nvinfo, payload)
-  //   return { props: { nvinfo }, stuff: { topbar } }
-  // }
-</script>
-
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { page } from '$app/stores'
+  // import { page } from '$app/stores'
   import { session } from '$lib/stores'
   import { Crumb, SIcon } from '$gui'
   import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
 
-  $: nvinfo = $page.data.nvinfo
+  import type { PageData } from './$types'
+  export let data: PageData
+
+  $: ({ nvinfo } = data)
   $: nv_href = `/-${nvinfo.bslug}`
 
   async function delete_book() {
