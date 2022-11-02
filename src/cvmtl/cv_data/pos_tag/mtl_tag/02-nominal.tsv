@@ -21,7 +21,7 @@ Occup	Humankind, Ktetic, Object	# occupational title that can't be combine with 
 Ftree	Humankind, Ktetic, Object	# kinship, family member
 Human	Humankind, Ktetic, Object	# generic human word
 
-Nabst	Object	# astract concept
+Nabst	Object, Ktetic	# astract concept
 Nattr	Object	# generic attribute
 
 # concrete nouns

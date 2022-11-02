@@ -3,37 +3,30 @@ module MT::Rules
     noun = foldl_noun_base!(noun)
     prev = noun.prev
 
-    prev = fix_mixedpos!(prev) if prev.mixedpos?
-
-    return noun if noun_is_modifier?(noun, prev)
-
-    noun = NounExpr.new(noun) unless noun.is_a?(NounExpr)
-
-    if prev.ptcl_deps?
-      dpmod = foldl_udep_base!(udep: prev)
-      noun.add_dpmod(dpmod)
-
+    if prev.ptcl_dep?
+      foldl_objt_udep!(objt: noun, udep: prev)
       prev = noun.prev
-      prev = fix_mixedpos!(prev) if prev.mixedpos?
     end
 
-    noun, prev = foldl_noun_number!(noun, number: prev) if prev.numerals?
+    return fold_noun_pron!(noun, pron: prev) if prev.all_prons?
 
-    return noun if !prev.all_prons? || prev.per_prons?
+    if prev.maybe_quanti?
+      prev.tag, prev.pos = PosTag.map_quanti(prev.as(MonoNode).key)
+      prev.tap(&.fix_val!)
+    elsif !prev.numerals?
+      return noun
+    end
 
-    # FIXME: handle special pronoun cases
-    noun.add_pdmod(prev)
-    # if prev.dem_prons? || prev.pro_na2?
-    #   noun = PairNode.new(prev, noun, flip: prev.at_tail?)
-    #   return noun unless prev = noun.prev?
-    # end
+    return noun unless match_noun_quanti?(noun, quanti: prev)
+    fix_quanti_val!(quanti: prev, nominal: noun) unless prev.numbers?
 
-    noun
+    noun = NounExpr.new(noun) unless noun.is_a?(NounExpr)
+    noun, prev = foldl_noun_number!(noun, number: prev)
+
+    prev.all_prons? ? fold_noun_pron!(noun, pron: prev) : noun
   end
 
   def foldl_noun_number!(noun : NounExpr, number : MtNode)
-    fix_quanti_val!(quanti: number, nominal: noun.noun) unless number.numbers?
-
     noun.add_nqmod(number)
     prev = noun.prev
 

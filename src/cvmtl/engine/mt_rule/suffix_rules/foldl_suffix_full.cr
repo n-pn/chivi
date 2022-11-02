@@ -25,15 +25,17 @@ module MT::Rules
       foldl_verb_full!(node)
     when .suf_zhi?
       foldl_suf_zhi_full!(node, prev)
+    when .suf_noun?
+      tag, pos = PosTag.make(:noun)
+      node = PairNode.new(prev, node, tag, pos, flip: true)
+      foldl_objt_full!(node)
     else
-      Log.warn { "unhandled suffix: #{node}" }
+      # Log.warn { "unhandled suffix: #{node.inspect}" }
       return node unless prev.common_nouns?
 
       tag, pos = PosTag.make(:noun)
       node = PairNode.new(prev, node, tag, pos, flip: true)
       foldl_objt_full!(node)
-
-      # foldl_noun_expr!(node)
     end
   end
 

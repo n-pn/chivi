@@ -1,12 +1,10 @@
 require "./pair_node"
 
 class MT::VerbPair < MT::PairNode
-  include MtList
-
   def initialize(head : MtNode, tail : MtNode)
     tag = MtlTag::Vmix
     pos = head.pos | tail.pos
-    super(head, tail, tag: tag, pos: pos)
+    super(head, tail, tag: tag, pos: pos, flip: false)
   end
 
   def add_objt(objt : MtNode)

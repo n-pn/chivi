@@ -9,7 +9,7 @@ module MT::Rules
   end
 
   def fix_mixedpos!(node : MtNode)
-    Log.warn { "this should not happen!" }
+    Log.warn { "this should not happen! #{node.inspect}" }
     node
   end
 end

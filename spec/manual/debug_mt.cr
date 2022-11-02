@@ -2,7 +2,7 @@ require "../../src/cvmtl/engine"
 require "../../src/cvmtl/tr_lit"
 
 text = ARGV[0]? || "在魏梦柔的目光下"
-book = ARGV[1]? || "t6wn9xe0"
+book = ARGV[1]? || "qcwe8yg1"
 user = ARGV[2]?
 
 time = Time.monotonic

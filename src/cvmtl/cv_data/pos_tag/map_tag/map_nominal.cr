@@ -15,6 +15,7 @@ module MT::PosTag
     when 'h' then map_honor(alt)
     when 'o' then map_nobjt(key)
     when 'a' then make(:nattr)
+    when 'b' then make(:nabst)
     when 'l' then make(:nmix)
     else          make(:noun)
     end

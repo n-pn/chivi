@@ -20,6 +20,7 @@ module MT::Rules
     when .verbal_words? then foldr_verb_base!(node)
     when .name_words?   then foldr_name_base!(node)
     when .maybe_cmpl?   then fixr_not_cmpl!(node)
+    when .cenum?        then node.tap(&.val = ",")
       # when .maybe_quanti? then as_not_quanti!(node)
     else node
     end
@@ -39,6 +40,7 @@ module MT::Rules
     when .suffixes?     then foldl_suffix_full!(node)
     when .all_times?    then foldl_time_full!(node)
     when .all_nouns?    then foldl_noun_full!(node)
+    when .all_prons?    then foldl_pron_full!(node)
     when .adjt_words?   then foldl_adjt_full!(node)
     when .verbal_words? then foldl_verb_full!(node)
     when .ptcl_dep?     then node.tap(&.as(MonoNode).skipover!)

@@ -3,8 +3,10 @@ require "../mt_list"
 class MT::SeriNode < MT::MtNode
   include MtList
 
-  def initialize(@head : MtNode, @tail : MtNode,
-                 @tag : MtlTag, @pos : MtlPos)
+  getter head : MtNode
+  getter tail : MtNode
+
+  def initialize(@head, @tail, @tag : MtlTag, @pos : MtlPos)
     self.fix_prev!(head.prev?)
     self.fix_succ!(tail.succ?)
 

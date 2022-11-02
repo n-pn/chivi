@@ -2,7 +2,7 @@ module MT::Rules
   def foldr_noun_join!(noun : MtNode, junc = noun.prev, left = junc.prev)
     case left
     when .all_nouns?
-      left = foldl_noun_expr!(left)
+      left = foldl_noun_base!(left)
     when .all_prons?
       # FIXME: fold pronouns
     else

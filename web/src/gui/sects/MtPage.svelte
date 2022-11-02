@@ -95,13 +95,16 @@
       headers: { 'Content-Type': 'text/plain' },
     })
 
+    const data = await res.text()
+
     if (!res.ok) {
-      console.log(await res.text())
-      return []
+      console.log(data)
+      return
     }
 
-    const data = await res.text()
-    datav2 = MtData.parse_lines(data)
+    const v2data = MtData.parse_lines(data)
+    if (v2data.length == mtdata.length) datav2 = v2data
+    else console.log(data)
   }
 </script>
 
