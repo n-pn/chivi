@@ -5,8 +5,9 @@ module MT::Rules
   extend self
 
   def foldr_all!(head : MtNode, tail : MtNode) : Nil
-    while (head = head.succ?)
-      head = foldr_once!(head) if head.is_a?(MonoNode)
+    while (head = head.succ?) && head != tail
+      next unless head.is_a?(MonoNode)
+      head = foldr_once!(head)
     end
   end
 

@@ -37,6 +37,7 @@ module MT
 
       lines.each do |line|
         res << '\n'
+        puts line.colorize.yellow
         data = engine.cv_plain(line)
         to_mtl ? data.to_mtl(res) : data.to_txt(res)
       rescue err

@@ -91,6 +91,7 @@
 
   :global(.app-vessel) {
     width: $page-width;
+    position: relative;
     max-width: 100%;
     margin: 0 auto;
     padding-left: var(--gutter);

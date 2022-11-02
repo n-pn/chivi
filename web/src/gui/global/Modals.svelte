@@ -13,8 +13,8 @@
   $: Control = session.uname != 'Khách' ? Usercp : Signin
 </script>
 
-<aside class="popup">
-  <div class="vessel">
+<aside class="popups">
+  <div class="app-vessel">
     {#if $popups.config}<Config />{/if}
   </div>
 
@@ -22,3 +22,11 @@
   <Dboard bind:actived={$popups.dboard} />
   <svelte:component this={Control} bind:actived={$popups.usercp} />
 </aside>
+
+<style lang="scss">
+  .app-vessel {
+    > :global(*) {
+      margin-right: var(--gutter);
+    }
+  }
+</style>

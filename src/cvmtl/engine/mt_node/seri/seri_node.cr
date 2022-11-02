@@ -18,7 +18,6 @@ class MT::SeriNode < MT::MtNode
 
     while node = node.succ?
       yield node
-      break if node == @tail
     end
   end
 end

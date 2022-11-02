@@ -3,7 +3,7 @@
   $: session = $page.data._user || { privi: -1 }
 </script>
 
-<div class="vessel">
+<div class="app-vessel">
   {#if session.privi < 0}
     <div class="pledge">
       Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá các tính năng!
@@ -18,7 +18,7 @@
 <style lang="scss">
   .pledge {
     display: block;
-    text-align: vessel;
+    text-align: app-vessel;
     // max-width: 50vw;
     margin-top: 0.75rem;
     font-size: rem(15px);

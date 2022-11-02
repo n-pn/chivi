@@ -8,7 +8,7 @@ module MT::Rules
   end
 
   def foldr_human_name!(name : MtNode)
-    head = name
+    head = name.prev
 
     # FIXME: check if succ.key == name.key because it is obviously not combinable
 
@@ -17,6 +17,8 @@ module MT::Rules
       when .middot?
         tail = succ.succ
         break unless tail.name_words?
+        succ.as(MonoNode).val = " "
+
         name = TrioNode.new(name, succ, tail)
       when .cenum?
         tail = succ.succ
@@ -33,11 +35,11 @@ module MT::Rules
       end
     end
 
-    foldr_name_list!(head, tail: name, succ: succ)
+    foldr_name_list!(head.succ, tail: name, succ: succ)
   end
 
   def foldr_space_name!(name : MtNode)
-    head = name
+    head = name.prev
     flip = true
 
     while succ = name.succ
@@ -62,11 +64,11 @@ module MT::Rules
       end
     end
 
-    foldr_name_list!(head, tail: name, succ: succ, flip: flip)
+    foldr_name_list!(head.succ, tail: name, succ: succ, flip: flip)
   end
 
   def foldr_other_name!(name : MtNode)
-    head = name
+    head = name.prev
 
     while succ = name.succ
       case succ
@@ -82,15 +84,17 @@ module MT::Rules
       end
     end
 
-    foldr_name_list!(head, tail: name, succ: succ)
+    foldr_name_list!(head.succ, tail: name, succ: succ)
   end
 
   private def foldr_name_list!(head : MtNode, tail : MtNode, succ : MtNode, flip = false)
     if succ.ptcl_etcs? && (head != tail || etcs_is_particle?(node: succ))
-      head, _tail = flip_name_list_smart!(head, tail) if flip
+      puts [head, tail, "has_udeng"]
+      # head, _tail = flip_name_list_smart!(head, tail) if flip && head != tail
       tail = succ.tap(&.as(MonoNode).fix_val!)
     elsif flip
-      head, tail = flip_name_list_full!(head, tail)
+      puts [head, tail, "should_flip"] if head != tail
+      # head, tail = flip_name_list_full!(head, tail) if head != tail
     end
 
     case
@@ -106,18 +110,24 @@ module MT::Rules
   end
 
   private def flip_name_list_full!(head : MtNode, tail : MtNode)
+    prev = head.prev
+    succ = tail.succ
+
     while node = tail.prev?
       flip_node!(node, tail)
       break if node == head
     end
 
-    {tail, head}
+    {prev.succ, succ.prev}
   end
 
   private def flip_name_list_smart!(head : MtNode, tail : MtNode)
+    prev = head.prev
+    succ = tail.succ
+
     while node = tail.prev?
       if node.place_name? && tail.insti_name?
-        flip_node!(node, tail)
+        tail = PairNode.new(node, tail, tail.tag, tail.pos)
       else
         tail = node
       end
@@ -125,7 +135,7 @@ module MT::Rules
       break if node == head
     end
 
-    {tail, head}
+    {prev.succ, succ.prev}
   end
 
   private def flip_node!(head : MtNode, tail : MtNode) : Nil
