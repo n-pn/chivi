@@ -14,9 +14,18 @@ class MT::NounExpr < MT::MtNode
   getter tl_nqmod : MtNode? = nil
   getter tl_pdmod : MtNode? = nil
 
+  getter hd_locat : MtNode? = nil
+
   def initialize(@noun, @tag = noun.tag, @pos = noun.pos)
-    self.fix_prev!(@noun.prev?)
-    self.fix_succ!(@noun.succ?)
+    self.fix_prev!(noun.prev?)
+    self.fix_succ!(noun.succ?)
+    # noun.fix_prev!(nil)
+    # noun.fix_succ!(nil)
+
+    if noun.is_a?(PairNode) && noun.tail.locat_words?
+      @noun = noun.head
+      @hd_locat = noun.tail
+    end
   end
 
   def add_pdmod(node : MtNode)
@@ -55,6 +64,8 @@ class MT::NounExpr < MT::MtNode
   end
 
   def each
+    @hd_locat.try { |x| yield x }
+
     @hd_pdmod.try { |x| yield x }
     @hd_nqmod.try { |x| yield x }
     @hd_dpmod.try { |x| yield x }
