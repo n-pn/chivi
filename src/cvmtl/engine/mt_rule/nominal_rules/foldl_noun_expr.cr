@@ -4,7 +4,7 @@ module MT::Rules
     prev = noun.prev
 
     if prev.ptcl_dep?
-      foldl_objt_udep!(objt: noun, udep: prev)
+      noun = foldl_objt_udep!(objt: noun, udep: prev)
       prev = noun.prev
     end
 

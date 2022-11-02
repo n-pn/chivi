@@ -35,7 +35,7 @@ module MT::Rules
   end
 
   def fix_aspcmpl_val!(verb : MtNode) : Nil
-    return if verb.succ.boundary? || !verb.verb_take_obj?
+    return if verb.succ? { |x| x.unreal? || x.boundary? } || !verb.verb_take_obj?
 
     while verb.is_a?(PairNode)
       tail = verb.tail

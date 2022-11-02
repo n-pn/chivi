@@ -7,20 +7,34 @@ module MT::Rules
     # thus no need to resolve mixedpos in this step
     prev = noun.prev
     prev = fix_mixedpos!(prev) if prev.mixedpos?
-    noun = foldr_noun_join!(noun, junc: prev) if prev.join_word?
-    return noun if noun_is_modifier?(noun, prev)
+
+    if prev.join_word?
+      noun = foldr_noun_join!(noun, junc: prev)
+      prev = noun.prev
+      prev = fix_mixedpos!(prev) if prev.mixedpos?
+    end
+
+    if noun.succ.ptcl_dep?
+      return noun if noun_is_modifier?(noun, prev, noun.succ.succ)
+      # elsif noun.succ.ptcl_dev?
+    end
 
     foldl_objt_full!(noun)
   end
 
-  private def noun_is_modifier?(noun : MtNode, prev = noun.prev, succ = noun.succ) : Bool
-    return true if prev.v_shi? && succ.ptcl_deps?
-    return true if succ.adjt_words? && succ.succ?(&.ptcl_deps?)
+  private def noun_is_modifier?(noun : MtNode, prev = noun.prev, tail = noun.succ.succ) : Bool
+    after_is_verb = after_is_verb?(tail)
 
-    return false unless succ.tag.ptcl_dev? && (center = succ.succ?) && center.object?
-    return false unless tail = center.succ?
-
-    tail.verbal_words? || tail.adjt_words? || tail.ptcl_cmps?
+    case prev
+    when .v_shi?, .v_you?
+      true
+    when .verbal_words?
+      (prev.vlinking? || prev.modal_verbs?) && after_is_verb
+    when .preposes?
+      !match_noun_prepos?(noun, prepos: prev, tail: tail, after_is_verb: after_is_verb)
+    else
+      false
+    end
 
     # FIXME:
     # - check if before prepos has subject or not
@@ -28,5 +42,11 @@ module MT::Rules
     #   + pre_zai take location/temporal
     #   + comparison prepos and comparision particles
     # - add more special
+  end
+
+  def after_is_verb?(node : MtNode) : Bool
+    return false unless succ = node.succ?
+    return true if succ.verbal_words?
+    succ.comma? && succ.succ?(&.verbal_words?) || false
   end
 end

@@ -34,7 +34,7 @@ ParenCl1	Boundary, NoSpaceL	")"
 Colon	Boundary, NoSpaceL, CapAfter	":"
 Smcln	Boundary, NoSpaceL	";"
 
-Comma	NoSpaceL	","
+Comma	NoSpaceL, Boundary	","
 Cenum	NoSpaceL, JoinWord	"､"
 
 Dash1	Boundary, NoSpaceL, NoSpaceR	"–"

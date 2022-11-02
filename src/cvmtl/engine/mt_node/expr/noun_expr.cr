@@ -63,6 +63,12 @@ class MT::NounExpr < MT::MtNode
     head.fix_prev!(nil)
   end
 
+  def add_locat(locat : MtNode)
+    @hd_locat = locat
+    self.fix_succ!(locat.succ?)
+    locat.fix_succ!(nil)
+  end
+
   def each
     @hd_locat.try { |x| yield x }
 

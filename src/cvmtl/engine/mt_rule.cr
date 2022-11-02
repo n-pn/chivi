@@ -38,6 +38,7 @@ module MT::Rules
 
     case node
     when .suffixes?     then foldl_suffix_full!(node)
+    when .locat_words?  then foldl_locat_full!(node)
     when .all_times?    then foldl_time_full!(node)
     when .all_nouns?    then foldl_noun_full!(node)
     when .all_prons?    then foldl_pron_full!(node)
