@@ -53,22 +53,25 @@
     <SIcon name="caret-down" />
   </button>
 
-  <a class="link" href={gsearch} target="_blank" rel="noopener noreferer"
+  <a class="link" href={gsearch} target="_blank" rel="noopener noreferrer"
     >Google</a>
 </div>
 
 <div class="submenu">
   {#if submenu == 1}
     {#each helps as [name, href]}
-      <a class="link" {href} target="_blank" rel="noopener noreferer">{name}</a>
+      <a class="link" {href} target="_blank" rel="noopener noreferrer"
+        >{name}</a>
     {/each}
   {:else if submenu == 2}
     {#each links as [name, href]}
-      <a class="link" {href} target="_blank" rel="noopener noreferer">{name}</a>
+      <a class="link" {href} target="_blank" rel="noopener noreferrer"
+        >{name}</a>
     {/each}
   {:else if submenu == 3}
     {#each trans as [name, href]}
-      <a class="link" {href} target="_blank" rel="noopener noreferer">{name}</a>
+      <a class="link" {href} target="_blank" rel="noopener noreferrer"
+        >{name}</a>
     {/each}
   {/if}
 </div>

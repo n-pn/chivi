@@ -4,7 +4,7 @@ import { seed_url, to_pgidx } from '$utils/route_utils'
 import { api_get } from '$lib/api'
 import { gen_api_url } from './shared'
 
-export async function load({ params, parent }) {
+export async function load({ params, parent, fetch }) {
   const { nvinfo } = await parent()
   const { sname, chidx, cpart: slug } = params
   const cpart = +slug.split('/')[1] || 1
