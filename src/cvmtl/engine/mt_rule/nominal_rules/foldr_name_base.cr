@@ -90,13 +90,13 @@ module MT::Rules
   private def foldr_name_list!(head : MtNode, tail : MtNode, succ : MtNode, flip = false)
     if succ.ptcl_etcs? && (head != tail || etcs_is_particle?(node: succ))
       if head != tail
-        puts [head, tail, "has_udeng"]
+        # puts [head, tail, "has_udeng"]
         # head, _tail = flip_name_list_smart!(head, tail)
       end
 
       tail = succ.tap(&.as(MonoNode).fix_val!)
     elsif flip && head != tail
-      puts [head, tail, "should_flip"]
+      # puts [head, tail, "should_flip"]
       # head, tail = flip_name_list_full!(head, tail)
     end
 

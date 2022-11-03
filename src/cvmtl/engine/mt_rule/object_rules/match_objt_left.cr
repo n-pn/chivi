@@ -16,7 +16,12 @@ module MT::Rules
 
   def match_objt_verbal?(objt : MtNode, verbal : MtNode, tail : MtNode, after_is_verb = false)
     return true if (verbal.vlinking? || verbal.modal_verbs?) && after_is_verb
-    return false unless verbal.comma? && (head = verbal.prev?)
+    prev = verbal.prev
+
+    # puts [objt, verbal, prev]
+
+    return true if prev.v_shi?
+    return false unless prev.comma? && (head = prev.prev?)
 
     # FIXME: check more case here
     head.subj_verb? || head.verb_no_obj?

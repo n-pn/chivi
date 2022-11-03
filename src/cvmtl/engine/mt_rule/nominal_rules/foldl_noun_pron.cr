@@ -4,9 +4,17 @@ module MT::Rules
 
     noun = NounExpr.new(noun) unless noun.is_a?(NounExpr)
 
-    # FIXME: handle special pronoun cases
+    fix_pronoun_val_as_modi!(pron, noun)
     noun.add_pdmod(pron)
     noun
+  end
+
+  def fix_pronoun_val_as_modi!(pron, noun)
+    # FIXME: handle special pronoun cases
+    return unless pron.is_a?(MonoNode)
+    case pron.key
+    when "什么" then pron.val = "gì"
+    end
   end
 
   def fold_noun_per_pron!(noun : MtNode, pron : MtNode)

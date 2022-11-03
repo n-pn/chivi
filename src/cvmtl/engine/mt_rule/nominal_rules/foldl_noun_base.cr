@@ -1,17 +1,18 @@
 module MT::Rules
   def foldl_noun_base!(noun : MtNode)
     while prev = noun.prev
-      prev = fix_mixedpos!(prev) if prev.mixedpos?
+      # puts [noun, prev]
+      # prev = fix_mixedpos!(prev) if prev.mixedpos?
 
       case prev
       when .all_times?
         prev = foldl_time_base!(prev)
         # Do not combine if time is adverb phrase
         return noun if prev.prev?(&.boundary?)
-      when .adjt_words?
+      when .adjt_words?, .hao_word?, .maybe_adjt?
         return noun if prev.amix? || prev.ades? || prev.prev?(&.advb_words?)
         return PairNode.new(prev, noun, flip: !prev.at_head?)
-      when .verb_no_obj?
+      when .verb_no_obj?, .verb_or_noun?
         return noun if prev.prev?(&.advb_words?)
         return PairNode.new(prev, noun, flip: !prev.at_head?)
       else

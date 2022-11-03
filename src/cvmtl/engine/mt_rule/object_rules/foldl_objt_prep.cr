@@ -17,6 +17,8 @@ module MT::Rules
         prep.fix_val!
         pos |= MtlPos::AtTail
       end
+    when .prep_rang?
+      fix_prep_rang_val!(prep, objt)
     else
       prep.fix_val!
       pos |= MtlPos::AtTail if prep.at_tail?
@@ -33,5 +35,16 @@ module MT::Rules
     end
 
     expr
+  end
+
+  def fix_prep_rang_val!(prep : MonoNode, objt : MtNode) : Nil
+    case
+    when prep.prev? { |x| x.advb_words? || x.maybe_auxi? }
+      prep.val = "để cho"
+    when objt.succ?(&.verbal_words?)
+      prep.val = "làm cho"
+    else
+      prep.val = "khiến cho"
+    end
   end
 end

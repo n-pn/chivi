@@ -1,12 +1,15 @@
 module MT::Rules
   def fixr_mixedpos!(head : MonoNode, prev = head.prev, succ = head.succ)
     case head
+    when .hao_word?   then fix_hao_word!(head, succ)
     when .maybe_verb? then fixr_maybe_verb!(head, prev, succ)
     else                   head
     end
   end
 
   def fixr_maybe_verb!(head, prev, succ)
+    # puts [head, prev, succ]
+
     case maybe_verb_tag(head, prev, succ)
     when .nil?          then head
     when .all_nouns?    then head.as_noun!
