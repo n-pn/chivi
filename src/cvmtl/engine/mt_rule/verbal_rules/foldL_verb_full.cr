@@ -25,7 +25,7 @@ module MT::Rules
     when .verbal_words?, .adjt_words?
       return verb unless verb.v_shi?
     when .prep_form?
-      return join_prep_form!(verb, prev)
+      return foldl_verb_prep!(verb, prev)
     else
       # TODO: add more cases
       # - adjt as subject
@@ -41,7 +41,7 @@ module MT::Rules
     # FIXME: add more logic
     case pronoun
     when .pron_zhe?
-      pronoun.val = "cái này"
+      pronoun.val = succ.v_shi? ? "đây" : "cái này"
     when .pron_na1?
       pronoun.val = "vậy"
     end

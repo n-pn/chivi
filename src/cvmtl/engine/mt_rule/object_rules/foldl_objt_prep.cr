@@ -7,7 +7,10 @@ module MT::Rules
     when .prep_bi3?
       prep.val = prep.prev?(&.adv_bu4?) ? "bằng" : "hơn"
       pos |= MtlPos::AtTail
-    when .prep_ling?, .prep_gei3?
+    when .prep_gei3?
+      prep.val = "cho" if prep.prev?(&.unreal?.!)
+      pos |= MtlPos::AtTail if objt.humankind?
+    when .prep_ling?
       prep.val = "làm" if prep.prev?(&.unreal?.!)
     when .prep_zai?, .prep_cong?
       if objt.all_times? || objt.spaceword?

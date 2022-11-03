@@ -8,7 +8,7 @@ module MT::Rules
     case head
     when .preposes?
       head = foldl_objt_prep!(objt: objt, prep: head.as(MonoNode))
-      join_prep_form!(tail: adjt, prep_form: head.as(PairNode))
+      foldl_verb_prep!(tail: adjt, prep_form: head.as(PairNode))
     else
       return adjt if tail.ptcl_dev? || tail.ptcl_deps?
       PairNode.new(objt, adjt, tag, pos)

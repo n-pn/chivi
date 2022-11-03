@@ -45,6 +45,6 @@ module MT::Rules
     return verb unless prev.all_times?
 
     advb = foldl_time_full!(prev)
-    advb.prep_form? ? join_prep_form!(verb, prep_form: advb) : verb.tap(&.add_advb(advb))
+    advb.prep_form? ? foldl_verb_prep!(verb, prep_form: advb) : verb.tap(&.add_advb(advb))
   end
 end

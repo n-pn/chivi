@@ -8,7 +8,7 @@ module MT::Rules
     when VerbExpr
       VerbPair.new(head, verb)
     when .prep_form?
-      join_prep_form!(verb, prep_form: head)
+      foldl_verb_prep!(verb, prep_form: head)
     when .all_nouns?
       SubjPred.new(head, verb, tag: MtlTag::SubjVerb)
     else
