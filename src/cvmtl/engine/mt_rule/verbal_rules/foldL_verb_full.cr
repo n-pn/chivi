@@ -19,6 +19,7 @@ module MT::Rules
     when .quantis?, .dem_prons?
       # FIXME: check pass verb object
       return verb if verb.common_verbs? && verb.succ.tag.ptcl_dep?
+      fix_pronoun_val!(prev, verb) if prev.dem_prons?
     when .all_nouns?, .all_prons?
       # OK
     when .verbal_words?, .adjt_words?
@@ -32,6 +33,18 @@ module MT::Rules
     end
 
     SubjPred.new(prev, verb, tag: MtlTag::SubjVerb)
+  end
+
+  def fix_pronoun_val!(pronoun : MtNode, succ = node.succ)
+    return unless pronoun.is_a?(MonoNode)
+
+    # FIXME: add more logic
+    case pronoun
+    when .pron_zhe?
+      pronoun.val = "cái này"
+    when .pron_na1?
+      pronoun.val = "vậy"
+    end
   end
 
   def fix_aspcmpl_val!(verb : MtNode) : Nil

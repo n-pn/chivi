@@ -7,4 +7,11 @@ class MT::NounPair < MT::PairNode
                  flip = true)
     super(head, tail, tag: tag, pos: pos, flip: flip)
   end
+
+  def detach!
+    @head.fix_prev!(@prev)
+    @tail.fix_succ!(@succ)
+    @prev = @succ = nil
+    {head, @tail}
+  end
 end

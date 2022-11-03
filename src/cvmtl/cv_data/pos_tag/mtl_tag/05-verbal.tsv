@@ -15,6 +15,7 @@ Vcmp	CanBePred	# verbs using for comparision
 Vexi	CanBePred	# existential verbs
 Vcau	CanBePred	# causative verbs
 
+VDao	CanBePred, MaybeCmpl, Vlinking
 Vdir	CanBePred, MaybeCmpl	# directional verb
 
 Vpsy	CanBePred, MaybeAuxi	# psychological verb

@@ -101,7 +101,7 @@ enum MT::MtlTag : UInt32
 
   # is not proper nouns
   def common_nouns?
-    self >= Honor && self <= OrgSf
+    self >= Noun && self <= OrgSf
   end
 
   # noun is objects

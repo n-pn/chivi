@@ -19,6 +19,16 @@ module MT::Rules
       pos |= MtlPos::AtTail if prep.at_tail?
     end
 
-    PairNode.new(prep, objt, tag, pos, flip: false)
+    return PairNode.new(prep, objt, tag, pos, flip: false) if objt.succ?(&.verbal_words?)
+
+    expr = VerbExpr.new(prep.as_verb!)
+    expr.add_objt(objt)
+
+    while prev = expr.prev?
+      break unless prev.advb_words? || prev.maybe_advb?
+      expr.add_advb(prev)
+    end
+
+    expr
   end
 end

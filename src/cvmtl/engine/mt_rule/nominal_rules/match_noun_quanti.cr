@@ -2,18 +2,6 @@ module MT::Rules
   # check if noun can fold with left node
   # all assume that after noun is ptcl_dep
 
-  def match_noun_prepos?(noun : MtNode, prepos : MtNode, tail : MtNode, after_is_verb = false)
-    return false if noun.nattr? || noun.brand_name?
-
-    case prepos
-    when .prep_zai?
-      return false if tail.spaceword? || tail.timeword?
-      return true if noun.spaceword? || noun.timeword?
-    end
-
-    !after_is_verb
-  end
-
   def match_noun_quanti?(noun : MtNode, quanti : MtNode)
     # puts [noun, quanti, "match noun quanti"]
     return !(noun.nattr? || noun.nabst?) if quanti.numbers?

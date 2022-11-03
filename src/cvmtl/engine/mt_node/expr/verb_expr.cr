@@ -26,6 +26,8 @@ class MT::VerbExpr < MT::MtNode
   def add_advb(advb : MtNode)
     add_head(advb)
 
+    fix_advb_val!(advb) if advb.is_a?(MonoNode)
+
     tag = MtlTag::Adform
     pos = advb.pos
 
@@ -42,20 +44,28 @@ class MT::VerbExpr < MT::MtNode
     end
   end
 
+  def fix_advb_val!(advb : MonoNode)
+    case advb
+    when .maybe_advb? then advb.fix_val!
+      # when .adv_mei?
+      # FIXME:
+    end
+  end
+
   def add_prep(prep : MtNode)
     add_head(prep)
+
     tag, pos = PosTag.make(:prep_form)
 
     if prep.at_tail?
-      if node = @tl_prep
-        @tl_prep = PairNode.new(prep, node, tag, pos | node.pos, flip: true)
-      else
-        @tl_prep = prep
-      end
-    elsif node = @hd_prep
-      @hd_prep = PairNode.new(prep, node, tag, pos | node.pos, flip: false)
+      @tl_prep = @tl_prep.try { |x| PairNode.new(prep, x, tag, pos | x.pos, flip: true) } || prep
     else
-      @hd_prep = prep
+      @hd_prep = @hd_prep.try { |x| PairNode.new(prep, x, tag, pos | x.pos, flip: false) } || prep
+
+      if hd_advb = @hd_advb
+        @verb = PairNode.new(hd_advb, verb)
+        @hd_advb = nil
+      end
     end
   end
 

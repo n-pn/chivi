@@ -4,7 +4,8 @@ module MT::Rules
     prev = noun.prev
 
     if prev.ptcl_dep?
-      noun = foldl_objt_udep!(objt: noun, udep: prev)
+      return noun if !(head = prev.prev?) || head.punctuations?
+      noun = foldl_objt_udep!(objt: noun, udep: prev, head: head)
       prev = noun.prev
     end
 

@@ -1,11 +1,12 @@
 module MT::Rules
-  def foldl_udep_base!(udep : MtNode)
+  def foldl_udep_base!(udep : MtNode, head = udep.head)
     raise "udep should be MonoNode" unless udep.is_a?(MonoNode)
+
+    head = foldl_once!(head)
+    return udep if head.unreal?
 
     tag = MtlTag::DcPhrase
     pos = MtlPos::AtTail
-
-    head = foldl_once!(udep.prev)
 
     if head.ktetic?
       udep.val = "của"
