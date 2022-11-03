@@ -20,6 +20,7 @@ module MT::Rules
       end
 
       tag, pos, flip = noun_pairing_type(noun, prev)
+
       noun = PairNode.new(prev, noun, tag, pos, flip: flip)
     end
 
@@ -32,7 +33,7 @@ module MT::Rules
       tag, pos = PosTag.make(:posit)
       {tag, pos, true}
     when .nattr?
-      {noun.tag, noun.pos, prev.nattr?}
+      {noun.tag, noun.pos, true}
     else
       other_pairing_type(noun, prev)
     end
@@ -40,12 +41,12 @@ module MT::Rules
 
   private def other_pairing_type(noun : MtNode, prev : MtNode)
     flip = prev.posit? || prev.nattr? || should_flip_noun?(prev.prev?, noun.succ?)
-    {noun.tag, noun.pos, flip}
+    {noun.tag, noun.pos | prev.pos, flip}
   end
 
   private def should_flip_noun?(prev, succ)
     return true unless succ && prev && prev.verbal_words?
     return false if prev.vtwo?
-    succ.verbal_words?
+    !succ.verbal_words?
   end
 end

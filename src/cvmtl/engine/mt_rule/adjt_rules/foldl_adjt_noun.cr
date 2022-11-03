@@ -14,7 +14,8 @@ module MT::Rules
       PairNode.new(head, adjt, tag, pos)
     when .preposes?
       head = foldl_objt_prep!(objt: noun, prep: head.as(MonoNode))
-      foldl_verb_prep!(tail: adjt, prep_form: head.as(PairNode))
+      return adjt unless head.is_a?(PairNode)
+      foldl_verb_prep!(tail: adjt, prep_form: head)
     else
       return adjt unless tail.ptcl_dev? || tail.ptcl_deps?
       PairNode.new(noun, adjt, tag, pos)

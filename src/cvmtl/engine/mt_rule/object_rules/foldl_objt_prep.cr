@@ -12,11 +12,11 @@ module MT::Rules
       pos |= MtlPos::AtTail if objt.humankind?
     when .prep_ling?
       prep.val = "làm" if prep.prev?(&.unreal?.!)
-    when .prep_zai?, .prep_cong?
-      if objt.all_times? || objt.spaceword?
-        prep.fix_val!
-        pos |= MtlPos::AtTail
-      end
+    when .prep_zai?
+      pos = fix_prep_zai!(prep, objt, pos)
+    when .prep_cong?
+      prep.fix_val!
+      pos |= MtlPos::AtTail
     when .prep_rang?
       fix_prep_rang_val!(prep, objt)
     else
@@ -24,8 +24,14 @@ module MT::Rules
       pos |= MtlPos::AtTail if prep.at_tail?
     end
 
-    return PairNode.new(prep, objt, tag, pos, flip: false) if objt.succ?(&.verbal_words?)
+    if objt.succ? { |x| x.verbal_words? || x.adjt_words? }
+      PairNode.new(prep, objt, tag, pos, flip: false)
+    else
+      foldl_prep_as_verb!(prep, objt)
+    end
+  end
 
+  def foldl_prep_as_verb!(prep : MonoNode, objt : MtNode)
     expr = VerbExpr.new(prep.as_verb!)
     expr.add_objt(objt)
 
@@ -35,6 +41,15 @@ module MT::Rules
     end
 
     expr
+  end
+
+  def fix_prep_zai!(prep : MonoNode, objt : MtNode, pos : MtlPos) : MtlPos
+    return pos unless objt.succ?(&.verbal_words?)
+
+    prep.fix_val!
+    pos |= MtlPos::AtTail if objt.all_times? || objt.spaceword?
+
+    pos
   end
 
   def fix_prep_rang_val!(prep : MonoNode, objt : MtNode) : Nil
