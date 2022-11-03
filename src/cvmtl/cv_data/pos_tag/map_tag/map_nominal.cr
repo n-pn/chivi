@@ -66,9 +66,7 @@ module MT::PosTag
 
       char = key[-1]
       # skipp common suffixes `子`, `儿`
-      if key.size > 1 && (char == '子' || char == '儿')
-        char = key[-2]
-      end
+      char = key[-2] if key.size > 1 && char.in?('子', '儿')
 
       case char
       when '剑', '刀', '枪'

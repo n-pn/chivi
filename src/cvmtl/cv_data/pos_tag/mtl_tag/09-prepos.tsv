@@ -14,8 +14,8 @@ PrepJiang	Unreal	"将"
 PrepHe2	Unreal	"和"
 PrepYu3	Unreal	"与"
 
-PrepTong	Unreal	"同"
-PrepGen1	Unreal	"跟"
+PrepTong	Unreal, AtTail	"同"
+PrepGen1	Unreal, AtTail	"跟"
 
 PrepRang	Unreal	"让"
 

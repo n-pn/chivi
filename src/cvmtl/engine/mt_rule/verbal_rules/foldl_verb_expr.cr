@@ -8,18 +8,14 @@ module MT::Rules
 
     # join verb with adverbs
     while prev = verb.prev
-      case prev
-      when .maybe_advb?
-        if prev.is_a?(MonoNode)
-          prev.fix_val!
-        else
-          Log.error { prev.inspect }
-        end
-      else
-        break unless prev.advb_words?
-      end
+      # TODO: handle when adjt is not advb
 
-      verb.add_advb(prev)
+      case prev
+      when .adjt_words?, .maybe_adjt?, .advb_words?
+        verb.add_advb(prev)
+      else
+        break
+      end
     end
 
     if prev.qtverb?

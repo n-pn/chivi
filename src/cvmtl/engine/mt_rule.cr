@@ -20,6 +20,7 @@ module MT::Rules
     when .verbal_words? then foldr_verb_base!(node)
     when .name_words?   then foldr_name_base!(node)
     when .maybe_cmpl?   then fixr_not_cmpl!(node)
+    when .ptcl_dev?     then fixr_ptcl_dev!(node)
     when .cenum?        then node.tap(&.val = ",")
       # when .maybe_quanti? then as_not_quanti!(node)
     else node

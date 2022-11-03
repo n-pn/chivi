@@ -94,8 +94,36 @@ class Dict
     add_fixed("#{FIX_DIR}/suffixes.tsv")
     add_fixed("#{FIX_DIR}/fixtures.tsv")
   end
+
+  record Data, id : Int32, val : String do
+    include DB::Serializable
+
+    def inspect(io : IO)
+      io << val
+    end
+  end
+
+  def fix_once!
+    MT::DbRepo.open_db(@type) do |db|
+      query = <<-SQL
+        select id, val from terms where ptag = 'Ns';
+      SQL
+
+      entries = db.query_all(query, as: Data)
+      entries.select! { |x| x.val == x.val.downcase }
+
+      db.exec "begin transaction"
+      entries.each do |x|
+        db.exec "update terms set ptag = 's' where id = ?", args: [x.id]
+      end
+
+      db.exec "commit"
+    end
+  end
 end
 
 dict = Dict.new("core")
 dict.fix_ptags
 dict.add_fixes
+
+# dict.fix_once!

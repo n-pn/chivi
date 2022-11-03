@@ -18,7 +18,9 @@ module MT::Rules
       return noun
     end
 
-    return noun unless match_noun_quanti?(noun, quanti: prev)
+    # puts [noun, prev, "noun_expr"]
+
+    return noun if noun.succ.ptcl_dep? && !match_noun_quanti?(noun, quanti: prev)
     fix_quanti_val!(quanti: prev, nominal: noun) unless prev.numbers?
 
     noun = NounExpr.new(noun) unless noun.is_a?(NounExpr)

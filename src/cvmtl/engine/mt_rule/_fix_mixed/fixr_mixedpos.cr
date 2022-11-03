@@ -5,7 +5,15 @@ module MT::Rules
     end
 
     case head
-    when .hao_word?     then fix_hao_word!(head, succ)
+    when .hao_word?             then fix_hao_word!(head, succ: succ)
+    when .loc_shang?, .loc_xia? then fixr_shangxia!(head, succ: succ, prev: prev)
+    when .polysemy?             then fixr_polysemy!(head, prev: prev, succ: succ)
+    else                             head
+    end
+  end
+
+  def fixr_polysemy!(head : MonoNode, prev : MtNode, succ : MtNode) : MonoNode
+    case head
     when .adjt_or_verb? then fixr_adjt_or_verb!(head, prev, succ)
     when .adjt_or_advb? then fixr_adjt_or_advb!(head, prev, succ)
     when .adjt_or_noun? then fixr_adjt_or_noun!(head, prev, succ)
@@ -71,7 +79,7 @@ module MT::Rules
   def fixr_verb_or_advb!(head : MonoNode, prev : MtNode, succ : MtNode) : MonoNode
     case succ
     when .maybe_advb?
-      head
+      prev.ptcl_dev? ? head.as_verb! : head
     when .verbal_words?, .preposes?, .advb_words?, .adjt_words?
       head.as_advb!(head.alt)
     else
@@ -88,7 +96,7 @@ module MT::Rules
     end
 
     case prev
-    when .advb_words?, .maybe_auxi?
+    when .advb_words?, .maybe_auxi?, .ptcl_dev?
       return head.as_verb!
     end
 

@@ -14,9 +14,6 @@ module MT::Rules
       prep.val = "làm" if prep.prev?(&.unreal?.!)
     when .prep_zai?
       pos = fix_prep_zai!(prep, objt, pos)
-    when .prep_cong?
-      prep.fix_val!
-      pos |= MtlPos::AtTail
     when .prep_rang?
       fix_prep_rang_val!(prep, objt)
     else

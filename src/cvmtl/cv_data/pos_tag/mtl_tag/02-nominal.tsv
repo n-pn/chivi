@@ -41,8 +41,8 @@ OrgSf	Spaceword, Ktetic, Object	# combine with prev noun to organization
 Posit	Spaceword, Object	# place + locat
 Locat	Spaceword, Object	# can act as place
 
-LocShang	Spaceword, Object, MaybeCmpl	# "上"
-LocXia	Spaceword, Object, MaybeCmpl	# "下"
+LocShang	Spaceword, Object, MaybeCmpl, Mixedpos	# "上"
+LocXia	Spaceword, Object, MaybeCmpl, Mixedpos	# "下"
 LocZhong	Spaceword, Object, MaybeCmpl	# "中"
 
 LocQian	Spaceword, Object	# "前"
