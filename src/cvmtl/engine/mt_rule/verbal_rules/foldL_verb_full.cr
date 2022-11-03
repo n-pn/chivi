@@ -54,7 +54,15 @@ module MT::Rules
       tail = verb.tail
 
       if tail.aspect_marker?
-        return tail.as(MonoNode).skipover!
+        tail = tail.as(MonoNode)
+
+        if tail.ptcl_le?
+          tail.skipover!
+        elsif tail.ptcl_zhe?
+          tail.skipover!
+        end
+
+        return
       else
         verb = verb.head
       end
