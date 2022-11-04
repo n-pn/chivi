@@ -14,16 +14,13 @@ CREATE TABLE IF NOT EXISTS terms (
 
 CREATE INDEX IF NOT EXISTS terms_scan_idx ON terms (dic, flag);
 
-CREATE INDEX IF NOT EXISTS terms_time_idx ON terms (time, dic);
-
-CREATE INDEX IF NOT EXISTS terms_user_idx ON terms (user);
-
-CREATE INDEX IF NOT EXISTS terms_key_idx ON terms (key, dic);
-
-CREATE INDEX IF NOT EXISTS terms_val_idx ON terms (val);
-
-CREATE INDEX IF NOT EXISTS terms_alt_idx ON terms (alt);
+CREATE INDEX IF NOT EXISTS terms_key_idx ON terms ('key', dic);
 
 CREATE INDEX IF NOT EXISTS terms_tag_idx ON terms (ptag, dic);
 
-CREATE INDEX IF NOT EXISTS terms_seg_idx ON terms (wseg);
+-- removed
+-- CREATE INDEX IF NOT EXISTS terms_user_idx ON terms ('user');
+-- CREATE INDEX IF NOT EXISTS terms_time_idx ON terms (time, dic);
+-- CREATE INDEX IF NOT EXISTS terms_val_idx ON terms (val);
+-- CREATE INDEX IF NOT EXISTS terms_alt_idx ON terms (alt);
+-- CREATE INDEX IF NOT EXISTS terms_seg_idx ON terms (wseg);

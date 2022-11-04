@@ -12,8 +12,7 @@ CREATE TABLE IF NOT EXISTS dicts (
 
 CREATE UNIQUE INDEX IF NOT EXISTS dicts_name_idx ON dicts (name);
 
-CREATE INDEX IF NOT EXISTS dicts_type_idx ON dicts (type);
-
-CREATE INDEX IF NOT EXISTS dicts_size_idx ON dicts (term_total);
-
 CREATE INDEX IF NOT EXISTS dicts_time_idx ON dicts (last_mtime);
+
+-- CREATE INDEX IF NOT EXISTS dicts_size_idx ON dicts (term_total);
+-- CREATE INDEX IF NOT EXISTS dicts_type_idx ON dicts (type);

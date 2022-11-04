@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e pipefail
 
 SSH=nipin@ssh.chivi.app:srv/chivi
 
@@ -41,6 +41,5 @@ then
   rsync -azi "var/cvmtl/fixed" "$SSH/var/cvmtl"
   rsync -azi "var/dicts/core.dic" "$SSH/var/dicts"
   rsync -azi "var/dicts/book.dic" "$SSH/var/dicts"
-  rsync -azi "var/dicts/user.dic" "$SSH/var/dicts"
   rsync -azi "var/dicts/pack.dic" "$SSH/var/dicts"
 fi
