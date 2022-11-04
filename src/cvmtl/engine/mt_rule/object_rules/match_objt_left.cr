@@ -15,6 +15,8 @@ module MT::Rules
   end
 
   def match_objt_verbal?(objt : MtNode, verbal : MtNode, tail : MtNode, after_is_verb = false)
+    return false if objt.spaceword?
+
     return true if (verbal.vlinking? || verbal.modal_verbs?) && after_is_verb
     prev = verbal.prev
 

@@ -122,8 +122,8 @@ class Dict
   end
 end
 
-dict = Dict.new("core")
-dict.fix_ptags
-dict.add_fixes
+# dict = Dict.new("core")
+# dict.fix_ptags
+# dict.add_fixes
 
 # dict.fix_once!
