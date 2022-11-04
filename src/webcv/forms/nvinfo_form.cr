@@ -1,40 +1,24 @@
-require "../../_init/books/book_info"
+require "../../zhlib/models/zh_book"
 
 class CV::NvinfoForm
   getter params : Amber::Validators::Params
-  getter errors : String = ""
-  getter nvinfo : Nvinfo
 
-  @user_log : BookInfo
-  @base_log : BookInfo
-
-  LOG_DIR = "var/books/infos"
-
-  def get_param(param_name : String)
-    return unless value = params[param_name]?
-    value = TextUtil.fix_spaces(value).strip
-    value unless value.empty?
-  end
+  getter vi_book : Nvinfo
+  getter zh_user : ZH::ZhBook
+  getter zh_base : ZH::ZhBook
 
   def initialize(@params, @uname = "users")
     btitle_zh = get_param("btitle_zh").not_nil!
     author_zh = get_param("author_zh").not_nil!
-    @nvinfo = init!(btitle_zh, author_zh)
 
-    @user_log = book_info_log(@uname, nvinfo.id.to_i, btitle_zh, author_zh)
-    @base_log = book_info_log("=base", nvinfo.id.to_i, btitle_zh, author_zh)
+    @vi_book = init_vi_book!(btitle_zh, author_zh)
+    @book_id = @vi_book.id.to_i
+
+    @zh_user = init_zh_book(@uname, @book_id, btitle_zh, author_zh)
+    @zh_base = init_zh_book("=base", @book_id, btitle_zh, author_zh)
   end
 
-  def book_info_log(sname : String, s_bid : Int32, btitle : String, author : String)
-    info = BookInfo.new("#{LOG_DIR}/#{sname}/#{s_bid}.tsv")
-
-    info.set_btitle(btitle)
-    info.set_author(author)
-
-    info
-  end
-
-  def init!(btitle_zh : String, author_zh : String) : Nvinfo
+  def init_vi_book!(btitle_zh : String, author_zh : String) : Nvinfo
     btitle_zh, author_zh = BookUtil.fix_names(btitle_zh, author_zh)
 
     author = get_author(author_zh)
@@ -43,70 +27,84 @@ class CV::NvinfoForm
     Nvinfo.upsert!(author, btitle, fix_names: true)
   end
 
-  def get_author(author_zh : String)
+  private def get_author(author_zh : String)
     author_vi = get_param("author_vi")
     BookUtil.vi_authors.append!(author_zh, author_vi) if author_vi
     Author.upsert!(author_zh, author_vi)
   end
 
-  def get_btitle(btitle_zh : String)
+  private def get_btitle(btitle_zh : String)
     btitle_vi = get_param("btitle_vi")
     BookUtil.vi_btitles.append!(btitle_zh, btitle_vi) if btitle_vi
     Btitle.upsert!(btitle_zh, btitle_vi)
   end
 
-  def save_bintro(bintro = get_param("bintro"))
+  def init_zh_book(sname : String, s_bid : Int32, btitle : String, author : String)
+    ZH::ZhBook.find_or_init(sname, s_bid).tap do |x|
+      x.btitle = btitle
+      x.author = author
+    end
+  end
+
+  def add_bintro(bintro : String?)
     return unless bintro
     bintro = TextUtil.split_html(bintro, true)
 
-    @user_log.set_bintro(bintro)
-    @base_log.set_bintro(bintro)
+    ZH::ZhBook.add_intro(@uname, @book_id, bintro.join("\n"))
+    ZH::ZhBook.add_intro("=base", @book_id, bintro.join("\n"))
 
-    nvinfo.set_bintro(bintro, force: true)
+    @vi_book.set_bintro(bintro, force: true)
   end
 
-  def save_genres(genres = get_param("genres"))
+  def add_genres(genres : String?)
     return unless genres
 
     vi_genres = genres.split(",").map!(&.strip)
     zh_genres = GenreMap.vi_to_zh(vi_genres)
 
-    @user_log.set_genres(zh_genres)
-    @base_log.set_genres(zh_genres)
+    @zh_user.genres = zh_genres.join("\n")
+    @zh_base.genres = zh_genres.join("\n")
 
-    @nvinfo.vgenres = vi_genres
-    @nvinfo.igenres = GenreMap.map_int(vi_genres)
+    @vi_book.vgenres = vi_genres
+    @vi_book.igenres = GenreMap.map_int(vi_genres)
   end
 
-  def save_bcover(bcover = get_param("bcover"))
-    return unless bcover
-    bcover = TextUtil.fix_spaces(bcover).strip
+  def add_bcover(bcover : String?)
+    return if !bcover || bcover.blank?
 
-    @user_log.set_bcover(bcover)
-    @base_log.set_bcover(bcover)
+    @zh_user.genres = bcover
+    @zh_base.genres = bcover
 
-    @nvinfo.set_bcover(bcover, force: true)
+    @vi_book.set_bcover(bcover, force: true)
   end
 
-  def save_status(status = get_param("status"))
+  def add_status(status : Int32?)
     return unless status
-    status = TextUtil.fix_spaces(status).strip.to_i
 
-    @user_log.set_status(status)
-    @base_log.set_status(status)
+    @zh_user.status = status
+    @zh_base.status = status
 
-    @nvinfo.set_status(status, force: true)
+    @vi_book.set_status(status, force: true)
   end
 
-  def save(uname = "users") : Nvinfo?
-    save_bintro
-    save_genres
-    save_bcover
-    save_status
+  private def get_param(param_name : String)
+    return unless value = params[param_name]?
+    value = TextUtil.fix_spaces(value).strip
+    value unless value.empty?
+  end
 
-    @nvinfo.tap(&.save!)
-  rescue err
-    @errors = err.message || "Unknown error"
-    nil
+  def save : Nvinfo?
+    self.add_bintro(get_param("bintro"))
+    self.add_genres(get_param("genres"))
+    self.add_bcover(get_param("bcover"))
+    self.add_status(get_param("status").try(&.to_i?))
+
+    ZH::ZhBook.save!(@uname, @zh_user)
+    ZH::ZhBook.save!("=base", @zh_base)
+
+    # TODO: wite text log
+    # File.append("var/.keep/web_log/books-upsert.tsv", @params.to_json)
+
+    @vi_book.tap(&.save!)
   end
 end

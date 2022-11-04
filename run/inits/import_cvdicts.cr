@@ -220,8 +220,8 @@ class Dict
         holder = Array.new(fields.size, "?").join(", ")
 
         db.exec <<-SQL, args: values
-        replace into terms (#{fields.join(", ")}) values (#{holder})
-      SQL
+          replace into terms (#{fields.join(", ")}) values (#{holder})
+        SQL
       end
 
       db.exec "commit"

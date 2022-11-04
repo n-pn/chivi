@@ -115,25 +115,20 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   end
 
   def upsert
-    if _viuser.privi < 2
-      raise Unauthorized.new("Cần quyền hạn tối thiểu là 2")
+    raise Unauthorized.new("Cần quyền hạn tối thiểu là 2") if _viuser.privi < 2
+
+    nvinfo = NvinfoForm.new(params, "@" + _viuser.uname).save
+    Nvinfo.cache!(nvinfo)
+
+    spawn do
+      `bin/bcover_cli single -i "#{nvinfo.scover}" -n #{nvinfo.bcover}`
+      body = params.to_unsafe_h.tap(&.delete("_json"))
+      CtrlUtil.log_user_action("nvinfo-upsert", body, _viuser.uname)
     end
 
-    form = NvinfoForm.new(params, "@" + _viuser.uname)
-
-    if nvinfo = form.save
-      Nvinfo.cache!(nvinfo)
-
-      spawn do
-        `bin/bcover_cli single -i "#{nvinfo.scover}" -n #{nvinfo.bcover}`
-        body = params.to_unsafe_h.tap(&.delete("_json"))
-        CtrlUtil.log_user_action("nvinfo-upsert", body, _viuser.uname)
-      end
-
-      serv_json({bslug: nvinfo.bslug})
-    else
-      serv_text(form.errors, 400)
-    end
+    serv_json({bslug: nvinfo.bslug})
+  rescue err
+    serv_text(err.message, 400)
   end
 
   def delete

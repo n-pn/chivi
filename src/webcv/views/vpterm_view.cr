@@ -1,5 +1,5 @@
 require "json"
-require "../../cvmtl/*"
+require "../../oldmt/*"
 
 struct CV::VpTermView
   DIR = "var/vhint/detect"
@@ -119,7 +119,7 @@ struct CV::VpTermView
         @first_tag = "Nr" if @vdict.kind.novel? || !@first_tag
       end
 
-      if TlName.is_cap_affil?(@word)
+      if TlName.is_affil?(@word)
         @tag_hints << "Na"
         @first_tag ||= "Na" if @vdict.kind.novel? || !@first_tag
       end

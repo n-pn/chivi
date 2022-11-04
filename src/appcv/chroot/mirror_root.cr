@@ -24,7 +24,7 @@ class CV::Chroot
     offset = new_chmin &- chmin
 
     infos.map! do |input|
-      entry = input.dup.tap(&.mark_as_changed)
+      entry = input.dup
       entry.ch_no = input.ch_no! &+ offset
       entry
     end

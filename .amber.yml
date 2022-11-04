@@ -17,6 +17,7 @@ watch:
       - ./src/**/*.cr
     exclude:
       - ./src/cvmtl/**/*.cr
+      - ./src/oldmt/**/*.cr
       - ./src/ysapp/**/*.cr
 
   spec:

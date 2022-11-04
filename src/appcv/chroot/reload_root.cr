@@ -84,7 +84,7 @@ class CV::Chroot
           utimes[ch_no] = entry.utime
         end
 
-        entry.dup.tap(&.mark_as_changed)
+        entry.dup
       end
 
       next unless last = infos.last?
