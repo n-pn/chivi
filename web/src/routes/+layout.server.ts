@@ -1,5 +1,6 @@
-export async function load({ locals }) {
+export async function load({ locals, cookies }) {
   return {
-    _user: locals._user as App.Session,
+    theme: cookies.get('theme') || 'light',
+    _user: locals._user as App.CurrentUser,
   }
 }

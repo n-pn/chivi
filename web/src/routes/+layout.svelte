@@ -14,13 +14,12 @@
   import Pledge from '$gui/global/Pledge.svelte'
   import Footer from '$gui/global/Footer.svelte'
 
-  $: session = $page.data._user || { wtheme: 'white' }
-
   onMount(() => {
-    if (!$config.wtheme) config.put('wtheme', session.wtheme || 'light')
+    if (!$config.wtheme) config.put('wtheme', wtheme)
   })
 
-  $: wtheme = (browser ? $config.wtheme : session.wtheme) || 'light'
+  $: wtheme = $page.data.theme || 'white'
+  $: if (browser) wtheme = $config.wtheme
 
   let kbd_hint = false
 

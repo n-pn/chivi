@@ -17,8 +17,12 @@ export async function load({ fetch, parent }) {
 
   const crits = await load_crits(nvinfo.id, fetch)
 
-  const _meta = {
+  const _meta: App.PageMeta = {
     title: `${nvinfo.btitle_vi}`,
+    left_nav: [
+      // prettier-ignore
+      { text: nvinfo.btitle_vi, icon: 'book', href: `/-${nvinfo.bslug}`, "data-show": 'tm', "data-kind": 'title' },
+    ],
   }
 
   return { ...payload.props, crits, _meta }

@@ -3,6 +3,9 @@ class CV::UsercpCtrl < CV::BaseCtrl
     set_cache :private, maxage: 3
     _viuser.check_privi! unless _viuser.privi < 0
 
+    tokens = `bin/cvjwt_cli e "#{_viuser.uname}" #{_viuser.privi}`.split("\n")
+    cookies["cv_at"], cookies["cv_rt"] = tokens
+
     serv_json(ViuserView.new(_viuser))
   end
 
@@ -21,6 +24,10 @@ class CV::UsercpCtrl < CV::BaseCtrl
       sn_id = _viuser.id * 2 + 20
       ChSeed.add_user(sname, sn_id)
     end
+
+    tokens = `bin/cvjwt_cli e "#{_viuser.uname}" #{_viuser.privi}`.split("\n")
+    cookies["cv_at"], cookies["cv_rt"] = tokens
+    save_session!
 
     serv_json(ViuserView.new(_viuser))
   rescue err
@@ -77,6 +84,9 @@ class CV::UsercpCtrl < CV::BaseCtrl
   def update_config
     if _viuser.privi >= 0
       wtheme = params.read_str("wtheme", "light")
+      cookies["theme"] = wtheme
+      save_session!
+
       _viuser.update!({wtheme: wtheme})
     end
 

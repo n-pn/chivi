@@ -1,7 +1,21 @@
 class CV::BaseCtrl < Amber::Controller::Base
   LAYOUT = false
 
-  protected getter u_dname : String { session["uname"]? || "Khách" }
+  protected getter u_dname : String do
+    token = cookies["cv_rt"]
+    `bin/cvjwt_cli dr "#{token}"`.strip
+  rescue
+    "Khách"
+  end
+
+  protected getter u_privi : Int32 do
+    token = cookies["cv_at"]
+    _user, privi = `bin/cvjwt_cli da "#{token}"`
+    privi.to_i
+  rescue
+    -1
+  end
+
   protected getter _viuser : Viuser { Viuser.load!(u_dname) }
 
   enum CacheType
@@ -34,7 +48,7 @@ class CV::BaseCtrl < Amber::Controller::Base
   end
 
   def save_session!
-    return unless session.changed?
+    # return unless session.changed?
     session.set_session
     cookies.write(response.headers)
   end

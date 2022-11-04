@@ -41,7 +41,12 @@ class CV::SigninCtrl < CV::BaseCtrl
 
   private def login_user!(user : Viuser)
     @_viuser = user
+
+    tokens = `bin/cvjwt_cli e "#{user.uname}" #{user.privi}`.split("\n")
+    cookies["cv_at"], cookies["cv_rt"] = tokens
+    cookies["theme"] = user.wtheme
     session["uname"] = user.uname
+
     save_session!
     serv_json(ViuserView.new(user))
   end
@@ -60,7 +65,11 @@ class CV::SigninCtrl < CV::BaseCtrl
 
   def logout
     @_viuser = nil
+
+    cookies.delete("cv_at")
+    cookies.delete("cv_rt")
     session.delete("uname")
+
     save_session!
     serv_text("Đã đăng xuất", 201)
   end
