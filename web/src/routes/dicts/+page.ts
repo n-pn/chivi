@@ -17,6 +17,5 @@ export async function load({ fetch, url }) {
     left_nav: [{ text: 'Từ điển', icon: 'package', href: url.pathname }],
   }
 
-  console.log(data)
   return { ...data, _meta }
 }
