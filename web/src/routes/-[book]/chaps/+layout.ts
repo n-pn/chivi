@@ -1,4 +1,4 @@
-export const ssr = false
+// export const ssr = false
 
 import { get_nslist } from '$lib/api'
 import { suggest_read } from '$utils/ubmemo_utils'

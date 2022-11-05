@@ -18,6 +18,7 @@
   $: if (elem) elem.focus()
 
   async function update_wtheme(wtheme: string) {
+    document.cookie = 'theme=' + wtheme
     await fetch('/api/_self/config', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

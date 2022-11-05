@@ -18,14 +18,15 @@ export async function api_call( url: string, method = 'PUT', body?: object, fetc
   }
 
   const res = await fetch(url, options)
-  if (!res.ok) {
-    const message = await res.text()
-    if (res.status >= 400) throw error(res.status, message)
-    else throw redirect(res.status, encodeURI(message))
+
+  if (res.ok) {
+    const type = res.headers.get('Content-Type')
+    return type.includes('application/json') ? await res.json() : await res.text()
   }
 
-  const type = res.headers.get('Content-Type')
-  return type.startsWith('text') ? await res.text() : await res.json()
+  const message = await res.text()
+  if (res.status >= 400) throw error(res.status, message)
+  else throw redirect(res.status, message)
 }
 
 // prettier-ignore

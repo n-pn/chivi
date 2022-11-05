@@ -12,7 +12,12 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, sname, chidx, chvol, title, input } = data)
+  $: ({ nvinfo, sname } = data)
+
+  let chidx = data.chidx
+  let chvol = data.chvol
+  let title = data.title
+  let input = data.input
 
   let form = {
     tosimp: false,
