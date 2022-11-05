@@ -38,7 +38,7 @@
     cvdata = res.cvdata
     chmeta = res.chmeta
     chinfo = res.chinfo
-    $page.data.ubmemo = res.chmemo
+    // $page.data.ubmemo = res.chmemo
     _reloading = false
   }
 
@@ -73,7 +73,7 @@
     const res = await api_put(url, body, fetch)
 
     if (res.error) alert(res.error)
-    else $page.data.ubmemo = res
+    // else $page.data.ubmemo = res
   }
 
   $: [on_memory, memo_icon] = check_memo($page.data.ubmemo)

@@ -23,8 +23,8 @@
     const url = `/api/_self/books/${nvinfo.id}/status`
     const res = await api_call(url, 'PUT', { status })
 
-    if (res.error) alert(res.error)
-    else $page.data.ubmemo = res
+    if (res.error) return alert(res.error)
+    else ubmemo = res
   }
 
   $: color = status_colors[book_status]

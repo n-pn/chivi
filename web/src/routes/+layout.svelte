@@ -13,8 +13,7 @@
   import Pledge from '$gui/global/Pledge.svelte'
   import Footer from '$gui/global/Footer.svelte'
 
-  $: wtheme = $page.data.theme || 'white'
-  $: if (browser) wtheme = $config.wtheme
+  $: wtheme = browser ? $config.wtheme : $page.data.theme || 'white'
 
   let kbd_hint = false
 

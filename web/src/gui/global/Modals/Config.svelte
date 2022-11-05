@@ -1,4 +1,6 @@
 <script context="module" lang="ts">
+  import { page } from '$app/stores'
+
   import { config as data, popups } from '$lib/stores'
   import { ctrl as lookup } from '$gui/parts/Lookup.svelte'
 
@@ -18,7 +20,8 @@
   $: if (elem) elem.focus()
 
   async function update_wtheme(wtheme: string) {
-    document.cookie = 'theme=' + wtheme
+    document.cookie = `theme=${wtheme}; max-age=31536000`
+
     await fetch('/api/_self/config', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
