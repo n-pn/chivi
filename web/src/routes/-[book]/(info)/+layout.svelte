@@ -9,7 +9,7 @@
   import BookTrack from '$gui/parts/BookTrack.svelte'
 
   $: nvinfo = $page.data.nvinfo
-  $: nv_tab = $page.data.nv_tab || gen_nv_tab($page.routeId)
+  $: nv_tab = $page.data.nv_tab || gen_nv_tab($page.route.id || '')
 
   function gen_nv_tab(path: string) {
     if (path.includes('crits')) return 'crits'
