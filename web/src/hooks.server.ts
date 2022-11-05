@@ -25,6 +25,7 @@ export async function handleFetch({ event, fetch, request }) {
 
   const headers = Object.fromEntries(req_headers)
   delete headers.connection
+  headers['accept-encoding'] = '*'
 
   return fetch(url, { method, body, headers })
 }

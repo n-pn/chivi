@@ -11,7 +11,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
-  $: session = $page.data._user
+  import { session } from '$lib/stores'
 
   import { call_api } from '$lib/api_call'
 
@@ -21,7 +21,7 @@
 
   let error = ''
 
-  let privi = session.privi < 3 ? session.privi + 1 : 3
+  let privi = $session.privi < 3 ? $session.privi + 1 : 3
   let tspan = 1
   $: vcoin = costs[privi][tspan]
 
@@ -75,7 +75,7 @@
     <button
       type="submit"
       class="m-btn _success  _fill"
-      disabled={vcoin > session.vcoin_avail}
+      disabled={vcoin > $session.vcoin_avail}
       on:click|preventDefault={submit}>
       <span>Nâng cấp</span>
       <SIcon name="coin" />{vcoin}
