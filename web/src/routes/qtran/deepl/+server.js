@@ -4,7 +4,7 @@ import { error } from '@sveltejs/kit'
 
 const url = 'https://api-free.deepl.com/v2/translate'
 
-export async function POST({ request }) {
+export async function POST({ request, fetch }) {
   const data = await request.json()
 
   const body = new URLSearchParams()
@@ -14,6 +14,11 @@ export async function POST({ request }) {
   body.append('target_lang', 'EN')
 
   const res = await fetch(url, { method: 'POST', body: body })
-  if (res.ok) return (await res.json()).translations[0]
-  else throw error(res.status, await res.text())
+  if (!res.ok) throw error(res.status, await res.text())
+
+  const res_body = (await res.json()).translations[0]
+
+  return new Response(JSON.stringify(res_body), {
+    headers: { 'Content-Type': 'application/json' },
+  })
 }

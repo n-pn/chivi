@@ -5,7 +5,11 @@ export async function POST({ request }) {
   const data = await request.json()
 
   try {
-    return await translate(data.text, 'zh-Hans', data.to, true)
+    const body = await translate(data.text, 'zh-Hans', data.to, true)
+
+    return new Response(JSON.stringify(body), {
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (err) {
     throw error(500, err.toString())
   }

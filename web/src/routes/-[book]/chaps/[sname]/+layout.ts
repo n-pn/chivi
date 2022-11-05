@@ -1,3 +1,5 @@
+export const ssr = false
+
 import { get_nvseed } from '$lib/api'
 
 export async function load({ parent, params, fetch }) {
