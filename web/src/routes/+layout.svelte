@@ -1,7 +1,6 @@
 <script lang="ts">
   import '../styles/generic.scss'
 
-  import { onMount } from 'svelte'
   import { browser } from '$app/environment'
   import { page, navigating } from '$app/stores'
 
@@ -13,10 +12,6 @@
   import Modals from '$gui/global/Modals.svelte'
   import Pledge from '$gui/global/Pledge.svelte'
   import Footer from '$gui/global/Footer.svelte'
-
-  onMount(() => {
-    if (!$config.wtheme) config.put('wtheme', wtheme)
-  })
 
   $: wtheme = $page.data.theme || 'white'
   $: if (browser) wtheme = $config.wtheme
