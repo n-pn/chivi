@@ -1,22 +1,3 @@
-<script context="module" lang="ts">
-  interface PatchForm {
-    chmin: number
-    chmax: number
-    o_sname: string
-    i_chmin: number
-  }
-
-  function init_data(nslist: CV.Nslist, { sname }): [CV.Chroot[], PatchForm] {
-    let seeds = [...nslist.other, ...nslist.users]
-    seeds = seeds.filter((x) => x.sname != sname)
-
-    const { chmax, sname: o_sname } = seeds[0] || { chmax: 0, sname: '' }
-
-    const form = { chmin: 1, i_chmin: 1, chmax: chmax, o_sname }
-    return [seeds, form]
-  }
-</script>
-
 <script lang="ts">
   // import { page } from '$app/stores'
   import { goto } from '$app/navigation'
@@ -27,9 +8,9 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, nvseed, nslist } = data)
+  $: ({ nvinfo, nvseed } = data)
 
-  let [seeds, patch_form] = init_data(nslist, nvseed)
+  let [seeds, patch_form] = init_data(data.nslist, data.nvseed)
   let prune = ''
 
   async function submit_patch() {
@@ -73,6 +54,26 @@
   function change_mirror(mirror: CV.Chroot) {
     patch_form.o_sname = mirror.sname
     patch_form.chmax = mirror.chmax
+  }
+
+  interface PatchForm {
+    chmin: number
+    chmax: number
+    o_sname: string
+    i_chmin: number
+  }
+
+  // prettier-ignore
+  function init_data(nslist: CV.Nslist, nvseed : CV.Chroot): [CV.Chroot[], PatchForm] {
+    const sname = nvseed?.sname || '=base'
+    let seeds = [...nslist.other, ...nslist.users].filter((x) => x)
+
+    seeds = seeds.filter((x) => x.sname != sname)
+
+    const { chmax, sname: o_sname } = seeds[0] || { chmax: 0, sname: '' }
+
+    const form = { chmin: 1, i_chmin: 1, chmax: chmax, o_sname }
+    return [seeds, form]
   }
 </script>
 
