@@ -35,7 +35,7 @@ class ZH::ZhChap
   end
 
   def self.open_db(sname : String, s_bid : Int32)
-    db_path = "var/chaps/origs/#{sname}/#{s_bid}.db"
+    db_path = "var/chaps/seeds/#{sname}/#{s_bid}.db"
     DB.open("sqlite3://./#{db_path}") { |db| yield db }
   end
 
