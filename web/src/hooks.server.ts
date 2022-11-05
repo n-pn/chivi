@@ -13,6 +13,19 @@ const api_hosts = {
   api: 'localhost:5010',
 }
 
+// export async function handleFetch({ event, fetch, request }) {
+//   const url = new URL(request.url)
+//   const host = api_hosts[url.pathname.split('/')[1]]
+
+//   if (host) {
+//     url.protocol = 'http'
+//     url.host = host
+//     request = new Request(url, request)
+//   }
+
+//   return fetch(request)
+// }
+
 export async function handleFetch({ event, fetch, request }) {
   const url = new URL(request.url)
   const host = api_hosts[url.pathname.split('/')[1]]
@@ -25,9 +38,9 @@ export async function handleFetch({ event, fetch, request }) {
 
   const headers = Object.fromEntries(req_headers)
   delete headers.connection
-  headers['accept-encoding'] = '*'
+  delete headers['accept-encoding']
 
-  return fetch(url, { method, body, headers })
+  return globalThis.fetch(url, { method, body, headers })
 }
 
 export async function getSession({ request: { headers } }) {

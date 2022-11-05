@@ -112,7 +112,7 @@
 
   <div class="line">
     <div class="book-track">
-      <BookTrack {nvinfo} />
+      <BookTrack />
     </div>
 
     <a class="m-btn" href="/dicts/-{nvinfo.bhash}" data-kbd="p">

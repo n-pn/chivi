@@ -1,5 +1,7 @@
-import { suggest_read } from '$utils/ubmemo_utils'
+export const ssr = false
+
 import { get_nslist } from '$lib/api'
+import { suggest_read } from '$utils/ubmemo_utils'
 
 export async function load({ parent, fetch, url }) {
   const { nvinfo, ubmemo } = await parent()

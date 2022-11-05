@@ -41,13 +41,7 @@ class CV::SigninCtrl < CV::BaseCtrl
 
   private def login_user!(user : Viuser)
     @_viuser = user
-
-    tokens = `bin/cvjwt_cli e "#{user.uname}" #{user.privi}`.split("\n")
-    cookies["cv_at"], cookies["cv_rt"] = tokens
-    cookies["theme"] = user.wtheme
-    session["uname"] = user.uname
-
-    save_session!
+    save_current_user!(user)
     serv_json(ViuserView.new(user))
   end
 

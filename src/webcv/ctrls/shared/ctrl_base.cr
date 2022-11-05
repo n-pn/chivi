@@ -1,7 +1,10 @@
 class CV::BaseCtrl < Amber::Controller::Base
   LAYOUT = false
 
-  protected getter u_dname : String do
+  # protected getter u_dname : String { session["uname"]? || "Khách" }
+  protected getter u_dname : String { get_uname_from_jwt }
+
+  private def get_uname_from_jwt
     token = cookies["cv_rt"]
     `bin/cvjwt_cli dr "#{token}"`.strip
   rescue
@@ -129,5 +132,16 @@ class CV::BaseCtrl < Amber::Controller::Base
 
   def assert_privi(privi : Int32 = 1)
     raise Unauthorized.new("Bạn không đủ quyền hạn") if _viuser.privi < privi
+  end
+
+  def save_current_user!(user : Viuser)
+    tokens = `bin/cvjwt_cli e "#{_viuser.uname}" #{_viuser.privi}`.split("\n")
+
+    cookies.set "cv_at", tokens[0], expires: 30.minutes.from_now
+    cookies.set "cv_rt", tokens[1], expires: 2.month.from_now
+    cookies.set "theme", user.wtheme, expires: 1.year.from_now
+
+    # session["uname"] = user.uname
+    cookies.write(response.headers)
   end
 end

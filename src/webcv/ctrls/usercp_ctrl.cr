@@ -2,10 +2,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
   def profile
     set_cache :private, maxage: 3
     _viuser.check_privi! unless _viuser.privi < 0
-
-    tokens = `bin/cvjwt_cli e "#{_viuser.uname}" #{_viuser.privi}`.split("\n")
-    cookies["cv_at"], cookies["cv_rt"] = tokens
-
+    # save_current_user!(_viuser)
     serv_json(ViuserView.new(_viuser))
   end
 
@@ -25,10 +22,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
       ChSeed.add_user(sname, sn_id)
     end
 
-    tokens = `bin/cvjwt_cli e "#{_viuser.uname}" #{_viuser.privi}`.split("\n")
-    cookies["cv_at"], cookies["cv_rt"] = tokens
-    save_session!
-
+    save_current_user!(_viuser)
     serv_json(ViuserView.new(_viuser))
   rescue err
     halt! 403, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"

@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { getContext } from 'svelte'
-  import type { Writable } from 'svelte/store'
-
+  import { page } from '$app/stores'
   import { session } from '$lib/stores'
   import { api_call } from '$lib/api'
 
@@ -14,10 +12,8 @@
 
   import { SIcon, Gmenu } from '$gui'
 
-  export let nvinfo: CV.Nvinfo
-  let ubmemo: Writable<CV.Ubmemo> = getContext('ubmemos')
-
-  $: book_status = $ubmemo.status
+  $: ({ nvinfo, ubmemo } = $page.data)
+  $: book_status = ubmemo.status
 
   async function update_status(status: string) {
     if ($session.privi < 0) return
@@ -28,7 +24,7 @@
     const res = await api_call(url, 'PUT', { status })
 
     if (res.error) alert(res.error)
-    else $ubmemo = res
+    else $page.data.ubmemo = res
   }
 
   $: color = status_colors[book_status]

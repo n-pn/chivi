@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-  import { page } from '$app/stores'
   import { map_status } from '$utils/nvinfo_utils'
 
   function gen_keywords(nvinfo: CV.Nvinfo) {
@@ -17,14 +16,11 @@
 
 <script lang="ts">
   import { dtlist_data } from '$lib/stores'
-  import { setContext } from 'svelte'
-  import { writable } from 'svelte/store'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, ubmemo } = data)
-  $: setContext('ubmemos', writable(ubmemo))
+  $: ({ nvinfo } = data)
 
   $: bcover = nvinfo.bcover || 'blank.webp'
   $: bintro = nvinfo.bintro.substring(0, 300)
