@@ -25,7 +25,7 @@ class TL::Btran
     getter to : String?
   end
 
-  def translate(terms : Enumerable(String))
+  def translate(terms : Enumerable(String), no_cap : Bool = false)
     @headers["X-ClientTraceId"] = UUID.random.to_s
 
     params = URI::Params.build do |form|
@@ -34,7 +34,7 @@ class TL::Btran
       form.add "to", "vi"
     end
 
-    body = terms.map { |x| {text: "*," + x} }.to_json
+    body = terms.map { |x| {text: no_cap ? "*," + x : x} }.to_json
 
     url = "/translate?" + params.to_s
     res = @client.post(url, headers: @headers, body: body)
@@ -46,8 +46,13 @@ class TL::Btran
 
     output.map_with_index do |entry, i|
       term = terms[i]
-      data = entry[:translations].map(&.text.sub(/^\*,\s/, "")).join('\t')
-      {term, data}
+
+      data = entry[:translations].map do |item|
+        text = item.text
+        no_cap ? text.sub(/^\*,\s/, "") : text
+      end
+
+      {term, data.join('\t')}
     end
   end
 
@@ -131,21 +136,21 @@ class TL::Btran
     end
   end
 
-  def self.translate(terms : Enumerable(String))
+  def self.translate(terms : Enumerable(String), no_cap : Bool = false)
     raise "no more available client" unless client = @@clients.sample
-    translate(client, terms)
+    translate(client, terms, no_cap: no_cap)
   end
 
-  def self.translate(client : self, terms : Enumerable(String))
-    client.translate(terms)
+  def self.translate(client : self, terms : Enumerable(String), no_cap : Bool)
+    client.translate(terms, no_cap: no_cap)
   rescue err
     Log.warn { "error using bing translation: #{err.message}" }
 
     if err.message.try(&.starts_with?("size mismatch"))
-      translate(client, terms)
+      translate(client, terms, no_cap: no_cap)
     else
       @@clients.reject!(&.== client)
-      translate(terms)
+      translate(terms, no_cap: no_cap)
     end
   end
 
