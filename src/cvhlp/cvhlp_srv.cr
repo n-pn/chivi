@@ -1,6 +1,6 @@
 require "./server/*"
 
-port = 5601
+port = 5501
 host = "127.0.0.1"
 server = AC::Server.new(port, host)
 

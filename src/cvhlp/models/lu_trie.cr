@@ -1,36 +1,37 @@
-class TL::TlTrie
-  alias Trie = Hash(Char, TlTrie)
+class TL::LuTrie
+  alias Next = Hash(Char, LuTrie)
 
   property data : Int32? = nil
-  property trie : Trie? = nil
+  property trie : Next? = nil
 
   def next(char : Char) : self
-    trie = @trie ||= Trie.new
-    trie[char] ||= TlTrie.new
+    trie = @trie ||= Next.new
+    trie[char] ||= LuTrie.new
   end
 
   def set(word : String, data : Int32) : Nil
     node = self
 
     word.each_char do |char|
-      trie = node.trie ||= Trie.new
-      node = trie[char] ||= TlTrie.new
+      trie = node.trie ||= Next.new
+      node = trie[char] ||= LuTrie.new
     end
 
     node.data = data
   end
 
-  def all(word : String)
+  def all(input : String)
     node = self
-    word.each_char do |char|
+    input.each_char do |char|
       return unless node = node.trie.try(&.[char]?)
       node.data.try { |x| yield x }
     end
   end
 
-  def all(word : Array(Char))
+  def all(chars : Array(Char), start = 0)
     node = self
-    word.each do |char|
+
+    chars[start..].each do |char|
       return unless node = node.trie.try(&.[char]?)
       node.data.try { |x| yield x }
     end

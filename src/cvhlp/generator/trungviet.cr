@@ -1,4 +1,4 @@
-require "../models/tl_term"
+require "../models/lu_term"
 
 def cleanup(input : String)
   input.split("\\t")
@@ -12,18 +12,18 @@ def cleanup(input : String)
     .join("; ")
 end
 
-terms = [] of TL::TlTerm
+terms = [] of TL::LuTerm
 
 File.each_line("var/inits/system/lacviet-mtd.txt") do |line|
   key, vals = line.split("=", 2)
   vals = vals.split("\\n").map { |x| cleanup(x) }
-  vals.each { |val| terms << TL::TlTerm.new(key, val) }
+  vals.each { |val| terms << TL::LuTerm.new(key, val) }
 rescue err
   puts err
 end
 
 puts "input: #{terms.size}"
 
-TL::TlTerm.init_db("trungviet", reset: false)
-TL::TlTerm.upsert_bulk("trungviet", terms)
-# TL::TlTerm.remove_dup!("trungviet")
+TL::LuTerm.init_db("trungviet", reset: false)
+TL::LuTerm.upsert_bulk("trungviet", terms)
+# TL::LuTerm.remove_dup!("trungviet")

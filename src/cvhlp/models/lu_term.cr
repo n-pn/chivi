@@ -1,6 +1,6 @@
 require "sqlite3"
 
-class TL::TlTerm
+class TL::LuTerm
   include DB::Serializable
 
   # property id : Int32 = 0
@@ -22,7 +22,7 @@ class TL::TlTerm
     end
   end
 
-  def self.upsert_bulk(dict : String, items : Array(TlTerm))
+  def self.upsert_bulk(dict : String, items : Array(LuTerm))
     open_db_tx(dict) do |db|
       items.each do |item|
         do_upsert(db, item.word, item.defn, item.utime)
@@ -71,7 +71,7 @@ class TL::TlTerm
   @[AlwaysInline]
   # return path for database
   def self.db_path(dict : String)
-    "var/mtkit/#{dict}.dic"
+    "var/cvhlp/#{dict}.dic"
   end
 
   # open database for reading/writing

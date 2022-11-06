@@ -2,7 +2,7 @@ require "json"
 require "colorize"
 require "http/client"
 require "compress/zip"
-require "../models/tl_term"
+require "../models/lu_term"
 
 URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 DIR = "var/inits/system"
@@ -41,7 +41,7 @@ def parse_line(line : String)
   senses = clean_senses(senses).split('/').join("; ")
 
   defn = "[#{pinyin}] {#{trad}} #{senses}"
-  TL::TlTerm.new(simp, defn)
+  TL::LuTerm.new(simp, defn)
 end
 
 def read_data(zip_file : String, expiry = 24.hours)
@@ -62,6 +62,6 @@ end
 terms = read_data(ZIP_FILE)
 puts "input: #{terms.size}"
 
-TL::TlTerm.init_db("cc_cedict", reset: false)
-TL::TlTerm.upsert_bulk("cc_cedict", terms)
-# TL::TlTerm.remove_dup!("cc_cedict")
+TL::LuTerm.init_db("cc_cedict", reset: false)
+TL::LuTerm.upsert_bulk("cc_cedict", terms)
+# TL::LuTerm.remove_dup!("cc_cedict")

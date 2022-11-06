@@ -13,10 +13,13 @@ targets:
     main: src/chivi.cr
 
   cvmtl-srv:
-    main: src/cvmtl/mt_srv.cr
+    main: src/cvmtl/cvmtl_srv.cr
 
   ysapp-srv:
-    main: src/ysapp/ys_srv.cr
+    main: src/ysapp/ysapp_srv.cr
+
+  cvhlp-srv:
+    main: src/cvhlp/cvhlp_srv.cr
 
   cvjwt_cli:
     main: cli/cvjwt_cli.cr
