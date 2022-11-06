@@ -1,5 +1,5 @@
 require "../_util/char_util"
-require "./tr_lit/*"
+require "./engine/*"
 
 class TL::Engine
   class_getter hanviet : self do

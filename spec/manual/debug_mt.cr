@@ -1,5 +1,5 @@
 require "../../src/cvmtl/engine"
-require "../../src/cvmtl/tr_lit"
+require "../../src/mtkit/engine"
 
 text = ARGV[0]? || "在魏梦柔的目光下"
 book = ARGV[1]? || "qcwe8yg1"

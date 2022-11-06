@@ -1,8 +1,11 @@
 class TL::CharDict
-  DIR = "var/dicts/qtran/%{name}-chars.tsv"
+  @[AlwaysInline]
+  def self.path(name : String)
+    "var/dicts/qtran/#{name}-chars.tsv"
+  end
 
   def self.load(name : String)
-    new(DIR % {name: name})
+    new(path(name))
   end
 
   @data = {} of Char => String
@@ -34,10 +37,13 @@ class TL::CharDict
 end
 
 class TL::WordDict
-  DIR = "var/dicts/qtran/%{name}-words.tsv"
+  @[AlwaysInline]
+  def self.path(name : String)
+    "var/dicts/qtran/#{name}-words.tsv"
+  end
 
   def self.load(name : String)
-    new(DIR % {name: name})
+    new(path(name))
   end
 
   @data = Trie.new
