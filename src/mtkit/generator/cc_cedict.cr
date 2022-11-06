@@ -62,5 +62,6 @@ end
 terms = read_data(ZIP_FILE)
 puts "input: #{terms.size}"
 
-TL::TlTerm.init_db("cc_cedict", reset: true)
+TL::TlTerm.init_db("cc_cedict", reset: false)
 TL::TlTerm.upsert_bulk("cc_cedict", terms)
+# TL::TlTerm.remove_dup!("cc_cedict")

@@ -17,5 +17,7 @@ rescue err
 end
 
 puts "input: #{terms.size}"
-TL::TlTerm.init_db("trich_dan", reset: true)
+
+TL::TlTerm.init_db("trich_dan", reset: false)
 TL::TlTerm.upsert_bulk("trich_dan", terms)
+# TL::TlTerm.remove_dup!("trich_dan")

@@ -23,14 +23,10 @@ class TL::TlTerm
   end
 
   def self.upsert_bulk(dict : String, items : Array(TlTerm))
-    open_db(dict) do |db|
-      db.exec "begin transaction"
-
+    open_db_tx(dict) do |db|
       items.each do |item|
         do_upsert(db, item.word, item.defn, item.utime)
       end
-
-      db.exec "commit"
     end
   end
 
@@ -42,20 +38,55 @@ class TL::TlTerm
       on conflict(word) do update set
         defn = terms.defn || char(11) || excluded.defn,
         utime = excluded.utime
-      where terms.defn <> excluded.defn
+      where terms.defn not like '%' || excluded.defn || '%'
     SQL
+  end
+
+  def self.remove_dup!(dict : String)
+    open_db_tx(dict) do |db|
+      changes = [] of Tuple(String, Int32)
+
+      db.query_each "select id, defn from terms where defn like '%\v%'" do |rs|
+        id, defn = rs.read(Int32, String)
+
+        defs = defn.split('\v')
+        defu = defs.uniq
+
+        next if defu.size == defs.size
+        changes << {defu.join('\v'), id}
+      end
+
+      update_query = "update terms set defn = ? where id = ?"
+
+      changes.each do |defn, id|
+        db.exec update_query, args: [defn, id]
+      end
+
+      puts "changed: #{changes.size}"
+    end
   end
 
   ######
 
   @[AlwaysInline]
+  # return path for database
   def self.db_path(dict : String)
-    "var/mtkit/#{dict}.db"
+    "var/mtkit/#{dict}.dic"
   end
 
+  # open database for reading/writing
   def self.open_db(dict : String)
     db_path = self.db_path(dict)
     DB.open("sqlite3://./#{db_path}") { |db| yield db }
+  end
+
+  # open database with transaction for writing
+  def self.open_db_tx(dict : String)
+    open_db(dict) do |db|
+      db.exec "begin transaction"
+      yield db
+      db.exec "commit"
+    end
   end
 
   def self.init_db(dict : String, reset : Bool = false)

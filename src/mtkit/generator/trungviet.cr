@@ -7,7 +7,7 @@ def cleanup(input : String)
     .join("; ")
     .gsub("]; ", "] ")
     .gsub("}; ", "} ")
-    .split(/;\s+/)
+    .split(/;\s*/)
     .uniq
     .join("; ")
 end
@@ -17,12 +17,13 @@ terms = [] of TL::TlTerm
 File.each_line("var/inits/system/lacviet-mtd.txt") do |line|
   key, vals = line.split("=", 2)
   vals = vals.split("\\n").map { |x| cleanup(x) }
-
-  terms << TL::TlTerm.new(key, vals.join('\v'))
+  vals.each { |val| terms << TL::TlTerm.new(key, val) }
 rescue err
   puts err
 end
 
 puts "input: #{terms.size}"
-TL::TlTerm.init_db("trungviet", reset: true)
+
+TL::TlTerm.init_db("trungviet", reset: false)
 TL::TlTerm.upsert_bulk("trungviet", terms)
+# TL::TlTerm.remove_dup!("trungviet")
