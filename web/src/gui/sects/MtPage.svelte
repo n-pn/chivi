@@ -109,9 +109,9 @@
 </script>
 
 <article
-  class="article app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+  class="article island app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   tabindex="-1"
-  style="--textlh: {$config.textlh}%"
+  style:--textlh="{$config.textlh}%"
   on:blur={mtmenu.hide}
   bind:this={article}>
   <header>

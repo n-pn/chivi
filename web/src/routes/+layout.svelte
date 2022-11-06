@@ -12,8 +12,10 @@
   import Modals from '$gui/global/Modals.svelte'
   import Pledge from '$gui/global/Pledge.svelte'
   import Footer from '$gui/global/Footer.svelte'
+  import { onMount } from 'svelte'
 
-  $: wtheme = browser ? $config.wtheme : $page.data.theme || 'white'
+  onMount(() => ($config.wtheme = $page.data.theme))
+  $: wtheme = browser ? $config.wtheme : $page.data.theme || 'light'
 
   let kbd_hint = false
 

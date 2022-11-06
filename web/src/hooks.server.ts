@@ -13,19 +13,6 @@ const api_hosts = {
   api: 'localhost:5010',
 }
 
-// export async function handleFetch({ fetch, request }) {
-//   const url = new URL(request.url)
-//   const host = api_hosts[url.pathname.split('/')[1]]
-
-//   if (host) {
-//     url.protocol = 'http'
-//     url.host = host
-//     request = new Request(url, request)
-//   }
-
-//   return fetch(request)
-// }
-
 export async function handleFetch({ event, fetch, request }) {
   const url = new URL(request.url)
   const host = api_hosts[url.pathname.split('/')[1]]
@@ -34,18 +21,15 @@ export async function handleFetch({ event, fetch, request }) {
   url.protocol = 'http'
   url.host = host
 
-  const { method, body, headers: req_headers } = event.request
+  request = new Request(url, event.request)
+  request.headers.delete('connection')
 
-  const headers = Object.fromEntries(req_headers)
-  delete headers.connection
-  delete headers['accept-encoding']
-
-  return globalThis.fetch(url, { method, body, headers })
+  return fetch(request)
 }
 
 export function handleError({ error, event }) {
   // console.log(event)
-  // console.log(error)
+  console.log(error)
 
   return {
     message: error.toString(),

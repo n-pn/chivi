@@ -12,7 +12,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, sname } = data)
+  $: ({ nvinfo, sname } = $page.data)
 
   let chidx = data.chidx
   let chvol = data.chvol

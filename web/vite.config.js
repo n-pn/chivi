@@ -23,6 +23,11 @@ const config = {
       '/_mt': 'http://localhost:5502',
     },
   },
+  vitePlugin: {
+    experimental: {
+      prebundleSvelteLibraries: true,
+    },
+  },
 }
 
 export default config

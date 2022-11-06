@@ -52,7 +52,7 @@
   }
 </script>
 
-<article class="article">
+<article class="article island">
   <page-info>
     <info-left>
       <info-text>{nvseed.sname}</info-text>

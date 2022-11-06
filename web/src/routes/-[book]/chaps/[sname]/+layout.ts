@@ -1,4 +1,4 @@
-export const ssr = false
+// export const ssr = false
 
 import { get_nvseed } from '$lib/api'
 
