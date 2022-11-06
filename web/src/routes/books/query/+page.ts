@@ -18,10 +18,9 @@ export async function load({ fetch, url }) {
   const type = url.searchParams.get('t') || 'btitle'
   const input = url.searchParams.get('q')
 
-  const params = { input, type }
-  const qs = input.replace(/\+|-/g, ' ')
+  const qs = input.replace(/\+|-/g, ' ').trim()
   const api_url = `/api/books?order=weight&lm=8&pg=${pg}&${type}=${qs}`
-  const api_res: JsonData = await api_get(api_url.toString(), params, fetch)
+  const api_res: JsonData = await api_get(api_url.toString(), null, fetch)
 
   _meta.title = _meta.title + `"#${input}"`
   return { ...api_res, input, type, _meta }
