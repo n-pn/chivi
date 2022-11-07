@@ -9,6 +9,7 @@
   export let data: PageData
 
   $: ({ nvinfo } = data)
+
   $: nv_href = `/-${nvinfo.bslug}`
 
   async function delete_book() {

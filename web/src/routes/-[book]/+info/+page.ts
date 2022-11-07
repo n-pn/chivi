@@ -5,7 +5,12 @@ export async function load({ parent, fetch }) {
 
   const api_url = `/api/books/${nvinfo.bslug.substr(0, 8)}/+edit`
   const api_res = await fetch(api_url)
-  const payload = await api_res.json()
+
+  const { bintro, genres, bcover } = await api_res.json()
+
+  nvinfo.bintro = bintro
+  nvinfo.genres = genres
+  nvinfo.bcover = bcover
 
   const _meta = {
     title: 'Sửa thông tin truyện ' + nvinfo.btitle_vi,
@@ -15,5 +20,5 @@ export async function load({ parent, fetch }) {
     ],
   }
 
-  return { _meta, ...payload }
+  return { nvinfo, _meta }
 }

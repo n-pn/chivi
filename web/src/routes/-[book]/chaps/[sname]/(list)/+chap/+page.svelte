@@ -41,7 +41,6 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { page } from '$app/stores'
   import { uncache } from '$lib/api'
 
   import { SIcon, Footer } from '$gui'
@@ -49,9 +48,10 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, nvseed, chidx } = data)
+  $: ({ nvinfo, nvseed } = data)
 
   let input = ''
+  let chidx = data.chidx
   let files: FileList
 
   let form = {
