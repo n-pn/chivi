@@ -1,7 +1,7 @@
 require "jwt"
 
-ACCESS_TOKEN_SECRET  = ENV["CV_ATSK"] || "???"
-REFRESH_TOKEN_SECRET = ENV["CV_RTSK"]? || "???"
+ACCESS_TOKEN_SECRET  = {{ env("CV_ATSK") }}.not_nil!
+REFRESH_TOKEN_SECRET = {{ env("CV_RTSK") }}.not_nil!
 
 ALGORITHM = JWT::Algorithm::HS256
 

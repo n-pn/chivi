@@ -9,6 +9,7 @@
 /doc/
 /lib/
 /old
+/cli/cvjwt_cli.cr
 /node_modules
 .env
 .encryption_key

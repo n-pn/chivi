@@ -13,13 +13,18 @@ class CV::BaseCtrl < Amber::Controller::Base
 
   protected getter u_privi : Int32 do
     token = cookies["cv_at"]
-    _user, privi = `bin/cvjwt_cli da "#{token}"`
+    _user, privi = `bin/cvjwt_cli da "#{token}"`.split("\n")
     privi.to_i
   rescue
     -1
   end
 
-  protected getter _viuser : Viuser { Viuser.load!(u_dname) }
+  protected getter _viuser : Viuser do
+    Viuser.load!(u_dname)
+  rescue err
+    Log.error { err.message }
+    Viuser.load!("Khách")
+  end
 
   enum CacheType
     Private; Public

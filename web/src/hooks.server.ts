@@ -44,6 +44,7 @@ async function getSession({ request: { headers } }) {
 
   if (res.ok) return await res.json()
   const error = await res.text()
+  console.log({ error })
 
   return {
     uname: 'Khách',
