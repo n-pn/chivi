@@ -43,7 +43,7 @@ def redownload(dir_path : String)
 end
 
 def redownload_file(zip_file : String)
-  zip_href = zip_file.sub("var/chtexts", "https://cr2.chivi.app/texts")
+  zip_href = zip_file.sub("var/chaps/texts", "https://cr2.chivi.app/texts")
   `curl -L -k -s #{zip_href} -o "#{zip_file}"`
   $?.success?
 end
@@ -58,7 +58,7 @@ rescue err
   false
 end
 
-INP_DIR = "var/chtexts"
+INP_DIR = "var/chaps/texts"
 Dir.glob("#{INP_DIR}/hetushu/*/").each do |dir_path|
   check_error(dir_path)
   # redownload(dir_path)

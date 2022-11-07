@@ -18,7 +18,7 @@ class CV::Zxcs::SplitText
   RARS_DIR = "var/seeds/zxcs_me/_rars"
   TEXT_DIR = "var/seeds/zxcs_me/texts"
 
-  SAVE_DIR = "var/chtexts/zxcs_me"
+  SAVE_DIR = "var/chaps/texts/zxcs_me"
 
   def extract_all!
     input = Dir.glob("#{RARS_DIR}/*.rar")

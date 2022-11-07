@@ -6,8 +6,8 @@ require "colorize"
 module CV::UploadChseed
   extend self
 
-  INP = "var/chtexts"
-  OUT = "/home/nipin/var/chivi_db/chtext"
+  INP = "var/chaps/texts"
+  OUT = "/app/chivi/#{INP}"
 
   def run!(argv = ARGV)
     exists = Dir.children(INP)

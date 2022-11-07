@@ -4,8 +4,8 @@ require "option_parser"
 require "../shared/bootstrap"
 
 class CV::BdLacInvoke
-  INP_DIR = "var/chtexts"
-  OUT_DIR = "_db/vpinit/bd_lac/raw"
+  INP_DIR = "var/chaps/texts"
+  OUT_DIR = "var/inits/bdtmp/raw"
 
   getter chap_count = 0
   getter to_parse = 0

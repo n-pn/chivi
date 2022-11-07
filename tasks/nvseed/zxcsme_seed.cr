@@ -95,7 +95,7 @@ module CV::SeedZxcsme
   extend self
 
   INP_DIR = "_db/.cache/zxcs_me/infos"
-  TXT_DIR = "var/chtexts/zxcs_me"
+  TXT_DIR = "var/chaps/texts/zxcs_me"
 
   OUT_DIR = "var/zhinfos/zxcs_me"
   MFTIMES = Tabkv(Int64).new("#{OUT_DIR}/utimes.tsv")

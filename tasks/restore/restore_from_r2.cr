@@ -1,4 +1,4 @@
-TXT_DIR = "var/chtexts"
+TXT_DIR = "var/chaps/texts"
 R2_ROOT = "https://cr2.chivi.app/texts"
 
 def download_file(file : String)

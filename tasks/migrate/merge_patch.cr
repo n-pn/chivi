@@ -4,12 +4,12 @@ require "compress/zip"
 
 require "../src/appcv/nvchap/*"
 
-INP_DIR = Path["var", "chtexts"]
+INP_DIR = Path["var", "chaps", "texts"]
 
 # Dir.children(INP_DIR).each do |sname|
 #   next unless sname.starts_with?('@')
 
-sname_dir = INP_DIR.join("miscs")
+sname_dir = INP_DIR / "miscs"
 
 Dir.children(sname_dir).each do |s_bid|
   book_dir = sname_dir.join(s_bid)

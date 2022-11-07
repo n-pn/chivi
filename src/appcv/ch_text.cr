@@ -3,7 +3,7 @@ require "sqlite3"
 require "./remote/remote_text"
 
 class CV::ChText
-  DIR   = "var/chtexts"
+  DIR   = "var/chaps/texts"
   PSIZE = 128
 
   def self.pgidx(ch_no : Int32) : Int32

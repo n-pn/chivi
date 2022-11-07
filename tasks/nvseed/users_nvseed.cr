@@ -1,5 +1,5 @@
 require "../shared/bootstrap"
-DIR = "var/chtexts/users"
+DIR = "var/chaps/texts/users"
 
 Dir.children(DIR).each do |bhash|
   idx_files = Dir.glob("#{DIR}/#{bhash}/*.tsv")

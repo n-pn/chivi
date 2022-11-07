@@ -2,8 +2,8 @@ require "colorize"
 require "compress/zip"
 require "option_parser"
 
-INP_DIR = "var/chtexts"
-OUT_DIR = "/mnt/d/hanlp/data/inp"
+INP_DIR = "var/chaps/texts"
+OUT_DIR = "var/inits/hanlp/data/inp"
 
 def extract(inp_path : String)
   puts inp_path

@@ -1,6 +1,6 @@
 DELETE = ARGV.includes?("--delete")
 
-DIR = "var/chtexts/jx_la"
+DIR = "var/chaps/texts/jx_la"
 Dir.each_child(DIR) do |child|
   next if child == "_"
   dir = File.join(DIR, child)

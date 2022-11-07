@@ -4,7 +4,7 @@ require "../shared/bootstrap"
 class CV::CrawlText
   INP_DIR = "var/chaps/.html"
 
-  DIR = "var/chtexts"
+  DIR = "var/chaps/texts"
 
   def initialize(@sname : String, @snvid : String)
     File.mkdir_p("#{INP_DIR}/#{sname}/#{snvid}")
@@ -127,7 +127,7 @@ class CV::CrawlText
   end
 
   def self.load_snvids(sname : String) : Array(String)
-    Dir.children("var/chtexts/#{sname}")
+    Dir.children("var/chaps/texts/#{sname}")
   end
 
   def self.run!(argv = ARGV)

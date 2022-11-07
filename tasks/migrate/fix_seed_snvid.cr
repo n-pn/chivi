@@ -8,14 +8,14 @@ def load_map(path : String | Path)
   end
 end
 
-TEXT_DIR = Path["var", "chtexts"]
+TEXT_DIR = Path["var", "chaps", "texts"]
 SEED_DIR = Path["var", "chaps", "users"]
 
 NAME_MAP = load_map Path["var", "fixed", "books.tsv"]
 
 def rename_snvids(sname : String)
   CV::Chroot.query.where("sname = ?", sname).each do |chroot|
-    old_snvid = chroot.snvid
+    old_snvid = chroot.sn_id
 
     next unless new_snvid = NAME_MAP[old_snvid]?
     next if new_snvid == old_snvid

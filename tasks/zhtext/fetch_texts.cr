@@ -2,7 +2,7 @@ require "option_parser"
 require "../shared/bootstrap"
 
 class CV::FetchText
-  DIR = "var/chtexts/=base"
+  DIR = "var/chaps/texts/=base"
 
   @queue = [] of ChInfo
 

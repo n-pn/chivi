@@ -32,7 +32,7 @@ then
   rsync -aiz --no-p "$SSH/var/books/infos" "var/books"
   rsync -aiz --no-p "$SSH/var/books/cover" "var/books"
 
-  rsync -aiz --no-p "$SSH/var/chtexts/@*" "var/chtexts"
+  rsync -aiz --no-p "$SSH/var/chaps/texts/@*" "var/chaps/texts"
   rsync -aiz --no-p "$SSH/var/chaps/.html" "var/chaps"
   rsync -aiz --no-p "$SSH/var/chaps/users" "var/chaps"
 fi

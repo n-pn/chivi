@@ -2,8 +2,8 @@ require "http/client"
 
 module CV
   extend self
-  DIR = "var/chtexts"
-  SSH = "nipin@ssh.chivi.app:srv/chivi/#{DIR}"
+  DIR = "var/chaps/texts"
+  SSH = "nipin@ssh.chivi.app:/app/chivi/#{DIR}"
 
   def upload(sname : String, redo = false, sync = false)
     s_dir = File.join(DIR, sname)
@@ -60,7 +60,7 @@ module CV
   end
 
   def upload_file(inp_file : String) : String?
-    url = inp_file.sub("var/chtexts", "https://r2.chivi.app/texts")
+    url = inp_file.sub("var/chaps/texts", "https://r2.chivi.app/texts")
     headers = HTTP::Headers{"X-Custom-Auth-Key" => ENV["R2_AUTH"]}
 
     res = HTTP::Client.put(url, headers, body: File.read(inp_file))

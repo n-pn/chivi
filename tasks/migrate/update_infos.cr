@@ -5,7 +5,7 @@ require "compress/zip"
 require "../shared/bootstrap"
 require "../../src/appcv/nvchap/*"
 
-INP_DIR = Path["var", "chtexts"]
+INP_DIR = Path["var", "chaps", "texts"]
 
 NAME_MAP = load_map Path["var", "fixed", "books.tsv"]
 

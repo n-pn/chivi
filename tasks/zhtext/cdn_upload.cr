@@ -60,7 +60,7 @@ module CV
   end
 
   def upload_file(inp_file : String) : String?
-    url = inp_file.sub("var/chtexts", "https://r2.chivi.app/texts")
+    url = inp_file.sub("var/chaps/texts", "https://r2.chivi.app/texts")
     headers = HTTP::Headers{"X-Custom-Auth-Key" => ENV["R2_AUTH"]}
 
     res = HTTP::Client.put(url, headers, body: File.read(inp_file))
@@ -75,7 +75,7 @@ module CV
   end
 
   def upload_dir(dir_name : String, reupload = false, purge_zip = false, sync_data = false)
-    root = "var/chtexts/#{dir_name}"
+    root = "var/chaps/texts/#{dir_name}"
     dirs = Dir.children(root).map { |x| x.to_i64? || x.to_i64(base: 36) }
     # dirs.reject! { |x| x < 128740 }
 

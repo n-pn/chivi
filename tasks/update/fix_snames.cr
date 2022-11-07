@@ -5,7 +5,7 @@ def rename_seed(from source : String, to target : String)
     "_db/.cache/#{source}",
     "_db/bcover/#{source}",
     "var/chaps/.html/#{source}",
-    "var/chtexts/#{source}",
+    "var/chaps/texts/#{source}",
     "var/zhinfos/#{source}",
   }
 
@@ -30,6 +30,6 @@ end
 # rename_seed("bqg_5200", "biqu5200")
 # rename_seed("biqubao", "biqugee")
 
-FileUtils.rm_rf("var/chtexts/chivi")
-FileUtils.mkdir_p("var/chtexts/chivi")
+FileUtils.rm_rf("var/chaps/texts/chivi")
+FileUtils.mkdir_p("var/chaps/texts/chivi")
 CV::Chroot.query.where(zseed: 0).to_update.set(chap_count: 0).execute

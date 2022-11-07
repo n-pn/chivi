@@ -2,7 +2,7 @@ require "./ch_info"
 require "../_util/r2_client"
 
 class CV::ChRepo
-  DIR = "var/chtexts"
+  DIR = "var/chaps/texts"
 
   getter sn_id : Int32
   getter s_bid : Int32
