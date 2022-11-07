@@ -65,36 +65,28 @@
   <span class="crumb _text">Chương tiết</span>
 </nav>
 
-<seed-list>
+<div class="seed-list">
   <a
     href={seed_url(nvinfo.bslug, nslist._base.sname, pgidx)}
     class="seed-name"
     class:_active={nslist._base.sname == _curr.sname}
-    data-tip="Danh sách chương trộn tổng hợp miễn phí">
-    <seed-label>Tổng hợp</seed-label>
-    <seed-stats><strong>{nslist._base.chmax}</strong> chương</seed-stats>
+    data-tip="Danh sách chương trộn tổng hợp">
+    <div class="seed-label">Tổng hợp</div>
+    <div class="seed-stats"><strong>{nslist._base.chmax}</strong> chương</div>
   </a>
 
-  <button
-    class="seed-name _btn"
-    class:_active={show_subtype == 1}
-    data-tip="Chương tiết cập nhật tự động từ các trang web truyện lậu"
-    on:click={() => change_subtype(1)}>
-    <seed-label>Tải ngoài</seed-label>
-    <seed-stats><strong>{nslist.other.length}</strong> nguồn</seed-stats>
-  </button>
-
-  <button
-    class="seed-name _btn"
-    class:_active={show_subtype == 2}
-    data-tip="Các danh sách chương của mỗi người dùng Chivi"
-    on:click={() => change_subtype(2)}>
-    <seed-label>
-      <span>Cá nhân</span>
-    </seed-label>
-
-    <seed-stats><strong>{nslist.users.length}</strong> người</seed-stats>
-  </button>
+  {#each nslist.users as nvseed}
+    {#if nvseed.chmax > 0 && nvseed.sname != _self.sname}
+      <a
+        href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
+        class="seed-name"
+        class:_active={nvseed.sname == _curr.sname}
+        data-tip={map_info(nvseed)}>
+        <div class="seed-label">{nvseed.sname}</div>
+        <div class="seed-stats"><strong>{nvseed.chmax}</strong> chương</div>
+      </a>
+    {/if}
+  {/each}
 
   {#if _self.chmax > 0 || $session.privi > 0}
     <a
@@ -102,28 +94,37 @@
       class="seed-name"
       class:_active={_self.sname == _curr.sname}
       data-tip="Danh sách chương của cá nhân bạn">
-      <seed-label>Của bạn</seed-label>
-      <seed-stats><strong>{_self.chmax}</strong> chương</seed-stats>
+      <div class="seed-label">Của bạn</div>
+      <div class="seed-stats"><strong>{_self.chmax}</strong> chương</div>
     </a>
   {/if}
-</seed-list>
+
+  <button
+    class="seed-name _btn"
+    class:_active={show_subtype == 1}
+    data-tip="Chương tiết cập nhật tự động từ các trang web truyện lậu"
+    on:click={() => change_subtype(1)}>
+    <div class="seed-label">Tải ngoài</div>
+    <div class="seed-stats"><strong>{nslist.other.length}</strong> nguồn</div>
+  </button>
+</div>
 
 {#if show_subtype == 1}
-  <seed-list class="extra">
+  <div class="seed-list -extra">
     {#each nslist.other as nvseed}
       <a
         href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
         class="seed-name _sub"
         class:_active={nvseed.sname == _curr.sname}
         data-tip={map_info(nvseed)}>
-        <seed-label>
+        <div class="seed-label">
           <span>{nvseed.sname}</span>
           <SIcon name={icon_types[nvseed.stype]} />
-        </seed-label>
-        <seed-stats><strong>{nvseed.chmax}</strong> chương</seed-stats>
+        </div>
+        <div class="seed-stats"><strong>{nvseed.chmax}</strong> chương</div>
       </a>
     {/each}
-  </seed-list>
+  </div>
 
   <div class="seed-task">
     <a
@@ -144,32 +145,10 @@
       <span class="label">Quản lý nguồn</span>
     </a>
   </div>
-{:else if show_subtype == 2}
-  <seed-list class="extra">
-    <a
-      href={seed_url(nvinfo.bslug, nslist._user.sname, pgidx)}
-      class="seed-name _sub"
-      class:_active={nslist._user.sname == _curr.sname}
-      data-tip="Danh sách chương tổng hợp từ các người dùng">
-      <seed-label>Nhiều người</seed-label>
-      <seed-stats><strong>{_self.chmax}</strong> chương</seed-stats>
-    </a>
-
-    {#each nslist.users as nvseed}
-      <a
-        href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
-        class="seed-name _sub"
-        class:_active={nvseed.sname == _curr.sname}
-        data-tip={map_info(nvseed)}>
-        <seed-label>{nvseed.sname}</seed-label>
-        <seed-stats><strong>{nvseed.chmax}</strong> chương</seed-stats>
-      </a>
-    {/each}
-  </seed-list>
 {/if}
 
 <style lang="scss">
-  seed-list {
+  .seed-list {
     @include flex-cx($gap: 0.25rem);
     flex-wrap: wrap;
     padding: 0 var(--gutter);
@@ -208,7 +187,7 @@
 
     // prettier-ignore
     &._active, &:hover, &:active {
-      > seed-label { @include fgcolor(primary, 5); }
+      .seed-label { @include fgcolor(primary, 5); }
     }
 
     &._sub {
@@ -216,7 +195,7 @@
     }
   }
 
-  seed-label {
+  .seed-label {
     @include flex($center: both);
     @include label();
 
@@ -238,10 +217,11 @@
     }
   }
 
-  seed-stats {
+  .seed-stats {
     display: block;
     text-align: center;
     line-height: 0.875rem;
+
     @include fgcolor(tert);
     @include bps(font-size, rem(11px), $ts: rem(12px));
 
