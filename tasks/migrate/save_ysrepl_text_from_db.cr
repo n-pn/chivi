@@ -2,7 +2,7 @@ require "../../src/ysapp/models/*"
 require "compress/zip"
 
 def saved_crit_list(ysbook_id : Int64)
-  zip_file = "var/ys_db/crits/#{ysbook_id}-zh.zip"
+  zip_file = "var/ysapp/crits/#{ysbook_id}-zh.zip"
   return [] of String unless File.exists?(zip_file)
 
   Compress::Zip::File.open(zip_file) do |zip|
@@ -28,7 +28,7 @@ CV::Ysbook.query.each do |ysbook|
 
   puts "<#{ysbook.id}> unsaved crits: #{crits.size}"
 
-  save_dir = "var/ys_db/crits/#{ysbook.id}-zh"
+  save_dir = "var/ysapp/crits/#{ysbook.id}-zh"
   Dir.mkdir_p(save_dir)
 
   crits.each do |crit|

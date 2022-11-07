@@ -25,7 +25,7 @@ def save_crit_body(file : String)
 
     raise "mising book_id for #{uuid}" unless book_id = book_ids[uuid]
 
-    save_dir = "var/ys_db/crits/#{book_id}-zh"
+    save_dir = "var/ysapp/crits/#{book_id}-zh"
     Dir.mkdir_p(save_dir)
 
     text_path = "#{save_dir}/#{uuid}.txt"

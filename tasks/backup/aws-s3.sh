@@ -1,6 +1,6 @@
 aws s3 sync --delete var/dicts/v1 s3://chivi-bak/dicts
 
-aws s3 sync var/ys_db s3://chivi-bak/ys_db --exclude "*" --include "*.zip"
+aws s3 sync var/ysapp s3://chivi-bak/ysapp --exclude "*" --include "*.zip"
 
 aws s3 sync --delete var/pg_data/weblogs s3://chivi-bak/weblogs
 aws s3 sync --delete var/pg_data/cvusers s3://chivi-bak/cvusers

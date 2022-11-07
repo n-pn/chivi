@@ -87,7 +87,7 @@ class CV::YscritRaw
     puts err.inspect_with_backtrace.colorize.red
   end
 
-  ZTEXT_DIR = "var/ys_db/crits"
+  ZTEXT_DIR = "var/ysapp/crits"
 
   def save_ztext
     # save crit body to disk instead of db

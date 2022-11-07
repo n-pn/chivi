@@ -8,7 +8,7 @@ def save_crit_body(crit : YS::RawCrit, skip_if_exists = false)
   # do not write file if content is hidden in yousuu
   return if crit.ztext == "请登录查看评论内容" || crit.ztext.empty?
 
-  save_dir = "var/ys_db/crits/#{crit.book.id}-zh"
+  save_dir = "var/ysapp/crits/#{crit.book.id}-zh"
   Dir.mkdir_p(save_dir)
 
   # write crit body to {yousuu_id}.zip

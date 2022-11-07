@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-set -e pipefail
 
-SSH=nipin@ssh.chivi.app:srv/chivi
+SSH=nipin@ssh.chivi.app:/app/chivi
 
 ## upload dicts
 if [[ $* == "all" || $* == *dict* ]]
 then
   echo upload dicts!
-  rsync -azi --no-p "var/dicts/*.db" "$SSH/var/dicts"
+  rsync -azi --no-p "var/dicts/*.dic" "$SSH/var/dicts"
 fi
 
 ## upload parsed seed data
@@ -21,7 +20,7 @@ then
   rsync -azi --no-p --exclude="*.zip" "var/chaps/texts" "$SSH/var/chaps"
 fi
 
-if [[ $* == "all" || $* == "misc" ]]
+if [[ $* == "all" || $* == *misc* ]]
 then
   echo upload misc!
   # rsync -azi --no-p "var/dicts/v1/basic/hanviet.tsv" "$SSH/var/dicts/v1/basic"
@@ -29,11 +28,14 @@ then
 
   # rsync -azi --no-p "var/_common" "$SSH/var"
   rsync -azi "var/fixed" "$SSH/var"
+  rsync -azi "var/cvhlp" "$SSH/var"
   # rsync -azi --exclude="*.tab" "var/dicts/v1/novel" "$SSH/var/dicts/v1"
   # rsync -azi --no-p --delete "priv/static/covers/" "$SSH/priv/static/covers/"
 fi
 
-if [[ $* == "all" || $* == "mtv2" ]]
+echo $*
+
+if [[ $* == "all" || $* == *mtv2* ]]
 then
   echo upload mtv2!
 
@@ -42,4 +44,5 @@ then
   rsync -azi "var/dicts/core.dic" "$SSH/var/dicts"
   rsync -azi "var/dicts/book.dic" "$SSH/var/dicts"
   rsync -azi "var/dicts/pack.dic" "$SSH/var/dicts"
+  rsync -azi "var/dicts/qtran" "$SSH/var/dicts"
 fi

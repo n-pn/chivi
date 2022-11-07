@@ -1,4 +1,4 @@
-Dir.glob("var/ys_db/crits/*/").each do |text_dir|
+Dir.glob("var/ysapp/crits/*/").each do |text_dir|
   puts text_dir
 
   zip_file = text_dir.sub(/\/$/, ".zip")

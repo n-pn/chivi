@@ -2,7 +2,7 @@ require "compress/zip"
 require "../../src/ysapp/models/*"
 
 # def saved_crit_list(ysbook_id : Int64)
-#   zip_file = "var/ys_db/crits/#{ysbook_id}-zh.zip"
+#   zip_file = "var/ysapp/crits/#{ysbook_id}-zh.zip"
 #   return [] of String unless File.exists?(zip_file)
 
 #   Compress::Zip::File.open(zip_file) do |zip|
@@ -44,7 +44,7 @@ require "../../src/ysapp/models/*"
 total = YS::Yscrit.query.count
 count = 0
 
-Dir.glob("var/ys_db/crits/*.zip").each do |zip|
+Dir.glob("var/ysapp/crits/*.zip").each do |zip|
   count += Compress::Zip::File.open(zip, &.entries.size)
   puts "#{zip} : #{count}/#{total}"
 end
