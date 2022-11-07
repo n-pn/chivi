@@ -70,8 +70,6 @@ Amber::Server.configure do
 
     get "/dicts", CV::VpdictCtrl, :index
     get "/dicts/:dname", CV::VpdictCtrl, :show
-    get "/dicts/:dname/lookup", CV::VpdictCtrl, :lookup
-    put "/dicts/:dname/lookup", CV::VpdictCtrl, :lookup
 
     post "/terms/query", CV::VptermCtrl, :lookup
     put "/terms/entry", CV::VptermCtrl, :upsert_entry
@@ -79,7 +77,7 @@ Amber::Server.configure do
 
     # # quick trans
 
-    put "/qtran/hanviet", CV::QtransCtrl, :hanviet
+    # put "/qtran/hanviet", CV::QtransCtrl, :hanviet
     put "/qtran/mterror", CV::QtransCtrl, :mterror
     post "/qtran", CV::QtransCtrl, :webpage # to make the extension works
     get "/qtran/:type/:name", CV::QtransCtrl, :convert

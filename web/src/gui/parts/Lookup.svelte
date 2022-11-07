@@ -1,12 +1,10 @@
 <script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable, get } from 'svelte/store'
-  import { call_api } from '$lib/api_call'
+  import { api_put } from '$lib/api'
 
   import MtData from '$lib/mt_data'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
-
-  import pt_labels from '$lib/consts/postag_labels.json'
 
   import { ctrl as upsert } from '$gui/parts/Upsert.svelte'
 
@@ -27,12 +25,14 @@
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
-  let entries_cache: Record<string, any> = {}
+  type Entry = [number, Record<string, string>]
+  let entries_cache: Record<string, Entry[]> = {}
+
   let hv_html_cache: Record<string, any> = {}
   let zh_html_cache: Record<string, any> = {}
 
   let entries = []
-  let current = []
+  let current: Entry[] = []
 
   let hv_html = ''
   let zh_html = ''
@@ -64,18 +64,9 @@
     }
 
     if (range.length != 0) {
-      const url = `/api/dicts/${$vdict.dname}/lookup`
-      const [status, body] = await call_api(url, 'PUT', { input, range }, fetch)
-      if (status >= 400) return console.error(body)
-
-      for (let index in body) {
-        const entry = body[index]
-        entries[index] = entry
-        for (const term of entry) {
-          const viet = term[1].vietphrase as Array<string>
-          if (viet) term[1].vietphrase = viet.map((x) => x.split('\t'))
-        }
-      }
+      const url = `/_mh/lookup?udict=${$vdict.dname}`
+      const res = await api_put(url, { input, range }, fetch)
+      for (let index in res) entries[index] = res[index]
     }
 
     setTimeout(update_focus, 20)
@@ -84,12 +75,16 @@
   async function get_hanviet(input: string) {
     hv_html = hv_html_cache[input]
 
-    if (!hv_html) {
-      const url = `/api/qtran/hanviet`
-      const [status, body] = await call_api(url, 'PUT', { input }, fetch)
+    if (hv_html) return
 
-      if (status >= 400) return console.error(body)
-      hv_html_cache[input] = hv_html = new MtData(body).render_hv()
+    const url = `/_mh/hanviet`
+    const params = { lines: [input], mode: 'mtl', cap: true }
+
+    try {
+      const res = await api_put(url, params, fetch)
+      hv_html_cache[input] = hv_html = new MtData(res).render_hv()
+    } catch (err) {
+      console.log(err)
     }
   }
 
@@ -141,10 +136,12 @@
   </svelte:fragment>
 
   <section class="input" bind:this={viewer}>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="input-nav _zh" on:click={handle_click} lang="zh">
       {@html zh_html}
     </div>
 
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="input-nav _hv" on:click={handle_click}>
       {@html hv_html}
     </div>
@@ -154,39 +151,23 @@
     {#each current as [size, terms]}
       <div class="entry">
         <h3 class="word" lang="zh">
-          <entry-key>{$ztext.substring($zfrom, $zfrom + size)}</entry-key>
-          <entry-btn
-            class="m-btn _sm"
-            role="button"
+          <span class="entry-key"
+            >{$ztext.substring($zfrom, $zfrom + size)}</span>
+          <button
+            class="m-btn _sm btn-edit"
             on:click={() => upsert.show(0, 1, $zfrom, $zfrom + size)}>
             <SIcon name="edit" />
-            <span>{terms.vietphrase ? 'Sửa' : 'Thêm'}</span>
-          </entry-btn>
+          </button>
         </h3>
 
-        {#if terms.vietphrase}
-          <div class="item">
-            <h4 class="name">vietphrase</h4>
-            {#each terms.vietphrase as [val, tag, dic]}
-              <p class="term">
-                <term-dic>
-                  <SIcon name={dic % 2 ? 'book' : 'world'} />
-                  <SIcon name={dic > 3 ? 'user' : 'share'} />
-                </term-dic>
+        {#each Object.entries(terms) as [dict, defn]}
+          {#if defn}
+            {@const defns = defn.split('\v')}
 
-                <term-val>{val || '<đã xoá>'}</term-val>
-                <term-tag>{pt_labels[tag] || 'Chưa phân loại'}</term-tag>
-              </p>
-            {/each}
-          </div>
-        {/if}
-
-        {#each ['trungviet', 'cc_cedict', 'trich_dan'] as dname}
-          {#if terms[dname]}
             <div class="item">
-              <h4 class="name">{dname}</h4>
-              {#each terms[dname] as line}
-                <p class="term">{line}</p>
+              <h4 class="name">{dict}</h4>
+              {#each defns as defn}
+                <p class="term">{defn}</p>
               {/each}
             </div>
           {/if}
@@ -249,7 +230,7 @@
     display: flex;
   }
 
-  entry-btn {
+  .btn-edit {
     margin-left: auto;
     background: transparent;
   }
@@ -286,20 +267,20 @@
     line-height: 1.5rem;
   }
 
-  term-tag {
-    display: inline-block;
-    @include bdradi(0.75rem);
-    @include ftsize(sm);
-    @include linesd(--bd-main);
-    @include fgcolor(tert);
-    font-weight: 500;
-    padding: 0 0.5rem;
-  }
+  // term-tag {
+  //   display: inline-block;
+  //   @include bdradi(0.75rem);
+  //   @include ftsize(sm);
+  //   @include linesd(--bd-main);
+  //   @include fgcolor(tert);
+  //   font-weight: 500;
+  //   padding: 0 0.5rem;
+  // }
 
-  term-dic {
-    display: inline-flex;
-    @include ftsize(sm);
-    @include fgcolor(tert);
-    padding: 0.25rem 0;
-  }
+  // term-dic {
+  //   display: inline-flex;
+  //   @include ftsize(sm);
+  //   @include fgcolor(tert);
+  //   padding: 0.25rem 0;
+  // }
 </style>

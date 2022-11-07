@@ -1,8 +1,8 @@
 require "./_shared"
 require "../models/lu_dict"
 
-class TL::HomeCtrl < TL::BaseCtrl
-  base "/_hl"
+class TL::LookupCtrl < TL::BaseCtrl
+  base "/_mh"
 
   class LookupInput
     include JSON::Serializable
@@ -10,7 +10,7 @@ class TL::HomeCtrl < TL::BaseCtrl
     getter range : Array(Int32)
   end
 
-  @[AC::Route::GET("/lookup", body: :req)]
+  @[AC::Route::PUT("/lookup", body: :req)]
   def lookup(req : LookupInput)
     output = {} of Int32 => Array(Tuple(Int32, LuTerms))
 
@@ -33,10 +33,10 @@ class TL::HomeCtrl < TL::BaseCtrl
 
     def to_json(jb : JSON::Builder)
       jb.object do
-        jb.field "top_terms", @top_terms
-        jb.field "trungviet", @trungviet
-        jb.field "cc_cedict", @cc_cedict
-        jb.field "trich_dan", @trich_dan
+        jb.field "Dữ liệu Vietphrase", @top_terms
+        jb.field "Từ điển Trung Việt", @trungviet
+        jb.field "Từ điển CC-CEDICT", @cc_cedict
+        jb.field "Từ điển Trích dẫn", @trich_dan
       end
     end
   end
@@ -45,7 +45,7 @@ class TL::HomeCtrl < TL::BaseCtrl
     entry = Hash(Int32, LuTerms).new { |hash, key| hash[key] = LuTerms.new }
 
     LuDict.top_terms.scan(chars, start: start) do |word, defn|
-      entry[word.size].top_terms = defn
+      entry[word.size].top_terms = defn.gsub("\v", "; ")
     end
 
     LuDict.trungviet.scan(chars, start: start) do |word, defn|
