@@ -12,6 +12,8 @@ Environment=PORT=5501
 Environment=CV_ENV=production
 WorkingDirectory=/app/chivi
 ExecStart=/app/chivi/bin/cvhlp-srv
+StandardOutput=file:/app/chivi/log/cvhlp-srv.log
+StandardError=append:/app/chivi/log/cvhlp-err.log
 
 [Install]
 WantedBy=multi-user.target

@@ -1,27 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SSH=nipin@ssh.chivi.app:srv/chivi
+SSH=nipin@ssh.chivi.app:/app/chivi
 GC_INITIAL_HEAP_SIZE=3G
 
-for var in "$@"
+for target in "$@"
 do
-  echo push $var!
+  echo push $target!
 
-  if [[ $var == "svkit" ]]
+  if [[ $target == "cvweb-srv" ]]
   then
-    cd web && pnpm i && pnpm run build
-    rsync -azi --no-p build nipin@ssh.chivi.app:srv/chivi/web
-    ssh nipin@ssh.chivi.app "sudo service chivi-web restart"
+    cd web && pnpm run build
+    rsync -ai --no-p build/ $SSH/web/
     cd ..
-    continue
+  else
+    shards build -s --release --production $target
+    rsync -aiz --no-p bin/$target $SSH/bin
   fi
 
-  shards build -s --release --production $var
-  rsync -aiz --no-p bin/$var $SSH/bin
-
-  case $var in
-    chivi-srv | ysapp-srv | cvmtl-srv)
-    ssh nipin@ssh.chivi.app "sudo service $var restart"
-  esac
+  ssh nipin@ssh.chivi.app "sudo service $target restart"
 done
