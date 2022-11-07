@@ -21,6 +21,7 @@ const config = {
       '/api': 'http://localhost:5010',
       '/_ys': 'http://localhost:5509',
       '/_mt': 'http://localhost:5502',
+      '/_mh': 'http://localhost:5501',
     },
   },
   vitePlugin: {

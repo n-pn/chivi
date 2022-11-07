@@ -9,9 +9,12 @@ Restart=always
 RestartSec=5
 User=nipin
 Environment=PORT=5509
+Environment=CV_ENV=production
 Environment=AMBER_ENV=production
-WorkingDirectory=/home/nipin/srv/chivi.app
-ExecStart=/home/nipin/srv/chivi.app/bin/ysapp-srv
+WorkingDirectory=/app/chivi
+ExecStart=/app/chivi/bin/ysapp-srv
+StandardOutput=file:/app/chivi/log/ysapp-srv.log
+StandardError=append:/app/chivi/log/ysapp-err.log
 
 [Install]
 WantedBy=multi-user.target

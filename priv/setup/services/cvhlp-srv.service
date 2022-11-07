@@ -1,0 +1,17 @@
+[Unit]
+Description=cvhlp server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=nipin
+Environment=PORT=5501
+Environment=CV_ENV=production
+WorkingDirectory=/app/chivi
+ExecStart=/app/chivi/bin/cvhlp-srv
+
+[Install]
+WantedBy=multi-user.target

@@ -9,7 +9,7 @@ export async function handle({ event, resolve }) {
 const api_hosts = {
   _ys: 'localhost:5509',
   _mt: 'localhost:5502',
-  _tl: 'localhost:5501',
+  _mh: 'localhost:5501',
   // _db: 'localhost:5010',
   api: 'localhost:5010',
 }
@@ -42,5 +42,11 @@ async function getSession({ request: { headers } }) {
   const url = `http://localhost:5010/api/_self`
   const res = await fetch(url, { headers: { cookie } })
 
-  return await res.json()
+  if (res.ok) return await res.json()
+  const error = await res.text()
+
+  return {
+    uname: 'Khách',
+    privi: -2,
+  }
 }

@@ -8,9 +8,9 @@ watch:
   run:
     build_commands:
       - mkdir -p bin
-      - crystal build ./src/chivi.cr -o bin/chivi-dev --error-trace
+      - crystal build ./src/cvapp_srv.cr -o bin/cvapp-dev --error-trace
     run_commands:
-      - bin/chivi-dev
+      - bin/cvapp-dev
     include:
       - ./config/**/*.cr
       - ./config/environments/*.yml

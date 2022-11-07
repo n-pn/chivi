@@ -1,17 +1,12 @@
 #! /bin/sh
-DIR=/home/nipin/srv/chivi.app/etc/workers
 
-sudo rm /etc/systemd/system/ys-serial.service
-sudo cp "$DIR/ys-serial.service" /etc/systemd/system/ys-serial.service
+CWD=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-sudo rm /etc/systemd/system/ys-serial.timer
-sudo cp "$DIR/ys-serial.timer" /etc/systemd/system/ys-serial.timer
+sudo cp -f "$CWD/workers/ys-serial.service" /etc/systemd/system/ys-serial.service
+sudo cp -f "$CWD/workers/ys-serial.timer" /etc/systemd/system/ys-serial.timer
 
-sudo rm /etc/systemd/system/ys-review.service
-sudo cp "$DIR/ys-review.service" /etc/systemd/system/ys-review.service
-
-sudo rm /etc/systemd/system/ys-review.timer
-sudo cp "$DIR/ys-review.timer" /etc/systemd/system/ys-review.timer
+sudo cp -f "$CWD/workers/ys-review.service" /etc/systemd/system/ys-review.service
+sudo cp -f "$CWD/workers/ys-review.timer" /etc/systemd/system/ys-review.timer
 
 sudo systemctl daemon-reload
 
