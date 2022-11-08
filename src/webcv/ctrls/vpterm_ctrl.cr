@@ -52,14 +52,14 @@ class CV::VptermCtrl < CV::BaseCtrl
       Log.error { err }
     end
 
-    log_upsert_entry(dname, vpterm)
+    log_upsert_entry(dname, vpterm, params)
     serv_json(vpterm, 201)
   end
 
-  LOG_DIR = "var/vdict/ulogs"
+  LOG_DIR = "var/dicts/ulogs"
   Dir.mkdir_p(LOG_DIR)
 
-  private def log_upsert_entry(dname, entry)
+  private def log_upsert_entry(dname, entry, params)
     log_file = "#{LOG_DIR}/#{Time.local.to_s("%F")}.log"
 
     File.open(log_file, "a") do |io|
@@ -68,6 +68,7 @@ class CV::VptermCtrl < CV::BaseCtrl
         entry.key, entry.vals.join(VpTerm::SPLIT),
         entry.tags.join(' '), entry.prio_str,
         entry.uname, entry._mode,
+        params["_raw"]?, params["_idx"]?,
       }.join(io, '\t')
       io << '\n'
     end

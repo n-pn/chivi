@@ -3,7 +3,7 @@
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
 
-  import { vdict, zfrom, zupto } from '$lib/stores'
+  import { vdict, ztext, zfrom, zupto } from '$lib/stores'
 
   export const ctrl = {
     ...writable({ tab: 0, state: 0 }),
@@ -84,10 +84,13 @@
     const vals = vals_ary.join('ǀ')
     const tags = tags_ary.join(' ')
 
+    // prettier-ignore
+    const body = { key, vals, tags, prio, dname, _mode, _raw: $ztext, _idx: $zfrom }
+
     const res = await fetch('/api/terms/entry', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key, vals, tags, prio, _mode, dname }),
+      body: JSON.stringify(body),
     })
 
     if (res.ok) {

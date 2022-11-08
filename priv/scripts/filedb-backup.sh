@@ -3,7 +3,7 @@
 echo "Backup from chivi.app!"
 
 REMOTE=nipin@ssh.chivi.app
-SSH=$REMOTE:srv/chivi
+SSH=$REMOTE:/app/chivi
 
 ## backup user data
 if [[ $1 == "all" || $* == *user* ]]
@@ -32,9 +32,9 @@ then
   rsync -aiz --no-p "$SSH/var/books/infos" "var/books"
   rsync -aiz --no-p "$SSH/var/books/cover" "var/books"
 
-  rsync -aiz --no-p "$SSH/var/chaps/texts/@*" "var/chaps/texts"
   rsync -aiz --no-p "$SSH/var/chaps/.html" "var/chaps"
   rsync -aiz --no-p "$SSH/var/chaps/users" "var/chaps"
+  rsync -aiz --no-p "$SSH/var/chaps/texts" "var/chaps"
 fi
 
 ## backup crit data

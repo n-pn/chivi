@@ -1,7 +1,7 @@
 #! /bin/bash
 
 DIR=var/ysraw
-SSH=nipin@ssh.chivi.app:srv/chivi
+SSH=nipin@ssh.chivi.app:/app/chivi
 
 rsync -azui --no-p "$SSH/$DIR/infos" "$DIR"
 rsync -azui --no-p "$SSH/$DIR/users" "$DIR"
