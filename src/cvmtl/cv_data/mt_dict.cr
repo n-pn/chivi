@@ -6,7 +6,9 @@ class MT::MtDict
 
   def initialize(book : String = "shared", user : String? = nil, temp : Bool = false)
     # dicts for current book
-    d_id = get_dict_id("book", book)
+    # note: by convention dict id for book always smaller than zero
+
+    d_id = -get_dict_id("book", book)
     add_dicts("book", d_id: d_id, dpos: 4, user: user, temp: temp) if d_id != 0
 
     # global dicts used in all books
