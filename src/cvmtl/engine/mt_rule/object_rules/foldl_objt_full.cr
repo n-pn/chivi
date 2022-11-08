@@ -1,11 +1,10 @@
 module MT::Rules
   def foldl_objt_full!(objt : MtNode, prev = objt.prev)
-    if prev.ptcl_dep?
-      objt = foldl_objt_udep!(objt: objt, udep: prev)
-      prev = objt.prev
-    end
+    objt = foldl_noun_expr!(objt, prev: prev)
+    prev = objt.prev
 
     if objt.succ.ptcl_dep?
+      # puts [objt, prev, objt.succ.succ, "check!"]
       return objt unless can_fold_objt_prev?(objt, prev, objt.succ.succ)
       # elsif noun.succ.ptcl_dev?
     end
@@ -31,21 +30,22 @@ module MT::Rules
     #   + comparison prepos and comparision particles
     # - add more special
 
-    after_is_verb = after_is_verb?(tail)
+    after_is_pred = after_is_pred?(tail)
 
     case prev
     when .v_shi?, .v_you?
       false
     when .verbal_words?
-      match_objt_verbal?(objt, verbal: prev, tail: tail, after_is_verb: after_is_verb)
+      match_objt_verbal?(objt, verbal: prev, tail: tail, after_is_pred: after_is_pred)
     when .preposes?
-      match_objt_prepos?(objt, prepos: prev, tail: tail, after_is_verb: after_is_verb)
+      match_objt_prepos?(objt, prepos: prev, tail: tail, after_is_pred: after_is_pred)
     else
       true
     end
   end
 
-  def after_is_verb?(node : MtNode, succ = node.succ) : Bool
+  def after_is_pred?(node : MtNode, succ = node.succ) : Bool
+    return true if succ.adjt_words?
     succ = succ.succ if succ.comma?
     succ.verbal_words? || succ.preposes?
   end

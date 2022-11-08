@@ -1,6 +1,7 @@
 module MT::Rules
   def foldl_objt_verb!(objt : MtNode, verb : MtNode)
     head = foldl_verb_full!(verb)
+    # puts [objt, verb, "foldl_objt_verb"]
 
     case head
     when VerbExpr

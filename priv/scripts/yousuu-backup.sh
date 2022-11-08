@@ -17,5 +17,3 @@ rsync -azui --no-p "$SSH/$DIR/crits-by-list" "$DIR"
 # rsync -azui --no-p "$SSH/$DIR/crits-by-user" "$DIR"
 
 rsync -azui --no-p "$SSH/$DIR/repls" "$DIR"
-
-# rsync -azui --no-p "$SSH/var/ysinfos/yscrits" "var/ysinfos"

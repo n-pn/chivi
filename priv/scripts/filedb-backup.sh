@@ -10,6 +10,7 @@ if [[ $1 == "all" || $* == *user* ]]
 then
   echo backup users data!
   rsync -aiz --no-p "$SSH/var/fixed" "var"
+  rsync -aiz --no-p --delete "$SSH/var/.keep/web_log" "var/.keep"
   rsync -aiz --no-p --delete "$SSH/var/cvmtl/users" "var/cvmtl"
 fi
 
@@ -45,5 +46,4 @@ then
   echo backup pg_data!
   rsync -ai --no-p --delete "nipin@ssh.chivi.app:var/wal_log" "var/.keep"
   rsync -aiz --no-p --delete "nipin@ssh.chivi.app:var/pg_data" "var/.keep"
-  rsync -aiz --no-p --delete "$SSH/var/.keep/web_log" "var/.keep"
 fi

@@ -52,11 +52,11 @@ module MT::Rules
   def fix_prep_rang_val!(prep : MonoNode, objt : MtNode) : Nil
     case
     when prep.prev? { |x| x.advb_words? || x.maybe_auxi? }
-      prep.val = "để cho"
+      prep.val = "để"
     when objt.succ?(&.verbal_words?)
-      prep.val = "làm cho"
+      prep.val = "khiến"
     else
-      prep.val = "khiến cho"
+      prep.val = "khiến"
     end
   end
 end

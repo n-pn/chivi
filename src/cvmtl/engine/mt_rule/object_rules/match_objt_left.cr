@@ -2,7 +2,7 @@ module MT::Rules
   # check if objt can fold with left node
   # all assume that after objt is ptcl_dep
 
-  def match_objt_prepos?(objt : MtNode, prepos : MtNode, tail : MtNode, after_is_verb = false)
+  def match_objt_prepos?(objt : MtNode, prepos : MtNode, tail : MtNode, after_is_pred = false)
     return false if objt.nattr? || objt.brand_name?
 
     case prepos
@@ -11,19 +11,19 @@ module MT::Rules
       return true if objt.spaceword? || objt.timeword?
     end
 
-    !after_is_verb
+    !after_is_pred
   end
 
-  def match_objt_verbal?(objt : MtNode, verbal : MtNode, tail : MtNode, after_is_verb = false)
+  def match_objt_verbal?(objt : MtNode, verbal : MtNode, tail : MtNode, after_is_pred = false)
     return false if objt.spaceword?
 
-    return true if (verbal.vlinking? || verbal.modal_verbs?) && after_is_verb
-    prev = verbal.prev
+    head = verbal.prev
+    return true if after_is_pred && (verbal.vlinking? || verbal.modal_verbs? || head.unreal?)
 
     # puts [objt, verbal, prev]
 
-    return true if prev.v_shi?
-    return false unless prev.comma? && (head = prev.prev?)
+    return true if head.v_shi?
+    return false unless head.comma? && (head = head.prev?)
 
     # FIXME: check more case here
     head.subj_verb? || head.verb_no_obj?
