@@ -118,6 +118,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     raise Unauthorized.new("Cần quyền hạn tối thiểu là 2") if _viuser.privi < 2
 
     nvinfo = NvinfoForm.new(params, "@" + _viuser.uname).save
+    update_db_index(nvinfo)
+
     Nvinfo.cache!(nvinfo)
 
     spawn do
@@ -129,6 +131,23 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     serv_json({bslug: nvinfo.bslug})
   rescue err
     serv_text(err.message, 400)
+  end
+
+  private def update_db_index(nvinfo : Nvinfo)
+    DB.open("sqlite3://var/dicts/index.db") do |db|
+      args = [
+        -nvinfo.id.to_i,
+        "-" + nvinfo.bhash,
+        nvinfo.bslug,
+        nvinfo.vname,
+        "Từ điển riêng cho bộ truyện [#{nvinfo.vname}]",
+      ]
+
+      db.exec <<-SQL, args: args
+        insert or ignore into dicts(id, name, slug, label, intro)
+        values (?, ?, ?, ?, ?)
+      SQL
+    end
   end
 
   def delete

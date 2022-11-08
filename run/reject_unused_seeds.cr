@@ -1,8 +1,9 @@
 require "db"
 require "pg"
+require "amber"
 
 def open_db
-  DB.open("postgres://postgres:postgres@localhost:5432/chivi_dev") do |db|
+  DB.open(Amber.settings.database_url) do |db|
     yield db
   end
 end
