@@ -32,7 +32,6 @@ class MT::CvDict
     case name[0]
     when '-' then find("book", name)
     when '!' then find("pack", name)
-    when '@' then find("user", name)
     else          find("core", name)
     end
   end

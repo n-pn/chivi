@@ -1,5 +1,5 @@
+require "db"
 require "./pos_tag"
-require "./open_db"
 
 class MT::MtTerm
   include DB::Serializable
@@ -31,30 +31,6 @@ class MT::MtTerm
   def after_initialize
     @seg = MtTerm.seg_weight(@key.size, @wseg)
     @tag, @pos = PosTag.init(@ptag, @key, @val, @alt)
-  end
-
-  ####
-
-  def self.load_all(type : String, dic : Int32, user : String)
-    DbRepo.open_db(type) do |db|
-      query = <<-SQL
-        select key, val, alt, ptag, wseg from terms
-        where dic = ? and flag < 1 and user = ?
-      SQL
-
-      db.query_all(query, args: [dic, user], as: MtTerm)
-    end
-  end
-
-  def self.load_all(type : String, dic : Int32, user : Nil = nil)
-    DbRepo.open_db(type) do |db|
-      query = <<-SQL
-        select key, val, alt, ptag, wseg from terms
-        where dic = ? and flag < 1
-      SQL
-
-      db.query_all(query, args: [dic], as: MtTerm)
-    end
   end
 
   SEG_VALUE = {

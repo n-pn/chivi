@@ -3,8 +3,8 @@ require "./cv_data/mt_dict"
 require "../_util/text_util"
 
 class MT::Engine
-  def initialize(book : String, pack : String? = nil, user : String? = nil, temp : Bool = false)
-    @dicts = MtDict.new(book: book, pack: pack, user: user, temp: temp)
+  def initialize(book : String, user : String? = nil, temp : Bool = false)
+    @dicts = MtDict.new(book: book, user: user, temp: temp)
   end
 
   def cv_title_full(title : String) : MtData
