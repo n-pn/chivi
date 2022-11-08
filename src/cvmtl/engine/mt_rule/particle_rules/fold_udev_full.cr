@@ -3,7 +3,7 @@ module MT::Rules
     raise "udev should be MonoNode" unless udev.is_a?(MonoNode)
 
     tag = MtlTag::DvPhrase
-    pos = MtlPos::AtTail
+    pos = udev.ptcl_dep? ? MtlPos::AtHead : MtlPos::AtTail
 
     passive = true
 
@@ -18,7 +18,10 @@ module MT::Rules
       udev.skipover!
     when .common_nouns?
       head = foldl_noun_full!(head)
-      raise "Expected v_you!" unless (vyou = head.prev?) && vyou.v_you?
+      unless (vyou = head.prev?) && vyou.v_you?
+        raise "Expected v_you #{vyou}!"
+      end
+
       tag, pos = PosTag.make(:adjt)
       head = PairNode.new(vyou, head, tag, pos, flip: false)
     end

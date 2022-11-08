@@ -30,7 +30,7 @@ module MT::Rules
 
     # puts [verb, prev, verb.prev, "construct_verb"]
 
-    if prev.ptcl_dev?
+    if prev.ptcl_dev? || (prev.ptcl_dep? && prev.prev?(&.adjt_words?))
       prev = foldl_udev_full!(prev)
       return verb unless prev.tag.dv_phrase?
 
