@@ -1,5 +1,6 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
     "mt": "crystal run --error-trace spec/manual/debug_mt.cr -- ",
     "test": "crystal spec --error-trace spec/engine/cvmtl_spec.cr",
