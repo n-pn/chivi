@@ -155,7 +155,7 @@ class SplitText
     sname = paths[-2]
     s_bid = paths[-1].split(/[\-\.]/, 2).first
 
-    File.join("var/var/texts", sname, s_bid)
+    File.join("var/chaps/texts", sname, s_bid)
   end
 
   private def read_and_clean_text(inp_file : String) : Array(String)
