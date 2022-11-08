@@ -5,7 +5,8 @@ module CV::CtrlUtil
     (total &- 1) // limit &+ 1
   end
 
-  LOG_DIR = "var/pg_data/weblogs"
+  LOG_DIR = "var/.keep/web_log"
+  Dir.mkdir_p(LOG_DIR)
 
   def log_user_action(type : String, data : Object, user = "")
     time_now = Time.local.to_s

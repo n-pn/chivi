@@ -200,6 +200,7 @@
     <tlspec-input>
       <tlspec-hanzi bind:this={hanzi_elem}>
         {#each Array.from($ztext) as char, index}
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
           <x-z
             class:active={index >= lower && index < upper}
             on:click={() => change_focus(index)}>{char}</x-z>
