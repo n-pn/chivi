@@ -17,7 +17,9 @@
     {#each list.covers as cover, idx}
       <div class="cover _{idx}">
         <picture>
-          <source type="image/webp" srcset="/covers/{cover}" />
+          <source
+            type="image/webp"
+            srcset="https://cr2.chivi.app/covers/{cover}" />
           <img src="/imgs/empty.png" alt="" />
         </picture>
       </div>
