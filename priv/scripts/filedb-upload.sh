@@ -41,6 +41,8 @@ then
   rsync -azi --no-p "var/cvmtl/inits" "$SSH/var/cvmtl"
   rsync -azi --no-p "var/cvmtl/fixed" "$SSH/var/cvmtl"
   rsync -azi --no-p "var/dicts/qtran" "$SSH/var/dicts"
+
+  rsync -azi --no-p "var/dicts/index.db" "$SSH/var/dicts"
   rsync -azi --no-p "var/dicts/core.dic" "$SSH/var/dicts"
   rsync -azi --no-p "var/dicts/book.dic" "$SSH/var/dicts"
   rsync -azi --no-p "var/dicts/pack.dic" "$SSH/var/dicts"

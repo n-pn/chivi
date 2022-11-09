@@ -20,6 +20,8 @@ class MT::CvTerm
   column time : Int64 = 0_i64
   column flag : Int32 = 0
 
+  EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
+
   ###########
 
   def self.total(type : String, query = "true")
@@ -39,5 +41,14 @@ class MT::CvTerm
 
       db.query_all(query, args: [dic], as: CvTerm)
     end
+  end
+
+  @[AlwaysInline]
+  def self.db_path(type : String) : String
+    "var/dicts/#{type}.dic"
+  end
+
+  def self.open_db(type : String)
+    DB.open("sqlite3:./var/dicts/#{type}.dic") { |db| yield db }
   end
 end
