@@ -22,6 +22,57 @@ class MT::CvTerm
 
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
 
+  def save!(db : DB::Database, id : Int32?)
+    mark_prevs_as_dead!(db)
+
+    fields, values = self.changes(id)
+    holder = Array.new(fields.size, "?").join(", ")
+
+    db.exec <<-SQL, args: values
+      replace into terms (#{fields.join(", ")}) values (#{holder})
+    SQL
+  end
+
+  def changes(id : Int32?)
+    fields = [] of String
+    values = [] of DB::Any
+
+    if id
+      fields << "id"
+      values << id
+    end
+
+    {% for ivar in @type.instance_vars %}
+      {% if ivar.name.stringify != "id" %}
+        fields << {{ ivar.name.stringify }}
+        values << @{{ ivar.name.id }}
+      {% end %}
+    {% end %}
+
+    {fields, values}
+  end
+
+  def mark_prevs_as_dead!(db : DB::Database)
+    dic = @dic.not_nil!
+    args = [dic, @key.not_nil!]
+
+    query = String.build do |str|
+      str << "update terms set flag = 1 where key = ?1 and (dic = ?2"
+
+      if dic > 0 # base dict
+        args << -dic
+        str << " and flag = 0) or (dic = ?3 and flag = 0)"
+      elsif flag == -1 # user dict
+        args << @user.not_nil!
+        str << " and flag = -1 and user = ?3)"
+      else # temp dict
+        str << " and flag = 0)"
+      end
+    end
+
+    db.exec query, args: args
+  end
+
   ###########
 
   def self.total(type : String, query = "true")

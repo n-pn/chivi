@@ -57,7 +57,7 @@ class MT::CvDict
   end
 
   def self.find(name : String)
-    find!(type, name)
+    find!(name)
   rescue
     nil
   end
