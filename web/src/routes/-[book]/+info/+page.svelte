@@ -8,12 +8,12 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo } = data)
+  $: ({ nvinfo_form } = data)
 
-  $: nv_href = `/-${nvinfo.bslug}`
+  $: nv_href = `/-${nvinfo_form.bslug}`
 
   async function delete_book() {
-    const bslug = nvinfo.bslug.substring(0, 8)
+    const bslug = nvinfo_form.bslug.substring(0, 8)
     await fetch(`api/books/${bslug}/delete`, { method: 'DELETE' })
     await goto('/')
   }
@@ -21,12 +21,12 @@
 
 <Crumb
   tree={[
-    [nvinfo.btitle_vi, nv_href],
+    [nvinfo_form.btitle_vi, nv_href],
     ['Sửa thông tin', '.'],
   ]} />
 
-<NvinfoForm {nvinfo}>
-  <h1 slot="header">Sửa thông tin truyện [{nvinfo.btitle_vi}]</h1>
+<NvinfoForm nvinfo={nvinfo_form}>
+  <h1 slot="header">Sửa thông tin truyện [{nvinfo_form.btitle_vi}]</h1>
 </NvinfoForm>
 
 {#if $session.privi > 3}

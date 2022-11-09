@@ -232,6 +232,7 @@
               data-tip="Lấy kết quả từ Google Translate">
               <SIcon name="language" />
             </button>
+            <!-- svelte-ignore security-anchor-rel-noreferrer -->
             <a
               href="/qtran?dname={$vdict.dname}&input={$ztext}"
               target="_blank"

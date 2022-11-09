@@ -43,13 +43,11 @@ declare namespace App {
   }
 
   interface PageData {
-    nvinfo: CV.Nvinfo
-    ubmemo: CV.Ubmemo
-    nslist: CV.Nslist
+    nvinfo?: CV.Nvinfo
+    ubmemo?: CV.Ubmemo
+    nslist?: CV.Nslist
 
-    nv_tab: 'index' | 'board' | 'crits' | 'chaps'
-
-    _user: CurrentUser
+    _user?: CurrentUser
     _meta?: PageMeta
   }
 }

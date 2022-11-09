@@ -8,7 +8,7 @@ require "../shared/seed_data"
 
 class CV::FetchCovers
   def fetch_yousuu!
-    dir = "_db/bcover/yousuu"
+    dir = "var/books/cover/yousuu"
     ::FileUtils.mkdir_p(dir)
 
     out_queue = {} of String => String

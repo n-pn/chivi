@@ -37,11 +37,12 @@ then
   rsync-fast "$SSH/var/books/.html" "var/books"
   rsync-fast "$SSH/var/books/infos" "var/books"
   rsync-fast "$SSH/var/books/cover" "var/books"
+  # rsync-fast "$SSH/var/books/seeds" "var/books"
 
-  rsync-fast "$SSH/var/chaps/seeds" "var/chaps"
   rsync-fast "$SSH/var/chaps/users" "var/chaps"
   rsync-fast "$SSH/var/chaps/texts" "var/chaps"
   rsync-fast "$SSH/var/chaps/.html" "var/chaps"
+  # rsync-fast "$SSH/var/chaps/seeds" "var/chaps"
 fi
 
 

@@ -9,12 +9,11 @@
   import BookTrack from '$gui/parts/BookTrack.svelte'
 
   $: nvinfo = $page.data.nvinfo
-  $: nv_tab = $page.data.nv_tab || gen_nv_tab($page.route.id || '')
+  $: nv_tab = map_tab_from_route($page.route.id || '')
 
-  function gen_nv_tab(path: string) {
-    if (path.includes('crits')) return 'crits'
-    if (path.includes('board')) return 'board'
-
+  function map_tab_from_route(route_id: string) {
+    if (route_id.includes('crits')) return 'crits'
+    if (route_id.includes('chaps')) return 'chaps'
     return 'index'
   }
 </script>

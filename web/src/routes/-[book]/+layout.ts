@@ -1,7 +1,8 @@
 import { get_nvbook } from '$lib/api'
 import { suggest_read } from '$utils/ubmemo_utils'
 
-export async function load({ params, fetch }) {
+import type { LayoutLoad } from './$types'
+export const load: LayoutLoad = async ({ params, fetch }) => {
   const bslug = params.book
 
   const { nvinfo, ubmemo } = await get_nvbook(bslug, fetch)
