@@ -62,22 +62,28 @@ class CV::QtransCtrl < CV::BaseCtrl
   end
 
   def webpage
-    input = params["input"].gsub("\t", "  ")
-
-    lines = Process.run("./bin/trad2sim", shell: false) do |proc|
-      proc.input.print(input)
-      proc.input.close
-      proc.output.gets_to_end.split("\n")
-    end
-
     dname = params.read_str("dname", "combine")
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
+
+    input = params["input"].gsub("\t", "  ")
+    lines = trad_to_simp(input).split("\n")
 
     set_headers content_type: :text
 
     lines.each_with_index do |line, idx|
       response << '\n' if idx > 0
       cvmtl.cv_plain(line, cap_first: true).to_txt(response)
+    end
+  end
+
+  private def trad_to_simp(input : String)
+    Process.run("/usr/bin/opencc", {"-c", "hk2s"}) do |proc|
+      proc.input.print(input)
+      proc.input.close
+      proc.output.gets_to_end
+    rescue err
+      Log.error(exception: err) { err.message }
+      input
     end
   end
 end

@@ -1,4 +1,5 @@
-require "compress/zip"
+require "sqlite3"
+
 require "./ys_list"
 
 class YS::Yscrit
@@ -17,32 +18,53 @@ class YS::Yscrit
   column _sort : Int32 = 0
 
   # column ztext : String = "" # translated comment
-  column vhtml : String = "" # translated comment
+  # column vhtml : String = "" # translated comment
 
   getter ztext : String { load_ztext_from_disk }
-
-  ZTEXT_PATH = "var/ysapp/crits/%{yb_id}-zh.zip"
-  VHTML_PATH = "var/ysapp/crits/%{yb_id}-vi.zip"
+  getter vhtml : String { load_vhtml_from_disk }
 
   def load_ztext_from_disk : String
-    zip_file = ZTEXT_PATH % {yb_id: self.ysbook_id}
-
-    Compress::Zip::File.open(zip_file) do |zip|
-      zip[origin_id + ".txt"]?.try(&.open(&.gets_to_end)) || "$$$"
-    end
+    zip_file = "var/ysapp/crits/#{self.ysbook_id}-zh.zip"
+    Helpers.read_zip(zip_file, "#{origin_id}.txt") { "$$$" }
   rescue err
-    "!!!"
+    Log.error(exception: err) { err.message }
+    "$$$"
   end
 
   def load_vhtml_from_disk : String
-    zip_file = VHTML_PATH % {yb_id: self.ysbook_id}
-
-    Compress::Zip::File.open(zip_file) do |zip|
-      zip[origin_id + ".htm"]?.try(&.open(&.gets_to_end)) || "$$$"
-    end
+    zip_file = "var/ysapp/crits/#{self.ysbook_id}-vi.zip"
+    Helpers.read_zip(zip_file, "#{origin_id}.htm") { render_vhtml_from_ztext(persist: true) }
   rescue err
     Log.error(exception: err) { "error loading vhtml for #{origin_id} of #{ysbook_id}" }
-    "<p><em class=err>Lỗi: Không tìm được dữ liệu! Mời liên hệ ban quản trị.</em></p>"
+    render_vhtml_from_ztext(persist: true)
+  end
+
+  ERROR_BODY = "<p><em class=err>Lỗi dịch đánh giá!</em></p>"
+
+  def render_vhtml_from_ztext(persist : Bool = true)
+    ztext = self.ztext
+
+    if ztext.empty? || ztext == "$$$"
+      html = "<p>$$$</p>"
+    else
+      dict = Helpers.load_dict(self.nvinfo_id.try(&.to_i) || 0)
+      return ERROR_BODY unless tran = Helpers.qtran(ztext, dict.name)
+      html = tran.split('\n').map { |x| "<p>#{x}</p>" }.join('\n')
+    end
+
+    save_vhtml_to_disk(html) if persist
+    html
+  end
+
+  def save_vhtml_to_disk(vhtml : String)
+    out_dir = "var/ysapp/crits.tmp/#{self.ysbook_id}-vi"
+    Dir.mkdir_p(out_dir)
+
+    out_html = "#{out_dir}/#{self.origin_id}.htm"
+    File.write(out_html, vhtml)
+
+    zip_path = "var/ysapp/crits/#{ysbook_id}-vi.zip"
+    `zip -rjuq "#{zip_path}" #{out_html}`
   end
 
   column ztags : Array(String) = [] of String
