@@ -14,8 +14,9 @@ if [[ $1 == "all" || $* == *user* ]]
 then
   echo backup users data!
   rsync-fast "$SSH/var/fixed" "var"
-  rsync-fast --delete "$SSH/var/.keep/web_log" "var/.keep"
-  rsync-fast --delete "$SSH/var/cvmtl/users" "var/cvmtl"
+  rsync-fast --delete "$SSH/var/.keep/web_log/" "var/.keep/web_log/"
+  rsync-fast --delete "$SSH/var/cvmtl/users/" "var/cvmtl/users/"
+  rsync-fast --delete "$SSH/var/books/seeds/" "var/book/seeds/"
 fi
 
 ## backup dict data

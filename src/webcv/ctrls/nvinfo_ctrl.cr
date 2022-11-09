@@ -130,6 +130,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     serv_json({bslug: nvinfo.bslug})
   rescue err
+    Log.error(exception: err) { err.message }
     serv_text(err.message, 400)
   end
 

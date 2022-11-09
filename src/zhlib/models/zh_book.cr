@@ -4,7 +4,7 @@ class ZH::ZhBook
   include Crorm::Model
   self.table = "books"
 
-  column s_bid : Int32
+  column s_bid : Int32, primary: true
   column bhash : String = ""
 
   column btitle : String = ""
@@ -14,7 +14,7 @@ class ZH::ZhBook
   column bcover : String = ""
 
   column status : Int32 = 0
-  column update : Int64 = 0_i64
+  column mftime : Int64 = 0_i64
 
   column last_s_cid : Int32 = 0 # last chap origin id
   column chap_total : Int32 = 0 # total chapter/max chapter ch_no
@@ -24,83 +24,106 @@ class ZH::ZhBook
   column mtime : Int64 = 0_i64 # modification time
   column ctime : Int64 = 0_i64 # crawl time
 
-  def initialize(@s_bid, @btitle = "", @author = "")
+  property repo : Repo { Repo.load("=base") }
+
+  def self.load(sname : String, s_bid : Int32)
+    repo = Repo.load(sname)
+    load(repo, s_bid)
   end
 
-  #####
+  def self.load(repo : Repo, s_bid : Int32)
+    return new(repo, s_bid) unless entry = find(repo, s_bid)
+    entry.tap(&.repo = repo)
+  end
 
-  def self.add_intro(sname : String, s_bid : Int32, intro : String)
-    prefix = s_bid % 1000
-    zip_path = "var/books/seeds/#{sname}/intros/#{prefix}.zip"
-    tmp_path = "var/books/seeds/#{sname}/intros.tmp/#{prefix}"
+  def self.find(repo : Repo, s_bid : Int32)
+    repo.db.query_one?("select * from books where s_bid = ?", args: [s_bid], as: self)
+  end
+
+  ###
+
+  def initialize(@repo : Repo, @s_bid : Int32)
+  end
+
+  def add_intro(intro : String)
+    prefix = @s_bid.not_nil! % 1000
+
+    dir = "var/books/seeds/#{repo.sname}.db"
+    zip_path = "#{dir}/intros/#{prefix}.zip"
+    tmp_path = "#{dir}/intros.tmp/#{prefix}"
 
     Dir.mkdir_p(File.dirname(zip_path))
     Dir.mkdir_p(tmp_path)
 
     File.write("#{tmp_path}/#{s_bid}.txt", intro)
-    Process.exec "zip", {"-rjmq", zip_path, tmp_path}
+    Process.exec "zip", {"-rjuq", zip_path, tmp_path}
   end
 
-  def self.find_or_init(sname : String, s_bid : Int32) : ZhBook
-    find(sname, s_bid) || new(s_bid)
+  def save!
+    @mtime = Time.utc.to_unix
+    @btime = @mtime if @btime == 0
+
+    fields, values = self.get_changes
+    holder = Array.new(fields.size, "?").join(", ")
+
+    repo.db.exec <<-SQL, args: values
+      replace into books (#{fields.join(", ")}) values (#{holder})
+    SQL
   end
 
-  def self.find(sname : String, s_bid : Int32) : ZhBook?
-    open_db(sname) do |db|
-      db.query_one?("select * from books where s_bid = ?", [s_bid], as: ZhBook)
+  class Repo
+    REPOS = {} of String => self
+
+    def self.load(sname : String)
+      REPOS[sname] ||= new(sname)
     end
-  end
 
-  def self.save!(sname : String, entry : ZhBook)
-    open_db(sname) do |db|
-      entry.mtime = Time.utc.to_unix
-      entry.btime = entry.mtime if entry.btime == 0
+    getter db : DB::Database
+    getter sname : String
 
-      fields, values = entry.get_changes
-      holder = Array.new(fields.size, "?").join(", ")
+    def initialize(@sname : String)
+      db_path = "var/books/seeds/#{sname}.db"
+      init_db(db_path, reset: false) unless File.exists?(db_path)
 
-      db.exec <<-SQL, args: values
-        replace into books (#{fields.join(", ")}) values (#{holder})
-      SQL
+      @db = DB.open("sqlite3://#{db_path}")
+      at_exit { @db.close }
     end
-  end
 
-  def self.open_db(sname : String)
-    db_path = "var/books/seeds/#{sname}.db"
-    DB.open("sqlite3://./#{db_path}") { |x| yield x }
-  end
+    def init_db(db_path : String, reset : Bool = false)
+      Log.info { "init zh_book database for seed: #{@sname}" }
 
-  def self.init_db(db_path : String)
-    open_db do |db|
-      db.exec <<-SQL
-        create table if not exists books (
-          s_bid integer primary key,
-          bhash varchar not null default "",
+      DB.open("sqlite3://#{db_path}") do |db|
+        db.exec "drop table if exists books" if reset
 
-          author varchar not null default "",
-          btitle varchar not null default "",
+        db.exec <<-SQL
+          create table if not exists books (
+            s_bid integer primary key,
+            bhash varchar not null default "",
 
-          genres varchar not null default "",
-          bcover varchar not null default "",
+            author varchar not null default "",
+            btitle varchar not null default "",
 
-          "status" integer not null default 0,
-          "update" integer not null default 0,
+            genres varchar not null default "",
+            bcover varchar not null default "",
 
-          chap_count integer not null default 0,
-          chap_total integer not null default 0,
+            status integer not null default 0,
+            mftime integer not null default 0,
 
-          last_schid integer not null default 0,
+            last_s_cid integer not null default 0,
+            chap_total integer not null default 0,
+            chap_avail integer not null default 0,
 
-          btime integer not null default 0,
-          mtime integer not null default 0
-          ctime integer not null default 0
-        );
-      SQL
+            btime integer not null default 0,
+            mtime integer not null default 0,
+            ctime integer not null default 0
+          );
+        SQL
 
-      db.exec "create index lookup_idx on books (bhash);"
-      db.exec "create index author_idx on books (author);"
-      db.exec "create index btitle_idx on books (btitle);"
-      db.exec "create index update_idx on books (update, status);"
+        db.exec "create index if not exists lookup_idx on books(bhash);"
+        db.exec "create index if not exists author_idx on books(author);"
+        db.exec "create index if not exists btitle_idx on books(btitle);"
+        db.exec "create index if not exists mftime_idx on books(mftime, status);"
+      end
     end
   end
 end

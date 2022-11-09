@@ -8,9 +8,7 @@ export async function load({ parent, fetch }) {
 
   const { bintro, genres, bcover } = await api_res.json()
 
-  nvinfo.bintro = bintro
-  nvinfo.genres = genres
-  nvinfo.bcover = bcover
+  const nvinfo_form = { ...nvinfo, bintro, genres, bcover }
 
   const _meta = {
     title: 'Sửa thông tin truyện ' + nvinfo.btitle_vi,
@@ -20,5 +18,5 @@ export async function load({ parent, fetch }) {
     ],
   }
 
-  return { nvinfo, _meta }
+  return { nvinfo: nvinfo_form, _meta }
 }

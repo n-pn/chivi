@@ -14,7 +14,7 @@ class CV::NvinfoForm
     @vi_book = init_vi_book!(btitle_zh, author_zh)
     @book_id = @vi_book.id.to_i
 
-    @zh_user = init_zh_book(@uname, @book_id, btitle_zh, author_zh)
+    @zh_user = init_zh_book("=user", @book_id, btitle_zh, author_zh)
     @zh_base = init_zh_book("=base", @book_id, btitle_zh, author_zh)
   end
 
@@ -40,7 +40,7 @@ class CV::NvinfoForm
   end
 
   def init_zh_book(sname : String, s_bid : Int32, btitle : String, author : String)
-    ZH::ZhBook.find_or_init(sname, s_bid).tap do |x|
+    ZH::ZhBook.load(sname, s_bid).tap do |x|
       x.btitle = btitle
       x.author = author
     end
@@ -50,8 +50,8 @@ class CV::NvinfoForm
     return unless bintro
     bintro = TextUtil.split_html(bintro, true)
 
-    ZH::ZhBook.add_intro(@uname, @book_id, bintro.join("\n"))
-    ZH::ZhBook.add_intro("=base", @book_id, bintro.join("\n"))
+    @zh_user.add_intro(bintro.join("\n"))
+    @zh_base.add_intro(bintro.join("\n"))
 
     @vi_book.set_bintro(bintro, force: true)
   end
@@ -62,8 +62,8 @@ class CV::NvinfoForm
     vi_genres = genres.split(",").map!(&.strip)
     zh_genres = GenreMap.vi_to_zh(vi_genres)
 
-    @zh_user.genres = zh_genres.join("\n")
-    @zh_base.genres = zh_genres.join("\n")
+    @zh_user.genres = zh_genres.join("\t")
+    @zh_base.genres = zh_genres.join("\t")
 
     @vi_book.vgenres = vi_genres
     @vi_book.igenres = GenreMap.map_int(vi_genres)
@@ -99,8 +99,8 @@ class CV::NvinfoForm
     self.add_bcover(get_param("bcover"))
     self.add_status(get_param("status").try(&.to_i?))
 
-    ZH::ZhBook.save!(@uname, @zh_user)
-    ZH::ZhBook.save!("=base", @zh_base)
+    @zh_user.save!
+    @zh_base.save!
 
     # TODO: wite text log
     # File.append("var/.keep/web_log/books-upsert.tsv", @params.to_json)
