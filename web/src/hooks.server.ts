@@ -2,7 +2,9 @@ export async function handle({ event, resolve }) {
   event.locals._user = await getSession(event)
 
   return resolve(event, {
-    filterSerializedResponseHeaders: (_name: string) => true,
+    filterSerializedResponseHeaders: (name: string) => {
+      return name != 'location'
+    },
   })
 }
 

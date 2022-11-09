@@ -12,6 +12,8 @@ Environment=PORT=5502
 Environment=CV_ENV=production
 WorkingDirectory=/app/chivi
 ExecStart=/app/chivi/bin/cvmtl-srv
+StandardOutput=file:/app/chivi/log/cvmtl-srv.log
+StandardError=append:/app/chivi/log/cvmtl-err.log
 
 [Install]
 WantedBy=multi-user.target

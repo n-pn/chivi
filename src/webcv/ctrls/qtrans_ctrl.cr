@@ -62,7 +62,7 @@ class CV::QtransCtrl < CV::BaseCtrl
   end
 
   def webpage
-    dname = params.read_str("dname", "combine")
+    dname = params["dname"]? || "combine"
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
 
     input = params["input"].gsub("\t", "  ")
