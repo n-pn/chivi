@@ -1,4 +1,5 @@
-require "./open_db"
+require "./cv_dict"
+require "./cv_term"
 require "./mt_trie"
 
 class MT::MtDict
@@ -8,7 +9,7 @@ class MT::MtDict
     # dicts for current book
     # note: by convention dict id for book always smaller than zero
 
-    d_id = -get_dict_id("book", book)
+    d_id = -get_dict_id("-#{book}")
     add_dicts("book", d_id: d_id, dpos: 4, user: user, temp: temp) if d_id != 0
 
     # global dicts used in all books
@@ -17,10 +18,10 @@ class MT::MtDict
 
   DICT_IDS = {} of String => Int32
 
-  def get_dict_id(type : String, name : String) : Int32
-    DICT_IDS["#{type}/#{name}"] ||= begin
+  def get_dict_id(name : String) : Int32
+    DICT_IDS[name] ||= begin
       query = "select id from dicts where name = ?"
-      DbRepo.open_db type, &.query_one?(query, args: [name], as: Int32) || 0
+      CvDict.open_db(&.query_one?(query, args: [name], as: Int32)) || 0
     end
   end
 
@@ -52,7 +53,7 @@ class MT::MtDict
       where dic = ? and #{clause}
     SQL
 
-    DbRepo.open_db(type) do |db|
+    CvTerm.open_db(type) do |db|
       db.query_each(query, args: args) { |rs| trie.push!(rs.read(MtTerm)) }
     end
 

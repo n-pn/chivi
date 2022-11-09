@@ -69,7 +69,7 @@ class MT::CvDict
   end
 
   def self.open_db
-    DB.open("sqlite3:var/dicts/index.db") { |db| yield db }
+    DB.open("sqlite3://var/dicts/index.db") { |db| yield db }
   end
 
   def self.total_books
