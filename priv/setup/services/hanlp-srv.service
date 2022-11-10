@@ -1,0 +1,22 @@
+[Unit]
+Description=hanlp server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=100
+User=nipin
+Environment=PORT=5401
+Environment=HANLP_VERBOSE=0
+Environment=HANLP_HOME=/home/nipin/.hanlp
+#Environment=PYTHONPATH=$PYTHONPATH:/home/nipin/.local/lib/python3.10/site-packages
+
+WorkingDirectory=/app/chivi
+ExecStart=/usr/bin/python3 /app/chivi/bin/hanlp_srv.py
+StandardOutput=file:/app/chivi/log/hanlp-srv.log
+StandardError=append:/app/chivi/log/hanlp-err.log
+
+[Install]
+WantedBy=multi-user.target

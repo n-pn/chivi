@@ -12,6 +12,9 @@ do
     cd web && pnpm run build
     rsync -ai --no-p build/ /app/chivi/web/
     cd ..
+  elif [[ $target == "hanlp-srv" ]]
+  then
+    cp -f "src/cvhlp/hanlp_srv.py" /app/chivi/bin
   else
     shards build -s --release --production $target
   fi

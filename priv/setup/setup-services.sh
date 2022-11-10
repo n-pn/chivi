@@ -9,6 +9,7 @@ sudo cp -f "$CWD/services/cvweb-srv.service" /etc/systemd/system/cvweb-srv.servi
 sudo cp -f "$CWD/services/cvmtl-srv.service" /etc/systemd/system/cvmtl-srv.service
 sudo cp -f "$CWD/services/cvhlp-srv.service" /etc/systemd/system/cvhlp-srv.service
 sudo cp -f "$CWD/services/ysapp-srv.service" /etc/systemd/system/ysapp-srv.service
+sudo cp -f "$CWD/services/hanlp-srv.service" /etc/systemd/system/hanlp-srv.service
 
 sudo systemctl daemon-reload
 
@@ -23,3 +24,6 @@ sudo service cvhlp-srv restart
 
 sudo systemctl enable ysapp-srv.service
 sudo service ysapp-srv restart
+
+sudo systemctl enable hanlp-srv.service
+sudo service hanlp-srv restart
