@@ -7,6 +7,7 @@ import hanlp
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+TOK = hanlp.load(hanlp.pretrained.tok.FINE_ELECTRA_SMALL_ZH)
 POS = hanlp.load(hanlp.pretrained.pos.PKU_POS_ELECTRA_SMALL)
 
 class Server(BaseHTTPRequestHandler):
@@ -14,18 +15,24 @@ class Server(BaseHTTPRequestHandler):
     content_len = int(self.headers.get('Content-Length'))
     post_body = self.rfile.read(content_len).decode('utf-8')
 
-
     if self.path == "/pos":
-      self.pos_tagging(post_body)
+      lines = [x.split('\t') for x in post_body.split('\n')]
+      self.print_result(POS(lines))
+    elif self.path == "/tok":
+      lines = post_body.split('\n')
+      self.print_result(TOK(lines))
+    else:
+      self.send_response(400)
+      self.send_header("Content-type", "text/plain; charset=utf-8")
+      self.end_headers()
+      self.wfile.write('Unsupported path'.encode('utf-8'))
 
-  def pos_tagging(self, content):
-    lines = []
+  def parse_input(self, post_body):
 
-    for line in content.split('\n'):
-      lines.append(line.rstrip('\n').split('\t'))
 
-    output = POS(lines)
+    return lines
 
+  def print_result(self, output):
     self.send_response(200)
     self.send_header("Content-type", "text/plain; charset=utf-8")
     self.end_headers()
