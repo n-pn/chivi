@@ -4,16 +4,21 @@ module MT::PosTag
     when 'r' then make(:human_name)
     when 's' then make(:place_name)
     when 't' then make(:insti_name)
-    when 'b' then make(:brand_name)
+    when 'h' then make(:hrace_name)
     when 'w' then make(:title_name)
+    when 'b' then make(:brand_name)
+    when 'k' then make(:skill_name)
     else          make(:other_name)
     end
   end
 
-  def self.map_noun(tag : String, key = "", alt : String? = nil)
+  def self.map_noun(tag : String, key = "")
     case tag[1]?
-    when 'h' then map_honor(alt)
+    when 'r' then make(:human) # todo: map human words
+    when 'h' then make(:honor)
+    when 's' then map_space(key)
     when 'o' then map_nobjt(key)
+    when 't' then map_tword(key)
     when 'a' then make(:nattr)
     when 'b' then make(:nabst)
     when 'l' then make(:nmix)
@@ -21,29 +26,10 @@ module MT::PosTag
     end
   end
 
-  def self.map_honor(val : String?)
-    tag, pos = make(:honor)
+  SPACE_MAP = load_map("map_place")
 
-    case val
-    when .nil?
-      pos |= :at_tail
-    when .starts_with?('?')
-      pos |= :at_head
-      pos |= :no_space_r if val[1] != ' '
-    when .ends_with?('?')
-      pos |= :at_tail
-      pos |= :no_space_l if val[-2] != ' '
-    else
-      pos |= :at_tail
-    end
-
-    {tag, pos}
-  end
-
-  PLACE_MAP = load_map("map_place")
-
-  def self.map_place(key : String)
-    PLACE_MAP[key] ||= begin
+  def self.map_space(key : String)
+    SPACE_MAP[key] ||= begin
       is_locat?(key[-1]) ? make(:posit) : make(:place)
     end
   end

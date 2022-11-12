@@ -1,20 +1,16 @@
 # conjuctions
 
-ConjAdvb	Unreal, MaybeAdvb	# conjuction or adverbial
-Conjunct	Unreal	# subordinating conjunction
+Fc	Conjunct	Unreal	# subordinating conjunction
 
-# both correl or concoord
-Conmixed	Unreal, JoinWord	# generic
-
-ConDan4	Unreal, JoinWord, Peculiar	# "但"
-ConYou4	Unreal, JoinWord, Peculiar	# "又"
-ConHuo4	Unreal, JoinWord, Peculiar	# "或"
-ConHuoshi	Unreal, JoinWord, Peculiar	# "或是"
+#Fc_d	ConDan4	Unreal, JoinWord, Peculiar	# "但"
+#Fc_y	ConYou4	Unreal, JoinWord, Peculiar	# "又"
+#Fc_h	ConHuo4	Unreal, JoinWord, Peculiar	# "或"
+#Fc_hs	ConHuoshi	Unreal, JoinWord, Peculiar	# "或是"
 
 # coordinating conjunction
-Concoord	Unreal, JoinWord	# geneirc
+Fcc	Concoord	Unreal, JoinWord	# geneirc
 
-ConHe2	Unreal, JoinWord, Peculiar	# "和"
-ConYu3	Unreal, JoinWord, Peculiar	# "与"
-ConTong	Unreal, JoinWord, Peculiar	# "同"
-ConGen1	Unreal, JoinWord, Peculiar	# "跟"
+#Fcc_h	ConHe2	Unreal, JoinWord, Peculiar	# "和"
+#Fcc_y	ConYu3	Unreal, JoinWord, Peculiar	# "与"
+#Fcc_t	ConTong	Unreal, JoinWord, Peculiar	# "同"
+#Fcc_g	ConGen1	Unreal, JoinWord, Peculiar	# "跟"

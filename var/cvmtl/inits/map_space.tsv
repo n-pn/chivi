@@ -1,8 +1,13 @@
-上	LocShang
-下	LocXia
-中	LocZhong
-前	LocQian
-后	LocHou4
+上	Locat
+下	Locat
+中	Locat
+前	Locat
+后	Locat
+#上	LocShang
+#下	LocXia
+#中	LocZhong
+#前	LocQian
+#后	LocHou4
 
 左	Locat
 右	Locat

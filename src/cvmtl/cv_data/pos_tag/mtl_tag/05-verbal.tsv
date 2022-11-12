@@ -1,44 +1,43 @@
 # verbs
 
-Vobj	CanBePred	# verb + object phrase
-Vsep	CanBePred	# verb object seperatable
-Vset	CanBePred	# verb + object as skill
+Vi_o	Vobj	CanBePred	# verb + object phrase
+Vi_s	Vset	CanBePred	# verb + object as skill
+Vi_l	Vmix	CanBePred	# verb phrase need no object
+Vi_i	Vint	CanBePred	# intransitive verb
 
-Vmix	CanBePred	# verb phrase need no object
-Vint	CanBePred	# intransitive verb
-Vinx	CanBePred	# intra | trans
+Vd	Vead	CanBePred	# verbs using for comparision
+Vn	Veno	CanBePred
 
-Verb	CanBePred	# normal transitive verb
-Vtwo	CanBePred	# verbs need two objects
-Vcmp	CanBePred	# verbs using for comparision
+Vt_1	Verb	CanBePred	# normal transitive verb
+Vt_2	Vtwo	CanBePred	# verbs need two objects
+Vt_d	Vdir	CanBePred	# directional verb
 
-Vexi	CanBePred	# existential verbs
-Vcau	CanBePred	# causative verbs
+Vs_r	Vcmp	CanBePred	# verbs using for comparision
+Vs_c	Vcau	CanBePred	# causative verbs
 
-VDao	CanBePred, MaybeCmpl, Vlinking, Peculiar
-VZhu	CanBePred, MaybeCmpl, Peculiar	# "住"
+Vs_p	Vpsy	CanBePred	# psychological verb
+Vs_x	Vpro	CanBePred	# performative verb
 
-Vdir	CanBePred, MaybeCmpl	# directional verb
-
-Vpsy	CanBePred, MaybeAuxi	# psychological verb
-Vpro	CanBePred, MaybeAuxi	# performative verb
-Vmod	CanBePred, MaybeAuxi	# modal verbs
-
-## special modal verbs
-VmHui	CanBePred, MaybeAuxi, MaybeCmpl, Peculiar	# "会"
-VmBuhui	CanBePred, MaybeAuxi, Peculiar	# "不会"
-VmXiang	CanBePred, MaybeAuxi, Peculiar	# "想"
-VmNeng	CanBePred, MaybeAuxi, Peculiar	# "能"
-VmYao	CanBePred, MaybeAuxi, Peculiar	# "要"
-VmKe3	CanBePred, MaybeAuxi, Peculiar	# "可"
+## modal verbs
+Vs_m	Vmod	CanBePred, MaybeAuxi	# modal verbs
+Vs_hui	VmHui	CanBePred, MaybeAuxi, MaybeCmpl, Peculiar	# "会"
+Vs_bubui	VmBuhui	CanBePred, MaybeAuxi, Peculiar	# "不会"
+Vs_xiang	VmXiang	CanBePred, MaybeAuxi, Peculiar	# "想"
+Vs_neng	VmNeng	CanBePred, MaybeAuxi, Peculiar	# "能"
+Vs_yao	VmYao	CanBePred, MaybeAuxi, Peculiar	# "要"
+Vs_ke3	VmKe3	CanBePred, MaybeAuxi, Peculiar	# "可"
 
 ## special verbs
-VShang	CanBePred, MaybeAuxi, Peculiar	# "上"
-VXia	CanBePred, MaybeAuxi, Peculiar	# "下"
+#Vs_shang	VShang	CanBePred, MaybeAuxi, Peculiar	# "上"
+#Vs_xia	VXia	CanBePred, MaybeAuxi, Peculiar	# "下"
+#Vs_dao	VDao	CanBePred, MaybeCmpl, Vlinking, Peculiar
+#Vs_zhu	VZhu	CanBePred, MaybeCmpl, Peculiar	# "住"
 
 ### existential/comparision
-VYou	CanBePred, MaybeAuxi, Peculiar, Vlinking	# "有"
-VMeiyou	CanBePred, MaybeAuxi, Peculiar, Vlinking	# "没有"
+Vs_s	Vexi	CanBePred	# existential verbs
+Vs_you	VYou	CanBePred, MaybeAuxi, Peculiar, Vlinking	# "有"
+Vs_meiyou	VMeiyou	CanBePred, MaybeAuxi, Peculiar, Vlinking	# "没有"
 
 ### copula
-VShi	CanBePred, MaybeAuxi, Peculiar	# '是'
+Vs_shi	VShi	CanBePred, MaybeAuxi, Peculiar	# '是'
+Vs_cop	VCop	CanBePred, MaybeAuxi, Peculiar	# other copula

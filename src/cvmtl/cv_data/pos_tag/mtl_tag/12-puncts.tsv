@@ -1,0 +1,58 @@
+#lbl	#tag	#pos	#key
+
+Xw_pm	Period	Boundary, CapAfter, NoSpaceL	"."
+Xw_em	Exclpm	Boundary, CapAfter, NoSpaceL	"!"
+Xw_qm	Quespm	Boundary, CapAfter, NoSpaceL	"?"
+
+Xw_dq	DbQuote	Boundary, NoSpaceL	"\""
+Xw_sq	SgQuote	Boundary, NoSpaceL	"'"
+
+Xw_ts1	TitleSt1	Boundary, NoSpaceR, CapAfter	"⟨"
+Xw_ts2	TitleSt2	Boundary, NoSpaceR, CapAfter	"<"
+Xw_ts3	TitleSt3	Boundary, NoSpaceR, CapAfter	"‹"
+
+Xw_qs1	QuoteSt1	Boundary, NoSpaceR	"“"
+Xw_qs2	QuoteSt2	Boundary, NoSpaceR	"‘"
+
+Xw_bs1	BrackSt1	Boundary, NoSpaceR, CapAfter	"["
+Xw_bs2	BrackSt2	Boundary, NoSpaceR, CapAfter	"{"
+
+Xw_ps1	ParenSt1	Boundary, NoSpaceR	"("
+
+Xw_tc1	TitleCl1	Boundary, NoSpaceL	"⟩"
+Xw_tc2	TitleCl2	Boundary, NoSpaceL	">"
+Xw_tc3	TitleCl3	Boundary, NoSpaceL	"›"
+
+Xw_qc1	QuoteCl1	Boundary, NoSpaceL	"”"
+Xw_qc2	QuoteCl2	Boundary, NoSpaceL	"’"
+
+Xw_bc1	BrackCl1	Boundary, NoSpaceL	"]"
+Xw_bc2	BrackCl2	Boundary, NoSpaceL	"}"
+
+Xw_pc1	ParenCl1	Boundary, NoSpaceL	")"
+
+Xw_cl	Colon	Boundary, NoSpaceL, CapAfter	":"
+Xw_sc	Smcln	Boundary, NoSpaceL	";"
+
+Xw_cm	Comma	NoSpaceL, Boundary	","
+Xw_ce	Cenum	NoSpaceL, JoinWord	"､"
+
+Xw_d1	Dash1	Boundary, NoSpaceL, NoSpaceR	"–"
+Xw_d2	Dash2	Boundary	"—"
+
+Xw_e1	Ellip1	NoSpaceL	"…"
+Xw_e2	Ellip2	NoSpaceL	"……"
+
+Xw_td	Tilde	Boundary, NoSpaceL	"~"
+
+Xw_md	Middot	NoSpaceL, NoSpaceR, JoinWord	"·"
+Xw_as	Atsign	NoSpaceR	"@"
+
+Xw_pc	Pcmark	NoSpaceL	"‰", "%"
+Xw_qt	Qtmark	NoSpaceL	"￥", "$", "￡", "°", "℃"
+
+Xw_pl	PlMark	NoSpaceL, NoSpaceR	"+"
+Xw_mn	MnMark	NoSpaceL, NoSpaceR	"-"
+
+Xw_ws	Space	Boundary, NoSpaceL, NoSpaceR	" "
+Xw_xx	Pmark	Boundary	""

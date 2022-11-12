@@ -3,27 +3,15 @@ enum MT::MtlTag : UInt32
 
   {% begin %}
     {% files = {
-         "00-punct",
-         "01-literal",
-         "02-nominal",
-         "03-pronoun",
-         "04-numeral",
-         "05-verbal",
-         "06-adjective",
-         "07-adverb",
-         "08-conjunct",
-         "09-prepos",
-         "10-particle",
-         "11-phrase",
-         "12-soundword",
-         "13-morpheme",
-         "14-polysemy",
-         "15-uniqword",
+         "00-grammar",
+         "01-literal", "02-nominal", "03-pronoun", "04-numeral",
+         "05-verbal", "06-adjective", "07-adverb", "08-conjunct",
+         "09-prepos", "10-particle", "11-others", "12-puncts",
        } %}
     {% for file in files %}
       {% lines = read_file("#{__DIR__}/mtl_tag/#{file.id}.tsv").split('\n') %}
       {% for line in lines.reject { |x| x.empty? || x.starts_with?('#') } %}
-        {{ line.split('\t').first.id }}
+        {{ line.split('\t')[1].id }}
       {% end %}
     {% end %}
   {% end %}
@@ -87,7 +75,7 @@ enum MT::MtlTag : UInt32
   end
 
   def name_words?
-    self >= HumanName && self <= SkillName
+    self >= HumanName && self <= OtherName
   end
 
   # is place name or oraganization
@@ -96,7 +84,7 @@ enum MT::MtlTag : UInt32
   end
 
   def other_names?
-    self >= OtherName && self <= InstiName
+    self >= BrandName && self <= OtherName
   end
 
   # is not proper nouns

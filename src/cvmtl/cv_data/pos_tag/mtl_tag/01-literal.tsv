@@ -1,12 +1,15 @@
-#tag	#pos	#desc
+#lbl	#tag	#pos	#desc
 
-LitBlank	Object, Ktetic	# unknown/untagged phrases
-LitIdiom	Object, Ktetic	# chinese idiom that have multi classes
-LitQuote	Object, Ktetic	# citations, quotes
-LitTrans	Object, Ktetic	# partial translations
+Xp_b	LitBlank	Object, Ktetic	# unknown/untagged phrases
+Xp_i	LitIdiom	Object, Ktetic	# chinese idiom that have multi classes
+Xp_q	LitQuote	Object, Ktetic	# citations, quotes
+Xp_t	LitTrans	Object, Ktetic	# partial translations
 
-StrLink	Object	# hyper link (can act as object)
-StrMail	Object	# email string (can act as object)
-StrHash	Object	# hash tag (can act as object)
-StrEmoji	Object	# emoji, kaomoji
-StrOther	Object	# other raw string
+Xs_u	StrLink	Object	# hyper link (can act as object)
+Xs_m	StrMail	Object	# email string (can act as object)
+Xs_h	StrHash	Object	# hash tag (can act as object)
+Xs_e	StrEmoji	Object	# emoji, kaomoji
+Xs_x	StrOther	Object	# other raw string
+
+Xv	SepVerb	Peculiar	# verb seperable, verb part
+Xo	SepObjt	Object	# verb seperable, object part

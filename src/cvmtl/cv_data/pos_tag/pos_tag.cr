@@ -6,39 +6,74 @@ module MT::PosTag
   # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
+  # convert mtl tag to short name for display
+  MAP_STR = {} of MtlTag => String
+
+  # map from short name to full name in enum entity
+  MAP_TAG = {} of String => MtlTag
+
+  # map from tag enum to part of speech attributes
   MAP_POS = {} of MtlTag => MtlPos
-  MAP_POS[MtlTag::Empty] = MtlPos.flags(Boundary, NoSpaceL, NoSpaceR, CapRelay, Unreal)
+
+  MAP_POS[MtlTag::Empty] = MtlPos.flags(Boundary, NoSpaceL, NoSpaceR, Unreal)
 
   {% begin %}
     {% files = {
-         "00-punct",
-         "01-literal",
-         "02-nominal",
-         "03-pronoun",
-         "04-numeral",
-         "05-verbal",
-         "06-adjective",
-         "07-adverb",
-         "08-conjunct",
-         "09-prepos",
-         "10-particle",
-         "11-phrase",
-         "12-soundword",
-         "13-morpheme",
-         "14-polysemy",
-         "15-uniqword",
+         "00-grammar",
+         "01-literal", "02-nominal", "03-pronoun", "04-numeral",
+         "05-verbal", "06-adjective", "07-adverb", "08-conjunct",
+         "09-prepos", "10-particle", "11-others", "12-puncts",
        } %}
     {% for file in files %}
       {% lines = read_file("#{__DIR__}/mtl_tag/#{file.id}.tsv").split("\n") %}
       {% for line in lines.reject { |x| x.empty? || x.starts_with?('#') } %}
-        {% tag, pos = line.split('\t') %}
+        {% str, tag, pos = line.split('\t') %}
+        MAP_STR[MtlTag::{{tag.id}}] = {{str.stringify}}
+        MAP_TAG[{{str.stringify}}] = MtlTag::{{tag.id}}
         MAP_POS[MtlTag::{{tag.id}}] = MtlPos.flags({{pos.id}})
       {% end %}
     {% end %}
   {% end %}
 
   def self.map_pos(tag : MtlTag)
-    MAP_POS[tag] || MtlPos::None
+    MAP_POS[tag]? || MtlPos::None
+  end
+
+  # convert from tag enum to shortname
+  def self.to_str(tag : MtlTag)
+    MAP_STR[tag]
+  end
+
+  # convert from user input tag string to real tag string
+  #
+  # to hide complexity from regular user, some tags will be mapped directly by
+  # its content instead.
+  def self.map_str(tag : String, key : String, val = key)
+    tag.ends_with?('_') ? MAP_STR[map_tag(tag, key)] : tag
+  end
+
+  # map tag from tag string and raw input
+  # need `val` for punctuation only, should be removed
+  def self.map_tag(str : String, key : String, val : String = "")
+    MAP_TAG[str]? || map_tag_by_ctx(str, key, val)
+  end
+
+  # ameba:disable Metrics/CyclomaticComplexity
+  def self.map_tag_by_ctx(tag : String, key : String = "", val : String = "")
+    case tag[0]?
+    when nil then make(:lit_trans)
+    when 'E' then map_name(tag, key)
+    when 'N' then map_noun(tag, key)
+    when 'V' then map_verb(tag, key)
+    when 'A' then map_adjt(tag, key)
+    when 'R' then map_pronoun(key)
+    when 'M' then map_number(tag, key)
+    when 'Q' then map_quanti(key)
+    when 'F' then map_function(tag, key)
+    when 'G' then map_affix(key)
+    when 'X' then map_literal(tag, val)
+    else          make(:lit_blank)
+    end
   end
 
   def self.load_map(name : String) : Hash(String, {MtlTag, MtlPos})
@@ -57,80 +92,6 @@ module MT::PosTag
 
   def self.make(tag : MtlTag, pos : MtlPos = map_pos(tag))
     {tag, pos}
-  end
-
-  # ameba:disable Metrics/CyclomaticComplexity
-  def self.init(tag : String, key : String = "", val : String = "", alt : String? = nil)
-    case tag[0]?
-    when nil then make(:lit_trans)
-    when 'N' then map_name(tag, key)
-    when 'n' then map_noun(tag, key, alt)
-    when 't' then map_tword(key)
-    when 's' then map_place(key)
-    when 'v' then map_verb(tag, key, !!alt)
-    when 'a' then map_adjt(tag, key, !!alt)
-    when '~' then map_polysemy(tag, key)
-    when '+' then map_phrase(tag)
-    when 'p' then map_prepos(key)
-    when 'd' then map_adverb(key)
-    when 'm' then map_number(tag, key)
-    when 'r' then map_pronoun(key)
-    when 'q' then map_quanti(key)
-    when 'k' then map_suffix(key)
-    when 'x' then map_strings(key)
-    when 'l' then map_literal(tag)
-    when 'c' then map_conjunct(key)
-    when 'u' then map_particle(key)
-    when '!' then map_uniqword(key)
-    when 'y' then map_sound(key)
-    when 'w' then map_punct(val)
-    else          make(:lit_blank)
-    end
-  end
-
-  def self.map_punct(str : String)
-    {% begin %}
-      case str
-    {% lines = read_file("#{__DIR__}/mtl_tag/00-punct.tsv").split("\n") %}
-    {% for line in lines.select { |x| !x.empty? && !x.starts_with?('#') } %}
-      {% tag, pos, keys = line.split('\t') %}
-      when {{keys.id}} then {MtlTag::{{tag.id}}, MtlPos.flags(Unreal, {{pos.id}})}
-    {% end %}
-      else {MtlTag::Pmark, MtlPos.flags(Unreal, Boundary)}
-      end
-    {% end %}
-  end
-
-  def self.map_prepos(str : String)
-    {% begin %}
-      case str
-    {% lines = read_file("#{__DIR__}/mtl_tag/09-prepos.tsv").split("\n") %}
-    {% for line in lines.select { |x| !x.empty? && !x.starts_with?('#') } %}
-      {% tag, pos, key = line.split('\t') %}
-      {% if !key.empty? %}
-      when {{key.id}} then {MtlTag::{{tag.id}}, MtlPos.flags({{pos.id}})}
-      {% end %}
-    {% end %}
-      else {MtlTag::Prepos, MtlPos.flags(Unreal)}
-      end
-    {% end %}
-  end
-
-  def self.map_particle(str : String)
-    {% begin %}
-      case str
-    {% lines = read_file("#{__DIR__}/mtl_tag/10-particle.tsv").split("\n") %}
-    {% for line in lines.select { |x| !x.empty? && !x.starts_with?('#') } %}
-      {% tag, pos, key = line.split('\t') %}
-      {% if !key.empty? %}
-      when {{key.id}} then {MtlTag::{{tag.id}}, MtlPos.flags({{pos.id}})}
-      {% end %}
-    {% end %}
-      else
-        # Log.debug { "unknown particle #{str}"}
-        {MtlTag::Prepos, MtlPos.flags(Unreal)}
-      end
-    {% end %}
   end
 end
 

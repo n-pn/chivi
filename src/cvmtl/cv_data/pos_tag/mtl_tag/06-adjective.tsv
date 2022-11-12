@@ -1,16 +1,13 @@
 # adjectives
 
-Adjt	CanBePred	# normal adjective
-Amed	CanBePred	# measurement adjective
-
-## special adjectives
-AHao	CanBePred, MaybeModi, MaybeAdvb, MaybeCmpl, Peculiar	# "好"
-ASi3	CanBePred, MaybeModi, MaybeCmpl, MaybeVerb, Peculiar	# "死"
+Aa	Adjt	CanBePred	# normal adjective
+An	Ajno	MaybeNoun
+Ad	Ajad	MaybeAdvb
 
 # modifier 区别词
-Amod	MaybeModi, AtTail	# modifier place after center noun
-AmodL	MaybeModi, AtHead	# modifier put before noun
+Ab_t	Amod	MaybeModi, AtTail	# modifier place after center noun
+Ab_h	AmodL	MaybeModi, AtHead	# modifier put before noun
 
 # words that act as adjective
-Ades	CanBePred 	# 状态词 stative verb
-Amix	CanBePred	# 形容词性惯用语 adjectival formulaic expression
+Al_x	Amix	CanBePred	# 形容词性惯用语 adjectival formulaic expression
+Al_z	Ades	CanBePred 	# 状态词 stative verb

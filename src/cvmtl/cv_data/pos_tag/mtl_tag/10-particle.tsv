@@ -1,46 +1,46 @@
 # particles
 
-PtclLe	Unreal	"了", "喽"
+Fu_le	PtclLe	Unreal	"了", "喽"
 
-PtclZhe	Unreal	"着"
-PtclGuo	Unreal	"过"
+Fu_zhe	PtclZhe	Unreal	"着"
+Fu_guo	PtclGuo	Unreal	"过"
 
-PtclSuo	Unreal	"所"
+Fu_suo	PtclSuo	Unreal	"所"
 
-PtclLaishuo	Unreal	"来说"
-PtclShuolai	Unreal	"说来"
-PtclLaijiang	Unreal	"来讲"
-PtclEryan	Unreal	"而言"
+Fu_ls0	PtclLaishuo	Unreal	"来说"
+Fu_ls1	PtclShuolai	Unreal	"说来"
+Fu_ls2	PtclLaijiang	Unreal	"来讲"
+Fu_ls3	PtclEryan	Unreal	"而言"
 
-PtclDehua	Unreal	"的话"
-PtclLian2	Unreal	"连"
+Fu_dh	PtclDehua	Unreal	"的话"
+Fu_lian	PtclLian2	Unreal	"连"
 
-PtclZhi	Unreal	"之"
-PtclDep	Unreal	"的", "底"	# generic
+Fu_zhi	PtclZhi	Unreal	"之"
+Fu_dep	PtclDep	Unreal	"的", "底"	# generic
 
-PtclDec	Unreal		# 的、之 as complementizer or a nominalizer
-PtclDeg	Unreal		# 的、之 as a genitive marker and an associative marker
+Fu_de1	PtclDec	Unreal		# 的、之 as complementizer or a nominalizer
+Fu_de2	PtclDeg	Unreal		# 的、之 as a genitive marker and an associative marker
 
-PtclDer	Unreal	"得"	# resultative de, de in V-de const and V-de-R
-PtclDev	Unreal	"地"	# manner de, de before VP
+Fu_der	PtclDer	Unreal	"得"	# resultative de, de in V-de const and V-de-R
+Fu_dev	PtclDev	Unreal	"地"	# manner de, de before VP
 
-PtclYunyun	Unreal	"云云"
-PtclDeng1	Unreal	"等"
-PtclDeng2	Unreal	"等等"
-PtclDeng3	Unreal	"等人"
-PtclDeng4	Unreal	"等等等等"
-PltZhilei	Unreal	"之类"
+Fu_d0	PtclYunyun	Unreal	"云云"
+Fu_d1	PtclDeng1	Unreal	"等"
+Fu_d2	PtclDeng2	Unreal	"等等"
+Fu_d3	PtclDeng3	Unreal	"等人"
+Fu_d4	PtclDeng4	Unreal	"等等等等"
+Fu_zl	PltlZhilei	Unreal	"之类"
 
-PtclBan	Unreal	"般"
-PtclYiyang	Unreal	"一样"
-PtclYiban	Unreal	"一般"
-PtclShide	Unreal	"似的"
-PtclGudi	Unreal	"鹄的"
+Fu_yy0	PtclBan	Unreal	"般"
+Fu_yy1	PtclYiyang	Unreal	"一样"
+Fu_yy2	PtclYiban	Unreal	"一般"
+Fu_yy3	PtclShide	Unreal	"似的"
+Fu_yy4	PtclGudi	Unreal	"鹄的"
 
-PtclQijian	Unreal	"起见"
-PtclWeizhi	Unreal	"为止"
-PtclKaiwai	Unreal	"开外"
+Fu_qijian	PtclQijian	Unreal	"起见"
+Fu_weizhi	PtclWeizhi	Unreal	"为止"
+Fu_kaiwai	PtclKaiwai	Unreal	"开外"
 
-PtclYebai	Unreal	"也罢"
-PtclYehao	Unreal	"也好"
-PtclYufou	Unreal	"与否"
+Fu_yebai	PtclYebai	Unreal	"也罢"
+Fu_yehao	PtclYehao	Unreal	"也好"
+Fu_yufou	PtclYufou	Unreal	"与否"

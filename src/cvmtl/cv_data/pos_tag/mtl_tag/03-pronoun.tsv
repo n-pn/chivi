@@ -1,27 +1,27 @@
 # pronouns
 
-Pronoun	Object, Ktetic	# unknown pronoun
+Rx	Pronoun	Object, Ktetic	# unknown pronoun
 
 ## 人称代词 - personal pronoun - đại từ nhân xưng
-PerPron	Object, Ktetic, Humankind	#
+Rr	PerPron	Object, Ktetic, Humankind	#
 
-PronQu2	Object, Ktetic, Humankind, Peculiar	# "其"
-PronQumen	Object, Ktetic, Humankind, Peculiar	# "其们"
-PronZiji	Object, Ktetic, Humankind, Peculiar	# "自己"
+Rr_qu	PronQu2	Object, Ktetic, Humankind, Peculiar	# "其"
+Rr_qm	PronQumen	Object, Ktetic, Humankind, Peculiar	# "其们"
+Rr_ziji	PronZiji	Object, Ktetic, Humankind, Peculiar	# "自己"
 
 # 指示代词 - demonstrative pronoun - đại từ chỉ thị
-DemPron	Object, Ktetic	# generic
+Rz	DemPron	Object, Ktetic	# generic
 
-PronZhe	Object, Peculiar, AtTail	# "这"
-PronNa1	Object, Peculiar, AtTail	# "那"
-PronMei	Object, Peculiar	# "每"
+Rz_zhe	PronZhe	Object, Peculiar, AtTail	# "这"
+Rz_na1	PronNa1	Object, Peculiar, AtTail	# "那"
+Rz_mei	PronMei	Object, Peculiar	# "每"
 
-PronZheyang	Object, Peculiar, MaybeAdvb, MaybeConj, CanSplit	# "这样"
-PronNayang	Object, Peculiar, MaybeAdvb, MaybeConj, CanSplit	# "那样"
+Rz_zy	PronZheyang	Object, Peculiar, MaybeAdvb, MaybeConj, CanSplit	# "这样"
+Rz_ny	PronNayang	Object, Peculiar, MaybeAdvb, MaybeConj, CanSplit	# "那样"
 
 # 疑问代词 - interrogative pronoun
-IntPron	Object, Peculiar, AtTail	# generic
+Ry	IntPron	Object, Peculiar, AtTail	# generic
 
-PronJi	Object, Peculiar, AtTail	# "几"
-PronNa2	Object, Peculiar, AtTail	# "哪"
-PronShei	Humankind, Object, Peculiar	# 谁
+Ry_ji	PronJi	Object, Peculiar, AtTail	# "几"
+Ry_na2	PronNa2	Object, Peculiar, AtTail	# "哪"
+Ry_shei	PronShei	Humankind, Object, Peculiar	# 谁

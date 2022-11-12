@@ -4,13 +4,13 @@ module MT::PosTag
   VOBJ_MAP = load_map("map_vobj")
   VABN_MAP = load_map("map_vabn") # abn == abnormal
 
-  def self.map_verb(tag : String, key : String = "", has_alt = false)
+  def self.map_verb(tag : String, key : String = "")
     case tag[1]?
     when 'l' then make(:vmix)
     when 'o' then map_voform(key)
     when '!' then map_vauxil(key)
-    when 'i' then map_vintra(key, has_alt: has_alt)
-    else          map_verbal(key, has_alt: has_alt)
+    when 'i' then map_vintra(key)
+    else          map_verbal(key)
     end
   end
 

@@ -1,12 +1,12 @@
 # nominal classifiers
 # - https://en.wikipedia.org/wiki/List_of_Chinese_classifiers
 
-#key	#val	#alt	#quanti_tag	#nquant_tag
+#key	#val	#quanti_tag	#nquant_tag
 
 ## Classifiers proper
 
-个	cái		QtGe4	NqGe4
-本	quyển		Qtnoun	Nqnoun
+个	cái	QtGe4
+本	quyển	Qtnoun
 埲
 部
 册
@@ -145,74 +145,75 @@
 ## Measurement units
 
 ### Time
-年	năm		QtNien
-月	tháng		QtYue4
-日	ngày		QtRi4
-号	số		QtHao
-分	phút		QtFen1
-秒	giây		QtMiao
-刻	khắc		Qttime
-天	ngày		Qttime
-载	năm		Qttime
-岁	tuổi		Qttime
-周	tuần		Qttime
-席	tối		Qttime
-秒钟	giây		Qttime
-分钟	phút		Qttime
+年	năm	QtNien
+月	tháng	QtYue4
+日	ngày	QtRi4
+号	số	QtHao
+分	phút	QtFen1
+秒	giây	QtMiao
+刻	khắc	Qttime
+天	ngày	Qttime
+载	năm	Qttime
+岁	tuổi	Qttime
+周	tuần	Qttime
+席	tối	Qttime
+秒钟	giây	Qttime
+分钟	phút	Qttime
 小时	giờ	 	Qttime
-个月	tháng		Qttime
-时辰	canh giờ		Qttime
+个月	tháng	Qttime
+时辰	canh giờ	Qttime
 
 
 ### weight/mass
-克			Qtwght
-两			Qtwght
-加仑			Qtwght
-斤			Qtwght
-公斤			Qtwght
-千克			Qtwght
-吨			Qtwght
+克		Qtwght
+两		Qtwght
+加仑		Qtwght
+斤		Qtwght
+公斤		Qtwght
+千克		Qtwght
+吨		Qtwght
 
 ### length/distance
-公分			Qtdist
-厘米			Qtdist
-寸			Qtdist
-吋			Qtdist
-尺			Qtdist
-呎			Qtdist
-英尺			Qtdist
-公尺			Qtdist
-米			Qtdist
-里			Qtdist
-哩			Qtdist
-英里			Qtdist
-海里			Qtdist
-公里			Qtdist
-天文单位			Qtdist
-光年			Qtdist
-秒差距			Qtdist
+公分		Qtdist
+厘米		Qtdist
+寸		Qtdist
+吋		Qtdist
+尺		Qtdist
+呎		Qtdist
+英尺		Qtdist
+公尺		Qtdist
+米	mét	Qtdist
+分米	centimet	Qtdist
+里	dặm	Qtdist
+哩		Qtdist
+英里		Qtdist
+海里		Qtdist
+公里		Qtdist
+天文单位		Qtdist
+光年		Qtdist
+秒差距		Qtdist
 
 ### money classifiers
-圆			Qtcash
-元			Qtcash
-块			Qtcash
-角			Qtcash
-毛			Qtcash
-毫			Qtcash
-#分			Qtcash
+圆		Qtcash
+元		Qtcash
+块		Qtcash
+角		Qtcash
+毛		Qtcash
+毫		Qtcash
+#分		Qtcash
 
 
 ## verbal classifiers - động lượng từ
-遍			Qtverb
-场			Qtverb
-次			Qtverb
-顿			Qtverb
-回			Qtverb
-声			Qtverb
-趟			Qtverb
-下			Qtverb
-下儿			Qtverb
-番			Qtverb
-阵			Qtverb
-会			Qtverb
-会儿			Qtverb
+遍		Qtverb
+场		Qtverb
+次		Qtverb
+顿		Qtverb
+回		Qtverb
+声		Qtverb
+趟		Qtverb
+下		Qtverb
+下儿		Qtverb
+番		Qtverb
+阵		Qtverb
+会		Qtverb
+会儿		Qtverb

@@ -44,6 +44,10 @@ class HanLP
 end
 
 # hanlp = HanLP.new
+# puts hanlp.tok!("缪大爷")
+# puts hanlp.tag!(["缪大爷"])
+# puts hanlp.tag!(["缪", "大爷"])
+
 # puts hanlp.tok!("我的希望是希望的世界和平")
 # puts hanlp.tag!(["我", "的", "希望", "是", "希望", "的", "世界", "和平"])
 # puts hanlp.tag!([["我", "的", "希望", "是", "希望"], ["希望", "是", "世界"]])
