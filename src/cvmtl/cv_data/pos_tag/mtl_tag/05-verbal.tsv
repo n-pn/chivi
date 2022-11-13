@@ -3,7 +3,7 @@
 Vi_o	Vobj	CanBePred	# verb + object phrase
 Vi_s	Vset	CanBePred	# verb + object as skill
 Vi_l	Vmix	CanBePred	# verb phrase need no object
-Vi_i	Vint	CanBePred	# intransitive verb
+Vi_x	Vint	CanBePred	# intransitive verb
 
 Vd	Vead	CanBePred	# verbs using for comparision
 Vn	Veno	CanBePred

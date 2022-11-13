@@ -1,5 +1,7 @@
 #lbl	#tag	#pos	#key
 
+Xw_z	Pmark	Boundary	""
+
 Xw_pm	Period	Boundary, CapAfter, NoSpaceL	"."
 Xw_em	Exclpm	Boundary, CapAfter, NoSpaceL	"!"
 Xw_qm	Quespm	Boundary, CapAfter, NoSpaceL	"?"
@@ -55,4 +57,3 @@ Xw_pl	PlMark	NoSpaceL, NoSpaceR	"+"
 Xw_mn	MnMark	NoSpaceL, NoSpaceR	"-"
 
 Xw_ws	Space	Boundary, NoSpaceL, NoSpaceR	" "
-Xw_xx	Pmark	Boundary	""

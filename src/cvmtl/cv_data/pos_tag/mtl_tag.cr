@@ -17,7 +17,7 @@ enum MT::MtlTag : UInt32
   {% end %}
 
   def punctuations?
-    self <= Pmark
+    self >= Pmark
   end
 
   def final_puncts?
@@ -80,7 +80,7 @@ enum MT::MtlTag : UInt32
 
   # is place name or oraganization
   def space_name?
-    self >= PlaceName && self <= InstiName
+    self >= PlaceName && self <= AffilName
   end
 
   def other_names?
@@ -94,7 +94,7 @@ enum MT::MtlTag : UInt32
 
   # noun is objects
   def object_nouns?
-    self >= Nsolid && self <= Plant
+    self >= Nobjt && self <= Plant
   end
 
   # common noun that refer to placement/location

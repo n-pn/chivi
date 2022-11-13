@@ -1,17 +1,18 @@
 # nominal
 
 # proper nouns
-Eh	HumanName	Humankind, Ktetic, Object	# human name
+Eh_x	HumanName	Humankind, Ktetic, Object	# human name
 
 Es_p	PlaceName	Spaceword, Ktetic, Object	# place name
 Es_i	InstiName	Spaceword, Ktetic, Object	# institute
+Es_a	AffilName	Spaceword, Ktetic, Object	# institute
 
 # other proper nouns
 Ez_b	BrandName	Object	# brand name
 Ez_w	TitleName	Ktetic, Object	# book title, work name
 Ez_r	HraceName	Ktetic, Object	# race name
 Ez_k	SkillName	Ktetic, Object	# skill name
-Ez_z	OtherName	Ktetic, Object	# other proper noun
+Ez_x	OtherName	Ktetic, Object	# other proper noun
 
 # generic noun
 Nx	Noun	Ktetic, Object	# generic noun
@@ -27,11 +28,11 @@ Nb	Nabst	Object, Ktetic	# astract concept
 Na	Nattr	Object	# generic attribute
 
 # concrete nouns
+No_x	Nobjt	Ktetic, Object	# generic concrete noun
 No_w	Weapon	Ktetic, Object	# all kind of weapons, for ba3 quantifier
 No_i	Inhand	Ktetic, Object	# can be measured by hand, for ba3 quantifier
 No_a	Animal	Ktetic, Object	# all kind of living animals
 No_p	Plant	Ktetic, Object	# all kind of plants
-No_x	Nobjt	Ktetic, Object	# generic concrete noun
 
 # placement
 Ns_p	Place	Spaceword, Ktetic, Object	# generic place

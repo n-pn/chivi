@@ -1,9 +1,9 @@
 #lbl	#tag	#pos	#desc
 
-Xp_b	LitBlank	Object, Ktetic	# unknown/untagged phrases
-Xp_i	LitIdiom	Object, Ktetic	# chinese idiom that have multi classes
-Xp_q	LitQuote	Object, Ktetic	# citations, quotes
-Xp_t	LitTrans	Object, Ktetic	# partial translations
+Xl_b	LitBlank	Object, Ktetic	# unknown/untagged phrases
+Xl_i	LitIdiom	Object, Ktetic	# chinese idiom that have multi classes
+Xl_q	LitQuote	Object, Ktetic	# citations, quotes
+Xl_t	LitTrans	Object, Ktetic	# partial translations
 
 Xs_u	StrLink	Object	# hyper link (can act as object)
 Xs_m	StrMail	Object	# email string (can act as object)

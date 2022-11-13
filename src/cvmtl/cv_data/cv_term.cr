@@ -102,4 +102,12 @@ class MT::CvTerm
   def self.open_db(type : String)
     DB.open("sqlite3:./var/dicts/#{type}.dic") { |db| yield db }
   end
+
+  def self.open_db_tx(type : String)
+    open_db(type) do |db|
+      db.exec "begin transaction"
+      yield db
+      db.exec "commit"
+    end
+  end
 end
