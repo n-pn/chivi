@@ -1,3 +1,5 @@
+require "option_parser"
+
 require "../src/cvmtl/cv_data/*"
 
 REMAP = {
@@ -70,10 +72,10 @@ REMAP = {
   "+dp"  => "!",
   "+dr"  => "!",
   "+dv"  => "!",
-  "~vc"  => "Fv",
+  "~vc"  => "Fv_",
   "!"    => "!",
-  "uden" => "Fu_",
   "~nd"  => "Nb",
+  "uden" => "Fu_",
 }
 
 def fix_dict(type : String)
@@ -88,6 +90,42 @@ def fix_dict(type : String)
   end
 end
 
-# puts ptags
+record Term, id : Int32, key : String, val : String do
+  include DB::Serializable
+end
+
+def fix_tags(type : String, ptag : String, persist = false)
+  color = persist ? :yellow : :blue
+
+  MT::CvTerm.open_db_tx(type) do |db|
+    query = "select id, key, val from terms where ptag = ?"
+    terms = db.query_all query, args: [ptag], as: Term
+
+    update_query = "update terms set ptag = ? where id = ?"
+
+    terms.each do |term|
+      new_ptag = MT::PosTag.map_str(ptag, term.key, term.val)
+      puts "[#{term.key}  #{term.val}] #{ptag} => #{new_ptag}".colorize(color)
+
+      next unless persist
+      db.exec update_query, args: [new_ptag, term.id]
+    end
+  end
+end
+
 # fix_dict("core")
 # fix_dict("book")
+
+persist = false
+target = "core"
+ptags = [] of String
+
+OptionParser.parse(ARGV) do |parser|
+  parser.on("--persist", "persist") { persist = true }
+  parser.on("-t TARGET", "target") { |x| target = x }
+  parser.unknown_args { |x| ptags = x }
+end
+
+ptags.each do |ptag|
+  fix_tags(target, ptag, persist: persist)
+end

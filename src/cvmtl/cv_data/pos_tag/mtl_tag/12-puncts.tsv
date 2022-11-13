@@ -1,6 +1,6 @@
 #lbl	#tag	#pos	#key
 
-Xw_z	Pmark	Boundary	""
+Xw_z	Pmark	Boundary	"_"
 
 Xw_pm	Period	Boundary, CapAfter, NoSpaceL	"."
 Xw_em	Exclpm	Boundary, CapAfter, NoSpaceL	"!"

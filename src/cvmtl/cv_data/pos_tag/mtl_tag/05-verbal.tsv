@@ -8,9 +8,10 @@ Vi_x	Vint	CanBePred	# intransitive verb
 Vd	Vead	CanBePred	# verbs using for comparision
 Vn	Veno	CanBePred
 
-Vt_1	Verb	CanBePred	# normal transitive verb
+Vt_x	Verb	CanBePred	# normal transitive verb
 Vt_2	Vtwo	CanBePred	# verbs need two objects
 Vt_d	Vdir	CanBePred	# directional verb
+Vt_l	Vlnk	Vlinking, CanBePred	# linking verb
 
 Vs_r	Vcmp	CanBePred	# verbs using for comparision
 Vs_c	Vcau	CanBePred	# causative verbs

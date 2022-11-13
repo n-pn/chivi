@@ -1,16 +1,16 @@
 module MT::PosTag
   def self.map_phrase(tag : String)
     case tag
-    when "Psv" then make(:subj_verb)
-    when "Psa" then make(:subj_adjt)
-    when "Ppn" then make(:prep_form)
-    when "Pdp" then make(:dp_phrase)
-    when "Pdc" then make(:dc_phrase)
-    when "Pdg" then make(:dg_phrase)
-    when "Pdr" then make(:dr_phrase)
-    when "Pdv" then make(:dv_phrase)
-    when "Ppe" then make(:paren_exp)
-    else            make(:lit_trans)
+    when "Psv" then MtlTag::SubjVerb
+    when "Psa" then MtlTag::SubjAdjt
+    when "Ppn" then MtlTag::PrepForm
+    when "Pdp" then MtlTag::DpPhrase
+    when "Pdc" then MtlTag::DcPhrase
+    when "Pdg" then MtlTag::DgPhrase
+    when "Pdr" then MtlTag::DrPhrase
+    when "Pdv" then MtlTag::DvPhrase
+    when "Ppe" then MtlTag::ParenExp
+    else            MtlTag::LitTrans
     end
   end
 end

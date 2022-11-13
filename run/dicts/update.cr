@@ -29,7 +29,7 @@ class Dict
   def fix_ptags
     fix_ptag("#{PTAG_DIR}/map_pronoun.tsv", "r")
     fix_ptag("#{PTAG_DIR}/map_quanti.tsv", "m")
-    fix_ptag("#{PTAG_DIR}/map_place.tsv", "s")
+    fix_ptag("#{PTAG_DIR}/map_space.tsv", "s")
     # fix_ptag("#{PTAG_DIR}/map_sound.tsv", "y")
 
     fix_ptag("#{PTAG_DIR}/map_verb.tsv", "v")

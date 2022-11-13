@@ -48,8 +48,9 @@ module MT::PosTag
   #
   # to hide complexity from regular user, some tags will be mapped directly by
   # its content instead.
-  def self.map_str(tag : String, key : String, val = key)
-    tag.ends_with?('_') ? MAP_STR[map_tag(tag, key)] : tag
+  def self.map_str(tag : String, key : String, val : String = key)
+    return tag unless tag.ends_with?('_')
+    MAP_STR[map_tag(tag, key, val)]
   end
 
   # map tag from tag string and raw input
@@ -59,9 +60,9 @@ module MT::PosTag
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def self.map_tag_by_ctx(tag : String, key : String = "", val : String = "")
+  def self.map_tag_by_ctx(tag : String, key : String = "", val : String = "") : MtlTag
     case tag[0]?
-    when nil then make(:lit_trans)
+    when nil then MtlTag::LitBlank
     when 'E' then map_name(tag, key)
     when 'N' then map_noun(tag, key)
     when 'V' then map_verb(tag, key)
@@ -70,21 +71,17 @@ module MT::PosTag
     when 'M' then map_number(tag, key)
     when 'Q' then map_quanti(key)
     when 'F' then map_function(tag, key)
-    when 'G' then map_affix(key)
     when 'X' then map_literal(tag, val)
-    else          make(:lit_blank)
+    else          MtlTag::LitTrans
     end
   end
 
-  def self.load_map(name : String) : Hash(String, {MtlTag, MtlPos})
+  def self.load_map(name : String) : Hash(String, MtlTag)
     lines = File.read_lines("var/cvmtl/inits/#{name}.tsv")
-    lines.each_with_object({} of String => {MtlTag, MtlPos}) do |line, hash|
+    lines.each_with_object({} of String => MtlTag) do |line, hash|
       next if line.empty? || line.starts_with?('#')
-      args = line.split('\t')
-
-      key = args[0]
-      tag = MtlTag.parse(args[1])
-      hash[key] = make(tag)
+      key, tag = line.split('\t')
+      hash[key] = MtlTag.parse(tag)
     rescue err
       Log.error(exception: err) { "error parsing #{name} on line: #{line}" }
     end

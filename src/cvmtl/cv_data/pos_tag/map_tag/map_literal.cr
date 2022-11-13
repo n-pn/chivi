@@ -1,14 +1,14 @@
 module MT::PosTag
   def self.map_literal(tag : String, str : String)
     case tag[1]?
-    when 'v' then make(:sep_verb)
-    when 'o' then make(:sep_objt)
-    when 'i' then make(:lit_idiom)
-    when 'q' then make(:lit_quote)
-    when 't' then make(:lit_trans)
-    when 'e' then make(:str_emoji)
-    when 'x' then make(:str_other)
-    when 'u' then make(:str_link)
+    when 'v' then MtlTag::SepVerb
+    when 'o' then MtlTag::SepObjt
+    when 'i' then MtlTag::LitIdiom
+    when 'q' then MtlTag::LitQuote
+    when 't' then MtlTag::LitTrans
+    when 'e' then MtlTag::StrEmoji
+    when 'x' then MtlTag::StrOther
+    when 'u' then MtlTag::StrLink
     when 'w' then map_puncts(str)
     else          map_string(str)
     end
@@ -16,12 +16,12 @@ module MT::PosTag
 
   def self.map_string(str : String = "")
     case str
-    when .starts_with?('#')    then make(:str_hash, :object)
-    when .starts_with?("http") then make(:str_link, :object)
-    when .starts_with?("www.") then make(:str_link, :object)
-    when .includes?("@")       then make(:str_mail, :object)
-    when .matches?(/[\w\d]/)   then make(:str_other, :object)
-    else                            make(:lit_blank, :object)
+    when .starts_with?('#')    then MtlTag::StrHash
+    when .starts_with?("http") then MtlTag::StrLink
+    when .starts_with?("www.") then MtlTag::StrLink
+    when .includes?("@")       then MtlTag::StrMail
+    when .matches?(/[\w\d]/)   then MtlTag::StrOther
+    else                            MtlTag::LitBlank
     end
   end
 
@@ -30,10 +30,10 @@ module MT::PosTag
       case str
     {% lines = read_file("#{__DIR__}/../mtl_tag/12-puncts.tsv").split("\n") %}
     {% for line in lines.select { |x| !x.empty? && !x.starts_with?('#') } %}
-      {% _short, tag, pos, keys = line.split('\t') %}
-      when {{keys.id}} then {MtlTag::{{tag.id}}, MtlPos.flags(Unreal, {{pos.id}})}
+      {% _str, tag, pos, keys = line.split('\t') %}
+      when {{keys.id}} then MtlTag::{{tag.id}}
     {% end %}
-      else {MtlTag::Pmark, MtlPos.flags(Unreal, Boundary)}
+      else MtlTag::Pmark
       end
     {% end %}
   end

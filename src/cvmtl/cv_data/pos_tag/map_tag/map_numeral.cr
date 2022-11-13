@@ -6,13 +6,13 @@ module MT::PosTag
 
     NUMBER_MAP[key] ||= begin
       case key
-      when .starts_with?('第') then make(:ordinal)
+      when .starts_with?('第') then MtlTag::Ordinal
       when .matches?(/\d/)
-        key.matches?(/\D/) ? make(:ndigit2) : make(:ndigit1)
+        key.matches?(/\D/) ? MtlTag::Ndigit2 : MtlTag::Ndigit1
       when .matches?(/[零〇一二两三四五六七八九十百千万亿兆]/)
-        make(:nhanzi0)
+        MtlTag::Nhanzi0
       else
-        make(:numeric)
+        MtlTag::Numeric
       end
     end
   end
@@ -21,8 +21,7 @@ module MT::PosTag
 
   def self.map_nquant(key : String)
     NQUANT_MAP[key] ||= begin
-      tag, _ = map_quanti(clean_nquant(key))
-      make(tag.qt_to_nq)
+      map_quanti(clean_nquant(key)).qt_to_nq
     end
   end
 
@@ -54,6 +53,6 @@ module MT::PosTag
   QUANTI_MAP = load_map("map_quanti")
 
   def self.map_quanti(key : String)
-    QUANTI_MAP[key]? || make(:qtnoun)
+    QUANTI_MAP[key]? || MtlTag::Qtnoun
   end
 end

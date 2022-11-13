@@ -1,36 +1,36 @@
 module MT::PosTag
   def self.map_name(tag : String, key = "")
     case tag[1]?
-    when 'r' then make(:human_name)
-    when 's' then make(:place_name)
-    when 't' then make(:insti_name)
-    when 'h' then make(:hrace_name)
-    when 'w' then make(:title_name)
-    when 'b' then make(:brand_name)
-    when 'k' then make(:skill_name)
-    else          make(:other_name)
+    when 'r' then MtlTag::HumanName
+    when 's' then MtlTag::PlaceName
+    when 't' then MtlTag::InstiName
+    when 'h' then MtlTag::HraceName
+    when 'w' then MtlTag::TitleName
+    when 'b' then MtlTag::BrandName
+    when 'k' then MtlTag::SkillName
+    else          MtlTag::OtherName
     end
   end
 
   def self.map_noun(tag : String, key = "")
     case tag[1]?
-    when 'r' then make(:human) # todo: map human words
-    when 'h' then make(:honor)
+    when 'r' then MtlTag::Human # todo: map human words
+    when 'h' then MtlTag::Honor
     when 's' then map_space(key)
     when 'o' then map_nobjt(key)
     when 't' then map_tword(key)
-    when 'a' then make(:nattr)
-    when 'b' then make(:nabst)
-    when 'l' then make(:nmix)
-    else          make(:noun)
+    when 'a' then MtlTag::Nattr
+    when 'b' then MtlTag::Nabst
+    when 'l' then MtlTag::Nmix
+    else          MtlTag::Noun
     end
   end
 
-  SPACE_MAP = load_map("map_place")
+  SPACE_MAP = load_map("map_space")
 
   def self.map_space(key : String)
     SPACE_MAP[key] ||= begin
-      is_locat?(key[-1]) ? make(:posit) : make(:place)
+      is_locat?(key[-1]) ? MtlTag::Posit : MtlTag::Place
     end
   end
 
@@ -46,8 +46,6 @@ module MT::PosTag
 
   def self.map_nobjt(key : String)
     OBJECT_MAP[key] ||= begin
-      pos = MtlPos.flags(Object, Ktetic)
-
       # guess type of object by last character
 
       char = key[-1]
@@ -56,11 +54,11 @@ module MT::PosTag
 
       case char
       when '剑', '刀', '枪'
-        make(:weapon, pos)
+        MtlTag::Weapon
       when '米', '花', '盐', '糖', '麦', '谷'
-        make(:inhand, pos)
+        MtlTag::Inhand
       else
-        make(:nsolid, pos)
+        MtlTag::Nobjt
       end
     end
   end
@@ -69,6 +67,6 @@ module MT::PosTag
 
   def self.map_tword(key : String)
     # TODO: map time by key
-    TWORD_MAP[key]? || make(:timeword)
+    TWORD_MAP[key]? || MtlTag::Timeword
   end
 end

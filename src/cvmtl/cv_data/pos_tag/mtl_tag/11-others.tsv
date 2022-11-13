@@ -9,7 +9,7 @@ Fy	Mopart	Unreal, Boundary
 # vcompls
 
 Fc_d	Dircmpl	Mixedpos	# direction complement
-Fc_r	ResCmpl	Mixedpos	# result complemnt
+Fc_r	Rescmpl	Mixedpos	# result complemnt
 Fc_p	Potcmpl	Mixedpos	# potential complement
 Fc_g	Degcmpl	Mixedpos	# degree complement
 Fc_s	Sttcmpl	Mixedpos	# state complement
