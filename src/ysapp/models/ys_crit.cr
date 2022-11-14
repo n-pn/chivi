@@ -17,56 +17,6 @@ class YS::Yscrit
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
   column _sort : Int32 = 0
 
-  # column ztext : String = "" # translated comment
-  # column vhtml : String = "" # translated comment
-
-  getter ztext : String { load_ztext_from_disk }
-  getter vhtml : String { load_vhtml_from_disk }
-
-  def load_ztext_from_disk : String
-    zip_file = "var/ysapp/crits/#{self.ysbook_id}-zh.zip"
-    Helpers.read_zip(zip_file, "#{origin_id}.txt") { "$$$" }
-  rescue err
-    Log.error(exception: err) { err.message }
-    "$$$"
-  end
-
-  def load_vhtml_from_disk : String
-    zip_file = "var/ysapp/crits/#{self.ysbook_id}-vi.zip"
-    Helpers.read_zip(zip_file, "#{origin_id}.htm") { render_vhtml_from_ztext(persist: true) }
-  rescue err
-    Log.error(exception: err) { "error loading vhtml for #{origin_id} of #{ysbook_id}" }
-    render_vhtml_from_ztext(persist: true)
-  end
-
-  ERROR_BODY = "<p><em class=err>Lỗi dịch đánh giá!</em></p>"
-
-  def render_vhtml_from_ztext(persist : Bool = true)
-    ztext = self.ztext
-
-    if ztext.empty? || ztext == "$$$"
-      html = "<p>$$$</p>"
-    else
-      dict = Helpers.load_dict(self.nvinfo_id.try(&.to_i) || 0)
-      return ERROR_BODY unless tran = Helpers.qtran(ztext, dict.name)
-      html = tran.split('\n').map { |x| "<p>#{x}</p>" }.join('\n')
-    end
-
-    save_vhtml_to_disk(html) if persist
-    html
-  end
-
-  def save_vhtml_to_disk(vhtml : String)
-    out_dir = "var/ysapp/crits.tmp/#{self.ysbook_id}-vi"
-    Dir.mkdir_p(out_dir)
-
-    out_html = "#{out_dir}/#{self.origin_id}.htm"
-    File.write(out_html, vhtml)
-
-    zip_path = "var/ysapp/crits/#{ysbook_id}-vi.zip"
-    `zip -rjuq "#{zip_path}" #{out_html}`
-  end
-
   column ztags : Array(String) = [] of String
   column vtags : Array(String) = [] of String
 
@@ -104,6 +54,72 @@ class YS::Yscrit
     end
   end
 
+  getter ztext : String { load_ztext_from_disk }
+  getter vhtml : String { load_vhtml_from_disk }
+
+  def zip_path(type = "zh")
+    "var/ysapp/crits/#{self.ysbook_id}-#{type}.zip"
+  end
+
+  def tmp_path(type = "zh")
+    "var/ysapp/crits.tmp/#{self.ysbook_id}-#{type}"
+  end
+
+  def filename(type = "zh", ext = "txt")
+    "#{self.origin_id}.#{ext}"
+  end
+
+  def load_ztext_from_disk : String
+    Helpers.read_zip(self.zip_path("zh"), filename("zh", "txt")) { "$$$" }
+  rescue err
+    Log.error(exception: err) { err.message }
+    "$$$"
+  end
+
+  def load_vhtml_from_disk : String
+    load_html_from_disk("vi", persist: false) do |ztext|
+      dict = Helpers.load_dict(self.nvinfo_id.try(&.to_i) || 0)
+      TranUtil.qtran(ztext, dict.name)
+    end
+  end
+
+  def load_btran_from_disk : String
+    load_html_from_disk("bv", persist: false) { |ztext| TranUtil.btran(ztext) }
+  end
+
+  def load_deepl_from_disk : String
+    load_html_from_disk("de", persist: false) { |ztext| TranUtil.deepl(ztext) }
+  end
+
+  private def load_html_from_disk(type : String, persist : Bool = true)
+    Helpers.read_zip(self.zip_path(type), filename(type, "htm")) do
+      ztext = self.ztext
+
+      if (!ztext.empty?) && (tranlation = yield ztext)
+        html = tranlation.split('\n').map { |x| "<p>#{x}</p>" }.join('\n')
+      else
+        html = "<p>$$$</p>"
+        persist = ztext.empty?
+      end
+
+      save_file_to_disk(html, type, ext: "htm") if persist
+      html
+    end
+  rescue err
+    Log.error(exception: err) { "error loading #{type} html for #{origin_id} of #{ysbook_id}" }
+    "<p>$$$</p>"
+  end
+
+  private def save_file_to_disk(content : String, type : String, ext : String)
+    dir_path = self.tmp_path(type)
+    Dir.mkdir_p(dir_path)
+
+    file_path = File.join(dir_path, filename(type, ext))
+    File.write(file_path, content)
+
+    Helpers.zipping(self.zip_path(type), file_path)
+  end
+
   #############
 
   def fix_sort!
@@ -111,19 +127,19 @@ class YS::Yscrit
     self._sort &+ self.repl_count &* self.stars
   end
 
-  def set_tags(tags : Array(String), force : Bool = false)
+  def set_tags(ztags : Array(String), force : Bool = false)
     return unless force || self.ztags.empty?
-    self.ztags = tags
-    self.fix_vtags
+    self.ztags = ztags
+    self.fix_vtags!(ztags)
   end
 
-  def fix_vhtml(ztext : String, dname = self.nvinfo.dname)
-    self.vhtml = CV::BookUtil.cv_lines(ztext, dname, mode: :html)
+  def fix_vtags!(ztags = self.ztags)
+    self.vtags = TranUtil.qtran(ztags, "!labels").split('\n')
   end
 
-  def fix_vtags(mtl = CV::MtCore.generic_mtl("!labels"))
-    self.vtags = self.ztags.map { |x| mtl.translate(x) }
-  end
+  # def fix_vhtml(ztext : String, dname = self.nvinfo.dname)
+  #   self.vhtml = CV::BookUtil.cv_lines(ztext, dname, mode: :html)
+  # end
 
   ###################
 

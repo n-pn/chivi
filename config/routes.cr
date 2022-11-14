@@ -80,6 +80,7 @@ Amber::Server.configure do
     # put "/qtran/hanviet", CV::QtransCtrl, :hanviet
     put "/qtran/mterror", CV::QtransCtrl, :mterror
     post "/qtran", CV::QtransCtrl, :webpage # to make the extension works
+    put "/qtran", CV::QtransCtrl, :webpage  # to make the extension works
     get "/qtran/:type/:name", CV::QtransCtrl, :convert
     post "/qtran/posts", CV::QtransCtrl, :posts_upsert
 

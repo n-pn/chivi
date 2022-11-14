@@ -16,7 +16,7 @@ struct YS::CritView
       jb.field "uname", @data.ysuser.vname
       jb.field "uslug", @data.ysuser.vslug
 
-      jb.field "id", CV::UkeyUtil.encode32(@data.id)
+      jb.field "id", UkeyUtil.encode32(@data.id)
 
       jb.field "stars", @data.stars
       jb.field "vtags", @data.vtags
@@ -52,7 +52,7 @@ struct YS::CritView
       end
 
       if yslist = @data.yslist
-        jb.field "yslist_id", CV::UkeyUtil.encode32(yslist.id)
+        jb.field "yslist_id", UkeyUtil.encode32(yslist.id)
 
         jb.field "yslist_vname", yslist.vname
         jb.field "yslist_vslug", yslist.vslug

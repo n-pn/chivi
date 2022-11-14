@@ -29,7 +29,7 @@ module YS
         crits = query.filter_nvinfo(book).with_yslist.with_ysuser.to_a
         crits.each(&.nvinfo = nvinfo)
       elsif list
-        yslist = Yslist.find!({id: CV::UkeyUtil.decode32(list)})
+        yslist = Yslist.find!({id: UkeyUtil.decode32(list)})
         total = yslist.book_count
 
         crits = query.where("yslist_id = ?", yslist.id).with_nvinfo.to_a
@@ -46,10 +46,10 @@ module YS
       }
     end
 
-    @[AC::Route::GET("/crits/:crit")]
-    def entry(crit : String)
-      ycrit = Yscrit.find!({id: CV::UkeyUtil.decode32(crit)})
-      repls = Ysrepl.query.where("yscrit_id = ?", ycrit.id)
+    @[AC::Route::GET("/crits/:crit_id", converters: {crit_id: Base32ID})]
+    def entry(crit_id : Int64)
+      ycrit = Yscrit.find!({id: crit_id})
+      repls = Ysrepl.query.where("yscrit_id = ?", crit_id)
 
       render json: {
         entry: CritView.new(ycrit),
@@ -59,14 +59,47 @@ module YS
       render :not_found, text: "Đánh giá không tồn tại"
     end
 
-    @[AC::Route::GET("/crits/:crit/raw")]
-    def rawzh(crit : String)
-      ycrit = Yscrit.find!({id: CV::UkeyUtil.decode32(crit)})
-      binfo = ycrit.nvinfo.not_nil!
+    @[AC::Route::GET("/crits/:crit_id/ztext", converters: {crit_id: Base32ID})]
+    def ztext(crit_id : Int64)
+      ycrit = Yscrit.find!({id: crit_id})
+      vdict = Helpers.load_dict(ycrit.nvinfo_id.try(&.to_i) || 0)
 
-      response = @context.response
-      response.headers["Content-Type"] = "text/plain; charset=utf-8"
-      response.print "#{binfo.dname}\t#{binfo.vname}\t#{ycrit.ztext}"
+      @render_called = true
+      res = @context.response
+
+      res.headers["Content-Type"] = "text/plain; charset=utf-8"
+      res.headers["X-DNAME"] = vdict.name
+      res.headers["X-BNAME"] = vdict.label
+
+      res.print ycrit.ztext
+    rescue err
+      render :not_found, text: "Đánh giá không tồn tại"
+    end
+
+    @[AC::Route::GET("/crits/:crit_id/vhtml", converters: {crit_id: Base32ID})]
+    def vhtml(crit_id : Int64)
+      ycrit = Yscrit.find!({id: crit_id})
+      render text: ycrit.vhtml
+    rescue err
+      render :not_found, text: "Đánh giá không tồn tại"
+    end
+
+    @[AC::Route::GET("/crits/:crit_id/btran", converters: {crit_id: Base32ID})]
+    def btran(crit_id : Int64)
+      ycrit = Yscrit.find!({id: crit_id})
+      render text: ycrit.load_btran_from_disk
+    rescue err
+      render :not_found, text: "Đánh giá không tồn tại"
+    end
+
+    @[AC::Route::GET("/crits/:crit_id/deepl", converters: {crit_id: Base32ID})]
+    def deepl(crit_id : Int64)
+      ycrit = Yscrit.find!({id: crit_id})
+
+      # res = @context.response
+      # res.headers["Content-Type"] = "text/plain; charset=utf-8"
+
+      render text: ycrit.load_deepl_from_disk
     rescue err
       render :not_found, text: "Đánh giá không tồn tại"
     end

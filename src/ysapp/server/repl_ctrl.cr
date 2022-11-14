@@ -7,7 +7,7 @@ module YS
 
     @[AC::Route::GET("/crits/:crit/repls")]
     def list(crit : String, page : Int32 = 1)
-      crit_id = CV::UkeyUtil.decode32(crit)
+      crit_id = UkeyUtil.decode32(crit)
       repls = Ysrepl.query.where("yscrit_id = ?", crit_id)
 
       limit = 25
@@ -18,11 +18,17 @@ module YS
     end
   end
 
-  @[AC::Route::GET("/repls/:repl/raw")]
-  def rawzh(repl : String)
-    yrepl = Ysrepl.find!({id: CV::UkeyUtil.decode32(repl)})
-    binfo = yrepl.yscrit.nvinfo
-    render text: "#{binfo.dname}\t#{binfo.vname}\t#{ycrit.ztext}"
+  @[AC::Route::GET("/repls/:repl/ztext")]
+  def ztext(crit : String)
+    yrepl = Ysrepl.find!({id: UkeyUtil.decode32(repl)})
+    vdict = Helpers.get_dict(yrepl.yscrit.nvinfo_id.to_i)
+
+    res = @context.response
+    res.headers["Content-Type"] = "text/plain; charset=utf-8"
+    res.headers["X-DNAME"] = vdict.name
+    res.headers["X-BNAME"] = vdict.label
+
+    res.print yrepl.ztext
   rescue err
     render :not_found, text: "Phản hồi không tồn tại"
   end

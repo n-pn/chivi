@@ -11,15 +11,65 @@ class YS::Ysrepl
   belongs_to ysuser : Ysuser
   belongs_to yscrit : Yscrit
 
-  column ztext : String = "" # orginal comment
-  column vhtml : String = "" # translated comment
-
   column stime : Int64 = 0 # list checked at by minutes from epoch
 
   column like_count : Int32 = 0
   column repl_count : Int32 = 0 # reply count, optional
 
   timestamps
+
+  getter ztext : String { load_ztext_from_disk }
+  getter vhtml : String { load_vhtml_from_disk }
+
+  def zip_path(type = "zh")
+    crit_uuid = self.yscrit.origin_id
+    prefix = crit_uuid[0..2]
+    "var/ysapp/repls/#{prefix}-#{type}/#{crit_uuid}.zip"
+  end
+
+  def load_ztext_from_disk : String
+    Helpers.read_zip(zip_path("zh"), "#{origin_id}.txt") { "$$$" }
+  rescue err
+    Log.error(exception: err) { err.message }
+    "$$$"
+  end
+
+  def load_vhtml_from_disk : String
+    Helpers.read_zip(zip_path("vi"), "#{origin_id}.htm") do
+      render_vhtml_from_ztext(persist: true)
+    end
+  rescue err
+    Log.error(exception: err) { "error loading vhtml for #{origin_id} of #{yscrit_id}" }
+    "<p><em class=err>Lỗi hệ thống! Mời liên hệ ban quản trị</em></p>"
+  end
+
+  ERROR_BODY = "<p><em class=err>Lỗi dịch phản hồi!</em></p>"
+
+  def render_vhtml_from_ztext(persist : Bool = true)
+    ztext = self.ztext
+
+    if ztext.empty? || ztext == "$$$"
+      html = "<p><em>Không có nội dung</em></p>"
+    else
+      dict = Helpers.load_dict(self.yscrit.nvinfo_id.try(&.to_i) || 0)
+      return ERROR_BODY unless tran = TranUtil.qtran(ztext, dict.name)
+      html = tran.split('\n').map { |x| "<p>#{x}</p>" }.join('\n')
+    end
+
+    save_vhtml_to_disk(html) if persist
+    html
+  end
+
+  def save_vhtml_to_disk(vhtml : String)
+    zip_path = self.zip_path("vi")
+    out_path = zip_path.sub("repls", "repls.tmp").sub(".zip", "")
+    Dir.mkdir_p(out_path)
+
+    out_html = "#{out_path}/#{self.origin_id}.htm"
+    File.write(out_html, vhtml)
+
+    `zip -FS -jrq "#{zip_path}" #{out_html}`
+  end
 
   scope :filter_yscrit do |yscrit_id|
     yscrit_id ? where("yscrit_id = #{yscrit_id}") : self
@@ -37,15 +87,15 @@ class YS::Ysrepl
     end
   end
 
-  def set_ztext(ztext : String)
-    return if ztext.empty?
-    self.ztext = ztext
-    self.fix_vhtml
-  end
+  # def set_ztext(ztext : String)
+  #   return if ztext.empty?
+  #   self.ztext = ztext
+  #   self.fix_vhtml
+  # end
 
-  def fix_vhtml(dname = self.yscrit.nvinfo.dname)
-    self.vhtml = CV::BookUtil.cv_lines(ztext, dname, mode: :html)
-  end
+  # def fix_vhtml(dname = self.yscrit.nvinfo.dname)
+  #   self.vhtml = CV::BookUtil.cv_lines(ztext, dname, mode: :html)
+  # end
 
   ##############
 

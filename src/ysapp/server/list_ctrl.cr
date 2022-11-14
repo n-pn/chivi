@@ -29,7 +29,7 @@ module YS
 
     @[AC::Route::GET("/lists/:list")]
     def entry(list : String, sort : String = "utime")
-      yslist = Yslist.find!({id: CV::UkeyUtil.decode32(list)})
+      yslist = Yslist.find!({id: UkeyUtil.decode32(list)})
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 20)
 
       crits = Yscrit.sort_by(sort).where("yslist_id = ?", yslist.id)

@@ -34,24 +34,6 @@ class CV::QtranData
     new(lines, dname, d_lbl, count.to_i, label)
   end
 
-  def self.load_crit(name : String) : QtranData
-    url = "localhost:5509/_ys/crits/"
-    res = HTTP::Client.get(url + "#{name}/raw")
-
-    raise NotFound.new("Bình luận không tồn tại!") unless res.success?
-    dname, vname, ztext = res.body.split('\t', 3)
-    new(parse_lines(ztext), dname, vname)
-  end
-
-  def self.load_repl(name : String) : QtranData
-    url = "localhost:5509/_ys/crits/"
-    res = HTTP::Client.get(url + "#{name}/raw")
-
-    raise NotFound.new("Phản hồi không tồn tại!") unless res.success?
-    dname, vname, ztext = res.body.split('\t', 3)
-    new(parse_lines(ztext), dname, vname)
-  end
-
   def self.load_chap(name : String, mode : Int8 = 0, uname = "") : QtranData
     sname, s_bid, ch_no, cpart = name.split(":")
 
@@ -79,6 +61,29 @@ class CV::QtranData
     new(lines, nvinfo.dname, nvinfo.vname, label: label)
   end
 
+  CRIT_URL = "localhost:5509/_ys/crits"
+  REPL_URL = "localhost:5509/_ys/repls"
+
+  def self.load_crit(name : String) : QtranData
+    self.load_text_from_url("#{CRIT_URL}/#{name}/ztext")
+  end
+
+  def self.load_repl(name : String) : QtranData
+    self.load_text_from_url("#{REPL_URL}/#{name}/ztext")
+  end
+
+  def self.load_text_from_url(url : String)
+    HTTP::Client.get(url) do |res|
+      body = res.body_io.gets_to_end
+      raise NotFound.new(body) unless res.status.success?
+
+      dname = res.headers["X-DNAME"]
+      bname = res.headers["X-BNAME"]
+
+      new(parse_lines(body), dname, bname)
+    end
+  end
+
   def self.parse_lines(ztext : String) : Array(String)
     ztext = ztext.gsub("\t", "  ")
     TextUtil.split_text(ztext, spaces_as_newline: false)
@@ -94,7 +99,7 @@ class CV::QtranData
 
   def self.post_ukey : String
     @@counter &+= 1
-    CV::UkeyUtil.encode32(Time.local.to_unix_ms &+ @@counter)
+    UkeyUtil.encode32(Time.local.to_unix_ms &+ @@counter)
   end
 
   ################

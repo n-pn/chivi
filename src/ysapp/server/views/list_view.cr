@@ -11,7 +11,7 @@ struct YS::ListView
 
   def to_json(jb = JSON::Builder.new)
     jb.object do
-      jb.field "id", CV::UkeyUtil.encode32(@data.id)
+      jb.field "id", UkeyUtil.encode32(@data.id)
 
       jb.field "op_id", @data.ysuser.id
       jb.field "uname", @data.ysuser.vname

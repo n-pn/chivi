@@ -1,5 +1,6 @@
 require "compress/zip"
 require "../../_util/ukey_util"
+require "../../_util/tran_util"
 require "../../appcv/ys_book"
 
 # require "../../appcv/shared/book_util"
@@ -29,17 +30,14 @@ module YS::Helpers
     end
   end
 
-  HEADERS = HTTP::Headers{"content-type" => "application/json"}
+  def self.zipping(zip_path : String, inp_file : String)
+    `zip --FS -jrq "#{zip_path}" #{inp_file}`
+  end
+end
 
-  def self.qtran(input : String, dname : String)
-    url = "http://localhost:5010/api/qtran"
-    body = {input: input, dname: dname, mode: "plain"}.to_json
-
-    HTTP::Client.post(url, headers: HEADERS, body: body) do |res|
-      return res.body_io.gets_to_end if res.status.success?
-      Log.error { "error: #{res.body}" }
-    end
-  rescue err
-    Log.error(exception: err) { err.message }
+struct Base32ID
+  # i.e. `"master#742887"`
+  def convert(raw : String)
+    UkeyUtil.decode32(raw)
   end
 end

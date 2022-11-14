@@ -1,6 +1,6 @@
 require "digest"
 
-module CV::UkeyUtil
+module UkeyUtil
   extend self
 
   @@seed = 0
@@ -138,16 +138,16 @@ module CV::UkeyUtil
   # end
 end
 
-# puts CV::UkeyUtil.digest32("95410")
-# puts CV::UkeyUtil.encode32(95410).ljust(8, '0')
-# puts CV::UkeyUtil.decode32("j5x20000")
-# puts CV::UkeyUtil.decode32("j5x20")
+# puts UkeyUtil.digest32("95410")
+# puts UkeyUtil.encode32(95410).ljust(8, '0')
+# puts UkeyUtil.decode32("j5x20000")
+# puts UkeyUtil.decode32("j5x20")
 
 # str = "28unvs22456465"
-# int = CV::UkeyUtil.decode32_zh(str)
-# puts str, int, CV::UkeyUtil.encode32_zh(int)
+# int = UkeyUtil.decode32_zh(str)
+# puts str, int, UkeyUtil.encode32_zh(int)
 
-# puts CV::UkeyUtil.encode32(125272284354752)
-# puts CV::UkeyUtil.gen_ukey
-# puts CV::UkeyUtil.gen_ukey
-# puts CV::UkeyUtil.gen_ukey
+# puts UkeyUtil.encode32(125272284354752)
+# puts UkeyUtil.gen_ukey
+# puts UkeyUtil.gen_ukey
+# puts UkeyUtil.gen_ukey
