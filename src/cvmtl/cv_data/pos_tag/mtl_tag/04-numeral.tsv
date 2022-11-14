@@ -16,10 +16,12 @@ Mn_hf	Nhanzi2	Object	# chinese number, approximate
 Mn_x	Nmixed0	Object	# mixed digits with hanzi units
 Mn_xf	Nmixed1	Object	# mixed approximate digits with hanzi units
 
+Mn_yi1	NumYi1 	Object	# "一"
+Mn_han	NumHan 	Object	# "半"
+
 Mn_f	Numeral	Object	# 基数词 generic cardinal number
 
-#Mn_yi1	NumYi1 	Object	# "一"
-#Mn_han	NumHan 	Object	# "半"
+
 
 
 #############

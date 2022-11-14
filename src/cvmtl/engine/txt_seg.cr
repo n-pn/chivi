@@ -26,7 +26,8 @@ class MT::TxtSeg
 
   private def init_node(raw_char : Char, mtl_char : Char, idx : Int32)
     mtl_str = mtl_char.to_s
-    tag, pos = PosTag.map_punct(mtl_str)
+    tag = PosTag.map_puncts(mtl_str)
+    pos = PosTag.map_pos(tag)
     MonoNode.new(raw_char.to_s, mtl_str, tag: tag, pos: pos, idx: idx)
   end
 

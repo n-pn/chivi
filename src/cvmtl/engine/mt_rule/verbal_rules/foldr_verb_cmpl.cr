@@ -48,8 +48,8 @@ module MT::Rules
 
   private def map_cmpl_pos(cmpl : MtNode)
     case cmpl
-    when .shang_word?, .xia_word?
-      MtlPos::HasDircmpl | MtlPos::HasRescmpl
+    # when .shang_word?, .xia_word?
+    #   MtlPos::HasDircmpl | MtlPos::HasRescmpl
     when .vdir?
       MtlPos::HasDircmpl
     else

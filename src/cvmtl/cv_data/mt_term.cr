@@ -30,7 +30,8 @@ class MT::MtTerm
 
   def after_initialize
     @seg = MtTerm.seg_weight(@key.size, @wseg)
-    @tag, @pos = PosTag.init(@ptag, @key, @val, @alt)
+    @tag = PosTag.map_tag(@ptag, @key, @val)
+    @pos = PosTag.map_pos(@tag)
   end
 
   SEG_VALUE = {

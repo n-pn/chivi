@@ -148,7 +148,7 @@ enum MT::MtlTag : UInt32
 
   # all kind of numbers
   def numbers?
-    self >= Ordinal && self < NumHan
+    self >= Ordinal && self <= Numeral
   end
 
   def ndigits?
@@ -228,7 +228,7 @@ enum MT::MtlTag : UInt32
   # adverb
 
   def advb_words?
-    self >= Adverb && self <= ConjAdvb
+    self >= Adverb && self <= AdvManner
   end
 
   def nega_advs?
@@ -325,7 +325,7 @@ enum MT::MtlTag : UInt32
 
   # words that have multi meaning/part-of-speech
   def polysemy?
-    self >= VerbOrNoun && self < ZhongWord
+    false
   end
 
   # special words that need to be check before build semantic tree
