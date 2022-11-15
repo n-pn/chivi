@@ -20,7 +20,7 @@
     <section class="body">
       <div class="repls">
         {#each replies as repl}
-          <div class="repl island">
+          <div class="repl">
             <header class="repl-head">
               <a class="-user" href="/crits?user={repl.uslug}">{repl.uname}</a>
               <span class="-sep">·</span>
@@ -109,7 +109,7 @@
   .repl {
     margin-bottom: min(var(--gutter), 0.75rem);
     // @include shadow();
-    // @include bdradi();
+    @include bdradi();
     @include border();
     // @include bgcolor(tert);
     @include padding-x(var(--gutter));

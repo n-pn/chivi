@@ -66,109 +66,111 @@
   ]
 </script>
 
-<crit-item class="island">
-  <header>
-    <a class="meta _user" href="/crits?user={crit.op_id}-{crit.uslug}"
-      >{crit.uname}</a>
+{#key crit.id}
+  <crit-item class="island">
+    <header>
+      <a class="meta _user" href="/crits?user={crit.op_id}-{crit.uslug}"
+        >{crit.uname}</a>
 
-    <div class="right">
-      <span class="meta _star">
-        <Stars count={crit.stars} />
-      </span>
-    </div>
-  </header>
-
-  {#if show_book && book}<YscritBook {book} />{/if}
-
-  <section class="version">
-    <span class="meta">Dịch theo:</span>
-    {#each body_types as [value, label, privi]}
-      <label
-        class="meta _inline"
-        data-tip="Cần thiết quyền hạn tối thiểu: {privi}"
-        data-tip-loc="bottom"
-        ><input
-          type="radio"
-          name="{crit.id}_body_type"
-          bind:group={body_type}
-          disabled={$session.privi < privi}
-          {value} />
-        <span>{label}</span>
-      </label>
-    {/each}
-  </section>
-
-  <section class="body" class:big_text>
-    {#if _loading}
-      <div class="loading">
-        <SIcon name="loader" spin={_loading} />
-        <span>Đang tải dữ liệu</span>
+      <div class="right">
+        <span class="meta _star">
+          <Stars count={crit.stars} />
+        </span>
       </div>
-    {:else if content == '<p>$$$</p>'}
-      <p class="mute">
-        <em>(Nội dung đánh giá đã bị ẩn trên Ưu Thư Võng, đợi phục hồi)</em>
-      </p>
-    {:else}
-      <Truncate html={content} {view_all} />
-    {/if}
-  </section>
+    </header>
 
-  <div class="vtags">
-    {#each crit.vtags as label}
-      <a class="vtag" href="/crits?lb={label}">
-        <SIcon name="hash" />
-        <span>{label}</span>
-      </a>
-    {/each}
-  </div>
+    {#if show_book && book}<YscritBook {book} />{/if}
 
-  <footer class="foot" class:_sticky={view_all}>
-    <!-- <span class="meta">&middot;</span> -->
+    <section class="version">
+      <span class="meta">Dịch theo:</span>
+      {#each body_types as [value, label, privi]}
+        <label
+          class="meta _inline"
+          data-tip="Cần thiết quyền hạn tối thiểu: {privi}"
+          data-tip-loc="bottom"
+          ><input
+            type="radio"
+            name="{crit.id}_body_type"
+            bind:group={body_type}
+            disabled={$session.privi < privi}
+            {value} />
+          <span>{label}</span>
+        </label>
+      {/each}
+    </section>
 
-    <a class="meta _time" href="/qtran/crits/{crit.id}">
-      <SIcon name="clock" />
-      <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
-    </a>
+    <section class="body" class:big_text>
+      {#if _loading}
+        <div class="loading">
+          <SIcon name="loader" spin={_loading} />
+          <span>Đang tải dữ liệu</span>
+        </div>
+      {:else if content == '<p>$$$</p>'}
+        <p class="mute">
+          <em>(Nội dung đánh giá đã bị ẩn trên Ưu Thư Võng, đợi phục hồi)</em>
+        </p>
+      {:else}
+        <Truncate html={content} {view_all} />
+      {/if}
+    </section>
 
-    <a class="meta" href="/crits/{crit.id}">
-      <SIcon name="link" />
-      <span>Liên kết</span>
-    </a>
-
-    {#if content.length > 600}
-      <button class="meta" on:click={() => (view_all = !view_all)}>
-        <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
-        <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
-      </button>
-    {/if}
-
-    <div class="right">
-      <span class="meta">
-        <SIcon name="thumb-up" />
-        <span>{crit.like_count}</span>
-      </span>
-
-      <button class="meta" on:click={show_replies}>
-        <SIcon name="message" />
-        <span>{crit.repl_count}</span>
-      </button>
+    <div class="vtags">
+      {#each crit.vtags as label}
+        <a class="vtag" href="/crits?lb={label}">
+          <SIcon name="hash" />
+          <span>{label}</span>
+        </a>
+      {/each}
     </div>
-  </footer>
 
-  {#if show_list && crit.yslist_id}
-    <footer class="list">
-      <a class="link _list" href="/lists/{crit.yslist_id}{crit.yslist_vslug}">
-        <SIcon name="bookmarks" />
-        <span>{crit.yslist_vname}</span>
-        <span>({crit.yslist_count} bộ truyện)</span>
+    <footer class="foot" class:_sticky={view_all}>
+      <!-- <span class="meta">&middot;</span> -->
+
+      <a class="meta _time" href="/qtran/crits/{crit.id}">
+        <SIcon name="clock" />
+        <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
       </a>
-    </footer>
-  {/if}
-</crit-item>
 
-{#if show_repls}
-  <YsreplList {replies} bind:_active={show_repls} />
-{/if}
+      <a class="meta" href="/crits/{crit.id}">
+        <SIcon name="link" />
+        <span>Liên kết</span>
+      </a>
+
+      {#if content.length > 600}
+        <button class="meta" on:click={() => (view_all = !view_all)}>
+          <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
+          <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
+        </button>
+      {/if}
+
+      <div class="right">
+        <span class="meta">
+          <SIcon name="thumb-up" />
+          <span>{crit.like_count}</span>
+        </span>
+
+        <button class="meta" on:click={show_replies}>
+          <SIcon name="message" />
+          <span>{crit.repl_count}</span>
+        </button>
+      </div>
+    </footer>
+
+    {#if show_list && crit.yslist_id}
+      <footer class="list">
+        <a class="link _list" href="/lists/{crit.yslist_id}{crit.yslist_vslug}">
+          <SIcon name="bookmarks" />
+          <span>{crit.yslist_vname}</span>
+          <span>({crit.yslist_count} bộ truyện)</span>
+        </a>
+      </footer>
+    {/if}
+  </crit-item>
+
+  {#if show_repls}
+    <YsreplList {replies} bind:_active={show_repls} />
+  {/if}
+{/key}
 
 <style lang="scss">
   crit-item {
