@@ -52,11 +52,11 @@
     const url = `/_ys/crits/${crit.id}/${body_type}`
     const res = await globalThis.fetch(url)
     const res_text = await res.text()
-    if (!res.ok) return alert(res_text)
+    _loading = false
 
+    if (!res.ok) return alert(res_text)
     cached[body_type] = res_text
     content = res_text
-    _loading = false
   }
 
   const body_types = [
@@ -254,7 +254,7 @@
   }
 
   .body {
-    padding: 0 var(--gutter);
+    padding: 0.375rem var(--gutter) 0.25rem;
     position: relative;
     line-height: 1.5em;
 
@@ -264,7 +264,7 @@
       @include bps(font-size, rem(18px), $pl: rem(19px), $tm: rem(20px));
     }
 
-    :global(p) {
+    :global(p + p) {
       margin-top: 0.75em;
     }
 

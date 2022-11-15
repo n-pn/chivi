@@ -36,8 +36,9 @@ module YS::Helpers
     end
   end
 
-  def self.zipping(zip_path : String, inp_file : String)
-    `zip --FS -jrq "#{zip_path}" #{inp_file}`
+  def self.zipping(zip_path : String, inp_path : String)
+    response = `zip -FS -jrq "#{zip_path}" "#{inp_path}"`
+    raise response unless $?.success?
   end
 end
 

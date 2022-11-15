@@ -117,7 +117,8 @@ class YS::Yscrit
     file_path = File.join(dir_path, filename(type, ext))
     File.write(file_path, content)
 
-    Helpers.zipping(self.zip_path(type), file_path)
+    Log.debug { "save #{file_path} to #{self.zip_path(type)}" }
+    Helpers.zipping(self.zip_path(type), dir_path)
   end
 
   #############
