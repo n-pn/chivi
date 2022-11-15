@@ -6,8 +6,10 @@
   export let _active = true
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="wrap" data-kbd="esc" on:click={() => (_active = false)}>
-  <div class="main" on:click={(e) => e.stopPropagation()}>
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div class="main island" on:click={(e) => e.stopPropagation()}>
     <header class="head">
       <div class="title">Phản hồi bình luận</div>
       <button on:click={() => (_active = false)}>
@@ -18,7 +20,7 @@
     <section class="body">
       <div class="repls">
         {#each replies as repl}
-          <div class="repl">
+          <div class="repl island">
             <header class="repl-head">
               <a class="-user" href="/crits?user={repl.uslug}">{repl.uname}</a>
               <span class="-sep">·</span>
@@ -55,12 +57,18 @@
   }
 
   .main {
-    width: rem(40);
+    $max-width: 40rem;
+
+    width: $max-width;
     min-width: 320px;
     max-width: 100%;
+
     @include bgcolor(tert);
-    @include bdradi();
     @include shadow(3);
+
+    @include bp-min($max-width) {
+      @include bdradi();
+    }
   }
 
   .head {
@@ -85,7 +93,8 @@
 
   .body {
     // @include bgcolor(secd);
-    padding: 0 var(--gutter-small);
+    padding: 0 var(--gutter);
+
     margin-top: 0.25rem;
     margin-bottom: 0.25rem;
     overflow: auto;
@@ -98,20 +107,17 @@
   }
 
   .repl {
-    margin-bottom: 1rem;
-    @include shadow();
-    @include bdradi();
-    @include bgcolor(secd);
+    margin-bottom: min(var(--gutter), 0.75rem);
+    // @include shadow();
+    // @include bdradi();
+    @include border();
+    // @include bgcolor(tert);
+    @include padding-x(var(--gutter));
   }
 
   .repl-head {
     @include flex($gap: 0.3rem);
 
-    @include bgcolor(secd);
-    @include bdradi($loc: top);
-    // @include border(--bd-main, $loc: bottom);
-
-    padding: 0.375rem var(--gutter-small);
     line-height: 1.75rem;
     @include bps(font-size, rem(13px), rem(14px), rem(15px));
 
@@ -143,7 +149,6 @@
   }
 
   .repl-body {
-    margin: 0 var(--gutter-small);
     @include bps(font-size, rem(15px), rem(16px));
     padding-bottom: 0.75rem;
     > :global(*) + :global(*) {

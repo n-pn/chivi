@@ -63,12 +63,9 @@
 
     @include border(--bd-soft, $loc: bottom);
     // margin-top: 0.75rem;
-    @include margin-x(auto);
-    @include padding-y(calc(var(--gutter) / 2));
 
-    @include bp-min(pl) {
-      @include padding-x(var(--gutter));
-    }
+    @include padding-y(calc(var(--gutter) / 2));
+    @include padding-x(var(--gutter));
   }
 
   .-info {

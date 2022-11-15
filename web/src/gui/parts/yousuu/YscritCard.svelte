@@ -66,7 +66,7 @@
   ]
 </script>
 
-<crit-item>
+<crit-item class="island">
   <header>
     <a class="meta _user" href="/crits?user={crit.op_id}-{crit.uslug}"
       >{crit.uname}</a>
@@ -173,13 +173,13 @@
 <style lang="scss">
   crit-item {
     display: block;
-    margin: 1rem 0;
-    padding-bottom: 0.01px;
+    @include margin-y(1rem);
+    // padding-bottom: 0.01px;
 
     // @include shadow();
-    // @include bgcolor(secd);
+    @include bgcolor(tert);
 
-    @include bdradi();
+    // @include bdradi();
     @include linesd(--bd-main, $inset: false);
 
     @include tm-dark {
@@ -267,6 +267,12 @@
     :global(p + p) {
       margin-top: 0.75em;
     }
+
+    --line: 12;
+    // prettier-ignore
+    @include bp-min(ts) { --line: 10; }
+    // prettier-ignore
+    @include bp-min(ds) { --line: 8; }
 
     // &._loading:after {
     //   display: block;

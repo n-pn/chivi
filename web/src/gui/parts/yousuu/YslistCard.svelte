@@ -85,9 +85,9 @@
     margin: 1rem 0;
     padding: var(--gutter);
 
-    @include bgcolor(secd);
+    @include bgcolor(tert);
     @include bdradi;
-    @include shadow;
+    // @include shadow;
     @include linesd(--bd-soft);
   }
 

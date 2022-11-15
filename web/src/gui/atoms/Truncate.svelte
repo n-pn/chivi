@@ -1,6 +1,5 @@
 <script lang="ts">
   export let html: string
-  export let line = 5
 
   export let view_all = false
 
@@ -14,11 +13,7 @@
   }
 </script>
 
-<div
-  class:_full={view_all}
-  class:_trim={clamped || !view_all}
-  bind:this={elm}
-  style:--line={line}>
+<div class:_full={view_all} class:_trim={clamped || !view_all} bind:this={elm}>
   {@html html}
 </div>
 
