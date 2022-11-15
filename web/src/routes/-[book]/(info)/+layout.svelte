@@ -15,6 +15,7 @@
   function map_tab_from_route(route_id: string) {
     if (route_id.includes('crits')) return 'crits'
     if (route_id.includes('chaps')) return 'chaps'
+    if (route_id.includes('lists')) return 'lists'
     return 'index'
   }
 </script>
@@ -132,10 +133,10 @@
     </a>
 
     <a
-      href="/-{nvinfo.bslug}/chaps"
+      href="/-{nvinfo.bslug}/lists"
       class="header-tab"
-      class:_active={nv_tab == 'chaps'}>
-      <span>Chương tiết</span>
+      class:_active={nv_tab == 'lists'}>
+      <span>Thư đơn</span>
     </a>
   </header>
 

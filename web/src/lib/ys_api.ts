@@ -31,3 +31,24 @@ export async function view_crit(crit_id: string, fetch = globalThis.fetch) {
   const res = await fetch(url)
   return await res.json()
 }
+
+export async function get_lists(
+  params = new URLSearchParams(),
+  extra: Record<string, string | number> = {},
+  fetch = globalThis.fetch
+) {
+  if (!(params instanceof URLSearchParams)) {
+    params = new URLSearchParams(params)
+  }
+
+  if (typeof extra == 'object') {
+    for (let key in extra) {
+      const val = extra[key]
+      if (val) params.append(key, val.toString())
+    }
+  }
+
+  const url = `/_ys/lists?` + params.toString()
+  const res = await fetch(url)
+  return await res.json()
+}
