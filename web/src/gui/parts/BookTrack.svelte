@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores'
   import { session } from '$lib/stores'
   import { api_call } from '$lib/api'
 
@@ -12,7 +11,8 @@
 
   import { SIcon, Gmenu } from '$gui'
 
-  $: ({ nvinfo, ubmemo } = $page.data)
+  export let nvinfo: CV.Nvinfo
+  export let ubmemo: CV.Ubmemo
   $: book_status = ubmemo.status
 
   async function update_status(status: string) {
@@ -33,9 +33,9 @@
 </script>
 
 <Gmenu class="navi-item" loc="bottom" r>
-  <button class="m-btn _fill _{color}" slot="trigger">
+  <button class="m-btn _{color}" slot="trigger">
     <SIcon name={icon} />
-    <span>{name}</span>
+    <span class="u-show-md">{name}</span>
   </button>
 
   <svelte:fragment slot="content">

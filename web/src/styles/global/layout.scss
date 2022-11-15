@@ -17,3 +17,7 @@
     }
   }
 }
+
+.u-show-md {
+  @include bps(display, none, $ts: inline-block);
+}

@@ -9,6 +9,7 @@
   import UserAction from './UserAction.svelte'
 
   $: nvinfo = $page.data.nvinfo
+  $: ubmemo = $page.data.ubmemo
   $: nv_tab = map_tab_from_route($page.route.id || '')
 
   function map_tab_from_route(route_id: string) {
@@ -111,7 +112,7 @@
     {/if}
   </div>
 
-  <UserAction {nvinfo} />
+  <UserAction {nvinfo} {ubmemo} />
 </div>
 
 <section class="section island">
