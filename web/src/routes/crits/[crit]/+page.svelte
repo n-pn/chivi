@@ -20,6 +20,6 @@
   </a>
 </nav>
 
-<article class="article _narrow">
+<article class="article island _narrow">
   <YscritCard crit={data.entry} view_all={true} big_text={true} />
 </article>

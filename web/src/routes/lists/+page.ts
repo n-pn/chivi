@@ -14,5 +14,7 @@ export async function load({ fetch, url: { searchParams } }) {
   // - remove props
   // - add interface
 
-  return { ...api_res, _meta }
+  const params = Object.fromEntries(searchParams)
+
+  return { ...api_res, params, _meta }
 }

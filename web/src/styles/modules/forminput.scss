@@ -25,13 +25,17 @@
 
   @include hover-focus {
     @include bdcolor(primary, 5);
-    box-shadow: 0 0 0 1px color(primary, 5, 5);
+    // box-shadow: 0 0 0 1px color(primary, 5, 5);
+  }
+
+  &[type='search'] {
+    border-radius: 2rem;
   }
 
   &:focus,
   &:focus-within {
     @include bgcolor(tert);
-    box-shadow: 0 0 0 2px color(primary, 5, 5);
+    box-shadow: 0 0 0 1px color(primary, 5, 5);
   }
 
   &::placeholder {
