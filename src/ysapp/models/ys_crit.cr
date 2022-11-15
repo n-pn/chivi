@@ -77,18 +77,18 @@ class YS::Yscrit
   end
 
   def load_vhtml_from_disk : String
-    load_html_from_disk("vi", persist: false) do |ztext|
+    load_html_from_disk("vi", persist: true) do |ztext|
       dict = Helpers.load_dict(self.nvinfo_id.try(&.to_i) || 0)
       TranUtil.qtran(ztext, dict.name)
     end
   end
 
   def load_btran_from_disk : String
-    load_html_from_disk("bv", persist: false) { |ztext| TranUtil.btran(ztext) }
+    load_html_from_disk("bv", persist: true) { |ztext| TranUtil.btran(ztext) }
   end
 
   def load_deepl_from_disk : String
-    load_html_from_disk("de", persist: false) { |ztext| TranUtil.deepl(ztext) }
+    load_html_from_disk("de", persist: true) { |ztext| TranUtil.deepl(ztext) }
   end
 
   private def load_html_from_disk(type : String, persist : Bool = true)

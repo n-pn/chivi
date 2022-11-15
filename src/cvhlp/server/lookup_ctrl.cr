@@ -11,7 +11,9 @@ class TL::LookupCtrl < TL::BaseCtrl
   end
 
   @[AC::Route::PUT("/lookup", body: :req)]
-  def lookup(req : LookupInput)
+  def lookup(req : LookupInput | String)
+    raise "Invalid request" if req.is_a?(String)
+
     output = {} of Int32 => Array(Tuple(Int32, LuTerms))
 
     chars = req.input.chars

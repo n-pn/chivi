@@ -1,0 +1,19 @@
+@use '../essence' as *;
+
+.app-vessel {
+  width: var(--page-width, 52rem);
+  position: relative;
+  max-width: 100%;
+  margin: 0 auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+
+  .island {
+    @include margin-x(calc(var(--gutter) * -1));
+
+    @include bp-min(tl) {
+      @include margin-x(0);
+      @include bdradi();
+    }
+  }
+}

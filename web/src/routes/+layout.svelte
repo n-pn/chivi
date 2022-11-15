@@ -68,7 +68,11 @@
 </chivi-app>
 
 <style lang="scss">
+  $page-width: 56rem;
+
   chivi-app {
+    --page-width: #{$page-width};
+
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -79,24 +83,6 @@
 
     &._shift {
       @include bps(padding-right, $ls: 30rem);
-    }
-  }
-
-  $page-width: 56rem;
-
-  :global(.app-vessel) {
-    width: $page-width;
-    position: relative;
-    max-width: 100%;
-    margin: 0 auto;
-    padding-left: var(--gutter);
-    padding-right: var(--gutter);
-
-    > :global(.island) {
-      @include bp-max(tl) {
-        margin-left: calc(var(--gutter) * -1);
-        margin-right: calc(var(--gutter) * -1);
-      }
     }
   }
 

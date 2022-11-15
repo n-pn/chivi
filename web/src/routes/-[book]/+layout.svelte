@@ -17,8 +17,8 @@
 <script lang="ts">
   import { dtlist_data } from '$lib/stores'
 
-  import type { PageData } from './$types'
-  export let data: PageData
+  import type { LayoutData } from './$types'
+  export let data: LayoutData
 
   $: ({ nvinfo } = data)
 

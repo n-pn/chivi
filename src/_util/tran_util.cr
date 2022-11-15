@@ -5,11 +5,11 @@ module TranUtil
   extend self
 
   CVMTL_URL = "http://localhost:5010/api/qtran"
-  BTRAN_URL = "http://localhost:5401/_mh/btran"
-  DEEPL_URL = "http://localhost:5401/_mh/deepl"
+  BTRAN_URL = "http://localhost:5501/_mh/btran"
+  DEEPL_URL = "http://localhost:5501/_mh/deepl"
 
-  BTRAN_NO_CAP = "http://localhost:5010/api/qtran?no_cap=true"
-  DEEPL_NO_CAP = "http://localhost:5010/api/deepl?no_cap=true"
+  BTRAN_NO_CAP = "http://localhost:5501/_mh/qtran?no_cap=true"
+  DEEPL_NO_CAP = "http://localhost:5501/_mh/deepl?no_cap=true"
 
   JSON_HEADER = HTTP::Headers{"content-type" => "application/json"}
   TEXT_HEADER = HTTP::Headers{"content-type" => "text/plain"}
@@ -28,11 +28,12 @@ module TranUtil
   end
 
   private def call_api(url : String, headers : HTTP::Headers, body : String) : String?
+    Log.debug { "CALL:#{url}" }
+
     HTTP::Client.put(url, headers: headers, body: body) do |res|
-      return res.body_io.gets_to_end if res.status.success?
-      Log.error { "error: #{res.body}" }
+      body = res.body_io.gets_to_end
+      return body if res.status.success?
+      Log.error { "error call #{url}: #{body}" }
     end
-  rescue err
-    Log.error(exception: err) { err.message }
   end
 end

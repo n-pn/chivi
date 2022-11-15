@@ -248,15 +248,11 @@
   }
 
   .section {
-    margin: 0.5rem 0;
+    @include margin-y(var(--gutter));
 
     @include bgcolor(tert);
     @include shadow(2);
     @include padding-x(var(--gutter));
-
-    @include bp-min(tl) {
-      border-radius: 1rem;
-    }
 
     @include tm-dark {
       @include linesd(--bd-soft, $ndef: false, $inset: false);

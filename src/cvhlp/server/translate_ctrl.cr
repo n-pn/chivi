@@ -14,7 +14,9 @@ class TL::TranslateCtrl < TL::BaseCtrl
   end
 
   @[AC::Route::PUT("/hanviet", body: :req)]
-  def hanviet(req : HanvietReq)
+  def hanviet(req : HanvietReq | String)
+    raise "Invalid request" if req.is_a?(String)
+
     @render_called = true
     res = @context.response
 
@@ -39,7 +41,11 @@ class TL::TranslateCtrl < TL::BaseCtrl
     res.content_type = "text/plain; charset=utf-8"
 
     output = Btran.translate(text.split('\n'), no_cap: no_cap)
-    output.join(res, '\n')
+
+    output.each_with_index do |line, i|
+      res << '\n' if i > 0
+      res << line[1]
+    end
   end
 
   @[AC::Route::PUT("/deepl", body: :text)]
@@ -51,6 +57,10 @@ class TL::TranslateCtrl < TL::BaseCtrl
     res.content_type = "text/plain; charset=utf-8"
 
     output = Deepl.translate(text.split('\n'), no_cap: no_cap)
-    output.join(res, '\n')
+
+    output.each_with_index do |line, i|
+      res << '\n' if i > 0
+      res << line[1]
+    end
   end
 end
