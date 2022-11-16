@@ -92,12 +92,18 @@
 
   async function update_preview(input: string) {
     const api_url = `/api/qtran/mterror?caps=t`
-    const params = { input, dname }
 
-    const res = await $page.stuff.api.call(api_url, 'PUT', params)
-    if (res.error) alert(res.error)
+    const res = await fetch(api_url, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ input, dname }),
+    })
+
+    const res_data = await res.text()
+
+    if (!res.ok) alert(res_data)
     else {
-      const lines = res.split('\n')
+      const lines = res_data.split('\n')
       convert = lines[0]
       hanviet = lines[1]
     }
