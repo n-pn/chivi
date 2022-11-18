@@ -65,7 +65,7 @@
     min_blanks: 2,
     trim_space: false,
     need_blank: false,
-    label: '章节回幕折集卷季',
+    name: '章节回幕折集卷季',
     regex: `^\\s*第?[\\d${numbers}]+[章节回]`,
   }
 

@@ -1,0 +1,199 @@
+## time quantifiers
+- ptag: Mqt # combin e with number to timespan / timeform / dateform time
+  name: Thời lượng từ
+  desc:
+  extend: [Zfunc]
+
+## verb quantifiers
+- ptag: Mqv # verb q uantifier verb
+  name: Động lượng từ
+  desc:
+  extend: [Zfunc]
+
+- ptag: Mqn # generic noun quantifier
+  name: Danh lượng từ
+  desc:
+  extend: [Zfunc]
+
+- ptag: Mqn_m # mass
+  name: Lượng từ đo lường
+  desc: Dùng để đo lường các danh từ không đếm được
+  extend: [Object]
+
+- ptag: Mqn_w # weight
+  name: Lượng từ khối lượng
+  desc:
+  extend: [Object]
+
+- ptag: Mqn_d # distance
+  name: Lượng từ khoảng cách
+  desc:
+  extend: [Object]
+
+- ptag: Mqn_c # currency/cash
+  name: Lượng từ tiền tệ
+  desc: Lượng từ cho tiền tệ
+  extend: [Object]
+
+## proper quantifiers
+- ptag: Mqn_ge # "个"  Ge4
+  name: Lượng từ `个`
+  desc:
+  extend: [Mqn]
+
+- ptag: Mqn_ba # "把"  Ba3
+  name: Lượng từ `把`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "本"  Ben
+  name: Lượng từ `本`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "部"  Bu4
+  name: Lượng từ `部`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "册"  Ce4
+  name: Lượng từ `册`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "层"  Ceng
+  name: Lượng từ `层`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "场"
+  name: [tChang]
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "处"  Chu4
+  name: Lượng từ `处`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "出"  Chu1
+  name: Lượng từ `出`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "次"  Ci4
+  name: Lượng từ `次`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "道"  Dao
+  name: Lượng từ `道`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "顶"  Ding
+  name: Lượng từ `顶`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "栋"  Dong
+  name: Lượng từ `栋`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "堵"  Du3
+  name: Lượng từ `堵`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "顿"  Dun
+  name: Lượng từ `顿`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "朵"  Duo
+  name: Lượng từ `朵`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "发"  Fa1
+  name: Lượng từ `发`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "份"  Fen4
+  name: Lượng từ `份`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "封"  Feng
+  name: Lượng từ `封`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "幅"  Fu2
+  name: Lượng từ `幅`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "杆"  Gan3
+  name: Lượng từ `杆`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "根"  Gen1
+  name: Lượng từ `根`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "家"  Jia1
+  name: Lượng từ `家`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "架"  Jia4
+  name: Lượng từ `架`
+  desc:
+  extend: [Mqn]
+
+- ptag: #Mqn_ # "间"  Jian
+  name: Lượng từ `间`
+  desc:
+  extend: [Mqn]
+
+# more_ https_//en.wikipedia.org/wiki/List_of_Chinese_classifiers
+
+- ptag: Mqt_dien # " 点" Dian
+  name: Thời lượng từ `点`
+  desc:
+  extend: [Mqn]
+
+- ptag: Mqt_fen1 # " 分" Fen1
+  name: Thời lượng từ `分`
+  desc:
+  extend: [Mqn]
+
+- ptag: Mqt_miao # " 秒" Miao
+  name: Thời lượng từ `秒`
+  desc:
+  extend: [Mqn]
+
+- ptag: Mqt_nian # " 年" Nian
+  name: Thời lượng từ `年`
+  desc:
+  extend: [Mqn]
+
+- ptag: Mqt_yue4 # " 月" Yue4
+  name: Thời lượng từ `月`
+  desc:
+  extend: [Mqn]
+
+- ptag: Mqt_ri4 # "日 " Ri4
+  name: Thời lượng từ `日`
+  desc:
+  extend: [Mqn]
+
+- ptag: Mqt_hao # "号 " Hao
+  name: Thời lượng từ `号`
+  desc:
+  extend: [Mqn]

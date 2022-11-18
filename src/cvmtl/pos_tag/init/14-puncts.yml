@@ -1,0 +1,197 @@
+# Dấu câu thường
+- ptag: Xp
+  name: Dấu câu
+  detect: /^\p{P}$/
+  virtual: true
+
+- ptag: Xp_t
+  name: Dấu kết câu
+  desc: Đánh dấu phân tách câu
+  virtual: true
+
+- ptag: Xp_c
+  name: Dấu kết đoạn
+  desc: Đánh dấu phân tách đoạn
+  virtual: true
+
+- ptag: Xp_s
+  name: Dấu mở ngoặc
+  desc: Đánh dấu mở ngoặc
+  detect: /^\p{Ps}$/
+  virtual: true
+
+- ptag: Xp_e
+  name: Dấu đóng ngoặc
+  detect: /^\p{Pe}$/
+  virtual: true
+
+- ptag: Xp_i
+  name: Dấu mở trích
+  detect: /^\p{Pi}$/
+  virtual: true
+
+- ptag: Xp_f
+  name: Dấu đóng trích
+  detect: /\p{Pf}/
+  virtual: true
+
+- ptag: Xp_o
+  name: Dấu câu khác
+  extend: [Xp]
+  detect: /\p{Po}/
+  virtual: false
+
+# dấu kết câu
+- ptag: Xp_pm
+  name: Dấu chấm `.`
+  extend: [Xp, Xp_t]
+  detect: /^[.]$/
+
+- ptag: Xp_qm
+  name: Dấu chấm hỏi `?`
+  extend: [Xp, Xp_t]
+  detect: /^[?]$/
+
+- ptag: Xp_fm
+  name: Dấu chấm than `!`
+  extend: [Xp, Xp_t]
+  detect: /^[!]$/
+
+# - ptag: Xp_dq
+#   name: Dấu ngoặc kép
+#   extend: [Xp]
+# - ptag: Xp_sq
+#   name: dấu ngoặc đơn
+#   extend: [Xp]
+
+# đánh dấu tác phẩm
+- ptag: Xp_ts1
+  name: Dấu mở ngoặc `⟨`
+  desc: Kết hợp với `⟩` đằng sau thành cụm từ chỉ tên tác phẩm
+  extend: [Xp, Xp_s]
+  detect: /^[⟨]$/
+
+- ptag: Xp_ts2
+  name: Dấu mở ngoặc `<`
+  desc: Kết hợp với `>` đằng sau thành cụm từ chỉ tên tác phẩm
+  extend: [Xp, Xp_s]
+  detect: /^[<]$/
+
+- ptag: Xp_ts3
+  name: Dấu mở ngoặc '‹'
+  desc: Kết hợp với `›` đằng sau thành cụm từ chỉ tên tác phẩm
+  extend: [Xp, Xp_s]
+  detect: /^[‹]$/
+
+- ptag: Xp_tc1
+  name: Dấu đóng ngoặc `⟩`
+  desc: Kết hợp với `⟨` đằng trước thành cụm từ chỉ tên tác phẩm
+  extend: [Xp, Xp_e]
+  detect: /^[⟩]$/
+
+- ptag: Xp_tc2
+  name: Dấu đóng ngoặc `>`
+  desc: Kết hợp với `<` đằng trước thành cụm từ chỉ tên tác phẩm
+  extend: [Xp, Xp_e]
+  detect: /^[>]$/
+
+- ptag: Xp_tc3
+  name: Dấu đóng ngoặc `›`
+  desc: Kết hợp với `‹` đằng trước thành cụm từ chỉ tên tác phẩm
+  extend: [Xp, Xp_e]
+  detect: /^[›]$/
+
+# đánh dấu trích đoạn
+- ptag: Xp_qs1
+  name: Mở ngoặc kép `“`
+  extend: [Xp, Xp_i]
+- ptag: Xp_qs2
+  name: Mở ngoặc kép `‘`
+  extend: [Xp, Xp_i]
+- ptag: Xp_qc1
+  name: Đóng ngoặc kép `”`
+  extend: [Xp, Xp_f]
+- ptag: Xp_qc2
+  name: Đóng ngoặc đơn `’`
+  extend: [Xp, Xp_f]
+
+# đóng mở ngoặc
+- ptag: Xp_bs1
+  name: Mở ngoặc `[`
+  extend: [Xp, Xp_s]
+- ptag: Xp_bs2
+  name: Mở ngoặc `{`
+  extend: [Xp, Xp_s]
+- ptag: Xp_ps1
+  name: Mở ngoặc `(`
+  extend: [Xp, Xp_s]
+
+- ptag: Xp_bc1
+  name: Đóng ngoặc `]`
+  extend: [Xp]
+- ptag: Xp_bc2
+  name: Đóng ngoặc `}`
+  extend: [Xp]
+- ptag: Xp_pc1
+  name: Đóng ngoặc `)`
+  extend: [Xp]
+
+# dấu câu khác
+- ptag: Xp_cl
+  name: Dấu hai chấm `]`
+  extend: [Xp]
+- ptag: Xp_sc
+  name: Dấu chấm phẩy `;`
+  extend: [Xp]
+
+- ptag: Xp_cm
+  name: Dấu phẩy `,`
+  extend: [Xp]
+- ptag: Xp_ce
+  name: Dấu phẩy liệt kê `､`
+  extend: [Xp]
+
+- ptag: Xp_d1
+  name: Dấu gạch ngắn `–`
+  extend: [Xp]
+- ptag: Xp_d2
+  name: Dấu gạch dài `—`
+  extend: [Xp]
+
+- ptag: Xp_e1
+  name: Dấu ba chấm `…`
+  extend: [Xp]
+- ptag: Xp_e2
+  name: Dấu chấm lửng `……`
+  extend: [Xp]
+
+- ptag: Xp_td
+  name: Dấu ngã `~`
+  extend: [Xp]
+
+- ptag: Xp_md
+  name: Dấu chấm giữa `·`
+  extend: [Xp]
+
+- ptag: Xp_as
+  name: Dấu a còng `@`
+  extend: [Xp]
+
+- ptag: Xp_pc
+  name: Dấu phần trăm `%‰`
+  extend: [Xp]
+
+- ptag: Xp_qt
+  name: Ký hiệu đơn vị `￥$℃`
+  extend: [Xp]
+
+- ptag: Xp_pl
+  name: Dấu cộng `+`
+  extend: [Xp]
+- ptag: Xp_mn
+  name: Dấu trừ `-`
+  extend: [Xp]
+
+- ptag: Xp_ws
+  name: Dấu cách ` `
+  extend: [Xp]

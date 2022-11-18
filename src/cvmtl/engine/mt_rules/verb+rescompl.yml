@@ -1,0 +1,24 @@
+# TODO: restrict type of verb that can combine with complements
+
+# động từ + bổ ngữ kết quả
+
+- ptag: verb+rescompl-1
+  decs: Động từ + bổ ngữ kết quả thể khẳng định
+  pattern: [Verb, Fc_r]
+  outputs:
+    - node: [1, 2]
+      ptag: 1
+
+- ptag: verb+rescompl-2
+  decs: Động từ + bổ ngữ kết quả thể phủ định với 没
+  pattern: [Verb, Fd_mei_0, Fc_r]
+  outputs:
+    - node: [1, 2, 3]
+      ptag: 1
+
+- ptag: verb+rescompl-3
+  decs: Động từ + bổ ngữ kết quả thể phủ định với 没有
+  pattern: [Verb, Fd_meiyou_0, Fc_r]
+  outputs:
+    - node: [1, 2, 3]
+      ptag: 1

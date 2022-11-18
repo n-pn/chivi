@@ -33,7 +33,7 @@ export const labels = {
   },
 
   V: {
-    label: 'Động từ',
+    name: 'Động từ',
     short: 'Động',
     items: {
       Vt_: 'Ngoại động từ',
@@ -64,7 +64,7 @@ export const labels = {
   },
 
   R: {
-    label: 'Đại từ',
+    name: 'Đại từ',
     short: 'Đại',
     items: {
       Rr_: 'Đại từ nhân xưng',
@@ -76,7 +76,7 @@ export const labels = {
   },
 
   M: {
-    label: 'Số lượng',
+    name: 'Số lượng',
     short: 'Số',
     items: {
       Mn_: 'Số từ thường',
@@ -96,7 +96,7 @@ export const labels = {
   },
 
   // C: {
-  //   label: 'Bổ ngữ', // bổ ngữ cho động từ/tính từ
+  //   name: 'Bổ ngữ', // bổ ngữ cho động từ/tính từ
   //   short: 'Bổ',
 
   //   items: {
@@ -111,7 +111,7 @@ export const labels = {
   // },
 
   F: {
-    label: 'Hư từ',
+    name: 'Hư từ',
     short: 'Hư',
 
     items: {
@@ -130,7 +130,7 @@ export const labels = {
   },
 
   // G: {
-  //   label: 'Ngữ tố',
+  //   name: 'Ngữ tố',
   //   short: 'Tố',
 
   //   items: {
@@ -152,27 +152,27 @@ export const labels = {
   // },
 
   X: {
-    label: 'Loại khác',
+    name: 'Loại khác',
     short: 'Khác',
 
     items: {
       Xv: 'Ly hợp: Động',
       Xo: 'Ly hợp: Tân',
 
-      Xp_q: 'Trích thơ văn',
-      Xp_t: 'Đoạn dịch tay',
-      Xp_i: 'Ngữ cố định',
+      Xl_q: 'Trích thơ văn',
+      Xl_t: 'Đoạn dịch tay',
+      Xl_i: 'Ngữ cố định',
 
       Xs_e: 'Kaomoji',
       Xs_: 'Ký tự khác',
 
-      Xw: 'Dấu câu',
-      Xp_b: 'Chưa phân loại',
+      Xp: 'Dấu câu',
+      Xl_b: 'Chưa phân loại',
     },
   },
 
   // P: {
-  //   label: 'Cấu trúc', // cấu trúc ngữ pháp
+  //   name: 'Cấu trúc', // cấu trúc ngữ pháp
   //   short: 'Cấu',
   //   items: {
   //     Ppn: 'Cụm giới danh',

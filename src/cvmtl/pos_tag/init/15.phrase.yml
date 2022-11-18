@@ -1,0 +1,24 @@
+# cụm từ
+
+- ptag: Psp
+  name: Cụm chủ vị
+
+- ptag: Psp_v
+  name: Cụm chủ vị(động)
+  extend: [Psp]
+
+- ptag: Psp_a
+  name: Cụm chủ vị(tính)
+  extend: [Psp]
+
+- ptag: Pmd_c
+  name: Cụm định ngữ (x+的) 1
+  desc: Cụm từ kết hợp với `的` (để trắng) làm định ngữ cho danh từ
+
+- ptag: Pmd_g
+  name: Cụm định ngữ (x+的) 2
+  desc: Cụm từ kết hợp với `的` (nghĩa là của) làm định ngữ sở hữu cách
+
+- ptag: Pdr
+  name: Cụm bổ ngữ (得+x)
+  desc: Cụm từ kết hợp với `得` làm bổ ngữ cho động từ

@@ -1,0 +1,131 @@
+# adverbs
+
+## uncategorized
+- ptag: Fd # unmapped adverb
+  name: Phó từ
+  desc:
+  extend: [Ffunc, Fdadv]
+
+- ptag: Fd_l # advbial phrase
+  name: Cụm phó từ
+  desc:
+  extend: [Fd]
+
+- ptag: Fd_nega # 否定副词 negative adverbs
+  name: Phó từ phủ định
+  desc:
+  extend: [Fd]
+
+- ptag: Fd_degree # adverb of degree
+  name: Phó từ mức độ
+  desc:
+  extend: [Fd]
+
+- ptag: Fd_time # 时间副词 adverbs of time
+  name: Phó từ thời gian
+  desc:
+  extend: [Fd]
+
+- ptag: Fd_scope # 范围副词 scope adverbs
+  name: Phó từ phạm vi
+  desc:
+  extend: [Fd]
+
+- ptag: Fd_mood # 语气副词 modal adverbs/adverbs of mood
+  name: Phó từ ngữ khí
+  desc:
+  extend: [Fd]
+
+- ptag: Fd_freq # 频度副词 adverbs of frequency
+  name: Phó từ tần suất
+  desc:
+  extend: [Fd]
+
+## 关联副词 correlative or conjunctive adverbs
+- ptag: Fd_correl # regular
+  name: Phó từ liên quan
+  desc:
+  extend: [Fd]
+
+# 情态副词/情状副词 adverbs of manner
+- ptag: Fd_mann # regular
+  name: Phó từ tình cảm
+  desc:
+  extend: [Fd]
+
+## phó từ đặc biệt
+
+- ptag: Fd_bu4 # "不"
+  name: Phó từ `不`
+  desc:
+  extend: [Fd_nega]
+
+- ptag: Fd_fei # "非"
+  name: Phó từ `非`
+  desc:
+  extend: [Fd_nega]
+
+- ptag: Fd_mei # "没"
+  name: Phó từ `没`
+  desc:
+  extend: [Fd_nega]
+
+- ptag: Fd_bie # "别"
+  name: Phó từ `别`
+  desc:
+  extend: [Fd_nega]
+
+- ptag: Fd_zui # "最"
+  name: Phó từ `最`
+  desc:
+  extend: [Fd_degree]
+
+- ptag: Fd_hen # "很"
+  name: Phó từ `很`
+  desc:
+  extend: [Fd_degree]
+
+- ptag: Fd_hao # "好"
+  name: Phó từ `好`
+  desc:
+  extend: [Fd_degree]
+
+- ptag: Fd_zong # "总": both time and scope
+  name: AdvZong
+  desc:
+  extend: [Fd_time, Fd_scope]
+
+- ptag: Fd_jiu3 # "就": both scope and mood
+  name: AdvJiu3
+  desc:
+  extend: [Fd_scope, Fd_mood]
+
+- ptag: Fd_zai # "再": both frequency or correlative
+  name: AdvZai
+  desc:
+  extend: [Fd_freq, Fd_correl]
+
+- ptag: Fd_you # "又": both frequency or correlative
+  name: AdvYou
+  desc:
+  extend: [Fd_freq, Fd_correl]
+
+- ptag: Fd_ye3 # "也": both frequency or correlative
+  name: AdvYe3
+  desc:
+  extend: [Fd_freq, Fd_correl]
+
+- ptag: Fd_hoan # "还": both frequency or correlative
+  name: AdvHoan
+  desc:
+  extend: [Fd_freq, Fd_correl]
+
+- ptag: Fd_du1 # "都": correlative or scope
+  name: AdvDu1
+  desc:
+  extend: [Fd_correl, Fd_scope]
+
+- ptag: Fd_cai # "才": correlative or ???
+  name: AdvCai
+  desc:
+  extend: [Fd_correl]

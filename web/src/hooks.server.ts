@@ -3,7 +3,7 @@ export async function handle({ event, resolve }) {
 
   return resolve(event, {
     filterSerializedResponseHeaders: (name: string) => {
-      return name != 'location'
+      return name != 'location' && name != 'link'
     },
   })
 }

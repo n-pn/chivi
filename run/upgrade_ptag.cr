@@ -2,7 +2,7 @@ require "option_parser"
 
 require "../src/cvmtl/cv_data/*"
 
-REMAP = {
+REMAP_1 = {
   "Nr" => "Eh_x",
   "Ns" => "Es_p",
   "Nt" => "Es_i",
@@ -113,19 +113,15 @@ def fix_tags(type : String, ptag : String, persist = false)
   end
 end
 
-# fix_dict("core")
-# fix_dict("book")
-
 persist = false
-target = "core"
 ptags = [] of String
 
 OptionParser.parse(ARGV) do |parser|
   parser.on("--persist", "persist") { persist = true }
-  parser.on("-t TARGET", "target") { |x| target = x }
   parser.unknown_args { |x| ptags = x }
 end
 
 ptags.each do |ptag|
-  fix_tags(target, ptag, persist: persist)
+  fix_tags("core", ptag, persist: persist)
+  fix_tags("dict", ptag, persist: persist)
 end

@@ -1,0 +1,56 @@
+# literal
+
+- ptag: Xl_b
+  name: Chưa phân loại
+  desc: Những từ chưa được phân loại
+  extend: [Zdobj, Zimod]
+
+- ptag: Xl_i
+  name: Ngữ cố định
+  desc: Các thành/quán ngữ/tục ngữ/yết hậu ngữ chưa được phân loại sang danh/động/tính
+  extend: [Zdobj, Zimod, Ziadv]
+
+- ptag: Xl_q
+  name: Trích thơ văn
+  desc: Trích đoạn thơ, văn xuôi, danh ngôn, tiếng nước ngoài...
+  extend: [Zdobj, Zimod]
+
+- ptag: Xl_t
+  name: Đoạn dịch tay
+  desc: Đoạn dịch ngắn không có phân loại từ cụ thể
+  extend: [Zdobj, Zposs]
+
+- ptag: Xs_u
+  name: Đường link
+  desc: Siêu liên kết (hyperlink) tới các trang web khác, e.g. https://chivi.app
+  extend: [Zdobj]
+
+- ptag: Xs_m
+  name: Email
+  desc: Địa chỉ email e.g. me@chivi.app
+  extend: [Zdobj, Zposs]
+
+- ptag: Xs_h
+  name: Hashtag
+  desc: 'Hashtag trên mạng, ví dụ #truyen_mang #tiếng trung'
+  extend: [Zdobj]
+
+- ptag: Xs_e
+  name: Kaomoji
+  desc: Dùng để ký hiệu các ký hiệu hình mặt
+  extend: [Zfinal, Zdobj]
+
+- ptag: Xs_x
+  name: Ký tự khác
+  desc: Các chữ cái ngoại lai chưa được phân loại
+  extend: [Zfinal, Zdobj]
+
+- ptag: Xv
+  name: 'Ly hợp: Động'
+  desc: Phần động từ của cấu trúc ly hợp
+  extend: [Zuniq]
+
+- ptag: Xo
+  name: 'Ly hợp: Tân'
+  desc: Phần tân ngữ của cấu trúc ly hợp
+  extend: [Zuniq]

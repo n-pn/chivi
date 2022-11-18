@@ -1,0 +1,77 @@
+# numbers
+
+- ptag: Mn
+  name: Số từ
+  desc: Các loại số từ
+  extend: [Z]
+
+# numeral
+- ptag: Mn_o # 序数词 ordinal number
+  name: Ordinal
+  desc:
+  extend: [Object, AtTail]
+
+- ptag: Mn_c # 基数词 generic cardinal number
+  name: Numeric
+  desc:
+  extend: [Object]
+
+- ptag: Mn_d # all digits
+  name: Ndigit0
+  desc:
+  extend: [Object]
+
+- ptag: Mn_df # digits with decimal point
+  name: Ndigit1
+  desc:
+  extend: [Object]
+
+- ptag: Mn_dr # fractal number
+  name: Ndigit2
+  desc:
+  extend: [Object]
+
+- ptag: Mn_da # approximate numbers (has `-`, `~` between)
+  name: Ndigit3
+  desc:
+  extend: [Object]
+
+- ptag: Mn_h # all chinese number, unknown state
+  name: Nhanzi0
+  desc:
+  extend: [Object]
+
+- ptag: Mn_hd # chinese number, can convert to number
+  name: Nhanzi1
+  desc:
+  extend: [Object]
+
+- ptag: Mn_hf # chinese number, approximate
+  name: Nhanzi2
+  desc:
+  extend: [Object]
+
+- ptag: Mn_x # mixed digits with hanzi units
+  name: Nmixed0
+  desc:
+  extend: [Object]
+
+- ptag: Mn_xf # mixed approximate digits with hanzi units
+  name: Nmixed1
+  desc:
+  extend: [Object]
+
+- ptag: Mn_yi1 # "一"
+  name: NumYi1
+  desc:
+  extend: [Object]
+
+- ptag: Mn_han # "半"
+  name: NumHan
+  desc:
+  extend: [Object]
+
+- ptag: Mn_f # 基数词 generic cardinal number
+  name: Numeral
+  desc:
+  extend: [Object]

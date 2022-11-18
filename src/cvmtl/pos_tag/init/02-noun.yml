@@ -1,0 +1,161 @@
+# generic noun
+- ptag: 'N' # generic noun
+  name: Danh từ
+  desc: Các loại danh từ thường
+  extend: [Zimod, Zdobj]
+
+- ptag: Nx
+  name: Danh từ khác
+  desc: Các danh từ chưa được phân loại
+  extend: ['N']
+
+- ptag: Nx_l # noun phrase
+  name: Nmix
+  desc: Cụm danh từ chưa được phân loại
+  extend: [Nx]
+
+# human related noun
+
+- ptag: Nr # generic human word
+  name: Danh từ chỉ người
+  desc: Các danh từ dùng để nói về nhân loại
+  extend: ['N', Zhuman]
+
+- ptag: Nr_f # kinship, family member
+  name: Quan hệ thân thuộc
+  desc:
+  extend: [Nr]
+
+- ptag: Nr_o # occupational title that can't be combine with human name
+  name: Nghề nghiệp
+  desc:
+  extend: [Nr]
+
+- ptag: Nr_h # honorific
+  name: Xưng hô (N h)
+  desc: Các từ ghép với tên người phía trước làm kính ngữ chỉ địa vị
+  extend: [Nr]
+
+- ptag: Nr_hj # honorific
+  name: Xưng hô (N-h)
+  desc: Các từ xưng hô địa vị tiếng Nhật, đặt sau và không thêm dấu cách
+  extend: [Nr_h]
+
+- ptag: Nr_hl # honorific
+  name: Xưng hô (h N)
+  desc: Các từ xưng hô địa vị khi ghép với tên người sẽ đặt trước
+  extend: [Nr_h]
+
+- ptag: Nb # astract concept
+  name: Danh từ trừu tượng
+  desc:
+  extend: [Zdobj, Zposs]
+- ptag: Na # generic attribute
+  name: Danh từ thuộc tính
+  desc:
+  extend: [Zdobj]
+
+# concrete nouns
+- ptag: 'No' # generic concrete noun
+  name: Vật đếm được
+  desc:
+  extend: [Zposs, Zdobj]
+
+- ptag: No_w # all kind of weapons, for ba3 quantifier
+  name: Danh từ vũ khí
+  desc: Các loại vũ khí (để ghép với lượng từ 把 mang nghĩa `thanh`)
+  extend: ['No']
+
+- ptag: No_i # can be measured by hand, for ba3 quantifier
+  name: Vật cầm trong tay
+  desc: Vật cầm trong tay (để ghép với lượng từ 把 mang nghĩa `nắm`)
+  extend: ['No']
+
+- ptag: No_a # all kind of living animals
+  name: Động vật
+  desc:
+  extend: ['No']
+
+- ptag: No_p # all kind of plants
+  name: Thực vật
+  desc:
+  extend: ['No']
+
+- ptag: Ns
+  name: Xứ sở
+  desc: Các danh từ thông dụng chỉ địa điểm
+  extend: ['N', Zspace]
+
+# placement
+- ptag: Ns_p # generic place
+  name: Địa điểm
+  desc:
+  extend: [Ns, Zposs]
+
+# locative
+- ptag: Ns_s # place + locat
+  name: Nơi chốn
+  desc:
+  extend: [Ns, Zspace]
+
+- ptag: Ns_f # can act as place
+  name: Locat
+  desc:
+  extend: [Ns]
+
+# - ptag: Nf_shang # "上"
+#   name: LocShang
+#   desc:
+#   extend: [Ns_f]
+
+# - ptag: Nf_xia # "下"
+#   name: LocXia
+#   desc:
+#   extend: [Ns_f]
+
+# - ptag: Nf_zhong # "中"
+#   name: LocZhong
+#   desc:
+#   extend: [Ns_f]
+
+# - ptag: Nf_qian # "前"
+#   name: LocQian
+#   desc:
+#   extend: [Ns_f]
+
+# - ptag: Nf_hou4 # "后"
+#   name: LocHou4
+#   desc:
+#   extend: [Ns_f]
+
+# temporal
+
+- ptag: Nt # generic temporal words
+  name: Thời gian
+  desc:
+  extend: ['N']
+
+- ptag: Nt_s # time span, duration
+  name: Khoảng thời gian
+  desc:
+  extend: [Nt]
+
+- ptag: Nt_d # date
+  name: Ngày tháng năm
+  desc: Các từ chỉ ngày tháng cụ thể
+  extend: [Nt]
+
+- ptag: Nt_t # time
+  name: Giờ phút giây
+  desc: Các từ chỉ giờ giấc cụ thể
+  extend: [Nt]
+
+- ptag: Nt_md # can mark successor term as date
+  name: Đánh dấu ngày tháng
+  desc: Đứng trước các danh từ chỉ năm tháng để chỉ ngày tháng cụ thể
+  extend: [Nt]
+
+- ptag: Nt_mt # can mark successor term as time
+  name: Đánh dấu giờ giấc
+  desc: Đứng trước các danh từ chỉ giờ phút để chỉ thời gian trong ngày
+  extend: [Nt]
