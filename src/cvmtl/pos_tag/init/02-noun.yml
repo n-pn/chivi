@@ -31,18 +31,18 @@
   name: Nghề nghiệp
   desc:
 
-- ptag: Nhon # honorific
+- ptag: Nhrf # honorific
   extd: [Noun, Zhuman]
   name: Xưng hô (N h)
   desc: Các từ ghép với tên người phía trước làm kính ngữ chỉ địa vị
 
-- ptag: Nhon_j # honorific
-  extd: [Nhon]
+- ptag: Nhrf_j # honorific
+  extd: [Nhrf]
   name: Xưng hô (N-h)
   desc: Các từ xưng hô địa vị tiếng Nhật, đặt sau và không thêm dấu cách
 
-- ptag: Nhon_l # honorific
-  extd: [Nhon]
+- ptag: Nhrf_l # honorific
+  extd: [Nhrf]
   name: Xưng hô (h N)
   desc: Các từ xưng hô địa vị khi ghép với tên người sẽ đặt trước
 
@@ -100,7 +100,7 @@
   desc:
 
 - ptag: Ndir # locative
-  extd: [Ns]
+  extd: [Nspc]
   name: Phương vị
   desc:
 
@@ -136,17 +136,17 @@
   name: Thời gian
   desc:
 
-- ptag: Time_span # time span, duration
+- ptag: Time_dur # time span, duration
   extd: [Time]
   name: Khoảng thời gian
   desc:
 
-- ptag: Time_umdw # date
+- ptag: Time_ymd # date
   extd: [Time]
   name: Ngày tháng năm
   desc: Các từ chỉ ngày tháng cụ thể
 
-- ptag: Time_hmsm # time
+- ptag: Time_hms # time
   extd: [Time]
   name: Giờ phút giây
   desc: Các từ chỉ giờ giấc cụ thể
