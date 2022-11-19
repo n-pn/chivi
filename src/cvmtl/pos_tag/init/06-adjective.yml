@@ -3,41 +3,41 @@
 - ptag: A # normal adjective
   name: Tính từ
   desc:
-  extend: [Zsubj_a, Zpred_a, Zimod, Ziadv]
+  extd: [Zsubj_a, Zpred_a, Zimod, Ziadv]
 
 - ptag: Aa # normal adjective
   name: Hình dung từ
   desc:
-  extend: [A, Zdmod, Zdadv]
+  extd: [A, Zdmod, Zdadv]
 
 - ptag: An
   name: Danh hình từ
   desc:
-  extend: [A, Zdmod]
+  extd: [A, Zdmod]
 
 - ptag: Ad
   name: Phó hình từ
   desc:
-  extend: [A, Zdadv]
+  extd: [A, Zdadv]
 
 # modifier 区别词
 - ptag: Ab # modifier place after center noun
   name: Khu biệt từ
   desc: Từ khu biệt ghép với danh từ đặt nghãi sau danh từ
-  extend: [A, Zdmod]
+  extd: [A, Zdmod]
 
 - ptag: Ab_2 # modifier put before noun
   name: Khu biệt từ 2
   desc: Từ khu biệt khi ghép thường đặt nghĩa trước danh từ
-  extend: [Ab]
+  extd: [Ab]
 
 # words that act as adjective
 - ptag: Al # 形容词性惯用语 adjectival formulaic expression
   name: Cụm hình dung
   desc: Cụm từ mang tính chất hình dung, chỉ có thể làm định ngữ gián tiếp
-  extend: [A]
+  extd: [A]
 
 - ptag: Al_z # 状态词 stative verb
   name: Trạng thái từ
   desc:
-  extend: [Al]
+  extd: [Al]

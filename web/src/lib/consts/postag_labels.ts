@@ -1,6 +1,6 @@
 export const labels = {
   E: {
-    group: 'Tên riêng',
+    extd: 'Tên riêng',
     short: 'Riêng',
     items: {
       Eh_x: 'Tên họ người',
@@ -17,7 +17,7 @@ export const labels = {
   },
 
   N: {
-    group: 'Danh từ',
+    extd: 'Danh từ',
     short: 'Danh',
     items: {
       Nh: 'Xưng hô',
@@ -50,7 +50,7 @@ export const labels = {
   },
 
   A: {
-    group: 'Tính từ',
+    extd: 'Tính từ',
     short: 'Tính',
     items: {
       Aa_: 'Từ hình dung',

@@ -1,89 +1,89 @@
 - ptag: Fp #  generic
   name: Giới từ
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fp_ba # "把"
   name: Giới từ `把`
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_dui # "对"
   name: Giới từ `对`
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_bei # "被"
   name: Giới từ `被`
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_zai # "在"
   name: Giới từ `在`
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_bi_1 # "比"
   name: Giới từ `比`
   desc: Giới từ 比 trong so sánh hơn kém
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_bi_2 # "比"
   name: Giới từ `比` *
   desc: Giới từ 比 trong so sánh không bằng
-  extend: [Ffunc]
+  extd: [Ffunc]
 
 - ptag: Fp_jiang # "将"
   name: Giới từ `将`
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_rang # "让"
   name: Giới từ `让`
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_ling # "令"
   name: Giới từ `令`
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_gei3 # "给"
   name: Giới từ `给`
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_zi4 # "自"
   name: Giới từ `自`
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_cong # "从"
   name: Giới từ `从`
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_c #  compare
   name: Giới từ so sánh bằng
   desc:
-  extend: [Fp]
+  extd: [Fp]
 
 - ptag: Fp_he2 # "和"
   name: Giới từ `和`
   desc:
-  extend: [Fp_c]
+  extd: [Fp_c]
 
 - ptag: Fp_yu3 # "与"
   name: Giới từ `与`
   desc:
-  extend: [Fp_c]
+  extd: [Fp_c]
 
 - ptag: Fp_tong # "同"
   name: Giới từ `同`
   desc:
-  extend: [Fp_c]
+  extd: [Fp_c]
 
 - ptag: Fp_gen1 # "跟"
   name: Giới từ `跟`
   desc:
-  extend: [Fp_c]
+  extd: [Fp_c]

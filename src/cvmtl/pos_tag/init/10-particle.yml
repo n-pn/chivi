@@ -3,174 +3,172 @@
 - ptag: Fu_le
   name: Trợ từ `了`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_zhe
   name: Trợ từ `着`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 - ptag: Fu_guo
   name: Trợ từ `过`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_suo
   name: Trợ từ `所`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_ls0
   name: Trợ từ `来说`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_ls1
   name: Trợ từ `说来`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_ls2
   name: Trợ từ `来讲
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_ls3
   name: Trợ từ `而言`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_dh
   name: Trợ từ `的话`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_lian
   name: Trợ từ `连`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_zhi
   name: Trợ từ `之`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
-- ptag: Fu_dep
+- ptag: Fu_dep # "的/底"
   name: Trợ từ `的` 1
   desc:
-  extend: [Zfunc], "底"	# generic
+  extd: [Zfunc]
 
 - ptag: Fu_de1 # 的、之 as complementizer or a nominalizer
   name: Trợ từ `的` 2
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_de2 # 的、之 as a genitive marker and an associative marker
   name: Trợ từ `的` 3
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_der
   name: Trợ từ `得`
   desc:
-  extend: [Zfunc]	# resultative de, de in V-de const and V-de-R
+  extd: [Zfunc] # resultative de, de in V-de const and V-de-R
 
 - ptag: Fu_dev
   name: Trợ từ `地`
   desc:
-  extend: [Zfunc]	# manner de, de before VP
+  extd: [Zfunc] # manner de, de before VP
 
 - ptag: Fu_etc
   name: Trợ từ liệt kê
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 # - ptag: Fu_d0
 #   name: Trợ từ liệt kê `云云`
 #   desc:
-#   extend: [Fu_etc]
+#   extd: [Fu_etc]
 
 # - ptag: Fu_d1
 #   name: Trợ từ liệt kê `等`
 #   desc:
-#   extend: [Fu_etc]
+#   extd: [Fu_etc]
 # - ptag: Fu_d2
 #   name: Trợ từ liệt kê `等等`
 #   desc:
-#   extend: [Fu_etc]
+#   extd: [Fu_etc]
 
 # - ptag: Fu_d3
 #   name: Trợ từ liệt kê `等人`
 #   desc:
-#   extend: [Fu_etc]
+#   extd: [Fu_etc]
 
 # - ptag: Fu_d4
 #   name: Trợ từ liệt kê `等等等等`
 #   desc:
-#   extend: [Fu_etc]
+#   extd: [Fu_etc]
 
 - ptag: Fu_zl
   name: Trợ từ liệt kê `之类`
   desc:
-  extend: [Fu_etc]
+  extd: [Fu_etc]
 
 - ptag: Fu_cmp
   name: Trợ từ so sánh
   desc: Các trợ từ kết hợp với động từ/giới từ so sánh đằng trước thành cấu trúc so sánh
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 # - ptag: Fu_yy0
 #   name: Trợ từ `般`
 #   desc:
-#   extend: [Zfunc]
+#   extd: [Zfunc]
 
 - ptag: Fu_yy1
   name: Trợ từ so sánh `一样`
   desc:
-  extend: [Fu_cmp]
+  extd: [Fu_cmp]
 
 # - ptag: Fu_yy2
 #   name: Trợ từ `一般`
 #   desc:
-#   extend: [Zfunc]
+#   extd: [Zfunc]
 
 # - ptag: Fu_yy3
 #   name: Trợ từ `似的`
 #   desc:
-#   extend: [Zfunc]
+#   extd: [Zfunc]
 
 # - ptag: Fu_yy4
 #   name: Trợ từ `鹄的`
 #   desc:
-#   extend: [Zfunc]
-
+#   extd: [Zfunc]
 
 - ptag: Fu_qijian
   name: Trợ từ `起见`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_weizhi
   name: Trợ từ `为止`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_kaiwai
   name: Trợ từ `开外`
   desc:
-  extend: [Zfunc]
-
+  extd: [Zfunc]
 
 - ptag: Fu_yebai
   name: Trợ từ `也罢`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_yehao
   name: Trợ từ `也好`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fu_yufou
   name: Trợ từ `与否`
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]

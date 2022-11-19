@@ -2,198 +2,198 @@
 - ptag: Mqt # combin e with number to timespan / timeform / dateform time
   name: Thời lượng từ
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 ## verb quantifiers
 - ptag: Mqv # verb q uantifier verb
   name: Động lượng từ
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Mqn # generic noun quantifier
   name: Danh lượng từ
   desc:
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Mqn_m # mass
   name: Lượng từ đo lường
   desc: Dùng để đo lường các danh từ không đếm được
-  extend: [Object]
+  extd: [Mnq]
 
 - ptag: Mqn_w # weight
   name: Lượng từ khối lượng
   desc:
-  extend: [Object]
+  extd: [Mnq]
 
 - ptag: Mqn_d # distance
   name: Lượng từ khoảng cách
   desc:
-  extend: [Object]
+  extd: [Mnq]
 
 - ptag: Mqn_c # currency/cash
   name: Lượng từ tiền tệ
   desc: Lượng từ cho tiền tệ
-  extend: [Object]
+  extd: [Mnq]
 
 ## proper quantifiers
 - ptag: Mqn_ge # "个"  Ge4
   name: Lượng từ `个`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
 - ptag: Mqn_ba # "把"  Ba3
   name: Lượng từ `把`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "本"  Ben
+- ptag: Mqn_ben # "本"
   name: Lượng từ `本`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "部"  Bu4
+- ptag: Mqn_bu4 # "部"
   name: Lượng từ `部`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "册"  Ce4
+- ptag: Mqn_ce4 # "册"
   name: Lượng từ `册`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "层"  Ceng
+- ptag: Mqn_ceng # "层"
   name: Lượng từ `层`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "场"
-  name: [tChang]
+- ptag: Mqn_chang # "场"
+  name: Lượng từ `场`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "处"  Chu4
+- ptag: Mqn_chu4 # "处"
   name: Lượng từ `处`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "出"  Chu1
+- ptag: Mqn_chu1 # "出"
   name: Lượng từ `出`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "次"  Ci4
+- ptag: Mqn_ci4 # "次"
   name: Lượng từ `次`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "道"  Dao
+- ptag: Mqn_dao # "道"
   name: Lượng từ `道`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "顶"  Ding
+- ptag: Mqn_ding # "顶"
   name: Lượng từ `顶`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "栋"  Dong
+- ptag: Mqn_dong # "栋"
   name: Lượng từ `栋`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "堵"  Du3
+- ptag: Mqn_du3 # "堵"
   name: Lượng từ `堵`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "顿"  Dun
+- ptag: Mqn_dun # "顿"
   name: Lượng từ `顿`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "朵"  Duo
+- ptag: Mqn_duo # "朵"
   name: Lượng từ `朵`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "发"  Fa1
+- ptag: Mqn_fa1 # "发"
   name: Lượng từ `发`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "份"  Fen4
+- ptag: Mqn_fen4 # "份"
   name: Lượng từ `份`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "封"  Feng
+- ptag: Mqn_feng # "封"
   name: Lượng từ `封`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "幅"  Fu2
+- ptag: Mqn_fu2 # "幅"
   name: Lượng từ `幅`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "杆"  Gan3
+- ptag: Mqn_gan3 # "杆"
   name: Lượng từ `杆`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "根"  Gen1
+- ptag: Mqn_gen1 # "根"
   name: Lượng từ `根`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "家"  Jia1
+- ptag: Mqn_jia1 # "家"
   name: Lượng từ `家`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "架"  Jia4
+- ptag: Mqn_jia4 # "架"
   name: Lượng từ `架`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
-- ptag: #Mqn_ # "间"  Jian
+- ptag: Mqn_jian # "间"
   name: Lượng từ `间`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
 # more_ https_//en.wikipedia.org/wiki/List_of_Chinese_classifiers
 
 - ptag: Mqt_dien # " 点" Dian
   name: Thời lượng từ `点`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
 - ptag: Mqt_fen1 # " 分" Fen1
   name: Thời lượng từ `分`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
 - ptag: Mqt_miao # " 秒" Miao
   name: Thời lượng từ `秒`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
 - ptag: Mqt_nian # " 年" Nian
   name: Thời lượng từ `年`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
 - ptag: Mqt_yue4 # " 月" Yue4
   name: Thời lượng từ `月`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
 - ptag: Mqt_ri4 # "日 " Ri4
   name: Thời lượng từ `日`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]
 
 - ptag: Mqt_hao # "号 " Hao
   name: Thời lượng từ `号`
   desc:
-  extend: [Mqn]
+  extd: [Mqn]

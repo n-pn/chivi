@@ -2,36 +2,36 @@
 - ptag: Mfv # can be verb complement or adverbial phrase
   name: Số + động lượng
   desc:
-  extend: [Zdadv, Zdcom]
+  extd: [Zdadv, Zdcom]
 
 # temporal
 - ptag: Mft # can be verb complement or timeform
   name: Số + thời lượng
   desc:
-  extend: []
+  extd: []
 
 # for nouns
 - ptag: Mfn # generic noun quantifier
   name: Số + danh lượng
   desc:
-  extend: [Object, Ktetic]
+  extd: [Object, Ktetic]
 
 - ptag: Mfn_m # mass
   name: Số + lượng (đo lường)
   desc:
-  extend: [Object]
+  extd: [Object]
 
 - ptag: Mfn_w # weight
   name: Số + lượng (khối lượng)
   desc:
-  extend: [Object]
+  extd: [Object]
 
 - ptag: Mfn_d # distance
   name: Số + lượng (khoảng cách)
   desc:
-  extend: [Object]
+  extd: [Object]
 
 - ptag: Mfn_c # currency
   name: Số + lượng (tiền bạc)
   desc:
-  extend: [Object]
+  extd: [Object]

@@ -2,69 +2,69 @@
 
 - ptag: Fg_ke
   name: SufName
-  extend: [Ktetic] # make other names
+  extd: [Zfunc] # make other names
 
 - ptag: Fg_kn
   name: SufNoun
-  extend: [Zfunc] # make noun words
+  extd: [Zfunc] # make noun words
 
 - ptag: Fg_kb
   name: SufAttr
-  extend: [Zfunc] # make noun attribute
+  extd: [Zfunc] # make noun attribute
 
 - ptag: Fg_kt
   name: SufTime
-  extend: [Zfunc] # make whole structure as time expression
+  extd: [Zfunc] # make whole structure as time expression
 
 - ptag: Fg_kv
   name: SufVerb
-  extend: [Zfunc] # tranform adjt/noun to verb
+  extd: [Zfunc] # tranform adjt/noun to verb
 - ptag: Fg_ka
   name: SufAdjt
-  extend: [Zfunc] # transform verb/noun to adjt
+  extd: [Zfunc] # transform verb/noun to adjt
 
 - ptag: Fg_kz
   name: SufZhi
-  extend: [Zfunc] # 之 + noun that can have alternative meaning
+  extd: [Zfunc] # 之 + noun that can have alternative meaning
 
 - ptag: Fg_kmen
   name: SufMen5
-  extend: [Zfunc] # "们"
+  extd: [Zfunc] # "们"
 - ptag: Fg_kxing
   name: SufXing
-  extend: [Zfunc] # "性"
+  extd: [Zfunc] # "性"
 
 - ptag: Ns_ks # combine with prev noun to placement
   name:
   desc:
-  extend: [Zspace, Zposs, Zdobj]
+  extd: [Zfunc]
 
 - ptag: Ns_kt # combine with prev noun to organization
   name: OrgSf
   desc:
-  extend: [Zspace, Zposs, Zdobj]
+  extd: [Zfunc]
 
 - ptag: Np_kg # combine with prev noun to placement
   name: GeoSf
   desc:
-  extend: [Zspace, Zposs, Zdobj]
+  extd: [Zfunc]
 
 # infixes
 
 - ptag: Fg_ja
   name: InfAdjt
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 - ptag: Fg_jv
   name: InfVerb
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 # prefixes
 
 - ptag: Fg_hke
   name: PrefKe3
-  extend: [Zfunc] # "可"
+  extd: [Zfunc] # "可"
 
 - ptag: Fg_hdi
   name: PrefDi4
-  extend: [Zfunc] # "第"
+  extd: [Zfunc] # "第"

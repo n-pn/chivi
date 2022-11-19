@@ -3,14 +3,14 @@
 # onomatopoeia
 - ptag: Fo_o
   name: Tượng thanh
-  extend: [Zsubj_a, Zpred_a]
+  extd: [Zsubj_a, Zpred_a]
 
   # interjection/exclamation -
 - ptag: Fo_e
   name: Thán từ
-  extend: [Zbegin]
+  extd: [Zbegin]
 
 # modal particle
 - ptag: Fy
   name: Ngữ khí
-  extend: [Zfinal]
+  extd: [Zfinal]

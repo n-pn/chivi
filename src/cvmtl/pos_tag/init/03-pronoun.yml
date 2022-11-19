@@ -3,81 +3,81 @@
 - ptag: R
   name: Đại từ
   desc: Các loại đại từ
-  extend: [Zsubj]
+  extd: [Zsubj]
 
 - ptag: Rx
   name: Đại từ khác
   desc: Các loại đại từ chưa được phân loại
-  extend: [R, Zposs, Zdobj]
+  extd: [R, Zposs, Zdobj]
 
 - ptag: Rr
   name: Đại từ nhân xưng
   desc: Đại từ chỉ ngôi thứ nhất, thứ hai hoặc thứ ba. Ví dụ ta, ngươi, hắn, trẫm, ngài
-  extend: [R, Zposs, Zhuman, Zdobj, Ziobj]
+  extd: [R, Zposs, Zhuman, Zdobj, Ziobj]
 
 - ptag: Rr_qu # "其"
   name: PronQu2
   desc:
-  extend: [Zdobj, Zposs, Zhuman, Zuniq]
+  extd: [Zdobj, Zposs, Zhuman, Zuniq]
 
 - ptag: Rr_qm # "其们"
   name: PronQumen
   desc:
-  extend: [Zdobj, Zposs, Zhuman, Zuniq]
+  extd: [Zdobj, Zposs, Zhuman, Zuniq]
 
 - ptag: Rr_ziji # "自己"
   name: PronZiji
   desc:
-  extend: [Zdobj, Zposs, Zhuman, Zuniq]
+  extd: [Zdobj, Zposs, Zhuman, Zuniq]
 
 # 指示代词 - demonstrative pronoun - đại từ chỉ thị
 - ptag: Rz
   name: DemPron
   desc:
-  extend: [Zdobj, Zposs]
+  extd: [Zdobj, Zposs]
 
 - ptag: Rz_zhe # "这"
   name: PronZhe
   desc:
-  extend: [Zdobj, Zuniq]
+  extd: [Zdobj, Zuniq]
 
 - ptag: Rz_na1 # "那"
   name: PronNa1
   desc:
-  extend: [Zdobj, Zuniq]
+  extd: [Zdobj, Zuniq]
 
 - ptag: Rz_mei # "每"
   name: Đại từ 每
   desc:
-  extend: [Zdobj, Zuniq]
+  extd: [Zdobj, Zuniq]
 
 - ptag: Rz_zy # "这样"
   name: PronZheyang
   desc:
-  extend: [Zdobj, Zuniq]
+  extd: [Zdobj, Zuniq]
 
 - ptag: Rz_ny # "那样"
   name: PronNayang
   desc:
-  extend: [Zdobj, Zuniq]
+  extd: [Zdobj, Zuniq]
 
 # 疑问代词 - interrogative pronoun
 - ptag: Ry # generic
   name: IntPron
   desc:
-  extend: [Zdobj, Zuniq]
+  extd: [Zdobj, Zuniq]
 
 - ptag: Ry_ji # "几"
   name: PronJi
   desc:
-  extend: [Zdobj, Zuniq]
+  extd: [Zdobj, Zuniq]
 
 - ptag: Ry_na2 # "哪"
   name: PronNa2
   desc:
-  extend: [Zdobj, Zuniq]
+  extd: [Zdobj, Zuniq]
 
 - ptag: Ry_shei # 谁
   name: Đại từ 谁
   desc:
-  extend: [Zhuman, Zdobj, Zuniq]
+  extd: [Zhuman, Zdobj, Zuniq]

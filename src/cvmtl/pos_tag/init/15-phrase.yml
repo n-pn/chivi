@@ -5,11 +5,11 @@
 
 - ptag: Psp_v
   name: Cụm chủ vị(động)
-  extend: [Psp]
+  extd: [Psp]
 
 - ptag: Psp_a
   name: Cụm chủ vị(tính)
-  extend: [Psp]
+  extd: [Psp]
 
 - ptag: Pmd_c
   name: Cụm định ngữ (x+的) 1

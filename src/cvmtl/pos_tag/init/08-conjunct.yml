@@ -2,40 +2,40 @@
 
 - ptag: Fc
   name: Liên từ
-  extend: [Zfunc]
+  extd: [Zfunc]
 
 # subordinating conjunction
 # - ptag: Fc_d # "但"
 #   name: ConDan4
-#   extend: [Zfunc]
+#   extd: [Zfunc]
 # - ptag: Fc_y # "又"
 #   name: ConYou4
-#   extend: [Zfunc]
+#   extd: [Zfunc]
 # - ptag: Fc_h # "或"
 #   name: ConHuo4
-#   extend: [Zfunc]
+#   extd: [Zfunc]
 # - ptag: Fc_hs # "或是"
 #   name: ConHuoshi
-#   extend: [Zfunc]
+#   extd: [Zfunc]
 
 # coordinating conjunction
 - ptag: Fcc #
   name: Liên từ liệt kê
-  extend: [Zfunc]
+  extd: [Zfunc]
 ## liên từ liệt kê đặc biệt
 
 # - ptag: Fcc_h # "和"
 #   name: ConHe2
-#   extend: [Zfunc]
+#   extd: [Zfunc]
 
 # - ptag: Fcc_y # "与"
 #   name: ConYu3
-#   extend: [Zfunc]
+#   extd: [Zfunc]
 
 # - ptag: Fcc_t # "同"
 #   name: ConTong
-#   extend: [Zfunc]
+#   extd: [Zfunc]
 
 # - ptag: Fcc_g # "跟"
 #   name: ConGen1
-#   extend: [Zfunc]
+#   extd: [Zfunc]

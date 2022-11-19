@@ -2,160 +2,160 @@
 - ptag: V
   name: Động từ
   desc:
-  extend: [Zsubj_a, Zpred_a]
+  extd: [Zsubj_a, Zpred_a]
 
 - ptag: Vc
   name: Động từ so sánh
   desc: Động từ kết hợp với trợ từ so sánh phía sau tạo thành cụm từ so sánh
-  extend: [V]
+  extd: [V]
 
 - ptag: Vi # intransitive verb
   name: Nội động từ
   desc: Động từ không kết hợp được với tân ngữ
-  extend: [V, Zdmod]
+  extd: [V, Zdmod]
 
 - ptag: Vi_l # verb phrase need no object
   name: Cụm động từ
   desc: Cụm động từ phức tạp không cần thiết tân ngữ
-  extend: [Vi]
+  extd: [Vi]
 
 - ptag: Vi_o # verb + object phrase
   name: Cụm động tân
   desc: Cụm động từ kết hợp với tân ngữ
-  extend: [Vi]
+  extd: [Vi]
 
 - ptag: Vi_os # verb + object as skill
   name: Cụm động tân *
   desc: Cụm động tân chỉ năng khiếu như đánh đàn, chơi nhạc
-  extend: [Vi_o]
+  extd: [Vi_o]
 
 - ptag: Vn
-  nam: Danh động từ
-  extend: [Vi]
+  name: Danh động từ
+  extd: [Vi]
 
 - ptag: Vt # normal transitive verb
   name: Ngoại động từ
   desc: Các động từ thường đi kèm với tân ngữ trực tiếp
-  extend: [V]
+  extd: [V]
 
 - ptag: Vt_2 # verbs need two objects
   name: Động từ 2 tân
   desc: Động từ cần hai tân ngữ gián tiếp và trực tiếp
-  extend: [Vt]
+  extd: [Vt]
 
 - ptag: Vd
   name: Phó động từ
   desc: Các động từ làm trạng ngữ cho động từ phía sau
-  extend: [V]
+  extd: [V]
 
 - ptag: Vt_d # directional verb
   name: Động từ xu hướng
   desc: Động từ chỉ xu hướng, không kết hợp với bổ ngữ xu hướng
-  extend: [V]
+  extd: [V]
 
 - ptag: Vt_l # linking verb
   name: Động từ liên động
   desc: Động từ chỉ các hành động xảy ra nối tiếp
-  extend: [Vlinking, V]
+  extd: [Vlinking, V]
 
 # verbs using for comparision
 - ptag: Vs_c
   name: Vcau
   desc:
-  extend: [V]
+  extd: [V]
 # causative verbs
 
 - ptag: Vs_p
   name: Vpsy
   desc:
-  extend: [V]
+  extd: [V]
 # psychological verb
 - ptag: Vs_x
   name: Vpro
   desc:
-  extend: [V]
+  extd: [V]
 # performative verb
 
 ## modal verbs
 - ptag: Vs_m
   name: Vmod
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # modal verbs
 - ptag: Vs_hui
   name: VmHui
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # "会"
 - ptag: Vs_bubui
   name: VmBuhui
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # "不会"
 - ptag: Vs_xiang
   name: VmXiang
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # "想"
 - ptag: Vs_neng
   name: VmNeng
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # "能"
 - ptag: Vs_yao
   name: VmYao
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # "要"
 - ptag: Vs_ke3
   name: VmKe3
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # "可"
 
 ## special verbs
 - ptag: #Vs_shang
   name: VShang
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # "上"
 - ptag: #Vs_xia
   name: VXia
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # "下"
 #Vs_dao	VDao	V, Vlinking
 - ptag: #Vs_zhu
   name: VZhu
   desc:
-  extend: [V]
+  extd: [V]
 # "住"
 
 ### existential/comparision
 - ptag: Vs_s
   name: Vexi
   desc:
-  extend: [V]
+  extd: [V]
 # existential verbs
 - ptag: Vs_you
   name: VYou
   desc:
-  extend: [V, Vaux, Vlinking]
+  extd: [V, Vaux, Vlinking]
 # "有"
 - ptag: Vs_meiyou
   name: VMeiyou
   desc:
-  extend: [V, Vaux, Vlinking]
+  extd: [V, Vaux, Vlinking]
 # "没有"
 
 ### copula
 - ptag: Vs_shi
   name: VShi
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # '是'
 - ptag: Vs_cop
   name: VCop
   desc:
-  extend: [V, Vaux]
+  extd: [V, Vaux]
 # other copula

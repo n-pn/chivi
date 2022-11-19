@@ -2,42 +2,42 @@
 - ptag: Fc_r
   name: Bổ ngữ kết quả
   desc: Thể hiện hành động, động tác có quan hệ nhân quả với trung tâm ngữ đằng trước.
-  extend: [Zdcom]
+  extd: [Zdcom]
 
 # degree complement
 - ptag: Fc_gd
   name: Bổ ngữ mức độ trực tiếp
   desc: Nói lên mức độ của hành động, trạng thái.
-  extend: [Zdcom]
+  extd: [Zdcom]
 
 - ptag: Fc_gi
   name: Bổ ngữ mức độ gián tiếp
   desc: Nói lên mức độ của hành động, trạng thái khi kết hợp với 得 phía trước
-  extend: [Zicom]
+  extd: [Zicom]
 
 # direction complement
 - ptag: Fc_d
   name: Bổ ngữ xu hướng
-  extend: [Zdcom]
+  extd: [Zdcom]
 
 # potential complement
 - ptag: Fc_p
   name: Bổ ngữ khả năng
-  extend: [Zdcom]
+  extd: [Zdcom]
 
 # state complement
 - ptag: Fc_s
   name: Bổ ngữ tình trạng
-  extend: [Zdcom]
+  extd: [Zdcom]
 
 #quantiment complement
 - ptag: Fc_q
   name: Bổ ngữ số lượng
-  extend: [Zdcom]
+  extd: [Zdcom]
   virtual: true
 
 # time complement
 - ptag: Fc_t
   name: Bổ ngữ thời gian
-  extend: [Zdcom]
+  extd: [Zdcom]
   virtual: true

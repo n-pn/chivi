@@ -7,7 +7,7 @@
 - ptag: Zsubj_a
   name: Chủ ngủ chủ động
   desc: Có thể làm chủ ngữ trong câu nếu phía sau là động từ hoặc tính từ hoặc danh từ làm vị ngữ
-  extend: [Zsubj]
+  extd: [Zsubj]
 
 - ptag: Zpred
   name: Vị ngữ
@@ -55,7 +55,7 @@
 - ptag: Zdobj
   name: Tân ngữ trực tiếp
   desc: Những từ có thể làm tân ngữ cho ngoại động từ
-  extend: [Zsubj_a, Zpred_a]
+  extd: [Zsubj_a, Zpred_a]
 
 - ptag: Ziobj
   name: Tân ngữ gián tiếp
@@ -86,9 +86,9 @@
 - ptag: Zhuman
   name: Nhân loại
   desc: Danh từ hoặc đại từ dùng cho nhân loại, chủ yếu dùng đánh dấu tân ngữ gián tiếp
-  extend: [Zdobj, Ziobj, Zposs]
+  extd: [Zdobj, Ziobj, Zposs]
 
 - ptag: Zspace
   name: Vị trí
   desc: Danh từ chung hay danh từ riêng chỉ địa danh, địa điểm, nơi chốn, tổ chức...
-  extend: [Zdobj]
+  extd: [Zdobj]
