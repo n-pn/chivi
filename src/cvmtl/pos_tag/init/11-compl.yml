@@ -1,43 +1,54 @@
 # result complemnt
-- ptag: Fc_r
+- ptag: Vc_res
+  extd: [Zdcom]
   name: Bổ ngữ kết quả
   desc: Thể hiện hành động, động tác có quan hệ nhân quả với trung tâm ngữ đằng trước.
-  extd: [Zdcom]
 
 # degree complement
-- ptag: Fc_gd
+- ptag: Vc_deg_d
+  extd: [Zdcom]
   name: Bổ ngữ mức độ trực tiếp
   desc: Nói lên mức độ của hành động, trạng thái.
-  extd: [Zdcom]
 
-- ptag: Fc_gi
+- ptag: Vc_deg_i
+  extd: [Zicom]
   name: Bổ ngữ mức độ gián tiếp
   desc: Nói lên mức độ của hành động, trạng thái khi kết hợp với 得 phía trước
-  extd: [Zicom]
 
 # direction complement
-- ptag: Fc_d
-  name: Bổ ngữ xu hướng
+- ptag: Vc_dir_h
   extd: [Zdcom]
+  name: Bổ ngữ xu hướng gần
+  desc:
+
+- ptag: Vc_dir_k
+  extd: [Zdcom]
+  name: Bổ ngữ xu hướng xa
+  desc: Bổ ngữ xu hướng đứng sau tân ngữ
+
+- ptag: Vc_dir_x
+  extd: [Zdcom]
+  name: Bổ ngữ xu hướng kép
+  desc:
 
 # potential complement
-- ptag: Fc_p
-  name: Bổ ngữ khả năng
+- ptag: Vc_pot
   extd: [Zdcom]
+  name: Bổ ngữ khả năng
 
 # state complement
-- ptag: Fc_s
-  name: Bổ ngữ tình trạng
+- ptag: Vc_stt
   extd: [Zdcom]
+  name: Bổ ngữ tình trạng
 
 #quantiment complement
-- ptag: Fc_q
-  name: Bổ ngữ số lượng
+- ptag: Vc_nqv
   extd: [Zdcom]
+  name: Bổ ngữ số lượng
   virtual: true
 
 # time complement
-- ptag: Fc_t
-  name: Bổ ngữ thời gian
+- ptag: Vc_nqt
   extd: [Zdcom]
+  name: Bổ ngữ thời gian
   virtual: true

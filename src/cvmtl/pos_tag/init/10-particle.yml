@@ -1,174 +1,176 @@
 # particles
 
-- ptag: Fu_le
+- ptag: Ptcl_le
+  extd: [Zfunc]
   name: Trợ từ `了`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_zhe
+- ptag: Ptcl_zhe
+  extd: [Zfunc]
   name: Trợ từ `着`
   desc:
+
+- ptag: Ptcl_guo
   extd: [Zfunc]
-- ptag: Fu_guo
   name: Trợ từ `过`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_suo
+- ptag: Ptcl_suo
+  extd: [Zfunc]
   name: Trợ từ `所`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_ls0
+- ptag: Ptcl_ls0
+  extd: [Zfunc]
   name: Trợ từ `来说`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_ls1
+- ptag: Ptcl_ls1
+  extd: [Zfunc]
   name: Trợ từ `说来`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_ls2
+- ptag: Ptcl_ls2
+  extd: [Zfunc]
   name: Trợ từ `来讲
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_ls3
+- ptag: Ptcl_ls3
+  extd: [Zfunc]
   name: Trợ từ `而言`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_dh
+- ptag: Ptcl_dh
+  extd: [Zfunc]
   name: Trợ từ `的话`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_lian
+- ptag: Ptcl_lian
+  extd: [Zfunc]
   name: Trợ từ `连`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_zhi
+- ptag: Ptcl_zhi
+  extd: [Zfunc]
   name: Trợ từ `之`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_dep # "的/底"
+- ptag: Ptcl_dep # "的/底"
+  extd: [Zfunc]
   name: Trợ từ `的` 1
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_de1 # 的、之 as complementizer or a nominalizer
+- ptag: Ptcl_de1 # 的、之 as complementizer or a nominalizer
+  extd: [Zfunc]
   name: Trợ từ `的` 2
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_de2 # 的、之 as a genitive marker and an associative marker
+- ptag: Ptcl_de2 # 的、之 as a genitive marker and an associative marker
+  extd: [Zfunc]
   name: Trợ từ `的` 3
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_der
+- ptag: Ptcl_der
+  extd: [Zfunc] # resultative de, de in V-de const and V-de-R
   name: Trợ từ `得`
   desc:
-  extd: [Zfunc] # resultative de, de in V-de const and V-de-R
 
-- ptag: Fu_dev
+- ptag: Ptcl_dev
+  extd: [Zfunc] # manner de, de before VP
   name: Trợ từ `地`
   desc:
-  extd: [Zfunc] # manner de, de before VP
 
-- ptag: Fu_etc
+- ptag: Ptcl_etc
+  extd: [Zfunc]
   name: Trợ từ liệt kê
   desc:
-  extd: [Zfunc]
 
-# - ptag: Fu_d0
+# - ptag: Ptcl_d0
+#   extd: [Ptcl_etc]
 #   name: Trợ từ liệt kê `云云`
 #   desc:
-#   extd: [Fu_etc]
 
-# - ptag: Fu_d1
+# - ptag: Ptcl_d1
+#   extd: [Ptcl_etc]
 #   name: Trợ từ liệt kê `等`
 #   desc:
-#   extd: [Fu_etc]
-# - ptag: Fu_d2
+
+# - ptag: Ptcl_d2
+#   extd: [Ptcl_etc]
 #   name: Trợ từ liệt kê `等等`
 #   desc:
-#   extd: [Fu_etc]
 
-# - ptag: Fu_d3
+# - ptag: Ptcl_d3
+#   extd: [Ptcl_etc]
 #   name: Trợ từ liệt kê `等人`
 #   desc:
-#   extd: [Fu_etc]
 
-# - ptag: Fu_d4
+# - ptag: Ptcl_d4
+#   extd: [Ptcl_etc]
 #   name: Trợ từ liệt kê `等等等等`
 #   desc:
-#   extd: [Fu_etc]
 
-- ptag: Fu_zl
+- ptag: Ptcl_zl
+  extd: [Ptcl_etc]
   name: Trợ từ liệt kê `之类`
   desc:
-  extd: [Fu_etc]
 
-- ptag: Fu_cmp
+- ptag: Ptcl_cmp
+  extd: [Zfunc]
   name: Trợ từ so sánh
   desc: Các trợ từ kết hợp với động từ/giới từ so sánh đằng trước thành cấu trúc so sánh
-  extd: [Zfunc]
 
-# - ptag: Fu_yy0
+# - ptag: Ptcl_yy0
+#   extd: [Zfunc]
 #   name: Trợ từ `般`
 #   desc:
-#   extd: [Zfunc]
 
-- ptag: Fu_yy1
+- ptag: Ptcl_yy1
+  extd: [Ptcl_cmp]
   name: Trợ từ so sánh `一样`
   desc:
-  extd: [Fu_cmp]
 
-# - ptag: Fu_yy2
+# - ptag: Ptcl_yy2
+#   extd: [Zfunc]
 #   name: Trợ từ `一般`
 #   desc:
-#   extd: [Zfunc]
 
-# - ptag: Fu_yy3
+# - ptag: Ptcl_yy3
+#   extd: [Zfunc]
 #   name: Trợ từ `似的`
 #   desc:
-#   extd: [Zfunc]
 
-# - ptag: Fu_yy4
+# - ptag: Ptcl_yy4
+#   extd: [Zfunc]
 #   name: Trợ từ `鹄的`
 #   desc:
-#   extd: [Zfunc]
 
-- ptag: Fu_qijian
+- ptag: Ptcl_qijian
+  extd: [Zfunc]
   name: Trợ từ `起见`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_weizhi
+- ptag: Ptcl_weizhi
+  extd: [Zfunc]
   name: Trợ từ `为止`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_kaiwai
+- ptag: Ptcl_kaiwai
+  extd: [Zfunc]
   name: Trợ từ `开外`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_yebai
+- ptag: Ptcl_yebai
+  extd: [Zfunc]
   name: Trợ từ `也罢`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_yehao
+- ptag: Ptcl_yehao
+  extd: [Zfunc]
   name: Trợ từ `也好`
   desc:
-  extd: [Zfunc]
 
-- ptag: Fu_yufou
+- ptag: Ptcl_yufou
+  extd: [Zfunc]
   name: Trợ từ `与否`
   desc:
-  extd: [Zfunc]

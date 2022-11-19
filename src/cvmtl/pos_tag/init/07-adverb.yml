@@ -1,131 +1,131 @@
 # adverbs
 
 ## uncategorized
-- ptag: Fd # unmapped adverb
+- ptag: Advb # unmapped adverb
+  extd: [Zfunc, Zdadv]
   name: Phó từ
   desc:
-  extd: [Ffunc, Fdadv]
 
-- ptag: Fd_l # advbial phrase
+- ptag: Advl # advbial phrase
+  extd: [Advb]
   name: Cụm phó từ
   desc:
-  extd: [Fd]
 
-- ptag: Fd_nega # 否定副词 negative adverbs
+- ptag: Adv_nega # 否定副词 negative adverbs
+  extd: [Advb]
   name: Phó từ phủ định
   desc:
-  extd: [Fd]
 
-- ptag: Fd_degree # adverb of degree
+- ptag: Adv_degree # adverb of degree
+  extd: [Advb]
   name: Phó từ mức độ
   desc:
-  extd: [Fd]
 
-- ptag: Fd_time # 时间副词 adverbs of time
+- ptag: Adv_time # 时间副词 adverbs of time
+  extd: [Advb]
   name: Phó từ thời gian
   desc:
-  extd: [Fd]
 
-- ptag: Fd_scope # 范围副词 scope adverbs
+- ptag: Adv_scope # 范围副词 scope adverbs
+  extd: [Advb]
   name: Phó từ phạm vi
   desc:
-  extd: [Fd]
 
-- ptag: Fd_mood # 语气副词 modal adverbs/adverbs of mood
+- ptag: Adv_mood # 语气副词 modal adverbs/adverbs of mood
+  extd: [Advb]
   name: Phó từ ngữ khí
   desc:
-  extd: [Fd]
 
-- ptag: Fd_freq # 频度副词 adverbs of frequency
+- ptag: Adv_freq # 频度副词 adverbs of frequency
+  extd: [Advb]
   name: Phó từ tần suất
   desc:
-  extd: [Fd]
 
 ## 关联副词 correlative or conjunctive adverbs
-- ptag: Fd_correl # regular
+- ptag: Adv_correl # regular
+  extd: [Advb]
   name: Phó từ liên quan
   desc:
-  extd: [Fd]
 
 # 情态副词/情状副词 adverbs of manner
-- ptag: Fd_mann # regular
+- ptag: Adv_manner # regular
+  extd: [Advb]
   name: Phó từ tình cảm
   desc:
-  extd: [Fd]
 
 ## phó từ đặc biệt
 
-- ptag: Fd_bu4 # "不"
+- ptag: Adv_bu4 # "不"
+  extd: [Adv_nega]
   name: Phó từ `不`
   desc:
-  extd: [Fd_nega]
 
-- ptag: Fd_fei # "非"
+- ptag: Adv_fei # "非"
+  extd: [Adv_nega]
   name: Phó từ `非`
   desc:
-  extd: [Fd_nega]
 
-- ptag: Fd_mei # "没"
+- ptag: Adv_mei # "没"
+  extd: [Adv_nega]
   name: Phó từ `没`
   desc:
-  extd: [Fd_nega]
 
-- ptag: Fd_bie # "别"
+- ptag: Adv_bie # "别"
+  extd: [Adv_nega]
   name: Phó từ `别`
   desc:
-  extd: [Fd_nega]
 
-- ptag: Fd_zui # "最"
+- ptag: Adv_zui # "最"
+  extd: [Adv_degree]
   name: Phó từ `最`
   desc:
-  extd: [Fd_degree]
 
-- ptag: Fd_hen # "很"
+- ptag: Adv_hen # "很"
+  extd: [Adv_degree]
   name: Phó từ `很`
   desc:
-  extd: [Fd_degree]
 
-- ptag: Fd_hao # "好"
+- ptag: Adv_hao # "好"
+  extd: [Adv_degree]
   name: Phó từ `好`
   desc:
-  extd: [Fd_degree]
 
-- ptag: Fd_zong # "总": both time and scope
+- ptag: Adv_zong # "总": both time and scope
+  extd: [Adv_time, Adv_scope]
   name: AdvZong
   desc:
-  extd: [Fd_time, Fd_scope]
 
-- ptag: Fd_jiu3 # "就": both scope and mood
+- ptag: Adv_jiu3 # "就": both scope and mood
+  extd: [Adv_scope, Adv_mood]
   name: AdvJiu3
   desc:
-  extd: [Fd_scope, Fd_mood]
 
-- ptag: Fd_zai # "再": both frequency or correlative
+- ptag: Adv_zai # "再": both frequency or correlative
+  extd: [Adv_freq, Adv_correl]
   name: AdvZai
   desc:
-  extd: [Fd_freq, Fd_correl]
 
-- ptag: Fd_you # "又": both frequency or correlative
+- ptag: Adv_you # "又": both frequency or correlative
+  extd: [Adv_freq, Adv_correl]
   name: AdvYou
   desc:
-  extd: [Fd_freq, Fd_correl]
 
-- ptag: Fd_ye3 # "也": both frequency or correlative
+- ptag: Adv_ye3 # "也": both frequency or correlative
+  extd: [Adv_freq, Adv_correl]
   name: AdvYe3
   desc:
-  extd: [Fd_freq, Fd_correl]
 
-- ptag: Fd_hoan # "还": both frequency or correlative
+- ptag: Adv_hoan # "还": both frequency or correlative
+  extd: [Adv_freq, Adv_correl]
   name: AdvHoan
   desc:
-  extd: [Fd_freq, Fd_correl]
 
-- ptag: Fd_du1 # "都": correlative or scope
+- ptag: Adv_du1 # "都": correlative or scope
+  extd: [Adv_correl, Adv_scope]
   name: AdvDu1
   desc:
-  extd: [Fd_correl, Fd_scope]
 
-- ptag: Fd_cai # "才": correlative or ???
+- ptag: Adv_cai # "才": correlative or ???
+  extd: [Adv_correl]
   name: AdvCai
   desc:
-  extd: [Fd_correl]

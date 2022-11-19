@@ -1,161 +1,184 @@
 # verbs
-- ptag: V
+- ptag: Verb
+  extd: [Zsubj_a, Zpred_a]
   name: Động từ
   desc:
-  extd: [Zsubj_a, Zpred_a]
 
-- ptag: Vc
+- ptag: Vcmp
+  extd: [Verb]
   name: Động từ so sánh
   desc: Động từ kết hợp với trợ từ so sánh phía sau tạo thành cụm từ so sánh
-  extd: [V]
 
-- ptag: Vi # intransitive verb
+- ptag: Vntr # intransitive verb
+  extd: [Verb, Zdmod]
   name: Nội động từ
   desc: Động từ không kết hợp được với tân ngữ
-  extd: [V, Zdmod]
 
-- ptag: Vi_l # verb phrase need no object
+- ptag: Vmix # verb phrase need no object
+  extd: [Vntr]
   name: Cụm động từ
   desc: Cụm động từ phức tạp không cần thiết tân ngữ
-  extd: [Vi]
 
-- ptag: Vi_o # verb + object phrase
+- ptag: Vobj # verb + object phrase
+  extd: [Vntr]
   name: Cụm động tân
   desc: Cụm động từ kết hợp với tân ngữ
-  extd: [Vi]
 
-- ptag: Vi_os # verb + object as skill
-  name: Cụm động tân *
+- ptag: Vabi # verb + object as ability
+  extd: [Vobj]
+  name: Cụm động tân (*)
   desc: Cụm động tân chỉ năng khiếu như đánh đàn, chơi nhạc
-  extd: [Vi_o]
 
-- ptag: Vn
+- ptag: Veno
+  extd: [Verb]
   name: Danh động từ
-  extd: [Vi]
+  desc: Những từ khi đi kèm với danh từ thông dụng sẽ tạo thành cụm danh từ
 
-- ptag: Vt # normal transitive verb
-  name: Ngoại động từ
-  desc: Các động từ thường đi kèm với tân ngữ trực tiếp
-  extd: [V]
-
-- ptag: Vt_2 # verbs need two objects
-  name: Động từ 2 tân
-  desc: Động từ cần hai tân ngữ gián tiếp và trực tiếp
-  extd: [Vt]
-
-- ptag: Vd
+- ptag: Vead
+  extd: [Verb]
   name: Phó động từ
   desc: Các động từ làm trạng ngữ cho động từ phía sau
-  extd: [V]
 
-- ptag: Vt_d # directional verb
+- ptag: Vaux
+  extd: [Verb]
+  name: Trợ động từ
+  desc: Các động từ làm ghép với động từ phía sau
+
+- ptag: Vtrv # normal transitive verb
+  extd: [Verb]
+  name: Ngoại động từ
+  desc: Các động từ thường đi kèm với tân ngữ trực tiếp
+
+- ptag: Vtwo # ditransitive verbs
+  extd: [Vtrv]
+  name: Động từ 2 tân
+  desc: Động từ cần hai tân ngữ gián tiếp và trực tiếp
+
+- ptag: Vdir # directional verb
+  extd: [Vtrv]
   name: Động từ xu hướng
   desc: Động từ chỉ xu hướng, không kết hợp với bổ ngữ xu hướng
-  extd: [V]
 
-- ptag: Vt_l # linking verb
+- ptag: Vlnk # linking verb
+  extd: [Vtrv]
   name: Động từ liên động
   desc: Động từ chỉ các hành động xảy ra nối tiếp
-  extd: [Vlinking, V]
 
-# verbs using for comparision
-- ptag: Vs_c
-  name: Vcau
-  desc:
-  extd: [V]
 # causative verbs
+- ptag: Vcau
+  extd: [Verb]
+  name: Động từ khởi phát
+  desc: Chấp nhận cụm chủ vị làm tân ngữ
 
-- ptag: Vs_p
-  name: Vpsy
-  desc:
-  extd: [V]
 # psychological verb
-- ptag: Vs_x
-  name: Vpro
-  desc:
-  extd: [V]
+- ptag: Vpsy
+  extd: [Verb]
+  name: Động từ tâm lý
+  desc: Chấp nhận tính từ làm tân ngữ
+
 # performative verb
+- ptag: Vpro
+  extd: [Verb]
+  name: Động từ hình thức
+  desc: Chỉ hành động tiếp diễn
 
 ## modal verbs
-- ptag: Vs_m
-  name: Vmod
+- ptag: Vmod
+  extd: [Verb, Vaux]
+  name: Động từ năng nguyện
   desc:
-  extd: [V, Vaux]
-# modal verbs
-- ptag: Vs_hui
-  name: VmHui
-  desc:
-  extd: [V, Vaux]
-# "会"
-- ptag: Vs_bubui
-  name: VmBuhui
-  desc:
-  extd: [V, Vaux]
-# "不会"
-- ptag: Vs_xiang
-  name: VmXiang
-  desc:
-  extd: [V, Vaux]
-# "想"
-- ptag: Vs_neng
-  name: VmNeng
-  desc:
-  extd: [V, Vaux]
-# "能"
-- ptag: Vs_yao
-  name: VmYao
-  desc:
-  extd: [V, Vaux]
-# "要"
-- ptag: Vs_ke3
-  name: VmKe3
-  desc:
-  extd: [V, Vaux]
-# "可"
 
-## special verbs
-- ptag: #Vs_shang
-  name: VShang
+# special modal verbs
+
+- ptag: Vm_hui_1 # "会"
+  extd: [Vmod]
+  name: Động từ `会` (biết)
   desc:
-  extd: [V, Vaux]
-# "上"
-- ptag: #Vs_xia
-  name: VXia
+
+- ptag: Vm_hui_2 # "会"
+  extd: [Vmod]
+  name: Động từ `会` (sẽ)
   desc:
-  extd: [V, Vaux]
-# "下"
-#Vs_dao	VDao	V, Vlinking
-- ptag: #Vs_zhu
-  name: VZhu
+
+- ptag: Vm_bubui # "不会"
+  extd: [Vmod]
+  name: Động từ `不会` (sẽ không)
   desc:
-  extd: [V]
-# "住"
+
+- ptag: Vm_xiang_1 # "想"
+  extd: [Vmod]
+  name: Động từ `想` (nghĩ)
+  desc:
+
+- ptag: Vm_xiang_2 # "想"
+  extd: [Vaux]
+  name: Động từ `想` (muốn)
+  desc:
+
+- ptag: Vm_xiang_3 # "想"
+  extd: [Vtrv]
+  name: Động từ `想` (nhớ)
+  desc:
+
+- ptag: Vm_neng # "能"
+  extd: [Vaux]
+  name: Động từ `能`
+  desc:
+
+- ptag: Vm_yao # "要"
+  extd: [Vaux]
+  name: Động từ `要`
+  desc:
+
+- ptag: Vm_ke3 # "可"
+  extd: [Vaux]
+  name: Động từ `可` (có thể)
+  desc:
 
 ### existential/comparision
-- ptag: Vs_s
-  name: Vexi
+- ptag: Vexi
+  extd: [Verb]
+  name: Động từ tồn hiện
   desc:
-  extd: [V]
+
 # existential verbs
-- ptag: Vs_you
-  name: VYou
+- ptag: Vyou
+  extd: [Vexi]
+  name: Động từ `有` (có)
   desc:
-  extd: [V, Vaux, Vlinking]
-# "有"
-- ptag: Vs_meiyou
-  name: VMeiyou
+
+- ptag: Vmeiyou # "没有"
+  extd: [Vexi]
+  name: Động từ `没有` (không có)
   desc:
-  extd: [V, Vaux, Vlinking]
-# "没有"
 
 ### copula
-- ptag: Vs_shi
-  name: VShi
+- ptag: Vcop
+  extd: [Verb]
+  name: Động từ liên hiệp
   desc:
-  extd: [V, Vaux]
-# '是'
-- ptag: Vs_cop
-  name: VCop
+
+- ptag: Vshi # '是'
+  extd: [Vcop]
+  name: Động từ `是` (là)
   desc:
-  extd: [V, Vaux]
-# other copula
+## special verbs
+# - ptag: Vspl_shang # "上"
+#   extd: [Vtrv]
+#   name: VShang
+#   desc:
+
+# - ptag: Vspl_xia "下"
+#   extd: [Vtrv]
+#   name: VXia
+#   desc:
+
+# - ptag: Vspl_dao
+#   extd: [Verb, Vlnk]
+#   name: Động từ đáo
+#   desc:
+
+# - ptag: Vspl_zhu # "住"
+#   extd: [Verb]
+#   name: VZhu
+#   desc:

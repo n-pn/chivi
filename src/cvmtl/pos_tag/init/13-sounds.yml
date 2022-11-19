@@ -1,16 +1,16 @@
 # sound words
 
 # onomatopoeia
-- ptag: Fo_o
-  name: Tượng thanh
+- ptag: Onomat
   extd: [Zsubj_a, Zpred_a]
+  name: Tượng thanh
 
   # interjection/exclamation -
-- ptag: Fo_e
-  name: Thán từ
+- ptag: Interj
   extd: [Zbegin]
+  name: Thán từ
 
 # modal particle
-- ptag: Fy
-  name: Ngữ khí
+- ptag: Mopart
   extd: [Zfinal]
+  name: Ngữ khí

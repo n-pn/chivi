@@ -2,121 +2,121 @@
 
 # proper nouns
 - ptag: E
+  extd: [Zsubj_a, Zdobj]
   name: Danh từ riêng
   desc: Các danh từ chỉ tên cá nhân, địa danh, tập thể nhất định, thường được viết hoa
-  extd: [Zsubj_a, Zdobj]
 
 # human name
 - ptag: Eh
+  extd: [E, Zhuman]
   name: Tên họ người
   desc: Tên riêng chỉ người
-  extd: [E, Zhuman]
 
 - ptag: Eh_z
+  extd: [Eh]
   name: Tên họ tiếng Trung
   desc: Tên + họ tiếng Trung
-  extd: [Eh]
 
 - ptag: Eh_j
+  extd: [Eh]
   name: Tên họ tiếng Nhật
   desc: Tên + họ tiếng Nhật
-  extd: [Eh]
 
 - ptag: Eh_w
+  extd: [Eh]
   name: Tên họ phương Tây
   desc: Tên + họ phương Tây
-  extd: [Eh]
 
 # family names
 - ptag: Eh_f
+  extd: [Eh]
   name: Họ người
   desc: Tên riêng chỉ họ người
-  extd: [Eh]
 
 - ptag: Eh_fz
+  extd: [Eh_f]
   name: Họ tiếng Trung
   desc: Họ người tiếng Trung
-  extd: [Eh_f]
 
 - ptag: Eh_fj
+  extd: [Eh_f]
   name: Họ tiếng Nhật
   desc: Họ người tiếng Nhật
-  extd: [Eh_f]
 
 - ptag: Eh_fw
+  extd: [Eh_f]
   name: Họ phương Tây
   desc: Họ người tiếng Anh, Pháp, Đức..
-  extd: [Eh_f]
 
 # given names
 - ptag: Eh_g
+  extd: [Eh]
   name: Tên gọi người
   desc: Tên người không kèm theo không họ
-  extd: [Eh]
 
 - ptag: Eh_gz
+  extd: [Eh_g]
   name: Tên gọi tiếng Trung
   desc: Tên người tiếng Trung không kèm theo họ
-  extd: [Eh_g]
 
 - ptag: Eh_gj
+  extd: [Eh_g]
   name: Tên gọi tiếng Nhật
   desc: Tên người tiếng Nhật không kèm theo họ
-  extd: [Eh_g]
 
 - ptag: Eh_gw
+  extd: [Eh_g]
   name: Tên gọi phương Tây
   desc: Tên người phương Tây không kèm theo họ
-  extd: [Eh_g]
 
 #####
 
 # affiliate
 - ptag: Es
+  extd: [E, Zspace]
   name: Nơi sở thuộc
   desc:
-  extd: [E, Zspace]
 
 # place name
 - ptag: Es_p
+  extd: [Es]
   name: Tên địa danh
   desc:
-  extd: [Es]
 
 # institute
 - ptag: Es_i
+  extd: [Es]
   name: Tên tổ chức
   desc:
-  extd: [Es]
 
 - ptag: Es_g
+  extd: [Es]
   name: Tên khu vực
   desc: Tên địa lý hành chính, châu thổ, quốc gia..
-  extd: [Es]
 
 - ptag: Eb # brand name
+  extd: [E, Zimod]
   name: Tên nhãn hiệu
   desc: Các tên riêng chỉ nhãn hiệu, thường mang tính chất thuộc tính
-  extd: [E, Zimod]
 
 #####
 
 - ptag: Ez # other proper noun
+  extd: [E, Zposs, Zdobj]
   name: Tên riêng khác
   desc: Các loại tên riêng khác
-  extd: [E, Zposs, Zdobj]
 
 - ptag: Ez_w # book title, work name
+  extd: [Ez]
   name: Tên tác phẩm
   desc: Tên tựa sách, phim truyện, ca khúc, thơ văn...
-  extd: [Ez]
 
 - ptag: Ez_r # race name
+  extd: [Ez]
   name: Tên tộc loại
   desc: Tên các dân tộc, bộ lạc, tập đoàn người
-  extd: [Ez]
 
 - ptag: Ez_s # skill name
+  extd: [Ez]
   name: Tên chiêu thức
   desc: Tên các loại chiêu thức, phép thuật
-  extd: [Ez]

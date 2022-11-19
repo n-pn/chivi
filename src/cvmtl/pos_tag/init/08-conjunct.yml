@@ -1,41 +1,63 @@
 # conjuctions
 
-- ptag: Fc
-  name: Liên từ
+- ptag: Conjunct
   extd: [Zfunc]
+  name: Liên từ
 
 # subordinating conjunction
-# - ptag: Fc_d # "但"
-#   name: ConDan4
-#   extd: [Zfunc]
-# - ptag: Fc_y # "又"
-#   name: ConYou4
-#   extd: [Zfunc]
-# - ptag: Fc_h # "或"
-#   name: ConHuo4
-#   extd: [Zfunc]
-# - ptag: Fc_hs # "或是"
-#   name: ConHuoshi
-#   extd: [Zfunc]
 
 # coordinating conjunction
-- ptag: Fcc #
-  name: Liên từ liệt kê
+- ptag: Concoord
   extd: [Zfunc]
-## liên từ liệt kê đặc biệt
+  name: Liên từ liệt kê
+  desc: |
+    Liên từ kết nối các danh từ, động từ tính từ thành cụm từ
 
-# - ptag: Fcc_h # "和"
+- ptag: Cc_noun
+  extd: [Zfunc]
+  name: Liên kết danh từ
+  desc: |
+    Các liên từ kết nối danh từ với nhau
+
+- ptag: Cc_verb
+  extd: [Zfunc]
+  name: Liên kết động từ
+  desc: |
+    Các liên từ kết nối động từ với nhau
+
+- ptag: Cc_adjt
+  extd: [Zfunc]
+  name: Liên kết tính từ
+  desc: |
+    Các liên từ kết nối tính từ với nhau
+
+## liên từ  đặc biệt
+
+# - ptag: Conj_dan4 # "但"
+#   extd: [Zfunc]
+#   name: ConDan4
+# - ptag: Conj_you4 # "又"
+#   extd: [Zfunc]
+#   name: ConYou4
+# - ptag: Conj_huo4 # "或"
+#   extd: [Zfunc]
+#   name: ConHuo4
+# - ptag: Conj_huoshi # "或是"
+#   extd: [Zfunc]
+#   name: ConHuoshi
+
+# - ptag: Cc_he2 # "和"
+#   extd: [Concoord]
 #   name: ConHe2
-#   extd: [Zfunc]
 
-# - ptag: Fcc_y # "与"
+# - ptag: Cc_yu3 # "与"
+#   extd: [Concoord]
 #   name: ConYu3
-#   extd: [Zfunc]
 
-# - ptag: Fcc_t # "同"
+# - ptag: Cc_tong # "同"
+#   extd: [Concoord]
 #   name: ConTong
-#   extd: [Zfunc]
 
-# - ptag: Fcc_g # "跟"
+# - ptag: Cc_gen1 # "跟"
+#   extd: [Concoord]
 #   name: ConGen1
-#   extd: [Zfunc]

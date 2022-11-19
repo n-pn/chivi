@@ -1,77 +1,53 @@
 # numbers
 
-- ptag: Mn
+- ptag: Number
+  extd: [Zdmod, Zsubj, Zpred]
   name: Số từ
   desc: Các loại số từ
-  extd: [Z]
 
 # numeral
-- ptag: Mn_o # 序数词 ordinal number
-  name: Ordinal
+- ptag: Nb_car # 序数词 cardinal number
+  extd: [Number]
+  name: Số đếm
   desc:
-  extd: [Object, AtTail]
 
-- ptag: Mn_c # 基数词 generic cardinal number
-  name: Numeric
+# numeral
+- ptag: Nb_ord # 序数词 ordinal number
+  extd: [Number]
+  name: Số thứ tự
   desc:
-  extd: [Object]
 
-- ptag: Mn_d # all digits
-  name: Ndigit0
+- ptag: Nb_dig # all digits
+  extd: [Ncar]
+  name: Con số đếm
   desc:
-  extd: [Object]
 
-- ptag: Mn_df # digits with decimal point
-  name: Ndigit1
+- ptag: Nb_lit # all chinese number, unknown state
+  extd: [Ncar]
+  name: Chữ số đếm
   desc:
-  extd: [Object]
 
-- ptag: Mn_dr # fractal number
-  name: Ndigit2
+- ptag: Nb_deci # digits with decimal point
+  extd: [Ncar]
+  name: Số thập phân
   desc:
-  extd: [Object]
 
-- ptag: Mn_da # approximate numbers (has `-`, `~` between)
-  name: Ndigit3
+- ptag: Nb_frac # fractal number
+  extd: [Ncar]
+  name: Phân số
   desc:
-  extd: [Object]
 
-- ptag: Mn_h # all chinese number, unknown state
-  name: Nhanzi0
+- ptag: Nb_appr # approximate numbers (has `-`, `~` between)
+  extd: [Ncar]
+  name: Số xấp xỉ
   desc:
-  extd: [Object]
 
-- ptag: Mn_hd # chinese number, can convert to number
-  name: Nhanzi1
+- ptag: Nb_yi1 # "一"
+  extd: [Nb_lit]
+  name: Số chữ `一`
   desc:
-  extd: [Object]
 
-- ptag: Mn_hf # chinese number, approximate
-  name: Nhanzi2
+- ptag: Nb_han # "半"
+  extd: [Ncar]
+  name: Số chữ `半`
   desc:
-  extd: [Object]
-
-- ptag: Mn_x # mixed digits with hanzi units
-  name: Nmixed0
-  desc:
-  extd: [Object]
-
-- ptag: Mn_xf # mixed approximate digits with hanzi units
-  name: Nmixed1
-  desc:
-  extd: [Object]
-
-- ptag: Mn_yi1 # "一"
-  name: NumYi1
-  desc:
-  extd: [Object]
-
-- ptag: Mn_han # "半"
-  name: NumHan
-  desc:
-  extd: [Object]
-
-- ptag: Mn_f # 基数词 generic cardinal number
-  name: Numeral
-  desc:
-  extd: [Object]

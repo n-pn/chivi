@@ -1,56 +1,56 @@
 # literal
 
-- ptag: Xl_b
+- ptag: Lit
+  extd: [Zdobj, Zimod]
   name: Chưa phân loại
   desc: Những từ chưa được phân loại
-  extd: [Zdobj, Zimod]
 
-- ptag: Xl_i
+- ptag: Lit_idiom
+  extd: [Zdobj, Zimod, Ziadv]
   name: Ngữ cố định
   desc: Các thành/quán ngữ/tục ngữ/yết hậu ngữ chưa được phân loại sang danh/động/tính
-  extd: [Zdobj, Zimod, Ziadv]
 
-- ptag: Xl_q
+- ptag: Lit_quote
+  extd: [Zdobj, Zimod]
   name: Trích thơ văn
   desc: Trích đoạn thơ, văn xuôi, danh ngôn, tiếng nước ngoài...
-  extd: [Zdobj, Zimod]
 
-- ptag: Xl_t
+- ptag: Lit_trans
+  extd: [Zdobj, Zposs]
   name: Đoạn dịch tay
   desc: Đoạn dịch ngắn không có phân loại từ cụ thể
-  extd: [Zdobj, Zposs]
 
-- ptag: Xs_u
+- ptag: Str_link
+  extd: [Zdobj]
   name: Đường link
   desc: Siêu liên kết (hyperlink) tới các trang web khác, e.g. https://chivi.app
-  extd: [Zdobj]
 
-- ptag: Xs_m
+- ptag: Str_mail
+  extd: [Zdobj, Zposs]
   name: Email
   desc: Địa chỉ email e.g. me@chivi.app
-  extd: [Zdobj, Zposs]
 
-- ptag: Xs_h
+- ptag: Str_hash
+  extd: [Zdobj]
   name: Hashtag
   desc: 'Hashtag trên mạng, ví dụ #truyen_mang #tiếng trung'
-  extd: [Zdobj]
 
-- ptag: Xs_e
+- ptag: Str_moji
+  extd: [Zfinal, Zdobj]
   name: Kaomoji
   desc: Dùng để ký hiệu các ký hiệu hình mặt
-  extd: [Zfinal, Zdobj]
 
-- ptag: Xs_x
+- ptag: Str_else
+  extd: [Zfinal, Zdobj]
   name: Ký tự khác
   desc: Các chữ cái ngoại lai chưa được phân loại
-  extd: [Zfinal, Zdobj]
 
-- ptag: Xv
+- ptag: Sverb
+  extd: [Zuniq]
   name: 'Ly hợp: Động'
   desc: Phần động từ của cấu trúc ly hợp
-  extd: [Zuniq]
 
-- ptag: Xo
+- ptag: Sobjt
+  extd: [Zuniq]
   name: 'Ly hợp: Tân'
   desc: Phần tân ngữ của cấu trúc ly hợp
-  extd: [Zuniq]

@@ -1,43 +1,43 @@
 # adjectives
 
-- ptag: A # normal adjective
+- ptag: Adjv # adjectival
+  extd: [Zsubj_a, Zpred_a, Zimod, Ziadv]
   name: Tính từ
   desc:
-  extd: [Zsubj_a, Zpred_a, Zimod, Ziadv]
 
-- ptag: Aa # normal adjective
+- ptag: Adjt # normal adjective
+  extd: [Adjv, Zdmod, Zdadv]
   name: Hình dung từ
   desc:
-  extd: [A, Zdmod, Zdadv]
 
-- ptag: An
+- ptag: Ajno
+  extd: [Adjv, Zdmod]
   name: Danh hình từ
   desc:
-  extd: [A, Zdmod]
 
-- ptag: Ad
+- ptag: Ajad
+  extd: [Adjv, Zdadv]
   name: Phó hình từ
   desc:
-  extd: [A, Zdadv]
 
 # modifier 区别词
-- ptag: Ab # modifier place after center noun
+- ptag: Amod_1 # modifier place after center noun
+  extd: [Adjv, Zdmod]
   name: Khu biệt từ
   desc: Từ khu biệt ghép với danh từ đặt nghãi sau danh từ
-  extd: [A, Zdmod]
 
-- ptag: Ab_2 # modifier put before noun
+- ptag: Amod_2 # modifier put before noun
+  extd: [Adjv, Zdmod]
   name: Khu biệt từ 2
   desc: Từ khu biệt khi ghép thường đặt nghĩa trước danh từ
-  extd: [Ab]
 
 # words that act as adjective
-- ptag: Al # 形容词性惯用语 adjectival formulaic expression
+- ptag: Amix # 形容词性惯用语 adjectival formulaic expression
+  extd: [Adjv]
   name: Cụm hình dung
   desc: Cụm từ mang tính chất hình dung, chỉ có thể làm định ngữ gián tiếp
-  extd: [A]
 
-- ptag: Al_z # 状态词 stative verb
+- ptag: Ades # 状态词 stative verb
+  extd: [Adjv]
   name: Trạng thái từ
   desc:
-  extd: [Al]

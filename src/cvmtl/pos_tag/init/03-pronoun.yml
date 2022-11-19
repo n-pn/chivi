@@ -1,83 +1,83 @@
 # pronouns
 
-- ptag: R
+- ptag: Pron
+  extd: [Zsubj]
   name: Đại từ
   desc: Các loại đại từ
-  extd: [Zsubj]
 
-- ptag: Rx
+- ptag: Pron_mix
+  extd: [Pron, Zposs, Zdobj]
   name: Đại từ khác
   desc: Các loại đại từ chưa được phân loại
-  extd: [R, Zposs, Zdobj]
 
-- ptag: Rr
+- ptag: Pron_per
+  extd: [Pron, Zhuman]
   name: Đại từ nhân xưng
   desc: Đại từ chỉ ngôi thứ nhất, thứ hai hoặc thứ ba. Ví dụ ta, ngươi, hắn, trẫm, ngài
-  extd: [R, Zposs, Zhuman, Zdobj, Ziobj]
 
-- ptag: Rr_qu # "其"
+- ptag: Pron_qu # "其"
+  extd: [Pron_per]
   name: PronQu2
   desc:
-  extd: [Zdobj, Zposs, Zhuman, Zuniq]
 
-- ptag: Rr_qm # "其们"
+- ptag: Pron_qm # "其们"
+  extd: [Pron_per]
   name: PronQumen
   desc:
-  extd: [Zdobj, Zposs, Zhuman, Zuniq]
 
-- ptag: Rr_ziji # "自己"
+- ptag: Pron_ziji # "自己"
+  extd: [Pron_per]
   name: PronZiji
   desc:
-  extd: [Zdobj, Zposs, Zhuman, Zuniq]
 
 # 指示代词 - demonstrative pronoun - đại từ chỉ thị
-- ptag: Rz
-  name: DemPron
-  desc:
+- ptag: Pron_dem
   extd: [Zdobj, Zposs]
-
-- ptag: Rz_zhe # "这"
-  name: PronZhe
+  name: Đại từ chỉ thị
   desc:
-  extd: [Zdobj, Zuniq]
 
-- ptag: Rz_na1 # "那"
-  name: PronNa1
+- ptag: Pron_zhe # "这"
+  extd: [Pron_dem]
+  name: Đại từ `这` (này)
   desc:
-  extd: [Zdobj, Zuniq]
 
-- ptag: Rz_mei # "每"
-  name: Đại từ 每
+- ptag: Pron_na1 # "那"
+  extd: [Pron_dem]
+  name: Đại từ `那` (kia)
   desc:
-  extd: [Zdobj, Zuniq]
 
-- ptag: Rz_zy # "这样"
-  name: PronZheyang
+- ptag: Pron_mei # "每"
+  extd: [Pron_dem]
+  name: Đại từ 每 (mỗi)
   desc:
-  extd: [Zdobj, Zuniq]
 
-- ptag: Rz_ny # "那样"
-  name: PronNayang
+- ptag: Pron_zheyang # "这样"
+  extd: [Pron_dem]
+  name: Đại từ `这样`
   desc:
+
+- ptag: Pron_nayang # "那样"
   extd: [Zdobj, Zuniq]
+  name: Đại từ `那样`
+  desc:
 
 # 疑问代词 - interrogative pronoun
-- ptag: Ry # generic
-  name: IntPron
+- ptag: Pron_int # generic
+  extd: [Pron]
+  name: Đại từ nghi vấn
   desc:
-  extd: [Zdobj, Zuniq]
 
-- ptag: Ry_ji # "几"
+- ptag: Pron_ji # "几"
+  extd: [Pron_int]
   name: PronJi
   desc:
-  extd: [Zdobj, Zuniq]
 
-- ptag: Ry_na2 # "哪"
-  name: PronNa2
+- ptag: Pron_na2 # "哪"
+  extd: [Pron_int]
+  name: Đại từ `哪` (nào)
   desc:
-  extd: [Zdobj, Zuniq]
 
-- ptag: Ry_shei # 谁
-  name: Đại từ 谁
+- ptag: Pron_shei # 谁
+  extd: [Pron_int, Zhuman]
+  name: Đại từ `谁` (ai)
   desc:
-  extd: [Zhuman, Zdobj, Zuniq]

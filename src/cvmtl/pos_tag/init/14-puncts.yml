@@ -1,197 +1,197 @@
 # Dấu câu thường
-- ptag: Xp
+- ptag: Pu
   name: Dấu câu
   detect: /^\p{P}$/
   virtual: true
 
-- ptag: Xp_t
+- ptag: Pu_t
   name: Dấu kết câu
   desc: Đánh dấu phân tách câu
   virtual: true
 
-- ptag: Xp_c
+- ptag: Pu_c
   name: Dấu kết đoạn
   desc: Đánh dấu phân tách đoạn
   virtual: true
 
-- ptag: Xp_s
+- ptag: Pu_s
   name: Dấu mở ngoặc
   desc: Đánh dấu mở ngoặc
   detect: /^\p{Ps}$/
   virtual: true
 
-- ptag: Xp_e
+- ptag: Pu_e
   name: Dấu đóng ngoặc
   detect: /^\p{Pe}$/
   virtual: true
 
-- ptag: Xp_i
+- ptag: Pu_i
   name: Dấu mở trích
   detect: /^\p{Pi}$/
   virtual: true
 
-- ptag: Xp_f
+- ptag: Pu_f
   name: Dấu đóng trích
   detect: /\p{Pf}/
   virtual: true
 
-- ptag: Xp_o
+  extd: [Pu]
+- ptag: Pu_o
   name: Dấu câu khác
-  extd: [Xp]
   detect: /\p{Po}/
   virtual: false
 
 # dấu kết câu
-- ptag: Xp_pm
+  extd: [Pu, Pu_t]
+- ptag: Pu_pm
   name: Dấu chấm `.`
-  extd: [Xp, Xp_t]
   detect: /^[.]$/
 
-- ptag: Xp_qm
+  extd: [Pu, Pu_t]
+- ptag: Pu_qm
   name: Dấu chấm hỏi `?`
-  extd: [Xp, Xp_t]
   detect: /^[?]$/
 
-- ptag: Xp_fm
+  extd: [Pu, Pu_t]
+- ptag: Pu_fm
   name: Dấu chấm than `!`
-  extd: [Xp, Xp_t]
   detect: /^[!]$/
 
-# - ptag: Xp_dq
+#   extd: [Pu]
+# - ptag: Pu_dq
 #   name: Dấu ngoặc kép
-#   extd: [Xp]
-# - ptag: Xp_sq
+#   extd: [Pu]
+# - ptag: Pu_sq
 #   name: dấu ngoặc đơn
-#   extd: [Xp]
 
 # đánh dấu tác phẩm
-- ptag: Xp_ts1
+- ptag: Pu_ts1
+  extd: [Pu, Pu_s]
   name: Dấu mở ngoặc `⟨`
   desc: Kết hợp với `⟩` đằng sau thành cụm từ chỉ tên tác phẩm
-  extd: [Xp, Xp_s]
   detect: /^[⟨]$/
 
-- ptag: Xp_ts2
+- ptag: Pu_ts2
+  extd: [Pu, Pu_s]
   name: Dấu mở ngoặc `<`
   desc: Kết hợp với `>` đằng sau thành cụm từ chỉ tên tác phẩm
-  extd: [Xp, Xp_s]
   detect: /^[<]$/
 
-- ptag: Xp_ts3
+- ptag: Pu_ts3
+  extd: [Pu, Pu_s]
   name: Dấu mở ngoặc '‹'
   desc: Kết hợp với `›` đằng sau thành cụm từ chỉ tên tác phẩm
-  extd: [Xp, Xp_s]
   detect: /^[‹]$/
 
-- ptag: Xp_tc1
+- ptag: Pu_tc1
+  extd: [Pu, Pu_e]
   name: Dấu đóng ngoặc `⟩`
   desc: Kết hợp với `⟨` đằng trước thành cụm từ chỉ tên tác phẩm
-  extd: [Xp, Xp_e]
   detect: /^[⟩]$/
 
-- ptag: Xp_tc2
+- ptag: Pu_tc2
+  extd: [Pu, Pu_e]
   name: Dấu đóng ngoặc `>`
   desc: Kết hợp với `<` đằng trước thành cụm từ chỉ tên tác phẩm
-  extd: [Xp, Xp_e]
   detect: /^[>]$/
 
-- ptag: Xp_tc3
+- ptag: Pu_tc3
+  extd: [Pu, Pu_e]
   name: Dấu đóng ngoặc `›`
   desc: Kết hợp với `‹` đằng trước thành cụm từ chỉ tên tác phẩm
-  extd: [Xp, Xp_e]
   detect: /^[›]$/
 
 # đánh dấu trích đoạn
-- ptag: Xp_qs1
+  extd: [Pu, Pu_i]
+- ptag: Pu_qs1
   name: Mở ngoặc kép `“`
-  extd: [Xp, Xp_i]
-- ptag: Xp_qs2
+  extd: [Pu, Pu_i]
+- ptag: Pu_qs2
   name: Mở ngoặc kép `‘`
-  extd: [Xp, Xp_i]
-- ptag: Xp_qc1
+  extd: [Pu, Pu_f]
+- ptag: Pu_qc1
   name: Đóng ngoặc kép `”`
-  extd: [Xp, Xp_f]
-- ptag: Xp_qc2
+  extd: [Pu, Pu_f]
+- ptag: Pu_qc2
   name: Đóng ngoặc đơn `’`
-  extd: [Xp, Xp_f]
 
 # đóng mở ngoặc
-- ptag: Xp_bs1
+  extd: [Pu, Pu_s]
+- ptag: Pu_bs1
   name: Mở ngoặc `[`
-  extd: [Xp, Xp_s]
-- ptag: Xp_bs2
+  extd: [Pu, Pu_s]
+- ptag: Pu_bs2
   name: Mở ngoặc `{`
-  extd: [Xp, Xp_s]
-- ptag: Xp_ps1
+  extd: [Pu, Pu_s]
+- ptag: Pu_ps1
   name: Mở ngoặc `(`
-  extd: [Xp, Xp_s]
 
-- ptag: Xp_bc1
+  extd: [Pu]
+- ptag: Pu_bc1
   name: Đóng ngoặc `]`
-  extd: [Xp]
-- ptag: Xp_bc2
+  extd: [Pu]
+- ptag: Pu_bc2
   name: Đóng ngoặc `}`
-  extd: [Xp]
-- ptag: Xp_pc1
+  extd: [Pu]
+- ptag: Pu_pc1
   name: Đóng ngoặc `)`
-  extd: [Xp]
 
 # dấu câu khác
-- ptag: Xp_cl
+  extd: [Pu]
+- ptag: Pu_cl
   name: Dấu hai chấm `]`
-  extd: [Xp]
-- ptag: Xp_sc
+  extd: [Pu]
+- ptag: Pu_sc
   name: Dấu chấm phẩy `;`
-  extd: [Xp]
 
-- ptag: Xp_cm
+  extd: [Pu]
+- ptag: Pu_cm
   name: Dấu phẩy `,`
-  extd: [Xp]
-- ptag: Xp_ce
+  extd: [Pu]
+- ptag: Pu_ce
   name: Dấu phẩy liệt kê `､`
-  extd: [Xp]
 
-- ptag: Xp_d1
+  extd: [Pu]
+- ptag: Pu_d1
   name: Dấu gạch ngắn `–`
-  extd: [Xp]
-- ptag: Xp_d2
+  extd: [Pu]
+- ptag: Pu_d2
   name: Dấu gạch dài `—`
-  extd: [Xp]
 
-- ptag: Xp_e1
+  extd: [Pu]
+- ptag: Pu_e1
   name: Dấu ba chấm `…`
-  extd: [Xp]
-- ptag: Xp_e2
+  extd: [Pu]
+- ptag: Pu_e2
   name: Dấu chấm lửng `……`
-  extd: [Xp]
 
-- ptag: Xp_td
+  extd: [Pu]
+- ptag: Pu_td
   name: Dấu ngã `~`
-  extd: [Xp]
 
-- ptag: Xp_md
+  extd: [Pu]
+- ptag: Pu_md
   name: Dấu chấm giữa `·`
-  extd: [Xp]
 
-- ptag: Xp_as
+  extd: [Pu]
+- ptag: Pu_as
   name: Dấu a còng `@`
-  extd: [Xp]
 
-- ptag: Xp_pc
+  extd: [Pu]
+- ptag: Pu_pc
   name: Dấu phần trăm `%‰`
-  extd: [Xp]
 
-- ptag: Xp_qt
+  extd: [Pu]
+- ptag: Pu_qt
   name: Ký hiệu đơn vị `￥$℃`
-  extd: [Xp]
 
-- ptag: Xp_pl
+  extd: [Pu]
+- ptag: Pu_pl
   name: Dấu cộng `+`
-  extd: [Xp]
-- ptag: Xp_mn
+  extd: [Pu]
+- ptag: Pu_mn
   name: Dấu trừ `-`
-  extd: [Xp]
 
-- ptag: Xp_ws
+  extd: [Pu]
+- ptag: Pu_ws
   name: Dấu cách ` `
-  extd: [Xp]

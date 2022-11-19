@@ -1,161 +1,162 @@
 # generic noun
-- ptag: 'N' # generic noun
+- ptag: 'Noun' # generic noun
+  extd: [Zimod, Zdobj]
   name: Danh từ
   desc: Các loại danh từ thường
-  extd: [Zimod, Zdobj]
 
-- ptag: Nx
+- ptag: Noth
+  extd: [Noun]
   name: Danh từ khác
   desc: Các danh từ chưa được phân loại
-  extd: ['N']
 
-- ptag: Nx_l # noun phrase
-  name: Nmix
+- ptag: Nmix # noun phrase
+  extd: [Noth]
+  name: Cụm danh từ
   desc: Cụm danh từ chưa được phân loại
-  extd: [Nx]
 
 # human related noun
 
-- ptag: Nr # generic human word
+- ptag: Nppl # generic human word
+  extd: [Noun, Zhuman]
   name: Danh từ chỉ người
   desc: Các danh từ dùng để nói về nhân loại
-  extd: ['N', Zhuman]
 
-- ptag: Nr_f # kinship, family member
+- ptag: Nppl_f # kinship, family member
+  extd: [Nppl]
   name: Quan hệ thân thuộc
   desc:
-  extd: [Nr]
 
-- ptag: Nr_o # occupational title that can't be combine with human name
+- ptag: Nppl_o # occupational title that can't be combine with human name
+  extd: [Nppl]
   name: Nghề nghiệp
   desc:
-  extd: [Nr]
 
-- ptag: Nr_h # honorific
+- ptag: Nhon # honorific
+  extd: [Noun, Zhuman]
   name: Xưng hô (N h)
   desc: Các từ ghép với tên người phía trước làm kính ngữ chỉ địa vị
-  extd: [Nr]
 
-- ptag: Nr_hj # honorific
+- ptag: Nhon_j # honorific
+  extd: [Nhon]
   name: Xưng hô (N-h)
   desc: Các từ xưng hô địa vị tiếng Nhật, đặt sau và không thêm dấu cách
-  extd: [Nr_h]
 
-- ptag: Nr_hl # honorific
+- ptag: Nhon_l # honorific
+  extd: [Nhon]
   name: Xưng hô (h N)
   desc: Các từ xưng hô địa vị khi ghép với tên người sẽ đặt trước
-  extd: [Nr_h]
 
-- ptag: Nb # astract concept
+- ptag: Nabs # abstract concept
+  extd: [Zdobj, Zposs]
   name: Danh từ trừu tượng
   desc:
-  extd: [Zdobj, Zposs]
-- ptag: Na # generic attribute
+
+- ptag: Natt # generic attribute
+  extd: [Zdobj]
   name: Danh từ thuộc tính
   desc:
-  extd: [Zdobj]
 
 # concrete nouns
-- ptag: 'No' # generic concrete noun
+- ptag: Nobj # generic concrete noun
+  extd: [Zposs, Zdobj]
   name: Vật đếm được
   desc:
-  extd: [Zposs, Zdobj]
 
-- ptag: No_w # all kind of weapons, for ba3 quantifier
+- ptag: N_weapon # all kind of weapons, for ba3 quantifier
+  extd: [Nobj]
   name: Danh từ vũ khí
   desc: Các loại vũ khí (để ghép với lượng từ 把 mang nghĩa `thanh`)
-  extd: ['No']
 
-- ptag: No_i # can be measured by hand, for ba3 quantifier
+- ptag: N_inhand # can be measured by hand, for ba3 quantifier
+  extd: [Nobj]
   name: Vật cầm trong tay
   desc: Vật cầm trong tay (để ghép với lượng từ 把 mang nghĩa `nắm`)
-  extd: ['No']
 
-- ptag: No_a # all kind of living animals
+- ptag: N_animal # all kind of living animals
+  extd: [Nobj]
   name: Động vật
   desc:
-  extd: ['No']
 
-- ptag: No_p # all kind of plants
+- ptag: N_plant # all kind of plants
+  extd: [Nobj]
   name: Thực vật
   desc:
-  extd: ['No']
 
-- ptag: Ns
+- ptag: Nspc
+  extd: [Noun, Zspace]
   name: Xứ sở
   desc: Các danh từ thông dụng chỉ địa điểm
-  extd: ['N', Zspace]
 
 # placement
-- ptag: Ns_p # generic place
+- ptag: Ngeo # generic place
+  extd: [Nspc, Zposs]
   name: Địa điểm
   desc:
-  extd: [Ns, Zposs]
 
 # locative
-- ptag: Ns_s # place + locat
+- ptag: Nloc # location
+  extd: [Nspc, Zspace]
   name: Nơi chốn
   desc:
-  extd: [Ns, Zspace]
 
-- ptag: Ns_f # can act as place
-  name: Locat
-  desc:
+- ptag: Ndir # locative
   extd: [Ns]
+  name: Phương vị
+  desc:
 
-# - ptag: Nf_shang # "上"
+# - ptag: Ndir_shang # "上"
+#   extd: [Ndir]
 #   name: LocShang
 #   desc:
-#   extd: [Ns_f]
 
-# - ptag: Nf_xia # "下"
+# - ptag: Ndir_xia # "下"
+#   extd: [Ndir]
 #   name: LocXia
 #   desc:
-#   extd: [Ns_f]
 
-# - ptag: Nf_zhong # "中"
+# - ptag: Ndir_zhong # "中"
+#   extd: [Ndir]
 #   name: LocZhong
 #   desc:
-#   extd: [Ns_f]
 
-# - ptag: Nf_qian # "前"
+# - ptag: Ndir_qian # "前"
+#   extd: [Ndir]
 #   name: LocQian
 #   desc:
-#   extd: [Ns_f]
 
-# - ptag: Nf_hou4 # "后"
+# - ptag: Ndir_hou4 # "后"
+#   extd: [Ndir]
 #   name: LocHou4
 #   desc:
-#   extd: [Ns_f]
 
 # temporal
 
-- ptag: Nt # generic temporal words
+- ptag: Time # generic temporal words
+  extd: [Noun]
   name: Thời gian
   desc:
-  extd: ['N']
 
-- ptag: Nt_s # time span, duration
+- ptag: Time_span # time span, duration
+  extd: [Time]
   name: Khoảng thời gian
   desc:
-  extd: [Nt]
 
-- ptag: Nt_d # date
+- ptag: Time_umdw # date
+  extd: [Time]
   name: Ngày tháng năm
   desc: Các từ chỉ ngày tháng cụ thể
-  extd: [Nt]
 
-- ptag: Nt_t # time
+- ptag: Time_hmsm # time
+  extd: [Time]
   name: Giờ phút giây
   desc: Các từ chỉ giờ giấc cụ thể
-  extd: [Nt]
 
-- ptag: Nt_md # can mark successor term as date
+- ptag: Time_dmark # can mark successor term as date
+  extd: [Time]
   name: Đánh dấu ngày tháng
   desc: Đứng trước các danh từ chỉ năm tháng để chỉ ngày tháng cụ thể
-  extd: [Nt]
 
-- ptag: Nt_mt # can mark successor term as time
+- ptag: Time_tmark # can mark successor term as time
+  extd: [Time]
   name: Đánh dấu giờ giấc
   desc: Đứng trước các danh từ chỉ giờ phút để chỉ thời gian trong ngày
-  extd: [Nt]
