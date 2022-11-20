@@ -16,7 +16,7 @@
   desc:
 
 - ptag: Mq_mass # mass
-  extd: [Mnq]
+  extd: [Mq_noun]
   name: Lượng từ đo lường
   desc: Dùng để đo lường các danh từ không đếm được
 

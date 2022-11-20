@@ -5,7 +5,7 @@
   name: Hậu tố danh từ
   # make noun words
 
-- ptag: Fgl_natt
+- ptag: Suf_natt
   extd: [Zfunc]
   name: Hậu tố thuộc tính
   desc: Các từ kết hợp với danh từ đằng trước tạo thành danh từ thuộc tính

@@ -142,12 +142,12 @@
   desc:
 
 # existential verbs
-- ptag: Vyou
+- ptag: V_you
   extd: [Vexi]
   name: Động từ `有` (có)
   desc:
 
-- ptag: Vmeiyou # "没有"
+- ptag: V_meiyou # "没有"
   extd: [Vexi]
   name: Động từ `没有` (không có)
   desc:
@@ -158,7 +158,7 @@
   name: Động từ liên hiệp
   desc:
 
-- ptag: Vshi # '是'
+- ptag: V_shi # '是'
   extd: [Vcop]
   name: Động từ `是` (là)
   desc:

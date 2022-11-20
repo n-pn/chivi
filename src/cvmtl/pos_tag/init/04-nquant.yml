@@ -12,7 +12,7 @@
 
 # for nouns
 - ptag: Nq_noun # generic noun quantifier
-  extd: [Zreal, Ktetic]
+  extd: [Zreal, Zposs]
   name: Số + danh lượng
   desc:
 

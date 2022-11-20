@@ -1,24 +1,46 @@
 # cụm từ
 
-- ptag: Psp
+- ptag: SP
   name: Cụm chủ vị
 
-- ptag: Psp_v
+- ptag: SP_v
   name: Cụm chủ vị(động)
-  extd: [Psp]
+  extd: [SP]
 
-- ptag: Psp_a
+- ptag: SP_a
   name: Cụm chủ vị(tính)
-  extd: [Psp]
+  extd: [SP]
 
-- ptag: Pmd_c
+- ptag: DNP_c
   name: Cụm định ngữ (x+的) 1
   desc: Cụm từ kết hợp với `的` (để trắng) làm định ngữ cho danh từ
 
-- ptag: Pmd_g
+- ptag: DNP_g
   name: Cụm định ngữ (x+的) 2
   desc: Cụm từ kết hợp với `的` (nghĩa là của) làm định ngữ sở hữu cách
 
-- ptag: Pdr
-  name: Cụm bổ ngữ (得+x)
+- ptag: DVP
+  name: Cụm trạng ngữ (XP + 地)
+  desc: Cụm từ kết hợp với 地 làm trạng ngữ cho động từ
+
+- ptag: VP
+  name: Cụm động từ
+
+- ptag: VPT
+  name: Cụm động + 得 + R
   desc: Cụm từ kết hợp với `得` làm bổ ngữ cho động từ
+
+- ptag: VRD
+  name: Cụm động + bổ ngữ kết quả
+
+- ptag: PP
+  name: Cụm giới danh
+
+- ptag: DP
+  name: Cụm đại + số lượng
+
+- ptag: PRN
+  name: Cụm trong ngoặc
+
+- ptag: QP
+  name: Cụm số lượng

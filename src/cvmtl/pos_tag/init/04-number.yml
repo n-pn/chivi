@@ -6,48 +6,48 @@
   desc: Các loại số từ
 
 # numeral
-- ptag: Nb_car # 序数词 cardinal number
+- ptag: Nu_car # 序数词 cardinal number
   extd: [Number]
   name: Số đếm
   desc:
 
 # numeral
-- ptag: Nb_ord # 序数词 ordinal number
+- ptag: Nu_ord # 序数词 ordinal number
   extd: [Number]
   name: Số thứ tự
   desc:
 
-- ptag: Nb_dig # all digits
-  extd: [Ncar]
+- ptag: Nu_dig # all digits
+  extd: [Nu_car]
   name: Con số đếm
   desc:
 
-- ptag: Nb_lit # all chinese number, unknown state
-  extd: [Ncar]
+- ptag: Nu_lit # all chinese number, unknown state
+  extd: [Nu_car]
   name: Chữ số đếm
   desc:
 
-- ptag: Nb_deci # digits with decimal point
-  extd: [Ncar]
+- ptag: Nu_deci # digits with decimal point
+  extd: [Nu_car]
   name: Số thập phân
   desc:
 
-- ptag: Nb_frac # fractal number
-  extd: [Ncar]
+- ptag: Nu_frac # fractal number
+  extd: [Nu_car]
   name: Phân số
   desc:
 
-- ptag: Nb_appr # approximate numbers (has `-`, `~` between)
-  extd: [Ncar]
+- ptag: Nu_appr # approximate numbers (has `-`, `~` between)
+  extd: [Nu_car]
   name: Số xấp xỉ
   desc:
 
-- ptag: Nb_yi1 # "一"
-  extd: [Nb_lit]
+- ptag: Nu_yi1 # "一"
+  extd: [Nu_lit]
   name: Số chữ `一`
   desc:
 
-- ptag: Nb_han # "半"
-  extd: [Ncar]
+- ptag: Nu_han # "半"
+  extd: [Nu_car]
   name: Số chữ `半`
   desc:

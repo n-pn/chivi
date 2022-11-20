@@ -92,40 +92,40 @@
 
 - ptag: Adv_zong # "总": both time and scope
   extd: [Adv_time, Adv_scope]
-  name: AdvZong
+  name: Phó từ `总`
   desc:
 
 - ptag: Adv_jiu3 # "就": both scope and mood
   extd: [Adv_scope, Adv_mood]
-  name: AdvJiu3
+  name: Phó từ `就`
   desc:
 
 - ptag: Adv_zai # "再": both frequency or correlative
   extd: [Adv_freq, Adv_correl]
-  name: AdvZai
+  name: Phó từ `再`
   desc:
 
 - ptag: Adv_you # "又": both frequency or correlative
   extd: [Adv_freq, Adv_correl]
-  name: AdvYou
+  name: Phó từ `又`
   desc:
 
 - ptag: Adv_ye3 # "也": both frequency or correlative
   extd: [Adv_freq, Adv_correl]
-  name: AdvYe3
+  name: Phó từ `也`
   desc:
 
 - ptag: Adv_hoan # "还": both frequency or correlative
   extd: [Adv_freq, Adv_correl]
-  name: AdvHoan
+  name: Phó từ `还`
   desc:
 
 - ptag: Adv_du1 # "都": correlative or scope
   extd: [Adv_correl, Adv_scope]
-  name: AdvDu1
+  name: Phó từ `都`
   desc:
 
 - ptag: Adv_cai # "才": correlative or ???
   extd: [Adv_correl]
-  name: AdvCai
+  name: Phó từ `才`
   desc:
