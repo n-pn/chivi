@@ -16,7 +16,7 @@ module MT::PosTag
 
   EXTD_MAP = Hash(Int32, Array(Int32)).new { |h, k| h[k] = [] of Int32 }
 
-  files = Dir.glob("src/cvmtl/pos_tag/init/*.yml")
+  files = Dir.glob("src/cvmtl/engine/pos_tag/*.yml")
   files.sort_by! { |x| File.basename(x, ".yml").split('-').first.to_i }
 
   files.each do |file|

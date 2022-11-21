@@ -1,6 +1,6 @@
-。	.	Pu_pm
-｡	.	Pu_pm
-.	.	Pu_pm
+。	.	Pu_fs
+｡	.	Pu_fs
+.	.	Pu_fs
 
 !	!	Pu_em
 
@@ -37,7 +37,7 @@
 ;	;	Pu_sc
 
 ,	,	Pu_cm
-､	､	Pu_ce
+､	,	Pu_ce
 
 –	–	Pu_d1
 —	—	Pu_d2
@@ -47,8 +47,8 @@
 
 ~	~	Pu_td
 
-·	·	Pu_md
-@	@	Pu_as
+·	 	Pu_md
+@	@	Pu_at
 
 ‰	‰	Pu_pc
 ￥	￥	Pu_qt

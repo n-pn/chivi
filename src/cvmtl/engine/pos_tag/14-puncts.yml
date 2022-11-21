@@ -43,7 +43,7 @@
 
 # dấu kết câu
   extd: [Pu, Pu_t]
-- ptag: Pu_pm
+- ptag: Pu_fs
   name: Dấu chấm `.`
   detect: /^[.]$/
 
@@ -53,7 +53,7 @@
   detect: /^[?]$/
 
   extd: [Pu, Pu_t]
-- ptag: Pu_fm
+- ptag: Pu_em
   name: Dấu chấm than `!`
   detect: /^[!]$/
 
@@ -174,7 +174,7 @@
   name: Dấu chấm giữa `·`
 
   extd: [Pu]
-- ptag: Pu_as
+- ptag: Pu_at
   name: Dấu a còng `@`
 
   extd: [Pu]

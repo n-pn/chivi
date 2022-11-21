@@ -1,84 +1,96 @@
-# require "./mt_util"
-require "./mt_rule/**"
+require "log"
+require "yaml"
+require "./mt_node"
 
-module MT::Rules
+module MT::MtRule
   extend self
 
-  def foldr_all!(head : MtNode, tail : MtNode) : Nil
-    while (head = head.succ?) && head != tail
-      next unless head.is_a?(MonoNode)
-      head = foldr_once!(head)
+  struct RawRule
+    include YAML::Serializable
+
+    getter rule : Array(String)
+    getter ptag : String
+
+    getter swap : Array(Int32)?
+    getter mult : Float32 = 1.1
+  end
+
+  class Rule
+    getter ptag : Int32
+    getter mult : Float32
+    getter swap : Array(Int32)?
+
+    def initialize(@ptag, @mult = 1.1, @swap = nil)
+    end
+
+    def make(list : Array(MtNode))
+      idx = list.first.idx
+      len = list.sum(&.len)
+
+      cost = list.sum(&.cost) * @mult
+
+      ptag = @ptag > 0 ? @ptag : list[1 &- @ptag].ptag
+      @swap.try { |x| list = swap_list(list, x) }
+
+      MtExpr.new(list, idx: idx, len: len, ptag: ptag, cost: cost)
+    end
+
+    private def swap_list(list : Array(MtNode), order : Array(Int32))
+      new_list = list.dup
+
+      order.each_with_index do |new_idx, old_idx|
+        new_list[new_idx] = list.unsafe_fetch(old_idx)
+      end
+
+      new_list
     end
   end
 
-  def foldr_once!(node : MonoNode)
-    node = fixr_mixedpos!(node) if node.mixedpos?
+  class RuleTrie
+    alias Suff = Hash(Int32, RuleTrie)
 
-    case node
-    when .numbers?      then foldr_number_base!(node)
-    when .adjt_words?   then foldr_adjt_base!(node)
-    when .verbal_words? then foldr_verb_base!(node)
-    when .name_words?   then foldr_name_base!(node)
-    when .maybe_cmpl?   then fixr_not_cmpl!(node)
-    when .ptcl_dev?     then fixr_ptcl_dev!(node)
-    when .cenum?        then node.tap(&.val = ",")
-      # when .maybe_quanti? then as_not_quanti!(node)
-    else node
+    property rule : Rule?
+    property suff : Suff? = nil
+
+    def [](ptag : Int32) : RuleTrie
+      suff = @suff ||= Suff.new
+      suff[ptag] ||= RuleTrie.new
+    end
+
+    @[AlwaysInline]
+    def []?(ptag : Int32) : RuleTrie?
+      @suff.try?(&.[ptag]?)
     end
   end
 
-  def foldl_all!(tail : MtNode, head : MtNode) : Nil
-    while tail = tail.prev?
-      break if tail == head
-      tail = foldl_once!(tail)
+  RULES = RuleTrie.new
+
+  def add_rule(input : RawRule)
+    trie = RULES
+
+    input.rule.each do |ptag_str|
+      ptag = PosTag::PTAG_MAP[ptag_str]
+      trie = trie[ptag]
     end
+
+    swap = input.swap.try(&.map!(&.- 1))
+
+    if input.ptag.starts_with?('$')
+      ptag = -input.ptag[1..].to_i
+    else
+      ptag = PosTag::PTAG_MAP[input.ptag]
+    end
+
+    trie.rule = Rule.new(ptag, swap: swap, mult: input.mult)
   end
 
-  def foldl_once!(node : MtNode) : MtNode
-    node = fix_mixedpos!(node) if node.mixedpos?
+  files = Dir.glob("src/cvmtl/engine/mt_rule/**/*.yml")
 
-    case node
-    when .suffixes?     then foldl_suffix_full!(node)
-    when .locat_words?  then foldl_locat_full!(node)
-    when .all_times?    then foldl_time_full!(node)
-    when .all_nouns?    then foldl_noun_full!(node)
-    when .all_prons?    then foldl_pron_full!(node)
-    when .adjt_words?   then foldl_adjt_full!(node)
-    when .verbal_words? then foldl_verb_full!(node)
-    when .ptcl_dep?     then node.tap(&.as(MonoNode).skipover!)
-    else                     node
+  files.each do |file|
+    File.open(file, "r") do |io|
+      Array(RawRule).from_yaml(io).each { |rule| add_rule(rule) }
     end
-  end
-
-  def join_group!(pstart : MonoNode, pclose : MonoNode) : Nil
-    foldl_all!(pclose, pstart)
-    tag, pos = guess_group_tag(pstart, pclose)
-    SeriNode.new(pstart, pclose, tag: tag, pos: pos)
-  end
-
-  def guess_group_tag(head : MtNode, tail : MtNode) : {MtlTag, MtlPos}
-    case head.tag
-    when .title_sts? then PosTag.make(:title_name)
-    when .brack_sts? then PosTag.make(:other_name)
-    when .paren_st1? then PosTag.make(:paren_exp)
-    else                  guess_quote_group(head, tail)
-    end
-  end
-
-  def guess_quote_group(head : MtNode, tail : MtNode) : {MtlTag, MtlPos}
-    head_succ = head.succ
-    tail_prev = tail.prev
-
-    if head_succ == tail_prev
-      return {head_succ.tag, head_succ.pos}
-    end
-
-    if (tail_prev.interj? || tail_prev.ptcl_dep?) &&
-       (head_succ.onomat? || head_succ.interj?) &&
-       (head.prev?(&.boundary?.!) || tail.succ?(&.ptcl_dep?))
-      return {head_succ.tag, head_succ.pos}
-    end
-
-    head.prev?(&.ptcl_dep?) ? PosTag.make(:nmix) : PosTag.make(:lit_blank)
+  rescue err
+    Log.error(exception: err) { file }
   end
 end

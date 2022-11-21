@@ -80,14 +80,4 @@ module MT::Rules
     return false unless noun.tag.all_nouns? && (tail = noun.succ?)
     tail.preposes? || tail.ptcl_cmps? || tail.common_verbs?
   end
-
-  def fix_ptcl_dev!(node : MonoNode)
-    Log.info { "TODO fix ptcl_dev!".colorize.yellow }
-    node
-  end
-
-  def fix_ptcl_der!(node : MonoNode)
-    Log.info { "TODO fix pd_der!".colorize.yellow }
-    node
-  end
 end

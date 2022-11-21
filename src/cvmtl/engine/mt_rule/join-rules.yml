@@ -1,0 +1,8 @@
+- rule: [Noun, Concoord, Noun]
+  ptag: $3
+
+- rule: [Verb, Concoord, Verb]
+  ptag: $3
+
+- rule: [Adjs, Concoord, Adjs]
+  ptag: $3
