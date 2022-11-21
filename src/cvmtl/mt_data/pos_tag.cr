@@ -11,27 +11,24 @@ module MT::PosTag
     # getter desc : String = ""
   end
 
-  PTAG_MAP = Hash(String, Int32).new
-  PTAG_STR = Hash(Int32, String).new
+  PTAG_MAP = {} of String => Int32
+  PTAG_STR = {} of Int32 => String
+  ROLE_MAP = {} of Int32 => Array(Int32)
 
-  EXTD_MAP = Hash(Int32, Array(Int32)).new { |h, k| h[k] = [] of Int32 }
-
-  files = Dir.glob("src/cvmtl/engine/pos_tag/*.yml")
+  files = Dir.glob("src/cvmtl/mt_data/pos_tag/*.yml")
   files.sort_by! { |x| File.basename(x, ".yml").split('-').first.to_i }
 
   files.each do |file|
     File.open(file, "r") do |io|
       Array(Entry).from_yaml(io).each do |entry|
-        tag_id = map_tag(entry.ptag)
-        extends = [] of Int32
+        ptag = map_tag(entry.ptag)
 
-        entry.extd.each do |ptag|
-          ext_id = map_tag(ptag)
-          extends << ext_id
-          EXTD_MAP[ext_id]?.try { |x| extends.concat(x) }
+        roles = entry.extd.each_with_object([ptag]) do |extd, memo|
+          next unless extd_roles = ROLE_MAP[map_tag(extd)]?
+          memo.concat(extd_roles)
         end
 
-        EXTD_MAP[tag_id] = extends.uniq!
+        ROLE_MAP[ptag] = roles.uniq!
       end
     end
   rescue err
@@ -46,7 +43,7 @@ module MT::PosTag
     PTAG_STR[tag]? || "N/A"
   end
 
-  # puts PTAG_MAP, EXTD_MAP
+  # puts PTAG_MAP, ROLE_MAP
   # puts EXTD_MAP.to_a.max_by(&.[1].size)
   # puts PTAG_MAP.find { |k, v| v == 39 }
 end

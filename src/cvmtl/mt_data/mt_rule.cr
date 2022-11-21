@@ -22,28 +22,6 @@ module MT::MtRule
 
     def initialize(@ptag, @mult = 1.1, @swap = nil)
     end
-
-    def make(list : Array(MtNode))
-      idx = list.first.idx
-      len = list.sum(&.len)
-
-      cost = list.sum(&.cost) * @mult
-
-      ptag = @ptag > 0 ? @ptag : list[1 &- @ptag].ptag
-      @swap.try { |x| list = swap_list(list, x) }
-
-      MtExpr.new(list, idx: idx, len: len, ptag: ptag, cost: cost)
-    end
-
-    private def swap_list(list : Array(MtNode), order : Array(Int32))
-      new_list = list.dup
-
-      order.each_with_index do |new_idx, old_idx|
-        new_list[new_idx] = list.unsafe_fetch(old_idx)
-      end
-
-      new_list
-    end
   end
 
   class RuleTrie
@@ -63,10 +41,10 @@ module MT::MtRule
     end
   end
 
-  RULES = RuleTrie.new
+  RULE_TRIE = RuleTrie.new
 
   def add_rule(input : RawRule)
-    trie = RULES
+    trie = RULE_TRIE
 
     input.rule.each do |ptag_str|
       ptag = PosTag.map_tag(ptag_str)
@@ -84,7 +62,7 @@ module MT::MtRule
     trie.rule = Rule.new(ptag, swap: swap, mult: input.mult)
   end
 
-  files = Dir.glob("src/cvmtl/engine/mt_rule/**/*.yml")
+  files = Dir.glob("src/cvmtl/mt_data/mt_rule/**/*.yml")
 
   files.each do |file|
     File.open(file, "r") do |io|

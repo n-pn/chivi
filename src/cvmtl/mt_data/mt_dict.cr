@@ -52,23 +52,28 @@ class MT::MtDict
     end
 
     data = trie.data ||= Trie::Data.new
-    data[term.ptag] = data
+    data << term
   end
 
   def scan(input : Array(Char), start : Int32 = 0) : Nil
     trie = @trie
 
     input.each do |char|
-      return unless trie = trie.succ.try(&.[char]?)
-      trie.data.try { |hash| yield hash }
+      return unless trie = trie[char]?
+      trie.data.try { |data| yield data }
     end
   end
 
   class Trie
-    alias Data = Hash(Int32, MtTerm)
+    alias Data = Array(MtTerm)
     alias Succ = Hash(Char, Trie)
 
     property data : Data? = nil
     property succ : Succ? = nil
+
+    @[AlwaysInline]
+    def []?(char : Char)
+      @succ.try(&.[char]?)
+    end
   end
 end
