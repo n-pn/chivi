@@ -2,32 +2,36 @@ require "colorize"
 require "./pos_tag"
 
 abstract class MT::MtNode
-  getter idx : Int32
-  getter len : Int32
-
   getter ptag : Int32
+  getter size : Int32
   getter cost : Float32
 
   abstract def to_txt(io : IO)
   abstract def to_mtl(io : IO)
   abstract def inspect(io : IO)
 
-  def initialize(@idx, @len, @ptag, @cost)
+  def initialize(@size, @ptag, @cost)
   end
 end
 
 class MT::MtTerm < MT::MtNode
-  getter key : String
+  # getter key : String
   getter val : String
-  getter dic : Int32
+  getter dic : Int8
 
-  def initialize(@key, @val, @dic, @idx, @len, @ptag, @cost)
+  def initialize(@val, @dic, @size, @ptag, @cost)
   end
 
-  private def capitalize!
-    String.build(@val.size) do |io|
-      io << @val[0].upcase << @val[1..]
-    end
+  def initialize(key : String, @val, @dic, tag : String, prio : Int32)
+    @size = key.size
+    @ptag = PosTag.map_tag(tag)
+
+    # TODO: improve cost calculation
+    @cost = prio > 0 ? size ** (1 + (prio * 2 + @dpos) / 10) : 0
+  end
+
+  def title_val
+    String.build(@val.size) { |io| io << @val[0].upcase << @val[1..] }
   end
 
   def to_txt(io : IO) : Nil
@@ -35,7 +39,7 @@ class MT::MtTerm < MT::MtNode
   end
 
   def to_mtl(io : IO) : Nil
-    io << '\t' << @val << 'ǀ' << @dic << 'ǀ' << @idx << 'ǀ' << @len
+    io << '\t' << @val << 'ǀ' << @dic << 'ǀ' << 'ǀ' << @size
   end
 
   def inspect(io : IO = STDOUT, pad = -1) : Nil
@@ -51,7 +55,7 @@ end
 class MT::MtExpr < MT::MtNode
   getter list : Array(MtNode)
 
-  def initialize(@list, @idx, @len, @ptag, @cost)
+  def initialize(@list, @size, @ptag, @cost)
   end
 
   def to_txt(io : IO = STDOUT) : Nil

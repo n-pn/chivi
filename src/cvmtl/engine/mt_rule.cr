@@ -69,7 +69,7 @@ module MT::MtRule
     trie = RULES
 
     input.rule.each do |ptag_str|
-      ptag = PosTag::PTAG_MAP[ptag_str]
+      ptag = PosTag.map_tag(ptag_str)
       trie = trie[ptag]
     end
 
@@ -78,7 +78,7 @@ module MT::MtRule
     if input.ptag.starts_with?('$')
       ptag = -input.ptag[1..].to_i
     else
-      ptag = PosTag::PTAG_MAP[input.ptag]
+      ptag = PosTag.map_tag(input.ptag)
     end
 
     trie.rule = Rule.new(ptag, swap: swap, mult: input.mult)

@@ -50,6 +50,15 @@ class MT::CvDict
 
   ######
 
+  DICT_IDS = {} of String => Int32
+
+  def self.id_of(name : String) : Int32
+    DICT_IDS[name] ||= begin
+      query = "select id from dicts where name = ?"
+      open_db(&.query_one?(query, args: [name], as: Int32)) || 0
+    end
+  end
+
   def self.get!(id : Int32)
     open_db do |db|
       db.query_one("select * from dicts where id = ?", args: [id], as: CvDict)
