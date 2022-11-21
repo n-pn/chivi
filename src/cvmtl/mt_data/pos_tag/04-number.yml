@@ -1,7 +1,7 @@
 # numbers
 
 - ptag: Number
-  extd: [Zdmod, Zsubj, Zpred]
+  extd: [Xmodi, Xsubj, Xpred]
   name: Số từ
   desc: Các loại số từ
 

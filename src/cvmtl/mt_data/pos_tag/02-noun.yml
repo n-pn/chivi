@@ -1,6 +1,6 @@
 # generic noun
 - ptag: 'Noun' # generic noun
-  extd: [Zimod, Zdobj]
+  extd: [Xmodi_p, Zdobj]
   name: Danh từ
   desc: Các loại danh từ thường
 
@@ -17,7 +17,7 @@
 # human related noun
 
 - ptag: Nppl # generic human word
-  extd: [Noun, Zhuman]
+  extd: [Noun, Xhuman]
   name: Danh từ chỉ người
   desc: Các danh từ dùng để nói về nhân loại
 
@@ -32,7 +32,7 @@
   desc:
 
 - ptag: Nhrf # honorific
-  extd: [Noun, Zhuman]
+  extd: [Noun, Xhuman]
   name: Xưng hô (N h)
   desc: Các từ ghép với tên người phía trước làm kính ngữ chỉ địa vị
 
@@ -47,7 +47,7 @@
   desc: Các từ xưng hô địa vị khi ghép với tên người sẽ đặt trước
 
 - ptag: Nabs # abstract concept
-  extd: [Zdobj, Zposs]
+  extd: [Zdobj, Xposs]
   name: Danh từ trừu tượng
   desc:
 
@@ -58,7 +58,7 @@
 
 # concrete nouns
 - ptag: Nobj # generic concrete noun
-  extd: [Zposs, Zdobj]
+  extd: [Xposs, Zdobj]
   name: Vật đếm được
   desc:
 
@@ -83,19 +83,19 @@
   desc:
 
 - ptag: Nspc
-  extd: [Noun, Zspace]
+  extd: [Noun, Xspace]
   name: Xứ sở
   desc: Các danh từ thông dụng chỉ địa điểm
 
 # placement
 - ptag: Ngeo # generic place
-  extd: [Nspc, Zposs]
+  extd: [Nspc, Xposs]
   name: Địa điểm
   desc:
 
 # locative
 - ptag: Nloc # location
-  extd: [Nspc, Zspace]
+  extd: [Nspc, Xspace]
   name: Nơi chốn
   desc:
 

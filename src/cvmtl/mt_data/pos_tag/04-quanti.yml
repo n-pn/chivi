@@ -1,17 +1,17 @@
 ## time quantifiers
 - ptag: Mq_time # combin e with number to timespan / timeform / dateform time
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Thời lượng từ
   desc:
 
 ## verb quantifiers
 - ptag: Mq_verb # verb q uantifier verb
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Động lượng từ
   desc:
 
 - ptag: Mq_noun # generic noun quantifier
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Danh lượng từ
   desc:
 

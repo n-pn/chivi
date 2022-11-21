@@ -2,13 +2,13 @@
 
 # proper nouns
 - ptag: Name
-  extd: [Zsubj_a, Zdobj]
+  extd: [Xsubj_a, Zdobj]
   name: Danh từ riêng
   desc: Các danh từ chỉ tên cá nhân, địa danh, tập thể nhất định, thường được viết hoa
 
 # human name
 - ptag: Name_h
-  extd: [Name, Zhuman]
+  extd: [Name, Xhuman]
   name: Tên họ người
   desc: Tên riêng chỉ người
 
@@ -73,7 +73,7 @@
 
 # affiliate
 - ptag: Name_s
-  extd: [Name, Zspace]
+  extd: [Name, Xspace]
   name: Nơi sở thuộc
   desc:
 
@@ -95,14 +95,14 @@
   desc: Tên địa lý hành chính, châu thổ, quốc gia..
 
 - ptag: Name_b # brand name
-  extd: [Name, Zimod]
+  extd: [Name, Xmodi_p]
   name: Tên nhãn hiệu
   desc: Các tên riêng chỉ nhãn hiệu, thường mang tính chất thuộc tính
 
 #####
 
 - ptag: Name_z # other proper noun
-  extd: [E, Zposs, Zdobj]
+  extd: [Name, Xposs, Zdobj]
   name: Tên riêng khác
   desc: Các loại tên riêng khác
 

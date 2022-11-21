@@ -2,15 +2,15 @@
 
 # onomatopoeia
 - ptag: Onomat
-  extd: [Zsubj_a, Zpred_a]
+  extd: [Xsubj_a, Xpred_a]
   name: Tượng thanh
 
   # interjection/exclamation -
 - ptag: Interj
-  extd: [Zbegin]
+  extd: [Xbegin]
   name: Thán từ
 
 # modal particle
 - ptag: Mopart
-  extd: [Zfinal]
+  extd: [Xfinal]
   name: Ngữ khí

@@ -1,6 +1,6 @@
 # verbs
 - ptag: Verb
-  extd: [Zsubj_a, Zpred_a]
+  extd: [Xsubj_a, Xpred_a]
   name: Động từ
   desc:
 
@@ -10,7 +10,7 @@
   desc: Động từ kết hợp với trợ từ so sánh phía sau tạo thành cụm từ so sánh
 
 - ptag: Vntr # intransitive verb
-  extd: [Verb, Zdmod]
+  extd: [Verb, Xmodi]
   name: Nội động từ
   desc: Động từ không kết hợp được với tân ngữ
 

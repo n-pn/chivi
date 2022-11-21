@@ -1,17 +1,17 @@
 # pronouns
 
 - ptag: Pron
-  extd: [Zsubj]
+  extd: [Xsubj]
   name: Đại từ
   desc: Các loại đại từ
 
 - ptag: Pron_mix
-  extd: [Pron, Zposs, Zdobj]
+  extd: [Pron, Xposs, Zdobj]
   name: Đại từ khác
   desc: Các loại đại từ chưa được phân loại
 
 - ptag: Pron_per
-  extd: [Pron, Zhuman]
+  extd: [Pron, Xhuman]
   name: Đại từ nhân xưng
   desc: Đại từ chỉ ngôi thứ nhất, thứ hai hoặc thứ ba. Ví dụ ta, ngươi, hắn, trẫm, ngài
 
@@ -32,7 +32,7 @@
 
 # 指示代词 - demonstrative pronoun - đại từ chỉ thị
 - ptag: Pron_dem
-  extd: [Zdobj, Zposs]
+  extd: [Zdobj, Xposs]
   name: Đại từ chỉ thị
   desc:
 
@@ -57,7 +57,7 @@
   desc:
 
 - ptag: Pron_nayang # "那样"
-  extd: [Zdobj, Zuniq]
+  extd: [Zdobj, Xuniq]
   name: Đại từ `那样`
   desc:
 
@@ -78,6 +78,6 @@
   desc:
 
 - ptag: Pron_shei # 谁
-  extd: [Pron_int, Zhuman]
+  extd: [Pron_int, Xhuman]
   name: Đại từ `谁` (ai)
   desc:

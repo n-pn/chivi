@@ -1,87 +1,87 @@
 # particles
 
 - ptag: Ptcl_le
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `了`
   desc:
 
 - ptag: Ptcl_zhe
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `着`
   desc:
 
 - ptag: Ptcl_guo
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `过`
   desc:
 
 - ptag: Ptcl_suo
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `所`
   desc:
 
 - ptag: Ptcl_ls0
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `来说`
   desc:
 
 - ptag: Ptcl_ls1
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `说来`
   desc:
 
 - ptag: Ptcl_ls2
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `来讲
   desc:
 
 - ptag: Ptcl_ls3
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `而言`
   desc:
 
 - ptag: Ptcl_dh
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `的话`
   desc:
 
 - ptag: Ptcl_lian
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `连`
   desc:
 
 - ptag: Ptcl_zhi
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `之`
   desc:
 
 - ptag: Ptcl_dep # "的/底"
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `的` 1
   desc:
 
 - ptag: Ptcl_de1 # 的、之 as complementizer or a nominalizer
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `的` 2
   desc:
 
 - ptag: Ptcl_de2 # 的、之 as a genitive marker and an associative marker
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `的` 3
   desc:
 
 - ptag: Ptcl_der
-  extd: [Zfunc] # resultative de, de in V-de const and V-de-R
+  extd: [Xfunc] # resultative de, de in V-de const and V-de-R
   name: Trợ từ `得`
   desc:
 
 - ptag: Ptcl_dev
-  extd: [Zfunc] # manner de, de before VP
+  extd: [Xfunc] # manner de, de before VP
   name: Trợ từ `地`
   desc:
 
 - ptag: Ptcl_etc
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ liệt kê
   desc:
 
@@ -116,12 +116,12 @@
   desc:
 
 - ptag: Ptcl_cmp
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ so sánh
   desc: Các trợ từ kết hợp với động từ/giới từ so sánh đằng trước thành cấu trúc so sánh
 
 # - ptag: Ptcl_yy0
-#   extd: [Zfunc]
+#   extd: [Xfunc]
 #   name: Trợ từ `般`
 #   desc:
 
@@ -131,46 +131,46 @@
   desc:
 
 # - ptag: Ptcl_yy2
-#   extd: [Zfunc]
+#   extd: [Xfunc]
 #   name: Trợ từ `一般`
 #   desc:
 
 # - ptag: Ptcl_yy3
-#   extd: [Zfunc]
+#   extd: [Xfunc]
 #   name: Trợ từ `似的`
 #   desc:
 
 # - ptag: Ptcl_yy4
-#   extd: [Zfunc]
+#   extd: [Xfunc]
 #   name: Trợ từ `鹄的`
 #   desc:
 
 - ptag: Ptcl_qijian
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `起见`
   desc:
 
 - ptag: Ptcl_weizhi
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `为止`
   desc:
 
 - ptag: Ptcl_kaiwai
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `开外`
   desc:
 
 - ptag: Ptcl_yebai
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `也罢`
   desc:
 
 - ptag: Ptcl_yehao
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `也好`
   desc:
 
 - ptag: Ptcl_yufou
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Trợ từ `与否`
   desc:

@@ -1,18 +1,18 @@
 # for verb
 - ptag: Nq_verb # can be verb complement or adverbial phrase
-  extd: [Zdadv, Zdcom]
+  extd: [Xadvb, Xcmpl]
   name: Số + động lượng
   desc:
 
 # temporal
 - ptag: Nq_time # can be verb complement or timeform
-  extd: [Zreal]
+  extd: [Xreal]
   name: Số + thời lượng
   desc:
 
 # for nouns
 - ptag: Nq_noun # generic noun quantifier
-  extd: [Zreal, Zposs]
+  extd: [Xreal, Xposs]
   name: Số + danh lượng
   desc:
 

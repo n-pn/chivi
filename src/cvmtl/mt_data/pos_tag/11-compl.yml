@@ -1,54 +1,54 @@
 # result complemnt
 - ptag: Vc_res
-  extd: [Zdcom]
+  extd: [Xcmpl]
   name: Bổ ngữ kết quả
   desc: Thể hiện hành động, động tác có quan hệ nhân quả với trung tâm ngữ đằng trước.
 
 # degree complement
 - ptag: Vc_deg_d
-  extd: [Zdcom]
+  extd: [Xcmpl]
   name: Bổ ngữ mức độ trực tiếp
   desc: Nói lên mức độ của hành động, trạng thái.
 
 - ptag: Vc_deg_i
-  extd: [Zicom]
+  extd: [Xcmpl_p]
   name: Bổ ngữ mức độ gián tiếp
   desc: Nói lên mức độ của hành động, trạng thái khi kết hợp với 得 phía trước
 
 # direction complement
 - ptag: Vc_dir_h
-  extd: [Zdcom]
+  extd: [Xcmpl]
   name: Bổ ngữ xu hướng gần
   desc:
 
 - ptag: Vc_dir_k
-  extd: [Zdcom]
+  extd: [Xcmpl]
   name: Bổ ngữ xu hướng xa
   desc: Bổ ngữ xu hướng đứng sau tân ngữ
 
 - ptag: Vc_dir_x
-  extd: [Zdcom]
+  extd: [Xcmpl]
   name: Bổ ngữ xu hướng kép
   desc:
 
 # potential complement
 - ptag: Vc_pot
-  extd: [Zdcom]
+  extd: [Xcmpl]
   name: Bổ ngữ khả năng
 
 # state complement
 - ptag: Vc_stt
-  extd: [Zdcom]
+  extd: [Xcmpl]
   name: Bổ ngữ tình trạng
 
 #quantiment complement
 - ptag: Vc_nqv
-  extd: [Zdcom]
+  extd: [Xcmpl]
   name: Bổ ngữ số lượng
   virtual: true
 
 # time complement
 - ptag: Vc_nqt
-  extd: [Zdcom]
+  extd: [Xcmpl]
   name: Bổ ngữ thời gian
   virtual: true

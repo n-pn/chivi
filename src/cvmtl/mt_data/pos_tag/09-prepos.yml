@@ -1,5 +1,5 @@
 - ptag: Prep #  generic
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Giới từ
   desc:
 
@@ -29,7 +29,7 @@
   desc: Giới từ 比 trong so sánh hơn kém
 
 - ptag: Prep_bi_2 # "比"
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Giới từ `比` (bằng)
   desc: Giới từ 比 trong so sánh không bằng
 

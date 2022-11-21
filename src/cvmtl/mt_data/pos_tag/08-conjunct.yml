@@ -1,32 +1,32 @@
 # conjuctions
 
 - ptag: Conjunct
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Liên từ
 
 # subordinating conjunction
 
 # coordinating conjunction
 - ptag: Concoord
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Liên từ liệt kê
   desc: |
     Liên từ kết nối các danh từ, động từ tính từ thành cụm từ
 
 - ptag: Cc_noun
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Liên kết danh từ
   desc: |
     Các liên từ kết nối danh từ với nhau
 
 - ptag: Cc_verb
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Liên kết động từ
   desc: |
     Các liên từ kết nối động từ với nhau
 
 - ptag: Cc_adjt
-  extd: [Zfunc]
+  extd: [Xfunc]
   name: Liên kết tính từ
   desc: |
     Các liên từ kết nối tính từ với nhau
@@ -34,16 +34,16 @@
 ## liên từ  đặc biệt
 
 # - ptag: Conj_dan4 # "但"
-#   extd: [Zfunc]
+#   extd: [Xfunc]
 #   name: ConDan4
 # - ptag: Conj_you4 # "又"
-#   extd: [Zfunc]
+#   extd: [Xfunc]
 #   name: ConYou4
 # - ptag: Conj_huo4 # "或"
-#   extd: [Zfunc]
+#   extd: [Xfunc]
 #   name: ConHuo4
 # - ptag: Conj_huoshi # "或是"
-#   extd: [Zfunc]
+#   extd: [Xfunc]
 #   name: ConHuoshi
 
 # - ptag: Cc_he2 # "和"

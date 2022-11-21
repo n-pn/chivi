@@ -1,33 +1,33 @@
 # adjectives
 
 - ptag: Adjv # adjectival
-  extd: [Zsubj_a, Zpred_a, Zimod, Ziadv]
+  extd: [Xsubj_a, Xpred_a, Xmodi_p, Xadvb_p]
   name: Tính từ
   desc:
 
 - ptag: Adjt # normal adjective
-  extd: [Adjv, Zdmod, Zdadv]
+  extd: [Adjv, Xmodi, Xadvb]
   name: Hình dung từ
   desc:
 
 - ptag: Ajno
-  extd: [Adjv, Zdmod]
+  extd: [Adjv, Xmodi]
   name: Danh hình từ
   desc:
 
 - ptag: Ajad
-  extd: [Adjv, Zdadv]
+  extd: [Adjv, Xadvb]
   name: Phó hình từ
   desc:
 
 # modifier 区别词
 - ptag: Amod_1 # modifier place after center noun
-  extd: [Adjv, Zdmod]
+  extd: [Adjv, Xmodi]
   name: Khu biệt từ
   desc: Từ khu biệt ghép với danh từ đặt nghãi sau danh từ
 
 - ptag: Amod_2 # modifier put before noun
-  extd: [Adjv, Zdmod]
+  extd: [Adjv, Xmodi]
   name: Khu biệt từ 2
   desc: Từ khu biệt khi ghép thường đặt nghĩa trước danh từ
 
