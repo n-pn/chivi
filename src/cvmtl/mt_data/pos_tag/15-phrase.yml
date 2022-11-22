@@ -3,7 +3,7 @@
 - ptag: Subj+Pred
   name: Cụm chủ vị
 
-- ptag: Subj+Vmix
+- ptag: Subj+Verb
   name: Cụm chủ vị (động)
   extd: [Subj+Pred]
 

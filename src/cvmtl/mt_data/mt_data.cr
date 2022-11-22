@@ -46,6 +46,17 @@ class MT::MtData
     end
   end
 
+  def debug(term : MtTerm)
+    data = {
+      key:  @raw_chars[term.idx, term.size].join,
+      val:  term.val,
+      dic:  term.dic,
+      cost: term.cost,
+    }
+
+    puts data
+  end
+
   def add_node!(node : MtNode, idx : Int32)
     prev_top = @top.unsafe_fetch(idx)
     @top[idx] = node if node.cost > prev_top.cost

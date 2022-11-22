@@ -18,8 +18,8 @@
 
 - ptag: Uzhe_0
   extd: [Xfunc]
-  name: Trợ từ `着` (⛶)
   attr: [Void]
+  name: Trợ từ `着` (⛶)
   desc: Trợ từ động thái 着 khi ghép với động từ thì để trắng
 
 - ptag: Uzhe_1
@@ -84,6 +84,7 @@
 
 - ptag: Udep # "的/底"
   extd: [Xfunc]
+  attr: [Void]
   name: Trợ từ `的` (⛶)
   desc: Trợ từ 的 khi ghép với các từ khác làm định ngữ chỉ tính chất cho danh từ
 
@@ -99,11 +100,13 @@
 
 - ptag: Uder
   extd: [Xfunc] # resultative de, de in V-de const and V-de-R
+  attr: [Void]
   name: Trợ từ `得`
   desc:
 
 - ptag: Udev_0
   extd: [Xfunc] # manner de, de before VP
+  attr: [Void]
   name: Trợ từ `地` (⛶)
   desc: Khi ghép với từ phía trước làm cụm trạng ngữ thì không thêm nghĩa
 

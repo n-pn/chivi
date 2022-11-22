@@ -1,43 +1,43 @@
 # adjectives
 
-- ptag: Adjv # adjectival
+- ptag: Adjs # adjectival
   extd: [Xsubj_a, Xpred_a, Xmodi_p, Xadvb_p]
   name: Tính từ
   desc:
 
 - ptag: Adjt # normal adjective
-  extd: [Adjv, Xmodi, Xadvb]
+  extd: [Adjs, Xmodi, Xadvb]
   name: Hình dung từ
   desc:
 
 - ptag: Ajno
-  extd: [Adjv, Xmodi]
+  extd: [Adjs, Xmodi]
   name: Danh hình từ
   desc:
 
 - ptag: Ajad
-  extd: [Adjv, Xadvb]
+  extd: [Adjs, Xadvb]
   name: Phó hình từ
   desc:
 
 # modifier 区别词
 - ptag: Amod_1 # modifier place after center noun
-  extd: [Adjv, Xmodi]
+  extd: [Adjs, Xmodi]
   name: Khu biệt từ
-  desc: Từ khu biệt ghép với danh từ đặt nghãi sau danh từ
+  desc: Từ khu biệt ghép với danh từ đặt nghĩa sau danh từ
 
 - ptag: Amod_2 # modifier put before noun
-  extd: [Adjv, Xmodi]
+  extd: [Adjs, Xmodi]
   name: Khu biệt từ 2
   desc: Từ khu biệt khi ghép thường đặt nghĩa trước danh từ
 
 # words that act as adjective
 - ptag: Amix # 形容词性惯用语 adjectival formulaic expression
-  extd: [Adjv]
+  extd: [Adjs]
   name: Cụm hình dung
   desc: Cụm từ mang tính chất hình dung, chỉ có thể làm định ngữ gián tiếp
 
 - ptag: Ades # 状态词 stative verb
-  extd: [Adjv]
+  extd: [Adjs]
   name: Trạng thái từ
   desc:

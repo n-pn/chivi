@@ -44,23 +44,23 @@
   name: Trợ động từ
   desc: Các động từ làm ghép với động từ phía sau
 
-- ptag: Vtrv # normal transitive verb
+- ptag: Vtrn # normal transitive verb
   extd: [Verb]
   name: Ngoại động từ
   desc: Các động từ thường đi kèm với tân ngữ trực tiếp
 
 - ptag: Vtwo # ditransitive verbs
-  extd: [Vtrv]
+  extd: [Vtrn]
   name: Động từ 2 tân
   desc: Động từ cần hai tân ngữ gián tiếp và trực tiếp
 
 - ptag: Vdir # directional verb
-  extd: [Vtrv]
+  extd: [Vtrn]
   name: Động từ xu hướng
   desc: Động từ chỉ xu hướng, không kết hợp với bổ ngữ xu hướng
 
 - ptag: Vlnk # linking verb
-  extd: [Vtrv]
+  extd: [Vtrn]
   name: Động từ liên động
   desc: Động từ chỉ các hành động xảy ra nối tiếp
 
@@ -116,7 +116,7 @@
   desc:
 
 - ptag: Vm_xiang_3 # "想"
-  extd: [Vtrv]
+  extd: [Vtrn]
   name: Động từ `想` (nhớ)
   desc:
 
@@ -164,12 +164,12 @@
   desc:
 ## special verbs
 # - ptag: Vspl_shang # "上"
-#   extd: [Vtrv]
+#   extd: [Vtrn]
 #   name: VShang
 #   desc:
 
 # - ptag: Vspl_xia "下"
-#   extd: [Vtrv]
+#   extd: [Vtrn]
 #   name: VXia
 #   desc:
 

@@ -1,0 +1,7 @@
+- rule: [Xsubj, Verb]
+  ptag: Subj+Verb
+  mult: 1.1
+
+- rule: [Xsubj, Adjs]
+  ptag: Subj+Adjt
+  mult: 1.1

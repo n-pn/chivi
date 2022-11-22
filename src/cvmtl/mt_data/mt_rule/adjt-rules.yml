@@ -10,7 +10,15 @@
   ptag: Adjs
   mult: 1.5
 
+- rule: [Adjs, Adjs]
+  ptag: Adjs
+  mult: 1.45
+
 - rule: [Advb, Adjt]
+  ptag: Adjs
+  mult: 1.35
+
+- rule: [Advb, Adjs]
   ptag: Adjs
   mult: 1.4
 
