@@ -43,6 +43,8 @@ module MT::MtRule
 
   RULE_TRIE = Trie.new
 
+  PTAG_USED = Set(Int32).new
+
   def get_rule(ptag : Int32)
     RULE_TRIE[ptag]?
   end
@@ -52,6 +54,7 @@ module MT::MtRule
 
     input.rule.each do |ptag_str|
       ptag = PosTag.map_tag(ptag_str)
+      PTAG_USED << ptag
       trie = trie[ptag]
     end
 
@@ -75,4 +78,10 @@ module MT::MtRule
   rescue err
     Log.error(exception: err) { file }
   end
+
+  PosTag::ROLE_MAP.each_value do |ptags|
+    ptags.select! { |x| PTAG_USED.includes?(x) }
+  end
+
+  PosTag::ROLE_MAP.reject! { |_, v| v.empty? }
 end

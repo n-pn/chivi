@@ -38,7 +38,7 @@ class MT::MtTerm < MT::MtNode
     if prio < 1
       @cost = 0
     else
-      @cost = (size + 0.1) ** (1.2 + (prio * 2 &+ @dic) / 10_f64)
+      @cost = (size + 0.1) ** (1.2 + prio / 5_f64) + dic / 10_f64
     end
   end
 
