@@ -19,12 +19,14 @@ class MT::MtData
 
   def initialize(input : String)
     @raw_chars = input.chars
+    @top_cost = [0_f64]
     @upper = @raw_chars.size
 
     @raw_chars.each do |raw_char|
       inp_char = CharUtil.fullwidth?(raw_char) ? CharUtil.to_halfwidth(raw_char) : raw_char
       @inp_chars << inp_char
 
+      @top_cost << 0_f64
       @top << MtTerm.new(inp_char.to_s, 0, 1, 0, 0.0)
       @all << Hash(Int32, All).new { |h, k| h[k] = All.new }
     end
@@ -60,8 +62,16 @@ class MT::MtData
   end
 
   def add_node!(node : MtNode, idx : Int32)
-    prev_top = @top.unsafe_fetch(idx)
-    @top[idx] = node if node.cost > prev_top.cost
+    # prev_top = @top.unsafe_fetch(idx)
+    # @top_cost[idx] = node_cost if node.cost > prev_top.cost
+
+    prev_cost = @top_cost.unsafe_fetch(idx)
+    node_cost = node.cost + @top_cost.unsafe_fetch(idx &+ node.size)
+
+    if node_cost > prev_cost
+      @top[idx] = node
+      @top_cost[idx] = node_cost
+    end
 
     return unless ptags = PosTag::ROLE_MAP[node.ptag]?
     # puts [node, PosTag.tag_str(node.ptag), PosTag.tag_str(ptags)]

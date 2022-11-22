@@ -12,12 +12,12 @@ module MT::MtRule
     getter ptag : String
 
     getter swap : Array(Int32)?
-    getter mult : Float32 = 1.1
+    getter mult : Float64 = 1.1
   end
 
   class Rule
     getter ptag : Int32
-    getter mult : Float32
+    getter mult : Float64
     getter swap : Array(Int32)?
 
     def initialize(@ptag, @mult = 1.1, @swap = nil)
