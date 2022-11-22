@@ -1,0 +1,8 @@
+- rule: [Noun, Noun]
+  ptag: Noun
+  mult: 1.2
+
+- rule: [Noun, Ndir]
+  ptag: Nloc
+  swap: [2, 1]
+  mult: 1.3

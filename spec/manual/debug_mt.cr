@@ -2,11 +2,10 @@ require "../../src/cvmtl/engine"
 require "../../src/cvhlp/engine"
 
 text = ARGV[0]? || "在魏梦柔的目光下"
-book = ARGV[1]? || "qcwe8yg1"
-user = ARGV[2]?
+book = ARGV[1]? || "-qcwe8yg1"
 
 time = Time.monotonic
-mtl = MT::Engine.new(book: book, user: user)
+mtl = MT::Engine.new(book: book)
 res = mtl.cv_plain(text)
 
 res.inspect(STDOUT)

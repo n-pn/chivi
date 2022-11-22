@@ -24,24 +24,28 @@ module MT::MtRule
     end
   end
 
-  class RuleTrie
-    alias Suff = Hash(Int32, RuleTrie)
+  class Trie
+    alias Suff = Hash(Int32, Trie)
 
     property rule : Rule?
     property suff : Suff? = nil
 
-    def [](ptag : Int32) : RuleTrie
+    def [](ptag : Int32) : Trie
       suff = @suff ||= Suff.new
-      suff[ptag] ||= RuleTrie.new
+      suff[ptag] ||= Trie.new
     end
 
     @[AlwaysInline]
-    def []?(ptag : Int32) : RuleTrie?
-      @suff.try?(&.[ptag]?)
+    def []?(ptag : Int32) : Trie?
+      @suff.try(&.[ptag]?)
     end
   end
 
-  RULE_TRIE = RuleTrie.new
+  RULE_TRIE = Trie.new
+
+  def get_rule(ptag : Int32)
+    RULE_TRIE[ptag]?
+  end
 
   def add_rule(input : RawRule)
     trie = RULE_TRIE
