@@ -1,17 +1,18 @@
 # cụm từ
 
-- ptag: SP
+- ptag: Subj+Pred
   name: Cụm chủ vị
 
-- ptag: SP_v
-  name: Cụm chủ vị(động)
-  extd: [SP]
+- ptag: Subj+Vmix
+  name: Cụm chủ vị (động)
+  extd: [Subj+Pred]
 
-- ptag: SP_a
-  name: Cụm chủ vị(tính)
-  extd: [SP]
+- ptag: Subj+Adjs
+  name: Cụm chủ vị (tính)
+  extd: [Subj+Pred]
 
-- ptag: DNP_c
+- ptag: XP+U_dep
+  extd: [Xmodi_p]
   name: Cụm định ngữ (x+的) 1
   desc: Cụm từ kết hợp với `的` (để trắng) làm định ngữ cho danh từ
 

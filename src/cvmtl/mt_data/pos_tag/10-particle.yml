@@ -1,176 +1,215 @@
 # particles
 
-- ptag: Ptcl_le
+- ptag: Ule_0
   extd: [Xfunc]
-  name: Trợ từ `了`
-  desc:
+  name: Trợ từ `了` (⛶)
+  attr: [Void]
+  desc: Trợ từ động thái 了 khi ghép với động từ không thêm nghĩa "rồi"
 
-- ptag: Ptcl_zhe
+- ptag: Ule_1
   extd: [Xfunc]
-  name: Trợ từ `着`
-  desc:
+  name: Trợ từ `了` (rồi)
+  desc: Trợ từ động thái 了 khi ghép với động từ giữ nguyên nghĩa "rồi"
 
-- ptag: Ptcl_guo
+- ptag: Ule_2
   extd: [Xfunc]
-  name: Trợ từ `过`
-  desc:
+  name: Trợ từ `了` (đã)
+  desc: Trợ từ động thái 了 khi ghép với động từ đổi sang nghĩa là "đã" và đảo về trước
 
-- ptag: Ptcl_suo
+- ptag: Uzhe_0
+  extd: [Xfunc]
+  name: Trợ từ `着` (⛶)
+  attr: [Void]
+  desc: Trợ từ động thái 着 khi ghép với động từ thì để trắng
+
+- ptag: Uzhe_1
+  extd: [Xfunc]
+  name: Trợ từ `着` (lấy)
+  attr: [Void]
+  desc: Trợ từ động thái 着 khi ghép với động từ thì giữ nguyên nghĩa
+
+- ptag: Uzhe_2
+  extd: [Xfunc]
+  name: Trợ từ `着` (đang)
+  attr: [Void]
+  desc: Trợ từ động thái 着 khi ghép với động từ thì mang nghĩa là "đang" và đảo ngược
+
+- ptag: Uguo_0
+  extd: [Xfunc]
+  name: Trợ từ `过` (qua)
+  desc: Trợ từ động thái 过 ghép với động từ thì giữ nguyên nghĩa
+
+- ptag: Uguo_1
+  extd: [Xfunc]
+  name: Trợ từ `过` (từng)
+  desc: Trợ từ động thái 过 ghép với động từ thì mang nghãi là "từng" và đảo ngược
+
+- ptag: Usuo
   extd: [Xfunc]
   name: Trợ từ `所`
   desc:
 
-- ptag: Ptcl_ls0
+- ptag: Uls0
   extd: [Xfunc]
   name: Trợ từ `来说`
   desc:
 
-- ptag: Ptcl_ls1
+- ptag: Uls1
   extd: [Xfunc]
   name: Trợ từ `说来`
   desc:
 
-- ptag: Ptcl_ls2
+- ptag: Uls2
   extd: [Xfunc]
-  name: Trợ từ `来讲
+  name: Trợ từ `来讲`
   desc:
 
-- ptag: Ptcl_ls3
+- ptag: Uls3
   extd: [Xfunc]
   name: Trợ từ `而言`
   desc:
 
-- ptag: Ptcl_dh
+- ptag: Udh
   extd: [Xfunc]
   name: Trợ từ `的话`
   desc:
 
-- ptag: Ptcl_lian
+- ptag: Ulian
   extd: [Xfunc]
   name: Trợ từ `连`
   desc:
 
-- ptag: Ptcl_zhi
+- ptag: Uzhi
   extd: [Xfunc]
   name: Trợ từ `之`
   desc:
 
-- ptag: Ptcl_dep # "的/底"
+- ptag: Udep # "的/底"
   extd: [Xfunc]
-  name: Trợ từ `的` 1
-  desc:
+  name: Trợ từ `的` (⛶)
+  desc: Trợ từ 的 khi ghép với các từ khác làm định ngữ chỉ tính chất cho danh từ
 
-- ptag: Ptcl_de1 # 的、之 as complementizer or a nominalizer
+- ptag: Udec # 的、之 as complementizer or a nominalizer
   extd: [Xfunc]
-  name: Trợ từ `的` 2
-  desc:
+  name: Trợ từ `的` (đồ)
+  desc: Trợ từ 的 khi ghép với một số từ loại phía trước tạo thành cấu trúc dạng danh từ
 
-- ptag: Ptcl_de2 # 的、之 as a genitive marker and an associative marker
+- ptag: Udeg # 的、之 as a genitive marker and an associative marker
   extd: [Xfunc]
-  name: Trợ từ `的` 3
-  desc:
+  name: Trợ từ `的` (của)
+  desc: Trợ từ 的 khi ghép với các danh từ/đại từ tạo thành cụm từ sở hữu cách
 
-- ptag: Ptcl_der
+- ptag: Uder
   extd: [Xfunc] # resultative de, de in V-de const and V-de-R
   name: Trợ từ `得`
   desc:
 
-- ptag: Ptcl_dev
+- ptag: Udev_0
   extd: [Xfunc] # manner de, de before VP
-  name: Trợ từ `地`
-  desc:
+  name: Trợ từ `地` (⛶)
+  desc: Khi ghép với từ phía trước làm cụm trạng ngữ thì không thêm nghĩa
 
-- ptag: Ptcl_etc
+- ptag: Udev_1
+  extd: [Xfunc] # manner de, de before VP
+  name: Trợ từ `地` (mà)
+  desc: Khi ghép với từ phía trước làm trạng ngữ thì mang nghĩa là "mà"
+
+- ptag: Udev_2
+  extd: [Xfunc] # manner de, de before VP
+  name: Trợ từ `地` (một cách)
+  desc: Khi ghép với từ phía trước làm trạng ngữ thì mang nghĩa là "một cách" và đảo ngược cả cụm
+
+- ptag: Uetc
   extd: [Xfunc]
   name: Trợ từ liệt kê
   desc:
 
-# - ptag: Ptcl_d0
-#   extd: [Ptcl_etc]
+# - ptag: Ud0
+#   extd: [Uetc]
 #   name: Trợ từ liệt kê `云云`
 #   desc:
 
-# - ptag: Ptcl_d1
-#   extd: [Ptcl_etc]
+# - ptag: Ud1
+#   extd: [Uetc]
 #   name: Trợ từ liệt kê `等`
 #   desc:
 
-# - ptag: Ptcl_d2
-#   extd: [Ptcl_etc]
+# - ptag: Ud2
+#   extd: [Uetc]
 #   name: Trợ từ liệt kê `等等`
 #   desc:
 
-# - ptag: Ptcl_d3
-#   extd: [Ptcl_etc]
+# - ptag: Ud3
+#   extd: [Uetc]
 #   name: Trợ từ liệt kê `等人`
 #   desc:
 
-# - ptag: Ptcl_d4
-#   extd: [Ptcl_etc]
+# - ptag: Ud4
+#   extd: [Uetc]
 #   name: Trợ từ liệt kê `等等等等`
 #   desc:
 
-- ptag: Ptcl_zl
-  extd: [Ptcl_etc]
+- ptag: Uzl
+  extd: [Uetc]
   name: Trợ từ liệt kê `之类`
   desc:
 
-- ptag: Ptcl_cmp
+- ptag: Ucmp
   extd: [Xfunc]
   name: Trợ từ so sánh
   desc: Các trợ từ kết hợp với động từ/giới từ so sánh đằng trước thành cấu trúc so sánh
 
-# - ptag: Ptcl_yy0
+# - ptag: Uyy0
 #   extd: [Xfunc]
 #   name: Trợ từ `般`
 #   desc:
 
-- ptag: Ptcl_yy1
-  extd: [Ptcl_cmp]
+- ptag: Uyy1
+  extd: [Ucmp]
   name: Trợ từ so sánh `一样`
   desc:
 
-# - ptag: Ptcl_yy2
+# - ptag: Uyy2
 #   extd: [Xfunc]
 #   name: Trợ từ `一般`
 #   desc:
 
-# - ptag: Ptcl_yy3
+# - ptag: Uyy3
 #   extd: [Xfunc]
 #   name: Trợ từ `似的`
 #   desc:
 
-# - ptag: Ptcl_yy4
+# - ptag: Uyy4
 #   extd: [Xfunc]
 #   name: Trợ từ `鹄的`
 #   desc:
 
-- ptag: Ptcl_qijian
+- ptag: Uqijian
   extd: [Xfunc]
   name: Trợ từ `起见`
   desc:
 
-- ptag: Ptcl_weizhi
+- ptag: Uweizhi
   extd: [Xfunc]
   name: Trợ từ `为止`
   desc:
 
-- ptag: Ptcl_kaiwai
+- ptag: Ukaiwai
   extd: [Xfunc]
   name: Trợ từ `开外`
   desc:
 
-- ptag: Ptcl_yebai
+- ptag: Uyebai
   extd: [Xfunc]
   name: Trợ từ `也罢`
   desc:
 
-- ptag: Ptcl_yehao
+- ptag: Uyehao
   extd: [Xfunc]
   name: Trợ từ `也好`
   desc:
 
-- ptag: Ptcl_yufou
+- ptag: Uyufou
   extd: [Xfunc]
   name: Trợ từ `与否`
   desc:

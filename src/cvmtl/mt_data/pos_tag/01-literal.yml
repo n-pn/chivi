@@ -5,52 +5,52 @@
   name: Chưa phân loại
   desc: Những từ chưa được phân loại
 
-- ptag: Lit_idiom
+- ptag: Lit_i
   extd: [Zdobj, Xmodi_p, Xadvb_p]
   name: Ngữ cố định
   desc: Các thành/quán ngữ/tục ngữ/yết hậu ngữ chưa được phân loại sang danh/động/tính
 
-- ptag: Lit_quote
+- ptag: Lit_q
   extd: [Zdobj, Xmodi_p]
   name: Trích thơ văn
   desc: Trích đoạn thơ, văn xuôi, danh ngôn, tiếng nước ngoài...
 
-- ptag: Lit_trans
+- ptag: Lit_t
   extd: [Zdobj, Xposs]
   name: Đoạn dịch tay
   desc: Đoạn dịch ngắn không có phân loại từ cụ thể
 
-- ptag: Str_link
+- ptag: Str_u
   extd: [Zdobj]
   name: Đường link
   desc: Siêu liên kết (hyperlink) tới các trang web khác, e.g. https://chivi.app
 
-- ptag: Str_mail
+- ptag: Str_m
   extd: [Zdobj, Xposs]
   name: Email
   desc: Địa chỉ email e.g. me@chivi.app
 
-- ptag: Str_hash
+- ptag: Str_h
   extd: [Zdobj]
   name: Hashtag
   desc: 'Hashtag trên mạng, ví dụ #truyen_mang #tiếng trung'
 
-- ptag: Str_moji
+- ptag: Str_e
   extd: [Xfinal, Zdobj]
   name: Kaomoji
   desc: Dùng để ký hiệu các ký hiệu hình mặt
 
-- ptag: Str_else
+- ptag: Str_x
   extd: [Xfinal, Zdobj]
   name: Ký tự khác
   desc: Các chữ cái ngoại lai chưa được phân loại
 
-- ptag: Sverb
+- ptag: Sep_v
   extd: [Xuniq]
   name: 'Ly hợp: Động'
   desc: Phần động từ của cấu trúc ly hợp
 
-- ptag: Sobjt
+- ptag: Sep_o
   extd: [Xuniq]
   name: 'Ly hợp: Tân'
   desc: Phần tân ngữ của cấu trúc ly hợp

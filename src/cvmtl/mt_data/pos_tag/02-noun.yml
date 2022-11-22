@@ -1,5 +1,5 @@
 # generic noun
-- ptag: 'Noun' # generic noun
+- ptag: Noun # generic noun
   extd: [Xmodi_p, Zdobj]
   name: Danh từ
   desc: Các loại danh từ thường
@@ -88,12 +88,11 @@
   desc: Các danh từ thông dụng chỉ địa điểm
 
 # placement
-- ptag: Ngeo # generic place
+- ptag: Nplc # generic place
   extd: [Nspc, Xposs]
   name: Địa điểm
   desc:
 
-# locative
 - ptag: Nloc # location
   extd: [Nspc, Xspace]
   name: Nơi chốn

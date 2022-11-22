@@ -1,0 +1,28 @@
+- rule: [Cj_you4, Adjt, Cj_you4, Adjt]
+  ptag: Adjs
+  mult: 1.8
+
+- rule: [Adjt, Cc_adjt, Adjt]
+  ptag: Adjs
+  mult: 1.7
+
+- rule: [Adjt, Adjt]
+  ptag: Adjs
+  mult: 1.5
+
+- rule: [Advb, Adjt]
+  ptag: Adjs
+  mult: 1.4
+
+- rule: [Adjt, Noun]
+  ptag: $2
+  mult: 1.55
+
+- rule: [Amod_1, Noun]
+  ptag: $2
+  mult: 1.6
+
+- rule: [Amod_2, Noun]
+  ptag: $2
+  swap: [2, 1]
+  mult: 1.65

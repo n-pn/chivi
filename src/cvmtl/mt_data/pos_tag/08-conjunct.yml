@@ -7,11 +7,6 @@
 # subordinating conjunction
 
 # coordinating conjunction
-- ptag: Concoord
-  extd: [Xfunc]
-  name: Liên từ liệt kê
-  desc: |
-    Liên từ kết nối các danh từ, động từ tính từ thành cụm từ
 
 - ptag: Cc_noun
   extd: [Xfunc]
@@ -31,33 +26,26 @@
   desc: |
     Các liên từ kết nối tính từ với nhau
 
+- ptag: Cc_real
+  extd: [Cc_verb, Cc_adjt, Cc_noun]
+  name: Liên từ liệt kê
+  desc: |
+    Liên từ kết nối các danh từ, động từ tính từ thành cụm từ
+
 ## liên từ  đặc biệt
 
-# - ptag: Conj_dan4 # "但"
-#   extd: [Xfunc]
-#   name: ConDan4
-# - ptag: Conj_you4 # "又"
-#   extd: [Xfunc]
-#   name: ConYou4
-# - ptag: Conj_huo4 # "或"
-#   extd: [Xfunc]
-#   name: ConHuo4
-# - ptag: Conj_huoshi # "或是"
-#   extd: [Xfunc]
-#   name: ConHuoshi
+- ptag: Cj_you4
+  extd: [Cc_adjt]
+  name: Liên từ `又`
 
-# - ptag: Cc_he2 # "和"
-#   extd: [Concoord]
-#   name: ConHe2
+- ptag: Cj_dan4
+  extd: [Cc_adjt]
+  name: Liên từ `但`
 
-# - ptag: Cc_yu3 # "与"
-#   extd: [Concoord]
-#   name: ConYu3
+- ptag: Cj_huo4
+  extd: [Cc_real]
+  name: Liên từ `或`
 
-# - ptag: Cc_tong # "同"
-#   extd: [Concoord]
-#   name: ConTong
-
-# - ptag: Cc_gen1 # "跟"
-#   extd: [Concoord]
-#   name: ConGen1
+- ptag: Cj_huoshi
+  extd: [Cc_real]
+  name: Liên từ `或是`
