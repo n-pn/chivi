@@ -38,7 +38,7 @@ class MT::MtTerm < MT::MtNode
     if prio < 1
       @cost = 0
     else
-      @cost = (size + 0.1) ** (1.2 + prio / 5_f64) + dic / 10_f64
+      @cost = (size + dic / 10_f64) ** (1.2 + prio / 5_f64)
     end
   end
 
@@ -61,6 +61,10 @@ class MT::MtTerm < MT::MtNode
     io << '\t'
     to_txt(io, apply_cap)
     io << 'ǀ' << @dic << 'ǀ' << @idx << 'ǀ' << @size
+  end
+
+  def inspect(io : IO)
+    io << '{' << @val << '/' << PosTag.tag_str(@ptag) << '/' << @dic << '}'
   end
 end
 

@@ -1,12 +1,12 @@
 # pronouns
 
 - ptag: Pron
-  extd: [Xsubj]
+  extd: [Xsubj, Xdobj, Xreal, Xmodi_p]
   name: Đại từ
   desc: Các loại đại từ
 
 - ptag: Pron_mix
-  extd: [Pron, Xposs, Zdobj]
+  extd: [Pron, Xposs, Xdobj, Xsubj_a]
   name: Đại từ khác
   desc: Các loại đại từ chưa được phân loại
 
@@ -32,7 +32,7 @@
 
 # 指示代词 - demonstrative pronoun - đại từ chỉ thị
 - ptag: Pron_dem
-  extd: [Zdobj, Xposs]
+  extd: [Xdobj, Xposs]
   name: Đại từ chỉ thị
   desc:
 
@@ -57,7 +57,7 @@
   desc:
 
 - ptag: Pron_nayang # "那样"
-  extd: [Zdobj, Xuniq]
+  extd: [Xdobj, Xuniq]
   name: Đại từ `那样`
   desc:
 

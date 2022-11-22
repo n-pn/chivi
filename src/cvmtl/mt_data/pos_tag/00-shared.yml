@@ -27,9 +27,15 @@
 
 - ptag: Xreal
   name: Thực từ
+  desc: Content word
 
 - ptag: Xfunc
   name: Hư từ
+  desc: Các từ loại phụ trợ như trợ từ, phó từ...
+
+- ptag: Xmorp
+  name: Ngữ tố
+  desc: Các từ đứng riêng không có nghĩa, chỉ có nghĩa khi ghép với các thành phần khác trong câu
 
 - ptag: Xuniq
   name: Từ đặc biệt
@@ -40,7 +46,11 @@
 
 - ptag: Xmodi
   name: Định ngữ trực tiếp
-  desc: Các từ có thể trực tiếp làm định ngữ cho trung tâm ngữ
+  desc: Các từ có thể trực tiếp làm định ngữ cho danh từ, khi ghép sẽ đảo sa rau
+
+- ptag: Xmodi_h
+  name: Dịnh ngữ trực tiếp *
+  desc: Các từ có thể trực tiếp làm định ngữ cho danh từ, khi ghép không cần đảo ra sau
 
 - ptag: Xmodi_p
   name: Định ngữ gián tiếp
@@ -52,12 +62,12 @@
 
 # tân ngữ
 
-- ptag: Zdobj
+- ptag: Xdobj
   name: Tân ngữ trực tiếp
   desc: Những từ có thể làm tân ngữ cho ngoại động từ
   extd: [Xsubj_a, Xpred_a]
 
-- ptag: Ziobj
+- ptag: Xiobj
   name: Tân ngữ gián tiếp
   desc: Những từ (thường chỉ người) làm tân ngữ gián tiếp cho động từ 2 tân
 
@@ -86,9 +96,9 @@
 - ptag: Xhuman
   name: Nhân loại
   desc: Danh từ hoặc đại từ dùng cho nhân loại, chủ yếu dùng đánh dấu tân ngữ gián tiếp
-  extd: [Zdobj, Ziobj, Xposs]
+  extd: [Xdobj, Xiobj, Xposs]
 
 - ptag: Xspace
   name: Vị trí
   desc: Danh từ chung hay danh từ riêng chỉ địa danh, địa điểm, nơi chốn, tổ chức...
-  extd: [Zdobj]
+  extd: [Xdobj]

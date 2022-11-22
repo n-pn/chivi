@@ -1,6 +1,6 @@
 # generic noun
 - ptag: Noun # generic noun
-  extd: [Xmodi_p, Zdobj]
+  extd: [Xmodi_p, Xdobj]
   name: Danh từ
   desc: Các loại danh từ thường
 
@@ -47,18 +47,18 @@
   desc: Các từ xưng hô địa vị khi ghép với tên người sẽ đặt trước
 
 - ptag: Nabs # abstract concept
-  extd: [Zdobj, Xposs]
+  extd: [Xdobj, Xposs]
   name: Danh từ trừu tượng
   desc:
 
 - ptag: Natt # generic attribute
-  extd: [Zdobj]
+  extd: [Xdobj]
   name: Danh từ thuộc tính
   desc:
 
 # concrete nouns
 - ptag: Nobj # generic concrete noun
-  extd: [Xposs, Zdobj]
+  extd: [Xposs, Xdobj]
   name: Vật đếm được
   desc:
 

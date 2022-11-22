@@ -79,9 +79,9 @@ module MT::MtRule
     Log.error(exception: err) { file }
   end
 
-  PosTag::ROLE_MAP.each_value do |ptags|
-    ptags.select! { |x| PTAG_USED.includes?(x) }
-  end
+  # PosTag::ROLE_MAP.each_value do |ptags|
+  #   ptags.select! { |x| PTAG_USED.includes?(x) }
+  # end
 
-  PosTag::ROLE_MAP.reject! { |_, v| v.empty? }
+  # PosTag::ROLE_MAP.reject! { |_, v| v.empty? }
 end

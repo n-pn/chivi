@@ -64,6 +64,7 @@ class MT::MtData
     @top[idx] = node if node.cost > prev_top.cost
 
     return unless ptags = PosTag::ROLE_MAP[node.ptag]?
+    # puts [node, PosTag.tag_str(node.ptag), PosTag.tag_str(ptags)]
 
     all_curr = @all.unsafe_fetch(idx)
 
@@ -89,8 +90,11 @@ class MT::MtData
     end
 
     return unless (trie_hash = trie.suff) && (all_succ = @all[idx &+ size]?)
+    return if all_succ.empty?
 
-    if trie_hash.size > all_succ.size
+    # pp trie_hash, all_succ
+
+    if all_succ.size < trie_hash.size
       all_succ.each do |ptag, nodes|
         next unless next_trie = trie_hash[ptag]?
         apply_rule_all!(list, next_trie, nodes, idx: idx, size: size)

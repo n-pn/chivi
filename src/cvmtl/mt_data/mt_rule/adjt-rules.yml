@@ -24,6 +24,7 @@
 
 - rule: [Adjt, Noun]
   ptag: $2
+  swap: [2, 1]
   mult: 1.55
 
 - rule: [Amod_1, Noun]

@@ -1,7 +1,11 @@
-- rule: [Vtrn, Noun]
-  ptag: Vobj
-  mult: 1.5
+- rule: [Vtrn, Xdobj]
+  ptag: Verb+Objt
+  mult: 1.75
 
 - rule: [Vlnk, Verb]
-  ptag: Vlnk
-  mult: 1.4
+  ptag: $1
+  mult: 1.6
+
+- rule: [Vlnk, Xdobj, Verb]
+  ptag: Verb
+  mult: 1.6

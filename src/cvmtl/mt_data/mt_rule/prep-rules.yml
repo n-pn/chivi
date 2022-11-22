@@ -1,0 +1,16 @@
+- rule: [Prep, Xdobj]
+  ptag: Prep+Objt 1
+  mult: 1.6
+
+- rule: [Prep_2, Xdobj]
+  ptag: Prep+Objt 2
+  mult: 1.625
+
+- rule: [Prep+Objt 1, Verb]
+  ptag: $2
+  mult: 1.65
+
+- rule: [Prep+Objt 2, Verb]
+  ptag: $2
+  swap: [2, 1]
+  mult: 1.675

@@ -1,0 +1,8 @@
+- rule: [XP+Dep 1, Xdobj]
+  ptag: $2
+  swap: [2, 1]
+  mult: 1.3
+
+- rule: [XP+Dep 2, Xdobj]
+  ptag: $2
+  mult: 1.25

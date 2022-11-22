@@ -11,9 +11,13 @@
   name: Cụm chủ vị (tính)
   extd: [Subj+Pred]
 
-- ptag: XP+Udeg
-  name: Cụm định ngữ (X+的)
-  desc: Cụm từ kết hợp với `的` làm định ngữ cho danh từ trung tâm
+- ptag: XP+Udep 1
+  name: Cụm định ngữ (X+的) 1
+  desc: Cụm từ kết hợp với `的` làm định ngữ cho danh từ trung tâm, khi ghép đảo về sau
+
+- ptag: XP+Udep 2
+  name: Cụm định ngữ (X+的) 2
+  desc: Cụm từ kết hợp với `的` làm định ngữ cho danh từ trung tâm, khi ghép đặt phía trước
 
 - ptag: XP+Udev 1
   name: Cụm trạng ngữ 1
@@ -27,7 +31,13 @@
   name: Cụm động + bổ
   desc: Cụm động từ kết hợp với bổ ngữ
 
+- ptag: Verb+Objt
+  extd: [Xpred]
+  name: Cụm động + tân
+  desc: Cụm động từ gồm động từ, bổ ngữ phía trước và tân ngữ
+
 - ptag: Verb+Objt+Cmpl
+  extd: [Xpred]
   name: Cụm vị ngữ (động)
   desc: Cụm động từ đầy đủ (gồm động từ, bổ ngữ phía trước, tân ngữ, bổ ngữ phía sau)
 

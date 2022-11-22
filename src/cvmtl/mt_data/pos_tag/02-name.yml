@@ -2,7 +2,7 @@
 
 # proper nouns
 - ptag: Name
-  extd: [Xsubj_a, Zdobj]
+  extd: [Xsubj_a, Xdobj]
   name: Danh từ riêng
   desc: Các danh từ chỉ tên cá nhân, địa danh, tập thể nhất định, thường được viết hoa
 
@@ -102,7 +102,7 @@
 #####
 
 - ptag: Name_z # other proper noun
-  extd: [Name, Xposs, Zdobj]
+  extd: [Name, Xposs, Xdobj]
   name: Tên riêng khác
   desc: Các loại tên riêng khác
 

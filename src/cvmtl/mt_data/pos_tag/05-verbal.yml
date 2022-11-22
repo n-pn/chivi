@@ -1,6 +1,6 @@
 # verbs
 - ptag: Verb
-  extd: [Xsubj_a, Xpred_a]
+  extd: [Xsubj, Xpred_a]
   name: Động từ
   desc:
 
@@ -30,7 +30,7 @@
   desc: Cụm động tân chỉ năng khiếu như đánh đàn, chơi nhạc
 
 - ptag: Veno
-  extd: [Verb]
+  extd: [Verb, Xdobj]
   name: Danh động từ
   desc: Những từ khi đi kèm với danh từ thông dụng sẽ tạo thành cụm danh từ
 

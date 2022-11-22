@@ -67,6 +67,10 @@ module MT::PosTag
     PTAG_STR[tag]? || "N/A"
   end
 
+  def self.tag_str(tag : Array(Int32))
+    tag.map { |x| tag_str(x) }
+  end
+
   def self.attr_of(tag : Int32)
     TAG_ATTR[tag]? || Attr::None
   end
@@ -74,4 +78,7 @@ module MT::PosTag
   # puts TAG_HASH, ROLE_MAP
   # puts EXTD_MAP.to_a.max_by(&.[1].size)
   # puts TAG_HASH.find { |k, v| v == 39 }
+
+  # puts ROLE_MAP[map_tag("Ndir")].map { |x| tag_str(x) }
+  # puts ROLE_MAP[map_tag("Prep_cong")].map { |x| tag_str(x) }
 end

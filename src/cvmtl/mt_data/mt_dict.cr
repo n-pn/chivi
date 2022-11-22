@@ -1,17 +1,17 @@
 require "./mt_node"
 
 class MT::MtDict
-  class_getter core_base : MtDict { load("core", 1, dic: 1_i8) }
-  class_getter core_temp : MtDict { load("core", -1, dic: 2_i8) }
+  class_getter core_base : MtDict { load("core", 1, dic: 2_i8) }
+  class_getter core_temp : MtDict { load("core", -1, dic: 3_i8) }
 
   BOOKS = {} of Int32 => MtDict
 
   def self.book_base(d_id : Int32)
-    BOOKS[d_id] ||= load("book", d_id, dic: 3_i8)
+    BOOKS[d_id] ||= load("book", d_id, dic: 4_i8)
   end
 
   def self.book_temp(d_id : Int32)
-    BOOKS[-d_id] ||= load("book", -d_id, dic: 4_i8)
+    BOOKS[-d_id] ||= load("book", -d_id, dic: 5_i8)
   end
 
   def self.load(type : String, d_id : Int32, dic : Int8)
