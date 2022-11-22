@@ -21,5 +21,5 @@
 </nav>
 
 <article class="article island _narrow">
-  <YscritCard crit={data.entry} view_all={true} big_text={true} />
+  <YscritCard crit={data.entry} view_all={true} />
 </article>

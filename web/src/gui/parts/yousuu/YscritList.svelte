@@ -57,7 +57,9 @@
 <div class="crits">
   {#each crits as crit}
     {@const view_all = crit.vhtml.length < 600}
-    <YscritCard {crit} {show_book} {show_list} {view_all} />
+    {#key crit.id}
+      <YscritCard {crit} {show_book} {show_list} {view_all} />
+    {/key}
   {/each}
 
   <footer class="pagi">

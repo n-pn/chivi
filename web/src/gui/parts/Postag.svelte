@@ -75,23 +75,23 @@
 
   const tabs = [
     {
-      name: 'Danh từ riêng/chung',
+      label: 'Danh từ riêng/chung',
       ptags: [names, nouns],
     },
     {
-      name: 'Tính từ / Động từ',
+      label: 'Tính từ / Động từ',
       ptags: [adjts, verbs],
     },
     {
-      name: 'Số từ / Đại từ / Thực từ khác',
+      label: 'Số từ / Đại từ / Thực từ khác',
       ptags: [numbers, pronouns, extras],
     },
     {
-      name: 'Phó từ / Liên từ / Trợ từ / Giới từ',
+      label: 'Phó từ / Liên từ / Trợ từ / Giới từ',
       ptags: [adverbs, functions],
     },
     {
-      name: 'Từ ngoại lai / Dấu câu / Cấu trúc',
+      label: 'Từ ngoại lai / Dấu câu / Cấu trúc',
       ptags: [literals, phrases],
     },
   ]

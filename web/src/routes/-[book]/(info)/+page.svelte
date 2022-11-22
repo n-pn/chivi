@@ -42,7 +42,8 @@
 
   <div class="crits">
     {#each crits as crit}
-      <YscritCard {crit} show_book={false} view_all={crit.vhtml.length < 640} />
+      {@const view_all = crit.vhtml.length < 640}
+      {#key crit.id}<YscritCard {crit} show_book={false} {view_all} />{/key}
     {:else}
       <div class="empty">Chưa có đánh giá</div>
     {/each}
