@@ -1,5 +1,6 @@
 - rule: [Noun, Noun]
   ptag: Noun
+  swap: [2, 1]
   mult: 1.2
 
 - rule: [Noun, Ndir]

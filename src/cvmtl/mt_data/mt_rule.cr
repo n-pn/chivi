@@ -69,7 +69,7 @@ module MT::MtRule
     trie.rule = Rule.new(ptag, swap: swap, mult: input.mult)
   end
 
-  files = Dir.glob("src/cvmtl/mt_data/mt_rule/**/*.yml")
+  files = Dir.glob("var/cvmtl/rules/**/*.yml")
 
   files.each do |file|
     File.open(file, "r") do |io|

@@ -1,0 +1,13 @@
+- rule: [XP+Udep 1, Xdobj]
+  ptag: Xdobj
+  swap: [2, 1]
+  mult: 1.4
+
+- rule: [XP+Udep 2, Xdobj]
+  ptag: Xdobj
+  mult: 1.45
+
+- rule: [Xdobj, Ndir]
+  ptag: Xspace
+  swap: [2, 1]
+  mult: 1.3

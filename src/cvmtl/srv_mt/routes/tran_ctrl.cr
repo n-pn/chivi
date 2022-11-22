@@ -16,9 +16,8 @@ module MT
     base "/_mt"
 
     @[AC::Route::POST("/convert")]
-    def convert(book = "combine", user : String? = nil, rmode = "txt",
-                apply_cap : Bool = true, has_title : Bool = false, use_temp : Bool = false)
-      engine = Engine.new(book, user, temp: use_temp)
+    def convert(book = "combine", rmode = "txt", apply_cap : Bool = true, has_title : Bool = false, use_temp : Bool = false)
+      engine = Engine.new(book, temp: use_temp)
       to_mtl = rmode == "mtl"
 
       input = request.body.not_nil!.gets_to_end
@@ -31,15 +30,16 @@ module MT
       res.content_type = "text/plain; charset=utf-8"
 
       if title = lines.shift?
-        data = has_title ? engine.cv_title_full(title) : engine.cv_plain(title)
-        to_mtl ? data.to_mtl(res) : data.to_txt(res)
+        # data = has_title ? engine.cv_title_full(title) : engine.cv_plain(title)
+        data = engine.cv_plain(title)
+        to_mtl ? data.to_mtl(res, apply_cap) : data.to_txt(res, apply_cap)
       end
 
       lines.each do |line|
         res << '\n'
         # puts line.colorize.yellow
         data = engine.cv_plain(line)
-        to_mtl ? data.to_mtl(res) : data.to_txt(res)
+        to_mtl ? data.to_mtl(res, apply_cap) : data.to_txt(res, apply_cap)
       rescue err
         Log.error(exception: err) { line }
         res << "Lỗi máy dịch!"

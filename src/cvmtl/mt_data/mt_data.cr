@@ -155,12 +155,12 @@ class MT::MtData
     end
   end
 
-  def to_txt(cap_first = true) : String
-    String.build { |io| to_txt(io, apply_cap: cap_first) }
+  def to_txt(apply_cap = true) : String
+    String.build { |io| to_txt(io, apply_cap: apply_cap) }
   end
 
-  def to_mtl(cap_first = true) : String
-    String.build { |io| to_mtl(io, apply_cap: cap_first) }
+  def to_mtl(apply_cap = true) : String
+    String.build { |io| to_mtl(io, apply_cap: apply_cap) }
   end
 
   def inspect(io : IO = STDOUT)

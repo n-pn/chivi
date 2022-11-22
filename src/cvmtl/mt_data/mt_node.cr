@@ -6,8 +6,8 @@ abstract class MT::MtNode
   getter size : Int32
   getter cost : Float64
 
-  abstract def to_txt(io : IO, apply_cap : Bool)
-  abstract def to_mtl(io : IO, apply_cap : Bool)
+  abstract def to_txt(io : IO, apply_cap : Bool) : Bool
+  abstract def to_mtl(io : IO, apply_cap : Bool) : Bool
 
   def initialize(@size, @ptag, @cost)
   end
@@ -38,7 +38,7 @@ class MT::MtTerm < MT::MtNode
     if prio < 1
       @cost = 0
     else
-      @cost = (size + dic / 10_f64) ** (1.2 + prio / 5_f64)
+      @cost = (size + dic / 10_f64) ** (1.4 + prio / 5_f64)
     end
   end
 
@@ -59,8 +59,9 @@ class MT::MtTerm < MT::MtNode
 
   def to_mtl(io : IO, apply_cap : Bool) : Bool
     io << '\t'
-    to_txt(io, apply_cap)
+    apply_cap = to_txt(io, apply_cap)
     io << 'ǀ' << @dic << 'ǀ' << @idx << 'ǀ' << @size
+    apply_cap
   end
 
   def inspect(io : IO)
@@ -91,7 +92,7 @@ module MT::MtSeri
     attr = PosTag::Attr::NoSpaceR
 
     each do |node|
-      node_attr = PosTag.attr_of(node)
+      node_attr = node.tag_attr
 
       unless node_attr.void?
         io << "\t " unless attr.no_space_r? || node_attr.no_space_l?
