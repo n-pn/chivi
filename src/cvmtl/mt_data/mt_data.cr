@@ -5,6 +5,8 @@ require "./mt_node"
 require "./mt_rule"
 
 class MT::MtData
+  include MtSeri
+
   @raw_chars = [] of Char
   @inp_chars = [] of Char # normalized input
 
@@ -28,13 +30,17 @@ class MT::MtData
 
   def construct!(dicts : Array(MtDict))
     @upper.downto(0) do |idx|
-      if term = @ner[idx]?
-        add_node!(term, idx: idx)
+      if ner_term = @ner[idx]?
+        add_node!(ner_term, idx: idx)
       end
 
       dicts.each do |dict|
         dict.scan(@inp_chars, start: idx) do |terms|
-          terms.each { |x| add_node!(x, idx: idx) }
+          terms.each do |term|
+            term = term.dup
+            term.idx = idx
+            add_node!(term, idx: idx)
+          end
         end
       end
     end
@@ -86,7 +92,8 @@ class MT::MtData
 
   private def make_node(list : Array(MtNode), rule : MtRule::Rule, idx : Int32, size : Int32)
     cost = list.sum(&.cost) * rule.mult
-    ptag = rule.ptag < 0 ? list[1 &- rule.ptag].ptag : rule.ptag
+
+    ptag = rule.ptag < 0 ? list[-rule.ptag &- 1].ptag : rule.ptag
 
     rule.swap.try { |x| list = swap_list(list, x) }
     MtExpr.new(list, size: size, ptag: ptag, cost: cost)
@@ -102,10 +109,6 @@ class MT::MtData
     new_list
   end
 
-  def to_txt : String
-    String.build { |io| to_txt(io) }
-  end
-
   def each
     idx = 0
 
@@ -116,27 +119,21 @@ class MT::MtData
     end
   end
 
-  def to_txt(io : IO)
-    each do |node|
-      io << ' ' # unless ...
-      node.to_txt(io)
-    end
+  def to_txt(cap_first = true) : String
+    String.build { |io| to_txt(io, apply_cap: cap_first) }
   end
 
-  def to_mtl(io : IO)
-    each do |node, idx|
-      io << "\t " # unless ...
-      node.to_mtl(io, idx: idx)
-    end
+  def to_mtl(cap_first = true) : String
+    String.build { |io| to_mtl(io, apply_cap: cap_first) }
   end
 
   def inspect(io : IO = STDOUT)
-    each do |node, idx|
-      inspect(io, node, idx)
+    each do |node|
+      inspect(io, node)
     end
   end
 
-  def inspect(io : IO, node : MtNode, idx : Int32, pad = 0) : Nil
+  def inspect(io : IO, node : MtNode, pad = 0) : Nil
     pad_left = pad > 0 ? " " * pad : ""
     io << pad_left
 
@@ -146,17 +143,12 @@ class MT::MtData
     when MtTerm
       io << '[' << node.val.colorize.light_yellow.bold << ']'
 
-      key = @raw_chars[idx, node.size].join.colorize.blue
+      key = @raw_chars[node.idx, node.size].join.colorize.blue
       io << ' ' << key << ' ' << tag
-      io << ' ' << node.dic << ' ' << idx.colorize.dark_gray
+      io << ' ' << node.dic << ' ' << node.idx.colorize.dark_gray
     when MtExpr
       io << '{' << tag << '}' << '\n'
-
-      node.list.each do |child|
-        inspect(io, child, idx, pad &+ 2)
-        idx += child.size
-      end
-
+      node.each { |child| inspect(io, child, pad &+ 2) }
       io << pad_left << '{' << '/' << tag << '}'
     end
 

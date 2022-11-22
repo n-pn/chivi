@@ -25,13 +25,11 @@
 - ptag: Uzhe_1
   extd: [Xfunc]
   name: Trợ từ `着` (lấy)
-  attr: [Void]
   desc: Trợ từ động thái 着 khi ghép với động từ thì giữ nguyên nghĩa
 
 - ptag: Uzhe_2
   extd: [Xfunc]
   name: Trợ từ `着` (đang)
-  attr: [Void]
   desc: Trợ từ động thái 着 khi ghép với động từ thì mang nghĩa là "đang" và đảo ngược
 
 - ptag: Uguo_0

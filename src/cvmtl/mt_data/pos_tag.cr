@@ -2,17 +2,40 @@ require "log"
 require "yaml"
 
 module MT::PosTag
+  @[Flags]
+  enum Attr
+    Void # for word that marked empty
+
+    NoSpaceL # no space before
+    NoSpaceR # no space after
+
+    CapRelay # relay capitalization
+    CapAfter # add capitalizion after this node
+
+    def self.parse(array : Array(String))
+      array.reduce(None) { |memo, attr| memo | parse(attr) }
+    end
+
+    def self.init(apply_cap : Bool = true)
+      apply_cap ? self.flags(CapAfter, NoSpaceR) : NoSpaceR
+    end
+  end
+
   struct Entry
     include YAML::Serializable
 
     getter ptag : String
     getter extd = [] of String
+    getter attr = [] of String
+
     # getter name : String
     # getter desc : String = ""
   end
 
-  PTAG_MAP = {} of String => Int32
   PTAG_STR = {} of Int32 => String
+
+  TAG_HASH = {} of String => Int32
+  TAG_ATTR = {} of Int32 => Attr
   ROLE_MAP = {} of Int32 => Array(Int32)
 
   files = Dir.glob("src/cvmtl/mt_data/pos_tag/*.yml")
@@ -22,6 +45,7 @@ module MT::PosTag
     File.open(file, "r") do |io|
       Array(Entry).from_yaml(io).each do |entry|
         ptag = map_tag(entry.ptag)
+        TAG_ATTR[ptag] = Attr.parse(entry.attr)
 
         roles = entry.extd.each_with_object([ptag]) do |extd, memo|
           next unless extd_roles = ROLE_MAP[map_tag(extd)]?
@@ -36,14 +60,18 @@ module MT::PosTag
   end
 
   def self.map_tag(str : String)
-    PTAG_MAP[str] ||= (PTAG_MAP.size &+ 1).tap { |x| PTAG_STR[x] = str }
+    TAG_HASH[str] ||= (TAG_HASH.size &+ 1).tap { |x| PTAG_STR[x] = str }
   end
 
   def self.tag_str(tag : Int32)
     PTAG_STR[tag]? || "N/A"
   end
 
-  # puts PTAG_MAP, ROLE_MAP
+  def self.attr_of(tag : Int32)
+    TAG_ATTR[tag]? || Attr::None
+  end
+
+  # puts TAG_HASH, ROLE_MAP
   # puts EXTD_MAP.to_a.max_by(&.[1].size)
-  # puts PTAG_MAP.find { |k, v| v == 39 }
+  # puts TAG_HASH.find { |k, v| v == 39 }
 end

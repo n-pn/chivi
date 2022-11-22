@@ -2,7 +2,7 @@ require "../../src/cvmtl/engine"
 require "../../src/cvhlp/engine"
 
 text = ARGV[0]? || "在魏梦柔的目光下"
-book = ARGV[1]? || "-qcwe8yg1"
+book = ARGV[1]? || "-x3wmhcb6"
 
 time = Time.monotonic
 mtl = MT::Engine.new(book: book)
