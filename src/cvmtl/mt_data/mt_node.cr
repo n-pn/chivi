@@ -4,7 +4,7 @@ require "./pos_tag"
 abstract class MT::MtNode
   getter ptag : Int32
   getter size : Int32
-  getter cost : Float64
+  getter cost : Int32
 
   abstract def to_txt(io : IO, apply_cap : Bool) : Bool
   abstract def to_mtl(io : IO, apply_cap : Bool) : Bool
@@ -27,7 +27,7 @@ class MT::MtTerm < MT::MtNode
   getter dic : Int8
   property idx : Int32 = 0
 
-  def initialize(@val, @dic, @size, @ptag, @cost : Float64)
+  def initialize(@val, @dic, @size, @ptag, @cost : Int32)
   end
 
   def initialize(key : String, @val, @dic, tag : String, prio : Int32)
@@ -38,7 +38,7 @@ class MT::MtTerm < MT::MtNode
     if prio < 1
       @cost = 0
     else
-      @cost = (size + dic / 10_f64) ** (1.4 + prio / 5_f64)
+      @cost = size &* 100 &+ 2 << size &+ dic &* prio
     end
   end
 

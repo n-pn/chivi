@@ -19,15 +19,15 @@ class MT::MtData
 
   def initialize(input : String)
     @raw_chars = input.chars
-    @top_cost = [0_f64]
+    @top_cost = [0]
     @upper = @raw_chars.size
 
     @raw_chars.each do |raw_char|
       inp_char = CharUtil.fullwidth?(raw_char) ? CharUtil.to_halfwidth(raw_char) : raw_char
       @inp_chars << inp_char
 
-      @top_cost << 0_f64
-      @top << MtTerm.new(inp_char.to_s, 0, 1, 0, 0.0)
+      @top_cost << 0
+      @top << MtTerm.new(inp_char.to_s, 0, 1, 0, 0)
       @all << Hash(Int32, All).new { |h, k| h[k] = All.new }
     end
   end
@@ -127,7 +127,7 @@ class MT::MtData
   end
 
   private def make_node(list : Array(MtNode), rule : MtRule::Rule, idx : Int32, size : Int32)
-    cost = list.sum(&.cost) * rule.mult
+    cost = list.sum(&.cost) &+ rule.cost
 
     ptag = rule.ptag < 0 ? list[-rule.ptag &- 1].ptag : rule.ptag
 
@@ -139,7 +139,7 @@ class MT::MtData
     new_list = list.dup
 
     swap.each_with_index do |new_idx, old_idx|
-      new_list[new_idx] = list.unsafe_fetch(old_idx)
+      new_list[old_idx] = list.unsafe_fetch(new_idx)
     end
 
     new_list

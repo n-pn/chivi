@@ -1,11 +1,15 @@
 - rule: [Vtrn, Xdobj]
   ptag: Verb+Objt
-  mult: 1.75
+  cost: 15
 
 - rule: [Vlnk, Verb]
   ptag: $1
-  mult: 1.6
+  cost: 14
 
 - rule: [Vlnk, Xdobj, Verb]
   ptag: Verb
-  mult: 1.6
+  cost: 14
+
+- rule: [Advb, Verb]
+  ptag: Verb
+  cost: 13

@@ -1,27 +1,27 @@
 - rule: [Verb, Ule_0]
   ptag: $1
-  mult: 1.6
+  cost: 15
 
 - rule: [Vntr, Ule_1]
   ptag: $1
-  mult: 1.65
+  cost: 16
 
 - rule: [Verb, Uzhe_0]
   ptag: Vlnk
-  mult: 1.6
+  cost: 15
 
 - rule: [Verb, Uguo_0]
   ptag: $1
-  mult: 1.6
+  cost: 15
 
 - rule: [Usuo, Verb]
   ptag: $2
-  mult: 1.6
+  cost: 15
 
 - rule: [Xposs, Udeg]
   ptag: XP+Udep 1
-  mult: 1.5
+  cost: 14
 
 - rule: [Xmodi_p, Udep]
   ptag: XP+Udep 1
-  mult: 1.45
+  cost: 13

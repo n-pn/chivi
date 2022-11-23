@@ -1,37 +1,37 @@
 - rule: [Cj_you4, Adjt, Cj_you4, Adjt]
   ptag: Adjs
-  mult: 1.8
+  cost: 16
 
 - rule: [Adjt, Cc_adjt, Adjt]
   ptag: Adjs
-  mult: 1.7
+  cost: 17
 
 - rule: [Adjt, Adjt]
   ptag: Adjs
-  mult: 1.5
+  cost: 15
 
 - rule: [Adjs, Adjs]
   ptag: Adjs
-  mult: 1.45
+  cost: 14
 
 - rule: [Advb, Adjt]
   ptag: Adjs
-  mult: 1.35
+  cost: 13
 
 - rule: [Advb, Adjs]
   ptag: Adjs
-  mult: 1.4
+  cost: 14
 
 - rule: [Adjt, Noun]
   ptag: $2
   swap: [2, 1]
-  mult: 1.55
+  cost: 15
 
 - rule: [Amod_1, Noun]
   ptag: $2
-  mult: 1.6
+  cost: 16
 
 - rule: [Amod_2, Noun]
   ptag: $2
   swap: [2, 1]
-  mult: 1.65
+  cost: 16

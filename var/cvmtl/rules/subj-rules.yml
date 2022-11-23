@@ -1,15 +1,15 @@
 - rule: [Xsubj_a, Verb]
   ptag: Subj+Verb
-  mult: 1.1
+  cost: 11
 
 - rule: [Xsubj_a, Adjs]
   ptag: Subj+Adjt
-  mult: 1.1
+  cost: 12
 
 - rule: [Xsubj, V_shi, Xpred]
   ptag: Subj+Pred
-  mult: 1.2
+  cost: 14
 
 - rule: [Xsubj, V_shi, Subj+Verb]
   ptag: Subj+Pred
-  mult: 1.5
+  cost: 15

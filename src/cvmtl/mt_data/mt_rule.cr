@@ -12,15 +12,15 @@ module MT::MtRule
     getter ptag : String
 
     getter swap : Array(Int32)?
-    getter mult : Float64 = 1.1
+    getter cost : Int32 = 10
   end
 
   class Rule
     getter ptag : Int32
-    getter mult : Float64
+    getter cost : Int32
     getter swap : Array(Int32)?
 
-    def initialize(@ptag, @mult = 1.1, @swap = nil)
+    def initialize(@ptag, @cost = 10, @swap = nil)
     end
   end
 
@@ -66,7 +66,7 @@ module MT::MtRule
       ptag = PosTag.map_tag(input.ptag)
     end
 
-    trie.rule = Rule.new(ptag, swap: swap, mult: input.mult)
+    trie.rule = Rule.new(ptag, swap: swap, cost: input.cost)
   end
 
   files = Dir.glob("var/cvmtl/rules/**/*.yml")

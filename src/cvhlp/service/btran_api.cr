@@ -175,4 +175,4 @@ end
 
 # test = "能源、表情".split("、")
 # puts TL::Btran.translate(test).to_pretty_json
-# puts TL::Btran.lookup(test).to_pretty_json
+# puts TL::Btran.lookup(["于", "的", "色"]).to_pretty_json
