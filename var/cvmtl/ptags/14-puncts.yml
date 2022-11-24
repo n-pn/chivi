@@ -1,245 +1,263 @@
 # Dấu câu thường
-- ptag: Pu
+- ptag: .p.
   name: Dấu câu
   detect: /^\p{P}$/
   virtual: true
 
-- ptag: Pu_t
+- ptag: .t.
+  extd: [.p.]
   name: Dấu kết câu
   desc: Đánh dấu phân tách câu
   virtual: true
 
-- ptag: Pu_c
+- ptag: .c.
+  extd: [.p.]
   name: Dấu kết đoạn
   desc: Đánh dấu phân tách đoạn
   virtual: true
 
-- ptag: Pu_s
+- ptag: .s.
+  extd: [.p.]
   name: Dấu mở ngoặc
   desc: Đánh dấu mở ngoặc
   detect: /^\p{Ps}$/
   virtual: true
 
-- ptag: Pu_e
+- ptag: .e.
+  extd: [.p.]
   name: Dấu đóng ngoặc
   detect: /^\p{Pe}$/
   virtual: true
 
-- ptag: Pu_i
+- ptag: .i.
+  extd: [.p.]
   name: Dấu mở trích
   detect: /^\p{Pi}$/
   virtual: true
 
-- ptag: Pu_f
+- ptag: .f.
+  extd: [.p.]
   name: Dấu đóng trích
   detect: /\p{Pf}/
   virtual: true
 
-- ptag: Pu_o
-  extd: [Pu]
+- ptag: .pu.
+  extd: [.p.]
   attr: [CapRelay]
   name: Dấu câu khác
   detect: /\p{Po}/
   virtual: false
 
 # dấu kết câu
-- ptag: Pu_fs
-  extd: [Pu, Pu_t]
+- ptag: .fs. # full stop
+  extd: [.t.]
   name: Dấu chấm `.`
   attr: [CapAfter, NoSpaceL]
   detect: /^[.]$/
 
-- ptag: Pu_qm
-  extd: [Pu, Pu_t]
+- ptag: .qm. # question mark
+  extd: [.t.]
   attr: [CapAfter, NoSpaceL]
   name: Dấu chấm hỏi `?`
   detect: /^[?]$/
 
-- ptag: Pu_em
-  extd: [Pu, Pu_t]
+- ptag: .em. # exclamation mark
+  extd: [.t.]
   attr: [CapAfter, NoSpaceL]
   name: Dấu chấm than `!`
   detect: /^[!]$/
 
-# - ptag: Pu_dq
-#   extd: [Pu]
+# - ptag: .dq. # double quote
+#   extd: [.p.]
 #   name: Dấu ngoặc kép
-# - ptag: Pu_sq
-#   extd: [Pu]
+# - ptag: .sq. # single quote
+#   extd: [.p.]
 #   name: dấu ngoặc đơn
 
 # đánh dấu tác phẩm
-- ptag: Pu_ts1
-  extd: [Pu, Pu_s]
+
+# title start
+- ptag: .ts1.
+  extd: [.p., .s.]
   attr: [CapAfter, NoSpaceR]
   name: Dấu mở ngoặc `⟨`
   desc: Kết hợp với `⟩` đằng sau thành cụm từ chỉ tên tác phẩm
   detect: /^[⟨]$/
 
-- ptag: Pu_ts2
-  extd: [Pu, Pu_s]
+- ptag: .ts2.
+  extd: [.p., .s.]
   attr: [CapAfter, NoSpaceR]
   name: Dấu mở ngoặc `<`
   desc: Kết hợp với `>` đằng sau thành cụm từ chỉ tên tác phẩm
   detect: /^[<]$/
 
-- ptag: Pu_ts3
-  extd: [Pu, Pu_s]
+- ptag: .ts3.
+  extd: [.p., .s.]
   attr: [CapAfter, NoSpaceR]
   name: Dấu mở ngoặc '‹'
   desc: Kết hợp với `›` đằng sau thành cụm từ chỉ tên tác phẩm
   detect: /^[‹]$/
 
-- ptag: Pu_tc1
-  extd: [Pu, Pu_e]
+# title close
+
+- ptag: .tc1.
+  extd: [.p., .e.]
   attr: [NoSpaceL]
   name: Dấu đóng ngoặc `⟩`
   desc: Kết hợp với `⟨` đằng trước thành cụm từ chỉ tên tác phẩm
   detect: /^[⟩]$/
 
-- ptag: Pu_tc2
-  extd: [Pu, Pu_e]
+- ptag: .tc2.
+  extd: [.p., .e.]
   attr: [NoSpaceL]
   name: Dấu đóng ngoặc `>`
   desc: Kết hợp với `<` đằng trước thành cụm từ chỉ tên tác phẩm
   detect: /^[>]$/
 
-- ptag: Pu_tc3
-  extd: [Pu, Pu_e]
+- ptag: .tc3.
+  extd: [.p., .e.]
   attr: [NoSpaceL]
   name: Dấu đóng ngoặc `›`
   desc: Kết hợp với `‹` đằng trước thành cụm từ chỉ tên tác phẩm
   detect: /^[›]$/
 
 # đánh dấu trích đoạn
-- ptag: Pu_qs1
-  extd: [Pu, Pu_i]
+
+# quote start
+- ptag: .qs1.
+  extd: [.p., .i.]
   attr: [CapRelay, NoSpaceR]
   name: Mở ngoặc kép `“`
 
-- ptag: Pu_qs2
-  extd: [Pu, Pu_i]
+- ptag: .qs2.
+  extd: [.p., .i.]
   attr: [CapRelay, NoSpaceR]
   name: Mở ngoặc kép `‘`
 
-- ptag: Pu_qc1
-  extd: [Pu, Pu_f]
+# quote close
+- ptag: .qc1.
+  extd: [.p., .f.]
   attr: [CapRelay, NoSpaceL]
   name: Đóng ngoặc kép `”`
 
-- ptag: Pu_qc2
-  extd: [Pu, Pu_f]
+- ptag: .qc2.
+  extd: [.p., .f.]
   attr: [CapRelay, NoSpaceL]
   name: Đóng ngoặc đơn `’`
 
 # đóng mở ngoặc
-- ptag: Pu_bs1
-  extd: [Pu, Pu_s]
+
+# bracket start
+- ptag: .bs1.
+  extd: [.p., .s.]
   attr: [CapAfter, NoSpaceR]
   name: Mở ngoặc `[`
 
-- ptag: Pu_bs2
-  extd: [Pu, Pu_s]
+- ptag: .bs2.
+  extd: [.p., .s.]
   attr: [CapAfter, NoSpaceR]
   name: Mở ngoặc `{`
 
-- ptag: Pu_ps1
-  extd: [Pu, Pu_s]
-  attr: [CapAfter, NoSpaceR]
-  name: Mở ngoặc `(`
-
-- ptag: Pu_bc1
-  extd: [Pu]
+# bracket close
+- ptag: .bc1.
+  extd: [.p.]
   attr: [CapRelay, NoSpaceL]
   name: Đóng ngoặc `]`
 
-- ptag: Pu_bc2
-  extd: [Pu]
+- ptag: .bc2.
+  extd: [.p.]
   attr: [CapRelay, NoSpaceL]
   name: Đóng ngoặc `}`
 
-- ptag: Pu_pc1
-  extd: [Pu]
+# parenthesis start
+- ptag: .ps1.
+  extd: [.p., .s.]
+  attr: [CapAfter, NoSpaceR]
+  name: Mở ngoặc `(`
+
+# parenthesis close
+- ptag: .pc1.
+  extd: [.p.]
   attr: [CapRelay, NoSpaceL]
   name: Đóng ngoặc `)`
 
 # dấu câu khác
-- ptag: Pu_cl
-  extd: [Pu]
+- ptag: .cl. # colon
+  extd: [.p.]
   attr: [CapAfter, NoSpaceL]
   name: Dấu hai chấm `:`
 
-- ptag: Pu_sc
-  extd: [Pu]
+- ptag: .sc. # semi colon
+  extd: [.p.]
   attr: [NoSpaceL]
   name: Dấu chấm phẩy `;`
 
-- ptag: Pu_cm
-  extd: [Pu]
+- ptag: .cm. # comma
+  extd: [.p.]
   attr: [NoSpaceL]
   name: Dấu phẩy `,`
 
-- ptag: Pu_ce
-  extd: [Pu]
+- ptag: .ce. # enumerable comma
+  extd: [.p.]
   attr: [NoSpaceL]
   name: Dấu phẩy liệt kê `､`
 
-- ptag: Pu_d1
-  extd: [Pu]
+- ptag: .en. # short dash
+  extd: [.p.]
   attr: [NoSpaceL, NoSpaceR]
   name: Dấu gạch ngắn `–`
 
-- ptag: Pu_d2
-  extd: [Pu]
+- ptag: .em. # long dash
+  extd: [.p.]
   attr: [CapRelay]
   name: Dấu gạch dài `—`
 
-- ptag: Pu_e1
-  extd: [Pu]
+- ptag: .e1. # ellipsis
+  extd: [.p.]
   attr: [CapAfter, NoSpaceL]
   name: Dấu ba chấm `…`
 
-- ptag: Pu_e2
-  extd: [Pu]
+- ptag: .e2.
+  extd: [.p.]
   attr: [CapRelay, NoSpaceL]
   name: Dấu chấm lửng `……`
 
-- ptag: Pu_td
-  extd: [Pu]
+- ptag: .td. # tilde
+  extd: [.p.]
   attr: [CapRelay, NoSpaceL]
   name: Dấu ngã `~`
 
-- ptag: Pu_md
-  extd: [Pu]
+- ptag: .md. # middot
+  extd: [.p.]
   attr: [NoSpaceL, NoSpaceR]
   name: Dấu chấm giữa `·`
 
-- ptag: Pu_at
-  extd: [Pu]
+- ptag: .at. # at sign
+  extd: [.p.]
   attr: [CapRelay, NoSpaceR]
   name: Dấu a còng `@`
 
-- ptag: Pu_pc
-  extd: [Pu]
+- ptag: .pc. # percentage
+  extd: [.p.]
   attr: [NoSpaceL]
   name: Dấu phần trăm `%‰`
 
-- ptag: Pu_qt
-  extd: [Pu]
+- ptag: .qt. # quanti mark
+  extd: [.p.]
   attr: [NoSpaceL]
   name: Ký hiệu đơn vị `￥$℃`
 
-- ptag: Pu_pl
-  extd: [Pu]
+- ptag: .pl. # plus sign
+  extd: [.p.]
   attr: [CapRelay, NoSpaceR]
   name: Dấu cộng `+`
 
-- ptag: Pu_mn
-  extd: [Pu]
+- ptag: .mn. # minus sign
+  extd: [.p.]
   attr: [CapRelay, NoSpaceR]
   name: Dấu trừ `-`
 
-- ptag: Pu_ws
-  extd: [Pu]
+- ptag: .ws. # whitespace
+  extd: [.p.]
   attr: [NoSpaceL, NoSpaceR, CapRelay]
   name: Dấu cách ` `

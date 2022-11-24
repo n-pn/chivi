@@ -7,7 +7,7 @@
   ptag: Xdobj
   cost: 15
 
-- rule: [Xdobj, Ndir]
+- rule: [Xdobj, Ldir]
   ptag: Xspace
   swap: [2, 1]
   cost: 13

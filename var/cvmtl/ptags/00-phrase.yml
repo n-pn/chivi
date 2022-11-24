@@ -7,7 +7,7 @@
   name: Cụm chủ vị (động)
   extd: [Subj+Pred]
 
-- ptag: Subj+Adjs
+- ptag: Subj+Aword
   name: Cụm chủ vị (tính)
   extd: [Subj+Pred]
 

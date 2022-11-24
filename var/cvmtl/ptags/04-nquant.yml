@@ -1,37 +1,37 @@
 # for verb
-- ptag: Nq_verb # can be verb complement or adverbial phrase
+- ptag: MQverb # can be verb complement or adverbial phrase
   extd: [Xadvb, Xcmpl]
   name: Số + động lượng
   desc:
 
 # temporal
-- ptag: Nq_time # can be verb complement or timeform
+- ptag: MQtime # can be verb complement or timeform
   extd: [Xreal]
   name: Số + thời lượng
   desc:
 
 # for nouns
-- ptag: Nq_noun # generic noun quantifier
+- ptag: MQnoun # generic noun quantifier
   extd: [Xreal, Xposs]
   name: Số + danh lượng
   desc:
 
-- ptag: Nq_mass # mass
-  extd: [Nq_noun]
+- ptag: MQmass # mass
+  extd: [MQnoun]
   name: Số + lượng (đo lường)
   desc:
 
-- ptag: Nq_wght # weight
-  extd: [Nq_noun]
+- ptag: MQwght # weight
+  extd: [MQnoun]
   name: Số + lượng (khối lượng)
   desc:
 
-- ptag: Nq_dist # distance
-  extd: [Nq_noun]
+- ptag: MQdist # distance
+  extd: [MQnoun]
   name: Số + lượng (khoảng cách)
   desc:
 
-- ptag: Nq_cass # currency
-  extd: [Nq_noun]
+- ptag: MQcass # currency
+  extd: [MQnoun]
   name: Số + lượng (tiền bạc)
   desc:

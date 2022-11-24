@@ -18,22 +18,22 @@
   # swap: [1, 2]
   cost: 17
 
-- rule: [Name_h, Pu_md, Name_h]
+- rule: [Name_h, .md., Name_h]
   ptag: Name_h
   # swap: [1, 2]
   cost: 19
 
-- rule: [Name_h, Pu_md, Name_s]
+- rule: [Name_h, .md., Name_s]
   ptag: Name_h
   # swap: [1, 2]
   cost: 18
 
-- rule: [Name_h, Pu_ce, Name_h]
+- rule: [Name_h, .ce., Name_h]
   ptag: Name_h
   # swap: [1, 2]
   cost: 19
 
-- rule: [Name_h, Pu_ce, Name_s]
+- rule: [Name_h, .ce., Name_s]
   ptag: Name
   # swap: [1, 2]
   cost: 18

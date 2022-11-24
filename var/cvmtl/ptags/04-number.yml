@@ -1,53 +1,57 @@
 # numbers
 
-- ptag: Number
+- ptag: Mexpr
   extd: [Xmodi, Xsubj, Xpred]
+  name: Cụm từ số lượng
+
+- ptag: Mword
+  extd: [Mexpr]
   name: Số từ
   desc: Các loại số từ
 
 # numeral
-- ptag: Nu_car # 序数词 cardinal number
-  extd: [Number]
+- ptag: Mcar # 序数词 cardinal number
+  extd: [Mword]
   name: Số đếm
   desc:
 
 # numeral
-- ptag: Nu_ord # 序数词 ordinal number
-  extd: [Number]
+- ptag: Mord # 序数词 ordinal number
+  extd: [Mword]
   name: Số thứ tự
   desc:
 
-- ptag: Nu_dig # all digits
-  extd: [Nu_car]
+- ptag: Mdig # all digits
+  extd: [Mcar]
   name: Con số đếm
   desc:
 
-- ptag: Nu_lit # all chinese number, unknown state
-  extd: [Nu_car]
+- ptag: Mlit # all chinese number, unknown state
+  extd: [Mcar]
   name: Chữ số đếm
   desc:
 
-- ptag: Nu_deci # digits with decimal point
-  extd: [Nu_car]
+- ptag: Mdeci # digits with decimal point
+  extd: [Mcar]
   name: Số thập phân
   desc:
 
-- ptag: Nu_frac # fractal number
-  extd: [Nu_car]
+- ptag: Mfrac # fractal number
+  extd: [Mcar]
   name: Phân số
   desc:
 
-- ptag: Nu_appr # approximate numbers (has `-`, `~` between)
-  extd: [Nu_car]
+- ptag: Mprox # approximate numbers (has `-`, `~` between)
+  extd: [Mcar]
   name: Số xấp xỉ
   desc:
 
-- ptag: Nu_yi1 # "一"
-  extd: [Nu_lit]
+- ptag: M_yi1 # "一"
+  extd: [Mlit]
   name: Số chữ `一`
   desc:
 
-- ptag: Nu_han # "半"
-  extd: [Nu_car]
+- ptag: M_han # "半"
+  extd: [Mcar]
   name: Số chữ `半`
   desc:

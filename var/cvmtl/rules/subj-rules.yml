@@ -2,7 +2,7 @@
   ptag: Subj+Verb
   cost: 11
 
-- rule: [Xsubj_a, Adjs]
+- rule: [Xsubj_a, Aword]
   ptag: Subj+Adjt
   cost: 12
 

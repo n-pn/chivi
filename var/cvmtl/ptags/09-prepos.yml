@@ -1,89 +1,89 @@
-- ptag: Prep #  generic
+- ptag: Ppword #  generic
   extd: [Xfunc]
   name: Giới từ
   desc:
 
-- ptag: Prep_ba # "把"
-  extd: [Prep]
+- ptag: Ppcmp #  compare
+  extd: [Ppword]
+  name: Giới từ so sánh bằng
+  desc:
+
+- ptag: Pp_ba # "把"
+  extd: [Ppword]
   name: Giới từ `把`
   desc:
 
-- ptag: Prep_dui # "对"
-  extd: [Prep]
+- ptag: Pp_dui # "对"
+  extd: [Ppword]
   name: Giới từ `对`
   desc:
 
-- ptag: Prep_bei # "被"
-  extd: [Prep]
+- ptag: Pp_bei # "被"
+  extd: [Ppword]
   name: Giới từ `被`
   desc:
 
-- ptag: Prep_zai # "在"
-  extd: [Prep]
+- ptag: Pp_zai # "在"
+  extd: [Ppword]
   name: Giới từ `在`
   desc:
 
-- ptag: Prep_bi_1 # "比"
-  extd: [Prep]
+- ptag: Pp_bi_1 # "比"
+  extd: [Ppword]
   name: Giới từ `比` (hơn)
   desc: Giới từ 比 trong so sánh hơn kém
 
-- ptag: Prep_bi_2 # "比"
+- ptag: Pp_bi_2 # "比"
   extd: [Xfunc]
   name: Giới từ `比` (bằng)
   desc: Giới từ 比 trong so sánh không bằng
 
-- ptag: Prep_jiang # "将"
-  extd: [Prep]
+- ptag: Pp_jiang # "将"
+  extd: [Ppword]
   name: Giới từ `将`
   desc:
 
-- ptag: Prep_rang # "让"
-  extd: [Prep]
+- ptag: Pp_rang # "让"
+  extd: [Ppword]
   name: Giới từ `让`
   desc:
 
-- ptag: Prep_ling # "令"
-  extd: [Prep]
+- ptag: Pp_ling # "令"
+  extd: [Ppword]
   name: Giới từ `令`
   desc:
 
-- ptag: Prep_gei3 # "给"
-  extd: [Prep]
+- ptag: Pp_gei3 # "给"
+  extd: [Ppword]
   name: Giới từ `给`
   desc:
 
-- ptag: Prep_zi4 # "自"
-  extd: [Prep]
+- ptag: Pp_zi4 # "自"
+  extd: [Ppword]
   name: Giới từ `自`
   desc:
 
-- ptag: Prep_cong # "从"
-  extd: [Prep]
+- ptag: Pp_cong # "从"
+  extd: [Ppword]
   name: Giới từ `从`
   desc:
 
-- ptag: Prep_cmp #  compare
-  extd: [Prep]
-  name: Giới từ so sánh bằng
-  desc:
-
-- ptag: Prep_he2 # "和"
-  extd: [Prep_cmp]
+- ptag: Pp_he2 # "和"
+  extd: [Ppcmp]
   name: Giới từ `和`
   desc:
 
-- ptag: Prep_yu3 # "与"
-  extd: [Prep_cmp]
+- ptag: Pp_yu3 # "与"
+  extd: [Ppcmp]
   name: Giới từ `与`
   desc:
 
-- ptag: Prep_tong # "同"
-  extd: [Prep_cmp]
+- ptag: Pp_tong # "同"
+  extd: [Ppcmp]
   name: Giới từ `同`
   desc:
 
-- ptag: Prep_gen1 # "跟"
-  extd: [Prep_cmp]
+- ptag: Pp_gen1 # "跟"
+  extd: [Ppcmp]
   name: Giới từ `跟`
   desc:

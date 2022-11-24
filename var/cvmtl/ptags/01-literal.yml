@@ -1,56 +1,56 @@
 # literal
 
-- ptag: Lit
+- ptag: Zblank
   extd: [Xdobj, Xmodi_p]
   name: Chưa phân loại
   desc: Những từ chưa được phân loại
 
-- ptag: Lit_i
+- ptag: Zidiom
   extd: [Xdobj, Xmodi_p, Xadvb_p]
   name: Ngữ cố định
   desc: Các thành/quán ngữ/tục ngữ/yết hậu ngữ chưa được phân loại sang danh/động/tính
 
-- ptag: Lit_q
+- ptag: Zquote
   extd: [Xdobj, Xmodi_p]
   name: Trích thơ văn
   desc: Trích đoạn thơ, văn xuôi, danh ngôn, tiếng nước ngoài...
 
-- ptag: Lit_t
+- ptag: Ztrans
   extd: [Xdobj, Xposs]
   name: Đoạn dịch tay
   desc: Đoạn dịch ngắn không có phân loại từ cụ thể
 
-- ptag: Str_u
+- ptag: Slink
   extd: [Xdobj]
   name: Đường link
   desc: Siêu liên kết (hyperlink) tới các trang web khác, e.g. https://chivi.app
 
-- ptag: Str_m
-  extd: [Xdobj, Xposs]
-  name: Email
-  desc: Địa chỉ email e.g. me@chivi.app
-
-- ptag: Str_h
+- ptag: Shash
   extd: [Xdobj]
   name: Hashtag
   desc: 'Hashtag trên mạng, ví dụ #truyen_mang #tiếng trung'
 
-- ptag: Str_e
+- ptag: Smail
+  extd: [Xdobj, Xposs]
+  name: Email
+  desc: Địa chỉ email e.g. me@chivi.app
+
+- ptag: Smoji
   extd: [Xfinal, Xdobj]
   name: Kaomoji
   desc: Dùng để ký hiệu các ký hiệu hình mặt
 
-- ptag: Str_x
+- ptag: Sunkn
   extd: [Xfinal, Xdobj]
   name: Ký tự khác
   desc: Các chữ cái ngoại lai chưa được phân loại
 
 - ptag: Sep_v
-  extd: [Xuniq]
+  extd: [Xmorp]
   name: 'Ly hợp: Động'
   desc: Phần động từ của cấu trúc ly hợp
 
 - ptag: Sep_o
-  extd: [Xuniq]
+  extd: [Xmorp]
   name: 'Ly hợp: Tân'
   desc: Phần tân ngữ của cấu trúc ly hợp

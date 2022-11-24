@@ -1,122 +1,122 @@
 # nominal
 
 # proper nouns
-- ptag: Name
+- ptag: Ename
   extd: [Xsubj_a, Xdobj]
   name: Danh từ riêng
   desc: Các danh từ chỉ tên cá nhân, địa danh, tập thể nhất định, thường được viết hoa
 
 # human name
-- ptag: Name_h
-  extd: [Name, Xhuman]
+- ptag: Eppl
+  extd: [Ename, Xhuman]
   name: Tên họ người
   desc: Tên riêng chỉ người
 
-- ptag: Name_hz
-  extd: [Name_h]
+- ptag: Eppl_c
+  extd: [Eppl]
   name: Tên họ tiếng Trung
   desc: Tên + họ tiếng Trung
 
-- ptag: Name_hj
-  extd: [Name_h]
+- ptag: Eppl_j
+  extd: [Eppl]
   name: Tên họ tiếng Nhật
   desc: Tên + họ tiếng Nhật
 
-- ptag: Name_hw
-  extd: [Name_h]
+- ptag: Eppl_w
+  extd: [Eppl]
   name: Tên họ phương Tây
   desc: Tên + họ phương Tây
 
 # family names
-- ptag: Name_hf
-  extd: [Name_h]
+- ptag: Eppl_f
+  extd: [Eppl]
   name: Họ người
   desc: Tên riêng chỉ họ người
 
-- ptag: Name_hfz
-  extd: [Name_hf]
-  name: Họ tiếng Trung
+- ptag: Eppl_fc
+  extd: [Eppl_f]
+  name: Họ người tiếng Trung
   desc: Họ người tiếng Trung
 
-- ptag: Name_hfj
-  extd: [Name_hf]
+- ptag: Eppl_fj
+  extd: [Eppl_f]
   name: Họ tiếng Nhật
   desc: Họ người tiếng Nhật
 
-- ptag: Name_hfw
-  extd: [Name_hf]
+- ptag: Eppl_fw
+  extd: [Eppl_f]
   name: Họ phương Tây
   desc: Họ người tiếng Anh, Pháp, Đức..
 
 # given names
-- ptag: Name_hg
-  extd: [Name_h]
+- ptag: Eppl_g
+  extd: [Eppl]
   name: Tên gọi người
   desc: Tên người không kèm theo không họ
 
-- ptag: Name_hgz
-  extd: [Name_hg]
+- ptag: Eppl_gc
+  extd: [Eppl_g]
   name: Tên gọi tiếng Trung
   desc: Tên người tiếng Trung không kèm theo họ
 
-- ptag: Name_hgj
-  extd: [Name_hg]
+- ptag: Eppl_gj
+  extd: [Eppl_g]
   name: Tên gọi tiếng Nhật
   desc: Tên người tiếng Nhật không kèm theo họ
 
-- ptag: Name_hgw
-  extd: [Name_hg]
+- ptag: Eppl_gw
+  extd: [Eppl_g]
   name: Tên gọi phương Tây
   desc: Tên người phương Tây không kèm theo họ
 
 #####
 
 # affiliate
-- ptag: Name_s
-  extd: [Name, Xspace]
+- ptag: Eaff
+  extd: [Ename, Xspace]
   name: Nơi sở thuộc
   desc:
 
 # place name
-- ptag: Name_sp
-  extd: [Name_s]
+- ptag: Eloc
+  extd: [Eaff]
   name: Tên địa danh
   desc:
 
 # institute
-- ptag: Name_si
-  extd: [Name_s]
+- ptag: Eorg
+  extd: [Eaff]
   name: Tên tổ chức
   desc:
 
-- ptag: Name_sg
-  extd: [Name_s]
+- ptag: Egeo
+  extd: [Eaff]
   name: Tên khu vực
   desc: Tên địa lý hành chính, châu thổ, quốc gia..
 
-- ptag: Name_b # brand name
-  extd: [Name, Xmodi_p]
+- ptag: Ebrd # brand name
+  extd: [Ename, Xmodi_p]
   name: Tên nhãn hiệu
   desc: Các tên riêng chỉ nhãn hiệu, thường mang tính chất thuộc tính
 
 #####
 
-- ptag: Name_z # other proper noun
-  extd: [Name, Xposs, Xdobj]
+- ptag: Extr # other proper noun
+  extd: [Ename, Xposs, Xdobj]
   name: Tên riêng khác
   desc: Các loại tên riêng khác
 
-- ptag: Name_zw # book title, work name
-  extd: [Name_z]
+- ptag: Ewrk # book title, work name
+  extd: [Extr]
   name: Tên tác phẩm
   desc: Tên tựa sách, phim truyện, ca khúc, thơ văn...
 
-- ptag: Name_zr # race name
-  extd: [Name_z]
+- ptag: Etrb # tribe, race, ethnic group
+  extd: [Extr]
   name: Tên tộc loại
   desc: Tên các dân tộc, bộ lạc, tập đoàn người
 
-- ptag: Name_zs # skill name
-  extd: [Name_z]
+- ptag: Eskl # skill name
+  extd: [Extr]
   name: Tên chiêu thức
   desc: Tên các loại chiêu thức, phép thuật

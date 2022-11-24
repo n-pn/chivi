@@ -1,23 +1,29 @@
 # generic noun
-- ptag: Noun # generic noun
+
+- ptag: Nexpr
   extd: [Xmodi_p, Xdobj]
-  name: Danh từ
-  desc: Các loại danh từ thường
+  name: Cụm danh từ
+  desc: Cụm từ mang tính chất danh từ sau khi ghép với các từ loại khác
+
+- ptag: Npair
+  extd: [Nform]
+  name: Cặp danh từ
+  desc: Ghép cặp các danh từ độc lập, thường để kết hợp với trợ từ liệt kê phía sau
+
+- ptag: Nword
+  extd: [Nform]
+  name: Danh từ đơn
+  desc: Các loại danh từ cơ bản
 
 - ptag: Noth
-  extd: [Noun]
+  extd: [Nword]
   name: Danh từ khác
   desc: Các danh từ chưa được phân loại
-
-- ptag: Nmix # noun phrase
-  extd: [Noth]
-  name: Cụm danh từ
-  desc: Cụm danh từ chưa được phân loại
 
 # human related noun
 
 - ptag: Nppl # generic human word
-  extd: [Noun, Xhuman]
+  extd: [Nword, Xhuman]
   name: Danh từ chỉ người
   desc: Các danh từ dùng để nói về nhân loại
 
@@ -32,7 +38,7 @@
   desc:
 
 - ptag: Nhrf # honorific
-  extd: [Noun, Xhuman]
+  extd: [Nword, Xhuman]
   name: Xưng hô (N h)
   desc: Các từ ghép với tên người phía trước làm kính ngữ chỉ địa vị
 
@@ -82,80 +88,68 @@
   name: Thực vật
   desc:
 
-- ptag: Nspc
-  extd: [Noun, Xspace]
-  name: Xứ sở
-  desc: Các danh từ thông dụng chỉ địa điểm
-
 # placement
-- ptag: Nplc # generic place
-  extd: [Nspc, Xposs]
+- ptag: Lexpr
+  extd: [Nexpr, Xspace]
+  name: Cụm từ nơi chốn
+  desc: Cụm danh từ chỉ nơi chốn, địa điểm
+
+- ptag: Lword
+  extd: [Nword, Xspace]
+  name: Danh từ nơi chốn
+  desc: Các danh từ thông dụng chỉ nơi chốn
+
+- ptag: Lplc # generic place
+  extd: [Lword, Xposs]
   name: Địa điểm
   desc:
 
-- ptag: Nloc # location
-  extd: [Nspc, Xspace]
-  name: Nơi chốn
+- ptag: Lcat # location
+  extd: [Lword, Xspace]
+  name: Xứ sở
   desc:
 
-- ptag: Ndir # locative
-  extd: [Nspc]
+- ptag: Ldir # direction
+  extd: [Lword]
   name: Phương vị
   desc:
 
-# - ptag: Ndir_shang # "上"
-#   extd: [Ndir]
-#   name: LocShang
-#   desc:
-
-# - ptag: Ndir_xia # "下"
-#   extd: [Ndir]
-#   name: LocXia
-#   desc:
-
-# - ptag: Ndir_zhong # "中"
-#   extd: [Ndir]
-#   name: LocZhong
-#   desc:
-
-# - ptag: Ndir_qian # "前"
-#   extd: [Ndir]
-#   name: LocQian
-#   desc:
-
-# - ptag: Ndir_hou4 # "后"
-#   extd: [Ndir]
-#   name: LocHou4
-#   desc:
-
 # temporal
 
+- ptag: Tword
+  extd: [Nword]
+  name: Từ chỉ thời gian
+
+- ptag: Texpr
+  extd: [Nexpr]
+  name: Cụm từ thời gian
+
 - ptag: Time # generic temporal words
-  extd: [Noun]
-  name: Thời gian
+  extd: [Tword]
+  name: Thời gian chung
   desc:
 
-- ptag: Time_dur # time span, duration
-  extd: [Time]
+- ptag: Tdur # time span, duration
+  extd: [Tword]
   name: Khoảng thời gian
   desc:
 
-- ptag: Time_ymd # date
-  extd: [Time]
+- ptag: Tymd # date
+  extd: [Tword]
   name: Ngày tháng năm
   desc: Các từ chỉ ngày tháng cụ thể
 
-- ptag: Time_hms # time
-  extd: [Time]
+- ptag: Thms # time
+  extd: [Tword]
   name: Giờ phút giây
   desc: Các từ chỉ giờ giấc cụ thể
 
-- ptag: Time_dmark # can mark successor term as date
-  extd: [Time]
+- ptag: Tpre_d # can mark successor term as date
+  extd: [Tword]
   name: Đánh dấu ngày tháng
   desc: Đứng trước các danh từ chỉ năm tháng để chỉ ngày tháng cụ thể
 
-- ptag: Time_tmark # can mark successor term as time
-  extd: [Time]
+- ptag: Tpre_t # can mark successor term as time
+  extd: [Tword]
   name: Đánh dấu giờ giấc
   desc: Đứng trước các danh từ chỉ giờ phút để chỉ thời gian trong ngày

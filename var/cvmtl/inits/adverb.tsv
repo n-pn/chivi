@@ -1,0 +1,107 @@
+#key	#val	#ptag	#rank
+
+没	không có	Dmei_0	3
+没	không	Dmei_1	2
+没	chưa	Dmei_2	1
+
+没有	không có	Dmeiyou_0	3
+没有	không	Dmei_1	2
+没有	chưa	Dmeiyou_2	1
+
+不	không	D_bu4
+非	phi	D_fei
+别	đừng	D_bie
+
+甭		Dnega
+未	chưa	Dnega
+莫		Dnega
+勿		Dnega
+没有	không có	Dnega
+未必		Dnega
+不用	vô dụng	Dnega
+徒然		Dnega
+枉自		Dnega
+
+最	nhất	D_zui
+很	rất	D_hen
+太	quá	Ddegree
+更	càng	Ddegree
+极		Ddegree
+挺		Ddegree
+顶		Ddegree
+极其		Ddegree
+非常		Ddegree
+特别		Ddegree
+十分		Ddegree
+
+已	đã	Dtime
+正	đang	Dtime
+将	sắp	Dtime
+刚	vừa	Dtime
+老	mãi	Dtime
+先	trước	Dtime
+已经	đã	Dtime
+曾经		Dtime
+马上	lập tức	Dtime
+
+就	liền	Dmood
+就	liền	D_jiu3	1
+
+偏		Dmood
+可	có thể	Dmood
+
+却		Dmood
+岂		Dmood
+只好		Dmood
+难道		Dmood
+难怪		Dmood
+究竟		Dmood
+到底		Dmood
+
+
+全	chỉ	Dscope
+只	chỉ	Dscope
+共		Dscope
+光		Dscope
+总共		Dscope
+仅仅		Dscope
+
+
+始终		Dfreq
+总是		Dfreq
+一向		Dfreq
+常常		Dfreq
+偶尔		Dfreq
+向来		Dfreq
+仍然		Dfreq
+屡次		Dfreq
+再次		Dfreq
+反复		Dfreq
+重新		Dfreq
+
+
+才	mới	D_cai
+便	bèn	Dcorrel
+却		Dcorrel
+既		Dcorrel
+越		Dcorrel
+
+
+特地		Dmanner
+百般		Dmanner
+互相		Dmanner
+擅自		Dmanner
+亲自		Dmanner
+逐步		Dmanner
+政治	chính trị	Dmanner	1
+
+
+总	cứ	D_zong
+
+再		D_zai
+又	lại	D_you
+也	cũng	D_ye3
+还	còn	D_hoan
+
+
+都	đều	D_du1

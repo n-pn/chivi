@@ -1,25 +1,25 @@
 - rule: [Cj_you4, Adjt, Cj_you4, Adjt]
-  ptag: Adjs
+  ptag: Aword
   cost: 16
 
 - rule: [Adjt, Cc_adjt, Adjt]
-  ptag: Adjs
+  ptag: Aword
   cost: 17
 
 - rule: [Adjt, Adjt]
-  ptag: Adjs
+  ptag: Aword
   cost: 15
 
-- rule: [Adjs, Adjs]
-  ptag: Adjs
+- rule: [Aword, Aword]
+  ptag: Aword
   cost: 14
 
 - rule: [Advb, Adjt]
-  ptag: Adjs
+  ptag: Aword
   cost: 13
 
-- rule: [Advb, Adjs]
-  ptag: Adjs
+- rule: [Advb, Aword]
+  ptag: Aword
   cost: 14
 
 - rule: [Adjt, Noun]

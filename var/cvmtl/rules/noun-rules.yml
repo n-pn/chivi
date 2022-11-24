@@ -1,18 +1,29 @@
-- rule: [Noun, Noun]
-  ptag: Noun
+- rule: [Nword, Nword]
+  ptag: Npair
+  cost: 11
+
+- rule: [Npair]
+
+- rule: [Nword, Nword]
+  ptag: $2
   swap: [2, 1]
   cost: 12
 
-- rule: [Noun, Ndir]
-  ptag: Nloc
+- rule: [Nword, Ldir]
+  ptag: Lcat
   swap: [2, 1]
   cost: 13
 
-- rule: [Xmodi, Noun]
+- rule: [Nexpr, Ldir]
+  ptag: Xplace
+  swap: [2, 1]
+  cost: 12
+
+- rule: [Xmodi, Nword]
   ptag: $2
   swap: [2, 1]
   cost: 14
 
-- rule: [Xmodi_h, Noun]
+- rule: [Xmodi_h, Nword]
   ptag: $2
   cost: 15

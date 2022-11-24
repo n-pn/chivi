@@ -4,5 +4,5 @@
 - rule: [Verb, Concoord, Verb]
   ptag: $3
 
-- rule: [Adjs, Concoord, Adjs]
+- rule: [Aword, Concoord, Aword]
   ptag: $3

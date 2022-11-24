@@ -1,51 +1,57 @@
 # conjuctions
 
-- ptag: Conjunct
+- ptag: Jjword
   extd: [Xfunc]
-  name: Liên từ
+  name: Liên từ tương quan
 
 # subordinating conjunction
 
+- ptag: Jsword
+  extd: [Xfunc]
+  name: Liên từ phụ thuộc
+
 # coordinating conjunction
 
-- ptag: Cc_noun
+- ptag: Jcword
   extd: [Xfunc]
+  name: Liên từ kết hợp
+  virtual: true
+
+- ptag: Jcnoun
+  extd: [Jcword]
   name: Liên kết danh từ
-  desc: |
-    Các liên từ kết nối danh từ với nhau
+  desc: Các liên từ kết nối danh từ với nhau
 
-- ptag: Cc_verb
-  extd: [Xfunc]
+- ptag: Jcverb
+  extd: [Jcword]
   name: Liên kết động từ
-  desc: |
-    Các liên từ kết nối động từ với nhau
+  desc: Các liên từ kết nối động từ với nhau
 
-- ptag: Cc_adjt
-  extd: [Xfunc]
+- ptag: Jcadjt
+  extd: [Jcword]
   name: Liên kết tính từ
   desc: |
     Các liên từ kết nối tính từ với nhau
 
-- ptag: Cc_real
-  extd: [Cc_verb, Cc_adjt, Cc_noun]
-  name: Liên từ liệt kê
-  desc: |
-    Liên từ kết nối các danh từ, động từ tính từ thành cụm từ
+- ptag: Jcreal
+  extd: [Jcverb, Jcadjt, Jcnoun]
+  name: Liên kết thực từ
+  desc: Liên từ kết nối các danh từ, động từ tính từ thành cụm từ
 
 ## liên từ  đặc biệt
 
-- ptag: Cj_you4
-  extd: [Cc_adjt]
+- ptag: Jj_you4
+  extd: [Jcadjt]
   name: Liên từ `又`
 
-- ptag: Cj_dan4
-  extd: [Cc_adjt]
+- ptag: Jj_dan4
+  extd: [Jcadjt]
   name: Liên từ `但`
 
-- ptag: Cj_huo4
-  extd: [Cc_real]
+- ptag: Jj_huo4
+  extd: [Jcreal]
   name: Liên từ `或`
 
-- ptag: Cj_huoshi
-  extd: [Cc_real]
+- ptag: Jj_huoshi
+  extd: [Jcreal]
   name: Liên từ `或是`
