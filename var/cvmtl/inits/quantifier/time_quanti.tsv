@@ -1,0 +1,22 @@
+刻	khắc	Qtime
+天	ngày	Qtime
+载	năm	Qtime
+岁	tuổi	Qtime
+周	tuần	Qtime
+晚	đêm	Qtime
+载	năm	Qtime
+
+秒钟	giây	Qtime
+分钟	phút	Qtime
+小时	giờ	Qtime
+个月	tháng	Qtime
+时辰	canh giờ	Qtime
+
+
+年	năm	Qt_nian	1
+月	tháng	Qt_yue4	1
+日	ngày	Qt_ri4	1
+号	ngày	Qt_hao	1
+点	giờ	Qt_dian	1
+分	phút	Qt_fen1	1
+秒	giây	Qt_miao	1

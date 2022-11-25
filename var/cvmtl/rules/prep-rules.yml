@@ -2,15 +2,15 @@
   ptag: Prep+Objt 1
   cost: 10
 
-- rule: [Prep_2, Xdobj]
-  ptag: Prep+Objt 2
+- rule: [Prep_t, Xdobj]
+  ptag: Pp+o_t
   cost: 11
 
 - rule: [Prep+Objt 1, V+o+c]
   ptag: $2
   cost: 12
 
-- rule: [Prep+Objt 2, V+o+c]
+- rule: [Pp+o_t, V+o+c]
   ptag: $2
   swap: [2, 1]
   cost: 13

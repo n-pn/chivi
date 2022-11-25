@@ -1,0 +1,152 @@
+- rule: [Tword, Tword]
+  ptag: [Tword]
+  swap: [2, 1]
+  cost: 12
+
+- rule: [Texpr, Texpr]
+  ptag: [Texpr]
+  swap: [2, 1]
+  cost: 11
+
+#### year month date with digits
+
+- rule: [Mdig, Qt_nian, Mdig, Qt_yue4]
+  ptag: Tymd
+  swap: [4, 3, 2, 1]
+  cost: 14
+
+- rule: [Mdig, Qt_nian, Mdig, Qt_yue4, Mdig, Qt_ri4]
+  ptag: Tymd
+  swap: [6, 5, 4, 3, 2, 1]
+  cost: 50
+
+- rule: [Mdig, Qt_nian, Mdig, Qt_yue4, Mdig, Qt_hao]
+  ptag: Tymd
+  swap: [6, 5, 4, 3, 2, 1]
+  cost: 50
+
+- rule: [Mdig, Qt_yue4, Mdig, Qt_ri4]
+  ptag: Tymd
+  swap: [4, 3, 2, 1]
+  cost: 50
+
+- rule: [Mdig, Qt_yue4, Mdig, Qt_hao]
+  ptag: Tymd
+  swap: [4, 3, 2, 1]
+  cost: 50
+
+- rule: [Tpre_d, Tymd]
+  ptag: Tymd
+  swap: [2, 1]
+  cost: 15
+
+- rule: [Tpre_d, Mdig, Qt_nian]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+- rule: [Tpre_d, Mdig, Qt_yue4]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+- rule: [Tpre_d, Mdig, Qt_ri4]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+- rule: [Tpre_d, Mdig, Qt_hao]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+- rule: [Tpre_d, Mdig, Qt_ri4]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+- rule: [Tpre_d, Mdig, Qt_hao]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+#### year month date with literal numbers
+
+- rule: [Mlit, Qt_nian, Mlit, Qt_yue4]
+  ptag: Tymd
+  swap: [4, 3, 2, 1]
+  cost: 14
+
+- rule: [Mlit, Qt_yue4, Mlit, Qt_ri4]
+  ptag: Tymd
+  swap: [4, 3, 2, 1]
+  cost: 14
+
+- rule: [Mlit, Qt_yue4, Mlit, Qt_hao]
+  ptag: Tymd
+  swap: [4, 3, 2, 1]
+  cost: 14
+
+- rule: [Mlit, Qt_nian, Mlit, Qt_yue4, Mlit, Qt_ri4]
+  ptag: Tymd
+  swap: [6, 5, 4, 3, 2, 1]
+  cost: 30
+
+- rule: [Mlit, Qt_nian, Mlit, Qt_yue4, Mlit, Qt_hao]
+  ptag: Tymd
+  swap: [6, 5, 4, 3, 2, 1]
+  cost: 30
+
+- rule: [Tpre_d, Tymd]
+  ptag: Tymd
+  swap: [2, 1]
+  cost: 15
+
+- rule: [Tpre_d, Mlit, Qt_nian]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+- rule: [Tpre_d, Mlit, Qt_ri4]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+- rule: [Tpre_d, Mlit, Qt_hao]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+# hour minute second with digits
+
+- rule: [Mdig, Qt_dian, Mdig, Qt_fen1]
+  ptag: Thms
+  cost: 14
+
+- rule: [Mdig, Qt_dian, Mdig, Qt_fen1, Mdig, Qt_miao]
+  ptag: Thms
+  cost: 50
+
+- rule: [Mdig, Qt_fen1, Mdig, Qt_miao]
+  ptag: Thms
+  cost: 14
+
+- rule: [Tpre_t, Thms]
+  ptag: Thms
+  swap: [2, 1]
+  cost: 15
+
+- rule: [Tpre_t, Mdig, Qt_dian]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+- rule: [Tpre_t, Mdig, Qt_fen1]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15
+
+- rule: [Tpre_t, Mdig, Qt_miao]
+  ptag: Tymd
+  swap: [3, 2, 1]
+  cost: 15

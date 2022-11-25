@@ -34,7 +34,7 @@
   name: Đại từ nghi vấn
   desc:
 
-- ptag: Rany
+- ptag: Rind
   extd: [Rword, Xposs, Xsubj_a]
   name: Đại từ khác
   desc: Các loại đại từ chưa được phân loại

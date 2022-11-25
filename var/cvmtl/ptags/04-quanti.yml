@@ -163,37 +163,37 @@
 
 # more_ https_//en.wikipedia.org/wiki/List_of_Chinese_classifiers
 
-- ptag: Qt_dien # " 点" Dian
+- ptag: Qt_dian # "点"
   extd: [Qtime]
   name: Thời lượng từ `点`
   desc:
 
-- ptag: Qt_fen1 # " 分" Fen1
+- ptag: Qt_fen1 # "分"
   extd: [Qtime]
   name: Thời lượng từ `分`
   desc:
 
-- ptag: Qt_miao # " 秒" Miao
+- ptag: Qt_miao # "秒"
   extd: [Qtime]
   name: Thời lượng từ `秒`
   desc:
 
-- ptag: Qt_nian # " 年" Nian
+- ptag: Qt_nian # "年"
   extd: [Qtime]
   name: Thời lượng từ `年`
   desc:
 
-- ptag: Qt_yue4 # " 月" Yue4
+- ptag: Qt_yue4 # "月"
   extd: [Qtime]
   name: Thời lượng từ `月`
   desc:
 
-- ptag: Qt_ri4 # "日 " Ri4
+- ptag: Qt_ri4 # "日"
   extd: [Qtime]
   name: Thời lượng từ `日`
   desc:
 
-- ptag: Qt_hao # "号 " Hao
+- ptag: Qt_hao # "号"
   extd: [Qtime]
   name: Thời lượng từ `号`
   desc:

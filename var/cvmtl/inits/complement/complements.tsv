@@ -1,21 +1,4 @@
-来		Cdir
-去		Cdir
-出		Cdir
 
-上来		Cdir
-下来		Cdir
-进来		Cdir
-出来		Cdir
-回来		Cdir
-过来		Cdir
-起来		Cdir
-开来		Cdir
-上去		Cdir
-下去		Cdir
-进去		Cdir
-出去		Cdir
-回去		Cdir
-过去		Cdir
 
 好	tốt	Cres
 
@@ -70,4 +53,4 @@
 干净	sạch sẽ	sạch	a
 惯	quen		a
 累	mệt		a
-清楚	rõ ràng	rõ	a
+清楚	rõ	Cres

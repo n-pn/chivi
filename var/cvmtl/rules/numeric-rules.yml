@@ -1,11 +1,56 @@
+# cardinal rules
+
 - rule: [Mcar, Qverb]
   ptag: MQverb
+  cost: 13
 
 - rule: [Mcar, Qtime]
   ptag: MQtime
+  cost: 13
 
 - rule: [Mcar, Qnoun]
-  ptag: MQnou
+  ptag: MQnoun
+  cost: 12
+
+- rule: [Mcar, Qmass]
+  ptag: MQmass
+  cost: 13
+
+- rule: [Mcar, Qcash]
+  ptag: MQcash
+  cost: 13
 
 - rule: [Mcar, Qwght]
   ptag: MQwght
+  cost: 13
+
+- rule: [Mcar, Qdist]
+  ptag: MQdist
+  cost: 13
+
+# ordinal rules
+
+- rule: [Mcar, Qtime]
+  ptag: Texpr
+  swap: [2, 1]
+  cost: 14
+
+- rule: [Mcar, Qverb]
+  ptag: MQverb
+  swap: [2, 1]
+  cost: 12
+
+- rule: [Mcar, Qverb, Vexpr]
+  ptag: $2
+  swap: [2, 3, 1]
+  cost: 25
+
+- rule: [Mcar, Qnoun]
+  ptag: MQnoun
+  swap: [2, 1]
+  cost: 12
+
+- rule: [Mcar, Qnoun, Nword]
+  ptag: $3
+  swap: [2, 3, 1]
+  cost: 25

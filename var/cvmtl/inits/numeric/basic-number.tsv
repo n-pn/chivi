@@ -1,13 +1,14 @@
 0	0	Mdig
-1	0	Mdig
-2	0	Mdig
-3	0	Mdig
-4	0	Mdig
-5	0	Mdig
-6	0	Mdig
-7	0	Mdig
-8	0	Mdig
-9	0	Mdig
+1	1	Mdig
+2	2	Mdig
+3	3	Mdig
+4	4	Mdig
+5	5	Mdig
+6	6	Mdig
+7	7	Mdig
+8	8	Mdig
+9	9	Mdig
+
 一	một	Mlit
 两	hai	Mlit
 二	hai	Mlit
@@ -24,6 +25,3 @@
 万	mười nghìn	Mlit
 亿	trăm triệu	Mlit
 兆	nghìn tỉ	Mlit
-
-一	một	M_yi1
-半	nửa	M_han
