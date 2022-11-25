@@ -6,11 +6,11 @@
   ptag: Prep+Objt 2
   cost: 11
 
-- rule: [Prep+Objt 1, Verb]
+- rule: [Prep+Objt 1, V+o+c]
   ptag: $2
   cost: 12
 
-- rule: [Prep+Objt 2, Verb]
+- rule: [Prep+Objt 2, V+o+c]
   ptag: $2
   swap: [2, 1]
   cost: 13
@@ -18,4 +18,4 @@
 - rule: [Prep, Xdobj, Udep, Xdobj]
   swap: [4, 1, 2, 3]
   ptag: $4
-  cost: 100
+  cost: 20

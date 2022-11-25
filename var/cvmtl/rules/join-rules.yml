@@ -1,8 +1,16 @@
-- rule: [Noun, Concoord, Noun]
+- rule: [Noun, Cjnoun, Noun]
   ptag: $3
 
-- rule: [Verb, Concoord, Verb]
+- rule: [Xdobj, Cjreal, Xdobj]
+  ptag: Xdobj
+
+- rule: [Verb, Cjverb, Verb]
   ptag: $3
 
-- rule: [Aword, Concoord, Aword]
+- rule: [Aword, Cjadjt, Aword]
+  ptag: Aexpr
+  cost: 12
+
+- rule: [Aexpr, Cjadjt, Aexpr]
   ptag: $3
+  cost: 11

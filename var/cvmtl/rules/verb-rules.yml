@@ -1,15 +1,75 @@
 - rule: [Vtrn, Xdobj]
-  ptag: Verb+Objt
+  ptag: V+o+c
+  cost: 13
+
+- rule: [Vtrn, MQverb, Xdobj]
+  ptag: V+o+c
+  cost: 14
+
+- rule: [Vtrn, Xdobj, MQverb]
+  ptag: V+o+c
   cost: 15
 
-- rule: [Vlnk, Verb]
-  ptag: $1
+- rule: [Vtrn, MQtime, Xdobj]
+  ptag: V+o+c
   cost: 14
 
-- rule: [Vlnk, Xdobj, Verb]
-  ptag: Verb
+- rule: [Vtrn, Xdobj, MQtime]
+  ptag: V+o+c
+  cost: 15
+
+- rule: [Vtrn, Nword, MQnoun]
+  ptag: V+o+c
+  cost: 12
+
+- rule: [Vlnk, Vexpr]
+  ptag: Vseri
   cost: 14
 
-- rule: [Advb, Verb]
-  ptag: Verb
+- rule: [Vseri, Vexpr]
+  ptag: Vseri
   cost: 13
+
+- rule: [Vlnk, Xdobj, Vexpr]
+  ptag: Vseri
+  cost: 12
+
+- rule: [Tword, V+o+c]
+  ptag: $2
+  cost: 14
+
+- rule: [Advb, Vexpr]
+  ptag: Vexpr
+  cost: 13
+
+- rule: [Vead, Vword]
+  ptag: $2
+  cost: 14
+
+- rule: [Vmod, Vword]
+  ptag: $2
+  cost: 13
+
+- rule: [Vm_hui_1, Vabl]
+  ptag: $2
+  cost: 15
+
+- rule: [Vpro, Vword]
+  ptag: $2
+  cost: 15
+
+- rule: [Vtwo, Xiobjt, Xdobjt]
+  ptag: V+c+o
+  cost: 18
+
+- rule: [Vpsy, V+c+o]
+  ptag: Vexpr
+  cost: 17
+
+- rule: [Vcau, Subj+Verb]
+  ptag: Vexpr
+  cost: 16
+
+- rule: [Vcau, Subj+Adjt]
+  ptag: Vexpr
+  cost: 16

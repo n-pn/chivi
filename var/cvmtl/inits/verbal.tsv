@@ -191,16 +191,16 @@
 难以		Vmod
 易于		Vmod
 
-会	biết	Vm_hui_1	2
-会	sẽ	Vm_hui_2	1
-不会	sẽ không	Vm_buhui	1
+会	sẽ	V_hui_0	2
+会	biết	V_hui_1	1
+不会	sẽ không	V_buhui	1
 
-想	nghĩ	Vm_xiang_0	3
-想	muốn	Vm_xiang_1	2
-想	nhớ	Vm_xiang_2	1
+想	nghĩ	V_xiang_0	3
+想	muốn	V_xiang_1	2
+想	nhớ	V_xiang_2	1
 
-能		Vm_neng
-可	có thể	Vm_ke3
+能		V_neng
+可	có thể	V_ke3
 
-要	muốn	Vm_yao_0
-要	phải	Vm_yao_1
+要	muốn	V_yao_0
+要	phải	V_yao_1

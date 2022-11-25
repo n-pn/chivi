@@ -1,9 +1,9 @@
 - rule: [Cj_you4, Adjt, Cj_you4, Adjt]
-  ptag: Aword
+  ptag: Aexpr
   cost: 16
 
 - rule: [Adjt, Cc_adjt, Adjt]
-  ptag: Aword
+  ptag: Aexpr
   cost: 17
 
 - rule: [Adjt, Adjt]
@@ -15,11 +15,11 @@
   cost: 14
 
 - rule: [Advb, Adjt]
-  ptag: Aword
+  ptag: Aexpr
   cost: 13
 
-- rule: [Advb, Aword]
-  ptag: Aword
+- rule: [Advb, Aexpr]
+  ptag: Aexpr
   cost: 14
 
 - rule: [Adjt, Noun]
@@ -27,11 +27,11 @@
   swap: [2, 1]
   cost: 15
 
-- rule: [Amod_1, Noun]
+- rule: [Amod_h, Noun]
   ptag: $2
   cost: 16
 
-- rule: [Amod_2, Noun]
+- rule: [Amod_t, Noun]
   ptag: $2
   swap: [2, 1]
   cost: 16

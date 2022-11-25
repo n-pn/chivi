@@ -5,33 +5,41 @@
   name: Cụm động từ
   desc:
 
-- ptag: Vword
+- ptag: Vseri
   extd: [Vexpr]
+  name: Cụm liên động
+
+- ptag: V+o+c
+  extd: [Vexpr]
+  name: Cụm động tân bổ
+
+- ptag: Vword
+  extd: [V+o+c]
   name: Động từ chung
   desc:
 
 - ptag: Vpecr # perculiar
-  extd: [Vword]
+  extd: [V+o+c]
   name: Động từ đặc biệt
   desc:
 
 - ptag: Vcmp
-  extd: [Vpecr]
+  extd: [Xmorp]
   name: Động từ so sánh
   desc: Động từ kết hợp với trợ từ so sánh phía sau tạo thành cụm từ so sánh
 
 - ptag: Vntr # intransitive verb
-  extd: [Vword, Xmodi]
+  extd: [Vword, V+o+c, Xmodi]
   name: Nội động từ
   desc: Động từ không kết hợp được với tân ngữ
 
 - ptag: Vobj # verb + object phrase
-  extd: [Vexpr]
+  extd: [V+o+c]
   name: Cụm động tân
   desc: Cụm động từ kết hợp với tân ngữ
 
-- ptag: Vabi # verb + object as ability
-  extd: [Vexpr]
+- ptag: Vabl # verb + object as ability
+  extd: [V+o+c]
   name: Cụm động tân (*)
   desc: Cụm động tân chỉ năng khiếu như đánh đàn, chơi nhạc
 
@@ -66,7 +74,7 @@
   desc: Động từ chỉ xu hướng, không kết hợp với bổ ngữ xu hướng
 
 - ptag: Vlnk # linking verb
-  extd: [Vtrn]
+  extd: [Vtrn, Vseri]
   name: Động từ liên động
   desc: Động từ chỉ các hành động xảy ra nối tiếp
 
@@ -96,52 +104,52 @@
 
 # special modal verbs
 
-- ptag: Vm_hui_1 # "会"
+- ptag: V_hui_1 # "会"
   extd: [Vmod]
   name: Động từ `会` (biết)
   desc:
 
-- ptag: Vm_hui_2 # "会"
+- ptag: V_hui_2 # "会"
   extd: [Vmod]
   name: Động từ `会` (sẽ)
   desc:
 
-- ptag: Vm_bubui # "不会"
+- ptag: V_bubui # "不会"
   extd: [Vmod]
   name: Động từ `不会` (sẽ không)
   desc:
 
-- ptag: Vm_xiang_0 # "想"
+- ptag: V_xiang_0 # "想"
   extd: [Vmod]
   name: Động từ `想` (nghĩ)
   desc:
 
-- ptag: Vm_xiang_1 # "想"
+- ptag: V_xiang_1 # "想"
   extd: [Vaux]
   name: Động từ `想` (muốn)
   desc:
 
-- ptag: Vm_xiang_2 # "想"
+- ptag: V_xiang_2 # "想"
   extd: [Vtrn]
   name: Động từ `想` (nhớ)
   desc:
 
-- ptag: Vm_neng # "能"
+- ptag: V_neng # "能"
   extd: [Vaux]
   name: Động từ `能`
   desc:
 
-- ptag: Vm_yao_0 # "要"
+- ptag: V_yao_0 # "要"
   extd: [Vaux]
   name: Động từ `要` (muốn)
   desc:
 
-- ptag: Vm_yao_1 # "要"
+- ptag: V_yao_1 # "要"
   extd: [Vaux]
   name: Động từ `要` (phải)
   desc:
 
-- ptag: Vm_ke3 # "可"
+- ptag: V_ke3 # "可"
   extd: [Vaux]
   name: Động từ `可` (có thể)
   desc:

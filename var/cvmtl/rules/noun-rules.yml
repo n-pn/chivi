@@ -1,8 +1,10 @@
 - rule: [Nword, Nword]
-  ptag: Npair
+  ptag: Nseri
   cost: 11
 
-- rule: [Npair]
+- rule: [Nseri, Nseri]
+  ptag: Nseri
+  cost: 10
 
 - rule: [Nword, Nword]
   ptag: $2

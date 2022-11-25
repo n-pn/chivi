@@ -1,27 +1,27 @@
 # TODO: restrict type of verb that can combine with complements
 
-- rule: [Verb, Vc_res]
+- rule: [Vword, Cres]
   ptag: $1
   # swap: [1, 2]
   desc: Động từ + bổ ngữ kết quả thể khẳng định
 
-- rule: [Verb, Adv_mei_0, Vc_res]
+- rule: [Vword, Adv_mei_0, Cres]
   ptag: $1
   # swap: [1, 2, 3]
   desc: Động từ + bổ ngữ kết quả thể phủ định với 没
 
-- rule: [Verb, Adv_meiyou_0, Vc_res]
+- rule: [Vword, Adv_meiyou_0, Cres]
   ptag: $1
   # swap: [1, 2, 3]
   desc: Động từ + bổ ngữ kết quả thể phủ định với 没有
 
 # bổ ngữ mức độ
-- rule: [Verb, Vc_deg]
+- rule: [Vword, Cdeg]
   ptag: $1
   # swap: [1, 2]
   desc: Động từ + bổ ngữ chỉ mức độ trực tiếp
 
-- rule: [Verb, Fc_dir]
+- rule: [Vword, Cdir]
   ptag: $1
   # swap: [1, 2]
   desc: Động từ + bổ ngữ xu hướng

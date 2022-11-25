@@ -1,0 +1,31 @@
+# Fp_x: Prep
+# Fp_ba: Prep_ba
+# Fp_bei: Prep_bei
+# Fp_bi: Prep_bi_1
+# Fp_cong: Prep_cong
+# Fp_dui: Prep_dui
+# Fp_gei3: Prep_gei3
+# Fp_gen1: Prep_gen1
+# Fp_he2: Prep_he2
+# Fp_jiang: Prep_jiang
+# Fp_ling: Prep_ling
+# Fp_rang: Prep_rang
+# Fp_tong: Prep_tong
+# Fp_zai: Prep_zai
+# Fp_zi4: Prep_zi4
+
+Prep: Pword
+Prep_ba: Pba
+Prep_bei: Pbei
+Prep_bi_1: Pbi_1
+Prep_cong: Pcong
+Prep_dui: Pdui
+Prep_gei3: Pgei3
+Prep_gen1: Pgen1
+Prep_he2: Phe2
+Prep_jiang: Pjiang
+Prep_ling: Pling
+Prep_rang: Prang
+Prep_tong: Ptong
+Prep_zai: Pzai
+Prep_zi4: Pzi4

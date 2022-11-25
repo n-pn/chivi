@@ -1,22 +1,28 @@
+们	nhóm	Lit	2
+们	các	Suf_men5	1
 
-时		Suf_time
-的时候		Suf_time
-的日子		Suf_time
+性	tính	Suf_xing
+化	hoá	Suf_verb
 
-色		Suf_natt
-级		Suf_natt
-型		Suf_natt
-状		Suf_natt
+时	khi	Pos_time
+的时候	lúc	Pos_time
+的日子	thời gian	Pos_time
 
-化		Suf_verb
+色	màu	Suf_natt
+级	cấp	Suf_natt
+型	hình	Suf_natt
+状	dạng	Suf_natt
 
-们		Suf_men5
+界	giới	Noth	2
+界	thế giới	Suf_noun	1
 
-性		Suf_xing
+族	tộc	Noth	2
+族	dân tộc	Suf_name	1
 
-族		Suf_name
-语		Suf_name
-文		Suf_name
+语	ngữ	Noth	2
+语	tiếng	Suf_name	1
+
+文	chữ	Suf_name
 
 可	đáng	Pre_ke
 

@@ -202,12 +202,12 @@
   attr: [NoSpaceL]
   name: Dấu phẩy liệt kê `､`
 
-- ptag: .en. # short dash
+- ptag: .ds. # short dash
   extd: [.p.]
   attr: [NoSpaceL, NoSpaceR]
   name: Dấu gạch ngắn `–`
 
-- ptag: .em. # long dash
+- ptag: .dl. # long dash
   extd: [.p.]
   attr: [CapRelay]
   name: Dấu gạch dài `—`

@@ -1,0 +1,11 @@
+- rule: [Mcar, Qverb]
+  ptag: MQverb
+
+- rule: [Mcar, Qtime]
+  ptag: MQtime
+
+- rule: [Mcar, Qnoun]
+  ptag: MQnou
+
+- rule: [Mcar, Qwght]
+  ptag: MQwght

@@ -1,59 +1,64 @@
-- rule: [Name_h, Nhrf]
-  ptag: Name_h
+- rule: [Eppl, Nhrf]
+  ptag: Eppl
   # swap: [1, 2]
   cost: 18
 
-- rule: [Name_h, Nhrf_j]
-  ptag: Name_h
+- rule: [Eppl, Nhrf_j]
+  ptag: Eppl
   # swap: [1, 2]
   cost: 19
 
-- rule: [Name_h, Nhrf_l]
+- rule: [Eppl, Nhrf_l]
   swap: [2, 1]
-  ptag: Name_h
+  ptag: Eppl
   cost: 18
 
-- rule: [Name_h, Name_h]
-  ptag: Name_h
+- rule: [Eppl, Eppl]
+  ptag: Eppl
   # swap: [1, 2]
   cost: 17
 
-- rule: [Name_h, .md., Name_h]
-  ptag: Name_h
+- rule: [Eppl, .md., Eppl]
+  ptag: Eppl
   # swap: [1, 2]
   cost: 19
 
-- rule: [Name_h, .md., Name_s]
-  ptag: Name_h
+- rule: [Eppl, .md., Eaff]
+  ptag: Eppl
   # swap: [1, 2]
   cost: 18
 
-- rule: [Name_h, .ce., Name_h]
-  ptag: Name_h
+- rule: [Eppl, .ce., Eppl]
+  ptag: Eppl
   # swap: [1, 2]
   cost: 19
 
-- rule: [Name_h, .ce., Name_s]
+- rule: [Eppl, .ce., Eaff]
   ptag: Name
   # swap: [1, 2]
   cost: 18
 
-- rule: [Name_s, Name_h]
-  ptag: Name_h
+- rule: [Eaff, Eppl]
+  ptag: Eppl
   swap: [2, 1]
   cost: 17
 
-- rule: [Name_s, Name_s]
-  ptag: Name_s
+- rule: [Eaff, Eaff]
+  ptag: Eaff
   # swap: [1, 2]
   cost: 16
 
-- rule: [Name_z, Name_z]
-  ptag: Name_z
+- rule: [Ewrk, Ewrk]
+  ptag: Ewrk
   # swap: [1, 2]
-  cost: 15
+  cost: 16
 
-- rule: [Name, Name]
-  ptag: Name
+- rule: [Extr, Extr]
+  ptag: Extr
   # swap: [1, 2]
   cost: 14
+
+- rule: [Ename, Ename]
+  ptag: Ename
+  # swap: [1, 2]
+  cost: 13

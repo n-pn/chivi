@@ -1,89 +1,89 @@
-- ptag: Ppword #  generic
+- ptag: Pword #  generic
   extd: [Xfunc]
   name: Giới từ
   desc:
 
-- ptag: Ppcmp #  compare
-  extd: [Ppword]
+- ptag: Pcmp #  compare
+  extd: [Pword]
   name: Giới từ so sánh bằng
   desc:
 
-- ptag: Pp_ba # "把"
-  extd: [Ppword]
+- ptag: P_ba # "把"
+  extd: [Pword]
   name: Giới từ `把`
   desc:
 
-- ptag: Pp_dui # "对"
-  extd: [Ppword]
+- ptag: P_dui # "对"
+  extd: [Pword]
   name: Giới từ `对`
   desc:
 
-- ptag: Pp_bei # "被"
-  extd: [Ppword]
+- ptag: P_bei # "被"
+  extd: [Pword]
   name: Giới từ `被`
   desc:
 
-- ptag: Pp_zai # "在"
-  extd: [Ppword]
+- ptag: P_zai # "在"
+  extd: [Pword]
   name: Giới từ `在`
   desc:
 
-- ptag: Pp_bi_1 # "比"
-  extd: [Ppword]
+- ptag: P_bi_1 # "比"
+  extd: [Pword]
   name: Giới từ `比` (hơn)
   desc: Giới từ 比 trong so sánh hơn kém
 
-- ptag: Pp_bi_2 # "比"
+- ptag: P_bi_2 # "比"
   extd: [Xfunc]
   name: Giới từ `比` (bằng)
   desc: Giới từ 比 trong so sánh không bằng
 
-- ptag: Pp_jiang # "将"
-  extd: [Ppword]
+- ptag: P_jiang # "将"
+  extd: [Pword]
   name: Giới từ `将`
   desc:
 
-- ptag: Pp_rang # "让"
-  extd: [Ppword]
+- ptag: P_rang # "让"
+  extd: [Pword]
   name: Giới từ `让`
   desc:
 
-- ptag: Pp_ling # "令"
-  extd: [Ppword]
+- ptag: P_ling # "令"
+  extd: [Pword]
   name: Giới từ `令`
   desc:
 
-- ptag: Pp_gei3 # "给"
-  extd: [Ppword]
+- ptag: P_gei3 # "给"
+  extd: [Pword]
   name: Giới từ `给`
   desc:
 
-- ptag: Pp_zi4 # "自"
-  extd: [Ppword]
+- ptag: P_zi4 # "自"
+  extd: [Pword]
   name: Giới từ `自`
   desc:
 
-- ptag: Pp_cong # "从"
-  extd: [Ppword]
+- ptag: P_cong # "从"
+  extd: [Pword]
   name: Giới từ `从`
   desc:
 
-- ptag: Pp_he2 # "和"
-  extd: [Ppcmp]
+- ptag: P_he2 # "和"
+  extd: [Pcmp]
   name: Giới từ `和`
   desc:
 
-- ptag: Pp_yu3 # "与"
-  extd: [Ppcmp]
+- ptag: P_yu3 # "与"
+  extd: [Pcmp]
   name: Giới từ `与`
   desc:
 
-- ptag: Pp_tong # "同"
-  extd: [Ppcmp]
+- ptag: P_tong # "同"
+  extd: [Pcmp]
   name: Giới từ `同`
   desc:
 
-- ptag: Pp_gen1 # "跟"
-  extd: [Ppcmp]
+- ptag: P_gen1 # "跟"
+  extd: [Pcmp]
   name: Giới từ `跟`
   desc:
