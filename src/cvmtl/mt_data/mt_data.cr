@@ -10,10 +10,10 @@ class MT::MtData
   @raw_chars = [] of Char
   @inp_chars = [] of Char # normalized input
 
-  alias All = Hash(Int32, MtNode)
+  alias Multi = Hash(Int32, MtNode)
 
   @top = [] of MtNode
-  @all = [] of Hash(Int32, All)
+  @all = [] of Hash(Int32, Multi)
 
   @ner = [] of MtTerm?
 
@@ -28,7 +28,7 @@ class MT::MtData
 
       @top_cost << 0
       @top << MtTerm.new(inp_char.to_s, 0, 1, 0, 0)
-      @all << Hash(Int32, All).new { |h, k| h[k] = All.new }
+      @all << Hash(Int32, Multi).new { |h, k| h[k] = Multi.new }
     end
   end
 
@@ -50,16 +50,16 @@ class MT::MtData
     end
   end
 
-  def debug(term : MtTerm)
-    data = {
-      key:  @raw_chars[term.idx, term.size].join,
-      val:  term.val,
-      dic:  term.dic,
-      cost: term.cost,
-    }
+  # def debug(term : MtTerm)
+  #   data = {
+  #     key:  @raw_chars[term.idx, term.size].join,
+  #     val:  term.val,
+  #     dic:  term.dic,
+  #     cost: term.cost,
+  #   }
 
-    puts data
-  end
+  #   puts data
+  # end
 
   def add_node!(node : MtNode, idx : Int32)
     # prev_top = @top.unsafe_fetch(idx)
@@ -79,18 +79,12 @@ class MT::MtData
     all_curr = @all.unsafe_fetch(idx)
 
     ptags.each do |ptag|
-      all_ptag = all_curr[ptag] ||= All.new
-      all_ptag[node.size] = node if better_outcome?(all_ptag, node)
+      all_ptag = all_curr[ptag] ||= Multi.new
+      all_ptag[node.size] = node unless all_ptag[node.size]?.try(&.cost.>= node.cost)
 
       next unless rule_trie = MtRule.get_rule(ptag)
       apply_rule!([node] of MtNode, rule_trie, idx: idx, size: node.size)
     end
-  end
-
-  private def better_outcome?(all : All, node : MtNode) : Bool
-    return true unless prev = all[node.size]?
-    return node.is_a?(MtTerm) || node.cost > prev.cost if !prev.is_a?(MtTerm)
-    node.is_a?(MtTerm) && node.cost > prev.cost
   end
 
   private def apply_rule!(list : Array(MtNode), trie : MtRule::Trie, idx : Int32, size : Int32)
@@ -117,7 +111,7 @@ class MT::MtData
     end
   end
 
-  private def apply_rule_all!(list : Array(MtNode), trie : MtRule::Trie, nodes : All,
+  private def apply_rule_all!(list : Array(MtNode), trie : MtRule::Trie, nodes : Multi,
                               idx : Int32, size : Int32)
     nodes.each_value do |node|
       next_list = list.dup
