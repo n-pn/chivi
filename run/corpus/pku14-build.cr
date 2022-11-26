@@ -20,7 +20,7 @@ class Term
 end
 
 RE1 = /^(.+?)\/(\w+)$/
-RE2 = /^(.+?)\/(\w+)\](\w+)$/
+RE2 = /^(.+?)\/(\w+?)\]\/(\w+)$/
 
 def split_part(part : String)
   if match = RE2.match(part)
@@ -34,11 +34,15 @@ def split_part(part : String)
   end
 end
 
+RE3 = /^(\p{P}+)(.*)/
+
 def split_line(line : String)
   output = [] of String
 
-  line.strip.split(" ").each do |part|
-    if part !~ /^\p{P}/ || part[1]? == '/'
+  line.split(/\s/).each do |part|
+    next if part.empty?
+
+    if part[1]? == '/' || !(match = RE3.match(part))
       output << part
       next
     end
@@ -48,13 +52,9 @@ def split_line(line : String)
       next
     end
 
-    if match = part.match(/^(\p{P}+)(.*)/)
-      _, punct, extra = match
-      output << "#{punct}/w"
-      output << extra unless extra.empty?
-    else
-      raise "invalid: #{part} of #{line}"
-    end
+    _, punct, extra = match
+    output << "#{punct}/w"
+    output << extra unless extra.empty?
   end
 
   output
@@ -68,8 +68,6 @@ def parse_line(line : String)
 
   args = split_line(line)
   args.each do |part|
-    next if part == ""
-
     if part == "["
       comp_lpos = lpos
       next
@@ -85,7 +83,7 @@ def parse_line(line : String)
     term.comp = "E-#{comp_ptag}"
 
     output[comp_lpos].comp = "B-#{comp_ptag}"
-    output[comp_lpos..-2].each(&.comp = "M-#{comp_ptag}")
+    output[(comp_lpos + 1)..-2].each(&.comp = "M-#{comp_ptag}")
 
     comp_lpos = -1
   end
@@ -98,11 +96,9 @@ end
 
 alias Freq = Hash(String, Int32)
 
-terms = [] of Term
-
-freqs = Hash(String, Freq).new { |h, k| h[k] = Freq.new(0) }
-
 l_id = 0
+terms = [] of Term
+freqs = Hash(String, Freq).new { |h, k| h[k] = Freq.new(0) }
 
 lines.each do |line|
   line = line.strip
@@ -127,6 +123,7 @@ end
 
 DB.open("sqlite3:var/cvmtl/dicts/pku14-data.db") do |db|
   db.exec "begin transaction"
+  db.exec "delete from terms"
 
   terms.each do |term|
     viet = HANVIET[term.word]
@@ -149,6 +146,7 @@ DB.open("sqlite3:var/cvmtl/dicts/pku14-freq.db") do |db|
 
   freqs.sort_by!(&.[2].-)
   db.exec "begin transaction"
+  db.exec "delete from freqs"
 
   freqs.each do |word, count, _sum|
     count.each do |ptag, freq|

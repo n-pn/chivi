@@ -104,7 +104,7 @@ class TL::WordDict
       char = chars.unsafe_fetch(i)
       return unless (trie = node.trie) && (node = trie[char]?)
       next unless data = node.data
-      yield data, i &- offset
+      yield data, i &- offset &+ 1
     end
   end
 

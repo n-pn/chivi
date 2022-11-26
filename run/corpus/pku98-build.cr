@@ -34,7 +34,7 @@ def split_part(part : String)
 end
 
 def parse_line(line : String)
-  args = line.split "  "
+  args = line.split /\s+/
   args.shift # remove line count
 
   terms = [] of Term
@@ -100,6 +100,7 @@ end
 
 DB.open("sqlite3:var/cvmtl/dicts/pku98-data.db") do |db|
   db.exec "begin transaction"
+  db.exec "delete from terms"
 
   words.each do |word|
     viet = HANVIET[word.word]
@@ -121,6 +122,7 @@ DB.open("sqlite3:var/cvmtl/dicts/pku98-freq.db") do |db|
 
   freqs.sort_by!(&.[2].-)
   db.exec "begin transaction"
+  db.exec "delete from freqs"
 
   freqs.each do |word, count, _sum|
     count.each do |ptag, freq|

@@ -39,6 +39,7 @@ end
 
 DB.open("sqlite3:var/cvmtl/dicts/pmtv1-data.db") do |db|
   db.exec "begin transaction"
+  db.exec "delete from terms"
 
   entries.each do |entry|
     args = {entry.line, entry.lpos, entry.word, HANVIET[entry.word], entry.ptag, entry.dep_name, entry.dep_lpos}
@@ -59,6 +60,7 @@ DB.open("sqlite3:var/cvmtl/dicts/pmtv1-freq.db") do |db|
 
   freqs.sort_by!(&.[2].-)
   db.exec "begin transaction"
+  db.exec "delete from freqs"
 
   freqs.each do |word, count, _sum|
     count.each do |ptag, freq|
