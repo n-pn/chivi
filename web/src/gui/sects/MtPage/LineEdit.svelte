@@ -54,8 +54,24 @@
   let preview_mode = 0
 
   $: newtxt = rawtxt
+
+  function debounce(
+    func: { (input: string): Promise<void>; apply?: any },
+    timeout = 300
+  ) {
+    let timer: string | number | NodeJS.Timeout
+    return (...args: any) => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        func.apply(this, args)
+      }, timeout)
+    }
+  }
+
+  const debounce_update_preview = debounce(update_preview, 200)
+
   $: {
-    update_preview(newtxt)
+    debounce_update_preview(newtxt)
     if (underlay) on_update_caret()
     if (overlay) overlay.focus()
   }

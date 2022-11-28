@@ -1,10 +1,10 @@
 - rule: [Tword, Tword]
-  ptag: [Tword]
+  ptag: Tword
   swap: [2, 1]
   cost: 12
 
 - rule: [Texpr, Texpr]
-  ptag: [Texpr]
+  ptag: Texpr
   swap: [2, 1]
   cost: 11
 
