@@ -168,3 +168,7 @@ shards:
     git: https://github.com/crystal-lang/yaml_mapping.cr.git
     version: 0.1.1
 
+  zstd:
+    git: https://github.com/didactic-drunk/zstd.cr.git
+    version: 1.2.0
+

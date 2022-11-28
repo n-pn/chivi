@@ -154,6 +154,9 @@ dependencies:
   jwt:
     github: crystal-community/jwt
 
+  zstd:
+    github: didactic-drunk/zstd.cr
+
 development_dependencies:
   garnet_spec:
     github: amberframework/garnet-spec
