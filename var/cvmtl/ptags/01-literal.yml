@@ -20,27 +20,22 @@
   name: Đoạn dịch tay
   desc: Đoạn dịch ngắn không có phân loại từ cụ thể
 
-- ptag: Slink
+- ptag: Z_link
   extd: [Xdobj]
   name: Đường link
   desc: Siêu liên kết (hyperlink) tới các trang web khác, e.g. https://chivi.app
 
-- ptag: Shash
-  extd: [Xdobj]
-  name: Hashtag
-  desc: 'Hashtag trên mạng, ví dụ #truyen_mang #tiếng trung'
-
-- ptag: Smail
+- ptag: Z_mail
   extd: [Xdobj, Xposs]
   name: Email
   desc: Địa chỉ email e.g. me@chivi.app
 
-- ptag: Smoji
+- ptag: Z_moji
   extd: [Xfinal, Xdobj]
   name: Kaomoji
   desc: Dùng để ký hiệu các ký hiệu hình mặt
 
-- ptag: Sunkn
+- ptag: Z_unkn
   extd: [Xfinal, Xdobj]
   name: Ký tự khác
   desc: Các chữ cái ngoại lai chưa được phân loại

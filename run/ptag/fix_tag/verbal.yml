@@ -1,6 +1,8 @@
-#   "Vn"   => "Veno",
-#   "Vd"   => "Vead",
-#   "Vi_x" => "Vntr",
-#   "Vi_o" => "Vobj",
-#   "Vi_l" => "Vmix",
-#   "Vt_"  => "Vtrn",
+# Vn: Veno
+# Vd: Vead
+# Vi_x: Vint
+# Vi_o: Vobj
+# Vi_l: Vmix
+# Vt_: Vtrn
+
+Vmix: Vexpr

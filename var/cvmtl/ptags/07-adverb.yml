@@ -36,7 +36,7 @@
   name: Phó từ ngữ khí
   desc:
 
-- ptag: Dfreq # 频度副词 adverbs of frequency
+- ptag: Dfreque # 频度副词 adverbs of frequency
   extd: [Dword]
   name: Phó từ tần suất
   desc:
@@ -101,22 +101,22 @@
   desc:
 
 - ptag: D_zai # "再": both frequency or correlative
-  extd: [Dfreq, Dcorrel]
+  extd: [Dfreque, Dcorrel]
   name: Phó từ `再`
   desc:
 
 - ptag: D_you # "又": both frequency or correlative
-  extd: [Dfreq, Dcorrel]
+  extd: [Dfreque, Dcorrel]
   name: Phó từ `又`
   desc:
 
 - ptag: D_ye3 # "也": both frequency or correlative
-  extd: [Dfreq, Dcorrel]
+  extd: [Dfreque, Dcorrel]
   name: Phó từ `也`
   desc:
 
 - ptag: D_hoan # "还": both frequency or correlative
-  extd: [Dfreq, Dcorrel]
+  extd: [Dfreque, Dcorrel]
   name: Phó từ `还`
   desc:
 

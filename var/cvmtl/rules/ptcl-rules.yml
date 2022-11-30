@@ -2,7 +2,7 @@
   ptag: $1
   cost: 15
 
-- rule: [Vntr, Ule_1]
+- rule: [Vint, Ule_1]
   ptag: $1
   cost: 16
 

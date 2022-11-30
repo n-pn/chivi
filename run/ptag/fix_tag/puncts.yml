@@ -38,6 +38,7 @@
 #   "Xp_ws"  => "Pu_ws",
 
 Pu_o: .pu.
+Pu_fs: .fs.
 Pu_pm: .fs.
 Pu_em: .em.
 Pu_qm: .qm.

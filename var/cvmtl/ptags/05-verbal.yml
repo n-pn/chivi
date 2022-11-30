@@ -28,7 +28,7 @@
   name: Động từ so sánh
   desc: Động từ kết hợp với trợ từ so sánh phía sau tạo thành cụm từ so sánh
 
-- ptag: Vntr # intransitive verb
+- ptag: Vint # intransitive verb
   extd: [Vword, V+o+c, Xmodi]
   name: Nội động từ
   desc: Động từ không kết hợp được với tân ngữ

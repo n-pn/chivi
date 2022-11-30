@@ -23,27 +23,29 @@
 #   "Fd_zui"  => "Adv_zui",
 #   "Fd_x"    => "Advb",
 
-Advb: Dword
-Adv_correl: Dcorrel
-Adv_degree: Ddegree
-Adv_freq: Dfreq
-Adv_mood: Dmood
-Adv_nega: Dnega
-Adv_time: Dtime
-Adv_scope: Dscope
-Adv_manner: Dmanner
+# Advb: Dword
+# Adv_correl: Dcorrel
+# Adv_degree: Ddegree
+# Adv_freq: Dfreque
+# Adv_mood: Dmood
+# Adv_nega: Dnega
+# Adv_time: Dtime
+# Adv_scope: Dscope
+# Adv_manner: Dmanner
 
-Adv_bie: D_bie
-Adv_bu4: D_bu4
-Adv_cai: D_cai
-Adv_du1: D_du1
-Adv_fei: D_fei
-Adv_hen: D_hen
-Adv_hoan: D_hoan
-Adv_jiu3: D_jiu3
-Adv_mei: D_mei
-Adv_ye3: D_ye3
-Adv_you: D_you
-Adv_zai: D_zai
-Adv_zong: D_zong
-Adv_zui: D_zui
+# Adv_bie: D_bie
+# Adv_bu4: D_bu4
+# Adv_cai: D_cai
+# Adv_du1: D_du1
+# Adv_fei: D_fei
+# Adv_hen: D_hen
+# Adv_hoan: D_hoan
+# Adv_jiu3: D_jiu3
+# Adv_mei: D_mei
+# Adv_ye3: D_ye3
+# Adv_you: D_you
+# Adv_zai: D_zai
+# Adv_zong: D_zong
+# Adv_zui: D_zui
+
+Dfreq: Dfreque
