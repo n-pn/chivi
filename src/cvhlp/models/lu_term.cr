@@ -71,7 +71,7 @@ class TL::LuTerm
   @[AlwaysInline]
   # return path for database
   def self.db_path(dict : String)
-    "var/cvhlp/#{dict}.dic"
+    "var/dicts/hints/#{dict}.dic"
   end
 
   # open database for reading/writing

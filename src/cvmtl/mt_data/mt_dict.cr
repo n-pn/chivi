@@ -1,7 +1,7 @@
 require "./mt_node"
 
 class MT::MtDict
-  class_getter core_base : MtDict { load("core", 1, dic: 2_i8) }
+  class_getter core_base : MtDict { load_core }
   class_getter core_temp : MtDict { load("core", -1, dic: 3_i8) }
 
   BOOKS = {} of Int32 => MtDict
@@ -14,24 +14,19 @@ class MT::MtDict
     BOOKS[-d_id] ||= load("book", -d_id, dic: 5_i8)
   end
 
-  def self.load(type : String, d_id : Int32, dic : Int8)
-    db_path = "sqlite3:./var/dicts/#{type}.dic"
+  def self.load_core
+    dict = load("core", 1, dic: 2_i8)
 
-    select_query = <<-SQL
-    select key, val, ptag, wseg from terms
-    where dic = ? and flag < 1
-    SQL
-
-    instance = new(dic)
-
-    DB.open(db_path) do |db|
-      db.query_each(select_query, d_id) do |rs|
-        key, val, tag, prio = rs.read(String, String, String, Int32)
-        instance.add_term(key, val, tag, prio)
-      end
+    Dir.glob("var/cvmtl/inits/**/*.tsv").each do |file|
+      dict.load_tsv_file(file, dic: 1)
     end
 
-    instance
+    dict
+  end
+
+  def self.load(type : String, d_id : Int32, dic : Int8)
+    db_path = "sqlite3:./var/dicts/#{type}.dic"
+    new(dic).tap(&.load_dic_file(db_path, d_id: d_id, dic: dic))
   end
 
   ########
@@ -41,8 +36,35 @@ class MT::MtDict
   def initialize(@dic : Int8)
   end
 
-  def add_term(key : String, val : String, tag : String, prio : Int32)
-    term = MtTerm.new(key, val, dic: @dic, tag: tag, prio: prio)
+  def load_dic_file(db_path : String, d_id : Int32, dic = @dic)
+    select_query = <<-SQL
+      select key, val, ptag, wseg from terms
+      where dic = ? and flag < 1
+    SQL
+
+    DB.open(db_path) do |db|
+      db.query_each(select_query, d_id) do |rs|
+        key, val, tag, prio = rs.read(String, String, String, Int32)
+        add_term(key, val, tag, prio, dic: dic)
+      end
+    end
+  end
+
+  def load_tsv_file(tsv_path : String, dic = @dic)
+    File.each_line(tsv_path) do |line|
+      next if line.empty? || line[0] == '#'
+      args = line.split('\t')
+      key = args[0]
+      val = args[1]? || ""
+      tag = args[2]? || "Lit"
+      prio = args[3]?.try(&.to_i) || 2
+
+      add_term(key, val, tag, prio, dic: dic)
+    end
+  end
+
+  def add_term(key : String, val : String, tag : String, prio : Int32, dic = @dic)
+    term = MtTerm.new(key, val, dic: dic, tag: tag, prio: prio)
     add_term(key, term)
   end
 

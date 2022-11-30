@@ -30,8 +30,9 @@ then
   # rsync-fast "var/dicts/v1/basic/hanviet.tsv" "$SSH/var/dicts/v1/basic"
   # rsync-fast "var/dicts/v1/basic/hanviet.tab" "$SSH/var/dicts/v1/basic"
 
-  rsync-fast "var/fixed" "$SSH/var"
-  rsync-fast "var/cvhlp" "$SSH/var"
+  # rsync-fast "var/fixed" "$SSH/var"
+  # rsync-fast "var/dicts/hints" "$SSH/var/dicts"
+  rsync-fast "var/cvmtl/inits" "$SSH/var/cvmtl"
   # rsync-fast "var/dicts/v1/novel" "$SSH/var/dicts/v1"
   # rsync-fast --delete "priv/static/covers/" "$SSH/priv/static/covers/"
 fi
@@ -42,12 +43,15 @@ if [[ $* == "all" || $* == *mtv2* ]]
 then
   echo upload mtv2!
 
+  rsync-fast "var/cvmtl/dicts" "$SSH/var/cvmtl"
   rsync-fast "var/cvmtl/inits" "$SSH/var/cvmtl"
-  rsync-fast "var/cvmtl/fixed" "$SSH/var/cvmtl"
+  rsync-fast "var/cvmtl/ptags" "$SSH/var/cvmtl"
+  rsync-fast "var/cvmtl/rules" "$SSH/var/cvmtl"
+  rsync-fast "var/dicts/hints" "$SSH/var/dicts"
   rsync-fast "var/dicts/qtran" "$SSH/var/dicts"
 
   rsync-fast "var/dicts/index.db" "$SSH/var/dicts"
-  rsync-fast "var/dicts/core.dic" "$SSH/var/dicts"
-  rsync-fast "var/dicts/book.dic" "$SSH/var/dicts"
-  rsync-fast "var/dicts/pack.dic" "$SSH/var/dicts"
+  rsync-fast "var/dicts/init.dic" "$SSH/var/dicts"
+  # rsync-fast "var/dicts/core.dic" "$SSH/var/dicts"
+  # rsync-fast "var/dicts/book.dic" "$SSH/var/dicts"
 fi

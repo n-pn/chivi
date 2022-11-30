@@ -17,7 +17,7 @@ enum Mark
   Cdict # exists in chinese dicts
 end
 
-DIC = DB.open("sqlite3:var/cvhlp/all_terms.dic")
+DIC = DB.open("sqlite3:var/dicts/hints/all_terms.dic")
 # DIC.exec "pragma journal_mode = WAL"
 DIC.exec "begin transaction"
 at_exit { DIC.exec "commit"; DIC.close }
@@ -75,9 +75,61 @@ end
 #   end
 # end
 
-DB.open("sqlite3:var/cvmtl/dicts/ctbv9-freq.db") do |db|
-  db.query_each "select word, ptag, freq from freqs" do |rs|
-    word, ptag, freq = rs.read(String, String, Int32)
-    add_term(word, :ctb, "ctb", "#{ptag}:#{freq}")
-  end
-end
+# DB.open("sqlite3:var/cvmtl/dicts/ctbv9-freq.db") do |db|
+#   db.query_each "select word, ptag, freq from freqs" do |rs|
+#     word, ptag, freq = rs.read(String, String, Int32)
+#     add_term(word, :ctb, "ctb", "#{ptag}:#{freq}")
+#   end
+# end
+
+# DB.open("sqlite3:var/cvmtl/dicts/ud211-freq.db") do |db|
+#   db.query_each "select word, ptag, freq from freqs" do |rs|
+#     word, ptag, freq = rs.read(String, String, Int32)
+#     add_term(word, :ud2, "ud2", "#{ptag}:#{freq}")
+#   end
+# end
+
+# puts Mark::Edict.value
+# puts Mark::Vdict.value
+# puts Mark::Cdict.value
+
+# require "../../src/cvhlp/engine"
+
+# HVMTL = TL::Engine.hanviet
+
+# hanviet = [] of {String, Int32}
+
+# DIC.query_each "select rowid, zh from terms where hv = ''" do |rs|
+#   id = rs.read(Int32)
+#   zh = rs.read(String)
+#   hv = HVMTL.convert(zh).to_txt(false)
+#   hanviet << {hv, id}
+# end
+
+# hanviet.each do |hv, id|
+#   DIC.exec "update terms set hv = ? where rowid = ?", hv, id
+# end
+
+# VI = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
+
+# Dir.glob("var/vhint/phrase/viuser/*.tsv").each do |file|
+#   File.each_line(file) do |line|
+#     args = line.split('\t')
+#     key = args.shift
+#     VI[key] = args
+#   end
+# end
+
+# Dir.glob("var/vhint/phrase/cvuser/*.tsv").each do |file|
+#   File.each_line(file) do |line|
+#     args = line.split('\t')
+#     key = args.shift
+#     VI[key].concat(args).uniq!
+#   end
+# end
+
+# VI.each do |zh, vi|
+#   next unless res = DIC.query_one?("select rowid, vi from terms where zh = ?", zh, as: {Int32, String})
+#   vi.concat(res[1].split('\t')).reject!(&.empty?).uniq!
+#   DIC.exec "update terms set vi = ? where rowid = ?", vi.join('\t'), res[0]
+# end

@@ -1,6 +1,6 @@
 require "sqlite3"
 
-DIC = DB.open("sqlite3:var/cvhlp/top_terms.dic")
+DIC = DB.open("sqlite3:var/dicts/hints/top_terms.dic")
 at_exit { DIC.close }
 
 def find_value(word : String)

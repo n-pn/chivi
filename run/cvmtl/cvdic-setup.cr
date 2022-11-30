@@ -1,6 +1,6 @@
 require "sqlite3"
 
-DB.open("sqlite3:var/cvhlp/all_terms.dic") do |db|
+DB.open("sqlite3:var/dicts/hints/all_terms.dic") do |db|
   db.exec "drop table if exists terms"
 
   db.exec <<-SQL
@@ -32,7 +32,7 @@ DB.open("sqlite3:var/cvhlp/all_terms.dic") do |db|
   db.exec "pragma journal_mode = WAL"
 end
 
-# DB.open("sqlite3:var/cvhlp/all_terms.mlen.dic") do |db|
+# DB.open("sqlite3:var/dicts/hints/all_terms.mlen.dic") do |db|
 #   db.exec <<-SQL
 #     create table if not exists msize(
 
