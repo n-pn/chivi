@@ -8,7 +8,7 @@
   # swap: [1, 2]
   cost: 19
 
-- rule: [Eppl, Nhrf_l]
+- rule: [Eppl, Nhrf_s]
   swap: [2, 1]
   ptag: Eppl
   cost: 18

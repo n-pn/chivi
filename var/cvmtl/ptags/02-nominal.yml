@@ -47,7 +47,7 @@
   name: Xưng hô (N-h)
   desc: Các từ xưng hô địa vị tiếng Nhật, đặt sau và không thêm dấu cách
 
-- ptag: Nhrf_l # honorific
+- ptag: Nhrf_s # honorific
   extd: [Nhrf]
   name: Xưng hô (h N)
   desc: Các từ xưng hô địa vị khi ghép với tên người sẽ đặt trước

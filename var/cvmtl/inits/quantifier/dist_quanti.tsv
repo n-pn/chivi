@@ -1,18 +1,18 @@
-公分		Qdist
-厘米		Qdist
-寸		Qdist
-吋		Qdist
-尺		Qdist
-呎		Qdist
-英尺		Qdist
-公尺		Qdist
+公分	centimet	Qdist
+厘米	centimet	Qdist
+分米	decimet	Qdist
+寸	tấc	Qdist
+吋	tấc	Qdist
+尺	thước	Qdist
+呎	thước	Qdist
+英尺	thước Anh	Qdist
+公尺	mét	Qdist
 米	mét	Qdist	1
-分米	centimet	Qdist
 里	dặm	Qdist	1
-哩		Qdist
-英里		Qdist
-海里		Qdist
-公里		Qdist
-天文单位		Qdist
-光年		Qdist
-秒差距		Qdist
+哩	dặm	Qdist
+英里	dặm Anh	Qdist
+海里	hải lý	Qdist
+公里	kilomet	Qdist
+天文单位	đơn vị thiên văn	Qdist
+光年	năm ánh sáng	Qdist
+秒差距	parsec	Qdist

@@ -1,9 +1,13 @@
 require "sqlite3"
 
+def db_path(name : String)
+  "var/cvmtl/dicts/#{name}-freq.db"
+end
+
 DBs = {
-  "p98" => DB.open("sqlite3:var/cvmtl/dicts/pku98-freq.db"),
-  "p14" => DB.open("sqlite3:var/cvmtl/dicts/pku14-freq.db"),
-  "pmt" => DB.open("sqlite3:var/cvmtl/dicts/pmtv1-freq.db"),
+  "p98" => DB.open("sqlite3:#{db_path("pku98")}"),
+  "p14" => DB.open("sqlite3:#{db_path("pku14")}"),
+  "pmt" => DB.open("sqlite3:#{db_path("pmtv1")}"),
 }
 
 at_exit { DBs.each_value(&.close) }
@@ -19,9 +23,6 @@ def extract(dict : String, ptag : String, path : String, mode = "w")
   end
 
   file.close
-end
-
-def out_path(name : String, kind : String)
 end
 
 # extract("pmt", "p%", "sealed/preposition")
@@ -59,6 +60,19 @@ end
 # extract("pmt", "qv", "quantifier/verb-quanti")
 # extract("pmt", "qt", "quantifier/time-quanti")
 
-extract("pmt", "t%", "n-temporal/unknown")
-extract("p98", "t%", "n-temporal/unknown")
-extract("p14", "t%", "n-temporal/unknown")
+# extract("pmt", "t%", "n-temporal/unknown")
+# extract("p98", "t%", "n-temporal/unknown")
+# extract("p14", "t%", "n-temporal/unknown")
+
+# extract("p98", "b%", "adjective/modifier")
+# extract("p14", "b%", "adjective/modifier")
+
+# extract("p98", "a%", "adjective/adjective")
+# extract("p14", "a%", "adjective/adjective")
+
+# extract("p98", "z%", "adjective/compound")
+# extract("p14", "z%", "adjective/compound")
+
+extract("pmt", "d%", "adverbial/unknown")
+extract("p98", "d%", "adverbial/unknown")
+extract("p14", "d%", "adverbial/unknown")

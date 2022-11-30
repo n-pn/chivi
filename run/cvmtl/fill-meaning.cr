@@ -1,15 +1,15 @@
 require "sqlite3"
 
-DIC = DB.open("sqlite3:var/dicts/hints/top_terms.dic")
+DIC = DB.open("sqlite3:var/dicts/hints/all_terms.dic")
 at_exit { DIC.close }
 
-def find_value(word : String)
-  query = "select defn from terms where word = ?"
-  DIC.query_one?(query, word, as: String).try(&.tr("\v", "/")) || "?"
+def find_value(zh : String)
+  query = "select vi from terms where zh = ?"
+  DIC.query_one?(query, zh, as: String) || ""
 end
 
 def fill_viet(file : String, fill_all = false)
-  output = File.open(file + ".tab", "w")
+  output = File.open(file + ".tsv", "w")
   File.each_line(file) do |line|
     if line.empty? || line.starts_with?('#')
       output.puts line
@@ -18,16 +18,23 @@ def fill_viet(file : String, fill_all = false)
 
     args = line.split('\t')
     args << "" if args.size == 1
+    args << "?" if args.size == 2
 
     word = args[0]
     defn = args[1]
 
-    if fill_all || defn == ""
-      new_defn = find_value(word)
-      args[1] = defn.empty? ? new_defn : "#{new_defn} /#{defn}"
+    unless defn.empty?
+      output.puts args.join('\t')
+      next unless fill_all
     end
 
-    output.puts args.join('\t')
+    defined = find_value(word)
+    next if defined.empty?
+
+    defined.split('\t').each do |val|
+      args[1] = val
+      output.puts args.join('\t')
+    end
   end
 
   output.close

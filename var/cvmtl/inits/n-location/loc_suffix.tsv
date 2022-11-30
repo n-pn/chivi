@@ -1,53 +1,55 @@
 # suffixes
 ## places
-江		LocSf
-河		LocSf
-山		LocSf
-洋		LocSf
-海		LocSf
-岛		LocSf
-峰		LocSf
-湖		LocSf
-海峡		LocSf
-平原		LocSf
-高原		LocSf
-群岛		LocSf
-峡谷		LocSf
-山脉		LocSf
+江	sông	LocSf	1
+河	sông	LocSf	1
+山	núi	LocSf	1
+洋	biển	LocSf	1
+海	biển	LocSf	1
+岛	đảo	LocSf	1
+峰	đỉnh	LocSf	1
+湖	hồ	LocSf	1
+海峡	eo biển	LocSf	1
+平原	bình nguyên	LocSf	1
+高原	cao nguyên	LocSf	1
+群岛	quần đảo	LocSf	1
+峡谷	hẻm núi	LocSf	1
+山脉	dãy núi	LocSf	1
 
 ## regions
-街		LocSf
-路		LocSf
-道		LocSf
-巷		LocSf
-里		LocSf
-町		LocSf
-庄		LocSf
-村		LocSf
-弄		LocSf
-堡		LocSf
-大街		LocSf
-胡同		LocSf
-公园		LocSf
-大街		LocSf
-胡同		LocSf
+街	phố	LocSf	1
+路	đường	LocSf	1
+道	đường	LocSf	1
+巷	ngõ	LocSf	1
+里	xóm	LocSf	1
+町	đinh	LocSf	1
+庄	trang	LocSf	1
+村	thôn	LocSf	1
+弄	hẻm	LocSf	1
+堡	pháo đài	LocSf	1
+大街	đường	LocSf	1
+胡同	ngõ hẻm	LocSf	1
+公园	công viên	LocSf	1
+大街	đường cái	LocSf	1
 
 ## GRE
-省		LocSf
-市		LocSf
-县		LocSf
-区		LocSf
-乡		LocSf
-镇		LocSf
-村		LocSf
-旗		LocSf
-州		LocSf
-都		LocSf
-府		LocSf
+省	tỉnh	LocSf	1
+市	thành phố	LocSf	1
+县	huyện	LocSf	1
+区	khu	LocSf	1
+乡	xã	LocSf	1
+镇	thị trấn	LocSf	1
+村	thôn	LocSf	1
+旗	kỳ	LocSf	1
+州	châu	LocSf	1
+府	phủ	LocSf	1
 
-专区		LocSf
-地区		LocSf
-特区		LocSf
-自治区		LocSf
-行政区		LocSf
-自治县		LocSf
+专区	chuyên khu	LocSf	1
+地区	khu vực	LocSf	1
+地区	chi nhánh	LocSf	1
+地区	địa khu	LocSf	1
+特区	đặc khu	LocSf	1
+自治区	khu tự trị	LocSf	1
+行政区	khu hành chính	LocSf	1
+自治县	huyện tự trị	LocSf	1
+
+都	đô	LocSf2	1
