@@ -1,0 +1,131 @@
+# Ngữ khí: https://khoahoctiengtrung.com/tro-tu-ngu-khi-trong-tieng-trung/
+
+## Ngữ khí nghi vấn – 疑问语气
+吗	a	Omopa_q	1
+吗	à	Omopa_q	1
+么	à	Omopa_q	1
+么	sao	Omopa_q	1
+吧	a	Omopa_q	1
+吧	nha	Omopa_q	1
+呢	nha	Omopa_q	1
+呢	đây	Omopa_q	1
+呢	đâu	Omopa_q	1
+呢	nè	Omopa_q	1
+呢	này	Omopa_q	1
+
+之	chi	Omopa_q	1
+乎	hồ	Omopa_q	1
+也	vậy	Omopa_q	1
+者	đấy	Omopa_q	1
+
+哉	thay	Omopa_q	1
+与	cùng	Omopa_q	1
+欤	dư	Omopa_q	1
+邪	da	Omopa_q	1
+耶	ấy	Omopa_q	1
+耶	da	Omopa_q	1
+耶	ư	Omopa_q	1
+
+为	vì	Omopa_q	1
+为	là	Omopa_q	1
+
+## Ngữ khí mệnh lệnh – 祈使语气
+吧	nha	Omopa_c	1
+罢	xong	Omopa_c	1
+呀	nha	Omopa_c	1
+啊	à	Omopa_c	1
+啊	ah	Omopa_c	1
+啊	a	Omopa_c	1
+啦	rồi	Omopa_c	1
+啦	rùi	Omopa_c	1
+矣	vậy	Omopa_c	1
+焉	yên	Omopa_c	1
+焉	sao	Omopa_c	1
+哉	thay	Omopa_c	1
+
+## Ngữ khí cảm thán – 感叹语气
+啊	à	Omopa_e	1
+啊	ah	Omopa_e	1
+啊	a	Omopa_e	1
+呀	nha	Omopa_e	1
+哇	oa	Omopa_e	1
+哪	đâu	Omopa_e	1
+哪	nào	Omopa_e	1
+也	cũng	Omopa_e	1
+也	vậy	Omopa_e	1
+矣	vậy	Omopa_e	1
+乎	có lẽ	Omopa_e	1
+乎	hồ	Omopa_e	1
+乎	hô	Omopa_e	1
+焉	yên	Omopa_e	1
+焉	sao	Omopa_e	1
+哉	thay	Omopa_e	1
+与	cùng	Omopa_e	1
+欤	dư	Omopa_e	1
+耶	ấy	Omopa_e	1
+耶	da	Omopa_e	1
+耶	ư	Omopa_e	1
+已	đã	Omopa_e	1
+
+## Ngữ khí khẳng định – 肯定语气
+的	của	Omopa_d	1
+了	rồi	Omopa_d	1
+了	đã	Omopa_d	1
+嘛	a	Omopa_d	1
+嘛	mà	Omopa_d	1
+呢	nha	Omopa_d	1
+呢	đây	Omopa_d	1
+呢	đâu	Omopa_d	1
+呢	nè	Omopa_d	1
+呢	này	Omopa_d	1
+啦	rồi	Omopa_d	1
+啦	rùi	Omopa_d	1
+罢了	mà thôi	Omopa_d	1
+而已	mà thôi	Omopa_d	1
+也	cũng	Omopa_d	1
+也	vậy	Omopa_d	1
+矣	vậy	Omopa_d	1
+乎	có lẽ	Omopa_d	1
+乎	hồ	Omopa_d	1
+乎	hô	Omopa_d	1
+然	song	Omopa_d	1
+然	nhiên	Omopa_d	1
+焉	yên	Omopa_d	1
+焉	sao	Omopa_d	1
+耳	tai	Omopa_d	1
+而已	mà thôi	Omopa_d	1
+云	vân	Omopa_d	1
+云	nói	Omopa_d	1
+云	Vân	Omopa_d	1
+云	mây	Omopa_d	1
+尔	ngươi	Omopa_d	1
+尔	Nhĩ	Omopa_d	1
+
+## Ngữ khí ngừng – 停顿语气
+啊	à	Omopa_s	1
+啊	ah	Omopa_s	1
+啊	a	Omopa_s	1
+吧	a	Omopa_s	1
+吧	nha	Omopa_s	1
+呢	nha	Omopa_s	1
+呢	đây	Omopa_s	1
+呢	đâu	Omopa_s	1
+呢	nè	Omopa_s	1
+呢	này	Omopa_s	1
+么	à	Omopa_s	1
+么	sao	Omopa_s	1
+也	vậy	Omopa_s	1
+矣	vậy	Omopa_s	1
+乎	có lẽ	Omopa_s	1
+乎	hồ	Omopa_s	1
+乎	hô	Omopa_s	1
+焉	yên	Omopa_s	1
+焉	sao	Omopa_s	1
+兮	này	Omopa_s	1
+兮	chừ	Omopa_s	1
+兮	hề	Omopa_s	1
+
+## Ngữ khí ghép
+啦	rồi	Omopa	2
+啦	rùi	Omopa	2
+那	nhá	Omopa	2

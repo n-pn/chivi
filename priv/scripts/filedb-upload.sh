@@ -52,6 +52,6 @@ then
 
   rsync-fast "var/dicts/index.db" "$SSH/var/dicts"
   rsync-fast "var/dicts/init.dic" "$SSH/var/dicts"
-  # rsync-fast "var/dicts/core.dic" "$SSH/var/dicts"
-  # rsync-fast "var/dicts/book.dic" "$SSH/var/dicts"
+  rsync-fast "var/dicts/core.dic" "$SSH/var/dicts"
+  rsync-fast "var/dicts/book.dic" "$SSH/var/dicts"
 fi

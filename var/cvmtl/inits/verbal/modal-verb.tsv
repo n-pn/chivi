@@ -1,31 +1,31 @@
-肯		Vmod
-可能		Vmod
-可以		Vmod
-希望		Vmod
-应该		Vmod
-愿意		Vmod
-能够		Vmod
-得以		Vmod
-乐意		Vmod
-情愿		Vmod
-愿		Vmod
-想要		Vmod
-敢		Vmod
-敢于		Vmod
-乐于		Vmod
-应		Vmod
-应该		Vmod
-应当		Vmod
-必须		Vmod
-得		Vmod
-该		Vmod
-当		Vmod
-须得		Vmod
-犯得着		Vmod
-犯不着		Vmod
-理当		Vmod
-值得		Vmod
-便于		Vmod
-难于		Vmod
-难以		Vmod
-易于		Vmod
+肯	chịu	Vmod	1
+可能	có thể	Vmod	1
+可以	có thể	Vmod	1
+希望	hi vọng	Vmod	1
+应该	hẳn phải	Vmod	1
+愿意	nguyện ý	Vmod	1
+能够	có khả năng	Vmod	1
+得以	có thể	Vmod	1
+乐意	vui lòng	Vmod	1
+情愿	tình nguyện	Vmod	1
+愿	nguyện	Vmod	1
+想要	muốn	Vmod	1
+敢	dám	Vmod	1
+敢于	dám	Vmod	1
+乐于	vui với	Vmod	1
+应	nên	Vmod	1
+应该	cần phải	Vmod	1
+应当	nên	Vmod	1
+必须	nhất định phải	Vmod	1
+得	phải	Vmod	1
+该	nên	Vmod	1
+当	đương	Vmod	1
+须得	cần phải	Vmod	1
+犯得着	đáng giá	Vmod	1
+犯不着	không đáng	Vmod	1
+理当	nên	Vmod	1
+值得	đáng giá	Vmod	1
+便于	tiện bề	Vmod	1
+难于	khó với	Vmod	1
+难以	khó mà	Vmod	1
+易于	dễ dàng	Vmod	1

@@ -2,15 +2,36 @@
 次	lần	Qverb	2
 次	chuyến	Qv_ci4	1
 
-遍	lượt	Qverb
-场	trận	Qverb
-顿	chầu	Qverb
-回	hồi	Qverb
-声	tiếng	Qverb
-趟	chuyến	Qverb
-下	phát	Qverb
-下儿	phát	Qverb
-番	phen	Qverb
-阵		Qverb
-会	lúc	Qverb
-会儿	lát	Qverb
+遍	lượt	Qverb	1
+场	trận	Qverb	1
+顿	chầu	Qverb	1
+回	hồi	Qverb	1
+声	tiếng	Qverb	1
+趟	chuyến	Qverb	1
+下	phát	Qverb	1
+下儿	phát	Qverb	1
+番	phen	Qverb	1
+阵	trận	Qverb	1
+会	lúc	Qverb	1
+会儿	lát	Qverb	1
+
+
+路	lộ	Qverb	0
+道	đạo	Qverb	0
+周	chu	Qverb	0
+任	nhậm	Qverb	0
+期	kỳ	Qverb	0
+步	bộ	Qverb	0
+人次	nhân thứ	Qverb	0
+轮	luân	Qverb	0
+度	độ	Qverb	0
+班	ban	Qverb	0
+餐	xan	Qverb	0
+局	cục	Qverb	0
+圈	khuyên	Qverb	0
+席	tịch	Qverb	0
+幕	mạc	Qverb	0
+场次	trường thứ	Qverb	0
+架次	giá thứ	Qverb	0
+盘	bàn	Qverb	0
+胎	thai	Qverb	0

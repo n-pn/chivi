@@ -4,14 +4,16 @@
 岁	tuổi	Qtime
 周	tuần	Qtime
 晚	đêm	Qtime
-载	năm	Qtime
+夜	đêm	Qtime
 
 秒钟	giây	Qtime
 分钟	phút	Qtime
 小时	giờ	Qtime
 个月	tháng	Qtime
+辈子	đời	Qtime	1
 时辰	canh giờ	Qtime
-
+周年	năm tròn	Qtime
+会儿	chốc lát	Qtime	1
 
 年	năm	Qt_nian	1
 月	tháng	Qt_yue4	1
