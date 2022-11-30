@@ -1,5 +1,3 @@
-#key	#val	#ptag	#rank
-
 没	không có	Dmei_0	3
 没	không	Dmei_1	2
 没	chưa	Dmei_2	1
@@ -12,27 +10,27 @@
 非	phi	D_fei
 别	đừng	D_bie
 
-甭		Dnega
+甭	khỏi cần	Dnega
 未	chưa	Dnega
-莫		Dnega
-勿		Dnega
-没有	không có	Dnega
-未必		Dnega
+莫	chẳng lẽ	Dnega
+莫	đừng	Dnega
+勿	chớ	Dnega
+未必	chưa hẳn	Dnega
 不用	vô dụng	Dnega
-徒然		Dnega
-枉自		Dnega
+徒然	uổng công	Dnega
+枉自	vô ích	Dnega
 
 最	nhất	D_zui
 很	rất	D_hen
 太	quá	Ddegree
 更	càng	Ddegree
-极		Ddegree
-挺		Ddegree
-顶		Ddegree
-极其		Ddegree
-非常		Ddegree
-特别		Ddegree
-十分		Ddegree
+极	cực	Ddegree
+挺	rất	Ddegree
+顶	đỉnh	Ddegree
+极其	cực kỳ	Ddegree
+非常	phi thường	Ddegree
+特别	đặc biệt	Ddegree
+十分	mười phần	Ddegree
 
 已	đã	Dtime
 正	đang	Dtime
@@ -41,67 +39,64 @@
 老	mãi	Dtime
 先	trước	Dtime
 已经	đã	Dtime
-曾经		Dtime
+曾经	đã từng	Dtime
 马上	lập tức	Dtime
 
 就	liền	Dmood
 就	liền	D_jiu3	1
 
-偏		Dmood
+偏	chếch	Dmood
 可	có thể	Dmood
 
-却		Dmood
-岂		Dmood
-只好		Dmood
-难道		Dmood
-难怪		Dmood
-究竟		Dmood
-到底		Dmood
-
+却	lại	Dmood
+岂	há	Dmood
+只好	đành phải	Dmood
+难道	chẳng lẽ	Dmood
+难怪	khó trách	Dmood
+究竟	rốt cuộc	Dmood
+到底	rốt cuộc	Dmood
+到底	đến cùng	Dmood
 
 全	chỉ	Dscope
 只	chỉ	Dscope
-共		Dscope
-光		Dscope
-总共		Dscope
-仅仅		Dscope
+共	chung	Dscope
+光	quang	Dscope
+光	ánh sáng	Dscope
+总共	tổng cộng	Dscope
+仅仅	vẻn vẹn	Dscope
 
-
-始终		Dfreque
-总是		Dfreque
-一向		Dfreque
-常常		Dfreque
-偶尔		Dfreque
-向来		Dfreque
-仍然		Dfreque
-屡次		Dfreque
-再次		Dfreque
-反复		Dfreque
-重新		Dfreque
-
+始终	trước sau	Dfreque
+始终	thuỷ chung	Dfreque
+总是	luôn là	Dfreque
+一向	vẫn luôn	Dfreque
+常常	thường thường	Dfreque
+偶尔	ngẫu nhiên	Dfreque
+向来	từ trước đến nay	Dfreque
+仍然	vẫn cứ	Dfreque
+屡次	nhiều lần	Dfreque
+再次	lần nữa	Dfreque
+反复	lặp đi lặp lại	Dfreque
+重新	lần nữa	Dfreque
 
 才	mới	D_cai
 便	bèn	Dcorrel
-却		Dcorrel
-既		Dcorrel
-越		Dcorrel
+却	lại	Dcorrel
+既	đã	Dcorrel
+越	càng	Dcorrel
 
-
-特地		Dmanner
-百般		Dmanner
-互相		Dmanner
-擅自		Dmanner
-亲自		Dmanner
-逐步		Dmanner
+特地	đặc biệt	Dmanner
+百般	mọi cách	Dmanner
+互相	lẫn nhau	Dmanner
+擅自	tự tiện	Dmanner
+亲自	tự mình	Dmanner
+逐步	từng bước	Dmanner
 政治	chính trị	Dmanner	1
-
 
 总	cứ	D_zong
 
-再		D_zai
+再	lại	D_zai
 又	lại	D_you
 也	cũng	D_ye3
 还	còn	D_hoan
-
 
 都	đều	D_du1

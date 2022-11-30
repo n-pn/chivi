@@ -50,20 +50,20 @@ class MT::MtDict
     end
   end
 
-  def load_tsv_file(tsv_path : String, dic = @dic)
+  def load_tsv_file(tsv_path : String, dic : Int8 = @dic)
     File.each_line(tsv_path) do |line|
       next if line.empty? || line[0] == '#'
       args = line.split('\t')
       key = args[0]
       val = args[1]? || ""
       tag = args[2]? || "Lit"
-      prio = args[3]?.try(&.to_i) || 2
+      prio = args[3]?.try(&.to_i?) || 2
 
       add_term(key, val, tag, prio, dic: dic)
     end
   end
 
-  def add_term(key : String, val : String, tag : String, prio : Int32, dic = @dic)
+  def add_term(key : String, val : String, tag : String, prio : Int32, dic : Int8 = @dic)
     term = MtTerm.new(key, val, dic: dic, tag: tag, prio: prio)
     add_term(key, term)
   end

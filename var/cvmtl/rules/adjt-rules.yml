@@ -14,11 +14,11 @@
   ptag: Aword
   cost: 14
 
-- rule: [Advb, Adjt]
+- rule: [Dword, Adjt]
   ptag: Aexpr
   cost: 13
 
-- rule: [Advb, Aexpr]
+- rule: [Dword, Aexpr]
   ptag: Aexpr
   cost: 14
 

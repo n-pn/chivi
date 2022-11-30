@@ -1,4 +1,4 @@
-- rule: [Xsubj_a, Verb]
+- rule: [Xsubj_a, Vexpr]
   ptag: Subj+Verb
   cost: 11
 

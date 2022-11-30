@@ -12,85 +12,70 @@
 怪	trách
 对不起	có lỗi với
 
-暗道	thầm nói	v		1386479	tôm tép
-花	tốn	v		1428956	Nipin
+暗道	thầm nói	Vtrn
+花	tốn	Vtrn
 
-还	trả			1113104	Nipin
-画	vẽ			1113137	Nipin
-杵	chọc	v		1113158	Nipin
-更	đổi			1113188	Nipin
-真怒	thật giận			1113322	Nipin
-谎言	nói dối			1113334	Nipin
-服	uống			1113338	Nipin
-劫	cướp			1113366	Nipin
-倒	đổ			1120144	Nipin
-过去	đi qua			1120148	Nipin
-服	phục	v		1123910	tôm tép
+还	trả	Vtrn
+画	vẽ	Vtrn
+杵	chọc	Vtrn
+更	đổi	Vtrn
+真怒	thật giận	Vtrn
+谎言	nói dối	Vtrn
+服	uống	Vtrn
+劫	cướp	Vtrn
+倒	đổ	Vtrn
+过去	đi qua	Vtrn
+服	phục	Vtrn
 
-
-梳	chải			1133929	Nipin
-盘	cuộn			1133949	Nipin
-盖	đậy			1184743	Nipin
-理	để ý			1202254	Nipin
-命	lệnh	v		1202263	Nipin
-横	vạch			1202383	Nipin
-
-
-
-
-选择	lựa chọn	vd		1216672	Nipin
-
-关	đóng			1218003	Nipin
-花	xài			1218508	Nipin
-
+梳	chải	Vtrn
+盘	cuộn	Vtrn
+盖	đậy	Vtrn
+理	để ý	Vtrn
+命	lệnh	Vtrn
+横	vạch	Vtrn
+花	xài	Vtrn
+关	đóng	Vtrn
+背	gánh	Vtrn
+怪	trách	Vtrn
+选择	lựa chọn	Vtrn
+生气	giận	Vtrn
+昵称	gọi cưng	Vtrn
+要冲	muốn xung	Vtrn	1
 
 
-关	quan	v		1225295	tôm tép
-背	gánh			1227314	Nipin
+君临	quân lâm	Vtrn
+亲	hôn	Vtrn
 
 
-昵称	gọi cưng			1229998	Nipin
-怪	quái	v		1232074	tôm tép
-
-生气	nổi giận			1232655	Nipin
-
-要冲	muốn xung			1233150	Nipin
+安	lắp	Vtrn
 
 
+提灯	đốt đèn	Vtrn
+关	chốt	Vtrn
+
+
+教会	dạy cho	Vtrn
+生气	tức giận	Vtrn
+怪	trách	Vtrn
+戒	cai	Vtrn
+
+鼓	phồng	Vtrn
+还	trả	Vtrn
+卡	kẹt	Vtrn
+关	quan	Vtrn
+行商	hành thương	Vtrn
+完	xong	Vtrn
+高达	cao tới	Vtrn
+背	gánh	Vtrn
+昵称	nickname	Vtrn
+画饼	vẽ bánh	Vtrn
+
+缓冲完毕	tải đệm	Vtrn
 
 
 
 
-
-君临	quân lâm	v		1237335	eet789
-亲	hôn			1238677	Nipin
-
-进行	tiến hành	vx		1239133	Nipin
-安	lắp	v		1240843	Nipin
-
-打算	tính toán	vx		1243596	Nipin
-提灯	đốt đèn	v		1246453	eet789
-关	chốt	v		1248590	Nipin
-支持	chống đỡ	vx		1248687	Nipin
-
-教会	dạy cho	v		1249295	Nipin
-生气	tức giận	v		1249397	Nipin
-怪	trách	v		1251745	Nipin
-戒	cai	v		1253540	Nipin
-决定	quyết định	vx		1261492	Nipin
-鼓	phồng	v		1261645	Nipin
-还	trả	v		1263053	Nipin
-卡	kẹt	v		1268530	Nipin
-关	quan	v		1284511	tôm tép
-行商	hành thương	v		1302439	tôm tép
-完	xong	v		1310712	Nipin
-高达	cao tới	v		1311954	eet789
-背	gánh	v		1318471	tôm tép
-昵称	nickname	v		1322190	tôm tép
-画饼	vẽ bánh	v		1330025	tôm tép
-成功	thành công	vx		1334747	Nipin
-缓冲完毕	tải đệm	v		1334755	Nipin
-小点	nhỏ chút	v		1340528	Nipin
-
-纹身	xăm hình	v		1361049	tôm tép
-地道	mà nói	v		1374582	Nipin
+进行	tiến hành	Vtrn
+打算	tính toán	Vtrn
+支持	chống đỡ	Vtrn
+决定	quyết định	Vtrn

@@ -1,21 +1,21 @@
-- rule: [Prep, Xdobj]
-  ptag: Prep+Objt 1
+- rule: [Pword, Xdobj]
+  ptag: Pw+o
   cost: 10
 
-- rule: [Prep_t, Xdobj]
-  ptag: Pp+o_t
+- rule: [Pword_t, Xdobj]
+  ptag: Pw+o_t
   cost: 11
 
-- rule: [Prep+Objt 1, V+o+c]
+- rule: [Pw+o, V+o+c]
   ptag: $2
   cost: 12
 
-- rule: [Pp+o_t, V+o+c]
+- rule: [Pw+o_t, V+o+c]
   ptag: $2
   swap: [2, 1]
   cost: 13
 
-- rule: [Prep, Xdobj, Udep, Xdobj]
+- rule: [Pword, Xdobj, Udep, Xdobj]
   swap: [4, 1, 2, 3]
   ptag: $4
-  cost: 20
+  cost: 30

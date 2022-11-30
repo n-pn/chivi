@@ -3,6 +3,11 @@
   name: Giới từ
   desc:
 
+- ptag: Pword_t #  generic
+  extd: [Pword]
+  name: Giới từ 2
+  desc: Giới từ khi ghép với tân ngữ sẽ đặt sau động từ
+
 - ptag: Pcmp #  compare
   extd: [Pword]
   name: Giới từ so sánh bằng

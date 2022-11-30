@@ -6,12 +6,12 @@
   desc: Cụm từ mang tính chất danh từ sau khi ghép với các từ loại khác
 
 - ptag: Npair
-  extd: [Nform]
+  extd: [Nexpr]
   name: Cặp danh từ
   desc: Ghép cặp các danh từ độc lập, thường để kết hợp với trợ từ liệt kê phía sau
 
 - ptag: Nword
-  extd: [Nform]
+  extd: [Nexpr]
   name: Danh từ đơn
   desc: Các loại danh từ cơ bản
 

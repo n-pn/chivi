@@ -38,7 +38,7 @@
   ptag: $2
   cost: 14
 
-- rule: [Advb, Vexpr]
+- rule: [Dword, Vexpr]
   ptag: Vexpr
   cost: 13
 
