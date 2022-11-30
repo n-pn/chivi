@@ -71,24 +71,25 @@
 - ptag: P_cong # "从"
   extd: [Pword]
   name: Giới từ `从`
-  desc:
+  desc: Theo
+## extra
 
-- ptag: P_he2 # "和"
-  extd: [Pcmp]
-  name: Giới từ `和`
-  desc:
+# - ptag: P_he2 # "和"
+#   extd: [Pcmp]
+#   name: Giới từ `和`
+#   desc:
 
-- ptag: P_yu3 # "与"
-  extd: [Pcmp]
-  name: Giới từ `与`
-  desc:
+# - ptag: P_yu3 # "与"
+#   extd: [Pcmp]
+#   name: Giới từ `与`
+#   desc:
 
-- ptag: P_tong # "同"
-  extd: [Pcmp]
-  name: Giới từ `同`
-  desc:
+# - ptag: P_tong # "同"
+#   extd: [Pcmp]
+#   name: Giới từ `同`
+#   desc:
 
-- ptag: P_gen1 # "跟"
-  extd: [Pcmp]
-  name: Giới từ `跟`
-  desc:
+# - ptag: P_gen1 # "跟"
+#   extd: [Pcmp]
+#   name: Giới từ `跟`
+#   desc:

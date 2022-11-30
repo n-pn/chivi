@@ -1,5 +1,132 @@
 
-和	Pp_cmp
-与	Pp_cmp
-同	Pp_cmp
-跟	Pp_cmp
+把	đem	P_ba	1
+对	đối với	P_dui	1
+
+比	so với	Pword	2
+比	hơn	P_bi_1	1
+比	bằng	P_bi_1	0
+
+
+在	tại	Pword	1
+在	ở	P_zai	0
+
+
+和	với	Pword	2
+与	với	Pword	2
+同	cùng	Pword	2
+跟	cùng	Pword	2
+
+和	như	Pcmp	1
+与	như	Pcmp	1
+同	như	Pcmp	1
+跟	như	Pcmp	1
+
+为	vì	Pword	1
+到	đến	Pword	1
+到	tới	Pword	1
+就	liền	Pword	1
+将	đem	Pword	1
+
+以	để	Pword	1
+以	lấy	Pword	1
+从	từ	Pword	1
+从	theo	Pword	1
+
+向	hướng	Pword	1
+于	tại	Pword	1
+由	tuỳ	Pword	1
+由	từ	Pword	1
+由	do	Pword	1
+据	theo	Pword	1
+被	bị	Pword	1
+给	cho	Pword	1
+给	để cho	Pword	1
+有关	có quan hệ	Pword	1
+用	dùng	Pword	1
+通过	thông qua	Pword	1
+同	cùng	Pword	1
+至	đến	Pword	1
+作为	xem như	Pword	1
+作为	làm nên	Pword	1
+作为	với tư cách	Pword	1
+
+较	so	Pword	1
+由于	bởi vì	Pword	1
+当	làm	Pword	1
+为了	vì	Pword	1
+根据	căn cứ	Pword	1
+因	tại vì	Pword	1
+经过	trải qua	Pword	1
+因为	bởi vì	Pword	1
+关于	về	Pword	1
+对于	đối với	Pword	1
+自	từ	Pword	1
+按照	dựa theo	Pword	1
+像	giống	Pword	1
+按	dựa theo	Pword	1
+打	đánh	Pword	1
+拿	cầm	Pword	1
+经	chịu	Pword	1
+随着	cùng với	Pword	1
+比较	tương đối	Pword	1
+比较	so sánh	Pword	1
+靠	dựa	Pword	1
+连	liền	Pword	1
+往	hướng	Pword	1
+除	trừ	Pword	1
+针对	nhằm vào	Pword	1
+除了	ngoại trừ	Pword	1
+除了	trừ ra	Pword	1
+离	cách	Pword	1
+随	theo	Pword	1
+随	tuỳ	Pword	1
+跟	cùng	Pword	1
+跟	với	Pword	1
+借	mượn	Pword	1
+借	cho mượn	Pword	1
+依据	căn cứ	Pword	1
+归	thuộc về	Pword	1
+归	quy	Pword	1
+距离	khoảng cách	Pword	1
+距离	cự ly	Pword	1
+朝	hướng	Pword	1
+朝	triều	Pword	1
+奔	chạy	Pword	1
+沿	ven	Pword	1
+乘	ngồi	Pword	1
+乘	thừa	Pword	1
+距	cách	Pword	1
+依照	dựa theo	Pword	1
+依照	căn cứ theo	Pword	1
+依照	y theo	Pword	1
+至于	còn đến	Pword	1
+至于	đối với	Pword	1
+凭	dựa	Pword	1
+凭	bằng	Pword	1
+替	thay	Pword	1
+每当	mỗi khi	Pword	1
+沿着	dọc theo	Pword	1
+照	chiếu	Pword	1
+自从	từ lúc	Pword	1
+基于	căn cứ vào	Pword	1
+凭着	dựa vào	Pword	1
+依	dựa vào	Pword	1
+本着	căn cứ	Pword	1
+朝着	hướng tới	Pword	1
+朝着	hướng lấy	Pword	1
+凭借	bằng vào	Pword	1
+鉴于	xét thấy	Pword	1
+跟随	đi theo	Pword	1
+经由	đi qua	Pword	1
+向着	hướng về	Pword	1
+顺着	xuôi theo	Pword	1
+为着	để	Pword	1
+遵照	tuân theo	Pword	1
+乘着	thừa lúc	Pword	1
+连同	tính cả	Pword	1
+较之	so sánh với	Pword	1
+自打	từ lúc	Pword	1
+趁	thừa dịp	Pword	1
+当着	đang tại	Pword	1
+及至	cho đến	Pword	1
+趁着	thừa dịp	Pword	1
