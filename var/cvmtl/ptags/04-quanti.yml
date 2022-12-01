@@ -44,7 +44,7 @@
 - ptag: Qn_ge_2 # "个"  Ge4
   extd: [Qnoun]
   name: Lượng từ `个` (⛶)
-  attr: [Void]
+  attr: [Void, CapRelay]
   desc:
 
 - ptag: Qn_ba_1 # "把"  Ba3

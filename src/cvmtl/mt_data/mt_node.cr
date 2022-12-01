@@ -69,7 +69,7 @@ class MT::MtTerm < MT::MtNode
       io << @val
       apply_cap || attr.cap_after?
     elsif apply_cap
-      io << @val[0].upcase << @val[1..]
+      io << @val[0].upcase << @val[1..] unless @val.empty?
       attr.cap_after?
     else
       io << @val

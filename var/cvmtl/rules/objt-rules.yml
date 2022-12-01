@@ -29,3 +29,15 @@
 - rule: [XP+Udep 2, Ajino]
   ptag: Nabs
   cost: 11
+
+- rule: [Rdet_h, Qnoun]
+  ptag: Xdobj
+  cost: 12
+
+- rule: [Rdet_h, Qnoun]
+  ptag: NQnoun
+  cost: 12
+
+- rule: [Rdet_h, Qmass]
+  ptag: NQmass
+  cost: 13

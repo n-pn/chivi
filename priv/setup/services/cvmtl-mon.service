@@ -1,0 +1,10 @@
+[Unit]
+Description=cvmtl-srv restarter
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl restart cvmtl-srv.service
+
+[Install]
+WantedBy=multi-user.target

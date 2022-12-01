@@ -4,7 +4,7 @@
 
 - rule: [Xsubj_a, Aword]
   ptag: Subj+Adjt
-  cost: 12
+  cost: 11
 
 - rule: [Xsubj, V_shi, Xpred]
   ptag: Subj+Pred

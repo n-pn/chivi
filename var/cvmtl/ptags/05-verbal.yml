@@ -10,7 +10,7 @@
   name: Cụm liên động
 
 - ptag: V+o+c
-  extd: [Vexpr]
+  extd: [Vexpr, Xmodi_p]
   name: Cụm động tân bổ
 
 - ptag: Vword

@@ -1,0 +1,6 @@
+[Path]
+Unit=cvmtl-mon.service
+PathChanged=/app/chivi/var/cvmtl
+
+[Install]
+WantedBy=multi-user.target

@@ -1,4 +1,4 @@
-- rule: [Verb, Ule_0]
+- rule: [Vtrn, Ule_0]
   ptag: $1
   cost: 15
 
@@ -6,15 +6,19 @@
   ptag: $1
   cost: 16
 
-- rule: [Verb, Uzhe_0]
+- rule: [Vword, Ule_0]
+  ptag: $1
+  cost: 14
+
+- rule: [Vword, Uzhe_0]
   ptag: Vlnk
   cost: 15
 
-- rule: [Verb, Uguo_0]
+- rule: [Vword, Uguo_0]
   ptag: $1
   cost: 15
 
-- rule: [Usuo, Verb]
+- rule: [Usuo, Vword]
   ptag: $2
   cost: 15
 
