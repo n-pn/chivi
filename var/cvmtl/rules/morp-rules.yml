@@ -1,4 +1,4 @@
 - rule: [Pre_di_1, Mcar]
   ptag: Mord
-  swap: [2, 1]
+  # swap: [2, 1]
   cost: 14
