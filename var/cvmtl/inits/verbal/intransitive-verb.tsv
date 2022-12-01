@@ -1,4 +1,4 @@
-卡	kẹt	Vint	2
+卡	kẹt	Vint	1
 结果	kết quả	Vint	2
 重生	trùng sinh	Vint	2
 逃亡	chạy trốn	Vint	2
@@ -18,5 +18,7 @@
 沸腾	sôi trào	Vint	2
 褪色	phai màu	Vint	2
 生气	nổi giận	Vint	2
-成功	thành công	Vpro
-地道	mà nói	Vint
+地道	mà nói	Vint	2
+谈心	tâm sự	Vint	3
+
+成功	thành công	Vpro	2

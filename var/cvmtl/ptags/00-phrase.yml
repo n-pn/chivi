@@ -41,15 +41,15 @@
   name: Cụm vị ngữ (động)
   desc: Cụm động từ đầy đủ (gồm động từ, bổ ngữ phía trước, tân ngữ, bổ ngữ phía sau)
 
-- ptag: Prep+Objt 1
+- ptag: Pw+o_h
   name: Cụm giới tân 1
   desc: Cụm giới từ + tân ngữ khi ghép với động từ sẽ đứng phía trước
 
-- ptag: Prep+Objt 2
+- ptag: Pw+o_t
   name: Cụm giới tân 2
   desc: Cụm giới từ + tân ngữ khi ghép với động từ sẽ đứng phía sau
 
-- ptag: Pron+Numb
+- ptag: Det+MQ
   name: Cụm đại + số lượng
 
 - ptag: Parenthesis

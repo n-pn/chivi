@@ -73,7 +73,7 @@ class MT::MtData
       @top_cost[idx] = node_cost
     end
 
-    return unless ptags = PosTag::ROLE_MAP[node.ptag]?
+    ptags = PosTag::ROLE_MAP[node.ptag]? || [node.ptag]
     # puts [node, PosTag.tag_str(node.ptag), PosTag.tag_str(ptags)]
 
     all_curr = @all.unsafe_fetch(idx)

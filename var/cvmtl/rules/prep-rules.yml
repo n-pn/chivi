@@ -1,19 +1,19 @@
 - rule: [Pword, Xdobj]
-  ptag: Pw+o
-  cost: 10
+  ptag: Pw+o_h
+  cost: 12
+
+- rule: [Pw+o_h, V+o+c]
+  ptag: $2
+  cost: 12
 
 - rule: [Pword_t, Xdobj]
   ptag: Pw+o_t
-  cost: 11
-
-- rule: [Pw+o, V+o+c]
-  ptag: $2
-  cost: 12
+  cost: 13
 
 - rule: [Pw+o_t, V+o+c]
   ptag: $2
   swap: [2, 1]
-  cost: 13
+  cost: 16
 
 - rule: [Pword, Xdobj, Udep, Xdobj]
   swap: [4, 1, 2, 3]
@@ -23,3 +23,9 @@
 - rule: [P_bei, Vtrn]
   ptag: $2
   cost: 15
+  desc:
+######
+# - rule: [Pword_t, Xdobj, V+o+c]
+#   ptag: $3
+#   swap: [3, 1, 2]
+#   cost: 40
