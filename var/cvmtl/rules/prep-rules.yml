@@ -19,3 +19,7 @@
   swap: [4, 1, 2, 3]
   ptag: $4
   cost: 30
+
+- rule: [P_bei, Vtrn]
+  ptag: $2
+  cost: 15

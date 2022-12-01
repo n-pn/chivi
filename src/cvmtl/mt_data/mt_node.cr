@@ -35,11 +35,31 @@ class MT::MtTerm < MT::MtNode
     @ptag = PosTag.map_tag(tag)
 
     # TODO: improve cost calculation
-    if prio < 1
-      @cost = 0
-    else
-      @cost = size &* 100 &+ 2 << size &+ dic &* prio
-    end
+    @cost = MtTerm.cost(size, prio)
+  end
+
+  # COSTS = {
+  #   0, 3, 6, 9,
+  #   0, 14, 18, 26,
+  #   0, 25, 31, 40,
+  #   0, 40, 45, 55,
+  #   0, 58, 66, 78,
+  # }
+
+  COSTS = {
+    100, 103, 106, 109,
+    200, 214, 218, 226,
+    300, 325, 331, 340,
+    400, 440, 445, 455,
+    500, 558, 566, 578,
+  }
+
+  def self.cost(size : Int32, prio : Int32 = 0) : Int32
+    size &* 100 &+ 2 << (size + 1) &- 1
+
+    # size > 5 ? size &* 100 &+ 2 << size : begin
+    # COSTS[(size &- 1) &* 4 &+ prio]
+    # end
   end
 
   def to_txt(io : IO, apply_cap : Bool) : Bool
