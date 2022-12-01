@@ -41,3 +41,8 @@
 - rule: [Rdet_h, Qmass]
   ptag: NQmass
   cost: 13
+
+- rule: [Xdobj, Vtrn, Udep, Nword]
+  ptag: $4
+  swap: [4, 1, 2, 3]
+  cost: 40

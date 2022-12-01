@@ -44,28 +44,28 @@
   cost: 16
 
 - rule: [Rdet_h, Nexpr]
-  ptag: $2
+  ptag: Nexpr
   cost: 15
 
 - rule: [Rdet_t, Nexpr]
-  ptag: $2
+  ptag: Nexpr
   swap: [2, 1]
   cost: 15
 
 - rule: [Rdet_h, Qnoun, Nexpr]
-  ptag: $3
+  ptag: Nexpr
   cost: 17
 
 - rule: [Rdet_t, Qnoun, Nexpr]
-  ptag: $3
+  ptag: Nexpr
   swap: [2, 3, 1]
   cost: 17
 
 - rule: [Rdet_h, Qn_ge_2, Nexpr]
-  ptag: $3
+  ptag: Nexpr
   cost: 18
 
 - rule: [Rdet_t, Qn_ge_2, Nexpr]
-  ptag: $3
+  ptag: Nexpr
   swap: [2, 3, 1]
   cost: 18

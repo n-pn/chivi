@@ -48,7 +48,7 @@ class MT::Engine
   #   mt_data.concat(cv_plain(title, offset: offset + pre_zh.size))
   # end
 
-  def cv_plain(input : String, add_cap = true) : MtData
+  def cv_plain(input : String) : MtData
     mt_data = MtData.new(input)
     mt_data.construct!(@dicts)
 

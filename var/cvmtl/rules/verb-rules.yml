@@ -46,7 +46,7 @@
   ptag: $2
   cost: 14
 
-- rule: [Vmod, Vword]
+- rule: [Vmod, Vexpr]
   ptag: $2
   cost: 13
 
@@ -54,15 +54,15 @@
   ptag: $2
   cost: 15
 
-- rule: [Vpro, Vword]
+- rule: [Vpro, Vexpr]
   ptag: $2
   cost: 15
 
 - rule: [Vtwo, Xiobjt, Xdobjt]
-  ptag: V+c+o
+  ptag: V+o+c
   cost: 18
 
-- rule: [Vpsy, V+c+o]
+- rule: [Vpsy, V+o+c]
   ptag: Vexpr
   cost: 17
 
@@ -73,3 +73,11 @@
 - rule: [Vcau, Subj+Adjt]
   ptag: Vexpr
   cost: 16
+
+# - rule: [Vpsy, Vobj]
+#   ptag: $2
+#   cost: 25
+
+- rule: [Vpsy, V+o+c]
+  ptag: $2
+  cost: 20

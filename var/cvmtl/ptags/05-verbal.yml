@@ -140,17 +140,17 @@
   desc:
 
 - ptag: V_yao_0 # "要"
-  extd: [Vaux]
+  extd: [Vmod]
   name: Động từ `要` (muốn)
   desc:
 
 - ptag: V_yao_1 # "要"
-  extd: [Vaux]
+  extd: [Vmod]
   name: Động từ `要` (phải)
   desc:
 
 - ptag: V_ke3 # "可"
-  extd: [Vaux]
+  extd: [Vmod]
   name: Động từ `可` (có thể)
   desc:
 
