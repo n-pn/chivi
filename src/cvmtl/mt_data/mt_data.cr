@@ -22,12 +22,12 @@ class MT::MtData
     @top_cost = [0]
     @upper = @raw_chars.size
 
-    @raw_chars.each do |raw_char|
+    @raw_chars.each_with_index do |raw_char, idx|
       inp_char = CharUtil.fullwidth?(raw_char) ? CharUtil.to_halfwidth(raw_char) : raw_char
       @inp_chars << inp_char
 
       @top_cost << 0
-      @top << MtTerm.new(inp_char.to_s, 0, 1, 0, 0)
+      @top << MtTerm.new(inp_char.to_s, 0, 1, 0, 0).tap(&.idx = idx)
       @all << Hash(Int32, Multi).new { |h, k| h[k] = Multi.new }
     end
   end

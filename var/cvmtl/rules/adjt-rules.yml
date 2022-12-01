@@ -1,8 +1,8 @@
-- rule: [Cj_you4, Adjt, Cj_you4, Adjt]
+- rule: [Jc_you4, Adjt, Jc_you4, Adjt]
   ptag: Aexpr
   cost: 16
 
-- rule: [Adjt, Cc_adjt, Adjt]
+- rule: [Adjt, Jcadjt, Adjt]
   ptag: Aexpr
   cost: 17
 
