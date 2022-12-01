@@ -20,8 +20,10 @@
 
 - rule: [Xposs, Udeg]
   ptag: XP+Udep 1
+  swap: [2, 1]
   cost: 14
 
 - rule: [Xmodi_p, Udep]
   ptag: XP+Udep 1
+  swap: [2, 1]
   cost: 13

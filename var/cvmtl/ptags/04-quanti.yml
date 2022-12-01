@@ -36,130 +36,146 @@
   desc: Lượng từ cho tiền tệ
 
 ## proper quantifiers
-- ptag: Qn_ge # "个"  Ge4
+- ptag: Qn_ge_1 # "个"  Ge4
   extd: [Qnoun]
-  name: Danh lượng từ `个`
+  name: Lượng từ `个` (cái)
   desc:
 
-- ptag: Qn_ba # "把"  Ba3
+- ptag: Qn_ge_2 # "个"  Ge4
   extd: [Qnoun]
-  name: Danh lượng từ `把`
+  name: Lượng từ `个` (⛶)
+  attr: [Void]
   desc:
 
-- ptag: Qn_ben # "本"
+- ptag: Qn_ba_1 # "把"  Ba3
   extd: [Qnoun]
-  name: Danh lượng từ `本`
+  name: Lượng từ `把` (chiếc)
   desc:
 
-- ptag: Qn_bu4 # "部"
+- ptag: Qn_ba_2 # "把"  Ba3
   extd: [Qnoun]
-  name: Danh lượng từ `部`
+  name: Lượng từ `把` (thanh)
   desc:
 
-- ptag: Qn_ce4 # "册"
+- ptag: Qn_ba_3 # "把"  Ba3
   extd: [Qnoun]
-  name: Danh lượng từ `册`
+  name: Lượng từ `把` (nắm)
   desc:
 
-- ptag: Qn_ceng # "层"
-  extd: [Qnoun]
-  name: Danh lượng từ `层`
-  desc:
+# - ptag: Qn_ben # "本"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `本`
+#   desc:
 
-- ptag: Qn_chang # "场"
-  extd: [Qnoun]
-  name: Danh lượng từ `场`
-  desc:
+# - ptag: Qn_bu4 # "部"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `部`
+#   desc:
 
-- ptag: Qn_chu4 # "处"
-  extd: [Qnoun]
-  name: Danh lượng từ `处`
-  desc:
+# - ptag: Qn_ce4 # "册"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `册`
+#   desc:
 
-- ptag: Qn_chu1 # "出"
-  extd: [Qnoun]
-  name: Danh lượng từ `出`
-  desc:
+# - ptag: Qn_ceng # "层"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `层`
+#   desc:
 
-- ptag: Qn_ci4 # "次"
-  extd: [Qnoun]
-  name: Danh lượng từ `次`
-  desc:
+# - ptag: Qn_chang # "场"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `场`
+#   desc:
 
-- ptag: Qn_dao # "道"
-  extd: [Qnoun]
-  name: Danh lượng từ `道`
-  desc:
+# - ptag: Qn_chu4 # "处"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `处`
+#   desc:
 
-- ptag: Qn_ding # "顶"
-  extd: [Qnoun]
-  name: Danh lượng từ `顶`
-  desc:
+# - ptag: Qn_chu1 # "出"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `出`
+#   desc:
 
-- ptag: Qn_dong # "栋"
-  extd: [Qnoun]
-  name: Danh lượng từ `栋`
-  desc:
+# - ptag: Qn_ci4 # "次"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `次`
+#   desc:
 
-- ptag: Qn_du3 # "堵"
-  extd: [Qnoun]
-  name: Danh lượng từ `堵`
-  desc:
+# - ptag: Qn_dao # "道"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `道`
+#   desc:
 
-- ptag: Qn_dun # "顿"
-  extd: [Qnoun]
-  name: Danh lượng từ `顿`
-  desc:
+# - ptag: Qn_ding # "顶"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `顶`
+#   desc:
 
-- ptag: Qn_duo # "朵"
-  extd: [Qnoun]
-  name: Danh lượng từ `朵`
-  desc:
+# - ptag: Qn_dong # "栋"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `栋`
+#   desc:
 
-- ptag: Qn_fa1 # "发"
-  extd: [Qnoun]
-  name: Danh lượng từ `发`
-  desc:
+# - ptag: Qn_du3 # "堵"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `堵`
+#   desc:
 
-- ptag: Qn_fen4 # "份"
-  extd: [Qnoun]
-  name: Danh lượng từ `份`
-  desc:
+# - ptag: Qn_dun # "顿"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `顿`
+#   desc:
 
-- ptag: Qn_feng # "封"
-  extd: [Qnoun]
-  name: Danh lượng từ `封`
-  desc:
+# - ptag: Qn_duo # "朵"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `朵`
+#   desc:
 
-- ptag: Qn_fu2 # "幅"
-  extd: [Qnoun]
-  name: Danh lượng từ `幅`
-  desc:
+# - ptag: Qn_fa1 # "发"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `发`
+#   desc:
 
-- ptag: Qn_gan3 # "杆"
-  extd: [Qnoun]
-  name: Danh lượng từ `杆`
-  desc:
+# - ptag: Qn_fen4 # "份"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `份`
+#   desc:
 
-- ptag: Qn_gen1 # "根"
-  extd: [Qnoun]
-  name: Danh lượng từ `根`
-  desc:
+# - ptag: Qn_feng # "封"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `封`
+#   desc:
 
-- ptag: Qn_jia1 # "家"
-  extd: [Qnoun]
-  name: Danh lượng từ `家`
-  desc:
+# - ptag: Qn_fu2 # "幅"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `幅`
+#   desc:
 
-- ptag: Qn_jia4 # "架"
-  extd: [Qnoun]
-  name: Danh lượng từ `架`
-  desc:
+# - ptag: Qn_gan3 # "杆"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `杆`
+#   desc:
 
-- ptag: Qn_jian # "间"
-  extd: [Qnoun]
-  name: Danh lượng từ `间`
-  desc:
+# - ptag: Qn_gen1 # "根"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `根`
+#   desc:
+
+# - ptag: Qn_jia1 # "家"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `家`
+#   desc:
+
+# - ptag: Qn_jia4 # "架"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `架`
+#   desc:
+
+# - ptag: Qn_jian # "间"
+#   extd: [Qnoun]
+#   name: Danh lượng từ `间`
+#   desc:
 
 # more_ https_//en.wikipedia.org/wiki/List_of_Chinese_classifiers
 

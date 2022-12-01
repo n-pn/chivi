@@ -1,7 +1,7 @@
 # generic noun
 
 - ptag: Nexpr
-  extd: [Xmodi_p, Xdobj]
+  extd: [Xmodi_p, Xdobj, Xpred, Xsubj_a]
   name: Cụm danh từ
   desc: Cụm từ mang tính chất danh từ sau khi ghép với các từ loại khác
 
@@ -16,7 +16,7 @@
   desc: Các loại danh từ cơ bản
 
 - ptag: Noth
-  extd: [Nword]
+  extd: [Nword, Xposs]
   name: Danh từ khác
   desc: Các danh từ chưa được phân loại
 
@@ -53,18 +53,18 @@
   desc: Các từ xưng hô địa vị khi ghép với tên người sẽ đặt trước
 
 - ptag: Nabs # abstract concept
-  extd: [Xdobj, Xposs]
+  extd: [Nword, Xposs]
   name: Danh từ trừu tượng
   desc:
 
 - ptag: Natt # generic attribute
-  extd: [Xdobj]
+  extd: [Nword]
   name: Danh từ thuộc tính
   desc:
 
 # concrete nouns
 - ptag: Nobj # generic concrete noun
-  extd: [Xposs, Xdobj]
+  extd: [Nword, Xposs]
   name: Vật đếm được
   desc:
 

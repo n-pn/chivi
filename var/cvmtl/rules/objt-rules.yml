@@ -1,13 +1,31 @@
 - rule: [XP+Udep 1, Xdobj]
-  ptag: Xdobj
+  ptag: $2
   swap: [2, 1]
   cost: 14
 
 - rule: [XP+Udep 2, Xdobj]
-  ptag: Xdobj
+  ptag: $2
   cost: 15
 
 - rule: [Xdobj, Ldir]
   ptag: Xspace
   swap: [2, 1]
   cost: 13
+
+- rule: [XP+Udep 1, Veno]
+  ptag: Nabs
+  swap: [2, 1]
+  cost: 11
+
+- rule: [XP+Udep 1, Ajino]
+  ptag: Nabs
+  swap: [2, 1]
+  cost: 11
+
+- rule: [XP+Udep 2, Veno]
+  ptag: Nabs
+  cost: 11
+
+- rule: [XP+Udep 2, Ajino]
+  ptag: Nabs
+  cost: 11

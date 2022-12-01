@@ -28,29 +28,33 @@
   ptag: MQdist
   cost: 13
 
+- rule: [Mcar, Qn_ge_2]
+  ptag: MQnoun
+  cost: 15
+
 # ordinal rules
 
-- rule: [Mcar, Qtime]
+- rule: [Mord, Qtime]
   ptag: Texpr
   swap: [2, 1]
   cost: 14
 
-- rule: [Mcar, Qverb]
+- rule: [Mord, Qverb]
   ptag: MQverb
   swap: [2, 1]
   cost: 12
 
-- rule: [Mcar, Qverb, Vexpr]
+- rule: [Mord, Qverb, Vexpr]
   ptag: $2
   swap: [2, 3, 1]
   cost: 25
 
-- rule: [Mcar, Qnoun]
+- rule: [Mord, Qnoun]
   ptag: MQnoun
   swap: [2, 1]
   cost: 12
 
-- rule: [Mcar, Qnoun, Nword]
+- rule: [Mord, Qnoun, Nword]
   ptag: $3
   swap: [2, 3, 1]
   cost: 25

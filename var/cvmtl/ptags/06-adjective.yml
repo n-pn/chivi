@@ -2,12 +2,12 @@
 
 # words that act as adjective
 - ptag: Aexpr # 形容词性惯用语 adjectival formulaic expression
-  extd: [Aword]
+  extd: [Xsubj_a, Xpred_a, Xmodi_p, Xadvb_p]
   name: Cụm hình dung
   desc: Cụm từ mang tính chất hình dung, chỉ có thể làm định ngữ gián tiếp
 
 - ptag: Aword # adjectival
-  extd: [Xsubj_a, Xpred_a, Xmodi_p, Xadvb_p]
+  extd: [Aexpr]
   name: Tính từ
   desc:
 

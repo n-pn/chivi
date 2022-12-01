@@ -1,0 +1,8 @@
+- rule: [Vtrn, Udec, V_shi, Xpred]
+  ptag: S+V+O
+  swap: [2, 1, 3, 4]
+  cost: 22
+
+- rule: [Xsubj, V_shi, Xpred]
+  ptag: S+V+O
+  cost: 21

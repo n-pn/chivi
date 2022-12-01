@@ -44,7 +44,7 @@
   desc: Cụm động tân chỉ năng khiếu như đánh đàn, chơi nhạc
 
 - ptag: Veno
-  extd: [Vword, Xdobj]
+  extd: [Vword]
   name: Danh động từ
   desc: Những từ khi đi kèm với danh từ thông dụng sẽ tạo thành cụm danh từ
 

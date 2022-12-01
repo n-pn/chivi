@@ -90,7 +90,7 @@
 
 - ptag: Udec # 的、之 as complementizer or a nominalizer
   extd: [Xfunc]
-  name: Trợ từ `的` (đồ)
+  name: Trợ từ `的` (cái)
   desc: Trợ từ 的 khi ghép với một số từ loại phía trước tạo thành cấu trúc dạng danh từ
 
 - ptag: Udeg # 的、之 as a genitive marker and an associative marker

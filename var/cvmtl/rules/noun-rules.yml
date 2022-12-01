@@ -29,3 +29,34 @@
 - rule: [Xmodi_h, Nword]
   ptag: $2
   cost: 15
+
+- rule: [MQnoun, Nword]
+  ptag: Nexpr
+  cost: 14
+
+- rule: [MQnoun, XP+Udep 1, Nword]
+  ptag: Nexpr
+  swap: [1, 3, 2]
+  cost: 16
+
+- rule: [MQnoun, XP+Udep 2, Nword]
+  ptag: Nexpr
+  cost: 16
+
+- rule: [Rdet_h, Nexpr]
+  ptag: $2
+  cost: 15
+
+- rule: [Rdet_t, Nexpr]
+  ptag: $2
+  swap: [2, 1]
+  cost: 15
+
+- rule: [Rdet_h, Qn_ge_2, Nexpr]
+  ptag: $3
+  cost: 18
+
+- rule: [Rdet_t, Qn_ge_2, Nexpr]
+  ptag: $3
+  swap: [2, 3, 1]
+  cost: 18
