@@ -12,7 +12,7 @@
 
 # for nouns
 - ptag: MQnoun # generic noun quantifier
-  extd: [Xreal, Xposs]
+  extd: [Xreal, Xsubj, Xpred, Xmodi_p, Xmodi_h]
   name: Số + danh lượng
   desc:
 
