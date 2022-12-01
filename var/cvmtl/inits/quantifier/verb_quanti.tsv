@@ -15,23 +15,24 @@
 会	lúc	Qverb	1
 会儿	lát	Qverb	1
 
-
-路	lộ	Qverb	0
-道	đạo	Qverb	0
-周	chu	Qverb	0
-任	nhậm	Qverb	0
-期	kỳ	Qverb	0
-步	bộ	Qverb	0
-人次	nhân thứ	Qverb	0
-轮	luân	Qverb	0
-度	độ	Qverb	0
-班	ban	Qverb	0
-餐	xan	Qverb	0
-局	cục	Qverb	0
-圈	khuyên	Qverb	0
-席	tịch	Qverb	0
-幕	mạc	Qverb	0
-场次	trường thứ	Qverb	0
-架次	giá thứ	Qverb	0
-盘	bàn	Qverb	0
-胎	thai	Qverb	0
+路	mạch	Qverb	1
+道	lần	Qverb	1
+层	lớp	Qverb	1
+茬	vụ	Qverb	1
+周	vòng	Qverb	1
+任	lần	Qverb	1
+期	kỳ	Qverb	1
+步	bước	Qverb	1
+人次	lượt người	Qverb	1
+轮	vòng	Qverb	1
+度	lần	Qverb	1
+班	chuyến	Qverb	1
+餐	bữa	Qverb	1
+局	ván	Qverb	1
+圈	vòng	Qverb	1
+场次	buổi diễn	Qverb	1
+架次	lượt chiếc	Qverb	1
+胎	thai	Qverb	1
+席	buổi	Qverb	1
+幕	màm	Qverb	1
+盘	cỗ	Qverb	1

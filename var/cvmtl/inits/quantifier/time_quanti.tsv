@@ -1,18 +1,18 @@
-刻	khắc	Qtime
-天	ngày	Qtime
-载	năm	Qtime
-岁	tuổi	Qtime
-周	tuần	Qtime
-晚	đêm	Qtime
-夜	đêm	Qtime
+刻	khắc	Qtime	2
+天	ngày	Qtime	2
+载	năm	Qtime	2
+岁	tuổi	Qtime	2
+周	tuần	Qtime	2
+晚	đêm	Qtime	2
+夜	đêm	Qtime	2
 
-秒钟	giây	Qtime
-分钟	phút	Qtime
-小时	giờ	Qtime
-个月	tháng	Qtime
+秒钟	giây	Qtime	2
+分钟	phút	Qtime	2
+小时	giờ	Qtime	2
+个月	tháng	Qtime	2
 辈子	đời	Qtime	1
-时辰	canh giờ	Qtime
-周年	năm tròn	Qtime
+时辰	canh giờ	Qtime	2
+周年	năm tròn	Qtime	2
 会儿	chốc lát	Qtime	1
 
 年	năm	Qt_nian	1
