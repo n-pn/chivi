@@ -1,31 +1,51 @@
-- rule: [Xdobj, Jcreal, Xdobj]
-  ptag: Xdobj
-  cost: 10
-
-- rule: [Nword, Jcnoun, Nword]
-  ptag: $3
-  cost: 15
-
 - rule: [Xhuman, Jcnoun, Xhuman]
   ptag: Xhuman
+  cost: 26
+
+- rule: [Xdobj, Jcreal, Xdobj]
+  ptag: Xdobj
+  cost: 13
+
+- rule: [Nword, Jcnoun, Nword]
+  ptag: Nexpr
   cost: 20
 
 - rule: [Nexpr, Jcnoun, Nexpr]
-  ptag: $3
-  cost: 15
+  ptag: Nexpr
+  cost: 20
+
+- rule: [Nabs, Udep]
+  ptag: XP+Dep_t
+  cost: 30
+
+- rule: [Nabs, Jcnoun, Nabs, Udep]
+  ptag: XP+Dep_t
+  cost: 100
+
+- rule: [Natt, Udep]
+  ptag: XP+Dep_t
+  cost: 30
+
+- rule: [Natt, Jcnoun, Natt, Udep]
+  ptag: XP+Dep_t
+  cost: 100
+
+- rule: [Nobj, Jcnoun, Nobj]
+  ptag: Nexpr
+  cost: 24
 
 - rule: [Vword, Jcverb, Vword]
   ptag: $3
-  cost: 20
+  cost: 26
 
 - rule: [Vexpr, Jcverb, Vexpr]
-  ptag: $3
-  cost: 15
+  ptag: Vexpr
+  cost: 20
 
 - rule: [Aword, Jcadjt, Aword]
   ptag: Aexpr
-  cost: 20
+  cost: 26
 
 - rule: [Aexpr, Jcadjt, Aexpr]
-  ptag: $3
-  cost: 15
+  ptag: Aexpr
+  cost: 20

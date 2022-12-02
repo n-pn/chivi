@@ -198,7 +198,7 @@
   name: Dấu phẩy `,`
 
 - ptag: .ce. # enumerable comma
-  extd: [.p.]
+  extd: [.p., Jcreal]
   attr: [NoSpaceL]
   name: Dấu phẩy liệt kê `､`
 

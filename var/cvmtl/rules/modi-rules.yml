@@ -7,6 +7,15 @@
   ptag: $2
   cost: 12
 
+- rule: [XP+Dep_t, Nword]
+  ptag: Nexpr
+  swap: [2, 1]
+  cost: 14
+
+- rule: [XP+Dep_h, Nword]
+  ptag: Nexpr
+  cost: 13
+
 - rule: [Nword, Adjt, .ce., Nword, Adjt, Udep]
   ptag: XP+Dep_t
   cost: 160

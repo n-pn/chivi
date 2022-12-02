@@ -26,20 +26,45 @@
   swap: [2, 1]
   cost: 14
 
-- rule: [Xmodi_h, Nword]
+- rule: [Vobj, Nword]
   ptag: $2
+  swap: [2, 1]
+  cost: 12
+
+- rule: [Vobj, Nabs]
+  ptag: $2
+  swap: [2, 1]
   cost: 15
+
+- rule: [Veno, Nabs]
+  ptag: $2
+  swap: [2, 1]
+  cost: 15
+
+- rule: [Nabs, Veno]
+  ptag: $2
+  swap: [2, 1]
+  cost: 16
+
+- rule: [Vobj, Ldir]
+  ptag: Lcat
+  swap: [2, 1]
+  cost: 13
+
+- rule: [Mword, Nword]
+  ptag: Nexpr
+  cost: 16
 
 - rule: [MQnoun, Nword]
   ptag: Nexpr
   cost: 14
 
-- rule: [MQnoun, XP+Udep 1, Nword]
+- rule: [MQnoun, XP+Dep_t, Nword]
   ptag: Nexpr
   swap: [1, 3, 2]
   cost: 16
 
-- rule: [MQnoun, XP+Udep 2, Nword]
+- rule: [MQnoun, XP+Dep_h, Nword]
   ptag: Nexpr
   cost: 16
 

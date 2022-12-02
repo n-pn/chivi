@@ -23,11 +23,11 @@
   cost: 15
 
 - rule: [Xposs, Udeg]
-  ptag: XP+Udep 1
+  ptag: XP+Dep_t
   swap: [2, 1]
   cost: 12
 
 - rule: [Xmodi_p, Udep]
-  ptag: XP+Udep 1
+  ptag: XP+Dep_t
   swap: [2, 1]
   cost: 13

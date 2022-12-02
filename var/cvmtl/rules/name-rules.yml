@@ -34,7 +34,7 @@
   cost: 19
 
 - rule: [Eppl, .ce., Eaff]
-  ptag: Name
+  ptag: Eppl
   # swap: [1, 2]
   cost: 18
 

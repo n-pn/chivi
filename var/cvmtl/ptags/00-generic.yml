@@ -48,10 +48,6 @@
   name: Định ngữ trực tiếp
   desc: Các từ có thể trực tiếp làm định ngữ cho danh từ, khi ghép sẽ đảo sa rau
 
-- ptag: Xmodi_h
-  name: Dịnh ngữ trực tiếp *
-  desc: Các từ có thể trực tiếp làm định ngữ cho danh từ, khi ghép không cần đảo ra sau
-
 - ptag: Xmodi_p
   name: Định ngữ gián tiếp
   desc: Các từ kết hợp với `的` làm định ngữ cho danh từ

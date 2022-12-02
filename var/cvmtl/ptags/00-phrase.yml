@@ -11,11 +11,11 @@
   name: Cụm chủ vị (tính)
   extd: [Subj+Pred]
 
-- ptag: XP+Udep 1
+- ptag: XP+Dep_t
   name: Cụm định ngữ (X+的) 1
   desc: Cụm từ kết hợp với `的` làm định ngữ cho danh từ trung tâm, khi ghép đảo về sau
 
-- ptag: XP+Udep 2
+- ptag: XP+Dep_h
   name: Cụm định ngữ (X+的) 2
   desc: Cụm từ kết hợp với `的` làm định ngữ cho danh từ trung tâm, khi ghép đặt phía trước
 

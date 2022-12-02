@@ -1,11 +1,11 @@
 # numbers
 
 - ptag: Mexpr
-  extd: [Xmodi_p, Xsubj, Xpred, Xdobj]
+  extd: [Xsubj, Xpred, Xdobj]
   name: Cụm từ số lượng
 
 - ptag: Mword
-  extd: [Xmodi_h, Mexpr]
+  extd: [Mexpr]
   name: Số từ
   desc: Các loại số từ
 
