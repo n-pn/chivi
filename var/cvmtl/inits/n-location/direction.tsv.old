@@ -1,0 +1,119 @@
+上	trên	Ndir	2
+下	dưới	Ndir	2
+中	trong	Ndir	2
+前	trước	Ndir	2
+后	sau	Ndir	2
+左	trái	Ndir	2
+右	phải	Ndir	2
+东	đông	Ndir	2
+西	tây	Amod_t	2
+南	nam	Amod_t	2
+北	bắc	Ndir	2
+里	trong	Nplc	2
+外	bên ngoài	Ndir	2
+内	trong	Ndir	2
+旁	bên cạnh	Ndir	2
+间	giữa	Ndir	2
+以上	phía trên	Ndir	2
+以前	trước kia	Time	2
+以后	sau này	Fc_	2
+以后	sau này	Fc_	1
+以南	phía Nam	Ndir	2
+以南	phía nam	Ndir	1
+以北	phía bắc	Ndir	2
+以北	phía bắc	Ndir	1
+以外	ngoài ra	Fc_	2
+以内	trong vòng	Ndir	2
+以内	trong vòng	Ndir	1
+之上	phía trên	Ndir	2
+之上		Ndir	1
+之上	trên	Fg_kz	1
+之下	bên dưới	Ndir	1
+之前	về trước	Ndir	1
+之前	về trước	Time	1
+之后	về sau	Ndir	1
+之后		Ndir	1
+之后	về sau	Ndir	2
+之外	bên ngoài	Ndir	2
+之中	ở trong	Ndir	1
+之中	ở trong	Fg_kz	1
+之中	trong	Fg_kz	1
+上边	bên trên	Ndir	2
+下边	phía dưới	Ndir	2
+前边	phía trước	Ndir	2
+后边	phía sau	Ndir	2
+左边	bên trái	Ndir	2
+右边	bên phải	Ndir	2
+东边	phía đông	Ndir	2
+西边	phía tây	Ndir	2
+南边	phía nam	Ndir	2
+北边	phía bắc	Ndir	2
+里边	bên trong	Ndir	2
+外边	bên ngoài	Ndir	2
+旁边	bên cạnh	Ndir	2
+上面	phía trên	Ndir	2
+下面	phía dưới	Ndir	2
+下面	phía dưới	Ndir	1
+前面	phía trước	Ndir	2
+后面	phía sau	Ndir	2
+左面	mặt trái	Ndir	2
+右面	mặt phải	Ndir	2
+东面	mặt đông	Ndir	2
+西面	phía tây	Ndir	2
+南面	mặt phía nam	Ndir	2
+北面	mặt bắc	Ndir	2
+里面	bên trong	Ndir	2
+外面	bên ngoài	Ndir	2
+上头	thượng đầu	Ndir	1
+上头	bên trên	Ndir	1
+下头	phía dưới	Noth	2
+前头	đằng trước	Ndir	2
+后头	phía sau	Ndir	2
+东头	đầu đông	Ndir	2
+里头	bên trong	Ndir	2
+外头	bên ngoài	Ndir	2
+内头	đầu trong	Ndir	2
+上方	phía trên	Ndir	1
+下方	phía dưới	Ndir	2
+前方	phía trước	Ndir	2
+后方	phía sau	Ndir	2
+左方	bên trái	Noth	2
+右方	bên phải	Noth	2
+东方	phương đông	Ndir	2
+西方	phương tây	Ndir	2
+南方	phương nam	Ndir	2
+北方	phương bắc	Ndir	2
+外方	bên ngoài	Noth	2
+中方	trung phương	Noth	2
+上部	thượng bộ	Ndir	2
+下部	hạ bộ	Ndir	2
+后部	phần sau	Ndir	2
+东部	phía đông	Ndir	2
+西部	tây bộ	Ndir	2
+南部	nam bộ	Ndir	2
+北部	bắc bộ	Ndir	2
+外部	ngoại bộ	Ndir	2
+中部	trung bộ	Ndir	2
+内部	nội bộ	Ndir	2
+上下	cao thấp	Dword	2
+上下	cao thấp	Dword	1
+前后	trước sau	Ndir	2
+里外	trong ngoài	Noth	2
+里外		Noth	2
+左右	trên dưới	Ndir	2
+左右	trái phải	Ndir	2
+内外	trong ngoài	Ndir	2
+内外	trong ngoài	Ndir	1
+当中	chính giữa	Ndir	2
+头里	trước	Noth	1
+底下	phía dưới	Ndir	2
+中间	chính giữa	Ndir	2
+哪里	nơi nào	Pron	2
+哪儿	chỗ nào	Pron	2
+这里	nơi này	Ndir	2
+这里	nơi này	Ndir	1
+这儿	nơi này	Pron	2
+那里	chỗ đó	Ndir	2
+那里	chỗ đó	Pron	2
+那里	chỗ đó	Pron	1
+那儿	nơi đó	Pron	2
