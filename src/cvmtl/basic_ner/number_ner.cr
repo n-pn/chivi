@@ -24,6 +24,10 @@ module MT::NumberNER
       when .ascii_letter?
         return scan_rawstr(input, index &+ 1)
       when '0'..'9', '_' then index += 1
+      when ','
+        break unless index &+ 1 < upper
+        break unless input.unsafe_fetch(index &+ 1).in?('0'..'9')
+        index &+= 2
       when ':', '.', '-', '/', '~', '—'
         break unless index &+ 1 < upper
         break unless input.unsafe_fetch(index &+ 1).in?('0'..'9')
