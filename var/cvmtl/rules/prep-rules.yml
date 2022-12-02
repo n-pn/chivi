@@ -29,3 +29,11 @@
 #   ptag: $3
 #   swap: [3, 1, 2]
 #   cost: 40
+
+- rule: [P_zai_1, Xplace]
+  ptag: Pw+o_t
+  cost: 15
+
+- rule: [P_zai_0, Texpr]
+  ptag: Texpr
+  cost: 20

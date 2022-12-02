@@ -8,8 +8,8 @@
 
 被	bị	P_bei	2
 
-在	tại	Pword	1
-在	ở	P_zai	0
+在	tại	P_zai_0	1
+在	ở	P_zai_1	0
 
 
 和	với	Pword_t	2

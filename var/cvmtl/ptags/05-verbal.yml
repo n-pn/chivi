@@ -120,12 +120,12 @@
   desc:
 
 - ptag: V_xiang_0 # "想"
-  extd: [Vmod]
+  extd: [Vcau]
   name: Động từ `想` (nghĩ)
   desc:
 
 - ptag: V_xiang_1 # "想"
-  extd: [Vaux]
+  extd: [Vmod]
   name: Động từ `想` (muốn)
   desc:
 
@@ -135,7 +135,7 @@
   desc:
 
 - ptag: V_neng # "能"
-  extd: [Vaux]
+  extd: [Vmod]
   name: Động từ `能`
   desc:
 

@@ -14,12 +14,12 @@
 - rule: [Nword, Ldir]
   ptag: Lcat
   swap: [2, 1]
-  cost: 14
+  cost: 16
 
 - rule: [Nexpr, Ldir]
   ptag: Xplace
   swap: [2, 1]
-  cost: 13
+  cost: 17
 
 - rule: [Xmodi, Nword]
   ptag: $2

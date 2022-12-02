@@ -58,9 +58,9 @@
   ptag: $2
   cost: 15
 
-- rule: [Vtwo, Xiobjt, Xdobjt]
+- rule: [Vtwo, Xiobj, Xdobj]
   ptag: V+o+c
-  cost: 18
+  cost: 30
 
 - rule: [Vpsy, V+o+c]
   ptag: Vexpr

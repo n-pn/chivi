@@ -28,9 +28,14 @@
   name: Giới từ `被`
   desc:
 
-- ptag: P_zai # "在"
+- ptag: P_zai_0 # "在"
   extd: [Pword]
-  name: Giới từ `在`
+  name: Giới từ `在` (tại)
+  desc:
+
+- ptag: P_zai_1 # "在"
+  extd: [Xmorp]
+  name: Giới từ `在` (ở)
   desc:
 
 - ptag: P_bi_1 # "比"

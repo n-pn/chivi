@@ -1,12 +1,9 @@
 这	này	Pron	2
-这	này	Pron	2
 这么	thế này	Dword	2
-这么	như vậy	Dword	2
 这么	như vậy	Dword	2
 这些	chút này	Pron	2
 这样	dạng này	Pron	2
 这样	như vậy	Pron	2
-这里	nơi này	Ndir	2
 这里	nơi này	Ndir	2
 这里	nơi này	Ndir	1
 这时	lúc này	Zblank	1
@@ -16,7 +13,6 @@
 这边	bên này	Nloc	2
 这边	bên này	Nloc	1
 这会儿	lúc này	Time	2
-那	kia	Pron	2
 那	kia	Pron	2
 那儿	nơi đó	Pron	2
 那么	thế kia	Dword	2
@@ -48,10 +44,8 @@
 此处	nơi này	Nplc	2
 此地	nơi đây	Nplc	2
 如此	như thế	Dword	2
-如此	như thế	Dword	2
 各	mỗi	Pron	2
 各级	các cấp	Pron	2
-各种	các loại	Pron	2
 各种	các loại	Pron	2
 各种	các loại	Pron	1
 各地	các nơi	Pron	2
@@ -65,13 +59,11 @@
 各种各样	đủ loại	Amod_t	2
 各种各样	đủ loại	Aexpr	2
 之	chi	Uzhi	2
-之	chi	Uzhi	2
 之一	một trong	Nplc	1
 之一		Nplc	1
 之一	một trong	Fg_kz	1
 之类	đủ loại	Uzl	2
 之类	linh tinh	Zblank	2
-之类	các kiểu	Uzl	2
 之类	các kiểu	Uzl	2
 之类	các loại	Fg_kz	1
 本	bổn	Mq_	2
@@ -89,17 +81,11 @@
 他乡	tha hương	Pron	2
 他国	nước khác	Pron	2
 其	nó	Pron	2
-其	nó	Pron	2
-其	nó	Pron	2
 其他	khác	Pron	2
 其他		Pron	2
 其他	khác	Ajno	2
-其他	khác	Pron	2
-其他	khác	Pron	2
 其他	khác	Adjt	2
-其他	khác	Pron	2
 其他	khác	Amod_t	2
-其他	khác	Pron	2
 其中	trong đó	Pron	2
 其中	trong đó	Nloc	2
 其它	khác	Pron	2
@@ -112,9 +98,7 @@
 别国	nước khác	Pron	2
 别样	khác kiểu	Adjt	2
 某	mỗ	Pron	2
-某	mỗ	Pron	2
 某		Pron	2
-某	nào đó	Pron	2
 某	nào đó	Pron	2
 某些	nào đó	Pron	2
 某种	nào đó	Pron	2
@@ -129,7 +113,6 @@
 该	cần	Vs_	2
 有的	có	Fc_	1
 任何	bất kỳ	Pron	2
-任何	bất kỳ	Pron	2
 另	khác	Pron	2
 一切	hết thảy	Pron	2
 一切	hết thảy	Mf_	2
@@ -142,9 +125,9 @@
 另外	mặt khác	Fc_	1
 哪	nào	Pron	2
 哪	đâu	Pron	2
-哪	nào	Pron	2
-哪	nào	Pron	2
 诸	chư	Noth	2
 诸	chư	Pron	2
 如是	như thế	Pron	2
 彼	kia	Pron	2
+后者	người sau	Nhrf	1
+一切	hết thảy	MQnoun	1

@@ -1,16 +1,31 @@
-- rule: [Noun, Jcnoun, Noun]
-  ptag: $3
-
 - rule: [Xdobj, Jcreal, Xdobj]
   ptag: Xdobj
+  cost: 10
 
-- rule: [Verb, Jcverb, Verb]
+- rule: [Nword, Jcnoun, Nword]
   ptag: $3
+  cost: 15
+
+- rule: [Xhuman, Jcnoun, Xhuman]
+  ptag: Xhuman
+  cost: 20
+
+- rule: [Nexpr, Jcnoun, Nexpr]
+  ptag: $3
+  cost: 15
+
+- rule: [Vword, Jcverb, Vword]
+  ptag: $3
+  cost: 20
+
+- rule: [Vexpr, Jcverb, Vexpr]
+  ptag: $3
+  cost: 15
 
 - rule: [Aword, Jcadjt, Aword]
   ptag: Aexpr
-  cost: 12
+  cost: 20
 
 - rule: [Aexpr, Jcadjt, Aexpr]
   ptag: $3
-  cost: 11
+  cost: 15

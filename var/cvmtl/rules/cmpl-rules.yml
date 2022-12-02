@@ -25,3 +25,31 @@
   ptag: $1
   # swap: [1, 2]
   desc: Động từ + bổ ngữ xu hướng
+
+- rule: [Vword, MQnoun]
+  ptag: V+o+c
+  cost: 15
+
+- rule: [Vword, MQverb]
+  ptag: V+o+c
+  cost: 20
+
+- rule: [Vword, MQverb, Xdobj]
+  ptag: V+o+c
+  cost: 25
+
+- rule: [Vword, Xdobj, MQverb]
+  ptag: V+o+c
+  cost: 25
+
+- rule: [Vword, MQtime]
+  ptag: V+o+c
+  cost: 19
+
+- rule: [Vword, MQtime, Xdobj]
+  ptag: V+o+c
+  cost: 24
+
+- rule: [Vword, Xdobj, MQtime]
+  ptag: V+o+c
+  cost: 24

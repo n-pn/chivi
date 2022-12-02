@@ -46,9 +46,14 @@
   name: Số xấp xỉ
   desc:
 
-- ptag: M_yi1 # "一"
+- ptag: M_yi1_1 # "一"
   extd: [Mlit]
-  name: Số chữ `一`
+  name: Số `一` (một)
+  desc:
+
+- ptag: M_yi1_2 # "一"
+  extd: [Xmorp]
+  name: Số `一` (nhất)
   desc:
 
 - ptag: M_han # "半"

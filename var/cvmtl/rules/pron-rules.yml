@@ -1,0 +1,4 @@
+- rule: [Rper, Nppl]
+  ptag: Xhuman
+  swap: [2, 1]
+  cost: 14

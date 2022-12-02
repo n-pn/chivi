@@ -1,8 +1,16 @@
-- rule: [XP+Dep 1, Xdobj]
+- rule: [XP+Dep_t, Xdobj]
   ptag: $2
   swap: [2, 1]
   cost: 13
 
-- rule: [XP+Dep 2, Xdobj]
+- rule: [XP+Dep_h, Xdobj]
   ptag: $2
   cost: 12
+
+- rule: [Nword, Adjt, .ce., Nword, Adjt, Udep]
+  ptag: XP+Dep_t
+  cost: 160
+
+- rule: [Aexpr, .cm., Aexpr, Udep]
+  ptag: XP+Dep_t
+  cost: 80

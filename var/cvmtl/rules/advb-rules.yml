@@ -1,0 +1,3 @@
+- rule: [Aexpr, Udep, Vexpr]
+  ptag: Vexpr
+  cost: 22

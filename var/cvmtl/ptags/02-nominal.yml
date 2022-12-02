@@ -38,17 +38,17 @@
   desc:
 
 - ptag: Nhrf # honorific
-  extd: [Nword, Xhuman]
+  extd: [Nppl]
   name: Xưng hô (N h)
   desc: Các từ ghép với tên người phía trước làm kính ngữ chỉ địa vị
 
 - ptag: Nhrf_j # honorific
-  extd: [Nhrf]
+  extd: [Xmorp]
   name: Xưng hô (N-h)
   desc: Các từ xưng hô địa vị tiếng Nhật, đặt sau và không thêm dấu cách
 
 - ptag: Nhrf_s # honorific
-  extd: [Nhrf]
+  extd: [Nppl]
   name: Xưng hô (h N)
   desc: Các từ xưng hô địa vị khi ghép với tên người sẽ đặt trước
 
@@ -116,13 +116,13 @@
 
 # temporal
 
-- ptag: Tword
-  extd: [Nword]
-  name: Từ chỉ thời gian
-
 - ptag: Texpr
-  extd: [Nexpr]
+  extd: [Xmorp]
   name: Cụm từ thời gian
+
+- ptag: Tword
+  extd: [Nword, Texpr]
+  name: Từ chỉ thời gian
 
 - ptag: Time # generic temporal words
   extd: [Tword]
