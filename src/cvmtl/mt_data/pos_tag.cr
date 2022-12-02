@@ -59,6 +59,31 @@ module MT::PosTag
     Log.error(exception: err) { file }
   end
 
+  Tymd = map_tag("Tymd")
+  Thms = map_tag("Thms")
+
+  Mcar = map_tag("Mcar")
+  Mdig = map_tag("Mdig")
+  Mlit = map_tag("Mlit")
+
+  Mdeci = map_tag("Mdeci")
+  Mfrac = map_tag("Mfrac")
+  Mprox = map_tag("Mprox")
+
+  ZLink = map_tag("Z_link")
+  ZMail = map_tag("Z_mail")
+  ZMoji = map_tag("Z_moji")
+  ZUnkn = map_tag("Z_unkn")
+
+  Zblank = map_tag("Zblank")
+
+  Extr = map_tag("Extr")
+  Noth = map_tag("Noth")
+
+  def self.number?(tag : Int32)
+    {Mcar, Mdig, Mlit, Mdeci, Mfrac, Mprox}.includes?(tag)
+  end
+
   def self.map_tag(str : String)
     TAG_HASH[str] ||= (TAG_HASH.size &+ 1).tap { |x| PTAG_STR[x] = str }
   end

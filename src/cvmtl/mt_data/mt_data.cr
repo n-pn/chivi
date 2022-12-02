@@ -3,6 +3,7 @@ require "../../_util/char_util"
 require "./mt_dict"
 require "./mt_node"
 require "./mt_rule"
+require "../basic_ner"
 
 class MT::MtData
   include MtSeri
@@ -30,6 +31,10 @@ class MT::MtData
       @top << MtTerm.new(inp_char.to_s, 0, 1, 0, 0).tap(&.idx = idx)
       @all << Hash(Int32, Multi).new { |h, k| h[k] = Multi.new }
     end
+  end
+
+  def run_ner!(start = 0)
+    @ner = BasicNER.detect_all(@inp_chars, idx: start)
   end
 
   def construct!(dicts : Array(MtDict))

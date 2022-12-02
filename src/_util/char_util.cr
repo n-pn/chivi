@@ -104,12 +104,6 @@ module CharUtil
     '亿' => 100_000_000, '兆' => 1_000_000_000_000,
   }
 
-  URL_CHARS = {'$', '!', '*', '@', '&', '%', '/', ':', '=', '?', '#', '+', '-', '_', '.', '~'}
-
-  def allowed_in_url?(char : Char)
-    URL_CHARS.includes?(char)
-  end
-
   def is_hannum?(char : Char)
     HANNUM_CHARS.includes?(char)
   end

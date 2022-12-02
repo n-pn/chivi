@@ -50,6 +50,8 @@ class MT::Engine
 
   def cv_plain(input : String) : MtData
     mt_data = MtData.new(input)
+
+    mt_data.run_ner!
     mt_data.construct!(@dicts)
 
     # mt_data.fix_grammar!
