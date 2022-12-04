@@ -1,4 +1,5 @@
 require "json"
+require "../../zhlib/models/ch_edit"
 
 class CV::ChtextCtrl < CV::BaseCtrl
   # upload batch text
@@ -169,14 +170,12 @@ class CV::ChtextCtrl < CV::BaseCtrl
     orig = TextUtil.clean_spaces(params["orig"]? || "")
     edit = TextUtil.clean_spaces(params["edit"])
 
-    spawn do
-      ChapEdit.new({
-        viuser: _viuser, chroot: chroot,
-        chidx: chinfo.ch_no, schid: chinfo.s_cid,
-        cpart: part_no, l_id: line_no,
-        orig: orig, edit: edit, flag: 0_i16,
-      }).save!
-    end
+    ZH::LineEdit.new(
+      uname: _viuser.uname, sname: chroot.sname,
+      s_bid: chroot.s_bid, s_cid: chinfo.s_cid,
+      ch_no: chinfo.ch_no.not_nil!, cpart: part_no,
+      l_id: line_no, orig: orig, edit: edit
+    ).create!
 
     content = chinfo.all_text(mode: 0, uname: _viuser.uname)
 

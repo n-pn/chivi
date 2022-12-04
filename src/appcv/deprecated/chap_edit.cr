@@ -1,4 +1,4 @@
-require "./_base"
+require "../_base"
 
 class CV::ChapEdit
   include Clear::Model
@@ -17,7 +17,7 @@ class CV::ChapEdit
   column orig : String = ""   # original text line
   column edit : String        # edited text line
 
-  # flag:  an enum to denote the state of this edit
+  # flag: an enum to denote the state of this edit
   # 0: accepted and active
   # 1: accepted but outdated
   # 2: pending / await approve
