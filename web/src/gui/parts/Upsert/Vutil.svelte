@@ -30,7 +30,7 @@
 
 <script lang="ts">
   import { hint } from './_shared'
-  import { gtran, btran } from '$lib/trans'
+  import { gtran, btran, deepl } from '$lib/trans'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
@@ -101,8 +101,8 @@
     vpterm.val = '...'
     refocus()
 
-    const tran = await btran(PREFIX + key, b_tab)
-    vpterm.val = tran.replace(PREFIX, '')
+    const lang = b_tab == 0 ? 'vi' : 'en'
+    vpterm.val = await btran(key, lang, true)
 
     show_trans = false
   }
@@ -111,17 +111,7 @@
     vpterm.val = '...'
     refocus()
 
-    const PREFIX = ', '
-    const res = await fetch('/qtran/deepl', {
-      method: 'POST',
-      body: JSON.stringify({ text: PREFIX + key }),
-    })
-
-    if (res.ok) {
-      const data = await res.json()
-      vpterm.val = data.text.replace(PREFIX, '')
-    }
-
+    vpterm.val = await deepl(key, false)
     show_trans = false
   }
 </script>

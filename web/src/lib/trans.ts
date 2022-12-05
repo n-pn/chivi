@@ -31,21 +31,34 @@ export async function gtran(text: string, lang: number) {
   }
 }
 
+const headers = { 'content-type': 'text/plain' }
+
 const btran_cached = {}
 
-export async function btran(text: string, lang: number) {
+export async function btran(text: string, lang: string, no_cap = false) {
   const key = `${text}-${lang}`
+
   const val = btran_cached[key]
   if (val) return val
 
-  const body = { text, to: lang == 0 ? 'vi' : 'en' }
-  const res = await fetch('/qtran/bing', {
-    method: 'POST',
-    body: JSON.stringify(body),
-  })
+  const url = `/_mh/btran?lang=${lang}&no_cap=${no_cap}`
+  const res = await fetch(url, { method: 'PUT', body: text, headers })
 
-  if (!res.ok) return ''
-  const { translation } = await res.json()
-  btran_cached[key] = translation
-  return translation
+  const res_text = await res.text()
+  btran_cached[key] = res_text
+  return res_text
+}
+
+const deepl_cached = {}
+
+export async function deepl(text: string, no_cap = false) {
+  const val = deepl_cached[text]
+  if (val) return val
+
+  const url = `/_mh/deepl?no_cap=${no_cap}`
+  const res = await fetch(url, { method: 'PUT', body: text, headers })
+
+  const res_text = await res.text()
+  deepl_cached[text] = res_text
+  return res_text
 }

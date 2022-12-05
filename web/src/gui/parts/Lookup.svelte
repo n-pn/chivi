@@ -74,18 +74,15 @@
 
   async function get_hanviet(input: string) {
     hv_html = hv_html_cache[input]
-
     if (hv_html) return
 
-    const url = `/_mh/hanviet`
-    const params = { lines: [input], mode: 'mtl', cap: true }
+    const url = `/_mh/hanviet?mode=mtl`
+    const headers = { 'content-type': 'text/plain' }
 
-    try {
-      const res = await api_put(url, params, fetch)
-      hv_html_cache[input] = hv_html = new MtData(res).render_hv()
-    } catch (err) {
-      console.log(err)
-    }
+    const res = await fetch(url, { method: 'PUT', headers, body: input })
+    const res_text = await res.text()
+    if (!res.ok) console.log(res_text)
+    else hv_html_cache[input] = hv_html = new MtData(res_text).render_hv()
   }
 
   function handle_click({ target }) {

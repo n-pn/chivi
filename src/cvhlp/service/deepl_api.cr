@@ -85,9 +85,4 @@ class TL::Deepl
 end
 
 # test = "能源、表情".split("、")
-# TL::Deepl.clients.each do |client|
-#   puts TL::Deepl.translate(client, test).to_pretty_json
-# rescue err
-#   puts err
-#   puts client.key
-# end
+# puts TL::Deepl.translate(test, no_cap: true).to_pretty_json
