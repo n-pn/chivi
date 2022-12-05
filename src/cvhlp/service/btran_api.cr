@@ -34,7 +34,7 @@ class TL::Btran
       form.add "to", "vi"
     end
 
-    body = terms.map { |x| {text: no_cap ? "*," + x : x} }.to_json
+    body = terms.map { |x| {text: no_cap ? "_," + x : x} }.to_json
 
     url = "/translate?" + params.to_s
     res = @client.post(url, headers: @headers, body: body)
@@ -49,7 +49,7 @@ class TL::Btran
 
       data = entry[:translations].map do |item|
         text = item.text
-        no_cap ? text.sub(/^\*,\s/, "") : text
+        no_cap ? text.sub(/^_,\s/, "") : text
       end
 
       {term, data.join('\t')}
@@ -175,4 +175,4 @@ end
 
 # test = "能源、表情".split("、")
 # puts TL::Btran.translate(test).to_pretty_json
-puts TL::Btran.lookup(["没", "钱"]).to_pretty_json
+# puts TL::Btran.lookup(["没", "钱"]).to_pretty_json
