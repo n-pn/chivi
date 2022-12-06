@@ -18,7 +18,7 @@ def import(sname : String, s_bid : Int32)
   puts "import to: #{out_path}"
 
   ZH::ZhChap.open_db(sname, s_bid) do |db|
-    db.exec %{attach database "#{inp_path}" as inp}
+    db.exec %{attach database '#{inp_path}' as inp}
     db.exec <<-SQL
       insert into chaps (ch_no, s_cid, chdiv, title, c_len, p_len, mtime, uname)
       select ch_no, s_cid, chvol, title, c_len, p_len, utime, uname from inp.chinfos

@@ -1,7 +1,7 @@
 require "sqlite3"
 require "../src/ysapp/models/*"
 
-DB.open "sqlite3://./var/ysapp/ysusers.db" do |db|
+DB.open "sqlite3:var/ysapp/ysusers.db" do |db|
   db.transaction do |tx|
     YS::Ysuser.query.each_with_cursor(100) do |user|
       add_user(tx.connection, user)
