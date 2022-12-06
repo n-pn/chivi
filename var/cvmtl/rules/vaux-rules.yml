@@ -1,0 +1,3 @@
+- rule: [P_bei, Vword]
+  ptag: $2
+  cost: 15

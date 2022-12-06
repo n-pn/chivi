@@ -8,6 +8,21 @@
   swap: [2, 1]
   cost: 11
 
+- rule: [Pre_time, Subj+Verb, Pos_time]
+  ptag: Texpr
+  swap: [3, 1, 2]
+  cost: 140
+
+- rule: [Pre_time, Vexpr, Pos_time]
+  ptag: Texpr
+  swap: [3, 1, 2]
+  cost: 135
+
+- rule: [Pre_time, Nexpr, Pos_time]
+  ptag: Texpr
+  swap: [3, 1, 2]
+  cost: 135
+
 #### year month date with digits
 
 - rule: [Mdig, Qt_nian, Mdig, Qt_yue4]
