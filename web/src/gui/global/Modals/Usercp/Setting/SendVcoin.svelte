@@ -2,10 +2,10 @@
   import { page } from '$app/stores'
   $: session = $page.data._user
 
-  import { call_api } from '$lib/api_call'
+  import { api_put } from '$lib/api'
   import { SIcon } from '$gui'
 
-  let receiver = ''
+  let sendee = ''
   let amount = 10
   let reason = ''
 
@@ -21,15 +21,14 @@
     res_type = ''
     res_text = ''
 
-    const params = { receiver, amount, reason, as_admin }
-    const [status, body] = await call_api(action_url, 'PUT', params, fetch)
-
-    if (status >= 400) {
-      res_type = 'err'
-      res_text = body as string
-    } else {
+    try {
+      const inp = { sendee, amount, reason, as_admin }
+      const res = await api_put(action_url, inp, fetch)
       res_type = 'ok'
-      res_text = `[${body.receiver}] đã nhận được ${amount} vcoin, bạn còn có ${body.remain} vcoin.`
+      res_text = `[${res.sendee}] đã nhận được ${amount} vcoin, bạn còn có ${res.remain} vcoin.`
+    } catch (err) {
+      res_type = 'err'
+      res_text = err.message
     }
   }
 </script>
@@ -37,20 +36,20 @@
 <form action={action_url} method="POST" on:submit|preventDefault={submit}>
   <form-group>
     <form-field>
-      <label class="form-label" for="receiver">Người nhận</label>
+      <label class="form-label" for="sendee">Người nhận</label>
       <input
         type="text"
         class="m-input"
-        name="receiver"
+        name="sendee"
         placeholder="Tên tài khoản hoặc hòm thư"
         required
-        bind:value={receiver} />
+        bind:value={sendee} />
     </form-field>
   </form-group>
 
   <form-group>
     <form-field>
-      <label class="form-label" for="receiver">Lý do gửi tặng</label>
+      <label class="form-label" for="sendee">Lý do gửi tặng</label>
       <textarea
         type="text"
         class="m-input"
@@ -61,16 +60,15 @@
     </form-field>
   </form-group>
 
-  {#if session.privi > 3}
-    <label for="as_admin" class="as_admin">
-      <input
-        type="checkbox"
-        id="as_admin"
-        name="as_admin"
-        bind:checked={as_admin} />
-      Gửi dưới quyền hệ thống
-    </label>
-  {/if}
+  <label for="as_admin" class="as_admin">
+    <input
+      type="checkbox"
+      id="as_admin"
+      name="as_admin"
+      disabled={session.privi < 4}
+      bind:checked={as_admin} />
+    <span>Gửi dưới quyền hệ thống</span>
+  </label>
 
   <div class="form-group">
     <label class="form-label" for="amount">Số vcoin muốn tặng</label>

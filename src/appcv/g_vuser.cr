@@ -176,4 +176,8 @@ class CV::Viuser
   def self.load_many(unames : Array(String))
     query.where("uname IN ?", unames).to_a
   end
+
+  def self.find_any(name_or_email : String)
+    query.where("uname = ? OR email = ?", name_or_email, name_or_email).first
+  end
 end

@@ -9,7 +9,7 @@ interface Cached<T> {
 type GetParams = Record<string, string>
 
 // prettier-ignore
-export async function api_call( url: string, method = 'PUT', body?: object, fetch = globalThis.fetch ) {
+export async function api_call(url: string, method = 'PUT', body?: object, fetch = globalThis.fetch) {
   const options = { method }
 
   if (body) {
@@ -25,8 +25,8 @@ export async function api_call( url: string, method = 'PUT', body?: object, fetc
   }
 
   const message = await res.text()
-  if (res.status >= 400) throw error(res.status, message)
-  else throw redirect(res.status, message)
+  if (res.status < 400) throw redirect(300, message)
+  else throw error(res.status, message)
 }
 
 // prettier-ignore

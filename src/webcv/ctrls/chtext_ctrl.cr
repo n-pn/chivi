@@ -1,5 +1,5 @@
 require "json"
-require "../../zhlib/models/ch_edit"
+require "../../zhlib/models/line_edit"
 
 class CV::ChtextCtrl < CV::BaseCtrl
   # upload batch text

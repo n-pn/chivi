@@ -32,8 +32,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
     amount = params.read_int("amount", min: 1)
     reason = params.read_str("reason").strip
 
-    receiver_name = params["receiver"].strip
-    unless receiver = Viuser.query.where("uname = ? OR email = ?", receiver_name, receiver_name).first
+    unless sendee = Viuser.find_any(params["sendee"])
       raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại")
     end
 
@@ -45,32 +44,24 @@ class CV::UsercpCtrl < CV::BaseCtrl
       raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
     end
 
-    if sender.id == receiver.id
-      raise BadRequest.new("Bạn không thể gửi vcoin cho chính mình")
-    end
-
-    entry = ExchVcoin.new({
-      receiver: receiver, sender: sender,
-      amount: amount, reason: reason,
-    })
-
-    Clear::SQL.transaction do
-      sender.update(vcoin_avail: sender.vcoin_avail - amount)
-      receiver.update(vcoin_avail: receiver.vcoin_avail + amount)
-
-      entry.save!
-      spawn ExchVcoinMailer.new(entry).deliver
-
-      sender.cache!
-      receiver.cache!
-    end
-
     spawn do
-      body = {receiver: receiver_name, amount: amount, reason: reason}
+      body = {sendee: sendee.uname, amount: amount, reason: reason}
       CtrlUtil.log_user_action("send-vcoin", body, _viuser.uname)
     end
 
-    serv_json({receiver: receiver.uname, remain: _viuser.vcoin_avail})
+    Clear::SQL.transaction do
+      sender.update(vcoin_avail: sender.vcoin_avail - amount)
+      sendee.update(vcoin_avail: sendee.vcoin_avail + amount)
+
+      VcoinXlog.new(sender: sender.id, sendee: sendee.id, amount: amount, reason: reason).create!
+
+      sender.cache!
+      sendee.cache!
+
+      spawn VcoinReceiveMailer.new(sender, sendee, amount, reason).deliver
+    end
+
+    serv_json({sendee: sendee.uname, remain: _viuser.vcoin_avail})
   end
 
   ##################
