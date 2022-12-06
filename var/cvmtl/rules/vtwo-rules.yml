@@ -1,0 +1,8 @@
+- rule: [Vtwo, Xiobj, Xdobj]
+  ptag: V+o+c
+  cost: 30
+
+- rule: [Vtwo, Xiobj, XP+Dep_t, Nexpr]
+  ptag: V+o+c
+  swap: [1, 2, 4, 3]
+  cost: 70

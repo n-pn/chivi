@@ -1,3 +1,8 @@
-- rule: [Aexpr, Udep, Vexpr]
+- rule: [Aexpr, Udep, Vword]
   ptag: Vexpr
-  cost: 22
+  cost: 12
+
+- rule: [Aexpr, Udep, Veno]
+  ptag: Nexpr
+  swap: [3, 1, 2]
+  cost: 15
