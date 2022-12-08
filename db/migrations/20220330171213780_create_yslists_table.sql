@@ -7,11 +7,11 @@ CREATE TABLE yslists (
 
   zname text not null,
   vname text not null,
+  vslug text not null default '-',
 
   zdesc text not null default '',
   vdesc text not null default '',
 
-  vslug text not null default '-',
   klass text not null default 'male',
 
   covers text[] not null default '{}';
