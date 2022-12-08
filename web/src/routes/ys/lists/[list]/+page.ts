@@ -11,10 +11,10 @@ export async function load({ fetch, params, url }) {
     title: `Thư đơn: ${vname}`,
     desc: vdesc,
     left_nav: [
-      { text: 'Thư đơn', icon: 'bookmarks', href: '/lists' },
+      { text: 'Thư đơn', icon: 'bookmarks', href: '/ys/lists' },
       { text: vname, href: '.', 'data-kind': 'title' }
     ],
-    right_nav: [{text: 'Đánh giá', icon: 'stars', href: '/crits', 'data-show': 'tm' }],
+    right_nav: [{text: 'Đánh giá', icon: 'stars', href: '/ys/crits', 'data-show': 'tm' }],
   }
 
   return { ...api_res, _meta }

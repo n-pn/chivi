@@ -68,7 +68,7 @@
 
 <crit-item class="island">
   <header>
-    <a class="meta _user" href="/crits?user={crit.op_id}-{crit.uslug}"
+    <a class="meta _user" href="/ys/crits?user={crit.op_id}-{crit.uslug}"
       >{crit.uname}</a>
 
     <div class="right">
@@ -115,7 +115,7 @@
 
   <div class="vtags">
     {#each crit.vtags as label}
-      <a class="vtag" href="/crits?lb={label}">
+      <a class="vtag" href="/ys/crits?lb={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>
@@ -130,7 +130,7 @@
       <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
     </a>
 
-    <a class="meta" href="/crits/{crit.id}">
+    <a class="meta" href="/ys/crits/{crit.id}">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
@@ -157,7 +157,9 @@
 
   {#if show_list && crit.yslist_id}
     <footer class="list">
-      <a class="link _list" href="/lists/{crit.yslist_id}{crit.yslist_vslug}">
+      <a
+        class="link _list"
+        href="/ys/lists/{crit.yslist_id}{crit.yslist_vslug}">
         <SIcon name="bookmarks" />
         <span>{crit.yslist_vname}</span>
         <span>({crit.yslist_count} bộ truyện)</span>

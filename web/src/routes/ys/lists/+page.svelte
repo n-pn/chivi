@@ -10,14 +10,14 @@
   let qs = data.params.qs || ''
 </script>
 
-<Crumb tree={[['Thư đơn', '/lists']]} />
+<Crumb tree={[['Thư đơn', '/ys/lists']]} />
 
 <article class="article island">
   <form
     class="search-bar"
     method="get"
-    action="/lists"
-    on:submit|preventDefault={() => goto(`/lists?qs=${qs}`)}>
+    action="/ys/lists"
+    on:submit|preventDefault={() => goto(`/ys/lists?qs=${qs}`)}>
     <input
       type="search"
       class="m-input _sm"

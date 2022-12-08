@@ -2,8 +2,8 @@ import { api_get } from '$lib/api'
 // prettier-ignore
 const _meta : App.PageMeta = {
   title: 'Thư đơn',
-  left_nav: [{text: 'Thư đơn', icon: 'bookmarks',  href: '/lists' }],
-  right_nav: [{text: 'Đánh giá', icon: 'stars',  href: '/crits', 'data-show': 'tm' }],
+  left_nav: [{text: 'Thư đơn', icon: 'bookmarks',  href: '/ys/lists' }],
+  right_nav: [{text: 'Đánh giá', icon: 'stars',  href: '/ys/crits', 'data-show': 'tm' }],
 }
 
 export async function load({ fetch, url: { searchParams } }) {

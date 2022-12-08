@@ -29,7 +29,7 @@
   </div>
 
   <div class="infos">
-    <a class="vname" href="/lists/{uslug}">{list.vname}</a>
+    <a class="vname" href="/ys/lists/{uslug}">{list.vname}</a>
 
     <div class="genres">
       {#each list.genres.slice(0, 4) as genre}
@@ -48,7 +48,7 @@
       <def class="left">
         <span class="entry">
           <SIcon name="user" />
-          <a class="uname" href="/lists?user={list.op_id}-{list.uslug}"
+          <a class="uname" href="/ys/lists?user={list.op_id}-{list.uslug}"
             >{list.uname}</a>
         </span>
 

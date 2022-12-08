@@ -8,7 +8,7 @@
   $: ({ crits, pgidx, pgmax } = data)
 </script>
 
-<Crumb tree={[['Đánh giá', '/crits']]} />
+<Crumb tree={[['Đánh giá', '/ys/crits']]} />
 
 <article class="article island">
   <YscritList {crits} {pgidx} {pgmax} _sort="utime" />

@@ -11,11 +11,11 @@
     <SIcon name="home" />
   </a>
   <span class="-sep">/</span>
-  <a class="crumb _link" href="/crits">
+  <a class="crumb _link" href="/ys/crits">
     <span>Đánh giá</span>
   </a>
   <span class="-sep">/</span>
-  <a class="crumb _link" href="/crits?book={data.entry.book.id}">
+  <a class="crumb _link" href="/ys/crits?book={data.entry.book.id}">
     <span>{data.entry.book.btitle}</span>
   </a>
 </nav>

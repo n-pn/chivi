@@ -5,11 +5,11 @@ export async function load({ fetch, params: { crit } }) {
   const _meta: App.PageMeta = {
     title: 'Đánh giá',
     left_nav: [
-      { text: 'Đánh giá', icon: 'stars', href: '/crits' },
+      { text: 'Đánh giá', icon: 'stars', href: '/ys/crits' },
       { 'text': `[${crit}]`, 'href': '/.', 'data-kind': 'zseed' },
     ],
     // prettier-ignore
-    right_nav: [{text: 'Thư đơn', icon: 'bookmarks', href: '/lists', 'data-show': 'tm' }],
+    right_nav: [{text: 'Thư đơn', icon: 'bookmarks', href: '/ys/lists', 'data-show': 'tm' }],
   }
 
   return { entry, _meta }
