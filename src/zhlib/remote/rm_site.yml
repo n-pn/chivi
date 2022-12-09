@@ -1,0 +1,140 @@
+69shu:
+  text:
+    href: https://www.69shu.com/txt/%{bid}/%{cid}
+    paras_css: '.txtnav'
+
+ptwxz:
+  text:
+    tkind: 2
+    href: https://www.ptwxz.com/html/%{div}/%{bid}/%{cid}.html
+    title_css: 'h1@text'
+
+    paras_css: body
+
+hetushu:
+  encoding: UTF-8
+
+  text:
+    pkind: 1
+    href: https://www.hetushu.com/book/%{bid}/%{cid}.html
+    title_css: '#content .h2@text'
+
+    cookie: PHPSESSID=48grk8h3bi58q13rhbjp1kaa73
+
+uukanshu:
+  text:
+    href: https://www.uukanshu.com/b/%{bid}/%{cid}.html
+    paras_css: '#contentbox'
+    paras_del: ['\s*[uＵ][uＵ]看书\P{Han}+[ｃc][oｏ][ｍm]\s*']
+
+uuks:
+  encoding: UTF-8
+
+  text:
+    href: https://www.uuks.org/b/%{bid}/%{cid}.html
+    paras_css: '#contentbox'
+
+biqugse:
+  encoding: UTF-8
+
+  text:
+    href: http://www.biqugse.com/%{bid}/%{cid}.html
+
+bqxs520:
+  encoding: UTF-8
+
+  text:
+    href: http://www.bqxs520.com/%{bid}/%{cid}.html
+
+133txt:
+  encoding: UTF-8
+
+  text:
+    href: https://www.133txt.com/xiaoshuo/%{bid}/%{cid}.html
+
+b5200:
+  text:
+    href: http://www.b5200.org/%{div}_%{bid}/%{cid}.html
+
+bxwxio:
+  text:
+    href: https://www.bxwx.io/%{div}_%{bid}/%{cid}.html
+    paras_del: ['.+www\.bxwx\.io.+']
+
+xbiquge:
+  text:
+    href: https://www.xbiquge.so/book/%{bid}/%{cid}.html
+    paras_css: '#content'
+
+yannuozw:
+  encoding: UTF-8
+
+  text:
+    href: http://www.yannuozw.com/yn/%{bid}/%{cid}.html
+
+kanshu8:
+  encoding: UTF-8
+
+  text:
+    href: http://www.kanshu8.net/book/%{bid}/read_%{cid}.html
+    title_css: 'h1 > a@title'
+    paras_css: .pt-read-text
+
+duokan8:
+  text:
+    tkind: 3
+    href: http://www.duokanba.com/%{div}_%{bid}/%{cid}.html
+    title_css: '#read-content > h2'
+    paras_css: '#htmlContent > p'
+
+rengshu:
+  text:
+    href: http://www.rengshu.com/book/%{bid}/%{cid}
+
+paoshu8:
+  encoding: UTF-8
+
+  text:
+    href: http://www.paoshu8.com/%{div}_%{bid}/%{cid}.html
+
+'5200':
+  text:
+    href: https://www.5200.tv/%{div}_%{bid}/%{cid}.html
+
+biqu5200:
+  text:
+    href: http://www.biqu5200.net/%{div}_%{bid}/%{cid}.html
+
+shubaow:
+  text:
+    href: https://www.shubaow.net/%{div}_%{bid}/%{cid}.html
+
+bxwxorg:
+  encoding: UTF-8
+
+  text:
+    href: https://www.bxwxorg.com/read/%{bid}/%{cid}.html
+
+biqugee:
+  text:
+    href: https://www.biqugee.com/book/%{bid}/%{cid}.html
+
+zhwenpg:
+  encoding: UTF-8
+
+  text:
+    href: https://novel.zhwenpg.com/r.php?id=%{cid}
+    title_css: 'h2@text'
+    paras_css: '#tdcontent .content'
+
+sdyfcm:
+  encoding: UTF-8
+
+  text:
+    href: https://www.sdyfcm.com/%{bid}/%{cid}/
+
+jx_la:
+  encoding: UTF-8
+
+  text:
+    href: https://www.jx.la/book/%{bid}/%{cid}.html
