@@ -3,13 +3,16 @@ require "colorize"
 require "../../src/zhlib/remote/rm_text.cr"
 
 def fetch_text(sname : String, bid : Int32, cid : Int32, reset = false)
-  chap = ZH::RmText.new(sname, bid, cid, reset: reset)
-  puts "\n[#{sname}/#{bid}/#{cid}]\n".colorize.blue.bold
+  chap = ZH::RmText.init(sname, bid, cid, reset: reset)
+  puts "\n[#{chap.link.colorize.blue.bold}]"
+  puts
 
-  puts chap.title
-  puts "---".colorize.blue
+  puts chap.bname.colorize.yellow
+  puts "---".colorize.dark_gray
+  puts chap.title.colorize.green
+  puts "---".colorize.dark_gray
   puts chap.paras.first(4).join("\n")
-  puts "---".colorize.blue
+  puts "---".colorize.dark_gray
   puts chap.paras.last(4).join("\n")
 rescue err
   puts err.inspect_with_backtrace.colorize.red

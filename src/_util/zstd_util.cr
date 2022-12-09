@@ -25,4 +25,13 @@ module ZstdUtil
     file = File.open(inp_file, "r")
     Zstd::Decompress::IO.open(file, sync_close: true, &.gets_to_end)
   end
+
+  def load!(file : String)
+    if File.exists?(file)
+      Zstd::Decompress::IO.open(File.open(file, "r"), sync_close: true, &.gets_to_end)
+    else
+      cctx = Zstd::Compress::Context.new(level: 3)
+      yield.tap { |x| File.write(file, cctx.compress(x.to_slice)) }
+    end
+  end
 end

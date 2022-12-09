@@ -1,12 +1,16 @@
 require "log"
-require "zstd"
 require "lexbor"
 require "colorize"
 require "http/client"
 
+require "../../_util/zstd_util"
+require "../../_util/text_util"
+
 class ZH::RmPage
   getter doc : Lexbor::Parser
-  forward_missing_to @doc
+  delegate css, to: @doc
+
+  # forward_missing_to @doc
 
   def initialize(html : String)
     @doc = Lexbor::Parser.new(html)
@@ -23,16 +27,12 @@ class ZH::RmPage
   end
 
   def lines(selector : String)
-    @doc.css(selector).inner_text("\n").lines.map { |x| clean(x) }
+    @doc.css(selector).inner_text("\n").lines.map { |x| TextUtil.trim_spaces(x) }
   end
 
   private def extract(node : Lexbor::Node, attr : String)
-    text = attr == "text" ? node.inner_text : node.attributes[attr]
-    clean(text)
-  end
-
-  def clean(text : String)
-    text.tr("\t\u00A0\u205F\u3000", " ").strip
+    text = attr == "text" ? node.inner_text : node.attribute_by(attr) || ""
+    TextUtil.trim_spaces(text)
   end
 
   def remove!(node : Lexbor::Node, *tags : Symbol)
@@ -41,26 +41,23 @@ class ZH::RmPage
 
   ###
 
-  def self.load!(file : String)
-    if File.exists?(file)
-      new Zstd::Decompress::IO.open(File.open(file, "r"), sync_close: true, &.gets_to_end)
-    else
-      html = yield
-      cctx = Zstd::Compress::Context.new(level: 3)
-      File.write(file, cctx.compress(html.to_slice))
-      new html
+  def self.load!(link : String, file : String, encoding : String = "UTF-8")
+    html = ZstdUtil.load!(file) do
+      # puts "GET: #{link}".colorize.magenta
+
+      HTTP::Client.get(link) do |res|
+        bio = res.body_io
+
+        raise "#{res.status} request failed! " unless res.status.success?
+        bio.set_encoding(encoding, invalid: :skip)
+
+        body = bio.gets_to_end.lstrip
+        raise "invalid content!" unless body[0] == '<'
+
+        encoding == "UTF-8" ? body : body.sub(/set="?#{encoding}"?/i, "set=utf-8")
+      end
     end
-  end
 
-  def self.fetch!(link : String, file : String, encoding : String = "UTF-8")
-    # puts "GET: #{link}".colorize.magenta
-
-    HTTP::Client.get(link) do |res|
-      raise res.body_io.gets_to_end unless res.status.success?
-
-      res.body_io.set_encoding(encoding, invalid: :skip)
-      body = res.body_io.gets_to_end.lstrip
-      encoding == "UTF-8" ? body : body.sub(/charset="?#{encoding}"?/i, "charset=utf-8")
-    end
+    new(html)
   end
 end
