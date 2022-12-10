@@ -26,7 +26,7 @@
     smax: $page.url.searchParams.get('smax') || 5,
   }
 
-  $: pgidx = ys.pgidx
+  $: pgidx = ys.pgidx > vi.pgidx ? ys.pgidx : vi.pgidx
   $: pgmax = ys.pgmax > vi.pgmax ? ys.pgmax : vi.pgidx
 </script>
 
