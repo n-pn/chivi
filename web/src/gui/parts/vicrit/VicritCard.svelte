@@ -5,19 +5,19 @@
 </script>
 
 <script lang="ts">
-  import Truncate from '$gui/atoms/Truncate.svelte'
-
   import { SIcon, Stars } from '$gui'
-  import YsreplList from './YsreplList.svelte'
-  import YscritBook from './YscritBook.svelte'
+  import Truncate from '$gui/atoms/Truncate.svelte'
+  // import YscritBook from './YscritBook.svelte'
 
-  export let crit: CV.Yscrit
-  export let book = crit.book
+  export let crit: CV.Vicrit
+  export let book: CV.Nvinfo
+  export let user: CV.Viuser
+  export let list: CV.Vilist
 
   export let show_book = true
   export let show_list = true
 
-  export let view_all = crit.vhtml.length < 600
+  export let view_all = crit.ohtml.length < 600
   export let big_text = false
 
   let show_repls = false
@@ -27,49 +27,14 @@
     replies = await get_repls(crit.id)
     show_repls = true
   }
-
-  type BodyType = 'vhtml' | 'btran' | 'deepl'
-  let body_type: BodyType = 'vhtml'
-
-  let content = crit.vhtml
-  $: swap_content(body_type)
-
-  let cached = {}
-  $: cached = { vhtml: crit.vhtml }
-
-  let _loading = false
-
-  async function swap_content(body_type: BodyType) {
-    let cached_data = cached[body_type]
-
-    if (cached_data || body_type == 'vhtml') {
-      content = cached_data || crit.vhtml
-      return
-    }
-
-    _loading = true
-
-    const url = `/_ys/crits/${crit.id}/${body_type}`
-    const res = await globalThis.fetch(url)
-    const res_text = await res.text()
-    _loading = false
-
-    if (!res.ok) return alert(res_text)
-    cached[body_type] = res_text
-    content = res_text
-  }
-
-  const body_types = [
-    ['vhtml', 'Dịch thô', -1],
-    ['btran', 'Bing (Việt)', 2],
-    ['deepl', 'DeepL (Eng)', 3],
-  ]
 </script>
 
-<crit-item class="island">
-  <header>
-    <a class="meta _user" href="/ys/crits?user={crit.op_id}-{crit.uslug}"
-      >{crit.uname}</a>
+<article class="crit island">
+  <header class="head">
+    <a
+      class="meta _user cv-user"
+      data-privi={user.privi}
+      href="/vi/crits?user={user.uname}">{user.uname}</a>
 
     <div class="right">
       <span class="meta _star">
@@ -78,44 +43,13 @@
     </div>
   </header>
 
-  {#if show_book && book}<YscritBook {book} />{/if}
-
-  <section class="version">
-    <span class="meta">Dịch theo:</span>
-    {#each body_types as [value, label, privi]}
-      <label
-        class="meta _inline"
-        data-tip="Cần thiết quyền hạn tối thiểu: {privi}"
-        data-tip-loc="bottom"
-        ><input
-          type="radio"
-          name="{crit.id}_body_type"
-          bind:group={body_type}
-          disabled={$session.privi < privi}
-          {value} />
-        <span>{label}</span>
-      </label>
-    {/each}
-  </section>
-
   <section class="body" class:big_text>
-    {#if _loading}
-      <div class="loading">
-        <SIcon name="loader" spin={_loading} />
-        <span>Đang tải dữ liệu</span>
-      </div>
-    {:else if content == '<p>$$$</p>'}
-      <p class="mute">
-        <em>(Nội dung đánh giá đã bị ẩn trên Ưu Thư Võng, đợi phục hồi)</em>
-      </p>
-    {:else}
-      <Truncate html={content} {view_all} />
-    {/if}
+    <Truncate html={crit.ohtml} {view_all} />
   </section>
 
   <div class="vtags">
-    {#each crit.vtags as label}
-      <a class="vtag" href="/ys/crits?lb={label}">
+    {#each crit.btags as label}
+      <a class="vtag" href="/vi/crits?lb={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>
@@ -127,15 +61,22 @@
 
     <a class="meta _time" href="/qtran/crits/{crit.id}">
       <SIcon name="clock" />
-      <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
+      <span>{rel_time(crit.ctime)}{crit.edited ? '*' : ''}</span>
     </a>
 
-    <a class="meta" href="/ys/crits/{crit.id}">
+    <a class="meta" href="/vi/crits/{crit.id}">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
 
-    {#if content.length > 600}
+    {#if $session.privi > 3 || $session.uname == user.uname}
+      <a class="meta" href="/-{book?.bslug}/crits/+crit?id={crit.id}">
+        <SIcon name="pencil" />
+        <span>Sửa chữa</span>
+      </a>
+    {/if}
+
+    {#if crit.ohtml.length > 600}
       <button class="meta" on:click={() => (view_all = !view_all)}>
         <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
         <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
@@ -155,41 +96,30 @@
     </div>
   </footer>
 
-  {#if show_list && crit.yslist_id}
+  {#if show_list && list}
     <footer class="list">
-      <a
-        class="link _list"
-        href="/ys/lists/{crit.yslist_id}{crit.yslist_vslug}">
+      <a class="link _list" href="/ys/lists/{list.id}{list.tslug}">
         <SIcon name="bookmarks" />
-        <span>{crit.yslist_vname}</span>
-        <span>({crit.yslist_count} bộ truyện)</span>
+        <span>{list.title}</span>
+        <span>({list.book_count} bộ truyện)</span>
       </a>
     </footer>
   {/if}
-</crit-item>
-
-{#if show_repls}
-  <YsreplList {replies} bind:_active={show_repls} />
-{/if}
+</article>
 
 <style lang="scss">
-  crit-item {
+  .crit {
     display: block;
     @include margin-y(1rem);
-    // padding-bottom: 0.01px;
+    @include padding-y(0);
 
-    // @include shadow();
     @include bgcolor(tert);
 
     // @include bdradi();
     @include linesd(--bd-main, $inset: false);
-
-    @include tm-dark {
-      @include linesd(--bd-soft, $ndef: false, $inset: false);
-    }
   }
 
-  header {
+  .head {
     @include flex($gap: 0.25rem);
     position: sticky;
     top: 0;
@@ -212,7 +142,6 @@
   }
 
   .meta {
-    @include fgcolor(tert);
     display: inline-flex;
     gap: 0.125rem;
     align-items: center;
@@ -221,10 +150,13 @@
 
     &._user {
       font-weight: 500;
-      @include fgcolor(secd);
       @include clamp($width: null);
       @include bps(font-size, rem(13px), $pl: rem(14px), $tm: rem(15px));
       // flex-shrink: 0;
+    }
+
+    &:not(.cv-user) {
+      @include fgcolor(tert);
     }
 
     :global(.m-icon) {
@@ -248,13 +180,6 @@
     }
   }
 
-  .version {
-    display: flex;
-    gap: 0.5rem;
-    padding: 0 var(--gutter);
-    margin-top: 0.5rem;
-  }
-
   .body {
     padding: 0.375rem var(--gutter) 0.25rem;
     position: relative;
@@ -275,28 +200,6 @@
     @include bp-min(ts) { --line: 10; }
     // prettier-ignore
     @include bp-min(ds) { --line: 8; }
-
-    // &._loading:after {
-    //   display: block;
-    //   position: absolute;
-    //   content: '';
-    //   inset: 0;
-    //   @include bgcolor(neutral, 5, 1);
-    // }
-  }
-
-  .loading {
-    @include flex-ca;
-    gap: 0.25rem;
-
-    width: 100%;
-    height: 10em;
-    font-style: italic;
-    @include ftsize(lg);
-    @include fgcolor(mute);
-    span {
-      font-size: 0.9em;
-    }
   }
 
   footer {
@@ -307,6 +210,7 @@
       @include ftsize(sm);
     }
   }
+
   .foot {
     padding: 0.5rem var(--gutter);
   }

@@ -1,3 +1,5 @@
+require "amber"
+
 class CV::BaseCtrl < Amber::Controller::Base
   LAYOUT = false
 
@@ -148,5 +150,10 @@ class CV::BaseCtrl < Amber::Controller::Base
 
     # session["uname"] = user.uname
     cookies.write(response.headers)
+  end
+
+  def allowed?(owner_id : Int32 = -2)
+    privi = _viuser.privi
+    privi < 0 ? false : privi > 3 ? true : _viuser.id == owner_id
   end
 end

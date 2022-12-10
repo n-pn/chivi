@@ -117,6 +117,15 @@ Amber::Server.configure do
 
     # get "/vpinits/fixtag/:source/:target", CV::VpinitCtrl, :fixtag
     # put "/vpinits/upsert/:target", CV::VpinitCtrl, :upsert
+
+    # # review
+
+    get "/crits/", CV::VicritCtrl, :index
+    get "/crits/:crit", CV::VicritCtrl, :show
+    post "/crits", CV::VicritCtrl, :create
+    get "/crits/:crit/edit", CV::VicritCtrl, :edit
+    patch "/crits/:crit", CV::VicritCtrl, :update
+    delete "/crits", CV::VicritCtrl, :delete
   end
 
   routes :static do

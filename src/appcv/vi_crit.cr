@@ -8,10 +8,10 @@ class CV::Vicrit
 
   primary_key type: :serial
 
-  belongs_to viuser : Viuser
+  belongs_to viuser : Viuser, foreign_key_type: Int32
   belongs_to nvinfo : Nvinfo
 
-  belongs_to vilist : Vilist?
+  belongs_to vilist : Vilist?, foreign_key_type: Int32
 
   column stars : Int32 = 3
 
@@ -52,5 +52,14 @@ class CV::Vicrit
     when "likes" then self.order_by(like_count: :desc)
     else              self.order_by(_sort: :desc)
     end
+  end
+
+  def patch!(input : String, stars : String | Int32, btags : String)
+    self.itext = input
+    self.ohtml = PostUtil.md_to_html(input)
+    self.stars = stars.to_i
+    self.btags = btags.split(/\s*,\s*/, remove_empty: true)
+
+    self.save!
   end
 end

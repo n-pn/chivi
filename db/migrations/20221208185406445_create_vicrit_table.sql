@@ -3,7 +3,7 @@ CREATE TABLE vicrits (
   id serial primary key,
 
   viuser_id int not null references viusers(id) on update cascade on delete cascade,
-  nvinfo_id bigint not null references viusers(id) on update cascade on delete cascade,
+  nvinfo_id bigint not null references nvinfos(id) on update cascade on delete cascade,
 
   vilist_id int not null,
   unique(nvinfo_id, vilist_id),
@@ -13,7 +13,7 @@ CREATE TABLE vicrits (
   itext text not null,
   ohtml text not null default '',
 
-  btags varchar[] not null default '{}',
+  btags text[] not null default '{}',
 
   _flag int not null default 0,
   _sort int not null default 0,

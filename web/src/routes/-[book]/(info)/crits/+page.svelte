@@ -1,10 +1,8 @@
 <script lang="ts">
-  import YscritList from '$gui/parts/yousuu/YscritList.svelte'
+  import NvcritList from '$gui/parts/nvcrit/NvcritList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
-
-  $: ({ crits, pgidx, pgmax } = data)
 </script>
 
-<YscritList {crits} {pgidx} {pgmax} _sort="score" show_book={false} />
+<NvcritList ys={data.ys} vi={data.vi} _sort="score" show_book={false} />

@@ -43,4 +43,10 @@ declare namespace CV {
     yslist_class?: string
     yslist_count?: number
   }
+
+  interface YscritList {
+    pgidx: number
+    pgmax: number
+    crits: Yscrit[]
+  }
 }

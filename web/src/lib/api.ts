@@ -101,3 +101,17 @@ export async function get_chlist(nv_id: number, sname: string, pgidx = 1, fetch 
   const url = `/api/seeds/${key}`
   return await api_get(url, null, fetch)
 }
+
+export function merge_search(
+  search = new URLSearchParams(),
+  params: Record<string, string | number> = {}
+) {
+  if (!(search instanceof URLSearchParams)) search = new URLSearchParams(search)
+
+  for (const key in params) {
+    const val = params[key]
+    if (val) search.append(key, val.toString())
+  }
+
+  return search
+}
