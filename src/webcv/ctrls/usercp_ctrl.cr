@@ -3,7 +3,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
     set_cache :private, maxage: 3
     _viuser.check_privi! unless _viuser.privi < 0
     # save_current_user!(_viuser)
-    serv_json(ViuserView.new(_viuser))
+    serv_json(ViuserView.new(_viuser, true))
   end
 
   def upgrade_privi
@@ -23,7 +23,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
     end
 
     save_current_user!(_viuser)
-    serv_json(ViuserView.new(_viuser))
+    serv_json(ViuserView.new(_viuser, true))
   rescue err
     halt! 403, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
   end
@@ -75,7 +75,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
       _viuser.update!({wtheme: wtheme})
     end
 
-    serv_json(ViuserView.new(_viuser))
+    serv_json(ViuserView.new(_viuser, true))
   end
 
   def update_passwd

@@ -30,49 +30,46 @@ module CV::SiteLink
   }
 
   def info_url(sname : String, bid : Int32)
-    INFOS[sname]?.try(&.%({div: bid // 100, bid: bid})) || ""
+    INFOS.fetch(sname, "/") % {div: bid // 1000, bid: bid}
   end
+
+  CATAS = {
+    "69shu" => "https://www.69shu.com/%{bid}/",
+    "ptwxz" => "https://www.ptwxz.com/html/%{div}/%{bid}/index.html",
+  }
 
   def mulu_url(sname : String, bid : Int32)
-    case sname
-    when "69shu" then "https://www.69shu.com/%{bid}/"
-    when "ptwxz" then "https://www.ptwxz.com/html/%{div}/%{bid}/index.html"
-    else              info_url(sname, bid)
-    end
+    CATAS.fetch(sname) { INFOS.fetch(sname, "/") } % {div: bid // 1000, bid: bid}
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
+  CHAPS = {
+    "69shu"    => "https://www.69shu.com/txt/%{bid}/%{cid}",
+    "uukanshu" => "https://www.uukanshu.com/b/%{bid}/%{cid}.html",
+    "uuks"     => "https://www.uuks.org/b/%{bid}/%{cid}.html",
+    "biqugse"  => "http://www.biqugse.com/%{bid}/%{cid}.html",
+    "bqxs520"  => "http://www.bqxs520.com/%{bid}/%{cid}.html",
+    "133txt"   => "https://www.133txt.com/xiaoshuo/%{bid}/%{cid}.html",
+    "b5200"    => "http://www.b5200.org/%{div}_%{bid}/%{cid}.html",
+    "bxwxio"   => "https://www.bxwx.io/%{div}_%{bid}/%{cid}.html",
+    "xbiquge"  => "https://www.xbiquge.so/book/%{bid}/%{cid}.html",
+    "yannuozw" => "http://www.yannuozw.com/yn/%{bid}/%{cid}.html",
+    "kanshu8"  => "http://www.kanshu8.net/book/%{bid}/read_%{cid}.html",
+    "ptwxz"    => "https://www.ptwxz.com/html/%{div}/%{bid}/%{cid}.html",
+    "hetushu"  => "https://www.hetushu.com/book/%{bid}/%{cid}.html",
+    "duokan8"  => "http://www.duokanba.com/%{div}_%{bid}/%{cid}.html",
+    "rengshu"  => "http://www.rengshu.com/book/%{bid}/%{cid}",
+    "paoshu8"  => "http://www.paoshu8.com/%{div}_%{bid}/%{cid}.html",
+    "5200"     => "https://www.5200.tv/%{div}_%{bid}/%{cid}.html",
+    "biqu5200" => "http://www.biqu5200.net/%{div}_%{bid}/%{cid}.html",
+    "shubaow"  => "https://www.shubaow.net/%{div}_%{bid}/%{cid}.html",
+    "bxwxorg"  => "https://www.bxwxorg.com/read/%{bid}/%{cid}.html",
+    "biqugee"  => "https://www.biqugee.com/book/%{bid}/%{cid}.html",
+    "zhwenpg"  => "https://novel.zhwenpg.com/r.php?id=%{cid}",
+    "sdyfcm"   => "https://www.sdyfcm.com/%{bid}/%{cid}/",
+    "jx_la"    => "https://www.jx.la/book/%{bid}/%{cid}.html",
+  }
+
   def text_url(sname : String, bid : Int32, cid : Int32)
-    case sname
-    when "69shu"    then "https://www.69shu.com/txt/%{bid}/%{cid}"
-    when "uukanshu" then "https://www.uukanshu.com/b/%{bid}/%{cid}.html"
-    when "uuks"     then "https://www.uuks.org/b/%{bid}/%{cid}.html"
-    when "biqugse"  then "http://www.biqugse.com/%{bid}/%{cid}.html"
-    when "bqxs520"  then "http://www.bqxs520.com/%{bid}/%{cid}.html"
-    when "133txt"   then "https://www.133txt.com/xiaoshuo/%{bid}/%{cid}.html"
-    when "b5200"    then "http://www.b5200.org/%{div}_%{bid}/%{cid}.html"
-    when "bxwxio"   then "https://www.bxwx.io/%{div}_%{bid}/%{cid}.html"
-    when "xbiquge"  then "https://www.xbiquge.so/book/%{bid}/%{cid}.html"
-    when "yannuozw" then "http://www.yannuozw.com/yn/%{bid}/%{cid}.html"
-    when "kanshu8"  then "http://www.kanshu8.net/book/%{bid}/read_%{cid}.html"
-    when "ptwxz"    then "https://www.ptwxz.com/html/%{div}/%{bid}/%{cid}.html"
-    when "hetushu"  then "https://www.hetushu.com/book/%{bid}/%{cid}.html"
-    when "duokan8"  then "http://www.duokanba.com/%{div}_%{bid}/%{cid}.html"
-    when "rengshu"  then "http://www.rengshu.com/book/%{bid}/%{cid}"
-    when "paoshu8"  then "http://www.paoshu8.com/%{div}_%{bid}/%{cid}.html"
-    when "5200"     then "https://www.5200.tv/%{div}_%{bid}/%{cid}.html"
-    when "biqu5200" then "http://www.biqu5200.net/%{div}_%{bid}/%{cid}.html"
-    when "shubaow"  then "https://www.shubaow.net/%{div}_%{bid}/%{cid}.html"
-    when "bxwxorg"  then "https://www.bxwxorg.com/read/%{bid}/%{cid}.html"
-    when "biqugee"  then "https://www.biqugee.com/book/%{bid}/%{cid}.html"
-    when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=%{cid}"
-    when "sdyfcm"   then "https://www.sdyfcm.com/%{bid}/%{cid}/"
-    when "jx_la"    then "https://www.jx.la/book/%{bid}/%{cid}.html"
-    else                 ""
-    end
-  end
-
-  private def div(bid : Int32, sep = "_")
-    "#{bid // 1000}#{sep}%{bid}"
+    CHAPS.fetch(sname, "") % {div: bid // 1000, bid: bid, cid: cid}
   end
 end
