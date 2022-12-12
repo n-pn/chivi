@@ -46,6 +46,7 @@
   import { SIcon, Footer } from '$gui'
 
   import type { PageData } from './$types'
+  import { onMount } from 'svelte'
   export let data: PageData
 
   $: ({ nvinfo, nvseed } = data)
@@ -53,6 +54,8 @@
   let input = ''
   let chidx = data.chidx
   let files: FileList
+
+  let file_hash = ''
 
   let form = {
     tosimp: false,
@@ -65,33 +68,47 @@
     min_blanks: 2,
     trim_space: false,
     need_blank: false,
-    name: '章节回幕折集卷季',
+    label: '章节回幕折集卷季',
     regex: `^\\s*第?[\\d${numbers}]+[章节回]`,
   }
-
-  let encoding = 'GBK'
-  $: if (encoding && files) read_to_input(files[0], encoding)
 
   $: action_url = `/api/texts/${nvinfo.id}/${nvseed.sname}`
 
   let loading = false
   let changed = false
-  let file_hash = ''
 
   let err_msg = ''
 
-  function read_to_input(file: File | undefined, encoding = 'GBK') {
-    if (!file) return
+  let reader: FileReader
+
+  $: if (files) {
     loading = true
+    reader.readAsArrayBuffer(files[0])
+  }
 
-    const reader = new FileReader()
-    reader.readAsText(file, encoding)
-
-    reader.onload = (e) => {
-      const buffer = e.target.result
-      input = format_str(buffer.toString())
-      loading = changed = false
+  onMount(() => {
+    reader = new FileReader()
+    reader.onloadend = async () => {
+      changed = loading = false
+      const buffer = reader.result as ArrayBuffer
+      const encoding = await get_encoding(buffer)
+      const decoder = new TextDecoder(encoding)
+      // console.log({ encoding })
+      input = format_str(decoder.decode(buffer))
     }
+  })
+
+  const get_encoding = async (buffer: ArrayBuffer) => {
+    const headers = { 'content-type': 'text/plain' }
+
+    const opts = { method: 'POST', body: buffer.slice(0, 200), headers }
+    const res = await fetch('/_mh/chardet', opts)
+
+    const res_data = await res.text()
+    if (res.ok) return res_data
+
+    console.log('error', res_data)
+    return 'UTF-8'
   }
 
   $: chap_count = dry_check(input, form.split_mode, opts)
@@ -165,27 +182,8 @@
     <div class="form-field file-prompt">
       <label class="m-btn">
         <span>Chọn tệp tin</span>
-        <input
-          type="file"
-          bind:files
-          accept=".txt"
-          on:change={() => read_to_input(files[0], encoding)} />
+        <input type="file" bind:files accept=".txt" async />
       </label>
-
-      <div class="right">
-        <span class="label">Encoding:</span>
-
-        {#each ['GBK', 'UTF-8', 'UTF16-LE', 'BIG5'] as value}
-          <label>
-            <input
-              type="radio"
-              {value}
-              disabled={loading}
-              bind:group={encoding} />
-            <span>{value}</span>
-          </label>
-        {/each}
-      </div>
     </div>
 
     <div class="form-field">
@@ -365,10 +363,6 @@
 
   .file-prompt {
     display: flex;
-
-    & > .right {
-      margin-left: auto;
-    }
   }
 
   section {
