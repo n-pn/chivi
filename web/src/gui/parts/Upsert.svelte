@@ -52,7 +52,7 @@
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
-  let key = ''
+  let key = $ztext.substring($zfrom, $zupto)
 
   let show_opts = $session.privi < 1
 
@@ -283,7 +283,7 @@
           class:_active={show_opts}
           data-kbd="&bsol;"
           data-key="Backslash"
-          use:hint={'Thay dổi chế độ lưu trữ'}
+          use:hint={'Thay đổi chế độ lưu trữ'}
           on:click={() => (show_opts = !show_opts)}>
           <SIcon name="tools" />
         </button>

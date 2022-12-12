@@ -16,14 +16,15 @@ export async function gtran(text: string, lang: number) {
 
   const [sl, tl] = gtran_langs[lang]
 
-  const url = `${gtran_api}&sl=${sl}&tl=${tl}&q=${text}`
+  const url = `${gtran_api}&sl=${sl}&tl=${tl}&q=*,${text}`
 
   try {
     const res = await fetch(url)
-
     const data = JSON.parse(await res.text())
 
-    gtran_cached[key] = data[0][0][0]
+    console.log({ text, data })
+    const tran = data[0][0][0]
+    gtran_cached[key] = tran.replace(/\*,\s*/, '')
     return gtran_cached[key]
   } catch (err) {
     console.log(err)

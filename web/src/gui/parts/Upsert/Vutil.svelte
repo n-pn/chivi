@@ -78,14 +78,11 @@
     return [capped, words.length]
   }
 
-  const PREFIX = ', '
-
-  async function load_gtran(g_tab = 0) {
+  async function load_gtran(key: string, g_tab = 0) {
     vpterm.val = '...'
     refocus()
 
-    const res = await gtran(PREFIX + key, g_tab)
-    const tran = res.replace(PREFIX, '')
+    const tran = await gtran(key, g_tab)
 
     if (tab == 2) {
       const [fname, lname] = tran.split(' ')
@@ -189,7 +186,7 @@
       <button
         class="btn"
         data-kbd="5"
-        on:click={() => load_gtran(0)}
+        on:click={() => load_gtran(key, 0)}
         use:hint={'Dịch bằng Google từ Trung sang Anh'}>
         <SIcon name="brand-google" />
         <span class="lang">Anh</span>
@@ -198,7 +195,7 @@
       <button
         class="btn"
         data-kbd="6"
-        on:click={() => load_gtran(1)}
+        on:click={() => load_gtran(key, 1)}
         use:hint={'Dịch bằng Google từ Trung sang Việt'}>
         <SIcon name="brand-google" />
         <span class="lang">Việt</span>
@@ -207,7 +204,7 @@
       <button
         class="btn"
         data-kbd="7"
-        on:click={() => load_gtran(2)}
+        on:click={() => load_gtran(key, 2)}
         use:hint={'Dịch tên riêng tiếng Nhật bằng Google Dịch'}>
         <SIcon name="brand-google" />
         <span class="lang">Nhật</span>

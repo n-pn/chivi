@@ -154,6 +154,7 @@
   <button data-kbd="n" on:click={() => (vpterm.tag = 'n')} />
 </div>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="wrap" on:click={refocus}>
   <div class="hints" class:_expand={show_mode > 0}>
     {#each val_hints.slice(0, val_limit) as val, idx}

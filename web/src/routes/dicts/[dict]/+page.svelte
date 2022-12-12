@@ -206,9 +206,7 @@
 {#if browser}
   <Lookup />
 
-  {#if $upsert.state > 0}
-    <Upsert {on_change} />
-  {/if}
+  {#if $upsert.state > 0}<Upsert {on_change} />{/if}
 
   {#if postag_state > 1}
     <Postag bind:state={postag_state} bind:ptag={query.ptag} />
