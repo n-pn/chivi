@@ -104,7 +104,7 @@
           <td><input type="text" placeholder="-" bind:value={query.val} /></td>
           <td>
             <button class="m-btn _sm" on:click={() => (postag_state = 2)}
-              >{pt_labels[query.tag] || '-'}</button>
+              >{pt_labels[query.ptag] || '-'}</button>
           </td>
           <td class="prio"
             ><input type="text" placeholder="-" bind:value={query.prio} /></td>
@@ -178,7 +178,7 @@
                 </button>
                 <a
                   class="m-btn _xs"
-                  href={pager.gen_url({ tag: tags[0] || '~' })}>
+                  href={pager.gen_url({ ptag: tags[0] || '~' })}>
                   <SIcon name="search" />
                 </a>
               </div>
@@ -211,7 +211,7 @@
   {/if}
 
   {#if postag_state > 1}
-    <Postag bind:state={postag_state} bind:ptag={query.tag} />
+    <Postag bind:state={postag_state} bind:ptag={query.ptag} />
   {/if}
 {/if}
 

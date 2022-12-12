@@ -4,7 +4,7 @@ function make_query(params: URLSearchParams) {
   return {
     key: params.get('key') || '',
     val: params.get('val') || '',
-    tag: params.get('tag') || '',
+    ptag: params.get('ptag') || '',
     prio: params.get('prio') || '',
     uname: params.get('uname') || '',
     _mode: params.get('_mode') || '',
