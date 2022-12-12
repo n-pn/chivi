@@ -19,9 +19,10 @@
 
   let kbd_hint = false
 
+  const INPUTS = ['INPUT', 'TEXTAREA', 'TEXT-AREA']
   function handle_keydown(evt: KeyboardEvent) {
     const tag_name = document.activeElement?.tagName
-    const on_input = tag_name == 'TEXTAREA' || tag_name == 'INPUT'
+    const on_input = INPUTS.includes(tag_name)
 
     const kbd = map_keypress(evt, on_input)
     if (!kbd) {

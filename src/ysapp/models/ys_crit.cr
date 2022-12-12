@@ -124,8 +124,7 @@ class YS::Yscrit
   #############
 
   def fix_sort!
-    self._sort = self.stars &* self.stars &* self.like_count
-    self._sort &+ self.repl_count &* self.stars
+    self._sort = self.stars &* (self.stars &* self.like_count &+ self.repl_count)
   end
 
   def set_tags(ztags : Array(String), force : Bool = false)

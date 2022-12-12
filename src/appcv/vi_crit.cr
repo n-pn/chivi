@@ -18,7 +18,7 @@ class CV::Vicrit
   column itext : String = ""
   column ohtml : String = ""
 
-  column _sort : Int32 = 0
+  # column _sort : Int32 = 0 # manage by database
   column _flag : Int32 = 0
 
   column btags : Array(String) = [] of String

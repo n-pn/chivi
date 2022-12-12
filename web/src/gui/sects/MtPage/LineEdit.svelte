@@ -190,14 +190,14 @@
         {@html render_rawtxt(newtxt)}
       </div>
 
-      <div
+      <text-area
         class="overlay"
         bind:this={overlay}
         on:keypress={on_keypress}
         on:input={update_input}
         contenteditable="true">
         {newtxt}
-      </div>
+      </text-area>
     </section>
 
     <section class="preview">
@@ -269,6 +269,7 @@
   }
 
   .overlay {
+    display: block;
     position: relative;
     color: transparent;
     caret-color: color(primary, 5);
