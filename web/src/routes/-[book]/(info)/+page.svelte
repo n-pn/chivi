@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores'
   import { status_icons, status_names, status_colors } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -9,8 +8,12 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: nvinfo = $page.data.nvinfo
-  $: ({ crits, books, users } = data)
+  let nvinfo: CV.Nvinfo
+  let crits: CV.Yscrit[]
+  let books: CV.Nvinfo[]
+  let users: { u_dname: string; u_privi: number; _status: string }[]
+
+  $: ({ nvinfo, crits, books, users } = data)
 
   let short_intro = false
 </script>

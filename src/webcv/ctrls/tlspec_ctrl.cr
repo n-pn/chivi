@@ -3,7 +3,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     pgidx, limit, offset = params.page_info(min: 50)
     total = Tlspec.items.size
 
-    send_json(
+    serv_json(
       {
         total: total,
         pgidx: pgidx,
@@ -62,7 +62,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
 
     cvmtl = MtCore.generic_mtl(dname)
 
-    send_json({
+    serv_json({
       ztext: entry.ztext,
       lower: lower,
       upper: upper,
@@ -90,7 +90,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     entry.add_edit!(params, _viuser)
     entry.save!
 
-    send_json(["ok"])
+    serv_json(["ok"])
   end
 
   def delete
@@ -102,6 +102,6 @@ class CV::TlspecCtrl < CV::BaseCtrl
 
     entry.delete!
 
-    send_json(["ok"])
+    serv_json(["ok"])
   end
 end

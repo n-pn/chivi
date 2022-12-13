@@ -1,23 +1,21 @@
-export async function load({ parent, fetch, url: { searchParams } }) {
+import { api_path } from '$lib/api_call'
+import type { PageLoadEvent } from './$types'
+
+export async function load({ parent, fetch, url }: PageLoadEvent) {
   const { dboard } = await parent()
 
-  const pg = +searchParams.get('pg') || 1
-  const lb = searchParams.get('lb')
+  const extras = { dboard: dboard.id, lm: 10 }
+  const path = api_path('dtopics.index', null, url.searchParams, extras)
+  const data = await fetch(path).then((r) => r.json())
 
-  let api_url = `/api/topics?dboard=${dboard.id}&pg=${pg}&lm=10`
-  if (lb) api_url += `&labels=${lb}`
-
-  const api_res = await fetch(api_url)
-  const { props } = await api_res.json()
-
-  const _meta: App.PageMeta = {
+  data._meta = {
     title: 'Diễn đàn: ' + dboard.bname,
     left_nav: [
       { text: 'Diễn đàn', icon: 'messages', href: '/forum' },
       // prettier-ignore
       { 'text': dboard.bname, 'href': `/forum/-${dboard.bslug}`, 'data-kind': 'title', },
     ],
-  }
+  } satisfies App.PageMeta
 
-  return { ...props, dboard, _meta }
+  return data
 }

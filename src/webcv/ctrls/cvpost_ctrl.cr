@@ -27,7 +27,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     items = query.limit(limit).offset(offset).to_a
     memos = UserPost.glob(_viuser, items.map(&.id))
 
-    send_json({
+    serv_json({
       dtlist: {
         total: total,
         pgidx: pgidx,
@@ -53,7 +53,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
       memo = UserPost.find({viuser_id: _viuser.id, cvpost_id: cvpost.id})
     end
 
-    send_json({cvpost: CvpostView.new(cvpost, full: true, memo: memo)})
+    serv_json({cvpost: CvpostView.new(cvpost, full: true, memo: memo)})
   rescue err
     Log.error { err }
     halt!(404, "Chủ đề không tồn tại!")
@@ -63,7 +63,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     oid = params["cvpost"]
     cvpost = Cvpost.load!(oid)
 
-    send_json({
+    serv_json({
       id:     oid,
       title:  cvpost.title,
       labels: cvpost.labels.join(","),
@@ -87,7 +87,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     cvpost.update_content!(params)
     nvinfo.update!({post_count: count, board_bump: cvpost.utime})
 
-    send_json({cvpost: CvpostView.new(cvpost)})
+    serv_json({cvpost: CvpostView.new(cvpost)})
   end
 
   def update
@@ -98,7 +98,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     end
 
     cvpost.update_content!(params)
-    send_json({cvpost: CvpostView.new(cvpost)})
+    serv_json({cvpost: CvpostView.new(cvpost)})
   end
 
   def delete
@@ -113,6 +113,6 @@ class CV::CvpostCtrl < CV::BaseCtrl
     end
 
     cvpost.soft_delete(admin: admin)
-    send_json("Chủ đề đã bị xoá")
+    serv_json("Chủ đề đã bị xoá")
   end
 end

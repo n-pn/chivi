@@ -1,15 +1,16 @@
 import { api_path } from '$lib/api_call'
+import type { PageLoadEvent } from './$types'
 
 interface JsonData extends CV.Paginate {
   books: CV.Nvinfo[]
 }
 
-export async function load({ url, params, fetch }) {
+export async function load({ url, params, fetch }: PageLoadEvent) {
   const [uname, bmark = 'reading'] = params.uname.split('/')
   const extras = { lm: 24, order: 'update', uname, bmark }
 
   const path = api_path('nvinfos.index', null, url.searchParams, extras)
-  const data: JsonData = await fetch(path).then((x: Response) => x.json())
+  const data: JsonData = await fetch(path).then((x) => x.json())
 
   const _meta = {
     title: `Tủ truyện của @${uname}`,

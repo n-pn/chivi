@@ -1,8 +1,11 @@
-export async function load({ fetch, params: { crit } }) {
-  const api_res = await fetch(`/_ys/crits/${crit}`)
-  const { entry } = await api_res.json()
+import { api_path } from '$lib/api_call'
+import type { PageLoad } from './$types'
 
-  const _meta: App.PageMeta = {
+export const load: PageLoad = async ({ fetch, params: { crit } }) => {
+  const path = api_path('yscrits.show', crit)
+  const data = await fetch(path).then((r) => r.json())
+
+  data._meta = {
     title: 'Đánh giá',
     left_nav: [
       { text: 'Đánh giá', icon: 'stars', href: '/ys/crits' },
@@ -10,7 +13,7 @@ export async function load({ fetch, params: { crit } }) {
     ],
     // prettier-ignore
     right_nav: [{text: 'Thư đơn', icon: 'bookmarks', href: '/ys/lists', 'data-show': 'tm' }],
-  }
+  } satisfies App.PageMeta
 
-  return { entry, _meta }
+  return data
 }

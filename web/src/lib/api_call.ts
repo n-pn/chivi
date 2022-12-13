@@ -40,6 +40,8 @@ export const api_call = (url: string, body: ReqBody, method = 'POST') => {
 export const ROUTES = {
   // novel
   'nvinfos.index': '/api/books',
+  'nvinfos.show': (id: any) => `/api/books/${id}`,
+  'nvinfos.front': (id: any) => `/api/books/${id}/front`,
 
   // forum
   'dtopics.index': '/api/topics',

@@ -10,7 +10,7 @@ class CV::AuthorCtrl < CV::BaseCtrl
 
     set_cache maxage: 180
 
-    send_json({
+    serv_json({
       total: total,
       pgidx: pgidx,
       pgmax: CtrlUtil.pgmax(total, limit),

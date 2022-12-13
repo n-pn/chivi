@@ -11,7 +11,7 @@
 #     init_data = PostagInit.new("#{DIR}/_init/#{source}")
 #     conflicts = extract_conflicts(init_data, VpDict.load(target), limit)
 
-#     send_json({data: conflicts, source: source, target: target})
+#     serv_json({data: conflicts, source: source, target: target})
 #   end
 
 #   def upsert
@@ -24,7 +24,7 @@
 #     vpterm = VpTerm.new(key, [val], tag, uname: _viuser.uname, mtime: 0)
 #     result = @@topatch.set!(vpterm)
 
-#     send_json({result: result})
+#     serv_json({result: result})
 #   end
 
 #   @@similar = VpDict.new("#{DIR}/patch/similar-tags.tsv", kind: :basic)

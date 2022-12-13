@@ -8,7 +8,7 @@ class CV::VptermCtrl < CV::BaseCtrl
 
     w_temp = params["temp"]? == "t"
 
-    send_json do |jb|
+    serv_json do |jb|
       jb.object do
         input.each do |dname, words|
           words = words.as_a.map(&.to_s)

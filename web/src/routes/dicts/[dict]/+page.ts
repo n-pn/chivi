@@ -1,5 +1,6 @@
 import { api_path } from '$lib/api_call'
 import { make_vdict } from '$utils/vpdict_utils'
+import type { PageLoadEvent } from './$types'
 
 // FIXME: add type for term
 export interface JsonData extends CV.Paginate {
@@ -13,9 +14,9 @@ export interface JsonData extends CV.Paginate {
 
 const fields = ['key', 'val', 'ptag', 'prio', 'uname', '_mode']
 
-export async function load({ fetch, url, params: { dict } }) {
+export async function load({ fetch, url, params: { dict } }: PageLoadEvent) {
   const path = api_path('v1dict.show', dict, url.searchParams, { lm: 50 })
-  const data: JsonData = await fetch(path).then((r: Response) => r.json())
+  const data: JsonData = await fetch(path).then((r) => r.json())
 
   const { d_dub, d_tip } = make_vdict(dict, data.d_dub)
 

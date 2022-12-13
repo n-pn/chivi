@@ -1,11 +1,12 @@
 import { api_path } from '$lib/api_call'
+import type { PageLoad } from './$types'
 
-export async function load({ parent, fetch, url }) {
+export const load: PageLoad = async ({ parent, fetch, url }) => {
   const { dboard, cvpost } = await parent()
 
   const extras = { cvpost: cvpost.id, lm: 20 }
   const path = api_path('dtposts.index', null, url.searchParams, extras)
-  const data = await fetch(path).then((r: Response) => r.json())
+  const data = await fetch(path).then((r) => r.json())
 
   data._meta = {
     title: 'Diễn đàn: ' + dboard.bname,

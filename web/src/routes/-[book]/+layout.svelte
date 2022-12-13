@@ -20,8 +20,7 @@
   import type { LayoutData } from './$types'
   export let data: LayoutData
 
-  $: ({ nvinfo } = data)
-
+  $: nvinfo = data.nvinfo
   $: bcover = nvinfo.bcover || 'blank.webp'
   $: bintro = nvinfo.bintro.substring(0, 300)
   $: update = new Date(nvinfo.mftime || 0).toISOString()

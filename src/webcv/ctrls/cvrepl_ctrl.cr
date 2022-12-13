@@ -26,7 +26,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     items = query.limit(limit).offset(offset).to_a
     memos = UserRepl.glob(_viuser, items.map(&.id))
 
-    send_json({
+    serv_json({
       tplist: {
         total: total,
         pgidx: pgidx,
@@ -43,7 +43,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
   def detail
     cvrepl = Cvrepl.load!(params["cvrepl"].to_i64)
 
-    send_json({
+    serv_json({
       id:    cvrepl.id,
       input: cvrepl.input,
       itype: cvrepl.itype,
@@ -71,7 +71,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     repl = Cvrepl.load!(cvrepl.repl_cvrepl_id)
     repl.update!({repl_count: repl.repl_count + 1})
 
-    send_json({cvrepl: CvreplView.new(cvrepl)})
+    serv_json({cvrepl: CvreplView.new(cvrepl)})
   end
 
   def update
@@ -79,7 +79,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     return halt!(403) unless DboardACL.cvrepl_update?(cvrepl, _viuser)
 
     cvrepl.update_content!(params)
-    send_json({cvrepl: CvreplView.new(cvrepl)})
+    serv_json({cvrepl: CvreplView.new(cvrepl)})
   end
 
   def delete
@@ -94,6 +94,6 @@ class CV::CvreplCtrl < CV::BaseCtrl
     end
 
     Cvrepl.load!(params["cvrepl"].to_i64).soft_delete(admin: admin)
-    send_json({msg: "ok"})
+    serv_json({msg: "ok"})
   end
 end

@@ -117,7 +117,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
     memos = UserRepl.glob(_viuser, items.map(&.id))
 
     set_cache :private, maxage: 3
-    send_json(items.map { |x| CvreplView.new(x, full: true, memo: memos[x.id]?) })
+    serv_json(items.map { |x| CvreplView.new(x, full: true, memo: memos[x.id]?) })
   end
 
   def mark_post

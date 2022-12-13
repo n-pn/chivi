@@ -1,19 +1,20 @@
-import { get_nvbook } from '$lib/api_call'
+import { api_path } from '$lib/api_call'
 import { suggest_read } from '$utils/ubmemo_utils'
 
 import type { LayoutLoad } from './$types'
 export const load: LayoutLoad = async ({ params, fetch }) => {
-  const bslug = params.book
+  const path = api_path('nvinfos.show', params.book)
+  const data = await fetch(path).then((r) => r.json())
+  const { nvinfo, ubmemo } = data
 
-  const { nvinfo, ubmemo } = await get_nvbook(bslug, fetch)
-  const _meta: App.PageMeta = {
+  data._meta = {
     title: `${nvinfo.btitle_vi}`,
     left_nav: [
       // prettier-ignore
       { text: nvinfo.btitle_vi, icon: 'book', href: `/-${nvinfo.bslug}`, "data-show": 'tm', "data-kind": 'title' },
     ],
     right_nav: [suggest_read(nvinfo, ubmemo)],
-  }
+  } satisfies App.PageMeta
 
-  return { nvinfo, ubmemo, _meta }
+  return data
 }

@@ -11,8 +11,7 @@
 
   const on_change = async () => {
     const url = make_url($page.url)
-    const res = await fetch(url)
-    data.cvdata = await res.text()
+    data.cvdata = await fetch(url).then((r) => r.text())
   }
 </script>
 

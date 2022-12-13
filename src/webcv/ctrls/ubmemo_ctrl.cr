@@ -1,6 +1,6 @@
 class CV::UbmemoCtrl < CV::BaseCtrl
   def cvbook
-    send_json("Chưa có chức năng")
+    serv_text("Chưa có chức năng")
   end
 
   def access

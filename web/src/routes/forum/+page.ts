@@ -1,18 +1,16 @@
-// prettier-ignore
-const _meta : App.PageMeta = {
-  title: 'Diễn đàn',
-  left_nav: [{text: 'Diễn đàn', icon: 'messages',  href: '/forum' }],
-}
+import { api_path } from '$lib/api_call'
+import type { PageLoadEvent } from './$types'
 
-export async function load({ fetch, url }) {
-  const pg = url.searchParams.get('pg') || 1
-  const lb = url.searchParams.get('lb')
+export const load = async ({ fetch, url: { searchParams } }: PageLoadEvent) => {
+  const extras = { lm: 10, labels: searchParams.get('lb') }
 
-  let api_url = `/api/topics?pg=${pg}&lm=10`
-  if (lb) api_url += `&labels=${lb}`
+  const path = api_path('dtopics.index', null, searchParams, extras)
+  const data = await fetch(path).then((r) => r.json())
 
-  const api_res = await fetch(api_url)
-  const { props } = await api_res.json()
+  data._meta = {
+    title: 'Diễn đàn',
+    left_nav: [{ text: 'Diễn đàn', icon: 'messages', href: '/forum' }],
+  } satisfies App.PageMeta
 
-  return { ...props, _meta }
+  return data satisfies App.PageData
 }

@@ -1,12 +1,12 @@
 <script context="module" lang="ts">
   import { session } from '$lib/stores'
-  import { get_repls } from '$lib/ys_api'
   import { rel_time } from '$utils/time_utils'
 </script>
 
 <script lang="ts">
   import { SIcon, Stars } from '$gui'
   import Truncate from '$gui/atoms/Truncate.svelte'
+  import { api_path } from '$lib/api_call'
   // import YscritBook from './YscritBook.svelte'
 
   export let crit: CV.Vicrit
@@ -24,7 +24,9 @@
   let replies = []
 
   async function show_replies() {
-    replies = await get_repls(crit.id)
+    const extra = { crit: crit.id, order: 'ctime' }
+    const path = api_path('virepls.index', null, null, extra)
+    replies = await fetch(path).then((r: Response) => r.json())
     show_repls = true
   }
 </script>

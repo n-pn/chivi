@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { session } from '$lib/stores'
-  import { get_repls } from '$lib/ys_api'
+  import { api_path } from '$lib/api_call'
   import { rel_time } from '$utils/time_utils'
 </script>
 
@@ -24,7 +24,8 @@
   let replies = []
 
   async function show_replies() {
-    replies = await get_repls(crit.id)
+    const path = api_path('yscrits.repls', crit.id)
+    replies = await fetch(path).then((r: Response) => r.json())
     show_repls = true
   }
 

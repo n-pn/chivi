@@ -90,7 +90,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .with_viuser
         .limit(100)
 
-    send_json({
+    serv_json({
       books: nvinfos.map { |x| NvinfoView.new(x, false) },
       users: ubmemos.map do |x|
         {
@@ -159,6 +159,6 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     nvinfo.delete
     Ubmemo.query.where(nvinfo_id: nvinfo.id).to_delete.execute
-    send_json({message: "ok"})
+    serv_json({message: "ok"})
   end
 end

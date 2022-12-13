@@ -1,16 +1,17 @@
 import { api_path } from '$lib/api_call'
+import type { PageLoadEvent } from './$types'
 
 interface JsonData extends CV.Paginate {
   books: CV.Nvinfo[]
 }
 
-export async function load({ fetch, url }) {
-  const type = url.searchParams.get('t') || 'btitle'
-  const input = url.searchParams.get('q').replace('+', ' ')
+export async function load({ fetch, url: { searchParams } }: PageLoadEvent) {
+  const type = searchParams.get('t') || 'btitle'
+  const input = searchParams.get('q').replace('+', ' ')
   const extras = { order: 'weight', lm: 8, [type]: input }
 
-  const path = api_path('nvinfos.index', null, url.searchParams, extras)
-  const data: JsonData = await fetch(path).then((x: Response) => x.json())
+  const path = api_path('nvinfos.index', null, searchParams, extras)
+  const data: JsonData = await fetch(path).then((x) => x.json())
 
   const _meta: App.PageMeta = {
     title: `Kết quả tìm kiếm cho "${input}"`,

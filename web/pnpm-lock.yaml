@@ -290,7 +290,7 @@ packages:
     resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
     dev: true
 
-  /@rollup/plugin-commonjs/23.0.4_rollup@3.7.3:
+  /@rollup/plugin-commonjs/23.0.4_rollup@3.7.4:
     resolution: {integrity: sha512-bOPJeTZg56D2MCm+TT4psP8e8Jmf1Jsi7pFUMl8BN5kOADNzofNHe47+84WVCt7D095xPghC235/YKuNDEhczg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -299,16 +299,16 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2_rollup@3.7.3
+      '@rollup/pluginutils': 5.0.2_rollup@3.7.4
       commondir: 1.0.1
       estree-walker: 2.0.2
       glob: 8.0.3
       is-reference: 1.2.1
       magic-string: 0.26.7
-      rollup: 3.7.3
+      rollup: 3.7.4
     dev: true
 
-  /@rollup/plugin-json/5.0.2_rollup@3.7.3:
+  /@rollup/plugin-json/5.0.2_rollup@3.7.4:
     resolution: {integrity: sha512-D1CoOT2wPvadWLhVcmpkDnesTzjhNIQRWLsc3fA49IFOP2Y84cFOOJ+nKGYedvXHKUsPeq07HR4hXpBBr+CHlA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -317,11 +317,11 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2_rollup@3.7.3
-      rollup: 3.7.3
+      '@rollup/pluginutils': 5.0.2_rollup@3.7.4
+      rollup: 3.7.4
     dev: true
 
-  /@rollup/plugin-node-resolve/15.0.1_rollup@3.7.3:
+  /@rollup/plugin-node-resolve/15.0.1_rollup@3.7.4:
     resolution: {integrity: sha512-ReY88T7JhJjeRVbfCyNj+NXAG3IIsVMsX9b5/9jC98dRP8/yxlZdz7mHZbHk5zHr24wZZICS5AcXsFZAXYUQEg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -330,16 +330,16 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2_rollup@3.7.3
+      '@rollup/pluginutils': 5.0.2_rollup@3.7.4
       '@types/resolve': 1.20.2
       deepmerge: 4.2.2
       is-builtin-module: 3.2.0
       is-module: 1.0.0
       resolve: 1.22.1
-      rollup: 3.7.3
+      rollup: 3.7.4
     dev: true
 
-  /@rollup/pluginutils/5.0.2_rollup@3.7.3:
+  /@rollup/pluginutils/5.0.2_rollup@3.7.4:
     resolution: {integrity: sha512-pTd9rIsP92h+B6wWwFbW8RkZv4hiR/xKsqre4SIuAOaOEQRxi0lqLke9k2/7WegC85GgUs9pjmOjCUi3In4vwA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -351,16 +351,16 @@ packages:
       '@types/estree': 1.0.0
       estree-walker: 2.0.2
       picomatch: 2.3.1
-      rollup: 3.7.3
+      rollup: 3.7.4
     dev: true
 
   /@sveltejs/adapter-node/1.0.0-next.104:
     resolution: {integrity: sha512-CZVSDTH1fnpBEztvNqoye9xC5w2E+q4S1X5LjZv1tqszM/A9VuwWY358k4/tQ6OFYz011R5mbZ4QyjTB+GB2AA==}
     dependencies:
-      '@rollup/plugin-commonjs': 23.0.4_rollup@3.7.3
-      '@rollup/plugin-json': 5.0.2_rollup@3.7.3
-      '@rollup/plugin-node-resolve': 15.0.1_rollup@3.7.3
-      rollup: 3.7.3
+      '@rollup/plugin-commonjs': 23.0.4_rollup@3.7.4
+      '@rollup/plugin-json': 5.0.2_rollup@3.7.4
+      '@rollup/plugin-node-resolve': 15.0.1_rollup@3.7.4
+      rollup: 3.7.4
     dev: true
 
   /@sveltejs/kit/1.0.0-next.583_svelte@3.54.0+vite@4.0.0:
@@ -1529,6 +1529,14 @@ packages:
 
   /rollup/3.7.3:
     resolution: {integrity: sha512-7e68MQbAWCX6mI4/0lG1WHd+NdNAlVamg0Zkd+8LZ/oXojligdGnCNyHlzXqXCZObyjs5FRc3AH0b17iJESGIQ==}
+    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  /rollup/3.7.4:
+    resolution: {integrity: sha512-jN9rx3k5pfg9H9al0r0y1EYKSeiRANZRYX32SuNXAnKzh6cVyf4LZVto1KAuDnbHT03E1CpsgqDKaqQ8FZtgxw==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:

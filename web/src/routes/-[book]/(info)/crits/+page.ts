@@ -1,6 +1,7 @@
+import type { LoadEvent } from '@sveltejs/kit'
 import { merge_query, api_path } from '$lib/api_call'
 
-export async function load({ fetch, parent, url }) {
+export const load = async ({ fetch, parent, url }: LoadEvent) => {
   const sort = url.searchParams.get('sort') || 'score'
   const { nvinfo } = await parent()
 
@@ -15,7 +16,7 @@ export async function load({ fetch, parent, url }) {
   const ys_path = api_path('yscrits.index', 0, search)
 
   return {
-    ys: from == 'cv' ? empty : await fetch(ys_path),
-    vi: from == 'ys' ? empty : await fetch(vi_path),
+    ys: from == 'cv' ? empty : await fetch(ys_path).then((r) => r.json()),
+    vi: from == 'ys' ? empty : await fetch(vi_path).then((r) => r.json()),
   }
 }

@@ -19,12 +19,12 @@ function init(): CvpostForm {
 async function load(id: number): Promise<CvpostForm> {
   if (id == 0) return init()
 
-  const api_url = `/api/topics/${id}/detail`
-  const api_res = await fetch(api_url)
-  const payload = await api_res.json()
-  if (api_res.ok) return payload.props
-  console.log(payload.error)
-  return init()
+  try {
+    return await fetch(`/api/topics/${id}/detail`).then((r) => r.json())
+  } catch (ex) {
+    console.log(ex)
+    return init()
+  }
 }
 
 export const form = {

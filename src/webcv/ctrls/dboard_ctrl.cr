@@ -6,7 +6,7 @@ class CV::DboardCtrl < CV::BaseCtrl
     total = query.dup.limit(limit * 3 + offset).count
 
     set_cache :private, maxage: 30
-    send_json({
+    serv_json({
       total: total,
       pgidx: pgidx,
       pgmax: CtrlUtil.pgmax(total, limit),
@@ -21,6 +21,6 @@ class CV::DboardCtrl < CV::BaseCtrl
 
     # TODO: load user impression
     set_cache :private, maxage: 120
-    send_json({dboard: DboardView.new(dboard)})
+    serv_json({dboard: DboardView.new(dboard)})
   end
 end

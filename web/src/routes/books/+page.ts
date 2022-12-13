@@ -1,12 +1,13 @@
 import { api_path } from '$lib/api_call'
+import type { LoadEvent } from '@sveltejs/kit'
 
 interface JsonData extends CV.Paginate {
   books: CV.Nvinfo[]
 }
 
-export async function load({ url, fetch }) {
+export async function load({ url, fetch }: LoadEvent) {
   const path = api_path('nvinfos.index', null, url.searchParams, { lm: 24 })
-  const data: JsonData = await fetch(path).then((x: Response) => x.json())
+  const data: JsonData = await fetch(path).then((x) => x.json())
 
   // prettier-ignore
   const _meta: App.PageMeta = {

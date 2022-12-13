@@ -1,21 +1,19 @@
-import { get_crits } from '$lib/ys_api'
+import type { LoadEvent } from '@sveltejs/kit'
+import { api_path } from '$lib/api_call'
 
-async function load_crits(book_id: number, fetch = globalThis.fetch) {
-  const opts = { book: book_id, take: 3, sort: 'score' }
-  const { crits } = await get_crits(null, opts, fetch)
-  return crits
-}
-
-export async function load({ fetch, parent }) {
+export const load = async ({ fetch, parent }: LoadEvent) => {
   const { nvinfo } = await parent()
 
   const bhash = nvinfo.bslug.substring(0, 8)
-  const api_url = `/api/books/${bhash}/front`
+  const bpath = api_path('nvinfos.front', bhash)
 
-  const api_res = await fetch(api_url)
-  const payload = await api_res.json()
+  const data = await fetch(bpath).then((r) => r.json())
 
-  const crits = await load_crits(nvinfo.id, fetch)
+  const extra = { book: nvinfo.id, take: 3, sort: 'score' }
+  const ypath = api_path('yscrits.index', null, null, extra)
 
-  return { ...payload.props, crits }
+  const { crits } = await fetch(ypath).then((r) => r.json())
+  data.crits = crits
+
+  return data
 }

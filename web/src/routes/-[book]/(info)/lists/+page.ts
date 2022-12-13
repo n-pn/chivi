@@ -1,8 +1,11 @@
-import { get_lists } from '$lib/ys_api'
+import type { LoadEvent } from '@sveltejs/kit'
+import { api_path } from '$lib/api_call'
 
-export async function load({ fetch, parent, url }) {
-  const sort = url.searchParams.get('sort') || 'score'
+export const load = async ({ fetch, parent, url }: LoadEvent) => {
   const { nvinfo } = await parent()
+
+  const sort = url.searchParams.get('sort') || 'score'
   const opts = { book: nvinfo.id, take: 10, sort }
-  return await get_lists(url.searchParams, opts, fetch)
+  const path = api_path('yslists.index', null, url.searchParams, opts)
+  return fetch(path).then((r) => r.json())
 }
