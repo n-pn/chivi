@@ -3,7 +3,7 @@
   import { page } from '$app/stores'
 
   import { session } from '$lib/stores'
-  import { uncache } from '$lib/api'
+  import { uncache } from '$lib/api_call'
 
   import { hash_str } from '$utils/text_utils'
 

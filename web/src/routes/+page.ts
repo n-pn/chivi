@@ -1,4 +1,4 @@
-import { api_get } from '$lib/api'
+import { api_get } from '$lib/api_call'
 
 export async function load({ fetch }) {
   const books = await api_get('/api/ranks/brief', null, fetch)

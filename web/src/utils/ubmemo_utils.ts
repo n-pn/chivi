@@ -1,9 +1,9 @@
-import { call_api } from '$lib/api_call'
+import { api_call } from '$lib/api_call'
 import { chap_url } from './route_utils'
 
 export async function update_status(nvinfo_id: number, status: string) {
   const url = `/api/_self/books/${nvinfo_id}/status`
-  return await call_api(url, 'PUT', { status }, fetch)
+  return await api_call(url, { status }, 'PUT')
 }
 
 export function last_read({ bslug }, ubmemo: CV.Ubmemo) {

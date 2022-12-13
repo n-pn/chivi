@@ -1,4 +1,4 @@
-import { get_chlist } from '$lib/api'
+import { get_chlist } from '$lib/api_call'
 
 export async function load({ parent, url, fetch, params: { sname } }) {
   const { nvinfo } = await parent()

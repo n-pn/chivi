@@ -1,7 +1,7 @@
 import { nvinfo_bar } from '$utils/topbar_utils'
 import { seed_url, to_pgidx } from '$utils/route_utils'
 
-import { api_get } from '$lib/api'
+import { api_get } from '$lib/api_call'
 import { gen_api_url } from './shared'
 
 export async function load({ params, parent, fetch }) {

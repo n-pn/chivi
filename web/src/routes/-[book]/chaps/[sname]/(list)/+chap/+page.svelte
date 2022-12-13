@@ -41,7 +41,7 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { uncache } from '$lib/api'
+  import { uncache } from '$lib/api_call'
 
   import { SIcon, Footer } from '$gui'
 

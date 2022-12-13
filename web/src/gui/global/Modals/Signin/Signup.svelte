@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { call_api } from '$lib/api_call'
+  import { api_call } from '$lib/api_call'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let email: string
@@ -14,11 +14,13 @@
   async function submit() {
     error = ''
 
-    const params = { email, uname, upass }
-    const [status, body] = await call_api(action_url, 'POST', params, fetch)
-
-    if (status >= 400) error = body
-    else window.location.reload()
+    try {
+      await api_call(action_url, { email, uname, upass }, 'POST')
+      window.location.reload()
+    } catch (ex) {
+      console.log(ex)
+      error = ex.message
+    }
   }
 </script>
 

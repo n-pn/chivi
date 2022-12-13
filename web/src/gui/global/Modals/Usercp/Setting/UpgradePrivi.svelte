@@ -13,7 +13,7 @@
   import { page } from '$app/stores'
   import { session } from '$lib/stores'
 
-  import { call_api } from '$lib/api_call'
+  import { api_call } from '$lib/api_call'
 
   import { SIcon } from '$gui'
 
@@ -30,14 +30,13 @@
   async function submit() {
     error = ''
 
-    const params = { privi, tspan }
-    const [status, body] = await call_api(action_url, 'PUT', params, fetch)
-
-    if (status < 400) {
+    try {
+      const body = await api_call(action_url, { privi, tspan }, 'PUT')
       $page.data._user = body
       tab = 0
-    } else {
-      error = body
+    } catch (ex) {
+      console.log(ex)
+      error = ex.message
     }
   }
 </script>

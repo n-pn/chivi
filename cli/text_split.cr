@@ -198,17 +198,18 @@ class SplitText
 
   # split if there is `min_blanks` number of adjacent blank lines
   private def split_mode_1(trim_space = false, min_blanks = 2)
-    blank_count = 0
+    blank_count = min_blanks
 
     split_text do |line|
       line = clean_text(line) if trim_space
 
       if line.empty?
         blank_count += 1
-        blank_count >= min_blanks
+        break false
       else
+        is_title = blank_count >= min_blanks
         blank_count = 0
-        false
+        is_title
       end
     end
   end
@@ -225,9 +226,9 @@ class SplitText
       elsif line[0].in?(blank_chars)
         false
       else
-        is_new_chap = prev_was_blank || !need_blank
+        is_break = prev_was_blank || !need_blank
         prev_was_blank = false
-        is_new_chap
+        is_break
       end
     end
   end
@@ -247,10 +248,10 @@ class SplitText
     pending_chap = init_chap
 
     @raw_data.each_with_index(1) do |line, idx|
-      is_new_chap = yield line # check if this is the mark of new pending_chap
+      is_break = yield line # check if this is the mark of new pending_chap
       line = clean_text(line)
 
-      if !is_new_chap
+      if !is_break
         pending_chap.add_line(line)
         prev_was_chvol = false
       elsif pending_chap.paras.size > 0

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores'
   import { session } from '$lib/stores'
-  import { api_get, api_put, api_call } from '$lib/api'
+  import { api_get, api_call } from '$lib/api_call'
   import { gen_api_url, gen_retran_url } from './shared'
   import { seed_url, to_pgidx } from '$utils/route_utils'
 
@@ -31,7 +31,7 @@
 
     const { sname, cpart } = chmeta
     const url = gen_api_url(nvinfo, sname, chinfo.chidx, cpart, true)
-    const res = await api_get(url, null, fetch)
+    const res = await api_get(url)
 
     if (res.error) return alert(`Error: ${res.error}`)
 
@@ -70,10 +70,12 @@
     const url = `/api/_self/books/${nvinfo.id}/access`
     const body = { sname, cpart, chidx, title, uslug, locked: lock }
 
-    const res = await api_put(url, body, fetch)
-
-    if (res.error) alert(res.error)
-    // else $page.data.ubmemo = res
+    try {
+      await api_call(url, body, 'PUT')
+      // $page.data.ubmemo = res
+    } catch (ex) {
+      alert(ex.message)
+    }
   }
 
   $: [on_memory, memo_icon] = check_memo($page.data.ubmemo)
@@ -90,14 +92,13 @@
 
   async function on_fixraw(line_no: number, orig: string, edit: string) {
     const url = `/api/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}`
-    const params = { part_no: chmeta.cpart, line_no, orig, edit }
-    const res = await api_call(url, 'PATCH', params, fetch)
+    const body = { part_no: chmeta.cpart, line_no, orig, edit }
 
-    if (res.error) {
-      alert(res.error)
-    } else {
-      rl_key = res.trim()
+    try {
+      rl_key = await api_call(url, body, 'PATCH')
       retranslate(true)
+    } catch (ex) {
+      alert(ex.message)
     }
   }
 </script>

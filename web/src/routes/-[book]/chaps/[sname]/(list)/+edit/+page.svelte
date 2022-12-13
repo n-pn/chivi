@@ -2,7 +2,7 @@
   // import { page } from '$app/stores'
   import { goto } from '$app/navigation'
 
-  import { api_call, uncache } from '$lib/api'
+  import { api_call, uncache } from '$lib/api_call'
   import { SIcon } from '$gui'
 
   import type { PageData } from './$types'

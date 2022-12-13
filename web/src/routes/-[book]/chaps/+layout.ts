@@ -1,4 +1,4 @@
-import { get_nslist } from '$lib/api'
+import { get_nslist } from '$lib/api_call'
 import { suggest_read } from '$utils/ubmemo_utils'
 
 export async function load({ parent, fetch, url }) {

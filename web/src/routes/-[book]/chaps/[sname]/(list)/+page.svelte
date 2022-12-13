@@ -2,7 +2,7 @@
   import { page } from '$app/stores'
   import { session } from '$lib/stores'
 
-  import { get_nvseed, uncache } from '$lib/api'
+  import { get_nvseed, uncache } from '$lib/api_call'
 
   // import { getContext } from 'svelte'
   // import type { Writable } from 'svelte/store'

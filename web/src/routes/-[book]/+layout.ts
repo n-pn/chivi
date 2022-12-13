@@ -1,4 +1,4 @@
-import { get_nvbook } from '$lib/api'
+import { get_nvbook } from '$lib/api_call'
 import { suggest_read } from '$utils/ubmemo_utils'
 
 import type { LayoutLoad } from './$types'

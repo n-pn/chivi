@@ -12,7 +12,6 @@ end
 
 abstract class YS::BaseCtrl < ActionController::Base
   add_responder("*/*") { |io, result| io << result }
-  add_responder("text/html") { |io, result| result.to_json(io) }
   add_responder("text/plain") { |io, result| io << result }
 end
 

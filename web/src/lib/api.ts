@@ -1,117 +1,68 @@
-import { browser } from '$app/environment'
-import { error, redirect } from '@sveltejs/kit'
+// export const cache_get = async <T>(
+//   name: string,
+//   key: string | number,
+//   url: string,
+//   ttl: number,
+//   fetch: CV.Fetch
+// ): Promise<T> => {
+//   const map = (cache_maps[name] ||= new Map<string | number, Cached<T>>())
+//   const now = Math.floor(new Date().getTime() / 1000)
 
-interface Cached<T> {
-  val: T
-  ttl: number
-}
+//   const cached = map.get(key)
+//   if (cached && cached.ttl > now) return cached.val as T
 
-type GetParams = Record<string, string>
+//   const res = await api_get(url, null, fetch)
+//   map.set(key, { val: res, ttl: now + (browser ? ttl : 1) })
 
-// prettier-ignore
-export async function api_call(url: string, method = 'PUT', body?: object, fetch = globalThis.fetch) {
-  const options = { method }
+//   return res as T
+// }
 
-  if (body) {
-    options['headers'] = { 'Content-Type': 'application/json' }
-    options['body'] = JSON.stringify(body)
-  }
+// interface Nvbook {
+//   nvinfo: CV.Nvinfo
+//   ubmemo: CV.Ubmemo
+// }
 
-  const res = await fetch(url, options)
+// export function uncache(name: string, key: string | number) {
+//   const map = cache_maps[name]
+//   if (map) map.delete(key)
+//   else console.error(`uncache error: ${name} map not found!`)
+// }
 
-  if (res.ok) {
-    const type = res.headers.get('Content-Type')
-    return type.includes('application/json') ? await res.json() : await res.text()
-  }
+// // prettier-ignore
+// export async function get_nvbook(bslug: string, fetch = globalThis.fetch) : Promise<Nvbook> {
+//   const url = `/api/books/${bslug}`
+//   return await cache_get<Nvbook>('nvbooks', bslug, url, 300, fetch)
+// }
 
-  const message = await res.text()
-  if (res.status < 400) throw redirect(300, message)
-  else throw error(res.status, message)
-}
+// export async function get_nslist(nv_id: number, fetch = globalThis.fetch) {
+//   const url = `/api/seeds/${nv_id}`
+//   return await cache_get<CV.Nslist>('nslists', nv_id, url, 300, fetch)
+// }
 
-// prettier-ignore
-export async function api_get( url: string, params?: GetParams, fetch = globalThis.fetch ) {
-  if (params) url += '?' + new URLSearchParams(params).toString()
-  return await api_call(url, 'GET', null, fetch)
-}
+// // prettier-ignore
+// export async function get_nvseed(nv_id: number, sname: string, mode = 0, fetch = globalThis.fetch) {
+//   const map = cache_maps.nvseeds
+//   const key = `${nv_id}/${sname}`
 
-// prettier-ignore
-export async function api_put( url: string, body?: object, fetch = globalThis.fetch ) {
-  return await api_call(url, 'PUT', body, fetch)
-}
+//   let url = `/api/seeds/${key}`
+//   if (mode > 0) {
+//     map.delete(key)
+//     url += '?mode=' + mode
+//   }
+//   return await cache_get(map, key, url, 180, fetch)
+// }
 
-// prettier-ignore
-export async function cache_get<T>( map: Map<string | number, Cached<T>>, key: string | number, url: string, ttl: number, fetch: CV.Fetch ) {
-  const now = Math.floor(new Date().getTime() / 1000)
+// // prettier-ignore
+// export async function get_chlist(nv_id: number, sname: string, pgidx = 1, fetch = globalThis.fetch) {
+//   const key = `${nv_id}/${sname}/${pgidx}`
+//   const url = `/api/seeds/${key}`
+//   return await api_get(url, null, fetch)
+// }
 
-  const cached = map.get(key)
-  if (cached && cached.ttl > now) return cached.val
-
-  const res = await api_get(url, null, fetch)
-  map.set(key, { val: res, ttl: now + (browser ? ttl : 5) })
-
-  return res
-}
-
-interface Nvbook {
-  nvinfo: CV.Nvinfo
-  ubmemo: CV.Ubmemo
-}
-
-const cache_maps = {
-  nvbooks: new Map<string, Cached<Nvbook>>(),
-  nslists: new Map<number, Cached<CV.Nslist>>(),
-  nvseeds: new Map<string, Cached<CV.Chroot>>(),
-}
-
-export function uncache(map_name: string, key: string | number) {
-  const map = cache_maps[map_name]
-  if (map) map.delete(key)
-  else console.error(`map_name : ${map_name} not found!`)
-}
-
-// prettier-ignore
-export async function get_nvbook(bslug: string, fetch = globalThis.fetch) : Promise<Nvbook> {
-  const url = `/api/books/${bslug}`
-  return await cache_get<Nvbook>(cache_maps.nvbooks, bslug, url, 300, fetch)
-}
-
-export async function get_nslist(nv_id: number, fetch = globalThis.fetch) {
-  const map = cache_maps.nslists
-  const url = `/api/seeds/${nv_id}`
-  return await cache_get<CV.Nslist>(map, nv_id, url, 300, fetch)
-}
-
-// prettier-ignore
-export async function get_nvseed(nv_id: number, sname: string, mode = 0, fetch = globalThis.fetch) {
-  const map = cache_maps.nvseeds
-  const key = `${nv_id}/${sname}`
-
-  let url = `/api/seeds/${key}`
-  if (mode > 0) {
-    map.delete(key)
-    url += '?mode=' + mode
-  }
-  return await cache_get(map, key, url, 180, fetch)
-}
-
-// prettier-ignore
-export async function get_chlist(nv_id: number, sname: string, pgidx = 1, fetch = globalThis.fetch) {
-  const key = `${nv_id}/${sname}/${pgidx}`
-  const url = `/api/seeds/${key}`
-  return await api_get(url, null, fetch)
-}
-
-export function merge_search(
-  search = new URLSearchParams(),
-  params: Record<string, string | number> = {}
-) {
-  if (!(search instanceof URLSearchParams)) search = new URLSearchParams(search)
-
-  for (const key in params) {
-    const val = params[key]
-    if (val) search.append(key, val.toString())
-  }
-
-  return search
-}
+// type Extra = Record<string, string | number>
+// export function merge_search(query: URLSearchParams, extra: Extra = {}) {
+//   for (const [key, val] of Object.entries(extra)) {
+//     if (val) query.append(key, val.toString())
+//   }
+//   return query
+// }

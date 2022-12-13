@@ -1,4 +1,4 @@
-import { api_get } from '$lib/api'
+import { api_get } from '$lib/api_call'
 
 interface JsonData extends CV.Paginate {
   books: CV.Nvinfo[]

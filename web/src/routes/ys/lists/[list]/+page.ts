@@ -1,10 +1,13 @@
-import { api_get } from '$lib/api'
+import { set_fetch, do_fetch, api_path } from '$lib/api_call'
 
-export async function load({ fetch, params, url }) {
-  const id = params.list.split('-')[0]
-  const api_url = `/_ys/lists/${id}${url.search}`
-  const api_res = await api_get(api_url, null, fetch)
-  const { vname, vdesc } = api_res.ylist
+export async function load({ fetch, params, url: { searchParams } }) {
+  set_fetch(fetch)
+
+  const list = params.list.split('-')[0]
+  const path = api_path('yslists.show', { list }, searchParams)
+  const data = await do_fetch(path)
+
+  const { vname, vdesc } = data.ylist
 
   // prettier-ignore
   const _meta : App.PageMeta = {
@@ -17,5 +20,6 @@ export async function load({ fetch, params, url }) {
     right_nav: [{text: 'Đánh giá', icon: 'stars', href: '/ys/crits', 'data-show': 'tm' }],
   }
 
-  return { ...api_res, _meta }
+  Object.assign(data, _meta)
+  return data
 }

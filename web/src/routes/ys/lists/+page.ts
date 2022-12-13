@@ -1,4 +1,5 @@
-import { api_get } from '$lib/api'
+import { set_fetch, do_fetch, api_path } from '$lib/api_call'
+
 // prettier-ignore
 const _meta : App.PageMeta = {
   title: 'Thư đơn',
@@ -7,14 +8,10 @@ const _meta : App.PageMeta = {
 }
 
 export async function load({ fetch, url: { searchParams } }) {
-  const api_url = `/_ys/lists?${searchParams.toString()}&take=10`
-  const api_res = await api_get(api_url, null, fetch)
+  set_fetch(fetch)
 
-  // FIXME:
-  // - remove props
-  // - add interface
+  const path = api_path('yslists.index', {}, searchParams, { take: 10 })
+  const data = await do_fetch(path)
 
-  const params = Object.fromEntries(searchParams)
-
-  return { ...api_res, params, _meta }
+  return { ...data, params: Object.fromEntries(searchParams), _meta }
 }

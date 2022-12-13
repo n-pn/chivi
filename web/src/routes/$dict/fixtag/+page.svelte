@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Data } from './shared'
   import { ztext } from '$lib/stores'
-  import { api_call } from '$lib/api'
+  import { api_call } from '$lib/api_call'
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
 
   import { rel_time } from '$utils/time_utils'

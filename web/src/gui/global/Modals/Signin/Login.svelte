@@ -1,7 +1,7 @@
 <script lang="ts">
   // import { session } from '$lib/stores'
 
-  import { call_api } from '$lib/api_call'
+  import { api_call } from '$lib/api_call'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let email: string
@@ -13,11 +13,13 @@
   const action_url = '/api/_user/log-in'
 
   async function submit() {
-    const params = { email, upass }
-    const [status, body] = await call_api(action_url, 'POST', params, fetch)
-
-    if (status >= 400) error = body
-    else window.location.reload()
+    try {
+      await api_call(action_url, { email, upass }, 'POST')
+      window.location.reload()
+    } catch (ex) {
+      console.log(ex)
+      error = ex.message
+    }
   }
 </script>
 

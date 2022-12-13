@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { call_api } from '$lib/api_call'
+  import { api_call } from '$lib/api_call'
 </script>
 
 <script lang="ts">
@@ -17,13 +17,12 @@
     msg_type = ''
     msg_text = ''
 
-    const [status, body] = await call_api(action_url, 'POST', { email }, fetch)
-
-    if (status >= 400) {
-      msg_type = 'err'
-      msg_text = body
-    } else {
+    try {
+      await api_call(action_url, { email }, 'POST')
       msg_type = 'ok'
+    } catch (ex) {
+      msg_type = 'err'
+      msg_text = ex.message
     }
   }
 </script>

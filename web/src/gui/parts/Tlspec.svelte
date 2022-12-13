@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
-  import { call_api } from '$lib/api_call'
+  import { api_call, api_path } from '$lib/api_call'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
   const entry = {
@@ -49,7 +49,11 @@
 
   $: lower = $zfrom
   $: upper = $zupto
-  $: prefill_match($ztext, lower, upper)
+  $: try {
+    prefill_match($ztext, lower, upper)
+  } catch (err) {
+    console.log(err)
+  }
 
   async function prefill_match(ztext: String, lower: number, upper: number) {
     if (!$ctrl.actived) return
@@ -57,13 +61,11 @@
     const input = ztext.substring(lower, upper)
     if (!input) return
 
-    const api_url = `/api/qtran/mterror`
-    const params = { input, dname: $vdict.dname }
+    const path = api_path('tlspec.qtran')
+    const body = { input, dname: $vdict.dname }
+    const data = await api_call(path, body, 'PUT')
 
-    const [status, body] = await call_api(api_url, 'PUT', params, fetch)
-    if (status >= 400) return console.error(body)
-
-    const [convert, hanviet] = body.split('\n')
+    const [convert, hanviet] = data.split('\n')
     if (!$entry.match || $entry.match == $entry.cvmtl) $entry.match = convert
 
     $entry.cvmtl = convert
@@ -76,29 +78,32 @@
   }
 
   async function handle_submit() {
-    let url = '/api/tlspecs'
-    if ($entry._ukey) url += '/' + $entry._ukey
+    const args = { ukey: $entry._ukey }
+    const path = api_path(args.ukey ? 'tlspec.update' : 'tlspec.create', args)
+    const body = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
 
-    const params = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
-    const [status, data] = await call_api(url, 'POST', params, fetch)
-    if (status >= 400) {
-      console.error(data)
-      error = data
-    } else {
+    try {
+      await api_call(path, body)
       ctrl.hide()
       on_destroy()
+    } catch (ex) {
+      error = ex.message
+      // console.error(ex)
     }
   }
 
   async function delete_tlspec() {
-    const url = '/api/tlspecs/' + $entry._ukey
-    const [status, data] = await call_api(url, 'DELETE', null, fetch)
-    if (status >= 400) {
-      console.error(data)
-      error = data
-    } else {
+    const args = { ukey: $entry._ukey }
+
+    try {
+      const path = api_path('tlspec.delete', args)
+      await api_call(path, {}, 'DELETE')
+
       ctrl.hide()
       on_destroy()
+    } catch (ex) {
+      error = ex.message
+      // console.error(ex)
     }
   }
 

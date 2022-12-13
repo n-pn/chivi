@@ -1,4 +1,4 @@
-import { merge_search } from '$lib/api'
+import { merge_search } from '$lib/api_call'
 import { get_crits as get_yscrits } from '$lib/ys_api'
 import { get_crits as get_vicrits } from '$lib/vi_api'
 

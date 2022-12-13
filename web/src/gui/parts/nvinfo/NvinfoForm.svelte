@@ -54,7 +54,7 @@
   import { goto } from '$app/navigation'
   // import { page } from '$app/stores'
   import { session } from '$lib/stores'
-  import { api_call } from '$lib/api'
+  import { api_call } from '$lib/api_call'
 
   import { book_status } from '$utils/nvinfo_utils'
 

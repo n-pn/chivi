@@ -1,6 +1,6 @@
 <script lang="ts">
   import { session } from '$lib/stores'
-  import { api_call } from '$lib/api'
+  import { api_call } from '$lib/api_call'
 
   import {
     status_types,
@@ -18,13 +18,13 @@
   async function update_status(status: string) {
     if ($session.privi < 0) return
 
-    if (status == book_status) status = 'default'
-
-    const url = `/api/_self/books/${nvinfo.id}/status`
-    const res = await api_call(url, 'PUT', { status })
-
-    if (res.error) return alert(res.error)
-    else ubmemo = res
+    try {
+      if (status == book_status) status = 'default'
+      const path = `/api/_self/books/${nvinfo.id}/status`
+      ubmemo = await api_call(path, { status }, 'PUT')
+    } catch (ex) {
+      alert(ex)
+    }
   }
 
   $: color = status_colors[book_status]

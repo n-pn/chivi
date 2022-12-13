@@ -1,4 +1,4 @@
-import { api_get } from '$lib/api'
+import { api_get } from '$lib/api_call'
 
 export async function load({ parent, fetch, params }) {
   const { nvinfo, nvseed } = await parent()

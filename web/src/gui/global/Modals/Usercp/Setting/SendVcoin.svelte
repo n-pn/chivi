@@ -2,7 +2,7 @@
   import { page } from '$app/stores'
   $: session = $page.data._user
 
-  import { api_put } from '$lib/api'
+  import { api_call } from '$lib/api_call'
   import { SIcon } from '$gui'
 
   let sendee = ''
@@ -22,13 +22,13 @@
     res_text = ''
 
     try {
-      const inp = { sendee, amount, reason, as_admin }
-      const res = await api_put(action_url, inp, fetch)
+      const body = { sendee, amount, reason, as_admin }
+      const data = await api_call(action_url, body, 'PUT')
       res_type = 'ok'
-      res_text = `[${res.sendee}] đã nhận được ${amount} vcoin, bạn còn có ${res.remain} vcoin.`
-    } catch (err) {
+      res_text = `[${data.sendee}] đã nhận được ${amount} vcoin, bạn còn có ${data.remain} vcoin.`
+    } catch (ex) {
       res_type = 'err'
-      res_text = err.message
+      res_text = ex.message
     }
   }
 </script>

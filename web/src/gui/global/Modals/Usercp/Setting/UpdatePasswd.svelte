@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { call_api } from '$lib/api_call'
+  import { api_call } from '$lib/api_call'
 
   export let tab = 2
 
@@ -11,12 +11,13 @@
   async function submit() {
     error = ''
 
-    const url = '/api/_self/passwd'
-    const params = { oldpw, newpw }
-    const [status, body] = await call_api(url, 'PUT', params, fetch)
-
-    if (status < 400) tab = 0
-    else error = body as string
+    try {
+      await api_call('/api/_self/passwd', { oldpw, newpw }, 'PUT')
+      tab = 0
+    } catch (ex) {
+      console.log(ex)
+      error = ex.message
+    }
   }
 </script>
 

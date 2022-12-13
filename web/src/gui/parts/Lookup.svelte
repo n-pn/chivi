@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable, get } from 'svelte/store'
-  import { api_put } from '$lib/api'
+  import { api_call } from '$lib/api_call'
 
   import MtData from '$lib/mt_data'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
@@ -65,7 +65,7 @@
 
     if (range.length != 0) {
       const url = `/_mh/lookup?udict=${$vdict.dname}`
-      const res = await api_put(url, { input, range }, fetch)
+      const res = await api_call(url, { input, range }, 'PUT')
       for (let index in res) entries[index] = res[index]
     }
 
