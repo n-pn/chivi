@@ -3,7 +3,6 @@
   import { page } from '$app/stores'
 
   import { session } from '$lib/stores'
-  import { uncache } from '$lib/api_call'
 
   import { hash_str } from '$utils/text_utils'
 
@@ -29,25 +28,23 @@
   $: disabled = (privi == 1 && input.length > 30000) || privi < 1
   $: action_url = `/api/texts/${nvinfo.id}/${sname}`
 
-  async function submit() {
-    const body = new FormData()
+  let form_elem: HTMLFormElement
+  async function submit(event: SubmitEvent) {
+    event.preventDefault()
 
-    body.append('text', input)
+    const body = new FormData(form_elem)
+
     body.append('hash', hash_str(input))
-
-    body.append('title', title)
-    body.append('chvol', chvol)
-    body.append('chidx', chidx.toString())
     body.append('split_mode', '0')
     body.append('min_repeat', '9')
+
+    console.log(body)
 
     for (const key in form) body.append(key, form[key].toString())
     const res = await fetch(action_url, { method: 'PUT', body })
 
     if (res.ok) {
       await res.json()
-      uncache('nslists', nvinfo.id)
-      uncache('nvseeds', `${nvinfo.id}/${sname}`)
       goto(`/-${nvinfo.bslug}/chaps/${sname}/${chidx}`)
     } else {
       alert(await res.text())
@@ -71,7 +68,11 @@
 <section class="article">
   <h2>Sửa text chương #{chidx}</h2>
 
-  <form action={action_url} method="POST" on:submit|preventDefault={submit}>
+  <form
+    action={action_url}
+    method="POST"
+    on:submit={submit}
+    bind:this={form_elem}>
     <div class="form-group _fluid">
       <span class="form-field">
         <label class="label" for="chvol">Tên tập truyện</label>
@@ -91,7 +92,7 @@
 
     <div class="form-field">
       <label class="label" for="input">Nội dung chương</label>
-      <textarea class="m-input" name="input" lang="zh" bind:value={input} />
+      <textarea class="m-input" name="text" lang="zh" bind:value={input} />
     </div>
 
     <div class="form-field">

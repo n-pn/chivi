@@ -1,15 +1,5 @@
+import { api_path } from '$lib/api_call'
 import { make_vdict } from '$utils/vpdict_utils'
-
-function make_query(params: URLSearchParams) {
-  return {
-    key: params.get('key') || '',
-    val: params.get('val') || '',
-    ptag: params.get('ptag') || '',
-    prio: params.get('prio') || '',
-    uname: params.get('uname') || '',
-    _mode: params.get('_mode') || '',
-  }
-}
 
 // FIXME: add type for term
 export interface JsonData extends CV.Paginate {
@@ -21,14 +11,16 @@ export interface JsonData extends CV.Paginate {
   terms: any[]
 }
 
+const fields = ['key', 'val', 'ptag', 'prio', 'uname', '_mode']
+
 export async function load({ fetch, url, params: { dict } }) {
-  const api_url = `/api/dicts/${dict}${url.search}`
-  const api_res = await fetch(api_url)
+  const path = api_path('v1dict.show', dict, url.searchParams, { lm: 50 })
+  const data: JsonData = await fetch(path).then((r: Response) => r.json())
 
-  const props = (await api_res.json()).props as JsonData
-  const { d_dub, d_tip } = make_vdict(dict, props.d_dub)
+  const { d_dub, d_tip } = make_vdict(dict, data.d_dub)
 
-  const query = make_query(url.searchParams)
+  const query = {}
+  for (const field in fields) query[field] = url.searchParams.get(field) || ''
 
   // prettier-ignore
   const _meta: App.PageMeta = {
@@ -39,5 +31,5 @@ export async function load({ fetch, url, params: { dict } }) {
     ],
   }
 
-  return { ...props, d_dub, d_tip, query, _meta }
+  return { ...data, d_dub, d_tip, query, _meta }
 }

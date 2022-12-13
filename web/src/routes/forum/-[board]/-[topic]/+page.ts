@@ -1,13 +1,13 @@
+import { api_path } from '$lib/api_call'
+
 export async function load({ parent, fetch, url }) {
   const { dboard, cvpost } = await parent()
 
-  const pg = url.searchParams.get('pg') || 1
+  const extras = { cvpost: cvpost.id, lm: 20 }
+  const path = api_path('dtposts.index', null, url.searchParams, extras)
+  const data = await fetch(path).then((r: Response) => r.json())
 
-  const api_url = `/api/tposts?cvpost=${cvpost.id}&pg=${pg}&lm=20`
-  const api_res = await fetch(api_url)
-  const { props } = await api_res.json()
-
-  const _meta: App.PageMeta = {
+  data._meta = {
     title: 'Diễn đàn: ' + dboard.bname,
     left_nav: [
       // prettier-ignore
@@ -16,5 +16,5 @@ export async function load({ parent, fetch, url }) {
     ],
   }
 
-  return { ...props, _meta }
+  return data
 }

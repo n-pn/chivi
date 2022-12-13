@@ -78,8 +78,8 @@
   }
 
   async function handle_submit() {
-    const args = { ukey: $entry._ukey }
-    const path = api_path(args.ukey ? 'tlspec.update' : 'tlspec.create', args)
+    const ukey = $entry._ukey
+    const path = api_path(ukey ? 'tlspec.update' : 'tlspec.create', ukey)
     const body = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
 
     try {
@@ -93,10 +93,8 @@
   }
 
   async function delete_tlspec() {
-    const args = { ukey: $entry._ukey }
-
     try {
-      const path = api_path('tlspec.delete', args)
+      const path = api_path('tlspec.delete', $entry._ukey)
       await api_call(path, {}, 'DELETE')
 
       ctrl.hide()

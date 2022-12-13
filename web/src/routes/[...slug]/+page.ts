@@ -7,5 +7,5 @@ export async function load({ url, params: { slug } }) {
   if (slug.startsWith('notes'))
     throw redirect(301, slug.replace('notes', '/guide'))
 
-  throw error(404, `${slug} not found!`)
+  throw error(404, `Đường dẫn "${slug}" không tồn tại!`)
 }

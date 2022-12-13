@@ -41,7 +41,6 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { uncache } from '$lib/api_call'
 
   import { SIcon, Footer } from '$gui'
 
@@ -165,8 +164,6 @@
     const { from } = await res.json()
     const pgidx = Math.floor((from - 1) / 128) + 1
 
-    uncache('nslists', nvinfo.id)
-    uncache('nvseeds', `${nvinfo.id}/${nvseed.sname}`)
     goto(`/-${nvinfo.bslug}/chaps/${nvseed.sname}?pg=${pgidx}`)
   }
 </script>

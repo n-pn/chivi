@@ -1,16 +1,13 @@
-import { api_get } from '$lib/api_call'
+import { api_path } from '$lib/api_call'
 
 interface JsonData extends CV.Paginate {
   books: CV.Nvinfo[]
 }
 
 export async function load({ url, fetch, params: { genre } }) {
-  const api_url = new URL(url)
-  api_url.pathname = '/api/books'
-  api_url.searchParams.set('lm', '24')
-  api_url.searchParams.set('genre', genre)
-
-  const api_res: JsonData = await api_get(api_url.toString(), null, fetch)
+  const extras = { lm: 24, order: 'weight' }
+  const path = api_path('nvinfos.index', null, url.searchParams, extras)
+  const data: JsonData = await fetch(path).then((x: Response) => x.json())
 
   const _meta = {
     title: 'Lọc truyện theo thể loại',
@@ -21,5 +18,5 @@ export async function load({ url, fetch, params: { genre } }) {
     ],
   }
 
-  return { ...api_res, genres: genre.split('+'), _meta }
+  return { ...data, genres: genre.split('+'), _meta }
 }

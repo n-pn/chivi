@@ -24,7 +24,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
       {dict.dname, dict.d_lbl, dict.dsize}
     end
 
-    send_json({
+    serv_json({
       cores: core_dicts,
       books: book_dicts,
       total: total,
@@ -53,7 +53,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
 
     total = terms.size
 
-    send_json({
+    serv_json({
       dname: dname,
       d_dub: dname[0] == '-' ? Nvdict.load!(dname[1..]).d_lbl : "",
       dsize: vdict.size,

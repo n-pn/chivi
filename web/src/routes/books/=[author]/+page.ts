@@ -1,13 +1,14 @@
-import { api_get } from '$lib/api_call'
+import { api_path } from '$lib/api_call'
 
 interface JsonData extends CV.Paginate {
   books: CV.Nvinfo[]
 }
 
 export async function load({ fetch, url, params: { author } }) {
-  const page = +url.searchParams.get('pg') || 1
-  const api_url = `/api/books?order=weight&lm=8&pg=${page}&author=${author}`
-  const api_res: JsonData = await api_get(api_url.toString(), null, fetch)
+  const extras = { lm: 8, order: 'weight' }
+
+  const path = api_path('nvinfos.index', null, url.searchParams, extras)
+  const data: JsonData = await fetch(path).then((x: Response) => x.json())
 
   const _meta: App.PageMeta = {
     title: 'Kết quả tìm kiếm cho ',
@@ -18,5 +19,5 @@ export async function load({ fetch, url, params: { author } }) {
     ],
   }
 
-  return { ...api_res, author, _meta }
+  return { ...data, author, _meta }
 }

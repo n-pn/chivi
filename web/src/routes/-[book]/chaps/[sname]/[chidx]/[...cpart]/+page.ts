@@ -1,7 +1,7 @@
 import { nvinfo_bar } from '$utils/topbar_utils'
 import { seed_url, to_pgidx } from '$utils/route_utils'
 
-import { api_get } from '$lib/api_call'
+import { api_get, set_fetch } from '$lib/api_call'
 import { gen_api_url } from './shared'
 
 export async function load({ params, parent, fetch }) {
@@ -9,11 +9,13 @@ export async function load({ params, parent, fetch }) {
   const { sname, chidx, cpart: slug } = params
   const cpart = +slug.split('/')[1] || 1
 
-  const api_url = gen_api_url(nvinfo, sname, chidx, cpart - 1, false)
-  const api_res = await api_get(api_url, null, fetch)
+  set_fetch(fetch)
+  // TODO: using `api_path()` to generate url
+  const path = gen_api_url(nvinfo, sname, chidx, cpart - 1, false)
+  const data = await api_get(path)
 
-  const _meta = page_meta(nvinfo, api_res.chinfo.title, sname, +chidx)
-  return { ...api_res, _meta, redirect: slug == '' }
+  const _meta = page_meta(nvinfo, data.chinfo.title, sname, +chidx)
+  return { ...data, _meta, redirect: slug == '' }
 }
 
 // prettier-ignore

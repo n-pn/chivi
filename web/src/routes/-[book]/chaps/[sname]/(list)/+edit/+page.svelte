@@ -2,7 +2,7 @@
   // import { page } from '$app/stores'
   import { goto } from '$app/navigation'
 
-  import { api_call, uncache } from '$lib/api_call'
+  import { api_call } from '$lib/api_call'
   import { SIcon } from '$gui'
 
   import type { PageData } from './$types'
@@ -15,7 +15,7 @@
 
   async function submit_patch() {
     const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}/patch`
-    const res = await api_call(url, 'PUT', patch_form, fetch)
+    const res = await api_call(url, patch_form, 'PUT')
 
     if (res.error) return alert(res.error)
     else clean_jump(res.pgidx)
@@ -25,7 +25,7 @@
 
   async function trunc_source() {
     const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}/trunc`
-    const res = await api_call(url, 'PUT', { chidx: trunc_chidx }, fetch)
+    const res = await api_call(url, { chidx: trunc_chidx }, 'PUT')
 
     if (res.error) return alert(res.error)
     else clean_jump(res.pgidx)
@@ -33,16 +33,13 @@
 
   async function prune_source() {
     const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}`
-    const res = await api_call(url, 'DELETE', null, fetch)
+    const res = await api_call(url, {}, 'DELETE')
 
     if (res.error) return alert(res.error)
     else goto(`/-${nvinfo.bslug}/chaps/=base`)
   }
 
   function clean_jump(pgidx: number) {
-    uncache('nslists', nvinfo.id)
-    uncache('nvseeds', `${nvinfo.id}/${nvseed.sname}`)
-
     const root_href = `/-${nvinfo.bslug}/chaps`
     const page_href = root_href + '/' + nvseed.sname
 

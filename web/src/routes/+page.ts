@@ -1,8 +1,6 @@
-import { api_get } from '$lib/api_call'
-
 export async function load({ fetch }) {
-  const books = await api_get('/api/ranks/brief', null, fetch)
-  const { ycrits, ylists } = await api_get('/_ys', null, fetch)
+  const books = await fetch('/api/ranks/brief')
+  const { ycrits, ylists } = await fetch('/_ys')
 
   const _meta: App.PageMeta = {
     title: 'Trang chủ',

@@ -1,10 +1,10 @@
 export class Pager {
   url: URL
-  dfs: object
+  omit: object
 
-  constructor(url: URL, dfs: Record<string, any> = { pg: 1 }) {
+  constructor(url: URL, omit: Record<string, any> = { pg: 1 }) {
     this.url = url
-    this.dfs = dfs
+    this.omit = omit
   }
 
   get path(): string {
@@ -12,7 +12,7 @@ export class Pager {
   }
 
   get(value: string) {
-    return this.url.searchParams.get(value) || this.dfs[value]
+    return this.url.searchParams.get(value) || this.omit[value]
   }
 
   gen_url(opts = {}): string {
@@ -20,7 +20,7 @@ export class Pager {
 
     for (const key in opts) {
       const val = opts[key]
-      if (val && val != this.dfs[key]) {
+      if (val && val != this.omit[key]) {
         query.set(key, val)
       } else {
         query.delete(key)

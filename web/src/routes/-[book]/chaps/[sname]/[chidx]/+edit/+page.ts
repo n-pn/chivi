@@ -1,4 +1,4 @@
-import { api_get } from '$lib/api_call'
+import { set_fetch, api_get } from '$lib/api_call'
 
 export async function load({ parent, fetch, params }) {
   const { nvinfo, nvseed } = await parent()
@@ -6,12 +6,14 @@ export async function load({ parent, fetch, params }) {
 
   const chidx = params.chidx.split('-', 2)[0]
 
-  const api_url = `/api/texts/${nvinfo.id}/${sname}/${chidx}`
-  const api_res = await api_get(api_url, null, fetch)
+  set_fetch(fetch)
+
+  // TODO: call `api_path` to generate path
+  const path = `/api/texts/${nvinfo.id}/${sname}/${chidx}`
+  const data = await api_get(path)
 
   const _meta = page_meta(nvinfo, sname, chidx)
-
-  return { ...api_res, chidx, sname, _meta }
+  return { ...data, chidx, sname, _meta }
 }
 
 function page_meta({ bslug, btitle_vi }, sname: string, chidx: number) {

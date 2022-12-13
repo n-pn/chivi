@@ -30,6 +30,7 @@
     _reloading = true
 
     const { sname, cpart } = chmeta
+    // TODO: use `api_path()` to generate url
     const url = gen_api_url(nvinfo, sname, chinfo.chidx, cpart, true)
     const res = await api_get(url)
 

@@ -31,8 +31,8 @@
     if (!tag) return
 
     const term = content[idx]
-    const params = { key: term.key, val: term.val, tag }
-    await api_call(`/api/vpinits/upsert/${target}`, 'PUT', params, fetch)
+    const body = { key: term.key, val: term.val, tag }
+    await api_call(`/api/vpinits/upsert/${target}`, body, 'PUT')
 
     content = content.filter((_, i) => i != idx)
     value = map_tags(content)

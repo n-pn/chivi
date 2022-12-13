@@ -63,24 +63,6 @@ class CV::BaseCtrl < Amber::Controller::Base
     cookies.write(response.headers)
   end
 
-  def send_json(props : Object, status = 200)
-    set_headers(status, :json)
-    body = {status: status, props: props, cache: {maxage: @maxage}}
-    response.puts(body.to_json)
-  end
-
-  def send_json(status = 200)
-    set_headers(status, :json)
-
-    JSON.build(response) do |jb|
-      jb.object {
-        jb.field "status", status
-        jb.field "props" { yield jb }
-        jb.field "cache", {maxage: @maxage}
-      }
-    end
-  end
-
   def serv_json(object : Object, status = 200)
     set_headers(status, :json)
     response.puts(object.to_json)

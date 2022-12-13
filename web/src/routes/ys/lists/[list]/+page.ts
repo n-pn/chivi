@@ -4,7 +4,7 @@ export async function load({ fetch, params, url: { searchParams } }) {
   set_fetch(fetch)
 
   const list = params.list.split('-')[0]
-  const path = api_path('yslists.show', { list }, searchParams)
+  const path = api_path('yslists.show', list, searchParams)
   const data = await do_fetch(path)
 
   const { vname, vdesc } = data.ylist

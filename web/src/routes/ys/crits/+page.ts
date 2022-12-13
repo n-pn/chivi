@@ -1,4 +1,4 @@
-import { get_crits } from '$lib/ys_api'
+import { api_path } from '$lib/api_call'
 
 // prettier-ignore
 const _meta = {
@@ -8,6 +8,9 @@ const _meta = {
 }
 
 export async function load({ fetch, url: { searchParams } }) {
-  const props = await get_crits(searchParams, { take: 10 }, fetch)
-  return { ...props, _meta }
+  const path = api_path('yscrits.index', null, searchParams, { take: 10 })
+  const data = await fetch(path).then((r: Response) => r.json())
+
+  data._meta = _meta
+  return data
 }

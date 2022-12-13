@@ -2,7 +2,7 @@
   import { page } from '$app/stores'
   import { session } from '$lib/stores'
 
-  import { get_nvseed, uncache } from '$lib/api_call'
+  import { get_nvseed } from '$lib/api_call'
 
   // import { getContext } from 'svelte'
   // import type { Writable } from 'svelte/store'
@@ -30,9 +30,6 @@
   async function reload_source() {
     _refresh = true
     _error = ''
-
-    uncache('nvbooks', nvinfo.bslug)
-    uncache('nslists', nvinfo.id)
 
     const res = await get_nvseed(nvinfo.id, nvseed.sname, 1, fetch)
     _refresh = false

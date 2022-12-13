@@ -19,19 +19,8 @@ export const do_fetch = async (
   throw redirect(resp.status as REDIRECT_CODES, data)
 }
 
-export const build_params = (
-  params?: URLSearchParams,
-  extras: Record<string, any> = {},
-  plucks: string[] = []
-) => {
-  if (params) Object.assign(extras, Object.entries(params))
-  const output = new URLSearchParams(extras)
-  for (const pluck in plucks) output.delete(pluck)
-  return output
-}
-
 export const api_get = (url: string, search?: URLSearchParams) => {
-  return do_fetch(`${url}?${search}`, { method: 'GET' })
+  return do_fetch(`${url}?${search.toString()}`, { method: 'GET' })
 }
 
 type ReqBody = Record<string, any> | string
@@ -48,29 +37,64 @@ export const api_call = (url: string, body: ReqBody, method = 'POST') => {
   }
 }
 
-const PATHS = {
-  'yslists.index': (_opts?: any) => `/_ys/lists`,
-  'yslists.show': ({ list }) => `/_ys/lists/${list}`,
-  'yscrits.index': (_opts?: any) => `/_ys/crits`,
-  'ysrepls.index': ({ crit }) => `/_ys/crits/${crit}/repls`,
-  'tlspec.qtran': () => '/api/qtran/mterror',
-  'tlspec.create': () => '/api/tlspecs',
-  'tlspec.update': ({ ukey }) => `/api/tlspecs/${ukey}`,
-  'tlspec.delete': ({ ukey }) => `/api/tlspecs/${ukey}`,
+export const ROUTES = {
+  // novel
+  'nvinfos.index': '/api/books',
+
+  // forum
+  'dtopics.index': '/api/topics',
+  'dtopics.show': (id: any) => `/api/topics/${id}`,
+
+  'dtposts.index': '/api/tposts',
+
+  // chivi users booklists
+  'vilists.index': '/api/lists',
+  'vilists.show': (id: any) => `/api/lists/${id}`,
+  'vilists.create': '/api/lists',
+
+  // chivi users book reviews
+  'vicrits.index': '/api/crits',
+  'vicrits.show': (id: any) => `/api/crits/${id}`,
+  'vicrits.create': `/api/crits`,
+  'vicrits.edit': (id: any) => `/api/crits/${id}/edit`,
+  'vicrits.update': (id: any) => `/api/crits/${id}`,
+
+  // reviews' replies
+  'virepls.index': '/api/repls',
+
+  // yousuu booklists
+  'yslists.index': `/_ys/lists`,
+  'yslists.show': (id: any) => `/_ys/lists/${id}`,
+
+  // yosuu reviews
+  'yscrits.index': `/_ys/crits`,
+  'yscrits.show': (id: any) => `/_ys/crits/${id}`,
+  'yscrits.repls': (id: any) => `/_ys/crits/${id}/repls`,
+
+  // report convert errors
+  'tlspec.qtran': '/api/qtran/mterror',
+  'tlspec.create': '/api/tlspecs',
+  'tlspec.update': (id: any) => `/api/tlspecs/${id}`,
+  'tlspec.delete': (id: any) => `/api/tlspecs/${id}`,
+
+  // glosssary v1
+  'v1dict.index': '/api/dicts',
+  'v1dict.show': (name: any) => `/api/dicts/${name}`,
 }
 
-export const api_path = (
-  path: string,
-  args: Record<string, any> = {},
-  query?: URLSearchParams,
-  extras: Record<string, any> = {},
-  plucks: string[] = []
-) => {
-  const route = PATHS[path]
-  if (!route) throw `Unknown route name ${path}`
+type Extras = Record<string, any>
 
+export const merge_query = (query?: URLSearchParams, extras: Extras = {}) => {
   const params = new URLSearchParams(query)
-  for (const [key, val] of Object.entries(extras)) params.set(key, val)
-  for (const pluck in plucks) params.delete(pluck)
-  return `${route(args)}?${params}`
+  for (const key in extras) params.set(key, extras[key])
+  return params
+}
+
+// prettier-ignore
+export const api_path = (path: string, args?: any, query?: URLSearchParams, extras?: Extras) => {
+  const route = ROUTES[path]
+  path = typeof route == 'function' ? route(args) : route || path
+
+  if (extras) query = merge_query(query, extras)
+  return `${path}?${query?.toString()}`
 }

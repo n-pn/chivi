@@ -67,15 +67,15 @@
 
   async function submit() {
     if ($session.privi < 2) {
-      alert('Bạn cần nâng cấp quyền hạn lên 2 để thêm/sửa truyện')
-      return
+      return alert('Bạn cần nâng cấp quyền hạn lên 2 để thêm/sửa truyện')
     }
 
-    const url = '/api/books'
-    const res = await api_call(url, 'POST', params.output)
-
-    if (res.error) errors = res.error
-    else await goto(`/-${res.bslug}`)
+    try {
+      const { bslug } = await api_call('/api/books', params.output, 'POST')
+      await goto(`/-${bslug}`)
+    } catch (ex) {
+      errors = ex.message
+    }
   }
 
   function remove_genre(genre: string) {
