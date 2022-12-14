@@ -50,6 +50,6 @@ fi
 if [[ $1 == "all" || $* == *pgdb* ]]
 then
   echo backup pg_data!
-  rsync -ai --no-p --delete "nipin@ssh.chivi.app:var/wal_log" "var/.keep"
+  rsync-fast --delete "nipin@ssh.chivi.app:var/wal_log" "var/.keep"
   rsync-fast --delete "nipin@ssh.chivi.app:var/pg_data" "var/.keep"
 fi

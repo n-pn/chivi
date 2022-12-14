@@ -47,6 +47,7 @@ then
   rsync-fast "var/cvmtl/inits" "$SSH/var/cvmtl"
   rsync-fast "var/cvmtl/ptags" "$SSH/var/cvmtl"
   rsync-fast "var/cvmtl/rules" "$SSH/var/cvmtl"
+
   rsync-fast "var/dicts/hints" "$SSH/var/dicts"
   rsync-fast "var/dicts/qtran" "$SSH/var/dicts"
 
