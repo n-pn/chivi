@@ -39,18 +39,15 @@
     await load_tposts(list_api_url)
   }
 
-  async function load_cvpost(post_api_url: string) {
-    const api_res = await fetch(post_api_url)
-    const payload = await api_res.json()
-    cvpost = payload.props.cvpost
+  async function load_cvpost(url: string) {
+    const data = await fetch(url).then((r) => r.json())
+    cvpost = data.cvpost
   }
 
   async function load_tposts(api_url: string) {
     const res = await fetch(api_url)
-    const data = await res.json()
-
-    if (res.ok) tplist = data.props.tplist
-    else alert(data.error)
+    if (!res.ok) alert(await res.text())
+    else tplist = await res.json().then((x) => x.tplist)
   }
 </script>
 

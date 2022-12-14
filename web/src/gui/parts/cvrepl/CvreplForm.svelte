@@ -22,9 +22,7 @@
 
   async function load_form(id: number) {
     const api_url = `/api/tposts/${id}/detail`
-    const api_res = await fetch(api_url)
-    const payload = await api_res.json()
-    if (api_res.ok) form = payload.props
+    form = await fetch(api_url).then((r) => r.json())
   }
 
   function gen_api_url(cvpost_id: string) {

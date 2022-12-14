@@ -33,6 +33,7 @@
     items: [],
     pgidx: 1,
     pgmax: 1,
+    total: 0,
   }
 
   $: api_url = make_api_url($data)
@@ -45,10 +46,8 @@
 
   async function load_topics(api_url: string) {
     const api_res = await fetch(api_url)
-    const payload = await api_res.json()
-
-    if (api_res.ok) dtlist = payload.props.dtlist
-    else alert(payload.error)
+    if (!api_res.ok) alert(await api_res.text())
+    else dtlist = await api_res.json().then((x) => x.dtlist)
   }
 
   function change_tab(tab: CV.DtlistType) {
@@ -97,7 +96,7 @@
         disabled={!btip}
         data-tip={btip}
         data-tip-loc="bottom"
-        tip-pos="right">
+        data-tip-pos="right">
         <SIcon name={icon} />
       </button>
     {/each}

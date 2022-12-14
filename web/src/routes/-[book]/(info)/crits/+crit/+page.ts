@@ -1,6 +1,8 @@
-import { crit_edit } from '$lib/vi_api'
+// import { api_call } from '$lib/api_call'
 
 export const load = async ({ fetch, url }) => {
   const id = url.searchParams.get('id')
-  return { form: id ? await crit_edit(+id, fetch) : undefined }
+  if (!id) return { form: undefined }
+  const form = await fetch(`/api/crits/${id}/edit`).then((r) => r.json())
+  return { form: form }
 }
