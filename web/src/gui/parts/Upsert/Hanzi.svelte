@@ -23,6 +23,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import { config } from '$lib/stores'
+  import { api_call } from '$lib/api_call'
 
   export let vpdicts = []
   export let vpterms = []
@@ -89,25 +90,23 @@
 
     if (input_is_empty(input)) return
     const temp = $config.w_temp ? 't' : 'f'
+    const path = `/api/terms/query`
+    const body = { input, temp }
 
-    const api_url = `/api/terms/query`
-    const api_res = await fetch(api_url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input, temp }),
-    })
+    try {
+      const data = await api_call(path, body, 'POST')
 
-    const payload = await api_res.json()
-    if (!api_res.ok) return console.log(payload.error)
+      for (const dname in data) {
+        const terms = data[dname]
 
-    for (const dname in payload.props) {
-      const terms = payload.props[dname]
-
-      for (const key in terms) {
-        const val = terms[key]
-        if (dname == 'pin_yin') cached[dname][key] = val as string
-        else cached[dname][key] = new VpTerm(val as VpTermInit)
+        for (const key in terms) {
+          const val = terms[key]
+          if (dname == 'pin_yin') cached[dname][key] = val as string
+          else cached[dname][key] = new VpTerm(val as VpTermInit)
+        }
       }
+    } catch (ex) {
+      alert(ex.message)
     }
   }
 

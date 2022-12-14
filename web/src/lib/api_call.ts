@@ -20,7 +20,7 @@ export const do_fetch = async (
 }
 
 export const api_get = (url: string, search?: URLSearchParams) => {
-  return do_fetch(`${url}?${search.toString()}`, { method: 'GET' })
+  return do_fetch(search ? `${url}?${search}` : url, { method: 'GET' })
 }
 
 type ReqBody = Record<string, any> | string
@@ -38,10 +38,15 @@ export const api_call = (url: string, body: ReqBody, method = 'POST') => {
 }
 
 export const ROUTES = {
-  // novel
+  // book info
   'nvinfos.index': '/api/books',
   'nvinfos.show': (id: any) => `/api/books/${id}`,
   'nvinfos.front': (id: any) => `/api/books/${id}/front`,
+
+  // book seed
+  'chroots.index': (book: any) => `/api/seeds/${book}`,
+  'chroots.show': ([book, seed]) => `/api/seeds/${book}/${seed}`,
+  'chroots.chaps': ([book, seed, page]) => `/api/seeds/${book}/${seed}/${page}`,
 
   // forum
   'dtopics.index': '/api/topics',
@@ -98,5 +103,5 @@ export const api_path = (path: string, args?: any, query?: URLSearchParams, extr
   path = typeof route == 'function' ? route(args) : route || path
 
   if (extras) query = merge_query(query, extras)
-  return `${path}?${query?.toString()}`
+  return query ? `${path}?${query}` : path
 }

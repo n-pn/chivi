@@ -2,7 +2,7 @@
   import { page } from '$app/stores'
   import { session } from '$lib/stores'
 
-  import { get_nvseed } from '$lib/api_call'
+  import { api_path } from '$lib/api_call'
 
   // import { getContext } from 'svelte'
   // import type { Writable } from 'svelte/store'
@@ -14,7 +14,7 @@
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import { rel_time } from '$utils/time_utils'
-  import { invalidate, invalidateAll } from '$app/navigation'
+  import { invalidateAll } from '$app/navigation'
   import Gmenu from '$gui/molds/Gmenu.svelte'
 
   import type { PageData } from './$types'
@@ -31,14 +31,12 @@
     _refresh = true
     _error = ''
 
-    const res = await get_nvseed(nvinfo.id, nvseed.sname, 1, fetch)
-    _refresh = false
+    const args = [nvinfo.id, nvseed.sname]
+    const res = await fetch(api_path('chroots.show', args))
 
-    if (res.error) {
-      _error = res.error
-    } else {
-      invalidateAll()
-    }
+    if (res.ok) invalidateAll()
+    else _error = await res.text()
+    _refresh = false
   }
 
   function can_edit(sname: string) {
@@ -79,8 +77,8 @@
         </button>
       {/if}
 
-      <Gmenu dir="right" let:trigger>
-        <button class="m-btn" slot="trigger" on:click={trigger}>
+      <Gmenu dir="right">
+        <button class="m-btn" slot="trigger">
           <SIcon name="menu-2" />
           <span class="-hide">Nâng cao</span>
         </button>
