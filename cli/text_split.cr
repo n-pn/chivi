@@ -200,18 +200,20 @@ class SplitText
   private def split_mode_1(trim_space = false, min_blanks = 2)
     blank_count = min_blanks
 
-    split_text do |line|
+    is_chap_mark = ->(line : String) do
       line = clean_text(line) if trim_space
 
       if line.empty?
         blank_count += 1
-        break false
+        false
       else
-        is_title = blank_count >= min_blanks
+        chap_mark = blank_count >= min_blanks
         blank_count = 0
-        is_title
+        chap_mark
       end
     end
+
+    split_text(is_chap_mark)
   end
 
   # split if body is padded with spaces
@@ -219,7 +221,7 @@ class SplitText
     prev_was_blank = true
     blank_chars = {' ', '　', '\t'}
 
-    split_text do |line|
+    is_chap_mark = ->(line : String) do
       if line.blank?
         prev_was_blank = true
         false
@@ -231,44 +233,46 @@ class SplitText
         is_break
       end
     end
+
+    split_text(is_chap_mark)
   end
 
   # split by chapter
-  private def split_mode_3(suffixes : String)
-    split_mode_4("^[ 　]*第[\\d零〇一二两三四五六七八九十百千]+[#{suffixes}]")
+  private def split_mode_3(labels : String)
+    split_mode_4("^[ 　]*第[\\d零〇一二两三四五六七八九十百千]+[#{labels}]")
   end
 
   private def split_mode_4(regex_str : String)
     regex = Regex.new(regex_str)
-    split_text { |line| line =~ regex }
+    is_chap_mark = ->(line : String) { line =~ regex }
+    split_text(is_chap_mark)
   end
 
-  private def split_text
+  private def split_text(is_chap_mark)
     prev_was_chvol = false
     pending_chap = init_chap
 
     @raw_data.each_with_index(1) do |line, idx|
-      is_break = yield line # check if this is the mark of new pending_chap
-      line = clean_text(line)
+      clean_line = clean_text(line)
 
-      if !is_break
-        pending_chap.add_line(line)
+      if !is_chap_mark.call(line)
+        pending_chap.add_line(clean_line)
         prev_was_chvol = false
       elsif pending_chap.paras.size > 0
         push_chap(pending_chap)
 
         pending_chap = init_chap
-        pending_chap.title = line
+        pending_chap.title = clean_line
 
         prev_was_chvol = false
       elsif prev_was_chvol
         raise "Lỗi dòng: #{idx} [#{line[0..10]}]: Chương phía trước không có nội dung."
       elsif pending_chap.title.empty?
-        pending_chap.title = line
+        pending_chap.title = clean_line
         prev_was_chvol = false
       else
         @curr_chvol = pending_chap.chvol = pending_chap.title
-        pending_chap.title = line
+        pending_chap.title = clean_line
         prev_was_chvol = true
       end
     end

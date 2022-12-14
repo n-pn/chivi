@@ -51,48 +51,44 @@ module CV::MtUtil
 
   # :ditto:
   def to_integer(char : Char) : Int32 | Int64
-    return char.to_i if char.ascii_number?
-    HAN_VAL[char]? || 0
+    HAN_VAL.fetch(char) { char.to_i? || 0 }
   end
 
   NUMS = "零〇一二两三四五六七八九十百千"
-  SEPS = ".，,、：:"
+  DIVS = "章节幕回折"
 
-  LABEL_RE_1 = /^(【?第?([#{NUMS}]+|\d+)([集卷季])】?)([#{SEPS}\s]*)(.*)$/
+  LBLS = {
+    "季" => "Mùa",
+    "章" => "Chương",
+    "卷" => "Quyển",
+    "集" => "Tập",
+    "节" => "Tiết",
+    "幕" => "Màn",
+    "回" => "Hồi",
+    "折" => "Chiết",
+  }
 
-  TITLE_RE_1 = /^(第.*?([#{NUMS}]+|\d+).*?([章节幕回折]))(.*?\d+\.\s)(.+)/
-  TITLE_RE_2 = /^(.*?([#{NUMS}]+|\d+).*?([章节幕回折]))([#{SEPS}\s】]*)(.*)$/
+  LABEL_RE_1 = /^(\p{Ps}?第?([#{NUMS}]+|\d+)([集卷季])\p{Pe}?)([\p{P}\s]*)(.*)$/
 
-  TITLE_RE_3 = /^(\d+)([#{SEPS}\s]*)(.*)$/
-  TITLE_RE_4 = /^楔\s+子(\s+)(.+)$/
+  TITLE_RE_1 = /^(第\s*([#{NUMS}]+|\d+)\s*([章节幕回折]))([\p{P}\s]*)(.+)/
+  TITLE_RE_2 = /^(\p{Ps}?([#{NUMS}]+|\d+)\p{Pe}?([章节幕回折]))([\p{P}\s]*)(.*)$/
+
+  TITLE_RE_3 = /^(\d+)([\p{P}\s]*)(.*)$/
+  TITLE_RE_4 = /^(楔\s*子)(\s+)(.+)$/
 
   def tl_title(title : String)
     if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
-      _, pre_zh, num, lbl, pad, title = match
-      pre_cv = "#{tl_label(lbl)} #{to_integer(num)}"
-      {pre_zh, pre_cv, pad, title}
+      _, idx_zh, num, lbl, pad, title = match
+      idx_cv = String.build { |io| io << LBLS.fetch(lbl, "#") << ' ' << to_integer(num) }
+      {idx_zh, idx_cv, pad, title}
     elsif match = TITLE_RE_3.match(title)
       _, num, pad, title = match
       {num, num, pad, title}
     elsif match = TITLE_RE_4.match(title)
-      _, pad, title = match
-      {"楔子", "Phần đệm", pad, title}
+      _, idx, pad, title = match
+      {idx, "Phần đệm", pad, title}
     else
       {"", "", "", title}
-    end
-  end
-
-  def tl_label(label = "")
-    case label
-    when "季" then "Mùa"
-    when "章" then "Chương"
-    when "卷" then "Quyển"
-    when "集" then "Tập"
-    when "节" then "Tiết"
-    when "幕" then "Màn"
-    when "回" then "Hồi"
-    when "折" then "Chiết"
-    else          "#"
     end
   end
 end
@@ -101,4 +97,4 @@ end
 # puts CV::MtUtil.normalize('０')
 
 # puts CV::MtUtil.to_integer("1245")
-# puts CV::MtUtil.to_integer("四")
+# puts CV::MtUtil.tl_title("第1章 归序者")
