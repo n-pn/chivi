@@ -1,7 +1,7 @@
-import type { LoadEvent } from '@sveltejs/kit'
 import { merge_query, api_path } from '$lib/api_call'
+import type { PageLoad } from './$types'
 
-export const load = async ({ fetch, parent, url }: LoadEvent) => {
+export const load = (async ({ fetch, parent, url }) => {
   const sort = url.searchParams.get('sort') || 'score'
   const { nvinfo } = await parent()
 
@@ -19,4 +19,4 @@ export const load = async ({ fetch, parent, url }: LoadEvent) => {
     ys: from == 'cv' ? empty : await fetch(ys_path).then((r) => r.json()),
     vi: from == 'ys' ? empty : await fetch(vi_path).then((r) => r.json()),
   }
-}
+}) satisfies PageLoad

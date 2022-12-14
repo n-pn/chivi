@@ -57,6 +57,7 @@ export const ROUTES = {
   // chivi users booklists
   'vilists.index': '/api/lists',
   'vilists.show': (id: any) => `/api/lists/${id}`,
+  'vilists.': (id: any) => `/api/lists/${id}`,
   'vilists.create': '/api/lists',
 
   // chivi users book reviews

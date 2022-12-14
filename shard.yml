@@ -157,6 +157,9 @@ dependencies:
   zstd:
     github: didactic-drunk/zstd.cr
 
+  diff:
+    github: MakeNowJust/crystal-diff
+
 development_dependencies:
   garnet_spec:
     github: amberframework/garnet-spec

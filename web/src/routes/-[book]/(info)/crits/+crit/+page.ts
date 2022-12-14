@@ -1,8 +1,12 @@
-// import { api_call } from '$lib/api_call'
+import { set_fetch, api_get, api_path } from '$lib/api_call'
 
-export const load = async ({ fetch, url }) => {
+import type { PageLoad } from './$types'
+
+export const load = (async ({ fetch, url }) => {
   const id = url.searchParams.get('id')
   if (!id) return { form: undefined }
-  const form = await fetch(`/api/crits/${id}/edit`).then((r) => r.json())
-  return { form: form }
-}
+
+  set_fetch(fetch)
+  const path = api_path('vicrits.edit', id)
+  return { form: await api_get(path) }
+}) satisfies PageLoad

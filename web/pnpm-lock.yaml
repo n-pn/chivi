@@ -7,6 +7,7 @@ specifiers:
   autoprefixer: ^10.4.13
   chardet: ^1.5.0
   cssnano: ^5.1.14
+  fast-diff: ^1.2.0
   mdsvex: ^0.10.6
   postcss: ^8.4.20
   postcss-load-config: ^3.1.4
@@ -21,10 +22,11 @@ specifiers:
 
 dependencies:
   chardet: 1.5.0
+  fast-diff: 1.2.0
 
 devDependencies:
   '@fullhuman/postcss-purgecss': 4.1.3_postcss@8.4.20
-  '@sveltejs/adapter-node': 1.0.0-next.104
+  '@sveltejs/adapter-node': 1.0.0-next.105_p3hko4zrouod77fe3m552c5nsq
   '@sveltejs/kit': 1.0.0-next.583_svelte@3.54.0+vite@4.0.0
   autoprefixer: 10.4.13_postcss@8.4.20
   cssnano: 5.1.14_postcss@8.4.20
@@ -354,12 +356,15 @@ packages:
       rollup: 3.7.4
     dev: true
 
-  /@sveltejs/adapter-node/1.0.0-next.104:
-    resolution: {integrity: sha512-CZVSDTH1fnpBEztvNqoye9xC5w2E+q4S1X5LjZv1tqszM/A9VuwWY358k4/tQ6OFYz011R5mbZ4QyjTB+GB2AA==}
+  /@sveltejs/adapter-node/1.0.0-next.105_p3hko4zrouod77fe3m552c5nsq:
+    resolution: {integrity: sha512-MoTHu7/d+UjmHdhPMqOLopvk468OijePkRVs8VBmCdU54YAwSbAg5fLHS4X5XHOfBv6CBScN7zPoT7Tae6Y4Rw==}
+    peerDependencies:
+      '@sveltejs/kit': ^1.0.0-next.587
     dependencies:
       '@rollup/plugin-commonjs': 23.0.4_rollup@3.7.4
       '@rollup/plugin-json': 5.0.2_rollup@3.7.4
       '@rollup/plugin-node-resolve': 15.0.1_rollup@3.7.4
+      '@sveltejs/kit': 1.0.0-next.583_svelte@3.54.0+vite@4.0.0
       rollup: 3.7.4
     dev: true
 
@@ -804,6 +809,10 @@ packages:
   /estree-walker/2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
     dev: true
+
+  /fast-diff/1.2.0:
+    resolution: {integrity: sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==}
+    dev: false
 
   /fast-glob/3.2.12:
     resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
