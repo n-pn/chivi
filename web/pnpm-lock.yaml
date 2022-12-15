@@ -2,8 +2,8 @@ lockfileVersion: 5.4
 
 specifiers:
   '@fullhuman/postcss-purgecss': ^4.1.3
-  '@sveltejs/adapter-node': next
-  '@sveltejs/kit': 1.0.0-next.583
+  '@sveltejs/adapter-node': latest
+  '@sveltejs/kit': latest
   autoprefixer: ^10.4.13
   chardet: ^1.5.0
   cssnano: ^5.1.14
@@ -26,8 +26,8 @@ dependencies:
 
 devDependencies:
   '@fullhuman/postcss-purgecss': 4.1.3_postcss@8.4.20
-  '@sveltejs/adapter-node': 1.0.0-next.105_p3hko4zrouod77fe3m552c5nsq
-  '@sveltejs/kit': 1.0.0-next.583_svelte@3.54.0+vite@4.0.0
+  '@sveltejs/adapter-node': 1.0.0_@sveltejs+kit@1.0.0
+  '@sveltejs/kit': 1.0.0_svelte@3.54.0+vite@4.0.0
   autoprefixer: 10.4.13_postcss@8.4.20
   cssnano: 5.1.14_postcss@8.4.20
   mdsvex: 0.10.6_svelte@3.54.0
@@ -356,20 +356,20 @@ packages:
       rollup: 3.7.4
     dev: true
 
-  /@sveltejs/adapter-node/1.0.0-next.105_p3hko4zrouod77fe3m552c5nsq:
-    resolution: {integrity: sha512-MoTHu7/d+UjmHdhPMqOLopvk468OijePkRVs8VBmCdU54YAwSbAg5fLHS4X5XHOfBv6CBScN7zPoT7Tae6Y4Rw==}
+  /@sveltejs/adapter-node/1.0.0_@sveltejs+kit@1.0.0:
+    resolution: {integrity: sha512-Q8an8CXEt5XlFbyT1NBM4xELNZD8xPVZfKCcgorCfPkeBP5ftDgPaK12JIokXA5koYJ54AJcNY4ams9TZ7yGxA==}
     peerDependencies:
-      '@sveltejs/kit': ^1.0.0-next.587
+      '@sveltejs/kit': ^1.0.0
     dependencies:
       '@rollup/plugin-commonjs': 23.0.4_rollup@3.7.4
       '@rollup/plugin-json': 5.0.2_rollup@3.7.4
       '@rollup/plugin-node-resolve': 15.0.1_rollup@3.7.4
-      '@sveltejs/kit': 1.0.0-next.583_svelte@3.54.0+vite@4.0.0
+      '@sveltejs/kit': 1.0.0_svelte@3.54.0+vite@4.0.0
       rollup: 3.7.4
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.583_svelte@3.54.0+vite@4.0.0:
-    resolution: {integrity: sha512-LrVhaJ161VVa4YANvTBlS8NICvIipp5w/PtS5f+XuGv4y1nltY5FnN+PUCG3qlySNC8BQDTqR0xDp7gDVFL7qw==}
+  /@sveltejs/kit/1.0.0_svelte@3.54.0+vite@4.0.0:
+    resolution: {integrity: sha512-6VgD5C3i2XOT7GRBi5LaPPLiFAmpiDkhKJNVt8fLg1RmaL6f7rT4Kiwi2XGpYRj3V1F4t1QRdsfmAkkDUKY3OA==}
     engines: {node: '>=16.14'}
     hasBin: true
     requiresBuild: true
