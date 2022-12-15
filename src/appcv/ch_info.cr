@@ -128,7 +128,9 @@ class CV::Chinfo
   end
 
   def pull_text(mode : Int8 = 1, uname = "")
-    lines = fetch_text(mode > 1)
+    flags = mode > 1 ? "-f" : ""
+    lines = `bin/text_fetch #{sname} #{s_bid} #{s_cid} #{flags}`.lines
+
     self.c_len, output = ChUtil.split_parts(lines)
     self.chtext.save(self.s_cid, output)
 
@@ -139,21 +141,6 @@ class CV::Chinfo
     output
   rescue err
     Log.error(exception: err) { [self.sname, self.s_bid, self.s_cid, self.ch_no] }
-  end
-
-  private def fetch_text(force = false)
-    command = "bin/text_fetch #{sname} #{s_bid} #{s_cid}"
-    command += "-f" if force
-
-    Process.run(command, shell: true, output: :pipe) do |proc|
-      data = [] of String
-
-      while line = proc.output.gets
-        data << line
-      end
-
-      data
-    end
   end
 
   def heal_stats(p_len : Int32, utime : Int64, c_len = 0)
