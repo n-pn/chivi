@@ -31,5 +31,6 @@ export default {
   ],
   kit: {
     adapter: adapter(),
+    version: { pollInterval: 60000 },
   },
 }
