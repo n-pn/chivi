@@ -20,7 +20,7 @@
   $: if (elem) elem.focus()
 
   async function update_wtheme(wtheme: string) {
-    document.cookie = `theme=${wtheme}; max-age=31536000`
+    document.cookie = `theme=${wtheme}; max-age=31536000; path=/`
 
     await fetch('/api/_self/config', {
       method: 'PUT',

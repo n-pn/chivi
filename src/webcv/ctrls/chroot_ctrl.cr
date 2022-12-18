@@ -8,7 +8,8 @@ class CV::ChrootCtrl < CV::BaseCtrl
     chroot = load_chroot
 
     mode = params.read_i8("mode", min: 0_i8, max: max_mode_by_privi)
-    reload_chroot(chroot, mode: mode)
+    Log.info { [chroot.sname, mode] }
+    reload_chroot(chroot, mode: mode) if mode > 0
 
     fresh = chroot.fresh?(_viuser.privi, force: false)
     serv_json(ChrootView.new(chroot, full: true, fresh: fresh))
