@@ -127,7 +127,7 @@
   $: tag_hints = gen_tag_hints(dname, vpterm)
 
   function gen_tag_hints(dname: string, vpterm: VpTerm): string[] {
-    if (dname == 'hanviet' || dname == 'tradsim') return []
+    if (dname == 'hanviet') return []
     const output = vpterm.init.h_tags || []
     const curr_ptag = vpterm.tag
 

@@ -4,7 +4,7 @@
   // prettier-ignore
   const basic = [
     '$hanviet', 'fixture', 'essence',
-    '$surname', '$pin_yin', '$tradsim',
+    '$surname', '$pin_yin'
   ]
 
   // prettier-ignore

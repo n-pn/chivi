@@ -10,7 +10,6 @@ class CV::VpdictCtrl < CV::BaseCtrl
       {"fixture", "Khoá cứng", VpDict.fixture.size},
       {"$hanviet", "Hán việt", VpDict.hanviet.size},
       {"$pin_yin", "Bính âm", VpDict.pin_yin.size},
-      {"$tradsim", "Phồn giản", VpDict.tradsim.size},
     ]
   end
 

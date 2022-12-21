@@ -1,7 +1,6 @@
 const labels = {
   '$hanviet': 'Hán Việt',
   '$pin_yin': 'Bính Âm',
-  '$tradsim': 'Phồn Giản',
   '$surname': 'Họ tiếng Trung',
   'regular': 'Thông Dụng',
   'essence': 'Nền Tảng',
@@ -28,7 +27,6 @@ const intros = {
   'essence': 'Từ điển cơ sở chung cho các chế độ dịch',
   '$hanviet': 'Từ điển phiên âm Hán Việt',
   '$pin_yin': 'Từ điển bính âm',
-  '$tradsim': 'Phồn sang giản',
   '~fix_u_zhi': 'Đổi nghĩa của vế phải cụm từ kết hợp bởi 之',
   '~qt_times': 'Lượng từ chỉ thời gian',
   '~qt_verbs': 'Lượng từ làm bổ ngữ cho động từ phía trước',

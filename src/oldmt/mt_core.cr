@@ -5,7 +5,6 @@ require "./mt_core/*"
 class CV::MtCore
   class_getter hanviet_mtl : self { new([VpDict.essence, VpDict.hanviet]) }
   class_getter pin_yin_mtl : self { new([VpDict.essence, VpDict.pin_yin]) }
-  class_getter tradsim_mtl : self { new([VpDict.tradsim]) }
 
   def self.generic_mtl(bname : String = "combine",
                        uname : String = "",
@@ -18,7 +17,6 @@ class CV::MtCore
     case dname
     when "pin_yin" then pin_yin_mtl
     when "hanviet" then hanviet_mtl
-    when "tradsim" then tradsim_mtl
     when .starts_with?('-')
       generic_mtl(dname, uname, temp: temp)
     else
@@ -35,23 +33,10 @@ class CV::MtCore
     hanviet_mtl.translit(input, apply_cap: apply_cap).to_txt
   end
 
-  def self.trad_to_simp(input : String) : String
-    data = tradsim_mtl.tokenize(input.chars)
-
-    String.build do |io|
-      head = data.head
-      while head
-        io << head.val
-        head = head.succ?
-      end
-    end
-  end
-
   def self.convert(input : String, dname = "combine") : String
     case dname
     when "hanviet" then hanviet_mtl.translit(input).to_txt
     when "pin_yin" then pin_yin_mtl.translit(input).to_txt
-    when "tradsim" then tradsim_mtl.tokenize(input.chars).to_txt
     else                generic_mtl(dname).cv_plain(input).to_txt
     end
   end

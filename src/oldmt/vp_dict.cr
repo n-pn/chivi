@@ -18,10 +18,8 @@ class CV::VpDict
   class_property root = "var/dicts/v1"
 
   class_getter hanviet : self { load_other("hanviet") }
-  class_getter surname : self { load_other("surname") }
-
   class_getter pin_yin : self { load_other("pin_yin") }
-  class_getter tradsim : self { load_other("tradsim") }
+  class_getter surname : self { load_other("surname") }
 
   class_getter essence : self { load_basic("essence") }
   class_getter regular : self { load_basic("regular") }

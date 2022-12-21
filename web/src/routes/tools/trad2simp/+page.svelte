@@ -15,13 +15,13 @@
 
   $: if (trad) {
     clearTimeout(timer)
-    timer = setTimeout(trad2simp, 300)
+    timer = setTimeout(opencc, 300)
   }
 
-  async function trad2simp() {
+  async function opencc() {
     _onload = true
 
-    const href = '/_mt/tradsim?config=' + data.config
+    const href = '/_mt/opencc?config=' + data.config
     const init = { method: 'POST', body: trad }
 
     simp_text = await fetch(href, init).then((r) => r.text())
@@ -78,7 +78,7 @@
   </section>
 
   <footer class="foot">
-    <button class="m-btn _primary _fill" on:click={trad2simp}>
+    <button class="m-btn _primary _fill" on:click={opencc}>
       <SIcon name="bolt" />
       <span class="-text">Phồn sang giản</span>
     </button>
