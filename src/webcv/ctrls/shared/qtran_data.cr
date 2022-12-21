@@ -133,7 +133,7 @@ class CV::QtranData
   end
 
   getter simps : Array(String) do
-    Process.run("/usr/bin/opencc", {"-c", "tw2s"}) do |proc|
+    Process.run("/usr/bin/opencc", {"-c", "hk2s"}) do |proc|
       @input.each { |line| proc.input.puts(line) }
       proc.input.close
       proc.output.gets_to_end.lines

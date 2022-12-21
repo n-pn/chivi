@@ -39,8 +39,8 @@
 
   const options = [
     ['t2s', 'Phồn thể sang Giản'],
-    ['tw2s', 'Đài Loan sang Giản'],
     ['hk2s', 'Hồng Kông sang Giản'],
+    ['tw2s', 'Đài Loan sang Giản'],
   ]
 </script>
 

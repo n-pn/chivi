@@ -47,7 +47,7 @@ module MT
     end
 
     @[AC::Route::POST("/opencc", body: :input)]
-    def opencc(input : String, config = "tw2s")
+    def opencc(input : String, config = "hk2s")
       output = Process.run("/usr/bin/opencc", {"-c", config}) do |proc|
         proc.input.print(input)
         proc.input.close
