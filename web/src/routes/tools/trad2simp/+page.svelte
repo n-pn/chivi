@@ -13,15 +13,17 @@
 
   let _onload: boolean = false
 
-  const handleChange = (_: Event) => {
+  $: if (trad) {
     clearTimeout(timer)
     timer = setTimeout(trad2simp, 300)
   }
 
   async function trad2simp() {
     _onload = true
+
     const href = '/_mt/tradsim?config=' + data.config
     const init = { method: 'POST', body: trad }
+
     simp_text = await fetch(href, init).then((r) => r.text())
 
     let html = ''
@@ -30,6 +32,7 @@
       if (type == 0) html += text
       else if (type == -1) html += `<ins>${text}</ins>`
     }
+
     simp_html = html
     _onload = false
   }
@@ -58,8 +61,7 @@
         class="m-input trad"
         rows="10"
         placeholder="Nhập văn bản ở đây"
-        bind:value={trad}
-        on:change={handleChange} />
+        bind:value={trad} />
     </div>
     <div class="simp-out">
       <div class="simp" class:_none={_onload || !simp_text}>
