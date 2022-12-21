@@ -32,7 +32,7 @@
     _error = ''
 
     const args = [nvinfo.id, nvseed.sname]
-    const res = await fetch(api_path('chroots.show', args))
+    const res = await fetch(api_path('chroots.show', args, null, { mode: 1 }))
 
     if (res.ok) invalidateAll()
     else _error = await res.text()

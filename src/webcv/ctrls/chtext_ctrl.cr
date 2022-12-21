@@ -76,13 +76,13 @@ class CV::ChtextCtrl < CV::BaseCtrl
     fix_path = txt_path.sub(".txt", ".fix.txt")
 
     if params["tosimp"]? == "true"
-      res = `./bin/trad2sim -i "#{txt_path}" -o #{fix_path}`
+      res = `/usr/bin/opencc -c tw2c -i "#{txt_path}" -o "#{fix_path}"`
       raise BadRequest.new(res) unless $?.success?
       txt_path = fix_path
     end
 
     if params["unwrap"]? == "true"
-      res = `./bin/fix_text -i "#{txt_path}" -o #{fix_path}`
+      res = `./bin/fix_text -i "#{txt_path}" -o "#{fix_path}"`
       raise BadRequest.new(res) unless $?.success?
       txt_path = fix_path
     end

@@ -5,6 +5,8 @@ module MT
   abstract class BaseCtrl < ActionController::Base
     Log = Server::Log.for("controller")
 
+    add_parser("text/plain") { |_klass, body_io| body_io.gets_to_end }
+
     add_responder("*/*") { |io, result| io << result }
     add_responder("text/html") { |io, result| result.to_json(io) }
     add_responder("text/plain") { |io, result| io << result }

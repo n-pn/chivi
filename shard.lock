@@ -2,7 +2,7 @@ version: 2.0
 shards:
   action-controller:
     git: https://github.com/spider-gazelle/action-controller.git
-    version: 5.4.2
+    version: 5.5.3
 
   admiral:
     git: https://github.com/jwaldrip/admiral.cr.git

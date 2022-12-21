@@ -133,7 +133,14 @@ class CV::QtranData
   end
 
   getter simps : Array(String) do
-    @input.map { |x| MtCore.trad_to_simp(x) }
+    Process.run("/usr/bin/opencc", {"-c", "tw2s"}) do |proc|
+      @input.each { |line| proc.input.puts(line) }
+      proc.input.close
+      proc.output.gets_to_end.lines
+    rescue err
+      Log.error(exception: err) { err.message }
+      @input
+    end
   end
 
   def make_engine(user : String = "", with_temp : Bool = false) : MtCore

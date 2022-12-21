@@ -33,9 +33,6 @@ targets:
   text_fetch:
     main: cli/text_fetch.cr
 
-  trad2sim:
-    main: cli/trad2sim.cr
-
   fix_text:
     main: cli/fix_text.cr
 
@@ -134,7 +131,7 @@ dependencies:
 
   action-controller:
     github: spider-gazelle/action-controller
-    version: ~> 5.1
+    version: ~> 5.5
 
   redis:
     github: stefanwille/crystal-redis
