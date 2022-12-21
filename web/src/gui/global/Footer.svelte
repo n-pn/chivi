@@ -4,31 +4,41 @@
     ['Github', 'https://github.com/np-nam/chivi'],
     ['Facebook', 'https://www.facebook.com/chivi.fb/'],
   ]
+
+  const tools = [
+    ['Dịch nhanh', '/qtran'],
+    ['Phồn -> Giản', '/tools/trad2simp'],
+  ]
 </script>
 
 <footer class="foot">
-  <div class="foot-left">
+  <div class="main">
     <a href="/guide/donation" class="foot-link">Ủng hộ trang</a>
-  </div>
 
-  <div class="foot-right">
+    <span class="sep" />
     <strong>Liên kết: </strong>
-    {#each links as [text, href]}
+    {#each links as [text, href], index}
+      {#if index > 0} <span class="sep" />{/if}
       <a {href} class="foot-link" target="_blank" rel="noreferrer noopener"
         >{text}</a>
+    {/each}
+  </div>
+
+  <div class="secd">
+    <strong>Công cụ: </strong>
+    {#each tools as [text, href], index}
+      {#if index > 0} <span class="sep" />{/if}
+      <a {href} class="foot-link">{text}</a>
     {/each}
   </div>
 </footer>
 
 <style lang="scss">
   .foot {
-    line-height: 1.25rem;
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    justify-content: center;
+    line-height: 1rem;
+
     margin-top: auto;
-    padding: var(--gutter-pl);
+    padding: var(--gutter-pm);
 
     @include ftsize(sm);
     @include border($loc: top);
@@ -36,10 +46,22 @@
     @include bgcolor(tert);
   }
 
-  .foot-right {
+  .main {
+    margin-bottom: 0.25rem;
+  }
+
+  .main,
+  .secd {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    gap: 0.375rem;
+  }
+
+  .sep {
     &:before {
       @include fgcolor(mute);
-      margin: 0 0.5rem;
       content: '|';
     }
   }
@@ -49,6 +71,5 @@
     font-weight: 500;
     @include fgcolor(primary, 6);
     &:hover { @include fgcolor(primary, 4); }
-    & + & { margin-left: 0.5rem; }
   }
 </style>

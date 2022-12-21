@@ -4,7 +4,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  let trad: string = '極品嫂子'
+  let trad: string = ''
 
   let simp_text: string = ''
   let simp_html: string = ''
@@ -14,7 +14,6 @@
   let _onload: boolean = false
 
   const handleChange = (_: Event) => {
-    console.log(trad)
     clearTimeout(timer)
     timer = setTimeout(trad2simp, 300)
   }
