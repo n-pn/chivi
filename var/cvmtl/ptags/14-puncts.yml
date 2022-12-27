@@ -172,7 +172,7 @@
 # parenthesis start
 - ptag: .ps1.
   extd: [.p., .s.]
-  attr: [CapAfter, NoSpaceR]
+  attr: [CapRelay, NoSpaceR]
   name: Mở ngoặc `(`
 
 # parenthesis close

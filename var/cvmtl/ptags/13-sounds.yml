@@ -1,16 +1,40 @@
 # sound words
 
 # onomatopoeia
-- ptag: Onomat
+- ptag: Onoma
   extd: [Xsubj_a, Xpred_a]
   name: Tượng thanh
 
   # interjection/exclamation -
-- ptag: Interj
+- ptag: Ointj
   extd: [Xbegin]
   name: Thán từ
 
 # modal particle
-- ptag: Mopart
+- ptag: Omopa
   extd: [Xfinal]
   name: Ngữ khí
+
+- ptag: Omopa_q
+  extd: [Omopa]
+  name: Ngữ khí nghi vấn
+
+- ptag: Omopa_c
+  extd: [Omopa]
+  name: Ngữ khí mệnh lệnh
+
+- ptag: Omopa_e
+  extd: [Omopa]
+  name: Ngữ khí cảm thán
+
+- ptag: Omopa_d
+  extd: [Omopa]
+  name: Ngữ khí khẳng định
+
+- ptag: Omopa_s
+  extd: [Omopa]
+  name: Ngữ khí ngừng
+
+- ptag: Omopa_x
+  extd: [Omopa]
+  name: Ngữ khí ghép

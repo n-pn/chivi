@@ -13,7 +13,9 @@
 能	có thể	V_neng
 可	có thể	V_ke3
 
-要	muốn	V_yao_0
-要	phải	V_yao_1
+要	muốn	V_yao_0	1
+要	phải	V_yao_1	3
 
 还是	còn là	V_shi	2
+
+得	phải	Vcau	3
