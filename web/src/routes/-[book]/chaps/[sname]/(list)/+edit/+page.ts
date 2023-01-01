@@ -9,18 +9,9 @@ function page_meta({ btitle_vi, bslug }) {
   return {
     title: 'Tinh chỉnh nguồn chương truyện ' + btitle_vi,
     // prettier-ignore
-    nav_left: [
+    left_nav: [
       { text: btitle_vi, icon: 'book', href: `/-${bslug}`, 'data-kind': 'title' },
       { text: 'Tinh chỉnh', icon: 'settings', href: '.', "data-show": 'pl' },
-    ],
-  }
-}
-
-function gen_topbar({ btitle_vi, bslug }) {
-  return {
-    left: [
-      [btitle_vi, 'book', { href: `/-${bslug}`, kind: 'title' }],
-      ['Tinh chỉnh', 'settings', { href: '.', show: 'pl' }],
     ],
   }
 }

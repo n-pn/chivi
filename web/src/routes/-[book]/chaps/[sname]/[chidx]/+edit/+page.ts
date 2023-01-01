@@ -20,7 +20,7 @@ function page_meta({ bslug, btitle_vi }, sname: string, chidx: number) {
   const chap_href = `/-${bslug}/chaps/${sname}`
   return {
     title: `Sửa text gốc chương #${chidx} - ${btitle_vi}`,
-    nav_left: [
+    left_nav: [
       // prettier-ignore
       { text: sname, icon: 'list', href: chap_href, 'data-show': 'ts', 'data-kind': 'zseed' },
       { text: `#${chidx}`, icon: 'edit', href: `${chap_href}/${chidx}` },

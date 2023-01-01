@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { session } from '$lib/stores'
 
   import { SIcon, BCover } from '$gui'
   import { map_status } from '$utils/nvinfo_utils'

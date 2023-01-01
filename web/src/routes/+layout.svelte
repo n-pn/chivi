@@ -62,9 +62,7 @@
   <Modals />
   <Header />
   <Pledge />
-  <section>
-    <main class="app-vessel"><slot /></main>
-  </section>
+  <main class="app-vessel"><slot /></main>
   <Footer />
 </chivi-app>
 
@@ -87,8 +85,10 @@
     }
   }
 
-  section {
+  main {
     flex: 1;
+    display: flex;
+    flex-direction: column;
     position: relative;
   }
 </style>

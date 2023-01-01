@@ -1,8 +1,10 @@
 @use '../essence' as *;
 
 .app-vessel {
-  width: var(--page-width, 52rem);
+  display: block;
   position: relative;
+
+  width: var(--page-width, 52rem);
   max-width: 100%;
   margin: 0 auto;
   padding-left: var(--gutter);

@@ -5,8 +5,8 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let email: string
-  export let _form = 'pwtemp'
+  export let email: string = ''
+  export let _form: string = 'pwtemp'
 
   let msg_type: '' | 'ok' | 'err' = ''
   let msg_text = ''
@@ -58,11 +58,14 @@
 </form>
 
 <div class="form-more">
-  <button class="m-btn _text" on:click={() => (_form = 'login')}>
+  <a href="/_auth/login" class="m-btn _text" on:click={() => (_form = 'login')}>
     <span class="-text">Đăng nhập</span>
-  </button>
+  </a>
 
-  <button class="m-btn _text _success" on:click={() => (_form = 'signup')}>
+  <a
+    href="/_auth/signup"
+    class="m-btn _text _success"
+    on:click={() => (_form = 'signup')}>
     <span class="-txt">Tài khoản mới</span>
-  </button>
+  </a>
 </div>

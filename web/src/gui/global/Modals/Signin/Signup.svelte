@@ -2,8 +2,8 @@
   import { api_call } from '$lib/api_call'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let email: string
-  export let _form = 'signup'
+  export let email: string = ''
+  export let _form: string = 'signup'
 
   let uname = ''
   let upass = ''
@@ -16,7 +16,8 @@
 
     try {
       await api_call(action_url, { email, uname, upass }, 'POST')
-      window.location.reload()
+      const back = sessionStorage.getItem('back') || '/'
+      window.location.href = back
     } catch (ex) {
       console.log(ex)
       error = ex.body.message
@@ -72,7 +73,7 @@
 </form>
 
 <div class="form-more">
-  <button type="button" class="m-btn _text" on:click={() => (_form = 'login')}>
+  <a href="/_auth/login" class="m-btn _text" on:click={() => (_form = 'login')}>
     <span class="-text">Đăng nhập</span>
-  </button>
+  </a>
 </div>

@@ -10,7 +10,7 @@ function page_meta({ btitle_vi, bslug }) {
   return {
     title: 'Thêm/sửa chương truyện ' + btitle_vi,
     // prettier-ignore
-    nav_left: [
+    left_nav: [
       { text: btitle_vi, icon: 'book', href: `/-${bslug}`, 'data-kind': 'title' },
       { text: 'Thêm/sửa chương', icon: 'file-plus', href: '.', "data-show": 'pl' },
     ],

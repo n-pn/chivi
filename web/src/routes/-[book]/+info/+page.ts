@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 
   const _meta = {
     title: 'Sửa thông tin truyện ' + nvinfo.btitle_vi,
-    left: [
+    left_nav: [
       nvinfo_bar(nvinfo, { 'data-show': 'tm' }),
       { text: 'Sửa thông tin', icon: 'pencil', href: './+info' },
     ],

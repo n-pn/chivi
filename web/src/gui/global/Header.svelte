@@ -7,6 +7,12 @@
   // prettier-ignore
   $: meta = $page.data._meta || { left_nav: [], right_nav: [], show_config: false }
   $: ({ left_nav = [], right_nav = [], show_config = false } = meta)
+  $: uname = $page.data._user?.uname
+
+  function save_return_url() {
+    const back = window.location.href
+    sessionStorage.setItem('back', back.includes('_auth') ? '/' : back)
+  }
 </script>
 
 <header class="app-header" class:clear={$scroll > 0}>
@@ -53,14 +59,26 @@
         data-show="tl"
         on:click={() => popups.show('dboard')} />
 
-      <Item
-        type="button"
-        text={$page.data._user?.uname || 'Khách'}
-        icon="user"
-        data-kbd="u"
-        data-show="tl"
-        data-kind="uname"
-        on:click={() => popups.show('usercp')} />
+      {#if uname != 'Khách'}
+        <Item
+          type="button"
+          text={uname}
+          icon="user"
+          data-kbd="u"
+          data-show="tl"
+          data-kind="uname"
+          on:click={() => popups.show('usercp')} />
+      {:else}
+        <Item
+          type="a"
+          href="/_auth/login"
+          text="Đăng nhập"
+          icon="login"
+          data-kbd="u"
+          data-show="tl"
+          data-kind="uname"
+          on:click={save_return_url} />
+      {/if}
     </div>
   </nav>
 </header>
