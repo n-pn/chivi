@@ -16,7 +16,7 @@
       tab = 0
     } catch (ex) {
       console.log(ex)
-      error = ex.message
+      error = ex.body.message
     }
   }
 </script>

@@ -84,22 +84,21 @@ class CV::Nvstat
   def self.upsert(nvinfo_id : Int64, klass : Klass,
                   stamps = self.stamps(Time.local),
                   value = 1, mode = :inc)
-    models = stamps.map do |x|
-      data = {nvinfo_id: nvinfo_id, klass: klass.value, stamp: x, value: value}
-      self.new(data)
-    end
-
-    on_conflict = ->(req : Clear::SQL::InsertQuery) do
-      req.on_conflict("ON CONSTRAINT nvstat_unique_key").do_update do |upd|
-        case mode
-        when :inc then upd.set("value = EXCLUDED.value + #{value}")
-        when :dec then upd.set("value = EXCLUDED.value - #{value}")
-        else           upd.set("value = #{value}")
-        end
+    stamps.each do |stamp|
+      values = [nvinfo_id, klass.value, stamp, value]
+      case mode
+      when :inc then values << value
+      when :dec then values << -value
+      else           values << 0
       end
-    end
 
-    self.import(models, on_conflict: on_conflict)
+      Clear::SQL.execute <<-SQL, values
+      insert into nvstats(nvinf_id, klass, stamp, value)
+      values ($1, $2, $3, $4, $5)
+      on conflict (klass, stamp, nvinfo_id) do update
+        set value = nvstats.value + $6
+      SQL
+    end
   end
 
   def self.get_value(nvinfo_id : Int64, klass : Klass, stamp : Int32)

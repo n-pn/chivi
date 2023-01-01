@@ -74,7 +74,7 @@
       const { bslug } = await api_call('/api/books', params.output, 'POST')
       await goto(`/-${bslug}`)
     } catch (ex) {
-      errors = ex.message
+      errors = ex.body.message
     }
   }
 

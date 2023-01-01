@@ -75,7 +75,7 @@
       await api_call(url, body, 'PUT')
       // $page.data.ubmemo = res
     } catch (ex) {
-      alert(ex.message)
+      alert(ex.body.message)
     }
   }
 
@@ -99,7 +99,7 @@
       rl_key = await api_call(url, body, 'PATCH')
       retranslate(true)
     } catch (ex) {
-      alert(ex.message)
+      alert(ex.body.message)
     }
   }
 </script>

@@ -4,7 +4,7 @@ class CV::ChinfoCtrl < CV::BaseCtrl
     chinfo = load_chinfo(chroot)
 
     cpart = params.read_i16("cpart", min: 0_i16)
-    spawn Nvstat.inc_chap_view(chroot.nvinfo.id)
+    # spawn Nvstat.inc_chap_view(chroot.nvinfo.id)
 
     ubmemo = Ubmemo.find_or_new(_viuser.id, chroot.nvinfo_id)
     ubmemo.mark_chap!(chinfo, chroot.sname, cpart) if _viuser.privi >= 0

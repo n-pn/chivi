@@ -106,7 +106,7 @@
         }
       }
     } catch (ex) {
-      alert(ex.message)
+      alert(ex.body.message)
     }
   }
 

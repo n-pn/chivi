@@ -76,7 +76,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
-    Nvstat.inc_info_view(nvinfo.id)
+    # spawn Nvstat.inc_info_view(nvinfo.id)
 
     nvinfos =
       Nvinfo.query

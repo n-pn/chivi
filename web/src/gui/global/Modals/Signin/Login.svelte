@@ -18,7 +18,7 @@
       window.location.reload()
     } catch (ex) {
       console.log(ex)
-      error = ex.message
+      error = ex.body.message
     }
   }
 </script>

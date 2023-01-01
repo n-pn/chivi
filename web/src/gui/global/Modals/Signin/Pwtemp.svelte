@@ -22,7 +22,7 @@
       msg_type = 'ok'
     } catch (ex) {
       msg_type = 'err'
-      msg_text = ex.message
+      msg_text = ex.body.message
     }
   }
 </script>
