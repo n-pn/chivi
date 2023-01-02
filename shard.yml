@@ -70,7 +70,7 @@ targets:
     main: tasks/zhtext/upload_data.cr
 
   ysbook_crawl:
-    main: tasks/yousuu/ysbook_crawl.cr
+    main: src/ysapp/tasks/ysbook_crawl.cr
 
   ysrepl_crawl:
     main: tasks/yousuu/ysrepl_crawl.cr

@@ -9,8 +9,8 @@ SSH=nipin@ec2.chivi.app:chivi
 DIR=var/ysraw
 SSH_DIR="$SSH/$DIR"
 
-PROXY_DIR="$DIR/_proxy"
-PROXY_SSH="$SSH_DIR/_proxy"
+PROXY_DIR="var/proxy"
+PROXY_SSH="$SSH/$PROXY_DIR"
 
 
 if [[ $1 == "all" || $* == *proxy* ]]
@@ -23,10 +23,12 @@ then
   # rsync-fast "$PROXY_DIR/.works" $PROXY_SSH
 fi
 
-if [[ $1 == "all" || $* == *infos* ]]
+if [[ $1 == "all" || $* == *books* ]]
 then
-  echo upload raw info jsons!
-  rsync-fast "$DIR/infos" $SSH_DIR
+  echo upload book related data!
+  yarn build ysbook_crawl && rsync-fast "bin/ysbook_crawl" "$SSH/bin"
+  # rsync-fast "$DIR/books" $SSH_DIR
+  # rsync-fast "var/ysapp/books.db" $SSH/var/ysapp/books.db
 fi
 
 if [[ $1 == "all" || $* == *crits* ]]
