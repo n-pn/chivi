@@ -7,17 +7,21 @@ function rsync-fast {
 DIR=var/ysraw
 SSH=nipin@ssh.chivi.app:/app/chivi
 
-rsync-fast "$SSH/$DIR/infos" "$DIR"
-rsync-fast "$SSH/$DIR/users" "$DIR"
+rsync-fast "$SSH/var/proxy/.works" var/proxy
 
-rsync-fast "$SSH/$DIR/lists" "$DIR"
-rsync-fast "$SSH/$DIR/lists-by-page" "$DIR"
+rsync-fast "$SSH/var/ysapp/books.db" var/ysapp
+rsync-fast "$SSH/$DIR/books" "$DIR"
 
-rsync-fast "$SSH/$DIR/lists-by-book" "$DIR"
-rsync-fast "$SSH/$DIR/lists-by-user" "$DIR"
+# rsync-fast "$SSH/$DIR/users" "$DIR"
 
-rsync-fast "$SSH/$DIR/crits" "$DIR"
-rsync-fast "$SSH/$DIR/crits-by-list" "$DIR"
-# rsync-fast "$SSH/$DIR/crits-by-user" "$DIR"
+# rsync-fast "$SSH/$DIR/lists" "$DIR"
+# rsync-fast "$SSH/$DIR/lists-by-page" "$DIR"
 
-rsync-fast "$SSH/$DIR/repls" "$DIR"
+# rsync-fast "$SSH/$DIR/lists-by-book" "$DIR"
+# rsync-fast "$SSH/$DIR/lists-by-user" "$DIR"
+
+# rsync-fast "$SSH/$DIR/crits" "$DIR"
+# rsync-fast "$SSH/$DIR/crits-by-list" "$DIR"
+# # rsync-fast "$SSH/$DIR/crits-by-user" "$DIR"
+
+# rsync-fast "$SSH/$DIR/repls" "$DIR"

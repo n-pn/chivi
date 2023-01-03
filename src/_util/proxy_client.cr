@@ -44,11 +44,11 @@ class ProxyClient
     files.sort_by! { |f| File.basename(f, ".txt").to_i.- }
 
     files.first(4).each { |file| load_proxies(file) }
-    @proxies.uniq!
+    @proxies.uniq!(&.host)
 
     if reinit_proxies || @proxies.size < limit
       Dir.glob("#{DIR}/../*.txt").each { |file| load_proxies(file) }
-      @proxies.uniq!
+      @proxies.uniq!(&.host)
     end
 
     if @proxies.empty?

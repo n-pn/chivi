@@ -4,7 +4,7 @@ function rsync-fast {
   rsync -aHAXxvi --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x ' $@
 }
 
-SSH=nipin@ec2.chivi.app:chivi
+SSH=nipin@ssh.chivi.app:/app/chivi
 
 DIR=var/ysraw
 SSH_DIR="$SSH/$DIR"

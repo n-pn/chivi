@@ -15,7 +15,7 @@ class YS::ListCtrl < YS::BaseCtrl
     query = Yslist.sort_by(sort)
     query.filter_string(qs) if qs
 
-    query.where("viuser_id = ?", user.split('-', 2).first) if user
+    query.where("ysuser_id = ?", user.split('-', 2)[0]) if user
     query.where("klass = ?", type) if type
 
     if book

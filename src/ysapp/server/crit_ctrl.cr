@@ -15,9 +15,10 @@ module YS
       # TODO: Rename lb to tags
       pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 24)
 
-      query = Yscrit.sort_by(sort).filter_labels(lb)
-      query = query.filter_ysuser(user.split('-', 2).first?) if user
+      query = Yscrit.query.sort_by(sort)
 
+      query.where("vtags @> ?", lb.split("&")) if lb
+      query.where("ysuser_id = ?", user.split('-', 2)[0]) if user
       query.where("stars >= ?", smin) if smin > 1
       query.where("stars <= ?", smax) if smax < 5
       query.limit(limit).offset(offset)
