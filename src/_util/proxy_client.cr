@@ -19,13 +19,13 @@ class ProxyClient
     end
 
     def count_ng!
-      @ng += 0
+      @ng += 1
 
       self
     end
 
     def already_ng?
-      @ng > 4
+      @ng > 2
     end
   end
 
@@ -71,7 +71,7 @@ class ProxyClient
       exit 0
     end
 
-    body = `curl -f -s -L -x #{proxy.host} -m 30 "#{link}"`
+    body = `curl -f -s -L -x #{proxy.host} -m 20 "#{link}"`
 
     if !$?.success? || body.empty?
       Log.debug { "#{label} failed, remain proxies: #{@proxies.size}".colorize.yellow }

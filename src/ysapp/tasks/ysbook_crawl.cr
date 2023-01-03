@@ -1,8 +1,10 @@
-require "json"
 require "option_parser"
 
 require "../filedb/ys_book"
 require "../filedb/raw_ys_book"
+
+require "../../_util/ukey_util"
+require "../../_util/zstd_util"
 require "../../_util/proxy_client"
 
 class YS::CrawlYsbook
@@ -10,38 +12,48 @@ class YS::CrawlYsbook
     @client = ProxyClient.new(reseed_proxies)
   end
 
-  def crawl!(queue : Array(Int32))
-    dirs = Set(String).new
-    queue.each { |x| dirs << group_dir(x) }
-    dirs.each { |dir| Dir.mkdir_p("#{DIR}/#{dir}") }
+  def crawl!(queue : Array(Int32), loops = 0)
+    exit 0 if queue.empty? || @client.empty?
 
-    loops = 0
+    qsize = queue.size
+    wsize = qsize
+    wsize = 12 if wsize > 12
 
-    until queue.empty?
-      qsize = queue.size
-      puts "\n[loop: #{loops}, size: #{qsize}]".colorize.cyan
+    puts "- loop: #{loops}, size: #{qsize}"
 
-      loops += 1
-      fails = [] of Int32
+    # workers = Channel(Int32).new(qsize)
+    results = Channel(Int32?).new(wsize)
 
-      workers = qsize
-      workers = 8 if workers > 8
-      channel = Channel(Int32?).new(workers)
+    fails = [] of Int32
 
-      queue.each_with_index(1) do |b_id, idx|
-        exit 0 if @client.empty?
-
-        spawn do
-          label = "<#{idx}/#{qsize}> [#{b_id}]"
-          channel.send(crawl_book!(b_id, label: label))
-        end
-
-        channel.receive.try { |x| fails << x } if idx > workers
+    queue.each_with_index(1) do |b_id, idx|
+      spawn do
+        label = "<#{idx}/#{qsize}> [#{b_id}]"
+        results.send(crawl_book!(b_id, label: label))
       end
 
-      workers.times { channel.receive.try { |x| fails << x } }
-      queue = fails
+      results.receive.try { |x| fails << x } if idx > wsize
     end
+
+    wsize.times { results.receive.try { |x| fails << x } }
+
+    # spawn do
+    #   queue.each { |id| workers.send(id) }
+    # end
+
+    # wsize.times do
+    #   spawn do
+    #     loop do
+    #       # sleep 10.milliseconds
+    #       break unless b_id = workers.receive?
+    #       results.send(crawl_book!(b_id, label: "<#{qsize}> [#{b_id}]"))
+    #     end
+    #   end
+    # end
+
+    # qsize.times { results.receive.try { |x| fails << x } }
+
+    crawl!(fails, loops + 1)
   end
 
   DIR = "var/ysraw/books"
@@ -50,7 +62,7 @@ class YS::CrawlYsbook
     link = "https://api.yousuu.com/api/book/#{b_id}"
     return b_id unless json = @client.fetch!(link, label)
 
-    File.write("#{DIR}/#{group_dir(b_id)}/#{b_id}.json", json)
+    save_raw_json(b_id, json)
 
     fields, values = RawYsBook.from_raw_json(json).changeset
     YsBook.upsert!(fields, values)
@@ -58,9 +70,19 @@ class YS::CrawlYsbook
     nil
   rescue err
     Log.error { err.inspect_with_backtrace }
+    nil
   end
 
-  private def group_dir(b_id : Int32)
+  private def save_raw_json(b_id : Int32, json : String)
+    Log.info { "#{b_id} saved.".colorize.green }
+
+    fname = "#{b_id}-#{UkeyUtil.fnv_1a(json)}.json.zst"
+    fpath = "#{DIR}/#{self.class.group_dir(b_id)}/#{fname}"
+
+    ZstdUtil.save_ctx(json, fpath)
+  end
+
+  def self.group_dir(b_id : Int32)
     (b_id // 1000).to_s.rjust(3, '0')
   end
 
@@ -75,12 +97,15 @@ class YS::CrawlYsbook
     reseed_proxies = false
     crawl_mode = Mode::Tail
 
+    create_dirs = false
+
     OptionParser.parse(argv) do |opt|
       opt.on("-f FROM", "From book id") { |x| min_book_id = x.to_i }
       opt.on("-u UPTO", "Upto book id") { |x| max_book_id = x.to_i }
 
       opt.on("--head", "Crawl from beginning") { crawl_mode = Mode::Head }
       opt.on("--rand", "Crawl infos randomly") { crawl_mode = Mode::Rand }
+      opt.on("--init", "Create cache directories") { create_dirs = true }
 
       opt.on("--reseed-proxies", "Refresh proxies from init lists") { reseed_proxies = true }
     end
@@ -92,7 +117,14 @@ class YS::CrawlYsbook
     when .rand? then queue.shuffle!
     end
 
+    mkdirs(queue) if create_dirs
     new(reseed_proxies).crawl!(queue)
+  end
+
+  def self.mkdirs(queue)
+    dirs = Set(String).new
+    queue.each { |x| dirs << group_dir(x) }
+    dirs.each { |dir| Dir.mkdir_p("#{DIR}/#{dir}") }
   end
 
   def self.generate_queue(min = 1, max = 1)

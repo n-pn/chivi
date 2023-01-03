@@ -39,7 +39,7 @@ class YS::YsBook
   DB_PATH = "var/ysapp/books.db"
 
   def self.open_db
-    DB.connect "sqlite3:./#{DB_PATH}" { |cnn| yield cnn }
+    DB.open "sqlite3:./#{DB_PATH}" { |cnn| yield cnn }
   end
 
   def self.open_tx
@@ -62,6 +62,6 @@ class YS::YsBook
       fields.map { |f| "#{f} = excluded.#{f}" }.join(sql, ", ")
     end
 
-    open_tx(&.exec(query, args: values))
+    open_db(&.exec(query, args: values))
   end
 end
