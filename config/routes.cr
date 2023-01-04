@@ -9,6 +9,8 @@ Amber::Server.configure do
   end
 
   routes :api, "/api" do
+    get "/_user/privi/:uname", CV::SigninCtrl, :privi
+
     post "/_user/signup", CV::SigninCtrl, :signup
     post "/_user/log-in", CV::SigninCtrl, :log_in
     post "/_user/pwtemp", CV::SigninCtrl, :pwtemp

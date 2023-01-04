@@ -1,4 +1,8 @@
 class CV::SigninCtrl < CV::BaseCtrl
+  def privi
+    serv_text Viuser.load!(params["uname"]).privi
+  end
+
   def signup
     email = params["email"].strip
     uname = params["uname"].strip

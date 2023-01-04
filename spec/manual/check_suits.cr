@@ -2,7 +2,7 @@ require "../../src/cvmtl/engine"
 MTL = MT::Engine.new("combine")
 
 def convert(input : String)
-  MTL.cv_plain(input, cap_first: false).to_txt
+  MTL.cv_plain(input).to_txt(apply_cap: false)
 end
 
 DIR = "var/cvmtl/tests"

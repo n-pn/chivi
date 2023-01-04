@@ -1,4 +1,4 @@
-class CV::RamCache(K, V)
+class RamCache(K, V)
   struct Entry(V)
     getter value : V
     getter stale : Time
@@ -10,7 +10,7 @@ class CV::RamCache(K, V)
   @cache : Hash(K, Entry(V))
 
   def initialize(@limit : Int32 = 512, @ttl : Time::Span = 5.minutes)
-    @cache = new_cache
+    @cache = Hash(K, Entry(V)).new(initial_capacity: @limit)
   end
 
   def has?(key : K) : Bool
@@ -32,15 +32,6 @@ class CV::RamCache(K, V)
     @cache[key] = Entry(V).new(value, utime + @ttl)
   end
 
-  def delete(key : K)
-    @cache.delete(key)
-  end
-
-  def clear
-    @cache.clear
-  end
-
-  private def new_cache
-    Hash(K, Entry(V)).new(initial_capacity: @limit)
-  end
+  delegate delete, to: @cache
+  delegate clear, to: @cache
 end
