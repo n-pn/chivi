@@ -148,7 +148,24 @@ class CV::ChtextCtrl < CV::BaseCtrl
       texts.each { |text| io << text.split('\n', 2).last }
     end
 
-    serv_json({chvol: chinfo.chvol, title: chinfo.title, input: input})
+    if params["with_vtext"]?
+      dname = chroot.nvinfo.dname
+      cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
+
+      vtext = String.build do |str|
+        input.each_line.with_index do |line, idx|
+          str << '\n' if idx > 0
+          cvmtl.cv_plain(line, true).to_txt(str)
+        end
+      end
+    end
+
+    serv_json({
+      chvol: chinfo.chvol,
+      title: chinfo.title,
+      input: input,
+      vtext: vtext || "",
+    })
   end
 
   private def update_chroot(chroot : Chroot, chinfo : Chinfo, trunc = false)

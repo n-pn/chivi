@@ -10,10 +10,12 @@ export async function load({ parent, fetch, params }) {
 
   // TODO: call `api_path` to generate path
   const path = `/api/texts/${nvinfo.id}/${sname}/${chidx}`
-  const data = await api_get(path)
+  const { title, chvol, input } = await api_get(path)
 
+  const dname = '-' + nvinfo.bhash
   const _meta = page_meta(nvinfo, sname, chidx)
-  return { ...data, chidx, sname, _meta }
+
+  return { title, chvol, input, chidx, sname, dname, _meta }
 }
 
 function page_meta({ bslug, btitle_vi }, sname: string, chidx: number) {

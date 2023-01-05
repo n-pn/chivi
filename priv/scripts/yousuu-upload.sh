@@ -20,7 +20,7 @@ then
   rsync-fast "$PROXY_DIR/openproxy.space.txt" $PROXY_SSH
   rsync-fast "$PROXY_DIR/proxyscrape.com.txt" $PROXY_SSH
 
-  # rsync-fast "$PROXY_DIR/.works" $PROXY_SSH
+  rsync-fast "$PROXY_DIR/.works" $PROXY_SSH
 fi
 
 if [[ $1 == "all" || $* == *books* ]]
@@ -28,7 +28,7 @@ then
   echo upload book related data!
   yarn build ysbook_crawl && rsync-fast "bin/ysbook_crawl" "$SSH/bin"
   # rsync-fast "$DIR/books" $SSH_DIR
-  # rsync-fast "var/ysapp/books.db" $SSH/var/ysapp/books.db
+  rsync-fast "var/ysapp/books.db" $SSH/var/ysapp/books.db
 fi
 
 if [[ $1 == "all" || $* == *crits* ]]

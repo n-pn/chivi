@@ -66,14 +66,16 @@ class CV::QtransCtrl < CV::BaseCtrl
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
 
     input = params["input"].gsub("\t", "  ")
-    lines = trad_to_simp(input).split("\n")
+    input = trad_to_simp(input) unless params["_simp"]?
 
-    set_headers content_type: :text
-
-    lines.each_with_index do |line, idx|
-      response << '\n' if idx > 0
-      cvmtl.cv_plain(line, cap_first: true).to_txt(response)
+    output = String.build do |str|
+      input.each_line.with_index do |line, idx|
+        str << '\n' if idx > 0
+        cvmtl.cv_plain(line, cap_first: true).to_txt(str)
+      end
     end
+
+    serv_text output
   end
 
   private def trad_to_simp(input : String)

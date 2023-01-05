@@ -21,11 +21,7 @@
         <tr class="case" class:match>
           <td class="input">{input}</td>
           <td class="actual">{actual}</td>
-          <td class="expect">
-            {#each expect as line}
-              <span class="line">{line}</span>
-            {/each}
-          </td>
+          <td class="expect">{expect.join(' / ')}</td>
         </tr>
       {/each}
     </tbody>

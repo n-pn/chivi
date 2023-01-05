@@ -1,7 +1,9 @@
 <script lang="ts">
-  import fast_diff from 'fast-diff'
+  import { opencc, diff_html } from '$utils/text_utils'
+
   import { SIcon } from '$gui'
   import type { PageData } from './$types'
+
   export let data: PageData
 
   let trad: string = ''
@@ -15,25 +17,13 @@
 
   $: if (trad) {
     clearTimeout(timer)
-    timer = setTimeout(opencc, 300)
+    timer = setTimeout(convert, 300)
   }
 
-  async function opencc() {
+  async function convert() {
     _onload = true
-
-    const href = '/_mt/opencc?config=' + data.config
-    const init = { method: 'POST', body: trad }
-
-    simp_text = await fetch(href, init).then((r) => r.text())
-
-    let html = ''
-
-    for (const [type, text] of fast_diff(simp_text, trad)) {
-      if (type == 0) html += text
-      else if (type == -1) html += `<ins>${text}</ins>`
-    }
-
-    simp_html = html
+    simp_text = await opencc(trad, data.config)
+    simp_html = diff_html(trad, simp_text, false)
     _onload = false
   }
 
@@ -78,7 +68,7 @@
   </section>
 
   <footer class="foot">
-    <button class="m-btn _primary _fill" on:click={opencc}>
+    <button class="m-btn _primary _fill" on:click={convert}>
       <SIcon name="bolt" />
       <span class="-text">Phồn sang giản</span>
     </button>

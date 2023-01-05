@@ -22,7 +22,6 @@ export async function gtran(text: string, lang: number) {
     const res = await fetch(url)
     const data = JSON.parse(await res.text())
 
-    console.log({ text, data })
     const tran = data[0][0][0]
     gtran_cached[key] = tran.replace(/\*,\s*/, '')
     return gtran_cached[key]

@@ -1,12 +1,14 @@
 <script lang="ts">
+  import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
 
   import { session } from '$lib/stores'
-
-  import { hash_str } from '$utils/text_utils'
+  import { debounce } from '$lib/svelte'
 
   import { SIcon, Footer } from '$gui'
+
+  import { opencc, diff_html, fix_breaks, translate } from '$utils/text_utils'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -18,30 +20,15 @@
   let title = data.title
   let input = data.input
 
-  let form = {
-    tosimp: false,
-    unwrap: false,
-    split_mode: 0,
-  }
-
   $: privi = $session.privi || -1
-  $: disabled = (privi == 1 && input.length > 30000) || privi < 1
-  $: action_url = `/api/texts/${nvinfo.id}/${sname}`
+  $: disabled = privi < 1 || (privi == 1 && input.length > 30000)
 
-  let form_elem: HTMLFormElement
-  async function submit(event: SubmitEvent) {
+  $: action_url = `/api/texts/${nvinfo.id}/${sname}/${chidx}`
+
+  async function submit(event: Event) {
     event.preventDefault()
 
-    const body = new FormData(form_elem)
-
-    body.append('hash', hash_str(input))
-    body.append('split_mode', '0')
-    body.append('min_repeat', '9')
-
-    console.log(body)
-
-    for (const key in form) body.append(key, form[key].toString())
-    const res = await fetch(action_url, { method: 'PUT', body })
+    const res = await fetch(action_url, { method: 'PUT', body: input })
 
     if (res.ok) {
       await res.json()
@@ -49,6 +36,36 @@
     } else {
       alert(await res.text())
     }
+  }
+
+  const trad2sim = async (_: Event) => (input = await opencc(input))
+
+  let vtext: string = ''
+  let vhtml: string = diff_html(data.vtext, data.vtext, false)
+
+  const compare = debounce(async (input: string) => {
+    data.vtext ||= await translate(data.input, data.dname)
+    vtext = await translate(input, data.dname)
+    vhtml = diff_html(data.vtext, vtext, true)
+  }, 300)
+
+  $: if (browser) compare(input)
+
+  let edit_elem: HTMLElement
+  let view_elem: HTMLElement
+
+  function sync_scroll(source: HTMLElement, target: HTMLElement) {
+    if (!source || !target) return
+
+    const source_height = source.scrollHeight
+    const target_height = target.scrollHeight
+
+    const target_scrollTop = (source.scrollTop / source_height) * target_height
+
+    const _event = target.onscroll
+    target.onscroll = null
+    target.scrollTop = Math.round(target_scrollTop)
+    target.onscroll = _event
   }
 </script>
 
@@ -68,11 +85,7 @@
 <section class="article">
   <h2>Sửa text chương #{chidx}</h2>
 
-  <form
-    action={action_url}
-    method="POST"
-    on:submit={submit}
-    bind:this={form_elem}>
+  <form action={action_url} method="POST" on:submit={submit}>
     <div class="form-group _fluid">
       <span class="form-field">
         <label class="label" for="chvol">Tên tập truyện</label>
@@ -88,56 +101,72 @@
         <label class="label" for="title">Tên chương tiết</label>
         <input class="m-input" name="title" lang="zh" bind:value={title} />
       </span>
+
+      <span class="form-field _chidx">
+        <label class="label" for="chidx">Vị trí chương</label>
+        <input class="m-input" name="chidx" bind:value={chidx} />
+      </span>
     </div>
 
-    <div class="form-field">
-      <label class="label" for="input">Nội dung chương</label>
-      <textarea class="m-input" name="text" lang="zh" bind:value={input} />
-    </div>
+    <div class="content">
+      <div class="edit">
+        <label class="label" for="input">Nội dung chương</label>
+        <textarea
+          class="m-input"
+          name="text"
+          lang="zh"
+          bind:value={input}
+          bind:this={edit_elem}
+          on:scroll={() => sync_scroll(edit_elem, view_elem)} />
+      </div>
 
-    <div class="form-field">
-      <div class="label">Lựa chọn nâng cao</div>
-      <div class="options">
-        <label class="label">
-          <input type="checkbox" name="tosimp" bind:checked={form.tosimp} />
-          <span>Chuyển từ Phồn -> Giản</span>
-        </label>
-
-        <label class="label">
-          <input type="checkbox" name="unwrap" bind:checked={form.unwrap} />
-          <span>Sửa lỗi vỡ dòng</span>
-        </label>
+      <div class="view">
+        <span class="label">Xem trước</span>
+        <div
+          class="output"
+          bind:this={view_elem}
+          on:scroll={() => sync_scroll(view_elem, edit_elem)}>
+          {@html vhtml}
+        </div>
       </div>
     </div>
 
     <Footer>
-      <div class="pagi">
-        <label class="label" for="chidx">
-          <span>Đánh số chương</span>
-          <input class="m-input" name="chidx" bind:value={chidx} />
-        </label>
-
-        <button type="submit" class="m-btn _primary _fill" {disabled}>
-          <SIcon name="upload" />
-          <span class="-text">Đăng tải</span>
-          <SIcon name="privi-1" iset="sprite" />
+      <div class="actions">
+        <button
+          type="button"
+          class="m-btn _line"
+          on:click={() => (input = data.input)}>
+          <SIcon name="arrow-back-up" />
+          <span class="hide">Phục hồi</span>
         </button>
+
+        <button type="button" class="m-btn _line" on:click={trad2sim}>
+          <SIcon name="language" />
+          <span class="hide">Phồn 🠖 Giản</span>
+        </button>
+
+        <button
+          type="button"
+          class="m-btn _line"
+          on:click={() => (input = fix_breaks(input))}>
+          <SIcon name="bandage" />
+          <span class="hide">Sửa vỡ dòng</span>
+        </button>
+
+        <div class="right">
+          <button type="submit" class="m-btn _primary _fill" {disabled}>
+            <SIcon name="upload" />
+            <span class="-text">Đăng tải</span>
+            <SIcon name="privi-1" iset="sprite" />
+          </button>
+        </div>
       </div>
     </Footer>
   </form>
 </section>
 
 <style lang="scss">
-  textarea {
-    display: block;
-    width: 100%;
-    min-height: 10rem;
-    height: calc(100vh - 25rem);
-    padding: 0.75rem;
-    font-size: rem(18px);
-    margin-bottom: 0.5rem;
-  }
-
   h2 {
     padding: 0.75rem 0;
   }
@@ -146,26 +175,9 @@
     padding-bottom: 0.5rem;
   }
 
-  .pagi {
+  .actions {
     @include flex-cy($gap: 0.5rem);
-
-    .m-input {
-      display: inline-block;
-      &[name='chidx'] {
-        margin-left: 0.25rem;
-        width: 3.5rem;
-        text-align: center;
-        padding: 0 0.25rem;
-      }
-    }
-
-    .label {
-      @include bgcolor(tert);
-      height: 100%;
-      // height: 2rem;
-    }
-
-    .m-btn {
+    > .right {
       margin-left: auto;
     }
   }
@@ -201,11 +213,11 @@
 
       @include bp-min(ts) {
         &:first-child {
-          width: 40%;
+          width: 45%;
         }
 
         &:last-child {
-          width: 60%;
+          width: 25%;
         }
       }
     }
@@ -221,15 +233,55 @@
     }
   }
 
-  .options {
+  .content {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-    padding: 0.25rem 0;
+    margin-top: 0.75rem;
 
-    label {
-      @include fgcolor(secd);
+    height: calc(100vh - 10rem);
+    min-height: 25rem;
+    margin-bottom: 0.25rem;
+
+    .edit,
+    .view {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  // .preview span {
+  //   padding-left: 0.75rem;
+  // }
+
+  textarea {
+    display: block;
+    width: 100%;
+    flex: 1;
+
+    @include bdradi(0, $loc: right);
+
+    padding: 0.75rem;
+    font-size: rem(16px);
+  }
+
+  .output {
+    flex: 1;
+    padding: 0.75rem 0.75rem;
+    white-space: pre-wrap;
+
+    @include border;
+    border-left: none;
+    @include bdradi($loc: right);
+
+    overflow: scroll;
+
+    :global(ins) {
+      @include fgcolor(success, 5);
+    }
+
+    :global(del) {
+      @include fgcolor(harmful, 5);
     }
   }
 </style>

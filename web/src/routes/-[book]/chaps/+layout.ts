@@ -7,7 +7,6 @@ export async function load({ parent, fetch, url }) {
   set_fetch(fetch)
 
   const path = api_path('chroots.index', nvinfo.id)
-  console.log(path)
   const data = await api_get(path)
 
   const _meta: App.PageMeta = {

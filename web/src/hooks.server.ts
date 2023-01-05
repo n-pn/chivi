@@ -32,7 +32,7 @@ export async function handleFetch({ event, fetch, request }) {
 
 export function handleError({ error, event }) {
   // console.log(event)
-  console.log(error)
+  console.log({ error })
 
   return {
     message: error.toString(),
@@ -45,11 +45,8 @@ async function getSession({ request: { headers } }) {
   const res = await fetch(url, { headers: { cookie } })
 
   if (res.ok) return await res.json()
-  const error = await res.text()
-  console.log({ error })
+  // const error = await res.text()
+  // console.log({ error })
 
-  return {
-    uname: 'Khách',
-    privi: -2,
-  }
+  return { uname: 'Khách', privi: -2 }
 }
