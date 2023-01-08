@@ -49,22 +49,23 @@ end
 
 class ZH::ZhBook
   include Crorm::Model
-  self.table = "books"
 
-  column id : Int32, primary: true
+  @@table = "books"
 
-  column btitle : String = ""
-  column author : String = ""
+  field id : Int32, primary: true
 
-  column genres : String = ""
-  column bcover : String = ""
-  column bintro : String = ""
+  field btitle : String = ""
+  field author : String = ""
 
-  column ccount : Int32 = 0
-  column lastch : Int32 = 0
+  field genres : String = ""
+  field bcover : String = ""
+  field bintro : String = ""
 
-  column status : Int32 = 0
-  column mftime : Int64 = 0_i64 # modification time
+  field ccount : Int32 = 0
+  field lastch : Int32 = 0
+
+  field status : Int32 = 0
+  field mftime : Int64 = 0_i64 # modification time
 
   property repo : ZhRepo { ZhRepo.load("=base", 0) }
 

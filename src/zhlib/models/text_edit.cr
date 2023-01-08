@@ -1,7 +1,7 @@
 require "crorm/model"
 require "crorm/sqlite3"
 
-class ZH::LineEdit
+class ZH::TextEdit
   include Crorm::Model
 
   field id : Int32, primary: true
@@ -11,9 +11,6 @@ class ZH::LineEdit
 
   field s_cid : Int32
   field ch_no : Int32
-
-  field part_no : Int32
-  field line_no : Int32
 
   field patch : String
   field uname : String
@@ -28,7 +25,7 @@ class ZH::LineEdit
 
   ###
 
-  @@table = "line_edits"
+  @@table = "text_edits"
   class_getter db = Crorm::Sqlite3::Repo.new("var/chaps/#{@@table}.db", init_sql)
 
   def self.init_sql
@@ -41,9 +38,6 @@ class ZH::LineEdit
       --
       s_cid integer not null,
       ch_no integer not null,
-      --
-      part_no integer not null,
-      line_no integer not null,
       --
       patch text not null,
       --

@@ -1,47 +1,39 @@
-require "db"
 require "log"
-require "crorm"
-require "sqlite3"
 require "colorize"
+
+require "crorm"
+require "crorm/sqlite3"
 
 class MT::CvDict
   include Crorm::Model
-  self.table = "dicts"
+  @@table = "dicts"
 
-  column id : Int32
+  field id : Int32
 
-  column name : String
-  column slug : String = ""
+  field name : String
+  field slug : String = ""
 
-  column label : String = ""
-  column intro : String = ""
+  field label : String = ""
+  field intro : String = ""
 
-  column dsize : Int32 = 0
-  column mtime : Int64 = 0
+  field dsize : Int32 = 0
+  field mtime : Int64 = 0
 
   def ininitialize(@id, @name, @slug, @label = "", @intro = "")
   end
 
-  def save!
-    self.class.open_db do |db|
-      db.exec <<-SQL, args: [@id, @name, @slug, @label, @intro]
-        insert into dicts(id, name, slug, label, intro)
-        values (?, ?, ?, ?, ?)
-        on conflict (name) do update set
-          slug = excluded.slug,
-          label = excluded.label,
-          intro = excluded.intro
-        where id == excluded.id
-      SQL
+  def save!(db = @@db)
+    fields, values = get_changes
+    db.upsert(fields, values) do |sql|
+      Crorm::SqlBuilder.build_upsert_sql(sql, ["name", "slug", "label", "intro"])
+      sql << " where id == excluded.id"
     end
   end
 
   def bump!(@dsize, @mtime)
-    self.class.open_db do |db|
-      db.exec <<-SQL, args: [dsize, mtime, id]
-        update dicts set dsize = ?, mtime = ? where id = ?
-      SQL
-    end
+    @@db.exec <<-SQL, args: [dsize, mtime, id]
+      update dicts set dsize = ?, mtime = ? where id = ?
+    SQL
   end
 
   def tuple
@@ -50,19 +42,19 @@ class MT::CvDict
 
   ######
 
+  class_getter db = Crorm::Sqlite3::Repo.new("var/dicts/index.db")
+
   DICT_IDS = {} of String => Int32
 
   def self.id_of(name : String) : Int32
     DICT_IDS[name] ||= begin
       query = "select id from dicts where name = ?"
-      open_db(&.query_one?(query, args: [name], as: Int32)) || 0
+      @@db.open(&.query_one?(query, args: [name], as: Int32)) || 0
     end
   end
 
   def self.get!(id : Int32)
-    open_db do |db|
-      db.query_one("select * from dicts where id = ?", args: [id], as: CvDict)
-    end
+    @@db.open(&.query_one("select * from dicts where id = ?", args: [id], as: CvDict))
   end
 
   def self.find(name : String)
@@ -72,30 +64,20 @@ class MT::CvDict
   end
 
   def self.find!(name : String)
-    open_db do |db|
-      db.query_one(%{select * from dicts where name = ?}, args: [name], as: CvDict)
-    end
-  end
-
-  def self.open_db
-    DB.open("sqlite3://var/dicts/index.db") { |db| yield db }
+    @@db.open(&.query_one(%{select * from dicts where name = ?}, args: [name], as: CvDict))
   end
 
   def self.total_books
-    open_db do |db|
-      db.query_one "select count(*) from dicts where dsize > 0 and id < 0", as: Int32
-    end
+    @@db.open(&.query_one "select count(*) from dicts where dsize > 0 and id < 0", as: Int32)
   end
 
   def self.fetch_books(limit : Int32, offset = 0)
-    open_db do |db|
-      query = <<-SQL
-        select * from dicts where id < 0 and dsize > 0
-        order by mtime desc
-        limit ? offset ?
-      SQL
+    query = <<-SQL
+      select * from dicts where id < 0 and dsize > 0
+      order by mtime desc
+      limit ? offset ?
+    SQL
 
-      db.query_all query, args: [limit, offset], as: CvDict
-    end
+    @@db.open(&.query_all query, args: [limit, offset], as: CvDict)
   end
 end

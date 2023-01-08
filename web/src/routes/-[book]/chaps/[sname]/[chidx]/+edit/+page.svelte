@@ -1,10 +1,9 @@
 <script lang="ts">
   import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
-  import { page } from '$app/stores'
 
   import { session } from '$lib/stores'
-  import { debounce } from '$lib/svelte'
+  import { debounce, sync_scroll } from '$lib/svelte'
 
   import { SIcon, Footer } from '$gui'
 
@@ -13,13 +12,12 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, sname } = $page.data)
-
   let chidx = data.chidx
   let chvol = data.chvol
   let title = data.title
   let input = data.input
 
+  $: ({ nvinfo, sname } = data)
   $: privi = $session.privi || -1
   $: disabled = privi < 1 || (privi == 1 && input.length > 30000)
 
@@ -28,7 +26,10 @@
   async function submit(event: Event) {
     event.preventDefault()
 
-    const res = await fetch(action_url, { method: 'PUT', body: input })
+    const headers = { 'Content-Type': 'application/json' }
+    const body = JSON.stringify({ chvol, title, input })
+
+    const res = await fetch(action_url, { method: 'PUT', headers, body })
 
     if (res.ok) {
       await res.json()
@@ -40,13 +41,14 @@
 
   const trad2sim = async (_: Event) => (input = await opencc(input))
 
-  let vtext: string = ''
-  let vhtml: string = diff_html(data.vtext, data.vtext, false)
+  let old_vtext: string = ''
+  let new_vtext: string = ''
+  let html_diff: string = ''
 
   const compare = debounce(async (input: string) => {
-    data.vtext ||= await translate(data.input, data.dname)
-    vtext = await translate(input, data.dname)
-    vhtml = diff_html(data.vtext, vtext, true)
+    old_vtext ||= await translate(data.input, data.dname)
+    new_vtext = await translate(input, data.dname)
+    html_diff = diff_html(old_vtext, new_vtext, true)
   }, 300)
 
   $: if (browser) compare(input)
@@ -54,18 +56,10 @@
   let edit_elem: HTMLElement
   let view_elem: HTMLElement
 
-  function sync_scroll(source: HTMLElement, target: HTMLElement) {
-    if (!source || !target) return
-
-    const source_height = source.scrollHeight
-    const target_height = target.scrollHeight
-
-    const target_scrollTop = (source.scrollTop / source_height) * target_height
-
-    const _event = target.onscroll
-    target.onscroll = null
-    target.scrollTop = Math.round(target_scrollTop)
-    target.onscroll = _event
+  const revert_changes = () => {
+    input = data.input
+    chvol = data.chvol
+    title = data.title
   }
 </script>
 
@@ -126,17 +120,14 @@
           class="output"
           bind:this={view_elem}
           on:scroll={() => sync_scroll(view_elem, edit_elem)}>
-          {@html vhtml}
+          {@html html_diff}
         </div>
       </div>
     </div>
 
     <Footer>
       <div class="actions">
-        <button
-          type="button"
-          class="m-btn _line"
-          on:click={() => (input = data.input)}>
+        <button type="button" class="m-btn _line" on:click={revert_changes}>
           <SIcon name="arrow-back-up" />
           <span class="hide">Phục hồi</span>
         </button>
@@ -237,7 +228,7 @@
     display: flex;
     margin-top: 0.75rem;
 
-    height: calc(100vh - 10rem);
+    height: calc(100vh - 15rem);
     min-height: 25rem;
     margin-bottom: 0.25rem;
 
@@ -254,15 +245,21 @@
   //   padding-left: 0.75rem;
   // }
 
+  @mixin thin-scrollbar() {
+    scrollbar-width: thin;
+    &::-webkit-scrollbar {
+      cursor: pointer;
+      width: 8px;
+    }
+  }
+
   textarea {
-    display: block;
     width: 100%;
     flex: 1;
+    padding: 0.75rem;
 
     @include bdradi(0, $loc: right);
-
-    padding: 0.75rem;
-    font-size: rem(16px);
+    @include thin-scrollbar();
   }
 
   .output {
@@ -272,9 +269,10 @@
 
     @include border;
     border-left: none;
-    @include bdradi($loc: right);
-
     overflow: scroll;
+
+    @include bdradi($loc: right);
+    @include thin-scrollbar();
 
     :global(ins) {
       @include fgcolor(success, 5);

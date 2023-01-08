@@ -50,10 +50,10 @@ Amber::Server.configure do
     # nvchap actions
 
     get "/chaps/:nv_id/:sname/:chidx/:cpart", CV::ChinfoCtrl, :ch_info
+    get "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :rawtxt
 
     put "/texts/:nv_id/:sname", CV::ChtextCtrl, :upsert
-    get "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :rawtxt
-    # put "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :update
+    put "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :update
     patch "/texts/:nv_id/:sname/:chidx", CV::ChtextCtrl, :change
 
     get "/trans/:nv_id/:sname/:chidx/:part_no/:line_no", CV::ChtranCtrl, :list

@@ -1,5 +1,8 @@
 require "json"
+
 require "../../zhlib/models/line_edit"
+require "../../zhlib/models/text_edit"
+require "../../_util/diff_util"
 
 class CV::ChtextCtrl < CV::BaseCtrl
   # upload batch text
@@ -137,41 +140,45 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
   def rawtxt
     guard_privi min: 1
-
-    chroot = load_chroot
-    chinfo = load_chinfo(chroot)
-
-    input = String.build do |io|
-      mode = chroot.is_remote ? 1_i8 : 0_i8
-      texts = chinfo.all_text(mode: mode, uname: _viuser.uname)
-      io << texts.shift?
-      texts.each { |text| io << text.split('\n', 2).last }
-    end
-
-    if params["with_vtext"]?
-      dname = chroot.nvinfo.dname
-      cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
-
-      vtext = String.build do |str|
-        input.each_line.with_index do |line, idx|
-          str << '\n' if idx > 0
-          cvmtl.cv_plain(line, true).to_txt(str)
-        end
-      end
-    end
-
-    serv_json({
-      chvol: chinfo.chvol,
-      title: chinfo.title,
-      input: input,
-      vtext: vtext || "",
-    })
+    chinfo = load_chinfo(load_chroot)
+    serv_json({chvol: chinfo.chvol, title: chinfo.title, input: chinfo.full_body})
   end
 
   private def update_chroot(chroot : Chroot, chinfo : Chinfo, trunc = false)
     chroot.set_latest(chinfo, force: trunc)
     chroot.stime = chroot.utime = Time.utc.to_unix
     chroot.save!
+  end
+
+  def update
+    sname = params["sname"]
+    guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
+
+    chroot = load_chroot(sname, :find)
+    chinfo = load_chinfo(chroot)
+
+    new_ztext = params["input"]
+
+    chinfo.chvol = params["chvol"]
+    chinfo.title = params["title"]
+    chinfo.save_body(new_ztext, uname: _viuser.uname)
+
+    chroot._repo.upsert(chinfo)
+    chroot.clear_cache!
+
+    spawn create_text_edit(chroot, chinfo, new_ztext)
+    serv_json({msg: "ok"})
+  end
+
+  private def create_text_edit(chroot, chinfo, new_ztext)
+    ZH::TextEdit.new({
+      sname: chroot.sname,
+      s_bid: chroot.s_bid,
+      s_cid: chinfo.s_cid,
+      ch_no: chinfo.ch_no!,
+      patch: DiffUtil.diff_json(chinfo.full_body, new_ztext),
+      uname: _viuser.uname,
+    }).save!
   end
 
   def change
@@ -181,20 +188,15 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot = load_chroot(sname, :find)
     chinfo = load_chinfo(chroot)
 
-    part_no = params.read_i16("part_no", min: 0_i16)
-    line_no = params.read_i16("line_no", min: 0_i16)
+    part_no = params.read_int("part_no", min: 0)
+    line_no = params.read_int("line_no", min: 0)
 
     orig = TextUtil.clean_spaces(params["orig"]? || "")
     edit = TextUtil.clean_spaces(params["edit"])
 
-    ZH::LineEdit.new(
-      uname: _viuser.uname, sname: chroot.sname,
-      s_bid: chroot.s_bid, s_cid: chinfo.s_cid,
-      ch_no: chinfo.ch_no.not_nil!, cpart: part_no,
-      l_id: line_no, orig: orig, edit: edit
-    ).create!
+    spawn create_line_edit(chroot, chinfo, orig, edit, part_no, line_no)
 
-    content = chinfo.all_text(mode: 0, uname: _viuser.uname)
+    content = chinfo.body_parts(mode: 0, uname: _viuser.uname)
 
     chinfo.c_len &+= edit.size &- orig.size if line_no > 0
     chinfo.p_len = content.size
@@ -210,5 +212,15 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot.clear_cache!
 
     serv_text({chroot.sname, chroot.s_bid, chinfo.ch_no, part_no}.join(":"))
+  end
+
+  private def create_line_edit(chroot, chinfo, old_zline, new_zline, part_no, line_no)
+    ZH::LineEdit.new({
+      sname: chroot.sname, s_bid: chroot.s_bid,
+      s_cid: chinfo.s_cid, ch_no: chinfo.ch_no!,
+      part_no: part_no, line_no: line_no,
+      patch: DiffUtil.diff_json(old_zline, new_zline),
+      uname: _viuser.uname,
+    }).save!
   end
 end

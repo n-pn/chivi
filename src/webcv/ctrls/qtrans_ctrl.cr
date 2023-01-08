@@ -65,7 +65,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     dname = params["dname"]? || "combine"
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
 
-    input = params["input"].gsub("\t", "  ")
+    input = params["input"].tr("\t", " ")
     input = trad_to_simp(input) unless params["_simp"]?
 
     output = String.build do |str|
@@ -75,7 +75,9 @@ class CV::QtransCtrl < CV::BaseCtrl
       end
     end
 
-    serv_text output
+    respond_with do
+      text output
+    end
   end
 
   private def trad_to_simp(input : String)

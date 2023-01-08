@@ -37,7 +37,7 @@ class CV::ChRepo
   KEEP_FIELDS = {"ch_no", "sn_id", "s_bid", "s_cid"}
 
   def bulk_upsert(infos : Array(Chinfo))
-    @repo.transaction do |cnn|
+    @repo.open_tx do |cnn|
       infos.each do |entry|
         fields, values = entry.get_changes
         next if fields.empty?

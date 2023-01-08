@@ -1,5 +1,6 @@
 require "crorm"
 require "../_util/text_util"
+require "../zhlib/models/v1_text"
 
 # require "./_base"
 require "./ch_seed"
@@ -10,11 +11,11 @@ require "./ch_text"
 # class CV::ChTran2
 #   include Crorm::Model
 
-#   column ch_no : Int32, primary: true
-#   column title : String = ""
-#   column chvol : String = ""
-#   column uslug : String = ""
-#   column fixed : Bool = false
+#   field ch_no : Int32, primary: true
+#   field title : String = ""
+#   field chvol : String = ""
+#   field uslug : String = ""
+#   field fixed : Bool = false
 
 #   def convert!(cvmtl, title : String, chvol : String = "")
 #     self.title = title.empty? "Thiếu tựa": cvmtl.cv_title(title).to_txt
@@ -24,21 +25,22 @@ require "./ch_text"
 
 class CV::Chinfo
   include Crorm::Model
+  @@table = "chinfos"
 
-  column ch_no : Int32, primary: true # chap number
+  field ch_no : Int32, primary: true # chap number
 
-  column title : String = ""
-  column chvol : String = ""
+  field title : String = ""
+  field chvol : String = ""
 
-  column p_len : Int32 = 0 # part count
-  column c_len : Int32 = 0 # char count
+  field p_len : Int32 = 0 # part count
+  field c_len : Int32 = 0 # char count
 
-  column utime : Int64 = 0
-  column uname : String = ""
+  field utime : Int64 = 0
+  field uname : String = ""
 
-  column sn_id : Int32 = 0 # index of seed name
-  column s_bid : Int32 = 0 # book original id
-  column s_cid : Int32 = 0 # chap original id
+  field sn_id : Int32 = 0 # index of seed name
+  field s_bid : Int32 = 0 # book original id
+  field s_cid : Int32 = 0 # chap original id
 
   def initialize(sn_id : Int32, s_bid : Int32, cols : Array(String))
     self.sn_id = sn_id
@@ -92,7 +94,7 @@ class CV::Chinfo
   getter chtext : ChText { ChText.load(self.sname, self.s_bid, self.ch_no!) }
 
   def text(cpart : Int16 = 0, mode : Int8 = 0, uname = "") : String
-    return self.all_text(mode, uname)[cpart]? || "" if self.utime == 0
+    return self.body_parts(mode, uname)[cpart]? || "" if self.utime == 0
 
     if cached = self.chtext.read(self.s_cid, cpart)
       text, utime = cached
@@ -105,7 +107,7 @@ class CV::Chinfo
     pull_text(mode, uname).try(&.[cpart]?) || text || ""
   end
 
-  def all_text(mode : Int8 = 0, uname = "") : Array(String)
+  def body_parts(mode : Int8 = 0, uname = "") : Array(String)
     if cached = self.chtext.read_all(self.s_cid, self.p_len)
       parts, utime, c_len = cached
       self.heal_stats(parts.size, utime, c_len)
@@ -115,6 +117,23 @@ class CV::Chinfo
 
     return parts if mode < 2 && parts
     pull_text(mode, uname) || parts || [] of String
+  end
+
+  def full_body : String
+    String.build do |io|
+      body_parts.each_with_index do |part, i|
+        io << (i == 0 ? part : part.split('\n', 2).last)
+      end
+    end
+  end
+
+  def save_body(body : String, uname = "")
+    self.c_len, body_parts = ZH::V1Text.split(body)
+    self.p_len = body_parts.size
+    self.utime = Time.utc.to_unix
+    self.uname = uname
+
+    self.chtext.save(self.s_cid, body_parts)
   end
 
   def save_text(content : Array(String), uname = "")

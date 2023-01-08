@@ -50,7 +50,7 @@ shards:
 
   crorm:
     git: https://github.com/chi-vi/crorm.git
-    version: 0.0.1+git.commit.e9c78197933b03f603dd74553356cf85dabdaa94
+    version: 0.1.3
 
   db:
     git: https://github.com/crystal-lang/crystal-db.git
