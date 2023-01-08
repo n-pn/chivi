@@ -141,7 +141,12 @@ class CV::ChtextCtrl < CV::BaseCtrl
   def rawtxt
     guard_privi min: 1
     chinfo = load_chinfo(load_chroot)
-    serv_json({chvol: chinfo.chvol, title: chinfo.title, input: chinfo.full_body})
+
+    body = {chvol: chinfo.chvol, title: chinfo.title, input: chinfo.full_body}
+
+    respond_with do
+      json(body.to_json)
+    end
   end
 
   private def update_chroot(chroot : Chroot, chinfo : Chinfo, trunc = false)
