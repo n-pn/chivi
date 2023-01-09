@@ -1,28 +1,28 @@
-class CV::ChinfoCtrl < CV::BaseCtrl
-  def ch_info
-    chroot = load_chroot
-    chinfo = load_chinfo(chroot)
+require "./_ctrl_base"
+require "../views/*"
 
-    cpart = params.read_i16("cpart", min: 0_i16)
+class CV::ChinfoCtrl < CV::BaseCtrl
+  @[AC::Route::GET("/chaps/:b_id/:sname/:ch_no/:part_no")]
+  def show(b_id : Int64, sname : String, ch_no : Int16, part_no : Int16)
+    chroot = get_chroot(b_id, sname)
+    chinfo = load_chinfo(chroot, ch_no)
+
     # spawn Nvstat.inc_chap_view(chroot.nvinfo.id)
 
     ubmemo = Ubmemo.find_or_new(_viuser.id, chroot.nvinfo_id)
-    ubmemo.mark_chap!(chinfo, chroot.sname, cpart) if _viuser.privi >= 0
+    ubmemo.mark_chap!(chinfo, chroot.sname, part_no) if _viuser.privi >= 0
 
     redo = _viuser.privi > 0 && params["redo"]? == "true"
 
-    cvdata, rl_key = load_cvdata(chroot, chinfo, cpart, redo)
+    cvdata, rl_key = load_cvdata(chroot, chinfo, part_no, redo)
 
-    serv_json do |jb|
-      jb.object {
-        jb.field "chmeta" { ChmetaView.new(chroot, chinfo, cpart).to_json(jb) }
-        jb.field "chinfo" { ChinfoView.new(chinfo).to_json(jb) }
-        jb.field "chmemo" { UbmemoView.new(ubmemo).to_json(jb) }
-
-        jb.field "cvdata", cvdata
-        jb.field "rl_key", rl_key
-      }
-    end
+    {
+      chmeta: ChmetaView.new(chroot, chinfo, part_no),
+      chinfo: ChinfoView.new(chinfo),
+      chmemo: UbmemoView.new(ubmemo),
+      cvdata: cvdata,
+      rl_key: rl_key,
+    }
   end
 
   private def load_cvdata(chroot : Chroot, chinfo : Chinfo,

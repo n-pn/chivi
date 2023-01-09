@@ -1,8 +1,7 @@
 require "../../zhlib/models/zh_book"
+require "../../appcv/nv_info"
 
 class CV::NvinfoForm
-  getter params : Amber::Validators::Params
-
   getter vi_book : Nvinfo
 
   # getter zh_user : ZH::ZhBook

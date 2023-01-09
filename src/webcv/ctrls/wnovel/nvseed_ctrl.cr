@@ -1,4 +1,7 @@
-class CV::ChrootCtrl < CV::BaseCtrl
+require "../_ctrl_base"
+require "../../views/*"
+
+class CV::NvseedCtrl < CV::BaseCtrl
   def index
     nslist = load_nvinfo.seed_list
     serv_json(NslistView.new(nslist))

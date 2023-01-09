@@ -13,20 +13,20 @@ module MailUtil
     )
   )
 
-  def self.send(to target : String, subject : String, message : String)
-    send(target) do |email|
-      email.subject subject
-      email.message message
+  def self.send(to address : String, subject : String, message : String)
+    send(address) do |mail|
+      mail.subject subject
+      mail.message message
     end
   end
 
-  def self.send(to target : String, &block)
-    email = EMail::Message.new
+  def self.send(to address : String, name : String?, &block)
+    mail = EMail::Message.new
 
-    email.from "sys@chivi.app", "Chivi"
-    email.to target
+    mail.from "sys@chivi.app", "Chivi"
+    mail.to address, name: name
 
-    yield email
+    yield mail
 
     CLIENT.start { send(email) }
   end

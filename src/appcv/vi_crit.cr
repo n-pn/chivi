@@ -30,22 +30,6 @@ class CV::Vicrit
 
   timestamps
 
-  scope :filter_book do |book|
-    book ? where("nvinfo_id = ?", book) : self
-  end
-
-  scope :filter_user do |user|
-    user ? where("viuser_id = ?", user) : self
-  end
-
-  scope :filter_list do |list|
-    list ? where("vilist_id = ?", list) : self
-  end
-
-  scope :filter_tags do |tags|
-    tags ? where("btags @> ?", tags) : self
-  end
-
   scope :sort_by do |order|
     case order
     when "ctime" then self.order_by(id: :desc)
@@ -54,12 +38,12 @@ class CV::Vicrit
     end
   end
 
-  def patch!(input : String, stars : String | Int32, btags : String)
-    self.itext = input
-    self.ohtml = PostUtil.md_to_html(input)
-    self.stars = stars.to_i
-    self.btags = btags.split(/\s*,\s*/, remove_empty: true)
+  def patch!(input : String, stars : String, btags : String)
+    patch!(input, stars.to_i, btags.split(/\s*,\s*/, remove_empty: true))
+  end
 
+  def patch!(@itext : String, @stars : Int32, @btags : Array(String))
+    self.ohtml = PostUtil.md_to_html(itext)
     self.save!
   end
 end

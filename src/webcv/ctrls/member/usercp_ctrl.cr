@@ -1,4 +1,10 @@
+require "../_ctrl_base"
+require "../../../_util/mail_util"
+
 class CV::UsercpCtrl < CV::BaseCtrl
+  base "/api/_self"
+
+  @[AC::Route::GET("/")]
   def profile
     set_cache :private, maxage: 3
     _viuser.check_privi! unless _viuser.privi < 0
@@ -6,9 +12,11 @@ class CV::UsercpCtrl < CV::BaseCtrl
     serv_json(ViuserView.new(_viuser, true))
   end
 
-  def upgrade_privi
-    privi = params.read_int("privi", min: 1, max: 3)
-    tspan = params.read_int("tspan", min: 0, max: 3)
+  @[AC::Route::PUT("/ugprivi")]
+  @[AC::Route::PUT("/upgrade-privi")]
+  def upgrade_privi(privi : Int32, tspan : Int32)
+    # privi = params.read_int("privi", min: 1, max: 3)
+    # tspan = params.read_int("tspan", min: 0, max: 3)
     _viuser.upgrade!(privi, tspan)
 
     spawn do
@@ -23,11 +31,12 @@ class CV::UsercpCtrl < CV::BaseCtrl
     end
 
     save_current_user!(_viuser)
-    serv_json(ViuserView.new(_viuser, true))
+    render json: ViuserView.new(_viuser, true)
   rescue err
-    halt! 403, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
+    render :forbidden, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
   end
 
+  @[AC::Route::PUT("/send-vcoin")]
   def send_vcoin
     amount = params.read_int("amount", min: 1)
     reason = params.read_str("reason").strip
@@ -58,14 +67,29 @@ class CV::UsercpCtrl < CV::BaseCtrl
       sender.cache!
       sendee.cache!
 
-      spawn VcoinReceiveMailer.new(sender, sendee, amount, reason).deliver
+      spawn send_vcoin_receive_email(sender, sendee, amount, reason)
     end
 
-    serv_json({sendee: sendee.uname, remain: _viuser.vcoin_avail})
+    render json: {sendee: sendee.uname, remain: _viuser.vcoin_avail}
+  end
+
+  private def send_vcoin_receive_email(sender : Viuser, sendee : Viuser, amount : Int32, reason : String)
+    MailUtil.send(to: sendee.email, name: sendee.uname) do |mail|
+      mail.subject "Chivi: Bạn nhận được #{amount} vcoin"
+
+      mail.message_html <<-HTML
+        <h2>Thông báo từ Chivi:</h2>
+        <p>Bạn nhận được: <strong>#{amount}</strong> vcoin từ <strong>#{sender.uname}</strong>.</p>
+        <p>Chú thích của người tặng: #{reason}</p>
+        <p>Bạn có thể vào <a href="https://chivi.app/guide/vcoin">Tất cả về Vcoin</a>
+          để tìm hiểu các cách dùng của vcoin.</p>
+      HTML
+    end
   end
 
   ##################
 
+  @[AC::Route::PUT("/config")]
   def update_config
     if _viuser.privi >= 0
       wtheme = params.read_str("wtheme", "light")
@@ -75,9 +99,10 @@ class CV::UsercpCtrl < CV::BaseCtrl
       _viuser.update!({wtheme: wtheme})
     end
 
-    serv_json(ViuserView.new(_viuser, true))
+    render json: ViuserView.new(_viuser, true)
   end
 
+  @[AC::Route::PUT("/passwd")]
   def update_passwd
     raise "Quyền hạn không đủ" if _viuser.privi < 0
 
@@ -95,13 +120,14 @@ class CV::UsercpCtrl < CV::BaseCtrl
       CtrlUtil.log_user_action("change-pass", body, _viuser.uname)
     end
 
-    serv_text("Đổi mật khẩu thành công", 201)
+    render :accepted, text: "Đổi mật khẩu thành công"
   rescue err
     raise BadRequest.new(err.message)
   end
 
   ################
 
+  @[AC::Route::GET("/replied")]
   def replied
     _pgidx, limit, offset = params.page_info(min: 10)
     user_id = _viuser.id
@@ -113,58 +139,9 @@ class CV::UsercpCtrl < CV::BaseCtrl
     query.with_cvpost.with_viuser
     query.limit(limit).offset(offset)
 
-    items = query.to_a
-    memos = UserRepl.glob(_viuser, items.map(&.id))
-
-    set_cache :private, maxage: 3
-    serv_json(items.map { |x| CvreplView.new(x, full: true, memo: memos[x.id]?) })
-  end
-
-  def mark_post
-    return serv_text("Bạn cần đăng nhập", 403) if _viuser.privi < 0
-
-    cvpost = Cvpost.load!(params["post_ii"])
-    target = UserPost.find_or_new(_viuser.id, cvpost.id)
-
-    case params["action"]?
-    when "like"
-      return serv_text("Bạn đã ưa thích bài viết", 400) if target.liked
-
-      cvpost.inc_like_count!(1)
-      target.set_liked!(true)
-      serv_json({like_count: cvpost.like_count})
-    when "unlike"
-      return serv_text("Bạn chưa ưa thích bài viết", 400) unless target.liked
-
-      cvpost.inc_like_count!(-1)
-      target.set_liked!(false)
-      serv_json({like_count: cvpost.like_count})
-    else
-      serv_text("Hành động không được hỗ trợ", 400)
-    end
-  end
-
-  def mark_repl
-    return serv_text("Bạn cần đăng nhập", 403) if _viuser.privi < 0
-
-    cvrepl = Cvrepl.load!(params["repl_id"].to_i64)
-    target = UserRepl.find_or_new(_viuser.id, cvrepl.id)
-
-    case params["action"]?
-    when "like"
-      return serv_text("Bạn đã ưa thích bình luận", 400) if target.liked
-
-      cvrepl.inc_like_count!(1)
-      target.set_liked!(true)
-      serv_json({like_count: cvrepl.like_count})
-    when "unlike"
-      return serv_text("Bạn chưa ưa thích bình luận", 400) unless target.liked
-
-      cvrepl.inc_like_count!(-1)
-      target.set_liked!(false)
-      serv_json({like_count: cvrepl.like_count})
-    else
-      serv_text("Hành động không được hỗ trợ", 400)
-    end
+    render json: {
+      items: query.map { |x| CvreplView.new(x, full: true) },
+      memos: UserRepl.glob(_viuser, items.map(&.id)).map { |x| {x.cvrepl_id, x} }.to_h,
+    }
   end
 end

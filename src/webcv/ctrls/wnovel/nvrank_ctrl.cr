@@ -1,4 +1,9 @@
+require "../_ctrl_base"
+
 class CV::NvrankCtrl < CV::BaseCtrl
+  base "/api/ranks"
+
+  @[AC::Route::GET("/brief")]
   def brief
     book_query = Nvinfo.query.where("shield < 2").limit(6).offset(0)
 

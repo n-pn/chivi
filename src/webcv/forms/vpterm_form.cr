@@ -1,5 +1,4 @@
 struct CV::VpTermForm
-  @params : Amber::Validators::Params
   @key : String
 
   def initialize(@params, @dict : VpDict, @user : Viuser)

@@ -100,21 +100,6 @@ dependencies:
   crorm:
     github: chi-vi/crorm
 
-  sqlite3:
-    github: chi-vi/crystal-sqlite3
-
-  amber:
-    github: chi-vi/amber
-    branch: master
-
-  kilt:
-    github: jeromegn/kilt
-    version: ~> 0.6.0
-
-  quartz_mailer:
-    github: amberframework/quartz-mailer
-    version: ~> 0.8.0
-
   clear:
     github: chi-vi/clear
     branch: master
@@ -127,26 +112,9 @@ dependencies:
 
   cmark:
     github: amauryt/cr-cmark-gfm
-    branch: master
 
   action-controller:
     github: spider-gazelle/action-controller
-    version: ~> 5.5
-
-  redis:
-    github: stefanwille/crystal-redis
-    version: ~> 2.7.0
-
-  yaml_mapping:
-    github: crystal-lang/yaml_mapping.cr
-    version: ~> 0.1.0
-
-  json_mapping:
-    github: crystal-lang/json_mapping.cr
-    version: ~> 0.1.0
-
-  slang:
-    github: jeromegn/slang
 
   jwt:
     github: crystal-community/jwt
@@ -157,11 +125,9 @@ dependencies:
   diff:
     github: MakeNowJust/crystal-diff
 
-development_dependencies:
-  garnet_spec:
-    github: amberframework/garnet-spec
-    version: 0.4.1
+  email:
+    github: arcage/crystal-email
 
+development_dependencies:
   ameba:
     github: crystal-ameba/ameba
-    branch: master
