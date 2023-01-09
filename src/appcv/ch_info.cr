@@ -6,6 +6,8 @@ require "../zhlib/models/v1_text"
 require "./ch_seed"
 require "./ch_text"
 
+require "./nvchap/ch_util"
+
 # require "./nv_info"
 
 # class CV::ChTran2

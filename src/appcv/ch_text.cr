@@ -1,4 +1,5 @@
 require "sqlite3"
+require "compress/zip"
 
 require "./remote/remote_text"
 

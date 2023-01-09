@@ -5,25 +5,21 @@ class ZH::V1Text
   UPPER = LIMIT * 1.5
 
   def self.split(input : String)
-    lines = TextUtil.clean_spaces(input).split(/\r\n?|\n/).reject!(&.empty?)
-    clean(lines)
-  end
+    c_len = TextUtil.clean_spaces(input).size
+    p_len = c_len <= UPPER ? 1 : ((c_len - 1) // LIMIT) + 1
 
-  def self.split(lines : Array(String))
-    c_len = input.size
-    return {c_len, [lines.join('\n')]} if c_len <= UPPER
-
-    p_len = ((c_len - 1) // LIMIT) + 1
     limit = c_len // p_len
 
     chaps = [] of String
     count = 0
 
-    title = lines.shift
+    lines = input.each_line
+    title = lines.next.as(String).strip
+
     strio = String::Builder.new(title)
 
     lines.each do |line|
-      line = line.rstrip
+      line = line.strip
       next if line.empty?
 
       strio << '\n' << line

@@ -12,6 +12,7 @@
 /cli/cvjwt_cli.cr
 /node_modules
 .env
+.env.*
 .encryption_key
 production.yml
 .DS_Store

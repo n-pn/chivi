@@ -2,23 +2,23 @@ require "./open_db"
 
 class MT::CvTerm
   include Crorm::Model
-  self.table = "terms"
+  @@table = "terms"
 
-  column id : Int32, primary: true
-  column dic : Int32
+  field id : Int32, primary: true
+  field dic : Int32
 
-  column key : String
-  column raw : String?
+  field key : String
+  field raw : String?
 
-  column val : String
-  column alt : String?
+  field val : String
+  field alt : String?
 
-  column ptag : String = ""
-  column wseg : Int32 = 2
+  field ptag : String = ""
+  field wseg : Int32 = 2
 
-  column user : String = ""
-  column time : Int64 = 0_i64
-  column flag : Int32 = 0
+  field user : String = ""
+  field time : Int64 = 0_i64
+  field flag : Int32 = 0
 
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
 
