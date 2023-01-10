@@ -14,6 +14,7 @@
     "upload": "yarn db-up all && yarn ys-up",
     "build": "shards build -s --release",
     "build-mt": "shards build -s --release -Dpreview_mt",
+    "cvapp": "bash priv/invoke-dev.sh cvapp",
     "cvmtl": "bash priv/invoke-dev.sh cvmtl",
     "cvhlp": "bash priv/invoke-dev.sh cvhlp",
     "ysapp": "bash priv/invoke-dev.sh ysapp",

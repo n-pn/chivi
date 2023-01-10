@@ -18,6 +18,8 @@ module CV::Config
   class_getter ses_username : String = ENV["CV_SES_USERNAME"]
   class_getter ses_password : String = ENV["CV_SES_PASSWORD"]
 
+  class_getter session_skey : String = ENV["CV_SESSION_SKEY"]
+
   class_getter jwt_user_key : String = ENV["CV_JWT_USER_KEY"]
   class_getter jwt_auth_key : String = ENV["CV_JWT_AUTH_KEY"]
 

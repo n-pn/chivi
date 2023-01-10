@@ -1,5 +1,5 @@
-require "./nv_info"
-require "./g_vuser"
+require "../nv_info"
+require "../g_vuser"
 require "./vi_list"
 
 class CV::Vicrit

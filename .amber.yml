@@ -8,12 +8,10 @@ watch:
   run:
     build_commands:
       - mkdir -p bin
-      - crystal build ./src/cvapp_srv.cr -o bin/cvapp-dev --error-trace
+      - crystal build ./src/webcv/webcv_srv.cr -o bin/cvapp-dev --error-trace
     run_commands:
       - bin/cvapp-dev
     include:
-      - ./config/**/*.cr
-      - ./config/environments/*.yml
       - ./src/**/*.cr
     exclude:
       - ./src/cvmtl/**/*.cr

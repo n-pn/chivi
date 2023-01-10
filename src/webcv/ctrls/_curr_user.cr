@@ -1,5 +1,6 @@
 require "../../appcv/g_vuser"
-require "../../_util/cjwt_util"
+
+# require "../../_util/cjwt_util"
 
 class CV::Viuser
   # CACHE = {} of String => self

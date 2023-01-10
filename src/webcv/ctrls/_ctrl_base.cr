@@ -1,4 +1,4 @@
-require "../../appcv/*"
+require "../../appcv/**"
 require "./_curr_user"
 require "./_ctrl_util"
 
@@ -103,11 +103,11 @@ abstract class CV::BaseCtrl < ActionController::Base
   end
 
   def save_current_user!(user : Viuser) : Nil
-    user_token = CjwtUtil.encode_user_token(user.id, user.uname, user.privi)
+    # user_token = CjwtUtil.encode_user_token(user.id, user.uname, user.privi)
     # USER_CACHE[user_token] = CurrentUser.new(user.id, user.uname, user.privi)
+    # cookies << HTTP::Cookie.new("_user", user_token, expires: 30.minutes.from_now)
 
     session["uname"] = user.uname
-    cookies << HTTP::Cookie.new("_user", user_token, expires: 30.minutes.from_now)
   end
 
   private def guard_privi(min = 0)
