@@ -72,10 +72,12 @@ class CV::VicritCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::POST("/", body: body)]
-  def create(book : Int64, body : CritBody, list : Int32 = -_viuser.id)
-    raise Unauthorized.new("Bạn không có quyền tạo bình luận") unless allowed?(-1)
+  def create(book_id : Int64, body : CritBody, list_id : Int32 = -_viuser.id)
+    unless _viuser.can?(:create_post)
+      raise Unauthorized.new("Bạn không có quyền tạo bình luận")
+    end
 
-    vicrit = Vicrit.new({viuser: _viuser, nvinfo_id: book_id, vilist_id: list_id})
+    vicrit = Vicrit.new({viuser_id: _viuser.id, nvinfo_id: book_id, vilist_id: list_id})
     vicrit.patch!(body.input, body.stars, body.btags)
 
     VicritView.new(vicrit, full: true)
@@ -92,7 +94,9 @@ class CV::VicritCtrl < CV::BaseCtrl
   def update(crit_id : Int64, body : CritBody)
     vicrit = load_crit(crit_id)
 
-    raise Unauthorized.new("Bạn không có quyền sửa bình luận") unless allowed?(vicrit.viuser_id)
+    unless _viuser.can?(vicrit.viuser_id, :update_post)
+      raise Unauthorized.new("Bạn không có quyền sửa bình luận")
+    end
 
     vicrit.changed_at = Time.utc
     vicrit.patch!(body.input, body.stars, body.btags)
@@ -104,7 +108,11 @@ class CV::VicritCtrl < CV::BaseCtrl
   def delete(crit_id : Int64)
     vicrit = load_crit(crit_id)
     owner_id = vicrit.viuser_id
-    raise Unauthorized.new("Bạn không có quyền xoá bình luận") unless allowed?(owner_id)
+
+    unless _viuser.can?(owner_id, :update_post)
+      raise Unauthorized.new("Bạn không có quyền xoá bình luận")
+    end
+
     vicrit.update!({_flag: _viuser.privi > 3 && _viuser.id != owner_id ? -3 : -2})
 
     {msg: "Chủ đề đã bị xoá"}

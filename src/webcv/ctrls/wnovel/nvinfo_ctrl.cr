@@ -1,4 +1,5 @@
 require "../_ctrl_base"
+require "../../forms/nvinfo_form"
 
 class CV::NvinfoCtrl < CV::BaseCtrl
   base "/api/books"
@@ -8,11 +9,11 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     order : String = "access",
     pg pg_no : Int32 = 1, lm limit : Int32 = 10,
     btitle : String? = nil, author : String? = nil,
-    chroot : String? = nil,
+    chroot : String? = nil, origin : String? = nil,
     genres : String? = nil, tagged : String? = nil,
-    origin : String? = nil, status : Int32? = nil,
     voters : Int32? = nil, rating : Int32? = nil,
-    uname : String? = nil, bmark : String? = nil
+    uname : String? = nil, bmark : String? = nil,
+    status : Int32? = nil
   )
     limit = 25 if limit >= 24
     offset = CtrlUtil.offset(pg_no, limit)
@@ -35,7 +36,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     {
       total: total,
-      pgidx: pgidx,
+      pgidx: pg_no,
       pgmax: (total - 1) // limit + 1,
       books: NvinfoView.map(query),
     }
@@ -52,7 +53,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     bslug = TextUtil.slugify(bslug)
 
     unless nvinfo = Nvinfo.load!(bslug[0..7])
-      load_prev_book(bslug).try { |x| return serv_text(x.bslug, 301) }
+      load_prev_book(bslug).try { |x| render 301, text: x.bslug; return }
       raise NotFound.new("Quyển sách không tồn tại!")
     end
 
@@ -131,8 +132,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     spawn do
       `bin/bcover_cli single -i "#{nvinfo.scover}" -n #{nvinfo.bcover}`
-      body = params.to_unsafe_h.tap(&.delete("_json"))
-      CtrlUtil.log_user_action("nvinfo-upsert", body, _viuser.uname)
+      CtrlUtil.log_user_action("nvinfo-upsert", params.to_h, _viuser.uname)
     end
 
     {bslug: nvinfo.bslug}

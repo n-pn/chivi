@@ -1,33 +1,33 @@
 require "../../appcv/g_vuser"
 require "../../_util/cjwt_util"
 
-class CurrentUser
-  CACHE = {} of String => self
+class CV::Viuser
+  # CACHE = {} of String => self
 
-  def self.from_user_token(token : String)
-    CACHE[token] ||= begin
-      id, uname, privi = CjwtUtil.decode_user_token(token)
-      new(id, uname, privi)
-    end
-  end
+  # def self.from_user_token(token : String)
+  #   CACHE[token] ||= begin
+  #     id, uname, privi = CjwtUtil.decode_user_token(token)
+  #     new(id, uname, privi)
+  #   end
+  # end
 
-  def self.from_sess_uname(uname : String)
-    user = CV::Viuser.load!(uname)
-    new(user.id, user.uname, user.privi)
-  end
+  # def self.from_sess_uname(uname : String)
+  #   user = CV::Viuser.load!(uname)
+  #   new(user.id, user.uname, user.privi)
+  # end
 
-  def self.guest
-    new(0, "Khách", -1)
-  end
+  # def self.guest
+  #   new(0, "Khách", -1)
+  # end
 
-  def self.delete(token : String)
-    CACHE.delete(token)
-  end
+  # def self.delete(token : String)
+  #   CACHE.delete(token)
+  # end
 
-  getter id : Int32, uname : String, privi : Int32
+  # getter id : Int32, uname : String, privi : Int32
 
-  def initialize(@id, @uname, @privi)
-  end
+  # def initialize(@id, @uname, @privi)
+  # end
 
   enum Action
     Level0 = 0
@@ -45,14 +45,14 @@ class CurrentUser
   end
 
   def can?(action : Action = :level0)
-    @privi >= action.value
+    self.privi >= action.value
   end
 
   def can?(owner_id : Int32 | Int64, action : Action = :level0)
-    @privi >= 4 || @id == owner_id && @privi >= action.value
+    self.privi >= 4 || self.id == owner_id && self.privi >= action.value
   end
 
   def can?(owner : String, action : Action = :level0)
-    @privi >= 4 || @uname == owner && @privi >= action.value
+    self.privi >= 4 || self.uname == owner && self.privi >= action.value
   end
 end

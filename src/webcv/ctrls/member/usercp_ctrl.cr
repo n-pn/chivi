@@ -40,8 +40,8 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
   @[AC::Route::PUT("/send-vcoin")]
   def send_vcoin
-    amount = params.read_int("amount", min: 1)
-    reason = params.read_str("reason").strip
+    amount = params["amount"].to_i
+    reason = params["reason"].strip
 
     unless sendee = Viuser.find_any(params["sendee"])
       raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại")
@@ -72,7 +72,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
       spawn send_vcoin_receive_email(sender, sendee, amount, reason)
     end
 
-    render json: {sendee: sendee.uname, remain: _viuser.vcoin_avail}
+    render json: {sendee: sendee.uname, remain: viuser.vcoin_avail}
   end
 
   private def send_vcoin_receive_email(sender : Viuser, sendee : Viuser, amount : Int32, reason : String)
@@ -94,10 +94,8 @@ class CV::UsercpCtrl < CV::BaseCtrl
   @[AC::Route::PUT("/config")]
   def update_config
     if viuser.privi >= 0
-      wtheme = params.read_str("wtheme", "light")
+      wtheme = params["wtheme"]? || "light"
       cookies["theme"] = wtheme
-      save_session!
-
       viuser.update!({wtheme: wtheme})
     end
 
@@ -108,10 +106,10 @@ class CV::UsercpCtrl < CV::BaseCtrl
   def update_passwd
     raise "Quyền hạn không đủ" if viuser.privi < 0
 
-    oldpw = params.read_str("oldpw").strip
+    oldpw = params["oldpw"].strip
     raise "Mật khẩu cũ không đúng" unless viuser.authentic?(oldpw)
 
-    newpw = params.read_str("newpw").strip
+    newpw = params["newpw"].strip
     raise "Mật khẩu mới quá ngắn" if newpw.size < 8
 
     viuser.upass = newpw
@@ -130,9 +128,9 @@ class CV::UsercpCtrl < CV::BaseCtrl
   ################
 
   @[AC::Route::GET("/replied")]
-  def replied(pg pg_no = 1, lm limit = 10)
+  def replied(pg pg_no : Int32 = 1, lm limit : Int32 = 10)
     offset = CtrlUtil.offset(pg_no, limit)
-    user_id = viuser.id
+    user_id = _viuser.id
 
     query = Cvrepl.query.order_by(id: :desc)
     query.where("state >= 0 AND viuser_id != ?", user_id)
@@ -141,9 +139,11 @@ class CV::UsercpCtrl < CV::BaseCtrl
     query.with_cvpost.with_viuser
     query.limit(limit).offset(offset)
 
+    items = query.to_a
+    memos = UserRepl.glob(user_id, _viuser.privi, items.map(&.id))
+
     render json: {
-      items: query.map { |x| CvreplView.new(x, full: true) },
-      memos: UserRepl.glob(viuser, items.map(&.id)).map { |x| {x.cvrepl_id, x} }.to_h,
+      items: items.map { |x| CvreplView.new(x, full: true, memo: memos[x.id]?) },
     }
   end
 end

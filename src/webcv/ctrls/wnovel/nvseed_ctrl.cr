@@ -18,10 +18,9 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/:sname")]
   def show(sname : String)
-    chroot = load_chroot(nvinfo.id, sname)
+    chroot = get_chroot(nvinfo.id, sname)
 
-    mode = params.read_i8("mode", min: 0_i8, max: max_mode_by_privi)
-    Log.info { [chroot.sname, mode] }
+    mode = params["mode"].to_i8
     reload_chroot(chroot, mode: mode) if mode > 0
 
     fresh = chroot.fresh?(_viuser.privi, force: false)
@@ -54,7 +53,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/:sname/:pg_no")]
   def chaps(sname : String, pg_no : Int16)
-    chroot = load_chroot(nvinfo.id, sname)
+    chroot = get_chroot(nvinfo.id, sname)
     chaps = chroot.chpage(pg_no &- 1)
 
     {
@@ -75,7 +74,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
   end
 
   private def load_guarded_chroot(sname : String, min_privi = 1) : Chroot
-    return load_chroot(nvinfo, sname) if action_allowed?(sname, min_privi)
+    return get_chroot(nvinfo.id, sname) if action_allowed?(sname, min_privi)
     raise Unauthorized.new("Bạn không đủ quyền hạn")
   end
 
@@ -94,11 +93,12 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/:sname/patch")]
   def preview_patch(sname : String, o_sname : String,
-                    chmin : Int32 = 1, chmax : Int32 = chmin,
-                    i_chmin new_chmin : Int32 = chmin)
+                    chmin : Int32 = 1, chmax : Int32 = 1,
+                    i_chmin : Int32? = nil)
     # chroot = load_guarded_chroot(min_privi: 1)
     # target = Chroot.load!(nvinfo, o_sname)
 
+    # new_chmin = i_chmin || chmin
     # new_chmax = chmax + new_chmin - chmin
 
     render 400, text: "TODO!"
@@ -106,10 +106,13 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   @[AC::Route::PUT("/:sname/patch")]
   def patch(sname : String, o_sname : String,
-            chmin : Int32 = 1, chmax : Int32 = chmin,
-            i_chmin new_chmin = chmin)
+            chmin : Int32 = 1, chmax : Int32? = nil,
+            i_chmin : Int32? = nil)
     chroot = load_guarded_chroot(sname, min_privi: 1)
     target = Chroot.load!(nvinfo, o_sname)
+
+    chmax ||= chroot.chap_count
+    new_chmin = i_chmin || chmin
 
     chroot.mirror_other!(target, chmin, chmax, new_chmin)
     chroot.clear_cache!
@@ -123,7 +126,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
       raise Unauthorized.new("Bạn không đủ quyền hạn")
     end
 
-    chroot = load_chroot(nvinfo, sname, mode: :find)
+    chroot = get_chroot(nvinfo.id, sname, mode: :find)
     trunc_from = chroot.chap_count if trunc_from > chroot.chap_count
 
     if chinfo = chroot.chinfo(trunc_from &- 1)
@@ -150,7 +153,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
       raise Unauthorized.new("Bạn không đủ quyền hạn")
     end
 
-    chroot = load_chroot(nvinfo, sname, mode: :find)
+    chroot = get_chroot(nvinfo.id, sname, mode: :find)
 
     chroot.update({
       chap_count: 0_i16,

@@ -24,10 +24,10 @@ module MailUtil
     mail = EMail::Message.new
 
     mail.from "sys@chivi.app", "Chivi"
-    mail.to address, name: name
+    mail.to address, name
 
     yield mail
 
-    CLIENT.start { send(email) }
+    CLIENT.start { send(mail) }
   end
 end

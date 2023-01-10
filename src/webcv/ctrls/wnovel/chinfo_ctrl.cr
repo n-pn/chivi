@@ -5,7 +5,7 @@ class CV::ChinfoCtrl < CV::BaseCtrl
   @[AC::Route::GET("/chaps/:b_id/:sname/:ch_no/:part_no")]
   def show(b_id : Int64, sname : String, ch_no : Int16, part_no : Int16)
     chroot = get_chroot(b_id, sname)
-    chinfo = load_chinfo(chroot, ch_no)
+    chinfo = get_chinfo(chroot, ch_no)
 
     # spawn Nvstat.inc_chap_view(chroot.nvinfo.id)
 

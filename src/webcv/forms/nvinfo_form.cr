@@ -7,7 +7,7 @@ class CV::NvinfoForm
   # getter zh_user : ZH::ZhBook
   # getter zh_base : ZH::ZhBook
 
-  def initialize(@params, @uname = "users")
+  def initialize(@params : HTTP::Params, @uname = "users")
     btitle_zh = get_param("btitle_zh").not_nil!
     author_zh = get_param("author_zh").not_nil!
 
@@ -88,7 +88,7 @@ class CV::NvinfoForm
   end
 
   private def get_param(param_name : String)
-    return unless value = params[param_name]?
+    return unless value = @params[param_name]?
     value = TextUtil.fix_spaces(value).strip
     value unless value.empty?
   end

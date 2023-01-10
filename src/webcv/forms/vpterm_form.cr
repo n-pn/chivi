@@ -1,7 +1,7 @@
 struct CV::VpTermForm
   @key : String
 
-  def initialize(@params : HTTP::Params, @dict : VpDict, @user : CurrentUser)
+  def initialize(@params : HTTP::Params, @dict : VpDict, @user : Viuser)
     @key = @params["key"].tr("\t\n", " ").strip
     @_mode = @params["_mode"].try(&.to_u8) || 0_u8
   end

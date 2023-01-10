@@ -3,14 +3,12 @@ require "../_ctrl_base"
 class CV::ChtranCtrl < CV::BaseCtrl
   base "/api/texts/:book_id/:sname/:ch_no"
 
-  getter! nvinfo : Nvinfo
   getter! chroot : Chroot
   getter! chinfo : Chinfo
 
   @[AC::Route::Filter(:before_action)]
   def load_resources(book_id : Int64, sname : String, ch_no : Int32)
-    @nvinfo = Nvinfo.load!(book_id)
-    @chroot = get_chroot(nvinfo, sname, :find)
+    @chroot = get_chroot(book_id, sname, :find)
     @chinfo = get_chinfo(chroot, ch_no)
   end
 

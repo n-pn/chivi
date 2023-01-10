@@ -12,9 +12,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
 
   @[AC::Route::Filter(:before_action)]
   def load_resources(book_id : Int64, sname : String, ch_no : Int32?)
-    @nvinfo = Nvinfo.load!(book_id)
-    @chroot = get_chroot(nvinfo, sname, :auto)
-    @chinfo = get_chinfo(chroot, ch_no?) if ch_no
+    @chroot = get_chroot(book_id, sname)
+    @chinfo = get_chinfo(chroot, ch_no) if ch_no
   end
 
   # upload batch text
@@ -57,8 +56,8 @@ class CV::ChtextCtrl < CV::BaseCtrl
     file_hash = params["hash"]? || Time.utc.to_unix.to_s(base: 32)
     file_path = "#{save_dir}/#{chroot.s_bid}-#{file_hash}.txt"
 
-    if form_file = params.files["file"]?
-      File.copy(form_file.file.path, file_path)
+    if form_file = files.try(&.["file"]?.try(&.[0]))
+      File.write(file_path, form_file.body)
       return file_path
     end
 
@@ -107,7 +106,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     arg_path = txt_path.sub(".txt", ".arg")
     arg_file = File.open(arg_path, "w")
 
-    ch_no = params.read_int("chidx", min: 1)
+    ch_no = params["chidx"].to_i
     save_arg(arg_file, "init_ch_no", ch_no, &.> 1)
 
     chvol = params["chvol"]? || chroot._repo.nearby_chvol(ch_no)

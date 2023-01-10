@@ -7,7 +7,7 @@ class CV::Author
   self.table = "authors"
   primary_key type: :serial
 
-  # has_many nvinfos : Nvinfo
+  has_many nvinfos : Nvinfo, foreign_key: "author_id"
 
   column zname : String
   column vname : String

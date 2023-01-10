@@ -13,7 +13,7 @@ class Unauthorized < Exception; end
 abstract class CV::BaseCtrl < ActionController::Base
   base "/api"
 
-  Log = Log.for("controller")
+  Log = ::Log.for("controller")
 
   # add_parser("application/json") { |klass, body_io| klass.from_json(body_io) }
   # add_parser("text/plain") { |_klass, body_io| body_io.gets_to_end }
@@ -70,19 +70,9 @@ abstract class CV::BaseCtrl < ActionController::Base
     {error: error.message}
   end
 
-  USER_CACHE = {} of String => CurrentUser
-
-  getter _viuser : CurrentUser do
-    case
-    when token = cookies["_user"]?
-      CurrentUser.from_user_token(token.value)
-    when uname = session["uname"]?
-      CurrentUser.from_sess_uname(uname.as(String))
-    else
-      CurrentUser.guest
-    end
-  rescue
-    CurrentUser.guest
+  getter _viuser : Viuser do
+    uname = session["uname"]?.try(&.as(String)) || "Khách"
+    Viuser.load!(uname)
   end
 
   private def get_nvinfo(b_id : Int64) : Nvinfo
@@ -95,7 +85,7 @@ abstract class CV::BaseCtrl < ActionController::Base
     Find # raise missing if not exist
   end
 
-  private def get_chroot(b_id : Int64, sname : String, load_mode : ChrootLoadMode = :auto)
+  private def get_chroot(b_id : Int64, sname : String, mode : ChrootLoadMode = :auto)
     nvinfo = get_nvinfo(b_id)
 
     case sname
@@ -114,10 +104,10 @@ abstract class CV::BaseCtrl < ActionController::Base
 
   def save_current_user!(user : Viuser) : Nil
     user_token = CjwtUtil.encode_user_token(user.id, user.uname, user.privi)
-    USER_CACHE[user_token] = CurrentUser.new(user.id, user.uname, user.privi)
+    # USER_CACHE[user_token] = CurrentUser.new(user.id, user.uname, user.privi)
 
     session["uname"] = user.uname
-    cookies.set "_user", user_token, expires: 30.minutes.from_now
+    cookies << HTTP::Cookie.new("_user", user_token, expires: 30.minutes.from_now)
   end
 
   private def guard_privi(min = 0)

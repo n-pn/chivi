@@ -54,7 +54,7 @@ class CV::SigninCtrl < CV::BaseCtrl
   end
 
   private def send_pwtemp_email(user : Viuser)
-    MailUtil.send(to: email, name: user.uname) do |mail|
+    MailUtil.send(to: user.email, name: user.uname) do |mail|
       mail.subject "Mật khẩu tạm thời đăng nhập chivi.app"
       mail.message_html <<-HTML
         <p>Mật khẩu tạm thời của bạn là: <strong>#{user.pwtemp}</strong></p>
@@ -67,7 +67,7 @@ class CV::SigninCtrl < CV::BaseCtrl
   @[AC::Route::DELETE("/logout")]
   def logout
     session["uname"] = nil
-    cookies.delete("_user").try { |x| CurrentUser.delete(x.value) }
+    # cookies.delete("_user").try { |x| CurrentUser.delete(x.value) }
 
     render :accepted, text: "Đã đăng xuất"
   end
