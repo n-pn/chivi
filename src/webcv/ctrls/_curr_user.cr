@@ -51,4 +51,8 @@ class CurrentUser
   def can?(owner_id : Int32 | Int64, action : Action = :level0)
     @privi >= 4 || @id == owner_id && @privi >= action.value
   end
+
+  def can?(owner : String, action : Action = :level0)
+    @privi >= 4 || @uname == owner && @privi >= action.value
+  end
 end

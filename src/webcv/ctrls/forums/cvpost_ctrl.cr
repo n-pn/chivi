@@ -33,9 +33,9 @@ class CV::CvpostCtrl < CV::BaseCtrl
     query.with_rpbody.with_lastrp(&.with_viuser)
 
     items = query.limit(limit).offset(offset).to_a
-    memos = UserPost.glob(_viuser, items.map(&.id))
+    memos = UserPost.glob(_viuser.id, _viuser.privi, items.map(&.id))
 
-    {
+    render json: {
       dtlist: {
         total: total,
         pgidx: pgidx,
@@ -53,12 +53,12 @@ class CV::CvpostCtrl < CV::BaseCtrl
   def create(dboard : Int64)
     nvinfo = Nvinfo.load!(dboard)
 
-    unless _viuser.can?(:create_cvpost)
-      raise Forbidden.new("Bạn không có quyền tạo chủ đề")
+    unless _viuser.can?(:create_post)
+      raise Unauthorized.new("Bạn không có quyền tạo chủ đề")
     end
 
     count = nvinfo.post_count + 1
-    cvpost = Cvpost.new({viuser: _viuser, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
+    cvpost = Cvpost.new({viuser_id: _viuser.id, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
 
     cvpost.update_content!(params)
     nvinfo.update!({post_count: count, board_bump: cvpost.utime})

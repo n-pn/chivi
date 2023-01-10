@@ -2,20 +2,30 @@ require "../_ctrl_base"
 require "../../views/*"
 
 class CV::NvseedCtrl < CV::BaseCtrl
-  def index
-    nslist = load_nvinfo.seed_list
-    serv_json(NslistView.new(nslist))
+  base "/api/seeds/:book_id"
+
+  getter! nvinfo : Nvinfo
+
+  @[AC::Route::Filter(:before_action)]
+  def get_nvinfo(book_id : Int64)
+    @nvinfo = Nvinfo.load!(book_id)
   end
 
-  def show
-    chroot = load_chroot
+  @[AC::Route::GET("/")]
+  def index(book_id : Int64)
+    NslistView.new(nvinfo.seed_list)
+  end
+
+  @[AC::Route::GET("/:sname")]
+  def show(sname : String)
+    chroot = load_chroot(nvinfo.id, sname)
 
     mode = params.read_i8("mode", min: 0_i8, max: max_mode_by_privi)
     Log.info { [chroot.sname, mode] }
     reload_chroot(chroot, mode: mode) if mode > 0
 
     fresh = chroot.fresh?(_viuser.privi, force: false)
-    serv_json(ChrootView.new(chroot, full: true, fresh: fresh))
+    ChrootView.new(chroot, full: true, fresh: fresh)
   end
 
   private def max_mode_by_privi : Int8
@@ -42,40 +52,30 @@ class CV::NvseedCtrl < CV::BaseCtrl
     chroot.save! if chroot.changed?
   end
 
-  def chaps
-    chroot = load_chroot
-    pgidx = params.read_i16("page", min: 1_i16)
-    chaps = chroot.chpage(pgidx &- 1)
+  @[AC::Route::GET("/:sname/:pg_no")]
+  def chaps(sname : String, pg_no : Int16)
+    chroot = load_chroot(nvinfo.id, sname)
+    chaps = chroot.chpage(pg_no &- 1)
 
-    serv_json({
-      pgidx: pgidx,
+    {
+      pgidx: pg_no,
       pgmax: CtrlUtil.pgmax(chroot.chap_count, 32_i16),
       chaps: ChinfoView.list(chaps),
-    })
+    }
   end
 
-  def create
-    assert_privi 2
-
-    nvinfo = load_nvinfo
-
-    sname = params["sname"]
-    s_bid = params["snvid"].to_i
+  @[AC::Route::PUT("/")]
+  def create(sname : String, snvid s_bid : Int32)
+    raise Unauthorized.new "Quyền hạn không đủ!" unless _viuser.can?(:level2)
 
     chroot = Chroot.upsert!(nvinfo, sname, s_bid, force: true)
     nvinfo.seed_list.other.push(chroot).sort! { |x| SnameMap.zseed(x.sname) }
 
-    serv_json({sname: sname, snvid: s_bid})
+    {sname: sname, snvid: s_bid}
   end
 
-  before_action do
-    only [:patch, :trunc, :prune] do
-    end
-  end
-
-  private def load_guarded_chroot(min_privi = 1) : Chroot
-    sname = params["sname"]
-    return load_chroot(sname) if action_allowed?(sname, min_privi)
+  private def load_guarded_chroot(sname : String, min_privi = 1) : Chroot
+    return load_chroot(nvinfo, sname) if action_allowed?(sname, min_privi)
     raise Unauthorized.new("Bạn không đủ quyền hạn")
   end
 
@@ -92,37 +92,39 @@ class CV::NvseedCtrl < CV::BaseCtrl
     end
   end
 
-  def preview_patch
-    chroot = load_guarded_chroot(min_privi: 1)
-    target = Chroot.load!(chroot.nvinfo, params["o_sname"])
+  @[AC::Route::GET("/:sname/patch")]
+  def preview_patch(sname : String, o_sname : String,
+                    chmin : Int32 = 1, chmax : Int32 = chmin,
+                    i_chmin new_chmin : Int32 = chmin)
+    # chroot = load_guarded_chroot(min_privi: 1)
+    # target = Chroot.load!(nvinfo, o_sname)
 
-    chmin = params.read_int("chmin", min: 1)
-    chmax = params.read_int("chmax", min: chmin, max: target.chap_count)
+    # new_chmax = chmax + new_chmin - chmin
 
-    new_chmin = params.read_int("i_chmin", min: 1)
-    new_chmax = chmax + new_chmin - chmin
+    render 400, text: "TODO!"
   end
 
-  def patch
-    chroot = load_guarded_chroot(min_privi: 1)
-    target = Chroot.load!(chroot.nvinfo, params["o_sname"])
+  @[AC::Route::PUT("/:sname/patch")]
+  def patch(sname : String, o_sname : String,
+            chmin : Int32 = 1, chmax : Int32 = chmin,
+            i_chmin new_chmin = chmin)
+    chroot = load_guarded_chroot(sname, min_privi: 1)
+    target = Chroot.load!(nvinfo, o_sname)
 
-    chmin = params.read_int("chmin", min: 1)
-    chmax = params.read_int("chmax", min: chmin, max: target.chap_count)
-
-    new_chmin = params.read_int("i_chmin", min: 1)
     chroot.mirror_other!(target, chmin, chmax, new_chmin)
     chroot.clear_cache!
 
-    serv_json({pgidx: (new_chmin &- 1) // 128 &+ 1})
+    {pgidx: CtrlUtil.pg_no(new_chmin, 32)}
   end
 
-  def trunc
-    sname = params["sname"]
-    guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
+  @[AC::Route::PUT("/:sname/trunc")]
+  def trunc(sname : String, chidx trunc_from : Int32 = 1)
+    unless _viuser.can?(sname[1..], :level2)
+      raise Unauthorized.new("Bạn không đủ quyền hạn")
+    end
 
-    chroot = load_chroot(sname, mode: :find)
-    trunc_from = params.read_int("chidx", min: 1, max: chroot.chap_count)
+    chroot = load_chroot(nvinfo, sname, mode: :find)
+    trunc_from = chroot.chap_count if trunc_from > chroot.chap_count
 
     if chinfo = chroot.chinfo(trunc_from &- 1)
       last_sname = chinfo.sname
@@ -139,14 +141,16 @@ class CV::NvseedCtrl < CV::BaseCtrl
     })
 
     chroot.clear_cache!
-    serv_json({pgidx: (trunc_from - 1) // 128 + 1})
+    {pgidx: CtrlUtil.pg_no(trunc_from, 32)}
   end
 
-  def prune
-    sname = params["sname"]
-    guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
+  @[AC::Route::DELETE("/:sname/prune")]
+  def prune(sname : String)
+    unless _viuser.can?(sname[1..], :level2)
+      raise Unauthorized.new("Bạn không đủ quyền hạn")
+    end
 
-    chroot = load_chroot(sname, mode: :find)
+    chroot = load_chroot(nvinfo, sname, mode: :find)
 
     chroot.update({
       chap_count: 0_i16,
@@ -155,6 +159,6 @@ class CV::NvseedCtrl < CV::BaseCtrl
     })
 
     chroot.clear_cache!
-    serv_json({shield: chroot.shield})
+    {shield: chroot.shield}
   end
 end

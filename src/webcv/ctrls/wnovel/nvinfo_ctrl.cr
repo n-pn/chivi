@@ -1,45 +1,55 @@
+require "../_ctrl_base"
+
 class CV::NvinfoCtrl < CV::BaseCtrl
-  def index
-    pgidx, limit, offset = params.page_info(max: 24)
+  base "/api/books"
 
-    query =
-      Nvinfo.query
-        .where("shield < 2")
-        .filter_btitle(params["btitle"]?)
-        .filter_author(params["author"]?)
-        .filter_chroot(params["chroot"]?)
-        .filter_genres(params["genres"]?)
-        .filter_tagged(params["tagged"]?)
-        .filter_origin(params["origin"]?)
-        .filter_status(params["status"]?)
-        .filter_voters(params["voters"]?)
-        .filter_rating(params["rating"]?)
-        .filter_viuser(params["uname"]?, params["bmark"]?)
+  @[AC::Route::GET("/")]
+  def index(
+    order : String = "access",
+    pg pg_no : Int32 = 1, lm limit : Int32 = 10,
+    btitle : String? = nil, author : String? = nil,
+    chroot : String? = nil,
+    genres : String? = nil, tagged : String? = nil,
+    origin : String? = nil, status : Int32? = nil,
+    voters : Int32? = nil, rating : Int32? = nil,
+    uname : String? = nil, bmark : String? = nil
+  )
+    limit = 25 if limit >= 24
+    offset = CtrlUtil.offset(pg_no, limit)
 
-    query.sort_by(params.read_str("order", "access"))
+    query = Nvinfo.query.where("shield < 2").sort_by(order)
+    query.filter_btitle(btitle)
+    query.filter_author(author)
+    query.filter_chroot(chroot)
+    query.filter_genres(genres)
+    query.filter_tagged(tagged)
+    query.filter_origin(origin)
+
+    query.where("status = ?", status &- 1) if status
+    query.where("voters >= ?", voters) if voters
+    query.where("rating >= ?", rating) if rating
+    query.filter_viuser(uname, bmark) if uname && bmark
+
     total = query.dup.limit(offset + limit * 3).offset(0).count
-
-    limit = limit == 24 ? 25 : limit
     query.limit(limit).offset(offset).with_author
 
-    set_cache :private, maxage: 5
-
-    serv_json({
+    {
       total: total,
       pgidx: pgidx,
       pgmax: (total - 1) // limit + 1,
       books: NvinfoView.map(query),
-    })
+    }
   end
 
-  def load_prev_book(bslug : String)
+  private def load_prev_book(bslug : String)
     frags = bslug.split('-')
     return unless (last = frags.last?) && last.size == 4
     Nvinfo.find("bslug like '#{last}%'")
   end
 
-  def show : Nil
-    bslug = TextUtil.slugify(params["bslug"])
+  @[AC::Route::GET("/:bslug")]
+  def show(bslug : String) : Nil
+    bslug = TextUtil.slugify(bslug)
 
     unless nvinfo = Nvinfo.load!(bslug[0..7])
       load_prev_book(bslug).try { |x| return serv_text(x.bslug, 301) }
@@ -62,18 +72,17 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       end
     end
 
-    serv_json do |jb|
-      jb.object {
-        jb.field "nvinfo" { NvinfoView.new(nvinfo, true).to_json(jb) }
-        jb.field "ubmemo" { UbmemoView.new(ubmemo).to_json(jb) }
-      }
-    end
+    {
+      nvinfo: NvinfoView.new(nvinfo, true),
+      ubmemo: UbmemoView.new(ubmemo),
+    }
   end
 
   # show related data for book front page
-  def front
-    unless nvinfo = Nvinfo.load!(params["bslug"])
-      return halt!(404, "Quyển sách không tồn tại!")
+  @[AC::Route::GET("/:bslug/front")]
+  def front(bslug : String)
+    unless nvinfo = Nvinfo.load!(bslug)
+      raise NotFound.new("Quyển sách không tồn tại!")
     end
 
     # spawn Nvstat.inc_info_view(nvinfo.id)
@@ -90,35 +99,33 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .with_viuser
         .limit(100)
 
-    serv_json({
+    {
       books: nvinfos.map { |x| NvinfoView.new(x, false) },
-      users: ubmemos.map do |x|
-        {
-          u_dname: x.viuser.uname,
-          u_privi: x.viuser.privi,
-          _status: x.status_s,
-        }
-      end,
-    })
+      users: ubmemos.map { |x| {u_dname: x.viuser.uname, u_privi: x.viuser.privi, _status: x.status_s} },
+    }
   end
 
-  def edit
+  @[AC::Route::GET("/:bslug/+edit")]
+  def edit(bslug : String)
     unless nvinfo = Nvinfo.load!(params["bslug"])
-      return halt!(404, "Quyển sách không tồn tại!")
+      raise NotFound.new("Quyển sách không tồn tại!")
     end
 
-    serv_json({
+    {
       genres: nvinfo.vgenres,
       bintro: nvinfo.zintro,
       bcover: nvinfo.scover,
-    })
+    }
   end
 
+  @[AC::Route::POST("/")]
   def upsert
-    raise Unauthorized.new("Cần quyền hạn tối thiểu là 2") if _viuser.privi < 2
+    unless _viuser.can?(:level2)
+      raise Unauthorized.new("Cần quyền hạn tối thiểu là 2")
+    end
 
     nvinfo = NvinfoForm.new(params, "@" + _viuser.uname).save
-    update_db_index(nvinfo)
+    spawn update_db_index(nvinfo)
 
     Nvinfo.cache!(nvinfo)
 
@@ -128,10 +135,10 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       CtrlUtil.log_user_action("nvinfo-upsert", body, _viuser.uname)
     end
 
-    serv_json({bslug: nvinfo.bslug})
+    {bslug: nvinfo.bslug}
   rescue err
     Log.error(exception: err) { err.message }
-    serv_text(err.message, 400)
+    render 400, text: err.message
   end
 
   private def update_db_index(nvinfo : Nvinfo)
@@ -151,14 +158,19 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     end
   end
 
-  def delete
-    return halt!(403, "Quyền hạn không đủ!") if _viuser.privi < 4
-    unless nvinfo = Nvinfo.load!(params["bslug"])
-      return halt!(404, "Quyển sách không tồn tại!")
+  @[AC::Route::DELETE("/:bslug")]
+  def delete(bslug : String)
+    unless _viuser.can?(:level4)
+      raise Unauthorized.new("Cần quyền hạn tối thiểu là 4")
+    end
+
+    unless nvinfo = Nvinfo.load!(bslug)
+      raise NotFound.new("Quyển sách không tồn tại!")
     end
 
     nvinfo.delete
     Ubmemo.query.where(nvinfo_id: nvinfo.id).to_delete.execute
-    serv_json({message: "ok"})
+
+    {msg: "ok"}
   end
 end

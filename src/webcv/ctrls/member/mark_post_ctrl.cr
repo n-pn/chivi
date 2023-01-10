@@ -1,7 +1,7 @@
 require "../_ctrl_base"
 require "../../../_util/mail_util"
 
-class CV::MarkReplCtrl < CV::BaseCtrl
+class CV::MarkPostCtrl < CV::BaseCtrl
   base "/api/!posts"
 
   enum MarkAction
@@ -27,7 +27,7 @@ class CV::MarkReplCtrl < CV::BaseCtrl
     end
 
     cvpost.inc_like_count!(amount)
-    target.set_liked!(value > 0)
+    target.set_liked!(amount > 0)
 
     render json: {like_count: cvpost.like_count}
   end

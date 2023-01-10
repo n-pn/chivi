@@ -15,7 +15,7 @@ ActionController::Server.before(
 
 ActionController::Session.configure do |settings|
   settings.key = "_sess"
-  settings.secret = CV::Config.jwt_auth_token
+  settings.secret = CV::Config.jwt_auth_key
   settings.secure = CV::Config.production? # HTTPS only
 end
 

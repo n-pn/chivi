@@ -1,18 +1,25 @@
+require "../_ctrl_base"
+
 class CV::CvreplCtrl < CV::BaseCtrl
-  def index
-    pgidx, limit, offset = params.page_info(max: 24)
+  base "/api/tposts"
 
-    query =
-      Cvrepl.query
-        .sort_by(params["sort"]? || "id")
-        .where("ii > 0")
+  @[AC::Route::GET("/", converters: {cvpost: ConvertBase32})]
+  def index(pg pgidx : Int32 = 1,
+            lm limit : Int32 = 24,
+            sort : String = "id",
+            cvpost post_id : Int64? = nil,
+            viuser uname : String? = nil)
+    offset = CtrlUtil.offset(pgidx, limit)
 
-    if cvpost = params["cvpost"]?.try { |x| Cvpost.load!(x) }
-      query.filter_topic(cvpost)
+    query = Cvrepl.query.where("ii > 0")
+    query.sort_by(sort)
+
+    if cvpost = post_id && Cvpost.load!(post_id)
+      query.where("cvpost_id = ?", cvpost.id)
     end
 
-    if viuser = params["viuser"]?.try { |x| Viuser.load!(x) }
-      query.filter_owner(viuser)
+    if viuser = uname && Viuser.load!(uname)
+      query.where("viuser_id = ?", viuser.id)
     end
 
     if cvpost
@@ -24,9 +31,9 @@ class CV::CvreplCtrl < CV::BaseCtrl
     query.with_cvpost unless cvpost
     query.with_viuser unless viuser
     items = query.limit(limit).offset(offset).to_a
-    memos = UserRepl.glob(_viuser, items.map(&.id))
+    memos = UserRepl.glob(_viuser.id, _viuser.privi, items.map(&.id))
 
-    serv_json({
+    {
       tplist: {
         total: total,
         pgidx: pgidx,
@@ -37,29 +44,32 @@ class CV::CvreplCtrl < CV::BaseCtrl
           CvreplView.new(x, false, memo: memos[x.id]?)
         end,
       },
-    })
+    }
   end
 
-  def detail
-    cvrepl = Cvrepl.load!(params["cvrepl"].to_i64)
+  @[AC::Route::GET("/:repl_id/detail")]
+  def detail(repl_id : Int64)
+    cvrepl = Cvrepl.load!(repl_id)
 
-    serv_json({
+    {
       id:    cvrepl.id,
       input: cvrepl.input,
       itype: cvrepl.itype,
       rp_id: cvrepl.repl_cvrepl_id,
-    })
+    }
   rescue err
-    halt!(404, "Bài viết không tồn tại!")
+    render :not_found, text: "Bài viết không tồn tại!"
   end
 
-  def create
-    cvpost = Cvpost.load!(params["cvpost"])
-    unless DboardACL.cvrepl_create?(cvpost, _viuser)
-      return halt!(403, "Bạn không có quyền tạo bình luận mới")
+  @[AC::Route::POST("/", converters: {cvpost: ConvertBase32})]
+  def create(cvpost post_id : Int64)
+    cvpost = Cvpost.load!(post_id)
+
+    unless _viuser.can?(:create_post)
+      raise Unauthorized.new "Bạn không có quyền tạo bình luận mới"
     end
 
-    cvrepl = Cvrepl.new({viuser: _viuser, cvpost: cvpost, ii: cvpost.repl_count + 1})
+    cvrepl = Cvrepl.new({viuser_id: _viuser.id, cvpost: cvpost, ii: cvpost.repl_count + 1})
 
     dtrepl_id = params["rp_id"]?.try(&.to_i64?) || 0_i64
     dtrepl_id = cvpost.rpbody.id if dtrepl_id == 0
@@ -71,29 +81,34 @@ class CV::CvreplCtrl < CV::BaseCtrl
     repl = Cvrepl.load!(cvrepl.repl_cvrepl_id)
     repl.update!({repl_count: repl.repl_count + 1})
 
-    serv_json({cvrepl: CvreplView.new(cvrepl)})
+    {cvrepl: CvreplView.new(cvrepl)}
   end
 
-  def update
-    cvrepl = Cvrepl.load!(params["cvrepl"].to_i64)
-    return halt!(403) unless DboardACL.cvrepl_update?(cvrepl, _viuser)
+  @[AC::Route::POST("/:repl_id")]
+  def update(repl_id : Int64)
+    cvrepl = Cvrepl.load!(repl_id)
+
+    unless _viuser.can?(cvrepl.viuser_id, :update_post)
+      raise Unauthorized.new "Bạn không có quyền sửa bình luận"
+    end
 
     cvrepl.update_content!(params)
-    serv_json({cvrepl: CvreplView.new(cvrepl)})
+    {cvrepl: CvreplView.new(cvrepl)}
   end
 
-  def delete
-    cvrepl = Cvrepl.load!(params["cvrepl"].to_i64)
+  @[AC::Route::DELETE("/:repl_id")]
+  def delete(repl_id : Int64)
+    cvrepl = Cvrepl.load!(repl_id)
 
     if _viuser.privi == cvrepl.viuser_id
       admin = false
     elsif _viuser.privi > 2
       admin = true
     else
-      return halt!(403, "Bạn không có quyền xoá chủ đề")
+      raise Unauthorized.new "Bạn không có quyền xoá bình luận"
     end
 
-    Cvrepl.load!(params["cvrepl"].to_i64).soft_delete(admin: admin)
-    serv_json({msg: "ok"})
+    cvrepl.soft_delete(admin: admin)
+    {msg: "ok"}
   end
 end

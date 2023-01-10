@@ -1,4 +1,4 @@
-require "./_ctrl_base"
+require "../_ctrl_base"
 
 class CV::VicritCtrl < CV::BaseCtrl
   base "/api/crits"

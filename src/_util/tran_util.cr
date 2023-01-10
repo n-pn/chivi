@@ -36,4 +36,15 @@ module TranUtil
       Log.error { "error call #{url}: #{body}" }
     end
   end
+
+  def opencc(input : String, config = "hk2s")
+    Process.run("/usr/bin/opencc", {"-c", config}) do |proc|
+      proc.input.print(input)
+      proc.input.close
+      proc.output.gets_to_end
+    rescue err
+      Log.error(exception: err) { err.message }
+      input
+    end
+  end
 end

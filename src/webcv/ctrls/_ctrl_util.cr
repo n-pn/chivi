@@ -7,6 +7,10 @@ module CV::CtrlUtil
     (total &- 1) // limit &+ 1
   end
 
+  def pg_no(index : Int, limit : Int)
+    (index &- 1) // limit &+ 1
+  end
+
   def offset(pgidx : Int32, limit : Int32)
     (pgidx &- 1) &* limit
   end
@@ -26,8 +30,8 @@ struct ConvertLimit
   end
 
   def convert(raw : String)
-    return max unless int = raw.to_i?
-    int > max ? max : int < min ? min : int
+    return @max unless int = raw.to_i?
+    int > @max ? @max : int < @min ? @min : int
   end
 end
 
@@ -36,7 +40,7 @@ struct ConvertArray
   end
 
   def convert(raw : String)
-    raw.split(delimit, remove_empty: true).map(&.strip).uniq!
+    raw.split(@delimit, remove_empty: true).map(&.strip).uniq!
   end
 end
 

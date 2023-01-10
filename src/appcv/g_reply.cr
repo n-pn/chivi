@@ -35,14 +35,6 @@ class CV::Cvrepl
 
   timestamps
 
-  scope :filter_topic do |topic|
-    topic ? where({cvpost_id: topic.id}) : with_cvpost
-  end
-
-  scope :filter_owner do |owner|
-    owner ? where({viuser_id: owner.id}) : with_viuser
-  end
-
   scope :sort_by do |order|
     case order
     when "tn"  then order_by(ii: :asc)

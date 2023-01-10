@@ -1,7 +1,7 @@
 struct CV::VpTermForm
   @key : String
 
-  def initialize(@params, @dict : VpDict, @user : Viuser)
+  def initialize(@params : HTTP::Params, @dict : VpDict, @user : CurrentUser)
     @key = @params["key"].tr("\t\n", " ").strip
     @_mode = @params["_mode"].try(&.to_u8) || 0_u8
   end
@@ -25,9 +25,9 @@ struct CV::VpTermForm
   end
 
   def save : VpTerm?
-    vals = @params.read_str("vals").split('ǀ').map!(&.tr("", "").strip)
-    tags = @params.read_str("tags").split(' ').map!(&.strip)
-    prio = VpTerm.parse_prio(@params.read_str("prio", ""))
+    vals = @params["vals"].split('ǀ').map!(&.tr("", "").strip)
+    tags = @params["tags"].split(' ').map!(&.strip)
+    prio = VpTerm.parse_prio(@params["prio"]? || "")
 
     vpterm = VpTerm.new(@key, vals, tags, prio, uname: @user.uname)
     vpterm._mode = @_mode

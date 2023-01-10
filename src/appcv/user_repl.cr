@@ -50,11 +50,11 @@ class CV::UserRepl
     user_repl.save!
   end
 
-  def self.glob(viuser : Viuser, cvrepl_ids : Array(Int64))
+  def self.glob(user_id : Int32, privi : Int32, cvrepl_ids : Array(Int64))
     output = {} of Int64 => self
-    return output if viuser.privi < 0
+    return output if privi < 0
 
-    self.query.where({viuser_id: viuser.id})
+    self.query.where({viuser_id: user_id})
       .where { cvrepl_id.in? cvrepl_ids }
       .each { |x| output[x.cvrepl_id] = x }
 

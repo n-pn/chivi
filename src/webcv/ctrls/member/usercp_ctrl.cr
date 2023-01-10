@@ -4,12 +4,14 @@ require "../../../_util/mail_util"
 class CV::UsercpCtrl < CV::BaseCtrl
   base "/api/_self"
 
+  getter viuser : Viuser { Viuser.load!(_viuser.id) }
+
   @[AC::Route::GET("/")]
   def profile
-    set_cache :private, maxage: 3
-    _viuser.check_privi! unless _viuser.privi < 0
-    # save_current_user!(_viuser)
-    serv_json(ViuserView.new(_viuser, true))
+    viuser.check_privi! unless viuser.privi < 1
+
+    save_current_user!(viuser)
+    ViuserView.new(viuser, true)
   end
 
   @[AC::Route::PUT("/ugprivi")]
@@ -17,21 +19,21 @@ class CV::UsercpCtrl < CV::BaseCtrl
   def upgrade_privi(privi : Int32, tspan : Int32)
     # privi = params.read_int("privi", min: 1, max: 3)
     # tspan = params.read_int("tspan", min: 0, max: 3)
-    _viuser.upgrade!(privi, tspan)
+    viuser.upgrade!(privi, tspan)
 
     spawn do
       body = {privi: privi, tspan: tspan}
       CtrlUtil.log_user_action("upgrade-privi", body, _viuser.uname)
     end
 
-    sname = "@" + _viuser.uname
+    sname = "@" + viuser.uname
     unless ChSeed.has_sname?(sname)
-      sn_id = _viuser.id * 2
+      sn_id = viuser.id * 2
       ChSeed.add_user(sname, sn_id)
     end
 
-    save_current_user!(_viuser)
-    render json: ViuserView.new(_viuser, true)
+    save_current_user!(viuser)
+    render json: ViuserView.new(viuser, true)
   rescue err
     render :forbidden, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
   end
@@ -45,17 +47,17 @@ class CV::UsercpCtrl < CV::BaseCtrl
       raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại")
     end
 
-    if _viuser.privi > 3 && params["as_admin"]? == "true"
+    if viuser.privi > 3 && params["as_admin"]? == "true"
       sender = Viuser.load!(-1) # sender is admin
-    elsif _viuser.vcoin_avail >= amount
-      sender = _viuser
+    elsif viuser.vcoin_avail >= amount
+      sender = viuser
     else
       raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
     end
 
     spawn do
       body = {sendee: sendee.uname, amount: amount, reason: reason}
-      CtrlUtil.log_user_action("send-vcoin", body, _viuser.uname)
+      CtrlUtil.log_user_action("send-vcoin", body, viuser.uname)
     end
 
     Clear::SQL.transaction do
@@ -91,33 +93,33 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
   @[AC::Route::PUT("/config")]
   def update_config
-    if _viuser.privi >= 0
+    if viuser.privi >= 0
       wtheme = params.read_str("wtheme", "light")
       cookies["theme"] = wtheme
       save_session!
 
-      _viuser.update!({wtheme: wtheme})
+      viuser.update!({wtheme: wtheme})
     end
 
-    render json: ViuserView.new(_viuser, true)
+    render json: ViuserView.new(viuser, true)
   end
 
   @[AC::Route::PUT("/passwd")]
   def update_passwd
-    raise "Quyền hạn không đủ" if _viuser.privi < 0
+    raise "Quyền hạn không đủ" if viuser.privi < 0
 
     oldpw = params.read_str("oldpw").strip
-    raise "Mật khẩu cũ không đúng" unless _viuser.authentic?(oldpw)
+    raise "Mật khẩu cũ không đúng" unless viuser.authentic?(oldpw)
 
     newpw = params.read_str("newpw").strip
     raise "Mật khẩu mới quá ngắn" if newpw.size < 8
 
-    _viuser.upass = newpw
-    _viuser.save!
+    viuser.upass = newpw
+    viuser.save!
 
     spawn do
-      body = {email: _viuser.email, cpass: _viuser.cpass}
-      CtrlUtil.log_user_action("change-pass", body, _viuser.uname)
+      body = {email: viuser.email, cpass: viuser.cpass}
+      CtrlUtil.log_user_action("change-pass", body, viuser.uname)
     end
 
     render :accepted, text: "Đổi mật khẩu thành công"
@@ -128,9 +130,9 @@ class CV::UsercpCtrl < CV::BaseCtrl
   ################
 
   @[AC::Route::GET("/replied")]
-  def replied
-    _pgidx, limit, offset = params.page_info(min: 10)
-    user_id = _viuser.id
+  def replied(pg pg_no = 1, lm limit = 10)
+    offset = CtrlUtil.offset(pg_no, limit)
+    user_id = viuser.id
 
     query = Cvrepl.query.order_by(id: :desc)
     query.where("state >= 0 AND viuser_id != ?", user_id)
@@ -141,7 +143,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
     render json: {
       items: query.map { |x| CvreplView.new(x, full: true) },
-      memos: UserRepl.glob(_viuser, items.map(&.id)).map { |x| {x.cvrepl_id, x} }.to_h,
+      memos: UserRepl.glob(viuser, items.map(&.id)).map { |x| {x.cvrepl_id, x} }.to_h,
     }
   end
 end

@@ -15,7 +15,8 @@ abstract class CV::BaseCtrl < ActionController::Base
 
   Log = Log.for("controller")
 
-  add_parser("text/plain") { |_klass, body_io| body_io.gets_to_end }
+  # add_parser("application/json") { |klass, body_io| klass.from_json(body_io) }
+  # add_parser("text/plain") { |_klass, body_io| body_io.gets_to_end }
 
   add_responder("*/*") { |io, result| result.to_json(io) }
   add_responder("text/plain") { |io, result| io << result }
@@ -73,9 +74,12 @@ abstract class CV::BaseCtrl < ActionController::Base
 
   getter _viuser : CurrentUser do
     case
-    when token = cookies["_user"]? then CurrentUser.from_user_token(token.value)
-    when uname = session["uname"]? then CurrentUser.from_sess_uname(uname)
-    else                                CurrentUser.guest
+    when token = cookies["_user"]?
+      CurrentUser.from_user_token(token.value)
+    when uname = session["uname"]?
+      CurrentUser.from_sess_uname(uname.as(String))
+    else
+      CurrentUser.guest
     end
   rescue
     CurrentUser.guest
@@ -108,7 +112,7 @@ abstract class CV::BaseCtrl < ActionController::Base
     chroot.chinfo(ch_no) || raise NotFound.new("Chương tiết không tồn tại")
   end
 
-  def save_current_user!(user : Viuser) : Ni
+  def save_current_user!(user : Viuser) : Nil
     user_token = CjwtUtil.encode_user_token(user.id, user.uname, user.privi)
     USER_CACHE[user_token] = CurrentUser.new(user.id, user.uname, user.privi)
 
@@ -120,98 +124,8 @@ abstract class CV::BaseCtrl < ActionController::Base
     raise Unauthorized.new("Quyền hạn không đủ!") if _viuser.privi < min
   end
 
-  private def allowed?(owner_id : Int32 = -2)
+  private def guard_owner(owner_id : Int32)
     privi = _viuser.privi
     privi < 0 ? false : privi > 3 ? true : _viuser.id == owner_id
   end
 end
-
-# class CV::BaseCtrl < Amber::Controller::Base
-#   LAYOUT = false
-
-#   # protected getter u_dname : String { session["uname"]? || "Khách" }
-#   protected getter u_dname : String { get_uname_from_jwt }
-
-#   private def get_uname_from_jwt
-#     token = cookies["cv_rt"]
-#     `bin/cvjwt_cli dr "#{token}"`.strip
-#   rescue
-#     "Khách"
-#   end
-
-#   protected getter u_privi : Int32 do
-#     token = cookies["cv_at"]
-#     _user, privi = `bin/cvjwt_cli da "#{token}"`.split("\n")
-#     privi.to_i
-#   rescue
-#     -1
-#   end
-
-#   protected getter _viuser : Viuser do
-#     Viuser.load!(u_dname)
-#   rescue err
-#     Log.error { err.message }
-#     Viuser.load!("Khách")
-#   end
-
-#   enum CacheType
-#     Private; Public
-#   end
-
-#   enum ContentType
-#     Json; Text
-#   end
-
-#   @cache_type = CacheType::Public
-#   @maxage = 0 # max age in seconds
-
-#   def set_cache(@cache_type : CacheType = CacheType::Public, @maxage = 3)
-#   end
-
-#   def set_headers(status = 200, content_type : ContentType = :json)
-#     response.status_code = status
-
-#     case content_type
-#     when .json?
-#       response.content_type = "application/json; charset=utf-8"
-#     when .text?
-#       response.content_type = "text/plain; charset=utf-8"
-#     end
-
-#     if @maxage > 0
-#       response.headers.add("Cache-Control", "#{@cache_type}, max-age=#{@maxage}")
-#     end
-#   end
-
-#   def save_session!
-#     # return unless session.changed?
-#     session.set_session
-#     cookies.write(response.headers)
-#   end
-
-#   def serv_json(object : Object, status = 200)
-#     set_headers(status, :json)
-#     response.puts(object.to_json)
-#   end
-
-#   def serv_json(status = 200)
-#     set_headers(status, :json)
-#     JSON.build(response) { |jb| yield jb }
-#   end
-
-#   def serv_text(object : Object, status = 200)
-#     set_headers(status, :text)
-#     response.puts(object.to_s)
-#   end
-
-#   def halt!(status : Int32 = 200, error : String = "")
-#     set_headers(status, :json)
-#     response.puts({status: status, error: error}.to_json)
-#   end
-
-#   private def read_chidx(param : String = "chidx", max : Int32? = nil) : Int32
-#     idx = params.read_int(param, min: 1)
-#     max && max < idx ? max : idx
-#   end
-
-# end

@@ -1,26 +1,31 @@
+require "../_ctrl_base"
+
 class CV::ChtranCtrl < CV::BaseCtrl
-  def list
-    chroot = load_chroot(params["sname"], :find)
-    chinfo = load_chinfo(chroot)
+  base "/api/texts/:book_id/:sname/:ch_no"
 
-    items = ChapTran.query.where({
-      chroot_id: chroot.id, ch_no: chinfo.ch_no!,
-      part_no: params.read_i16("part_no", min: 0_i16),
-      line_no: params.read_i16("line_no", min: 0_i16),
-    }).with_viuser.to_a
+  getter! nvinfo : Nvinfo
+  getter! chroot : Chroot
+  getter! chinfo : Chinfo
 
-    serv_json(items)
+  @[AC::Route::Filter(:before_action)]
+  def load_resources(book_id : Int64, sname : String, ch_no : Int32)
+    @nvinfo = Nvinfo.load!(book_id)
+    @chroot = get_chroot(nvinfo, sname, :find)
+    @chinfo = get_chinfo(chroot, ch_no)
   end
 
-  def create
-    sname = params["sname"]
-    guard_privi min: ACL.upsert_chtext(sname, _viuser.uname)
+  @[AC::Route::GET("/:part_no/:line_no")]
+  def edits(part_no : Int32, line_no : Int32)
+    ChapTran.query.where({
+      chroot_id: chroot.id, ch_no: chinfo.ch_no!,
+      part_no: part_no,
+      line_no: line_no,
+    }).with_viuser.to_a
+  end
 
-    chroot = load_chroot(sname, :find)
-    chinfo = load_chinfo(chroot)
-
-    part_no = params.read_i16("part_no", min: 0_i16)
-    line_no = params.read_i16("line_no", min: 0_i16)
+  @[AC::Route::POST("/:part_no/:line_no")]
+  def create(part_no : Int32, line_no : Int32)
+    guard_privi min: 2
 
     orig = TextUtil.clean_spaces(params["orig"]? || "")
     tran = TextUtil.clean_spaces(params["tran"])
@@ -41,6 +46,6 @@ class CV::ChtranCtrl < CV::BaseCtrl
       item.save!
     end
 
-    serv_text("ok.")
+    render :accepted, text: "created"
   end
 end

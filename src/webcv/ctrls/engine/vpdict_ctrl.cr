@@ -1,6 +1,9 @@
-require "../../oldmt/vp_hint"
+require "../_ctrl_base"
+require "../../../oldmt/vp_hint"
 
 class CV::VpdictCtrl < CV::BaseCtrl
+  base "/api/dicts"
+
   alias VdInfo = Tuple(String, String, Int32) # dict name, label, entries count
 
   getter core_dicts : Array(VdInfo) do
@@ -13,8 +16,9 @@ class CV::VpdictCtrl < CV::BaseCtrl
     ]
   end
 
-  def index
-    pgidx, limit, offset = params.page_info(min: 24, max: 40)
+  @[AC::Route::GET("/", converters: {lm: ConvertLimit}, config: {lm: {min: 24, max: 40}})]
+  def index(pg pg_no : Int32 = 1, lm limit : Int32 = 24)
+    offset = CtrlUtil.offset(pg_no, limit)
 
     total = Nvdict.query.count.to_i
     query = Nvdict.query.limit(limit).offset(offset)
@@ -23,21 +27,20 @@ class CV::VpdictCtrl < CV::BaseCtrl
       {dict.dname, dict.d_lbl, dict.dsize}
     end
 
-    serv_json({
+    {
       cores: core_dicts,
       books: book_dicts,
       total: total,
-      pgidx: pgidx,
+      pgidx: pg_no,
       pgmax: CtrlUtil.pgmax(total, limit),
-    })
+    }
   end
 
-  def show
-    dname = params["dname"]
+  @[AC::Route::GET("/:dname", converters: {lm: ConvertLimit}, config: {lm: {min: 25, max: 50}})]
+  def show(dname : String, pg pg_no : Int32 = 1, lm limit : Int32 = 24)
     vdict = VpDict.load(dname)
 
-    pgidx, limit, offset = params.page_info(min: 25, max: 50)
-
+    offset = CtrlUtil.offset(pg_no, limit)
     total = offset + limit * 3
     terms = [] of VpTerm
     filter = VMatch.init(params)
@@ -52,66 +55,17 @@ class CV::VpdictCtrl < CV::BaseCtrl
 
     total = terms.size
 
-    serv_json({
+    {
       dname: dname,
       d_dub: dname[0] == '-' ? Nvdict.load!(dname[1..]).d_lbl : "",
       dsize: vdict.size,
 
       total: total,
-      pgidx: pgidx,
+      pgidx: pg_no,
       pgmax: CtrlUtil.pgmax(total, limit),
 
       start: offset &+ 1,
       terms: total > offset ? terms[offset, limit] : [] of VpTerm,
-    })
-  end
-
-  alias Lookup = Hash(Symbol, Array(String))
-
-  def lookup
-    dname = params["dname"]
-    dname = "combine" if dname == "generic"
-
-    input = params["input"].strip
-    range = params.json("range").as_a.map(&.as_i)
-
-    vdict = {VpDict.load(dname), VpDict.regular}
-    chars = input.chars
-
-    entries = {} of Int32 => Array(Tuple(Int32, Lookup))
-
-    range.each do |idx|
-      entry = Hash(Int32, Lookup).new do |hash, key|
-        hash[key] = Lookup.new { |h, k| h[k] = [] of String }
-      end
-
-      vdict.each do |dict|
-        dict.scan_best(chars, idx, user: _viuser.uname, temp: true) do |term|
-          entry[term.key.size][:vietphrase] << String.build do |io|
-            term.vals.reject(&.empty?).join(io, '/')
-            io << '\t'
-            term.tags.join(io, ' ')
-            io << '\t'
-            io << dict.type &+ term._mode &* 2_u8
-          end
-        end
-      end
-
-      VpHint.trungviet.scan(chars, idx: idx) do |key, vals|
-        entry[key.size][:trungviet] = vals
-      end
-
-      VpHint.cc_cedict.scan(chars, idx: idx) do |key, vals|
-        entry[key.size][:cc_cedict] = vals
-      end
-
-      VpHint.trich_dan.scan(chars, idx: idx) do |key, vals|
-        entry[key.size][:trich_dan] = vals
-      end
-
-      entries[idx] = entry.to_a.sort_by(&.[0].-)
-    end
-
-    serv_json(entries)
+    }
   end
 end

@@ -9,7 +9,7 @@ class CV::MarkReplCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::PUT("/:repl_id/:action", converter: {repl_id: ConvertBase32})]
-  def mark_repl
+  def mark_repl(action : MarkAction)
     raise Unauthorized.new("Bạn chưa đăng nhập") unless _viuser.can?(:mark_post)
 
     cvrepl = Cvrepl.load!(params["repl_id"].to_i64)
@@ -18,10 +18,10 @@ class CV::MarkReplCtrl < CV::BaseCtrl
     amount = 0
 
     case action
-    when .like?
+    in .like?
       raise BadRequest.new("Bạn đã ưa thích bình luận") if target.liked
       amount = 1
-    when .unlike?
+    in .unlike?
       raise BadRequest.new("Bạn chưa ưa thích bình luận") unless target.liked
       amount = -1
     end

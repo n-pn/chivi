@@ -1,55 +1,56 @@
+require "../_ctrl_base"
+require "../shared/qtran_data"
+require "../../../_util/tran_util"
+
 class CV::QtransCtrl < CV::BaseCtrl
-  def hanviet
-    set_headers content_type: :text
-    output = hv_translit(params["input"], true)
-    params["mode"]? == "text" ? output.to_txt(response) : output.to_mtl(response)
-  end
+  base "/api/qtran"
 
-  def mterror
-    input = params.read_str("input")
-    dname = params.read_str("dname", "combine")
-    uname = params.read_str("uname", _viuser.uname)
-
-    set_headers content_type: :text
-
-    caps = params["caps"]? == "t"
+  @[AC::Route::PUT("/mterror", body: :input)]
+  def mtspec(input : String,
+             dname : String = "combine", uname : String = _viuser.uname,
+             _caps : Bool = false)
+    response.headers["Content-Type"] = "text/plain; charset=utf8"
 
     cvmtl = MtCore.generic_mtl(dname, uname)
-    cvmtl.cv_plain(input, cap_first: caps).to_txt(response)
-    response << '\n'
-    hv_translit(input, caps).to_txt(response)
+
+    output = String.build do |io|
+      cvmtl.cv_plain(input, cap_first: _caps).to_txt(io)
+      io << '\n'
+      MtCore.hanviet_mtl.translit(input, _caps)
+    end
+
+    render text: output
   end
 
-  private def hv_translit(input : String, apply_cap = true)
-    MtCore.hanviet_mtl.translit(params["input"], apply_cap)
-  end
-
-  def convert
-    type = params["type"]
-    name = params["name"]
-
-    stale = params["_new"]? ? Time.utc + 10.minutes : Time.utc
+  @[AC::Route::GET("/:type/:name")]
+  def convert(type : String, name : String, _new : Bool = false,
+              trad : Bool = false,
+              user : String = _viuser.uname,
+              temp : Bool = false,
+              format : QtranData::Format = QtranData::Format::Html)
+    stale = _new ? Time.utc + 10.minutes : Time.utc
     data = QtranData.load!(type, name, stale: stale)
+    raise NotFound.new("Not found!") if data.input.empty?
 
-    return halt! 404, "Not found!" if data.input.empty?
+    engine = data.make_engine(user, with_temp: temp)
 
-    mode = QtranData::Format.parse(params.read_str("mode", "node"))
-    trad = params["trad"]? == "t"
-    user = params["user"]? || _viuser.uname
+    output = String.build do |io|
+      data.print_mtl(engine, io, format: format, title: type == "chaps", trad: trad)
+      data.print_raw(io) if params["_raw"]?
+    end
 
-    set_headers content_type: :text
-    engine = data.make_engine(user, with_temp: params["temp"]? == "t")
-    data.print_mtl(engine, response, format: mode, title: type == "chaps", trad: trad)
-    data.print_raw(response) if params["_raw"]?
+    render text: output
   end
 
+  @[AC::Route::POST("/posts")]
   def posts_upsert
     # TODO: save posts
-    input = params.read_str("input")
+    input = params["input"]
+    dname = params["dname"]? || "combine"
+
     raise BadRequest.new("Dữ liệu quá lớn") if input.size > 10000
 
     lines = QtranData.parse_lines(input)
-    dname = params.read_str("dname", "combine")
     d_lbl = QtranData.get_d_lbl(dname)
 
     data = QtranData.new(lines, dname, d_lbl)
@@ -58,15 +59,16 @@ class CV::QtransCtrl < CV::BaseCtrl
     data.save!(ukey)
     QtranData::CACHE.set("posts/" + ukey, data)
 
-    serv_json({ukey: ukey})
+    render json: {ukey: ukey}
   end
 
-  def webpage
-    dname = params["dname"]? || "combine"
+  @[AC::Route::PUT("/webpage")]
+  @[AC::Route::POST("/webpage")]
+  def webpage(dname : String = "combine", _simp : Bool = false)
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
 
     input = params["input"].tr("\t", " ")
-    input = trad_to_simp(input) unless params["_simp"]?
+    input = TranUtil.opencc(input, "hk2s") unless params["_simp"]?
 
     output = String.build do |str|
       input.each_line.with_index do |line, idx|
@@ -75,19 +77,6 @@ class CV::QtransCtrl < CV::BaseCtrl
       end
     end
 
-    respond_with do
-      text output
-    end
-  end
-
-  private def trad_to_simp(input : String)
-    Process.run("/usr/bin/opencc", {"-c", "hk2s"}) do |proc|
-      proc.input.print(input)
-      proc.input.close
-      proc.output.gets_to_end
-    rescue err
-      Log.error(exception: err) { err.message }
-      input
-    end
+    render text: output
   end
 end

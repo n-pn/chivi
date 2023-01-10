@@ -1,5 +1,5 @@
-require "./_ctrl_base"
-require "../views/*"
+require "../_ctrl_base"
+require "../../views/*"
 
 class CV::ChinfoCtrl < CV::BaseCtrl
   @[AC::Route::GET("/chaps/:b_id/:sname/:ch_no/:part_no")]

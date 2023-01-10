@@ -20,16 +20,12 @@ module CjwtUtil
   end
 
   def decode_user_token(token : String) : {Int32, String, Int32}
-    payload = JWT.decode(token, CV::Config.jwt_user_skey, ALGORITHM).first.as_h
+    payload = JWT.decode(token, CV::Config.jwt_user_key, ALGORITHM).first.as_h
     {payload["id"].as_i, payload["uname"].as_s, payload["privi"].as_i}
-  rescue
-    {0, "Khách", -1}
   end
 
   def decode_auth_token(token : String) : String
-    payload = JWT.decode(token, CV::Config.jwt_auth_skey, ALGORITHM).first.as_h
+    payload = JWT.decode(token, CV::Config.jwt_auth_key, ALGORITHM).first.as_h
     payload["uname"].as_s
-  rescue
-    "Khách"
   end
 end

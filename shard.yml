@@ -10,7 +10,7 @@ license: MIT
 
 targets:
   cvapp-srv:
-    main: src/cvapp_srv.cr
+    main: src/webcv/webcv_srv.cr
 
   cvmtl-srv:
     main: src/cvmtl/cvmtl_srv.cr
