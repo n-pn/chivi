@@ -32,9 +32,10 @@ then
 
   # rsync-fast "var/fixed" "$SSH/var"
   # rsync-fast "var/dicts/hints" "$SSH/var/dicts"
-  rsync-fast "var/cvmtl/inits" "$SSH/var/cvmtl"
+  # rsync-fast "var/cvmtl/inits" "$SSH/var/cvmtl"
   # rsync-fast "var/dicts/v1/novel" "$SSH/var/dicts/v1"
   # rsync-fast --delete "priv/static/covers/" "$SSH/priv/static/covers/"
+
 fi
 
 echo $*

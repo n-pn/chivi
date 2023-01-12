@@ -32,20 +32,27 @@ class CV::TlspecCtrl < CV::BaseCtrl
     }
   end
 
-  @[AC::Route::POST("/")]
-  def create
-    raise Unauthorized.new("Quyền hạn của bạn không đủ.") unless _viuser.can?(:level0)
+  struct SpecForm
+    include JSON::Serializable
+    getter ztext : String = ""
+    getter dname : String = "", d_dub : String = ""
 
-    ztext = params["ztext"]
+    getter lower : Int32 = 0, upper : Int32 = 0
+    getter extra : String = "", match : String = ""
+  end
+
+  @[AC::Route::POST("/", body: :form)]
+  def create(form : SpecForm)
+    raise Unauthorized.new("Quyền hạn của bạn không đủ.") unless _viuser.can?(:level0)
 
     _ukey = UkeyUtil.gen_ukey(Time.utc)
     entry = Tlspec.new(_ukey, fresh: true)
 
-    entry.ztext = ztext.strip
-    entry.dname = params.fetch("dname", "combine")
-    entry.d_dub = params.fetch("d_dub", "Tổng hợp")
+    entry.ztext = form.ztext
+    entry.dname = form.dname
+    entry.d_dub = form.d_dub
 
-    entry.add_edit!(params, _viuser)
+    entry.add_edit!(form, _viuser)
     entry.save!
 
     render text: _ukey
@@ -64,7 +71,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
 
     cvmtl = MtCore.generic_mtl(dname)
 
-    {
+    render json: {
       ztext: entry.ztext,
       lower: lower,
       upper: upper,
@@ -82,15 +89,15 @@ class CV::TlspecCtrl < CV::BaseCtrl
     }
   end
 
-  @[AC::Route::POST("/:ukey")]
-  def update(ukey : String)
+  @[AC::Route::POST("/:ukey", body: :form)]
+  def update(form : SpecForm, ukey : String)
     entry = Tlspec.load!(ukey)
 
     unless _viuser.privi > 2 || entry.edits.first.uname == _viuser.uname
       raise Unauthorized.new("Quyền hạn của bạn không đủ.")
     end
 
-    entry.add_edit!(params, _viuser)
+    entry.add_edit!(form, _viuser)
     entry.save!
 
     {msg: "ok"}

@@ -1,5 +1,5 @@
-require "../../zhlib/models/zh_book"
-require "../../appcv/nv_info"
+require "../../../zhlib/models/zh_book"
+require "../../../appcv/nv_info"
 
 class CV::NvinfoForm
   getter vi_book : Nvinfo

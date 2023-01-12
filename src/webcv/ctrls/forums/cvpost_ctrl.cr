@@ -1,4 +1,5 @@
 require "../_ctrl_base"
+require "./cvpost_form"
 
 class CV::CvpostCtrl < CV::BaseCtrl
   base "/api/topics"
@@ -39,7 +40,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
       dtlist: {
         total: total,
         pgidx: pgidx,
-        pgmax: CtrlUtil.pgmax(pgidx, total),
+        pgmax: CtrlUtil.pgmax(total, limit),
         items: items.map { |x|
           x.nvinfo = nvinfo if nvinfo
           x.viuser = viuser if viuser
@@ -49,8 +50,8 @@ class CV::CvpostCtrl < CV::BaseCtrl
     }
   end
 
-  @[AC::Route::POST("/")]
-  def create(dboard : Int64)
+  @[AC::Route::POST("/", body: :form)]
+  def create(dboard : Int64, form : CvpostForm)
     nvinfo = Nvinfo.load!(dboard)
 
     unless _viuser.can?(:create_post)
@@ -60,7 +61,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     count = nvinfo.post_count + 1
     cvpost = Cvpost.new({viuser_id: _viuser.id, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
 
-    cvpost.update_content!(params)
+    cvpost.update_content!(form)
     nvinfo.update!({post_count: count, board_bump: cvpost.utime})
 
     render json: {cvpost: CvpostView.new(cvpost)}
@@ -100,15 +101,15 @@ class CV::CvpostCtrl < CV::BaseCtrl
     render :not_found, text: "Chủ đề không tồn tại!"
   end
 
-  @[AC::Route::POST("/:post_id", converters: {post_id: ConvertBase32})]
-  def update(post_id : Int64)
+  @[AC::Route::POST("/:post_id", body: :form, converters: {post_id: ConvertBase32})]
+  def update(post_id : Int64, form : CvpostForm)
     cvpost = Cvpost.load!(post_id)
 
     unless _viuser.can?(cvpost.id, :level0)
       raise Unauthorized.new("Bạn không có quyền sửa chủ đề")
     end
 
-    cvpost.update_content!(params)
+    cvpost.update_content!(form)
     render json: {cvpost: CvpostView.new(cvpost)}
   end
 

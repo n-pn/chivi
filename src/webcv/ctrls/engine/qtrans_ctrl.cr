@@ -23,11 +23,11 @@ class CV::QtransCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::GET("/:type/:name")]
-  def convert(type : String, name : String, _new : Bool = false,
-              trad : Bool = false,
-              user : String = _viuser.uname,
-              temp : Bool = false,
-              format : QtranData::Format = QtranData::Format::Html)
+  def cached(type : String, name : String, _new : Bool = false,
+             trad : Bool = false,
+             user : String = _viuser.uname,
+             temp : Bool = false,
+             format : QtranData::Format = QtranData::Format::Html)
     stale = _new ? Time.utc + 10.minutes : Time.utc
     data = QtranData.load!(type, name, stale: stale)
     raise NotFound.new("Not found!") if data.input.empty?
@@ -62,12 +62,16 @@ class CV::QtransCtrl < CV::BaseCtrl
     render json: {ukey: ukey}
   end
 
-  @[AC::Route::PUT("/webpage")]
-  @[AC::Route::POST("/webpage")]
-  def webpage(dname : String = "combine", _simp : Bool = false)
+  record ConvertForm, input : String do
+    include JSON::Serializable
+  end
+
+  @[AC::Route::PUT("/", body: :form)]
+  @[AC::Route::POST("/", body: :form)]
+  def convert(form : ConvertForm, dname : String = "combine", _simp : Bool = false)
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
 
-    input = params["input"].tr("\t", " ")
+    input = form.input.tr("\t", " ")
     input = TranUtil.opencc(input, "hk2s") unless params["_simp"]?
 
     output = String.build do |str|

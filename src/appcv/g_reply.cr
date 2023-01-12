@@ -74,9 +74,9 @@ class CV::Cvrepl
     self.repl_viuser_id = Cvrepl.load!(dtrepl_id).viuser_id
   end
 
-  def update_content!(params)
+  def update_content!(input : String, itype = "md")
     self.utime = Time.utc.to_unix
-    set_input(params["input"], params["itype"])
+    set_input(input, itype)
     self.save!
   end
 

@@ -8,11 +8,6 @@
   $: meta = $page.data._meta || { left_nav: [], right_nav: [], show_config: false }
   $: ({ left_nav = [], right_nav = [], show_config = false } = meta)
   $: uname = $page.data._user?.uname
-
-  function save_return_url() {
-    const back = window.location.href
-    sessionStorage.setItem('back', back.includes('_auth') ? '/' : back)
-  }
 </script>
 
 <header class="app-header" class:clear={$scroll > 0}>
@@ -76,8 +71,7 @@
           icon="login"
           data-kbd="u"
           data-show="tl"
-          data-kind="uname"
-          on:click={save_return_url} />
+          data-kind="uname" />
       {/if}
     </div>
   </nav>

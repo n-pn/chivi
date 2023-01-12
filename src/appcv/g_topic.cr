@@ -2,6 +2,9 @@ require "cmark"
 require "../_util/ukey_util"
 require "./_base"
 
+require "./nv_info"
+require "./g_vuser"
+
 class CV::Cvpost
   include Clear::Model
 
@@ -113,14 +116,14 @@ class CV::Cvpost
     self.lslugs = self.labels.map { |x| BookUtil.scrub_vname(x, "-") }
   end
 
-  def update_content!(params, set_utime = true)
+  def update_content!(form, set_utime = true)
     set_utime(Time.utc.to_unix) if set_utime
 
-    set_title(params["title"])
-    set_labels(params["labels"].split(",").map(&.strip))
+    set_title(form.title)
+    set_labels(form.labels.split(",").map(&.strip))
 
     self.rpbody = load_rpbody
-    self.rpbody.set_input(params["body_input"])
+    self.rpbody.set_input(form.body_input)
     self.rpbody.save!
 
     self.brief = self.rpbody.brief

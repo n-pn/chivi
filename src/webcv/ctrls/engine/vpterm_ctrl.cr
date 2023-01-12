@@ -1,18 +1,17 @@
 require "../_ctrl_base"
-require "../../forms/vpterm_form"
+require "./vpterm_form"
 require "../../../oldmt/mt_core"
 
 class CV::VptermCtrl < CV::BaseCtrl
   base "/api/terms"
 
-  @[AC::Route::POST("/query", body: :json)]
-  def lookup(json : String, temp : Bool = false)
-    input = Hash(String, Array(String)).from_json(json)
+  @[AC::Route::POST("/query", body: :form)]
+  def lookup(form : Hash(String, Array(String)), temp : Bool = false)
     hvmap = Hash(String, String).new do |h, k|
       h[k] = MtCore.cv_hanviet(k, apply_cap: false)
     end
 
-    output = input.map do |dname, words|
+    output = form.map do |dname, words|
       if dname == "pin_yin"
         value = words.map { |w| {w, MtCore.cv_pin_yin(w)} }.to_h
       else
@@ -25,17 +24,19 @@ class CV::VptermCtrl < CV::BaseCtrl
     render json: output.to_h
   end
 
-  @[AC::Route::POST("/entry")]
-  def upsert_entry(dname : String)
-    vdict = VpDict.load(dname)
+  @[AC::Route::POST("/entry", body: :form)]
+  def upsert_entry(form : VpTermForm)
+    vdict = VpDict.load(form.dname)
 
-    chset = VpTermForm.new(params, vdict, _viuser)
-    chset.validate.try { |error| raise Unauthorized.new(error) }
-    raise BadRequest.new("Nội dung không thay đổi!") unless vpterm = chset.save
+    form.dict = vdict
+    form.user = _viuser
+
+    form.validate.try { |error| raise Unauthorized.new(error) }
+    raise BadRequest.new("Nội dung không thay đổi!") unless vpterm = form.save
 
     spawn do
       if vdict.kind.cvmtl?
-        MtDict.upsert(dname[1..], vpterm)
+        MtDict.upsert(form.dname[1..], vpterm)
       elsif vdict.kind.novel?
         VpHint.user_vals.append!(vpterm.key, vpterm.vals)
         VpHint.user_tags.append!(vpterm.key, vpterm.tags)
@@ -43,14 +44,14 @@ class CV::VptermCtrl < CV::BaseCtrl
     end
 
     spawn do
-      next unless vdict.kind.novel? && dname[0] == '-'
-      nvdict = Nvdict.load!(dname[1..])
+      next unless vdict.kind.novel? && form.dname[0] == '-'
+      nvdict = Nvdict.load!(form.dname[1..])
       nvdict.update(dsize: vdict.size, utime: vpterm.utime)
     rescue err
       Log.error { err }
     end
 
-    spawn log_upsert_entry(dname, vpterm, params)
+    spawn log_upsert_entry(form.dname, vpterm, params)
     render :accepted, json: vpterm
   end
 

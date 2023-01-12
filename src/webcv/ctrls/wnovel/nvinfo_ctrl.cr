@@ -1,5 +1,5 @@
 require "../_ctrl_base"
-require "../../forms/nvinfo_form"
+require "./nvinfo_form"
 
 class CV::NvinfoCtrl < CV::BaseCtrl
   base "/api/books"

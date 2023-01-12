@@ -89,6 +89,14 @@ shards:
     git: https://github.com/luckyframework/lucky_router.git
     version: 0.5.1
 
+  micrate: # Overridden
+    git: https://github.com/amberframework/micrate.git
+    version: 0.14.0
+
+  mysql:
+    git: https://github.com/crystal-lang/crystal-mysql.git
+    version: 0.14.0
+
   openssl_ext:
     git: https://github.com/spider-gazelle/openssl_ext.git
     version: 2.2.0

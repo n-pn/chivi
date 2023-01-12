@@ -39,6 +39,7 @@ class CV::MarkBookCtrl < CV::BaseCtrl
 
   struct AccessData
     include JSON::Serializable
+
     getter sname : String, chidx : Int16, cpart : Int16
     getter title : String, uslug : String
     getter locked : Bool = false

@@ -8,7 +8,7 @@ class CV::MarkPostCtrl < CV::BaseCtrl
     Like; Unlike
   end
 
-  @[AC::Route::PUT("/:post_id/:action", converter: {post_id: ConvertBase32})]
+  @[AC::Route::PUT("/:post_id/:action", converters: {post_id: ConvertBase32})]
   def mark_post(post_id : Int64, action : MarkAction)
     raise Unauthorized.new("Bạn chưa đăng nhập!") unless _viuser.can?(:mark_post)
 

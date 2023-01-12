@@ -89,12 +89,10 @@
     }
 
     if (input_is_empty(input)) return
-    const temp = $config.w_temp ? 't' : 'f'
-    const path = `/api/terms/query`
-    const body = { input, temp }
+    const path = `/api/terms/query?temp=${$config.w_temp}`
 
     try {
-      const data = await api_call(path, body, 'POST')
+      const data = await api_call(path, input, 'POST')
 
       for (const dname in data) {
         const terms = data[dname]

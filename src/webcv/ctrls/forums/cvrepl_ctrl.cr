@@ -61,8 +61,12 @@ class CV::CvreplCtrl < CV::BaseCtrl
     render :not_found, text: "Bài viết không tồn tại!"
   end
 
-  @[AC::Route::POST("/", converters: {cvpost: ConvertBase32})]
-  def create(cvpost post_id : Int64)
+  record CvreplForm, input : String, rp_id : Int64 = 0 do
+    include JSON::Serializable
+  end
+
+  @[AC::Route::POST("/", body: :form, converters: {cvpost: ConvertBase32})]
+  def create(cvpost post_id : Int64, form : CvreplForm)
     cvpost = Cvpost.load!(post_id)
 
     unless _viuser.can?(:create_post)
@@ -71,11 +75,11 @@ class CV::CvreplCtrl < CV::BaseCtrl
 
     cvrepl = Cvrepl.new({viuser_id: _viuser.id, cvpost: cvpost, ii: cvpost.repl_count + 1})
 
-    dtrepl_id = params["rp_id"]?.try(&.to_i64?) || 0_i64
+    dtrepl_id = form.rp_id
     dtrepl_id = cvpost.rpbody.id if dtrepl_id == 0
 
     cvrepl.set_dtrepl_id(dtrepl_id)
-    cvrepl.update_content!(params)
+    cvrepl.update_content!(form.input)
     cvpost.bump!(cvrepl.id)
 
     repl = Cvrepl.load!(cvrepl.repl_cvrepl_id)
@@ -84,15 +88,15 @@ class CV::CvreplCtrl < CV::BaseCtrl
     render json: {cvrepl: CvreplView.new(cvrepl)}
   end
 
-  @[AC::Route::POST("/:repl_id")]
-  def update(repl_id : Int64)
+  @[AC::Route::POST("/:repl_id", body: :form)]
+  def update(repl_id : Int64, form : CvreplForm)
     cvrepl = Cvrepl.load!(repl_id)
 
     unless _viuser.can?(cvrepl.viuser_id, :update_post)
       raise Unauthorized.new "Bạn không có quyền sửa bình luận"
     end
 
-    cvrepl.update_content!(params)
+    cvrepl.update_content!(form.input)
     render json: {cvrepl: CvreplView.new(cvrepl)}
   end
 

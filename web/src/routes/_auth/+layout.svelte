@@ -1,3 +1,14 @@
+<script>
+  import { afterNavigate } from '$app/navigation'
+
+  afterNavigate(({ from: { url } }) => {
+    if (!url.pathname.startsWith('/_auth')) {
+      const back = url.toString()
+      sessionStorage.setItem('back', back.includes('_auth') ? '/' : back)
+    }
+  })
+</script>
+
 <div class="wrap">
   <header class="brand">
     <img src="/icons/chivi.svg" alt="logo" />

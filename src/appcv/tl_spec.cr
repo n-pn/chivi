@@ -46,14 +46,14 @@ class CV::Tlspec
     end
   end
 
-  def add_edit!(params, viuser)
+  def add_edit!(form, viuser)
     edit = Tlspec::Edit.new(viuser)
 
-    edit.lower = params["lower"].to_i
-    edit.upper = params["upper"].to_i
+    edit.lower = form.lower
+    edit.upper = form.upper
 
-    edit.match = params["match"]?.try(&.strip) || ""
-    edit.extra = params["extra"]?.try(&.strip) || ""
+    edit.match = form.match
+    edit.extra = form.extra
 
     @edits << edit
   end
