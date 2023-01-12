@@ -88,7 +88,7 @@
     const body = { key, vals, tags, prio, dname, _mode, _raw: $ztext, _idx: $zfrom }
 
     const res = await fetch('/api/terms/entry', {
-      method: 'PUT',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
