@@ -33,7 +33,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     items = query.limit(limit).offset(offset).to_a
     memos = UserRepl.glob(_viuser.id, _viuser.privi, items.map(&.id))
 
-    {
+    render json: {
       tplist: {
         total: total,
         pgidx: pgidx,
@@ -51,7 +51,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
   def detail(repl_id : Int64)
     cvrepl = Cvrepl.load!(repl_id)
 
-    {
+    render json: {
       id:    cvrepl.id,
       input: cvrepl.input,
       itype: cvrepl.itype,
@@ -81,7 +81,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     repl = Cvrepl.load!(cvrepl.repl_cvrepl_id)
     repl.update!({repl_count: repl.repl_count + 1})
 
-    {cvrepl: CvreplView.new(cvrepl)}
+    render json: {cvrepl: CvreplView.new(cvrepl)}
   end
 
   @[AC::Route::POST("/:repl_id")]
@@ -93,7 +93,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     end
 
     cvrepl.update_content!(params)
-    {cvrepl: CvreplView.new(cvrepl)}
+    render json: {cvrepl: CvreplView.new(cvrepl)}
   end
 
   @[AC::Route::DELETE("/:repl_id")]
@@ -109,6 +109,6 @@ class CV::CvreplCtrl < CV::BaseCtrl
     end
 
     cvrepl.soft_delete(admin: admin)
-    {msg: "ok"}
+    render json: {msg: "ok"}
   end
 end

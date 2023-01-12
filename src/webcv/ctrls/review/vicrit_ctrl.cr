@@ -29,7 +29,7 @@ class CV::VicritCtrl < CV::BaseCtrl
       lists = Vilist.query.where("id in (#{crits.join(",", &.vilist_id)})")
     end
 
-    {
+    render json: {
       total: total,
       pgidx: pgidx,
       pgmax: (total - 1) // limit + 1,
@@ -48,7 +48,7 @@ class CV::VicritCtrl < CV::BaseCtrl
   def show(crit_id : Int64)
     vicrit = load_crit(crit_id)
 
-    {
+    render json: {
       crit: VicritView.new(vicrit, full: true),
       user: ViuserView.new(vicrit.viuser, false),
       book: NvinfoView.new(vicrit.nvinfo, false),
@@ -59,7 +59,7 @@ class CV::VicritCtrl < CV::BaseCtrl
   def edit(crit_id : Int64)
     vicrit = load_crit(crit_id)
 
-    {
+    render json: {
       id:    vicrit.id,
       stars: vicrit.stars,
       input: vicrit.itext,
@@ -101,7 +101,7 @@ class CV::VicritCtrl < CV::BaseCtrl
     vicrit.changed_at = Time.utc
     vicrit.patch!(body.input, body.stars, body.btags)
 
-    VicritView.new(vicrit, full: true)
+    render json: VicritView.new(vicrit, full: true)
   end
 
   @[AC::Route::DELETE("/:crit_id")]
@@ -115,6 +115,6 @@ class CV::VicritCtrl < CV::BaseCtrl
 
     vicrit.update!({_flag: _viuser.privi > 3 && _viuser.id != owner_id ? -3 : -2})
 
-    {msg: "Chủ đề đã bị xoá"}
+    render json: {msg: "Chủ đề đã bị xoá"}
   end
 end

@@ -57,17 +57,17 @@ abstract class CV::BaseCtrl < ActionController::Base
 
   @[AC::Route::Exception(BadRequest, status_code: HTTP::Status::BAD_REQUEST)]
   def bad_request(error)
-    {error: error.message}
+    {message: error.message}
   end
 
   @[AC::Route::Exception(NotFound, status_code: HTTP::Status::NOT_FOUND)]
   def not_found(error)
-    {error: error.message}
+    {message: error.message}
   end
 
   @[AC::Route::Exception(Unauthorized, status_code: HTTP::Status::FORBIDDEN)]
   def unauthorized(error)
-    {error: error.message}
+    {message: error.message}
   end
 
   getter _viuser : Viuser do

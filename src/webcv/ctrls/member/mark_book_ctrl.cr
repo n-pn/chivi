@@ -22,7 +22,7 @@ class CV::MarkBookCtrl < CV::BaseCtrl
     end
 
     query = query.order_by(utime: :desc).limit(limit).offset(offset)
-    query.with_nvinfo.map { |x| UbmemoView.new(x, true) }
+    render json: query.with_nvinfo.map { |x| UbmemoView.new(x, true) }
   end
 
   getter! book_mark : Ubmemo
@@ -34,7 +34,7 @@ class CV::MarkBookCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/:book_id")]
   def show(book_id : Int64) : Nil
-    UbmemoView.new(book_mark)
+    render json: UbmemoView.new(book_mark)
   end
 
   struct AccessData
@@ -50,12 +50,12 @@ class CV::MarkBookCtrl < CV::BaseCtrl
       data.sname, data.chidx, data.cpart,
       data.title, data.uslug, data.locked ? 1 : 0
     )
-    UbmemoView.new(book_mark)
+    render json: UbmemoView.new(book_mark)
   end
 
   @[AC::Route::PUT("/:book_id/status")]
   def update_status(book_id : Int64, status = "default")
     book_mark.update!({status: status})
-    UbmemoView.new(book_mark)
+    render json: UbmemoView.new(book_mark)
   end
 end

@@ -34,7 +34,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     total = query.dup.limit(offset + limit * 3).offset(0).count
     query.limit(limit).offset(offset).with_author
 
-    {
+    render json: {
       total: total,
       pgidx: pg_no,
       pgmax: (total - 1) // limit + 1,
@@ -73,7 +73,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       end
     end
 
-    {
+    render json: {
       nvinfo: NvinfoView.new(nvinfo, true),
       ubmemo: UbmemoView.new(ubmemo),
     }
@@ -100,7 +100,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .with_viuser
         .limit(100)
 
-    {
+    render json: {
       books: nvinfos.map { |x| NvinfoView.new(x, false) },
       users: ubmemos.map { |x| {u_dname: x.viuser.uname, u_privi: x.viuser.privi, _status: x.status_s} },
     }

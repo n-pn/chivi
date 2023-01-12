@@ -1,3 +1,4 @@
+require "sqlite3"
 require "./mt_node"
 
 class MT::MtDict

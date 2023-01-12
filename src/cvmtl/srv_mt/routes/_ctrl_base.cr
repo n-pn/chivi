@@ -4,27 +4,13 @@ require "../../engine"
 require "../../../_util/ram_cache"
 
 abstract class MT::BaseCtrl < ActionController::Base
-  Log = Server::Log.for("controller")
+  Log = ::Log.for("controller")
 
   add_parser("text/plain") { |_klass, body_io| body_io.gets_to_end }
 
   add_responder("*/*") { |io, result| io << result }
   add_responder("text/html") { |io, result| result.to_json(io) }
   add_responder("text/plain") { |io, result| io << result }
-
-  # This makes it simple to match client requests with server side logs.
-  # When building microservices this ID should be propagated to upstream services.
-  @[AC::Route::Filter(:before_action)]
-  def set_request_id
-    request_id = UUID.random.to_s
-    Log.context.set(client_ip: client_ip, request_id: request_id)
-    response.headers["X-Request-ID"] = request_id
-
-    # If this is an upstream service, the ID should be extracted from a request header.
-    # request_id = request.headers["X-Request-ID"]? || UUID.random.to_s
-    # Log.context.set client_ip: client_ip, request_id: request_id
-    # response.headers["X-Request-ID"] = request_id
-  end
 
   @[AC::Route::Filter(:before_action)]
   def set_date_header

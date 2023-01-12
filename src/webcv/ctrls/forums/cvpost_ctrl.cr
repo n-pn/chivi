@@ -63,7 +63,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     cvpost.update_content!(params)
     nvinfo.update!({post_count: count, board_bump: cvpost.utime})
 
-    {cvpost: CvpostView.new(cvpost)}
+    render json: {cvpost: CvpostView.new(cvpost)}
   end
 
   @[AC::Route::GET("/:post_id", converters: {post_id: ConvertBase32})]
@@ -79,7 +79,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
       memo = UserPost.find({viuser_id: _viuser.id, cvpost_id: cvpost.id})
     end
 
-    {cvpost: CvpostView.new(cvpost, full: true, memo: memo)}
+    render json: {cvpost: CvpostView.new(cvpost, full: true, memo: memo)}
   rescue err
     render :not_found, text: "Chủ đề không tồn tại!"
   end
@@ -88,7 +88,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
   def detail(post_id : Int64)
     cvpost = Cvpost.load!(post_id)
 
-    {
+    render json: {
       id:     cvpost.oid,
       title:  cvpost.title,
       labels: cvpost.labels.join(","),
@@ -109,7 +109,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     end
 
     cvpost.update_content!(params)
-    {cvpost: CvpostView.new(cvpost)}
+    render json: {cvpost: CvpostView.new(cvpost)}
   end
 
   @[AC::Route::DELETE("/:post_id", converters: {post_id: ConvertBase32})]

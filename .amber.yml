@@ -7,7 +7,6 @@ model: clear
 watch:
   run:
     build_commands:
-      - mkdir -p bin
       - crystal build ./src/webcv/webcv_srv.cr -o bin/cvapp-dev --error-trace
     run_commands:
       - bin/cvapp-dev
@@ -17,10 +16,18 @@ watch:
       - ./src/cvmtl/**/*.cr
       - ./src/oldmt/**/*.cr
       - ./src/cvhlp/**/*.cr
-      - ./src/ysapp/**/*.cr
+      - ./src/ysapp/*.cr
 
-  spec:
+  cvmtl:
+    build_commands:
+      - crystal build ./src/cvmtl/cvmtl_srv.cr -o bin/cvmtl-dev --error-trace
     run_commands:
-      - AMBER_ENV=test crystal spec
+      - bin/cvmtl-dev
     include:
-      - ./spec/engine/*.cr
+      - ./src/cvmtl/**/*.cr
+
+  # spec:
+  #   run_commands:
+  #     - CV_ENV=test crystal spec
+  #   include:
+  #     - ./spec/engine/*.cr

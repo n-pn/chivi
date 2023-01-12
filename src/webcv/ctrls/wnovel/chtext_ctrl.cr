@@ -46,7 +46,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
       mirror.mirror_other!(chroot, chmin, chmax, chmin)
     end
 
-    {from: chmin, upto: chmax}
+    render json: {from: chmin, upto: chmax}
   end
 
   private def save_upload_text(chroot : Chroot) : String
@@ -150,7 +150,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
   @[AC::Route::GET("/:ch_no")]
   def rawtxt
     guard_privi min: 1
-    {chvol: chinfo.chvol, title: chinfo.title, input: chinfo.full_body}
+    render json: {chvol: chinfo.chvol, title: chinfo.title, input: chinfo.full_body}
   end
 
   private def update_chroot(chroot : Chroot, chinfo : Chinfo, trunc = false)
@@ -172,7 +172,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot.clear_cache!
 
     spawn create_text_edit(chroot, chinfo, new_ztext)
-    {msg: "ok"}
+    render json: {msg: "ok"}
   end
 
   private def create_text_edit(chroot, chinfo, new_ztext)
@@ -210,7 +210,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot._repo.upsert(chinfo)
     chroot.clear_cache!
 
-    {chroot.sname, chroot.s_bid, chinfo.ch_no, part_no}
+    render json: {chroot.sname, chroot.s_bid, chinfo.ch_no, part_no}
   end
 
   private def create_line_edit(chroot, chinfo, old_zline, new_zline, part_no, line_no)

@@ -9,11 +9,15 @@ class CV::SigninCtrl < CV::BaseCtrl
     render text: Viuser.load!(uname).privi
   end
 
-  @[AC::Route::POST("/signup")]
-  def signup(email : String, uname : String, upass : String)
-    viuser = Viuser.create!(email.strip, uname.strip, upass.strip)
+  record SignupForm, email : String, uname : String, upass : String do
+    include JSON::Serializable
+  end
 
-    body = {email: email, uname: uname, cpass: viuser.cpass}
+  @[AC::Route::POST("/signup", body: :form)]
+  def signup(form : SignupForm)
+    viuser = Viuser.create!(form.email.strip, form.uname.strip, form.upass.strip)
+
+    body = {email: viuser.email, uname: viuser.uname, cpass: viuser.cpass}
     spawn CtrlUtil.log_user_action("user-signup", body, viuser)
 
     login_user!(viuser)
@@ -21,9 +25,14 @@ class CV::SigninCtrl < CV::BaseCtrl
     raise BadRequest.new(err.message)
   end
 
-  @[AC::Route::POST("/log-in")]
-  def log_in(email : String, upass : String)
-    unless user = validate_user(email, upass)
+  record LoginForm, email : String, upass : String do
+    include JSON::Serializable
+  end
+
+  @[AC::Route::POST("/log-in", body: :form)]
+  def log_in(form : LoginForm)
+    Log.info { form.to_json }
+    unless user = validate_user(form.email, form.upass)
       raise BadRequest.new("Thông tin đăng nhập không chính xác!")
     end
 
@@ -47,9 +56,13 @@ class CV::SigninCtrl < CV::BaseCtrl
     render json: ViuserView.new(user)
   end
 
-  @[AC::Route::POST("/pwtemp")]
-  def pwtemp(email : String)
-    Viuser.find({email: email}).try { |user| spawn send_pwtemp_email(user) }
+  record PwtempForm, email : String do
+    include JSON::Serializable
+  end
+
+  @[AC::Route::POST("/pwtemp", body: :form)]
+  def pwtemp(form : PwtempForm)
+    Viuser.find({email: form.email}).try { |user| spawn send_pwtemp_email(user) }
     render :accepted, text: "Đã gửi email"
   end
 

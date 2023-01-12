@@ -14,11 +14,13 @@ class CV::ChtranCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/:part_no/:line_no")]
   def edits(part_no : Int32, line_no : Int32)
-    ChapTran.query.where({
+    edits = ChapTran.query.where({
       chroot_id: chroot.id, ch_no: chinfo.ch_no!,
       part_no: part_no,
       line_no: line_no,
     }).with_viuser.to_a
+
+    render json: edits
   end
 
   @[AC::Route::POST("/:part_no/:line_no")]

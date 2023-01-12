@@ -9,7 +9,7 @@ class CV::AuthorCtrl < CV::BaseCtrl
     limit = 24 if limit < 24
     offset = CtrlUtil.offset(pgidx, limit)
 
-    {
+    render json: {
       total: books.size,
       pgidx: pgidx,
       pgmax: CtrlUtil.pgmax(books.size, limit),

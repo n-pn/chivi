@@ -7,7 +7,7 @@ export async function load({ parent, fetch, url }) {
   set_fetch(fetch)
 
   const path = api_path('chroots.index', nvinfo.id)
-  const data = await api_get(path)
+  const nslist = await api_get(path)
 
   const _meta: App.PageMeta = {
     title: 'Chương tiết truyện ' + nvinfo.btitle_vi,
@@ -19,5 +19,5 @@ export async function load({ parent, fetch, url }) {
     right_nav: [suggest_read(nvinfo, ubmemo)],
   }
 
-  return { nslist: data, _meta }
+  return { nslist, _meta }
 }

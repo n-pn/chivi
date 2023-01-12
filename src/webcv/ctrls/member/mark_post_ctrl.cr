@@ -10,7 +10,7 @@ class CV::MarkPostCtrl < CV::BaseCtrl
 
   @[AC::Route::PUT("/:post_id/:action", converter: {post_id: ConvertBase32})]
   def mark_post(post_id : Int64, action : MarkAction)
-    raise Unauthorized.new("Bạn chưa đăng nhập") unless _viuser.can?(:mark_post)
+    raise Unauthorized.new("Bạn chưa đăng nhập!") unless _viuser.can?(:mark_post)
 
     cvpost = Cvpost.load!(post_id)
     target = UserPost.find_or_new(_viuser.id, cvpost.id)

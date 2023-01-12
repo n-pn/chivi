@@ -2,7 +2,9 @@ require "../_ctrl_base"
 require "../../views/*"
 
 class CV::ChinfoCtrl < CV::BaseCtrl
-  @[AC::Route::GET("/chaps/:b_id/:sname/:ch_no/:part_no")]
+  base "/api/chaps/:b_id/:sname"
+
+  @[AC::Route::GET("/:ch_no/:part_no")]
   def show(b_id : Int64, sname : String, ch_no : Int16, part_no : Int16)
     chroot = get_chroot(b_id, sname)
     chinfo = get_chinfo(chroot, ch_no)
@@ -16,7 +18,7 @@ class CV::ChinfoCtrl < CV::BaseCtrl
 
     cvdata, rl_key = load_cvdata(chroot, chinfo, part_no, redo)
 
-    {
+    render json: {
       chmeta: ChmetaView.new(chroot, chinfo, part_no),
       chinfo: ChinfoView.new(chinfo),
       chmemo: UbmemoView.new(ubmemo),

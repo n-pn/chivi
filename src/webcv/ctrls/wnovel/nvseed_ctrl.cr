@@ -13,18 +13,16 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/")]
   def index(book_id : Int64)
-    NslistView.new(nvinfo.seed_list)
+    render json: NslistView.new(nvinfo.seed_list)
   end
 
   @[AC::Route::GET("/:sname")]
-  def show(sname : String)
+  def show(sname : String, mode : Int8 = 0_i8)
     chroot = get_chroot(nvinfo.id, sname)
-
-    mode = params["mode"].to_i8
     reload_chroot(chroot, mode: mode) if mode > 0
 
     fresh = chroot.fresh?(_viuser.privi, force: false)
-    ChrootView.new(chroot, full: true, fresh: fresh)
+    render json: ChrootView.new(chroot, full: true, fresh: fresh)
   end
 
   private def max_mode_by_privi : Int8
@@ -56,7 +54,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     chroot = get_chroot(nvinfo.id, sname)
     chaps = chroot.chpage(pg_no &- 1)
 
-    {
+    render json: {
       pgidx: pg_no,
       pgmax: CtrlUtil.pgmax(chroot.chap_count, 32_i16),
       chaps: ChinfoView.list(chaps),
@@ -70,7 +68,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     chroot = Chroot.upsert!(nvinfo, sname, s_bid, force: true)
     nvinfo.seed_list.other.push(chroot).sort! { |x| SnameMap.zseed(x.sname) }
 
-    {sname: sname, snvid: s_bid}
+    render json: {sname: sname, snvid: s_bid}
   end
 
   private def load_guarded_chroot(sname : String, min_privi = 1) : Chroot
@@ -117,7 +115,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     chroot.mirror_other!(target, chmin, chmax, new_chmin)
     chroot.clear_cache!
 
-    {pgidx: CtrlUtil.pg_no(new_chmin, 32)}
+    render json: {pgidx: CtrlUtil.pg_no(new_chmin, 32)}
   end
 
   @[AC::Route::PUT("/:sname/trunc")]
@@ -144,7 +142,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
     })
 
     chroot.clear_cache!
-    {pgidx: CtrlUtil.pg_no(trunc_from, 32)}
+    render json: {pgidx: CtrlUtil.pg_no(trunc_from, 32)}
   end
 
   @[AC::Route::DELETE("/:sname/prune")]
@@ -162,6 +160,6 @@ class CV::NvseedCtrl < CV::BaseCtrl
     })
 
     chroot.clear_cache!
-    {shield: chroot.shield}
+    render json: {shield: chroot.shield}
   end
 end

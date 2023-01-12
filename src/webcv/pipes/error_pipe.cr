@@ -1,3 +1,5 @@
+require "./base_pipe"
+
 class CV::Pipe::Error < CV::BasePipe
   def call(context : HTTP::Server::Context)
     raise NotFound.new(context.request.path) unless context.valid_route?

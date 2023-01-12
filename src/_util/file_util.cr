@@ -1,23 +1,7 @@
-require "icu"
 require "compress/gzip"
 
 module FileUtil
   extend self
-
-  def read_utf8(file : String | Path, encoding : String? = nil, csdet_limit = 1024)
-    File.open(file, "r") do |io|
-      encoding ||= begin
-        sample = io.read_string(csdet_limit)
-        io.rewind
-
-        icu = ICU::CharsetDetector.new
-        icu.detect(sample).name
-      end
-
-      io.set_encoding(encoding, invalid: :skip)
-      io.gets_to_end
-    end
-  end
 
   def save_gz!(file : String, data : String)
     File.open(file, "w") do |io|
