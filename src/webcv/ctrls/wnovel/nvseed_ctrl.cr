@@ -89,6 +89,20 @@ class CV::NvseedCtrl < CV::BaseCtrl
     end
   end
 
+  struct PatchForm
+    include JSON::Serializable
+
+    getter o_sname : String
+    getter chmin : Int32 = 1
+
+    property chmax : Int32 = 9999
+    property! i_chmin : Int32
+
+    def after_initialize
+      @i_chmin ||= @chmin
+    end
+  end
+
   @[AC::Route::GET("/:sname/patch")]
   def preview_patch(sname : String, o_sname : String,
                     chmin : Int32 = 1, chmax : Int32 = 1,
@@ -102,29 +116,28 @@ class CV::NvseedCtrl < CV::BaseCtrl
     render 400, text: "TODO!"
   end
 
-  @[AC::Route::PUT("/:sname/patch")]
-  def patch(sname : String, o_sname : String,
-            chmin : Int32 = 1, chmax : Int32? = nil,
-            i_chmin : Int32? = nil)
+  @[AC::Route::PUT("/:sname/patch", body: :form)]
+  def patch(sname : String, form : PatchForm)
     chroot = load_guarded_chroot(sname, min_privi: 1)
-    target = Chroot.load!(nvinfo, o_sname)
+    target = Chroot.load!(nvinfo, form.o_sname)
 
-    chmax ||= chroot.chap_count
-    new_chmin = i_chmin || chmin
+    form.chmax = chroot.chap_count if form.chmax > chroot.chap_count
+    form.i_chmin ||= form.chmin
 
-    chroot.mirror_other!(target, chmin, chmax, new_chmin)
+    chroot.mirror_other!(target, form.chmin, form.chmax, form.i_chmin)
     chroot.clear_cache!
 
-    render json: {pgidx: CtrlUtil.pg_no(new_chmin, 32)}
+    render json: {pgidx: CtrlUtil.pg_no(form.i_chmin, 32)}
   end
 
-  @[AC::Route::PUT("/:sname/trunc")]
-  def trunc(sname : String, chidx trunc_from : Int32 = 1)
+  @[AC::Route::PUT("/:sname/trunc", body: :form)]
+  def trunc(sname : String, form : NamedTuple(chidx: Int32))
     unless _viuser.can?(sname[1..], :level2)
       raise Unauthorized.new("Bạn không đủ quyền hạn")
     end
 
     chroot = get_chroot(nvinfo.id, sname, mode: :find)
+    trunc_from = form[:chidx]
     trunc_from = chroot.chap_count if trunc_from > chroot.chap_count
 
     if chinfo = chroot.chinfo(trunc_from &- 1)

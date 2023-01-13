@@ -54,9 +54,13 @@ class CV::MarkBookCtrl < CV::BaseCtrl
     render json: UbmemoView.new(book_mark)
   end
 
-  @[AC::Route::PUT("/:book_id/status")]
-  def update_status(book_id : Int64, status = "default")
-    book_mark.update!({status: status})
+  record StatusForm, status : String = "default" do
+    include JSON::Serializable
+  end
+
+  @[AC::Route::PUT("/:book_id/status", body: :form)]
+  def update_status(book_id : Int64, form : StatusForm)
+    book_mark.update!({status: form.status})
     render json: UbmemoView.new(book_mark)
   end
 end
