@@ -19,13 +19,13 @@ export function gen_retran_url(rl_key: string, uname: string, reload = false) {
   const params = new URLSearchParams()
 
   const { tosimp, w_temp } = get(config)
-  if (tosimp) params.set('trad', 't')
-  if (w_temp) params.set('temp', 't')
+  if (tosimp) params.set('trad', 'true')
+  if (w_temp) params.set('temp', 'true')
   params.set('user', uname)
 
   if (reload) {
-    params.set('_raw', 't')
-    params.set('_new', 't')
+    params.set('_raw', 'true')
+    params.set('_new', 'true')
   }
 
   return api_url + '?' + params.toString()

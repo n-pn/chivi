@@ -46,6 +46,7 @@
   async function retranslate(reload = false) {
     const url = gen_retran_url(rl_key, $session.uname, reload)
 
+    console.log({ url })
     const res = await fetch(url)
     const txt = await res.text()
 
@@ -73,9 +74,10 @@
 
     try {
       await api_call(url, body, 'PUT')
+
       // $page.data.ubmemo = res
     } catch (ex) {
-      alert(ex.body.message)
+      alert(ex.message)
     }
   }
 
@@ -95,12 +97,14 @@
     const url = `/api/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}`
     const body = { part_no: chmeta.cpart, line_no, orig, edit }
 
-    try {
-      rl_key = await api_call(url, body, 'PATCH')
-      retranslate(true)
-    } catch (ex) {
-      alert(ex.body.message)
-    }
+    const res = await fetch(url, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!res.ok) alert(await res.json().then((r) => r.message))
+    else retranslate(true)
   }
 </script>
 

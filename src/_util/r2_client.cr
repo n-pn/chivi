@@ -1,6 +1,6 @@
 require "http/client"
 
-module CV::R2Client
+module R2Client
   extend self
 
   R2_ROOT = ENV["R2_ROOT"]? || "https://cr2.chivi.app/"

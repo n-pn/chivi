@@ -39,14 +39,28 @@ export function handleError({ error, event }) {
     code: error.code ?? 'UNKNOWN',
   }
 }
-async function getSession({ request: { headers } }) {
-  const cookie = headers.get('cookie')
+
+interface CachedUser {
+  data: App.CurrentUser
+  ttl: number
+}
+
+const cached_users: Record<string, CachedUser> = {}
+
+async function getSession({ fetch, cookies, request: { headers } }) {
+  const cookie = cookies.get('_sess')
+
+  const now = new Date().getTime()
+
+  let cached_user = cached_users[cookie]
+  if (cached_user && cached_user.ttl >= now) return cached_user.data
+
   const url = `http://localhost:5010/api/_self`
-  const res = await fetch(url, { headers: { cookie } })
+  const res = await fetch(url, { headers: { cookie: headers.get('cookie') } })
 
-  if (res.ok) return await res.json()
-  // const error = await res.text()
-  // console.log({ error })
+  if (!res.ok) return { uname: 'Khách', privi: -2 }
 
-  return { uname: 'Khách', privi: -2 }
+  const user_data = await res.json()
+  cached_users[cookie] = { data: user_data, ttl: now + 3 * 60000 }
+  return user_data
 }

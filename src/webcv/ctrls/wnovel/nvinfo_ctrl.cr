@@ -112,20 +112,20 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       raise NotFound.new("Quyển sách không tồn tại!")
     end
 
-    {
+    render json: {
       genres: nvinfo.vgenres,
       bintro: nvinfo.zintro,
       bcover: nvinfo.scover,
     }
   end
 
-  @[AC::Route::POST("/")]
-  def upsert
+  @[AC::Route::POST("/", body: :form)]
+  def upsert(form : NvinfoForm)
     unless _viuser.can?(:level2)
       raise Unauthorized.new("Cần quyền hạn tối thiểu là 2")
     end
 
-    nvinfo = NvinfoForm.new(params, "@" + _viuser.uname).save
+    nvinfo = form.save
     spawn update_db_index(nvinfo)
 
     Nvinfo.cache!(nvinfo)
@@ -135,7 +135,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       CtrlUtil.log_user_action("nvinfo-upsert", params.to_h, _viuser.uname)
     end
 
-    {bslug: nvinfo.bslug}
+    render json: {bslug: nvinfo.bslug}
   rescue err
     Log.error(exception: err) { err.message }
     render 400, text: err.message
@@ -171,6 +171,6 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     nvinfo.delete
     Ubmemo.query.where(nvinfo_id: nvinfo.id).to_delete.execute
 
-    {msg: "ok"}
+    render json: {msg: "ok"}
   end
 end

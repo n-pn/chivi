@@ -28,7 +28,7 @@
       res_text = `[${data.sendee}] đã nhận được ${amount} vcoin, bạn còn có ${data.remain} vcoin.`
     } catch (ex) {
       res_type = 'err'
-      res_text = ex.body.message
+      res_text = ex.message
     }
   }
 </script>

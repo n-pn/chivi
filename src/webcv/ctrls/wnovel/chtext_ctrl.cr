@@ -159,19 +159,32 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot.save!
   end
 
-  @[AC::Route::PUT("/:ch_no")]
-  def update
+  struct TextForm
+    include JSON::Serializable
+
+    getter input : String
+    getter chvol : String
+    getter title : String
+
+    def after_initialize
+      @input = TextUtil.clean_spaces(@input)
+      @chvol = TextUtil.clean_spaces(@chvol)
+      @title = TextUtil.clean_spaces(@title)
+    end
+  end
+
+  @[AC::Route::PUT("/:ch_no", body: :form)]
+  def update(form : TextForm)
     guard_privi min: 1
 
-    new_ztext = params["input"]
-    chinfo.chvol = params["chvol"]
-    chinfo.title = params["title"]
-    chinfo.save_body(new_ztext, uname: _viuser.uname)
+    chinfo.chvol = form.chvol
+    chinfo.title = form.title
+    chinfo.save_body(form.input, uname: _viuser.uname)
 
     chroot._repo.upsert(chinfo)
     chroot.clear_cache!
 
-    spawn create_text_edit(chroot, chinfo, new_ztext)
+    spawn create_text_edit(chroot, chinfo, form.input)
     render json: {msg: "ok"}
   end
 
@@ -186,23 +199,31 @@ class CV::ChtextCtrl < CV::BaseCtrl
     }).save!
   end
 
-  @[AC::Route::PATCH("/:ch_no")]
-  def change(part_no : Int32, line_no : Int32)
+  struct LineForm
+    include JSON::Serializable
+    getter part_no : Int32, line_no : Int32
+    getter edit : String, orig : String = ""
+
+    def after_initialize
+      @orig = TextUtil.clean_spaces(@orig)
+      @edit = TextUtil.clean_spaces(@edit)
+    end
+  end
+
+  @[AC::Route::PATCH("/:ch_no", body: :form)]
+  def change(form : LineForm)
     guard_privi min: 1
 
-    orig = TextUtil.clean_spaces(params["orig"]? || "")
-    edit = TextUtil.clean_spaces(params["edit"])
-
-    spawn create_line_edit(chroot, chinfo, orig, edit, part_no, line_no)
+    spawn create_line_edit(chroot, chinfo, form)
 
     content = chinfo.body_parts(mode: 0, uname: _viuser.uname)
 
-    chinfo.c_len &+= edit.size &- orig.size if line_no > 0
+    chinfo.c_len &+= form.edit.size &- form.orig.size if form.line_no > 0
     chinfo.p_len = content.size
 
     content.each_with_index do |part_text, idx|
-      next unless idx == part_no || line_no == 0
-      content[idx] = part_text.split('\n').tap(&.[line_no] = edit).join('\n')
+      next unless idx == form.part_no || form.line_no == 0
+      content[idx] = part_text.split('\n').tap(&.[form.line_no] = form.edit).join('\n')
     end
 
     chinfo.change_root!(chroot) if chinfo.sn_id != chroot._repo.sn_id
@@ -210,15 +231,16 @@ class CV::ChtextCtrl < CV::BaseCtrl
     chroot._repo.upsert(chinfo)
     chroot.clear_cache!
 
-    render json: {chroot.sname, chroot.s_bid, chinfo.ch_no, part_no}
+    rl_key = {chroot.sname, chroot.s_bid, chinfo.ch_no, form.part_no}.join(':')
+    render text: rl_key
   end
 
-  private def create_line_edit(chroot, chinfo, old_zline, new_zline, part_no, line_no)
+  private def create_line_edit(chroot, chinfo, form)
     ZH::LineEdit.new({
       sname: chroot.sname, s_bid: chroot.s_bid,
       s_cid: chinfo.s_cid, ch_no: chinfo.ch_no!,
-      part_no: part_no, line_no: line_no,
-      patch: DiffUtil.diff_json(old_zline, new_zline),
+      part_no: form.part_no, line_no: form.line_no,
+      patch: DiffUtil.diff_json(form.orig, form.edit),
       uname: _viuser.uname,
     }).save!
   end

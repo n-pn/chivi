@@ -87,7 +87,7 @@
       ctrl.hide()
       on_destroy()
     } catch (ex) {
-      error = ex.body.message
+      error = ex.message
       // console.error(ex)
     }
   }
@@ -100,8 +100,8 @@
       ctrl.hide()
       on_destroy()
     } catch (ex) {
-      error = ex.body.message
-      // console.error(ex)
+      console.error(ex)
+      error = ex.message
     }
   }
 

@@ -97,7 +97,8 @@
       on_change()
       ctrl.hide()
     } else {
-      alert(await res.text())
+      const body = await res.json()
+      alert(body.message)
     }
   }
 

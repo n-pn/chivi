@@ -6,16 +6,19 @@ struct CV::VpTermForm
   getter dname : String
 
   getter key : String
-  getter val : String
+  getter vals : String
 
   getter tags : String
-  getter prio : Int8 = 2
+  getter prio : String = ""
 
   getter _mode : UInt8 = 0
 
+  getter _raw : String = ""
+  getter _idx : Int32 = 0
+
   def after_initialize
     @key = @key.tr("\t\n", " ").strip
-    @val = @val.tr("", "").strip
+    @vals = @vals.tr("\t", "").strip
   end
 
   @[JSON::Field(ignore: true)]
@@ -47,7 +50,8 @@ struct CV::VpTermForm
   end
 
   def save : VpTerm?
-    vpterm = VpTerm.new(@key, [@val], [@tags], @prio, uname: user.uname)
+    prio = VpTerm.parse_prio(@prio)
+    vpterm = VpTerm.new(@key, @vals.split('|'), @tags.split(' '), prio, uname: user.uname)
     vpterm._mode = @_mode
     dict.set!(vpterm)
   end

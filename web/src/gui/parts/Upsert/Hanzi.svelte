@@ -104,7 +104,7 @@
         }
       }
     } catch (ex) {
-      alert(ex.body.message)
+      alert(ex.message)
     }
   }
 

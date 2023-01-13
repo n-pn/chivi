@@ -19,7 +19,7 @@
       window.location.href = back
     } catch (ex) {
       console.log(ex)
-      error = ex.body.message
+      error = ex.message
     }
   }
 </script>

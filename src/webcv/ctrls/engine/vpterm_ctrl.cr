@@ -51,22 +51,22 @@ class CV::VptermCtrl < CV::BaseCtrl
       Log.error { err }
     end
 
-    spawn log_upsert_entry(form.dname, vpterm, params)
+    spawn log_upsert_entry(vpterm, form)
     render :accepted, json: vpterm
   end
 
   LOG_DIR = "var/dicts/ulogs"
   Dir.mkdir_p(LOG_DIR)
 
-  private def log_upsert_entry(dname, entry, params)
+  private def log_upsert_entry(entry, form)
     log_file = "#{LOG_DIR}/#{Time.local.to_s("%F")}.jsonl"
 
     File.open(log_file, "a") do |io|
       {
-        entry.utime, dname,
+        entry.utime, form.dname,
         entry.key, entry.vals, entry.tags,
         entry.prio, entry.uname, entry._mode,
-        params["_raw"]?, params["_idx"]?,
+        form._raw, form._idx,
       }.to_json(io)
 
       io << '\n'

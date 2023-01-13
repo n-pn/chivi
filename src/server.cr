@@ -21,9 +21,10 @@ def start_server!(port : Int32, server_name = "Chivi")
   server = AC::Server.new(port, "127.0.0.1")
 
   terminate = Proc(Signal, Nil).new do |signal|
-    puts " > terminating gracefully"
-    spawn { server.close }
     signal.ignore
+    server.close
+    # puts " > terminating gracefully"
+    # spawn { server.close }
   end
 
   Signal::INT.trap &terminate  # Detect ctr-c to shutdown gracefully
