@@ -18,8 +18,8 @@ Signal::TERM.trap &terminate
 
 # Start the server
 server.run do
-  puts "cvmtl listening on #{server.print_addresses}"
+  puts "mt_v2 listening on #{server.print_addresses}"
 end
 
 # Shutdown message
-puts "cvmtl server terminated\n"
+puts "mt_v2 server terminated\n"

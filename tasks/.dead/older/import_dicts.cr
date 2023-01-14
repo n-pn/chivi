@@ -1,4 +1,4 @@
-require "../src/cvmtl/vp_dict"
+require "../src/mt_v2/vp_dict"
 
 DIR = "db/vpdicts"
 

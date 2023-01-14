@@ -1,9 +1,9 @@
-require "../src/cvmtl/vp_dict"
+require "../src/mt_v2/vp_dict"
 
 INP = "var/dicts/v1"
 OUT = "var/dicts/v1"
 
-{"basic", "cvmtl", "novel", "other"}.each do |kind|
+{"basic", "mt_v2", "novel", "other"}.each do |kind|
   inp_dir = File.join(INP, kind)
   out_dir = File.join(OUT, kind)
 

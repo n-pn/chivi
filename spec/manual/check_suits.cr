@@ -1,11 +1,11 @@
-require "../../src/cvmtl/engine"
+require "../../src/mt_v2/engine"
 MTL = MT::Engine.new("combine")
 
 def convert(input : String)
   MTL.cv_plain(input).to_txt(apply_cap: false)
 end
 
-DIR = "var/cvmtl/tests"
+DIR = "var/mt_v2/tests"
 
 files = Dir.glob("#{DIR}/**/*.tsv")
 

@@ -1,6 +1,6 @@
 require "option_parser"
 
-require "../../src/cvmtl/cv_data/*"
+require "../../src/mt_v2/cv_data/*"
 
 def fix_dict(type : String)
   MT::CvTerm.open_db_tx(type) do |db|

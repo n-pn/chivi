@@ -8,18 +8,18 @@
   ]
 
   // prettier-ignore
-  const cvmtl = [
+  const mt_v2 = [
     '~fix_nouns', '~fix_verbs', '~fix_adjts',
     '~qt_times', '~qt_verbs', '~qt_nouns',
     '~v_compl', '~verb_dir', `~v_group`,
     '~v2_objs', '~fix_u_zhi', '~fix_adverbs'
   ]
 
-  const dicts = { basic, cvmtl }
+  const dicts = { basic, mt_v2 }
 
   const groups = {
     basic: 'Cơ bản',
-    cvmtl: 'Máy dịch',
+    mt_v2: 'Máy dịch',
   }
 </script>
 

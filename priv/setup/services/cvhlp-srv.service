@@ -1,5 +1,5 @@
 [Unit]
-Description=cvhlp server
+Description=mt_sp server
 After=network.target
 StartLimitIntervalSec=0
 
@@ -11,9 +11,9 @@ User=nipin
 Environment=PORT=5501
 Environment=CV_ENV=production
 WorkingDirectory=/app/chivi
-ExecStart=/app/chivi/bin/cvhlp-srv
-StandardOutput=file:/app/chivi/log/cvhlp-srv.log
-StandardError=append:/app/chivi/log/cvhlp-err.log
+ExecStart=/app/chivi/bin/mt_sp-srv
+StandardOutput=file:/app/chivi/log/mt_sp-srv.log
+StandardError=append:/app/chivi/log/mt_sp-err.log
 
 [Install]
 WantedBy=multi-user.target

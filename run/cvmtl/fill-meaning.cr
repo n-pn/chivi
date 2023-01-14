@@ -41,7 +41,7 @@ def fill_viet(file : String, fill_all = false)
 end
 
 def file_path(path : String)
-  "var/cvmtl/inits/#{path}"
+  "var/mt_v2/inits/#{path}"
 end
 
 fill_all = ARGV.includes?("-f")

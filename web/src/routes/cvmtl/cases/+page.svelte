@@ -6,7 +6,7 @@
 
 <div class="list article island">
   {#each data.files as file}
-    <a class="item" href="/cvmtl/cases/{file}">{file}</a>
+    <a class="item" href="/mt_v2/cases/{file}">{file}</a>
   {/each}
 </div>
 

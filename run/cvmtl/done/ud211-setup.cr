@@ -1,6 +1,6 @@
 require "sqlite3"
 
-DB.open("sqlite3:var/cvmtl/dicts/ud211-data.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/ud211-data.db") do |db|
   db.exec <<-SQL
     create table if not exists terms(
       line integer,
@@ -25,7 +25,7 @@ DB.open("sqlite3:var/cvmtl/dicts/ud211-data.db") do |db|
   db.exec "create index if not exists terms_ptag_idx on terms(ptag);"
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/ud211-freq.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/ud211-freq.db") do |db|
   db.exec <<-SQL
     create table if not exists freqs(
       word varchar,

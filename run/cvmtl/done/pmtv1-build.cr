@@ -1,7 +1,7 @@
 require "sqlite3"
-require "../../src/cvhlp/engine"
+require "../../src/mt_sp/engine"
 
-lines = File.read_lines("var/inits/cvmtl/199801_dependency_treebank_2003pos.txt")
+lines = File.read_lines("var/inits/mt_v2/199801_dependency_treebank_2003pos.txt")
 
 limit = lines.size // 5
 
@@ -37,7 +37,7 @@ end
   end
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/pmtv1-data.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/pmtv1-data.db") do |db|
   db.exec "begin transaction"
   db.exec "delete from terms"
 
@@ -51,7 +51,7 @@ DB.open("sqlite3:var/cvmtl/dicts/pmtv1-data.db") do |db|
   db.exec "commit"
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/pmtv1-freq.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/pmtv1-freq.db") do |db|
   freqs = freqs.to_a.map do |k, v|
     v = v.to_a.sort_by!(&.[1].-)
     sum = v.reduce(0) { |c, (_, i)| c + i }

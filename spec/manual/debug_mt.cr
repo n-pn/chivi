@@ -1,5 +1,5 @@
-require "../../src/cvmtl/engine"
-require "../../src/cvhlp/engine"
+require "../../src/mt_v2/engine"
+require "../../src/mt_sp/engine"
 
 text = ARGV[0]? || "在魏梦柔的目光下"
 book = ARGV[1]? || "-x3wmhcb6"

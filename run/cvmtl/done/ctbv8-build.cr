@@ -1,5 +1,5 @@
 require "sqlite3"
-require "../../src/cvhlp/engine"
+require "../../src/mt_sp/engine"
 
 class Term
   property line : Int32 = 0
@@ -40,7 +40,7 @@ alias Freq = Hash(String, Int32)
 freqs = Hash(String, Freq).new { |h, k| h[k] = Freq.new(0) }
 terms = [] of Term
 
-files = Dir.glob("var/inits/cvmtl/ctb8.0/data/postagged/*.pos")
+files = Dir.glob("var/inits/mt_v2/ctb8.0/data/postagged/*.pos")
 
 files.sort_by! do |x|
   name = File.basename(x, ".pos")
@@ -62,7 +62,7 @@ HANVIET = Hash(String, String).new do |h, k|
   h[k] = TL::Engine.hanviet.convert(k).to_txt(cap: false)
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/ctbv8-data.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/ctbv8-data.db") do |db|
   db.exec "begin transaction"
   db.exec "delete from terms"
 
@@ -77,7 +77,7 @@ DB.open("sqlite3:var/cvmtl/dicts/ctbv8-data.db") do |db|
   db.exec "commit"
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/ctbv8-freq.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/ctbv8-freq.db") do |db|
   freqs = freqs.to_a.map do |k, v|
     v = v.to_a.sort_by!(&.[1].-)
     sum = v.reduce(0) { |c, (_, i)| c + i }

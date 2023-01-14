@@ -1,5 +1,5 @@
 require "json"
-require "../../oldmt/*"
+require "../../mt_v1/*"
 
 struct CV::VpTermView
   DIR = "var/vhint/detect"
@@ -32,8 +32,8 @@ struct CV::VpTermView
   private def add_hints(entry : TermView) : Nil
     case @vdict.kind
     when .other? then return
-    when .cvmtl?
-      entry.hints_tags_for_cvmtl_dicts(@dname)
+    when .mt_v2?
+      entry.hints_tags_for_mt_v2_dicts(@dname)
     else
       entry.add_hints_from_mtl(@word_mtl)
       entry.hints_tags_by_word
@@ -83,7 +83,7 @@ struct CV::VpTermView
       @tag_hints << term.ptag.to_str unless term.ptag.unkn?
     end
 
-    def hints_tags_for_cvmtl_dicts(dname : String) : Nil
+    def hints_tags_for_mt_v2_dicts(dname : String) : Nil
       case dname
       when "~fix_adjts" then @tag_hints << "a" << "b"
       when "~fix_verbs" then @tag_hints << "v" << "vi" << "vo"

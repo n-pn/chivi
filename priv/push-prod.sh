@@ -19,7 +19,7 @@ do
     cd ..
   elif [[ $target == "hanlp-srv" ]]
   then
-    rsync-fast "src/cvhlp/hanlp_srv.py" $SSH/bin
+    rsync-fast "src/mt_sp/hanlp_srv.py" $SSH/bin
   else
     shards build -s --release --production $target
     rsync-fast bin/$target $SSH/bin

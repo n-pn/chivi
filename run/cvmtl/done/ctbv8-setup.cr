@@ -1,6 +1,6 @@
 require "sqlite3"
 
-DB.open("sqlite3:var/cvmtl/dicts/ctbv8-data.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/ctbv8-data.db") do |db|
   db.exec <<-SQL
     create table if not exists terms(
       line integer,
@@ -19,7 +19,7 @@ DB.open("sqlite3:var/cvmtl/dicts/ctbv8-data.db") do |db|
   db.exec "create index if not exists terms_cons_idx on terms(cons);"
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/ctbv8-freq.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/ctbv8-freq.db") do |db|
   db.exec <<-SQL
     create table if not exists freqs(
       word varchar,

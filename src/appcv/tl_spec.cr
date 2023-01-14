@@ -83,7 +83,7 @@ class CV::Tlspec
 
   ######################
 
-  DIR = "var/cvmtl/users"
+  DIR = "var/mt_v2/users"
   Dir.mkdir_p(DIR)
 
   CACHE = {} of String => self

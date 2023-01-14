@@ -38,7 +38,7 @@ module MT::PosTag
   TAG_ATTR = {} of Int32 => Attr
   ROLE_MAP = {} of Int32 => Array(Int32)
 
-  files = Dir.glob("var/cvmtl/ptags/*.yml")
+  files = Dir.glob("var/mt_v2/ptags/*.yml")
   files.sort_by! { |x| File.basename(x, ".yml").split('-').first.to_i }
 
   files.each do |file|

@@ -1,5 +1,5 @@
 require "sqlite3"
-require "../../src/cvhlp/engine"
+require "../../src/mt_sp/engine"
 
 class Term
   property line : Int32 = 0
@@ -64,7 +64,7 @@ freqs = Hash(String, Freq).new { |h, k| h[k] = Freq.new(0) }
 l_id = 0
 
 {"train", "dev", "test"}.each do |type|
-  array, l_id = read_file "var/inits/cvmtl/POS/ctb6/#{type}.char.bmes", l_id
+  array, l_id = read_file "var/inits/mt_v2/POS/ctb6/#{type}.char.bmes", l_id
   terms.concat(array)
   array.each do |term|
     freqs[term.word][term.ptag] &+= 1
@@ -77,7 +77,7 @@ HANVIET = Hash(String, String).new do |h, k|
   h[k] = TL::Engine.hanviet.convert(k).to_txt(cap: false)
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/ctbv6-data.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/ctbv6-data.db") do |db|
   db.exec "begin transaction"
   db.exec "delete from terms"
 
@@ -92,7 +92,7 @@ DB.open("sqlite3:var/cvmtl/dicts/ctbv6-data.db") do |db|
   db.exec "commit"
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/ctbv6-freq.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/ctbv6-freq.db") do |db|
   freqs = freqs.to_a.map do |k, v|
     v = v.to_a.sort_by!(&.[1].-)
     sum = v.reduce(0) { |c, (_, i)| c + i }

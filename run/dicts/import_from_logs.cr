@@ -1,4 +1,4 @@
-require "../../src/cvmtl/cv_data/*"
+require "../../src/mt_v2/cv_data/*"
 
 DICTS = {} of String => MT::CvDict?
 

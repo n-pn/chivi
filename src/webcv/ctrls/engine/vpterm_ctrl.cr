@@ -1,6 +1,6 @@
 require "../_ctrl_base"
 require "./vpterm_form"
-require "../../../oldmt/mt_core"
+require "../../../mt_v1/mt_core"
 
 class CV::VptermCtrl < CV::BaseCtrl
   base "/api/terms"
@@ -35,7 +35,7 @@ class CV::VptermCtrl < CV::BaseCtrl
     raise BadRequest.new("Nội dung không thay đổi!") unless vpterm = form.save
 
     spawn do
-      if vdict.kind.cvmtl?
+      if vdict.kind.mt_v2?
         MtDict.upsert(form.dname[1..], vpterm)
       elsif vdict.kind.novel?
         VpHint.user_vals.append!(vpterm.key, vpterm.vals)

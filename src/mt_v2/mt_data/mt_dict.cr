@@ -18,7 +18,7 @@ class MT::MtDict
   def self.load_core
     dict = load("core", 1, dic: 2_i8)
 
-    Dir.glob("var/cvmtl/inits/**/*.tsv").each do |file|
+    Dir.glob("var/mt_v2/inits/**/*.tsv").each do |file|
       dict.load_tsv_file(file, dic: 1)
     end
 

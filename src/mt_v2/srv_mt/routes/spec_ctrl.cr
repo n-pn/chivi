@@ -3,7 +3,7 @@ require "./_ctrl_base"
 class MT::SpecCtrl < MT::BaseCtrl
   base "/_mt"
 
-  SPEC_DIR = "var/cvmtl/tests/"
+  SPEC_DIR = "var/mt_v2/tests/"
 
   @[AC::Route::GET("/specs")]
   def list_specs

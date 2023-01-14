@@ -1,8 +1,8 @@
 require "sqlite3"
 
-# File.delete "var/cvmtl/dicts/pku98.db"
+# File.delete "var/mt_v2/dicts/pku98.db"
 
-DB.open("sqlite3:var/cvmtl/dicts/pku98-data.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/pku98-data.db") do |db|
   db.exec <<-SQL
     create table if not exists terms(
       line integer,
@@ -23,7 +23,7 @@ DB.open("sqlite3:var/cvmtl/dicts/pku98-data.db") do |db|
   db.exec "create index if not exists terms_comp_idx on terms(comp);"
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/pku98-freq.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/pku98-freq.db") do |db|
   db.exec <<-SQL
     create table if not exists freqs(
       word varchar,

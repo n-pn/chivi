@@ -1,7 +1,7 @@
 require "sqlite3"
 require "colorize"
-require "../src/cvmtl/engine/mt_term"
-require "../src/cvmtl/pos_tag"
+require "../src/mt_v2/engine/mt_term"
+require "../src/mt_v2/pos_tag"
 
 INP = "var/dicts"
 DIC = DB.open "sqlite3://./#{INP}/cvdicts.db"

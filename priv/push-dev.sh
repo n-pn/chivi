@@ -14,7 +14,7 @@ do
     cd ..
   elif [[ $target == "hanlp-srv" ]]
   then
-    cp -f "src/cvhlp/hanlp_srv.py" /app/chivi/bin
+    cp -f "src/mt_sp/hanlp_srv.py" /app/chivi/bin
   else
     shards build -s --release --production $target
   fi

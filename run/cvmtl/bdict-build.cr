@@ -1,5 +1,5 @@
 require "sqlite3"
-require "../../src/cvhlp/service/btran_api"
+require "../../src/mt_sp/service/btran_api"
 
 DIC = DB.open("sqlite3:var/dicts/hints/bing_dict.dic")
 DIC.exec "pragma journal_mode = WAL"

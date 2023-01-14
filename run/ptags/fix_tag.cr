@@ -1,5 +1,5 @@
 require "yaml"
-require "../../src/cvmtl/cv_data/*"
+require "../../src/mt_v2/cv_data/*"
 
 record Term, id : Int32, key : String, val : String do
   include DB::Serializable

@@ -16,7 +16,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
         entry = Tlspec.load!(ukey)
         last_edit = entry.edits.last
         ztext = entry.ztext[last_edit.lower...last_edit.upper]
-        cvmtl = MtCore.generic_mtl(entry.dname).cv_plain(ztext, cap_first: false).to_txt
+        mt_v2 = MtCore.generic_mtl(entry.dname).cv_plain(ztext, cap_first: false).to_txt
 
         {
           _ukey: ukey,
@@ -26,7 +26,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
           uname: entry.edits.first.uname,
           privi: entry.edits.first.privi,
           match: last_edit.match,
-          cvmtl: cvmtl,
+          mt_v2: mt_v2,
         }
       end,
     }
@@ -69,7 +69,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     ztext = entry.ztext[lower...upper]
     dname = entry.dname
 
-    cvmtl = MtCore.generic_mtl(dname)
+    mt_v2 = MtCore.generic_mtl(dname)
 
     render json: {
       ztext: entry.ztext,
@@ -83,7 +83,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
         _ukey: ukey,
         match: last_edit.match,
         extra: last_edit.extra,
-        cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_txt,
+        mt_v2: mt_v2.cv_plain(ztext, cap_first: false).to_txt,
       },
       # edits: entry.edits,
     }

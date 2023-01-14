@@ -1,5 +1,5 @@
 require "sqlite3"
-require "../../src/cvhlp/engine"
+require "../../src/mt_sp/engine"
 
 record Term,
   line : Int32,
@@ -54,7 +54,7 @@ end
 l_id = 0
 
 {"train", "dev", "test"}.each do |type|
-  file = "var/inits/cvmtl/UD2/UD_Chinese-GSDSimp/zh_gsdsimp-ud-#{type}.conllu"
+  file = "var/inits/mt_v2/UD2/UD_Chinese-GSDSimp/zh_gsdsimp-ud-#{type}.conllu"
   array, l_id = read_file(file)
   terms.concat(array)
   array.each do |term|
@@ -63,7 +63,7 @@ l_id = 0
 end
 
 puts terms.size
-DB.open("sqlite3:var/cvmtl/dicts/ud211-data.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/ud211-data.db") do |db|
   db.exec "begin transaction"
   db.exec "delete from terms"
 
@@ -92,7 +92,7 @@ DB.open("sqlite3:var/cvmtl/dicts/ud211-data.db") do |db|
 end
 
 puts freqs.size
-DB.open("sqlite3:var/cvmtl/dicts/ud211-freq.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/ud211-freq.db") do |db|
   freqs = freqs.to_a.map do |k, v|
     v = v.to_a.sort_by!(&.[1].-)
     sum = v.reduce(0) { |c, (_, i)| c + i }

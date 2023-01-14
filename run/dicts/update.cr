@@ -1,7 +1,7 @@
 require "sqlite3"
 require "colorize"
 
-require "../../src/cvmtl/cv_data/*"
+require "../../src/mt_v2/cv_data/*"
 
 class Dict
   def initialize(@type : String)
@@ -24,7 +24,7 @@ class Dict
     end
   end
 
-  PTAG_DIR = "var/cvmtl/inits"
+  PTAG_DIR = "var/mt_v2/inits"
 
   def fix_ptags
     fix_ptag("#{PTAG_DIR}/map_pronoun.tsv", "r")
@@ -87,7 +87,7 @@ class Dict
     end
   end
 
-  FIX_DIR = "var/cvmtl/fixed"
+  FIX_DIR = "var/mt_v2/fixed"
 
   def add_fixes
     # import_fixed("#{FIX_DIR}/poly_noad.tsv")

@@ -5,7 +5,7 @@ require "action-controller/logger"
 require "action-controller/server"
 
 module MT
-  Log = ::Log.for("cvmtl")
+  Log = ::Log.for("mt_v2")
 
   ActionController::Server.before(
     ActionController::ErrorHandler.new,

@@ -1,8 +1,8 @@
 require "sqlite3"
-require "../../src/cvhlp/engine"
+require "../../src/mt_sp/engine"
 
-# lines = File.read_lines("var/inits/cvmtl/input/199801.txt", encoding: "GB18030")
-lines = File.read_lines("var/inits/cvmtl/input/199801_people_s_daily.txt")
+# lines = File.read_lines("var/inits/mt_v2/input/199801.txt", encoding: "GB18030")
+lines = File.read_lines("var/inits/mt_v2/input/199801_people_s_daily.txt")
 
 class Term
   getter lpos : Int32
@@ -98,7 +98,7 @@ HANVIET = Hash(String, String).new do |h, k|
   h[k] = TL::Engine.hanviet.convert(k).to_txt(cap: false)
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/pku98-data.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/pku98-data.db") do |db|
   db.exec "begin transaction"
   db.exec "delete from terms"
 
@@ -113,7 +113,7 @@ DB.open("sqlite3:var/cvmtl/dicts/pku98-data.db") do |db|
   db.exec "commit"
 end
 
-DB.open("sqlite3:var/cvmtl/dicts/pku98-freq.db") do |db|
+DB.open("sqlite3:var/mt_v2/dicts/pku98-freq.db") do |db|
   freqs = freqs.to_a.map do |k, v|
     v = v.to_a.sort_by!(&.[1].-)
     sum = v.reduce(0) { |c, (_, i)| c + i }

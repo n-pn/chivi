@@ -47,42 +47,42 @@ end
 #   add_term(word, :top25, "lac", ptag.tr("¦", ":"))
 # end
 
-# lines = File.read_lines("var/inits/cvmtl/360w.txt")
+# lines = File.read_lines("var/inits/mt_v2/360w.txt")
 # lines.each do |line|
 #   next if line.empty?
 #   word, ptag = line.split('\t', 2)
 #   add_term(word, :x360w, "t3m", ptag.tr("\t", ":"))
 # end
 
-# DB.open("sqlite3:var/cvmtl/dicts/pku14-freq.db") do |db|
+# DB.open("sqlite3:var/mt_v2/dicts/pku14-freq.db") do |db|
 #   db.query_each "select word, ptag, freq from freqs" do |rs|
 #     word, ptag, freq = rs.read(String, String, Int32)
 #     add_term(word, :pku14, "p14", "#{ptag}:#{freq}")
 #   end
 # end
 
-# DB.open("sqlite3:var/cvmtl/dicts/pku98-freq.db") do |db|
+# DB.open("sqlite3:var/mt_v2/dicts/pku98-freq.db") do |db|
 #   db.query_each "select word, ptag, freq from freqs" do |rs|
 #     word, ptag, freq = rs.read(String, String, Int32)
 #     add_term(word, :pku98, "p98", "#{ptag}:#{freq}")
 #   end
 # end
 
-# DB.open("sqlite3:var/cvmtl/dicts/pmtv1-freq.db") do |db|
+# DB.open("sqlite3:var/mt_v2/dicts/pmtv1-freq.db") do |db|
 #   db.query_each "select word, ptag, freq from freqs" do |rs|
 #     word, ptag, freq = rs.read(String, String, Int32)
 #     add_term(word, :pku98, "pmt", "#{ptag}:#{freq}")
 #   end
 # end
 
-# DB.open("sqlite3:var/cvmtl/dicts/ctbv9-freq.db") do |db|
+# DB.open("sqlite3:var/mt_v2/dicts/ctbv9-freq.db") do |db|
 #   db.query_each "select word, ptag, freq from freqs" do |rs|
 #     word, ptag, freq = rs.read(String, String, Int32)
 #     add_term(word, :ctb, "ctb", "#{ptag}:#{freq}")
 #   end
 # end
 
-# DB.open("sqlite3:var/cvmtl/dicts/ud211-freq.db") do |db|
+# DB.open("sqlite3:var/mt_v2/dicts/ud211-freq.db") do |db|
 #   db.query_each "select word, ptag, freq from freqs" do |rs|
 #     word, ptag, freq = rs.read(String, String, Int32)
 #     add_term(word, :ud2, "ud2", "#{ptag}:#{freq}")
@@ -93,7 +93,7 @@ end
 # puts Mark::Vdict.value
 # puts Mark::Cdict.value
 
-# require "../../src/cvhlp/engine"
+# require "../../src/mt_sp/engine"
 
 # HVMTL = TL::Engine.hanviet
 

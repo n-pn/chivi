@@ -1,5 +1,5 @@
 require "../_ctrl_base"
-require "../../../oldmt/vp_hint"
+require "../../../mt_v1/vp_hint"
 
 class CV::VpdictCtrl < CV::BaseCtrl
   base "/api/dicts"

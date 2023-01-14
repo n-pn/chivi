@@ -25,23 +25,23 @@
       <tr>
         <th class="id">#</th>
         <th class="ztext">Từ gốc</th>
-        <th class="cvmtl">Dịch máy</th>
+        <th class="mt_v2">Dịch máy</th>
         <th class="match">Nghĩa đúng</th>
         <th class="_meta">N. dùng</th>
       </tr>
     </thead>
     <tbody>
-      {#each data.items as { _ukey, ztext, d_dub, mtime, uname, match, cvmtl }, idx}
+      {#each data.items as { _ukey, ztext, d_dub, mtime, uname, match, mt_v2 }, idx}
         <tr
-          class={cvmtl == match ? 'ok' : 'err'}
+          class={mt_v2 == match ? 'ok' : 'err'}
           on:click={() => tlspec.load(_ukey)}>
           <td class="id">{idx + 1 + (data.pgidx - 1) * 50}</td>
           <td class="ztext">
             <div class="txt">{ztext}</div>
             <div class="dic">{d_dub}</div>
           </td>
-          <td class="cvmtl">
-            <div title={cvmtl}>{cvmtl}</div>
+          <td class="mt_v2">
+            <div title={mt_v2}>{mt_v2}</div>
           </td>
           <td class="match">
             <div title={match}>{match}</div>
@@ -118,7 +118,7 @@
     }
   }
 
-  .cvmtl,
+  .mt_v2,
   .match {
     max-width: 12rem;
 
@@ -147,7 +147,7 @@
     font-size: 0.9em;
   }
 
-  td.cvmtl,
+  td.mt_v2,
   td.match {
     font-size: rem(15px);
   }

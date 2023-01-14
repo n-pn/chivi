@@ -1,4 +1,4 @@
-require "../../src/cvmtl/*"
+require "../../src/mt_v2/*"
 
 DIR = "var/vpdicts"
 

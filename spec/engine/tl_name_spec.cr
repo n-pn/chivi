@@ -1,5 +1,5 @@
 require "spec"
-require "../../src/oldmt/tl_name"
+require "../../src/mt_v1/tl_name"
 
 tl_name = CV::TlName.new(CV::VpDict.new("spec/fixtures/dict.tsv"))
 

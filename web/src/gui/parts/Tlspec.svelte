@@ -5,9 +5,9 @@
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
   const entry = {
-    ...writable({ _ukey: '', match: '', extra: '', cvmtl: '' }),
+    ...writable({ _ukey: '', match: '', extra: '', mt_v2: '' }),
     reset() {
-      this.set({ match: '', extra: '', cvmtl: '' })
+      this.set({ match: '', extra: '', mt_v2: '' })
     },
   }
 
@@ -66,9 +66,9 @@
     const data = await api_call(path, body, 'PUT')
 
     const [convert, hanviet] = data.split('\n')
-    if (!$entry.match || $entry.match == $entry.cvmtl) $entry.match = convert
+    if (!$entry.match || $entry.match == $entry.mt_v2) $entry.match = convert
 
-    $entry.cvmtl = convert
+    $entry.mt_v2 = convert
     hvmtl = hanviet
 
     setTimeout(() => {
@@ -131,8 +131,8 @@
     navigator.clipboard.writeText(input)
   }
 
-  function appy_cvmtl() {
-    $entry.match = $entry.cvmtl
+  function appy_mt_v2() {
+    $entry.match = $entry.mt_v2
     match_elem.focus()
   }
 
@@ -210,8 +210,8 @@
         {/each}
       </tlspec-hanzi>
 
-      <tlspec-cvmtl>{hvmtl}</tlspec-cvmtl>
-      <tlspec-cvmtl>{$entry.cvmtl}</tlspec-cvmtl>
+      <tlspec-mt_v2>{hvmtl}</tlspec-mt_v2>
+      <tlspec-mt_v2>{$entry.mt_v2}</tlspec-mt_v2>
     </tlspec-input>
 
     <form
@@ -244,7 +244,7 @@
             </a>
             <button
               type="button"
-              on:click={appy_cvmtl}
+              on:click={appy_mt_v2}
               data-tip="Copy từ kết quả dịch máy">
               <SIcon name="copy" />
             </button>
@@ -357,7 +357,7 @@
     @include ftsize(lg);
   }
 
-  tlspec-cvmtl {
+  tlspec-mt_v2 {
     display: block;
 
     $height: 1rem;

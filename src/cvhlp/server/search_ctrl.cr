@@ -1,7 +1,7 @@
 require "./_shared"
 
-require "../../cvmtl/cv_data/cv_dict"
-require "../../cvmtl/cv_data/cv_term"
+require "../../mt_v2/cv_data/cv_dict"
+require "../../mt_v2/cv_data/cv_term"
 
 class TL::SearchCtrl < TL::BaseCtrl
   base "/_mh"

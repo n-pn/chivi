@@ -32,7 +32,7 @@ then
 
   # rsync-fast "var/fixed" "$SSH/var"
   # rsync-fast "var/dicts/hints" "$SSH/var/dicts"
-  # rsync-fast "var/cvmtl/inits" "$SSH/var/cvmtl"
+  # rsync-fast "var/mt_v2/inits" "$SSH/var/mt_v2"
   # rsync-fast "var/dicts/v1/novel" "$SSH/var/dicts/v1"
   # rsync-fast --delete "priv/static/covers/" "$SSH/priv/static/covers/"
 
@@ -44,10 +44,10 @@ if [[ $* == "all" || $* == *mtv2* ]]
 then
   echo upload mtv2!
 
-  rsync-fast "var/cvmtl/dicts" "$SSH/var/cvmtl"
-  rsync-fast "var/cvmtl/inits" "$SSH/var/cvmtl"
-  rsync-fast "var/cvmtl/ptags" "$SSH/var/cvmtl"
-  rsync-fast "var/cvmtl/rules" "$SSH/var/cvmtl"
+  rsync-fast "var/mt_v2/dicts" "$SSH/var/mt_v2"
+  rsync-fast "var/mt_v2/inits" "$SSH/var/mt_v2"
+  rsync-fast "var/mt_v2/ptags" "$SSH/var/mt_v2"
+  rsync-fast "var/mt_v2/rules" "$SSH/var/mt_v2"
 
   rsync-fast "var/dicts/hints" "$SSH/var/dicts"
   rsync-fast "var/dicts/qtran" "$SSH/var/dicts"

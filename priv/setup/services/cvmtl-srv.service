@@ -1,5 +1,5 @@
 [Unit]
-Description=cvmtl server
+Description=mt_v2 server
 After=network.target
 StartLimitIntervalSec=0
 
@@ -11,9 +11,9 @@ User=nipin
 Environment=PORT=5502
 Environment=CV_ENV=production
 WorkingDirectory=/app/chivi
-ExecStart=/app/chivi/bin/cvmtl-srv
-StandardOutput=file:/app/chivi/log/cvmtl-srv.log
-StandardError=append:/app/chivi/log/cvmtl-err.log
+ExecStart=/app/chivi/bin/mt_v2-srv
+StandardOutput=file:/app/chivi/log/mt_v2-srv.log
+StandardError=append:/app/chivi/log/mt_v2-err.log
 
 [Install]
 WantedBy=multi-user.target

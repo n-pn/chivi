@@ -1,6 +1,6 @@
 require "colorize"
 
-require "../../src/cvmtl/cv_data/*"
+require "../../src/mt_v2/cv_data/*"
 
 record Term, id : Int32, key : String, time : Int64, user : String, flag : Int32 do
   include DB::Serializable

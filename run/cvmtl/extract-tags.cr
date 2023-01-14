@@ -1,7 +1,7 @@
 require "sqlite3"
 
 def db_path(name : String)
-  "var/cvmtl/dicts/#{name}-freq.db"
+  "var/mt_v2/dicts/#{name}-freq.db"
 end
 
 DBs = {
@@ -13,7 +13,7 @@ DBs = {
 at_exit { DBs.each_value(&.close) }
 
 def extract(dict : String, ptag : String, path : String, mode = "w")
-  file = File.open("var/cvmtl/inits/#{path}.#{dict}.tab", mode)
+  file = File.open("var/mt_v2/inits/#{path}.#{dict}.tab", mode)
 
   query = "select word, viet, ptag, freq from freqs where ptag like ?"
   DBs[dict].query_each query, ptag do |rs|

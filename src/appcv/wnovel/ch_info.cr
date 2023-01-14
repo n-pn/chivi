@@ -19,9 +19,9 @@ require "./nvchap/ch_util"
 #   field uslug : String = ""
 #   field fixed : Bool = false
 
-#   def convert!(cvmtl, title : String, chvol : String = "")
-#     self.title = title.empty? "Thiếu tựa": cvmtl.cv_title(title).to_txt
-#     self.chvol = chvol.empty? "Chính văn": cvmtl.cv_title(chvol).to_txt
+#   def convert!(mt_v2, title : String, chvol : String = "")
+#     self.title = title.empty? "Thiếu tựa": mt_v2.cv_title(title).to_txt
+#     self.chvol = chvol.empty? "Chính văn": mt_v2.cv_title(chvol).to_txt
 #   end
 # end
 
@@ -184,9 +184,9 @@ class CV::Chinfo
     getter chvol : String
     getter uslug : String
 
-    def initialize(cvmtl, title : String, chvol : String = "")
-      @title = title.empty? ? "Thiếu tựa" : cvmtl.cv_title(title).to_txt
-      @chvol = chvol.empty? ? "Chính văn" : cvmtl.cv_title(chvol).to_txt
+    def initialize(mt_v2, title : String, chvol : String = "")
+      @title = title.empty? ? "Thiếu tựa" : mt_v2.cv_title(title).to_txt
+      @chvol = chvol.empty? ? "Chính văn" : mt_v2.cv_title(chvol).to_txt
       @uslug = TextUtil.tokenize(@title)[0..7].join('-')
     end
   end
