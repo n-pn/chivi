@@ -1,5 +1,5 @@
 require "../../../zhlib/models/zh_book"
-require "../../../appcv/nv_info"
+require "../../../appcv/wnovel/nv_info"
 
 class CV::NvinfoForm
   include JSON::Serializable

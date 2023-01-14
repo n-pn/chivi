@@ -25,13 +25,13 @@
   let tspan = 1
   $: vcoin = costs[privi][tspan]
 
-  const action_url = '/api/_self/ugprivi'
+  const action = '/api/_self/upgrade-privi'
 
   async function submit() {
     error = ''
 
     try {
-      const body = await api_call(action_url, { privi, tspan }, 'PUT')
+      const body = await api_call(action, { privi, tspan }, 'PUT')
       $page.data._user = body
       tab = 0
     } catch (ex) {
@@ -41,7 +41,7 @@
   }
 </script>
 
-<form action={action_url} method="PUT">
+<form {action} method="PUT">
   <div class="form-field">
     <label class="form-label" for="privi">Chọn quyền hạn:</label>
     <div class="radio-group">
@@ -74,7 +74,7 @@
     <button
       type="submit"
       class="m-btn _success  _fill"
-      disabled={vcoin > $session.vcoin_avail}
+      disabled={vcoin > $session.vcoin}
       on:click|preventDefault={submit}>
       <span>Nâng cấp</span>
       <SIcon name="coin" />{vcoin}

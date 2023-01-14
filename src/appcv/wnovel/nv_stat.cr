@@ -1,4 +1,5 @@
-require "./_base"
+require "../_base"
+require "./nv_info"
 
 class CV::Nvstat
   enum Klass

@@ -30,7 +30,7 @@ module YS
         crits = query.filter_nvinfo(book).with_yslist.with_ysuser.to_a
         crits.each(&.nvinfo = nvinfo)
       elsif list
-        yslist = Yslist.find!({id: UkeyUtil.decode32(list)})
+        yslist = Yslist.find!({id: HashUtil.decode32(list)})
         total = yslist.book_count
 
         crits = query.where("yslist_id = ?", yslist.id).with_nvinfo.to_a

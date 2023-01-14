@@ -40,7 +40,7 @@ class YS::ListCtrl < YS::BaseCtrl
   def entry(list : String, sort : String = "utime",
             smin : Int32 = 0, smax : Int32 = 6,
             lb : String? = nil)
-    yslist = Yslist.find!({id: UkeyUtil.decode32(list)})
+    yslist = Yslist.find!({id: HashUtil.decode32(list)})
     pgidx, limit, offset = CtrlUtil.page_params(params, max_limit: 20)
 
     crits = Yscrit.sort_by(sort).with_nvinfo

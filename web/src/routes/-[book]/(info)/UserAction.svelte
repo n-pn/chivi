@@ -2,7 +2,7 @@
   import { last_read } from '$utils/ubmemo_utils'
 
   import { SIcon, Gmenu } from '$gui'
-  import BookTrack from '$gui/parts/BookTrack.svelte'
+  import MarkBook from './MarkBook.svelte'
 
   export let nvinfo: CV.Nvinfo
   export let ubmemo: CV.Ubmemo
@@ -21,7 +21,7 @@
     <span class="u-show-md">{toread.text}</span>
   </a>
 
-  <BookTrack {nvinfo} {ubmemo} />
+  <MarkBook {nvinfo} {ubmemo} />
 
   <Gmenu class="action" loc="bottom" r>
     <button class="m-btn " slot="trigger">

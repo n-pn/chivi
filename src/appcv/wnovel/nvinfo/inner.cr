@@ -37,7 +37,7 @@ module CV::NvinfoInner
   def set_bcover(zcover : String, force = false) : Nil
     return unless force || self.bcover.empty?
     self.scover = zcover
-    self.bcover = UkeyUtil.digest32(zcover, 8) + ".webp"
+    self.bcover = HashUtil.digest32(zcover, 8) + ".webp"
   end
 
   def set_utime(utime : Int64, force = false) : Int64?

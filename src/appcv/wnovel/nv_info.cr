@@ -1,11 +1,12 @@
-require "./shared/*"
-require "./nvinfo/*"
-require "./_base"
+require "../_base"
+require "../shared/*"
 
 require "./author"
 require "./btitle"
-require "./ys_book"
-require "../oldmt/mt_core"
+require "./nvinfo/*"
+
+require "../ys_book"
+require "../../oldmt/mt_core"
 
 class CV::Nvinfo
   include Clear::Model
@@ -217,7 +218,7 @@ class CV::Nvinfo
 
   def self.upsert!(author : Author, btitle : Btitle, fix_names : Bool = false)
     unless nvinfo = get(author, btitle)
-      bhash = UkeyUtil.digest32("#{btitle.zname}--#{author.zname}")
+      bhash = HashUtil.digest32("#{btitle.zname}--#{author.zname}")
       nvinfo = new({author: author, btitle: btitle, bhash: bhash})
       fix_names = true
     end

@@ -1,5 +1,6 @@
-require "./shared/book_util"
-require "./_base"
+require "../shared/book_util"
+require "../_base"
+
 require "./nv_info"
 
 class CV::Author

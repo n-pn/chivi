@@ -1,4 +1,5 @@
 require "./_base"
+require "./wnovel/nv_info"
 
 class CV::Nvdict
   include Clear::Model

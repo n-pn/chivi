@@ -7,7 +7,7 @@ module YS
 
     @[AC::Route::GET("/crits/:crit/repls")]
     def list(crit : String, page : Int32 = 1)
-      crit_id = UkeyUtil.decode32(crit)
+      crit_id = HashUtil.decode32(crit)
       repls = Ysrepl.query.where("yscrit_id = ?", crit_id)
 
       limit = 25
@@ -20,7 +20,7 @@ module YS
 
   @[AC::Route::GET("/repls/:repl/ztext")]
   def ztext(crit : String)
-    yrepl = Ysrepl.find!({id: UkeyUtil.decode32(repl)})
+    yrepl = Ysrepl.find!({id: HashUtil.decode32(repl)})
     vdict = Helpers.get_dict(yrepl.yscrit.nvinfo_id.to_i)
 
     res = @context.response

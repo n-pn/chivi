@@ -8,13 +8,12 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/")]
   def profile
-    viuser.check_privi! unless viuser.privi < 1
+    viuser.check_privi! if viuser.privi.in?(1, 2, 3)
 
     save_current_user!(viuser)
-    ViuserView.new(viuser, true)
+    render json: ViuserView.new(viuser, true)
   end
 
-  @[AC::Route::PUT("/ugprivi")]
   @[AC::Route::PUT("/upgrade-privi")]
   def upgrade_privi(privi : Int32, tspan : Int32)
     # privi = params.read_int("privi", min: 1, max: 3)

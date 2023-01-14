@@ -1,5 +1,5 @@
 require "./html_parser"
-require "../ch_info"
+require "../wnovel/ch_info"
 
 class CV::RemoteMulu
   record Chinfo, chidx : Int32, schid : String, title : String, chvol : String

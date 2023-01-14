@@ -1,4 +1,6 @@
-require "./_base"
+require "../_base"
+require "./vi_user"
+require "../dboard/dreply"
 
 class CV::UserRepl
   include Clear::Model

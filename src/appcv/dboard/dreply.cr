@@ -1,5 +1,8 @@
-require "../_util/post_util"
-require "./_base"
+require "../../_util/post_util"
+
+require "../_base"
+require "../member/vi_user"
+require "./dtopic"
 
 class CV::Cvrepl
   include Clear::Model

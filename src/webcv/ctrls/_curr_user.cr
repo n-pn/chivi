@@ -1,4 +1,4 @@
-require "../../appcv/g_vuser"
+require "../../appcv/member/vi_user"
 
 # require "../../_util/cjwt_util"
 

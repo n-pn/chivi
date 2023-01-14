@@ -51,7 +51,6 @@
     <form-field>
       <label class="form-label" for="sendee">Lý do gửi tặng</label>
       <textarea
-        type="text"
         class="m-input"
         name="reason"
         rows="1"
@@ -96,7 +95,7 @@
     <button
       type="submit"
       class="m-btn _primary  _fill"
-      disabled={!as_admin && session.vcoin_avail < amount}>
+      disabled={!as_admin && session.vcoin < amount}>
       <span>Gửi tặng</span>
       <SIcon name="coin" />
       {amount}

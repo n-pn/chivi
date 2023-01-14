@@ -1,4 +1,4 @@
-require "../../../_util/ukey_util"
+require "../../../_util/hash_util"
 require "../../../_util/ram_cache"
 
 require "compress/zip"
@@ -97,7 +97,7 @@ class CV::QtranData
 
   def self.post_ukey : String
     @@counter &+= 1
-    UkeyUtil.encode32(Time.local.to_unix_ms &+ @@counter)
+    HashUtil.encode32(Time.local.to_unix_ms &+ @@counter)
   end
 
   ################

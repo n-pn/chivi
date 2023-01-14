@@ -18,7 +18,7 @@ module CV::FixCovers
   end
 
   def copy_file(sname : String, snvid : String, slink : String, nodl = false) : {String, Int32}?
-    out_file = UkeyUtil.digest32(slink) + ".webp"
+    out_file = HashUtil.digest32(slink) + ".webp"
     out_path = File.join(OUT, out_file)
 
     if File.exists?(out_path)

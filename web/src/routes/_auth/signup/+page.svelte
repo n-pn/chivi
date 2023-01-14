@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { post_form } from '../shared'
+  import { post_form, return_back } from '../shared'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import type { PageData } from './$types'
@@ -15,10 +15,8 @@
 
   async function submit() {
     error = ''
-
-    const res = await post_form(action, { email, uname, upass })
-    if (res.error) error = res.error
-    else window.location.href = res.back
+    error = await post_form(action, { email, uname, upass })
+    if (!error) return_back
   }
 </script>
 

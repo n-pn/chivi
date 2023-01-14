@@ -1,5 +1,5 @@
 require "compress/zip"
-require "../../_util/ukey_util"
+require "../../_util/hash_util"
 require "../../_util/tran_util"
 require "../../appcv/ys_book"
 
@@ -45,6 +45,6 @@ end
 struct Base32ID
   # i.e. `"master#742887"`
   def convert(raw : String)
-    UkeyUtil.decode32(raw)
+    HashUtil.decode32(raw)
   end
 end

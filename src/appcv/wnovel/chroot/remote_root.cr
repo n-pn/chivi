@@ -1,4 +1,4 @@
-require "../remote/remote_info"
+require "../../remote/remote_info"
 
 # for source like `hetushu` or `69shu` that can download book info/book text form
 # internet

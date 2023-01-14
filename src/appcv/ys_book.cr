@@ -1,13 +1,10 @@
 require "./_base"
-require "./nv_info"
 
 class CV::Ysbook
   include Clear::Model
 
   self.table = "ysbooks"
   primary_key
-
-  belongs_to nvinfo : Nvinfo
 
   # seed data
 

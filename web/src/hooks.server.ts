@@ -1,12 +1,19 @@
-export async function handle({ event, resolve }) {
+import Appnav from '$gui/global/Modals/Appnav.svelte'
+import type {
+  Handle,
+  HandleFetch,
+  HandleServerError,
+  RequestEvent,
+} from '@sveltejs/kit'
+
+export const handle = (async ({ event, resolve }) => {
   event.locals._user = await getSession(event)
 
   return resolve(event, {
-    filterSerializedResponseHeaders: (name: string) => {
-      return name != 'location' && name != 'link'
-    },
+    filterSerializedResponseHeaders: (name: string) =>
+      name != 'location' && name != 'link',
   })
-}
+}) satisfies Handle
 
 const api_hosts = {
   _ys: 'localhost:5509',
@@ -16,7 +23,7 @@ const api_hosts = {
   api: 'localhost:5010',
 }
 
-export async function handleFetch({ event, fetch, request }) {
+export const handleFetch = (async ({ event, fetch, request }) => {
   const url = new URL(request.url)
   const host = api_hosts[url.pathname.split('/')[1]]
   if (!host) return fetch(request)
@@ -28,39 +35,43 @@ export async function handleFetch({ event, fetch, request }) {
   request.headers.delete('connection')
 
   return fetch(request)
-}
+}) satisfies HandleFetch
 
-export function handleError({ error, event }) {
+export const handleError = (({ error }) => {
   // console.log(event)
   console.log({ error })
+  return { message: error.toString(), code: 'UNKNOWN' }
+}) satisfies HandleServerError
 
-  return {
-    message: error.toString(),
-    code: error.code ?? 'UNKNOWN',
+import * as fs from 'fs'
+fs.mkdirSync('tmp/_user', { recursive: true })
+
+const cached_users: Record<string, App.CurrentUser> = {}
+const session_url = `http://localhost:5010/api/_self`
+const guest_user = { uname: 'Khách', privi: -1, until: 0, vcoin: 0, karma: 0 }
+
+async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
+  const hash = event.cookies.get('_sess')
+  let cached_user = cached_users[hash]
+
+  const path = `tmp/_user/${hash}.json`
+
+  if (!cached_user && fs.existsSync(path)) {
+    const file_data = fs.readFileSync(path).toString()
+    cached_user = JSON.parse(file_data) as App.CurrentUser
   }
-}
 
-interface CachedUser {
-  data: App.CurrentUser
-  ttl: number
-}
+  const now_unix = new Date().getTime() / 1000
+  if (cached_user && cached_user.until >= now_unix) return cached_user
 
-const cached_users: Record<string, CachedUser> = {}
+  const req_init = { headers: { cookie: event.request.headers.get('cookie') } }
+  const response = await event.fetch(session_url, req_init)
 
-async function getSession({ fetch, cookies, request: { headers } }) {
-  const cookie = cookies.get('_sess')
+  if (!response.ok) return guest_user
 
-  const now = new Date().getTime()
+  const user_data = (await response.json()) as App.CurrentUser
+  fs.writeFileSync(path, JSON.stringify(user_data))
 
-  let cached_user = cached_users[cookie]
-  if (cached_user && cached_user.ttl >= now) return cached_user.data
-
-  const url = `http://localhost:5010/api/_self`
-  const res = await fetch(url, { headers: { cookie: headers.get('cookie') } })
-
-  if (!res.ok) return { uname: 'Khách', privi: -2 }
-
-  const user_data = await res.json()
-  cached_users[cookie] = { data: user_data, ttl: now + 3 * 60000 }
+  event.setHeaders({ cookie: response.headers.get('cookie') })
   return user_data
 }

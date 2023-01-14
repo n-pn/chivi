@@ -1,5 +1,5 @@
 require "crypto/bcrypt/password"
-require "./_base"
+require "../_base"
 
 class CV::Viuser
   include Clear::Model
@@ -56,7 +56,7 @@ class CV::Viuser
   end
 
   def set_pwtemp!
-    self.pwtemp = UkeyUtil.rand_str(8)
+    self.pwtemp = HashUtil.rand_str(8)
     self.pwtemp_until = (Time.utc + PWTEMP_TSPAN).to_unix
 
     save!
@@ -74,6 +74,14 @@ class CV::Viuser
   def fix_vcoin(value : Int32)
     self.vcoin_total += value if value > 0
     self.vcoin_avail += value
+  end
+
+  def privi_until
+    {self.privi_1_until, self.privi_2_until, self.privi_3_until}
+  end
+
+  def until
+    privi_until[self.privi &- 1]? || Time.utc.to_unix &+ 86400 * 360
   end
 
   def upgrade!(privi : Int32, tspan : Int32) : Tuple(Int64, Int64, Int64)

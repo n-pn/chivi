@@ -12,7 +12,7 @@
   dụng các tiện ích nâng cao khác sẽ được phát triển trong tương lai gần.
 </p>
 
-{#if session.vcoin_avail >= 10 && session.privi < 1}
+{#if session.privi < 1}
   <button class="btn-link" on:click={() => (tab = 2)}>
     <span>Dùng vcoin để nâng cấp quyền hạn</span>
   </button>

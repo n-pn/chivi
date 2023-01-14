@@ -40,7 +40,7 @@
 
   export let actived = false
 
-  $: session = $page.data._user || { uname: 'Khách', privi: '-1' }
+  $: session = $page.data._user
 
   const tabs = [
     { icon: 'history', btip: 'Lịch sửa đọc' },
@@ -81,7 +81,7 @@
       {#if privi > 0 && privi < 4}
         <div>
           <span class="lbl">Hết hạn:</span>
-          <strong>{avail_until(session[`privi_${privi}_until`])}</strong>
+          <strong>{avail_until(session.until)}</strong>
         </div>
       {/if}
       <button class="m-btn _xs _primary" on:click={() => usercp.change_tab(1)}
@@ -91,7 +91,7 @@
     <div class="info">
       <div>
         <span class="lbl">Số lượng vcoin hiện có:</span>
-        <SIcon name="coin" /><strong>{session.vcoin_avail}</strong>
+        <SIcon name="coin" /><strong>{session.vcoin}</strong>
       </div>
 
       <button class="m-btn _xs" on:click={() => usercp.change_tab(2)}

@@ -14,9 +14,8 @@
     msg_type = ''
     msg_text = ''
 
-    const { error } = await post_form(action, { email })
-    msg_text = error
-    msg_type = error ? 'err' : 'ok'
+    msg_text = await post_form(action, { email })
+    msg_type = msg_text ? 'err' : 'ok'
   }
 </script>
 

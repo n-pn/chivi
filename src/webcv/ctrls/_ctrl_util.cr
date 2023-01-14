@@ -1,4 +1,4 @@
-require "../../_util/ukey_util"
+require "../../_util/hash_util"
 
 module CV::CtrlUtil
   extend self
@@ -46,6 +46,6 @@ end
 
 struct ConvertBase32
   def convert(raw : String)
-    UkeyUtil.decode32(raw)
+    HashUtil.decode32(raw)
   end
 end

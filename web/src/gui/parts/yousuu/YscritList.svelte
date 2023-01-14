@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
   import { page } from '$app/stores'
-  import { SIcon } from '$gui'
 
-  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import YscritCard from './YscritCard.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   const sort_trans = { score: 'Tổng hợp', likes: 'Ưa thích', utime: 'Gần nhất' }
 </script>

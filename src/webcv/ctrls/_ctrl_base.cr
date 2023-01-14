@@ -106,7 +106,10 @@ abstract class CV::BaseCtrl < ActionController::Base
     # USER_CACHE[user_token] = CurrentUser.new(user.id, user.uname, user.privi)
     # cookies << HTTP::Cookie.new("_user", user_token, expires: 30.minutes.from_now)
 
+    session["vu_id"] = user.id.to_i64
     session["uname"] = user.uname
+    session["privi"] = user.privi.to_i64
+    session["until"] = user.until
   end
 
   private def guard_privi(min = 0)

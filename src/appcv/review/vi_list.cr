@@ -1,4 +1,4 @@
-require "../g_vuser"
+require "../member/vi_user"
 
 class CV::Vilist
   include Clear::Model

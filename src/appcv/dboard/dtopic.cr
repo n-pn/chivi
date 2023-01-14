@@ -1,9 +1,9 @@
 require "cmark"
-require "../_util/ukey_util"
-require "./_base"
+require "../../_util/hash_util"
 
-require "./nv_info"
-require "./g_vuser"
+require "../_base"
+require "../wnovel/nv_info"
+require "../member/vi_user"
 
 class CV::Cvpost
   include Clear::Model
@@ -12,7 +12,7 @@ class CV::Cvpost
   primary_key
 
   column ii : Int32 = 1 # increase for each board
-  getter oid : String { UkeyUtil.encode32(ii) }
+  getter oid : String { HashUtil.encode32(ii) }
 
   belongs_to viuser : Viuser, foreign_key_type: Int32
   getter viuser : Viuser { Viuser.load!(self.viuser_id) }
@@ -154,7 +154,7 @@ class CV::Cvpost
   end
 
   def self.load!(ii : String) : self
-    load!(UkeyUtil.decode32(ii))
+    load!(HashUtil.decode32(ii))
   end
 
   def self.init_base_topic!(nvinfo : Nvinfo)

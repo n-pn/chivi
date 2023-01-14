@@ -1,6 +1,6 @@
 require "digest"
 
-module UkeyUtil
+module HashUtil
   extend self
 
   @@seed = 0
@@ -138,16 +138,16 @@ module UkeyUtil
   # end
 end
 
-# puts UkeyUtil.digest32("95410")
-# puts UkeyUtil.encode32(95410).ljust(8, '0')
-# puts UkeyUtil.decode32("j5x20000")
-# puts UkeyUtil.decode32("j5x20")
+# puts HashUtil.digest32("95410")
+# puts HashUtil.encode32(95410).ljust(8, '0')
+# puts HashUtil.decode32("j5x20000")
+# puts HashUtil.decode32("j5x20")
 
 # str = "28unvs22456465"
-# int = UkeyUtil.decode32_zh(str)
-# puts str, int, UkeyUtil.encode32_zh(int)
+# int = HashUtil.decode32_zh(str)
+# puts str, int, HashUtil.encode32_zh(int)
 
-# puts UkeyUtil.encode32(125272284354752)
-# puts UkeyUtil.gen_ukey
-# puts UkeyUtil.gen_ukey
-# puts UkeyUtil.gen_ukey
+# puts HashUtil.encode32(125272284354752)
+# puts HashUtil.gen_ukey
+# puts HashUtil.gen_ukey
+# puts HashUtil.gen_ukey

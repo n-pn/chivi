@@ -5,16 +5,12 @@
 declare namespace App {
   interface CurrentUser {
     uname: string
+
+    vcoin: number
+    karma: number
+
     privi: number
-
-    wtheme: string
-
-    vcoin_avail: number
-    vcoin_total: number
-
-    privi_1_until: number
-    privi_2_until: number
-    privi_3_until: number
+    until: number
   }
 
   interface Locals {

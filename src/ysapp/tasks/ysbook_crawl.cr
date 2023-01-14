@@ -3,7 +3,7 @@ require "option_parser"
 require "../filedb/ys_book"
 require "../filedb/raw_ys_book"
 
-require "../../_util/ukey_util"
+require "../../_util/hash_util"
 require "../../_util/zstd_util"
 require "../../_util/proxy_client"
 
@@ -76,7 +76,7 @@ class YS::CrawlYsbook
   private def save_raw_json(b_id : Int32, json : String)
     Log.info { "#{b_id} saved.".colorize.green }
 
-    fname = "#{b_id}-#{UkeyUtil.fnv_1a(json)}.json.zst"
+    fname = "#{b_id}-#{HashUtil.fnv_1a(json)}.json.zst"
     fpath = "#{DIR}/#{self.class.group_dir(b_id)}/#{fname}"
 
     ZstdUtil.save_ctx(json, fpath)

@@ -1,7 +1,7 @@
 require "sqlite3"
 require "compress/zip"
 
-require "./remote/remote_text"
+require "../remote/remote_text"
 
 class CV::ChText
   DIR   = "var/chaps/texts"

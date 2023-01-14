@@ -12,12 +12,8 @@ struct CV::ViuserView
       jb.field "privi", @data.privi
 
       if @full
-        jb.field "vcoin_avail", @data.vcoin_avail
-        jb.field "vcoin_total", @data.vcoin_total
-
-        jb.field "privi_1_until", @data.privi_1_until
-        jb.field "privi_2_until", @data.privi_2_until
-        jb.field "privi_3_until", @data.privi_3_until
+        jb.field "vcoin", @data.vcoin_avail
+        jb.field "until", @data.until
       end
     }
   end

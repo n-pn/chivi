@@ -1,4 +1,4 @@
-require "./_base"
+require "../_base"
 
 class CV::UserPost
   include Clear::Model

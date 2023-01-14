@@ -1,13 +1,13 @@
-require "./_base"
+require "../_base"
 require "./nv_info"
 
-require "../_util/site_link"
-require "../_util/file_util"
-require "../_util/ram_cache"
+require "../../_util/site_link"
+require "../../_util/file_util"
+require "../../_util/ram_cache"
 
 # require "./nvchap/ch_list"
-require "./shared/sname_map"
-require "./remote/remote_info"
+require "../shared/sname_map"
+require "../remote/remote_info"
 
 require "./chroot/*"
 

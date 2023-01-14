@@ -1,6 +1,6 @@
 require "crorm"
-require "../_util/text_util"
-require "../zhlib/models/v1_text"
+require "../../_util/text_util"
+require "../../zhlib/models/v1_text"
 
 # require "./_base"
 require "./ch_seed"

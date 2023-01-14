@@ -7,7 +7,7 @@
 
   const tools = [
     ['Dịch nhanh', '/qtran'],
-    ['Phồn -> Giản', '/tools/trad2simp'],
+    ['Phồn -> Giản', '/tools/opencc'],
   ]
 </script>
 

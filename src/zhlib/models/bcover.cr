@@ -5,7 +5,7 @@ require "crorm"
 require "crorm/sqlite3"
 
 require "../../_util/r2_client"
-require "../../_util/ukey_util"
+require "../../_util/hash_util"
 
 class ZH::Bcover
   include Crorm::Model
@@ -72,7 +72,7 @@ class ZH::Bcover
   field _flag : Int32 = 0
 
   def initialize(@link : String, @name = "")
-    @name = UkeyUtil.digest32(link, 8) if name.blank?
+    @name = HashUtil.digest32(link, 8) if name.blank?
   end
 
   def dead_link?

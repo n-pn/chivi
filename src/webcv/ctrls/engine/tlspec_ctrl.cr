@@ -45,7 +45,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
   def create(form : SpecForm)
     raise Unauthorized.new("Quyền hạn của bạn không đủ.") unless _viuser.can?(:level0)
 
-    _ukey = UkeyUtil.gen_ukey(Time.utc)
+    _ukey = HashUtil.gen_ukey(Time.utc)
     entry = Tlspec.new(_ukey, fresh: true)
 
     entry.ztext = form.ztext

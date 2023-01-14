@@ -1,5 +1,5 @@
-require "./shared/book_util"
-require "./_base"
+require "../shared/book_util"
+require "../_base"
 
 # storing book names
 

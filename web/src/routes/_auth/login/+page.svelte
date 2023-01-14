@@ -3,7 +3,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import type { PageData } from './$types'
-  import { post_form } from '../shared'
+  import { post_form, return_back } from '../shared'
 
   export let data: PageData
   let email: string = data.email
@@ -15,9 +15,8 @@
 
   const submit = async () => {
     error = ''
-    const res = await post_form(action, { email, upass })
-    if (res.error) error = res.error
-    else window.location.href = res.back
+    error = await post_form(action, { email, upass })
+    if (!error) return_back()
   }
 </script>
 
