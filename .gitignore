@@ -8,7 +8,7 @@
 /bin/
 /doc/
 /lib/
-/old
+/old/
 /cli/cvjwt_cli.cr
 /node_modules
 .env

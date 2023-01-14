@@ -163,7 +163,7 @@ class YS::RawYsBook
   def self.from_file(file : String) : self
     from_raw_json(File.read(file))
   rescue ex
-    Log.error(exception: ex) { "parsing json file [#{file}] error: #{ex.message}" }
+    Log.error(exception: ex) { "parsing json file [#{file}] error: #{ex.body.message}" }
     raise InvalidRaw.new(file)
   end
 

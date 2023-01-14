@@ -51,7 +51,7 @@ struct CV::VpTermForm
 
   def save : VpTerm?
     prio = VpTerm.parse_prio(@prio)
-    vpterm = VpTerm.new(@key, @vals.split('|'), @tags.split(' '), prio, uname: user.uname)
+    vpterm = VpTerm.new(@key, @vals.split('ǀ'), @tags.split(' '), prio, uname: user.uname)
     vpterm._mode = @_mode
     dict.set!(vpterm)
   end

@@ -1,5 +1,6 @@
 // vite.config.js
 import { sveltekit } from '@sveltejs/kit/vite'
+import autoImport from 'sveltekit-autoimport'
 
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -7,7 +8,17 @@ const _cwd = path.dirname(fileURLToPath(import.meta.url))
 
 /** @type {import('vite').UserConfig} */
 const config = {
-  plugins: [sveltekit()],
+  plugins: [
+    autoImport({
+      components: [{ name: './src/gui/atoms', flat: true }],
+      module: {
+        svelte: ['onMount', 'createEventDispatcher'],
+      },
+      include: ['**/*.svelte'],
+      exclude: ['**/node_modules/**'],
+    }),
+    sveltekit(),
+  ],
   resolve: {
     alias: {
       $api: path.resolve(_cwd, 'src/api'),

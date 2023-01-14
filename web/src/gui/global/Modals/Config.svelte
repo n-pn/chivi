@@ -1,6 +1,4 @@
 <script context="module" lang="ts">
-  import { page } from '$app/stores'
-
   import { config as data, popups } from '$lib/stores'
   import { ctrl as lookup } from '$gui/parts/Lookup.svelte'
 
@@ -28,18 +26,21 @@
       body: JSON.stringify({ wtheme }),
     })
   }
+
+  const close_modal = () => {
+    console.log('closing')
+    popups.hide('config')
+  }
 </script>
 
-<config-main bind:this={elem} on:onblur={() => popups.hide('config')}>
-  <config-head>
-    <config-title>Cài đặt</config-title>
-    <button
-      class="m-btn _sm"
-      data-kbd="esc"
-      on:click={() => popups.hide('config')}>
+<div class="config-wrap" bind:this={elem} on:mouseleave={close_modal}>
+  <header class="config-head">
+    <h4 class="config-title">Cài đặt</h4>
+
+    <button class="m-btn _sm" data-kbd="esc" on:click={close_modal}>
       <SIcon name="x" />
     </button>
-  </config-head>
+  </header>
 
   <config-item>
     <field-label>Màu nền:</field-label>
@@ -147,10 +148,10 @@
       <span class="switch-label">Luôn bật ô giải nghĩa:</span>
     </label>
   </config-item>
-</config-main>
+</div>
 
 <style lang="scss">
-  config-main {
+  .config-wrap {
     display: block;
     width: 18rem;
     position: absolute;
@@ -172,13 +173,13 @@
     }
   }
 
-  config-head {
+  .config-head {
     display: flex;
     padding: 0.5rem 1rem;
     @include border($loc: bottom);
   }
 
-  config-title {
+  .config-title {
     font-weight: 500;
     flex: 1;
     line-height: 2rem;

@@ -31,7 +31,6 @@ class CV::SigninCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/log-in", body: :form)]
   def log_in(form : LoginForm)
-    Log.info { form.to_json }
     unless user = validate_user(form.email, form.upass)
       raise BadRequest.new("Thông tin đăng nhập không chính xác!")
     end

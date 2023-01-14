@@ -1,5 +1,61 @@
 <script lang="ts">
-  import Pwtemp from '$gui/global/Modals/Signin/Pwtemp.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import { post_form } from '../shared'
+  import type { PageData } from './$types'
+
+  export let data: PageData
+  let email: string = data.email
+  let msg_type: '' | 'ok' | 'err' = ''
+  let msg_text = ''
+
+  const action = '/api/_user/pwtemp'
+
+  async function submit() {
+    msg_type = ''
+    msg_text = ''
+
+    const { error } = await post_form(action, { email })
+    msg_text = error
+    msg_type = error ? 'err' : 'ok'
+  }
 </script>
 
-<Pwtemp />
+<form {action} method="POST" on:submit|preventDefault={submit}>
+  <div class="form-inp">
+    <label class="form-lbl" for="email">Hòm thư</label>
+    <input
+      type="email"
+      class="m-input _lg"
+      id="email"
+      name="email"
+      placeholder="Hòm thư"
+      required
+      bind:value={email} />
+  </div>
+
+  {#if msg_type == 'err'}
+    <div class="form-msg _err">{msg_text}</div>
+  {:else if msg_type == 'ok'}
+    <div class="form-msg _ok">
+      <p>Một mật khẩu tạm thời đã được gửi tới hòm thư của bạn</p>
+      <p>Check thử trong thư mục Spam nếu không thấy hiện trong inbox.</p>
+    </div>
+  {/if}
+
+  <footer class="form-btns">
+    <button type="submit" class="m-btn _fill _warning">
+      <SIcon name="key" />
+      <span class="-txt">Gửi mật khẩu</span>
+    </button>
+  </footer>
+</form>
+
+<div class="form-more">
+  <a href="/_auth/login?email={email}" class="m-btn _text">
+    <span class="-text">Đăng nhập</span>
+  </a>
+
+  <a href="/_auth/signup?email={email}" class="m-btn _text _success">
+    <span class="-txt">Tài khoản mới</span>
+  </a>
+</div>

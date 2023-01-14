@@ -11,7 +11,7 @@ export const do_fetch = async (
   init: RequestInit = { method: 'GET' }
 ) => {
   const resp = await my_fetch(url, init)
-  const type = resp.headers.get('Content-Type')
+  const type = resp.headers.get('content-type')
   const data = type.includes('json') ? await resp.json() : await resp.text()
 
   if (resp.status < 300) return data

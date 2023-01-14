@@ -8,7 +8,7 @@ TARGET=${1:-"cvapp"}
 SOURCE=$TARGET
 WATCH="--watch ./src/_util --watch ./src/$SOURCE"
 
-if [[ $1 == "cvapp" ]]
+if [[ $TARGET == "cvapp" ]]
 then
   SOURCE="webcv"
   WATCH="--watch ./src/_util --watch ./src/webcv --watch ./src/appcv"

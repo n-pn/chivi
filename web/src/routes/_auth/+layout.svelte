@@ -1,11 +1,11 @@
 <script>
   import { afterNavigate } from '$app/navigation'
 
-  afterNavigate(({ from: { url } }) => {
-    if (!url.pathname.startsWith('/_auth')) {
-      const back = url.toString()
-      sessionStorage.setItem('back', back.includes('_auth') ? '/' : back)
-    }
+  afterNavigate(({ from }) => {
+    let url = from?.url
+    let back = '/'
+    if (url && !url.pathname.startsWith('/_auth')) back = url.toString()
+    sessionStorage.setItem('back', back)
   })
 </script>
 

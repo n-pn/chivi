@@ -1,8 +1,6 @@
-<script context="module" lang="ts">
-  import BCover from '$gui/atoms/BCover.svelte'
-</script>
-
 <script lang="ts">
+  import BCover from '$gui/atoms/BCover.svelte'
+
   export let nvinfo: CV.Nvinfo
   export let nvtab = ''
 

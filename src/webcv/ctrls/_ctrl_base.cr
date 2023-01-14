@@ -18,9 +18,8 @@ abstract class CV::BaseCtrl < ActionController::Base
   # add_parser("application/json") { |klass, body_io| klass.from_json(body_io) }
   # add_parser("text/plain") { |_klass, body_io| body_io.gets_to_end }
 
-  add_responder("*/*") { |io, result| result.to_json(io) }
-  add_responder("text/plain") { |io, result| io << result }
   add_responder("application/json") { |io, result| result.to_json(io) }
+  add_responder("text/plain") { |io, result| io << result }
 
   # @[AC::Route::Filter(:before_action)]
   # def set_request_id
