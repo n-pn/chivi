@@ -4,14 +4,3 @@ dependencies:
 
   sqlite3:
     github: chi-vi/crystal-sqlite3
-
-  micrate:
-    github: amberframework/micrate
-
-  cli:
-    github: amberframework/cli
-    version: ~> 0.11.3
-
-  icr:
-    github: crystal-community/icr
-    branch: master

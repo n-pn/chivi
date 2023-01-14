@@ -11,8 +11,14 @@ module YS::Server
 end
 
 abstract class YS::BaseCtrl < ActionController::Base
-  add_responder("*/*") { |io, result| io << result }
   add_responder("text/plain") { |io, result| io << result }
+
+  getter cu_uname : String { session[:uname] }
+
+  getter cu_privi : Int32 do
+    privi = session[:privi].to_i
+    (0 < privi < 4) && session[:until] < Time.utc.to_unix ? privi - 1 : privi
+  end
 end
 
 module YS::CtrlUtil

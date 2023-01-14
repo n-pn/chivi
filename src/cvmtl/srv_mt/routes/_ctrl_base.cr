@@ -42,14 +42,10 @@ abstract class MT::BaseCtrl < ActionController::Base
   UNAME_CACHE = {} of String => String
   PRIVI_CACHE = RamCache(String, Int32).new(limit: 10_000, ttl: 3.minutes)
 
-  getter cu_uname : String do
-    token = cookies["cv_rt"].value
-    UNAME_CACHE[token] ||= `./bin/cvjwt_cli dr #{token}`.strip
-  end
+  getter cu_uname : String { session[:uname] }
 
   getter cu_privi : Int32 do
-    PRIVI_CACHE.get(cu_uname) do
-      `curl -s localhost:5010/api/_user/privi/#{cu_uname}`.to_i? || -1
-    end
+    privi = session[:privi].to_i
+    (0 < privi < 4) && session[:until] < Time.utc.to_unix ? privi - 1 : privi
   end
 end

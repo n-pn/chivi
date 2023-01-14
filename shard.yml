@@ -21,9 +21,6 @@ targets:
   cvhlp-srv:
     main: src/cvhlp/cvhlp_srv.cr
 
-  cvjwt_cli:
-    main: cli/cvjwt_cli.cr
-
   bcover_cli:
     main: cli/bcover_cli.cr
 
@@ -115,9 +112,6 @@ dependencies:
 
   action-controller:
     github: spider-gazelle/action-controller
-
-  jwt:
-    github: crystal-community/jwt
 
   zstd:
     github: didactic-drunk/zstd.cr

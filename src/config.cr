@@ -20,9 +20,6 @@ module CV::Config
 
   class_getter session_skey : String = ENV["CV_SESSION_SKEY"]
 
-  class_getter jwt_user_key : String = ENV["CV_JWT_USER_KEY"]
-  class_getter jwt_auth_key : String = ENV["CV_JWT_AUTH_KEY"]
-
   class_getter log_severity : Log::Severity = self.production? ? Log::Severity::Error : Log::Severity::Debug
 
   class_getter be_port = 5010 # current api server
