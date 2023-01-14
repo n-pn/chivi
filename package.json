@@ -12,10 +12,9 @@
     "ys-bk": "bash priv/scripts/yousuu-backup.sh",
     "backup": "yarn db-bk all && yarn ys-bk",
     "upload": "yarn db-up all && yarn ys-up",
-    "build": "shards build -s --release",
-    "build-mt": "shards build -s --release -Dpreview_mt",
+    "build": "shards build -s --release --production",
+    "build-mt": "shards build -s --release --production -Dpreview_mt",
     "dev": "bash priv/invoke-dev.sh",
-    "rs-app": "ssh nipin@ssh.chivi.app \"sudo service cvapp-srv restart\"",
-    "rs-web": "ssh nipin@ssh.chivi.app \"sudo service cvweb-srv restart\""
+    "rs": "bash priv/restart-srv.sh"
   }
 }

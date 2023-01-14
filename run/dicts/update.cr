@@ -15,7 +15,7 @@ class Dict
       "'#{line.split('\t', 2).first}'"
     end
 
-    MT::DbRepo.open_db(@type) do |db|
+    M2::DbRepo.open_db(@type) do |db|
       db.exec <<-SQL
         begin transaction;
         update terms set ptag = '#{ptag}' where key in (#{keys.join(", ")})
@@ -63,7 +63,7 @@ class Dict
       {key, val, alt.empty? ? nil : alt, ptag}
     end
 
-    MT::DbRepo.open_db(@type) do |db|
+    M2::DbRepo.open_db(@type) do |db|
       db.exec "begin transaction"
 
       entries.each do |key, val, alt, tag|
@@ -104,7 +104,7 @@ class Dict
   end
 
   def fix_once!
-    MT::DbRepo.open_db(@type) do |db|
+    M2::DbRepo.open_db(@type) do |db|
       query = <<-SQL
         select id, val from terms where ptag = 'Ns';
       SQL

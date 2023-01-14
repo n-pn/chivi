@@ -12,14 +12,20 @@ targets:
   cvapp-srv:
     main: src/webcv/webcv_srv.cr
 
-  mt_v2-srv:
-    main: src/mt_v2/mt_v2_srv.cr
-
   ysapp-srv:
     main: src/ysapp/ysapp_srv.cr
 
   mt_sp-srv:
     main: src/mt_sp/mt_sp_srv.cr
+
+  mt_v0-srv:
+    main: src/mt_v0/mt_v0_srv.cr
+
+  mt_v1-srv:
+    main: src/mt_v1/mt_v1_srv.cr
+
+  mt_v2-srv:
+    main: src/mt_v2/mt_v2_srv.cr
 
   bcover_cli:
     main: cli/bcover_cli.cr
@@ -32,39 +38,6 @@ targets:
 
   fix_text:
     main: cli/fix_text.cr
-
-  ysbook_seed:
-    main: tasks/nvseed/ysbook_seed.cr
-
-  remote_seed:
-    main: tasks/nvseed/remote_seed.cr
-
-  zxcsme_seed:
-    main: tasks/nvseed/zxcsme_seed.cr
-
-  local_seeds:
-    main: tasks/nvseed/locals_seed.cr
-
-  fetch_covers:
-    main: tasks/nvinfo/fetch_covers.cr
-
-  fix_covers:
-    main: tasks/nvinfo/fix_covers.cr
-
-  fix_bnames:
-    main: tasks/nvinfo/fix_bnames.cr
-
-  fix_genres:
-    main: tasks/nvinfo/fix_genres.cr
-
-  fix_intros:
-    main: tasks/nvinfo/fix_intros.cr
-
-  crawl_text:
-    main: tasks/zhtext/crawl_texts.cr
-
-  upload_zhtext:
-    main: tasks/zhtext/upload_data.cr
 
   ysbook_crawl:
     main: src/ysapp/tasks/ysbook_crawl.cr

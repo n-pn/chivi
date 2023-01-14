@@ -50,8 +50,8 @@ class CV::VpDict
     THEME[dname] ||= new(path(dname, "theme"), kind: :theme, type: 2, mode: mode)
   end
 
-  def self.load_mt_v2(dname : String, mode : Mode = :full) : self
-    FIXED[dname] ||= new(path(dname, "mt_v2"), kind: :mt_v2, type: 1, mode: mode)
+  def self.load_cvmtl(dname : String, mode : Mode = :full) : self
+    FIXED[dname] ||= new(path(dname, "cvmtl"), kind: :cvmtl, type: 1, mode: mode)
   end
 
   def self.load_other(dname : String, mode : Mode = :full) : self
@@ -73,7 +73,7 @@ class CV::VpDict
     case dname[0]?
     when '-' then load_novel(dname[1..], mode: mode)
     when '!' then load_theme(dname[1..], mode: mode)
-    when '~' then load_mt_v2(dname[1..], mode: mode)
+    when '~' then load_cvmtl(dname[1..], mode: mode)
     when '$' then load_other(dname[1..], mode: mode)
     else          load_basic(dname, mode: mode)
     end

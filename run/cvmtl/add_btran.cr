@@ -1,5 +1,5 @@
 require "sqlite3"
-require "../../src/mt_sp/service/btran_api"
+require "../../src/mt_sp/util/btran_api"
 
 DIC = DB.open("sqlite3:var/dicts/hints/all_terms.dic")
 

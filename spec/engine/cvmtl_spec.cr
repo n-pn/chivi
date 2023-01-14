@@ -1,7 +1,7 @@
 require "spec"
 require "../../src/mt_v2/engine"
 
-MTL = MT::Engine.new("combine")
+MTL = M2::Engine.new("combine")
 
 def convert(input : String)
   MTL.cv_plain(input).to_txt(false)
@@ -9,7 +9,7 @@ end
 
 DIR = "var/mt_v2/tests"
 
-describe MT::Engine do
+describe M2::Engine do
   files = Dir.glob("#{DIR}/**/*.tsv")
 
   files.each do |file|

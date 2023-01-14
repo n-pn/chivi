@@ -1,12 +1,12 @@
 require "../../src/mt_v2/cv_data/*"
 
-DICTS = {} of String => MT::CvDict?
+DICTS = {} of String => M2::CvDict?
 
 def get_dict(dname : String)
   DICTS[dname] ||= begin
     case dname
-    when "generic", "fixture", "essense" then MT::CvDict.get!(1)
-    when .starts_with?('-')              then MT::CvDict.find(dname)
+    when "generic", "fixture", "essense" then M2::CvDict.get!(1)
+    when .starts_with?('-')              then M2::CvDict.find(dname)
     else                                      nil
     end
   end
@@ -125,8 +125,8 @@ end
 
 EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
 
-def init_term(dict : MT::CvDict, args : Array(String))
-  term = MT::CvTerm.new
+def init_term(dict : M2::CvDict, args : Array(String))
+  term = M2::CvTerm.new
 
   term.dic = dict.id < 0 ? -dict.id : dict.id
   term.key = args[2]
@@ -154,10 +154,10 @@ BOOK_DIC = DB.open("sqlite3://var/dicts/book.dic")
 CORE_DIC = DB.open("sqlite3://var/dicts/core.dic")
 at_exit { BOOK_DIC.close; CORE_DIC.close }
 
-def find_term(db : DB::Database, term : MT::CvTerm)
+def find_term(db : DB::Database, term : M2::CvTerm)
   query = "select * from terms where dic = ? and key = ? and time >= ? and user = ? limit 1"
   args = [term.dic, term.key, term.time - 5, term.user]
-  db.query_one? query, args: args, as: MT::CvTerm
+  db.query_one? query, args: args, as: M2::CvTerm
 end
 
 def apply_log(file : String)

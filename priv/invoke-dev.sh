@@ -2,7 +2,6 @@
 set -euo pipefail
 
 CV_ENV=development
-AMBER_ENV=development
 
 TARGET=${1:-"cvapp"}
 SOURCE=$TARGET

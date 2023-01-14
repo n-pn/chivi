@@ -7,7 +7,7 @@ record Term, id : Int32, key : String, time : Int64, user : String, flag : Int32
 end
 
 def fix_flags_for_base_dict!(type : String)
-  MT::DbRepo.open_db(type) do |db|
+  M2::DbRepo.open_db(type) do |db|
     dict_ids = db.query_all "select id from dicts where id % 3 == 0", as: Int32
 
     db.exec "begin transaction"
@@ -34,7 +34,7 @@ def fix_flags_for_base_dict!(type : String)
 end
 
 def fix_flags_for_temp_dict!(type : String)
-  MT::DbRepo.open_db(type) do |db|
+  M2::DbRepo.open_db(type) do |db|
     dict_ids = db.query_all "select id from dicts where id % 3 == 1", as: Int32
 
     db.exec "begin transaction"
@@ -66,7 +66,7 @@ def fix_flags_for_temp_dict!(type : String)
 end
 
 def fix_flags_for_user_dict!(type : String)
-  MT::DbRepo.open_db(type) do |db|
+  M2::DbRepo.open_db(type) do |db|
     dict_ids = db.query_all "select id from dicts where id % 3 == 1", as: Int32
 
     db.exec "begin transaction"

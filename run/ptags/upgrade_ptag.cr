@@ -3,7 +3,7 @@ require "option_parser"
 require "../../src/mt_v2/cv_data/*"
 
 def fix_dict(type : String)
-  MT::CvTerm.open_db_tx(type) do |db|
+  M2::CvTerm.open_db_tx(type) do |db|
     ptags = db.query_all "select distinct(ptag) from terms", as: String
 
     ptags.each do |old_ptag|
@@ -21,14 +21,14 @@ end
 def fix_tags(type : String, ptag : String, persist = false)
   color = persist ? :yellow : :blue
 
-  MT::CvTerm.open_db_tx(type) do |db|
+  M2::CvTerm.open_db_tx(type) do |db|
     query = "select id, key, val from terms where ptag = ?"
     terms = db.query_all query, args: [ptag], as: Term
 
     update_query = "update terms set ptag = ? where id = ?"
 
     terms.each do |term|
-      new_ptag = MT::PosTag.map_str(ptag, term.key, term.val)
+      new_ptag = M2::PosTag.map_str(ptag, term.key, term.val)
       puts "[#{term.key}  #{term.val}] #{ptag} => #{new_ptag}".colorize(color)
 
       next unless persist

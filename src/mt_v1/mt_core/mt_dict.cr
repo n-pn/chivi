@@ -47,7 +47,7 @@ module CV::MtDict
   }
 
   def load(dname : String, df_ptag = PosTag::Unkn, fixed_tag = false)
-    vpdict = VpDict.load_mt_v2(dname)
+    vpdict = VpDict.load_cvmtl(dname)
     output = MtHash.new(df_ptag, fixed_tag, initial_capacity: vpdict.size)
 
     vpdict.list.each do |vpterm|

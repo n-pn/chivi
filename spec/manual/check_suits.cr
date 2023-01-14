@@ -1,5 +1,5 @@
-require "../../src/mt_v2/engine"
-MTL = MT::Engine.new("combine")
+require "../../src/mt_v2/m2_core"
+MTL = M2::Engine.new("combine")
 
 def convert(input : String)
   MTL.cv_plain(input).to_txt(apply_cap: false)

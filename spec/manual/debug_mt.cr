@@ -1,11 +1,11 @@
-require "../../src/mt_v2/engine"
-require "../../src/mt_sp/engine"
+require "../../src/mt_v2/m2_core"
+require "../../src/mt_sp/sp_core"
 
 text = ARGV[0]? || "在魏梦柔的目光下"
 book = ARGV[1]? || "-x3wmhcb6"
 
 time = Time.monotonic
-mtl = MT::Engine.new(book: book)
+mtl = M2::Engine.new(book: book)
 res = mtl.cv_plain(text)
 
 res.inspect(STDOUT)
