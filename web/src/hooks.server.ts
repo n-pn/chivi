@@ -50,8 +50,10 @@ const cached_users: Record<string, App.CurrentUser> = {}
 const session_url = `http://localhost:5010/api/_self`
 const guest_user = { uname: 'Khách', privi: -1, until: 0, vcoin: 0, karma: 0 }
 
+const get_hash = (hash?: string) => hash?.substring(0, 12).replace('/', '_')
+
 async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
-  const hash = event.cookies.get('_sess')
+  const hash = get_hash(event.cookies.get('_auth')) || 'guest'
   let cached_user = cached_users[hash]
 
   const path = `tmp/_user/${hash}.json`
@@ -59,6 +61,7 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   if (!cached_user && fs.existsSync(path)) {
     const file_data = fs.readFileSync(path).toString()
     cached_user = JSON.parse(file_data) as App.CurrentUser
+    cached_users[hash] = cached_user
   }
 
   const now_unix = new Date().getTime() / 1000
@@ -69,9 +72,10 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
 
   if (!response.ok) return guest_user
 
-  const user_data = (await response.json()) as App.CurrentUser
-  fs.writeFileSync(path, JSON.stringify(user_data))
+  cached_user = (await response.json()) as App.CurrentUser
+  fs.writeFileSync(path, JSON.stringify(cached_user))
+  cached_users[hash] = cached_user
 
   event.setHeaders({ cookie: response.headers.get('cookie') })
-  return user_data
+  return cached_user
 }

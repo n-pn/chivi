@@ -12,7 +12,7 @@ ActionController::Server.before(
 )
 
 ActionController::Session.configure do |settings|
-  settings.key = "_sess"
+  settings.key = "_auth"
   settings.secret = CV::Config.session_skey
   settings.secure = CV::Config.production? # HTTPS only
 end
