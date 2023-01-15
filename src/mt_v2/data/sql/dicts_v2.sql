@@ -4,13 +4,12 @@ CREATE TABLE IF NOT EXISTS dicts (
   id integer PRIMARY KEY,
   --
   dname varchar NOT NULL,
-  dslug varchar NOT NULL,
   --
   label varchar NOT NULL DEFAULT '', -- display name
   brief text NOT NULL DEFAULT '', -- dict brief introduction
   --
-  dtype integer NOT NULL DEFAULT 0, -- dict type, optional, can be extracted by dname
   privi int NOT NULL DEFAULT 1, -- minimal priviledge required
+  dtype integer NOT NULL DEFAULT 0, -- dict type, optional, can be extracted by dname
   --
   term_total int NOT NULL DEFAULT 0, -- term total mean all entries in dict
   term_avail int NOT NULL DEFAULT 0, -- all active terms in dicts

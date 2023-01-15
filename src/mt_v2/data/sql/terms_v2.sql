@@ -9,7 +9,9 @@ CREATE TABLE IF NOT EXISTS terms (
   --
   "ptag" integer NOT NULL DEFAULT 0,
   "attr" integer NOT NULL DEFAULT 0,
-  "wght" integer NOT NULL DEFAULT 0
+  "wght" integer NOT NULL DEFAULT 0,
+  --
+  "_lock" integer NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS terms_uniq_idx ON terms (dic, ptag, key);

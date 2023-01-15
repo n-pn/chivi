@@ -1,19 +1,18 @@
 require "crorm"
 require "crorm/sqlite3"
 
-class M2::CvDict
+class M2::DbDict
   include Crorm::Model
   @@table = "dicts"
 
   field id : Int32, primary: true
 
   field dname : String
-  field dslug : String = ""
-
   field label : String = ""
-  field intro : String = ""
+  field brief : String = ""
 
-  field min_privi : Int32 = 0
+  field privi : Int32 = 0
+  field dtype : Int32 = 0
 
   field term_total : Int32 = 0
   field term_avail : Int32 = 0
@@ -22,16 +21,17 @@ class M2::CvDict
   field temp_terms : Int32 = 0
   field user_terms : Int32 = 0
 
+  field users : String = ""
   field mtime : Int64 = 0
 
-  def ininitialize(@id, @dname, @dslug, @label = "", @intro = "", @min_priv = 2)
+  def ininitialize(@id, @dname, @label = "", @brief = "", @privi = 1)
   end
 
   def save!(repo = @@repo)
     fields, values = get_changes
 
     repo.upsert(@@table, fields, values) do |sql|
-      fields = {"dname", "dslug", "label", "intro"}
+      fields = {"dname", "label", "brief", "privi"}
       Crorm::SqlBuilder.build_upsert_sql(sql, fields)
       sql << " where dname == excluded.dname"
     end
@@ -60,7 +60,7 @@ class M2::CvDict
 
   @[AlwaysInline]
   def self.db_path
-    "var/dicts/v2dic/dicts_v2.db"
+    "var/dicts/v2raw/dicts_v2.db"
   end
 
   def self.init_sql
@@ -72,20 +72,20 @@ class M2::CvDict
   DICT_IDS = {} of String => Int32
 
   def self.get_id(dname : String) : Int32
-    DICT_IDS[name] ||= begin
+    DICT_IDS[dname] ||= begin
       query = "select id from dicts where dname = ?"
-      @@repo.open(&.query_one?(query, dname, as: Int32)) || 0
+      @@repo.open_db(&.query_one?(query, dname, as: Int32)) || 0
     end
   end
 
   def self.get!(id : Int32) : self
     query = "select * from dicts where id = ?"
-    @@repo.open(&.query_one(query, id, as: self))
+    @@repo.open_db(&.query_one(query, id, as: self))
   end
 
   def self.get!(dname : String) : self
-    query = %{select * from #@@table where name = ?}
-    @@db.open(&.query_one(query, dname, as: self))
+    query = "select * from #{@@table} where dname = ?"
+    @@repo.open_db(&.query_one(query, dname, as: self))
   end
 
   def self.get(dname : String) : self | Nil
@@ -94,12 +94,12 @@ class M2::CvDict
 
   def self.count : Int32
     query = "select count(*) from #{@@table} where term_total > 0"
-    @@db.open(&.query_one(query, as: Int32))
+    @@repo.open_db(&.query_one(query, as: Int32))
   end
 
   def self.bdicts_count : Int32
     query = "select count(*) from #{@@table} where term_total > 0 and id < 0"
-    @@db.open(&.query_one(query, as: Int32))
+    @@repo.open_db(&.query_one(query, as: Int32))
   end
 
   def self.all(limit : Int32, offset = 0) : Array(self)
@@ -108,15 +108,15 @@ class M2::CvDict
       order by mtime desc limit ? offset ?
     SQL
 
-    @@db.open(&.query_all(query, limit, offset, as: self))
+    @@repo.open_db(&.query_all(query, limit, offset, as: self))
   end
 
-  def self.all_bdicts(limit : Int32, offset = 0)
+  def self.bdicts_all(limit : Int32, offset = 0)
     query = <<-SQL
       select * from #{@@table} where id < 0 and term_total > 0
       order by mtime desc limit ? offset ?
     SQL
 
-    @@db.open(&.query_all(query, limit, offset, as: self))
+    @@repo.open_db(&.query_all(query, limit, offset, as: self))
   end
 end
