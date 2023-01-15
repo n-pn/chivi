@@ -4,3 +4,6 @@ dependencies:
 
   sqlite3:
     github: chi-vi/crystal-sqlite3
+
+  crorm:
+    path: '../crorm'

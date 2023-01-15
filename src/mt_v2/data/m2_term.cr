@@ -1,4 +1,5 @@
-require "./open_db"
+require "crorm"
+require "crorm/sqlite3"
 
 class M2::CvTerm
   include Crorm::Model
@@ -10,7 +11,6 @@ class M2::CvTerm
   field key : String
 
   field val : String
-  field alt : String?
 
   field ptag : String = ""
   field wseg : Int32 = 2

@@ -1,7 +1,7 @@
 require "sqlite3"
 require "colorize"
 
-require "../../src/mt_v2/cv_data/*"
+require "../../src/mt_v2/data/*"
 
 class Dict
   def initialize(@type : String)

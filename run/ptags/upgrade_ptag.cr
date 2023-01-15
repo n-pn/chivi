@@ -1,6 +1,7 @@
 require "option_parser"
 
-require "../../src/mt_v2/cv_data/*"
+require "../../src/mt_v2/data/*"
+require "../../src/mt_v2/core/*"
 
 def fix_dict(type : String)
   M2::CvTerm.open_db_tx(type) do |db|
