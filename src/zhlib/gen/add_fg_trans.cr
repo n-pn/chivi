@@ -1,30 +1,28 @@
 require "log"
 require "sqlite3"
 require "colorize"
+
 require "../wnchap/*"
 require "../../mt_v1/mt_core"
+require "../../_util/text_util"
 
 def import_one(sname : String, s_bid : Int32, dname : String = "combine", regen = false)
   db_path = WN::ChInfo.db_path("#{sname}/#{s_bid}")
   return unless mtime = File.info?(db_path).try(&.modification_time)
-
-  File.info?(db_path).try { |x| return if x.modification_time > mtime }
-
-  mtime += 1.minutes
 
   trans = [] of {String, String, String, Int32}
   cvmtl = CV::MtCore.generic_mtl(dname)
 
   DB.open("sqlite3:#{db_path}") do |db|
     query = "select ch_no, title_zh, chdiv_zh from infos"
-    query += " where title = ''" unless regen
+    query += " where uslug = ''" unless regen
 
     db.query_each(query) do |rs|
       ch_no, title_zh, chdiv_zh = rs.read(Int32, String, String)
 
       title = title_zh.blank? ? "" : cvmtl.cv_title(title_zh).to_txt
       chdiv = chdiv_zh.blank? ? "" : cvmtl.cv_title(chdiv_zh).to_txt
-      uslug = TextUtil.tokenize(title)[0..7].join('-')
+      uslug = title.empty? ? "-" : TextUtil.tokenize(title)[0..7].join('-')
 
       trans << {title, chdiv, uslug, ch_no}
     end
