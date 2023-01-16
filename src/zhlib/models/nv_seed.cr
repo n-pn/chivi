@@ -1,28 +1,29 @@
 require "crorm"
+require "crorm/sqlite3"
 
 class ZH::NvSeed
   include Crorm::Model
-  self.table = "books"
+  @@table = "books"
 
-  column s_bid : Int32
-  column bhash : String = ""
+  field s_bid : Int32
+  field bhash : String = ""
 
-  column btitle : String = ""
-  column author : String = ""
+  field btitle : String = ""
+  field author : String = ""
 
-  column genres : String = ""
-  column bcover : String = ""
+  field genres : String = ""
+  field bcover : String = ""
 
-  column status : Int32 = 0
-  column update : Int64 = 0_i64
+  field status : Int32 = 0
+  field update : Int64 = 0_i64
 
-  column last_s_cid : Int32 = 0 # last chap origin id
-  column chap_total : Int32 = 0 # total chapter/max chapter ch_no
-  column chap_avail : Int32 = 0 # total chapters cached in disks
+  field last_s_cid : Int32 = 0 # last chap origin id
+  field chap_total : Int32 = 0 # total chapter/max chapter ch_no
+  field chap_avail : Int32 = 0 # total chapters cached in disks
 
-  column btime : Int64 = 0_i64 # birth time
-  column mtime : Int64 = 0_i64 # modification time
-  column ctime : Int64 = 0_i64 # crawl time
+  field btime : Int64 = 0_i64 # birth time
+  field mtime : Int64 = 0_i64 # modification time
+  field ctime : Int64 = 0_i64 # crawl time
 
   def initialize(@s_bid, @btitle = "", @author = "")
   end

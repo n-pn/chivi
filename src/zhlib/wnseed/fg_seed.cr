@@ -14,14 +14,13 @@ class WN::FgSeed
 
   field chap_total : Int32 = 0
   field chap_avail : Int32 = 0
-  field last_s_cid : Int32 = 0
 
-  field feed_stime : Int64 = 0_i64
   field feed_sname : String = ""
-
   field feed_s_bid : Int32 = 0
-  field feed_chmax : Int32 = 0
+  field feed_s_cid : Int32 = 0
+  field feed_stime : Int64 = 0_i64
 
+  field atime : Int64 = 0_i64 # last access time
   field mtime : Int64 = 0_i64 # modification time
 
   def initialize(@s_bid, @sname = "", @stype = 0)
@@ -65,24 +64,27 @@ class WN::FgSeed
 
   def self.init_sql
     <<-SQL
+      pragma journal_mode = WAL;
+      pragma synchronous = normal;
+
       create table if not exists #{@@table} (
         s_bid integer not null,
         sname varchar not null,
 
-        stype integer not null default 0,
-        _flag smallint default 0,
+        stype integer  not null default 0,
+        _flag integer not null default 0,
 
         chap_total integer default 0,
-        chap_count integer default 0,
-        last_s_cid integer default 0,
+        chap_avail integer default 0,
 
-        feed_stime bigint default 0,
         feed_sname varchar default 0,
-
         feed_s_bid integer default 0,
-        feed_chmax smallint default 0,
+        feed_s_cid integer default 0,
+        feed_stime bigint default 0,
 
+        atime bigint default 0,
         mtime bigint default 0,
+
         primary key(s_bid, sname)
       );
     SQL

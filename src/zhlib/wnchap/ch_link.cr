@@ -36,6 +36,8 @@ class WN::ChLink
 
   def self.init_sql
     <<-SQL
+    pragma journal_mode = WAL;
+
     create table if not exists #{@@table} (
       fg_ch_no integer not null,
       --

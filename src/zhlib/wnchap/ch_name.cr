@@ -32,6 +32,8 @@ class WN::ChName
 
   def self.init_sql
     <<-SQL
+    pragma journal_mode = WAL;
+
     create table if not exists #{@@table} (
       ch_no integer primary key,
       s_cid integer not null,

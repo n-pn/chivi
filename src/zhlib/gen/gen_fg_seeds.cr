@@ -1,96 +1,53 @@
-require "log"
+require "db"
+require "pg"
 require "sqlite3"
-require "colorize"
-require "../wnchap/*"
+require "../../config"
+require "../wnseed/*"
 
-SNAMES = {} of Int32 => String
+S_BIDS = {} of {Int32, String} => Int32
 
-{"common.tsv", "viuser-live.tsv", "viuser.tsv"}.each do |file|
-  File.each_line("var/fixed/seeds/#{file}") do |line|
-    next if line.empty? || line.starts_with?('#')
-    cols = line.split('\t')
-    sname, sn_id, _ = cols
-    SNAMES[sn_id.to_i] = sname
+WN::BgSeed.repo.open do |db|
+  db.query_each("select wn_id, sname, s_bid from seeds") do |rs|
+    S_BIDS[rs.read(Int32, String)] = rs.read(Int32)
   end
 end
 
-def import_one(sname : String, s_bid : Int32)
-  inp_path = "var/chaps/texts/#{sname}/#{s_bid}/index.db"
-  return unless mtime = File.info?(inp_path).try(&.modification_time)
+input = [] of Array(DB::Any)
 
-  out_path = WN::ChInfo.db_path("#{sname}/#{s_bid}")
-  File.info?(out_path).try { |x| return if x.modification_time > mtime }
+DB.open(CV::Config.database_url) do |db|
+  query = <<-SQL
+    select s_bid, sname, last_sname, last_schid, chap_count, utime
+    from chroots where sname = '=base' or sname like '@%' order by id asc
+  SQL
 
-  mtime += 1.minutes
+  db.query_each(query) do |rs|
+    s_bid, sname = rs.read(Int32, String)
+    last_sname, last_schid = rs.read(String, String)
+    chap_count, utime = rs.read(Int32, Int64)
 
-  paths = [] of {Int32, String}
-
-  DB.open("sqlite3:#{inp_path}") do |db|
-    query = "select sn_id, s_bid, ch_no, s_cid from chinfos"
-
-    db.query_each query do |rs|
-      sn_id, s_bid, ch_no, s_cid = rs.read(Int32, Int32, Int32, Int32)
-      paths << {ch_no, "bg:#{SNAMES[sn_id]}:#{s_bid}:#{ch_no}:#{s_cid}"}
-    end
+    input << [
+      s_bid, sname,
+      last_sname, S_BIDS[{s_bid, last_sname}]? || 0,
+      last_sname.empty? ? 0 : last_schid.to_i? || 0,
+      chap_count, utime,
+    ] of DB::Any
   end
-
-  DB.open("sqlite3:#{out_path}") do |db|
-    db.exec WN::ChInfo.init_sql
-    db.exec "pragma journal_mode = WAL"
-    db.exec "pragma synchronous = normal"
-    db.exec "attach database '#{inp_path}' as source"
-
-    db.exec "begin"
-    db.exec <<-SQL
-      replace into chaps (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname)
-      select ch_no, s_cid, title as title, chvol as chdiv, c_len, p_len, utime as mtime, uname
-      from source.chinfos
-    SQL
-
-    paths.each do |ch_no, path|
-      db.exec "update chaps set _path = ? where ch_no = ?", path, ch_no
-    end
-
-    db.exec "commit"
-  end
-
-  File.utime(mtime, mtime, out_path)
 end
 
-def import_all(sname : String, threads = 6)
-  Dir.mkdir_p("var/chaps/infos-fg/#{sname}")
-  s_bids = Dir.children("var/chaps/texts/#{sname}").map(&.to_i).sort!
+query = <<-SQL
+  replace into seeds (sname, s_bid, feed_sname, feed_s_bid, feed_s_cid, chap_total, mtime)
+  values (?, ?, ?, ?, ?, ?, ?)
+SQL
 
-  workers = Channel({Int32, Int32}).new(s_bids.size)
-  results = Channel(Nil).new(threads)
+puts "output: #{input.size}"
 
-  threads.times do
-    spawn do
-      loop do
-        s_bid, idx = workers.receive
-        import_one(sname, s_bid)
-        puts " - <#{idx}/#{s_bids.size}> [#{sname}/#{s_bid}]"
-      rescue err
-        puts "#{sname}, #{s_bid}, #{err.message} ".colorize.red
-      ensure
-        results.send(nil)
-      end
-    end
-  end
+db_path = WN::FgSeed.db_path
+File.delete?(db_path)
 
-  s_bids.each_with_index(1) { |s_bid, idx| workers.send({s_bid, idx}) }
-  s_bids.size.times { results.receive }
-end
+DB.open("sqlite3://#{db_path}") do |db|
+  WN::FgSeed.init_sql.split(";").each { |sql| db.exec sql rescue puts sql }
 
-threads = ENV["CRYSTAL_WORKERS"]?.try(&.to_i?) || 6
-threads = 6 if threads < 6
-
-snames = ARGV.empty? ? Dir.children("var/chaps/texts") : ARGV
-snames.sort!
-
-puts snames.colorize.yellow
-
-snames.each do |sname|
-  next if sname == "=user"
-  import_all(sname, threads) if sname[0].in?('@', '=')
+  db.exec "begin"
+  input.each { |args| db.exec(query, args: args) }
+  db.exec "end"
 end
