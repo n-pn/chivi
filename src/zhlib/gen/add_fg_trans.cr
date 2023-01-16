@@ -6,44 +6,23 @@ require "../wnchap/*"
 require "../../mt_v1/mt_core"
 require "../../_util/text_util"
 
-def import_one(sname : String, s_bid : Int32, dname : String = "combine", regen = false)
-  db_path = WN::ChInfo.db_path("#{sname}/#{s_bid}")
-  return unless mtime = File.info?(db_path).try(&.modification_time)
+DNAMES = {} of Int32 => String
 
-  trans = [] of {String, String, String, Int32}
-  cvmtl = CV::MtCore.generic_mtl(dname)
+File.each_line("var/fixed/dicts.tsv") do |line|
+  nv_id, dname = line.split('\t', 2)
+  DNAMES[nv_id.to_i] = dname
+end
 
-  DB.open("sqlite3:#{db_path}") do |db|
-    query = "select ch_no, title_zh, chdiv_zh from infos"
-    query += " where uslug = ''" unless regen
+def import_one(sname : String, s_bid : Int32, regen = false)
+  inp_path = WN::ChInfo.db_path("#{sname}/#{s_bid}")
+  return unless mtime = File.info?(inp_path).try(&.modification_time)
 
-    db.query_each(query) do |rs|
-      ch_no, title_zh, chdiv_zh = rs.read(Int32, String, String)
+  dname = DNAMES[s_bid]? || "combine"
+  `bin/gen_ch_trans -s #{sname} -b #{s_bid} -d #{dname}`
+  return unless $?.success?
 
-      title = title_zh.blank? ? "" : cvmtl.cv_title(title_zh).to_txt
-      chdiv = chdiv_zh.blank? ? "" : cvmtl.cv_title(chdiv_zh).to_txt
-      uslug = title.empty? ? "-" : TextUtil.tokenize(title)[0..7].join('-')
-
-      trans << {title, chdiv, uslug, ch_no}
-    end
-  end
-
-  DB.open("sqlite3:#{db_path}") do |db|
-    db.exec WN::ChInfo.init_sql
-    db.exec "pragma journal_mode = WAL"
-    db.exec "pragma synchronous = normal"
-
-    db.exec "begin"
-
-    trans.each do |args|
-      query = "update chaps set title = ?, chdiv = ?, uslug = ? where ch_no = ?"
-      db.exec query, args: args.to_a
-    end
-
-    db.exec "commit"
-  end
-
-  File.utime(mtime, mtime, db_path)
+  out_path = WN::ChTran.db_path("#{sname}/#{s_bid}")
+  File.utime(mtime, mtime, out_path)
 end
 
 def import_all(sname : String, threads = 6, regen : Bool = false)

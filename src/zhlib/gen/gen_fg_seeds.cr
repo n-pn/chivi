@@ -42,8 +42,8 @@ def import_one(sname : String, s_bid : Int32)
 
     db.exec "begin"
     db.exec <<-SQL
-      replace into chaps (ch_no, s_cid, title_zh, chdiv_zh, c_len, p_len, mtime, uname)
-      select ch_no, s_cid, title as title_zh, chvol as chdiv_zh, c_len, p_len, utime as mtime, uname
+      replace into chaps (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname)
+      select ch_no, s_cid, title as title, chvol as chdiv, c_len, p_len, utime as mtime, uname
       from source.chinfos
     SQL
 
@@ -86,6 +86,8 @@ threads = ENV["CRYSTAL_WORKERS"]?.try(&.to_i?) || 6
 threads = 6 if threads < 6
 
 snames = ARGV.empty? ? Dir.children("var/chaps/texts") : ARGV
+snames.sort!
+
 puts snames.colorize.yellow
 
 snames.each do |sname|
