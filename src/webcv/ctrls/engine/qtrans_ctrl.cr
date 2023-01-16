@@ -15,10 +15,10 @@ class CV::QtransCtrl < CV::BaseCtrl
 
   @[AC::Route::PUT("/mterror", body: :form)]
   def mtspec(form : SpecForm, _caps : Bool = false)
-    mt_v2 = MtCore.generic_mtl(form.dname, form.uname || _viuser.uname)
+    cvmtl = MtCore.generic_mtl(form.dname, form.uname || _viuser.uname)
 
     output = String.build do |io|
-      mt_v2.cv_plain(form.input, cap_first: _caps).to_txt(io)
+      cvmtl.cv_plain(form.input, cap_first: _caps).to_txt(io)
       io << '\n'
       MtCore.hanviet_mtl.translit(form.input, _caps)
     end
@@ -85,7 +85,7 @@ class CV::QtransCtrl < CV::BaseCtrl
   @[AC::Route::PUT("/", body: :form)]
   @[AC::Route::POST("/", body: :form)]
   def convert(form : ConvertForm, dname : String = "combine", _simp : Bool = false)
-    mt_v2 = MtCore.generic_mtl(dname, _viuser.uname)
+    cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
 
     input = form.input.tr("\t", " ")
     input = TranUtil.opencc(input, "hk2s") unless params["_simp"]?
@@ -93,7 +93,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     output = String.build do |str|
       input.each_line.with_index do |line, idx|
         str << '\n' if idx > 0
-        mt_v2.cv_plain(line, cap_first: true).to_txt(str)
+        cvmtl.cv_plain(line, cap_first: true).to_txt(str)
       end
     end
 

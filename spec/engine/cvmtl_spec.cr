@@ -1,5 +1,5 @@
 require "spec"
-require "../../src/mt_v2/engine"
+require "../../src/mt_v2/m2_core"
 
 MTL = M2::Engine.new("combine")
 

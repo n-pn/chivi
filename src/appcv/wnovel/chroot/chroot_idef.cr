@@ -68,8 +68,8 @@ class CV::Chroot
 
     infos = self._repo.all(chmin &+ 1, chmax)
 
-    mt_v2 = self.nvinfo.mt_v2
-    infos.each(&.trans!(mt_v2))
+    cvmtl = self.nvinfo.cvmtl
+    infos.each(&.trans!(cvmtl))
 
     infos
     # end
@@ -80,8 +80,8 @@ class CV::Chroot
     chmin = chmax &- 3
     infos = self._repo.all(chmin, chmax, "desc")
 
-    mt_v2 = self.nvinfo.mt_v2
-    infos.each(&.trans!(mt_v2))
+    cvmtl = self.nvinfo.cvmtl
+    infos.each(&.trans!(cvmtl))
 
     infos
   end
@@ -90,7 +90,7 @@ class CV::Chroot
 
   def chinfo(ch_no : Int32) : Chinfo?
     return unless info = self._repo.get(ch_no)
-    info.tap(&.trans!(self.nvinfo.mt_v2))
+    info.tap(&.trans!(self.nvinfo.cvmtl))
 
     # vpage = self.chpage(self.pg_vi(ch_no))
     # min = 0

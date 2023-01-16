@@ -1,8 +1,38 @@
 require "./config"
 
+require "log"
 require "action-controller"
 require "action-controller/logger"
 require "action-controller/server"
+
+class Log
+  backend = IOBackend.new(STDOUT)
+  time_zone = Time::Location.load("Asia/Ho_Chi_Minh")
+
+  backend.formatter = Formatter.new do |entry, io|
+    io << entry.timestamp.in(time_zone).to_s("%I:%M:%S")
+    io << ' ' << entry.source << " |"
+    io << " (#{entry.severity})" if entry.severity > Severity::Debug
+    io << ' ' << entry.message
+
+    if entry.severity == Severity::Error
+      io << '\n'
+      entry.exception.try(&.inspect_with_backtrace(io))
+    end
+  end
+
+  builder.clear
+
+  if CV::Config.production?
+    log_level = ::Log::Severity::Info
+    builder.bind "*", :warn, backend
+  else
+    log_level = ::Log::Severity::Debug
+    builder.bind "*", :info, backend
+  end
+
+  setup_from_env
+end
 
 # Add handlers that should run before your application
 ActionController::Server.before(

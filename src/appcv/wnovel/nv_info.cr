@@ -88,7 +88,7 @@ class CV::Nvinfo
 
   timestamps # created_at and updated_at
 
-  getter mt_v2 : CV::MtCore { CV::MtCore.generic_mtl(self.dname) }
+  getter cvmtl : CV::MtCore { CV::MtCore.generic_mtl(self.dname) }
 
   scope :filter_btitle do |input|
     if input.nil?

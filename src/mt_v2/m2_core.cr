@@ -1,5 +1,5 @@
 # require "./engine/*"
-require "./data/m2_dict"
+require "./m2_data"
 require "./core/mt_data"
 
 require "../_util/text_util"

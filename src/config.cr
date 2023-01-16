@@ -32,33 +32,3 @@ module CV::Config
   class_getter ms_port = 5501 # mt_sp helper
 
 end
-
-class Log
-  backend = IOBackend.new(STDOUT)
-  time_zone = Time::Location.load("Asia/Ho_Chi_Minh")
-
-  backend.formatter = Formatter.new do |entry, io|
-    io << entry.timestamp.in(time_zone).to_s("%I:%M:%S")
-    io << ' ' << entry.source << " |"
-    io << " (#{entry.severity})" if entry.severity > Severity::Debug
-    io << ' ' << entry.message
-
-    if entry.severity == Severity::Error
-      io << '\n'
-      entry.exception.try(&.inspect_with_backtrace(io))
-    end
-  end
-
-  builder.clear
-
-  if CV::Config.production?
-    log_level = ::Log::Severity::Info
-    builder.bind "*", :warn, backend
-  else
-    log_level = ::Log::Severity::Debug
-    builder.bind "*", :info, backend
-  end
-
-  builder.bind "action-controller.*", log_level, backend
-  setup_from_env
-end

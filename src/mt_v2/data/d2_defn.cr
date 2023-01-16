@@ -40,7 +40,7 @@ class M2::DbDefn
 
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix // 60
 
-  def create!(repo = @@repo, @mtime = Time.utc.to_unix // 60 - EPOCH) : Array(Int32)
+  def save!(repo = @@repo, @mtime = Time.utc.to_unix // 60 - EPOCH) : Array(Int32)
     prevs = find_prevs(repo, self.tab)
 
     if @_prev = prevs[0]?

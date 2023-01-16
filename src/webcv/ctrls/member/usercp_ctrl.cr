@@ -14,21 +14,25 @@ class CV::UsercpCtrl < CV::BaseCtrl
     render json: ViuserView.new(viuser, true)
   end
 
-  @[AC::Route::PUT("/upgrade-privi")]
-  def upgrade_privi(privi : Int32, tspan : Int32)
-    # privi = params.read_int("privi", min: 1, max: 3)
-    # tspan = params.read_int("tspan", min: 0, max: 3)
-    viuser.upgrade!(privi, tspan)
+  struct PriviForm
+    include JSON::Serializable
+
+    getter privi : Int32
+    getter tspan : Int32
+  end
+
+  @[AC::Route::PUT("/upgrade-privi", body: :form)]
+  def upgrade_privi(form : PriviForm)
+    viuser.upgrade!(form.privi, form.tspan)
+
+    spawn CtrlUtil.log_user_action("upgrade-privi", form, _viuser.uname)
 
     spawn do
-      body = {privi: privi, tspan: tspan}
-      CtrlUtil.log_user_action("upgrade-privi", body, _viuser.uname)
-    end
-
-    sname = "@" + viuser.uname
-    unless ChSeed.has_sname?(sname)
-      sn_id = viuser.id * 2
-      ChSeed.add_user(sname, sn_id)
+      sname = "@" + viuser.uname
+      unless ChSeed.has_sname?(sname)
+        sn_id = viuser.id * 2
+        ChSeed.add_user(sname, sn_id)
+      end
     end
 
     save_current_user!(viuser)
@@ -37,38 +41,42 @@ class CV::UsercpCtrl < CV::BaseCtrl
     render :forbidden, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
   end
 
-  @[AC::Route::PUT("/send-vcoin")]
-  def send_vcoin
-    amount = params["amount"].to_i
-    reason = params["reason"].strip
+  struct VcoinForm
+    include JSON::Serializable
 
-    unless sendee = Viuser.find_any(params["sendee"])
+    getter sendee : String
+    getter reason : String
+    getter amount : Int32
+
+    getter? as_admin : Bool = false
+  end
+
+  @[AC::Route::PUT("/send-vcoin", body: :form)]
+  def send_vcoin(form : VcoinForm)
+    unless sendee = Viuser.find_any(form.sendee)
       raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại")
     end
 
-    if viuser.privi > 3 && params["as_admin"]? == "true"
+    if viuser.privi > 3 && form.as_admin?
       sender = Viuser.load!(-1) # sender is admin
-    elsif viuser.vcoin_avail >= amount
+    elsif viuser.vcoin_avail >= form.amount
       sender = viuser
     else
       raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
     end
 
-    spawn do
-      body = {sendee: sendee.uname, amount: amount, reason: reason}
-      CtrlUtil.log_user_action("send-vcoin", body, viuser.uname)
-    end
+    spawn CtrlUtil.log_user_action("send-vcoin", form, viuser.uname)
 
     Clear::SQL.transaction do
-      sender.update(vcoin_avail: sender.vcoin_avail - amount)
-      sendee.update(vcoin_avail: sendee.vcoin_avail + amount)
+      sender.update(vcoin_avail: sender.vcoin_avail - form.amount)
+      sendee.update(vcoin_avail: sendee.vcoin_avail + form.amount)
 
-      VcoinXlog.new(sender: sender.id, sendee: sendee.id, amount: amount, reason: reason).create!
+      VcoinXlog.new(sender: sender.id, sendee: sendee.id, amount: form.amount, reason: form.reason).create!
 
       sender.cache!
       sendee.cache!
 
-      spawn send_vcoin_receive_email(sender, sendee, amount, reason)
+      spawn send_vcoin_receive_email(sender, sendee, form.amount, form.reason)
     end
 
     render json: {sendee: sendee.uname, remain: viuser.vcoin_avail}
