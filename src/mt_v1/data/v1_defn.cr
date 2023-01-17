@@ -35,7 +35,6 @@ class M1::DbDefn
   field mtime : Int64 = 0
 
   field _ctx : String = ""
-  field _idx : Int32 = 0
 
   field _prev : Int32 = 0
   field _flag : Int32 = 1

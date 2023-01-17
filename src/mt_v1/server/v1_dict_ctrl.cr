@@ -3,7 +3,7 @@ require "./_ctrl_base"
 require "../data/v1_dict"
 require "../data/v1_defn"
 
-class M1::DictCtrl < M1::BaseCtrl
+class M1::DictCtrl < AC::Base
   base "/_m1"
 
   @[AC::Route::GET("/dicts")]

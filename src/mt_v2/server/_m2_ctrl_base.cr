@@ -1,5 +1,5 @@
 require "../m2_core"
-require "../../server"
+require "../../cv_srv"
 
 abstract class AC::Base
 end

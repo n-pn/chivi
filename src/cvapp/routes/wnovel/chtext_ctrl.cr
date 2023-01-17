@@ -1,7 +1,8 @@
 require "../_ctrl_base"
-require "../../../zhlib/models/line_edit"
-require "../../../zhlib/models/text_edit"
 require "../../../_util/diff_util"
+
+require "../../../wnapp/data/viuser/user_line_edit"
+require "../../../wnapp/data/viuser/user_text_edit"
 
 class CV::ChtextCtrl < CV::BaseCtrl
   base "/api/texts/:book_id/:sname"

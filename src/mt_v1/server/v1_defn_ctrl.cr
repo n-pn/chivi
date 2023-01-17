@@ -1,9 +1,10 @@
-require "./_ctrl_base"
-
 require "../data/v1_dict"
 require "../data/v1_defn"
 
-class M1::DefnCtrl < M1::BaseCtrl
+require "./_ctrl_base"
+require "./forms/v1_defn_form"
+
+class M1::DefnCtrl < AC::Base
   base "/_m1"
 
   @[AC::Route::GET("/defns")]
@@ -39,14 +40,6 @@ class M1::DefnCtrl < M1::BaseCtrl
       start: offset + 1,
       pgmax: CtrlUtil.pg_no(total, limit),
     }
-  end
-
-  private def get_str(name : String)
-    params[name]?.try { |x| x unless x.blank? }
-  end
-
-  private def get_int(name : String)
-    params[name]?.try(&.to_i?)
   end
 
   private def build_query(params, limit, offset)
@@ -104,5 +97,12 @@ class M1::DefnCtrl < M1::BaseCtrl
     str = str.ends_with?('$') ? str[..-2] : str + "%"
 
     str
+  end
+
+  @[AC::Route::POST("/defns", body: :form)]
+  def create(form : DefnForm)
+    form.save!(_uname) if form.validate!(_privi)
+  rescue err
+    render :unauthozired, res.message
   end
 end

@@ -2,25 +2,9 @@ require "../../_data/**"
 require "./_curr_user"
 require "./_ctrl_util"
 
-require "action-controller"
+require "../../cv_srv"
 
-class NotFound < Exception; end
-
-class BadRequest < Exception; end
-
-class Unauthorized < Exception; end
-
-abstract class CV::BaseCtrl < ActionController::Base
-  base "/api"
-
-  Log = ::Log.for("controller")
-
-  # add_parser("application/json") { |klass, body_io| klass.from_json(body_io) }
-  # add_parser("text/plain") { |_klass, body_io| body_io.gets_to_end }
-
-  add_responder("application/json") { |io, result| result.to_json(io) }
-  add_responder("text/plain") { |io, result| io << result }
-
+abstract class CV::BaseCtrl < AC::Base
   # @[AC::Route::Filter(:before_action)]
   # def set_request_id
   #   request_id = request.headers["X-Request-ID"]? || UUID.random.to_s
@@ -28,51 +12,7 @@ abstract class CV::BaseCtrl < ActionController::Base
   #   response.headers["X-Request-ID"] = request_id
   # end
 
-  @[AC::Route::Filter(:before_action)]
-  def set_date_header
-    response.headers["Date"] = HTTP.format_time(Time.utc)
-  end
-
-  # handle common errors at a global level
-  # this covers no acceptable response format and not an acceptable post format
-  @[AC::Route::Exception(AC::Route::NotAcceptable, status_code: HTTP::Status::NOT_ACCEPTABLE)]
-  @[AC::Route::Exception(AC::Route::UnsupportedMediaType, status_code: HTTP::Status::UNSUPPORTED_MEDIA_TYPE)]
-  def bad_media_type(error)
-    {
-      error:   error.message,
-      accepts: error.accepts,
-    }
-  end
-
-  @[AC::Route::Exception(AC::Route::Param::MissingError, status_code: HTTP::Status::BAD_REQUEST)]
-  @[AC::Route::Exception(AC::Route::Param::ValueError, status_code: HTTP::Status::BAD_REQUEST)]
-  def invalid_param(error)
-    {
-      error:       error.message,
-      parameter:   error.parameter,
-      restriction: error.restriction,
-    }
-  end
-
-  @[AC::Route::Exception(BadRequest, status_code: HTTP::Status::BAD_REQUEST)]
-  def bad_request(error)
-    {message: error.message}
-  end
-
-  @[AC::Route::Exception(NotFound, status_code: HTTP::Status::NOT_FOUND)]
-  def not_found(error)
-    {message: error.message}
-  end
-
-  @[AC::Route::Exception(Unauthorized, status_code: HTTP::Status::FORBIDDEN)]
-  def unauthorized(error)
-    {message: error.message}
-  end
-
-  getter _viuser : Viuser do
-    uname = session["uname"]?.try(&.as(String)) || "Khách"
-    Viuser.load!(uname)
-  end
+  getter _viuser : Viuser { Viuser.load!(_uname) }
 
   private def get_nvinfo(b_id : Int64) : Nvinfo
     Nvinfo.load!(b_id) || raise NotFound.new("Quyển sách không tồn tại")

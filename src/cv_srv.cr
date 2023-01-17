@@ -34,18 +34,73 @@ class ::Log
   setup_from_env
 end
 
+class UserError < Exception; end
+
+class NotFound < UserError; end
+
+class BadRequest < UserError; end
+
+class Unauthorized < UserError; end
+
 abstract class AC::Base
   # add_responder("text/plain") { |io, result| io << result }
 
-  getter _uname : String { session["uname"]? || "Khách" }
-
-  getter _privi : Int32 do
-    privi = session["privi"]?.try(&.to_i) || -1
-    privi_until = session["until"]? || 0_i64
-    (0 < privi < 4) && privi_until < Time.utc.to_unix ? privi - 1 : privi
+  @[AC::Route::Filter(:before_action)]
+  def set_date_header
+    response.headers["Date"] = HTTP.format_time(Time.utc)
   end
 
-  def _paginate(max = 100)
+  # handle common errors at a global level
+  # this covers no acceptable response format and not an acceptable post format
+  @[AC::Route::Exception(ActionController::Route::NotAcceptable, status_code: HTTP::Status::NOT_ACCEPTABLE)]
+  @[AC::Route::Exception(AC::Route::UnsupportedMediaType, status_code: HTTP::Status::UNSUPPORTED_MEDIA_TYPE)]
+  def bad_media_type(error)
+    {
+      error:   error.message,
+      accepts: error.accepts,
+    }
+  end
+
+  # this covers a required paramater missing and a bad paramater value / format
+  @[AC::Route::Exception(AC::Route::Param::MissingError, status_code: HTTP::Status::BAD_REQUEST)]
+  @[AC::Route::Exception(AC::Route::Param::ValueError, status_code: HTTP::Status::BAD_REQUEST)]
+  def invalid_param(error)
+    {
+      error:       error.message,
+      parameter:   error.parameter,
+      restriction: error.restriction,
+    }
+  end
+
+  @[AC::Route::Exception(BadRequest, status_code: HTTP::Status::BAD_REQUEST)]
+  def bad_request(error)
+    {message: error.message}
+  end
+
+  @[AC::Route::Exception(NotFound, status_code: HTTP::Status::NOT_FOUND)]
+  def not_found(error)
+    {message: error.message}
+  end
+
+  @[AC::Route::Exception(Unauthorized, status_code: HTTP::Status::FORBIDDEN)]
+  def unauthorized(error)
+    {message: error.message}
+  end
+
+  #####
+
+  private getter _uname : String { session["uname"]?.try(&.as(String)) || "Khách" }
+
+  private getter _privi : Int32 do
+    _privi = session["privi"]?.try(&.as(Int64).to_i) || -1
+    _until = session["until"]?.try(&.as(Int64)) || 0_i64
+
+    (0 < _privi < 4) && _until < Time.utc.to_unix ? _privi - 1 : _privi
+  end
+
+  #####
+
+  private def _paginate(max = 100)
     pg_no = params["pg"]?.try(&.to_i?) || 1
     limit = params["lm"]?.try(&.to_i?) || 5
 
@@ -55,18 +110,26 @@ abstract class AC::Base
     {pg_no, limit, (pg_no &- 1) &* limit}
   end
 
-  def _paged(pg_no : Int, limit : Int, max : Int)
+  private def _paged(pg_no : Int, limit : Int, max : Int)
     limit = max if limit > max
     _paged(pg_no, limit)
   end
 
-  def _paged(pg_no : Int, limit : Int)
+  private def _paged(pg_no : Int, limit : Int)
     pg_no = 1 if pg_no < 1
     {limit, limit &* (pg_no &- 1)}
   end
 
-  def _pgidx(total : Int, limit : Int)
+  private def _pgidx(total : Int, limit : Int)
     (total &- 1) // limit &+ 1
+  end
+
+  private def _get_str(name : String)
+    params[name]?.try { |x| x unless x.blank? }
+  end
+
+  private def _get_int(name : String)
+    params[name]?.try(&.to_i?)
   end
 end
 

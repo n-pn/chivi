@@ -15,8 +15,7 @@ CREATE TABLE IF NOT EXISTS defns (
   "uname" varchar NOT NULL DEFAULT '', -- user name
   "mtime" integer NOT NULL DEFAULT 0, -- term update time
   --
-  '_ctx' varchar NOT NULL DEFAULT '',
-  '_idx' integer NOT NULL DEFAULT -1,
+  '_ctx' varchar NOT NULL DEFAULT ''
   --
   "_prev" integer NOT NULL DEFAULT 0,
   "_flag" integer NOT NULL DEFAULT 0 -- marking term as active or inactive
