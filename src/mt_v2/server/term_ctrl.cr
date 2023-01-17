@@ -1,7 +1,7 @@
 require "./_ctrl_base"
 
-require "../data/cv_dict"
-require "../data/cv_term"
+require "../data/d2_dict"
+require "../data/d2_defn"
 
 class M2::DictCtrl < M2::BaseCtrl
   base "/_m2"
@@ -10,16 +10,16 @@ class M2::DictCtrl < M2::BaseCtrl
   def index(page : Int32 = 1, take : Int32 = 20)
     pgidx, limit, offset = fix_paged(page, take)
 
-    total = M2::CvDict.total_books.to_i
-    cores = [M2::CvDict.get!(1)]
-    books = M2::CvDict.fetch_books(limit: limit, offset: offset)
+    total = DbDict.bdicts_count
+    cores = [DbDict.get!(1)]
+    books = DbDict.bdicts_all(limit: limit, offset: offset)
 
     output = {
       cores: cores.map(&.tuple),
       books: books.map(&.tuple),
       total: total,
       pgidx: pgidx,
-      pgmax: calc_pgmax(total, limit),
+      pgmax: CtrlUtil.pg_no(total, limit),
     }
 
     render json: output
@@ -59,7 +59,7 @@ class M2::DictCtrl < M2::BaseCtrl
 
       total: total,
       pgidx: pgidx,
-      pgmax: calc_pgmax(total, limit),
+      pgmax: CtrlUtil.pg_no(total, limit),
 
       start: offset &+ 1,
       terms: terms,
