@@ -38,10 +38,39 @@ class M1::DbDefn
   field _prev : Int32 = 0
   field _flag : Int32 = 1
 
-  EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix // 60
+  SPLIT = 'ǀ'
+
+  def to_json(jb : JSON::Builder)
+    jb.object do
+      jb.field "key", self.key
+
+      jb.field "dic", self.dic
+      jb.field "tab", self.tab
+
+      jb.field "vals", self.val.split(SPLIT)
+      jb.field "tags", self.ptag.split(' ')
+
+      jb.field "prio", self.prio
+
+      jb.field "uname", self.uname
+      jb.field "mtime", self.utime
+
+      jb.field "_flag", self._flag
+
+      jb.field "state", _flag == -1 ? "Xoá" : (_prev > 0 ? "Sửa" : "Thêm")
+    end
+  end
+
+  def utime
+    EPOCH &+ self.mtime &* 60
+  end
+
+  ####
+
+  EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
 
   def self.mtime(rtime : Time = Time.utc)
-    rtme.to_unix // 60 - EPOCH
+    (rtme.to_unix - EPOCH) // 60
   end
 
   def create!(repo = self.class.repo) : Array(Int32)

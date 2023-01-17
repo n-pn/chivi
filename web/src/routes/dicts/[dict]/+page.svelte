@@ -20,7 +20,7 @@
 
   $: ({ query, terms, start } = data)
 
-  $: vdict.put(data.dname, data.d_dub)
+  $: vdict.put(data.dname, data.label)
 
   let d_tab = 2
   $: {
@@ -36,16 +36,7 @@
 
   $: pager = new Pager($page.url)
 
-  const prio_labels = {
-    '^': 'Cao',
-    'v': 'Thấp',
-    'x': 'Ẩn',
-    '-': 'Bình',
-  }
-
-  function render_prio(prio: string) {
-    return prio_labels[prio] || 'Bình'
-  }
+  const prio_labels = ['Ẩn', 'Thấp', 'Bình', 'Cao']
 
   function reset_query() {
     for (let key in query) query[key] = ''
@@ -62,25 +53,21 @@
     upsert.show(d_tab, state)
   }
 
-  const modes = ['Cộng đồng', 'Lưu nháp', 'Cá nhân']
-  function map_mode(_mode: number) {
-    return modes[_mode] || modes[0]
-  }
+  const tab_labels = ['Tự động', 'Chung', 'Nháp', 'Riêng']
 
-  function map_uname_class(uname: string) {
-    return uname == $session.uname ? '_self' : '_other'
-  }
+  const uname_class = (uname: string) =>
+    uname == $session.uname ? '_self' : '_other'
 </script>
 
 <Crumb
   tree={[
     ['Từ điển', '/dicts'],
-    [data.d_dub, $page.url.pathname],
+    [data.label, $page.url.pathname],
   ]} />
 
 <article class="article m-article">
-  <h1 class="h2">[{data.dname}] {data.d_dub}</h1>
-  <p class="d_tip">{data.d_tip}</p>
+  <h1 class="h2">{data.label} <code>[{data.dname}]</code></h1>
+  <p class="brief">{data.brief}</p>
 
   <h2 class="h3">Số lượng từ: {data.dsize}</h2>
 
@@ -111,7 +98,7 @@
           <td class="uname"
             ><input type="text" placeholder="-" bind:value={query.uname} /></td>
           <td class="_mode"
-            ><input type="text" placeholder="-" bind:value={query._mode} /></td>
+            ><input type="text" placeholder="-" bind:value={query.tab} /></td>
           <td>
             <button class="m-btn _sm" on:click={reset_query}>
               <SIcon name="eraser" />
@@ -127,7 +114,7 @@
       </thead>
 
       <tbody>
-        {#each terms as { key, vals, tags, prio, mtime, uname, _flag, _mode }, idx}
+        {#each terms as { key, vals, tags, prio, mtime, uname, _flag, tab }, idx}
           <tr class="term _{_flag}">
             <td class="-idx">{start + idx}</td>
             <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -150,9 +137,7 @@
               class="-val"
               class:_del={!vals[0]}
               on:click={() => show_upsert(key, 1)}>
-              <span>
-                {vals.join(' | ') || 'Đã xoá'}
-              </span>
+              <span>{vals.join(' | ') || 'Đã xoá'}</span>
 
               <div class="hover">
                 <span class="m-btn _xs _active">
@@ -184,13 +169,12 @@
               </div>
             </td>
             <td class="prio">
-              <a href="{$page.url.pathname}?prio={prio || '-'}"
-                >{render_prio(prio)}</a>
+              <a href="{$page.url.pathname}?prio={prio}">{prio_labels[prio]}</a>
             </td>
-            <td class="uname {map_uname_class(uname)}">
+            <td class="uname {uname_class(uname)}">
               <a href="{$page.url.pathname}?uname={uname}">{uname}</a>
             </td>
-            <td class="_mode _{_mode}">{map_mode(_mode)} </td>
+            <td class="_mode _{tab}">{tab_labels[tab]} </td>
             <td class="mtime">{rel_time_vp(mtime)} </td>
           </tr>
         {/each}
@@ -214,7 +198,7 @@
 {/if}
 
 <style lang="scss">
-  .d_tip {
+  .brief {
     font-style: italic;
     margin-top: 1rem;
     @include fgcolor(tert);

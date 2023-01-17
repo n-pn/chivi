@@ -27,15 +27,17 @@ class M1::DictCtrl < M1::BaseCtrl
 
   @[AC::Route::GET("/dicts/:name")]
   def show(name : String)
-    dict = DbDict.get!(name)
+    raise "Từ điển không tồn tại!" unless dict = DbDict.get(name)
 
     output = {
       dname: dict.dname,
-      d_dub: dict.label,
+      label: dict.label,
       brief: dict.brief,
 
       dsize: dict.term_total,
       defns: dict.term_avail,
+
+      users: dict.users.split(',', remove_empty: true),
     }
 
     render json: output

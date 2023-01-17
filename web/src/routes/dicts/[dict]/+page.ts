@@ -1,36 +1,55 @@
 import { api_path } from '$lib/api_call'
-import { make_vdict } from '$utils/vpdict_utils'
 import type { PageLoadEvent } from './$types'
 
 // FIXME: add type for term
-export interface JsonData extends CV.Paginate {
-  dname: string
-  d_dub: string
-  d_tip: string
-  dsize: number
+export interface TermsData extends CV.Paginate {
   start: number
   terms: any[]
+}
+
+export interface V1Dict {
+  dname: string
+  label: string
+  brief: string
+
+  dsize: number
+  users: string[]
 }
 
 const fields = ['key', 'val', 'ptag', 'prio', 'uname', '_mode']
 
 export async function load({ fetch, url, params: { dict } }: PageLoadEvent) {
-  const path = api_path('v1dict.show', dict, url.searchParams, { lm: 50 })
-  const data: JsonData = await fetch(path).then((r) => r.json())
+  const dict_path = api_path('v1dict.show', dict)
+  const dinfo: V1Dict = await fetch(dict_path).then((r) => r.json())
 
-  const { d_dub, d_tip } = make_vdict(dict, data.d_dub)
+  console.log(dinfo)
+  const query = {
+    dic: dict,
+    key: url.searchParams.get('key') || '',
+    val: url.searchParams.get('val') || '',
+    ptag: url.searchParams.get('ptag') || '',
+    prio: +url.searchParams.get('prio') || '',
+    tab: +url.searchParams.get('tab') || '',
+    uname: url.searchParams.get('uname') || '',
+    pg: +url.searchParams.get('pg') || 1,
+    lm: +url.searchParams.get('lm') || 50,
+  }
 
-  const query = {}
+  const terms_url = api_path('v1defn.index', null, url.searchParams, query)
+  console.log({ terms_url })
+
+  const terms: TermsData = await fetch(terms_url).then((r) => r.json())
+
   for (const field in fields) query[field] = url.searchParams.get(field) || ''
 
   // prettier-ignore
   const _meta: App.PageMeta = {
-    title: 'Từ điển:' + d_dub,
+    title: 'Từ điển:' + dinfo.label,
     left_nav: [
       { text: 'Từ điển', icon: 'package', href: '/dicts', 'data-show': 'ts' },
-      { text: d_dub, href: url.pathname, 'data-kind': 'title' },
+      { text: dinfo.label, href: url.pathname, 'data-kind': 'title' },
     ],
   }
 
-  return { ...data, d_dub, d_tip, query, _meta }
+  return { ...dinfo, ...terms, query, _meta }
 }

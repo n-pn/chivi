@@ -99,7 +99,7 @@ class M1::DbDict
   end
 
   def self.get(dname : String) : self | Nil
-    find!(dname) rescue nil
+    get!(dname) rescue nil
   end
 
   def self.count : Int32

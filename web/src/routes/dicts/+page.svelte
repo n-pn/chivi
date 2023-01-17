@@ -33,7 +33,7 @@
 
   <div class="dicts">
     {#each books as [dname, label, dsize]}
-      <a class="-dict" href="/dicts/-{dname}">
+      <a class="-dict" href="/dicts/{dname}">
         <div class="-name">{label}</div>
         <div class="-meta">
           <div class="-type">Bộ truyện</div>

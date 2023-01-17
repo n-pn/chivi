@@ -95,7 +95,10 @@ type Extras = Record<string, any>
 
 export const merge_query = (query?: URLSearchParams, extras: Extras = {}) => {
   const params = new URLSearchParams(query)
-  for (const key in extras) params.set(key, extras[key])
+  for (const key in extras) {
+    const val = extras[key]
+    if (val) params.set(key, val)
+  }
   return params
 }
 
