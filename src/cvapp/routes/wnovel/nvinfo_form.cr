@@ -1,4 +1,4 @@
-require "../../../zhlib/models/zh_book"
+# require "../../../wndata/models/zh_book"
 require "../../../_data/wnovel/nv_info"
 
 class CV::NvinfoForm

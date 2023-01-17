@@ -1,0 +1,19 @@
+[Unit]
+Description=wnapp server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=nipin
+Environment=PORT=5300
+Environment=CV_ENV=production
+WorkingDirectory=/app/chivi
+ExecStart=/app/chivi/bin/wnapp-srv
+StandardOutput=file:/app/chivi/log/wnapp-srv.log
+StandardError=append:/app/chivi/log/wnapp-err.log
+
+[Install]
+WantedBy=multi-user.target

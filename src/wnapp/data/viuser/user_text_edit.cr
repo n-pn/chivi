@@ -1,7 +1,7 @@
 require "crorm/model"
 require "crorm/sqlite3"
 
-class ZH::TextEdit
+class WN::ChTextEdit
   include Crorm::Model
 
   field id : Int32, primary: true

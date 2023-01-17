@@ -7,7 +7,7 @@ module MailUtil
       host: "email-smtp.ap-southeast-1.amazonaws.com", port: 25,
       client_name: "Chivi", helo_domain: "chivi.app",
       tls_verify_mode: :peer, use_tls: :starttls,
-      auth: {CVENV.ses_username, CVENV.ses_password},
+      auth: {CV_ENV.ses_username, CV_ENV.ses_password},
       log: Log.for("email"),
       dns_timeout: 3, connect_timeout: 3, read_timeout: 10, write_timeout: 10,
     )

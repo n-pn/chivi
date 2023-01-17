@@ -10,10 +10,11 @@ sudo cp -f "$CWD/services/mt_v1-srv.service" /etc/systemd/system/mt_v1-srv.servi
 sudo cp -f "$CWD/services/mt_v2-srv.service" /etc/systemd/system/mt_v2-srv.service
 sudo cp -f "$CWD/services/mt_sp-srv.service" /etc/systemd/system/mt_sp-srv.service
 sudo cp -f "$CWD/services/ysapp-srv.service" /etc/systemd/system/ysapp-srv.service
-sudo cp -f "$CWD/services/hanlp-srv.service" /etc/systemd/system/hanlp-srv.service
 
-sudo cp -f "$CWD/services/mt_v2-mon.service" /etc/systemd/system/mt_v2-mon.service
-sudo cp -f "$CWD/services/mt_v2-mon.path" /etc/systemd/system/mt_v2-mon.path
+#sudo cp -f "$CWD/services/hanlp-srv.service" /etc/systemd/system/hanlp-srv.service
+
+#sudo cp -f "$CWD/services/mt_v2-mon.service" /etc/systemd/system/mt_v2-mon.service
+#sudo cp -f "$CWD/services/mt_v2-mon.path" /etc/systemd/system/mt_v2-mon.path
 
 sudo systemctl daemon-reload
 
@@ -26,8 +27,8 @@ sudo service cvweb-srv restart
 sudo systemctl enable ysapp-srv.service
 sudo service ysapp-srv restart
 
-sudo systemctl enable hanlp-srv.service
-sudo service hanlp-srv restart
+#sudo systemctl enable hanlp-srv.service
+#sudo service hanlp-srv restart
 
 sudo systemctl enable mt_sp-srv.service
 sudo service mt_sp-srv restart
@@ -38,8 +39,8 @@ sudo service mt_v1-srv restart
 sudo systemctl enable mt_v2-srv.service
 sudo service mt_v2-srv restart
 
-sudo systemctl enable mt_v2-mon.service
-sudo service mt_v2-mon restart
+#sudo systemctl enable mt_v2-mon.service
+#sudo service mt_v2-mon restart
 
-sudo systemctl enable mt_v2-mon.path
-sudo systemctl start mt_v2-mon.path
+#sudo systemctl enable mt_v2-mon.path
+#sudo systemctl start mt_v2-mon.path

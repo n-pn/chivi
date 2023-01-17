@@ -1,5 +1,6 @@
 require "json"
 require "../../mt_v1/vp_dict"
+require "../../mt_v1/tl_name"
 
 struct CV::VpTermView
   DIR = "var/vhint/detect"

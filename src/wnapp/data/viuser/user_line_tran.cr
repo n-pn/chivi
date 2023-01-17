@@ -1,7 +1,7 @@
 require "json"
 require "sqlite3"
 
-class ZH::LineTran
+class WN::ChLineTran
   include DB::Serializable
   include JSON::Serializable
 

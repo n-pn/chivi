@@ -1,8 +1,8 @@
 require "../data/v1_dict"
 require "../data/v1_defn"
 
-require "./_ctrl_base"
-require "./forms/v1_defn_form"
+require "./_m1_ctrl_base"
+require "./forms/m1_defn_form"
 
 class M1::DefnCtrl < AC::Base
   base "/_m1"

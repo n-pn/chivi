@@ -190,7 +190,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
   end
 
   private def create_text_edit(chroot, chinfo, new_ztext)
-    ZH::TextEdit.new({
+    WN::ChTextEdit.new({
       sname: chroot.sname,
       s_bid: chroot.s_bid,
       s_cid: chinfo.s_cid,
@@ -237,7 +237,7 @@ class CV::ChtextCtrl < CV::BaseCtrl
   end
 
   private def create_line_edit(chroot, chinfo, form)
-    ZH::LineEdit.new({
+    WN::ChLineEdit.new({
       sname: chroot.sname, s_bid: chroot.s_bid,
       s_cid: chinfo.s_cid, ch_no: chinfo.ch_no!,
       part_no: form.part_no, line_no: form.line_no,
