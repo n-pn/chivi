@@ -55,7 +55,7 @@ class M2::MtTerm < M2::MtNode
   }
 
   def self.cost(size : Int32, prio : Int32 = 0) : Int32
-    size &* 100 &+ 2 << (size + 1) &- 1
+    size &* 1000 &+ 2 << (size + 1) &* 100 &- 1
 
     # size > 5 ? size &* 100 &+ 2 << size : begin
     # COSTS[(size &- 1) &* 4 &+ prio]
