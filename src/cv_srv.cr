@@ -100,9 +100,9 @@ abstract class AC::Base
 
   #####
 
-  private def _paginate(max = 100)
+  private def _paginate(min = 5, max = 100)
     pg_no = params["pg"]?.try(&.to_i?) || 1
-    limit = params["lm"]?.try(&.to_i?) || 5
+    limit = params["lm"]?.try(&.to_i?) || min
 
     pg_no = 1 if pg_no < 1
     limit = max if limit > max

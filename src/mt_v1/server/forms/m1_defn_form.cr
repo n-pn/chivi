@@ -22,31 +22,29 @@ class M1::DefnForm
     @key = @key.tr("\t\n", " ").strip
     @val = @val.tr("\t", "").strip
 
-    @vdict = DbDict.find(@dic)
+    @vdict = DbDict.get!(@dic)
   end
 
-  def min_privi(vdict : DbDict)
-    case vdict.id
-    when .< 0, 4   then {2, 1, 0, 2} # novel dicts or combine
+  private def min_privi(dic : Int32)
+    case dic
+    when 4, .<(0)  then {2, 1, 0, 2} # novel dicts or combine
     when 1, 10, 11 then {3, 2, 1, 3} # regular, hanviet, pin_yin
     else                {4, 3, 2, 4} # system dicts
     end
   end
 
-  def valid?(privi = -1)
-    reg_privi = min_privi(vdict.id)[@tab]? || 3
+  def validate!(privi = -1) : Nil
+    reg_privi = min_privi(vdict.id!)[@tab]? || 3
 
     if privi < reg_privi
-      raise "Yên cầu quyền hạn tối thiểu #{reg_privi} để thêm từ"
+      raise Unauthorized.new("Yên cầu quyền hạn tối thiểu #{reg_privi} để thêm từ")
     end
-
-    true
   end
 
   def save!(uname : String, mtime = DbDefn.mtime)
     defn = DbDefn.new
 
-    defn.dic = vdict.id
+    defn.dic = vdict.id!
     defn.tab = @tab
 
     defn.key = @key
@@ -58,7 +56,7 @@ class M1::DefnForm
     defn.uname = uname
     defn.mtime = mtime
 
-    defn._ctx = @ctx
+    defn._ctx = @_ctx
 
     defn.save!(DbDefn.repo)
 

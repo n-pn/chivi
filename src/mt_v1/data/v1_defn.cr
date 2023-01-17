@@ -86,7 +86,7 @@ class M1::DbDefn
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
 
   def self.mtime(rtime : Time = Time.utc)
-    (rtme.to_unix - EPOCH) // 60
+    (rtime.to_unix - EPOCH) // 60
   end
 
   def create!(repo = self.class.repo) : Array(Int32)

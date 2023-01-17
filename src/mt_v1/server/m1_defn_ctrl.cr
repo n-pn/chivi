@@ -11,19 +11,13 @@ class M1::DefnCtrl < AC::Base
   def index(dic : String?, tab : Int32?,
             key : String?, val : String?,
             ptag : String?, prio : Int32?,
-            uname : String?,
-            pg pg_no : Int32 = 1, lm limit : Int32 = 50)
-    limit = 100 if limit > 100
-    offset = (pg_no - 1) * limit
+            uname : String?)
+    pg_no, limit, offset = _paginate(min: 50, max: 100)
 
     query, args = build_query(params, limit, offset)
-
-    terms = DbDefn.repo.open_db do |db|
-      db.query_all query, args: args, as: DbDefn
-    end
+    terms = DbDefn.repo.open_db { |db| db.query_all query, args: args, as: DbDefn }
 
     total = terms.size
-
     if total == limit
       total = DbDefn.repo.open_db do |db|
         query = query.sub("select * ", "select count (*) ")
@@ -38,7 +32,7 @@ class M1::DefnCtrl < AC::Base
       total: total,
       pgidx: pg_no,
       start: offset + 1,
-      pgmax: CtrlUtil.pg_no(total, limit),
+      pgmax: _pgidx(total, limit),
     }
   end
 
@@ -48,37 +42,37 @@ class M1::DefnCtrl < AC::Base
     query = String.build do |sql|
       sql << "select * from defns where _flag > -2"
 
-      if dic = get_str("dic")
+      if dic = _get_str("dic")
         sql << " and dic = ?"
         args << DbDict.get_id(dic)
       end
 
-      if tab = get_int("tab")
+      if tab = _get_int("tab")
         sql << " and tab = ?"
         args << tab
       end
 
-      if key = get_str("key")
+      if key = _get_str("key")
         sql << " and key like ?"
         args << regex_to_like(key)
       end
 
-      if val = get_str("val")
+      if val = _get_str("val")
         sql << " and val like ?"
         args << regex_to_like(val)
       end
 
-      if ptag = get_str("ptag")
+      if ptag = _get_str("ptag")
         sql << " and ptag = ?"
         args << ptag
       end
 
-      if prio = get_int("prio")
+      if prio = _get_int("prio")
         sql << " and prio = ?"
         args << prio
       end
 
-      if uname = get_str("uname")
+      if uname = _get_str("uname")
         sql << " and uname = ?"
         args << uname
       end
@@ -101,8 +95,9 @@ class M1::DefnCtrl < AC::Base
 
   @[AC::Route::POST("/defns", body: :form)]
   def create(form : DefnForm)
-    form.save!(_uname) if form.validate!(_privi)
-  rescue err
-    render :unauthozired, res.message
+    form.validate!(_privi)
+    form.save!(_uname)
+
+    {msg: "ok"}
   end
 end
