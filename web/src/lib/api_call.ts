@@ -86,8 +86,9 @@ export const ROUTES = {
   'tlspec.delete': (id: any) => `/api/tlspecs/${id}`,
 
   // glosssary v1
-  'v1dict.index': '/api/dicts',
-  'v1dict.show': (name: any) => `/api/dicts/${name}`,
+  'v1dict.index': '/_m1/dicts',
+  'v1dict.show': (name: string) => `/_m1/dicts/${name}`,
+  'v1defn.index': '/_m1/defns',
 }
 
 type Extras = Record<string, any>

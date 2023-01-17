@@ -32,13 +32,12 @@ const config = {
       '/api': 'http://localhost:5010',
       '/_ys': 'http://localhost:5509',
       '/_mt': 'http://localhost:5502',
+      '/_m1': 'http://localhost:5510',
       '/_mh': 'http://localhost:5501',
     },
   },
   vitePlugin: {
-    experimental: {
-      prebundleSvelteLibraries: true,
-    },
+    experimental: { prebundleSvelteLibraries: true },
   },
 }
 

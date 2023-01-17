@@ -3,7 +3,7 @@ require "./_ctrl_base"
 require "../data/v1_dict"
 require "../data/v1_defn"
 
-class M1::DictCtrl < M1::BaseCtrl
+class M1::DefnCtrl < M1::BaseCtrl
   base "/_m1"
 
   @[AC::Route::GET("/defns")]
@@ -73,7 +73,7 @@ class M1::DictCtrl < M1::BaseCtrl
     render json: {
       terms: terms,
       total: total,
-      pgidx: pgidx,
+      pgidx: pg_no,
       pgmax: CtrlUtil.pg_no(total, limit),
     }
   end

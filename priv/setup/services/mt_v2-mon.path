@@ -1,6 +1,6 @@
 [Path]
 Unit=mt_v2-mon.service
-PathChanged=/app/chivi/var/mt_v2
+PathChanged=/app/chivi/var/cvmtl
 
 [Install]
 WantedBy=multi-user.target

@@ -27,7 +27,8 @@ module CV::Config
   class_getter ys_port = 5509 # yousuu content
 
   class_getter m0_port = 5500 # mt_v0 engine
-  class_getter m1_port = 5501 # mt_v1 engine
+  class_getter m1_port = 5510 # mt_v1 engine
+
   class_getter m2_port = 5502 # mt_v2 engine
   class_getter ms_port = 5501 # mt_sp helper
 

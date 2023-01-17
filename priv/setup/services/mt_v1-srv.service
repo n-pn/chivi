@@ -1,0 +1,19 @@
+[Unit]
+Description=mt_v1 server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=nipin
+Environment=PORT=5510
+Environment=CV_ENV=production
+WorkingDirectory=/app/chivi
+ExecStart=/app/chivi/bin/mt_v1-srv
+StandardOutput=file:/app/chivi/log/mt_v1-srv.log
+StandardError=append:/app/chivi/log/mt_v1-err.log
+
+[Install]
+WantedBy=multi-user.target

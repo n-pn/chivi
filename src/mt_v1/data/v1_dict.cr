@@ -18,7 +18,7 @@ class M1::DbDict
   field term_total : Int32 = 0
   field term_avail : Int32 = 0
 
-  field base_terms : Int32 = 0
+  field main_terms : Int32 = 0
   field temp_terms : Int32 = 0
   field user_terms : Int32 = 0
 
@@ -60,8 +60,8 @@ class M1::DbDict
     @term_total = repo.db.query_one("select term_total from dicts where id = ?", self.id!, as: Int32)
   end
 
-  def tuple
-    {@dname, @label, @term_total, @brief}
+  def to_json(jb)
+    {@dname, @label, @term_total, @brief}.to_json(jb)
   end
 
   ######
@@ -104,12 +104,12 @@ class M1::DbDict
 
   def self.count : Int32
     query = "select count(*) from #{@@table} where term_total > 0"
-    @@repo.open_db(&.query_one(query, as: Int32))
+    self.repo.open_db(&.query_one(query, as: Int32))
   end
 
-  def self.bdicts_count : Int32
+  def self.books_count : Int32
     query = "select count(*) from #{@@table} where term_total > 0 and id < 0"
-    @@repo.open_db(&.query_one(query, as: Int32))
+    self.repo.open_db(&.query_one(query, as: Int32))
   end
 
   def self.all(limit : Int32, offset = 0) : Array(self)
@@ -118,15 +118,24 @@ class M1::DbDict
       order by mtime desc limit ? offset ?
     SQL
 
-    @@repo.open_db(&.query_all(query, limit, offset, as: self))
+    self.repo.open_db(&.query_all(query, limit, offset, as: self))
   end
 
-  def self.bdicts_all(limit : Int32, offset = 0)
+  def self.all_cores
+    query = <<-SQL
+      select * from #{@@table} where dtype = 0 or dtype = 1
+      order by id asc
+    SQL
+
+    self.repo.open_db(&.query_all(query, as: self))
+  end
+
+  def self.all_books(limit : Int32, offset = 0)
     query = <<-SQL
       select * from #{@@table} where id < 0 and term_total > 0
       order by mtime desc limit ? offset ?
     SQL
 
-    @@repo.open_db(&.query_all(query, limit, offset, as: self))
+    self.repo.open_db(&.query_all(query, limit, offset, as: self))
   end
 end

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS dicts (
   term_total integer NOT NULL DEFAULT 0, -- term total mean all entries in dict
   term_avail integer NOT NULL DEFAULT 0, -- all active terms in dicts
   --
-  base_terms integer NOT NULL DEFAULT 0,
+  main_terms integer NOT NULL DEFAULT 0,
   temp_terms integer NOT NULL DEFAULT 0,
   user_terms integer NOT NULL DEFAULT 0,
   --

@@ -17,6 +17,7 @@ export const handle = (async ({ event, resolve }) => {
 
 const api_hosts = {
   _ys: 'localhost:5509',
+  _m1: 'localhost:5510',
   _mt: 'localhost:5502',
   _mh: 'localhost:5501',
   // _db: 'localhost:5010',

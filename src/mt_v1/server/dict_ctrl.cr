@@ -7,18 +7,18 @@ class M1::DictCtrl < M1::BaseCtrl
   base "/_m1"
 
   @[AC::Route::GET("/dicts")]
-  def index(page : Int32 = 1, take : Int32 = 20)
-    pgidx, limit, offset = CtrlUtil.paginated(page, take)
+  def index(pg pg_no : Int32 = 1, lm limit : Int32 = 20)
+    limit, offset = CtrlUtil.paged(pg_no, limit, max: 50)
 
-    total = DbDict.bdicts_count
-    cores = [DbDict.get!(1)]
-    books = DbDict.bdicts_all(limit: limit, offset: offset)
+    cores = DbDict.all_cores
+    books = DbDict.all_books(limit: limit, offset: offset)
+    total = DbDict.books_count
 
     output = {
-      cores: cores.map(&.tuple),
-      books: books.map(&.tuple),
+      cores: cores,
+      books: books,
       total: total,
-      pgidx: pgidx,
+      pgidx: pg_no,
       pgmax: CtrlUtil.pg_no(total, limit),
     }
 
@@ -26,7 +26,7 @@ class M1::DictCtrl < M1::BaseCtrl
   end
 
   @[AC::Route::GET("/dicts/:name")]
-  def query(name : String)
+  def show(name : String)
     dict = DbDict.get!(name)
 
     output = {

@@ -40,3 +40,20 @@ abstract class M1::BaseCtrl < ActionController::Base
     (0 < privi < 4) && session["until"] < Time.utc.to_unix ? privi - 1 : privi
   end
 end
+
+module M1::CtrlUtil
+  extend self
+
+  def paged(pg_no : Int, limit : Int, max : Int = limit)
+    limit = max if limit > max
+    {limit, (pg_no - 1) &* limit}
+  end
+
+  def pg_no(index : Int, limit : Int)
+    (index &- 1) // limit &+ 1
+  end
+
+  def offset(pgidx : Int32, limit : Int32)
+    (pgidx &- 1) &* limit
+  end
+end
