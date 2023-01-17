@@ -2,7 +2,7 @@ require "json"
 require "uuid"
 require "http/client"
 
-class TL::Deepl
+class SP::Deepl
   FREE_API = "https://api-free.deepl.com"
   PRO_API  = "https://api.deepl.com"
 

@@ -1,4 +1,4 @@
-class TL::CharDict
+class SP::CharDict
   @[AlwaysInline]
   def self.path(name : String)
     "var/dicts/qtran/#{name}-chars.tsv"
@@ -36,7 +36,7 @@ class TL::CharDict
   end
 end
 
-class TL::WordDict
+class SP::WordDict
   @[AlwaysInline]
   def self.path(name : String)
     "var/dicts/qtran/#{name}-words.tsv"

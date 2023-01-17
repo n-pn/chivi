@@ -9,7 +9,7 @@ class M2::Engine
     @dicts = [MtDict.core_base]
     @dicts << MtDict.core_temp if temp
 
-    b_id = -CvDict.id_of(book)
+    b_id = -DbDict.get_id(book)
     return if b_id == 0
 
     @dicts << MtDict.book_base(b_id)

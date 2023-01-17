@@ -1,30 +1,28 @@
 require "./_sp_ctrl_base"
-require "../core/sp_dict"
+require "../data/wd_dict"
 
-class SP::LookupCtrl < SP::BaseCtrl
+class SP::LookupCtrl < AC::Base
   base "/_sp"
 
-  class LookupInput
+  class LookupForm
     include JSON::Serializable
     getter input : String
     getter range : Array(Int32)
   end
 
-  @[AC::Route::PUT("/lookup", body: :req)]
-  def lookup(req : LookupInput | String)
-    raise "Invalid request" if req.is_a?(String)
+  @[AC::Route::PUT("/lookup", body: :form)]
+  def lookup(form : LookupForm)
+    output = {} of Int32 => Array(Tuple(Int32, WdTerms))
+    chars = form.input.chars
 
-    output = {} of Int32 => Array(Tuple(Int32, LuTerms))
-
-    chars = req.input.chars
-    req.range.each do |index|
+    form.range.each do |index|
       output[index] = scan_terms(chars, start: index)
     end
 
     render json: output
   end
 
-  class LuTerms
+  class WdTerms
     property top_terms : String? = nil
     property trungviet : String? = nil
     property cc_cedict : String? = nil
@@ -44,21 +42,21 @@ class SP::LookupCtrl < SP::BaseCtrl
   end
 
   private def scan_terms(chars : Array(Char), start : Int32)
-    entry = Hash(Int32, LuTerms).new { |hash, key| hash[key] = LuTerms.new }
+    entry = Hash(Int32, WdTerms).new { |hash, key| hash[key] = WdTerms.new }
 
-    LuDict.top_terms.scan(chars, start: start) do |word, defn|
+    WdDict.top_terms.scan(chars, start: start) do |word, defn|
       entry[word.size].top_terms = defn.gsub("\v", "; ")
     end
 
-    LuDict.trungviet.scan(chars, start: start) do |word, defn|
+    WdDict.trungviet.scan(chars, start: start) do |word, defn|
       entry[word.size].trungviet = defn
     end
 
-    LuDict.cc_cedict.scan(chars, start: start) do |word, defn|
+    WdDict.cc_cedict.scan(chars, start: start) do |word, defn|
       entry[word.size].cc_cedict = defn
     end
 
-    LuDict.trich_dan.scan(chars, start: start) do |word, defn|
+    WdDict.trich_dan.scan(chars, start: start) do |word, defn|
       entry[word.size].trich_dan = defn
     end
 

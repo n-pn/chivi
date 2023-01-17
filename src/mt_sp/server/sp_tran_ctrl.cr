@@ -1,12 +1,12 @@
 require "./_sp_ctrl_base"
 
-require "../sp_cpre"
+require "../sp_core"
 require "../util/*"
 
-class SP::TranCtrl < SP::BaseCtrl
+class SP::TranCtrl < AC::Base
   base "/_sp"
 
-  struct HanvietReq
+  struct HanvietForm
     include JSON::Serializable
 
     getter lines : Array(String)

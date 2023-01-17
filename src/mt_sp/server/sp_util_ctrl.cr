@@ -1,7 +1,7 @@
 require "icu"
 require "./_sp_ctrl_base"
 
-class SP::UtilCtrl < SP::BaseCtrl
+class SP::UtilCtrl < AC::Base
   base "/_sp"
 
   @[AC::Route::POST("/chardet", body: input)]

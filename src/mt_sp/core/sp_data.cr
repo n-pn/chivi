@@ -29,7 +29,7 @@ class SP::MtData < Deque(SP::MtNode)
     end
   end
 
-  private def no_space?(prev : TlNode, node : TlNode)
+  private def no_space?(prev : MtNode, node : MtNode)
     prev.tag.no_space_r? || node.tag.no_space_l?
   end
 end

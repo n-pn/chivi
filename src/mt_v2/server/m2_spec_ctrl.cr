@@ -1,6 +1,6 @@
-require "./_ctrl_base"
+require "./_m2_ctrl_base"
 
-class M2::SpecCtrl < M2::BaseCtrl
+class M2::SpecCtrl < AC::Base
   base "/_mt"
 
   SPEC_DIR = "var/mt_v2/tests/"

@@ -2,7 +2,7 @@ require "json"
 require "uuid"
 require "http/client"
 
-class TL::Btran
+class SP::Btran
   ENDPOINT = "https://api.cognitive.microsofttranslator.com"
 
   @headers : HTTP::Headers

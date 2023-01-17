@@ -25,16 +25,16 @@ class SP::Engine
       char == '､' ? ',' : char
     end
 
-    bests = [TlNode::NONE]
+    bests = [MtNode::NONE]
     costs = [0]
 
     chars.each_with_index do |char, idx|
       costs << idx
 
       if val = @char_dict.find(char)
-        bests << TlNode.new(val, len: 1, idx: idx)
+        bests << MtNode.new(val, len: 1, idx: idx)
       else
-        bests << TlNode.new(char, idx: idx)
+        bests << MtNode.new(char, idx: idx)
       end
     end
 
@@ -64,7 +64,7 @@ class SP::Engine
         next if costs[jump_to] > word_cost
 
         costs[jump_to] = word_cost
-        bests[jump_to] = TlNode.new(val, idx: idx, len: len)
+        bests[jump_to] = MtNode.new(val, idx: idx, len: len)
       end
     end
 
@@ -82,7 +82,7 @@ class SP::Engine
       value <= Str.value
     end
 
-    def self.map(node : TlNode)
+    def self.map(node : MtNode)
       return Err if node.val.blank?
 
       case node.tag
@@ -93,7 +93,7 @@ class SP::Engine
       end
     end
 
-    def self.map(node : TlNode, prev : self)
+    def self.map(node : MtNode, prev : self)
       case node.tag
       when .content?  then Err
       when .int_part? then prev.is_url? ? prev : Err
@@ -104,7 +104,7 @@ class SP::Engine
     end
   end
 
-  private def combine_node(bests : Array(TlNode), idx = 1)
+  private def combine_node(bests : Array(MtNode), idx = 1)
     node = bests.unsafe_fetch(idx)
     kind = CombineKind.map(node)
     return if kind.err?
@@ -124,8 +124,8 @@ class SP::Engine
       tag =
         case kind
         when .mix? then tag
-        when .url? then TlNode::Tag::None
-        else            TlNode::Tag::Content
+        when .url? then MtNode::Tag::None
+        else            MtNode::Tag::Content
         end
     end
 
@@ -138,12 +138,12 @@ class SP::Engine
       end
     end
 
-    TlNode.new(val, idx: node.idx, len: len, tag: tag)
+    MtNode.new(val, idx: node.idx, len: len, tag: tag)
   end
 
-  private def extract_result(input : Array(TlNode))
+  private def extract_result(input : Array(MtNode))
     idx = input.size &- 1
-    res = TlData.new
+    res = MtData.new
 
     while idx > 0
       cur = input.unsafe_fetch(idx)

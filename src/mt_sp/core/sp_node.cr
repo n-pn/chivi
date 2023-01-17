@@ -6,7 +6,7 @@ struct SP::MtNode
 
   NONE = new(val: "", len: 0, idx: 0, tag: Tag.flags(NoSpaceL, NoSpaceR))
 
-  def initialize(@val, @len, @idx, @tag : Tag = :conte)
+  def initialize(@val, @len, @idx, @tag : Tag = :content)
   end
 
   def initialize(char : Char, @idx)
