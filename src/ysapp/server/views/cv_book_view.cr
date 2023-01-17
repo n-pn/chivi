@@ -11,22 +11,22 @@ struct YS::BookView
   end
 
   def to_json(jb = JSON::Builder.new)
-    {
-      id:    @data.id,
-      bslug: @data.bslug,
+    jb.object {
+      jb.field "id", @data.id
+      jb.field "bslug", @data.bslug
 
-      author: @data.author.vname,
-      btitle: @data.vname,
+      jb.field "author", @data.author.vname
+      jb.field "btitle", @data.vname
 
-      bgenre: @data.bgenre,
-      bcover: @data.bcover,
-      scover: @data.scover,
+      jb.field "bgenre", @data.bgenre
+      jb.field "bcover", @data.bcover
+      jb.field "scover", @data.scover
 
-      voters: @data.voters,
-      rating: @data.rating / 10,
+      jb.field "voters", @data.voters
+      jb.field "rating", @data.rating / 10
 
-      status: @data.status,
-      update: @data.utime,
+      jb.field "status", @data.status
+      jb.field "update", @data.utime
     }
   end
 

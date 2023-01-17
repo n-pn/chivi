@@ -1,6 +1,5 @@
 require "crorm"
 require "crorm/sqlite3"
-require "sqlite3"
 
 class M1::DbDict
   include Crorm::Model

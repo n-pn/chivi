@@ -12,8 +12,9 @@ export const load = async ({ fetch, parent }: LoadEvent) => {
   const extra = { book: nvinfo.id, take: 3, sort: 'score' }
   const ypath = api_path('yscrits.index', null, null, extra)
 
-  const { crits } = await fetch(ypath).then((r) => r.json())
-  data.crits = crits
+  const { crits } = (await fetch(ypath).then((r) => r.json())) as {
+    crits: CV.Yscrit[]
+  }
 
-  return data
+  return { ...data, crits }
 }

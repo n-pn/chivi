@@ -5,7 +5,7 @@ export const load: PageLoad = async ({ fetch, params: { crit } }) => {
   const path = api_path('yscrits.show', crit)
   const data = await fetch(path).then((r) => r.json())
 
-  data._meta = {
+  const _meta = {
     title: 'Đánh giá',
     left_nav: [
       { text: 'Đánh giá', icon: 'stars', href: '/ys/crits' },
@@ -15,5 +15,5 @@ export const load: PageLoad = async ({ fetch, params: { crit } }) => {
     right_nav: [{text: 'Thư đơn', icon: 'bookmarks', href: '/ys/lists', 'data-show': 'tm' }],
   } satisfies App.PageMeta
 
-  return data
+  return { ...data, _meta }
 }

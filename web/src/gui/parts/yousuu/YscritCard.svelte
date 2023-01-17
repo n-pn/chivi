@@ -12,7 +12,7 @@
   import YscritBook from './YscritBook.svelte'
 
   export let crit: CV.Yscrit
-  export let book = crit.book
+  export let book: CV.Crbook | null = null
 
   export let show_book = true
   export let show_list = true

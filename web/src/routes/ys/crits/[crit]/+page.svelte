@@ -4,6 +4,8 @@
 
   import type { PageData } from './$types'
   export let data: PageData
+
+  $: ({ entry: crit, vbook: book } = data)
 </script>
 
 <nav class="bread">
@@ -15,11 +17,11 @@
     <span>Đánh giá</span>
   </a>
   <span class="-sep">/</span>
-  <a class="crumb _link" href="/ys/crits?book={data.entry.book.id}">
-    <span>{data.entry.book.btitle}</span>
+  <a class="crumb _link" href="/ys/crits?book={book.id}">
+    <span>{book.btitle}</span>
   </a>
 </nav>
 
 <article class="article island _narrow">
-  <YscritCard crit={data.entry} view_all={true} />
+  <YscritCard {crit} {book} view_all={true} />
 </article>

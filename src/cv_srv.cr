@@ -168,6 +168,7 @@ def start_server!(port : Int32, server_name = "Chivi")
 
   AC::Session.configure do |settings|
     settings.key = "_auth"
+    settings.path = "/"
     settings.secret = CV_ENV.session_skey
     settings.secure = CV_ENV.production? # HTTPS only
   end

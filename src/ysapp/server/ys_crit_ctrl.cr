@@ -35,14 +35,14 @@ class YS::CritCtrl < AC::Base
       crits = query.with_yslist.with_ysuser
     end
 
-    books = CvBook.query.where("id in ?", crits.map(&.nvinfo_id))
+    books = CvBook.query.where { id.in? crits.map(&.nvinfo_id) }
 
-    render json: {
+    render json: ({
       pgidx: pg_no,
       pgmax: CtrlUtil.pgmax(total, limit),
       crits: crits.map { |x| CritView.new(x) },
       books: BookView.as_hash(books),
-    }
+    })
   end
 
   @[AC::Route::GET("/crits/:crit_id", converters: {crit_id: ConvertBase32})]
@@ -50,8 +50,10 @@ class YS::CritCtrl < AC::Base
     ycrit = Yscrit.find!({id: crit_id})
     repls = Ysrepl.query.where("yscrit_id = ?", crit_id)
 
+    vbook = CvBook.find({id: ycrit.nvinfo_id.not_nil!})
     render json: {
       entry: CritView.new(ycrit),
+      vbook: vbook ? BookView.new(vbook) : nil,
       repls: repls.with_ysuser.map { |x| ReplView.new(x) },
     }
   rescue err

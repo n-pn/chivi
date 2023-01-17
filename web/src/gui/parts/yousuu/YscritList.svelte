@@ -10,6 +10,8 @@
 
 <script lang="ts">
   export let crits: CV.Yscrit[] = []
+  export let books: CV.Crbook[] = []
+
   export let pgidx = 1
   export let pgmax = 1
   export let _sort = 'score'
@@ -57,8 +59,10 @@
 <div class="crits">
   {#each crits as crit}
     {@const view_all = crit.vhtml.length < 600}
+    {@const book = books[crit.wn_id]}
+
     {#key crit.id}
-      <YscritCard {crit} {show_book} {show_list} {view_all} />
+      <YscritCard {crit} {book} {show_book} {show_list} {view_all} />
     {/key}
   {/each}
 

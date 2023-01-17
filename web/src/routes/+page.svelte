@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { PageData } from './$types'
-  export let data: PageData
-
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
   import YscritCard from '$gui/parts/yousuu/YscritCard.svelte'
   import YslistCard from '$gui/parts/yousuu/YslistCard.svelte'
+
+  import type { PageData } from './$types'
+  export let data: PageData
 </script>
 
 <section class="list">
@@ -41,7 +41,8 @@
 
   <div class="ycrit-list">
     {#each data.ycrits as crit}
-      <YscritCard {crit} />
+      {@const book = data.books[crit.wn_id]}
+      <YscritCard {crit} {book} />
     {/each}
   </div>
 </section>

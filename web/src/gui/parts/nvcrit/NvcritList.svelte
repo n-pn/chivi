@@ -70,8 +70,9 @@
 
   {#each ys.crits as crit}
     {@const view_all = crit.vhtml.length < 600}
+    {@const book = ys.books[crit.wn_id]}
     {#key crit.id}
-      <YscritCard {crit} {show_book} {show_list} {view_all} />
+      <YscritCard {crit} {book} {show_book} {show_list} {view_all} />
     {/key}
   {/each}
 </div>

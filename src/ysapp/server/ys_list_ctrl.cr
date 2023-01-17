@@ -49,17 +49,19 @@ class YS::ListCtrl < AC::Base
     crits.limit(limit).offset(offset)
     crits.each(&.ysuser = yslist.ysuser)
 
-    books = CvBook.query.where("id in ?", crits.map(&.nvinfo_id))
+    query = crits.to_a.join(", ", &.nvinfo_id)
+    books = CvBook.query.where("id in (#{query})")
 
     render json: {
-      ylist: ListView.new(yslist),
       yl_id: yslist.origin_id,
-      crits: crits.map { |x| CritView.new(x) },
+      ylist: ListView.new(yslist),
+      crits: CritView.map(crits, false),
       books: BookView.as_hash(books),
       pgmax: _pgidx(yslist.book_count, limit),
       pgidx: pg_no,
     }
   rescue err
-    render :not_found, text: "Đánh giá không tồn tại"
+    Log.info { err }
+    render :not_found, text: "Thư đơn không tồn tại"
   end
 end

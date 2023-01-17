@@ -19,5 +19,6 @@ do
     shards build -s --release --production $target
   fi
 
+  echo restarting $target service
   sudo service $target restart
 done

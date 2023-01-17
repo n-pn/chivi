@@ -6,7 +6,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ ylist, yl_id, crits, pgidx, pgmax } = data)
+  $: ({ ylist, yl_id, crits, books, pgidx, pgmax } = data)
 </script>
 
 <svelte:head>
@@ -80,7 +80,7 @@
 </section>
 
 <article class="article island">
-  <YscritList {crits} {pgidx} {pgmax} _sort="utime" show_list={false} />
+  <YscritList {crits} {books} {pgidx} {pgmax} _sort="utime" show_list={false} />
 </article>
 
 <style lang="scss">

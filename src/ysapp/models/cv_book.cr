@@ -3,7 +3,7 @@ require "./_base"
 class YS::Author
   include Clear::Model
 
-  self.table = "author"
+  self.table = "authors"
   column vname : String = ""
 end
 
@@ -32,13 +32,13 @@ class YS::CvBook
 
   column utime : Int64 = 0
 
-  def bgenre
-    GENRES[self.igenres.first]? || "Loại khác"
+  def bgenre : String
+    GENRES[self.igenres[0]? || 0]
   end
 
   GENRES = {} of Int32 => String
 
-  File.each_line("var/books/fixes/genres_id.tsv") do |line|
+  File.each_line("var/books/fixes/genres_vi.tsv") do |line|
     next if line.empty?
     id, name = line.split('\t')
     GENRES[id.to_i] = name

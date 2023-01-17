@@ -1,4 +1,5 @@
 require "json"
+require "sqlite3"
 
 module YS::YsUtil
   extend self
@@ -13,7 +14,7 @@ module YS::YsUtil
     DICTS[book_id] ||= begin
       query = "select dname, label from dicts where id = ?"
 
-      DB.open("sqlite3://var/dicts/v1raw/dicts_v1.db") do |db|
+      DB.open("sqlite3:var/dicts/v1raw/dicts_v1.db") do |db|
         db.query_one?(query, -book_id, as: Dict) || Dict.new("combine", "Tổng hợp")
       end
     end

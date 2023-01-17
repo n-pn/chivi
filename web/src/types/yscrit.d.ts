@@ -1,6 +1,7 @@
 declare namespace CV {
   interface Crbook {
     id: number
+
     bslug: string
 
     btitle: string
@@ -18,9 +19,9 @@ declare namespace CV {
   }
 
   interface Yscrit {
-    book: Crbook
-
     id: string
+    wn_id: number
+
     vhtml: string
     stars: number
     vtags: string[]
@@ -48,5 +49,6 @@ declare namespace CV {
     pgidx: number
     pgmax: number
     crits: Yscrit[]
+    books: Record<number, CrBook>
   }
 }

@@ -9,7 +9,7 @@
   export let data: PageData
 
   let nvinfo: CV.Nvinfo
-  let crits: CV.Yscrit[]
+
   let books: CV.Nvinfo[]
   let users: { u_dname: string; u_privi: number; _status: string }[]
 
@@ -46,7 +46,9 @@
   <div class="crits">
     {#each crits as crit}
       {@const view_all = crit.vhtml.length < 640}
-      {#key crit.id}<YscritCard {crit} show_book={false} {view_all} />{/key}
+      {#key crit.id}
+        <YscritCard {crit} book={null} show_book={false} {view_all} />
+      {/key}
     {:else}
       <div class="empty">Chưa có đánh giá</div>
     {/each}

@@ -18,6 +18,7 @@ struct YS::CritView
       jb.field "uslug", @data.ysuser.vslug
 
       jb.field "id", HashUtil.encode32(@data.id)
+      jb.field "wn_id", @data.nvinfo_id
 
       jb.field "stars", @data.stars
       jb.field "vtags", @data.vtags
