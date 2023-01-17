@@ -1,6 +1,8 @@
 require "crorm"
 require "crorm/sqlite3"
 
+require "../pos_tag"
+
 class M1::DbDefn
   include Crorm::Model
   @@table = "defns"
@@ -65,6 +67,21 @@ class M1::DbDefn
     EPOCH &+ self.mtime &* 60
   end
 
+  BASE_COSTS = {
+    0, 3, 6, 9,
+    0, 14, 18, 26,
+    0, 25, 31, 40,
+    0, 40, 45, 55,
+    0, 58, 66, 78,
+  }
+
+  def cost : Int32
+    size = self.key.size
+    prio = self.prio
+
+    BASE_COSTS[(size &- 1) &* 4 &+ prio]? || size &* (prio &* 2 &+ 7) &* 2
+  end
+
   ####
 
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
@@ -99,5 +116,24 @@ class M1::DbDefn
     end
 
     repo.db.query_all(query, dic, key, ptag, as: Int32)
+  end
+
+  def to_term
+    term = DbTerm.new
+
+    term.id = self.id
+    term.dic = self.dic
+
+    term.key = TextUtil.normalize(self.key)
+    term.val = self.val.split(SPLIT).first
+
+    ptag = CV::PosTag.parse(self.ptag, self.key)
+
+    term.etag = ptag.tag.value
+    term.epos = ptag.pos.value.to_i64
+
+    term.cost = self.cost
+
+    term
   end
 end

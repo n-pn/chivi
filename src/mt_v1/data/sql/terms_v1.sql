@@ -7,11 +7,12 @@ CREATE TABLE IF NOT EXISTS terms (
   "key" varchar NOT NULL, -- input text normalized
   "val" varchar NOT NULL, -- main meaning
   --
-  "ptag" integer NOT NULL DEFAULT 0,
-  "attr" integer NOT NULL DEFAULT 0,
-  "wght" integer NOT NULL DEFAULT 0,
+  "etag" integer NOT NULL DEFAULT 0,
+  "epos" integer NOT NULL DEFAULT 0,
+  --
+  "cost" integer NOT NULL DEFAULT 0,
   --
   "_lock" integer NOT NULL DEFAULT 0
 );
 
-CREATE INDEX IF NOT EXISTS terms_uniq_idx ON terms (dic, ptag, key);
+CREATE INDEX IF NOT EXISTS terms_uniq_idx ON terms (dic, etag, key);
