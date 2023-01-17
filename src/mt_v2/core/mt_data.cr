@@ -126,7 +126,7 @@ class M2::MtData
   end
 
   private def make_node(list : Array(MtNode), rule : MtRule::Rule, idx : Int32, size : Int32)
-    cost = list.sum(&.cost) &+ rule.cost
+    cost = list.sum(&.cost) &+ 10 &* list.size &* (list.size &- 1) + rule.cost
 
     ptag = rule.ptag < 0 ? list[-rule.ptag &- 1].ptag : rule.ptag
 

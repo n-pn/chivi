@@ -1,0 +1,53 @@
+encoding: UTF-8
+
+bid_re: 'book/(\d+)/'
+cid_re: '(\d+).html^'
+
+binfo:
+  href: https://www.hetushu.com/book/%{bid}/index.html
+
+  btitle:
+    selector: 'h2'
+
+  author:
+    selector: '.book_info a:first-child'
+
+  intro:
+    selector: '.intro > p'
+    extract: each:text
+
+  cover:
+    selector: '.book_info img'
+    extract: attr:src
+    wrap: https://www.hetushu.com%{link}
+
+  genre:
+    selector: '.title > a:last-child'
+
+  tags:
+    selector: '.tag a'
+    extract: each:text
+
+  status:
+    selector: .book_info
+    extract: atrr:class
+
+  latest:
+    selector: '#dir :last-child a:last-of-type'
+    extract: attr:href
+
+clist:
+  href: https://www.hetushu.com/book/%{bid}/index.html
+
+  last:
+    selector: '#dir :last-child a:last-of-type'
+    extract: attr:href
+
+ctext:
+  href: https://www.hetushu.com/book/%{bid}/%{cid}.html
+
+  bname: 'h3 > a'
+  title: '#content .h2'
+
+  cookie: PHPSESSID=48grk8h3bi58q13rhbjp1kaa73
+  unique: true
