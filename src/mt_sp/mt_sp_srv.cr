@@ -1,4 +1,4 @@
 require "../server"
 require "./server/*"
 
-start_server!(CV::Config.ms_port, "mt_sp")
+start_server!(CV_ENV.ms_port, "mt_sp")

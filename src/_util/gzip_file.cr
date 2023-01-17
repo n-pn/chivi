@@ -1,6 +1,6 @@
 require "compress/gzip"
 
-class CV::GzipFile
+class GzipFile
   enum State
     Fresh; Staled; Missing
   end

@@ -3,7 +3,7 @@ require "file_utils"
 require "compress/zip"
 
 require "../../src/_util/file_util"
-require "../../src/appcv/nvchap/*"
+require "../../src/_data/nvchap/*"
 
 class CV::Zxcs::SplitText
   struct Chap

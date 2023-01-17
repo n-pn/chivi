@@ -1,6 +1,6 @@
 require "colorize"
 
-require "../../src/appcv/remote/remote_text.cr"
+require "../../src/_data/remote/remote_text.cr"
 
 def fetch_text(sname : String, snvid : Int32, schid : Int32, fresh = false)
   chap = CV::RemoteText.new(sname, snvid, schid, ttl: fresh ? 1.minute : 10.years)

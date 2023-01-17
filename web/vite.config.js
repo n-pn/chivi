@@ -30,10 +30,16 @@ const config = {
   server: {
     proxy: {
       '/api': 'http://localhost:5010',
-      '/_ys': 'http://localhost:5509',
-      '/_mt': 'http://localhost:5502',
-      '/_m1': 'http://localhost:5510',
-      '/_mh': 'http://localhost:5501',
+      '/_db': 'http://localhost:5010',
+      '/_wn': 'http://localhost:5020',
+
+      '/_m0': 'http://localhost:5100',
+      '/_m1': 'http://localhost:5110',
+      '/_m2': 'http://localhost:5120',
+
+      '/_sp': 'http://localhost:5300',
+
+      '/_ys': 'http://localhost:5400',
     },
   },
   vitePlugin: {

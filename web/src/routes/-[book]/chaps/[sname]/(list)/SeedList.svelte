@@ -26,7 +26,10 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  $: ({ nvinfo, nslist, nvseed: _curr } = $page.data)
+  import type { LayoutData } from './$types'
+  export let data: LayoutData
+
+  $: ({ nvinfo, seeds, nvseed: _curr } = data)
 
   $: pgidx = +$page.url.searchParams.get('pg') || 1
 
@@ -41,8 +44,10 @@
     }
   }
 
+  $: _base = seeds.find((x) => x.sname == '=base')
+
   $: uname = '@' + $session.uname
-  $: _self = nslist.users.find((x) => x.sname == uname) || make_seed(uname)
+  $: _self = seeds.find((x) => x.sname == uname) || make_seed(uname)
 
   $: show_subtype = init_show_subtype(_curr)
 
@@ -67,23 +72,24 @@
 
 <div class="seed-list">
   <a
-    href={seed_url(nvinfo.bslug, nslist._base.sname, pgidx)}
+    href={seed_url(nvinfo.bslug, _base.sname, pgidx)}
     class="seed-name"
-    class:_active={nslist._base.sname == _curr.sname}
+    class:_active={_base.sname == _curr.sname}
     data-tip="Danh sách chương trộn tổng hợp">
     <div class="seed-label">Tổng hợp</div>
-    <div class="seed-stats"><strong>{nslist._base.chmax}</strong> chương</div>
+    <div class="seed-stats"><strong>{_base.chmax}</strong> chương</div>
   </a>
 
-  {#each nslist.users as nvseed}
-    {#if nvseed.chmax > 0 && nvseed.sname != _self.sname}
+  {#each seeds as nvseed}
+    {@const { sname, chmax } = nvseed}
+    {#if chmax > 0 && sname != uname && sname != '=base'}
       <a
-        href={seed_url(nvinfo.bslug, nvseed.sname, pgidx)}
+        href={seed_url(nvinfo.bslug, sname, pgidx)}
         class="seed-name"
-        class:_active={nvseed.sname == _curr.sname}
+        class:_active={sname == _curr.sname}
         data-tip={map_info(nvseed)}>
-        <div class="seed-label">{nvseed.sname}</div>
-        <div class="seed-stats"><strong>{nvseed.chmax}</strong> chương</div>
+        <div class="seed-label">{sname}</div>
+        <div class="seed-stats"><strong>{chmax}</strong> chương</div>
       </a>
     {/if}
   {/each}
@@ -99,17 +105,17 @@
     </a>
   {/if}
 
-  <button
+  <!-- <button
     class="seed-name _btn"
     class:_active={show_subtype == 1}
     data-tip="Chương tiết cập nhật tự động từ các trang web truyện lậu"
     on:click={() => change_subtype(1)}>
     <div class="seed-label">Tải ngoài</div>
     <div class="seed-stats"><strong>{nslist.other.length}</strong> nguồn</div>
-  </button>
+  </button> -->
 </div>
 
-{#if show_subtype == 1}
+<!-- {#if show_subtype == 1}
   <div class="seed-list -extra">
     {#each nslist.other as nvseed}
       <a
@@ -145,8 +151,7 @@
       <span class="label">Quản lý nguồn</span>
     </a>
   </div>
-{/if}
-
+{/if} -->
 <style lang="scss">
   .seed-list {
     @include flex-cx($gap: 0.25rem);

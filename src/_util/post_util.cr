@@ -1,7 +1,7 @@
 require "cmark"
 require "lexbor"
 
-class CV::PostUtil
+class PostUtil
   OPTS = Cmark::Option.flags(Hardbreaks, ValidateUTF8, FullInfoString)
 
   def self.md_to_html(input : String)

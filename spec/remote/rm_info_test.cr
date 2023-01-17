@@ -1,5 +1,5 @@
 require "json"
-require "../../src/appcv/remote/remote_info.cr"
+require "../../src/_data/remote/remote_info.cr"
 
 def fetch_info(sname, s_bid, fresh = false) : Void
   parser = CV::RemoteInfo.new(sname, s_bid, ttl: fresh ? 10.seconds : 10.years)

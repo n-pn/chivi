@@ -1,4 +1,4 @@
-module CV::SiteLink
+module SiteLink
   extend self
 
   INFOS = {

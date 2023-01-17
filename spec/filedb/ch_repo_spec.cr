@@ -1,5 +1,5 @@
 require "../spec_helper"
-require "../../src/appcv/ch_repo"
+require "../../src/_data/ch_repo"
 
 describe CV::ChRepo do
   repo = CV::ChRepo.new("zxcs_me", 308)

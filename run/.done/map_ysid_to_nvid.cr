@@ -1,4 +1,4 @@
-require "../../src/appcv/ys_book"
+require "../../src/_data/ys_book"
 
 require "sqlite3"
 

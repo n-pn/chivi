@@ -1,3 +1,6 @@
+require "./_base"
+require "./_util"
+
 require "./ys_crit"
 require "./ys_user"
 
@@ -5,6 +8,7 @@ class YS::Ysrepl
   include Clear::Model
 
   self.table = "ysrepls"
+
   primary_key
   column origin_id : String
 
@@ -21,6 +25,10 @@ class YS::Ysrepl
   getter ztext : String { load_ztext_from_disk }
   getter vhtml : String { load_vhtml_from_disk }
 
+  def vdict
+    YsUtil.vdict(self.yscrit.nvinfo_id)
+  end
+
   def zip_path(type = "zh")
     crit_uuid = self.yscrit.origin_id
     prefix = crit_uuid[0..2]
@@ -28,14 +36,14 @@ class YS::Ysrepl
   end
 
   def load_ztext_from_disk : String
-    Helpers.read_zip(zip_path("zh"), "#{origin_id}.txt") { "$$$" }
+    YsUtil.read_zip(zip_path("zh"), "#{origin_id}.txt") { "$$$" }
   rescue err
     Log.error(exception: err) { err.message }
     "$$$"
   end
 
   def load_vhtml_from_disk : String
-    Helpers.read_zip(zip_path("vi"), "#{origin_id}.htm") do
+    YsUtil.read_zip(zip_path("vi"), "#{origin_id}.htm") do
       render_vhtml_from_ztext(persist: true)
     end
   rescue err
@@ -51,8 +59,7 @@ class YS::Ysrepl
     if ztext.empty? || ztext == "$$$"
       html = "<p><em>Không có nội dung</em></p>"
     else
-      dict = Helpers.load_dict(self.yscrit.nvinfo_id.try(&.to_i) || 0)
-      return ERROR_BODY unless tran = TranUtil.qtran(ztext, dict.name)
+      return ERROR_BODY unless tran = TranUtil.qtran(ztext, vdict.dname)
       html = tran.split('\n').map { |x| "<p>#{x}</p>" }.join('\n')
     end
 

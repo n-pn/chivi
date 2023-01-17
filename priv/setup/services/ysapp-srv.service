@@ -8,9 +8,8 @@ Type=simple
 Restart=always
 RestartSec=5
 User=nipin
-Environment=PORT=5509
+Environment=PORT=5400
 Environment=CV_ENV=production
-Environment=AMBER_ENV=production
 WorkingDirectory=/app/chivi
 ExecStart=/app/chivi/bin/ysapp-srv
 StandardOutput=file:/app/chivi/log/ysapp-srv.log

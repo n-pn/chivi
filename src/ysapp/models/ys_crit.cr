@@ -1,4 +1,4 @@
-require "sqlite3"
+require "./_util"
 
 require "./ys_list"
 
@@ -9,8 +9,9 @@ class YS::Yscrit
   primary_key
   column origin_id : String = ""
 
-  belongs_to nvinfo : CV::Nvinfo?
-  belongs_to ysbook : CV::Ysbook
+  column nvinfo_id : Int32 = 0
+  column ysbook_id : Int32 = 0
+
   belongs_to ysuser : Ysuser
   belongs_to yslist : Yslist?
 
@@ -57,6 +58,10 @@ class YS::Yscrit
   getter ztext : String { load_ztext_from_disk }
   getter vhtml : String { load_vhtml_from_disk }
 
+  def vdict
+    YsUtil.vdict(self.nvinfo_id)
+  end
+
   def zip_path(type = "zh")
     "var/ysapp/crits/#{self.ysbook_id}-#{type}.zip"
   end
@@ -70,17 +75,14 @@ class YS::Yscrit
   end
 
   def load_ztext_from_disk : String
-    Helpers.read_zip(self.zip_path("zh"), filename("zh", "txt")) { "$$$" }
+    YsUtil.read_zip(self.zip_path("zh"), filename("zh", "txt")) { "$$$" }
   rescue err
     Log.error(exception: err) { err.message }
     "$$$"
   end
 
   def load_vhtml_from_disk : String
-    load_html_from_disk("vi", persist: true) do |ztext|
-      dict = Helpers.load_dict(self.nvinfo_id.try(&.to_i) || 0)
-      TranUtil.qtran(ztext, dict.name)
-    end
+    load_html_from_disk("vi", persist: true) { |ztext| TranUtil.qtran(ztext, vdict.dname) }
   end
 
   def load_btran_from_disk : String
@@ -92,7 +94,7 @@ class YS::Yscrit
   end
 
   private def load_html_from_disk(type : String, persist : Bool = true)
-    Helpers.read_zip(self.zip_path(type), filename(type, "htm")) do
+    YsUtil.read_zip(self.zip_path(type), filename(type, "htm")) do
       ztext = self.ztext
 
       if (!ztext.empty?) && (tranlation = yield ztext)
@@ -118,7 +120,7 @@ class YS::Yscrit
     File.write(file_path, content)
 
     Log.debug { "save #{file_path} to #{self.zip_path(type)}" }
-    Helpers.zipping(self.zip_path(type), dir_path)
+    YsUtil.zipping(self.zip_path(type), dir_path)
   end
 
   #############

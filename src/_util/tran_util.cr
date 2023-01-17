@@ -5,11 +5,11 @@ module TranUtil
   extend self
 
   CVMTL_URL = "http://localhost:5010/api/qtran"
-  BTRAN_URL = "http://localhost:5501/_mh/btran"
-  DEEPL_URL = "http://localhost:5501/_mh/deepl"
+  BTRAN_URL = "http://localhost:5501/_sp/btran"
+  DEEPL_URL = "http://localhost:5501/_sp/deepl"
 
-  BTRAN_NO_CAP = "http://localhost:5501/_mh/qtran?no_cap=true"
-  DEEPL_NO_CAP = "http://localhost:5501/_mh/deepl?no_cap=true"
+  BTRAN_NO_CAP = "http://localhost:5501/_sp/qtran?no_cap=true"
+  DEEPL_NO_CAP = "http://localhost:5501/_sp/deepl?no_cap=true"
 
   JSON_HEADER = HTTP::Headers{"content-type" => "application/json"}
   TEXT_HEADER = HTTP::Headers{"content-type" => "text/plain"}

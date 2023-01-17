@@ -1,6 +1,6 @@
 [Unit]
 Description=chivi webapp
-After=network.target cvapp-srv.service mt_v2-srv.service mt_sp-srv.service ysapp-srv.service
+After=network.target cvapp-srv.service wnapp-srv.service mt_v1-srv.service mt_v2-srv.service mt_sp-srv.service ysapp-srv.service
 StartLimitIntervalSec=0
 
 [Service]

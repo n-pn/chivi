@@ -22,7 +22,6 @@ export async function load({ fetch, url, params: { dict } }: PageLoadEvent) {
   const dict_path = api_path('v1dict.show', dict)
   const dinfo: V1Dict = await fetch(dict_path).then((r) => r.json())
 
-  console.log(dinfo)
   const query = {
     dic: dict,
     key: url.searchParams.get('key') || '',
@@ -36,7 +35,6 @@ export async function load({ fetch, url, params: { dict } }: PageLoadEvent) {
   }
 
   const terms_url = api_path('v1defn.index', null, url.searchParams, query)
-  console.log({ terms_url })
 
   const terms: TermsData = await fetch(terms_url).then((r) => r.json())
 

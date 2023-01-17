@@ -1,5 +1,5 @@
-require "./src/appcv/nv_info"
-require "./src/appcv/chinfo"
+require "./src/_data/nv_info"
+require "./src/_data/chinfo"
 
 def chap_count(sname, snvid)
   file = "_db/chdata/chorigs/#{sname}/#{snvid}.tsv"

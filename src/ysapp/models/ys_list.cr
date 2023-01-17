@@ -46,7 +46,8 @@ class YS::Yslist
   end
 
   scope :filter_string do |qs|
-    qs ? where("vslug LIKE '%-#{CV::BookUtil.scrub_vname(qs, '-')}-%'") : self
+    qs = qs.gsub(/[^\w\p{L}]/, '-') if qs
+    qs ? where("vslug LIKE '%-#{qs}-%'") : self
   end
 
   scope :sort_by do |order|

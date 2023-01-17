@@ -2,7 +2,7 @@ require "log"
 require "colorize"
 require "compress/gzip"
 
-module CV::HttpUtil
+module HttpUtil
   extend self
 
   UTF8 = {

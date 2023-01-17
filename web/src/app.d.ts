@@ -41,7 +41,6 @@ declare namespace App {
   interface PageData {
     nvinfo?: CV.Nvinfo
     ubmemo?: CV.Ubmemo
-    nslist?: CV.Nslist
 
     _user?: CurrentUser
     _meta?: PageMeta

@@ -34,12 +34,12 @@ basics.each { |x| M1::DbDict.new(*x, dtype: 0).save! }
 others.each { |x| M1::DbDict.new(*x, dtype: 1).save! }
 cvmtls.each { |x| M1::DbDict.new(*x, dtype: 2).save! }
 
-require "../../../config"
+require "../../../cv_env"
 require "pg"
 
 dicts = [] of M1::DbDict
 
-DB.open(CV::Config.database_url) do |db|
+DB.open(CV_ENV.database_url) do |db|
   query = <<-SQL
     select id, bhash, vname from nvinfos where id > 0 order by id asc
   SQL

@@ -8,7 +8,7 @@ Type=simple
 Restart=always
 RestartSec=100
 User=nipin
-Environment=PORT=5401
+Environment=PORT=5600
 Environment=HANLP_VERBOSE=0
 Environment=HANLP_HOME=/home/nipin/.hanlp
 #Environment=PYTHONPATH=$PYTHONPATH:/home/nipin/.local/lib/python3.10/site-packages

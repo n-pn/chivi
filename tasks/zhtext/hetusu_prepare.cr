@@ -1,5 +1,5 @@
 require "../../src/_util/site_link"
-require "../../src/appcv/ch_repo"
+require "../../src/_data/ch_repo"
 
 def save_queue(sname : String, s_bid : Int32)
   repo = CV::ChRepo.new(sname, s_bid)

@@ -8,7 +8,7 @@ Type=simple
 Restart=always
 RestartSec=5
 User=nipin
-Environment=PORT=5510
+Environment=PORT=5110
 Environment=CV_ENV=production
 WorkingDirectory=/app/chivi
 ExecStart=/app/chivi/bin/mt_v1-srv

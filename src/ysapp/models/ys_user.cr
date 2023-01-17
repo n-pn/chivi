@@ -30,6 +30,7 @@ class YS::Ysuser
   timestamps
 
   def fix_name : Nil
+    # TODO: revemo CV::BookUtil
     self.vname = CV::BookUtil.hanviet(self.zname, caps: true)
     self.vslug = CV::BookUtil.scrub_vname(self.vname, "-")
   end

@@ -16,12 +16,17 @@ export const handle = (async ({ event, resolve }) => {
 }) satisfies Handle
 
 const api_hosts = {
-  _ys: 'localhost:5509',
-  _m1: 'localhost:5510',
-  _mt: 'localhost:5502',
-  _mh: 'localhost:5501',
-  // _db: 'localhost:5010',
   api: 'localhost:5010',
+  _db: 'localhost:5010',
+  _wn: 'localhost:5020',
+
+  _m0: 'localhost:5100',
+  _m1: 'localhost:5110',
+  _m2: 'localhost:5120',
+
+  _sp: 'localhost:5300',
+
+  _ys: 'localhost:5400',
 }
 
 export const handleFetch = (async ({ event, fetch, request }) => {
@@ -77,6 +82,6 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   fs.writeFileSync(path, JSON.stringify(cached_user))
   cached_users[hash] = cached_user
 
-  event.setHeaders({ cookie: response.headers.get('cookie') })
+  // event.setHeaders({ cookie: response.headers.get('cookie') })
   return cached_user
 }

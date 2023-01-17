@@ -3,7 +3,7 @@ require "file_utils"
 require "compress/zip"
 
 require "../shared/bootstrap"
-require "../../src/appcv/nvchap/*"
+require "../../src/_data/nvchap/*"
 
 INP_DIR = Path["var", "chaps", "texts"]
 

@@ -1,6 +1,6 @@
 require "tabkv"
 require "lexbor"
-require "../src/appcv/shared/sname_map"
+require "../src/_data/shared/sname_map"
 
 DIR = "var/books/.html"
 Dir.mkdir_p(DIR)

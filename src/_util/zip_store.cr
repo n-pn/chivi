@@ -1,6 +1,6 @@
 require "compress/zip"
 
-class CV::ZipStore
+class ZipStore
   def self.read(file : String)
     dir_path = File.dirname(file)
     zip_file = "#{dir_path}.zip"

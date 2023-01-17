@@ -9,8 +9,7 @@ WATCH="--watch ./src/_util --watch ./src/$SOURCE"
 
 if [[ $TARGET == "cvapp" ]]
 then
-  SOURCE="webcv"
-  WATCH="--watch ./src/_util --watch ./src/webcv --watch ./src/appcv"
+  WATCH="$WATCH --watch ./src/_data"
 fi
 
 sudo service $TARGET-srv stop

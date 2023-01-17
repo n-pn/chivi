@@ -1,4 +1,4 @@
 ENV["CV_ENV"] ||= "test"
 
 require "spec"
-require "../src/config"
+require "../src/cv_env"

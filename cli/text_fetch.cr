@@ -1,6 +1,6 @@
 require "option_parser"
 
-require "../src/appcv/remote/remote_text"
+require "../src/_data/remote/remote_text"
 
 Log.setup(:fatal)
 
