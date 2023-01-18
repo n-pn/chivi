@@ -1,4 +1,3 @@
-import Appnav from '$gui/global/Modals/Appnav.svelte'
 import type {
   Handle,
   HandleFetch,
