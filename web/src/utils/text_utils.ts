@@ -36,7 +36,7 @@ export function fix_breaks(input: string, min_invalid = 15) {
 }
 
 export async function opencc(input: string, config = 'hk2s') {
-  const href = '/_mt/opencc?config=' + config
+  const href = '/_sp/opencc?config=' + config
   const init = { method: 'POST', body: input }
   return await fetch(href, init).then((r) => r.text())
 }

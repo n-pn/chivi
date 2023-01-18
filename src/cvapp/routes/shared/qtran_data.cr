@@ -59,8 +59,8 @@ class CV::QtranData
     new(lines, nvinfo.dname, nvinfo.vname, label: label)
   end
 
-  CRIT_URL = "localhost:5509/_ys/crits"
-  REPL_URL = "localhost:5509/_ys/repls"
+  CRIT_URL = "localhost:5400/_ys/crits"
+  REPL_URL = "localhost:5400/_ys/repls"
 
   def self.load_crit(name : String) : QtranData
     self.load_text_from_url("#{CRIT_URL}/#{name}/ztext")

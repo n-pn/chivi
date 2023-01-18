@@ -140,8 +140,8 @@
         <span>Trước</span>
       </a>
 
-      <Gmenu class="navi-item" loc="top" let:trigger>
-        <button class="m-btn" slot="trigger" on:click={trigger}>
+      <Gmenu class="navi-item" loc="top">
+        <button class="m-btn" slot="trigger">
           <SIcon name={memo_icon} />
           <span>{chinfo.chidx}/{chmeta.total}</span>
         </button>

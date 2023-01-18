@@ -34,7 +34,7 @@ class M2::DbTerm
 
   @[AlwaysInline]
   def self.db_path(dname : String) : String
-    "var/dicts/v2dic/#{dname}.dic"
+    "var/dicts/v2dic/#{dname}_v2.dic"
   end
 
   def self.init_sql

@@ -64,7 +64,7 @@
     }
 
     if (range.length != 0) {
-      const url = `/_mh/lookup?udict=${$vdict.dname}`
+      const url = `/_sp/lookup?udict=${$vdict.dname}`
       const res = await api_call(url, { input, range }, 'PUT')
       for (let index in res) entries[index] = res[index]
     }
@@ -76,7 +76,7 @@
     hv_html = hv_html_cache[input]
     if (hv_html) return
 
-    const url = `/_mh/hanviet?mode=mtl`
+    const url = `/_sp/hanviet?mode=mtl`
     const headers = { 'content-type': 'text/plain' }
 
     const res = await fetch(url, { method: 'PUT', headers, body: input })

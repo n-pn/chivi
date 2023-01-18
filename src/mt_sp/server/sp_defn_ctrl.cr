@@ -1,7 +1,7 @@
 require "./_sp_ctrl_base"
 require "../data/wd_dict"
 
-class SP::LookupCtrl < AC::Base
+class SP::DefnCtrl < AC::Base
   base "/_sp"
 
   class LookupForm

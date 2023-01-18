@@ -88,7 +88,7 @@
     const user = $session.uname
     const temp = $config.w_temp
 
-    const url = `/_mt/convert?rmode=mtl&has_title=true&book=${book}&user=${user}&with_temp=${temp}`
+    const url = `/_m2/convert?rmode=mtl&has_title=true&book=${book}&user=${user}&with_temp=${temp}`
     const res = await fetch(url, {
       method: 'POST',
       body: body,

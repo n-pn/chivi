@@ -41,7 +41,7 @@ export async function btran(text: string, lang: string, no_cap = false) {
   const val = btran_cached[key]
   if (val) return val
 
-  const url = `/_mh/btran?lang=${lang}&no_cap=${no_cap}`
+  const url = `/_sp/btran?lang=${lang}&no_cap=${no_cap}`
   const res = await fetch(url, { method: 'PUT', body: text, headers })
 
   const res_text = await res.text()
@@ -55,7 +55,7 @@ export async function deepl(text: string, no_cap = false) {
   const val = deepl_cached[text]
   if (val) return val
 
-  const url = `/_mh/deepl?no_cap=${no_cap}`
+  const url = `/_sp/deepl?no_cap=${no_cap}`
   const res = await fetch(url, { method: 'PUT', body: text, headers })
 
   const res_text = await res.text()
