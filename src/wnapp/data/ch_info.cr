@@ -1,8 +1,10 @@
 require "crorm"
-require "crorm/sqlite3"
+
+require "../../_util/text_util"
 
 class WN::ChInfo
   include Crorm::Model
+
   @@table = "chaps"
 
   field ch_no : Int32 # chaper index number
@@ -20,33 +22,31 @@ class WN::ChInfo
   field _path : String = "" # file locator
   field _flag : Int32 = 0   # marking states
 
-  def save!(repo : Crorm::Sqlite3::Repo)
-    fields, values = self.get_changes
-    repo.insert(@@table, fields, values, :replace)
+  def initialize(@ch_no, @s_cid, @title, @chdiv = "")
   end
 
-  ###
-
-  REPOS = {} of String => Crorm::Sqlite3::Repo
-
-  def self.repo(sname : String, s_bid : Int32, type = "fg", name = "infos")
-    db_name = "#{type}/#{sname}/#{s_bid}-#{name}"
-    REPOS[db_name] ||= Crorm::Sqlite3::Repo.new(db_path(db_name), init_sql)
+  def uslug
+    tokens = TextUtil.tokenize(self.title)
+    tokens.empty? ? "-" : tokens.first(7).join('-')
   end
 
-  DIR = "var/chaps/infos"
+  def to_json(jb : JSON::Builder)
+    # FIXME: rename json fields
 
-  @[AlwaysInline]
-  def self.db_path(sname : String, s_bid : String, type : String = "fg", name : String = "infos")
-    "#{DIR}-#{type}/#{sname}/#{s_bid}-#{name}.db"
-  end
+    jb.object {
+      jb.field "chidx", self.ch_no
+      jb.field "schid", self.s_cid
 
-  @[AlwaysInline]
-  def self.db_path(db_name : String)
-    "#{DIR}-#{db_name}.db"
-  end
+      jb.field "title", self.title
+      jb.field "chvol", self.chdiv
+      jb.field "uslug", self.uslug
 
-  def self.init_sql
-    {{ read_file("#{__DIR__}/sql/init_ch_info.sql") }}
+      jb.field "chars", self.c_len
+      jb.field "parts", self.p_len
+
+      jb.field "utime", self.mtime
+      jb.field "uname", self.uname
+      # jb.field "sname", self.sname
+    }
   end
 end

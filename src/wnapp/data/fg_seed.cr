@@ -1,15 +1,18 @@
 require "crorm"
 require "crorm/sqlite3"
 
+require "./ch_repo"
+require "./zh_text"
+
 class WN::FgSeed
   include Crorm::Model
 
   @@table = "seeds"
 
-  field s_bid : Int32       # equivalent to book id
-  field sname : String = "" # username or blank
+  field s_bid : Int32 # equivalent to book id
+  field sname : String = "-"
 
-  field stype : Int32 = 0 # usually the user id
+  field stype : Int32 = 0 # usually the user id, or 0 if `-`
   field _flag : Int32 = 0 # user priority
 
   field chap_total : Int32 = 0
@@ -26,6 +29,26 @@ class WN::FgSeed
   def initialize(@s_bid, @sname = "", @stype = 0)
   end
 
+  @[DB::Field(ignore: true)]
+  getter zh_chaps : ChRepo { ChRepo.load(self.sname, self.s_bid, "fg", "infos") }
+
+  @[DB::Field(ignore: true)]
+  getter vi_chaps : ChRepo { ChRepo.load_tl(zh_chaps.db_path, self.dname) }
+
+  @[DB::Field(ignore: true)]
+  getter dname : String { M1::DbDict.get_dname(-self.s_bid) }
+
+  def chap_text(ch_no : Int32) : ZhText?
+    return unless info = self.chap_info(ch_no)
+
+    path = info._path
+    path = "#{@sname}:#{@s_bid}:#{info.ch_no}:#{info.s_cid}:#{info.p_len}" if path.empty?
+
+    ZhText.new("bg/#{@sname}/#{@s_bid}/#{info.s_cid}", path)
+  end
+
+  ####
+
   def save!(repo = @@repo, @mftime = Time.utc.to_unix)
     fields, values = self.get_changes
     repos.insert(@@table, fields, values, :replace)
@@ -33,16 +56,20 @@ class WN::FgSeed
 
   ####
 
-  class_getter repo = Crorm::Sqlite3::Repo.new(db_path, init_sql)
+  class_getter repo = Crorm::Sqlite3::Repo.new(self.db_path, self.init_sql)
 
   @[AlwaysInline]
   def self.db_path
     "var/chaps/fg-seeds.db"
   end
 
+  def self.init_sql
+    {{ read_file("#{__DIR__}/sql/init_fg_seed.sql") }}
+  end
+
   def self.all(s_bid : Int32)
     @@repo.open_db do |db|
-      query = "select * from #{@@table} where s_bid = ?"
+      query = "select * from #{@@table} where s_bid = ? order by stype asc"
       db.query_all(query, s_bid, as: self)
     end
   end
@@ -58,35 +85,11 @@ class WN::FgSeed
     get(sname, s_bid) || raise "fg_seed [#{sname}/#{s_bid}] not found!"
   end
 
-  def self.init(s_bid : Int32, name : String, &)
-    self.get(s_bid, sname) || yield
+  def self.load(sname : String, s_bid : Int32)
+    self.load(sname, s_bid) { new(sname, s_bid) }
   end
 
-  def self.init_sql
-    <<-SQL
-      pragma journal_mode = WAL;
-      pragma synchronous = normal;
-
-      create table if not exists #{@@table} (
-        s_bid integer not null,
-        sname varchar not null,
-
-        stype integer  not null default 0,
-        _flag integer not null default 0,
-
-        chap_total integer default 0,
-        chap_avail integer default 0,
-
-        feed_sname varchar default 0,
-        feed_s_bid integer default 0,
-        feed_s_cid integer default 0,
-        feed_stime bigint default 0,
-
-        atime bigint default 0,
-        mtime bigint default 0,
-
-        primary key(s_bid, sname)
-      );
-    SQL
+  def self.load(s_bid : Int32, name : String, &)
+    self.get(s_bid, sname) || yield
   end
 end

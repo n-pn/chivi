@@ -87,6 +87,10 @@ class M1::DbDict
     end
   end
 
+  def self.get_dname(id : Int32) : String
+    get!(id).dname rescue "combine"
+  end
+
   def self.get!(id : Int32) : self
     query = "select * from dicts where id = ?"
     self.repo.open_db(&.query_one(query, id, as: self))

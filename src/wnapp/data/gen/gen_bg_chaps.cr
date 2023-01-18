@@ -86,7 +86,7 @@ end
 
 snames = ARGV.empty? ? Dir.children("var/chaps/texts") : ARGV
 
-snames.each do |sname|
+snames.sort!.each do |sname|
   next if sname[0].in?('.', '=')
   next unless sn_id = SN_IDS[sname]?
   import_all(sname, sn_id)

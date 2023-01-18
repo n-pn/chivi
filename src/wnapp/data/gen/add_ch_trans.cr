@@ -2,9 +2,9 @@ require "log"
 require "sqlite3"
 require "colorize"
 
-require "../wnchap/*"
-require "../../mt_v1/mt_core"
-require "../../_util/text_util"
+require "../ch_info"
+require "../../../mt_v1/mt_core"
+require "../../../_util/text_util"
 
 DNAMES = {} of Int32 => String
 
