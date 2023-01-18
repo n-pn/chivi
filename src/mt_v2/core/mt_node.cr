@@ -35,7 +35,7 @@ class M2::MtTerm < M2::MtNode
     @ptag = PosTag.map_tag(tag)
 
     # TODO: improve cost calculation
-    @cost = MtTerm.cost(size, prio)
+    @cost = self.class.cost(size, prio)
   end
 
   # COSTS = {
@@ -55,11 +55,11 @@ class M2::MtTerm < M2::MtNode
   }
 
   def self.cost(size : Int32, prio : Int32 = 0) : Int32
-    size &* 1000 &+ 2 << (size + 1) &* 100 &- 1
-
-    # size > 5 ? size &* 100 &+ 2 << size : begin
-    # COSTS[(size &- 1) &* 4 &+ prio]
-    # end
+    case
+    when prio < 1 then 0
+    when size > 5 then 1000 &* size &* (size &+ prio)
+    else               1000 &* size &+ COSTS[(size &- 1) &* 4 &+ prio]
+    end
   end
 
   def to_txt(io : IO, apply_cap : Bool) : Bool

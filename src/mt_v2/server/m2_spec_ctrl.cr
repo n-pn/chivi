@@ -1,7 +1,7 @@
 require "./_m2_ctrl_base"
 
 class M2::SpecCtrl < AC::Base
-  base "/_mt"
+  base "/_m2"
 
   SPEC_DIR = "var/mt_v2/tests/"
 

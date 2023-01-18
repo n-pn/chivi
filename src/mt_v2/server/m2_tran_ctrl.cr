@@ -12,7 +12,7 @@ class CV::QtranData
 end
 
 class M2::TranCtrl < AC::Base
-  base "/_mt"
+  base "/_m2"
 
   @[AC::Route::POST("/convert")]
   def convert(udict = "combine",

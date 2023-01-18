@@ -46,6 +46,7 @@ class M2::MtDict
     DB.open(db_path) do |db|
       db.query_each(select_query, d_id) do |rs|
         key, val, tag, prio = rs.read(String, String, String, Int32)
+
         add_term(key, val, tag, prio, dic: dic)
       end
     end

@@ -16,15 +16,14 @@ CREATE TABLE IF NOT EXISTS defns (
   "mtime" integer NOT NULL DEFAULT 0, -- term update time
   --
   '_ctx' varchar NOT NULL DEFAULT 0,
-  '_idx' integer NOT NULL DEFAULT -1,
   --
   "_prev" integer NOT NULL DEFAULT 0,
   "_flag" integer NOT NULL DEFAULT 0 -- marking term as active or inactive
 );
 
-CREATE INDEX IF NOT EXISTS terms_word_idx ON defns ('key');
+CREATE INDEX IF NOT EXISTS defns_scan_idx ON defns (dic, tab);
 
-CREATE INDEX IF NOT EXISTS defns_scan_idx ON defns (d_id);
+CREATE INDEX IF NOT EXISTS defns_word_idx ON defns (key);
 
 CREATE INDEX IF NOT EXISTS defns_ptag_idx ON defns (ptag);
 

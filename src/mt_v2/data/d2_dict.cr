@@ -10,6 +10,7 @@ class M2::DbDict
   field dname : String
   field label : String = ""
   field brief : String = ""
+  field dslug : String = ""
 
   field privi : Int32 = 0
   field dtype : Int32 = 0
@@ -73,18 +74,18 @@ class M2::DbDict
 
   def self.get_id(dname : String) : Int32
     DICT_IDS[dname] ||= begin
-      query = "select id from dicts where dname = ?"
+      query = "select id from dicts where dname = ? limit 1"
       @@repo.open_db(&.query_one?(query, dname, as: Int32)) || 0
     end
   end
 
   def self.get!(id : Int32) : self
-    query = "select * from dicts where id = ?"
+    query = "select * from dicts where id = ? limit 1"
     @@repo.open_db(&.query_one(query, id, as: self))
   end
 
   def self.get!(dname : String) : self
-    query = "select * from #{@@table} where dname = ?"
+    query = "select * from #{@@table} where dname = ? limit 1"
     @@repo.open_db(&.query_one(query, dname, as: self))
   end
 

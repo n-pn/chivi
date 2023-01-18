@@ -7,7 +7,7 @@ def convert(input : String)
   MTL.cv_plain(input).to_txt(false)
 end
 
-DIR = "var/mt_v2/tests"
+DIR = "var/cvmtl/tests"
 
 describe M2::Engine do
   files = Dir.glob("#{DIR}/**/*.tsv")

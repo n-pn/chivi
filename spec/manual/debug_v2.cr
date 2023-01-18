@@ -15,7 +15,7 @@ puts "-----".colorize.dark_gray
 puts res.to_txt.colorize.light_yellow
 puts "-----".colorize.dark_gray
 
-puts TL::Engine.hanviet.convert(text).to_txt(cap: true).colorize.green
+puts SP::Engine.hanviet.convert(text).to_txt(cap: true).colorize.green
 puts "-----".colorize.dark_gray
 
 # puts TL::Engine.binh_am.convert(text).to_txt(cap: false).colorize.green

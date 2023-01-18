@@ -9,7 +9,7 @@ class M2::DbDefn
 
   @[AlwaysInline]
   def self.db_path
-    "var/dicts/v2raw/defns_v2.dic"
+    "var/dicts/v2raw/defns_v2.db"
   end
 
   def self.init_sql

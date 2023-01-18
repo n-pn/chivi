@@ -2,8 +2,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "mt": "crystal run --error-trace spec/manual/debug_mt.cr -- ",
-    "test": "crystal spec --error-trace spec/engine/mt_v2_spec.cr",
+    "mt": "crystal run --error-trace spec/manual/debug_v2.cr -- ",
+    "test": "crystal spec --error-trace spec/engine/cvmtl_spec.cr",
     "push-dev": "bash priv/push-dev.sh",
     "push-prod": "bash priv/push-prod.sh",
     "db-up": "bash priv/scripts/filedb-upload.sh",
