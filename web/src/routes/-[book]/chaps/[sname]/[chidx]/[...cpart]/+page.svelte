@@ -16,7 +16,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, nslist, nvseed, chmeta, chinfo, cvdata, rl_key } = data)
+  $: ({ nvinfo, seeds, nvseed, chmeta, chinfo, cvdata, rl_key } = data)
   $: paths = gen_paths(nvinfo, chmeta, chinfo)
 
   $: if ($$props.redirect) {
@@ -117,7 +117,7 @@
   <span class="crumb _text">{chinfo.chvol}</span>
 </nav>
 
-<Chtabs {nvinfo} {nslist} {nvseed} {chmeta} {chinfo} />
+<Chtabs {nvinfo} {seeds} {nvseed} {chmeta} {chinfo} />
 
 <MtPage
   {cvdata}
