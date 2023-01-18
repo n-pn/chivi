@@ -1,59 +1,48 @@
 require "log"
 require "sqlite3"
 require "colorize"
-require "../wnchap/*"
+require "../ch_info"
+
+def read_mtime(path : String)
+  File.info?(path).try(&.modification_time)
+end
+
+IMPORT_QUERY_1 = <<-SQL
+  replace into chaps (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname)
+  select ch_no, s_cid, title, chvol as chdiv, c_len, p_len, utime as mtime, uname
+  from inp.chinfos
+SQL
+
+IMPORT_QUERY_2 = IMPORT_QUERY_1 + " where sn_id = ?"
 
 def import_one(sname : String, s_bid : Int32, sn_id : Int32)
   inp_path = "var/chaps/texts/#{sname}/#{s_bid}/index.db"
-  return unless mtime = File.info?(inp_path).try(&.modification_time)
+  return unless inp_time = read_mtime(inp_path)
 
-  names_path = WN::ChName.db_path("bg/#{sname}/#{s_bid}")
-  stats_path = WN::ChStat.db_path("bg/#{sname}/#{s_bid}")
+  out_path = WN::ChInfo.db_path("bg/#{sname}/#{s_bid}-infos")
+  out_time = read_mtime(out_path)
+  return if out_time && out_time > inp_time
 
-  File.info?(names_path).try { |x| return if x.modification_time > mtime }
+  DB.open("sqlite3:#{out_path}") do |db|
+    db.exec WN::ChInfo.init_sql # unless out_time
 
-  mtime += 1.minutes
-
-  import_names(inp_path, names_path, mtime, sn_id)
-  import_stats(inp_path, stats_path, mtime, sn_id)
-end
-
-def import_names(source : String, target : String, mtime : Time, sn_id : Int32)
-  DB.open("sqlite3:#{target}") do |db|
-    db.exec WN::ChName.init_sql
     db.exec "pragma journal_mode = WAL"
     db.exec "pragma synchronous = normal"
-    db.exec "attach database '#{source}' as source"
+    db.exec "attach database '#{inp_path}' as inp"
 
     db.exec "begin"
-    db.exec <<-SQL
-      replace into names (ch_no, s_cid, title, chdiv)
-      select ch_no, s_cid, title, chvol as chdiv
-      from source.chinfos where sn_id = #{sn_id}
-    SQL
+
+    if sname.starts_with?('@') # ignore mirrored chapter in user seeds
+      db.exec IMPORT_QUERY_2, sn_id
+    else
+      db.exec IMPORT_QUERY_1
+    end
+
     db.exec "commit"
   end
 
-  File.utime(mtime, mtime, target)
-end
-
-def import_stats(source : String, target : String, mtime : Time, sn_id : Int32)
-  DB.open("sqlite3:#{target}") do |db|
-    db.exec WN::ChStat.init_sql
-    db.exec "pragma journal_mode = WAL"
-    db.exec "pragma synchronous = normal"
-    db.exec "attach database '#{source}' as source"
-
-    db.exec "begin"
-    db.exec <<-SQL
-      replace into stats (ch_no, s_cid, c_len, p_len, mtime)
-      select ch_no, s_cid, c_len, p_len, utime as mtime
-      from source.chinfos where sn_id = #{sn_id}
-    SQL
-    db.exec "commit"
-  end
-
-  File.utime(mtime, mtime, target)
+  inp_time += 1.minutes
+  File.utime(inp_time, inp_time, out_path)
 end
 
 def import_all(sname : String, sn_id : Int32)

@@ -1,7 +1,7 @@
 require "log"
 require "sqlite3"
 require "colorize"
-require "../wnchap/*"
+require "../ch_info"
 
 SNAMES = {} of Int32 => String
 
@@ -18,8 +18,9 @@ def import_one(sname : String, s_bid : Int32)
   inp_path = "var/chaps/texts/#{sname}/#{s_bid}/index.db"
   return unless mtime = File.info?(inp_path).try(&.modification_time)
 
-  out_path = WN::ChInfo.db_path("#{sname}/#{s_bid}")
-  File.info?(out_path).try { |x| return if x.modification_time > mtime }
+  out_path = WN::ChInfo.db_path("fg/#{sname}/#{s_bid}-infos")
+  out_info = File.info?(out_path)
+  out_info.try { |x| return if x.modification_time > mtime }
 
   mtime += 1.minutes
 
