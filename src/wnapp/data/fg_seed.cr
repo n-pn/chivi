@@ -41,10 +41,15 @@ class WN::FgSeed
   def chap_text(ch_no : Int32) : ZhText?
     return unless info = self.chap_info(ch_no)
 
-    path = info._path
-    path = "#{@sname}:#{@s_bid}:#{info.ch_no}:#{info.s_cid}:#{info.p_len}" if path.empty?
+    load_path = info._path
 
-    ZhText.new("bg/#{@sname}/#{@s_bid}/#{info.s_cid}", path)
+    if load_path.empty?
+      load_path = "bg:#{@sname}:#{@s_bid}:#{info.ch_no}:#{info.s_cid}:#{info.p_len}"
+    elsif load_path.starts_with?("bg")
+      load_path = "#{load_path}:#{info.p_len}"
+    end
+
+    ZhText.new("bg/#{@sname}/#{@s_bid}/#{info.s_cid}", load_path)
   end
 
   ####

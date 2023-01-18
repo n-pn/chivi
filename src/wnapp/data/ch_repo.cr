@@ -38,7 +38,7 @@ class WN::ChRepo
   def all(pg_no : Int32 = 1, limit = 32) : Array(ChInfo)
     open_db do |db|
       offset = (pg_no &- 1) * limit
-      query = "select * from chaps where ch_no >= ? and ch_no < ? order by ch_no asc"
+      query = "select * from chaps where ch_no > ? and ch_no <= ? order by ch_no asc"
       db.query_all query, offset, offset &+ limit, as: ChInfo
     end
   end
@@ -122,6 +122,31 @@ class WN::ChRepo
     self
   end
 
+  def copy_bg_to_fg(src_db_path : String, src_sname : String, src_s_bid : Int32,
+                    chmin = 0, chmax = 999, offset = 0)
+    open_db do |db|
+      db.exec "pragma synchronous = normal"
+      db.exec "attach database '#{src_db_path}' as src"
+
+      db.exec "begin"
+
+      query = <<-SQL
+        insert or replace into chaps (
+          title, chdiv, c_len, p_len, mtime, uname,
+          ch_no, s_cid, _path )
+        select
+          title, chdiv, c_len, p_len, mtime, uname,
+          sc.ch_no + #{offset} as ch_no,
+          (sc.ch_no + #{offset}) * 10 as s_cid,
+          'bg:' || ? || ':' || ? || ':' || sc.ch_no || ':' || sc.s_cid as _path
+        from src.chaps as sc where sc.ch_no >= ? and sc.ch_no <= ?
+      SQL
+
+      db.exec query, src_sname, src_s_bid, chmin, chmax
+      db.exec "commit"
+    end
+  end
+
   def save_info!(info : ChInfo)
     repo.insert(@@table, fields, values, :replace)
   end
@@ -197,3 +222,6 @@ class WN::ChRepo
     target_info.modification_time > source_info.modification_time
   end
 end
+
+repo = WN::ChRepo.new("tmp/chaps/fg.db")
+repo.copy_bg_to_fg("tmp/chaps/bg.db", "hetushu", 10, chmin: 5, offset: -4)

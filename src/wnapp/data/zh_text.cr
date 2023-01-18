@@ -35,7 +35,7 @@ class WN::ZhText
   ZIP_DIR = "var/chaps/texts"
 
   def load_data_from_zip!(path : String) : Array(String)?
-    sname, s_bid, ch_no, s_cid, p_len = path.split(":")
+    _, sname, s_bid, ch_no, s_cid, p_len = path.split(":")
     pg_no = (ch_no.to_i &- 1) // 128
 
     zip_path = "#{ZIP_DIR}/#{sname}/#{s_bid}/#{pg_no}.zip"

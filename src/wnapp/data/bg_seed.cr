@@ -47,10 +47,13 @@ class WN::BgSeed
   def chap_text(ch_no : Int32) : ZhText?
     return unless info = self.zh_chaps.get(ch_no)
 
-    path = info._path
-    path = "#{@sname}:#{@s_bid}:#{info.ch_no}:#{info.s_cid}:#{info.p_len}" if path.empty?
+    load_path = info._path
 
-    ZhText.new("bg/#{@sname}/#{@s_bid}/#{info.s_cid}", path)
+    if load_path.empty?
+      load_path = "bg:#{@sname}:#{@s_bid}:#{info.ch_no}:#{info.s_cid}:#{info.p_len}"
+    end
+
+    ZhText.new("bg/#{@sname}/#{@s_bid}/#{info.s_cid}", load_path)
   end
 
   def fetch_text(ch_no : Int32, uname : String = "", mode : Int32 = 0) : ZhText?
