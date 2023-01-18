@@ -158,9 +158,9 @@ class CV::Viuser
       new({email: email, uname: uname, upass: upass}).tap(&.save!)
     rescue err
       case err.message || ""
-      when .includes?("viusers_uname_key")
+      when .includes?("uname_key")
         raise "Tên người dùng đã được sử dụng"
-      when .includes?("viusers_email_key")
+      when .includes?("email_key")
         raise "Địa chỉ hòm thư đã được sử dụng"
       else
         raise "Không rõ lỗi, mời thử lại!"
