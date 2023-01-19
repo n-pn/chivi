@@ -1,4 +1,4 @@
-require "../data/lu_term"
+require "../wd_defn"
 
 def cleanup(input : String)
   input.split("\\t")
@@ -12,18 +12,18 @@ def cleanup(input : String)
     .join("; ")
 end
 
-terms = [] of TL::LuTerm
+defns = [] of SP::WdDefn
 
 File.each_line("var/inits/system/lacviet-mtd.txt") do |line|
   key, vals = line.split("=", 2)
-  vals = vals.split("\\n").map { |x| cleanup(x) }
-  vals.each { |val| terms << TL::LuTerm.new(key, val) }
+  vals = vals.split("\\n").map { |x| cleanup(x) }.join('\n')
+  defns << SP::WdDefn.new(key, vals)
 rescue err
   puts err
 end
 
-puts "input: #{terms.size}"
+puts "input: #{defns.size}"
 
-TL::LuTerm.init_db("trungviet", reset: false)
-TL::LuTerm.upsert_bulk("trungviet", terms)
-# TL::LuTerm.remove_dup!("trungviet")
+SP::WdDefn.init_db("trungviet", reset: true)
+SP::WdDefn.upsert("trungviet", defns)
+# SP::WdDefn.remove_dup!("trungviet")

@@ -150,7 +150,7 @@
   }
 </script>
 
-<Dialog actived={state == 2} --z-idx={80} class="postag" {on_close}>
+<Dialog --z-idx={80} class="postag" {on_close}>
   <postag-head slot="header">
     <postag-tabs>
       {#each tabs as { label }, tab}

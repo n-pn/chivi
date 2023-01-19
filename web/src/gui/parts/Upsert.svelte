@@ -306,8 +306,13 @@
   </footer>
 </Dialog>
 
-<Vdict vdict={extra} bind:state={$ctrl.state} on_close={swap_dict} />
-<Postag bind:ptag={vpterm.tags[vpterm._slot]} bind:state={$ctrl.state} />
+{#if $ctrl.state == 3}
+  <Vdict vdict={extra} bind:state={$ctrl.state} on_close={swap_dict} />
+{/if}
+
+{#if $ctrl.state == 2}
+  <Postag bind:ptag={vpterm.tags[vpterm._slot]} bind:state={$ctrl.state} />
+{/if}
 
 <style lang="scss">
   $gutter: 0.75rem;

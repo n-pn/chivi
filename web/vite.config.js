@@ -15,18 +15,18 @@ const _cwd = path.dirname(fileURLToPath(import.meta.url))
 //   exclude: ['**/node_modules/**'],
 // })
 
-// const dev = process.env['CV_ENV'] != 'production'
+const dev = process.env['ENV'] == 'dev'
 
 const proxy = {
-  '/_db': 'http://localhost:5010',
-  '/_wn': 'http://localhost:5020',
+  '/_db': 'http://127.0.0.1:5010',
+  '/_wn': 'http://127.0.0.1:5020',
 
-  '/_m0': 'http://localhost:5100',
-  '/_m1': 'http://localhost:5110',
-  '/_m2': 'http://localhost:5120',
+  '/_m0': 'http://127.0.0.1:5100',
+  '/_m1': 'http://127.0.0.1:5110',
+  '/_m2': 'http://127.0.0.1:5120',
 
-  '/_sp': 'http://localhost:5300',
-  '/_ys': 'http://localhost:5400',
+  '/_sp': 'http://127.0.0.1:5300',
+  '/_ys': 'http://127.0.0.1:5400',
 }
 
 /** @type {import('vite').UserConfig} */
@@ -40,7 +40,7 @@ const config = {
       $types: path.resolve(_cwd, 'src/types'),
     },
   },
-  // server: { host: 'localhost', proxy },
+  server: { host: 'localhost', proxy: dev && proxy },
   vitePlugin: { experimental: { prebundleSvelteLibraries: true } },
 }
 

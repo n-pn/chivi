@@ -13,35 +13,37 @@
   $: actived ? layers.add(layer) : layers.remove(layer)
 </script>
 
-{#if actived}
-  <dialog-wrap
-    on:click={() => on_close(false)}
-    transition:fade={{ duration: 100 }}>
-    <dialog-body
-      tabindex="-1"
-      class="{$$props.class} _{_size}"
-      on:click|stopPropagation={() => {}}
-      transition:scale={{ duration: 100, easing: backInOut }}>
-      {#if $$slots.header}
-        <dialog-head>
-          <slot name="header" />
-          <button
-            type="button"
-            class="x-btn"
-            data-kbd="esc"
-            on:click={() => on_close(false)}>
-            <SIcon name="x" />
-          </button>
-        </dialog-head>
-      {/if}
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div
+  class="wrap"
+  on:click={() => on_close(false)}
+  transition:fade={{ duration: 100 }}>
+  <div
+    class="dialog-main {$$props.class} _{_size}"
+    tabindex="-1"
+    on:click={(e) => e.stopPropagation()}
+    transition:scale={{ duration: 100, easing: backInOut }}>
+    {#if $$slots.header}
+      <header class="dialog-head">
+        <slot name="header" />
+        <button
+          type="button"
+          class="x-btn"
+          data-kbd="esc"
+          on:click={() => on_close(false)}>
+          <SIcon name="x" />
+        </button>
+      </header>
+    {/if}
 
+    <section class="dialog-body">
       <slot />
-    </dialog-body>
-  </dialog-wrap>
-{/if}
+    </section>
+  </div>
+</div>
 
 <style lang="scss">
-  dialog-wrap {
+  .wrap {
     @include flex-ca;
     position: fixed;
     top: 0;
@@ -52,7 +54,7 @@
     background: rgba(#000, 0.75);
   }
 
-  dialog-head {
+  .dialog-head {
     @include flex-cx;
 
     height: 2.25rem;
@@ -83,13 +85,11 @@
     xl: 36rem,
   );
 
-  dialog-body {
-    display: block;
+  .dialog-main {
     width: 50vw;
     max-width: 100%;
 
     @include bgcolor(secd);
-
     @include shadow(1);
     @include darksd();
 

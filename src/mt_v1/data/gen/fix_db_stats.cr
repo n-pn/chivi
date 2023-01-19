@@ -24,13 +24,9 @@ end
 M1::DbDict.repo.open_tx do |db|
   query = <<-SQL
     update dicts set
-      term_total = ?,
-      term_avail = ?,
-      main_terms = ?,
-      temp_terms = ?,
-      user_terms = ?,
-      users = ?,
-      mtime = ?
+      term_total = ?, term_avail = ?,
+      main_terms = ?, temp_terms = ?, user_terms = ?,
+      users = ?, mtime = ?
       where id = ?
     SQL
 

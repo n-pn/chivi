@@ -1,4 +1,4 @@
-require "../data/lu_term"
+require "../wd_defn"
 
 def cleanup(input : String)
   input.split("\\t")
@@ -6,18 +6,18 @@ def cleanup(input : String)
     .gsub(/(\]|}); /) { |_, x| x[1] + " " }
 end
 
-terms = [] of TL::LuTerm
+defns = [] of SP::WdDefn
 
 File.each_line("var/inits/system/trichdan.txt") do |line|
   key, vals = line.split("=", 2)
   vals = vals.split("\\n").map { |x| cleanup(x) }
-  terms << TL::LuTerm.new(key, vals.join('\v'))
+  defns << SP::WdDefn.new(key, vals.join('\n'))
 rescue err
   puts err
 end
 
-puts "input: #{terms.size}"
+puts "input: #{defns.size}"
 
-TL::LuTerm.init_db("trich_dan", reset: false)
-TL::LuTerm.upsert_bulk("trich_dan", terms)
-# TL::LuTerm.remove_dup!("trich_dan")
+SP::WdDefn.init_db("trich_dan", reset: true)
+SP::WdDefn.upsert("trich_dan", defns)
+# SP::WdDefn.remove_dup!("trich_dan")

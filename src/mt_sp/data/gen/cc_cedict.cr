@@ -2,13 +2,14 @@ require "json"
 require "colorize"
 require "http/client"
 require "compress/zip"
-require "../data/lu_term"
+
+require "../wd_defn"
 
 URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 DIR = "var/inits/system"
 
 ZIP_FILE = "#{DIR}/cc-cedict.zip"
-PY_TONES = Hash(String, String).from_json {{ read_file "#{__DIR__}/py-tones.json" }}
+PY_TONES = Hash(String, String).from_json File.read("#{__DIR__}/py-tones.json")
 
 def fetch_zip(output : String)
   tls = OpenSSL::SSL::Context::Client.insecure
@@ -16,7 +17,7 @@ def fetch_zip(output : String)
   HTTP::Client.get(URL, tls: tls) { |res| File.write(output, res.body_io) }
 end
 
-def file_outdated?(file : String, expiry : Time::Span)
+def file_outdated?(file : String, expiry : Time::Span = 1.days)
   return true unless File.exists?(file)
   File.info(file).modification_time < Time.utc - expiry
 end
@@ -41,7 +42,7 @@ def parse_line(line : String)
   senses = clean_senses(senses).split('/').join("; ")
 
   defn = "[#{pinyin}] {#{trad}} #{senses}"
-  TL::LuTerm.new(simp, defn)
+  SP::WdDefn.new(simp, defn)
 end
 
 def read_data(zip_file : String, expiry = 24.hours)
@@ -59,9 +60,9 @@ def read_data(zip_file : String, expiry = 24.hours)
   end
 end
 
-terms = read_data(ZIP_FILE)
-puts "input: #{terms.size}"
+defns = read_data(ZIP_FILE)
+puts "input: #{defns.size}"
 
-TL::LuTerm.init_db("cc_cedict", reset: false)
-TL::LuTerm.upsert_bulk("cc_cedict", terms)
+SP::WdDefn.init_db("cc_cedict", reset: true)
+SP::WdDefn.upsert("cc_cedict", defns)
 # TL::LuTerm.remove_dup!("cc_cedict")
