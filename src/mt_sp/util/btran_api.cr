@@ -61,8 +61,8 @@ class SP::Btran
 
     params = URI::Params.build do |form|
       form.add "api-version", "3.0"
-      form.add "from", "zh-Hans"
-      form.add "to", "en"
+      form.add "from", "en"
+      form.add "to", ""
     end
 
     body = terms.map { |x| {Text: x} }.to_json
@@ -174,5 +174,5 @@ class SP::Btran
 end
 
 # test = "能源、表情".split("、")
-# puts TL::Btran.translate(test).to_pretty_json
-# puts TL::Btran.lookup(["没", "钱"]).to_pretty_json
+# puts SP::Btran.translate(test).to_pretty_json
+# puts SP::Btran.lookup(["in", "out"]).to_pretty_json

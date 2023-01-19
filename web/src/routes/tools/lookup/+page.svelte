@@ -11,123 +11,6 @@
     confidence: number
     backTranslations: BingBackTrans[]
   }
-
-  // const sample = [
-  //   {
-  //     normalizedTarget: 'own',
-  //     displayTarget: 'own',
-  //     posTag: 'ADJ',
-  //     confidence: 0.2015,
-  //     prefixWord: '',
-  //     backTranslations: [
-  //       {
-  //         normalizedText: '自己',
-  //         displayText: '自己',
-  //         numExamples: 15,
-  //         frequencyCount: 29374,
-  //       },
-  //       {
-  //         normalizedText: '拥有',
-  //         displayText: '拥有',
-  //         numExamples: 15,
-  //         frequencyCount: 2574,
-  //       },
-  //       {
-  //         normalizedText: '自身',
-  //         displayText: '自身',
-  //         numExamples: 15,
-  //         frequencyCount: 1539,
-  //       },
-  //       {
-  //         normalizedText: '个人',
-  //         displayText: '个人',
-  //         numExamples: 15,
-  //         frequencyCount: 525,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     normalizedTarget: 'yourself',
-  //     displayTarget: 'yourself',
-  //     posTag: 'PRON',
-  //     confidence: 0.1891,
-  //     prefixWord: '',
-  //     backTranslations: [
-  //       {
-  //         normalizedText: '自己',
-  //         displayText: '自己',
-  //         numExamples: 15,
-  //         frequencyCount: 21543,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     normalizedTarget: 'myself',
-  //     displayTarget: 'myself',
-  //     posTag: 'PRON',
-  //     confidence: 0.1792,
-  //     prefixWord: '',
-  //     backTranslations: [
-  //       {
-  //         normalizedText: '自己',
-  //         displayText: '自己',
-  //         numExamples: 15,
-  //         frequencyCount: 19286,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     normalizedTarget: 'himself',
-  //     displayTarget: 'himself',
-  //     posTag: 'PRON',
-  //     confidence: 0.1641,
-  //     prefixWord: '',
-  //     backTranslations: [
-  //       {
-  //         normalizedText: '自己',
-  //         displayText: '自己',
-  //         numExamples: 15,
-  //         frequencyCount: 15324,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     normalizedTarget: 'themselves',
-  //     displayTarget: 'themselves',
-  //     posTag: 'PRON',
-  //     confidence: 0.1385,
-  //     prefixWord: '',
-  //     backTranslations: [
-  //       {
-  //         normalizedText: '自己',
-  //         displayText: '自己',
-  //         numExamples: 15,
-  //         frequencyCount: 10626,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     normalizedTarget: 'their',
-  //     displayTarget: 'their',
-  //     posTag: 'PRON',
-  //     confidence: 0.1277,
-  //     prefixWord: '',
-  //     backTranslations: [
-  //       {
-  //         normalizedText: '他们',
-  //         displayText: '他们',
-  //         numExamples: 15,
-  //         frequencyCount: 115407,
-  //       },
-  //       {
-  //         normalizedText: '自己',
-  //         displayText: '自己',
-  //         numExamples: 15,
-  //         frequencyCount: 33786,
-  //       },
-  //     ],
-  //   },
-  // ]
 </script>
 
 <script lang="ts">
@@ -150,6 +33,17 @@
 
   const debounce_get_bing_defn = debounce(get_bing_defn, 300)
   $: if (browser) debounce_get_bing_defn(data.word)
+
+  const vi_tags = {
+    NOUN: 'Danh từ',
+    PRON: 'Đại từ',
+    ADJ: 'Tính từ',
+    PREP: 'Giới từ',
+    VERB: 'Động từ',
+    ADV: 'Phó từ',
+    CONJ: 'Liên từ',
+    DET: 'Khu biệt',
+  }
 </script>
 
 <article class="article island">
@@ -166,19 +60,17 @@
   <section>
     {#each bing_defns as defn}
       <div class="defn">
-        <div class="line ">
+        <div class="line _head">
           <span>
             <span class="lbl">Nghĩa: </span>
             <span class="val">{defn.displayTarget}</span>
           </span>
-
           <span>
-            <span class="lbl">Từ loại: </span>
-            <span class="val _postag">{defn.posTag}</span>
-          </span>
-          <span>
-            <span class="lbl">Tần suất: </span>
-            <span class="val _confidence">{defn.confidence}</span>
+            <span class="lbl" data-tip="Từ loại của nghĩa">Từ loại: </span>
+            <span class="val _postag" data-tip={defn.posTag}
+              >{vi_tags[defn.posTag] || defn.posTag}</span>
+            <span class="val _confidence" data-tip="Độ tinh cậy"
+              >({defn.confidence})</span>
           </span>
         </div>
 
@@ -189,11 +81,14 @@
               <a
                 class="word"
                 href="/tools/lookup?word={back.displayText}"
-                data-tip={back.frequencyCount}>{back.displayText}</a>
+                data-tip="Tần suất: {back.frequencyCount}"
+                >{back.displayText}</a>
             {/each}
           </span>
         </div>
       </div>
+    {:else}
+      <div class="empty">Không có kết quả</div>
     {/each}
   </section>
 </article>
@@ -211,7 +106,7 @@
   section {
     padding: 1rem;
     display: grid;
-    grid-template-columns: repeat(2, minmax(5rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
     min-height: 5rem;
     gap: 0.5rem;
   }
@@ -241,7 +136,11 @@
 
   .line {
     display: flex;
-    justify-content: space-between;
+    // justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    line-height: 1.5rem;
+
     > span {
       display: flex;
       gap: 0.5rem;
@@ -253,7 +152,7 @@
   }
 
   .word {
-    margin-left: 0.5rem;
+    margin: 0 0.5rem;
     font-weight: 500;
 
     @include fgcolor(primary, 4);
@@ -261,5 +160,13 @@
       @include fgcolor(primary, 5);
       border-bottom: 1px solid currentColor;
     }
+  }
+
+  .empty {
+    @include fgcolor(mute);
+    @include flex-ca;
+    font-style: italic;
+    grid-column: 1/-1;
+    height: 5rem;
   }
 </style>
