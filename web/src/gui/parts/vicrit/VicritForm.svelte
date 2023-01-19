@@ -12,7 +12,7 @@
   let error = ''
 
   $: update = form.id != 0
-  $: action = update ? `/api/crits/${form.id}` : '/api/crits'
+  $: action = update ? `/_db/crits/${form.id}` : '/_db/crits'
   $: method = update ? 'PATCH' : 'POST'
 
   async function submit(evt: Event) {

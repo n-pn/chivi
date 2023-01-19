@@ -2,7 +2,7 @@ require "../_ctrl_base"
 require "../../../mt_v1/vp_hint"
 
 class CV::VpdictCtrl < CV::BaseCtrl
-  base "/api/dicts"
+  base "/_db/dicts"
 
   alias VdInfo = Tuple(String, String, Int32) # dict name, label, entries count
 

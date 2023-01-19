@@ -2,7 +2,7 @@ require "../_ctrl_base"
 require "../../../_util/mail_util"
 
 class CV::SigninCtrl < CV::BaseCtrl
-  base "/api/_user"
+  base "/_db/_user"
 
   @[AC::Route::GET("privi/:uname")]
   def privi(uname : String)

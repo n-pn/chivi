@@ -2,7 +2,7 @@ require "../_ctrl_base"
 require "./nvinfo_form"
 
 class CV::NvinfoCtrl < CV::BaseCtrl
-  base "/api/books"
+  base "/_db/books"
 
   @[AC::Route::GET("/")]
   def index(

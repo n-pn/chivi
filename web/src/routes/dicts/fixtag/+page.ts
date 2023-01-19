@@ -5,7 +5,7 @@ export async function load({ fetch, url }: LoadEvent) {
   const source = url.searchParams.get('source') || 'ptags-united'
   const target = url.searchParams.get('target') || 'regular'
 
-  const api_url = `/api/vpinits/fixtag/${source}/${target}`
+  const api_url = `/_db/vpinits/fixtag/${source}/${target}`
   const content: Data[] = await fetch(api_url).then((r) => r.json())
 
   const data = { content, source, target, _meta: null }

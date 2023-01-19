@@ -43,11 +43,18 @@ class BadRequest < UserError; end
 class Unauthorized < UserError; end
 
 abstract class AC::Base
-  # add_responder("text/plain") { |io, result| io << result }
+  add_responder("text/plain") { |io, result| io << result }
+  add_responder("text/html") { |io, result| io << result }
 
   @[AC::Route::Filter(:before_action)]
-  def set_date_header
+  def before_all_actions
     response.headers["Date"] = HTTP.format_time(Time.utc)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    response.headers["Content-Type"] = "application/json"
+    response.headers["Access-Control-Allow-Methods"] = "GET,HEAD,POST,DELETE,OPTIONS,PUT,PATCH"
+
+    Log.context.set(client_ip: client_ip)
   end
 
   # handle common errors at a global level
@@ -163,8 +170,8 @@ def start_server!(port : Int32, server_name = "Chivi")
   AC::Server.before(
     AC::ErrorHandler.new(CV_ENV.production?, ["X-Request-ID"]),
     AC::LogHandler.new(["upass", "new_upass"]),
-    HTTP::CompressHandler.new
-  )
+  # HTTP::CompressHandler.new
+)
 
   AC::Session.configure do |settings|
     settings.key = "_auth"

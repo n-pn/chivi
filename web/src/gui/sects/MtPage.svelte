@@ -89,12 +89,8 @@
     const temp = $config.w_temp
 
     const url = `/_m2/convert?rmode=mtl&has_title=true&book=${book}&user=${user}&with_temp=${temp}`
-    const res = await fetch(url, {
-      method: 'POST',
-      body: body,
-      headers: { 'Content-Type': 'text/plain' },
-    })
 
+    const res = await fetch(url, { method: 'POST', body })
     const data = await res.text()
 
     if (!res.ok) {

@@ -21,12 +21,12 @@
   let error = ''
 
   async function load_form(id: number) {
-    const api_url = `/api/tposts/${id}/detail`
+    const api_url = `/_db/tposts/${id}/detail`
     form = await fetch(api_url).then((r) => r.json())
   }
 
   function gen_api_url(cvpost_id: string) {
-    let base_url = '/api/tposts'
+    let base_url = '/_db/tposts'
     if (cvrepl_id) return base_url + '/' + cvrepl_id
     return base_url + '?cvpost=' + cvpost_id
   }

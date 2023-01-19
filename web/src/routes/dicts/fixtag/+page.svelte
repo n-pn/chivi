@@ -32,7 +32,7 @@
 
     const term = content[idx]
     const body = { key: term.key, val: term.val, tag }
-    await api_call(`/api/vpinits/upsert/${target}`, body, 'PUT')
+    await api_call(`/_db/vpinits/upsert/${target}`, body, 'PUT')
 
     content = content.filter((_, i) => i != idx)
     value = map_tags(content)

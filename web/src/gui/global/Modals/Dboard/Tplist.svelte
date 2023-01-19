@@ -2,7 +2,7 @@
   import { dboard_ctrl as ctrl, tplist_data, popups } from '$lib/stores'
 
   export function make_api_url(data: CV.Cvpost, { pg, op }) {
-    let api_url = `/api/tposts?pg=${pg}&lm=20`
+    let api_url = `/_db/tposts?pg=${pg}&lm=20`
     if (data) api_url += '&cvpost=' + data.id
     if (op) api_url += '&uname=' + op
 
@@ -23,7 +23,7 @@
     pgmax: 1,
   }
 
-  $: post_api_url = `/api/topics/${$tplist_data.topic.id}`
+  $: post_api_url = `/_db/topics/${$tplist_data.topic.id}`
   $: list_api_url = make_api_url(cvpost, $tplist_data.query)
 
   $: if ($popups.dboard && $tplist_data.topic) load_cvpost(post_api_url)

@@ -35,7 +35,8 @@ class YS::CritCtrl < AC::Base
       crits = query.with_yslist.with_ysuser
     end
 
-    books = CvBook.query.where { id.in? crits.map(&.nvinfo_id) }
+    b_ids = crits.map(&.nvinfo_id)
+    books = b_ids.empty? ? [] of CvBook : CvBook.query.where { id.in? b_ids }
 
     render json: ({
       pgidx: pg_no,

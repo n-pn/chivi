@@ -25,7 +25,7 @@
 
   async function toggle_like() {
     const action = cvrepl.self_liked ? 'unlike' : 'like'
-    const api_url = `/api/!repls/${cvrepl.id}/${action}`
+    const api_url = `/_db/!repls/${cvrepl.id}/${action}`
     const api_res = await fetch(api_url, { method: 'PUT' })
 
     if (!api_res.ok) {

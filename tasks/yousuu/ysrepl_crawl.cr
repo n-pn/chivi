@@ -84,7 +84,7 @@ class CV::YsreplCrawl
   end
 
   private def api_url(y_cid : String, page = 1)
-    "https://api.yousuu.com/api/comment/#{y_cid}/reply?&page=#{page}"
+    "https://api.yousuu.com/_db/comment/#{y_cid}/reply?&page=#{page}"
   end
 
   #####################

@@ -1,7 +1,7 @@
 require "../_ctrl_base"
 
 class CV::DboardCtrl < CV::BaseCtrl
-  base "/api/boards"
+  base "/_db/boards"
 
   @[AC::Route::GET("/", converters: {limit: ConvertLimit})]
   def index(pg pg_no : Int32, lm limit : Int32 = 24)

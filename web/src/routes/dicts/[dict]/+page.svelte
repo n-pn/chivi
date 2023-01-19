@@ -32,7 +32,7 @@
   let postag_state = 1
 
   // prettier-ignore
-  const on_change = () => invalidate(`/api/${$page.url.pathname}${$page.url.search}`)
+  const on_change = () => invalidate(`/_db/${$page.url.pathname}${$page.url.search}`)
 
   $: pager = new Pager($page.url)
 

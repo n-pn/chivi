@@ -82,7 +82,7 @@ class CV::YscritCrawlByList
   end
 
   private def api_url(y_lid : String, page : Int32 = 1)
-    "https://api.yousuu.com/api/booklist/#{y_lid}?page=#{page}&t=#{Time.utc.to_unix_ms}"
+    "https://api.yousuu.com/_db/booklist/#{y_lid}?page=#{page}&t=#{Time.utc.to_unix_ms}"
   end
 
   ################

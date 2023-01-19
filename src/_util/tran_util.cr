@@ -4,7 +4,7 @@ require "http/client"
 module TranUtil
   extend self
 
-  CVMTL_URL = "http://localhost:5010/api/qtran"
+  CVMTL_URL = "http://localhost:5010/_db/qtran"
   BTRAN_URL = "http://localhost:5501/_sp/btran"
   DEEPL_URL = "http://localhost:5501/_sp/deepl"
 

@@ -3,7 +3,7 @@ require "./vpterm_form"
 require "../../../mt_v1/mt_core"
 
 class CV::VptermCtrl < CV::BaseCtrl
-  base "/api/terms"
+  base "/_db/terms"
 
   @[AC::Route::POST("/query", body: :form)]
   def lookup(form : Hash(String, Array(String)), temp : Bool = false)

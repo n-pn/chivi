@@ -33,7 +33,7 @@
   <NvinfoList books={data.books.weight} />
 </section>
 
-<section class="list">
+<!-- <section class="list">
   <header class="head">
     <h3 class="text">Đánh giá mới nhất</h3>
     <a class="link" href="/crits">Xem tất cả</a>
@@ -58,8 +58,7 @@
       <YslistCard {list} />
     {/each}
   </div>
-</section>
-
+</section> -->
 <style lang="scss">
   .list {
     margin-top: 1.5rem;

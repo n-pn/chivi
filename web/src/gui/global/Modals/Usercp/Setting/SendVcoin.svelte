@@ -15,7 +15,7 @@
 
   let res_text = ''
 
-  const action_url = '/api/_self/send-vcoin'
+  const action_url = '/_db/_self/send-vcoin'
 
   async function submit() {
     res_type = ''
@@ -28,7 +28,7 @@
       res_text = `[${data.sendee}] đã nhận được ${amount} vcoin, bạn còn có ${data.remain} vcoin.`
     } catch (ex) {
       res_type = 'err'
-      res_text = ex.body.message
+      res_text = ex.body?.message
     }
   }
 </script>

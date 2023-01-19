@@ -39,36 +39,36 @@ export const api_call = (url: string, body: ReqBody, method = 'POST') => {
 
 export const ROUTES = {
   // book info
-  'nvinfos.index': '/api/books',
-  'nvinfos.show': (id: any) => `/api/books/${id}`,
-  'nvinfos.front': (id: any) => `/api/books/${id}/front`,
+  'nvinfos.index': '/_db/books',
+  'nvinfos.show': (id: any) => `/_db/books/${id}`,
+  'nvinfos.front': (id: any) => `/_db/books/${id}/front`,
 
   // book seed
-  'chroots.index': (book: any) => `/api/seeds/${book}`,
-  'chroots.show': ([book, seed]) => `/api/seeds/${book}/${seed}`,
-  'chroots.chaps': ([book, seed, page]) => `/api/seeds/${book}/${seed}/${page}`,
+  'chroots.index': (book: any) => `/_db/seeds/${book}`,
+  'chroots.show': ([book, seed]) => `/_db/seeds/${book}/${seed}`,
+  'chroots.chaps': ([book, seed, page]) => `/_db/seeds/${book}/${seed}/${page}`,
 
   // forum
-  'dtopics.index': '/api/topics',
-  'dtopics.show': (id: any) => `/api/topics/${id}`,
+  'dtopics.index': '/_db/topics',
+  'dtopics.show': (id: any) => `/_db/topics/${id}`,
 
-  'dtposts.index': '/api/tposts',
+  'dtposts.index': '/_db/tposts',
 
   // chivi users booklists
-  'vilists.index': '/api/lists',
-  'vilists.show': (id: any) => `/api/lists/${id}`,
-  'vilists.': (id: any) => `/api/lists/${id}`,
-  'vilists.create': '/api/lists',
+  'vilists.index': '/_db/lists',
+  'vilists.show': (id: any) => `/_db/lists/${id}`,
+  'vilists.': (id: any) => `/_db/lists/${id}`,
+  'vilists.create': '/_db/lists',
 
   // chivi users book reviews
-  'vicrits.index': '/api/crits',
-  'vicrits.show': (id: any) => `/api/crits/${id}`,
-  'vicrits.create': `/api/crits`,
-  'vicrits.edit': (id: any) => `/api/crits/${id}/edit`,
-  'vicrits.update': (id: any) => `/api/crits/${id}`,
+  'vicrits.index': '/_db/crits',
+  'vicrits.show': (id: any) => `/_db/crits/${id}`,
+  'vicrits.create': `/_db/crits`,
+  'vicrits.edit': (id: any) => `/_db/crits/${id}/edit`,
+  'vicrits.update': (id: any) => `/_db/crits/${id}`,
 
   // reviews' replies
-  'virepls.index': '/api/repls',
+  'virepls.index': '/_db/repls',
 
   // yousuu booklists
   'yslists.index': `/_ys/lists`,
@@ -80,10 +80,10 @@ export const ROUTES = {
   'yscrits.repls': (id: any) => `/_ys/crits/${id}/repls`,
 
   // report convert errors
-  'tlspec.qtran': '/api/qtran/mterror',
-  'tlspec.create': '/api/tlspecs',
-  'tlspec.update': (id: any) => `/api/tlspecs/${id}`,
-  'tlspec.delete': (id: any) => `/api/tlspecs/${id}`,
+  'tlspec.qtran': '/_db/qtran/mterror',
+  'tlspec.create': '/_db/tlspecs',
+  'tlspec.update': (id: any) => `/_db/tlspecs/${id}`,
+  'tlspec.delete': (id: any) => `/_db/tlspecs/${id}`,
 
   // glosssary v1
   'v1dict.index': '/_m1/dicts',

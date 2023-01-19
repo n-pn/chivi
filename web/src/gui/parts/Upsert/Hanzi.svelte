@@ -89,7 +89,7 @@
     }
 
     if (input_is_empty(input)) return
-    const path = `/api/terms/query?temp=${$config.w_temp}`
+    const path = `/_db/terms/query?temp=${$config.w_temp}`
 
     try {
       const data = await api_call(path, input, 'POST')

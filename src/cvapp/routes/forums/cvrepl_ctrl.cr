@@ -1,7 +1,7 @@
 require "../_ctrl_base"
 
 class CV::CvreplCtrl < CV::BaseCtrl
-  base "/api/tposts"
+  base "/_db/tposts"
 
   @[AC::Route::GET("/", converters: {cvpost: ConvertBase32})]
   def index(pg pgidx : Int32 = 1,

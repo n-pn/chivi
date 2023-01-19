@@ -2,7 +2,7 @@
   import { dtlist_data as data, DtlistData } from '$lib/stores'
   export function make_api_url(data: DtlistData) {
     const { tab, query } = data
-    let api_url = `/api/topics?pg=${query.pg}&lm=10`
+    let api_url = `/_db/topics?pg=${query.pg}&lm=10`
 
     if (query.lb) api_url += '&labels=' + query.lb
     if (query.op) api_url += '&viuser=' + query.op

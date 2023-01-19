@@ -11,7 +11,7 @@
   let upass = ''
   let error = ''
 
-  const action = '/api/_user/signup'
+  const action = '/_db/_user/signup'
 
   async function submit() {
     error = ''

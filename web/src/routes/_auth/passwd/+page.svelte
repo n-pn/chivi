@@ -8,7 +8,7 @@
   let msg_type: '' | 'ok' | 'err' = ''
   let msg_text = ''
 
-  const action = '/api/_user/pwtemp'
+  const action = '/_db/_user/pwtemp'
 
   async function submit() {
     msg_type = ''

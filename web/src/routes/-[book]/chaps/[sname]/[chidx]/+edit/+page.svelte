@@ -21,7 +21,7 @@
   $: privi = $session.privi || -1
   $: disabled = privi < 1 || (privi == 1 && input.length > 30000)
 
-  $: action_url = `/api/texts/${nvinfo.id}/${sname}/${chidx}`
+  $: action_url = `/_db/texts/${nvinfo.id}/${sname}/${chidx}`
 
   async function submit(event: Event) {
     event.preventDefault()

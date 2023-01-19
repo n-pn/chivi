@@ -10,7 +10,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  const on_destroy = () => invalidate(`/api/tlspecs${$page.url.search}`)
+  const on_destroy = () => invalidate(`/_db/tlspecs${$page.url.search}`)
 
   $: pager = new Pager($page.url)
 </script>

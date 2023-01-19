@@ -2,7 +2,7 @@ require "../_ctrl_base"
 require "../../views/*"
 
 class CV::NvseedCtrl < CV::BaseCtrl
-  base "/api/seeds/:book_id"
+  base "/_db/seeds/:book_id"
 
   getter! nvinfo : Nvinfo
 

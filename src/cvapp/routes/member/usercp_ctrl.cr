@@ -2,7 +2,7 @@ require "../_ctrl_base"
 require "../../../_util/mail_util"
 
 class CV::UsercpCtrl < CV::BaseCtrl
-  base "/api/_self"
+  base "/_db/_self"
 
   getter viuser : Viuser { Viuser.load!(_viuser.id) }
 

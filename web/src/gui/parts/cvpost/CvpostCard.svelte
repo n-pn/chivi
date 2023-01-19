@@ -16,7 +16,7 @@
 
   async function toggle_like() {
     const action = cvpost.self_liked ? 'unlike' : 'like'
-    const api_url = `/api/!posts/${cvpost.id}/${action}`
+    const api_url = `/_db/!posts/${cvpost.id}/${action}`
     const api_res = await fetch(api_url, { method: 'PUT' })
 
     if (!api_res.ok) {

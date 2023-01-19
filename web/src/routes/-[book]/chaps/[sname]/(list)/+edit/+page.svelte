@@ -14,7 +14,7 @@
   let prune = ''
 
   async function submit_patch() {
-    const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}/patch`
+    const url = `/_db/seeds/${nvinfo.id}/${nvseed.sname}/patch`
     const res = await api_call(url, patch_form, 'PUT')
 
     if (res.error) return alert(res.error)
@@ -24,7 +24,7 @@
   let trunc_chidx = 1
 
   async function trunc_source() {
-    const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}/trunc`
+    const url = `/_db/seeds/${nvinfo.id}/${nvseed.sname}/trunc`
     const res = await api_call(url, { chidx: trunc_chidx }, 'PUT')
 
     if (res.error) return alert(res.error)
@@ -32,7 +32,7 @@
   }
 
   async function prune_source() {
-    const url = `/api/seeds/${nvinfo.id}/${nvseed.sname}`
+    const url = `/_db/seeds/${nvinfo.id}/${nvseed.sname}`
     const res = await api_call(url, {}, 'DELETE')
 
     if (res.error) return alert(res.error)

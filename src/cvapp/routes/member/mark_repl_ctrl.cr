@@ -2,7 +2,7 @@ require "../_ctrl_base"
 require "../../../_util/mail_util"
 
 class CV::MarkReplCtrl < CV::BaseCtrl
-  base "/api/!repls"
+  base "/_db/!repls"
 
   enum MarkAction
     Like; Unlike

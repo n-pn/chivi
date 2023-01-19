@@ -15,7 +15,6 @@ export const handle = (async ({ event, resolve }) => {
 }) satisfies Handle
 
 const api_hosts = {
-  api: 'localhost:5010',
   _db: 'localhost:5010',
   _wn: 'localhost:5020',
 
@@ -24,27 +23,23 @@ const api_hosts = {
   _m2: 'localhost:5120',
 
   _sp: 'localhost:5300',
-
   _ys: 'localhost:5400',
 }
 
-export const handleFetch = (async ({ event, fetch, request }) => {
+export const handleFetch = (({ event, request, fetch }) => {
   const url = new URL(request.url)
   const host = api_hosts[url.pathname.split('/')[1]]
+
   if (!host) return fetch(request)
 
-  url.protocol = 'http'
   url.host = host
+  url.protocol = 'http'
 
-  request = new Request(url, event.request)
-  request.headers.delete('connection')
-
-  return fetch(request)
+  return fetch(new Request(url, request))
 }) satisfies HandleFetch
 
-export const handleError = (({ error }) => {
-  // console.log(event)
-  console.log({ error })
+export const handleError = (({ event, error }) => {
+  console.log(error)
   return { message: error.toString(), code: 'UNKNOWN' }
 }) satisfies HandleServerError
 
@@ -52,16 +47,16 @@ import * as fs from 'fs'
 fs.mkdirSync('tmp/_user', { recursive: true })
 
 const cached_users: Record<string, App.CurrentUser> = {}
-const session_url = `http://localhost:5010/api/_self`
+const session_url = `http://127.0.0.1:5010/_db/_self`
 const guest_user = { uname: 'Khách', privi: -1, until: 0, vcoin: 0, karma: 0 }
 
 const get_hash = (hash?: string) => hash?.substring(0, 12).replace('/', '_')
 
 async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   const hash = get_hash(event.cookies.get('_auth')) || 'guest'
-  let cached_user = cached_users[hash]
-
   const path = `tmp/_user/${hash}.json`
+
+  let cached_user = cached_users[hash]
 
   if (!cached_user && fs.existsSync(path)) {
     const file_data = fs.readFileSync(path).toString()
@@ -73,7 +68,7 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   if (cached_user && cached_user.until >= now_unix) return cached_user
 
   const req_init = { headers: { cookie: event.request.headers.get('cookie') } }
-  const response = await event.fetch(session_url, req_init)
+  const response = await globalThis.fetch(session_url, req_init)
 
   if (!response.ok) return guest_user
 
@@ -81,6 +76,6 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   fs.writeFileSync(path, JSON.stringify(cached_user))
   cached_users[hash] = cached_user
 
-  // event.setHeaders({ cookie: response.headers.get('cookie') })
-  return cached_user
+  event.setHeaders({ cookie: response.headers.get('cookie') })
+  return cached_user || guest_user
 }

@@ -20,7 +20,7 @@ async function load(id: number): Promise<CvpostForm> {
   if (id == 0) return init()
 
   try {
-    return await fetch(`/api/topics/${id}/detail`).then((r) => r.json())
+    return await fetch(`/_db/topics/${id}/detail`).then((r) => r.json())
   } catch (ex) {
     console.log(ex)
     return init()

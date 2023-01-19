@@ -25,7 +25,7 @@
   let tspan = 1
   $: vcoin = costs[privi][tspan]
 
-  const action = '/api/_self/upgrade-privi'
+  const action = '/_db/_self/upgrade-privi'
 
   async function submit() {
     error = ''

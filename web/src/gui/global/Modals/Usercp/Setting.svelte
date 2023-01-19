@@ -8,7 +8,7 @@
   export let tab = 2
 
   async function logout() {
-    await fetch('/api/_user/logout', { method: 'DELETE' })
+    await fetch('/_db/_user/logout', { method: 'DELETE' })
     window.location.reload()
   }
 </script>

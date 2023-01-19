@@ -2,7 +2,7 @@ require "../_ctrl_base"
 require "../../views/*"
 
 class CV::ChinfoCtrl < CV::BaseCtrl
-  base "/api/chaps/:b_id/:sname"
+  base "/_db/chaps/:b_id/:sname"
 
   @[AC::Route::GET("/:ch_no/:part_no")]
   def show(b_id : Int64, sname : String, ch_no : Int16, part_no : Int16)

@@ -13,7 +13,7 @@
 
   async function submit() {
     err = ''
-    const url = `/api/seeds/${nvinfo.id}`
+    const url = `/_db/seeds/${nvinfo.id}`
     const res = await api_call(url, { sname, snvid }, 'PUT')
 
     if (res.error) err = res.error

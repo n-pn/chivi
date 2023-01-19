@@ -1,7 +1,7 @@
 require "../_ctrl_base"
 
 class CV::VicritCtrl < CV::BaseCtrl
-  base "/api/crits"
+  base "/_db/crits"
 
   @[AC::Route::GET("/", converters: {lm: ConvertLimit, tags: ConvertArray})]
   def index(pg pgidx : Int32 = 1, lm limit : Int32 = 24,

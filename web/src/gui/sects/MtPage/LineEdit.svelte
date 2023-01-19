@@ -95,7 +95,7 @@
   }
 
   async function update_preview(input: string) {
-    const api_url = `/api/qtran/mterror?_caps=true`
+    const api_url = `/_db/qtran/mterror?_caps=true`
 
     const res = await fetch(api_url, {
       method: 'PUT',

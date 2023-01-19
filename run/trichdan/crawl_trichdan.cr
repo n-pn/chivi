@@ -1,8 +1,8 @@
 require "colorize"
 require "http/client"
 
-FIRST_PAGE = "http://vietnamtudien.hoangxuanhan.org/api/hanDict/%{word}"
-NEXT_PAGES = "http://vietnamtudien.hoangxuanhan.org/api/hanDict/_%{word},%{page}"
+FIRST_PAGE = "http://vietnamtudien.hoangxuanhan.org/_db/hanDict/%{word}"
+NEXT_PAGES = "http://vietnamtudien.hoangxuanhan.org/_db/hanDict/_%{word},%{page}"
 
 words = File.read_lines("run/trichdan/data/hanzi.tsv").map(&.split('\t').first)
 

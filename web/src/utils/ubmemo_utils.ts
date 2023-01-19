@@ -2,7 +2,7 @@ import { api_call } from '$lib/api_call'
 import { chap_url } from './route_utils'
 
 export async function update_status(nvinfo_id: number, status: string) {
-  const url = `/api/_self/books/${nvinfo_id}/status`
+  const url = `/_db/_self/books/${nvinfo_id}/status`
   return await api_call(url, { status }, 'PUT')
 }
 

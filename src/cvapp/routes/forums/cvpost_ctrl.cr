@@ -2,7 +2,7 @@ require "../_ctrl_base"
 require "./cvpost_form"
 
 class CV::CvpostCtrl < CV::BaseCtrl
-  base "/api/topics"
+  base "/_db/topics"
 
   @[AC::Route::GET("/")]
   def index(pg pgidx : Int32 = 1,

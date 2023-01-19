@@ -20,7 +20,7 @@
 
     try {
       if (status == book_status) status = 'default'
-      const path = `/api/_self/books/${nvinfo.id}/status`
+      const path = `/_db/_self/books/${nvinfo.id}/status`
       ubmemo = await api_call(path, { status }, 'PUT')
     } catch (ex) {
       alert(ex)

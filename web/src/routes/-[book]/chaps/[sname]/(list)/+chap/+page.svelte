@@ -71,7 +71,7 @@
     regex: `^\\s*第?[\\d${numbers}]+[章节回]`,
   }
 
-  $: action_url = `/api/texts/${nvinfo.id}/${nvseed.sname}`
+  $: action_url = `/_db/texts/${nvinfo.id}/${nvseed.sname}`
 
   let loading = false
   let changed = false

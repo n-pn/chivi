@@ -9,7 +9,7 @@ export async function load({ parent, fetch, params }) {
   set_fetch(fetch)
 
   // TODO: call `api_path` to generate path
-  const path = `/api/texts/${nvinfo.id}/${sname}/${chidx}`
+  const path = `/_db/texts/${nvinfo.id}/${sname}/${chidx}`
   const { title, chvol, input } = await api_get(path)
 
   const dname = '-' + nvinfo.bhash

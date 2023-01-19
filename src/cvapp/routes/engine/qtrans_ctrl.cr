@@ -3,7 +3,7 @@ require "../shared/qtran_data"
 require "../../../_util/tran_util"
 
 class CV::QtransCtrl < CV::BaseCtrl
-  base "/api/qtran"
+  base "/_db/qtran"
 
   struct SpecForm
     include JSON::Serializable

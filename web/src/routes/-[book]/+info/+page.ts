@@ -6,7 +6,7 @@ import type { PageLoad } from './$types'
 export const load: PageLoad = async ({ parent, fetch }) => {
   const { nvinfo } = await parent()
 
-  const api_url = `/api/books/${nvinfo.bslug.substring(0, 8)}/+edit`
+  const api_url = `/_db/books/${nvinfo.bslug.substring(0, 8)}/+edit`
   const api_res = await fetch(api_url)
 
   const { bintro, genres, bcover }: JsonLoad = await api_res.json()

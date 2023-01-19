@@ -1,7 +1,7 @@
 require "../_ctrl_base"
 
 class CV::ChtranCtrl < CV::BaseCtrl
-  base "/api/texts/:book_id/:sname/:ch_no"
+  base "/_db/texts/:book_id/:sname/:ch_no"
 
   getter! chroot : Chroot
   getter! chinfo : Chinfo

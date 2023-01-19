@@ -1,7 +1,7 @@
 require "../_ctrl_base"
 
 class CV::TlspecCtrl < CV::BaseCtrl
-  base "/api/tlspecs"
+  base "/_db/tlspecs"
 
   @[AC::Route::GET("/", converters: {lm: ConvertLimit}, config: {lm: {min: 10, max: 50}})]
   def index(pg pg_no : Int32 = 1, lm limit : Int32 = 50)

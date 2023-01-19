@@ -46,7 +46,6 @@
   async function retranslate(reload = false) {
     const url = gen_retran_url(rl_key, $session.uname, reload)
 
-    console.log({ url })
     const res = await fetch(url)
     const txt = await res.text()
 
@@ -69,7 +68,7 @@
     const { sname, cpart } = chmeta
     const { chidx, title, uslug } = chinfo
 
-    const url = `/api/_self/books/${nvinfo.id}/access`
+    const url = `/_db/_self/books/${nvinfo.id}/access`
     const body = { sname, cpart, chidx, title, uslug, locked: lock }
 
     try {
@@ -94,7 +93,7 @@
   }
 
   async function on_fixraw(line_no: number, orig: string, edit: string) {
-    const url = `/api/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}`
+    const url = `/_db/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}`
     const body = { part_no: chmeta.cpart, line_no, orig, edit }
 
     const res = await fetch(url, {

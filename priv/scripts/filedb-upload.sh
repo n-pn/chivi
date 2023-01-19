@@ -27,14 +27,11 @@ fi
 if [[ $* == "all" || $* == *misc* ]]
 then
   echo upload misc!
-  # rsync-fast "var/dicts/v1/basic/hanviet.tsv" "$SSH/var/dicts/v1/basic"
-  # rsync-fast "var/dicts/v1/basic/hanviet.tab" "$SSH/var/dicts/v1/basic"
 
-  # rsync-fast "var/fixed" "$SSH/var"
-  # rsync-fast "var/dicts/hints" "$SSH/var/dicts"
-  # rsync-fast "var/mt_v2/inits" "$SSH/var/mt_v2"
-  # rsync-fast "var/dicts/v1/novel" "$SSH/var/dicts/v1"
-  # rsync-fast --delete "priv/static/covers/" "$SSH/priv/static/covers/"
+  rsync-fast "var/dicts/v1raw" "$SSH/var/dicts"
+  rsync-fast "var/dicts/v1dic" "$SSH/var/dicts"
+  rsync-fast "var/dicts/v2raw" "$SSH/var/dicts"
+  rsync-fast "var/dicts/v2dic" "$SSH/var/dicts"
 
 fi
 

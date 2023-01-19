@@ -48,9 +48,9 @@
 
   function make_api_endpoint(dboard_id: string | number) {
     if ($ctrl.id != '0') {
-      return `/api/topics/${$ctrl.id}`
+      return `/_db/topics/${$ctrl.id}`
     } else {
-      return `/api/topics?dboard=${dboard_id}`
+      return `/_db/topics?dboard=${dboard_id}`
     }
   }
 

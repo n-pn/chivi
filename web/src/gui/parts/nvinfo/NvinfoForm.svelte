@@ -71,7 +71,7 @@
     }
 
     try {
-      const { bslug } = await api_call('/api/books', params.output, 'POST')
+      const { bslug } = await api_call('/_db/books', params.output, 'POST')
       await goto(`/-${bslug}`)
     } catch (ex) {
       errors = ex.body.message
@@ -97,7 +97,7 @@
     </slot>
   </header>
 
-  <form action="/api/books" method="POST" on:submit|preventDefault={submit}>
+  <form action="/_db/books" method="POST" on:submit|preventDefault={submit}>
     <form-group>
       <form-field>
         <label class="form-label" for="btitle_zh">Tên truyện tiếng Trung</label>

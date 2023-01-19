@@ -20,17 +20,14 @@
   async function update_wtheme(wtheme: string) {
     document.cookie = `theme=${wtheme}; max-age=31536000; path=/`
 
-    await fetch('/api/_self/config', {
+    await fetch('/_db/_self/config', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ wtheme }),
     })
   }
 
-  const close_modal = () => {
-    console.log('closing')
-    popups.hide('config')
-  }
+  const close_modal = () => popups.hide('config')
 </script>
 
 <div class="config-wrap" bind:this={elem} on:mouseleave={close_modal}>

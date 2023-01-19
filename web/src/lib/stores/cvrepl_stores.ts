@@ -13,7 +13,7 @@ function init(rp_id = 0, itype = 'md'): CvreplForm {
 async function load(id: number, rp_id: number): Promise<CvreplForm> {
   if (id == 0) return init(rp_id)
 
-  const api_url = `/api/tposts/${id}/detail`
+  const api_url = `/_db/tposts/${id}/detail`
   const api_res = await fetch(api_url)
 
   if (!api_res.ok) return init(rp_id)

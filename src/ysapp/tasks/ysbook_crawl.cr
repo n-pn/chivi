@@ -59,7 +59,7 @@ class YS::CrawlYsbook
   DIR = "var/ysraw/books"
 
   def crawl_book!(b_id : Int32, label = "-/-") : Int32?
-    link = "https://api.yousuu.com/api/book/#{b_id}"
+    link = "https://api.yousuu.com/_db/book/#{b_id}"
     return b_id unless json = @client.fetch!(link, label)
 
     save_raw_json(b_id, json)

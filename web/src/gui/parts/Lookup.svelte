@@ -64,9 +64,13 @@
     }
 
     if (range.length != 0) {
-      const url = `/_sp/lookup?udict=${$vdict.dname}`
-      const res = await api_call(url, { input, range }, 'PUT')
-      for (let index in res) entries[index] = res[index]
+      try {
+        const url = `/_sp/lookup?udict=${$vdict.dname}`
+        const res = await api_call(url, { input, range }, 'PUT')
+        for (let index in res) entries[index] = res[index]
+      } catch (ex) {
+        console.log(ex)
+      }
     }
 
     setTimeout(update_focus, 20)

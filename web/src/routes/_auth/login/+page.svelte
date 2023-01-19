@@ -11,7 +11,7 @@
   let upass = ''
   let error: string
 
-  const action = '/api/_user/log-in'
+  const action = '/_db/_user/log-in'
 
   const submit = async () => {
     error = ''

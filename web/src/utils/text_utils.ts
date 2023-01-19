@@ -58,7 +58,7 @@ export async function translate(
   dname: string = 'combine',
   fetch = globalThis.fetch
 ) {
-  const href = `/api/qtran?dname=${dname}&_simp=true`
+  const href = `/_db/qtran?dname=${dname}&_simp=true`
   const body = JSON.stringify({ input })
   const headers = { 'Content-Type': 'application/json' }
 

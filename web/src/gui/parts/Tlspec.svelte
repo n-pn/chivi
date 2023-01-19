@@ -19,7 +19,7 @@
       ctrl.set({ actived: false })
     },
     load: async (ukey: string) => {
-      const res = await fetch(`/api/tlspecs/${ukey}`)
+      const res = await fetch(`/_db/tlspecs/${ukey}`)
       const { props } = await res.json()
 
       ztext.set(props.ztext)
@@ -215,7 +215,7 @@
     </tlspec-input>
 
     <form
-      action="/api/tlspecs"
+      action="/_db/tlspecs"
       method="POST"
       class="tlspec-form"
       on:submit|preventDefault={handle_submit}>
