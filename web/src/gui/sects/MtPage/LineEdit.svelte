@@ -98,7 +98,7 @@
     const api_url = `/_db/qtran/mterror?_caps=true`
 
     const res = await fetch(api_url, {
-      method: 'PUT',
+      method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ input, dname }),
     })

@@ -1,7 +1,7 @@
 require "../_ctrl_base"
 
 class CV::MarkBookCtrl < CV::BaseCtrl
-  base "/api/_self/books"
+  base "/_db/_self/books"
 
   @[AC::Route::Filter(:before_action)]
   def ensure_logged_in

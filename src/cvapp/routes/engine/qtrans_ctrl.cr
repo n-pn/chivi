@@ -3,7 +3,7 @@ require "../shared/qtran_data"
 require "../../../_util/tran_util"
 
 class CV::QtransCtrl < CV::BaseCtrl
-  base "/_db/qtran"
+  base "/"
 
   struct SpecForm
     include JSON::Serializable
@@ -13,7 +13,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     getter uname : String? = nil
   end
 
-  @[AC::Route::PUT("/mterror", body: :form)]
+  @[AC::Route::PUT("/_db/qtran/mterror", body: :form)]
   def mtspec(form : SpecForm, _caps : Bool = false)
     cvmtl = MtCore.generic_mtl(form.dname, form.uname || _viuser.uname)
 
@@ -26,7 +26,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     render text: output
   end
 
-  @[AC::Route::GET("/:type/:name")]
+  @[AC::Route::GET("/_db/qtran/:type/:name")]
   def cached(type : String, name : String,
              user : String = _viuser.uname,
              trad : Bool = false,
@@ -60,7 +60,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     end
   end
 
-  @[AC::Route::POST("/posts", body: :form)]
+  @[AC::Route::POST("/_db/qtran/posts", body: :form)]
   def posts_upsert(form : PostForm)
     # TODO: save posts
 
@@ -82,8 +82,8 @@ class CV::QtransCtrl < CV::BaseCtrl
     include JSON::Serializable
   end
 
-  @[AC::Route::PUT("/", body: :form)]
-  @[AC::Route::POST("/", body: :form)]
+  @[AC::Route::POST("/_db/qtran", body: :form)]
+  @[AC::Route::POST("/api/qtran", body: :form)]
   def convert(form : ConvertForm, dname : String = "combine", _simp : Bool = false)
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
 
