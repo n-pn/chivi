@@ -84,7 +84,7 @@
   }
 
   async function call_v2_engine(body: string) {
-    const book = $vdict.dname.substring(1)
+    const book = $vdict.dname
     const user = $session.uname
     const temp = $config.w_temp
 

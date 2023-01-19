@@ -5,7 +5,7 @@ require "./core/mt_data"
 require "../_util/text_util"
 
 class M2::Engine
-  def initialize(book : String, temp : Bool = false)
+  def initialize(book : String, user : String? = nil, temp : Bool = false)
     @dicts = [MtDict.core_base]
     @dicts << MtDict.core_temp if temp
 

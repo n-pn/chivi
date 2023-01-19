@@ -47,19 +47,21 @@ class M2::MtTerm < M2::MtNode
   # }
 
   COSTS = {
-    100, 103, 106, 109,
-    200, 214, 218, 226,
-    300, 325, 331, 340,
-    400, 440, 445, 455,
-    500, 558, 566, 578,
+    103, 106, 109,
+    214, 218, 226,
+    325, 331, 340,
+    440, 445, 455,
+    558, 566, 578,
   }
 
   def self.cost(size : Int32, prio : Int32 = 0) : Int32
-    case
-    when prio < 1 then 0
-    when size > 5 then 1000 &* size &* (size &+ prio)
-    else               1000 &* size &+ COSTS[(size &- 1) &* 4 &+ prio]
-    end
+    prio < 1 ? 0 : 1020 &* (size) &* (size &- 1) &+ (prio * size) ** 2
+
+    # case
+    # when prio < 1 then 0
+    # when size > 5 then 1000 &* size &* (size &+ prio)
+    # else               1000 &* size &+ COSTS[(size &- 1) &* 3 &+ prio &- 1] * 4
+    # end
   end
 
   def to_txt(io : IO, apply_cap : Bool) : Bool

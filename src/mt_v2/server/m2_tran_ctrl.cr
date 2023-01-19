@@ -15,12 +15,15 @@ class M2::TranCtrl < AC::Base
   base "/_m2"
 
   @[AC::Route::POST("/convert")]
-  def convert(udict = "combine",
-              rmode = "txt",
-              apply_cap : Bool = true,
-              has_title : Bool = false,
-              use_temp : Bool = false)
-    engine = Engine.new(udict, temp: use_temp)
+  def convert(
+    rmode : String = "txt",
+    book : String = "combine",
+    user : String? = nil,
+    apply_cap : Bool = true,
+    has_title : Bool = false,
+    with_temp : Bool = false
+  )
+    engine = Engine.new(book, user: user || _uname, temp: with_temp)
     to_mtl = rmode == "mtl"
 
     input = request.body.not_nil!.gets_to_end

@@ -2,6 +2,7 @@ require "crorm"
 require "crorm/sqlite3"
 
 require "../pos_tag"
+require "./v1_dict"
 
 class M1::DbDefn
   include Crorm::Model
@@ -62,6 +63,22 @@ class M1::DbDefn
     end
   end
 
+  def dic=(dname : String)
+    @dic = DbDict.get_id(dname)
+  end
+
+  def val=(vals : Array(String))
+    @val = vals.join(SPLIT)
+  end
+
+  def ptag=(tags : Array(String))
+    @ptag = tags.join(' ')
+  end
+
+  def mtime=(time : Time)
+    @mtime = self.class.mtime(time)
+  end
+
   def utime
     EPOCH &+ self.mtime &* 60
   end
@@ -89,19 +106,19 @@ class M1::DbDefn
     (rtime.to_unix - EPOCH) // 60
   end
 
-  def create!(repo = self.class.repo) : Array(Int32)
-    prevs = find_prevs(repo, self.tab)
+  # def create!(repo = self.class.repo) : Array(Int32)
+  #   prevs = find_prevs(repo, self.tab)
 
-    if @_prev = prevs[0]?
-      query = "update table #{@@table} set _flag = -_flag where id in ?"
-      repo.open_tx(&.exec(query, prevs))
-    end
+  #   if @_prev = prevs[0]?
+  #     query = "update table #{@@table} set _flag = -_flag where id in ?"
+  #     repo.open_tx(&.exec(query, prevs))
+  #   end
 
-    fields, values = self.get_changes
-    repo.insert(@@table, fields, values)
+  #   fields, values = self.get_changes
+  #   repo.insert(@@table, fields, values)
 
-    prevs
-  end
+  #   prevs
+  # end
 
   def find_prevs(repo = self.class.repo, tab = self.tab)
     query = <<-SQL
@@ -114,7 +131,7 @@ class M1::DbDefn
     when 1 then query += " and tab = 2"             # remove temp defns if add dicts from
     end
 
-    repo.db.query_all(query, dic, key, ptag, as: Int32)
+    self.class.repo.db.query_all(query, dic, key, ptag, as: Int32)
   end
 
   def to_term

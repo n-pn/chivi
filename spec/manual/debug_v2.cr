@@ -1,8 +1,8 @@
 require "../../src/mt_v2/m2_core"
 require "../../src/mt_sp/sp_core"
 
-text = ARGV[0]? || "在魏梦柔的目光下"
-book = ARGV[1]? || "-x3wmhcb6"
+text = ARGV[0]? || "泽林有些意外的看着这位吸血鬼。"
+book = ARGV[1]? || "-ty24ejjk"
 
 time = Time.monotonic
 mtl = M2::Engine.new(book: book)
