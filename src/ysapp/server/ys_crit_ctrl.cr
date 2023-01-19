@@ -21,8 +21,8 @@ class YS::CritCtrl < AC::Base
     query.where("stars <= ?", smax) if smax < 5
     query.limit(limit).offset(offset)
 
-    if book
-      total = Ysbook.query.find!({nvinfo_id: book}).crit_count
+    if book && (ys_book = Ysbook.query.find({nvinfo_id: book}))
+      total = ys_book.crit_count
       crits = query.filter_nvinfo(book).with_yslist.with_ysuser.to_a
     elsif list
       yslist = Yslist.find!({id: list})
@@ -40,10 +40,18 @@ class YS::CritCtrl < AC::Base
 
     render json: ({
       pgidx: pg_no,
-      pgmax: CtrlUtil.pgmax(total, limit),
+      pgmax: _pgidx(total, limit),
       crits: crits.map { |x| CritView.new(x) },
       books: BookView.as_hash(books),
     })
+  rescue err
+    render json: {
+      pgidx: 0,
+      pgmax: 0,
+      crits: [] of Yscrit,
+      books: {} of Int64 => CvBook,
+      error: err.message,
+    }
   end
 
   @[AC::Route::GET("/crits/:crit_id", converters: {crit_id: ConvertBase32})]

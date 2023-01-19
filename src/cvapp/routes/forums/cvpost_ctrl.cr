@@ -40,7 +40,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
       dtlist: {
         total: total,
         pgidx: pgidx,
-        pgmax: CtrlUtil.pgmax(total, limit),
+        pgmax: _pgidx(total, limit),
         items: items.map { |x|
           x.nvinfo = nvinfo if nvinfo
           x.viuser = viuser if viuser

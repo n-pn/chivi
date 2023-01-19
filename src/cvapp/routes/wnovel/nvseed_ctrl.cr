@@ -58,7 +58,7 @@ class CV::NvseedCtrl < CV::BaseCtrl
 
     render json: {
       pgidx: pg_no,
-      pgmax: CtrlUtil.pgmax(chroot.chap_count, 32_i16),
+      pgmax: _pgidx(chroot.chap_count, 32_i16),
       chaps: ChinfoView.list(chaps),
     }
   end

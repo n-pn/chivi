@@ -1,5 +1,7 @@
+import type { PageLoad } from './$types'
 import { suggest_read } from '$utils/ubmemo_utils'
-export const load = async ({ parent }) => {
+
+export const load = (async ({ parent }) => {
   const { nvinfo, ubmemo } = await parent()
 
   const _meta: App.PageMeta = {
@@ -12,4 +14,4 @@ export const load = async ({ parent }) => {
   }
 
   return { _meta }
-}
+}) satisfies PageLoad

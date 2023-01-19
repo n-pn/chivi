@@ -12,7 +12,7 @@ class CV::AuthorCtrl < CV::BaseCtrl
     render json: {
       total: books.size,
       pgidx: pgidx,
-      pgmax: CtrlUtil.pgmax(books.size, limit),
+      pgmax: _pgidx(books.size, limit),
       books: books[offset, limit].map { |x| NvinfoView.new(x, false) },
     }
   end

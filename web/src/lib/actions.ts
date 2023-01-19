@@ -59,7 +59,6 @@ export function tooltip(node: HTMLElement, text: string) {
 //   const action = async (event: Event) => {
 //     href = href || node.getAttribute('href')
 //     await goto(href, opts)
-//     // console.log({ href, replace, scrollto })
 
 //     event.preventDefault()
 //     event.stopPropagation()

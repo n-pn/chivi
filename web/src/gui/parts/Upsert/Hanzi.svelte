@@ -54,7 +54,6 @@
     if (words.length > 0) await update_cached(words, dicts)
 
     vpterms = vpdicts.map(({ dname }) => cached[dname][output])
-    // console.log(vpterms)
   }
 
   function change_focus(index: number) {

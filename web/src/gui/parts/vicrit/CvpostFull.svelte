@@ -4,7 +4,7 @@
   import { dlabels } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import CvpostForm, { ctrl as cvpost_ctrl } from './CvpostForm.svelte'
+  import CvpostForm, { ctrl as cvpost_ctrl } from './VicritForm.svelte'
 
   export let cvpost: CV.Cvpost
   export let dboard: CV.Dboard = cvpost.dboard

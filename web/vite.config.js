@@ -15,7 +15,7 @@ const _cwd = path.dirname(fileURLToPath(import.meta.url))
 //   exclude: ['**/node_modules/**'],
 // })
 
-const dev = process.env['CV_ENV'] != 'production'
+// const dev = process.env['CV_ENV'] != 'production'
 
 const proxy = {
   '/_db': 'http://localhost:5010',
@@ -40,7 +40,7 @@ const config = {
       $types: path.resolve(_cwd, 'src/types'),
     },
   },
-  server: { host: 'localhost', proxy: dev && proxy },
+  // server: { host: 'localhost', proxy },
   vitePlugin: { experimental: { prebundleSvelteLibraries: true } },
 }
 

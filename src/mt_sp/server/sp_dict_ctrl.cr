@@ -19,7 +19,7 @@ require "./_sp_ctrl_base"
 #       books: books.map(&.tuple),
 #       total: total,
 #       pgidx: pgidx,
-#       pgmax: calc_pgmax(total, limit),
+#       pgmax: _pgidx(total, limit),
 #     }
 
 #     render json: output
@@ -59,7 +59,7 @@ require "./_sp_ctrl_base"
 
 #       total: total,
 #       pgidx: pgidx,
-#       pgmax: calc_pgmax(total, limit),
+#       pgmax: _pgidx(total, limit),
 
 #       start: offset &+ 1,
 #       terms: terms,

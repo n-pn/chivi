@@ -11,7 +11,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     {
       total: total,
       pgidx: pg_no,
-      pgmax: CtrlUtil.pgmax(total, limit),
+      pgmax: _pgidx(total, limit),
       items: Tlspec.items.skip(offset).first(limit).compact_map do |ukey|
         entry = Tlspec.load!(ukey)
         last_edit = entry.edits.last

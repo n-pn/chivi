@@ -5,7 +5,7 @@ export const load = (async ({ fetch, parent, url }) => {
   const sort = url.searchParams.get('sort') || 'score'
   const { nvinfo } = await parent()
 
-  const extras = { book: nvinfo.id, take: 10, sort }
+  const extras = { book: nvinfo.id, lm: 10, sort }
   const search = merge_query(url.searchParams, extras)
 
   // prettier-ignore

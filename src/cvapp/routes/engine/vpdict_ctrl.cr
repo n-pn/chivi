@@ -32,7 +32,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
       books: book_dicts,
       total: total,
       pgidx: pg_no,
-      pgmax: CtrlUtil.pgmax(total, limit),
+      pgmax: _pgidx(total, limit),
     }
   end
 
@@ -62,7 +62,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
 
       total: total,
       pgidx: pg_no,
-      pgmax: CtrlUtil.pgmax(total, limit),
+      pgmax: _pgidx(total, limit),
 
       start: offset &+ 1,
       terms: total > offset ? terms[offset, limit] : [] of VpTerm,

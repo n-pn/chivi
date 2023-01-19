@@ -13,7 +13,7 @@ class CV::DboardCtrl < CV::BaseCtrl
     render json: {
       total: total,
       pgidx: pg_no,
-      pgmax: CtrlUtil.pgmax(total, limit),
+      pgmax: _pgidx(total, limit),
       items: query.limit(limit).offset(offset).map { |x| DboardView.new(x) },
     }
   end

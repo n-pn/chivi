@@ -105,7 +105,6 @@ function split_text(input: string, is_title_fn: (line: string) => boolean) {
   for (let line of lines) {
     const is_title = is_title_fn(line)
     const clean_line = clean_text(line)
-    // console.log({ clean_line, is_title })
     if (!clean_line) continue
 
     if (!is_title) {

@@ -15,15 +15,15 @@ export const handle = (async ({ event, resolve }) => {
 }) satisfies Handle
 
 const api_hosts = {
-  _db: 'localhost:5010',
-  _wn: 'localhost:5020',
+  _db: '127.0.0.1:5010',
+  _wn: '127.0.0.1:5020',
 
-  _m0: 'localhost:5100',
-  _m1: 'localhost:5110',
-  _m2: 'localhost:5120',
+  _m0: '127.0.0.1:5100',
+  _m1: '127.0.0.1:5110',
+  _m2: '127.0.0.1:5120',
 
-  _sp: 'localhost:5300',
-  _ys: 'localhost:5400',
+  _sp: '127.0.0.1:5300',
+  _ys: '127.0.0.1:5400',
 }
 
 export const handleFetch = (({ event, request, fetch }) => {
@@ -35,11 +35,18 @@ export const handleFetch = (({ event, request, fetch }) => {
   url.host = host
   url.protocol = 'http'
 
-  return fetch(new Request(url, request))
+  // request.headers.delete('connection')
+  // return fetch(new Request(url, request))
+  const { method, headers, body } = request
+
+  headers.set('cookie', event.request.headers.get('cookie'))
+  headers.delete('connection')
+
+  return globalThis.fetch(url, { method, headers, body })
 }) satisfies HandleFetch
 
 export const handleError = (({ event, error }) => {
-  console.log(error)
+  console.log({ event, error })
   return { message: error.toString(), code: 'UNKNOWN' }
 }) satisfies HandleServerError
 

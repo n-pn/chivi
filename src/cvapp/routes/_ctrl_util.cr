@@ -3,10 +3,6 @@ require "../../_util/hash_util"
 module CV::CtrlUtil
   extend self
 
-  def pgmax(total : Int, limit : Int)
-    (total &- 1) // limit &+ 1
-  end
-
   def pg_no(index : Int, limit : Int)
     (index &- 1) // limit &+ 1
   end

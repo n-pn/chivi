@@ -5,7 +5,7 @@ class CV::NvrankCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/brief")]
   def brief
-    book_query = Nvinfo.query.where("shield < 2").limit(6).offset(0)
+    book_query = Nvinfo.query.where("shield < 2").limit(6)
 
     render json: {
       recent: NvinfoView.map(book_query.dup.sort_by("access")),

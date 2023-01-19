@@ -10,7 +10,7 @@ const _meta : App.PageMeta = {
 export async function load({ fetch, url: { searchParams } }) {
   set_fetch(fetch)
 
-  const path = api_path('yslists.index', {}, searchParams, { take: 10 })
+  const path = api_path('yslists.index', {}, searchParams, { lm: 10 })
   const data = await do_fetch(path)
 
   return { ...data, params: Object.fromEntries(searchParams), _meta }

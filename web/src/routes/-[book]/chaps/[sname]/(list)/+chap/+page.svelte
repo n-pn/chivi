@@ -92,7 +92,6 @@
       const buffer = reader.result as ArrayBuffer
       const encoding = await get_encoding(buffer)
       const decoder = new TextDecoder(encoding)
-      // console.log({ encoding })
       input = format_str(decoder.decode(buffer))
     }
   })
@@ -136,7 +135,7 @@
     }
   }
 
-  async function submit(_evt: SubmitEvent) {
+  async function submit(_evt: Event) {
     const body = new FormData()
     err_msg = ''
 
@@ -179,7 +178,7 @@
     <div class="form-field file-prompt">
       <label class="m-btn">
         <span>Chọn tệp tin</span>
-        <input type="file" bind:files accept=".txt" async />
+        <input type="file" bind:files accept=".txt" />
       </label>
     </div>
 
