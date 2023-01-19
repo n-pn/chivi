@@ -1,4 +1,4 @@
-require "./wd_term"
+require "./wd_defn"
 
 class SP::WdDict
   class Trie
@@ -50,7 +50,7 @@ class SP::WdDict
   end
 
   def build_trie!
-    query = "select word, id from terms order by id asc"
+    query = "select word, id from defns order by id asc"
     open_db do |db|
       db.query_each(query) do |rs|
         @trie.set(rs.read(String), rs.read(Int32))
@@ -59,11 +59,11 @@ class SP::WdDict
   end
 
   private def open_db
-    WdTerm.open_db(@name) { |db| yield db }
+    WdDefn.open_db(@name) { |db| yield db }
   end
 
   def scan(input : String | Array(Char), start = 0, &)
-    query = "select word, defn from terms where id = ?"
+    query = "select word, defn from defns where id = ?"
 
     open_db do |db|
       @trie.all(input, start: start) do |id|

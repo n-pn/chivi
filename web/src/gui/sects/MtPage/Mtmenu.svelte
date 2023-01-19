@@ -369,17 +369,9 @@
   <button data-kbd="c" on:click={() => upsert.show(1)}>C</button>
 </div>
 
-{#if $lookup.enabled || $lookup.actived}
-  <Lookup {on_destroy} />
-{/if}
-
-{#if $upsert.state > 0}
-  <Upsert {on_change} {on_destroy} />
-{/if}
-
-{#if $tlspec.actived}
-  <Tlspec {on_destroy} />
-{/if}
+{#if $lookup.enabled || $lookup.actived}<Lookup {on_destroy} />{/if}
+{#if $upsert.state > 0}<Upsert {on_change} {on_destroy} />{/if}
+{#if $tlspec.actived}<Tlspec {on_destroy} />{/if}
 
 <style lang="scss">
   $width: 1.875rem;

@@ -163,7 +163,7 @@
 
         {#each Object.entries(terms) as [dict, defn]}
           {#if defn}
-            {@const defns = defn.split('\v')}
+            {@const defns = defn.split('\n')}
 
             <div class="item">
               <h4 class="name">{dict}</h4>

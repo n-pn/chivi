@@ -1,6 +1,6 @@
 import type { PageLoad } from './$types'
 
 export const load = (({ url }) => {
-  const config = url.searchParams.get('config') || 'hk2s'
-  return { config }
+  const word = url.searchParams.get('word') || ''
+  return { word }
 }) satisfies PageLoad

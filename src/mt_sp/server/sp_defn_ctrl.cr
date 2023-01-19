@@ -1,5 +1,6 @@
 require "./_sp_ctrl_base"
 require "../data/wd_dict"
+require "../data/wd_defn"
 
 class SP::DefnCtrl < AC::Base
   base "/_sp"
@@ -10,8 +11,39 @@ class SP::DefnCtrl < AC::Base
     getter range : Array(Int32)
   end
 
+  @[AC::Route::GET("/defns/:word")]
+  def defn_word(word : String)
+    render json: bing_lookup(word)
+  end
+
+  # FIXME: move this to somewhere else
+  BING_UPSERT_QUERY = <<-SQL
+    insert into defns (word, defn, mtime) values (?, ?, ?)
+    on conflict do update set
+      word = excluded.word,
+      defn = excluded.defn,
+      mtime = excluded.mtime
+    where word = excluded.word
+  SQL
+
+  private def bing_lookup(word : String)
+    # FIXME: only call bing api if _privi > 0
+
+    WdDefn.open_db("bing_dict") do |db|
+      query = "select defn from defns where word = ? limit 1"
+
+      if defn = db.query_one?(query, word, as: String)
+        Array(Btran::LookupResult::Translation).from_json(defn)
+      else
+        defn = Btran.lookup([word]).first.translations
+        db.exec BING_UPSERT_QUERY, word, defn.to_json, Time.utc.to_unix
+        defn
+      end
+    end
+  end
+
   @[AC::Route::PUT("/lookup", body: :form)]
-  def lookup(form : LookupForm)
+  def defn_list(form : LookupForm)
     output = {} of Int32 => Array(Tuple(Int32, WdTerms))
     chars = form.input.chars
 
