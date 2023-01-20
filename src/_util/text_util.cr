@@ -70,14 +70,7 @@ module TextUtil
 
   # strip vietnamese accents
   def unaccent(input : String) : String
-    input
-      .tr("áàãạảAÁÀÃẠẢăắằẵặẳĂẮẰẴẶẲâầấẫậẩÂẤẦẪẬẨ", "a")
-      .tr("éèẽẹẻEÉÈẼẸẺêếềễệểÊẾỀỄỆỂ", "e")
-      .tr("íìĩịỉIÍÌĨỊỈ", "i")
-      .tr("óòõọỏOÓÒÕỌỎôốồỗộổÔỐỒỖỘỔơớờỡợởƠỚỜỠỢỞ", "o")
-      .tr("úùũụủUÚÙŨỤỦưứừữựửƯỨỪỮỰỬ", "u")
-      .tr("ýỳỹỵỷYÝỲỸỴỶ", "y")
-      .tr("đĐD", "d")
+    input.unicode_normalize(:nfd).gsub(/[\x{0300}-\x{036f}]/, "").downcase
   end
 
   # :nodoc:

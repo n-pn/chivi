@@ -65,3 +65,10 @@ export async function translate(
   const res = await fetch(href, { method: 'POST', headers, body })
   return await res.text()
 }
+
+export function unaccent(input: string) {
+  return input
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+}
