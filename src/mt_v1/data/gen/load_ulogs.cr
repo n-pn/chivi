@@ -7,7 +7,7 @@ db.start_tx
 # mtime, dname, key, vals, tags, prio, uname, tab, line, idx
 alias Entry = Tuple(Int64, String, String, Array(String), Array(String), Int32, String, Int32, String?, Int32?)
 
-files = Dir.glob("var/dicts/ulogs/*.jsonl").sort! # .last(2)
+files = Dir.glob("var/dicts/ulogs/*.jsonl").sort!.last(2)
 
 files.each do |file|
   File.each_line(file) do |line|

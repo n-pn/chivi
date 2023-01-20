@@ -1,7 +1,7 @@
 require "crorm"
 require "crorm/sqlite3"
 
-class WN::ChLink
+class WN::ChapLink
   include Crorm::Model
   @@table = "links"
 
@@ -31,7 +31,7 @@ class WN::ChLink
 
   @[AlwaysInline]
   def self.db_path(db_name : String)
-    "var/chaps/infos-fg/#{db_name}-links.db"
+    "var/chaps/infos/#{db_name}-links.db"
   end
 
   def self.init_sql
@@ -51,8 +51,5 @@ class WN::ChLink
       primary key (fg_ch_no, bg_sname)
     );
     SQL
-  end
-
-  def self.upsert!(repo, data : Enumerable(self))
   end
 end

@@ -15,8 +15,7 @@ then
   echo backup users data!
   rsync-fast "$SSH/var/fixed" "var"
   rsync-fast --delete "$SSH/var/.keep/web_log/" "var/.keep/web_log/"
-  rsync-fast --delete "$SSH/var/mt_v2/users/" "var/mt_v2/users/"
-  rsync-fast --delete "$SSH/var/books/seeds/" "var/book/seeds/"
+  rsync-fast --delete "$SSH/var/cvmtl/users/" "var/cvmtl/users/"
 fi
 
 ## backup dict data

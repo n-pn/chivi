@@ -131,4 +131,10 @@ class WN::ZhText
     parts << strio.to_s if count > 0
     parts
   end
+
+  ########
+
+  def self.gen_load_path(sname : String, s_bid : Int32, info : ChInfo, kind = "bg")
+    "#{kind}:#{sname}:#{s_bid}:#{info.ch_no}:#{info.s_cid}:#{info.p_len}"
+  end
 end

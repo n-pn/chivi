@@ -3,7 +3,7 @@
 SSH=nipin@ssh.chivi.app:/app/chivi
 
 function rsync-fast {
-  rsync -aHAXxvi --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x ' $@
+  rsync -aHAXxviz --compress-choice=zstd --compress-level=3 --checksum-choice=xxh3 --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x ' $@
 }
 
 ## upload dicts

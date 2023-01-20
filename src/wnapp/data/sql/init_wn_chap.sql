@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS chaps (
   uname varchar NOT NULL DEFAULT '',
   --
   _path varchar NOT NULL DEFAULT '',
-  _flag smallint NOT NULL DEFAULT 0
+  _flag integer NOT NULL DEFAULT 0
 );
 
 pragma journal_mode = WAL;

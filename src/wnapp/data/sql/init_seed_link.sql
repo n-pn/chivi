@@ -1,7 +1,3 @@
-pragma journal_mode = WAL;
-
-pragma synchronous = normal;
-
 CREATE TABLE IF NOT EXISTS seeds (
   s_bid integer NOT NULL,
   sname varchar NOT NULL,
@@ -22,3 +18,5 @@ CREATE TABLE IF NOT EXISTS seeds (
   --
   PRIMARY KEY (s_bid, sname)
 );
+
+pragma journal_mode = WAL;

@@ -10,6 +10,7 @@ sudo cp -f "$CWD/services/mt_v1-srv.service" /etc/systemd/system/mt_v1-srv.servi
 sudo cp -f "$CWD/services/mt_v2-srv.service" /etc/systemd/system/mt_v2-srv.service
 sudo cp -f "$CWD/services/mt_sp-srv.service" /etc/systemd/system/mt_sp-srv.service
 sudo cp -f "$CWD/services/ysapp-srv.service" /etc/systemd/system/ysapp-srv.service
+sudo cp -f "$CWD/services/wnapp-srv.service" /etc/systemd/system/wnapp-srv.service
 
 #sudo cp -f "$CWD/services/hanlp-srv.service" /etc/systemd/system/hanlp-srv.service
 
@@ -44,3 +45,6 @@ sudo service mt_v2-srv restart
 
 #sudo systemctl enable mt_v2-mon.path
 #sudo systemctl start mt_v2-mon.path
+
+sudo systemctl enable wbapp-srv.service
+sudo service wbapp-srv restart

@@ -1,7 +1,7 @@
 require "log"
 require "sqlite3"
 require "colorize"
-require "../ch_info"
+require "../wn_repo"
 
 def read_mtime(path : String)
   File.info?(path).try(&.modification_time)
@@ -10,7 +10,7 @@ end
 IMPORT_QUERY_1 = <<-SQL
   replace into chaps (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname)
   select ch_no, s_cid, title, chvol as chdiv, c_len, p_len, utime as mtime, uname
-  from inp.chinfos
+  from src.chinfos
 SQL
 
 IMPORT_QUERY_2 = IMPORT_QUERY_1 + " where sn_id = ?"
@@ -19,16 +19,18 @@ def import_one(sname : String, s_bid : Int32, sn_id : Int32)
   inp_path = "var/chaps/texts/#{sname}/#{s_bid}/index.db"
   return unless inp_time = read_mtime(inp_path)
 
-  out_path = WN::ChInfo.db_path("bg/#{sname}/#{s_bid}-infos")
+  bg_sname = sname[0] == '@' ? "+" + sname[1..] : "!" + sname
+
+  out_path = WN::WnRepo.db_path("#{bg_sname}/#{s_bid}-infos")
   out_time = read_mtime(out_path)
   return if out_time && out_time > inp_time
 
   DB.open("sqlite3:#{out_path}") do |db|
-    db.exec WN::ChInfo.init_sql # unless out_time
+    db.exec WN::WnRepo.init_sql # unless out_time
 
     db.exec "pragma journal_mode = WAL"
     db.exec "pragma synchronous = normal"
-    db.exec "attach database '#{inp_path}' as inp"
+    db.exec "attach database '#{inp_path}' as src"
 
     db.exec "begin"
 
@@ -46,7 +48,7 @@ def import_one(sname : String, s_bid : Int32, sn_id : Int32)
 end
 
 def import_all(sname : String, sn_id : Int32)
-  Dir.mkdir_p("var/chaps/infos-bg/#{sname}")
+  # Dir.mkdir_p("var/chaps/infos/#{sname}")
 
   s_bids = Dir.children("var/chaps/texts/#{sname}").map(&.to_i).sort!
 
@@ -89,5 +91,6 @@ snames = ARGV.empty? ? Dir.children("var/chaps/texts") : ARGV
 snames.sort!.each do |sname|
   next if sname[0].in?('.', '=')
   next unless sn_id = SN_IDS[sname]?
+
   import_all(sname, sn_id)
 end

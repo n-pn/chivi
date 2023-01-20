@@ -1,7 +1,7 @@
 require "log"
 require "sqlite3"
 require "colorize"
-require "../ch_info"
+require "../wn_repo"
 
 SNAMES = {} of Int32 => String
 
@@ -18,12 +18,13 @@ def import_one(sname : String, s_bid : Int32)
   inp_path = "var/chaps/texts/#{sname}/#{s_bid}/index.db"
   return unless mtime = File.info?(inp_path).try(&.modification_time)
 
-  out_path = WN::ChInfo.db_path("fg/#{sname}/#{s_bid}-infos")
+  fg_sname = sname[0] == '=' ? "-" : sname
+  out_path = WN::WnRepo.db_path("#{fg_sname}/#{s_bid}-infos")
+
   out_info = File.info?(out_path)
   out_info.try { |x| return if x.modification_time > mtime }
 
   mtime += 1.minutes
-
   paths = [] of {Int32, String}
 
   DB.open("sqlite3:#{inp_path}") do |db|
@@ -31,21 +32,23 @@ def import_one(sname : String, s_bid : Int32)
 
     db.query_each query do |rs|
       sn_id, s_bid, ch_no, s_cid = rs.read(Int32, Int32, Int32, Int32)
-      paths << {ch_no, "bg:#{SNAMES[sn_id]}:#{s_bid}:#{ch_no}:#{s_cid}"}
+      sname = SNAMES[sn_id]
+      sname = sname[0] == '@' ? "+" + sname[1..] : "!" + sname
+      paths << {ch_no, "#{sname}/#{s_bid}/#{s_cid}:#{ch_no}"}
     end
   end
 
   DB.open("sqlite3:#{out_path}") do |db|
-    db.exec WN::ChInfo.init_sql
+    db.exec WN::WnRepo.init_sql
     db.exec "pragma journal_mode = WAL"
     db.exec "pragma synchronous = normal"
-    db.exec "attach database '#{inp_path}' as source"
+    db.exec "attach database '#{inp_path}' as src"
 
     db.exec "begin"
     db.exec <<-SQL
       replace into chaps (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname)
       select ch_no, s_cid, title as title, chvol as chdiv, c_len, p_len, utime as mtime, uname
-      from source.chinfos
+      from src.chinfos
     SQL
 
     paths.each do |ch_no, path|
@@ -59,7 +62,9 @@ def import_one(sname : String, s_bid : Int32)
 end
 
 def import_all(sname : String, threads = 6)
-  Dir.mkdir_p("var/chaps/infos-fg/#{sname}")
+  return if sname == "=user"
+  Dir.mkdir_p("var/chaps/infos/#{sname}") unless sname[0] == '='
+
   s_bids = Dir.children("var/chaps/texts/#{sname}").map(&.to_i).sort!
 
   workers = Channel({Int32, Int32}).new(s_bids.size)
@@ -92,6 +97,5 @@ snames.sort!
 puts snames.colorize.yellow
 
 snames.each do |sname|
-  next if sname == "=user"
   import_all(sname, threads) if sname[0].in?('@', '=')
 end

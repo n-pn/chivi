@@ -1,19 +1,12 @@
 require "sqlite3"
-require "./ch_info"
+require "../../mt_v1/mt_core"
+require "./wn_chap"
 
-class WN::ChRepo
+class WN::WnRepo
   getter db_path : String
 
   def initialize(@db_path)
-    return if File.file?(db_path)
-
-    # unzip file if the compressed version exists
-    if File.file?("#{db_path}.zst")
-      `zstd -d '#{db_path}.zst'`
-      return if $?.success?
-    end
-
-    init_db(self.class.init_sql)
+    init_db(self.class.init_sql) unless File.file?(db_path)
   end
 
   def init_db(init_sql : String = self.class.init_sql)
@@ -27,7 +20,7 @@ class WN::ChRepo
   end
 
   def open_tx
-    DB.open("sqlite3:#{@db_path}") do |db|
+    open_db do |db|
       db.exec "pragma synchronous = normal"
       db.exec "begin"
       yield db
@@ -35,25 +28,25 @@ class WN::ChRepo
     end
   end
 
-  def all(pg_no : Int32 = 1, limit = 32) : Array(ChInfo)
+  def all(pg_no : Int32 = 1, limit = 32) : Array(WnChap)
     open_db do |db|
       offset = (pg_no &- 1) * limit
       query = "select * from chaps where ch_no > ? and ch_no <= ? order by ch_no asc"
-      db.query_all query, offset, offset &+ limit, as: ChInfo
+      db.query_all query, offset, offset &+ limit, as: WnChap
     end
   end
 
   def top(take = 6)
     open_db do |db|
       query = "select * from chaps order by ch_no desc limit ?"
-      db.query_all query, take, as: ChInfo
+      db.query_all query, take, as: WnChap
     end
   end
 
   def get(ch_no : Int32)
     open_db do |db|
       query = "select * from chaps where ch_no = ? limit 1"
-      db.query_one? query, ch_no, as: ChInfo
+      db.query_one? query, ch_no, as: WnChap
     end
   end
 
@@ -83,9 +76,9 @@ class WN::ChRepo
     end
   end
 
-  def upsert_entry(chinfo : ChInfo)
+  def upsert_entry(entry : WnChap)
     open_tx do |db|
-      fields, values = chinfo.get_changes
+      fields, values = entry.get_changes
       query = upsert_sql(fields)
       db.exec query, args: values
     end
@@ -109,10 +102,10 @@ class WN::ChRepo
     values.size
   end
 
-  def copy_full(src_db_path : String)
+  def copy_full(zh_db_path : String)
     open_db do |db|
       db.exec "pragma synchronous = normal"
-      db.exec "attach database '#{src_db_path}' as src"
+      db.exec "attach database '#{zh_db_path}' as src"
 
       db.exec "begin"
       db.exec "insert or replace into chaps select * from src.chaps"
@@ -122,40 +115,37 @@ class WN::ChRepo
     self
   end
 
-  def copy_bg_to_fg(src_db_path : String, src_sname : String, src_s_bid : Int32,
+  def copy_bg_to_fg(bg_db_path : String,
+                    bg_sname : String, bg_s_bid : Int32,
                     chmin = 0, chmax = 999, offset = 0)
-    open_db do |db|
-      db.exec "pragma synchronous = normal"
-      db.exec "attach database '#{src_db_path}' as src"
-
-      db.exec "begin"
+    open_tx do |db|
+      db.exec "attach database '#{bg_db_path}' as src"
 
       query = <<-SQL
         insert or replace into chaps (
           title, chdiv, c_len, p_len, mtime, uname,
-          ch_no, s_cid, _path )
+          ch_no, s_cid, _path)
         select
           title, chdiv, c_len, p_len, mtime, uname,
           sc.ch_no + #{offset} as ch_no,
           (sc.ch_no + #{offset}) * 10 as s_cid,
-          'bg:' || ? || ':' || ? || ':' || sc.ch_no || ':' || sc.s_cid as _path
+          ? || '/' || ? || '/' || sc.s_cid || ':' || sc.ch_no || ':' || sc.p_len as _path
         from src.chaps as sc where sc.ch_no >= ? and sc.ch_no <= ?
       SQL
 
-      db.exec query, src_sname, src_s_bid, chmin, chmax
-      db.exec "commit"
+      db.exec query, bg_sname, bg_s_bid, chmin, chmax
     end
   end
 
-  def save_info!(info : ChInfo)
+  def save_chap!(chap : WnChap)
     repo.insert(@@table, fields, values, :replace)
   end
 
   ###
 
-  def regen_tl!(src_db_path : String, dname : String)
+  def regen_tl!(zh_db_path : String, dname : String)
     # FIXME: make this more performant by only retranslate what changed
-    self.copy_full(src_db_path) # copy raw data
+    self.copy_full(zh_db_path) # copy raw data
 
     trans = [] of {String, String, Int32}
     cvmtl = CV::MtCore.generic_mtl(dname)
@@ -202,26 +192,25 @@ class WN::ChRepo
   DIR = "var/chaps/infos"
 
   @[AlwaysInline]
-  def self.db_path(sname : String, s_bid : Int32, type : String, name : String)
-    "#{DIR}-#{type}/#{sname}/#{s_bid}-#{name}.db"
+  def self.db_path(sname : String, s_bid : Int32, kind : String = "infos")
+    "#{DIR}/#{sname}/#{s_bid}-#{kind}.db"
   end
 
   @[AlwaysInline]
   def self.db_path(db_name : String)
-    "#{DIR}-#{db_name}.db"
+    "#{DIR}/#{db_name}.db"
   end
 
   def self.init_sql
-    {{ read_file("#{__DIR__}/sql/init_ch_info.sql") }}
+    {{ read_file("#{__DIR__}/sql/init_wn_chap.sql") }}
   end
 
   def self.newer?(target : String, source : String)
     return false unless target_info = File.info?(target)
     return true unless source_info = File.info?(source)
-
     target_info.modification_time > source_info.modification_time
   end
 end
 
-repo = WN::ChRepo.new("tmp/chaps/fg.db")
-repo.copy_bg_to_fg("tmp/chaps/bg.db", "hetushu", 10, chmin: 5, offset: -4)
+# repo = WN::WnRepo.new("tmp/chaps/fg.db")
+# repo.copy_bg_to_fg("tmp/chaps/bg.db", "hetushu", 10, chmin: 5, offset: -4)
