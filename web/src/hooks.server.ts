@@ -50,8 +50,8 @@ export const handleError = (({ event, error }) => {
   return { message: error.toString(), code: 'UNKNOWN' }
 }) satisfies HandleServerError
 
-import * as fs from 'fs'
-fs.mkdirSync('tmp/_user', { recursive: true })
+// import * as fs from 'fs'
+// fs.mkdirSync('tmp/_user', { recursive: true })
 
 const cached_users: Record<string, App.CurrentUser> = {}
 const session_url = `http://127.0.0.1:5010/_db/_self`
@@ -65,11 +65,11 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
 
   let cached_user = cached_users[hash]
 
-  if (!cached_user && fs.existsSync(path)) {
-    const file_data = fs.readFileSync(path).toString()
-    cached_user = JSON.parse(file_data) as App.CurrentUser
-    cached_users[hash] = cached_user
-  }
+  // if (!cached_user && fs.existsSync(path)) {
+  //   const file_data = fs.readFileSync(path).toString()
+  //   cached_user = JSON.parse(file_data) as App.CurrentUser
+  //   cached_users[hash] = cached_user
+  // }
 
   const now_unix = new Date().getTime() / 1000
   if (cached_user && cached_user.until >= now_unix) return cached_user
