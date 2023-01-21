@@ -5,7 +5,7 @@ require "option_parser"
 
 require "../../../mt_v1/mt_core"
 require "../../../_util/text_util"
-require "../ch_info"
+require "../wn_chap"
 
 def generate(inp_path : String, dname : String = "combine")
   raise "Input not found" unless File.file?(inp_path)

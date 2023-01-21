@@ -15,8 +15,8 @@ class WN::WnSeed
   field sname : String = ""
   field s_bid : Int32 = 0
 
-  field stype : Int32 = 0
   field wn_id : Int32 = 0
+  field sn_id : Int32 = 0
 
   field chap_total : Int32 = 0
   field chap_avail : Int32 = 0
@@ -50,37 +50,50 @@ class WN::WnSeed
     self.sname[0].in?('!', '+')
   end
 
-  def get_chap(ch_no : Int32)
+  def zh_chap(ch_no : Int32)
+    self.zh_chaps.get(ch_no).try(&.set_seed(self))
+  end
+
+  def vi_chap(ch_no : Int32)
     self.vi_chaps.get(ch_no).try(&.set_seed(self))
   end
 
-  def save_chap_info(chap : ChInfo)
-    self.zh_chaps.upsert_entry(chap)
+  REMOTE_SEEDS = {
+    "!69shu",
+    "!uukanshu",
+    "!xbiquge",
+    "!b5200",
+    "!biqugse",
+    "!paoshu8",
+    "!uuks",
+    "!ptwxz",
+    "!bxwxio",
+    "!133txt",
+    "!yannuozw",
+    "!biqu5200",
+  }
+
+  def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Bool
+    if REMOTE_SEEDS.includes?(self.sname)
+      sname, s_bid = self.sname, self.s_bid
+    elsif chap._path[0] == '!'
+      sname, s_bid = chap._path.split('/')
+    else
+      return false
+    end
+
+    flags = force ? "-f" : ""
+    body = `bin/text_fetch #{sname} #{s_bid} #{chap.s_cid} #{flags}`
+    return false unless $?.success?
+
+    chap.save_body!(body, seed: self, uname: uname)
+    @vi_chaps = nil
+    true
   end
 
-  # def fetch_text(ch_no : Int32, uname : String = "", mode : Int32 = 0) : ZhText?
-  #   return unless info = self.zh_chaps.get(ch_no)
-
-  #   flags = mode > 1 ? "-f" : ""
-  #   input = `bin/text_fetch #{sname} #{s_bid} #{info.s_cid} #{flags}`
-
-  #   zhtext = ZhText.new("bg/#{@sname}/#{@s_bid}/#{info.s_cid}", ":n/a")
-  #   zhtext.save_text!(input)
-
-  #   info.title = zhtext.data.first if info.title.empty?
-
-  #   info.c_len = zhtext.data.sum(&.size)
-  #   info.p_len = zhtext.data.size &- 1
-
-  #   info.mtime = Time.utc.to_unix
-  #   info.uname = ""
-  #   info._path = ":zst"
-
-  #   self.zh_chaps.upsert_entry(info)
-  #   @vi_chaps = nil
-
-  #   zhtext
-  # end
+  def save_chap!(chap : WnChap) : Nil
+    self.zh_chaps.upsert_entry(chap)
+  end
 
   #############
 

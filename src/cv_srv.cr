@@ -170,8 +170,8 @@ def start_server!(port : Int32, server_name = "Chivi")
   AC::Server.before(
     AC::ErrorHandler.new(CV_ENV.production?, ["X-Request-ID"]),
     AC::LogHandler.new(["upass", "new_upass"]),
-  # HTTP::CompressHandler.new
-)
+    HTTP::CompressHandler.new
+  )
 
   AC::Session.configure do |settings|
     settings.key = "_auth"

@@ -87,17 +87,25 @@ class WN::WnChap
     end
   end
 
-  def save_body!(input : String, seed : WnSeed = self.seed, @uname = "")
+  def save_body!(input : String, seed : WnSeed = self.seed, @uname = "") : Nil
     @body, @c_len = TextStore.save_txt_file(seed, self)
     @p_len = @body.size - 1
+
     @mtime = Time.utc.to_unix
-    save_body!(seed: seed)
+    @title = @body.first if self.title.empty?
+
+    @_path = "v"
+    seed.save_chap!(self)
   end
 
-  def save_body!(seed : WnSeed = self.seed) : Nil
+  def save_body_copy!(seed : WnSeed = self.seed) : Nil
     TextStore.save_text_file(seed, self)
 
-    self._path = "v"
-    seed.save_chap_info(self)
+    @_path = "v"
+    seed.save_chap(self)
+  end
+
+  def on_temp_dir?
+    @_path == "v"
   end
 end

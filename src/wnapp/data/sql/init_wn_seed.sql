@@ -2,8 +2,8 @@ CREATE TABLE IF NOT EXISTS "seeds" (
   sname varchar NOT NULL,
   s_bid integer NOT NULL,
   --
-  stype integer NOT NULL DEFAULT 0,
   wn_id integer NOT NULL DEFAULT 0,
+  sn_id integer NOT NULL DEFAULT 0,
   --
   chap_total integer NOT NULL DEFAULT 0,
   chap_avail integer NOT NULL DEFAULT 0,
