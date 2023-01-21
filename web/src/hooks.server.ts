@@ -80,7 +80,7 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   if (!response.ok) return guest_user
 
   cached_user = (await response.json()) as App.CurrentUser
-  fs.writeFileSync(path, JSON.stringify(cached_user))
+  // fs.writeFileSync(path, JSON.stringify(cached_user))
   cached_users[hash] = cached_user
 
   event.setHeaders({ cookie: response.headers.get('cookie') })

@@ -39,8 +39,13 @@
   const components = [Reading, Setting, UVcoin]
 
   export let actived = false
+  let user = $page.data._user
 
-  $: session = $page.data._user
+  $: if (actived) reload()
+
+  const reload = async () => {
+    user = await fetch('/_db/_self').then((r) => r.json())
+  }
 
   const tabs = [
     { icon: 'history', btip: 'Lịch sửa đọc' },
@@ -48,14 +53,14 @@
     { icon: 'coin', btip: 'Vcoin' },
   ]
 
-  $: privi = session.privi || 0
+  $: privi = user.privi || 0
 </script>
 
 <Slider class="usercp" bind:actived --slider-width="26rem">
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name="user" /></div>
     <div class="-text">
-      <cv-user data-privi={privi}>{session.uname}</cv-user>
+      <cv-user data-privi={privi}>{user.uname}</cv-user>
     </div>
   </svelte:fragment>
 
@@ -81,7 +86,7 @@
       {#if privi > 0 && privi < 4}
         <div>
           <span class="lbl">Hết hạn:</span>
-          <strong>{avail_until(session.until)}</strong>
+          <strong>{avail_until(user.until)}</strong>
         </div>
       {/if}
       <button class="m-btn _xs _primary" on:click={() => usercp.change_tab(1)}
@@ -91,7 +96,7 @@
     <div class="info">
       <div>
         <span class="lbl">Số lượng vcoin hiện có:</span>
-        <SIcon name="coin" /><strong>{session.vcoin}</strong>
+        <SIcon name="coin" /><strong>{user.vcoin}</strong>
       </div>
 
       <button class="m-btn _xs" on:click={() => usercp.change_tab(2)}

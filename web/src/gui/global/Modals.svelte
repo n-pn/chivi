@@ -18,7 +18,10 @@
 
   <Appnav bind:actived={$popups.appnav} />
   <Dboard bind:actived={$popups.dboard} />
-  {#if session.uname != 'Khách'}<Usercp bind:actived={$popups.usercp} />{/if}
+
+  {#if session.uname != 'Khách' && $popups.usercp}
+    <Usercp bind:actived={$popups.usercp} />
+  {/if}
 </aside>
 
 <style lang="scss">

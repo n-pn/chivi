@@ -1,8 +1,14 @@
 import type { PageLoad } from '../$types'
 
 export const load = (async ({ fetch, url: { searchParams } }) => {
-  const path = '/_db/li-xi/2023'
-  const { rolls, pg_no, avail } = await fetch(path).then((r) => r.json())
+  const pg = searchParams.get('pg') || 1
+  const sort = searchParams.get('sort') || '-mtime'
+  const user = searchParams.get('user')
+
+  let api_url = `/_db/li-xi/2023?pg=${pg}&sort=${sort}`
+  if (user) api_url += `&user=${user}`
+
+  const { rolls, pg_no, avail } = await fetch(api_url).then((r) => r.json())
 
   const _meta = {
     title: 'Chúc mừng năm mới!',
