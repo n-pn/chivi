@@ -11,13 +11,13 @@ module WN::TextStore
 
   # :ditto:
   @[AlwaysInline]
-  def gen_txt_path(sname : String, s_bid : Int32, s_cid : Int32)
+  def gen_txt_path(sname : String, s_bid : Int32, s_cid : Int32) : String
     "#{TXT_DIR}/#{sname}/#{s_bid}/#{s_cid}.txt"
   end
 
   # :ditto:
   @[AlwaysInline]
-  def gen_txt_path(bg_path : String)
+  def gen_txt_path(bg_path : String) : String
     "#{TXT_DIR}/#{bg_path}.txt"
   end
 
@@ -35,13 +35,13 @@ module WN::TextStore
 
   # save chap text file with body parts provided
   @[AlwaysInline]
-  def save_txt_file(seed : WnSeed, chap : WnChap)
+  def save_txt_file(seed : WnSeed, chap : WnChap) : Nil
     save_txt_file(gen_txt_path(seed, chap), chap.body)
   end
 
   # :ditto:
   @[AlwaysInline]
-  def save_txt_file(txt_path : String, body_parts : Array(String))
+  def save_txt_file(txt_path : String, body_parts : Array(String)) : Nil
     Dir.mkdir_p(File.dirname(txt_path))
     File.write(txt_path, body_parts.join("\n\n"))
   end
@@ -67,7 +67,7 @@ module WN::TextStore
   # read text from zip file
   @[AlwaysInline]
   def read_txt_from_zip(seed : WnSeed, chap : WnChap)
-    zip_path = gen_zip_path(sname, chap)
+    zip_path = gen_zip_path(seed.sname, seed.s_bid, chap.ch_no)
     read_txt_from_zip(zip_path, chap.s_cid, chap.p_len)
   end
 

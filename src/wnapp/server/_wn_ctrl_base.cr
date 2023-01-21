@@ -9,6 +9,10 @@ abstract class AC::Base
     WN::WnSeed.get(sname, s_bid) || raise NotFound.new("Nguồn truyện không tồn tại")
   end
 
+  private def get_vi_chap(seed : WN::WnSeed, ch_no : Int32)
+    seed.vi_chap(ch_no) || raise NotFound.new("Chương tiết không tồn tại")
+  end
+
   private def get_zh_chap(seed : WN::WnSeed, ch_no : Int32)
     seed.zh_chap(ch_no) || raise NotFound.new("Chương tiết không tồn tại")
   end

@@ -69,7 +69,7 @@ class WN::WnChap
     when "z" # zip file relative for this seed # old zip store
       TextStore.read_txt_from_zip(seed, self)
     when "" # for background chap with no metadata
-      return [""] unless self.bg_seed?
+      return [""] unless seed.bg_seed?
       TextStore.read_txt_from_zip(seed, self)
     else # load from linked mirror
       bg_path, ch_no, p_len = path.split(':', 3)
@@ -82,27 +82,27 @@ class WN::WnChap
       # FIXIME: fix texts folder, add prefixes for background seeds
       bg_sname = bg_sname[1..] if bg_sname.in?('!', '+') # remove bg seed prefix
 
-      zip_path = TextStore.gen_zip_path(bg_sname, bg_s_bid, ch_no.to_i)
+      zip_path = TextStore.gen_zip_path(bg_sname, bg_s_bid.to_i, ch_no.to_i)
       TextStore.read_txt_from_zip(zip_path, bg_s_cid.to_i, p_len.to_i)
     end
   end
 
   def save_body!(input : String, seed : WnSeed = self.seed, @uname = "") : Nil
-    @body, @c_len = TextStore.save_txt_file(seed, self)
-    @p_len = @body.size - 1
+    parts, @c_len = TextSplit.split_entry(input)
 
+    @p_len = parts.size - 1
     @mtime = Time.utc.to_unix
-    @title = @body.first if self.title.empty?
+    @title = parts.first if self.title.empty?
 
-    @_path = "v"
-    seed.save_chap!(self)
+    @body = parts
+    save_body_copy!(seed)
   end
 
   def save_body_copy!(seed : WnSeed = self.seed) : Nil
-    TextStore.save_text_file(seed, self)
+    TextStore.save_txt_file(seed, self)
 
     @_path = "v"
-    seed.save_chap(self)
+    seed.save_chap!(self)
   end
 
   def on_temp_dir?

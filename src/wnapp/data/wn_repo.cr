@@ -176,8 +176,8 @@ class WN::WnRepo
     CACHE[db_path] ||= new(db_path)
   end
 
-  def self.load(sname, s_bid, type, name)
-    db_path = self.db_path(sname, s_bid, type, name)
+  def self.load(sname : String, s_bid : Int32, kind : String)
+    db_path = self.db_path(sname, s_bid, kind )
     CACHE[db_path] ||= new(db_path)
   end
 
