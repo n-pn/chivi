@@ -70,12 +70,12 @@ class CV::LixiCtrl < CV::BaseCtrl
 
         if user
           args << user
-          sql << "where uname = ?"
+          sql << " where uname = ?"
         end
 
         case sort
         when "-mtime" then sql << " order by id desc"
-        when "-vcoin" then sql << " order by uname desc"
+        when "-vcoin" then sql << " order by vcoin desc"
         end
 
         sql << " limit ? offset ?"

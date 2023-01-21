@@ -52,9 +52,9 @@
   <table>
     <thead>
       <tr>
-        <th>#</th>
+        <th><a href="/li-xi">#</a></th>
         <th>Người nhận</th>
-        <th>Số vcoin</th>
+        <th><a href="/li-xi?sort=-vcoin">Số vcoin</a></th>
         <th>Thời gian</th>
       </tr>
     </thead>
@@ -63,7 +63,7 @@
       {#each rolls as { id, uname, vcoin, mtime }}
         <tr>
           <td>{id}</td>
-          <td>{uname}</td>
+          <td><a href="/li-xi?user={uname}">{uname}</a></td>
           <td>{vcoin}</td>
           <td>{rel_time(mtime)}</td>
         </tr>
