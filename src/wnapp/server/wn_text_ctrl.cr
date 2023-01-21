@@ -79,7 +79,15 @@ class WN::TextCtrl < AC::Base
     wn_seed = get_wn_seed(sname, s_bid)
     zh_chap = get_zh_chap(wn_seed, ch_no)
 
-    spawn save_text_edit(wn_seed, zh_chap, form.input)
+    spawn do
+      ChTextEdit.new({
+        sname: wn_seed.sname, s_bid: wn_seed.s_bid,
+        s_cid: zh_chap.s_cid, ch_no: zh_chap.ch_no,
+        patch: form.input, uname: _uname,
+      }).save!
+    rescue ex
+      Log.error(exception: ex) { ex.message.colorize.red }
+    end
 
     zh_chap.title = form.title
     zh_chap.chdiv = form.chdiv
@@ -87,14 +95,5 @@ class WN::TextCtrl < AC::Base
     zh_chap.save_body!(form.input, seed: wn_seed, uname: _uname)
 
     render json: zh_chap
-  end
-
-  private def save_text_edit(seed : WnSeed, chap : WnChap, new_text : String)
-    ChTextEdit.new({
-      sname: seed.sname, s_bid: seed.s_bid,
-      s_cid: chap.s_cid, ch_no: chap.ch_no,
-      patch: DiffUtil.diff_json(chap.body.join('\n'), new_text),
-      uname: _uname,
-    }).save!
   end
 end

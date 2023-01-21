@@ -1,12 +1,10 @@
 require "crorm"
 
-require "../../_util/text_util"
 require "./wn_seed"
 require "./wntext/*"
 
 class WN::WnChap
   include Crorm::Model
-
   @@table = "chaps"
 
   field ch_no : Int32 # chaper index number
@@ -38,9 +36,7 @@ class WN::WnChap
 
       jb.field "title", self.title
       jb.field "chvol", self.chdiv
-
-      tokens = TextUtil.tokenize(self.title)
-      jb.field "uslug", tokens.empty? ? "-" : tokens.first(7).join('-')
+      jb.field "uslug", self.uslug
 
       jb.field "chars", self.c_len
       jb.field "parts", self.p_len
@@ -49,6 +45,11 @@ class WN::WnChap
       jb.field "uname", self.uname
       # jb.field "sname", self.sname
     }
+  end
+
+  def uslug(title = self.title)
+    input = title.unicode_normalize(:nfd).gsub(/[\x{0300}-\x{036f}]/, "")
+    input.downcase.split(/\W+/, remove_empty: true).first(7).join('-')
   end
 
   ###
@@ -89,6 +90,7 @@ class WN::WnChap
 
   def save_body!(input : String, seed : WnSeed = self.seed, @uname = "") : Nil
     parts, @c_len = TextSplit.split_entry(input)
+    validate_body!(parts)
 
     @p_len = parts.size - 1
     @mtime = Time.utc.to_unix
@@ -98,9 +100,20 @@ class WN::WnChap
     save_body_copy!(seed)
   end
 
+  private def validate_body!(parts : Array(String))
+    if parts.size > 31
+      raise "too many parts: #{parts.size} (max: 30)!"
+    end
+
+    parts.each do |part|
+      c_len = part.size
+      next if c_len <= 4500
+      raise "part char count exceed limit: #{c_len} (max: 4500)!"
+    end
+  end
+
   def save_body_copy!(seed : WnSeed = self.seed) : Nil
     TextStore.save_txt_file(seed, self)
-
     @_path = "v"
     seed.save_chap!(self)
   end

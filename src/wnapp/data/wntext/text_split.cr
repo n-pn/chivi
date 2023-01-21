@@ -12,10 +12,9 @@ module WN::TextSplit
 
     c_len = input.size
     if c_len <= UPPER
-      limit = c_len
+      limit = UPPER
     else
       p_len = c_len <= UPPER ? 1 : ((c_len - 1) // LIMIT) + 1
-
       limit = c_len // p_len
     end
 
