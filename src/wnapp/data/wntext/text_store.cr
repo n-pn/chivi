@@ -67,12 +67,16 @@ module WN::TextStore
   # read text from zip file
   @[AlwaysInline]
   def read_txt_from_zip(seed : WnSeed, chap : WnChap)
-    zip_path = gen_zip_path(seed.sname, seed.s_bid, chap.ch_no)
+    sname = seed.sname
+    sname = sname[1..] if sname[0].in?('!', '@')
+    zip_path = gen_zip_path(sname, seed.s_bid, chap.ch_no)
     read_txt_from_zip(zip_path, chap.s_cid, chap.p_len)
   end
 
   # :ditto
   def read_txt_from_zip(zip_path : String, s_cid : Int32, p_len = 0) : Array(String)
+    Log.info { zip_path }
+
     unless File.file?(zip_path)
       return [""] unless File.file?(zip_path.sub(".zip", ".tab"))
       return [""] unless pull_zip_from_r2!(zip_path)

@@ -24,12 +24,7 @@ class WN::SeedLink
 
   # ###
 
-  # REPOS = {} of String => Crorm::Sqlite3::Repo
-
-  # def self.repo(sname : String, s_bid : Int32)
-  #   db_name = "#{sname}/#{s_bid}"
-  #   REPOS[db_name] ||= Crorm::Sqlite3::Repo.new(db_path(db_name), init_sql)
-  # end
+  class_getter repo = Crorm::Sqlite3::Repo.new(db_path, init_sql)
 
   @[AlwaysInline]
   def self.db_path
@@ -55,5 +50,21 @@ class WN::SeedLink
       primary key (fg_sname, fg_s_bid, bg_sname)
     );
     SQL
+  end
+
+  def self.all(fg_sname : String, fg_s_bid : Int32)
+    @@repo.open_db do |db|
+      query = <<-SQL
+        select * from links
+        where fg_sname = ?, fg_s_bid = ?
+        order by _flag desc
+      SQL
+
+      db.query_all(query, fg_sname, fg_s_bid, as: self)
+    end
+  end
+
+  def self.one(fg_sname : String, fg_s_bid : Int32)
+    all(fg_sname, fg_s_bid).first?
   end
 end

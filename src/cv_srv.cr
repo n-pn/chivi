@@ -96,6 +96,7 @@ abstract class AC::Base
 
   #####
 
+  private getter _vu_id : String { session["vu_id"]?.try(&.as(Int64).to_i) || 0 }
   private getter _uname : String { session["uname"]?.try(&.as(String)) || "Khách" }
 
   private getter _privi : Int32 do
@@ -103,6 +104,22 @@ abstract class AC::Base
     _until = session["until"]?.try(&.as(Int64)) || 0_i64
 
     (0 < _privi < 4) && _until < Time.utc.to_unix ? _privi - 1 : _privi
+  end
+
+  private def guard_privi(min min_privi : Int32, action : String = "thực hiện hoạt động")
+    raise Unauthorized.new "Bạn không đủ quyền hạn để #{action}" if _privi < min_privi
+  end
+
+  private def guard_owner(owner : Int32, min min_privi : Int32,
+                          action : String = "thực hiện hoạt động")
+    return if _privi > 3 || (_privi >= min_privi && owner == _vu_id)
+    raise Unauthorized.new "Bạn không đủ quyền hạn để #{action}!"
+  end
+
+  private def guard_owner(owner : String, min min_privi : Int32,
+                          action : String = "thực hiện hoạt động")
+    return if _privi > 3 || (_privi >= min_privi && owner == _uname)
+    raise Unauthorized.new "Bạn không đủ quyền hạn để #{action}!"
   end
 
   #####

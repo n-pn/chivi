@@ -137,10 +137,6 @@ class WN::WnRepo
     end
   end
 
-  def save_chap!(chap : WnChap)
-    repo.insert(@@table, fields, values, :replace)
-  end
-
   ###
 
   def regen_tl!(zh_db_path : String, dname : String)
@@ -177,7 +173,7 @@ class WN::WnRepo
   end
 
   def self.load(sname : String, s_bid : Int32, kind : String)
-    db_path = self.db_path(sname, s_bid, kind )
+    db_path = self.db_path(sname, s_bid, kind)
     CACHE[db_path] ||= new(db_path)
   end
 

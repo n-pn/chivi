@@ -14,17 +14,18 @@ then
 fi
 
 ## upload parsed seed data
-if [[ $* == "all" || $* == *seed* ]]
+if [[  $* == *seed* ]]
 then
   echo upload seed data!
-  # rsync -azi --no-p "var/nvinfos/autos" "$SSH/var/nvinfos"
-  # rsync -azi --no-p "priv/static/covers/" "$SSH/priv/static/covers/"
 
-  rsync -azi --no-p "var/chaps/infos" "$SSH/var/chaps"
-  rsync -azi --no-p --include="*/" --exclude="*.zip" "var/chaps/texts" "$SSH/var/chaps"
+  # rsync-fast "/mnt/vault/image/chinfos.btrfs" "nipin@ssh.chivi.app:/app/image"
+
+  rsync-fast "var/chaps/seed-infos.db" "$SSH/var/chaps"
+  # rsync-fast "var/chaps/infos" "$SSH/var/chaps"
+  # rsync-fast --include="*/" --exclude="*.zip" "var/chaps/texts" "$SSH/var/chaps"
 fi
 
-if [[ $* == "all" || $* == *misc* ]]
+if [[ $* == *misc* ]]
 then
   echo upload misc!
 
@@ -41,7 +42,7 @@ fi
 
 echo $*
 
-if [[ $* == "all" || $* == *mtv2* ]]
+if [[ $* == *mtv2* ]]
 then
   echo upload mtv2!
 
