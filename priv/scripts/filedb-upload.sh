@@ -10,7 +10,9 @@ function rsync-fast {
 if [[ $* == "all" || $* == *dict* ]]
 then
   echo upload dicts!
-  rsync-fast "var/dicts/*.dic" "$SSH/var/dicts"
+
+  rsync-fast "var/dicts/v1raw" "$SSH/var/dicts"
+  rsync-fast "var/dicts/v1dic" "$SSH/var/dicts"
 fi
 
 ## upload parsed seed data
@@ -29,15 +31,13 @@ if [[ $* == *misc* ]]
 then
   echo upload misc!
 
-  rsync-fast "var/dicts/defns" --include="*/" --exclude="*.zst" "$SSH/var/dicts"
+  # rsync-fast "var/dicts/defns" --include="*/" --exclude="*.zst" "$SSH/var/dicts"
 
-  rsync-fast "var/dicts/spdic" "$SSH/var/dicts"
+  # rsync-fast "var/dicts/spdic" "$SSH/var/dicts"
 
-  rsync-fast "var/dicts/v1raw" "$SSH/var/dicts"
-  rsync-fast "var/dicts/v1dic" "$SSH/var/dicts"
 
-  rsync-fast "var/dicts/v2raw" "$SSH/var/dicts"
-  rsync-fast "var/dicts/v2dic" "$SSH/var/dicts"
+  # rsync-fast "var/dicts/v2raw" "$SSH/var/dicts"
+  # rsync-fast "var/dicts/v2dic" "$SSH/var/dicts"
 fi
 
 echo $*
