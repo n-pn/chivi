@@ -22,12 +22,11 @@ class CV::LixiCtrl < CV::BaseCtrl
   @[AC::Route::PUT("/roll")]
   def roll
     raise Unauthorized.new "Bạn cần đăng nhập để nhận lì xì!" if _privi < 0
-
     raise BadRequest.new "Đã hết hạn nhận lì xì :(" if Time.utc > EXPIRY
 
     rolled = Lixi2023.roll_count(_uname)
 
-    if rolled > _privi
+    if _privi < rolled
       raise BadRequest.new "Bạn đã hết số lượt nhận lì xì!"
     end
 

@@ -6,11 +6,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/")]
   def profile
-    if _privi < _viuser.privi
-      _viuser.privi = _privi
-      _viuser.save!
-    end
-
+    _viuser.check_privi!
     response.headers["Cache-Control"] = "private, max-age=5, stale-while-revalidate"
 
     save_current_user!(_viuser)
