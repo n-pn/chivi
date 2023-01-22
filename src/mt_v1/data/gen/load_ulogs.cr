@@ -7,9 +7,10 @@ db.start_tx
 # mtime, dname, key, vals, tags, prio, uname, tab, line, idx
 alias Entry = Tuple(Int64, String, String, Array(String), Array(String), Int32, String, Int32, String?, Int32?)
 
-files = Dir.glob("var/dicts/ulogs/*.jsonl").sort!.last(3)
+LAST = ARGV[0]?.try(&.to_i) || 3
+files = Dir.glob("var/dicts/ulogs/*.jsonl").sort!
 
-files.each do |file|
+files.last(LAST).each do |file|
   File.each_line(file) do |line|
     entry = Entry.from_json(line)
     add_entry(db, entry)
