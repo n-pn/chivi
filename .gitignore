@@ -7,7 +7,7 @@
 /doc/
 /lib/
 /old/
-/tmp
+/tmp/
 /node_modules
 .env
 .env.*
