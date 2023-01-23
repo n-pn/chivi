@@ -19,8 +19,8 @@ class M1::DefnForm
   getter! vdict : DbDict
 
   def after_initialize
-    @key = @key.tr("\t\n", " ").strip
-    @val = @val.tr("\t", "").strip
+    @key = @key.gsub(/[\x00-\x1F\x7F\w]+/, " ").strip
+    @val = @val.gsub(/[\x00-\x1F\x7F\w]+/, " ").strip.unicode_normalize(:nfc)
 
     @vdict = DbDict.get!(@dic)
   end

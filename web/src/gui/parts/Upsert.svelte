@@ -93,6 +93,8 @@
       body: JSON.stringify(body),
     })
 
+    await submit_to_m1()
+
     if (res.ok) {
       on_change()
       ctrl.hide()
@@ -100,6 +102,28 @@
       const body = await res.json()
       alert(body.message)
     }
+  }
+
+  async function submit_to_m1() {
+    const { dname } = vpdicts[$ctrl.tab]
+
+    const body = {
+      dic: dname,
+      tab: vpterm._mode + 1,
+      key: key,
+      val: vpterm.vals.join('ǀ'),
+      ptag: vpterm.tags.join(' '),
+      prio: vpterm.prio,
+      _ctx: `${$ztext}:${$zfrom}:${dname}`,
+    }
+
+    const res = await fetch('/_m1/defns', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+
+    if (!res.ok) console.log(await res.json())
   }
 
   function swap_dict(entry?: CV.VpDict) {
