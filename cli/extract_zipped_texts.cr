@@ -27,29 +27,29 @@ def combine(entries : Array(Compress::Zip::File::Entry), file_path : String)
 end
 
 def extract(zip_path : String, out_path : String)
-  return if File.file?(zip_path + ".unzipped")
+  return false if File.file?(zip_path + ".unzipped")
 
   Compress::Zip::File.open(zip_path) do |zip|
     entries = zip.entries.group_by(&.filename.split("-").first)
 
     entries.each do |s_cid, parts|
       file = "#{out_path}/#{s_cid}.gbk"
+      next unless text = combine(parts, file)
 
-      if text = combine(parts, file)
-        begin
-          File.write(file, text.encode("GB18030"), encoding: "GB18030")
-        rescue InvalidByteSequenceError
-          File.write("#{out_path}/#{s_cid}.txt", text)
-        end
-      else
-        Log.debug { "#{zip_path} missing [#{s_cid}]".colorize.red }
-      end
+      File.write(file, text.encode("GB18030"), encoding: "GB18030")
+    rescue ArgumentError
+      File.write("#{out_path}/#{s_cid}.txt", text)
     end
-
-    File.touch(zip_path + ".unzipped")
-  rescue ex
-    Log.error(exception: ex) { [zip_path, ex.message] }
   end
+
+  File.touch(zip_path + ".unzipped")
+  true
+rescue Compress::Deflate::Error
+  File.delete(zip_path)
+rescue Compress::Zip::Error
+  File.delete(zip_path)
+rescue ex
+  Log.error(exception: ex) { [zip_path, ex.class] }
 end
 
 def extract_seed(sname : String)
@@ -68,9 +68,11 @@ def extract_seed(sname : String)
     spawn do
       loop do
         zip_file, out_path, idx = workers.receive
-        extract(zip_file, out_path)
-        puts " - <#{idx}/#{files.size}> [#{zip_file} => #{out_path}]"
+        if extract(zip_file, out_path)
+          puts " - <#{idx}/#{files.size}> [#{zip_file} => #{out_path}]"
+        end
       rescue err
+        puts err.inspect_with_backtrace
         puts "#{sname}, #{zip_file}, #{err.message} ".colorize.red
       ensure
         results.send(nil)
