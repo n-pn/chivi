@@ -6,24 +6,24 @@ class YS::CritCtrl < AC::Base
 
   # list revies
   @[AC::Route::GET("/crits", converters: {list: ConvertBase32})]
-  def query(sort : String = "utime", user : String? = nil,
-            smin : Int32 = 0, smax : Int32 = 6,
-            book : Int64? = nil, list : Int64? = nil,
-            lb : String? = nil)
+  def query(sort : String = "utime",
+            smin : Int32 = 1, smax : Int32 = 5,
+            user : String? = nil, book : Int64? = nil, list : Int64? = nil,
+            lb tags : String? = nil)
     # TODO: Rename lb to tags
 
     pg_no, limit, offset = _paginate(max: 24)
 
     query = Yscrit.query.sort_by(sort)
-    query.where("vtags @> ?", lb.split("&")) if lb
+    query.where("vtags @> ?", tags.split("&")) if tags
     query.where("ysuser_id = ?", user.split('-', 2)[0]) if user
     query.where("stars >= ?", smin) if smin > 1
     query.where("stars <= ?", smax) if smax < 5
     query.limit(limit).offset(offset)
 
-    if book && (ys_book = Ysbook.query.find({nvinfo_id: book}))
-      total = ys_book.crit_count
+    if book
       crits = query.filter_nvinfo(book).with_yslist.with_ysuser.to_a
+      total = Ysbook.query.find({nvinfo_id: book}).try(&.crit_count)
     elsif list
       yslist = Yslist.find!({id: list})
       total = yslist.book_count
@@ -39,10 +39,10 @@ class YS::CritCtrl < AC::Base
     books = b_ids.empty? ? [] of CvBook : CvBook.query.where { id.in? b_ids }
 
     render json: ({
-      pgidx: pg_no,
-      pgmax: _pgidx(total, limit),
       crits: crits.map { |x| CritView.new(x) },
       books: BookView.as_hash(books),
+      pgidx: pg_no,
+      pgmax: _pgidx(total || b_ids.size, limit),
     })
   rescue err
     render json: {
