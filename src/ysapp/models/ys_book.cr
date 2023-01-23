@@ -5,6 +5,7 @@ class YS::Ysbook
 
   self.table = "ysbooks"
 
+  column nvinfo_id : Int64 = 0
   column crit_count : Int32 = 0 # fetched reviews
   column list_count : Int32 = 0 # fetched book lists
 

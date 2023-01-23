@@ -75,8 +75,6 @@ module WN::TextStore
 
   # :ditto
   def read_txt_from_zip(zip_path : String, s_cid : Int32, p_len = 0) : Array(String)
-    Log.info { zip_path }
-
     unless File.file?(zip_path)
       return [""] unless File.file?(zip_path.sub(".zip", ".tab"))
       return [""] unless pull_zip_from_r2!(zip_path)

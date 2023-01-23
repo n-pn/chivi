@@ -80,23 +80,47 @@ class CV::QtransCtrl < CV::BaseCtrl
 
   record ConvertForm, input : String do
     include JSON::Serializable
+
+    def after_initialize
+      @input = @input.tr("\t", " ")
+    end
+
+    def validate!(privi = -1)
+      max_size = 2 ** (privi + 1) * 1000
+      return if input.size < max_size
+      raise BadRequest.new "Dữ liệu đầu vào vượt quá giới hạn cho phép (#{input.size}/#{max_size})"
+    end
   end
 
   @[AC::Route::POST("/_db/qtran", body: :form)]
   @[AC::Route::POST("/api/qtran", body: :form)]
-  def convert(form : ConvertForm, dname : String = "combine", _simp : Bool = false)
-    cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
+  def convert(form : ConvertForm,
+              format : String = "txt",
+              dname : String = "combine",
+              _simp : Bool = false)
+    form.validate!(_privi)
 
-    input = form.input.tr("\t", " ")
-    input = TranUtil.opencc(input, "hk2s") unless params["_simp"]?
+    cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
+    stime = Time.monotonic
+
+    to_txt = format == "txt"
 
     output = String.build do |str|
-      input.each_line.with_index do |line, idx|
+      form.input.each_line.with_index do |line, idx|
         str << '\n' if idx > 0
-        cvmtl.cv_plain(line, cap_first: true).to_txt(str)
+        mtl = cvmtl.cv_plain(line, cap_first: true)
+        to_txt ? mtl.to_txt(str) : mtl.to_mtl(str)
       end
     end
 
+    tspan = (Time.monotonic - stime).total_milliseconds.round.to_i
+    dsize = cvmtl.dicts.last.size
+
+    response.headers.add("X-TSPAN", tspan.to_s)
+    response.headers.add("X-DSIZE", dsize.to_s)
+
     render text: output
   end
+
+  @[AC::Route::POST("/_db/qtran2", body: :form)]
 end

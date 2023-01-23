@@ -41,20 +41,19 @@ dicts = [] of M1::DbDict
 
 DB.open(CV_ENV.database_url) do |db|
   query = <<-SQL
-    select id, bhash, vname from nvinfos where id > 0 order by id asc
+    select id::int, bhash, vname from nvinfos where id > 0 order by id asc
   SQL
 
   db.query_each(query) do |rs|
-    id, bhash, bname = rs.read(Int64, String, String)
+    id, bhash, bname = rs.read(Int32, String, String)
 
-    dicts << M1::DbDict.new(
-      id: -id.to_i,
-      dname: "-" + bhash,
-      label: bname,
-      brief: "Từ điển riêng cho bộ truyện [#{bname}]",
-      privi: 1,
-      dtype: 3
+    dict = M1::DbDict.new(
+      id: -id, dname: "-#{bhash}",
+      label: bname, brief: "Từ điển riêng cho bộ truyện [#{bname}]",
+      privi: 1, dtype: 3
     )
+
+    dicts << dict
   end
 end
 

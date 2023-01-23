@@ -8,6 +8,7 @@ class M1::DbDict
   field id : Int32, primary: true
 
   field dname : String
+
   field label : String = ""
   field brief : String = ""
 
@@ -27,7 +28,7 @@ class M1::DbDict
   def initialize(@id, @dname, @label = "", @brief = "", @privi = 1, @dtype = 0)
   end
 
-  def save!
+  def save!(repo = self.class.repo)
     fields, values = get_changes
 
     query = Crorm::Sqlite3::SQL.upsert_sql(@@table, fields) do |sql|
@@ -36,7 +37,7 @@ class M1::DbDict
       sql << " where dname == excluded.dname"
     end
 
-    self.class.repo.open_tx(&.exec query, args: values)
+    repo.open_tx(&.exec query, args: values)
   end
 
   def update!(changes : Hash(String, DB::Any))

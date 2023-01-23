@@ -81,16 +81,19 @@ abstract class AC::Base
 
   @[AC::Route::Exception(BadRequest, status_code: HTTP::Status::BAD_REQUEST)]
   def bad_request(error)
+    response.headers["Content-Type"] = "application/json; charset=UTF-8"
     {message: error.message}
   end
 
   @[AC::Route::Exception(NotFound, status_code: HTTP::Status::NOT_FOUND)]
   def not_found(error)
+    response.headers["Content-Type"] = "application/json; charset=UTF-8"
     {message: error.message}
   end
 
   @[AC::Route::Exception(Unauthorized, status_code: HTTP::Status::FORBIDDEN)]
   def unauthorized(error)
+    response.headers["Content-Type"] = "application/json; charset=UTF-8"
     {message: error.message}
   end
 
@@ -107,19 +110,24 @@ abstract class AC::Base
   end
 
   private def guard_privi(min min_privi : Int32, action : String = "thực hiện hoạt động")
-    raise Unauthorized.new "Bạn không đủ quyền hạn để #{action}" if _privi < min_privi
+    raise Unauthorized.new(privi_rejected(action, min_privi)) if _privi < min_privi
   end
 
   private def guard_owner(owner : Int32, min min_privi : Int32,
                           action : String = "thực hiện hoạt động")
     return if _privi > 3 || (_privi >= min_privi && owner == _vu_id)
-    raise Unauthorized.new "Bạn không đủ quyền hạn để #{action}!"
+    raise Unauthorized.new(privi_rejected(action, min_privi))
   end
 
   private def guard_owner(owner : String, min min_privi : Int32,
                           action : String = "thực hiện hoạt động")
     return if _privi > 3 || (_privi >= min_privi && owner == _uname)
-    raise Unauthorized.new "Bạn không đủ quyền hạn để #{action}!"
+    raise Unauthorized.new(privi_rejected(action, min_privi))
+  end
+
+  @[AlwaysInline]
+  private def privi_rejected(action : String, min_privi : Int32)
+    "Bạn không đủ quyền hạn để #{action} (tối thiểu: #{min_privi})!"
   end
 
   #####

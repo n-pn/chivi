@@ -61,9 +61,7 @@ class WN::WnSeed
     total = self.chap_total
 
     lower = total // 4
-    lower = 40 if lower > 40
-    upper = total - 40
-    upper = lower + 80 if upper < lower + 80
+    upper = total - lower
 
     case self.sname[0]
     when '-' then {lower, upper, total, total}

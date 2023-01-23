@@ -72,3 +72,8 @@ export function unaccent(input: string) {
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
 }
+
+export function slugify(input: string) {
+  input = unaccent(input)
+  return input.split(/\W+/).filter(Boolean).join('-')
+}

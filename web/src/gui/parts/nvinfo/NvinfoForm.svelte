@@ -3,6 +3,20 @@
 
   const fields = ['btitle_vi', 'author_vi', 'bintro', 'bcover']
 
+  export class NvinfoForm {
+    btitle_zh: string = ''
+    author_zh: string = ''
+
+    btitle_vi: string = ''
+    author_vi: string = ''
+
+    status: number = 0
+    genres: Array<string> = []
+
+    bintro: string = ''
+    bcover: string = ''
+  }
+
   export class Params {
     nvinfo?: CV.Nvinfo
 
@@ -152,7 +166,6 @@
         <label class="form-label" for="bintro"
           >Giới thiệu vắn tắt (tiếng Trung)</label>
         <textarea
-          type="text"
           class="m-input"
           name="bintro"
           rows="5"

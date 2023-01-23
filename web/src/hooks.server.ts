@@ -46,7 +46,7 @@ export const handleFetch = (({ event, request, fetch }) => {
 }) satisfies HandleFetch
 
 export const handleError = (({ event, error }) => {
-  console.log({ event, error })
+  console.log({ error })
   return { message: error.toString(), code: 'UNKNOWN' }
 }) satisfies HandleServerError
 
@@ -57,7 +57,7 @@ const cached_users: Record<string, App.CurrentUser> = {}
 const session_url = `http://127.0.0.1:5010/_db/_self`
 const guest_user = { uname: 'Khách', privi: -1, until: 0, vcoin: 0, karma: 0 }
 
-const get_hash = (hash?: string) => hash?.substring(0, 12).replace('/', '_')
+const get_hash = (hash?: string) => hash?.replace('/', '_')
 
 async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   const hash = get_hash(event.cookies.get('_auth')) || 'guest'

@@ -3,7 +3,7 @@
 echo "Backup from chivi.app!"
 
 function rsync-fast {
-  rsync -aHAXxvi --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x ' $@
+  rsync -aHAXxviz --compress-choice=zstd --compress-level=3 --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x ' $@
 }
 
 REMOTE=nipin@ssh.chivi.app

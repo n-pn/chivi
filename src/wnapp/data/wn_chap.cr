@@ -36,13 +36,15 @@ class WN::WnChap
 
       jb.field "title", self.title
       jb.field "chvol", self.chdiv
-      jb.field "uslug", self.uslug
 
       jb.field "chars", self.c_len
       jb.field "parts", self.p_len
 
       jb.field "utime", self.mtime
       jb.field "uname", self.uname
+
+      jb.field "uslug", uslug
+
       # jb.field "sname", self.sname
     }
   end
@@ -50,6 +52,14 @@ class WN::WnChap
   def uslug(title = self.title)
     input = title.unicode_normalize(:nfd).gsub(/[\x{0300}-\x{036f}]/, "")
     input.downcase.split(/\W+/, remove_empty: true).first(7).join('-')
+  end
+
+  def _href(part_no : Int32 = 0)
+    String.build do |io|
+      io << @ch_no << '/' << self.uslug
+      p_len = self.p_len
+      io << '/' << (part_no % p_len + 1) if part_no != 0 && p_len > 1
+    end
   end
 
   ###
@@ -73,7 +83,8 @@ class WN::WnChap
       return [""] unless seed.bg_seed?
       TextStore.read_txt_from_zip(seed, self)
     else # load from linked mirror
-      bg_path, ch_no, p_len = path.split(':', 3)
+      bg_path, ch_no = path.split(':')
+
       # attempt to load text from temp folder
       txt_path = TextStore.gen_txt_path(bg_path)
       return TextStore.read_txt_file(txt_path) if File.file?(txt_path)
@@ -81,10 +92,10 @@ class WN::WnChap
       # load text from background seed zip files
       bg_sname, bg_s_bid, bg_s_cid = bg_path.split('/')
       # FIXIME: fix texts folder, add prefixes for background seeds
-      bg_sname = bg_sname[1..] if bg_sname.in?('!', '+') # remove bg seed prefix
+      bg_sname = bg_sname[1..] if bg_sname[0].in?('!', '+') # remove bg seed prefix
 
       zip_path = TextStore.gen_zip_path(bg_sname, bg_s_bid.to_i, ch_no.to_i)
-      TextStore.read_txt_from_zip(zip_path, bg_s_cid.to_i, p_len.to_i)
+      TextStore.read_txt_from_zip(zip_path, bg_s_cid.to_i, self.p_len)
     end
   end
 

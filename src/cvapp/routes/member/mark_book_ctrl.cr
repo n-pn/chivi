@@ -28,12 +28,12 @@ class CV::MarkBookCtrl < CV::BaseCtrl
   getter! book_mark : Ubmemo
 
   @[AC::Route::Filter(:before_action, except: [:access])]
-  def get_book_mark(book_id : Int64)
-    @book_mark = Ubmemo.find_or_new(_viuser.id, book_id)
+  def get_book_mark(wn_id : Int64)
+    @book_mark = Ubmemo.find_or_new(_viuser.id, wn_id)
   end
 
-  @[AC::Route::GET("/:book_id")]
-  def show(book_id : Int64) : Nil
+  @[AC::Route::GET("/:wn_id")]
+  def show(wn_id : Int64) : Nil
     render json: UbmemoView.new(book_mark)
   end
 
@@ -45,8 +45,8 @@ class CV::MarkBookCtrl < CV::BaseCtrl
     getter locked : Bool = false
   end
 
-  @[AC::Route::PUT("/:book_id/access", body: :data)]
-  def update_access(book_id : Int64, data : AccessData)
+  @[AC::Route::PUT("/:wn_id/access", body: :data)]
+  def update_access(wn_id : Int64, data : AccessData)
     book_mark.mark!(
       data.sname, data.chidx, data.cpart,
       data.title, data.uslug, data.locked ? 1 : 0
@@ -58,8 +58,8 @@ class CV::MarkBookCtrl < CV::BaseCtrl
     include JSON::Serializable
   end
 
-  @[AC::Route::PUT("/:book_id/status", body: :form)]
-  def update_status(book_id : Int64, form : StatusForm)
+  @[AC::Route::PUT("/:wn_id/status", body: :form)]
+  def update_status(wn_id : Int64, form : StatusForm)
     book_mark.update!({status: form.status})
     render json: UbmemoView.new(book_mark)
   end

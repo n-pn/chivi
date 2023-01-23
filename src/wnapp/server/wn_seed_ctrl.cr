@@ -18,12 +18,17 @@ class WN::SeedCtrl < AC::Base
   def show(sname : String, s_bid : Int32)
     wn_seed = get_wn_seed(sname, s_bid)
 
+    fresh = Time.utc - Time.unix(wn_seed.rtime) < 24.hours
+
     render json: {
-      _main: wn_seed,
+      _seed: wn_seed,
       lasts: wn_seed.vi_chaps.top(6),
+      #
       stime: wn_seed.rtime,
       slink: wn_seed.slink,
-      privi: wn_seed.privi_map,
+      fresh: fresh,
+      # extra
+      privi_map: wn_seed.privi_map,
     }
   end
 

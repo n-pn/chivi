@@ -8,9 +8,10 @@ type REDIRECT_CODES = 300 | 301 | 302 | 303 | 304 | 305 | 306 | 307 | 308
 
 export const do_fetch = async (
   url: string,
-  init: RequestInit = { method: 'GET' }
+  init: RequestInit = { method: 'GET' },
+  fetch: CV.Fetch = my_fetch
 ) => {
-  const resp = await my_fetch(url, init)
+  const resp = await fetch(url, init)
   const type = resp.headers.get('content-type')
   const data = type.includes('json') ? await resp.json() : await resp.text()
 
@@ -19,8 +20,13 @@ export const do_fetch = async (
   throw redirect(resp.status as REDIRECT_CODES, data)
 }
 
-export const api_get = (url: string, search?: URLSearchParams) => {
-  return do_fetch(search ? `${url}?${search}` : url, { method: 'GET' })
+export function api_get<T>(
+  url: string,
+  search?: URLSearchParams,
+  fetch: CV.Fetch = my_fetch
+): Promise<T> {
+  const call_url = search ? `${url}?${search}` : url
+  return do_fetch(call_url, { method: 'GET' }, fetch)
 }
 
 type ReqBody = Record<string, any> | string
@@ -40,8 +46,12 @@ export const api_call = (url: string, body: ReqBody, method = 'POST') => {
 export const ROUTES = {
   // book info
   'nvinfos.index': '/_db/books',
-  'nvinfos.show': (id: any) => `/_db/books/${id}`,
+  'nvinfos.show': (name: any) => `/_db/books/${name}`,
   'nvinfos.front': (id: any) => `/_db/books/${id}/front`,
+
+  'wnovels.show': (id: any) => `/_db/v2/books/${id}`,
+  'wnovels.front': (id: any) => `/_db/v2/books/${id}/front`,
+  'wnovels.edit': (id: any) => `/_db/v2/books/${id}/+edit`,
 
   // book seed
   'chroots.index': (book: any) => `/_db/seeds/${book}`,
@@ -57,13 +67,13 @@ export const ROUTES = {
   // chivi users booklists
   'vilists.index': '/_db/lists',
   'vilists.show': (id: any) => `/_db/lists/${id}`,
-  'vilists.': (id: any) => `/_db/lists/${id}`,
+  'vilists.edit': (id: any) => `/_db/lists/${id}`,
   'vilists.create': '/_db/lists',
 
   // chivi users book reviews
   'vicrits.index': '/_db/crits',
-  'vicrits.show': (id: any) => `/_db/crits/${id}`,
   'vicrits.create': `/_db/crits`,
+  'vicrits.show': (id: any) => `/_db/crits/${id}`,
   'vicrits.edit': (id: any) => `/_db/crits/${id}/edit`,
   'vicrits.update': (id: any) => `/_db/crits/${id}`,
 
