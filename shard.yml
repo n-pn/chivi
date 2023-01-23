@@ -15,6 +15,9 @@ targets:
   ysapp-srv:
     main: src/ysapp/ysapp_srv.cr
 
+  wnapp-srv:
+    main: src/wnapp/wnapp_srv.cr
+
   mt_sp-srv:
     main: src/mt_sp/mt_sp_srv.cr
 

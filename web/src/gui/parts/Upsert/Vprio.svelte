@@ -25,8 +25,8 @@
     <button
       class="btn"
       class:_del={idx == 3}
-      class:_base={vpterm.init.b_prio == val}
-      class:_priv={vpterm.init.b_prio == val}
+      class:_base={vpterm.init.prio == val}
+      class:_priv={vpterm.init.prio == val}
       class:_curr={prio == val}
       data-kbd={kbd}
       on:click={() => (prio = val)}

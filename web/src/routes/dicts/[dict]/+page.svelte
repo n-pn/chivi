@@ -114,7 +114,7 @@
       </thead>
 
       <tbody>
-        {#each terms as { key, vals, tags, prio, mtime, uname, _flag, tab }, idx}
+        {#each terms as { key, vals, ptag, prio, mtime, uname, _flag, tab }, idx}
           <tr class="term _{_flag}">
             <td class="-idx">{start + idx}</td>
             <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -153,7 +153,7 @@
             <td class="-tag">
               <!-- svelte-ignore a11y-click-events-have-key-events -->
               <span on:click={() => show_upsert(key, 2)}>
-                {tags.map((x) => pt_labels[x]).join(' ') || '~'}
+                {ptag || '~'}
               </span>
               <div class="hover">
                 <button
@@ -163,7 +163,7 @@
                 </button>
                 <a
                   class="m-btn _xs"
-                  href={pager.gen_url({ ptag: tags[0] || '~' })}>
+                  href={pager.gen_url({ ptag: ptag || '~' })}>
                   <SIcon name="search" />
                 </a>
               </div>

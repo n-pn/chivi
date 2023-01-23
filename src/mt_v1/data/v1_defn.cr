@@ -50,7 +50,7 @@ class M1::DbDefn
       jb.field "tab", self.tab
 
       jb.field "vals", self.val.split(SPLIT)
-      jb.field "tags", self.ptag.split(' ')
+      jb.field "ptag", self.ptag
 
       jb.field "prio", self.prio
 

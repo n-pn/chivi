@@ -60,6 +60,8 @@
   $: vpdicts = upsert_dicts($vdict, extra)
 
   let vpterms: VpTerm[] = []
+  let vpterm: VpTerm
+
   $: [vpterm, show_opts] = init_term(vpterms, $ctrl.tab)
 
   function init_term(vpterms: VpTerm[], tab: number): [VpTerm, boolean] {
@@ -93,9 +95,9 @@
       body: JSON.stringify(body),
     })
 
-    await submit_to_m1()
-
     if (res.ok) {
+      await submit_to_m1()
+
       on_change()
       ctrl.hide()
     } else {
@@ -107,13 +109,15 @@
   async function submit_to_m1() {
     const { dname } = vpdicts[$ctrl.tab]
 
+    const prio_map = { '^': 3, 'v': 1, 'x': 0, '': 2 }
+
     const body = {
       dic: dname,
       tab: vpterm._mode + 1,
       key: key,
       val: vpterm.vals.join('ǀ'),
       ptag: vpterm.tags.join(' '),
-      prio: vpterm.prio,
+      prio: prio_map[vpterm.prio] || 2,
       _ctx: `${$ztext}:${$zfrom}:${dname}`,
     }
 
@@ -123,7 +127,7 @@
       body: JSON.stringify(body),
     })
 
-    if (!res.ok) console.log(await res.json())
+    if (!res.ok) console.log(await res.text())
   }
 
   function swap_dict(entry?: CV.VpDict) {

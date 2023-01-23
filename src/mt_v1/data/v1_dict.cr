@@ -49,15 +49,20 @@ class M1::DbDict
     self.class.repo.update(@table, fields, values) { |sql| sql << " where id = ?" }
   end
 
-  def update_after_term_added!(@mtime, @term_total)
+  def update_after_term_added!(@mtime : Int64, @term_total : Int32)
     repo = self.class.repo
     repo.db.exec "update dicts set mtime = ?, term_total = ?  where id = ?", mtime, term_total, self.id!
   end
 
-  def update_after_term_added!(@mtime)
+  def update_after_term_added!(@mtime : Int64)
     repo = self.class.repo
-    repo.db.exec "update dicts set  mtime = ?, term_total = term_total + 1 where id = ?", mtime, self.id!
-    @term_total = repo.db.query_one("select term_total from dicts where id = ?", self.id!, as: Int32)
+    repo.open_db do |db|
+      query = "update dicts set mtime = ?, term_total = term_total + 1 where id = ?"
+      db.exec query, mtime, self.id!
+
+      query = "select term_total from dicts where id = ?"
+      @term_total = db.query_one(query, self.id!, as: Int32)
+    end
   end
 
   def to_json(jb)
@@ -66,7 +71,7 @@ class M1::DbDict
 
   ######
 
-  class_getter repo : Crorm::Sqlite3::Repo { Crorm::Sqlite3::Repo.new(self.db_path, self.init_sql) }
+  class_getter repo = Crorm::Sqlite3::Repo.new(self.db_path, self.init_sql)
 
   @[AlwaysInline]
   def self.db_path

@@ -96,8 +96,17 @@ class M1::DefnCtrl < AC::Base
   @[AC::Route::POST("/defns", body: :form)]
   def create(form : DefnForm)
     form.validate!(_privi)
-    form.save!(_uname)
 
-    {msg: "ok"}
+    defn = form.save!(_uname)
+
+    spawn do
+      date = Time.local.to_s("%Y-%m/%d")
+      log_file = "var/dicts/v1log/#{date}.jsonl"
+
+      Dir.mkdir_p(File.dirname(log_file))
+      File.open(log_file, "a", &.puts(form.to_json))
+    end
+
+    render json: defn
   end
 end

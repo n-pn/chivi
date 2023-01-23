@@ -19,9 +19,8 @@ class M1::DefnForm
   getter! vdict : DbDict
 
   def after_initialize
-    @key = @key.gsub(/[\x00-\x1F\x7F\w]+/, " ").strip
-    @val = @val.gsub(/[\x00-\x1F\x7F\w]+/, " ").strip.unicode_normalize(:nfc)
-
+    @key = @key.gsub(/[\p{C}\s]+/, " ").strip
+    @val = @val.gsub(/[\p{C}\s]+/, " ").strip.unicode_normalize(:nfc)
     @vdict = DbDict.get!(@dic)
   end
 
@@ -41,7 +40,7 @@ class M1::DefnForm
     end
   end
 
-  def save!(uname : String, mtime = DbDefn.mtime)
+  def save!(uname : String, mtime = DbDefn.mtime) : DbDefn
     defn = DbDefn.new
 
     defn.dic = vdict.id!
@@ -59,6 +58,10 @@ class M1::DefnForm
     defn._ctx = @_ctx
 
     defn.save!(DbDefn.repo)
+
+    vdict.update_after_term_added!(defn.mtime)
+
+    defn
 
     # TODO: generate DbTerm from defn
   end
