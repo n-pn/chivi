@@ -18,8 +18,11 @@
   async function load_history(kind = '', pg = 1) {
     const api_url = `/_db/_self/books/access?kind=${kind}&pg=${pg}&lm=15`
     const api_res = await fetch(api_url)
-    const payload = await api_res.json()
-    if (api_res.ok) chaps = payload
+    if (api_res.ok) {
+      chaps = await api_res.json()
+    } else {
+      console.log(await api_res.text())
+    }
   }
 </script>
 

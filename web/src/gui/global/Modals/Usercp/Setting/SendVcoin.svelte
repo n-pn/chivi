@@ -22,7 +22,7 @@
     res_text = ''
 
     try {
-      const body = { sendee, amount, reason, as_admin }
+      const body = { sendee, reason, amount: +amount, as_admin }
       const data = await api_call(action_url, body, 'PUT')
       res_type = 'ok'
       res_text = `[${data.sendee}] đã nhận được ${amount} vcoin, bạn còn có ${data.remain} vcoin.`
