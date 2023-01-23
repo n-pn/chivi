@@ -145,7 +145,7 @@
           <Mpager
             {pager}
             pgidx={pg_no}
-            pgmax={Math.floor((_seed.chmax - 1) / 128) + 1} />
+            pgmax={Math.floor((_seed.chmax - 1) / 32) + 1} />
         </div>
       </Footer>
     {:else}

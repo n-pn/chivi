@@ -62,7 +62,7 @@
         <chap-chidx>{chinfo.chidx}.</chap-chidx>
       </div>
       <div class="chap-meta">
-        <chap-chvol>{chinfo.chvol}</chap-chvol>
+        <chap-chvol>{chinfo.chvol || 'Chính văn'}</chap-chvol>
         {#if chinfo.utime > 0}
           <chap-track
             data-tip="Lưu: {get_rtime(chinfo.utime)} bởi {chinfo.uname || '?'}">

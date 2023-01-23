@@ -99,7 +99,7 @@
   <div class="seed-list -extra">
     {#each seeds.backs as seed}
       <a
-        href={seed_url(seed.sname, pgidx)}
+        href={seed_url(seed.sname, pgidx, +seed.snvid)}
         class="seed-name _sub"
         class:_active={seed.sname == curr_sname}
         data-tip={map_info(seed)}>

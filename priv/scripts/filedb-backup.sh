@@ -25,6 +25,10 @@ then
   # rsync-fast --exclude="*.tsv" "$SSH/var/dicts/v1/" "var/dicts/v1/"
   rsync-fast "$SSH/var/dicts/v1/" "var/dicts/v1/"
   rsync-fast "$SSH/var/dicts/ulogs" "var/dicts"
+
+  rsync-fast "$SSH/var/dicts/v1log" "var/dicts"
+  rsync-fast "$SSH/var/dicts/v1raw" "var/dicts"
+  # rsync-fast "$SSH/var/dicts/v1dic" "var/dicts"
 fi
 
 ## backup book data

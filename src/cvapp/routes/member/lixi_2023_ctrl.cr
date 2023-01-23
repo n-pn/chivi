@@ -5,7 +5,7 @@ class CV::LixiCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/2023")]
   def index(user : String? = nil, sort : String = "-mtime")
-    pg_no, limit, offset = _paginate(min: 10, max: 20)
+    pg_no, limit, offset = _paginate(min: 50, max: 100)
 
     rolls = get_rolls(limit, offset, user, sort)
 
