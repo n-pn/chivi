@@ -1,47 +1,65 @@
+require "colorize"
+require "http/client"
+
 TXT_DIR = "var/chaps/texts"
 R2_ROOT = "https://cr2.chivi.app/texts"
 
-def download_file(file : String)
-  zip_file = file.sub(".tab", ".zip")
-  return if File.exists?(zip_file)
-
-  cdn_url = zip_file.sub(TXT_DIR, R2_ROOT)
-  puts "- GET: #{cdn_url}"
-
-  message = `curl -L -k -s -m 30 "#{cdn_url}" -o #{zip_file}`
-  puts message unless $?.success?
-end
-
-def download_files(files : Array(String))
-  workers = 6
-  channel = Channel(Nil).new(workers)
-
-  files.each_with_index(1) do |file, idx|
-    spawn do
-      download_file(file)
-    ensure
-      channel.send(nil)
-    end
-
-    channel.receive if idx > workers
-  end
-
-  workers.times { channel.receive }
-end
-
 def download_seed(sname : String)
   seed_dir = "#{TXT_DIR}/#{sname}"
-  book_dirs = Dir.children(seed_dir)
 
-  files = [] of String
-  book_dirs.each do |book_dir|
-    files.concat Dir.glob("#{seed_dir}/#{book_dir}/*.tab")
+  files = Dir.glob("#{seed_dir}/**/*.tab").select! do |file|
+    File.basename(file)[0].in?('1'..'9')
+  end
 
-    if files.size > 100
-      download_files(files)
-      files.clear
+  files.sort_by! do |file|
+    s_bid = File.basename(File.dirname(file)).to_i
+    s_cid = File.basename(file, ".tab").to_i
+    {s_bid, s_cid}
+  end
+
+  puts [seed_dir, files.size]
+
+  workers = Channel({String, Int32}).new(files.size + 1)
+  threads = 6
+  results = Channel(Nil).new(threads)
+
+  threads.times do
+    spawn do
+      loop do
+        file, idx = workers.receive
+        fetch_zip(file, "#{idx}/#{files.size}")
+        results.send(nil)
+      end
+    end
+  end
+
+  files.each_with_index(1) do |file, idx|
+    workers.send({file, idx})
+  end
+
+  files.size.times { results.receive }
+end
+
+def fetch_zip(tab_file : String, label : String) : Nil
+  zip_file = tab_file.sub(".tab", ".zip")
+  return if File.file?(zip_file) || File.file?(zip_file + ".unzipped")
+
+  HTTP::Client.get(zip_file.sub(TXT_DIR, R2_ROOT)) do |res|
+    if res.status.value < 300
+      puts "- #{label}: #{zip_file}".colorize.green
+      File.write(zip_file, res.body_io)
+    else
+      puts "- #{label}: #{zip_file}".colorize.red
+      File.delete(tab_file)
     end
   end
 end
 
-download_seed(ARGV[0])
+snames = ARGV
+snames = Dir.children("var/chaps/texts") if snames.empty?
+puts snames.colorize.yellow
+
+snames.each do |sname|
+  next if sname[0].in?('@', '.', '=')
+  download_seed(sname)
+end

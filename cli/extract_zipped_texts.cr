@@ -59,6 +59,8 @@ def extract_seed(sname : String)
     {s_bid, pg_no}
   end
 
+  puts [sname, files.size].colorize.cyan
+
   workers = Channel({String, String, Int32}).new(files.size)
 
   threads = 6
@@ -89,6 +91,10 @@ def extract_seed(sname : String)
   files.size.times { results.receive }
 end
 
-ARGV.each do |sname|
+snames = ARGV
+snames = Dir.children("var/chaps/texts") if snames.empty?
+puts snames.colorize.yellow
+
+snames.each do |sname|
   extract_seed(sname)
 end

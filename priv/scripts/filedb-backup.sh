@@ -43,8 +43,8 @@ then
   # rsync-fast "$SSH/var/books/seeds" "var/books"
 
   rsync-fast "$SSH/var/chaps/users" "var/chaps"
-  rsync-fast "$SSH/var/chaps/texts" "var/chaps"
   rsync-fast "$SSH/var/chaps/.html" "var/chaps"
+  # rsync-fast "$SSH/var/chaps/texts" "var/chaps"
   # rsync-fast "$SSH/var/chaps/seeds" "var/chaps"
 fi
 
