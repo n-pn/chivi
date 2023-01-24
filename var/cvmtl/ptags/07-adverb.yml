@@ -70,6 +70,11 @@
   name: Phó từ `没`
   desc:
 
+- ptag: D_meiyou # "没"
+  extd: [Dnega]
+  name: Phó từ `没`
+  desc:
+
 - ptag: D_bie # "别"
   extd: [Dnega]
   name: Phó từ `别`
