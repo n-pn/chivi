@@ -5,12 +5,6 @@
 
 {#if !$page.route.id.includes('_auth')}
   <div class="app-vessel">
-    {#if $page.route.id != '/li-xi'}
-      <a class="pledge _bold" href="/li-xi">
-        Chúc mừng năm mới 2023. Bấm vào đây để nhận lì xì mừng năm mới!
-      </a>
-    {/if}
-
     {#if _privi < 0}
       <div class="pledge">
         Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá các tính
@@ -47,15 +41,15 @@
       @include fgcolor(primary, 5);
     }
 
-    &._bold {
-      font-weight: 500;
-      font-size: rem(17px);
-      padding: 0.75rem var(--gutter);
-      @include fgcolor(warning, 5);
+    // &._bold {
+    //   font-weight: 500;
+    //   font-size: rem(17px);
+    //   padding: 0.75rem var(--gutter);
+    //   @include fgcolor(warning, 5);
 
-      &:hover {
-        @include bgcolor(warning, 5, 1);
-      }
-    }
+    //   &:hover {
+    //     @include bgcolor(warning, 5, 1);
+    //   }
+    // }
   }
 </style>
