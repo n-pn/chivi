@@ -48,6 +48,12 @@ then
   # rsync-fast "$SSH/var/chaps/seeds" "var/chaps"
 fi
 
+## backup book data
+if [[ $* == *misc* ]]
+then
+  echo backup miscs data!
+  rsync-fast --include="*/" --include="*.db" --exclude="*" "$SSH/var/chaps/texts" "var/chaps"
+fi
 
 ## backup pg_data
 if [[ $1 == "all" || $* == *pgdb* ]]
