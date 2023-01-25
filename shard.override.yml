@@ -1,7 +1,4 @@
 dependencies:
-  email:
-    github: arcage/crystal-email
-
   sqlite3:
     github: chi-vi/crystal-sqlite3
 

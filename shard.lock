@@ -37,7 +37,7 @@ shards:
     git: https://github.com/makenowjust/crystal-diff.git
     version: 1.1.0
 
-  email: # Overridden
+  email:
     git: https://github.com/arcage/crystal-email.git
     version: 0.6.4
 
@@ -76,6 +76,10 @@ shards:
   lexbor:
     git: https://github.com/kostya/lexbor.git
     version: 3.0.4
+
+  libzip.cr:
+    git: https://github.com/n-pn/libzip.cr.git
+    version: 0.2.1
 
   lucky_router:
     git: https://github.com/luckyframework/lucky_router.git

@@ -21,7 +21,6 @@ class Crawler
     end
 
     puts "Crawling #{@out_dir}: #{@entries.size} tokens".colorize.yellow
-    Dir.mkdir_p(@out_dir)
   end
 
   def crawl(conn = 3) : Nil
@@ -74,7 +73,7 @@ class Crawler
 
   def self.run!(inp_file : String)
     entries = [] of Entry
-    out_dir = inp_file.sub(".tsv", "")
+    out_dir = "var/texts/.cache"
 
     File.each_line(inp_file) do |line|
       entries << Entry.new(line.split('\t')) unless line.empty?
@@ -84,5 +83,7 @@ class Crawler
     crawler.crawl(3)
   end
 
-  run!(ARGV[0])
+  ARGV.each do |file|
+    run!(file)
+  end
 end
