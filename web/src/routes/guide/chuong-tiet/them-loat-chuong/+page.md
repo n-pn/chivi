@@ -1,0 +1,92 @@
+---
+title: Hướng dẫn thêm một loạt chương tiết cho bộ truyện
+---
+
+Đây là hướng dẫn nâng cao cho các bạn có nhu cầu thêm nhiều chương một lúc từ các nguồn text tổng hợp bên ngoài.
+
+## Các cách chia chương:
+
+**Lưu ý chung: Trừ cách chia chương thủ công, các cách chia chương khác sẽ tự nhận các chương tiết đơn lẻ (không có nội dung) thành tên tập truyện cho các chương tiếp theo.**
+
+### 1. Chia chương bằng khoảng trắng giữa các chương tiết:
+
+Đây là cách chia chương mặc định, khá phổ biến giữa các nguồn.
+Cách chương tiết sẽ được tách nếu giữa chúng có ít nhất 2 khoảng trắng (\*):
+
+**Ví dụ dữ liệu đầu vào**:
+
+```zh
+第1章.这位同学，等等
+“我们出生在一个好时代，却不是一个最好的时代。
+
+
+第2章.正确的开门方式
+“喂，让你等等你怎么还走那么快啊。”
+沈童在心中无奈的叹了一口气，望着拦在自己面前的“非主流”，说道：“同学有什么事情吗？”
+
+
+第3章.非主流进化……网红！
+“所以说，我们现在处于一个很奇怪的空间里，我开门，就是回到了我的2007年。你开门，就是回到了你的2017年，而我们两个又可以跟着对方去双方的时空……”
+```
+
+**Lưu ý**:
+
+- Bạn có thể thay đổi số khoảng trắng tối thiểu yêu cầu
+- Thường thì dòng trắng chỉ được tính nếu trong dòng đó không chứa bất kỳ ký tự nào, kể cả khoảng trắng. Bấm vào `Lọc bỏ dấu cách` nếu bạn muốn tính cả khoảng trắng vào dòng trắng.
+
+### 2. Phân chia chương dựa theo khoảng trắng đầu dòng
+
+Với cách chia này thì những dòng không có khoảng trắng `　` ở đầu dòng sẽ được tính là tên chương mới, còn lại thì sẽ được tính vào nội dung của chương
+
+**Ví dụ dữ liệu đầu vào**
+
+```zh no-wrap
+第1章.我是一个只喜欢兽耳娘的咸鱼挂哔
+　　“哈欠。”
+　　随着一声响亮的哈欠在流水线上响起，不少穿着白色工作服，带着头套的老员工都转过头看了一眼那个睡眼朦胧的年轻男子。
+第2章.挂机途中的异常
+　　女朋友，在沈项眼里是一个很麻烦的东西。
+　　因为她们的行为，举措，说辞都没有任何的规律可言，这种无规律，心情化的存在，让沈项没办法用自动代理系统来挂机处理。
+```
+
+**Lưu ý**:
+
+- Bạn có thể bật `Phía trước phải là dòng trắng` lên nếu nhận thấy đằng trước mỗi chương mới đều có khoảng trắng. Kết quả sẽ có độ chính xác cao hơn.
+
+### 3. Phân chia bằng định dạng của tên chương tiết.
+
+Thường thì dòng chứa chương tiết sẽ được bắt đầu bằng chữ `第`, tiếp theo là các từ chỉ số như `1`, `2`, `3`... hoặc `一` (một), `二` (hai), `三` (ba)..., tiếp đến là các chữ hán chỉ tên chương, hồi như `章` (chương), `节` (tiết), `回` (hồi), `幕` (màn)...
+
+**Lưu ý**:
+
+- Mỗi bộ truyện chỉ dùng một loại chữ hán chỉ tên chương (+một loại chữ hán chỉ tên tập). Bạn hãy thay đổi dữ liệu đầu vào cho phù hợp để đạt kết quả chính xác cao hơn.
+
+### 4. Phân chia bằng cách nhận dạng tên chương tiết qua Regular Expression (Biểu thức chính quy)
+
+Một số bộ truyện tên chương có thể không bắt đầu bằng `第`, bạn có thể tự viết dòng regexp riêng để nhận dạng tên chương.
+
+**Lưu ý**:
+
+- Đây là tính năng nâng cao, chỉ dành cho bạn nào có hiểu biết về regular expression. Bạn nào không hiểu về regexp có thể liên hệ với ban quản trị để được hướng dẫn thêm.
+
+### 5. Chèn thủ công các đoạn `///` giữa các chương
+
+Chèn bằng tay các dòng `///` để phân chia chương tiết trong trường hợp dữ liệu không phù hợ với các cách chia chương tự động phía trên.
+
+**Ví dụ dữ liệu đầu vào:**
+
+```zh
+chương 1
+nội dung chương 1
+
+///
+chương 2
+nội dung chương 2
+
+/// tên tập
+chương 3
+```
+
+**Lưu ý**:
+
+- Với các truyện có phân chia theo tập, bạn có thể thêm tên tập ngay sau `///`

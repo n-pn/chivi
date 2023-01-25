@@ -60,7 +60,7 @@
         <a
           class="m-btn _primary _fill"
           class:_disable={$session.privi < 1}
-          href="/-{nvinfo.bslug}/chaps/{_seed.sname}/+chap?chidx={_seed.chmax +
+          href="/wn/{nvinfo.bslug}/chaps/{_seed.sname}/+chap?chidx={_seed.chmax +
             1}"
           data-tip="Yêu cầu quyền hạn: 1">
           <SIcon name="upload" />

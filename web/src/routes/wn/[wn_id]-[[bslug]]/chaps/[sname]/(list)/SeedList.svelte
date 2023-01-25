@@ -187,9 +187,9 @@
       height: 0.875rem;
     }
 
-    > span {
-      margin-right: 0.125em;
-    }
+    // > span {
+    //   margin-right: 0.125em;
+    // }
   }
 
   .label {
@@ -211,13 +211,13 @@
     }
   }
 
-  .seed-task {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.25rem;
-    // text-align: center;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
+  // .seed-task {
+  //   display: flex;
+  //   flex-wrap: wrap;
+  //   justify-content: center;
+  //   gap: 0.25rem;
+  //   // text-align: center;
+  //   margin-top: 0.5rem;
+  //   margin-bottom: 0.5rem;
+  // }
 </style>
