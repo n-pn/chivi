@@ -24,7 +24,7 @@ class Dict
     end
   end
 
-  PTAG_DIR = "var/mt_v2/inits"
+  PTAG_DIR = "var/cvmtl/inits"
 
   def fix_ptags
     fix_ptag("#{PTAG_DIR}/map_pronoun.tsv", "r")
@@ -87,7 +87,7 @@ class Dict
     end
   end
 
-  FIX_DIR = "var/mt_v2/fixed"
+  FIX_DIR = "var/cvmtl/fixed"
 
   def add_fixes
     # import_fixed("#{FIX_DIR}/poly_noad.tsv")

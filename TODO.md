@@ -20,3 +20,15 @@
 - create ui to view/edit the definitions
 - update essential glossaries so results don't appear to be broken
 - add back support to translate chapter titles
+
+## update texts
+
+- restore files from old disks
+
+  - restore chapters from downloaded htmls
+  - restore chapters from zipped entries? (compare sizes with the newer one)
+
+- fix invalid multibytes sequence error (convert .txt file to bgk file)
+- fix broken texts (long time ago some files were stored with translations alongside, should be removed)
+- update metadatas for all cached chapters
+- copy fg seed chapters from bg seeds (using hardlink?)

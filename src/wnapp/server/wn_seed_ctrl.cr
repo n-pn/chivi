@@ -7,8 +7,10 @@ class WN::SeedCtrl < AC::Base
   def index(wn_id : Int32)
     seeds = WnSeed.all(wn_id)
 
+    _main = seeds.find(&.sname.== "-") || WnSeed.new("-", wn_id, wn_id).tap(&.save!)
+
     render json: {
-      _main: seeds.find(&.sname.== "-"),
+      _main: _main,
       users: seeds.select(&.sname.[0].== '@').sort_by!(&.mtime.-),
       backs: seeds.select(&.sname.[0].== '!').sort_by!(&.mtime.-),
     }

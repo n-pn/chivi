@@ -1,9 +1,11 @@
 <script lang="ts">
   import { page } from '$app/stores'
   $: _privi = $page.data._user.privi
+
+  $: route_id = $page.route?.id || ''
 </script>
 
-{#if !$page.route.id.includes('_auth')}
+{#if !route_id.includes('_auth')}
   <div class="app-vessel">
     {#if _privi < 0}
       <div class="pledge">

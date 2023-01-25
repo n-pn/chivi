@@ -49,6 +49,7 @@ export const ROUTES = {
   'nvinfos.show': (name: any) => `/_db/books/${name}`,
   'nvinfos.front': (id: any) => `/_db/books/${id}/front`,
 
+  'wnovels.index': '/_db/v2/books',
   'wnovels.show': (id: any) => `/_db/v2/books/${id}`,
   'wnovels.front': (id: any) => `/_db/v2/books/${id}/front`,
   'wnovels.edit': (id: any) => `/_db/v2/books/${id}/+edit`,

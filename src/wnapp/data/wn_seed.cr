@@ -41,6 +41,11 @@ class WN::WnSeed
     mkdir!(sname, s_bid)
   end
 
+  def mkdir!(sname = self.sname, s_bid = self.s_bid)
+    Dir.mkdir_p("var/chaps/infos/#{sname}")
+    Dir.mkdir_p("var/chaps/temps/#{sname}/#{s_bid}")
+  end
+
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "sname", @sname
@@ -88,11 +93,6 @@ class WN::WnSeed
   end
 
   ###
-
-  def mkdir!(sname = self.sname, s_bid = self.s_bid)
-    Dir.mkdir_p("var/chaps/infos/#{sname}")
-    Dir.mkdir_p("var/chaps/temps/#{sname}/#{s_bid}")
-  end
 
   def bg_seed?
     self.sname[0].in?('!', '+')
