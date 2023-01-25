@@ -77,7 +77,7 @@ shards:
     git: https://github.com/kostya/lexbor.git
     version: 3.0.4
 
-  libzip.cr:
+  zip:
     git: https://github.com/n-pn/libzip.cr.git
     version: 0.2.1
 
@@ -108,4 +108,3 @@ shards:
   zstd:
     git: https://github.com/didactic-drunk/zstd.cr.git
     version: 1.2.0
-

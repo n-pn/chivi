@@ -33,7 +33,7 @@ article {
   }
 
   > * + * {
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
   }
 
   h1 {
@@ -81,6 +81,11 @@ article {
   .em {
     font-style: italic;
     @include fgcolor(warning, 5);
+  }
+
+  pre.language-zh {
+    line-height: 1.25rem;
+    font-size: rem(14px);
   }
 }
 

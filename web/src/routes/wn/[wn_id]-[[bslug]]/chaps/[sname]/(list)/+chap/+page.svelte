@@ -7,8 +7,6 @@
     [0, 'Phân thủ công bằng ///'],
   ]
 
-  const numbers = '零〇一二两三四五六七八九十百千'
-
   function format_str(input: string) {
     return input.replace(/\r?\n|\r/g, '\n')
   }
@@ -36,21 +34,33 @@
 
   let split_mode = 1
 
-  let min_blanks = 2
-  let trim_space = false
-  let need_blank = false
+  const numbers = '零〇一二两三四五六七八九十百千'
+  let opts = {
+    // split mode 1
+    min_blanks: 2,
+    trim_space: false,
+    // split mode 2
+    need_blank: false,
+    // split mode 3
+    chdiv_labels: '章节回幕折集卷季',
+    //split mode 4
+    custom_regex: `^\\s*第?[\\d${numbers}]+[章节回]`,
+  }
 
-  let chdiv_labels = '章节回幕折集卷季'
-  let custom_regex = `^\\s*第?[\\d${numbers}]+[章节回]`
+  $: chapters = split_text(input, split_mode, opts)
 
-  $: {
+  const split_text = (input: string, split_mode: number, options) => {
     switch (split_mode) {
       case 1:
-        chapters = split.split_mode_1(input, min_blanks, trim_space)
-        break
+        return split.split_mode_1(input, options.min_blanks, options.trim_space)
       case 2:
-        chapters = split.split_mode_2(input, need_blank)
-        break
+        return split.split_mode_2(input, options.need_blank)
+      case 3:
+        return split.split_mode_3(input, options.chdiv_labels)
+      case 4:
+        return split.split_mode_4(input, options.custom_regex)
+      default:
+        return split.split_mode_0(input, 3)
     }
   }
 
@@ -125,7 +135,6 @@
         <strong>{chapters.length}</strong>
         <em>(chưa tính gộp tên tập)</em>
       </div>
-      <p>Lưu ý: Chương chỉ có một dòng sẽ được coi là tên tập.</p>
     </div>
 
     <div class="form-field">
@@ -158,7 +167,7 @@
               class="m-input _xs"
               type="number"
               name="min_blanks"
-              bind:value={min_blanks}
+              bind:value={opts.min_blanks}
               min={1}
               max={4} /></label>
 
@@ -167,7 +176,7 @@
               class="m-input"
               type="checkbox"
               name="trim_space"
-              bind:checked={trim_space} /> Lọc bỏ dấu cách</label>
+              bind:checked={opts.trim_space} /> Lọc bỏ dấu cách</label>
         </div>
       {:else if split_mode == 2}
         <label class="label"
@@ -175,27 +184,25 @@
             class="m-input"
             type="checkbox"
             name="need_blank"
-            bind:checked={need_blank} /> Phía trước phải là dòng trắng</label>
+            bind:checked={opts.need_blank} /> Phía trước phải là dòng trắng</label>
       {:else if split_mode == 3}
         <label class="label"
           >Đằng sau <code>第[số từ]+</code> là:
           <input
             class="m-input _xs"
             name="label"
-            bind:value={chdiv_labels} /></label>
+            bind:value={opts.chdiv_labels} /></label>
       {:else if split_mode == 4}
         <label class="label"
           >Custom regex:
           <input
             class="m-input _xs"
             name="regex"
-            bind:value={custom_regex} /></label>
+            bind:value={opts.custom_regex} /></label>
       {/if}
     </div>
 
     <div class="errors">{err_msg}</div>
-
-    <div class="guide" />
 
     <!-- <div class="form-field">
       <div class="label">Lựa chọn nâng cao</div>

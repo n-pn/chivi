@@ -101,8 +101,8 @@ dependencies:
   micrate:
     github: amberframework/micrate
 
-  zip:
-    github: n-pn/libzip.cr
+  # zip:
+  #   github: n-pn/libzip.cr
 
 development_dependencies:
   ameba:
