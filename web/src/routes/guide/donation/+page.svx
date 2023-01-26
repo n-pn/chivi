@@ -17,8 +17,15 @@ Lưu ý: Khi ủng hộ hãy để lại tên đăng nhập hoặc hòm thư đ�
 
 ### Việt Nam:
 
+- Techcombank: **160628101989**
 - Ví Momo: https://me.momo.vn/nipin
-- Techcombank: **19034964108016**
+
+**Quét mã QR:**
+
+<div class="qr">
+<img src="/imgs/techcombank.png" alt="Techcombank"/>
+<img src="/imgs/momo.png" alt="Momo"/>
+</div>
 
 Hoặc liên hệ qua các kênh liên lạc: [Facebook](https://www.facebook.com/chivi.app), [Discord](https://discord.gg/mdC3KQH).
 
@@ -74,3 +81,16 @@ Khi bạn ủng hộ Chivi bằng tiền mặt, bạn sẽ được tặng một
 - Các công việc bảo dưỡng làm hàng ngày/hàng tuần như backup dữ liệu, crawl thông tin mới từ các nguồn như `yousuu.com`, `zxcs.me`, `hetushu.com`....
 
 _TLDR_: Phát triển tính năng cho Chivi rất tốn kém về thời gian và tiền bạc. Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển.
+
+<style>
+  .qr {
+    display: flex;
+    justify-content: center;
+    gap: 4vw;
+  }
+
+  .qr img {
+    max-height: 20rem;
+    width: auto;
+  }
+</style >

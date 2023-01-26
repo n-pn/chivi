@@ -90,3 +90,9 @@ chương 3
 **Lưu ý**:
 
 - Với các truyện có phân chia theo tập, bạn có thể thêm tên tập ngay sau `///`
+
+### 6. Nhờ ban quản trị phân chia chương
+
+Bạn có thể nhờ đến sự trợ giúp của người khác nếu không thể chia chương theo các phương pháp trên.
+
+Để đạt được phản hồi nhanh nhất, hãy liên hệ với ban quản trị thông qua Discord: https://discord.gg/mdC3KQH
