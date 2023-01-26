@@ -69,34 +69,9 @@ class WN::WnChap
   end
 
   @[DB::Field(ignore: true)]
-  getter body : Array(String) do
+  property body : Array(String) do
     raise "missing seed data" unless seed = @seed
-
-    case path = self._path
-    when "x" # for dead remote with no data
-      [""]
-    when "v" # text file saved to disk
-      TextStore.read_txt_file(seed, self)
-    when "z" # zip file relative for this seed # old zip store
-      TextStore.read_txt_from_zip(seed, self)
-    when "" # for background chap with no metadata
-      return [""] unless seed.bg_seed?
-      TextStore.read_txt_from_zip(seed, self)
-    else # load from linked mirror
-      bg_path, ch_no = path.split(':')
-
-      # attempt to load text from temp folder
-      txt_path = TextStore.gen_txt_path(bg_path)
-      return TextStore.read_txt_file(txt_path) if File.file?(txt_path)
-
-      # load text from background seed zip files
-      bg_sname, bg_s_bid, bg_s_cid = bg_path.split('/')
-      # FIXIME: fix texts folder, add prefixes for background seeds
-      bg_sname = bg_sname[1..] if bg_sname[0].in?('!', '+') # remove bg seed prefix
-
-      zip_path = TextStore.gen_zip_path(bg_sname, bg_s_bid.to_i, ch_no.to_i)
-      TextStore.read_txt_from_zip(zip_path, bg_s_cid.to_i, self.p_len)
-    end
+    ZipStore.get_chap(seed, self)
   end
 
   def save_body!(input : String, seed : WnSeed = self.seed, @uname = "") : Nil

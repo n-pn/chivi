@@ -69,7 +69,7 @@ class WN::WnSeed
     upper = total - lower
 
     case self.sname[0]
-    when '-' then {lower, upper, total, total}
+    when '_' then {lower, upper, total, total}
     when '@' then {0, lower, upper, total}
     when '+' then {0, 0, lower, upper}
     else          {0, 0, 0, lower}
@@ -78,7 +78,7 @@ class WN::WnSeed
 
   def self.stype(sname : String)
     case sname
-    when "-"                then 0  # base user seed
+    when "_"                then 0  # base user seed
     when .starts_with?('@') then 1  # foreground user seed
     when .starts_with?('+') then -1 # background user seed
     when .in?(REMOTE_SEEDS) then -3 # active remote seed

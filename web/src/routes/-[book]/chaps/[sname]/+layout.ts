@@ -16,7 +16,6 @@ export const load = (async ({ parent, params: { sname }, fetch, url }) => {
   const { nvinfo } = await parent()
   set_fetch(fetch)
 
-  if (sname == '-') sname = '=base'
   const args = [nvinfo.id, sname]
   const path = api_path('chroots.show', args)
 

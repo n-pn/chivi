@@ -65,8 +65,16 @@ class WN::TextCtrl < AC::Base
 
     wn_seed = get_wn_seed(sname, s_bid)
 
+    start = wn_seed.chap_total + 1 if start < 1
     input = request.body.not_nil!.gets_to_end
-    chaps = TextSplit.split_multi(input)
+
+    TextSplit.split_multi(input).each_with_index(start) do |(text, chdiv), ch_no|
+      zh_chap = wn_seed.zh_chap(ch_no) || WnChap.new(ch_no, ch_no, "", "")
+      zh_chap.chdiv = chdiv
+      zh_chap.save_body!(text, wn_seed, _uname)
+    end
+
+    render json: {pg_no: _pgidx(start, 32)}
   end
 
   struct EntryForm

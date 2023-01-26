@@ -3,21 +3,11 @@ require "../../../_util/text_util"
 module WN::TextSplit
   extend self
 
-  struct Entry
-    property chdiv : String = ""
-    property parts : Array(String) = [] of String
-    property c_len : Int32 = 0
-
-    def initialize(input : String, @chdiv = "")
-      @parts, @c_len = TextSplit.split_entry(input, cleaned: true)
-    end
-  end
-
   # split multi chapters; returning array of text parts, char count and volume name if available
-  def split_multi(input : String, cleaned : Bool = false)
+  def split_multi(input : String, cleaned : Bool = false) : Array({String, String})
     input = TextUtil.clean_spaces(input) unless cleaned
 
-    chaps = [] of Entry
+    chaps = [] of {String, String}
     chdiv = ""
 
     strio = String::Builder.new
@@ -25,7 +15,7 @@ module WN::TextSplit
 
     input.each_line do |line|
       if line =~ /^\/{3,}(.*)/
-        chaps << Entry.new(strio.to_s, chdiv) if dirty
+        chaps << {strio.to_s, chdiv} if dirty
         chdiv = $1.strip
 
         strio = String::Builder.new
@@ -37,7 +27,7 @@ module WN::TextSplit
       end
     end
 
-    chaps << Entry.new(strio.to_s, chdiv) if dirty
+    chaps << {strio.to_s, chdiv} if dirty
 
     chaps
   end

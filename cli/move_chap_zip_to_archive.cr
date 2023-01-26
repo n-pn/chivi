@@ -32,5 +32,5 @@ snames = ARGV
 snames = Dir.children("#{INP}") if snames.empty?
 
 snames.each do |sname|
-  move_seed(sname) unless sname[0].in?('.', '-', '=')
+  move_seed(sname) unless sname[0].in?('.', '_', '=')
 end

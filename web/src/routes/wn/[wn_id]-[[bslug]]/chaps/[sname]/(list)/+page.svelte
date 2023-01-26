@@ -40,7 +40,7 @@
   function can_add_chaps(sname: string) {
     const _privi = $session.privi
 
-    if (sname == '-') return _privi > 0
+    if (sname == '_') return _privi > 0
     if (!sname.startsWith('@')) return _privi > 2
 
     return sname == '@' + $session.uname
@@ -50,7 +50,7 @@
 <article class="article island">
   <page-info>
     <info-left>
-      <info-text>{_seed.sname != '-' ? _seed.sname : 'Tổng hợp'}</info-text>
+      <info-text>{_seed.sname != '_' ? _seed.sname : 'Tổng hợp'}</info-text>
       <info-span>{_seed.chmax} chương</info-span>
       <info-span><RTime mtime={_seed.utime} /></info-span>
     </info-left>

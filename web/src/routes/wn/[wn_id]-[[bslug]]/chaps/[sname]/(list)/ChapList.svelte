@@ -31,7 +31,7 @@
     const lower = Math.floor(total / 4)
     const upper = total - lower
 
-    if (sname == '-') return [lower, upper, total]
+    if (sname == '_') return [lower, upper, total]
     if (sname[0] == '@') return [0, lower, upper, total]
     if (sname[0] == '!') return [0, 0, lower, upper, total]
     return [0, 0, 0, lower, upper, total]
@@ -56,7 +56,7 @@
       href="{base_url}/{chinfo.chidx}/{chinfo.uslug}"
       class="chinfo"
       class:_active={chinfo.chidx == mark_chidx}
-      rel={nvseed.sname != '-' ? 'nofollow' : null}>
+      rel={nvseed.sname != '_' ? 'nofollow' : null}>
       <div class="chap-text">
         <chap-title>{chinfo.title}</chap-title>
         <chap-chidx>{chinfo.chidx}.</chap-chidx>

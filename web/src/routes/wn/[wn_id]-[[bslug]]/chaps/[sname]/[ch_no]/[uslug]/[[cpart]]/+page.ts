@@ -1,4 +1,3 @@
-import { nvinfo_bar } from '$utils/topbar_utils'
 import { seed_url, to_pgidx } from '$utils/route_utils'
 
 import { api_get } from '$lib/api_call'
@@ -31,12 +30,20 @@ function page_meta(
   sname: string,
   ch_no: number
 ): App.PageMeta {
-  const list_url = seed_url(nvinfo.bslug, sname, to_pgidx(ch_no))
+  let list_url = `/wn/${nvinfo.bslug}/chaps/${sname}`
+  if (ch_no > 32) list_url += '?pg=' + to_pgidx(ch_no)
+
+  if (sname == '_') sname = 'Tổng hợp'
 
   return {
     title: `${title} - ${nvinfo.btitle_vi}`,
     left_nav: [
-      nvinfo_bar(nvinfo, { 'data-show': 'pl' }),
+      {
+        'text': nvinfo.btitle_vi,
+        'href': `/wn/${nvinfo.bslug}`,
+        'data-kind': 'title',
+        'data-show': 'pl',
+      },
       { 'text': sname, 'icon': 'list', 'href': list_url, 'data-kind': 'zseed' },
     ],
     show_config: true,

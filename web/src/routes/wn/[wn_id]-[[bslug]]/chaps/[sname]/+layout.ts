@@ -5,7 +5,7 @@ import { set_fetch, api_get } from '$lib/api_call'
 
 import type { LayoutLoad } from './$types'
 
-const prefixes = ['-', '@', '+', '!']
+const prefixes = ['_', '@', '+', '!']
 
 export interface SeedData {
   _seed: CV.Chroot

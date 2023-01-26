@@ -4,8 +4,6 @@ import type { PageLoad } from './$types'
 export const load = (async ({ parent, fetch, url, params: { sname } }) => {
   const { nvinfo } = await parent()
 
-  if (sname == '-') sname = '=base'
-
   const page = url.searchParams.get('pg') || 1
   const args = [nvinfo.id, sname, page]
 

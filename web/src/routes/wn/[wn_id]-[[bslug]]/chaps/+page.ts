@@ -10,7 +10,7 @@ export async function load({ parent }) {
 }
 
 function seed_url(bslug: string, sname: string, ch_no: number) {
-  if (!sname || sname == '=base') sname = '-'
+  if (!sname || sname == '=base') sname = '_'
   const base = `/wn/${bslug}/chaps/${sname}`
   const pg_no = to_pgidx(ch_no)
   return pg_no < 2 ? base : `${base}?pg=${pg_no}`
