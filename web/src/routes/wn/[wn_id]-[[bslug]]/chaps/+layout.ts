@@ -8,14 +8,15 @@ export interface SeedList {
   backs: CV.Chroot[]
 }
 
-export async function load({ parent, fetch, url }) {
+export async function load({ parent, fetch, url, depends, params }) {
   set_fetch(fetch)
 
-  const { nvinfo, ubmemo } = await parent()
+  depends('wn:seed_list')
 
-  const path = `/_wn/seeds?wn_id=${nvinfo.id}`
+  const path = `/_wn/seeds?wn_id=${params.wn_id}`
   const seeds: SeedList = await api_get(path)
 
+  const { nvinfo, ubmemo } = await parent()
   const _meta: App.PageMeta = {
     title: 'Chương tiết truyện ' + nvinfo.btitle_vi,
     // prettier-ignore

@@ -5,8 +5,6 @@ import { set_fetch, api_get } from '$lib/api_call'
 
 import type { LayoutLoad } from './$types'
 
-const prefixes = ['_', '@', '+', '!']
-
 export interface SeedData {
   _seed: CV.Chroot
   lasts: CV.Chinfo[]
@@ -17,11 +15,14 @@ export interface SeedData {
 
   privi_map: number[]
 }
+
+const prefixes = ['_', '@', '+', '!']
+
 export const load = (async ({ params, fetch, url }) => {
   const [sname, s_bid] = params.sname.split(':')
 
   if (!prefixes.includes(sname[0])) {
-    const location = url.pathname.replace(`/${sname}`, '/-')
+    const location = url.pathname.replace(`/${sname}`, '/_')
     throw redirect(300, location)
   }
 

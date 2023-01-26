@@ -6,7 +6,7 @@ module WN::TextStore
     return [""] if _path == "x" # no text available, stop trying
 
     # try reading txt file directly from disk
-    if path == "v" || _path.empty?
+    if _path.in?("", "v")
       txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
       return read_txt_file(txt_path) if File.file?(txt_path)
     end
@@ -27,7 +27,7 @@ module WN::TextStore
     bg_sname, bg_s_bid, bg_s_cid = bg_path.split('/')
     bg_zip_path = gen_zip_path(bg_sname, bg_s_bid.to_i)
 
-    read_txt_from_zip(bg_zip_path, bg_s_cid.to_i) || [""]
+    read_txt_from_zip(bg_zip_path, bg_s_cid.to_i)
   end
 
   TXT_DIR = "var/chaps/texts-txt"
@@ -55,7 +55,8 @@ module WN::TextStore
   # save chap text file with body parts provided
   @[AlwaysInline]
   def save_txt_file(seed : WnSeed, chap : WnChap) : Nil
-    save_txt_file(gen_txt_path(seed, chap), chap.body)
+    txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
+    save_txt_file(txt_path, chap.body)
   end
 
   # :ditto:
@@ -85,6 +86,8 @@ module WN::TextStore
     "!sdyfcm":  "!nofff.com",
     "!nofff":   "!nofff.com",
     "!5200":    "!5200.tv",
+    "!zxcs_me": "!zxcs.me",
+    "!jx_la":   "!jx.la",
   }
 
   # generate zip path
@@ -103,7 +106,7 @@ module WN::TextStore
   # read text from zip file
   @[AlwaysInline]
   def read_txt_from_zip(seed : WnSeed, chap : WnChap)
-    read_txt_from_zip(gen_zip_path(seed, chap.s_cid))
+    read_txt_from_zip(gen_zip_path(seed), chap.s_cid)
   end
 
   # :ditto

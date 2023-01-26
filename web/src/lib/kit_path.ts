@@ -19,3 +19,19 @@ export function book_path(id: string | number, bname: string = '') {
     child: (path: string) => `${base}/${path}`,
   }
 }
+
+export function _pgidx(index: number, limit = 32) {
+  return Math.floor((index - 1) / limit) + 1
+}
+
+export function seed_path(
+  bslug: string,
+  sname: string,
+  s_bid: string | number,
+  ch_no: number = 0
+): string {
+  let path = `/wn/${bslug}/chaps/${sname}`
+  if (sname[0] == '!') path += `:${s_bid}`
+
+  return ch_no > 32 ? (path += `?pg=${_pgidx(ch_no, 32)}`) : path
+}

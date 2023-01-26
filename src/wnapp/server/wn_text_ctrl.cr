@@ -50,7 +50,7 @@ class WN::TextCtrl < AC::Base
 
   def guard_sname_privi(sname : String)
     case sname
-    when "-"
+    when "_"
       guard_privi min: 1, action: "thêm chương tiết cho nguồn chính"
     when .starts_with?('@')
       guard_owner sname, min: 2, action: "thêm chương tiết cho nguồn cá nhân"
@@ -68,11 +68,19 @@ class WN::TextCtrl < AC::Base
     start = wn_seed.chap_total + 1 if start < 1
     input = request.body.not_nil!.gets_to_end
 
-    TextSplit.split_multi(input).each_with_index(start) do |(text, chdiv), ch_no|
+    chaps = TextSplit.split_multi(input)
+
+    chaps.each_with_index(start) do |(text, chdiv), ch_no|
       zh_chap = wn_seed.zh_chap(ch_no) || WnChap.new(ch_no, ch_no, "", "")
       zh_chap.chdiv = chdiv
       zh_chap.save_body!(text, wn_seed, _uname)
     end
+
+    max_ch_no = start + chaps.size - 1
+    wn_seed.chap_total = max_ch_no if max_ch_no > wn_seed.chap_total
+
+    wn_seed.mtime = Time.utc.to_unix
+    wn_seed.save!
 
     render json: {pg_no: _pgidx(start, 32)}
   end

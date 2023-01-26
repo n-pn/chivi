@@ -69,10 +69,7 @@ class WN::WnChap
   end
 
   @[DB::Field(ignore: true)]
-  property body : Array(String) do
-    raise "missing seed data" unless seed = @seed
-    ZipStore.get_chap(seed, self)
-  end
+  getter body : Array(String) { TextStore.get_chap(self.seed, self) || [""] }
 
   def save_body!(input : String, seed : WnSeed = self.seed, @uname = "") : Nil
     parts, @c_len = TextSplit.split_entry(input)

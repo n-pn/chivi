@@ -7,7 +7,7 @@ class WN::SeedCtrl < AC::Base
   def index(wn_id : Int32)
     seeds = WnSeed.all(wn_id)
 
-    _main = seeds.find(&.sname.== "-") || WnSeed.new("-", wn_id, wn_id).tap(&.save!)
+    _main = seeds.find(&.sname.== "_") || WnSeed.new("_", wn_id, wn_id).tap(&.save!)
 
     render json: {
       _main: _main,
@@ -24,7 +24,7 @@ class WN::SeedCtrl < AC::Base
 
     render json: {
       _seed: wn_seed,
-      lasts: wn_seed.vi_chaps.top(6),
+      lasts: wn_seed.vi_chaps.top(4),
       #
       stime: wn_seed.rtime,
       slink: wn_seed.slink,

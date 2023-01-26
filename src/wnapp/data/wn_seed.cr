@@ -24,9 +24,9 @@ class WN::WnSeed
   field _flag : Int32 = 0
   field _rank : Int32 = 0
 
-  field mtime : Int64 = 0_i64 # last updated at
-  field atime : Int64 = 0_i64 # last accessed at
-  field rtime : Int64 = 0_i64 # last refreshed at
+  field mtime : Int64 = Time.utc.to_unix # last updated at
+  field atime : Int64 = Time.utc.to_unix # last accessed at
+  field rtime : Int64 = 0_i64            # last refreshed at
 
   @[DB::Field(ignore: true)]
   getter zh_chaps : WnRepo { WnRepo.load(self.sname, self.s_bid, "infos") }

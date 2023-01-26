@@ -6,15 +6,11 @@
     [4, 'Theo regular expression tự nhập'],
     [0, 'Phân thủ công bằng ///'],
   ]
-
-  function format_str(input: string) {
-    return input.replace(/\r?\n|\r/g, '\n')
-  }
 </script>
 
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { goto } from '$app/navigation'
+  import { goto, invalidate } from '$app/navigation'
 
   import { SIcon, Footer } from '$gui'
 
@@ -23,11 +19,13 @@
   import { get_encoding } from './get_encoding'
 
   import type { PageData } from './$types'
+  import { seed_path } from '$lib/kit_path'
   export let data: PageData
   $: ({ nvinfo } = data)
 
   let input = ''
-  let chidx = data.chidx
+  let start = data.chidx
+
   let files: FileList
 
   let chapters: Zchap[] = []
@@ -65,7 +63,6 @@
   }
 
   $: _seed = data._curr._seed
-  $: action_url = `/_wn/texts/${_seed.sname}/${_seed.snvid}?start=${chidx}`
 
   let loading = false
   let changed = false
@@ -81,7 +78,7 @@
       const buffer = reader.result as ArrayBuffer
       const encoding = await get_encoding(buffer)
       const decoder = new TextDecoder(encoding)
-      input = format_str(decoder.decode(buffer))
+      input = decoder.decode(buffer).replace(/\r?\n|\r/g, '\n')
     }
   })
 
@@ -93,18 +90,26 @@
   async function submit(_evt: Event) {
     err_msg = ''
 
-    const body = JSON.stringify({ chidx, chapters })
-
-    const headers = { 'Content-Type': 'text/plain' }
-
-    const res = await fetch(action_url, { method: 'POST', body, headers })
+    const url = `/_wn/texts/${_seed.sname}/${_seed.snvid}?start=${start}`
+    const body = render_body(chapters)
+    const res = await fetch(url, { method: 'POST', body })
 
     if (!res.ok) {
       err_msg = await res.text()
     } else {
-      const { pg_no } = await res.json()
-      goto(`/wn/${nvinfo.bslug}/chaps/${_seed.sname}?pg=${pg_no}`)
+      invalidate('wn:seed_list')
+      goto(seed_path(nvinfo.bslug, _seed.sname, _seed.s_bid, start))
     }
+  }
+
+  function render_body(chapters: Zchap[]) {
+    let text = ''
+    for (const { title, chdiv, lines } of chapters) {
+      text += `///${chdiv}\n${title}`
+      for (const line of lines) text += '\n' + line
+      text += '\n'
+    }
+    return text
   }
 </script>
 
@@ -115,7 +120,7 @@
 <section class="article">
   <h2>Thêm/sửa chương</h2>
 
-  <form action={action_url} method="POST" on:submit|preventDefault={submit}>
+  <form action="." method="POST" on:submit|preventDefault={submit}>
     <div class="form-field file-prompt">
       <label class="m-btn">
         <span>Chọn tệp tin</span>
@@ -228,8 +233,8 @@
           <input
             class="m-input"
             type="number"
-            name="chidx"
-            bind:value={chidx} />
+            name="start"
+            bind:value={start} />
         </label>
 
         <button type="submit" class="m-btn _primary _fill">
