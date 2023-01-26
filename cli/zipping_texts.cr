@@ -1,6 +1,6 @@
 require "colorize"
 
-INP = "var/chaps/bgtexts"
+INP = "var/chaps/texts-txt"
 OUT = "/mnt/devel/Chivi/texts"
 
 MAP_SNAME = {
@@ -12,11 +12,7 @@ MAP_SNAME = {
 
 def map_sname(sname : String)
   MAP_SNAME[sname]? || begin
-    case sname[0]
-    when '+', '!', '-' then sname
-    when '@'           then "+" + sname[1..]
-    else                    "!" + sname
-    end
+    sname[0].in?('+', '!', '_', '@') ? sname : "!" + sname
   end
 end
 

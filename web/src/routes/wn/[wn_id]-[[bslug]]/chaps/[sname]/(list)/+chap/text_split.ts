@@ -25,10 +25,6 @@ export function split_mode_0(input: string, repeat = 3) {
     if (cpart.length > 0) {
       const [title, ...paras] = cpart
       chaps.push({ title, chdiv, lines: paras })
-
-      if (chaps.length > 1000) {
-        throw 'Có quá nhiều chương được chia, mời xem lại dữ liệu đầu vào!'
-      }
     }
 
     chdiv = found[1].trim() || chdiv

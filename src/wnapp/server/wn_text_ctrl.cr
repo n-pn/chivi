@@ -48,7 +48,28 @@ class WN::TextCtrl < AC::Base
     _privi > 0 && (load_mode > 0 || cookies["auto_load"]?)
   end
 
-  struct TextForm
+  def guard_sname_privi(sname : String)
+    case sname
+    when "-"
+      guard_privi min: 1, action: "thêm chương tiết cho nguồn chính"
+    when .starts_with?('@')
+      guard_owner sname, min: 2, action: "thêm chương tiết cho nguồn cá nhân"
+    else
+      guard_privi min: 3, action: "thêm chương tiết cho các nguồn phụ"
+    end
+  end
+
+  @[AC::Route::POST("/")]
+  def upsert_batch(sname : String, s_bid : Int32, start : Int32 = 0)
+    guard_sname_privi sname: sname
+
+    wn_seed = get_wn_seed(sname, s_bid)
+
+    input = request.body.not_nil!.gets_to_end
+    chaps = TextSplit.split_multi(input)
+  end
+
+  struct EntryForm
     include JSON::Serializable
     getter input : String
     getter title : String
@@ -61,20 +82,9 @@ class WN::TextCtrl < AC::Base
     end
   end
 
-  def guard_privi!(sname : String)
-    case sname
-    when "-"
-      guard_privi min: 1, action: "thêm chương tiết cho nguồn chính"
-    when .starts_with?('@')
-      guard_owner sname, min: 2, action: "thêm chương tiết cho nguồn cá nhân"
-    else
-      guard_privi min: 3, action: "thêm chương tiết cho các nguồn phụ"
-    end
-  end
-
   @[AC::Route::PUT("/:ch_no", body: :form)]
-  def upsert(form : TextForm, sname : String, s_bid : Int32, ch_no : Int32)
-    guard_privi! sname
+  def upsert_entry(form : EntryForm, sname : String, s_bid : Int32, ch_no : Int32)
+    guard_sname_privi sname: sname
 
     wn_seed = get_wn_seed(sname, s_bid)
     zh_chap = get_zh_chap(wn_seed, ch_no)

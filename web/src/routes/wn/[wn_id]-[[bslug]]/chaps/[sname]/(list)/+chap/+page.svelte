@@ -65,7 +65,7 @@
   }
 
   $: _seed = data._curr._seed
-  $: action_url = `/_wn/texts/${_seed.sname}/${_seed.snvid}`
+  $: action_url = `/_wn/texts/${_seed.sname}/${_seed.snvid}?start=${chidx}`
 
   let loading = false
   let changed = false
@@ -94,7 +94,9 @@
     err_msg = ''
 
     const body = JSON.stringify({ chidx, chapters })
-    const headers = { 'Content-Type': 'application/json' }
+
+    const headers = { 'Content-Type': 'text/plain' }
+
     const res = await fetch(action_url, { method: 'POST', body, headers })
 
     if (!res.ok) {

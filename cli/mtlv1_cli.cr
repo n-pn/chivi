@@ -1,4 +1,4 @@
-require "../src/mt_v2/mt_core"
+require "../src/mt_v1/mt_core"
 require "option_parser"
 
 input = [] of String
