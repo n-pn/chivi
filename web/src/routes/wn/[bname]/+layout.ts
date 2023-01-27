@@ -1,7 +1,9 @@
 import { api_path, api_get } from '$lib/api_call'
 
 import type { LayoutLoad } from './$types'
-export const load: LayoutLoad = async ({ params: { wn_id }, fetch }) => {
+export const load: LayoutLoad = async ({ params: { bname }, fetch }) => {
+  const wn_id = bname.split('-')[0]
+
   const book_path = api_path('wnovels.show', wn_id)
   const memo_path = `/_db/_self/books/${wn_id}`
 

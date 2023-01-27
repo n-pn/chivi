@@ -2,10 +2,12 @@ import { merge_query, api_path } from '$lib/api_call'
 import { error } from '@sveltejs/kit'
 import type { PageLoad } from './$types'
 
-export const load = (async ({ fetch, params: { wn_id }, url }) => {
+export const load = (async ({ fetch, params, url }) => {
   const sort = url.searchParams.get('sort') || 'score'
 
+  const wn_id = params.bname.split('-')[0]
   const extras = { book: wn_id, lm: 10, sort }
+
   const search = merge_query(url.searchParams, extras)
 
   // prettier-ignore

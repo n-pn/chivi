@@ -11,7 +11,8 @@ export interface BookFront {
   users: BookUser[]
 }
 
-export const load = async ({ fetch, params: { wn_id } }: LoadEvent) => {
+export const load = async ({ fetch, params }: LoadEvent) => {
+  const wn_id = params.bname.split('-')[0]
   const api_url = `/_db/v2/books/${wn_id}/front`
 
   const bdata = await api_get<BookFront>(api_url, null, fetch)

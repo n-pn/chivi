@@ -1,6 +1,7 @@
 struct M0::MtNode
   getter val : String
   getter len : Int32
+
   getter idx : Int32
   getter tag : Tag
 

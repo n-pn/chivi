@@ -9,7 +9,9 @@ export interface SeedList {
 export async function load({ fetch, depends, params }) {
   depends('wn:seed_list')
 
-  const path = `/_wn/seeds?wn_id=${params.wn_id}`
+  const wn_id = params.bname.split('-')[0]
+  const path = `/_wn/seeds?wn_id=${wn_id}`
+
   const seeds: SeedList = await api_get(path, null, fetch)
 
   return { seeds }

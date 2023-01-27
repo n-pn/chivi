@@ -18,13 +18,15 @@ export interface SeedData {
 const prefixes = ['_', '@', '+', '!']
 
 export const load = (async ({ params, fetch, url }) => {
-  const [sname, s_bid] = params.sname.split(':')
+  const wn_id = params.bname.split('-')[0]
+  const [sname, s_bid = wn_id] = params.sname.split(':')
 
   if (!prefixes.includes(sname[0])) {
     const location = url.pathname.replace(`/${sname}`, '/_')
     throw redirect(300, location)
   }
 
-  const api_url = `/_wn/seeds/${sname}/${s_bid || params.wn_id}`
+  const api_url = `/_wn/seeds/${sname}/${s_bid}`
+
   return await api_get<SeedData>(api_url, null, fetch)
 }) satisfies LayoutLoad

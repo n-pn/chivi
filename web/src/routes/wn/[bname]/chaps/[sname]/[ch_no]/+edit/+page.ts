@@ -1,7 +1,8 @@
 import { error } from '@sveltejs/kit'
 
 export async function load({ fetch, parent, params }) {
-  const [sname, s_bid = params.wn_id] = params.sname.split(':')
+  const wn_id = params.bname.split('-')[0]
+  const [sname, s_bid = wn_id] = params.sname.split(':')
 
   const ch_no = params.ch_no
 

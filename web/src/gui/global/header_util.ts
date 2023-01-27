@@ -1,4 +1,4 @@
-import { chap_path, fix_sname, seed_path } from '$lib/kit_path'
+import { chap_path, fix_sname, seed_path, _pgidx } from '$lib/kit_path'
 
 export function gen_meta(route: string, data: Record<string, any>) {
   const meta = meta_map[route]
@@ -16,8 +16,14 @@ const book_nav = (bslug: string, vname: string, show = '') => {
   return nav_link(`/wn/${bslug}`, vname, 'book', { show, kind: 'title' })
 }
 
-const seed_nav = (bslug: string, sname: string, s_bid: string | number) => {
-  const seed_href = seed_path(bslug, sname, s_bid)
+const seed_nav = (
+  bslug: string,
+  sname: string,
+  s_bid: string | number,
+  pg_no = 1
+) => {
+  const seed_href = seed_path(bslug, sname, s_bid, pg_no)
+
   const seed_name = sname == '_' ? 'Tổng hợp' : sname
   return nav_link(seed_href, seed_name, 'list', { show: 'pl' })
 }
@@ -155,7 +161,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       nav_link('/books/+book', 'Thêm truyện', 'file-plus', { show: 'tm' }),
     ],
   },
-  '/wn/[wn_id]-[[bslug]]/(info)': ({ nvinfo, ubmemo }) => {
+  '/wn/[bname]/(info)': ({ nvinfo, ubmemo }) => {
     return {
       title: `${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
@@ -166,7 +172,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
     }
   },
-  '/wn/[wn_id]-[[bslug]]/(info)/crits': ({ nvinfo }) => {
+  '/wn/[bname]/(info)/crits': ({ nvinfo }) => {
     return {
       title: `${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
@@ -178,7 +184,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [nav_link('crits/+crit', 'Đánh giá', 'circle-plus')],
     }
   },
-  '/wn/[wn_id]-[[bslug]]/(info)/crits/+crit': ({ nvinfo }) => {
+  '/wn/[bname]/(info)/crits/+crit': ({ nvinfo }) => {
     return {
       title: `${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
@@ -191,7 +197,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [nav_link('../lists', 'Thư đơn', 'bookmarks')],
     }
   },
-  '/wn/[wn_id]-[[bslug]]/+info': ({ nvinfo }) => {
+  '/wn/[bname]/+info': ({ nvinfo }) => {
     return {
       title: `Sửa thông tin truyện: ${nvinfo.btitle_vi}`,
       desc: 'Sửa thông tin truyện',
@@ -203,7 +209,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
   // book chapters
-  '/wn/[wn_id]-[[bslug]]/(info)/lists': ({ nvinfo }) => {
+  '/wn/[bname]/(info)/lists': ({ nvinfo }) => {
     return {
       title: `${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
@@ -216,7 +222,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
 
-  '/wn/[wn_id]-[[bslug]]/chaps/[sname]/(list)': ({ nvinfo, ubmemo }) => {
+  '/wn/[bname]/chaps/[sname]/(list)': ({ nvinfo, ubmemo }) => {
     return {
       title: `Chương tiết truyện  ${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
@@ -228,7 +234,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
     }
   },
-  '/wn/[wn_id]-[[bslug]]/chaps/+seed': ({ nvinfo, ubmemo }) => {
+  '/wn/[bname]/chaps/+seed': ({ nvinfo, ubmemo }) => {
     return {
       title: `Thêm nguồn truyện: ${nvinfo.btitle_vi}`,
       desc: `Quản lý nguồn truyện cho bộ truyện ${nvinfo.btitle_vi}`,
@@ -241,10 +247,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
     }
   },
-  '/wn/[wn_id]-[[bslug]]/chaps/[sname]/(list)/+chap': ({
-    nvinfo,
-    curr_seed,
-  }) => {
+  '/wn/[bname]/chaps/[sname]/(list)/+chap': ({ nvinfo, curr_seed }) => {
     const { bslug, btitle_vi: vname } = nvinfo
     const { sname, snvid } = curr_seed
 
@@ -256,6 +259,36 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
         seed_nav(bslug, sname, snvid),
         nav_link('+chap', 'Thêm/sửa chương', 'file-plus', { show: 'pm' }),
       ],
+    }
+  },
+  '/wn/[bname]/chaps/[sname]/(list)/+conf': ({ nvinfo }) => {
+    return {
+      title: 'Tinh chỉnh nguồn chương truyện ' + nvinfo.btitle_vi,
+      left_nav: [
+        home_nav('', ''),
+        book_nav(nvinfo.bslug, '', 'tl'),
+        nav_link('+conf', 'Tinh chỉnh', 'settings', { show: 'pm' }),
+      ],
+    }
+  },
+  '/wn/[bname]/chaps/[sname]/[ch_no]/[...cpart]': ({
+    nvinfo,
+    curr_seed,
+    curr_chap,
+  }) => {
+    const { bslug } = nvinfo
+    let { sname, snvid: s_bid } = curr_seed
+    const { title, chidx: ch_no } = curr_chap
+
+    return {
+      title: `${title} - ${nvinfo.btitle_vi}`,
+      left_nav: [
+        home_nav('', ''),
+        book_nav(bslug, '', 'tl'),
+        seed_nav(bslug, 'Mục lục', s_bid, _pgidx(ch_no)),
+        nav_link(ch_no, `Chương ${ch_no}`, '', { show: 'lg' }),
+      ],
+      show_config: true,
     }
   },
 }

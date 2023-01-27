@@ -96,7 +96,7 @@
       err_msg = await res.text()
     } else {
       invalidate('wn:seed_list')
-      goto(seed_path(nvinfo.bslug, curr_seed.sname, curr_seed.s_bid, start))
+      goto(seed_path(nvinfo.bslug, curr_seed.sname, curr_seed.snvid, start))
     }
   }
 
