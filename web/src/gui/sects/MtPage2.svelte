@@ -22,7 +22,7 @@
   export let ztext: string = ''
   export let mtime = 0
 
-  export let wn_id: number = 0
+  // export let wn_id: number = 0
 
   export let on_change = () => {}
   export let on_fixraw = (_n: number, _s: string, _s2: string) => {}
@@ -50,7 +50,7 @@
     mtmenu.hide()
   })
 
-  $: zlines = ztext.split('\n')
+  $: zlines = ztext ? ztext.split('\n') : []
 
   $: {
     if (browser && ztext) {

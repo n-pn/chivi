@@ -30,6 +30,7 @@ class WN::SeedCtrl < AC::Base
         slink: wn_seed.slink,
         fresh: fresh,
         # extra
+        min_privi: wn_seed.min_privi,
         privi_map: wn_seed.privi_map,
       },
     }

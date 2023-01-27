@@ -3,7 +3,7 @@ require "../_ctrl_base"
 class CV::MarkBookCtrl < CV::BaseCtrl
   base "/_db/_self/books"
 
-  @[AC::Route::Filter(:before_action)]
+  @[AC::Route::Filter(:before_action, except: [:show])]
   def ensure_logged_in
     render :unauthorized unless _viuser.privi >= 0
   end

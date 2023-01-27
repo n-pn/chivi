@@ -16,4 +16,11 @@ declare namespace CV {
   interface Chlist extends Paginate {
     chaps: Chinfo[]
   }
+
+  interface Zhchap {
+    ztext: string
+    title: string
+    grant: boolean
+    privi: number
+  }
 }

@@ -53,6 +53,11 @@ function quick_read_v2({ bslug }, { sname, chidx, locked }) {
 // prettier-ignore
 const qtran_icons = { notes: 'notes', posts: 'user', links: 'link', crits: 'stars', }
 
+const error: App.PageMeta = {
+  title: 'Lỗi hệ thống',
+  left_nav: [home_nav('tm'), { text: 'Lỗi hệ thống', href: '.' }],
+}
+
 type PageMetaFn = (data: Record<string, any>) => App.PageMeta
 const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
   '/': {
@@ -139,16 +144,21 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     left_nav: [home_nav('tm'), nav_link('/ys/lists', 'Thư đơn', 'bookmarks')],
     right_nav: [nav_link('/ys/crits', 'Đánh giá', 'stars', { show: 'tm' })],
   },
-  '/ys/lists/[list]': ({ ylist: { id, vname, vdesc, vslug, uslug } }) => ({
-    title: `Thư đơn: ${vname}`,
-    desc: vdesc,
-    left_nav: [
-      home_nav('', ''),
-      nav_link('/ys/lists', 'Thư đơn', 'bookmarks', { show: 'tm' }),
-      nav_link(`${id}${vslug}-${uslug}`, vname, null, { kind: 'title' }),
-    ],
-    right_nav: [nav_link('/ys/crits', 'Đánh giá', 'stars', { show: 'tm' })],
-  }),
+  '/ys/lists/[list]': ({ ylist }) => {
+    if (!ylist) return error
+    const { id, vname, vdesc, vslug, uslug } = ylist
+
+    return {
+      title: `Thư đơn: ${vname}`,
+      desc: vdesc,
+      left_nav: [
+        home_nav('', ''),
+        nav_link('/ys/lists', 'Thư đơn', 'bookmarks', { show: 'tm' }),
+        nav_link(`${id}${vslug}-${uslug}`, vname, null, { kind: 'title' }),
+      ],
+      right_nav: [nav_link('/ys/crits', 'Đánh giá', 'stars', { show: 'tm' })],
+    }
+  },
 
   // new book pages
   '/wn': {
@@ -162,6 +172,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     ],
   },
   '/wn/[bname]/(info)': ({ nvinfo, ubmemo }) => {
+    if (!nvinfo) return error
+
     return {
       title: `${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
@@ -173,6 +185,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
   '/wn/[bname]/(info)/crits': ({ nvinfo }) => {
+    if (!nvinfo) return error
+
     return {
       title: `${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
@@ -185,6 +199,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
   '/wn/[bname]/(info)/crits/+crit': ({ nvinfo }) => {
+    if (!nvinfo) return error
+
     return {
       title: `${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
@@ -198,6 +214,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
   '/wn/[bname]/+info': ({ nvinfo }) => {
+    if (!nvinfo) return error
+
     return {
       title: `Sửa thông tin truyện: ${nvinfo.btitle_vi}`,
       desc: 'Sửa thông tin truyện',
@@ -210,6 +228,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
   },
   // book chapters
   '/wn/[bname]/(info)/lists': ({ nvinfo }) => {
+    if (!nvinfo) return error
+
     return {
       title: `${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
@@ -223,6 +243,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
   },
 
   '/wn/[bname]/chaps/[sname]/(list)': ({ nvinfo, ubmemo }) => {
+    if (!nvinfo) return error
+
     return {
       title: `Chương tiết truyện  ${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
@@ -235,6 +257,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
   '/wn/[bname]/chaps/+seed': ({ nvinfo, ubmemo }) => {
+    if (!nvinfo) return error
+
     return {
       title: `Thêm nguồn truyện: ${nvinfo.btitle_vi}`,
       desc: `Quản lý nguồn truyện cho bộ truyện ${nvinfo.btitle_vi}`,
@@ -248,6 +272,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
   '/wn/[bname]/chaps/[sname]/(list)/+chap': ({ nvinfo, curr_seed }) => {
+    if (!nvinfo) return error
+
     const { bslug, btitle_vi: vname } = nvinfo
     const { sname, snvid } = curr_seed
 
@@ -262,6 +288,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
   '/wn/[bname]/chaps/[sname]/(list)/+conf': ({ nvinfo }) => {
+    if (!nvinfo) return error
+
     return {
       title: 'Tinh chỉnh nguồn chương truyện ' + nvinfo.btitle_vi,
       left_nav: [
@@ -276,6 +304,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     curr_seed,
     curr_chap,
   }) => {
+    if (!nvinfo) return error
+
     const { bslug } = nvinfo
     let { sname, snvid: s_bid } = curr_seed
     const { title, chidx: ch_no } = curr_chap
@@ -285,7 +315,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       left_nav: [
         home_nav('', ''),
         book_nav(bslug, '', 'tl'),
-        seed_nav(bslug, 'Mục lục', s_bid, _pgidx(ch_no)),
+        seed_nav(bslug, sname, s_bid, _pgidx(ch_no)),
         nav_link(ch_no, `Chương ${ch_no}`, '', { show: 'lg' }),
       ],
       show_config: true,

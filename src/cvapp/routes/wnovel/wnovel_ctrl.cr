@@ -46,7 +46,11 @@ class CV::WnovelCtrl < CV::BaseCtrl
   @[AC::Route::GET("/:wn_id")]
   def show(wn_id : Int64) : Nil
     nvinfo = get_wnovel(wn_id)
-    spawn nvinfo.bump! if _privi >= 0
+
+    if _privi >= 0
+      spawn nvinfo.bump!
+    end
+
     render json: WnovelView.new(nvinfo, true)
   end
 

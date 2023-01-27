@@ -7,8 +7,7 @@ export interface ChapPart {
   _prev_url: string | null
   _next_url: string | null
   ///
-  ztext: string
-  mtlv1: string
+  chap_data: CV.Zhchap
 }
 
 export async function load({ params, fetch }) {

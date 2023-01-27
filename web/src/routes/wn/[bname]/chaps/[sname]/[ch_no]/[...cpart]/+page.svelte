@@ -1,14 +1,12 @@
 <script lang="ts">
-  import { page } from '$app/stores'
   import { session } from '$lib/stores'
-  import { api_get, api_call } from '$lib/api_call'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
   import MtPage2 from '$gui/sects/MtPage2.svelte'
-  import Notext from '$gui/parts/Notext.svelte'
+  import Notext from './Notext.svelte'
 
   // import Chtabs from './ChapTabs.svelte'
 
@@ -16,7 +14,8 @@
   import { chap_path, seed_path, _pgidx } from '$lib/kit_path'
   export let data: PageData
 
-  $: ({ nvinfo, curr_seed, curr_chap, ztext } = data)
+  $: ({ nvinfo, curr_seed, seed_data, curr_chap, chap_data } = data)
+
   $: paths = gen_paths(
     nvinfo,
     curr_seed,
@@ -93,9 +92,17 @@
 
 <!-- <Chtabs {nvinfo} {seeds} {nvseed} {chmeta} {chinfo} /> -->
 
-<MtPage2 {ztext} mtime={curr_chap.utime} wn_id={nvinfo.id} {on_fixraw}>
+<MtPage2
+  ztext={chap_data.ztext}
+  mtime={curr_chap.utime}
+  wn_id={nvinfo.id}
+  {on_fixraw}>
   <svelte:fragment slot="notext">
-    <!-- <Notext {nvseed} {chmeta} {chinfo} /> -->
+    <Notext
+      book_info={nvinfo}
+      seed_info={seed_data}
+      chap_info={curr_chap}
+      {chap_data} />
   </svelte:fragment>
 
   <Footer slot="footer">

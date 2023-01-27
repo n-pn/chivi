@@ -11,6 +11,8 @@ export interface SeedData {
     stime: number
     slink: string
     fresh: boolean
+    //
+    min_privi: number
     privi_map: number[]
   }
 }

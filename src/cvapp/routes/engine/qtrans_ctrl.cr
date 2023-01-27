@@ -92,11 +92,16 @@ class CV::QtransCtrl < CV::BaseCtrl
     end
   end
 
+  enum RenderTitle
+    None; First; All
+  end
+
   @[AC::Route::POST("/_db/qtran", body: :form)]
   @[AC::Route::POST("/api/qtran", body: :form)]
   def convert(form : ConvertForm,
               format : String = "txt",
               dname : String = "combine",
+              cv_title : String = "none",
               _simp : Bool = false)
     form.validate!(_privi)
 
@@ -104,12 +109,17 @@ class CV::QtransCtrl < CV::BaseCtrl
     stime = Time.monotonic
 
     to_txt = format == "txt"
+    render_title = RenderTitle.parse(cv_title)
 
     output = String.build do |str|
-      form.input.each_line.with_index do |line, idx|
-        str << '\n' if idx > 0
-        mtl = cvmtl.cv_plain(line, cap_first: true)
-        to_txt ? mtl.to_txt(str) : mtl.to_mtl(str)
+      iter = form.input.each_line
+
+      head = iter.next.as(String)
+      convert(cvmtl, str, head, !render_title.none?, to_txt)
+
+      iter.each do |line|
+        str << '\n'
+        convert(cvmtl, str, line, render_title.all?, to_txt)
       end
     end
 
@@ -122,5 +132,9 @@ class CV::QtransCtrl < CV::BaseCtrl
     render text: output
   end
 
-  @[AC::Route::POST("/_db/qtran2", body: :form)]
+  @[AlwaysInline]
+  private def convert(cvmtl, strio, input, cv_title = false, to_txt = true)
+    mtl = cv_title ? cvmtl.cv_title(input) : cvmtl.cv_plain(input)
+    to_txt ? mtl.to_txt(strio) : mtl.to_mtl(strio)
+  end
 end

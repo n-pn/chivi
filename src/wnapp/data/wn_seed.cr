@@ -58,6 +58,15 @@ class WN::WnSeed
     }
   end
 
+  def min_privi(owner : String = "")
+    case self.sname[0]
+    when '_' then 1
+    when '@' then 2
+    when '+' then @sname == owner ? 2 : 3
+    else          3
+    end
+  end
+
   # min privi required to read chapter
   #
   # return array of ch_no return max chapter can be readed by the current user

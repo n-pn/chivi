@@ -17,7 +17,30 @@ class WN::ChapCtrl < AC::Base
     wn_seed = get_wn_seed(sname, s_bid)
     vi_chap = get_vi_chap(wn_seed, ch_no)
 
-    zh_chap = get_zh_chap(wn_seed, ch_no)
+    min_privi = wn_seed.min_privi("+#{_uname}")
+    min_privi -= 1 if ch_no <= wn_seed.chap_total // 3
+
+    zh_chap = wn_seed.zh_chap(ch_no).not_nil!
+    can_read = _privi >= min_privi
+    ztext = can_read ? load_ztext(wn_seed, zh_chap, part_no, load_mode) : ""
+
+    render json: {
+      curr_chap: vi_chap,
+      _prev_url: prev_url(wn_seed, vi_chap, part_no),
+      _next_url: next_url(wn_seed, vi_chap, part_no),
+      ###
+      chap_data: {
+        mtlv1: "",
+        ztext: ztext,
+        title: zh_chap.title,
+        ##
+        privi: min_privi,
+        grant: can_read,
+      },
+    }
+  end
+
+  private def load_ztext(wn_seed : WnSeed, zh_chap : WnChap, part_no : Int32, load_mode = 0)
     zh_text = zh_chap.body
 
     # auto reload remote texts
@@ -30,19 +53,7 @@ class WN::ChapCtrl < AC::Base
     #   spawn zh_chap.save_body_copy!(seed: wn_seed)
     # end
 
-    ztext = String.build do |io|
-      io << zh_text[0]
-      zh_text[part_no + 1]?.try { |x| io << '\n' << x }
-    end
-
-    render json: {
-      curr_chap: vi_chap,
-      _prev_url: prev_url(wn_seed, vi_chap, part_no),
-      _next_url: next_url(wn_seed, vi_chap, part_no),
-      ###
-      ztext: ztext,
-      mtlv1: "",
-    }
+    zh_text.empty? ? "" : "#{zh_text[0]}\n#{zh_text[part_no &+ 1]?}"
   end
 
   @[AlwaysInline]
