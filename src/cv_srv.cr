@@ -34,13 +34,33 @@ class ::Log
   setup_from_env
 end
 
-class UserError < Exception; end
+abstract class UserError < Exception
+  getter status : HTTP::Status = :bad_request
+end
 
-class NotFound < UserError; end
+class BadRequest < UserError
+  def initialize(@message)
+    @status = :bad_request
+  end
+end
 
-class BadRequest < UserError; end
+class Unauthorized < UserError
+  def initialize(@message)
+    @status = :unauthorized
+  end
+end
 
-class Unauthorized < UserError; end
+class Forbidden < UserError
+  def initialize(@message)
+    @status = :forbidden
+  end
+end
+
+class NotFound < UserError
+  def initialize(@message)
+    @status = :not_found
+  end
+end
 
 abstract class AC::Base
   add_responder("text/plain") { |io, result| io << result }
@@ -56,48 +76,6 @@ abstract class AC::Base
 
     Log.context.set(client_ip: client_ip)
   end
-
-  # handle common errors at a global level
-  # this covers no acceptable response format and not an acceptable post format
-  @[AC::Route::Exception(ActionController::Route::NotAcceptable, status_code: HTTP::Status::NOT_ACCEPTABLE)]
-  @[AC::Route::Exception(AC::Route::UnsupportedMediaType, status_code: HTTP::Status::UNSUPPORTED_MEDIA_TYPE)]
-  def bad_media_type(error)
-    {
-      error:   error.message,
-      accepts: error.accepts,
-    }
-  end
-
-  # this covers a required paramater missing and a bad paramater value / format
-  @[AC::Route::Exception(AC::Route::Param::MissingError, status_code: HTTP::Status::BAD_REQUEST)]
-  @[AC::Route::Exception(AC::Route::Param::ValueError, status_code: HTTP::Status::BAD_REQUEST)]
-  def invalid_param(error)
-    {
-      error:       error.message,
-      parameter:   error.parameter,
-      restriction: error.restriction,
-    }
-  end
-
-  @[AC::Route::Exception(BadRequest, status_code: HTTP::Status::BAD_REQUEST)]
-  def bad_request(error)
-    response.headers["Content-Type"] = "application/json; charset=UTF-8"
-    {message: error.message}
-  end
-
-  @[AC::Route::Exception(NotFound, status_code: HTTP::Status::NOT_FOUND)]
-  def not_found(error)
-    response.headers["Content-Type"] = "application/json; charset=UTF-8"
-    {message: error.message}
-  end
-
-  @[AC::Route::Exception(Unauthorized, status_code: HTTP::Status::FORBIDDEN)]
-  def unauthorized(error)
-    response.headers["Content-Type"] = "application/json; charset=UTF-8"
-    {message: error.message}
-  end
-
-  #####
 
   private getter _vu_id : String { session["vu_id"]?.try(&.as(Int64).to_i) || 0 }
   private getter _uname : String { session["uname"]?.try(&.as(String)) || "Khách" }
@@ -190,10 +168,30 @@ struct ConvertBase32
   end
 end
 
+class ErrorHandler
+  include HTTP::Handler
+
+  def call(context : HTTP::Server::Context)
+    call_next(context)
+  rescue ex : Exception
+    response = context.response
+    response.reset
+
+    if ex.is_a?(UserError)
+      response.status = ex.status
+    else
+      response.status = :internal_server_error
+    end
+
+    response.content_type = "text/plain; charset=utf-8"
+    response.print(ex.message)
+  end
+end
+
 def start_server!(port : Int32, server_name = "Chivi")
   # Add handlers that should run before your application
   AC::Server.before(
-    AC::ErrorHandler.new(CV_ENV.production?, ["X-Request-ID"]),
+    ErrorHandler.new,
     AC::LogHandler.new(["upass", "new_upass"]),
     HTTP::CompressHandler.new
   )
