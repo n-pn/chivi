@@ -1,4 +1,4 @@
-import { set_fetch, api_get } from '$lib/api_call'
+import { api_get } from '$lib/api_call'
 
 import { suggest_read } from '$utils/ubmemo_utils'
 
@@ -9,14 +9,13 @@ export interface SeedList {
 }
 
 export async function load({ parent, fetch, url, depends, params }) {
-  set_fetch(fetch)
-
   depends('wn:seed_list')
 
   const path = `/_wn/seeds?wn_id=${params.wn_id}`
-  const seeds: SeedList = await api_get(path)
+  const seeds: SeedList = await api_get(path, null, fetch)
 
   const { nvinfo, ubmemo } = await parent()
+
   const _meta: App.PageMeta = {
     title: 'Chương tiết truyện ' + nvinfo.btitle_vi,
     // prettier-ignore

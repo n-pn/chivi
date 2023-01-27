@@ -40,21 +40,12 @@
     if ($navigating) return scroll.reset()
     else scroll.update()
   }
-
-  // prettier-ignore
-  $: meta_desc = $page.data._meta?.desc || 'Công cụ dịch máy từ Tiếng Trung sang Tiếng Việt'
-  $: meta_title = $page.data._meta?.title || 'Trang chủ'
 </script>
 
 <svelte:window
   on:scroll={handle_scroll}
   on:keydown={handle_keydown}
   on:keyup={() => (kbd_hint = false)} />
-
-<svelte:head>
-  <meta name="description" content={meta_desc} />
-  <title>{meta_title} - Chivi</title>
-</svelte:head>
 
 <chivi-app class="tm-{wtheme}" class:kbd-hint={kbd_hint} class:_shift={$toleft}>
   {#if $navigating}<Loader />{/if}

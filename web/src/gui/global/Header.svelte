@@ -4,39 +4,32 @@
 
   import Item from './Header/HeaderItem.svelte'
 
+  import { gen_meta } from './header_util'
+
   // prettier-ignore
-  $: meta = $page.data._meta || { left_nav: [], right_nav: [], show_config: false }
-  $: ({ left_nav = [], right_nav = [], show_config = false } = meta)
+  $: meta = $page.data._meta || gen_meta($page.data)
   $: uname = $page.data._user?.uname
 </script>
 
+<svelte:head>
+  <meta name="description" content={meta.desc} />
+  <title>{meta.title || ''} - Chivi</title>
+</svelte:head>
+
 <header class="app-header" class:clear={$scroll > 0}>
   <nav class="app-vessel">
-    <div class="-left">
+    <div class="-left __left">
       <Item
         type="button"
         icon="menu-2"
         on:click={() => popups.show('appnav')} />
-
-      {#if left_nav.length < 2}
-        <Item type="a" href="/" data-kind="brand" show="tl" text="Chivi">
-          <img src="/icons/chivi.svg" alt="logo" slot="icon" />
-        </Item>
-      {/if}
-
-      {#each left_nav as opts, idx}
-        {@const active = idx == left_nav.length - 1 || null}
-        <Item type="a" {...opts} {active} />
-      {/each}
+      {#each meta.left_nav || [] as opts}<Item {...opts} />{/each}
     </div>
 
     <div class="-right">
-      {#each right_nav as opts}
-        {@const type = opts.href ? 'a' : 'button'}
-        <Item {type} {...opts} />
-      {/each}
+      {#each meta.right_nav || [] as opts}<Item {...opts} />{/each}
 
-      {#if show_config}
+      {#if meta.show_config}
         <Item
           type="button"
           text="Cài đặt"

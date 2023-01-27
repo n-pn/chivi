@@ -1,17 +1,9 @@
-import { set_fetch, do_fetch, api_path } from '$lib/api_call'
-
-// prettier-ignore
-const _meta : App.PageMeta = {
-  title: 'Thư đơn',
-  left_nav: [{text: 'Thư đơn', icon: 'bookmarks',  href: '/ys/lists' }],
-  right_nav: [{text: 'Đánh giá', icon: 'stars',  href: '/ys/crits', 'data-show': 'tm' }],
-}
+import { api_path, api_get } from '$lib/api_call'
 
 export async function load({ fetch, url: { searchParams } }) {
-  set_fetch(fetch)
-
   const path = api_path('yslists.index', {}, searchParams, { lm: 10 })
-  const data = await do_fetch(path)
+  const data = await api_get<CV.YscritList>(path, null, fetch)
 
-  return { ...data, params: Object.fromEntries(searchParams), _meta }
+  const params = Object.fromEntries(searchParams)
+  return { ...data, params: params, _path: 'ylist_idx' }
 }

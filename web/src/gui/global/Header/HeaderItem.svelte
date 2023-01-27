@@ -1,13 +1,17 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let type: string = 'span'
   export let text: string = ''
   export let icon: string = ''
+  export let type: string = 'span'
 </script>
 
 <svelte:element this={type} class="topbar-item" {...$$restProps} on:click>
-  {#if icon}<SIcon name={icon} />{:else}<slot name="icon" />{/if}
+  {#if icon}
+    <SIcon name={icon} />
+  {:else if $$props['data-kind'] == 'brand'}
+    <img src="/icons/chivi.svg" alt="logo" />
+  {/if}
   {#if text}<span class="-text">{text}</span>{/if}
 </svelte:element>
 
@@ -32,7 +36,7 @@
     @include bdradi();
     @include bgcolor(primary, 7);
 
-    &[active],
+    :global(.__left) > &:last-child,
     &:hover {
       @include bgcolor(primary, 6);
     }

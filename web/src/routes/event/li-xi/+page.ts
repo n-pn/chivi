@@ -1,4 +1,4 @@
-import type { PageLoad } from '../$types'
+import type { PageLoad } from './$types'
 
 export const load = (async ({ fetch, url: { searchParams } }) => {
   const pg = searchParams.get('pg') || 1
