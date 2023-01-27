@@ -9,6 +9,6 @@ export async function load({ fetch, url, params }) {
 
   const cvdata = await api_res.text()
 
-  const [type, name] = params.id.split('/')
-  return { type, name, cvdata, _path: 'qtran_post' }
+  const { type, name } = params
+  return { type, name, cvdata }
 }

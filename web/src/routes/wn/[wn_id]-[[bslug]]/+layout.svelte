@@ -22,7 +22,6 @@
 
   $: nvinfo = data.nvinfo
   $: bcover = nvinfo.bcover || 'blank.webp'
-  $: bintro = nvinfo.bintro.substring(0, 300)
   $: update = new Date(nvinfo.mftime || 0).toISOString()
   $: genres = nvinfo.genres || []
 
@@ -38,15 +37,11 @@
 </script>
 
 <svelte:head>
-  <title>{nvinfo.btitle_vi} - Chivi</title>
   <meta name="keywords" content={gen_keywords(nvinfo)} />
-  <meta name="description" content={bintro} />
 
-  <meta property="og:title" content={nvinfo.btitle_vi} />
   <meta property="og:type" content="novel" />
-  <meta property="og:description" content={bintro} />
-  <meta property="og:url" content="https://chivi.app/-{nvinfo.bslug}" />
-  <meta property="og:image" content="https://r2.chivi.app/covers/{bcover}" />
+  <meta property="og:url" content="https://chivi.app/wn/{nvinfo.bslug}" />
+  <meta property="og:image" content="https://cr2.chivi.app/covers/{bcover}" />
 
   <meta property="og:novel:category" content={genres[0]} />
   <meta property="og:novel:author" content={nvinfo.author_vi} />

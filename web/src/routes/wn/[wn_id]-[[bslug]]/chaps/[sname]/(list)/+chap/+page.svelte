@@ -21,10 +21,10 @@
   import type { PageData } from './$types'
   import { seed_path } from '$lib/kit_path'
   export let data: PageData
-  $: ({ nvinfo } = data)
+  $: ({ nvinfo, curr_seed } = data)
 
   let input = ''
-  let start = data.chidx
+  let start = data.start
 
   let files: FileList
 
@@ -62,8 +62,6 @@
     }
   }
 
-  $: _seed = data._curr._seed
-
   let loading = false
   let changed = false
 
@@ -90,7 +88,7 @@
   async function submit(_evt: Event) {
     err_msg = ''
 
-    const url = `/_wn/texts/${_seed.sname}/${_seed.snvid}?start=${start}`
+    const url = `/_wn/texts/${curr_seed.sname}/${curr_seed.snvid}?start=${start}`
     const body = render_body(chapters)
     const res = await fetch(url, { method: 'POST', body })
 
@@ -98,7 +96,7 @@
       err_msg = await res.text()
     } else {
       invalidate('wn:seed_list')
-      goto(seed_path(nvinfo.bslug, _seed.sname, _seed.s_bid, start))
+      goto(seed_path(nvinfo.bslug, curr_seed.sname, curr_seed.s_bid, start))
     }
   }
 

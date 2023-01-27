@@ -5,6 +5,7 @@
   line-height: 1.25em;
   font-family: var(--font-sans);
 
+  z-index: 10;
   text-transform: initial;
   color: var(--bg-main);
   background-color: var(--fg-secd);
@@ -21,7 +22,6 @@ tool-tip {
   }
 
   width: 10rem;
-  z-index: 10;
   position: absolute;
   display: inline-block;
   text-align: center;

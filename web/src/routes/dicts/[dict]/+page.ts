@@ -1,4 +1,4 @@
-import { api_path } from '$lib/api_call'
+import { api_path, api_get } from '$lib/api_call'
 import type { PageLoadEvent } from './$types'
 
 // FIXME: add type for term
@@ -16,38 +16,27 @@ export interface V1Dict {
   users: string[]
 }
 
-const fields = ['key', 'val', 'ptag', 'prio', 'uname', '_mode']
-
 export async function load({ fetch, url, params: { dict } }: PageLoadEvent) {
   const dict_path = api_path('v1dict.show', dict)
-  const dinfo: V1Dict = await fetch(dict_path).then((r) => r.json())
+  const dinfo = await api_get<V1Dict>(dict_path, null, fetch)
 
-  const query = {
-    dic: dict,
-    key: url.searchParams.get('key') || '',
-    val: url.searchParams.get('val') || '',
-    ptag: url.searchParams.get('ptag') || '',
-    prio: +url.searchParams.get('prio') || '',
-    tab: +url.searchParams.get('tab') || '',
-    uname: url.searchParams.get('uname') || '',
-    pg: +url.searchParams.get('pg') || 1,
-    lm: +url.searchParams.get('lm') || 50,
-  }
-
+  const query = gen_query(dict, url.searchParams)
   const terms_url = api_path('v1defn.index', null, url.searchParams, query)
+  const terms = await api_get<TermsData>(terms_url, null, fetch)
 
-  const terms: TermsData = await fetch(terms_url).then((r) => r.json())
+  return { ...dinfo, ...terms, query }
+}
 
-  for (const field in fields) query[field] = url.searchParams.get(field) || ''
-
-  // prettier-ignore
-  const _meta: App.PageMeta = {
-    title: 'Từ điển:' + dinfo.label,
-    left_nav: [
-      { text: 'Từ điển', icon: 'package', href: '/dicts', 'data-show': 'ts' },
-      { text: dinfo.label, href: url.pathname, 'data-kind': 'title' },
-    ],
+function gen_query(dic: string, params: URLSearchParams) {
+  return {
+    dic: dic,
+    key: params.get('key') || '',
+    val: params.get('val') || '',
+    ptag: params.get('ptag') || '',
+    prio: +params.get('prio') || '',
+    tab: +params.get('tab') || '',
+    uname: params.get('uname') || '',
+    pg: +params.get('pg') || 1,
+    lm: +params.get('lm') || 50,
   }
-
-  return { ...dinfo, ...terms, query, _meta }
 }

@@ -5,5 +5,5 @@ export async function load({ fetch, url: { searchParams } }) {
   const data = await api_get<CV.YscritList>(path, null, fetch)
 
   const params = Object.fromEntries(searchParams)
-  return { ...data, params: params, _path: 'ylist_idx' }
+  return { ...data, params: params }
 }

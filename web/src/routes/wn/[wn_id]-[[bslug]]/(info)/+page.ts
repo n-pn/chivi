@@ -15,16 +15,14 @@ export const load = async ({ fetch, params: { wn_id } }: LoadEvent) => {
   const api_url = `/_db/v2/books/${wn_id}/front`
 
   const bdata = await api_get<BookFront>(api_url, null, fetch)
+  const crits = await load_ycrits(wn_id, fetch)
 
-  set_fetch(fetch)
-  const crits = await load_ycrits(wn_id)
-
-  return { ...bdata, crits: crits }
+  return { ...bdata, crits }
 }
 
-const load_ycrits = async (book: string) => {
+const load_ycrits = async (book: string, fetch = globalThis.fetch) => {
   const extra = { book, sort: 'score', lm: 3 }
   const ypath = api_path('yscrits.index', null, null, extra)
-  const ydata = await api_get<{ crits: CV.Yscrit[] }>(ypath)
+  const ydata = await api_get<{ crits: CV.Yscrit[] }>(ypath, null, fetch)
   return ydata.crits
 }

@@ -9,4 +9,12 @@
   const on_success = (_: CV.Vicrit) => goto(`/-${data.nvinfo.bslug}/crits`)
 </script>
 
+<h3>Đánh giá cá nhân của bạn cho bộ truyện:</h3>
+
 <VicritForm nvinfo={data.nvinfo} form={data.form} {on_success} />
+
+<style lang="scss">
+  h3 {
+    margin-bottom: 1rem;
+  }
+</style>

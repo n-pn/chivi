@@ -9,7 +9,12 @@
 <section class="wrapper">
   <article class="content">
     <h1>{$page.status}</h1>
-    <p>{$page.error.message}</p>
+
+    {#if $page.status == 404}
+      <p>Đường dẫn không tồn tại!</p>
+    {:else}
+      <p>{$page.error.message}</p>
+    {/if}
   </article>
 </section>
 

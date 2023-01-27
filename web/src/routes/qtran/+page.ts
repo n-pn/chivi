@@ -1,5 +1,6 @@
 export async function load({ url }) {
-  const dname = url.searchParams.get('dname') || 'combine'
-  const input = url.searchParams.get('input')
-  return { dname, input, _path: 'qtran' }
+  return {
+    dname: url.searchParams.get('dname') || 'combine',
+    input: url.searchParams.get('input'),
+  }
 }

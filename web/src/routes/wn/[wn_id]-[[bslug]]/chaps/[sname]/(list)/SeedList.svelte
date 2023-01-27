@@ -23,7 +23,8 @@
     href={seed_path(nvinfo.bslug, seeds._main.sname, seeds._main.snvid, pgidx)}
     class="seed-name"
     class:_active={seeds._main.sname == curr_seed.sname}
-    data-tip="Danh sách chương trộn tổng hợp">
+    data-tip="Danh sách chương trộn tổng hợp"
+    data-tip-loc="bottom">
     <div class="seed-label">Tổng hợp</div>
     <div class="seed-stats"><strong>{seeds._main.chmax}</strong> chương</div>
   </a>
@@ -34,7 +35,9 @@
       <a
         href={seed_path(nvinfo.bslug, sname, snvid, pgidx)}
         class="seed-name"
-        class:_active={sname == curr_seed.sname}>
+        class:_active={sname == curr_seed.sname}
+        data-tip="Danh sách chương cá nhân của {sname}"
+        data-tip-loc="bottom">
         <div class="seed-label">{sname}</div>
         <div class="seed-stats"><strong>{chmax}</strong> chương</div>
       </a>
@@ -46,7 +49,8 @@
       href={seed_path(nvinfo.bslug, _self.sname, _self.snvid, pgidx)}
       class="seed-name"
       class:_active={_self.sname == curr_seed.sname}
-      data-tip="Danh sách chương của cá nhân bạn">
+      data-tip="Danh sách chương của cá nhân bạn"
+      data-tip-loc="bottom">
       <div class="seed-label">Của bạn</div>
       <div class="seed-stats"><strong>{_self.chmax}</strong> chương</div>
     </a>
@@ -56,6 +60,7 @@
     class="seed-name _btn"
     class:_active={show_bg}
     data-tip="Các nguồn text cơ sở có thể được thừa kế bằng các nguồn khác"
+    data-tip-loc="bottom"
     on:click={() => (show_bg = !show_bg)}>
     <div class="seed-label">Nguồn nền</div>
     <div class="seed-stats"><strong>{seeds.backs.length}</strong> nguồn</div>

@@ -9,6 +9,7 @@ interface BookList {
 
 export const load = async ({ fetch }: LoadEvent) => {
   // const ydata = await fetch('/_ys/front').then((r) => r.json())
-  const books = await api_get<BookList>('/_db/ranks/brief', null, fetch)
-  return { books, _path: '/' }
+  return {
+    books: await api_get<BookList>('/_db/ranks/brief', null, fetch),
+  }
 }

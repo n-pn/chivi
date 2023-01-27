@@ -32,6 +32,8 @@ declare namespace App {
   interface PageMeta {
     title: string
     desc?: string
+    url?: string
+    image?: string
 
     left_nav?: HeadItem[]
     right_nav?: HeadItem[]

@@ -13,19 +13,23 @@ export function book_path(bslug: string, child: string = '') {
   return child ? `/wn/${bslug}/${child}` : `/wn/${bslug}`
 }
 
-const seed_prefixes = ['_', '@', '!', '+']
-
 export function seed_path(
   bslug: string,
   sname: string,
   s_bid: string | number,
   pg_no: number = 0
 ): string {
-  if (!seed_prefixes.includes(sname[0])) sname = '_'
-  else if (s_bid && sname[0] == '!') sname += `:${s_bid}`
+  sname = fix_sname(sname)
+  if (s_bid && s_bid[0] == '!') sname += `:${s_bid}`
 
   const path = `/wn/${bslug}/chaps/${sname}`
   return pg_no > 1 ? path + `?pg=${pg_no}` : path
+}
+
+const seed_prefixes = ['_', '@', '!', '+']
+// prettier-ignore
+export const fix_sname = (sname: string) => {
+  return seed_prefixes.includes(sname[0]) ? sname : '_'
 }
 
 export function chap_path(bslug: string, { sname, snvid }, ch_no: number) {

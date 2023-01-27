@@ -9,9 +9,8 @@ interface ListData {
   pgidx: number
 }
 
-export async function load({ fetch, params, url: { searchParams } }) {
+export function load({ fetch, params, url: { searchParams } }) {
   const list = params.list.split('-')[0]
   const path = api_path('yslists.show', list, searchParams)
-  const data = await api_get<ListData>(path, null, fetch)
-  return { ...data, _path: 'ylist_show' }
+  return api_get<ListData>(path, null, fetch)
 }

@@ -15,6 +15,7 @@
   import Gmenu from '$gui/molds/Gmenu.svelte'
 
   import type { PageData } from './$types'
+  import { seed_path } from '$lib/kit_path'
   export let data: PageData
 
   $: ({ nvinfo, ubmemo, curr_seed, seed_data, chaps, pg_no } = data)
@@ -44,6 +45,8 @@
 
     return sname == '@' + $session.uname
   }
+
+  $: base_path = seed_path(nvinfo.bslug, curr_seed.sname, curr_seed.snvid)
 </script>
 
 <article class="article island">
@@ -60,8 +63,8 @@
         <a
           class="m-btn _primary _fill"
           class:_disable={$session.privi < 1}
-          href="/wn/{nvinfo.bslug}/chaps/{curr_seed.sname}/+chap?chidx={curr_seed.chmax +
-            1}"
+          href="
+          {base_path}/+chap?start={curr_seed.chmax + 1}"
           data-tip="Yêu cầu quyền hạn: 1">
           <SIcon name="upload" />
           <span class="-hide">Thêm chương</span>

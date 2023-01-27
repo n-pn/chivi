@@ -7,13 +7,20 @@
   import { gen_meta } from './header_util'
 
   // prettier-ignore
-  $: meta = $page.data._meta || gen_meta($page.data)
+  $: meta = $page.data._meta || gen_meta($page.route?.id ||'/', $page.data)
   $: uname = $page.data._user?.uname
+
+  $: image = meta.image || 'https://chivi.app/imgs/avatar.pgn'
 </script>
 
 <svelte:head>
   <meta name="description" content={meta.desc} />
   <title>{meta.title || ''} - Chivi</title>
+
+  <meta property="og:title" content={meta.title} />
+  <meta property="og:description" content={meta.desc} />
+  <meta property="og:url" content={meta.url || 'https://chivi.app'} />
+  <meta property="og:image" content={image} />
 </svelte:head>
 
 <header class="app-header" class:clear={$scroll > 0}>

@@ -9,6 +9,5 @@ interface CritData {
 
 export const load = (async ({ fetch, params: { crit } }) => {
   const path = api_path('yscrits.show', crit)
-  const data = await api_get<CritData>(path, null, fetch)
-  return { ...data, crit_id: crit, _path: 'ycrit_show' }
+  return await api_get<CritData>(path, null, fetch)
 }) satisfies PageLoad

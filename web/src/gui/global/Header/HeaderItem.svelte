@@ -1,9 +1,9 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let text: string = ''
-  export let icon: string = ''
-  export let type: string = 'span'
+  export let text: string | null = null
+  export let icon: string | null = null
+  export let type: string = 'a'
 </script>
 
 <svelte:element this={type} class="topbar-item" {...$$restProps} on:click>
