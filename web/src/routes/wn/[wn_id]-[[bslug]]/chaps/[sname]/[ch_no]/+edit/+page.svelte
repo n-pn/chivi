@@ -10,61 +10,62 @@
   import { opencc, diff_html, fix_breaks, translate } from '$utils/text_utils'
 
   import type { PageData } from './$types'
+  import { chap_path } from '$lib/kit_path'
   export let data: PageData
 
-  let chidx = data.chidx
-  let chvol = data.chvol
+  let ztext = data.ztext
   let title = data.title
-  let input = data.input
+  let chdiv = data.chdiv
+  let ch_no = data.ch_no
 
-  $: ({ nvinfo, sname } = data)
+  $: ({ nvinfo } = data)
   $: privi = $session.privi || -1
-  $: disabled = privi < 1 || (privi == 1 && input.length > 30000)
+  $: disabled = privi < 1 || (privi == 1 && ztext.length > 30000)
 
-  $: action_url = `/_db/texts/${nvinfo.id}/${sname}/${chidx}`
+  $: action_url = `/_wn/texts/${data.sname}/${data.s_bid}/${ch_no}`
 
   async function submit(event: Event) {
     event.preventDefault()
 
     const headers = { 'Content-Type': 'application/json' }
-    const body = JSON.stringify({ chvol, title, input })
+    const body = JSON.stringify({ chdiv, title, ztext })
 
     const res = await fetch(action_url, { method: 'PUT', headers, body })
 
     if (res.ok) {
-      await res.json()
-      goto(`/-${nvinfo.bslug}/chaps/${sname}/${chidx}`)
+      const seed = { sname: data.sname, snvid: data.s_bid }
+      goto(chap_path(nvinfo.bslug, seed, ch_no))
     } else {
       alert(await res.text())
     }
   }
 
-  const trad2sim = async (_: Event) => (input = await opencc(input))
+  const trad2sim = async (_: Event) => (ztext = await opencc(ztext))
 
   let old_vtext: string = ''
   let new_vtext: string = ''
   let html_diff: string = ''
 
-  const compare = debounce(async (input: string) => {
-    old_vtext ||= await translate(data.input, data.dname)
-    new_vtext = await translate(input, data.dname)
+  const compare = debounce(async (ztext: string) => {
+    old_vtext ||= await translate(data.ztext, data.dname)
+    new_vtext = await translate(ztext, data.dname)
     html_diff = diff_html(old_vtext, new_vtext, true)
   }, 300)
 
-  $: if (browser) compare(input)
+  $: if (browser) compare(ztext)
 
   let edit_elem: HTMLElement
   let view_elem: HTMLElement
 
   const revert_changes = () => {
-    input = data.input
-    chvol = data.chvol
+    ztext = data.ztext
+    chdiv = data.chdiv
     title = data.title
   }
 </script>
 
 <svelte:head>
-  <title>Sửa text gốc chương #{chidx} - {nvinfo.btitle_vi} - Chivi</title>
+  <title>Sửa text gốc chương #{ch_no} - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
 
 <nav class="bread">
@@ -77,17 +78,17 @@
 </nav>
 
 <section class="article">
-  <h2>Sửa text chương #{chidx}</h2>
+  <h2>Sửa text chương #{ch_no}</h2>
 
   <form action={action_url} method="POST" on:submit={submit}>
     <div class="form-group _fluid">
       <span class="form-field">
-        <label class="label" for="chvol">Tên tập truyện</label>
+        <label class="label" for="chdiv">Tên tập truyện</label>
         <input
           class="m-input"
-          name="chvol"
+          name="chdiv"
           lang="zh"
-          bind:value={chvol}
+          bind:value={chdiv}
           placeholder="Có thể để trắng" />
       </span>
 
@@ -96,20 +97,20 @@
         <input class="m-input" name="title" lang="zh" bind:value={title} />
       </span>
 
-      <span class="form-field _chidx">
-        <label class="label" for="chidx">Vị trí chương</label>
-        <input class="m-input" name="chidx" bind:value={chidx} />
+      <span class="form-field _ch_no">
+        <label class="label" for="ch_no">Vị trí chương</label>
+        <input class="m-input" name="ch_no" bind:value={ch_no} />
       </span>
     </div>
 
     <div class="content">
       <div class="edit">
-        <label class="label" for="input">Nội dung chương</label>
+        <label class="label" for="ztext">Nội dung chương</label>
         <textarea
           class="m-input"
           name="text"
           lang="zh"
-          bind:value={input}
+          bind:value={ztext}
           bind:this={edit_elem}
           on:scroll={() => sync_scroll(edit_elem, view_elem)} />
       </div>
@@ -140,7 +141,7 @@
         <button
           type="button"
           class="m-btn _line"
-          on:click={() => (input = fix_breaks(input))}>
+          on:click={() => (ztext = fix_breaks(ztext))}>
           <SIcon name="bandage" />
           <span class="hide">Sửa vỡ dòng</span>
         </button>

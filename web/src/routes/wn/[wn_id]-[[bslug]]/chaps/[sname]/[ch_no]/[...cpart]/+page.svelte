@@ -13,34 +13,33 @@
   // import Chtabs from './ChapTabs.svelte'
 
   import type { PageData } from './$types'
+  import { chap_path, seed_path, _pgidx } from '$lib/kit_path'
   export let data: PageData
 
-  $: ({ nvinfo, seeds, _curr, _chap, ztext } = data)
-  $: paths = gen_paths(data)
+  $: ({ nvinfo, curr_seed, curr_chap, ztext } = data)
+  $: paths = gen_paths(
+    nvinfo,
+    curr_seed,
+    curr_chap,
+    data._prev_url,
+    data._next_url
+  )
 
-  $: _seed = _curr._seed
+  function gen_paths(
+    { bslug },
+    { sname, snvid: s_bid, chmax },
+    { chidx: ch_no },
+    _prev_url: string | null,
+    _next_url: string | null
+  ) {
+    const list = seed_path(bslug, sname, s_bid, ch_no)
+    const last = seed_path(bslug, sname, s_bid, chmax)
 
-  function gen_paths({
-    nvinfo: { bslug },
-    _curr: { _seed },
-    _chap,
-    _next,
-    _prev,
-  }) {
-    const home = `/wn/${bslug}`
-    const base = seed_base_url(bslug, _seed.sname, _seed.s_bid)
-
-    const list = base + '?pg=' + Math.floor((_chap.ch_no - 1) / 32) + 1
-
-    const prev = _prev ? `${base}/${_prev}` : home
-    const next = _next ? `${base}/${_next}` : list
+    const base = seed_path(bslug, sname, s_bid)
+    const prev = _prev_url ? `${base}/${_prev_url}` : base
+    const next = _next_url ? `${base}/${_next_url}` : last
 
     return { list, prev, next }
-  }
-
-  function seed_base_url(bslug: string, sname: string, s_bid: number) {
-    const base = `/wn/${bslug}/chaps/${sname}`
-    return sname[0] == '!' ? `${base}:${s_bid}` : base
   }
 
   // async function update_history(lock: boolean) {
@@ -89,12 +88,12 @@
     <span>{nvinfo.btitle_vi}</span>
   </a>
   <span>/</span>
-  <span class="crumb _text">{_chap.chvol}</span>
+  <span class="crumb _text">{curr_chap.chvol}</span>
 </nav>
 
 <!-- <Chtabs {nvinfo} {seeds} {nvseed} {chmeta} {chinfo} /> -->
 
-<MtPage2 {ztext} mtime={_chap.utime} wn_id={nvinfo.id} {on_fixraw}>
+<MtPage2 {ztext} mtime={curr_chap.utime} wn_id={nvinfo.id} {on_fixraw}>
   <svelte:fragment slot="notext">
     <!-- <Notext {nvseed} {chmeta} {chinfo} /> -->
   </svelte:fragment>
@@ -104,23 +103,23 @@
       <a
         href={paths.prev}
         class="m-btn navi-item"
-        class:_disable={!data._prev}
+        class:_disable={!data._prev_url}
         data-kbd="j">
         <SIcon name="chevron-left" />
         <span>Trước</span>
       </a>
 
       <Gmenu class="navi-item" loc="top">
-        <!-- <button class="m-btn" slot="trigger">
-          <SIcon name={memo_icon} />
-          <span>{chinfo.chidx}/{chmeta.total}</span>
-        </button> -->
+        <button class="m-btn" slot="trigger">
+          <SIcon name="menu-2" />
+          <span>{curr_chap.chidx}/{curr_seed.chmax}</span>
+        </button>
 
         <svelte:fragment slot="content">
           <a
             class="gmenu-item"
             class:_disable={$session.privi < 1}
-            href="/-{nvinfo.bslug}/chaps/{_seed.sname}/{_chap.chidx}/+edit">
+            href="{chap_path(nvinfo.bslug, curr_seed, curr_chap.chidx)}/+edit">
             <SIcon name="pencil" />
             <span>Sửa text gốc</span>
           </a>
@@ -172,7 +171,7 @@
       <a
         href={paths.next}
         class="m-btn _fill navi-item"
-        class:_primary={data._next}
+        class:_primary={data._next_url}
         data-kbd="k">
         <span>Kế tiếp</span>
         <SIcon name="chevron-right" />

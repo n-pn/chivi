@@ -2,7 +2,6 @@
   import { page } from '$app/stores'
 
   import { SIcon, BCover } from '$gui'
-  import { book_path } from '$lib/kit_path'
 
   import { map_status } from '$utils/nvinfo_utils'
 
@@ -20,7 +19,7 @@
     return 'index'
   }
 
-  $: root_path = book_path(nvinfo.id, nvinfo.btitle_vi).index
+  $: root_path = `/wn/${nvinfo.bslug}`
 </script>
 
 <div class="main-info">

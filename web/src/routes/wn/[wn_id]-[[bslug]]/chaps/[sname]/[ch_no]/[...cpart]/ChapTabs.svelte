@@ -17,8 +17,7 @@
     return `/-${nvinfo.bslug}/chaps/${sname}/${chinfo.chidx}`
   }
 
-  $: _base = seeds.find((x) => x.sname == '=base')
-
+  $: _main = seeds.find((x) => x.sname == '_')
   $: uname = '@' + $session.uname
   $: _self = seeds.find((x) => x.sname == uname)
 </script>
@@ -37,9 +36,9 @@
 
   <a
     class="nvseed"
-    class:_active={nslist._base.sname == chmeta.sname}
-    class:_hidden={nslist._base.chmax < chinfo.chidx}
-    href={chap_href(nslist._base.sname)}>
+    class:_active={nslist._main.sname == chmeta.sname}
+    class:_hidden={nslist._main.chmax < chinfo.chidx}
+    href={chap_href(nslist._main.sname)}>
     <span class="nvseed-name">Tổng hợp</span>
   </a>
 

@@ -17,8 +17,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, ubmemo, _curr, chaps, pg_no } = data)
-  $: _seed = _curr._seed
+  $: ({ nvinfo, ubmemo, curr_seed, seed_data, chaps, pg_no } = data)
 
   $: pager = new Pager($page.url, { pg: 1 })
 
@@ -29,7 +28,7 @@
     _refresh = true
     _error = ''
 
-    const args = [nvinfo.id, _seed.sname]
+    const args = [nvinfo.id, curr_seed.sname]
     const res = await fetch(api_path('chroots.show', args, null, { mode: 1 }))
 
     if (res.ok) invalidateAll()
@@ -50,17 +49,18 @@
 <article class="article island">
   <page-info>
     <info-left>
-      <info-text>{_seed.sname != '_' ? _seed.sname : 'Tổng hợp'}</info-text>
-      <info-span>{_seed.chmax} chương</info-span>
-      <info-span><RTime mtime={_seed.utime} /></info-span>
+      <info-text
+        >{curr_seed.sname != '_' ? curr_seed.sname : 'Tổng hợp'}</info-text>
+      <info-span>{curr_seed.chmax} chương</info-span>
+      <info-span><RTime mtime={curr_seed.utime} /></info-span>
     </info-left>
 
     <info-right>
-      {#if _seed.stype == 0 && can_add_chaps(_seed.sname)}
+      {#if curr_seed.stype == 0 && can_add_chaps(curr_seed.sname)}
         <a
           class="m-btn _primary _fill"
           class:_disable={$session.privi < 1}
-          href="/wn/{nvinfo.bslug}/chaps/{_seed.sname}/+chap?chidx={_seed.chmax +
+          href="/wn/{nvinfo.bslug}/chaps/{curr_seed.sname}/+chap?chidx={curr_seed.chmax +
             1}"
           data-tip="Yêu cầu quyền hạn: 1">
           <SIcon name="upload" />
@@ -84,7 +84,7 @@
         </button>
 
         <svelte:fragment slot="content">
-          {#if _seed.stype == 0 && can_add_chaps(_seed.sname)}
+          {#if curr_seed.stype == 0 && can_add_chaps(curr_seed.sname)}
             <button
               class="gmenu-item"
               disabled={$session.privi < 0}
@@ -95,7 +95,7 @@
           {:else}
             <a
               class="gmenu-item"
-              href={_curr.slink}
+              href={seed_data.slink}
               target="_blank"
               rel="external noopener noreferrer">
               <SIcon name="external-link" />
@@ -106,7 +106,7 @@
           <a
             class="gmenu-item"
             class:_disable={$session.privi < 1}
-            href="/-{nvinfo.bslug}/chaps/{_seed.sname}/+edit">
+            href="/-{nvinfo.bslug}/chaps/{curr_seed.sname}/+edit">
             <SIcon name="settings" />
             <span>Cài đặt</span>
           </a>
@@ -118,10 +118,10 @@
   {#if _error}<div class="error">{_error}</div>{/if}
   <div class="chap-hint">
     <span>Gợi ý:</span>
-    <span class="-hint" class:_bold={!_curr.fresh}
+    <span class="-hint" class:_bold={!seed_data.fresh}
       >Bấm "<SIcon name="refresh" /> Đổi mới" để cập nhật danh sách chương tiết.</span>
     <span class="-stat"
-      >Lần cập nhật cuối: <strong>{rel_time(_curr.stime)}</strong>.</span>
+      >Lần cập nhật cuối: <strong>{rel_time(seed_data.stime)}</strong>.</span>
   </div>
 
   <chap-list>
@@ -129,23 +129,23 @@
       <ChapList
         {nvinfo}
         {ubmemo}
-        nvseed={_seed}
-        chaps={_curr.lasts}
-        privi_map={_curr.privi_map} />
+        nvseed={curr_seed}
+        chaps={data.top_chaps}
+        privi_map={seed_data.privi_map} />
       <div class="chlist-sep" />
       <ChapList
         {nvinfo}
         {ubmemo}
-        nvseed={_seed}
+        nvseed={curr_seed}
         {chaps}
-        privi_map={_curr.privi_map} />
+        privi_map={seed_data.privi_map} />
 
       <Footer>
         <div class="foot">
           <Mpager
             {pager}
             pgidx={pg_no}
-            pgmax={Math.floor((_seed.chmax - 1) / 32) + 1} />
+            pgmax={Math.floor((curr_seed.chmax - 1) / 32) + 1} />
         </div>
       </Footer>
     {:else}

@@ -27,15 +27,21 @@ class WN::TextCtrl < AC::Base
     # end
 
     # put extra metadata
-    response.headers["X-TITLE"] = zh_chap.title
-    response.headers["X-CHDIV"] = zh_chap.chdiv
     response.headers["Content-Type"] = "text/plain; charset=UTF-8"
 
-    if part_no && (text_part = ch_body[part_no]?)
-      render text: "#{ch_body[0]}\n#{text_part}"
-    else
-      render text: ch_body.join('\n')
+    ztext = String.build do |io|
+      if part_no
+        io << ch_body[0] << '\n' << ch_body[part_no]?
+      else
+        ch_body.join(io, '\n')
+      end
     end
+
+    render json: {
+      ztext: ztext,
+      title: zh_chap.title,
+      chdiv: zh_chap.chdiv,
+    }
   end
 
   @[AlwaysInline]
@@ -66,14 +72,14 @@ class WN::TextCtrl < AC::Base
     wn_seed = get_wn_seed(sname, s_bid)
 
     start = wn_seed.chap_total + 1 if start < 1
-    input = request.body.not_nil!.gets_to_end
+    ztext = request.body.not_nil!.gets_to_end
 
-    chaps = TextSplit.split_multi(input)
+    chaps = TextSplit.split_multi(ztext)
 
     chaps.each_with_index(start) do |(text, chdiv), ch_no|
       zh_chap = wn_seed.zh_chap(ch_no) || WnChap.new(ch_no, ch_no, "", "")
       zh_chap.chdiv = chdiv
-      zh_chap.save_body!(text, wn_seed, _uname)
+      zh_chap.save_body!(text, seed: wn_seed, uname: _uname)
     end
 
     max_ch_no = start + chaps.size - 1
@@ -82,17 +88,26 @@ class WN::TextCtrl < AC::Base
     wn_seed.mtime = Time.utc.to_unix
     wn_seed.save!
 
+    spawn do
+      save_dir = "var/texts/users/#{sname}-#{s_bid}"
+      Dir.mkdir_p(save_dir)
+
+      file_name = "#{Time.utc.to_unix // 60}-#{start}-@#{_uname}"
+      file_path = "#{save_dir}/#{file_name}.txt"
+      File.write(file_path, ztext)
+    end
+
     render json: {pg_no: _pgidx(start, 32)}
   end
 
   struct EntryForm
     include JSON::Serializable
-    getter input : String
+    getter ztext : String
     getter title : String
     getter chdiv : String
 
     def after_initialize
-      @input = TextUtil.clean_spaces(@input)
+      @ztext = TextUtil.clean_spaces(@ztext)
       @title = TextUtil.clean_spaces(@title)
       @chdiv = TextUtil.clean_spaces(@chdiv)
     end
@@ -109,7 +124,7 @@ class WN::TextCtrl < AC::Base
       ChTextEdit.new({
         sname: wn_seed.sname, s_bid: wn_seed.s_bid,
         s_cid: zh_chap.s_cid, ch_no: zh_chap.ch_no,
-        patch: form.input, uname: _uname,
+        patch: form.ztext, uname: _uname,
       }).save!
     rescue ex
       Log.error(exception: ex) { ex.message.colorize.red }
@@ -118,7 +133,7 @@ class WN::TextCtrl < AC::Base
     zh_chap.title = form.title
     zh_chap.chdiv = form.chdiv
 
-    zh_chap.save_body!(form.input, seed: wn_seed, uname: _uname)
+    zh_chap.save_body!(form.ztext, seed: wn_seed, uname: _uname)
 
     render json: zh_chap
   end

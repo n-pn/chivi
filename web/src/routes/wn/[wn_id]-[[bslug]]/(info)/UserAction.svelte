@@ -1,6 +1,5 @@
 <script lang="ts">
   import { last_read } from '$utils/ubmemo_utils'
-  import { book_path } from '$lib/kit_path'
 
   import { SIcon, Gmenu } from '$gui'
   import MarkBook from './MarkBook.svelte'
@@ -9,7 +8,7 @@
   export let ubmemo: CV.Ubmemo
 
   $: toread = last_read(nvinfo, ubmemo)
-  $: root_path = book_path(nvinfo.id, nvinfo.btitle_vi).index
+  $: root_path = `/wn/${nvinfo.bslug}`
 </script>
 
 <div class="user-action">

@@ -1,24 +1,3 @@
-<script context="module" lang="ts">
-  const icon_types = ['affiliate', 'archive', 'cloud-off', 'cloud-fog', 'cloud']
-
-  function map_info({ sname, slink }) {
-    switch (sname) {
-      case 'zxcs_me':
-        return 'Nguồn text tải bằng tay từ trang zxcs.me (bản đẹp).'
-
-      case 'hetushu':
-        return 'Chương tiết từ trang hetushu.com (phần lớn là bản đẹp)'
-
-      default:
-        if (sname.startsWith('@')) return `Danh sách chương của ${sname}`
-        if (!slink || slink == '/') return `Nguồn truyện chưa có chú thích.`
-
-        const hostname = new URL(slink).hostname.replace('www.', '')
-        return `Chương tiết tải ngoài từ trang ${hostname}`
-    }
-  }
-</script>
-
 <script lang="ts">
   import { page } from '$app/stores'
   import { session } from '$lib/stores'
@@ -26,48 +5,36 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import type { LayoutData } from './$types'
+  import { book_path, seed_path } from '$lib/kit_path'
   export let data: LayoutData
 
-  $: ({ nvinfo, seeds, _curr } = data)
+  $: ({ nvinfo, seeds, curr_seed } = data)
 
   $: pgidx = +$page.url.searchParams.get('pg') || 1
 
   $: uname = '@' + $session.uname
   $: _self = seeds.users.find((x) => x.sname == uname)
 
-  $: curr_sname = _curr._seed.sname
-
-  function seed_url(sname: string, pg_no: number, s_bid: number = nvinfo.id) {
-    const bslug = nvinfo.bslug.replace(/^.+?-/, `${nvinfo.id}-`)
-
-    let url = `/wn/${bslug}/chaps/${sname}`
-    if (sname[0] == '!') url += ':' + s_bid
-    if (pg_no > 1) url += '?pg=' + pg_no
-
-    return url
-  }
-
   let show_bg = false
 </script>
 
 <div class="seed-list">
   <a
-    href={seed_url(seeds._main.sname, pgidx)}
+    href={seed_path(nvinfo.bslug, seeds._main.sname, seeds._main.snvid, pgidx)}
     class="seed-name"
-    class:_active={seeds._main.sname == curr_sname}
+    class:_active={seeds._main.sname == curr_seed.sname}
     data-tip="Danh sách chương trộn tổng hợp">
     <div class="seed-label">Tổng hợp</div>
     <div class="seed-stats"><strong>{seeds._main.chmax}</strong> chương</div>
   </a>
 
   {#each seeds.users as seed}
-    {@const { sname, chmax } = seed}
+    {@const { sname, snvid, chmax } = seed}
     {#if chmax > 0 && sname != uname}
       <a
-        href={seed_url(sname, pgidx)}
+        href={seed_path(nvinfo.bslug, sname, snvid, pgidx)}
         class="seed-name"
-        class:_active={sname == curr_sname}
-        data-tip={map_info(seed)}>
+        class:_active={sname == curr_seed.sname}>
         <div class="seed-label">{sname}</div>
         <div class="seed-stats"><strong>{chmax}</strong> chương</div>
       </a>
@@ -76,9 +43,9 @@
 
   {#if _self && $session.privi > 0}
     <a
-      href={seed_url(_self.sname, pgidx)}
+      href={seed_path(nvinfo.bslug, _self.sname, _self.snvid, pgidx)}
       class="seed-name"
-      class:_active={_self.sname == curr_sname}
+      class:_active={_self.sname == curr_seed.sname}
       data-tip="Danh sách chương của cá nhân bạn">
       <div class="seed-label">Của bạn</div>
       <div class="seed-stats"><strong>{_self.chmax}</strong> chương</div>
@@ -97,19 +64,18 @@
 
 {#if show_bg}
   <div class="seed-list -extra">
-    {#each seeds.backs as seed}
+    {#each seeds.backs as { sname, snvid, chmax }}
       <a
-        href={seed_url(seed.sname, pgidx, +seed.snvid)}
+        href={seed_path(nvinfo.bslug, sname, snvid, pgidx)}
         class="seed-name _sub"
-        class:_active={seed.sname == curr_sname}
-        data-tip={map_info(seed)}>
-        <div class="seed-label">{seed.sname}</div>
-        <div class="seed-stats"><strong>{seed.chmax}</strong> chương</div>
+        class:_active={sname == curr_seed.sname}>
+        <div class="seed-label">{sname}</div>
+        <div class="seed-stats"><strong>{chmax}</strong> chương</div>
       </a>
     {/each}
 
     <a
-      href={seed_url('+seed', 0)}
+      href={book_path(nvinfo.bslug, 'chaps/+seed')}
       class="seed-name _sub _btn"
       class:_disable={$session.privi < 2}
       data-tip="Thêm/sửa/xóa các nguồn ngoài">

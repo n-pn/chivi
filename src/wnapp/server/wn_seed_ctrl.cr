@@ -23,14 +23,15 @@ class WN::SeedCtrl < AC::Base
     fresh = Time.utc - Time.unix(wn_seed.rtime) < 24.hours
 
     render json: {
-      _seed: wn_seed,
-      lasts: wn_seed.vi_chaps.top(4),
-      #
-      stime: wn_seed.rtime,
-      slink: wn_seed.slink,
-      fresh: fresh,
-      # extra
-      privi_map: wn_seed.privi_map,
+      curr_seed: wn_seed,
+      top_chaps: wn_seed.vi_chaps.top(4),
+      seed_data: {
+        stime: wn_seed.rtime,
+        slink: wn_seed.slink,
+        fresh: fresh,
+        # extra
+        privi_map: wn_seed.privi_map,
+      },
     }
   end
 

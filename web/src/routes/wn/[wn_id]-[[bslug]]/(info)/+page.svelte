@@ -4,7 +4,6 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
   import YscritCard from '$gui/parts/yousuu/YscritCard.svelte'
-  import { book_path } from '$lib/kit_path'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -18,7 +17,7 @@
 
   let short_intro = false
 
-  $: root_path = book_path(nvinfo.id, nvinfo.btitle_vi).index
+  $: root_path = `/wn/${nvinfo.bslug}`
 </script>
 
 <article class="m-article">

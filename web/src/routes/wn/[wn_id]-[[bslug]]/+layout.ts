@@ -1,8 +1,6 @@
 import { api_path, api_get, set_fetch } from '$lib/api_call'
 import { suggest_read } from '$utils/ubmemo_utils'
 
-import { book_path } from '$lib/kit_path'
-
 import type { LayoutLoad } from './$types'
 export const load: LayoutLoad = async ({ params: { wn_id }, fetch }) => {
   set_fetch(fetch)
@@ -15,7 +13,7 @@ export const load: LayoutLoad = async ({ params: { wn_id }, fetch }) => {
       {
         'text': nvinfo.btitle_vi,
         'icon': 'book',
-        'href': book_path(nvinfo.id, nvinfo.btitle_vi).index,
+        'href': `/wn/${nvinfo.bslug}`,
         'data-show': 'tm',
         'data-kind': 'title',
       },

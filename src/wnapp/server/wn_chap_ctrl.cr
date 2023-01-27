@@ -36,10 +36,12 @@ class WN::ChapCtrl < AC::Base
     end
 
     render json: {
+      curr_chap: vi_chap,
+      _prev_url: prev_url(wn_seed, vi_chap, part_no),
+      _next_url: next_url(wn_seed, vi_chap, part_no),
+      ###
       ztext: ztext,
-      _chap: vi_chap,
-      _prev: prev_url(wn_seed, vi_chap, part_no),
-      _next: next_url(wn_seed, vi_chap, part_no),
+      mtlv1: "",
     }
   end
 

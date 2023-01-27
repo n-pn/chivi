@@ -1,38 +1,39 @@
-import { seed_url, to_pgidx } from '$utils/route_utils'
-
 import { api_get } from '$lib/api_call'
+import { seed_path } from '$lib/kit_path'
 import { api_chap_url } from './shared'
 
 export async function load({ params, parent, fetch }) {
   const [sname, s_bid = params.wn_id] = params.sname.split(':')
   const ch_no = +params.ch_no
-  const cpart = +params.cpart || 1
+  const cpart = +params.cpart.split('/').pop() || 1
 
   const path = api_chap_url(sname, +s_bid, ch_no, cpart, false)
   const data = await api_get<ChapPart>(path, null, fetch)
 
   const { nvinfo } = await parent()
-  const _meta = page_meta(nvinfo, data._chap.title, sname, +ch_no)
 
+  const _meta = page_meta(nvinfo, data.curr_chap.title, sname, s_bid, +ch_no)
   return { ...data, cpart, _meta, redirect: params.cpart == '' }
 }
 
 export interface ChapPart {
+  curr_chap: CV.Chinfo
+  //
+  _prev_url: string | null
+  _next_url: string | null
+  ///
   ztext: string
-  _chap: CV.Chinfo
-  _prev: string | null
-  _next: string | null
+  mtlv1: string
 }
 
 function page_meta(
   nvinfo: CV.Nvinfo,
   title: string,
   sname: string,
+  s_bid: string | number,
   ch_no: number
 ): App.PageMeta {
-  let list_url = `/wn/${nvinfo.bslug}/chaps/${sname}`
-  if (ch_no > 32) list_url += '?pg=' + to_pgidx(ch_no)
-
+  const list_url = seed_path(nvinfo.bslug, sname, s_bid, ch_no)
   if (sname == '_') sname = 'Tổng hợp'
 
   return {

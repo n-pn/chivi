@@ -1,19 +1,18 @@
-// export const ssr = false
-
 import { redirect } from '@sveltejs/kit'
-import { set_fetch, api_get } from '$lib/api_call'
+import { api_get } from '$lib/api_call'
 
 import type { LayoutLoad } from './$types'
 
 export interface SeedData {
-  _seed: CV.Chroot
-  lasts: CV.Chinfo[]
+  curr_seed: CV.Chroot
+  top_chaps: CV.Chinfo[]
 
-  stime: number
-  slink: string
-  fresh: boolean
-
-  privi_map: number[]
+  seed_data: {
+    stime: number
+    slink: string
+    fresh: boolean
+    privi_map: number[]
+  }
 }
 
 const prefixes = ['_', '@', '+', '!']
@@ -26,8 +25,6 @@ export const load = (async ({ params, fetch, url }) => {
     throw redirect(300, location)
   }
 
-  set_fetch(fetch)
-
   const api_url = `/_wn/seeds/${sname}/${s_bid || params.wn_id}`
-  return { _curr: await api_get<SeedData>(api_url) }
+  return await api_get<SeedData>(api_url, null, fetch)
 }) satisfies LayoutLoad

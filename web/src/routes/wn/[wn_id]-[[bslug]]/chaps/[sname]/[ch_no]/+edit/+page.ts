@@ -1,21 +1,21 @@
-import { set_fetch, api_get } from '$lib/api_call'
+import { error } from '@sveltejs/kit'
 
-export async function load({ parent, fetch, params }) {
-  const { nvinfo, nvseed } = await parent()
-  const { sname } = nvseed
+export async function load({ fetch, parent, params }) {
+  const [sname, s_bid = params.wn_id] = params.sname.split(':')
 
-  const chidx = params.chidx.split('-', 2)[0]
+  const ch_no = params.ch_no
 
-  set_fetch(fetch)
+  const api_url = `/_wn/texts/${sname}/${s_bid}/${ch_no}`
+  const api_res = await fetch(api_url)
+  if (!api_res.ok) throw error(api_res.status, await api_res.text())
 
-  // TODO: call `api_path` to generate path
-  const path = `/_db/texts/${nvinfo.id}/${sname}/${chidx}`
-  const { title, chvol, input } = await api_get(path)
+  const { ztext, title, chdiv } = await api_res.json()
 
+  const { nvinfo } = await parent()
   const dname = '-' + nvinfo.bhash
-  const _meta = page_meta(nvinfo, sname, chidx)
+  const _meta = page_meta(nvinfo, sname, ch_no)
 
-  return { title, chvol, input, chidx, sname, dname, _meta }
+  return { ztext, title, chdiv, ch_no, sname, s_bid, dname, _meta }
 }
 
 function page_meta({ bslug, btitle_vi }, sname: string, chidx: number) {

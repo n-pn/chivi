@@ -5,16 +5,19 @@
   import { api_call } from '$lib/api_call'
   import { SIcon } from '$gui'
 
-  import type { PageData } from './$types'
+  import type { PageData } from '../+edit/$types'
   export let data: PageData
 
-  $: ({ nvinfo, nvseed } = data)
+  $: ({
+    nvinfo,
+    _curr: { _seed },
+  } = data)
 
-  let [seeds, patch_form] = init_data(data.nslist, data.nvseed)
+  let [seeds, patch_form] = init_data(data.seeds, data._curr._seed)
   let prune = ''
 
   async function submit_patch() {
-    const url = `/_db/seeds/${nvinfo.id}/${nvseed.sname}/patch`
+    const url = `/_db/seeds/${nvinfo.id}/${_seed.sname}/patch`
     const res = await api_call(url, patch_form, 'PUT')
 
     if (res.error) return alert(res.error)
@@ -24,7 +27,7 @@
   let trunc_chidx = 1
 
   async function trunc_source() {
-    const url = `/_db/seeds/${nvinfo.id}/${nvseed.sname}/trunc`
+    const url = `/_db/seeds/${nvinfo.id}/${_seed.sname}/trunc`
     const res = await api_call(url, { chidx: trunc_chidx }, 'PUT')
 
     if (res.error) return alert(res.error)
@@ -32,7 +35,7 @@
   }
 
   async function prune_source() {
-    const url = `/_db/seeds/${nvinfo.id}/${nvseed.sname}`
+    const url = `/_db/seeds/${nvinfo.id}/${_seed.sname}`
     const res = await api_call(url, {}, 'DELETE')
 
     if (res.error) return alert(res.error)
@@ -41,7 +44,7 @@
 
   function clean_jump(pgidx: number) {
     const root_href = `/-${nvinfo.bslug}/chaps`
-    const page_href = root_href + '/' + nvseed.sname
+    const page_href = root_href + '/' + _seed.sname
 
     // invalidate(root_href)
     // invalidate(page_href)
@@ -75,7 +78,7 @@
 </script>
 
 <svelte:head>
-  <title>Nguồn truyện: {nvseed.sname} - {nvinfo.btitle_vi} - Chivi</title>
+  <title>Nguồn truyện: {_seed.sname} - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
 
 <article class="article">
@@ -90,7 +93,7 @@
         <select class="m-input" id="mirror" value={patch_form.o_sname}>
           {#each seeds as mirror}
             <option
-              disabled={mirror.chmax == 0 || mirror.sname == nvseed.sname}
+              disabled={mirror.chmax == 0 || mirror.sname == _seed.sname}
               value={mirror.sname}
               on:click={() => change_mirror(mirror)}
               >[{mirror.sname}] ({mirror.chmax} chương)</option>
@@ -154,7 +157,7 @@
           id="trunc_chidx"
           class="m-input"
           min="1"
-          max={nvseed.chmax}
+          max={_seed.chmax}
           bind:value={trunc_chidx} />
       </div>
       <div class="form-field _button">
@@ -174,7 +177,7 @@
     <div class="form-group">
       <div class="form-field">
         <label class="form-label" for="prune"
-          >Gõ vào <em>{nvseed.sname}</em> để đảm bảo</label>
+          >Gõ vào <em>{_seed.sname}</em> để đảm bảo</label>
         <input type="text" id="prune" class="m-input" bind:value={prune} />
       </div>
 
@@ -183,7 +186,7 @@
           type="button"
           class="m-btn _harmful _fill"
           on:click={prune_source}
-          disabled={prune != nvseed.sname}>
+          disabled={prune != _seed.sname}>
           <SIcon name="trash" />
           <span>Xoá danh sách</span>
         </button>
