@@ -14,7 +14,7 @@ export interface BookFront {
 export const load = async ({ fetch, params }: LoadEvent) => {
   const api_url = `/_db/v2/books/${params.wn_id}/front`
 
-  const bdata = await api_get<BookFront>(api_url, null, fetch)
+  const bdata = await api_get<BookFront>(api_url, fetch)
   const crits = await load_ycrits(params.wn_id, fetch)
 
   return { ...bdata, crits }
@@ -23,6 +23,6 @@ export const load = async ({ fetch, params }: LoadEvent) => {
 const load_ycrits = async (book: string, fetch = globalThis.fetch) => {
   const extra = { book, sort: 'score', lm: 3 }
   const ypath = api_path('yscrits.index', null, null, extra)
-  const ydata = await api_get<{ crits: CV.Yscrit[] }>(ypath, null, fetch)
+  const ydata = await api_get<{ crits: CV.Yscrit[] }>(ypath, fetch)
   return ydata.crits
 }

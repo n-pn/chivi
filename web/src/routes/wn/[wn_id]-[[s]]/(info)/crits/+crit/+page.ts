@@ -7,5 +7,5 @@ export const load = (async ({ fetch, url }) => {
   if (!id) return { form: undefined }
 
   const path = api_path('vicrits.edit', id)
-  return { form: await api_get<CV.VicritForm>(path, null, fetch) }
+  return { form: await api_get<CV.VicritForm>(path, fetch) }
 }) satisfies PageLoad

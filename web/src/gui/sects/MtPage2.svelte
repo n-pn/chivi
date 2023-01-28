@@ -59,6 +59,7 @@
 
   function parse_cvmtl(cvmtl: string) {
     const [lines, extra = ''] = cvmtl.split('\n$\t$\t$\n')
+    console.log(lines.length)
     const args = extra.split('\t')
 
     tspan = +args[0]

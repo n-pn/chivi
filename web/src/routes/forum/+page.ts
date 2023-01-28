@@ -5,8 +5,7 @@ export const load = (async ({ fetch, url }) => {
   const extras = { lm: 10, labels: url.searchParams.get('lb') }
 
   const path = api_path('dtopics.index', null, url.searchParams, extras)
-  const data = await api_get(path, null, fetch)
+  const data = await api_get(path, fetch)
 
-  data['_path'] = 'forum'
   return data
 }) satisfies PageData

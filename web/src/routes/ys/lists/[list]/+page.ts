@@ -12,5 +12,5 @@ interface ListData {
 export function load({ fetch, params, url: { searchParams } }) {
   const list = params.list.split('-')[0]
   const path = api_path('yslists.show', list, searchParams)
-  return api_get<ListData>(path, null, fetch)
+  return api_get<ListData>(path, fetch)
 }

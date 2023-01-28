@@ -8,10 +8,10 @@ type REDIRECT_CODES = 300 | 301 | 302 | 303 | 304 | 305 | 306 | 307 | 308
 
 export const do_fetch = async (
   url: string,
-  init?: RequestInit,
+  init: RequestInit = { method: 'GET' },
   fetch: CV.Fetch = my_fetch
 ) => {
-  const resp = await fetch(url, init || { method: 'GET' })
+  const resp = await fetch(url, init)
   const type = resp.headers.get('content-type') || ''
   const data = type.includes('json') ? await resp.json() : await resp.text()
 
@@ -20,13 +20,8 @@ export const do_fetch = async (
   throw redirect(resp.status as REDIRECT_CODES, data)
 }
 
-export function api_get<T>(
-  url: string,
-  search?: URLSearchParams,
-  fetch: CV.Fetch = my_fetch
-): Promise<T> {
-  const call_url = search ? `${url}?${search}` : url
-  return do_fetch(call_url, { method: 'GET' }, fetch)
+export function api_get<T>(url: string, fetch?: CV.Fetch): Promise<T> {
+  return do_fetch(url, { method: 'GET' }, fetch || my_fetch)
 }
 
 type ReqBody = Record<string, any> | string

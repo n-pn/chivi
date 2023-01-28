@@ -7,6 +7,5 @@ interface BookList extends CV.Paginate {
 
 export async function load({ url, fetch }: LoadEvent) {
   const path = api_path('wnovels.index', null, url.searchParams, { lm: 24 })
-  const data = await api_get<BookList>(path, null, fetch)
-  return data
+  return await api_get<BookList>(path, fetch)
 }

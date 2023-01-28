@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
   import { map_status } from '$utils/nvinfo_utils'
+  import { vdict } from '$lib/stores'
 
   function gen_keywords(nvinfo: CV.Nvinfo) {
     const kw = [
@@ -33,6 +34,12 @@
       bslug: nvinfo.bslug,
     }
     return x
+  })
+
+  $: vdict.set({
+    dname: '-' + nvinfo.bhash,
+    d_dub: nvinfo.btitle_vi,
+    d_tip: `Từ điển riêng cho bộ truyện: ${nvinfo.btitle_vi}`,
   })
 </script>
 

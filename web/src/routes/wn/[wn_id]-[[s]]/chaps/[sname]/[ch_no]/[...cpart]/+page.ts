@@ -15,7 +15,7 @@ export async function load({ params, fetch }) {
   const cpart = +params.cpart.split('/').pop() || 1
 
   const path = api_chap_url(+params.wn_id, params.sname, ch_no, cpart, false)
-  const data = await api_get<ChapPart>(path, null, fetch)
+  const data = await api_get<ChapPart>(path, fetch)
 
   if (!data.chap_data.cvmtl && data.chap_data.grant) {
     const ztext = data.chap_data.ztext
@@ -25,10 +25,9 @@ export async function load({ params, fetch }) {
 }
 
 async function get_cvdata(fetch: CV.Fetch, wn_id: string, body: string) {
-  console.log(`loading text from client: ${wn_id}`)
-  const url = `/_db/cv_chap?wn_id=${wn_id}&cv_title=first`
-  const headers = { 'Content-Type': 'text/plain', 'Accept': 'text/plain' }
-  const res = await fetch(url, { method: 'POST', headers, body })
+  const url = `http://localhost:5010/_db/cv_chap?wn_id=${wn_id}&cv_title=first`
+  // const headers = { 'Content-Type': 'text/plain' }
+  const res = await fetch(url, { method: 'POST', body })
 
   if (!res.ok) return ''
   return await res.text()

@@ -100,6 +100,10 @@ module WN::TextStore
         io.set_encoding ENCODING
         io.gets_to_end.split("\n\n")
       end
+    rescue ex
+      File.delete?(zip_path)
+      Log.error(exception: ex) { ex.message }
+      nil
     end
   end
 
@@ -112,7 +116,7 @@ module WN::TextStore
     link = file.sub(ZIP_DIR, B2_URL)
 
     HTTP::Client.get(link) do |res|
-      return false if res.status_code >= 300
+      return false unless res.success?
       File.write(file, res.body_io)
       true
     end

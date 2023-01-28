@@ -10,7 +10,7 @@ export async function load({ fetch, depends, params }) {
   depends('wn:seed_list')
 
   const path = `/_wn/seeds?wn_id=${params.wn_id}`
-  const seeds: SeedList = await api_get(path, null, fetch)
+  const seeds: SeedList = await api_get(path, fetch)
 
   return { seeds }
 }

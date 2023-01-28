@@ -101,7 +101,7 @@ class WN::WnChap
     seed.save_chap!(self)
   end
 
-  def on_temp_dir?
+  def on_txt_dir?
     @_path == "v"
   end
 end

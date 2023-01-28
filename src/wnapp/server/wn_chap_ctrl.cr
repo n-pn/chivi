@@ -32,7 +32,7 @@ class WN::ChapCtrl < AC::Base
       chap_data: {
         ztext: ztext,
         title: zh_chap.title,
-        cvmtl: ztext.empty? ? "" : load_cv_data(wn_id, ztext),
+        # cvmtl: ztext.empty? ? "" : load_cv_data(wn_id, ztext),
         ##
         privi: min_privi,
         grant: can_read,
@@ -44,9 +44,10 @@ class WN::ChapCtrl < AC::Base
     url = "http://localhost:5010/_db/cv_chap?wn_id=#{wn_id}&cv_title=first"
 
     headers = HTTP::Headers{"Content-Type" => "text/plain"}
-
     HTTP::Client.post(url, headers: headers, body: ztext) do |res|
-      res.success? ? res.body_io.gets_to_end : ""
+      return "" unless res.success?
+      Log.info { "loading here" }
+      res.body_io.gets_to_end
     end
   end
 
@@ -59,9 +60,9 @@ class WN::ChapCtrl < AC::Base
     end
 
     # save chap text directly to `temps` folder
-    # unless no_text?(zh_text) || zh_chap.on_temp_dir?
-    #   spawn zh_chap.save_body_copy!(seed: wn_seed)
-    # end
+    unless no_text?(zh_text) || zh_chap.on_txt_dir?
+      spawn zh_chap.save_body_copy!(seed: wn_seed)
+    end
 
     zh_text.empty? ? "" : "#{zh_text[0]}\n#{zh_text[part_no &+ 1]?}"
   end
