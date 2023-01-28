@@ -25,6 +25,7 @@ export async function load({ params, fetch }) {
 }
 
 async function get_cvdata(fetch: CV.Fetch, wn_id: string, body: string) {
+  console.log(`loading text from client: ${wn_id}`)
   const url = `/_db/cv_chap?wn_id=${wn_id}&cv_title=first`
   const headers = { 'Content-Type': 'text/plain', 'Accept': 'text/plain' }
   const res = await fetch(url, { method: 'POST', headers, body })

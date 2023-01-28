@@ -103,11 +103,13 @@ module WN::TextStore
     end
   end
 
+  B2_URL = "https://f004.backblazeb2.com/file/cvtxts"
+
   # download zip from backblaze b2 object storage
   private def pull_zip_from_b2!(file : String) : Bool
     Dir.mkdir_p(File.dirname(file))
 
-    link = file.sub(ZIP_DIR, "https://b2t.chivi.app")
+    link = file.sub(ZIP_DIR, B2_URL)
 
     HTTP::Client.get(link) do |res|
       return false if res.status_code >= 300

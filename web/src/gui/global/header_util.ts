@@ -12,15 +12,15 @@ const home_nav = (show: string = 'tm', title = 'Chivi') => {
   return nav_link('/', title, null, { show, kind: 'brand' })
 }
 
-const book_nav = (bslug: string, vname: string, show = '') => {
+const book_nav = (bslug: string, vname: string, show = 'tm') => {
   return nav_link(`/wn/${bslug}`, vname, 'book', { show, kind: 'title' })
 }
 
-const seed_nav = (bslug: string, sname: string, pg_no = 1) => {
+const seed_nav = (bslug: string, sname: string, pg_no = 1, show = 'pl') => {
   const seed_href = seed_path(bslug, sname, pg_no)
 
   const seed_name = sname == '_' ? '[Tổng hợp]' : `[${sname}]`
-  return nav_link(seed_href, seed_name, 'list', { kind: 'zseed', show: 'pl' })
+  return nav_link(seed_href, seed_name, 'list', { kind: 'zseed', show })
 }
 
 function nav_link(
@@ -172,11 +172,20 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     return {
       title: `${nvinfo.btitle_vi}`,
       desc: nvinfo.bintro.substring(0, 300),
-      left_nav: [
-        home_nav('tm'),
-        book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'tm'),
-      ],
+      left_nav: [home_nav(''), book_nav(nvinfo.bslug, nvinfo.btitle_vi, '')],
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
+    }
+  },
+  '/wn/[wn_id]-[[s]]/+info': ({ nvinfo }) => {
+    if (!nvinfo) return error
+    return {
+      title: `Sửa thông tin truyện: ${nvinfo.btitle_vi}`,
+      desc: 'Sửa thông tin truyện',
+      left_nav: [
+        home_nav('', ''),
+        book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'tm'),
+        nav_link('+info', 'Sửa thông tin', 'pencil'),
+      ],
     }
   },
   '/wn/[wn_id]-[[s]]/(info)/crits': ({ nvinfo }) => {
@@ -188,9 +197,11 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       left_nav: [
         home_nav('', ''),
         book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'tm'),
-        nav_link('crits', 'Đánh giá truyện', 'stars'),
+        nav_link('crits', 'Đánh giá', 'stars'),
       ],
-      right_nav: [nav_link('crits/+crit', 'Đánh giá', 'circle-plus')],
+      right_nav: [
+        nav_link('crits/+crit', 'Đánh giá', 'circle-plus', { show: 'tl' }),
+      ],
     }
   },
   '/wn/[wn_id]-[[s]]/(info)/crits/+crit': ({ nvinfo }) => {
@@ -201,26 +212,14 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       desc: nvinfo.bintro.substring(0, 300),
       left_nav: [
         home_nav('', ''),
-        book_nav(nvinfo.bslug, '', 'tm'),
-        nav_link('.', 'Đánh giá truyện', 'stars'),
-        nav_link('+crit', 'Của bạn', 'user'),
+        book_nav(nvinfo.bslug, 'book-open', 'pl'),
+        nav_link('.', 'Đánh giá', 'stars', { show: 'ts' }),
+        nav_link('+crit', 'Thêm đánh giá', 'circle-plus', { show: 'pl' }),
       ],
-      right_nav: [nav_link('../lists', 'Thư đơn', 'bookmarks')],
+      right_nav: [nav_link('../lists', 'Thư đơn', 'bookmarks', { show: 'tl' })],
     }
   },
-  '/wn/[wn_id]-[[s]]/+info': ({ nvinfo }) => {
-    if (!nvinfo) return error
 
-    return {
-      title: `Sửa thông tin truyện: ${nvinfo.btitle_vi}`,
-      desc: 'Sửa thông tin truyện',
-      left_nav: [
-        home_nav('', ''),
-        book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'tm'),
-        nav_link('+info', 'Sửa thông tin', 'pencil'),
-      ],
-    }
-  },
   // book chapters
   '/wn/[wn_id]-[[s]]/(info)/lists': ({ nvinfo }) => {
     if (!nvinfo) return error
@@ -233,7 +232,9 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
         book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'tm'),
         nav_link('lists', 'Thư đơn', 'bookmarks'),
       ],
-      right_nav: [nav_link('lists/+list', 'Thư đơn', 'circle-plus')],
+      right_nav: [
+        nav_link('lists/+list', 'Thư đơn', 'circle-plus', { show: 'tl' }),
+      ],
     }
   },
 
@@ -305,10 +306,9 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     return {
       title: `${title} - ${nvinfo.btitle_vi}`,
       left_nav: [
-        home_nav('', ''),
-        book_nav(bslug, '', 'tl'),
-        seed_nav(bslug, curr_seed.sname, _pgidx(ch_no)),
-        nav_link(chap_href, `Chương ${ch_no}`, '', { show: 'lg' }),
+        book_nav(bslug, nvinfo.btitle_vi, 'tm'),
+        seed_nav(bslug, curr_seed.sname, _pgidx(ch_no), 'ts'),
+        nav_link(chap_href, `Ch. ${ch_no}`, '', { show: 'lg', kind: 'uname' }),
       ],
       show_config: true,
     }

@@ -6,19 +6,19 @@
   export let type: string = 'a'
 </script>
 
-<svelte:element this={type} class="topbar-item" {...$$restProps} on:click>
+<svelte:element this={type} class="item" {...$$restProps} on:click>
   {#if icon}
     <SIcon name={icon} />
   {:else if $$props['data-kind'] == 'brand'}
     <img src="/icons/chivi.svg" alt="logo" />
   {/if}
-  {#if text}<span class="-text">{text}</span>{/if}
+  {#if text}<span class="text">{text}</span>{/if}
 </svelte:element>
 
 <style lang="scss">
   $height: 2.25rem;
 
-  .topbar-item {
+  .item {
     display: inline-flex;
     align-items: center;
 
@@ -26,6 +26,10 @@
 
     min-width: $height;
     user-select: none;
+    text-decoration: none;
+
+    border: none;
+    outline: none;
 
     cursor: pointer;
     padding: 0 0.5rem;
@@ -41,7 +45,7 @@
       @include bgcolor(primary, 6);
     }
 
-    &[data-kind='brand'] {
+    &[data-kind='brand'] > span {
       @include bps(display, none, $ts: inline-flex);
     }
 
@@ -59,16 +63,7 @@
     }
   }
 
-  :is(a).topbar-item {
-    text-decoration: none;
-  }
-
-  :is(button).topbar-item {
-    border: none;
-    outline: none;
-  }
-
-  .-text {
+  .text {
     font-weight: 500;
     font-size: rem(15px);
 
@@ -76,15 +71,15 @@
       @include bps(display, none, $pl: inline);
     }
 
-    [data-show='ts'] > & {
+    :global([data-show='ts']) > & {
       @include bps(display, none, $ts: inline);
     }
 
-    [data-show='tm'] > & {
+    :global([data-show='tm']) > & {
       @include bps(display, none, $tm: inline);
     }
 
-    [data-show='tl'] > & {
+    :global([data-show='tl']) > & {
       @include bps(display, none, $tl: inline);
     }
 

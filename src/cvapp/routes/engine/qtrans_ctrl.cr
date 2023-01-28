@@ -116,6 +116,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/_db/cv_chap")]
   def cv_chap(wn_id : Int32 = 0, cv_title : String = "none")
+    Log.info { [wn_id] }
     dname = M1::DbDict.get_dname(-wn_id)
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
 

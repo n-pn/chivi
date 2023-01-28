@@ -32,7 +32,7 @@ class WN::ChapCtrl < AC::Base
       chap_data: {
         ztext: ztext,
         title: zh_chap.title,
-        cvmtl: ztext.empty? ? "" : translate_chap(wn_id, ztext),
+        cvmtl: ztext.empty? ? "" : load_cv_data(wn_id, ztext),
         ##
         privi: min_privi,
         grant: can_read,
@@ -40,7 +40,7 @@ class WN::ChapCtrl < AC::Base
     }
   end
 
-  private def translate_chap(wn_id : Int32, ztext : String)
+  private def load_cv_data(wn_id : Int32, ztext : String)
     url = "http://localhost:5010/_db/cv_chap?wn_id=#{wn_id}&cv_title=first"
 
     headers = HTTP::Headers{"Content-Type" => "text/plain"}
