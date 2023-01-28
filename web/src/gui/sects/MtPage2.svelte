@@ -20,6 +20,8 @@
   import { browser } from '$app/environment'
 
   export let ztext: string = ''
+  export let cvmtl: string = ''
+
   export let mtime = 0
 
   // export let wn_id: number = 0
@@ -51,29 +53,18 @@
   })
 
   $: zlines = ztext ? ztext.split('\n') : []
+  $: if (cvmtl) parse_cvmtl(cvmtl)
 
-  $: {
-    if (browser && ztext) {
-      convert_input(ztext)
-      if ($config.render == 1) call_v2_engine(ztext)
-    }
-  }
+  $: if (browser && ztext && $config.render == 1) call_v2_engine(ztext)
 
-  async function convert_input(input: string) {
-    let url = `/_db/qtran?format=mtl&dname=${$vdict.dname}`
-    if (!$config.tosimp) url += '&_simp=true'
+  function parse_cvmtl(cvmtl: string) {
+    const [lines, extra = ''] = cvmtl.split('\n$\t$\t$\n')
+    const args = extra.split('\t')
 
-    const headers = { 'Content-Type': 'application/json' }
-    const init = { headers, method: 'POST', body: JSON.stringify({ input }) }
+    tspan = +args[0]
+    dsize = +args[1]
 
-    const res = await fetch(url, init)
-    const data = await res.text()
-
-    if (!res.ok) return alert(await res.text())
-
-    tspan = +res.headers.get('X-TSPAN')
-    dsize = +res.headers.get('X-DSIZE')
-    datav1 = MtData.parse_lines(data)
+    datav1 = MtData.parse_lines(lines)
   }
 
   function render_html(

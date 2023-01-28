@@ -1,38 +1,24 @@
 <script lang="ts">
-  import SIcon from '$gui/atoms/SIcon.svelte'
+  import { page } from '$app/stores'
   import { seed_path } from '$lib/kit_path'
 
-  import { page } from '$app/stores'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
-  let chap_data: CV.Zhchap
-
-  let zname: string
-  let bslug: string
-
-  let sname: string
-  let s_bid: number
-
-  let min_privi: number
-  let ch_no: number
-
-  $: ({
-    nvinfo: { btitle_zh: zname, bslug },
-    curr_seed: { sname, snvid: s_bid },
-    seed_data: { min_privi },
-    curr_chap: { chidx: ch_no },
-    chap_data,
-  } = $page.data)
+  export let book_info: CV.Nvinfo
+  export let curr_seed: CV.Chroot
+  export let seed_data: CV.WnSeed
+  export let curr_chap: CV.Chinfo
+  export let chap_data: CV.Zhchap
 
   $: _privi = $page.data._user?.privi || 0
-
-  $: search = `"${zname}" ${chap_data.title}`
-
-  $: edit_path = `${seed_path(bslug, sname, s_bid)}/${ch_no}/+edit`
+  $: search = `"${book_info.btitle_zh}" ${chap_data.title}`
+  $: seed_href = seed_path(book_info.bslug, curr_seed.sname)
+  $: edit_href = `${seed_href}/${curr_chap.chidx}/+edit`
 </script>
 
 <div class="notext">
   {#if !chap_data.grant}
-    <h1>Bạn không đủ quyền hạn để xem chương {ch_no}.</h1>
+    <h1>Bạn không đủ quyền hạn để xem chương {curr_chap.chidx}.</h1>
 
     <p>
       <strong>
@@ -108,10 +94,10 @@
     </p>
 
     <h3>Tự text gốc cho chương:</h3>
-    {#if _privi >= min_privi}
+    {#if _privi >= seed_data.min_privi}
       <p>
         Bạn có đủ quyền hạn để thêm text gốc cho bộ truyện, bấm vào nút
-        <a href={edit_path}>Thêm text gốc</a>
+        <a href={edit_href}>Thêm text gốc</a>
         bên dưới để tự thêm text của chương.
       </p>
 
@@ -131,7 +117,7 @@
       </p>
 
       <div class="actions">
-        <a class="m-btn _primary _fill _lg" href={edit_path}>
+        <a class="m-btn _primary _fill _lg" href={edit_href}>
           <SIcon name="edit" />
           <span>Thêm text gốc</span>
         </a>

@@ -17,24 +17,24 @@
   $: ({ nvinfo, curr_seed, seed_data, curr_chap, chap_data } = data)
 
   $: paths = gen_paths(
-    nvinfo,
+    nvinfo.bslug,
     curr_seed,
-    curr_chap,
+    curr_chap.chidx,
     data._prev_url,
     data._next_url
   )
 
   function gen_paths(
-    { bslug },
-    { sname, snvid: s_bid, chmax },
-    { chidx: ch_no },
+    bslug: string,
+    { sname, chmax },
+    ch_no: number,
     _prev_url: string | null,
     _next_url: string | null
   ) {
-    const list = seed_path(bslug, sname, s_bid, ch_no)
-    const last = seed_path(bslug, sname, s_bid, chmax)
+    const list = seed_path(bslug, sname, ch_no)
+    const last = seed_path(bslug, sname, chmax)
 
-    const base = seed_path(bslug, sname, s_bid)
+    const base = seed_path(bslug, sname)
     const prev = _prev_url ? `${base}/${_prev_url}` : base
     const next = _next_url ? `${base}/${_next_url}` : last
 
@@ -93,6 +93,7 @@
 <!-- <Chtabs {nvinfo} {seeds} {nvseed} {chmeta} {chinfo} /> -->
 
 <MtPage2
+  cvmtl={chap_data.cvmtl}
   ztext={chap_data.ztext}
   mtime={curr_chap.utime}
   wn_id={nvinfo.id}
@@ -100,8 +101,9 @@
   <svelte:fragment slot="notext">
     <Notext
       book_info={nvinfo}
-      seed_info={seed_data}
-      chap_info={curr_chap}
+      {curr_seed}
+      {seed_data}
+      {curr_chap}
       {chap_data} />
   </svelte:fragment>
 
@@ -126,7 +128,11 @@
           <a
             class="gmenu-item"
             class:_disable={$session.privi < 1}
-            href="{chap_path(nvinfo.bslug, curr_seed, curr_chap.chidx)}/+edit">
+            href="{chap_path(
+              nvinfo.bslug,
+              curr_seed.sname,
+              curr_chap.chidx
+            )}/+edit">
             <SIcon name="pencil" />
             <span>Sửa text gốc</span>
           </a>

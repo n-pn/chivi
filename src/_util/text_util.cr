@@ -70,7 +70,10 @@ module TextUtil
 
   # strip vietnamese accents
   def unaccent(input : String) : String
-    input.unicode_normalize(:nfd).gsub(/[\x{0300}-\x{036f}]/, "").downcase
+    input
+      .unicode_normalize(:nfd)
+      .gsub(/[\x{0300}-\x{036f}]/, "")
+      .downcase.tr("đ", "d")
   end
 
   # :nodoc:

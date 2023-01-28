@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { last_read } from '$utils/ubmemo_utils'
+  import { chap_path } from '$lib/kit_path'
 
   import { SIcon, Gmenu } from '$gui'
   import MarkBook from './MarkBook.svelte'
@@ -9,6 +9,18 @@
 
   $: toread = last_read(nvinfo, ubmemo)
   $: root_path = `/wn/${nvinfo.bslug}`
+
+  function last_read({ bslug }, ubmemo: CV.Ubmemo) {
+    let { locked, chidx } = ubmemo
+    if (chidx < 1) chidx = 1
+
+    return {
+      href: chap_path(bslug, ubmemo.sname, chidx),
+      icon: locked ? 'player-skip-forward' : 'player-play',
+      text: ubmemo.chidx > 0 ? 'Đọc tiếp' : 'Đọc thử',
+      mute: ubmemo.chidx < 0,
+    }
+  }
 </script>
 
 <div class="user-action">

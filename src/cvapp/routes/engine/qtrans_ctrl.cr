@@ -1,6 +1,7 @@
 require "../_ctrl_base"
 require "../shared/qtran_data"
 require "../../../_util/tran_util"
+require "../../../mt_v1/data/v1_dict"
 
 class CV::QtransCtrl < CV::BaseCtrl
   base "/"
@@ -96,45 +97,52 @@ class CV::QtransCtrl < CV::BaseCtrl
     None; First; All
   end
 
-  @[AC::Route::POST("/_db/qtran", body: :form)]
   @[AC::Route::POST("/api/qtran", body: :form)]
-  def convert(form : ConvertForm,
-              format : String = "txt",
-              dname : String = "combine",
-              cv_title : String = "none",
-              _simp : Bool = false)
+  def cv_post(form : ConvertForm,
+              dname : String = "combine")
     form.validate!(_privi)
-
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
-    stime = Time.monotonic
-
-    to_txt = format == "txt"
-    render_title = RenderTitle.parse(cv_title)
 
     output = String.build do |str|
-      iter = form.input.each_line
-
-      head = iter.next.as(String)
-      convert(cvmtl, str, head, !render_title.none?, to_txt)
-
-      iter.each do |line|
+      form.input.each_line do |line|
+        cvmtl.cv_plain(line).to_txt(str)
         str << '\n'
-        convert(cvmtl, str, line, render_title.all?, to_txt)
       end
     end
-
-    tspan = (Time.monotonic - stime).total_milliseconds.round.to_i
-    dsize = cvmtl.dicts.last.size
-
-    response.headers.add("X-TSPAN", tspan.to_s)
-    response.headers.add("X-DSIZE", dsize.to_s)
 
     render text: output
   end
 
-  @[AlwaysInline]
-  private def convert(cvmtl, strio, input, cv_title = false, to_txt = true)
-    mtl = cv_title ? cvmtl.cv_title(input) : cvmtl.cv_plain(input)
-    to_txt ? mtl.to_txt(strio) : mtl.to_mtl(strio)
+  @[AC::Route::POST("/qtran_chap")]
+  def cv_chap(wn_id : Int32 = 0, cv_title : String = "none")
+    dname = M1::DbDict.get_dname(-wn_id)
+    cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
+
+    render_title = RenderTitle.parse(cv_title)
+    input = request.body.not_nil!.gets_to_end
+
+    output = String.build do |str|
+      stime = Time.monotonic
+
+      iter = input.each_line
+      head = iter.next.as(String)
+
+      mtl = !render_title.none? ? cvmtl.cv_title(head) : cvmtl.cv_plain(head)
+      mtl.to_mtl(str)
+
+      iter.each do |line|
+        str << '\n'
+
+        mtl = render_title.all? ? cvmtl.cv_title(line) : cvmtl.cv_plain(line)
+        mtl.to_mtl(str)
+      end
+
+      tspan = (Time.monotonic - stime).total_milliseconds.round.to_i
+      dsize = cvmtl.dicts.last.size
+
+      str << "\n$\t$\t$\n" << tspan << '\t' << dsize << '\t' << dname
+    end
+
+    render text: output
   end
 end

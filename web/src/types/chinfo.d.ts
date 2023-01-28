@@ -19,8 +19,19 @@ declare namespace CV {
 
   interface Zhchap {
     ztext: string
+    cvmtl: string
     title: string
     grant: boolean
     privi: number
+  }
+
+  interface WnSeed {
+    links: string[]
+    stime: number
+    _flag: number
+    fresh: boolean
+    //
+    min_privi: number
+    gift_chap: number
   }
 }

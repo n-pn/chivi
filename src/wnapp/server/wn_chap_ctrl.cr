@@ -30,14 +30,22 @@ class WN::ChapCtrl < AC::Base
       _next_url: next_url(wn_seed, vi_chap, part_no),
       ###
       chap_data: {
-        mtlv1: "",
         ztext: ztext,
         title: zh_chap.title,
+        cvmtl: ztext.empty? ? "" : translate_chap(wn_id, ztext),
         ##
         privi: min_privi,
         grant: can_read,
       },
     }
+  end
+
+  private def translate_chap(wn_id : Int32, ztext : String)
+    url = "http://localhost:5010/qtran_chap?wn_id=#{wn_id}&cv_title=first"
+
+    HTTP::Client.post(url, body: ztext) do |res|
+      res.success? ? res.body_io.gets_to_end : ""
+    end
   end
 
   private def load_ztext(wn_seed : WnSeed, zh_chap : WnChap, part_no : Int32, load_mode = 0)

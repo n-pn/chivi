@@ -7,15 +7,7 @@ export interface SeedData {
   curr_seed: CV.Chroot
   top_chaps: CV.Chinfo[]
 
-  seed_data: {
-    links: string[]
-    stime: number
-    _flag: number
-    fresh: boolean
-    //
-    min_privi: number
-    gift_chap: number
-  }
+  seed_data: CV.WnSeed
 }
 
 const prefixes = ['_', '@', '+', '!']

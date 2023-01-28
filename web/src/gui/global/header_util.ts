@@ -238,7 +238,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
   },
 
   '/wn/[wn_id]-[[s]]/chaps/[sname]/(list)': ({ nvinfo, ubmemo }) => {
-    if (!nvinfo) return error
+    if (!nvinfo || !ubmemo) return error
 
     return {
       title: `Chương tiết truyện  ${nvinfo.btitle_vi}`,
@@ -252,7 +252,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
   '/wn/[wn_id]-[[s]]/chaps/+seed': ({ nvinfo, ubmemo }) => {
-    if (!nvinfo) return error
+    if (!nvinfo || !ubmemo) return error
 
     return {
       title: `Thêm nguồn truyện: ${nvinfo.btitle_vi}`,
@@ -267,7 +267,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
   '/wn/[wn_id]-[[s]]/chaps/[sname]/(list)/+chap': ({ nvinfo, curr_seed }) => {
-    if (!nvinfo) return error
+    if (!nvinfo || !curr_seed) return error
     const { bslug, btitle_vi: vname } = nvinfo
 
     return {
@@ -294,10 +294,13 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
   },
   '/wn/[wn_id]-[[s]]/chaps/[sname]/[ch_no]/[...cpart]': (data) => {
     const { nvinfo, curr_seed, curr_chap } = data
-    if (!nvinfo) return error
+    if (!(nvinfo && curr_seed && curr_chap)) return error
 
     const { bslug } = nvinfo
-    const { title, chidx: ch_no } = curr_chap
+    const { title, uslug, chidx: ch_no } = curr_chap
+
+    let chap_href = chap_path(bslug, curr_seed.sname, ch_no)
+    chap_href += '/' + uslug
 
     return {
       title: `${title} - ${nvinfo.btitle_vi}`,
@@ -305,7 +308,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
         home_nav('', ''),
         book_nav(bslug, '', 'tl'),
         seed_nav(bslug, curr_seed.sname, _pgidx(ch_no)),
-        nav_link(ch_no, `Chương ${ch_no}`, '', { show: 'lg' }),
+        nav_link(chap_href, `Chương ${ch_no}`, '', { show: 'lg' }),
       ],
       show_config: true,
     }
