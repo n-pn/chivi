@@ -5,13 +5,13 @@ require "../data/viuser/ch_line_edit"
 require "../../_util/diff_util"
 
 class WN::TextCtrl < AC::Base
-  base "/_wn/texts/:sname/:s_bid"
+  base "/_wn/texts/:wn_id/:sname"
 
   @[AC::Route::GET("/:ch_no")]
-  def show(sname : String, s_bid : Int32,
+  def show(wn_id : Int32, sname : String,
            ch_no : Int32, part_no : Int32? = nil,
            load_mode : Int32 = 0)
-    wn_seed = get_wn_seed(sname, s_bid)
+    wn_seed = get_wn_seed(wn_id, sname)
     zh_chap = get_zh_chap(wn_seed, ch_no)
 
     ch_body = zh_chap.body
@@ -66,10 +66,10 @@ class WN::TextCtrl < AC::Base
   end
 
   @[AC::Route::POST("/")]
-  def upsert_batch(sname : String, s_bid : Int32, start : Int32 = 0)
+  def upsert_batch(wn_id : Int32, sname : String, start : Int32 = 0)
     guard_sname_privi sname: sname
 
-    wn_seed = get_wn_seed(sname, s_bid)
+    wn_seed = get_wn_seed(wn_id, sname)
 
     start = wn_seed.chap_total + 1 if start < 1
     ztext = request.body.not_nil!.gets_to_end
@@ -89,7 +89,7 @@ class WN::TextCtrl < AC::Base
     wn_seed.save!
 
     spawn do
-      save_dir = "var/texts/users/#{sname}-#{s_bid}"
+      save_dir = "var/texts/users/#{wn_id}-#{sname}"
       Dir.mkdir_p(save_dir)
 
       file_name = "#{Time.utc.to_unix // 60}-#{start}-@#{_uname}"
@@ -114,10 +114,10 @@ class WN::TextCtrl < AC::Base
   end
 
   @[AC::Route::PUT("/:ch_no", body: :form)]
-  def upsert_entry(form : EntryForm, sname : String, s_bid : Int32, ch_no : Int32)
+  def upsert_entry(form : EntryForm, wn_id : Int32, sname : String, ch_no : Int32)
     guard_sname_privi sname: sname
 
-    wn_seed = get_wn_seed(sname, s_bid)
+    wn_seed = get_wn_seed(wn_id, sname)
     zh_chap = get_zh_chap(wn_seed, ch_no)
 
     spawn do

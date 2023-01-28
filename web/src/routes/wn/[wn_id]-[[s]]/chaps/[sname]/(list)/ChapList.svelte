@@ -3,43 +3,28 @@
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import { SIcon } from '$gui'
+  import { seed_path } from '$lib/kit_path'
 
   export let nvinfo: CV.Nvinfo
   export let ubmemo: CV.Ubmemo
 
-  export let nvseed: CV.Chroot
+  export let curr_seed: CV.Chroot
+  export let seed_data: { min_privi: number; gift_chap: number }
 
   export let chaps: CV.Chinfo[]
 
-  export let privi_map: number[] = gen_privi_map(nvseed.sname, nvseed.chmax)
-
   export let mark_chidx = ubmemo.chidx
 
-  $: same_sname = nvseed.sname == ubmemo.sname
+  $: same_sname = curr_seed.sname == ubmemo.sname
 
-  $: base_url = gen_base_url(nvinfo, nvseed)
-
-  function gen_base_url({ bslug }, { sname, snvid }) {
-    const url = `/wn/${bslug}/chaps/${sname}`
-    return sname[0] == '!' ? `${url}:${snvid}` : url
-  }
+  $: base_url = seed_path(nvinfo.bslug, curr_seed.sname)
 
   $: _privi = $page.data._user.privi
 
-  function gen_privi_map(sname: string, total: number = 0) {
-    const lower = Math.floor(total / 4)
-    const upper = total - lower
-
-    if (sname == '_') return [lower, upper, total]
-    if (sname[0] == '@') return [0, lower, upper, total]
-    if (sname[0] == '!') return [0, 0, lower, upper, total]
-    return [0, 0, 0, lower, upper, total]
-  }
-
   function map_privi(ch_no: number) {
-    const min = privi_map.findIndex((value) => ch_no <= value) - 1 || 2
+    let min = seed_data.min_privi
+    if (ch_no <= seed_data.gift_chap) min -= 1
 
-    if (min < 0) return ['Chương tiết miễn phí', 'lock-open']
     if (_privi >= min) return ['Bạn đủ quyền xem chương', 'lock-open']
 
     if (min < 1) return ['Bạn cần đăng nhập để xem chương', 'lock']
@@ -49,13 +34,13 @@
 
 <div class="chaps">
   {#each chaps as chinfo}
-    {@const [lock_text, lock_icon, lock_type] = map_privi(chinfo.chidx)}
+    {@const [lock_text, lock_icon, lock_iset] = map_privi(chinfo.chidx)}
 
     <a
       href="{base_url}/{chinfo.chidx}/{chinfo.uslug}"
       class="chinfo"
       class:_active={chinfo.chidx == mark_chidx}
-      rel={nvseed.sname != '_' ? 'nofollow' : null}>
+      rel={curr_seed.sname != '_' ? 'nofollow' : null}>
       <div class="chap-text">
         <chap-title>{chinfo.title}</chap-title>
         <chap-chidx>{chinfo.chidx}.</chap-chidx>
@@ -76,7 +61,7 @@
         {/if}
 
         <chap-mark data-tip={lock_text}
-          ><SIcon name={lock_icon} iset={lock_type} /></chap-mark>
+          ><SIcon name={lock_icon} iset={lock_iset} /></chap-mark>
       </div>
     </a>
   {/each}

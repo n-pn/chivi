@@ -3,18 +3,18 @@ require "./_wn_ctrl_base"
 class WN::ChapCtrl < AC::Base
   base "/_wn/chaps"
 
-  @[AC::Route::GET("/:sname/:s_bid")]
-  def index(sname : String, s_bid : Int32, pg pg_no : Int32 = 1)
-    wn_seed = get_wn_seed(sname, s_bid)
+  @[AC::Route::GET("/:wn_id/:sname")]
+  def index(wn_id : Int32, sname : String, pg pg_no : Int32 = 1)
+    wn_seed = get_wn_seed(wn_id, sname)
     # TODO: restrict user access
     render json: wn_seed.vi_chaps.all(pg_no)
   end
 
-  @[AC::Route::GET("/:sname/:s_bid/:ch_no/:part_no")]
-  def show(sname : String, s_bid : Int32,
+  @[AC::Route::GET("/:wn_id/:sname/:ch_no/:part_no")]
+  def show(wn_id : Int32, sname : String,
            ch_no : Int32, part_no : Int32,
            load_mode : Int32 = 0)
-    wn_seed = get_wn_seed(sname, s_bid)
+    wn_seed = get_wn_seed(wn_id, sname)
     vi_chap = get_vi_chap(wn_seed, ch_no)
 
     min_privi = wn_seed.min_privi("+#{_uname}")

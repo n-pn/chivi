@@ -22,7 +22,7 @@
   $: privi = $session.privi || -1
   $: disabled = privi < 1 || (privi == 1 && ztext.length > 30000)
 
-  $: action_url = `/_wn/texts/${data.sname}/${data.s_bid}/${ch_no}`
+  $: action_url = `/_wn/texts/${data.wn_id}/${data.sname}/${ch_no}`
 
   async function submit(event: Event) {
     event.preventDefault()
@@ -33,8 +33,7 @@
     const res = await fetch(action_url, { method: 'PUT', headers, body })
 
     if (res.ok) {
-      const seed = { sname: data.sname, snvid: data.s_bid }
-      goto(chap_path(nvinfo.bslug, seed, ch_no))
+      goto(chap_path(nvinfo.bslug, data.sname, ch_no))
     } else {
       alert(await res.text())
     }

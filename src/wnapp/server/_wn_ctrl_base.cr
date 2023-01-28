@@ -5,17 +5,15 @@ require "./views/*"
 require "./forms/*"
 
 abstract class AC::Base
-  private def get_wn_seed(sname : String, s_bid : Int32)
-    WN::WnSeed.get(sname, s_bid) || begin
-      unless autocreate_seed?(sname)
-        raise NotFound.new("Nguồn truyện không tồn tại")
-      end
-
-      WN::WnSeed.new(sname, s_bid, s_bid).tap(&.save!)
+  private def get_wn_seed(wn_id : Int32, sname : String)
+    WN::WnSeed.get(wn_id, sname) || begin
+      raise NotFound.new("Nguồn truyện không tồn tại") unless auto_seed?(sname)
+      entry = WN::WnSeed.new(wn_id, sname, wn_id).tap(&.mkdirs!)
+      entry.tap(&.save!)
     end
   end
 
-  private def autocreate_seed?(sname : String)
+  private def auto_seed?(sname : String)
     case sname
     when "-"          then true
     when "@#{_uname}" then _privi > 1

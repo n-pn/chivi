@@ -1,12 +1,7 @@
 import { error } from '@sveltejs/kit'
 
-export async function load({ fetch, parent, params }) {
-  const wn_id = params.bname.split('-')[0]
-  const [sname, s_bid = wn_id] = params.sname.split(':')
-
-  const ch_no = params.ch_no
-
-  const api_url = `/_wn/texts/${sname}/${s_bid}/${ch_no}`
+export async function load({ fetch, parent, params: { wn_id, sname, ch_no } }) {
+  const api_url = `/_wn/texts/${wn_id}/${sname}/${ch_no}`
   const api_res = await fetch(api_url)
   if (!api_res.ok) throw error(api_res.status, await api_res.text())
 
@@ -16,7 +11,7 @@ export async function load({ fetch, parent, params }) {
   const dname = '-' + nvinfo.bhash
   const _meta = page_meta(nvinfo, sname, ch_no)
 
-  return { ztext, title, chdiv, ch_no, sname, s_bid, dname, _meta }
+  return { ztext, title, chdiv, ch_no, wn_id, sname, dname, _meta }
 }
 
 function page_meta({ bslug, btitle_vi }, sname: string, chidx: number) {

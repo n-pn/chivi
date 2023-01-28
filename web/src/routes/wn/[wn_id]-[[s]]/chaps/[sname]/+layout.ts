@@ -8,27 +8,24 @@ export interface SeedData {
   top_chaps: CV.Chinfo[]
 
   seed_data: {
+    links: string[]
     stime: number
-    slink: string
+    _flag: number
     fresh: boolean
     //
     min_privi: number
-    privi_map: number[]
+    gift_chap: number
   }
 }
 
 const prefixes = ['_', '@', '+', '!']
 
-export const load = (async ({ params, fetch, url }) => {
-  const wn_id = params.bname.split('-')[0]
-  const [sname, s_bid = wn_id] = params.sname.split(':')
-
+export const load = (async ({ params: { wn_id, sname }, fetch, url }) => {
   if (!prefixes.includes(sname[0])) {
     const location = url.pathname.replace(`/${sname}`, '/_')
     throw redirect(300, location)
   }
 
-  const api_url = `/_wn/seeds/${sname}/${s_bid}`
-
+  const api_url = `/_wn/seeds/${wn_id}/${sname}`
   return await api_get<SeedData>(api_url, null, fetch)
 }) satisfies LayoutLoad

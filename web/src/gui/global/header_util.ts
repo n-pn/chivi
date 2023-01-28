@@ -16,16 +16,11 @@ const book_nav = (bslug: string, vname: string, show = '') => {
   return nav_link(`/wn/${bslug}`, vname, 'book', { show, kind: 'title' })
 }
 
-const seed_nav = (
-  bslug: string,
-  sname: string,
-  s_bid: string | number,
-  pg_no = 1
-) => {
-  const seed_href = seed_path(bslug, sname, s_bid, pg_no)
+const seed_nav = (bslug: string, sname: string, pg_no = 1) => {
+  const seed_href = seed_path(bslug, sname, pg_no)
 
-  const seed_name = sname == '_' ? 'Tổng hợp' : sname
-  return nav_link(seed_href, seed_name, 'list', { show: 'pl' })
+  const seed_name = sname == '_' ? '[Tổng hợp]' : `[${sname}]`
+  return nav_link(seed_href, seed_name, 'list', { kind: 'zseed', show: 'pl' })
 }
 
 function nav_link(
@@ -45,7 +40,7 @@ function quick_read_v2({ bslug }, { sname, chidx, locked }) {
   return {
     'text': chidx > 0 ? 'Đọc tiếp' : 'Đọc thử',
     'icon': locked ? 'player-skip-forward' : 'player-play',
-    'href': chap_path(bslug, { sname, snvid: '' }, chidx),
+    'href': chap_path(bslug, sname, chidx),
     'data-show': 'tm',
   } as App.HeadItem
 }
@@ -171,7 +166,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       nav_link('/books/+book', 'Thêm truyện', 'file-plus', { show: 'tm' }),
     ],
   },
-  '/wn/[bname]/(info)': ({ nvinfo, ubmemo }) => {
+  '/wn/[wn_id]-[[s]]/(info)': ({ nvinfo, ubmemo }) => {
     if (!nvinfo) return error
 
     return {
@@ -184,7 +179,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
     }
   },
-  '/wn/[bname]/(info)/crits': ({ nvinfo }) => {
+  '/wn/[wn_id]-[[s]]/(info)/crits': ({ nvinfo }) => {
     if (!nvinfo) return error
 
     return {
@@ -198,7 +193,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [nav_link('crits/+crit', 'Đánh giá', 'circle-plus')],
     }
   },
-  '/wn/[bname]/(info)/crits/+crit': ({ nvinfo }) => {
+  '/wn/[wn_id]-[[s]]/(info)/crits/+crit': ({ nvinfo }) => {
     if (!nvinfo) return error
 
     return {
@@ -213,7 +208,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [nav_link('../lists', 'Thư đơn', 'bookmarks')],
     }
   },
-  '/wn/[bname]/+info': ({ nvinfo }) => {
+  '/wn/[wn_id]-[[s]]/+info': ({ nvinfo }) => {
     if (!nvinfo) return error
 
     return {
@@ -227,7 +222,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
   // book chapters
-  '/wn/[bname]/(info)/lists': ({ nvinfo }) => {
+  '/wn/[wn_id]-[[s]]/(info)/lists': ({ nvinfo }) => {
     if (!nvinfo) return error
 
     return {
@@ -242,7 +237,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     }
   },
 
-  '/wn/[bname]/chaps/[sname]/(list)': ({ nvinfo, ubmemo }) => {
+  '/wn/[wn_id]-[[s]]/chaps/[sname]/(list)': ({ nvinfo, ubmemo }) => {
     if (!nvinfo) return error
 
     return {
@@ -256,7 +251,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
     }
   },
-  '/wn/[bname]/chaps/+seed': ({ nvinfo, ubmemo }) => {
+  '/wn/[wn_id]-[[s]]/chaps/+seed': ({ nvinfo, ubmemo }) => {
     if (!nvinfo) return error
 
     return {
@@ -271,23 +266,21 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
     }
   },
-  '/wn/[bname]/chaps/[sname]/(list)/+chap': ({ nvinfo, curr_seed }) => {
+  '/wn/[wn_id]-[[s]]/chaps/[sname]/(list)/+chap': ({ nvinfo, curr_seed }) => {
     if (!nvinfo) return error
-
     const { bslug, btitle_vi: vname } = nvinfo
-    const { sname, snvid } = curr_seed
 
     return {
       title: 'Thêm/sửa chương truyện ' + vname,
       left_nav: [
         home_nav('', ''),
         book_nav(bslug, '', 'tl'),
-        seed_nav(bslug, sname, snvid),
+        seed_nav(bslug, curr_seed.sname),
         nav_link('+chap', 'Thêm/sửa chương', 'file-plus', { show: 'pm' }),
       ],
     }
   },
-  '/wn/[bname]/chaps/[sname]/(list)/+conf': ({ nvinfo }) => {
+  '/wn/[wn_id]-[[s]]/chaps/[sname]/(list)/+conf': ({ nvinfo }) => {
     if (!nvinfo) return error
 
     return {
@@ -299,15 +292,11 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       ],
     }
   },
-  '/wn/[bname]/chaps/[sname]/[ch_no]/[...cpart]': ({
-    nvinfo,
-    curr_seed,
-    curr_chap,
-  }) => {
+  '/wn/[wn_id]-[[s]]/chaps/[sname]/[ch_no]/[...cpart]': (data) => {
+    const { nvinfo, curr_seed, curr_chap } = data
     if (!nvinfo) return error
 
     const { bslug } = nvinfo
-    let { sname, snvid: s_bid } = curr_seed
     const { title, chidx: ch_no } = curr_chap
 
     return {
@@ -315,7 +304,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       left_nav: [
         home_nav('', ''),
         book_nav(bslug, '', 'tl'),
-        seed_nav(bslug, sname, s_bid, _pgidx(ch_no)),
+        seed_nav(bslug, curr_seed.sname, _pgidx(ch_no)),
         nav_link(ch_no, `Chương ${ch_no}`, '', { show: 'lg' }),
       ],
       show_config: true,

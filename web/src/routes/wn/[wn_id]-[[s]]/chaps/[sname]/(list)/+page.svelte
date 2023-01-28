@@ -3,19 +3,21 @@
   import { session } from '$lib/stores'
 
   import { api_path } from '$lib/api_call'
+  import { seed_path } from '$lib/kit_path'
+
+  import { rel_time } from '$utils/time_utils'
+  import { invalidateAll } from '$app/navigation'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
-  import ChapList from './ChapList.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-  import { rel_time } from '$utils/time_utils'
-  import { invalidateAll } from '$app/navigation'
   import Gmenu from '$gui/molds/Gmenu.svelte'
 
+  import ChapList from './ChapList.svelte'
+
   import type { PageData } from './$types'
-  import { seed_path } from '$lib/kit_path'
   export let data: PageData
 
   $: ({ nvinfo, ubmemo, curr_seed, seed_data, chaps, pg_no } = data)
@@ -132,16 +134,11 @@
       <ChapList
         {nvinfo}
         {ubmemo}
-        nvseed={curr_seed}
-        chaps={data.top_chaps}
-        privi_map={seed_data.privi_map} />
+        {curr_seed}
+        {seed_data}
+        chaps={data.top_chaps} />
       <div class="chlist-sep" />
-      <ChapList
-        {nvinfo}
-        {ubmemo}
-        nvseed={curr_seed}
-        {chaps}
-        privi_map={seed_data.privi_map} />
+      <ChapList {nvinfo} {ubmemo} {curr_seed} {seed_data} {chaps} />
 
       <Footer>
         <div class="foot">

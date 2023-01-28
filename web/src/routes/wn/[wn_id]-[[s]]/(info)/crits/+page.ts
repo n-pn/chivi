@@ -4,18 +4,13 @@ import type { PageLoad } from './$types'
 
 export const load = (async ({ fetch, params, url }) => {
   const sort = url.searchParams.get('sort') || 'score'
-
-  const wn_id = params.bname.split('-')[0]
-  const extras = { book: wn_id, lm: 10, sort }
-
+  const extras = { book: params.wn_id, lm: 10, sort }
   const search = merge_query(url.searchParams, extras)
 
   // prettier-ignore
   const empty = { crits: [], books: [], users: [], lists: [], pgmax: 0, pgidx: 0 }
-
   const from = url.searchParams.get('from') || ''
 
-  console.log(search)
   return {
     ys: from == 'cv' ? empty : await load_crits(fetch, search, 'yscrits.index'),
     vi: from == 'ys' ? empty : await load_crits(fetch, search, 'vicrits.index'),

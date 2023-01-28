@@ -11,13 +11,10 @@ export interface ChapPart {
 }
 
 export async function load({ params, fetch }) {
-  const wn_id = params.bname.split('-')[0]
-  const [sname, s_bid = wn_id] = params.sname.split(':')
-
   const ch_no = +params.ch_no
   const cpart = +params.cpart.split('/').pop() || 1
 
-  const path = api_chap_url(sname, +s_bid, ch_no, cpart, false)
+  const path = api_chap_url(+params.wn_id, params.sname, ch_no, cpart, false)
   const data = await api_get<ChapPart>(path, null, fetch)
 
   // const _meta = page_meta(nvinfo, data.curr_chap.title, sname, s_bid, +ch_no)

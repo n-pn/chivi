@@ -1,5 +1,5 @@
 import type { LoadEvent } from '@sveltejs/kit'
-import { api_path, api_get, set_fetch } from '$lib/api_call'
+import { api_path, api_get } from '$lib/api_call'
 
 interface BookUser {
   u_dname: string
@@ -12,11 +12,10 @@ export interface BookFront {
 }
 
 export const load = async ({ fetch, params }: LoadEvent) => {
-  const wn_id = params.bname.split('-')[0]
-  const api_url = `/_db/v2/books/${wn_id}/front`
+  const api_url = `/_db/v2/books/${params.wn_id}/front`
 
   const bdata = await api_get<BookFront>(api_url, null, fetch)
-  const crits = await load_ycrits(wn_id, fetch)
+  const crits = await load_ycrits(params.wn_id, fetch)
 
   return { ...bdata, crits }
 }

@@ -5,28 +5,33 @@ require "../../_util/site_link"
 require "../../mt_v1/data/v1_dict"
 
 require "./wn_repo"
-
 require "./wnseed/seed_fetch"
 
 class WN::WnSeed
   include Crorm::Model
   @@table = "seeds"
 
+  field wn_id : Int32 = 0
   field sname : String = ""
   field s_bid : Int32 = 0
-
-  field wn_id : Int32 = 0
-  field sn_id : Int32 = 0
 
   field chap_total : Int32 = 0
   field chap_avail : Int32 = 0
 
-  field _flag : Int32 = 0
-  field _rank : Int32 = 0
+  # field rm_link : String = ""   # link to remote catalog page
+  # field rm_kind : String = ""   # parser type
+  # field rm_time : Int64 = 0_i64 # last remote refreshed at
+
+  # field rm_last_s_cid : Int32 = 0 # the last remote chap id crawled
+  # field rm_last_ch_no : Int32 = 0 # matching remote last chap with ch_no position
 
   field mtime : Int64 = Time.utc.to_unix # last updated at
   field atime : Int64 = Time.utc.to_unix # last accessed at
-  field rtime : Int64 = 0_i64            # last refreshed at
+
+  field rm_links : String = "[]" # remote catalog links associated with this seed
+  field rm_stime : Int64 = 0
+
+  field _flag : Int32 = 0
 
   @[DB::Field(ignore: true)]
   getter zh_chaps : WnRepo { WnRepo.load(self.sname, self.s_bid, "infos") }
@@ -37,13 +42,17 @@ class WN::WnSeed
   @[DB::Field(ignore: true)]
   getter dname : String { M1::DbDict.get_dname(-self.wn_id) }
 
-  def initialize(@sname, @s_bid, @wn_id = 0)
-    mkdir!(sname, s_bid)
+  getter remotes : Array(String) { Array(String).from_json(self.rm_links) }
+
+  def initialize(@wn_id, @sname, @s_bid = wn_id)
   end
 
-  def mkdir!(sname = self.sname, s_bid = self.s_bid)
+  def mkdirs!(sname = self.sname, s_bid = self.s_bid)
     Dir.mkdir_p("var/chaps/infos/#{sname}")
-    Dir.mkdir_p("var/chaps/temps/#{sname}/#{s_bid}")
+    Dir.mkdir_p("var/chaps/texts-zip/#{sname}")
+    Dir.mkdir_p("var/chaps/texts-gbk/#{sname}/#{s_bid}")
+
+    self
   end
 
   def to_json(jb : JSON::Builder)
@@ -67,31 +76,13 @@ class WN::WnSeed
     end
   end
 
-  # min privi required to read chapter
-  #
-  # return array of ch_no return max chapter can be readed by the current user
-  # from privi -1 to 2, privi 3 can read it all
-  def privi_map : {Int32, Int32, Int32, Int32}
-    total = self.chap_total
-
-    lower = total // 4
-    upper = total - lower
-
-    case self.sname[0]
-    when '_' then {lower, upper, total, total}
-    when '@' then {0, lower, upper, total}
-    when '+' then {0, 0, lower, upper}
-    else          {0, 0, 0, lower}
-    end
-  end
-
   def self.stype(sname : String)
-    case sname
-    when "_"                then 0  # base user seed
-    when .starts_with?('@') then 1  # foreground user seed
-    when .starts_with?('+') then -1 # background user seed
-    when .in?(REMOTE_SEEDS) then -3 # active remote seed
-    else                         -2 # dead remote seed
+    case sname[0]
+    when '_' then 0  # base user seed
+    when '@' then 1  # foreground user seed
+    when '+' then -1 # background user seed
+    else
+      sname.in?(REMOTE_SEEDS) ? 3 : 2 # dead remote seed
     end
   end
 
@@ -187,11 +178,11 @@ class WN::WnSeed
 
   ####
 
-  def self.upsert!(sname : String, s_bid : Int32, wn_id : Int32 = 0)
+  def self.upsert!(wn_id : Int32, sname : String, s_bid = wn_id)
     @@repo.open_tx do |db|
-      db.exec <<-SQL, sname, s_bid, wn_id
-        insert into #{@@table} (sname, s_bid, wn_id) values (?, ?, ?)
-        on conflict do update set wn_id = excluded.wn_id
+      db.exec <<-SQL, wn_id, sname, s_bid
+        insert into #{@@table} (wn_id, sname) values (?, ?, ?)
+        on conflict do update set s_bid = excluded.s_bid
       SQL
     end
   end
@@ -214,23 +205,23 @@ class WN::WnSeed
     end
   end
 
-  def self.get(sname : String, s_bid : Int32) : self | Nil
+  def self.get(wn_id : Int32, sname : String) : self | Nil
     @@repo.open_db do |db|
-      query = "select * from #{@@table} where sname = ? and s_bid = ?"
-      db.db.query_one?(query, sname, s_bid, as: WnSeed)
+      query = "select * from #{@@table} where wn_id = ? and sname = ?"
+      db.db.query_one?(query, wn_id, sname, as: WnSeed)
     end
   end
 
-  def self.get!(sname : String, s_bid : Int32) : self
-    self.get(sname, s_bid) || raise "wn_seed [#{sname}/#{s_bid}] not found!"
+  def self.get!(wn_id : Int32, sname : String) : self
+    self.get(wn_id, sname) || raise "wn_seed [#{wn_id}/#{sname}] not found!"
   end
 
-  def self.load(sname : String, s_bid : Int32)
-    self.load(sname, s_bid) { new(sname, s_bid) }
+  def self.load(wn_id : Int32, sname : String)
+    self.load(wn_id, sname) { new(wn_id, sname) }
   end
 
-  def self.load(sname : String, s_bid : Int32, &)
-    self.get(sname, s_bid) || yield
+  def self.load(wn_id : Int32, sname : String, &)
+    self.get(wn_id, sname) || yield
   end
 end
 

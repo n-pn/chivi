@@ -88,7 +88,7 @@
   async function submit(_evt: Event) {
     err_msg = ''
 
-    const url = `/_wn/texts/${curr_seed.sname}/${curr_seed.snvid}?start=${start}`
+    const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}?start=${start}`
     const body = render_body(chapters)
     const res = await fetch(url, { method: 'POST', body })
 
@@ -96,7 +96,7 @@
       err_msg = await res.text()
     } else {
       invalidate('wn:seed_list')
-      goto(seed_path(nvinfo.bslug, curr_seed.sname, curr_seed.snvid, start))
+      goto(seed_path(nvinfo.bslug, curr_seed.sname, start))
     }
   }
 

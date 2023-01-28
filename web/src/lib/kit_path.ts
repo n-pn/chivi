@@ -16,12 +16,8 @@ export function book_path(bslug: string, child: string = '') {
 export function seed_path(
   bslug: string,
   sname: string,
-  s_bid: string | number,
   pg_no: number = 0
 ): string {
-  sname = fix_sname(sname)
-  if (s_bid && s_bid[0] == '!') sname += `:${s_bid}`
-
   const path = `/wn/${bslug}/chaps/${sname}`
   return pg_no > 1 ? path + `?pg=${pg_no}` : path
 }
@@ -32,8 +28,8 @@ export const fix_sname = (sname: string) => {
   return seed_prefixes.includes(sname[0]) ? sname : '_'
 }
 
-export function chap_path(bslug: string, { sname, snvid }, ch_no: number) {
-  return `${seed_path(bslug, sname, snvid)}/${ch_no}`
+export function chap_path(bslug: string, sname: string, ch_no: number) {
+  return `${seed_path(bslug, sname)}/${ch_no}`
 }
 
 export function _pgidx(index: number, limit = 32) {
