@@ -35,8 +35,10 @@
     <h1>Bạn không đủ quyền hạn để xem chương {ch_no}.</h1>
 
     <p>
-      Quyền hạn tối thiểu để xem chương hiện tại: <x-chap
-        >{chap_data.privi}</x-chap>
+      <strong>
+        Quyền hạn tối thiểu để xem chương hiện tại: <x-chap
+          >{chap_data.privi}</x-chap>
+      </strong>
     </p>
 
     <p class="em">
@@ -61,7 +63,7 @@
       </li>
       <li>
         Bạn cần quyền hạn tối thiểu là <x-chap>2</x-chap> để xem các chương tiết
-        từ các nguồn cá nhân (bắt đầu bằng <x-seed>@</x-seed>)
+        từ nguồn cá nhân (bắt đầu bằng <x-seed>@</x-seed>)
       </li>
 
       <li>
@@ -85,15 +87,15 @@
   {:else}
     <h1>Chương tiết không có nội dung.</h1>
     <p class="em">
-      Bạn có đủ quyền hạn để xem chương, nhưng vì lý do nào đó mà chương tiết
-      không có trên hệ thống.
+      Bạn có đủ quyền hạn để xem chương, nhưng vì lý do nào đó mà text gốc của
+      chương không có trên hệ thống.
     </p>
 
-    <h2>Các biện khác khắc phục:</h2>
+    <h2>Các biện pháp khắc phục:</h2>
     <p>
-      Cách tốt nhất khi chương tiết không có nội dung là liên hệ ban quản trị để
-      khắc phục. Tuy nhiên, bạn có thể tự mình sửa nội dung mà không phải chờ
-      đợi phản hồi của ban quản trị.
+      Cách tốt nhất khi chương tiết không có nội dung là liên hệ ban quản trị
+      chờ xử lý. Tuy vậy, bạn cũng có thể tự mình sửa text chương mà không cần
+      phải tốn thời gian chờ đợi sự phản hồi của ban quản trị.
     </p>
     <p>
       <em
@@ -112,6 +114,7 @@
         <a href={edit_path}>Thêm text gốc</a>
         bên dưới để tự thêm text của chương.
       </p>
+
       <p>
         <em>
           Gợi ý: Tìm kiếm nhanh text gốc của chương thông qua các công cụ tìm
@@ -148,51 +151,6 @@
         hạn ngay hôm nay để mở khóa các tính năng.
       </p>
     {/if}
-
-    <!-- {#if curr_seed.sname == 'users'}
-      <p>
-        Chương tiết nguồn <x-seed>users</x-seed> được đăng tải bởi người dùng của
-        Chivi.
-      </p>
-      <p>
-        Các chương có tựa là "Thiếu chương" là các chương chưa được đăng tải.
-      </p>
-      <p>
-        Bạn có thể liên hệ với các bạn có quyền hạn từ <x-chap>2</x-chap> trở lên
-        để khắc phục các chương bị thiếu.
-      </p>
-    {:else if nvseed.sname == 'zxcs_me'}
-      <p>
-        Nguồn <x-seed>zxcs.me</x-seed> được tải thủ công từ trang
-        <a href="http://www.zxcs.me/" rel="noopener noferrer">zxcs.me</a><br />
-        Không có nội dung nghĩa là có lỗi hệ thống. Hãy liên hệ ban quản trị.
-      </p>
-    {:else if nvseed.sname == 'shubaow'}
-      <p>
-        Nguồn <x-seed>shubaow</x-seed> không cho phép các IP server truy cập.
-      </p>
-      <p>
-        Liên hệ với ban quản trị nếu bạn thực sự muốn đọc truyện từ nguồn này.
-      </p>
-    {:else if nvseed.stype == 2}
-      <p>Nguồn truyện này hiện tại đã chết hoặc ngừng được hỗ trợ.</p>
-      <p>Bạn hãy đổi sang nguồn khác còn sống để xem nội dung chương.</p>
-    {:else}
-      <p>
-        Bạn có quyền xem chương tiết từ nguồn này, nhưng vì lý do nào đó chương
-        tiết bị lỗi.
-      </p>
-      <p>
-        Hãy kiểm tra từ <a
-          href={chmeta.clink}
-          rel="noopener noreferrer"
-          target="_blank">trang gốc</a> xem có phải vấn đề từ bên đó hay không.
-      </p>
-      <p>
-        Nếu vấn đề thuộc về bên Chivi, hãy liên hệ với ban quản trị để khắc
-        phục.
-      </p>
-    {/if} -->
   {/if}
 </div>
 

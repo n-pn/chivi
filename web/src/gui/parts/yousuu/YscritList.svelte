@@ -10,7 +10,7 @@
 
 <script lang="ts">
   export let crits: CV.Yscrit[] = []
-  export let books: CV.Crbook[] = []
+  export let books: Record<number, CV.Crbook> = {}
 
   export let pgidx = 1
   export let pgmax = 1
