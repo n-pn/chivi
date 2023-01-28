@@ -40,14 +40,15 @@
 </script>
 
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { goto } from '$app/navigation'
 
   import { SIcon, Footer } from '$gui'
 
   import type { PageData } from './$types'
-  import { onMount } from 'svelte'
   export let data: PageData
 
+  let nvseed: CV.Chroot
   $: ({ nvinfo, nvseed } = data)
 
   let input = ''
@@ -71,7 +72,7 @@
     regex: `^\\s*第?[\\d${numbers}]+[章节回]`,
   }
 
-  $: action_url = `/_db/texts/${nvinfo.id}/${_seed.sname}`
+  $: action_url = `/_db/texts/${nvinfo.id}/${nvseed.sname}`
 
   let loading = false
   let changed = false

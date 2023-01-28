@@ -26,7 +26,7 @@
 
   function gen_paths(
     bslug: string,
-    { sname, chmax },
+    { sname },
     ch_no: number,
     _prev_url: string | null,
     _next_url: string | null

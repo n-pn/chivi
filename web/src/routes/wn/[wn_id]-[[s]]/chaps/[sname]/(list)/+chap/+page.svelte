@@ -33,21 +33,24 @@
   let split_mode = 1
 
   const numbers = '零〇一二两三四五六七八九十百千'
-  let opts = {
+
+  class Opts {
     // split mode 1
-    min_blanks: 2,
-    trim_space: false,
+    min_blanks = 2
+    trim_space = false
     // split mode 2
-    need_blank: false,
+    need_blank = false
     // split mode 3
-    chdiv_labels: '章节回幕折集卷季',
+    chdiv_labels = '章节回幕折集卷季'
     //split mode 4
-    custom_regex: `^\\s*第?[\\d${numbers}]+[章节回]`,
+    custom_regex = `^\\s*第?[\\d${numbers}]+[章节回]`
   }
+
+  let opts = new Opts()
 
   $: chapters = split_text(input, split_mode, opts)
 
-  const split_text = (input: string, split_mode: number, options) => {
+  const split_text = (input: string, split_mode: number, options: Opts) => {
     switch (split_mode) {
       case 1:
         return split.split_mode_1(input, options.min_blanks, options.trim_space)
@@ -324,7 +327,7 @@
 
     .m-input {
       display: inline-block;
-      &[name='chidx'] {
+      &[name='start'] {
         margin-left: 0.25rem;
         width: 3.5rem;
         text-align: center;

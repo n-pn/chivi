@@ -74,6 +74,15 @@ class WN::TextCtrl < AC::Base
     start = wn_seed.chap_total + 1 if start < 1
     ztext = request.body.not_nil!.gets_to_end
 
+    spawn do
+      save_dir = "var/texts/users/#{wn_id}-#{sname}"
+      Dir.mkdir_p(save_dir)
+
+      file_name = "#{Time.utc.to_unix // 60}-#{start}-@#{_uname}"
+      file_path = "#{save_dir}/#{file_name}.txt"
+      File.write(file_path, ztext)
+    end
+
     chaps = TextSplit.split_multi(ztext)
 
     chaps.each_with_index(start) do |(text, chdiv), ch_no|
@@ -85,20 +94,10 @@ class WN::TextCtrl < AC::Base
     max_ch_no = start + chaps.size - 1
     wn_seed.chap_total = max_ch_no if max_ch_no > wn_seed.chap_total
 
-    Log.info { max_ch_no }
-
     wn_seed.mtime = Time.utc.to_unix
     wn_seed.save!
 
-    spawn do
-      save_dir = "var/texts/users/#{wn_id}-#{sname}"
-      Dir.mkdir_p(save_dir)
-
-      file_name = "#{Time.utc.to_unix // 60}-#{start}-@#{_uname}"
-      file_path = "#{save_dir}/#{file_name}.txt"
-      File.write(file_path, ztext)
-    end
-
+    wn_seed.regen_vi_chaps!
     render json: {pg_no: _pgidx(start, 32)}
   end
 
@@ -140,6 +139,7 @@ class WN::TextCtrl < AC::Base
     wn_seed.chap_total = ch_no if ch_no > wn_seed.chap_total
     wn_seed.mtime = Time.utc.to_unix
     wn_seed.save!
+    wn_seed.regen_vi_chaps!
 
     render json: zh_chap
   end

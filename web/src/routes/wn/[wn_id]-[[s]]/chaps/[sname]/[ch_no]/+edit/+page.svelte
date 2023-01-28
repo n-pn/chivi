@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment'
-  import { goto } from '$app/navigation'
+  import { goto, invalidateAll } from '$app/navigation'
 
   import { session } from '$lib/stores'
   import { debounce, sync_scroll } from '$lib/svelte'
@@ -33,6 +33,7 @@
     const res = await fetch(action_url, { method: 'PUT', headers, body })
 
     if (res.ok) {
+      await invalidateAll()
       goto(chap_path(nvinfo.bslug, data.sname, ch_no))
     } else {
       alert(await res.text())
