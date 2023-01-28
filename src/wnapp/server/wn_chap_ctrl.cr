@@ -22,7 +22,9 @@ class WN::ChapCtrl < AC::Base
 
     zh_chap = wn_seed.zh_chap(ch_no).not_nil!
     can_read = _privi >= min_privi
+
     ztext = can_read ? load_ztext(wn_seed, zh_chap, part_no, load_mode) : ""
+    cvmtl = ztext.empty? ? "" : load_cv_data(wn_id, ztext)
 
     render json: {
       curr_chap: vi_chap,
@@ -32,7 +34,7 @@ class WN::ChapCtrl < AC::Base
       chap_data: {
         ztext: ztext,
         title: zh_chap.title,
-        # cvmtl: ztext.empty? ? "" : load_cv_data(wn_id, ztext),
+        cvmtl: cvmtl,
         ##
         privi: min_privi,
         grant: can_read,
@@ -40,14 +42,14 @@ class WN::ChapCtrl < AC::Base
     }
   end
 
+  HEADERS = HTTP::Headers{"Content-Type" => "text/plain"}
+
   private def load_cv_data(wn_id : Int32, ztext : String)
     url = "http://localhost:5010/_db/cv_chap?wn_id=#{wn_id}&cv_title=first"
+    puts "loading cvmtl".colorize.blue
 
-    headers = HTTP::Headers{"Content-Type" => "text/plain"}
-    HTTP::Client.post(url, headers: headers, body: ztext) do |res|
-      return "" unless res.success?
-      Log.info { "loading here" }
-      res.body_io.gets_to_end
+    HTTP::Client.post(url, headers: HEADERS, body: ztext) do |res|
+      res.success? ? res.body_io.gets_to_end : ""
     end
   end
 

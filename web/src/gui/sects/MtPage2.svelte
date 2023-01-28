@@ -44,28 +44,24 @@
   let fix_raw = false
 
   beforeNavigate(() => {
-    l_focus = 0
+    mtmenu.hide()
 
     datav1 = []
     datav2 = []
 
-    mtmenu.hide()
+    l_focus = 0
   })
 
   $: zlines = ztext ? ztext.split('\n') : []
-  $: if (cvmtl) parse_cvmtl(cvmtl)
+  $: [datav1, tspan, dsize] = parse_cvmtl(cvmtl)
 
   $: if (browser && ztext && $config.render == 1) call_v2_engine(ztext)
 
-  function parse_cvmtl(cvmtl: string) {
+  function parse_cvmtl(cvmtl: string): [MtData[], number, number] {
     const [lines, extra = ''] = cvmtl.split('\n$\t$\t$\n')
-    console.log(lines.length)
     const args = extra.split('\t')
 
-    tspan = +args[0]
-    dsize = +args[1]
-
-    datav1 = MtData.parse_lines(lines)
+    return [MtData.parse_lines(lines), +args[0], +args[1]]
   }
 
   function render_html(
