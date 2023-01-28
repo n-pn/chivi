@@ -17,9 +17,9 @@ do
     cd web && pnpm run build
     rsync-fast build/ $SSH/web/
     cd ..
-  elif [[ $target == "hanlp-srv" ]]
-  then
-    rsync-fast "src/mt_sp/hanlp_srv.py" $SSH/bin
+  # elif [[ $target == "hanlp-srv" ]]
+  # then
+  #   rsync-fast "src/mt_sp/hanlp_srv.py" $SSH/bin
   else
     shards build -s --release --production $target
     rsync-fast bin/$target $SSH/bin

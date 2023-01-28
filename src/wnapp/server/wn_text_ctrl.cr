@@ -85,6 +85,8 @@ class WN::TextCtrl < AC::Base
     max_ch_no = start + chaps.size - 1
     wn_seed.chap_total = max_ch_no if max_ch_no > wn_seed.chap_total
 
+    Log.info { max_ch_no }
+
     wn_seed.mtime = Time.utc.to_unix
     wn_seed.save!
 
@@ -134,6 +136,10 @@ class WN::TextCtrl < AC::Base
     zh_chap.chdiv = form.chdiv
 
     zh_chap.save_body!(form.ztext, seed: wn_seed, uname: _uname)
+
+    wn_seed.chap_total = ch_no if ch_no > wn_seed.chap_total
+    wn_seed.mtime = Time.utc.to_unix
+    wn_seed.save!
 
     render json: zh_chap
   end

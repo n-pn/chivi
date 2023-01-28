@@ -10,7 +10,7 @@
 
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { goto, invalidate } from '$app/navigation'
+  import { goto, invalidateAll } from '$app/navigation'
 
   import { SIcon, Footer } from '$gui'
 
@@ -19,7 +19,7 @@
   import { get_encoding } from './get_encoding'
 
   import type { PageData } from './$types'
-  import { seed_path } from '$lib/kit_path'
+  import { seed_path, _pgidx } from '$lib/kit_path'
   export let data: PageData
   $: ({ nvinfo, curr_seed } = data)
 
@@ -95,8 +95,8 @@
     if (!res.ok) {
       err_msg = await res.text()
     } else {
-      invalidate('wn:seed_list')
-      goto(seed_path(nvinfo.bslug, curr_seed.sname, start))
+      await invalidateAll()
+      goto(seed_path(nvinfo.bslug, curr_seed.sname, _pgidx(start)))
     }
   }
 

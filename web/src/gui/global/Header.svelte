@@ -2,14 +2,11 @@
   import { page } from '$app/stores'
   import { scroll, popups } from '$lib/stores'
 
+  import { gen_meta } from './header_util'
   import Item from './Header/HeaderItem.svelte'
 
-  import { gen_meta } from './header_util'
-
-  // prettier-ignore
-  $: meta = $page.data._meta || gen_meta($page.route?.id ||'/', $page.data)
+  $: meta = $page.data._meta || gen_meta($page.route?.id || '/', $page.data)
   $: uname = $page.data._user?.uname
-
   $: image = meta.image || 'https://chivi.app/imgs/avatar.pgn'
 </script>
 

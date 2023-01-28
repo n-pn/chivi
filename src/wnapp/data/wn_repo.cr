@@ -177,10 +177,26 @@ class WN::WnRepo
     CACHE[db_path] ||= new(db_path)
   end
 
-  def self.load_tl(zh_db_path : String, dname : String)
+  def self.load_tl(zh_db_path : String, dname : String, force : Bool = false)
     vi_db_path = zh_db_path.sub("infos.db", "trans.db")
-    outdated = newer?(zh_db_path, vi_db_path)
-    new(vi_db_path).tap { |x| x.regen_tl!(zh_db_path, dname) if outdated }
+    repo = new(vi_db_path)
+
+    if force || older?(vi_db_path, zh_db_path)
+      repo.regen_tl!(zh_db_path, dname)
+    end
+
+    repo
+  end
+
+  # return true if the vi_repo is older than the zh_repo or its last mtime > 12 hours
+  def self.older?(target : String, source : String, stale : Time::Span = 12.hours)
+    return true unless target_mtime = mtime(target)
+    return false unless target_mtime = mtime(source)
+    target_mtime < {Time.utc - stale, target_mtime}.min
+  end
+
+  def self.mtime(path : String)
+    File.info?(path).try(&.modification_time)
   end
 
   ####
@@ -199,12 +215,6 @@ class WN::WnRepo
 
   def self.init_sql
     {{ read_file("#{__DIR__}/sql/init_wn_chap.sql") }}
-  end
-
-  def self.newer?(target : String, source : String)
-    return false unless target_info = File.info?(target)
-    return true unless source_info = File.info?(source)
-    target_info.modification_time > source_info.modification_time
   end
 end
 

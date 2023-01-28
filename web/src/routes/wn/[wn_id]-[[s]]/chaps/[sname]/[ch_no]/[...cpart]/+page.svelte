@@ -31,12 +31,11 @@
     _prev_url: string | null,
     _next_url: string | null
   ) {
-    const list = seed_path(bslug, sname, ch_no)
-    const last = seed_path(bslug, sname, chmax)
-
     const base = seed_path(bslug, sname)
+    const list = seed_path(bslug, sname, _pgidx(ch_no))
+
     const prev = _prev_url ? `${base}/${_prev_url}` : base
-    const next = _next_url ? `${base}/${_next_url}` : last
+    const next = _next_url ? `${base}/${_next_url}` : list
 
     return { list, prev, next }
   }

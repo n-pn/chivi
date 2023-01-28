@@ -45,10 +45,6 @@
 
   beforeNavigate(() => {
     mtmenu.hide()
-
-    datav1 = []
-    datav2 = []
-
     l_focus = 0
   })
 

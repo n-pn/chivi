@@ -37,7 +37,7 @@ class WN::WnSeed
   getter zh_chaps : WnRepo { WnRepo.load(self.sname, self.s_bid, "infos") }
 
   @[DB::Field(ignore: true)]
-  getter vi_chaps : WnRepo { WnRepo.load_tl(zh_chaps.db_path, self.dname) }
+  getter vi_chaps : WnRepo { WnRepo.load_tl(zh_chaps.db_path, self.dname, force: false) }
 
   @[DB::Field(ignore: true)]
   getter dname : String { M1::DbDict.get_dname(-self.wn_id) }
@@ -53,6 +53,10 @@ class WN::WnSeed
     Dir.mkdir_p("var/chaps/texts-gbk/#{sname}/#{s_bid}")
 
     self
+  end
+
+  def regen_vi_chaps!
+    @vi_chaps = WnRepo.load_tl(zh_chaps.db_path, self.dname, force: true)
   end
 
   def to_json(jb : JSON::Builder)
