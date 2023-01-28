@@ -29,7 +29,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/_db/qtran/:type/:name")]
   def cached(type : String, name : String,
-             user : String = _viuser.uname,
+             user : String = _uname,
              trad : Bool = false,
              temp : Bool = false,
              _raw : Bool = false,
@@ -98,6 +98,7 @@ class CV::QtransCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::POST("/api/qtran", body: :form)]
+  @[AC::Route::POST("/_db/qtran", body: :form)]
   def cv_post(form : ConvertForm,
               dname : String = "combine")
     form.validate!(_privi)
@@ -113,7 +114,7 @@ class CV::QtransCtrl < CV::BaseCtrl
     render text: output
   end
 
-  @[AC::Route::POST("/qtran_chap")]
+  @[AC::Route::POST("/_db/cv_chap")]
   def cv_chap(wn_id : Int32 = 0, cv_title : String = "none")
     dname = M1::DbDict.get_dname(-wn_id)
     cvmtl = MtCore.generic_mtl(dname, _viuser.uname)

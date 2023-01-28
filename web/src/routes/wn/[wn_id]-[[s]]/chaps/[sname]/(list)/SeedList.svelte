@@ -20,7 +20,7 @@
 
 <div class="seed-list">
   <a
-    href={seed_path(nvinfo.bslug, seeds._main.sname, seeds._main.snvid, pgidx)}
+    href={seed_path(nvinfo.bslug, seeds._main.sname, pgidx)}
     class="seed-name"
     class:_active={seeds._main.sname == curr_seed.sname}
     data-tip="Danh sách chương trộn tổng hợp"
@@ -30,10 +30,10 @@
   </a>
 
   {#each seeds.users as seed}
-    {@const { sname, snvid, chmax } = seed}
+    {@const { sname, chmax } = seed}
     {#if chmax > 0 && sname != uname}
       <a
-        href={seed_path(nvinfo.bslug, sname, snvid, pgidx)}
+        href={seed_path(nvinfo.bslug, sname, pgidx)}
         class="seed-name"
         class:_active={sname == curr_seed.sname}
         data-tip="Danh sách chương cá nhân của {sname}"
@@ -46,7 +46,7 @@
 
   {#if _self && $session.privi > 0}
     <a
-      href={seed_path(nvinfo.bslug, _self.sname, _self.snvid, pgidx)}
+      href={seed_path(nvinfo.bslug, _self.sname, pgidx)}
       class="seed-name"
       class:_active={_self.sname == curr_seed.sname}
       data-tip="Danh sách chương của cá nhân bạn"
@@ -69,9 +69,9 @@
 
 {#if show_bg}
   <div class="seed-list -extra">
-    {#each seeds.backs as { sname, snvid, chmax }}
+    {#each seeds.backs as { sname, chmax }}
       <a
-        href={seed_path(nvinfo.bslug, sname, snvid, pgidx)}
+        href={seed_path(nvinfo.bslug, sname, pgidx)}
         class="seed-name _sub"
         class:_active={sname == curr_seed.sname}>
         <div class="seed-label">{sname}</div>

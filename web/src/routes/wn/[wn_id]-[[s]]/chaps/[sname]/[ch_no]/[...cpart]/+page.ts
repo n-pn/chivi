@@ -17,7 +17,18 @@ export async function load({ params, fetch }) {
   const path = api_chap_url(+params.wn_id, params.sname, ch_no, cpart, false)
   const data = await api_get<ChapPart>(path, null, fetch)
 
-  // const _meta = page_meta(nvinfo, data.curr_chap.title, sname, s_bid, +ch_no)
-
+  if (!data.chap_data.cvmtl && data.chap_data.grant) {
+    const ztext = data.chap_data.ztext
+    data.chap_data.cvmtl = await get_cvdata(fetch, params.wn_id, ztext)
+  }
   return { ...data, cpart, redirect: params.cpart == '' }
+}
+
+async function get_cvdata(fetch: CV.Fetch, wn_id: string, body: string) {
+  const url = `/_db/cv_chap?wn_id=${wn_id}&cv_title=first`
+  const headers = { 'Content-Type': 'text/plain', 'Accept': 'text/plain' }
+  const res = await fetch(url, { method: 'POST', headers, body })
+
+  if (!res.ok) return ''
+  return await res.text()
 }

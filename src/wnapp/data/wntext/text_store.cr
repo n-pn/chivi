@@ -6,10 +6,8 @@ module WN::TextStore
     return [""] if _path == "x" # no text available, stop trying
 
     # try reading txt file directly from disk
-    if _path.in?("", "v")
-      txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
-      return read_txt_file(txt_path) if File.file?(txt_path)
-    end
+    txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
+    return read_txt_file(txt_path) if File.file?(txt_path)
 
     # try reading txt file from new zip
     read_txt_from_zip(seed, chap).try { |x| return x }
@@ -49,6 +47,7 @@ module WN::TextStore
   # read chap text file and split to parts
   @[AlwaysInline]
   def read_txt_file(txt_path : String)
+    # Log.info { "found in txt folder: #{txt_path}" }
     File.read(txt_path, encoding: ENCODING).split("\n\n")
   end
 
@@ -71,30 +70,10 @@ module WN::TextStore
 
   ZIP_DIR = "var/chaps/texts-zip"
 
-  MAP_ZIP = {
-    "!biqugee": "!biqugee.com",
-    "!bxwxorg": "!bxwxorg.com",
-    "!rengshu": "!rengshu.com",
-    "!shubaow": "!shubaow.net",
-    "!duokan8": "!duokan8.com",
-    "!paoshu8": "!paoshu8.com",
-    "!miscs":   "!chivi.app",
-    "!chivi":   "!chivi.app",
-    "!xbiquge": "!xbiquge.so",
-    "!hetushu": "!hetushu.com",
-    "!69shu":   "!69shu.com",
-    "!sdyfcm":  "!nofff.com",
-    "!nofff":   "!nofff.com",
-    "!5200":    "!5200.tv",
-    "!zxcs_me": "!zxcs.me",
-    "!jx_la":   "!jx.la",
-  }
-
   # generate zip path
   @[AlwaysInline]
   def gen_zip_path(seed : WnSeed)
-    sname = MAP_ZIP[seed.sname]? || seed.sname
-    gen_zip_path(sname, seed.s_bid)
+    gen_zip_path(seed.sname, seed.s_bid)
   end
 
   # :ditto:
@@ -115,6 +94,7 @@ module WN::TextStore
 
     Compress::Zip::File.open(zip_path) do |zip|
       return unless entry = zip["#{s_cid}.gbk"]?
+      # Log.info { "found in zip archive: #{zip_path}" }
 
       entry.open do |io|
         io.set_encoding ENCODING

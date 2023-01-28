@@ -41,9 +41,11 @@ class WN::ChapCtrl < AC::Base
   end
 
   private def translate_chap(wn_id : Int32, ztext : String)
-    url = "http://localhost:5010/qtran_chap?wn_id=#{wn_id}&cv_title=first"
+    url = "http://localhost:5010/_db/cv_chap?wn_id=#{wn_id}&cv_title=first"
 
-    HTTP::Client.post(url, body: ztext) do |res|
+    headers = HTTP::Headers{"Content-Type" => "text/plain"}
+
+    HTTP::Client.post(url, headers: headers, body: ztext) do |res|
       res.success? ? res.body_io.gets_to_end : ""
     end
   end
