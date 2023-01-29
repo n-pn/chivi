@@ -132,26 +132,28 @@
     </div>
   {/if}
 
-  <div class="chap-hint">
-    <SIcon name="alert-circle" />
-    {#if seed_data.read_privi > 0}
-      <span>
-        Chương từ <span class="em">1</span> tới
-        <span class="em">{seed_data.gift_chaps}</span> cần
-        <strong class="em">{privi_str(seed_data.read_privi - 1)}</strong> để xem
-        nội dung.
-      </span>
-    {/if}
+  {#if seed_data.read_privi > -1}
+    <div class="chap-hint">
+      <SIcon name="alert-circle" />
+      {#if seed_data.read_privi > 0}
+        <span>
+          Chương từ <span class="em">1</span> tới
+          <span class="em">{seed_data.gift_chaps}</span> cần
+          <strong class="em">{privi_str(seed_data.read_privi - 1)}</strong> để xem
+          nội dung.
+        </span>
+      {/if}
 
-    {#if seed_data.read_privi > -1 && curr_seed.chmax > seed_data.gift_chaps}
-      <span>
-        Chương từ <span class="em">{seed_data.gift_chaps + 1}</span> tới
-        <span class="em">{curr_seed.chmax}</span> cần
-        <strong class="em">{privi_str(seed_data.read_privi)}</strong> để xem nội
-        dung.
-      </span>
-    {/if}
-  </div>
+      {#if curr_seed.chmax > seed_data.gift_chaps}
+        <span>
+          Chương từ <span class="em">{seed_data.gift_chaps + 1}</span> tới
+          <span class="em">{curr_seed.chmax}</span> cần
+          <strong class="em">{privi_str(seed_data.read_privi)}</strong> để xem nội
+          dung.
+        </span>
+      {/if}
+    </div>
+  {/if}
 
   <chap-list>
     {#if curr_seed.chmax > 0}
