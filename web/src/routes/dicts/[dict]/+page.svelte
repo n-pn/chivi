@@ -161,7 +161,7 @@
           <td><input type="text" placeholder="-" bind:value={query.val} /></td>
           <td>
             <button class="m-btn _sm" on:click={() => (postag_state = 2)}
-              >{pt_labels[query.ptag] || '-'}</button>
+              >{(query.ptag && pt_labels[query.ptag]) || '-'}</button>
           </td>
           <td class="prio"
             ><input type="text" placeholder="-" bind:value={query.prio} /></td>
@@ -223,7 +223,7 @@
             <td class="-tag">
               <!-- svelte-ignore a11y-click-events-have-key-events -->
               <span on:click={() => show_upsert(key, 2)}>
-                {ptag || '~'}
+                {pt_labels[ptag || '~']}
               </span>
               <div class="hover">
                 <button
