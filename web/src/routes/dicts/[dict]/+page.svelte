@@ -53,10 +53,21 @@
     upsert.show(d_tab, state)
   }
 
-  const tab_labels = ['Tự động', 'Chung', 'Nháp', 'Riêng']
+  const tab_labels = ['Tự động', 'Cộng đồng', 'Tạm thời', 'Cá nhân']
 
   const uname_class = (uname: string) =>
     uname == $session.uname ? '_self' : '_other'
+
+  let dl_opts = {
+    format: 'qt',
+    scope: 'all',
+    temp: true,
+    user: true,
+    get toQuery() {
+      const fields = ['format', 'scope', 'temp', 'user']
+      return fields.map((x) => `${x}=${this[x]}`).join('&')
+    },
+  }
 </script>
 
 <Crumb
@@ -66,10 +77,69 @@
   ]} />
 
 <article class="article m-article">
-  <h1 class="h2">{data.label} <code>[{data.dname}]</code></h1>
-  <p class="brief">{data.brief}</p>
+  <header>
+    <h1 class="h2">{data.label} <small>Số lượng từ: {data.dsize}</small></h1>
+  </header>
 
-  <h2 class="h3">Số lượng từ: {data.dsize}</h2>
+  <details class="export">
+    <summary>Tải từ điển về máy </summary>
+    <div class="dl-opt">
+      <span class="dl-lbl">Giới hạn số lượng từ:</span>
+      <label
+        ><input
+          type="radio"
+          name="dl-scope"
+          bind:group={dl_opts.scope}
+          value="all" /> Tất cả các từ trong từ điển</label>
+      <label
+        ><input
+          type="radio"
+          name="dl-scope"
+          bind:group={dl_opts.scope}
+          value="top" /> Mười nghìn từ gần nhất</label>
+    </div>
+
+    <div class="dl-opt">
+      <span class="dl-lbl">Bao gồm các từ trong:</span>
+      <label data-tip="Từ điển áp dụng chung cho tất cả mọi người"
+        ><input type="checkbox" checked name="dl-main" disabled value="main" /> Từ
+        điển cộng đồng</label>
+
+      <label data-tip="Từ lưu ở chế độ lưu tạm thời"
+        ><input type="checkbox" name="dl-temp" bind:checked={dl_opts.temp} /> Từ
+        điển tạm thời</label>
+      <label data-tip="Từ lưu trong từ điển cá nhân của bạn"
+        ><input type="checkbox" name="dl-user" bind:checked={dl_opts.user} /> Từ
+        điển cá nhân</label>
+    </div>
+
+    <div class="dl-opt">
+      <span class="dl-lbl">Định dạng:</span>
+      <label
+        ><input
+          type="radio"
+          name="dl-format"
+          bind:group={dl_opts.format}
+          value="qt" /> Kiểu QuickTranslator (chỉ có từ và nghĩa)</label>
+      <label
+        ><input
+          type="radio"
+          name="dl-format"
+          bind:group={dl_opts.format}
+          value="cv" /> Kiểu Chivi (có kèm từ loại và luật ưu tiên)</label>
+    </div>
+
+    <div class="action">
+      <a
+        href="/_m1/dicts/{data.dname}/export?{dl_opts.toQuery}"
+        download={data.dname}
+        class="m-btn _primary _fill _lg"
+        class:_disable={data._user.privi < 1}>
+        <SIcon name="download" />
+        <span>Tải xuống</span>
+      </a>
+    </div>
+  </details>
 
   <div class="body">
     <table>
@@ -228,6 +298,9 @@
     line-height: 1.5rem;
     padding: 0.375rem 0.5rem;
     @include clamp($width: null);
+    @include border(--bd-soft, $loc: top-bottom);
+    border-left: none;
+    border-right: none;
   }
 
   tbody {
@@ -352,5 +425,47 @@
     &:hover {
       @include bgcolor(main);
     }
+  }
+
+  .export {
+    margin-bottom: 1.5rem;
+
+    summary {
+      @include ftsize(lg);
+      line-height: 2rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+
+      &:hover {
+        @include fgcolor(primary, 5);
+      }
+    }
+
+    label {
+      cursor: pointer;
+    }
+
+    .action {
+      margin-top: 0.25rem;
+      // @include flex-cx;
+    }
+
+    a {
+      // display: inline-block;
+      width: 10rem;
+    }
+  }
+
+  .dl-opt {
+    display: flex;
+    gap: 0.75rem;
+    line-height: 2rem;
+    margin: 0.5rem 0;
+    // margin-bottom: 0.5rem;
+  }
+
+  .dl-lbl {
+    @include fgcolor(secd);
+    font-weight: 500;
   }
 </style>

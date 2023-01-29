@@ -4,9 +4,9 @@ require "../data/v1_dict"
 require "../data/v1_defn"
 
 class M1::DictCtrl < AC::Base
-  base "/_m1"
+  base "/_m1/dicts"
 
-  @[AC::Route::GET("/dicts")]
+  @[AC::Route::GET("/")]
   def index
     pg_no, limit, offset = _paginate(min: 20, max: 50)
 
@@ -25,9 +25,13 @@ class M1::DictCtrl < AC::Base
     render json: output
   end
 
-  @[AC::Route::GET("/dicts/:name")]
+  private def get_dict(dname : String)
+    DbDict.get(dname) || raise NotFound.new("Từ điển không tồn tại!")
+  end
+
+  @[AC::Route::GET("/:name")]
   def show(name : String)
-    raise "Từ điển không tồn tại!" unless dict = DbDict.get(name)
+    dict = get_dict(name)
 
     output = {
       dname: dict.dname,
@@ -41,5 +45,43 @@ class M1::DictCtrl < AC::Base
     }
 
     render json: output
+  end
+
+  @[Flags]
+  enum ExportTabs
+    Main; Temp; User
+  end
+
+  @[AC::Route::GET("/:name/export")]
+  def export(name : String,
+             temp : Bool = false, user : Bool = true,
+             scope : String = "all", format : String = "qt")
+    dict = get_dict(name)
+
+    guard_privi dict.privi, "tải từ điển"
+
+    query = String.build do |io|
+      io << "select key, val, ptag, prio from defns "
+      io << "where dic = ? and (tab = 1"
+      io << " or tab = 2" if temp
+      io << " or (tab = 3 and uname = '#{_uname}')" if user
+      io << ')'
+      io << " limit 10000 order by id desc" if scope != "all"
+    end
+
+    terms = DbDefn.repo.open_db do |db|
+      db.query_all query, dict.id, as: {String, String, String, Int32}
+    end
+
+    output = String.build do |strio|
+      if format == "qt"
+        terms.join(strio, "\n") { |(key, val), io| io << key << '=' << val }
+      else
+        terms.join(strio, "\n") { |rows, io| rows.join(io, '\t') }
+      end
+    end
+
+    response.headers["Content-Type"] = %{text/plain; charset=utf-8}
+    render text: output
   end
 end

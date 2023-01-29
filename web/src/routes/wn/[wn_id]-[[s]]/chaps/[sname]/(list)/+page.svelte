@@ -155,8 +155,8 @@
     </div>
   {/if}
 
-  <chap-list>
-    {#if curr_seed.chmax > 0}
+  {#if curr_seed.chmax > 0}
+    <chap-list>
       <ChapList
         {nvinfo}
         {ubmemo}
@@ -174,10 +174,10 @@
             pgmax={Math.floor((curr_seed.chmax - 1) / 32) + 1} />
         </div>
       </Footer>
-    {:else}
-      <p class="empty">Không có nội dung :(</p>
-    {/if}
-  </chap-list>
+    </chap-list>
+  {:else}
+    <p class="empty">Không có nội dung :(</p>
+  {/if}
 </article>
 
 <style lang="scss">
