@@ -247,7 +247,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       left_nav: [
         home_nav('', ''),
         book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'ts'),
-        nav_link('../chaps', 'Chương tiết', 'list', { show: 'pm' }),
+        nav_link('../chaps', 'Chương tiết', 'list', { show: 'pl' }),
       ],
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
     }

@@ -9,7 +9,7 @@
   export let ubmemo: CV.Ubmemo
 
   export let curr_seed: CV.Chroot
-  export let seed_data: { min_privi: number; gift_chap: number }
+  export let seed_data: CV.WnSeed
 
   export let chaps: CV.Chinfo[]
 
@@ -21,13 +21,13 @@
 
   $: _privi = $page.data._user.privi
 
-  function map_privi(ch_no: number) {
-    let min = seed_data.min_privi
-    if (ch_no <= seed_data.gift_chap) min -= 1
+  function map_privi(ch_no: number): string[] {
+    let min = seed_data.read_privi
+    if (ch_no <= seed_data.gift_chaps) min -= 1
 
-    if (_privi >= min) return ['Bạn đủ quyền xem chương', 'lock-open']
+    if (_privi >= min) return ['Bạn đủ quyền xem chương', 'lock-open', 'tabler']
 
-    if (min < 1) return ['Bạn cần đăng nhập để xem chương', 'lock']
+    if (min < 1) return ['Bạn cần đăng nhập để xem chương', 'lock', 'tabler']
     return [`Cần quyền hạn ${min} để xem chương`, `privi-${min}`, 'sprite']
   }
 </script>
@@ -50,7 +50,7 @@
         {#if chinfo.utime > 0}
           <chap-track
             data-tip="Lưu: {get_rtime(chinfo.utime)} bởi {chinfo.uname || '?'}">
-            <SIcon name="device-floppy" />
+            <SIcon name="file-download" />
           </chap-track>
         {/if}
 

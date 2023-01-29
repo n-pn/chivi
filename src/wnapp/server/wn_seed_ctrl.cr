@@ -35,8 +35,9 @@ class WN::SeedCtrl < AC::Base
         _flag: wn_seed._flag,
         fresh: fresh,
         # extra
-        min_privi: wn_seed.min_privi,
-        gift_chap: wn_seed.chap_total // 3,
+        read_privi: wn_seed.read_privi,
+        edit_privi: wn_seed.edit_privi,
+        gift_chaps: wn_seed.gift_chaps,
       },
     }
   end

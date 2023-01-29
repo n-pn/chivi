@@ -42,26 +42,31 @@
     _onload = false
   }
 
-  $: [can_upsert, can_reload] = check_privi(
+  $: [can_upsert, can_reload] = check_edit_privi(
     curr_seed.sname,
-    seed_data.min_privi,
+    seed_data.edit_privi,
     data._user
   )
 
-  const check_privi = (
+  const check_edit_privi = (
     sname: string,
-    min_privi: number,
+    edit_privi: number,
     user: App.CurrentUser
   ): [boolean, boolean] => {
+    if (user.privi > 3) return [true, true]
+
     if (sname[0] == '@') {
       const owner = sname == '@' + user.uname
       return [owner && user.privi > 1, owner && user.privi > 0]
     } else {
-      return [user.privi >= min_privi, user.privi >= min_privi - 1]
+      return [user.privi >= edit_privi, user.privi >= edit_privi - 1]
     }
   }
 
   $: edit_href = `${seed_path(nvinfo.bslug, curr_seed.sname)}/+chap`
+
+  // prettier-ignore
+  const privi_str = (privi: number) => privi < 1 ? 'đăng nhập' : `quyền hạn ${privi}`
 </script>
 
 <article class="article island">
@@ -70,7 +75,7 @@
       <info-text
         >{curr_seed.sname != '_' ? curr_seed.sname : 'Tổng hợp'}</info-text>
       <info-span>{curr_seed.chmax} chương</info-span>
-      <info-span><RTime mtime={curr_seed.utime} /></info-span>
+      <info-span class="show-pl"><RTime mtime={curr_seed.utime} /></info-span>
     </info-left>
 
     <info-right>
@@ -114,13 +119,36 @@
     </info-right>
   </page-info>
 
-  {#if err_msg}<div class="error">{err_msg}</div>{/if}
+  {#if err_msg}
+    <div class="chap-hint _error">{err_msg}</div>
+  {/if}
+
+  {#if seed_data.links.length > 0}
+    <div class="chap-hint" class:_bold={!seed_data.fresh}>
+      <SIcon name="alert-triangle" />
+      Bấm "<SIcon name="refresh" /> Đổi mới" để cập nhật danh sách chương tiết.
+    </div>
+  {/if}
+
   <div class="chap-hint">
-    <span>Gợi ý:</span>
-    <span class="-hint" class:_bold={!seed_data.fresh}
-      >Bấm "<SIcon name="refresh" /> Đổi mới" để cập nhật danh sách chương tiết.</span>
-    <span class="-stat"
-      >Lần cập nhật cuối: <strong>{rel_time(seed_data.stime)}</strong>.</span>
+    <SIcon name="alert-circle" />
+    {#if seed_data.read_privi > 0}
+      <span>
+        Chương từ <span class="em">1</span> tới
+        <span class="em">{seed_data.gift_chaps}</span> cần thiết
+        <strong class="em">{privi_str(seed_data.read_privi - 1)}</strong> để xem
+        nội dung.
+      </span>
+    {/if}
+
+    {#if seed_data.read_privi > -1 && curr_seed.chmax > seed_data.gift_chaps}
+      <span>
+        Chương từ <span class="em">{seed_data.gift_chaps + 1}</span> tới
+        <span class="em">{curr_seed.chmax}</span> cần thiết
+        <strong class="em">{privi_str(seed_data.read_privi)}</strong> để xem nội
+        dung.
+      </span>
+    {/if}
   </div>
 
   <chap-list>
@@ -168,6 +196,10 @@
     // @include bdradi(1rem, $loc: top);
   }
 
+  .show-pl {
+    @include bps(display, none, $pl: initial);
+  }
+
   info-left {
     display: flex;
     flex: 1;
@@ -194,8 +226,18 @@
     @include ftsize(sm);
     @include fgcolor(tert);
 
-    .-hint._bold {
+    &._bold {
+      font-weight: 500;
+    }
+
+    .em {
       @include fgcolor(warning, 5);
+      font-weight: 500;
+    }
+
+    &._error {
+      font-size: italic;
+      @include fgcolor(harmful, 5);
     }
 
     :global(svg) {
@@ -258,11 +300,5 @@
 
   .foot {
     margin-top: 1rem;
-  }
-
-  .error {
-    font-size: italic;
-    @include fgcolor(harmful, 5);
-    @include ftsize(sm);
   }
 </style>

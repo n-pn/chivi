@@ -31,6 +31,9 @@ class WN::WnSeed
   field rm_links : String = "[]" # remote catalog links associated with this seed
   field rm_stime : Int64 = 0
 
+  field edit_privi : Int32 = 1
+  field read_privi : Int32 = 1
+
   field _flag : Int32 = 0
 
   @[DB::Field(ignore: true)]
@@ -44,7 +47,8 @@ class WN::WnSeed
 
   getter remotes : Array(String) { Array(String).from_json(self.rm_links) }
 
-  def initialize(@wn_id, @sname, @s_bid = wn_id)
+  def initialize(@wn_id, @sname, @s_bid = wn_id, privi = 1)
+    @read_privi = @edit_privi = privi
   end
 
   def mkdirs!(sname = self.sname, s_bid = self.s_bid)
@@ -68,17 +72,20 @@ class WN::WnSeed
       jb.field "utime", @mtime
 
       jb.field "stype", self.class.stype(self.sname)
-      jb.field "privi", self.min_privi
+
+      jb.field "edit_privi", self.edit_privi
+      jb.field "read_privi", self.read_privi
     }
   end
 
   def min_privi(owner : String = "")
-    case self.sname[0]
-    when '_' then 1
-    when '@' then 2
-    when '+' then @sname == owner ? 2 : 3
-    else          3
-    end
+    return self.edit_privi if self.sname[0] != '@'
+    @sname == owner ? 2 : 4
+  end
+
+  def gift_chaps
+    gift = self.chap_total // 3
+    gift > 20 ? gift : 20
   end
 
   def self.stype(sname : String)

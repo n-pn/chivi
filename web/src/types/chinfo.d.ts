@@ -31,7 +31,8 @@ declare namespace CV {
     _flag: number
     fresh: boolean
     //
-    min_privi: number
-    gift_chap: number
+    read_privi: number
+    edit_privi: number
+    gift_chaps: number
   }
 }

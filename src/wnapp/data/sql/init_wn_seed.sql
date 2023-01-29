@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS "seeds" (
   rm_links varchar DEFAULT '[]',
   rm_stime bigint NOT NULL DEFAULT 0,
   --
+  privi integer NOT NULL DEFAULT 3,
   _flag integer NOT NULL DEFAULT 0,
   --
   PRIMARY KEY (wn_id, sname)
