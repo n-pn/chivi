@@ -5,15 +5,17 @@ class WN::SeedCtrl < AC::Base
 
   @[AC::Route::GET("/")]
   def index(wn_id : Int32)
-    seeds = WnSeed.all(wn_id)
-
-    _main = seeds.find(&.sname.== "_") || WnSeed.new(wn_id, "_").tap(&.save!)
+    seeds = WnSeed.all(wn_id).sort_by!(&.mtime.-)
 
     render json: {
-      _main: _main,
-      users: seeds.select(&.sname.[0].== '@').sort_by!(&.mtime.-),
-      backs: seeds.select(&.sname.[0].== '!').sort_by!(&.mtime.-),
+      _main: find_or_init(seeds, wn_id, "_"),
+      users: seeds.select(&.sname.[0].== '@'),
+      backs: seeds.select(&.sname.[0].== '!'),
     }
+  end
+
+  private def find_or_init(seeds : Array(WnSeed), wn_id : Int32, sname : String)
+    seeds.find(&.sname.== sname) || WnSeed.new(wn_id, sname).tap(&.save!)
   end
 
   @[AC::Route::GET("/:wn_id/:sname")]
@@ -69,7 +71,7 @@ class WN::SeedCtrl < AC::Base
   @[AC::Route::GET("/:wn_id/:sname/reload")]
   def reload(wn_id : Int32, sname : String)
     wn_seed = get_wn_seed(wn_id, sname)
-    guard_privi wn_seed.min_privi, "cập nhật nguồn"
+    guard_privi wn_seed.min_privi - 1, "cập nhật nguồn"
 
     # if WnSeed.remote?(sname)
     #   wn_seed.remote_reload!

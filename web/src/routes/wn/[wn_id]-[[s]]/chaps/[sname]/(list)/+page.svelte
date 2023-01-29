@@ -1,12 +1,9 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { session } from '$lib/stores'
-
-  import { api_path } from '$lib/api_call'
-  import { seed_path } from '$lib/kit_path'
-
-  import { rel_time } from '$utils/time_utils'
   import { invalidateAll } from '$app/navigation'
+
+  import { seed_path } from '$lib/kit_path'
+  import { rel_time } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
@@ -24,31 +21,47 @@
 
   $: pager = new Pager($page.url, { pg: 1 })
 
-  let _refresh = false
-  let _error: string
+  let _onload = false
+  let err_msg: string
 
-  async function reload_source() {
-    _refresh = true
-    _error = ''
+  async function reload_seed() {
+    _onload = true
+    err_msg = ''
 
-    const args = [nvinfo.id, curr_seed.sname]
-    const res = await fetch(api_path('chroots.show', args, null, { mode: 1 }))
+    const api_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}/reload`
+    const headers = { Accept: 'application/json' }
+    const api_res = await fetch(api_url, { headers })
 
-    if (res.ok) invalidateAll()
-    else _error = await res.text()
-    _refresh = false
+    if (!api_res.ok) {
+      const data = await api_res.json()
+      err_msg = data.message
+    } else {
+      await invalidateAll()
+    }
+
+    _onload = false
   }
 
-  function can_add_chaps(sname: string) {
-    const _privi = $session.privi
+  $: [can_upsert, can_reload] = check_privi(
+    curr_seed.sname,
+    seed_data.min_privi,
+    data._user
+  )
 
-    if (sname == '_') return _privi > 0
-    if (!sname.startsWith('@')) return _privi > 2
-
-    return sname == '@' + $session.uname
+  const check_privi = (
+    sname: string,
+    min_privi: number,
+    user: App.CurrentUser
+  ): [boolean, boolean] => {
+    if (sname[0] == '@') {
+      const owner = sname == '@' + user.uname
+      return [owner && user.privi > 1, owner && user.privi > 0]
+    } else {
+      return [user.privi >= min_privi, user.privi >= min_privi - 1]
+    }
   }
 
-  $: base_path = seed_path(nvinfo.bslug, curr_seed.sname, curr_seed.snvid)
+  $: edit_href = `${seed_path(nvinfo.bslug, curr_seed.sname)}/+chap`
 </script>
 
 <article class="article island">
@@ -61,57 +74,38 @@
     </info-left>
 
     <info-right>
-      {#if curr_seed.stype == 0 && can_add_chaps(curr_seed.sname)}
-        <a
-          class="m-btn _primary _fill"
-          class:_disable={$session.privi < 1}
-          href="
-          {base_path}/+chap?start={curr_seed.chmax + 1}"
-          data-tip="Yêu cầu quyền hạn: 1">
-          <SIcon name="upload" />
-          <span class="-hide">Thêm chương</span>
-        </a>
-      {:else}
-        <button
-          class="m-btn _primary"
-          disabled={$session.privi < 0}
-          data-tip="Yêu cầu quyền hạn: Đăng nhập"
-          on:click={reload_source}>
-          <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
-          <span class="-hide">Cập nhật</span>
-        </button>
-      {/if}
+      <a
+        class="m-btn _primary _fill"
+        class:_disable={!can_upsert}
+        href="{edit_href}?start=${curr_seed.chmax + 1}"
+        data-tip="Tự thêm nội dung chương tiết cho nguồn truyện"
+        data-tip-loc="bottom"
+        data-tip-pos="right">
+        <SIcon name="upload" />
+        <span class="-hide">Thêm text</span>
+      </a>
+
+      <button
+        class="m-btn _primary"
+        disabled={!can_reload}
+        on:click={reload_seed}
+        data-tip="Cập nhật danh sách chương tiết từ nguồn ngoài"
+        data-tip-loc="bottom"
+        data-tip-pos="right">
+        <SIcon name={_onload ? 'loader' : 'refresh'} spin={_onload} />
+        <span class="-hide">Đổi mới</span>
+      </button>
 
       <Gmenu dir="right">
         <button class="m-btn" slot="trigger">
           <SIcon name="menu-2" />
-          <span class="-hide">Nâng cao</span>
         </button>
 
         <svelte:fragment slot="content">
-          {#if curr_seed.stype == 0 && can_add_chaps(curr_seed.sname)}
-            <button
-              class="gmenu-item"
-              disabled={$session.privi < 0}
-              on:click={reload_source}>
-              <SIcon name={_refresh ? 'loader' : 'refresh'} spin={_refresh} />
-              <span class="-hide">Đổi mới</span>
-            </button>
-          {:else}
-            <a
-              class="gmenu-item"
-              href={seed_data.slink}
-              target="_blank"
-              rel="external noopener noreferrer">
-              <SIcon name="external-link" />
-              <span>Liên kết</span>
-            </a>
-          {/if}
-
           <a
             class="gmenu-item"
-            class:_disable={$session.privi < 1}
-            href="/-{nvinfo.bslug}/chaps/{curr_seed.sname}/+edit">
+            class:_disable={!can_upsert}
+            href="/-{nvinfo.bslug}/chaps/{curr_seed.sname}/+conf">
             <SIcon name="settings" />
             <span>Cài đặt</span>
           </a>
@@ -120,7 +114,7 @@
     </info-right>
   </page-info>
 
-  {#if _error}<div class="error">{_error}</div>{/if}
+  {#if err_msg}<div class="error">{err_msg}</div>{/if}
   <div class="chap-hint">
     <span>Gợi ý:</span>
     <span class="-hint" class:_bold={!seed_data.fresh}

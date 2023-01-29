@@ -13,7 +13,18 @@
   $: pgidx = +$page.url.searchParams.get('pg') || 1
 
   $: uname = '@' + $session.uname
-  $: _self = seeds.users.find((x) => x.sname == uname)
+  $: _self = find_or_init(seeds, uname)
+
+  function find_or_init(seeds: { users: CV.Chroot[] }, sname: string) {
+    const found = seeds.users.find((x) => x.sname == sname)
+    if (found) return found
+    return {
+      sname,
+      chmax: 0,
+      utime: 0,
+      stype: 0,
+    }
+  }
 
   let show_bg = false
 </script>
@@ -59,10 +70,10 @@
   <button
     class="seed-name _btn"
     class:_active={show_bg}
-    data-tip="Các nguồn text cơ sở có thể được thừa kế bằng các nguồn khác"
+    data-tip="Các nguồn text nâng cao dành cho người dùng cao cấp"
     data-tip-loc="bottom"
     on:click={() => (show_bg = !show_bg)}>
-    <div class="seed-label">Nguồn nền</div>
+    <div class="seed-label">Nguồn khác</div>
     <div class="seed-stats"><strong>{seeds.backs.length}</strong> nguồn</div>
   </button>
 </div>
@@ -82,8 +93,9 @@
     <a
       href={book_path(nvinfo.bslug, 'chaps/+seed')}
       class="seed-name _sub _btn"
-      class:_disable={$session.privi < 2}
-      data-tip="Thêm/sửa/xóa các nguồn ngoài">
+      class:_disable={$session.privi < 3}
+      data-tip="Thêm/sửa/xóa các nguồn ngoài"
+      data-tip-loc="bottom">
       <SIcon name="tools" />
       <span class="label">Quản lý</span>
     </a>

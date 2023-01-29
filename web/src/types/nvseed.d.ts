@@ -16,6 +16,7 @@ declare namespace CV {
 
     free_chap: number = 40
     privi_map: [number, number, number] = [0, 1, 1]
+    privi: number = 1
   }
 
   interface Nslist {

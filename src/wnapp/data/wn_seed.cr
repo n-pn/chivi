@@ -68,6 +68,7 @@ class WN::WnSeed
       jb.field "utime", @mtime
 
       jb.field "stype", self.class.stype(self.sname)
+      jb.field "privi", self.min_privi
     }
   end
 
