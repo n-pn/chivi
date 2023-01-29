@@ -132,7 +132,7 @@
     <div class="action">
       <a
         href="/_m1/dicts/{data.dname}/export?{dl_opts.toQuery}"
-        download={data.dname}
+        download="{data.label}.{dl_opts.format == 'q' ? 'txt' : 'tsv'}"
         class="m-btn _primary _fill _lg"
         class:_disable={data._user.privi < 1}>
         <SIcon name="download" />
