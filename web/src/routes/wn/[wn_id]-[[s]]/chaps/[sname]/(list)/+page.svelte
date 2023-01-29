@@ -135,7 +135,7 @@
     {#if seed_data.read_privi > 0}
       <span>
         Chương từ <span class="em">1</span> tới
-        <span class="em">{seed_data.gift_chaps}</span> cần thiết
+        <span class="em">{seed_data.gift_chaps}</span> cần
         <strong class="em">{privi_str(seed_data.read_privi - 1)}</strong> để xem
         nội dung.
       </span>
@@ -144,7 +144,7 @@
     {#if seed_data.read_privi > -1 && curr_seed.chmax > seed_data.gift_chaps}
       <span>
         Chương từ <span class="em">{seed_data.gift_chaps + 1}</span> tới
-        <span class="em">{curr_seed.chmax}</span> cần thiết
+        <span class="em">{curr_seed.chmax}</span> cần
         <strong class="em">{privi_str(seed_data.read_privi)}</strong> để xem nội
         dung.
       </span>
@@ -152,7 +152,7 @@
   </div>
 
   <chap-list>
-    {#if chaps.length > 0}
+    {#if curr_seed.chmax > 0}
       <ChapList
         {nvinfo}
         {ubmemo}

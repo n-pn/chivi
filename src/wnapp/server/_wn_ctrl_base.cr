@@ -11,9 +11,12 @@ abstract class AC::Base
         raise NotFound.new("Nguồn truyện không tồn tại")
       end
 
+      min_privi -= 1 if wn_id == 0
       entry = WN::WnSeed.new(wn_id, sname, wn_id, min_privi)
+
       entry.mkdirs!
       entry.save!
+
       entry
     end
   end
