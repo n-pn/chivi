@@ -38,15 +38,16 @@ class WN::WnSeed
   field _flag : Int32 = 0
 
   @[DB::Field(ignore: true)]
+  getter dname : String { M1::DbDict.get_dname(-self.wn_id) }
+
+  @[DB::Field(ignore: true)]
+  getter remotes : Array(String) { Array(String).from_json(self.rm_links) }
+
+  @[DB::Field(ignore: true)]
   getter zh_chaps : WnRepo { WnRepo.load(self.sname, self.s_bid, "infos") }
 
   @[DB::Field(ignore: true)]
-  getter vi_chaps : WnRepo { WnRepo.load_tl(zh_chaps.db_path, self.dname, force: false) }
-
-  @[DB::Field(ignore: true)]
-  getter dname : String { M1::DbDict.get_dname(-self.wn_id) }
-
-  getter remotes : Array(String) { Array(String).from_json(self.rm_links) }
+  getter vi_chaps : WnRepo { WnRepo.load_tl(zh_chaps.db_path, self.dname, force: true) }
 
   def initialize(@wn_id, @sname, @s_bid = wn_id, privi = 1)
     @read_privi = @edit_privi = privi
@@ -123,8 +124,7 @@ class WN::WnSeed
     parser = RmCata.new(slink, ttl: mode > 0 ? 3.minutes : 30.minutes)
 
     raw_chaps = parser.parse!
-
-    return if raw_chaps.empty?
+    # return if raw_chaps.empty?
 
     last_ch_no = raw_chaps.size
 
@@ -148,7 +148,8 @@ class WN::WnSeed
   end
 
   def reload_content!
-    self.vi_chaps.regen_tl!(self.zh_chaps.db_path, self.dname)
+    @vi_chaps = nil
+    # self.vi_chaps.regen_tl!(self.zh_chaps.db_path, self.dname)
   end
 
   REMOTE_SEEDS = {

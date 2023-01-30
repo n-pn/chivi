@@ -70,12 +70,12 @@ class WN::SeedCtrl < AC::Base
   end
 
   @[AC::Route::GET("/:wn_id/:sname/refresh")]
-  def refresh(wn_id : Int32, sname : String)
+  def refresh(wn_id : Int32, sname : String, mode : Int32 = 1)
     wn_seed = get_wn_seed(wn_id, sname)
     guard_privi wn_seed.min_privi - 1, "cập nhật nguồn"
 
     if slink = wn_seed.remotes.first?
-      wn_seed.update_from_remote!(slink)
+      wn_seed.update_from_remote!(slink, mode: mode)
     else
       wn_seed.reload_content!
     end
