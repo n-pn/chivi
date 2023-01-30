@@ -62,16 +62,17 @@ class WN::WnRepo
       sql << ") on conflict (ch_no) do update set "
 
       fields.join(sql, ", ") { |f, io| io << f << " = excluded." << f }
-      sql << " where ch_no = excluded.ch_no"
+      sql << " where ch_no = excluded.ch_no and _flag < 2"
     end
   end
 
-  def upsert_infos(raw_infos)
+  def upsert_infos(raw_chaps, keep_s_cid : Bool = false)
     open_tx do |db|
-      query = upsert_sql({"ch_no", "s_cid", "title", "chdiv"})
+      query = upsert_sql({"ch_no", "s_cid", "title", "chdiv", "_path"})
 
-      raw_infos.each do |raw|
-        db.exec query, raw.chidx, raw.schid.to_i, raw.title, raw.chvol
+      raw_chaps.each do |raw|
+        s_cid = keep_s_cid ? raw.s_cid : raw.ch_no
+        db.exec query, raw.ch_no, s_cid, raw.title, raw.chdiv, raw._path
       end
     end
   end

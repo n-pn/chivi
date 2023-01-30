@@ -24,11 +24,11 @@
   let _onload = false
   let err_msg: string
 
-  async function reload_seed() {
+  async function refresh_seed() {
     _onload = true
     err_msg = ''
 
-    const api_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}/reload`
+    const api_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}/refresh`
     const headers = { Accept: 'application/json' }
     const api_res = await fetch(api_url, { headers })
 
@@ -94,7 +94,7 @@
         <button
           class="m-btn _primary"
           disabled={!can_reload}
-          on:click={reload_seed}
+          on:click={refresh_seed}
           data-tip="Cập nhật danh sách chương tiết từ nguồn ngoài"
           data-tip-loc="bottom"
           data-tip-pos="right">
@@ -126,9 +126,15 @@
   {/if}
 
   {#if seed_data.links.length > 0}
+    {@const href = seed_data.links[0]}
     <div class="chap-hint" class:_bold={!seed_data.fresh}>
       <SIcon name="alert-triangle" />
-      Bấm "<SIcon name="refresh" /> Đổi mới" để cập nhật danh sách chương tiết.
+      Danh sách chương tiết được liên kết tới
+      <a class="link" {href} rel="noreferrer noopener" target="_blank"
+        >nguồn ngoài
+        <SIcon name="external-link" />
+      </a>. Bạn có thể bấm [<SIcon name="refresh" /> Đổi mới] để cập nhật theo nguồn
+      ngoài.
     </div>
   {/if}
 
@@ -304,5 +310,12 @@
 
   .foot {
     margin-top: 1rem;
+  }
+
+  .link {
+    @include fgcolor(primary, 5);
+    &:hover {
+      @include fgcolor(primary, 6);
+    }
   }
 </style>

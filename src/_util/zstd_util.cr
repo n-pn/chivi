@@ -4,9 +4,8 @@ module ZstdUtil
   extend self
 
   def save_io(data : IO | String, out_file : String, level = 3)
-    file = File.open(out_file, "w")
-    Zstd::Compress::IO.open(file, sync_close: true, level: level) do |cio|
-      cio.write data.to_slice
+    File.open(out_file, "w") do |file|
+      Zstd::Compress::IO.open(file, level: level, &.write(data.to_slice))
     end
   end
 
@@ -15,7 +14,7 @@ module ZstdUtil
     File.write(out_file, cctx.compress(data.to_slice))
   end
 
-  def save_file(inp_file : String, out_file = "#{file}.zst", level = 3)
+  def zip_file(inp_file : String, out_file = "#{file}.zst", level = 3)
     cctx = Zstd::Compress::Context.new(level: level)
     ibuf = File.read(inp_file).to_slice
     File.write(out_file, cctx.compress(ibuf))
@@ -28,10 +27,9 @@ module ZstdUtil
 
   def load!(file : String)
     if File.exists?(file)
-      Zstd::Decompress::IO.open(File.open(file, "r"), sync_close: true, &.gets_to_end)
+      read_file(inp_file)
     else
-      cctx = Zstd::Compress::Context.new(level: 3)
-      yield.tap { |x| File.write(file, cctx.compress(x.to_slice)) }
+      yield.tap { |data| save_ctx(data, file) }
     end
   end
 end

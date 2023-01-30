@@ -1,10 +1,13 @@
 require "colorize"
 
-require "../../src/zhlib/remote/rm_text.cr"
+require "../../src/wnapp/remote/rm_text.cr"
+require "../../src/_util/site_link"
 
-def fetch_text(sname : String, bid : Int32, cid : Int32, reset = false)
-  chap = ZH::RmText.init(sname, bid, cid, reset: reset)
-  puts "\n[#{chap.link.colorize.blue.bold}]"
+def fetch_text(sname : String, s_bid : Int32, s_cid : Int32, reset = false)
+  link = SiteLink.text_url(sname, s_bid, s_cid)
+  puts "\n[#{link.colorize.blue.bold}]"
+
+  chap = WN::RmText.new(link, ttl: reset ? 2.minutes : 10.years)
   puts
 
   puts chap.bname.colorize.yellow
@@ -57,7 +60,7 @@ fetch_text("biqu5200", 153174, 180388551, reset: false)
 
 # fetch_text("133txt", 9, 5900, reset: false)
 
-fetch_text("biqugse", 69761, 95223327, reset: false)
+# fetch_text("biqugse", 69761, 95223327, reset: false)
 # fetch_text("bqxs520", 122958, 95416098, reset: false)
 
 fetch_text("b5200", 160872, 183484031, reset: false)

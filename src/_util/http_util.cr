@@ -40,23 +40,21 @@ module HttpUtil
     File.open(file, "w") { |io| Compress::Gzip::Writer.open(io, &.print(data)) }
   end
 
-  def fetch(url : String, lbl : String = "-", encoding = "UTF-8") : String
-    try = 1
-    cmd = "curl -L -k -s -m 30 '#{url}'"
-
-    if encoding != "UTF-8"
-      cmd += " | iconv -c -f #{encoding} -t UTF-8"
-      cmd += %q{ | sed -r 's/charset=\"?(gbk|gb2312)\"?/charset=utf-8/i'}
-    end
+  def fetch(url : String, encoding = "UTF-8") : String
+    args = {"-L", "-k", "-s", "-m", "10", url}
+    retry = 0
 
     loop do
-      Log.debug { "<#{lbl}> [GET: #{url.colorize.magenta} (try: #{try})]" }
-      html = `#{cmd}`
-      return html if $?.success?
-    ensure
-      raise "[GET: #{url} failed after #{try} attempts.]" if try > 3
-      try += 1
-      sleep 1.second * try
+      Log.debug { "[GET: #{url.colorize.magenta} (retry: #{retry})]" }
+
+      Process.run("curl", args: args) do |proc|
+        proc.output.set_encoding(encoding)
+        html = proc.output.gets_to_end
+        return html.sub(/(?<==|")#{encoding}(?=;|")/i, "utf-8") unless html.empty?
+      end
+
+      raise "[GET: #{url} failed after #{retry} attempts.]" if retry > 2
+      retry += 1
     end
   end
 

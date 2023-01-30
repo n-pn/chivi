@@ -5,7 +5,8 @@ require "../../_util/site_link"
 require "../../mt_v1/data/v1_dict"
 
 require "./wn_repo"
-require "./wnseed/seed_fetch"
+require "../remote/rm_cata"
+require "../remote/rm_text"
 
 class WN::WnSeed
   include Crorm::Model
@@ -118,18 +119,34 @@ class WN::WnSeed
     self.vi_chaps.get(ch_no).try(&.set_seed(self))
   end
 
+  def update_from_remote!(slink = self.remotes.first, mode : Int32 = 0)
+    parser = RmCata.new(slink, ttl: mode > 0 ? 3.minutes : 30.minutes)
+
+    raw_chaps = parser.parse!
+    return if raw_chaps.empty?
+
+    # @_flag = parser.status_int.to_i
+
+    self.bump_mftime(parser.last_mtime, force: mode > 1)
+    self.bump_latest(raw_chaps.last.ch_no, force: false)
+
+    self.save!(self.class.repo)
+
+    self.zh_chaps.upsert_infos(raw_chaps, keep_s_cid: self.sname[0] == '!')
+    @vi_chaps = nil # force retranslation
+  end
+
   REMOTE_SEEDS = {
     "!69shu",
-    "!uukanshu",
-    "!xbiquge",
-    "!b5200",
-    "!biqugse",
-    "!paoshu8",
-    "!uuks",
     "!ptwxz",
-    "!bxwxio",
+    "!hetushu",
+    "!uukanshu",
+    "!uuks",
     "!133txt",
-    "!yannuozw",
+    "!b5200",
+    "!bxwxio",
+    "!xbiquge",
+    "!paoshu8",
     "!biqu5200",
   }
 
@@ -137,21 +154,25 @@ class WN::WnSeed
     REMOTE_SEEDS.includes?(sname)
   end
 
-  def remote_reload!(ttl : Time::Span = 3.minutes)
-  end
-
   def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Bool
-    if REMOTE_SEEDS.includes?(self.sname)
-      sname, s_bid = self.sname, self.s_bid
-    elsif chap._path[0] == '!'
-      sname, s_bid = chap._path.split('/')
+    case path = chap._path
+    when .starts_with?("http")
+      href = path
+    when .starts_with?('!')
+      bg_path = path.split(':').first
+      sname, s_bid, s_cid = bg_path.split('/')
+      href = SiteLink.text_url(sname[1..], s_bid.to_i, s_cid.to_i)
     else
       return false
     end
 
-    flags = force ? "-f" : ""
-    body = `bin/text_fetch #{sname} #{s_bid} #{chap.s_cid} #{flags}`
-    return false unless $?.success?
+    parser = RmText.new(href, ttl: force ? 3.minutes : 1.years)
+
+    # FIXME: just split the text already
+    body = String.build do |io|
+      io << parser.title
+      parser.paras.each { |line| io << '\n' << line }
+    end
 
     chap.save_body!(body, seed: self, uname: uname)
     @vi_chaps = nil
@@ -174,11 +195,9 @@ class WN::WnSeed
     end
   end
 
-  def bump_latest(ch_no : Int32, s_cid : Int32, force : Bool = false)
+  def bump_latest(ch_no : Int32, force : Bool = false)
     return unless force || ch_no > self.chap_total
-
     @chap_total = ch_no
-    @last_s_cid = s_cid
   end
 
   #####

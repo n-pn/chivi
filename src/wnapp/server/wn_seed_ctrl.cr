@@ -74,14 +74,11 @@ class WN::SeedCtrl < AC::Base
     wn_seed = get_wn_seed(wn_id, sname)
     guard_privi wn_seed.min_privi - 1, "cập nhật nguồn"
 
-    # if WnSeed.remote?(sname)
-    #   wn_seed.remote_reload!
-    # elsif link = SeedLink.one(sname, s_bid)
-    #   bg_seed = get_wn_seed(link.bg_sname, link.bg_s_bid)
-    #   bg_seed.remote_reload!
-    # else
-    #   raise BadRequest.new "Liên kết với nguồn ngoài để cập nhật!"
-    # end
+    if slink = wn_seed.remotes.first?
+      wn_seed.update_from_remote!(slink)
+    else
+      raise BadRequest.new "Liên kết với nguồn ngoài để cập nhật!"
+    end
 
     render json: wn_seed
   end

@@ -1,49 +1,69 @@
-require "./rm_site"
+require "yaml"
+require "http/client"
+
 require "./rm_page"
 
-class ZH::RmText
-  class_getter path = "var/texts/.cache/%{sname}/%{bid}/%{cid}.htm.zst"
+class WN::RmText
+  struct Conf
+    include YAML::Serializable
 
-  def self.init(sname : String, bid : Int32, cid : Int32, reset = false)
-    site = RmSite[sname]
+    getter encoding = "GBK"
+    getter sites = [] of String
 
-    link = site.chap_link(bid, cid)
-    path = @@path % {sname: sname, bid: bid, cid: cid}
+    getter bname = ""
+    getter title = "h1"
 
-    File.delete(path) if reset && File.exists?(path)
-    Dir.mkdir_p(File.dirname(path))
+    getter paras = "#content"
+    getter clean = [] of String
 
-    new(link, path, site)
+    getter cookie = ""
+    getter unique = ""
+
+    ###
+
+    class_getter confs = begin
+      yaml = File.read("var/_conf/rm_chap.yml")
+      Hash(String, Conf).from_yaml(yaml)
+    end
+
+    def self.load(sname : String)
+      @@confs[sname]? || Conf.new
+    end
+
+    def self.find(link : String)
+      @@confs.each_value.find do |conf|
+        conf.sites.any? { |x| link.includes?(x) }
+      end
+    end
   end
 
-  getter link : String
-  getter path : String
+  def self.new(link : String, ttl : Time::MonthSpan | Time::Span = 1.years)
+    raise "no matching config" unless conf = Conf.find(link)
 
-  @chap : RmSite::Chap
-  @page : RmPage
-
-  def initialize(@link, @path, site : RmSite)
-    @chap = site.chap
-    @page = RmPage.load!(link, path, site.encoding)
+    html = RmPage.load_html(link, ttl: ttl, encoding: conf.encoding)
+    new(html, conf, link)
   end
 
-  getter bname : String { @page.get(@chap.bname) }
+  @doc : RmPage
+
+  def initialize(html : String, @conf : Conf, @link : String)
+    @doc = RmPage.new(html)
+    # @host = RmPage.get_host(link)
+  end
+
+  getter bname : String { @conf.bname.empty? ? "" : @doc.get(@conf.bname) || "" }
 
   getter title : String do
-    @page.get(@chap.title)
-      .sub(/^#{Regex.escape(bname)}\s*/, "")
-      .sub(/^章节目录\s*/, "")
-      .sub(/(《.+》)?正文\s*/, "")
+    title = @doc.get(@conf.title) || ""
+    title = title.sub(/^#{Regex.escape(bname)}*/, "") unless @conf.bname.empty?
+    title.sub(/^章节目录\s*/, "").sub(/(《.+》)?正文\s*/, "")
   end
 
   getter paras : Array(String) do
-    return get_paras_wrong_order if @chap.reorder
+    return get_hetu_paras if @conf.unique == "hetu"
 
-    node = @page.css(@chap.paras, &.first)
-    @page.remove!(node, :script, :div, :h1, :table)
-
-    lines = node.inner_text("\n").lines
-    lines.map! { |x| TextUtil.trim_spaces(x) }.reject!(&.empty?)
+    purge_tags = {:script, :div, :h1, :table}
+    lines = @doc.get_lines(@conf.paras, purge_tags)
 
     lines.shift if reject_first_line?(lines.first)
     lines.pop if lines.last == "(本章完)"
@@ -58,13 +78,14 @@ class ZH::RmText
     first =~ /^笔趣阁|笔下文学|，#{Regex.escape bname}/ || first.sub(self.title, "") !~ /\p{Han}/
   end
 
-  private def get_paras_wrong_order
-    reorder = get_reorder(@path.sub(".htm.zst", ".tok"))
+  private def get_hetu_paras
+    file_path = RmPage.cache_file(@link).sub(".htm.zst", ".tok")
+    reorder = get_hetu_line_order(file_path)
 
     res = Array(String).new(reorder.size, "")
     jmp = 0
 
-    nodes = @page.css("#content > div:not([class])")
+    nodes = @doc.css("#content > div:not([class])")
 
     nodes.each_with_index do |node, idx|
       ord = reorder[idx]? || 0
@@ -81,27 +102,25 @@ class ZH::RmText
     res
   end
 
-  private def get_reorder(file : String, retry = false)
-    File.delete(file) if retry
-    base64 = encrypt_string(file)
+  private def get_hetu_line_order(file : String)
+    base64 = load_encrypt_string(file)
     Base64.decode_string(base64).split(/[A-Z]+%/).map(&.to_i)
-  rescue err
-    retry ? raise err : get_reorder(file, retry: true)
   end
 
-  private def encrypt_string(file : String)
+  private def load_encrypt_string(file : String)
     return File.read(file) if File.exists?(file)
 
     headers = HTTP::Headers{
       "Referer"          => @link,
       "Content-Type"     => "application/x-www-form-urlencoded",
       "X-Requested-With" => "XMLHttpRequest",
-      "Cookie"           => @chap.cookie,
+      "Cookie"           => @conf.cookie,
     }
 
-    link = @link.sub(/(\d+).html$/) { "r#{$1}.json" }
+    json_link = @link.sub(/(\d+).html$/) { "r#{$1}.json" }
 
-    HTTP::Client.get(link, headers: headers) do |res|
+    HTTP::Client.get(json_link, headers: headers) do |res|
+      raise "Can't download encrypt data" unless res.success?
       res.headers["token"].tap { |x| File.write(file, x) }
     end
   end

@@ -1,3 +1,5 @@
+require "compress/zip"
+
 module WN::TextStore
   extend self
 
