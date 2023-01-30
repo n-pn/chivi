@@ -171,7 +171,7 @@ class WN::WnSeed
     # FIXME: just split the text already
     body = String.build do |io|
       io << parser.title
-      parser.paras.each { |line| io << '\n' << line }
+      parser.body.each { |line| io << '\n' << line }
     end
 
     chap.save_body!(body, seed: self, uname: uname)

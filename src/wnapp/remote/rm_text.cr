@@ -13,7 +13,7 @@ class WN::RmText
     getter bname = ""
     getter title = "h1"
 
-    getter paras = "#content"
+    getter body = "#content"
     getter clean = [] of String
 
     getter cookie = ""
@@ -59,11 +59,11 @@ class WN::RmText
     title.sub(/^章节目录\s*/, "").sub(/(《.+》)?正文\s*/, "")
   end
 
-  getter paras : Array(String) do
-    return get_hetu_paras if @conf.unique == "hetu"
+  getter body : Array(String) do
+    return get_hetu_body if @conf.unique == "hetu"
 
     purge_tags = {:script, :div, :h1, :table}
-    lines = @doc.get_lines(@conf.paras, purge_tags)
+    lines = @doc.get_lines(@conf.body, purge_tags)
 
     lines.shift if reject_first_line?(lines.first)
     lines.pop if lines.last == "(本章完)"
@@ -78,7 +78,7 @@ class WN::RmText
     first =~ /^笔趣阁|笔下文学|，#{Regex.escape bname}/ || first.sub(self.title, "") !~ /\p{Han}/
   end
 
-  private def get_hetu_paras
+  private def get_hetu_body
     file_path = RmPage.cache_file(@link).sub(".htm.zst", ".tok")
     reorder = get_hetu_line_order(file_path)
 
