@@ -4,8 +4,7 @@ module WN::TextStore
   extend self
 
   def get_chap(seed : WnSeed, chap : WnChap)
-    _path = chap._path
-    return [""] if _path == "x" # no text available, stop trying
+    return [""] if chap._flag < 0
 
     # try reading txt file directly from disk
     txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
@@ -14,6 +13,7 @@ module WN::TextStore
     # try reading txt file from new zip
     read_txt_from_zip(seed, chap).try { |x| return x }
 
+    _path = chap._path
     # return blank data if no backend link found
     return [""] unless _path[0]? == '!'
 

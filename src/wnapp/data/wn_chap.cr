@@ -79,7 +79,7 @@ class WN::WnChap
   @[DB::Field(ignore: true)]
   getter body : Array(String) { TextStore.get_chap(self.seed, self) || [""] }
 
-  def save_body!(input : String, seed : WnSeed = self.seed, @uname = "") : Nil
+  def save_body!(input : String, seed : WnSeed = self.seed, @uname = "", _flag = 2) : Nil
     parts, @c_len = TextSplit.split_entry(input)
     validate_body!(parts)
 
@@ -88,7 +88,7 @@ class WN::WnChap
     @title = parts.first if self.title.empty?
 
     @body = parts
-    save_body_copy!(seed)
+    save_body_copy!(seed, _flag: _flag)
   end
 
   private def validate_body!(parts : Array(String))
@@ -103,7 +103,7 @@ class WN::WnChap
     end
   end
 
-  def save_body_copy!(seed : WnSeed = self.seed) : Nil
+  def save_body_copy!(seed : WnSeed = self.seed, @_flag = 2) : Nil
     TextStore.save_txt_file(seed, self)
     seed.save_chap!(self)
   end

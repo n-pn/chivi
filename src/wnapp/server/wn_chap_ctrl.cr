@@ -62,7 +62,7 @@ class WN::ChapCtrl < AC::Base
 
     # save chap text directly to `temps` folder
     unless no_text?(zh_text) || zh_chap.on_txt_dir?
-      spawn zh_chap.save_body_copy!(seed: wn_seed)
+      spawn zh_chap.save_body_copy!(seed: wn_seed, _flag: 2)
     end
 
     no_text?(zh_text) ? "" : "#{zh_text[0]}\n#{zh_text[part_no &+ 1]}"

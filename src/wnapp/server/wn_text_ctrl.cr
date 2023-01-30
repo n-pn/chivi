@@ -88,7 +88,7 @@ class WN::TextCtrl < AC::Base
     chaps.each_with_index(start) do |(text, chdiv), ch_no|
       zh_chap = wn_seed.zh_chap(ch_no) || WnChap.new(ch_no, ch_no, "", "")
       zh_chap.chdiv = chdiv
-      zh_chap.save_body!(text, seed: wn_seed, uname: _uname)
+      zh_chap.save_body!(text, seed: wn_seed, uname: _uname, _flag: 3)
     end
 
     max_ch_no = start + chaps.size - 1
@@ -134,7 +134,7 @@ class WN::TextCtrl < AC::Base
     zh_chap.title = form.title
     zh_chap.chdiv = form.chdiv
 
-    zh_chap.save_body!(form.ztext, seed: wn_seed, uname: _uname)
+    zh_chap.save_body!(form.ztext, seed: wn_seed, uname: _uname, _flag: 3)
 
     wn_seed.chap_total = ch_no if ch_no > wn_seed.chap_total
     wn_seed.mtime = Time.utc.to_unix

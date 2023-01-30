@@ -33,7 +33,7 @@ then
 
   # rsync-fast "var/dicts/defns" --include="*/" --exclude="*.zst" "$SSH/var/dicts"
 
-  # rsync-fast "var/dicts/spdic" "$SSH/var/dicts"
+  rsync-fast "var/_conf" "$SSH/var"
 
 
   # rsync-fast "var/dicts/v2raw" "$SSH/var/dicts"
