@@ -69,15 +69,15 @@ class WN::SeedCtrl < AC::Base
     render json: WnSeed.get!(form.wn_id, form.sname)
   end
 
-  @[AC::Route::GET("/:wn_id/:sname/reload")]
-  def reload(wn_id : Int32, sname : String)
+  @[AC::Route::GET("/:wn_id/:sname/refresh")]
+  def refresh(wn_id : Int32, sname : String)
     wn_seed = get_wn_seed(wn_id, sname)
     guard_privi wn_seed.min_privi - 1, "cập nhật nguồn"
 
     if slink = wn_seed.remotes.first?
       wn_seed.update_from_remote!(slink)
     else
-      raise BadRequest.new "Liên kết với nguồn ngoài để cập nhật!"
+      wn_seed.reload_content!
     end
 
     render json: wn_seed

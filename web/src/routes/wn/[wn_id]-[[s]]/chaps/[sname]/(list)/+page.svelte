@@ -31,6 +31,7 @@
     const api_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}/refresh`
     const headers = { Accept: 'application/json' }
     const api_res = await fetch(api_url, { headers })
+    _onload = false
 
     if (!api_res.ok) {
       const data = await api_res.json()
@@ -38,8 +39,6 @@
     } else {
       await invalidateAll()
     }
-
-    _onload = false
   }
 
   $: [can_upsert, can_reload] = check_edit_privi(

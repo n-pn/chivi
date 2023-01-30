@@ -1,5 +1,6 @@
 # require "./html_parser"
 require "yaml"
+require "json"
 
 require "./rm_page"
 require "../../_util/text_util"
@@ -95,7 +96,9 @@ class WN::RmCata
   record Chap,
     ch_no : Int32, s_cid : Int32,
     title : String, chdiv : String,
-    _path : String
+    _path : String do
+    include JSON::Serializable
+  end
 
   getter chaps = [] of Chap
 

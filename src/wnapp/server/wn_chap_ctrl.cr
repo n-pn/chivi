@@ -46,7 +46,6 @@ class WN::ChapCtrl < AC::Base
 
   private def load_cv_data(wn_id : Int32, ztext : String)
     url = "http://localhost:5010/_db/cv_chap?wn_id=#{wn_id}&cv_title=first"
-    puts "loading cvmtl".colorize.blue
 
     HTTP::Client.post(url, headers: HEADERS, body: ztext) do |res|
       res.success? ? res.body_io.gets_to_end : ""
@@ -57,8 +56,8 @@ class WN::ChapCtrl < AC::Base
     zh_text = zh_chap.body
 
     # auto reload remote texts
-    if !no_text?(zh_text) && should_auto_fetch?(load_mode)
-      wn_seed.fetch_text!(zh_chap, _uname, force: load_mode == 2)
+    if no_text?(zh_text) && should_auto_fetch?(load_mode)
+      zh_text = wn_seed.fetch_text!(zh_chap, _uname, force: load_mode == 2)
     end
 
     # save chap text directly to `temps` folder
@@ -66,7 +65,7 @@ class WN::ChapCtrl < AC::Base
       spawn zh_chap.save_body_copy!(seed: wn_seed)
     end
 
-    zh_text.empty? ? "" : "#{zh_text[0]}\n#{zh_text[part_no &+ 1]?}"
+    no_text?(zh_text) ? "" : "#{zh_text[0]}\n#{zh_text[part_no &+ 1]}"
   end
 
   @[AlwaysInline]
@@ -76,7 +75,8 @@ class WN::ChapCtrl < AC::Base
 
   @[AlwaysInline]
   private def should_auto_fetch?(load_mode : Int32)
-    _privi > 0 && (load_mode > 0 || cookies["auto_load"]?)
+    _privi > 0
+    # _privi > 0 && (load_mode > 0 || cookies["auto_load"]?)
   end
 
   private def prev_url(seed, chap : WnChap, part_no = 0)

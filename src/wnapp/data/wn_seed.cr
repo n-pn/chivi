@@ -123,17 +123,32 @@ class WN::WnSeed
     parser = RmCata.new(slink, ttl: mode > 0 ? 3.minutes : 30.minutes)
 
     raw_chaps = parser.parse!
+
     return if raw_chaps.empty?
+
+    last_ch_no = raw_chaps.size
+
+    if last_ch_no > self.chap_total
+      self.chap_total = last_ch_no
+      last_ch_no = self.chap_total
+    end
+
+    if last_ch_no > 0
+      # FIXME: check for real last_chap and offset
+      # raw_chaps = raw_chaps[last_ch_no..]
+    end
 
     # @_flag = parser.status_int.to_i
 
-    self.bump_mftime(parser.last_mtime, force: mode > 1)
-    self.bump_latest(raw_chaps.last.ch_no, force: false)
-
+    self.bump_times(parser.last_mtime, force: true)
     self.save!(self.class.repo)
 
     self.zh_chaps.upsert_infos(raw_chaps, keep_s_cid: self.sname[0] == '!')
-    @vi_chaps = nil # force retranslation
+    self.reload_content!
+  end
+
+  def reload_content!
+    self.vi_chaps.regen_tl!(self.zh_chaps.db_path, self.dname)
   end
 
   REMOTE_SEEDS = {
@@ -154,16 +169,16 @@ class WN::WnSeed
     REMOTE_SEEDS.includes?(sname)
   end
 
-  def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Bool
+  def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Array(String)
     case path = chap._path
-    when .starts_with?("http")
-      href = path
     when .starts_with?('!')
       bg_path = path.split(':').first
       sname, s_bid, s_cid = bg_path.split('/')
       href = SiteLink.text_url(sname[1..], s_bid.to_i, s_cid.to_i)
+    when .starts_with?("http")
+      href = path
     else
-      return false
+      return chap.body
     end
 
     parser = RmText.new(href, ttl: force ? 3.minutes : 1.years)
@@ -176,7 +191,8 @@ class WN::WnSeed
 
     chap.save_body!(body, seed: self, uname: uname)
     @vi_chaps = nil
-    true
+
+    chap.body
   end
 
   def save_chap!(chap : WnChap) : Nil
@@ -185,17 +201,17 @@ class WN::WnSeed
 
   #############
 
-  def bump_mftime(mtime : Int64 = 0, force : Bool = false)
-    @stime = Time.utc.to_unix
+  def bump_times(mtime : Int64 = 0, force : Bool = false)
+    @atime = Time.utc.to_unix
 
     if mtime > 0
       @mtime = mtime
     elsif force
-      @mtime = @stime
+      @mtime = @atime
     end
   end
 
-  def bump_latest(ch_no : Int32, force : Bool = false)
+  def bump_chmax(ch_no : Int32, force : Bool = false)
     return unless force || ch_no > self.chap_total
     @chap_total = ch_no
   end

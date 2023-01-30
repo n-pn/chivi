@@ -22,6 +22,14 @@ class WN::WnChap
   field _path : String = "" # file locator
   field _flag : Int32 = 0   # marking states
 
+  # flags:
+  # -2 : dead remote
+  # -1 : error remote
+  # 0 : default
+  # 1: exists on zip
+  # 2: exists as txt
+  # 3: exists as txt and edited by users
+
   @[DB::Field(ignore: true)]
   getter! seed : WnSeed
 
@@ -97,11 +105,10 @@ class WN::WnChap
 
   def save_body_copy!(seed : WnSeed = self.seed) : Nil
     TextStore.save_txt_file(seed, self)
-    @_path = "v"
     seed.save_chap!(self)
   end
 
   def on_txt_dir?
-    @_path == "v"
+    self._flag > 1
   end
 end

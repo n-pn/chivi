@@ -2,7 +2,7 @@ require "log"
 require "sqlite3"
 require "colorize"
 
-require "../ch_info"
+require "../wn_chap"
 require "../../../mt_v1/mt_core"
 require "../../../_util/text_util"
 

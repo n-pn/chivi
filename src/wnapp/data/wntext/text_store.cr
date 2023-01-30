@@ -15,7 +15,7 @@ module WN::TextStore
     read_txt_from_zip(seed, chap).try { |x| return x }
 
     # return blank data if no backend link found
-    return [""] if _path.empty?
+    return [""] unless _path[0]? == '!'
 
     # try reading txt file from backend txt folder
     bg_path = _path.split(':')[0]
