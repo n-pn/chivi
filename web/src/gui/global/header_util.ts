@@ -293,15 +293,14 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       ],
     }
   },
-  '/wn/[wn_id]-[[s]]/chaps/[sname]/[ch_no]/[...cpart]': (data) => {
+  '/wn/[wn_id]-[[s]]/chaps/[sname]/[ch_no]/[[cpart]]': (data) => {
     const { nvinfo, curr_seed, curr_chap } = data
     if (!(nvinfo && curr_seed && curr_chap)) return error
 
     const { bslug } = nvinfo
     const { title, uslug, chidx: ch_no } = curr_chap
 
-    let chap_href = chap_path(bslug, curr_seed.sname, ch_no)
-    chap_href += '/' + uslug
+    const chap_href = chap_path(bslug, curr_seed.sname, ch_no, uslug)
 
     return {
       title: `${title} - ${nvinfo.btitle_vi}`,

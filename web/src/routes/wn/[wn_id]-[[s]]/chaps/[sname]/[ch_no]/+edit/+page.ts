@@ -1,11 +1,11 @@
-import { error } from '@sveltejs/kit'
+import { api_get } from '$lib/api_call'
+
+type ZtextRaw = { ztext: string; title: string; chdiv: string }
 
 export async function load({ fetch, parent, params: { wn_id, sname, ch_no } }) {
   const api_url = `/_wn/texts/${wn_id}/${sname}/${ch_no}`
-  const api_res = await fetch(api_url)
-  if (!api_res.ok) throw error(api_res.status, await api_res.text())
 
-  const { ztext, title, chdiv } = await api_res.json()
+  const { ztext, title, chdiv } = await api_get<ZtextRaw>(api_url, fetch)
 
   const { nvinfo } = await parent()
   const dname = '-' + nvinfo.bhash
@@ -15,7 +15,7 @@ export async function load({ fetch, parent, params: { wn_id, sname, ch_no } }) {
 }
 
 function page_meta({ bslug, btitle_vi }, sname: string, chidx: number) {
-  const chap_href = `/-${bslug}/chaps/${sname}`
+  const chap_href = `/wn/${bslug}/chaps/${sname}`
   return {
     title: `Sửa text gốc chương #${chidx} - ${btitle_vi}`,
     left_nav: [

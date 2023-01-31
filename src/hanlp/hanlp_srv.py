@@ -27,11 +27,6 @@ class Server(BaseHTTPRequestHandler):
       self.end_headers()
       self.wfile.write('Unsupported path'.encode('utf-8'))
 
-  def parse_input(self, post_body):
-
-
-    return lines
-
   def print_result(self, output):
     self.send_response(200)
     self.send_header("Content-type", "text/plain; charset=utf-8")

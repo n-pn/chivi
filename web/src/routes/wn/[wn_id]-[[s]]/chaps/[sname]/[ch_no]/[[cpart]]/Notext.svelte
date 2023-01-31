@@ -94,7 +94,7 @@
     </p>
 
     <h3>Tự text gốc cho chương:</h3>
-    {#if _privi >= seed_data.min_privi}
+    {#if _privi >= seed_data.edit_privi}
       <p>
         Bạn có đủ quyền hạn để thêm text gốc cho bộ truyện, bấm vào nút
         <a href={edit_href}>Thêm text gốc</a>

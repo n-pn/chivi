@@ -12,7 +12,7 @@ export interface ChapPart {
 
 export async function load({ params, fetch }) {
   const ch_no = +params.ch_no
-  const cpart = +params.cpart.split('/')[1] || 1
+  const cpart = +params.cpart.split('-')[0] || 1
 
   const path = api_chap_url(+params.wn_id, params.sname, ch_no, cpart, false)
   const data = await api_get<ChapPart>(path, fetch)

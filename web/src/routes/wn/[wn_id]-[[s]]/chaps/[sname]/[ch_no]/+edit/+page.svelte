@@ -64,10 +64,6 @@
   }
 </script>
 
-<svelte:head>
-  <title>Sửa text gốc chương #{ch_no} - {nvinfo.btitle_vi} - Chivi</title>
-</svelte:head>
-
 <nav class="bread">
   <a href="/-{nvinfo.bslug}" class="crumb _link">
     <SIcon name="book" />

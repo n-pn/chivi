@@ -28,8 +28,13 @@ export const fix_sname = (sname: string) => {
   return seed_prefixes.includes(sname[0]) ? sname : '_'
 }
 
-export function chap_path(bslug: string, sname: string, ch_no: number) {
-  return `${seed_path(bslug, sname)}/${ch_no}`
+export function chap_path(
+  bslug: string,
+  sname: string,
+  ch_no: number,
+  uslug = '-'
+) {
+  return `${seed_path(bslug, sname)}/${ch_no}/${uslug}`
 }
 
 export function _pgidx(index: number, limit = 32) {
