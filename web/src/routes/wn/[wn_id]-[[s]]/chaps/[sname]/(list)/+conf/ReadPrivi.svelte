@@ -17,9 +17,9 @@
 
   const read_privi_descs = {
     0: 'Không hạn chế đọc 1/3 số chương đầu, cần đăng nhập để đọc 2/3 số chương tiếp theo',
-    1: 'Cần đăng nhập để đọc 1/3 số chương đầu, quyền hạn 1+ để đọc 2/3 số chương tiếp theo',
-    2: 'Cần quyền hạn 1+ để đọc 1/3 số chương đầu, quyền hạn 2+ để đọc 2/3 số chương tiếp theo',
-    3: 'Cần quyền hạn 2+ để đọc 1/3 số chương đầu, quyền hạn 3+ để đọc 2/3 số chương tiếp theo',
+    1: 'Cần đăng nhập để đọc 1/3 số chương đầu, cần quyền hạn 1+ để đọc 2/3 số chương tiếp theo',
+    2: 'Cần quyền hạn 1+ để đọc 1/3 số chương đầu, cần quyền hạn 2+ để đọc 2/3 số chương tiếp theo',
+    3: 'Cần quyền hạn 2+ để đọc 1/3 số chương đầu, cần quyền hạn 3+ để đọc 2/3 số chương tiếp theo',
     '-1': 'Tất cả mọi người đều đọc được nội dung các chương',
   }
 

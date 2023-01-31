@@ -61,7 +61,7 @@ const get_hash = (hash?: string) => hash?.replace('/', '_')
 
 async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   const hash = get_hash(event.cookies.get('_auth')) || 'guest'
-  const path = `tmp/_user/${hash}.json`
+  // const path = `tmp/_user/${hash}.json`
 
   let cached_user = cached_users[hash]
 
@@ -83,6 +83,5 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   // fs.writeFileSync(path, JSON.stringify(cached_user))
   cached_users[hash] = cached_user
 
-  event.setHeaders({ cookie: response.headers.get('cookie') })
   return cached_user || guest_user
 }

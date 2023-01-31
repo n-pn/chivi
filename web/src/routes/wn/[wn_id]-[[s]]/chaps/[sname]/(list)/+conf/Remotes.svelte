@@ -158,18 +158,19 @@
 
 <p class="warning">
   <strong
-    >Đường dẫn nguồn phải trỏ tới trang chứa danh sách chương tiết. Đường dẫn
-    sai lệch sẽ dẫn tới lỗi.</strong>
+    >Hãy kiểm tra kỹ đường dẫn nguồn trước khi thêm. Đường dẫn nguồn phải trỏ
+    tới trang chứa danh sách chương tiết. Đường dẫn sai lệch sẽ không trả về kết
+    quả bạn mong muốn.</strong>
 </p>
 
 <p class="warning">
-  Lưu ý 2: Bạn có thể chọn nguồn bất kỳ, hệ thống sẽ thử nghiệm đọc dữ liệu từ
-  nguồn nếu có thể. Nhưng để đạt được kết quả tốt nhất, hãy lựa chọn các nguồn
-  được hỗ trợ bên dưới.
+  Lưu ý 2: Bạn có thể thêm nguồn bất kỳ, hệ thống sẽ thử nghiệm đọc dữ liệu từ
+  nguồn nếu có thể. Nhưng để đạt được kết quả tốt nhất, hãy lựa chọn từ các
+  nguồn được hỗ trợ bên dưới:
 </p>
 
 <details>
-  <summary>Các nguồn ngoài đang được hỗ trợ:</summary>
+  <summary>Các nguồn ngoài đang được hỗ trợ</summary>
   <table>
     {#each sources as { site, href }}
       <tr>
@@ -248,6 +249,9 @@
 
   details {
     margin-top: 1rem;
+  }
+
+  summary {
     font-style: italic;
   }
 </style>

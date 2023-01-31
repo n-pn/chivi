@@ -83,7 +83,7 @@
   $: ztitle = `${nvinfo.btitle_zh} ${nvinfo.author_zh}`
 </script>
 
-<article class="article">
+<article class="article island">
   <h2>Cài đặt nguồn truyện</h2>
 
   <details open>
@@ -95,13 +95,13 @@
       bind:curr_seed={data.curr_seed} />
   </details>
 
-  <details open>
-    <summary>Liên kết tới nguồn ngoài:</summary>
+  <details>
+    <summary>Liên kết đồng bộ với các nguồn ngoài</summary>
     <Remotes {ztitle} {can_edit} {edit_url} bind:seed_data={data.seed_data} />
   </details>
 
   <details>
-    <summary>Sao chép từ nguồn khác</summary>
+    <summary>Sao chép từ danh sách chương tiết khác</summary>
 
     <div class="form-group">
       <div class="form-field">
@@ -162,7 +162,7 @@
   </details>
 
   <details>
-    <summary>Xoá chương thừa</summary>
+    <summary>Xoá các chương tiết bị thừa</summary>
     <div class="form-group">
       <div class="form-field">
         <label class="form-label _inline" for="trunc_chidx"
@@ -189,7 +189,7 @@
   </details>
 
   <details>
-    <summary>Xoá danh sách</summary>
+    <summary>Xoá danh sách chương tiết</summary>
     <div class="form-group">
       <div class="form-field">
         <label class="form-label" for="prune"
@@ -252,13 +252,15 @@
     }
   }
 
-  details + details {
-    margin-top: 1rem;
+  details {
+    @include border(--bd-soft, $loc: top);
+    padding-top: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 
   summary {
     font-weight: 500;
-    @include ftsize(lg);
+    // @include ftsize(lg);
     @include fgcolor(secd);
     @include hover {
       @include fgcolor(primary, 5);
