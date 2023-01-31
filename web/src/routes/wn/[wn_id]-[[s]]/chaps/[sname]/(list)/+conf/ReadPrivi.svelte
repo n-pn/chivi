@@ -1,0 +1,89 @@
+<script lang="ts">
+  import { api_call } from '$lib/api_call'
+
+  export let wn_id: number
+  export let can_edit = false
+
+  export let curr_seed: CV.Chroot
+  export let seed_data: CV.WnSeed
+
+  const read_privis = [
+    [-1, 'Không hạn chế'],
+    [0, 'Cần đăng nhập'],
+    [1, 'Quyền hạn 1'],
+    [2, 'Quyền hạn 2'],
+    [3, 'Quyền hạn 3'],
+  ]
+
+  const read_privi_descs = {
+    '-1': 'Tất cả mọi người đều đọc được nội dung các chương',
+    0: 'Không hạn chế đọc 1/3 số chương đầu, cần đăng nhập để đọc 2/3 số chương tiếp theo',
+    1: 'Cần đăng nhập để đọc 1/3 số chương đầu, quyền hạn 1+ để đọc 2/3 số chương tiếp theo',
+    2: 'Cần quyền hạn 1+ để đọc 1/3 số chương đầu, quyền hạn 2+ để đọc 2/3 số chương tiếp theo',
+    3: 'Cần quyền hạn 2+ để đọc 1/3 số chương đầu, quyền hạn 3+ để đọc 2/3 số chương tiếp theo',
+  }
+
+  let error = ''
+
+  const update_read_privi = async () => {
+    const url = `/_wn/seeds/${wn_id}/${curr_seed.sname}`
+    try {
+      curr_seed = await api_call(
+        url,
+        { read_privi: seed_data.read_privi },
+        'PATCH'
+      )
+    } catch (ex) {
+      error = ex.body.message
+    }
+  }
+</script>
+
+<div class="options">
+  {#each read_privis as [value, label]}
+    <label class="radio">
+      <input type="radio" bind:group={seed_data.read_privi} {value} />
+      <span> {label}</span>
+    </label>
+  {/each}
+</div>
+
+<div class="desc">{read_privi_descs[seed_data.read_privi]}</div>
+
+{#if error}<div class="error">{error}</div>{/if}
+
+<footer class="action">
+  <button
+    class="m-btn _primary _fill"
+    disabled={!can_edit}
+    on:click={update_read_privi}>
+    <span>Lưu thay đổi</span>
+  </button>
+</footer>
+
+<style lang="scss">
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+
+  .radio {
+    cursor: pointer;
+    line-height: 2rem;
+    margin-right: 0.5rem;
+    input {
+      margin-right: 0.25rem;
+    }
+  }
+
+  .error {
+    @include fgcolor(harmful, 5);
+  }
+
+  .desc {
+    font-style: italic;
+    @include fgcolor(tert);
+    margin-bottom: 1rem;
+  }
+</style>

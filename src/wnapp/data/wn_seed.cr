@@ -80,7 +80,7 @@ class WN::WnSeed
     }
   end
 
-  def min_privi(owner : String = "")
+  def edit_privi(owner : String)
     return self.edit_privi if self.sname[0] != '@'
     @sname == owner ? 2 : 4
   end

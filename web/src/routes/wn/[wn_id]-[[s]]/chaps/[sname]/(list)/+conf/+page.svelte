@@ -6,11 +6,12 @@
   import { SIcon } from '$gui'
 
   import type { PageData } from './$types'
+  import ReadPrivi from './ReadPrivi.svelte'
   export let data: PageData
 
-  $: ({ nvinfo, seeds, curr_seed } = data)
+  $: ({ nvinfo, curr_seed } = data)
 
-  let [bg_seeds, patch_form] = init_data(seeds, curr_seed)
+  let [bg_seeds, patch_form] = init_data(data.seed_list, data.curr_seed)
   let prune = ''
 
   async function submit_patch() {
@@ -60,11 +61,21 @@
     i_chmin: number
   }
 
-  function init_data({ users, backs }, nvseed: CV.Chroot) {
+  function init_data({ users = [], backs = [] }, nvseed: CV.Chroot) {
     let seeds = [...users, ...backs].filter((x) => x.sname != nvseed.sname)
+    seeds = seeds.filter((x) => x.chmax > 0)
+
     const { chmax, sname: o_sname } = seeds[0] || { chmax: 0, sname: '' }
     const form = { chmin: 1, i_chmin: 1, chmax: chmax, o_sname }
     return [seeds, form] as [CV.Chroot[], PatchForm]
+  }
+
+  $: can_edit = check_privi(data.curr_seed, data.seed_data, data._user)
+
+  const check_privi = ({ sname }, { edit_privi }, { uname, privi }) => {
+    if (privi < edit_privi) return false
+    if (privi > 3 || sname[0] != '@') return true
+    return sname == '@' + uname
   }
 </script>
 
@@ -72,6 +83,23 @@
   <h2>Cài đặt nguồn truyện</h2>
 
   <details open>
+    <summary>Quyền hạn tối thiểu để xem nội dung chương tiết</summary>
+    <ReadPrivi
+      {can_edit}
+      wn_id={nvinfo.id}
+      seed_data={data.seed_data}
+      bind:curr_seed={data.curr_seed} />
+  </details>
+
+  <details open>
+    <summary>Liên kết tới nguồn ngoài:</summary>
+    {#each data.seed_data.links as slink}
+      <a href={slink} class="slink" rel="noopener noreferrer" target="_blank"
+        >{slink}</a>
+    {/each}
+  </details>
+
+  <details>
     <summary>Sao chép từ nguồn khác</summary>
 
     <div class="form-group">
@@ -132,7 +160,7 @@
     </div>
   </details>
 
-  <details open>
+  <details>
     <summary>Xoá chương thừa</summary>
     <div class="form-group">
       <div class="form-field">
@@ -229,6 +257,10 @@
 
   summary {
     font-weight: 500;
-    // @include ftsize(lg);
+    @include ftsize(lg);
+    @include fgcolor(secd);
+    @include hover {
+      @include fgcolor(primary, 5);
+    }
   }
 </style>

@@ -8,22 +8,16 @@
   import { book_path, seed_path } from '$lib/kit_path'
   export let data: LayoutData
 
-  $: ({ nvinfo, seeds, curr_seed } = data)
+  $: ({ nvinfo, seed_list, curr_seed } = data)
 
   $: pgidx = +$page.url.searchParams.get('pg') || 1
 
   $: uname = '@' + $session.uname
-  $: _self = find_or_init(seeds, uname)
+  $: _self = find_or_init(seed_list, uname)
 
-  function find_or_init(seeds: { users: CV.Chroot[] }, sname: string) {
-    const found = seeds.users.find((x) => x.sname == sname)
-    if (found) return found
-    return {
-      sname,
-      chmax: 0,
-      utime: 0,
-      stype: 0,
-    }
+  function find_or_init(seed_list: { users: CV.Chroot[] }, sname: string) {
+    const found = seed_list.users.find((x) => x.sname == sname)
+    return found || { sname, chmax: 0, utime: 0, stype: 0 }
   }
 
   let show_bg = false
@@ -31,16 +25,18 @@
 
 <div class="seed-list">
   <a
-    href={seed_path(nvinfo.bslug, seeds._main.sname, pgidx)}
+    href={seed_path(nvinfo.bslug, seed_list._main.sname, pgidx)}
     class="seed-name"
-    class:_active={seeds._main.sname == curr_seed.sname}
+    class:_active={seed_list._main.sname == curr_seed.sname}
     data-tip="Danh sách chương trộn tổng hợp"
     data-tip-loc="bottom">
     <div class="seed-label">Tổng hợp</div>
-    <div class="seed-stats"><strong>{seeds._main.chmax}</strong> chương</div>
+    <div class="seed-stats">
+      <strong>{seed_list._main.chmax}</strong> chương
+    </div>
   </a>
 
-  {#each seeds.users as seed}
+  {#each seed_list.users as seed}
     {@const { sname, chmax } = seed}
     {#if chmax > 0 && sname != uname}
       <a
@@ -74,13 +70,15 @@
     data-tip-loc="bottom"
     on:click={() => (show_bg = !show_bg)}>
     <div class="seed-label">Nguồn khác</div>
-    <div class="seed-stats"><strong>{seeds.backs.length}</strong> nguồn</div>
+    <div class="seed-stats">
+      <strong>{seed_list.backs.length}</strong> nguồn
+    </div>
   </button>
 </div>
 
 {#if show_bg}
   <div class="seed-list -extra">
-    {#each seeds.backs as { sname, chmax }}
+    {#each seed_list.backs as { sname, chmax }}
       <a
         href={seed_path(nvinfo.bslug, sname, pgidx)}
         class="seed-name _sub"

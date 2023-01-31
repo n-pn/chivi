@@ -17,11 +17,11 @@ class WN::ChapCtrl < AC::Base
     wn_seed = get_wn_seed(wn_id, sname)
     vi_chap = get_vi_chap(wn_seed, ch_no)
 
-    min_privi = wn_seed.min_privi("+#{_uname}")
-    min_privi -= 1 if ch_no <= wn_seed.chap_total // 3
+    read_privi = wn_seed.read_privi
+    read_privi -= 1 if ch_no <= wn_seed.gift_chaps
 
     zh_chap = wn_seed.zh_chap(ch_no).not_nil!
-    can_read = _privi >= min_privi
+    can_read = _privi >= read_privi
 
     ztext = can_read ? load_ztext(wn_seed, zh_chap, part_no, load_mode) : ""
     cvmtl = ztext.empty? ? "" : load_cv_data(wn_id, ztext)
@@ -36,7 +36,7 @@ class WN::ChapCtrl < AC::Base
         title: zh_chap.title,
         cvmtl: cvmtl,
         ##
-        privi: min_privi,
+        privi: read_privi,
         grant: can_read,
       },
     }

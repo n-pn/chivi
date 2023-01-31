@@ -111,7 +111,7 @@
           <a
             class="gmenu-item"
             class:_disable={!can_upsert}
-            href="/-{nvinfo.bslug}/chaps/{curr_seed.sname}/+conf">
+            href="/wn/{nvinfo.bslug}/chaps/{curr_seed.sname}/+conf">
             <SIcon name="settings" />
             <span>Cài đặt</span>
           </a>

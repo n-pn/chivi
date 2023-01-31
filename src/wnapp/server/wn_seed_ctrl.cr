@@ -42,7 +42,7 @@ class WN::SeedCtrl < AC::Base
     }
   end
 
-  record SeedForm, wn_id : Int32, sname : String, s_bid : Int32? do
+  record CreateForm, wn_id : Int32, sname : String, s_bid : Int32? do
     include JSON::Serializable
 
     def validate!(uname : String, privi : Int32) : String?
@@ -58,8 +58,8 @@ class WN::SeedCtrl < AC::Base
     end
   end
 
-  @[AC::Route::POST("/", body: :form)]
-  def upsert(form : SeedForm)
+  @[AC::Route::PUT("/", body: :form)]
+  def create(form : CreateForm)
     guard_privi 2, "thêm nguồn truyện"
 
     error = form.validate!(_uname, _privi) if _privi < 3
@@ -69,10 +69,28 @@ class WN::SeedCtrl < AC::Base
     render json: WnSeed.get!(form.wn_id, form.sname)
   end
 
+  record UpdateForm, read_privi : Int32? do
+    include JSON::Serializable
+  end
+
+  @[AC::Route::PATCH("/:wn_id/:sname", body: :form)]
+  def update_seed(form : UpdateForm, wn_id : Int32, sname : String)
+    wn_seed = get_wn_seed(wn_id, sname)
+    guard_privi wn_seed.edit_privi("@" + _uname), "cập nhật nguồn"
+
+    if read_privi = form.read_privi
+      wn_seed.read_privi = read_privi
+    end
+
+    wn_seed.save!
+
+    render json: wn_seed
+  end
+
   @[AC::Route::GET("/:wn_id/:sname/refresh")]
   def refresh(wn_id : Int32, sname : String, mode : Int32 = 1)
     wn_seed = get_wn_seed(wn_id, sname)
-    guard_privi wn_seed.min_privi - 1, "cập nhật nguồn"
+    guard_privi wn_seed.read_privi - 1, "cập nhật nguồn"
 
     if slink = wn_seed.remotes.first?
       wn_seed.update_from_remote!(slink, mode: mode)
