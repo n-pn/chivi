@@ -7,6 +7,7 @@
 
   import type { PageData } from './$types'
   import ReadPrivi from './ReadPrivi.svelte'
+  import Remotes from './Remotes.svelte'
   export let data: PageData
 
   $: ({ nvinfo, curr_seed } = data)
@@ -77,6 +78,9 @@
     if (privi > 3 || sname[0] != '@') return true
     return sname == '@' + uname
   }
+
+  $: edit_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}`
+  $: ztitle = `${nvinfo.btitle_zh} ${nvinfo.author_zh}`
 </script>
 
 <article class="article">
@@ -86,17 +90,14 @@
     <summary>Quyền hạn tối thiểu để xem nội dung chương tiết</summary>
     <ReadPrivi
       {can_edit}
-      wn_id={nvinfo.id}
+      {edit_url}
       seed_data={data.seed_data}
       bind:curr_seed={data.curr_seed} />
   </details>
 
   <details open>
     <summary>Liên kết tới nguồn ngoài:</summary>
-    {#each data.seed_data.links as slink}
-      <a href={slink} class="slink" rel="noopener noreferrer" target="_blank"
-        >{slink}</a>
-    {/each}
+    <Remotes {ztitle} {can_edit} {edit_url} bind:seed_data={data.seed_data} />
   </details>
 
   <details>

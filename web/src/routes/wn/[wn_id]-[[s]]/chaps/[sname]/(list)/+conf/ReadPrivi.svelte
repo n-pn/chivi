@@ -1,7 +1,7 @@
 <script lang="ts">
   import { api_call } from '$lib/api_call'
 
-  export let wn_id: number
+  export let edit_url: string
   export let can_edit = false
 
   export let curr_seed: CV.Chroot
@@ -26,13 +26,9 @@
   let error = ''
 
   const update_read_privi = async () => {
-    const url = `/_wn/seeds/${wn_id}/${curr_seed.sname}`
     try {
-      curr_seed = await api_call(
-        url,
-        { read_privi: seed_data.read_privi },
-        'PATCH'
-      )
+      const body = { read_privi: seed_data.read_privi }
+      curr_seed = await api_call(edit_url, body, 'PATCH')
     } catch (ex) {
       error = ex.body.message
     }

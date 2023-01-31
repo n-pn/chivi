@@ -61,6 +61,10 @@ class WN::WnSeed
     self
   end
 
+  def rm_links=(@remotes : Array(String))
+    @rm_links = remotes.to_json
+  end
+
   def regen_vi_chaps!
     @vi_chaps = WnRepo.load_tl(zh_chaps.db_path, self.dname, force: true)
   end

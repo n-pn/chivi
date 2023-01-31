@@ -69,8 +69,11 @@ class WN::SeedCtrl < AC::Base
     render json: WnSeed.get!(form.wn_id, form.sname)
   end
 
-  record UpdateForm, read_privi : Int32? do
+  struct UpdateForm
     include JSON::Serializable
+
+    getter read_privi : Int32?
+    getter rm_links : Array(String)?
   end
 
   @[AC::Route::PATCH("/:wn_id/:sname", body: :form)]
@@ -80,6 +83,10 @@ class WN::SeedCtrl < AC::Base
 
     if read_privi = form.read_privi
       wn_seed.read_privi = read_privi
+    end
+
+    if rm_links = form.rm_links
+      wn_seed.rm_links = rm_links
     end
 
     wn_seed.save!

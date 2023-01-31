@@ -69,19 +69,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       nav_link('/ys/crits', 'Đánh giá', 'stars', { show: 'tm' }),
     ],
   },
-  // authenticate
-  '/_auth/login': {
-    title: 'Đăng nhập',
-    left_nav: [home_nav('ps'), nav_link('login', 'Đăng nhập', 'login')],
-  },
-  '/_auth/signup': {
-    title: 'Đăng ký',
-    left_nav: [home_nav('ps'), nav_link('signup', 'Đăng ký', 'user-plus')],
-  },
-  '/_auth/passwd': {
-    title: 'Quên mật khẩu',
-    left_nav: [home_nav('ps'), nav_link('passwd', 'Quên mật khẩu', 'key')],
-  },
+
   // dictionary management
   '/dicts': {
     title: 'Từ điển',

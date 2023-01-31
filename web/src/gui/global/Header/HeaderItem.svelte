@@ -67,6 +67,10 @@
     font-weight: 500;
     font-size: rem(15px);
 
+    [data-show='pm'] > & {
+      @include bps(display, none, $pm: inline);
+    }
+
     [data-show='pl'] > & {
       @include bps(display, none, $pl: inline);
     }

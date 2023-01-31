@@ -6,9 +6,9 @@ export const load = async ({ parent }) => {
   const _meta = {
     title: 'Tinh chỉnh nguồn chương truyện ' + nvinfo.btitle_vi,
     left_nav: [
-      book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'tm'),
-      seed_nav(nvinfo.bslug, curr_seed.sname, 0, 'ts'),
-      nav_link('+conf', 'Tinh chỉnh', 'settings', { show: 'pl' }),
+      book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'ts'),
+      seed_nav(nvinfo.bslug, curr_seed.sname, 0, 'pl'),
+      nav_link('+conf', 'Tinh chỉnh', 'settings', { show: 'pm' }),
     ],
   }
 
