@@ -65,7 +65,8 @@ class WN::ChapCtrl < AC::Base
       spawn zh_chap.save_body_copy!(seed: wn_seed, _flag: 2)
     end
 
-    no_text?(zh_text) ? "" : "#{zh_text[0]}\n#{zh_text[part_no &+ 1]}"
+    part_no = zh_text.size - 1 if part_no >= zh_text.size
+    zh_text.size < 2 ? "" : "#{zh_text[0]}\n#{zh_text[part_no]}"
   end
 
   @[AlwaysInline]

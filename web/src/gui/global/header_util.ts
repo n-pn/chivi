@@ -8,27 +8,32 @@ export function gen_meta(route: string, data: Record<string, any>) {
   return (meta || meta_map['/']) as App.PageMeta
 }
 
-const home_nav = (show: string = 'tm', title = 'Chivi') => {
+export const home_nav = (show: string = 'tm', title = 'Chivi') => {
   return nav_link('/', title, null, { show, kind: 'brand' })
 }
 
-const book_nav = (bslug: string, vname: string, show = 'tm') => {
+export const book_nav = (bslug: string, vname: string, show = 'tm') => {
   return nav_link(`/wn/${bslug}`, vname, 'book', { show, kind: 'title' })
 }
 
-const seed_nav = (bslug: string, sname: string, pg_no = 1, show = 'pl') => {
+export const seed_nav = (
+  bslug: string,
+  sname: string,
+  pg_no = 1,
+  show = 'pl'
+) => {
   const seed_href = seed_path(bslug, sname, pg_no)
 
   const seed_name = sname == '_' ? '[Tổng hợp]' : `[${sname}]`
   return nav_link(seed_href, seed_name, 'list', { kind: 'zseed', show })
 }
 
-function nav_link(
+export const nav_link = (
   href: string,
   text: string | null,
   icon: string | null,
   opts = {}
-) {
+) => {
   const res = { type: 'a', href, icon, text }
   for (const [key, val] of Object.entries(opts)) res['data-' + key] = val
   return res

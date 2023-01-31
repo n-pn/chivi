@@ -14,14 +14,17 @@ export async function load({ fetch, parent, params: { wn_id, sname, ch_no } }) {
   return { ztext, title, chdiv, ch_no, wn_id, sname, dname, _meta }
 }
 
-function page_meta({ bslug, btitle_vi }, sname: string, chidx: number) {
-  const chap_href = `/wn/${bslug}/chaps/${sname}`
+import { book_nav, seed_nav, nav_link } from '$gui/global/header_util'
+import { _pgidx } from '$lib/kit_path'
+
+function page_meta({ bslug, btitle_vi }, sname: string, ch_no: number) {
   return {
-    title: `Sửa text gốc chương #${chidx} - ${btitle_vi}`,
+    title: `Sửa text gốc chương #${ch_no} - ${btitle_vi}`,
     left_nav: [
-      // prettier-ignore
-      { text: sname, icon: 'list', href: chap_href, 'data-show': 'ts', 'data-kind': 'zseed' },
-      { text: `#${chidx}`, icon: 'edit', href: `${chap_href}/${chidx}` },
+      book_nav(bslug, btitle_vi, 'tm'),
+      seed_nav(bslug, sname, _pgidx(ch_no), 'ts'),
+      nav_link('+edit', `Ch. ${ch_no}`, 'edit'),
     ],
+    right_nav: [nav_link('-', `Chương`, 'arrow-back-up', { show: 'tm' })],
   }
 }

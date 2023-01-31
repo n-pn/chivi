@@ -78,24 +78,26 @@
 
   <form action={action_url} method="POST" on:submit={submit}>
     <div class="form-group _fluid">
-      <span class="form-field">
-        <label class="label" for="chdiv">Tên tập truyện</label>
-        <input
-          class="m-input"
-          name="chdiv"
-          lang="zh"
-          bind:value={chdiv}
-          placeholder="Có thể để trắng" />
-      </span>
-
-      <span class="form-field">
+      <span class="form-field _title">
         <label class="label" for="title">Tên chương tiết</label>
         <input class="m-input" name="title" lang="zh" bind:value={title} />
       </span>
 
-      <span class="form-field _ch_no">
-        <label class="label" for="ch_no">Vị trí chương</label>
-        <input class="m-input" name="ch_no" bind:value={ch_no} />
+      <span class="sub-group">
+        <span class="form-field _chdiv">
+          <label class="label" for="chdiv">Tên tập truyện</label>
+          <input
+            class="m-input"
+            name="chdiv"
+            lang="zh"
+            bind:value={chdiv}
+            placeholder="Có thể để trắng" />
+        </span>
+
+        <span class="form-field _ch_no">
+          <label class="label" for="ch_no">Vị trí chương</label>
+          <input class="m-input" name="ch_no" bind:value={ch_no} />
+        </span>
       </span>
     </div>
 
@@ -185,29 +187,8 @@
 
     flex-direction: column;
 
-    > .form-field {
-      width: 100%;
-    }
-
-    @include bp-min(ts) {
+    @include bp-min(tm) {
       flex-direction: row;
-    }
-
-    > .form-field {
-      display: flex;
-      gap: 0.5rem;
-      position: relative;
-      align-items: center;
-
-      @include bp-min(ts) {
-        &:first-child {
-          width: 45%;
-        }
-
-        &:last-child {
-          width: 25%;
-        }
-      }
     }
 
     label {
@@ -219,6 +200,36 @@
     input {
       width: 100%;
     }
+  }
+
+  .sub-group {
+    display: flex;
+    gap: 0.75rem;
+
+    @include bp-min(tm) {
+      width: 40%;
+    }
+  }
+
+  .form-field {
+    flex: 1;
+    gap: 0.5rem;
+    position: relative;
+
+    &._ch_no {
+      max-width: 25%;
+      min-width: 6rem;
+    }
+
+    // @include bp-min(ts) {
+    //   &:first-of-type {
+    //     width: 50%;
+    //   }
+
+    //   &:last-of-type {
+    //     width: 15%;
+    //   }
+    // }
   }
 
   .content {

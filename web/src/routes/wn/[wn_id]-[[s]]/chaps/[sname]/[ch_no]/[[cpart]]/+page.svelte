@@ -127,11 +127,10 @@
           <a
             class="gmenu-item"
             class:_disable={$session.privi < 1}
-            href="{chap_path(
+            href="{seed_path(
               nvinfo.bslug,
-              curr_seed.sname,
-              curr_chap.chidx
-            )}/+edit">
+              curr_seed.sname
+            )}/{curr_chap.chidx}/+edit">
             <SIcon name="pencil" />
             <span>Sửa text gốc</span>
           </a>
