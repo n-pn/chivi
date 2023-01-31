@@ -272,32 +272,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
     }
   },
-  '/wn/[wn_id]-[[s]]/chaps/[sname]/(list)/+chap': ({ nvinfo, curr_seed }) => {
-    if (!nvinfo || !curr_seed) return error
-    const { bslug, btitle_vi: vname } = nvinfo
 
-    return {
-      title: 'Thêm/sửa chương truyện ' + vname,
-      left_nav: [
-        home_nav('', ''),
-        book_nav(bslug, '', 'tl'),
-        seed_nav(bslug, curr_seed.sname),
-        nav_link('+chap', 'Thêm/sửa chương', 'file-plus', { show: 'pm' }),
-      ],
-    }
-  },
-  '/wn/[wn_id]-[[s]]/chaps/[sname]/(list)/+conf': ({ nvinfo }) => {
-    if (!nvinfo) return error
-
-    return {
-      title: 'Tinh chỉnh nguồn chương truyện ' + nvinfo.btitle_vi,
-      left_nav: [
-        home_nav('', ''),
-        book_nav(nvinfo.bslug, '', 'tl'),
-        nav_link('+conf', 'Tinh chỉnh', 'settings', { show: 'pm' }),
-      ],
-    }
-  },
   '/wn/[wn_id]-[[s]]/chaps/[sname]/[ch_no]/[[cpart]]': (data) => {
     const { nvinfo, curr_seed, curr_chap } = data
     if (!(nvinfo && curr_seed && curr_chap)) return error

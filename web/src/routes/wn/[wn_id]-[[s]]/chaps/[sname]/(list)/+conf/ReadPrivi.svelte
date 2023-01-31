@@ -8,19 +8,19 @@
   export let seed_data: CV.WnSeed
 
   const read_privis = [
-    [-1, 'Không hạn chế'],
     [0, 'Cần đăng nhập'],
     [1, 'Quyền hạn 1'],
     [2, 'Quyền hạn 2'],
     [3, 'Quyền hạn 3'],
+    [-1, 'Không hạn chế'],
   ]
 
   const read_privi_descs = {
-    '-1': 'Tất cả mọi người đều đọc được nội dung các chương',
     0: 'Không hạn chế đọc 1/3 số chương đầu, cần đăng nhập để đọc 2/3 số chương tiếp theo',
     1: 'Cần đăng nhập để đọc 1/3 số chương đầu, quyền hạn 1+ để đọc 2/3 số chương tiếp theo',
     2: 'Cần quyền hạn 1+ để đọc 1/3 số chương đầu, quyền hạn 2+ để đọc 2/3 số chương tiếp theo',
     3: 'Cần quyền hạn 2+ để đọc 1/3 số chương đầu, quyền hạn 3+ để đọc 2/3 số chương tiếp theo',
+    '-1': 'Tất cả mọi người đều đọc được nội dung các chương',
   }
 
   let error = ''
