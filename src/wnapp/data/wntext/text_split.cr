@@ -35,12 +35,17 @@ module WN::TextSplit
   LIMIT = 3000
   UPPER = 4500
 
-  # split text of a single chapter, returning text parts and char count
-  def split_entry(input : String, cleaned : Bool = false) : {Array(String), Int32}
-    # fix whitespaces
-    input = TextUtil.clean_spaces(input) unless cleaned
+  # # split text of a single chapter, returning text parts and char count
+  # def split_entry(input : String, cleaned : Bool = false) : {Array(String), Int32}
+  #   # fix whitespaces
+  #   input = TextUtil.clean_spaces(input) unless cleaned
+  #   lines = input.split(/\n/, remove_empty: true)
+  #   split_entry(lines.shift, lines)
+  # end
 
-    c_len = input.size
+  def split_entry(title : String, lines : Array(String))
+    c_len = title.size + lines.sum(&.size)
+
     if c_len <= UPPER
       limit = UPPER
     else
@@ -48,17 +53,13 @@ module WN::TextSplit
       limit = c_len // p_len
     end
 
-    lines = input.each_line
-    title = lines.next.as(String).strip # extract first line as title
-
     parts = [title]
+    return {parts, c_len} if lines.empty?
+
     strio = String::Builder.new
     count = 0
 
     lines.each do |line|
-      line = line.strip
-      next if line.empty?
-
       strio << '\n' if count > 0
       strio << line
 

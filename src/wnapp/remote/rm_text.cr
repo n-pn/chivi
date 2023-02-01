@@ -55,7 +55,7 @@ class WN::RmText
 
   getter title : String do
     title = @doc.get(@conf.title) || ""
-    title = title.sub(/^#{Regex.escape(bname)}*/, "") unless @conf.bname.empty?
+    title = title.sub(/^#{Regex.escape(bname)}*/, "") unless bname.empty?
     title.sub(/^章节目录\s*/, "").sub(/(《.+》)?正文\s*/, "")
   end
 

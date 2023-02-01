@@ -201,13 +201,7 @@ class WN::WnSeed
     return chap.body if href.empty?
     parser = RmText.new(href, ttl: force ? 3.minutes : 1.years)
 
-    # FIXME: just split the text already
-    body = String.build do |io|
-      io << parser.title
-      parser.body.each { |line| io << '\n' << line }
-    end
-
-    chap.save_body!(body, seed: self, uname: uname)
+    chap.save_body!(parser.title, parser.body, seed: self, uname: uname)
     @vi_chaps = nil
 
     chap.body

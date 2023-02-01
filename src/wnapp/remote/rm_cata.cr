@@ -116,6 +116,7 @@ class WN::RmCata
   end
 
   private def gen_path(href : String)
+    return href if href.starts_with?("http")
     href[0] == '/' ? "#{@host}#{href}" : "#{@root}#{href}"
   end
 
