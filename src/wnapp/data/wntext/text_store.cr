@@ -71,7 +71,7 @@ module WN::TextStore
 
   #############
 
-  ZIP_DIR = "var/chaps/texts-zip"
+  ZIP_DIR = "var/texts/rzips"
 
   # generate zip path
   @[AlwaysInline]
@@ -93,7 +93,12 @@ module WN::TextStore
 
   # :ditto
   def read_txt_from_zip(zip_path : String, s_cid : Int32) : Array(String)?
-    return unless File.file?(zip_path) || pull_zip_from_b2!(zip_path)
+    return nil if File.file?(zip_path + ".404")
+
+    unless File.file?(zip_path) || pull_zip_from_b2!(zip_path)
+      File.touch(zip_path + ".404")
+      return nil
+    end
 
     Compress::Zip::File.open(zip_path) do |zip|
       return unless entry = zip["#{s_cid}.gbk"]?
@@ -121,7 +126,14 @@ module WN::TextStore
     HTTP::Client.get(link) do |res|
       return false unless res.success?
       File.write(file, res.body_io)
-      true
     end
+
+    spawn unzip_file(file)
+    true
+  end
+
+  private def unzip_file(file : String)
+    out_dir = File.dirname(file.sub(ZIP_DIR, TXT_DIR))
+    Process.run("unzip", args: {"-nq", file, "-d", out_dir})
   end
 end
