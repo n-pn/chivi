@@ -81,15 +81,15 @@ class WN::ChapCtrl < AC::Base
     # _privi > 0 && (load_mode > 0 || cookies["auto_load"]?)
   end
 
-  private def prev_url(seed, chap : WnChap, part_no = 0)
-    return chap._href(part_no - 1) if part_no > 0
+  private def prev_url(seed, chap : WnChap, part_no = 1)
+    return chap._href(part_no - 1) if part_no > 1
     return if chap.ch_no < 2
     seed.vi_chap(chap.ch_no - 1).try(&._href(-1))
   end
 
-  private def next_url(seed, chap : WnChap, part_no = 0)
-    return chap._href(part_no + 1) if part_no + 1 < chap.p_len
+  private def next_url(seed, chap : WnChap, part_no = 1)
+    return chap._href(part_no + 1) if part_no < chap.p_len
     return if chap.ch_no >= seed.chap_total
-    seed.vi_chap(chap.ch_no + 1).try(&._href(0))
+    seed.vi_chap(chap.ch_no + 1).try(&._href(1))
   end
 end

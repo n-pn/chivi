@@ -60,10 +60,14 @@ class WN::WnChap
     input.downcase.split(/\W+/, remove_empty: true).first(7).join('-')
   end
 
-  def _href(part_no : Int32 = 0)
+  def _href(part_no : Int32 = 1)
     String.build do |io|
       io << @ch_no << '/'
-      io << (part_no % self.p_len + 1) if part_no != 0 && self.p_len > 1
+
+      if self.p_len > 1 && part_no != 1
+        io << (part_no < 1 ? self.p_len : part_no)
+      end
+
       io << '-' << self.uslug
     end
   end

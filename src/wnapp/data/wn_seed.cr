@@ -144,7 +144,7 @@ class WN::WnSeed
 
     if last_ch_no > self.chap_total
       self.chap_total = last_ch_no
-      last_ch_no = self.chap_total
+      # last_ch_no = self.chap_total
     end
 
     # FIXME: check for real last_chap and offset
