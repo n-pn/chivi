@@ -4,6 +4,8 @@ module WN::TextStore
   extend self
 
   def get_chap(seed : WnSeed, chap : WnChap)
+    # TODO: cleanup logic
+
     return [""] if chap._flag < 0
 
     # try reading txt file directly from disk
@@ -31,7 +33,7 @@ module WN::TextStore
     read_txt_from_zip(bg_zip_path, bg_s_cid.to_i)
   end
 
-  TXT_DIR = "var/texts/rgbks"
+  TXT_DIR = "var/texts/rgbks-2"
 
   # generate body text path to be saved
   @[AlwaysInline]

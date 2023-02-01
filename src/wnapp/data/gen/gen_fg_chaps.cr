@@ -44,17 +44,18 @@ MAP_BG = {
   end
 end
 
+def get_mtime(file : String)
+  File.info?(file).try(&.modification_time)
+end
+
 def import_one(sname : String, s_bid : Int32, force : Bool = false)
   inp_path = "var/chaps/texts/#{sname}/#{s_bid}/index.db"
-  return unless mtime = File.info?(inp_path).try(&.modification_time)
+  return unless mtime = get_mtime(inp_path)
 
-  fg_sname = sname[0] == '=' ? "-" : sname
-  out_path = WN::WnRepo.db_path("#{fg_sname}/#{s_bid}-infos")
+  fg_sname = sname[0] == '=' ? "_" : sname
+  out_path = WN::WnRepo.db_path(fg_sname, s_bid)
 
-  unless force
-    out_info = File.info?(out_path)
-    out_info.try { |x| return if x.modification_time > mtime }
-  end
+  return if !force && get_mtime(out_path).try(&.> mtime)
 
   mtime += 1.minutes
   paths = [] of {Int32, String}
@@ -75,6 +76,7 @@ def import_one(sname : String, s_bid : Int32, force : Bool = false)
     db.exec "attach database '#{inp_path}' as src"
 
     db.exec "begin"
+
     db.exec <<-SQL
       replace into chaps (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname)
       select ch_no, s_cid, title, chvol as chdiv, c_len, p_len, utime as mtime, uname
@@ -89,6 +91,8 @@ def import_one(sname : String, s_bid : Int32, force : Bool = false)
   end
 
   File.utime(mtime, mtime, out_path)
+rescue err
+  puts "#{sname}, #{s_bid}, #{err.class}".colorize.red
 end
 
 def import_all(sname : String, threads = 6, force = false)
@@ -105,9 +109,6 @@ def import_all(sname : String, threads = 6, force = false)
         s_bid, idx = workers.receive
         import_one(sname, s_bid, force: force)
         puts " - <#{idx}/#{s_bids.size}> [#{sname}/#{s_bid}]"
-      rescue err
-        puts "#{sname}, #{s_bid}, #{err.message} ".colorize.red
-      ensure
         results.send(nil)
       end
     end

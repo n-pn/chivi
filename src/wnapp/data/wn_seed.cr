@@ -189,6 +189,7 @@ class WN::WnSeed
       return chap.body if href.empty?
     when .starts_with?('!')
       bg_path = path.split(':').first
+
       sname, s_bid, s_cid = bg_path.split('/')
       href = SiteLink.text_url(sname, s_bid.to_i, s_cid.to_i)
     when .starts_with?("http")
@@ -197,6 +198,7 @@ class WN::WnSeed
       return chap.body
     end
 
+    return chap.body if href.empty?
     parser = RmText.new(href, ttl: force ? 3.minutes : 1.years)
 
     # FIXME: just split the text already
@@ -208,6 +210,9 @@ class WN::WnSeed
     chap.save_body!(body, seed: self, uname: uname)
     @vi_chaps = nil
 
+    chap.body
+  rescue ex
+    Log.error(exception: ex) { ex.message }
     chap.body
   end
 
