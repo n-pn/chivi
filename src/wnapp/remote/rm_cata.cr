@@ -3,6 +3,8 @@ require "yaml"
 require "json"
 
 require "./rm_page"
+require "../data/wn_chap"
+
 require "../../_util/text_util"
 
 class WN::RmCata
@@ -78,11 +80,14 @@ class WN::RmCata
     raise "no matching config" unless conf = Conf.find(link)
 
     html = RmPage.load_html(link, ttl: ttl, encoding: conf.encoding)
-    new(html, conf, RmPage.get_host(link))
+    new(html, conf, link)
   end
 
-  def initialize(html : String, @conf : Conf, @host : String)
+  def initialize(html : String, @conf : Conf, link : String)
     @doc = RmPage.new(html)
+
+    @root = link.ends_with?('/') ? link : File.dirname(link) + "/"
+    @host = RmPage.get_host(link)
   end
 
   getter last_s_cid : Int32 { @conf.get_latest_chap(@doc) }
@@ -93,16 +98,9 @@ class WN::RmCata
     last_mtime > 0 && last_mtime != prev_mtime
   end
 
-  record Chap,
-    ch_no : Int32, s_cid : Int32,
-    title : String, chdiv : String,
-    _path : String do
-    include JSON::Serializable
-  end
+  getter chaps = [] of WnChap
 
-  getter chaps = [] of Chap
-
-  def parse! : Array(Chap)
+  def parse! : Array(WnChap)
     case @conf.parse
     when "plain"    then extract_plain(@conf.query)
     when "chdiv"    then extract_chdiv(@conf.query)
@@ -117,6 +115,10 @@ class WN::RmCata
     chdiv.gsub(/《.*》/, "").gsub(/\n|\t|\s{3,}/, "  ").strip
   end
 
+  private def gen_path(href : String)
+    href[0] == '/' ? "#{@host}#{href}" : "#{@root}#{href}"
+  end
+
   private def add_chap(node : Lexbor::Node?, chdiv = "")
     return unless node && (href = node.attributes["href"]?)
 
@@ -128,9 +130,7 @@ class WN::RmCata
 
     title, chdiv = TextUtil.format_title(title, chdiv)
 
-    _path = href.starts_with?('/') ? "#{@host}#{href}" : href
-
-    @chaps << Chap.new(ch_no, s_cid, title, chdiv, _path)
+    @chaps << WnChap.new(ch_no, s_cid, title, chdiv, gen_path(href))
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }
   end

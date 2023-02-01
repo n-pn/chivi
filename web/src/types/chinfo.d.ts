@@ -21,8 +21,10 @@ declare namespace CV {
     ztext: string
     cvmtl: string
     title: string
+    //
     grant: boolean
     privi: number
+    _path?: string
   }
 
   interface WnSeed {

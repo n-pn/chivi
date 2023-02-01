@@ -38,6 +38,7 @@ class WN::ChapCtrl < AC::Base
         ##
         privi: read_privi,
         grant: can_read,
+        _path: zh_chap._path,
       },
     }
   end

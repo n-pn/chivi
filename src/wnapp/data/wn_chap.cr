@@ -1,26 +1,24 @@
-require "crorm"
-
+require "json"
 require "./wn_seed"
 require "./wntext/*"
 
 class WN::WnChap
-  include Crorm::Model
-  @@table = "chaps"
+  include DB::Serializable
 
-  field ch_no : Int32 # chaper index number
-  field s_cid : Int32 # chapter fname in disk/remote
+  property ch_no : Int32 # chaper index number
+  property s_cid : Int32 # chapter fname in disk/remote
 
-  field title : String = "" # chapter title
-  field chdiv : String = "" # volume name
+  property title : String = "" # chapter title
+  property chdiv : String = "" # volume name
 
-  field mtime : Int64 = 0   # last modification time
-  field uname : String = "" # last modified by username
+  property mtime : Int64 = 0   # last modification time
+  property uname : String = "" # last modified by username
 
-  field c_len : Int32 = 0 # chars count
-  field p_len : Int32 = 0 # parts count
+  property c_len : Int32 = 0 # chars count
+  property p_len : Int32 = 0 # parts count
 
-  field _path : String = "" # file locator
-  field _flag : Int32 = 0   # marking states
+  property _path : String = "" # file locator
+  property _flag : Int32 = 0   # marking states
 
   # flags:
   # -2 : dead remote
@@ -33,7 +31,7 @@ class WN::WnChap
   @[DB::Field(ignore: true)]
   getter! seed : WnSeed
 
-  def initialize(@ch_no, @s_cid, @title, @chdiv = "")
+  def initialize(@ch_no, @s_cid, @title, @chdiv = "", @_path = "")
   end
 
   def to_json(jb : JSON::Builder)
@@ -68,6 +66,38 @@ class WN::WnChap
       io << (part_no % self.p_len + 1) if part_no != 0 && self.p_len > 1
       io << '-' << self.uslug
     end
+  end
+
+  INFO_FIELDS = {
+    "ch_no", "s_cid",
+    "title", "chdiv",
+    "_path",
+  }
+
+  def info_values
+    {
+      @ch_no, @s_cid,
+      @title, @chdiv,
+      @_path,
+    }
+  end
+
+  FULL_FIELDS = {
+    "ch_no", "s_cid",
+    "title", "chdiv",
+    "mtime", "uname",
+    "c_len", "p_len",
+    "_path", "_flag",
+  }
+
+  def full_values
+    {
+      @ch_no, @s_cid,
+      @title, @chdiv,
+      @mtime, @uname,
+      @c_len, @p_len,
+      @_path, @_flag,
+    }
   end
 
   ###

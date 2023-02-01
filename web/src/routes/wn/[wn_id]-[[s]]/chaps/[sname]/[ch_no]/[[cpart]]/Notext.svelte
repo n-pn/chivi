@@ -161,7 +161,7 @@
     h1 {
       // font-weight: 500;
       @include ftsize(x4);
-      text-align: center;
+      // text-align: center;
 
       margin-bottom: 2rem;
       @include fgcolor(secd);
@@ -169,7 +169,7 @@
 
     h2 {
       @include ftsize(x3);
-      text-align: center;
+      // text-align: center;
 
       margin-top: 1em;
       margin-bottom: 1rem;

@@ -147,21 +147,25 @@ class WN::WnSeed
       last_ch_no = self.chap_total
     end
 
-    if last_ch_no > 0
-      # FIXME: check for real last_chap and offset
-      # raw_chaps = raw_chaps[last_ch_no..]
-    end
+    # FIXME: check for real last_chap and offset
+    # if last_ch_no > 0
+    #   raw_chaps = raw_chaps[last_ch_no..]
+    # end
 
     # @_flag = parser.status_int.to_i
 
     self.bump_times(parser.last_mtime, force: true)
     self.save!(self.class.repo)
 
-    self.zh_chaps.upsert_infos(raw_chaps, keep_s_cid: self.sname[0] == '!')
+    # do not keep remote chap id info if seed is not a remote one
+    raw_chaps.each { |x| x.s_cid = x.ch_no } if self.sname[0] != '!'
+
+    self.zh_chaps.upsert_chap_infos(raw_chaps)
     self.reload_content!
   end
 
   def reload_content!
+    # TODO: smart reload translation instead of force regen
     @vi_chaps = nil
     # self.vi_chaps.regen_tl!(self.zh_chaps.db_path, self.dname)
   end

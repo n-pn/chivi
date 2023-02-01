@@ -78,22 +78,20 @@ class WN::WnRepo
     end
   end
 
-  def upsert_infos(raw_chaps, keep_s_cid : Bool = false)
+  def upsert_chap_infos(chapters : Enumerable(WnChap))
     open_tx do |db|
-      query = upsert_sql({"ch_no", "s_cid", "title", "chdiv", "_path"})
+      query = upsert_sql(WnChap::INFO_FIELDS)
 
-      raw_chaps.each do |raw|
-        s_cid = keep_s_cid ? raw.s_cid : raw.ch_no
-        db.exec query, raw.ch_no, s_cid, raw.title, raw.chdiv, raw._path
+      chapters.each do |raw|
+        db.exec query, *raw.info_values
       end
     end
   end
 
   def upsert_entry(entry : WnChap)
     open_tx do |db|
-      fields, values = entry.get_changes
-      query = upsert_sql(fields)
-      db.exec query, args: values
+      query = upsert_sql(WnChap::FULL_FIELDS)
+      db.exec query, *entry.full_values
     end
   end
 
