@@ -94,13 +94,25 @@ class WN::WnSeed
     gift > 20 ? gift : 20
   end
 
+  REMOTES = {
+    "!hetushu.com",
+    "!69shu.com",
+    "!xbiquge.so",
+    "!uukanshu.com",
+    "!ptwxz.com",
+    "!133txt.com",
+    "!bxwx.io",
+    "!b5200.org",
+    "!paoshu8.com",
+    "!biqu5200.net",
+  }
+
   def self.stype(sname : String)
     case sname[0]
-    when '_' then 0  # base user seed
-    when '@' then 1  # foreground user seed
-    when '+' then -1 # background user seed
+    when '_' then 0 # base user seed
+    when '@' then 1 # foreground user seed
     else
-      sname.in?(REMOTE_SEEDS) ? 3 : 2 # dead remote seed
+      sname.in?(REMOTES) ? 3 : 2 # dead remote seed
     end
   end
 
@@ -170,30 +182,15 @@ class WN::WnSeed
     # self.vi_chaps.regen_tl!(self.zh_chaps.db_path, self.dname)
   end
 
-  REMOTE_SEEDS = {
-    "!69shu",
-    "!ptwxz",
-    "!hetushu",
-    "!uukanshu",
-    "!uuks",
-    "!133txt",
-    "!b5200",
-    "!bxwxio",
-    "!xbiquge",
-    "!paoshu8",
-    "!biqu5200",
-  }
-
-  def self.remote?(sname : String)
-    REMOTE_SEEDS.includes?(sname)
-  end
-
   def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Array(String)
     case path = chap._path
+    when ""
+      href = SiteLink.text_url(self.sname, self.s_bid, chap.s_cid)
+      return chap.body if href.empty?
     when .starts_with?('!')
       bg_path = path.split(':').first
       sname, s_bid, s_cid = bg_path.split('/')
-      href = SiteLink.text_url(sname[1..], s_bid.to_i, s_cid.to_i)
+      href = SiteLink.text_url(sname, s_bid.to_i, s_cid.to_i)
     when .starts_with?("http")
       href = path
     else

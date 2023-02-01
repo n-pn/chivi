@@ -43,6 +43,19 @@ module SiteLink
   end
 
   CHAPS = {
+    "!hetushu.com"  => "https://www.hetushu.com/book/%{bid}/%{cid}.html",
+    "!69shu.com"    => "https://www.69shu.com/txt/%{bid}/%{cid}",
+    "!xbiquge.so"   => "https://www.xbiquge.so/book/%{bid}/%{cid}.html",
+    "!uukanshu.com" => "https://www.uukanshu.com/b/%{bid}/%{cid}.html",
+    "!ptwxz.com"    => "https://www.ptwxz.com/html/%{div}/%{bid}/%{cid}.html",
+    "!133txt.com"   => "https://www.133txt.com/xiaoshuo/%{bid}/%{cid}.html",
+    "!bxwx.io"      => "https://www.bxwx.io/%{div}_%{bid}/%{cid}.html",
+    "!b5200.org"    => "http://www.b5200.org/%{div}_%{bid}/%{cid}.html",
+    "!paoshu8.com"  => "http://www.paoshu8.com/%{div}_%{bid}/%{cid}.html",
+    "!biqu5200.net" => "http://www.biqu5200.net/%{div}_%{bid}/%{cid}.html",
+    # "!bqxs520.com" => "http://www.bqxs520.com/%{bid}/%{cid}.html",
+    # "!uuks.org"     => "https://www.uuks.org/b/%{bid}/%{cid}.html",
+    # "!biqugse.com" => "http://www.biqugse.com/%{bid}/%{cid}.html",
     "69shu"    => "https://www.69shu.com/txt/%{bid}/%{cid}",
     "uukanshu" => "https://www.uukanshu.com/b/%{bid}/%{cid}.html",
     "uuks"     => "https://www.uuks.org/b/%{bid}/%{cid}.html",
@@ -70,6 +83,7 @@ module SiteLink
   }
 
   def text_url(sname : String, bid : Int32, cid : Int32)
-    CHAPS.fetch(sname, "") % {div: bid // 1000, bid: bid, cid: cid}
+    return "" unless template = CHAPS[sname]?
+    template % {div: bid // 1000, bid: bid, cid: cid}
   end
 end

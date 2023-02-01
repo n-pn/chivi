@@ -47,7 +47,7 @@ def import_one(sname : String, s_bid : Int32)
     db.exec "begin"
     db.exec <<-SQL
       replace into chaps (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname)
-      select ch_no, s_cid, title as title, chvol as chdiv, c_len, p_len, utime as mtime, uname
+      select ch_no, s_cid, title, chvol as chdiv, c_len, p_len, utime as mtime, uname
       from src.chinfos
     SQL
 

@@ -51,7 +51,8 @@ class WN::SeedCtrl < AC::Base
         return if sname[1..] == uname
         "Bạn chỉ được quyền thêm nguồn cho tên của mình"
       when '!'
-        "Tên nguồn truyện không chính xác" unless WnSeed.remote?(sname)
+        return if WnSeed::REMOTES.includes?(sname)
+        "Tên nguồn truyện không chính xác"
       else
         "Tên nguồn truyện không được chấp nhận"
       end

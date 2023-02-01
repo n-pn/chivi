@@ -3,7 +3,7 @@
   $: session = $page.data._user
 
   import { status_names, status_icons } from '$lib/constants'
-  import { chap_url } from '$utils/route_utils'
+  import { chap_path, _pgidx } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import { get_rtime } from '$gui/atoms/RTime.svelte'
@@ -18,11 +18,14 @@
   async function load_history(kind = '', pg = 1) {
     const api_url = `/_db/_self/books/access?kind=${kind}&pg=${pg}&lm=15`
     const api_res = await fetch(api_url)
-    if (api_res.ok) {
-      chaps = await api_res.json()
-    } else {
-      console.log(await api_res.text())
-    }
+
+    if (api_res.ok) chaps = await api_res.json()
+    else console.log(await api_res.text())
+  }
+
+  const chap_href = ({ bslug, sname, chidx: ch_no, cpart: part_no, uslug }) => {
+    uslug = `${part_no > 1 ? part_no : ''}-${uslug}`
+    return chap_path(bslug, sname, ch_no, uslug)
   }
 </script>
 
@@ -58,13 +61,14 @@
 
 <div class="chlist">
   {#each chaps || [] as chap}
+    {@const href = chap_href(chap)}
     {@const type = chap.locked
       ? 'bookmark'
       : chap.status != 'default'
       ? 'book'
       : 'eye'}
 
-    <a class="chap" href={chap_url(chap.bslug, chap)}>
+    <a class="chap" {href}>
       <div class="chap-text">
         <div class="chap-title">{chap.title}</div>
         <div class="chap-chidx">{chap.chidx}.</div>

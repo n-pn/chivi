@@ -14,6 +14,7 @@ module WN::TextStore
     read_txt_from_zip(seed, chap).try { |x| return x }
 
     _path = chap._path
+
     # return blank data if no backend link found
     return [""] unless _path[0]? == '!'
 
