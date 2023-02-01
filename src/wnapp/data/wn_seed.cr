@@ -124,6 +124,16 @@ class WN::WnSeed
     self.vi_chaps.get(ch_no).try(&.set_seed(self))
   end
 
+  ###
+  def delete_chaps!(from_ch_no : Int32)
+    # FIXME: support delete upto
+    self.zh_chaps.delete_chaps!(from_ch_no)
+    @vi_chaps = nil
+    @chap_total = from_ch_no - 1
+  end
+
+  ###
+
   def update_from_remote!(slink = self.remotes.first, mode : Int32 = 0)
     parser = RmCata.new(slink, ttl: mode > 0 ? 3.minutes : 30.minutes)
 
@@ -274,6 +284,18 @@ class WN::WnSeed
 
   def self.load(wn_id : Int32, sname : String, &)
     self.get(wn_id, sname) || yield
+  end
+
+  def self.soft_delete!(wn_id : Int32, sname : String)
+    self.repo.open_db do |db|
+      query = <<-SQL
+        update #{@@table}
+        set wn_id = -wn_id, s_bid = -s_bid
+        where wn_id = ? and sname = ?
+      SQL
+
+      db.exec query, wn_id, sname
+    end
   end
 end
 

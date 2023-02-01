@@ -96,6 +96,16 @@
   $: search = 'https://www.google.com/search?q=' + ztitle
 </script>
 
+<h4>Các liên kết tới nguồn ngoài hiện tại:</h4>
+
+<p class="explain">
+  <SIcon name="alert-circle" />
+  <em>
+    Bạn có thể bấm vào biểu tượng <SIcon name="star" /> để thay đổi nguồn được chọn
+    mặc định khi đổi mới.
+  </em>
+</p>
+
 <table>
   <thead>
     <tr>
@@ -242,6 +252,16 @@
     font-style: italic;
   }
 
+  .explain {
+    @include fgcolor(tert);
+
+    :global(svg) {
+      // vertical-align: sub;
+      font-size: 0.95em;
+      margin-bottom: 0.2em;
+    }
+  }
+
   .warning {
     @include fgcolor(warning, 5);
     margin-top: 1rem;
@@ -253,5 +273,10 @@
 
   summary {
     font-style: italic;
+  }
+
+  p,
+  h4 {
+    margin-top: 0.75rem;
   }
 </style>

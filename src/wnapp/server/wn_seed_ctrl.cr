@@ -69,11 +69,27 @@ class WN::SeedCtrl < AC::Base
     render json: WnSeed.get!(form.wn_id, form.sname)
   end
 
+  @[AC::Route::GET("/:wn_id/:sname/refresh")]
+  def refresh(wn_id : Int32, sname : String, mode : Int32 = 1)
+    wn_seed = get_wn_seed(wn_id, sname)
+    guard_privi wn_seed.read_privi - 1, "cập nhật nguồn"
+
+    if slink = wn_seed.remotes.first?
+      wn_seed.update_from_remote!(slink, mode: mode)
+    else
+      wn_seed.reload_content!
+    end
+
+    render json: wn_seed
+  end
+
   struct UpdateForm
     include JSON::Serializable
 
     getter read_privi : Int32?
     getter rm_links : Array(String)?
+
+    getter cut_from : Int32?
   end
 
   @[AC::Route::PATCH("/:wn_id/:sname", body: :form)]
@@ -89,22 +105,31 @@ class WN::SeedCtrl < AC::Base
       wn_seed.rm_links = rm_links
     end
 
-    wn_seed.save!
+    if cut_from = form.cut_from
+      wn_seed.delete_chaps!(cut_from)
+    end
 
+    wn_seed.save!
     render json: wn_seed
   end
 
-  @[AC::Route::GET("/:wn_id/:sname/refresh")]
-  def refresh(wn_id : Int32, sname : String, mode : Int32 = 1)
+  @[AC::Route::DELETE("/:wn_id/:sname")]
+  def delete(wn_id : Int32, sname : String, mode : Int32 = 1)
+    guard_privi delete_privi(sname), "xóa danh sách chương"
     wn_seed = get_wn_seed(wn_id, sname)
-    guard_privi wn_seed.read_privi - 1, "cập nhật nguồn"
 
-    if slink = wn_seed.remotes.first?
-      wn_seed.update_from_remote!(slink, mode: mode)
-    else
-      wn_seed.reload_content!
+    WnSeed.soft_delete!(wn_id, sname)
+    WnRepo.soft_delete!(wn_seed.sname, wn_seed.s_bid)
+
+    render json: {message: "ok"}
+  end
+
+  private def delete_privi(sname : String)
+    case sname
+    when "@#{_uname}"       then 2
+    when "!chivi.app"       then 4
+    when .starts_with?('!') then 3
+    else                         5
     end
-
-    render json: wn_seed
   end
 end

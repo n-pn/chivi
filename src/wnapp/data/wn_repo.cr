@@ -38,7 +38,7 @@ class WN::WnRepo
 
   def top(take = 6)
     open_db do |db|
-      query = "select * from chaps order by ch_no desc limit ?"
+      query = "select * from chaps where ch_no > 0 order by ch_no desc limit ?"
       db.query_all query, take, as: WnChap
     end
   end
@@ -47,6 +47,18 @@ class WN::WnRepo
     open_db do |db|
       query = "select * from chaps where ch_no = ? limit 1"
       db.query_one? query, ch_no, as: WnChap
+    end
+  end
+
+  ###
+
+  def delete_chaps!(from_ch_no : Int32)
+    open_tx do |db|
+      # delete previous deleted entries
+      db.exec "delete chaps where ch_no <= ?", -from_ch_no
+
+      # soft delete entries by reverting `ch_no` value
+      db.exec "update chaps set ch_no = -ch_no where ch_no >= ?", from_ch_no
     end
   end
 
@@ -207,6 +219,25 @@ class WN::WnRepo
   @[AlwaysInline]
   def self.db_path(sname : String, s_bid : Int32, kind : String = "infos")
     "#{DIR}/#{sname}/#{s_bid}-#{kind}.db"
+  end
+
+  def self.soft_delete!(sname : String, s_bid : Int32) : Nil
+    # delete translation file if exists
+    File.delete? db_path(sname, s_bid, "trans")
+
+    info_path = db_path(sname, s_bid, "infos")
+
+    # checking if file exists to make sure, though this file should be alwasy available
+    return unless File.file?(info_path)
+
+    # instead of remove data, just change `s_bid` value so it can't be reached.
+    dead_path = db_path(sname, -s_bid, "infos")
+
+    # delete old deleted database file if existed
+    File.delete?(dead_path)
+
+    File.rename(info_path, dead_path)
+    CACHE.delete(info_path)
   end
 
   @[AlwaysInline]
