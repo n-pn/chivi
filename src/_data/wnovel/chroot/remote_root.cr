@@ -12,8 +12,8 @@ class CV::Chroot
     self.reseed_remote!(ttl: ttl, force: mode > 1)
   end
 
-  def reseed_remote!(ttl : Time::Span, force : Bool = false, lbl = "-/-") : Nil
-    parser = RemoteInfo.new(self.sname, self.s_bid, ttl: ttl, lbl: lbl)
+  def reseed_remote!(ttl : Time::Span, force : Bool = false) : Nil
+    parser = RemoteInfo.new(self.sname, self.s_bid, ttl: ttl)
     changed = parser.changed?(self.last_schid, self.utime)
     return unless force || changed
 

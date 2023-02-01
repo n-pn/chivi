@@ -30,7 +30,7 @@ module WN::TextStore
     read_txt_from_zip(bg_zip_path, bg_s_cid.to_i)
   end
 
-  TXT_DIR = "var/chaps/texts-txt"
+  TXT_DIR = "var/texts/rgbks"
 
   # generate body text path to be saved
   @[AlwaysInline]

@@ -1,6 +1,6 @@
 require "colorize"
 
-INP = "var/chaps/texts-txt"
+INP = "var/texts/rgbks"
 OUT = "/mnt/devel/Chivi/texts"
 
 MAP_SNAME = {

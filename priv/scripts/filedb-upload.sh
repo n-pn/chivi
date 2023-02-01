@@ -16,7 +16,7 @@ then
 fi
 
 ## upload parsed seed data
-if [[  $* == *seed* ]]
+if [[ $* == *seed* ]]
 then
   echo upload seed data!
 
@@ -58,4 +58,11 @@ then
   rsync-fast "var/dicts/init.dic" "$SSH/var/dicts"
   rsync-fast "var/dicts/core.dic" "$SSH/var/dicts"
   rsync-fast "var/dicts/book.dic" "$SSH/var/dicts"
+fi
+
+## upload parsed seed data
+if [[ $* == *text* ]]
+then
+  echo upload text data!
+  rsync-fast "var/texts/rgbks/@*" "$SSH/var/texts/rgbks"
 fi

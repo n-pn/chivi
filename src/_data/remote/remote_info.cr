@@ -23,7 +23,7 @@ class CV::RemoteInfo
   getter mulu_file : String { "#{@root_dir}/#{@s_bid}-mulu.html.gz" }
 
   def initialize(@sname : String, @s_bid : Int32,
-                 @ttl : Tspan = 10.years, @lbl = "-/-")
+                 @ttl : Tspan = 10.years)
     @root_dir = File.join(DIR, @sname)
     Dir.mkdir_p(@root_dir)
     @encoding = HttpUtil.encoding_for(@sname)
@@ -36,7 +36,7 @@ class CV::RemoteInfo
   end
 
   getter info : HtmlParser do
-    html = HttpUtil.cache(info_file, info_link, @ttl, @lbl, @encoding)
+    html = HttpUtil.cache(info_file, info_link, @ttl, @encoding)
     HtmlParser.new(html)
   rescue
     HtmlParser.new("")
@@ -48,7 +48,7 @@ class CV::RemoteInfo
 
   private def load_mulu_parser
     return info unless @sname.in?("69shu", "ptwxz")
-    html = HttpUtil.cache(mulu_file, mulu_link, @ttl, @lbl, @encoding)
+    html = HttpUtil.cache(mulu_file, mulu_link, @ttl, @encoding)
     HtmlParser.new(html)
   rescue err
     Log.error(exception: err) { mulu_link }

@@ -83,7 +83,7 @@ def extract_seed(sname : String)
   end
 
   files.each_with_index(1) do |zip_file, idx|
-    out_path = File.dirname(zip_file.sub("/texts/", "/bgtexts/"))
+    out_path = File.dirname(zip_file.sub("var/chaps/texts", "var/texts/rgbks"))
     Dir.mkdir_p(out_path)
     workers.send({zip_file, out_path, idx})
   end
@@ -96,5 +96,5 @@ snames = Dir.children("var/chaps/texts") if snames.empty?
 puts snames.colorize.yellow
 
 snames.each do |sname|
-  extract_seed(sname)
+  extract_seed(sname) if sname[0] == '@'
 end

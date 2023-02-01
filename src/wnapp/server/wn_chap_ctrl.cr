@@ -24,7 +24,9 @@ class WN::ChapCtrl < AC::Base
     can_read = _privi >= read_privi
 
     ztext = can_read ? load_ztext(wn_seed, zh_chap, part_no, load_mode) : ""
-    cvmtl = ztext.empty? ? "" : load_cv_data(wn_id, ztext)
+
+    label = "#{part_no}/#{zh_chap.p_len}" # if part_no > 1
+    cvmtl = ztext.empty? ? "" : load_cv_data(wn_id, ztext, label)
 
     render json: {
       curr_chap: vi_chap,
@@ -45,8 +47,9 @@ class WN::ChapCtrl < AC::Base
 
   HEADERS = HTTP::Headers{"Content-Type" => "text/plain"}
 
-  private def load_cv_data(wn_id : Int32, ztext : String)
+  private def load_cv_data(wn_id : Int32, ztext : String, label : String? = nil)
     url = "http://localhost:5010/_db/cv_chap?wn_id=#{wn_id}&cv_title=first"
+    url += "&label=#{label}" if label
 
     HTTP::Client.post(url, headers: HEADERS, body: ztext) do |res|
       res.success? ? res.body_io.gets_to_end : ""
@@ -65,6 +68,8 @@ class WN::ChapCtrl < AC::Base
     unless no_text?(zh_text) || zh_chap.on_txt_dir?
       spawn zh_chap.save_body_copy!(seed: wn_seed, _flag: 2)
     end
+
+    zh_chap.p_len = zh_text.size - 1
 
     part_no = zh_text.size - 1 if part_no >= zh_text.size
     zh_text.size < 2 ? "" : "#{zh_text[0]}\n#{zh_text[part_no]}"

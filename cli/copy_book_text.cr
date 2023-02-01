@@ -1,7 +1,7 @@
 require "sqlite3"
 require "colorize"
 
-TXT_DIR = "var/chaps/texts-txt"
+TXT_DIR = "var/texts/rgbks"
 
 # ZIP_DIR = "var/chaps/texts-zip"
 

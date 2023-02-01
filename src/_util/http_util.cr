@@ -19,9 +19,9 @@ module HttpUtil
 
   def cache(file : String, url : String,
             ttl : Time::Span | Time::MonthSpan = 10.years,
-            lbl : String = "-", encoding : String = "UTF-8")
+            encoding : String = "UTF-8")
     return read_gzip(file) if fresh?(file, ttl)
-    fetch(url, lbl, encoding).tap { |data| save_gzip(file, data) }
+    fetch(url, encoding).tap { |data| save_gzip(file, data) }
   rescue err
     Log.error(exception: err) { url.colorize.red }
     read_gzip(file)
