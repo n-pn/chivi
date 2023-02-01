@@ -10,7 +10,7 @@
   $: ({ nvinfo_form } = data)
 
   async function delete_book() {
-    await fetch(`api/books/v2/${nvinfo_form.id}/delete`, { method: 'DELETE' })
+    await fetch(`api/books/${nvinfo_form.id}/delete`, { method: 'DELETE' })
     await goto('/')
   }
 </script>

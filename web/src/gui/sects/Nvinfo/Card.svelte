@@ -6,7 +6,7 @@
   export let nvinfo: CV.Nvinfo
 </script>
 
-<a href="/-{nvinfo.bslug}" class="nvinfo">
+<a href="/wn/{nvinfo.bslug}" class="nvinfo">
   <div class="cover">
     <BCover bcover={nvinfo.bcover} scover={nvinfo.scover} />
   </div>

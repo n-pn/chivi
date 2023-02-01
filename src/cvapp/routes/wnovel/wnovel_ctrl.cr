@@ -3,7 +3,7 @@ require "./nvinfo_form"
 require "../../../mt_v1/data/v1_dict"
 
 class CV::WnovelCtrl < CV::BaseCtrl
-  base "/_db/v2/books"
+  base "/_db/books"
 
   @[AC::Route::GET("/")]
   def index(
@@ -36,6 +36,18 @@ class CV::WnovelCtrl < CV::BaseCtrl
       total: total, pgidx: pg_no,
       pgmax: _pgidx(total, limit),
     }
+  end
+
+  @[AC::Route::GET("/find/:bslug")]
+  def find(bslug : String) : Nil
+    frags = TextUtil.slugify(bslug).split('-')
+    query = "bslug like '#{frags[0]}%' or bslug like '#{frags[-1]}%'"
+
+    if nvinfo = Nvinfo.find(query)
+      found = nvinfo.bslug.sub(/^\w+/, nvinfo.id)
+    end
+
+    render json: {found: found}
   end
 
   #############

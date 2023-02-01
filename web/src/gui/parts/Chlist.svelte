@@ -19,7 +19,7 @@
     else return nvseed.privi_map[2]
   }
 
-  $: base_url = `/-${nvinfo.bslug}/chaps/${nvseed.sname}`
+  $: base_url = `/wn/${nvinfo.bslug}/chaps/${nvseed.sname}`
   $: saved_icon = nvseed.stype > 2 ? 'cloud-download' : 'device-floppy'
 </script>
 

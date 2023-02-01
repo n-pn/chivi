@@ -86,7 +86,7 @@
 
     try {
       const { bslug } = await api_call('/_db/books', params.output, 'POST')
-      await goto(`/-${bslug}`)
+      await goto(`/wn/${bslug}`)
     } catch (ex) {
       errors = ex.body.message
     }

@@ -81,7 +81,7 @@
 </script>
 
 <nav class="bread">
-  <a href="/-{nvinfo.bslug}" class="crumb _link">
+  <a href="/wn/{nvinfo.bslug}" class="crumb _link">
     <SIcon name="book" />
     <span>{nvinfo.btitle_vi}</span>
   </a>

@@ -17,7 +17,7 @@
     const res = await api_call(url, { sname, snvid }, 'PUT')
 
     if (res.error) err = res.error
-    else goto(`/-${nvinfo.bslug}/chaps/${sname}`)
+    else goto(`/wn/${nvinfo.bslug}/chaps/${sname}`)
   }
 
   function extract_nvseed(href: string) {

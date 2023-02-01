@@ -6,7 +6,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  const on_success = (_: CV.Vicrit) => goto(`/-${data.nvinfo.bslug}/crits`)
+  const on_success = (_: CV.Vicrit) => goto(`/wn/${data.nvinfo.bslug}/crits`)
 </script>
 
 <h3>Đánh giá cá nhân của bạn cho bộ truyện:</h3>

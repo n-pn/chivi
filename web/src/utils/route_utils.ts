@@ -1,5 +1,5 @@
 export function book_url(bslug: string, suffix = '') {
-  return `/-${bslug}/${suffix}`
+  return `/wn/${bslug}/${suffix}`
 }
 
 export function seed_url(bslug: string, sname = 'union', pgidx = 1) {

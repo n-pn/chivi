@@ -12,7 +12,7 @@ export interface BookFront {
 }
 
 export const load = async ({ fetch, params }: LoadEvent) => {
-  const api_url = `/_db/v2/books/${params.wn_id}/front`
+  const api_url = `/_db/books/${params.wn_id}/front`
 
   const bdata = await api_get<BookFront>(api_url, fetch)
   const crits = await load_ycrits(params.wn_id, fetch)

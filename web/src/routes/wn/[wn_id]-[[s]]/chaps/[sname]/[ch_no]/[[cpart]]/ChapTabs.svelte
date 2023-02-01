@@ -14,7 +14,7 @@
   let show_other = false
 
   function chap_href(sname: string) {
-    return `/-${nvinfo.bslug}/chaps/${sname}/${chinfo.chidx}`
+    return `/wn/${nvinfo.bslug}/chaps/${sname}/${chinfo.chidx}`
   }
 
   $: _main = seeds.find((x) => x.sname == '_')
