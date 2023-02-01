@@ -224,3 +224,29 @@ p > img {
       url('/fonts/lora-v20-vietnamese_latin-ext_latin-700italic.woff')
       format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
+
+/* roboto-slab-regular - vietnamese_latin-ext_latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-regular.woff2')
+      format('woff2'),
+    /* Chrome 36+, Opera 23+, Firefox 39+ */
+      url('/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-regular.woff')
+      format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* roboto-slab-700 - vietnamese_latin-ext_latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-700.woff2')
+      format('woff2'),
+    /* Chrome 36+, Opera 23+, Firefox 39+ */
+      url('/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-700.woff')
+      format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}

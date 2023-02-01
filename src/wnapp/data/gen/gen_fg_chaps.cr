@@ -5,24 +5,56 @@ require "../wn_repo"
 
 SNAMES = {} of Int32 => String
 
+MAP_BG = {
+  "biqugee":  "!biqugee.com",
+  "bxwxorg":  "!bxwxorg.com",
+  "rengshu":  "!rengshu.com",
+  "shubaow":  "!shubaow.net",
+  "duokan8":  "!duokan8.com",
+  "paoshu8":  "!paoshu8.com",
+  "miscs":    "!chivi.app",
+  "xbiquge":  "!xbiquge.so",
+  "hetushu":  "!hetushu.com",
+  "69shu":    "!69shu.com",
+  "sdyfcm":   "!nofff.com",
+  "nofff":    "!nofff.com",
+  "5200":     "!5200.tv",
+  "zxcs_me":  "!zxcs.me",
+  "jx_la":    "!jx.la",
+  "ptwxz":    "!ptwxz.com",
+  "uukanshu": "!uukanshu.com",
+  "uuks":     "!uuks.org",
+  "bxwxio":   "!bxwx.io",
+  "133txt":   "!133txt.com",
+  "biqugse":  "!biqugse.com",
+  "bqxs520":  "!bqxs520.com",
+  "yannuozw": "!yannuozw.com",
+  "kanshu8":  "!kanshu8.net",
+  "biqu5200": "!biqu5200.net",
+  "b5200":    "!b5200.org",
+}
+
 {"common.tsv", "viuser-live.tsv", "viuser.tsv"}.each do |file|
   File.each_line("var/fixed/seeds/#{file}") do |line|
     next if line.empty? || line.starts_with?('#')
     cols = line.split('\t')
     sname, sn_id, _ = cols
-    SNAMES[sn_id.to_i] = sname
+
+    SNAMES[sn_id.to_i] = MAP_BG[sname]? || sname
   end
 end
 
-def import_one(sname : String, s_bid : Int32)
+def import_one(sname : String, s_bid : Int32, force : Bool = false)
   inp_path = "var/chaps/texts/#{sname}/#{s_bid}/index.db"
   return unless mtime = File.info?(inp_path).try(&.modification_time)
 
   fg_sname = sname[0] == '=' ? "-" : sname
   out_path = WN::WnRepo.db_path("#{fg_sname}/#{s_bid}-infos")
 
-  out_info = File.info?(out_path)
-  out_info.try { |x| return if x.modification_time > mtime }
+  unless force
+    out_info = File.info?(out_path)
+    out_info.try { |x| return if x.modification_time > mtime }
+  end
 
   mtime += 1.minutes
   paths = [] of {Int32, String}
@@ -32,9 +64,7 @@ def import_one(sname : String, s_bid : Int32)
 
     db.query_each query do |rs|
       sn_id, s_bid, ch_no, s_cid = rs.read(Int32, Int32, Int32, Int32)
-      sname = SNAMES[sn_id]
-      sname = sname[0] == '@' ? "+" + sname[1..] : "!" + sname
-      paths << {ch_no, "#{sname}/#{s_bid}/#{s_cid}:#{ch_no}"}
+      paths << {ch_no, "#{SNAMES[sn_id]}/#{s_bid}/#{s_cid}:#{ch_no}"}
     end
   end
 
@@ -61,8 +91,7 @@ def import_one(sname : String, s_bid : Int32)
   File.utime(mtime, mtime, out_path)
 end
 
-def import_all(sname : String, threads = 6)
-  return if sname == "=user"
+def import_all(sname : String, threads = 6, force = false)
   Dir.mkdir_p("var/chaps/infos/#{sname}") unless sname[0] == '='
 
   s_bids = Dir.children("var/chaps/texts/#{sname}").map(&.to_i).sort!
@@ -74,7 +103,7 @@ def import_all(sname : String, threads = 6)
     spawn do
       loop do
         s_bid, idx = workers.receive
-        import_one(sname, s_bid)
+        import_one(sname, s_bid, force: force)
         puts " - <#{idx}/#{s_bids.size}> [#{sname}/#{s_bid}]"
       rescue err
         puts "#{sname}, #{s_bid}, #{err.message} ".colorize.red
@@ -91,11 +120,15 @@ end
 threads = ENV["CRYSTAL_WORKERS"]?.try(&.to_i?) || 6
 threads = 6 if threads < 6
 
+force = ARGV.includes?("--force")
+ARGV.reject!(&.starts_with?('-'))
+
 snames = ARGV.empty? ? Dir.children("var/chaps/texts") : ARGV
-snames.sort!
+snames.sort!.reverse!
 
 puts snames.colorize.yellow
 
 snames.each do |sname|
-  import_all(sname, threads) if sname[0].in?('@', '=')
+  next unless sname[0].in?('@', '=') && sname != "=user"
+  import_all(sname, threads, force: force)
 end

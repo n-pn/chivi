@@ -353,6 +353,9 @@
     :global(.app-ff-4) & {
       font-family: Lora, var(--font-serif);
     }
+    :global(.app-ff-5) & {
+      font-family: Roboto Slab, var(--font-serif);
+    }
 
     // &.focus {
     //   :global(.tm-light) & { @include bgcolor(warning, 2, 1); }

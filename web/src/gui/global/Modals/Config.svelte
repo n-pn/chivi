@@ -4,7 +4,13 @@
 
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
-  const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora']
+  const ftfaces = [
+    'Roboto',
+    'Merriweather',
+    'Nunito Sans',
+    'Lora',
+    'Roboto Slab',
+  ]
 
   // const textlhs = [150, 150, 150, 150]
   // prettier-ignore
