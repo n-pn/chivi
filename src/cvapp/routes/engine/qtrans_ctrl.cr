@@ -131,7 +131,7 @@ class CV::QtransCtrl < CV::BaseCtrl
       mtl = !render_title.none? ? cvmtl.cv_title(head) : cvmtl.cv_plain(head)
       mtl.to_mtl(str)
 
-      str << '\t' << label if label
+      str << '\t' << ' ' << label if label
 
       iter.each do |line|
         str << '\n'

@@ -28,6 +28,11 @@ class WN::ChapCtrl < AC::Base
     label = "[#{part_no}/#{zh_chap.p_len}]" if zh_chap.p_len > 1
     cvmtl = ztext.empty? ? "" : load_cv_data(wn_id, ztext, label)
 
+    vi_chap.p_len = zh_chap.p_len
+    # vi_chap.c_len = zh_chap.c_len
+    # vi_chap.mtime = zh_chap.mtime
+    # part_no = 1 if part_no < 1
+
     render json: {
       curr_chap: vi_chap,
       _prev_url: prev_url(wn_seed, vi_chap, part_no),
@@ -68,8 +73,6 @@ class WN::ChapCtrl < AC::Base
     unless no_text?(zh_text) || zh_chap.on_txt_dir?
       spawn zh_chap.save_body_copy!(seed: wn_seed, _flag: 2)
     end
-
-    zh_chap.p_len = zh_text.size - 1
 
     part_no = zh_text.size - 1 if part_no >= zh_text.size
     zh_text.size < 2 ? "" : "#{zh_text[0]}\n#{zh_text[part_no]}"

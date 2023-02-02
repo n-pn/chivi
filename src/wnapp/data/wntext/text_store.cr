@@ -33,7 +33,7 @@ module WN::TextStore
     read_txt_from_zip(bg_zip_path, bg_s_cid.to_i)
   end
 
-  TXT_DIR = "var/texts/rgbks-2"
+  TXT_DIR = "var/texts/rgbks"
 
   # generate body text path to be saved
   @[AlwaysInline]
@@ -135,7 +135,7 @@ module WN::TextStore
   end
 
   private def unzip_file(file : String)
-    out_dir = File.dirname(file.sub(ZIP_DIR, TXT_DIR))
+    out_dir = file.sub(ZIP_DIR, TXT_DIR).sub(".zip", "")
     Process.run("unzip", args: {"-nq", file, "-d", out_dir})
   end
 end
