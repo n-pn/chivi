@@ -35,7 +35,7 @@ class WN::TextCtrl < AC::Base
     when "_"
       guard_privi min: 1, action: "thêm chương tiết cho nguồn chính"
     when .starts_with?('@')
-      guard_owner sname, min: 2, action: "thêm chương tiết cho nguồn cá nhân"
+      guard_owner sname[1..], min: 2, action: "thêm chương tiết cho nguồn cá nhân"
     else
       guard_privi min: 3, action: "thêm chương tiết cho các nguồn phụ"
     end

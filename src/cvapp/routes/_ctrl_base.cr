@@ -53,9 +53,4 @@ abstract class CV::BaseCtrl < AC::Base
   private def guard_privi(min = 0)
     raise Unauthorized.new("Quyền hạn không đủ!") if _viuser.privi < min
   end
-
-  private def guard_owner(owner_id : Int32)
-    privi = _viuser.privi
-    privi < 0 ? false : privi > 3 ? true : _viuser.id == owner_id
-  end
 end

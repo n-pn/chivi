@@ -52,13 +52,16 @@ class WN::ChapCtrl < AC::Base
     }
   end
 
-  HEADERS = HTTP::Headers{"Content-Type" => "text/plain"}
-
   private def load_cv_data(wn_id : Int32, ztext : String, label : String? = nil)
     url = "http://localhost:5010/_db/cv_chap?wn_id=#{wn_id}&cv_title=first"
     url += "&label=#{label}" if label
 
-    HTTP::Client.post(url, headers: HEADERS, body: ztext) do |res|
+    headers = HTTP::Headers{
+      "Content-Type" => "text/plain",
+      "Cookie"       => context.request.headers["Cookie"],
+    }
+
+    HTTP::Client.post(url, headers: headers, body: ztext) do |res|
       res.success? ? res.body_io.gets_to_end : ""
     end
   end

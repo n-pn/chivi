@@ -14,7 +14,12 @@
   import Footer from '$gui/global/Footer.svelte'
   import { onMount } from 'svelte'
 
-  onMount(() => ($config.wtheme = $page.data.theme))
+  onMount(() => {
+    $config.wtheme = $page.data.theme
+    $config.w_temp = $page.data.w_temp == 't'
+    $config.showzh = $page.data.showzh == 't'
+  })
+
   $: wtheme = browser ? $config.wtheme : $page.data.theme || 'light'
 
   let kbd_hint = false

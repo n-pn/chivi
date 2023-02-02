@@ -18,16 +18,16 @@
 </script>
 
 <script lang="ts">
+  import { page } from '$app/stores'
+  import { browser } from '$app/environment'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   let elem: HTMLElement
 
-  import { page } from '$app/stores'
-
   $: if (elem) elem.focus()
 
   async function update_wtheme(wtheme: string) {
-    document.cookie = `theme=${wtheme}; max-age=31536000; path=/`
     if ($page.data._user.privi < 0) return
 
     await fetch('/_db/_self/config', {
@@ -35,6 +35,16 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ wtheme }),
     })
+  }
+
+  $: if (browser && $data) {
+    write_cookie('showzh', $data.showzh ? 't' : 'f')
+    write_cookie('w_temp', $data.w_temp ? 't' : 'f')
+    write_cookie('theme', $data.wtheme)
+  }
+
+  const write_cookie = (key: string, value: string) => {
+    document.cookie = `${key}=${value}; max-age=31536000; path=/`
   }
 
   const close_modal = () => popups.hide('config')
@@ -135,12 +145,12 @@
     </label>
   </config-item>
 
-  <config-item>
+  <!-- <config-item>
     <label class="switch">
       <input type="checkbox" bind:checked={$data.tosimp} />
       <span class="switch-label">Phồn thể sang giản thể:</span>
     </label>
-  </config-item>
+  </config-item> -->
 
   <config-item>
     <label class="switch">
