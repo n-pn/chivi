@@ -38,35 +38,28 @@ class WN::WnSeed
   field _flag : Int32 = 0
 
   @[DB::Field(ignore: true)]
-  getter dname : String { M1::DbDict.get_dname(-self.wn_id) }
-
-  @[DB::Field(ignore: true)]
   getter remotes : Array(String) { Array(String).from_json(self.rm_links) }
 
   @[DB::Field(ignore: true)]
-  getter zh_chaps : WnRepo { WnRepo.load(self.sname, self.s_bid, "infos") }
+  getter dname : String { M1::DbDict.get_dname(-self.wn_id) }
 
   @[DB::Field(ignore: true)]
-  getter vi_chaps : WnRepo { WnRepo.load_tl(zh_chaps.db_path, self.dname, force: true) }
+  getter chaps : WnRepo { WnRepo.load(self.sname, self.s_bid, self.dname) }
 
   def initialize(@wn_id, @sname, @s_bid = wn_id, privi = 1)
     @read_privi = @edit_privi = privi
   end
 
-  def mkdirs!(sname = self.sname, s_bid = self.s_bid)
+  def mkdirs!(sname = self.sname, s_bid = self.s_bid) : self
     Dir.mkdir_p("var/chaps/infos/#{sname}")
-    Dir.mkdir_p("var/chaps/texts-zip/#{sname}")
-    Dir.mkdir_p("var/chaps/texts-gbk/#{sname}/#{s_bid}")
+    Dir.mkdir_p("var/texts/rzips/#{sname}")
+    Dir.mkdir_p("var/texts/rgbks/#{sname}/#{s_bid}")
 
     self
   end
 
   def rm_links=(@remotes : Array(String))
     @rm_links = remotes.to_json
-  end
-
-  def regen_vi_chaps!
-    @vi_chaps = WnRepo.load_tl(zh_chaps.db_path, self.dname, force: true)
   end
 
   def to_json(jb : JSON::Builder)
@@ -77,10 +70,10 @@ class WN::WnSeed
       jb.field "chmax", @chap_total
       jb.field "utime", @mtime
 
-      jb.field "stype", self.class.stype(self.sname)
+      # jb.field "stype", self.class.stype(self.sname)
 
-      jb.field "edit_privi", self.edit_privi
-      jb.field "read_privi", self.read_privi
+      jb.field "edit_privi", @edit_privi
+      jb.field "read_privi", @read_privi
     }
   end
 
@@ -107,42 +100,16 @@ class WN::WnSeed
     "!biqu5200.net",
   }
 
-  def self.stype(sname : String)
-    case sname[0]
-    when '_' then 0 # base user seed
-    when '@' then 1 # foreground user seed
-    else
-      sname.in?(REMOTES) ? 3 : 2 # dead remote seed
-    end
-  end
-
-  def slink
-    sname = self.sname
-    sname = sname[1..] if sname[0] == '!'
-    SiteLink.info_url(sname, self.s_bid)
-  end
+  # def self.stype(sname : String)
+  #   case sname[0]
+  #   when '_' then 0 # base user seed
+  #   when '@' then 1 # foreground user seed
+  #   else
+  #     sname.in?(REMOTES) ? 3 : 2 # dead remote seed
+  #   end
+  # end
 
   ###
-
-  def bg_seed?
-    self.sname[0].in?('!', '+')
-  end
-
-  def zh_chap(ch_no : Int32)
-    self.zh_chaps.get(ch_no).try(&.set_seed(self))
-  end
-
-  def vi_chap(ch_no : Int32)
-    self.vi_chaps.get(ch_no).try(&.set_seed(self))
-  end
-
-  ###
-  def delete_chaps!(from_ch_no : Int32)
-    # FIXME: support delete upto
-    self.zh_chaps.delete_chaps!(from_ch_no)
-    self.vi_chaps.delete_chaps!(from_ch_no)
-    @chap_total = from_ch_no - 1
-  end
 
   ###
 
@@ -177,14 +144,18 @@ class WN::WnSeed
       raw_chaps.each { |x| x.s_cid = x.ch_no }
     end
 
-    self.zh_chaps.upsert_chap_infos(raw_chaps)
-    self.reload_content!
+    self.chaps.upsert_chap_infos(raw_chaps)
+    self.chaps.translate!(raw_chaps.first.ch_no, raw_chaps.last.ch_no)
   end
 
-  def reload_content!
+  def update_stats!(chmax : Int32, @mtime : Int64 = Time.utc.to_unix)
+    @chap_total = chmax if chmax > self.chap_total
+    self.save!
+  end
+
+  def reload_content!(min = 1, max = 99999)
     # TODO: smart reload translation instead of force regen
-    @vi_chaps = nil
-    # self.vi_chaps.regen_tl!(self.zh_chaps.db_path, self.dname)
+    self.chaps.translate!(min: min, max: max)
   end
 
   private def get_fetch_url(chap : WnChap)
@@ -200,6 +171,15 @@ class WN::WnSeed
     end
   end
 
+  def get_chap(ch_no : Int32)
+    self.chaps.get(ch_no).try(&.set_seed(self))
+  end
+
+  def save_chap!(chap : WnChap) : Nil
+    self.chaps.upsert_entry(chap)
+    self.chaps.translate!(chap.ch_no, chap.ch_no)
+  end
+
   def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Array(String)
     href = get_fetch_url(chap)
     return chap.body if href.empty?
@@ -208,16 +188,12 @@ class WN::WnSeed
     parser = RmText.new(href, ttl: force ? 3.minutes : 1.years)
 
     chap.save_body!(parser.title, parser.body, seed: self, uname: uname)
-    @vi_chaps = nil
+    self.chaps.translate!(chap.ch_no, chap.ch_no)
 
     chap.body
   rescue ex
     Log.error(exception: ex) { ex.message }
     chap.body
-  end
-
-  def save_chap!(chap : WnChap) : Nil
-    self.zh_chaps.upsert_entry(chap)
   end
 
   #############

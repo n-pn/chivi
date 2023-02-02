@@ -5,6 +5,9 @@ CREATE TABLE IF NOT EXISTS chaps (
   title varchar NOT NULL DEFAULT '',
   chdiv varchar NOT NULL DEFAULT '',
   --
+  vtitle varchar NOT NULL DEFAULT '',
+  vchdiv varchar NOT NULL DEFAULT '',
+  --
   c_len integer NOT NULL DEFAULT 0,
   p_len integer NOT NULL DEFAULT 0,
   --

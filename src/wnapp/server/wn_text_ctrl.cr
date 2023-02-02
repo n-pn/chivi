@@ -11,23 +11,13 @@ class WN::TextCtrl < AC::Base
   def show(wn_id : Int32, sname : String,
            ch_no : Int32)
     wn_seed = get_wn_seed(wn_id, sname)
-    zh_chap = get_zh_chap(wn_seed, ch_no)
+    wn_chap = get_wn_chap(wn_seed, ch_no)
 
     render json: {
-      ztext: zh_chap.body.join('\n'),
-      title: zh_chap.title,
-      chdiv: zh_chap.chdiv,
+      ztext: wn_chap.body.join('\n'),
+      title: wn_chap.title,
+      chdiv: wn_chap.chdiv,
     }
-  end
-
-  @[AlwaysInline]
-  private def no_text?(body : Array(String))
-    body.size < 2
-  end
-
-  @[AlwaysInline]
-  private def should_auto_fetch?(load_mode : Int32)
-    _privi > 0 && (load_mode > 0 || cookies["auto_load"]?)
   end
 
   def guard_sname_privi(sname : String)
@@ -62,18 +52,16 @@ class WN::TextCtrl < AC::Base
     chaps = TextSplit.split_multi(ztext)
 
     chaps.each_with_index(start) do |(text, chdiv), ch_no|
-      zh_chap = wn_seed.zh_chap(ch_no) || WnChap.new(ch_no, ch_no, "", "")
-      zh_chap.chdiv = chdiv
-      zh_chap.save_body!(text, seed: wn_seed, uname: _uname, _flag: 3)
+      wn_chap = wn_seed.get_chap(ch_no) || WnChap.new(ch_no, ch_no, "", "")
+      wn_chap.chdiv = chdiv
+      wn_chap.save_body!(text, seed: wn_seed, uname: _uname, _flag: 3)
     end
 
-    max_ch_no = start + chaps.size - 1
-    wn_seed.chap_total = max_ch_no if max_ch_no > wn_seed.chap_total
+    chmax = start + chaps.size - 1
 
-    wn_seed.mtime = Time.utc.to_unix
-    wn_seed.save!
+    wn_seed.reload_content!(start, chmax)
+    wn_seed.update_stats!(chmax)
 
-    wn_seed.regen_vi_chaps!
     render json: {pg_no: _pgidx(start, 32)}
   end
 
@@ -95,28 +83,24 @@ class WN::TextCtrl < AC::Base
     guard_sname_privi sname: sname
 
     wn_seed = get_wn_seed(wn_id, sname)
-    zh_chap = get_zh_chap(wn_seed, ch_no)
+    wn_chap = get_wn_chap(wn_seed, ch_no)
 
     spawn do
       ChTextEdit.new({
         sname: wn_seed.sname, s_bid: wn_seed.s_bid,
-        s_cid: zh_chap.s_cid, ch_no: zh_chap.ch_no,
+        s_cid: wn_chap.s_cid, ch_no: wn_chap.ch_no,
         patch: form.ztext, uname: _uname,
       }).save!
     rescue ex
       Log.error(exception: ex) { ex.message.colorize.red }
     end
 
-    zh_chap.title = form.title
-    zh_chap.chdiv = form.chdiv
+    wn_chap.title = form.title
+    wn_chap.chdiv = form.chdiv
 
-    zh_chap.save_body!(form.ztext, seed: wn_seed, uname: _uname, _flag: 3)
+    wn_chap.save_body!(form.ztext, seed: wn_seed, uname: _uname, _flag: 3)
+    wn_seed.update_stats!(ch_no)
 
-    wn_seed.chap_total = ch_no if ch_no > wn_seed.chap_total
-    wn_seed.mtime = Time.utc.to_unix
-    wn_seed.save!
-    wn_seed.regen_vi_chaps!
-
-    render json: zh_chap
+    render json: wn_chap
   end
 end

@@ -7,7 +7,7 @@ class WN::ChapCtrl < AC::Base
   def index(wn_id : Int32, sname : String, pg pg_no : Int32 = 1)
     wn_seed = get_wn_seed(wn_id, sname)
     # TODO: restrict user access
-    render json: wn_seed.vi_chaps.all(pg_no)
+    render json: wn_seed.chaps.all(pg_no)
   end
 
   @[AC::Route::GET("/:wn_id/:sname/:ch_no/:cpart")]
@@ -15,39 +15,36 @@ class WN::ChapCtrl < AC::Base
            ch_no : Int32, cpart : Int32,
            load_mode : Int32 = 0)
     wn_seed = get_wn_seed(wn_id, sname)
-    vi_chap = get_vi_chap(wn_seed, ch_no)
+    wn_chap = get_wn_chap(wn_seed, ch_no)
 
     read_privi = wn_seed.read_privi
     read_privi -= 1 if ch_no <= wn_seed.gift_chaps
 
-    zh_chap = wn_seed.zh_chap(ch_no).not_nil!
     can_read = _privi >= read_privi
 
-    ztext = can_read ? load_ztext(wn_seed, zh_chap, cpart, load_mode) : ""
+    ztext = can_read ? load_ztext(wn_seed, wn_chap, cpart, load_mode) : ""
 
-    label = "[#{cpart}/#{zh_chap.p_len}]" if zh_chap.p_len > 1
+    label = "[#{cpart}/#{wn_chap.p_len}]" if wn_chap.p_len > 1
     cvmtl = ztext.empty? ? "" : load_cv_data(wn_id, ztext, label)
 
-    vi_chap.p_len = zh_chap.p_len
-    # vi_chap.c_len = zh_chap.c_len
-    # vi_chap.mtime = zh_chap.mtime
     cpart = 1 if cpart < 1
 
     render json: {
-      curr_chap: vi_chap,
-      _prev_url: prev_url(wn_seed, vi_chap, cpart),
-      _next_url: next_url(wn_seed, vi_chap, cpart),
+      curr_chap: wn_chap,
+      _prev_url: prev_url(wn_seed, wn_chap, cpart),
+      _next_url: next_url(wn_seed, wn_chap, cpart),
 
       ###
       chap_data: {
+        title: wn_chap.title,
         ztext: ztext,
-        title: zh_chap.title,
         cvmtl: cvmtl,
         ##
         privi: read_privi,
         grant: can_read,
+        ##
         cpart: cpart,
-        _path: zh_chap._path,
+        _path: wn_chap._path,
       },
     }
   end
@@ -66,17 +63,17 @@ class WN::ChapCtrl < AC::Base
     end
   end
 
-  private def load_ztext(wn_seed : WnSeed, zh_chap : WnChap, cpart : Int32, load_mode = 0)
-    zh_text = zh_chap.body
+  private def load_ztext(wn_seed : WnSeed, wn_chap : WnChap, cpart : Int32, load_mode = 0)
+    zh_text = wn_chap.body
 
     # auto reload remote texts
     if zh_text.size < 2 && should_auto_fetch?(load_mode)
-      zh_text = wn_seed.fetch_text!(zh_chap, _uname, force: load_mode == 2)
+      zh_text = wn_seed.fetch_text!(wn_chap, _uname, force: load_mode == 2)
     end
 
     # save chap text directly to `temps` folder
-    unless zh_text.size < 2 || zh_chap.on_txt_dir?
-      spawn zh_chap.save_body_copy!(seed: wn_seed, _flag: 2)
+    unless zh_text.size < 2 || wn_chap.on_txt_dir?
+      spawn wn_chap.save_body_copy!(seed: wn_seed, _flag: 2)
     end
 
     cpart = zh_text.size - 1 if cpart >= zh_text.size
@@ -97,12 +94,14 @@ class WN::ChapCtrl < AC::Base
   private def prev_url(seed, chap : WnChap, part_no = 1)
     return chap._href(part_no - 1) if part_no > 1
     return if chap.ch_no < 2
-    seed.vi_chap(chap.ch_no - 1).try(&._href(-1))
+
+    seed.get_chap(chap.ch_no - 1).try(&._href(-1))
   end
 
   private def next_url(seed, chap : WnChap, part_no = 1)
     return chap._href(part_no + 1) if part_no < chap.p_len
     return if chap.ch_no >= seed.chap_total
-    seed.vi_chap(chap.ch_no + 1).try(&._href(1))
+
+    seed.get_chap(chap.ch_no + 1).try(&._href(1))
   end
 end

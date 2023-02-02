@@ -11,6 +11,9 @@ class WN::WnChap
   property title : String = "" # chapter title
   property chdiv : String = "" # volume name
 
+  property vtitle : String = "" # translated title
+  property vchdiv : String = "" # translated volume name
+
   property mtime : Int64 = 0   # last modification time
   property uname : String = "" # last modified by username
 
@@ -40,8 +43,8 @@ class WN::WnChap
       jb.field "chidx", self.ch_no
       jb.field "schid", self.s_cid
 
-      jb.field "title", self.title
-      jb.field "chvol", self.chdiv
+      jb.field "title", self.vtitle
+      jb.field "chvol", self.vchdiv
 
       jb.field "chars", self.c_len
       jb.field "parts", self.p_len
@@ -49,13 +52,13 @@ class WN::WnChap
       jb.field "utime", self.mtime
       jb.field "uname", self.uname
 
-      jb.field "uslug", uslug
+      jb.field "uslug", self.uslug
 
       # jb.field "sname", self.sname
     }
   end
 
-  def uslug(title = self.title)
+  def uslug(title = self.vtitle)
     input = title.unicode_normalize(:nfd).gsub(/[\x{0300}-\x{036f}]/, "")
     input.downcase.split(/\W+/, remove_empty: true).first(7).join('-')
   end

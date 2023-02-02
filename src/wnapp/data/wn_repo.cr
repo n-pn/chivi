@@ -5,14 +5,10 @@ require "./wn_chap"
 class WN::WnRepo
   getter db_path : String
 
-  def initialize(@db_path)
+  def initialize(@db_path, dname : String)
     init_db(self.class.init_sql) unless File.file?(db_path)
-  end
-
-  def init_db(init_sql : String = self.class.init_sql)
-    open_db do |db|
-      init_sql.split(";") { |sql| db.exec(sql) unless sql.blank? }
-    end
+    @cvmtl = CV::MtCore.generic_mtl(dname)
+    self.translate!
   end
 
   def open_db
@@ -26,6 +22,55 @@ class WN::WnRepo
       yield db
       db.exec "commit"
     end
+  end
+
+  def init_db(init_sql : String = self.class.init_sql)
+    open_tx do |db|
+      init_sql.split(";") { |sql| db.exec(sql) unless sql.blank? }
+
+      zh_db_path = @db_path.sub(".db", "-infos.db")
+      next unless File.exists?(zh_db_path)
+
+      db.exec "attach database '#{zh_db_path}' as src"
+
+      db.exec <<-SQL
+        replace into chaps (
+          ch_no, s_cid,
+          title, chdiv,
+          c_len, p_len,
+          mtime, uname,
+          _path, _flag)
+        select
+          ch_no, s_cid,
+          title, chdiv,
+          c_len, p_len,
+          mtime, uname,
+          _path, _flag
+        from src.chaps
+      SQL
+    end
+  end
+
+  def translate!(min = 1, max = 99999)
+    trans = [] of {String, String, Int32}
+
+    open_db do |db|
+      query = <<-SQL
+        select ch_no, title, chdiv from chaps
+        where ch_no >= ? and ch_no <= ?
+      SQL
+
+      db.query_each(query, min, max) do |rs|
+        ch_no, title, chdiv = rs.read(Int32, String, String)
+
+        title = @cvmtl.cv_title(title).to_txt unless title.blank?
+        chdiv = @cvmtl.cv_title(chdiv).to_txt unless chdiv.blank?
+
+        trans << {title, chdiv, ch_no} unless title.empty?
+      end
+    end
+
+    self.bulk_update({"vtitle", "vchdiv"}, trans)
   end
 
   def all(pg_no : Int32 = 1, limit = 32) : Array(WnChap)
@@ -113,19 +158,6 @@ class WN::WnRepo
     values.size
   end
 
-  def copy_full(zh_db_path : String)
-    open_db do |db|
-      db.exec "pragma synchronous = normal"
-      db.exec "attach database '#{zh_db_path}' as src"
-
-      db.exec "begin"
-      db.exec "insert or replace into chaps select * from src.chaps"
-      db.exec "commit"
-    end
-
-    self
-  end
-
   def copy_bg_to_fg(bg_db_path : String,
                     bg_sname : String, bg_s_bid : Int32,
                     chmin = 0, chmax = 999, offset = 0)
@@ -148,94 +180,28 @@ class WN::WnRepo
     end
   end
 
-  ###
-
-  def regen_tl!(zh_db_path : String, dname : String)
-    # FIXME: make this more performant by only retranslate what changed
-    self.copy_full(zh_db_path) # copy raw data
-
-    trans = [] of {String, String, Int32}
-    cvmtl = CV::MtCore.generic_mtl(dname)
-
-    open_db do |db|
-      query = "select ch_no, title, chdiv from chaps"
-
-      db.query_each(query) do |rs|
-        ch_no, title, chdiv = rs.read(Int32, String, String)
-
-        title = cvmtl.cv_title(title).to_txt unless title.blank?
-        chdiv = cvmtl.cv_title(chdiv).to_txt unless chdiv.blank?
-
-        trans << {title, chdiv, ch_no} unless title.empty?
-      end
-    end
-
-    self.bulk_update({"title", "chdiv"}, trans)
-
-    self
-  end
-
   ####
 
   CACHE = {} of String => self
 
-  def self.load(db_path : String)
-    CACHE[db_path] ||= new(db_path)
+  @[AlwaysInline]
+  def self.load(db_path : String, dname : String)
+    CACHE[db_path] ||= new(db_path, dname)
   end
 
-  def self.load(sname : String, s_bid : Int32, kind : String)
-    db_path = self.db_path(sname, s_bid, kind)
-    CACHE[db_path] ||= new(db_path)
+  @[AlwaysInline]
+  def self.load(sname : String, s_bid : Int32, dname : String)
+    db_path = self.db_path(sname, s_bid)
+    self.load(db_path, dname)
   end
 
-  def self.load_tl(zh_db_path : String, dname : String, force : Bool = false)
-    vi_db_path = zh_db_path.sub("infos.db", "trans.db")
-    repo = new(vi_db_path)
-
-    if force || older?(vi_db_path, zh_db_path)
-      repo.regen_tl!(zh_db_path, dname)
-    end
-
-    repo
-  end
-
-  # return true if the vi_repo is older than the zh_repo or its last mtime > 12 hours
-  def self.older?(target : String, source : String, stale : Time::Span = 12.hours)
-    return true unless target_mtime = mtime(target)
-    return false unless target_mtime = mtime(source)
-    target_mtime < {Time.utc - stale, target_mtime}.min
-  end
-
-  def self.mtime(path : String)
-    File.info?(path).try(&.modification_time)
-  end
-
-  ####
+  ###
 
   DIR = "var/chaps/infos"
 
   @[AlwaysInline]
-  def self.db_path(sname : String, s_bid : Int32, kind : String = "infos")
-    "#{DIR}/#{sname}/#{s_bid}-#{kind}.db"
-  end
-
-  def self.soft_delete!(sname : String, s_bid : Int32) : Nil
-    # delete translation file if exists
-    File.delete? db_path(sname, s_bid, "trans")
-
-    info_path = db_path(sname, s_bid, "infos")
-
-    # checking if file exists to make sure, though this file should be alwasy available
-    return unless File.file?(info_path)
-
-    # instead of remove data, just change `s_bid` value so it can't be reached.
-    dead_path = db_path(sname, -s_bid, "infos")
-
-    # delete old deleted database file if existed
-    File.delete?(dead_path)
-
-    File.rename(info_path, dead_path)
-    CACHE.delete(info_path)
+  def self.db_path(sname : String, s_bid : Int32)
+    "#{DIR}/#{sname}/#{s_bid}.db"
   end
 
   @[AlwaysInline]
@@ -246,7 +212,22 @@ class WN::WnRepo
   def self.init_sql
     {{ read_file("#{__DIR__}/sql/init_wn_chap.sql") }}
   end
-end
 
-# repo = WN::WnRepo.new("tmp/chaps/fg.db")
-# repo.copy_bg_to_fg("tmp/chaps/bg.db", "hetushu", 10, chmin: 5, offset: -4)
+  ####
+
+  def self.soft_delete!(sname : String, s_bid : Int32) : Nil
+    db_path = self.db_path(sname, s_bid)
+
+    # checking if file exists to make sure, though this file should be alwasy available
+    return unless File.file?(db_path)
+
+    # instead of remove data, just change `s_bid` value so it can't be reached.
+    dead_path = db_path(sname, -s_bid)
+
+    # delete old deleted database file if existed
+    File.delete?(dead_path)
+
+    File.rename(db_path, dead_path)
+    CACHE.delete(db_path)
+  end
+end

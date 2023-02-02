@@ -28,7 +28,7 @@ class WN::SeedCtrl < AC::Base
 
     render json: {
       curr_seed: wn_seed,
-      top_chaps: wn_seed.vi_chaps.top(4),
+      top_chaps: wn_seed.chaps.top(4),
       seed_data: {
         links: wn_seed.remotes,
         stime: wn_seed.rm_stime,
@@ -78,7 +78,7 @@ class WN::SeedCtrl < AC::Base
     if slink = wn_seed.remotes.first?
       wn_seed.update_from_remote!(slink, mode: mode)
     else
-      wn_seed.reload_content!
+      wn_seed.chaps.translate!
     end
 
     render json: wn_seed
@@ -107,7 +107,8 @@ class WN::SeedCtrl < AC::Base
     end
 
     if cut_from = form.cut_from
-      wn_seed.delete_chaps!(cut_from)
+      wn_seed.chaps.delete_chaps!(cut_from)
+      wn_seed.chap_total = cut_from - 1
     end
 
     wn_seed.save!

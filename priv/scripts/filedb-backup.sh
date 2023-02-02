@@ -22,9 +22,9 @@ fi
 if [[ $1 == "all" || $* == *dict* ]]
 then
   echo backup dicts data!
-  # rsync-fast --exclude="*.tsv" "$SSH/var/dicts/v1/" "var/dicts/v1/"
-  rsync-fast "$SSH/var/dicts/v1/" "var/dicts/v1/"
-  rsync-fast "$SSH/var/dicts/ulogs" "var/dicts"
+
+  # rsync-fast "$SSH/var/dicts/v1/" "var/dicts/v1/"
+  # rsync-fast "$SSH/var/dicts/ulogs" "var/dicts"
 
   rsync-fast "$SSH/var/dicts/v1log" "var/dicts"
   rsync-fast "$SSH/var/dicts/v1raw" "var/dicts"
@@ -37,15 +37,15 @@ then
   echo backup books data!
   # rsync-fast "$SSH/var/nvinfos/autos" "var/nvinfos"
 
-  rsync-fast "$SSH/var/books/.html" "var/books"
   rsync-fast "$SSH/var/books/infos" "var/books"
   rsync-fast "$SSH/var/books/cover" "var/books"
   # rsync-fast "$SSH/var/books/seeds" "var/books"
 
   rsync-fast "$SSH/var/chaps/users" "var/chaps"
-  rsync-fast "$SSH/var/chaps/.html" "var/chaps"
-  # rsync-fast "$SSH/var/chaps/texts" "var/chaps"
-  # rsync-fast "$SSH/var/chaps/seeds" "var/chaps"
+  rsync-fast "$SSH/var/chaps/infos" "var/chaps"
+
+  rsync-fast "$SSH/var/.html" "var"
+  # rsync-fast "$SSH/var/texts/rzips" "var/texts"
 fi
 
 ## backup book data
