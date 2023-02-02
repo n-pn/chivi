@@ -16,7 +16,7 @@ class CV::MarkBookCtrl < CV::BaseCtrl
 
     query = Ubmemo.query.where("viuser_id = ?", _viuser.id)
 
-    case params["kind"]?
+    case kind
     when "marked" then query.where("locked = true")
     when "stored" then query.where("status > 0")
     end

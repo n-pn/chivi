@@ -4,14 +4,15 @@ class CV::VicritCtrl < CV::BaseCtrl
   base "/_db/crits"
 
   @[AC::Route::GET("/", converters: {lm: ConvertLimit, tags: ConvertArray})]
-  def index(pg pgidx : Int32 = 1, lm limit : Int32 = 24,
-            sort : String? = nil,
-            user : Int32? = nil,
-            book : Int32? = nil,
-            tags : Array(String)? = nil)
-    offset = CtrlUtil.offset(pgidx, limit)
+  def index(
+    sort : String? = nil,
+    user : Int32? = nil,
+    book : Int32? = nil,
+    tags : Array(String)? = nil
+  )
+    pg_no, limit, offset = _paginate(min: 1, max: 24)
 
-    query = Vicrit.query.sort_by(params["sort"]?)
+    query = Vicrit.query.sort_by(sort)
     query.where("viuser_id = ?", user) if user
     query.where("nvinfo_id = ?", user) if book
     query.where("btags = ?", tags) if tags
@@ -31,7 +32,7 @@ class CV::VicritCtrl < CV::BaseCtrl
 
     render json: {
       total: total,
-      pgidx: pgidx,
+      pgidx: pg_no,
       pgmax: (total - 1) // limit + 1,
       crits: crits.map { |x| VicritView.new(x, full: false) },
       users: users.map { |x| {x.id, ViuserView.new(x, false)} }.to_h,

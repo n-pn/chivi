@@ -96,29 +96,41 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
   ##################
 
-  @[AC::Route::PUT("/config")]
-  def update_config
-    if _viuser.privi >= 0
-      wtheme = params["wtheme"]? || "light"
-      cookies["theme"] = wtheme
-      _viuser.update!({wtheme: wtheme})
-    end
-
-    render json: ViuserView.new(_viuser, true)
+  record ConfigForm, wtheme : String = "light" do
+    include JSON::Serializable
   end
 
-  @[AC::Route::PUT("/passwd")]
-  def update_passwd
-    raise "Quyền hạn không đủ" if _viuser.privi < 0
+  @[AC::Route::PUT("/config", body: :form)]
+  def update_config(form : ConfigForm)
+    guard_privi 0, "thay đổi giao diện"
 
-    oldpw = params["oldpw"].strip
-    raise "Mật khẩu cũ không đúng" unless _viuser.authentic?(oldpw)
+    _viuser.update!({wtheme: form.wtheme})
+    render text: "ok"
+  end
 
-    newpw = params["newpw"].strip
-    raise "Mật khẩu mới quá ngắn" if newpw.size < 8
+  struct PasswdForm
+    include JSON::Serializable
 
-    _viuser.upass = newpw
-    _viuser.save!
+    getter oldpw : String
+    getter newpw : String
+
+    def after_initialize
+      @oldpw = @oldpw.strip
+      @newpw = @newpw.strip
+    end
+
+    def validate!(user : Viuser)
+      raise BadRequest.new "Mật khẩu mới quá ngắn" if @newpw.size < 8
+      raise BadRequest.new "Mật khẩu cũ không đúng" unless user.authentic?(@oldpw)
+    end
+  end
+
+  @[AC::Route::PUT("/passwd", body: :form)]
+  def update_passwd(form : PasswdForm)
+    guard_privi 0, "đổi mật khẩu"
+
+    form.validate!(_viuser)
+    _viuser.tap(&.passwd = form.newpw).save!
 
     spawn do
       body = {email: _viuser.email, cpass: _viuser.cpass}

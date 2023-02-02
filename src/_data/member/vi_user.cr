@@ -11,7 +11,6 @@ class CV::Viuser
   column email : String
 
   column cpass : String
-  getter upass : String? # virtual password field
 
   column pwtemp : String = ""
   column pwtemp_until : Int64 = 0
@@ -40,9 +39,8 @@ class CV::Viuser
 
   timestamps
 
-  def upass=(upass : String)
+  def passwd=(upass : String)
     self.cpass = Crypto::Bcrypt::Password.create(upass, cost: 10).to_s
-    @upass = upass
   end
 
   def authentic?(upass : String)
@@ -155,7 +153,9 @@ class CV::Viuser
     raise "Mật khẩu quá ngắn (cần ít nhất 7 ký tự)" if upass.size < 7
 
     begin
-      new({email: email, uname: uname, upass: upass}).tap(&.save!)
+      user = new({email: email, uname: uname})
+      user.passwd = upass
+      user.tap(&.save!)
     rescue err
       case err.message || ""
       when .includes?("uname_key")

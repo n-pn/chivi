@@ -15,7 +15,6 @@
       await api_call('/_db/_self/passwd', { oldpw, newpw }, 'PUT')
       tab = 0
     } catch (ex) {
-      console.log(ex)
       error = ex.body.message
     }
   }

@@ -21,10 +21,14 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   let elem: HTMLElement
+
+  import { page } from '$app/stores'
+
   $: if (elem) elem.focus()
 
   async function update_wtheme(wtheme: string) {
     document.cookie = `theme=${wtheme}; max-age=31536000; path=/`
+    if ($page.data._user.privi < 0) return
 
     await fetch('/_db/_self/config', {
       method: 'PUT',
