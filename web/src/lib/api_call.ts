@@ -40,19 +40,10 @@ export const api_call = (url: string, body: ReqBody, method = 'POST') => {
 
 export const ROUTES = {
   // book info
-  'nvinfos.index': '/_db/books',
-  'nvinfos.show': (name: any) => `/_db/books/${name}`,
-  'nvinfos.front': (id: any) => `/_db/books/${id}/front`,
-
   'wnovels.index': '/_db/books',
   'wnovels.show': (id: any) => `/_db/books/${id}`,
   'wnovels.front': (id: any) => `/_db/books/${id}/front`,
   'wnovels.edit': (id: any) => `/_db/books/${id}/+edit`,
-
-  // book seed
-  'chroots.index': (book: any) => `/_db/seeds/${book}`,
-  'chroots.show': ([book, seed]) => `/_db/seeds/${book}/${seed}`,
-  'chroots.chaps': ([book, seed, page]) => `/_db/seeds/${book}/${seed}/${page}`,
 
   // forum
   'dtopics.index': '/_db/topics',

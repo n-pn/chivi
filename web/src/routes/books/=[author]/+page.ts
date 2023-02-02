@@ -8,7 +8,7 @@ interface JsonData extends CV.Paginate {
 export async function load({ fetch, url, params: { author } }: PageLoadEvent) {
   const extras = { author, lm: 8, order: 'weight' }
 
-  const path = api_path('nvinfos.index', null, url.searchParams, extras)
+  const path = api_path('wnovels.index', null, url.searchParams, extras)
   const data: JsonData = await fetch(path).then((x) => x.json())
 
   const _meta = {

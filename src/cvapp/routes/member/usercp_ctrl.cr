@@ -27,11 +27,11 @@ class CV::UsercpCtrl < CV::BaseCtrl
     spawn do
       CtrlUtil.log_user_action("upgrade-privi", form, _viuser.uname)
 
-      sname = "@" + _viuser.uname
-      unless ChSeed.has_sname?(sname)
-        sn_id = _viuser.id * 2
-        ChSeed.add_user(sname, sn_id)
-      end
+      # sname = "@" + _viuser.uname
+      # unless ChSeed.has_sname?(sname)
+      #   sn_id = _viuser.id * 2
+      #   ChSeed.add_user(sname, sn_id)
+      # end
     end
 
     save_current_user!(_viuser)

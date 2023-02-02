@@ -1,5 +1,6 @@
 require "../_ctrl_base"
 require "./vpterm_form"
+
 require "../../../mt_v1/mt_core"
 
 class CV::VptermCtrl < CV::BaseCtrl
@@ -43,13 +44,13 @@ class CV::VptermCtrl < CV::BaseCtrl
       end
     end
 
-    spawn do
-      next unless vdict.kind.novel? && form.dname[0] == '-'
-      nvdict = Nvdict.load!(form.dname[1..])
-      nvdict.update(dsize: vdict.size, utime: vpterm.utime)
-    rescue err
-      Log.error { err }
-    end
+    # spawn do
+    #   next unless vdict.kind.novel? && form.dname[0] == '-'
+    #   nvdict = Nvdict.load!(form.dname[1..])
+    #   nvdict.update(dsize: vdict.size, utime: vpterm.utime)
+    # rescue err
+    #   Log.error { err }
+    # end
 
     spawn log_upsert_entry(vpterm, form)
     render :accepted, json: vpterm

@@ -10,7 +10,7 @@ export async function load({ fetch, url: { searchParams } }: PageLoadEvent) {
   const input = searchParams.get('q').replace('+', ' ')
   const extras = { order: 'weight', lm: 8, [type]: input }
 
-  const path = api_path('nvinfos.index', null, searchParams, extras)
+  const path = api_path('wnovels.index', null, searchParams, extras)
   const data: JsonData = await fetch(path).then((x) => x.json())
 
   const _meta: App.PageMeta = {

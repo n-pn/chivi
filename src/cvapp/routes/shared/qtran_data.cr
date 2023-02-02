@@ -21,8 +21,8 @@ class CV::QtranData
     when "posts" then load_file(File.join(DIR, ukey + ".txt"))
     when "crits" then load_crit(ukey)
     when "repls" then load_repl(ukey)
-    when "chaps" then load_chap(ukey)
-    else              raise "Unsupported type"
+      # when "chaps" then load_chap(ukey)
+    else raise "Unsupported type"
     end
   end
 
@@ -32,32 +32,32 @@ class CV::QtranData
     new(lines, dname, d_lbl, count.to_i, label)
   end
 
-  def self.load_chap(name : String, mode : Int8 = 0, uname = "") : QtranData
-    sname, s_bid, ch_no, cpart = name.split(":")
+  # def self.load_chap(name : String, mode : Int8 = 0, uname = "") : QtranData
+  #   sname, s_bid, ch_no, cpart = name.split(":")
 
-    unless chroot = Chroot.find({sname: sname, s_bid: s_bid.to_i})
-      raise NotFound.new("Nguồn truyện không tồn tại")
-    end
+  #   unless chroot = Chroot.find({sname: sname, s_bid: s_bid.to_i})
+  #     raise NotFound.new("Nguồn truyện không tồn tại")
+  #   end
 
-    unless chinfo = chroot.chinfo(ch_no.to_i)
-      raise NotFound.new("Chương tiết không tồn tại")
-    end
+  #   unless chinfo = chroot.chinfo(ch_no.to_i)
+  #     raise NotFound.new("Chương tiết không tồn tại")
+  #   end
 
-    load_chap(chroot, chinfo, cpart.to_i16, mode, uname)
-  end
+  #   load_chap(chroot, chinfo, cpart.to_i16, mode, uname)
+  # end
 
-  def self.load_chap(chroot : Chroot, chinfo : Chinfo,
-                     cpart = 0_i16, mode : Int8 = 0, uname = "")
-    input = chinfo.text(cpart, mode: mode, uname: uname)
-    chroot._repo.upsert(chinfo)
-    lines = input.empty? ? [] of String : input.split('\n')
+  # def self.load_chap(chroot : Chroot, chinfo : Chinfo,
+  #                    cpart = 0_i16, mode : Int8 = 0, uname = "")
+  #   input = chinfo.text(cpart, mode: mode, uname: uname)
+  #   chroot._repo.upsert(chinfo)
+  #   lines = input.empty? ? [] of String : input.split('\n')
 
-    p_len = chinfo.p_len
-    label = p_len > 1 ? " [#{cpart &+ 1}/#{p_len}]" : ""
+  #   p_len = chinfo.p_len
+  #   label = p_len > 1 ? " [#{cpart &+ 1}/#{p_len}]" : ""
 
-    nvinfo = chroot.nvinfo
-    new(lines, nvinfo.dname, nvinfo.vname, label: label)
-  end
+  #   nvinfo = chroot.nvinfo
+  #   new(lines, nvinfo.dname, nvinfo.vname, label: label)
+  # end
 
   CRIT_URL = "localhost:5400/_ys/crits"
   REPL_URL = "localhost:5400/_ys/repls"

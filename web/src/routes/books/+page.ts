@@ -6,7 +6,7 @@ interface JsonData extends CV.Paginate {
 }
 
 export async function load({ url, fetch }: LoadEvent) {
-  const path = api_path('nvinfos.index', null, url.searchParams, { lm: 24 })
+  const path = api_path('wnovels.index', null, url.searchParams, { lm: 24 })
   const data: JsonData = await fetch(path).then((x) => x.json())
 
   // prettier-ignore

@@ -21,7 +21,7 @@ class CV::Nvinfo
 
   belongs_to ysbook : Ysbook?
 
-  getter seed_list : Nslist { Nslist.new(self) }
+  # getter seed_list : Nslist { Nslist.new(self) }
 
   column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
 

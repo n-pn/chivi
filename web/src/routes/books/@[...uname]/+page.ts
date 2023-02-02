@@ -9,7 +9,7 @@ export async function load({ url, params, fetch }: PageLoadEvent) {
   const [uname, bmark = 'reading'] = params.uname.split('/')
   const extras = { lm: 24, order: 'update', uname, bmark }
 
-  const path = api_path('nvinfos.index', null, url.searchParams, extras)
+  const path = api_path('wnovels.index', null, url.searchParams, extras)
   const data: JsonData = await fetch(path).then((x) => x.json())
 
   const _meta = {
