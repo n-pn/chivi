@@ -1,3 +1,20 @@
+<script context="module" lang="ts">
+  export function show_mtl(
+    mode: number,
+    lmax: number,
+    l_index: number,
+    l_hover: number,
+    l_focus: number
+  ) {
+    if (mode != 0) return mode > 0
+    if (l_index == l_hover) return true
+
+    if (l_index > l_focus - 3 && l_index < l_focus + 3) return true
+    if (l_focus == 0) return l_index == lmax
+    return l_index == 0 && l_focus == lmax
+  }
+</script>
+
 <script lang="ts">
   import MtData from '$lib/mt_data'
 

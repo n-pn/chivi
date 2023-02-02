@@ -5,15 +5,16 @@ require "./core/mt_data"
 require "../_util/text_util"
 
 class M2::Engine
-  def initialize(book : String, user : String? = nil, temp : Bool = false)
+  def self.new(udict : String, user : String? = nil, temp : Bool = false)
+    new(-DbDict.get_id(udict), user: user, temp: temp)
+  end
+
+  def initialize(udict : Int32 = 0, user : String? = nil, temp : Bool = false)
     @dicts = [MtDict.core_base]
     @dicts << MtDict.core_temp if temp
 
-    b_id = -DbDict.get_id(book)
-    return if b_id == 0
-
-    @dicts << MtDict.book_base(b_id)
-    @dicts << MtDict.book_temp(b_id) if temp
+    @dicts << MtDict.book_base(udict)
+    @dicts << MtDict.book_temp(udict) if temp
   end
 
   # def cv_title_full(title : String) : MtData

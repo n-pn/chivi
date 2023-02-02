@@ -7,20 +7,20 @@ class CV::MtCore
   class_getter pin_yin_mtl : self { new([VpDict.essence, VpDict.pin_yin]) }
 
   def self.generic_mtl(bname : String = "combine",
-                       uname : String = "",
+                       user : String = "",
                        temp : Bool = true) : self
     dicts = [VpDict.essence, VpDict.regular, VpDict.fixture, VpDict.load(bname)]
-    new(dicts, uname, temp: temp)
+    new(dicts, user, temp: temp)
   end
 
-  def self.load(dname : String, uname : String = "", temp : Bool = false) : self
+  def self.load(dname : String, user : String = "", temp : Bool = false) : self
     case dname
     when "pin_yin" then pin_yin_mtl
     when "hanviet" then hanviet_mtl
     when .starts_with?('-')
-      generic_mtl(dname, uname, temp: temp)
+      generic_mtl(dname, user, temp: temp)
     else
-      generic_mtl("combine", uname, temp: temp)
+      generic_mtl("combine", user, temp: temp)
     end
   end
 

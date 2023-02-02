@@ -7,7 +7,7 @@
   import Mtmenu, { ctrl as mtmenu } from './MtPage/Mtmenu.svelte'
 
   import Zhline from './MtPage/Zhline.svelte'
-  import Cvline from './MtPage/Cvline.svelte'
+  import Cvline, { show_mtl } from './MtPage/Cvline.svelte'
 
   import LineEdit from './MtPage/LineEdit.svelte'
 
@@ -16,25 +16,23 @@
 </script>
 
 <script lang="ts">
-  import { session } from '$lib/stores'
   import { browser } from '$app/environment'
 
   export let ztext: string = ''
   export let cvmtl: string = ''
 
-  export let mtime = 0
+  export let mtime: number = 0
+  export let wn_id: number = 0
 
-  // export let wn_id: number = 0
-
-  export let on_change = () => {}
   export let on_fixraw = (_n: number, _s: string, _s2: string) => {}
+  export let on_change = () => render_v1(ztext)
 
   let article = null
+
   let l_hover = 0
   let l_focus = 0
 
   let zlines = []
-
   let datav1 = []
   let datav2 = []
 
@@ -49,54 +47,30 @@
   })
 
   $: zlines = ztext ? ztext.split('\n') : []
-  $: [datav1, tspan, dsize] = parse_cvmtl(cvmtl)
+  $: [datav1, tspan, dsize] = MtData.parse_cvmtl(cvmtl)
 
-  $: if (browser && ztext && $config.render == 1) call_v2_engine(ztext)
+  $: if (browser && ztext && $config.render != 3) render_v2(ztext)
 
-  function parse_cvmtl(cvmtl: string): [MtData[], number, number] {
-    const [lines, extra = ''] = cvmtl.split('\n$\t$\t$\n')
-    const args = extra.split('\t')
-
-    return [MtData.parse_lines(lines), +args[0], +args[1]]
-  }
-
-  function render_html(
-    render: number,
-    index: number,
-    hover: number,
-    focus: number
-  ) {
-    if (render != 0) return render > 0
-    if (index == hover) return true
-
-    if (index > focus - 3 && index < focus + 3) return true
-    if (focus == 0) return index == zlines.length - 1
-    return index == 0 && focus == zlines.length - 1
-  }
-
-  function change_engine(engine: number) {
-    config.set_engine(engine)
-    on_change()
-  }
-
-  async function call_v2_engine(body: string) {
-    const book = $vdict.dname
-    const user = $session.uname
-    const temp = $config.w_temp
-
-    const url = `/_m2/convert?rmode=mtl&has_title=true&book=${book}&user=${user}&with_temp=${temp}`
-
+  async function render_v1(body: string, cv_title = 'first') {
+    const url = `/_db/cv_chap?wn_id=${wn_id}&cv_title=${cv_title}`
     const res = await fetch(url, { method: 'POST', body })
-    const data = await res.text()
 
-    if (!res.ok) {
-      console.log(data)
-      return
+    if (!res.ok) return
+    const data = MtData.parse_cvmtl(await res.text())
+
+    datav1 = data[0]
+    tspan = data[1]
+    dsize = data[2]
+  }
+
+  async function render_v2(body: string, cv_title = '') {
+    if ($config.render != 1) {
+      datav2 = []
+    } else {
+      const url = `/_m2/qtran?udict=-${wn_id}&format=txt&cv_title=${cv_title}`
+      const res = await fetch(url, { method: 'POST', body })
+      if (res.ok) datav2 = (await res.text()).split('\n')
     }
-
-    const v2data = MtData.parse_lines(data)
-    if (v2data.length == datav1.length) datav2 = v2data
-    else console.log(data)
   }
 </script>
 
@@ -143,31 +117,32 @@
 
   <section>
     {#each zlines as input, index (index)}
+      {@const elem = index > 0 || $$props.no_title ? 'p' : 'h1'}
       {@const mtlv1 = datav1[index]}
       {@const mtlv2 = datav2[index]}
-
+      {@const view_mtl = show_mtl(
+        $config.render,
+        zlines.length - 1,
+        index,
+        l_hover,
+        l_focus
+      )}
       <svelte:element
-        this={index > 0 || $$props.no_title ? 'p' : 'h1'}
+        this={elem}
         id="L{index}"
         class="cv-line"
         class:focus={index == l_focus}
         on:mouseenter={() => (l_hover = index)}>
         {#if $config.showzh}
-          <Zhline ztext={input} plain={$config.render < 0} />
+          <Zhline ztext={input} plain={!view_mtl} />
         {/if}
 
         {#if mtlv1}
-          <Cvline
-            input={mtlv1}
-            focus={render_html($config.render, index, l_hover, l_focus)} />
+          <Cvline input={mtlv1} focus={view_mtl} />
         {/if}
 
         {#if mtlv2}
-          <p class="v2">
-            <Cvline
-              input={mtlv2}
-              focus={render_html($config.render, index, l_hover, l_focus)} />
-          </p>
+          <p class="v2">{mtlv2}</p>
         {/if}
       </svelte:element>
     {:else}
@@ -202,8 +177,8 @@
   <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
   <button data-kbd="z" on:click={() => config.set_render(-1)}>Z</button>
   <button data-kbd="g" on:click={() => config.set_render(1)}>G</button>
-  <button data-kbd="⌃1" on:click={() => change_engine(1)}>1</button>
-  <button data-kbd="⌃2" on:click={() => change_engine(2)}>2</button>
+  <!-- <button data-kbd="⌃1" on:click={() => change_engine(1)}>1</button>
+  <button data-kbd="⌃2" on:click={() => change_engine(2)}>2</button> -->
 </div>
 
 <style lang="scss">

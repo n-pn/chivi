@@ -14,20 +14,15 @@ end
 class M2::TranCtrl < AC::Base
   base "/_m2"
 
-  @[AC::Route::POST("/convert")]
-  def convert(
-    rmode : String = "txt",
-    book : String = "combine",
-    user : String? = nil,
-    apply_cap : Bool = true,
-    has_title : Bool = false,
-    with_temp : Bool = false
-  )
-    engine = Engine.new(book, user: user || _uname, temp: with_temp)
-    to_mtl = rmode == "mtl"
+  @[AC::Route::POST("/qtran")]
+  def qtran(udict : Int32, format : String = "txt", apply_cap : Bool = true)
+    w_temp = cookies["w_temp"]?.try(&.value) || "f"
+
+    engine = Engine.new(udict, user: _uname, temp: w_temp == "t")
+    to_mtl = format == "mtl"
 
     input = request.body.not_nil!.gets_to_end
-    lines = input.split("\n").map!(&.strip)
+    lines = input.split("\n", remove_empty: true).map!(&.strip)
 
     @render_called = true
     res = @context.response

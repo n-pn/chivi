@@ -9,6 +9,14 @@ export default class MtData {
   _html: string
   _text: string
 
+  static parse_cvmtl(input = ''): [MtData[], number, number] {
+    if (!input) return [[], 0, 0]
+    const [lines, extra = ''] = input.split('\n$\t$\t$\n')
+    const args = extra.split('\t')
+
+    return [MtData.parse_lines(lines), +args[0], +args[1]]
+  }
+
   static parse_lines(input = '') {
     if (!input) return []
     return input.split('\n').map((x) => new MtData(x))

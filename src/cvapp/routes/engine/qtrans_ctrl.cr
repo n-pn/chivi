@@ -16,10 +16,10 @@ class CV::QtransCtrl < CV::BaseCtrl
 
   @[AC::Route::PUT("/_db/qtran/mterror", body: :form)]
   def mtspec(form : SpecForm, _caps : Bool = false)
-    cvmtl = MtCore.generic_mtl(form.dname, form.uname || _viuser.uname)
+    engine = MtCore.generic_mtl(form.dname, form.uname || _viuser.uname)
 
     output = String.build do |io|
-      cvmtl.cv_plain(form.input, cap_first: _caps).to_txt(io)
+      engine.cv_plain(form.input, cap_first: _caps).to_txt(io)
       io << '\n'
       MtCore.hanviet_mtl.translit(form.input, _caps)
     end
@@ -102,11 +102,11 @@ class CV::QtransCtrl < CV::BaseCtrl
   def cv_post(form : ConvertForm,
               dname : String = "combine")
     form.validate!(_privi)
-    cvmtl = MtCore.generic_mtl(dname, _viuser.uname)
+    engine = MtCore.generic_mtl(dname, _viuser.uname)
 
     output = String.build do |str|
       form.input.each_line do |line|
-        cvmtl.cv_plain(line).to_txt(str)
+        engine.cv_plain(line).to_txt(str)
         str << '\n'
       end
     end
@@ -115,17 +115,13 @@ class CV::QtransCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::POST("/_db/cv_chap")]
-  def cv_chap(wn_id : Int32 = 0,
-              cv_title : String = "none",
-              w_temp : String? = nil,
-              label : String? = nil)
+  def cv_chap(wn_id : Int32 = 0, cv_title : String = "none", label : String? = nil)
     dname = M1::DbDict.get_dname(-wn_id)
+    w_temp = cookies["w_temp"]?.try(&.value) || "t"
+    engine = MtCore.generic_mtl(dname, user: _uname, temp: w_temp == "t")
 
-    w_temp ||= cookies["w_temp"]?.try(&.value) || "t"
-    cvmtl = MtCore.generic_mtl(dname, _uname, temp: w_temp == "t")
-
-    render_title = RenderTitle.parse(cv_title)
     input = request.body.not_nil!.gets_to_end
+    render_title = RenderTitle.parse(cv_title)
 
     output = String.build do |str|
       stime = Time.monotonic
@@ -133,7 +129,7 @@ class CV::QtransCtrl < CV::BaseCtrl
       iter = input.each_line
       head = iter.next.as(String)
 
-      mtl = !render_title.none? ? cvmtl.cv_title(head) : cvmtl.cv_plain(head)
+      mtl = !render_title.none? ? engine.cv_title(head) : engine.cv_plain(head)
       mtl.to_mtl(str)
 
       str << '\t' << ' ' << label if label
@@ -141,12 +137,12 @@ class CV::QtransCtrl < CV::BaseCtrl
       iter.each do |line|
         str << '\n'
 
-        mtl = render_title.all? ? cvmtl.cv_title(line) : cvmtl.cv_plain(line)
+        mtl = render_title.all? ? engine.cv_title(line) : engine.cv_plain(line)
         mtl.to_mtl(str)
       end
 
       tspan = (Time.monotonic - stime).total_milliseconds.round.to_i
-      dsize = cvmtl.dicts.last.size
+      dsize = engine.dicts.last.size
 
       str << "\n$\t$\t$\n" << tspan << '\t' << dsize << '\t' << dname
     end
