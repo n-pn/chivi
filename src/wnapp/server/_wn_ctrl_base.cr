@@ -8,6 +8,8 @@ abstract class AC::Base
   CACHE = {} of String => WN::WnSeed
 
   private def get_wn_seed(wn_id : Int32, sname : String)
+    sname = "_" if sname[0] == '#'
+
     CACHE["#{wn_id}/#{sname}"] ||= WN::WnSeed.get(wn_id, sname) || begin
       unless min_privi = auto_min_privi(sname)
         raise NotFound.new("Nguồn truyện không tồn tại")

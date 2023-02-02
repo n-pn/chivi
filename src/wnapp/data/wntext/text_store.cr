@@ -53,7 +53,8 @@ module WN::TextStore
   @[AlwaysInline]
   def read_txt_file(txt_path : String)
     # Log.info { "found in txt folder: #{txt_path}" }
-    File.read(txt_path, encoding: ENCODING).split("\n\n")
+    body = File.read(txt_path, encoding: ENCODING)
+    body.empty? ? [""] : body.split("\n\n")
   end
 
   # save chap text file with body parts provided

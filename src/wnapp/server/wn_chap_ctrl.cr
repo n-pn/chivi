@@ -65,12 +65,12 @@ class WN::ChapCtrl < AC::Base
     zh_text = zh_chap.body
 
     # auto reload remote texts
-    if no_text?(zh_text) && should_auto_fetch?(load_mode)
+    if zh_text.size < 2 && should_auto_fetch?(load_mode)
       zh_text = wn_seed.fetch_text!(zh_chap, _uname, force: load_mode == 2)
     end
 
     # save chap text directly to `temps` folder
-    unless no_text?(zh_text) || zh_chap.on_txt_dir?
+    unless zh_text.size < 2 || zh_chap.on_txt_dir?
       spawn zh_chap.save_body_copy!(seed: wn_seed, _flag: 2)
     end
 

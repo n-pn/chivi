@@ -169,8 +169,13 @@ class WN::WnSeed
     self.bump_times(parser.last_mtime, force: true)
     self.save!(self.class.repo)
 
-    # do not keep remote chap id info if seed is not a remote one
-    raw_chaps.each { |x| x.s_cid = x.ch_no } if self.sname[0] != '!'
+    if self.sname[0] == '!'
+      # _path can be generated from `s_cid` field
+      raw_chaps.each(&._path = "")
+    else
+      # do not keep remote chap id info if seed is not a remote one
+      raw_chaps.each { |x| x.s_cid = x.ch_no }
+    end
 
     self.zh_chaps.upsert_chap_infos(raw_chaps)
     self.reload_content!
@@ -182,23 +187,24 @@ class WN::WnSeed
     # self.vi_chaps.regen_tl!(self.zh_chaps.db_path, self.dname)
   end
 
-  def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Array(String)
-    case path = chap._path
-    when ""
-      href = SiteLink.text_url(self.sname, self.s_bid, chap.s_cid)
-      return chap.body if href.empty?
-    when .starts_with?('!')
-      bg_path = path.split(':').first
+  private def get_fetch_url(chap : WnChap)
+    if self.sname[0] == '!'
+      SiteLink.text_url(self.sname, self.s_bid, chap.s_cid)
+    elsif chap._path.starts_with?('!')
+      bg_path = chap._path.split(':').first
 
       sname, s_bid, s_cid = bg_path.split('/')
-      href = SiteLink.text_url(sname, s_bid.to_i, s_cid.to_i)
-    when .starts_with?("http")
-      href = path
+      SiteLink.text_url(sname, s_bid.to_i, s_cid.to_i)
     else
-      return chap.body
+      chap._path
     end
+  end
 
+  def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Array(String)
+    href = get_fetch_url(chap)
     return chap.body if href.empty?
+
+    Log.info { "HIT: #{href}".colorize.blue }
     parser = RmText.new(href, ttl: force ? 3.minutes : 1.years)
 
     chap.save_body!(parser.title, parser.body, seed: self, uname: uname)
