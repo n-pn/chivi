@@ -36,8 +36,8 @@
     <div class="form-msg _err">{msg_text}</div>
   {:else if msg_type == 'ok'}
     <div class="form-msg _ok">
-      <p>Một mật khẩu tạm thời đã được gửi tới hòm thư của bạn</p>
-      <p>Check thử trong thư mục Spam nếu không thấy hiện trong inbox.</p>
+      <p>Một mật khẩu tạm thời đã được gửi tới hòm thư của bạn.</p>
+      <p>Mật khẩu này sẽ có hiệu lực trong vòng 5 phút.</p>
     </div>
   {/if}
 

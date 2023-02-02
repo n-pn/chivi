@@ -49,17 +49,17 @@ class CV::Viuser
     Crypto::Bcrypt::Password.new(cpass).verify(upass) || pwtemp?(upass)
   end
 
-  PWTEMP_TSPAN = 5.minutes
-
   def pwtemp?(upass : String)
     self.pwtemp == upass && self.pwtemp_until >= Time.utc.to_unix
   end
+
+  PWTEMP_TSPAN = 5.minutes
 
   def set_pwtemp!
     self.pwtemp = HashUtil.rand_str(8)
     self.pwtemp_until = (Time.utc + PWTEMP_TSPAN).to_unix
 
-    save!
+    self.save!
   end
 
   TSPAN_UNIT = 1.days.total_seconds.to_i

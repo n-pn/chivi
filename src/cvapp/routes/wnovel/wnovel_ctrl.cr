@@ -50,7 +50,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
     Nvinfo.find({id: wn_id}) || raise NotFound.new("Quyển sách không tồn tại!")
   end
 
-  @[AC::Route::GET("/:wn_id")]
+  @[AC::Route::GET("/:wn_id/show")]
   def show(wn_id : Int64) : Nil
     nvinfo = get_wnovel(wn_id)
 

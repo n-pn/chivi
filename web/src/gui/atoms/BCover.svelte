@@ -20,7 +20,7 @@
 
 <picture class={$$props.class || 'round'}>
   <source {srcset} />
-  <img src="/imgs/empty.png" alt="" on:error={() => (cursor += 1)} />
+  <img src="/imgs/blank.png" alt="" on:error={() => (cursor += 1)} />
 </picture>
 
 <style lang="scss">

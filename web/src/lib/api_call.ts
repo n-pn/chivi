@@ -41,7 +41,7 @@ export const api_call = (url: string, body: ReqBody, method = 'POST') => {
 export const ROUTES = {
   // book info
   'wnovels.index': '/_db/books',
-  'wnovels.show': (id: any) => `/_db/books/${id}`,
+  'wnovels.show': (id: any) => `/_db/books/${id}/show`,
   'wnovels.front': (id: any) => `/_db/books/${id}/front`,
   'wnovels.edit': (id: any) => `/_db/books/${id}/+edit`,
 

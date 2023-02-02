@@ -57,11 +57,19 @@ class CV::SigninCtrl < CV::BaseCtrl
 
   record PwtempForm, email : String do
     include JSON::Serializable
+
+    def after_initialize
+      @email = @email.strip
+    end
   end
 
   @[AC::Route::POST("/pwtemp", body: :form)]
   def pwtemp(form : PwtempForm)
-    Viuser.find({email: form.email}).try { |user| spawn send_pwtemp_email(user) }
+    if user = Viuser.find({email: form.email})
+      user.set_pwtemp!
+      send_pwtemp_email(user)
+    end
+
     render :accepted, text: "Đã gửi email"
   end
 
