@@ -10,4 +10,16 @@ declare namespace CV {
     _prev: string
     _next: string
   }
+
+  interface Zhchap {
+    ztext: string
+    cvmtl: string
+    title: string
+    //
+    grant: boolean
+    privi: number
+    cpart: number
+    //
+    _path?: string
+  }
 }

@@ -10,9 +10,9 @@ class WN::ChapCtrl < AC::Base
     render json: wn_seed.vi_chaps.all(pg_no)
   end
 
-  @[AC::Route::GET("/:wn_id/:sname/:ch_no/:part_no")]
+  @[AC::Route::GET("/:wn_id/:sname/:ch_no/:cpart")]
   def show(wn_id : Int32, sname : String,
-           ch_no : Int32, part_no : Int32,
+           ch_no : Int32, cpart : Int32,
            load_mode : Int32 = 0)
     wn_seed = get_wn_seed(wn_id, sname)
     vi_chap = get_vi_chap(wn_seed, ch_no)
@@ -23,20 +23,21 @@ class WN::ChapCtrl < AC::Base
     zh_chap = wn_seed.zh_chap(ch_no).not_nil!
     can_read = _privi >= read_privi
 
-    ztext = can_read ? load_ztext(wn_seed, zh_chap, part_no, load_mode) : ""
+    ztext = can_read ? load_ztext(wn_seed, zh_chap, cpart, load_mode) : ""
 
-    label = "[#{part_no}/#{zh_chap.p_len}]" if zh_chap.p_len > 1
+    label = "[#{cpart}/#{zh_chap.p_len}]" if zh_chap.p_len > 1
     cvmtl = ztext.empty? ? "" : load_cv_data(wn_id, ztext, label)
 
     vi_chap.p_len = zh_chap.p_len
     # vi_chap.c_len = zh_chap.c_len
     # vi_chap.mtime = zh_chap.mtime
-    # part_no = 1 if part_no < 1
+    cpart = 1 if cpart < 1
 
     render json: {
       curr_chap: vi_chap,
-      _prev_url: prev_url(wn_seed, vi_chap, part_no),
-      _next_url: next_url(wn_seed, vi_chap, part_no),
+      _prev_url: prev_url(wn_seed, vi_chap, cpart),
+      _next_url: next_url(wn_seed, vi_chap, cpart),
+
       ###
       chap_data: {
         ztext: ztext,
@@ -45,6 +46,7 @@ class WN::ChapCtrl < AC::Base
         ##
         privi: read_privi,
         grant: can_read,
+        cpart: cpart,
         _path: zh_chap._path,
       },
     }
@@ -61,7 +63,7 @@ class WN::ChapCtrl < AC::Base
     end
   end
 
-  private def load_ztext(wn_seed : WnSeed, zh_chap : WnChap, part_no : Int32, load_mode = 0)
+  private def load_ztext(wn_seed : WnSeed, zh_chap : WnChap, cpart : Int32, load_mode = 0)
     zh_text = zh_chap.body
 
     # auto reload remote texts
@@ -74,8 +76,8 @@ class WN::ChapCtrl < AC::Base
       spawn zh_chap.save_body_copy!(seed: wn_seed, _flag: 2)
     end
 
-    part_no = zh_text.size - 1 if part_no >= zh_text.size
-    zh_text.size < 2 ? "" : "#{zh_text[0]}\n#{zh_text[part_no]}"
+    cpart = zh_text.size - 1 if cpart >= zh_text.size
+    zh_text.size < 2 ? "" : "#{zh_text[0]}\n#{zh_text[cpart]}"
   end
 
   @[AlwaysInline]

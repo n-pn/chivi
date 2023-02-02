@@ -12,6 +12,8 @@
 
   import type { PageData } from './$types'
   import { chap_path, seed_path, _pgidx } from '$lib/kit_path'
+  import { api_call } from '$lib/api_call'
+  import { onMount } from 'svelte'
   export let data: PageData
 
   $: ({ nvinfo, curr_seed, seed_data, curr_chap, chap_data } = data)
@@ -40,33 +42,37 @@
     return { list, prev, next }
   }
 
-  // async function update_history(lock: boolean) {
-  //   const { sname, cpart } = chmeta
-  //   const { chidx, title, uslug } = chinfo
+  onMount(() => {
+    update_memo(false)
+  })
 
-  //   const url = `/_db/_self/books/${nvinfo.id}/access`
-  //   const body = { sname, cpart, chidx, title, uslug, locked: lock }
+  async function update_memo(locking: boolean) {
+    const { chidx: ch_no, title, uslug } = curr_chap
+    const { sname } = curr_seed
+    const { cpart } = chap_data
 
-  //   try {
-  //     await api_call(url, body, 'PUT')
+    const url = `/_db/_self/books/${nvinfo.id}/access`
+    const body = { sname, ch_no, cpart, title, uslug, locking }
 
-  //     // $page.data.ubmemo = res
-  //   } catch (ex) {
-  //     alert(ex.body.message)
-  //   }
-  // }
+    try {
+      data.ubmemo = await api_call(url, body, 'PUT')
+    } catch (ex) {
+      alert(ex.body.message)
+    }
+  }
 
-  // $: [on_memory, memo_icon] = check_memo($page.data.ubmemo)
+  $: [on_memory, memo_icon] = check_memo(data.ubmemo)
 
-  // function check_memo(ubmemo: CV.Ubmemo): [boolean, string] {
-  //   let on_memory = false
-  //   if (ubmemo.sname == chmeta.sname) {
-  //     on_memory = ubmemo.chidx == chinfo.chidx && ubmemo.cpart == chmeta.cpart
-  //   }
+  function check_memo(ubmemo: CV.Ubmemo): [boolean, string] {
+    let on_memory = false
+    if (ubmemo.sname == curr_seed.sname) {
+      on_memory =
+        ubmemo.chidx == curr_chap.chidx && ubmemo.cpart == chap_data.cpart
+    }
 
-  //   if (!ubmemo.locked) return [on_memory, 'menu-2']
-  //   return on_memory ? [true, 'bookmark'] : [false, 'bookmark-off']
-  // }
+    if (!ubmemo.locked) return [on_memory, 'menu-2']
+    return on_memory ? [true, 'bookmark'] : [false, 'bookmark-off']
+  }
 
   async function on_fixraw(line_no: number, orig: string, edit: string) {
     // const url = `/_db/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}`
@@ -152,11 +158,11 @@
             <span>Dịch lại</span>
           </button> -->
 
-          <!-- {#if on_memory && $page.data.ubmemo.locked}
+          {#if on_memory && data.ubmemo.locked}
             <button
               class="gmenu-item"
               disabled={$session.privi < 0}
-              on:click={() => update_history(false)}
+              on:click={() => update_memo(false)}
               data-kbd="p">
               <SIcon name="bookmark-off" />
               <span>Bỏ đánh dấu</span>
@@ -165,12 +171,12 @@
             <button
               class="gmenu-item"
               disabled={$session.privi < 0}
-              on:click={() => update_history(true)}
+              on:click={() => update_memo(true)}
               data-kbd="p">
               <SIcon name="bookmark" />
               <span>Đánh dấu</span>
             </button>
-          {/if} -->
+          {/if}
 
           <a href={paths.list} class="gmenu-item" data-kbd="h">
             <SIcon name="list" />

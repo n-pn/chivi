@@ -40,16 +40,20 @@ class CV::MarkBookCtrl < CV::BaseCtrl
   struct AccessData
     include JSON::Serializable
 
-    getter sname : String, chidx : Int16, cpart : Int16
-    getter title : String, uslug : String
-    getter locked : Bool = false
+    getter sname : String, ch_no : Int16
+    getter cpart : Int16 = 1
+
+    getter title : String = ""
+    getter uslug : String = "-"
+
+    getter locking : Bool = false
   end
 
   @[AC::Route::PUT("/:wn_id/access", body: :data)]
   def update_access(wn_id : Int64, data : AccessData)
     book_mark.mark!(
-      data.sname, data.chidx, data.cpart,
-      data.title, data.uslug, data.locked ? 1 : 0
+      data.sname, data.ch_no, data.cpart,
+      data.title, data.uslug, data.locking ? 1 : 0
     )
     render json: UbmemoView.new(book_mark)
   end
