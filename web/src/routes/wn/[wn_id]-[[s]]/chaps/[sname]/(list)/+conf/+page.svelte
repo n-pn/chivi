@@ -1,10 +1,4 @@
 <script lang="ts">
-  // import { page } from '$app/stores'
-  import { goto } from '$app/navigation'
-
-  import { api_call } from '$lib/api_call'
-  import { SIcon } from '$gui'
-
   import ReadPrivi from './ReadPrivi.svelte'
   import Remotes from './Remotes.svelte'
   import DeleteSeed from './DeleteSeed.svelte'

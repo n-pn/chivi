@@ -140,7 +140,7 @@ class WN::WnSeed
   def delete_chaps!(from_ch_no : Int32)
     # FIXME: support delete upto
     self.zh_chaps.delete_chaps!(from_ch_no)
-    @vi_chaps = nil
+    self.vi_chaps.delete_chaps!(from_ch_no)
     @chap_total = from_ch_no - 1
   end
 

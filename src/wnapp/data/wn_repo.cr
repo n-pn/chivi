@@ -55,7 +55,7 @@ class WN::WnRepo
   def delete_chaps!(from_ch_no : Int32)
     open_tx do |db|
       # delete previous deleted entries
-      db.exec "delete chaps where ch_no <= ?", -from_ch_no
+      db.exec "delete from chaps where ch_no <= ?", -from_ch_no
 
       # soft delete entries by reverting `ch_no` value
       db.exec "update chaps set ch_no = -ch_no where ch_no >= ?", from_ch_no
