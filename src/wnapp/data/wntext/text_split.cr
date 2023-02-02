@@ -44,12 +44,12 @@ module WN::TextSplit
   # end
 
   def split_entry(title : String, lines : Array(String))
-    c_len = title.size + lines.sum(&.size)
+    c_len = title.size &+ lines.sum(&.size) &+ lines.size
 
     if c_len <= UPPER
-      limit = UPPER
+      limit = c_len
     else
-      p_len = c_len <= UPPER ? 1 : ((c_len - 1) // LIMIT) + 1
+      p_len = (c_len - 1) // LIMIT + 1
       limit = c_len // p_len
     end
 

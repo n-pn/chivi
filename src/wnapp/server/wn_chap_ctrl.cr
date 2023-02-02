@@ -25,7 +25,7 @@ class WN::ChapCtrl < AC::Base
 
     ztext = can_read ? load_ztext(wn_seed, zh_chap, part_no, load_mode) : ""
 
-    label = "[#{part_no}/#{zh_chap.p_len}]" if part_no > 1
+    label = "[#{part_no}/#{zh_chap.p_len}]" if zh_chap.p_len > 1
     cvmtl = ztext.empty? ? "" : load_cv_data(wn_id, ztext, label)
 
     render json: {
