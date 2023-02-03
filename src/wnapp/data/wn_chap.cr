@@ -60,7 +60,7 @@ class WN::WnChap
 
   def uslug(title = self.vtitle)
     input = title.unicode_normalize(:nfd).gsub(/[\x{0300}-\x{036f}]/, "")
-    input.downcase.split(/\W+/, remove_empty: true).first(7).join('-')
+    input.downcase.tr("đ", "d").split(/\W+/, remove_empty: true).first(7).join('-')
   end
 
   def _href(part_no : Int32 = 1)
@@ -124,7 +124,7 @@ class WN::WnChap
       line unless line.empty?
     end
 
-    save_body!(lines.shift, lines, seed, uname, _flag)
+    save_body!(lines.shift, lines, seed, uname: uname, _flag: _flag)
   end
 
   def save_body!(title : String, lines : Array(String),

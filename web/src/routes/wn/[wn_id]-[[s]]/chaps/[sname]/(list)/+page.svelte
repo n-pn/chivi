@@ -81,7 +81,7 @@
       <a
         class="m-btn _primary _fill"
         class:_disable={!can_upsert}
-        href="{edit_href}?start=${curr_seed.chmax + 1}"
+        href="{edit_href}?start={curr_seed.chmax + 1}"
         data-tip="Tự thêm nội dung chương tiết cho nguồn truyện"
         data-tip-loc="bottom"
         data-tip-pos="right">

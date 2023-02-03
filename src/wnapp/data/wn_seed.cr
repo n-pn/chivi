@@ -145,7 +145,6 @@ class WN::WnSeed
     end
 
     self.chaps.upsert_chap_infos(raw_chaps)
-    self.chaps.translate!(raw_chaps.first.ch_no, raw_chaps.last.ch_no)
   end
 
   def update_stats!(chmax : Int32, @mtime : Int64 = Time.utc.to_unix)
@@ -176,8 +175,7 @@ class WN::WnSeed
   end
 
   def save_chap!(chap : WnChap) : Nil
-    self.chaps.upsert_entry(chap)
-    self.chaps.translate!(chap.ch_no, chap.ch_no)
+    self.chaps.upsert_chap_full(chap)
   end
 
   def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Array(String)
@@ -188,7 +186,6 @@ class WN::WnSeed
     parser = RmText.new(href, ttl: force ? 3.minutes : 1.years)
 
     chap.save_body!(parser.title, parser.body, seed: self, uname: uname)
-    self.chaps.translate!(chap.ch_no, chap.ch_no)
 
     chap.body
   rescue ex

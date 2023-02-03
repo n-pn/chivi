@@ -52,25 +52,18 @@ class WN::WnRepo
   end
 
   def translate!(min = 1, max = 99999)
-    trans = [] of {String, String, Int32}
-
-    open_db do |db|
+    open_tx do |db|
       query = <<-SQL
-        select ch_no, title, chdiv from chaps
+        select title, chdiv, ch_no from chaps
         where ch_no >= ? and ch_no <= ?
       SQL
 
-      db.query_each(query, min, max) do |rs|
-        ch_no, title, chdiv = rs.read(Int32, String, String)
+      raws = db.query_all(query, min, max, as: {String, String, Int32})
 
-        title = @cvmtl.cv_title(title).to_txt unless title.blank?
-        chdiv = @cvmtl.cv_title(chdiv).to_txt unless chdiv.blank?
-
-        trans << {title, chdiv, ch_no} unless title.empty?
+      raws.each do |ztitle, zchdiv, ch_no|
+        upsert_trans(db, ztitle, zchdiv, ch_no)
       end
     end
-
-    self.bulk_update({"vtitle", "vchdiv"}, trans)
   end
 
   def all(pg_no : Int32 = 1, limit = 32) : Array(WnChap)
@@ -109,7 +102,7 @@ class WN::WnRepo
 
   ###
 
-  private def upsert_sql(fields : Enumerable(String))
+  private def upsert_sql(fields : Enumerable(String), unsafe : Bool = false)
     String.build do |sql|
       sql << "insert into chaps ("
       fields.join(sql, ", ")
@@ -119,25 +112,38 @@ class WN::WnRepo
       sql << ") on conflict (ch_no) do update set "
 
       fields.join(sql, ", ") { |f, io| io << f << " = excluded." << f }
-      sql << " where ch_no = excluded.ch_no and _flag < 2"
+      sql << " where ch_no = excluded.ch_no"
+      sql << " where _flag < 2" if unsafe
     end
   end
 
   def upsert_chap_infos(chapters : Enumerable(WnChap))
     open_tx do |db|
-      query = upsert_sql(WnChap::INFO_FIELDS)
+      query = upsert_sql(WnChap::INFO_FIELDS, unsafe: true)
 
-      chapters.each do |raw|
-        db.exec query, *raw.info_values
+      chapters.each do |chap|
+        db.exec query, *chap.info_values
+        upsert_trans(db, chap.title, chap.chdiv, chap.ch_no)
       end
     end
   end
 
-  def upsert_entry(entry : WnChap)
+  def upsert_chap_full(chap : WnChap)
     open_tx do |db|
-      query = upsert_sql(WnChap::FULL_FIELDS)
-      db.exec query, *entry.full_values
+      query = upsert_sql(WnChap::FULL_FIELDS, unsafe: false)
+      db.exec query, *chap.full_values
+      upsert_trans(db, chap.title, chap.chdiv, chap.ch_no)
     end
+  end
+
+  private def upsert_trans(db, ztitle : String, zchdiv : String, ch_no : Int32)
+    return if ztitle.empty?
+
+    vtitle = @cvmtl.cv_title(ztitle).to_txt
+    vchdiv = zchdiv.blank? ? "" : @cvmtl.cv_title(zchdiv).to_txt
+
+    query = "update chaps set vtitle = ?, vchdiv = ? where ch_no = ?"
+    db.exec query, vtitle, vchdiv, ch_no
   end
 
   ###
@@ -158,27 +164,27 @@ class WN::WnRepo
     values.size
   end
 
-  def copy_bg_to_fg(bg_db_path : String,
-                    bg_sname : String, bg_s_bid : Int32,
-                    chmin = 0, chmax = 999, offset = 0)
-    open_tx do |db|
-      db.exec "attach database '#{bg_db_path}' as src"
+  # def copy_bg_to_fg(bg_db_path : String,
+  #                   bg_sname : String, bg_s_bid : Int32,
+  #                   chmin = 0, chmax = 999, offset = 0)
+  #   open_tx do |db|
+  #     db.exec "attach database '#{bg_db_path}' as src"
 
-      query = <<-SQL
-        insert or replace into chaps (
-          title, chdiv, c_len, p_len, mtime, uname,
-          ch_no, s_cid, _path)
-        select
-          title, chdiv, c_len, p_len, mtime, uname,
-          sc.ch_no + #{offset} as ch_no,
-          (sc.ch_no + #{offset}) * 10 as s_cid,
-          ? || '/' || ? || '/' || sc.s_cid || ':' || sc.ch_no || ':' || sc.p_len as _path
-        from src.chaps as sc where sc.ch_no >= ? and sc.ch_no <= ?
-      SQL
+  #     query = <<-SQL
+  #       insert or replace into chaps (
+  #         title, chdiv, c_len, p_len, mtime, uname,
+  #         ch_no, s_cid, _path)
+  #       select
+  #         title, chdiv, c_len, p_len, mtime, uname,
+  #         sc.ch_no + #{offset} as ch_no,
+  #         (sc.ch_no + #{offset}) * 10 as s_cid,
+  #         ? || '/' || ? || '/' || sc.s_cid || ':' || sc.ch_no || ':' || sc.p_len as _path
+  #       from src.chaps as sc where sc.ch_no >= ? and sc.ch_no <= ?
+  #     SQL
 
-      db.exec query, bg_sname, bg_s_bid, chmin, chmax
-    end
-  end
+  #     db.exec query, bg_sname, bg_s_bid, chmin, chmax
+  #   end
+  # end
 
   ####
 
