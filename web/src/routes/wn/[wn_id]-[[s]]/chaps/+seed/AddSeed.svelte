@@ -8,69 +8,29 @@
   let url = ''
   let err = ''
 
-  $: [sname, s_bid] = extract_nvseed(url)
+  $: [sname, s_bid] = extract_seed_data(url)
 
   async function submit() {
     err = ''
-    const url = `/_wn/seeds/${nvinfo.id}`
-    const res = await api_call(url, { sname, s_bid }, 'PUT')
 
-    if (res.error) err = res.error
-    else goto(`/wn/${nvinfo.bslug}/chaps/${sname}`)
+    const body = { wn_id: nvinfo.id, sname, s_bid }
+    try {
+      await api_call(`/_wn/seeds`, body, 'PUT')
+      await goto(`/wn/${nvinfo.bslug}/chaps/${sname}`)
+    } catch (ex) {
+      err = ex.body.message
+    }
   }
 
-  function extract_nvseed(href: string) {
+  function extract_seed_data(href: string) {
     if (!href || !href.startsWith('http')) return ['', '']
 
     const url = new URL(href)
-    const name = '!' + url.hostname.replace('www.', '')
 
-    const slugs = url.pathname.slice(1).split('/')
+    const sname = '!' + url.hostname.replace('www.', '')
+    const s_bid = url.pathname.split(/\W/).filter(Boolean).pop()
 
-    switch (name) {
-      case '69shu':
-        const snvid_69shu = slugs[0] == 'txt' ? slugs[1] : slugs[0]
-        return [name, snvid_69shu.replace('.htm', '')]
-
-      case 'uukanshu':
-      case 'bxwxorg':
-      case 'rengshu':
-      case 'xbiquge':
-      case 'hetushu':
-      case 'biqugee':
-      case 'ptwxz':
-      case '133txt':
-      case 'uuks':
-      case 'kanshu8':
-        return [name, slugs[1]]
-
-      case 'yannuozw':
-        return [name, slugs[1].replace('.html', '')]
-
-      case 'biqugse':
-      case 'bqxs520':
-        return [name, slugs[0]]
-
-      case 'paoshu8':
-      case '5200':
-      case 'b5200':
-      case 'biqu5200':
-      case 'shubaow':
-        return [name, slugs[0].split('_').pop()]
-
-      case 'bxwx.io':
-        return ['bxwxio', slugs[0].split('_').pop()]
-
-      case 'duokanba':
-        return ['duokan8', slugs[0].split('_').pop()]
-
-      case 'zxcs':
-        return ['zxcs_me', slugs[1]]
-
-      default:
-        err = 'Nguồn truyện chưa được hỗ trợ'
-        return ['', '']
-    }
+    return [sname, s_bid]
   }
 </script>
 
@@ -92,14 +52,14 @@
   </div>
 
   <div class="form-field">
-    <label for="snvid" class="form-label">ID quyển sách</label>
-    <input type="text" name="snvid" class="m-input" bind:value={snvid} />
+    <label for="s_bid" class="form-label">ID quyển sách</label>
+    <input type="text" name="s_bid" class="m-input" bind:value={s_bid} />
   </div>
 
   <button
     class="m-btn _success _fill"
     on:click={submit}
-    disabled={!sname || !snvid}
+    disabled={!sname || !s_bid}
     data-tip="Yêu cầu quyền hạn: 2">
     <span>Thêm nguồn</span>
     <SIcon name="privi-2" iset="sprite" />
@@ -134,7 +94,7 @@
     width: 6rem;
   }
 
-  [name='snvid'] {
+  [name='s_bid'] {
     text-align: center;
     width: 5.5rem;
   }
