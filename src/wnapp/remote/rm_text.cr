@@ -76,7 +76,7 @@ class WN::RmText
   end
 
   def reject_first_line?(first : String)
-    first =~ /^笔趣阁|笔下文学|，#{Regex.escape bname}/ || first.sub(self.title, "") !~ /\p{Han}/
+    first =~ /^笔趣阁|笔下文学|，#{Regex.escape(bname)}/ || first.sub(self.title, "") !~ /\p{Han}/
   end
 
   private def get_hetu_body

@@ -104,6 +104,7 @@ class WN::RmCata
     case @conf.parse
     when "plain"    then extract_plain(@conf.query)
     when "chdiv"    then extract_chdiv(@conf.query)
+    when "ymxwx"    then extract_ymxwx(@conf.query)
     when "uukanshu" then extract_uukanshu(@conf.query)
     else                 raise "unsupported #{@conf.parse} parser type"
     end
@@ -116,7 +117,10 @@ class WN::RmCata
   end
 
   private def gen_path(href : String)
+    # TODO: config this in yml
     return href if href.starts_with?("http")
+    return "http:#{href}" if @conf.parse == "ymxwx"
+
     href[0] == '/' ? "#{@host}#{href}" : "#{@root}#{href}"
   end
 
@@ -148,6 +152,23 @@ class WN::RmCata
         add_chap(node.css("a", &.first?), chdiv)
       when :dd
         next if chdiv.includes?("最新章节")
+        add_chap(node.css("a", &.first?), chdiv)
+      end
+    end
+  end
+
+  private def extract_ymxwx(query : String)
+    return unless body = @doc.find(query)
+    chdiv = ""
+
+    body.children.each do |node|
+      next unless node.tag_sym == :li
+
+      case node.attributes["class"]?
+      when "col1 volumn"
+        chdiv = clean_chdiv(node.inner_text)
+      when "col3"
+        next if chdiv.includes?("最新九章")
         add_chap(node.css("a", &.first?), chdiv)
       end
     end

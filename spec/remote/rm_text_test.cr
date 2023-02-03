@@ -25,4 +25,5 @@ rescue err
   puts err.inspect_with_backtrace.colorize.red
 end
 
-fetch_text("http://www.kenshuzw.com/xiaoshuo/30192/16590117/", true)
+# fetch_text("http://www.kenshuzw.com/xiaoshuo/30192/16590117/")
+fetch_text("http://www.ymxwx.com/book/31/31577/172429322.html")
