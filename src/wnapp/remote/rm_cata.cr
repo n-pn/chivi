@@ -66,7 +66,7 @@ class WN::RmCata
     end
 
     def self.load(sname : String)
-      @@confs[sname]? || Conf.new
+      @@confs[sname]? || raise "no matching config"
     end
 
     def self.find(link : String)
@@ -77,7 +77,7 @@ class WN::RmCata
   end
 
   def self.new(link : String, ttl : Time::MonthSpan | Time::Span = 1.years)
-    raise "no matching config" unless conf = Conf.find(link)
+    conf = Conf.find(link) || Conf.load("biquge")
 
     html = RmPage.load_html(link, ttl: ttl, encoding: conf.encoding)
     new(html, conf, link)
