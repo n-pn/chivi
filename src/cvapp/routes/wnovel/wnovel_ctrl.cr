@@ -41,7 +41,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
   @[AC::Route::GET("/find/:bslug")]
   def find(bslug : String) : Nil
     frags = TextUtil.slugify(bslug).split('-')
-    query = "bslug like '#{frags[0]}%' or bslug like '#{frags[-1]}%'"
+    query = "bhash like '#{frags[0]}%' or bhash like '#{frags[-1]}%'"
     render json: {found: Nvinfo.find(query).try(&.bslug)}
   end
 

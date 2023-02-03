@@ -77,18 +77,21 @@ module CV::NvinfoInner
     self.weight = scores + Math.log(self.view_count + 10).to_i
   end
 
-  def fix_names!(bdict : String? = self.dname)
-    self.btitle.regen!(bdict) if bdict
-    self.vname = self.btitle.vname
-
-    tokens = self.btitle.hslug[..-2].split("-")
+  def set_bslug(hslug : String)
+    tokens = hslug.split('-', remove_empty: true)
 
     if tokens.size > 8
       tokens.truncate(0, 8)
       tokens[7] = ""
     end
 
-    self.bslug = bhash[0..5] + tokens.join("-")
+    self.bslug = tokens.join('-')
+  end
+
+  def fix_names!(bdict : String? = self.dname)
+    self.btitle.regen!(bdict) if bdict
+    self.vname = self.btitle.vname
+    self.set_bslug(self.btitle.hslug)
     self.save!
   end
 end

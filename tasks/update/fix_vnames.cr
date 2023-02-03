@@ -1,6 +1,6 @@
-require "./../shared/bootstrap"
+require "../../src/_data/wnovel/nv_info"
 
-CV::VpDict.regular.set("三国", ["Tam Quốc"], "Na")
+# CV::VpDict.regular.set("三国", ["Tam Quốc"], "Na")
 
 def fix_all_entries
   books = CV::Nvinfo.query.order_by(id: :desc).to_a

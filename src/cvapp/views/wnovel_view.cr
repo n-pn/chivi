@@ -9,7 +9,7 @@ struct CV::WnovelView
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "id", @data.id
-      jb.field "bslug", @data.bslug
+      jb.field "bslug", "#{@data.id}-#{@data.bslug}"
 
       jb.field "author_vi", @data.author.vname
       jb.field "btitle_vi", @data.vname
