@@ -13,7 +13,7 @@ struct YS::BookView
   def to_json(jb = JSON::Builder.new)
     jb.object {
       jb.field "id", @data.id
-      jb.field "bslug", @data.bslug
+      jb.field "bslug", "#{@data.id}-#{@data.bslug}"
 
       jb.field "author", @data.author.vname
       jb.field "btitle", @data.vname

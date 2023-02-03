@@ -1,10 +1,6 @@
 class CV::VpHint
   DIR = "var/vhint"
 
-  class_getter cc_cedict : self { new("#{DIR}/lookup/cc_cedict", 128) }
-  class_getter trungviet : self { new("#{DIR}/lookup/trungviet", 128) }
-  class_getter trich_dan : self { new("#{DIR}/lookup/trich_dan", 128) }
-
   class_getter seed_vals : self { new("#{DIR}/phrase/legacy", 256) }
   class_getter user_vals : self { new("#{DIR}/phrase/viuser", 256) }
 
