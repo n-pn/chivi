@@ -53,8 +53,8 @@ tests = [
 # end
 
 fetch_info("http://www.kenshuzw.com/xiaoshuo/30192/0/")
-# fetch_info("https://www.00kxs.com/html/91/91911/")
-# fetch_info("https://www.xklxsw.com/book/119080/")
 fetch_info("http://www.ymxwx.com/book/31/31577/index.html")
-
 fetch_info("https://www.wenku8.net/novel/1/1973/index.htm")
+
+# fetch_info("https://www.00kxs.com/html/91/91911/", true)
+# fetch_info("https://www.xklxsw.com/book/119080/", true)

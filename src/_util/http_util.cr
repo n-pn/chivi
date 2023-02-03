@@ -40,8 +40,10 @@ module HttpUtil
     File.open(file, "w") { |io| Compress::Gzip::Writer.open(io, &.print(data)) }
   end
 
+  USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"
+
   def fetch(url : String, encoding = "UTF-8") : String
-    args = {"-L", "-k", "-s", "-m", "10", url}
+    args = {"-H", "user-agent: #{USER_AGENT}", "-L", "-k", "-s", "-m", "10", url}
     retry = 0
 
     loop do
