@@ -27,3 +27,4 @@ end
 
 # fetch_text("http://www.kenshuzw.com/xiaoshuo/30192/16590117/")
 fetch_text("http://www.ymxwx.com/book/31/31577/172429322.html")
+fetch_text("https://www.wenku8.net/novel/1/1973/139396.htm")

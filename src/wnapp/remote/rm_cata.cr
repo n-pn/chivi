@@ -105,6 +105,7 @@ class WN::RmCata
     when "plain"    then extract_plain(@conf.query)
     when "chdiv"    then extract_chdiv(@conf.query)
     when "ymxwx"    then extract_ymxwx(@conf.query)
+    when "wenku"    then extract_wenku(@conf.query)
     when "uukanshu" then extract_uukanshu(@conf.query)
     else                 raise "unsupported #{@conf.parse} parser type"
     end
@@ -169,6 +170,20 @@ class WN::RmCata
         chdiv = clean_chdiv(node.inner_text)
       when "col3"
         next if chdiv.includes?("最新九章")
+        add_chap(node.css("a", &.first?), chdiv)
+      end
+    end
+  end
+
+  private def extract_wenku(query : String)
+    return unless body = @doc.find(query)
+    chdiv = ""
+
+    body.css("td").each do |node|
+      case node.attributes["class"]?
+      when "vcss"
+        chdiv = clean_chdiv(node.inner_text)
+      when "ccss"
         add_chap(node.css("a", &.first?), chdiv)
       end
     end

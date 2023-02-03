@@ -62,7 +62,7 @@ class WN::RmText
   getter body : Array(String) do
     return get_hetu_body if @conf.unique == "hetu"
 
-    purge_tags = {:script, :div, :h1, :table}
+    purge_tags = {:script, :div, :h1, :table, :ul}
     lines = @doc.get_lines(@conf.body, purge_tags)
     return lines if lines.empty?
 
