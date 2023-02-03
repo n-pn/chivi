@@ -13,7 +13,7 @@ class CV::NvinfoForm
   getter bintro : String?
   getter genres : String?
   getter bcover : String?
-  getter status : String?
+  getter status : Int32?
 
   @[JSON::Field(ignore: true)]
   getter! vi_book : Nvinfo
