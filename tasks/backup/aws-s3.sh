@@ -1,11 +1,10 @@
-aws s3 sync --delete var/dicts/v1 s3://chivi-bak/dicts/v1dic
-aws s3 sync --delete var/dicts/ulogs s3://chivi-bak/dicts/ulogs
-aws s3 sync --delete var/dicts s3://chivi-bak/dicts --exclude "*" --include "*.dic"
+rclone sync var/dicts/v1raw oracle:chivi/dicts/v1raw
+rclone sync var/dicts/v1log oracle:chivi/dicts/v1log
 
-aws s3 sync --delete var/.keep/web_log s3://chivi-bak/web_log
-aws s3 sync --delete var/cvmtl/users s3://chivi-bak/mtl_err
+rclone sync var/.keep/web_log oracle:chivi/users/web_log
+rclone sync var/cvmtl/users oracle:chivi/users/mtl_err
 
-aws s3 sync var/ysapp s3://chivi-bak/ysapp --exclude "*" --include "*.zip" --include "*.db"
+rclone sync var/ysapp oracle:chivi/ysapp --include "*.{db,zip}"
 
-aws s3 sync --delete ~/var/wal_log s3://chivi-bak/wal_log
-aws s3 sync --delete ~/var/pg_data s3://chivi-bak/pg_data
+rclone sync ~/var/wal_log oracle:chivi/wal_log
+rclone sync ~/var/pg_data oracle:chivi/pg_data
