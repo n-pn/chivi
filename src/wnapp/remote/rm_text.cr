@@ -64,13 +64,14 @@ class WN::RmText
 
     purge_tags = {:script, :div, :h1, :table}
     lines = @doc.get_lines(@conf.body, purge_tags)
+    return lines if lines.empty?
 
     lines.shift if reject_first_line?(lines.first)
     lines.pop if lines.last == "(本章完)"
 
     lines
-  rescue err
-    Log.error(exception: err) { "error extracting body" }
+  rescue ex
+    Log.error(exception: ex) { "error extracting body" }
     [] of String
   end
 

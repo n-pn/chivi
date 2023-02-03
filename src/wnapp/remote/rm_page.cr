@@ -43,9 +43,8 @@ class WN::RmPage
   end
 
   def get_lines(query : String, purges : Enumerable(Symbol)) : Array(String)
-    node = find!(query)
+    return [] of String unless node = find(query)
     node.children.each { |x| x.remove! if purges.includes?(x.tag_sym) }
-
     get_lines(node)
   end
 

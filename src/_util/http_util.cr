@@ -45,7 +45,7 @@ module HttpUtil
     retry = 0
 
     loop do
-      Log.debug { "[GET: #{url.colorize.magenta} (retry: #{retry})]" }
+      Log.debug { "[GET: #{url.colorize.magenta} {#{encoding}} (retry: #{retry})]" }
 
       Process.run("curl", args: args) do |proc|
         proc.output.set_encoding(encoding)

@@ -8,12 +8,12 @@
   let url = ''
   let err = ''
 
-  $: [sname, snvid] = extract_nvseed(url)
+  $: [sname, s_bid] = extract_nvseed(url)
 
   async function submit() {
     err = ''
     const url = `/_wn/seeds/${nvinfo.id}`
-    const res = await api_call(url, { sname, snvid }, 'PUT')
+    const res = await api_call(url, { sname, s_bid }, 'PUT')
 
     if (res.error) err = res.error
     else goto(`/wn/${nvinfo.bslug}/chaps/${sname}`)
@@ -23,7 +23,7 @@
     if (!href || !href.startsWith('http')) return ['', '']
 
     const url = new URL(href)
-    const name = clean_hostname(url.hostname)
+    const name = '!' + url.hostname.replace('www.', '')
 
     const slugs = url.pathname.slice(1).split('/')
 
@@ -71,11 +71,6 @@
         err = 'Nguồn truyện chưa được hỗ trợ'
         return ['', '']
     }
-  }
-
-  function clean_hostname(host: string) {
-    host = host.replace('www.', '')
-    return host.replace(/\.(com|org|net|so|me|tv)$/, '')
   }
 </script>
 

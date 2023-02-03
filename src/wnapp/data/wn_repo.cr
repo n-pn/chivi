@@ -113,7 +113,7 @@ class WN::WnRepo
 
       fields.join(sql, ", ") { |f, io| io << f << " = excluded." << f }
       sql << " where ch_no = excluded.ch_no"
-      sql << " where _flag < 2" if unsafe
+      # sql << " and _flag < 2" unless unsafe
     end
   end
 

@@ -5,6 +5,10 @@ require "../../src/_util/site_link"
 
 def fetch_text(sname : String, s_bid : Int32, s_cid : Int32, reset = false)
   link = SiteLink.text_url(sname, s_bid, s_cid)
+  fetch_text(link)
+end
+
+def fetch_text(link : String, reset = false)
   puts "\n[#{link.colorize.blue.bold}]"
 
   chap = WN::RmText.new(link, ttl: reset ? 2.minutes : 10.years)
@@ -14,9 +18,9 @@ def fetch_text(sname : String, s_bid : Int32, s_cid : Int32, reset = false)
   puts "---".colorize.dark_gray
   puts chap.title.colorize.green
   puts "---".colorize.dark_gray
-  puts chap.paras.first(4).join("\n")
+  puts chap.body.first(4).join("\n")
   puts "---".colorize.dark_gray
-  puts chap.paras.last(4).join("\n")
+  puts chap.body.last(4).join("\n")
 rescue err
   puts err.inspect_with_backtrace.colorize.red
 end
@@ -70,4 +74,4 @@ fetch_text("bxwxio", 127400, 52941263, reset: false)
 # fetch_text("yannuozw", 147108, 69474701, reset: false)
 
 # fetch_text("kanshu8", 59127, 47845259, reset: false)
-fetch_text("69shu", 37960, 29004701, reset: true)
+# fetch_text("69shu", 37960, 29004701, reset: true)

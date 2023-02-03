@@ -2,8 +2,12 @@ require "json"
 require "../../src/wnapp/remote/rm_cata.cr"
 require "../../src/_util/site_link"
 
-def fetch_info(sname, s_bid, fresh = false) : Void
+def fetch_info(sname, s_bid, fresh = false) : Nil
   link = SiteLink.mulu_url(sname, s_bid)
+  fetch_info(link, fresh)
+end
+
+def fetch_info(link : String, fresh = false)
   puts "\n[#{link}]".colorize.green.bold
 
   parser = WN::RmCata.new(link, ttl: fresh ? 10.seconds : 10.years)
@@ -15,10 +19,10 @@ def fetch_info(sname, s_bid, fresh = false) : Void
   puts "last_s_cid: #{parser.last_s_cid}"
   puts "------".colorize.green
 
-  parser.chaps.first(4).map { |x| puts x }
+  parser.chaps.first(4).map { |x| puts [x.ch_no, x.s_cid, x.title, x.chdiv, x._path] }
   puts "------".colorize.green
 
-  parser.chaps.last(4).map { |x| puts x }
+  parser.chaps.last(4).map { |x| puts [x.ch_no, x.s_cid, x.title, x.chdiv, x._path] }
   puts "------".colorize.green
 rescue err
   puts err.colorize.red
@@ -47,3 +51,5 @@ tests = [
 tests.each do |sname, s_bid, fresh|
   fetch_info(sname, s_bid, fresh: fresh)
 end
+
+fetch_info("http://www.kenshuzw.com/xiaoshuo/30192/0/")
