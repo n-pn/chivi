@@ -2,12 +2,12 @@ require "log"
 require "colorize"
 require "option_parser"
 
-require "../src/zhlib/models/bcover"
+require "../src/wnapp/data/wnovel/bcover"
 
 def single(link : String, name : String = "", force = false) : Nil
   raise "Empty link" if link.empty?
 
-  cover = ZH::Bcover.load(link)
+  cover = WN::Bcover.load(link)
   cover.do_tasks!(force: force)
 
   puts "[#{cover.name}] saved and uploaded to cloudflare r2!".colorize.yellow

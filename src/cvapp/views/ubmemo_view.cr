@@ -10,7 +10,7 @@ struct CV::UbmemoView
     jb.object do
       if @full
         jb.field "bname", @data.nvinfo.vname
-        jb.field "bslug", @data.nvinfo.bslug
+        jb.field "bslug", "#{@data.nvinfo.id}-#{@data.nvinfo.bslug}"
       end
 
       jb.field "status", @data.status_s

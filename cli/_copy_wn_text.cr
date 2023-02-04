@@ -11,7 +11,7 @@ def copy_book(sname : String, s_bid : String)
   out_dir = "#{TXT_DIR}/#{sname}/#{s_bid}"
   Dir.mkdir_p(out_dir)
 
-  db_path = "sqlite3:var/chaps/infos/#{sname}/#{s_bid}-infos.db"
+  db_path = "sqlite3:var/chaps/infos/#{sname}/#{s_bid}.db"
   DB.open(db_path) do |db|
     db.query_each "select ch_no, _path from chaps" do |rs|
       ch_no, _path = rs.read(Int32, String)
