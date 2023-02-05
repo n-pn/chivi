@@ -28,20 +28,20 @@
 
   let opts = new Opts()
   let err_msg = ''
-  let body = ''
 
   $: {
     chaps = []
     try {
       err_msg = ''
       chaps = split_text(input, opts)
-      body = render_body(chaps)
     } catch (ex) {
       err_msg = ex.message
     }
   }
 
   const split_text = (input: string, options: Opts) => {
+    input = input.replace(/\r?\n|\r/g, '\n')
+
     switch (options.split_mode) {
       case 1:
         return split.split_mode_1(input, options.min_blanks, options.trim_space)
@@ -67,7 +67,7 @@
       const buffer = reader.result as ArrayBuffer
       const encoding = await get_encoding(buffer)
       const decoder = new TextDecoder(encoding)
-      input = decoder.decode(buffer).replace(/\r?\n|\r/g, '\n')
+      input = decoder.decode(buffer)
     }
   })
 
@@ -79,6 +79,8 @@
   async function submit(_evt: Event) {
     err_msg = ''
     loading = true
+
+    const body = render_body(chaps)
 
     const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}?start=${start}`
     const res = await fetch(url, { method: 'POST', body })
@@ -97,9 +99,13 @@
   function render_body(chaps: Zchap[]) {
     let body = ''
 
+    let prev = ''
+
     for (const { title, chdiv, lines } of chaps) {
-      if (chdiv) body += '\n\n' + chdiv
-      body += '\n\n' + title
+      if (chdiv) body += prev + chdiv
+      body += prev + title
+
+      prev = '\n\n'
       for (const line of lines) body += '\n' + line
     }
 

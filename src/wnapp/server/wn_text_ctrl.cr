@@ -44,7 +44,7 @@ class WN::TextCtrl < AC::Base
       save_dir = "var/texts/users/#{wn_id}-#{sname}"
       Dir.mkdir_p(save_dir)
 
-      file_name = "#{Time.utc.to_unix // 60}-#{start}-@#{_uname}"
+      file_name = "#{Time.utc.to_unix // 60}-#{start}-[#{_uname}]"
       file_path = "#{save_dir}/#{file_name}.txt"
       File.write(file_path, ztext)
     end

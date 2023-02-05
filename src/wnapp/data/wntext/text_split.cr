@@ -27,6 +27,8 @@ module WN::TextSplit
       end
     end
 
+    chaps << Entry.new(lines, chdiv) unless lines.empty?
+
     chaps
   end
 
