@@ -102,7 +102,7 @@
   <section class="body" class:big_text>
     {#if _loading}
       <div class="loading">
-        <SIcon name="loader" spin={_loading} />
+        <SIcon name="loader-2" spin={_loading} />
         <span>Đang tải dữ liệu</span>
       </div>
     {:else if content == '<p>$$$</p>'}

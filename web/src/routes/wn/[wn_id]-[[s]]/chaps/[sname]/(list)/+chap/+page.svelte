@@ -78,13 +78,17 @@
 
   async function submit(_evt: Event) {
     err_msg = ''
+    loading = true
 
     const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}?start=${start}`
     const res = await fetch(url, { method: 'POST', body })
+    loading = false
 
     if (!res.ok) {
+      loading = false
       err_msg = await res.text()
     } else {
+      loading = false
       await invalidateAll()
       goto(seed_path(nvinfo.bslug, curr_seed.sname, _pgidx(start)))
     }
@@ -181,11 +185,11 @@
       <button
         type="button"
         class="m-btn _primary _fill"
-        disabled={cant_submit}
+        disabled={cant_submit || loading}
         data-tip="Bạn cần quyền hạn tối thiểu là {seed_data.edit_privi} để thêm chương"
         data-tip-pos="right"
         on:click={submit}>
-        <SIcon name="upload" />
+        <SIcon name={loading ? 'loader-2' : 'send'} spin={loading} />
         <span class="show-ts -text">Đăng tải</span>
         <SIcon name="privi-{seed_data.edit_privi}" iset="sprite" />
       </button>

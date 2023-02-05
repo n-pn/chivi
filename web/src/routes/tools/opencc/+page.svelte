@@ -56,7 +56,7 @@
     <div class="simp-out">
       <div class="simp" class:_none={_onload || !simp_text}>
         {#if _onload}
-          <SIcon name="loader" spin={_onload} />
+          <SIcon name="loader-2" spin={_onload} />
           <span class="mute">Đang chuyển ngữ</span>
         {:else if simp_text}
           {@html simp_html}

@@ -97,7 +97,7 @@
           data-tip="Cập nhật danh sách chương tiết từ nguồn ngoài"
           data-tip-loc="bottom"
           data-tip-pos="right">
-          <SIcon name={_onload ? 'loader' : 'refresh'} spin={_onload} />
+          <SIcon name={_onload ? 'loader-2' : 'refresh'} spin={_onload} />
           <span class="-hide">Đổi mới</span>
         </button>
       {/if}

@@ -8,7 +8,7 @@
   ]
 
   export class Opts {
-    split_mode = 2
+    split_mode = 1
     // split mode 1
     min_blanks = 2
     trim_space = false
