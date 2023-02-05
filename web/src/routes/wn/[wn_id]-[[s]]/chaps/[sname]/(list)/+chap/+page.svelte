@@ -28,14 +28,16 @@
 
   let opts = new Opts()
   let err_msg = ''
+  let body = ''
 
   $: {
+    chaps = []
     try {
       err_msg = ''
       chaps = split_text(input, opts)
+      body = render_body(chaps)
     } catch (ex) {
       err_msg = ex.message
-      chaps = []
     }
   }
 
@@ -78,7 +80,6 @@
     err_msg = ''
 
     const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}?start=${start}`
-    const body = render_body(chaps)
     const res = await fetch(url, { method: 'POST', body })
 
     if (!res.ok) {
