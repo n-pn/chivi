@@ -178,4 +178,16 @@
       width: 3.5rem;
     }
   }
+
+  .count {
+    @include fgcolor(tert);
+    font-size: rem(15px);
+  }
+
+  .err_msg {
+    @include flex-ca();
+    @include fgcolor(harmful);
+    min-height: 10rem;
+    font-style: italic;
+  }
 </style>

@@ -185,7 +185,8 @@ class WN::WnSeed
     Log.info { "HIT: #{href}".colorize.blue }
     parser = RmText.new(href, ttl: force ? 3.minutes : 1.years)
 
-    chap.save_body!(parser.title, parser.body, seed: self, uname: uname)
+    lines = parser.body.tap(&.unshift(parser.title))
+    chap.save_body!(lines, seed: self, uname: uname)
 
     chap.body
   rescue ex

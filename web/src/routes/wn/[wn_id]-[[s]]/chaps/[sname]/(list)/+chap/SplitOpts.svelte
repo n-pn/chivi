@@ -17,7 +17,7 @@
     // split mode 3
     chdiv_labels = '章节回幕折集卷季'
     //split mode 4
-    custom_regex = `^\\s*第?[\\零〇一二两三四五六七八九十百千]+[章节回]`
+    custom_regex = `^第[\\d零〇一二两三四五六七八九十百千]+[章节回]`
   }
 </script>
 

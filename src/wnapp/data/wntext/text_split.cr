@@ -3,12 +3,12 @@ require "../../../_util/text_util"
 module WN::TextSplit
   extend self
 
-  record Entry, lines = [] of String, chdiv : String = ""
+  record Entry, lines : Array(String), chdiv : String
 
   # split multi chapters; returning array of text parts, char count and volume name if available
   def split_multi(input : String, cleaned : Bool = false) : Array(Entry)
     input = TextUtil.clean_spaces(input) unless cleaned
-    chaps = [] of String
+    chaps = [] of Entry
 
     chdiv = ""
     lines = [] of String

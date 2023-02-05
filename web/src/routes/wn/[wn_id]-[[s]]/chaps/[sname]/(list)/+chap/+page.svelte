@@ -283,11 +283,6 @@
     }
   }
 
-  .count {
-    @include fgcolor(tert);
-    font-size: rem(15px);
-  }
-
   .show-ts {
     @include bps(display, none, $ts: initial);
   }
@@ -298,12 +293,5 @@
 
   .show-tl {
     @include bps(display, none, $tl: initial);
-  }
-
-  .err_msg {
-    @include flex-ca();
-    min-height: 10rem;
-    font-style: italic;
-    @include fgcolor(harmful);
   }
 </style>
