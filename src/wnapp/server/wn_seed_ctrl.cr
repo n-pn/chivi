@@ -42,31 +42,28 @@ class WN::SeedCtrl < AC::Base
     }
   end
 
-  record CreateForm, wn_id : Int32, sname : String, s_bid : Int32? do
+  record CreateForm, wn_id : Int32, sname : String, s_bid : Int32 = -1 do
+    def after_initialize
+      @s_bid = @wn_id if @s_bid < 0
+    end
+
     include JSON::Serializable
 
     def validate!(uname : String, privi : Int32) : String?
-      case sname[0]
-      when '@'
-        return if sname[1..] == uname
-        "Bạn chỉ được quyền thêm nguồn cho tên của mình"
-      when '!'
-        return if WnSeed::REMOTES.includes?(sname)
-        "Tên nguồn truyện không chính xác"
-      else
-        "Tên nguồn truyện không được chấp nhận"
-      end
     end
   end
 
   @[AC::Route::PUT("/", body: :form)]
   def create(form : CreateForm)
-    guard_privi 2, "thêm nguồn truyện"
+    # user own seed list can be auto created, not needed here
 
-    error = form.validate!(_uname, _privi) if _privi < 3
-    raise Unauthorized.new(error) if error
+    if form.sname[0] != '!'
+      raise BadRequest.new("Tên nguồn truyện không được chấp nhận")
+    end
 
-    WnSeed.upsert!(form.wn_id, form.sname, form.s_bid || form.wn_id)
+    guard_privi 3, "thêm nguồn truyện"
+
+    WnSeed.upsert!(form.wn_id, form.sname, form.s_bid)
     render json: WnSeed.get!(form.wn_id, form.sname)
   end
 

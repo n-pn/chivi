@@ -30,7 +30,7 @@
     const sname = '!' + url.hostname.replace('www.', '')
     const s_bid = url.pathname.split(/\W/).filter(Boolean).pop()
 
-    return [sname, s_bid]
+    return [sname, +s_bid]
   }
 </script>
 
@@ -53,16 +53,16 @@
 
   <div class="form-field">
     <label for="s_bid" class="form-label">ID quyển sách</label>
-    <input type="text" name="s_bid" class="m-input" bind:value={s_bid} />
+    <input type="number" name="s_bid" class="m-input" bind:value={s_bid} />
   </div>
 
   <button
     class="m-btn _success _fill"
     on:click={submit}
     disabled={!sname || !s_bid}
-    data-tip="Yêu cầu quyền hạn: 2">
+    data-tip="Yêu cầu quyền hạn: 3">
     <span>Thêm nguồn</span>
-    <SIcon name="privi-2" iset="sprite" />
+    <SIcon name="privi-3" iset="sprite" />
   </button>
 </div>
 

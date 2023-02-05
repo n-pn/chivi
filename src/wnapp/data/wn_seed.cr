@@ -223,7 +223,7 @@ class WN::WnSeed
   def self.upsert!(wn_id : Int32, sname : String, s_bid = wn_id)
     @@repo.open_tx do |db|
       db.exec <<-SQL, wn_id, sname, s_bid
-        insert into #{@@table} (wn_id, sname) values (?, ?, ?)
+        insert into #{@@table} (wn_id, sname, s_bid) values (?, ?, ?)
         on conflict do update set s_bid = excluded.s_bid
       SQL
     end
