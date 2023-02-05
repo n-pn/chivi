@@ -118,23 +118,22 @@ class WN::WnChap
 
   def save_body!(input : String, seed : WnSeed = self.seed, uname = "", _flag = 2) : Nil
     input = TextUtil.clean_spaces(input)
-
-    lines = input.split(/\n/).compact_map do |line|
-      line = line.strip
-      line unless line.empty?
-    end
-
-    save_body!(lines.shift, lines, seed, uname: uname, _flag: _flag)
+    lines = input.split(/\s*\R\s*/, remove_empty: true)
+    save_body!(lines, seed, uname: uname, _flag: _flag)
   end
 
-  def save_body!(title : String, lines : Array(String),
-                 seed : WnSeed = self.seed, @uname = "", _flag = 2) : Nil
-    parts, @c_len = TextSplit.split_entry(title, lines)
-    validate_body!(parts)
+  def save_body!(lines : Array(String), seed : WnSeed = self.seed, @uname = "", _flag = 2) : Nil
+    if lines.empty?
+      parts = [self.title]
+      @c_len = 0
+    else
+      parts, @c_len = TextSplit.split_entry(lines)
+      validate_body!(parts)
+    end
 
     @p_len = parts.size - 1
     @mtime = Time.utc.to_unix
-    @title = title if self.title.empty?
+    @title = lines.first if self.title.empty?
 
     @body = parts
     save_body_copy!(seed, _flag: _flag)

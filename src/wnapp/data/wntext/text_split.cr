@@ -3,31 +3,29 @@ require "../../../_util/text_util"
 module WN::TextSplit
   extend self
 
+  record Entry, lines = [] of String, chdiv : String = ""
+
   # split multi chapters; returning array of text parts, char count and volume name if available
-  def split_multi(input : String, cleaned : Bool = false) : Array({String, String})
+  def split_multi(input : String, cleaned : Bool = false) : Array(Entry)
     input = TextUtil.clean_spaces(input) unless cleaned
+    chaps = [] of String
 
-    chaps = [] of {String, String}
     chdiv = ""
-
-    strio = String::Builder.new
-    dirty = false
+    lines = [] of String
 
     input.each_line do |line|
-      if line =~ /^\/{3,}(.*)/
-        chaps << {strio.to_s, chdiv} if dirty
-        chdiv = $1.strip
-
-        strio = String::Builder.new
-        dirty = false
+      if !line.empty?
+        lines << line
+      elsif lines.size == 1
+        chdiv = lines.first
+        lines.clear
+      elsif lines.empty?
+        raise "invalid format!"
       else
-        strio << '\n' if dirty
-        strio << line
-        dirty = true
+        chaps << Entry.new(lines, chdiv)
+        lines = [] of String
       end
     end
-
-    chaps << {strio.to_s, chdiv} if dirty
 
     chaps
   end
@@ -43,23 +41,23 @@ module WN::TextSplit
   #   split_entry(lines.shift, lines)
   # end
 
-  def split_entry(title : String, lines : Array(String))
-    c_len = title.size &+ lines.sum(&.size) &+ lines.size
+  def split_entry(lines : Array(String))
+    c_len = lines.sum(&.size) &+ lines.size &- 1
 
     if c_len <= UPPER
-      limit = c_len
+      limit = UPPER
     else
-      p_len = (c_len - 1) // LIMIT + 1
+      p_len = (c_len &- 1) // LIMIT &+ 1
       limit = c_len // p_len
     end
 
-    parts = [title]
-    return {parts, c_len} if lines.empty?
+    line_iter = lines.each
+    parts = [line_iter.next.as(String)]
 
     strio = String::Builder.new
     count = 0
 
-    lines.each do |line|
+    line_iter.each do |line|
       strio << '\n' if count > 0
       strio << line
 

@@ -51,10 +51,15 @@ class WN::TextCtrl < AC::Base
 
     chaps = TextSplit.split_multi(ztext)
 
-    chaps.each_with_index(start) do |(text, chdiv), ch_no|
+    chaps.each_with_index(start) do |entry, ch_no|
+      raise BadRequest.new "Invalid input" if entry.lines.empty?
+
       wn_chap = wn_seed.get_chap(ch_no) || WnChap.new(ch_no, ch_no, "", "")
-      wn_chap.chdiv = chdiv
-      wn_chap.save_body!(text, seed: wn_seed, uname: _uname, _flag: 3)
+
+      wn_chap.chdiv = entry.chdiv
+      wn_chap.title = entry.lines.first
+
+      wn_chap.save_body!(entry.lines, seed: wn_seed, uname: _uname, _flag: 3)
     end
 
     wn_seed.update_stats!(start + chaps.size - 1)

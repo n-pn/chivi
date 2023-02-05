@@ -95,13 +95,15 @@
   }
 
   function render_body(chaps: Zchap[]) {
-    let text = ''
+    let body = ''
+
     for (const { title, chdiv, lines } of chaps) {
-      text += `///${chdiv}\n${title}`
-      for (const line of lines) text += '\n' + line
-      text += '\n'
+      if (chdiv) body += '\n\n' + chdiv
+      body += '\n\n' + title
+      for (const line of lines) body += '\n' + line
     }
-    return text
+
+    return body
   }
 
   const trad2sim = async (_: Event) => (input = await opencc(input))
