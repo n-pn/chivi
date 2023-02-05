@@ -1,16 +1,8 @@
-<script context="module" lang="ts">
-  const split_modes = [
-    [1, 'Phân bởi dòng trắng giữa chương'],
-    [2, 'Nội dung thụt vào so với tên chương'],
-    [3, 'Theo định dạng tên chương'],
-    [4, 'Theo regular expression tự nhập'],
-    [0, 'Phân thủ công bằng ///'],
-  ]
-</script>
-
 <script lang="ts">
   import { onMount } from 'svelte'
   import { goto, invalidateAll } from '$app/navigation'
+
+  import { opencc, fix_breaks } from '$utils/text_utils'
 
   import { SIcon, Footer } from '$gui'
 
@@ -20,38 +12,35 @@
 
   import type { PageData } from './$types'
   import { seed_path, _pgidx } from '$lib/kit_path'
-  export let data: PageData
-  $: ({ nvinfo, curr_seed } = data)
 
-  let input = ''
+  import SplitOpts, { Opts } from './SplitOpts.svelte'
+  import ChapList from './ChapList.svelte'
+
+  export let data: PageData
+  $: ({ nvinfo, curr_seed, seed_data, _user } = data)
+
+  let input = ``
   let start = data.start
 
   let files: FileList
 
-  let chapters: Zchap[] = []
-
-  let split_mode = 1
-
-  const numbers = '零〇一二两三四五六七八九十百千'
-
-  class Opts {
-    // split mode 1
-    min_blanks = 2
-    trim_space = false
-    // split mode 2
-    need_blank = false
-    // split mode 3
-    chdiv_labels = '章节回幕折集卷季'
-    //split mode 4
-    custom_regex = `^\\s*第?[\\d${numbers}]+[章节回]`
-  }
+  let chaps: Zchap[] = []
 
   let opts = new Opts()
+  let err_msg = ''
 
-  $: chapters = split_text(input, split_mode, opts)
+  $: {
+    try {
+      err_msg = ''
+      chaps = split_text(input, opts)
+    } catch (ex) {
+      err_msg = ex.message
+      chaps = []
+    }
+  }
 
-  const split_text = (input: string, split_mode: number, options: Opts) => {
-    switch (split_mode) {
+  const split_text = (input: string, options: Opts) => {
+    switch (options.split_mode) {
       case 1:
         return split.split_mode_1(input, options.min_blanks, options.trim_space)
       case 2:
@@ -66,16 +55,13 @@
   }
 
   let loading = false
-  let changed = false
-
-  let err_msg = ''
 
   let reader: FileReader
 
   onMount(() => {
     reader = new FileReader()
     reader.onloadend = async () => {
-      changed = loading = false
+      loading = false
       const buffer = reader.result as ArrayBuffer
       const encoding = await get_encoding(buffer)
       const decoder = new TextDecoder(encoding)
@@ -92,7 +78,7 @@
     err_msg = ''
 
     const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}?start=${start}`
-    const body = render_body(chapters)
+    const body = render_body(chaps)
     const res = await fetch(url, { method: 'POST', body })
 
     if (!res.ok) {
@@ -103,15 +89,24 @@
     }
   }
 
-  function render_body(chapters: Zchap[]) {
+  function render_body(chaps: Zchap[]) {
     let text = ''
-    for (const { title, chdiv, lines } of chapters) {
+    for (const { title, chdiv, lines } of chaps) {
       text += `///${chdiv}\n${title}`
       for (const line of lines) text += '\n' + line
       text += '\n'
     }
     return text
   }
+
+  const trad2sim = async (_: Event) => (input = await opencc(input))
+
+  const max_lenth_allowed = [0, 300_000, 1_000_000, 5_000_000, 10_000_000]
+
+  $: max_lenth = _user.privi < 0 ? 0 : max_lenth_allowed[_user.privi]
+
+  $: cant_submit =
+    _user.privi < seed_data.edit_privi || input.length > max_lenth
 </script>
 
 <svelte:head>
@@ -121,154 +116,109 @@
 <section class="article">
   <h2>Thêm/sửa chương</h2>
 
-  <form action="." method="POST" on:submit|preventDefault={submit}>
-    <div class="form-field file-prompt">
-      <label class="m-btn">
-        <span>Chọn tệp tin</span>
-        <input type="file" bind:files accept=".txt" />
-      </label>
-    </div>
+  <div class="content">
+    <section class="input">
+      <div class="label">
+        <span>Nội dung:</span>
+        <em data-tip="Giới hạn số ký tự">{input.length}/{max_lenth}</em>
+      </div>
 
-    <div class="form-field">
       <textarea
         class="m-input"
         name="input"
-        rows="10"
+        rows="25"
         bind:value={input}
         disabled={loading}
         placeholder="Nội dung chương tiết"
         required />
-      <div class="preview">
-        <span class="label">Số chương đại khái theo cách chia:</span>
-        <strong>{chapters.length}</strong>
-        <em>(chưa tính gộp tên tập)</em>
-      </div>
-    </div>
+    </section>
 
-    <div class="form-field">
-      <span class="label">Cách chia chương: </span>
-      <select
-        name="split_mode"
-        class="m-input _sm"
-        disabled={loading}
-        bind:value={split_mode}
-        on:change={() => (changed = true)}>
-        {#each split_modes as [value, label]}
-          <option {value}>{label}</option>
-        {/each}
-      </select>
+    <section class="preview">
+      <SplitOpts bind:opts {loading} />
+      <ChapList {chaps} {start} {err_msg} />
+    </section>
+  </div>
 
-      <a
-        class="guide"
-        href="/guide/chuong-tiet/them-loat-chuong"
-        target="_blank">
-        <span>Giải thích cách chia</span>
-        <SIcon name="external-link" />
-      </a>
-    </div>
-
-    <div class="split-extra">
-      {#if split_mode == 1}
-        <div class="options">
-          <label class="label"
-            >Số dòng trắng tối thiểu: <input
-              class="m-input _xs"
-              type="number"
-              name="min_blanks"
-              bind:value={opts.min_blanks}
-              min={1}
-              max={4} /></label>
-
-          <label class="label"
-            ><input
-              class="m-input"
-              type="checkbox"
-              name="trim_space"
-              bind:checked={opts.trim_space} /> Lọc bỏ dấu cách</label>
-        </div>
-      {:else if split_mode == 2}
-        <label class="label"
-          ><input
-            class="m-input"
-            type="checkbox"
-            name="need_blank"
-            bind:checked={opts.need_blank} /> Phía trước phải là dòng trắng</label>
-      {:else if split_mode == 3}
-        <label class="label"
-          >Đằng sau <code>第[số từ]+</code> là:
-          <input
-            class="m-input _xs"
-            name="label"
-            bind:value={opts.chdiv_labels} /></label>
-      {:else if split_mode == 4}
-        <label class="label"
-          >Custom regex:
-          <input
-            class="m-input _xs"
-            name="regex"
-            bind:value={opts.custom_regex} /></label>
-      {/if}
-    </div>
-
-    <div class="errors">{err_msg}</div>
-
-    <!-- <div class="form-field">
-      <div class="label">Lựa chọn nâng cao</div>
-      <div class="options">
-        <label class="label">
-          <input type="checkbox" name="tosimp" bind:checked={form.tosimp} />
-          <span>Chuyển từ Phồn -> Giản</span>
-        </label>
-
-        <label class="label">
-          <input type="checkbox" name="unwrap" bind:checked={form.unwrap} />
-          <span>Sửa lỗi vỡ dòng</span>
-        </label>
-      </div>
-    </div> -->
-
-    <Footer>
-      <div class="pagi">
-        <label class="label" data-tip="Vị trí bắt đầu ghi đè">
-          <span>Chương bắt đầu</span>
-          <input
-            class="m-input"
-            type="number"
-            name="start"
-            bind:value={start} />
-        </label>
-
-        <button type="submit" class="m-btn _primary _fill">
+  <footer class="footer">
+    <div class="left">
+      <div class="file-prompt">
+        <label
+          class="m-btn _primary"
+          data-tip="Đăng tải nội dung chương tiết từ máy tính"
+          data-tip-pos="left">
           <SIcon name="upload" />
-          <span class="-text">Đăng tải</span>
-          <SIcon
-            name={input.length > 30000 ? 'privi-2' : 'privi-1'}
-            iset="sprite" />
-        </button>
+          <span class="show-tm">Chọn tệp tin</span>
+          <input type="file" bind:files accept=".txt" />
+        </label>
       </div>
-    </Footer>
-  </form>
+
+      <button
+        type="button"
+        class="m-btn _line"
+        data-tip="Chuyển đổi từ phồn thể sang giản thể"
+        on:click={trad2sim}>
+        <SIcon name="language" />
+        <span class="show-tl">Phồn 🠖 Giản</span>
+      </button>
+
+      <button
+        type="button"
+        class="m-btn _line"
+        data-tip="Gộp các dòng bị vỡ thành các câu văn hoàn chỉnh."
+        on:click={() => (input = fix_breaks(input))}>
+        <SIcon name="bandage" />
+        <span class="show-tl">Sửa vỡ dòng</span>
+      </button>
+    </div>
+
+    <div class="right">
+      <label class="label">
+        <span data-tip="Vị trí bắt đầu ghi đè">Chương bắt đầu</span>
+        <input class="m-input" type="number" name="start" bind:value={start} />
+      </label>
+
+      <button
+        type="button"
+        class="m-btn _primary _fill"
+        disabled={cant_submit}
+        data-tip="Bạn cần quyền hạn tối thiểu là {seed_data.edit_privi} để thêm chương"
+        data-tip-pos="right"
+        on:click={submit}>
+        <SIcon name="upload" />
+        <span class="show-ts -text">Đăng tải</span>
+        <SIcon name="privi-{seed_data.edit_privi}" iset="sprite" />
+      </button>
+    </div>
+  </footer>
 </section>
 
 <style lang="scss">
   h2 {
-    padding: 0.75rem 0;
+    // padding: 0.75rem 0;
+    margin-top: var(--gutter);
+    margin-bottom: 0.5rem;
   }
 
   textarea {
     display: block;
     width: 100%;
+    min-height: 20rem;
+
+    flex: 1;
   }
 
   .preview {
-    @include ftsize(sm);
-    font-style: italic;
-    @include fgcolor(tert);
-    margin-top: 0.25rem;
+    padding-left: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    // @include ftsize(sm);
+    // font-style: italic;
+    // @include fgcolor(tert);
+    // margin-top: 0.25rem;
 
-    strong {
-      @include fgcolor(secd);
-    }
+    // strong {
+    //   @include fgcolor(secd);
+    // }
   }
 
   .m-btn > input {
@@ -279,97 +229,74 @@
     display: flex;
   }
 
-  section {
-    padding-bottom: 0.5rem;
-  }
-
-  select {
-    padding: 0 0.25rem;
-  }
-
-  .options {
+  .input {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-    padding: 0.25rem 0;
+    flex-direction: column;
+  }
 
-    label {
-      @include fgcolor(secd);
+  .content {
+    display: flex;
+
+    > * {
+      width: 50%;
+      max-height: 100vh;
     }
   }
 
-  [name='min_blanks'] {
-    width: 2rem;
-    text-align: center;
+  .footer {
+    @include flex-cy($gap: 0.75rem);
+    justify-content: space-between;
+    margin: 0.75rem 0;
   }
 
-  // .split-descs {
-  //   @include fgcolor(tert);
-  //   @include ftsize(sm);
-  //   margin-top: 0.25rem;
-
-  //   summary {
-  //     @include fgcolor(secd);
-  //   }
-  // }
-
-  [name='regex'] {
-    width: 20rem;
+  .left {
+    @include flex-cy($gap: 0.5rem);
   }
 
-  .split-extra {
-    margin-top: 0.5rem;
-  }
-
-  .pagi {
+  .right {
     @include flex-cy($gap: 0.5rem);
 
     .m-input {
-      display: inline-block;
-      &[name='start'] {
-        margin-left: 0.25rem;
-        width: 3.5rem;
-        text-align: center;
-        padding: 0 0.25rem;
-      }
-    }
-
-    .m-btn {
-      margin-left: auto;
+      width: 3.5rem;
+      text-align: center;
+      padding: 0 0.25rem;
     }
   }
 
   .label {
-    // text-transform: uppercase;
-    font-weight: 500;
+    line-height: 2rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
     font-size: rem(15px);
-    // @include ftsize(sm);
     @include fgcolor(tert);
+
+    span {
+      font-weight: 500;
+    }
   }
 
-  // summary {
-  //   font-weight: 500;
-  //   font-size: 1rem;
-  // }
-
-  // pre {
-  //   font-size: rem(15px);
-  //   line-height: 1.25rem;
-  //   padding: 0.75rem;
-  //   margin-top: 0.25rem;
-  //   // word-wrap: break-word;
-  //   white-space: break-spaces;
-  // }
-
-  .errors:not(:empty) {
-    margin: 0.5rem;
-    @include fgcolor(harmful, 5);
+  .count {
+    @include fgcolor(tert);
+    font-size: rem(15px);
   }
 
-  .guide {
-    margin-left: 1rem;
-    display: inline-block;
-    @include fgcolor(warning, 5);
+  .show-ts {
+    @include bps(display, none, $ts: initial);
+  }
+
+  .show-tm {
+    @include bps(display, none, $tm: initial);
+  }
+
+  .show-tl {
+    @include bps(display, none, $tl: initial);
+  }
+
+  .err_msg {
+    @include flex-ca();
+    min-height: 10rem;
+    font-style: italic;
+    @include fgcolor(harmful);
   }
 </style>
