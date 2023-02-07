@@ -99,14 +99,15 @@
   function render_body(chaps: Zchap[]) {
     let body = ''
 
-    let prev = ''
+    for (let idx = 0; idx < chaps.length; idx++) {
+      const { chdiv, title, lines } = chaps[idx]
 
-    for (const { title, chdiv, lines } of chaps) {
-      if (chdiv) body += prev + chdiv
-      body += prev + title
+      if (chdiv) body += chdiv + '\n\n'
 
-      prev = '\n\n'
+      body += title
       for (const line of lines) body += '\n' + line
+
+      if (idx < chaps.length - 1) body += '\n\n'
     }
 
     return body
