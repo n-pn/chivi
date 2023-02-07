@@ -17,13 +17,13 @@ module HttpUtil
     UTF8.includes?(sname) ? "UTF-8" : "GBK"
   end
 
-  def cache(file : String, url : String,
+  def cache(file : String, link : String,
             ttl : Time::Span | Time::MonthSpan = 10.years,
             encoding : String = "UTF-8")
     return read_gzip(file) if fresh?(file, ttl)
-    fetch(url, encoding).tap { |data| save_gzip(file, data) }
+    fetch(link, encoding).tap { |data| save_gzip(file, data) }
   rescue err
-    Log.error(exception: err) { url.colorize.red }
+    Log.error(exception: err) { link.colorize.red }
     read_gzip(file)
   end
 
@@ -66,7 +66,7 @@ module HttpUtil
   #   `#{cmd}`
   # end
 
-  # def crystal_get(url : String, encoding : String)
+  # def crystal_get(url : String, encoding : String = "UTF-8")
   #   HTTP::Client.get(url) do |res|
   #     res.body_io.set_encoding(encoding, invalid: :skip)
   #     res.body_io.gets_to_end.lstrip
