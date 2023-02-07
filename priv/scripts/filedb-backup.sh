@@ -52,7 +52,6 @@ fi
 if [[ $* == *misc* ]]
 then
   echo backup miscs data!
-  rsync-fast --include="*/" --include="*.db" --exclude="*" "$SSH/var/chaps/texts" "var/chaps"
 fi
 
 ## backup pg_data
