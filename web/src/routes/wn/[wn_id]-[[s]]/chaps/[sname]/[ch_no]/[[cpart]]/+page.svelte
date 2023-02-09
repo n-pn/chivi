@@ -47,6 +47,8 @@
   })
 
   async function update_memo(locking: boolean) {
+    if (data._user.privi < 0) return
+
     const { chidx: ch_no, title, uslug } = curr_chap
     const { sname } = curr_seed
     const { cpart } = chap_data

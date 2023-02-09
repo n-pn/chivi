@@ -13,23 +13,26 @@ export function hash_str(s: string) {
   return hash.toString(32)
 }
 
-const title_re = /^第|[。！#\p{Pe}\p{Pf}]\s*$/
+const valid_re = /^[\s　]*第|[。！」#\p{Pe}\p{Pf}]\s*$/
 
 export function fix_breaks(input: string, min_invalid = 15) {
   const lines = input.split(/\r\n?|\n/)
   let output = ''
   let was_invalid = false
 
-  for (const line of lines) {
+  for (let line of lines) {
     if (!line) continue
-    output += line
 
-    if ((was_invalid || line.length > min_invalid) && !title_re.test(line)) {
-      was_invalid = true
+    if (was_invalid) output += line.replace(/^[\s　]*/, '')
+    else output += line
+
+    if (was_invalid || line.length > min_invalid) {
+      was_invalid = !valid_re.test(line)
     } else {
       was_invalid = false
-      output += '\n'
     }
+
+    if (!was_invalid) output += '\n'
   }
 
   return output
@@ -69,8 +72,9 @@ export async function translate(
 export function unaccent(input: string) {
   return input
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace('đ', 'd')
 }
 
 export function slugify(input: string) {
