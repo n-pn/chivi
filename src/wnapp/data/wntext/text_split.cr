@@ -35,7 +35,10 @@ module WN::TextSplit
   LIMIT = 3000
   UPPER = 4500
 
-  # # split text of a single chapter, returning text parts and char count
+  def get_p_len(c_len : Int32)
+    c_len <= UPPER ? 1 : (c_len &- 1) // LIMIT &+ 1
+  end
+
   # def split_entry(input : String, cleaned : Bool = false) : {Array(String), Int32}
   #   # fix whitespaces
   #   input = TextUtil.clean_spaces(input) unless cleaned
@@ -43,6 +46,7 @@ module WN::TextSplit
   #   split_entry(lines.shift, lines)
   # end
 
+  # # split text of a single chapter, returning text parts and char count
   def split_entry(lines : Array(String))
     c_len = lines.sum(&.size) &+ lines.size &- 1
 

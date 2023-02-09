@@ -1,4 +1,5 @@
 require "compress/zip"
+require "log"
 
 module WN::TextStore
   extend self
@@ -76,6 +77,16 @@ module WN::TextStore
 
   ZIP_DIR = "var/texts/rzips"
 
+  def unload_zip!(sname : String, s_bid : Int32) : Nil
+    unload_zip!(gen_zip_path(sname, s_bid))
+  end
+
+  def unload_zip!(zip_path : String) : Nil
+    not_found = zip_path + ".404"
+    return if File.file?(zip_path) || File.file?(not_found)
+    File.touch(not_found) unless pull_zip_from_b2!(zip_path)
+  end
+
   # generate zip path
   @[AlwaysInline]
   def gen_zip_path(seed : WnSeed)
@@ -131,12 +142,14 @@ module WN::TextStore
       File.write(file, res.body_io)
     end
 
-    spawn unzip_file(file)
+    unzip_file(file)
     true
   end
 
   private def unzip_file(file : String)
     out_dir = file.sub(ZIP_DIR, TXT_DIR).sub(".zip", "")
     Process.run("unzip", args: {"-nq", file, "-d", out_dir})
+  rescue ex
+    Log.error(exception: ex) { ex.message }
   end
 end

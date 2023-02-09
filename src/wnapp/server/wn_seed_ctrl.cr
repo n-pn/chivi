@@ -42,15 +42,27 @@ class WN::SeedCtrl < AC::Base
     }
   end
 
+  @[AC::Route::GET("/:wn_id/:sname/word_count")]
+  def word_count(wn_id : Int32, sname : String, from : Int32, upto : Int32)
+    wn_seed = get_wn_seed(wn_id, sname)
+    wn_seed.reload_stats!
+
+    render json: {
+      s_bid:      wn_seed.s_bid,
+      chap_avail: wn_seed.chap_avail,
+      word_count: wn_seed.word_count(from, upto),
+    }
+  end
+
   record CreateForm, wn_id : Int32, sname : String, s_bid : Int32 = -1 do
+    include JSON::Serializable
+
     def after_initialize
       @s_bid = @wn_id if @s_bid < 0
     end
 
-    include JSON::Serializable
-
-    def validate!(uname : String, privi : Int32) : String?
-    end
+    # def validate!(uname : String, privi : Int32) : String?
+    # end
   end
 
   @[AC::Route::PUT("/", body: :form)]

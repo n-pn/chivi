@@ -87,6 +87,47 @@ class WN::WnSeed
     gift > 20 ? gift : 20
   end
 
+  def reload_stats!(force : Bool = false)
+    return unless force || self.chap_avail < 0
+
+    query = "select ch_no, schid from chaps"
+    input = self.chaps.open_db(&.query_all(query, as: {Int32, Int32}))
+
+    output = [] of {Int32, Int32}
+
+    TextStore.unload_zip!(self.sname, self.s_bid)
+
+    chap_avail = 0
+
+    input.each do |ch_no, s_cid|
+      txt_path = TextStore.gen_txt_path(self.sname, self.s_bid, s_cid)
+
+      if File.file?(txt_path)
+        c_len = File.read(txt_path, encoding: "GB18030").size
+        chap_avail += 1 if c_len > 0
+      else
+        c_len = 0
+      end
+
+      output << {c_len, ch_no}
+    end
+
+    self.chaps.open_tx do |db|
+      query = "update chaps set c_len = ? where ch_no = ?"
+      output.each { |c_len, ch_no| db.exec query, c_len, ch_no }
+    end
+
+    @chap_avail = chap_avail
+    self.save!
+  end
+
+  def word_count(from = 1, upto = self.chap_total) : Int32
+    self.chaps.open_db do |db|
+      query = "select sum(c_len) from chaps where ch_no >= ? and ch_no <= ?"
+      db.query_one(query, from, upto, as: Int32)
+    end
+  end
+
   REMOTES = {
     "!hetushu.com",
     "!69shu.com",
