@@ -156,57 +156,63 @@
     </section>
   </div>
 
-  <footer class="footer">
-    <div class="left">
-      <div class="file-prompt">
-        <label
-          class="m-btn _primary"
-          data-tip="Đăng tải nội dung chương tiết từ máy tính"
-          data-tip-pos="left">
-          <SIcon name="upload" />
-          <span class="show-tm">Chọn tệp tin</span>
-          <input type="file" bind:files accept=".txt" />
-        </label>
+  <Footer>
+    <footer class="footer">
+      <div class="left">
+        <div class="file-prompt">
+          <label
+            class="m-btn _primary"
+            data-tip="Đăng tải nội dung chương tiết từ máy tính"
+            data-tip-pos="left">
+            <SIcon name="upload" />
+            <span class="show-tm">Chọn tệp tin</span>
+            <input type="file" bind:files accept=".txt" />
+          </label>
+        </div>
+
+        <button
+          type="button"
+          class="m-btn _line"
+          data-tip="Chuyển đổi từ phồn thể sang giản thể"
+          on:click={trad2sim}>
+          <SIcon name="language" />
+          <span class="show-tl">Phồn 🠖 Giản</span>
+        </button>
+
+        <button
+          type="button"
+          class="m-btn _line"
+          data-tip="Gộp các dòng bị vỡ thành các câu văn hoàn chỉnh."
+          on:click={() => (input = fix_breaks(input))}>
+          <SIcon name="bandage" />
+          <span class="show-tl">Sửa vỡ dòng</span>
+        </button>
       </div>
 
-      <button
-        type="button"
-        class="m-btn _line"
-        data-tip="Chuyển đổi từ phồn thể sang giản thể"
-        on:click={trad2sim}>
-        <SIcon name="language" />
-        <span class="show-tl">Phồn 🠖 Giản</span>
-      </button>
+      <div class="right">
+        <label class="label">
+          <span data-tip="Vị trí bắt đầu ghi đè">Chương bắt đầu</span>
+          <input
+            class="m-input"
+            type="number"
+            name="start"
+            bind:value={start} />
+        </label>
 
-      <button
-        type="button"
-        class="m-btn _line"
-        data-tip="Gộp các dòng bị vỡ thành các câu văn hoàn chỉnh."
-        on:click={() => (input = fix_breaks(input))}>
-        <SIcon name="bandage" />
-        <span class="show-tl">Sửa vỡ dòng</span>
-      </button>
-    </div>
-
-    <div class="right">
-      <label class="label">
-        <span data-tip="Vị trí bắt đầu ghi đè">Chương bắt đầu</span>
-        <input class="m-input" type="number" name="start" bind:value={start} />
-      </label>
-
-      <button
-        type="button"
-        class="m-btn _primary _fill"
-        disabled={cant_submit || loading}
-        data-tip="Bạn cần quyền hạn tối thiểu là {seed_data.edit_privi} để thêm chương"
-        data-tip-pos="right"
-        on:click={submit}>
-        <SIcon name={loading ? 'loader-2' : 'send'} spin={loading} />
-        <span class="show-ts -text">Đăng tải</span>
-        <SIcon name="privi-{seed_data.edit_privi}" iset="sprite" />
-      </button>
-    </div>
-  </footer>
+        <button
+          type="button"
+          class="m-btn _primary _fill"
+          disabled={cant_submit || loading}
+          data-tip="Bạn cần quyền hạn tối thiểu là {seed_data.edit_privi} để thêm chương"
+          data-tip-pos="right"
+          on:click={submit}>
+          <SIcon name={loading ? 'loader-2' : 'send'} spin={loading} />
+          <span class="show-ts -text">Đăng tải</span>
+          <SIcon name="privi-{seed_data.edit_privi}" iset="sprite" />
+        </button>
+      </div>
+    </footer>
+  </Footer>
 </section>
 
 <style lang="scss">
@@ -220,8 +226,8 @@
     display: block;
     width: 100%;
     min-height: 20rem;
-
     flex: 1;
+    @include ftsize(sm);
   }
 
   .preview {

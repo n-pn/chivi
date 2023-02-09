@@ -92,7 +92,7 @@
   .chaps {
     overflow-y: scroll;
     flex: 1;
-    max-height: 70vh;
+    max-height: calc(100vh - 15rem);
     padding-top: 0.25rem;
 
     scrollbar-width: thin;
