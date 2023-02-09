@@ -14,15 +14,13 @@ class CV::DlTran
   field from_ch_no : Int32 = 0
   field upto_ch_no : Int32 = 0
 
-  field texsmart_pos : Bool = false
-  field texsmart_ner : Bool = false
-
   field mt_version : Int32 = 1
+  field smart_opts : Int32 = 0
 
   field init_word_count : Int32 = 0
   field real_word_count : Int32 = 0
 
-  field uname : String
+  field uname : String = "-"
   field privi : Int32 = 0
 
   field mtime : Int64 = Time.utc.to_unix
@@ -31,9 +29,35 @@ class CV::DlTran
   class_getter repo = Crorm::Sqlite3::Repo.new(db_path, init_sql)
 
   def initialize(@wn_id, @sname, @s_bid,
-                 @from_ch_no, @upto_ch_no, @texsmart_pos, @texsmart_ner,
-                 @mt_version, @init_word_count,
+                 @from_ch_no, @upto_ch_no,
+                 @mt_version, @smart_opts,
+                 @init_word_count,
                  @uname, @privi, @_flag = 0)
+  end
+
+  def failed?
+    return true if @_flag == -1
+    return false unless @_flag == 1
+    Time.utc - Time.unix(self.mtime) > 10.minutes
+  end
+
+  def reset_flag!
+    @@repo.open_tx do |db|
+      db.exec "update #{@@table} set _flag = 0 where id = ?", self.id
+    end
+  end
+
+  def self.get(id : Int32)
+    @@repo.open_db do |db|
+      db.query_one?("select * from #{@@table} where id = ? limit 1", id, as: DlTran)
+    end
+  end
+
+  def self.get(id : Int32, uname : String)
+    @@repo.open_db do |db|
+      query = "select * from #{@@table} where id = ? and uname = ? limit 1"
+      db.db.query_one?(query, id, uname, as: DlTran)
+    end
   end
 
   @[AlwaysInline]
@@ -53,10 +77,8 @@ class CV::DlTran
       from_ch_no integer not null,
       upto_ch_no integer not null,
       --
-      texsmart_pos boolean not null default 'f',
-      texsmart_ner boolean not null default 'f',
-      --
       mt_version integer not null,
+      smart_opts integer not null default 0,
       --
       init_word_count integer not null,
       real_word_count integer not null,

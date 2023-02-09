@@ -90,7 +90,7 @@ class WN::WnSeed
   def reload_stats!(force : Bool = false)
     return unless force || self.chap_avail < 0
 
-    query = "select ch_no, schid from chaps"
+    query = "select ch_no, s_cid from chaps"
     input = self.chaps.open_db(&.query_all(query, as: {Int32, Int32}))
 
     output = [] of {Int32, Int32}
@@ -124,7 +124,7 @@ class WN::WnSeed
   def word_count(from = 1, upto = self.chap_total) : Int32
     self.chaps.open_db do |db|
       query = "select sum(c_len) from chaps where ch_no >= ? and ch_no <= ?"
-      db.query_one(query, from, upto, as: Int32)
+      db.query_one(query, from, upto, as: Int32?) || 0
     end
   end
 

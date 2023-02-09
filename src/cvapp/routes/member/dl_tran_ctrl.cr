@@ -6,7 +6,7 @@ class CV::DlTranCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/")]
   def index(wn_id : Int32? = nil, sname : Int32? = nil, _flag : Int32? = nil)
-    pg_no, limit, offset = _paginate(min: 5)
+    _pg_no, limit, offset = _paginate(min: 5)
 
     args = [_uname] of DB::Any
 
@@ -34,10 +34,7 @@ class CV::DlTranCtrl < CV::BaseCtrl
       args << limit << offset
     end
 
-    render json: {
-      items: DlTran.repo.open_db(&.query_all(query, args: args, as: DlTran)),
-      pg_no: pg_no,
-    }
+    render json: DlTran.repo.open_db(&.query_all(query, args: args, as: DlTran))
   end
 
   struct DlForm
@@ -49,10 +46,8 @@ class CV::DlTranCtrl < CV::BaseCtrl
     getter from : Int32
     getter upto : Int32
 
-    getter texsmart_pos : Bool = false
-    getter texsmart_ner : Bool = false
-
     getter mt_version : Int32 = 1
+    getter smart_opts : Int32 = 0
 
     @[JSON::Field(ignore: true)]
     getter s_bid : Int32 = -1
@@ -60,10 +55,12 @@ class CV::DlTranCtrl < CV::BaseCtrl
     @[JSON::Field(ignore: true)]
     getter word_count : Int32 = -1
 
+    API = "http://localhost:5020/_wn/seeds"
+
     def after_initialize
       @upto = @from if @upto < @from
 
-      url = "localhost:5020/_wn/seeds/#{@wn_id}/#{@sname}?from=#{@from}&upto=#{@upto}"
+      url = "#{API}/#{@wn_id}/#{@sname}/word_count?from=#{@from}&upto=#{@upto}"
 
       HTTP::Client.get(url) do |res|
         raise "error" unless res.status.success?
@@ -80,9 +77,10 @@ class CV::DlTranCtrl < CV::BaseCtrl
 
     def record(uname : String, privi : Int32)
       DlTran.new(
-        @wn_id, @sname, @s_bid, @from, @upto,
-        @texsmart_pos, @texsmart_ner,
-        @mt_version, self.word_count,
+        wn_id: @wn_id, sname: @sname, s_bid: @s_bid,
+        from_ch_no: @from, upto_ch_no: @upto,
+        mt_version: @mt_version, smart_opts: @smart_opts,
+        init_word_count: self.word_count,
         uname: uname, privi: privi, _flag: 0
       )
     end
@@ -104,10 +102,7 @@ class CV::DlTranCtrl < CV::BaseCtrl
       dltran.save!
     end
 
-    spawn do
-      invoke_translation!(force: false)
-    end
-
+    spawn invoke_translation!(force: false)
     render json: {msg: "ok"}
   end
 
@@ -120,8 +115,24 @@ class CV::DlTranCtrl < CV::BaseCtrl
   @[AC::Route::GET("/:id")]
   def download(id : Int32)
     file_path = "var/texts/dlcvs/#{_uname}/#{id}.txt"
-    raise BadRequest.new("Dữ liệu không tồn tại") unless File.file?(file_path)
+    raise NotFound.new("Dữ liệu không tồn tại") unless File.file?(file_path)
 
     render text: File.read(file_path)
+  end
+
+  @[AC::Route::PATCH("/:id/retry")]
+  def retry(id : Int32)
+    unless dltran = DlTran.get(id, _uname)
+      raise NotFound.new("Dữ liệu không tồn tại")
+    end
+
+    unless dltran.failed?
+      raise BadRequest.new("Không thể dịch lại")
+    end
+
+    dltran.reset_flag!
+
+    spawn invoke_translation!(force: false)
+    render json: {msg: "ok"}
   end
 end

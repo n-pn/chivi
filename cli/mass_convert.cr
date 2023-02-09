@@ -41,12 +41,14 @@ def run_task(task : CV::DlTran)
   dname = M1::DbDict.get_dname(-task.wn_id)
   engine = CV::MtCore.generic_mtl(dname, user: task.uname)
 
-  txt_dir = "var/texts/rgbks/#{task.sname}/#{task.s_bid}"
+  Dir.mkdir_p("var/texts/dlcvs/#{task.uname}")
 
   out_path = "var/texts/dlcvs/#{task.uname}/#{task.id}.txt"
   out_file = File.open(out_path, "w")
 
   word_count = 0
+
+  txt_dir = "var/texts/rgbks/#{task.sname}/#{task.s_bid}"
 
   task.from_ch_no.upto(task.upto_ch_no) do |ch_no|
     txt_path = "#{txt_dir}/#{ch_no}.gbk"
@@ -56,6 +58,8 @@ def run_task(task : CV::DlTran)
     else
       out_file << "Chương thứ #{ch_no} không có text gốc, mời kiểm tra lại!"
     end
+
+    out_file << '\n' << '\n' unless ch_no == task.upto_ch_no
   end
 
   out_file.close

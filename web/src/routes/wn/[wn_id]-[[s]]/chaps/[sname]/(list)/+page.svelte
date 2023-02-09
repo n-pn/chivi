@@ -115,6 +115,13 @@
             <SIcon name="settings" />
             <span>Cài đặt</span>
           </a>
+          <a
+            class="gmenu-item"
+            class:_disable={data._user.privi < 1}
+            href="/wn/{nvinfo.bslug}/chaps/{curr_seed.sname}/+down">
+            <SIcon name="download" />
+            <span>Tải xuống</span>
+          </a>
         </svelte:fragment>
       </Gmenu>
     </info-right>

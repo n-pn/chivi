@@ -96,7 +96,8 @@
     <div class="info">
       <div>
         <span class="lbl">Số lượng vcoin hiện có:</span>
-        <SIcon name="coin" /><strong>{user.vcoin}</strong>
+        <SIcon name="coin" /><strong
+          >{Math.round(user.vcoin * 100) / 100}</strong>
       </div>
 
       <button class="m-btn _xs" on:click={() => usercp.change_tab(2)}
