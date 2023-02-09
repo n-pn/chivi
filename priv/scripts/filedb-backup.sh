@@ -43,6 +43,7 @@ then
 
   rsync-fast "$SSH/var/chaps/users" "var/chaps"
   rsync-fast "$SSH/var/chaps/infos" "var/chaps"
+  rsync-fast "$SSH/var/texts/rgbks" "var/texts"
 
   rsync-fast "$SSH/var/.html" "var"
   # rsync-fast "$SSH/var/texts/rzips" "var/texts"

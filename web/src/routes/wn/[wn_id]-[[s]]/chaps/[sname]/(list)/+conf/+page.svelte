@@ -11,14 +11,27 @@
   $: ({ nvinfo, curr_seed } = data)
 
   $: can_edit = check_privi(data.curr_seed, data.seed_data, data._user)
-
   $: edit_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}`
   $: ztitle = `${nvinfo.btitle_zh} ${nvinfo.author_zh}`
+
+  $: can_conf = check_conf_privi(data.curr_seed, data._user)
 
   const check_privi = ({ sname }, { edit_privi }, { uname, privi }) => {
     if (privi < edit_privi) return false
     if (privi > 3 || sname[0] != '@') return true
     return sname == '@' + uname
+  }
+
+  const check_conf_privi = ({ sname }, { uname, privi }) => {
+    if (sname[0] == '@') {
+      return sname == '@' + uname ? privi > 1 : privi > 3
+    }
+
+    if (sname[0] == '!') {
+      return sname == '!chivi.app' ? privi > 3 : privi > 2
+    }
+
+    return privi > 1
   }
 </script>
 
@@ -28,8 +41,9 @@
   <details open>
     <summary>Quyền hạn tối thiểu để xem nội dung chương tiết</summary>
     <ReadPrivi
-      {can_edit}
+      {can_conf}
       {edit_url}
+      _privi={data._user.privi}
       seed_data={data.seed_data}
       bind:curr_seed={data.curr_seed} />
   </details>

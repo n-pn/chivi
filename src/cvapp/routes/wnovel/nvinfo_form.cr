@@ -10,10 +10,10 @@ class CV::NvinfoForm
   getter author_zh : String
   getter author_vi : String?
 
-  getter bintro : String?
-  getter genres : String?
-  getter bcover : String?
-  getter status : Int32?
+  getter bintro : String? = nil
+  getter genres : String? = nil
+  getter bcover : String? = nil
+  getter status : Int32? = nil
 
   @[JSON::Field(ignore: true)]
   getter! vi_book : Nvinfo

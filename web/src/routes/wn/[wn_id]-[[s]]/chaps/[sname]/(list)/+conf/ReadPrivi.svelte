@@ -2,7 +2,9 @@
   import { api_call } from '$lib/api_call'
 
   export let edit_url: string
-  export let can_edit = false
+  export let can_conf = false
+
+  export let _privi = -1
 
   export let curr_seed: CV.Chroot
   export let seed_data: CV.WnSeed
@@ -38,7 +40,11 @@
 <div class="options">
   {#each read_privis as [value, label]}
     <label class="radio">
-      <input type="radio" bind:group={seed_data.read_privi} {value} />
+      <input
+        type="radio"
+        {value}
+        bind:group={seed_data.read_privi}
+        disabled={value > _privi} />
       <span> {label}</span>
     </label>
   {/each}
@@ -51,7 +57,7 @@
 <footer class="action">
   <button
     class="m-btn _primary _fill"
-    disabled={!can_edit}
+    disabled={!can_conf}
     on:click={update_read_privi}>
     <span>Lưu thay đổi</span>
   </button>

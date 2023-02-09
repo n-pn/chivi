@@ -6,7 +6,9 @@ require "compress/zip"
 class CV::QtranData
   DIR = "tmp/qtrans"
 
-  # spawn `find #{DIR} -type f -atime +1 -delete`
+  spawn do
+    `find #{DIR} -type f -atime +1 -delete`
+  end
 
   CACHE = RamCache(String, self).new(2048, 10.minutes)
 

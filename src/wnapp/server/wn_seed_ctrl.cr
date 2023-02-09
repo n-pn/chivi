@@ -92,8 +92,9 @@ class WN::SeedCtrl < AC::Base
 
   @[AC::Route::PATCH("/:wn_id/:sname", body: :form)]
   def update_seed(form : UpdateForm, wn_id : Int32, sname : String)
+    guard_privi update_privi(sname), "cập nhật nguồn"
+
     wn_seed = get_wn_seed(wn_id, sname)
-    guard_privi wn_seed.edit_privi("@" + _uname), "cập nhật nguồn"
 
     if read_privi = form.read_privi
       wn_seed.read_privi = read_privi
@@ -110,6 +111,16 @@ class WN::SeedCtrl < AC::Base
 
     wn_seed.save!
     render json: wn_seed
+  end
+
+  private def update_privi(sname : String)
+    case sname
+    when "@#{_uname}"       then 2
+    when "!chivi.app"       then 4
+    when .starts_with?('!') then 3
+    when .starts_with?('@') then 4
+    else                         2
+    end
   end
 
   @[AC::Route::DELETE("/:wn_id/:sname")]

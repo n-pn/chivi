@@ -87,6 +87,10 @@
     chroot: !!query.chroot,
     origin: !!query.origin,
   }
+
+  let qsearch: HTMLInputElement
+
+  const refocus_on_qsearch = () => qsearch && qsearch.focus()
 </script>
 
 <Slider class="appnav" bind:actived _slider="left" --slider-width="22rem">
@@ -115,20 +119,35 @@
         type="search"
         name="kw"
         bind:value={qtext}
+        bind:this={qsearch}
         placeholder="Từ khoá" />
-      <button class="-icon" disabled={!qtext} on:click={fast_query}>
+      <button
+        class="-icon"
+        type="button"
+        disabled={!qtext}
+        data-kbd="↵"
+        on:click={fast_query}>
         <SIcon name="search" />
       </button>
     </div>
 
     <div class="querytype">
-      <label
-        ><input type="radio" bind:group={qtype} value="btitle" />
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <label>
+        <input
+          type="radio"
+          value="btitle"
+          bind:group={qtype}
+          on:change={refocus_on_qsearch} />
         <span>Tìm theo bộ truyện</span>
       </label>
 
-      <label
-        ><input type="radio" bind:group={qtype} value="author" />
+      <label>
+        <input
+          type="radio"
+          value="author"
+          bind:group={qtype}
+          on:change={refocus_on_qsearch} />
         <span>Tìm theo tác giả</span>
       </label>
     </div>
@@ -404,6 +423,14 @@
       :global(svg) {
         width: 1rem;
         height: 1rem;
+      }
+    }
+
+    > button {
+      z-index: 99;
+      &:hover,
+      &:focus {
+        @include fgcolor(primary, 5);
       }
     }
   }

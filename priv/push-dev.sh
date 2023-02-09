@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-GC_INITIAL_HEAP_SIZE=3G
+
 
 for target in "$@"
 do
@@ -16,7 +16,7 @@ do
   then
     cp -f "src/mt_sp/hanlp_srv.py" /app/chivi/bin
   else
-    shards build -s --release --production $target
+    GC_INITIAL_HEAP_SIZE=4G shards build -s --release --production $target
   fi
 
   echo restarting $target service

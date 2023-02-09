@@ -2,7 +2,6 @@
 set -euo pipefail
 
 SSH=nipin@ssh.chivi.app:/app/chivi
-GC_INITIAL_HEAP_SIZE=3G
 
 function rsync-fast {
   rsync -aHAXxviz --compress-choice=zstd --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x ' $@
@@ -21,7 +20,7 @@ do
   # then
   #   rsync-fast "src/mt_sp/hanlp_srv.py" $SSH/bin
   else
-    shards build -s --release --production $target
+    GC_INITIAL_HEAP_SIZE=4G shards build -s --release --production $target
     rsync-fast bin/$target $SSH/bin
   fi
 
