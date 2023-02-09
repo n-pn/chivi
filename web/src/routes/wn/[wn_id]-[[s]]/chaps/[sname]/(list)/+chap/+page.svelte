@@ -35,7 +35,8 @@
       err_msg = ''
       chaps = split_text(input, opts)
     } catch (ex) {
-      err_msg = ex.message
+      console.log(ex)
+      err_msg = ex
     }
   }
 
@@ -44,7 +45,9 @@
 
     switch (options.split_mode) {
       case 1:
-        return split.split_mode_1(input, options.min_blanks, options.trim_space)
+        let min_blanks = +options.min_blanks
+        if (min_blanks < 1) min_blanks = 1
+        return split.split_mode_1(input, min_blanks, options.trim_space)
       case 2:
         return split.split_mode_2(input, options.need_blank)
       case 3:

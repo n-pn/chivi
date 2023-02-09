@@ -16,12 +16,9 @@
     {#if $popups.config}<Config />{/if}
   </div>
 
-  <Appnav bind:actived={$popups.appnav} />
-  <Dboard bind:actived={$popups.dboard} />
-
-  {#if session.uname != 'Khách' && $popups.usercp}
-    <Usercp bind:actived={$popups.usercp} />
-  {/if}
+  {#if $popups.appnav}<Appnav bind:actived={$popups.appnav} />{/if}
+  {#if $popups.dboard}<Dboard bind:actived={$popups.dboard} />{/if}
+  {#if $popups.usercp}<Usercp bind:actived={$popups.usercp} />{/if}
 </aside>
 
 <style lang="scss">

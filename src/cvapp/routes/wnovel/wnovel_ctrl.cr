@@ -42,7 +42,12 @@ class CV::WnovelCtrl < CV::BaseCtrl
   def find(bslug : String) : Nil
     frags = TextUtil.slugify(bslug).split('-')
     query = "bhash like '#{frags[0]}%' or bhash like '#{frags[-1]}%'"
-    render json: {found: Nvinfo.find(query).try(&.bslug)}
+
+    if wnovel = Nvinfo.find(query)
+      found = "#{wnovel.id}-#{wnovel.bslug}"
+    end
+
+    render json: {found: found}
   end
 
   #############

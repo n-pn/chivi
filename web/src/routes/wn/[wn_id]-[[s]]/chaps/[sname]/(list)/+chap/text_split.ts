@@ -5,6 +5,8 @@ export interface Zchap {
 }
 
 export function split_mode_0(input: string, repeat = 3) {
+  if (repeat < 1) repeat = 1
+
   const chaps: Zchap[] = []
   const lines = input.split('\n').filter(Boolean)
 
@@ -40,12 +42,13 @@ export function split_mode_0(input: string, repeat = 3) {
 }
 
 export function split_mode_1(input: string, min_blanks = 2, trim = false) {
+  if (min_blanks < 1) min_blanks = 1
   let blank_count = min_blanks
 
   const is_title_fn = (line: string) => {
     if (trim) line = clean_text(line)
 
-    if (line) {
+    if (line !== '') {
       const is_title = blank_count >= min_blanks
       blank_count = 0
       return is_title
@@ -99,8 +102,10 @@ function split_text(input: string, is_title_fn: (line: string) => boolean) {
 
   let pending: Zchap = { chdiv, title: '', lines: [] }
 
-  for (let line of lines) {
+  for (let line_no = 0; line_no < lines.length; line_no++) {
+    const line = lines[line_no]
     const is_title = is_title_fn(line)
+
     const clean_line = clean_text(line)
     if (!clean_line) continue
 
@@ -112,7 +117,7 @@ function split_text(input: string, is_title_fn: (line: string) => boolean) {
       pending = { chdiv, title: clean_line, lines: [] }
       prev_was_chdiv = false
     } else if (prev_was_chdiv) {
-      throw `Lỗi dòng [${line}]: Chương phía trước không có nội dung!`
+      throw `Lỗi dòng #${line_no + 1} (${line}): Chương trước thiếu nội dung!`
     } else if (!pending.title) {
       pending.title = clean_line
       prev_was_chdiv = false

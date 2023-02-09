@@ -13,7 +13,7 @@ export function hash_str(s: string) {
   return hash.toString(32)
 }
 
-const valid_re = /^[\s　]*第|[。！」#\p{Pe}\p{Pf}]\s*$/
+const valid_re = /^[\s　]*第|[。！」#＊”\p{Pe}\p{Pf}]\s*$/
 
 export function fix_breaks(input: string, min_invalid = 15) {
   const lines = input.split(/\r\n?|\n/)
@@ -21,9 +21,9 @@ export function fix_breaks(input: string, min_invalid = 15) {
   let was_invalid = false
 
   for (let line of lines) {
-    if (!line) continue
+    line = line.replace(/^[\s　]*/, '')
 
-    if (was_invalid) output += line.replace(/^[\s　]*/, '')
+    if (!line) continue
     else output += line
 
     if (was_invalid || line.length > min_invalid) {
