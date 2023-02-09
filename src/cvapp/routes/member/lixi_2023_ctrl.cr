@@ -30,7 +30,7 @@ class CV::LixiCtrl < CV::BaseCtrl
     roll = Lixi2023.new
     roll.uname = _uname
 
-    _viuser.vcoin_avail += roll.vcoin
+    _viuser.vcoin += roll.vcoin
     _viuser.vcoin_total += roll.vcoin
 
     _viuser.save!

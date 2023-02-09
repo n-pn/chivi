@@ -27,8 +27,8 @@ class CV::Viuser
   column privi_2_until : Int64 = 0
   column privi_3_until : Int64 = 0
 
+  column vcoin : Float64 = 0
   column vcoin_total : Int32 = 0
-  column vcoin_avail : Int32 = 0
 
   column last_loggedin_at : Time = Time.utc
   column reply_checked_at : Time = Time.utc
@@ -69,9 +69,9 @@ class CV::Viuser
     {50, 100, 175, 250}, # privi 2
   }
 
-  def fix_vcoin(value : Int32)
+  def fix_vcoin(value : Float64)
     self.vcoin_total += value if value > 0
-    self.vcoin_avail += value
+    self.vcoin += value
   end
 
   def privi_until
@@ -84,9 +84,9 @@ class CV::Viuser
 
   def upgrade!(privi : Int32, tspan : Int32) : Tuple(Int64, Int64, Int64)
     vcoin = PRIVI_COST[privi][tspan]
-    raise "Not enough vcoin" if vcoin_avail < vcoin
+    raise "Lượng vcoin không đủ!" if vcoin < vcoin
 
-    self.vcoin_avail -= vcoin
+    self.vcoin -= vcoin
     self.privi = privi if self.privi < privi
 
     tspan = PRIVI_SPAN[tspan]

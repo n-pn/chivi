@@ -18,7 +18,7 @@ class CV::VcoinXlog
           sender integer default 0,
           sendee integer default 0,
 
-          amount integer default 0,
+          amount real default 0,
           reason text default '',
 
           ctime integer default 0,
@@ -42,7 +42,7 @@ class CV::VcoinXlog
   getter sender : Int32
   getter sendee : Int32
 
-  getter amount : Int32 = 0
+  getter amount : Float64 = 0_f64
   getter reason : String = ""
 
   getter ctime : Int64

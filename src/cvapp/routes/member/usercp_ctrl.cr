@@ -45,9 +45,14 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
     getter sendee : String
     getter reason : String
-    getter amount : Int32
+    getter amount : Float64
 
     getter? as_admin : Bool = false
+
+    def after_initialize
+      @amount = @amount.round(2)
+      @amount = 0.1 if @amount < 0.1
+    end
   end
 
   @[AC::Route::PUT("/send-vcoin", body: :form)]
@@ -58,15 +63,15 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
     if _viuser.privi > 3 && form.as_admin?
       sender = Viuser.load!(-1) # sender is admin
-    elsif _viuser.vcoin_avail >= form.amount
+    elsif _viuser.vcoin >= form.amount
       sender = _viuser
     else
       raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
     end
 
     Clear::SQL.transaction do
-      sender.update(vcoin_avail: sender.vcoin_avail - form.amount)
-      sendee.update(vcoin_avail: sendee.vcoin_avail + form.amount)
+      sender.update(vcoin: sender.vcoin - form.amount)
+      sendee.update(vcoin: sendee.vcoin + form.amount)
 
       VcoinXlog.new(sender: sender.id, sendee: sendee.id, amount: form.amount, reason: form.reason).create!
 
@@ -77,10 +82,10 @@ class CV::UsercpCtrl < CV::BaseCtrl
     end
 
     spawn CtrlUtil.log_user_action("send-vcoin", form, _viuser.uname)
-    render json: {sendee: sendee.uname, remain: _viuser.vcoin_avail}
+    render json: {sendee: sendee.uname, remain: _viuser.vcoin}
   end
 
-  private def send_vcoin_receive_email(sender : Viuser, sendee : Viuser, amount : Int32, reason : String)
+  private def send_vcoin_receive_email(sender : Viuser, sendee : Viuser, amount : Float64, reason : String)
     MailUtil.send(to: sendee.email, name: sendee.uname) do |mail|
       mail.subject "Chivi: Bạn nhận được #{amount} vcoin"
 
