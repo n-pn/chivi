@@ -1,4 +1,5 @@
 import { api_path, api_get } from '$lib/api_call'
+import { home_nav, nav_link } from '$gui/global/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -11,7 +12,7 @@ interface JsonData extends CV.Paginate {
 
 const _meta: App.PageMeta = {
   title: 'Từ điển',
-  left_nav: [{ text: 'Từ điển', icon: 'package', href: 'dicts' }],
+  left_nav: [home_nav('ps'), nav_link('dicts', 'Từ điển', 'package')],
 }
 
 export const load = (async ({ fetch, url }) => {

@@ -70,21 +70,6 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     ],
   },
 
-  // dictionary management
-  '/dicts': {
-    title: 'Từ điển',
-    left_nav: [home_nav('ps'), nav_link('/dicts', 'Từ điển', 'package')],
-  },
-  '/dicts/[dict]': ({ label, dname }) => {
-    return {
-      title: 'Từ điển:' + label,
-      left_nav: [
-        home_nav('ps'),
-        nav_link('/dicts', 'Từ điển', 'package', { show: 'ts' }),
-        nav_link(dname, label, '', { kind: 'title' }),
-      ],
-    }
-  },
   // forum pages
   '/forum': {
     title: 'Diễn đàn',

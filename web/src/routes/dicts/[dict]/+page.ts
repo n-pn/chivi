@@ -1,5 +1,7 @@
 import { api_path, api_get } from '$lib/api_call'
-import type { PageLoadEvent } from './$types'
+import { home_nav, nav_link } from '$gui/global/header_util'
+
+import type { PageLoad } from './$types'
 
 // FIXME: add type for term
 export interface TermsData extends CV.Paginate {
@@ -16,7 +18,7 @@ export interface V1Dict {
   users: string[]
 }
 
-export async function load({ fetch, url, params: { dict } }: PageLoadEvent) {
+export const load = (async ({ fetch, url, params: { dict } }) => {
   const dict_path = api_path('v1dict.show', dict)
   const dinfo = await api_get<V1Dict>(dict_path, fetch)
 
@@ -24,8 +26,17 @@ export async function load({ fetch, url, params: { dict } }: PageLoadEvent) {
   const terms_url = api_path('v1defn.index', null, url.searchParams, query)
   const terms = await api_get<TermsData>(terms_url, fetch)
 
-  return { ...dinfo, ...terms, query }
-}
+  const _meta = {
+    title: 'Từ điển:' + dinfo.label,
+    left_nav: [
+      home_nav('ps'),
+      nav_link('/dicts', 'Từ điển', 'package', { show: 'ts' }),
+      nav_link(dict, dinfo.label, '', { kind: 'title' }),
+    ],
+  }
+
+  return { ...dinfo, ...terms, query, _meta }
+}) satisfies PageLoad
 
 function gen_query(dic: string, params: URLSearchParams) {
   return {
