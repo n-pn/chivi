@@ -1,5 +1,6 @@
-import { api_path } from '$lib/api_call'
-import type { PageLoadEvent } from './$types'
+import { api_path, api_get } from '$lib/api_call'
+
+import type { PageLoad } from './$types'
 
 export type DictInfo = [string, string, number]
 
@@ -8,16 +9,16 @@ interface JsonData extends CV.Paginate {
   books: DictInfo[]
 }
 
-export async function load({ fetch, url }: PageLoadEvent) {
+const _meta: App.PageMeta = {
+  title: 'Từ điển',
+  left_nav: [{ text: 'Từ điển', icon: 'package', href: 'dicts' }],
+}
+
+export const load = (async ({ fetch, url }) => {
   const path = api_path('v1dict.index', 0, url.searchParams)
 
   // FIXME: update api result
-  const data: JsonData = await fetch(path).then((x) => x.json())
-
-  const _meta: App.PageMeta = {
-    title: 'Từ điển',
-    left_nav: [{ text: 'Từ điển', icon: 'package', href: url.pathname }],
-  }
+  const data: JsonData = await api_get<JsonData>(path, fetch)
 
   return { ...data, _meta }
-}
+}) satisfies PageLoad

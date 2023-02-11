@@ -18,11 +18,11 @@ export interface V1Dict {
 
 export async function load({ fetch, url, params: { dict } }: PageLoadEvent) {
   const dict_path = api_path('v1dict.show', dict)
-  const dinfo = await api_get<V1Dict>(dict_path, null, fetch)
+  const dinfo = await api_get<V1Dict>(dict_path, fetch)
 
   const query = gen_query(dict, url.searchParams)
   const terms_url = api_path('v1defn.index', null, url.searchParams, query)
-  const terms = await api_get<TermsData>(terms_url, null, fetch)
+  const terms = await api_get<TermsData>(terms_url, fetch)
 
   return { ...dinfo, ...terms, query }
 }

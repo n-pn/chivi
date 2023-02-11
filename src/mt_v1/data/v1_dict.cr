@@ -28,16 +28,20 @@ class M1::DbDict
   def initialize(@id, @dname, @label = "", @brief = "", @privi = 1, @dtype = 0)
   end
 
-  def save!(repo = self.class.repo)
+  def save!(repo : Crorm::Sqlite3::Repo = self.class.repo)
+    repo.open_tx { |db| self.save!(db) }
+  end
+
+  def save!(db : Crorm::Sqlite3::DB)
     fields, values = get_changes
 
     query = Crorm::Sqlite3::SQL.upsert_sql(@@table, fields) do |sql|
       fields = {"dname", "label", "brief", "privi", "dtype"}
       Crorm::Sqlite3::SQL.build_upsert_sql(sql, fields)
-      sql << " where dname == excluded.dname"
+      sql << " where dname = excluded.dname"
     end
 
-    repo.open_tx(&.exec query, args: values)
+    db.exec query, args: values
   end
 
   def update!(changes : Hash(String, DB::Any))
