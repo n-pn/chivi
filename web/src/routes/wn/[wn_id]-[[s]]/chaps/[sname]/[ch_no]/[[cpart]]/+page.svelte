@@ -120,7 +120,8 @@
         href={paths.prev}
         class="m-btn navi-item"
         class:_disable={!data._prev_url}
-        data-kbd="j">
+        data-key="74"
+        data-kbd="←">
         <SIcon name="chevron-left" />
         <span>Trước</span>
       </a>
@@ -191,7 +192,8 @@
         href={paths.next}
         class="m-btn _fill navi-item"
         class:_primary={data._next_url}
-        data-kbd="k">
+        data-key="75"
+        data-kbd="→">
         <span>Kế tiếp</span>
         <SIcon name="chevron-right" />
       </a>

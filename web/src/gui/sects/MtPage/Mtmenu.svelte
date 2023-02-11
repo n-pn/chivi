@@ -118,18 +118,26 @@
         return
 
       case 'ArrowUp':
+        if (!event.ctrlKey) return
+
         event.preventDefault()
         return change_focus(null, (l_focus - 1 + lines.length) % lines.length)
 
       case 'ArrowDown':
+        if (!event.ctrlKey) return
+
         event.preventDefault()
         return change_focus(null, (l_focus = (l_focus + 1) % lines.length))
 
       case 'ArrowLeft':
+        if (!event.ctrlKey) return
+
         event.preventDefault()
         return move_left(event.shiftKey)
 
       case 'ArrowRight':
+        if (!event.ctrlKey) return
+
         event.preventDefault()
         return move_right(event.shiftKey)
     }
