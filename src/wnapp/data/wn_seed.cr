@@ -2,7 +2,6 @@ require "crorm"
 require "crorm/sqlite3"
 
 require "../../_util/site_link"
-require "../../mt_v1/data/v1_dict"
 
 require "./wn_repo"
 require "../remote/rm_cata"
@@ -41,10 +40,7 @@ class WN::WnSeed
   getter remotes : Array(String) { Array(String).from_json(self.rm_links) }
 
   @[DB::Field(ignore: true)]
-  getter dname : String { M1::DbDict.get_dname(self.wn_id) }
-
-  @[DB::Field(ignore: true)]
-  getter chaps : WnRepo { WnRepo.load(self.sname, self.s_bid, self.dname) }
+  getter chaps : WnRepo { WnRepo.load(self.sname, self.s_bid, self.wn_id) }
 
   def initialize(@wn_id, @sname, @s_bid = wn_id, privi = 1)
     @read_privi = @edit_privi = privi

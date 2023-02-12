@@ -57,33 +57,33 @@
       background: none !important;
     }
 
-    // regular + public
+    // regular + main
     &[data-d='2'] {
       @include cv-node(blue);
     }
 
-    // unique + public
-    &[data-d='3'] {
-      @include cv-node(orange);
-    }
-
     // regular + temp
-    &[data-d='4'] {
+    &[data-d='3'] {
       @include cv-node(teal);
     }
 
-    // unique + temp
-    &[data-d='5'] {
-      @include cv-node(red);
-    }
-
-    // regular + private
-    &[data-d='6'] {
+    // regular + user
+    &[data-d='4'] {
       @include cv-node(green);
     }
 
-    // unique + private
+    // unique + main
+    &[data-d='6'] {
+      @include cv-node(orange);
+    }
+
+    // unique + temp
     &[data-d='7'] {
+      @include cv-node(red);
+    }
+
+    // unique + user
+    &[data-d='8'] {
       @include cv-node(purple);
     }
 

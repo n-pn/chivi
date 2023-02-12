@@ -2,7 +2,7 @@ require "../data/v1_dict"
 require "../data/v1_defn"
 
 require "./_m1_ctrl_base"
-require "./forms/m1_defn_form"
+require "./m1_defn_form"
 
 class M1::DefnCtrl < AC::Base
   base "/_m1"
@@ -98,6 +98,7 @@ class M1::DefnCtrl < AC::Base
     form.validate!(_privi)
 
     defn = form.save!(_uname)
+    sync_data!(form.vdict, defn)
 
     spawn do
       date = Time.local.to_s("%Y-%m/%d")
@@ -108,5 +109,20 @@ class M1::DefnCtrl < AC::Base
     end
 
     render json: defn
+  end
+
+  private def sync_data!(dict : DbDict, defn : DbDefn)
+    dict.update_after_term_added!(defn.mtime)
+
+    case defn.tab
+    when 0, 1 # add to main dict
+      MtDict::TEMPS[dict.id]?.try(&.remove_term(defn.key))
+      MtDict::MAINS[dict.id]?.try(&.add_defn(defn))
+    when 2 # add to temp dict
+      MtDict::TEMPS[dict.id]?.try(&.add_defn(defn))
+    when 3 # add to user dict
+      MtDict::TEMPS[dict.id]?.try(&.remove_term(defn.key))
+      MtDict::USERS["#{dict.id}/#{defn.uname}"]?.try(&.add_defn(defn))
+    end
   end
 end

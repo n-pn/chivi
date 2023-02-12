@@ -1,13 +1,13 @@
 require "sqlite3"
-require "../../mt_v1/mt_core"
+require "../../mt_v1/core/m1_core"
 require "./wn_chap"
 
 class WN::WnRepo
   getter db_path : String
 
-  def initialize(@db_path, dname : String)
+  def initialize(@db_path, wn_id : Int32)
     init_db(self.class.init_sql) unless File.file?(db_path)
-    @cvmtl = CV::MtCore.generic_mtl(dname)
+    @cvmtl = M1::MtCore.generic_mtl(wn_id)
     self.translate!
   end
 
@@ -191,14 +191,14 @@ class WN::WnRepo
   CACHE = {} of String => self
 
   @[AlwaysInline]
-  def self.load(db_path : String, dname : String)
-    CACHE[db_path] ||= new(db_path, dname)
+  def self.load(db_path : String, wn_id : Int32)
+    CACHE[db_path] ||= new(db_path, wn_id)
   end
 
   @[AlwaysInline]
-  def self.load(sname : String, s_bid : Int32, dname : String)
+  def self.load(sname : String, s_bid : Int32, wn_id : Int32)
     db_path = self.db_path(sname, s_bid)
-    self.load(db_path, dname)
+    self.load(db_path, wn_id)
   end
 
   ###

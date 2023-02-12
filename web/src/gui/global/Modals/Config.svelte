@@ -50,7 +50,7 @@
   const close_modal = () => popups.hide('config')
 </script>
 
-<div class="config-wrap" bind:this={elem} on:mouseleave={close_modal}>
+<div class="config-wrap" bind:this={elem} on:blur={close_modal}>
   <header class="config-head">
     <h4 class="config-title">Cài đặt</h4>
 

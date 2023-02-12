@@ -1,4 +1,4 @@
-require "./mt_node"
+require "./mt_base"
 
 require "../pos_tag"
 require "../mt_core/mt_util"
@@ -6,6 +6,8 @@ require "../../../_util/text_util"
 
 class M1::MtTerm < M1::MtNode
   def self.cost(size : Int32, prio : Int32 = 0)
+    return 0 if prio < 1
+
     COSTS[(size &- 1) &* 4 &+ prio]? || size &* (prio &* 2 &+ 7) &* 2
   end
 
@@ -19,7 +21,7 @@ class M1::MtTerm < M1::MtNode
 
   ###########
 
-  getter cost : Int32 = 1
+  getter cost : Int32 = 0
 
   def initialize(@key, @val = @key, @tag = PosTag::Unkn, @dic = 0, @idx = 0)
     @cost = self.class.cost(key.size, 2)
@@ -46,7 +48,7 @@ class M1::MtTerm < M1::MtNode
     MtTerm.new(
       key: @key, val: @val,
       tag: @tag, dic: @dic,
-      idx: @idx
+      idx: idx
     )
   end
 

@@ -1,7 +1,7 @@
 require "crorm"
 require "crorm/sqlite3"
 
-require "../pos_tag"
+# require "../core/pos_tag"
 require "./v1_dict"
 
 class M1::DbDefn
@@ -134,22 +134,22 @@ class M1::DbDefn
     self.class.repo.db.query_all(query, dic, key, ptag, as: Int32)
   end
 
-  def to_term
-    term = DbTerm.new
+  # def to_term
+  #   term = DbTerm.new
 
-    term.id = self.id
-    term.dic = self.dic
+  #   term.id = self.id
+  #   term.dic = self.dic
 
-    term.key = TextUtil.normalize(self.key)
-    term.val = self.val.split(SPLIT).first
+  #   term.key = TextUtil.normalize(self.key)
+  #   term.val = self.val.split(SPLIT).first
 
-    ptag = CV::PosTag.parse(self.ptag, self.key)
+  #   ptag = PosTag.parse(self.ptag, self.key)
 
-    term.etag = ptag.tag.value
-    term.epos = ptag.pos.value.to_i64
+  #   term.etag = ptag.tag.value
+  #   term.epos = ptag.pos.value.to_i64
 
-    term.cost = self.cost
+  #   term.cost = self.cost
 
-    term
-  end
+  #   term
+  # end
 end

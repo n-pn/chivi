@@ -19,6 +19,17 @@ class M1::MtTrie
     node
   end
 
+  def find(input : String) : self | Nil
+    node = self
+
+    input.each_char do |char|
+      return unless trie = node.trie
+      return unless node = trie[char]?
+    end
+
+    node
+  end
+
   def scan(chars : Array(Char), idx : Int32 = 0) : Nil
     node = self
 
@@ -36,28 +47,40 @@ end
 class M1::MtDict
   DB_PATH = "var/dicts/v1raw/v1_defns.dic"
 
-  CACHED = {} of String => self
+  MAINS = {} of Int32 => self
+  TEMPS = {} of Int32 => self
+  USERS = {} of String => self
 
-  class_getter hanviet : self { new(0).load!(-2).load!(-10) }
-  class_getter pin_yin : self { new(0).load!(-2).load!(-11) }
+  class_getter hanviet : self do
+    MAINS[-10] ||= new(0).load!(-2).load!(-10)
+  end
 
-  class_getter regular_main : self { new(2).load!(-2).load_main!(-1).load!(-3) }
-  class_getter regular_temp : self { new(3).load_temp!(-1) }
+  class_getter pin_yin : self do
+    MAINS[-11] ||= new(0).load!(-2).load!(-11)
+  end
+
+  class_getter regular_main : self do
+    MAINS[-1] ||= new(2).load!(-2).load_main!(-1).load!(-3)
+  end
+
+  class_getter regular_temp : self do
+    TEMPS[-1] ||= new(3).load_temp!(-1)
+  end
 
   def self.regular_user(uname : String) : self
-    CACHED["@#{uname}"] ||= new(4).load_user!(-1, uname)
+    USERS["-1@#{uname}"] ||= new(4).load_user!(-1, uname)
   end
 
   def self.unique_main(wn_id : Int32) : self
-    CACHED["#{wn_id}"] ||= new(6).load_main!(wn_id)
+    MAINS[wn_id] ||= new(6).load_main!(wn_id)
   end
 
   def self.unique_temp(wn_id : Int32) : self
-    CACHED["#{wn_id}!"] ||= new(7).load_temp!(wn_id)
+    TEMPS[wn_id] ||= new(7).load_temp!(wn_id)
   end
 
   def self.unique_user(wn_id : Int32, uname : String) : self
-    CACHED["#{wn_id}!"] ||= new(8).load_user!(wn_id, uname)
+    USERS["#{wn_id}@#{uname}"] ||= new(8).load_user!(wn_id, uname)
   end
 
   getter trie = MtTrie.new
@@ -104,7 +127,11 @@ class M1::MtDict
     self
   end
 
-  def add_term(key : String, val : String, ptag : String, prio : Int32 = 0)
+  def add_defn(defn : DbDefn)
+    add_term(defn.key, defn.val, defn.ptag, defn.prio)
+  end
+
+  def add_term(key : String, val : String, ptag : String = "", prio : Int32 = 0)
     node = @trie.find!(key)
 
     if val.empty?
@@ -112,5 +139,10 @@ class M1::MtDict
     else
       node.term = MtTerm.new(key, val.split('ǀ')[0], dic: @lbl, ptag: ptag, prio: prio)
     end
+  end
+
+  def remove_term(key : String) : Nil
+    return unless node = @trie.find(key)
+    node.term = nil
   end
 end

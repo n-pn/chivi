@@ -1,4 +1,4 @@
-class CV::VpHint
+class M1::VpHint
   DIR = "var/vhint"
 
   class_getter seed_vals : self { new("#{DIR}/phrase/legacy", 256) }

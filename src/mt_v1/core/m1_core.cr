@@ -89,7 +89,7 @@ class M1::MtCore
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtData
-    nodes = [MtTerm.new('.', idx: offset)]
+    nodes = [MtTerm.new("", idx: offset)]
     costs = [0]
 
     input.each_with_index do |char, idx|

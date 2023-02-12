@@ -1,6 +1,6 @@
 require "sqlite3"
 
-require "../mt_node/*"
+require "./mt_node/mt_term"
 require "./pos_tag"
 
 class M1::SpDict

@@ -1,7 +1,7 @@
 require "../_ctrl_base"
 require "../shared/qtran_data"
 require "../../../_util/tran_util"
-require "../../../mt_v1/data/v1_dict"
+require "../../../mt_v1/core/m1_core"
 
 class CV::QtransCtrl < CV::BaseCtrl
   base "/"
@@ -116,9 +116,8 @@ class CV::QtransCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/_db/cv_chap")]
   def cv_chap(wn_id : Int32 = 0, cv_title : String = "none", label : String? = nil)
-    dname = M1::DbDict.get_dname(wn_id)
     w_temp = cookies["w_temp"]?.try(&.value) || "t"
-    engine = MtCore.generic_mtl(dname, user: _uname, temp: w_temp == "t")
+    engine = M1::MtCore.generic_mtl(wn_id, temp: w_temp == "t", user: _uname)
 
     input = request.body.not_nil!.gets_to_end
     render_title = RenderTitle.parse(cv_title)

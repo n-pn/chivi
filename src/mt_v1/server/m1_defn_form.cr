@@ -1,5 +1,5 @@
 require "json"
-require "../../data/v1_dict"
+require "../data/v1_dict"
 
 class M1::DefnForm
   include JSON::Serializable
@@ -21,7 +21,7 @@ class M1::DefnForm
   def after_initialize
     @key = @key.gsub(/[\p{C}\s]+/, " ").strip
     @val = @val.gsub(/[\p{C}\s]+/, " ").strip.unicode_normalize(:nfc)
-    @vdict = DbDict.get!(@dic)
+    @vdict = DbDict.load(@dic)
   end
 
   private def min_privi(dic : Int32)
@@ -58,8 +58,6 @@ class M1::DefnForm
     defn._ctx = @_ctx
 
     defn.save!(DbDefn.repo)
-
-    vdict.update_after_term_added!(defn.mtime)
 
     defn
 

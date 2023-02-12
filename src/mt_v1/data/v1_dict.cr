@@ -101,6 +101,16 @@ class M1::DbDict
     get!(id).dname rescue "combine"
   end
 
+  CACHED = {} of Int32 => self
+
+  def self.load(id : Int32)
+    CACHED[id] ||= get!(id)
+  end
+
+  def self.load(dname : String)
+    load(get_id(dname))
+  end
+
   def self.get!(id : Int32) : self
     query = "select * from dicts where id = ?"
     self.repo.open_db(&.query_one(query, id, as: self))

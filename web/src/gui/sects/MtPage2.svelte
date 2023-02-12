@@ -52,7 +52,7 @@
   $: if (browser && ztext && $config.render != 3) render_v2(ztext)
 
   async function render_v1(body: string, cv_title = 'first') {
-    const url = `/_db/cv_chap?wn_id=${wn_id}&cv_title=${cv_title}`
+    const url = `/_m1/qtran/cv_chap?wn_id=${wn_id}&cv_title=${cv_title}`
     const res = await fetch(url, { method: 'POST', body })
 
     if (!res.ok) return

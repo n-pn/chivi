@@ -1,3 +1,4 @@
+require "./mt_base"
 require "./mt_term"
 
 class M1::MtList < M1::MtNode

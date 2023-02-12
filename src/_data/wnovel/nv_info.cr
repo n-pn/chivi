@@ -6,7 +6,7 @@ require "./btitle"
 require "./nvinfo/*"
 
 require "../ys_book"
-require "../../mt_v1/mt_core"
+require "../../mt_v1/core/m1_core"
 
 class CV::Nvinfo
   include Clear::Model
@@ -88,7 +88,7 @@ class CV::Nvinfo
 
   timestamps # created_at and updated_at
 
-  getter cvmtl : CV::MtCore { CV::MtCore.generic_mtl(self.dname) }
+  getter cvmtl : M1::MtCore { M1::MtCore.generic_mtl(self.id) }
 
   scope :filter_btitle do |input|
     if input.nil?
