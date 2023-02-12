@@ -1,11 +1,11 @@
-require "../../src/mtlv1/mt_core"
+require "../../src/mt_v1/core/m1_core"
 
 text = ARGV[0]? || "在魏梦柔的目光下"
-book = ARGV[1]? || "qcwe8yg1"
+book = ARGV[1]?.try(&.to_i) || 0
 user = ARGV[2]?
 
 time = Time.monotonic
-mtl = CV::MtCore.generic_mtl(bname: book, uname: user || "")
+mtl = M1::MtCore.generic_mtl(udic: book, user: user || "")
 res = mtl.cv_plain(text)
 
 res.inspect(STDOUT)

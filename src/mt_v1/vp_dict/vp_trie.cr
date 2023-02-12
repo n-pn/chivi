@@ -1,59 +1,74 @@
 require "./vp_term"
 
-class V1::VpLeaf
-  property base : CV::VpTerm? = nil
-  property temp : CV::VpTerm? = nil
+# class V1::VpLeaf
+#   property base : CV::VpTerm? = nil
+#   property temp : CV::VpTerm? = nil
 
-  getter privs = {} of String => CV::VpTerm
+#   getter privs = {} of String => CV::VpTerm
 
-  def add(term : CV::VpTerm) : CV::VpTerm?
-    # term is a user private entry if uname is prefixed with a "!"
-    case term
-    when .priv?
-      uname = term.uname
-      @privs[uname] = term if newer?(term, @privs[uname]?)
-    when .temp?
-      @temp = term if newer?(term, @temp)
-    else
-      @temp = term if newer?(term, @temp)
-      @base = term if newer?(term, @base)
-    end
-  end
-end
+#   def add(term : CV::VpTerm) : CV::VpTerm?
+#     # term is a user private entry if uname is prefixed with a "!"
+#     case term
+#     when .priv?
+#       uname = term.uname
+#       @privs[uname] = term if newer?(term, @privs[uname]?)
+#     when .temp?
+#       @temp = term if newer?(term, @temp)
+#     else
+#       @temp = term if newer?(term, @temp)
+#       @base = term if newer?(term, @base)
+#     end
+#   end
+# end
 
 class CV::VpTrie
   alias Trie = Hash(Char, VpTrie)
 
-  getter _next = Trie.new
-  property base : VpTerm? = nil
-  property temp : VpTerm? = nil
-
-  getter privs = {} of String => VpTerm
+  property term : VpTerm? = nil
+  property trie : Trie? = nil
 
   def each
     queue = [self]
 
     while node = queue.shift?
-      yield node if node.base || !node.privs.empty?
-      node._next.each_value { |x| queue << x }
+      yield node if node.term
+
+      node.trie.try do |trie|
+        trie.each_value { |x| queue << x }
+      end
     end
   end
 
   def find!(input : String) : VpTrie
     node = self
-    input.each_char { |c| node = node._next[c] ||= VpTrie.new }
+
+    input.each_char do |char|
+      trie = node.trie ||= Trie.new
+      node = trie[char] ||= VpTrie.new
+    end
+
     node
   end
 
   def find(input : String) : VpTrie?
     node = self
-    input.each_char { |c| return unless node = node._next[c]? }
+
+    input.each_char do |char|
+      return unless trie = node.trie
+      return unless node = trie[char]?
+    end
+
     node
   end
 
   def find(chars : Array(Char)) : VpTrie?
     node = self
-    chars.each { |c| return unless node = node._next[c]? }
+
+    input.each do |char|
+      return unless trie = node.trie
+      return unless node = trie[char]?
+    end
+
     node
   end
 
@@ -61,38 +76,12 @@ class CV::VpTrie
     node = self
 
     idx.upto(chars.size - 1) do |i|
+      break unless trie = node.trie
+
       char = chars.unsafe_fetch(i)
-      break unless node = node._next[char]?
+      break unless node = trie[char]?
 
-      node.base.try { |term| yield term unless term.deleted? }
-    end
-  end
-
-  def scan_best(chars : Array(Char), idx : Int32 = 0, user : String = "", temp : Bool = false) : Nil
-    node = self
-
-    idx.upto(chars.size - 1) do |i|
-      char = chars.unsafe_fetch(i)
-      break unless node = node._next[char]?
-
-      node.base.try { |term| yield term unless term.deleted? }
-      node.temp.try { |term| yield term unless term.deleted? } if temp
-      node.privs[user]?.try { |term| yield term unless term.deleted? }
-    end
-  end
-
-  def push!(term : VpTerm) : VpTerm?
-    # term is a user private entry if uname is prefixed with a "!"
-    case term
-    when .priv?
-      @privs[term.uname] = term if term.newer?(@privs[term.uname]?)
-    when .temp?
-      @privs[term.uname] = term if term.newer?(@privs[term.uname]?)
-      @temp = term if term.newer?(@temp)
-    else
-      @privs[term.uname] = term if term.newer?(@privs[term.uname]?)
-      @temp = term if term.newer?(@temp)
-      @base = term if term.newer?(@base)
+      node.term.try { |term| yield term }
     end
   end
 end
