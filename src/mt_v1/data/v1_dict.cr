@@ -121,7 +121,7 @@ class M1::DbDict
   end
 
   def self.books_count : Int32
-    query = "select count(*) from #{@@table} where term_total > 0 and id < 0"
+    query = "select count(*) from #{@@table} where term_total > 0 and id > 0"
     self.repo.open_db(&.query_one(query, as: Int32))
   end
 
@@ -145,7 +145,7 @@ class M1::DbDict
 
   def self.all_books(limit : Int32, offset = 0)
     query = <<-SQL
-      select * from #{@@table} where id < 0 and term_total > 0
+      select * from #{@@table} where id > 0 and term_total > 0
       order by mtime desc limit ? offset ?
     SQL
 

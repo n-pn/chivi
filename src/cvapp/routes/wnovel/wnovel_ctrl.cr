@@ -133,7 +133,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
   private def add_book_dict(wn_id : Int64, bhash : String, bname : String)
     # TODO: call mt_v1 api instead
     dict = M1::DbDict.new(
-      id: -wn_id.to_i, dname: "-#{bhash}",
+      id: wn_id.to_i, dname: "-#{bhash}",
       label: bname, brief: "Từ điển riêng cho bộ truyện [#{bname}]",
       privi: 1, dtype: 3,
     )

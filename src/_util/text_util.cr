@@ -197,6 +197,34 @@ module TextUtil
   def normalize(input : Array(Char)) : Array(Char)
     input.map { |char| CharUtil.normalize(char) }
   end
+
+  FIX_MARKS = {
+    "òa" => "oà",
+    "óa" => "oá",
+    "ỏa" => "oả",
+    "õa" => "oã",
+    "ọa" => "oạ",
+
+    "òe" => "oè",
+    "óe" => "oé",
+    "ỏe" => "oẻ",
+    "õe" => "oẽ",
+    "ọe" => "oẹ",
+
+    "ùy" => "uỳ",
+    "úy" => "uý",
+    "ủy" => "uỷ",
+    "ũy" => "uỹ",
+    "ụy" => "uỵ",
+  }
+
+  MARK_RE = Regex.new(FIX_MARKS.keys.join('|'))
+
+  def fix_viet(str : String)
+    str
+      .unicode_normalize(:nfc)
+      .gsub(MARK_RE) { |key| FIX_MARKS[key] }
+  end
 end
 
 # pp TextUtil.format_title("第二十集 红粉骷髅 第八章")

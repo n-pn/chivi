@@ -116,7 +116,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/_db/cv_chap")]
   def cv_chap(wn_id : Int32 = 0, cv_title : String = "none", label : String? = nil)
-    dname = M1::DbDict.get_dname(-wn_id)
+    dname = M1::DbDict.get_dname(wn_id)
     w_temp = cookies["w_temp"]?.try(&.value) || "t"
     engine = MtCore.generic_mtl(dname, user: _uname, temp: w_temp == "t")
 

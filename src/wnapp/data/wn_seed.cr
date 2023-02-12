@@ -41,7 +41,7 @@ class WN::WnSeed
   getter remotes : Array(String) { Array(String).from_json(self.rm_links) }
 
   @[DB::Field(ignore: true)]
-  getter dname : String { M1::DbDict.get_dname(-self.wn_id) }
+  getter dname : String { M1::DbDict.get_dname(self.wn_id) }
 
   @[DB::Field(ignore: true)]
   getter chaps : WnRepo { WnRepo.load(self.sname, self.s_bid, self.dname) }
