@@ -38,7 +38,7 @@ def do_convert(engine, out_file : File, inp_path : String)
 end
 
 def run_task(task : CV::DlTran)
-  dname = M1::DbDict.get_dname(-task.wn_id)
+  dname = M1::DbDict.get_dname(task.wn_id)
   engine = CV::MtCore.generic_mtl(dname, user: task.uname)
 
   Dir.mkdir_p("var/texts/dlcvs/#{task.uname}")

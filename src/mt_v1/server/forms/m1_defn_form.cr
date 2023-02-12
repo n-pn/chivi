@@ -26,9 +26,9 @@ class M1::DefnForm
 
   private def min_privi(dic : Int32)
     case dic
-    when 4, .<(0)  then {2, 1, 0, 2} # novel dicts or combine
-    when 1, 10, 11 then {3, 2, 1, 3} # regular, hanviet, pin_yin
-    else                {4, 3, 2, 4} # system dicts
+    when -4, .>(0)    then {2, 1, 0, 2} # novel dicts or combine
+    when -1, -10, -11 then {3, 2, 1, 3} # regular, hanviet, pin_yin
+    else                   {4, 3, 2, 4} # system dicts
     end
   end
 
