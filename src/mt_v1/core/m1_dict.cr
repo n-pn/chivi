@@ -49,6 +49,7 @@ class M1::MtDict
 
   MAINS = {} of Int32 => self
   TEMPS = {} of Int32 => self
+  AUTOS = {} of Int32 => self
   USERS = {} of String => self
 
   class_getter hanviet : self do
@@ -69,6 +70,10 @@ class M1::MtDict
 
   def self.regular_user(uname : String) : self
     USERS["-1@#{uname}"] ||= new(4).load_user!(-1, uname)
+  end
+
+  class_getter regular_init : self do
+    new(5).load_init!
   end
 
   def self.unique_main(wn_id : Int32) : self
@@ -127,11 +132,29 @@ class M1::MtDict
     self
   end
 
+  def load_init!
+    DB.open("sqlite3:var/dicts/init.dic") do |db|
+      sql = "select zstr, tags, mtls from terms"
+
+      db.query_each(sql) do |rs|
+        key, tags, mtls = rs.read(String, String, String)
+
+        val = mtls.split('ǀ')[0]
+        tag = PosTag.map_ctb(tags.split(' ')[0], key)
+
+        node = @trie.find!(key)
+        node.term = MtTerm.new(key, val, tag: tag, dic: @lbl, prio: 1)
+      end
+    end
+
+    self
+  end
+
   def add_defn(defn : DbDefn)
     add_term(defn.key, defn.val, defn.ptag, defn.prio)
   end
 
-  def add_term(key : String, val : String, ptag : String = "", prio : Int32 = 0)
+  def add_term(key : String, val : String, ptag : String = "", prio : Int32 = 2)
     node = @trie.find!(key)
 
     if val.empty?

@@ -44,21 +44,19 @@ class M1::DbDefn
 
   def to_json(jb : JSON::Builder)
     jb.object do
-      jb.field "key", self.key
-
       jb.field "dic", self.dic
       jb.field "tab", self.tab
 
-      jb.field "vals", self.val.split(SPLIT)
-      jb.field "ptag", self.ptag
+      jb.field "key", self.key
+      jb.field "val", self.val.split('ǀ').join(" | ")
 
+      jb.field "ptag", self.ptag
       jb.field "prio", self.prio
 
       jb.field "uname", self.uname
       jb.field "mtime", self.utime
 
       jb.field "_flag", self._flag
-
       jb.field "state", _flag == -1 ? "Xoá" : (_prev > 0 ? "Sửa" : "Thêm")
     end
   end

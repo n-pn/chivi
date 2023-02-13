@@ -186,6 +186,76 @@ struct M1::PosTag
       Litstr
     end
   end
+
+  CTB = {
+    "AD":  Adverb,
+    "BA":  PreBa3,
+    "CC":  Concoord,
+    "CS":  Conjunct,
+    "DEV": Ude2,
+    "DER": Ude3,
+    "ETC": Udeng,
+    "EM":  Fixstr,
+    "FW":  Litstr,
+    "IJ":  Exclam,
+    "JJ":  Modi,
+    "LB":  PreBei,
+    "SB":  PreBei,
+    "LC":  Locat,
+    "NOI": Unkn,
+    "NT":  Ntime,
+    "VA":  Adjt,
+    "URL": Urlstr,
+    "ON":  Onomat,
+    "SP":  Mopart,
+    "VC":  VShi,
+    "VE":  VYou,
+  }
+
+  def self.map_ctb(tag : String, key : String)
+    CTB[tag]?.try { |x| return x }
+
+    case tag
+    when "CD", "OD"
+      parse_number(tag, key)
+    when "DEC", "DEG"
+      key == "之" ? Uzhi : Ude1
+    when "DT"
+      parse_prodem(key)
+    when "M"
+      parse_quanti(key)
+    when "MSP"
+      map_ctb_msp(key)
+    when "NN"
+      # TODO: map common nouns
+      Noun
+    when "NR"
+      # TODO: map proper nouns
+      Nother
+    when "P"
+      parse_prepos(key)
+    when "PN"
+      # TODO: map pronouns
+      ProUkn
+    when "PU"
+      parse_punct(key)
+    when "VV"
+      # TODO: map verbs
+      Verb
+    else
+      Unkn
+    end
+  end
+
+  def self.map_ctb_msp(key)
+    case key
+    when "所" then Usuo
+    when "以" then Prepos
+    when "来" then Vdir
+    when "而" then Adverb
+    else          parse_auxil(key)
+    end
+  end
 end
 
 # puts MT::PosTag.parse("n").tag

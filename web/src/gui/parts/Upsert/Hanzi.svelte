@@ -1,60 +1,15 @@
 <script context="module" lang="ts">
   import { ztext, zfrom, zupto } from '$lib/stores'
-
-  const mapper = [
-    [0, 0],
-    [-1, 0],
-    [1, 0],
-    [0, 1],
-    [0, -1],
-    [-2, 0],
-    [0, 2],
-    [-1, -1],
-    [-1, 1],
-    // [1, -1],
-    // [1, 1],
-  ]
-
-  import type { VpTermInit } from '$lib/vp_term'
-  import { VpTerm } from '$lib/vp_term'
 </script>
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  import { config } from '$lib/stores'
-  import { api_call } from '$lib/api_call'
-
-  export let vpdicts = []
-  export let vpterms = []
-
   export let output = ''
-  export let active = true
-
-  let cached = { pin_yin: {} }
-  for (const { dname } of vpdicts) cached[dname] = {}
+  export let pinyin = ''
 
   let prefix = ''
   let suffix = ''
-
-  $: if (active) update_input($ztext, $zfrom, $zupto, vpdicts)
-
-  async function update_input(
-    ztext: string,
-    zfrom: number,
-    zupto: number,
-    dicts: CV.VpDict[]
-  ) {
-    output = ztext.substring(zfrom, zupto)
-    prefix = ztext.substring(zfrom - 10, zfrom)
-    suffix = ztext.substring(zupto, zupto + 10)
-
-    let words = mapper.map(([l, r]) => ztext.substring(zfrom + l, zupto + r))
-    words = words.filter((x, i, s) => x && s.indexOf(x) == i)
-    if (words.length > 0) await update_cached(words, dicts)
-
-    vpterms = vpdicts.map(({ dname }) => cached[dname][output])
-  }
 
   function change_focus(index: number) {
     if (index != $zfrom && index < $zupto) $zfrom = index
@@ -75,43 +30,6 @@
 
     $zupto = value
     if ($zfrom >= value) $zfrom = value - 1
-  }
-
-  async function update_cached(words: string[], dicts: CV.VpDict[]) {
-    const input = {
-      pin_yin: words.filter((x) => !cached.pin_yin[x]).slice(0, 5),
-    }
-
-    for (const { dname } of dicts) {
-      cached[dname] = cached[dname] || {}
-      input[dname] = words.filter((x) => !cached[dname][x]).slice(0, 5)
-    }
-
-    if (input_is_empty(input)) return
-    const path = `/_db/terms/query?temp=${$config.w_temp}`
-
-    try {
-      const data = await api_call(path, input, 'POST')
-
-      for (const dname in data) {
-        const terms = data[dname]
-
-        for (const key in terms) {
-          const val = terms[key]
-          if (dname == 'pin_yin') cached[dname][key] = val as string
-          else cached[dname][key] = new VpTerm(val as VpTermInit)
-        }
-      }
-    } catch (ex) {
-      alert(ex.body.message)
-    }
-  }
-
-  function input_is_empty(input: Record<string, string[]>) {
-    for (const dname in input) {
-      if (input[dname].length > 0) return false
-    }
-    return true
   }
 </script>
 
@@ -164,7 +82,7 @@
   </div>
 
   <div class="pinyin">
-    <span class="pinyin-txt">{cached.pin_yin[output] || ''}</span>
+    <span class="pinyin-txt">{pinyin}</span>
   </div>
 
   <button

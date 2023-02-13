@@ -23,8 +23,8 @@ class M1::MtTerm < M1::MtNode
 
   getter cost : Int32 = 0
 
-  def initialize(@key, @val = @key, @tag = PosTag::Unkn, @dic = 0, @idx = 0)
-    @cost = self.class.cost(key.size, 2)
+  def initialize(@key, @val = @key, @tag = PosTag::Unkn, @dic = 0, @idx = 0, prio = 2)
+    @cost = self.class.cost(key.size, prio)
   end
 
   def initialize(@key, @val, @dic, ptag : String, prio : Int32)

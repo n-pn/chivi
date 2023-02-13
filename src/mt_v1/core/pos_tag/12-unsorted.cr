@@ -9,7 +9,7 @@ struct M1::PosTag
 
     # 字符串 - non-word character string - hư từ khác
     {"x", "Litstr", Pos::Strings},
-    # 网址URL - url string | 非语素字 - for ascii art like emoji...
+    # 网址URL - url string | 非语素字
     {"xl", "Urlstr", Pos::Strings},
     # 非语素字 - for ascii art like emoji...
     {"xx", "Fixstr", Pos::Strings},

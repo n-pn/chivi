@@ -1,11 +1,13 @@
 require "crorm"
 require "crorm/sqlite3"
 
-class M1::DbDefn
+class MT::VpInit
   include Crorm::Model
   @@table = "terms"
 
-  class_getter repo = Crorm::Sqlite3::Repo.new(db_path, init_sql)
+  class_getter repo : Crorm::Sqlite3::Repo {
+    Crorm::Sqlite3::Repo.new(db_path, init_sql)
+  }
 
   @[AlwaysInline]
   def self.db_path
@@ -21,13 +23,14 @@ class M1::DbDefn
   field id : Int32, primary: true
 
   field zstr : String = ""
-  field tran : String = ""
+  field tags : String = ""
+  field mtls : String = ""
 
-  field ctag : String = ""
-  field _ord : Int32 = 0
+  field raw_tags : String = "{}" # json data
+  field raw_mtls : String = "{}" # json data
 
-  field tran_by : String = ""
-  field ctag_by : String = ""
+  field mtime : Int64 = 0
+  field uname : String = ""
 
   field _flag : Int32 = 0
 end

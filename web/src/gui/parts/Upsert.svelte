@@ -4,6 +4,7 @@
   import { writable } from 'svelte/store'
 
   import { vdict, ztext, zfrom, zupto } from '$lib/stores'
+  import { related_words } from './Upsert/_shared'
 
   export const ctrl = {
     ...writable({ tab: 0, state: 0 }),
@@ -16,176 +17,109 @@
     set_tab: (tab: number) => ctrl.update((x) => ({ ...x, tab })),
     set_state: (state: number) => ctrl.update((x) => ({ ...x, state })),
   }
-  const tabs = [
-    { kbd: 'x', icon: 'book', class: 'novel' },
-    { kbd: 'c', icon: 'world', class: 'basic' },
-    { kbd: 'v', icon: 'package', class: 'miscs' },
-  ]
 </script>
 
 <script lang="ts">
+  import { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
+  // import { make_vdict } from '$utils/vpdict_utils'
+
   import { session } from '$lib/stores'
 
-  import pt_labels from '$lib/consts/postag_labels.json'
+  // import pt_labels from '$lib/consts/postag_labels.json'
 
-  import { upsert_dicts } from '$utils/vpdict_utils'
-  import { hint } from './Upsert/_shared'
-  import { VpTerm } from '$lib/vp_term'
+  // import { upsert_dicts } from '$utils/vpdict_utils'
+  // import { hint } from './Upsert/_shared'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
   import Hanzi from './Upsert/Hanzi.svelte'
-  import Vdict from './Upsert/Vdict.svelte'
-  import Emend from './Upsert/Emend.svelte'
-  import Vhint from './Upsert/Vhint.svelte'
-  import Vutil from './Upsert/Vutil.svelte'
-  import Vprio from './Upsert/Vprio.svelte'
-  import Links from './Upsert/Links.svelte'
+  import Entry from './Upsert/Entry.svelte'
+  // import Vdict from './Upsert/Vdict.svelte'
+  // import Emend from './Upsert/Emend.svelte'
 
-  import Postag from '$gui/parts/Postag.svelte'
-  import { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
-  import { make_vdict } from '$utils/vpdict_utils'
+  // import Vprio from './Upsert/Vprio.svelte'
+
+  import Links from './Upsert/Links.svelte'
+  import { api_call } from '$lib/api_call'
 
   export let on_change = () => {}
   export let on_destroy = () => {}
+
   onDestroy(on_destroy)
 
   let key = $ztext.substring($zfrom, $zupto)
 
-  let show_opts = $session.privi < 1
+  interface JsonData {
+    pin_yin: string
+    hanviet: string
 
-  let extra = make_vdict('$hanviet')
-  $: vpdicts = upsert_dicts($vdict, extra)
+    entries: CV.VpTerm[]
 
-  let vpterms: VpTerm[] = []
-  let vpterm: VpTerm
-
-  $: [vpterm, show_opts] = init_term(vpterms, $ctrl.tab)
-
-  function init_term(vpterms: VpTerm[], tab: number): [VpTerm, boolean] {
-    const term = vpterms[tab] || new VpTerm()
-    if ($session.privi > tab) {
-      return [term, term._mode > 0 || show_opts]
-    } else {
-      term._mode = 1
-      return [term, true]
-    }
+    tag_hints: string[]
+    val_hints: string[]
   }
 
-  let dname = $vdict.dname
-  $: if (extra) dname = vpdicts[$ctrl.tab].dname
-
-  $: [lbl_state, btn_state] = vpterm.state
-
-  async function submit_val() {
-    const { dname } = vpdicts[$ctrl.tab]
-    const { vals: vals_ary, tags: tags_ary, prio, _mode } = vpterm
-
-    const vals = vals_ary.join('ǀ')
-    const tags = tags_ary.join(' ')
-
-    // prettier-ignore
-    const body = { key, vals, tags, prio, dname, _mode, _raw: $ztext, _idx: $zfrom }
-
-    const res = await fetch('/_db/terms/entry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-
-    if (res.ok) {
-      await submit_to_m1()
-
-      on_change()
-      ctrl.hide()
-    } else {
-      const body = await res.json()
-      alert(body.message)
-    }
+  let data: JsonData = {
+    pin_yin: '',
+    hanviet: '',
+    entries: [],
+    val_hints: [],
+    tag_hints: [],
   }
 
-  async function submit_to_m1() {
-    const { dname } = vpdicts[$ctrl.tab]
+  $: update_data($ztext, $zfrom, $zupto)
 
-    const prio_map = { '^': 3, 'v': 1, 'x': 0, '': 2 }
+  let cached: Record<string, JsonData> = {}
 
-    const body = {
-      dic: dname,
-      tab: vpterm._mode + 1,
-      key: key,
-      val: vpterm.vals.join('ǀ'),
-      ptag: vpterm.tags.join(' '),
-      prio: prio_map[vpterm.prio] || 2,
-      _ctx: `${$ztext}:${$zfrom}:${dname}`,
+  async function update_data(ztext: string, zfrom: number, zupto: number) {
+    const words = related_words(ztext, zfrom, zupto)
+    const body = words.filter((w) => !cached[w]).slice(0, 5)
+
+    if (body.length > 0) {
+      const api = `/_m1/terms/query?dname=${$vdict.dname}`
+      const res: Record<string, JsonData> = await api_call(api, body, 'POST')
+      for (const [key, data] of Object.entries(res)) cached[key] = data
     }
 
-    const res = await fetch('/_m1/defns', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-
-    if (!res.ok) console.log(await res.text())
+    data = cached[words[0]]
+    console.log(data.entries)
   }
 
-  function swap_dict(entry?: CV.VpDict) {
-    $ctrl = { tab: 2, state: 1 }
-    if (entry) extra = entry
-  }
+  // $: [vpterm, show_opts] = init_term(vpterms, $ctrl.tab)
 
-  let inputs: HTMLInputElement[] = []
+  // let inputs: HTMLInputElement[] = []
 
-  $: if (vpterm) refocus()
+  // $: if (vpterm) refocus()
 
-  const refocus = () => {
-    const field = inputs[vpterm._slot]
-    if (field) field.focus()
-  }
+  // const refocus = () => {
+  //   const field = inputs[vpterm._slot]
+  //   if (field) field.focus()
+  // }
 
-  function copy_key() {
-    navigator.clipboard.writeText(key)
-  }
+  const copy_raw = () => navigator.clipboard.writeText(key)
 
-  function changed(term: VpTerm) {
-    if (term._mode != term.init._mode) return true
-    if (term.prio != term.init.prio) return true
+  // function changed(term: VpTerm) {
+  //   if (term._mode != term.init._mode) return true
+  //   if (term.prio != term.init.prio) return true
 
-    const init_vals = term.init.vals || []
-    if (term.vals.length != init_vals.length) return true
+  //   const init_vals = term.init.vals || []
+  //   if (term.vals.length != init_vals.length) return true
 
-    const init_tags = term.init.tags || []
-    if (term.tags.length != init_tags.length) return true
+  //   const init_tags = term.init.tags || []
+  //   if (term.tags.length != init_tags.length) return true
 
-    for (let i = 0; i < term.vals.length; i++) {
-      if (term.vals[i] != init_vals[i]) return true
-    }
+  //   for (let i = 0; i < term.vals.length; i++) {
+  //     if (term.vals[i] != init_vals[i]) return true
+  //   }
 
-    for (let i = 0; i < term.tags.length; i++) {
-      if (term.tags[i] != init_tags[i]) return true
-    }
+  //   for (let i = 0; i < term.tags.length; i++) {
+  //     if (term.tags[i] != init_tags[i]) return true
+  //   }
 
-    return false
-  }
-
-  const save_modes = [
-    {
-      text: 'Cộng đồng',
-      desc: 'Ngay lập tức cập nhật nghĩa dịch cho tất cả mọi người. Ghi đè lên nghĩa "Lưu tạm" nếu có.',
-      pmin: 1,
-    },
-    {
-      text: 'Lưu nháp',
-      desc: 'Tạm thời chỉ áp dụng nghĩa dịch cho riêng bạn cho tới khi nghĩa được kiểm tra kỹ.',
-      pmin: 0,
-    },
-    {
-      text: 'Riêng bạn',
-      desc: 'Chỉ áp dụng cho riêng bạn, không bị ảnh hưởng khi người khác cập nhật nghĩa của từ.',
-      pmin: 2,
-    },
-  ]
+  //   return false
+  // }
 </script>
 
 <Dialog
@@ -193,8 +127,7 @@
   on_close={ctrl.hide}
   class="upsert"
   _size="lg">
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <upsert-head class="head" on:click={refocus}>
+  <upsert-head class="head">
     <Gmenu dir="left" loc="bottom">
       <button class="m-btn _text" slot="trigger">
         <SIcon name="menu-2" />
@@ -214,14 +147,14 @@
           <span>Báo lỗi</span>
         </button>
 
-        <button class="gmenu-item" data-kbd="⌃c" on:click={copy_key}>
+        <button class="gmenu-item" data-kbd="⌃c" on:click={copy_raw}>
           <SIcon name="copy" />
           <span>Copy text</span>
         </button>
       </svelte:fragment>
     </Gmenu>
 
-    <Hanzi {vpdicts} bind:vpterms bind:output={key} active={$ctrl.state > 0} />
+    <Hanzi pinyin={data.pin_yin} bind:output={key} />
 
     <button
       type="button"
@@ -232,115 +165,20 @@
     </button>
   </upsert-head>
 
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <upsert-tabs on:click={refocus}>
-    {#each vpdicts as { d_dub, d_tip }, tab}
-      {@const infos = tabs[tab]}
-
-      <button
-        class="tab-item _{infos.class}"
-        class:_active={$ctrl.tab == tab}
-        class:_edited={vpterms[tab]?.init.state != 'Xoá'}
-        data-kbd={infos.kbd}
-        on:click={() => ctrl.set_tab(tab)}
-        use:hint={d_tip}>
-        <SIcon name={infos.icon} />
-        <span>{d_dub}</span>
-      </button>
+  <upsert-body>
+    {#each data.entries as vpterm, idx}
+      <Entry
+        active={idx == 0}
+        {vpterm}
+        val_hints={data.val_hints}
+        tag_hints={data.tag_hints} />
     {/each}
-
-    <button
-      class="tab-btn"
-      on:click={() => ($ctrl.state = 3)}
-      use:hint={'Chọn từ điển nâng cao'}>
-      <SIcon name="package" />
-    </button>
-  </upsert-tabs>
-
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <upsert-body on:click={refocus}>
-    <Emend {vpterm} />
-
-    <upsert-main>
-      <Vhint {dname} bind:vpterm />
-
-      <div class="value" class:_fresh={vpterm.init.state == 'Xoá'}>
-        <input
-          type="text"
-          class="-input"
-          bind:this={inputs[0]}
-          bind:value={vpterm.vals[vpterm._slot]}
-          autocomplete="off"
-          autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
-
-        {#if !dname.startsWith('$')}
-          <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
-            {pt_labels[vpterm.tags[0]] || 'Phân loại'}
-          </button>
-        {/if}
-      </div>
-
-      <Vutil {key} tab={$ctrl.tab} bind:vpterm />
-    </upsert-main>
-
-    {#if show_opts}
-      <section class="opts">
-        {#each save_modes as { text, desc, pmin }, index}
-          {@const privi = $ctrl.tab + pmin}
-          <label class="label" class:_active={vpterm._mode == index}
-            ><input
-              type="radio"
-              name="_mode"
-              bind:group={vpterm._mode}
-              disabled={$session.privi < privi}
-              value={index} />
-            <span class="-text" use:hint={desc}>{text}</span>
-            <span class="-icon" use:hint={'Yêu cần quyền hạn: ' + privi}>
-              <SIcon name="privi-{privi}" iset="sprite" />
-            </span>
-          </label>
-        {/each}
-      </section>
-    {/if}
-
-    <upsert-foot>
-      <Vprio {vpterm} bind:prio={vpterm.prio} />
-
-      <btn-group>
-        <button
-          class="m-btn _lg"
-          class:_active={show_opts}
-          data-kbd="&bsol;"
-          data-key="Backslash"
-          use:hint={'Thay đổi chế độ lưu trữ'}
-          on:click={() => (show_opts = !show_opts)}>
-          <SIcon name="tools" />
-        </button>
-
-        <button
-          class="m-btn _lg _fill {btn_state}"
-          data-kbd="↵"
-          disabled={!changed(vpterm)}
-          on:click={submit_val}>
-          <span class="submit-text">{lbl_state}</span>
-        </button>
-      </btn-group>
-    </upsert-foot>
   </upsert-body>
 
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <footer class="foot" on:click={refocus}>
+  <footer class="foot">
     <Links {key} />
   </footer>
 </Dialog>
-
-{#if $ctrl.state == 3}
-  <Vdict vdict={extra} bind:state={$ctrl.state} on_close={swap_dict} />
-{/if}
-
-{#if $ctrl.state == 2}
-  <Postag bind:ptag={vpterm.tags[vpterm._slot]} bind:state={$ctrl.state} />
-{/if}
 
 <style lang="scss">
   $gutter: 0.75rem;

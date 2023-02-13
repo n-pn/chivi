@@ -5,7 +5,13 @@ bings = {} of String => String
 prevs = {} of String => String
 
 DB.open("sqlite3:var/dicts/v1raw/v1_defns.dic") do |db|
-  db.query_each "select key, val from defns order by id desc" do |rs|
+  sql = <<-SQL
+  select key, val from defns
+  where dic > -4 and val <> '' and _flag >= 0
+  order by id asc, tab asc, id desc
+  SQL
+
+  db.query_each sql do |rs|
     key, val = rs.read(String, String)
     defns[key] ||= val
   end

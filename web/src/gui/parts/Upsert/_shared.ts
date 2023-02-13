@@ -49,3 +49,21 @@ export function hint(node: HTMLElement, data: string) {
     },
   }
 }
+
+const mapping = [
+  [0, 0],
+  [-1, 0],
+  [1, 0],
+  [0, 1],
+  [0, -1],
+  [-2, 0],
+  [0, 2],
+  [-1, -1],
+  [-1, 1],
+  // [1, -1],
+  // [1, 1],
+]
+
+export const related_words = (ztext: string, zfrom: number, zupto: number) => {
+  return mapping.map(([x, y]) => ztext.substring(zfrom + x, zupto + y))
+}

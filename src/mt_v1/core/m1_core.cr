@@ -9,7 +9,8 @@ class M1::MtCore
   class_getter pin_yin_mtl : self { new([MtDict.pin_yin]) }
 
   def self.generic_mtl(udic : Int32 = 0, temp : Bool = true, user : String = "") : self
-    dicts = [MtDict.regular_main]
+    dicts = [MtDict.regular_init, MtDict.regular_main]
+
     dicts << MtDict.regular_temp if temp
     dicts << MtDict.regular_user(user) unless user.empty?
 

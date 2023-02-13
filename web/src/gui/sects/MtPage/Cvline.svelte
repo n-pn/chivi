@@ -72,6 +72,12 @@
       @include cv-node(green);
     }
 
+    // regular + init
+    &[data-d='5'] {
+      @include cv-node(pink);
+      font-weight: bold;
+    }
+
     // unique + main
     &[data-d='6'] {
       @include cv-node(orange);
