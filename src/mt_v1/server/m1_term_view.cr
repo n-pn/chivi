@@ -10,10 +10,10 @@ struct M1::M1TermView
 
   getter defns : Hash(String, Array(DbDefn))
 
-  def initialize(@words : Array(String), wn_id : Int32 = 0)
+  def initialize(@words : Array(String), @uname : String, @wn_id : Int32)
     @defns = DbDefn.repo.open_db do |db|
       sql = String.build do |str|
-        str << "select * from defns where (dic < 0 or dic = " << wn_id << ") "
+        str << "select * from defns where dic in (#{wn_id}, -1, -2, -3)"
         str << "and _flag >= 0 and key in ("
         words.join(str, ",") { |_, s| s << '?' }
         str << ")"
@@ -31,10 +31,10 @@ struct M1::M1TermView
     jb.object do
       @words.each do |word|
         jb.field(word) {
-          hanviet = MtCore.cv_hanviet(word, false)
           entries = @defns[word]? || [] of DbDefn
           entries.sort_by! { |e| {-e.dic, -e.tab, -e.mtime} }
-          entries.uniq! { |e| {e.dic, e.tab} }
+
+          hanviet = MtCore.cv_hanviet(word, false)
 
           tag_hints = entries.map(&.ptag)
           tag_hints.concat(gen_tag_hints(word)).uniq!
@@ -43,7 +43,8 @@ struct M1::M1TermView
           val_hints.concat(gen_val_hints(word, tag_hints)).uniq!
 
           jb.object {
-            jb.field "entries" { jb.array { entries.each(&.to_json(jb)) } }
+            jb.field "current", extract_current(entries)
+            # jb.field "entries" { jb.array { entries.each(&.to_json(jb)) } }
 
             jb.field "hanviet", hanviet
             jb.field "pin_yin", MtCore.cv_pin_yin(word)
@@ -54,6 +55,15 @@ struct M1::M1TermView
         }
       end
     end
+  end
+
+  private def extract_current(entries : Array(DbDefn))
+    return if entries.empty?
+
+    groups = entries.group_by(&.dic)
+
+    terms = groups[@wn_id]? || groups[-3]? || groups[-1]? || groups[-2]
+    terms.find(&.uname.== @uname) || terms.first
   end
 
   private def gen_tag_hints(word : String)

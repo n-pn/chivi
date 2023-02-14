@@ -7,7 +7,7 @@ class M1::M1TermCtrl < AC::Base
   @[AC::Route::POST("/query", body: :words)]
   def lookup(words : Array(String), dname : String = "combine")
     wn_id = DbDict.get_id(dname)
-    render json: M1TermView.new(words, wn_id)
+    render json: M1TermView.new(words, wn_id: wn_id, uname: _uname)
   end
 
   @[AC::Route::POST("/batch")]

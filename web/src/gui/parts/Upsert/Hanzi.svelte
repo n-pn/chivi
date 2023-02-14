@@ -11,6 +11,14 @@
   let prefix = ''
   let suffix = ''
 
+  $: update_input($ztext, $zfrom, $zupto)
+
+  const update_input = (text: string, from: number, upto: number) => {
+    output = text.substring(from, upto)
+    prefix = text.substring(from - 10, from)
+    suffix = text.substring(upto, upto + 10)
+  }
+
   function change_focus(index: number) {
     if (index != $zfrom && index < $zupto) $zfrom = index
     if (index >= $zfrom) $zupto = index + 1

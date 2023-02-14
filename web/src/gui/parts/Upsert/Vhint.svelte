@@ -1,111 +1,14 @@
-<script context="module" lang="ts">
-  import pt_labels from '$lib/consts/postag_labels.json'
-  const v_kbd = ['q', '@', '#', '$', '%', '^']
-  const p_kbd = ['-', '=']
-
-  function similar_tags(ptag: string) {
-    switch (ptag) {
-      case '_':
-        return ['n', 'a', 'v']
-
-      case 'ng':
-      case 'nl':
-      case 'np':
-        return ['n']
-
-      case 'Nz':
-        return ['Nr', 'Na']
-
-      case 'Na':
-        return ['Nr', 'Nz']
-
-      case 'n':
-        return ['na', 'nt']
-
-      case 'na':
-        return ['n', 'an']
-
-      case 'a':
-        return ['ab', 'an']
-
-      case 'ab':
-        return ['a', 'al']
-
-      case 'an':
-        return ['a', 'na']
-
-      case 'ad':
-        return ['a', 'd']
-
-      case 'v':
-        return ['vi', 'vn']
-
-      case 'vd':
-        return ['v', 'd']
-
-      case 'vn':
-        return ['v', 'n']
-
-      case 'vi':
-        return ['v', 'vo']
-
-      case 'vg':
-        return ['v', 'kv']
-
-      case 'r':
-      case 'rr':
-      case 'ry':
-      case 'rz':
-        return ['rr', 'rz', 'ry']
-
-      case 'al':
-        return ['a', 'b']
-
-      case 'vl':
-        return ['al', 'nl']
-
-      case 'i':
-      case 'il':
-        return ['nl', 'al']
-
-      case 'm':
-      case 'q':
-      case 'mp':
-        return ['m', 'q', 'mq']
-
-      case 'c':
-      case 'cc':
-      case 'd':
-        return ['d', 'c', 'cc']
-
-      case 'xe':
-      case 'xy':
-      case 'xo':
-        return ['xe', 'xy', 'xo']
-
-      case 'k':
-      case 'ka':
-      case 'kn':
-      case 'kv':
-        return ['ka', 'kn', 'kv']
-
-      default:
-        return ['n', 'v', 'a']
-    }
-  }
-</script>
-
 <script lang="ts">
-  import { hint } from './_shared'
+  import { hint, type VpForm } from './_shared'
 
   import { SIcon } from '$gui'
-  import type { VpTerm } from '$lib/vp_term'
 
-  export let vpterm: VpTerm
-  export let dname = 'combine'
+  export let form: VpForm
+  export let hints: string[]
+
   export let refocus = () => {}
 
-  $: val_hints = gen_val_hints(vpterm.init.h_vals || [], vpterm.val.trim())
+  $: val_hints = gen_val_hints(hints, form.val.trim())
   $: val_limit = gen_val_limit(val_hints)
 
   function gen_val_hints(hints: Array<string>, cval: string) {
@@ -124,90 +27,39 @@
     return val_hints.length
   }
 
-  $: tag_hints = gen_tag_hints(dname, vpterm)
+  var show_all = false
+  $: if (form) show_all = false
 
-  function gen_tag_hints(dname: string, vpterm: VpTerm): string[] {
-    if (dname == 'hanviet') return []
-    const output = vpterm.init.h_tags || []
-    const curr_ptag = vpterm.tag
-
-    if (dname.startsWith('-')) output.push('Nr', 'Na')
-    if (output.length < 3) output.push(...similar_tags(curr_ptag))
-    return output.filter((x, i, s) => x && x != curr_ptag && s.indexOf(x) == i)
-  }
-
-  // show_mode = 0 => show minimal
-  // show_mode = 1 => show vals, hide tags
-  // show_mode = 2 => show tags, hide vals
-  var show_mode = 0
-  $: if (vpterm) show_mode = 0
+  const kbds = ['q', '@', '#', '$', '%', '^']
 </script>
-
-<div hidden={true}>
-  <button data-kbd="~" on:click={() => (vpterm.val = vpterm.o_val)} />
-  <button data-kbd="[" on:click={() => (vpterm.tag = 'Nr')} />
-  <button data-kbd="]" on:click={() => (vpterm.tag = 'Na')} />
-  <button data-kbd="." on:click={() => (vpterm.tag = 'Nz')} />
-  <button data-kbd="/" on:click={() => (vpterm.tag = 'Nw')} />
-  <button data-kbd=";" on:click={() => (vpterm.tag = 'al')} />
-  <button data-kbd="'" on:click={() => (vpterm.tag = 'vl')} />
-  <button data-kbd="n" on:click={() => (vpterm.tag = 'n')} />
-</div>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="wrap" on:click={refocus}>
-  <div class="hints" class:_expand={show_mode > 0}>
+  <div class="hints" class:_expand={show_all}>
     {#each val_hints.slice(0, val_limit) as val, idx}
       <button
         class="hint"
-        class:_prev={val == vpterm.o_val}
-        data-kbd={v_kbd[idx]}
-        on:click={() => (vpterm.val = val)}>{val}</button>
+        class:_prev={val == form.init.val}
+        data-kbd={kbds[idx]}
+        on:click={() => (form.val = val)}>{val}</button>
     {/each}
 
     {#if val_hints.length > val_limit}
       <button
         class="hint _icon"
-        on:click={() => (show_mode = show_mode == 1 ? 0 : 1)}
+        on:click={() => (show_all = !show_all)}
         use:hint={'Ẩn/hiện các gợi ý nghĩa cụm từ'}
-        ><SIcon name={show_mode == 1 ? 'minus' : 'plus'} /></button>
+        ><SIcon name={show_all ? 'minus' : 'plus'} /></button>
     {/if}
-
-    <div class="right">
-      {#each tag_hints.slice(0, 2) as tag, idx (tag)}
-        <button
-          class="hint _ptag"
-          class:_prev={tag == vpterm.o_tag}
-          data-kbd={p_kbd[idx]}
-          on:click={() => (vpterm.tag = tag)}>{pt_labels[tag] || tag}</button>
-      {/each}
-
-      {#if tag_hints.length > 2}
-        <button
-          class="hint _icon"
-          on:click={() => (show_mode = show_mode == 2 ? 0 : 2)}
-          use:hint={'Ẩn/hiện các gợi ý thể loại'}
-          ><SIcon name={show_mode == 2 ? 'minus' : 'plus'} /></button>
-      {/if}
-    </div>
   </div>
 
-  {#if show_mode == 1}
+  {#if show_all}
     <div class="extra">
       {#each val_hints.slice(val_limit) as val}
         <button
           class="hint"
-          class:_prev={val == vpterm.o_val}
-          on:click={() => (vpterm.val = val)}>{val}</button>
-      {/each}
-    </div>
-  {:else if show_mode == 2}
-    <div class="extra _tag">
-      {#each tag_hints.slice(2) as tag}
-        <button
-          class="hint _ptag"
-          class:_prev={tag == vpterm.o_tag}
-          on:click={() => (vpterm.tag = tag)}>{pt_labels[tag] || tag}</button>
+          class:_prev={val == form.init.val}
+          on:click={() => (form.val = val)}>{val}</button>
       {/each}
     </div>
   {/if}
@@ -241,16 +93,6 @@
     @include border;
     @include bdradi($loc: bottom);
     @include bgcolor(secd);
-
-    &._tag {
-      justify-content: flex-end;
-    }
-  }
-
-  .right {
-    margin-left: auto;
-    padding-left: 0.5rem;
-    @include flex();
   }
 
   .hint {
@@ -267,11 +109,6 @@
 
     @include hover {
       @include fgcolor(primary, 5);
-    }
-
-    &._ptag {
-      font-size: em(13px, 14px);
-      max-width: 5rem;
     }
 
     &._prev {

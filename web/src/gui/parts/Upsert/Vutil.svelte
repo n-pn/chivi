@@ -24,25 +24,24 @@
 
     return res.join(' ')
   }
-
-  import type { VpTerm } from '$lib/vp_term'
 </script>
 
 <script lang="ts">
-  import { hint } from './_shared'
+  import { hint, VpForm } from './_shared'
   import { gtran, btran, deepl } from '$lib/trans'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let key: string
   export let tab = 0
-  export let vpterm: VpTerm
+
+  export let form: VpForm
   export let refocus = () => {}
 
   let capped = 0
   let length = 0
 
-  $: [capped, length] = check_capped(vpterm.val)
+  $: [capped, length] = check_capped(form.val)
 
   let show_trans = false
 
@@ -54,10 +53,10 @@
   function upcase_val(node: Element, count: number) {
     const action = (_: any) => {
       if (count != capped) {
-        vpterm.val = titleize(vpterm.val, count)
+        form.val = titleize(form.val, count)
         capped = count
       } else {
-        vpterm.val = detitle(vpterm.val, count)
+        form.val = detitle(form.val, count)
         capped = 0
       }
     }
@@ -79,36 +78,36 @@
   }
 
   async function load_gtran(key: string, g_tab = 0) {
-    vpterm.val = '...'
+    form.val = '...'
     refocus()
 
     const tran = await gtran(key, g_tab)
 
     if (tab == 2) {
       const [fname, lname] = tran.split(' ')
-      vpterm.val = lname + ' ' + fname
+      form.val = lname + ' ' + fname
     } else {
-      vpterm.val = tran
+      form.val = tran
     }
 
     show_trans = false
   }
 
   async function load_btran(b_tab = 0) {
-    vpterm.val = '...'
+    form.val = '...'
     refocus()
 
     const lang = b_tab == 0 ? 'vi' : 'en'
-    vpterm.val = await btran(key, lang, true)
+    form.val = await btran(key, lang, true)
 
     show_trans = false
   }
 
   async function load_deepl() {
-    vpterm.val = '...'
+    form.val = '...'
     refocus()
 
-    vpterm.val = await deepl(key, false)
+    form.val = await deepl(key, false)
     show_trans = false
   }
 </script>
@@ -141,7 +140,7 @@
 
     <button
       class="btn"
-      disabled={vpterm.val == vpterm.val.toLowerCase()}
+      disabled={form.val == form.val.toLowerCase()}
       data-kbd="0"
       data-key="Backquote"
       use:upcase_val={0}
@@ -164,8 +163,8 @@
       <button
         class="btn"
         data-kbd="r"
-        disabled={vpterm.val == vpterm.o_val && vpterm.tag == vpterm.o_tag}
-        on:click={() => (vpterm = vpterm.reset())}
+        disabled={form.val == form.init.val && form.tag == form.init.ptag}
+        on:click={() => (form = form.reset())}
         use:hint={'Phục hồi lại nghĩa + phân loại ban đầu'}>
         <SIcon name="corner-up-left" />
       </button>
@@ -173,8 +172,8 @@
       <button
         class="btn"
         data-kbd="e"
-        disabled={!vpterm.val && !vpterm.tag}
-        on:click={() => (vpterm = vpterm.clear())}
+        disabled={!form.val && !form.tag}
+        on:click={() => (form = form.clear())}
         use:hint={'Xoá nghĩa từ / Xoá phân loại'}>
         <SIcon name="eraser" />
       </button>

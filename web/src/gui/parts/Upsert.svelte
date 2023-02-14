@@ -41,12 +41,12 @@
   import Dialog from '$gui/molds/Dialog.svelte'
 
   import Hanzi from './Upsert/Hanzi.svelte'
-  // import Entry from './Upsert/Entry.svelte'
   import Vdict from './Upsert/Vdict.svelte'
 
   import Vhint from './Upsert/Vhint.svelte'
   import Emend from './Upsert/Emend.svelte'
   import Vprio from './Upsert/Vprio.svelte'
+  import Vutil from './Upsert/Vutil.svelte'
 
   import Links from './Upsert/Links.svelte'
 
@@ -62,7 +62,7 @@
     pin_yin: string
     hanviet: string
 
-    entries: CV.VpTerm[]
+    current?: CV.VpTerm
 
     tag_hints: string[]
     val_hints: string[]
@@ -71,10 +71,12 @@
   let data: JsonData = {
     pin_yin: '',
     hanviet: '',
-    entries: [],
+    current: null,
     val_hints: [],
     tag_hints: [],
   }
+
+  let form = VpForm.from(key)
 
   $: update_data($ztext, $zfrom, $zupto)
 
@@ -82,6 +84,7 @@
 
   async function update_data(ztext: string, zfrom: number, zupto: number) {
     const words = related_words(ztext, zfrom, zupto)
+
     const body = words.filter((w) => !cached[w]).slice(0, 5)
 
     if (body.length > 0) {
@@ -91,16 +94,17 @@
     }
 
     data = cached[words[0]]
+    form = new VpForm(data.current || {})
   }
 
   let extra = make_vdict(-10)
   $: dicts = upsert_dicts($vdict, extra)
 
-  // $: [vpterm, show_opts] = init_term(vpterms, $ctrl.tab)
-
   // let inputs: HTMLInputElement[] = []
+  let field: HTMLInputElement
 
-  // $: if (vpterm) refocus()
+  const refocus = () => field && field.focus()
+  $: if (form) refocus()
 
   // const refocus = () => {
   //   const field = inputs[vpterm._slot]
@@ -129,6 +133,13 @@
 
   //   return false
   // }
+
+  $: [lbl_state, btn_state] = form.state
+
+  const submit_val = () => {
+    alert('TODO!')
+    on_change()
+  }
 </script>
 
 <Dialog
@@ -199,26 +210,36 @@
 
   <upsert-body>
     <upsert-main>
-      <!-- <Vhint {dname} bind:vpterm />
-
-      <div class="value" class:_fresh={vpterm.init.state == 'Xoá'}>
+      <Vhint hints={data.val_hints} bind:form />
+      <div class="value" class:_fresh={form.init.state == 'Xoá'}>
         <input
           type="text"
           class="-input"
-          bind:this={inputs[0]}
-          bind:value={vpterm.vals[vpterm._slot]}
+          bind:this={field}
+          bind:value={form.val}
           autocomplete="off"
           autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
 
-        {#if !dname.startsWith('$')}
-          <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
-            {pt_labels[vpterm.tags[0]] || 'Phân loại'}
-          </button>
-        {/if}
+        <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
+          {pt_labels[form.tag] || 'Phân loại'}
+        </button>
       </div>
 
-      <Vutil {key} tab={$ctrl.tab} bind:vpterm /> -->
+      <Vutil {key} tab={$ctrl.tab} bind:form />
     </upsert-main>
+
+    <upsert-foot>
+      <Vprio bind:form />
+
+      <btn-group>
+        <button
+          class="m-btn _lg _fill {btn_state}"
+          data-kbd="↵"
+          on:click={submit_val}>
+          <span class="submit-text">{lbl_state}</span>
+        </button>
+      </btn-group>
+    </upsert-foot>
   </upsert-body>
 
   <footer class="foot">
@@ -334,7 +355,7 @@
 
   upsert-body {
     display: block;
-    padding: 0 0.75rem;
+    padding: 0.75rem;
     @include bgcolor(bg-secd);
   }
 
@@ -411,33 +432,6 @@
   btn-group {
     @include flex();
     gap: 0.5rem;
-  }
-
-  .opts {
-    display: flex;
-    justify-content: right;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    margin-bottom: -0.25rem;
-
-    > .label {
-      display: inline-flex;
-      cursor: pointer;
-      align-items: center;
-      gap: 0.25rem;
-
-      line-height: 1.25rem;
-      font-weight: 500;
-      @include ftsize(sm);
-      @include fgcolor(tert);
-      &._active {
-        @include fgcolor(secd);
-      }
-    }
-
-    .-icon {
-      display: inline-flex;
-    }
   }
 
   .foot {

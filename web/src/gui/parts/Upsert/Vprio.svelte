@@ -12,8 +12,7 @@
 <script lang="ts">
   import { hint, VpForm } from './_shared'
 
-  export let vpterm: VpForm
-  export let prio = 2
+  export let form: VpForm
 </script>
 
 <div class="prio">
@@ -25,11 +24,10 @@
     <button
       class="btn"
       class:_del={idx == 3}
-      class:_base={vpterm.init.prio == val}
-      class:_priv={vpterm.init.prio == val}
-      class:_curr={prio == val}
+      class:_base={form.init.prio == val}
+      class:_curr={form.prio == val}
       data-kbd={kbd}
-      on:click={() => (prio = val)}
+      on:click={() => (form.prio = val)}
       use:hint={tip}>{lbl}</button>
   {/each}
 </div>
@@ -63,10 +61,6 @@
     &._base {
       font-style: italic;
       // @include fgcolor(green, 5);
-    }
-
-    &._priv {
-      @include fgcolor(secd);
     }
 
     &._curr {

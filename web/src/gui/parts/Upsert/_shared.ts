@@ -74,7 +74,7 @@ export class VpForm {
 
   static from(key: string, tab: number = 0, dic: number = 0) {
     const term = { key, tab, dic }
-    new VpForm(term)
+    return new VpForm(term)
   }
 
   constructor(init: Partial<CV.VpTerm>, val_hints = [], tag_hints = []) {
@@ -95,12 +95,20 @@ export class VpForm {
     return this.form.ptag || ''
   }
 
+  get prio(): number {
+    return this.form.prio || 2
+  }
+
   set val(data: string) {
     this.form.val = data
   }
 
   set tag(data: string) {
     this.form.ptag = data
+  }
+
+  set prio(data: number) {
+    this.form.prio = data
   }
 
   reset() {

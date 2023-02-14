@@ -58,7 +58,7 @@
     try {
       data.ubmemo = await api_call(url, body, 'PUT')
     } catch (ex) {
-      alert(ex.body.message)
+      alert(ex)
     }
   }
 
