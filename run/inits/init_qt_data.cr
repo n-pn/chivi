@@ -54,7 +54,7 @@ files.each do |file|
     output[key] ||= Set(String).new
 
     correcting(vals).split(/\/|\|/).each do |val|
-      output[key] << val.strip
+      output[key] << val.strip unless val.empty?
     end
   end
 
