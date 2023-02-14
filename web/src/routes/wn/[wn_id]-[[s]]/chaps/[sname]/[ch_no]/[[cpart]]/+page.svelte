@@ -58,7 +58,7 @@
     try {
       data.ubmemo = await api_call(url, body, 'PUT')
     } catch (ex) {
-      alert(ex.body.message)
+      console.log(ex)
     }
   }
 
@@ -127,7 +127,7 @@
 
       <Gmenu class="navi-item" loc="top">
         <button class="m-btn" slot="trigger">
-          <SIcon name="menu-2" />
+          <SIcon name={memo_icon} />
           <span>{curr_chap.chidx}/{curr_seed.chmax}</span>
         </button>
 
