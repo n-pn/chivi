@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { session } from '$lib/stores'
+  import { seed_path, _pgidx } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
@@ -11,10 +11,8 @@
   // import Chtabs from './ChapTabs.svelte'
 
   import type { PageData } from './$types'
-  import { chap_path, seed_path, _pgidx } from '$lib/kit_path'
   import { api_call } from '$lib/api_call'
-  import { onMount } from 'svelte'
-  import { browser } from '$app/environment'
+  import { afterNavigate } from '$app/navigation'
   export let data: PageData
 
   $: ({ nvinfo, curr_seed, seed_data, curr_chap, chap_data } = data)
@@ -43,7 +41,9 @@
     return { list, prev, next }
   }
 
-  $: if (browser && chap_data) update_memo(false)
+  afterNavigate(() => {
+    update_memo(false)
+  })
 
   async function update_memo(locking: boolean) {
     if (data._user.privi < 0) return
@@ -134,7 +134,7 @@
         <svelte:fragment slot="content">
           <a
             class="gmenu-item"
-            class:_disable={$session.privi < 1}
+            class:_disable={data._user.privi < 1}
             href="{seed_path(
               nvinfo.bslug,
               curr_seed.sname
@@ -163,7 +163,7 @@
           {#if on_memory && data.ubmemo.locked}
             <button
               class="gmenu-item"
-              disabled={$session.privi < 0}
+              disabled={data._user.privi < 0}
               on:click={() => update_memo(false)}
               data-kbd="p">
               <SIcon name="bookmark-off" />
@@ -172,7 +172,7 @@
           {:else}
             <button
               class="gmenu-item"
-              disabled={$session.privi < 0}
+              disabled={data._user.privi < 0}
               on:click={() => update_memo(true)}
               data-kbd="p">
               <SIcon name="bookmark" />
