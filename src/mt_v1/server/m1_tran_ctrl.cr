@@ -13,7 +13,9 @@ class M1::TranCtrl < AC::Base
   @[AC::Route::POST("/cv_chap")]
   def cv_chap(wn_id : Int32 = 0, cv_title : String = "none", label : String? = nil)
     w_temp = cookies["w_temp"]?.try(&.value) || "t"
-    engine = MtCore.generic_mtl(wn_id, temp: w_temp == "t", user: _uname)
+    w_init = cookies["w_init"]?.try(&.value) || "t"
+
+    engine = MtCore.generic_mtl(wn_id, user: _uname, temp: w_temp == "t", init: w_init == "t")
 
     input = request.body.not_nil!.gets_to_end
     render_title = RenderTitle.parse(cv_title)

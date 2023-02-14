@@ -8,13 +8,13 @@ class M1::MtCore
   class_getter hanviet_mtl : self { new([MtDict.hanviet]) }
   class_getter pin_yin_mtl : self { new([MtDict.pin_yin]) }
 
-  def self.generic_mtl(udic : Int32 = 0, temp : Bool = true, user : String = "") : self
+  def self.generic_mtl(udic : Int32 = 0, user : String = "", temp : Bool = false, init : Bool = false) : self
     dicts = [MtDict.regular_main]
 
     dicts << MtDict.regular_temp if temp
     dicts << MtDict.regular_user(user) unless user.empty?
 
-    dicts << MtDict.regular_init
+    dicts << MtDict.regular_init if init
 
     dicts << MtDict.unique_main(udic)
     dicts << MtDict.unique_temp(udic) if temp

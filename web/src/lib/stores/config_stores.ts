@@ -13,6 +13,7 @@ class ConfigData {
   tosimp = false
   engine = 1
   w_temp = false
+  w_init = false
 }
 
 function load_config(): ConfigData {

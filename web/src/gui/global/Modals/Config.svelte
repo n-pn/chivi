@@ -40,6 +40,7 @@
   $: if (browser && $data) {
     write_cookie('showzh', $data.showzh ? 't' : 'f')
     write_cookie('w_temp', $data.w_temp ? 't' : 'f')
+    write_cookie('w_init', $data.w_init ? 't' : 'f')
     write_cookie('theme', $data.wtheme)
   }
 
@@ -156,6 +157,13 @@
     <label class="switch">
       <input type="checkbox" bind:checked={$data.w_temp} />
       <span class="switch-label">Hiển thị từ điển tạm thời:</span>
+    </label>
+  </config-item>
+
+  <config-item>
+    <label class="switch">
+      <input type="checkbox" bind:checked={$data.w_init} />
+      <span class="switch-label">Hiển thị từ điển thử nghiệm:</span>
     </label>
   </config-item>
 
