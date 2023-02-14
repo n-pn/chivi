@@ -14,6 +14,7 @@
   import { chap_path, seed_path, _pgidx } from '$lib/kit_path'
   import { api_call } from '$lib/api_call'
   import { onMount } from 'svelte'
+  import { browser } from '$app/environment'
   export let data: PageData
 
   $: ({ nvinfo, curr_seed, seed_data, curr_chap, chap_data } = data)
@@ -42,9 +43,7 @@
     return { list, prev, next }
   }
 
-  onMount(() => {
-    update_memo(false)
-  })
+  $: if (browser && chap_data) update_memo(false)
 
   async function update_memo(locking: boolean) {
     if (data._user.privi < 0) return
