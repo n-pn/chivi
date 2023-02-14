@@ -95,7 +95,7 @@
     <span class="stats _dname" data-tip="Từ điển bộ truyện">
       <span class="stats-label">Từ điển riêng:</span>
       <SIcon name="package" />
-      <a href="/dicts/{$vdict.dname}" class="stats-value _link">{dsize} từ</a>
+      <a href="/dicts/{$vdict.dslug}" class="stats-value _link">{dsize} từ</a>
     </span>
 
     <div class="header-right">
@@ -167,7 +167,7 @@
       {on_fixraw}
       lineid={l_focus}
       caret={$zfrom}
-      dname={$vdict.dname} />
+      vd_id={$vdict.vd_id} />
   {/if}
 
   <slot name="footer" />

@@ -1,3 +1,4 @@
+import { slugify } from '$utils/text_utils'
 import { writable, get } from 'svelte/store'
 import { make_vdict } from '../../utils/vpdict_utils'
 
@@ -53,7 +54,8 @@ export const ztext = {
 }
 
 export const vdict = {
-  ...writable(make_vdict('combine')),
-  put: (dname: string, d_dub?: string, d_tip?: string) =>
-    vdict.set(make_vdict(dname, d_dub, d_tip)),
+  ...writable(make_vdict(-4)),
+  put: (vd_id: number, label?: string, brief?: string) => {
+    vdict.set(make_vdict(vd_id, label, brief))
+  },
 }

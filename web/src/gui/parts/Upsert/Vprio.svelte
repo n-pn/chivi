@@ -1,19 +1,19 @@
 <script context="module" lang="ts">
-  const prios = [
-    ['^', 'd', 'Cao', 'Được ưu tiên cao khi phân tách câu văn'],
-    ['', 's', 'Bình', 'Độ ưu tiên trung bình, giá trị mặc định'],
-    ['v', 'a', 'Thấp', 'Không được ưu tiên khi phân tách câu văn'],
-    ['x', 'f', 'Ẩn', 'Không dùng cụm từ khi phân tách câu văn'],
+  type Prio = [number, string, string, string]
+
+  const prios: Prio[] = [
+    [3, 'd', 'Cao', 'Được ưu tiên cao khi phân tách câu văn'],
+    [2, 's', 'Bình', 'Độ ưu tiên trung bình, giá trị mặc định'],
+    [1, 'a', 'Thấp', 'Không được ưu tiên khi phân tách câu văn'],
+    [0, 'f', 'Ẩn', 'Không dùng cụm từ khi phân tách câu văn'],
   ]
 </script>
 
 <script lang="ts">
-  import type { VpTerm } from '$lib/vp_term'
+  import { hint, VpForm } from './_shared'
 
-  import { hint } from './_shared'
-
-  export let vpterm: VpTerm
-  export let prio = ''
+  export let vpterm: VpForm
+  export let prio = 2
 </script>
 
 <div class="prio">

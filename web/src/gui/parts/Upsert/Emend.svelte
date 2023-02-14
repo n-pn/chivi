@@ -1,10 +1,10 @@
 <script lang="ts">
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import { hint } from './_shared'
+  import type { VpForm } from './_shared'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  import type { VpTerm } from '$lib/vp_term'
-  export let vpterm: VpTerm
+  export let vpterm: VpForm
 
   const save_modes = ['(Cộng đồng)', '(Lưu nháp)', '(Riêng bạn)']
 </script>
@@ -16,7 +16,7 @@
       <span class="val">{get_rtime(vpterm.init.mtime)}</span>
       <span>bởi</span>
       <span class="val user">@{vpterm.init.uname}</span>
-      <span>{save_modes[vpterm.init._mode]}</span>
+      <span>{save_modes[vpterm.init.tab]}</span>
     {:else}
       <span>Chưa có lịch sử</span>
     {/if}

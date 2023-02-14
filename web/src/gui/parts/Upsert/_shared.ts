@@ -67,3 +67,56 @@ const mapping = [
 export const related_words = (ztext: string, zfrom: number, zupto: number) => {
   return mapping.map(([x, y]) => ztext.substring(zfrom + x, zupto + y))
 }
+
+export class VpForm {
+  init: Partial<CV.VpTerm>
+  form: Partial<CV.VpTerm>
+
+  static from(key: string, tab: number = 0, dic: number = 0) {
+    const term = { key, tab, dic }
+    new VpForm(term)
+  }
+
+  constructor(init: Partial<CV.VpTerm>, val_hints = [], tag_hints = []) {
+    init.val ||= val_hints[0] || ''
+    init.ptag ||= tag_hints[0] || ''
+
+    this.init = init
+    this.form = Object.assign({}, init)
+
+    this.init.state ||= 'Xoá'
+  }
+
+  get val(): string {
+    return this.form.val || ''
+  }
+
+  get tag(): string {
+    return this.form.ptag || ''
+  }
+
+  set val(data: string) {
+    this.form.val = data
+  }
+
+  set tag(data: string) {
+    this.form.ptag = data
+  }
+
+  reset() {
+    this.form.val = this.init.val
+    this.form.ptag = this.init.ptag
+    return this
+  }
+
+  clear() {
+    if (this.form.val) this.form.val = ''
+    else this.form.ptag = ''
+    return this
+  }
+
+  get state() {
+    if (!this.form.val) return ['Xoá', `_harmful`]
+    return this.init.state != 'Xoá' ? ['Sửa', `_primary`] : ['Lưu', `_success`]
+  }
+}

@@ -4,7 +4,12 @@
   import { writable } from 'svelte/store'
 
   import { vdict, ztext, zfrom, zupto } from '$lib/stores'
-  import { related_words } from './Upsert/_shared'
+  import { make_vdict, upsert_dicts } from '$utils/vpdict_utils'
+  import { api_call } from '$lib/api_call'
+
+  import { hint, related_words, VpForm } from './Upsert/_shared'
+
+  import pt_labels from '$lib/consts/postag_labels.json'
 
   export const ctrl = {
     ...writable({ tab: 0, state: 0 }),
@@ -17,6 +22,12 @@
     set_tab: (tab: number) => ctrl.update((x) => ({ ...x, tab })),
     set_state: (state: number) => ctrl.update((x) => ({ ...x, state })),
   }
+
+  const tabs = [
+    { kbd: 'x', icon: 'book', class: 'novel' },
+    { kbd: 'c', icon: 'world', class: 'basic' },
+    { kbd: 'v', icon: 'package', class: 'miscs' },
+  ]
 </script>
 
 <script lang="ts">
@@ -25,24 +36,19 @@
 
   import { session } from '$lib/stores'
 
-  // import pt_labels from '$lib/consts/postag_labels.json'
-
-  // import { upsert_dicts } from '$utils/vpdict_utils'
-  // import { hint } from './Upsert/_shared'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
   import Hanzi from './Upsert/Hanzi.svelte'
-  import Entry from './Upsert/Entry.svelte'
-  // import Vdict from './Upsert/Vdict.svelte'
-  // import Emend from './Upsert/Emend.svelte'
+  // import Entry from './Upsert/Entry.svelte'
+  import Vdict from './Upsert/Vdict.svelte'
 
-  // import Vprio from './Upsert/Vprio.svelte'
+  import Vhint from './Upsert/Vhint.svelte'
+  import Emend from './Upsert/Emend.svelte'
+  import Vprio from './Upsert/Vprio.svelte'
 
   import Links from './Upsert/Links.svelte'
-  import { api_call } from '$lib/api_call'
 
   export let on_change = () => {}
   export let on_destroy = () => {}
@@ -50,6 +56,7 @@
   onDestroy(on_destroy)
 
   let key = $ztext.substring($zfrom, $zupto)
+  let vpform = VpForm.from(key, $ctrl.tab, $vdict.vd_id || 0)
 
   interface JsonData {
     pin_yin: string
@@ -78,14 +85,16 @@
     const body = words.filter((w) => !cached[w]).slice(0, 5)
 
     if (body.length > 0) {
-      const api = `/_m1/terms/query?dname=${$vdict.dname}`
+      const api = `/_m1/terms/query?vd_id=${$vdict.vd_id}`
       const res: Record<string, JsonData> = await api_call(api, body, 'POST')
       for (const [key, data] of Object.entries(res)) cached[key] = data
     }
 
     data = cached[words[0]]
-    console.log(data.entries)
   }
+
+  let extra = make_vdict(-10)
+  $: dicts = upsert_dicts($vdict, extra)
 
   // $: [vpterm, show_opts] = init_term(vpterms, $ctrl.tab)
 
@@ -135,7 +144,7 @@
       <svelte:fragment slot="content">
         <a
           class="gmenu-item"
-          href="/dicts/{$vdict.dname}"
+          href="/dicts/{$vdict.dslug}"
           target="_blank"
           rel="noreferrer">
           <SIcon name="package" />
@@ -165,14 +174,51 @@
     </button>
   </upsert-head>
 
-  <upsert-body>
-    {#each data.entries as vpterm, idx}
-      <Entry
-        active={idx == 0}
-        {vpterm}
-        val_hints={data.val_hints}
-        tag_hints={data.tag_hints} />
+  <upsert-tabs>
+    {#each dicts as { label, brief }, tab}
+      {@const infos = tabs[tab]}
+
+      <button
+        class="tab-item _{infos.class}"
+        class:_active={$ctrl.tab == tab}
+        data-kbd={infos.kbd}
+        on:click={() => ctrl.set_tab(tab)}
+        use:hint={brief}>
+        <SIcon name={infos.icon} />
+        <span>{label}</span>
+      </button>
     {/each}
+
+    <button
+      class="tab-btn"
+      on:click={() => ($ctrl.state = 3)}
+      use:hint={'Chọn từ điển nâng cao'}>
+      <SIcon name="package" />
+    </button>
+  </upsert-tabs>
+
+  <upsert-body>
+    <upsert-main>
+      <!-- <Vhint {dname} bind:vpterm />
+
+      <div class="value" class:_fresh={vpterm.init.state == 'Xoá'}>
+        <input
+          type="text"
+          class="-input"
+          bind:this={inputs[0]}
+          bind:value={vpterm.vals[vpterm._slot]}
+          autocomplete="off"
+          autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
+
+        {#if !dname.startsWith('$')}
+          <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
+            {pt_labels[vpterm.tags[0]] || 'Phân loại'}
+          </button>
+        {/if}
+      </div>
+
+      <Vutil {key} tab={$ctrl.tab} bind:vpterm /> -->
+    </upsert-main>
   </upsert-body>
 
   <footer class="foot">

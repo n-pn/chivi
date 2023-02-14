@@ -10,7 +10,9 @@ export interface TermsData extends CV.Paginate {
 }
 
 export interface V1Dict {
+  vd_id: number
   dname: string
+
   label: string
   brief: string
 

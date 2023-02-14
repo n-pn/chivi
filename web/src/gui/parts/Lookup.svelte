@@ -65,7 +65,7 @@
 
     if (range.length != 0) {
       try {
-        const url = `/_sp/lookup?udict=${$vdict.dname}`
+        const url = `/_sp/lookup?vd_id=${$vdict.vd_id}`
         const res = await api_call(url, { input, range }, 'PUT')
         for (let index in res) entries[index] = res[index]
       } catch (ex) {

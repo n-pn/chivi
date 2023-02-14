@@ -34,7 +34,9 @@ class M1::DictCtrl < AC::Base
     dict = get_dict(name)
 
     output = {
+      vp_id: dict.id,
       dname: dict.dname,
+
       label: dict.label,
       brief: dict.brief,
 

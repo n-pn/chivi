@@ -20,12 +20,12 @@
 
   $: ({ query, terms, start } = data)
 
-  $: vdict.put(data.dname, data.label)
+  $: vdict.put(+data.vd_id, data.label, data.brief)
 
   let d_tab = 2
   $: {
-    if (data.dname == 'generic') d_tab = 1
-    else if (data.dname == 'combine' || data.dname.startsWith('-')) d_tab = 0
+    if (data.vd_id == -1) d_tab = 1
+    else if (data.vd_id == -4 || data.vd_id > 0) d_tab = 0
     else d_tab = 2
   }
 

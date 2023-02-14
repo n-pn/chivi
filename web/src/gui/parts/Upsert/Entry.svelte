@@ -7,7 +7,6 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Vhint from './Vhint.svelte'
   import Vutil from './Vutil.svelte'
-  import { VpTerm } from '$lib/vp_term'
   import { rel_time } from '$utils/time_utils'
 
   const save_modes = [
@@ -85,29 +84,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!--
-  <upsert-tabs on:click={refocus}>
-    {#each vpdicts as { d_dub, d_tip }, tab}
-      {@const infos = tabs[tab]}
 
-      <button
-        class="tab-item _{infos.class}"
-        class:_active={$ctrl.tab == tab}
-        class:_edited={vpterms[tab]?.init.state != 'Xoá'}
-        data-kbd={infos.kbd}
-        on:click={() => ctrl.set_tab(tab)}
-        use:hint={d_tip}>
-        <SIcon name={infos.icon} />
-        <span>{d_dub}</span>
-      </button>
-    {/each}
-
-    <button
-      class="tab-btn"
-      on:click={() => ($ctrl.state = 3)}
-      use:hint={'Chọn từ điển nâng cao'}>
-      <SIcon name="package" />
-    </button>
-  </upsert-tabs>
 
   <upsert-body on:click={refocus}>
     <Emend {vpterm} />

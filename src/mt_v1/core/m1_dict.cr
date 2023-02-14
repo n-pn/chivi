@@ -30,7 +30,7 @@ class M1::MtTrie
     node
   end
 
-  def scan(chars : Array(Char), idx : Int32 = 0) : Nil
+  def scan(chars : Array(Char), idx : Int32 = 0, &) : Nil
     node = self
 
     idx.upto(chars.size - 1) do |i|
@@ -94,7 +94,7 @@ class M1::MtDict
   def initialize(@lbl : Int32)
   end
 
-  private def open_db
+  private def open_db(&)
     DB.open("sqlite3:#{DB_PATH}") { |db| yield db }
   end
 
@@ -114,7 +114,7 @@ class M1::MtDict
     do_load!(dic, uname) { "and tab > 1 and uname = ?" }
   end
 
-  private def do_load!(*args : DB::Any) : self
+  private def do_load!(*args : DB::Any, &) : self
     open_db do |db|
       sql = String.build do |io|
         io << "select key, val, ptag, prio from defns"
@@ -134,7 +134,7 @@ class M1::MtDict
 
   def load_init!
     DB.open("sqlite3:var/dicts/init.dic") do |db|
-      sql = "select zstr, tags, mtls from terms"
+      sql = "select zstr, tags, mtls from terms where _flag >= 0 and mtls <> ''"
 
       db.query_each(sql) do |rs|
         key, tags, mtls = rs.read(String, String, String)
@@ -160,7 +160,8 @@ class M1::MtDict
     if val.empty?
       node.term = nil
     else
-      node.term = MtTerm.new(key, val.split('ǀ')[0], dic: @lbl, ptag: ptag, prio: prio)
+      val = val.split(/[\ǀ\|]/).first.strip
+      node.term = MtTerm.new(key, val, dic: @lbl, ptag: ptag, prio: prio)
     end
   end
 

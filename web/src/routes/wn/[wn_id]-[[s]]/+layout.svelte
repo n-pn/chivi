@@ -36,11 +36,7 @@
     return x
   })
 
-  $: vdict.set({
-    dname: '-' + nvinfo.bhash,
-    d_dub: nvinfo.btitle_vi,
-    d_tip: `Từ điển riêng cho bộ truyện: ${nvinfo.btitle_vi}`,
-  })
+  $: vdict.put(nvinfo.id, nvinfo.btitle_vi)
 </script>
 
 <svelte:head>

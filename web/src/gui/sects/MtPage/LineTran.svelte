@@ -28,7 +28,7 @@
   let hint_atab = 0
 
   function save_change() {
-    on_changed()
+    on_changed(line_no, raw_txt, '')
     alert('Todo!')
   }
 </script>

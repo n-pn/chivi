@@ -23,4 +23,13 @@ declare namespace CV {
     ctime: number
     utime: number
   }
+
+  interface YslistList {
+    pgidx: number
+    pgmax: number
+    yl_id: number
+    lists: Yslist[]
+    crits: Yscrit[]
+    books: Record<number, CrBook>
+  }
 }

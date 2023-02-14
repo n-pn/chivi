@@ -26,6 +26,9 @@ class MT::VpInit
   field tags : String = ""
   field mtls : String = ""
 
+  field ptag : String = ""
+  field prio : Int32 = 0
+
   field raw_tags : String = "{}" # json data
   field raw_mtls : String = "{}" # json data
 

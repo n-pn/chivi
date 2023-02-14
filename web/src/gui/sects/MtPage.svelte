@@ -31,10 +31,6 @@
   let cached = false // reloading chapter do not need zhtext anymore
 
   $: [chars, tspan, dsize] = parse_data(cvdata)
-  let datav2 = []
-
-  import { browser } from '$app/environment'
-  $: if (browser && $config.render == 1) call_v2_engine(zhtext.join('\n'))
 
   let article = null
   let l_hover = 0
@@ -60,7 +56,6 @@
     }
 
     const [dname, d_dub, chars = '', tspan = '', dsize = ''] = stats.split('\t')
-    if (dname) vdict.put(dname, d_dub)
     return [+chars, +tspan, +dsize]
   }
 
@@ -81,26 +76,6 @@
   function change_engine(engine: number) {
     config.set_engine(engine)
     on_change()
-  }
-
-  async function call_v2_engine(body: string) {
-    const book = $vdict.dname
-    const user = $session.uname
-    const temp = $config.w_temp
-
-    const url = `/_m2/convert?rmode=mtl&has_title=true&book=${book}&user=${user}&with_temp=${temp}`
-
-    const res = await fetch(url, { method: 'POST', body })
-    const data = await res.text()
-
-    if (!res.ok) {
-      console.log(data)
-      return
-    }
-
-    const v2data = MtData.parse_lines(data)
-    if (v2data.length == mtdata.length) datav2 = v2data
-    else console.log(data)
   }
 </script>
 
@@ -125,7 +100,7 @@
     <span class="stats _dname" data-tip="Từ điển bộ truyện">
       <span class="stats-label">Từ điển riêng:</span>
       <SIcon name="package" />
-      <a href="/dicts/{$vdict.dname}" class="stats-value _link">{dsize} từ</a>
+      <a href="/dicts/{$vdict.dslug}" class="stats-value _link">{dsize} từ</a>
     </span>
 
     <div class="header-right">
@@ -157,7 +132,6 @@
 
   <section>
     {#each mtdata as input, index (index)}
-      {@const mtlv2 = datav2[index]}
       <svelte:element
         this={index > 0 || $$props.no_title ? 'p' : 'h1'}
         id="L{index}"
@@ -171,13 +145,6 @@
         <Cvline
           {input}
           focus={render_html($config.render, index, l_hover, l_focus)} />
-        {#if mtlv2}
-          <p class="v2">
-            <Cvline
-              input={mtlv2}
-              focus={render_html($config.render, index, l_hover, l_focus)} />
-          </p>
-        {/if}
       </svelte:element>
     {:else}
       <slot name="notext" />
@@ -201,7 +168,7 @@
       {on_fixraw}
       lineid={l_focus}
       caret={$zfrom}
-      dname={$vdict.dname} />
+      vd_id={$vdict.vd_id} />
   {/if}
 
   <slot name="footer" />

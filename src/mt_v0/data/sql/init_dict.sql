@@ -4,6 +4,9 @@ CREATE TABLE IF NOT EXISTS terms (
   "zstr" varchar NOT NULL, -- normalized chinese input
   "tags" varchar NOT NULL, -- ctb tag sort by popularity
   "mtls" varchar NOT NULL, -- translation correspoding to tags
+  -- v1data
+  "ptag" varchar NOT NULL DEFAULT '',
+  "prio" integer NOT NULL DEFAULT 1,
   --
   "raw_tags" varchar NOT NULL DEFAULT '{}', -- tags combine from all sources
   "raw_mtls" varchar NOT NULL DEFAULT '{}', -- mtls combine from all sources

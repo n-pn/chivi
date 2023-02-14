@@ -39,7 +39,7 @@
   export let rawtxt = ''
   export let lineid = 0
 
-  export let dname = 'combine'
+  export let vd_id = -4
   export let caret = 0
 
   export let on_fixraw = (_n: number, _s: string, _s2: string) => {}
@@ -95,19 +95,16 @@
   }
 
   async function update_preview(input: string) {
-    const api_url = `/_db/qtran/mterror?_caps=true`
+    const url = `/_mt/qtran/debug?wn_id=${vd_id}&_cap=true`
+    const res = await fetch(url, { method: 'POST', body: input })
 
-    const res = await fetch(api_url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ input, dname }),
-    })
+    const text = await res.text()
 
-    const res_data = await res.text()
+    if (!res.ok) {
+      alert(text)
+    } else {
+      const lines = text.split('\n')
 
-    if (!res.ok) alert(res_data)
-    else {
-      const lines = res_data.split('\n')
       convert = lines[0]
       hanviet = lines[1]
     }
