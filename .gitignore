@@ -13,3 +13,4 @@
 .env.*
 .DS_Store
 *.dwarf
+var/cvmtl/index

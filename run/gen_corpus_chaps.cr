@@ -11,8 +11,8 @@ DB.open("sqlite3:var/chaps/seed-infos.db") do |db|
 end
 
 SEED_ORDER = {
-  "!chivi.app",
   "!zxcs.me",
+  "!chivi.app",
   "!hetushu.com",
   "!rengshu.com",
   "_",

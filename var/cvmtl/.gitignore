@@ -1,6 +1,2 @@
-!*
-/dicts
-/posts
-/users
-/vocab/*.md
-/vocab/*.txt
+*
+!.gitignore
