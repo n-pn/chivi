@@ -11,8 +11,6 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
-  import { session } from '$lib/stores'
-
   import { api_call } from '$lib/api_call'
 
   import { SIcon } from '$gui'
@@ -21,27 +19,33 @@
 
   let error = ''
 
-  let privi = $session.privi < 3 ? $session.privi + 1 : 3
+  let privi = $page.data._user.privi < 3 ? $page.data._user.privi + 1 : 3
   let tspan = 1
   $: vcoin = costs[privi][tspan]
 
   const action = '/_db/_self/upgrade-privi'
 
+  let _onload = false
+
   async function submit() {
     error = ''
+    _onload = true
 
     try {
       const body = await api_call(action, { privi, tspan }, 'PUT')
+      $page.data._user.vcoin -= vcoin
       $page.data._user = body
       tab = 0
     } catch (ex) {
       console.log(ex)
       error = ex.body.message
     }
+
+    _onload = false
   }
 </script>
 
-<form {action} method="PUT">
+<section class="form">
   <div class="form-field">
     <label class="form-label" for="privi">Chọn quyền hạn:</label>
     <div class="radio-group">
@@ -66,21 +70,19 @@
     </div>
   </div>
 
-  {#if error}
-    <div class="form-error">{error}</div>
-  {/if}
+  {#if error}<div class="form-error">{error}</div>{/if}
 
   <footer class="form-action">
     <button
       type="submit"
       class="m-btn _success  _fill"
-      disabled={vcoin > $session.vcoin}
-      on:click|preventDefault={submit}>
+      disabled={_onload || vcoin > $page.data._user.vcoin}
+      on:click={submit}>
       <span>Nâng cấp</span>
       <SIcon name="coin" />{vcoin}
     </button>
   </footer>
-</form>
+</section>
 
 <style lang="scss">
   .radio-group {
