@@ -144,12 +144,7 @@
   }
 
   function show_upsert(no_guess = true) {
-    let tab = 0
-    if (!no_guess && focused.length == 1) {
-      const dic = +focused[0].dataset.d
-      if (dic % 2 == 0) tab = 1
-    }
-    return setTimeout(() => upsert.show(tab), 20)
+    return setTimeout(() => upsert.show(0), 20)
   }
 
   function find_nearest_nodes(line: HTMLElement, idx: number, max: number) {

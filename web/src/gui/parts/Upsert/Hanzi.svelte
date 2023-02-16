@@ -129,7 +129,7 @@
     overflow: hidden;
     flex-wrap: nowrap;
     font-size: rem(20px);
-    @include border(--bd-main, $loc: left-right);
+    @include border(--bd-soft, $loc: left-right);
   }
 
   .key-txt {
@@ -213,11 +213,11 @@
     @include fgcolor(secd);
 
     &._left {
-      @include border(--bd-main, $loc: left);
+      @include border(--bd-soft, $loc: left);
     }
 
     &._right {
-      @include border(--bd-main, $loc: right);
+      @include border(--bd-soft, $loc: right);
     }
 
     &._hide {

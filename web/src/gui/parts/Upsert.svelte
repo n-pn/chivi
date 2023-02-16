@@ -23,25 +23,31 @@
     set_state: (state: number) => ctrl.update((x) => ({ ...x, state })),
   }
 
-  const tabs = [
-    { kbd: 'x', icon: 'book', class: 'novel' },
-    { kbd: 'c', icon: 'world', class: 'basic' },
-    { kbd: 'v', icon: 'package', class: 'miscs' },
-  ]
+  // const tabs = [
+  //   { kbd: 'x', icon: 'book', class: 'novel' },
+  //   { kbd: 'c', icon: 'world', class: 'basic' },
+  //   { kbd: 'v', icon: 'package', class: 'miscs' },
+  // ]
+
+  interface JsonData {
+    pin_yin: string
+    hanviet: string
+
+    current?: CV.VpTerm
+
+    tag_hints: string[]
+    val_hints: string[]
+  }
 </script>
 
 <script lang="ts">
   import { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
-  // import { make_vdict } from '$utils/vpdict_utils'
-
-  import { session } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
   import Hanzi from './Upsert/Hanzi.svelte'
-  import Vdict from './Upsert/Vdict.svelte'
 
   import Vhint from './Upsert/Vhint.svelte'
   import Emend from './Upsert/Emend.svelte'
@@ -55,19 +61,6 @@
 
   onDestroy(on_destroy)
 
-  let key = $ztext.substring($zfrom, $zupto)
-  let vpform = VpForm.from(key, $ctrl.tab, $vdict.vd_id || 0)
-
-  interface JsonData {
-    pin_yin: string
-    hanviet: string
-
-    current?: CV.VpTerm
-
-    tag_hints: string[]
-    val_hints: string[]
-  }
-
   let data: JsonData = {
     pin_yin: '',
     hanviet: '',
@@ -76,6 +69,7 @@
     tag_hints: [],
   }
 
+  let key = $ztext.substring($zfrom, $zupto)
   let form = VpForm.from(key)
 
   $: update_data($ztext, $zfrom, $zupto)
@@ -94,45 +88,22 @@
     }
 
     data = cached[words[0]]
-    form = new VpForm(data.current || {})
+    form = new VpForm(
+      data.current || {},
+      data.val_hints,
+      data.tag_hints,
+      $vdict.vd_id
+    )
   }
 
-  let extra = make_vdict(-10)
-  $: dicts = upsert_dicts($vdict, extra)
+  $: dicts = upsert_dicts($vdict)
 
-  // let inputs: HTMLInputElement[] = []
   let field: HTMLInputElement
 
-  const refocus = () => field && field.focus()
+  const refocus = () => $ctrl.tab == 0 && field && field.focus()
   $: if (form) refocus()
 
-  // const refocus = () => {
-  //   const field = inputs[vpterm._slot]
-  //   if (field) field.focus()
-  // }
-
   const copy_raw = () => navigator.clipboard.writeText(key)
-
-  // function changed(term: VpTerm) {
-  //   if (term._mode != term.init._mode) return true
-  //   if (term.prio != term.init.prio) return true
-
-  //   const init_vals = term.init.vals || []
-  //   if (term.vals.length != init_vals.length) return true
-
-  //   const init_tags = term.init.tags || []
-  //   if (term.tags.length != init_tags.length) return true
-
-  //   for (let i = 0; i < term.vals.length; i++) {
-  //     if (term.vals[i] != init_vals[i]) return true
-  //   }
-
-  //   for (let i = 0; i < term.tags.length; i++) {
-  //     if (term.tags[i] != init_tags[i]) return true
-  //   }
-
-  //   return false
-  // }
 
   $: [lbl_state, btn_state] = form.state
 
@@ -186,60 +157,73 @@
   </upsert-head>
 
   <upsert-tabs>
-    {#each dicts as { label, brief }, tab}
-      {@const infos = tabs[tab]}
-
-      <button
-        class="tab-item _{infos.class}"
-        class:_active={$ctrl.tab == tab}
-        data-kbd={infos.kbd}
-        on:click={() => ctrl.set_tab(tab)}
-        use:hint={brief}>
-        <SIcon name={infos.icon} />
-        <span>{label}</span>
-      </button>
-    {/each}
+    <button
+      class="tab-item _miscs"
+      class:_active={$ctrl.tab == 0}
+      data-kbd="x"
+      on:click={() => ctrl.set_tab(0)}>
+      <SIcon name="package" />
+      <span>Thêm sửa từ</span>
+    </button>
 
     <button
-      class="tab-btn"
-      on:click={() => ($ctrl.state = 3)}
-      use:hint={'Chọn từ điển nâng cao'}>
-      <SIcon name="package" />
+      class="tab-item _basic"
+      class:_active={$ctrl.tab == 1}
+      data-kbd="c"
+      on:click={() => ctrl.set_tab(1)}>
+      <SIcon name="history" />
+      <span>Lịch sử thêm sửa</span>
+    </button>
+
+    <button
+      class="tab-item _novel"
+      class:_active={$ctrl.tab == 2}
+      data-kbd="c"
+      on:click={() => ctrl.set_tab(2)}>
+      <SIcon name="message" />
+      <span>Tranh luận</span>
     </button>
   </upsert-tabs>
 
   <upsert-body>
-    <upsert-main>
-      <Vhint hints={data.val_hints} bind:form />
-      <div class="value" class:_fresh={form.init.state == 'Xoá'}>
-        <input
-          type="text"
-          class="-input"
-          bind:this={field}
-          bind:value={form.val}
-          autocomplete="off"
-          autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
+    {#if $ctrl.tab == 0}
+      <Emend {form} {dicts} />
 
-        <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
-          {pt_labels[form.tag] || 'Phân loại'}
-        </button>
-      </div>
+      <upsert-main>
+        <Vhint hanviet={data.hanviet} val_hints={data.val_hints} bind:form />
+        <div class="value" class:_fresh={form.init.state == 'Xoá'}>
+          <input
+            type="text"
+            class="-input"
+            bind:this={field}
+            bind:value={form.val}
+            autocomplete="off"
+            autocapitalize="off" />
 
-      <Vutil {key} tab={$ctrl.tab} bind:form />
-    </upsert-main>
+          <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
+            {pt_labels[form.ptag] || 'Phân loại'}
+          </button>
+        </div>
 
-    <upsert-foot>
-      <Vprio bind:form />
+        <Vutil {key} tab={$ctrl.tab} bind:form />
+      </upsert-main>
 
-      <btn-group>
-        <button
-          class="m-btn _lg _fill {btn_state}"
-          data-kbd="↵"
-          on:click={submit_val}>
-          <span class="submit-text">{lbl_state}</span>
-        </button>
-      </btn-group>
-    </upsert-foot>
+      <upsert-foot>
+        <Vprio bind:form udict={dicts[0]} />
+
+        <btn-group>
+          <button
+            class="m-btn _lg _fill {btn_state}"
+            data-kbd="↵"
+            disabled={!form.changed()}
+            on:click={submit_val}>
+            <span class="submit-text">{lbl_state}</span>
+          </button>
+        </btn-group>
+      </upsert-foot>
+    {:else}
+      <div class="empty">Đợi thêm sau</div>
+    {/if}
   </upsert-body>
 
   <footer class="foot">
@@ -253,9 +237,7 @@
   upsert-head {
     @include flex();
 
-    // @include bdradi($loc: top);
-    @include border(--bd-main, $loc: bottom);
-    // @include linesd(--bd-soft);
+    @include border(--bd-soft, $loc: bottom);
 
     .m-btn {
       @include fgcolor(neutral, 5);
@@ -275,8 +257,11 @@
     height: $tab-height;
     padding: 0 0.75rem;
 
+    gap: 0.5rem;
     @include flex;
     @include border(--bd-main, $loc: bottom);
+
+    justify-content: center;
     font-size: rem(14px);
 
     // prettier-ignore
@@ -286,7 +271,6 @@
     cursor: pointer;
     @include flex($center: vert);
     // text-transform: capitalize;
-    margin-right: 0.25rem;
     padding: 0 0.375rem;
     flex-shrink: 0;
     height: $tab-height;
@@ -297,22 +281,6 @@
     @include bdradi($loc: top);
     @include fgcolor(tert);
     @include border(--bd-main, $loc: top-left-right);
-
-    &._novel {
-      min-width: 6rem;
-      max-width: 40%;
-    }
-
-    &._basic {
-      max-width: 30%;
-      flex-shrink: 1;
-    }
-
-    &._miscs {
-      margin-left: auto;
-      max-width: 25%;
-      flex-shrink: 1;
-    }
 
     &._edited {
       @include fgcolor(secd);
@@ -437,5 +405,10 @@
   .foot {
     position: relative;
     @include border(--bd-main, $loc: top);
+  }
+
+  .empty {
+    height: 15rem;
+    @include flex-ca;
   }
 </style>

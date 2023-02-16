@@ -77,33 +77,49 @@ export class VpForm {
     return new VpForm(term)
   }
 
-  constructor(init: Partial<CV.VpTerm>, val_hints = [], tag_hints = []) {
-    init.val ||= val_hints[0] || ''
-    init.ptag ||= tag_hints[0] || ''
-
-    this.init = init
-    this.form = Object.assign({}, init)
-
+  constructor(
+    init: Partial<CV.VpTerm>,
+    val_hints = [],
+    tag_hints = [],
+    vp_id = 0
+  ) {
+    this.init = Object.assign({}, init)
     this.init.state ||= 'Xoá'
+
+    this.form = Object.assign({}, init)
+    this.form.dic ||= vp_id
+    if (this.form.dic < 0) this.form.dic = -2
+
+    this.form.val ||= val_hints[0]
+    this.form.ptag ||= tag_hints[0]
+    this.form.prio ||= 2
+  }
+
+  get dic(): number {
+    return +this.form.dic
   }
 
   get val(): string {
     return this.form.val || ''
   }
 
-  get tag(): string {
+  get ptag(): string {
     return this.form.ptag || ''
   }
 
   get prio(): number {
-    return this.form.prio || 2
+    return this.form.prio
+  }
+
+  set dic(data: number) {
+    this.form.dic = data
   }
 
   set val(data: string) {
     this.form.val = data
   }
 
-  set tag(data: string) {
+  set ptag(data: string) {
     this.form.ptag = data
   }
 
@@ -126,5 +142,14 @@ export class VpForm {
   get state() {
     if (!this.form.val) return ['Xoá', `_harmful`]
     return this.init.state != 'Xoá' ? ['Sửa', `_primary`] : ['Lưu', `_success`]
+  }
+
+  changed() {
+    if (this.form.dic != this.init.dic) return true
+    if (this.form.val != this.init.val) return true
+    if (this.form.ptag != this.init.ptag) return true
+    if (this.form.prio != this.init.prio) return true
+
+    return false
   }
 }

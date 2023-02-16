@@ -10,11 +10,11 @@ struct M1::M1TermView
 
   getter defns : Hash(String, Array(DbDefn))
 
-  def initialize(@words : Array(String), @uname : String, @wn_id : Int32)
+  def initialize(@words : Array(String), @uname : String, @wn_id : Int32, @w_temp = true)
     @defns = DbDefn.repo.open_db do |db|
       sql = String.build do |str|
-        str << "select * from defns where dic in (#{wn_id}, -1, -2, -3)"
-        str << "and _flag >= 0 and key in ("
+        str << "select * from defns where dic >= -4"
+        str << " and val <> '' and key in ("
         words.join(str, ",") { |_, s| s << '?' }
         str << ")"
       end
@@ -40,11 +40,10 @@ struct M1::M1TermView
           tag_hints.concat(gen_tag_hints(word)).uniq!
 
           val_hints = entries.flat_map(&.val.split('ǀ'))
-          val_hints.concat(gen_val_hints(word, tag_hints)).uniq!
+          val_hints.concat(gen_val_hints(word, hanviet, tag_hints)).uniq!
 
           jb.object {
             jb.field "current", extract_current(entries)
-            # jb.field "entries" { jb.array { entries.each(&.to_json(jb)) } }
 
             jb.field "hanviet", hanviet
             jb.field "pin_yin", MtCore.cv_pin_yin(word)
@@ -58,20 +57,28 @@ struct M1::M1TermView
   end
 
   private def extract_current(entries : Array(DbDefn))
-    return if entries.empty?
-
     groups = entries.group_by(&.dic)
+    return unless terms = groups[@wn_id]? || groups[-3]? || groups[-1]? || groups[-2]?
 
-    terms = groups[@wn_id]? || groups[-3]? || groups[-1]? || groups[-2]
-    terms.find(&.uname.== @uname) || terms.first
+    term_tabs = terms.group_by(&.tab)
+
+    if term = term_tabs[3]?.try(&.find(&.uname.== @uname))
+      return term
+    end
+
+    if @w_temp && (term == term_tabs[2]?.try(&.first))
+      return term
+    end
+
+    term_tabs[1]?.try(&.first)
   end
 
   private def gen_tag_hints(word : String)
-    [] of String
+    ["Nr"]
   end
 
-  private def gen_val_hints(word : String, tags : Array(String))
-    [] of String
+  private def gen_val_hints(word : String, hanviet : String, tags : Array(String))
+    [hanviet]
   end
 
   # private def add_hints(entry : TermView) : Nil

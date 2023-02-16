@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<!-- <script context="module" lang="ts">
   import { make_vdict } from '$utils/vpdict_utils'
 
   // prettier-ignore
@@ -127,4 +127,4 @@
       }
     }
   }
-</style>
+</style> -->

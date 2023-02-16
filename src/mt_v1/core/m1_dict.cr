@@ -61,7 +61,7 @@ class M1::MtDict
   end
 
   class_getter regular_main : self do
-    MAINS[-1] ||= new(2).load!(-2).load_main!(-1).load_main!(-3)
+    MAINS[-1] ||= new(2).load!(-2).load_main!(-1).load!(-3)
   end
 
   class_getter regular_temp : self do
