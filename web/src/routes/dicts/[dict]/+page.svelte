@@ -1,40 +1,29 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { invalidate } from '$app/navigation'
-  import { browser } from '$app/environment'
+  import { invalidateAll } from '$app/navigation'
 
-  import { ztext, vdict, session } from '$lib/stores'
+  import { ztext, vdict } from '$lib/stores'
   import { rel_time_vp } from '$utils/time_utils'
 
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
   import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
   import pt_labels from '$lib/consts/postag_labels.json'
 
-  import Postag from '$gui/parts/Postag.svelte'
-
   import { Crumb, SIcon } from '$gui'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import Postag from '$gui/parts/Postag.svelte'
+  import DictDl from './DictDl.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ query, terms, start } = data)
-
   $: vdict.put(+data.vd_id, data.label, data.brief)
-
-  let d_tab = 2
-  $: {
-    if (data.vd_id == -1) d_tab = 1
-    else if (data.vd_id == -4 || data.vd_id > 0) d_tab = 0
-    else d_tab = 2
-  }
-
-  let postag_state = 1
-
-  // prettier-ignore
-  const on_change = () => invalidate(`/_db/${$page.url.pathname}${$page.url.search}`)
+  $: query = data.query
 
   $: pager = new Pager($page.url)
+  $: root_path = $page.url.pathname
+
+  let postag_state = 1
 
   const prio_labels = ['Ẩn', 'Thấp', 'Bình', 'Cao']
 
@@ -50,30 +39,16 @@
 
   function show_upsert(key: string, state = 1) {
     ztext.put(key)
-    upsert.show(d_tab, state)
+    upsert.show(0, state)
   }
 
-  const tab_labels = ['Tự động', 'Cộng đồng', 'Tạm thời', 'Cá nhân']
-
-  const uname_class = (uname: string) =>
-    uname == $session.uname ? '_self' : '_other'
-
-  let dl_opts = {
-    format: 'qt',
-    scope: 'all',
-    temp: true,
-    user: true,
-    get toQuery() {
-      const fields = ['format', 'scope', 'temp', 'user']
-      return fields.map((x) => `${x}=${this[x]}`).join('&')
-    },
-  }
+  const tab_labels = ['Tự chọn', 'Chung', 'Nháp', 'Riêng']
 </script>
 
 <Crumb
   tree={[
     ['Từ điển', '/dicts'],
-    [data.label, $page.url.pathname],
+    [data.label, root_path],
   ]} />
 
 <article class="article m-article">
@@ -81,65 +56,7 @@
     <h1 class="h2">{data.label} <small>Số lượng từ: {data.dsize}</small></h1>
   </header>
 
-  <details class="export">
-    <summary>Tải từ điển về máy </summary>
-    <div class="dl-opt">
-      <span class="dl-lbl">Giới hạn số lượng từ:</span>
-      <label
-        ><input
-          type="radio"
-          name="dl-scope"
-          bind:group={dl_opts.scope}
-          value="all" /> Tất cả các từ trong từ điển</label>
-      <label
-        ><input
-          type="radio"
-          name="dl-scope"
-          bind:group={dl_opts.scope}
-          value="top" /> Mười nghìn từ gần nhất</label>
-    </div>
-
-    <div class="dl-opt">
-      <span class="dl-lbl">Bao gồm các từ trong:</span>
-      <label data-tip="Từ điển áp dụng chung cho tất cả mọi người"
-        ><input type="checkbox" checked name="dl-main" disabled value="main" /> Từ
-        điển cộng đồng</label>
-
-      <label data-tip="Từ lưu ở chế độ lưu tạm thời"
-        ><input type="checkbox" name="dl-temp" bind:checked={dl_opts.temp} /> Từ
-        điển tạm thời</label>
-      <label data-tip="Từ lưu trong từ điển cá nhân của bạn"
-        ><input type="checkbox" name="dl-user" bind:checked={dl_opts.user} /> Từ
-        điển cá nhân</label>
-    </div>
-
-    <div class="dl-opt">
-      <span class="dl-lbl">Định dạng:</span>
-      <label
-        ><input
-          type="radio"
-          name="dl-format"
-          bind:group={dl_opts.format}
-          value="qt" /> Kiểu QuickTranslator (chỉ có từ và nghĩa)</label>
-      <label
-        ><input
-          type="radio"
-          name="dl-format"
-          bind:group={dl_opts.format}
-          value="cv" /> Kiểu Chivi (có kèm từ loại và luật ưu tiên)</label>
-    </div>
-
-    <div class="action">
-      <a
-        href="/_m1/dicts/{data.dname}/export?{dl_opts.toQuery}"
-        download="{data.label}.{dl_opts.format == 'q' ? 'txt' : 'tsv'}"
-        class="m-btn _primary _fill _lg"
-        class:_disable={data._user.privi < 1}>
-        <SIcon name="download" />
-        <span>Tải xuống</span>
-      </a>
-    </div>
-  </details>
+  <DictDl {data} />
 
   <div class="body">
     <table>
@@ -151,7 +68,7 @@
           <th>Phân loại</th>
           <th class="prio">Ư.t</th>
           <th class="uname">Người dùng</th>
-          <th class="_mode">Cách lưu</th>
+          <th class="scope">Cách lưu</th>
           <th>Cập nhật</th>
         </tr>
 
@@ -167,7 +84,7 @@
             ><input type="text" placeholder="-" bind:value={query.prio} /></td>
           <td class="uname"
             ><input type="text" placeholder="-" bind:value={query.uname} /></td>
-          <td class="_mode"
+          <td class="scope"
             ><input type="text" placeholder="-" bind:value={query.tab} /></td>
           <td>
             <button class="m-btn _sm" on:click={reset_query}>
@@ -184,9 +101,11 @@
       </thead>
 
       <tbody>
-        {#each terms as { key, vals, ptag, prio, mtime, uname, _flag, tab }, idx}
-          <tr class="term _{_flag}">
-            <td class="-idx">{start + idx}</td>
+        {#each data.terms as { key, val, ptag, prio, mtime, uname, tab = 0 }, idx}
+          {@const uname_class = uname == data._user.uname ? '_self' : '_else'}
+
+          <tr class="term" class:_mute={tab < 0} class:_temp={tab > 1}>
+            <td class="-idx">{data.start + idx}</td>
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <td class="-key" on:click={() => show_lookup(key)}>
               <span>{key}</span>
@@ -205,9 +124,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <td
               class="-val"
-              class:_del={!vals[0]}
+              class:_del={!val}
               on:click={() => show_upsert(key, 1)}>
-              <span>{vals.join(' | ') || 'Đã xoá'}</span>
+              <span>{val || 'Đã xoá'}</span>
 
               <div class="hover">
                 <span class="m-btn _xs _active">
@@ -215,7 +134,7 @@
                 </span>
                 <button
                   class="m-btn _xs"
-                  on:click|stopPropagation={() => (query.val = vals[0])}>
+                  on:click|stopPropagation={() => (query.val = val)}>
                   <SIcon name="search" />
                 </button>
               </div>
@@ -239,12 +158,16 @@
               </div>
             </td>
             <td class="prio">
-              <a href="{$page.url.pathname}?prio={prio}">{prio_labels[prio]}</a>
+              <a href="{root_path}?prio={prio}">{prio_labels[prio]}</a>
             </td>
-            <td class="uname {uname_class(uname)}">
-              <a href="{$page.url.pathname}?uname={uname}">{uname}</a>
+            <td class="uname {uname_class}">
+              <a href="{root_path}?uname={uname}">{uname}</a>
             </td>
-            <td class="_mode _{tab}">{tab_labels[tab]} </td>
+            <td class="scope _{Math.abs(tab)}">
+              <a href="{root_path}?tab={tab}">
+                {tab_labels[Math.abs(tab)]}
+              </a>
+            </td>
             <td class="mtime">{rel_time_vp(mtime)} </td>
           </tr>
         {/each}
@@ -257,14 +180,12 @@
   </footer>
 </article>
 
-{#if browser}
-  <Lookup />
+{#if $lookup.enabled}<Lookup />{/if}
 
-  {#if $upsert.state > 0}<Upsert {on_change} />{/if}
+{#if $upsert.state > 0}<Upsert on_change={invalidateAll} />{/if}
 
-  {#if postag_state > 1}
-    <Postag bind:state={postag_state} bind:ptag={query.ptag} />
-  {/if}
+{#if postag_state > 1}
+  <Postag bind:state={postag_state} bind:ptag={query.ptag} />
 {/if}
 
 <style lang="scss">
@@ -357,24 +278,24 @@
       @include fgcolor(harmful);
     }
 
-    &._other {
+    &._else {
       @include fgcolor(primary);
     }
   }
 
-  ._mode {
+  .scope {
     width: 4rem;
     @include ftsize(xs);
 
-    &._0 {
+    &._1 {
       @include fgcolor(success);
     }
 
-    &._1 {
+    &._2 {
       @include fgcolor(neutral);
     }
 
-    &._2 {
+    &._3 {
       @include fgcolor(private);
     }
   }
@@ -410,13 +331,15 @@
     }
   }
 
-  .term {
-    &._1,
-    &._2 {
-      @include bgcolor(neutral, 5, 3);
-      text-decoration: line-through;
-      font-style: italic;
-    }
+  .term._mute {
+    @include bgcolor(neutral, 5, 3);
+    text-decoration: line-through;
+    font-style: italic;
+  }
+
+  .term._temp {
+    @include fgcolor(tert);
+    font-style: italic;
   }
 
   thead .m-btn {
@@ -425,47 +348,5 @@
     &:hover {
       @include bgcolor(main);
     }
-  }
-
-  .export {
-    margin-bottom: 1.5rem;
-
-    summary {
-      @include ftsize(lg);
-      line-height: 2rem;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-
-      &:hover {
-        @include fgcolor(primary, 5);
-      }
-    }
-
-    label {
-      cursor: pointer;
-    }
-
-    .action {
-      margin-top: 0.25rem;
-      // @include flex-cx;
-    }
-
-    a {
-      // display: inline-block;
-      width: 10rem;
-    }
-  }
-
-  .dl-opt {
-    display: flex;
-    gap: 0.75rem;
-    line-height: 2rem;
-    margin: 0.5rem 0;
-    // margin-bottom: 0.5rem;
-  }
-
-  .dl-lbl {
-    @include fgcolor(secd);
-    font-weight: 500;
   }
 </style>

@@ -40,7 +40,7 @@ class M1::DefnCtrl < AC::Base
     args = [] of DB::Any
 
     query = String.build do |sql|
-      sql << "select * from defns where _flag > -2"
+      sql << "select * from defns where 1 = 1"
 
       if dic = _get_str("dic")
         sql << " and dic = ?"
