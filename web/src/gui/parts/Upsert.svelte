@@ -4,10 +4,10 @@
   import { writable } from 'svelte/store'
 
   import { vdict, ztext, zfrom, zupto } from '$lib/stores'
-  import { make_vdict, upsert_dicts } from '$utils/vpdict_utils'
+  import { upsert_dicts } from '$utils/vpdict_utils'
   import { api_call } from '$lib/api_call'
 
-  import { hint, related_words, VpForm } from './Upsert/_shared'
+  import { related_words, VpForm } from './Upsert/_shared'
 
   import pt_labels from '$lib/consts/postag_labels.json'
 
@@ -47,6 +47,8 @@
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
+  import Postag from './Postag.svelte'
+
   import Hanzi from './Upsert/Hanzi.svelte'
 
   import Vhint from './Upsert/Vhint.svelte'
@@ -72,6 +74,7 @@
   let key = $ztext.substring($zfrom, $zupto)
   let form = VpForm.from(key)
 
+  $: dicts = upsert_dicts($vdict)
   $: update_data($ztext, $zfrom, $zupto)
 
   let cached: Record<string, JsonData> = {}
@@ -96,20 +99,29 @@
     )
   }
 
-  $: dicts = upsert_dicts($vdict)
-
   let field: HTMLInputElement
+  const refocus = () => field && field.focus()
 
-  const refocus = () => $ctrl.tab == 0 && field && field.focus()
-  $: if (form) refocus()
-
-  const copy_raw = () => navigator.clipboard.writeText(key)
+  $: if (form) {
+    refocus()
+  }
 
   $: [lbl_state, btn_state] = form.state
 
-  const submit_val = () => {
-    alert('TODO!')
-    on_change()
+  const copy_raw = () => navigator.clipboard.writeText(key)
+
+  const submit_val = async () => {
+    const res = await fetch('/_m1/defns', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    })
+
+    if (!res.ok) {
+      console.log(await res.text())
+    } else {
+      on_change()
+    }
   }
 </script>
 
@@ -230,6 +242,10 @@
     <Links {key} />
   </footer>
 </Dialog>
+
+{#if $ctrl.state == 2}
+  <Postag bind:ptag={form.ptag} bind:state={$ctrl.state} />
+{/if}
 
 <style lang="scss">
   $gutter: 0.75rem;
