@@ -61,7 +61,7 @@ class M1::MtDict
   end
 
   class_getter regular_main : self do
-    MAINS[-1] ||= new(2).load!(-2).load_main!(-1).load!(-3)
+    MAINS[-1] ||= new(2).load!(-2).load_main!(-1).load_main!(-3)
   end
 
   class_getter regular_temp : self do
@@ -118,7 +118,7 @@ class M1::MtDict
     open_db do |db|
       sql = String.build do |io|
         io << "select key, val, ptag, prio from defns"
-        io << " where dic = ? and _flag >= 0 "
+        io << " where dic = ? "
         io << yield
         io << " order by id asc"
       end

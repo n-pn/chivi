@@ -63,9 +63,14 @@ class M1::SpDict
     node.set!(term[0], term[1])
   end
 
+  def fix_quanti(node : MtNode)
+    return node unless term = @hash[node.key]?
+    node.set!(term[0])
+  end
+
   def self.fix_quanti!(node : MtTerm) : MtTerm
     dicts = {self.qt_nouns, self.qt_verbs, self.qt_times}
-    dicts.reduce(node) { |memo, dict| dict.fix!(memo) }
+    dicts.reduce(node) { |memo, dict| dict.fix_quanti(memo) }
   end
 
   ##########
