@@ -6,7 +6,7 @@ class WN::ChLineTran
   include JSON::Serializable
 
   def self.db_path
-    "var/chaps/trans.db"
+    "var/chaps/users/line-trans.db"
   end
 
   def self.open_db

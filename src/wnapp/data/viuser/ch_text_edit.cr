@@ -26,7 +26,11 @@ class WN::ChTextEdit
   ###
 
   @@table = "text_edits"
-  class_getter db = Crorm::Sqlite3::Repo.new("var/chaps/#{@@table}.db", init_sql)
+  class_getter db = Crorm::Sqlite3::Repo.new(db_path, init_sql)
+
+  def self.db_path
+    "var/chaps/users/full-edits.db"
+  end
 
   def self.init_sql
     <<-SQL
@@ -47,8 +51,10 @@ class WN::ChTextEdit
       _flag integer not null default 0
     );
 
-    create index if not exists #{@@table}_user_idx on #{@@table}(uname, _flag);
-    create index if not exists #{@@table}_book_idx on #{@@table}(sname, s_bid);
+    create index if not exists user_idx on #{@@table}(uname, _flag);
+    create index if not exists book_idx on #{@@table}(sname, s_bid);
+
+    pragma journal_mode = WAL;
     SQL
   end
 end
