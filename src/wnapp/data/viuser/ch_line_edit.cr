@@ -33,7 +33,7 @@ class WN::ChLineEdit
 
   @[AlwaysInline]
   def self.db_path
-    "var/chaps/#{@@table}.db"
+    "var/chaps/users/line-edits.db"
   end
 
   def self.init_sql(table_name = @@table)
@@ -58,8 +58,10 @@ class WN::ChLineEdit
       _flag integer not null default 0
     );
 
-    create index if not exists #{table_name}_user_idx on #{table_name}(uname, _flag);
-    create index if not exists #{table_name}_book_idx on #{table_name}(sname, s_bid);
+    create index if not exists user_idx on #{table_name}(uname, _flag);
+    create index if not exists book_idx on #{table_name}(sname, s_bid);
+
+    pragma journal_mode = WAL;
     SQL
   end
 end
