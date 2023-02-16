@@ -84,7 +84,7 @@ class CV::Viuser
 
   def upgrade!(privi : Int32, tspan : Int32) : Tuple(Int64, Int64, Int64)
     vcoin = PRIVI_COST[privi][tspan]
-    raise "Lượng vcoin không đủ!" if vcoin < vcoin
+    raise "Lượng vcoin không đủ!" if vcoin < self.vcoin
 
     self.vcoin -= vcoin
     self.privi = privi if self.privi < privi

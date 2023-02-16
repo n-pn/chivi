@@ -355,7 +355,7 @@
 
   upsert-body {
     display: block;
-    padding: 0.75rem;
+    padding: 0 0.75rem;
     @include bgcolor(bg-secd);
   }
 
