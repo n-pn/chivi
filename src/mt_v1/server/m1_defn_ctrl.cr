@@ -98,7 +98,7 @@ class M1::DefnCtrl < AC::Base
     form.validate!(_privi)
 
     defn = form.save!(_uname)
-    sync_data!(form.vdict, defn)
+    sync_data!(defn)
 
     spawn do
       date = Time.local.to_s("%Y-%m/%d")
@@ -111,7 +111,8 @@ class M1::DefnCtrl < AC::Base
     render json: defn
   end
 
-  private def sync_data!(dict : DbDict, defn : DbDefn)
+  private def sync_data!(defn : DbDefn)
+    dict = DbDict.load(defn.dic)
     dict.update_after_term_added!(defn.mtime)
 
     case defn.tab

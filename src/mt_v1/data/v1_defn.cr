@@ -1,7 +1,6 @@
 require "crorm"
 require "crorm/sqlite3"
 
-# require "../core/pos_tag"
 require "./v1_dict"
 
 class M1::DbDefn
@@ -48,7 +47,7 @@ class M1::DbDefn
       jb.field "tab", self.tab
 
       jb.field "key", self.key
-      jb.field "val", self.val.split('ǀ').join(" | ")
+      jb.field "val", self.val.gsub('ǀ', " | ")
 
       jb.field "ptag", self.ptag
       jb.field "prio", self.prio
@@ -81,20 +80,20 @@ class M1::DbDefn
     EPOCH &+ self.mtime &* 60
   end
 
-  BASE_COSTS = {
-    0, 3, 6, 9,
-    0, 14, 18, 26,
-    0, 25, 31, 40,
-    0, 40, 45, 55,
-    0, 58, 66, 78,
-  }
+  # BASE_COSTS = {
+  #   0, 3, 6, 9,
+  #   0, 14, 18, 26,
+  #   0, 25, 31, 40,
+  #   0, 40, 45, 55,
+  #   0, 58, 66, 78,
+  # }
 
-  def cost : Int32
-    size = self.key.size
-    prio = self.prio
+  # def cost : Int32
+  #   size = self.key.size
+  #   prio = self.prio
 
-    BASE_COSTS[(size &- 1) &* 4 &+ prio]? || size &* (prio &* 2 &+ 7) &* 2
-  end
+  #   BASE_COSTS[(size &- 1) &* 4 &+ prio]? || size &* (prio &* 2 &+ 7) &* 2
+  # end
 
   ####
 
@@ -118,19 +117,19 @@ class M1::DbDefn
   #   prevs
   # end
 
-  def find_prevs(repo = self.class.repo, tab = self.tab)
-    query = <<-SQL
-      select id from #{@@table}
-      where dic = ? and key = ? and ptag = ? and _flag > 0
-    SQL
+  # def find_prevs(repo = self.class.repo, tab = self.tab)
+  #   query = <<-SQL
+  #     select id from #{@@table}
+  #     where dic = ? and key = ? and ptag = ? and _flag > 0
+  #   SQL
 
-    case tab
-    when 3 then query += " and uname = '#{@uname}'" # only search for terms from same user
-    when 1 then query += " and tab = 2"             # remove temp defns if add dicts from
-    end
+  #   case tab
+  #   when 3 then query += " and uname = '#{@uname}'" # only search for terms from same user
+  #   when 1 then query += " and tab = 2"             # remove temp defns if add dicts from
+  #   end
 
-    self.class.repo.db.query_all(query, dic, key, ptag, as: Int32)
-  end
+  #   self.class.repo.db.query_all(query, dic, key, ptag, as: Int32)
+  # end
 
   # def to_term
   #   term = DbTerm.new

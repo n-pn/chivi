@@ -92,7 +92,7 @@
 
     data = cached[words[0]]
     form = new VpForm(
-      data.current || {},
+      data.current || { key, dic: $vdict.vd_id },
       data.val_hints,
       data.tag_hints,
       $vdict.vd_id
@@ -114,7 +114,7 @@
     const res = await fetch('/_m1/defns', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: form.toJSON($ztext, $zfrom),
     })
 
     if (!res.ok) {
@@ -197,7 +197,7 @@
     </button>
   </upsert-tabs>
 
-  <upsert-body>
+  <main class="upsert-body">
     {#if $ctrl.tab == 0}
       <Emend {form} {dicts} />
 
@@ -221,7 +221,7 @@
       </upsert-main>
 
       <upsert-foot>
-        <Vprio bind:form udict={dicts[0]} />
+        <Vprio bind:form />
 
         <btn-group>
           <button
@@ -236,7 +236,7 @@
     {:else}
       <div class="empty">Đợi thêm sau</div>
     {/if}
-  </upsert-body>
+  </main>
 
   <footer class="foot">
     <Links {key} />
@@ -337,7 +337,7 @@
     }
   }
 
-  upsert-body {
+  .upsert-body {
     display: block;
     padding: 0 0.75rem;
     @include bgcolor(bg-secd);
@@ -364,7 +364,7 @@
     height: $h-outer;
     padding: math.div($h-outer - $h-inner, 2);
 
-    @include linesd(--bd-main, $inset: true);
+    @include linesd(--bd-soft, $inset: true);
 
     &:focus-within {
       @include linesd(primary, 4, $ndef: false);

@@ -7,8 +7,6 @@
   export let hanviet: string
   export let val_hints: string[]
 
-  $: console.log(val_hints)
-
   $: hints = gen_val_hints(val_hints, form.val.trim())
   $: limit = gen_val_limit(hints)
 

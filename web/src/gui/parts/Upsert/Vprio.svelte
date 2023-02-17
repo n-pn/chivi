@@ -1,70 +1,33 @@
 <script context="module" lang="ts">
-  type Prio = [number, string]
+  type Prio = [number, string, string, string]
 
-  const prios: Prio[] = [
-    [3, 'Cao'],
-    [2, 'Bình'],
-    [1, 'Thấp'],
-    [0, 'Ẩn'],
+  const options: Prio[] = [
+    [3, 'Cao', 'd', 'Cụm từ được ưu tiên cao khi phân tách câu văn'],
+    [2, 'Bình', 's', 'Cụm từ ưu tiên trung bình, giá trị mặc định'],
+    [1, 'Thấp', 'a', 'Cụm từ không được ưu tiên khi phân tách câu văn'],
+    [0, 'Ẩn đi', 'f', 'Cụm từ không được áp dụng trong khi dịch'],
   ]
-
-  const prio_tips = {
-    3: 'Được ưu tiên cao khi phân tách câu văn',
-    2: 'Độ ưu tiên trung bình, giá trị mặc định',
-    1: 'Không được ưu tiên khi phân tách câu văn',
-    0: 'Không dùng cụm từ khi phân tách câu văn',
-  }
-
-  // const prio_kbds = [
-  //   [3, 'd'],
-  //   [2, 's'],
-  //   [1, 'a'],
-  //   [0, 'f'],
-  // ]
 </script>
 
 <script lang="ts">
-  import type { VpForm } from './_shared'
+  import { type VpForm, hint } from './_shared'
 
   export let form: VpForm
-  export let udict: CV.VpDict
-
-  let dicts = {
-    [udict.vd_id]: {
-      lbl: 'Bộ truyện hiện tại',
-      tip: `Áp dụng nghĩa của từ cho bộ truyện ${udict.label}`,
-    },
-    [-2]: {
-      lbl: 'Tất cả các truyện',
-      tip: `Áp dụng nghĩa của từ cho tất cả các bộ truyện`,
-    },
-    0: {
-      lbl: 'Tự động lựa chọn',
-      tip: 'Hệ thống sẽ tự động chọn phạm vi ứng dụng hợp lý nhất',
-    },
-  }
-
-  $: dict_tip = dicts[form.dic]?.tip
 </script>
 
 <div class="prio">
-  <label data-tip={dict_tip} data-tip-pos="left">
-    <span class="lbl">Áp dụng:</span>
-    <select name="dic" class="m-input _dic" bind:value={form.dic}>
-      {#each Object.entries(dicts) as [val, { lbl }]}
-        <option value={+val}>{lbl} </option>
-      {/each}
-    </select>
-  </label>
+  <span class="lbl" use:hint={'Độ ưu tiên của cụm từ khi phân tách câu văn'}
+    >Độ ưu tiên:</span>
 
-  <label data-tip={prio_tips[form.prio]}>
-    <span class="lbl">Ưu tiên:</span>
-    <select name="prio" class="m-input _prio" bind:value={form.prio}>
-      {#each prios as [val, lbl]}
-        <option value={val}>{lbl}</option>
-      {/each}
-    </select>
-  </label>
+  {#each options as [val, lbl, kbd, tip]}
+    <button
+      class="btn"
+      class:_base={form.init.prio == val}
+      class:_curr={form.prio == val}
+      data-kbd={kbd}
+      on:click={() => (form.prio = val)}
+      use:hint={tip}>{lbl}</button>
+  {/each}
 </div>
 
 <style lang="scss">
@@ -74,48 +37,41 @@
     margin-right: 0.375rem;
   }
 
-  .lbl {
+  .lbl,
+  .btn {
     @include ftsize(sm);
     @include fgcolor(tert);
     line-height: 1.75rem;
+  }
+
+  .lbl {
     @include bps(display, none, $pl: inline-block);
   }
 
-  select {
-    font-size: rem(14px);
+  .btn {
+    padding: 0 0.75rem;
+    font-weight: 500;
+
+    @include bgcolor(tranparent);
+    @include linesd(--bd-main);
+    @include bdradi(0.5rem);
+
+    &:hover {
+      @include bgcolor(tert);
+    }
+
+    &._base {
+      font-style: italic;
+      // @include fgcolor(green, 5);
+    }
+
+    &._curr {
+      @include fgcolor(primary, 5);
+      @include linesd(primary, 4, $ndef: false);
+    }
+
+    &:last-child {
+      margin-left: 0.375rem;
+    }
   }
-
-  select._dic {
-    width: 9rem;
-  }
-
-  select._prio {
-    width: 4rem;
-  }
-
-  option {
-    font-size: rem(16px);
-  }
-  // .btn {
-  //   padding: 0 0.75rem;
-  //   font-weight: 500;
-
-  //   @include bgcolor(tranparent);
-  //   @include linesd(--bd-main);
-  //   @include bdradi(0.5rem);
-
-  //   &._base {
-  //     font-style: italic;
-  //     // @include fgcolor(green, 5);
-  //   }
-
-  //   &._curr {
-  //     @include fgcolor(primary, 5);
-  //     @include linesd(primary, 4, $ndef: false);
-  //   }
-
-  //   &:hover {
-  //     @include bgcolor(tert);
-  //   }
-  // }
 </style>

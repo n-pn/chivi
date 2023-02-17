@@ -70,86 +70,83 @@ export const related_words = (ztext: string, zfrom: number, zupto: number) => {
 
 export class VpForm {
   init: Partial<CV.VpTerm>
-  form: Partial<CV.VpTerm>
 
   static from(key: string, tab: number = 0, dic: number = 0) {
     const term = { key, tab, dic }
-    return new VpForm(term)
+    return new VpForm(term, [], [], dic)
   }
+
+  key: string
+  val: string
+
+  ptag: string
+  prio: number
+
+  dic: number = 0
 
   constructor(
     init: Partial<CV.VpTerm>,
     val_hints = [],
     tag_hints = [],
-    vp_id = 0
+    dic = -4
   ) {
+    this.dic = dic
+    this.key = init.key
+
     this.init = Object.assign({}, init)
     this.init.state ||= 'Xoá'
 
-    this.form = Object.assign({}, init)
-    this.form.dic ||= vp_id
-    if (this.form.dic < 0) this.form.dic = -2
-
-    this.form.val ||= val_hints[0]
-    this.form.ptag ||= tag_hints[0]
-    this.form.prio ||= 2
-  }
-
-  get dic(): number {
-    return +this.form.dic
-  }
-
-  get val(): string {
-    return this.form.val || ''
-  }
-
-  get ptag(): string {
-    return this.form.ptag || ''
-  }
-
-  get prio(): number {
-    return this.form.prio
-  }
-
-  set dic(data: number) {
-    this.form.dic = data
-  }
-
-  set val(data: string) {
-    this.form.val = data
-  }
-
-  set ptag(data: string) {
-    this.form.ptag = data
-  }
-
-  set prio(data: number) {
-    this.form.prio = data
+    this.val = init.val || val_hints[0] || ''
+    this.ptag = init.ptag || tag_hints[0] || ''
+    this.prio = init.prio || 2
   }
 
   reset() {
-    this.form.val = this.init.val
-    this.form.ptag = this.init.ptag
+    this.val = this.init.val || ''
+    this.ptag = this.init.ptag || ''
+    this.prio = this.init.prio || 2
+
     return this
   }
 
   clear() {
-    if (this.form.val) this.form.val = ''
-    else this.form.ptag = ''
+    if (this.val) this.val = ''
+    else this.ptag = ''
+
     return this
   }
 
   get state() {
-    if (!this.form.val) return ['Xoá', `_harmful`]
+    if (!this.val) return ['Xoá', `_harmful`]
     return this.init.state != 'Xoá' ? ['Sửa', `_primary`] : ['Lưu', `_success`]
   }
 
   changed() {
-    if (this.form.dic != this.init.dic) return true
-    if (this.form.val != this.init.val) return true
-    if (this.form.ptag != this.init.ptag) return true
-    if (this.form.prio != this.init.prio) return true
+    const fields = ['val', 'ptag', 'prio']
+
+    for (const field of fields) {
+      if (this[field] != this.init[field]) return true
+    }
 
     return false
+  }
+
+  min_privi() {
+    if (this.dic == -4 || this.dic > 0) return 0
+    if (this.dic == -1 || this.dic == 10) return 1
+    return 2
+  }
+
+  toJSON(ztext: string, zfrom: number) {
+    const _ctx = `${ztext}:${zfrom}:${this.dic}`
+
+    return JSON.stringify({
+      key: this.key,
+      val: this.val,
+      ptag: this.ptag,
+      prio: this.prio,
+      dic: this.dic,
+      _ctx,
+    })
   }
 }
