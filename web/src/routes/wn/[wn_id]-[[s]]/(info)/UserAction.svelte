@@ -14,8 +14,10 @@
     let { locked, chidx } = ubmemo
     if (chidx < 1) chidx = 1
 
+    let sname = ubmemo.sname || '_'
+
     return {
-      href: chap_path(bslug, ubmemo.sname, chidx),
+      href: chap_path(bslug, sname, chidx),
       icon: locked ? 'player-skip-forward' : 'player-play',
       text: ubmemo.chidx > 0 ? 'Đọc tiếp' : 'Đọc thử',
       mute: ubmemo.chidx < 0,

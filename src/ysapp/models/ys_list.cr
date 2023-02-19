@@ -45,11 +45,6 @@ class YS::Yslist
     ysuser_id ? where("ysuser_id = #{ysuser_id}") : self
   end
 
-  scope :filter_string do |qs|
-    qs = qs.gsub(/[^\w\p{L}]/, '-') if qs
-    qs ? where("vslug LIKE '%-#{qs}-%'") : self
-  end
-
   scope :sort_by do |order|
     case order
     when "ctime" then self.order_by(id: :desc)
