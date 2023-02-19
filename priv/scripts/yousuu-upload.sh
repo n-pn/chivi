@@ -6,7 +6,7 @@ function rsync-fast {
 
 SSH=nipin@ssh.chivi.app:/app/chivi
 
-DIR=var/ysraw
+DIR="var/ysraw"
 SSH_DIR="$SSH/$DIR"
 
 PROXY_DIR="var/proxy"
@@ -26,15 +26,36 @@ fi
 if [[ $1 == "all" || $* == *books* ]]
 then
   echo upload book related data!
-  yarn build ysbook_crawl && rsync-fast "bin/ysbook_crawl" "$SSH/bin"
-  # rsync-fast "$DIR/books" $SSH_DIR
+
+  yarn build ysbook_crawl
+  rsync-fast "bin/ysbook_crawl" "$SSH/bin"
+
   rsync-fast "var/ysapp/books.db" $SSH/var/ysapp/books.db
+  rsync-fast "$DIR/books" $SSH_DIR
 fi
+
+if [[ $1 == "all" || $* == *users* ]]
+then
+  echo upload book related data!
+
+  yarn build ysbook_crawl
+  rsync-fast "bin/ysbook_crawl" "$SSH/bin"
+
+  rsync-fast "var/ysapp/users.db" $SSH/var/ysapp/users.db
+  rsync-fast "$DIR/users" $SSH_DIR
+fi
+
 
 if [[ $1 == "all" || $* == *crits* ]]
 then
   echo upload raw review jsons!
+
+  yarn build yscrit_crawl_by_user
+  rsync-fast "bin/yscrit_crawl_by_user" "$SSH/bin"
+
   rsync-fast "$DIR/crits" $SSH_DIR
+  rsync-fast "$DIR/crits-by-user" $SSH_DIR
+  rsync-fast "$DIR/crits-by-list" $SSH_DIR
 fi
 
 if [[ $1 == "all" || $* == *repls* ]]

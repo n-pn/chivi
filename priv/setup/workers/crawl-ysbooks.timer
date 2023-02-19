@@ -1,12 +1,12 @@
 [Unit]
-Description=yousuu replies timer
+Description=crawl yousuu books
 
 [Timer]
-OnCalendar=0/8:00:00
+OnCalendar=0/4:00:00
 RandomizedDelaySec=600
 OnBootSec=300
 Persistent=true
-Unit=ys-replies.service
+Unit=crawl-ysbooks.service
 
 [Install]
 WantedBy=timers.target

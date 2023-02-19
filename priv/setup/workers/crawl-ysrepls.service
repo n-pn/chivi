@@ -6,9 +6,9 @@ StartLimitIntervalSec=0
 [Service]
 Type=oneshot
 User=nipin
-WorkingDirectory=/home/nipin/srv/chivi.app/
-Environment=AMBER_ENV=production
-ExecStart=/home/nipin/srv/chivi.app/bin/ys_replies
+WorkingDirectory=/var/chivi
+Environment=CV_ENV=production
+ExecStart=/var/chivi/bin/ysrepl_crawl
 
 [Install]
 WantedBy=multi-user.target

@@ -1,12 +1,12 @@
 [Unit]
-Description=yousuu serial timer
+Description=yousuu replies timer
 
 [Timer]
-OnCalendar=0/4:00:00
+OnCalendar=0/8:00:00
 RandomizedDelaySec=600
 OnBootSec=300
 Persistent=true
-Unit=ys-serial.service
+Unit=crawl-ysrepls.service
 
 [Install]
 WantedBy=timers.target
