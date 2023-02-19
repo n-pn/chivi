@@ -81,7 +81,7 @@ class CV::YsuserCrawl
   end
 
   private def api_url(y_uid : Int32)
-    "https://api.yousuu.com/_db/user/#{y_uid}/info"
+    "https://api.yousuu.com/api/user/#{y_uid}/info"
   end
 
   #####################

@@ -7,10 +7,9 @@ function rsync-fast {
 DIR=var/ysraw
 SSH=nipin@ssh.chivi.app:/app/chivi
 
-rsync-fast "$SSH/var/proxy/.works" var/proxy
-
-rsync-fast "$SSH/var/ysapp/books.db" var/ysapp
 rsync-fast "$SSH/$DIR/books" "$DIR"
+rsync-fast "$SSH/var/proxy/.works" var/proxy
+rsync-fast "$SSH/var/ysapp/books.db" var/ysapp
 
 # rsync-fast "$SSH/$DIR/users" "$DIR"
 

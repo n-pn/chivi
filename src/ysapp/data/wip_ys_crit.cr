@@ -1,6 +1,6 @@
 # require "./_share"
 
-# class YS::Yscrit
+# class YS::YsCrit
 #   include DB::Serializable
 #   include JSON::Serializable
 

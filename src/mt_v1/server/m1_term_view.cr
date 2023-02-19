@@ -2,8 +2,9 @@ require "json"
 
 require "../data/v1_defn"
 require "../core/m1_dict"
+
 # require "../core/tl_name"
-require "../core/vp_hint"
+# require "../core/vp_hint"
 
 struct M1::M1TermView
   DIR = "var/vhint/detect"

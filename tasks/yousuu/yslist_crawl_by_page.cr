@@ -76,7 +76,7 @@ class CV::YslistCrawl
   end
 
   private def api_url(page = 1)
-    "https://api.yousuu.com/_db/booklists?type=#{@type}&screen=#{@screen}&page=#{page}&t=#{Time.utc.to_unix_ms}"
+    "https://api.yousuu.com/api/booklists?type=#{@type}&screen=#{@screen}&page=#{page}&t=#{Time.utc.to_unix_ms}"
   end
 
   ################

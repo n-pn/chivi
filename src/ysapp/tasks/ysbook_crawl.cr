@@ -1,10 +1,10 @@
+require "zstd"
 require "option_parser"
 
-require "../filedb/ys_book"
-require "../filedb/raw_ys_book"
+require "../_raw/raw_ys_book"
+require "../data/ys_book"
 
 require "../../_util/hash_util"
-require "../../_util/zstd_util"
 require "../../_util/proxy_client"
 
 class YS::CrawlYsbook
@@ -17,41 +17,27 @@ class YS::CrawlYsbook
 
     qsize = queue.size
     wsize = qsize
-    wsize = 12 if wsize > 12
+    wsize = 8 if wsize > 8
 
     puts "- loop: #{loops}, size: #{qsize}"
 
-    # workers = Channel(Int32).new(qsize)
+    workers = Channel(Int32).new(qsize)
     results = Channel(Int32?).new(wsize)
 
-    fails = [] of Int32
-
-    queue.each_with_index(1) do |b_id, idx|
+    wsize.times do
       spawn do
-        label = "<#{idx}/#{qsize}> [#{b_id}]"
-        results.send(crawl_book!(b_id, label: label))
+        loop do
+          # sleep 10.milliseconds
+          break unless b_id = workers.receive?
+          results.send(crawl_book!(b_id, label: "<#{qsize}> [#{b_id}]"))
+        end
       end
-
-      results.receive.try { |x| fails << x } if idx > wsize
     end
 
-    wsize.times { results.receive.try { |x| fails << x } }
+    queue.each { |id| workers.send(id) }
 
-    # spawn do
-    #   queue.each { |id| workers.send(id) }
-    # end
-
-    # wsize.times do
-    #   spawn do
-    #     loop do
-    #       # sleep 10.milliseconds
-    #       break unless b_id = workers.receive?
-    #       results.send(crawl_book!(b_id, label: "<#{qsize}> [#{b_id}]"))
-    #     end
-    #   end
-    # end
-
-    # qsize.times { results.receive.try { |x| fails << x } }
+    fails = [] of Int32
+    qsize.times { results.receive.try { |x| fails << x } }
 
     crawl!(fails, loops + 1)
   end
@@ -59,7 +45,8 @@ class YS::CrawlYsbook
   DIR = "var/ysraw/books"
 
   def crawl_book!(b_id : Int32, label = "-/-") : Int32?
-    link = "https://api.yousuu.com/_db/book/#{b_id}"
+    link = "https://api.yousuu.com/api/book/#{b_id}"
+    Log.info { "GET: #{link.colorize.magenta}" }
     return b_id unless json = @client.fetch!(link, label)
 
     save_raw_json(b_id, json)
@@ -68,23 +55,26 @@ class YS::CrawlYsbook
     YsBook.upsert!(fields, values)
 
     nil
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    nil
+  rescue ex
+    Log.error(exception: ex) { ex.colorize.red }
+    b_id
   end
 
-  private def save_raw_json(b_id : Int32, json : String)
-    Log.info { "#{b_id} saved.".colorize.green }
+  ZSTD = Zstd::Compress::Context.new(level: 3)
 
+  private def save_raw_json(b_id : Int32, json : String)
     fname = "#{b_id}-#{HashUtil.fnv_1a(json)}.json.zst"
     fpath = "#{DIR}/#{self.class.group_dir(b_id)}/#{fname}"
 
-    ZstdUtil.save_ctx(json, fpath)
+    File.write(fpath, ZSTD.compress(json.to_slice))
+    Log.info { "#{b_id} saved.".colorize.green }
   end
 
   def self.group_dir(b_id : Int32)
     (b_id // 1000).to_s.rjust(3, '0')
   end
+
+  #####
 
   enum Mode
     Head; Tail; Rand
@@ -92,7 +82,7 @@ class YS::CrawlYsbook
 
   def self.run!(argv = ARGV)
     min_book_id = 1
-    max_book_id = 270000
+    max_book_id = 295362
 
     reseed_proxies = false
     crawl_mode = Mode::Tail
@@ -110,7 +100,7 @@ class YS::CrawlYsbook
       opt.on("--reseed-proxies", "Refresh proxies from init lists") { reseed_proxies = true }
     end
 
-    queue = generate_queue(min_book_id, max_book_id)
+    queue = make_queue(min_book_id, max_book_id)
 
     case crawl_mode
     when .tail? then queue.reverse!
@@ -127,10 +117,13 @@ class YS::CrawlYsbook
     dirs.each { |dir| Dir.mkdir_p("#{DIR}/#{dir}") }
   end
 
-  def self.generate_queue(min = 1, max = 1)
+  def self.make_queue(min = 1, max = 1)
     queue = Set(Int32).new(min..max)
+
     YsBook.open_db do |db|
-      db.query_each "select id, cprio, ctime from books where id >= #{min} and id <= #{max}" do |rs|
+      sql = "select id, cprio, ctime from books where id >= ? and id <= ?"
+
+      db.query_each sql, min, max do |rs|
         id, cprio, ctime = rs.read(Int32, Int32, Int64)
         queue.delete(id) unless should_crawl?(cprio, ctime)
       end
