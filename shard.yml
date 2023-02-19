@@ -48,6 +48,9 @@ targets:
   ysuser_crawl:
     main: src/ysapp/tasks/ysuser_crawl.cr
 
+  yscrit_crawl_by_user:
+    main: src/ysapp/tasks/yscrit_crawl_by_user.cr
+
   ysrepl_crawl:
     main: tasks/yousuu/ysrepl_crawl.cr
 
