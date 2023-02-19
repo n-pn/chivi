@@ -74,12 +74,12 @@ class ProxyClient
     body = `curl -f -s -L -x #{proxy.host} -m 20 "#{link}"`
 
     if !$?.success? || body.empty?
-      Log.info { "#{label} failed, remain proxies: #{@proxies.size}".colorize.yellow }
+      Log.info { "- <#{label}> failed, remain proxies: #{@proxies.size}".colorize.yellow }
       add_proxy(proxy.count_ng!) unless proxy.already_ng?
       return nil
     end
 
-    Log.info { "#{label} successed.".colorize.green }
+    Log.info { "- <#{label}> successed.".colorize.green }
     File.open(@fpath, "a", &.puts(proxy.host))
 
     add_proxy(proxy.count_ok!)
