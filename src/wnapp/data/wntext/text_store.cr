@@ -68,9 +68,25 @@ module WN::TextStore
   # :ditto:
   @[AlwaysInline]
   def save_txt_file(txt_path : String, body_parts : Array(String)) : Nil
-    Dir.mkdir_p(File.dirname(txt_path))
     body = body_parts.join("\n\n").encode(ENCODING)
     File.write(txt_path, body, encoding: ENCODING)
+
+    zip_path = File.dirname(txt_path).sub("rgbks", "rzips") + ".zip"
+    `zip -jyoq '#{zip_path}' '#{txt_path}'`
+  rescue ex
+    Log.error(exception: ex) { ex.message }
+  end
+
+  def zip_one(sname : String, s_bid : Int32, txt_path : String)
+    zip_path = gen_zip_path(sname, s_bid)
+    `zip -jyoq '#{zip_path}' '#{txt_path}'`
+  end
+
+  def zip_all(sname : String, s_bid : Int32)
+    zip_path = gen_zip_path(sname, s_bid)
+    text_dir = "#{TXT_DIR}/#{sname}/#{s_bid}"
+
+    `zip -FSrjyoq '#{zip_path}' '#{text_dir}'`
   end
 
   #############

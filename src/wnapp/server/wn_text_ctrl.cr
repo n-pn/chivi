@@ -36,6 +36,7 @@ class WN::TextCtrl < AC::Base
     guard_sname_privi sname: sname
 
     wn_seed = get_wn_seed(wn_id, sname)
+    Dir.mkdir_p("var/texts/rgkbs/#{sname}/#{wn_seed.s_bid}")
 
     start = wn_seed.chap_total + 1 if start < 1
     ztext = request.body.not_nil!.gets_to_end
@@ -86,6 +87,8 @@ class WN::TextCtrl < AC::Base
 
     wn_seed = get_wn_seed(wn_id, sname)
     wn_chap = get_wn_chap(wn_seed, ch_no)
+
+    Dir.mkdir_p("var/texts/rgkbs/#{sname}/#{wn_seed.s_bid}")
 
     spawn do
       ChTextEdit.new({
