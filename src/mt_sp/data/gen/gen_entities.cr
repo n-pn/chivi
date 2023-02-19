@@ -22,9 +22,6 @@ end
 PRUNE = ARGV.includes?("--prune")
 
 books.each do |book|
-  SP::EntRelate.db.exec "begin"
-  SP::EntValue.db.exec "begin"
-
   inp_dir = File.join(DIR, book)
   next unless File.directory?(inp_dir)
 
@@ -46,7 +43,7 @@ books.each do |book|
       form, idx, etag = rows
       strio << form << '\t' << idx << '\t' << etag << '\n'
 
-      next unless (meaning = rows[4]?) && !meaning.empty?
+      next if !(meaning = rows[4]?) || meaning.empty?
 
       add_relates(form, etag, meaning, known_relates)
       add_values(form, etag, meaning, known_values)
@@ -57,9 +54,6 @@ books.each do |book|
 
     File.write(inp_file.sub(".tsv", ".ner"), strio.to_s)
   end
-
-  SP::EntRelate.db.exec "commit"
-  SP::EntValue.db.exec "commit"
 
   next unless PRUNE
 
