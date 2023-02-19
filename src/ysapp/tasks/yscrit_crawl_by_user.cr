@@ -75,7 +75,9 @@ class YS::CrawlYscritByUser
     File.write(fpath, ZSTD.compress(json.to_slice))
 
     hashed = HashUtil.encode32 HashUtil.fnv_1a(json)
-    File.copy(fpath, fpath.sub(".json.zst", "#{hashed}.json.zst"))
+    hashed_path = fpath.sub(".json.zst", ".#{hashed}.json.zst")
+
+    File.copy(fpath, hashed_path) unless File.file?(hashed_path)
 
     Log.info { "#{u_id} saved.".colorize.green }
   end
