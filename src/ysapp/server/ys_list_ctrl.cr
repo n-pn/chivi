@@ -1,4 +1,5 @@
 require "./_ys_ctrl_base"
+require "../../_util/text_util"
 
 class YS::ListCtrl < AC::Base
   base "/_ys"
@@ -11,7 +12,11 @@ class YS::ListCtrl < AC::Base
     pg_no, limit, offset = _paginate(max: 24)
 
     query = Yslist.sort_by(sort)
-    query.filter_string(qs) if qs
+
+    if qs
+      qs = TextUtil.slugify(qs)
+      query.where("vslug LIKE '%-#{qs}-%'")
+    end
 
     query.where("ysuser_id = ?", user.split('-', 2)[0]) if user
     query.where("klass = ?", type) if type
