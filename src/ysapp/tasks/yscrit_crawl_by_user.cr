@@ -74,7 +74,7 @@ class YS::CrawlYscritByUser
   private def save_raw_json(u_id : Int32, json : String, fpath : String)
     File.write(fpath, ZSTD.compress(json.to_slice))
 
-    hashed = HashUtil.fnv_1a(json)
+    hashed = HashUtil.encode32 HashUtil.fnv_1a(json)
     File.copy(fpath, fpath.sub(".json.zst", "#{hashed}.json.zst"))
 
     Log.info { "#{u_id} saved.".colorize.green }

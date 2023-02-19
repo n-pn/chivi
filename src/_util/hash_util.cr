@@ -40,7 +40,7 @@ module HashUtil
   }
 
   # convert integer to zbase32
-  def encode32(number : Int32 | Int64)
+  def encode32(number : Int32 | Int64 | UInt32)
     buffer = String::Builder.new
 
     while number >= 32
@@ -82,7 +82,7 @@ module HashUtil
   PRIME =   16777619_u32
   MASK  = 4294967295_u32
 
-  def fnv_1a(inp : String)
+  def fnv_1a(inp : String) : UInt32
     hash = BASIS
 
     inp.each_byte do |byte|

@@ -7,6 +7,8 @@ require "../data/ys_book"
 require "../../_util/hash_util"
 require "../../_util/proxy_client"
 
+Log.setup(:info)
+
 class YS::CrawlYsbook
   def initialize(reseed_proxies = false)
     @client = ProxyClient.new(reseed_proxies)
@@ -63,10 +65,14 @@ class YS::CrawlYsbook
   ZSTD = Zstd::Compress::Context.new(level: 3)
 
   private def save_raw_json(b_id : Int32, json : String)
-    fname = "#{b_id}-#{HashUtil.fnv_1a(json)}.json.zst"
-    fpath = "#{DIR}/#{self.class.group_dir(b_id)}/#{fname}"
+    group = self.class.group_dir(b_id)
+    fpath = "#{DIR}/#{group}/#{b_id}.json.zst"
 
     File.write(fpath, ZSTD.compress(json.to_slice))
+
+    hashed = HashUtil.encode32 HashUtil.fnv_1a(json)
+    File.copy(fpath, fpath.sub(".json.zst", ".#{hashed}.json.zst"))
+
     Log.info { "#{b_id} saved.".colorize.green }
   end
 
