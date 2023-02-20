@@ -22,12 +22,12 @@ class SP::TranCtrl < AC::Base
     res.status_code = 200
     res.content_type = "text/plain; charset=utf-8"
 
-    engine = Engine.hanviet
+    engine = MtCore.sino_vi
 
     input = request.body.not_nil!.gets_to_end
     input.lines.each_with_index do |line, idx|
       res << '\n' if idx > 0
-      data = engine.convert(line)
+      data = engine.tokenize(line)
       mode == "txt" ? data.to_txt(res, cap: cap_first) : data.to_mtl(res, cap: cap_first)
     end
   end

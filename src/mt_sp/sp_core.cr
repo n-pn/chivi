@@ -5,6 +5,14 @@ class SP::MtCore
   class_getter sino_vi : self { new(MtDict.sino_vi) }
   class_getter pin_yin : self { new(MtDict.pin_yin) }
 
+  def self.tl_sinovi(str : String, cap : Bool = false)
+    self.sino_vi.tokenize(str).to_txt(cap: cap)
+  end
+
+  def self.tl_pinyin(str : String, cap : Bool = false)
+    self.pin_yin.tokenize(str).to_txt(cap: cap)
+  end
+
   def initialize(@dict : MtDict)
   end
 

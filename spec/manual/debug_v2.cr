@@ -5,7 +5,7 @@ text = ARGV[0]? || "泽林有些意外的看着这位吸血鬼。"
 book = ARGV[1]? || "-ty24ejjk"
 
 time = Time.monotonic
-mtl = M2::Engine.new(book: book)
+mtl = M2::MtCore.new(book: book)
 res = mtl.cv_plain(text)
 
 res.inspect(STDOUT)
@@ -15,7 +15,7 @@ puts "-----".colorize.dark_gray
 puts res.to_txt.colorize.light_yellow
 puts "-----".colorize.dark_gray
 
-puts SP::Engine.hanviet.convert(text).to_txt(cap: true).colorize.green
+puts SP::MtCore.tl_sinovi(k, cap: true).colorize.green
 puts "-----".colorize.dark_gray
 
 # puts TL::Engine.binh_am.convert(text).to_txt(cap: false).colorize.green

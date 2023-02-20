@@ -45,12 +45,12 @@ module SP::SpNers
   end
 
   def scan_all(nodes : Array(MtNode), index = 0)
-    output = Array(MtNode?).new(nodes.size, nil)
+    output = Array(MtNode?).new(size: nodes.size, value: nil)
 
     while index < nodes.size
       if node = scan_best(nodes, index)
-        index &+= node.size
         output[index] = node
+        index &+= node.size
       else
         index &+= 1
       end
@@ -64,10 +64,9 @@ module SP::SpNers
     kind = Kind.map(node)
     return if kind.err?
 
-    max = nodes.size &- 1
     prop = node.prop
 
-    while index < max
+    while index < nodes.size
       index &+= 1
 
       curr = nodes.unsafe_fetch(index)
@@ -77,11 +76,11 @@ module SP::SpNers
       prop = kind.map_prop(prop)
     end
 
-    size = index &- node.size &- 1
+    size = index &- node.idx
     return unless size > 1
 
     val = String.build do |str|
-      (node.idx &+ 1).upto(index &- 1) do |i|
+      node.idx.upto(index &- 1) do |i|
         str << nodes.unsafe_fetch(i).val
       end
     end

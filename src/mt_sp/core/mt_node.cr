@@ -42,8 +42,10 @@ struct SP::MtNode
   def cap_val(cap : Bool = true)
     return @val unless cap && @prop.content?
 
-    String.build(@val.size) do |io|
-      io << @val[0].upcase << @val[1..]
+    String.build(@val.bytesize) do |io|
+      @val.each_char_with_index do |char, i|
+        io << (i == 0 ? char.upcase : char)
+      end
     end
   end
 end

@@ -12,7 +12,7 @@ enum SP::MtProp
   Content
 
   @@known = {
-    ' '  => NoSpaceL | NoSpaceR,
+    ' '  => NoSpaceL | NoSpaceR | CapAfter,
     '.'  => CapAfter | NoSpaceL | UrlPart,
     '!'  => CapAfter | NoSpaceL | UrlPart,
     '?'  => CapAfter | NoSpaceL | UrlPart,
@@ -54,9 +54,12 @@ enum SP::MtProp
 
   def self.map(char : Char)
     case char
-    when 'a'..'z', 'A'..'Z' then StrPart | UrlPart
-    when '0'..'9', '_'      then IntPart | StrPart | UrlPart
-    else                         @@known[char]? || Content
+    when 'a'..'z', 'A'..'Z'
+      StrPart | UrlPart
+    when '0'..'9', '_'
+      IntPart | StrPart | UrlPart
+    else
+      @@known[char]? || Content
     end
   end
 end
