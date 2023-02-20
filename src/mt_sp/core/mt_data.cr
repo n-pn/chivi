@@ -1,6 +1,6 @@
-require "./sp_node"
+require "./mt_node"
 
-class SP::MtData < Deque(SP::MtNode)
+class SP::MtData < Array(SP::MtNode)
   def to_txt(cap : Bool = true) : String
     String.build { |io| to_txt(io, cap: cap) }
   end
@@ -30,6 +30,6 @@ class SP::MtData < Deque(SP::MtNode)
   end
 
   private def no_space?(prev : MtNode, node : MtNode)
-    prev.tag.no_space_r? || node.tag.no_space_l?
+    prev.prop.no_space_r? || node.prop.no_space_l?
   end
 end

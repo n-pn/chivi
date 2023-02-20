@@ -269,9 +269,7 @@
     position: relative;
     padding-right: 0.375rem;
     transform: translateY(-0.125rem);
-    // margin-bottom: 0.25rem;
 
-    // padding-bottom: 0.25rem;
     > span {
       display: inline-block;
       position: absolute;
@@ -280,7 +278,7 @@
 
       right: 0rem;
       bottom: 0.25rem;
-      opacity: 0.5;
+      opacity: 0.6;
     }
   }
 

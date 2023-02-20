@@ -6,7 +6,7 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Vhint from './TranHint.svelte'
-  import Vutil from './Vutil.svelte'
+  import Vutil from './TranUtil.svelte'
   import { rel_time } from '$utils/time_utils'
 
   const save_modes = [

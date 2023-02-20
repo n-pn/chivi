@@ -49,14 +49,16 @@
 
   import Postag from './Postag.svelte'
 
-  import Hanzi from './Upsert/Hanzi.svelte'
+  import Header from './Upsert/Header.svelte'
 
   import Emend from './Upsert/Emend.svelte'
+
+  import TranHint from './Upsert/TranHint.svelte'
+  import TranUtil from './Upsert/TranUtil.svelte'
+
   import SegRank from './Upsert/SegRank.svelte'
-  import Vutil from './Upsert/Vutil.svelte'
 
   import Footer from './Upsert/Footer.svelte'
-  import TranHint from './Upsert/TranHint.svelte'
 
   export let on_change = () => {}
   export let on_destroy = () => {}
@@ -157,7 +159,7 @@
       </svelte:fragment>
     </Gmenu>
 
-    <Hanzi pinyin={data.pin_yin} bind:output={key} />
+    <Header pinyin={data.pin_yin} bind:output={key} />
 
     <button
       type="button"
@@ -217,7 +219,7 @@
           </button>
         </div>
 
-        <Vutil bind:form />
+        <TranUtil bind:form />
       </upsert-main>
 
       <upsert-foot>
