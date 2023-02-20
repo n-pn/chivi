@@ -113,11 +113,11 @@ module CV::BookUtil
   end
 
   def cv_lines(lines : Array(String), udict : String = "combine", mode : RenderMode = :text) : String
-    mt_v2 = MtCore.generic_mtl(udict)
+    cvmtl = M1::MtCore.init(udict)
 
     String.build do |io|
       lines.each_with_index do |line, idx|
-        mt_list = mt_v2.cv_plain(line)
+        mt_list = cvmtl.cv_plain(line)
         io << '\n' if idx > 0
 
         case mode
@@ -146,14 +146,14 @@ module CV::BookUtil
   end
 
   def btitle_vname_mtl(zname : String, bdict : String) : String
-    mt_v2 = MtCore.generic_mtl(bdict)
+    cvmtl = M1::MtCore.init(bdict)
 
     NAME_PREFIXES.each do |key, val|
       next unless zname.starts_with?(key)
-      return val + mt_v2.translate(zname[key.size..])
+      return val + cvmtl.translate(zname[key.size..])
     end
 
-    mt_v2.translate(zname)
+    cvmtl.translate(zname)
   end
 
   NAME_PREFIXES = {

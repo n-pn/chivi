@@ -5,7 +5,7 @@ require "./mt_core/*"
 require "../data/v1_dict"
 
 class M1::MtCore
-  def self.generic_mtl(udic : Int32 = 0, user : String = "", temp : Bool = false, init : Bool = false) : self
+  def self.init(udic : Int32 = 0, user : String = "", temp : Bool = false, init : Bool = false) : self
     dicts = [MtDict.regular_main]
 
     dicts << MtDict.regular_temp if temp
@@ -20,12 +20,8 @@ class M1::MtCore
     new(dicts)
   end
 
-  def self.load(dname : String, temp : Bool = false, user : String = "") : self
-    case dname
-    when "pin_yin" then pin_yin_mtl
-    when "hanviet" then hanviet_mtl
-    else                generic_mtl(DbDict.get_id(dname), temp: temp, user: user)
-    end
+  def self.init(dname : String, temp : Bool = false, user : String = "") : self
+    init(DbDict.get_id(dname), temp: temp, user: user)
   end
 
   def self.convert(input : String, dname = "combine") : String

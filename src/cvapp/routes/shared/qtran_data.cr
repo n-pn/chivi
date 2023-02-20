@@ -141,8 +141,9 @@ class CV::QtranData
     end
   end
 
-  def make_engine(user : String = "", with_temp : Bool = false) : MtCore
-    MtCore.generic_mtl(@dname, user, with_temp)
+  def make_engine(user : String = "", with_temp : Bool = false)
+    wn_id = M1::DbDict.get_id(@dname)
+    M1::MtCore.generic_mtl(wn_id, user, with_temp)
   end
 
   def print_mtl(engine, output : IO,

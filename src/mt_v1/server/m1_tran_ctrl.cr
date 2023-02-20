@@ -15,7 +15,7 @@ class M1::TranCtrl < AC::Base
     w_temp = cookies["w_temp"]?.try(&.value) || "t"
     w_init = cookies["w_init"]?.try(&.value) || "t"
 
-    engine = MtCore.generic_mtl(wn_id, user: _uname, temp: w_temp == "t", init: w_init == "t")
+    engine = MtCore.init(wn_id, user: _uname, temp: w_temp == "t", init: w_init == "t")
 
     input = request.body.not_nil!.gets_to_end
     render_title = RenderTitle.parse(cv_title)
@@ -51,11 +51,11 @@ class M1::TranCtrl < AC::Base
   @[AC::Route::POST("/tl_mulu")]
   def tl_mulu(wn_id : Int32 = 0)
     input = request.body.not_nil!.gets_to_end
-    engine = MtCore.generic_mtl(wn_id)
+    cvmtl = MtCore.init(wn_id)
 
     output = String.build do |str|
       input.each_line do |line|
-        engine.cv_title(line).to_txt(str) unless line.empty?
+        cvmtl.cv_title(line).to_txt(str) unless line.empty?
         str << '\n'
       end
     end
