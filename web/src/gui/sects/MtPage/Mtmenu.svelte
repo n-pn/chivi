@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { onMount, onDestroy } from 'svelte'
+  import { onMount } from 'svelte'
   import { writable } from 'svelte/store'
   import { ztext, zfrom, zupto } from '$lib/stores'
 
@@ -82,8 +82,8 @@
 
   onMount(() => {
     setTimeout(() => article.addEventListener('mouseup', handle_mouse), 40)
+    return () => article?.removeEventListener('mouseup', handle_mouse)
   })
-  onDestroy(() => article?.removeEventListener('mouseup', handle_mouse))
 
   function handle_mouse({ target, which }) {
     if (which == 3 || fix_raw) return // return if is right click
@@ -109,7 +109,7 @@
   }
 
   function handle_keydown(event: KeyboardEvent) {
-    if (article != document.activeElement) return
+    if (!$ctrl.actived) return
 
     switch (event.key) {
       case 'Escape':
@@ -142,9 +142,7 @@
     }
   }
 
-  function show_upsert(no_guess = true) {
-    return setTimeout(() => upsert.show(0), 20)
-  }
+  const show_upsert = (_no_guess = true) => setTimeout(() => upsert.show(0), 20)
 
   function find_nearest_nodes(line: HTMLElement, idx: number, max: number) {
     if (idx >= max) idx = max - 1
@@ -315,46 +313,45 @@
   class="menu"
   class:_show={$ctrl.actived}
   style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
   <button
-    class="navi"
+    class="btn"
     data-kbd="⇧←"
     data-tip="Mở sang trái"
-    on:click|capture={() => move_left(true, 500)}>
+    on:click|capture|stopPropagation={() => move_left(true, 500)}>
     <SIcon name="arrow-left-square" />
+  </button>
 
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <button
-      data-kbd="&bsol;"
-      data-key="Backslash"
-      data-tip="Tra từ"
-      on:click|capture={() => lookup.show(true)}>
-      <SIcon name="search" />
-    </button>
+  <button
+    class="btn"
+    data-kbd="&bsol;"
+    data-key="Backslash"
+    data-tip="Tra từ"
+    on:click|capture|stopPropagation={() => lookup.show(true)}>
+    <SIcon name="search" />
+  </button>
 
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <button
-      data-kbd="↵"
-      data-tip="Thêm sửa từ"
-      on:click|capture={() => show_upsert()}>
-      <SIcon name="circle-plus" />
-    </button>
+  <button
+    class="btn"
+    data-kbd="↵"
+    data-tip="Thêm sửa từ"
+    on:click|capture|stopPropagation={() => show_upsert()}>
+    <SIcon name="circle-plus" />
+  </button>
 
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <button
-      data-kbd="-"
-      data-tip="Sửa text gốc"
-      on:click|capture={() => (fix_raw = true)}>
-      <SIcon name="edit" />
-    </button>
+  <button
+    class="btn"
+    data-kbd="-"
+    data-tip="Sửa text gốc"
+    on:click|capture|stopPropagation={() => (fix_raw = true)}>
+    <SIcon name="edit" />
+  </button>
 
-    <button
-      class="navi"
-      data-kbd="⇧→"
-      data-tip="Mở sang phải"
-      on:click|capture={() => move_right(true, 500)}>
-      <SIcon name="arrow-right-square" />
-    </button>
+  <button
+    class="btn"
+    data-kbd="⇧→"
+    data-tip="Mở sang phải"
+    on:click|capture|stopPropagation={() => move_right(true, 500)}>
+    <SIcon name="arrow-right-square" />
   </button>
 </div>
 
@@ -405,16 +402,25 @@
     }
   }
 
-  // prettier-ignore
-  button {
-    @include flex-ca;
-    cursor: pointer;
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     height: 100%;
-    width: $width;
+    flex: 1;
+
+    background: none;
     @include fgcolor(white);
 
-    &:hover { @include fgcolor(primary, 2); }
-    &:first-child { @include bdradi($loc: left); }
-    &:last-child { @include bdradi($loc: right); }
+    &:hover {
+      @include fgcolor(primary, 2);
+    }
+    &:first-child {
+      @include bdradi($loc: left);
+    }
+    &:last-child {
+      @include bdradi($loc: right);
+    }
   }
 </style>

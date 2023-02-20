@@ -65,7 +65,9 @@ const mapping = [
 ]
 
 export const related_words = (ztext: string, zfrom: number, zupto: number) => {
-  return mapping.map(([x, y]) => ztext.substring(zfrom + x, zupto + y))
+  return mapping
+    .map(([x, y]) => ztext.substring(zfrom + x, zupto + y))
+    .filter(Boolean)
 }
 
 export class VpForm {

@@ -76,9 +76,7 @@
 
 <article
   class="article island app-fs-{$config.ftsize} app-ff-{$config.ftface}"
-  tabindex="-1"
   style:--textlh="{$config.textlh}%"
-  on:blur={mtmenu.hide}
   bind:this={article}>
   <header>
     <span class="stats" data-tip="Phiên bản máy dịch">
