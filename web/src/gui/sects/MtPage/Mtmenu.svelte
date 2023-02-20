@@ -311,54 +311,51 @@
 
 <svelte:window on:keydown={handle_keydown} />
 
-{#if $ctrl.actived}
-  <cv-menu style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
+<div
+  class="menu"
+  class:_show={$ctrl.actived}
+  style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <button
+    class="navi"
+    data-kbd="⇧←"
+    data-tip="Mở sang trái"
+    on:click|capture={() => move_left(true, 500)}>
+    <SIcon name="arrow-left-square" />
+
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <cv-item
+    <button
+      data-kbd="&bsol;"
+      data-key="Backslash"
+      data-tip="Tra từ"
+      on:click|capture={() => lookup.show(true)}>
+      <SIcon name="search" />
+    </button>
+
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <button
+      data-kbd="↵"
+      data-tip="Thêm sửa từ"
+      on:click|capture={() => show_upsert()}>
+      <SIcon name="circle-plus" />
+    </button>
+
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <button
+      data-kbd="-"
+      data-tip="Sửa text gốc"
+      on:click|capture={() => (fix_raw = true)}>
+      <SIcon name="edit" />
+    </button>
+
+    <button
       class="navi"
-      data-kbd="⇧←"
-      data-tip="Mở sang trái"
-      on:click|capture={() => move_left(true, 500)}>
-      <SIcon name="arrow-left-square" />
-
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <cv-item
-        data-kbd="&bsol;"
-        data-key="Backslash"
-        data-tip="Tra từ"
-        on:click|capture={() => lookup.show(true)}>
-        <SIcon name="search" />
-      </cv-item>
-
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <cv-item
-        data-kbd="↵"
-        data-tip="Thêm sửa từ"
-        on:click|capture={show_upsert}>
-        <SIcon name="circle-plus" />
-      </cv-item>
-
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <cv-item
-        data-kbd="-"
-        data-tip="Sửa text gốc"
-        on:click|capture={() => (fix_raw = true)}>
-        <SIcon name="edit" />
-      </cv-item>
-
-      <cv-item
-        class="navi"
-        data-kbd="⇧→"
-        data-tip="Mở sang phải"
-        on:click|capture={() => move_right(true, 500)}>
-        <SIcon name="arrow-right-square" />
-      </cv-item>
-    </cv-item></cv-menu>
-{/if}
-
-<div hidden>
-  <button data-kbd="x" on:click={() => upsert.show(0)}>X</button>
-  <button data-kbd="c" on:click={() => upsert.show(1)}>C</button>
+      data-kbd="⇧→"
+      data-tip="Mở sang phải"
+      on:click|capture={() => move_right(true, 500)}>
+      <SIcon name="arrow-right-square" />
+    </button>
+  </button>
 </div>
 
 {#if $lookup.enabled || $lookup.actived}<Lookup {on_destroy} />{/if}
@@ -368,8 +365,8 @@
   $width: 1.875rem;
   $height: 2.25rem;
 
-  cv-menu {
-    @include flex();
+  .menu {
+    display: none;
 
     height: $height;
     z-index: 40;
@@ -390,6 +387,10 @@
     // prettier-ignore
     // @include tm-dark { --bgc: #{color(primary, 4)}; }
 
+    &._show {
+      @include flex();
+    }
+
     &:before {
       display: block;
       position: absolute;
@@ -405,7 +406,7 @@
   }
 
   // prettier-ignore
-  cv-item {
+  button {
     @include flex-ca;
     cursor: pointer;
     height: 100%;

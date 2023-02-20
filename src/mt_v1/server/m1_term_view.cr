@@ -1,17 +1,16 @@
 require "json"
 
+require "../../mt_sp/sp_core"
+
 require "../data/v1_defn"
 require "../core/m1_dict"
-require "../../mt_sp/mt_core"
 
 # require "../core/tl_name"
 # require "../core/vp_hint"
 
 struct M1::M1TermView
-
   getter defns : Hash(String, Array(DbDefn))
 
-  SINO_VI = .sno
   def initialize(@words : Array(String), @uname : String, @wn_id : Int32, @w_temp = true)
     @defns = DbDefn.repo.open_db do |db|
       sql = String.build do |str|
