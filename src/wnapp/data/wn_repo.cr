@@ -1,13 +1,16 @@
+require "http/client"
+
 require "sqlite3"
-require "../../mt_v1/core/m1_core"
 require "./wn_chap"
 
 class WN::WnRepo
   getter db_path : String
 
   def initialize(@db_path, wn_id : Int32)
-    init_db(self.class.init_sql) unless File.file?(db_path)
-    @cvmtl = M1::MtCore.generic_mtl(wn_id)
+    @tl_api = "http://127.0.0.1:5110/_m1/qtran/tl_mulu?wn_id=#{wn_id}"
+    return if File.file?(db_path)
+
+    init_db(self.class.init_sql)
     self.translate!
   end
 
@@ -21,6 +24,9 @@ class WN::WnRepo
       db.exec "begin"
       yield db
       db.exec "commit"
+    rescue ex
+      db.close
+      raise ex
     end
   end
 
@@ -51,19 +57,38 @@ class WN::WnRepo
     end
   end
 
+  SELECT_RAW_SQL = <<-SQL
+    select title, chdiv, ch_no from chaps
+    where ch_no >= ? and ch_no <= ?
+  SQL
+
   def translate!(min = 1, max = 99999)
     open_tx do |db|
-      query = <<-SQL
-        select title, chdiv, ch_no from chaps
-        where ch_no >= ? and ch_no <= ?
-      SQL
+      ch_nos = [] of Int32
+      buffer = String::Builder.new
 
-      raws = db.query_all(query, min, max, as: {String, String, Int32})
-
-      raws.each do |ztitle, zchdiv, ch_no|
-        upsert_trans(db, ztitle, zchdiv, ch_no)
+      db.query_each(SELECT_RAW_SQL, min, max) do |rs|
+        buffer << rs.read(String) << '\n' # read title
+        buffer << rs.read(String) << '\n' # read chdiv
+        ch_nos << rs.read(Int32)          # read ch_no
       end
+
+      translated = tl_mulu(buffer.to_s).lines
+
+      ch_nos.each_with_index do |ch_no, idx|
+        break unless vtitle = translated[idx * 2]?
+        break unless vchdiv = translated[idx * 2 + 1]?
+
+        update_vnames!(db, vtitle, vchdiv, ch_no)
+      end
+    rescue ex
+      Log.info { @db_path.colorize.red }
+      Log.error(exception: ex) { ex.message.colorize.red }
     end
+  end
+
+  private def tl_mulu(body : String) : String
+    HTTP::Client.post(@tl_api, body: body, &.body_io.gets_to_end) rescue ""
   end
 
   def all(pg_no : Int32 = 1, limit = 32) : Array(WnChap)
@@ -118,32 +143,42 @@ class WN::WnRepo
   end
 
   def upsert_chap_infos(chapters : Enumerable(WnChap))
+    sql = upsert_sql(WnChap::INFO_FIELDS, unsafe: true)
+
     open_tx do |db|
-      query = upsert_sql(WnChap::INFO_FIELDS, unsafe: true)
+      buffer = String::Builder.new
 
       chapters.each do |chap|
-        db.exec query, *chap.info_values
-        upsert_trans(db, chap.title, chap.chdiv, chap.ch_no)
+        db.exec sql, *chap.info_values
+        buffer << chap.title << '\n' << chap.chdiv << '\n'
+      end
+
+      translated = tl_mulu(buffer.to_s).lines
+
+      chapters.each_with_index do |chap, idx|
+        break unless vtitle = translated[idx * 2]?
+        break unless vchdiv = translated[idx * 2 + 1]?
+
+        update_vnames!(db, vtitle, vchdiv, chap.ch_no)
       end
     end
   end
 
   def upsert_chap_full(chap : WnChap)
+    sql = upsert_sql(WnChap::FULL_FIELDS, unsafe: false)
+
     open_tx do |db|
-      query = upsert_sql(WnChap::FULL_FIELDS, unsafe: false)
-      db.exec query, *chap.full_values
-      upsert_trans(db, chap.title, chap.chdiv, chap.ch_no)
+      db.exec sql, *chap.full_values
+      translated = tl_mulu("#{chap.title}\n#{chap.chdiv}").lines
+      break if translated.size < 2
+      update_vnames!(db, translated[0], translated[1], chap.ch_no)
     end
   end
 
-  private def upsert_trans(db, ztitle : String, zchdiv : String, ch_no : Int32)
-    return if ztitle.empty?
+  UPDATE_VI_SQL = "update chaps set vtitle = ?, vchdiv = ? where ch_no = ?"
 
-    vtitle = @cvmtl.cv_title(ztitle).to_txt
-    vchdiv = zchdiv.blank? ? "" : @cvmtl.cv_title(zchdiv).to_txt
-
-    query = "update chaps set vtitle = ?, vchdiv = ? where ch_no = ?"
-    db.exec query, vtitle, vchdiv, ch_no
+  private def update_vnames!(db, vtitle : String, vchdiv : String, ch_no : Int32)
+    db.exec(UPDATE_VI_SQL, vtitle, vchdiv, ch_no)
   end
 
   ###
@@ -192,13 +227,13 @@ class WN::WnRepo
 
   @[AlwaysInline]
   def self.load(db_path : String, wn_id : Int32)
-    CACHE[db_path] ||= new(db_path, wn_id)
+    CACHE[db_path] ||= new(db_path, wn_id: wn_id)
   end
 
   @[AlwaysInline]
   def self.load(sname : String, s_bid : Int32, wn_id : Int32)
     db_path = self.db_path(sname, s_bid)
-    self.load(db_path, wn_id)
+    self.load(db_path, wn_id: wn_id)
   end
 
   ###

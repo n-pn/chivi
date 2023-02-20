@@ -41,6 +41,12 @@
     }
   }
 
+  const reconvert = async () => {
+    const api = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}/reconvert`
+    const time = await fetch(api).then((r) => r.text())
+    console.log(`time to reconvert: ${time}`)
+  }
+
   $: [can_upsert, can_reload] = check_edit_privi(
     curr_seed.sname,
     seed_data.edit_privi,
@@ -122,6 +128,14 @@
             <SIcon name="download" />
             <span>Tải xuống</span>
           </a>
+
+          <button
+            class="gmenu-item"
+            class:_disable={data._user.privi < 0}
+            on:click={reconvert}>
+            <SIcon name="language" />
+            <span>Dịch lại</span>
+          </button>
         </svelte:fragment>
       </Gmenu>
     </info-right>

@@ -47,4 +47,19 @@ class M1::TranCtrl < AC::Base
 
     render text: output
   end
+
+  @[AC::Route::POST("/tl_mulu")]
+  def tl_mulu(wn_id : Int32 = 0)
+    input = request.body.not_nil!.gets_to_end
+    engine = MtCore.generic_mtl(wn_id)
+
+    output = String.build do |str|
+      input.each_line do |line|
+        engine.cv_title(line).to_txt(str) unless line.empty?
+        str << '\n'
+      end
+    end
+
+    render text: output
+  end
 end

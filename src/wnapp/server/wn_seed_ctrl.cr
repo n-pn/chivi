@@ -93,6 +93,15 @@ class WN::SeedCtrl < AC::Base
     render json: wn_seed
   end
 
+  @[AC::Route::GET("/:wn_id/:sname/reconvert")]
+  def reconvert(wn_id : Int32, sname : String, min = 1, max = 99999)
+    guard_privi 0, "dịch lại danh sách chương tiết"
+
+    wn_seed = get_wn_seed(wn_id, sname)
+    tdiff = Time.measure { wn_seed.chaps.translate!(min, max) }
+    render text: "#{tdiff.total_milliseconds.round}ms"
+  end
+
   struct UpdateForm
     include JSON::Serializable
 
