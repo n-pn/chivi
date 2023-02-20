@@ -102,9 +102,9 @@ abstract class CrawlTask
     File.write(entry.path, ZSTD.compress(json.to_slice))
 
     hash = HashUtil.encode32(HashUtil.fnv_1a(json))
-    hash_path = entry.path.sub(".json.zst", ".#{hash}.json.zst")
+    hash_path = entry.path.sub("latest", hash)
 
-    File.link(entry.path, hash_path) unless File.file?(hash_path)
+    File.copy(entry.path, hash_path) unless File.file?(hash_path)
 
     puts "  [#{entry.path}] saved.".colorize.green
   end

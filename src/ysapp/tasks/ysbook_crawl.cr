@@ -18,7 +18,7 @@ class YS::CrawlYsbook < CrawlTask
 
   def self.gen_path(b_id : Int32)
     group = (b_id // 1000).to_s.rjust(3, '0')
-    "#{DIR}/#{group}/#{b_id}.json.zst"
+    "#{DIR}/#{group}/#{b_id}.latest.json.zst"
   end
 
   #####

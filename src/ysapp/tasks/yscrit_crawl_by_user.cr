@@ -30,7 +30,7 @@ class YS::CrawlYscritByUser < CrawlTask
   DIR = "var/ysraw/crits-by-user"
 
   def self.gen_path(u_id : Int32, page : Int32 = 1)
-    "#{DIR}/#{u_id}/#{page}.json.zst"
+    "#{DIR}/#{u_id}/#{page}.latest.json.zst"
   end
 
   ################

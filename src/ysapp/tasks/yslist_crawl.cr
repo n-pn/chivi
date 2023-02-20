@@ -43,7 +43,7 @@ class CV::YslistCrawl < CrawlTask
 
   def self.gen_path(uuid : String)
     group = uuid[0..3]
-    "#{DIR}/#{group}/#{uuid}.json"
+    "#{DIR}/#{group}/#{uuid}.latest.json"
   end
 
   def self.run!(argv = ARGV)

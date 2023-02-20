@@ -18,7 +18,7 @@ class YS::CrawlYsuser < CrawlTask
   Dir.mkdir_p(DIR)
 
   def self.gen_path(u_id : Int32)
-    "#{DIR}/#{u_id}.json.zst"
+    "#{DIR}/#{u_id}.latest.json.zst"
   end
 
   def self.run!(argv = ARGV)
