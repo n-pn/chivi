@@ -1,7 +1,7 @@
 require "./zhinfo_data"
 
 class CV::RemoteSeed
-  INP_DIR = "_db/.cache/"
+  INP_DIR = "var/.html/"
   OUT_DIR = "var/zhinfos"
 
   getter data : ZhinfoData
