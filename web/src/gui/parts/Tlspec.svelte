@@ -5,9 +5,9 @@
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
   const entry = {
-    ...writable({ _ukey: '', match: '', extra: '', mt_v2: '' }),
+    ...writable({ _ukey: '', match: '', extra: '', cvmtl: '' }),
     reset() {
-      this.set({ match: '', extra: '', mt_v2: '' })
+      this.set({ match: '', extra: '', cvmtl: '' })
     },
   }
 
@@ -34,7 +34,7 @@
 </script>
 
 <script lang="ts">
-  import { gtran } from '$lib/trans'
+  import { gtran } from '$utils/qtran_utils'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
@@ -62,13 +62,13 @@
     if (!input) return
 
     const path = api_path('tlspec.qtran')
-    const body = { input, dname: $vdict.dname }
+    const body = { input, vd_id: $vdict.vd_id }
     const data = await api_call(path, body, 'PUT')
 
     const [convert, hanviet] = data.split('\n')
-    if (!$entry.match || $entry.match == $entry.mt_v2) $entry.match = convert
+    if (!$entry.match || $entry.match == $entry.cvmtl) $entry.match = convert
 
-    $entry.mt_v2 = convert
+    $entry.cvmtl = convert
     hvmtl = hanviet
 
     setTimeout(() => {
@@ -131,8 +131,8 @@
     navigator.clipboard.writeText(input)
   }
 
-  function appy_mt_v2() {
-    $entry.match = $entry.mt_v2
+  function appy_cvmtl() {
+    $entry.match = $entry.cvmtl
     match_elem.focus()
   }
 
@@ -210,8 +210,8 @@
         {/each}
       </tlspec-hanzi>
 
-      <tlspec-mt_v2>{hvmtl}</tlspec-mt_v2>
-      <tlspec-mt_v2>{$entry.mt_v2}</tlspec-mt_v2>
+      <tlspec-cvmtl>{hvmtl}</tlspec-cvmtl>
+      <tlspec-cvmtl>{$entry.cvmtl}</tlspec-cvmtl>
     </tlspec-input>
 
     <form
@@ -244,7 +244,7 @@
             </a>
             <button
               type="button"
-              on:click={appy_mt_v2}
+              on:click={appy_cvmtl}
               data-tip="Copy từ kết quả dịch máy">
               <SIcon name="copy" />
             </button>
@@ -357,7 +357,7 @@
     @include ftsize(lg);
   }
 
-  tlspec-mt_v2 {
+  tlspec-cvmtl {
     display: block;
 
     $height: 1rem;

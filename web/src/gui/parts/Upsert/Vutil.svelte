@@ -27,13 +27,8 @@
 </script>
 
 <script lang="ts">
-  import { hint, VpForm } from './_shared'
-  import { gtran, btran, deepl } from '$lib/trans'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
-
-  export let key: string
-  export let tab = 0
+  import { hint, type VpForm } from './_shared'
 
   export let form: VpForm
   export let refocus = () => {}
@@ -75,40 +70,6 @@
     }
 
     return [capped, words.length]
-  }
-
-  async function load_gtran(key: string, g_tab = 0) {
-    form.val = '...'
-    refocus()
-
-    const tran = await gtran(key, g_tab)
-
-    if (tab == 2) {
-      const [fname, lname] = tran.split(' ')
-      form.val = lname + ' ' + fname
-    } else {
-      form.val = tran
-    }
-
-    show_trans = false
-  }
-
-  async function load_btran(b_tab = 0) {
-    form.val = '...'
-    refocus()
-
-    const lang = b_tab == 0 ? 'vi' : 'en'
-    form.val = await btran(key, lang, true)
-
-    show_trans = false
-  }
-
-  async function load_deepl() {
-    form.val = '...'
-    refocus()
-
-    form.val = await deepl(key, false)
-    show_trans = false
   }
 </script>
 
@@ -153,17 +114,8 @@
     <div class="right">
       <button
         class="btn"
-        class:_active={show_trans}
-        data-kbd="t"
-        on:click={trigger_trans_submenu}
-        use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>
-        <SIcon name="language" />
-      </button>
-
-      <button
-        class="btn"
         data-kbd="r"
-        disabled={form.val == form.init.val && form.tag == form.init.ptag}
+        disabled={form.val == form.init.val && form.ptag == form.init.ptag}
         on:click={() => (form = form.reset())}
         use:hint={'Phục hồi lại nghĩa + phân loại ban đầu'}>
         <SIcon name="corner-up-left" />
@@ -172,70 +124,13 @@
       <button
         class="btn"
         data-kbd="e"
-        disabled={!form.val && !form.tag}
+        disabled={!form.val && !form.ptag}
         on:click={() => (form = form.clear())}
         use:hint={'Xoá nghĩa từ / Xoá phân loại'}>
         <SIcon name="eraser" />
       </button>
     </div>
   </div>
-
-  {#if show_trans}
-    <div class="trans">
-      <button
-        class="btn"
-        data-kbd="5"
-        on:click={() => load_gtran(key, 0)}
-        use:hint={'Dịch bằng Google từ Trung sang Anh'}>
-        <SIcon name="brand-google" />
-        <span class="lang">Anh</span>
-      </button>
-
-      <button
-        class="btn"
-        data-kbd="6"
-        on:click={() => load_gtran(key, 1)}
-        use:hint={'Dịch bằng Google từ Trung sang Việt'}>
-        <SIcon name="brand-google" />
-        <span class="lang">Việt</span>
-      </button>
-
-      <button
-        class="btn"
-        data-kbd="7"
-        on:click={() => load_gtran(key, 2)}
-        use:hint={'Dịch tên riêng tiếng Nhật bằng Google Dịch'}>
-        <SIcon name="brand-google" />
-        <span class="lang">Nhật</span>
-      </button>
-
-      <button
-        class="btn"
-        data-kbd="9"
-        on:click={() => load_deepl()}
-        use:hint={'Dịch bằng DeepL từ Trung sang Anh'}>
-        <span class="lang">DeepL</span>
-      </button>
-
-      <button
-        class="btn"
-        data-kbd="8"
-        on:click={() => load_btran(0)}
-        use:hint={'Dịch bằng Bing từ Trung sang Việt'}>
-        <SIcon name="brand-bing" />
-        <span class="lang">Việt</span>
-      </button>
-
-      <button
-        class="btn"
-        data-kbd="9"
-        on:click={() => load_btran(1)}
-        use:hint={'Dịch bằng Bing từ Trung sang Anh'}>
-        <SIcon name="brand-bing" />
-        <span class="lang">Anh</span>
-      </button>
-    </div>
-  {/if}
 </div>
 
 <style lang="scss">
@@ -249,31 +144,6 @@
     padding: 0 0.375rem;
     @include flex($gap: 0);
     min-width: 280px;
-  }
-
-  .trans {
-    @include flex($gap: 0);
-    @include bgcolor(secd);
-    @include border();
-    @include bdradi($loc: bottom);
-
-    z-index: 99999;
-    left: 0;
-    right: 0;
-    top: 2rem;
-    position: absolute;
-    justify-content: flex-end;
-
-    padding: 0 0.375rem;
-
-    > .btn {
-      height: 2rem;
-      font-size: rem(13px);
-
-      :global(svg) {
-        @include ftsize(sm);
-      }
-    }
   }
 
   .lbl {
@@ -315,9 +185,6 @@
 
     &[disabled] {
       @include fgcolor(mute);
-    }
-    &._active {
-      @include fgcolor(primary, 5);
     }
   }
 

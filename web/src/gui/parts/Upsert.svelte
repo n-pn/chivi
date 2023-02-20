@@ -51,12 +51,12 @@
 
   import Hanzi from './Upsert/Hanzi.svelte'
 
-  import Vhint from './Upsert/Vhint.svelte'
   import Emend from './Upsert/Emend.svelte'
-  import Vprio from './Upsert/Vprio.svelte'
+  import SegRank from './Upsert/SegRank.svelte'
   import Vutil from './Upsert/Vutil.svelte'
 
-  import Links from './Upsert/Links.svelte'
+  import Footer from './Upsert/Footer.svelte'
+  import TranHint from './Upsert/TranHint.svelte'
 
   export let on_change = () => {}
   export let on_destroy = () => {}
@@ -202,7 +202,7 @@
       <Emend {form} {dicts} />
 
       <upsert-main>
-        <Vhint hanviet={data.hanviet} val_hints={data.val_hints} bind:form />
+        <TranHint hanviet={data.hanviet} val_hints={data.val_hints} bind:form />
         <div class="value" class:_fresh={form.init.state == 'Xoá'}>
           <input
             type="text"
@@ -217,11 +217,11 @@
           </button>
         </div>
 
-        <Vutil {key} tab={$ctrl.tab} bind:form />
+        <Vutil bind:form />
       </upsert-main>
 
       <upsert-foot>
-        <Vprio bind:form />
+        <SegRank bind:form />
 
         <btn-group>
           <button
@@ -238,9 +238,7 @@
     {/if}
   </main>
 
-  <footer class="foot">
-    <Links {key} />
-  </footer>
+  <Footer {key} />
 </Dialog>
 
 {#if $ctrl.state == 2}
@@ -416,11 +414,6 @@
   btn-group {
     @include flex();
     gap: 0.5rem;
-  }
-
-  .foot {
-    position: relative;
-    @include border(--bd-main, $loc: top);
   }
 
   .empty {

@@ -25,13 +25,16 @@ class SP::Btran
     getter to : String?
   end
 
-  def translate(terms : Enumerable(String), lang = "vi", no_cap : Bool = false)
+  def translate(terms : Enumerable(String),
+                source = "zh", target = "vi",
+                no_cap : Bool = false)
+    source = "zh-Hans" if source == "zh"
     @headers["X-ClientTraceId"] = UUID.random.to_s
 
     params = URI::Params.build do |form|
       form.add "api-version", "3.0"
-      form.add "from", "zh-Hans"
-      form.add "to", lang
+      form.add "from", source
+      form.add "to", target
     end
 
     body = terms.map { |x| {text: no_cap ? "*," + x : x} }.to_json
@@ -136,21 +139,25 @@ class SP::Btran
     end
   end
 
-  def self.translate(terms : Enumerable(String), lang = "vi", no_cap : Bool = false)
+  def self.translate(terms : Enumerable(String),
+                     source = "zh", target = "vi",
+                     no_cap : Bool = false)
     raise "no more available client" unless client = @@clients.sample
-    translate(client, terms, lang: lang, no_cap: no_cap)
+    translate(client, terms, source: source, target: target, no_cap: no_cap)
   end
 
-  def self.translate(client : self, terms : Enumerable(String), lang : String, no_cap : Bool)
-    client.translate(terms, lang: lang, no_cap: no_cap)
+  def self.translate(client : self, terms : Enumerable(String),
+                     source : String, target : String,
+                     no_cap : Bool)
+    client.translate(terms, source: source, target: target, no_cap: no_cap)
   rescue err
     Log.warn { "error using bing translation: #{err.message}" }
 
     if err.message.try(&.starts_with?("size mismatch"))
-      translate(client, terms, lang: lang, no_cap: no_cap)
+      translate(client, terms, source: source, target: target, no_cap: no_cap)
     else
       @@clients.reject!(&.== client)
-      translate(terms, lang: lang, no_cap: no_cap)
+      translate(terms, source: source, target: target, no_cap: no_cap)
     end
   end
 

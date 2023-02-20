@@ -37,46 +37,53 @@
   }
 </script>
 
-<div class="main">
-  <button class="link" use:trigger={1}>
-    <span>Hướng dẫn</span>
-    <SIcon name="caret-down" />
-  </button>
+<footer>
+  <div class="main">
+    <button class="link" use:trigger={1}>
+      <span>Hướng dẫn</span>
+      <SIcon name="caret-down" />
+    </button>
 
-  <button class="link" use:trigger={3}>
-    <span>Dịch ngoài</span>
-    <SIcon name="caret-down" />
-  </button>
+    <button class="link" use:trigger={3}>
+      <span>Dịch ngoài</span>
+      <SIcon name="caret-down" />
+    </button>
 
-  <button class="link" use:trigger={2}>
-    <span>Tra cứu</span>
-    <SIcon name="caret-down" />
-  </button>
+    <button class="link" use:trigger={2}>
+      <span>Tra cứu</span>
+      <SIcon name="caret-down" />
+    </button>
 
-  <a class="link" href={gsearch} target="_blank" rel="noopener noreferrer"
-    >Google</a>
-</div>
+    <a class="link" href={gsearch} target="_blank" rel="noopener noreferrer"
+      >Google</a>
+  </div>
 
-<div class="submenu">
-  {#if submenu == 1}
-    {#each helps as [name, href]}
-      <a class="link" {href} target="_blank" rel="noopener noreferrer"
-        >{name}</a>
-    {/each}
-  {:else if submenu == 2}
-    {#each links as [name, href]}
-      <a class="link" {href} target="_blank" rel="noopener noreferrer"
-        >{name}</a>
-    {/each}
-  {:else if submenu == 3}
-    {#each trans as [name, href]}
-      <a class="link" {href} target="_blank" rel="noopener noreferrer"
-        >{name}</a>
-    {/each}
-  {/if}
-</div>
+  <div class="submenu">
+    {#if submenu == 1}
+      {#each helps as [name, href]}
+        <a class="link" {href} target="_blank" rel="noopener noreferrer"
+          >{name}</a>
+      {/each}
+    {:else if submenu == 2}
+      {#each links as [name, href]}
+        <a class="link" {href} target="_blank" rel="noopener noreferrer"
+          >{name}</a>
+      {/each}
+    {:else if submenu == 3}
+      {#each trans as [name, href]}
+        <a class="link" {href} target="_blank" rel="noopener noreferrer"
+          >{name}</a>
+      {/each}
+    {/if}
+  </div>
+</footer>
 
 <style lang="scss">
+  footer {
+    position: relative;
+    @include border(--bd-main, $loc: top);
+  }
+
   .main {
     @include flex($center: horz, $gap: 0.25rem);
   }

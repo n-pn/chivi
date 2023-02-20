@@ -14,8 +14,8 @@ rsync-fast "$SSH/$DIR/crits-by-user" "$DIR"
 rsync-fast "$SSH/var/ysapp/books.db" var/ysapp
 rsync-fast "$SSH/var/ysapp/users.db" var/ysapp
 
-rsync-fast "$SSH/var/ysapp/crits.tmp" var/ysapp
-rsync-fast "$SSH/var/ysapp/repls.tmp" var/ysapp
+# rsync-fast "$SSH/var/ysapp/crits.tmp" var/ysapp
+# rsync-fast "$SSH/var/ysapp/repls.tmp" var/ysapp
 
 rsync-fast "$SSH/var/proxy/.works" var/proxy
 

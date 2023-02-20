@@ -33,15 +33,15 @@ class SP::TranCtrl < AC::Base
   end
 
   @[AC::Route::PUT("/btran")]
-  def btran(lang : String = "vi", no_cap : Bool = false)
+  def btran(sl : String = "zh", tl : String = "vi", no_cap : Bool = false)
     @render_called = true
     res = @context.response
 
     res.status_code = 200
     res.content_type = "text/plain; charset=utf-8"
 
-    input = request.body.not_nil!.gets_to_end
-    output = Btran.translate(input.lines, lang: lang, no_cap: no_cap)
+    text = request.body.not_nil!.gets_to_end
+    output = Btran.translate(text.lines, source: sl, target: tl, no_cap: no_cap)
 
     output.each_with_index do |line, i|
       res << '\n' if i > 0
@@ -50,16 +50,15 @@ class SP::TranCtrl < AC::Base
   end
 
   @[AC::Route::PUT("/deepl")]
-  def deepl(no_cap : Bool = false)
+  def deepl(sl : String = "zh", tl : String = "en", no_cap : Bool = false)
     @render_called = true
     res = @context.response
 
     res.status_code = 200
     res.content_type = "text/plain; charset=utf-8"
 
-    input = request.body.not_nil!.gets_to_end
-
-    output = Deepl.translate(input.lines, no_cap: no_cap)
+    text = request.body.not_nil!.gets_to_end
+    output = Deepl.translate(text.lines, source: sl, target: tl, no_cap: no_cap)
 
     output.each_with_index do |line, i|
       res << '\n' if i > 0

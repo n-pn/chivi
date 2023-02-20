@@ -19,7 +19,9 @@ class SP::Deepl
     @client = HTTP::Client.new(URI.parse(free ? FREE_API : PRO_API))
   end
 
-  def translate(terms : Enumerable(String), no_cap : Bool = false)
+  def translate(terms : Enumerable(String),
+                source = "ZH", target = "EN",
+                no_cap : Bool = false)
     body = String.build do |str|
       terms.each_with_index do |term, i|
         str << '&' if i > 0
@@ -28,7 +30,7 @@ class SP::Deepl
         URI.encode_path(str, term)
       end
 
-      str << "&source_lang=ZH&target_lang=EN&split_sentences=1"
+      str << "&source_lang=#{source}&target_lang=#{target}&split_sentences=1"
     end
 
     res = @client.post("/v2/translate", headers: @headers, body: body)
@@ -65,13 +67,17 @@ class SP::Deepl
     end
   end
 
-  def self.translate(terms : Enumerable(String), no_cap : Bool = false)
+  def self.translate(terms : Enumerable(String),
+                     source = "zh", target = "vi",
+                     no_cap : Bool = false)
     raise "no more available client" unless client = @@clients.sample
-    translate(client, terms, no_cap: no_cap)
+    translate(client, terms, source: source, target: target, no_cap: no_cap)
   end
 
-  def self.translate(client : Deepl, terms : Enumerable(String), no_cap : Bool = false)
-    client.translate(terms, no_cap: no_cap)
+  def self.translate(client : Deepl, terms : Enumerable(String),
+                     source = "zh", target = "vi",
+                     no_cap : Bool = false)
+    client.translate(terms, source: source, target: target, no_cap: no_cap)
   rescue err
     Log.warn { "error using deepl translation: #{err.message}" }
 

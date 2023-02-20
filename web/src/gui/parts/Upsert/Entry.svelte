@@ -5,7 +5,7 @@
   import Postag from '$gui/parts/Postag.svelte'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Vhint from './Vhint.svelte'
+  import Vhint from './TranHint.svelte'
   import Vutil from './Vutil.svelte'
   import { rel_time } from '$utils/time_utils'
 
