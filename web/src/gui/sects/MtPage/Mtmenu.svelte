@@ -58,7 +58,6 @@
 
   import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
   import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
-  import Tlspec, { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
 
   export let article: HTMLElement
   export let fix_raw = false
@@ -313,58 +312,48 @@
 <svelte:window on:keydown={handle_keydown} />
 
 {#if $ctrl.actived}
-  <!-- <cv-item
-    class="navi"
-    data-kbd="⇧←"
-    data-tip="Mở sang trái"
-    on:click|capture={() => move_left(true, 500)}>
-    <SIcon name="arrow-left-square" />
-  </cv-item> -->
-
   <cv-menu style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <cv-item
-      data-kbd="&bsol;"
-      data-key="Backslash"
-      data-tip="Tra từ"
-      on:click|capture={() => lookup.show(true)}>
-      <SIcon name="search" />
-    </cv-item>
+      class="navi"
+      data-kbd="⇧←"
+      data-tip="Mở sang trái"
+      on:click|capture={() => move_left(true, 500)}>
+      <SIcon name="arrow-left-square" />
 
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <cv-item data-kbd="p" data-tip="Báo lỗi" on:click|capture={tlspec.show}>
-      <SIcon name="flag" />
-    </cv-item>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <cv-item
+        data-kbd="&bsol;"
+        data-key="Backslash"
+        data-tip="Tra từ"
+        on:click|capture={() => lookup.show(true)}>
+        <SIcon name="search" />
+      </cv-item>
 
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <cv-item data-kbd="↵" data-tip="Thêm sửa từ" on:click|capture={show_upsert}>
-      <SIcon name="circle-plus" />
-    </cv-item>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <cv-item
+        data-kbd="↵"
+        data-tip="Thêm sửa từ"
+        on:click|capture={show_upsert}>
+        <SIcon name="circle-plus" />
+      </cv-item>
 
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <cv-item
-      data-kbd="-"
-      data-tip="Sửa text gốc"
-      on:click|capture={() => (fix_raw = true)}>
-      <SIcon name="edit" />
-    </cv-item>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <cv-item
+        data-kbd="-"
+        data-tip="Sửa text gốc"
+        on:click|capture={() => (fix_raw = true)}>
+        <SIcon name="edit" />
+      </cv-item>
 
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <cv-item
-      data-kbd="/"
-      data-tip="Thêm nghĩa việt"
-      on:click|capture={() => alert('Đang hoàn thiện')}>
-      <SIcon name="language" />
-    </cv-item>
-  </cv-menu>
-
-  <!-- <cv-item
-    class="navi"
-    data-kbd="⇧→"
-    data-tip="Mở sang phải"
-    on:click|capture={() => move_right(true, 500)}>
-    <SIcon name="arrow-right-square" />
-  </cv-item> -->
+      <cv-item
+        class="navi"
+        data-kbd="⇧→"
+        data-tip="Mở sang phải"
+        on:click|capture={() => move_right(true, 500)}>
+        <SIcon name="arrow-right-square" />
+      </cv-item>
+    </cv-item></cv-menu>
 {/if}
 
 <div hidden>
@@ -374,7 +363,6 @@
 
 {#if $lookup.enabled || $lookup.actived}<Lookup {on_destroy} />{/if}
 {#if $upsert.state > 0}<Upsert {on_change} {on_destroy} />{/if}
-{#if $tlspec.actived}<Tlspec {on_destroy} />{/if}
 
 <style lang="scss">
   $width: 1.875rem;
