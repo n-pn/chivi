@@ -2,10 +2,10 @@
   type Prio = [number, string, string, string]
 
   const options: Prio[] = [
-    [3, 'Cao', 'd', 'Cụm từ được ưu tiên cao khi phân tách câu văn'],
+    [3, 'Cao', 'a', 'Cụm từ được ưu tiên cao khi phân tách câu văn'],
     [2, 'Bình', 's', 'Cụm từ ưu tiên trung bình, giá trị mặc định'],
-    [1, 'Thấp', 'a', 'Cụm từ không được ưu tiên khi phân tách câu văn'],
-    [0, 'Ẩn đi', 'f', 'Cụm từ không được áp dụng trong khi dịch'],
+    [1, 'Thấp', 'd', 'Cụm từ không được ưu tiên khi phân tách câu văn'],
+    [0, 'Ẩn', 'f', 'Cụm từ không được áp dụng trong khi dịch'],
   ]
 </script>
 

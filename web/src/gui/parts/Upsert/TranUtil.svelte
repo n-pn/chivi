@@ -76,15 +76,13 @@
 <div class="wrap">
   <div class="vutil">
     {#each [1, 2, 3] as num}
-      {@const icon = 'letter-case' + (capped == num ? '-toggle' : '')}
       <button
-        class="btn"
+        class="btn _{num}"
+        class:_active={capped == num}
         data-kbd={num}
         use:upcase_val={num}
         use:hint={`Viết hoa ${num} chữ đầu`}>
-        <SIcon name={icon} />
-        <span class="cap">{num}</span>
-        <span class="lbl">chữ</span>
+        <span class="cap">V.hoa {num}</span>
       </button>
     {/each}
 
@@ -94,9 +92,7 @@
       disabled={capped == length}
       use:upcase_val={99}
       use:hint={'Viết hoa tất cả các chữ'}>
-      <SIcon name="letter-case-upper" />
-      <span class="lbl">V.hoa</span>
-      <span class="cap">tất</span>
+      <span class="cap">V.hoa tất</span>
     </button>
 
     <button
@@ -106,9 +102,7 @@
       data-key="Backquote"
       use:upcase_val={0}
       use:hint={'Viết thường tất cả các chữ'}>
-      <SIcon name="letter-case-lower" />
-      <span class="lbl">Viết</span>
-      <span class="cap">thường</span>
+      <span class="cap">Viết thường</span>
     </button>
 
     <div class="right">
@@ -146,25 +140,13 @@
     min-width: 280px;
   }
 
-  .lbl {
-    display: none;
-    font-size: rem(14px);
-    // @include fgcolor(mute);
-    @include bps(display, none, $ts: inline-block);
-  }
-
   .right {
     @include flex();
     margin-left: auto;
   }
 
-  .btn {
-    background: transparent;
-    @include fgcolor(tert);
-  }
-
   .cap {
-    font-size: rem(14px);
+    @include bps(font-size, rem(12px), $pm: rem(13px), $ts: rem(14px));
   }
 
   .btn {
@@ -172,6 +154,9 @@
     align-items: center;
     padding: 0 0.25rem;
     font-weight: 500;
+
+    background: none;
+    @include fgcolor(tert);
 
     gap: 0.125rem;
 
@@ -181,6 +166,14 @@
     // padding-bottom: 0.125rem;
     :global(svg) {
       font-size: 1rem;
+    }
+
+    &._3 {
+      @include bps(display, none, $pm: initial);
+    }
+
+    &._active {
+      @include fgcolor(secd);
     }
 
     &[disabled] {

@@ -52,8 +52,6 @@
   }
 
   $: init_val = form.init.val
-
-  const kbds = ['@', '#', '$', '%', '^']
 </script>
 
 <div class="wrap">
@@ -68,7 +66,6 @@
       <button
         class="hint"
         class:_prev={val == init_val}
-        data-kbd={kbds[idx]}
         on:click={() => (form.val = val)}>{val}</button>
     {/each}
 
