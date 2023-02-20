@@ -48,7 +48,7 @@ terms = [] of Term
 freqs = Hash(String, Freq).new { |h, k| h[k] = Freq.new(0) }
 
 HANVIET = Hash(String, String).new do |h, k|
-  h[k] = TL::Engine.hanviet.convert(k).to_txt(cap: false)
+  h[k] = SP::MtCore.tl_sinovi(k, cap: false)
 end
 
 l_id = 0

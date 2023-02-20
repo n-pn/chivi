@@ -95,14 +95,12 @@ end
 
 # require "../../src/mt_sp/engine"
 
-# HVMTL = TL::Engine.hanviet
-
 # hanviet = [] of {String, Int32}
 
 # DIC.query_each "select rowid, zh from terms where hv = ''" do |rs|
 #   id = rs.read(Int32)
 #   zh = rs.read(String)
-#   hv = HVMTL.convert(zh).to_txt(false)
+#   hv = SP::MtCore.tl_sinovi(k, cap: false)
 #   hanviet << {hv, id}
 # end
 

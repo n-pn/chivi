@@ -2,6 +2,7 @@ require "json"
 require "tabkv"
 
 require "../../_util/text_util"
+require "../../mt_sp/sp_core"
 
 module CV::BookUtil
   extend self
@@ -93,7 +94,7 @@ module CV::BookUtil
   def hanviet(input : String, caps : Bool = true) : String
     return input unless input =~ /\p{Han}/ # return if no hanzi found
 
-    output = MtCore.hanviet_mtl.translit(input, false).to_txt
+    output = SP::MtCore.tl_sinovi(input, false)
     caps ? TextUtil.titleize(output) : output
   end
 

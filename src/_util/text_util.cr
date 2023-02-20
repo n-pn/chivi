@@ -57,15 +57,15 @@ module TextUtil
     res.to_s
   end
 
+  # make url friendly string
+  def slugify(input : String, tones = false) : String
+    tokenize(input, tones).join("-")
+  end
+
   # split input to words
   def tokenize(input : String, tones = false) : Array(String)
     input = unaccent(input) unless tones
     split_words(input.downcase)
-  end
-
-  # make url friendly string
-  def slugify(input : String, tones = false) : String
-    tokenize(input, tones).join("-")
   end
 
   # strip vietnamese accents

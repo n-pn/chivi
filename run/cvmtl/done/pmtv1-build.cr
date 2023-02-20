@@ -14,7 +14,7 @@ entries = [] of Entry
 freqs = Hash(String, Count).new { |h, k| h[k] = Count.new(0) }
 
 HANVIET = Hash(String, String).new do |h, k|
-  h[k] = TL::Engine.hanviet.convert(k).to_txt(cap: false)
+  h[k] = SP::MtCore.tl_sinovi(k, cap: false)
 end
 
 1.upto(limit - 1) do |line_id|

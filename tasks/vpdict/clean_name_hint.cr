@@ -1,5 +1,6 @@
 require "../../src/mt_v2/tl_util"
 require "../../src/mt_v2/mt_core"
+require "../../src/mt_sp/sp_core"
 
 alias Dict = Hash(String, Array(String))
 
@@ -18,7 +19,7 @@ def write_dict(file : String, dict : Dict)
 end
 
 def hanviet(key : String, cap = false)
-  CV::MtCore.cv_hanviet(key, cap)
+  SP::MtCore.tl_sinovi(key, cap)
 end
 
 def translate(key : String, tag : String = "Nr")

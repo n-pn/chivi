@@ -52,14 +52,6 @@ class M1::MtDict
   AUTOS = {} of Int32 => self
   USERS = {} of String => self
 
-  class_getter hanviet : self do
-    MAINS[-10] ||= new(0).load!(-2).load!(-10)
-  end
-
-  class_getter pin_yin : self do
-    MAINS[-11] ||= new(0).load!(-2).load!(-11)
-  end
-
   class_getter regular_main : self do
     MAINS[-1] ||= new(2).load!(-2).load_main!(-1).load!(-3)
   end

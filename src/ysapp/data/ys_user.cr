@@ -1,6 +1,9 @@
 require "crorm"
 require "crorm/sqlite3"
 
+require "../../mt_sp/sp_core"
+require "../../_util/text_util"
+
 class YS::YsUser
   include Crorm::Model
 
@@ -31,19 +34,30 @@ class YS::YsUser
   field rtime : Int64 = 0
   field mtime : Int64 = 0
 
-  # def fix_name : Nil
-  #   # TODO: revemo CV::BookUtil
-  #   self.vname = CV::BookUtil.hanviet(self.zname, caps: true)
-  #   self.vslug = CV::BookUtil.scrub_vname(self.vname, "-")
-  # end
+  VNAME_UPDATE_SQL = <<-SQL
+    update #{@@table} set vname = ?, vslug = ?
+    where id = ?
+  SQL
+
+  def db_names
+    vname = translit(self.zname)
+    vslug = TextUtil.slugify(vname)
+
+    {vname, vslug}
+  end
+
+  private def translit(name : String)
+    return name unless name =~ /\p{Han}/
+    SP::MtCore.tl_sinovi(name, true)
+  end
 
   ###
 
-  def self.open_db(db_path = self.db_path)
+  def self.open_db(db_path = self.db_path, &)
     DB.open("sqlite3:#{db_path}") { |db| yield db }
   end
 
-  def self.open_tx(db_path = self.db_path)
+  def self.open_tx(db_path = self.db_path, &)
     open_db(db_path) do |db|
       db.exec "begin"
       yield db

@@ -5,9 +5,6 @@ require "./mt_core/*"
 require "../data/v1_dict"
 
 class M1::MtCore
-  class_getter hanviet_mtl : self { new([MtDict.hanviet]) }
-  class_getter pin_yin_mtl : self { new([MtDict.pin_yin]) }
-
   def self.generic_mtl(udic : Int32 = 0, user : String = "", temp : Bool = false, init : Bool = false) : self
     dicts = [MtDict.regular_main]
 
@@ -29,15 +26,6 @@ class M1::MtCore
     when "hanviet" then hanviet_mtl
     else                generic_mtl(DbDict.get_id(dname), temp: temp, user: user)
     end
-  end
-
-  def self.cv_pin_yin(input : String) : String
-    pin_yin_mtl.translit(input).to_txt
-  end
-
-  def self.cv_hanviet(input : String, apply_cap = true) : String
-    return input unless input =~ /\p{Han}/
-    hanviet_mtl.translit(input, apply_cap: apply_cap).to_txt
   end
 
   def self.convert(input : String, dname = "combine") : String

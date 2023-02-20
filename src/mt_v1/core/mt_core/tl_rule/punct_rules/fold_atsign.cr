@@ -1,3 +1,5 @@
+require "../../../../../mt_sp/sp_core"
+
 module M1::TlRule
   def fold_atsign!(head : MtNode)
     key_io = String::Builder.new
@@ -12,7 +14,7 @@ module M1::TlRule
     return head unless tail
 
     key = key_io.to_s
-    val = TextUtil.titleize(MtCore.cv_hanviet(key, false))
+    val = TextUtil.titleize(SP::MtCore.tl_sinovi(key, false))
 
     key = "#{head.key}#{key}#{tail.key}"
 

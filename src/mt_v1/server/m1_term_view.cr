@@ -2,15 +2,16 @@ require "json"
 
 require "../data/v1_defn"
 require "../core/m1_dict"
+require "../../mt_sp/mt_core"
 
 # require "../core/tl_name"
 # require "../core/vp_hint"
 
 struct M1::M1TermView
-  DIR = "var/vhint/detect"
 
   getter defns : Hash(String, Array(DbDefn))
 
+  SINO_VI = .sno
   def initialize(@words : Array(String), @uname : String, @wn_id : Int32, @w_temp = true)
     @defns = DbDefn.repo.open_db do |db|
       sql = String.build do |str|
@@ -35,7 +36,7 @@ struct M1::M1TermView
           entries = @defns[word]? || [] of DbDefn
           entries.sort_by! { |e| {-e.dic, -e.tab, -e.mtime} }
 
-          hanviet = MtCore.cv_hanviet(word, false)
+          hanviet = SP::MtCore.tl_sinovi(word, false)
 
           tag_hints = entries.map(&.ptag)
           tag_hints.concat(gen_tag_hints(word)).uniq!
@@ -47,7 +48,7 @@ struct M1::M1TermView
             jb.field "current", extract_current(entries)
 
             jb.field "hanviet", hanviet
-            jb.field "pin_yin", MtCore.cv_pin_yin(word)
+            jb.field "pin_yin", SP::MtCore.tl_pinyin(word, false)
 
             jb.field "val_hints", val_hints
             jb.field "tag_hints", tag_hints

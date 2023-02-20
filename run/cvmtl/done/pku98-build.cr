@@ -95,7 +95,7 @@ end
 puts words.size, freqs.size
 
 HANVIET = Hash(String, String).new do |h, k|
-  h[k] = TL::Engine.hanviet.convert(k).to_txt(cap: false)
+  h[k] = SP::MtCore.tl_sinovi(k, cap: false)
 end
 
 DB.open("sqlite3:var/mt_v2/dicts/pku98-data.db") do |db|
