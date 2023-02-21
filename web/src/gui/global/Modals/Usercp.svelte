@@ -58,7 +58,7 @@
 
 <Slider class="usercp" bind:actived --slider-width="26rem">
   <svelte:fragment slot="header-left">
-    <div class="-icon"><SIcon name="user" /></div>
+    <div class="-icon"><SIcon name="privi-{privi}" iset="sprite" /></div>
     <div class="-text">
       <cv-user data-privi={privi}>{user.uname}</cv-user>
     </div>
@@ -81,7 +81,7 @@
     <div class="info">
       <div>
         <span class="lbl">Quyền hạn:</span>
-        <SIcon name="crown" /><strong>{privi}</strong>
+        <SIcon name="privi-{privi}" iset="sprite" />
       </div>
       {#if privi > 0 && privi < 4}
         <div>

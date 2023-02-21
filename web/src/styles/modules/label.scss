@@ -31,18 +31,6 @@
   }
 
   &._1 {
-    --color: #{color(primary, 5)};
-    --bdcolor: #{color(primary, 2)};
-    --bgcolor: #{color(primary, 1)};
-
-    @include tm-dark($svelte: false) {
-      --color: #{color(primary, 3)};
-      --bdcolor: #{color(primary, 5, 5)};
-      --bgcolor: #{color(primary, 5, 3)};
-    }
-  }
-
-  &._2 {
     --color: #{color(success, 5)};
     --bdcolor: #{color(success, 2)};
     --bgcolor: #{color(success, 1)};
@@ -54,19 +42,19 @@
     }
   }
 
-  &._3 {
-    --color: #{color(harmful, 5)};
-    --bdcolor: #{color(harmful, 2)};
-    --bgcolor: #{color(harmful, 1)};
+  &._2 {
+    --color: #{color(primary, 5)};
+    --bdcolor: #{color(primary, 2)};
+    --bgcolor: #{color(primary, 1)};
 
     @include tm-dark($svelte: false) {
-      --color: #{color(harmful, 3)};
-      --bdcolor: #{color(harmful, 5, 5)};
-      --bgcolor: #{color(harmful, 5, 3)};
+      --color: #{color(primary, 3)};
+      --bdcolor: #{color(primary, 5, 5)};
+      --bgcolor: #{color(primary, 5, 3)};
     }
   }
 
-  &._4 {
+  &._3 {
     --color: #{color(warning, 5)};
     --bdcolor: #{color(warning, 2)};
     --bgcolor: #{color(warning, 1)};
@@ -75,6 +63,18 @@
       --color: #{color(warning, 3)};
       --bdcolor: #{color(warning, 5, 5)};
       --bgcolor: #{color(warning, 5, 3)};
+    }
+  }
+
+  &._4 {
+    --color: #{color(harmful, 5)};
+    --bdcolor: #{color(harmful, 2)};
+    --bgcolor: #{color(harmful, 1)};
+
+    @include tm-dark($svelte: false) {
+      --color: #{color(harmful, 3)};
+      --bdcolor: #{color(harmful, 5, 5)};
+      --bgcolor: #{color(harmful, 5, 3)};
     }
   }
 

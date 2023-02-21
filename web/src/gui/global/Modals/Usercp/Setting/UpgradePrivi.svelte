@@ -43,6 +43,8 @@
 
     _onload = false
   }
+
+  const privi_colors = ['neutral', 'success', 'primary', 'warning', 'harmful']
 </script>
 
 <section class="form">
@@ -52,7 +54,8 @@
       {#each [1, 2, 3] as value}
         <label class="m-label _{value}" class:_active={value == privi}>
           <input type="radio" bind:group={privi} {value} />
-          <span class="icon"><SIcon name="crown" /></span>Q.hạn {value}
+          <span class="icon"><SIcon name="privi-{value}" iset="sprite" /></span
+          >Q.hạn {value}
         </label>
       {/each}
     </div>
@@ -62,7 +65,7 @@
     <label class="form-label" for="privi">Chọn thời gian:</label>
     <div class="radio-group">
       {#each [0, 1, 2, 3] as value}
-        <label class="m-label _1" class:_active={value == tspan}>
+        <label class="m-label _{value}" class:_active={value == tspan}>
           <input type="radio" bind:group={tspan} {value} />
           <SIcon name="clock" />{tspans[value]}
         </label>
@@ -75,7 +78,7 @@
   <footer class="form-action">
     <button
       type="submit"
-      class="m-btn _success  _fill"
+      class="m-btn _fill _{privi_colors[privi]}"
       disabled={_onload || vcoin > $page.data._user.vcoin}
       on:click={submit}>
       <span>Nâng cấp</span>

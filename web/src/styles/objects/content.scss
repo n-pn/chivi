@@ -119,11 +119,11 @@ cv-user,
   }
 
   &[data-privi='1'] {
-    --color: #{color(primary, 5)};
+    --color: #{color(success, 5)};
   }
 
   &[data-privi='2'] {
-    --color: #{color(success, 5)};
+    --color: #{color(primary, 5)};
   }
 
   &[data-privi='3'] {
@@ -172,8 +172,4 @@ input::-webkit-inner-spin-button {
   /* display: none; <- Crashes Chrome on hover */
   -webkit-appearance: none;
   margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
-}
-
-input[type='number'] {
-  -moz-appearance: textfield; /* Firefox */
 }
