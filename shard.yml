@@ -61,7 +61,7 @@ targets:
     main: tasks/yousuu/yscrit_crawl_by_list.cr
 
   yslist_crawl_by_book:
-    main: tasks/yousuu/yslist_crawl_by_book.cr
+    main: src/ysapp/tasks/yslist_crawl_by_book.cr
 
   yslist_crawl_by_user:
     main: tasks/yousuu/yslist_crawl_by_user.cr

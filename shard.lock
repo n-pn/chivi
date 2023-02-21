@@ -3,7 +3,7 @@ version: 2.0
 shards:
   action-controller:
     git: https://github.com/spider-gazelle/action-controller.git
-    version: 5.5.3
+    version: 5.6.2
 
   admiral:
     git: https://github.com/jwaldrip/admiral.cr.git
@@ -11,7 +11,7 @@ shards:
 
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
-    version: 1.2.0+git.commit.cac1ce4138765ee4adfa3ee44dcf8ad1d27b3914
+    version: 1.4.1
 
   backtracer:
     git: https://github.com/sija/backtracer.cr.git
@@ -19,11 +19,11 @@ shards:
 
   clear:
     git: https://github.com/chi-vi/clear.git
-    version: 0.9+git.commit.b30ddecec0fb2ce1e1e1008bd060bb15693b25ba
+    version: 0.9+git.commit.ca670b7c7f2e20feaea69af4bbdeed0232c81e3e
 
   cmark:
     git: https://github.com/amauryt/cr-cmark-gfm.git
-    version: 0.1.2+git.commit.a8fa0cf2da359444d110f2303f85bddf1158e417
+    version: 0.1.2
 
   crorm: # Overridden
     path: ../crorm
@@ -39,7 +39,7 @@ shards:
 
   email:
     git: https://github.com/arcage/crystal-email.git
-    version: 0.6.4
+    version: 0.7.0
 
   exception_page:
     git: https://github.com/crystal-loot/exception_page.git
@@ -77,17 +77,13 @@ shards:
     git: https://github.com/kostya/lexbor.git
     version: 3.0.4
 
-  zip:
-    git: https://github.com/n-pn/libzip.cr.git
-    version: 0.2.1
-
   lucky_router:
     git: https://github.com/luckyframework/lucky_router.git
     version: 0.5.1
 
   micrate:
     git: https://github.com/amberframework/micrate.git
-    version: 0.14.0
+    version: 0.15.0
 
   mysql:
     git: https://github.com/crystal-lang/crystal-mysql.git
@@ -98,8 +94,8 @@ shards:
     version: 0.26.0
 
   sqlite3: # Overridden
-    git: https://github.com/chi-vi/crystal-sqlite3.git
-    version: 0.19.0+git.commit.0127783ff72d3bc71c198829de0112c8d1c94d9c
+    git: https://github.com/crystal-lang/crystal-sqlite3.git
+    version: 0.19.0
 
   tabkv:
     git: https://github.com/chi-vi/tabkv.git
@@ -108,3 +104,4 @@ shards:
   zstd:
     git: https://github.com/didactic-drunk/zstd.cr.git
     version: 1.2.0
+

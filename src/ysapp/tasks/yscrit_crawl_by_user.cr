@@ -4,24 +4,24 @@ require "../_raw/raw_ys_crit"
 require "../data/ys_user"
 
 class YS::CrawlYscritByUser < CrawlTask
-  def crawl_page!(u_id : Int32, page : Int32 = 1, label = "-/-") : Int32?
-    link = api_page_url(u_id, page)
-    Log.info { "GET: #{link.colorize.magenta}" }
+  # def crawl_page!(u_id : Int32, page : Int32 = 1, label = "-/-") : Int32?
+  #   link = api_page_url(u_id, page)
+  #   Log.info { "GET: #{link.colorize.magenta}" }
 
-    out_path = "#{DIR}/#{u_id}/#{page}.json.zst"
-    return if file_exists?(out_path, page.days)
+  #   out_path = "#{DIR}/#{u_id}/#{page}.json.zst"
+  #   return if file_exists?(out_path, page.days)
 
-    return u_id unless json = @client.fetch!(link, label)
-    save_raw_json(u_id, json, out_path)
+  #   return u_id unless json = @client.fetch!(link, label)
+  #   save_raw_json(u_id, json, out_path)
 
-    # fields, values = RawYsBook.from_raw_json(json).changeset
-    # YsBook.upsert!(fields, values)
+  #   # fields, values = RawYsBook.from_raw_json(json).changeset
+  #   # YsBook.upsert!(fields, values)
 
-    nil
-  rescue ex
-    Log.error(exception: ex) { ex.colorize.red }
-    u_id
-  end
+  #   nil
+  # rescue ex
+  #   Log.error(exception: ex) { ex.colorize.red }
+  #   u_id
+  # end
 
   def self.gen_link(u_id : Int32, page : Int32 = 1)
     "https://api.yousuu.com/api/user/#{u_id}/comment?page=#{page}&t=#{Time.utc.to_unix_ms}"
@@ -36,6 +36,14 @@ class YS::CrawlYscritByUser < CrawlTask
   ################
 
   def self.run!(argv = ARGV)
+    start = 1
+    reseed = false
+
+    OptionParser.parse(argv) do |opt|
+      opt.on("-p PAGE", "start page") { |i| start = i.to_i }
+      opt.on("-r", "Reseed content") { reseed = true }
+    end
+
     queue_init = gen_queue_init
     return if queue_init.empty?
 
@@ -44,7 +52,7 @@ class YS::CrawlYscritByUser < CrawlTask
     max_pages = queue_init.max_of(&.pgmax)
     crawler = new(false)
 
-    1.upto(max_pages) do |page|
+    start.upto(max_pages) do |page|
       queue_init.reject!(&.pgmax.< page)
 
       queue = queue_init.map_with_index(1) do |init, index|
