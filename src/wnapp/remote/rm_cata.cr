@@ -43,7 +43,7 @@ class WN::RmCata
     end
 
     def get_s_cid(href : String)
-      match = @s_cid_re.not_nil!.match(href)
+      match = @s_cid_re.match(href)
       match ? match.[1].to_i : raise "link not match to any parser"
     end
 
