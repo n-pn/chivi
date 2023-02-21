@@ -81,7 +81,7 @@
     <div class="info">
       <div>
         <span class="lbl">Quyền hạn:</span>
-        <SIcon name="crown" /><strong>{privi}</strong>
+        <SIcon name="privi-{privi}" iset="sprite" /><strong>{privi}</strong>
       </div>
       {#if privi > 0 && privi < 4}
         <div>

@@ -70,9 +70,8 @@ label.m-label {
   @include bps(font-size, rem(12px), rem(13px), rem(14px));
 
   &._active {
-    background: var(--color);
-    box-shadow: none;
-    color: #fff;
+    background: var(--bdcolor);
+    outline: var(--bgcolor) 3px solid;
   }
 
   .icon > svg {

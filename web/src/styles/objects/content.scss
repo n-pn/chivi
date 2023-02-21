@@ -119,11 +119,11 @@ cv-user,
   }
 
   &[data-privi='1'] {
-    --color: #{color(primary, 5)};
+    --color: #{color(success, 5)};
   }
 
   &[data-privi='2'] {
-    --color: #{color(success, 5)};
+    --color: #{color(primary, 5)};
   }
 
   &[data-privi='3'] {
