@@ -63,7 +63,9 @@ class WN::TextCtrl < AC::Base
       wn_chap.save_body!(entry.lines, seed: wn_seed, uname: _uname, _flag: 3)
     end
 
-    wn_seed.update_stats!(start + chaps.size - 1)
+    chmax = start + chaps.size - 1
+    wn_seed.update_stats!(chmax)
+    wn_seed.chaps.translate!(start, chmax)
 
     render json: {pg_no: _pgidx(start, 32)}
   end
@@ -105,7 +107,9 @@ class WN::TextCtrl < AC::Base
     wn_chap._path = ""
 
     wn_chap.save_body!(form.ztext, seed: wn_seed, uname: _uname, _flag: 3)
+
     wn_seed.update_stats!(ch_no)
+    wn_seed.chaps.translate!(ch_no, ch_no)
 
     render json: wn_chap
   end

@@ -182,6 +182,7 @@ class WN::WnSeed
     end
 
     self.chaps.upsert_chap_infos(raw_chaps)
+    self.chaps.translate!(raw_chaps.first.ch_no, raw_chaps.last.ch_no)
   end
 
   def update_stats!(chmax : Int32, @mtime : Int64 = Time.utc.to_unix)

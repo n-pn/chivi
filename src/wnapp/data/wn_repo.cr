@@ -97,7 +97,7 @@ class WN::WnRepo
 
   ###
 
-  private def upsert_sql(fields : Enumerable(String), unsafe : Bool = false)
+  def self.upsert_sql(fields : Enumerable(String), unsafe : Bool = false)
     String.build do |sql|
       sql << "insert into chaps ("
       fields.join(sql, ", ")
@@ -114,43 +114,24 @@ class WN::WnRepo
     end
   end
 
+  UPSERT_INFO_SQL = upsert_sql(WnChap::INFO_FIELDS, unsafe: false)
+  UPSERT_FULL_SQL = upsert_sql(WnChap::FULL_FIELDS, unsafe: false)
+  UPDATE_TRAN_SQL = "update chaps set vtitle = ?, vchdiv = ? where ch_no = ?"
+
   def upsert_chap_infos(chapters : Enumerable(WnChap))
-    sql = upsert_sql(WnChap::INFO_FIELDS, unsafe: true)
-
     open_tx do |db|
-      buffer = String::Builder.new
-
       chapters.each do |chap|
-        db.exec sql, *chap.info_values
-        buffer << chap.title << '\n' << chap.chdiv << '\n'
-      end
-
-      translated = tl_mulu(buffer.to_s).lines
-
-      chapters.each_with_index do |chap, idx|
-        break unless vtitle = translated[idx * 2]?
-        break unless vchdiv = translated[idx * 2 + 1]?
-
-        update_vnames!(db, vtitle, vchdiv, chap.ch_no)
+        db.exec UPSERT_INFO_SQL, *chap.info_values
       end
     end
   end
 
   def upsert_chap_full(chap : WnChap)
-    sql = upsert_sql(WnChap::FULL_FIELDS, unsafe: false)
-
-    open_tx do |db|
-      db.exec sql, *chap.full_values
-
-      vtitle, vchdiv = tl_mulu("#{chap.title}\n#{chap.chdiv}").split('\n')
-      update_vnames!(db, vtitle, vchdiv, chap.ch_no)
-    end
+    open_tx(&.exec UPSERT_FULL_SQL, *chap.full_values)
   end
 
-  UPDATE_VI_SQL = "update chaps set vtitle = ?, vchdiv = ? where ch_no = ?"
-
   private def update_vnames!(db, vtitle : String, vchdiv : String, ch_no : Int32)
-    db.exec(UPDATE_VI_SQL, vtitle, vchdiv, ch_no)
+    db.exec(UPDATE_TRAN_SQL, vtitle, vchdiv, ch_no)
   end
 
   ###
