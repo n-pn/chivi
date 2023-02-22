@@ -123,7 +123,7 @@ $-colors: (primary, success, warning, harmful, private, teal, pink, purple);
   @include text-button(neutral);
 
   @each $color in $-colors {
-    &._#{$color} {
+    &._#{'' + $color} {
       @include text-button($color);
     }
   }
@@ -133,7 +133,7 @@ $-colors: (primary, success, warning, harmful, private, teal, pink, purple);
   @include fill-button(neutral);
 
   @each $color in $-colors {
-    &._#{$color} {
+    &._#{'' + $color} {
       @include fill-button($color);
     }
   }

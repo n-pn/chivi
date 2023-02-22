@@ -39,7 +39,7 @@ class WN::TextCtrl < AC::Base
     Dir.mkdir_p("var/texts/rgkbs/#{sname}/#{wn_seed.s_bid}")
 
     start = wn_seed.chap_total + 1 if start < 1
-    ztext = request.body.not_nil!.gets_to_end
+    ztext = request.body.try(&.gets_to_end) || ""
 
     spawn do
       save_dir = "var/texts/users/#{wn_id}-#{sname}"

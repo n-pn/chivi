@@ -17,7 +17,7 @@ class M1::TranCtrl < AC::Base
 
     engine = MtCore.init(wn_id, user: _uname, temp: w_temp == "t", init: w_init == "t")
 
-    input = request.body.not_nil!.gets_to_end
+    input = request.body.try(&.gets_to_end) || ""
     render_title = RenderTitle.parse(cv_title)
 
     output = String.build do |str|
@@ -50,12 +50,15 @@ class M1::TranCtrl < AC::Base
 
   @[AC::Route::POST("/tl_mulu")]
   def tl_mulu(wn_id : Int32 = 0)
-    input = request.body.not_nil!.gets_to_end
+    input = request.body.try(&.gets_to_end) || ""
     cvmtl = MtCore.init(wn_id)
 
     output = String.build do |str|
       input.each_line do |line|
-        cvmtl.cv_title(line).to_txt(str) unless line.empty?
+        unless line.empty?
+          cvmtl.cv_title(line).to_txt(str)
+        end
+
         str << '\n'
       end
     end

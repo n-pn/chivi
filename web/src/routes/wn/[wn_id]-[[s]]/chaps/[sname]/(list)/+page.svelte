@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { invalidateAll } from '$app/navigation'
+  import { invalidate, invalidateAll } from '$app/navigation'
 
   import { seed_path } from '$lib/kit_path'
   import { rel_time } from '$utils/time_utils'
@@ -45,6 +45,7 @@
     const api = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}/reconvert`
     const time = await fetch(api).then((r) => r.text())
     console.log(`time to reconvert: ${time}`)
+    await invalidateAll()
   }
 
   $: [can_upsert, can_reload] = check_edit_privi(

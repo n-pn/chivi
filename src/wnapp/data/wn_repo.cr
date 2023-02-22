@@ -6,19 +6,16 @@ require "./wn_chap"
 class WN::WnRepo
   getter db_path : String
 
-  def initialize(@db_path, wn_id : Int32)
+  def initialize(@db_path, wn_id : Int32, retran = false)
     @tl_api = "http://127.0.0.1:5110/_m1/qtran/tl_mulu?wn_id=#{wn_id}"
-    return if File.file?(db_path)
-
-    init_db(self.class.init_sql)
-    self.translate!
+    self.translate! if retran
   end
 
-  def open_db
+  def open_db(&)
     DB.open("sqlite3:#{@db_path}") { |db| yield db }
   end
 
-  def open_tx
+  def open_tx(&)
     open_db do |db|
       db.exec "pragma synchronous = normal"
       db.exec "begin"
@@ -27,33 +24,6 @@ class WN::WnRepo
     rescue ex
       db.close
       raise ex
-    end
-  end
-
-  def init_db(init_sql : String = self.class.init_sql)
-    open_tx do |db|
-      init_sql.split(";") { |sql| db.exec(sql) unless sql.blank? }
-
-      zh_db_path = @db_path.sub(".db", "-infos.db")
-      next unless File.exists?(zh_db_path)
-
-      db.exec "attach database '#{zh_db_path}' as src"
-
-      db.exec <<-SQL
-        replace into chaps (
-          ch_no, s_cid,
-          title, chdiv,
-          c_len, p_len,
-          mtime, uname,
-          _path, _flag)
-        select
-          ch_no, s_cid,
-          title, chdiv,
-          c_len, p_len,
-          mtime, uname,
-          _path, _flag
-        from src.chaps
-      SQL
     end
   end
 
@@ -136,7 +106,9 @@ class WN::WnRepo
       fields.join(sql, ", ") { |_, io| io << '?' }
       sql << ") on conflict (ch_no) do update set "
 
+      fields = fields.reject(&.== "ch_no")
       fields.join(sql, ", ") { |f, io| io << f << " = excluded." << f }
+
       sql << " where ch_no = excluded.ch_no"
       # sql << " and _flag < 2" unless unsafe
     end
@@ -169,9 +141,9 @@ class WN::WnRepo
 
     open_tx do |db|
       db.exec sql, *chap.full_values
-      translated = tl_mulu("#{chap.title}\n#{chap.chdiv}").lines
-      break if translated.size < 2
-      update_vnames!(db, translated[0], translated[1], chap.ch_no)
+
+      vtitle, vchdiv = tl_mulu("#{chap.title}\n#{chap.chdiv}").split('\n')
+      update_vnames!(db, vtitle, vchdiv, chap.ch_no)
     end
   end
 
@@ -199,41 +171,53 @@ class WN::WnRepo
     values.size
   end
 
-  # def copy_bg_to_fg(bg_db_path : String,
-  #                   bg_sname : String, bg_s_bid : Int32,
-  #                   chmin = 0, chmax = 999, offset = 0)
-  #   open_tx do |db|
-  #     db.exec "attach database '#{bg_db_path}' as src"
-
-  #     query = <<-SQL
-  #       insert or replace into chaps (
-  #         title, chdiv, c_len, p_len, mtime, uname,
-  #         ch_no, s_cid, _path)
-  #       select
-  #         title, chdiv, c_len, p_len, mtime, uname,
-  #         sc.ch_no + #{offset} as ch_no,
-  #         (sc.ch_no + #{offset}) * 10 as s_cid,
-  #         ? || '/' || ? || '/' || sc.s_cid || ':' || sc.ch_no || ':' || sc.p_len as _path
-  #       from src.chaps as sc where sc.ch_no >= ? and sc.ch_no <= ?
-  #     SQL
-
-  #     db.exec query, bg_sname, bg_s_bid, chmin, chmax
-  #   end
-  # end
-
-  ####
-
   CACHE = {} of String => self
 
   @[AlwaysInline]
-  def self.load(db_path : String, wn_id : Int32)
-    CACHE[db_path] ||= new(db_path, wn_id: wn_id)
+  def self.load(db_path : String, wn_id : Int32, reinit : Bool = false)
+    CACHE[db_path] ||= begin
+      empty = !File.exists?(db_path) || File.size(db_path) < 512
+
+      init_db(db_path, init_sql) if reinit || empty
+      new(db_path, wn_id: wn_id, retran: empty)
+    end
   end
 
   @[AlwaysInline]
   def self.load(sname : String, s_bid : Int32, wn_id : Int32)
     db_path = self.db_path(sname, s_bid)
     self.load(db_path, wn_id: wn_id)
+  end
+
+  def self.init_db(db_path : String, init_sql : String)
+    DB.open("sqlite3:#{db_path}") do |db|
+      init_sql.split(";", remove_empty: true) { |sql| db.exec(sql) unless sql.blank? }
+
+      zh_db_path = db_path.sub(".db", "-infos.db")
+      import_db(zh_db_path, db) if File.exists?(zh_db_path)
+    end
+  end
+
+  def self.import_db(old_db_path : String, db)
+    db.exec "attach database '#{old_db_path}' as src"
+
+    db.exec <<-SQL
+      replace into chaps (
+        ch_no, s_cid,
+        title, chdiv,
+        c_len, p_len,
+        mtime, uname,
+        _path, _flag)
+      select
+        ch_no, s_cid,
+        title, chdiv,
+        c_len, p_len,
+        mtime, uname,
+        _path, _flag
+      from src.chaps
+    SQL
+
+    File.delete?(old_db_path)
   end
 
   ###
