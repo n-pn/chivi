@@ -36,8 +36,6 @@ class WN::ChapLink
 
   def self.init_sql
     <<-SQL
-    pragma journal_mode = WAL;
-
     create table if not exists #{@@table} (
       fg_ch_no integer not null,
       --
@@ -50,6 +48,8 @@ class WN::ChapLink
       _flag integer not null default 0,
       primary key (fg_ch_no, bg_sname)
     );
+
+    pragma journal_mode = WAL;
     SQL
   end
 end

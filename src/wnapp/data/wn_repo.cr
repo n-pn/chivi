@@ -1,6 +1,6 @@
 require "http/client"
 
-require "sqlite3"
+require "./_repo"
 require "./wn_chap"
 
 class WN::WnRepo
@@ -11,29 +11,13 @@ class WN::WnRepo
     self.translate! if retran
   end
 
-  def open_db(&)
-    DB.open("sqlite3:#{@db_path}") { |db| yield db }
-  end
-
-  def open_tx(&)
-    open_db do |db|
-      db.exec "pragma synchronous = normal"
-      db.exec "begin"
-      yield db
-      db.exec "commit"
-    rescue ex
-      db.close
-      raise ex
-    end
-  end
-
   SELECT_RAW_SQL = <<-SQL
     select title, chdiv, ch_no from chaps
     where ch_no >= ? and ch_no <= ?
   SQL
 
   def translate!(min = 1, max = 99999)
-    open_tx do |db|
+    DB3.open_tx(@db_path) do |db|
       ch_nos = [] of Int32
       buffer = String::Builder.new
 
@@ -62,7 +46,7 @@ class WN::WnRepo
   end
 
   def all(pg_no : Int32 = 1, limit = 32) : Array(WnChap)
-    open_db do |db|
+    DB3.open_db(@db_path) do |db|
       offset = (pg_no &- 1) * limit
       query = "select * from chaps where ch_no > ? and ch_no <= ? order by ch_no asc"
       db.query_all query, offset, offset &+ limit, as: WnChap
@@ -70,23 +54,60 @@ class WN::WnRepo
   end
 
   def top(take = 6)
-    open_db do |db|
+    DB3.open_db(@db_path) do |db|
       query = "select * from chaps where ch_no > 0 order by ch_no desc limit ?"
       db.query_all query, take, as: WnChap
     end
   end
 
   def get(ch_no : Int32)
-    open_db do |db|
+    DB3.open_db(@db_path) do |db|
       query = "select * from chaps where ch_no = ? limit 1"
       db.query_one? query, ch_no, as: WnChap
+    end
+  end
+
+  def reload_stats!(sname : String, s_bid : Int32) : Int32
+    stats = [] of {Int32, Int32}
+    avail = 0
+
+    DB3.open_db(@db_path) do |db|
+      sql = "select ch_no, s_cid from chaps"
+
+      db.query_each(sql) do |rs|
+        ch_no, s_cid = rs.read(Int32, Int32)
+        txt_path = TextStore.gen_txt_path(sname, s_bid, s_cid)
+
+        if File.file?(txt_path)
+          c_len = File.read(txt_path, encoding: "GB18030").size
+          avail += 1 if c_len > 0
+        else
+          c_len = 0
+        end
+
+        stats << {c_len, ch_no}
+      end
+    end
+
+    DB3.open_tx(@db_path) do |db|
+      sql = "update chaps set c_len = ? where ch_no = ?"
+      stats.each { |c_len, ch_no| db.exec(sql, c_len, ch_no) }
+    end
+
+    avail
+  end
+
+  def word_count(from : Int32, upto : Int32) : Int32
+    DB3.open_db(@db_path) do |db|
+      sql = "select sum(c_len) from chaps where ch_no >= ? and ch_no <= ?"
+      db.query_one(sql, from, upto, as: Int32?) || 0
     end
   end
 
   ###
 
   def delete_chaps!(from_ch_no : Int32)
-    open_tx do |db|
+    DB3.open_tx(db_path) do |db|
       # delete previous deleted entries
       db.exec "delete from chaps where ch_no <= ?", -from_ch_no
 
@@ -119,7 +140,7 @@ class WN::WnRepo
   UPDATE_TRAN_SQL = "update chaps set vtitle = ?, vchdiv = ? where ch_no = ?"
 
   def upsert_chap_infos(chapters : Enumerable(WnChap))
-    open_tx do |db|
+    DB3.open_tx(@db_path) do |db|
       chapters.each do |chap|
         db.exec UPSERT_INFO_SQL, *chap.info_values
       end
@@ -127,7 +148,7 @@ class WN::WnRepo
   end
 
   def upsert_chap_full(chap : WnChap)
-    open_tx(&.exec UPSERT_FULL_SQL, *chap.full_values)
+    DB3.open_tx(@db_path, &.exec UPSERT_FULL_SQL, *chap.full_values)
   end
 
   private def update_vnames!(db, vtitle : String, vchdiv : String, ch_no : Int32)
@@ -158,8 +179,7 @@ class WN::WnRepo
   def self.load(db_path : String, wn_id : Int32, reinit : Bool = false)
     CACHE[db_path] ||= begin
       empty = !File.exists?(db_path) || File.size(db_path) < 512
-
-      init_db(db_path, init_sql) if reinit || empty
+      init_db(db_path) if reinit || empty
       new(db_path, wn_id: wn_id, retran: empty)
     end
   end
@@ -170,35 +190,27 @@ class WN::WnRepo
     self.load(db_path, wn_id: wn_id)
   end
 
-  def self.init_db(db_path : String, init_sql : String)
-    DB.open("sqlite3:#{db_path}") do |db|
-      init_sql.split(";", remove_empty: true) { |sql| db.exec(sql) unless sql.blank? }
+  INIT_SQL = {{ read_file("#{__DIR__}/sql/init_wn_chap.sql") }}
 
-      zh_db_path = db_path.sub(".db", "-infos.db")
-      import_db(zh_db_path, db) if File.exists?(zh_db_path)
+  def self.init_db(db_path : String)
+    DB3.init_db(db_path, INIT_SQL)
+
+    zh_db_path = db_path.sub(".db", "-infos.db")
+    return unless File.file?(zh_db_path)
+
+    DB3.open_tx(db_path) do |db|
+      db.exec "attach database '#{zh_db_path}' as src"
+
+      db.exec <<-SQL
+        replace into chaps
+          (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname, _path, _flag)
+        select
+          ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname, _path, _flag
+        from src.chaps
+      SQL
     end
-  end
 
-  def self.import_db(old_db_path : String, db)
-    db.exec "attach database '#{old_db_path}' as src"
-
-    db.exec <<-SQL
-      replace into chaps (
-        ch_no, s_cid,
-        title, chdiv,
-        c_len, p_len,
-        mtime, uname,
-        _path, _flag)
-      select
-        ch_no, s_cid,
-        title, chdiv,
-        c_len, p_len,
-        mtime, uname,
-        _path, _flag
-      from src.chaps
-    SQL
-
-    File.delete?(old_db_path)
+    File.delete?(zh_db_path)
   end
 
   ###
@@ -213,10 +225,6 @@ class WN::WnRepo
   @[AlwaysInline]
   def self.db_path(db_name : String)
     "#{DIR}/#{db_name}.db"
-  end
-
-  def self.init_sql
-    {{ read_file("#{__DIR__}/sql/init_wn_chap.sql") }}
   end
 
   ####
