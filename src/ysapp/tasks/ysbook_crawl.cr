@@ -4,6 +4,7 @@ require "../data/ys_book"
 
 class YS::CrawlYsbook < CrawlTask
   def db_seed_tasks(json : String)
+    return if json.includes?("未找到该图书")
     fields, values = RawYsBook.from_raw_json(json).changeset
     YsBook.upsert!(fields, values)
   end

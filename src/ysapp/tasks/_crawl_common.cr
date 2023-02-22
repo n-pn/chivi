@@ -54,8 +54,7 @@ abstract class CrawlTask
   end
 
   def crawl!(queue : Enumerable(Entry), loop_no = 1)
-    exit 0 if queue.empty?
-    exit 1 if @http.empty?
+    return if queue.empty?
 
     qsize = queue.size
     wsize = qsize
