@@ -4,14 +4,14 @@ require "../data/v1_dict"
 class M1::DefnForm
   include JSON::Serializable
 
-  getter dic : Int32 = 0
-  getter tab : Int32 = 1
-
   getter key : String
   getter val : String
 
   getter ptag : String = ""
   getter prio : Int32 = 2
+
+  getter dic : Int32 = 0
+  getter tab : Int32 = 1
 
   getter _ctx : String
 
@@ -19,24 +19,19 @@ class M1::DefnForm
     @key = @key.gsub(/[\p{C}\s]+/, " ").strip
     @val = @val.gsub(/[\p{C}\s]+/, " ").strip.unicode_normalize(:nfkc)
     @val = @val.split(/[|ǀ]/, remove_empty: true).map!(&.strip).join('\t')
+
+    @dic = -1 if @dic < 0
+    @tab = 1 if @tab < 1
   end
 
-  private def min_privi(dic : Int32)
-    case dic
-    when -4, .>(0)    then 0 # novel dicts or combine
-    when -1, -10, -11 then 1 # regular, hanviet, pin_yin
-    else                   2 # system dicts
-    end
-  end
+  REG_PRIVI = {0, 2, 1, 3}
 
-  def validate!(privi = -1) : Nil
-    reg_privi = min_privi(@dic)
+  def validate!(_privi = -1) : Nil
+    req_privi = REG_PRIVI[@tab]
+    req_privi -= 1 if @dic >= 0
 
-    if reg_privi > privi
-      raise Unauthorized.new("Yên cầu quyền hạn tối thiểu #{reg_privi} để thêm từ")
-    end
-
-    @tab = privi == reg_privi ? 2 : 1
+    return unless req_privi > _privi
+    raise Unauthorized.new("Yên cầu quyền hạn tối thiểu #{req_privi} để thêm từ")
   end
 
   def save!(uname : String, mtime = DbDefn.mtime) : DbDefn

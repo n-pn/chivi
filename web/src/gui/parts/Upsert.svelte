@@ -94,12 +94,10 @@
     if (body.length > 0) {
       const api = `/_m1/terms/query?vd_id=${vd_id}`
       const res: Record<string, JsonData> = await api_call(api, body, 'POST')
-      for (const [key, data] of Object.entries(res)) cached[key] = data
+      for (let key in res) cached[key] = res[key]
     }
 
     data = cached[words[0]]
-    console.log(data.current)
-
     form = new VpForm(data.current, vd_id, privi)
   }
 
@@ -110,6 +108,8 @@
 
   const copy_raw = () => navigator.clipboard.writeText(key)
 
+  let upsert_error = ''
+
   const submit_val = async () => {
     const res = await fetch('/_m1/defns', {
       method: 'POST',
@@ -117,9 +117,12 @@
       body: form.toJSON($ztext, $zfrom),
     })
 
+    const data = await res.json()
+
     if (!res.ok) {
-      console.log(await res.text())
+      upsert_error = data.message
     } else {
+      $ctrl.state = 0
       on_change()
     }
   }
@@ -249,6 +252,18 @@
       </upsert-foot>
     {:else}
       <div class="empty">Đợi thêm sau</div>
+    {/if}
+
+    {#if privi < form.req_privi}
+      <div class="upsert-msg _warn">
+        Bạn chưa đủ quyền hạn để thêm sửa từ.
+        <br />
+        Thử bấm vào biểu tượng <SIcon
+          name="privi-{form.req_privi}"
+          iset="sprite" /> phía trên để thay đổi cách lưu.
+      </div>
+    {:else if upsert_error}
+      <div class="upsert-msg _err">{upsert_error}</div>
     {/if}
   </main>
 
@@ -422,7 +437,23 @@
   upsert-foot {
     display: flex;
     padding: 0.75rem 0;
-    justify-content: right;
+  }
+
+  .upsert-msg {
+    margin-top: -0.25rem;
+    font-size: rem(13px);
+    line-height: 1rem;
+    padding-bottom: 0.5rem;
+    text-align: center;
+    font-style: italic;
+
+    &._warn {
+      @include fgcolor(warning);
+    }
+
+    &._err {
+      @include fgcolor(harmful);
+    }
   }
 
   btn-group {

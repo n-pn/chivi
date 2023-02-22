@@ -21,8 +21,6 @@
 </script>
 
 <script lang="ts">
-  import SIcon from '$gui/atoms/SIcon.svelte'
-
   import { type VpForm, hint, req_privi } from './_shared'
 
   export let form: VpForm
@@ -54,6 +52,8 @@
     </label>
   </span>
   <span class="choices _right">
+    <span class="label _hide">Cách lưu:</span>
+
     {#each save_tabs as [value, label, brief]}
       <label class="label" class:_active={form.tab == value} use:hint={brief}>
         <input

@@ -108,7 +108,7 @@ export class VpForm {
       this.tab = 1
     } else {
       this.dic = this.init.dic
-      this.tab = this.init.tab
+      this.tab = Math.abs(this.init.tab)
     }
   }
 
