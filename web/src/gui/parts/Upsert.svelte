@@ -127,7 +127,18 @@
     }
   }
 
-  $: btn_style = !form.val ? `_harmful` : form.init.id ? `_primary` : `_success`
+  const button_colors = [
+    '_neutral', // base
+    '_primary', // shared+main
+    '_harmful', // shared+temp
+    '_purple', // shared+user
+    '_success', // initial
+    '_teal', // unique+main
+    '_warning', // unique+temp
+    '_pink', // unique+user
+  ]
+
+  $: btn_style = button_colors[form.tab + (form.dic < 0 ? 0 : 4)]
 </script>
 
 <Dialog

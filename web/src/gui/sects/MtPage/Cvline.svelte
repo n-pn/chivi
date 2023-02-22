@@ -59,38 +59,38 @@
 
     // regular + main
     &[data-d='2'] {
-      @include cv-node(blue);
+      @include cv-node(primary);
     }
 
     // regular + temp
     &[data-d='3'] {
-      @include cv-node(teal);
+      @include cv-node(harmful);
     }
 
     // regular + user
     &[data-d='4'] {
-      @include cv-node(green);
+      @include cv-node(purple);
     }
 
     // regular + init
     &[data-d='5'] {
-      @include cv-node(pink);
+      @include cv-node(success);
       font-weight: bold;
     }
 
     // unique + main
     &[data-d='6'] {
-      @include cv-node(orange);
+      @include cv-node(teal);
     }
 
     // unique + temp
     &[data-d='7'] {
-      @include cv-node(red);
+      @include cv-node(warning);
     }
 
     // unique + user
     &[data-d='8'] {
-      @include cv-node(purple);
+      @include cv-node(pink);
     }
 
     &:hover,

@@ -128,6 +128,7 @@ export class VpForm {
   }
 
   changed() {
+    if (!this.val) return false
     if (this.init.id == 0) return true
 
     const fields = ['val', 'ptag', 'prio', 'dic', 'tab']
