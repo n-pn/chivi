@@ -288,4 +288,21 @@
     width: rem(14px);
     height: rem(18px);
   }
+
+  // .lang {
+  //   position: absolute;
+  //   display: inline-block;
+
+  //   bottom: 0.25rem;
+  //   right: -0.125rem;
+  //   line-height: 0.75rem;
+  //   width: 0.75rem;
+  //   text-align: center;
+  //   font-size: 9px;
+  //   font-weight: 500;
+  //   text-transform: uppercase;
+  //   border-radius: 0.125rem;
+  //   // @include border();
+  //   @include linesd(--bd-main, $inset: false);
+  // }
 </style>

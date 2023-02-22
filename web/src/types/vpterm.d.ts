@@ -1,5 +1,7 @@
 declare namespace CV {
   interface VpTerm {
+    id: number
+
     dic: number
     tab: number
 
@@ -12,7 +14,6 @@ declare namespace CV {
     uname: string
     mtime: number
 
-    _flag: number
     state: string
   }
 }

@@ -11,43 +11,45 @@ require "../core/m1_dict"
 struct M1::M1TermView
   getter defns : Hash(String, Array(DbDefn))
 
-  def initialize(@words : Array(String), @uname : String, @wn_id : Int32, @w_temp = true)
+  def initialize(@forms : Array(String), @uname : String, @wn_id : Int32, @w_temp = true)
     @defns = DbDefn.repo.open_db do |db|
       sql = String.build do |str|
         str << "select * from defns where dic >= -4"
         str << " and val <> '' and key in ("
-        words.join(str, ",") { |_, s| s << '?' }
+        forms.join(str, ",") { |_, s| s << '?' }
         str << ")"
       end
 
-      db.query_all(sql, args: words, as: DbDefn).group_by(&.key)
+      db.query_all(sql, args: forms, as: DbDefn).group_by(&.key)
     end
 
     # @vdict = MtDict.load(@dname)
-    # @word_mtl = MtCore.load(@dname, @user)
+    # @form_mtl = MtCore.load(@dname, @user)
     # @name_mtl = TlName.new(@vdict)
   end
 
   def to_json(jb : JSON::Builder)
     jb.object do
-      @words.each do |word|
-        jb.field(word) {
-          entries = @defns[word]? || [] of DbDefn
+      @forms.each do |form|
+        jb.field(form) {
+          entries = @defns[form]? || [] of DbDefn
           entries.sort_by! { |e| {-e.dic, -e.tab, -e.mtime} }
 
-          hanviet = SP::MtCore.tl_sinovi(word, false)
+          hanviet = SP::MtCore.tl_sinovi(form, false)
 
           tag_hints = entries.map(&.ptag)
-          tag_hints.concat(gen_tag_hints(word)).uniq!
+          tag_hints.concat(gen_tag_hints(form)).uniq!
 
           val_hints = entries.flat_map(&.val.split('ǀ'))
-          val_hints.concat(gen_val_hints(word, hanviet, tag_hints)).uniq!
+          val_hints.concat(gen_val_hints(form, hanviet, tag_hints)).uniq!
+
+          current = extract_current(entries) || init_current(form, val_hints, tag_hints)
 
           jb.object {
-            jb.field "current", extract_current(entries)
+            jb.field "current", current
 
             jb.field "hanviet", hanviet
-            jb.field "pin_yin", SP::MtCore.tl_pinyin(word, false)
+            jb.field "pin_yin", SP::MtCore.tl_pinyin(form, false)
 
             jb.field "val_hints", val_hints
             jb.field "tag_hints", tag_hints
@@ -74,17 +76,36 @@ struct M1::M1TermView
     term_tabs[1]?.try(&.first)
   end
 
-  private def gen_tag_hints(word : String)
+  private def init_current(form : String,
+                           val_hints : Array(String),
+                           tag_hints : Array(String))
+    defn = DbDefn.new
+
+    defn.id = 0
+    defn.key = form
+
+    defn.val = val_hints.first
+    defn.ptag = tag_hints.first? || "Nr"
+
+    defn.dic = @wn_id
+    defn.tab = 1
+
+    defn.mtime = 0
+
+    defn
+  end
+
+  private def gen_tag_hints(form : String)
     ["Nr"]
   end
 
-  private def gen_val_hints(word : String, hanviet : String, tags : Array(String))
+  private def gen_val_hints(form : String, hanviet : String, tags : Array(String))
     [hanviet]
   end
 
   # private def add_hints(entry : TermView) : Nil
-  #   # entry.add_hints_from_mtl(@word_mtl)
-  #   entry.hints_tags_by_word
+  #   # entry.add_hints_from_mtl(@form_mtl)
+  #   entry.hints_tags_by_form
   #   # entry.hints_vals_by_tags(@name_mtl)
   #   entry.add_hint_from_regular_dict
   #   entry.add_preseed_hints
@@ -97,12 +118,12 @@ struct M1::M1TermView
   #   @first_val : String? = nil
   #   @first_tag : String? = nil
 
-  #   def initialize(@word : String, @vdict : MtDict, hanviet : String)
+  #   def initialize(@form : String, @vdict : MtDict, hanviet : String)
   #     @val_hints << hanviet
   #   end
 
   #   def get_active_term(with_user : String = "", with_temp : Bool = false) : VpTerm?
-  #     return unless node = @vdict.trie.find(@word)
+  #     return unless node = @vdict.trie.find(@form)
 
   #     if term = node.base
   #       add_hints_by_term(term)
@@ -130,8 +151,8 @@ struct M1::M1TermView
   #     @tag_hints << term.ptag.to_str unless term.ptag.unkn?
   #   end
 
-  #   def add_hints_from_mtl(word_mtl : MtCore) : Nil
-  #     mt_data = word_mtl.cv_plain(@word, cap_first: false)
+  #   def add_hints_from_mtl(form_mtl : MtCore) : Nil
+  #     mt_data = form_mtl.cv_plain(@form, cap_first: false)
   #     mtl_val = mt_data.to_txt
 
   #     @val_hints << mtl_val
@@ -146,18 +167,18 @@ struct M1::M1TermView
   #     @first_val ||= mtl_val
   #   end
 
-  #   def hints_tags_by_word
-  #     if TlName.is_human?(@word)
+  #   def hints_tags_by_form
+  #     if TlName.is_human?(@form)
   #       @tag_hints << "Nr"
   #       @first_tag = "Nr" if @vdict.kind.novel? || !@first_tag
   #     end
 
-  #     if TlName.is_affil?(@word)
+  #     if TlName.is_affil?(@form)
   #       @tag_hints << "Na"
   #       @first_tag ||= "Na" if @vdict.kind.novel? || !@first_tag
   #     end
 
-  #     if TlName::ATTRIBUTE.includes?(@word[-1]?) || @word[0]? == '姓'
+  #     if TlName::ATTRIBUTE.includes?(@form[-1]?) || @form[0]? == '姓'
   #       @tag_hints << "na"
   #     end
 
@@ -166,24 +187,24 @@ struct M1::M1TermView
 
   #   def hints_vals_by_tags(name_mtl : TlName) : Nil
   #     if @tag_hints.includes?("Nr")
-  #       list = name_mtl.tl_human(@word)
+  #       list = name_mtl.tl_human(@form)
   #       @val_hints.concat list
   #       @first_val = list.first if @first_tag == "Nr"
   #     end
 
   #     if @tag_hints.includes?("Na")
-  #       list = name_mtl.tl_affil(@word)
+  #       list = name_mtl.tl_affil(@form)
   #       @val_hints.concat list
   #       @first_val ||= list.first if @first_tag == "Na"
   #     end
 
   #     if @tag_hints.includes?("Nz")
-  #       list = name_mtl.tl_other(@word)
+  #       list = name_mtl.tl_other(@form)
   #       @val_hints.concat list
   #     end
 
   #     if @tag_hints.includes?("Nw")
-  #       title_val = name_mtl.tl_name(@word)
+  #       title_val = name_mtl.tl_name(@form)
   #       @val_hints << title_val
   #     end
   #   end
@@ -191,7 +212,7 @@ struct M1::M1TermView
   #   def add_hint_from_regular_dict
   #     return if @first_val || !@vdict.kind.novel?
 
-  #     if term = MtDict.regular.find(@word)
+  #     if term = MtDict.regular.find(@form)
   #       @first_val = term.vals.first
   #       @first_tag = term.tags.first
   #     else
@@ -201,11 +222,11 @@ struct M1::M1TermView
   #   end
 
   #   def add_preseed_hints : Nil
-  #     VpHint.seed_vals.find(@word).try { |x| @val_hints.concat(x) }
-  #     VpHint.seed_tags.find(@word).try { |x| @tag_hints.concat(x) }
+  #     VpHint.seed_vals.find(@form).try { |x| @val_hints.concat(x) }
+  #     VpHint.seed_tags.find(@form).try { |x| @tag_hints.concat(x) }
 
-  #     VpHint.user_vals.find(@word).try { |x| @val_hints.concat(x) }
-  #     VpHint.user_tags.find(@word).try { |x| @tag_hints.concat(x) }
+  #     VpHint.user_vals.find(@form).try { |x| @val_hints.concat(x) }
+  #     VpHint.user_tags.find(@form).try { |x| @tag_hints.concat(x) }
   #   end
 
   #   def to_json(jb : JSON::Builder, term : VpTerm?)

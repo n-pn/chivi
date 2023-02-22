@@ -44,8 +44,7 @@ abstract class CrawlTask
     end
 
     def existed?(ttl = 1.day)
-      return false unless info = File.info?(@path)
-      info.modification_time > Time.utc - ttl
+      File.info?(@path).try(&.modification_time.> Time.utc - ttl) || false
     end
   end
 

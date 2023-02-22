@@ -24,7 +24,7 @@ class YS::CrawlYscritByUser < CrawlTask
   # end
 
   def self.gen_link(u_id : Int32, page : Int32 = 1)
-    "https://api.yousuu.com/api/user/#{u_id}/comment?page=#{page}&t=#{Time.utc.to_unix_ms}"
+    "https://api.yousuu.com/api/user/#{u_id}/comment?page=#{page}"
   end
 
   DIR = "var/ysraw/crits-by-user"
@@ -52,18 +52,18 @@ class YS::CrawlYscritByUser < CrawlTask
     max_pages = queue_init.max_of(&.pgmax)
     crawler = new(false)
 
-    start.upto(max_pages) do |page|
-      queue_init.reject!(&.pgmax.< page)
+    start.upto(max_pages) do |pg_no|
+      queue_init.reject!(&.pgmax.< pg_no)
 
       queue = queue_init.map_with_index(1) do |init, index|
         Entry.new(
-          link: gen_link(init.id, page),
-          path: gen_path(init.id, page),
+          link: gen_link(init.id, pg_no),
+          path: gen_path(init.id, pg_no),
           name: "#{index}/#{queue_init.size}"
         )
       end
 
-      queue.reject!(&.existed?(page.days))
+      queue.reject!(&.existed?(pg_no.days))
       crawler.crawl!(queue)
     end
   end

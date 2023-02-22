@@ -41,7 +41,7 @@ class YS::CrawlYsbook < CrawlTask
       opt.on("--reseed-proxies", "Refresh proxies from init lists") { reseed_proxies = true }
     end
 
-    queue = gen_queue(min_id, max_id)
+    queue = gen_queue(min_id, max_id).reject!(&.existed?(1.days))
     queue = crawl_mode.rearrange!(queue)
 
     worker = new(reseed_proxies)

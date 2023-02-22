@@ -43,6 +43,8 @@ class M1::DbDefn
 
   def to_json(jb : JSON::Builder)
     jb.object do
+      jb.field "id", self.id
+
       jb.field "dic", self.dic
       jb.field "tab", self.tab
 
@@ -55,8 +57,7 @@ class M1::DbDefn
       jb.field "uname", self.uname
       jb.field "mtime", self.utime
 
-      jb.field "_flag", self._flag
-      jb.field "state", _flag == -1 ? "Xoá" : (_prev > 0 ? "Sửa" : "Thêm")
+      jb.field "state", tab < 0 ? "Xoá" : (_prev > 0 ? "Sửa" : "Thêm")
     end
   end
 

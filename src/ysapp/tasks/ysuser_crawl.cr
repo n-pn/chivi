@@ -6,7 +6,7 @@ class YS::CrawlYsuser < CrawlTask
   UPSERT_SQL = YsUser.upsert_sql(YsUser::RAW_UPSERT_FIELDS)
 
   def db_seed_tasks(json : String)
-    return if json == "不存在该用户"
+    return if json.includes?("不存在该用户")
     args = RawYsUser.from_raw_json(json).changeset
     YsUser.open_tx(&.exec(UPSERT_SQL, args: args))
   end
@@ -23,7 +23,7 @@ class YS::CrawlYsuser < CrawlTask
   end
 
   def self.run!(argv = ARGV)
-    queue = gen_queue
+    queue = gen_queue.reject!(&.existed?(1.days))
     new(false).crawl!(queue)
   end
 

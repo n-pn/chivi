@@ -131,7 +131,7 @@ class M1::MtDict
       db.query_each(sql) do |rs|
         key, tags, mtls = rs.read(String, String, String)
 
-        val = mtls.split('ǀ')[0]
+        val = mtls.split(/[|ǀ\t]/).first
         tag = PosTag.map_ctb(tags.split(' ')[0], key)
 
         node = @trie.find!(key)
@@ -152,7 +152,7 @@ class M1::MtDict
     if val.empty?
       node.term = nil
     else
-      val = val.split(/[\ǀ\|]/).first.strip
+      val = val.split(/[ǀ|\t]/).first
       node.term = MtTerm.new(key, val, dic: @lbl, ptag: ptag, prio: prio)
     end
   end

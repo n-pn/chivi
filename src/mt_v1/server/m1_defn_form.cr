@@ -18,6 +18,7 @@ class M1::DefnForm
   def after_initialize
     @key = @key.gsub(/[\p{C}\s]+/, " ").strip
     @val = @val.gsub(/[\p{C}\s]+/, " ").strip.unicode_normalize(:nfkc)
+    @val = @val.split(/[|ǀ]/, remove_empty: true).map!(&.strip).join('\t')
   end
 
   private def min_privi(dic : Int32)

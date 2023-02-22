@@ -5,8 +5,8 @@
   import Postag from '$gui/parts/Postag.svelte'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Vhint from './TranHint.svelte'
-  import Vutil from './TranUtil.svelte'
+  import Vhint from './DefnHint.svelte'
+  import Vutil from './DefnUtil.svelte'
   import { rel_time } from '$utils/time_utils'
 
   const save_modes = [
@@ -41,7 +41,7 @@
   // $: [lbl_state, btn_state] = vpterm.state
 
   async function submit() {
-    vpterm['_ctx'] = `${$ztext}:${$zfrom}:${$vdict.dname}`
+    vpterm['_ctx'] = `${$ztext}:${$zfrom}:${$vdict.vd_id}`
 
     const res = await fetch('/_m1/defns', {
       method: 'POST',

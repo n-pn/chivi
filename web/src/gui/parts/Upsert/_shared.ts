@@ -70,12 +70,17 @@ export const related_words = (ztext: string, zfrom: number, zupto: number) => {
     .filter(Boolean)
 }
 
+export const req_privi = (dic: number, tab: number = 1) => {
+  const privi = [0, 2, 1, 3][tab]
+  return dic < 0 ? privi : privi - 1
+}
+
 export class VpForm {
   init: Partial<CV.VpTerm>
 
-  static from(key: string, tab: number = 0, dic: number = 0) {
-    const term = { key, tab, dic }
-    return new VpForm(term, [], [], dic)
+  static from(key: string, dic: number = 0, privi = -1) {
+    const term = { key, val: '', ptag: '', wseg: 2, dic, tab: 1 }
+    return new VpForm(term, dic, privi)
   }
 
   key: string
@@ -85,22 +90,26 @@ export class VpForm {
   prio: number
 
   dic: number = 0
+  tab: number = 0
 
-  constructor(
-    init: Partial<CV.VpTerm>,
-    val_hints = [],
-    tag_hints = [],
-    dic = -4
-  ) {
-    this.dic = dic
+  constructor(init: Partial<CV.VpTerm>, wn_id = 0, privi = 0) {
+    this.init = init
+
     this.key = init.key
+    this.val = init.val
+    this.ptag = init.ptag
+    this.prio = init.prio
 
-    this.init = Object.assign({}, init)
-    this.init.state ||= 'Xoá'
-
-    this.val = init.val || val_hints[0] || ''
-    this.ptag = init.ptag || tag_hints[0] || ''
-    this.prio = init.prio || 2
+    if (privi < 1) {
+      this.dic = wn_id
+      this.tab = 2
+    } else if (privi == 1) {
+      this.dic = wn_id
+      this.tab = 1
+    } else {
+      this.dic = this.init.dic
+      this.tab = this.init.tab
+    }
   }
 
   reset() {
@@ -118,13 +127,10 @@ export class VpForm {
     return this
   }
 
-  get state() {
-    if (!this.val) return ['Xoá', `_harmful`]
-    return this.init.state != 'Xoá' ? ['Sửa', `_primary`] : ['Lưu', `_success`]
-  }
-
   changed() {
-    const fields = ['val', 'ptag', 'prio']
+    if (this.init.id == 0) return true
+
+    const fields = ['val', 'ptag', 'prio', 'dic', 'tab']
 
     for (const field of fields) {
       if (this[field] != this.init[field]) return true
@@ -133,10 +139,8 @@ export class VpForm {
     return false
   }
 
-  min_privi() {
-    if (this.dic == -4 || this.dic > 0) return 0
-    if (this.dic == -1 || this.dic == 10) return 1
-    return 2
+  get req_privi() {
+    return req_privi(this.dic, this.tab)
   }
 
   toJSON(ztext: string, zfrom: number) {

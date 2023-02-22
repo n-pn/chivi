@@ -7,7 +7,7 @@
   import { upsert_dicts } from '$utils/vpdict_utils'
   import { api_call } from '$lib/api_call'
 
-  import { related_words, VpForm } from './Upsert/_shared'
+  import { related_words, VpForm, hint } from './Upsert/_shared'
 
   import pt_labels from '$lib/consts/postag_labels.json'
 
@@ -41,6 +41,7 @@
 </script>
 
 <script lang="ts">
+  import { page } from '$app/stores'
   import { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -49,16 +50,16 @@
 
   import Postag from './Postag.svelte'
 
-  import Header from './Upsert/Header.svelte'
+  import PickForm from './Upsert/PickForm.svelte'
+  import PrevDefn from './Upsert/PrevDefn.svelte'
 
-  import Emend from './Upsert/Emend.svelte'
+  import DefnHint from './Upsert/DefnHint.svelte'
+  import DefnUtil from './Upsert/DefnUtil.svelte'
 
-  import TranHint from './Upsert/TranHint.svelte'
-  import TranUtil from './Upsert/TranUtil.svelte'
+  import TermOpts from './Upsert/TermOpts.svelte'
+  import WsegRank from './Upsert/WsegRank.svelte'
 
-  import SegRank from './Upsert/SegRank.svelte'
-
-  import Footer from './Upsert/Footer.svelte'
+  import HelpUrls from './Upsert/HelpUrls.svelte'
 
   export let on_change = () => {}
   export let on_destroy = () => {}
@@ -73,8 +74,11 @@
     tag_hints: [],
   }
 
+  let privi = $page.data._user.privi
+  let show_opts = false
+
   let key = $ztext.substring($zfrom, $zupto)
-  let form = VpForm.from(key)
+  let form = VpForm.from(key, $vdict.vd_id, privi)
 
   $: dicts = upsert_dicts($vdict)
   $: update_data($ztext, $zfrom, $zupto)
@@ -82,33 +86,27 @@
   let cached: Record<string, JsonData> = {}
 
   async function update_data(ztext: string, zfrom: number, zupto: number) {
+    const vd_id = $vdict.vd_id
     const words = related_words(ztext, zfrom, zupto)
 
     const body = words.filter((w) => !cached[w]).slice(0, 5)
 
     if (body.length > 0) {
-      const api = `/_m1/terms/query?vd_id=${$vdict.vd_id}`
+      const api = `/_m1/terms/query?vd_id=${vd_id}`
       const res: Record<string, JsonData> = await api_call(api, body, 'POST')
       for (const [key, data] of Object.entries(res)) cached[key] = data
     }
 
     data = cached[words[0]]
-    form = new VpForm(
-      data.current || { key, dic: $vdict.vd_id },
-      data.val_hints,
-      data.tag_hints,
-      $vdict.vd_id
-    )
+    console.log(data.current)
+
+    form = new VpForm(data.current, vd_id, privi)
   }
 
   let field: HTMLInputElement
   const refocus = () => field && field.focus()
 
-  $: if (form) {
-    refocus()
-  }
-
-  $: [lbl_state, btn_state] = form.state
+  $: if (form) refocus()
 
   const copy_raw = () => navigator.clipboard.writeText(key)
 
@@ -125,6 +123,8 @@
       on_change()
     }
   }
+
+  $: btn_style = !form.val ? `_harmful` : form.init.id ? `_primary` : `_success`
 </script>
 
 <Dialog
@@ -159,7 +159,7 @@
       </svelte:fragment>
     </Gmenu>
 
-    <Header pinyin={data.pin_yin} bind:output={key} />
+    <PickForm pinyin={data.pin_yin} bind:output={key} />
 
     <button
       type="button"
@@ -201,11 +201,11 @@
 
   <main class="upsert-body">
     {#if $ctrl.tab == 0}
-      <Emend {form} {dicts} />
+      <PrevDefn {form} {dicts} />
 
       <upsert-main>
-        <TranHint hanviet={data.hanviet} val_hints={data.val_hints} bind:form />
-        <div class="value" class:_fresh={form.init.state == 'Xoá'}>
+        <DefnHint hanviet={data.hanviet} val_hints={data.val_hints} bind:form />
+        <div class="value" class:_fresh={form.init.id == 0}>
           <input
             type="text"
             class="-input"
@@ -219,19 +219,31 @@
           </button>
         </div>
 
-        <TranUtil bind:form />
+        <DefnUtil bind:form />
       </upsert-main>
 
+      {#if show_opts}<TermOpts bind:form vdict={$vdict} {privi} />{/if}
+
       <upsert-foot>
-        <SegRank bind:form />
+        <WsegRank bind:form />
 
         <btn-group>
           <button
-            class="m-btn _lg _fill {btn_state}"
+            class="m-btn _lg _fill {btn_style}"
+            class:_active={show_opts}
+            data-kbd="&bsol;"
+            data-key="Backslash"
+            use:hint={'Thay đổi lựa chọn lưu trữ'}
+            on:click={() => (show_opts = !show_opts)}>
+            <SIcon name="privi-{form.req_privi}" iset="sprite" />
+          </button>
+
+          <button
+            class="m-btn _lg _fill {btn_style}"
             data-kbd="↵"
             disabled={!form.changed()}
             on:click={submit_val}>
-            <span class="submit-text">{lbl_state}</span>
+            <span class="submit-text">Lưu</span>
           </button>
         </btn-group>
       </upsert-foot>
@@ -240,7 +252,7 @@
     {/if}
   </main>
 
-  <Footer {key} />
+  <HelpUrls {key} />
 </Dialog>
 
 {#if $ctrl.state == 2}
@@ -415,7 +427,17 @@
 
   btn-group {
     @include flex();
-    gap: 0.5rem;
+
+    > button:first-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    > button:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      margin-left: -1px;
+    }
   }
 
   .empty {

@@ -53,9 +53,9 @@ then
   yarn build yscrit_crawl_by_user
   rsync-fast "bin/yscrit_crawl_by_user" "$SSH/bin"
 
-  rsync-fast "$DIR/crits" $SSH_DIR
+  # rsync-fast "$DIR/crits" $SSH_DIR
   rsync-fast "$DIR/crits-by-user" $SSH_DIR
-  rsync-fast "$DIR/crits-by-list" $SSH_DIR
+  # rsync-fast "$DIR/crits-by-list" $SSH_DIR
 fi
 
 if [[ $1 == "all" || $* == *repls* ]]
