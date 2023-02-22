@@ -18,11 +18,15 @@ class SP::Btran
     @client = HTTP::Client.new(URI.parse(ENDPOINT))
   end
 
-  class TranslateResult
+  struct TlEntry
     include JSON::Serializable
-
     getter text : String
-    getter to : String?
+    # getter to : String?
+  end
+
+  struct TlOutput
+    include JSON::Serializable
+    getter translations : Array(TlEntry)
   end
 
   def translate(terms : Enumerable(String),
@@ -43,14 +47,14 @@ class SP::Btran
     res = @client.post(url, headers: @headers, body: body)
     raise res.body unless res.status.success?
 
-    output = Array(NamedTuple(translations: Array(TranslateResult))).from_json(res.body)
+    output = Array(TlOutput).from_json(res.body)
 
     raise "size mismatch" if output.size != terms.size
 
     output.map_with_index do |entry, i|
       term = terms[i]
 
-      data = entry[:translations].map do |item|
+      data = entry.translations.map do |item|
         text = item.text
         no_cap ? text.sub(/^\*,\s/, "") : text
       end
@@ -105,24 +109,24 @@ class SP::Btran
       @[JSON::Field(key: "prefixWord")]
       getter prefix_word : String
 
-      @[JSON::Field(key: "backTranslations")]
-      getter back_translations : Array(BackTranslation)
+      # @[JSON::Field(key: "backTranslations")]
+      # getter back_translations : Array(BackTranslation)
 
-      class BackTranslation
-        include JSON::Serializable
+      # class BackTranslation
+      #   include JSON::Serializable
 
-        @[JSON::Field(key: "normalizedText")]
-        getter normalized_text : String
+      #   @[JSON::Field(key: "normalizedText")]
+      #   getter normalized_text : String
 
-        @[JSON::Field(key: "displayText")]
-        getter display_text : String
+      #   @[JSON::Field(key: "displayText")]
+      #   getter display_text : String
 
-        @[JSON::Field(key: "numExamples")]
-        getter num_examples : Int32
+      #   @[JSON::Field(key: "numExamples")]
+      #   getter num_examples : Int32
 
-        @[JSON::Field(key: "frequencyCount")]
-        getter frequency_count : Int32
-      end
+      #   @[JSON::Field(key: "frequencyCount")]
+      #   getter frequency_count : Int32
+      # end
     end
   end
 

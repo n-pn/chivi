@@ -46,11 +46,11 @@ class SP::Deepl
     end
   end
 
-  class TranslateResult
+  struct TranslateResult
     include JSON::Serializable
 
     getter text : String
-    getter detected_source_language : String?
+    # getter detected_source_language : String?
   end
 
   ####
