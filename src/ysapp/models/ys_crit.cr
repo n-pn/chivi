@@ -93,7 +93,7 @@ class YS::Yscrit
     load_html_from_disk("de", persist: true) { |ztext| TranUtil.deepl(ztext) }
   end
 
-  private def load_html_from_disk(type : String, persist : Bool = true)
+  private def load_html_from_disk(type : String, persist : Bool = true, &)
     YsUtil.read_zip(self.zip_path(type), filename(type, "htm")) do
       ztext = self.ztext
 
