@@ -99,20 +99,6 @@
 
 #   @[AC::Route::POST("/api/qtran", body: :form)]
 #   @[AC::Route::POST("/_db/qtran", body: :form)]
-#   def cv_post(form : ConvertForm,
-#               dname : String = "combine")
-#     form.validate!(_privi)
-#     engine = MtCore.generic_mtl(dname, _viuser.uname)
-
-#     output = String.build do |str|
-#       form.input.each_line do |line|
-#         engine.cv_plain(line).to_txt(str)
-#         str << '\n'
-#       end
-#     end
-
-#     render text: output
-#   end
 
 #   @[AC::Route::POST("/_db/cv_chap")]
 #   def cv_chap(wn_id : Int32 = 0, cv_title : String = "none", label : String? = nil)

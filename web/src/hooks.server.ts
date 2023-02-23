@@ -28,7 +28,9 @@ const api_hosts = {
 
 export const handleFetch = (({ event, request, fetch }) => {
   const url = new URL(request.url)
-  const host = api_hosts[url.pathname.split('/')[1]]
+
+  const head = url.pathname.split('/')[1]
+  const host = api_hosts[head]
 
   if (!host) return fetch(request)
 
@@ -42,7 +44,7 @@ export const handleFetch = (({ event, request, fetch }) => {
   headers.set('cookie', event.request.headers.get('cookie'))
   headers.delete('connection')
 
-  return globalThis.fetch(url, { method, headers, body })
+  return fetch(url, { method, headers, body })
 }) satisfies HandleFetch
 
 export const handleError = (({ event, error }) => {

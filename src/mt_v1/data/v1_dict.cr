@@ -7,7 +7,7 @@ class M1::DbDict
 
   field id : Int32, primary: true
 
-  field dname : String
+  field dname : String = ""
 
   field label : String = ""
   field brief : String = ""

@@ -1,14 +1,31 @@
-import { error } from '@sveltejs/kit'
-import { make_url } from './shared'
+import { home_nav, nav_link } from '$gui/global/header_util'
 
-export async function load({ fetch, url, params }) {
-  const api_url = make_url(url, true)
-  const api_res = await fetch(api_url)
+import { api_get } from '$lib/api_call'
 
-  if (!api_res.ok) throw error(api_res.status, await api_res.text())
+type Data = { cvmtl: string; ztext: string; wn_id: number }
 
-  const cvdata = await api_res.text()
+const qtran_icons = {
+  notes: 'notes',
+  posts: 'user',
+  links: 'link',
+  crits: 'stars',
+}
 
-  const { type, name } = params
-  return { type, name, cvdata }
+export async function load({ fetch, url, params: { type, name } }) {
+  const wn_id = +url.searchParams.get('wn_id')
+  const path = `/_m1/qtran/cached/?type=${type}&name=${name}&wn_id=${wn_id}`
+
+  const _meta: App.PageMeta = {
+    title: `Dịch nhanh: [${type}/${name}]`,
+    desc: 'Dịch nhanh từ tiếng Trung sang tiếng Việt',
+    left_nav: [
+      home_nav('tm'),
+      nav_link('/qtran', 'Dịch nhanh', 'bolt', { show: 'ts' }),
+      nav_link(name, `[${name}]`, qtran_icons[type], { kind: 'title' }),
+    ],
+    show_config: true,
+  }
+
+  const data = await api_get<Data>(path, fetch)
+  return { ...data, _meta }
 }

@@ -61,10 +61,15 @@ class YS::CritCtrl < AC::Base
     ycrit = Yscrit.find!({id: crit_id})
     repls = Ysrepl.query.where("yscrit_id = ?", crit_id)
 
+    yuser = Ysuser.find!({id: ycrit.ysuser_id})
     vbook = CvBook.find({id: ycrit.nvinfo_id})
+    ylist = Yslist.find({id: ycrit.yslist_id})
+
     render json: {
-      entry: CritView.new(ycrit),
+      ycrit: CritView.new(ycrit),
+      yuser: UserView.new(yuser),
       vbook: vbook ? BookView.new(vbook) : nil,
+      ylist: ylist ? ListView.new(ylist) : nil,
       repls: repls.with_ysuser.map { |x| ReplView.new(x) },
     }
   rescue err
@@ -74,11 +79,8 @@ class YS::CritCtrl < AC::Base
   @[AC::Route::GET("/crits/:crit_id/ztext", converters: {crit_id: ConvertBase32})]
   def ztext(crit_id : Int64)
     ycrit = Yscrit.find!({id: crit_id})
-    vdict = ycrit.vdict
 
-    response.headers["X-DNAME"] = vdict.dname
-    response.headers["X-BNAME"] = vdict.label
-
+    response.headers["X-WN_ID"] = ycrit.nvinfo_id.to_s
     render text: ycrit.ztext
   rescue err
     render :not_found, text: "Đánh giá không tồn tại"

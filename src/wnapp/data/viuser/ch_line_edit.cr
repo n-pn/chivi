@@ -3,6 +3,7 @@ require "crorm/sqlite3"
 
 class WN::ChLineEdit
   include Crorm::Model
+  @@table = "line_edits"
 
   field id : Int32, primary: true
 
@@ -21,15 +22,16 @@ class WN::ChLineEdit
   field ctime : Int64 = Time.utc.to_unix
   field _flag : Int32 = 0
 
-  def save!(db = @@db)
-    fields, values = get_changes
-    db.insert(@@table, fields, values)
+  def save!(repo : SQ3::Repo = self.classrepo)
+    fields, values = db_changes()
+    repo.insert(@@table, fields, values, "insert")
   end
 
   ###
 
-  @@table = "line_edits"
-  class_getter db = Crorm::Sqlite3::Repo.new(self.db_path, self.init_sql)
+  class_getter repo : SQ3::Repo do
+    SQ3::Repo.new(self.db_path, self.init_sql)
+  end
 
   @[AlwaysInline]
   def self.db_path

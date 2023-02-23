@@ -3,6 +3,7 @@ require "crorm/sqlite3"
 
 class WN::ChTextEdit
   include Crorm::Model
+  @@table = "text_edits"
 
   field id : Int32, primary: true
 
@@ -18,23 +19,22 @@ class WN::ChTextEdit
   field ctime : Int64 = Time.utc.to_unix
   field _flag : Int32 = 0
 
-  def save!(db = @@db)
-    fields, values = get_changes
-    db.insert(@@table, fields, values)
+  def save!(repo : SQ3::Repo = self.class.repo)
+    fields, values = db_changes()
+    repo.insert(@@table, fields, values)
   end
 
   ###
 
-  @@table = "text_edits"
-  class_getter db = Crorm::Sqlite3::Repo.new(db_path, init_sql)
+  class_getter repo : SQ3::Repo { SQ3::Repo.new(db_path, init_sql) }
 
-  def self.db_path
-    "var/chaps/users/full-edits.db"
+  def self.db_path(name : String = "full-edits")
+    "var/chaps/users/#{name}.db"
   end
 
-  def self.init_sql
+  def self.init_sql(table : String = @@table)
     <<-SQL
-    create table if not exists #{@@table} (
+    create table if not exists #{table} (
       id integer primary key,
       --
       sname varchar not null,
@@ -51,10 +51,8 @@ class WN::ChTextEdit
       _flag integer not null default 0
     );
 
-    create index if not exists user_idx on #{@@table}(uname, _flag);
-    create index if not exists book_idx on #{@@table}(sname, s_bid);
-
-    pragma journal_mode = WAL;
+    create index if not exists user_idx on #{table}(uname, _flag);
+    create index if not exists book_idx on #{table}(sname, s_bid);
     SQL
   end
 end

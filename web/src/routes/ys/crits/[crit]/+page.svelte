@@ -5,7 +5,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ entry: crit, vbook: book } = data)
+  $: ({ ycrit: crit, ylist: list, yuser: user, vbook: book } = data)
 </script>
 
 <nav class="bread">
@@ -23,5 +23,5 @@
 </nav>
 
 <article class="article island _narrow">
-  <YscritCard {crit} {book} view_all={true} />
+  <YscritCard {crit} {book} {list} {user} view_all={true} />
 </article>

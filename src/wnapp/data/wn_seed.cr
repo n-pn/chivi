@@ -222,8 +222,8 @@ class WN::WnSeed
   #####
 
   def save!(repo = self.class.repo, @mtime = Time.utc.to_unix)
-    fields, values = self.get_changes
-    repo.insert(@@table, fields, values, :replace)
+    fields, values = self.db_changes
+    repo.insert(@@table, fields, values, "replace")
   end
 
   ####
@@ -258,7 +258,7 @@ class WN::WnSeed
   def self.get(wn_id : Int32, sname : String) : self | Nil
     @@repo.open_db do |db|
       query = "select * from #{@@table} where wn_id = ? and sname = ?"
-      db.db.query_one?(query, wn_id, sname, as: WnSeed)
+      db.query_one?(query, wn_id, sname, as: WnSeed)
     end
   end
 

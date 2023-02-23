@@ -25,14 +25,12 @@ class YS::Ysrepl
   getter ztext : String { load_ztext_from_disk }
   getter vhtml : String { load_vhtml_from_disk }
 
-  def vdict
-    YsUtil.vdict(self.yscrit.nvinfo_id)
-  end
+  ZIP_DIR = "var/ysapp/repls"
 
   def zip_path(type = "zh")
     crit_uuid = self.yscrit.origin_id
     prefix = crit_uuid[0..2]
-    "var/ysapp/repls/#{prefix}-#{type}/#{crit_uuid}.zip"
+    "#{ZIP_DIR}/#{prefix}-#{type}/#{crit_uuid}.zip"
   end
 
   def load_ztext_from_disk : String
@@ -59,7 +57,7 @@ class YS::Ysrepl
     if ztext.empty? || ztext == "$$$"
       html = "<p><em>Không có nội dung</em></p>"
     else
-      return ERROR_BODY unless tran = TranUtil.qtran(ztext, vdict.dname)
+      return ERROR_BODY unless tran = TranUtil.qtran(ztext, self.yscrit.nvinfo_id)
       html = tran.split('\n').map { |x| "<p>#{x}</p>" }.join('\n')
     end
 

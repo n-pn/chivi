@@ -51,7 +51,6 @@ function quick_read_v2({ bslug }, { sname, chidx, locked }) {
 }
 
 // prettier-ignore
-const qtran_icons = { notes: 'notes', posts: 'user', links: 'link', crits: 'stars', }
 
 const error: App.PageMeta = {
   title: 'Lỗi hệ thống',
@@ -60,79 +59,11 @@ const error: App.PageMeta = {
 
 type PageMetaFn = (data: Record<string, any>) => App.PageMeta
 const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
-  '/': {
-    title: 'Trang chủ',
-    desc: 'Truyện Tàu dịch máy, đánh giá truyện, dịch nhanh tiếng Trung...',
-    left_nav: [home_nav('ps')],
-    right_nav: [
-      nav_link('/qtran', 'Dịch nhanh', 'bolt', { show: 'tm' }),
-      nav_link('/ys/crits', 'Đánh giá', 'stars', { show: 'tm' }),
-    ],
-  },
-
   // forum pages
   '/forum': {
     title: 'Diễn đàn',
     left_nav: [home_nav('tm'), nav_link('/forum', 'Diễn đàn', 'messages')],
   },
-
-  // quick trans pages
-  '/qtran': {
-    title: 'Dịch nhanh',
-    desc: 'Dịch nhanh từ tiếng Trung sang tiếng Việt',
-    left_nav: [home_nav('tm'), nav_link('/qtran', 'Dịch nhanh', 'bolt')],
-  },
-  '/qtran/[type]/[name]': ({ type, name }) => ({
-    title: `Dịch nhanh: [${type}/${name}]`,
-    desc: 'Dịch nhanh từ tiếng Trung sang tiếng Việt',
-    left_nav: [
-      home_nav('tm'),
-      nav_link('/qtran', 'Dịch nhanh', 'bolt', { show: 'ts' }),
-      // prettier-ignore
-      nav_link(name, `[${name}]`, qtran_icons[type], { kind: 'title', }),
-    ],
-    show_config: true,
-  }),
-
-  // yousuu review pages
-  '/ys/crits': {
-    title: 'Đánh giá truyện',
-    left_nav: [home_nav('tm'), nav_link('/ys/crits', 'Đánh giá', 'stars')],
-    right_nav: [nav_link('/ys/lists', 'Thư đơn', 'bookmarks', { show: 'tm' })],
-  },
-  '/ys/crits/[crit]': ({ entry: { id: crit_id }, vbook }) => ({
-    title: `Đánh giá [${crit_id}]`,
-    desc: `Đánh giá cho bộ truyện ${vbook.btitle}`,
-    left_nav: [
-      home_nav('', ''),
-      nav_link('/ys/crits', 'Đánh giá truyện', 'stars', { show: 'tm' }),
-      nav_link(crit_id, `[${crit_id}]`, null, { kind: 'zseed' }),
-    ],
-    right_nav: [nav_link('/ys/lists', 'Thư đơn', 'bookmarks', { show: 'tm' })],
-  }),
-
-  // yousuu booklist pages
-  '/ys/lists': {
-    title: 'Thư đơn',
-    left_nav: [home_nav('tm'), nav_link('/ys/lists', 'Thư đơn', 'bookmarks')],
-    right_nav: [nav_link('/ys/crits', 'Đánh giá', 'stars', { show: 'tm' })],
-  },
-  '/ys/lists/[list]': ({ ylist }) => {
-    if (!ylist) return error
-    const { id, vname, vdesc, vslug, uslug } = ylist
-
-    return {
-      title: `Thư đơn: ${vname}`,
-      desc: vdesc,
-      left_nav: [
-        home_nav('', ''),
-        nav_link('/ys/lists', 'Thư đơn', 'bookmarks', { show: 'tm' }),
-        nav_link(`${id}${vslug}-${uslug}`, vname, null, { kind: 'title' }),
-      ],
-      right_nav: [nav_link('/ys/crits', 'Đánh giá', 'stars', { show: 'tm' })],
-    }
-  },
-
   // new book pages
   '/wn': {
     title: 'Danh sách truyện',

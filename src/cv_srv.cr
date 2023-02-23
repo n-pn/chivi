@@ -118,6 +118,10 @@ abstract class AC::Base
 
   #####
 
+  private def _read_cookie(name : String)
+    cookies["name"]?.try(&.value)
+  end
+
   private def _paginate(min = 5, max = 100)
     pg_no = params["pg"]?.try(&.to_i?) || 1
     limit = params["lm"]?.try(&.to_i?) || min

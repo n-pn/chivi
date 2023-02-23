@@ -51,6 +51,6 @@ class M1::DefnForm
 
     defn._ctx = @_ctx
 
-    defn.tap(&.save!)
+    defn.tap(&.create!)
   end
 end

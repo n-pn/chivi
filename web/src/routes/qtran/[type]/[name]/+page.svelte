@@ -1,23 +1,15 @@
 <script lang="ts">
-  import { page } from '$app/stores'
-  import { make_url } from './shared'
+  import { Footer, SIcon } from '$gui'
 
-  import { Footer, SIcon, Crumb } from '$gui'
-
-  import MtPage from '$gui/sects/MtPage.svelte'
+  import MtPage from '$gui/sects/MtPage2.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  const on_change = async () => {
-    const url = make_url($page.url)
-    data.cvdata = await fetch(url).then((r) => r.text())
-  }
+  $: ({ ztext, cvmtl, wn_id } = data)
 </script>
 
-<Crumb tree={[['Dịch nhanh', '/qtran']]} />
-
-<MtPage cvdata={data.cvdata} {on_change} no_title={true}>
+<MtPage {ztext} {cvmtl} {wn_id}>
   <Footer slot="footer">
     <div class="foot">
       <button

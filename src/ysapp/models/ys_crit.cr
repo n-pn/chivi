@@ -42,16 +42,19 @@ class YS::Yscrit
   getter ztext : String { load_ztext_from_disk }
   getter vhtml : String { load_vhtml_from_disk }
 
-  def vdict
-    YsUtil.vdict(self.nvinfo_id)
+  ZIP_DIR = "var/ysapp/crits-zip"
+  TXT_DIR = "var/ysapp/crits-txt"
+
+  private def group_by
+    self.origin_id[0..3]
   end
 
   def zip_path(type = "zh")
-    "var/ysapp/crits/#{self.ysbook_id}-#{type}.zip"
+    "#{ZIP_DIR}/#{group_by}-#{type}.zip"
   end
 
   def tmp_path(type = "zh")
-    "var/ysapp/crits.tmp/#{self.ysbook_id}-#{type}"
+    "#{TXT_DIR}/#{group_by}-#{type}"
   end
 
   def filename(type = "zh", ext = "txt")
@@ -66,7 +69,9 @@ class YS::Yscrit
   end
 
   def load_vhtml_from_disk : String
-    load_html_from_disk("vi", persist: true) { |ztext| TranUtil.qtran(ztext, vdict.dname) }
+    load_html_from_disk("vi", persist: true) do |ztext|
+      TranUtil.qtran(ztext, self.nvinfo_id, "txt")
+    end
   end
 
   def load_btran_from_disk : String
@@ -104,7 +109,7 @@ class YS::Yscrit
     File.write(file_path, content)
 
     Log.debug { "save #{file_path} to #{self.zip_path(type)}" }
-    YsUtil.zipping(self.zip_path(type), dir_path)
+    YsUtil.zip_data(self.zip_path(type), dir_path)
   end
 
   #############

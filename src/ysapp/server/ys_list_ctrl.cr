@@ -61,10 +61,12 @@ class YS::ListCtrl < AC::Base
     books = CvBook.preload(crits.map(&.nvinfo_id))
 
     render json: {
-      ylist: ListView.new(ylist),
+      ylist: ListView.new(ylist, true),
       yuser: UserView.new(yuser),
+
       crits: CritView.as_list(crits, false),
       books: BookView.as_hash(books),
+
       pgidx: pg_no,
       pgmax: _pgidx(ylist.book_count, limit),
     }

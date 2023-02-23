@@ -4,7 +4,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ lists, pgidx, pgmax } = data)
+  $: ({ lists, users, pgidx, pgmax } = data)
 </script>
 
-<YslistList {lists} {pgidx} {pgmax} _sort="score" />
+<YslistList {lists} {users} {pgidx} {pgmax} _sort="score" />

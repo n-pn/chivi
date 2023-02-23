@@ -4,7 +4,7 @@ require "http/client"
 module TranUtil
   extend self
 
-  CVMTL_URL = "http://localhost:5010/_db/qtran"
+  CVMTL_URL = "http://localhost:5110/_m1/qtran"
   BTRAN_URL = "http://localhost:5501/_sp/btran"
   DEEPL_URL = "http://localhost:5501/_sp/deepl"
 
@@ -14,9 +14,9 @@ module TranUtil
   JSON_HEADER = HTTP::Headers{"content-type" => "application/json"}
   TEXT_HEADER = HTTP::Headers{"content-type" => "text/plain"}
 
-  def qtran(input : String, dname : String) : String?
-    body = {input: input, dname: dname, mode: "plain"}.to_json
-    call_api(CVMTL_URL, JSON_HEADER, body)
+  def qtran(input : String, wn_id : Int32 = 0, format = "mtl") : String?
+    url = "#{CVMTL_URL}?wn_id=#{wn_id}&format=#{format}"
+    call_api(url, TEXT_HEADER, input)
   end
 
   def btran(input : String, no_cap : Bool = false) : String?
