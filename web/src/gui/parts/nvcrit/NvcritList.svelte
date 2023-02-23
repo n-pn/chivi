@@ -71,8 +71,18 @@
   {#each ys.crits as crit}
     {@const view_all = crit.vhtml.length < 600}
     {@const book = ys.books[crit.wn_id]}
+    {@const user = ys.users[crit.user_id]}
+    {@const list = ys.lists[crit.list_id]}
+
     {#key crit.id}
-      <YscritCard {crit} {book} {show_book} {show_list} {view_all} />
+      <YscritCard
+        {crit}
+        {user}
+        {book}
+        {list}
+        {show_book}
+        {show_list}
+        {view_all} />
     {/key}
   {/each}
 </div>

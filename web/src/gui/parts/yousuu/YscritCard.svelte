@@ -5,14 +5,16 @@
 </script>
 
 <script lang="ts">
+  import { SIcon, Stars } from '$gui'
   import Truncate from '$gui/atoms/Truncate.svelte'
 
-  import { SIcon, Stars } from '$gui'
   import YsreplList from './YsreplList.svelte'
   import YscritBook from './YscritBook.svelte'
 
   export let crit: CV.Yscrit
+  export let user: CV.Ysuser
   export let book: CV.Crbook | null = null
+  export let list: CV.Yslist | null = null
 
   export let show_book = true
   export let show_list = true
@@ -69,8 +71,8 @@
 
 <crit-item class="island">
   <header>
-    <a class="meta _user" href="/ys/crits?user={crit.op_id}-{crit.uslug}"
-      >{crit.uname}</a>
+    <a class="meta _user" href="/ys/crits?user={user.id}-{user.uslug}"
+      >{user.uname}</a>
 
     <div class="right">
       <span class="meta _star">
@@ -156,14 +158,12 @@
     </div>
   </footer>
 
-  {#if show_list && crit.yslist_id}
+  {#if show_list && list}
     <footer class="list">
-      <a
-        class="link _list"
-        href="/ys/lists/{crit.yslist_id}{crit.yslist_vslug}">
+      <a class="link _list" href="/ys/lists/{list.id}{list.vslug}">
         <SIcon name="bookmarks" />
-        <span>{crit.yslist_vname}</span>
-        <span>({crit.yslist_count} bộ truyện)</span>
+        <span>{list.vname}</span>
+        <span>({list.book_count} bộ truyện)</span>
       </a>
     </footer>
   {/if}

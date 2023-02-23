@@ -7,9 +7,7 @@ class YS::Yslist
   self.table = "yslists"
   primary_key
 
-  belongs_to ysuser : Ysuser
-  # has_many yscrits : Yscrit, foreign_key: "yslist_id"
-  # has_many nvinfos : CV::Nvinfo, through: "yscrits"
+  column ysuser_id : Int32 = 0
 
   column origin_id : String = ""
 
@@ -42,7 +40,7 @@ class YS::Yslist
   timestamps
 
   scope :filter_ysuser do |ysuser_id|
-    ysuser_id ? where("ysuser_id = #{ysuser_id}") : self
+    ysuser_id ? where("ysuser_id = ?", ysuser_id) : self
   end
 
   scope :sort_by do |order|
@@ -87,6 +85,10 @@ class YS::Yslist
   end
 
   ##################
+
+  def self.preload(ids : Enumerable(Int32))
+    ids.empty? ? [] of self : query.where { id.in? ids }
+  end
 
   def self.gen_id(origin_id : String)
     origin_id[-7..-1].to_i64(base: 16)

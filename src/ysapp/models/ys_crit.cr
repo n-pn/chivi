@@ -12,8 +12,8 @@ class YS::Yscrit
   column nvinfo_id : Int32 = 0
   column ysbook_id : Int32 = 0
 
-  belongs_to ysuser : Ysuser
-  belongs_to yslist : Yslist?
+  column ysuser_id : Int32 = 0
+  column yslist_id : Int32 = 0
 
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
   column _sort : Int32 = 0
@@ -29,22 +29,6 @@ class YS::Yscrit
   column like_count : Int32 = 0
 
   timestamps
-
-  scope :filter_nvinfo do |nvinfo_id|
-    nvinfo_id ? where("nvinfo_id = #{nvinfo_id}") : self
-  end
-
-  scope :filter_ysuser do |ysuser_id|
-    ysuser_id ? where("ysuser_id = #{ysuser_id}") : self
-  end
-
-  scope :filter_yslist do |yslist_id|
-    yslist_id ? where("yslist_id = #{yslist_id}") : self
-  end
-
-  scope :filter_labels do |vtag|
-    vtag ? where("vtags @> ?", [vtag]) : self
-  end
 
   scope :sort_by do |order|
     case order

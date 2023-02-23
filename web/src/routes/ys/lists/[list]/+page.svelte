@@ -6,7 +6,9 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ ylist, yl_id, crits, books, pgidx, pgmax } = data)
+  $: ({ ylist, yuser, crits, books, pgidx, pgmax } = data)
+
+  $: users = { [yuser.id]: yuser }
 </script>
 
 <svelte:head>
@@ -26,8 +28,8 @@
     <def class="left">
       <span class="entry">
         <SIcon name="user" />
-        <a class="uname" href="/ys/lists?user={ylist.op_id}-{ylist.uslug}"
-          >{ylist.uname}</a>
+        <a class="uname" href="/ys/lists?user={yuser.id}-{yuser.uslug}"
+          >{yuser.uname}</a>
       </span>
 
       <span class="entry">
@@ -71,7 +73,7 @@
 
   <div class="origin">
     <a
-      href="https://www.yousuu.com/booklist/{yl_id}"
+      href="https://www.yousuu.com/booklist/{ylist.yl_id}"
       rel="noopener noreferrer"
       target="_blank">
       <SIcon name="external-link" />
@@ -80,7 +82,14 @@
 </section>
 
 <article class="article island">
-  <YscritList {crits} {books} {pgidx} {pgmax} _sort="utime" show_list={false} />
+  <YscritList
+    {crits}
+    {users}
+    {books}
+    {pgidx}
+    {pgmax}
+    _sort="utime"
+    show_list={false} />
 </article>
 
 <style lang="scss">

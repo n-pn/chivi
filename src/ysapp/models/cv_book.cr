@@ -44,4 +44,8 @@ class YS::CvBook
     GENRES[id.to_i] = name
     {id.to_i, name}
   end
+
+  def self.preload(ids : Enumerable(Int32))
+    ids.empty? ? [] of self : query.where { id.in? ids }
+  end
 end

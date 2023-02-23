@@ -10,10 +10,7 @@
 
   let nvinfo: CV.Nvinfo
 
-  let books: CV.Nvinfo[]
-  let users: { u_dname: string; u_privi: number; _status: string }[]
-
-  $: ({ nvinfo, crits, books, users } = data)
+  $: ({ nvinfo, bdata, ydata } = data)
 
   let short_intro = false
 
@@ -46,10 +43,18 @@
   </h3>
 
   <div class="crits">
-    {#each crits as crit}
+    {#each ydata.crits as crit}
+      {@const list = ydata.lists[crit.list_id]}
+      {@const user = ydata.users[crit.user_id]}
       {@const view_all = crit.vhtml.length < 640}
       {#key crit.id}
-        <YscritCard {crit} book={null} show_book={false} {view_all} />
+        <YscritCard
+          {crit}
+          {user}
+          {list}
+          book={null}
+          show_book={false}
+          {view_all} />
       {/key}
     {:else}
       <div class="empty">Chưa có đánh giá</div>
@@ -61,8 +66,8 @@
     <a class="sub-link" href="/books/={nvinfo.author_vi}">Xem tất cả</a>
   </h3>
 
-  {#if books.length > 0}
-    <NvinfoList {books} />
+  {#if bdata.books.length > 0}
+    <NvinfoList books={bdata.books} />
   {:else}
     <div class="empty">Danh sách trống</div>
   {/if}
@@ -72,7 +77,7 @@
   </h3>
 
   <div class="users">
-    {#each users as { u_dname, u_privi, _status }}
+    {#each bdata.users as { u_dname, u_privi, _status }}
       <a
         class="m-chip _{status_colors[_status]}"
         href="/books/@{u_dname}/{_status}"

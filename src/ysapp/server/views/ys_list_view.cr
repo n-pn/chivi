@@ -12,33 +12,36 @@ struct YS::ListView
   def to_json(jb = JSON::Builder.new)
     jb.object do
       jb.field "id", HashUtil.encode32(@data.id)
-
-      jb.field "op_id", @data.ysuser.id
-      jb.field "uname", @data.ysuser.vname
-      jb.field "uslug", @data.ysuser.vslug
+      jb.field "user_id", @data.ysuser_id
 
       jb.field "vname", @data.vname
       jb.field "vslug", @data.vslug
 
-      jb.field "vdesc", @data.vdesc
       jb.field "class", @data.klass
-
-      jb.field "genres", @data.genres
-      jb.field "covers", @data.covers
-
       jb.field "book_count", @data.book_count
-      jb.field "like_count", @data.like_count
-      jb.field "view_count", @data.view_count
-      jb.field "star_count", @data.star_count
 
-      jb.field "ctime", @data.created_at.to_unix
-      jb.field "utime", @data.utime
+      if @full
+        jb.field "yl_id", @data.origin_id
+        jb.field "vdesc", @data.vdesc
+
+        jb.field "genres", @data.genres
+        jb.field "covers", @data.covers
+
+        jb.field "like_count", @data.like_count
+        jb.field "view_count", @data.view_count
+        jb.field "star_count", @data.star_count
+
+        jb.field "ctime", @data.created_at.to_unix
+        jb.field "utime", @data.utime
+      end
     end
   end
 
-  def self.map(inp : Enumerable(Yslist), full = false)
-    res = [] of ListView
-    inp.each { |obj| res << new(obj, full) }
-    res
+  def self.as_list(inp : Enumerable(Yslist), full = false)
+    inp.map { |obj| new(obj, full) }
+  end
+
+  def self.as_hash(inp : Enumerable(Yslist))
+    inp.map { |x| {x.id, x} }.to_h
   end
 end

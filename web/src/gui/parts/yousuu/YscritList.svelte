@@ -11,6 +11,8 @@
 <script lang="ts">
   export let crits: CV.Yscrit[] = []
   export let books: Record<number, CV.Crbook> = {}
+  export let users: Record<number, CV.Ysuser> = {}
+  export let lists: Record<number, CV.Yslist> = {}
 
   export let pgidx = 1
   export let pgmax = 1
@@ -60,9 +62,18 @@
   {#each crits as crit}
     {@const view_all = crit.vhtml.length < 600}
     {@const book = books[crit.wn_id]}
+    {@const user = users[crit.user_id]}
+    {@const list = lists[crit.list_id]}
 
     {#key crit.id}
-      <YscritCard {crit} {book} {show_book} {show_list} {view_all} />
+      <YscritCard
+        {crit}
+        {user}
+        {book}
+        {list}
+        {show_book}
+        {show_list}
+        {view_all} />
     {/key}
   {/each}
 

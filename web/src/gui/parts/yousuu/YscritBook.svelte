@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
   import { map_status } from '$utils/nvinfo_utils'
   import { rel_time } from '$utils/time_utils'
 
   import { SIcon, BCover } from '$gui'
 
-  export let book
+  export let book: CV.Crbook
 </script>
 
 <section class="book">

@@ -1,16 +1,15 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { Crumb, SIcon } from '$gui'
+
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import YslistList from '$gui/parts/yousuu/YslistList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ lists, pgidx, pgmax } = data)
+  $: ({ lists, users, pgidx, pgmax } = data)
   let qs = data.params.qs || ''
 </script>
-
-<Crumb tree={[['Thư đơn', '/ys/lists']]} />
 
 <article class="article island">
   <form
@@ -30,7 +29,7 @@
     </button>
   </form>
 
-  <YslistList {lists} {pgidx} {pgmax} />
+  <YslistList {lists} {users} {pgidx} {pgmax} />
 </article>
 
 <style lang="scss">

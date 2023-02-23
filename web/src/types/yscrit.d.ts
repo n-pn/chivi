@@ -22,33 +22,24 @@ declare namespace CV {
     id: string
     wn_id: number
 
+    user_id: number
+    list_id: number
+
     vhtml: string
     stars: number
     vtags: string[]
-
-    op_id: number
-    uname: string
-    uslug: string
 
     ctime: number
     utime: number
 
     like_count: number
     repl_count: number
-
-    yslist_id?: string
-
-    yslist_vname?: string
-    yslist_vslug?: string
-
-    yslist_class?: string
-    yslist_count?: number
   }
 
-  interface YscritList {
-    pgidx: number
-    pgmax: number
+  interface YscritList extends Paginate {
     crits: Yscrit[]
     books: Record<number, CrBook>
+    users: Record<number, Ysuser>
+    lists: Record<number, Yslist>
   }
 }

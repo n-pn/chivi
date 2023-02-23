@@ -42,4 +42,8 @@ class YS::Ysuser
       entry.tap(&.save!)
     end
   end
+
+  def self.preload(ids : Enumerable(Int32))
+    ids.empty? ? [] of self : query.where { id.in? ids }
+  end
 end

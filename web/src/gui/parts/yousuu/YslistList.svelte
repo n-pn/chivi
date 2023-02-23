@@ -9,7 +9,9 @@
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import YslistCard from './YslistCard.svelte'
 
-  export let lists = []
+  export let lists: CV.Yslist[] = []
+  export let users: Record<number, CV.Ysuser>
+
   export let pgidx = 1
   export let pgmax = 1
   export let _sort = 'utime'
@@ -45,7 +47,8 @@
 
 <div class="lists">
   {#each lists as list}
-    <YslistCard {list} />
+    {@const user = users[list.user_id]}
+    <YslistCard {list} {user} />
   {/each}
 
   <footer class="pagi">

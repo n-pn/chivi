@@ -3,6 +3,7 @@
 
   import type { PageData } from './$types'
   export let data: PageData
+  $: ({ vi, ys } = data)
 </script>
 
-<NvcritList ys={data.ys} vi={data.vi} _sort="score" show_book={false} />
+<NvcritList {ys} {vi} _sort="score" show_book={false} />

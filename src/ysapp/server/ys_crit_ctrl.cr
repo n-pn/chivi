@@ -22,27 +22,29 @@ class YS::CritCtrl < AC::Base
     query.limit(limit).offset(offset)
 
     if book
-      crits = query.filter_nvinfo(book).with_yslist.with_ysuser.to_a
-      total = Ysbook.query.find({nvinfo_id: book}).try(&.crit_count)
+      crits = query.where("nvinfo_id = ?", book).to_a
+      total = Ysbook.query.find({nvinfo_id: book}).try(&.crit_count.to_i) || 0
     elsif list
       yslist = Yslist.find!({id: list})
       total = yslist.book_count
-
       crits = query.where("yslist_id = ?", yslist.id).to_a
-      crits.each(&.ysuser = yslist.ysuser)
     else
-      total = query.dup.limit((pg_no &+ 2) &* limit).offset(0).count
-      crits = query.with_yslist.with_ysuser
+      total = query.dup.limit((pg_no &+ 2) &* limit).offset(0).count.to_i
+      crits = query.to_a
     end
 
-    b_ids = crits.map(&.nvinfo_id)
-    books = b_ids.empty? ? [] of CvBook : CvBook.query.where { id.in? b_ids }
+    books = CvBook.preload(crits.map(&.nvinfo_id))
+    users = Ysuser.preload(crits.map(&.ysuser_id))
+
+    lists = yslist ? [yslist] : Yslist.preload(crits.compact_map(&.yslist_id))
 
     render json: ({
-      crits: crits.map { |x| CritView.new(x) },
+      crits: CritView.as_list(crits),
       books: BookView.as_hash(books),
+      lists: ListView.as_hash(lists),
+      users: UserView.as_hash(users),
       pgidx: pg_no,
-      pgmax: _pgidx(total || b_ids.size, limit),
+      pgmax: _pgidx(total, limit),
     })
   rescue err
     render json: {
@@ -59,7 +61,7 @@ class YS::CritCtrl < AC::Base
     ycrit = Yscrit.find!({id: crit_id})
     repls = Ysrepl.query.where("yscrit_id = ?", crit_id)
 
-    vbook = CvBook.find({id: ycrit.nvinfo_id.not_nil!})
+    vbook = CvBook.find({id: ycrit.nvinfo_id})
     render json: {
       entry: CritView.new(ycrit),
       vbook: vbook ? BookView.new(vbook) : nil,

@@ -3,8 +3,9 @@
   import { SIcon } from '$gui'
 
   export let list: CV.Yslist
+  export let user: CV.Ysuser
 
-  $: uslug = list.id + list.vslug + '-' + list.uslug
+  $: uslug = list.id + list.vslug + '-' + user.uslug
 
   function humanize(num: number) {
     if (num < 1000) return num
@@ -48,8 +49,8 @@
       <def class="left">
         <span class="entry">
           <SIcon name="user" />
-          <a class="uname" href="/ys/lists?user={list.op_id}-{list.uslug}"
-            >{list.uname}</a>
+          <a class="uname" href="/ys/lists?user={user.id}-{user.uslug}"
+            >{user.uname}</a>
         </span>
 
         <span class="entry">

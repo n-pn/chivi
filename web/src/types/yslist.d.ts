@@ -1,10 +1,8 @@
 declare namespace CV {
   interface Yslist {
     id: string
-
-    op_id: number
-    uname: string
-    uslug: string
+    yl_id: number
+    user_id: number
 
     vname: string
     vslug: string
@@ -15,21 +13,17 @@ declare namespace CV {
     genres: string[]
     covers: string[]
 
+    ctime: number
+    utime: number
+
     book_count: number
     view_count: number
     like_count: number
     star_count: number
-
-    ctime: number
-    utime: number
   }
 
-  interface YslistList {
-    pgidx: number
-    pgmax: number
-    yl_id: number
+  interface YslistList extends Paginate {
     lists: Yslist[]
-    crits: Yscrit[]
-    books: Record<number, CrBook>
+    users: Record<number, Ysuser>
   }
 }

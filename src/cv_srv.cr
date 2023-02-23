@@ -36,22 +36,30 @@ end
 
 abstract class UserError < Exception
   getter status : HTTP::Status = :bad_request
+
+  def initialize(@message)
+    @cause = nil
+    @callstack = nil
+  end
 end
 
 class BadRequest < UserError
-  def initialize(@message)
+  def initialize(message : String)
+    super(message)
     @status = :bad_request
   end
 end
 
 class Unauthorized < UserError
-  def initialize(@message)
+  def initialize(message)
+    super(message)
     @status = :unauthorized
   end
 end
 
 class Forbidden < UserError
-  def initialize(@message)
+  def initialize(message)
+    super(message)
     @status = :forbidden
   end
 end
