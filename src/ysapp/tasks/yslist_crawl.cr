@@ -56,6 +56,7 @@ class CV::YslistCrawl < CrawlTask
     end
 
     queue = gen_queue()
+    queue.reject!(&.existed?(3.days))
     queue = crawl_mode.rearrange!(queue)
 
     crawler = new(false)
@@ -68,8 +69,8 @@ class CV::YslistCrawl < CrawlTask
     fresh = Time.utc - ttl
 
     uuids = DB.open(CV_ENV.database_url) do |db|
-      sql = "select origin_id from yslists where stime < $1"
-      db.query_all(sql, fresh.to_unix, as: String)
+      smt = "select origin_id from yslists where stime < $1"
+      db.query_all(smt, fresh.to_unix, as: String)
     end
 
     uuids.map_with_index do |uuid, index|

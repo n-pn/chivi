@@ -1,16 +1,4 @@
-require "json"
-
-struct YS::RawUser
-  include JSON::Serializable
-
-  getter _id : Int32
-
-  @[JSON::Field(key: "userName")]
-  getter name : String
-
-  @[JSON::Field(key: "avatarId")]
-  getter avatar : String
-end
+require "./_common"
 
 class YS::RawYsList
   include JSON::Serializable
@@ -21,7 +9,7 @@ class YS::RawYsList
   getter list_id : String = ""
 
   @[JSON::Field(key: "createrId")]
-  getter user : RawUser?
+  getter user : EmbedUser?
 
   @[JSON::Field(key: "title")]
   getter zname : String
@@ -53,10 +41,10 @@ class YS::RawYsList
   @[JSON::Field(key: "praiseAt")]
   getter praised_at : Time
 
-  def changes(stime : Int64 = Time.utc.to_unix)
-    [
-      @_id.empty? ? @list_id : @_id,
-      @user.try(&.id) || 0,
+  def db_values(rtime : Int64 = Time.utc.to_unix)
+    {
+      @_id.empty? ? @list_id : @_id, # uuid
+      @user.try(&.id) || 0,          # user_id
 
       @zname,
       @zdesc,
@@ -67,9 +55,9 @@ class YS::RawYsList
       @star_count,
       @book_total,
 
-      @updated_at.to_unix,
-      stime,
-    ] of DB::Any
+      @updated_at.to_unix, # updated at
+      rtime,               # crawled at
+    }
   end
 
   ###################

@@ -60,9 +60,9 @@ class YS::RawYsBook
   getter status = 0
 
   @[Virtual]
-  getter shielded = false
+  getter? shielded = false
   @[Virtual]
-  getter recom_ignore = false
+  getter? recom_ignore = false
 
   @[JSON::Field(ignore: true)]
   getter shield : Int32 = 0

@@ -1,17 +1,17 @@
-require "../src/mt_v1/mt_core"
+require "../src/mt_v1/core/m1_core"
 require "../src/mt_v1/data/v1_dict"
 require "../src/_data/dl_tran"
 
 force = ARGV.includes?("-f")
 
 tasks = CV::DlTran.repo.open_db do |db|
-  query = String.build do |sql|
+  smt = String.build do |sql|
     sql << "select * from dltrans where _flag = 0"
     sql << " or _flag = 1" if force
     sql << " order by privi desc"
   end
 
-  db.query_all(query, as: CV::DlTran)
+  db.query_all(smt, as: CV::DlTran)
 end
 
 CV::DlTran.repo.open_db do |db|
@@ -38,8 +38,7 @@ def do_convert(engine, out_file : File, inp_path : String)
 end
 
 def run_task(task : CV::DlTran)
-  dname = M1::DbDict.get_dname(task.wn_id)
-  engine = CV::MtCore.generic_mtl(dname, user: task.uname)
+  engine = M1::MtCore.init(task.wn_id, user: task.uname)
 
   Dir.mkdir_p("var/texts/dlcvs/#{task.uname}")
 
@@ -64,10 +63,8 @@ def run_task(task : CV::DlTran)
 
   out_file.close
 
-  CV::DlTran.repo.open_tx do |db|
-    query = "update dltrans set _flag = 2, real_word_count = ? where id = ?"
-    db.exec query, word_count, task.id
-  end
+  smt = "update dltrans set _flag = 2, real_word_count = ? where id = ?"
+  CV::DlTran.repo.db.exec(smt, word_count, task.id)
 end
 
 tasks.each do |task|

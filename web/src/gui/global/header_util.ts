@@ -3,7 +3,7 @@ import { chap_path, fix_sname, seed_path, _pgidx } from '$lib/kit_path'
 export function gen_meta(route: string, data: Record<string, any>) {
   const meta = meta_map[route]
   if (typeof meta == 'function') return meta(data)
-  return (meta || meta_map['/']) as App.PageMeta
+  return (meta || default_meta) as App.PageMeta
 }
 
 export const home_nav = (show: string = 'tm', title = 'Chivi') => {
@@ -35,6 +35,16 @@ export const nav_link = (
   const res = { type: 'a', href, icon, text }
   for (const [key, val] of Object.entries(opts)) res['data-' + key] = val
   return res
+}
+
+const default_meta = {
+  title: 'Trang chủ',
+  desc: 'Truyện Tàu dịch máy, đánh giá truyện, dịch nhanh tiếng Trung...',
+  left_nav: [home_nav('ps')],
+  right_nav: [
+    nav_link('/qtran', 'Dịch nhanh', 'bolt', { show: 'tm' }),
+    nav_link('/ys/crits', 'Đánh giá', 'stars', { show: 'tm' }),
+  ],
 }
 
 function quick_read_v2({ bslug }, { sname, chidx, locked }) {

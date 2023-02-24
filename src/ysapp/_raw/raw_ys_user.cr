@@ -1,23 +1,11 @@
 require "log"
-require "json"
+require "./_common"
 
 class YS::RawYsUser
-  struct User
-    include JSON::Serializable
-
-    getter _id : Int32
-
-    @[JSON::Field(key: "userName")]
-    getter name : String
-
-    @[JSON::Field(key: "avatarId")]
-    getter avatar : String
-  end
-
   include JSON::Serializable
 
   @[JSON::Field(key: "userId")]
-  getter user : User
+  getter user : EmbedUser
 
   @[JSON::Field(key: "praiseTotal")]
   getter like_count : Int32 = 0
@@ -31,8 +19,8 @@ class YS::RawYsUser
   @[JSON::Field(key: "commentNum")]
   getter crit_total : Int32 = 0
 
-  def changeset(rtime : Int64 = Time.utc.to_unix)
-    [
+  def db_values(rtime : Int64 = Time.utc.to_unix)
+    {
       @user._id,
       @user.name,
       @user.avatar,
@@ -42,7 +30,7 @@ class YS::RawYsUser
       @crit_total,
       rtime,
       rtime,
-    ] of DB::Any
+    }
   end
 
   ###################

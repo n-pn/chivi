@@ -51,14 +51,14 @@ targets:
   yscrit_crawl_by_user:
     main: src/ysapp/tasks/yscrit_crawl_by_user.cr
 
-  ysrepl_crawl:
-    main: tasks/yousuu/ysrepl_crawl.cr
+  yscrit_crawl_by_list:
+    main: src/ysapp/tasks/yscrit_crawl_by_list.cr
 
   yscrit_crawl_by_book:
     main: tasks/yousuu/yscrit_crawl_by_book.cr
 
-  yscrit_crawl_by_list:
-    main: tasks/yousuu/yscrit_crawl_by_list.cr
+  yslist_crawl:
+    main: src/ysapp/tasks/yslist_crawl.cr
 
   yslist_crawl_by_book:
     main: src/ysapp/tasks/yslist_crawl_by_book.cr
@@ -66,11 +66,8 @@ targets:
   yslist_crawl_by_user:
     main: tasks/yousuu/yslist_crawl_by_user.cr
 
-  yscrit_tasks:
-    main: tasks/pgdata/yscrit_tasks.cr
-
-  ysrepl_tasks:
-    main: tasks/pgdata/ysrepl_tasks.cr
+  ysrepl_crawl:
+    main: tasks/yousuu/ysrepl_crawl.cr
 
 dependencies:
   tabkv:
