@@ -7,7 +7,7 @@ class M1::DbDefn
   include Crorm::Model
   @@table = "defns"
 
-  class_getter repo = Crorm::Sqlite3::Repo.new(db_path, init_sql)
+  class_getter repo : SQ3::Repo { SQ3::Repo.new(db_path, init_sql, 3.minutes) }
 
   @[AlwaysInline]
   def self.db_path

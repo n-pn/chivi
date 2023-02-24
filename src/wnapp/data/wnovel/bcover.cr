@@ -1,7 +1,6 @@
 require "http/client"
 
-require "sqlite3"
-require "crorm"
+require "crorm/model"
 require "crorm/sqlite3"
 
 require "../../_util/r2_client"
@@ -9,9 +8,9 @@ require "../../_util/hash_util"
 
 class ZH::Bcover
   include Crorm::Model
-
-  class_getter repo : Crorm::Sqlite3::Repo = Crorm::Sqlite3::Repo.new(db_path, init_sql)
   @@table = "covers"
+
+  class_getter repo : SQ3::Repo { SQ3::Repo.new(db_path, init_sql) }
 
   def self.db_path
     "var/books/covers.db"
@@ -19,8 +18,6 @@ class ZH::Bcover
 
   def self.init_sql
     <<-SQL
-    pragma journal_mode = WAL;
-
     create table covers(
       id primary key,
 

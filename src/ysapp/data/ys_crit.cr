@@ -38,7 +38,7 @@ class YS::YsCrit
 
   class_getter repo : SQ3::Repo do
     init_sql = {{ read_file("#{__DIR__}/sql/init_ys_crit.sql") }}
-    SQ3::Repo.new("var/ysapp/users.db", init_sql)
+    SQ3::Repo.new("var/ysapp/users.db", init_sql, ttl: 3.minutes)
   end
 
   RAW_UPSERT_FIELDS = {

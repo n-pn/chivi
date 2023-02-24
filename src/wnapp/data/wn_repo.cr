@@ -1,4 +1,5 @@
 require "http/client"
+require "crorm/sqlite3"
 
 require "./_repo"
 require "./wn_chap"
@@ -6,47 +7,82 @@ require "./wn_chap"
 class WN::WnRepo
   getter db_path : String
 
-  def initialize(@db_path, wn_id : Int32, retran = false)
-    @tl_api = "http://127.0.0.1:5110/_m1/qtran/tl_mulu?wn_id=#{wn_id}"
+  @repo : SQ3::Repo
+
+  INIT_SQL = {{ read_file("#{__DIR__}/sql/init_wn_chap.sql") }}
+
+  def initialize(@db_path, @wn_id : Int32, reinit = false)
+    if reinit
+      retran = true
+    elsif file_info = File.info?(db_path)
+      reinit = File.size(db_path) < 512
+      retran = file_info.modification_time < Time.utc - 1.day
+    else
+      reinit = retran = true
+    end
+
+    @repo = SQ3::Repo.new(db_path, INIT_SQL)
+    self.import_zh! if reinit
     self.translate! if retran
   end
 
-  SELECT_RAW_SQL = <<-SQL
+  def import_zh!(zh_db_path = @db_path.sub(".db", "-infos.db"))
+    return unless File.file?(zh_db_path)
+
+    @repo.open_tx do |db|
+      db.exec "attach database '#{zh_db_path}' as src"
+
+      db.exec <<-SQL
+          replace into chaps
+            (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname, _path, _flag)
+          select
+            ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname, _path, _flag
+          from src.chaps
+        SQL
+    end
+
+    File.delete?(zh_db_path)
+  end
+
+  SELECT_RAW_SMT = <<-SQL
     select title, chdiv, ch_no from chaps
     where ch_no >= ? and ch_no <= ?
   SQL
 
   def translate!(min = 1, max = 99999)
-    DB3.open_tx(@db_path) do |db|
-      ch_nos = [] of Int32
-      buffer = String::Builder.new
+    ch_nos = [] of Int32
+    buffer = String::Builder.new
 
-      db.query_each(SELECT_RAW_SQL, min, max) do |rs|
-        buffer << rs.read(String) << '\n' # read title
-        buffer << rs.read(String) << '\n' # read chdiv
-        ch_nos << rs.read(Int32)          # read ch_no
-      end
-
-      translated = tl_mulu(buffer.to_s).lines
-
-      ch_nos.each_with_index do |ch_no, idx|
-        break unless vtitle = translated[idx * 2]?
-        break unless vchdiv = translated[idx * 2 + 1]?
-
-        update_vnames!(db, vtitle, vchdiv, ch_no)
-      end
-    rescue ex
-      Log.info { @db_path.colorize.red }
-      Log.error(exception: ex) { ex.message.colorize.red }
+    @repo.db.query_each(SELECT_RAW_SMT, min, max) do |rs|
+      buffer << rs.read(String) << '\n' # read title
+      buffer << rs.read(String) << '\n' # read chdiv
+      ch_nos << rs.read(Int32)          # read ch_no
     end
+
+    translated = tl_mulu(buffer.to_s).lines
+
+    @repo.start_tx
+
+    ch_nos.each_with_index do |ch_no, idx|
+      break unless vtitle = translated[idx * 2]?
+      break unless vchdiv = translated[idx * 2 + 1]?
+
+      update_vnames!(vtitle, vchdiv, ch_no)
+    end
+
+    @repo.commit_tx
+  rescue ex
+    Log.error { @db_path.colorize.red }
+    Log.error(exception: ex) { ex.message.colorize.red }
   end
 
   private def tl_mulu(body : String) : String
-    HTTP::Client.post(@tl_api, body: body, &.body_io.gets_to_end) rescue ""
+    href = "http://127.0.0.1:5110/_m1/qtran/tl_mulu?wn_id=#{@wn_id}"
+    HTTP::Client.post(href, body: body, &.body_io.gets_to_end)
   end
 
   def all(pg_no : Int32 = 1, limit = 32) : Array(WnChap)
-    DB3.open_db(@db_path) do |db|
+    @repo.open_db do |db|
       offset = (pg_no &- 1) * limit
       query = "select * from chaps where ch_no > ? and ch_no <= ? order by ch_no asc"
       db.query_all query, offset, offset &+ limit, as: WnChap
@@ -54,14 +90,14 @@ class WN::WnRepo
   end
 
   def top(take = 6)
-    DB3.open_db(@db_path) do |db|
+    @repo.open_db do |db|
       query = "select * from chaps where ch_no > 0 order by ch_no desc limit ?"
       db.query_all query, take, as: WnChap
     end
   end
 
   def get(ch_no : Int32)
-    DB3.open_db(@db_path) do |db|
+    @repo.open_db do |db|
       query = "select * from chaps where ch_no = ? limit 1"
       db.query_one? query, ch_no, as: WnChap
     end
@@ -71,7 +107,7 @@ class WN::WnRepo
     stats = [] of {Int32, Int32}
     avail = 0
 
-    DB3.open_db(@db_path) do |db|
+    @repo.open_db do |db|
       sql = "select ch_no, s_cid from chaps"
 
       db.query_each(sql) do |rs|
@@ -89,16 +125,16 @@ class WN::WnRepo
       end
     end
 
-    DB3.open_tx(@db_path) do |db|
-      sql = "update chaps set c_len = ? where ch_no = ?"
-      stats.each { |c_len, ch_no| db.exec(sql, c_len, ch_no) }
+    @repo.open_tx do |db|
+      smt = "update chaps set c_len = ? where ch_no = ?"
+      stats.each { |c_len, ch_no| db.exec(smt, c_len, ch_no) }
     end
 
     avail
   end
 
   def word_count(from : Int32, upto : Int32) : Int32
-    DB3.open_db(@db_path) do |db|
+    @repo.open_db do |db|
       sql = "select sum(c_len) from chaps where ch_no >= ? and ch_no <= ?"
       db.query_one(sql, from, upto, as: Int32?) || 0
     end
@@ -107,7 +143,7 @@ class WN::WnRepo
   ###
 
   def delete_chaps!(from_ch_no : Int32)
-    DB3.open_tx(db_path) do |db|
+    @repo.open_db do |db|
       # delete previous deleted entries
       db.exec "delete from chaps where ch_no <= ?", -from_ch_no
 
@@ -140,19 +176,17 @@ class WN::WnRepo
   UPDATE_TRAN_SQL = "update chaps set vtitle = ?, vchdiv = ? where ch_no = ?"
 
   def upsert_chap_infos(chapters : Enumerable(WnChap))
-    DB3.open_tx(@db_path) do |db|
-      chapters.each do |chap|
-        db.exec UPSERT_INFO_SQL, *chap.info_values
-      end
+    @repo.open_tx do |db|
+      chapters.each { |chap| db.exec UPSERT_INFO_SQL, *chap.info_values }
     end
   end
 
   def upsert_chap_full(chap : WnChap)
-    DB3.open_tx(@db_path, &.exec UPSERT_FULL_SQL, *chap.full_values)
+    @repo.db.exec UPSERT_FULL_SQL, *chap.full_values
   end
 
-  private def update_vnames!(db, vtitle : String, vchdiv : String, ch_no : Int32)
-    db.exec(UPDATE_TRAN_SQL, vtitle, vchdiv, ch_no)
+  private def update_vnames!(vtitle : String, vchdiv : String, ch_no : Int32)
+    @repo.db.exec(UPDATE_TRAN_SQL, vtitle, vchdiv, ch_no)
   end
 
   ###
@@ -160,14 +194,14 @@ class WN::WnRepo
   def bulk_update(fields : Enumerable(String), values : Array(Enumerable(DB::Any)))
     return 0 if values.empty?
 
-    query = String.build do |sql|
+    smt = String.build do |sql|
       sql << "update chaps set "
       fields.join(sql, ", ") { |f, io| io << f << " = ?" }
       sql << " where ch_no = ?"
     end
 
-    open_tx do |db|
-      values.each { |args| db.exec query, args: args.to_a }
+    @repo.open_tx do |db|
+      values.each { |args| db.exec smt, args: args.to_a }
     end
 
     values.size
@@ -175,42 +209,15 @@ class WN::WnRepo
 
   CACHE = {} of String => self
 
-  @[AlwaysInline]
   def self.load(db_path : String, wn_id : Int32, reinit : Bool = false)
     CACHE[db_path] ||= begin
-      empty = !File.exists?(db_path) || File.size(db_path) < 512
-      init_db(db_path) if reinit || empty
-      new(db_path, wn_id: wn_id, retran: empty)
+      new(db_path, wn_id: wn_id, reinit: reinit)
     end
   end
 
-  @[AlwaysInline]
   def self.load(sname : String, s_bid : Int32, wn_id : Int32)
     db_path = self.db_path(sname, s_bid)
     self.load(db_path, wn_id: wn_id)
-  end
-
-  INIT_SQL = {{ read_file("#{__DIR__}/sql/init_wn_chap.sql") }}
-
-  def self.init_db(db_path : String)
-    DB3.init_db(db_path, INIT_SQL)
-
-    zh_db_path = db_path.sub(".db", "-infos.db")
-    return unless File.file?(zh_db_path)
-
-    DB3.open_tx(db_path) do |db|
-      db.exec "attach database '#{zh_db_path}' as src"
-
-      db.exec <<-SQL
-        replace into chaps
-          (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname, _path, _flag)
-        select
-          ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname, _path, _flag
-        from src.chaps
-      SQL
-    end
-
-    File.delete?(zh_db_path)
   end
 
   ###

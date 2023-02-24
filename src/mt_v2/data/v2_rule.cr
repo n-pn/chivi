@@ -43,9 +43,7 @@ class M2::DbRule
 
   ###########
 
-  class_getter repo : Crorm::Sqlite3::Repo do
-    Crorm::Sqlite3::Repo.new(self.db_path, self.init_sql)
-  end
+  class_getter repo : SQ3::Repo { SQ3::Repo.new(self.db_path, self.init_sql) }
 
   @[AlwaysInline]
   def self.db_path

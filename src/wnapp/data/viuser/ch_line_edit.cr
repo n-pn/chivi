@@ -22,16 +22,14 @@ class WN::ChLineEdit
   field ctime : Int64 = Time.utc.to_unix
   field _flag : Int32 = 0
 
-  def save!(repo : SQ3::Repo = self.classrepo)
-    fields, values = db_changes()
+  def save!(repo : SQ3::Repo = self.class.repo)
+    fields, values = self.db_changes
     repo.insert(@@table, fields, values, "insert")
   end
 
   ###
 
-  class_getter repo : SQ3::Repo do
-    SQ3::Repo.new(self.db_path, self.init_sql)
-  end
+  class_getter repo : SQ3::Repo { SQ3::Repo.new(self.db_path, self.init_sql) }
 
   @[AlwaysInline]
   def self.db_path

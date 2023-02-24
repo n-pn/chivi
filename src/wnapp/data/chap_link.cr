@@ -15,18 +15,18 @@ class WN::ChapLink
 
   field _flag : Int32 = 0
 
-  def save!(repo : Crorm::Sqlite3::Repo)
+  def save!(repo : SQ3::Repo)
     fields, values = self.get_changes
     repo.insert(@@table, fields, values, :replace)
   end
 
   ###
 
-  REPOS = {} of String => Crorm::Sqlite3::Repo
+  REPOS = {} of String => SQ3::Repo
 
   def self.repo(sname : String, s_bid : Int32)
     db_name = "#{sname}/#{s_bid}"
-    REPOS[db_name] ||= Crorm::Sqlite3::Repo.new(db_path(db_name), init_sql)
+    REPOS[db_name] ||= SQ3::Repo.new(db_path(db_name), init_sql)
   end
 
   @[AlwaysInline]

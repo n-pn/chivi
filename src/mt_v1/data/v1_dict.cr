@@ -75,7 +75,7 @@ class M1::DbDict
 
   ######
 
-  class_getter repo = Crorm::Sqlite3::Repo.new(self.db_path, self.init_sql)
+  class_getter repo : SQ3::Repo { SQ3::Repo.new(self.db_path, self.init_sql, ttl: 3.minutes) }
 
   @[AlwaysInline]
   def self.db_path

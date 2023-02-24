@@ -6,7 +6,7 @@ class M1::DbTerm
   @@table = "terms"
 
   def self.repo(name : String = "_main")
-    Crorm::Sqlite3::Repo.new(db_path(name), init_sql)
+    SQ3::Repo.new(db_path(name), init_sql)
   end
 
   @[AlwaysInline]

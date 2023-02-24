@@ -54,6 +54,7 @@ class M1::TranData
     @lines.each do |line|
       data = engine.cv_plain(line)
       @to_mtl ? data.to_mtl(io) : data.to_txt(io)
+      io << '\n'
     end
   end
 
@@ -64,6 +65,7 @@ class M1::TranData
     data = w_title ? engine.cv_title(title) : engine.cv_plain(title)
     @to_mtl ? data.to_mtl(io) : data.to_txt(io)
     io << '\t' << ' ' << label if label
+    io << '\n'
 
     # render body
 
@@ -71,6 +73,7 @@ class M1::TranData
       line = @lines.unsafe_fetch(i)
       data = engine.cv_plain(line)
       @to_mtl ? data.to_mtl(io) : data.to_txt(io)
+      io << '\n'
     end
   end
 end

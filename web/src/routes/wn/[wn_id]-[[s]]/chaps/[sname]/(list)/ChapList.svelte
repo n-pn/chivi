@@ -32,40 +32,43 @@
   }
 </script>
 
-<div class="chaps">
-  {#each chaps as chinfo}
-    {@const [lock_text, lock_icon, lock_iset] = map_privi(chinfo.chidx)}
+{#key curr_seed.sname}
+  <div class="chaps">
+    {#each chaps as chinfo}
+      {@const [lock_text, lock_icon, lock_iset] = map_privi(chinfo.chidx)}
 
-    <a
-      href="{base_url}/{chinfo.chidx}/-{chinfo.uslug}"
-      class="chinfo"
-      class:_active={chinfo.chidx == mark_chidx}
-      rel={curr_seed.sname != '_' ? 'nofollow' : null}>
-      <div class="chap-text">
-        <chap-title>{chinfo.title}</chap-title>
-        <chap-chidx>{chinfo.chidx}.</chap-chidx>
-      </div>
-      <div class="chap-meta">
-        <chap-chvol>{chinfo.chvol || 'Chính văn'}</chap-chvol>
-        {#if chinfo.utime > 0}
-          <chap-track
-            data-tip="Lưu: {get_rtime(chinfo.utime)} bởi {chinfo.uname || '?'}">
-            <SIcon name="file-download" />
-          </chap-track>
-        {/if}
+      <a
+        href="{base_url}/{chinfo.chidx}/-{chinfo.uslug}"
+        class="chinfo"
+        class:_active={chinfo.chidx == mark_chidx}
+        rel={curr_seed.sname != '_' ? 'nofollow' : null}>
+        <div class="chap-text">
+          <chap-title>{chinfo.title}</chap-title>
+          <chap-chidx>{chinfo.chidx}.</chap-chidx>
+        </div>
+        <div class="chap-meta">
+          <chap-chvol>{chinfo.chvol || 'Chính văn'}</chap-chvol>
+          {#if chinfo.utime > 0}
+            <chap-track
+              data-tip="Lưu: {get_rtime(chinfo.utime)} bởi {chinfo.uname ||
+                '?'}">
+              <SIcon name="file-download" />
+            </chap-track>
+          {/if}
 
-        {#if same_sname && chinfo.chidx == ubmemo.chidx}
-          <chap-mark data-tip="Xem: {get_rtime(ubmemo.utime)}">
-            <SIcon name={ubmemo.locked ? 'bookmark' : 'eye'} />
-          </chap-mark>
-        {/if}
+          {#if same_sname && chinfo.chidx == ubmemo.chidx}
+            <chap-mark data-tip="Xem: {get_rtime(ubmemo.utime)}">
+              <SIcon name={ubmemo.locked ? 'bookmark' : 'eye'} />
+            </chap-mark>
+          {/if}
 
-        <chap-mark data-tip={lock_text}
-          ><SIcon name={lock_icon} iset={lock_iset} /></chap-mark>
-      </div>
-    </a>
-  {/each}
-</div>
+          <chap-mark data-tip={lock_text}
+            ><SIcon name={lock_icon} iset={lock_iset} /></chap-mark>
+        </div>
+      </a>
+    {/each}
+  </div>
+{/key}
 
 <style lang="scss">
   $chap-size: 17.5rem;

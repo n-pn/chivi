@@ -221,23 +221,25 @@ class WN::WnSeed
 
   #####
 
-  def save!(repo = self.class.repo, @mtime = Time.utc.to_unix)
+  def save!(repo : SQ3::Repo = self.class.repo, @mtime = Time.utc.to_unix)
     fields, values = self.db_changes
+    raise "invalid" if fields.empty? || fields.size != values.size
+
     repo.insert(@@table, fields, values, "replace")
   end
 
   ####
 
   def self.upsert!(wn_id : Int32, sname : String, s_bid = wn_id)
-    @@repo.open_tx do |db|
-      db.exec <<-SQL, wn_id, sname, s_bid
-        insert into #{@@table} (wn_id, sname, s_bid) values (?, ?, ?)
-        on conflict do update set s_bid = excluded.s_bid
-      SQL
-    end
+    smt = <<-SQL
+      insert into #{@@table} (wn_id, sname, s_bid) values (?, ?, ?)
+      on conflict do update set s_bid = excluded.s_bid
+    SQL
+
+    self.repo.open_tx(&.exec(smt, wn_id, sname, s_bid))
   end
 
-  class_getter repo = Crorm::Sqlite3::Repo.new(db_path, init_sql)
+  class_getter repo : SQ3::Repo { SQ3::Repo.new(db_path, init_sql, 10.minutes) }
 
   @[AlwaysInline]
   def self.db_path
@@ -249,17 +251,13 @@ class WN::WnSeed
   end
 
   def self.all(wn_id : Int32) : Array(self)
-    @@repo.open_db do |db|
-      query = "select * from #{@@table} where wn_id = ? order by mtime desc"
-      db.query_all(query, wn_id, as: self)
-    end
+    smt = "select * from #{@@table} where wn_id = ? order by mtime desc"
+    self.repo.open_db(&.query_all(smt, wn_id, as: self))
   end
 
   def self.get(wn_id : Int32, sname : String) : self | Nil
-    @@repo.open_db do |db|
-      query = "select * from #{@@table} where wn_id = ? and sname = ?"
-      db.query_one?(query, wn_id, sname, as: WnSeed)
-    end
+    smt = "select * from #{@@table} where wn_id = ? and sname = ?"
+    self.repo.open_db(&.query_one?(smt, wn_id, sname, as: self))
   end
 
   def self.get!(wn_id : Int32, sname : String) : self
@@ -275,15 +273,13 @@ class WN::WnSeed
   end
 
   def self.soft_delete!(wn_id : Int32, sname : String)
-    self.repo.open_db do |db|
-      query = <<-SQL
-        update #{@@table}
-        set wn_id = -wn_id, s_bid = -s_bid
-        where wn_id = ? and sname = ?
-      SQL
+    smt = <<-SQL
+      update #{@@table}
+      set wn_id = -wn_id, s_bid = -s_bid
+      where wn_id = ? and sname = ?
+    SQL
 
-      db.exec query, wn_id, sname
-    end
+    self.repo.open_db(&.exec smt, wn_id, sname)
   end
 end
 

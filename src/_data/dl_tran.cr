@@ -26,7 +26,9 @@ class CV::DlTran
   field mtime : Int64 = Time.utc.to_unix
   field _flag : Int32 = 0
 
-  class_getter repo = Crorm::Sqlite3::Repo.new(db_path, init_sql)
+  class_getter repo : SQ3::Repo do
+    SQ3::Repo.new(db_path, init_sql, ttl: 20.minutes)
+  end
 
   def initialize(@wn_id, @sname, @s_bid,
                  @from_ch_no, @upto_ch_no,
