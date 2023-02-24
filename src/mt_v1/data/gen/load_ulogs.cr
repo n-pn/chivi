@@ -1,8 +1,8 @@
 require "../v1_defn"
 require "../v1_dict"
 
-db = Crorm::Sqlite3::DB.new M1::DbDefn.db_path
-db.start_tx
+db = SQ3::Repo.open_db M1::DbDefn.db_path
+db.exec "begin"
 
 # mtime, dname, key, vals, tags, prio, uname, tab, line, idx
 alias Entry = Tuple(Int64, String, String, Array(String), Array(String), Int32, String, Int32, String?, Int32?)
@@ -20,7 +20,7 @@ files.last(LAST).each do |file|
   end
 end
 
-db.commit_tx
+db.exec "commit"
 db.close
 
 def find_existing_id(db, defn)
@@ -90,8 +90,10 @@ def add_entry(db, entry)
 
   defn._prev = mark_prev_as_outdated(db, defn)
 
-  fields, values = defn.get_changes
-  db.insert("defns", fields, values, Crorm::Sqlite3::SQL::InsertMode::Replace)
+  fields, values = defn.db_changes
+
+  smt = SQ3::SQL.insert_smt("defns", fields, "replace")
+  db.exec(smt, args: values)
 
   puts defn.to_json
 end

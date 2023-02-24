@@ -27,7 +27,7 @@ class CV::DlTran
   field _flag : Int32 = 0
 
   class_getter repo : SQ3::Repo do
-    SQ3::Repo.new(db_path, init_sql, ttl: 20.minutes)
+    SQ3::Repo.new(db_path, init_sql, ttl: 10.minutes)
   end
 
   def initialize(@wn_id, @sname, @s_bid,
@@ -44,22 +44,18 @@ class CV::DlTran
   end
 
   def reset_flag!
-    @@repo.open_tx do |db|
-      db.exec "update #{@@table} set _flag = 0 where id = ?", self.id
-    end
+    smt = "update #{@@table} set _flag = 0 where id = ?"
+    self.class.repo.open_tx(&.exec(smt, self.id))
   end
 
   def self.get(id : Int32)
-    @@repo.open_db do |db|
-      db.query_one?("select * from #{@@table} where id = ? limit 1", id, as: DlTran)
-    end
+    smt = "select * from #{@@table} where id = ? limit 1"
+    self.repo.db.query_one?(smt, id, as: DlTran)
   end
 
   def self.get(id : Int32, uname : String)
-    @@repo.open_db do |db|
-      query = "select * from #{@@table} where id = ? and uname = ? limit 1"
-      db.db.query_one?(query, id, uname, as: DlTran)
-    end
+    smt = "select * from #{@@table} where id = ? and uname = ? limit 1"
+    self.repo.db.query_one?(smt, id, uname, as: DlTran)
   end
 
   @[AlwaysInline]

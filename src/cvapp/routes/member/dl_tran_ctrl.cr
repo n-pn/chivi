@@ -99,7 +99,7 @@ class CV::DlTranCtrl < CV::BaseCtrl
     Clear::SQL.transaction do
       dltran = form.record(_viuser.uname, _viuser.privi)
       _viuser.update!(vcoin: vcoin_remain)
-      dltran.save!
+      dltran.create!
     end
 
     spawn invoke_translation!(force: false)

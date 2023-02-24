@@ -28,20 +28,10 @@ class M1::DbDict
   def initialize(@id, @dname, @label = "", @brief = "", @privi = 1, @dtype = 0)
   end
 
-  def save!(repo : Crorm::Sqlite3::Repo = self.class.repo)
-    repo.open_tx { |db| self.save!(db) }
-  end
-
-  def save!(db : Crorm::Sqlite3::DB)
-    fields, values = get_changes
-
-    query = Crorm::Sqlite3::SQL.upsert_sql(@@table, fields) do |sql|
-      fields = {"dname", "label", "brief", "privi", "dtype"}
-      Crorm::Sqlite3::SQL.build_upsert_sql(sql, fields)
-      sql << " where dname = excluded.dname"
-    end
-
-    db.exec query, args: values
+  def save!(repo : SQ3::Repo = self.class.repo)
+    fields, values = db_changes
+    smt = SQ3::SQL.upsert_smt(@@table, fields, "(dname)", skip_fields: {"id"})
+    repo.db.exec(smt, args: values)
   end
 
   def update!(changes : Hash(String, DB::Any))
@@ -50,22 +40,21 @@ class M1::DbDict
 
   def update!(fields : Enumerable(String), values : Enumerable(DB::Any))
     values << self.id!
-    self.class.repo.update(@table, fields, values) { |sql| sql << " where id = ?" }
+    self.class.repo.update(@table, fields, values, where_clause: "id = ?")
   end
 
   def update_after_term_added!(@mtime : Int64, @term_total : Int32)
-    repo = self.class.repo
-    repo.db.exec "update dicts set mtime = ?, term_total = ?  where id = ?", mtime, term_total, self.id!
+    smt = "update dicts set mtime = ?, term_total = ? where id = ?"
+    self.class.repo.db.exec smt, mtime, term_total, self.id!
   end
 
   def update_after_term_added!(@mtime : Int64)
-    repo = self.class.repo
-    repo.open_db do |db|
-      query = "update dicts set mtime = ?, term_total = term_total + 1 where id = ?"
-      db.exec query, mtime, self.id!
+    update_smt = "update dicts set mtime = ?, term_total = term_total + 1 where id = ?"
+    select_smt = "select term_total from dicts where id = ?"
 
-      query = "select term_total from dicts where id = ?"
-      @term_total = db.query_one(query, self.id!, as: Int32)
+    self.class.repo.open_db do |db|
+      db.exec update_smt, mtime, self.id!
+      @term_total = db.query_one(select_smt, self.id!, as: Int32)
     end
   end
 

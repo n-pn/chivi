@@ -34,7 +34,7 @@ class CV::LixiCtrl < CV::BaseCtrl
     _viuser.vcoin_total += roll.vcoin
 
     _viuser.save!
-    roll.save!
+    roll.create!
 
     spawn do
       MailUtil.send(to: _viuser.email, name: _viuser.uname) do |mail|

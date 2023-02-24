@@ -61,19 +61,17 @@ class WN::WnRepo
 
     translated = tl_mulu(buffer.to_s).lines
 
-    @repo.start_tx
+    @repo.open_tx do
+      ch_nos.each_with_index do |ch_no, idx|
+        break unless vtitle = translated[idx * 2]?
+        break unless vchdiv = translated[idx * 2 + 1]?
 
-    ch_nos.each_with_index do |ch_no, idx|
-      break unless vtitle = translated[idx * 2]?
-      break unless vchdiv = translated[idx * 2 + 1]?
-
-      update_vnames!(vtitle, vchdiv, ch_no)
+        update_vnames!(vtitle, vchdiv, ch_no)
+      end
+    rescue ex
+      Log.error { @db_path.colorize.red }
+      Log.error(exception: ex) { ex.message.colorize.red }
     end
-
-    @repo.commit_tx
-  rescue ex
-    Log.error { @db_path.colorize.red }
-    Log.error(exception: ex) { ex.message.colorize.red }
   end
 
   private def tl_mulu(body : String) : String

@@ -44,7 +44,7 @@ abstract class UserError < Exception
 end
 
 class BadRequest < UserError
-  def initialize(message : String)
+  def initialize(message)
     super(message)
     @status = :bad_request
   end

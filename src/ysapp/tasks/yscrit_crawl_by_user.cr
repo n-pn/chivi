@@ -4,25 +4,6 @@ require "../_raw/raw_ys_crit"
 require "../data/ys_user"
 
 class YS::CrawlYscritByUser < CrawlTask
-  # def crawl_page!(u_id : Int32, page : Int32 = 1, label = "-/-") : Int32?
-  #   link = api_page_url(u_id, page)
-  #   Log.info { "GET: #{link.colorize.magenta}" }
-
-  #   out_path = "#{DIR}/#{u_id}/#{page}.json.zst"
-  #   return if file_exists?(out_path, page.days)
-
-  #   return u_id unless json = @client.fetch!(link, label)
-  #   save_raw_json(u_id, json, out_path)
-
-  #   # fields, values = RawYsBook.from_raw_json(json).changeset
-  #   # YsBook.upsert!(fields, values)
-
-  #   nil
-  # rescue ex
-  #   Log.error(exception: ex) { ex.colorize.red }
-  #   u_id
-  # end
-
   def self.gen_link(u_id : Int32, page : Int32 = 1)
     "https://api.yousuu.com/api/user/#{u_id}/comment?page=#{page}"
   end
@@ -63,7 +44,8 @@ class YS::CrawlYscritByUser < CrawlTask
         )
       end
 
-      queue.reject!(&.existed?(pg_no.days))
+      expiry = pg_no * (pg_no - 1) // 2 + 1
+      queue.reject!(&.existed?(expiry.days))
       crawler.crawl!(queue)
     end
   end
