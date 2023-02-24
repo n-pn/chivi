@@ -3,10 +3,10 @@
 require "../v1_dict"
 
 basics = {
+  {0, "combine", "Tổng hợp", "Từ điển tổng hợp dùng cho chế độ dịch nhanh", 1},
   {-1, "regular", "Thông dụng", "Từ điển chung cho tất cả các bộ truyện", 2},
   {-2, "essense", "Nền tảng", "Từ điển cơ sở chung cho các chế độ dịch", 3},
   {-3, "fixture", "Khoá cứng", "Các từ nghĩa cố định dùng trong máy dịch", 3},
-  {-4, "combine", "Tổng hợp", "Từ điển tổng hợp dùng cho chế độ dịch nhanh", 1},
 }
 
 others = {

@@ -31,7 +31,6 @@
   }
 
   const update_rm_links = async (rm_links: string[]) => {
-    console.log({ rm_links })
     try {
       await api_call(edit_url, { rm_links }, 'PATCH')
       seed_data = seed_data

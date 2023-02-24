@@ -34,7 +34,7 @@ class M1::TranData
   getter udict : DbDict
 
   def initialize(@lines : Array(String), @wn_id : Int32, format : String)
-    @udict = DbDict.load(wn_id)
+    @udict = DbDict.load(wn_id) rescue DbDict.load(0)
     @to_mtl = format == "mtl"
   end
 

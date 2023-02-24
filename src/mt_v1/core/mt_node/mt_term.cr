@@ -94,7 +94,7 @@ class M1::MtTerm < M1::MtNode
     @key.matches?(/^[a-zA-Z0-9_.-]+$/)
   end
 
-  def each
+  def each(&)
     yield self
   end
 

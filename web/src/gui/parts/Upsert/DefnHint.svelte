@@ -30,7 +30,6 @@
 
   const trigger_show_more = (value: number) => {
     show_more = value == show_more ? 0 : value
-    console.log({ show_more })
   }
 
   var show_more = 0

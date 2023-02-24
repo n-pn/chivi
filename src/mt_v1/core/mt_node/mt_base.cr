@@ -14,11 +14,11 @@ abstract class M1::MtNode
   property! prev : MtNode
   property! succ : MtNode
 
-  def prev?
+  def prev?(&)
     @prev.try { |x| yield x }
   end
 
-  def succ?
+  def succ?(&)
     @succ.try { |x| yield x }
   end
 

@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable, get } from 'svelte/store'
-  import { api_call } from '$lib/api_call'
+  import { api_call, api_get } from '$lib/api_call'
 
   import MtData from '$lib/mt_data'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
@@ -85,6 +85,9 @@
 
     const res = await fetch(url, { method: 'PUT', headers, body: input })
     const res_text = await res.text()
+
+    console.log(res_text)
+
     if (!res.ok) console.log(res_text)
     else hv_html_cache[input] = hv_html = new MtData(res_text).render_hv()
   }

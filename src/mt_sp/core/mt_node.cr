@@ -24,8 +24,10 @@ struct SP::MtNode
     @cost = 65
   end
 
-  def dup!(idx = @idx)
-    dup.tap(&.idx = idx)
+  def dup!(idx = @idx) : self
+    clone = self.dup
+    clone.idx = idx
+    clone
   end
 
   def to_txt(io : IO, cap : Bool = false) : Bool
@@ -35,7 +37,9 @@ struct SP::MtNode
 
   def to_mtl(io : IO, cap : Bool = false) : Bool
     io << '\t' << cap_val(cap)
-    io << 'ǀ' << (@prop.content? ? 1 : 0) << 'ǀ' << @idx << 'ǀ' << @size
+
+    dic = @prop.content? ? 1 : 0
+    io << 'ǀ' << dic << 'ǀ' << @idx << 'ǀ' << @size
     !@prop.content? && cap || prop.cap_after?
   end
 

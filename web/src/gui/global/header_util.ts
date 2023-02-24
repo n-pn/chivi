@@ -2,8 +2,6 @@ import { chap_path, fix_sname, seed_path, _pgidx } from '$lib/kit_path'
 
 export function gen_meta(route: string, data: Record<string, any>) {
   const meta = meta_map[route]
-  if (!meta) console.log({ route })
-
   if (typeof meta == 'function') return meta(data)
   return (meta || meta_map['/']) as App.PageMeta
 }

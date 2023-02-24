@@ -17,6 +17,10 @@ class SP::MtData < Array(SP::MtNode)
     end
   end
 
+  def to_mtl(cap : Bool = true) : String
+    String.build { |io| to_mtl(io, cap: cap) }
+  end
+
   def to_mtl(io : IO, cap : Bool = true) : Nil
     prev = unsafe_fetch(0)
     apply_cap = prev.to_mtl(io, cap)

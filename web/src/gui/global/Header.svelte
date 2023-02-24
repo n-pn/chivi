@@ -6,7 +6,6 @@
   import Item from './Header/HeaderItem.svelte'
 
   $: meta = $page.data._meta || gen_meta($page.route?.id || '/', $page.data)
-  $: console.log({ meta })
   $: uname = $page.data._user?.uname
   $: image = meta.image || 'https://chivi.app/imgs/avatar.pgn'
 </script>

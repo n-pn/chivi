@@ -9,7 +9,9 @@
   $: ({ ztext, cvmtl, wn_id } = data)
 </script>
 
-<MtPage {ztext} {cvmtl} {wn_id}>
+<header>.</header>
+
+<MtPage {ztext} {cvmtl} {wn_id} no_title={true}>
   <Footer slot="footer">
     <div class="foot">
       <button
@@ -31,5 +33,9 @@
   .foot {
     @include flex($center: horz, $gap: 0.5rem);
     // justify-content: right;
+  }
+
+  header {
+    padding: 0.5rem 0;
   }
 </style>
