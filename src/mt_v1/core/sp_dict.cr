@@ -11,11 +11,13 @@ class M1::SpDict
   end
 
   def upsert(key : String, val : String, tag : String)
-    if val.empty?
-      @hash.delete(key)
-    else
+    vals = val.split(/[ǀ|\t]/).map!(&.strip).reject!(&.empty?)
+
+    if val = vals.first?
       tag = @fixed_tag || tag.blank? ? @df_ptag : PosTag.parse(tag: tag, key: key)
       @hash[key] = {val, tag}
+    else
+      @hash.delete(key)
     end
   end
 
@@ -23,7 +25,7 @@ class M1::SpDict
     @hash.has_key?(key)
   end
 
-  private def open_db
+  private def open_db(&)
     DB.open("sqlite3:#{DB_PATH}") { |db| yield db }
   end
 

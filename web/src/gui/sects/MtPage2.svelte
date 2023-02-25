@@ -24,7 +24,7 @@
   export let mtime: number = 0
   export let wn_id: number = 0
 
-  export let on_fixraw = (_n: number, _s: string, _s2: string) => {}
+  export let do_fixraw = async (_n: number, _s: string, _s2: string) => ''
   export let on_change = () => render_v1(ztext)
 
   let article = null
@@ -71,6 +71,21 @@
       const res = await fetch(url, { method: 'POST', body })
       if (res.ok) datav2 = (await res.text()).split('\n')
     }
+  }
+
+  const on_fixraw = async (line_no: number, orig: string, edit: string) => {
+    const message = await do_fixraw(line_no, orig, edit)
+
+    if (message) {
+      alert(message)
+      return
+    }
+
+    const cv_title = line_no == 0
+    const url = `/_m1/qtran/cv_chap?wn_id=${wn_id}&cv_title=${cv_title}`
+
+    const res = await fetch(url, { method: 'POST', body: edit })
+    datav1[line_no] = MtData.parse_cvmtl(await res.text())[0][0]
   }
 </script>
 

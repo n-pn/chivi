@@ -55,26 +55,28 @@
 
 <div class="wrap">
   <div class="hints">
-    <button
-      class="hint"
-      class:_prev={hanviet == init_val}
-      data-kbd="q"
-      on:click={() => (form.val = hanviet)}>{hanviet}</button>
-
-    {#each hints.slice(0, limit) as val, idx}
+    <div class="left">
       <button
         class="hint"
-        class:_prev={val == init_val}
-        on:click={() => (form.val = val)}>{val}</button>
-    {/each}
+        class:_prev={hanviet == init_val}
+        data-kbd="q"
+        on:click={() => (form.val = hanviet)}>{hanviet}</button>
 
-    {#if hints.length > limit}
-      <button
-        class="hint _icon"
-        on:click={() => trigger_show_more(1)}
-        use:hint={'Ẩn/hiện các gợi ý nghĩa cụm từ'}
-        ><SIcon name={show_more == 1 ? 'minus' : 'plus'} /></button>
-    {/if}
+      {#each hints.slice(0, limit) as val, idx}
+        <button
+          class="hint"
+          class:_prev={val == init_val}
+          on:click={() => (form.val = val)}>{val}</button>
+      {/each}
+
+      {#if hints.length > limit}
+        <button
+          class="hint _icon"
+          on:click={() => trigger_show_more(1)}
+          use:hint={'Ẩn/hiện các gợi ý nghĩa cụm từ'}
+          ><SIcon name={show_more == 1 ? 'minus' : 'plus'} /></button>
+      {/if}
+    </div>
 
     <span class="right">
       <button
@@ -199,8 +201,19 @@
     @include flex();
     @include ftsize(sm);
 
+    justify-content: space-between;
     padding: 0.25rem 0.5rem;
     height: 2rem;
+  }
+
+  .left,
+  .right {
+    @include flex();
+  }
+
+  .left {
+    flex-shrink: 1;
+    @include clamp($width: null);
   }
 
   .extra {
@@ -254,10 +267,6 @@
       margin-right: -0.125rem;
       @include fgcolor(mute);
     }
-  }
-
-  .right {
-    margin-left: auto;
   }
 
   .lang-ico {

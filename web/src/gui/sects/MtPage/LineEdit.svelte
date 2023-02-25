@@ -1,6 +1,6 @@
 <!-- @hmr:keep-all -->
 <script context="module" lang="ts">
-  import { onDestroy, onMount } from 'svelte'
+  import { onMount } from 'svelte'
 
   const suggest_maps = {
     '的': [
@@ -56,7 +56,7 @@
 
   $: newtxt = rawtxt
 
-  const debounce_update_preview = debounce(update_preview, 200)
+  const debounce_update_preview = debounce(update_preview, 250)
 
   $: {
     debounce_update_preview(newtxt)
@@ -70,16 +70,16 @@
       .join('')
   }
 
-  onDestroy(() => {
-    document.removeEventListener('selectionchange', change_focus)
-    on_destroy()
-  })
-
   onMount(() => {
     const selection = window.getSelection()
     const startNode = overlay.firstChild
     selection.collapse(startNode, caret)
     document.addEventListener('selectionchange', change_focus)
+
+    return () => {
+      document.removeEventListener('selectionchange', change_focus)
+      on_destroy()
+    }
   })
 
   function change_focus() {
@@ -95,8 +95,8 @@
   }
 
   async function update_preview(input: string) {
-    const url = `/_mt/qtran/debug?wn_id=${vd_id}&_cap=true`
-    const res = await fetch(url, { method: 'POST', body: input })
+    const url = `/_m1/qtran/debug?wn_id=${vd_id}&w_cap=true`
+    const res = await fetch(url, { method: 'PUT', body: input })
 
     const text = await res.text()
 

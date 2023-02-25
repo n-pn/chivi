@@ -75,15 +75,18 @@
     return on_memory ? [true, 'bookmark'] : [false, 'bookmark-off']
   }
 
-  async function on_fixraw(line_no: number, orig: string, edit: string) {
-    // const url = `/_db/texts/${nvinfo.id}/${nvseed.sname}/${chinfo.chidx}`
-    // const body = { part_no: chmeta.cpart, line_no, orig, edit }
-    // const res = await fetch(url, {
-    //   method: 'PATCH',
-    //   body: JSON.stringify(body),
-    //   headers: { 'Content-Type': 'application/json' },
-    // })
-    // if (!res.ok) alert(await res.json().then((r) => r.message))
+  async function do_fixraw(line_no: number, orig: string, edit: string) {
+    const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}/${curr_chap.chidx}`
+    const body = { part_no: chap_data.cpart, line_no, orig, edit }
+
+    const res = await fetch(url, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (res.ok) return null
+    return await res.json().then((r) => r.message)
   }
 </script>
 
@@ -103,7 +106,7 @@
   ztext={chap_data.ztext}
   mtime={curr_chap.utime}
   wn_id={nvinfo.id}
-  {on_fixraw}>
+  {do_fixraw}>
   <svelte:fragment slot="notext">
     <Notext
       book_info={nvinfo}

@@ -15,18 +15,19 @@
       return
     }
 
-    const url = `/_db/qtran/posts`
+    const url = `/_m1/qtran/posts?wn_id=${data.wn_id || 0}`
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input: data.input, dname: data.dname }),
+      headers: { 'Content-Type': 'text/plain' },
+      body: data.input,
     })
 
     if (res.ok) {
-      const { ukey } = await res.json()
-      goto(`/qtran/posts/${ukey}`)
+      const pname = await res.text()
+      await goto(`/qtran/posts/${pname}`)
     } else {
-      error = await res.text()
+      const data = await res.json()
+      error = data.message
     }
   }
 </script>

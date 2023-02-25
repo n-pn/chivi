@@ -94,6 +94,10 @@ module HashUtil
     hash
   end
 
+  def uniq_hash(inp : String) : String
+    encode32(fnv_1a(inp))
+  end
+
   # B32_ZH = {
   #   '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b',
   #   'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm',

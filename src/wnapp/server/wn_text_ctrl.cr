@@ -113,4 +113,59 @@ class WN::TextCtrl < AC::Base
 
     render json: wn_chap
   end
+
+  struct PatchForm
+    include JSON::Serializable
+    getter part_no : Int32
+    getter line_no : Int32
+
+    getter orig : String
+    getter edit : String
+
+    def after_initialize
+      @orig = TextUtil.clean_spaces(@orig)
+      @edit = TextUtil.clean_spaces(@edit)
+    end
+  end
+
+  @[AC::Route::PATCH("/:ch_no", body: :form)]
+  def edit_line(form : PatchForm, wn_id : Int32, sname : String, ch_no : Int32)
+    guard_sname_privi sname: sname
+
+    wn_seed = get_wn_seed(wn_id, sname)
+    wn_chap = get_wn_chap(wn_seed, ch_no)
+
+    spawn do
+      ChTextEdit.new({
+        sname: wn_seed.sname, s_bid: wn_seed.s_bid,
+        s_cid: wn_chap.s_cid, ch_no: wn_chap.ch_no,
+        part_no: form.part_no, line_no: form.line_no,
+        patch: form.edit, uname: _uname,
+      }).save!
+    rescue ex
+      Log.error(exception: ex) { ex.message.colorize.red }
+    end
+
+    wn_chap.c_len += form.edit.size - form.orig.size
+
+    if form.line_no == 0
+      raise "input mismatch" if form.orig != wn_chap.body[0]
+
+      wn_chap.body[0] = form.edit
+    else
+      ch_part = wn_chap.body[form.part_no].lines
+      line_no = form.line_no - 1
+      raise "input mismatch" if form.orig != ch_part[line_no]
+
+      ch_part[line_no] = form.edit
+      wn_chap.body[form.part_no] = ch_part.join('\n')
+    end
+
+    ztext = wn_chap.body.join('\n')
+
+    wn_chap.save_body!(ztext, seed: wn_seed, uname: _uname, _flag: 3)
+    wn_seed.update_stats!(ch_no)
+
+    render json: wn_chap
+  end
 end

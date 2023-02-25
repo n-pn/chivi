@@ -13,7 +13,7 @@
   let from = 1
   let upto = data.curr_seed?.chmax || 1
 
-  let _onload = false
+  let _onload = true
   let err_msg: string
 
   let word_count = 0
@@ -117,8 +117,8 @@
       <span class="label">Số vcoin cần thiết để yêu cầu tải xuống:</span>
       <span class="vcoin"><SIcon name="coin" />{vcoin_cost}</span>
 
-      <button class="m-btn _primary _fill" on:click={submit}>
-        <SIcon name="send" />
+      <button class="m-btn _primary _fill" disabled={_onload} on:click={submit}>
+        <SIcon name={_onload ? 'refresh' : 'send'} spin={_onload} />
         <span>Tạo yêu cầu</span>
       </button>
     </div>

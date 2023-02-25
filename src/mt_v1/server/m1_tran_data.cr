@@ -11,6 +11,8 @@ class M1::TranData
       lines, wn_id = load_remote("#{CRIT_URL}/#{name}/ztext", wn_id)
     when "repls"
       lines, wn_id = load_remote("#{REPL_URL}/#{name}/ztext", wn_id)
+    when "posts"
+      lines = File.read_lines("tmp/qtran/#{name}.txt")
     else
       raise "unsupported!"
     end

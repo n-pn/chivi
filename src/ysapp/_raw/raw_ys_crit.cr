@@ -3,7 +3,8 @@ require "./_common"
 class YS::RawYsCrit
   include JSON::Serializable
 
-  getter _id : String
+  @[JSON::Field(key: "_id")]
+  getter uuid : String
 
   @[JSON::Field(key: "bookId")]
   getter book : EmbedBook

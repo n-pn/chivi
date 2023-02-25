@@ -8,7 +8,7 @@ const _meta: App.PageMeta = {
 
 export async function load({ url }) {
   return {
-    dname: url.searchParams.get('dname') || 'combine',
+    wn_id: url.searchParams.get('wn_id') || 0,
     input: url.searchParams.get('input'),
     _meta,
   }
