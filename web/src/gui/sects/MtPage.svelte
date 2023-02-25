@@ -7,7 +7,7 @@
   import Mtmenu, { ctrl as mtmenu } from './MtPage/Mtmenu.svelte'
 
   import Zhline from './MtPage/Zhline.svelte'
-  import Cvline from './MtPage/Cvline.svelte'
+  import Cvline, { show_mtl } from './MtPage/Cvline.svelte'
 
   import LineEdit from './MtPage/LineEdit.svelte'
 
@@ -16,74 +16,82 @@
 </script>
 
 <script lang="ts">
-  import { session } from '$lib/stores'
+  import { browser } from '$app/environment'
 
-  export let cvdata = ''
-  export let on_change = () => {}
-  export let on_fixraw = (_n: number, _s: string, _s2: string) => {}
+  export let ztext: string = ''
+  export let cvmtl: string = ''
 
-  export let mftime = 0
-  export let mficon = 'file-download'
-  export let source = ''
+  export let mtime: number = 0
+  export let wn_id: number = 0
 
-  let mtdata = []
-  let zhtext = []
-  let cached = false // reloading chapter do not need zhtext anymore
-
-  $: [chars, tspan, dsize] = parse_data(cvdata)
+  export let do_fixraw = async (_n: number, _s: string, _s2: string) => ''
+  export let on_change = () => render_v1(ztext)
 
   let article = null
+
   let l_hover = 0
   let l_focus = 0
+
+  let zlines = []
+  let datav1 = []
+  let datav2 = []
+
+  let tspan = 0
+  let dsize = 0
 
   let fix_raw = false
 
   beforeNavigate(() => {
-    l_focus = 0
-    cached = false
     mtmenu.hide()
+    l_focus = 0
   })
 
-  function parse_data(input: string) {
-    const [cvdata, stats = '', rawtxt] = input.split('\n$\t$\t$\n')
+  $: zlines = ztext ? ztext.split('\n') : []
+  $: [datav1, tspan, dsize] = MtData.parse_cvmtl(cvmtl)
 
-    mtdata = MtData.parse_lines(cvdata)
-    if (rawtxt) {
-      cached = true
-      zhtext = rawtxt.split('\n')
-    } else if (!cached) {
-      zhtext = []
+  $: if (browser && ztext && $config.render != 3) render_v2(ztext)
+
+  async function render_v1(body: string, cv_title = 'first') {
+    const url = `/_m1/qtran/cv_chap?wn_id=${wn_id}&cv_title=${cv_title}`
+    const res = await fetch(url, { method: 'POST', body })
+
+    if (!res.ok) return
+    const data = MtData.parse_cvmtl(await res.text())
+
+    datav1 = data[0]
+    tspan = data[1]
+    dsize = data[2]
+  }
+
+  async function render_v2(body: string, cv_title = '') {
+    if ($config.render != 1) {
+      datav2 = []
+    } else {
+      const url = `/_m2/qtran?udict=-${wn_id}&format=txt&cv_title=${cv_title}`
+      const res = await fetch(url, { method: 'POST', body })
+      if (res.ok) datav2 = (await res.text()).split('\n')
+    }
+  }
+
+  const on_fixraw = async (line_no: number, orig: string, edit: string) => {
+    const message = await do_fixraw(line_no, orig, edit)
+
+    if (message) {
+      alert(message)
+      return
     }
 
-    const [dname, d_dub, chars = '', tspan = '', dsize = ''] = stats.split('\t')
-    return [+chars, +tspan, +dsize]
-  }
+    const cv_title = line_no == 0
+    const url = `/_m1/qtran/cv_chap?wn_id=${wn_id}&cv_title=${cv_title}`
 
-  function render_html(
-    render: number,
-    index: number,
-    hover: number,
-    focus: number
-  ) {
-    if (render != 0) return render > 0
-    if (index == hover) return true
-
-    if (index > focus - 3 && index < focus + 3) return true
-    if (focus == 0) return index == zhtext.length - 1
-    return index == 0 && focus == zhtext.length - 1
-  }
-
-  function change_engine(engine: number) {
-    config.set_engine(engine)
-    on_change()
+    const res = await fetch(url, { method: 'POST', body: edit })
+    datav1[line_no] = MtData.parse_cvmtl(await res.text())[0][0]
   }
 </script>
 
 <article
   class="article island app-fs-{$config.ftsize} app-ff-{$config.ftface}"
-  tabindex="-1"
   style:--textlh="{$config.textlh}%"
-  on:blur={mtmenu.hide}
   bind:this={article}>
   <header>
     <span class="stats" data-tip="Phiên bản máy dịch">
@@ -104,47 +112,51 @@
     </span>
 
     <div class="header-right">
-      {#if mftime > 0}
+      {#if mtime && mtime > 0}
         <span class="stats" data-tip="Thời gian lưu văn bản gốc">
-          <SIcon name={mficon} />
+          <SIcon name="file-download" />
           <span class="stats-value"
-            >{rel_time(mftime).replace(' trước', ' tr.')}</span>
+            >{rel_time(mtime).replace(' trước', ' tr.')}</span>
         </span>
       {/if}
 
       <span class="stats" data-tip="Số ký tự tiếng Trung">
         <SIcon name="file-analytics" />
-        <span class="stats-value">{chars}</span>
+        <span class="stats-value">{ztext.length}</span>
         <span class="stats-label"> chữ</span>
       </span>
-
-      {#if source}
-        <a
-          class="stats"
-          href={source}
-          rel="noopener noreferrer nofollow"
-          target="_blank">
-          <SIcon name="external-link" />
-        </a>
-      {/if}
     </div>
   </header>
 
   <section>
-    {#each mtdata as input, index (index)}
+    {#each zlines as input, index (index)}
+      {@const elem = index > 0 || $$props.no_title ? 'p' : 'h1'}
+      {@const mtlv1 = datav1[index]}
+      {@const mtlv2 = datav2[index]}
+      {@const view_mtl = show_mtl(
+        $config.render,
+        zlines.length - 1,
+        index,
+        l_hover,
+        l_focus
+      )}
       <svelte:element
-        this={index > 0 || $$props.no_title ? 'p' : 'h1'}
+        this={elem}
         id="L{index}"
         class="cv-line"
         class:focus={index == l_focus}
         on:mouseenter={() => (l_hover = index)}>
         {#if $config.showzh}
-          <Zhline ztext={zhtext[index]} plain={$config.render < 0} />
+          <Zhline ztext={input} plain={!view_mtl} />
         {/if}
 
-        <Cvline
-          {input}
-          focus={render_html($config.render, index, l_hover, l_focus)} />
+        {#if mtlv1}
+          <Cvline input={mtlv1} focus={view_mtl} />
+        {/if}
+
+        {#if mtlv2}
+          <p class="v2">{mtlv2}</p>
+        {/if}
       </svelte:element>
     {:else}
       <slot name="notext" />
@@ -154,7 +166,7 @@
   {#if $config.render >= 0}
     <Mtmenu
       {article}
-      lines={zhtext}
+      lines={zlines}
       bind:l_focus
       bind:fix_raw
       {l_hover}
@@ -163,7 +175,7 @@
 
   {#if fix_raw}
     <LineEdit
-      bind:rawtxt={zhtext[l_focus]}
+      bind:rawtxt={zlines[l_focus]}
       bind:fix_raw
       {on_fixraw}
       lineid={l_focus}
@@ -178,8 +190,8 @@
   <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
   <button data-kbd="z" on:click={() => config.set_render(-1)}>Z</button>
   <button data-kbd="g" on:click={() => config.set_render(1)}>G</button>
-  <button data-kbd="⌃1" on:click={() => change_engine(1)}>1</button>
-  <button data-kbd="⌃2" on:click={() => change_engine(2)}>2</button>
+  <!-- <button data-kbd="⌃1" on:click={() => change_engine(1)}>1</button>
+  <button data-kbd="⌃2" on:click={() => change_engine(2)}>2</button> -->
 </div>
 
 <style lang="scss">

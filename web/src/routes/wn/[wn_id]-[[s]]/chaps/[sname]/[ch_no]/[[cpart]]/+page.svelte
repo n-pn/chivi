@@ -5,7 +5,7 @@
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import MtPage2 from '$gui/sects/MtPage2.svelte'
+  import MtPage2 from '$gui/sects/MtPage.svelte'
   import Notext from './Notext.svelte'
 
   // import Chtabs from './ChapTabs.svelte'

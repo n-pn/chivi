@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Footer, SIcon } from '$gui'
 
-  import MtPage from '$gui/sects/MtPage2.svelte'
+  import MtPage from '$gui/sects/MtPage.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
