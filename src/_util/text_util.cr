@@ -59,6 +59,8 @@ module TextUtil
 
   # make url friendly string
   def slugify(input : String, tones = false) : String
+    input = unaccent(input) unless tones
+
     tokenize(input, tones).join("-")
   end
 
@@ -70,32 +72,39 @@ module TextUtil
 
   # strip vietnamese accents
   def unaccent(input : String) : String
-    input
-      .unicode_normalize(:nfd)
-      .gsub(/[\x{0300}-\x{036f}]/, "")
-      .downcase.tr("đ", "d")
+    String.build do |str|
+      input.unicode_normalize(:nfd).each_char do |char|
+        case char
+        when 'A'..'Z'               then str << (char.ord &+ 32).unsafe_chr
+        when 'đ', 'Đ'               then str << 'd'
+        when '\u{0300}'..'\u{036f}' then next # skip tone marks
+        else                             str << char
+        end
+      end
+    end
   end
 
   # :nodoc:
   def split_words(input : String) : Array(String)
     res = [] of String
-    acc = ""
+    acc = String::Builder.new
 
     input.each_char do |char|
       if char.alphanumeric?
-        acc += char
+        acc << char
         next
       end
 
       unless acc.empty?
-        res << acc
-        acc = ""
+        res << acc.to_s
+        acc = String::Builder.new
       end
 
       word = char.to_s
       res << word if word =~ /\p{L}/
     end
 
+    acc = acc.to_s
     res << acc unless acc.empty?
     res
   end
@@ -221,9 +230,7 @@ module TextUtil
   MARK_RE = Regex.new(FIX_MARKS.keys.join('|'))
 
   def fix_viet(str : String)
-    str
-      .unicode_normalize(:nfc)
-      .gsub(MARK_RE) { |key| FIX_MARKS[key] }
+    str.unicode_normalize(:nfkc).gsub(MARK_RE) { |key| FIX_MARKS[key] }
   end
 end
 

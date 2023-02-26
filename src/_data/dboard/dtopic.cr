@@ -49,8 +49,9 @@ class CV::Cvpost
 
   timestamps
 
-  scope :filter_label do |label|
-    label ? where("lslugs @> ?", [BookUtil.scrub_vname(label, "-")]) : self
+  scope :filter_label do |labels|
+    labels = labels.split('+').map! { |x| TextUtil.slugify(x.strip) }
+    where("lslugs @> ?", labels)
   end
 
   scope :filter_board do |board|
@@ -113,7 +114,7 @@ class CV::Cvpost
 
   def set_labels(labels : Array(String))
     self.labels = labels.uniq!(&.downcase)
-    self.lslugs = self.labels.map { |x| BookUtil.scrub_vname(x, "-") }
+    self.lslugs = self.labels.map { |x| TextUtil.slugify(x) }
   end
 
   def update_content!(form, set_utime = true)

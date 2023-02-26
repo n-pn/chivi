@@ -3,14 +3,6 @@ require "./spec_helper"
 require "../src/_util/*"
 
 describe TextUtil do
-  describe ".titleize" do
-    it "works correctly" do
-      TextUtil.titleize("xxx  x x").should eq("Xxx  X X")
-    end
-    it "can handle empty string" do
-      TextUtil.titleize("").should eq("")
-    end
-  end
 
   # describe ".han_to_int" do
   #   it "works correctly" do

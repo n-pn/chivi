@@ -15,6 +15,10 @@
 
     bintro: string = ''
     bcover: string = ''
+
+    toJSON() {
+      return JSON.stringify(this)
+    }
   }
 
   export class Params {
@@ -75,15 +79,12 @@
   import { SIcon } from '$gui'
 
   export let nvinfo: CV.Nvinfo = undefined
+  // export let nvform: NvinfoForm
 
   let params = new Params(nvinfo)
   let errors: string
 
   async function submit() {
-    if ($session.privi < 2) {
-      return alert('Bạn cần nâng cấp quyền hạn lên 2 để thêm/sửa truyện')
-    }
-
     try {
       const { id, bslug } = await api_call('/_db/books', params.output, 'POST')
       await goto(`/wn/${id}-${bslug}`)

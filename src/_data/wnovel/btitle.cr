@@ -18,36 +18,20 @@ class CV::Btitle
 
   timestamps # created_at and updated_at
 
-  def regen!(bdict : String = "combine") : Nil
-    self.set_hname(BookUtil.hanviet(self.zname))
-    self.set_vname(BookUtil.btitle_vname(self.zname, bdict))
+  def self.upsert!(zname : String, vname : String?) : self
+    if entry = find({zname: zname})
+      if vname && vname != entry.vname
+        entry.update({vname: vname})
+      end
 
-    self.save!
-  end
+      entry
+    else
+      entry = new({zname: zname})
 
-  def set_hname(hname : String) : Nil
-    self.hname = hname
-    self.hslug = BookUtil.make_slug(hname)
-  end
+      entry.hname = BookUtil.tl_name(zname)
+      entry.vname = vname || entry.hname
 
-  def set_vname(vname : String) : Nil
-    self.vname = vname
-    self.vslug = BookUtil.make_slug(vname)
-  end
-
-  #########################################
-
-  def self.upsert!(zname : String, vname : String? = nil, bdict : String = "combine") : self
-    unless btitle = find({zname: zname})
-      btitle = new({zname: zname})
-
-      btitle.set_vname(vname || BookUtil.btitle_vname(zname, bdict))
-      btitle.set_hname(BookUtil.hanviet(zname))
-
-      return btitle.tap(&.save!)
+      entry.tap(&.save!)
     end
-
-    btitle.tap(&.set_vname(vname)).save! if vname && vname != btitle.vname
-    btitle
   end
 end

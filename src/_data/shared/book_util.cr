@@ -1,5 +1,5 @@
 require "json"
-require "tabkv"
+# require "tabkv"
 
 require "../../_util/text_util"
 require "../../mt_sp/sp_core"
@@ -9,14 +9,26 @@ module CV::BookUtil
 
   DIR = "var/books/fixes"
 
-  class_getter zh_authors : Tabkv(String) { load_tsv("authors_zh") }
-  class_getter vi_authors : Tabkv(String) { load_tsv("authors_vi") }
+  class_getter zh_authors : Hash(String, String) { load_tsv("authors_zh") }
+  class_getter zh_btitles : Hash(String, String) { load_tsv("btitles_zh") }
 
-  class_getter zh_btitles : Tabkv(String) { load_tsv("btitles_zh") }
-  class_getter vi_btitles : Tabkv(String) { load_tsv("btitles_vi") }
+  # class_getter vi_authors : Hash(String, String) { load_tsv("authors_vi") }
+  # class_getter vi_btitles : Tabkv(String) { load_tsv("btitles_vi") }
 
   def load_tsv(name : String)
-    Tabkv(String).new("#{DIR}/#{name}.tsv")
+    hash = {} of String => String
+
+    File.each_line("#{DIR}/#{name}.tsv") do |line|
+      rows = line.split('\t')
+      key = rows[0]
+      if val = rows[1]?
+        hash[key] = val
+      else
+        hash.delete(key)
+      end
+    end
+
+    hash
   end
 
   #############
@@ -51,127 +63,114 @@ module CV::BookUtil
     zname.gsub(/[^\p{L}\p{N}]/, "")
   end
 
-  def scrub_vname(vname : String, delimit = " ") : String
-    res = String::Builder.new
-    acc = String::Builder.new
+  # def scrub_vname(vname : String, delimit = " ") : String
+  #   res = String::Builder.new
+  #   acc = String::Builder.new
 
-    vname = scrub_tones(vname)
-    vname.each_char do |char|
-      if char.ascii_alphanumeric?
-        acc << char
-      elsif !acc.empty?
-        res << delimit unless res.empty?
-        res << acc.to_s
-        acc = String::Builder.new
-      end
-    end
+  #   vname = scrub_tones(vname)
 
-    unless acc.empty?
-      res << delimit unless res.empty?
-      res << acc.to_s
-    end
+  #   vname.each_char do |char|
+  #     if char.ascii_alphanumeric?
+  #       acc << char
+  #     elsif !acc.empty?
+  #       res << delimit unless res.empty?
+  #       res << acc.to_s
+  #       acc = String::Builder.new
+  #     end
+  #   end
 
-    res.to_s
-  end
+  #   unless acc.empty?
+  #     res << delimit unless res.empty?
+  #     res << acc.to_s
+  #   end
 
-  def scrub_tones(vname : String) : String
-    vname.downcase
-      .tr("áàãạảăắằẵặẳâầấẫậẩ", "a")
-      .tr("éèẽẹẻêếềễệể", "e")
-      .tr("íìĩịỉ", "i")
-      .tr("óòõọỏôốồỗộổơớờỡợở", "o")
-      .tr("úùũụủưứừữựử", "u")
-      .tr("ýỳỹỵỷ", "y")
-      .tr("đ", "d")
-  end
+  #   res.to_s
+  # end
 
-  def make_slug(name : String)
-    String.build do |io|
-      io << '-' << scrub_vname(name, "-") << '-'
-    end
-  end
-
-  def hanviet(input : String, caps : Bool = true) : String
-    return input unless input =~ /\p{Han}/ # return if no hanzi found
-
-    output = SP::MtCore.tl_sinovi(input, false)
-    caps ? TextUtil.titleize(output) : output
-  end
+  # def make_slug(name : String)
+  #   "-#{scrub_vname(name, "-")}-"
+  # end
 
   #######################
 
   def split_lines(input : String)
-    input.split(/\r?\n|\r/).map(&.strip).reject(&.empty?)
+    input.split(/\R/).map!(&.strip).reject!(&.empty?)
   end
 
-  enum RenderMode
-    Mtl; Text; Html
+  def tl_name(input : String)
+    return input unless input =~ /\p{Han}/
+    output = SP::MtCore.tl_sinovi(input)
+    TextUtil.capitalize(output)
   end
 
-  def cv_lines(input : String, udict : String, mode : RenderMode) : String
-    cv_lines(split_lines(input), udict, mode)
-  end
+  # enum RenderMode
+  #   Mtl; Text; Html
+  # end
 
-  def cv_lines(lines : Array(String), udict : String = "combine", mode : RenderMode = :text) : String
-    cvmtl = M1::MtCore.init(udict)
+  # def cv_lines(input : String, udict : String, mode : RenderMode) : String
+  #   cv_lines(split_lines(input), udict, mode)
+  # end
 
-    String.build do |io|
-      lines.each_with_index do |line, idx|
-        mt_list = cvmtl.cv_plain(line)
-        io << '\n' if idx > 0
+  # def cv_lines(lines : Array(String), udict : String = "combine", mode : RenderMode = :text) : String
+  #   cvmtl = M1::MtCore.init(udict)
 
-        case mode
-        when .html?
-          io << "<p>"
-          mt_list.to_txt(io)
-          io << "</p>"
-        when .text?
-          mt_list.to_txt(io)
-        else
-          mt_list.to_mtl(io)
-        end
-      end
-    end
-  end
+  #   String.build do |io|
+  #     lines.each_with_index do |line, idx|
+  #       mt_list = cvmtl.cv_plain(line)
+  #       io << '\n' if idx > 0
 
-  ###################
+  #       case mode
+  #       when .html?
+  #         io << "<p>"
+  #         mt_list.to_txt(io)
+  #         io << "</p>"
+  #       when .text?
+  #         mt_list.to_txt(io)
+  #       else
+  #         mt_list.to_mtl(io)
+  #       end
+  #     end
+  #   end
+  # end
 
-  def author_vname(author : String) : String
-    vi_authors[author]? || hanviet(author)
-  end
+  # ###################
 
-  def btitle_vname(zname : String, bdict : String = "combine") : String
-    vname = vi_btitles[zname]? || btitle_vname_mtl(zname, bdict)
-    TextUtil.titleize(vname)
-  end
+  # def author_vname(author : String) : String
+  #   vi_authors[author]? || hanviet(author)
+  # end
 
-  def btitle_vname_mtl(zname : String, bdict : String) : String
-    cvmtl = M1::MtCore.init(bdict)
+  # def btitle_vname(zname : String, bdict : String = "combine") : String
+  #   vname = vi_btitles[zname]? || btitle_vname_mtl(zname, bdict)
+  #   TextUtil.titleize(vname)
+  # end
 
-    NAME_PREFIXES.each do |key, val|
-      next unless zname.starts_with?(key)
-      return val + cvmtl.translate(zname[key.size..])
-    end
+  # def btitle_vname_mtl(zname : String, bdict : String) : String
+  #   cvmtl = M1::MtCore.init(bdict)
 
-    cvmtl.translate(zname)
-  end
+  #   NAME_PREFIXES.each do |key, val|
+  #     next unless zname.starts_with?(key)
+  #     return val + cvmtl.translate(zname[key.size..])
+  #   end
 
-  NAME_PREFIXES = {
-    "华娱之"   => "C-biz: ",
-    "韩娱之"   => "K-biz: ",
-    "火影之"   => "NARUTO: ",
-    "民国之"   => "Dân quốc: ",
-    "三国之"   => "Tam Quốc: ",
-    "综漫之"   => "Tổng mạn: ",
-    "娱乐之"   => "Giải trí: ",
-    "重生之"   => "Trùng sinh: ",
-    "穿越之"   => "Xuyên qua: ",
-    "复活之"   => "Phục sinh: ",
-    "网游之"   => "Game online: ",
-    "异界之"   => "Thế giới khác: ",
-    "哈利波特之" => "Harry Potter: ",
-    "网游三国之" => "Tam Quốc game online: ",
-  }
+  #   cvmtl.translate(zname)
+  # end
+
+  # NAME_PREFIXES = {
+  #   "华娱之"   => "C-biz: ",
+  #   "韩娱之"   => "K-biz: ",
+  #   "火影之"   => "NARUTO: ",
+  #   "民国之"   => "Dân quốc: ",
+  #   "三国之"   => "Tam Quốc: ",
+  #   "综漫之"   => "Tổng mạn: ",
+  #   "娱乐之"   => "Giải trí: ",
+  #   "重生之"   => "Trùng sinh: ",
+  #   "穿越之"   => "Xuyên qua: ",
+  #   "复活之"   => "Phục sinh: ",
+  #   "网游之"   => "Game online: ",
+  #   "异界之"   => "Thế giới khác: ",
+  #   "哈利波特之" => "Harry Potter: ",
+  #   "网游三国之" => "Tam Quốc game online: ",
+  # }
 end
 
 # puts CV::BookUtil.scrub_zname("9205.第9205章 test 番外 test??!!")

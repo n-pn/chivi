@@ -1,6 +1,5 @@
 require "./_m1_ctrl_base"
 require "./m1_tran_data"
-require "../../_util/hash_util"
 require "../../mt_sp/sp_core"
 
 class M1::TranCtrl < AC::Base
@@ -56,6 +55,14 @@ class M1::TranCtrl < AC::Base
     render json: {
       cvmtl: cvmtl,
       ztext: qtran.lines.join('\n'),
+    }
+  end
+
+  @[AC::Route::GET("/wn_name")]
+  def wn_name(btitle : String = "", author : String = "", wn_id : Int32 = 0)
+    render json: {
+      btitle_vi: TlUtil.tl_btitle(btitle, wn_id),
+      author_vi: TlUtil.tl_author(author),
     }
   end
 

@@ -7,6 +7,7 @@ require "./nvinfo/*"
 
 require "../ys_book"
 require "../../mt_v1/core/m1_core"
+require "../../_util/ram_cache"
 
 class CV::Nvinfo
   include Clear::Model
@@ -88,66 +89,38 @@ class CV::Nvinfo
 
   timestamps # created_at and updated_at
 
-  # getter cvmtl : M1::MtCore { M1::MtCore.generic_mtl(self.id) }
-
   scope :filter_btitle do |input|
-    if input.nil?
-      return self
-    elsif input =~ /\p{Han}/
-      scrub = BookUtil.scrub_zname(input)
-      query = "zname LIKE '%#{scrub}%'"
+    if input =~ /\p{Han}/
+      smt = "btitle_id in (select id from btitles where zname %> ?)"
     else
-      scrub = BookUtil.scrub_vname(input, "-")
-      query = "vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%'"
+      smt = "btitle_id in (select id from btitles where __fts like ('%' || scrub_name(?)) || '%')"
     end
 
-    where("btitle_id IN (SELECT id from btitles where #{query})")
+    where(smt, input)
   end
 
   scope :filter_author do |input|
-    if input.nil?
-      return self
-    elsif input =~ /\p{Han}/
-      scrub = BookUtil.scrub_zname(input)
-      query = "zname LIKE '%#{scrub}%'"
+    if input =~ /\p{Han}/
+      smt = "author_id in (select id from authors where zname %> ?)"
     else
-      scrub = BookUtil.scrub_vname(input, "-")
-      query = "vslug LIKE '%-#{scrub}-%'"
+      smt = "author_id in (select id from authors where __fts like ('%' || scrub_name(?)) || '%')"
     end
 
-    where("author_id IN (SELECT id FROM authors WHERE #{query})")
+    where(smt, input)
   end
 
   scope :filter_chroot do |input|
-    input ? where("id IN (SELECT nvinfo_id FROM chroots WHERE sname = ? AND chap_count > 0)", input) : self
+    smt = "id IN (SELECT nvinfo_id FROM chroots WHERE sname = ? AND chap_count > 0)"
+    where(smt, input)
+  end
+
+  scope :filter_origin do |input|
+    smt = "ysbook_id in (select id from ysbooks where pub_name = ?)"
+    where(smt, input)
   end
 
   scope :filter_genres do |input|
     input ? where("igenres @> ?", GenreMap.map_int(input.split('+'))) : self
-  end
-
-  scope :filter_tagged do |input|
-    input ? where("vlabels @> ?", input.split("+").map(&.strip)) : self
-  end
-
-  scope :filter_status do |input|
-    if input && (status = input.to_i?) && status < 5
-      where("status = ?", status &- 1)
-    else
-      self
-    end
-  end
-
-  scope :filter_voters do |input|
-    input ? where("voters >= ?", input.to_i? || 0) : self
-  end
-
-  scope :filter_rating do |input|
-    input ? where("rating >= ?", (input.to_i? || 0) * 10) : self
-  end
-
-  scope :filter_origin do |input|
-    input ? where("ysbook_id in (select id from ysbooks where pub_name = ?)", input) : self
   end
 
   scope :filter_viuser do |uname, bmark|
@@ -158,6 +131,10 @@ class CV::Nvinfo
     else
       self
     end
+  end
+
+  scope :filter_tagged do |input|
+    input ? where("vlabels @> ?", input.split("+").map(&.strip)) : self
   end
 
   scope :sort_by do |order|

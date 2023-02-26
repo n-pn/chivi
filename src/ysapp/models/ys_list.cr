@@ -72,7 +72,8 @@ class YS::Yslist
     vdict.set(ysuser.zname, [ysuser.vname], ["nr"])
 
     self.vname = mtl.translate(self.zname)
-    self.vslug = "-" + CV::BookUtil.scrub_vname(self.vname, "-") + "-"
+    self.vslug = "-" + TextUtil.slugify(vname).gslub(/[^\p{L}\p{N}]/, "-")
+
     vdict.set(ysuser.zname, [""])
   end
 

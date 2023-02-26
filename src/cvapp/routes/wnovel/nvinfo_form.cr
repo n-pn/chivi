@@ -10,8 +10,11 @@ class CV::NvinfoForm
   getter author_zh : String
   getter author_vi : String?
 
-  getter bintro : String? = nil
+  getter bintro_zh : String?
+  getter bintro_vi : String?
+
   getter genres : String? = nil
+
   getter bcover : String? = nil
   getter status : Int32? = nil
 
@@ -21,8 +24,11 @@ class CV::NvinfoForm
   def after_initialize
     @btitle_zh, @author_zh = BookUtil.fix_names(@btitle_zh, @author_zh)
 
-    @author_vi.try { |x| BookUtil.vi_authors.append!(@author_zh, x) }
-    @btitle_vi.try { |x| BookUtil.vi_btitles.append!(@btitle_zh, x) }
+    @author_vi = nil if @author_vi.try(&.blank?)
+    @btitle_vi = nil if @btitle_vi.try(&.blank?)
+
+    @bintro_zh = nil if @bintro_zh.try(&.blank?)
+    @bintro_vi = nil if @bintro_vi.try(&.blank?)
 
     @vi_book = init_nv_book(force: true)
   end
@@ -33,9 +39,12 @@ class CV::NvinfoForm
 
     vi_book = Nvinfo.upsert!(author, btitle, fix_names: true)
 
-    @bintro.try do |intro|
-      intro = TextUtil.split_html(intro, true)
-      vi_book.set_bintro(intro, force: force)
+    @bintro_zh.try do |intro|
+      vi_book.zintro = TextUtil.split_html(intro, true).join('\n')
+    end
+
+    @bintro_vi.try do |intro|
+      vi_book.zintro = intro.split(/\R/).join('\n')
     end
 
     @genres.try do |genres|

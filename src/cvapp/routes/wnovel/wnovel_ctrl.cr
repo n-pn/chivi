@@ -17,11 +17,14 @@ class CV::WnovelCtrl < CV::BaseCtrl
   )
     pg_no, limit, offset = _paginate(max: 100)
 
-    query = Nvinfo.query
-      .sort_by(order)
-      .filter_btitle(btitle).filter_author(author)
-      .filter_chroot(chroot).filter_genres(genres)
-      .filter_tagged(tagged).filter_origin(origin)
+    query = Nvinfo.query.sort_by(order)
+
+    query.filter_btitle(btitle) if btitle
+    query.filter_author(author) if author
+    query.filter_chroot(chroot) if chroot
+    query.filter_origin(origin) if origin
+
+    query.filter_genres(genres).filter_tagged(tagged)
 
     query.where("status = ?", status - 1) if status
     query.where("voters >= ?", voters) if voters
