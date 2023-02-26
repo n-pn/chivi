@@ -151,7 +151,7 @@
     <div class="chap-hint" class:_bold={!seed_data.fresh}>
       <SIcon name="alert-triangle" />
       Danh sách chương tiết được liên kết tới
-      <a class="link" {href} rel="noreferrer noopener" target="_blank"
+      <a class="link" {href} rel="noreferrer" target="_blank"
         >nguồn ngoài
         <SIcon name="external-link" />
       </a>. Bạn có thể bấm [<SIcon name="refresh" /> Đổi mới] để cập nhật theo nguồn

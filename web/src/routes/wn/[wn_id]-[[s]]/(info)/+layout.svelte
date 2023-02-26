@@ -83,36 +83,26 @@
         >({nvinfo.voters} lượt<span class="trim">&nbsp;đánh giá</span>)</span>
     </div>
 
-    {#if nvinfo.ys_snvid || nvinfo.pub_link}
-      <div class="line">
-        <span class="stat">Liên kết:</span>
+    <div class="line">
+      <span class="stat">Liên kết:</span>
 
-        {#if nvinfo.ys_snvid != ''}
-          <a
-            class="stat link _outer"
-            href="https://www.yousuu.com/book/{nvinfo.ys_snvid}"
-            rel="noopener noreferrer"
-            target="_blank"
-            data-tip="Đánh giá tiếng Trung">
-            <span>yousuu</span>
-          </a>
+      {#each nvinfo.origins as { name, link, type }}
+        <a
+          class="stat link _outer"
+          href={link}
+          rel="noreferrer"
+          target="_blank">
+          <span>{name}</span>
+        </a>
 
-          <a
-            class="stat link _outer"
-            href={nvinfo.pub_link}
-            rel="noopener noreferrer"
-            target="_blank"
-            data-tip="Trang xuất bản gốc">
-            <span>{nvinfo.pub_name}</span>
-          </a>
-
+        {#if type == 1}
           <a
             class="stat link"
-            href="/books?origin={nvinfo.pub_name}"
+            href="/books?origin={name}"
             data-tip="Tìm truyện cùng nguồn"><SIcon name="search" /></a>
         {/if}
-      </div>
-    {/if}
+      {/each}
+    </div>
   </div>
 
   <UserAction {nvinfo} {ubmemo} />

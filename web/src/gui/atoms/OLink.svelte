@@ -3,5 +3,4 @@
   export let text: string
 </script>
 
-<a {href} class={$$props.class} target="_blank" rel="noopener noreferrer"
-  >{text}</a>
+<a {href} class={$$props.class} target="_blank" rel="noreferrer">{text}</a>

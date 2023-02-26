@@ -19,8 +19,7 @@
     <strong>Liên kết: </strong>
     {#each links as [text, href], index}
       {#if index > 0} <span class="sep" />{/if}
-      <a {href} class="foot-link" target="_blank" rel="noreferrer noopener"
-        >{text}</a>
+      <a {href} class="foot-link" target="_blank" rel="noreferrer">{text}</a>
     {/each}
   </div>
 

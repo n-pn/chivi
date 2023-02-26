@@ -86,10 +86,8 @@
     <p>
       <em
         >Lưu ý: Liên hệ ban quản trị qua
-        <a
-          href="https://discord.gg/mdC3KQH"
-          target="_blank"
-          rel="noreferrer noopener">Discord</a>
+        <a href="https://discord.gg/mdC3KQH" target="_blank" rel="noreferrer"
+          >Discord</a>
         để nhận được phản hồi nhanh nhất.</em>
     </p>
 
@@ -108,11 +106,11 @@
           <a
             href="https://www.google.com/search?q={search}"
             target="_blank"
-            rel="noreferrer noopener">Google</a>
+            rel="noreferrer">Google</a>
           <a
             href="https://www.baidu.com/s?wd={search}"
             target="_blank"
-            rel="noreferrer noopener">Baidu</a>
+            rel="noreferrer">Baidu</a>
         </em>
       </p>
 
@@ -126,7 +124,7 @@
           class="m-btn  _lg"
           href="https://discord.gg/mdC3KQH"
           target="_blank"
-          rel="noreferrer noopener">
+          rel="noreferrer">
           <SIcon name="brand-discord" />
           <span>Liên hệ quản trị</span>
         </a>

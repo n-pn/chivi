@@ -121,17 +121,16 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
         {#each sources as { site, href, desc }}
           <tr>
             <td class="href"
-              ><a {href} rel="noopener noreferrer" target="_blank">{href}</a
-              ></td>
+              ><a {href} rel="noreferrer" target="_blank">{href}</a></td>
             <td class="search">
               <a
                 href="{google_url} site:{site}"
-                rel="noopener noreferrer"
+                rel="noreferrer"
                 target="_blank">Google</a>
               <!-- {#if custom_search}
                   <a
                     href={custom_search}
-                    rel="noopener noreferrer"
+                    rel="noreferrer"
                     target="_blank">{site}</a>
                 {/if} -->
             </td>

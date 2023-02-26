@@ -5,6 +5,8 @@ require "./author"
 require "./btitle"
 require "./nvinfo/*"
 
+require "./wn_link"
+
 require "../ys_book"
 require "../../mt_v1/core/m1_core"
 require "../../_util/ram_cache"
@@ -91,32 +93,32 @@ class CV::Nvinfo
 
   scope :filter_btitle do |input|
     if input =~ /\p{Han}/
-      smt = "btitle_id in (select id from btitles where zname %> ?)"
+      stmt = "btitle_id in (select id from btitles where zname %> ?)"
     else
-      smt = "btitle_id in (select id from btitles where __fts like ('%' || scrub_name(?)) || '%')"
+      stmt = "btitle_id in (select id from btitles where __fts like ('%' || scrub_name(?)) || '%')"
     end
 
-    where(smt, input)
+    where(stmt, input)
   end
 
   scope :filter_author do |input|
     if input =~ /\p{Han}/
-      smt = "author_id in (select id from authors where zname %> ?)"
+      stmt = "author_id in (select id from authors where zname %> ?)"
     else
-      smt = "author_id in (select id from authors where __fts like ('%' || scrub_name(?)) || '%')"
+      stmt = "author_id in (select id from authors where __fts like ('%' || scrub_name(?)) || '%')"
     end
 
-    where(smt, input)
+    where(stmt, input)
   end
 
   scope :filter_chroot do |input|
-    smt = "id IN (SELECT nvinfo_id FROM chroots WHERE sname = ? AND chap_count > 0)"
-    where(smt, input)
+    stmt = "id IN (SELECT nvinfo_id FROM chroots WHERE sname = ? AND chap_count > 0)"
+    where(stmt, input)
   end
 
   scope :filter_origin do |input|
-    smt = "ysbook_id in (select id from ysbooks where pub_name = ?)"
-    where(smt, input)
+    stmt = "id in (select book_id from wnlinks where type = 1 and name = ?)"
+    where(stmt, input)
   end
 
   scope :filter_genres do |input|
@@ -147,6 +149,8 @@ class CV::Nvinfo
     else               order_by(id: :desc)
     end
   end
+
+  getter orig_links : Array(WnLink) { WnLink.all_origs(self.id.to_i) }
 
   include NvinfoInner
 

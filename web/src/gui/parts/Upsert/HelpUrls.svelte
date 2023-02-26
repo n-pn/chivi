@@ -2,14 +2,23 @@
   import { SIcon } from '$gui'
   export let key = ''
 
-  let submenu = 0
+  let submenu = -1
 
-  $: helps = [
+  const helps = [
     ['Chọn từ điển', '/guide/may-dich/chon-tu-dien'],
     ['Phân loại từ', '/guide/may-dich/phan-loai-tu'],
     ['Độ ưu tiên', '/guide/may-dich/uu-tien-cum-tu'],
   ]
-  // prettier-ignore
+
+  $: trans = [
+    // prettier-ignore
+    ['G.Tran', `//translate.google.com/?sl=zh-CN&tl=en&op=translate&text=${key}`],
+    ['Bing', `//www.bing.com/translator?from=zh-Hans&to=vi&text=${key}`],
+    ['DeepL', ` //www.deepl.com/translator#zh/en/${key}`],
+    ['Fanyi', `//fanyi.baidu.com/#zh/en/${key}`],
+    ['iCIBA', `//www.iciba.com/word?w=${key}`],
+  ]
+
   $: links = [
     ['Google', `//www.google.com/search?q=${key}`],
     ['Baidu', `//www.baidu.com/s?wd=${key}`],
@@ -19,19 +28,11 @@
     ['Thivien', `//hvdic.thivien.net/whv/${key}`],
   ]
 
-  // prettier-ignore
-  $: trans = [
-    ['G.Trans', `//translate.google.com/?sl=zh-CN&tl=en&op=translate&text=${key}`, ],
-    ['Bing', `//www.bing.com/translator?from=zh-Hans&to=vi&text=${key}`],
-    ['DeepL', ` //www.deepl.com/translator#zh/en/${key}`],
-    ['Fanyi', `//fanyi.baidu.com/#zh/en/${key}`],
-    ['iCIBA', `//www.iciba.com/word?w=${key}`],
-  ]
-
+  $: submenus = [helps, trans, links]
   $: gsearch = links[0][1]
 
   function trigger(node: HTMLElement, value: number) {
-    const click = () => (submenu = submenu == value ? 0 : value)
+    const click = () => (submenu = submenu == value ? -1 : value)
     node.addEventListener('click', click, true)
     return { destroy: () => node.removeEventListener('click', click) }
   }
@@ -39,12 +40,12 @@
 
 <footer>
   <div class="main">
-    <button class="link" use:trigger={1}>
+    <button class="link" use:trigger={0}>
       <span>Hướng dẫn</span>
       <SIcon name="caret-down" />
     </button>
 
-    <button class="link" use:trigger={3}>
+    <button class="link" use:trigger={1}>
       <span>Dịch ngoài</span>
       <SIcon name="caret-down" />
     </button>
@@ -54,28 +55,19 @@
       <SIcon name="caret-down" />
     </button>
 
-    <a class="link" href={gsearch} target="_blank" rel="noopener noreferrer"
-      >Google</a>
+    <a class="link" href={gsearch} target="_blank" rel="noreferrer">
+      <span>Google</span>
+      <SIcon name="external-link" />
+    </a>
   </div>
 
-  <div class="submenu">
-    {#if submenu == 1}
-      {#each helps as [name, href]}
-        <a class="link" {href} target="_blank" rel="noopener noreferrer"
-          >{name}</a>
+  {#if submenu >= 0}
+    <div class="submenu">
+      {#each submenus[submenu] as [name, href]}
+        <a class="link" {href} target="_blank" rel="noreferrer">{name}</a>
       {/each}
-    {:else if submenu == 2}
-      {#each links as [name, href]}
-        <a class="link" {href} target="_blank" rel="noopener noreferrer"
-          >{name}</a>
-      {/each}
-    {:else if submenu == 3}
-      {#each trans as [name, href]}
-        <a class="link" {href} target="_blank" rel="noopener noreferrer"
-          >{name}</a>
-      {/each}
-    {/if}
-  </div>
+    </div>
+  {/if}
 </footer>
 
 <style lang="scss">
@@ -91,9 +83,11 @@
   $height: 2.25rem;
 
   .link {
+    display: inline-flex;
+    align-items: center;
     cursor: pointer;
+    gap: 0.2em;
     padding: 0 0.25rem;
-    line-height: $height;
     height: $height;
 
     @include bgcolor(tranparent);
@@ -116,11 +110,11 @@
     left: 0;
     right: 0;
     top: 100%;
-    // margin-top: -2px;
+    margin-top: -0.25rem;
 
     .link {
-      line-height: 2rem;
-      height: 2rem;
+      line-height: 1.875rem;
+      height: 1.875rem;
     }
 
     &:empty {

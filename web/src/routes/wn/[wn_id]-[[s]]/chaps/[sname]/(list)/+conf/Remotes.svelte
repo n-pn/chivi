@@ -117,11 +117,8 @@
     {#each seed_data.links as slink, index}
       <tr>
         <td>
-          <a
-            href={slink}
-            class="slink"
-            rel="noopener noreferrer"
-            target="_blank">{slink}</a>
+          <a href={slink} class="slink" rel="noreferrer" target="_blank"
+            >{slink}</a>
         </td>
         <td align="center">
           <button
@@ -184,7 +181,7 @@
     {#each sources as { site, href }}
       <tr>
         <td>
-          <a {href} rel="noopener noreferrer" target="_blank">
+          <a {href} rel="noreferrer" target="_blank">
             {href}
             <SIcon name="external-link" />
           </a>
@@ -193,7 +190,7 @@
           <a
             class="search"
             href="{search} site:{site}"
-            rel="noopener noreferrer"
+            rel="noreferrer"
             target="_blank">
             <span>Tìm truyện</span>
           </a>

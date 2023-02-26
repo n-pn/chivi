@@ -4,6 +4,12 @@ declare namespace CV {
     vname: string
   }
 
+  interface Wnlink {
+    type: number
+    name: string
+    link: string
+  }
+
   interface Nvinfo {
     id: number
 
@@ -30,9 +36,7 @@ declare namespace CV {
     voters: number
     rating: number
 
-    ys_snvid: string
-    pub_link: string
-    pub_name: string
+    origins: Wnlink[]
   }
 
   interface WnForm {

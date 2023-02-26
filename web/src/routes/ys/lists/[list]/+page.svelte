@@ -74,7 +74,7 @@
   <div class="origin">
     <a
       href="https://www.yousuu.com/booklist/{ylist.yl_id}"
-      rel="noopener noreferrer"
+      rel="noreferrer"
       target="_blank">
       <SIcon name="external-link" />
       <span>Nguồn</span></a>

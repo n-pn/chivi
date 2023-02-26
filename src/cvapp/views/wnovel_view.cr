@@ -34,11 +34,7 @@ struct CV::WnovelView
         jb.field "btitle_zh", @data.btitle.zname
         jb.field "btitle_hv", @data.btitle.hname
 
-        if ysbook = @data.ysbook
-          jb.field "ys_snvid", ysbook.id
-          jb.field "pub_link", ysbook.pub_link
-          jb.field "pub_name", ysbook.pub_name
-        end
+        jb.field "origins", @data.orig_links
       end
     end
   end
