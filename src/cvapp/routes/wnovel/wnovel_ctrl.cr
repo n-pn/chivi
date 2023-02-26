@@ -1,5 +1,5 @@
 require "../_ctrl_base"
-require "./nvinfo_form"
+require "./wnovel_form"
 require "../../../mt_v1/data/v1_dict"
 
 class CV::WnovelCtrl < CV::BaseCtrl
@@ -94,8 +94,8 @@ class CV::WnovelCtrl < CV::BaseCtrl
     }
   end
 
-  @[AC::Route::GET("/:wn_id/+edit")]
-  def edit(wn_id : Int64)
+  @[AC::Route::GET("/:wn_id/edit_form")]
+  def edit_form(wn_id : Int64)
     nvinfo = get_wnovel(wn_id)
 
     render json: {
@@ -105,15 +105,17 @@ class CV::WnovelCtrl < CV::BaseCtrl
       author_zh: nvinfo.author.zname,
       author_vi: nvinfo.author.vname,
 
-      status: nvinfo.status,
+      bintro_zh: nvinfo.zintro,
+      bintro_vi: nvinfo.bintro,
+
       genres: nvinfo.vgenres,
-      bintro: nvinfo.zintro,
       bcover: nvinfo.scover,
+      status: nvinfo.status,
     }
   end
 
   @[AC::Route::POST("/", body: :form)]
-  def upsert(form : NvinfoForm)
+  def upsert(form : WnovelForm)
     guard_privi 2, "thêm truyện/sửa nội dung truyện"
 
     nvinfo = form.save

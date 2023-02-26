@@ -7,6 +7,21 @@ const _meta: App.PageMeta = {
   ],
 }
 
+const wnform: CV.WnForm = {
+  btitle_zh: '',
+  btitle_vi: '',
+  author_zh: '',
+  author_vi: '',
+
+  bintro_zh: '',
+  bintro_vi: '',
+
+  genres: [],
+  bcover: '',
+  status: 0,
+}
+
 export function load() {
-  return { _meta }
+  const nvinfo: Partial<CV.Nvinfo> = { id: 0 }
+  return { nvinfo, wnform, _meta }
 }

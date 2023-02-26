@@ -14,6 +14,27 @@ class M1::TranCtrl < AC::Base
     @w_init = _read_cookie("w_init").try(&.starts_with?('t')) || false
   end
 
+  @[AC::Route::GET("/cached")]
+  def cached(type : String, name : String, wn_id : Int32 = 0, format = "mtl")
+    qtran = TranData.load_cached(type, name, wn_id, format)
+    cvmtl = qtran.cv_wrap(_uname, @w_temp, @w_init) { |io, engine| cv_post(io, engine) }
+
+    render json: {
+      cvmtl: cvmtl,
+      ztext: qtran.lines.join('\n'),
+    }
+  end
+
+  @[AC::Route::GET("/tl_btitle")]
+  def tl_btitle(btitle : String, wn_id : Int32 = 0)
+    render text: TlUtil.tl_btitle(btitle, wn_id)
+  end
+
+  @[AC::Route::GET("/tl_author")]
+  def tl_author(author : String)
+    render text: TlUtil.tl_author(author)
+  end
+
   private def post_limit(privi = _privi)
     2 ** (privi &+ 1) &* 1000 &+ 1000
   end
@@ -28,7 +49,9 @@ class M1::TranCtrl < AC::Base
     # end
 
     qtran = TranData.new(input.lines, wn_id, format)
-    cvmtl = qtran.cv_wrap(_uname, @w_temp, @w_init) { |io, engine| cv_post(io, engine) }
+    cvmtl = qtran.cv_wrap(_uname, @w_temp, @w_init, w_stat: false) do |io, engine|
+      cv_post(io, engine)
+    end
 
     render text: cvmtl
   end
@@ -45,25 +68,6 @@ class M1::TranCtrl < AC::Base
     File.write("#{TMP_DIR}/#{pname}.txt", input)
 
     render text: pname
-  end
-
-  @[AC::Route::GET("/cached")]
-  def cached(type : String, name : String, wn_id : Int32 = 0, format = "mtl")
-    qtran = TranData.load_cached(type, name, wn_id, format)
-    cvmtl = qtran.cv_wrap(_uname, @w_temp, @w_init) { |io, engine| cv_post(io, engine) }
-
-    render json: {
-      cvmtl: cvmtl,
-      ztext: qtran.lines.join('\n'),
-    }
-  end
-
-  @[AC::Route::GET("/wn_name")]
-  def wn_name(btitle : String = "", author : String = "", wn_id : Int32 = 0)
-    render json: {
-      btitle_vi: TlUtil.tl_btitle(btitle, wn_id),
-      author_vi: TlUtil.tl_author(author),
-    }
   end
 
   @[AC::Route::PUT("/debug")]

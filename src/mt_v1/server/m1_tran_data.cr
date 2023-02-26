@@ -40,13 +40,18 @@ class M1::TranData
     @to_mtl = format == "mtl"
   end
 
-  def cv_wrap(w_user : String = "", w_temp : Bool = false, w_init : Bool = false, &)
+  def cv_wrap(w_user : String = "",
+              w_temp : Bool = false,
+              w_init : Bool = false,
+              w_stat : Bool = true,
+              &)
     engine = MtCore.init(@wn_id, user: w_user, temp: w_temp, init: w_init)
 
     String.build do |io|
       tspan = Time.measure { with self yield io, engine }
       tspan = tspan.total_milliseconds.round.to_i
 
+      next unless w_stat
       io << "\n$\t$\t$\n"
       io << tspan << '\t' << @udict.term_avail << '\t' << @udict.dname
     end

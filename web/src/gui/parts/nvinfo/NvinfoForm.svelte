@@ -3,24 +3,6 @@
 
   const fields = ['btitle_vi', 'author_vi', 'bintro', 'bcover']
 
-  export class NvinfoForm {
-    btitle_zh: string = ''
-    author_zh: string = ''
-
-    btitle_vi: string = ''
-    author_vi: string = ''
-
-    status: number = 0
-    genres: Array<string> = []
-
-    bintro: string = ''
-    bcover: string = ''
-
-    toJSON() {
-      return JSON.stringify(this)
-    }
-  }
-
   export class Params {
     nvinfo?: CV.Nvinfo
 
@@ -78,38 +60,59 @@
 
   import { SIcon } from '$gui'
 
-  export let nvinfo: CV.Nvinfo = undefined
-  // export let nvform: NvinfoForm
+  export let nvinfo: Partial<CV.Nvinfo>
+  export let wnform: CV.WnForm
 
-  let params = new Params(nvinfo)
   let errors: string
 
   async function submit() {
+    for (const key in wnform) {
+      if (key == 'btitle_zh' || key == 'author_zh') continue
+      const val = wnform[key]
+      if (val == nvinfo[key]) delete wnform[key]
+    }
+
     try {
-      const { id, bslug } = await api_call('/_db/books', params.output, 'POST')
+      const { id, bslug } = await api_call('/_db/books', wnform, 'POST')
       await goto(`/wn/${id}-${bslug}`)
     } catch (ex) {
       errors = ex.body.message
     }
   }
 
-  function remove_genre(genre: string) {
-    params.genres = params.genres.filter((x) => x != genre)
+  const remove_genre = (genre: string) => {
+    wnform.genres = wnform.genres.filter((x) => x != genre)
   }
 
-  function add_genre(genre: string) {
-    params.genres = [...params.genres, genre]
+  const add_genre = (genre: string) => {
+    wnform.genres = [...wnform.genres, genre]
   }
 
   let show_genres_menu = false
   let show_genres_more = false
+
+  const tl_btitle = async (btitle: string) => {
+    const href = `/_m1/qtran/tl_btitle?btitle=${btitle}&wn_id=${nvinfo.id}`
+    wnform.btitle_vi = await fetch(href).then((r) => r.text())
+  }
+
+  const tl_author = async (author: string) => {
+    const href = `/_m1/qtran/tl_author?author=${author}&wn_id=${nvinfo.id}`
+    wnform.author_vi = await fetch(href).then((r) => r.text())
+  }
+
+  const tl_bintro = async (bintro: string) => {
+    const headers = { 'Content-Type': 'text/plain' }
+    const init = { method: 'POST', body: bintro, headers: headers }
+
+    const href = `/_m1/qtran?wn_id=${nvinfo.id}&format=txt`
+    wnform.bintro_vi = await fetch(href, init).then((r) => r.text())
+  }
 </script>
 
 <article class="article">
   <header>
-    <slot name="header">
-      <h1>Thêm/sửa thông tin bộ truyện</h1>
-    </slot>
+    <slot name="header"><h1>Thêm/sửa thông tin bộ truyện</h1></slot>
   </header>
 
   <form action="/_db/books" method="POST" on:submit|preventDefault={submit}>
@@ -121,9 +124,10 @@
           class="m-input"
           name="btitle_zh"
           placeholder="Tựa bộ truyện"
-          disabled={!!params.nvinfo}
+          disabled={nvinfo.id != 0}
+          on:change={() => tl_btitle(wnform.btitle_zh)}
           required
-          bind:value={params.btitle_zh} />
+          bind:value={wnform.btitle_zh} />
       </form-field>
 
       <form-field>
@@ -132,8 +136,8 @@
           type="text"
           class="m-input"
           name="btitle_vi"
-          placeholder="Có thể để trắng"
-          bind:value={params.btitle_vi} />
+          placeholder="Để trắng để hệ thống tự gợi ý"
+          bind:value={wnform.btitle_vi} />
       </form-field>
     </form-group>
 
@@ -147,8 +151,9 @@
           name="author_zh"
           placeholder="Tên tác giả bộ truyện"
           required
-          disabled={!!params.nvinfo}
-          bind:value={params.author_zh} />
+          disabled={nvinfo.id != 0}
+          on:change={() => tl_author(wnform.author_zh)}
+          bind:value={wnform.author_zh} />
       </form-field>
 
       <form-field>
@@ -157,21 +162,31 @@
           type="text"
           class="m-input"
           name="author_vi"
-          placeholder="Có thể để trắng"
-          bind:value={params.author_vi} />
+          placeholder="Để trắng để hệ thống tự gợi ý"
+          bind:value={wnform.author_vi} />
       </form-field>
     </form-group>
 
     <form-group>
       <form-field>
-        <label class="form-label" for="bintro"
-          >Giới thiệu vắn tắt (tiếng Trung)</label>
+        <label class="form-label" for="zintro">Giới thiệu tiếng Trung</label>
         <textarea
           class="m-input"
-          name="bintro"
-          rows="5"
+          name="zintro"
+          rows="8"
           placeholder="Giới thiệu vắn tắt nội dung"
-          bind:value={params.bintro} />
+          on:change={() => tl_bintro(wnform.bintro_zh)}
+          bind:value={wnform.bintro_zh} />
+      </form-field>
+
+      <form-field>
+        <label class="form-label" for="vintro">Giới thiệu tiếng Việt</label>
+        <textarea
+          class="m-input"
+          name="vintro"
+          rows="8"
+          placeholder="Để trắng để hệ thống tự gợi ý"
+          bind:value={wnform.bintro_vi} />
       </form-field>
     </form-group>
 
@@ -183,7 +198,7 @@
           class="m-input"
           name="bcover"
           placeholder="Đường dẫn tới file ảnh"
-          bind:value={params.bcover} />
+          bind:value={wnform.bcover} />
       </form-field>
     </form-group>
 
@@ -192,7 +207,7 @@
         <label class="label" for="genres">Thể loại</label>
 
         <div class="m-chips ">
-          {#each params.genres as genre}
+          {#each wnform.genres as genre}
             <button
               type="button"
               class="m-chip _success"
@@ -213,7 +228,7 @@
         {#if show_genres_menu}
           <div class="m-chips suggest">
             {#each bgenres as [vgenre, _slug, primary_genre]}
-              {@const included = params.genres.includes(vgenre)}
+              {@const included = wnform.genres.includes(vgenre)}
               {@const revealed = show_genres_more || primary_genre}
               <button
                 type="button"
@@ -246,7 +261,7 @@
             <label class="radio">
               <input
                 type="radio"
-                bind:group={params.status}
+                bind:group={wnform.status}
                 name="status"
                 {value} />
               <span>{label}</span>

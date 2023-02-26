@@ -7,16 +7,16 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo_form } = data)
+  $: ({ wnform, nvinfo } = data)
 
   async function delete_book() {
-    await fetch(`api/books/${nvinfo_form.id}/delete`, { method: 'DELETE' })
+    await fetch(`api/books/${nvinfo.id}/delete`, { method: 'DELETE' })
     await goto('/')
   }
 </script>
 
-<NvinfoForm nvinfo={nvinfo_form}>
-  <h1 slot="header">Sửa thông tin truyện [{nvinfo_form.btitle_vi}]</h1>
+<NvinfoForm {nvinfo} {wnform}>
+  <h1 slot="header">Sửa thông tin truyện [{nvinfo.btitle_vi}]</h1>
 </NvinfoForm>
 
 {#if $session.privi > 3}

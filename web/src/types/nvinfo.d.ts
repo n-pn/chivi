@@ -34,4 +34,21 @@ declare namespace CV {
     pub_link: string
     pub_name: string
   }
+
+  interface WnForm {
+    btitle_zh: string
+    btitle_vi: string
+
+    author_zh: string
+    author_vi: string
+
+    bintro_zh: string
+    bintro_vi: string
+
+    genres: string[]
+    bcover: string
+    status: number
+
+    // labels: string[]
+  }
 }
