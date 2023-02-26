@@ -7,7 +7,6 @@ require "./nvinfo/*"
 
 require "./wn_link"
 
-require "../ys_book"
 require "../../mt_v1/core/m1_core"
 require "../../_util/ram_cache"
 
@@ -22,8 +21,6 @@ class CV::Nvinfo
   belongs_to author : Author, foreign_key_type: Int32
   belongs_to btitle : Btitle, foreign_key_type: Int32
 
-  belongs_to ysbook : Ysbook?
-
   # getter seed_list : Nslist { Nslist.new(self) }
 
   column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
@@ -36,8 +33,6 @@ class CV::Nvinfo
 
   column bhash : String # unique string generate from zh_title & zh_author
   column bslug : String # unique string generate from hv_title & bhash
-
-  getter dname : String { "-" + bhash }
 
   ###########
 
@@ -204,6 +199,6 @@ class CV::Nvinfo
       fix_names = true
     end
 
-    nvinfo.tap { |x| x.fix_names!(nil) if fix_names }
+    nvinfo.tap { |x| x.fix_names! if fix_names }
   end
 end

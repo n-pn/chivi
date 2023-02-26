@@ -8,10 +8,9 @@ export async function load({ fetch, parent, params: { wn_id, sname, ch_no } }) {
   const { ztext, title, chdiv } = await api_get<ZtextRaw>(api_url, fetch)
 
   const { nvinfo } = await parent()
-  const dname = '-' + nvinfo.bhash
   const _meta = page_meta(nvinfo, sname, ch_no)
 
-  return { ztext, title, chdiv, ch_no, wn_id, sname, dname, _meta }
+  return { ztext, title, chdiv, ch_no, wn_id, sname, _meta }
 }
 
 import { book_nav, seed_nav, nav_link } from '$gui/global/header_util'

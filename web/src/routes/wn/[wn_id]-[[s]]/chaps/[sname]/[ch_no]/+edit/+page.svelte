@@ -47,8 +47,8 @@
   let html_diff: string = ''
 
   const compare = debounce(async (ztext: string) => {
-    old_vtext ||= await translate(data.ztext, data.dname)
-    new_vtext = await translate(ztext, data.dname)
+    old_vtext ||= await translate(data.ztext, data.wn_id)
+    new_vtext = await translate(ztext, data.wn_id)
     html_diff = diff_html(old_vtext, new_vtext, true)
   }, 300)
 

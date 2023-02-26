@@ -1,10 +1,10 @@
 import fast_diff from 'fast-diff'
 
-export function hash_str(s: string) {
+export function hash_str(str: string) {
   var hash = 0
 
-  for (let i = 0; i < s.length; i++) {
-    const chr = s.charCodeAt(i)
+  for (let i = 0; i < str.length; i++) {
+    const chr = str.charCodeAt(i)
     hash = (hash << 5) - hash + chr
     hash |= 0
   }
@@ -13,9 +13,6 @@ export function hash_str(s: string) {
   return hash.toString(32)
 }
 
-const valid_re_1 = /^[\s 　]*第/
-const valid_re_2 = /[。？！”」#＊）】…\.\p{Pe}\p{Pf}]\s*$/u
-
 export function fix_breaks(input: string, min_invalid = 15) {
   const lines = input.split(/\r\n?|\n/)
 
@@ -23,20 +20,21 @@ export function fix_breaks(input: string, min_invalid = 15) {
 
   for (let line of lines) {
     line = line.trim()
-
     if (!line) continue
-    output += line
 
-    if (
-      line.length < min_invalid ||
-      valid_re_1.test(line) ||
-      valid_re_2.test(line)
-    ) {
-      output += '\n'
-    }
+    output += line
+    if (is_full_line(line, min_invalid)) output += '\n'
   }
 
   return output
+}
+
+const full_line_re_1 = /^[\s 　]*第/
+const full_line_re_2 = /[。？！”」#＊）】…\.\p{Pe}\p{Pf}]\s*$/u
+
+const is_full_line = (line: string, min_invalid = 15) => {
+  if (line.length < min_invalid) return true
+  return full_line_re_1.test(line) || full_line_re_2.test(line)
 }
 
 export async function opencc(input: string, config = 'hk2s') {
@@ -57,17 +55,16 @@ export function diff_html(orig: string, edit: string, show_deleted = false) {
   return html
 }
 
+const text_headers = { 'Content-Type': 'text_plain' }
+
 export async function translate(
   input: string,
-  dname: string = 'combine',
+  wn_id: number = 0,
   fetch = globalThis.fetch
 ) {
-  const href = `/_db/qtran?dname=${dname}&_simp=true`
-  const body = JSON.stringify({ input })
-  const headers = { 'Content-Type': 'application/json' }
-
-  const res = await fetch(href, { method: 'POST', headers, body })
-  return await res.text()
+  const href = `/_m1/qtran?wn_id=${wn_id}&format=txt`
+  const init = { method: 'POST', headers: text_headers, body: input }
+  return await fetch(href, init).then((r) => r.text())
 }
 
 export function unaccent(input: string) {

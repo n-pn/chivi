@@ -88,8 +88,7 @@ module CV::NvinfoInner
     self.bslug = tokens.join('-')
   end
 
-  def fix_names!(bdict : String? = self.dname)
-    self.btitle.regen!(bdict) if bdict
+  def fix_names!
     self.vname = self.btitle.vname
     self.set_bslug(self.btitle.hslug)
     self.save!
