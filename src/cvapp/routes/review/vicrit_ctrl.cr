@@ -3,7 +3,7 @@ require "../_ctrl_base"
 class CV::VicritCtrl < CV::BaseCtrl
   base "/_db/crits"
 
-  @[AC::Route::GET("/", converters: {lm: ConvertLimit, tags: ConvertArray})]
+  @[AC::Route::GET("/", converters: {tags: ConvertArray})]
   def index(
     sort : String? = nil,
     user : Int32? = nil,
@@ -14,7 +14,7 @@ class CV::VicritCtrl < CV::BaseCtrl
 
     query = Vicrit.query.sort_by(sort)
     query.where("viuser_id = ?", user) if user
-    query.where("nvinfo_id = ?", user) if book
+    query.where("nvinfo_id = ?", book) if book
     query.where("btags = ?", tags) if tags
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count
@@ -57,33 +57,53 @@ class CV::VicritCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::GET("/:crit_id/edit")]
-  def edit(crit_id : Int64)
+  def edit_form(crit_id : Int64)
     vicrit = load_crit(crit_id)
+    guard_owner vicrit.viuser_id, 0, "sửa đánh giá"
 
     render json: {
       id:    vicrit.id,
+      bl_id: vicrit.vilist_id,
       stars: vicrit.stars,
       input: vicrit.itext,
       btags: vicrit.btags.join(", "),
     }
   end
 
-  record CritBody, input : String, stars : Int32, btags : Array(String) do
+  struct CritForm
     include JSON::Serializable
+
+    getter wn_id : Int32
+    getter bl_id : Int32?
+
+    getter input : String
+    getter stars : Int32 = 3
+    getter btags : Array(String)
+
+    def after_initialize
+      @input = @input.strip
+      @btags.map!(&.strip).reject!(&.empty?).uniq!
+
+      @stars = 3 unless @stars.in?(1..5)
+      @bl_id = nil if @bl_id == 0
+    end
   end
 
-  @[AC::Route::POST("/", body: body)]
-  def create(book_id : Int64, body : CritBody, list_id : Int32 = -_viuser.id)
-    unless _viuser.can?(:create_post)
-      raise Unauthorized.new("Bạn không có quyền tạo bình luận")
-    end
+  @[AC::Route::POST("/", body: form)]
+  def create(form : CritForm)
+    guard_privi 0, "tạo đánh giá"
 
-    vicrit = Vicrit.new({viuser_id: _viuser.id, nvinfo_id: book_id, vilist_id: list_id})
-    vicrit.patch!(body.input, body.stars, body.btags)
+    vicrit = Vicrit.new({
+      viuser_id: _viuser.id,
+      nvinfo_id: form.wn_id,
+      vilist_id: form.bl_id || -_vu_id,
+    })
 
-    VicritView.new(vicrit, full: true)
+    vicrit.patch!(form.input, form.stars, form.btags)
+
+    render json: VicritView.new(vicrit, full: true)
   rescue err : PG::Error
-    case msg = err.message.not_nil!
+    case msg = err.message || "Không rõ lỗi!"
     when .includes?("unique constraint")
       raise BadRequest.new "Bình luận cho bộ sách đã tồn tại!"
     else
@@ -92,12 +112,9 @@ class CV::VicritCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::PATCH("/:crit_id", body: body)]
-  def update(crit_id : Int64, body : CritBody)
+  def update(crit_id : Int64, body : CritForm)
     vicrit = load_crit(crit_id)
-
-    unless _viuser.can?(vicrit.viuser_id, :update_post)
-      raise Unauthorized.new("Bạn không có quyền sửa bình luận")
-    end
+    guard_owner vicrit.viuser_id, 0, "sửa đánh giá"
 
     vicrit.changed_at = Time.utc
     vicrit.patch!(body.input, body.stars, body.btags)
@@ -109,10 +126,7 @@ class CV::VicritCtrl < CV::BaseCtrl
   def delete(crit_id : Int64)
     vicrit = load_crit(crit_id)
     owner_id = vicrit.viuser_id
-
-    unless _viuser.can?(owner_id, :update_post)
-      raise Unauthorized.new("Bạn không có quyền xoá bình luận")
-    end
+    guard_owner owner_id, 0, "xoá đánh giá"
 
     vicrit.update!({_flag: _viuser.privi > 3 && _viuser.id != owner_id ? -3 : -2})
 

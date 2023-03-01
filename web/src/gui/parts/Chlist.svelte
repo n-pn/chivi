@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { page } from '$app/stores'
   $: session = $page.data._user
 
@@ -171,4 +171,4 @@
     font-size: 1rem;
     @include fgcolor(mute);
   }
-</style>
+</style> -->

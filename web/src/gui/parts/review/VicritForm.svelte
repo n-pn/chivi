@@ -5,7 +5,13 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let nvinfo: CV.Nvinfo
-  export let form: CV.VicritForm = { id: 0, stars: 3, input: '', btags: '' }
+  export let form: CV.VicritForm = {
+    id: 0,
+    stars: 3,
+    input: '',
+    btags: '',
+    bl_id: 0,
+  }
 
   export let on_success = (crit: CV.Vicrit) => console.log(crit)
 
@@ -15,16 +21,28 @@
   $: action = update ? `/_db/crits/${form.id}` : '/_db/crits'
   $: method = update ? 'PATCH' : 'POST'
 
+  const headers = { 'content-type': 'application/json' }
+
   async function submit(evt: Event) {
     evt.preventDefault()
 
-    const body = { ...form, book: nvinfo.id }
-    const headers = { 'content-type': 'application/json' }
+    const body = {
+      wn_id: nvinfo.id,
+      bl_id: form.bl_id,
+      stars: +form.stars,
+      input: form.input.trim(),
+      btags: form.btags.split(',').map((x) => x.trim()),
+    }
 
-    // prettier-ignore
-    const res = await fetch(action, {method, body: JSON.stringify(body), headers})
-    if (res.ok) on_success((await res.json()) as CV.Vicrit)
-    else error = await res.text()
+    const init = { method, headers, body: JSON.stringify(body) }
+    const res = await fetch(action, init)
+
+    if (!res.ok) {
+      error = await res.text()
+    } else {
+      const crit = (await res.json()) as CV.Vicrit
+      on_success(crit)
+    }
   }
 </script>
 
@@ -37,6 +55,8 @@
           <Star active={star <= form.stars} />
         </button>
       {/each}
+
+      <span class="star-out">{form.stars} sao</span>
     </span>
   </header>
 
@@ -65,7 +85,7 @@
     <button
       type="submit"
       class="m-btn _primary _fill"
-      disabled={form.input.length < 1}
+      disabled={form.input.length < 3}
       on:click={submit}>
       <SIcon name="send" />
       <span>{update ? 'Lưu' : 'Tạo'} đánh giá</span>

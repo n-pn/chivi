@@ -39,6 +39,11 @@ class YS::YsUser
     where id = ?
   SQL
 
+  STATS_UPDATE_SQL = <<-SQL
+    update users set crit_total = $1, crit_rtime = $2
+    where id = $3
+  SQL
+
   def db_names
     vname = translit(self.zname)
     vslug = TextUtil.slugify(vname)

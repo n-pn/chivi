@@ -7,7 +7,7 @@
   import { upsert_dicts } from '$utils/vpdict_utils'
   import { api_call } from '$lib/api_call'
 
-  import { related_words, VpForm, hint } from './Upsert/_shared'
+  import { related_words, VpForm, hint } from './vpform/_shared'
 
   import pt_labels from '$lib/consts/postag_labels.json'
 
@@ -50,16 +50,16 @@
 
   import Postag from './Postag.svelte'
 
-  import PickForm from './Upsert/PickForm.svelte'
-  import PrevDefn from './Upsert/PrevDefn.svelte'
+  import PickForm from './vpform/PickForm.svelte'
+  import PrevDefn from './vpform/PrevDefn.svelte'
 
-  import DefnHint from './Upsert/DefnHint.svelte'
-  import DefnUtil from './Upsert/DefnUtil.svelte'
+  import DefnHint from './vpform/DefnHint.svelte'
+  import DefnUtil from './vpform/DefnUtil.svelte'
 
-  import TermOpts from './Upsert/TermOpts.svelte'
-  import WsegRank from './Upsert/WsegRank.svelte'
+  import TermOpts from './vpform/TermOpts.svelte'
+  import WsegRank from './vpform/WsegRank.svelte'
 
-  import HelpUrls from './Upsert/HelpUrls.svelte'
+  import HelpUrls from './vpform/HelpUrls.svelte'
 
   export let on_change = () => {}
   export let on_destroy = () => {}

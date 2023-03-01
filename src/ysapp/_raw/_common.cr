@@ -15,10 +15,10 @@ end
 struct YS::EmbedBook
   include JSON::Serializable
 
-  getter _id : Int32 = 0_i64
+  getter _id : Int32 = 0
 
   @[JSON::Field(key: "bookId")]
-  getter book_id : Int32 = 0_i64
+  getter book_id : Int32 = 0
 
   getter id : Int32 { _id > 0 ? _id : book_id }
 

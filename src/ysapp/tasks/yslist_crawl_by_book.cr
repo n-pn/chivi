@@ -36,7 +36,7 @@ class CV::YslistCrawlByBook < CrawlTask
   #####################
 
   def self.gen_link(ybid : Int32, page = 1)
-    "https://api.yousuu.com/api/book/#{ybid}/booklist?page=#{page}&t=#{Time.utc.to_unix_ms}"
+    "https://api.yousuu.com/api/book/#{ybid}/booklist?page=#{page}"
   end
 
   DIR = "var/ysraw/lists-by-book"

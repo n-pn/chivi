@@ -29,6 +29,8 @@
     replies = await fetch(path).then((r: Response) => r.json())
     show_repls = true
   }
+
+  $: edit_path = `/wn/${book.bslug}/crits/+crit?id=${crit.id}`
 </script>
 
 <article class="crit island">
@@ -72,7 +74,7 @@
     </a>
 
     {#if $session.privi > 3 || $session.uname == user.uname}
-      <a class="meta" href="/-{book?.bslug}/crits/+crit?id={crit.id}">
+      <a class="meta" href={edit_path}>
         <SIcon name="pencil" />
         <span>Sửa chữa</span>
       </a>

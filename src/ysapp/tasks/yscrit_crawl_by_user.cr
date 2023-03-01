@@ -4,6 +4,21 @@ require "../_raw/raw_ys_crit"
 require "../data/ys_user"
 
 class YS::CrawlYscritByUser < CrawlTask
+  alias RawData = NamedTuple(data: NamedTuple(total: Int32))
+
+  private def db_seed_tasks(entry : Entry, json : String)
+    return unless json.starts_with?('{')
+
+    # _crits, total = RawYsCrit.from_book_json(json)
+    total = RawData.from_json(json)[:data][:total]
+    yu_id = File.basename(File.dirname(entry.path)).to_i
+
+    YsUser.open_db(&.exec YsUser::STATS_UPDATE_SQL, total, Time.utc.to_unix, yu_id)
+  rescue ex
+    puts entry.path, json
+    Log.error { ex.message }
+  end
+
   def self.gen_link(u_id : Int32, page : Int32 = 1)
     "https://api.yousuu.com/api/user/#{u_id}/comment?page=#{page}"
   end

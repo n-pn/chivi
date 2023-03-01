@@ -28,6 +28,8 @@ declare namespace CV {
 
   interface VicritForm {
     id: number
+    bl_id: number
+
     stars: number
     input: string
     btags: string

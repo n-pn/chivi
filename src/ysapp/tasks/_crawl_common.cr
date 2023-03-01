@@ -86,7 +86,7 @@ abstract class CrawlTask
     return entry unless json = @http.fetch!(entry.link, entry.name)
 
     save_raw_json(entry, json)
-    db_seed_tasks(json)
+    db_seed_tasks(entry, json)
 
     nil
   rescue ex
@@ -107,7 +107,7 @@ abstract class CrawlTask
     puts "  [#{entry.path}] saved.".colorize.green
   end
 
-  private def db_seed_tasks(json : String)
+  private def db_seed_tasks(entry : Entry, json : String)
     # implement by inherited classes
   end
 

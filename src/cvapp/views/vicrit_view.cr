@@ -9,6 +9,7 @@ struct CV::VicritView
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "id", @data.id
+
       jb.field "user_id", @data.viuser_id
       jb.field "book_id", @data.nvinfo_id
       jb.field "list_id", @data.vilist_id
@@ -18,7 +19,7 @@ struct CV::VicritView
       jb.field "btags", @data.btags
 
       jb.field "ctime", @data.created_at.to_unix
-      jb.field "edited", !!@data.changed_at
+      jb.field "mtime", (@data.changed_at || @data.created_at).to_unix
 
       jb.field "repl_count", @data.repl_count
       jb.field "like_count", @data.like_count

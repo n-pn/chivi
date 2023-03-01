@@ -55,7 +55,7 @@ targets:
     main: src/ysapp/tasks/yscrit_crawl_by_list.cr
 
   yscrit_crawl_by_book:
-    main: tasks/yousuu/yscrit_crawl_by_book.cr
+    main: src/ysapp/tasks/yscrit_crawl_by_book.cr
 
   yslist_crawl:
     main: src/ysapp/tasks/yslist_crawl.cr

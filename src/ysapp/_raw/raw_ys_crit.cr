@@ -10,7 +10,7 @@ class YS::RawYsCrit
   getter book : EmbedBook
 
   @[JSON::Field(key: "createrId")]
-  getter user : EmbedBook
+  getter user : EmbedUser
 
   @[JSON::Field(key: "score")]
   getter stars : Int32 = 3

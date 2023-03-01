@@ -39,11 +39,14 @@ class CV::Vicrit
     end
   end
 
-  def patch!(input : String, stars : String, btags : String)
-    patch!(input, stars.to_i, btags.split(/\s*,\s*/, remove_empty: true))
-  end
+  # def patch!(input : String, stars : String, btags : String)
+  #   patch!(input, stars.to_i, btags.split(/\s*,\s*/, remove_empty: true))
+  # end
 
-  def patch!(@itext : String, @stars : Int32, @btags : Array(String))
+  def patch!(itext : String, stars : Int32, btags : Array(String))
+    self.itext = itext
+    self.stars = stars
+    self.btags = btags
     self.ohtml = PostUtil.md_to_html(itext)
     self.save!
   end

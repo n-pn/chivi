@@ -28,7 +28,7 @@ export const load = (async ({ fetch, params, url }) => {
 }) satisfies PageLoad
 
 const load_vi_crits = async (fetch: CV.Fetch, search: URLSearchParams) => {
-  const url = api_path('vicrits.index', 0, search)
+  const url = api_path('/_db/crits', 0, search)
   return await api_get<CV.VicritList>(url, fetch)
 }
 

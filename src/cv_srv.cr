@@ -85,7 +85,7 @@ abstract class AC::Base
     Log.context.set(client_ip: client_ip)
   end
 
-  private getter _vu_id : String { session["vu_id"]?.try(&.as(Int64).to_i) || 0 }
+  private getter _vu_id : Int32 { session["vu_id"]?.try(&.as(Int64).to_i) || 0 }
   private getter _uname : String { session["uname"]?.try(&.as(String)) || "Khách" }
 
   private getter _privi : Int32 do
