@@ -133,6 +133,10 @@ cv-user,
   &[data-privi='4'] {
     --color: #{color(harmful, 5)};
   }
+
+  &[data-privi='5'] {
+    --color: #{color(purple, 5)};
+  }
 }
 
 .bread {

@@ -57,7 +57,15 @@ export const handleError = (({ event, error }) => {
 
 const cached_users: Record<string, App.CurrentUser> = {}
 const session_url = `http://127.0.0.1:5010/_db/_self`
-const guest_user = { uname: 'Khách', privi: -1, until: 0, vcoin: 0, karma: 0 }
+
+const guest_user = {
+  vu_id: 0,
+  uname: 'Khách',
+  privi: -1,
+  until: 0,
+  vcoin: 0,
+  karma: 0,
+}
 
 const get_hash = (hash?: string) => hash?.replace('/', '_')
 

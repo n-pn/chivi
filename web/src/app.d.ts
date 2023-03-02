@@ -4,6 +4,7 @@
 // for information about these interfaces
 declare namespace App {
   interface CurrentUser {
+    vu_id: number
     uname: string
 
     vcoin: number

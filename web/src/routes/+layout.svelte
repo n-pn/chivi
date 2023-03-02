@@ -15,12 +15,12 @@
   import { onMount } from 'svelte'
 
   onMount(() => {
-    $config.wtheme = $page.data.theme
-    $config.w_temp = $page.data.w_temp == 't'
-    $config.showzh = $page.data.showzh == 't'
+    $config.wtheme = $page.data._conf.theme
+    $config.w_temp = $page.data._conf.w_temp == 't'
+    $config.showzh = $page.data._conf.showzh == 't'
   })
 
-  $: wtheme = browser ? $config.wtheme : $page.data.theme || 'light'
+  $: wtheme = browser ? $config.wtheme : $page.data._conf.theme || 'light'
 
   let kbd_hint = false
 

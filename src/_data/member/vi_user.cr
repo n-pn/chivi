@@ -145,6 +145,10 @@ class CV::Viuser
 
   ##############################################
 
+  def self.preload(ids : Enumerable(Int32))
+    ids.empty? ? [] of self : self.query.where { id.in? ids.to_a }
+  end
+
   def self.create!(email : String, uname : String, upass : String) : self
     raise "Địa chỉ hòm thư quá ngắn" if email.size < 3
     raise "Địa chỉ hòm thư không hợp lệ" if email !~ /@/
