@@ -108,7 +108,8 @@
     <span class="stats _dname" data-tip="Từ điển bộ truyện">
       <span class="stats-label">Từ điển riêng:</span>
       <SIcon name="package" />
-      <a href="/dicts/{$vdict.dslug}" class="stats-value _link">{dsize} từ</a>
+      <a href="/mt/dicts/{$vdict.dslug}" class="stats-value _link"
+        >{dsize} từ</a>
     </span>
 
     <div class="header-right">

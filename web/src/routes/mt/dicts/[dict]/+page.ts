@@ -32,7 +32,7 @@ export const load = (async ({ fetch, url, params: { dict } }) => {
     title: 'Từ điển:' + dinfo.label,
     left_nav: [
       home_nav('ps'),
-      nav_link('/dicts', 'Từ điển', 'package', { show: 'ts' }),
+      nav_link('/mt/dicts', 'Từ điển', 'package', { show: 'ts' }),
       nav_link(dict, dinfo.label, '', { kind: 'title' }),
     ],
   }

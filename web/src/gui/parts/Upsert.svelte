@@ -154,7 +154,7 @@
       <svelte:fragment slot="content">
         <a
           class="gmenu-item"
-          href="/dicts/{$vdict.dslug}"
+          href="/mt/dicts/{$vdict.dslug}"
           target="_blank"
           rel="noreferrer">
           <SIcon name="package" />

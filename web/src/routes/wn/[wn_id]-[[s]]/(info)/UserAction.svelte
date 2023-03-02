@@ -44,7 +44,7 @@
     </button>
 
     <svelte:fragment slot="content">
-      <a class="gmenu-item" href="/dicts/-{nvinfo.bhash}" data-kbd="p">
+      <a class="gmenu-item" href="/mt/dicts/-{nvinfo.bhash}" data-kbd="p">
         <SIcon name="package" />
         <span>Từ điển truyện</span>
       </a>

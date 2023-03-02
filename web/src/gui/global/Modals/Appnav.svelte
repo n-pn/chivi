@@ -104,7 +104,7 @@
   <svelte:fragment slot="header-right">
     <a href="/sp/qtran" class="-btn"><SIcon name="bolt" /></a>
     <a href="/crits" class="-btn"><SIcon name="stars" /></a>
-    <a href="/dicts" class="-btn"><SIcon name="package" /></a>
+    <a href="/mt/dicts" class="-btn"><SIcon name="package" /></a>
     <a href="/" class="-btn"><SIcon name="home" /></a>
   </svelte:fragment>
 

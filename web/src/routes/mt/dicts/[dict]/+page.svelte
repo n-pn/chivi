@@ -47,7 +47,7 @@
 
 <Crumb
   tree={[
-    ['Từ điển', '/dicts'],
+    ['Từ điển', '/mt/dicts'],
     [data.label, root_path],
   ]} />
 

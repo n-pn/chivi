@@ -10,7 +10,7 @@
   $: ({ cores = [], books = [] } = data)
 </script>
 
-<Crumb tree={[['Từ điển', '/dicts']]} />
+<Crumb tree={[['Từ điển', '/mt/dicts']]} />
 
 <article class="article m-article">
   <h1>Từ điển</h1>
@@ -19,7 +19,7 @@
 
   <div class="dicts">
     {#each cores as [dname, label, dsize]}
-      <a class="-dict" href="/dicts/{dname}">
+      <a class="-dict" href="/mt/dicts/{dname}">
         <div class="-name">{label}</div>
         <div class="-meta">
           <div class="-type">Hệ thống</div>
@@ -33,7 +33,7 @@
 
   <div class="dicts">
     {#each books as [dname, label, dsize]}
-      <a class="-dict" href="/dicts/{dname}">
+      <a class="-dict" href="/mt/dicts/{dname}">
         <div class="-name">{label}</div>
         <div class="-meta">
           <div class="-type">Bộ truyện</div>
