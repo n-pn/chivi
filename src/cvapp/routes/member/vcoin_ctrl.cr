@@ -6,7 +6,7 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
   @[AC::Route::GET("/")]
   def index(vu_id : Int32? = nil)
     vu_id = _vu_id if _privi < 3
-    pg_no, limit, offset = _paginate(min: 5)
+    pg_no, limit, offset = _paginate(min: 50)
 
     select_stmt = String.build do |stmt|
       stmt << "select id, sender, sendee, cast(amount as real) as amount, reason, ctime"
