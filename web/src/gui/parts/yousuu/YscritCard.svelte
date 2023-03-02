@@ -128,7 +128,7 @@
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="meta">&middot;</span> -->
 
-    <a class="meta _time" href="/qtran/crits/{crit.id}">
+    <a class="meta _time" href="/sp/qtran/crits/{crit.id}">
       <SIcon name="clock" />
       <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
     </a>

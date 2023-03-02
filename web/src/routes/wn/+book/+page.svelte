@@ -4,8 +4,6 @@
 
   import type { PageData } from './$types'
   export let data: PageData
-
-  $: ({ wnform, nvinfo } = data)
 </script>
 
 <Crumb
@@ -14,6 +12,6 @@
     ['Thêm truyện mới', '.'],
   ]} />
 
-<NvinfoForm {nvinfo} {wnform}>
+<NvinfoForm nvinfo={data.nvinfo} wnform={data.wnform}>
   <h1 slot="header">Thêm truyện mới</h1>
 </NvinfoForm>

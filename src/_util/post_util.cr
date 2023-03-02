@@ -10,6 +10,6 @@ class PostUtil
 
   def self.html_to_text(input : String)
     input = "<html><body>#{input}</body></html>"
-    Lexbor::Parser.new(input).body.not_nil!.inner_text
+    Lexbor::Parser.new(input).body.try(&.inner_text) || raise "invalid!"
   end
 end

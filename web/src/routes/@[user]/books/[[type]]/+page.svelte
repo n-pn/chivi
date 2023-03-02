@@ -9,7 +9,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ books, pgidx, pgmax, uname, bmark = 'reading' } = data)
+  $: ({ books, pgidx, pgmax, uname, bmark } = data)
 
   $: pager = new Pager($page.url)
 </script>
@@ -17,7 +17,7 @@
 <div class="tabs">
   {#each status_types as status}
     <a
-      href="/books/@{uname}/{status}"
+      href="/@{uname}/books/{status}"
       class="tab"
       class:_active={status == bmark}>
       {status_names[status]}

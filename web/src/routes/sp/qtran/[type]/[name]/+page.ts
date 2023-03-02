@@ -20,7 +20,7 @@ export async function load({ fetch, url, params: { type, name } }) {
     desc: 'Dịch nhanh từ tiếng Trung sang tiếng Việt',
     left_nav: [
       home_nav('tm'),
-      nav_link('/qtran', 'Dịch nhanh', 'bolt', { show: 'ts' }),
+      nav_link('/sp/qtran', 'Dịch nhanh', 'bolt', { show: 'ts' }),
       nav_link(name, `[${name}]`, qtran_icons[type], { kind: 'title' }),
     ],
     show_config: true,

@@ -61,11 +61,11 @@
       if (val) params.set(key, val.toString())
     }
 
-    goto('/books?' + params.toString())
+    goto('/wn?' + params.toString())
   }
 
   function fast_query() {
-    goto(`/books/query?q=${qtext}&t=${qtype}`)
+    goto(`/wn/search?q=${qtext}&t=${qtype}`)
   }
 
   function clear_query() {
@@ -102,7 +102,7 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <a href="/qtran" class="-btn"><SIcon name="bolt" /></a>
+    <a href="/sp/qtran" class="-btn"><SIcon name="bolt" /></a>
     <a href="/crits" class="-btn"><SIcon name="stars" /></a>
     <a href="/dicts" class="-btn"><SIcon name="package" /></a>
     <a href="/" class="-btn"><SIcon name="home" /></a>

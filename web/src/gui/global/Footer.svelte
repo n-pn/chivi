@@ -6,8 +6,8 @@
   ]
 
   const tools = [
-    ['Dịch nhanh', '/qtran'],
-    ['Phồn -> Giản', '/tools/opencc'],
+    ['Dịch nhanh', '/sp/qtran'],
+    ['Phồn -> Giản', '/sp/opencc'],
   ]
 </script>
 

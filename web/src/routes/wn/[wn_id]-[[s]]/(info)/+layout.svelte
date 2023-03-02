@@ -45,7 +45,7 @@
     <div class="line _clamp">
       <div class="stat -trim -author">
         <SIcon name="edit" />
-        <a class="link -trim" href="/books/={nvinfo.author_vi}">
+        <a class="link -trim" href="/wn/={nvinfo.author_vi}">
           <span class="label">{nvinfo.author_vi}</span>
         </a>
       </div>
@@ -53,7 +53,7 @@
       <div class="bgenres">
         {#each nvinfo.genres || [] as genre, idx}
           <span class="stat _genre" class:_trim={idx > 1}>
-            <a class="link" href="/books/-{genre}">
+            <a class="link" href="/wn/~{genre}">
               <SIcon name="folder" />
               <span class="label">{genre}</span>
             </a>

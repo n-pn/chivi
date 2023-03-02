@@ -19,12 +19,12 @@
       </a>
     </div>
     <div class="-extra">
-      <a class="link _author" href="/books/={book.author}">
+      <a class="link _author" href="/wn/={book.author}">
         <SIcon name="edit" />
         <span>{book.author}</span>
       </a>
 
-      <a class="link _genre" href="/books/-{book.bgenre}">
+      <a class="link _genre" href="/wn/~{book.bgenre}">
         <SIcon name="folder" />
         <span>{book.bgenre}</span>
       </a>

@@ -22,7 +22,7 @@
         <span>Dịch lại</span>
       </button>
 
-      <a class="m-btn _success _fill" data-kbd="n" href="/qtran">
+      <a class="m-btn _success _fill" data-kbd="n" href="/sp/qtran">
         <span>Dịch mới</span>
       </a>
     </div>

@@ -237,7 +237,7 @@
             </button>
             <!-- svelte-ignore security-anchor-rel-noreferrer -->
             <a
-              href="/qtran?dname={$vdict.dname}&input={$ztext}"
+              href="/sp/qtran?wn_id={$vdict.vd_id}&input={$ztext}"
               target="_blank"
               data-tip="Mở bằng trang dịch nhanh">
               <SIcon name="external-link" />

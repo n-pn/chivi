@@ -15,7 +15,7 @@
   $: pager = new Pager($page.url)
 </script>
 
-<Crumb tree={[['Dịch nhanh', '/qtran']]} />
+<Crumb tree={[['Dịch nhanh', '/sp/qtran']]} />
 
 <article class="md-article">
   <h1>Lỗi máy dịch (Đỏ: Đang lỗi, Xanh: Đã sửa đúng)</h1>

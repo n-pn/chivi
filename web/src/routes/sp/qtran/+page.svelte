@@ -24,7 +24,7 @@
 
     if (res.ok) {
       const pname = await res.text()
-      await goto(`/qtran/posts/${pname}`)
+      await goto(`/sp/qtran/posts/${pname}`)
     } else {
       const data = await res.json()
       error = data.message
@@ -32,7 +32,7 @@
   }
 </script>
 
-<Crumb tree={[['Dịch nhanh', '/qtran']]} />
+<Crumb tree={[['Dịch nhanh', '/sp/qtran']]} />
 
 <div class="input">
   <textarea

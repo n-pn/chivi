@@ -12,7 +12,7 @@
     {@const _reveal = show_all_genres || primary_genre}
 
     {#if _active || _reveal}
-      <a href="/books/-{slug}" class="m-chip _success" class:_active>{name}</a>
+      <a href="/wn/~{name}" class="m-chip _success" class:_active>{name}</a>
     {/if}
   {/each}
 

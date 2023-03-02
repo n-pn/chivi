@@ -24,7 +24,8 @@ class CV::WnovelCtrl < CV::BaseCtrl
     query.filter_chroot(chroot) if chroot
     query.filter_origin(origin) if origin
 
-    query.filter_genres(genres).filter_tagged(tagged)
+    query.filter_genres(genres)
+    query.filter_tagged(tagged)
 
     query.where("status = ?", status - 1) if status
     query.where("voters >= ?", voters) if voters

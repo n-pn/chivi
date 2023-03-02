@@ -13,7 +13,7 @@ const _meta = {
   desc: 'Truyện Tàu dịch máy, đánh giá truyện, dịch nhanh tiếng Trung...',
   left_nav: [home_nav('ps')],
   right_nav: [
-    nav_link('/qtran', 'Dịch nhanh', 'bolt', { show: 'tm' }),
+    nav_link('/sp/qtran', 'Dịch nhanh', 'bolt', { show: 'tm' }),
     nav_link('/ys/crits', 'Đánh giá', 'stars', { show: 'tm' }),
   ],
 }

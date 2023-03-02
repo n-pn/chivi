@@ -42,7 +42,7 @@ const default_meta = {
   desc: 'Truyện Tàu dịch máy, đánh giá truyện, dịch nhanh tiếng Trung...',
   left_nav: [home_nav('ps')],
   right_nav: [
-    nav_link('/qtran', 'Dịch nhanh', 'bolt', { show: 'tm' }),
+    nav_link('/sp/qtran', 'Dịch nhanh', 'bolt', { show: 'tm' }),
     nav_link('/ys/crits', 'Đánh giá', 'stars', { show: 'tm' }),
   ],
 }
@@ -80,7 +80,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       nav_link('/wn', 'Danh sách truyện', 'books', { kind: 'title' }),
     ],
     right_nav: [
-      nav_link('/books/+book', 'Thêm truyện', 'file-plus', { show: 'tm' }),
+      nav_link('/wn/+book', 'Thêm truyện', 'file-plus', { show: 'tm' }),
     ],
   },
   '/wn/[wn_id]-[[s]]/(info)': ({ nvinfo, ubmemo }) => {

@@ -63,7 +63,7 @@
 
   <h3 class="sub">
     <sub-label>Truyện đồng tác giả</sub-label>
-    <a class="sub-link" href="/books/={nvinfo.author_vi}">Xem tất cả</a>
+    <a class="sub-link" href="/wn/={nvinfo.author_vi}">Xem tất cả</a>
   </h3>
 
   {#if bdata.books.length > 0}
@@ -80,7 +80,7 @@
     {#each bdata.users as { u_dname, u_privi, _status }}
       <a
         class="m-chip _{status_colors[_status]}"
-        href="/books/@{u_dname}/{_status}"
+        href="/@{u_dname}/books/{_status}"
         data-tip="[{status_names[_status]}]">
         <cv-user data-privi={u_privi}>{u_dname}</cv-user>
         <SIcon name={status_icons[_status]} />

@@ -1,13 +1,14 @@
+import { nav_link } from '$gui/global/header_util'
 import { api_path } from '$lib/api_call'
-import type { PageLoadEvent } from './$types'
+import type { PageLoad } from './$types'
 
 interface JsonData extends CV.Paginate {
   books: CV.Nvinfo[]
 }
 
-export async function load({ url, params, fetch }: PageLoadEvent) {
-  const [uname, bmark = 'reading'] = params.uname.split('/')
-  const extras = { lm: 24, order: 'update', uname, bmark }
+export const load = (async ({ url, params, fetch }) => {
+  const { user: uname, type: bmark = 'reading' } = params
+  const extras = { lm: 24, order: 'update', uname: uname, bmark }
 
   const path = api_path('wnovels.index', null, url.searchParams, extras)
   const data: JsonData = await fetch(path).then((x) => x.json())
@@ -15,11 +16,10 @@ export async function load({ url, params, fetch }: PageLoadEvent) {
   const _meta = {
     title: `Tủ truyện của @${uname}`,
     left_nav: [
-      // prettier-ignore
-      { text: 'Thư viện', icon: 'books', href: '/books', 'data-show': 'md' },
+      nav_link(`/@${uname}`, uname, 'user', { show: 'md' }),
       { text: 'Tủ truyện', icon: 'notebook', href: url.pathname },
     ],
   }
 
-  return { ...data, uname, bmark, _meta }
-}
+  return { ...data, uname: uname, bmark, _meta }
+}) satisfies PageLoad
