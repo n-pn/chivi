@@ -1,18 +1,15 @@
 require "../wnovel/nv_info"
 require "../member/vi_user"
 
-require "./vi_list"
-
 class CV::Vicrit
   include Clear::Model
   self.table = "vicrits"
 
   primary_key type: :serial
 
-  belongs_to viuser : Viuser, foreign_key_type: Int32
-  belongs_to nvinfo : Nvinfo
-
-  belongs_to vilist : Vilist?, foreign_key_type: Int32
+  column nvinfo_id : Int32
+  column viuser_id : Int32
+  column vilist_id : Int32
 
   column stars : Int32 = 3
 
@@ -38,10 +35,6 @@ class CV::Vicrit
     else              self.order_by(_sort: :desc)
     end
   end
-
-  # def patch!(input : String, stars : String, btags : String)
-  #   patch!(input, stars.to_i, btags.split(/\s*,\s*/, remove_empty: true))
-  # end
 
   def patch!(itext : String, stars : Int32, btags : Array(String))
     self.itext = itext

@@ -1,11 +1,14 @@
 require "../member/vi_user"
 
+require "../../_util/text_util"
+require "../../_util/post_util"
+
 class CV::Vilist
   include Clear::Model
   self.table = "vilists"
 
   primary_key type: :serial
-  belongs_to viuser : Viuser
+  column viuser_id : Int32
 
   column title : String = ""
   column tslug : String = ""
@@ -24,14 +27,11 @@ class CV::Vilist
 
   column book_count : Int32 = 0
   column like_count : Int32 = 0
+
   column star_count : Int32 = 0
   column view_count : Int32 = 0
 
   timestamps
-
-  scope :filter_user do |viuser_id|
-    viuser_id ? where("viuser_id = #{viuser_id}") : self
-  end
 
   scope :sort_by do |order|
     case order
@@ -39,6 +39,33 @@ class CV::Vilist
     when "likes" then self.order_by(like_count: :desc)
     when "stars" then self.order_by(star_count: :desc)
     else              self.order_by(_sort: :desc)
+    end
+  end
+
+  def set_title(title : String)
+    self.title = title
+    self.tslug = TextUtil.slugify(title)
+  end
+
+  def set_intro(input : String)
+    self.dtext = input
+    self.dhtml = PostUtil.md_to_html(input)
+  end
+
+  ###
+  def self.load!(id : Int32)
+    self.find({id: id}) || begin
+      raise "not found" if id >= 0
+      vuser = Viuser.load!(-id)
+
+      model = new
+      model.id = id
+      model.viuser_id = -id
+
+      model.set_title "Đánh giá truyện chung của @#{vuser.uname}"
+      model.set_intro "Tổng hợp đánh giá các bộ truyện không theo đề tài cụ thể"
+
+      model.tap(&.save!)
     end
   end
 end

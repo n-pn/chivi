@@ -20,9 +20,15 @@ struct CV::ViuserView
     }
   end
 
-  def self.as_hash(inp : Enumerable(Viuser))
-    res = {} of Int64 => self
-    inp.each { |obj| res[obj.id] = new(obj, full: false) }
-    res
+  def self.as_list(data : Enumerable(Viuser), full = false)
+    list = [] of self
+    data.each { |x| list << new(x, full) }
+    list
+  end
+
+  def self.as_hash(data : Enumerable(Viuser))
+    hash = {} of Int64 => self
+    data.each { |x| hash[x.id] = new(x, full: false) }
+    hash
   end
 end

@@ -19,6 +19,5 @@ export const load = (async ({ fetch, parent }) => {
   const path = `/_db/vcoins?vu_id=${_user.vu_id}`
   const data = await api_get<XlogData>(path, fetch)
 
-  console.log(data)
   return { ...data, _meta }
 }) satisfies PageLoad

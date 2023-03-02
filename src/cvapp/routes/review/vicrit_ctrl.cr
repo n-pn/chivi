@@ -46,18 +46,23 @@ class CV::VicritCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::GET("/:crit_id")]
-  def show(crit_id : Int64)
+  def show(crit_id : Int32)
     vicrit = load_crit(crit_id)
+    nvinfo = Nvinfo.load!(vicrit.nvinfo_id)
+
+    viuser = Viuser.load!(vicrit.viuser_id)
+    vilist = Vilist.load!(vicrit.vilist_id)
 
     render json: {
       crit: VicritView.new(vicrit, full: true),
-      user: ViuserView.new(vicrit.viuser, false),
-      book: WnovelView.new(vicrit.nvinfo, false),
+      book: WnovelView.new(nvinfo, false),
+      user: ViuserView.new(viuser, false),
+      list: VilistView.new(vilist, mode: :crit),
     }
   end
 
   @[AC::Route::GET("/:crit_id/edit")]
-  def edit_form(crit_id : Int64)
+  def edit_form(crit_id : Int32)
     vicrit = load_crit(crit_id)
     guard_owner vicrit.viuser_id, 0, "sửa đánh giá"
 
@@ -112,9 +117,11 @@ class CV::VicritCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::PATCH("/:crit_id", body: body)]
-  def update(crit_id : Int64, body : CritForm)
+  def update(crit_id : Int32, body : CritForm)
     vicrit = load_crit(crit_id)
-    guard_owner vicrit.viuser_id, 0, "sửa đánh giá"
+
+    owner_id = vicrit.viuser_id
+    guard_owner owner_id, 0, "sửa đánh giá"
 
     vicrit.changed_at = Time.utc
     vicrit.patch!(body.input, body.stars, body.btags)
@@ -123,13 +130,15 @@ class CV::VicritCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::DELETE("/:crit_id")]
-  def delete(crit_id : Int64)
+  def delete(crit_id : Int32)
     vicrit = load_crit(crit_id)
+
     owner_id = vicrit.viuser_id
     guard_owner owner_id, 0, "xoá đánh giá"
 
-    vicrit.update!({_flag: _viuser.privi > 3 && _viuser.id != owner_id ? -3 : -2})
+    is_admin = _privi > 3 && _vu_id != owner_id
+    vicrit.update!({_flag: is_admin ? -3 : -2})
 
-    render json: {msg: "Chủ đề đã bị xoá"}
+    render json: {msg: "đánh giá đã bị xoá"}
   end
 end

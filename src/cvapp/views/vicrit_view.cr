@@ -25,4 +25,10 @@ struct CV::VicritView
       jb.field "like_count", @data.like_count
     }
   end
+
+  def self.as_list(inp : Enumerable(Vicrit), full = false)
+    res = [] of self
+    inp.each { |obj| res << new(obj, full) }
+    res
+  end
 end

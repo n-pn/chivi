@@ -34,4 +34,16 @@ struct CV::VilistView
       end
     }
   end
+
+  def self.as_list(data : Enumerable(Vilist), mode : Mode = :list)
+    list = [] of self
+    data.each { |x| list << new(x, mode: mode) }
+    list
+  end
+
+  def self.as_hash(data : Enumerable(Vilist))
+    hash = {} of Int32 => self
+    data.each { |obj| hash[obj.id] = obj }
+    hash
+  end
 end
