@@ -60,43 +60,44 @@ class YS::Yscrit
     "#{TXT_DIR}/#{group_by}-#{type}"
   end
 
-  def filename(type = "zh", ext = "txt")
+  def filename(ext = "txt")
     "#{self.origin_id}.#{ext}"
   end
 
   def load_ztext_from_disk : String
-    YsUtil.read_zip(self.zip_path("zh"), filename("zh", "txt")) { "$$$" }
-  rescue err
-    Log.error(exception: err) { err.message }
-    "$$$"
+    return "$$$" if self.b_len == 0
+    YsUtil.read_zip(self.zip_path("zh"), filename("txt")) { "$$$" }
   end
 
   def load_vhtml_from_disk : String
-    load_html_from_disk("vi", persist: true) do |ztext|
+    load_htm_from_disk("vi", persist: true) do |ztext|
       TranUtil.qtran(ztext, self.nvinfo_id, "txt")
     end
   end
 
   def load_btran_from_disk : String
-    load_html_from_disk("bv", persist: true) { |ztext| TranUtil.btran(ztext) }
+    load_htm_from_disk("bv", persist: true) { |ztext| TranUtil.btran(ztext) }
   end
 
   def load_deepl_from_disk : String
-    load_html_from_disk("de", persist: true) { |ztext| TranUtil.deepl(ztext) }
+    load_htm_from_disk("de", persist: true) { |ztext| TranUtil.deepl(ztext) }
   end
 
-  private def load_html_from_disk(type : String, persist : Bool = true, &)
-    YsUtil.read_zip(self.zip_path(type), filename(type, "htm")) do
-      ztext = self.ztext
+  private def load_htm_from_disk(type : String, persist : Bool = true, &)
+    YsUtil.read_zip(self.zip_path(type), filename("htm")) do
+      ztext = self.load_ztext_from_disk
 
-      if (!ztext.empty?) && (tranlation = yield ztext)
-        html = tranlation.split('\n').map { |x| "<p>#{x}</p>" }.join('\n')
+      if ztext != "$$$" && (vtext = yield ztext)
+        html = "<p>#{vtext.gsub('\n', "</p><p>")}</p>"
       else
         html = "<p>$$$</p>"
-        persist = ztext.empty?
+        persist = false
       end
 
-      save_file_to_disk(html, type, ext: "htm") if persist
+      if persist
+        save_data_to_disk(html, type: type, ext: "htm")
+      end
+
       html
     end
   rescue err
@@ -104,31 +105,30 @@ class YS::Yscrit
     "<p>$$$</p>"
   end
 
-  private def save_file_to_disk(content : String, type : String, ext : String)
+  def save_data_to_disk(data : String, type : String, ext : String) : Nil
     dir_path = self.tmp_path(type)
     Dir.mkdir_p(dir_path)
 
-    file_path = File.join(dir_path, filename(type, ext))
-    File.write(file_path, content)
+    file_path = File.join(dir_path, filename(ext))
+    File.write(file_path, data)
 
-    Log.debug { "save #{file_path} to #{self.zip_path(type)}" }
-    YsUtil.zip_data(self.zip_path(type), dir_path)
-  end
+    zip_path = self.zip_path(type)
+    YsUtil.zip_data(zip_path, dir_path)
 
-  #############
-
-  def fix_sort!
-    self._sort = self.stars &* (self.stars &* self.like_count &+ self.repl_count)
+    Log.debug { "save #{file_path} to #{zip_path}" }
   end
 
   def set_tags(ztags : Array(String), force : Bool = false)
     return unless force || self.ztags.empty?
+
     self.ztags = ztags
     self.fix_vtags!(ztags)
   end
 
   def fix_vtags!(ztags = self.ztags)
-    self.vtags = TranUtil.qtran(ztags, "!labels").split('\n')
+    input = ztags.join('\n')
+    return unless output = TranUtil.qtran(input, wn_id: -2)
+    self.vtags = output.split('\n', remove_empty: true)
   end
 
   # def fix_vhtml(ztext : String, dname = self.nvinfo.dname)
@@ -141,26 +141,40 @@ class YS::Yscrit
     origin_id[12..].to_i64(base: 16)
   end
 
-  def self.upsert!(origin_id : String, created_at : Time)
-    find({origin_id: origin_id}) || begin
-      new({id: gen_id(origin_id), origin_id: origin_id, created_at: created_at})
-    end
+  def self.load(y_cid : String)
+    find({origin_id: y_cid}) || new({id: gen_id(y_cid), origin_id: y_cid})
   end
 
   ####
 
-  def self.upsert_from_raw_data(raw_crits : Array(RawYsCrit))
-    return unless data.total > 0
-
+  def self.bulk_upsert(raw_crits : Array(RawYsCrit))
     raw_crits.each do |raw_crit|
-      out_crit = self.upsert!(raw_crit.y_cid, raw_crit.created_at)
-      out_crit.ysbook_id = raw_crit.book.id
+      out_crit = self.load(raw_crit.y_cid)
+
+      out_book = Ysbook.upsert!(raw_crit.book, force: true)
+      out_crit.ysbook_id = out_book.id
+      out_crit.nvinfo_id = out_book.nvinfo_id
 
       out_user = Ysuser.upsert!(raw_crit.user)
 
       out_crit.y_uid = out_user.y_uid
       out_crit.ysuser_id = out_user.id # TODO: remove this
 
+      unless raw_crit.ztext == "请登录查看评论内容"
+        out_crit.b_len = raw_crit.ztext.size
+        out_crit.save_data_to_disk(raw_crit.ztext, type: "zh", ext: "txt")
+      end
+
+      out_crit.stars = raw_crit.stars
+      out_crit.set_tags(raw_crit.tags, force: true)
+
+      out_crit.like_count = raw_crit.like_count
+      out_crit.repl_total = raw_crit.repl_total
+
+      out_crit.created_at = raw_crit.created_at
+      out_crit.updated_at = raw_crit.updated_at || raw_crit.created_at
+
+      out_crit.save!
     end
   end
 end

@@ -9,6 +9,10 @@ class YS::Ysuser
 
   column zname : String
   column vname : String
+
+  column y_avatar : String = ""
+  column v_avatar : String = ""
+
   # column vslug : String = ""
 
   column like_count : Int32 = 0

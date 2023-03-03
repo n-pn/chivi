@@ -5,6 +5,9 @@ require "./_crawl_common"
 require "../_raw/raw_ys_crit"
 
 class YS::CrawlYscritByUser < CrawlTask
+  def db_seed_tasks(entry : Entry, json : String)
+  end
+
   def self.gen_link(yl_id : String, page : Int32 = 1)
     "https://api.yousuu.com/api/booklist/#{yl_id}?page=#{page}"
   end

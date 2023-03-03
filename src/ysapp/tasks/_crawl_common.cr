@@ -24,6 +24,11 @@ def post_raw_data(href : String, body : String)
   HTTP::Client.post("#{YS_API}#{href}", headers: headers, body: body)
 end
 
+def file_exists?(file : String, span = 1.days)
+  return false unless info = File.info?(file)
+  info.modification_time > Time.utc - span
+end
+
 enum CrawlMode
   Head; Tail; Rand
 
@@ -34,23 +39,6 @@ enum CrawlMode
     in Rand then queue.shuffle!
     end
   end
-end
-
-struct YS::RawUser
-  include JSON::Serializable
-
-  getter _id : Int32
-
-  @[JSON::Field(key: "userName")]
-  getter name : String
-
-  @[JSON::Field(key: "avatarId")]
-  getter avatar : String
-end
-
-def file_exists?(file : String, span = 1.days)
-  return false unless info = File.info?(file)
-  info.modification_time > Time.utc - span
 end
 
 abstract class CrawlTask

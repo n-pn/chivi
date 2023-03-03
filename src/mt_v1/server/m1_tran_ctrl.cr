@@ -35,6 +35,28 @@ class M1::TranCtrl < AC::Base
     render text: TlUtil.tl_author(author)
   end
 
+  record WnovelForm, btitle : String, author : String, bintro : String do
+    include JSON::Serializable
+  end
+
+  @[AC::Route::POST("/tl_wnovel", body: :form)]
+  def tl_wnovel(form : WnovelForm, wn_id : Int32 = 0)
+    cv_mt = MtCore.init(wn_id, user: _uname, temp: @w_temp, init: @w_init)
+
+    intro = String.build do |io|
+      form.bintro.each_line.with_index do |line, idx|
+        io << '\n' if idx > 0
+        cv_mt.cv_plain(line, true).to_txt(io)
+      end
+    end
+
+    render json: {
+      btitle: TlUtil.tl_btitle(form.btitle, wn_id),
+      author: TlUtil.tl_author(form.author),
+      bintro: intro,
+    }
+  end
+
   private def post_limit(privi = _privi)
     2 ** (privi &+ 1) &* 1000 &+ 1000
   end
@@ -72,11 +94,11 @@ class M1::TranCtrl < AC::Base
 
   @[AC::Route::PUT("/debug")]
   def debug(wn_id : Int32, w_cap : Bool = false)
-    cvter = MtCore.init(wn_id, user: _uname, temp: @w_temp, init: @w_init)
+    cv_mt = MtCore.init(wn_id, user: _uname, temp: @w_temp, init: @w_init)
     input = request.body.try(&.gets_to_end) || ""
 
     output = String.build do |io|
-      cvter.cv_plain(input, w_cap).to_txt(io)
+      cv_mt.cv_plain(input, w_cap).to_txt(io)
       io << '\n'
       io << SP::MtCore.tl_sinovi(input, cap: w_cap)
     end
@@ -99,11 +121,11 @@ class M1::TranCtrl < AC::Base
   @[AC::Route::POST("/tl_mulu")]
   def tl_mulu(wn_id : Int32 = 0)
     input = request.body.try(&.gets_to_end) || ""
-    cvter = MtCore.init(wn_id)
+    cv_mt = MtCore.init(wn_id)
 
     lines = String.build do |str|
       input.each_line do |line|
-        cvter.cv_title(line).to_txt(str) unless line.empty?
+        cv_mt.cv_title(line).to_txt(str) unless line.empty?
         str << '\n'
       end
     end

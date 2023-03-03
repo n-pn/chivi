@@ -6,7 +6,7 @@ class YS::Ysbook
 
   primary_key type: :serial
 
-  column nvinfo_id : Int64 = 0
+  column nvinfo_id : Int32 = 0
 
   column btitle : String = ""
   column author : String = ""
@@ -98,9 +98,24 @@ class YS::Ysbook
     false
   end
 
+  def create_wnovel!
+    # TODO
+  end
+
   #########################################
 
   def self.upsert!(id : Int64)
     find({id: id}) || new({id: id})
+  end
+
+  def self.upsert!(raw_data : EmbedBook, force : Bool = false)
+    model = find({id: raw_data.id}) || new({id: raw_data.id})
+
+    model.btitle = raw_data.title
+    model.author = raw_data.author
+
+    model.create_wnovel! if force
+
+    model.tap(&.save!)
   end
 end

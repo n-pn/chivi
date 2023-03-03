@@ -15,7 +15,18 @@ class YS::InitCtrl < AC::Base
   @[AC::Route::POST("/crits/by_user", body: :json)]
   def crits_by_user(json : RawBookComments, rtime : Int64 = Time.utc.to_unix)
     Ysuser.update_stats_from_raw_data(json, rtime)
+    Yscrit.bulk_upsert(json.comments)
+    render text: json.total
+  end
 
+  @[AC::Route::POST("/crits/by_list/:y_lid", body: :json)]
+  def crits_by_list(json : RawListEntries, y_lid : String, rtime : Int64 = Time.utc.to_unix)
+    ylist = Yslist.load(y_lid)
+
+    ylist.book_total = json.total if ylist.book_total < json.total
+    # ylist.book_rtime = rtime
+
+    Yscrit.bulk_upsert(json.books)
     render text: json.total
   end
 end

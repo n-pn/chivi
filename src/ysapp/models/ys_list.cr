@@ -103,6 +103,10 @@ class YS::Yslist
     })
   end
 
+  def self.load(y_lid : String)
+    find({origin_id: y_lid}) || new({id: gen_id(y_lid), origin_id: y_lid})
+  end
+
   CACHE_INT = CV::RamCache(Int64, self).new
 
   def self.load!(id : Int64)

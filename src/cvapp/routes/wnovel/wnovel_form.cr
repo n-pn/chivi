@@ -4,6 +4,8 @@ require "../../../_data/wnovel/nv_info"
 class CV::WnovelForm
   include JSON::Serializable
 
+  getter wn_id : Int32 = 0
+
   getter btitle_zh : String
   getter btitle_vi : String?
 
@@ -17,13 +19,43 @@ class CV::WnovelForm
   getter bcover : String? = nil
   getter status : Int32? = nil
 
+  getter wn_links : Array(String)? = nil
+
+  # for init
+  getter z_forced : Bool = false
+  getter z_voters : Int32? = nil
+  getter z_rating : Int32? = nil
+  getter z_udtime : Int64? = nil
+
   def after_initialize
     @btitle_zh, @author_zh = BookUtil.fix_names(@btitle_zh, @author_zh)
+
     @author_vi = nil if @author_vi.try(&.blank?)
     @btitle_vi = nil if @btitle_vi.try(&.blank?)
+    @bintro_vi = nil if @bintro_vi.try(&.blank?)
+
+    gen_vi_data! unless @author_vi && @btitle_vi && @bintro_vi
   end
 
-  def save : Nvinfo?
+  alias ViData = NamedTuple(btitle: String, author: String, bintro: String)
+
+  def gen_vi_data!
+    link = "http://localhost:5110/_m1/qtran/tl_wnovel?wn_id=#{@wn_id}"
+
+    headers = HTTP::Headers{"Content-Type" => "application/json"}
+    body = {btitle: @btitle_zh, author: @author_zh, bintro: @bintro_zh || ""}
+
+    HTTP::Client.post(link, headers: headers, body: body.to_json) do |res|
+      return unless res.success?
+      data = ViData.from_json(res.body_io.gets_to_end)
+
+      @author_vi ||= data[:author]
+      @btitle_vi ||= data[:btitle]
+      @bintro_vi ||= data[:bintro]
+    end
+  end
+
+  def save(_privi : Int32) : Nvinfo?
     author = Author.upsert!(@author_zh, @author_vi)
     btitle = Btitle.upsert!(@btitle_zh, @btitle_vi)
 
@@ -57,6 +89,10 @@ class CV::WnovelForm
 
     @status.try do |status|
       vi_book.set_status(status.to_i, force: true)
+    end
+
+    if _privi > 2
+      # TODO: add seed_data
     end
 
     # TODO: wite text log
