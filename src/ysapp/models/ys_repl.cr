@@ -6,7 +6,6 @@ require "./ys_user"
 
 class YS::Ysrepl
   include Clear::Model
-
   self.table = "ysrepls"
 
   primary_key

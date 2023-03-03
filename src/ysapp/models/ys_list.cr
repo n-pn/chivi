@@ -3,13 +3,12 @@ require "./ys_crit"
 
 class YS::Yslist
   include Clear::Model
-
   self.table = "yslists"
+
   primary_key
+  column origin_id : String = ""
 
   column ysuser_id : Int32 = 0
-
-  column origin_id : String = ""
 
   column zname : String = "" # original list name
   column vname : String = "" # translated name

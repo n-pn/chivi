@@ -2,15 +2,10 @@ require "./_base"
 
 class YS::Ysuser
   include Clear::Model
-
   self.table = "ysusers"
-  primary_key
 
-  column origin_id : Int32
-
-  # has_many yslists : Yslist, foreign_key: "ysuser_id"
-  # has_many yscrits : Yscrit, foreign_key: "ysuser_id"
-  # has_many nvinfos : Nvinfo, through: "yscrits"
+  primary_key type: :serial
+  column y_uid : Int32 # origin yousuu id
 
   column zname : String
   column vname : String

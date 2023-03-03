@@ -2,10 +2,10 @@ require "./_base"
 
 class YS::Ysbook
   include Clear::Model
-
   self.table = "ysbooks"
 
-  primary_key
+  primary_key type: :serial
+
   column nvinfo_id : Int64 = 0
 
   column btitle : String = ""

@@ -5,6 +5,30 @@ require "./_crawl_common"
 require "../_raw/raw_ys_crit"
 
 class YS::CrawlYscritByBook < CrawlTask
+  #   def do_crawl!(ysbook : Ysbook, page = 1, label = "-/-") : Ysbook?
+  #     y_bid = ysbook.id
+  #     ofile = "#{DIR}/#{y_bid // 1000}/#{y_bid}-#{page}.json"
+
+  #     if FileUtil.fresh?(ofile, Time.utc - 3.days - 6.hours * page)
+  #       return unless @reseed # skip seeding old data
+  #     elsif !@http.save!(api_url(y_bid, page), ofile, label)
+  #       return ysbook
+  #     end
+
+  #     crits, total = YscritRaw.from_book(File.read(ofile))
+
+  #     stime = FileUtil.mtime_int(ofile)
+  #     crits.each(&.seed!(stime: stime))
+
+  #     total = ysbook.crit_total if ysbook.crit_total > total
+  #     count = YS::Yscrit.query.where(ysbook_id: ysbook.id).count.to_i
+
+  #     ysbook.update(crit_total: total, crit_count: count)
+  #     Log.info { "- yscrits: #{YS::Yscrit.query.count}".colorize.cyan }
+  #   rescue err
+  #     Log.error { err }
+  #   end
+
   def self.gen_link(y_bid : Int32, page : Int32 = 1)
     "https://api.yousuu.com/api/book/#{y_bid}/comment?type=latest&page=#{page}"
   end
