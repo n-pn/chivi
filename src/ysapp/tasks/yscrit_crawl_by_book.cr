@@ -5,6 +5,9 @@ require "./_crawl_common"
 require "../_raw/raw_ys_crit"
 
 class YS::CrawlYscritByBook < CrawlTask
+  def db_seed_tasks(entry : Entry, json : String)
+  end
+
   #   def do_crawl!(ysbook : Ysbook, page = 1, label = "-/-") : Ysbook?
   #     y_bid = ysbook.id
   #     ofile = "#{DIR}/#{y_bid // 1000}/#{y_bid}-#{page}.json"

@@ -6,14 +6,18 @@ CREATE TABLE yscrits (
   ysbook_id bigint not null default 0,
   nvinfo_id bigint not null default 0,
 
-  ysuser_id bigint not null default 0,
+  v_uid int4 not null default 0, -- chivi ysuser id
+  y_uid int4 not null default 0, -- original user id
+
   yslist_id bigint not null default 0,
+  y_lid text not null default '',
 
   stars int not null default 3,
-  _sort int not null default 0,
+  _sort int generated always as (stars * (stars * like_count + repl_count)) stored,
 
-  ztext text not null default '',
-  vhtml text not null default '',
+  b_len int not null default - 1,
+  -- ztext text not null default '',
+  -- vhtml text not null default '',
 
   ztags text[] not null default '{}',
   vtags text[] not null default '{}',

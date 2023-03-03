@@ -1,14 +1,15 @@
 require "./_crawl_common"
 require "../_raw/raw_ys_user"
-require "../data/ys_user"
 
 class YS::CrawlYsuser < CrawlTask
-  UPSERT_SQL = YsUser.upsert_sql(YsUser::RAW_UPSERT_FIELDS)
+  def self.upsert_user_info(json : String, rtime : Time)
+    post_raw_data("/_ys/users/info?rtime=#{rtime.to_unix}", json)
+  end
 
-  def db_seed_tasks(json : String)
-    return if json.includes?("不存在该用户")
-    args = RawYsUser.from_raw_json(json).changeset
-    YsUser.open_tx(&.exec(UPSERT_SQL, args: args))
+  def db_seed_tasks(entry : Entry, json : String)
+    self.class.upsert_user_info(json, Time.utc)
+  rescue ex
+    puts ex
   end
 
   def self.gen_link(u_id : Int32)
@@ -31,17 +32,15 @@ class YS::CrawlYsuser < CrawlTask
     u_ids = [] of Int32
     fresh = (Time.utc - 1.day).to_unix
 
-    YsUser.open_db do |db|
-      sql = <<-SQL
-        select id, rtime from users
-        order by (like_count + star_count) desc
-      SQL
+    sql = <<-SQL
+      select y_uid, info_rtime from ysusers
+      order by (like_count + star_count) desc
+    SQL
 
-      db.query_each(sql) do |rs|
-        id, rtime = rs.read(Int32, Int64)
-        fresh -= 60 # add 1 minute
-        u_ids << id if rtime < fresh
-      end
+    PG_DB.query_each(sql) do |rs|
+      y_uid, rtime = rs.read(Int32, Int64)
+      fresh -= 60 # add 1 minute
+      u_ids << y_uid if rtime < fresh
     end
 
     u_ids.map_with_index(1) do |u_id, index|
@@ -53,5 +52,24 @@ class YS::CrawlYsuser < CrawlTask
     end
   end
 
-  run!(ARGV)
+  def self.seed_crawled!(latest_only = true)
+    files = Dir.glob("#{DIR}/*.zst")
+    files.select!(&.ends_with?("latest.json.zst")) if latest_only
+
+    files.each do |file|
+      puts file
+      json = read_zstd(file)
+      rtime = File.info(file).modification_time
+      upsert_user_info(json, rtime)
+    rescue ex
+      puts ex.colorize.red
+      File.delete(file)
+    end
+  end
+
+  if ARGV.includes?("--seed")
+    seed_crawled!(ARGV.includes?("--latest"))
+  else
+    run!(ARGV)
+  end
 end

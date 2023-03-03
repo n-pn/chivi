@@ -4,7 +4,7 @@ class YS::RawYsCrit
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
-  getter uuid : String
+  getter y_cid : String
 
   @[JSON::Field(key: "bookId")]
   getter book : EmbedBook
@@ -32,21 +32,38 @@ class YS::RawYsCrit
   @[JSON::Field(key: "updateAt")]
   getter updated_at : Time?
 
-  record BookComments, comments : Array(RawYsCrit), total : Int32 do
-    include JSON::Serializable
-  end
+  # def db_changes
+  #   fields = [] of String
+  #   values = [] of DB::Any | Array(String)
 
-  record BooklistEntries, books : Array(RawYsCrit), total : Int32 do
-    include JSON::Serializable
-  end
+  #   fields << "origin_id"
+  #   values << self.uuid
 
-  def self.from_book_json(json : String) : {Array(self), Int32}
-    data = NamedTuple(data: BookComments).from_json(json)[:data]
-    {data.comments, data.total}
-  end
+  #   fields << "ysbook_id"
+  #   values << self.uuid
 
-  def self.from_list_json(json : String) : {Array(self), Int32}
-    data = NamedTuple(data: BooklistEntries).from_json(json)[:data]
-    {data.books, data.total}
+  #   {fields, values}
+  # end
+end
+
+record YS::RawBookComments, comments : Array(YS::RawYsCrit), total : Int32 do
+  include JSON::Serializable
+
+  def self.from_json(json : String)
+    raise "invalid json" unless json.starts_with?('{')
+
+    parser = JSON::PullParser.new(json)
+    parser.on_key!("data") { new(parser) }
+  end
+end
+
+record YS::RawListEntries, books : Array(YS::RawYsCrit), total : Int32 do
+  include JSON::Serializable
+
+  def self.from_json(json : String)
+    raise "invalid json" unless json.starts_with?('{')
+
+    parser = JSON::PullParser.new(json)
+    parser.on_key!("data") { new(parser) }
   end
 end

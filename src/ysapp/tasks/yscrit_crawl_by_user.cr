@@ -4,16 +4,14 @@ require "../_raw/raw_ys_crit"
 require "../data/ys_user"
 
 class YS::CrawlYscritByUser < CrawlTask
-  alias RawData = NamedTuple(data: NamedTuple(total: Int32))
-
-  private def db_seed_tasks(entry : Entry, json : String)
+  def self.seed_db_from_json(json : String, rtime : Time)
     return unless json.starts_with?('{')
+    post_raw_data("/_ys/crits/by_user?rtime=#{rtime.to_unix}", json)
+  end
 
-    # _crits, total = RawYsCrit.from_book_json(json)
-    total = RawData.from_json(json)[:data][:total]
-    yu_id = File.basename(File.dirname(entry.path)).to_i
-
-    YsUser.open_db(&.exec YsUser::STATS_UPDATE_SQL, total, Time.utc.to_unix, yu_id)
+  def db_seed_tasks(entry : Entry, json : String)
+    return unless json.starts_with?('{')
+    self.class.seed_db_from_json(json, Time.utc)
   rescue ex
     puts entry.path, json
     Log.error { ex.message }
@@ -92,6 +90,30 @@ class YS::CrawlYscritByUser < CrawlTask
     end
 
     output
+  end
+
+  def self.seed_crawled!(latest_only = true)
+    u_ids = Dir.children(DIR)
+
+    u_ids.each do |y_uid|
+      files = Dir.glob("#{DIR}/#{y_uid}/*.zst")
+      files.select!(&.ends_with?("latest.json.zst")) if latest_only
+
+      files.each do |file|
+        puts file
+        mtime = File.info(file).modification_time
+        seed_db_from_json(read_zstd(file), mtime)
+      rescue ex
+        puts ex
+        File.delete(file)
+      end
+    end
+  end
+
+  if ARGV.includes?("--seed")
+    seed_crawled!(ARGV.includes?("--latest"))
+  else
+    run!(ARGV)
   end
 
   run!(ARGV)

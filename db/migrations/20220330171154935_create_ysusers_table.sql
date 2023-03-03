@@ -5,9 +5,8 @@ CREATE TABLE ysusers (
 
   zname text not null,
   vname text not null,
-  vslug text not null default '',
 
-  stime int8 not null default 0,
+  vslug text not null default '',
 
   like_count int4 not null default 0,
   star_count int4 not null default 0,
@@ -18,13 +17,17 @@ CREATE TABLE ysusers (
   list_count int4 not null default 0,
   list_total int4 not null default 0,
 
+  repl_count int4 not null default 0,
+  repl_total int4 not null default 0,
+
+  info_rtime int8 not null default 0,
+
   created_at timestamptz not null default CURRENT_TIMESTAMP,
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX ysuser_uniq_idx ON ysusers (zname);
-CREATE UNIQUE INDEX ysuser_user_idx ON ysusers (y_uid);
-
+CREATE UNIQUE INDEX ysuser_y_uid_idx ON ysusers (y_uid);
+CREATE INDEX ysuser_uname_idx ON ysusers (zname);
 
 -- +micrate Down
 DROP TABLE IF EXISTS ysusers;

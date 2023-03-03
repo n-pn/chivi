@@ -40,7 +40,7 @@ class SP::TranCtrl < AC::Base
     res.status_code = 200
     res.content_type = "text/plain; charset=utf-8"
 
-    text = request.body.not_nil!.gets_to_end
+    text = request.body.try(&.gets_to_end) || ""
     output = Btran.translate(text.lines, source: sl, target: tl, no_cap: no_cap)
 
     output.each_with_index do |line, i|

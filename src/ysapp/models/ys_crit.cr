@@ -15,8 +15,11 @@ class YS::Yscrit
   column ysuser_id : Int32 = 0
   column yslist_id : Int32 = 0
 
-  column stars : Int32 = 3 # voting 1 2 3 4 5 stars
-  column _sort : Int32 = 0
+  column y_uid : Int32 = 0
+  column y_lid : String = ""
+
+  column stars : Int32 = 3  # voting 1 2 3 4 5 stars
+  column b_len : Int32 = -1 # body size (real data is stored in a different location)
 
   column ztags : Array(String) = [] of String
   column vtags : Array(String) = [] of String
@@ -141,6 +144,23 @@ class YS::Yscrit
   def self.upsert!(origin_id : String, created_at : Time)
     find({origin_id: origin_id}) || begin
       new({id: gen_id(origin_id), origin_id: origin_id, created_at: created_at})
+    end
+  end
+
+  ####
+
+  def self.upsert_from_raw_data(raw_crits : Array(RawYsCrit))
+    return unless data.total > 0
+
+    raw_crits.each do |raw_crit|
+      out_crit = self.upsert!(raw_crit.y_cid, raw_crit.created_at)
+      out_crit.ysbook_id = raw_crit.book.id
+
+      out_user = Ysuser.upsert!(raw_crit.user)
+
+      out_crit.y_uid = out_user.y_uid
+      out_crit.ysuser_id = out_user.id # TODO: remove this
+
     end
   end
 end

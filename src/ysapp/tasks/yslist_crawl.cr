@@ -1,11 +1,10 @@
-require "pg"
-require "../../cv_env"
-
 require "./_crawl_common"
 require "../_raw/raw_ys_list"
 
-class CV::YslistCrawl < CrawlTask
-  # def db_seed_tasks(json : String)
+class YS::YslistCrawl < CrawlTask
+  def db_seed_tasks(entry : Entry, json : String)
+  end
+
   #   yslist = YS::Yslist.upsert!(self.oid, self.created_at || self.updated_at)
 
   #   yslist.ysuser = ysuser || begin
@@ -30,7 +29,6 @@ class CV::YslistCrawl < CrawlTask
   #   yslist.save!
   # rescue err
   #   Log.error { err.inspect_with_backtrace.colorize.red }
-  # end
   # end
 
   #####################
@@ -68,10 +66,8 @@ class CV::YslistCrawl < CrawlTask
   def self.gen_queue : Array(Entry)
     # fresh = Time.utc - ttl
 
-    uuids = DB.open(CV_ENV.database_url) do |db|
-      stmt = "select origin_id from yslists"
-      db.query_all(stmt, as: String)
-    end
+    stmt = "select origin_id from yslists"
+    uuids = PG_DB.query_all(stmt, as: String)
 
     uuids.map_with_index do |uuid, index|
       Entry.new(

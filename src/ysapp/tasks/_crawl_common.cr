@@ -1,9 +1,28 @@
+require "pg"
 require "json"
 require "zstd"
+require "http/client"
 require "option_parser"
 
 require "../../_util/hash_util"
 require "../../_util/proxy_client"
+require "../../cv_env"
+
+PG_DB = DB.open(CV_ENV.database_url)
+at_exit { PG_DB.close }
+
+def read_zstd(path : String)
+  file = File.open(path, "r")
+  Zstd::Decompress::IO.open(file, sync_close: true, &.gets_to_end)
+end
+
+YS_API = "http://localhost:5400"
+
+HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
+
+def post_raw_data(href : String, body : String)
+  HTTP::Client.post("#{YS_API}#{href}", headers: headers, body: body)
+end
 
 enum CrawlMode
   Head; Tail; Rand
@@ -107,9 +126,7 @@ abstract class CrawlTask
     puts "  [#{entry.path}] saved.".colorize.green
   end
 
-  private def db_seed_tasks(entry : Entry, json : String)
-    # implement by inherited classes
-  end
+  abstract def db_seed_tasks(entry : Entry, json : String)
 
   def mkdirs!(queue : Enumerable(Entry))
     dirs = queue.map { |entry| File.dirname(entry.path) }.uniq!
