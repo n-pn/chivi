@@ -1,29 +1,34 @@
 <script lang="ts">
-  import { page } from '$app/stores'
   import { seed_path } from '$lib/kit_path'
+  import { recrawl_chap } from './shared'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let book_info: CV.Nvinfo
-  export let curr_seed: CV.Chroot
-  export let seed_data: CV.WnSeed
-  export let curr_chap: CV.Chinfo
-  export let chap_data: CV.Zhchap
+  import type { PageData } from './$types'
+  export let data: PageData
+  export let _onload = false
 
-  $: _privi = $page.data._user?.privi || 0
-  $: search = `"${book_info.btitle_zh}" ${chap_data.title}`
-  $: seed_href = seed_path(book_info.bslug, curr_seed.sname)
-  $: edit_href = `${seed_href}/${curr_chap.chidx}/+edit`
+  $: _privi = data._user?.privi || 0
+  $: search = `"${data.nvinfo.btitle_zh}" ${data.chap_data.title}`
+  $: seed_href = seed_path(data.nvinfo.bslug, data.curr_seed.sname)
+  $: edit_href = `${seed_href}/${data.curr_chap.chidx}/+edit`
+
+  const reload_chap = async (load_mode = 2) => {
+    _onload = true
+    const json = await recrawl_chap(data, load_mode)
+    data = { ...data, ...json }
+    _onload = false
+  }
 </script>
 
 <div class="notext">
-  {#if !chap_data.grant}
-    <h1>Bạn không đủ quyền hạn để xem chương {curr_chap.chidx}.</h1>
+  {#if !data.chap_data.grant}
+    <h1>Bạn không đủ quyền hạn để xem chương {data.curr_chap.chidx}.</h1>
 
     <p>
       <strong>
         Quyền hạn tối thiểu để xem chương hiện tại: <x-chap
-          >{chap_data.privi}</x-chap>
+          >{data.chap_data.privi}</x-chap>
       </strong>
     </p>
 
@@ -34,7 +39,7 @@
           màn hình để đăng nhập hoặc đăng ký tài khoản mới.
         {:else}
           Quyền hạn hiện tại của bạn là {_privi}, nâng cấp quyền hạn lên
-          <strong>{chap_data.privi}</strong> để xem nội dung chương tiết.
+          <strong>{data.chap_data.privi}</strong> để xem nội dung chương tiết.
         {/if}
       </em>
     </p>
@@ -72,9 +77,15 @@
     </p>
   {:else}
     <h1>Chương tiết không có nội dung.</h1>
+
     <p class="em">
       Bạn có đủ quyền hạn để xem chương, nhưng vì lý do nào đó mà text gốc của
       chương không có trên hệ thống.
+    </p>
+
+    <p>
+      Nếu bạn đang xem chương tiết từ [Nguồn khác], khả năng cao là nguồn đó đã
+      chết trước khi hệ thống kịp lưu text gốc vào ổ cứng.
     </p>
 
     <h2>Các biện pháp khắc phục:</h2>
@@ -83,16 +94,37 @@
       chờ xử lý. Tuy vậy, bạn cũng có thể tự mình sửa text chương mà không cần
       phải tốn thời gian chờ đợi sự phản hồi của ban quản trị.
     </p>
+
+    <p>
+      Ngoài ra, một số chương tiết được liên kết với nguồn bên ngoài để tải
+      xuống tự động, bạn có thể thử bấm [Tải lại nguồn] phía dưới để hệ thống
+      thử tải lại text gốc từ nguồn ngoài.
+    </p>
+
     <p>
       <em
-        >Lưu ý: Liên hệ ban quản trị qua
+        >Lưu ý 1: Liên hệ ban quản trị qua
         <a href="https://discord.gg/mdC3KQH" target="_blank" rel="noreferrer"
           >Discord</a>
         để nhận được phản hồi nhanh nhất.</em>
     </p>
 
-    <h3>Tự text gốc cho chương:</h3>
-    {#if _privi >= seed_data.edit_privi}
+    <p>
+      <em
+        >Lưu ý 2: Để chắc chắn nhất là chương tiết được kết nối với nguồn ngoài,
+        hãy bấm [Cập nhật] bên danh sách chương.
+      </em>
+    </p>
+
+    <p>
+      <em
+        >Lưu ý 3: Một số nguồn ngoài có thể ngừng hoạt động theo thời gian, bạn
+        có thể vào phần [Cài đặt] để chỉnh sửa các liên kết tới nguồn ngoài.
+      </em>
+    </p>
+
+    <h3>Tự thêm text gốc cho chương:</h3>
+    {#if _privi >= data.seed_data.edit_privi}
       <p>
         Bạn có đủ quyền hạn để thêm text gốc cho bộ truyện, bấm vào nút
         <a href={edit_href}>Thêm text gốc</a>
@@ -113,28 +145,36 @@
             rel="noreferrer">Baidu</a>
         </em>
       </p>
-
-      <div class="actions">
-        <a class="m-btn _primary _fill _lg" href={edit_href}>
-          <SIcon name="edit" />
-          <span>Thêm text gốc</span>
-        </a>
-
-        <a
-          class="m-btn  _lg"
-          href="https://discord.gg/mdC3KQH"
-          target="_blank"
-          rel="noreferrer">
-          <SIcon name="brand-discord" />
-          <span>Liên hệ quản trị</span>
-        </a>
-      </div>
     {:else}
       <p>
         Bạn chưa đủ quyền hạn dể thêm text gốc cho bộ truyện. Hãy nâng cấp quyền
         hạn ngay hôm nay để mở khóa các tính năng.
       </p>
     {/if}
+
+    <div class="actions">
+      <a class="m-btn _primary _fill _lg" href={edit_href}>
+        <SIcon name="edit" />
+        <span>Thêm text gốc</span>
+      </a>
+
+      <a
+        class="m-btn  _lg"
+        href="https://discord.gg/mdC3KQH"
+        target="_blank"
+        rel="noreferrer">
+        <SIcon name="brand-discord" />
+        <span>Liên hệ quản trị</span>
+      </a>
+
+      <button
+        class="m-btn _lg _harmful"
+        on:click={() => reload_chap(2)}
+        disabled={data._user.privi < 1}>
+        <SIcon name="rotate-rectangle" spin={_onload} />
+        <span>Tải lại nguồn</span>
+      </button>
+    </div>
   {/if}
 </div>
 

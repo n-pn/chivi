@@ -10,9 +10,11 @@
 
   // import Chtabs from './ChapTabs.svelte'
 
-  import type { PageData } from './$types'
   import { api_call } from '$lib/api_call'
   import { afterNavigate } from '$app/navigation'
+  import { recrawl_chap } from './shared'
+
+  import type { PageData } from './$types'
   export let data: PageData
 
   $: ({ nvinfo, curr_seed, seed_data, curr_chap, chap_data } = data)
@@ -93,19 +95,8 @@
 
   const reload_chap = async (load_mode = 2) => {
     _onload = true
-    const wn_id = nvinfo.id
-    const sname = curr_seed.sname
-    const chidx = curr_chap.chidx
-    const cpart = chap_data.cpart
-
-    try {
-      const href = `/_wn/chaps/${wn_id}/${sname}/${chidx}/${cpart}?load_mode=${load_mode}`
-      const json = await fetch(href).then((r) => r.json())
-      data = { ...data, ...json }
-    } catch (ex) {
-      console.log(ex)
-    }
-
+    const json = await recrawl_chap(data, load_mode)
+    data = { ...data, ...json }
     _onload = false
   }
 </script>
@@ -128,12 +119,7 @@
   wn_id={nvinfo.id}
   {do_fixraw}>
   <svelte:fragment slot="notext">
-    <Notext
-      book_info={nvinfo}
-      {curr_seed}
-      {seed_data}
-      {curr_chap}
-      {chap_data} />
+    <Notext bind:data bind:_onload />
   </svelte:fragment>
 
   <Footer slot="footer">
