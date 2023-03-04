@@ -8,7 +8,7 @@
 
 <Crumb
   tree={[
-    ['Thư viện', '/books'],
+    ['Thư viện', '/wn'],
     ['Thêm truyện mới', '.'],
   ]} />
 

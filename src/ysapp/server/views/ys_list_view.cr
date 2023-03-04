@@ -38,10 +38,12 @@ struct YS::ListView
   end
 
   def self.as_list(inp : Enumerable(Yslist), full = false)
-    inp.map { |obj| new(obj, full) }
+    inp.map { |obj| new(obj, full: full) }
   end
 
-  def self.as_hash(inp : Enumerable(Yslist))
-    inp.map { |x| {x.id, x} }.to_h
+  def self.as_hash(data : Enumerable(Yslist))
+    hash = {} of Int64 => self
+    data.each { |obj| hash[obj.id] = new(obj) }
+    hash
   end
 end

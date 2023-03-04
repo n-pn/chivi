@@ -2,7 +2,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "mt": "crystal run --error-trace spec/manual/debug_v2.cr -- ",
+    "m1": "crystal run --error-trace spec/manual/debug_v1.cr -- ",
+    "m2": "crystal run --error-trace spec/manual/debug_v2.cr -- ",
     "test": "crystal spec --error-trace spec/engine/cvmtl_spec.cr",
     "push-dev": "bash priv/push-dev.sh",
     "push-prod": "bash priv/push-prod.sh",

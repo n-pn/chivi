@@ -5,7 +5,7 @@ book = ARGV[1]?.try(&.to_i) || 5344
 user = ARGV[2]?
 
 time = Time.monotonic
-mtl = M1::MtCore.generic_mtl(udic: book, user: user || "")
+mtl = M1::MtCore.init(udic: book, user: user || "")
 res = mtl.cv_plain(text)
 
 res.inspect(STDOUT)

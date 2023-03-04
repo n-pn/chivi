@@ -10,7 +10,7 @@
 <section class="list">
   <header class="head">
     <h3 class="text">Truyện vừa xem</h3>
-    <a class="link" href="/books">Xem tất cả</a>
+    <a class="link" href="/wn">Xem tất cả</a>
   </header>
 
   <NvinfoList books={data.books.recent} />
@@ -19,7 +19,7 @@
 <section class="list">
   <header class="head">
     <h3 class="text">Truyện mới cập nhật</h3>
-    <a class="link" href="/books?order=update">Xem tất cả</a>
+    <a class="link" href="/wn?order=update">Xem tất cả</a>
   </header>
   <NvinfoList books={data.books.update} />
 </section>
@@ -27,7 +27,7 @@
 <section class="list">
   <header class="head">
     <h3 class="text">Tổng hợp cho điểm</h3>
-    <a class="link" href="/books?order=weight">Xem tất cả</a>
+    <a class="link" href="/wn?order=weight">Xem tất cả</a>
   </header>
 
   <NvinfoList books={data.books.weight} />

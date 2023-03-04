@@ -30,7 +30,7 @@
 
   <div class="tags">
     {#each nvinfo.labels as label}
-      <a class="tag" href="/books?tagged={label}">
+      <a class="tag" href="/wn?tagged={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>

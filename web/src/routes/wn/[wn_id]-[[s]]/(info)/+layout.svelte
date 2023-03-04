@@ -98,7 +98,7 @@
         {#if type == 1}
           <a
             class="stat link"
-            href="/books?origin={name}"
+            href="/wn?origin={name}"
             data-tip="Tìm truyện cùng nguồn"><SIcon name="search" /></a>
         {/if}
       {/each}

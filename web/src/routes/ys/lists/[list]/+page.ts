@@ -14,6 +14,7 @@ interface YslistData extends CV.Paginate {
 export const load = (async ({ fetch, params, url: { searchParams } }) => {
   const list = params.list.split('-')[0]
   const path = api_path('yslists.show', list, searchParams)
+  console.log(path)
   const data = await api_get<YslistData>(path, fetch)
 
   const { id, vname, vdesc, vslug } = data.ylist

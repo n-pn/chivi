@@ -35,7 +35,7 @@ struct YS::CritView
 
   def self.as_list(inp : Enumerable(Yscrit), full = false)
     res = [] of CritView
-    inp.each { |obj| res << new(obj, full) }
+    inp.each { |obj| res << new(obj, full: full) }
     res
   end
 end
