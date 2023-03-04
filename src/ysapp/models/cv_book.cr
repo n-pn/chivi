@@ -2,9 +2,14 @@ require "./_base"
 
 class YS::Author
   include Clear::Model
-
   self.table = "authors"
+
+  column zname : String = ""
   column vname : String = ""
+
+  class_getter known_authors : Set(String) do
+    PG_DB.query_all("select zname from authors", as: String).to_set
+  end
 end
 
 class YS::CvBook

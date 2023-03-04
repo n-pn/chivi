@@ -1,5 +1,5 @@
 require "../_ctrl_base"
-require "./wnovel_form"
+require "./wninfo_form"
 require "../../../mt_v1/data/v1_dict"
 
 class CV::WnovelCtrl < CV::BaseCtrl
@@ -62,11 +62,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
   @[AC::Route::GET("/:wn_id/show")]
   def show(wn_id : Int64) : Nil
     nvinfo = get_wnovel(wn_id)
-
-    if _privi >= 0
-      spawn nvinfo.bump!
-    end
-
+    spawn nvinfo.bump! if _privi >= 0
     render json: WnovelView.new(nvinfo, true)
   end
 
@@ -122,7 +118,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
     nvinfo = form.save
     Nvinfo.cache!(nvinfo)
 
-    spawn add_book_dict(nvinfo.id, nvinfo.bhash, nvinfo.vname)
+    spawn add_book_dict(nvinfo.id, nvinfo.bslug, nvinfo.vname)
     spawn CtrlUtil.log_user_action("nvinfo-upsert", params.to_h, _viuser.uname)
     spawn upload_bcover_to_r2!(nvinfo.scover, nvinfo.bcover)
 
@@ -136,14 +132,11 @@ class CV::WnovelCtrl < CV::BaseCtrl
     `bin/bcover_cli single -i "#{source_url}" -n #{cover_name}`
   end
 
-  private def add_book_dict(wn_id : Int64, bhash : String, bname : String)
+  private def add_book_dict(wn_id : Int64, bslug : String, bname : String)
+    dname = "#{wn_id}-#{bslug}"
+    url = "http://127.0.0.1:5110/_m1/dicts?wn_id=#{wn_id}&dname=#{dname}&bname=#{bname}"
+    HTTP::Client.put(url)
     # TODO: call mt_v1 api instead
-    dict = M1::DbDict.new(
-      id: wn_id.to_i, dname: "-#{bhash}",
-      label: bname, brief: "Từ điển riêng cho bộ truyện [#{bname}]",
-      privi: 1, dtype: 3,
-    )
-    dict.save!
   end
 
   @[AC::Route::DELETE("/:wn_id")]

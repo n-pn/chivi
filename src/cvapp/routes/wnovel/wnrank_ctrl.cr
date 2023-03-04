@@ -1,6 +1,6 @@
 require "../_ctrl_base"
 
-class CV::NvrankCtrl < CV::BaseCtrl
+class CV::WnrankCtrl < CV::BaseCtrl
   base "/_db/ranks"
 
   @[AC::Route::GET("/brief")]

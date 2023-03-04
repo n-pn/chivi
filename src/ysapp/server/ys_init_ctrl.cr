@@ -6,6 +6,14 @@ require "../_raw/*"
 class YS::InitCtrl < AC::Base
   base "/_ys"
 
+  @[AC::Route::POST("/books/info", body: :json)]
+  def book_info(json : RawYsBook, rtime : Int64 = Time.utc.to_unix)
+    json.info_rtime = rtime
+    model = Ysbook.upsert!(json)
+
+    render text: model.nvinfo_id
+  end
+
   @[AC::Route::POST("/users/info", body: :json)]
   def user_info(json : RawYsUser, rtime : Int64 = Time.utc.to_unix)
     y_uid = Ysuser.upsert_info_from_raw_data(json, rtime)

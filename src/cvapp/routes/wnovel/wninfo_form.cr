@@ -21,12 +21,6 @@ class CV::WnovelForm
 
   getter wn_links : Array(String)? = nil
 
-  # for init
-  getter z_forced : Bool = false
-  getter z_voters : Int32? = nil
-  getter z_rating : Int32? = nil
-  getter z_udtime : Int64? = nil
-
   def after_initialize
     @btitle_zh, @author_zh = BookUtil.fix_names(@btitle_zh, @author_zh)
 

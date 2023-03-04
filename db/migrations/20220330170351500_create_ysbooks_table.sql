@@ -1,45 +1,37 @@
 -- +micrate Up
 CREATE TABLE ysbooks (
-  id bigserial primary key,
-
-  nvinfo_id bigint not null default 0,
+  id serial primary key,
+  nvinfo_id int4 not null default 0,
 
   btitle text not null default '',
   author text not null default '',
 
-  voters int not null default 0,
-  scores int not null default 0,
+  voters int4 not null default 0,
+  rating int4 not null default 0,
 
   -- book info
 
-  bcover text not null default '',
-  bintro text not null default '',
-  bgenre text not null default '',
+  cover text not null default '',
+  intro text not null default '',
 
-  shield int not null default 0,
-  status int not null default 0,
+  genre text not null default '',
+  btags text[] not null default '{}',
 
-  --
+  shield int4 not null default 0,
+  status int4 not null default 0,
 
-  utime bigint not null default 0,
-  stime bigint not null default 0, -- stime: crawled at
+  book_mtime int8 not null default 0,
+  info_rtime int8 not null default 0,
 
-  status int not null default 0,
-  word_count int not null default 0,
+  word_count int4 not null default 0,
 
-  --  origin
+  crit_count int4 not null default 0,
+  list_count int4 not null default 0,
 
-  pub_link text not null default '',
-  pub_name text not null default '',
+  crit_total int4 not null default 0,
+  list_total int4 not null default 0,
 
-  -- counters
-
-  word_count int not null default 0,
-  crit_count int not null default 0,
-  list_count int not null default 0,
-
-  crit_total int not null default 0,
-  list_total int not null default 0,
+  sources text[] not null default '{}',
 
   -- timestamps
 
@@ -48,7 +40,6 @@ CREATE TABLE ysbooks (
 );
 
 CREATE INDEX ysbook_nvinfo_idx ON ysbooks (nvinfo_id);
-CREATE INDEX ysbook_source_idx ON ysbooks (pub_name);
 
 -- +micrate Down
 DROP TABLE IF EXISTS ysbooks;

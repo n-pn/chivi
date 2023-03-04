@@ -49,6 +49,20 @@ class M1::DictCtrl < AC::Base
     render json: output
   end
 
+  @[AC::Route::PUT("/")]
+  def upsert(wn_id : Int32, dname : String, bname : String)
+    DbDict.new(
+      id: wn_id,
+      dname: dname,
+      label: bname,
+      brief: "Từ điển riêng cho bộ truyện [#{bname}]",
+      privi: 1,
+      dtype: 3,
+    ).save!
+
+    render text: wn_id
+  end
+
   @[Flags]
   enum ExportTabs
     Main; Temp; User

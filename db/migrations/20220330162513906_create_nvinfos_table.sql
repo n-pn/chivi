@@ -5,7 +5,7 @@ CREATE TABLE nvinfos (
   author_id int not null references authors (id) on update cascade on delete cascade,
   btitle_id int not null references btitles (id) on update cascade on delete cascade,
 
-  ysbook_id bigint not null default 0,
+  ysbook_id int4 not null default 0,
   subdue_id bigint not null default 0,
 
   -- title
@@ -34,10 +34,16 @@ CREATE TABLE nvinfos (
   utime bigint not null default 0,
 
   -- stats
+  weight int not null default 0,
 
   voters int not null default 0,
   rating int not null default 0,
-  weight int not null default 0,
+
+  zvoters int not null default 0,
+  zrating int not null default 0,
+
+  vvoters int not null default 0,
+  vrating int not null default 0,
 
   -- counters
 

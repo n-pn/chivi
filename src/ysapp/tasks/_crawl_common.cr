@@ -16,12 +16,11 @@ def read_zstd(path : String)
   Zstd::Decompress::IO.open(file, sync_close: true, &.gets_to_end)
 end
 
-YS_API = "http://localhost:5400"
-
+YS_HOST = "http://localhost:5400"
 HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
 
 def post_raw_data(href : String, body : String)
-  HTTP::Client.post("#{YS_API}#{href}", headers: headers, body: body)
+  HTTP::Client.post("#{YS_HOST}#{href}", headers: HEADERS, body: body)
 end
 
 def file_exists?(file : String, span = 1.days)

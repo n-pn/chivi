@@ -4,52 +4,47 @@ require "json"
 require "../../_util/text_util"
 
 class YS::RawYsBook
-  annotation Virtual; end
+  annotation Temp; end
 
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
-  getter id = 0
+  getter id : Int32
 
   @[JSON::Field(key: "title")]
   getter btitle = ""
 
   getter author = ""
 
+  getter cover = ""
+
   @[JSON::Field(key: "introduction")]
   getter intro = ""
 
-  @[Virtual]
-  @[JSON::Field(key: "classInfo")]
-  getter class_info : NamedTuple(className: String)?
-
-  @[JSON::Field(ignore: true)]
+  @[JSON::Field(key: "className", root: "classInfo")]
   getter genre = "其他"
 
-  @[Virtual]
   @[JSON::Field(key: "tags")]
-  getter tags = [] of String
-
-  @[JSON::Field(ignore: true)]
-  getter btags = ""
-
-  getter cover = ""
+  getter btags = [] of String
 
   @[JSON::Field(key: "scorerCount")]
   getter voters : Int32 = 0
 
-  @[Virtual]
+  @[Temp]
   getter score = 0_f32
 
   @[JSON::Field(ignore: true)]
-  getter rating : Int32 = 0
+  getter rating : Int32 { (@score * 10).round.to_i }
 
-  @[Virtual]
+  @[Temp]
   @[JSON::Field(key: "countWord")]
-  getter word_count = 0_f64
+  getter raw_word_count = 0_f64
 
   @[JSON::Field(ignore: true)]
-  getter word_total = 0
+  getter word_count : Int32 {
+    raw_count = raw_word_count.round.to_i
+    raw_count < 100_000_000 ? raw_count : raw_count // 10000
+  }
 
   @[JSON::Field(key: "commentCount")]
   getter crit_total = 0
@@ -59,50 +54,43 @@ class YS::RawYsBook
 
   getter status = 0
 
-  @[Virtual]
+  @[Temp]
   getter? shielded = false
-  @[Virtual]
+
+  @[Temp]
   getter? recom_ignore = false
 
   @[JSON::Field(ignore: true)]
-  getter shield : Int32 = 0
+  getter shield : Int32 { (@shielded ? 1 : 0) & (@recom_ignore ? 2 : 0) }
 
-  @[Virtual]
+  @[Temp]
   @[JSON::Field(key: "updateAt")]
   getter update_str : String = "2020-01-01T07:00:00.000Z"
 
   @[JSON::Field(ignore: true)]
-  getter mtime : Int64 = 0_i64
+  getter book_mtime : Int64 { parse_time(@update_str).to_unix }
 
   @[JSON::Field(ignore: true)]
-  property origs : String = ""
+  property info_rtime : Int64 = Time.utc.to_unix
 
   @[JSON::Field(ignore: true)]
-  getter ctime : Int64 = Time.utc.to_unix
+  property sources = [] of String
 
   def after_initialize
     @btitle = TextUtil.trim_spaces(@btitle)
     @author = TextUtil.trim_spaces(@author)
 
     @intro = TextUtil.split_html(@intro).join('\n')
-    @btags = @tags.flat_map(&.split('-', remove_empty: true)).uniq!.join('\t')
+    @btags = @btags.flat_map(&.split('-', remove_empty: true)).uniq!
 
-    @genre = @class_info.try(&.[:className]) || "其他"
     @cover = fix_cover(@cover)
-
-    @rating = (@score * 10).round.to_i
-
-    @mtime = parse_time(@update_str).to_unix
-    @shield = {@shielded, @recom_ignore}.map_with_index { |b, i| b ? 1 << i : 0 }.sum
-
-    @word_total = fix_word_count(@word_count)
   end
 
-  def changeset(@ctime : Int64 = Time.utc.to_unix)
+  def db_changes(@info_rtime : Int64 = Time.utc.to_unix)
     fields = [] of String
     values = [] of DB::Any
 
-    {% for ivar in @type.instance_vars.reject(&.annotation(Virtual)) %}
+    {% for ivar in @type.instance_vars.reject(&.annotation(Temp)) %}
       fields << {{ivar.name.stringify}}
       values << @{{ivar.name.id}}
     {% end %}
@@ -131,11 +119,6 @@ class YS::RawYsBook
     Time.utc(2021, 1, 1, 7, 0, 0)
   end
 
-  private def fix_word_count(count : Float64, max = 100_000_000)
-    count = count < max ? count : (count / 10000)
-    count.round.to_i
-  end
-
   ######################
 
   struct Source
@@ -148,27 +131,17 @@ class YS::RawYsBook
     property link : String
   end
 
-  class InvalidRaw < Exception; end
-
   alias YsbookJson = NamedTuple(bookInfo: RawYsBook, bookSource: Array(Source))
 
-  DIR = "var/ysraw/books"
+  def self.from_json(io_or_string : String | IO)
+    parser = JSON::PullParser.new(io_or_string)
 
-  def self.from_file(id : Int32)
-    group = (id // 1000).to_s.rjust(3, '0')
-    file = "#{DIR}/#{group}/#{id}.json"
-    from_file(file)
-  end
+    parser.on_key!("data") do
+      data = YsbookJson.new(parser)
+      book = data[:bookInfo]
 
-  def self.from_file(file : String) : self
-    from_raw_json(File.read(file))
-  rescue ex
-    Log.error(exception: ex) { "parsing json file [#{file}] error: #{ex.body.message}" }
-    raise InvalidRaw.new(file)
-  end
-
-  def self.from_raw_json(json : String) : self
-    data = YsbookJson.from_json(json, root: "data")
-    data[:bookInfo].tap(&.origs = data[:bookSource].map(&.link).join('\n'))
+      book.sources = data[:bookSource].map(&.link)
+      book
+    end
   end
 end
