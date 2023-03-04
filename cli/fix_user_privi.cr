@@ -1,4 +1,4 @@
-require "../member/vi_user"
+require "../src/_data/member/vi_user"
 
 time_zone = Time::Location.load("Asia/Ho_Chi_Minh")
 

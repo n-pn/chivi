@@ -188,11 +188,12 @@ class WN::WnSeed
 
   def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Array(String)
     href = get_fetch_url(chap)
+    Log.info { "HIT: #{href}".colorize.magenta }
+
     return chap.body if href.empty?
+    self.mkdirs!
 
-    Log.info { "HIT: #{href}".colorize.blue }
     parser = RmText.new(href, ttl: force ? 3.minutes : 1.years)
-
     lines = parser.body.tap(&.unshift(parser.title))
     chap.save_body!(lines, seed: self, uname: uname)
 

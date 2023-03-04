@@ -67,7 +67,7 @@ class WN::ChapCtrl < AC::Base
     zh_text = wn_chap.body
 
     # auto reload remote texts
-    if zh_text.size < 2 && should_auto_fetch?(load_mode)
+    if should_fetch_text?(zh_text.size < 2, load_mode)
       zh_text = wn_seed.fetch_text!(wn_chap, _uname, force: load_mode == 2)
     end
 
@@ -87,8 +87,8 @@ class WN::ChapCtrl < AC::Base
   end
 
   @[AlwaysInline]
-  private def should_auto_fetch?(load_mode : Int32)
-    _privi > 0
+  private def should_fetch_text?(empty_body : Bool = false, load_mode : Int32 = 0)
+    load_mode > 1 || (_privi > 0 || empty_body)
     # _privi > 0 && (load_mode > 0 || cookies["auto_load"]?)
   end
 

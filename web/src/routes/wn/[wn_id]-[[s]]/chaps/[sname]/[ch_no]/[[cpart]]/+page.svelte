@@ -88,6 +88,26 @@
     if (res.ok) return null
     return await res.json().then((r) => r.message)
   }
+
+  let _onload = false
+
+  const reload_chap = async (load_mode = 2) => {
+    _onload = true
+    const wn_id = nvinfo.id
+    const sname = curr_seed.sname
+    const chidx = curr_chap.chidx
+    const cpart = chap_data.cpart
+
+    try {
+      const href = `/_wn/chaps/${wn_id}/${sname}/${chidx}/${cpart}?load_mode=${load_mode}`
+      const json = await fetch(href).then((r) => r.json())
+      data = { ...data, ...json }
+    } catch (ex) {
+      console.log(ex)
+    }
+
+    _onload = false
+  }
 </script>
 
 <nav class="bread">
@@ -130,7 +150,11 @@
 
       <Gmenu class="navi-item" loc="top">
         <button class="m-btn" slot="trigger">
-          <SIcon name={memo_icon} />
+          {#if _onload}
+            <SIcon name="reload" spin={_onload} />
+          {:else}
+            <SIcon name={memo_icon} />
+          {/if}
           <span>{curr_chap.chidx}/{curr_seed.chmax}</span>
         </button>
 
@@ -146,13 +170,13 @@
             <span>Sửa text gốc</span>
           </a>
 
-          <!-- <button
+          <button
             class="gmenu-item"
-            disabled={$session.privi < 1}
-            on:click={reload_chap}>
-            <SIcon name="rotate-rectangle" spin={_reloading} />
+            disabled={data._user.privi < 1}
+            on:click={() => reload_chap(2)}>
+            <SIcon name="rotate-rectangle" spin={_onload} />
             <span>Tải lại nguồn</span>
-          </button> -->
+          </button>
 
           <!-- <button
             class="gmenu-item"
