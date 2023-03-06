@@ -10,8 +10,7 @@ class YS::InitCtrl < AC::Base
   def book_info(json : RawYsBook, rtime : Int64 = Time.utc.to_unix)
     json.info_rtime = rtime
     model = Ysbook.upsert!(json)
-
-    render text: model.nvinfo_id
+    render json: {y_bid: model.id, wn_id: model.nvinfo_id}
   end
 
   @[AC::Route::POST("/users/info", body: :json)]

@@ -21,7 +21,7 @@ class ZH::RmSite
     getter paras = "#content"
 
     getter cookie : String = ""
-    getter reorder : Bool = false
+    getter? reorder : Bool = false
   end
 
   ALL = Hash(String, self).from_yaml {{ read_file("#{__DIR__}/rm_site.yml") }}

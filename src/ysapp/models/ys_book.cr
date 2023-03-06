@@ -1,4 +1,8 @@
 require "./_base"
+require "./cv_book"
+require "../../_data/wnovel/nv_info"
+require "../../_data/wnovel/wn_link"
+require "../../_util/tran_util"
 
 class YS::Ysbook
   include Clear::Model
@@ -48,8 +52,61 @@ class YS::Ysbook
   #   false
   # end
 
-  def create_wnovel!
-    # TODO
+  def worth_saving?
+    self.crit_total > 0 || self.list_total > 0 || self.voters > 10 || self.author.in?(Author.known_authors)
+  end
+
+  def sync_with_wn! : Nil
+    return unless nvinfo = self.get_nvinfo
+
+    if self.voters > nvinfo.voters
+      nvinfo.zvoters = self.voters
+      nvinfo.zrating = self.rating
+    end
+
+    nvinfo.set_utime(self.book_mtime)
+    nvinfo.set_status(self.status)
+
+    nvinfo.save!
+
+    self.nvinfo_id = nvinfo.id.to_i
+
+    CV::WnLink.upsert!(self.nvinfo_id, "https://www.yousuu.com/book/#{self.id}")
+    CV::WnLink.upsert!(self.nvinfo_id, self.sources)
+  end
+
+  def get_nvinfo
+    case self.nvinfo_id
+    when 0    then create_nvinfo if worth_saving?
+    when .> 0 then CV::Nvinfo.find({id: self.nvinfo_id})
+    else           nil
+    end
+  end
+
+  API_PATH    = "http://127.0.0.1:5010/_db/books"
+  JSON_HEADER = HTTP::Headers{"content-type" => "application/json"}
+
+  def create_nvinfo
+    btitle_zh, author_zh = CV::BookUtil.fix_names(self.btitle, self.author)
+    bintro_zh = TextUtil.split_html(self.intro, true).join('\n')
+
+    raise "uknown error" unless tl_data = TranUtil.tl_book(btitle_zh, author_zh, bintro_zh)
+    btitle_vi, author_vi, bintro_vi = tl_data
+
+    Log.info { "create new book: #{btitle_vi} -- #{author_vi}".colorize.yellow }
+
+    author = CV::Author.upsert!(author_zh, author_vi)
+    btitle = CV::Btitle.upsert!(btitle_zh, btitle_vi)
+    nvinfo = CV::Nvinfo.upsert!(author, btitle, fix_names: true)
+
+    nvinfo.zintro = bintro_zh
+    nvinfo.bintro = bintro_vi
+    nvinfo.scover = self.cover
+
+    zgenres = [self.genre].concat(self.btags)
+    nvinfo.vgenres = CV::GenreMap.zh_to_vi(zgenres)
+
+    nvinfo
   end
 
   #########################################
@@ -63,8 +120,6 @@ class YS::Ysbook
 
     model.btitle = raw_data.btitle
     model.author = raw_data.author
-
-    model.create_wnovel! if force
 
     model.tap(&.save!)
   end
@@ -96,8 +151,7 @@ class YS::Ysbook
 
     model.sources = raw_data.sources
 
-    model.create_wnovel! if force
-
+    model.sync_with_wn!
     model.tap(&.save!)
   end
 end

@@ -19,7 +19,7 @@ class CV::WnovelForm
   getter bcover : String? = nil
   getter status : Int32? = nil
 
-  getter wn_links : Array(String)? = nil
+  getter wn_links : Array(String) = [] of String
 
   def after_initialize
     @btitle_zh, @author_zh = BookUtil.fix_names(@btitle_zh, @author_zh)
@@ -49,7 +49,7 @@ class CV::WnovelForm
     end
   end
 
-  def save(_privi : Int32) : Nvinfo?
+  def save!(_uname : String, _privi : Int32) : Nvinfo
     author = Author.upsert!(@author_zh, @author_vi)
     btitle = Btitle.upsert!(@btitle_zh, @btitle_vi)
 
@@ -83,10 +83,6 @@ class CV::WnovelForm
 
     @status.try do |status|
       vi_book.set_status(status.to_i, force: true)
-    end
-
-    if _privi > 2
-      # TODO: add seed_data
     end
 
     # TODO: wite text log

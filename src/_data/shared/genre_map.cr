@@ -29,11 +29,18 @@ module CV::GenreMap
   # mapping chinese genre to vietnamese one
   def zh_to_vi(input : String) : Array(String)
     input == "轻小说" ? input : input.sub("小说", "")
-    zh_map[input]? || [MtCore.convert(input, "!labels")]
+    zh_map[input]? || [""]
   end
 
-  def zh_to_vi(input : Array(String)) : Array(String)
-    input.flat_map { |x| zh_to_vi(x) }.uniq!
+  def tl_genre(input : String)
+  end
+
+  def zh_to_vi(zgenres : Array(String)) : Array(String)
+    vgenres = zgenres.each_with_object([] of String) do |zgenre, output|
+      zh_map[zgenre]?.try { |x| output.concat(x) }
+    end
+
+    vgenres.uniq!
   end
 
   def vi_to_zh(input : String) : String

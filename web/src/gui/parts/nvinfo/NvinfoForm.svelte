@@ -1,53 +1,5 @@
 <script context="module" lang="ts">
   import { bgenres } from '$lib/constants'
-
-  const fields = ['btitle_vi', 'author_vi', 'bintro', 'bcover']
-
-  export class Params {
-    nvinfo?: CV.Nvinfo
-
-    btitle_zh: string = ''
-    author_zh: string = ''
-
-    btitle_vi: string = ''
-    author_vi: string = ''
-
-    status: number = 0
-    genres: Array<string> = []
-
-    bintro: string = ''
-    bcover: string = ''
-
-    constructor(nvinfo?: CV.Nvinfo) {
-      this.nvinfo = nvinfo
-      if (!nvinfo) return
-
-      this.btitle_zh = nvinfo.btitle_zh
-      this.author_zh = nvinfo.author_zh
-      this.genres = nvinfo.genres
-      this.status = nvinfo.status
-      for (const field of fields) this[field] = nvinfo[field]
-    }
-
-    get output() {
-      const nvinfo = this.nvinfo || {}
-
-      const output = {
-        btitle_zh: this.btitle_zh,
-        author_zh: this.author_zh,
-        genres: this.genres.join(','),
-      }
-
-      if (this.status != nvinfo['status']) output['status'] = this.status
-
-      for (const field of fields) {
-        const value = this[field].trim()
-        if (value && value != nvinfo[field]) output[field] = value
-      }
-
-      return output
-    }
-  }
 </script>
 
 <script lang="ts">

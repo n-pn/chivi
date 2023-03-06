@@ -27,6 +27,19 @@ module TranUtil
     call_api(no_cap ? DEEPL_NO_CAP : DEEPL_URL, TEXT_HEADER, input)
   end
 
+  alias BookTran = NamedTuple(btitle: String, author: String, bintro: String)
+
+  def tl_book(btitle : String, author : String, bintro : String, wn_id = 0)
+    url = "#{CVMTL_URL}/tl_wnovel?wn_id=#{wn_id}"
+    body = {btitle: btitle, author: author, bintro: bintro}
+
+    HTTP::Client.post(url, headers: JSON_HEADER, body: body.to_json) do |res|
+      return unless res.success?
+      data = BookTran.from_json(res.body_io)
+      {data[:btitle], data[:author], data[:bintro]}
+    end
+  end
+
   private def call_api(url : String, headers : HTTP::Headers, body : String) : String?
     Log.debug { "CALL:#{url}" }
 

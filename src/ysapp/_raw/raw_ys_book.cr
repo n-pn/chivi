@@ -131,17 +131,23 @@ class YS::RawYsBook
     property link : String
   end
 
-  alias YsbookJson = NamedTuple(bookInfo: RawYsBook, bookSource: Array(Source))
+  struct YsbookJson
+    include JSON::Serializable
+
+    @[JSON::Field(key: "bookInfo")]
+    getter info : RawYsBook
+
+    @[JSON::Field(key: "bookSource")]
+    property sources : Array(Source)
+  end
 
   def self.from_json(io_or_string : String | IO)
     parser = JSON::PullParser.new(io_or_string)
 
     parser.on_key!("data") do
       data = YsbookJson.new(parser)
-      book = data[:bookInfo]
-
-      book.sources = data[:bookSource].map(&.link)
-      book
+      data.info.sources = data.sources.map(&.link)
+      data.info
     end
   end
 end

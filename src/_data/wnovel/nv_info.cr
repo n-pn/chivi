@@ -75,6 +75,12 @@ class CV::Nvinfo
   column voters : Int32 = 0
   column rating : Int32 = 0
 
+  column zvoters : Int32 = 0
+  column zrating : Int32 = 0
+
+  column vvoters : Int32 = 0
+  column vrating : Int32 = 0
+
   column chap_count : Int32 = 0 # chap views count
   column word_count : Int32 = 0 # chap views count
 

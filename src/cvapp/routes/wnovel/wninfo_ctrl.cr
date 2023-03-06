@@ -115,7 +115,9 @@ class CV::WnovelCtrl < CV::BaseCtrl
   def upsert(form : WnovelForm)
     guard_privi 2, "thêm truyện/sửa nội dung truyện"
 
-    nvinfo = form.save
+    nvinfo = form.save!(_uname, _privi)
+    WnLink.upsert!(nvinfo.id.to_i, form.wn_links)
+
     Nvinfo.cache!(nvinfo)
 
     spawn add_book_dict(nvinfo.id, nvinfo.bslug, nvinfo.vname)

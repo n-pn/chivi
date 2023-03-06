@@ -17,4 +17,28 @@ class CV::WnLink
 
     PGDB.query_all(stmt, wn_id, as: self)
   end
+
+  UPSERT_STMT = <<-SQL
+    insert into wnlinks (book_id, link, name, type)
+    values ($1, $2, $3, $4)
+    on conflict on constraint wnlink_unq do nothing
+  SQL
+
+  def self.upsert!(wn_id : Int32, link : String)
+    name = self.extract_name(link)
+    type = link.includes?("yousuu") ? 2 : 1
+    PGDB.exec(UPSERT_STMT, wn_id, link, name, type)
+  end
+
+  def self.upsert!(wn_id : Int32, links : Array(String))
+    links.each { |link| upsert!(wn_id, link) }
+  end
+
+  USE_SUBDOMAIN = {"yunqi", "chuangshi", "huayu", "yuedu", "shenqi"}
+
+  def self.extract_name(link : String)
+    return "" if link.empty? || !(host = URI.parse(link).host)
+    host = host.split('.')
+    USE_SUBDOMAIN.includes?(host.first) ? host.first : host[-2]
+  end
 end
