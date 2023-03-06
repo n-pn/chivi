@@ -1,7 +1,5 @@
 require "./_crawl_common"
-
 require "../_raw/raw_ys_crit"
-require "../data/ys_user"
 
 class YS::CrawlYscritByUser < CrawlTask
   def self.seed_db_from_json(json : String, rtime : Time)

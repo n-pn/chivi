@@ -8,30 +8,6 @@ class YS::CrawlYscritByBook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
   end
 
-  #   def do_crawl!(ysbook : Ysbook, page = 1, label = "-/-") : Ysbook?
-  #     y_bid = ysbook.id
-  #     ofile = "#{DIR}/#{y_bid // 1000}/#{y_bid}-#{page}.json"
-
-  #     if FileUtil.fresh?(ofile, Time.utc - 3.days - 6.hours * page)
-  #       return unless @reseed # skip seeding old data
-  #     elsif !@http.save!(api_url(y_bid, page), ofile, label)
-  #       return ysbook
-  #     end
-
-  #     crits, total = YscritRaw.from_book(File.read(ofile))
-
-  #     stime = FileUtil.mtime_int(ofile)
-  #     crits.each(&.seed!(stime: stime))
-
-  #     total = ysbook.crit_total if ysbook.crit_total > total
-  #     count = YS::Yscrit.query.where(ysbook_id: ysbook.id).count.to_i
-
-  #     ysbook.update(crit_total: total, crit_count: count)
-  #     Log.info { "- yscrits: #{YS::Yscrit.query.count}".colorize.cyan }
-  #   rescue err
-  #     Log.error { err }
-  #   end
-
   def self.gen_link(y_bid : Int32, page : Int32 = 1)
     "https://api.yousuu.com/api/book/#{y_bid}/comment?type=latest&page=#{page}"
   end
@@ -80,20 +56,25 @@ class YS::CrawlYscritByBook < CrawlTask
 
   record QueueInit, y_bid : Int32, pgmax : Int32
 
-  SELECT_SQL = <<-SQL
-    select id::int, crit_total from ysbooks
-    -- where crit_total > crit_count
-  SQL
-
   def self.gen_queue_init
     output = [] of QueueInit
 
-    DB.open(CV_ENV.database_url) do |db|
-      db.query_each(SELECT_SQL) do |rs|
-        y_bid, total = rs.read(Int32, Int32)
-        pgmax = (total - 1) // 20 + 1
-        output << QueueInit.new(y_bid, pgmax)
-      end
+    PG_DB.exec <<-SQL
+      update ysbooks set crit_count = (
+        select count(*) from yscrits
+        where ysbook_id = ysbooks.id
+      );
+    SQL
+
+    select_stmt = <<-SQL
+      select id::int, crit_total from ysbooks
+      where crit_total > crit_count
+    SQL
+
+    PG_DB.query_each(select_stmt) do |rs|
+      y_bid, total = rs.read(Int32, Int32)
+      pgmax = (total - 1) // 20 + 1
+      output << QueueInit.new(y_bid, pgmax)
     end
 
     output

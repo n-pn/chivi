@@ -1,6 +1,10 @@
 require "./_util"
 
 require "./ys_list"
+require "./ys_book"
+require "./ys_user"
+
+require "../_raw/raw_ys_crit"
 
 class YS::Yscrit
   include Clear::Model
@@ -65,7 +69,7 @@ class YS::Yscrit
   end
 
   def load_ztext_from_disk : String
-    return "$$$" if self.b_len == 0
+    # return "$$$" if self.b_len == 0
     YsUtil.read_zip(self.zip_path("zh"), filename("txt")) { "$$$" }
   end
 
@@ -127,7 +131,9 @@ class YS::Yscrit
 
   def fix_vtags!(ztags = self.ztags)
     input = ztags.join('\n')
-    return unless output = TranUtil.qtran(input, wn_id: -2)
+    return if input.blank?
+
+    return unless output = TranUtil.qtran(input, wn_id: -2, format: "txt")
     self.vtags = output.split('\n', remove_empty: true)
   end
 
@@ -151,7 +157,7 @@ class YS::Yscrit
     raw_crits.each do |raw_crit|
       out_crit = self.load(raw_crit.y_cid)
       out_book = Ysbook.load(raw_crit.book.id)
-      out_user = Ysuser.upsert!(raw_crit.user)
+      out_user = Ysuser.load(raw_crit.user.id)
 
       out_crit.ysbook_id = out_book.id
       out_crit.nvinfo_id = out_book.nvinfo_id
@@ -159,7 +165,7 @@ class YS::Yscrit
       out_crit.y_uid = out_user.y_uid
       out_crit.ysuser_id = out_user.id # TODO: remove this
 
-      unless raw_crit.ztext == "请登录查看评论内容"
+      unless raw_crit.ztext == "请登录查看评论内容" || raw_crit.ztext.blank?
         out_crit.b_len = raw_crit.ztext.size
         out_crit.save_data_to_disk(raw_crit.ztext, type: "zh", ext: "txt")
       end
@@ -173,6 +179,7 @@ class YS::Yscrit
       out_crit.created_at = raw_crit.created_at
       out_crit.updated_at = raw_crit.updated_at || raw_crit.created_at
 
+      out_crit.utime = out_crit.updated_at.to_unix
       out_crit.save!
     end
   end

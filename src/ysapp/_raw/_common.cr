@@ -12,7 +12,8 @@ end
 struct YS::EmbedUser
   include JSON::Serializable
 
-  getter _id : Int32
+  @[JSON::Field(key: "_id")]
+  getter id : Int32
 
   @[JSON::Field(key: "userName")]
   getter name : String

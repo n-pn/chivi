@@ -1,4 +1,5 @@
 require "./_base"
+require "../../mt_sp/sp_core"
 
 class YS::Ysuser
   include Clear::Model
@@ -7,27 +8,28 @@ class YS::Ysuser
   primary_key type: :serial
   column y_uid : Int32 # origin yousuu id
 
-  column zname : String
-  column vname : String
+  column zname : String = ""
+  column vname : String = ""
+  column vslug : String = ""
 
   column y_avatar : String = ""
   column v_avatar : String = ""
 
-  # column vslug : String = ""
-
   column like_count : Int32 = 0
   column star_count : Int32 = 0
 
-  # column list_total : Int32 = 0 # database only
+  column list_total : Int32 = 0 # database only
   column list_count : Int32 = 0
 
-  # column crit_total : Int32 = 0 # database only
+  column crit_total : Int32 = 0 # database only
   column crit_count : Int32 = 0
 
-  # column repl_total : Int32 = 0 # database only
-  # column repl_count : Int32 = 0 # database only
+  column repl_total : Int32 = 0 # database only
+  column repl_count : Int32 = 0 # database only
 
-  # column info_rtime : Int64 = 0 # database only
+  column info_rtime : Int64 = 0 # database only
+  column crit_rtime : Int64 = 0 # database only
+  column list_rtime : Int64 = 0 # database only
 
   timestamps
 
@@ -64,7 +66,7 @@ class YS::Ysuser
   def self.upsert_info_from_raw_data(data : RawYsUser, rtime : Int64)
     upsert_sql = upsert_sql(RawYsUser::DB_FIELDS)
     PG_DB.exec upsert_sql, *data.db_values(rtime)
-    data.user._id
+    data.user.id
   end
 
   def self.update_stats_from_raw_data(data : RawBookComments, rtime : Int64)
@@ -82,13 +84,19 @@ class YS::Ysuser
 
   ###############
 
+  def self.load(y_uid : Int32)
+    find({y_uid: y_uid}) || new({y_uid: y_uid})
+  end
+
   def self.upsert!(raw_user : EmbedUser)
-    find({y_uid: raw_user._id}) || begin
+    find({y_uid: raw_user.id}) || begin
       entry = new
 
-      entry.y_uid = raw_user._id
+      entry.y_uid = raw_user.id
       entry.zname = raw_user.name
+
       entry.y_avatar = raw_user.avatar
+      entry.fix_name!
 
       entry.tap(&.save!)
     end

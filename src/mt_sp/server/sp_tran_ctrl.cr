@@ -32,7 +32,7 @@ class SP::TranCtrl < AC::Base
     end
   end
 
-  @[AC::Route::PUT("/btran")]
+  @[AC::Route::POST("/btran")]
   def btran(sl : String = "zh", tl : String = "vi", no_cap : Bool = false)
     @render_called = true
     res = @context.response
@@ -49,7 +49,7 @@ class SP::TranCtrl < AC::Base
     end
   end
 
-  @[AC::Route::PUT("/deepl")]
+  @[AC::Route::POST("/deepl")]
   def deepl(sl : String = "zh", tl : String = "en", no_cap : Bool = false)
     @render_called = true
     res = @context.response

@@ -9,8 +9,12 @@ class YS::InitCtrl < AC::Base
   @[AC::Route::POST("/books/info", body: :json)]
   def book_info(json : RawYsBook, rtime : Int64 = Time.utc.to_unix)
     json.info_rtime = rtime
-    model = Ysbook.upsert!(json)
-    render json: {y_bid: model.id, wn_id: model.nvinfo_id}
+
+    if model = Ysbook.upsert!(json)
+      render json: {y_bid: model.id, wn_id: model.nvinfo_id}
+    else
+      render json: {y_bid: 0, wn_id: 0}
+    end
   end
 
   @[AC::Route::POST("/users/info", body: :json)]
@@ -19,21 +23,44 @@ class YS::InitCtrl < AC::Base
     render text: y_uid
   end
 
-  @[AC::Route::POST("/crits/by_user", body: :json)]
-  def crits_by_user(json : RawBookComments, rtime : Int64 = Time.utc.to_unix)
-    Ysuser.update_stats_from_raw_data(json, rtime)
-    Yscrit.bulk_upsert(json.comments)
-    render text: json.total
+  @[AC::Route::POST("/crits/by_user", body: :data)]
+  def crits_by_user(data : RawBookComments, rtime : Int64 = Time.utc.to_unix)
+    if data.comments.empty?
+      render text: 0
+      return
+    end
+
+    raw_ysuser = data.comments.first.user
+    ysuser = YS::Ysuser.upsert!(raw_ysuser)
+
+    ysuser.crit_total = data.total if ysuser.crit_total < data.total
+    ysuser.crit_rtime = rtime
+
+    ysuser.save!
+
+    Yscrit.bulk_upsert(data.comments)
+    render text: data.comments.size
   end
 
-  @[AC::Route::POST("/crits/by_list/:y_lid", body: :json)]
-  def crits_by_list(json : RawListEntries, y_lid : String, rtime : Int64 = Time.utc.to_unix)
-    ylist = Yslist.load(y_lid)
+  @[AC::Route::POST("/crits/by_list/:y_lid", body: :data)]
+  def crits_by_list(data : RawListEntries, y_lid : String, rtime : Int64 = Time.utc.to_unix)
+    yslist = Yslist.load(y_lid)
 
-    ylist.book_total = json.total if ylist.book_total < json.total
-    # ylist.book_rtime = rtime
+    yslist.book_total = data.total if yslist.book_total < data.total
+    yslist.book_rtime = rtime
 
-    Yscrit.bulk_upsert(json.books)
+    Yscrit.bulk_upsert(data.books)
+    render text: data.books.size
+  end
+
+  @[AC::Route::POST("/lists/by_user/:y_uid", body: :json)]
+  def lists_by_user(json : RawListEntries, y_uid : Int32, rtime : Int64 = Time.utc.to_unix)
+    yuser = Ysuser.load(y_uid)
+
+    yuser.list_total = json.total if yuser.list_total < json.total
+    yuser.list_rtime = rtime
+
+    # Yslist.bulk_upsert(json.lists)
     render text: json.total
   end
 end

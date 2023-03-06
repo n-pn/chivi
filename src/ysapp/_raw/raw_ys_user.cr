@@ -29,7 +29,7 @@ class YS::RawYsUser
 
   def db_values(rtime : Int64 = Time.utc.to_unix)
     {
-      @user._id, @user.name,
+      @user.id, @user.name,
       @user.name, @user.avatar,
       @like_count, @star_count,
       @list_total, @crit_total,

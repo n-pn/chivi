@@ -1,0 +1,45 @@
+require "../models/_base"
+require "../../mt_v1/core/m1_core"
+
+DICT_MAP = {} of Int32 => Int32
+
+TXT_DIR = "var/ysapp/crits-txt"
+TMP_DIR = "var/ysapp/crits-idx"
+
+dict_sql = "select id::int, nvinfo_id::int from ysbooks order by voters desc"
+PG_DB.query_each dict_sql do |rs|
+  DICT_MAP[rs.read(Int32)] = rs.read(Int32)
+end
+
+crit_sql = "select origin_id from yscrits where ysbook_id = $1"
+
+progress = 0
+
+DICT_MAP.each do |y_bid, wn_id|
+  progress += 1
+  PG_DB.exec "update yscrits set nvinfo_id = $1 where ysbook_id = $2", wn_id, y_bid
+
+  cv_mt = M1::MtCore.init(udic: wn_id)
+  puts "- <#{progress}/#{DICT_MAP.size}> #{wn_id}".colorize.blue
+
+  PG_DB.query_each(crit_sql) do |rs|
+    y_cid = rs.read(String)
+    group = y_cid[0..3]
+
+    inp_path = "#{TXT_DIR}/#{group}-zh/#{y_cid}.txt"
+    next unless File.file?(inp_path)
+
+    out_dir = "#{TXT_DIR}/#{group}-vi"
+    Dir.mkdir(out_dir)
+
+    File.open("#{out_dir}/#{y_cid}.htm") do |file|
+      File.each_line(inp_path) do |line|
+        next if line.blank?
+
+        file << "<p>"
+        cv_mt.cv_plain(line).to_txt(file)
+        file << "</p>"
+      end
+    end
+  end
+end

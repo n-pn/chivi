@@ -59,13 +59,21 @@ class YS::CrawlYscritByUser < CrawlTask
   def self.gen_queue_init
     output = [] of QueueInit
 
-    DB.open(CV_ENV.database_url) do |db|
-      smt = "select origin_id, book_total from yslists where book_total > 0"
+    PG_DB.exec <<-SQL
+      update yslists set book_count = (
+        select count(*) from yscrits
+        where yslist_id = yslists.id
+      );
+    SQL
 
-      db.query_each(smt) do |rs|
-        yl_id, total = rs.read(String, Int32)
-        output << QueueInit.new(yl_id, (total - 1) // 20 + 1)
-      end
+    select_smt = <<-SQL
+      select origin_id, book_total from yslists
+      where book_total > book_count
+    SQL
+
+    PG_DB.query_each(select_smt) do |rs|
+      yl_id, total = rs.read(String, Int32)
+      output << QueueInit.new(yl_id, (total - 1) // 20 + 1)
     end
 
     output

@@ -18,7 +18,8 @@ def read_file(inp_path : String)
     File.open("#{TMP_DIR}/error-pages.txt", "a", &.puts(inp_path))
     {[] of YS::RawYsCrit, 0}
   else
-    YS::RawYsCrit.from_book_json(json)
+    data = YS::RawBookComments.from_json(json)
+    {data.comments, data.total}
   end
 end
 
@@ -46,16 +47,16 @@ files.each do |path|
   end
 
   crits.each do |crit|
-    next if crit.ztext == HIDDEN
+    next if crit.ztext == HIDDEN || crit.ztext.blank?
 
-    group = crit._id[0..3]
+    group = crit.y_cid[0..3]
     out_dir = "#{TXT_DIR}/#{group}-zh"
 
     Dir.mkdir_p(out_dir)
-    File.write("#{out_dir}/#{crit._id}.txt", crit.ztext)
+    File.write("#{out_dir}/#{crit.y_cid}.txt", crit.ztext)
 
     File.open("#{TMP_DIR}/#{group}-body.tsv", "a") do |io|
-      io.puts("#{crit._id}\t#{crit.ztext.size}")
+      io.puts("#{crit.y_cid}\t#{crit.ztext.size}")
     end
   end
 rescue ex

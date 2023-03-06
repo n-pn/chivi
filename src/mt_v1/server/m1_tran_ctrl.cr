@@ -14,6 +14,23 @@ class M1::TranCtrl < AC::Base
     @w_init = _read_cookie("w_init").try(&.starts_with?('t')) || false
   end
 
+  @[AC::Route::POST("/")]
+  def convert(wn_id : Int32 = 0, format = "mtl")
+    input = request.body.try(&.gets_to_end) || ""
+
+    # if input.size > limit
+    #   render :bad_request, "Nội dung vượt quá giới hạn cho phép (#{input.size}/#{limit})"
+    #   return
+    # end
+
+    qtran = TranData.new(input.lines, wn_id, format)
+    cvmtl = qtran.cv_wrap(_uname, @w_temp, @w_init, w_stat: false) do |io, engine|
+      cv_post(io, engine)
+    end
+
+    render text: cvmtl
+  end
+
   @[AC::Route::GET("/cached")]
   def cached(type : String, name : String, wn_id : Int32 = 0, format = "mtl")
     qtran = TranData.load_cached(type, name, wn_id, format)
@@ -59,23 +76,6 @@ class M1::TranCtrl < AC::Base
 
   private def post_limit(privi = _privi)
     2 ** (privi &+ 1) &* 1000 &+ 1000
-  end
-
-  @[AC::Route::POST("/")]
-  def cv_post(wn_id : Int32 = 0, format = "mtl")
-    input = request.body.try(&.gets_to_end) || ""
-
-    # if input.size > limit
-    #   render :bad_request, "Nội dung vượt quá giới hạn cho phép (#{input.size}/#{limit})"
-    #   return
-    # end
-
-    qtran = TranData.new(input.lines, wn_id, format)
-    cvmtl = qtran.cv_wrap(_uname, @w_temp, @w_init, w_stat: false) do |io, engine|
-      cv_post(io, engine)
-    end
-
-    render text: cvmtl
   end
 
   TMP_DIR = "tmp/qtran"

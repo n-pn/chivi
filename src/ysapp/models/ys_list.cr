@@ -24,7 +24,9 @@ class YS::Yslist
   column genres : Array(String) = [] of String
 
   column utime : Int64 = 0 # list checked at by minutes from epoch
-  column stime : Int64 = 0 # list changed at by seconds from epoch
+
+  column info_rtime : Int64 = 0 # list changed at by seconds from epoch
+  column book_rtime : Int64 = 0 # list changed at by seconds from epoch
 
   column _bump : Int32 = 0 # mapped from raw yousuu praiseAt column
   column _sort : Int32 = 0 # sort list by custom algorithm

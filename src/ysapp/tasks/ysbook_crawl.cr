@@ -1,6 +1,5 @@
 require "./_crawl_common"
 require "../_raw/raw_ys_book"
-require "../data/ys_book"
 
 class YS::CrawlYsbook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
@@ -49,16 +48,17 @@ class YS::CrawlYsbook < CrawlTask
     worker.crawl!(queue)
   end
 
-  def self.gen_queue(min = 1, max = 100000)
+  def self.gen_queue(min = 1, max = 300000)
     y_bids = Set(Int32).new(min..max)
 
-    YsBook.open_db do |db|
-      sql = "select id, cprio, ctime from books where id >= ? and id <= ?"
+    select_stmt = <<-SQL
+      select id, voters, info_rtime from ysbooks
+      where id >= ? and id <= ?
+    SQL
 
-      db.query_each sql, min, max do |rs|
-        id, cprio, ctime = rs.read(Int32, Int32, Int64)
-        y_bids.delete(id) unless should_crawl?(cprio, ctime)
-      end
+    PG_DB.query_each(select_stmt, min, max) do |rs|
+      id, voters, rtime = rs.read(Int32, Int32, Int64)
+      y_bids.delete(id) unless should_crawl?(voters, rtime)
     end
 
     y_bids.map_with_index(1) do |y_bid, index|
@@ -70,12 +70,20 @@ class YS::CrawlYsbook < CrawlTask
     end
   end
 
-  TIME_TO_STALE = {14.days, 10.days, 7.days, 5.days, 3.days, 1.days}
+  def self.should_crawl?(voters : Int32, rtime : Int64)
+    tspan = map_tspan(voters)
+    Time.unix(rtime) + tspan < Time.utc
+  end
 
-  def self.should_crawl?(cprio : Int32, ctime : Int64)
-    return false if cprio < 0
-    tspan = TIME_TO_STALE[cprio]? || 1.days
-    Time.unix(ctime) + tspan < Time.utc
+  def self.map_tspan(voters : Int32)
+    case voters
+    when .< 10   then 14.days
+    when .< 50   then 10.days
+    when .< 100  then 7.days
+    when .< 300  then 5.days
+    when .< 1000 then 3.days
+    else              1.days
+    end
   end
 
   run!(ARGV)
