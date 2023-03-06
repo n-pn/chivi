@@ -16,8 +16,6 @@ CREATE TABLE nvinfos (
 
   -- extra
 
-  zseeds int[] not null default '{}',
-
   igenres int[] not null default '{}',
   vlabels citext[] not null default '{}',
 

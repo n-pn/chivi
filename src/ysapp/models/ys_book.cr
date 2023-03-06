@@ -1,5 +1,6 @@
 require "./_base"
 require "./cv_book"
+require "../_raw/raw_ys_book"
 require "../../_data/wnovel/nv_info"
 require "../../_data/wnovel/wn_link"
 require "../../_util/tran_util"
@@ -56,16 +57,18 @@ class YS::Ysbook
     self.crit_total > 0 || self.list_total > 0 || self.voters > 10 || self.author.in?(Author.known_authors)
   end
 
-  def sync_with_wn! : Nil
+  def sync_with_wn!(force : Bool = false) : Nil
     return unless nvinfo = self.get_nvinfo
 
-    if self.voters > nvinfo.voters
-      nvinfo.zvoters = self.voters
-      nvinfo.zrating = self.rating
+    if self.voters >= nvinfo.zvoters
+      nvinfo.set_zscores!(self.voters, self.rating)
     end
 
     nvinfo.set_utime(self.book_mtime)
     nvinfo.set_status(self.status)
+
+    zgenres = [self.genre].concat(self.btags)
+    nvinfo.set_vgenres(CV::GenreMap.zh_to_vi(zgenres))
 
     nvinfo.save!
 
@@ -75,9 +78,9 @@ class YS::Ysbook
     CV::WnLink.upsert!(self.nvinfo_id, self.sources)
   end
 
-  def get_nvinfo
+  def get_nvinfo(force : Bool = false)
     case self.nvinfo_id
-    when 0    then create_nvinfo if worth_saving?
+    when 0    then create_nvinfo if force || worth_saving?
     when .> 0 then CV::Nvinfo.find({id: self.nvinfo_id})
     else           nil
     end
@@ -104,7 +107,7 @@ class YS::Ysbook
     nvinfo.scover = self.cover
 
     zgenres = [self.genre].concat(self.btags)
-    nvinfo.vgenres = CV::GenreMap.zh_to_vi(zgenres)
+    nvinfo.set_vgenres(CV::GenreMap.zh_to_vi(zgenres))
 
     nvinfo
   end
@@ -126,6 +129,9 @@ class YS::Ysbook
 
   def self.upsert!(raw_data : RawYsBook, force : Bool = false)
     model = load(raw_data.id)
+
+    return if model.info_rtime >= raw_data.info_rtime
+    model.info_rtime = raw_data.info_rtime
 
     model.btitle = raw_data.btitle
     model.author = raw_data.author

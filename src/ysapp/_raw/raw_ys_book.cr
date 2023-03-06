@@ -1,7 +1,4 @@
-require "db"
-require "log"
-require "json"
-require "../../_util/text_util"
+require "./_common"
 
 class YS::RawYsBook
   annotation Temp; end
@@ -41,10 +38,10 @@ class YS::RawYsBook
   getter raw_word_count = 0_f64
 
   @[JSON::Field(ignore: true)]
-  getter word_count : Int32 {
-    raw_count = raw_word_count.round.to_i
-    raw_count < 100_000_000 ? raw_count : raw_count // 10000
-  }
+  getter word_count : Int32 do
+    raw_count = raw_word_count.round.to_i64
+    (raw_count < 100_000_000 ? raw_count : raw_count // 10000).to_i
+  end
 
   @[JSON::Field(key: "commentCount")]
   getter crit_total = 0
@@ -84,18 +81,6 @@ class YS::RawYsBook
     @btags = @btags.flat_map(&.split('-', remove_empty: true)).uniq!
 
     @cover = fix_cover(@cover)
-  end
-
-  def db_changes(@info_rtime : Int64 = Time.utc.to_unix)
-    fields = [] of String
-    values = [] of DB::Any
-
-    {% for ivar in @type.instance_vars.reject(&.annotation(Temp)) %}
-      fields << {{ivar.name.stringify}}
-      values << @{{ivar.name.id}}
-    {% end %}
-
-    {fields, values}
   end
 
   #############

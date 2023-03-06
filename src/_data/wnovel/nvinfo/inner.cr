@@ -1,10 +1,4 @@
 module CV::NvinfoInner
-  def add_chroot(zseed : Int32) : Nil
-    return if self.zseeds.includes?(zseed)
-    self.zseeds.push(zseed).sort!
-    self.zseeds_column.dirty!
-  end
-
   def set_genres(zgenres : Array(String), force = false) : Nil
     return unless force || self.igenres.empty? || self.igenres == [0]
     set_vgenres(GenreMap.zh_to_vi(zgenres), force: force)
@@ -26,12 +20,6 @@ module CV::NvinfoInner
     self.igenres << 0 if self.igenres.empty?
     self.vlabels_column.dirty!
     self.igenres_column.dirty!
-  end
-
-  def set_bintro(lines : Array(String), force = false) : Nil
-    return unless force || self.bintro.empty?
-    self.zintro = lines.join('\n')
-    self.bintro = BookUtil.cv_lines(lines, self.dname, :text)
   end
 
   def set_bcover(zcover : String, force = false) : Nil
@@ -63,18 +51,32 @@ module CV::NvinfoInner
     self.shield = shield if force || shield > self.shield
   end
 
-  # recalculate
-  def fix_scores!(voters : Int32, scores : Int32) : Nil
-    self.voters = voters
+  def set_zscores!(zvoters : Int32, zrating : Int32)
+    self.zvoters = zvoters
+    self.zrating = zrating
 
-    if voters < 10
-      scores &+= (10 - voters) &* 45
+    self.fix_xscores!
+  end
+
+  def set_vscores!(vvoters : Int32, vrating : Int32)
+    self.vvoters = vvoters
+    self.vrating = vrating
+
+    self.fix_xscores!
+  end
+
+  def fix_xscores!
+    self.voters = self.zvoters &+ self.vvoters
+    scores = self.zvoters &* self.zrating &+ self.vvoters &* self.vrating
+
+    if self.voters < 10
+      scores &+= (10 &- self.voters) &* 45
       self.rating = scores // 10
     else
-      self.rating = scores // voters
+      self.rating = scores // self.voters
     end
 
-    self.weight = scores + Math.log(self.view_count + 10).to_i
+    self.weight = scores &+ Math.log(self.view_count &+ 10).to_i
   end
 
   def set_bslug(hslug : String)

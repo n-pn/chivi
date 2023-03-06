@@ -1,4 +1,13 @@
+require "log"
 require "json"
+require "zstd"
+
+require "../../_util/text_util"
+
+def read_zstd(path : String)
+  file = File.open(path, "r")
+  Zstd::Decompress::IO.open(file, sync_close: true, &.gets_to_end)
+end
 
 struct YS::EmbedUser
   include JSON::Serializable

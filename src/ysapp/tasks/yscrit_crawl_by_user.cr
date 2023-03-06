@@ -68,36 +68,29 @@ class YS::CrawlYscritByUser < CrawlTask
   def self.gen_queue_init(min_ttl = 1.day)
     output = [] of QueueInit
 
-    # fresh = (Time.utc - min_ttl).to_unix
+    sql = <<-SQL
+      select y_uid, crit_total from ysusers
+      order by (like_count + star_count) desc
+    SQL
 
-    YsUser.open_db do |db|
-      sql = <<-SQL
-        select id, crit_total, crit_rtime from users
-        order by (like_count + star_count) desc
-        SQL
+    PG_DB.query_each(sql) do |rs|
+      id, total = rs.read(Int32, Int32)
 
-      db.query_each(sql) do |rs|
-        id, total, _rtime = rs.read(Int32, Int32, Int64)
+      total = 1 if total < 1
+      pages = (total - 1) // 20 + 1
 
-        # fresh -= 10 # add 1 second delay
-        # next if rtime < fresh
-
-        total = 1 if total < 1
-        pages = (total - 1) // 20 + 1
-
-        output << QueueInit.new(id, pages)
-      end
+      output << QueueInit.new(id, pages)
     end
 
     output
   end
 
-  def self.seed_crawled!(latest_only = true)
+  def self.seed_crawled!(all : Bool = false)
     u_ids = Dir.children(DIR)
 
     u_ids.each do |y_uid|
       files = Dir.glob("#{DIR}/#{y_uid}/*.zst")
-      files.select!(&.ends_with?("latest.json.zst")) if latest_only
+      files.select!(&.ends_with?("latest.json.zst")) unless all
 
       files.each do |file|
         puts file
@@ -111,7 +104,7 @@ class YS::CrawlYscritByUser < CrawlTask
   end
 
   if ARGV.includes?("--seed")
-    seed_crawled!(ARGV.includes?("--latest"))
+    seed_crawled!(all: ARGV.includes?("--all"))
   else
     run!(ARGV)
   end
