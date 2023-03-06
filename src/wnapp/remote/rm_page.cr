@@ -33,6 +33,11 @@ class WN::RmPage
   end
 
   @[AlwaysInline]
+  def find!(query : String)
+    @doc.css(query, &.first)
+  end
+
+  @[AlwaysInline]
   def get(query : String, attr : String = "") : String?
     return unless node = find(query)
     get_text(node, attr)
@@ -60,6 +65,10 @@ class WN::RmPage
       line = clean_text(line)
       line unless line.blank?
     end.to_a
+  end
+
+  def inner_text(node : Lexbor::Node, sep = '\n')
+    clean_text(node.inner_text(sep))
   end
 
   private def get_text(node : Lexbor::Node, attr : String)

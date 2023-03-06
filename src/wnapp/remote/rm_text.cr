@@ -45,17 +45,22 @@ class WN::RmText
   end
 
   @doc : RmPage
+  getter title : String
 
   def initialize(html : String, @conf : Conf, @link : String)
     @doc = RmPage.new(html)
+
+    @title = extract_title(@conf.title)
     # @host = RmPage.get_host(link)
   end
 
   getter bname : String { @conf.bname.empty? ? "" : @doc.get(@conf.bname) || "" }
 
-  getter title : String do
-    title = @doc.get(@conf.title) || ""
-    title = title.sub(/^#{Regex.escape(bname)}*/, "") unless bname.empty?
+  def extract_title(css_query : String)
+    elem = @doc.find!(css_query)
+    elem.children.each { |node| node.remove! if node.tag_sym == :a }
+
+    title = @doc.inner_text(elem, ' ')
     title.sub(/^章节目录\s*/, "").sub(/(《.+》)?正文\s*/, "")
   end
 
