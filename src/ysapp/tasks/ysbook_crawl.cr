@@ -1,5 +1,4 @@
 require "./_crawl_common"
-require "../_raw/raw_ys_book"
 
 class YS::CrawlYsbook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
@@ -53,7 +52,7 @@ class YS::CrawlYsbook < CrawlTask
 
     select_stmt = <<-SQL
       select id, voters, info_rtime from ysbooks
-      where id >= ? and id <= ?
+      where id >= $1 and id <= $2
     SQL
 
     PG_DB.query_each(select_stmt, min, max) do |rs|

@@ -17,7 +17,7 @@ class YS::ReplCtrl < AC::Base
   @[AC::Route::GET("/repls/:id/ztext", converters: {id: ConvertBase32})]
   def ztext(id : Int64)
     yrepl = Ysrepl.find!({id: id})
-    response.headers["X-WN_ID"] = yrepl.yscrit.nvinfo_id.to_s
+    response.headers["X-WN_ID"] = "0"
     render text: yrepl.ztext
   rescue err
     render :not_found, text: "Phản hồi không tồn tại"

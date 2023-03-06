@@ -63,4 +63,15 @@ class YS::InitCtrl < AC::Base
     # Yslist.bulk_upsert(json.lists)
     render text: json.total
   end
+
+  @[AC::Route::POST("/repls/by_crit/:y_cid", body: :json)]
+  def repls_by_crit(json : RawCritReplies, y_cid : String, rtime : Int64 = Time.utc.to_unix)
+    yscrit = Yscrit.load(y_cid)
+
+    yscrit.repl_total = json.total if yscrit.repl_total < json.total
+    yscrit.repl_rtime = rtime
+
+    Ysrepl.bulk_upsert(json.repls)
+    render text: json.total
+  end
 end

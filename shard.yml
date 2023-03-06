@@ -64,10 +64,10 @@ targets:
     main: src/ysapp/tasks/yslist_crawl_by_book.cr
 
   yslist_crawl_by_user:
-    main: tasks/yousuu/yslist_crawl_by_user.cr
+    main: src/ysapp/tasks/yslist_crawl_by_user.cr
 
   ysrepl_crawl:
-    main: tasks/yousuu/ysrepl_crawl.cr
+    main: src/ysapp/tasks/ysrepl_crawl.cr
 
 dependencies:
   tabkv:

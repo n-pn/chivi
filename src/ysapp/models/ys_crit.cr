@@ -29,10 +29,13 @@ class YS::Yscrit
   column vtags : Array(String) = [] of String
 
   column utime : Int64 = 0 # list changed at by seconds from epoch
-  column stime : Int64 = 0 # list checked at by minutes from epoch
+
+  column info_rtime : Int64 = 0
+  column repl_rtime : Int64 = 0
 
   column repl_total : Int32 = 0
   column repl_count : Int32 = 0
+
   column like_count : Int32 = 0
 
   timestamps

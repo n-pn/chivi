@@ -12,24 +12,55 @@ class YS::Ysrepl
   column origin_id : String
 
   belongs_to ysuser : Ysuser
-  belongs_to yscrit : Yscrit
+
+  column yscrit_id : Int64 = 0_i64
 
   column stime : Int64 = 0 # list checked at by minutes from epoch
+
+  column y_cid : String = ""
+  column y_uid : Int32 = 0
 
   column like_count : Int32 = 0
   column repl_count : Int32 = 0 # reply count, optional
 
   timestamps
 
+  scope :filter_yscrit do |yscrit_id|
+    yscrit_id ? where("yscrit_id = #{yscrit_id}") : self
+  end
+
+  scope :filter_ysuser do |ysuser_id|
+    ysuser_id ? where("ysuser_id = #{ysuser_id}") : self
+  end
+
+  scope :sort_by do |order|
+    case order
+    when "ctime" then self.order_by(id: :desc)
+    when "likes" then self.order_by(like_count: :desc)
+    else              self.order_by(created_at: :desc)
+    end
+  end
+
   getter ztext : String { load_ztext_from_disk }
   getter vhtml : String { load_vhtml_from_disk }
 
   ZIP_DIR = "var/ysapp/repls"
+  TXT_DIR = "var/ysapp/repls-txt"
+
+  private def group_by
+    self.origin_id[0..2]
+  end
 
   def zip_path(type = "zh")
-    crit_uuid = self.yscrit.origin_id
-    prefix = crit_uuid[0..2]
-    "#{ZIP_DIR}/#{prefix}-#{type}/#{crit_uuid}.zip"
+    "#{ZIP_DIR}/#{group_by}-#{type}/#{self.origin_id}.zip"
+  end
+
+  def tmp_path(type = "zh")
+    "#{TXT_DIR}/#{group_by}-#{type}"
+  end
+
+  def filename(ext = "txt")
+    "#{self.origin_id}.#{ext}"
   end
 
   def load_ztext_from_disk : String
@@ -56,39 +87,25 @@ class YS::Ysrepl
     if ztext.empty? || ztext == "$$$"
       html = "<p><em>Không có nội dung</em></p>"
     else
-      return ERROR_BODY unless tran = TranUtil.qtran(ztext, self.yscrit.nvinfo_id)
+      return ERROR_BODY unless tran = TranUtil.qtran(ztext, 0)
       html = tran.split('\n').map { |x| "<p>#{x}</p>" }.join('\n')
     end
 
-    save_vhtml_to_disk(html) if persist
+    save_data_to_disk(html, "vi", ".htm") if persist
     html
   end
 
-  def save_vhtml_to_disk(vhtml : String)
-    zip_path = self.zip_path("vi")
-    out_path = zip_path.sub("repls", "repls.tmp").sub(".zip", "")
-    Dir.mkdir_p(out_path)
+  def save_data_to_disk(data : String, type : String, ext : String) : Nil
+    dir_path = self.tmp_path(type)
+    Dir.mkdir_p(dir_path)
 
-    out_html = "#{out_path}/#{self.origin_id}.htm"
-    File.write(out_html, vhtml)
+    file_path = File.join(dir_path, self.filename(ext))
+    File.write(file_path, data)
 
-    `zip -FS -jrq "#{zip_path}" #{out_html}`
-  end
+    zip_path = self.zip_path(type)
+    YsUtil.zip_data(zip_path, dir_path)
 
-  scope :filter_yscrit do |yscrit_id|
-    yscrit_id ? where("yscrit_id = #{yscrit_id}") : self
-  end
-
-  scope :filter_ysuser do |ysuser_id|
-    ysuser_id ? where("ysuser_id = #{ysuser_id}") : self
-  end
-
-  scope :sort_by do |order|
-    case order
-    when "ctime" then self.order_by(id: :desc)
-    when "likes" then self.order_by(like_count: :desc)
-    else              self.order_by(created_at: :desc)
-    end
+    Log.debug { "save #{file_path} to #{zip_path}" }
   end
 
   # def set_ztext(ztext : String)
@@ -107,9 +124,32 @@ class YS::Ysrepl
     origin_id[12..].to_i64(base: 16)
   end
 
-  def self.upsert!(origin_id : String, created_at : Time)
+  def self.load(origin_id : String)
     find({origin_id: origin_id}) || begin
-      new({id: gen_id(origin_id), origin_id: origin_id, created_at: created_at})
+      new({id: gen_id(origin_id), origin_id: origin_id})
+    end
+  end
+
+  def self.bulk_upsert(raw_repls : Array(RawYsRepl), save_text : Bool = true)
+    raw_repls.each do |raw_repl|
+      out_repl = self.load(raw_repl.y_rid)
+
+      out_crit = Yscrit.load(raw_repl.y_cid)
+      out_user = Ysuser.load(raw_repl.user.id)
+
+      out_repl.yscrit_id = out_crit.id
+
+      out_repl.y_uid = out_user.y_uid
+      out_repl.ysuser_id = out_user.id # TODO: remove this
+
+      out_repl.save_data_to_disk(raw_repl.ztext, "zh", "txt") if save_text
+
+      out_repl.like_count = raw_repl.like_count
+      out_repl.repl_count = raw_repl.repl_count
+
+      out_repl.created_at = raw_repl.created_at
+
+      out_repl.save!
     end
   end
 end

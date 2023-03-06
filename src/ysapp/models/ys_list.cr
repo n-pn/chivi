@@ -10,6 +10,8 @@ class YS::Yslist
 
   column ysuser_id : Int32 = 0
 
+  column y_uid : Int32 = 0
+
   column zname : String = "" # original list name
   column vname : String = "" # translated name
 
