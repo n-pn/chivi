@@ -38,9 +38,11 @@ module M1::MTL
       when ':'
         break unless input[index]? == '/' && input[index + 1]? == '/'
         val = val_io.to_s
+
         break unless val =~ /^https?/
 
-        val_io = String::Builder.new(val)
+        val_io = String::Builder.new
+        val_io << val
         key_io << input[index] << input[index + 1]
         val_io << "//"
         return recog_anchor(input, key_io, val_io, index + 2)
@@ -49,7 +51,7 @@ module M1::MTL
       end
     end
 
-    MtTerm.new(key_io.to_s, val_io.to_s, PosTag::Nother, 0)
+    MtTerm.new(key_io.to_s, (val || val_io).to_s, PosTag::Nother, 0)
   end
 
   def recog_anchor(input : Array(Char), key_io, val_io, index)

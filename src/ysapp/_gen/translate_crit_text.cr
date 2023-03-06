@@ -22,7 +22,7 @@ DICT_MAP.each do |y_bid, wn_id|
   cv_mt = M1::MtCore.init(udic: wn_id)
   puts "- <#{progress}/#{DICT_MAP.size}> #{wn_id}".colorize.blue
 
-  PG_DB.query_each(crit_sql) do |rs|
+  PG_DB.query_each(crit_sql, y_bid) do |rs|
     y_cid = rs.read(String)
     group = y_cid[0..3]
 
@@ -30,16 +30,25 @@ DICT_MAP.each do |y_bid, wn_id|
     next unless File.file?(inp_path)
 
     out_dir = "#{TXT_DIR}/#{group}-vi"
-    Dir.mkdir(out_dir)
+    Dir.mkdir_p(out_dir)
 
-    File.open("#{out_dir}/#{y_cid}.htm") do |file|
-      File.each_line(inp_path) do |line|
-        next if line.blank?
+    begin
+      vhtml = convert(cv_mt, inp_path)
+      File.write("#{out_dir}/#{y_cid}.htm", vhtml)
+    rescue ex
+      File.open("tmp/error-crits-body.log", "a", &.puts(inp_path))
+    end
+  end
+end
 
-        file << "<p>"
-        cv_mt.cv_plain(line).to_txt(file)
-        file << "</p>"
-      end
+def convert(cv_mt, inp_path : String)
+  String.build do |io|
+    File.each_line(inp_path) do |line|
+      next if line.blank?
+
+      io << "<p>"
+      cv_mt.cv_plain(line).to_txt(io)
+      io << "</p>"
     end
   end
 end

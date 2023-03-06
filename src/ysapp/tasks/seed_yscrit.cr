@@ -18,7 +18,7 @@ def seed_crit_by_user(path : String)
 
   ysuser.save!
 
-  YS::Yscrit.bulk_upsert(data.comments)
+  YS::Yscrit.bulk_upsert(data.comments, save_text: false)
   puts "ysuser: #{ysuser.id}, total: #{data.comments.size}".colorize.yellow
 end
 

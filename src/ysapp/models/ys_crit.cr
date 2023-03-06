@@ -153,7 +153,7 @@ class YS::Yscrit
 
   ####
 
-  def self.bulk_upsert(raw_crits : Array(RawYsCrit))
+  def self.bulk_upsert(raw_crits : Array(RawYsCrit), save_text : Bool = true)
     raw_crits.each do |raw_crit|
       out_crit = self.load(raw_crit.y_cid)
       out_book = Ysbook.load(raw_crit.book.id)
@@ -165,13 +165,13 @@ class YS::Yscrit
       out_crit.y_uid = out_user.y_uid
       out_crit.ysuser_id = out_user.id # TODO: remove this
 
-      unless raw_crit.ztext == "请登录查看评论内容" || raw_crit.ztext.blank?
+      out_crit.stars = raw_crit.stars
+      out_crit.set_tags(raw_crit.tags, force: true)
+
+      if save_text && raw_crit.ztext != "请登录查看评论内容"
         out_crit.b_len = raw_crit.ztext.size
         out_crit.save_data_to_disk(raw_crit.ztext, type: "zh", ext: "txt")
       end
-
-      out_crit.stars = raw_crit.stars
-      out_crit.set_tags(raw_crit.tags, force: true)
 
       out_crit.like_count = raw_crit.like_count
       out_crit.repl_total = raw_crit.repl_total

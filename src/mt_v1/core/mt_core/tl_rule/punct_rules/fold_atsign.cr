@@ -14,8 +14,9 @@ module M1::TlRule
     return head unless tail
 
     key = key_io.to_s
-    val = TextUtil.titleize(SP::MtCore.tl_sinovi(key, false))
+    return head if key.blank?
 
+    val = TextUtil.titleize(SP::MtCore.tl_sinovi(key, false))
     key = "#{head.key}#{key}#{tail.key}"
 
     if (prev = head.prev?) && prev.key == " "
