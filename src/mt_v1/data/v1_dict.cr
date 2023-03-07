@@ -152,4 +152,15 @@ class M1::DbDict
 
     self.repo.open_db(&.query_all(query, limit, offset, as: self))
   end
+
+  def self.init_wn_dict(wn_id : Int32, bslug : String, bname : String)
+    new(
+      id: wn_id,
+      dname: "#{wn_id}-#{bslug}",
+      label: bname,
+      brief: "Từ điển riêng cho bộ truyện [#{bname}]",
+      privi: 1,
+      dtype: 3
+    )
+  end
 end

@@ -4,6 +4,7 @@ require "../_raw/raw_ys_book"
 require "../../_data/wnovel/nv_info"
 require "../../_data/wnovel/wn_link"
 require "../../_util/tran_util"
+require "../../mt_v1/data/v1_dict"
 
 class YS::Ysbook
   include Clear::Model
@@ -73,6 +74,8 @@ class YS::Ysbook
     nvinfo.save!
 
     self.nvinfo_id = nvinfo.id.to_i
+
+    M1::DbDict.init_wn_dict(self.nvinfo_id, nvinfo.bslug, nvinfo.vname)
 
     CV::WnLink.upsert!(self.nvinfo_id, "https://www.yousuu.com/book/#{self.id}")
     CV::WnLink.upsert!(self.nvinfo_id, self.sources)

@@ -29,7 +29,7 @@ export const load = (async ({ fetch, url, params: { dict } }) => {
   const terms = await api_get<TermsData>(terms_url, fetch)
 
   const _meta = {
-    title: 'Từ điển:' + dinfo.label,
+    title: 'Từ điển: ' + dinfo.label,
     left_nav: [
       home_nav('ps'),
       nav_link('/mt/dicts', 'Từ điển', 'package', { show: 'ts' }),

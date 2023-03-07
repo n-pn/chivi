@@ -96,9 +96,10 @@ class M1::DefnCtrl < AC::Base
   @[AC::Route::POST("/defns", body: :form)]
   def create(form : DefnForm)
     form.validate!(_privi)
-
     defn = form.save!(_uname)
-    sync_data!(defn)
+
+    rebuild_trie(defn)
+    update_stats(defn)
 
     spawn do
       date = Time.local.to_s("%Y-%m/%d")
@@ -111,19 +112,23 @@ class M1::DefnCtrl < AC::Base
     render json: defn
   end
 
-  private def sync_data!(defn : DbDefn)
-    dict = DbDict.load(defn.dic)
-    dict.update_after_term_added!(defn.mtime)
-
+  private def rebuild_trie(defn : DbDefn)
     case defn.tab
     when 0, 1 # add to main dict
-      MtDict::TEMPS[dict.id]?.try(&.remove_term(defn.key))
-      MtDict::MAINS[dict.id]?.try(&.add_defn(defn))
+      MtDict::TEMPS[defn.dic]?.try(&.remove_term(defn.key))
+      MtDict::MAINS[defn.dic]?.try(&.add_defn(defn))
     when 2 # add to temp dict
-      MtDict::TEMPS[dict.id]?.try(&.add_defn(defn))
+      MtDict::TEMPS[defn.dic]?.try(&.add_defn(defn))
     when 3 # add to user dict
-      MtDict::TEMPS[dict.id]?.try(&.remove_term(defn.key))
-      MtDict::USERS["#{dict.id}/#{defn.uname}"]?.try(&.add_defn(defn))
+      MtDict::TEMPS[defn.dic]?.try(&.remove_term(defn.key))
+      MtDict::USERS["#{defn.dic}/#{defn.uname}"]?.try(&.add_defn(defn))
     end
+  end
+
+  private def update_stats(defn : DbDefn)
+    dict = DbDict.load(defn.dic)
+    dict.update_after_term_added!(defn.mtime)
+  rescue ex
+    Log.error { ex.message }
   end
 end

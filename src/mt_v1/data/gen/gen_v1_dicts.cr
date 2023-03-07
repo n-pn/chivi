@@ -46,17 +46,7 @@ SQL
 DB.open(CV_ENV.database_url) do |db|
   db.query_each(select_sql) do |rs|
     id, bslug, bname = rs.read(Int32, String, String)
-
-    dict = M1::DbDict.new(
-      id: id,
-      dname: "#{id}-#{bslug}",
-      label: bname,
-      brief: "Từ điển riêng cho bộ truyện [#{bname}]",
-      privi: 1,
-      dtype: 3
-    )
-
-    dicts << dict
+    dicts << M1::DbDict.init_wn_dict(id, bslug, bname)
   end
 end
 
