@@ -30,7 +30,7 @@ class M1::DbDict
 
   def save!(repo : SQ3::Repo = self.class.repo)
     fields, values = db_changes
-    smt = SQ3::SQL.upsert_smt(@@table, fields, "(dname)", skip_fields: {"id"})
+    smt = SQ3::SQL.upsert_smt(@@table, fields, "(id)", skip_fields: {"id"})
     repo.db.exec(smt, args: values)
   end
 
@@ -64,7 +64,9 @@ class M1::DbDict
 
   ######
 
-  class_getter repo : SQ3::Repo { SQ3::Repo.new(self.db_path, self.init_sql, ttl: 3.minutes) }
+  class_getter repo : SQ3::Repo do
+    SQ3::Repo.new(self.db_path, self.init_sql, ttl: 3.minutes)
+  end
 
   @[AlwaysInline]
   def self.db_path
