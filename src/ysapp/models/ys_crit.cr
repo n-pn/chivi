@@ -156,7 +156,7 @@ class YS::Yscrit
 
   ####
 
-  def self.bulk_upsert(raw_crits : Array(RawYsCrit), save_text : Bool = true)
+  def self.bulk_upsert(raw_crits : Array(RawYsCrit), yslist : Yslist? = nil, save_text : Bool = true)
     raw_crits.each do |raw_crit|
       out_crit = self.load(raw_crit.y_cid)
       out_book = Ysbook.load(raw_crit.book.id)
@@ -164,6 +164,11 @@ class YS::Yscrit
 
       out_crit.ysbook_id = out_book.id
       out_crit.nvinfo_id = out_book.nvinfo_id
+
+      if yslist
+        out_crit.yslist_id = yslist.id
+        out_crit.y_lid = yslist.origin_id
+      end
 
       out_crit.y_uid = out_user.y_uid
       out_crit.ysuser_id = out_user.id # TODO: remove this

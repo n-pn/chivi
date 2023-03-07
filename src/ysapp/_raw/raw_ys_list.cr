@@ -74,4 +74,9 @@ class YS::RawYsList
   def self.from_info_json(json : String) : self
     NamedTuple(data: self).from_json(json)[:data]
   end
+
+  def self.from_json(string_or_io : String | IO)
+    parser = JSON::PullParser.new(string_or_io)
+    parser.on_key!("data") { new(parser) }
+  end
 end

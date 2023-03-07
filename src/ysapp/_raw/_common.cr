@@ -19,7 +19,7 @@ struct YS::EmbedUser
   getter name : String
 
   @[JSON::Field(key: "avatarId")]
-  getter avatar : String
+  getter avatar : String = ""
 end
 
 struct YS::EmbedBook

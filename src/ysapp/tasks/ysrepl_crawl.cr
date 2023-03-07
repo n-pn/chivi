@@ -67,7 +67,7 @@ class YS::CrawlYslistByUser < CrawlTask
       update yscrits set repl_count = (
         select count(*) from ysrepls
         where yscrit_id = yscrits.id
-      );
+      ) where repl_total > 0;
     SQL
 
     sql = <<-SQL

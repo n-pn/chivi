@@ -31,28 +31,13 @@ class YS::RawYsCrit
 
   @[JSON::Field(key: "updateAt")]
   getter updated_at : Time?
-
-  # def db_changes
-  #   fields = [] of String
-  #   values = [] of DB::Any | Array(String)
-
-  #   fields << "origin_id"
-  #   values << self.uuid
-
-  #   fields << "ysbook_id"
-  #   values << self.uuid
-
-  #   {fields, values}
-  # end
 end
 
 record YS::RawBookComments, comments : Array(YS::RawYsCrit), total : Int32 do
   include JSON::Serializable
 
-  def self.from_json(json : String)
-    raise "invalid json" unless json.starts_with?('{')
-
-    parser = JSON::PullParser.new(json)
+  def self.from_json(string_or_io : String | IO)
+    parser = JSON::PullParser.new(string_or_io)
     parser.on_key!("data") { new(parser) }
   end
 end
@@ -60,10 +45,8 @@ end
 record YS::RawListEntries, books : Array(YS::RawYsCrit), total : Int32 do
   include JSON::Serializable
 
-  def self.from_json(json : String)
-    raise "invalid json" unless json.starts_with?('{')
-
-    parser = JSON::PullParser.new(json)
+  def self.from_json(string_or_io : String | IO)
+    parser = JSON::PullParser.new(string_or_io)
     parser.on_key!("data") { new(parser) }
   end
 end

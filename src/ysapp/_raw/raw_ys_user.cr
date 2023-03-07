@@ -37,10 +37,8 @@ class YS::RawYsUser
     }
   end
 
-  def self.from_json(json : String)
-    raise "invalid json" unless json.starts_with?('{')
-    # raise "user not exists" if json.includes?("不存在该用户")
-    parser = JSON::PullParser.new(json)
+  def self.from_json(string_or_io : String | IO)
+    parser = JSON::PullParser.new(string_or_io)
     parser.on_key!("data") { new(parser) }
   end
 end

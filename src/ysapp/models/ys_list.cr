@@ -5,11 +5,10 @@ class YS::Yslist
   include Clear::Model
   self.table = "yslists"
 
-  primary_key
+  primary_key type: :serial
   column origin_id : String = ""
 
   column ysuser_id : Int32 = 0
-
   column y_uid : Int32 = 0
 
   column zname : String = "" # original list name

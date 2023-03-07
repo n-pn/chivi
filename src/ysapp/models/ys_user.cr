@@ -94,9 +94,11 @@ class YS::Ysuser
 
       entry.y_uid = raw_user.id
       entry.zname = raw_user.name
-
-      entry.y_avatar = raw_user.avatar
       entry.fix_name!
+
+      unless raw_user.avatar.blank?
+        entry.y_avatar = raw_user.avatar
+      end
 
       entry.tap(&.save!)
     end

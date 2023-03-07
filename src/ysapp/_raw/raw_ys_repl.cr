@@ -42,10 +42,8 @@ struct YS::RawCritReplies
 
   getter total : Int32
 
-  def self.from_json(json : String)
-    raise "invalid json" unless json.starts_with?('{')
-
-    parser = JSON::PullParser.new(json)
+  def self.from_json(string_or_io : String | IO)
+    parser = JSON::PullParser.new(string_or_io)
     parser.on_key!("data") { new(parser) }
   end
 end

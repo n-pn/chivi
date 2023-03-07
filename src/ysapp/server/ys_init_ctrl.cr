@@ -49,7 +49,9 @@ class YS::InitCtrl < AC::Base
     yslist.book_total = data.total if yslist.book_total < data.total
     yslist.book_rtime = rtime
 
-    Yscrit.bulk_upsert(data.books)
+    yslist.save!
+
+    Yscrit.bulk_upsert(data.books, yslist: yslist, save_text: true)
     render text: data.books.size
   end
 
