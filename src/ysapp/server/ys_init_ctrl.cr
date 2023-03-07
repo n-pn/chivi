@@ -17,26 +17,51 @@ class YS::InitCtrl < AC::Base
     end
   end
 
-  @[AC::Route::POST("/users/info", body: :json)]
-  def user_info(json : RawYsUser, rtime : Int64 = Time.utc.to_unix)
-    y_uid = Ysuser.upsert_info_from_raw_data(json, rtime)
-    render text: y_uid
+  @[AC::Route::POST("/users/info", body: :data)]
+  def user_info(data : RawYsUser, rtime : Int64 = Time.utc.to_unix)
+    ysuser = Ysuser.load(data.user.id)
+
+    ysuser.set_data(data.user)
+    ysuser.set_stat(data, rtime)
+
+    ysuser.save!
+
+    render text: ysuser.id
+  end
+
+  macro guard_empty(list)
+    if {{list.id}}.empty?
+      render text: 0
+      return
+    end
   end
 
   @[AC::Route::POST("/crits/by_user", body: :data)]
   def crits_by_user(data : RawBookComments, rtime : Int64 = Time.utc.to_unix)
-    if data.comments.empty?
-      render text: 0
-      return
-    end
+    guard_empty data.comments
 
     raw_ysuser = data.comments.first.user
     ysuser = YS::Ysuser.upsert!(raw_ysuser)
 
-    ysuser.crit_total = data.total if ysuser.crit_total < data.total
-    ysuser.crit_rtime = rtime
+    if ysuser.crit_total < data.total
+      ysuser.update!({crit_total: data.total, crit_rtime: rtime})
+    end
 
     ysuser.save!
+
+    Yscrit.bulk_upsert(data.comments)
+    render text: data.comments.size
+  end
+
+  @[AC::Route::POST("/crits/by_book", body: :data)]
+  def crits_by_book(data : RawBookComments, rtime : Int64 = Time.utc.to_unix)
+    guard_empty data.comments
+
+    ysbook = Ysbook.load(data.comments.first.book.id)
+
+    if ysbook.crit_total < data.total
+      ysbook.update!({crit_total: data.total})
+    end
 
     Yscrit.bulk_upsert(data.comments)
     render text: data.comments.size

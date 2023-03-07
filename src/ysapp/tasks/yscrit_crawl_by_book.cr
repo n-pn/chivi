@@ -6,6 +6,9 @@ require "../_raw/raw_ys_crit"
 
 class YS::CrawlYscritByBook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
+    return unless json.starts_with?('{')
+    api_path = "/_ys/crits/by_book?rtime=#{Time.utc.to_unix}"
+    post_raw_data(api_path, json)
   end
 
   def self.gen_link(y_bid : Int32, page : Int32 = 1)
@@ -57,19 +60,20 @@ class YS::CrawlYscritByBook < CrawlTask
   record QueueInit, y_bid : Int32, pgmax : Int32
 
   def self.gen_queue_init
-    output = [] of QueueInit
-
     PG_DB.exec <<-SQL
       update ysbooks set crit_count = (
         select count(*) from yscrits
         where ysbook_id = ysbooks.id
-      );
+      ) where crit_total > 0;
     SQL
 
     select_stmt = <<-SQL
-      select id::int, crit_total from ysbooks
+      select id, crit_total from ysbooks
       where crit_total > crit_count
+      order by (crit_total - crit_count) desc
     SQL
+
+    output = [] of QueueInit
 
     PG_DB.query_each(select_stmt) do |rs|
       y_bid, total = rs.read(Int32, Int32)

@@ -129,7 +129,14 @@ class YS::Yscrit
     return unless force || self.ztags.empty?
 
     self.ztags = ztags
-    self.fix_vtags!(ztags)
+    self.fix_vtags!(ztags) unless ztags.empty?
+  end
+
+  def set_text(ztext : String, force : Bool = false)
+    return if ztext == "请登录查看评论内容" || ztext.blank?
+
+    self.b_len = ztext.size
+    self.save_data_to_disk(ztext, type: "zh", ext: "txt")
   end
 
   def fix_vtags!(ztags = self.ztags)
@@ -143,6 +150,33 @@ class YS::Yscrit
   # def fix_vhtml(ztext : String, dname = self.nvinfo.dname)
   #   self.vhtml = CV::BookUtil.cv_lines(ztext, dname, mode: :html)
   # end
+
+  def set_book_id(y_bid : Int32, force : Bool = false)
+    self.ysbook_id = y_bid
+
+    return unless force || self.nvinfo_id == 0
+    self.nvinfo_id = Ysbook.load(y_bid).nvinfo_id
+  end
+
+  def set_list_id(yslist : Yslist)
+    self.yslist_id = yslist.id
+    self.y_lid = yslist.origin_id
+  end
+
+  def set_user_id(user : EmbedUser, force : Bool = false)
+    self.y_uid = user.id
+    # TODO: remove  ysuser_id
+    return unless force || self.ysuser_id == 0
+    self.ysuser_id = Ysuser.upsert!(user).id
+  end
+
+  def set_repl_total(value : Int32)
+    self.repl_total = value if value > self.repl_total
+  end
+
+  def set_like_count(value : Int32)
+    self.like_count = value if value > self.like_count
+  end
 
   ###################
 
@@ -159,30 +193,17 @@ class YS::Yscrit
   def self.bulk_upsert(raw_crits : Array(RawYsCrit), yslist : Yslist? = nil, save_text : Bool = true)
     raw_crits.each do |raw_crit|
       out_crit = self.load(raw_crit.y_cid)
-      out_book = Ysbook.load(raw_crit.book.id)
-      out_user = Ysuser.load(raw_crit.user.id)
 
-      out_crit.ysbook_id = out_book.id
-      out_crit.nvinfo_id = out_book.nvinfo_id
-
-      if yslist
-        out_crit.yslist_id = yslist.id
-        out_crit.y_lid = yslist.origin_id
-      end
-
-      out_crit.y_uid = out_user.y_uid
-      out_crit.ysuser_id = out_user.id # TODO: remove this
+      out_crit.set_book_id(raw_crit.book.id)
+      out_crit.set_user_id(raw_crit.user)
+      out_crit.set_list_id(yslist) if yslist
 
       out_crit.stars = raw_crit.stars
-      out_crit.set_tags(raw_crit.tags, force: true)
+      out_crit.set_tags(raw_crit.tags, force: false)
+      out_crit.set_text(raw_crit.ztext) if save_text
 
-      if save_text && raw_crit.ztext != "请登录查看评论内容"
-        out_crit.b_len = raw_crit.ztext.size
-        out_crit.save_data_to_disk(raw_crit.ztext, type: "zh", ext: "txt")
-      end
-
-      out_crit.like_count = raw_crit.like_count
-      out_crit.repl_total = raw_crit.repl_total
+      out_crit.set_like_count(raw_crit.like_count)
+      out_crit.set_repl_total(raw_crit.repl_total)
 
       out_crit.created_at = raw_crit.created_at
       out_crit.updated_at = raw_crit.updated_at || raw_crit.created_at

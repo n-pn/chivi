@@ -18,69 +18,98 @@ class YS::Ysuser
   column like_count : Int32 = 0
   column star_count : Int32 = 0
 
-  column list_total : Int32 = 0 # database only
+  column list_total : Int32 = 0
   column list_count : Int32 = 0
 
-  column crit_total : Int32 = 0 # database only
+  column crit_total : Int32 = 0
   column crit_count : Int32 = 0
 
-  column repl_total : Int32 = 0 # database only
-  column repl_count : Int32 = 0 # database only
+  column repl_total : Int32 = 0
+  column repl_count : Int32 = 0
 
-  column info_rtime : Int64 = 0 # database only
-  column crit_rtime : Int64 = 0 # database only
-  column list_rtime : Int64 = 0 # database only
+  column info_rtime : Int64 = 0
+  column crit_rtime : Int64 = 0
+  column list_rtime : Int64 = 0
 
   timestamps
 
-  def fix_name! : Nil
-    self.vname = SP::MtCore.tl_name(self.zname)
-    self.vslug = TextUtil.slugify(vname)
+  def set_name(zname : String)
+    self.zname = zname
+    self.vname = SP::MtCore.tl_name(zname)
+    self.vslug = TextUtil.slugify(self.vname)
   end
 
-  def self.upsert_sql(fields : Enumerable(String))
-    String.build do |stmt|
-      stmt << "insert into ysusers ("
-      fields.join(stmt, ", ") { |f, io| io << f }
-      stmt << ") values ("
-      (1..fields.size).join(stmt, ", ") { |ii, io| io << '$' << ii }
-      stmt << ") on conflict (y_uid) do update set "
-      update_fields = fields.reject(&.== "y_uid")
-      update_fields.join(stmt, ", ") { |f, io| io << f << " = excluded." << f }
-      stmt << " where ysusers.y_uid = excluded.y_uid"
-    end
+  def set_avatar(avatar : String)
+    return if avatar.empty?
+    self.y_avatar = avatar
   end
 
-  def self.update_sql(fields : Enumerable(String))
-    String.build do |stmt|
-      stmt << "update ysusers set "
-
-      fields.each.with_index(1).join(stmt, ", ") do |(field, index), io|
-        io << field << " = $" << index
-      end
-
-      stmt << " where y_uid = $" << fields.size + 1
-    end
+  def set_data(data : EmbedUser)
+    self.set_name(data.name)
+    self.set_avatar(data.avatar)
   end
 
-  def self.upsert_info_from_raw_data(data : RawYsUser, rtime : Int64)
-    upsert_sql = upsert_sql(RawYsUser::DB_FIELDS)
-    PG_DB.exec upsert_sql, *data.db_values(rtime)
-    data.user.id
+  def set_stat(stat : RawYsUser, rtime : Int64)
+    self.like_count = stat.like_count
+    self.star_count = stat.star_count
+
+    self.set_crit_total(stat.crit_total)
+    self.set_list_total(stat.list_total)
+
+    self
   end
 
-  def self.update_stats_from_raw_data(data : RawBookComments, rtime : Int64)
-    return unless data.total > 0
-
-    user_stats_update_sql = update_sql({"crit_total", "crit_rtime"})
-    user_stats_update_sql += " and crit_total <= $1"
-
-    y_uid = data.comments.first.user._id
-
-    PG_DB.exec user_stats_update_sql, data.total, rtime, y_uid
-
-    data.total
+  def set_crit_total(value : Int32)
+    self.crit_total = value if value > self.crit_total
   end
+
+  def set_list_total(value : Int32)
+    self.list_total = value if value > self.list_total
+  end
+
+  # def self.upsert_sql(fields : Enumerable(String))
+  #   String.build do |stmt|
+  #     stmt << "insert into ysusers ("
+  #     fields.join(stmt, ", ") { |f, io| io << f }
+  #     stmt << ") values ("
+  #     (1..fields.size).join(stmt, ", ") { |ii, io| io << '$' << ii }
+  #     stmt << ") on conflict (y_uid) do update set "
+  #     update_fields = fields.reject(&.== "y_uid")
+  #     update_fields.join(stmt, ", ") { |f, io| io << f << " = excluded." << f }
+  #     stmt << " where ysusers.y_uid = excluded.y_uid"
+  #   end
+  # end
+
+  # def self.update_sql(fields : Enumerable(String))
+  #   String.build do |stmt|
+  #     stmt << "update ysusers set "
+
+  #     fields.each.with_index(1).join(stmt, ", ") do |(field, index), io|
+  #       io << field << " = $" << index
+  #     end
+
+  #     stmt << " where y_uid = $" << fields.size + 1
+  #   end
+  # end
+
+  # def self.upsert_info_from_raw_data(data : RawYsUser, rtime : Int64)
+  #   upsert_sql = upsert_sql(RawYsUser::DB_FIELDS)
+  #   PG_DB.exec upsert_sql, *data.db_values(rtime)
+  #   data.user.id
+  # end
+
+  # def self.update_stats_from_raw_data(data : RawBookComments, rtime : Int64)
+  #   return unless data.total > 0
+
+  #   user_stats_update_sql = update_sql({"crit_total", "crit_rtime"})
+  #   user_stats_update_sql += " and crit_total <= $1"
+
+  #   y_uid = data.comments.first.user._id
+
+  #   PG_DB.exec user_stats_update_sql, data.total, rtime, y_uid
+
+  #   data.total
+  # end
 
   ###############
 
@@ -90,16 +119,8 @@ class YS::Ysuser
 
   def self.upsert!(raw_user : EmbedUser)
     find({y_uid: raw_user.id}) || begin
-      entry = new
-
-      entry.y_uid = raw_user.id
-      entry.zname = raw_user.name
-      entry.fix_name!
-
-      unless raw_user.avatar.blank?
-        entry.y_avatar = raw_user.avatar
-      end
-
+      entry = new({y_uid: raw_user.id})
+      entry.set_data(raw_user)
       entry.tap(&.save!)
     end
   end

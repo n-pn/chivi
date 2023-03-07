@@ -135,7 +135,7 @@ class YS::Ysrepl
       out_repl = self.load(raw_repl.y_rid)
 
       out_crit = Yscrit.load(raw_repl.y_cid)
-      out_user = Ysuser.load(raw_repl.user.id)
+      out_user = Ysuser.upsert!(raw_repl.user)
 
       out_repl.yscrit_id = out_crit.id
 
