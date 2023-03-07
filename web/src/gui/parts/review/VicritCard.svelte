@@ -38,7 +38,12 @@
     <a
       class="meta _user cv-user"
       data-privi={user.privi}
-      href="/vi/crits?user={user.uname}">{user.uname}</a>
+      href="/wn/crits?from=vi&user={user.uname}">{user.uname}</a>
+
+    <span class="meta _time">
+      <SIcon name="clock" />
+      <span>{rel_time(crit.ctime)}{crit.edited ? '*' : ''}</span>
+    </span>
 
     <div class="right">
       <span class="meta _star">
@@ -47,28 +52,23 @@
     </div>
   </header>
 
-  <section class="body" class:big_text>
-    <Truncate html={crit.ohtml} {view_all} />
-  </section>
-
   <div class="vtags">
     {#each crit.btags as label}
-      <a class="vtag" href="/vi/crits?lb={label}">
+      <a class="vtag" href="/wn/crits?lb={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>
     {/each}
   </div>
 
+  <section class="body" class:big_text>
+    <Truncate html={crit.ohtml} {view_all} />
+  </section>
+
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="meta">&middot;</span> -->
 
-    <a class="meta _time" href="/sp/qtran/crits/{crit.id}">
-      <SIcon name="clock" />
-      <span>{rel_time(crit.ctime)}{crit.edited ? '*' : ''}</span>
-    </a>
-
-    <a class="meta" href="/vi/crits/{crit.id}">
+    <a class="meta" href="/wn/crits/v-{crit.id}">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
@@ -90,19 +90,21 @@
     <div class="right">
       <span class="meta">
         <SIcon name="thumb-up" />
-        <span>{crit.like_count}</span>
+        <span class="u-show-pl">Ưa thích</span>
+        <span class="badge">{crit.like_count}</span>
       </span>
 
       <button class="meta" on:click={show_replies}>
         <SIcon name="message" />
-        <span>{crit.repl_count}</span>
+        <span class="u-show-pl">Phản hồi</span>
+        <span class="badge">{crit.repl_count}</span>
       </button>
     </div>
   </footer>
 
   {#if show_list && list}
     <footer class="list">
-      <a class="link _list" href="/ys/lists/{list.id}{list.tslug}">
+      <a class="link _list" href="/wn/lists/v-{list.id}-{list.tslug}">
         <SIcon name="bookmarks" />
         <span>{list.title}</span>
         <span>({list.book_count} bộ truyện)</span>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NvcritList from '$gui/parts/nvcrit/NvcritList.svelte'
+  import NvcritList from '$gui/parts/review/WncritList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData

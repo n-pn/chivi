@@ -7,8 +7,8 @@
 
   import { SIcon } from '$gui'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-  import YscritCard from '../yousuu/YscritCard.svelte'
-  import VicritCard from '../review/VicritCard.svelte'
+  import YscritCard from './YscritCard.svelte'
+  import VicritCard from './VicritCard.svelte'
 
   export let ys: CV.YscritList
   export let vi: CV.VicritList

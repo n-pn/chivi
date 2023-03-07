@@ -6,8 +6,18 @@ declare namespace CV {
     title: string
     tslug: string
 
+    genres: string[]
+    covers: string[]
+
+    book_count: number
+
+    view_count: number
     like_count: number
     star_count: number
-    book_count: number
+  }
+
+  interface VilistList extends Paginate {
+    lists: Vilist[]
+    users: Record<number, Viuser>
   }
 }

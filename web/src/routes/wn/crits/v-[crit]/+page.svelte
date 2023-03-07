@@ -1,11 +1,9 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import YscritCard from '$gui/parts/yousuu/YscritCard.svelte'
+  import VicritCard from '$gui/parts/review/VicritCard.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
-
-  $: ({ ycrit: crit, ylist: list, yuser: user, vbook: book } = data)
 </script>
 
 <nav class="bread">
@@ -17,11 +15,11 @@
     <span>Đánh giá</span>
   </a>
   <span class="-sep">/</span>
-  <a class="crumb _link" href="/ys/crits?book={book.id}">
-    <span>{book.btitle}</span>
+  <a class="crumb _link" href="/ys/crits?book={data.book.id}">
+    <span>{data.book.btitle_vi}</span>
   </a>
 </nav>
 
 <article class="article island _narrow">
-  <YscritCard {crit} {book} {list} {user} view_all={true} />
+  <VicritCard {...data} view_all={true} />
 </article>

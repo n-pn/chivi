@@ -1,5 +1,6 @@
 <script>
   export let active = true
+  export let scale = false
 </script>
 
 <svg
@@ -9,6 +10,7 @@
   height="24"
   class="star"
   class:active
+  class:scale
   fill="currentColor"
   ><path
     fill-rule="evenodd"
@@ -21,5 +23,9 @@
     &.active {
       color: rgb(247, 186, 42);
     }
+
+    // &.scale {
+    //   transform: scale(1.2);
+    // }
   }
 </style>

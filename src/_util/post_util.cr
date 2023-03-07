@@ -4,7 +4,7 @@ require "lexbor"
 class PostUtil
   OPTS = Cmark::Option.flags(Hardbreaks, ValidateUTF8, FullInfoString)
 
-  def self.md_to_html(input : String)
+  def self.md_to_html(input : String) : String
     Cmark.gfm_to_html(input, OPTS)
   end
 

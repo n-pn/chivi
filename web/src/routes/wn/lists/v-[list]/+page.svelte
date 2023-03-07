@@ -1,7 +1,7 @@
 <script lang="ts">
   import { rel_time } from '$utils/time_utils'
   import { SIcon } from '$gui'
-  import YscritList from '$gui/parts/yousuu/YscritList.svelte'
+  import YscritList from '$gui/parts/review/YscritList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -17,7 +17,7 @@
   <meta property="og:description" content={ylist.vdesc} />
   <meta
     property="og:url"
-    content="https://chivi.app/list/{ylist.id}{ylist.vslug}" />
+    content="https://chivi.app/list/y-{ylist.id}{ylist.vslug}" />
   <meta
     property="og:image"
     content="https://chivi.app/covers/{ylist.covers[0] || 'blank.webp'}" />

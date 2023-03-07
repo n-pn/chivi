@@ -20,10 +20,10 @@ export const load = (async ({ fetch, params: { crit } }) => {
     desc: `Đánh giá cho bộ truyện ${data.vbook.btitle}`,
     left_nav: [
       home_nav('', ''),
-      nav_link('/ys/crits', 'Đánh giá truyện', 'stars', { show: 'tm' }),
+      nav_link('/wn/crits', 'Đánh giá truyện', 'stars', { show: 'tm' }),
       nav_link(crit, `[${crit}]`, null, { kind: 'zseed' }),
     ],
-    right_nav: [nav_link('/ys/lists', 'Thư đơn', 'bookmarks', { show: 'tm' })],
+    right_nav: [nav_link('/wn/lists', 'Thư đơn', 'bookmarks', { show: 'tm' })],
   }
 
   return { ...data, _meta }

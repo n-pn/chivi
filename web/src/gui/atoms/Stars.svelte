@@ -3,4 +3,9 @@
   import Star from './Star.svelte'
 </script>
 
-{#each [1, 2, 3, 4, 5] as x}<Star active={x <= count} />{/each}
+{#each [1, 2, 3, 4, 5] as x}
+  <Star active={x <= count} scale={x == count} />
+{/each}
+
+<style lang="scss">
+</style>

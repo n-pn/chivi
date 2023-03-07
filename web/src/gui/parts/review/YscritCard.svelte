@@ -10,6 +10,7 @@
 
   import YsreplList from './YsreplList.svelte'
   import YscritBook from './YscritBook.svelte'
+  import Gmenu from '$gui/molds/Gmenu.svelte'
 
   export let crit: CV.Yscrit
   export let user: CV.Ysuser
@@ -31,8 +32,7 @@
     show_repls = true
   }
 
-  type BodyType = 'vhtml' | 'btran' | 'deepl'
-  let body_type: BodyType = 'vhtml'
+  let body_type = 'vhtml'
 
   let content = crit.vhtml
   $: swap_content(body_type)
@@ -40,9 +40,9 @@
   let cached = {}
   $: cached = { vhtml: crit.vhtml }
 
-  let _loading = false
+  let _onload = false
 
-  async function swap_content(body_type: BodyType) {
+  async function swap_content(body_type: string) {
     let cached_data = cached[body_type]
 
     if (cached_data || body_type == 'vhtml') {
@@ -50,29 +50,34 @@
       return
     }
 
-    _loading = true
+    _onload = true
 
     const url = `/_ys/crits/${crit.id}/${body_type}`
     const res = await globalThis.fetch(url)
     const res_text = await res.text()
-    _loading = false
+    _onload = false
 
     if (!res.ok) return alert(res_text)
     cached[body_type] = res_text
     content = res_text
   }
 
-  const body_types = [
-    ['vhtml', 'Dịch thô', -1],
-    ['btran', 'Bing (Việt)', 2],
-    ['deepl', 'DeepL (Eng)', 3],
-  ]
+  const body_types: Record<string, [string, number]> = {
+    vhtml: ['Dịch thô', -1],
+    btran: ['Bing (Việt)', 2],
+    deepl: ['DeepL (Eng)', 3],
+  }
 </script>
 
 <crit-item class="island">
   <header>
-    <a class="meta _user" href="/ys/crits?user={user.id}-{user.uslug}"
+    <a class="meta _user" href="/wn/crits?from=ys&user={user.id}-{user.uslug}"
       >{user.uname}</a>
+
+    <a class="meta _time" href="/sp/qtran/crits/{crit.id}">
+      <SIcon name="clock" />
+      <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
+    </a>
 
     <div class="right">
       <span class="meta _star">
@@ -83,28 +88,19 @@
 
   {#if show_book && book}<YscritBook {book} />{/if}
 
-  <section class="version">
-    <span class="meta">Dịch theo:</span>
-    {#each body_types as [value, label, privi]}
-      <label
-        class="meta _inline"
-        data-tip="Cần thiết quyền hạn tối thiểu: {privi}"
-        data-tip-loc="bottom"
-        ><input
-          type="radio"
-          name="{crit.id}_body_type"
-          bind:group={body_type}
-          disabled={$session.privi < privi}
-          {value} />
+  <div class="vtags">
+    {#each crit.vtags as label}
+      <a class="vtag" href="/wn/crits?lb={label}">
+        <SIcon name="hash" />
         <span>{label}</span>
-      </label>
+      </a>
     {/each}
-  </section>
+  </div>
 
   <section class="body" class:big_text>
-    {#if _loading}
+    {#if _onload}
       <div class="loading">
-        <SIcon name="loader-2" spin={_loading} />
+        <SIcon name="loader-2" spin={_onload} />
         <span>Đang tải dữ liệu</span>
       </div>
     {:else if content == '<p>$$$</p>'}
@@ -116,24 +112,10 @@
     {/if}
   </section>
 
-  <div class="vtags">
-    {#each crit.vtags as label}
-      <a class="vtag" href="/ys/crits?lb={label}">
-        <SIcon name="hash" />
-        <span>{label}</span>
-      </a>
-    {/each}
-  </div>
-
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="meta">&middot;</span> -->
 
-    <a class="meta _time" href="/sp/qtran/crits/{crit.id}">
-      <SIcon name="clock" />
-      <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
-    </a>
-
-    <a class="meta" href="/ys/crits/{crit.id}">
+    <a class="meta" href="/wn/crits/y-{crit.id}">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
@@ -145,22 +127,41 @@
       </button>
     {/if}
 
+    <Gmenu dir="left" loc="bottom">
+      <button class="meta" slot="trigger">
+        <SIcon name="language" />
+        <span>{body_types[body_type][0]}</span>
+      </button>
+      <svelte:fragment slot="content">
+        {#each Object.entries(body_types) as [value, [label, privi]]}
+          <button
+            class="gmenu-item"
+            disabled={$session.privi < privi}
+            on:click={() => (body_type = value)}>
+            <span>{label}</span>
+          </button>
+        {/each}
+      </svelte:fragment>
+    </Gmenu>
+
     <div class="right">
       <span class="meta">
         <SIcon name="thumb-up" />
-        <span>{crit.like_count}</span>
+        <span class="u-show-pl">Ưa thích</span>
+        <span class="badge">{crit.like_count}</span>
       </span>
 
       <button class="meta" on:click={show_replies}>
         <SIcon name="message" />
-        <span>{crit.repl_count}</span>
+        <span class="u-show-pl">Phản hồi</span>
+        <span class="badge">{crit.repl_count}</span>
       </button>
     </div>
   </footer>
 
   {#if show_list && list}
     <footer class="list">
-      <a class="link _list" href="/ys/lists/{list.id}{list.vslug}">
+      <a class="link _list" href="/wn/lists/y-{list.id}{list.vslug}">
         <SIcon name="bookmarks" />
         <span>{list.vname}</span>
         <span>({list.book_count} bộ truyện)</span>
@@ -228,6 +229,10 @@
       // flex-shrink: 0;
     }
 
+    .badge {
+      font-size: 0.85em;
+    }
+
     :global(.m-icon) {
       width: 1.1em;
       height: 1.1em;
@@ -249,15 +254,8 @@
     }
   }
 
-  .version {
-    display: flex;
-    gap: 0.5rem;
-    padding: 0 var(--gutter);
-    margin-top: 0.5rem;
-  }
-
   .body {
-    padding: 0.375rem var(--gutter) 0.25rem;
+    padding: 0 var(--gutter);
     position: relative;
     line-height: 1.5em;
 
@@ -267,8 +265,8 @@
       @include bps(font-size, rem(18px), $pl: rem(19px), $tm: rem(20px));
     }
 
-    :global(p + p) {
-      margin-top: 0.75em;
+    :global(p) {
+      margin-top: 0.5em;
     }
 
     --line: 12;
@@ -277,7 +275,7 @@
     // prettier-ignore
     @include bp-min(ds) { --line: 8; }
 
-    // &._loading:after {
+    // &._onload:after {
     //   display: block;
     //   position: absolute;
     //   content: '';
@@ -303,13 +301,14 @@
   footer {
     @include flex($gap: 0.375rem);
     @include fgcolor(tert);
-
-    span {
-      @include ftsize(sm);
-    }
   }
+
+  .list {
+    @include ftsize(sm);
+  }
+
   .foot {
-    padding: 0.5rem var(--gutter);
+    padding: 0.375rem var(--gutter);
   }
 
   .list {

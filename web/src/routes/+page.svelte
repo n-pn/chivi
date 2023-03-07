@@ -1,7 +1,7 @@
 <script lang="ts">
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
-  import YscritCard from '$gui/parts/yousuu/YscritCard.svelte'
-  import YslistCard from '$gui/parts/yousuu/YslistCard.svelte'
+  // import YscritCard from '$gui/parts/review/YscritCard.svelte'
+  // import YslistCard from '$gui/parts/review/YslistCard.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData

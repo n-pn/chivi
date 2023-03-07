@@ -3,7 +3,7 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
-  import YscritCard from '$gui/parts/yousuu/YscritCard.svelte'
+  import YscritCard from '$gui/parts/review/YscritCard.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData

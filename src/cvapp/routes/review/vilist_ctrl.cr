@@ -4,18 +4,22 @@ class CV::VilistCtrl < CV::BaseCtrl
   base "/_db/lists"
 
   @[AC::Route::GET("/")]
-  def index(sort : String? = nil, user : Int32? = nil, type : String = "both")
+  def index(sort : String? = nil, user : Int32? = nil, type : String? = nil)
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
     query = Vilist.query.sort_by(sort)
     query.where("_flag >= 0")
-    query.where("viuser_id = ?", user) if user
-    query.where("type = ?", type) if type
+
+    if viuser = Viuser.find({uname: user})
+      query.where("viuser_id = ?", viuser.id)
+    end
+
+    query.where("klass = ?", type) if type
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count
     lists = query.limit(limit).offset(offset).to_a
 
-    users = Viuser.preload(lists.map(&.viuser_id))
+    users = viuser ? [viuser] : Viuser.preload(lists.map(&.viuser_id))
 
     render json: {
       lists: VilistView.as_list(lists, mode: :list),

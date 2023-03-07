@@ -8,7 +8,7 @@ class CV::Vilist
   self.table = "vilists"
 
   primary_key type: :serial
-  column viuser_id : Int32
+  column viuser_id : Int32 = 0
 
   column title : String = ""
   column tslug : String = ""
@@ -16,10 +16,10 @@ class CV::Vilist
   column dtext : String = ""
   column dhtml : String = ""
 
-  column klass : String = "male"
+  column klass : String = ""
 
-  column covers : Array(String) = [] of String
-  column genres : Array(String) = [] of String
+  # column covers : Array(String) = [""]
+  # column genres : Array(String) = [""]
 
   column _sort : Int32 = 0
   column _flag : Int32 = 0
@@ -56,11 +56,10 @@ class CV::Vilist
   def self.load!(id : Int32)
     self.find({id: id}) || begin
       raise "not found" if id >= 0
+
       vuser = Viuser.load!(-id)
 
-      model = new
-      model.id = id
-      model.viuser_id = -id
+      model = new({id: id, viuser_id: vuser.id})
 
       model.set_title "Đánh giá truyện chung của @#{vuser.uname}"
       model.set_intro "Tổng hợp đánh giá các bộ truyện không theo đề tài cụ thể"
