@@ -22,7 +22,7 @@ Các danh từ thường được viết hoa.
 
   Tên/họ người có thể kết hợp với danh xưng đằng sau, ví dụ "Vũ Nhu tiên tử", "Lâm tiểu thư"...
 
-  Ví dụ từ: [Tên người trong từ điển thông dụng](/dicts/regular?ptag=Nr)
+  Ví dụ từ: [Tên người trong từ điển thông dụng](/mt/dicts/regular?ptag=Nr)
 
 - **Nơi sở thuộc**: Tên riêng của các địa danh, tổ chức như Hoa Sơn, phái Thiếu Lâm.
 
@@ -30,31 +30,31 @@ Các danh từ thường được viết hoa.
 
   **Địa danh** và **Tổ chức** là phân loại riêng của **Nơi sở thuộc**, hiện tại thì về mặt ngữ pháp thì 3 từ loại này chức năng tương tự, việc tách riêng chỉ mang tính chất dự phnfg.
 
-  Ví dụ từ: [Địa danh/tổ chức trong từ điển thông dụng](/dicts/regular?ptag=Na)
+  Ví dụ từ: [Địa danh/tổ chức trong từ điển thông dụng](/mt/dicts/regular?ptag=Na)
 
 - **Tác phẩm**: Tên bộ truyện, tiểu thuyết, phim ảnh, bài hát....
   Tên tác phẩm thường nằm trong dấu ngoặc `《》`, `⟨⟩`.
 
-  Ví dụ từ: [Tên tác phẩm trong từ điển thông dụng](/dicts/regular?ptag=Nw)
+  Ví dụ từ: [Tên tác phẩm trong từ điển thông dụng](/mt/dicts/regular?ptag=Nw)
 
 - **Tên riêng khác**: Những loại tên riêng khác không hợp với các loại trên, ví dụ tên chiêu thức, hoá chất...
 
   _Tên riêng khác với danh từ thông dụng là nó đứng độc lập, không ghép với các danh từ chung tạo thành cụm danh từ._
 
-  Ví dụ từ: [Tên riêng khác trong từ điển thông dụng](/dicts/regular?ptag=Nz)
+  Ví dụ từ: [Tên riêng khác trong từ điển thông dụng](/mt/dicts/regular?ptag=Nz)
 
 ### Danh từ chung
 
 - **Danh từ thông dụng**: Các từ chỉ đồ vật, hiện tượng.
   Danh từ thông dụng nếu đứng liền kề nhau có thể kết hợp được.
 
-  Ví dụ từ: [Danh từ thường trong từ điển thông dụng](/dicts/regular?ptag=n)
+  Ví dụ từ: [Danh từ thường trong từ điển thông dụng](/mt/dicts/regular?ptag=n)
 
 - **Danh xưng**: các danh từ dùng để xưng hô người như "tỷ tỷ", "muội muội", "lão sư", "chưởng môn", "tiên tử"...
 
   Trong ngữ pháp thì danh từ nhân xưng có thể gộp với **Tên/họ người** đằng trước tạo thành tên người.
 
-  Ví dụ từ: [Danh xưng trong từ điển thông dụng](/dicts/regular?ptag=nh)
+  Ví dụ từ: [Danh xưng trong từ điển thông dụng](/mt/dicts/regular?ptag=nh)
 
 - **Thuộc tính**: các từ có mang tính chất mô tả nhưng không phải là tính từ, ví dụ:
 
@@ -66,7 +66,7 @@ Các danh từ thường được viết hoa.
 
   Đặc điểm chung của **danh từ thuộc tính** là nếu làm định ngữ (đằng sau là "đích") thì không cần thêm "của".
 
-  Ví dụ từ: [Từ thuộc tính trong từ điển thông dụng](/dicts/regular?ptag=na)
+  Ví dụ từ: [Từ thuộc tính trong từ điển thông dụng](/mt/dicts/regular?ptag=na)
 
 - **Phương vị**:
   Phương vị từ là những danh từ chỉ phương hướng, được sử dụng rất nhiều trong giao tiếp tiếng Trung, nhất là chủ đề giao tiếp liên quan tới xác định phương hướng, hỏi thăm đường xá.
@@ -75,7 +75,7 @@ Các danh từ thường được viết hoa.
 
   Phương vị đứng đằng sau danh từ thường sẽ tạo thành cụm từ chỉ nơi chốn.
 
-  Ví dụ từ: [Từ phương vị trong từ điển thông dụng](/dicts/regular?ptag=nf)
+  Ví dụ từ: [Từ phương vị trong từ điển thông dụng](/mt/dicts/regular?ptag=nf)
 
 - **Nơi chốn**: Thường thì nơi chốn là kết quả của việc ghép danh từ + phương vị từ.
 
@@ -83,13 +83,13 @@ Các danh từ thường được viết hoa.
 
   ví dụ: "桌上的本" dịch là "sách trên bàn" thay vì là "sách của trên bàn".
 
-  Ví dụ từ: [Từ chỉ nơi chốn trong từ điển thông dụng](/dicts/regular?ptag=ns)
+  Ví dụ từ: [Từ chỉ nơi chốn trong từ điển thông dụng](/mt/dicts/regular?ptag=ns)
 
 - **Thời gian**: các từ mang nghĩa thời gian như "hôm nay", "4 giờ chiều", "12 tiếng"...
 
   Danh từ thời gian có thể làm bổ ngữ hoặc trạng ngữ cho động từ.
 
-  Ví dụ từ: [Từ chỉ thời gian trong từ điển thông dụng](/dicts/regular?ptag=nt)
+  Ví dụ từ: [Từ chỉ thời gian trong từ điển thông dụng](/mt/dicts/regular?ptag=nt)
 
 ## 2. TÍNH TỪ 形容詞 - 状态词 - 区别词
 
@@ -103,7 +103,7 @@ Các loại tính từ trong Chivi
 - Hình dung từ miêu tả tính chất của người hay sự vật: 对，错，骄傲，坚强， 好，坏
 - Hình dung từ miêu tả trạng thái của một động tác, hành vi: 快，慢，顺利，紧张
 
-  Ví dụ từ: [Hình dung từ trong từ điển thông dụng](/dicts/regular?ptag=a)
+  Ví dụ từ: [Hình dung từ trong từ điển thông dụng](/mt/dicts/regular?ptag=a)
 
 ### Khu biệt từ
 
@@ -112,7 +112,7 @@ Khu biệt từ là các tính từ đặc biệt không thể đứng độc l�
 
 Chi tiết về khu biệt từ: [Khu biệt từ](/guid/ngu-phap/khu-biet-tu)
 
-Ví dụ từ: [Từ khu biệt trong từ điển thông dụng](/dicts/regular?ptag=ab)
+Ví dụ từ: [Từ khu biệt trong từ điển thông dụng](/mt/dicts/regular?ptag=ab)
 
 ### Cụm tính từ
 
@@ -127,19 +127,19 @@ Trong chivi thì `Cụm tính từ` hiện tại là tổng hợp cho vài loạ
 
 Trong tương lai thì các loại từ này sẽ được tách riêng ra cho phù hợp.
 
-Ví dụ từ: [Cụm tính từ trong từ điển thông dụng](/dicts/regular?ptag=al)
+Ví dụ từ: [Cụm tính từ trong từ điển thông dụng](/mt/dicts/regular?ptag=al)
 
 ### Danh hình từ
 
 Các từ có thể làm tính từ cũng có thể làm danh từ.
 
-Ví dụ từ: [Danh hình từ trong từ điển thông dụng](/dicts/regular?ptag=an)
+Ví dụ từ: [Danh hình từ trong từ điển thông dụng](/mt/dicts/regular?ptag=an)
 
 ### Phó hình từ
 
 Các từ có thể làm tính từ cũng có thể làm phó từ.
 
-Ví dụ từ: [Phó hình từ trong từ điển thông dụng](/dicts/regular?ptag=ad)
+Ví dụ từ: [Phó hình từ trong từ điển thông dụng](/mt/dicts/regular?ptag=ad)
 
 ## 3. ĐỘNG TỪ 動詞
 
@@ -150,31 +150,31 @@ Các loại động từ đang được phân loại ở Chivi:
 ### Động từ thường
 
 Các động từ cần thiết tân ngữ (đối tượng) ở phía sau.
-Ví dụ từ: [Động từ thường trong từ điển thông dụng](/dicts/regular?ptag=v)
+Ví dụ từ: [Động từ thường trong từ điển thông dụng](/mt/dicts/regular?ptag=v)
 
 ### Nội động từ
 
 Các động từ không thiết tân ngữ (đối tượng) ở phía sau.
-Ví dụ từ: [Nội động từ trong từ điển thông dụng](/dicts/regular?ptag=vi)
+Ví dụ từ: [Nội động từ trong từ điển thông dụng](/mt/dicts/regular?ptag=vi)
 
 ### Cụm động tân
 
 Cụm động từ + đối tượng của động từ kết hợp.
 Khác biệt với nội động từ là cụm động tân có thể đóng vai trò là chủ ngữ, hoặc là danh từ trung tâm trong cụm danh từ có `的`.
 
-Ví dụ từ: [Cụm động tân trong từ điển thông dụng](/dicts/regular?ptag=vo)
+Ví dụ từ: [Cụm động tân trong từ điển thông dụng](/mt/dicts/regular?ptag=vo)
 
 ### Danh động từ
 
 Các từ có thể làm động từ cũng có thể làm danh từ.
 
-Ví dụ từ: [Danh động từ trong từ điển thông dụng](/dicts/regular?ptag=an)
+Ví dụ từ: [Danh động từ trong từ điển thông dụng](/mt/dicts/regular?ptag=an)
 
 ### Phó động từ
 
 Các từ có thể làm động từ cũng có thể làm phó từ.
 
-Ví dụ từ: [Phó động từ trong từ điển thông dụng](/dicts/regular?ptag=ad)
+Ví dụ từ: [Phó động từ trong từ điển thông dụng](/mt/dicts/regular?ptag=ad)
 
 ### Động từ xu hướng
 
@@ -184,13 +184,13 @@ Ví dụ từ: [Phó động từ trong từ điển thông dụng](/dicts/regul
 
 Tham khảo: https://tiengtrungtoandien.com/dong-tu-xu-huong
 
-Ví dụ từ: [Động từ xu hướng](/dicts/regular?ptag=vf)
+Ví dụ từ: [Động từ xu hướng](/mt/dicts/regular?ptag=vf)
 
 ### Động từ hình thức
 
 Động từ hình thức có thể kết hợp trực tiếp với động từ phía sau.
 
-Ví dụ từ: [Động từ hình thức](/dicts/regular?ptag=vx)
+Ví dụ từ: [Động từ hình thức](/mt/dicts/regular?ptag=vx)
 
 ## 4. ĐỘNG TỪ NĂNG NGUYỆN 助動詞
 
@@ -198,7 +198,7 @@ Ví dụ từ: [Động từ hình thức](/dicts/regular?ptag=vx)
 
 Tham khảo: https://khoahoctiengtrung.com/dong-tu-nang-nguyen/
 
-Ví dụ từ: [Động từ năng nguyện](/dicts/regular?ptag=vm)
+Ví dụ từ: [Động từ năng nguyện](/mt/dicts/regular?ptag=vm)
 
 # Chưa hoàn thiện:
 

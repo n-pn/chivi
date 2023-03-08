@@ -20,7 +20,7 @@ Trong Chivi danh từ được chia thành các loại nhỏ:
 
   Tên/họ người có thể kết hợp với danh xưng đằng sau, ví dụ "Vũ Nhu tiên tử", "Lâm tiểu thư"...
 
-  Ví dụ từ: [Tên người trong từ điển thông dụng](/dicts/regular?ptag=nr)
+  Ví dụ từ: [Tên người trong từ điển thông dụng](/mt/dicts/regular?ptag=nr)
 
 - **Nơi sở thuộc**: Tên riêng của các địa danh, tổ chức như Hoa Sơn, phái Thiếu Lâm.
 
@@ -28,26 +28,26 @@ Trong Chivi danh từ được chia thành các loại nhỏ:
 
   Ví dụ từ:
 
-  - [Địa danh/tổ chức trong từ điển thông dụng](/dicts/regular?ptag=nn)
+  - [Địa danh/tổ chức trong từ điển thông dụng](/mt/dicts/regular?ptag=nn)
 
 - **Tên riêng khác**: Những loại tên riêng khác không hợp với các loại trên, ví dụ tên chiêu thức, tựa sách, hoá chất...
 
   _Tên riêng khác với danh từ thông dụng là nó đứng độc lập, không ghép với các từ khác tạo thành cụm từ._
 
-  Ví dụ từ: [Tên riêng khác trong từ điển thông dụng](/dicts/regular?ptag=nz)
+  Ví dụ từ: [Tên riêng khác trong từ điển thông dụng](/mt/dicts/regular?ptag=nz)
 
   **_Hiện tại việc đánh dấu tên riêng khác bị sai khá nhiều do Chivi dùng các công cụ phân loại từ tự động có độ chính xác chưa cao (do không được train với văn học mạng). Các bạn check thấy sai hãy sửa giùm :)_**
 
 - **Danh từ thông dụng**: Các từ chỉ đồ vật, hiện tượng.
   Danh từ thông dụng nếu đứng liền kề nhau có thể kết hợp được.
 
-  [Các danh từ thường dùng](/dicts/regular?ptag=n&uname=Nipin)
+  [Các danh từ thường dùng](/mt/dicts/regular?ptag=n&uname=Nipin)
 
 - **Danh xưng**: các danh từ dùng để xưng hô người như "tỷ tỷ", "muội muội", "lão sư", "chưởng môn", "tiên tử"...
 
   Trong ngữ pháp thì danh từ nhân xưng có thể gộp với **Tên/họ người** đằng trước tạo thành tên người.
 
-  [Các danh xưng thường dùng](/dicts/regular?ptag=nw)
+  [Các danh xưng thường dùng](/mt/dicts/regular?ptag=nw)
 
 - **Thuộc tính**: các từ có mang tính chất mô tả nhưng không phải là tính từ, ví dụ:
 
@@ -66,7 +66,7 @@ Trong Chivi danh từ được chia thành các loại nhỏ:
 
   Phương vị đứng đằng sau danh từ thường sẽ tạo thành cụm từ chỉ nơi chốn
 
-  [Các từ phương vị thường dùng](/dicts/regular?ptag=f)
+  [Các từ phương vị thường dùng](/mt/dicts/regular?ptag=f)
 
 - **Nơi chốn**: Thường thì nơi chốn là kết quả của việc ghép danh từ + phương vị từ.
 
@@ -74,13 +74,13 @@ Trong Chivi danh từ được chia thành các loại nhỏ:
 
   ví dụ: "桌上的本" dịch là "sách trên bàn" thay vì là "sách của trên bàn".
 
-  [Các từ chỉ nơi chốn thường dùng](/dicts/regular?ptag=f&uname=Nipin)
+  [Các từ chỉ nơi chốn thường dùng](/mt/dicts/regular?ptag=f&uname=Nipin)
 
 - **Thời gian**: các từ mang nghĩa thời gian như "hôm nay", "4 giờ chiều", "12 tiếng"...
 
   Danh từ thời gian có thể làm bổ ngữ hoặc trạng ngữ cho động từ.
 
-  Tham khảo: [Các từ thời gian thường dùng](/dicts/regular?ptag=t)
+  Tham khảo: [Các từ thời gian thường dùng](/mt/dicts/regular?ptag=t)
 
 - **Ngữ tố danh từ/Ngữ tố thời gian**: Kết quả rác của công cụ phân loại từ tự động, cần thiết chuyển về đúng phân loại danh từ/thời gian bình thường.
 
