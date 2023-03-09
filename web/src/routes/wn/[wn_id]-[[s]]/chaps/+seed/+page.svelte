@@ -98,11 +98,11 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
     },
   ]
 
-  $: google_url = 'https://www.google.com/search?q=' + nvinfo.btitle_zh
+  $: google_url = 'https://www.google.com/search?q=' + nvinfo.ztitle
 </script>
 
 <article class="article island md-article">
-  <h3>Quản lý nguồn truyện cho bộ [{nvinfo.btitle_vi}]</h3>
+  <h3>Quản lý nguồn truyện cho bộ [{nvinfo.vtitle}]</h3>
 
   <AddSeed {nvinfo} />
 

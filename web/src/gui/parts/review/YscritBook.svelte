@@ -4,7 +4,7 @@
 
   import { SIcon, BCover } from '$gui'
 
-  export let book: CV.Crbook
+  export let book: CV.Crbook | CV.Nvinfo
 </script>
 
 <section class="book">
@@ -15,18 +15,18 @@
   <div class="-info">
     <div class="-title">
       <a class="link _title" href="/wn/{book.bslug}">
-        <span>{book.btitle}</span>
+        <span>{book.vtitle}</span>
       </a>
     </div>
     <div class="-extra">
-      <a class="link _author" href="/wn/={book.author}">
+      <a class="link _author" href="/wn/={book.vauthor}">
         <SIcon name="edit" />
-        <span>{book.author}</span>
+        <span>{book.vauthor}</span>
       </a>
 
-      <a class="link _genre" href="/wn/~{book.bgenre}">
+      <a class="link _genre" href="/wn/~{book.genres[0]}">
         <SIcon name="folder" />
-        <span>{book.bgenre}</span>
+        <span>{book.genres[0]}</span>
       </a>
     </div>
     <div class="-extra">
@@ -37,7 +37,7 @@
 
       <span class="meta">
         <SIcon name="clock" />
-        <span>{rel_time(book.update)}</span>
+        <span>{rel_time(book.mftime)}</span>
       </span>
     </div>
   </div>

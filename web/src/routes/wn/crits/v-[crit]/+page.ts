@@ -16,7 +16,7 @@ export const load = (async ({ fetch, params: { crit } }) => {
 
   const _meta = {
     title: `Đánh giá [${crit}]`,
-    desc: `Đánh giá cho bộ truyện ${data.book.btitle_vi}`,
+    desc: `Đánh giá cho bộ truyện ${data.book.vtitle}`,
     left_nav: [
       home_nav('', ''),
       nav_link('/ys/crits', 'Đánh giá truyện', 'stars', { show: 'tm' }),

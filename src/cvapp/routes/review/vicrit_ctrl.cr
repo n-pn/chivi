@@ -31,13 +31,14 @@ class CV::VicritCtrl < CV::BaseCtrl
     end
 
     render json: {
-      total: total,
-      pgidx: pg_no,
-      pgmax: (total - 1) // limit + 1,
       crits: crits.map { |x| VicritView.new(x, full: false) },
       users: users.map { |x| {x.id, ViuserView.new(x, false)} }.to_h,
       books: books.map { |x| {x.id, WnovelView.new(x, false)} }.to_h,
       lists: lists.map { |x| {x.id, VilistView.new(x, :crit)} }.to_h,
+
+      pgidx: pg_no,
+      pgmax: _pgidx(total, limit),
+      total: total,
     }
   end
 

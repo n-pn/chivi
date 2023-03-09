@@ -21,11 +21,11 @@ export const load = (async ({ fetch, url, params, depends, parent }) => {
   const dlcvs = await api_get<DlTran[]>(api_url, fetch)
 
   const _meta = {
-    title: `Tải xuống bản dịch truyện: ${nvinfo.btitle_vi}`,
+    title: `Tải xuống bản dịch truyện: ${nvinfo.vtitle}`,
     desc: 'Tải xuống bản dịch bộ truyện',
     left_nav: [
       home_nav('', ''),
-      book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'tm'),
+      book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
       nav_link('+info', 'Sửa thông tin', 'pencil'),
     ],
   }

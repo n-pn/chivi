@@ -19,7 +19,7 @@
 
   async function submit() {
     for (const key in wnform) {
-      if (key == 'btitle_zh' || key == 'author_zh') continue
+      if (key == 'ztitle' || key == 'zauthor') continue
       const val = wnform[key]
       if (val == nvinfo[key]) delete wnform[key]
     }
@@ -43,22 +43,22 @@
   let show_genres_menu = false
   let show_genres_more = false
 
-  const tl_btitle = async (btitle: string) => {
-    const href = `/_m1/qtran/tl_btitle?btitle=${btitle}&wn_id=${nvinfo.id}`
-    wnform.btitle_vi = await fetch(href).then((r) => r.text())
+  const tl_btitle = async (value: string) => {
+    const href = `/_m1/qtran/tl_btitle?btitle=${value}&wn_id=${nvinfo.id}`
+    wnform.vtitle = await fetch(href).then((r) => r.text())
   }
 
-  const tl_author = async (author: string) => {
-    const href = `/_m1/qtran/tl_author?author=${author}&wn_id=${nvinfo.id}`
-    wnform.author_vi = await fetch(href).then((r) => r.text())
+  const tl_author = async (value: string) => {
+    const href = `/_m1/qtran/tl_author?author=${value}&wn_id=${nvinfo.id}`
+    wnform.vauthor = await fetch(href).then((r) => r.text())
   }
 
-  const tl_bintro = async (bintro: string) => {
+  const tl_bintro = async (value: string) => {
     const headers = { 'Content-Type': 'text/plain' }
-    const init = { method: 'POST', body: bintro, headers: headers }
+    const init = { method: 'POST', body: value, headers: headers }
 
     const href = `/_m1/qtran?wn_id=${nvinfo.id}&format=txt`
-    wnform.bintro_vi = await fetch(href, init).then((r) => r.text())
+    wnform.vintro = await fetch(href, init).then((r) => r.text())
   }
 </script>
 
@@ -70,52 +70,51 @@
   <form action="/_db/books" method="POST" on:submit|preventDefault={submit}>
     <form-group>
       <form-field>
-        <label class="form-label" for="btitle_zh">Tên truyện tiếng Trung</label>
+        <label class="form-label" for="ztitle">Tên truyện tiếng Trung</label>
         <input
           type="text"
           class="m-input"
-          name="btitle_zh"
+          name="ztitle"
           placeholder="Tựa bộ truyện"
           disabled={nvinfo.id != 0}
-          on:change={() => tl_btitle(wnform.btitle_zh)}
+          on:change={() => tl_btitle(wnform.ztitle)}
           required
-          bind:value={wnform.btitle_zh} />
+          bind:value={wnform.ztitle} />
       </form-field>
 
       <form-field>
-        <label class="form-label" for="btitle_vi">Tên truyện tiếng Việt</label>
+        <label class="form-label" for="vtitle">Tên truyện tiếng Việt</label>
         <input
           type="text"
           class="m-input"
-          name="btitle_vi"
+          name="vtitle"
           placeholder="Để trắng để hệ thống tự gợi ý"
-          bind:value={wnform.btitle_vi} />
+          bind:value={wnform.vtitle} />
       </form-field>
     </form-group>
 
     <form-group>
       <form-field>
-        <label class="form-label" for="author_zh"
-          >Tên tác giả tiếng Trung</label>
+        <label class="form-label" for="zauthor">Tên tác giả tiếng Trung</label>
         <input
           type="text"
           class="m-input"
-          name="author_zh"
+          name="zauthor"
           placeholder="Tên tác giả bộ truyện"
           required
           disabled={nvinfo.id != 0}
-          on:change={() => tl_author(wnform.author_zh)}
-          bind:value={wnform.author_zh} />
+          on:change={() => tl_author(wnform.zauthor)}
+          bind:value={wnform.zauthor} />
       </form-field>
 
       <form-field>
-        <label class="form-label" for="author_vi">Tên tác giả tiếng Việt</label>
+        <label class="form-label" for="vauthor">Tên tác giả tiếng Việt</label>
         <input
           type="text"
           class="m-input"
-          name="author_vi"
+          name="vauthor"
           placeholder="Để trắng để hệ thống tự gợi ý"
-          bind:value={wnform.author_vi} />
+          bind:value={wnform.vauthor} />
       </form-field>
     </form-group>
 
@@ -127,8 +126,8 @@
           name="zintro"
           rows="8"
           placeholder="Giới thiệu vắn tắt nội dung"
-          on:change={() => tl_bintro(wnform.bintro_zh)}
-          bind:value={wnform.bintro_zh} />
+          on:change={() => tl_bintro(wnform.zintro)}
+          bind:value={wnform.zintro} />
       </form-field>
 
       <form-field>
@@ -138,7 +137,7 @@
           name="vintro"
           rows="8"
           placeholder="Để trắng để hệ thống tự gợi ý"
-          bind:value={wnform.bintro_vi} />
+          bind:value={wnform.vintro} />
       </form-field>
     </form-group>
 

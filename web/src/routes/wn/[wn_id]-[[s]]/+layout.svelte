@@ -4,11 +4,11 @@
 
   function gen_keywords(nvinfo: CV.Nvinfo) {
     const kw = [
-      nvinfo.btitle_zh,
-      nvinfo.btitle_vi,
-      nvinfo.btitle_hv,
-      nvinfo.author_zh,
-      nvinfo.author_vi,
+      nvinfo.ztitle,
+      nvinfo.vtitle,
+      nvinfo.htitle,
+      nvinfo.zauthor,
+      nvinfo.vauthor,
       ...nvinfo.genres,
     ]
     return kw.filter((v, i, a) => i != a.indexOf(v)).join(',')
@@ -30,13 +30,13 @@
     x.tab = 'book'
     x.book = {
       id: nvinfo.id,
-      bname: nvinfo.btitle_vi,
+      bname: nvinfo.vtitle,
       bslug: nvinfo.bslug,
     }
     return x
   })
 
-  $: vdict.put(nvinfo.id, nvinfo.btitle_vi)
+  $: vdict.put(nvinfo.id, nvinfo.vtitle)
 </script>
 
 <svelte:head>
@@ -47,8 +47,8 @@
   <meta property="og:image" content="https://cr2.chivi.app/covers/{bcover}" />
 
   <meta property="og:novel:category" content={genres[0]} />
-  <meta property="og:novel:author" content={nvinfo.author_vi} />
-  <meta property="og:novel:book_name" content={nvinfo.btitle_vi} />
+  <meta property="og:novel:author" content={nvinfo.vauthor} />
+  <meta property="og:novel:book_name" content={nvinfo.vtitle} />
   <meta property="og:novel:status" content={map_status(nvinfo.status)} />
   <meta property="og:novel:update_time" content={update} />
 </svelte:head>

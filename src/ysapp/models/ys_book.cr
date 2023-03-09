@@ -93,20 +93,20 @@ class YS::Ysbook
   JSON_HEADER = HTTP::Headers{"content-type" => "application/json"}
 
   def create_nvinfo
-    btitle_zh, author_zh = CV::BookUtil.fix_names(self.btitle, self.author)
-    bintro_zh = TextUtil.split_html(self.intro, true).join('\n')
+    ztitle, zauthor = CV::BookUtil.fix_names(self.btitle, self.author)
+    zintro = TextUtil.split_html(self.intro, true).join('\n')
 
-    raise "uknown error" unless tl_data = TranUtil.tl_book(btitle_zh, author_zh, bintro_zh)
-    btitle_vi, author_vi, bintro_vi = tl_data
+    raise "uknown error" unless tl_data = TranUtil.tl_book(ztitle, zauthor, zintro)
+    vtitle, vauthor, vintro = tl_data
 
-    Log.info { "create new book: #{btitle_vi} -- #{author_vi}".colorize.yellow }
+    Log.info { "create new book: #{vtitle} -- #{vauthor}".colorize.yellow }
 
-    author = CV::Author.upsert!(author_zh, author_vi)
-    btitle = CV::Btitle.upsert!(btitle_zh, btitle_vi)
+    author = CV::Author.upsert!(zauthor, vauthor)
+    btitle = CV::Btitle.upsert!(ztitle, vtitle)
     nvinfo = CV::Nvinfo.upsert!(author, btitle, fix_names: true)
 
-    nvinfo.zintro = bintro_zh
-    nvinfo.bintro = bintro_vi
+    nvinfo.zintro = zintro
+    nvinfo.bintro = vintro
     nvinfo.scover = self.cover
 
     zgenres = [self.genre].concat(self.btags)

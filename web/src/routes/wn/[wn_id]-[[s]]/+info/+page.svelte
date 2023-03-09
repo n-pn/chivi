@@ -16,7 +16,7 @@
 </script>
 
 <NvinfoForm {nvinfo} {wnform}>
-  <h1 slot="header">Sửa thông tin truyện [{nvinfo.btitle_vi}]</h1>
+  <h1 slot="header">Sửa thông tin truyện [{nvinfo.vtitle}]</h1>
 </NvinfoForm>
 
 {#if $session.privi > 3}

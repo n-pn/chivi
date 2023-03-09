@@ -23,16 +23,16 @@
 </script>
 
 <div class="main-info">
-  <div class="title" data-tip={nvinfo.btitle_hv} data-tip-loc="bottom">
+  <div class="title" data-tip={nvinfo.htitle} data-tip-loc="bottom">
     <h1 class="bname _main">
-      <bname-vi>{nvinfo.btitle_vi}</bname-vi>
-      {#if nvinfo.btitle_zh != nvinfo.btitle_vi}
+      <bname-vi>{nvinfo.vtitle}</bname-vi>
+      {#if nvinfo.ztitle != nvinfo.vtitle}
         <bname-sep>/</bname-sep>
-        <bname-zh>{nvinfo.btitle_zh}</bname-zh>
+        <bname-zh>{nvinfo.ztitle}</bname-zh>
       {/if}
-      {#if nvinfo.btitle_hv != nvinfo.btitle_vi && nvinfo.btitle_hv != nvinfo.btitle_zh}
+      {#if nvinfo.htitle != nvinfo.vtitle && nvinfo.htitle != nvinfo.ztitle}
         <bname-sep>/</bname-sep>
-        <bname-vi>{nvinfo.btitle_hv}</bname-vi>
+        <bname-vi>{nvinfo.htitle}</bname-vi>
       {/if}
     </h1>
   </div>
@@ -45,8 +45,8 @@
     <div class="line _clamp">
       <div class="stat -trim -author">
         <SIcon name="edit" />
-        <a class="link -trim" href="/wn/={nvinfo.author_vi}">
-          <span class="label">{nvinfo.author_vi}</span>
+        <a class="link -trim" href="/wn/={nvinfo.vauthor}">
+          <span class="label">{nvinfo.vauthor}</span>
         </a>
       </div>
 

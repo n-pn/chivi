@@ -37,8 +37,8 @@ class YS::CvBook
 
   column utime : Int64 = 0
 
-  def bgenre : String
-    GENRES[self.igenres[0]? || 0]
+  def genres : Array(String)
+    igenres.map { |x| GENRES[x]? || "Loại khác" }.uniq!
   end
 
   GENRES = {} of Int32 => String

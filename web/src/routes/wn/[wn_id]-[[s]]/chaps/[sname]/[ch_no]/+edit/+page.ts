@@ -16,11 +16,11 @@ export async function load({ fetch, parent, params: { wn_id, sname, ch_no } }) {
 import { book_nav, seed_nav, nav_link } from '$gui/global/header_util'
 import { _pgidx } from '$lib/kit_path'
 
-function page_meta({ bslug, btitle_vi }, sname: string, ch_no: number) {
+function page_meta({ bslug, vtitle }, sname: string, ch_no: number) {
   return {
-    title: `Sửa text gốc chương #${ch_no} - ${btitle_vi}`,
+    title: `Sửa text gốc chương #${ch_no} - ${vtitle}`,
     left_nav: [
-      book_nav(bslug, btitle_vi, 'tm'),
+      book_nav(bslug, vtitle, 'tm'),
       seed_nav(bslug, sname, _pgidx(ch_no), 'ts'),
       nav_link('+edit', `Ch. ${ch_no}`, 'edit'),
     ],

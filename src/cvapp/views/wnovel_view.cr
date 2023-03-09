@@ -11,8 +11,8 @@ struct CV::WnovelView
       jb.field "id", @data.id
       jb.field "bslug", "#{@data.id}-#{@data.bslug}"
 
-      jb.field "author_vi", @data.author.vname
-      jb.field "btitle_vi", @data.vname
+      jb.field "vauthor", @data.author.vname
+      jb.field "vtitle", @data.vname
 
       jb.field "genres", @data.vgenres
       jb.field "bcover", @data.bcover
@@ -25,14 +25,12 @@ struct CV::WnovelView
       jb.field "rating", @data.rating / 10
 
       if @full
-        jb.field "bhash", @data.bhash
-
         jb.field "bintro", @data.bintro
         jb.field "labels", @data.vlabels
 
-        jb.field "author_zh", @data.author.zname
-        jb.field "btitle_zh", @data.btitle.zname
-        jb.field "btitle_hv", @data.btitle.hname
+        jb.field "zauthor", @data.author.zname
+        jb.field "ztitle", @data.btitle.zname
+        jb.field "htitle", @data.btitle.hname
 
         jb.field "origins", @data.orig_links
       end

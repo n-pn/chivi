@@ -67,7 +67,7 @@
 <nav class="bread">
   <a href="/wn/{nvinfo.bslug}" class="crumb _link">
     <SIcon name="book" />
-    <span>{nvinfo.btitle_vi}</span>
+    <span>{nvinfo.vtitle}</span>
   </a>
   <span>/</span>
   <a href="/wn/{nvinfo.bslug}/-union" class="crumb _link">Chương tiết</a>

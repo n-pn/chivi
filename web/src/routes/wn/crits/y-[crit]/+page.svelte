@@ -18,7 +18,7 @@
   </a>
   <span class="-sep">/</span>
   <a class="crumb _link" href="/wn/crits?book={book.id}">
-    <span>{book.btitle}</span>
+    <span>{book.vtitle}</span>
   </a>
 </nav>
 

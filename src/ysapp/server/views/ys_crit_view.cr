@@ -13,9 +13,9 @@ struct YS::CritView
 
   def to_json(jb = JSON::Builder.new)
     jb.object do
-      jb.field "id", HashUtil.encode32(@data.id)
-      jb.field "wn_id", @data.nvinfo_id
+      jb.field "v_cid", HashUtil.encode32(@data.id)
 
+      jb.field "book_id", @data.nvinfo_id
       jb.field "user_id", @data.ysuser_id
       jb.field "list_id", @data.yslist_id
 

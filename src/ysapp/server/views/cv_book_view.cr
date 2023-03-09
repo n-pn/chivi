@@ -15,10 +15,10 @@ struct YS::BookView
       jb.field "id", @data.id
       jb.field "bslug", "#{@data.id}-#{@data.bslug}"
 
-      jb.field "author", @data.author.vname
-      jb.field "btitle", @data.vname
+      jb.field "vauthor", @data.author.vname
+      jb.field "vtitle", @data.vname
 
-      jb.field "bgenre", @data.bgenre
+      jb.field "genres", @data.genres
       jb.field "bcover", @data.bcover
       jb.field "scover", @data.scover
 
@@ -26,7 +26,7 @@ struct YS::BookView
       jb.field "rating", @data.rating / 10
 
       jb.field "status", @data.status
-      jb.field "update", @data.utime
+      jb.field "mftime", @data.utime
     }
   end
 

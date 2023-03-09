@@ -5,7 +5,7 @@ export const load = (async ({ url, parent }) => {
   const { nvinfo, curr_seed } = await parent()
 
   const _meta: App.PageMeta = {
-    title: 'Thêm/sửa chương truyện ' + nvinfo.btitle_vi,
+    title: 'Thêm/sửa chương truyện ' + nvinfo.vtitle,
     left_nav: [
       home_nav('', ''),
       book_nav(nvinfo.bslug, '', 'tl'),

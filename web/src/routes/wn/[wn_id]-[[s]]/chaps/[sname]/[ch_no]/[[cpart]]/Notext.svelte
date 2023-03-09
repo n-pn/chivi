@@ -9,7 +9,7 @@
   export let _onload = false
 
   $: _privi = data._user?.privi || 0
-  $: search = `"${data.nvinfo.btitle_zh}" ${data.chap_data.title}`
+  $: search = `"${data.nvinfo.ztitle}" ${data.chap_data.title}`
   $: seed_href = seed_path(data.nvinfo.bslug, data.curr_seed.sname)
   $: edit_href = `${seed_href}/${data.curr_chap.chidx}/+edit`
 

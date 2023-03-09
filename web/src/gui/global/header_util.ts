@@ -87,20 +87,20 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     if (!nvinfo) return error
 
     return {
-      title: `${nvinfo.btitle_vi}`,
+      title: `${nvinfo.vtitle}`,
       desc: nvinfo.bintro.substring(0, 300),
-      left_nav: [home_nav(''), book_nav(nvinfo.bslug, nvinfo.btitle_vi, '')],
+      left_nav: [home_nav(''), book_nav(nvinfo.bslug, nvinfo.vtitle, '')],
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
     }
   },
   '/wn/[wn_id]-[[s]]/+info': ({ nvinfo }) => {
     if (!nvinfo) return error
     return {
-      title: `Sửa thông tin truyện: ${nvinfo.btitle_vi}`,
+      title: `Sửa thông tin truyện: ${nvinfo.vtitle}`,
       desc: 'Sửa thông tin truyện',
       left_nav: [
         home_nav('', ''),
-        book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'tm'),
+        book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
         nav_link('+info', 'Sửa thông tin', 'pencil'),
       ],
     }
@@ -109,11 +109,11 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     if (!nvinfo) return error
 
     return {
-      title: `${nvinfo.btitle_vi}`,
+      title: `${nvinfo.vtitle}`,
       desc: nvinfo.bintro.substring(0, 300),
       left_nav: [
         home_nav('', ''),
-        book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'tm'),
+        book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
         nav_link('crits', 'Đánh giá', 'stars'),
       ],
       right_nav: [
@@ -125,7 +125,7 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     if (!nvinfo) return error
 
     return {
-      title: `${nvinfo.btitle_vi}`,
+      title: `${nvinfo.vtitle}`,
       desc: nvinfo.bintro.substring(0, 300),
       left_nav: [
         home_nav('', ''),
@@ -142,11 +142,11 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     if (!nvinfo) return error
 
     return {
-      title: `${nvinfo.btitle_vi}`,
+      title: `${nvinfo.vtitle}`,
       desc: nvinfo.bintro.substring(0, 300),
       left_nav: [
         home_nav('', ''),
-        book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'tm'),
+        book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
         nav_link('lists', 'Thư đơn', 'bookmarks'),
       ],
       right_nav: [
@@ -159,11 +159,11 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     if (!nvinfo || !ubmemo) return error
 
     return {
-      title: `Chương tiết truyện  ${nvinfo.btitle_vi}`,
+      title: `Chương tiết truyện  ${nvinfo.vtitle}`,
       desc: nvinfo.bintro.substring(0, 300),
       left_nav: [
         home_nav('', ''),
-        book_nav(nvinfo.bslug, nvinfo.btitle_vi, 'ts'),
+        book_nav(nvinfo.bslug, nvinfo.vtitle, 'ts'),
         nav_link('../chaps', 'Chương tiết', 'list', { show: 'pl' }),
       ],
       right_nav: [quick_read_v2(nvinfo, ubmemo)],
@@ -173,8 +173,8 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     if (!nvinfo || !ubmemo) return error
 
     return {
-      title: `Thêm nguồn truyện: ${nvinfo.btitle_vi}`,
-      desc: `Quản lý nguồn truyện cho bộ truyện ${nvinfo.btitle_vi}`,
+      title: `Thêm nguồn truyện: ${nvinfo.vtitle}`,
+      desc: `Quản lý nguồn truyện cho bộ truyện ${nvinfo.vtitle}`,
       left_nav: [
         home_nav('', ''),
         book_nav(nvinfo.bslug, '', 'tl'),
@@ -195,9 +195,9 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
     const chap_href = chap_path(bslug, curr_seed.sname, ch_no, uslug)
 
     return {
-      title: `${title} - ${nvinfo.btitle_vi}`,
+      title: `${title} - ${nvinfo.vtitle}`,
       left_nav: [
-        book_nav(bslug, nvinfo.btitle_vi, 'tm'),
+        book_nav(bslug, nvinfo.vtitle, 'tm'),
         seed_nav(bslug, curr_seed.sname, _pgidx(ch_no), 'ts'),
         nav_link(chap_href, `Ch. ${ch_no}`, '', { show: 'lg', kind: 'uname' }),
       ],

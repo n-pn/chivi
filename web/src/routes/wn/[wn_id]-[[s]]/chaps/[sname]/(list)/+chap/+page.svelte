@@ -127,7 +127,7 @@
 </script>
 
 <svelte:head>
-  <title>Thêm/sửa chương - {nvinfo.btitle_vi} - Chivi</title>
+  <title>Thêm/sửa chương - {nvinfo.vtitle} - Chivi</title>
 </svelte:head>
 
 <section class="article">

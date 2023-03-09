@@ -12,16 +12,14 @@ declare namespace CV {
 
   interface Nvinfo {
     id: number
-
     bslug: string
-    bhash: string
 
-    btitle_zh: string
-    btitle_hv: string
-    btitle_vi: string
+    ztitle: string
+    vtitle: string
+    htitle: string
 
-    author_zh: string
-    author_vi: string
+    zauthor: string
+    vauthor: string
 
     bcover: string
     scover: string
@@ -39,15 +37,34 @@ declare namespace CV {
     origins: Wnlink[]
   }
 
+  interface Crbook {
+    id: number
+    bslug: string
+
+    vtitle: string
+    vauthor: string
+
+    genres: string[]
+
+    bcover: string
+    scover: string
+
+    rating: number
+    voters: number
+
+    status: number
+    mftime: number
+  }
+
   interface WnForm {
-    btitle_zh: string
-    btitle_vi: string
+    ztitle: string
+    vtitle: string
 
-    author_zh: string
-    author_vi: string
+    zauthor: string
+    vauthor: string
 
-    bintro_zh: string
-    bintro_vi: string
+    zintro: string
+    vintro: string
 
     genres: string[]
     bcover: string

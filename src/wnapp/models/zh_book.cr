@@ -42,8 +42,8 @@ class ZH::ZhRepo
       );
     SQL
 
-    db.exec "create index if not exists author_idx on books(author);"
-    db.exec "create index if not exists btitle_idx on books(btitle);"
+    db.exec "create index if not exists author_idx on books (author);"
+    db.exec "create index if not exists btitle_idx on books (btitle);"
   end
 end
 

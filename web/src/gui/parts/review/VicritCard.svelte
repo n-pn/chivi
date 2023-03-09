@@ -5,9 +5,10 @@
 
 <script lang="ts">
   import { SIcon, Stars } from '$gui'
-  import Truncate from '$gui/atoms/Truncate.svelte'
   import { api_path } from '$lib/api_call'
-  // import YscritBook from './YscritBook.svelte'
+
+  import Truncate from '$gui/atoms/Truncate.svelte'
+  import YscritBook from './YscritBook.svelte'
 
   export let crit: CV.Vicrit
   export let book: CV.Nvinfo
@@ -51,6 +52,8 @@
       </span>
     </div>
   </header>
+
+  {#if show_book && book}<YscritBook {book} />{/if}
 
   <div class="vtags">
     {#each crit.btags as label}

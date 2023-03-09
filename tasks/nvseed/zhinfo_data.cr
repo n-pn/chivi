@@ -46,11 +46,11 @@ class CV::ZhinfoData
     _index.append(snvid, Bindex.new(stime, "", ""))
   end
 
-  def get_nvinfo(author_zh : String, btitle_zh : String)
-    return if btitle_zh.blank? || author_zh.blank?
+  def get_nvinfo(zauthor : String, ztitle : String)
+    return if ztitle.blank? || zauthor.blank?
 
-    return unless author = NvinfoUtil.get_author(author_zh, force: @force_author)
-    return unless btitle = NvinfoUtil.get_btitle(btitle_zh, force: @force_btitle)
+    return unless author = NvinfoUtil.get_author(zauthor, force: @force_author)
+    return unless btitle = NvinfoUtil.get_btitle(ztitle, force: @force_btitle)
 
     Nvinfo.upsert!(author, btitle)
   end
@@ -67,8 +67,8 @@ class CV::ZhinfoData
   end
 
   def seed_entry!(snvid : String, bindex : Bindex, mode : Int32 = 0)
-    btitle_zh, author_zh = bindex.fix_names
-    return unless nvinfo = get_nvinfo(author_zh, btitle_zh)
+    ztitle, zauthor = bindex.fix_names
+    return unless nvinfo = get_nvinfo(zauthor, ztitle)
 
     nvseed = Chroot.upsert!(nvinfo, @sname, snvid)
     return unless mode > 0 || nvseed.stime < bindex.stime
@@ -88,7 +88,7 @@ class CV::ZhinfoData
     nvseed.fix_latest(force: mode > 1)
 
     if nvinfo.voters < 10
-      voters, rating = get_scores(btitle_zh, author_zh)
+      voters, rating = get_scores(ztitle, zauthor)
       nvinfo.fix_scores!(voters, voters &* rating)
     end
 

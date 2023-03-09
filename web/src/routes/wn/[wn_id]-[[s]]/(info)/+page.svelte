@@ -63,7 +63,7 @@
 
   <h3 class="sub">
     <sub-label>Truyện đồng tác giả</sub-label>
-    <a class="sub-link" href="/wn/={nvinfo.author_vi}">Xem tất cả</a>
+    <a class="sub-link" href="/wn/={nvinfo.vauthor}">Xem tất cả</a>
   </h3>
 
   {#if bdata.books.length > 0}

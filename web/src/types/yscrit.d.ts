@@ -1,27 +1,8 @@
 declare namespace CV {
-  interface Crbook {
-    id: number
-
-    bslug: string
-
-    btitle: string
-    author: string
-
-    bgenre: string
-    bcover: string
-    scover: string
-
-    rating: number
-    voters: number
-
-    status: number
-    update: number
-  }
-
   interface Yscrit {
-    id: string
-    wn_id: number
+    v_cid: string
 
+    book_id: number
     user_id: number
     list_id: number
 

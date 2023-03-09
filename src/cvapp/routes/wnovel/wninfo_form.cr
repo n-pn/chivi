@@ -6,14 +6,14 @@ class CV::WnovelForm
 
   getter wn_id : Int32 = 0
 
-  getter btitle_zh : String
-  getter btitle_vi : String?
+  getter ztitle : String
+  getter vtitle : String?
 
-  getter author_zh : String
-  getter author_vi : String?
+  getter zauthor : String
+  getter vauthor : String?
 
-  getter bintro_zh : String?
-  getter bintro_vi : String?
+  getter zintro : String?
+  getter vintro : String?
 
   getter genres : Array(String)? = nil
   getter bcover : String? = nil
@@ -22,13 +22,13 @@ class CV::WnovelForm
   getter wn_links : Array(String) = [] of String
 
   def after_initialize
-    @btitle_zh, @author_zh = BookUtil.fix_names(@btitle_zh, @author_zh)
+    @ztitle, @zauthor = BookUtil.fix_names(@ztitle, @zauthor)
 
-    @author_vi = nil if @author_vi.try(&.blank?)
-    @btitle_vi = nil if @btitle_vi.try(&.blank?)
-    @bintro_vi = nil if @bintro_vi.try(&.blank?)
+    @vauthor = nil if @vauthor.try(&.blank?)
+    @vtitle = nil if @vtitle.try(&.blank?)
+    @vintro = nil if @vintro.try(&.blank?)
 
-    gen_vi_data! unless @author_vi && @btitle_vi && @bintro_vi
+    gen_vi_data! unless @vauthor && @vtitle && @vintro
   end
 
   alias ViData = NamedTuple(btitle: String, author: String, bintro: String)
@@ -37,30 +37,30 @@ class CV::WnovelForm
     link = "http://localhost:5110/_m1/qtran/tl_wnovel?wn_id=#{@wn_id}"
 
     headers = HTTP::Headers{"Content-Type" => "application/json"}
-    body = {btitle: @btitle_zh, author: @author_zh, bintro: @bintro_zh || ""}
+    body = {btitle: @ztitle, author: @zauthor, bintro: @zintro || ""}
 
     HTTP::Client.post(link, headers: headers, body: body.to_json) do |res|
       return unless res.success?
       data = ViData.from_json(res.body_io.gets_to_end)
 
-      @author_vi ||= data[:author]
-      @btitle_vi ||= data[:btitle]
-      @bintro_vi ||= data[:bintro]
+      @vauthor ||= data[:author]
+      @vtitle ||= data[:btitle]
+      @vintro ||= data[:bintro]
     end
   end
 
   def save!(_uname : String, _privi : Int32) : Nvinfo
-    author = Author.upsert!(@author_zh, @author_vi)
-    btitle = Btitle.upsert!(@btitle_zh, @btitle_vi)
+    author = Author.upsert!(@zauthor, @vauthor)
+    btitle = Btitle.upsert!(@ztitle, @vtitle)
 
     vi_book = Nvinfo.upsert!(author, btitle, fix_names: true)
 
-    @bintro_zh.try do |intro|
+    @zintro.try do |intro|
       intro = TextUtil.split_html(intro, true).join('\n')
       vi_book.zintro = intro unless intro.blank?
     end
 
-    @bintro_vi.try do |intro|
+    @vintro.try do |intro|
       intro = intro.split(/\R/).map(&.strip).join('\n')
       vi_book.bintro = intro unless intro.blank?
     end

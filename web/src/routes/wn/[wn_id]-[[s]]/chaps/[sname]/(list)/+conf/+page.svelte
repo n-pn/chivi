@@ -12,7 +12,7 @@
 
   $: can_edit = check_privi(data.curr_seed, data.seed_data, data._user)
   $: edit_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}`
-  $: ztitle = `${nvinfo.btitle_zh} ${nvinfo.author_zh}`
+  $: ztitle = `${nvinfo.ztitle} ${nvinfo.zauthor}`
 
   $: can_conf = check_conf_privi(data.curr_seed, data._user)
 

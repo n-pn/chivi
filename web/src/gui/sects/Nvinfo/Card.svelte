@@ -12,8 +12,8 @@
   </div>
 
   <div class="infos">
-    <div class="info _title"><div class="trim">{nvinfo.btitle_vi}</div></div>
-    <div class="info"><strong class="trim">{nvinfo.author_vi}</strong></div>
+    <div class="info _title"><div class="trim">{nvinfo.vtitle}</div></div>
+    <div class="info"><strong class="trim">{nvinfo.vauthor}</strong></div>
 
     <div class="info">
       <span>Thể loại:</span>

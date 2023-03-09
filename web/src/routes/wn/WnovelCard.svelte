@@ -33,7 +33,7 @@
       </div>
     {/if}
   </div>
-  <div class="title">{nvinfo.btitle_vi}</div>
+  <div class="title">{nvinfo.vtitle}</div>
   <div class="genre">{nvinfo.genres[0] || 'Loại khác'}</div>
 </a>
 

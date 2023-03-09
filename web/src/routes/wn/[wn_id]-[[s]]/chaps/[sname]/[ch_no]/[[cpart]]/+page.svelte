@@ -104,7 +104,7 @@
 <nav class="bread">
   <a href="/wn/{nvinfo.bslug}" class="crumb _link">
     <SIcon name="book" />
-    <span>{nvinfo.btitle_vi}</span>
+    <span>{nvinfo.vtitle}</span>
   </a>
   <span>/</span>
   <span class="crumb _text">{curr_chap.chvol}</span>

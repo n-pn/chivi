@@ -9,14 +9,14 @@ const _meta: App.PageMeta = {
 }
 
 const wnform: CV.WnForm = {
-  btitle_zh: '',
-  btitle_vi: '',
+  ztitle: '',
+  vtitle: '',
 
-  author_zh: '',
-  author_vi: '',
+  zauthor: '',
+  vauthor: '',
 
-  bintro_zh: '',
-  bintro_vi: '',
+  zintro: '',
+  vintro: '',
 
   genres: [],
 
