@@ -163,4 +163,11 @@ class YS::Ysbook
     model.sync_with_wn!
     model.tap(&.save!)
   end
+
+  def self.crit_count(wn_id : Int64)
+    query.find({nvinfo_id: wn_id}).try(&.crit_count) || begin
+      query_stmt = "select count(*) from yscrits where nvinfo_id = $1"
+      PG_DB.query_one query_stmt, wn_id, as: Int32
+    end
+  end
 end

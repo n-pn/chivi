@@ -47,7 +47,7 @@
       {@const list = ydata.lists[crit.list_id]}
       {@const user = ydata.users[crit.user_id]}
       {@const view_all = crit.vhtml.length < 640}
-      {#key crit.id}
+      {#key crit.v_cid}
         <YscritCard
           {crit}
           {user}

@@ -21,8 +21,8 @@ targets:
   mt_sp-srv:
     main: src/mt_sp/mt_sp_srv.cr
 
-  mt_v0-srv:
-    main: src/mt_v0/mt_v0_srv.cr
+  # mt_v0-srv:
+  #   main: src/mt_v0/mt_v0_srv.cr
 
   mt_v1-srv:
     main: src/mt_v1/mt_v1_srv.cr
@@ -33,20 +33,17 @@ targets:
   bcover_cli:
     main: cli/bcover_cli.cr
 
-  text_split:
-    main: cli/text_split.cr
-
-  text_fetch:
-    main: cli/text_fetch.cr
-
-  fix_text:
-    main: cli/fix_text.cr
-
   ysbook_crawl:
     main: src/ysapp/tasks/ysbook_crawl.cr
 
   ysuser_crawl:
     main: src/ysapp/tasks/ysuser_crawl.cr
+
+  yslist_crawl:
+    main: src/ysapp/tasks/yslist_crawl.cr
+
+  ysrepl_crawl:
+    main: src/ysapp/tasks/ysrepl_crawl.cr
 
   yscrit_crawl_by_user:
     main: src/ysapp/tasks/yscrit_crawl_by_user.cr
@@ -57,17 +54,11 @@ targets:
   yscrit_crawl_by_book:
     main: src/ysapp/tasks/yscrit_crawl_by_book.cr
 
-  yslist_crawl:
-    main: src/ysapp/tasks/yslist_crawl.cr
-
   yslist_crawl_by_book:
     main: src/ysapp/tasks/yslist_crawl_by_book.cr
 
   yslist_crawl_by_user:
     main: src/ysapp/tasks/yslist_crawl_by_user.cr
-
-  ysrepl_crawl:
-    main: src/ysapp/tasks/ysrepl_crawl.cr
 
 dependencies:
   tabkv:

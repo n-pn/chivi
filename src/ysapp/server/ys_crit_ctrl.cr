@@ -23,7 +23,7 @@ class YS::CritCtrl < AC::Base
 
     if book
       crits = query.where("nvinfo_id = ?", book).to_a
-      total = Ysbook.query.find({nvinfo_id: book}).try(&.crit_count.to_i) || 0
+      total = Ysbook.crit_count(book)
     elsif list
       yslist = Yslist.find!({id: list})
       total = yslist.book_count
@@ -38,13 +38,23 @@ class YS::CritCtrl < AC::Base
 
     lists = yslist ? [yslist] : Yslist.preload(crits.compact_map(&.yslist_id))
 
+    if total < offset + crits.size
+      total = offset + crits.size
+    end
+
+    pgmax = _pgidx(total, limit)
+    pgmax += 1 if pgmax == pg_no && crits.size == limit
+
+    Log.info { "total: #{total}, pgmax: #{pgmax}" }
+
     render json: ({
       crits: CritView.as_list(crits),
       books: BookView.as_hash(books),
       lists: ListView.as_hash(lists),
       users: UserView.as_hash(users),
       pgidx: pg_no,
-      pgmax: _pgidx(total, limit),
+      total: total,
+      pgmax: pgmax,
     })
   rescue err
     render json: {
