@@ -16,7 +16,7 @@ export async function deepl(text: string, tab = 0, no_cap = false) {
   const url = `/_sp/deepl?sl=${sl}&tl=${tl}&no_cap=${no_cap}`
 
   try {
-    const res = await fetch(url, { method: 'PUT', body: text, headers })
+    const res = await fetch(url, { method: 'POST', body: text, headers })
     results[key] = await res.text()
     return results[key]
   } catch (ex) {

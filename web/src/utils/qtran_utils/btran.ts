@@ -17,7 +17,7 @@ export async function btran(text: string, tab: number, no_cap = true) {
   const url = `/_sp/btran?sl=${sl}&tl=${tl}&no_cap=${no_cap}`
 
   try {
-    const res = await fetch(url, { method: 'PUT', body: text, headers })
+    const res = await fetch(url, { method: 'POST', body: text, headers })
     results[key] = await res.text()
     return results[key]
   } catch (ex) {
