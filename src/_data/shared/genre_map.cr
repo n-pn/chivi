@@ -32,9 +32,6 @@ module CV::GenreMap
     zh_map[input]? || [""]
   end
 
-  def tl_genre(input : String)
-  end
-
   def zh_to_vi(zgenres : Array(String)) : Array(String)
     vgenres = zgenres.each_with_object([] of String) do |zgenre, output|
       zh_map[zgenre]?.try { |x| output.concat(x) }

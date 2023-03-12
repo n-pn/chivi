@@ -41,9 +41,9 @@
 
   onMount(() => {
     const params = $page.url.searchParams
-    for (const [key, val] of params.entries()) {
+    params.forEach((val, key) => {
       if (keys.includes(key)) query[key] = val
-    }
+    })
   })
 
   $: if (qtype == 'btitle') {
