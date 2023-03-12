@@ -2,6 +2,7 @@
   import { browser } from '$app/environment'
   import { goto, invalidateAll } from '$app/navigation'
 
+  import { chap_path } from '$lib/kit_path'
   import { session } from '$lib/stores'
   import { debounce, sync_scroll } from '$lib/svelte'
 
@@ -10,7 +11,6 @@
   import { opencc, diff_html, fix_breaks, translate } from '$utils/text_utils'
 
   import type { PageData } from './$types'
-  import { chap_path } from '$lib/kit_path'
   export let data: PageData
 
   let ztext = data.ztext

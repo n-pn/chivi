@@ -2,7 +2,11 @@ import { api_get } from '$lib/api_call'
 
 type ZtextRaw = { ztext: string; title: string; chdiv: string }
 
-export async function load({ fetch, parent, params: { wn_id, sname, ch_no } }) {
+export async function load({ fetch, parent, params }) {
+  const sname = params.sname
+  const wn_id = +params.wn_id
+  const ch_no = +params.ch_no
+
   const api_url = `/_wn/texts/${wn_id}/${sname}/${ch_no}`
 
   const { ztext, title, chdiv } = await api_get<ZtextRaw>(api_url, fetch)

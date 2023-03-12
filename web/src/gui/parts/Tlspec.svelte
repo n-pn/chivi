@@ -149,7 +149,7 @@
   on_close={ctrl.hide}>
   <tlspec-title slot="header">
     <title-lbl><SIcon name="flag" /></title-lbl>
-    <title-dic>{$vdict.d_dub} [{$vdict.dname}]</title-dic>
+    <title-dic>{$vdict.vd_id} [{$vdict.label}]</title-dic>
   </tlspec-title>
 
   <tlspec-body>

@@ -62,6 +62,7 @@ export async function translate(
   wn_id: number = 0,
   fetch = globalThis.fetch
 ) {
+  if (!input) return ''
   const href = `/_m1/qtran?wn_id=${wn_id}&format=txt`
   const init = { method: 'POST', headers: text_headers, body: input }
   return await fetch(href, init).then((r) => r.text())

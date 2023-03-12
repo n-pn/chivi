@@ -55,7 +55,8 @@ class YS::Ysbook
   # end
 
   def worth_saving?
-    self.crit_total > 0 || self.list_total > 0 || self.voters > 10 || self.author.in?(Author.known_authors)
+    self.crit_total > 0 || self.list_total > 0 || self.voters > 10 ||
+      self.author.in?(Author.known_authors)
   end
 
   def sync_with_wn!(force : Bool = false) : Nil
