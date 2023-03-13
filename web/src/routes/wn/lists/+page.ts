@@ -9,7 +9,8 @@ export const load = (async ({ url, fetch, parent }) => {
   const { _user } = await parent()
   const _meta = build_meta(_user)
 
-  return { ...data.ys, _meta }
+  const params = Object.fromEntries(url.searchParams)
+  return { ...data.ys, params, _meta }
 }) satisfies PageLoad
 
 const build_meta = (user: App.CurrentUser) => {
