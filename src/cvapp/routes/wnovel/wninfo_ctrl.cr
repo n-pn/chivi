@@ -36,7 +36,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
     query.limit(limit == 24 ? 25 : limit).offset(offset).with_author
 
     render json: {
-      books: WnovelView.map(query),
+      books: WnovelView.as_list(query),
       total: total, pgidx: pg_no,
       pgmax: _pgidx(total, limit),
     }

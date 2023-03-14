@@ -37,9 +37,15 @@ struct CV::WnovelView
     end
   end
 
-  def self.map(inp : Enumerable(Nvinfo), full = false)
+  def self.as_list(inp : Enumerable(Nvinfo), full = false)
     res = [] of self
     inp.each { |obj| res << new(obj, full) }
+    res
+  end
+
+  def self.as_hash(inp : Enumerable(Nvinfo))
+    res = {} of Int64 => self
+    inp.each { |obj| res[obj.id] = new(obj) }
     res
   end
 end

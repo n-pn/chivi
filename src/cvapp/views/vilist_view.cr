@@ -18,19 +18,20 @@ struct CV::VilistView
       jb.field "title", @data.title
       jb.field "tslug", @data.tslug
 
-      # unless @mode.crit?
-      #   jb.field "covers", @data.covers
-      #   jb.field "genres", @data.genres
-      # end
+      unless @mode.crit?
+        jb.field "covers", @data.covers
+        jb.field "genres", @data.genres
+      end
 
       jb.field "book_count", @data.book_count
 
       if @mode.full?
-        jb.field "ctime", @data.created_at.to_unix
         jb.field "dhtml", @data.dhtml
+        jb.field "utime", @data.updated_at.to_unix
 
         jb.field "like_count", @data.like_count
         jb.field "star_count", @data.star_count
+        jb.field "view_count", @data.view_count
       end
     }
   end

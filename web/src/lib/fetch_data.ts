@@ -1,4 +1,4 @@
-import { merge_query, api_path, api_get } from '$lib/api_call'
+import { merge_query, api_get } from '$lib/api_call'
 
 const get = async <T>(
   path: string,
@@ -7,16 +7,6 @@ const get = async <T>(
 ) => {
   const url = `${path}?${search}`
   return await api_get<T>(url, fetch)
-}
-
-const empty_crit_page = {
-  crits: [],
-  books: [],
-  users: [],
-  lists: [],
-  pgmax: 0,
-  pgidx: 0,
-  total: 0,
 }
 
 export const load_crits = async (url: URL, fetch: CV.Fetch, book?: string) => {
@@ -28,10 +18,10 @@ export const load_crits = async (url: URL, fetch: CV.Fetch, book?: string) => {
 
   const from = url.searchParams.get('from') || ''
 
-  let vi: CV.VicritList = empty_crit_page
+  let vi: CV.VicritList | null
   if (from != 'ys') vi = await get<CV.VicritList>('/_db/crits', fetch, search)
 
-  let ys: CV.YscritList = empty_crit_page
+  let ys: CV.YscritList | null
   if (from != 'vi') ys = await get<CV.YscritList>('/_ys/crits', fetch, search)
 
   return { vi, ys }
@@ -45,12 +35,11 @@ const empty_list_page = {
   total: 0,
 }
 
-export const load_lists = async (url: URL, fetch: CV.Fetch, book?: string) => {
-  const sort = url.searchParams.get('sort') || 'score'
-  const extras = { lm: 10, sort }
+export const load_lists = async (url: URL, fetch: CV.Fetch, opts = {}) => {
+  opts['sort'] ||= url.searchParams.get('sort') || 'score'
+  opts['lm'] ||= 10
 
-  const search = merge_query(url.searchParams, extras)
-  if (book) search.set('book', book)
+  const search = merge_query(url.searchParams, opts)
 
   const from = url.searchParams.get('from') || ''
 

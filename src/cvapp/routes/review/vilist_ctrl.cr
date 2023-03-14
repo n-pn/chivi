@@ -22,7 +22,7 @@ class CV::VilistCtrl < CV::BaseCtrl
     users = viuser ? [viuser] : Viuser.preload(lists.map(&.viuser_id))
 
     render json: {
-      lists: VilistView.as_list(lists, mode: :list),
+      lists: VilistView.as_list(lists, mode: :full),
       users: ViuserView.as_hash(users),
       total: total,
       pgidx: pg_no,
@@ -35,14 +35,35 @@ class CV::VilistCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::GET("/:list_id")]
-  def show(list_id : Int32)
+  def show(list_id : Int32,
+           sort : String = "utime",
+           smin : Int32 = 0, smax : Int32 = 6,
+           lb : String? = nil)
     vilist = load_list(list_id)
-
     viuser = Viuser.load!(vilist.viuser_id)
+
+    pg_no, limit, offset = _paginate(max: 20)
+    crits = Vicrit.sort_by(sort)
+
+    crits.where("vilist_id = ?", list_id)
+    crits.where("stars >= ?", smin) if smin > 1
+    crits.where("stars <= ?", smax) if smax < 5
+
+    crits.limit(limit).offset(offset).to_a
+
+    books = Nvinfo.preload(crits.map(&.nvinfo_id))
 
     render json: {
       list: VilistView.new(vilist, mode: :full),
       user: ViuserView.new(viuser, full: false),
+
+      books: {
+        crits: VicritView.as_list(crits, false),
+        books: WnovelView.as_hash(books),
+
+        pgidx: pg_no,
+        pgmax: _pgidx(vilist.book_count, limit),
+      },
     }
   end
 

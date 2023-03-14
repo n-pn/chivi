@@ -1,10 +1,8 @@
 <script lang="ts">
-  import YslistList from '$gui/parts/review/YslistList.svelte'
+  import WnlistList from '$gui/parts/review/WnlistList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
-
-  $: ({ lists, users, pgidx, pgmax } = data)
 </script>
 
-<YslistList {lists} {users} {pgidx} {pgmax} _sort="score" />
+<WnlistList vi={data.vi} ys={data.ys} _sort="score" />

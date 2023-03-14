@@ -1,11 +1,29 @@
-import type { LoadEvent } from '@sveltejs/kit'
-import { api_path } from '$lib/api_call'
+import { load_lists } from '$lib/fetch_data'
+import { home_nav, book_nav, nav_link } from '$gui/global/header_util'
 
-export const load = async ({ fetch, parent, url }: LoadEvent) => {
+import type { PageLoad } from './$types'
+
+export const load = (async ({ url, fetch, parent, params }) => {
+  const book = params.wn_id
+  const data = await load_lists(url, fetch, { book })
+
   const { nvinfo } = await parent()
+  const _meta = build_meta(nvinfo)
 
-  const sort = url.searchParams.get('sort') || 'score'
-  const opts = { book: nvinfo.id, lm: 10, sort }
-  const path = api_path('yslists.index', null, url.searchParams, opts)
-  return fetch(path).then((r) => r.json())
+  return { ...data, _meta }
+}) satisfies PageLoad
+
+const build_meta = (book: CV.Nvinfo) => {
+  return {
+    title: `${book.vtitle}`,
+    desc: book.bintro.substring(0, 300),
+    left_nav: [
+      home_nav('', ''),
+      book_nav(book.bslug, book.vtitle, 'tm'),
+      nav_link('lists', 'Thư đơn', 'bookmarks'),
+    ],
+    right_nav: [
+      nav_link('/wn/lists/+list', 'Tạo mới', 'circle-plus', { show: 'tl' }),
+    ],
+  }
 }

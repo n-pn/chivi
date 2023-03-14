@@ -9,8 +9,10 @@ declare namespace CV {
     genres: string[]
     covers: string[]
 
-    book_count: number
+    dhtml: string
+    utime: number
 
+    book_count: number
     view_count: number
     like_count: number
     star_count: number

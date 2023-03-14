@@ -1,31 +1,34 @@
-import { api_path, api_get } from '$lib/api_call'
+import { api_get } from '$lib/api_call'
 import { home_nav, nav_link } from '$gui/global/header_util'
 
 import type { PageLoad } from './$types'
 
 interface VilistData extends CV.Paginate {
-  ylist: CV.Yslist
-  yuser: CV.Ysuser
+  list: CV.Vilist
+  user: CV.Viuser
 
-  crits: CV.Yscrit[]
-  books: Record<number, CV.Crbook>
+  books: CV.VicritList
 }
 
-export const load = (async ({ fetch, params, url: { searchParams } }) => {
-  const list = params.list.split('-')[0]
-  const path = api_path('vilists.show', list, searchParams)
-  const data = await api_get<VilistData>(path, fetch)
+export const load = (async ({ url, fetch, params }) => {
+  const list = parseInt(params.list)
+  const api_url = new URL(url)
+  api_url.pathname = `/_db/lists/${list}`
 
-  const { id, vname, vdesc, vslug } = data.ylist
-  const uslug = `${id}${vslug}-${data.yuser.uslug}`
+  const data = await api_get<VilistData>(api_url.toString(), fetch)
+
+  data.books.users = { [data.user.vu_id]: data.user }
+  data.books.lists = { [data.list.id]: data.list }
+
+  const { id, title, tslug } = data.list
+  const uslug = `${id}${tslug}-${data.user.uname}`
 
   const _meta: App.PageMeta = {
-    title: `Thư đơn: ${vname}`,
-    desc: vdesc,
+    title: `Thư đơn: ${title}`,
     left_nav: [
       home_nav('', ''),
       nav_link('/wn/lists', 'Thư đơn', 'bookmarks', { show: 'tm' }),
-      nav_link(uslug, vname, null, { kind: 'title' }),
+      nav_link(uslug, title, null, { kind: 'title' }),
     ],
     right_nav: [nav_link('/wn/crits', 'Đánh giá', 'stars', { show: 'tm' })],
   }

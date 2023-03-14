@@ -154,6 +154,10 @@ class CV::Nvinfo
 
   #########################################
 
+  def self.preload(ids : Enumerable(Int32))
+    ids.empty? ? [] of self : query.where { id.in? ids }
+  end
+
   class_getter total : Int64 { query.count }
 
   def self.get(author : Author, btitle : Btitle)

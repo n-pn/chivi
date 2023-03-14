@@ -18,8 +18,8 @@ class CV::Vilist
 
   column klass : String = ""
 
-  # column covers : Array(String) = [""]
-  # column genres : Array(String) = [""]
+  column covers : Array(String) = [] of String
+  column genres : Array(String) = [] of String
 
   column _sort : Int32 = 0
   column _flag : Int32 = 0
