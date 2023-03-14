@@ -44,15 +44,15 @@ class YS::Ysrepl
   getter ztext : String { load_ztext_from_disk }
   getter vhtml : String { load_vhtml_from_disk }
 
-  ZIP_DIR = "var/ysapp/repls"
+  ZIP_DIR = "var/ysapp/repls-zip"
   TXT_DIR = "var/ysapp/repls-txt"
 
   private def group_by
-    self.origin_id[0..2]
+    self.origin_id[0..3]
   end
 
   def zip_path(type = "zh")
-    "#{ZIP_DIR}/#{group_by}-#{type}/#{self.origin_id}.zip"
+    "#{ZIP_DIR}/#{group_by}-#{type}.zip"
   end
 
   def tmp_path(type = "zh")

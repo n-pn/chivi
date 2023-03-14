@@ -72,8 +72,8 @@ fi
 
 if [[ $1 == "all" || $* == *miscs* ]]
 then
-  echo upload new crits data!
-  rsync-fast "var/ysapp/crits-zip" "$SSH/var/ysapp"
+  echo upload miscs data!
+  rsync-fast "var/ysapp/repls-zip" "$SSH/var/ysapp"
 fi
 
 SRC=tasks/yousuu
