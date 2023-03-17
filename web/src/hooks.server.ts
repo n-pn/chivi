@@ -81,8 +81,8 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   //   cached_users[hash] = cached_user
   // }
 
-  const now_unix = new Date().getTime() / 1000
-  if (cached_user && cached_user.until >= now_unix) return cached_user
+  // const now_unix = new Date().getTime() / 1000
+  // if (cached_user && cached_user.until >= now_unix) return cached_user
 
   const req_init = { headers: { cookie: event.request.headers.get('cookie') } }
   const response = await globalThis.fetch(session_url, req_init)
@@ -91,7 +91,7 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
 
   cached_user = (await response.json()) as App.CurrentUser
   // fs.writeFileSync(path, JSON.stringify(cached_user))
-  cached_users[hash] = cached_user
+  // cached_users[hash] = cached_user
 
   return cached_user || guest_user
 }

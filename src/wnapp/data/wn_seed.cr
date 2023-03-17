@@ -47,7 +47,7 @@ class WN::WnSeed
   end
 
   def mkdirs!(sname = self.sname, s_bid = self.s_bid) : self
-    Dir.mkdir_p("var/chaps/infos/#{sname}")
+    # Dir.mkdir_p("var/chaps/infos/#{sname}")
     Dir.mkdir_p("var/texts/rzips/#{sname}")
     Dir.mkdir_p("var/texts/rgbks/#{sname}/#{s_bid}")
 

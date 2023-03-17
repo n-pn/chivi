@@ -6,6 +6,7 @@
   import type { PageData } from './$types'
   import { browser } from '$app/environment'
   import DlcvList from './DlcvList.svelte'
+  import { debounce } from '$lib/svelte'
   export let data: PageData
 
   $: ({ nvinfo, curr_seed, dlcvs, pg_no } = data)
@@ -19,8 +20,13 @@
   let word_count = 0
   let vcoin_cost = 0
 
-  $: if (browser) {
-    caculate_cost(nvinfo.id, curr_seed.sname, from, upto)
+  let timer: number
+
+  $: if (browser && from > 0 && upto >= from) {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      caculate_cost(nvinfo.id, curr_seed.sname, from, upto)
+    }, 300)
   }
 
   async function caculate_cost(
