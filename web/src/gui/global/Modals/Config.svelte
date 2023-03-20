@@ -22,6 +22,7 @@
   import { browser } from '$app/environment'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import Slider from '$gui/molds/Slider.svelte'
 
   let elem: HTMLElement
 
@@ -48,17 +49,14 @@
     document.cookie = `${key}=${value}; max-age=31536000; path=/`
   }
 
-  const close_modal = () => popups.hide('config')
+  export let actived = true
 </script>
 
-<div class="config-wrap" bind:this={elem} on:blur={close_modal}>
-  <header class="config-head">
-    <h4 class="config-title">Cài đặt</h4>
-
-    <button class="m-btn _sm" data-kbd="esc" on:click={close_modal}>
-      <SIcon name="x" />
-    </button>
-  </header>
+<Slider class="config" bind:actived --slider-width="22rem">
+  <svelte:fragment slot="header-left">
+    <div class="-icon"><SIcon name="adjustments-alt" /></div>
+    <div class="-text">Cài đặt</div>
+  </svelte:fragment>
 
   <config-item>
     <field-label>Màu nền:</field-label>
@@ -173,44 +171,9 @@
       <span class="switch-label">Luôn bật ô giải nghĩa:</span>
     </label>
   </config-item>
-</div>
+</Slider>
 
 <style lang="scss">
-  .config-wrap {
-    display: block;
-    width: 18rem;
-    position: absolute;
-    top: 3.5rem;
-    right: 0;
-    // right: var(--gutter);
-
-    z-index: 90;
-    // right: 0;
-    padding: 0 0 1rem;
-
-    @include fgcolor(secd);
-    @include bgcolor(secd);
-    @include bdradi();
-    @include shadow(3);
-
-    @include tm-dark {
-      @include linesd(--bd-main);
-    }
-  }
-
-  .config-head {
-    display: flex;
-    padding: 0.5rem 1rem;
-    @include border($loc: bottom);
-  }
-
-  .config-title {
-    font-weight: 500;
-    flex: 1;
-    line-height: 2rem;
-    @include ftsize(lg);
-  }
-
   config-item {
     @include flex-cy($gap: 0.5rem);
     padding: 0 1rem;

@@ -25,10 +25,10 @@ class CV::UsercpCtrl < CV::BaseCtrl
     _viuser.upgrade!(form.privi, form.tspan)
 
     spawn do
-      CtrlUtil.log_user_action("upgrade-privi", form, _viuser.uname)
+      CtrlUtil.log_user_action("upgrade-privi", form, _uname)
 
-      Dir.mkdir_p("var/chaps/infos/#{sname}")
-      Dir.mkdir_p("var/texts/rzips/#{sname}")
+      Dir.mkdir_p("var/chaps/infos/@#{_uname}")
+      Dir.mkdir_p("var/texts/rzips/@#{_uname}")
 
       # sname = "@" + _viuser.uname
       # unless ChSeed.has_sname?(sname)
