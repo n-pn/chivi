@@ -5,24 +5,23 @@
   export let form: VpForm
   export let dicts: CV.VpDict[]
 
-  const save_modes = ['Tự động', 'Chung', 'Nháp', 'Riêng']
+  const save_modes = ['Tự động', 'Chung', 'Riêng', 'Riêng']
 
   $: vdict = form.init.dic >= 0 ? dicts[0] : dicts[1]
-  $: dname = vdict.vd_id > 0 ? `Truyện ${vdict.label}` : `Tất cả bộ truyện`
+  $: dname = vdict.vd_id > 0 ? vdict.label : `Tất cả bộ truyện`
 </script>
 
 <div class="emend">
-  {#if form.init.mtime > 0}
+  {#if form.init.uname}
     <span>{form.init.state}:</span>
-    <span class="bold">{get_rtime(form.init.mtime)}</span>
+    <span class="bold">{get_rtime(form.init.mtime * 1000)}</span>
     <span>bởi</span>
     <span class="bold trim">@{form.init.uname}</span>
-    <span>-</span>
-    <span>Phạm vi:</span>
-    <span class="bold trim">{dname}</span>
-    <span>({save_modes[Math.abs(form.init.tab)]})</span>
+    <span>Cho:</span>
+    <span class="bold trim _dic">{dname}</span>
+    <em>({save_modes[Math.abs(form.init.tab)]})</em>
   {:else}
-    <span>Chưa có lịch sử</span>
+    <em>Chưa có lịch sử sửa từ</em>
   {/if}
 </div>
 
@@ -42,6 +41,11 @@
   }
 
   .trim {
-    @include clamp(5vw);
+    @include clamp($width: null);
+
+    &._dic {
+      text-overflow: elipsis;
+      max-width: 8.5rem;
+    }
   }
 </style>
