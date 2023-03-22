@@ -2,21 +2,8 @@
   type SaveTab = [number, string, string]
 
   const save_tabs: SaveTab[] = [
-    [
-      2,
-      'Nháp',
-      'Lưu vào từ điển tạm thời, chỉ có tác dụng nếu bạn mở tử điển tạm thời',
-    ],
-    [
-      1,
-      'Chung',
-      'Lập tức áp dụng nghĩa của từ cho tất cả mọi người, ghi đè lên các từ ở chế độ Nháp',
-    ],
-    [
-      3,
-      'Riêng',
-      'Chỉ áp dụng cho riêng cá nhân, không thay đổi dù được sửa trong chế độ Chung',
-    ],
+    [1, 'Chung', 'Nghĩa của từ sẽ được áp dụng tất cả mọi người'],
+    [2, 'Riêng', 'Nghĩa của từ chỉ áp dụng cho riêng cá nhân bạn'],
   ]
 </script>
 

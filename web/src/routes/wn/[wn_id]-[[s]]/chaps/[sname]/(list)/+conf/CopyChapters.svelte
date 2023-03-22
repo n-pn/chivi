@@ -35,14 +35,17 @@
   }
 
   async function submit_patch() {
-    try {
-      await api_call(edit_url, { copy_other }, 'PATCH')
-      const pg_no = _pgidx(copy_other.base_ch_no)
-      const href = seed_path(book_info.bslug, curr_seed.sname, pg_no)
-      await goto(href)
-    } catch (ex) {
-      alert(ex.body.message)
-    }
+    alert('Tính năng đang được hoàn thiện')
+    return
+
+    // try {
+    //   await api_call(edit_url, { copy_other }, 'PATCH')
+    //   const pg_no = _pgidx(copy_other.base_ch_no)
+    //   const href = seed_path(book_info.bslug, curr_seed.sname, pg_no)
+    //   await goto(href)
+    // } catch (ex) {
+    //   alert(ex.body.message)
+    // }
   }
 
   function change_bg_seed(mirror: CV.Chroot) {

@@ -115,12 +115,8 @@ class M1::DefnCtrl < AC::Base
   private def rebuild_trie(defn : DbDefn)
     case defn.tab
     when 0, 1 # add to main dict
-      MtDict::TEMPS[defn.dic]?.try(&.remove_term(defn.key))
       MtDict::MAINS[defn.dic]?.try(&.add_defn(defn))
-    when 2 # add to temp dict
-      MtDict::TEMPS[defn.dic]?.try(&.add_defn(defn))
-    when 3 # add to user dict
-      MtDict::TEMPS[defn.dic]?.try(&.remove_term(defn.key))
+    when 2, 3 # add to user dict
       MtDict::USERS["#{defn.dic}/#{defn.uname}"]?.try(&.add_defn(defn))
     end
   end

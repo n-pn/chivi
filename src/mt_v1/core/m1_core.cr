@@ -5,16 +5,14 @@ require "./mt_core/*"
 require "../data/v1_dict"
 
 class M1::MtCore
-  def self.init(udic : Int32 = 0, user : String = "", temp : Bool = false, init : Bool = false) : self
+  def self.init(udic : Int32 = 0, user : String = "", init : Bool = false) : self
     dicts = [MtDict.regular_main]
 
-    dicts << MtDict.regular_temp if temp
     dicts << MtDict.regular_user(user) unless user.empty?
 
     dicts << MtDict.regular_init if init
 
     dicts << MtDict.unique_main(udic)
-    dicts << MtDict.unique_temp(udic) if temp
     dicts << MtDict.unique_user(udic, user) unless user.empty?
 
     dicts << MtDict.unique_auto(udic)
@@ -22,8 +20,8 @@ class M1::MtCore
     new(dicts)
   end
 
-  def self.init(dname : String, temp : Bool = false, user : String = "") : self
-    init(DbDict.get_id(dname), temp: temp, user: user)
+  def self.init(dname : String, user : String = "") : self
+    init(DbDict.get_id(dname), user: user)
   end
 
   def initialize(@dicts : Array(MtDict))

@@ -48,7 +48,6 @@ class M1::MtDict
   DB_PATH = "var/dicts/v1raw/v1_defns.dic"
 
   MAINS = {} of Int32 => self
-  TEMPS = {} of Int32 => self
   AUTOS = {} of Int32 => self
   USERS = {} of String => self
 
@@ -56,12 +55,12 @@ class M1::MtDict
     MAINS[-1] ||= new(2).load!(-2).load_main!(-1).load!(-3)
   end
 
-  class_getter regular_temp : self do
-    TEMPS[-1] ||= new(3).load_temp!(-1)
-  end
+  # class_getter regular_temp : self do
+  #   TEMPS[-1] ||= new(3).load_temp!(-1)
+  # end
 
   def self.regular_user(uname : String) : self
-    USERS["-1@#{uname}"] ||= new(4).load_user!(-1, uname)
+    USERS["@#{uname}"] ||= new(4).load_user!(-1, uname)
   end
 
   class_getter regular_init : self do
@@ -72,9 +71,9 @@ class M1::MtDict
     MAINS[wn_id] ||= new(6).load_main!(wn_id)
   end
 
-  def self.unique_temp(wn_id : Int32) : self
-    TEMPS[wn_id] ||= new(7).load_temp!(wn_id)
-  end
+  # def self.unique_temp(wn_id : Int32) : self
+  #   TEMPS[wn_id] ||= new(7).load_temp!(wn_id)
+  # end
 
   def self.unique_auto(wn_id : Int32) : self
     AUTOS[wn_id] ||= new(5)
@@ -102,9 +101,9 @@ class M1::MtDict
     do_load!(dic) { "and tab = 1" }
   end
 
-  def load_temp!(dic : Int32) : self
-    do_load!(dic) { "and tab > 1" }
-  end
+  # def load_temp!(dic : Int32) : self
+  #   do_load!(dic) { "and tab > 1" }
+  # end
 
   def load_user!(dic : Int32, uname : String) : self
     do_load!(dic, uname) { "and tab > 1 and uname = ?" }

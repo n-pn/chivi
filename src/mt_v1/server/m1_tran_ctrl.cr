@@ -10,7 +10,6 @@ class M1::TranCtrl < AC::Base
 
   @[AC::Route::Filter(:before_action)]
   def before_action
-    @w_temp = _read_cookie("w_temp").try(&.starts_with?('t')) || false
     @w_init = _read_cookie("w_init").try(&.starts_with?('t')) || false
   end
 
@@ -24,7 +23,7 @@ class M1::TranCtrl < AC::Base
     # end
 
     qtran = TranData.new(input.lines, wn_id, format)
-    cvmtl = qtran.cv_wrap(_uname, @w_temp, @w_init, w_stat: false) do |io, engine|
+    cvmtl = qtran.cv_wrap(_uname, @w_init, w_stat: false) do |io, engine|
       cv_post(io, engine)
     end
 
@@ -34,7 +33,7 @@ class M1::TranCtrl < AC::Base
   @[AC::Route::GET("/cached")]
   def cached(type : String, name : String, wn_id : Int32 = 0, format = "mtl")
     qtran = TranData.load_cached(type, name, wn_id, format)
-    cvmtl = qtran.cv_wrap(_uname, @w_temp, @w_init) { |io, engine| cv_post(io, engine) }
+    cvmtl = qtran.cv_wrap(_uname, @w_init) { |io, engine| cv_post(io, engine) }
 
     render json: {
       cvmtl: cvmtl,
@@ -58,7 +57,7 @@ class M1::TranCtrl < AC::Base
 
   @[AC::Route::POST("/tl_wnovel", body: :form)]
   def tl_wnovel(form : WnovelForm, wn_id : Int32 = 0)
-    cv_mt = MtCore.init(wn_id, user: _uname, temp: @w_temp, init: @w_init)
+    cv_mt = MtCore.init(wn_id, user: _uname, init: @w_init)
 
     intro = String.build do |io|
       form.bintro.each_line.with_index do |line, idx|
@@ -94,7 +93,7 @@ class M1::TranCtrl < AC::Base
 
   @[AC::Route::PUT("/debug")]
   def debug(wn_id : Int32, w_cap : Bool = false)
-    cv_mt = MtCore.init(wn_id, user: _uname, temp: @w_temp, init: @w_init)
+    cv_mt = MtCore.init(wn_id, user: _uname, init: @w_init)
     input = request.body.try(&.gets_to_end) || ""
 
     output = String.build do |io|

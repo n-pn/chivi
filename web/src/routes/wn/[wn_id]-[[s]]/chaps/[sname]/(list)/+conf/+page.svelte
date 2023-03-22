@@ -39,6 +39,11 @@
   <h2>Cài đặt nguồn truyện</h2>
 
   <details open>
+    <summary>Liên kết đồng bộ với các nguồn ngoài</summary>
+    <Remotes {ztitle} {can_edit} {edit_url} bind:seed_data={data.seed_data} />
+  </details>
+
+  <details>
     <summary>Quyền hạn tối thiểu để xem nội dung chương tiết</summary>
     <ReadPrivi
       {can_conf}
@@ -46,11 +51,6 @@
       _privi={data._user.privi}
       seed_data={data.seed_data}
       bind:curr_seed={data.curr_seed} />
-  </details>
-
-  <details>
-    <summary>Liên kết đồng bộ với các nguồn ngoài</summary>
-    <Remotes {ztitle} {can_edit} {edit_url} bind:seed_data={data.seed_data} />
   </details>
 
   <details>
