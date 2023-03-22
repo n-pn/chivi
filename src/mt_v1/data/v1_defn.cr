@@ -78,7 +78,7 @@ class M1::DbDefn
   end
 
   def utime
-    EPOCH &+ self.mtime &* 60
+    self.mtime > 0 ? EPOCH &+ self.mtime &* 60 : 0
   end
 
   # BASE_COSTS = {

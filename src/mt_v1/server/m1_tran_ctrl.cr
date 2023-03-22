@@ -23,7 +23,7 @@ class M1::TranCtrl < AC::Base
     # end
 
     qtran = TranData.new(input.lines, wn_id, format)
-    cvmtl = qtran.cv_wrap(_uname, @w_init, w_stat: false) do |io, engine|
+    cvmtl = qtran.cv_wrap(_uname, w_init: @w_init, w_stat: false) do |io, engine|
       cv_post(io, engine)
     end
 
@@ -33,7 +33,7 @@ class M1::TranCtrl < AC::Base
   @[AC::Route::GET("/cached")]
   def cached(type : String, name : String, wn_id : Int32 = 0, format = "mtl")
     qtran = TranData.load_cached(type, name, wn_id, format)
-    cvmtl = qtran.cv_wrap(_uname, @w_init) { |io, engine| cv_post(io, engine) }
+    cvmtl = qtran.cv_wrap(_uname, w_init: @w_init) { |io, engine| cv_post(io, engine) }
 
     render json: {
       cvmtl: cvmtl,
@@ -110,7 +110,7 @@ class M1::TranCtrl < AC::Base
     input = request.body.try(&.gets_to_end) || ""
     qtran = TranData.new(input.lines, wn_id, format: "mtl")
 
-    cvmtl = qtran.cv_wrap(_uname, @w_temp, @w_init) do |io, engine|
+    cvmtl = qtran.cv_wrap(w_user: _uname, w_init: @w_init) do |io, engine|
       cv_chap(io, engine, w_title, label)
     end
 

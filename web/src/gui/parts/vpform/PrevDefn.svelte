@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { get_rtime } from '$gui/atoms/RTime.svelte'
+  import { rel_time_vp } from '$utils/time_utils'
   import type { VpForm } from './_shared'
 
   export let form: VpForm
@@ -12,11 +12,11 @@
 </script>
 
 <div class="emend">
-  {#if form.init.uname}
+  {#if form.init.mtime > 0}
     <span>{form.init.state}:</span>
-    <span class="bold">{get_rtime(form.init.mtime * 1000)}</span>
+    <span class="bold">{rel_time_vp(form.init.mtime)}</span>
     <span>bởi</span>
-    <span class="bold trim">@{form.init.uname}</span>
+    <span class="bold trim">{form.init.uname || '_'}</span>
     <span>Cho:</span>
     <span class="bold trim _dic">{dname}</span>
     <em>({save_modes[Math.abs(form.init.tab)]})</em>

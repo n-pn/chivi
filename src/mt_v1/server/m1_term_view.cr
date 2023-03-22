@@ -47,6 +47,7 @@ struct M1::M1TermView
 
           jb.object {
             jb.field "current", current
+            jb.field "history", entries
 
             jb.field "hanviet", hanviet
             jb.field "pin_yin", SP::MtCore.tl_pinyin(form, false)
