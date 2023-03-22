@@ -6,15 +6,24 @@ class CV::VicritCtrl < CV::BaseCtrl
   @[AC::Route::GET("/", converters: {lb: ConvertArray})]
   def index(
     sort : String = "utime",
-    user : Int32? = nil,
-    book : Int32? = nil,
+    smin : Int32 = 1, smax : Int32 = 5,
+    user : Int32? = nil, book : Int32? = nil, list : Int32? = nil,
     lb tags : Array(String)? = nil
   )
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
     query = Vicrit.query.sort_by(sort)
-    query.where("viuser_id = ?", user) if user
+
+    if user && (user_data = Viuser.find({uname: user}))
+      query.where("viuser_id = ?", user_data.id)
+    end
+
     query.where("nvinfo_id = ?", book) if book
+    query.where("vilist_id = ?", list) if list
+
+    query.where("stars >= ?", smin) if smin > 1
+    query.where("stars <= ?", smax) if smax < 5
+
     query.where("btags @> ?", tags) if tags
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count

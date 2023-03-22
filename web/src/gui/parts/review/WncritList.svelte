@@ -37,7 +37,7 @@
   $: pager = new Pager($page.url, { sort: _sort, smin: 1, smax: 5, pg: 1 })
 
   $: opts = {
-    sort: $page.url.searchParams.get('sort') || _sort,
+    sort: _sort,
     smin: $page.url.searchParams.get('smin') || 1,
     smax: $page.url.searchParams.get('smax') || 5,
   }

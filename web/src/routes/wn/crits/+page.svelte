@@ -9,5 +9,9 @@
 <WnNavMenu tab="crits" />
 
 <article class="article island">
-  <WncritList ys={data.ys} vi={data.vi} _sort={data.sort} show_book={true} />
+  <WncritList
+    ys={data.ys || undefined}
+    vi={data.vi || undefined}
+    _sort={data.sort || 'utime'}
+    show_book={true} />
 </article>

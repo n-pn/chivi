@@ -5,4 +5,4 @@
   export let data: PageData
 </script>
 
-<WnlistList vi={data.vi} ys={data.ys} _sort="score" />
+<WnlistList vi={data.vi || undefined} ys={data.ys || undefined} _sort="score" />

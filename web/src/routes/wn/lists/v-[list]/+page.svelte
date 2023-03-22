@@ -65,7 +65,7 @@
 </section>
 
 <article class="article island">
-  <WncritList vi={data.books} _sort="utime" show_list={false} />
+  <WncritList vi={data.books} ys={undefined} _sort="utime" show_list={false} />
 </article>
 
 <style lang="scss">

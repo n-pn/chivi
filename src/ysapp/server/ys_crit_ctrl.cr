@@ -10,8 +10,6 @@ class YS::CritCtrl < AC::Base
             smin : Int32 = 1, smax : Int32 = 5,
             user : String? = nil, book : Int64? = nil, list : Int64? = nil,
             lb tags : String? = nil)
-    # TODO: Rename lb to tags
-
     pg_no, limit, offset = _paginate(max: 24)
 
     query = Yscrit.query.sort_by(sort)

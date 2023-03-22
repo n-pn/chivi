@@ -5,4 +5,8 @@
   export let data: PageData
 </script>
 
-<WncritList ys={data.ys} vi={data.vi} _sort="score" show_book={false} />
+<WncritList
+  ys={data.ys || undefined}
+  vi={data.vi || undefined}
+  _sort={data.sort || 'score'}
+  show_book={false} />
