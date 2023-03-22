@@ -16,10 +16,7 @@ declare namespace CV {
     repl_count: number
   }
 
-  interface VicritList {
-    pgidx: number
-    pgmax: number
-
+  interface VicritList extends Paginate {
     crits: Array<Vicrit>
     books: Record<number, Nvinfo>
     users: Record<number, Viuser>

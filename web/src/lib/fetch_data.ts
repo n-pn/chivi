@@ -9,6 +9,16 @@ const get = async <T>(
   return await api_get<T>(url, fetch)
 }
 
+const empty_crits = {
+  crits: [],
+  books: [],
+  users: [],
+  lists: [],
+  pgmax: 0,
+  pgidx: 0,
+  total: 0,
+}
+
 export const load_crits = async (url: URL, fetch: CV.Fetch, opts = {}) => {
   opts['sort'] ||= url.searchParams.get('sort') || 'score'
   opts['lm'] ||= 10
@@ -17,10 +27,10 @@ export const load_crits = async (url: URL, fetch: CV.Fetch, opts = {}) => {
 
   const from = url.searchParams.get('from') || ''
 
-  let vi: CV.VicritList | null
+  let vi: CV.VicritList = empty_crits
   if (from != 'ys') vi = await get<CV.VicritList>('/_db/crits', fetch, search)
 
-  let ys: CV.YscritList | null
+  let ys: CV.YscritList = empty_crits
   if (from != 'vi') ys = await get<CV.YscritList>('/_ys/crits', fetch, search)
 
   return { vi, ys }

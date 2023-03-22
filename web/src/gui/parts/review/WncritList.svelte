@@ -1,5 +1,15 @@
 <script lang="ts" context="module">
   const sort_trans = { score: 'Tổng hợp', likes: 'Ưa thích', utime: 'Gần nhất' }
+
+  const empty_crits = {
+    crits: [],
+    books: [],
+    users: [],
+    lists: [],
+    pgmax: 0,
+    pgidx: 0,
+    total: 0,
+  }
 </script>
 
 <script lang="ts">
@@ -10,24 +20,8 @@
   import YscritCard from './YscritCard.svelte'
   import VicritCard from './VicritCard.svelte'
 
-  export let ys: CV.YscritList = {
-    crits: [],
-    books: [],
-    users: [],
-    lists: [],
-    pgmax: 0,
-    pgidx: 0,
-    total: 0,
-  }
-
-  export let vi: CV.VicritList = {
-    crits: [],
-    books: [],
-    users: [],
-    lists: [],
-    pgmax: 0,
-    pgidx: 0,
-  }
+  export let ys: CV.YscritList = empty_crits
+  export let vi: CV.VicritList = empty_crits
 
   export let _sort = 'score'
 

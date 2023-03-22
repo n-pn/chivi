@@ -5,9 +5,8 @@ class CV::VicritCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/", converters: {lb: ConvertArray})]
   def index(
-    sort : String = "utime",
-    smin : Int32 = 1, smax : Int32 = 5,
-    user : Int32? = nil, book : Int32? = nil, list : Int32? = nil,
+    sort : String = "utime", smin : Int32 = 1, smax : Int32 = 5,
+    user : String? = nil, book : Int32? = nil, list : Int32? = nil,
     lb tags : Array(String)? = nil
   )
     pg_no, limit, offset = _paginate(min: 1, max: 24)
