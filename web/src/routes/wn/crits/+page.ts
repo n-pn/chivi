@@ -4,12 +4,13 @@ import { home_nav, nav_link } from '$gui/global/header_util'
 import type { PageLoad } from './$types'
 
 export const load = (async ({ url, fetch, parent }) => {
-  const data = await load_crits(url, fetch)
+  const sort = url.searchParams.get('sort') || 'utime'
+  const data = await load_crits(url, fetch, { sort })
 
   const { _user } = await parent()
   const _meta = build_meta(_user)
 
-  return { ...data, _meta }
+  return { ...data, sort, _meta }
 }) satisfies PageLoad
 
 const build_meta = (user: App.CurrentUser) => {

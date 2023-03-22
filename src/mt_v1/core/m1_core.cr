@@ -17,19 +17,13 @@ class M1::MtCore
     dicts << MtDict.unique_temp(udic) if temp
     dicts << MtDict.unique_user(udic, user) unless user.empty?
 
+    dicts << MtDict.unique_auto(udic)
+
     new(dicts)
   end
 
   def self.init(dname : String, temp : Bool = false, user : String = "") : self
     init(DbDict.get_id(dname), temp: temp, user: user)
-  end
-
-  def self.convert(input : String, dname = "combine") : String
-    case dname
-    when "hanviet" then hanviet_mtl.translit(input).to_txt
-    when "pin_yin" then pin_yin_mtl.translit(input).to_txt
-    else                generic_mtl(dname).cv_plain(input).to_txt
-    end
   end
 
   def initialize(@dicts : Array(MtDict))

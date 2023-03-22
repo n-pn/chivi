@@ -105,22 +105,6 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       ],
     }
   },
-  '/wn/[wn_id]-[[s]]/(info)/crits': ({ nvinfo }) => {
-    if (!nvinfo) return error
-
-    return {
-      title: `${nvinfo.vtitle}`,
-      desc: nvinfo.bintro.substring(0, 300),
-      left_nav: [
-        home_nav('', ''),
-        book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
-        nav_link('crits', 'Đánh giá', 'stars'),
-      ],
-      right_nav: [
-        nav_link('crits/+crit', 'Đánh giá', 'circle-plus', { show: 'tl' }),
-      ],
-    }
-  },
   '/wn/[wn_id]-[[s]]/(info)/crits/+crit': ({ nvinfo }) => {
     if (!nvinfo) return error
 

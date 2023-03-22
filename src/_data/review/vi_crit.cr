@@ -31,8 +31,9 @@ class CV::Vicrit
   scope :sort_by do |order|
     case order
     when "ctime" then self.order_by(id: :desc)
-    when "likes" then self.order_by(like_count: :desc)
-    else              self.order_by(_sort: :desc)
+    when "utime" then self.order_by(id: :desc)
+    when "likes" then self.order_by(like_count: :desc, stars: :desc)
+    else              self.order_by(_sort: :desc, stars: :desc)
     end
   end
 

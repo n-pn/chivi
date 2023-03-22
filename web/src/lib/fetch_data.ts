@@ -9,12 +9,11 @@ const get = async <T>(
   return await api_get<T>(url, fetch)
 }
 
-export const load_crits = async (url: URL, fetch: CV.Fetch, book?: string) => {
-  const sort = url.searchParams.get('sort') || 'score'
-  const extras = { lm: 10, sort }
+export const load_crits = async (url: URL, fetch: CV.Fetch, opts = {}) => {
+  opts['sort'] ||= url.searchParams.get('sort') || 'score'
+  opts['lm'] ||= 10
 
-  const search = merge_query(url.searchParams, extras)
-  if (book) search.set('book', book)
+  const search = merge_query(url.searchParams, opts)
 
   const from = url.searchParams.get('from') || ''
 

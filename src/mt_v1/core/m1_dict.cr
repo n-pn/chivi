@@ -76,6 +76,10 @@ class M1::MtDict
     TEMPS[wn_id] ||= new(7).load_temp!(wn_id)
   end
 
+  def self.unique_auto(wn_id : Int32) : self
+    AUTOS[wn_id] ||= new(5)
+  end
+
   def self.unique_user(wn_id : Int32, uname : String) : self
     USERS["#{wn_id}@#{uname}"] ||= new(8).load_user!(wn_id, uname)
   end

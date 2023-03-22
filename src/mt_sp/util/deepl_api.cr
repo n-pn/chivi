@@ -70,7 +70,7 @@ class SP::Deepl
   def self.translate(terms : Enumerable(String),
                      source = "zh", target = "vi",
                      no_cap : Bool = false)
-    raise "no more available client" unless client = @@clients.sample
+    raise "no more available client" unless client = @@clients.first?
     translate(client, terms, source: source, target: target, no_cap: no_cap)
   end
 

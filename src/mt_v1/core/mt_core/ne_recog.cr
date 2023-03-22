@@ -14,12 +14,14 @@ module M1::MTL
     end
   end
 
-  def recog_string(input : Array(Char), key : Char | String, val : Char | String, index : Int32 = 1)
+  def recog_string(input : Array(Char), key : Char | String, val : Char | String, start : Int32 = 1)
     key_io = String::Builder.new
     key_io << key
 
     val_io = String::Builder.new
     val_io << val
+
+    index = start
 
     while index < input.size
       char = input.unsafe_fetch(index)
@@ -37,12 +39,10 @@ module M1::MTL
         val_io << char
       when ':'
         break unless input[index]? == '/' && input[index + 1]? == '/'
-        val = val_io.to_s
+        val = val_io.dup.to_s
+        break unless val.starts_with?("http")
 
-        break unless val =~ /^https?/
-
-        val_io = String::Builder.new
-        val_io << val
+        val_io = String::Builder.new(val)
         key_io << input[index] << input[index + 1]
         val_io << "//"
         return recog_anchor(input, key_io, val_io, index + 2)
@@ -51,7 +51,10 @@ module M1::MTL
       end
     end
 
-    MtTerm.new(key_io.to_s, (val || val_io).to_s, PosTag::Nother, 0)
+    key = key_io.to_s
+    val = val_io.to_s
+
+    MtTerm.new(key, val, PosTag::Nother, 0, idx: start)
   end
 
   def recog_anchor(input : Array(Char), key_io, val_io, index)
@@ -76,8 +79,6 @@ module M1::MTL
 
     MtTerm.new(key_io.to_s, val_io.to_s, PosTag::Urlstr, 0)
   end
-
-  FULLWIDTH_GAP = 65248 # different in code point between half width and full width characters
 
   def recog_number(input : Array(Char), key : Char, val : Char, index = 1)
     # puts ["recog_number", input, index, key, val].colorize.yellow
@@ -188,6 +189,8 @@ module M1::MTL
     end
   end
 
+  FULLWIDTH_GAP = 65248 # different in code point between half width and full width characters
+
   def map_letter(char : Char) : Char?
     return char if (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')
     return char - FULLWIDTH_GAP if (char >= 'ａ' && char <= 'ｚ') || (char >= 'Ａ' && char <= 'Ｚ')
@@ -195,8 +198,8 @@ module M1::MTL
   end
 
   def map_number(char : Char) : Char?
-    return char if (char >= '0' && char <= '9')
-    return char - FULLWIDTH_GAP if (char >= '０' && char <= '９')
+    return char if char >= '0' && char <= '9'
+    return char - FULLWIDTH_GAP if char >= '０' && char <= '９'
     nil
   end
 

@@ -3,19 +3,19 @@ require "../_ctrl_base"
 class CV::VicritCtrl < CV::BaseCtrl
   base "/_db/crits"
 
-  @[AC::Route::GET("/", converters: {tags: ConvertArray})]
+  @[AC::Route::GET("/", converters: {lb: ConvertArray})]
   def index(
-    sort : String? = nil,
+    sort : String = "utime",
     user : Int32? = nil,
     book : Int32? = nil,
-    tags : Array(String)? = nil
+    lb tags : Array(String)? = nil
   )
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
     query = Vicrit.query.sort_by(sort)
     query.where("viuser_id = ?", user) if user
     query.where("nvinfo_id = ?", book) if book
-    query.where("btags = ?", tags) if tags
+    query.where("btags @> ?", tags) if tags
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count
     crits = query.limit(limit).offset(offset).to_a
