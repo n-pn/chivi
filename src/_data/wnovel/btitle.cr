@@ -13,8 +13,8 @@ class CV::Btitle
   column hname : String = "" # hanviet title
   column vname : String = "" # localization
 
-  column hslug : String = "" # for text searching, auto generated from hname
-  column vslug : String = "" # for text searching, auto generated from vname
+  # column hslug : String = "" # for text searching, auto generated from hname
+  # column vslug : String = "" # for text searching, auto generated from vname
 
   timestamps # created_at and updated_at
 

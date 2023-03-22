@@ -9,12 +9,12 @@ export default class MtData {
   _html: string
   _text: string
 
-  static parse_cvmtl(input = ''): [MtData[], number, number] {
-    if (!input) return [[], 0, 0]
+  static parse_cvmtl(input = ''): [MtData[], number, number, string] {
+    if (!input) return [[], 0, 0, '0-tong-hop']
     const [lines, extra = ''] = input.split('\n$\t$\t$\n')
     const args = extra.split('\t')
 
-    return [MtData.parse_lines(lines), +args[0], +args[1]]
+    return [MtData.parse_lines(lines), +args[0], +args[1], args[2]]
   }
 
   static parse_lines(input = '') {

@@ -47,7 +47,7 @@
   })
 
   $: zlines = ztext ? ztext.split('\n') : []
-  $: [datav1, tspan, dsize] = MtData.parse_cvmtl(cvmtl)
+  $: [datav1, tspan, dsize, dname] = MtData.parse_cvmtl(cvmtl)
 
   $: if (browser && ztext && $config.render != 3) render_v2(ztext)
 
@@ -61,6 +61,7 @@
     datav1 = data[0]
     tspan = data[1]
     dsize = data[2]
+    dname = data[3]
   }
 
   async function render_v2(body: string, cv_title = '') {
@@ -108,7 +109,7 @@
     <span class="stats _dname" data-tip="Từ điển bộ truyện">
       <span class="stats-label">Từ điển riêng:</span>
       <SIcon name="package" />
-      <a href="/mt/dicts/{$vdict.dslug}" class="stats-value _link"
+      <a href="/mt/dicts/{dname || $vdict.dslug}" class="stats-value _link"
         >{dsize} từ</a>
     </span>
 

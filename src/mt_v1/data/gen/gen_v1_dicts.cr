@@ -51,5 +51,10 @@ DB.open(CV_ENV.database_url) do |db|
 end
 
 M1::DbDict.repo.begin_tx
-dicts.each(&.save!)
+
+dicts.each do |dict|
+  puts dict.dname
+  dict.save!
+end
+
 M1::DbDict.repo.commit_tx

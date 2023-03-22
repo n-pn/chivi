@@ -92,7 +92,10 @@ module CV::NvinfoInner
 
   def fix_names!
     self.vname = self.btitle.vname
-    self.set_bslug(self.btitle.hslug)
+
+    hslug = TextUtil.slugify(self.btitle.hname)
+    self.set_bslug(hslug)
+
     self.save!
   end
 end
