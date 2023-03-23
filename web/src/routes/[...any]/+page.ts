@@ -9,6 +9,10 @@ export const load = (async ({ fetch, url, params }) => {
     throw await load_old_book(root.substring(1), fetch, url)
   }
 
+  if (root == 'guide' || root == 'notes') {
+    throw redirect(301, url.pathname.replace(root, 'hd') + url.search)
+  }
+
   if (root == 'crits' || root == 'lists') {
     throw redirect(304, '/ys' + url.pathname + url.search)
   }

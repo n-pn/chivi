@@ -15,13 +15,12 @@
 
   import { SIcon } from '$gui'
 
-  export let tab = 2
-
   let error = ''
 
   let privi = $page.data._user.privi < 3 ? $page.data._user.privi + 1 : 3
   let tspan = 1
-  $: vcoin = costs[privi][tspan]
+
+  $: cost = costs[privi][tspan]
 
   const action = '/_db/_self/upgrade-privi'
 
@@ -32,10 +31,8 @@
     _onload = true
 
     try {
-      const body = await api_call(action, { privi, tspan }, 'PUT')
-      $page.data._user.vcoin -= vcoin
-      $page.data._user = body
-      tab = 0
+      await api_call(action, { privi, tspan }, 'PUT')
+      window.location.reload()
     } catch (ex) {
       console.log(ex)
       error = ex.body.message
@@ -79,10 +76,10 @@
     <button
       type="submit"
       class="m-btn _fill _{privi_colors[privi]}"
-      disabled={_onload || vcoin > $page.data._user.vcoin}
+      disabled={_onload || cost > $page.data._user.vcoin}
       on:click={submit}>
       <span>Nâng cấp</span>
-      <SIcon name="coin" />{vcoin}
+      <SIcon name="coin" />{cost}
     </button>
   </footer>
 </section>

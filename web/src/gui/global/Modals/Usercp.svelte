@@ -34,9 +34,8 @@
 
   import Reading from './Usercp/Reading.svelte'
   import Setting from './Usercp/Setting.svelte'
-  import UVcoin from './Usercp/UVcoin.svelte'
 
-  const components = [Reading, Setting, UVcoin]
+  const components = [Reading, Setting]
 
   export let actived = false
   let user = $page.data._user
@@ -50,7 +49,6 @@
   const tabs = [
     { icon: 'history', btip: 'Lịch sửa đọc' },
     { icon: 'settings', btip: 'Cài đặt' },
-    { icon: 'coin', btip: 'Vcoin' },
   ]
 
   $: privi = user.privi || 0
@@ -100,8 +98,7 @@
           >{Math.round(user.vcoin * 100) / 100}</strong>
       </div>
 
-      <button class="m-btn _xs" on:click={() => usercp.change_tab(2)}
-        >Chi tiết</button>
+      <a href="/hd/vcoin" class="m-btn _xs">Giải thích</a>
     </div>
   </section>
 
@@ -142,7 +139,8 @@
       @include fgcolor(tert);
     }
 
-    > button {
+    > button,
+    a {
       margin-left: auto;
     }
 

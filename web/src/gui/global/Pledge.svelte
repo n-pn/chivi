@@ -13,7 +13,7 @@
         năng!
       </div>
     {:else if _privi < 2}
-      <a class="pledge" href="/guide/donation">
+      <a class="pledge" href="/hd/donation">
         Ủng hộ <strong>Chivi</strong> để nâng cấp quyền hạn!
       </a>
     {/if}

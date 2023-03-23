@@ -15,7 +15,7 @@ Bạn có thể dùng vcoin để nâng cấp quyền hạn, biếu tặng ngư�
 
 ### Ủng hộ trang web trực tiếp bằng tiền mặt
 
-Tham khảo: [Ủng hộ Chivi](/guide/donation)
+Bạn có thể ủng hộ Chivi bằng cách làm theo hướng dẫn: [Ủng hộ Chivi](/hd/donation)
 
 _Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web._
 

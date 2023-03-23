@@ -32,7 +32,7 @@
 <div>
   <div class="label">
     <span>Cách chia chương:</span>
-    <a class="guide" href="/guide/chuong-tiet/them-loat-chuong" target="_blank">
+    <a class="guide" href="/hd/chuong-tiet/them-loat-chuong" target="_blank">
       <span>Giải thích</span>
       <SIcon name="external-link" />
     </a>

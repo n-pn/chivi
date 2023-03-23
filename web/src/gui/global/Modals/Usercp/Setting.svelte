@@ -15,7 +15,7 @@
 
 <details open>
   <summary>Nâng quyền hạn</summary>
-  <UpgradePrivi bind:tab />
+  <UpgradePrivi />
 </details>
 
 <details>

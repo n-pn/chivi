@@ -13,7 +13,7 @@
 
 <footer class="foot">
   <div class="main">
-    <a href="/guide/donation" class="foot-link">Ủng hộ trang</a>
+    <a href="/hd/donation" class="foot-link">Ủng hộ trang</a>
 
     <span class="sep" />
     <strong>Liên kết: </strong>

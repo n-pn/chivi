@@ -5,9 +5,9 @@
   let submenu = -1
 
   const helps = [
-    ['Chọn từ điển', '/guide/may-dich/chon-tu-dien'],
-    ['Phân loại từ', '/guide/may-dich/phan-loai-tu'],
-    ['Độ ưu tiên', '/guide/may-dich/uu-tien-cum-tu'],
+    ['Chọn từ điển', '/hd/may-dich/chon-tu-dien'],
+    ['Phân loại từ', '/hd/may-dich/phan-loai-tu'],
+    ['Độ ưu tiên', '/hd/may-dich/uu-tien-cum-tu'],
   ]
 
   $: trans = [

@@ -4,7 +4,7 @@ title: Ưu tiên cụm từ trong câu
 
 <p><em>Cập nhật: 22/07/2022</em></p>
 
-Khi bạn thêm/sửa từ vựng thông qua [Hộp thoại thêm sửa từ](/guide/tu-vung/them-sua-tu), phần <a href="/imgs/uu-tien-cum-tu.png" rel="external">phía dưới bên phải</a> sẽ cho phép bạn thay đổi độ ưu tiên của cụm từ khi phân tích câu văn. Bài viết này sẽ hướng dẫn bạn việc lựa chọn độ ưu tiên cho phù hợp, và giải thích chi tiết tính năng này cho bạn nào còn chưa rõ.
+Khi bạn thêm/sửa từ vựng thông qua [Hộp thoại thêm sửa từ](/hd/tu-vung/them-sua-tu), phần <a href="/imgs/uu-tien-cum-tu.png" rel="external">phía dưới bên phải</a> sẽ cho phép bạn thay đổi độ ưu tiên của cụm từ khi phân tích câu văn. Bài viết này sẽ hướng dẫn bạn việc lựa chọn độ ưu tiên cho phù hợp, và giải thích chi tiết tính năng này cho bạn nào còn chưa rõ.
 
 ## Trường hợp đặc biệt: Độ ưu tiên là `Xoá`
 
@@ -72,7 +72,7 @@ Thông thường mà nói thì cụm từ từ bốn ký tự trở lên luôn �
 
 Máy dịch Chivi hoạt động bằng cách phân tách đoạn văn trong câu thành các cụm từ (lưu trong từ điển), rồi thông qua từ loại của các cụm từ đã được phân tách để áp dụng các quy luật ngữ pháp đã biết, biến câu văn thành các cấu trúc đúng chính tả tiếng việt.
 
-**Lưu ý: máy dịch của Chivi hiện vẫn chưa hoàn thiện, còn thiếu rất nhiều quy luật ngữ pháp cơ bản, sự ủng hộ của bạn thông qua [tinh thần](https://discord.gg/mdC3KQH) hoặc [vật chất](/guide/donation) sẽ là động lực lớn để nó được hoàn thiện.**
+**Lưu ý: máy dịch của Chivi hiện vẫn chưa hoàn thiện, còn thiếu rất nhiều quy luật ngữ pháp cơ bản, sự ủng hộ của bạn thông qua [tinh thần](https://discord.gg/mdC3KQH) hoặc [vật chất](/hd/donation) sẽ là động lực lớn để nó được hoàn thiện.**
 
 Bình thường thì máy dịch của Chivi sẽ ưu tiên cụm từ dài hơn cụm từ ngắn, ưu tiên cụm từ có trước từ trái sang phải, nhưng trong nhiều trường hợp điều này chưa hẳn đã đúng.
 
@@ -82,7 +82,7 @@ Nếu bạn đã quen dùng công cụ dịch QuickTranslator, thì giải pháp
 
 Ở đây thì `炎黄` và `烟云` là tên người, `大人`, `夫人` là xưng hô. Cụm từ 3 chữ `黄大人`, `云夫人` nếu được ưu tiên sẽ phá vỡ cách phân tách từ này, biến kết quả phân tách từ `炎 (danh từ)` + `云夫人 (Tên người)`, cuối cùng dẫn đến kết quả dịch không chính xác: `Hoàng đại nhân viêm` (gộp hai danh từ với nhau kết quả thường đảo ngược).
 
-_(Về chi tiết phân loại từ xin tham khảo: [Hướng dẫn Phân loại từ](/guide/tu-vung/phan-loai-tu))_
+_(Về chi tiết phân loại từ xin tham khảo: [Hướng dẫn Phân loại từ](/hd/tu-vung/phan-loai-tu))_
 
 Ngoài ra, trong trường hợp từ cùng độ dài, thì vẫn có nhiều trường hợp từ xuất hiện sau được chọn thì hợp lý hơn từ đằng trước.
 Ví dụ cụm từ `小心思 (tâm tư nhỏ)`, vì `小心 (cẩn thận)` được ưu tiên cao hơn `心思 (tâm tư)` dẫn tới kết quả dịch lại là `cẩn thận tư` thay vì dịch đúng nghĩa.
