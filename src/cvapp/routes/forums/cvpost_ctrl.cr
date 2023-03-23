@@ -52,11 +52,8 @@ class CV::CvpostCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/", body: :form)]
   def create(dboard : Int64, form : CvpostForm)
+    guard_privi 0, "tạo chủ đề"
     nvinfo = Nvinfo.load!(dboard)
-
-    unless _viuser.can?(:create_post)
-      raise Unauthorized.new("Bạn không có quyền tạo chủ đề")
-    end
 
     count = nvinfo.post_count + 1
     cvpost = Cvpost.new({viuser_id: _viuser.id, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
@@ -104,10 +101,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
   @[AC::Route::POST("/:post_id", body: :form, converters: {post_id: ConvertBase32})]
   def update(post_id : Int64, form : CvpostForm)
     cvpost = Cvpost.load!(post_id)
-
-    unless _viuser.can?(cvpost.id, :level0)
-      raise Unauthorized.new("Bạn không có quyền sửa chủ đề")
-    end
+    guard_owner cvpost.viuser_id, 0, "sửa chủ đề"
 
     cvpost.update_content!(form)
     render json: {cvpost: CvpostView.new(cvpost)}
@@ -116,16 +110,11 @@ class CV::CvpostCtrl < CV::BaseCtrl
   @[AC::Route::DELETE("/:post_id", converters: {post_id: ConvertBase32})]
   def delete(post_id : Int64)
     cvpost = Cvpost.load!(post_id)
+    guard_owner cvpost.viuser_id, 0, "xoá chủ đề"
 
-    if _viuser.privi == cvpost.viuser_id
-      admin = false
-    elsif _viuser.privi > 2
-      admin = true
-    else
-      raise Unauthorized.new("Bạn không có quyền xoá chủ đề")
-    end
+    is_admin = _privi > 3 && _vu_id != cvpost.viuser_id
+    cvpost.soft_delete(admin: is_admin)
 
-    cvpost.soft_delete(admin: admin)
-    render json: {msg: "Chủ đề đã bị xoá"}
+    render json: {msg: "chủ đề đã bị xoá"}
   end
 end

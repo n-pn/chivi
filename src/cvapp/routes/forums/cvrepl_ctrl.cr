@@ -67,11 +67,8 @@ class CV::CvreplCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/", body: :form, converters: {cvpost: ConvertBase32})]
   def create(cvpost post_id : Int64, form : CvreplForm)
+    guard_privi 0, "tạo bình luận"
     cvpost = Cvpost.load!(post_id)
-
-    unless _viuser.can?(:create_post)
-      raise Unauthorized.new "Bạn không có quyền tạo bình luận mới"
-    end
 
     cvrepl = Cvrepl.new({viuser_id: _viuser.id, cvpost: cvpost, ii: cvpost.repl_count + 1})
 
@@ -91,10 +88,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
   @[AC::Route::POST("/:repl_id", body: :form)]
   def update(repl_id : Int64, form : CvreplForm)
     cvrepl = Cvrepl.load!(repl_id)
-
-    unless _viuser.can?(cvrepl.viuser_id, :update_post)
-      raise Unauthorized.new "Bạn không có quyền sửa bình luận"
-    end
+    guard_owner cvrepl.viuser_id, 0, "sửa bình luận"
 
     cvrepl.update_content!(form.input)
     render json: {cvrepl: CvreplView.new(cvrepl)}
@@ -103,16 +97,11 @@ class CV::CvreplCtrl < CV::BaseCtrl
   @[AC::Route::DELETE("/:repl_id")]
   def delete(repl_id : Int64)
     cvrepl = Cvrepl.load!(repl_id)
+    guard_owner cvrepl.viuser_id, 0, "xoá bình luận"
 
-    if _viuser.privi == cvrepl.viuser_id
-      admin = false
-    elsif _viuser.privi > 2
-      admin = true
-    else
-      raise Unauthorized.new "Bạn không có quyền xoá bình luận"
-    end
+    is_admin = _privi > 3 && _vu_id != cvrepl.viuser_id
+    cvrepl.soft_delete(admin: is_admin)
 
-    cvrepl.soft_delete(admin: admin)
-    render json: {msg: "ok"}
+    render json: {msg: "bình luận đã bị xoá"}
   end
 end
