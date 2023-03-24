@@ -55,7 +55,7 @@ class CV::DlTranCtrl < CV::BaseCtrl
     @[JSON::Field(ignore: true)]
     getter word_count : Int32 = -1
 
-    API = "http://localhost:5020/_wn/seeds"
+    API = "#{CV_ENV.wn_host}/_wn/seeds"
 
     def after_initialize
       @upto = @from if @upto < @from

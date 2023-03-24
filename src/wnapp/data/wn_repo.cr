@@ -1,8 +1,8 @@
 require "http/client"
 require "crorm/sqlite3"
-
 require "./_repo"
 require "./wn_chap"
+require "../../cv_env"
 
 class WN::WnRepo
   getter db_path : String
@@ -75,7 +75,7 @@ class WN::WnRepo
   end
 
   private def tl_mulu(body : String) : String
-    href = "http://127.0.0.1:5110/_m1/qtran/tl_mulu?wn_id=#{@wn_id}"
+    href = "#{CV_ENV.m1_host}/_m1/qtran/tl_mulu?wn_id=#{@wn_id}"
     HTTP::Client.post(href, body: body, &.body_io.gets_to_end)
   end
 

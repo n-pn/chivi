@@ -1,16 +1,17 @@
 require "log"
 require "http/client"
+require "../cv_env"
 
 module TranUtil
   extend self
 
-  CVMTL_URL = "http://127.0.0.1:5110/_m1/qtran"
+  CVMTL_URL = "#{CV_ENV.m1_host}/_m1/qtran"
 
-  BTRAN_URL = "http://127.0.0.1:5300/_sp/btran"
-  DEEPL_URL = "http://127.0.0.1:5300/_sp/deepl"
+  BTRAN_URL = "#{CV_ENV.sp_host}/_sp/btran"
+  DEEPL_URL = "#{CV_ENV.sp_host}/_sp/deepl"
 
-  BTRAN_NO_CAP = "http://127.0.0.1:5300/_sp/qtran?no_cap=true"
-  DEEPL_NO_CAP = "http://127.0.0.1:5300/_sp/deepl?no_cap=true"
+  BTRAN_NO_CAP = "#{CV_ENV.sp_host}/_sp/qtran?no_cap=true"
+  DEEPL_NO_CAP = "#{CV_ENV.sp_host}/_sp/deepl?no_cap=true"
 
   JSON_HEADER = HTTP::Headers{"Content-Type" => "application/json"}
   TEXT_HEADER = HTTP::Headers{"Content-Type" => "text/plain"}

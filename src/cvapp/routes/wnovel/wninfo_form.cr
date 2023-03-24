@@ -34,7 +34,7 @@ class CV::WnovelForm
   alias ViData = NamedTuple(btitle: String, author: String, bintro: String)
 
   def gen_vi_data!
-    link = "http://localhost:5110/_m1/qtran/tl_wnovel?wn_id=#{@wn_id}"
+    link = "#{CV_ENV.m1_host}/_m1/qtran/tl_wnovel?wn_id=#{@wn_id}"
 
     headers = HTTP::Headers{"Content-Type" => "application/json"}
     body = {btitle: @ztitle, author: @zauthor, bintro: @zintro || ""}

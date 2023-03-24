@@ -136,7 +136,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
 
   private def add_book_dict(wn_id : Int64, bslug : String, bname : String)
     dname = "#{wn_id}-#{bslug}"
-    url = "http://127.0.0.1:5110/_m1/dicts?wn_id=#{wn_id}&dname=#{dname}&bname=#{bname}"
+    url = "#{CV_ENV.m1_host}/_m1/dicts?wn_id=#{wn_id}&dname=#{dname}&bname=#{bname}"
     HTTP::Client.put(url)
     # TODO: call mt_v1 api instead
   end

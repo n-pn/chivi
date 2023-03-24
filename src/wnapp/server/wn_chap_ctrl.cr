@@ -50,7 +50,7 @@ class WN::ChapCtrl < AC::Base
   end
 
   private def load_cv_data(wn_id : Int32, ztext : String, label : String? = nil)
-    url = "http://localhost:5110/_m1/qtran/cv_chap?wn_id=#{wn_id}&cv_title=first"
+    url = "#{CV_ENV.m1_host}/_m1/qtran/cv_chap?wn_id=#{wn_id}&cv_title=first"
     url += "&label=#{label}" if label
 
     headers = HTTP::Headers{

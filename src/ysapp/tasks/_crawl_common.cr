@@ -16,11 +16,10 @@ def read_zstd(path : String)
   Zstd::Decompress::IO.open(file, sync_close: true, &.gets_to_end)
 end
 
-YS_HOST = "http://localhost:5400"
 HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
 
 def post_raw_data(href : String, body : String)
-  HTTP::Client.post("#{YS_HOST}#{href}", headers: HEADERS, body: body) do |res|
+  HTTP::Client.post("#{CV_ENV.ys_host}#{href}", headers: HEADERS, body: body) do |res|
     color = res.success? ? :green : :red
     puts res.body_io.gets_to_end.colorize(color)
   end

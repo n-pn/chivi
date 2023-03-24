@@ -1,9 +1,10 @@
 require "../data/v1_dict"
 require "../core/m1_core"
+require "./_m1_ctrl_base"
 
 class M1::TranData
-  CRIT_URL = "localhost:5400/_ys/crits"
-  REPL_URL = "localhost:5400/_ys/repls"
+  CRIT_URL = "#{CV_ENV.ys_host}/_ys/crits"
+  REPL_URL = "#{CV_ENV.ys_host}/_ys/repls"
 
   def self.load_cached(type : String, name : String, wn_id : Int32, format : String = "mtl")
     case type

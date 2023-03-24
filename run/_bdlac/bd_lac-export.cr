@@ -35,7 +35,7 @@ module CV
   def should_keep?(term : String)
     return true if BONUS[term]?
 
-    term =~ /^[\p{Han}a-zA-Z0-9-_.· ○]+$/
+    term =~ /^[\p{Han}a-zA-Z0-9\-_.· ○]+$/
   end
 
   def reduce_raw

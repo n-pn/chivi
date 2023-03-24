@@ -3,34 +3,24 @@ require "../_ctrl_base"
 class CV::CvreplCtrl < CV::BaseCtrl
   base "/_db/tposts"
 
-  @[AC::Route::GET("/", converters: {cvpost: ConvertBase32})]
-  def index(pg pgidx : Int32 = 1,
-            lm limit : Int32 = 24,
-            sort : String = "id",
-            cvpost post_id : Int64? = nil,
-            viuser uname : String? = nil)
-    offset = CtrlUtil.offset(pgidx, limit)
-
+  @[AC::Route::GET("/", converters: {post_id: ConvertBase32})]
+  def index(sort : String = "id", post_id : Int64? = nil, uname : String? = nil)
     query = Cvrepl.query.where("ii > 0")
     query.sort_by(sort)
 
-    if cvpost = post_id && Cvpost.load!(post_id)
-      query.where("cvpost_id = ?", cvpost.id)
+    if post_id
+      query.where("cvpost_id = ?", post_id)
     end
 
-    if viuser = uname && Viuser.load!(uname)
-      query.where("viuser_id = ?", viuser.id)
-    end
-
-    if cvpost
-      total = cvpost.repl_count
-    else
-      total = query.dup.limit(limit * 3 + offset).offset(0).count
+    if uname
+      query.where("viuser_id = (select id from viusers where uname = ? limit 1)", uname)
     end
 
     query.with_cvpost unless cvpost
     query.with_viuser unless viuser
-    items = query.limit(limit).offset(offset).to_a
+
+    items = query.to_a
+    total = items.size
     memos = UserRepl.glob(_viuser.id, _viuser.privi, items.map(&.id))
 
     render json: {

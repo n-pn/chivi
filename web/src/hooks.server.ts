@@ -15,15 +15,15 @@ export const handle = (async ({ event, resolve }) => {
 }) satisfies Handle
 
 const api_hosts = {
-  _db: '127.0.0.1:5010',
-  _wn: '127.0.0.1:5020',
+  _db: `127.0.0.1:${import.meta.env.VITE_BE_PORT}`,
+  _wn: `127.0.0.1:${import.meta.env.VITE_WN_PORT}`,
 
-  _m0: '127.0.0.1:5100',
-  _m1: '127.0.0.1:5110',
-  _m2: '127.0.0.1:5120',
+  _m0: `127.0.0.1:${import.meta.env.VITE_M0_PORT}`,
+  _m1: `127.0.0.1:${import.meta.env.VITE_M1_PORT}`,
+  _m2: `127.0.0.1:${import.meta.env.VITE_M2_PORT}`,
 
-  _sp: '127.0.0.1:5300',
-  _ys: '127.0.0.1:5400',
+  _sp: `127.0.0.1:${import.meta.env.VITE_SP_PORT}`,
+  _ys: `127.0.0.1:${import.meta.env.VITE_YS_PORT}`,
 }
 
 export const handleFetch = (({ event, request, fetch }) => {

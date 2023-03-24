@@ -23,14 +23,19 @@ module CV_ENV
 
   class_getter log_severity : Log::Severity = self.production? ? Log::Severity::Error : Log::Severity::Debug
 
-  class_getter be_port = 5010 # current api server
-  class_getter wn_port = 5020 # raw novel data
+  class_getter be_port = ENV["CV_BE_PORT"]?.try(&.to_i?) || 5010 # current api server
+  class_getter wn_port = ENV["CV_WN_PORT"]?.try(&.to_i?) || 5020 # current api server
 
-  class_getter m0_port = 5100 # mt_v0 engine
-  class_getter m1_port = 5110 # mt_v1 engine
-  class_getter m2_port = 5120 # mt_v2 engine
+  class_getter m0_port = ENV["CV_M0_PORT"]?.try(&.to_i?) || 5100 # mt_v0 engine
+  class_getter m1_port = ENV["CV_M1_PORT"]?.try(&.to_i?) || 5110 # mt_v1 engine
+  class_getter m2_port = ENV["CV_M2_PORT"]?.try(&.to_i?) || 5120 # mt_v2 engine
 
-  class_getter sp_port = 5300 # mt_sp helper
+  class_getter sp_port = ENV["CV_SP_PORT"]?.try(&.to_i?) || 5300 # mt_sp helper
+  class_getter ys_port = ENV["CV_YS_PORT"]?.try(&.to_i?) || 5400 # ysapp server
 
-  class_getter ys_port = 5400 # yousuu content
+  class_getter be_host = "http://localhost:#{be_port}"
+  class_getter wn_host = "http://localhost:#{wn_port}"
+  class_getter m1_host = "http://localhost:#{m1_port}"
+  class_getter sp_host = "http://localhost:#{sp_port}"
+  class_getter ys_host = "http://localhost:#{ys_port}"
 end

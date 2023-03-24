@@ -90,7 +90,7 @@ class YS::Ysbook
     end
   end
 
-  API_PATH    = "http://127.0.0.1:5010/_db/books"
+  API_PATH    = "#{CV_ENV.be_host}/_db/books"
   JSON_HEADER = HTTP::Headers{"content-type" => "application/json"}
 
   def create_nvinfo
