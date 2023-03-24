@@ -28,6 +28,7 @@ then
 
   rsync-fast "$SSH/var/dicts/v1log" "var/dicts"
   rsync-fast "$SSH/var/dicts/v1raw" "var/dicts"
+  rsync-fast "$SSH/var/users" "var"
   # rsync-fast "$SSH/var/dicts/v1dic" "var/dicts"
 fi
 
@@ -43,7 +44,7 @@ then
 
   rsync-fast "$SSH/var/chaps/seed-infos.db" "var/chaps"
 
-  rsync-fast "$SSH/var/chaps/users" "var/chaps"
+  rsync-fast "$SSH/var/chaps/users" "var/chaps"s
   rsync-fast "$SSH/var/chaps/infos" "var/chaps"
 
   rsync-fast "$SSH/var/texts/rgbks" "var/texts"

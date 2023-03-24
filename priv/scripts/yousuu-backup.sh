@@ -32,3 +32,5 @@ rsync-fast "$SSH/var/proxy/.works" var/proxy
 # # rsync-fast "$SSH/$DIR/crits-by-user" "$DIR"
 
 # rsync-fast "$SSH/$DIR/repls" "$DIR"
+
+rsync-fast "$SSH/var/ysapp/crits.tmp" var/ysapp

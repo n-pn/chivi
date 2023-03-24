@@ -1,0 +1,12 @@
+[Unit]
+Description=crawl yscrits by book
+
+[Timer]
+OnCalendar=0/8:00:00
+RandomizedDelaySec=600
+OnBootSec=300
+Persistent=true
+Unit=crawl-yscrits-by-book.service
+
+[Install]
+WantedBy=timers.target
