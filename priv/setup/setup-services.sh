@@ -46,5 +46,5 @@ sudo service mt_v2-srv restart
 #sudo systemctl enable mt_v2-mon.path
 #sudo systemctl start mt_v2-mon.path
 
-sudo systemctl enable wbapp-srv.service
-sudo service wbapp-srv restart
+sudo systemctl enable wnapp-srv.service
+sudo service wnapp-srv restart

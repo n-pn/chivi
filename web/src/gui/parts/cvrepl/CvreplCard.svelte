@@ -99,10 +99,6 @@
             on:click={() => (_mode = 1)}>
             <SIcon name="pencil" />
           </button>
-
-          <a class="btn" href="{topic_url}#{card_id}">
-            <cvrepl-meta class="no">#{cvrepl.no}</cvrepl-meta>
-          </a>
         </dthead-right>
       </cvrepl-head>
 
@@ -189,7 +185,7 @@
 
   cvrepl-head {
     @include flex-cy($gap: 0.25rem);
-    padding-top: 0.25rem;
+    padding-top: 0.375rem;
   }
 
   cvrepl-body {
@@ -201,6 +197,10 @@
 
     .fluid & {
       @include bps(font-size, rem(16px), $tm: rem(17px));
+    }
+
+    > :global(*) + :global(*) {
+      margin-top: 1em;
     }
   }
 
@@ -240,11 +240,6 @@
     &._active {
       @include fgcolor(warning, 5);
     }
-  }
-
-  .no {
-    letter-spacing: 0.1em;
-    font-size: rem(13px);
   }
 
   .edit {

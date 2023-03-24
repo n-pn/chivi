@@ -9,32 +9,24 @@ class CV::CvreplCtrl < CV::BaseCtrl
     query.sort_by(sort)
 
     if post_id
-      query.where("cvpost_id = ?", post_id)
+      query.where("cvpost_id = (select id from cvposts where ii = ? limit 1)", post_id)
     end
 
     if uname
       query.where("viuser_id = (select id from viusers where uname = ? limit 1)", uname)
     end
 
-    query.with_cvpost unless cvpost
-    query.with_viuser unless viuser
+    query.with_cvpost
+    query.with_viuser
 
     items = query.to_a
-    total = items.size
     memos = UserRepl.glob(_viuser.id, _viuser.privi, items.map(&.id))
 
-    render json: {
-      tplist: {
-        total: total,
-        pgidx: pgidx,
-        pgmax: (total - 1) // limit + 1,
-        items: items.map do |x|
-          x.viuser = viuser if viuser
-          x.cvpost = cvpost if cvpost
-          CvreplView.new(x, false, memo: memos[x.id]?)
-        end,
-      },
-    }
+    repls = items.map do |x|
+      CvreplView.new(x, false, memo: memos[x.id]?)
+    end
+
+    render json: repls
   end
 
   @[AC::Route::GET("/:repl_id/detail")]
@@ -55,8 +47,8 @@ class CV::CvreplCtrl < CV::BaseCtrl
     include JSON::Serializable
   end
 
-  @[AC::Route::POST("/", body: :form, converters: {cvpost: ConvertBase32})]
-  def create(cvpost post_id : Int64, form : CvreplForm)
+  @[AC::Route::POST("/", body: :form, converters: {post_id: ConvertBase32})]
+  def create(post_id : Int64, form : CvreplForm)
     guard_privi 0, "tạo bình luận"
     cvpost = Cvpost.load!(post_id)
 

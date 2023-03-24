@@ -13,7 +13,7 @@
   }
 
   let on_edit = cvrepl_id > 0
-  let api_url = gen_api_url(cvpost_id)
+  let api_url = gen_action(cvpost_id)
 
   let form = { input: '', itype: 'md', rp_id: dtrepl_id }
   $: if (cvrepl_id > 0) load_form(cvrepl_id)
@@ -25,10 +25,10 @@
     form = await fetch(api_url).then((r) => r.json())
   }
 
-  function gen_api_url(cvpost_id: string) {
+  function gen_action(cvpost_id: string) {
     let base_url = '/_db/tposts'
     if (cvrepl_id) return base_url + '/' + cvrepl_id
-    return base_url + '?cvpost=' + cvpost_id
+    return base_url + '?post_id=' + cvpost_id
   }
 
   async function submit() {

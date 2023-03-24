@@ -2,8 +2,8 @@
   import { dboard_ctrl as ctrl, tplist_data, popups } from '$lib/stores'
 
   export function make_api_url(data: CV.Cvpost, { pg, op }) {
-    let api_url = `/_db/tposts?pg=${pg}&lm=20`
-    if (data) api_url += '&cvpost=' + data.id
+    let api_url = `/_db/tposts`
+    if (data) api_url += '?post_id=' + data.id
     if (op) api_url += '&uname=' + op
 
     return api_url
@@ -17,11 +17,7 @@
   import CvreplList from '$gui/parts/cvrepl/CvreplList.svelte'
 
   let cvpost: CV.Cvpost
-  let tplist: CV.Tplist = {
-    items: [],
-    pgidx: 1,
-    pgmax: 1,
-  }
+  let tplist: CV.Cvrepl[] = []
 
   $: post_api_url = `/_db/topics/${$tplist_data.topic.id}`
   $: list_api_url = make_api_url(cvpost, $tplist_data.query)
@@ -47,7 +43,7 @@
   async function load_tposts(api_url: string) {
     const res = await fetch(api_url)
     if (!res.ok) alert(await res.text())
-    else tplist = await res.json().then((x) => x.tplist)
+    else tplist = (await res.json()) as CV.Cvrepl[]
   }
 </script>
 

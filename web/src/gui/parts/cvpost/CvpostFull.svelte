@@ -65,9 +65,9 @@
 
       {#if $session.privi > 3 || $session.uname == cvpost.op_uname}
         <topic-sep>·</topic-sep>
-        <topic-action on:click={() => cvpost_ctrl.show(cvpost.id)}>
+        <button class="action" on:click={() => cvpost_ctrl.show(cvpost.id)}>
           <span>Sửa</span>
-        </topic-action>
+        </button>
       {/if}
 
       <foot-right>
@@ -105,6 +105,7 @@
           class="m-btn _primary _xs btn-show"
           on:click={() => (_all = !_all)}>
           <SIcon name="chevrons-{_all ? 'up' : 'down'}" />
+          <span class="-text">{_all ? 'Thu hẹp' : 'Mở rộng'}</span>
         </button>
       </pbody-foot>
     {/if}
@@ -224,9 +225,10 @@
     margin-left: auto;
   }
 
-  topic-action {
-    cursor: pointer;
+  .action {
     font-style: italic;
+    border: none;
+    background: none;
 
     @include hover {
       @include fgcolor(primary, 5);
@@ -240,8 +242,8 @@
     position: relative;
 
     background: linear-gradient(to top, color(--hide) .25rem, transparent 1rem);
-    @include border(--bd-main, $loc: bottom);
-    @include tm-dark { --hide: #{color(neutral, 5, 2)}; }
+    // @include border(--bd-main, $loc: bottom);
+    // @include tm-dark { --hide: #{color(neutral, 5, 2)}; }
     &._all { background: none; }
   }
 
@@ -257,6 +259,8 @@
   .btn-show {
     text-transform: uppercase;
     padding: 0.25rem;
+    display: inline-flex;
+    align-items: center;
     :global(svg) {
       width: 1rem;
       height: 1rem;

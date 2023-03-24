@@ -4,11 +4,12 @@ import type { PageLoad } from './$types'
 export const load: PageLoad = async ({ parent, fetch, url }) => {
   const { dboard, cvpost } = await parent()
 
-  const extras = { cvpost: cvpost.id, lm: 20 }
-  const path = api_path('dtposts.index', null, url.searchParams, extras)
-  const data = await fetch(path).then((r) => r.json())
+  const extras = { post_id: cvpost.id }
+  const path = api_path(`/_db/tposts`, null, url.searchParams, extras)
 
-  data._meta = {
+  const tplist = await fetch(path).then((r) => r.json())
+
+  const _meta = {
     title: 'Diễn đàn: ' + dboard.bname,
     left_nav: [
       // prettier-ignore
@@ -17,5 +18,5 @@ export const load: PageLoad = async ({ parent, fetch, url }) => {
     ],
   }
 
-  return data
+  return { tplist, _meta }
 }

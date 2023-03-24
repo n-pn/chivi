@@ -49,8 +49,6 @@ export const ROUTES = {
   'dtopics.index': '/_db/topics',
   'dtopics.show': (id: any) => `/_db/topics/${id}`,
 
-  'dtposts.index': '/_db/tposts',
-
   // chivi users booklists
   'vilists.index': '/_db/lists',
   'vilists.show': (id: any) => `/_db/lists/${id}`,

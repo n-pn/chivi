@@ -3,7 +3,10 @@ require "./_base_view"
 struct CV::CvreplView
   include BaseView
 
-  def initialize(@data : Cvrepl, @full = false, @memo : UserRepl? = nil)
+  @memo : UserRepl?
+
+  def initialize(@data : Cvrepl, @full : Bool = false,
+                 @memo = nil)
   end
 
   def to_json(jb : JSON::Builder)

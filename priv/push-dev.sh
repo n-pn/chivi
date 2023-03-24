@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-
-
 for target in "$@"
 do
   echo push $target!

@@ -13,32 +13,16 @@
 
 <CvpostFull {dboard} {cvpost} fluid={true} />
 
-<cvpost-posts>
-  <cvrepl-head>
-    <h3>Bình luận</h3>
-  </cvrepl-head>
-
+<section>
+  <h3>Bình luận</h3>
   <CvreplList {tplist} {cvpost} fluid={true} />
-</cvpost-posts>
+</section>
 
 <style lang="scss">
-  cvpost-posts {
-    display: block;
-    max-width: 40rem;
-    margin: 1.25rem auto 0;
-    padding: 0 var(--gutter);
-
-    @include bgcolor(secd);
-    @include bdradi();
-    @include shadow();
-
-    @include tm-dark {
-      @include linesd(--bd-main);
-    }
+  h3 {
+    padding: 0.5rem 0;
   }
-
-  cvrepl-head {
-    display: block;
-    padding: 0.5rem var(--gutter);
+  section {
+    padding: 0 var(--gutter);
   }
 </style>

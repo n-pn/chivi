@@ -1,7 +1,7 @@
 require "colorize"
 
 INP = ENV["INP"]? || "var/texts/rgbks"
-OUT = ENV["OUT"]? || "var/texts/rzips"
+OUT = ENV["OUT"]? || "/mnt/serve/chivi/texts"
 
 WORKERS = ENV["WORKERS"]?.try(&.to_i?) || 4
 
