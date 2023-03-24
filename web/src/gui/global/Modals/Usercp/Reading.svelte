@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  $: session = $page.data._user
 
   import { status_names, status_icons } from '$lib/constants'
   import { chap_path, _pgidx } from '$lib/kit_path'
@@ -9,6 +8,7 @@
   import { get_rtime } from '$gui/atoms/RTime.svelte'
 
   export let tab = 0
+  export let user
 
   let chaps: Array<any>
 
@@ -32,7 +32,7 @@
 <div class="chips">
   {#each ['reading', 'onhold', 'pending'] as status}
     {@const icon = status_icons[status]}
-    <a href="/@{session.uname}/books/{status}" class="chip">
+    <a href="/@{user.uname}/books/{status}" class="chip">
       <SIcon name={icon} />
       {status_names[status]}
     </a>

@@ -104,7 +104,10 @@
 
   <usercp-body>
     {#if actived}
-      <svelte:component this={components[$usercp]} bind:tab={$usercp} />
+      <svelte:component
+        this={components[$usercp]}
+        bind:tab={$usercp}
+        bind:user />
     {/if}
   </usercp-body>
 </Slider>

@@ -15,6 +15,8 @@
 
   import { SIcon } from '$gui'
 
+  export let user: App.CurrentUser
+
   let error = ''
 
   let privi = $page.data._user.privi < 3 ? $page.data._user.privi + 1 : 3
@@ -31,7 +33,7 @@
     _onload = true
 
     try {
-      await api_call(action, { privi, tspan }, 'PUT')
+      user = await api_call(action, { privi, tspan }, 'PUT')
       window.location.reload()
     } catch (ex) {
       console.log(ex)
@@ -76,7 +78,7 @@
     <button
       type="submit"
       class="m-btn _fill _{privi_colors[privi]}"
-      disabled={_onload || cost > $page.data._user.vcoin}
+      disabled={_onload || cost > user.vcoin}
       on:click={submit}>
       <span>Nâng cấp</span>
       <SIcon name="coin" />{cost}

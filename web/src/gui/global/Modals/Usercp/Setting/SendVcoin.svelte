@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { page } from '$app/stores'
-  $: session = $page.data._user
-
   import { api_call } from '$lib/api_call'
   import { SIcon } from '$gui'
+
+  export let user: App.CurrentUser
 
   let sendee = ''
   let amount = 10
@@ -24,6 +23,8 @@
     try {
       const body = { sendee, reason, amount: +amount, as_admin }
       const data = await api_call(action_url, body, 'PUT')
+      user.vcoin -= amount
+
       res_type = 'ok'
       res_text = `[${data.sendee}] đã nhận được ${amount} vcoin, bạn còn có ${data.remain} vcoin.`
     } catch (ex) {
@@ -59,15 +60,17 @@
     </form-field>
   </form-group>
 
-  <label for="as_admin" class="as_admin">
-    <input
-      type="checkbox"
-      id="as_admin"
-      name="as_admin"
-      disabled={session.privi < 4}
-      bind:checked={as_admin} />
-    <span>Gửi dưới quyền hệ thống</span>
-  </label>
+  {#if user.privi > 3}
+    <label for="as_admin" class="as_admin">
+      <input
+        type="checkbox"
+        id="as_admin"
+        name="as_admin"
+        disabled={user.privi < 4}
+        bind:checked={as_admin} />
+      <span>Gửi dưới quyền hệ thống</span>
+    </label>
+  {/if}
 
   <div class="form-group">
     <label class="form-label" for="amount">Số vcoin muốn tặng</label>
@@ -95,7 +98,7 @@
     <button
       type="submit"
       class="m-btn _primary  _fill"
-      disabled={!as_admin && session.vcoin < amount}>
+      disabled={!as_admin && user.vcoin < amount}>
       <span>Gửi tặng</span>
       <SIcon name="coin" />
       {amount}

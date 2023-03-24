@@ -5,6 +5,7 @@
   import SendVcoin from './Setting/SendVcoin.svelte'
   import UpdatePasswd from './Setting/UpdatePasswd.svelte'
 
+  export let user: App.CurrentUser
   export let tab = 2
 
   async function logout() {
@@ -15,12 +16,12 @@
 
 <details open>
   <summary>Nâng quyền hạn</summary>
-  <UpgradePrivi />
+  <UpgradePrivi bind:user />
 </details>
 
 <details>
   <summary>Tặng vcoin</summary>
-  <SendVcoin />
+  <SendVcoin bind:user />
 </details>
 
 <details>
