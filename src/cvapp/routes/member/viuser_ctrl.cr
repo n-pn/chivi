@@ -86,8 +86,7 @@ class CV::SigninCtrl < CV::BaseCtrl
 
   @[AC::Route::DELETE("/logout")]
   def logout
-    session["uname"] = nil
-    # cookies.delete("_user").try { |x| CurrentUser.delete(x.value) }
+    save_current_user!(Viuser.load!("Khách"))
 
     render :accepted, text: "Đã đăng xuất"
   end

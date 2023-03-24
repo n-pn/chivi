@@ -16,7 +16,7 @@
   async function submit() {
     error = ''
     error = await post_form(action, { email, uname, upass })
-    if (!error) return_back
+    if (!error) return_back()
   }
 </script>
 

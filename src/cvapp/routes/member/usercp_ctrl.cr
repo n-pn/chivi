@@ -29,12 +29,6 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
       Dir.mkdir_p("var/chaps/infos/@#{_uname}")
       Dir.mkdir_p("var/texts/rzips/@#{_uname}")
-
-      # sname = "@" + _viuser.uname
-      # unless ChSeed.has_sname?(sname)
-      #   sn_id = _viuser.id * 2
-      #   ChSeed.add_user(sname, sn_id)
-      # end
     end
 
     save_current_user!(_viuser)
@@ -53,6 +47,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
     getter? as_admin : Bool = false
 
     def after_initialize
+      @sendee = @sendee.strip
       @amount = @amount.round(2)
       @amount = 0.1 if @amount < 0.1
     end
@@ -96,7 +91,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
         <h2>Thông báo từ Chivi:</h2>
         <p>Bạn nhận được: <strong>#{amount}</strong> vcoin từ <strong>#{sender.uname}</strong>.</p>
         <p>Chú thích của người tặng: #{reason}</p>
-        <p>Bạn có thể vào <a href="https://chivi.app/guide/vcoin">Tất cả về Vcoin</a>
+        <p>Bạn có thể vào <a href="https://chivi.app/hd/vcoin">Tất cả về Vcoin</a>
           để tìm hiểu các cách dùng của vcoin.</p>
       HTML
     end

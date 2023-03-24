@@ -13,6 +13,10 @@ export const load = (async ({ fetch, url, params }) => {
     throw redirect(301, url.pathname.replace(root, 'hd') + url.search)
   }
 
+  if (root == 'ys') {
+    throw redirect(301, url.pathname.replace(root, 'wn') + url.search)
+  }
+
   if (root == 'crits' || root == 'lists') {
     throw redirect(304, '/ys' + url.pathname + url.search)
   }

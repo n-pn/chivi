@@ -3,8 +3,8 @@ import { home_nav, nav_link } from '$gui/global/header_util'
 import type { PageLoad } from './$types'
 
 const _meta: App.PageMeta = {
-  title: 'Quên mật khẩu',
-  left_nav: [home_nav('ps'), nav_link('passwd', 'Quên mật khẩu', 'key')],
+  title: 'Tạo tài khoản',
+  left_nav: [home_nav('ps'), nav_link('signup', 'Tạo tài khoản', 'key')],
 }
 
 export const load = (({ url }) => {
