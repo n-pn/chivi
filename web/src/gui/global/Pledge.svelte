@@ -8,13 +8,13 @@
 {#if !route_id.includes('_auth')}
   <div class="app-vessel">
     {#if _privi < 0}
-      <div class="pledge">
+      <a class="pledge" href="/_auth/signup">
         Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá các tính
         năng!
-      </div>
-    {:else if _privi < 2}
-      <a class="pledge" href="/hd/donation">
-        Ủng hộ <strong>Chivi</strong> để nâng cấp quyền hạn!
+      </a>
+    {:else if _privi < 1}
+      <a class="pledge" href="/hd/nang-cap-quyen-han">
+        Nâng cấp quyền hạn để mở khoá các tính năng!
       </a>
     {/if}
   </div>

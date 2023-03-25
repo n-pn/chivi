@@ -91,7 +91,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
         <h2>Thông báo từ Chivi:</h2>
         <p>Bạn nhận được: <strong>#{amount}</strong> vcoin từ <strong>#{sender.uname}</strong>.</p>
         <p>Chú thích của người tặng: #{reason}</p>
-        <p>Bạn có thể vào <a href="https://chivi.app/hd/vcoin">Tất cả về Vcoin</a>
+        <p>Bạn có thể vào <a href="https://chivi.app/hd/tat-ca-ve-vcoin">Tất cả về Vcoin</a>
           để tìm hiểu các cách dùng của vcoin.</p>
       HTML
     end

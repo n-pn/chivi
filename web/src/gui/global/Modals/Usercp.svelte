@@ -98,7 +98,7 @@
           >{Math.round(user.vcoin * 100) / 100}</strong>
       </div>
 
-      <a href="/hd/vcoin" class="m-btn _xs">Giải thích</a>
+      <a href="/hd/tat-ca-ve-vcoin" class="m-btn _xs">Giải thích</a>
     </div>
   </section>
 

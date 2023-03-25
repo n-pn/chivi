@@ -1,0 +1,47 @@
+---
+title: Hướng dẫn nâng cấp quyền hạn
+---
+
+**_Bạn cần có vcoin để nâng cấp quyền hạn_**
+
+Chi tiết tham khảo [Tất cả về vcoin](/hd/tat-ca-ve-vcoin)
+Ủng hộ trang để nhận vcoin: [Ủng hộ trang web](/hd/donation)
+
+## Các bước nâng cấp quyền hạn cho tài khoản
+
+### Bước 1: Bấm vào chỗ được khoanh đỏ phía bên phải màn hình:
+
+![step 1](/imgs/privi-upgrade/step-1.png)
+
+Ở đây thay vì tên của người viết hướng dẫn (Nipin), thì nó sẽ hiện lên tên đăng nhập của bạn trên Chivi.
+
+### Bước 2: Bấm vào biểu tượng răng cưa (được khoanh đỏ) góc trên bên phải:
+
+![step 2](/imgs/privi-upgrade/step-2.png)
+
+<style>
+  img {
+    display: block;
+    margin: 0 auto;
+    width: 30rem;
+    max-width: 100%;
+  }
+</style>
+
+### Bước 3: Chọn quyền hạn + khoảng thời gian bạn muốn nâng cấp, rồi bấm nút Nâng cấp
+
+![step 3](/imgs/privi-upgrade/step-3.png)
+
+**Lưu ý:**
+
+- Bạn phải có đủ vcoin mới có thể nâng cấp quyền hạn.
+
+- Thời hạn có hiệu lực của quyền hạn hiện có sẽ được cộng dồn và bảo lưu.
+
+- Nếu bạn nâng cấp quyền hạn lên 2 hoặc 3, thì bạn sẽ được tặng thêm 1 nửa thời gian của quyền hạn thấp hơn.
+
+  Ví dụ: Nâng cấp quyền hạn 3 lên 2 tháng thì bạn sẽ được tặng thêm 1 tháng quyền hạn 2, và 2 tuần quyền hạn 1.
+
+### Ứng dụng của quyền hạn trong Chivi
+
+_(Đợi bổ sung)_
