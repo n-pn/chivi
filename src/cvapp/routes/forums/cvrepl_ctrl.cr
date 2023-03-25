@@ -4,7 +4,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
   base "/_db/tposts"
 
   @[AC::Route::GET("/", converters: {post_id: ConvertBase32})]
-  def index(sort : String = "id", post_id : Int64? = nil, uname : String? = nil)
+  def index(sort : String = "-id", post_id : Int64? = nil, uname : String? = nil)
     query = Cvrepl.query.where("ii > 0")
     query.sort_by(sort)
 

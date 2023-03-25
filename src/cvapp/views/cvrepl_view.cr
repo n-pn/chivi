@@ -25,10 +25,10 @@ struct CV::CvreplView
       jb.field "u_dname", @data.viuser.uname
       jb.field "u_privi", @data.viuser.privi
 
+      jb.field "rp_id", @data.repl_cvrepl_id
+
       if @data.repl_cvrepl_id > 0
         repl = Cvrepl.load!(@data.repl_cvrepl_id)
-
-        jb.field "rp_id", repl.id
         jb.field "rp_no", repl.ii
         jb.field "ru_dname", repl.viuser.uname
         jb.field "ru_privi", repl.viuser.privi

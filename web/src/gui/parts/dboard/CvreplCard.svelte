@@ -6,19 +6,13 @@
   import CvreplForm from './CvreplForm.svelte'
 
   export let cvrepl: CV.Cvrepl
-  export let active_card = ''
   export let render_mode = 0
+
+  export let nest_level = 0
 
   let card_id = `tp-${cvrepl.no}`
   $: is_owner = $session.uname == cvrepl.u_dname
   $: can_edit = $session.privi > 3 || (is_owner && $session.privi >= 0)
-
-  let _mode = 0
-
-  export let on_cvrelp_form = (dirty = false) => {
-    if (dirty) window.location.reload()
-    else _mode = 0
-  }
 
   $: board_url = `/forum/-${cvrepl.db_bslug}`
   $: topic_url = `${board_url}/-${cvrepl.dt_tslug}-${cvrepl.dt}`
@@ -38,130 +32,66 @@
   }
 </script>
 
-<cvrepl-wrap class:fluid={$$props.fluid}>
-  {#if _mode == 1}
-    <cvrepl-edit>
-      <CvreplForm
-        cvpost_id={cvrepl.dt}
-        cvrepl_id={cvrepl.id}
-        on_destroy={on_cvrelp_form} />
-    </cvrepl-edit>
-  {:else}
-    <cvrepl-card
-      id={card_id}
-      class:active={active_card == card_id}
-      class:larger={render_mode == 0}>
-      {#if render_mode > 0}
-        <cvrepl-orig>
-          <SIcon name="messages" />
-          <a href={board_url}>{cvrepl.db_bname}</a>
-          <span>/</span>
-          <a href={topic_url}>{cvrepl.dt_title}</a>
-        </cvrepl-orig>
+<cvrepl-card
+  id={card_id}
+  class="nest_{nest_level % 5}"
+  class:larger={render_mode == 0}
+  class:nested={nest_level > 0}>
+  {#if render_mode > 0}
+    <cvrepl-orig>
+      <SIcon name="messages" />
+      <a href={board_url}>{cvrepl.db_bname}</a>
+      <span>/</span>
+      <a href={topic_url}>{cvrepl.dt_title}</a>
+    </cvrepl-orig>
+  {/if}
+
+  <cvrepl-head>
+    <cvrepl-meta>
+      <a
+        class="cv-user"
+        href="{topic_url}?op={cvrepl.u_dname}"
+        data-privi={cvrepl.u_privi}
+        >{cvrepl.u_dname}
+      </a>
+    </cvrepl-meta>
+
+    <cvrepl-sep>·</cvrepl-sep>
+
+    <cvrepl-meta>
+      {rel_time(cvrepl.ctime)}
+      {#if cvrepl.utime > cvrepl.ctime}*{/if}
+    </cvrepl-meta>
+  </cvrepl-head>
+
+  <cvrepl-body class="m-article">{@html cvrepl.ohtml}</cvrepl-body>
+
+  <cvrepl-foot>
+    <button
+      class="btn"
+      class:_active={cvrepl.self_liked}
+      disabled={$session.privi < 0}
+      on:click={toggle_like}>
+      <SIcon name="thumb-up" />
+      <span>Thích</span>
+      {#if cvrepl.like_count > 0}
+        <span class="badge">{cvrepl.like_count}</span>
       {/if}
+    </button>
 
-      <cvrepl-head>
-        <cvrepl-meta>
-          <a
-            class="cv-user"
-            href="{topic_url}?op={cvrepl.u_dname}"
-            data-privi={cvrepl.u_privi}
-            >{cvrepl.u_dname}
-          </a>
-        </cvrepl-meta>
-
-        {#if cvrepl.rp_no > 0}
-          <cvrepl-sep><SIcon name="corner-up-right" /></cvrepl-sep>
-          <cvrepl-meta>
-            <a
-              class="cv-user"
-              href="{topic_url}#tp-{cvrepl.rp_no}"
-              data-privi={cvrepl.ru_privi}
-              on:click={() => (active_card = 'tp-' + cvrepl.rp_no)}
-              >{cvrepl.ru_dname}
-            </a>
-          </cvrepl-meta>
-        {/if}
-
-        <cvrepl-sep>·</cvrepl-sep>
-        <cvrepl-meta>{rel_time(cvrepl.ctime)}</cvrepl-meta>
-
-        {#if cvrepl.utime > cvrepl.ctime}
-          <cvrepl-sep>·</cvrepl-sep>
-          <cvrepl-meta class="edit">Đã sửa</cvrepl-meta>
-        {/if}
-
-        <dthead-right>
-          <button
-            class="btn"
-            disabled={!can_edit}
-            data-tip="Sửa nội dung"
-            on:click={() => (_mode = 1)}>
-            <SIcon name="pencil" />
-          </button>
-        </dthead-right>
-      </cvrepl-head>
-
-      <cvrepl-body class="m-article">{@html cvrepl.ohtml}</cvrepl-body>
-
-      <cvrepl-foot>
-        <cvrepl-stats>
-          {#if cvrepl.like_count > 0}
-            <cvrepl-meta>
-              <SIcon name="heart" />
-              <span>{cvrepl.like_count}</span>
-            </cvrepl-meta>
-          {/if}
-
-          {#if cvrepl.repl_count > 0}
-            <cvrepl-meta>
-              <SIcon name="message-circle" />
-              <span>{cvrepl.repl_count}</span>
-            </cvrepl-meta>
-          {/if}
-        </cvrepl-stats>
-
-        <cvrepl-react>
-          <cvrepl-meta>
-            <button
-              class="btn"
-              class:_active={cvrepl.self_liked}
-              disabled={$session.privi < 0}
-              on:click={toggle_like}>
-              <SIcon name="thumb-up" />
-              <span>Thích</span>
-            </button>
-          </cvrepl-meta>
-
-          <cvrepl-meta>
-            <button class="btn" on:click={() => (_mode = 2)}>
-              <SIcon name="arrow-back-up" />
-              <span>Trả lời</span>
-            </button>
-          </cvrepl-meta>
-        </cvrepl-react>
-      </cvrepl-foot>
-    </cvrepl-card>
-  {/if}
-
-  {#if _mode == 2}
-    <cvrepl-repl>
-      <CvreplForm
-        cvpost_id={cvrepl.dt}
-        dtrepl_id={cvrepl.id}
-        on_destroy={on_cvrelp_form} />
-    </cvrepl-repl>
-  {/if}
-</cvrepl-wrap>
+    <cvrepl-meta>
+      <button class="btn" disabled>
+        <SIcon name="arrow-back-up" />
+        <span>Trả lời</span>
+      </button>
+    </cvrepl-meta>
+  </cvrepl-foot>
+</cvrepl-card>
 
 <style lang="scss">
-  cvrepl-wrap {
-    display: block;
-    @include border($loc: top);
-  }
-
   cvrepl-card {
     display: block;
+    margin: 0.75rem 0;
 
     &.active {
       @include bgcolor(tert);
@@ -185,7 +115,6 @@
 
   cvrepl-head {
     @include flex-cy($gap: 0.25rem);
-    padding-top: 0.375rem;
   }
 
   cvrepl-body {
@@ -202,6 +131,10 @@
     > :global(*) + :global(*) {
       margin-top: 1em;
     }
+
+    // > :global(*) {
+    //   max-width: 70ch;
+    // }
   }
 
   cvrepl-sep {
@@ -223,8 +156,8 @@
   }
 
   cvrepl-foot {
-    display: flex;
-    padding-bottom: 0.25rem;
+    margin-top: 0.375rem;
+    @include flex-cy($gap: 0.75rem);
   }
 
   .btn {
@@ -248,16 +181,6 @@
     // @include fgcolor(mute);
   }
 
-  cvrepl-stats,
-  cvrepl-react {
-    @include flex-cy($gap: 0.75rem);
-  }
-
-  cvrepl-react {
-    margin-left: auto;
-    padding-right: 0.5rem;
-  }
-
   cvrepl-orig {
     @include flex-cy($gap: 0.125rem);
     @include ftsize(xs);
@@ -274,5 +197,28 @@
     a:hover {
       @include fgcolor(primary, 5);
     }
+  }
+
+  .nested {
+    --bdcolor: #{color(neutral, 5, 3)};
+
+    border-left: 3px solid var(--bdcolor);
+    padding-left: 0.75rem;
+  }
+
+  .nest_1 {
+    --bdcolor: #{color(primary, 5, 8)};
+  }
+
+  .nest_2 {
+    --bdcolor: #{color(warning, 5, 8)};
+  }
+
+  .nest_3 {
+    --bdcolor: #{color(success, 5, 8)};
+  }
+
+  .nest_4 {
+    --bdcolor: #{color(harmful, 5, 8)};
   }
 </style>

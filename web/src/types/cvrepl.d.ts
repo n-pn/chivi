@@ -32,6 +32,8 @@ declare namespace CV {
 
     self_liked?: boolean
     self_rp_ii?: number
+
+    repls: Cvrepl[] = []
   }
 
   interface Tplist {
