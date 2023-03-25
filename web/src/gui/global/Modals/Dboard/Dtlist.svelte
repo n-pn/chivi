@@ -26,7 +26,7 @@
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
+  import CvpostList from '$gui/parts/dboard/CvpostList.svelte'
   import { invalidate } from '$app/navigation'
 
   let dtlist: CV.Dtlist = {

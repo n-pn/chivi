@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CvpostList from '$gui/parts/cvpost/CvpostList.svelte'
+  import CvpostList from '$gui/parts/dboard/CvpostList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData

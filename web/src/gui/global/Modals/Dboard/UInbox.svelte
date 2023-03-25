@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CvreplCard from '$gui/parts/cvrepl/CvreplCard.svelte'
+  import CvreplCard from '$gui/parts/dboard/CvreplCard.svelte'
 
   let items = []
   let pgidx = 1

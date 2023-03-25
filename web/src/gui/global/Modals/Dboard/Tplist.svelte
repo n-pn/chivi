@@ -13,8 +13,8 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
 
-  import CvpostFull from '$gui/parts/cvpost/CvpostFull.svelte'
-  import CvreplList from '$gui/parts/cvrepl/CvreplList.svelte'
+  import CvpostFull from '$gui/parts/dboard/CvpostFull.svelte'
+  import CvreplList from '$gui/parts/dboard/CvreplList.svelte'
 
   let cvpost: CV.Cvpost
   let tplist: CV.Cvrepl[] = []
