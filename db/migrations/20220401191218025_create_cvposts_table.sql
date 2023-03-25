@@ -7,7 +7,6 @@ CREATE TABLE cvposts (
   viuser_id int not null default 0,
   nvinfo_id bigint not null default 0,
 
-  rpbody_id bigint not null default 0,
   lastrp_id bigint not null default 0,
 
   ptype int not null default 0,

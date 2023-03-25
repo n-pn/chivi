@@ -20,7 +20,6 @@ class CV::Cvpost
   belongs_to nvinfo : Nvinfo
   getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
-  belongs_to rpbody : Cvrepl, foreign_key: "rpbody_id"
   belongs_to lastrp : Cvrepl?, foreign_key: "lastrp_id"
 
   #####
@@ -31,6 +30,9 @@ class CV::Cvpost
 
   column labels : Array(String) = [] of String
   column lslugs : Array(String) = [] of String
+
+  column btext : String = ""
+  column bhtml : String = ""
 
   ##########
 
@@ -64,8 +66,7 @@ class CV::Cvpost
 
   def set_title(title : String)
     self.title = title
-    uslug = TextUtil.slugify(title).split("-").first(8).join("-")
-    self.tslug = uslug.size < 48 ? uslug : uslug[0..40]
+    self.tslug = TextUtil.slugify(title).split('-').first(8).join('-')
   end
 
   def set_utime(utime : Int64)
@@ -118,32 +119,20 @@ class CV::Cvpost
   end
 
   def update_content!(form, set_utime = true)
-    set_utime(Time.utc.to_unix) if set_utime
+    self.set_utime(Time.utc.to_unix) if set_utime
 
-    set_title(form.title)
-    set_labels(form.labels.split(",").map(&.strip))
+    self.set_title(form.title)
+    self.set_labels(form.labels.split(",").map(&.strip))
 
-    self.rpbody = load_rpbody
-    self.rpbody.set_input(form.body_input)
-    self.rpbody.save!
-
-    self.brief = self.rpbody.brief
-    self.rpbody_id = self.rpbody.id
+    self.btext = form.btext
+    self.bhtml = PostUtil.md_to_html(self.btext)
+    self.brief = self.btext.split("\n", 2).first? || ""
 
     self.save!
-    self.rpbody.update(cvpost_id: self.id)
   end
 
   def soft_delete(admin = false)
     update!(state: admin ? -3 : -2)
-  end
-
-  def load_rpbody
-    if self.rpbody_id_column.defined?
-      Cvrepl.find!({id: self.rpbody_id})
-    else
-      Cvrepl.new({viuser_id: self.viuser_id, cvpost_id: 0_i64})
-    end
   end
 
   #################
@@ -167,21 +156,20 @@ class CV::Cvpost
       labels:    "thao-luan",
     })
 
-    bintro = nvinfo.vintro.split("\n").map { |x| "> #{x}\n>\n" }.join("\n")
-    tpbody = <<-MARKDOWN
+    intro = nvinfo.vintro.split("\n").map { |x| "> #{x}\n>\n" }.join("\n")
+    btext = <<-MARKDOWN
     **Tên truyện**: #{nvinfo.vname}
     **Tác giả**: #{nvinfo.author.vname}
 
     ### Giới thiệu vắn tắt:
 
-    #{bintro.empty? ? "Cần bổ sung" : bintro}
+    #{intro.empty? ? "Cần bổ sung" : intro}
     MARKDOWN
 
     cvpost.update_content!({
-      "title":      "Thảo luận chung truyện #{nvinfo.vname}",
-      "labels":     "1",
-      "body_input": tpbody,
-      "body_itype": "md",
+      "labels": "1",
+      "title":  "Thảo luận chung truyện #{nvinfo.vname}",
+      "btext":  btext,
     }, set_utime: false)
   end
 end

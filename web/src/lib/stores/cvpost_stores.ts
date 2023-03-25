@@ -1,18 +1,16 @@
 import { writable, get } from 'svelte/store'
 
 export interface CvpostForm {
-  title: string
   labels: string
-  body_input: string
-  body_itype: string
+  title: string
+  btext: string
 }
 
 function init(): CvpostForm {
   return {
-    title: '',
     labels: 'Thảo luận',
-    body_input: '',
-    body_itype: 'md',
+    title: '',
+    btext: '',
   }
 }
 
@@ -31,15 +29,13 @@ export const form = {
   ...writable(init()),
   init: async (id = 0) => form.set(await load(id)),
   validate(data: CvpostForm = get(form)) {
-    const { title, body_input: body } = data
+    const { title, btext } = data
 
     if (title.length < 4) return 'Độ dài của chủ đề phải dài hơn 4 ký tự'
     if (title.length > 200) return 'Độ dài của chủ đề phải nhỏ hơn 200 ký tự'
 
-    if (body.length < 1) return 'Độ dài của nội dung phải dài hơn 1 ký tự'
-    if (body.length > 5000) return 'Độ dài của nội dung phải nhỏ hơn 5000 ký tự'
+    if (btext.length < 4) return 'Độ dài của nội dung phải dài hơn 4 ký tự'
 
-    // TODO
     return false
   },
   reset: () => form.set(init()),

@@ -31,7 +31,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
 
     query.with_nvinfo unless nvinfo
     query.with_viuser unless viuser
-    query.with_rpbody.with_lastrp(&.with_viuser)
+    query.with_lastrp(&.with_viuser)
 
     items = query.limit(limit).offset(offset).to_a
     memos = UserPost.glob(_viuser.id, _viuser.privi, items.map(&.id))
@@ -89,10 +89,8 @@ class CV::CvpostCtrl < CV::BaseCtrl
     render json: {
       id:     cvpost.oid,
       title:  cvpost.title,
+      btext:  cvpost.btext,
       labels: cvpost.labels.join(","),
-
-      body_input: cvpost.rpbody.input,
-      body_itype: cvpost.rpbody.itype,
     }
   rescue err
     render :not_found, text: "Chủ đề không tồn tại!"

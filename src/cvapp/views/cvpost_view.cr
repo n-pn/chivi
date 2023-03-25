@@ -20,33 +20,24 @@ struct CV::CvpostView
 
       jb.field "title", @data.title
       jb.field "tslug", @data.tslug
+      jb.field "brief", @data.brief
 
-      jb.field "state", @data.state
       jb.field "labels", @data.labels
 
       jb.field "ctime", @data.created_at.to_unix
-
-      if @full
-        jb.field "bhtml", @data.rpbody.ohtml
-      end
+      jb.field "utime", @data.utime
+      jb.field "state", @data.state
 
       jb.field "op_uname", @data.viuser.uname
       jb.field "op_privi", @data.viuser.privi
 
-      if lastrp = Cvrepl.find({id: @data.lastrp_id})
-        jb.field "brief", lastrp.brief
-        jb.field "utime", lastrp.utime
-
-        jb.field "lp_uname", lastrp.viuser.uname
-        jb.field "lp_privi", lastrp.viuser.privi
-      else
-        jb.field "brief", @data.brief
-        jb.field "utime", @data.utime
-      end
-
       jb.field "post_count", @data.repl_count
       jb.field "like_count", @data.like_count
       jb.field "view_count", @data.view_count
+
+      if @full
+        jb.field "bhtml", @data.bhtml
+      end
 
       if memo = @memo
         jb.field "self_liked", memo.liked

@@ -54,8 +54,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
 
     cvrepl = Cvrepl.new({viuser_id: _viuser.id, cvpost: cvpost, ii: cvpost.repl_count + 1})
 
-    dtrepl_id = form.rp_id
-    dtrepl_id = cvpost.rpbody.id if dtrepl_id == 0
+    dtrepl_id = form.rp_id == 0 ? -cvpost.id : form.rp_id
 
     cvrepl.set_dtrepl_id(dtrepl_id)
     cvrepl.update_content!(form.input)

@@ -104,8 +104,8 @@
 
       <form-field class="body">
         <MdForm
-          bind:value={$data.body_input}
-          name="body_input"
+          bind:value={$data.btext}
+          name="btext"
           placeholder="Nội dung thảo luận" />
       </form-field>
 

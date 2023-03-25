@@ -57,6 +57,8 @@ fi
 if [[ $* == *misc* ]]
 then
   echo backup miscs data!
+  rsync-fast "$SSH/var/texts/edits" "var/texts"
+  rsync-fast "$SSH/var/texts/trans" "var/texts"
 fi
 
 ## backup pg_data
