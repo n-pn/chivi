@@ -22,6 +22,6 @@
 
 <style lang="scss">
   ._nest {
-    padding-left: 0.75rem;
+    padding-left: 0.5rem;
   }
 </style>

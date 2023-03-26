@@ -3,14 +3,11 @@ require "../_ctrl_base"
 class CV::CvreplCtrl < CV::BaseCtrl
   base "/_db/tposts"
 
-  @[AC::Route::GET("/", converters: {post_id: ConvertBase32})]
+  @[AC::Route::GET("/")]
   def index(sort : String = "-id", post_id : Int64? = nil, uname : String? = nil)
-    query = Cvrepl.query.where("ii > 0")
-    query.sort_by(sort)
+    query = Cvrepl.query.sort_by(sort)
 
-    if post_id
-      query.where("cvpost_id = (select id from cvposts where ii = ? limit 1)", post_id)
-    end
+    query.where("cvpost_id = ?", post_id) if post_id
 
     if uname
       query.where("viuser_id = (select id from viusers where uname = ? limit 1)", uname)
@@ -36,38 +33,38 @@ class CV::CvreplCtrl < CV::BaseCtrl
     render json: {
       id:    cvrepl.id,
       input: cvrepl.input,
-      itype: cvrepl.itype,
-      rp_id: cvrepl.repl_cvrepl_id,
+
+      post_id: cvrepl.cvpost_id,
+      repl_id: cvrepl.repl_cvrepl_id,
     }
   rescue err
     render :not_found, text: "Bài viết không tồn tại!"
   end
 
-  record CvreplForm, input : String, rp_id : Int64 = 0 do
+  record CvreplForm, input : String, repl_id : Int64 = 0, post_id : Int64 = 0 do
     include JSON::Serializable
 
     def after_initialize
       @input = @input.strip
+      @repl_id = -@post_id if @repl_id == 0
     end
   end
 
-  @[AC::Route::POST("/", body: :form, converters: {post_id: ConvertBase32})]
-  def create(post_id : Int64, form : CvreplForm)
+  @[AC::Route::POST("/", body: :form)]
+  def create(form : CvreplForm)
     guard_privi 0, "tạo bình luận"
-    cvpost = Cvpost.load!(post_id)
 
-    cvrepl = Cvrepl.new({viuser_id: _viuser.id, cvpost: cvpost, ii: cvpost.repl_count + 1})
+    cvpost = Cvpost.load!(form.post_id)
+    cvrepl = Cvrepl.new({viuser_id: _vu_id, cvpost: cvpost})
 
-    dtrepl_id = form.rp_id == 0 ? -cvpost.id : form.rp_id
-
-    cvrepl.set_dtrepl_id(dtrepl_id)
+    cvrepl.set_dtrepl_id(form.repl_id)
     cvrepl.update_content!(form.input)
     cvpost.bump!(cvrepl.id)
 
     render json: CvreplView.new(cvrepl)
   end
 
-  @[AC::Route::POST("/:repl_id", body: :form)]
+  @[AC::Route::PATCH("/:repl_id", body: :form)]
   def update(repl_id : Int64, form : CvreplForm)
     cvrepl = Cvrepl.load!(repl_id)
     guard_owner cvrepl.viuser_id, 0, "sửa bình luận"

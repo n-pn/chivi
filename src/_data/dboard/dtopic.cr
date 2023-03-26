@@ -139,37 +139,33 @@ class CV::Cvpost
 
   CACHE = RamCache(Int64, self).new(1024, ttl: 10.minutes)
 
-  def self.load!(ii : Int64) : self
-    CACHE.get(ii) { find!({ii: ii}) }
+  def self.load!(id : Int64) : self
+    CACHE.get(id) { find!({id: id}) }
   end
 
-  def self.load!(ii : String) : self
-    load!(HashUtil.decode32(ii))
-  end
+  # def self.init_base_topic!(nvinfo : Nvinfo)
+  #   cvpost = find({ii: nvinfo.dt_ii}) || new({
+  #     ii:        nvinfo.dt_ii,
+  #     state:     1,
+  #     viuser_id: -2,
+  #     nvinfo_id: nvinfo.id,
+  #     labels:    "thao-luan",
+  #   })
 
-  def self.init_base_topic!(nvinfo : Nvinfo)
-    cvpost = find({ii: nvinfo.dt_ii}) || new({
-      ii:        nvinfo.dt_ii,
-      state:     1,
-      viuser_id: -2,
-      nvinfo_id: nvinfo.id,
-      labels:    "thao-luan",
-    })
+  #   intro = nvinfo.vintro.split("\n").map { |x| "> #{x}\n>\n" }.join("\n")
+  #   btext = <<-MARKDOWN
+  #   **Tên truyện**: #{nvinfo.vname}
+  #   **Tác giả**: #{nvinfo.author.vname}
 
-    intro = nvinfo.vintro.split("\n").map { |x| "> #{x}\n>\n" }.join("\n")
-    btext = <<-MARKDOWN
-    **Tên truyện**: #{nvinfo.vname}
-    **Tác giả**: #{nvinfo.author.vname}
+  #   ### Giới thiệu vắn tắt:
 
-    ### Giới thiệu vắn tắt:
+  #   #{intro.empty? ? "Cần bổ sung" : intro}
+  #   MARKDOWN
 
-    #{intro.empty? ? "Cần bổ sung" : intro}
-    MARKDOWN
-
-    cvpost.update_content!({
-      "labels": "1",
-      "title":  "Thảo luận chung truyện #{nvinfo.vname}",
-      "btext":  btext,
-    }, set_utime: false)
-  end
+  #   cvpost.update_content!({
+  #     "labels": "1",
+  #     "title":  "Thảo luận chung truyện #{nvinfo.vname}",
+  #     "btext":  btext,
+  #   }, set_utime: false)
+  # end
 end

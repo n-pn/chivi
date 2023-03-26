@@ -5,12 +5,12 @@ class CV::CvpostCtrl < CV::BaseCtrl
   base "/_db/topics"
 
   @[AC::Route::GET("/")]
-  def index(pg pgidx : Int32 = 1,
-            lm limit : Int32 = 24,
-            labels : String? = nil,
-            dboard : Int64? = nil,
-            viuser : String? = nil)
-    offset = CtrlUtil.offset(pgidx, limit)
+  def index(
+    labels : String? = nil,
+    dboard : Int64? = nil,
+    viuser : String? = nil
+  )
+    pgidx, limit, offset = _paginate(max: 100)
 
     query = Cvpost.query.order_by(_sort: :desc)
 
@@ -64,7 +64,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     render json: {cvpost: CvpostView.new(cvpost)}
   end
 
-  @[AC::Route::GET("/:post_id", converters: {post_id: ConvertBase32})]
+  @[AC::Route::GET("/:post_id")]
   def show(post_id : Int64)
     cvpost = Cvpost.load!(post_id)
 
@@ -82,7 +82,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     render :not_found, text: "Chủ đề không tồn tại!"
   end
 
-  @[AC::Route::GET("/:post_id/detail", converters: {post_id: ConvertBase32})]
+  @[AC::Route::GET("/:post_id/detail")]
   def detail(post_id : Int64)
     cvpost = Cvpost.load!(post_id)
 
@@ -96,7 +96,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     render :not_found, text: "Chủ đề không tồn tại!"
   end
 
-  @[AC::Route::POST("/:post_id", body: :form, converters: {post_id: ConvertBase32})]
+  @[AC::Route::POST("/:post_id", body: :form)]
   def update(post_id : Int64, form : CvpostForm)
     cvpost = Cvpost.load!(post_id)
     guard_owner cvpost.viuser_id, 0, "sửa chủ đề"
@@ -105,7 +105,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
     render json: {cvpost: CvpostView.new(cvpost)}
   end
 
-  @[AC::Route::DELETE("/:post_id", converters: {post_id: ConvertBase32})]
+  @[AC::Route::DELETE("/:post_id")]
   def delete(post_id : Int64)
     cvpost = Cvpost.load!(post_id)
     guard_owner cvpost.viuser_id, 0, "xoá chủ đề"

@@ -237,7 +237,7 @@
   textarea {
     display: block;
     width: 100%;
-    min-height: 6rem;
+    min-height: 5rem;
     max-height: 80vh;
     border: 0;
     outline: 0;

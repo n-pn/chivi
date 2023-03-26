@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { page } from '$app/stores'
-
   import { api_call } from '$lib/api_call'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import MdForm from '$gui/molds/MdForm.svelte'
 
-  export let cvpost_id = '0'
+  export let cvpost_id = 0
   export let cvrepl_id = 0
   export let dtrepl_id = 0
   export let disabled = false
@@ -15,30 +13,29 @@
     if (new_repl) window.location.reload()
   }
 
-  let on_edit = cvrepl_id > 0
-  let api_url = gen_action(cvpost_id)
+  $: on_edit = cvrepl_id > 0
 
-  let form = { input: '', rp_id: dtrepl_id }
+  $: [action, method] =
+    dtrepl_id > 0
+      ? [`/_db/tposts/${dtrepl_id}`, 'PATCH']
+      : [`/_db/tposts`, 'POST']
+
+  let form = { input: '', repl_id: dtrepl_id || -cvpost_id, post_id: cvpost_id }
   $: if (cvrepl_id > 0) load_form(cvrepl_id)
 
   let error = ''
 
   async function load_form(id: number) {
     const api_url = `/_db/tposts/${id}/detail`
-    form = await fetch(api_url).then((r) => r.json())
-  }
-
-  function gen_action(cvpost_id: string) {
-    let base_url = '/_db/tposts'
-    if (cvrepl_id) return base_url + '/' + cvrepl_id
-    return base_url + '?post_id=' + cvpost_id
+    const api_res = await fetch(api_url)
+    if (api_res.ok) form = await api_res.json()
   }
 
   async function submit() {
     error = ''
 
     try {
-      const new_repl = await api_call(api_url, form)
+      const new_repl = await api_call(action, form, method)
       form.input = ''
       on_destroy(new_repl as CV.Cvrepl)
     } catch (ex) {
@@ -51,11 +48,7 @@
     : 'Nội dung bình luận'
 </script>
 
-<form
-  class="repl-form"
-  action={api_url}
-  method="POST"
-  on:submit|preventDefault={submit}>
+<form class="repl-form" {action} {method} on:submit|preventDefault={submit}>
   <MdForm bind:value={form.input} name="input" {disabled} {placeholder}>
     <svelte:fragment slot="footer">
       {#if error}

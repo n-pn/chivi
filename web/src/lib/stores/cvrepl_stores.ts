@@ -2,27 +2,26 @@ import { writable, get } from 'svelte/store'
 
 export interface CvreplForm {
   input: string
-  itype: string
-  rp_id: number
+  repl_id: number
 }
 
-function init(rp_id = 0, itype = 'md'): CvreplForm {
-  return { input: '', itype, rp_id }
+function init(repl_id = 0): CvreplForm {
+  return { input: '', repl_id }
 }
 
-async function load(id: number, rp_id: number): Promise<CvreplForm> {
-  if (id == 0) return init(rp_id)
+async function load(id: number, repl_id: number): Promise<CvreplForm> {
+  if (id == 0) return init(repl_id)
 
   const api_url = `/_db/tposts/${id}/detail`
   const api_res = await fetch(api_url)
 
-  if (!api_res.ok) return init(rp_id)
+  if (!api_res.ok) return init(repl_id)
   return await api_res.json()
 }
 
 export const form = {
   ...writable(init()),
-  init: async (id = 0, rp_id = 0) => form.set(await load(id, rp_id)),
+  init: async (id = 0, repl_id = 0) => form.set(await load(id, repl_id)),
   // prettier-ignore
   validate(data: CvreplForm = get(form) ) {
     const { input } = data

@@ -16,7 +16,10 @@ struct CV::CvpostView
         }
       end
 
-      jb.field "id", @data.oid
+      jb.field "op_uname", @data.viuser.uname
+      jb.field "op_privi", @data.viuser.privi
+
+      jb.field "id", @data.id
 
       jb.field "title", @data.title
       jb.field "tslug", @data.tslug
@@ -27,9 +30,6 @@ struct CV::CvpostView
       jb.field "ctime", @data.created_at.to_unix
       jb.field "utime", @data.utime
       jb.field "state", @data.state
-
-      jb.field "op_uname", @data.viuser.uname
-      jb.field "op_privi", @data.viuser.privi
 
       jb.field "post_count", @data.repl_count
       jb.field "like_count", @data.like_count

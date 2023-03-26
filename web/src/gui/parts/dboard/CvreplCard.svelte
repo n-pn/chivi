@@ -6,18 +6,12 @@
   import CvreplForm from './CvreplForm.svelte'
 
   export let cvrepl: CV.Cvrepl
-  export let render_mode = 0
-
+  export let on_focus = false
   export let nest_level = 0
-
-  let card_id = `tp-${cvrepl.no}`
 
   $: _user = $page.data._user
   $: is_owner = _user.uname == cvrepl.u_dname
   $: can_edit = _user.privi > 3 || (is_owner && _user.privi >= 0)
-
-  $: board_url = `/forum/-${cvrepl.db_bslug}`
-  $: topic_url = `${board_url}/-${cvrepl.dt_tslug}-${cvrepl.dt}`
 
   let show_repl = false
 
@@ -45,26 +39,14 @@
   }
 </script>
 
-<cvrepl-card
-  id={card_id}
-  class="nest_{nest_level % 5}"
-  class:larger={render_mode == 0}
-  class:nested={nest_level > 0}>
-  {#if render_mode > 0}
-    <cvrepl-orig>
-      <SIcon name="messages" />
-      <a href={board_url}>{cvrepl.db_bname}</a>
-      <span>/</span>
-      <a href={topic_url}>{cvrepl.dt_title}</a>
-    </cvrepl-orig>
-  {/if}
-
-  <cvrepl-head>
+<div
+  id="rp-{cvrepl.id}"
+  class="repl nest_{nest_level % 5}"
+  class:nested={nest_level > 0}
+  class:on_focus>
+  <header class="repl-head">
     <cvrepl-meta>
-      <a
-        class="cv-user"
-        href="{topic_url}?op={cvrepl.u_dname}"
-        data-privi={cvrepl.u_privi}
+      <a class="cv-user" href="/@{cvrepl.u_dname}" data-privi={cvrepl.u_privi}
         >{cvrepl.u_dname}
       </a>
     </cvrepl-meta>
@@ -75,11 +57,11 @@
       {rel_time(cvrepl.ctime)}
       {#if cvrepl.utime > cvrepl.ctime}*{/if}
     </span>
-  </cvrepl-head>
+  </header>
 
-  <cvrepl-body class="m-article">{@html cvrepl.ohtml}</cvrepl-body>
+  <main class="repl-body m-article">{@html cvrepl.ohtml}</main>
 
-  <cvrepl-foot>
+  <footer class="repl-foot">
     <button
       class="meta btn"
       class:_active={show_repl}
@@ -99,56 +81,76 @@
         <span class="badge">{cvrepl.like_count}</span>
       {/if}
     </button>
-  </cvrepl-foot>
-</cvrepl-card>
+  </footer>
+</div>
 
 {#if show_repl}
-  <CvreplForm
-    cvpost_id={cvrepl.dt}
-    dtrepl_id={cvrepl.id}
-    disabled={_user.privi < 1}
-    on_destroy={handle_repl_form} />
+  <section class="new-repl">
+    <CvreplForm
+      cvpost_id={cvrepl.post_id}
+      dtrepl_id={cvrepl.id}
+      disabled={_user.privi < 1}
+      on_destroy={handle_repl_form} />
+  </section>
 {/if}
 
 <style lang="scss">
-  cvrepl-card {
-    display: block;
+  .repl {
     margin: 0.75rem 0;
+    font-size: rem(17px);
 
-    &.active {
-      @include bgcolor(tert);
+    // border-left: 3px solid var(--bdcolor);
+    // padding-left: 0.75rem;
+
+    &.on_focus {
+      @include bgcolor(warning, 5, 1);
     }
-
-    &.larger {
-      font-size: rem(17px);
-    }
   }
 
-  cvrepl-edit {
-    display: block;
-    padding-bottom: 0.75rem;
+  .nested {
+    border-left: 3px solid var(--bdcolor);
+    padding-left: 0.75rem;
+    // margin-left: -0.25rem;
   }
 
-  cvrepl-repl {
-    display: block;
-    margin-left: var(--gutter);
-    @include border($loc: top);
+  .nest_0 {
+    --bdcolor: #{color(neutral, 5, 2)};
   }
 
-  cvrepl-head {
+  .nest_1 {
+    --bdcolor: #{color(primary, 5, 8)};
+  }
+
+  .nest_2 {
+    --bdcolor: #{color(warning, 5, 8)};
+  }
+
+  .nest_3 {
+    --bdcolor: #{color(success, 5, 8)};
+  }
+
+  .nest_4 {
+    --bdcolor: #{color(harmful, 5, 8)};
+  }
+
+  .new-repl {
+    padding-left: 0.75rem;
+  }
+
+  .repl-head {
     @include flex-cy($gap: 0.25rem);
   }
 
-  cvrepl-body {
+  .repl-body {
     display: block;
     margin: 0.25rem 0;
     word-wrap: break-word;
 
     font-size: rem(16px);
 
-    .fluid & {
-      @include bps(font-size, rem(16px), $tm: rem(17px));
-    }
+    // .fluid & {
+    //   @include bps(font-size, rem(16px), $tm: rem(17px));
+    // }
 
     > :global(*) + :global(*) {
       margin-top: 1em;
@@ -173,12 +175,12 @@
     @include ftsize(sm);
   }
 
-  dthead-right {
-    @include flex-cy($gap: 0.25rem);
-    margin-left: auto;
-  }
+  // dthead-right {
+  //   @include flex-cy($gap: 0.25rem);
+  //   margin-left: auto;
+  // }
 
-  cvrepl-foot {
+  .repl-foot {
     margin-top: 0.375rem;
     @include flex-cy($gap: 0.75rem);
   }
@@ -198,50 +200,9 @@
     }
   }
 
-  .edit {
-    font-size: rem(13px);
-    font-style: italic;
-    // @include fgcolor(mute);
-  }
-
-  cvrepl-orig {
-    @include flex-cy($gap: 0.125rem);
-    @include ftsize(xs);
-    line-height: 1.25rem;
-
-    @include border($loc: top-bottom);
-    @include fgcolor(tert);
-
-    a {
-      color: inherit;
-      @include clamp($width: null);
-    }
-
-    a:hover {
-      @include fgcolor(primary, 5);
-    }
-  }
-
-  .nested {
-    --bdcolor: #{color(neutral, 5, 3)};
-
-    border-left: 3px solid var(--bdcolor);
-    padding-left: 0.75rem;
-  }
-
-  .nest_1 {
-    --bdcolor: #{color(primary, 5, 8)};
-  }
-
-  .nest_2 {
-    --bdcolor: #{color(warning, 5, 8)};
-  }
-
-  .nest_3 {
-    --bdcolor: #{color(success, 5, 8)};
-  }
-
-  .nest_4 {
-    --bdcolor: #{color(harmful, 5, 8)};
-  }
+  // .edit {
+  //   font-size: rem(13px);
+  //   font-style: italic;
+  //   // @include fgcolor(mute);
+  // }
 </style>

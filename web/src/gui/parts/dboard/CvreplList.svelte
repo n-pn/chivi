@@ -21,7 +21,7 @@
     const output: CV.Cvrepl[] = []
 
     for (const repl of repls) {
-      const parent = map.get(repl.rp_id)
+      const parent = map.get(repl.repl_id)
 
       if (parent) parent.repls.push(repl)
       else output.push(repl)

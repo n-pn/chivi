@@ -2,7 +2,7 @@ declare namespace CV {
   interface Cvpost {
     dboard?: Dboard
 
-    id: string
+    id: number
 
     title: string
     tslug: string
