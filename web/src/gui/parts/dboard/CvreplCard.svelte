@@ -36,9 +36,12 @@
   }
 
   const handle_repl_form = (new_repl?: CV.Cvrepl) => {
+    show_repl = false
+    if (!new_repl) return
+
+    cvrepl.repls ||= []
     cvrepl.repls.unshift(new_repl)
     cvrepl = cvrepl
-    show_repl = false
   }
 </script>
 
@@ -102,8 +105,9 @@
 {#if show_repl}
   <CvreplForm
     cvpost_id={cvrepl.dt}
-    on_destroy={handle_repl_form}
-    disabled={_user.privi < 1} />
+    dtrepl_id={cvrepl.id}
+    disabled={_user.privi < 1}
+    on_destroy={handle_repl_form} />
 {/if}
 
 <style lang="scss">

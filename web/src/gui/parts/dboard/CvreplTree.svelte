@@ -12,7 +12,7 @@
 
 <div class="repl-list" class:_nest={level > 0}>
   {#each repls as cvrepl}
-    <CvreplCard {cvrepl} nest_level={level} />
+    <CvreplCard bind:cvrepl nest_level={level} />
 
     {#if cvrepl.repls && cvrepl.repls.length > 0}
       <svelte:self {cvpost} repls={cvrepl.repls} level={level + 1} {fluid} />

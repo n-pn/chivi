@@ -20,6 +20,8 @@ struct CV::CvreplView
         jb.field "db_bslug", @data.cvpost.nvinfo.bslug
         jb.field "dt_title", @data.cvpost.title
         jb.field "dt_tslug", @data.cvpost.tslug
+
+        jb.field "repls", [] of Cvrepl
       end
 
       jb.field "u_dname", @data.viuser.uname
