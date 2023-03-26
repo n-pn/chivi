@@ -108,50 +108,53 @@
   }
 
   .repl {
-    margin-bottom: min(var(--gutter), 0.75rem);
-    // @include shadow();
-    @include bdradi();
-    @include border();
-    // @include bgcolor(tert);
-    @include padding-x(var(--gutter));
+    @include border(--bd-soft, $loc: top);
   }
 
   .repl-head {
     @include flex($gap: 0.3rem);
 
-    line-height: 1.75rem;
+    line-height: 1.5rem;
+    padding-top: 0.375rem;
+
     @include bps(font-size, rem(13px), rem(14px), rem(15px));
+  }
 
-    .-user,
-    .-time {
-      @include fgcolor(secd);
-      @include clamp($width: null);
-      &:hover {
-        @include fgcolor(primary, 5);
-      }
+  .-user,
+  .-time {
+    @include clamp($width: null);
+  }
+
+  .-time,
+  .-like,
+  .-sep {
+    @include fgcolor(tert);
+  }
+
+  .-user {
+    font-weight: 500;
+    max-width: 50vw;
+    @include fgcolor(secd);
+
+    &:hover {
+      @include fgcolor(primary, 5);
     }
+  }
 
-    .-user {
-      font-weight: 500;
-      max-width: 50vw;
-    }
+  .-like {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
 
-    .-time {
-      @include fgcolor(tert);
-    }
-
-    .-like {
-      margin-left: auto;
-      @include fgcolor(tert);
-      > span {
-        @include ftsize(sm);
-      }
+    > span {
+      @include ftsize(sm);
     }
   }
 
   .repl-body {
     @include bps(font-size, rem(15px), rem(16px));
-    padding-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
     > :global(*) + :global(*) {
       margin-top: 0.75rem;
     }
