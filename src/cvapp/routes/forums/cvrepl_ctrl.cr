@@ -45,6 +45,10 @@ class CV::CvreplCtrl < CV::BaseCtrl
 
   record CvreplForm, input : String, rp_id : Int64 = 0 do
     include JSON::Serializable
+
+    def after_initialize
+      @input = @input.strip
+    end
   end
 
   @[AC::Route::POST("/", body: :form, converters: {post_id: ConvertBase32})]
@@ -60,10 +64,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     cvrepl.update_content!(form.input)
     cvpost.bump!(cvrepl.id)
 
-    repl = Cvrepl.load!(cvrepl.repl_cvrepl_id)
-    repl.update!({repl_count: repl.repl_count + 1})
-
-    render json: {cvrepl: CvreplView.new(cvrepl)}
+    render json: CvreplView.new(cvrepl)
   end
 
   @[AC::Route::POST("/:repl_id", body: :form)]
@@ -72,7 +73,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     guard_owner cvrepl.viuser_id, 0, "sửa bình luận"
 
     cvrepl.update_content!(form.input)
-    render json: {cvrepl: CvreplView.new(cvrepl)}
+    render json: CvreplView.new(cvrepl)
   end
 
   @[AC::Route::DELETE("/:repl_id")]

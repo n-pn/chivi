@@ -1,17 +1,13 @@
-<script context="module" lang="ts">
-  import { page } from '$app/stores'
-
-  import CvreplTree from './CvreplTree.svelte'
-  import CvreplCard from './CvreplCard.svelte'
-  import CvreplForm from './CvreplForm.svelte'
-</script>
-
 <script lang="ts">
+  import CvreplTree from './CvreplTree.svelte'
+  import CvreplForm from './CvreplForm.svelte'
+
   export let cvpost: CV.Cvpost
   export let tplist: CV.Cvrepl[]
 
-  export let on_cvrepl_form = (dirty = false) => {
-    if (dirty) window.location.reload()
+  export let on_cvrepl_form = (new_repl?: CV.Cvrepl) => {
+    if (new_repl) tplist.unshift(new_repl)
+    tplist = tplist
   }
 
   function build_tree(repls: CV.Cvrepl[]) {
@@ -35,6 +31,10 @@
   }
 </script>
 
+<div class="new-repl">
+  <CvreplForm cvpost_id={cvpost.id} on_destroy={on_cvrepl_form} />
+</div>
+
 {#if tplist.length > 0}
   <CvreplTree
     {cvpost}
@@ -45,16 +45,9 @@
   <div class="empty">Chưa có bình luận</div>
 {/if}
 
-<dtlist-foot>
-  <CvreplForm cvpost_id={cvpost.id} on_destroy={on_cvrepl_form} />
-</dtlist-foot>
-
 <style lang="scss">
-  dtlist-foot {
+  .new-repl {
     display: block;
-
-    margin-top: 0.75rem;
-    @include border($loc: top);
   }
 
   .empty {

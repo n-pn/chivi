@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { session } from '$lib/stores'
+  import { page } from '$app/stores'
 
   import { rel_time } from '$utils/time_utils'
   import { SIcon } from '$gui'
@@ -11,11 +11,15 @@
   export let nest_level = 0
 
   let card_id = `tp-${cvrepl.no}`
-  $: is_owner = $session.uname == cvrepl.u_dname
-  $: can_edit = $session.privi > 3 || (is_owner && $session.privi >= 0)
+
+  $: _user = $page.data._user
+  $: is_owner = _user.uname == cvrepl.u_dname
+  $: can_edit = _user.privi > 3 || (is_owner && _user.privi >= 0)
 
   $: board_url = `/forum/-${cvrepl.db_bslug}`
   $: topic_url = `${board_url}/-${cvrepl.dt_tslug}-${cvrepl.dt}`
+
+  let show_repl = false
 
   async function toggle_like() {
     const action = cvrepl.self_liked ? 'unlike' : 'like'
@@ -29,6 +33,12 @@
       cvrepl.like_count = payload.like_count
       cvrepl.self_liked = !cvrepl.self_liked
     }
+  }
+
+  const handle_repl_form = (new_repl?: CV.Cvrepl) => {
+    cvrepl.repls.unshift(new_repl)
+    cvrepl = cvrepl
+    show_repl = false
   }
 </script>
 
@@ -58,35 +68,43 @@
 
     <cvrepl-sep>·</cvrepl-sep>
 
-    <cvrepl-meta>
+    <span class="meta">
       {rel_time(cvrepl.ctime)}
       {#if cvrepl.utime > cvrepl.ctime}*{/if}
-    </cvrepl-meta>
+    </span>
   </cvrepl-head>
 
   <cvrepl-body class="m-article">{@html cvrepl.ohtml}</cvrepl-body>
 
   <cvrepl-foot>
     <button
+      class="meta btn"
+      class:_active={show_repl}
+      on:click={() => (show_repl = !show_repl)}>
+      <SIcon name="arrow-forward" />
+      <span>Trả lời</span>
+    </button>
+
+    <button
       class="btn"
       class:_active={cvrepl.self_liked}
-      disabled={$session.privi < 0}
+      disabled={_user.privi < 0}
       on:click={toggle_like}>
       <SIcon name="thumb-up" />
-      <span>Thích</span>
+      <span>Ưa thích</span>
       {#if cvrepl.like_count > 0}
         <span class="badge">{cvrepl.like_count}</span>
       {/if}
     </button>
-
-    <cvrepl-meta>
-      <button class="btn" disabled>
-        <SIcon name="arrow-back-up" />
-        <span>Trả lời</span>
-      </button>
-    </cvrepl-meta>
   </cvrepl-foot>
 </cvrepl-card>
+
+{#if show_repl}
+  <CvreplForm
+    cvpost_id={cvrepl.dt}
+    on_destroy={handle_repl_form}
+    disabled={_user.privi < 1} />
+{/if}
 
 <style lang="scss">
   cvrepl-card {
@@ -142,10 +160,11 @@
     @include fgcolor(tert);
   }
 
-  cvrepl-meta {
+  .meta {
     display: inline-flex;
-    gap: 0.125rem;
     align-items: center;
+    gap: 0.125rem;
+
     @include fgcolor(tert);
     @include ftsize(sm);
   }

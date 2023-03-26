@@ -12,8 +12,8 @@ then
   WATCH="$WATCH --watch ./src/_data"
 fi
 
-sudo service $TARGET-srv stop
-echo killed service $TARGET-srv to start $TARGET-srv in dev mode!
+# sudo service $TARGET-srv stop
+# echo killed service $TARGET-srv to start $TARGET-srv in dev mode!
 
 export GC_INITIAL_HEAP_SIZE=4G
 nodemon $WATCH --exec "crystal run --error-trace" src/$SOURCE/${SOURCE}_srv.cr

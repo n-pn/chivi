@@ -17,7 +17,6 @@ class CV::Cvrepl
 
   column repl_cvrepl_id : Int64 = 0 # replied to cvrepl.id
   column repl_viuser_id : Int64 = 0 # replied to cvrepl's viuser.id
-  getter parent : Cvrepl { Cvrepl.load!(repl_cvrepl_id) }
 
   column tagged_ids : Array(Int64) = [] of Int64
 
@@ -74,7 +73,12 @@ class CV::Cvrepl
 
   def set_dtrepl_id(dtrepl_id : Int64)
     self.repl_cvrepl_id = dtrepl_id
-    self.repl_viuser_id = Cvrepl.load!(dtrepl_id).viuser_id
+
+    if dtrepl_id > 0
+      self.repl_viuser_id = Cvrepl.load!(dtrepl_id).viuser_id
+    else
+      self.repl_viuser_id = self.cvpost.viuser_id
+    end
   end
 
   def update_content!(input : String, itype = "md")

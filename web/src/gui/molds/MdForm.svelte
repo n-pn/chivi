@@ -1,9 +1,13 @@
 <script lang="ts">
+  import { page } from '$app/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let value = ''
   export let name = 'mdform'
+  export let value = ''
+
   export let placeholder = ''
+  export let disabled = false
+
   let input: HTMLTextAreaElement
 
   let old_value = ''
@@ -32,6 +36,9 @@
 
       case 'list':
         return insert_text(extend_range(start, end), '- ', '')
+
+      case 'list-numbers':
+        return insert_text(extend_range(start, end), '+ ', '')
 
       default:
         return
@@ -89,57 +96,129 @@
     ['list', '-', 'Danh sách'],
     ['list-numbers', '+', 'Danh sách đánh số'],
   ]
+
+  let mode = 'edit'
+  let html = ''
+
+  const change_mode = async () => {
+    if (mode == 'edit') {
+      const init = { method: 'POST', body: value }
+      const res = await fetch('/_sp/mdpost', init)
+      if (!res.ok) return
+
+      html = await res.text()
+      mode = 'html'
+    } else {
+      mode = 'edit'
+    }
+  }
+
+  $: [mode_icon, mode_btip] =
+    mode == 'edit' ? ['eye', 'Xem trước'] : ['edit', 'Soạn thảo']
 </script>
 
 <svelte:window on:keydown={handle_key} />
 
-<md-form>
-  <md-head>
-    <md-menu>
-      {#each menu as [name, kbd, tip]}
-        <button on:click={() => apply(name)} data-kbd={kbd} data-tip={tip}
-          ><SIcon {name} /></button>
-      {/each}
-    </md-menu>
-  </md-head>
+<div class="md-form" class:active={mode == 'html'}>
+  <section class="input">
+    <header class="md-head">
+      <div class="md-menu">
+        {#each menu as [name, kbd, tip]}
+          <button
+            type="button"
+            class="md-btn"
+            on:click={() => apply(name)}
+            data-kbd={kbd}
+            data-tip={tip}><SIcon {name} /></button>
+        {/each}
+      </div>
 
-  <textarea {name} {placeholder} lang="vi" bind:value bind:this={input} />
-</md-form>
+      <div class="md-menu _right">
+        <button
+          type="button"
+          class="md-btn"
+          data-tip={mode_btip}
+          disabled={!value}
+          on:click={change_mode}>
+          <SIcon name={mode_icon} />
+        </button>
+      </div>
+    </header>
+
+    {#if mode == 'edit' || !html}
+      <textarea
+        {name}
+        {placeholder}
+        {disabled}
+        lang="vi"
+        bind:value
+        bind:this={input} />
+    {:else}
+      <div class="preview">
+        {@html html}
+      </div>
+    {/if}
+  </section>
+
+  <section class="md-foot">
+    <slot name="footer" />
+  </section>
+</div>
 
 <style lang="scss">
-  md-form {
-    display: block;
-    max-width: 100%;
+  .md-form {
+    &.active,
+    &:focus-within {
+      .input {
+        @include bgcolor(secd);
+        border-color: color(primary, 5);
+        box-shadow: 0 0 0 2px color(primary, 5, 5);
+      }
 
+      .md-head {
+        display: flex;
+      }
+
+      .md-foot {
+        display: initial;
+      }
+
+      textarea {
+        height: 8rem;
+      }
+    }
+  }
+
+  .input {
     @include fgcolor(main);
     @include bgcolor(main);
 
     @include bdradi();
     @include border($width: 1px);
-
-    &:focus,
-    &:focus-within {
-      @include bgcolor(secd);
-      border-color: color(primary, 5);
-      box-shadow: 0 0 0 2px color(primary, 5, 5);
-    }
   }
 
-  md-head {
-    display: flex;
+  .md-head,
+  .md-foot {
+    display: none;
+  }
+
+  .md-head {
     height: 2rem;
     padding: 0 0.5rem;
     @include bdradi($loc: top);
     @include border($loc: bottom);
-    @include bgcolor(tert);
+    // @include bgcolor(tert);
   }
 
-  md-menu {
-    display: flex;
-    margin-left: auto;
+  .md-menu {
+    display: inline-flex;
+
+    &._right {
+      margin-left: auto;
+    }
   }
 
-  button {
+  .md-btn {
     background: none;
     height: 2rem;
     width: 1.875rem;
@@ -171,6 +250,15 @@
     &::placeholder {
       font-style: italic;
       @include fgcolor(tert);
+    }
+  }
+
+  .preview {
+    padding: 0.75rem;
+    line-height: 1.5rem;
+
+    > :global(* + *) {
+      margin-top: 1em;
     }
   }
 </style>
