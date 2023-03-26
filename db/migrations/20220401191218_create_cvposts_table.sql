@@ -2,15 +2,15 @@
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE cvposts (
   id bigserial primary key,
-  ii bigint not null default 1,
+  ii int8 not null default 1,
 
-  viuser_id int not null default 0,
-  nvinfo_id bigint not null default 0,
+  viuser_id int4 not null default 0,
+  nvinfo_id int8 not null default 0,
 
-  lastrp_id bigint not null default 0,
+  lastrp_id int8 not null default 0,
 
-  ptype int not null default 0,
-  stars int not null default 3,
+  ptype int4 not null default 0,
+  stars int4 not null default 3,
 
   labels text[] not null default '{}',
   lslugs text[] not null default '{}',
@@ -19,15 +19,15 @@ CREATE TABLE cvposts (
   tslug text not null default '',
   brief text not null default '',
 
-  state int not null default 0, -- states: public, sticky, deleted....
-  utime bigint not null default 0, -- update when new post created
+  state int4 not null default 0, -- states: public, sticky, deleted....
+  utime int8 not null default 0, -- update when new post created
 
-  _sort int not null default 0,
-  _bump int not null default 0,
+  _sort int4 not null default 0,
+  _bump int4 not null default 0,
 
-  repl_count int not null default 0, -- post count
-  like_count int not null default 0, -- like count
-  view_count int not null default 0, -- view count
+  repl_count int4 not null default 0, -- post count
+  like_count int4 not null default 0, -- like count
+  view_count int4 not null default 0, -- view count
 
   created_at timestamptz not null default CURRENT_TIMESTAMP,
   updated_at timestamptz not null default CURRENT_TIMESTAMP
