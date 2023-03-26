@@ -3,15 +3,13 @@
 require "micrate"
 require "pg"
 
-def load_env(file : String = ".env")
-  File.each_line(file) do |line|
-    next unless line =~ /^\s*(\w+)\s*=\s*(.+?)\s*$/
-    ENV[$1] ||= $2
+require "../src/cv_env"
+
+module Micreate
+  def self.migrations_dir
+    File.join("privs", "migrations")
   end
 end
 
-load_env(".env.production") if ENV["CV_ENV"]? == "production"
-load_env(".env")
-
-Micrate::DB.connection_url = ENV["CV_DATABASE_URL"]
+Micrate::DB.connection_url = CV_ENV.database_url
 Micrate::Cli.run
