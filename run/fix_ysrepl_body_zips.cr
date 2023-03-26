@@ -1,34 +1,21 @@
-require "compress/zip"
+require "../src/cv_env"
+require "pg"
 
-INP = "var/ysapp/repls"
+PG_DB = DB.open(CV_ENV.database_url)
+at_exit { PG_DB.close }
 
 OUT = "var/ysapp/repls-txt"
+SQL = "update ysrepls set vhtml = $1 where origin_id = $2"
 
-# Dir.glob("#{INP}/*-vi").each do |dir|
-#   Dir.glob("#{dir}/*.zip") do |zip_path|
-#     Compress::Zip::File.open(zip_path) do |zip|
-#       zip.entries.each do |entry|
-#         out_file = "#{OUT}/#{entry.filename[0..3]}-vi/#{entry.filename}"
-#         next if File.file?(out_file)
-#         Dir.mkdir_p(File.dirname(out_file))
-#         puts "#{entry.filename} => #{out_file}"
+dirs = Dir.glob("#{OUT}/*-vi")
+dirs.each_with_index(1) do |dir, idx|
+  puts "- #{idx}/#{dirs.size}: #{dir}"
 
-#         content = entry.open(&.gets_to_end)
-#         File.write(out_file, content)
-#       end
-#     end
-#   end
-# end
-
-Dir.glob("#{OUT}/*-vi").each do |dir|
-  Dir.glob("#{dir}/*..htm") do |htm_path|
-    puts htm_path
-    out_path = htm_path.sub("..htm", ".htm")
-
-    if File.file?(out_path)
-      File.delete(htm_path)
-    else
-      File.rename(htm_path, out_path)
+  PG_DB.transaction do |tx|
+    Dir.glob("#{dir}/*.htm") do |path|
+      y_rid = File.basename(path, ".htm")
+      vhtml = File.read(path)
+      tx.connection.exec SQL, vhtml, y_rid
     end
   end
 end

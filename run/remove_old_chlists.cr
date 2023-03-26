@@ -4,9 +4,9 @@ childs = Dir.children(INP).map! { |x| "#{INP}/#{x}" }.select! { |x| File.directo
 childs.each do |child|
   `find '#{child}' -type f -name '*-trans.db' -delete`
 
-  files = Dir.glob("#{child}/*-infos.db")
+  files = Dir.glob("#{child}/*-infos")
   files.each do |file|
-    next unless File.file?(file.sub("-infos", ""))
+    next unless File.file?(file.sub("-infos", ".db"))
     puts "deleting: #{file}"
     File.delete(file)
   end

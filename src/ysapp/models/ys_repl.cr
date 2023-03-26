@@ -20,6 +20,9 @@ class YS::Ysrepl
   column y_cid : String = ""
   column y_uid : Int32 = 0
 
+  column ztext : String = ""
+  column vhtml : String = ""
+
   column like_count : Int32 = 0
   column repl_count : Int32 = 0 # reply count, optional
 
@@ -41,82 +44,40 @@ class YS::Ysrepl
     end
   end
 
-  getter ztext : String { load_ztext_from_disk }
-  getter vhtml : String { load_vhtml_from_disk }
+  def set_ztext(ztext : String)
+    return if ztext.empty?
+    spawn save_ztext_copy(ztext)
 
-  ZIP_DIR = "var/ysapp/repls-zip"
+    self.ztext = ztext
+    self.fix_vhtml(ztext)
+  end
+
   TXT_DIR = "var/ysapp/repls-txt"
 
-  private def group_by
-    self.origin_id[0..3]
-  end
+  def save_ztext_copy(ztext : String) : Nil
+    y_rid = self.origin_id
 
-  def zip_path(type = "zh")
-    "#{ZIP_DIR}/#{group_by}-#{type}.zip"
-  end
-
-  def tmp_path(type = "zh")
-    "#{TXT_DIR}/#{group_by}-#{type}"
-  end
-
-  def filename(ext = "txt")
-    "#{self.origin_id}.#{ext}"
-  end
-
-  def load_ztext_from_disk : String
-    YsUtil.read_zip(zip_path("zh"), "#{origin_id}.txt") { "$$$" }
-  rescue err
-    Log.error(exception: err) { err.message }
-    "$$$"
-  end
-
-  def load_vhtml_from_disk : String
-    YsUtil.read_zip(zip_path("vi"), "#{origin_id}.htm") do
-      render_vhtml_from_ztext(persist: true)
-    end
-  rescue err
-    Log.error(exception: err) { "error loading vhtml for #{origin_id} of #{yscrit_id}" }
-    "<p><em class=err>Lỗi hệ thống! Mời liên hệ ban quản trị</em></p>"
-  end
-
-  ERROR_BODY = "<p><em class=err>Lỗi dịch phản hồi!</em></p>"
-
-  def render_vhtml_from_ztext(persist : Bool = true)
-    ztext = self.ztext
-
-    if ztext.empty? || ztext == "$$$"
-      html = "<p><em>Không có nội dung</em></p>"
-    else
-      return ERROR_BODY unless tran = TranUtil.qtran(ztext, 0)
-      html = tran.split('\n').map { |x| "<p>#{x}</p>" }.join('\n')
-    end
-
-    save_data_to_disk(html, "vi", ".htm") if persist
-    html
-  end
-
-  def save_data_to_disk(data : String, type : String, ext : String) : Nil
-    dir_path = self.tmp_path(type)
+    dir_path = "#{TXT_DIR}/#{y_rid[0..3]}-zh"
     Dir.mkdir_p(dir_path)
 
-    file_path = File.join(dir_path, self.filename(ext))
-    File.write(file_path, data)
+    file_path = File.join(dir_path, "#{y_rid}.txt")
+    File.write(file_path, ztext)
 
-    zip_path = self.zip_path(type)
-    YsUtil.zip_data(zip_path, dir_path)
-
-    Log.debug { "save #{file_path} to #{zip_path}" }
+    Log.debug { "saved repl ztext to #{file_path}" }
   end
 
-  # def set_ztext(ztext : String)
-  #   return if ztext.empty?
-  #   self.ztext = ztext
-  #   self.fix_vhtml
-  # end
+  EMPTY_BODY = "<p><em>Không có nội dung</em></p>"
+  ERROR_BODY = "<p><em>Máy dịch gặp sự cố</em></p>"
 
-  # def fix_vhtml(dname = self.yscrit.nvinfo.dname)
-  #   self.vhtml = CV::BookUtil.cv_lines(ztext, dname, mode: :html)
-  # end
+  def fix_vhtml(ztext = self.ztext)
+    if ztext.empty?
+      self.vhtml = EMPTY_BODY
+    elsif vtext = TranUtil.qtran(ztext, wn_id: 0)
+      self.vhtml = TranUtil.txt_to_htm(vtext)
+    else
+      self.vhtml = ERROR_BODY
+    end
+  end
 
   ##############
 
@@ -142,12 +103,15 @@ class YS::Ysrepl
       out_repl.y_uid = out_user.y_uid
       out_repl.ysuser_id = out_user.id # TODO: remove this
 
-      out_repl.save_data_to_disk(raw_repl.ztext, "zh", "txt") if save_text
+      if save_text || out_repl.ztext.empty?
+        out_repl.set_ztext(raw_repl.ztext)
+      end
 
       out_repl.like_count = raw_repl.like_count
       out_repl.repl_count = raw_repl.repl_count
 
       out_repl.created_at = raw_repl.created_at
+      out_repl.updated_at = raw_repl.created_at
 
       out_repl.save!
     end

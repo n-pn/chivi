@@ -62,4 +62,10 @@ module TranUtil
       input
     end
   end
+
+  def txt_to_htm(input : String)
+    String.build do |io|
+      input.split('\n').join(io, '\n') { |x| io << "<p>" << x << "</p>" }
+    end
+  end
 end
