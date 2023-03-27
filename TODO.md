@@ -1,12 +1,8 @@
 # TODO
 
-## rewrite v1 data storage using sqlite3
+## BUGS
 
-- import v1 terms from logs
-- sync v1 terms with user upload
-- registering new dict entries when new books created
-- sync dbterms with dbdefns
-- make core engine load dbterms instead of loading tsv files
+- do not create new dicts when new books created
 
 ## improve v1 dict data
 
@@ -28,7 +24,6 @@
   - restore chapters from downloaded htmls
   - restore chapters from zipped entries? (compare sizes with the newer one)
 
-- fix invalid multibytes sequence error (convert .txt file to bgk file)
+- fix invalid multibytes sequence error (converted .txt file to gbk file)
 - fix broken texts (long time ago some files were stored with translations alongside, should be removed)
 - update metadatas for all cached chapters
-- copy fg seed chapters from bg seeds (using hardlink?)

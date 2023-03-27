@@ -1,6 +1,6 @@
 require "pg"
 require "sqlite3"
-require "../src/cv_env"
+require "../../src/cv_env"
 
 book_ids = Set(Int32).new
 

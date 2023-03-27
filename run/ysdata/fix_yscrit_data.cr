@@ -1,6 +1,6 @@
 require "pg"
 require "colorize"
-require "../src/cv_env"
+require "../../src/cv_env"
 
 PG_DB = DB.open(CV_ENV.database_url)
 at_exit { PG_DB.close }
