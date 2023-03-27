@@ -1,4 +1,5 @@
 require "json"
+require "sqlite3"
 
 def export(files : Array(String), name : String, encoding = "UTF-8", &)
   items = [] of String
@@ -60,3 +61,22 @@ DIR = "var/inits"
 
 # puts "exported to #{out_path}, items: #{ondict.size}"
 # File.write(out_path, ondict.join('\n'))
+
+# DB.open("sqlite3:var/dicts/defns/all_terms.dic") do |db|
+#   words = db.query_all "select zh from terms", as: String
+#   File.write("var/inits/known/corpus.tsv", words.join('\n'))
+# end
+
+# export(["var/dicts/inits/count-by-books.tsv"], "texsmart", &.split('\t').first?)
+
+files = Dir.glob("var/inits/known/*.tsv")
+
+output = Set(String).new
+
+files.each do |file|
+  next if file.ends_with?("all-known.tsv")
+  output.concat File.read_lines(file)
+end
+
+puts output.size
+File.write("var/inits/known/all-known.tsv", output.join('\n'))
