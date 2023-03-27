@@ -75,7 +75,7 @@ output = {} of String => Array(String)
 
 DIR = "var/inits/vietphrase"
 
-File.each_line("#{DIR}/combined.txt") do |line|
+File.each_line("#{DIR}/combined.tsv") do |line|
   vals = line.split('\t')
   next if vals.size < 2
 
@@ -86,9 +86,13 @@ end
 puncts = File.open("#{DIR}/combine-puncts.tsv", "w")
 numbers = File.open("#{DIR}/combine-numbers.tsv", "w")
 propers = File.open("#{DIR}/combine-propers.tsv", "w")
+cleaned = File.open("#{DIR}/combine-cleaned.tsv", "w")
 
 output.each do |key, vals|
   line = String.build { |io| io << key; vals.each { |v| io << '\t' << v }; io << '\n' }
+
+  cleaned << line
+
   case key
   when /\p{P}/
     puncts << line
@@ -102,6 +106,7 @@ end
 puncts.close
 numbers.close
 propers.close
+cleaned.close
 
 # File.open("#{DIR}/combine-cleaned.tsv", "w") do |file|
 #   output.each do |key, vals|

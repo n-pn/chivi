@@ -4,7 +4,11 @@ require "../_raw/raw_ys_repl"
 class YS::CrawlYslistByUser < CrawlTask
   private def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
-    post_raw_data("/_ys/repls/by_crit?rtime=#{Time.utc.to_unix}", json)
+
+    y_cid = File.basename File.dirname(entry.path)
+    endpoint = "/_ys/repls/by_crit/#{y_cid}?rtime=#{Time.utc.to_unix}"
+
+    post_raw_data(endpoint, json)
   rescue ex
     puts entry.path, json
     Log.error { ex.message }
@@ -14,7 +18,7 @@ class YS::CrawlYslistByUser < CrawlTask
     "https://api.yousuu.com/api/comment/#{y_cid}/reply?&page=#{page}"
   end
 
-  DIR = "var/ysraw/repls"
+  DIR = "var/ysraw/repls-by-crit"
 
   def self.gen_path(y_cid : String, page : Int32 = 1)
     "#{DIR}/#{y_cid}/#{page}.latest.json.zst"

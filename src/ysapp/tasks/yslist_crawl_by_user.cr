@@ -16,7 +16,7 @@ class YS::CrawlYslistByUser < CrawlTask
     "https://api.yousuu.com/api/user/#{u_id}/booklistDetail?page=#{page}"
   end
 
-  DIR = "var/ysraw/list-by-user"
+  DIR = "var/ysraw/lists-by-user"
 
   def self.gen_path(u_id : Int32, page : Int32 = 1)
     "#{DIR}/#{u_id}/#{page}.latest.json.zst"

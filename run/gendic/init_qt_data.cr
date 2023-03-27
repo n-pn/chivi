@@ -1,6 +1,6 @@
 DIR = "var/inits/vietphrase"
 
-files = Dir.glob("#{DIR}/*/*.txt").sort!
+files = Dir.glob("#{DIR}/*/**/*.txt").sort!
 
 output = {} of String => Set(String)
 
@@ -27,7 +27,7 @@ FIX_TONE_MARKS = {
 REGEX = Regex.new(FIX_TONE_MARKS.keys.join('|'))
 
 def correcting(val : String)
-  val = val.unicode_normalize(:nfc)
+  val = val.unicode_normalize(:nfkc)
   val.gsub(REGEX) { |str| FIX_TONE_MARKS[str] }
 end
 
@@ -35,7 +35,7 @@ def normalize(key : String)
   String.build do |io|
     key.each_char do |char|
       if (char.ord & 0xff00) == 0xff00
-        io << (char.ord - 0xfee0).chr
+        io << (char.ord - 0xfee0).chr.downcase
       else
         io << char.downcase
       end
@@ -54,19 +54,22 @@ files.each do |file|
     output[key] ||= Set(String).new
 
     correcting(vals).split(/\/|\|/).each do |val|
-      output[key] << val.strip unless val.empty?
+      output[key] << val.strip unless val.blank?
     end
   end
 
   puts "file: #{file}, output: #{output.size}"
 end
 
-File.open("#{DIR}/combined.txt", "w") do |file|
+out_path = "#{DIR}/combined.tsv"
+File.open(out_path, "w") do |file|
   output.each do |key, vals|
-    next if vals.empty? || vals.first.empty?
+    next if vals.empty?
 
     file << key << '\t'
     vals.join(file, '\t')
     file << '\n'
   end
 end
+
+puts "saved to: #{out_path}"
