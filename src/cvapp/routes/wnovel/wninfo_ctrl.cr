@@ -9,7 +9,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
   def index(
     order : String = "access",
     btitle : String? = nil, author : String? = nil,
-    chroot : String? = nil, origin : String? = nil,
+    seed : String? = nil, origin : String? = nil,
     genres : String? = nil, tagged : String? = nil,
     voters : Int32? = nil, rating : Int32? = nil,
     uname : String? = nil, bmark : String? = nil,
@@ -21,7 +21,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
 
     query.filter_btitle(btitle) if btitle
     query.filter_author(author) if author
-    query.filter_wnseed(chroot) if chroot
+    query.filter_wnseed(seed) if seed
     query.filter_origin(origin) if origin
 
     query.filter_genres(genres)

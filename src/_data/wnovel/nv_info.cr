@@ -64,7 +64,7 @@ class CV::Nvinfo
   column shield : Int32 = 0 # default to 0
 
   column atime : Int64 = 0 # value by minute from the epoch, update whenever an registered user viewing book info
-  column utime : Int64 = 0 # value by minute from the epoch, max value of chroot utime and ys_utime
+  column utime : Int64 = 0 # value by minute from the epoch, max value of wnseed utime and ys_utime
 
   # ranking
 
@@ -112,7 +112,7 @@ class CV::Nvinfo
   scope :filter_wnseed do |input|
     stmt = <<-SQL
       id IN (
-        SELECT nvinfo_id FROM wnseeds
+        SELECT wn_id FROM wnseeds
         WHERE sname = ? AND s_bid > 0 AND chap_total > 0
       )
     SQL

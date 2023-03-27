@@ -4,7 +4,7 @@
     'btitle',
     'genres',
     'origin',
-    'chroot',
+    'seed',
     'status',
     'rating',
     'voters',
@@ -33,7 +33,7 @@
     btitle: '',
     genres: '',
     origin: '',
-    chroot: '',
+    seed: '',
     status: 0,
     rating: 0,
     voters: 0,
@@ -84,7 +84,7 @@
     voters: true,
     rating: true,
     genres: true,
-    chroot: !!query.chroot,
+    seed: !!query.seed,
     origin: !!query.origin,
   }
 
@@ -241,24 +241,24 @@
     </div>
   </details>
 
-  <details class="content" bind:open={triggers.chroot}>
+  <details class="content" bind:open={triggers.seed}>
     <summary class="summary">
       <span class="type">Nguồn text: </span>
-      <span class="data _caps" class:_caps={query.chroot}
-        >{query.chroot || 'Tất cả'}</span>
+      <span class="data _caps" class:_caps={query.seed}
+        >{query.seed || 'Tất cả'}</span>
     </summary>
 
     <div class="choices">
-      <label class="m-chip _caps" class:_active={!query.chroot}>
-        <input type="radio" bind:group={query.chroot} value="" />
+      <label class="m-chip _caps" class:_active={!query.seed}>
+        <input type="radio" bind:group={query.seed} value="" />
         <span class="radio-text">Tất cả</span>
-        {#if !query.chroot}<SIcon name="check" />{/if}
+        {#if !query.seed}<SIcon name="check" />{/if}
       </label>
 
       {#each snames as name}
-        {@const actived = name == query.chroot}
+        {@const actived = name == query.seed}
         <label class="m-chip _caps" class:_active={actived}>
-          <input type="radio" bind:group={query.chroot} value={name} />
+          <input type="radio" bind:group={query.seed} value={name} />
           <span class="radio-text">{name}</span>
           {#if actived}<SIcon name="check" />{/if}
         </label>
