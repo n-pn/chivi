@@ -110,7 +110,7 @@ class CV::Nvinfo
   end
 
   scope :filter_chroot do |input|
-    stmt = "id IN (SELECT nvinfo_id FROM chroots WHERE sname = ? AND chap_count > 0)"
+    stmt = "id IN (SELECT nvinfo_id FROM wnseeds WHERE sname = ? AND chap_count > 0)"
     where(stmt, input)
   end
 

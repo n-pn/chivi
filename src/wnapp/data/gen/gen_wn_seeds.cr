@@ -43,7 +43,7 @@ end
 DB.open(CV_ENV.database_url) do |db|
   query = <<-SQL
     select sname, s_bid::int, nvinfo_id::int, status + 1 as _flag, chap_count, utime, stime
-    from chroots
+    from wnseeds
     where sname <> '=user' and nvinfo_id >= 0
     order by nvinfo_id asc, id asc
   SQL

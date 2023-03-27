@@ -1,11 +1,9 @@
 require "db"
 require "pg"
-require "amber"
+require "../../src/cv_env"
 
-def open_db
-  DB.open(Amber.settings.database_url) do |db|
-    yield db
-  end
+def open_db(&)
+  DB.open(CV_ENV.database_url) { |db| yield db }
 end
 
 INP = "var/chaps/seeds"
@@ -15,7 +13,7 @@ def reject_unused(sname : String)
 
   used_ids = open_db do |db|
     db.query_all <<-SQL, args: [sname], as: Int32
-      select s_bid from chroots where sname = $1
+      select s_bid from wnseeds where sname = $1
     SQL
   end
 

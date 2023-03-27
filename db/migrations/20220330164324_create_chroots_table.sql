@@ -1,31 +1,31 @@
 -- +micrate Up
-CREATE TABLE chroots (
-  id serial primary key,
-
-  nvinfo_id bigint not null default 0,
-
-  sname varchar not null default '',
-  s_bid int not null default 0,
-  zseed int not null default 0,
-
-  status int not null default 0,
-  shield int not null default 0,
-
-  utime bigint not null default 0,
-  stime bigint not null default 0,
-
-  last_sname varchar not null default '',
-  last_schid varchar not null default '',
-  chap_count int not null default 0,
-
-  created_at timestamptz not null default CURRENT_TIMESTAMP,
-  updated_at timestamptz not null default CURRENT_TIMESTAMP
+CREATE TABLE wnseeds (
+  id serial PRIMARY KEY,
+  nvinfo_id bigint NOT NULL DEFAULT 0,
+  --
+  sname varchar NOT NULL DEFAULT '',
+  s_bid int NOT NULL DEFAULT 0,
+  zseed int NOT NULL DEFAULT 0,
+  --
+  status int NOT NULL DEFAULT 0,
+  shield int NOT NULL DEFAULT 0,
+  --
+  utime bigint NOT NULL DEFAULT 0,
+  stime bigint NOT NULL DEFAULT 0,
+  --
+  last_sname varchar NOT NULL DEFAULT '',
+  last_schid varchar NOT NULL DEFAULT '',
+  chap_count int NOT NULL DEFAULT 0,
+  --
+  created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX chroot_origin_idx ON chroots (sname, s_bid);
-CREATE INDEX chroot_nvinfo_idx ON chroots (nvinfo_id, sname);
-CREATE INDEX chroot_stime_idx ON chroots (stime);
+CREATE INDEX wnseeds_origin_idx ON wnseeds (sname, s_bid);
 
+CREATE INDEX wnseeds_nvinfo_idx ON wnseeds (nvinfo_id, sname);
+
+CREATE INDEX wnseeds_stime_idx ON wnseeds (stime);
 
 -- +micrate Down
-DROP TABLE IF EXISTS chroots;
+DROP TABLE IF EXISTS wnseedss;

@@ -1,15 +1,16 @@
-require "../../../_util/char_util"
+require "./entity_type"
 
-module M2::StringNER
+module MT::BasicNER::ScanString
   extend self
 
-  def detect(input : Array(Char), index : Int32 = 0)
+  def scan_one(input : Array(Char), start : Int32 = 0)
     num_count = 0
     cap_count = 0
 
     url1_idx = 0
     url2_idx = 0
 
+    index = start
     upper = input.size
 
     while index < upper
@@ -31,19 +32,22 @@ module M2::StringNER
     end
 
     if cap_count > 0
-      tag = PosTag::Extr
+      tag = EntityType::Name
     elsif num_count == 0
-      tag = PosTag::Noth
+      tag = EntityType::Frgn
     else
-      tag = PosTag::Zblank
+      tag = EntityType::Misc
     end
 
     # puts ["scan_string", index, url1_idx, url2_idx]
 
     case
-    when str_is_url1?(input, index, url1_idx) then detect_link(input, index &+ 3)
-    when str_is_url2?(input, index, url2_idx) then detect_link(input, index &+ 2)
-    else                                           {index, tag, nil}
+    when str_is_url1?(input, index, url1_idx)
+      scan_link(input, index &+ 3)
+    when str_is_url2?(input, index, url2_idx)
+      scan_link(input, index &+ 2)
+    else
+      {index, tag, nil}
     end
   end
 
@@ -73,7 +77,14 @@ module M2::StringNER
     input[index] == '.' && input[index &+ 1].ascii_letter?
   end
 
-  def detect_link(input : Array(Char), index : Int32 = 0)
+  URL_CHARS = {
+    '$', '!', '*', '@', '&',
+    '%', '/', ':', '=', '?',
+    '#', '+', '-', '_', '.',
+    '~',
+  }
+
+  def scan_link(input : Array(Char), index : Int32 = 0)
     # puts ["scan_url", index]
 
     while index < input.size
@@ -84,24 +95,13 @@ module M2::StringNER
       when 'A'..'Z', '0'..'9', 'a'..'z', '_'
         next
       else
-        break if index >= input.size || !allowed_in_url?(char)
+        break if index >= input.size || !URL_CHARS.includes?(char)
         char = input.unsafe_fetch(index)
         index += 1
         break unless char.ascii_alphanumeric?
       end
     end
 
-    {index, PosTag::ZLink, nil}
-  end
-
-  URL_CHARS = {
-    '$', '!', '*', '@', '&',
-    '%', '/', ':', '=', '?',
-    '#', '+', '-', '_', '.',
-    '~',
-  }
-
-  def allowed_in_url?(char : Char)
-    URL_CHARS.includes?(char)
+    {index, EntityType::Link, nil}
   end
 end
