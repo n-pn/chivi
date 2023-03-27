@@ -20,9 +20,9 @@ module MT::BasicNER
     while idx < upper
       case input.unsafe_fetch(idx)
       when .ascii_letter?
-        new_idx, tag, val = StringNER.detect(input, idx)
+        new_idx, tag, val = ScanString.scan_one(input, idx)
       when .ascii_number?
-        new_idx, tag, val = NumberNER.detect(input, idx)
+        new_idx, tag, val = ScanNumber.scan_one(input, idx)
       when .in?(HANNUM_CHARS)
         new_idx, tag, val = NumlitNER.detect(input, idx)
       when '几'

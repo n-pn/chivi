@@ -33,12 +33,12 @@ class WN::WnRepo
       db.exec "attach database '#{zh_db_path}' as src"
 
       db.exec <<-SQL
-          replace into chaps
-            (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname, _path, _flag)
-          select
-            ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname, _path, _flag
-          from src.chaps
-        SQL
+        replace into chaps
+          (ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname, _path, _flag)
+        select
+          ch_no, s_cid, title, chdiv, c_len, p_len, mtime, uname, _path, _flag
+        from src.chaps
+      SQL
     end
 
     File.delete?(zh_db_path)
@@ -79,26 +79,55 @@ class WN::WnRepo
     HTTP::Client.post(href, body: body, &.body_io.gets_to_end)
   end
 
+  def count
+    @repo.db.scalar("chaps", "count (ch_no)")
+  end
+
   def all(pg_no : Int32 = 1, limit = 32) : Array(WnChap)
-    @repo.open_db do |db|
-      offset = (pg_no &- 1) * limit
-      query = "select * from chaps where ch_no > ? and ch_no <= ? order by ch_no asc"
-      db.query_all query, offset, offset &+ limit, as: WnChap
-    end
+    offset = (pg_no &- 1) * limit
+    stmt = "select * from chaps where ch_no > ? and ch_no <= ? order by ch_no asc"
+    @repo.db.query_all stmt, offset, offset &+ limit, as: WnChap
   end
 
   def top(take = 6)
-    @repo.open_db do |db|
-      query = "select * from chaps where ch_no > 0 order by ch_no desc limit ?"
-      db.query_all query, take, as: WnChap
-    end
+    stmt = "select * from chaps where ch_no > 0 order by ch_no desc limit ?"
+    @repo.db.query_all stmt, take, as: WnChap
   end
 
   def get(ch_no : Int32)
-    @repo.open_db do |db|
-      query = "select * from chaps where ch_no = ? limit 1"
-      db.query_one? query, ch_no, as: WnChap
-    end
+    stmt = "select * from chaps where ch_no = ? limit 1"
+    @repo.db.query_one? stmt, ch_no, as: WnChap
+  end
+
+  def get_title(ch_no : Int32) : String?
+    stmt = "select title from chaps where ch_no = $1 limit 1"
+    @repo.db.query_one? stmt, ch_no, as: String
+  end
+
+  # for two chapter source of a single book, find the matching ch_no, which is
+  # the ch_no of this source which have the same title with the other souce
+  # and in range of original ch_no +/- 10 (to prevent multi chapters with same name)
+  def matching_ch_no(title : String, ch_no : Int32) : Int32
+    stmt = <<-SQL
+      select ch_no from chaps
+      where ch_no >= $1 and ch_no <= $2 and title = $3
+      order by ch_no desc
+      limit 1
+    SQL
+
+    @repo.db.query_one?(stmt, ch_no &- 10, ch_no &+ 10, title, as: Int32) || ch_no
+  end
+
+  # find the previous chdiv if none provided in chapter upsert action
+  def nearby_chdiv(ch_no : Int32) : String?
+    stmt = <<-SQL
+      select chdiv from chaps
+      where ch_no <= $1 and chdiv <> ''
+      order by ch_no desc
+      limit 1
+    SQL
+
+    @repo.db.query_one?(stmt, ch_no, as: String)
   end
 
   def reload_stats!(sname : String, s_bid : Int32) : Int32
@@ -162,7 +191,7 @@ class WN::WnRepo
       sql << ") on conflict (ch_no) do update set "
 
       fields = fields.reject(&.== "ch_no")
-      fields.join(sql, ", ") { |f, io| io << f << " = excluded." << f }
+      fields.join(sql, ", ") { |f| sql << f << " = excluded." << f }
 
       sql << " where ch_no = excluded.ch_no"
       # sql << " and _flag < 2" unless unsafe

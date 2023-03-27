@@ -21,7 +21,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
 
     query.filter_btitle(btitle) if btitle
     query.filter_author(author) if author
-    query.filter_chroot(chroot) if chroot
+    query.filter_wnseed(chroot) if chroot
     query.filter_origin(origin) if origin
 
     query.filter_genres(genres)

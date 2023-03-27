@@ -109,8 +109,14 @@ class CV::Nvinfo
     where(stmt, input)
   end
 
-  scope :filter_chroot do |input|
-    stmt = "id IN (SELECT nvinfo_id FROM wnseeds WHERE sname = ? AND chap_count > 0)"
+  scope :filter_wnseed do |input|
+    stmt = <<-SQL
+      id IN (
+        SELECT nvinfo_id FROM wnseeds
+        WHERE sname = ? AND s_bid > 0 AND chap_total > 0
+      )
+    SQL
+
     where(stmt, input)
   end
 
