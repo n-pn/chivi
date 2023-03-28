@@ -9,6 +9,9 @@ class YS::RawYsRepl
   @[JSON::Field(key: "fromId")]
   getter user : EmbedUser
 
+  @[JSON::Field(key: "toId")]
+  getter to_user : EmbedUser? = nil
+
   @[JSON::Field(key: "bookCommentId")]
   getter y_cid : String
 

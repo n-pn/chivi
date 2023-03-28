@@ -16,7 +16,7 @@ struct YS::EmbedUser
   getter id : Int32
 
   @[JSON::Field(key: "userName")]
-  getter name : String
+  getter name : String = ""
 
   @[JSON::Field(key: "avatarId")]
   getter avatar : String = ""

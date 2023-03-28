@@ -9,16 +9,17 @@ class YS::Ysrepl
   self.table = "ysrepls"
 
   primary_key
-  column origin_id : String
+  column y_rid : String # hexstring from yousuu
 
   belongs_to ysuser : Ysuser
+  column y_uid : Int32 = 0
+
+  column to_y_uid : Int32 = 0 # to ysuser id
 
   column yscrit_id : Int64 = 0_i64
+  column y_cid : String = ""
 
   column stime : Int64 = 0 # list checked at by minutes from epoch
-
-  column y_cid : String = ""
-  column y_uid : Int32 = 0
 
   column ztext : String = ""
   column vhtml : String = ""
@@ -38,7 +39,7 @@ class YS::Ysrepl
 
   scope :sort_by do |order|
     case order
-    when "ctime" then self.order_by(id: :desc)
+    when "ctime" then self.order_by(created_at: :asc)
     when "likes" then self.order_by(like_count: :desc)
     else              self.order_by(created_at: :desc)
     end
@@ -55,7 +56,7 @@ class YS::Ysrepl
   TXT_DIR = "var/ysapp/repls-txt"
 
   def save_ztext_copy(ztext : String) : Nil
-    y_rid = self.origin_id
+    y_rid = self.y_rid
 
     dir_path = "#{TXT_DIR}/#{y_rid[0..3]}-zh"
     Dir.mkdir_p(dir_path)
@@ -81,27 +82,26 @@ class YS::Ysrepl
 
   ##############
 
-  def self.gen_id(origin_id : String)
-    origin_id[12..].to_i64(base: 16)
-  end
-
-  def self.load(origin_id : String)
-    find({origin_id: origin_id}) || begin
-      new({id: gen_id(origin_id), origin_id: origin_id})
-    end
+  def self.load(y_rid : String)
+    find({y_rid: y_rid}) || new({y_rid: y_rid})
   end
 
   def self.bulk_upsert(raw_repls : Array(RawYsRepl), save_text : Bool = true)
     raw_repls.each do |raw_repl|
       out_repl = self.load(raw_repl.y_rid)
 
+      out_repl.y_cid = raw_repl.y_cid
+      out_repl.y_uid = raw_repl.user.id
+
       out_crit = Yscrit.load(raw_repl.y_cid)
       out_user = Ysuser.upsert!(raw_repl.user)
 
       out_repl.yscrit_id = out_crit.id
-
-      out_repl.y_uid = out_user.y_uid
       out_repl.ysuser_id = out_user.id # TODO: remove this
+
+      if to_user = raw_repl.to_user
+        out_repl.to_y_uid = to_user.id
+      end
 
       if save_text || out_repl.ztext.empty?
         out_repl.set_ztext(raw_repl.ztext)

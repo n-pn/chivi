@@ -5,33 +5,33 @@
 # PGDB = DB.open(Amber.settings.database_url)
 # at_exit { PGDB.close }
 
-# record Crit, id : Int64, origin_id : String do
+# record Crit, id : Int64, y_rid : String do
 #   include DB::Serializable
 # end
 
-# crits = PGDB.query_all "select id, origin_id from yscrits where repl_count > 0 ", as: Crit
+# crits = PGDB.query_all "select id, y_rid from yscrits where repl_count > 0 ", as: Crit
 # puts "total reviews: #{crits.size}"
 
-# record Data, origin_id : String, ztext : String, vhtml : String do
+# record Data, y_rid : String, ztext : String, vhtml : String do
 #   include DB::Serializable
 # end
 
 # def export_data(crit)
-#   group = crit.origin_id[0..2]
+#   group = crit.y_rid[0..2]
 
-#   ztext_dir = "var/ysapp/repls.tmp/#{group}-zh/#{crit.origin_id}"
-#   vhtml_dir = "var/ysapp/repls.tmp/#{group}-vi/#{crit.origin_id}"
+#   ztext_dir = "var/ysapp/repls.tmp/#{group}-zh/#{crit.y_rid}"
+#   vhtml_dir = "var/ysapp/repls.tmp/#{group}-vi/#{crit.y_rid}"
 
 #   Dir.mkdir_p(ztext_dir)
 #   Dir.mkdir_p(vhtml_dir)
 
-#   query = "select origin_id, ztext, vhtml from ysrepls where yscrit_id = $1"
+#   query = "select y_rid, ztext, vhtml from ysrepls where yscrit_id = $1"
 
 #   PGDB.query_each(query, args: [crit.id]) do |rs|
-#     origin_id, ztext, vhtml = rs.read(String, String, String)
+#     y_rid, ztext, vhtml = rs.read(String, String, String)
 
-#     File.write("#{ztext_dir}/#{origin_id}.txt", ztext)
-#     File.write("#{vhtml_dir}/#{origin_id}.htm", vhtml)
+#     File.write("#{ztext_dir}/#{y_rid}.txt", ztext)
+#     File.write("#{vhtml_dir}/#{y_rid}.htm", vhtml)
 #   end
 # end
 
@@ -40,7 +40,7 @@
 
 # crits.each do |crit|
 #   next if tracker.includes?(crit.id)
-#   puts "- review: #{crit.origin_id}"
+#   puts "- review: #{crit.y_rid}"
 
 #   export_data(crit)
 #   tracker << crit.id

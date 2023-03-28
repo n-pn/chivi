@@ -45,8 +45,8 @@ class YS::Ysuser
   end
 
   def set_data(data : EmbedUser)
-    self.set_name(data.name)
-    self.set_avatar(data.avatar)
+    self.set_name(data.name) unless data.name.empty?
+    self.set_avatar(data.avatar) unless data.avatar.empty?
   end
 
   def set_stat(stat : RawYsUser, rtime : Int64)

@@ -97,6 +97,7 @@ class YS::InitCtrl < AC::Base
 
     yscrit.repl_total = json.total if yscrit.repl_total < json.total
     yscrit.repl_rtime = rtime
+    yscrit.save!
 
     Ysrepl.bulk_upsert(json.repls)
     render text: json.total
