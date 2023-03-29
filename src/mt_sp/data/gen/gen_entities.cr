@@ -2,7 +2,7 @@ require "json"
 require "colorize"
 require "../sp_ents"
 
-DIR = "var/texts/anlzs/tmp"
+DIR = "var/anlzs/texsmart/tmp"
 
 # SP::EntRelate.init_db(reset: false)
 # SP::EntValue.init_db(reset: false)

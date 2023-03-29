@@ -17,7 +17,7 @@ class MT::TxTerm
   end
 
   def self.db_path(wn_id : String | Int32)
-    "var/texts/anlzs/out/#{wn_id}.db"
+    "var/anlzs/texsmart/out/#{wn_id}.db"
   end
 
   def self.open_db(wn_id : String | Int32)

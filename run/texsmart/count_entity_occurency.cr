@@ -1,6 +1,6 @@
 require "sqlite3"
 
-DIR = "var/texts/anlzs/out"
+DIR = "var/anlzs/texsmart/out"
 
 counter = Hash({String, String}, Int32).new(0)
 select_sql = "select zstr, ztag, count from terms where \"type\" > 300"

@@ -13,8 +13,8 @@ DB.open("sqlite3:var/chaps/seed-infos.db") do |db|
   db.query_each(sql) do |rs|
     wn_id, s_bid = rs.read(Int32, Int32)
 
-    inp_dir = "var/texts/anlzs/!zxcs.me-#{s_bid}"
-    out_dir = "var/texts/anlzs/#{map_name[wn_id]}"
+    inp_dir = "var/anlzs/texsmart/!zxcs.me-#{s_bid}"
+    out_dir = "var/anlzs/texsmart/#{map_name[wn_id]}"
     next unless File.exists?(inp_dir)
 
     puts "#{inp_dir} => #{out_dir}"

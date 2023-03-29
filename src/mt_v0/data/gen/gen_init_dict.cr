@@ -1,7 +1,7 @@
 require "json"
 require "../vp_init"
 
-DIR = "var/texts/anlzs/out"
+DIR = "var/anlzs/texsmart/out"
 
 alias Counter = Hash(String, Int32)
 

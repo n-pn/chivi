@@ -1,8 +1,8 @@
 require "colorize"
 require "../data/tx_term"
 
-IDX_DIR = "var/texts/anlzs/idx"
-INP_DIR = "var/texts/anlzs/tmp"
+IDX_DIR = "var/anlzs/texsmart/idx"
+INP_DIR = "var/anlzs/texsmart/tmp"
 
 books = Dir.children(INP_DIR).reject!(&.starts_with?('!'))
 

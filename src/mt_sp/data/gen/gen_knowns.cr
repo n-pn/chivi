@@ -9,4 +9,4 @@ SP::EntValue.db.query_each("select form, etag from ent_values") do |rs|
   knowns << rs.read(String) + "\t" + rs.read(String)
 end
 
-File.write("var/texts/anlzs/known_entities.tsv", knowns.join('\n'))
+File.write("var/anlzs/texsmart/known_entities.tsv", knowns.join('\n'))

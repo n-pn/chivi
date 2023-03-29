@@ -1,7 +1,7 @@
 require "json"
 require "sqlite3"
 
-DIR = "var/texts/anlzs/out"
+DIR = "var/anlzs/texsmart/out"
 OUT = "var/cvmtl/vocab/texsmart"
 
 SELECT_STMT = "select zstr, count from terms where ztag = $1"
