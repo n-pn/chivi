@@ -1,4 +1,5 @@
 require "http/client"
+require "../cv_env"
 
 module R2Client
   extend self

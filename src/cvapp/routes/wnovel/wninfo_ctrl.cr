@@ -122,7 +122,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
 
     spawn add_book_dict(nvinfo.id, nvinfo.bslug, nvinfo.vname)
     spawn CtrlUtil.log_user_action("nvinfo-upsert", params.to_h, _viuser.uname)
-    spawn upload_bcover_to_r2!(nvinfo.scover, nvinfo.bcover)
+    spawn cache_cover!(nvinfo)
 
     render json: {id: nvinfo.id, bslug: nvinfo.bslug}
   rescue ex
@@ -130,8 +130,13 @@ class CV::WnovelCtrl < CV::BaseCtrl
     render :bad_request, text: ex.message
   end
 
-  private def upload_bcover_to_r2!(source_url : String, cover_name : String)
-    `bin/bcover_cli single -i "#{source_url}" -n #{cover_name}`
+  private def cache_cover!(nvinfo)
+    bcover = Bcover.load(nvinfo.scover, nvinfo.bcover)
+    bcover.wn_id = nvinfo.id.to_i
+    bcover.in_use = true
+    bcover.cache!
+  rescue ex
+    Log.error(exception: ex) { ex.message.colorize.red }
   end
 
   private def add_book_dict(wn_id : Int64, bslug : String, bname : String)

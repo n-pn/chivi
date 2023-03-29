@@ -2,45 +2,41 @@ require "log"
 require "colorize"
 require "option_parser"
 
-require "../src/wnapp/data/wnovel/bcover"
+require "../src/_data/wnovel/bcover"
 
-def single(link : String, name : String = "", force = false) : Nil
+def crawl_one(link : String, name : String = "", force = false) : Nil
   raise "Empty link" if link.empty?
 
-  cover = WN::Bcover.load(link)
-  cover.do_tasks!(force: force)
+  cover = CV::Bcover.load(link)
+  cover.name = CV::Bcover.gen_name(link) if cover.name.blank?
 
-  puts "[#{cover.name}] saved and uploaded to cloudflare r2!".colorize.yellow
+  cover.cache!(force: force)
+  Log.info { "[#{cover.name}] saved".colorize.yellow }
 end
 
-# def batch(sname = "=base", force = false)
-#   files = Dir.glob("var/books/infos/#{sname}/*.tsv").shuffle
+def crawl_all(links : Array(String), force = false)
+  q_size = links.size
+  w_size = 8
 
-#   q_size = files.size
-#   w_size = 8
+  workers = Channel(String).new(q_size)
+  results = Channel(Nil).new(w_size)
 
-#   workers = Channel(String).new(q_size)
-#   results = Channel(Nil).new(w_size)
+  w_size.times do
+    spawn do
+      loop do
+        link = workers.receive
+        crawl_one(link, force: force) unless link.empty?
+      rescue err
+        Log.error(exception: err) { err.message.colorize.red }
+      ensure
+        results.send(nil)
+      end
+    end
+  end
 
-#   spawn do
-#     files.each { |file| workers.send(file) }
-#   end
-
-#   w_size.times do
-#     spawn do
-#       loop do
-#         info = BookInfo.new(workers.receive)
-#         single(info.bcover, force: force) unless info.bcover.empty?
-#       rescue err
-#         Log.error(exception: err) { err.message.colorize.red }
-#       ensure
-#         results.send(nil)
-#       end
-#     end
-#   end
-
-#   q_size.times { results.receive }
-# end
+  links.each { |link| workers.send(link) }
+  q_size.times { results.receive }
+end
 
 def run!(argv = ARGV)
   mode = 0
@@ -49,26 +45,28 @@ def run!(argv = ARGV)
   image_link = ""
   image_name = ""
 
-  seed_name = "=base"
-
   OptionParser.parse(argv) do |parser|
     parser.on("-f", "Force redo") { force = true }
 
-    parser.on("single", "Work with a single book cover") do
+    parser.on("one", "Work with a single book cover") do
       mode = 1
       parser.on("-i LINK", "image link") { |i| image_link = i }
       parser.on("-n NAME", "image name") { |i| image_name = i }
     end
 
-    parser.on("batch", "Fetch all covers") do
+    parser.on("all", "Fetch all covers") do
       mode = 2
-      parser.on("-s SEED", "seed folder") { |s| seed_name = s }
     end
   end
 
   case mode
-  when 1 then single(image_link, image_name, force)
-    # when 2 then batch(seed_name, force)
+  when 1
+    crawl_one(image_link, image_name, force: force)
+  when 2
+    links = CV::Bcover.query.where("state < 4").order_by(wn_id: :desc).map(&.link)
+    links.reject!(&.=~ /bxwxorg|biqugee|jx.la|zhwenpg|shubaow/)
+
+    crawl_all(links, force: force)
   else raise "Unsupported mode"
   end
 rescue err
