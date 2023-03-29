@@ -68,7 +68,7 @@ class YS::Ysbook
 
     if nvinfo.bcover.empty?
       nvinfo.scover = self.cover
-      spawn nvinfo.cache_cover(self.cover, persist: true)
+      # nvinfo.cache_cover(self.cover, persist: false)
     end
 
     nvinfo.set_utime(self.book_mtime)
@@ -138,7 +138,7 @@ class YS::Ysbook
   def self.upsert!(raw_data : RawYsBook, force : Bool = false)
     model = load(raw_data.id)
 
-    return if model.info_rtime >= raw_data.info_rtime
+    return if !force && model.info_rtime >= raw_data.info_rtime
     model.info_rtime = raw_data.info_rtime
 
     model.btitle = raw_data.btitle
@@ -150,18 +150,34 @@ class YS::Ysbook
     model.genre = raw_data.genre
     model.btags = raw_data.btags
 
-    model.voters = raw_data.voters
-    model.rating = raw_data.rating
+    if model.voters < raw_data.voters
+      model.voters = raw_data.voters
+      model.rating = raw_data.rating
+    end
 
-    model.status = raw_data.status
-    model.shield = raw_data.shield
+    if model.status < raw_data.status
+      model.status = raw_data.status
+    end
 
-    model.book_mtime = raw_data.book_mtime
-    model.info_rtime = raw_data.info_rtime
+    if model.shield < raw_data.shield
+      model.shield = raw_data.shield
+    end
 
-    model.word_count = raw_data.word_count
-    model.crit_total = raw_data.crit_total
-    model.list_total = raw_data.list_total
+    if model.book_mtime <= raw_data.book_mtime
+      model.book_mtime = raw_data.book_mtime
+    end
+
+    if model.word_count < raw_data.word_count
+      model.word_count = raw_data.word_count
+    end
+
+    if model.crit_total < raw_data.crit_total
+      model.crit_total = raw_data.crit_total
+    end
+
+    if model.list_total < raw_data.list_total
+      model.list_total = raw_data.list_total
+    end
 
     model.sources = raw_data.sources
 

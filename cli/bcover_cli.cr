@@ -37,14 +37,14 @@ def map_extension(mime : String?) : String
   end
 end
 
-def valid_extension?
-  !self.ext.in?(".raw", ".html", ".ascii")
+def valid_extension?(path : String)
+  !File.extname(path).in?(".raw", ".txt", ".html", ".ascii")
 end
 
 def image_width(path : String) : Int32
-  result = `identify -format '%w %h' '#{path}'`
+  result = `gm identify -format '%w' '#{path}'`
   return -1 unless $?.success?
-  result.split(' ', 2).first.to_i
+  result.to_i
 rescue
   -1
 end
@@ -101,7 +101,10 @@ webp_path = image_path(name, ".webp")
 
 if redo || !File.file?(webp_path)
   orig_path = fetch_image(link: link, name: name)
-  exit 1 unless File.file?(orig_path) && img_to_webp(orig_path, webp_path)
+
+  exit 1 unless File.file?(orig_path)
+  exit 1 unless valid_extension?(orig_path)
+  exit 1 unless img_to_webp(orig_path, webp_path)
 end
 
 puts "WEBP: #{name}.webp"
