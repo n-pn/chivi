@@ -1,0 +1,13 @@
+[Unit]
+Description=chivi backup
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+User=nipin
+WorkingDirectory=/app/chivi/srv
+ExecStart=/usr/bin/bash tasks/backup/aws-s3.sh
+
+[Install]
+WantedBy=multi-user.target

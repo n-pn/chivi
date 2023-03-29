@@ -1,0 +1,12 @@
+[Unit]
+Description=chivi-bak timer
+
+[Timer]
+OnCalendar=0/0:30:00
+RandomizedDelaySec=600
+OnBootSec=300
+Persistent=true
+Unit=chivi-bak.service
+
+[Install]
+WantedBy=timers.target

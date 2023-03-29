@@ -8,11 +8,11 @@ DIR=var/ysraw
 SSH=nipin@ssh.chivi.app:/app/chivi
 
 rsync-fast "$SSH/$DIR/books" "$DIR"
-rsync-fast "$SSH/$DIR/users" "$DIR"
+# rsync-fast "$SSH/$DIR/users" "$DIR"
 rsync-fast "$SSH/$DIR/crits-by-user" "$DIR"
-rsync-fast "$SSH/$DIR/crits-by-list" "$DIR"
-rsync-fast "$SSH/$DIR/crits-by-book" "$DIR"
-rsync-fast "$SSH/$DIR/repls" "$DIR"
+# rsync-fast "$SSH/$DIR/crits-by-list" "$DIR"
+# rsync-fast "$SSH/$DIR/crits-by-book" "$DIR"
+# rsync-fast "$SSH/$DIR/repls" "$DIR"
 # rsync-fast "$SSH/$DIR/lists-by-book" "$DIR"
 # rsync-fast "$SSH/$DIR/lists-by-user" "$DIR"
 
