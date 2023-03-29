@@ -1,3 +1,5 @@
+require "../../../_util/hash_util"
+
 module CV::NvinfoInner
   def set_genres(zgenres : Array(String), force = false) : Nil
     return unless force || self.igenres.empty? || self.igenres == [0]
@@ -22,10 +24,20 @@ module CV::NvinfoInner
     self.igenres_column.dirty!
   end
 
-  def set_bcover(zcover : String, force = false) : Nil
-    return unless force || self.bcover.empty?
-    self.scover = zcover
-    self.bcover = HashUtil.digest32(zcover, 8) + ".webp"
+  def set_bcover(link : String, force = false) : Nil
+    return unless force || self.scover.empty?
+    self.bcover = "" unless self.scover == link
+    self.scover = link
+  end
+
+  def cache_cover(link = self.scover, persist : Bool = true) : Nil
+    return if link.empty?
+
+    cname = HashUtil.digest32(link, 8)
+    `./bin/bcover_cli -i '#{self.scover}' -n '#{cname}'`
+
+    self.bcover = $?.success? ? "#{cname}.webp" : ""
+    self.save! if persist
   end
 
   def set_utime(utime : Int64, force = false) : Int64?

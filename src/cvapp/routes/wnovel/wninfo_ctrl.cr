@@ -122,7 +122,6 @@ class CV::WnovelCtrl < CV::BaseCtrl
 
     spawn add_book_dict(nvinfo.id, nvinfo.bslug, nvinfo.vname)
     spawn CtrlUtil.log_user_action("nvinfo-upsert", params.to_h, _viuser.uname)
-    spawn cache_cover!(nvinfo)
 
     render json: {id: nvinfo.id, bslug: nvinfo.bslug}
   rescue ex
@@ -130,20 +129,10 @@ class CV::WnovelCtrl < CV::BaseCtrl
     render :bad_request, text: ex.message
   end
 
-  private def cache_cover!(nvinfo)
-    bcover = Bcover.load(nvinfo.scover, nvinfo.bcover)
-    bcover.wn_id = nvinfo.id.to_i
-    bcover.in_use = true
-    bcover.cache!
-  rescue ex
-    Log.error(exception: ex) { ex.message.colorize.red }
-  end
-
   private def add_book_dict(wn_id : Int64, bslug : String, bname : String)
     dname = "#{wn_id}-#{bslug}"
     url = "#{CV_ENV.m1_host}/_m1/dicts?wn_id=#{wn_id}&dname=#{dname}&bname=#{bname}"
     HTTP::Client.put(url)
-    # TODO: call mt_v1 api instead
   end
 
   @[AC::Route::DELETE("/:wn_id")]

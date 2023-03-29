@@ -66,6 +66,11 @@ class YS::Ysbook
       nvinfo.set_zscores!(self.voters, self.rating)
     end
 
+    if nvinfo.bcover.empty?
+      nvinfo.scover = self.cover
+      spawn nvinfo.cache_cover(self.cover, persist: true)
+    end
+
     nvinfo.set_utime(self.book_mtime)
     nvinfo.set_status(self.status)
 
@@ -108,7 +113,6 @@ class YS::Ysbook
 
     nvinfo.zintro = zintro
     nvinfo.bintro = vintro
-    nvinfo.scover = self.cover
 
     zgenres = [self.genre].concat(self.btags)
     nvinfo.set_vgenres(CV::GenreMap.zh_to_vi(zgenres))

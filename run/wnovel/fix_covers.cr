@@ -1,69 +1,26 @@
-require "../../src/_data/wnovel/bcover"
+require "../../src/_data/wnovel/nv_info"
 
-# struct CoverInfo
-#   getter link : String = ""
-#   getter name : String = ""
+nvinfos = CV::Nvinfo.query.where("scover <> ?", "").order_by(id: :desc).to_a
 
-#   getter format : String = ""
+w_size = 8
+q_size = nvinfos.size
 
-#   getter width : Int32 = 0
-#   getter? on_r2 : Bool = false
+workers = Channel({CV::Nvinfo, Int32}).new(q_size)
+results = Channel(Nil).new(w_size)
 
-#   def initialize(path : String)
-#     File.each_line(path) do |line|
-#       next if line.blank?
-#       key, val = line.strip.split('\t')
-
-#       case key
-#       when "link"   then @link = val
-#       when "name"   then @name = val
-#       when "format" then @format = val
-#       when "width"  then @width = val.to_i
-#       when "on_r2"  then @on_r2 = val == "t"
-#       end
-#     end
-#   end
-# end
-
-# Dir.glob("#{CV::Bcover::DIR}/*.tsv") do |file|
-#   rinfo = CoverInfo.new(file)
-#   cover = CV::Bcover.load(rinfo.link, rinfo.name)
-
-#   cover.name = rinfo.name
-#   cover.ext = rinfo.format
-
-#   cover.width = rinfo.width
-#   cover.mtime = File.info(file).modification_time.to_unix
-
-#   webp_path = cover.image_path(".webp")
-#   orig_path = cover.image_path
-
-#   if File.file?(webp_path)
-#     cover.state = rinfo.on_r2? ? 6_i16 : 4_i16
-#   elsif File.file?(orig_path)
-#     cover.state = 3_i16
-#   else
-#     cover.state = 1_i16
-#   end
-
-#   puts "#{cover.link} updated, new state: #{cover.state}"
-#   cover.save!
-# end
-
-CV::Bcover.query.where("state < 2").each do |cover|
-  cover.name = CV::Bcover.gen_name(cover.link) if cover.name.blank?
-
-  orig_path = cover.image_path
-  webp_path = cover.image_path(".webp")
-
-  if File.file?(webp_path)
-    cover.state = 4_i16
-    cover.mtime = File.info(webp_path).modification_time.to_unix
-  elsif File.file?(orig_path)
-    cover.state = 3_i16
-    cover.mtime = File.info(orig_path).modification_time.to_unix
+w_size.times do
+  spawn do
+    loop do
+      wnovel, idx = workers.receive
+      wnovel.cache_cover(persist: true)
+      puts "- #{idx}/#{q_size} <#{wnovel.vname.colorize.cyan}> #{wnovel.scover.colorize.blue} => [#{wnovel.bcover.colorize.yellow}]"
+    rescue err
+      Log.error(exception: err) { err.message.colorize.red }
+    ensure
+      results.send(nil)
+    end
   end
-
-  puts "#{cover.link} updated, new state: #{cover.state}"
-  cover.save!
 end
+
+nvinfos.each_with_index(1) { |nvinfo, idx| workers.send({nvinfo, idx}) }
+q_size.times { results.receive }

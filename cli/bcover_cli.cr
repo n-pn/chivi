@@ -1,77 +1,101 @@
-require "log"
 require "colorize"
 require "option_parser"
+require "http/client"
+require "compress/gzip"
 
-require "../src/_data/wnovel/bcover"
+require "../src/_util/hash_util"
 
-def crawl_one(link : String, name : String = "", force = false) : Nil
-  raise "Empty link" if link.empty?
+DIR = "var/files/covers"
+Dir.mkdir_p(DIR)
 
-  cover = CV::Bcover.load(link)
-  cover.name = CV::Bcover.gen_name(link) if cover.name.blank?
+MAX_WIDTH = 300
 
-  cover.cache!(force: force)
-  Log.info { "[#{cover.name}] saved".colorize.yellow }
+def dead_link?(link : String)
+  link =~ /bxwxorg|biqugee|jx.la|zhwenpg|shubaow/
 end
 
-def crawl_all(links : Array(String), force = false)
-  q_size = links.size
-  w_size = 8
+def image_path(name : String, ext : String = ".jpg")
+  File.join(DIR, "#{name}#{ext}")
+end
 
-  workers = Channel(String).new(q_size)
-  results = Channel(Nil).new(w_size)
+def map_extension(mime : String?) : String
+  case mime
+  when .nil?        then ".raw"
+  when "image/jpeg" then ".jpg"
+  when "image/png"  then ".png"
+  when "image/gif"  then ".gif"
+  when "image/webp" then ".webp"
+  when "text/html"  then ".html"
+  else
+    MIME.extensions(mime).first? || ".jpg"
+  end
+end
 
-  w_size.times do
-    spawn do
-      loop do
-        link = workers.receive
-        crawl_one(link, force: force) unless link.empty?
-      rescue err
-        Log.error(exception: err) { err.message.colorize.red }
-      ensure
-        results.send(nil)
-      end
+def valid_extension?
+  !self.ext.in?(".raw", ".html", ".ascii")
+end
+
+def image_width(path : String) : Int32
+  result = `identify -format '%w %h' '#{path}'`
+  return -1 unless $?.success?
+  result.split(' ', 2).first.to_i
+rescue
+  -1
+end
+
+def fetch_image(link : String, name : String) : String
+  ext = ".jpg"
+  path = image_path(name, ext)
+
+  HTTP::Client.get(link) do |res|
+    _ext = map_extension(res.content_type)
+    path = path.sub(ext, _ext)
+    ext = _ext
+
+    if res.headers["Content-Encoding"]? == "gzip"
+      Compress::Gzip::Reader.open(res.body_io) { |io| File.write(path, io.gets_to_end) }
+    else
+      File.write(path, res.body_io)
     end
   end
 
-  links.each { |link| workers.send(link) }
-  q_size.times { results.receive }
+  path
 end
 
-def run!(argv = ARGV)
-  mode = 0
-  force = false
-
-  image_link = ""
-  image_name = ""
-
-  OptionParser.parse(argv) do |parser|
-    parser.on("-f", "Force redo") { force = true }
-
-    parser.on("one", "Work with a single book cover") do
-      mode = 1
-      parser.on("-i LINK", "image link") { |i| image_link = i }
-      parser.on("-n NAME", "image name") { |i| image_name = i }
-    end
-
-    parser.on("all", "Fetch all covers") do
-      mode = 2
-    end
+def img_to_webp(orig_path : String, webp_path : String) : Bool
+  if orig_path.ends_with?(".gif")
+    Process.run "gif2webp -quiet '#{orig_path}' -o '#{webp_path}'", shell: true
+  else
+    webp_cmd = "cwebp '#{orig_path}' -o '#{webp_path}' -quiet -q 100 -mt"
+    webp_cmd += " -resize #{MAX_WIDTH} 0" if image_width(orig_path) > MAX_WIDTH
+    Process.run(webp_cmd, shell: true)
   end
 
-  case mode
-  when 1
-    crawl_one(image_link, image_name, force: force)
-  when 2
-    links = CV::Bcover.query.where("state < 4").order_by(wn_id: :desc).map(&.link)
-    links.reject!(&.=~ /bxwxorg|biqugee|jx.la|zhwenpg|shubaow/)
-
-    crawl_all(links, force: force)
-  else raise "Unsupported mode"
-  end
-rescue err
-  puts err.message.colorize.red
-  exit 1
+  File.file?(webp_path)
 end
 
-run!(ARGV)
+link = ""
+name = ""
+redo = false
+
+OptionParser.parse(ARGV) do |parser|
+  parser.on("-f", "Force redo") { redo = true }
+
+  parser.on("-i LINK", "Image link") { |x| link = x.strip }
+  parser.on("-n NAME", "Image name") { |x| name = x.strip }
+end
+
+name = HashUtil.digest32(link, 8) if name.empty?
+
+puts "LINK: #{link}, NAME: #{name}"
+
+exit 1 if link.empty? || dead_link?(link)
+
+webp_path = image_path(name, ".webp")
+
+if redo || !File.file?(webp_path)
+  orig_path = fetch_image(link: link, name: name)
+  exit 1 unless File.file?(orig_path) && img_to_webp(orig_path, webp_path)
+end
+
+puts "WEBP: #{name}.webp"

@@ -78,7 +78,8 @@ class CV::WnovelForm
     end
 
     @bcover.try do |bcover|
-      vi_book.set_bcover(bcover, force: true) unless bcover.blank?
+      vi_book.set_bcover(bcover, force: true)
+      vi_book.cache_cover(bcover, persist: false)
     end
 
     @status.try do |status|
