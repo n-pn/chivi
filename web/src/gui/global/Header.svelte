@@ -7,17 +7,18 @@
 
   $: meta = $page.data._meta || gen_meta($page.route?.id || '/', $page.data)
   $: uname = $page.data._user?.uname
-  $: image = meta.image || 'https://chivi.app/imgs/avatar.pgn'
+  $: image = meta.image || '/imgs/avatar.png'
 </script>
 
 <svelte:head>
-  <meta name="description" content={meta.desc} />
   <title>{meta.title || ''} - Chivi</title>
+  <meta name="description" content={meta.desc} />
+
+  {#if meta.url}<meta property="og:url" content={meta.url} />{/if}
 
   <meta property="og:title" content={meta.title} />
   <meta property="og:description" content={meta.desc} />
-  <meta property="og:url" content={meta.url || 'https://chivi.app'} />
-  <meta property="og:image" content={image} />
+  <meta property="og:image" content="https://chivi.app{image}" />
 </svelte:head>
 
 <header class="app-header" class:clear={$scroll > 0}>

@@ -47,7 +47,7 @@ const default_meta = {
   ],
 }
 
-function quick_read_v2({ bslug }, { sname, chidx, locked }) {
+export function quick_read_v2({ bslug }, { sname, chidx, locked }) {
   sname = fix_sname(sname)
 
   return {
