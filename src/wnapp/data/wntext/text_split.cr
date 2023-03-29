@@ -6,11 +6,10 @@ module WN::TextSplit
   record Entry, lines : Array(String), chdiv : String
 
   # split multi chapters; returning array of text parts, char count and volume name if available
-  def split_multi(input : String, cleaned : Bool = false) : Array(Entry)
+  def split_multi(input : String, chdiv : String = "", cleaned : Bool = false) : Array(Entry)
     input = TextUtil.clean_spaces(input) unless cleaned
     chaps = [] of Entry
 
-    chdiv = ""
     lines = [] of String
 
     input.each_line do |line|

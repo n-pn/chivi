@@ -92,10 +92,11 @@
     if (!res.ok) {
       loading = false
       err_msg = await res.text()
+      console.log({ err_msg })
     } else {
       loading = false
       await invalidateAll()
-      goto(seed_path(nvinfo.bslug, curr_seed.sname, _pgidx(start)))
+      await goto(seed_path(nvinfo.bslug, curr_seed.sname, _pgidx(start)))
     }
   }
 
@@ -108,7 +109,10 @@
       if (chdiv) body += chdiv + '\n\n'
 
       body += title
-      for (const line of lines) body += '\n' + line
+      for (const line of lines) {
+        const clean_line = line.trim()
+        if (clean_line) body += '\n' + clean_line
+      }
 
       if (idx < chaps.length - 1) body += '\n\n'
     }

@@ -50,7 +50,7 @@ class WN::TextCtrl < AC::Base
       File.write(file_path, ztext)
     end
 
-    chaps = TextSplit.split_multi(ztext)
+    chaps = TextSplit.split_multi(ztext, cleaned: false)
 
     chaps.each_with_index(start) do |entry, ch_no|
       raise BadRequest.new "Invalid input" if entry.lines.empty?
