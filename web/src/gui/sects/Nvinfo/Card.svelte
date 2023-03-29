@@ -8,7 +8,7 @@
 
 <a href="/wn/{nvinfo.bslug}" class="nvinfo">
   <div class="cover">
-    <BCover bcover={nvinfo.bcover} scover={nvinfo.scover} />
+    <BCover srcset={nvinfo.bcover} />
   </div>
 
   <div class="infos">

@@ -1,8 +1,11 @@
 require "../../src/_data/wnovel/nv_info"
 
-nvinfos = CV::Nvinfo.query.where("scover <> ?", "").order_by(id: :desc).to_a
+nvinfos = CV::Nvinfo.query
+  .where("scover <> ''")
+  .where("bcover = ''")
+  .to_a.shuffle!
 
-w_size = 8
+w_size = 16
 q_size = nvinfos.size
 
 workers = Channel({CV::Nvinfo, Int32}).new(q_size)
@@ -13,7 +16,7 @@ w_size.times do
     loop do
       wnovel, idx = workers.receive
       wnovel.cache_cover(persist: true)
-      puts "- #{idx}/#{q_size} <#{wnovel.vname.colorize.cyan}> #{wnovel.scover.colorize.blue} => [#{wnovel.bcover.colorize.yellow}]"
+      puts "- #{idx}/#{q_size} <#{wnovel.id}-#{wnovel.vname.colorize.cyan}> #{wnovel.scover.colorize.blue} => [#{wnovel.bcover.colorize.yellow}]"
     rescue err
       Log.error(exception: err) { err.message.colorize.red }
     ensure

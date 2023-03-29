@@ -18,6 +18,8 @@ const _cwd = path.dirname(fileURLToPath(import.meta.url))
 const dev = process.env['ENV'] == 'dev'
 
 const proxy = {
+  '/covers': 'https://chivi.app',
+
   '/_db': 'http://127.0.0.1:5011',
   '/_wn': 'http://127.0.0.1:5020',
 

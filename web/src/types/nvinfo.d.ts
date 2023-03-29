@@ -21,10 +21,9 @@ declare namespace CV {
     zauthor: string
     vauthor: string
 
-    bcover: string
-    scover: string
-
     bintro: string
+    bcover: string
+
     genres: string[]
     labels: string[]
 
@@ -44,10 +43,8 @@ declare namespace CV {
     vtitle: string
     vauthor: string
 
-    genres: string[]
-
     bcover: string
-    scover: string
+    genres: string[]
 
     rating: number
     voters: number

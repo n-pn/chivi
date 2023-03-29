@@ -9,7 +9,7 @@
 
 <section class="book">
   <a class="-cover" href="/wn/{book.bslug}">
-    <BCover bcover={book.bcover} scover={book.scover} class="square" />
+    <BCover srcset={book.bcover} _class="square" />
   </a>
 
   <div class="-info">

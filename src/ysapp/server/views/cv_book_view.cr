@@ -10,6 +10,11 @@ struct YS::BookView
     JSON.build(io) { |jb| to_json(jb) }
   end
 
+  def cover_url
+    return "/covers/#{@data.bcover}" unless @data.bcover.empty?
+    @data.scover.blank? ? "/covers/_blank.webp" : @data.scover
+  end
+
   def to_json(jb = JSON::Builder.new)
     jb.object {
       jb.field "id", @data.id
@@ -19,7 +24,7 @@ struct YS::BookView
       jb.field "vtitle", @data.vname
 
       jb.field "genres", @data.genres
-      jb.field "bcover", @data.bcover
+      jb.field "bcover", cover_url
       jb.field "scover", @data.scover
 
       jb.field "voters", @data.voters

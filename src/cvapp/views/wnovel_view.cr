@@ -6,6 +6,11 @@ struct CV::WnovelView
   def initialize(@data : Nvinfo, @full = true)
   end
 
+  def cover_url
+    return "/covers/#{@data.bcover}" unless @data.bcover.empty?
+    @data.scover.blank? ? "/covers/_blank.webp" : @data.scover
+  end
+
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "id", @data.id
@@ -15,8 +20,7 @@ struct CV::WnovelView
       jb.field "vtitle", @data.vname
 
       jb.field "genres", @data.vgenres
-      jb.field "bcover", @data.bcover
-      jb.field "scover", @data.scover
+      jb.field "bcover", cover_url
 
       jb.field "status", @data.status
       jb.field "mftime", @data.utime

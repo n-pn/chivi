@@ -1,7 +1,8 @@
 <script lang="ts">
   import { page } from '$app/stores'
 
-  import { SIcon, BCover } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import BCover from '$gui/atoms/BCover.svelte'
 
   import { map_status } from '$utils/nvinfo_utils'
 
@@ -38,7 +39,7 @@
   </div>
 
   <div class="cover">
-    <BCover bcover={nvinfo.bcover} scover={nvinfo.scover} />
+    <BCover srcset={nvinfo.bcover} />
   </div>
 
   <div class="infos">

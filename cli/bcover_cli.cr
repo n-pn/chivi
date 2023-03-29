@@ -5,6 +5,12 @@ require "compress/gzip"
 
 require "../src/_util/hash_util"
 
+class HTTP::Client
+  @connect_timeout = 20.0
+  @read_timeout = 40.0
+  @write_timeout = 40.0
+end
+
 DIR = "var/files/covers"
 Dir.mkdir_p(DIR)
 

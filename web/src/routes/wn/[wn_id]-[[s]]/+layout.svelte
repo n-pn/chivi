@@ -22,7 +22,7 @@
   export let data: LayoutData
 
   $: nvinfo = data.nvinfo
-  $: bcover = nvinfo.bcover || 'blank.webp'
+
   $: update = new Date(nvinfo.mftime || 0).toISOString()
   $: genres = nvinfo.genres || []
 
@@ -36,6 +36,9 @@
     return x
   })
 
+  const cover_url = (cover: string) =>
+    cover.startsWith('/') ? cover : '/covers/_blank.webp'
+
   $: vdict.put(nvinfo.id, nvinfo.vtitle)
 </script>
 
@@ -44,7 +47,9 @@
 
   <meta property="og:type" content="novel" />
   <meta property="og:url" content="https://chivi.app/wn/{nvinfo.bslug}" />
-  <meta property="og:image" content="https://cr2.chivi.app/covers/{bcover}" />
+  <meta
+    property="og:image"
+    content="https://chivi.app{cover_url(nvinfo.bcover)}" />
 
   <meta property="og:novel:category" content={genres[0]} />
   <meta property="og:novel:author" content={nvinfo.vauthor} />

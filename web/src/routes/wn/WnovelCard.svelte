@@ -23,7 +23,7 @@
 
 <a class="book" href="/wn/{nvinfo.bslug}/{route}">
   <div class="cover">
-    <BCover bcover={nvinfo.bcover} scover={nvinfo.scover} />
+    <BCover srcset={nvinfo.bcover} />
     {#if nvinfo.voters > 10}
       <div class="extra">
         <div class="score">

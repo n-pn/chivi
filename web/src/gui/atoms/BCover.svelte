@@ -1,33 +1,29 @@
 <script lang="ts">
-  export let bcover: string = ''
-  export let scover: string = ''
+  export let srcset: string = ''
+  export let _class = 'round'
 
-  const cdn_base = 'https://chivi.app/covers/'
-
-  $: [images, cursor] = generate_urls(bcover, scover)
-
-  function generate_urls(bcover: string, scover: string): [string[], number] {
-    const res = []
-
-    if (bcover) res.push(cdn_base + bcover)
-    if (scover) res.push(scover)
-
-    return [res, 0]
+  const on_error = (e: Event) => {
+    const target = e.target as HTMLImageElement
+    console.log(target.src)
+    target.src = '/covers/_blank.png'
   }
-
-  $: srcset = images[cursor] || cdn_base + 'blank.webp'
 </script>
 
-<picture class={$$props.class || 'round'}>
-  <source {srcset} />
-  <img src="/imgs/empty.png" alt="" on:error={() => (cursor += 1)} />
-</picture>
+<figure class={_class}>
+  <img
+    src={srcset}
+    loading="lazy"
+    alt=""
+    referrerpolicy="no-referrer"
+    on:error={on_error} />
+</figure>
 
 <style lang="scss">
-  picture {
+  figure {
     display: block;
     position: relative;
     height: 0;
+
     padding-top: math.div(4, 3) * 100%;
     overflow: hidden;
 
