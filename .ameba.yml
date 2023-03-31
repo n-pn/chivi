@@ -1,0 +1,6 @@
+Globs:
+  - '**/*.cr'
+  - '!lib'
+
+Style/MethodNames:
+  Enabled: false

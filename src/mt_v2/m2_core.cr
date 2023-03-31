@@ -54,7 +54,18 @@ class M2::Engine
     mt_data = MtData.new(input)
 
     mt_data.run_ner!
-    mt_data.construct!(@dicts)
+
+    mt_data.inp_chars.size.downto(0) do |idx|
+      if ner_term = mt_data.ner_nodes[idx]?
+        MtRule.add_node(mt_data, ner_term, idx: idx)
+      end
+
+      dicts.each do |dict|
+        dict.scan(mt_data.inp_chars, start: idx) do |terms|
+          terms.each { |term| MtRule.add_node(mt_data, term, idx: idx) }
+        end
+      end
+    end
 
     # mt_data.fix_grammar!
     # mt_data.apply_cap!(cap: add_cap)

@@ -8,7 +8,7 @@ class M2::NP_Node
   @detm : MtNode | Nil = nil
   @noun : MtNode | Array(MtNode)
 
-  @ptag = "NP"
+  @ptag = :NP
 
   def initialize(@noun : MtNode)
     @size = noun.size

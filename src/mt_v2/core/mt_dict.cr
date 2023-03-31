@@ -82,7 +82,7 @@ class M2::MtDict
     data << term
   end
 
-  def scan(input : Array(Char), start : Int32 = 0) : Nil
+  def scan(input : Array(Char), start : Int32 = 0, &) : Nil
     trie = @trie
 
     start.upto(input.size - 1) do |idx|

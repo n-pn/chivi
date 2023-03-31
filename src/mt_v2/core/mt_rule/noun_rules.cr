@@ -2,65 +2,67 @@ require "./_rule_base"
 
 module M2::MtRule
   # single-word nouns or names
-  def nn(root : MtData, node : MtNode, idx : Int32)
-    root.add_node!(NP_Node.new(node), idx: idx)
+  def_rule :NN do
+    add_node(root, NP_Node.new(head), idx: idx)
   end
 
+  copy_rule :NT, NN
+  copy_rule :NR, NN
+
   # noun-noun compounds
-  def nn__nn(root : MtData, left : MtNode, right : MtNode, idx : Int32)
+  def_rule :NN, :NN do
     # TODO: check flip condition
-    noun = MtPair.new(left, right, flip: true)
-    root.add_node!(noun, idx: idx)
+    noun = MtPair.new(head, secd, flip: true)
+    add_node(root, noun, idx: idx)
   end
 
   # time-time compounds
-  def nt__nt(root : MtData, left : MtNode, right : MtNode, idx : Int32)
-    noun = MtPair.new(left, right, cost: 3, flip: true)
-    root.add_node!(noun, idx: idx)
+  def_rule :NT, :NT do
+    noun = MtPair.new(head, secd, cost: 3, flip: true)
+    add_node(root, noun, idx: idx)
   end
 
   # word-level coordinations
-  def nn__cc(root : MtData, left : MtNode, coord : MtNode, idx : Int32)
-    right_idx = idx &+ left.size &+ coord.size
+  def_rule :NN, :CC do
+    tail_idx = idx &+ head.size &+ secd.size
 
-    right_map = root.all_nodes[right_idx]
-    return unless right_nodes = right_map["NN"]?
+    tail_map = root.all_nodes[tail_idx]
+    return unless tail_nodes = tail_map[:NN]?
 
-    right_nodes.each_value do |right_node|
+    tail_nodes.each_value do |tail_node|
       # TODO: check similarity
       # TODO: combine with ETC tag
 
-      list = Slice[left, coord, right_node]
-      noun = MtExpr.new(list, "NN", cost: 3)
-      root.add_node!(noun, idx: idx)
+      list = Slice[head, secd, tail_node]
+      noun = MtExpr.new(list, :NN, cost: 3)
+      add_node(root, noun, idx: idx)
     end
   end
 
   # proper nouns formed by NR + one or more NNs
-  def nr__nn(root : MtData, left : MtNode, right : MtNode, idx : Int32)
+  def_rule :NR, :NN do
     # TODO: check flip condition
     # seperate between loc/org and person with titles
-    noun = MtPair.new(left, right, flip: true)
-    root.add_node!(noun, idx: idx)
+    noun = MtPair.new(head, secd, flip: true)
+    add_node(root, noun, idx: idx)
   end
 
   # space names + space names
-  def nr_s__nr_s(root : MtData, left : MtNode, right : MtNode, idx : Int32)
-    noun = MtPair.new(left, right, ptag: "NR_s", cost: 4, flip: true)
-    root.add_node!(noun, idx: idx)
+  def_rule :NR_s, :NR_s do
+    noun = MtPair.new(head, secd, ptag: :NR_s, cost: 4, flip: true)
+    add_node(root, noun, idx: idx)
   end
 
   # space names + space (org/loc) suffix
-  def nr_s__nn_ss(root : MtData, left : MtNode, right : MtNode, idx : Int32)
-    noun = MtPair.new(left, right, ptag: "NR_s", cost: 4, flip: true)
-    root.add_node!(noun, idx: idx)
+  def_rule :NR_s, :NN_ss do
+    noun = MtPair.new(head, secd, ptag: :NR_s, cost: 4, flip: true)
+    add_node(root, noun, idx: idx)
   end
 
   # human names + title/honorific (suffix)
-  def nr_h__nn_hs(root : MtData, left : MtNode, right : MtNode, idx : Int32)
+  def_rule :NR_h, :NN_hs do
     # TODO: Check if NR_h already contains honorific
-
-    noun = MtPair.new(left, right, ptag: "NR_h", cost: 5, flip: false)
-    root.add_node!(noun, idx: idx)
+    noun = MtPair.new(head, secd, ptag: :NR_h, cost: 5, flip: false)
+    add_node(root, noun, idx: idx)
   end
 end

@@ -1,7 +1,7 @@
 require "../pos_tag"
 
 module M2::MtNode
-  getter ptag : String
+  getter ptag : Symbol
   getter size : Int32
   getter cost : Int32
 
@@ -96,7 +96,7 @@ class M2::MtTerm
   def initialize(@key, @val, @dic, @size, @ptag, @cost)
   end
 
-  def initialize(@key : String, @val, @dic, @ptag : String, prio : Int32 = 3)
+  def initialize(@key : String, @val, @dic, @ptag : Symbol, prio : Int32 = 3)
     @size = key.size
     @cost = MtNode.cost(@size, prio)
   end
