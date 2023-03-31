@@ -6,7 +6,6 @@ class M2::NP_Node
   include MtSeri
 
   @detm : MtNode | Nil = nil
-
   @noun : MtNode | Array(MtNode)
 
   @ptag = "NP"

@@ -31,7 +31,7 @@ class M2::MtData
 
       @top_costs << 0
       @top_nodes << MtTerm.new(inp_char)
-      @all_nodes << Hash(Int32, AllNode).new { |h, k| h[k] = AllNode.new }
+      @all_nodes << Hash(Int32, AllNode).new
     end
   end
 
@@ -58,15 +58,22 @@ class M2::MtData
   end
 
   def add_node!(node : MtNode, idx : Int32)
-    # prev_top = @top.unsafe_fetch(idx)
-    # @top_cost[idx] = node_cost if node.cost > prev_top.cost
+    all_nodes = @all_nodes.unsafe_fetch(idx)
 
-    prev_cost = @top_costs.unsafe_fetch(idx)
-    node_cost = node.cost &+ @top_costs.unsafe_fetch(idx &+ node.size)
+    if pos_nodes = all_nodes[node.ptag]?
+      pos_nodes[node.size]?.try { |curr| return if node.cost < curr.cost }
+    else
+      pos_nodes = all_nodes[node.ptag] = AllNode.new
+    end
 
-    if node_cost > prev_cost
+    pos_nodes[node.size] = node
+
+    top_cost = @top_costs.unsafe_fetch(idx)
+    new_cost = node.cost &+ @top_costs.unsafe_fetch(idx &+ node.size)
+
+    if new_cost > top_cost
       @top_nodes[idx] = node
-      @top_costs[idx] = node_cost
+      @top_costs[idx] = new_cost
     end
 
     # ptags = PosTag::ROLE_MAP[node.ptag]? || [node.ptag]

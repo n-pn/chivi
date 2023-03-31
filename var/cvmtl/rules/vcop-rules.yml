@@ -1,8 +1,0 @@
-- rule: [Vtrn, Udec, V_shi, Xpred]
-  ptag: Subj+Verb
-  swap: [2, 1, 3, 4]
-  cost: 22
-
-- rule: [Xsubj, V_shi, Xpred]
-  ptag: Subj+Verb
-  cost: 30
