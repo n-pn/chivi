@@ -137,7 +137,7 @@ class M2::MtPair
 
   def initialize(@head, @tail, @ptag = tail.ptag, cost = 0, @flip = false)
     @size = @head.size &+ @tail.size
-    @cost = @head.cost &+ @tail.cose &+ cost * @size # TODO: update this
+    @cost = @head.cost &+ @tail.cost &+ cost * @size # TODO: update this
   end
 
   def each(&)
@@ -155,10 +155,10 @@ class M2::MtExpr
   include MtNode
   include MtSeri
 
-  getter list : Array(MtNode)
-  @ords : Array(Int32) | Nil = nil
+  getter list : Slice(MtNode)
+  @ords : Slice(Int32) | Nil = nil
 
-  def initialize(@list : Array(MtNode), @ptag = list.last.ptag, cost = 0, @ords = nil)
+  def initialize(@list : Slice(MtNode), @ptag = list.last.ptag, cost = 0, @ords = nil)
     @size = list.sum(&.size)
     @cost = list.sum(&.cost) &+ cost * @size # TODO: update this
   end

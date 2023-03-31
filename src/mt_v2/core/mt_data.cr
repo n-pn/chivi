@@ -17,9 +17,8 @@ class M2::MtData
   @top_nodes = [] of MtNode
   @top_costs = [] of Int32
 
-  @all_nodes = [] of Hash(String, AllNode)
-
-  @ner_terms = [] of MtTerm?
+  getter all_nodes = [] of Hash(String, AllNode)
+  getter ner_terms = [] of MtTerm?
 
   def initialize(input : String)
     @raw_chars = input.chars

@@ -14,14 +14,14 @@ module M2::MtRule
 
   TRIE = {} of String => RuleNode
 
-  def add_rule(xpos : String, rule : SoloRule)
-    node = TRIE[xpos] ||= RuleNode.new
+  def _add_rule(apos : String, rule : SoloRule)
+    node = TRIE[apos] ||= RuleNode.new
     node.rule = rule
   end
 
-  def add_rule(apos : String, bpos, rule : PairRule)
+  def _add_rule(apos : String, bpos : String, rule : PairRule)
     node = TRIE[apos] ||= RuleNode.new
-    node[bpos] = Rule
+    node[bpos] = rule
   end
 
   @[AlwaysInline]
