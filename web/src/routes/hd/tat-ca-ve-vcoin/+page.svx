@@ -2,11 +2,6 @@
 title: Tất cả về Vcoin
 ---
 
-<script lang="ts">
-  import { page } from '$app/stores'
-  $: session = $page.data._user
-</script>
-
 **Vcoin là đơn vị tiền tệ ảo được dùng trong Chivi.**
 
 Bạn có thể dùng vcoin để nâng cấp quyền hạn, biếu tặng người khác, hoặc sử dụng các tiện ích nâng cao khác sẽ được phát triển trong tương lai gần.
@@ -33,7 +28,7 @@ _Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các b�
 
 - Các tính năng khác sẽ dần được bổ sung sau...
 
-<style lang="scss">
+<style>
   .lead {
     font-weight: 500;
     font-size: rem(17px);
@@ -45,6 +40,6 @@ _Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các b�
 
   .em {
     font-style: italic;
-    @include fgcolor(warning, 5);
+    color: #d68010;
   }
 </style>

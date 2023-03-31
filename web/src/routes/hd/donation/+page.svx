@@ -2,11 +2,28 @@
 title: Ủng hộ Chivi bằng tiền mặt
 ---
 
+<script>
+  import { page } from '$app/stores'
+  $: uname = $page.data._user.uname || 'Chivi'
+</script>
+
 Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.
 
-<p class="em">
-**Lưu ý: Khi ủng hộ hãy để lại tên sử dụng trên Chivi hoặc hòm thư đã đăng ký trên Chivi để định danh tài khoản.**
+<p class="em strong">
+Lưu ý: Để ban quản trị dễ dàng phân biệt tài khoản của bạn, khi chuyển khoản ủng hộ Chivi hãy để lại lời nhắn theo định dạng <code>CHIVI tendangnhap</code>.
 </p>
+
+<p class="em">
+<code>tendangnhap</code> ở đây là thông tin để định danh tài khoản, bạn hãy thay thế bằng tên tài khoản của bạn trên Chivi, hoặc địa chỉ email của bạn dùng để đăng ký Chivi.
+</p>
+
+<p class="strong">
+Ví dụ tên tài khoản bạn là {uname}, hãy để lại lời nhắn là <code>CHIVI {uname}</code>.
+</p>
+
+_Gợi ý 1: Từ `CHIVI` ở phía trước là không bắt buộc, bạn có thể bỏ qua nếu muốn._
+_Gợi ý 2: Nếu tên tài khoản có dấu, để chắc chắn hãy để lại địa chỉ email._
+_Gợi ý 3: Bạn có thể scan mã QR để việc ủng hộ thuận tiện hơn._
 
 Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy liên hệ với ban quản trị để được hỗ trợ thông qua các kênh liên hệ của trang:
 
@@ -15,6 +32,9 @@ Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy
 
 ## Phương thức ủng hộ
 
+<p class="em strong">
+
+</p>
 ### Quốc tế
 
 - Ko-Fi: https://ko-fi.com/chivi
@@ -30,17 +50,36 @@ Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy
 **Quét mã QR:**
 
 <div class="qr">
-  <img src="/imgs/techcombank.png" alt="Techcombank"/>
-  <img src="/imgs/vietcombank.png" alt="Vietcombank"/>
-  <img src="/imgs/momo.png" alt="Momo"/>
-  <img src="/imgs/vnpay.png" alt="VNPAY"/>
+  <figure>
+    <figcaption>Techcombank</figcaption>
+    <img src="/imgs/techcombank-fs8.png" alt="Techcombank"/>
+  </figure>
+
+  <figure>
+    <figcaption>Vietcombank</figcaption>
+    <img src="/imgs/vietcombank-fs8.png" alt="Vietcombank"/>
+  </figure>
+
+  <figure>
+    <figcaption>Ví Mommo</figcaption>
+    <img src="/imgs/momo-fs8.png" alt="Momo"/>
+  </figure>
+
+  <figure>
+    <figcaption>Ví VNPAY</figcaption>
+    <img src="/imgs/vnpay-fs8.png" alt="VNPAY"/>
+  </figure>
 </div>
 
-Hoặc liên hệ qua các kênh liên lạc: [Facebook](https://www.facebook.com/chivi.app), [Discord](https://discord.gg/mdC3KQH).
+_Khi bạn ủng hộ Chivi bằng tiền mặt, bạn sẽ được tặng một đơn vị tiền tệ ảo là vcoin, bạn có thể dùng vcoin để nâng cấp quyền hạn, gửi tặng người dùng khác, hoặc sử dụng các tính năng nâng cao sẽ dần được phát triển bổ sung._
 
-Khi bạn ủng hộ Chivi bằng tiền mặt, bạn sẽ được tặng một đơn vị tiền tệ ảo là vcoin, bạn có thể dùng vcoin để nâng cấp quyền hạn, gửi tặng người dùng khác, hoặc sử dụng các tính năng nâng cao sẽ dần được phát triển bổ sung.
+<p class="em strong">Quy ước trao đổi: 1000 VND = 1 vcoin, $1 USD = 20 vcoin.</p>
 
-<p class="em">Quy ước trao đổi: 1000 VND = 1 vcoin, $1 USD = 20 vcoin.</p>
+**Lưu ý: Hiện tại trang chưa có hệ thống thanh toán tự động, cho nên bạn chỉ được cộng vcoin sau khi ban quản trị có người kiểm tra thông tin giao dịch rồi cộng thủ công, quá trình này có thể kéo dài từ vài chục phút tới vài giờ tuỳ tình huống, mong các bạn kiên nhẫn.**
+
+Muốn nhận được vcoin nhanh hơn, hãy thử liên hệ qua các kênh liên lạc của trang như [Facebook](https://www.facebook.com/chivi.app) hoặc [Discord](https://discord.gg/mdC3KQH).
+
+Trong tương lai, nếu có nhiều người ủng hộ hơn thì quá trình này có thể sẽ được cải thiện.
 
 ## Tại sao phải ủng hộ Chivi?
 
@@ -74,6 +113,27 @@ Vì vậy, nếu điều kiện cho phép, hãy ủng hộ cho Chivi để trang
     grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
     gap: 2vw;
 
+  }
+
+  figcaption {
+    color: var(--fg-tert);
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+
+  .em {
+    font-style: italic;
+    color: #d68010;
+  }
+
+  .strong {
+    font-weight: 500;
+  }
+
+  .em code {
+    color: #0b845c;
+    font-weight: 800;
   }
 
   .qr img {
