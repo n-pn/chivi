@@ -1,0 +1,106 @@
+#
+
+- inp: [A]
+  out: AA
+  pts: 2
+
+- inp: [AA]
+  out: AP
+  pts: 1
+
+- inp: [A, A]
+  out: AA
+  pts: 4
+
+- inp: [AA, AA]
+  out: AA
+  pts: 3
+
+- inp: [A, CC_a, A]
+  out: AA
+  pts: 4
+
+- inp: [AA, CC_a, AP]
+  out: AA
+  pts: 4
+
+- inp: [D, AA]
+  out: AA
+  pts: 4
+
+- inp: [CC_又, A, CC_又, A]
+  out: AP
+  pts: 5
+
+- inp: [JJ, NA]
+  out: NA
+  pts: 4
+
+- inp: [JJ, 'N']
+  out: 'N'
+  pts: 3
+
+- inp: [AP, DEV_的, VP]
+  out: VP
+  pts: 2
+
+- inp: [AP, DEV_地, VP]
+  out: VP
+  pts: 3
+
+- inp: [AP, DEG_的, NN]
+  out: NN
+  pts: 4
+  ord: [3, 1, 2]
+
+- inp: [V, CPL_r]
+  out: $1
+
+- inp: [Vword, Adv_mei_0, Cres]
+  out: $1
+  # swap: [1, 2, 3]
+  desc: Động từ + bổ ngữ kết quả thể phủ định với 没
+
+- inp: [Vword, Adv_meiyou_0, Cres]
+  out: $1
+  # swap: [1, 2, 3]
+  desc: Động từ + bổ ngữ kết quả thể phủ định với 没有
+
+# bổ ngữ mức độ
+- inp: [Vword, Cdeg]
+  out: $1
+  # swap: [1, 2]
+  desc: Động từ + bổ ngữ chỉ mức độ trực tiếp
+
+- inp: [Vword, Cdir]
+  out: $1
+  # swap: [1, 2]
+  desc: Động từ + bổ ngữ xu hướng
+
+- inp: [Vword, MQnoun]
+  out: V+o+c
+  cost: 15
+
+- inp: [Vword, MQverb]
+  out: V+o+c
+  cost: 20
+
+- inp: [Vword, MQverb, Xdobj]
+  out: V+o+c
+  cost: 25
+
+- inp: [Vword, Xdobj, MQverb]
+  out: V+o+c
+  cost: 25
+
+- inp: [Vword, MQtime]
+  out: V+o+c
+  cost: 19
+
+- inp: [Vword, MQtime, Xdobj]
+  out: V+o+c
+  cost: 24
+
+- inp: [Vword, Xdobj, MQtime]
+  out: V+o+c
+  cost: 24
