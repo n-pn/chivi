@@ -1,7 +1,7 @@
 <script lang="ts">
   import { opencc, diff_html } from '$utils/text_utils'
 
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import type { PageData } from './$types'
 
   export let data: PageData

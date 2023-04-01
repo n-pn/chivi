@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   import UpgradePrivi from './Setting/UpgradePrivi.svelte'
   import SendVcoin from './Setting/SendVcoin.svelte'

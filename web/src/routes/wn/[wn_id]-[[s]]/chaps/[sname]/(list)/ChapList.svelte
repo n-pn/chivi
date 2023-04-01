@@ -2,7 +2,7 @@
   import { page } from '$app/stores'
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import { seed_path } from '$lib/kit_path'
 
   export let nvinfo: CV.Nvinfo

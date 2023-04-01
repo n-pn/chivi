@@ -11,7 +11,7 @@
 </script>
 
 <script lang="ts">
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let dboard: CV.Dboard
   export let dtlist: CV.Dtlist

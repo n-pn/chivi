@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { api_call } from '$lib/api_call'
 
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let curr_seed: CV.Chroot
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   export let key = ''
 
   let submenu = -1

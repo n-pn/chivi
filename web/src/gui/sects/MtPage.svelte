@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { config, vdict, zfrom } from '$lib/stores'
 
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import MtData from '$lib/mt_data'
 
   import Mtmenu, { ctrl as mtmenu } from './MtPage/Mtmenu.svelte'

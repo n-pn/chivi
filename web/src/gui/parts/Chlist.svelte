@@ -3,7 +3,7 @@
   $: session = $page.data._user
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let nvinfo: CV.Nvinfo
   export let nvseed: CV.Chroot

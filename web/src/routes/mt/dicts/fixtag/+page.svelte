@@ -6,7 +6,7 @@
 
   import { rel_time } from '$utils/time_utils'
   import Upsert from '$gui/parts/Upsert.svelte'
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData

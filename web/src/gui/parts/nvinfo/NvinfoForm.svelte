@@ -10,7 +10,7 @@
 
   import { book_status } from '$utils/nvinfo_utils'
 
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let nvinfo: Partial<CV.Nvinfo>
   export let wnform: CV.WnForm

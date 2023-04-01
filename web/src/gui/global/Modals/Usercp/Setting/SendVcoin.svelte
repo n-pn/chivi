@@ -1,6 +1,6 @@
 <script lang="ts">
   import { api_call } from '$lib/api_call'
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let user: App.CurrentUser
 

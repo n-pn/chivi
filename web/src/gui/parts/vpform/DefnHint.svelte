@@ -3,7 +3,7 @@
 
   import { hint, type VpForm } from './_shared'
 
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let form: VpForm
   export let hanviet: string

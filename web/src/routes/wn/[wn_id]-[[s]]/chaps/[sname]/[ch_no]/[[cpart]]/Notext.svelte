@@ -153,27 +153,29 @@
     {/if}
 
     <div class="actions">
-      <a class="m-btn _primary _fill _lg" href={edit_href}>
+      <a class="m-btn _primary _fill" href={edit_href}>
         <SIcon name="edit" />
         <span>Thêm text gốc</span>
       </a>
 
+      <button
+        class="m-btn _harmful"
+        on:click={() => reload_chap(2)}
+        disabled={data._user.privi < 1}>
+        <SIcon name="rotate-rectangle" spin={_onload} />
+        <span>Tải lại nguồn</span>
+      </button>
+    </div>
+
+    <div class="actions">
       <a
-        class="m-btn  _lg"
+        class="m-btn"
         href="https://discord.gg/mdC3KQH"
         target="_blank"
         rel="noreferrer">
         <SIcon name="brand-discord" />
         <span>Liên hệ quản trị</span>
       </a>
-
-      <button
-        class="m-btn _lg _harmful"
-        on:click={() => reload_chap(2)}
-        disabled={data._user.privi < 1}>
-        <SIcon name="rotate-rectangle" spin={_onload} />
-        <span>Tải lại nguồn</span>
-      </button>
     </div>
   {/if}
 </div>
@@ -183,10 +185,10 @@
     max-width: 48rem;
     // width: 100%;
     // min-height: 30vh;
-    margin: 0 auto;
+    margin: auto;
 
     // padding: var(--gutter) ;
-    padding: 1.5rem 0 0.75rem;
+    padding: 1.5rem var(--gutter) 0.75rem;
 
     font-size: rem(18px);
     line-height: rem(28px);
@@ -248,11 +250,12 @@
   }
 
   .actions {
-    @include flex-ca($gap: 1rem);
+    @include flex-ca($gap: 0.75rem);
+    padding-bottom: 0.75rem;
 
-    padding-bottom: 1.5rem;
-    @include border(--bd-soft, $loc: bottom);
-    // margin-bottom: var(--gutter);
+    &:last-of-type {
+      @include border(--bd-soft, $loc: bottom);
+    }
   }
 
   x-seed {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { session } from '$lib/stores'
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
 
   import type { PageData } from './$types'

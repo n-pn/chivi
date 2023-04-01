@@ -2,7 +2,7 @@
   import { page } from '$app/stores'
 
   import { rel_time } from '$utils/time_utils'
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import CvreplForm from './CvreplForm.svelte'
 
   export let cvrepl: CV.Cvrepl

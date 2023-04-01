@@ -15,7 +15,7 @@
 <script lang="ts">
   import { page } from '$app/stores'
 
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import YscritCard from './YscritCard.svelte'
   import VicritCard from './VicritCard.svelte'

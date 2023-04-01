@@ -5,7 +5,7 @@
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import MtPage2 from '$gui/sects/MtPage.svelte'
+  import MtPage from '$gui/sects/MtPage.svelte'
   import Notext from './Notext.svelte'
 
   // import Chtabs from './ChapTabs.svelte'
@@ -17,7 +17,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, curr_seed, seed_data, curr_chap, chap_data } = data)
+  $: ({ nvinfo, curr_seed, curr_chap, chap_data } = data)
 
   $: paths = gen_paths(
     nvinfo.bslug,
@@ -112,7 +112,7 @@
 
 <!-- <Chtabs {nvinfo} {seeds} {nvseed} {chmeta} {chinfo} /> -->
 
-<MtPage2
+<MtPage
   cvmtl={chap_data.cvmtl}
   ztext={chap_data.ztext}
   mtime={curr_chap.utime}
@@ -211,7 +211,7 @@
       </a>
     </div>
   </Footer>
-</MtPage2>
+</MtPage>
 
 <style lang="scss">
   .navi {

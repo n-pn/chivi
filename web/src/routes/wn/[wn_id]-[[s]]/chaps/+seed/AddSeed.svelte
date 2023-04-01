@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import { goto } from '$app/navigation'
   import { api_call } from '$lib/api_call'
 

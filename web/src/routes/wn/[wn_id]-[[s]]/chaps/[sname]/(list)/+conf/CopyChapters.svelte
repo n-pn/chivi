@@ -4,7 +4,7 @@
   import { seed_path, _pgidx } from '$lib/kit_path'
 
   import { api_call } from '$lib/api_call'
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let book_info: CV.Nvinfo
   export let seed_list: { users: CV.Chroot[]; backs: CV.Chroot[] }

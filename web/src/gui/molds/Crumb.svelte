@@ -1,5 +1,5 @@
 <script>
-  import { SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   export let tree = []
 </script>
 
