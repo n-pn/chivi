@@ -1,5 +1,4 @@
 require "../../../_util/char_util"
-require "../pos_tag"
 
 module M2::NumberNER
   extend self

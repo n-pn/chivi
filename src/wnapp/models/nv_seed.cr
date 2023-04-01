@@ -1,7 +1,7 @@
 require "crorm"
 require "crorm/sqlite3"
 
-class ZH::NvSeed
+class ZH::WnInit
   include Crorm::Model
   @@table = "books"
 
@@ -32,8 +32,8 @@ class ZH::NvSeed
 
   DB_PATH = "var/books/seeds/%{sname}.db"
 
-  def self.open_db(db_path : String)
-    db = DB.open("sqlite3://./#{db_path}")
+  def self.open_db(db_path : String, &)
+    db = DB.open("sqlite3:#{db_path}")
     yield db
     db.close
   end

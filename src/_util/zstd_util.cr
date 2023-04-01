@@ -25,7 +25,7 @@ module ZstdUtil
     Zstd::Decompress::IO.open(file, sync_close: true, &.gets_to_end)
   end
 
-  def load!(file : String)
+  def load!(file : String, &)
     if File.exists?(file)
       read_file(inp_file)
     else
