@@ -1,5 +1,7 @@
 require "sqlite3"
-require "./mt_node"
+
+require "./mt_data/mt_term"
+require "./mt_data/mt_ptag"
 
 class M2::MtDict
   class_getter core_base : MtDict { load_core }
@@ -45,9 +47,10 @@ class M2::MtDict
 
     DB.open(db_path) do |db|
       db.query_each(select_query, d_id) do |rs|
-        key, val, tag, prio = rs.read(String, String, String, Int32)
+        key, val, ptag, prio = rs.read(String, String, String, Int32)
+        ptag = MtPtag.parse(ptag)
 
-        add_term(key, val, tag, prio, dic: dic)
+        add_term(key, val, ptag: ptag, prio: prio, dic: dic)
       end
     end
   end
@@ -56,21 +59,25 @@ class M2::MtDict
     File.each_line(tsv_path) do |line|
       next if line.empty? || line[0] == '#'
       args = line.split('\t')
+
       key = args[0]
       val = args[1]? || ""
-      tag = args[2]? || "Lit"
+
+      ptag = args[2]? || "Lit"
       prio = args[3]?.try(&.to_i?) || 2
 
       add_term(key, val, tag, prio, dic: dic)
     end
   end
 
-  def add_term(key : String, val : String, tag : String, prio : Int32, dic : Int8 = @dic)
-    term = MtTerm.new(key, val, dic: dic, tag: tag, prio: prio)
-    add_term(key, term)
+  def add_term(key : String, val : String, ptag : String, prio : Int32, dic : Int8 = @dic)
+    term = MtTerm.new(key: key, val: val, dic: dic, prio: prio)
+    ptag = MtPtag.parse(ptag)
+
+    add_term(key, ptag, term)
   end
 
-  def add_term(key : String, term : MtTerm)
+  def add_term(key : String, ptag : Symbol, term : MtTerm)
     trie = @trie
 
     key.each_char do |char|
@@ -79,7 +86,7 @@ class M2::MtDict
     end
 
     data = trie.data ||= Trie::Data.new
-    data << term
+    data[ptag] = term
   end
 
   def scan(input : Array(Char), start : Int32 = 0, &) : Nil
@@ -88,13 +95,12 @@ class M2::MtDict
     start.upto(input.size - 1) do |idx|
       char = input.unsafe_fetch(idx)
       return unless trie = trie[char]?
-
       trie.data.try { |data| yield data }
     end
   end
 
   class Trie
-    alias Data = Array(MtTerm)
+    alias Data = Hash(Symbol, MtTerm)
     alias Succ = Hash(Char, Trie)
 
     property data : Data? = nil

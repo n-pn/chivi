@@ -1,8 +1,6 @@
 require "../../_util/char_util"
 
-require "./mt_dict"
-require "./mt_node"
-require "./basic_ner"
+require "./mt_data/*"
 
 class M2::MtData
   include MtSeri
@@ -10,14 +8,13 @@ class M2::MtData
   record TopNode, node : MtNode, cost : Int32
   alias AllNode = Hash(Int32, MtNode)
 
+  getter raw_chars = [] of Char
   getter inp_chars = [] of Char # normalized input
-  @raw_chars = [] of Char
 
-  @top_nodes = [] of MtNode
-  @top_costs = [] of Int32
+  getter top_nodes = [] of MtNode
+  getter top_costs = [] of Int32
 
   getter all_nodes = [] of Hash(Symbol, AllNode)
-  getter ner_terms = [] of MtTerm?
 
   def initialize(input : String)
     @raw_chars = input.chars
@@ -35,10 +32,6 @@ class M2::MtData
 
   def normalize(char : Char)
     CharUtil.fullwidth?(raw_char) ? CharUtil.to_halfwidth(raw_char) : raw_char
-  end
-
-  def run_ner!(start = 0)
-    @ner_nodes = BasicNER.detect_all(@inp_chars, idx: start)
   end
 
   def add_node(node : MtNode, idx : Int32) : MtNode?

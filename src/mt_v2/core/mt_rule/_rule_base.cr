@@ -1,4 +1,3 @@
-require "../mt_node"
 require "../mt_data"
 
 module M2::MtRule

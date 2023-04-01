@@ -1,5 +1,4 @@
 require "../../../_util/char_util"
-require "../pos_tag"
 
 module M2::NumlitNER
   extend self
@@ -36,10 +35,10 @@ module M2::NumlitNER
 
     if has_unit
       val = han_to_vi_with_unit(int_arr, prev_val)
-      tag = is_appro ? PosTag::Mprox : PosTag::Mlit
+      tag = is_appro ? :M_prox : :M_lit
     else
       val = han_to_vi_no_unit(int_arr)
-      tag = PosTag::Mlit
+      tag = :M_lit
     end
 
     {index, tag, prev_val + val}

@@ -1,6 +1,9 @@
 # require "./engine/*"
 require "./m2_data"
 require "./core/mt_data"
+require "./core/mt_dict"
+require "./core/basic_ner"
+require "./core/mt_rule/*"
 
 require "../_util/text_util"
 
@@ -53,16 +56,19 @@ class M2::Engine
   def cv_plain(input : String) : MtData
     mt_data = MtData.new(input)
 
-    mt_data.run_ner!
+    ner_terms = BasicNER.detect_all(mt_data.inp_chars, idx: 0)
 
     mt_data.inp_chars.size.downto(0) do |idx|
-      if ner_term = mt_data.ner_nodes[idx]?
+      if ner_term = ner_terms[idx]?
         MtRule.add_node(mt_data, ner_term, idx: idx)
       end
 
       dicts.each do |dict|
-        dict.scan(mt_data.inp_chars, start: idx) do |terms|
-          terms.each { |term| MtRule.add_node(mt_data, term, idx: idx) }
+        dict.scan(mt_data.inp_chars, start: idx) do |data|
+          data.each do |ptag, term|
+            atom = MtAtom.new(term, ptag: ptag, idx: idx)
+            MtRule.add_node(mt_data, atom, idx: idx)
+          end
         end
       end
     end

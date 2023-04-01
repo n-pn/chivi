@@ -1,7 +1,10 @@
-require "../pos_tag"
+require "./mt_prop"
+require "./mt_term"
 
 module M2::MtNode
   getter ptag : Symbol
+  getter prop : MtProp = MtProp::None
+
   getter size : Int32
   getter cost : Int32
 
@@ -77,54 +80,44 @@ module M2::MtSeri
   end
 end
 
-class M2::MtTerm
+class M2::MtAtom
   include MtNode
 
-  getter key : String
-  getter val : String
-  getter dic : Int8
+  getter term : MtTerm
+  getter idx : Int32
 
-  def initialize(char : Char)
-    @key = @val = char.to_s
-    @dic = 0
-
-    @ptag = "RAW"
+  def initialize(key_char : Char, val_char : Char, @idx = 0)
+    @term = MtTerm.new(key: key_char.to_s, val: val_char.to_s, dic: 0, prio: 3)
+    @ptag = :RAW
     @size = 1
     @cost = 0
   end
 
-  def initialize(@key, @val, @dic, @size, @ptag, @cost)
-  end
-
-  def initialize(@key : String, @val, @dic, @ptag : Symbol, prio : Int32 = 3)
+  def initialize(key : String, val : String, dic : Int32, @ptag : Symbol, prio : Int32 = 0, @idx = 0)
+    @term = MtTerm.new(key: key, val: val, dic: dic, prio: prio)
     @size = key.size
-    @cost = MtNode.cost(@size, prio)
+    @cost = MtNode.term_cost(@size, prio)
   end
 
-  def to_txt(io : IO, apply_cap : Bool) : Bool
-    attr = PosTag.attr_for(ptag)
+  def initialize(@term, @ptag : Symbol, prio = term.prio, @idx = 0)
+    @size = key.size
+    @cost = MtNode.term_cost(@size, prio)
+  end
 
-    if attr.cap_relay? # for punctuation
-      io << @val
-      apply_cap || attr.cap_after?
-    elsif apply_cap
-      io << @val[0].upcase << @val[1..] unless @val.empty?
-      attr.cap_after?
-    else
-      io << @val
-      attr.cap_after?
-    end
+  @[AlwaysInline]
+  def to_txt(io : IO, apply_cap : Bool) : Bool
+    @term.print_val(io, prop: @prop, apply_cap: apply_cap)
   end
 
   def to_mtl(io : IO, apply_cap : Bool) : Bool
     io << '\t'
     apply_cap = to_txt(io, apply_cap)
-    io << 'ǀ' << @dic << 'ǀ' << @idx << 'ǀ' << @size
+    io << 'ǀ' << @term.dic << 'ǀ' << @idx << 'ǀ' << @size
     apply_cap
   end
 
   def inspect(io : IO)
-    io << '{' << @key << '/' << @val << '/' << @ptag << '/' << @dic << '}'
+    io << '{' << @term.key << '/' << @term.val << '/' << @ptag << '/' << @term.dic << '}'
   end
 end
 
@@ -135,9 +128,9 @@ class M2::MtPair
   getter head : MtNode
   getter tail : MtNode
 
-  def initialize(@head, @tail, @ptag = tail.ptag, cost = 0, @flip = false)
+  def initialize(@head, @tail, @ptag = tail.ptag, rank = 3, @flip = false)
     @size = @head.size &+ @tail.size
-    @cost = @head.cost &+ @tail.cost &+ cost * @size # TODO: update this
+    @cost = MtNode.rule_cost(@head.cost &+ @tail.cost, @size, rank)
   end
 
   def each(&)
@@ -158,9 +151,9 @@ class M2::MtExpr
   getter list : Slice(MtNode)
   @ords : Slice(Int32) | Nil = nil
 
-  def initialize(@list : Slice(MtNode), @ptag = list.last.ptag, cost = 0, @ords = nil)
+  def initialize(@list : Slice(MtNode), @ptag = list.last.ptag, rank = 3, @ords = nil)
     @size = list.sum(&.size)
-    @cost = list.sum(&.cost) &+ cost * @size # TODO: update this
+    @cost = MtNode.rule_cost(@size, list.sum(&.cost), rank)
   end
 
   def each(&)
@@ -169,5 +162,54 @@ class M2::MtExpr
     else
       @list.each { |term| yield term }
     end
+  end
+end
+
+# ameba:disable Style/TypeNames
+class M2::NP_Node
+  include MtNode
+  include MtSeri
+
+  @detm : MtNode | Nil = nil
+  @noun : MtNode | Array(MtNode)
+
+  @ptag = :NP
+
+  def initialize(@noun : MtNode)
+    @size = noun.size
+    @cost = noun.cost
+  end
+
+  def initialize(@noun : MtNode, @detm : MtNode, rank = 4)
+    @size = noun.size &+ detm.size
+    @cost = MtNode.rule_cost(noun.cost &+ detm.cost, 2, rank)
+  end
+
+  def initialize(@noun : Array(MtNode))
+    @size = noun.sum(&.size)
+    @cost = noun.sum(&.cost)
+  end
+
+  def each(&)
+    if detm = @detm
+      # TODO: split to left and right nodes
+      yield detm
+    end
+
+    noun = @noun
+
+    if noun.is_a?(MtNode)
+      yield noun
+    else
+      noun.each { |node| yield node }
+    end
+  end
+
+  def to_txt(io : IO, apply_cap : Bool) : Bool
+    @noun.to_txt(io, apply_cap)
+  end
+
+  def to_mtl(io : IO, apply_cap : Bool) : Bool
+    @noun.to_txt(io, apply_cap)
   end
 end
