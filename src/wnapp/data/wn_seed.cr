@@ -5,7 +5,8 @@ require "../../_util/site_link"
 
 require "./wn_repo"
 require "../remote/rm_cata"
-require "../remote/rm_text"
+
+require "../util/dl_chap"
 
 class WN::WnSeed
   include Crorm::Model
@@ -193,7 +194,7 @@ class WN::WnSeed
     return chap.body if href.empty?
     self.mkdirs!
 
-    parser = RmText.new(href, ttl: force ? 3.minutes : 1.years)
+    parser = DlChap.new(href, ttl: force ? 3.minutes : 1.years)
     lines = parser.body.tap(&.unshift(parser.title))
     chap.save_body!(lines, seed: self, uname: uname)
 

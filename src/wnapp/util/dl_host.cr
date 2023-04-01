@@ -44,7 +44,7 @@ struct DlHost
       @book_id_regex = Regex.new(host.book_id_regex)
       @chap_id_regex = Regex.new(host.chap_id_regex)
 
-      @cache_dir = "var/wndls/.html/#{host.hostname}"
+      @cache_dir = "var/.html/#{host.hostname}"
       Dir.mkdir_p(@cache_dir)
     end
   end
