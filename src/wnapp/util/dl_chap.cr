@@ -28,9 +28,16 @@ class DlChap
       elem.children.each { |node| node.remove! if node.tag_sym == :a }
     end
 
-    @doc.inner_text(elem, ' ')
-      .sub(/^章节目录\s*/, "")
-      .sub(/(《.+》)?正文\s*/, "")
+    title = @doc.inner_text(elem, ' ')
+
+    case @host.hostname
+    when "www.69shu.com"
+      title.sub(/^\d+\.第/, "第")
+    else
+      title
+        .sub(/^章节目录\s*/, "")
+        .sub(/(《.+》)?正文\s*/, "")
+    end
   end
 
   getter body : Array(String) do
@@ -57,8 +64,14 @@ class DlChap
     case first
     when .starts_with?("笔趣阁"), .starts_with?("笔下文学")
       true
+    when .starts_with?('，')
+      @host.hostname.in?("www.b5200.org", "www.biqu5200.net")
     else
-      first.sub(self.title, "") !~ /\p{Han}/
+      @title.split(' ') do |frag|
+        first = first.sub(/^#{Regex.escape(frag)}\s*/, "")
+      end
+
+      first !~ /\p{Han}/
     end
   end
 
