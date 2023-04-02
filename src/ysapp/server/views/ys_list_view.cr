@@ -21,7 +21,7 @@ struct YS::ListView
       jb.field "book_count", @data.book_count
 
       if @full
-        jb.field "yl_id", @data.origin_id
+        jb.field "y_lid", @data.y_lid
         jb.field "vdesc", @data.vdesc
 
         jb.field "genres", @data.genres

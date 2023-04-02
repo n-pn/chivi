@@ -66,7 +66,7 @@ class YS::YslistCrawl < CrawlTask
   def self.gen_queue : Array(Entry)
     # fresh = Time.utc - ttl
 
-    stmt = "select origin_id from yslists"
+    stmt = "select y_lid from yslists"
     uuids = PG_DB.query_all(stmt, as: String)
 
     uuids.map_with_index do |uuid, index|

@@ -13,7 +13,7 @@ Dir.children(DIR).each do |y_cid|
   seed_dir(y_cid)
 end
 
-UPDATE_STMT = "update yscrits set repl_total = $1 where origin_id = $2 and repl_total < $1"
+UPDATE_STMT = "update yscrits set repl_total = $1 where y_cid = $2 and repl_total < $1"
 
 def seed_dir(y_cid : String)
   files = Dir.glob("#{DIR}/#{y_cid}/*.json.zst")

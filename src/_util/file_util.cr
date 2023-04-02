@@ -11,7 +11,7 @@ module FileUtil
       unless encoding
         sample = file.read_string(1024)
         file.rewind
-        encoding = csdet.detect(sample).encoding
+        encoding = CSDET.detect(sample).encoding
       end
 
       file.set_encoding(encoding, invalid: :skip)

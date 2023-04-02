@@ -12,7 +12,7 @@ at_exit { PG_DB.close }
 #   next unless cols.size > 1
 #   y_cid, y_uid = cols
 
-#   PG_DB.exec "update yscrits set y_uid = $1 where origin_id = $2", y_uid.to_i, y_cid
+#   PG_DB.exec "update yscrits set y_uid = $1 where y_cid = $2", y_uid.to_i, y_cid
 # end
 
 # PG_DB.exec "commit"

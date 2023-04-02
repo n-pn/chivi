@@ -11,7 +11,7 @@ class YS::Yscrit
   self.table = "yscrits"
 
   primary_key
-  column origin_id : String = ""
+  column y_cid : String = ""
 
   column nvinfo_id : Int32 = 0
   column ysbook_id : Int32 = 0
@@ -56,7 +56,7 @@ class YS::Yscrit
   TXT_DIR = "var/ysapp/crits-txt"
 
   private def group_by
-    self.origin_id[0..3]
+    self.y_cid[0..3]
   end
 
   def zip_path(type = "zh")
@@ -68,7 +68,7 @@ class YS::Yscrit
   end
 
   def filename(ext = "txt")
-    "#{self.origin_id}.#{ext}"
+    "#{self.y_cid}.#{ext}"
   end
 
   def load_ztext_from_disk : String
@@ -108,7 +108,7 @@ class YS::Yscrit
       html
     end
   rescue err
-    Log.error(exception: err) { "error loading #{type} html for #{origin_id} of #{ysbook_id}" }
+    Log.error(exception: err) { "error loading #{type} html for #{y_cid} of #{ysbook_id}" }
     "<p>$$$</p>"
   end
 
@@ -160,7 +160,7 @@ class YS::Yscrit
 
   def set_list_id(yslist : Yslist)
     self.yslist_id = yslist.id
-    self.y_lid = yslist.origin_id
+    self.y_lid = yslist.y_lid
   end
 
   def set_user_id(user : EmbedUser, force : Bool = false)
@@ -180,12 +180,12 @@ class YS::Yscrit
 
   ###################
 
-  def self.gen_id(origin_id : String)
-    origin_id[12..].to_i64(base: 16)
+  def self.gen_id(y_cid : String)
+    y_cid[12..].to_i64(base: 16)
   end
 
   def self.load(y_cid : String)
-    find({origin_id: y_cid}) || new({id: gen_id(y_cid), origin_id: y_cid})
+    find({y_cid: y_cid}) || new({id: gen_id(y_cid), y_cid: y_cid})
   end
 
   ####

@@ -1,7 +1,8 @@
 declare namespace CV {
   interface Yslist {
     id: string
-    yl_id: number
+    y_lid: string
+
     user_id: number
 
     vname: string

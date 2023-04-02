@@ -11,7 +11,7 @@ PG_DB.query_each dict_sql do |rs|
   DICT_MAP[rs.read(Int32)] = rs.read(Int32)
 end
 
-crit_sql = "select origin_id from yscrits where ysbook_id = $1"
+crit_sql = "select y_cid from yscrits where ysbook_id = $1"
 
 progress = 0
 

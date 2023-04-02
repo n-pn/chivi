@@ -6,7 +6,7 @@ class YS::Yslist
   self.table = "yslists"
 
   primary_key type: :serial
-  column origin_id : String = ""
+  column y_lid : String = ""
 
   column ysuser_id : Int32 = 0
   column y_uid : Int32 = 0
@@ -93,21 +93,21 @@ class YS::Yslist
     ids.empty? ? [] of self : query.where { id.in? ids }
   end
 
-  def self.gen_id(origin_id : String)
-    origin_id[-7..-1].to_i64(base: 16)
+  def self.gen_id(y_lid : String)
+    y_lid[-7..-1].to_i64(base: 16)
   end
 
-  def self.upsert!(origin_id : String, created_at : Time)
-    find({origin_id: origin_id}) || new({
-      id: gen_id(origin_id),
+  def self.upsert!(y_lid : String, created_at : Time)
+    find({y_lid: y_lid}) || new({
+      id: gen_id(y_lid),
 
-      origin_id:  origin_id,
+      y_lid:      y_lid,
       created_at: created_at,
     })
   end
 
   def self.load(y_lid : String)
-    find({origin_id: y_lid}) || new({id: gen_id(y_lid), origin_id: y_lid})
+    find({y_lid: y_lid}) || new({id: gen_id(y_lid), y_lid: y_lid})
   end
 
   CACHE_INT = CV::RamCache(Int64, self).new

@@ -38,7 +38,7 @@ def map_extension(mime : String?) : String
 end
 
 def valid_extension?(path : String)
-  !File.extname(path).in?(".raw", ".txt", ".html", ".ascii")
+  !File.extname(path).in?("", ".raw", ".txt", ".xml", ".html", ".ascii")
 end
 
 def image_width(path : String) : Int32
@@ -76,6 +76,8 @@ def img_to_webp(orig_path : String, webp_path : String) : Bool
     webp_cmd += " -resize #{MAX_WIDTH} 0" if image_width(orig_path) > MAX_WIDTH
     Process.run(webp_cmd, shell: true)
   end
+
+  # `convert #{inp_file} -quality 50 -define webp:lossless=true -resize "#{width}x>" #{out_file}`
 
   File.file?(webp_path)
 end

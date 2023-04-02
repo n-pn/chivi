@@ -35,7 +35,7 @@ class YS::CrawlYscritByUser < CrawlTask
     OptionParser.parse(argv) do |opt|
       opt.on("-p PAGE", "start page") { |i| start = i.to_i }
       opt.on("-r", "Reseed content") { reseed = true }
-      opt.on("--nofix", "Do not caculate book_count before run") { fix_db_stats = false }
+      opt.on("--nofix", "Do not caculate book_count before run") { fix_db_stat = false }
     end
 
     queue_init = gen_queue_init(fix_db_stat)
@@ -76,7 +76,7 @@ class YS::CrawlYscritByUser < CrawlTask
     PG_DB.exec(FIX_STAT_SQL) if fix_db_stat
 
     select_smt = <<-SQL
-      select origin_id, book_total from yslists
+      select y_lid, book_total from yslists
       where book_total > book_count
     SQL
 

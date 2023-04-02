@@ -75,7 +75,7 @@ class YS::CrawlYslistByUser < CrawlTask
     SQL
 
     sql = <<-SQL
-      select origin_id, repl_total from yscrits
+      select y_cid, repl_total from yscrits
       where repl_total > repl_count
       order by repl_total desc
     SQL

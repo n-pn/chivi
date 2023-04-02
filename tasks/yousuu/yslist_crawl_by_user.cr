@@ -13,7 +13,7 @@
 
 #   def initialize(crmode : CrMode, @reseed = false, refresh_proxy = fase)
 #     @http = HttpClient.new(refresh_proxy)
-#     @data = YS::Ysuser.query.where("origin_id > 0 AND list_count < list_total").to_a
+#     @data = YS::Ysuser.query.where("y_uid > 0 AND list_count < list_total").to_a
 
 #     case crmode
 #     when .rand? then @data.shuffle!
