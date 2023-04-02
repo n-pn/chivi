@@ -14,20 +14,21 @@ class DlChap
 
   @doc : DlPage
 
+  getter title : String
+
   def initialize(@host : DlHost, html : String, @path : String)
     @doc = DlPage.new(html)
+    @title = get_title(@host.chap_name_css)
   end
 
-  getter title : String do
-    elem = @doc.find!(@host.chap_name_css)
+  def get_title(chap_name_css : String)
+    elem = @doc.find!(chap_name_css)
 
-    if @host.hostname.includes?("ptwxz")
+    if @host.hostname.ends_with?("ptwxz.com")
       elem.children.each { |node| node.remove! if node.tag_sym == :a }
     end
 
-    title = @doc.inner_text(elem, ' ')
-
-    title
+    @doc.inner_text(elem, ' ')
       .sub(/^章节目录\s*/, "")
       .sub(/(《.+》)?正文\s*/, "")
   end
