@@ -1,5 +1,6 @@
 require "colorize"
 require "../../src/_util/hash_util"
+require "../../src/_util/zstd_util"
 
 # BOOK_DIR = "var/ysraw/books"
 # USER_DIR = "var/ysraw/users"
@@ -32,9 +33,6 @@ require "../../src/_util/hash_util"
 # fix_dir(BOOK_DIR)
 # fix_dir(USER_DIR)
 # fix_dir(CRIT_DIR)
-
-require "zstd"
-require "../../src/_util/hash_util"
 
 INP = "var/ysraw/lists"
 OUT = "var/ysraw/lists"
