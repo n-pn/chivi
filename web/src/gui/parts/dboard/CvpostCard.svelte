@@ -1,30 +1,33 @@
 <script lang="ts">
   import { session } from '$lib/stores'
   import { dboard_ctrl } from '$lib/stores'
-  import { dlabels } from '$lib/constants'
 
+  import { dlabels } from '$lib/constants'
   import { rel_time } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let cvpost: CV.Cvpost
+  export let post: CV.Cvpost
+  export let user: CV.Viuser
+  export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
+
   export let _mode = 0
 
-  $: dboard = cvpost.dboard
+  $: dboard = post.dboard
   $: board_url = `/forum/-${dboard.bslug}`
   $: label_url = _mode > -1 ? board_url : `/-${dboard.bslug}/board`
 
   async function toggle_like() {
-    const action = cvpost.self_liked ? 'unlike' : 'like'
-    const api_url = `/_db/!posts/${cvpost.id}/${action}`
+    const action = memo?.liked > 0 ? 'unlike' : 'like'
+    const api_url = `/_db/memos/posts/${post.id}/${action}`
     const api_res = await fetch(api_url, { method: 'PUT' })
 
     if (!api_res.ok) {
       alert(await api_res.text())
     } else {
-      const payload = await api_res.json()
-      cvpost.like_count = payload.like_count
-      cvpost.self_liked = !cvpost.self_liked
+      const { like_count, memo_liked } = await api_res.json()
+      post.like_count = like_count
+      memo.liked = memo_liked
     }
   }
 </script>
@@ -33,12 +36,12 @@
   <topic-head class={_mode}>
     <a
       class="topic-title"
-      href="{board_url}/-{cvpost.tslug}-{cvpost.id}"
-      on:click={(e) => dboard_ctrl.view_topic(e, cvpost)}>
-      {cvpost.title}
+      href="{board_url}/-{post.tslug}-{post.id}"
+      on:click={(e) => dboard_ctrl.view_topic(e, post)}>
+      {post.title}
     </a>
 
-    {#each cvpost.labels as label}
+    {#each post.labels as label}
       <a
         class="m-label _{dlabels[label]} _sm"
         href="{label_url}?lb={label}"
@@ -47,20 +50,12 @@
   </topic-head>
 
   <topic-brief>
-    {#if cvpost.lp_uname}
-      <span><SIcon name="corner-up-left" /></span>
-      <cv-user data-privi={cvpost.lp_privi}>{cvpost.lp_uname}</cv-user>
-      <span>·</span>
-      <topic-time>{rel_time(cvpost.utime)}</topic-time>
-    {:else}
-      <span><SIcon name="send" /></span>
-      <cv-user data-privi={cvpost.op_privi}>{cvpost.op_uname}</cv-user>
-      <span>·</span>
-      <topic-time>{rel_time(cvpost.ctime)}</topic-time>
-    {/if}
+    <span><SIcon name="send" /></span>
+    <cv-user data-privi={user.privi}>{user.uname}</cv-user>
+    <span>·</span>
+    <topic-time>{rel_time(post.ctime)}</topic-time>
     <topic-sep>·</topic-sep>
-
-    <span class="brief">{cvpost.brief}</span>
+    <span class="brief">{post.brief}</span>
   </topic-brief>
 
   <topic-foot>
@@ -77,21 +72,21 @@
     <foot-right>
       <topic-meta class="meta">
         <SIcon name="eye" />
-        <span>{cvpost.view_count}</span>
+        <span>{post.view_count}</span>
       </topic-meta>
 
       <topic-meta class="meta">
         <SIcon name="messages" />
-        <span>{cvpost.post_count}</span>
+        <span>{post.post_count}</span>
       </topic-meta>
 
       <button
         class="meta"
-        class:_active={cvpost.self_liked}
+        class:_active={memo?.liked > 0}
         disabled={$session.privi < 0}
         on:click={toggle_like}>
         <SIcon name="star" />
-        <span>{cvpost.like_count}</span>
+        <span>{post.like_count}</span>
       </button>
     </foot-right>
   </topic-foot>

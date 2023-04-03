@@ -50,11 +50,16 @@
 </board-head>
 
 <topic-list>
-  {#each dtlist.items as cvpost}
-    <CvpostCard size="sm" {cvpost} {_mode} />
+  {#each dtlist.posts as post}
+    <CvpostCard
+      {post}
+      user={dtlist.users[post.user_id]}
+      memo={dtlist.memos[post.id]}
+      size="sm"
+      {_mode} />
   {:else}
     <div class="empty">
-      <h4>Chưa có chủ đề thảo luận :(</h4>
+      <h4>Chưa có chủ đề thảo luận :-(</h4>
     </div>
   {/each}
 </topic-list>
@@ -69,7 +74,7 @@
   <button
     class="m-btn _primary _fill"
     disabled={$session.privi < 0}
-    on:click={() => cvpost_form.show('0')}>
+    on:click={() => cvpost_form.show(0)}>
     <SIcon name="message-plus" />
     <span>Tạo chủ đề mới</span></button>
 </board-foot>

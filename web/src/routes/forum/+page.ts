@@ -1,11 +1,10 @@
-import { api_get, api_path } from '$lib/api_call'
+import { api_get, api_path, merge_query } from '$lib/api_call'
 import type { PageData } from './$types'
 
 export const load = (async ({ fetch, url }) => {
-  const extras = { lm: 10, labels: url.searchParams.get('lb') }
+  const query = merge_query(url.searchParams, { lm: 10 })
+  const path = api_path(`/_db/topics?${query.toString()}`)
+  const dtlist = await api_get<CV.Dtlist>(path, fetch)
 
-  const path = api_path('dtopics.index', null, url.searchParams, extras)
-  const data = await api_get(path, fetch)
-
-  return data
+  return { dtlist }
 }) satisfies PageData

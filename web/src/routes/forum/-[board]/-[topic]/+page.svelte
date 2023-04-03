@@ -11,7 +11,12 @@
   <title>{cvpost.title} - Diễn đàn - Chivi</title>
 </svelte:head>
 
-<CvpostFull {dboard} {cvpost} fluid={true} />
+<CvpostFull
+  post={cvpost.post}
+  user={cvpost.user}
+  memo={cvpost.memo}
+  {dboard}
+  fluid={true} />
 
 <section>
   <h3>Bình luận</h3>

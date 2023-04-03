@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<!-- <script context="module" lang="ts">
   import { page } from '$app/stores'
   import { session } from '$lib/stores'
   import { dlabels } from '$lib/constants'
@@ -113,4 +113,4 @@
     @include ftsize(lg);
     @include fgcolor(mute);
   }
-</style>
+</style> -->

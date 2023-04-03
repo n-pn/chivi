@@ -14,8 +14,32 @@ class CV::MemoirCtrl < CV::BaseCtrl
 
     target = Cvrepl.find!({id: repl_id})
     memoir = Memoir.load(_vu_id, :dreply, repl_id)
-    Log.info { memoir }
 
+    do_mark_action(memoir, target, action)
+
+    render json: {
+      like_count: target.like_count,
+      memo_liked: memoir.liked_at,
+    }
+  end
+
+  @[AC::Route::PUT("/posts/:post_id/:action")]
+  def mark_post(post_id : Int32, action : MarkAction)
+    guard_privi 0, "tương tác với chủ đề"
+
+    target = Cvpost.find!({id: post_id})
+    memoir = Memoir.load(_vu_id, :dtopic, post_id)
+
+    do_mark_action(memoir, target, action)
+
+    render json: {
+      like_count: target.like_count,
+      memo_liked: memoir.liked_at,
+      memo_track: memoir.track_at,
+    }
+  end
+
+  private def do_mark_action(memoir : Memoir, target : Cvpost | Cvrepl, action : MarkAction)
     utc_unix = Time.utc.to_unix
 
     case action
@@ -41,12 +65,5 @@ class CV::MemoirCtrl < CV::BaseCtrl
 
     target.save!
     memoir.save!
-
-    render json: {
-      like_count: target.like_count,
-
-      memo_liked: memoir.liked_at,
-      memo_track: memoir.track_at,
-    }
   end
 end

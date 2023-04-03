@@ -4,27 +4,31 @@
   import { dlabels } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import CvpostForm, { ctrl as cvpost_ctrl } from './CvpostForm.svelte'
+  import CvpostForm, { ctrl as post_ctrl } from './CvpostForm.svelte'
 
-  export let cvpost: CV.Cvpost
-  export let dboard: CV.Dboard = cvpost.dboard
-  export let _all = cvpost.bhtml.length < 500
+  export let post: CV.Cvpost
+  export let dboard: CV.Dboard = post.dboard
 
-  export let on_cvpost_form = () => window.location.reload()
+  export let user: CV.Viuser
+  export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
+
+  export let _all = post.bhtml.length < 500
+
+  export let on_post_form = () => window.location.reload()
 
   $: board_url = `/forum/-${dboard.bslug}`
 
   async function toggle_like() {
-    const action = cvpost.self_liked ? 'unlike' : 'like'
-    const api_url = `/_db/!posts/${cvpost.id}/${action}`
+    const action = memo.liked > 0 ? 'unlike' : 'like'
+    const api_url = `/_db/memos/posts/${post.id}/${action}`
     const api_res = await fetch(api_url, { method: 'PUT' })
 
     if (!api_res.ok) {
       alert(await api_res.text())
     } else {
-      const payload = await api_res.json()
-      cvpost.like_count = payload.like_count
-      cvpost.self_liked = !cvpost.self_liked
+      const { like_count, memo_liked } = await api_res.json()
+      post.like_count = like_count
+      memo.liked = memo_liked
     }
   }
 </script>
@@ -40,32 +44,32 @@
 
     <a class="m-board" href={board_url}>
       <SIcon name="message" />
-      <span>{cvpost.dboard.bname}</span>
+      <span>{post.dboard.bname}</span>
     </a>
 
-    {#each cvpost.labels as label}
+    {#each post.labels as label}
       <a class="m-label _{dlabels[label]}" href="{board_url}?lb={label}"
         >{label}</a>
     {/each}
   </topic-navi>
 
   <topic-head class={_all}>
-    <a class="topic-title" href="{board_url}/-{cvpost.tslug}-{cvpost.id}">
-      {cvpost.title}
+    <a class="topic-title" href="{board_url}/-{post.tslug}-{post.id}">
+      {post.title}
     </a>
 
     <topic-foot>
       <topic-user>
         <SIcon name="edit" />
-        <cv-user data-privi={cvpost.op_privi}>{cvpost.op_uname}</cv-user>
+        <cv-user data-privi={user.privi}>{user.uname}</cv-user>
       </topic-user>
 
       <topic-sep>·</topic-sep>
-      <topic-time>{rel_time(cvpost.ctime)}</topic-time>
+      <topic-time>{rel_time(post.ctime)}</topic-time>
 
-      {#if $session.privi > 3 || $session.uname == cvpost.op_uname}
+      {#if $session.privi > 3 || $session.uname == user.uname}
         <topic-sep>·</topic-sep>
-        <button class="action" on:click={() => cvpost_ctrl.show(cvpost.id)}>
+        <button class="action" on:click={() => post_ctrl.show(post.id)}>
           <span>Sửa</span>
         </button>
       {/if}
@@ -73,33 +77,34 @@
       <foot-right>
         <topic-meta class="meta">
           <SIcon name="messages" />
-          <span>{cvpost.post_count}</span>
+          <span>{post.post_count}</span>
         </topic-meta>
 
         <topic-sep>·</topic-sep>
         <topic-meta class="meta">
           <SIcon name="eye" />
-          <span>{cvpost.view_count}</span>
+          <span>{post.view_count}</span>
         </topic-meta>
 
         <topic-sep>·</topic-sep>
 
         <button
           class="meta"
-          class:_active={cvpost.self_liked}
+          class:_active={memo.liked > 0}
           disabled={$session.privi < 0}
+          data-tip={new Date(Math.abs(memo.liked) * 1000).toString()}
           on:click={toggle_like}>
           <SIcon name="star" />
-          <span>{cvpost.like_count}</span>
+          <span>{post.like_count}</span>
         </button>
       </foot-right>
     </topic-foot>
   </topic-head>
 
   <topic-pbody class:_all>
-    <article class="m-article">{@html cvpost.bhtml}</article>
+    <article class="m-article">{@html post.bhtml}</article>
 
-    {#if cvpost.bhtml.length >= 500}
+    {#if post.bhtml.length >= 500}
       <pbody-foot>
         <button
           class="m-btn _primary _xs btn-show"
@@ -112,8 +117,8 @@
   </topic-pbody>
 </topic-full>
 
-{#if $cvpost_ctrl.actived}
-  <CvpostForm {dboard} on_destroy={on_cvpost_form} />
+{#if $post_ctrl.actived}
+  <CvpostForm {dboard} on_destroy={on_post_form} />
 {/if}
 
 <style lang="scss">

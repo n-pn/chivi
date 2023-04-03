@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
   import { dtlist_data as data, DtlistData } from '$lib/stores'
+
   export function make_api_url(data: DtlistData) {
     const { tab, query } = data
     let api_url = `/_db/topics?pg=${query.pg}&lm=10`
@@ -25,15 +26,16 @@
 </script>
 
 <script lang="ts">
-  import SIcon from '$gui/atoms/SIcon.svelte'
-  import CvpostList from '$gui/parts/dboard/CvpostList.svelte'
   import { invalidate } from '$app/navigation'
 
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import CvpostList from '$gui/parts/dboard/CvpostList.svelte'
+
   let dtlist: CV.Dtlist = {
-    items: [],
+    posts: [],
+    users: {},
+    memos: {},
     pgidx: 1,
-    pgmax: 1,
-    total: 0,
   }
 
   $: api_url = make_api_url($data)
@@ -47,7 +49,7 @@
   async function load_topics(api_url: string) {
     const api_res = await fetch(api_url)
     if (!api_res.ok) alert(await api_res.text())
-    else dtlist = await api_res.json().then((x) => x.dtlist)
+    else dtlist = await api_res.json()
   }
 
   function change_tab(tab: CV.DtlistType) {

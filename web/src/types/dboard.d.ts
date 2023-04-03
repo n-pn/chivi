@@ -4,8 +4,4 @@ declare namespace CV {
     bname: string
     bslug: string
   }
-
-  interface Dtlist extends Paginate {
-    items: any[]
-  }
 }

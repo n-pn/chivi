@@ -1,9 +1,9 @@
 <script context="module" lang="ts">
-  import { dboard_ctrl as ctrl, tplist_data, popups } from '$lib/stores'
+  import { dboard_ctrl, tplist_data, popups } from '$lib/stores'
 
-  export function make_api_url(data: CV.Cvpost, { pg, op }) {
+  export function make_api_url(data: CV.Cvpost, { op }) {
     let api_url = `/_db/tposts`
-    if (data) api_url += '?post_id=' + data.id
+    if (data) api_url += '?post=' + data.id
     if (op) api_url += '&uname=' + op
 
     return api_url
@@ -16,7 +16,12 @@
   import CvpostFull from '$gui/parts/dboard/CvpostFull.svelte'
   import CvreplList from '$gui/parts/dboard/CvreplList.svelte'
 
-  let cvpost: CV.Cvpost
+  let cvpost: CV.CvpostFull = {
+    post: { dboard: { id: 0, bname: '', bslug: '' }, bhtml: '', labels: [] },
+    user: {},
+    memo: {},
+  }
+
   let rplist: CV.Rplist = {
     repls: [],
     users: {},
@@ -26,7 +31,7 @@
   }
 
   $: post_api_url = `/_db/topics/${$tplist_data.topic.id}`
-  $: list_api_url = make_api_url(cvpost, $tplist_data.query)
+  $: list_api_url = make_api_url(cvpost.post, $tplist_data.query)
 
   $: if ($popups.dboard && $tplist_data.topic) load_cvpost(post_api_url)
   $: if (cvpost) load_tposts(list_api_url)
@@ -42,8 +47,7 @@
   }
 
   async function load_cvpost(url: string) {
-    const data = await fetch(url).then((r) => r.json())
-    cvpost = data.cvpost
+    cvpost = await fetch(url).then((r) => r.json())
   }
 
   async function load_tposts(api_url: string) {
@@ -57,10 +61,10 @@
 
 {#if cvpost}
   <section class="topic">
-    <CvpostFull {cvpost} {on_cvpost_form} />
+    <CvpostFull {...cvpost} {on_cvpost_form} />
   </section>
   <section class="posts">
-    <CvreplList {rplist} {cvpost} {on_cvrepl_form} />
+    <CvreplList {rplist} cvpost={cvpost.post} {on_cvrepl_form} />
   </section>
 {:else}
   Chưa chọn chủ đề

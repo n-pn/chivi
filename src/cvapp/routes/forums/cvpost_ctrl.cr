@@ -5,11 +5,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
   base "/_db/topics"
 
   @[AC::Route::GET("/")]
-  def index(
-    labels : String? = nil,
-    dboard : Int64? = nil,
-    viuser : String? = nil
-  )
+  def index(lb labels : String? = nil, dboard : Int64? = nil, viuser : String? = nil)
     pgidx, limit, offset = _paginate(max: 100)
 
     query = Cvpost.query.order_by(_sort: :desc)
@@ -19,34 +15,34 @@ class CV::CvpostCtrl < CV::BaseCtrl
 
     if nvinfo = dboard.try { |x| Nvinfo.load!(x) }
       query.filter_board(nvinfo)
-    else
-      query.where("_sort > 0")
     end
 
-    if viuser = viuser && Viuser.load!(viuser)
-      query.filter_owner(viuser)
+    if viuser
+      query.where("viuser_id = (select id from viusers where uname = ? limit 1)", viuser)
     end
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count
 
     query.with_nvinfo unless nvinfo
-    query.with_viuser unless viuser
-    query.with_lastrp(&.with_viuser)
 
-    items = query.limit(limit).offset(offset).to_a
-    memos = UserPost.glob(_viuser.id, _viuser.privi, items.map(&.id))
+    posts = query.limit(limit).offset(offset).to_a
+    memos = Memoir.glob(_vu_id, :dtopic, posts.map(&.id.to_i))
+
+    user_ids = posts.map(&.viuser_id)
+    user_ids << _vu_id if _vu_id >= 0
+
+    users = Viuser.glob(user_ids)
+
+    posts.map(&.nvinfo = nvinfo) if nvinfo
 
     render json: {
-      dtlist: {
-        total: total,
-        pgidx: pgidx,
-        pgmax: _pgidx(total, limit),
-        items: items.map { |x|
-          x.nvinfo = nvinfo if nvinfo
-          x.viuser = viuser if viuser
-          CvpostView.new(x, full: false, memo: memos[x.id]?)
-        },
-      },
+      total: total,
+      pgidx: pgidx,
+      pgmax: _pgidx(total, limit),
+
+      posts: CvpostView.as_list(posts, false),
+      memos: MemoirView.as_hash(memos),
+      users: ViuserView.as_hash(users),
     }
   end
 
@@ -67,17 +63,17 @@ class CV::CvpostCtrl < CV::BaseCtrl
   @[AC::Route::GET("/:post_id")]
   def show(post_id : Int64)
     cvpost = Cvpost.load!(post_id)
-
     cvpost.bump_view_count!
-    cvpost.nvinfo.tap { |x| x.update!(view_count: x.view_count + 1) }
 
-    # TODO: load user trace
+    viuser = Viuser.load!(cvpost.viuser_id)
+    memoir = Memoir.load(_vu_id, :dtopic, cvpost.id.to_i)
 
-    if _viuser.privi >= 0
-      memo = UserPost.find({viuser_id: _viuser.id, cvpost_id: cvpost.id})
-    end
+    render json: {
+      post: CvpostView.new(cvpost, full: true),
+      user: ViuserView.new(viuser),
+      memo: MemoirView.new(memoir),
 
-    render json: {cvpost: CvpostView.new(cvpost, full: true, memo: memo)}
+    }
   rescue err
     render :not_found, text: "Chủ đề không tồn tại!"
   end

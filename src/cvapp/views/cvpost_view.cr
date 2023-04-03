@@ -3,7 +3,7 @@ require "./_base_view"
 struct CV::CvpostView
   include BaseView
 
-  def initialize(@data : Cvpost, @full = false, @memo : UserPost? = nil)
+  def initialize(@data : Cvpost, @full = false)
   end
 
   def to_json(jb : JSON::Builder)
@@ -16,10 +16,8 @@ struct CV::CvpostView
         }
       end
 
-      jb.field "op_uname", @data.viuser.uname
-      jb.field "op_privi", @data.viuser.privi
-
       jb.field "id", @data.id
+      jb.field "user_id", @data.viuser_id
 
       jb.field "title", @data.title
       jb.field "tslug", @data.tslug
@@ -38,11 +36,12 @@ struct CV::CvpostView
       if @full
         jb.field "bhtml", @data.bhtml
       end
-
-      if memo = @memo
-        jb.field "self_liked", memo.liked
-        jb.field "self_rp_ii", memo.last_rp_ii
-      end
     }
+  end
+
+  def self.as_list(data : Enumerable(Cvpost), full = false)
+    list = [] of self
+    data.each { |x| list << new(x, full: full) }
+    list
   end
 end

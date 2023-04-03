@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { session } from '$lib/stores'
   import { rel_time } from '$utils/time_utils'
   import { dlabels } from '$lib/constants'
@@ -262,4 +262,4 @@
       height: 1rem;
     }
   }
-</style>
+</style> -->

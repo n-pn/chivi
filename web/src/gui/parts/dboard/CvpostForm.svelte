@@ -17,13 +17,13 @@
   }
 
   export const ctrl = {
-    ...writable({ id: '0', actived: false }),
-    show(id = '0') {
+    ...writable({ id: 0, actived: false }),
+    show(id = 0) {
       data.init(id)
       ctrl.set({ id, actived: true })
     },
     hide() {
-      ctrl.set({ id: '0', actived: false })
+      ctrl.set({ id: 0, actived: false })
     },
   }
 </script>
@@ -38,7 +38,7 @@
 
   export let on_destroy = () => window.location.reload()
 
-  $: on_edit = $ctrl.id != '0'
+  $: on_edit = $ctrl.id != 0
   $: api_url = make_api_endpoint(dboard.id)
 
   let labels = build_labels($data.labels)
@@ -47,7 +47,7 @@
   let error = ''
 
   function make_api_endpoint(dboard_id: string | number) {
-    if ($ctrl.id != '0') {
+    if ($ctrl.id != 0) {
       return `/_db/topics/${$ctrl.id}`
     } else {
       return `/_db/topics?dboard=${dboard_id}`

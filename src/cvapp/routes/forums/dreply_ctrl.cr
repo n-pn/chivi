@@ -4,10 +4,12 @@ class CV::CvreplCtrl < CV::BaseCtrl
   base "/_db/tposts"
 
   @[AC::Route::GET("/")]
-  def index(sort : String = "-id", post_id : Int64? = nil, uname : String? = nil)
+  def index(sort : String = "-id", post : Int64? = nil, uname : String? = nil)
     repls = Cvrepl.query.sort_by(sort)
 
-    repls.where("cvpost_id = ?", post_id) if post_id
+    if post
+      repls.where("cvpost_id = ?", post)
+    end
 
     if uname
       repls.where("viuser_id = (select id from viusers where uname = ? limit 1)", uname)

@@ -3,6 +3,7 @@ declare namespace CV {
     dboard?: Dboard
 
     id: number
+    user_id: number
 
     title: string
     tslug: string
@@ -15,17 +16,20 @@ declare namespace CV {
     ctime: number
     utime: number
 
-    op_uname: string
-    op_privi: number
-
-    lp_uname: string
-    lp_privi: number
-
     post_count?: number
     view_count?: number
     like_count?: number
+  }
 
-    self_liked?: boolean
-    self_rp_ii?: number
+  interface CvpostFull {
+    post: Cvpost
+    user: Viuser
+    memo: Memoir
+  }
+
+  interface Dtlist extends Paginate {
+    posts: Cvpost[]
+    users: Record<number, Cvuser>
+    memos: Record<number, Memoir>
   }
 }
