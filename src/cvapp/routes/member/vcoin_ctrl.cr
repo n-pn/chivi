@@ -9,6 +9,7 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
     pg_no, limit, offset = _paginate(min: 50)
 
     entries = VcoinXlog.query.order_by(id: :desc)
+    # entries.where("kind >= 0")
     entries.where("(sender_id = ? or receiver_id = ?)", vu_id, vu_id) if vu_id
 
     total = entries.dup.count
@@ -61,11 +62,12 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
       receiver.update(vcoin: receiver.vcoin + form.amount)
 
       VcoinXlog.new({
-        kind:        form.as_admin? ? 1 : 0,
-        sender_id:   sender.id,
-        receiver_id: receiver.id,
-        amount:      form.amount,
-        reason:      form.reason,
+        kind:          form.as_admin? ? 2 : 1,
+        sender_id:     sender.id,
+        receiver_id:   receiver.id,
+        receiver_name: form.receiver,
+        amount:        form.amount,
+        reason:        form.reason,
       }).save!
 
       sender.cache!

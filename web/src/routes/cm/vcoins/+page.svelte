@@ -1,7 +1,14 @@
 <script lang="ts">
+  import { page } from '$app/stores'
   import { rel_time } from '$utils/time_utils'
+
   import type { PageData } from './$types'
   export let data: PageData
+
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+
+  $: pager = new Pager($page.url, { pg: 1, tl: '' })
 </script>
 
 <article class="article island">
@@ -20,11 +27,27 @@
     <tbody>
       {#each data.xlogs as xlog}
         {@const sender = data.users[xlog.sender_id]}
-        {@const sendee = data.users[xlog.receiver_id]}
+        {@const receiver = data.users[xlog.receiver_id]}
         <tr>
           <td>{xlog.id}</td>
-          <td><cv-user data-privi={sender.privi}>{sender.uname}</cv-user></td>
-          <td><cv-user data-privi={sendee.privi}>{sendee.uname}</cv-user></td>
+          <td>
+            <a
+              class="cv-user"
+              href={pager.gen_url({ vu_id: xlog.sender_id, pg: 1 })}
+              data-privi={sender.privi}>
+              <SIcon name="privi-{sender.privi}" iset="sprite" />
+              {sender.uname}
+            </a>
+          </td>
+          <td>
+            <a
+              class="cv-user"
+              href={pager.gen_url({ vu_id: xlog.receiver_id, pg: 1 })}
+              data-privi={receiver.privi}>
+              {receiver.uname}
+              <SIcon name="privi-{receiver.privi}" iset="sprite" />
+            </a>
+          </td>
           <td>{xlog.amount}</td>
           <td>{xlog.reason}</td>
           <td>{rel_time(xlog.ctime)}</td>
@@ -32,6 +55,10 @@
       {/each}
     </tbody>
   </table>
+
+  <footer>
+    <Mpager {pager} pgidx={data.pgidx} pgmax={data.pgmax} />
+  </footer>
 </article>
 
 <style lang="scss">
@@ -44,5 +71,15 @@
       border-right: none;
       text-align: center;
     }
+  }
+
+  footer {
+    margin-top: 0.75rem;
+  }
+
+  .cv-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 </style>

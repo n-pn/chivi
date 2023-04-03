@@ -13,8 +13,8 @@ const _meta = {
   right_nav: [],
 }
 
-export const load = (async ({ fetch }) => {
-  const path = `/_db/vcoins`
+export const load = (async ({ fetch, url }) => {
+  const path = `/_db/vcoins${url.search}`
   const data = await api_get<XlogData>(path, fetch)
 
   return { ...data, _meta }

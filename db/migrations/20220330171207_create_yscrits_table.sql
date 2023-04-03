@@ -6,7 +6,7 @@ CREATE TABLE yscrits (
   ysbook_id bigint NOT NULL DEFAULT 0,
   nvinfo_id bigint NOT NULL DEFAULT 0,
   --
-  v_uid int4 NOT NULL DEFAULT 0, -- chivi ysuser id
+  vu_id int4 NOT NULL DEFAULT 0, -- chivi ysuser id
   y_uid int4 NOT NULL DEFAULT 0, -- original user id
   --
   yslist_id bigint NOT NULL DEFAULT 0,

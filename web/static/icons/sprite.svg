@@ -32,5 +32,9 @@
       <path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"></path>
       <path d="M13 16v-8l-4 6h5" />
     </symbol>
+    <symbol id="privi-5" viewBox="0 0 24 24">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4z"></path>
+    </symbol>
   </defs>
 </svg>

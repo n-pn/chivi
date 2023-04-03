@@ -9,7 +9,9 @@ class CV::VcoinXlog
   column kind : Int32 = 1
 
   column sender_id : Int32
+
   column receiver_id : Int32
+  column receiver_name : String = ""
 
   column amount : Float64 = 0_f64
   column reason : String = ""
