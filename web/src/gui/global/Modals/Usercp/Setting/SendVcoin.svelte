@@ -4,29 +4,29 @@
 
   export let user: App.CurrentUser
 
-  let sendee = ''
+  let receiver = ''
+
   let amount = 10
   let reason = ''
 
   let as_admin = false
 
   let res_type: '' | 'ok' | 'err' = ''
-
   let res_text = ''
 
-  const action_url = '/_db/_self/send-vcoin'
+  const action_url = '/_db/vcoins'
 
   async function submit() {
     res_type = ''
     res_text = ''
 
     try {
-      const body = { sendee, reason, amount: +amount, as_admin }
-      const data = await api_call(action_url, body, 'PUT')
+      const body = { receiver, reason, amount: +amount, as_admin }
+      const data = await api_call(action_url, body, 'POST')
       user.vcoin -= amount
 
       res_type = 'ok'
-      res_text = `[${data.sendee}] đã nhận được ${amount} vcoin, bạn còn có ${data.remain} vcoin.`
+      res_text = `[${data.receiver}] đã nhận được ${amount} vcoin, bạn còn có ${data.remain} vcoin.`
     } catch (ex) {
       res_type = 'err'
       res_text = ex.body?.message
@@ -37,20 +37,20 @@
 <form action={action_url} method="POST" on:submit|preventDefault={submit}>
   <form-group>
     <form-field>
-      <label class="form-label" for="sendee">Người nhận</label>
+      <label class="form-label" for="receiver">Người nhận</label>
       <input
         type="text"
         class="m-input"
-        name="sendee"
+        name="receiver"
         placeholder="Tên tài khoản hoặc hòm thư"
         required
-        bind:value={sendee} />
+        bind:value={receiver} />
     </form-field>
   </form-group>
 
   <form-group>
     <form-field>
-      <label class="form-label" for="sendee">Lý do gửi tặng</label>
+      <label class="form-label" for="receiver">Lý do gửi tặng</label>
       <textarea
         class="m-input"
         name="reason"

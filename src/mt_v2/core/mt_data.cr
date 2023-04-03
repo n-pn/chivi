@@ -56,6 +56,11 @@ class M2::MtData
     node
   end
 
+  def each_tail_node(tail_idx : Int32, tag : Symbol, &)
+    return unless tail_nodes = @all_nodes[tail_idx]?.try(&.[tag]?)
+    tail_nodes.each_value { |node| yield node }
+  end
+
   def each(&)
     idx = 0
 

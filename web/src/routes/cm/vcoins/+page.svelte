@@ -19,8 +19,8 @@
 
     <tbody>
       {#each data.xlogs as xlog}
-        {@const sender = data.users[xlog.sender]}
-        {@const sendee = data.users[xlog.sendee]}
+        {@const sender = data.users[xlog.sender_id]}
+        {@const sendee = data.users[xlog.receiver_id]}
         <tr>
           <td>{xlog.id}</td>
           <td><cv-user data-privi={sender.privi}>{sender.uname}</cv-user></td>

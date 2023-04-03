@@ -37,66 +37,6 @@ class CV::UsercpCtrl < CV::BaseCtrl
     render :forbidden, "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
   end
 
-  struct VcoinForm
-    include JSON::Serializable
-
-    getter sendee : String
-    getter reason : String
-    getter amount : Float64
-
-    getter? as_admin : Bool = false
-
-    def after_initialize
-      @sendee = @sendee.strip
-      @amount = @amount.round(2)
-      @amount = 0.1 if @amount < 0.1
-    end
-  end
-
-  @[AC::Route::PUT("/send-vcoin", body: :form)]
-  def send_vcoin(form : VcoinForm)
-    unless sendee = Viuser.find_any(form.sendee)
-      raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại")
-    end
-
-    if _viuser.privi > 3 && form.as_admin?
-      sender = Viuser.load!(-1) # sender is admin
-    elsif _viuser.vcoin >= form.amount
-      sender = _viuser
-    else
-      raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
-    end
-
-    Clear::SQL.transaction do
-      sender.update(vcoin: sender.vcoin - form.amount)
-      sendee.update(vcoin: sendee.vcoin + form.amount)
-
-      VcoinXlog.new(sender: sender.id, sendee: sendee.id, amount: form.amount, reason: form.reason).create!
-
-      sender.cache!
-      sendee.cache!
-
-      spawn send_vcoin_receive_email(sender, sendee, form.amount, form.reason)
-    end
-
-    spawn CtrlUtil.log_user_action("send-vcoin", form, _viuser.uname)
-    render json: {sendee: sendee.uname, remain: _viuser.vcoin}
-  end
-
-  private def send_vcoin_receive_email(sender : Viuser, sendee : Viuser, amount : Float64, reason : String)
-    MailUtil.send(to: sendee.email, name: sendee.uname) do |mail|
-      mail.subject "Chivi: Bạn nhận được #{amount} vcoin"
-
-      mail.message_html <<-HTML
-        <h2>Thông báo từ Chivi:</h2>
-        <p>Bạn nhận được: <strong>#{amount}</strong> vcoin từ <strong>#{sender.uname}</strong>.</p>
-        <p>Chú thích của người tặng: #{reason}</p>
-        <p>Bạn có thể vào <a href="https://chivi.app/hd/tat-ca-ve-vcoin">Tất cả về Vcoin</a>
-          để tìm hiểu các cách dùng của vcoin.</p>
-      HTML
-    end
-  end
-
   ##################
 
   record ConfigForm, wtheme : String = "light" do

@@ -2,8 +2,8 @@ declare namespace CV {
   interface VcoinXlog {
     id: number
 
-    sender: number
-    sendee: number
+    sender_id: number
+    receiver_id: number
 
     amount: number
     reason: string

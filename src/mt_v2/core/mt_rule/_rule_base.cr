@@ -1,5 +1,7 @@
 require "../mt_data"
 
+# reference: https://www.cs.brandeis.edu/~clp/ctb/parseguide.3rd.ch.pdf
+
 module M2::MtRule
   extend self
 

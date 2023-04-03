@@ -128,7 +128,7 @@ class M2::MtPair
   getter head : MtNode
   getter tail : MtNode
 
-  def initialize(@head, @tail, @ptag = tail.ptag, rank = 3, @flip = false)
+  def initialize(@head, @tail, @ptag = tail.ptag, @prop = tail.prop, rank = 3, @flip = false)
     @size = @head.size &+ @tail.size
     @cost = MtNode.rule_cost(@head.cost &+ @tail.cost, @size, rank)
   end

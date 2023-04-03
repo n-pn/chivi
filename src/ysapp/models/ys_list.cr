@@ -1,5 +1,6 @@
 require "./ys_user"
 require "./ys_crit"
+require "../_raw/raw_ys_list"
 
 class YS::Yslist
   include Clear::Model
@@ -102,6 +103,13 @@ class YS::Yslist
       id: gen_id(y_lid),
 
       y_lid:      y_lid,
+      created_at: created_at,
+    })
+  end
+
+  def self.upsert!(raw_list : RawYsList)
+    inp_list = find({y_lid: raw_list.y_lid}) || new({
+      y_lid:      raw_list.y_lid,
       created_at: created_at,
     })
   end

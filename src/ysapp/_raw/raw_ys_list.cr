@@ -3,7 +3,8 @@ require "./_common"
 class YS::RawYsList
   include JSON::Serializable
 
-  getter _id : String = ""
+  @[JSON::Field(key: "_id")]
+  getter y_lid : String = ""
 
   @[JSON::Field(key: "booklistId")]
   getter list_id : String = ""
@@ -41,24 +42,24 @@ class YS::RawYsList
   @[JSON::Field(key: "praiseAt")]
   getter praised_at : Time
 
-  def db_values(rtime : Int64 = Time.utc.to_unix)
-    {
-      @_id.empty? ? @list_id : @_id, # uuid
-      @user.try(&.id) || 0,          # user_id
+  # def db_values(rtime : Int64 = Time.utc.to_unix)
+  #   {
+  #     @_id.empty? ? @list_id : @_id, # uuid
+  #     @user.try(&.id) || 0,          # user_id
 
-      @zname,
-      @zdesc,
-      @klass,
+  #     @zname,
+  #     @zdesc,
+  #     @klass,
 
-      @view_count,
-      @like_count,
-      @star_count,
-      @book_total,
+  #     @view_count,
+  #     @like_count,
+  #     @star_count,
+  #     @book_total,
 
-      @updated_at.to_unix, # updated at
-      rtime,               # crawled at
-    }
-  end
+  #     @updated_at.to_unix, # updated at
+  #     rtime,               # crawled at
+  #   }
+  # end
 
   ###################
 
