@@ -66,7 +66,7 @@ class YS::CrawlYslistByUser < CrawlTask
     # fresh = (Time.utc - min_ttl).to_unix
 
     sql = <<-SQL
-      select y_uid, list_total from ysusers
+      select yu_id, list_total from ysusers
       order by (like_count + star_count) desc
     SQL
 

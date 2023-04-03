@@ -2,7 +2,7 @@
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE ysrepls (
   id bigserial PRIMARY KEY,
-  y_rid text NOT NULL,
+  yr_id text NOT NULL,
   --
   ysuser_id bigint NOT NULL DEFAULT 0,
   yscrit_id bigint NOT NULL DEFAULT 0,
@@ -19,7 +19,7 @@ CREATE TABLE ysrepls (
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX ysrepl_y_ridx ON ysrepls (y_rid);
+CREATE UNIQUE INDEX ysrepl_uniq_idx ON ysrepls (yr_id);
 
 CREATE INDEX ysrepl_ysuser_idx ON ysrepls (ysuser_id);
 

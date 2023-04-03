@@ -9,12 +9,12 @@ class YS::Ysrepl
   self.table = "ysrepls"
 
   primary_key
-  column y_rid : String # hexstring from yousuu
+  column yr_id : String # hexstring from yousuu
 
   belongs_to ysuser : Ysuser
-  column y_uid : Int32 = 0
+  column yu_id : Int32 = 0
 
-  column to_y_uid : Int32 = 0 # to ysuser id
+  column to_yu_id : Int32 = 0 # to ysuser id
 
   column yscrit_id : Int64 = 0_i64
   column yc_id : String = ""
@@ -56,12 +56,12 @@ class YS::Ysrepl
   TXT_DIR = "var/ysapp/repls-txt"
 
   def save_ztext_copy(ztext : String) : Nil
-    y_rid = self.y_rid
+    yr_id = self.yr_id
 
-    dir_path = "#{TXT_DIR}/#{y_rid[0..3]}-zh"
+    dir_path = "#{TXT_DIR}/#{yr_id[0..3]}-zh"
     Dir.mkdir_p(dir_path)
 
-    file_path = File.join(dir_path, "#{y_rid}.txt")
+    file_path = File.join(dir_path, "#{yr_id}.txt")
     File.write(file_path, ztext)
 
     Log.debug { "saved repl ztext to #{file_path}" }
@@ -82,16 +82,16 @@ class YS::Ysrepl
 
   ##############
 
-  def self.load(y_rid : String)
-    find({y_rid: y_rid}) || new({y_rid: y_rid})
+  def self.load(yr_id : String)
+    find({yr_id: yr_id}) || new({yr_id: yr_id})
   end
 
   def self.bulk_upsert(raw_repls : Array(RawYsRepl), save_text : Bool = true)
     raw_repls.each do |raw_repl|
-      out_repl = self.load(raw_repl.y_rid)
+      out_repl = self.load(raw_repl.yr_id)
 
       out_repl.yc_id = raw_repl.yc_id
-      out_repl.y_uid = raw_repl.user.id
+      out_repl.yu_id = raw_repl.user.id
 
       out_crit = Yscrit.load(raw_repl.yc_id)
       out_user = Ysuser.upsert!(raw_repl.user)
@@ -100,7 +100,7 @@ class YS::Ysrepl
       out_repl.ysuser_id = out_user.id # TODO: remove this
 
       if to_user = raw_repl.to_user
-        out_repl.to_y_uid = to_user.id
+        out_repl.to_yu_id = to_user.id
       end
 
       if save_text || out_repl.ztext.empty?

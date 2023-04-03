@@ -15,14 +15,14 @@ class YS::CrawlYscritByUser < CrawlTask
     Log.error { ex.message }
   end
 
-  def self.gen_link(u_id : Int32, page : Int32 = 1)
-    "https://api.yousuu.com/api/user/#{u_id}/comment?page=#{page}"
+  def self.gen_link(yu_id : Int32, page : Int32 = 1)
+    "https://api.yousuu.com/api/user/#{yu_id}/comment?page=#{page}"
   end
 
   DIR = "var/ysraw/crits-by-user"
 
-  def self.gen_path(u_id : Int32, page : Int32 = 1)
-    "#{DIR}/#{u_id}/#{page}.latest.json.zst"
+  def self.gen_path(yu_id : Int32, page : Int32 = 1)
+    "#{DIR}/#{yu_id}/#{page}.latest.json.zst"
   end
 
   ################
@@ -67,7 +67,7 @@ class YS::CrawlYscritByUser < CrawlTask
     output = [] of QueueInit
 
     sql = <<-SQL
-      select y_uid, crit_total from ysusers
+      select yu_id, crit_total from ysusers
       order by (like_count + star_count) desc
     SQL
 
@@ -86,8 +86,8 @@ class YS::CrawlYscritByUser < CrawlTask
   def self.seed_crawled!(all : Bool = false)
     u_ids = Dir.children(DIR)
 
-    u_ids.each do |y_uid|
-      files = Dir.glob("#{DIR}/#{y_uid}/*.zst")
+    u_ids.each do |yu_id|
+      files = Dir.glob("#{DIR}/#{yu_id}/*.zst")
       files.select!(&.ends_with?("latest.json.zst")) unless all
 
       files.each do |file|

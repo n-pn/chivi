@@ -13,7 +13,7 @@
 
 #   def initialize(crmode : CrMode, @reseed = false, refresh_proxy = fase)
 #     @http = HttpClient.new(refresh_proxy)
-#     @data = YS::Ysuser.query.where("y_uid > 0 AND list_count < list_total").to_a
+#     @data = YS::Ysuser.query.where("yu_id > 0 AND list_count < list_total").to_a
 
 #     case crmode
 #     when .rand? then @data.shuffle!
@@ -58,12 +58,12 @@
 #   end
 
 #   def do_crawl!(ysuser : YS::Ysuser, page = 0, label = "-/-") : YS::Ysuser?
-#     y_uid = ysuser.origin_id
-#     ofile = "#{DIR}/#{y_uid}/#{page}.json"
+#     yu_id = ysuser.origin_id
+#     ofile = "#{DIR}/#{yu_id}/#{page}.json"
 
 #     if FileUtil.fresh?(ofile, Time.utc - 2.days - 6.hours * page)
 #       return unless @reseed # skip seeding old data
-#     elsif !@http.save!(api_url(y_uid, page), ofile, label)
+#     elsif !@http.save!(api_url(yu_id, page), ofile, label)
 #       return ysuser
 #     end
 
@@ -79,8 +79,8 @@
 #     Log.info { "yslists: #{YS::Yslist.query.count}".colorize.cyan }
 #   end
 
-#   def api_url(y_uid : Int32, page = 1)
-#     "https://api.yousuu.com/api/user/#{y_uid}/booklistDetail?page=#{page}&t=#{Time.utc.to_unix_ms}"
+#   def api_url(yu_id : Int32, page = 1)
+#     "https://api.yousuu.com/api/user/#{yu_id}/booklistDetail?page=#{page}&t=#{Time.utc.to_unix_ms}"
 #   end
 
 #   #####################

@@ -48,10 +48,10 @@ def seed_page(json : String, seeded : Set(String), repl_total : Int32)
   data = YS::RawCritReplies.from_json(json)
   repl_total = data.total if repl_total < data.total
 
-  repls = data.repls.reject!(&.y_rid.in?(seeded))
+  repls = data.repls.reject!(&.yr_id.in?(seeded))
   YS::Ysrepl.bulk_upsert(repls)
 
-  repls.each { |repl| seeded << repl.y_rid }
+  repls.each { |repl| seeded << repl.yr_id }
   {seeded, repl_total}
 rescue error
   puts error

@@ -6,7 +6,7 @@ class YS::Ysuser
   self.table = "ysusers"
 
   primary_key type: :serial
-  column y_uid : Int32 # origin yousuu id
+  column yu_id : Int32 # origin yousuu id
 
   column zname : String = ""
   column vname : String = ""
@@ -67,67 +67,23 @@ class YS::Ysuser
     self.list_total = value if value > self.list_total
   end
 
-  # def self.upsert_sql(fields : Enumerable(String))
-  #   String.build do |stmt|
-  #     stmt << "insert into ysusers ("
-  #     fields.join(stmt, ", ") { |f, io| io << f }
-  #     stmt << ") values ("
-  #     (1..fields.size).join(stmt, ", ") { |ii, io| io << '$' << ii }
-  #     stmt << ") on conflict (y_uid) do update set "
-  #     update_fields = fields.reject(&.== "y_uid")
-  #     update_fields.join(stmt, ", ") { |f, io| io << f << " = excluded." << f }
-  #     stmt << " where ysusers.y_uid = excluded.y_uid"
-  #   end
-  # end
-
-  # def self.update_sql(fields : Enumerable(String))
-  #   String.build do |stmt|
-  #     stmt << "update ysusers set "
-
-  #     fields.each.with_index(1).join(stmt, ", ") do |(field, index), io|
-  #       io << field << " = $" << index
-  #     end
-
-  #     stmt << " where y_uid = $" << fields.size + 1
-  #   end
-  # end
-
-  # def self.upsert_info_from_raw_data(data : RawYsUser, rtime : Int64)
-  #   upsert_sql = upsert_sql(RawYsUser::DB_FIELDS)
-  #   PG_DB.exec upsert_sql, *data.db_values(rtime)
-  #   data.user.id
-  # end
-
-  # def self.update_stats_from_raw_data(data : RawBookComments, rtime : Int64)
-  #   return unless data.total > 0
-
-  #   user_stats_update_sql = update_sql({"crit_total", "crit_rtime"})
-  #   user_stats_update_sql += " and crit_total <= $1"
-
-  #   y_uid = data.comments.first.user._id
-
-  #   PG_DB.exec user_stats_update_sql, data.total, rtime, y_uid
-
-  #   data.total
-  # end
-
   ###############
 
-  def self.load(y_uid : Int32)
-    find({y_uid: y_uid}) || new({y_uid: y_uid})
+  def self.load(yu_id : Int32)
+    find({yu_id: yu_id}) || new({yu_id: yu_id})
   end
 
   def self.upsert!(raw_user : EmbedUser)
-    find({y_uid: raw_user.id}) || begin
-      entry = new({y_uid: raw_user.id})
+    find({yu_id: raw_user.id}) || begin
+      entry = new({yu_id: raw_user.id})
       entry.set_data(raw_user)
       entry.tap(&.save!)
     end
   end
 
-  def self.upsert!(y_uid : Int32, zname : String)
-    find({y_uid: y_uid}) || begin
-      entry = new({y_uid: y_uid, zname: zname}).tap(&.fix_name)
+  def self.upsert!(yu_id : Int32, zname : String)
+    find({yu_id: yu_id}) || begin
+      entry = new({yu_id: yu_id, zname: zname}).tap(&.fix_name)
       entry.tap(&.save!)
     end
   end

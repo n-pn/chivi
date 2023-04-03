@@ -23,8 +23,8 @@ def seed_crit_by_user(path : String)
 end
 
 DIR = "var/ysraw/crits-by-user"
-Dir.children(DIR).each do |y_uid|
-  files = Dir.glob("#{DIR}/#{y_uid}/*.zst")
+Dir.children(DIR).each do |yu_id|
+  files = Dir.glob("#{DIR}/#{yu_id}/*.zst")
   files.select!(&.ends_with?("latest.json.zst")) unless ARGV.includes?("--all")
   files.sort_by! { |x| File.basename(x).split('.', 2).first.to_i? || 0 }
 

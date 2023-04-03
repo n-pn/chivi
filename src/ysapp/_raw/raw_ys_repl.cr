@@ -4,7 +4,7 @@ class YS::RawYsRepl
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
-  getter y_rid : String
+  getter yr_id : String
 
   @[JSON::Field(key: "fromId")]
   getter user : EmbedUser

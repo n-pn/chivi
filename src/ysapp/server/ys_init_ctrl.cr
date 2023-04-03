@@ -80,9 +80,9 @@ class YS::InitCtrl < AC::Base
     render text: data.books.size
   end
 
-  @[AC::Route::POST("/lists/by_user/:y_uid", body: :json)]
-  def lists_by_user(json : RawListEntries, y_uid : Int32, rtime : Int64 = Time.utc.to_unix)
-    yuser = Ysuser.load(y_uid)
+  @[AC::Route::POST("/lists/by_user/:yu_id", body: :json)]
+  def lists_by_user(json : RawListEntries, yu_id : Int32, rtime : Int64 = Time.utc.to_unix)
+    yuser = Ysuser.load(yu_id)
 
     yuser.list_total = json.total if yuser.list_total < json.total
     yuser.list_rtime = rtime

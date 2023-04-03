@@ -1,7 +1,7 @@
 -- +micrate Up
 CREATE TABLE ysusers (
   id serial primary key,
-  y_uid int4 not null,
+  yu_id int4 not null,
 
   zname text not null,
   vname text not null,
@@ -26,7 +26,7 @@ CREATE TABLE ysusers (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX ysuser_y_uid_idx ON ysusers (y_uid);
+CREATE UNIQUE INDEX ysuser_yu_id_idx ON ysusers (yu_id);
 CREATE INDEX ysuser_uname_idx ON ysusers (zname);
 
 -- +micrate Down

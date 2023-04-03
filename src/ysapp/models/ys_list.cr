@@ -10,7 +10,7 @@ class YS::Yslist
   column yl_id : String = ""
 
   column ysuser_id : Int32 = 0
-  column y_uid : Int32 = 0
+  column yu_id : Int32 = 0
 
   column zname : String = "" # original list name
   column vname : String = "" # translated name
@@ -31,10 +31,9 @@ class YS::Yslist
   column book_rtime : Int64 = 0 # list changed at by seconds from epoch
 
   column _bump : Int32 = 0 # mapped from raw yousuu praiseAt column
-  column _sort : Int32 = 0 # sort list by custom algorithm
 
-  column book_count : Int32 = 0
   column book_total : Int32 = 0
+  column book_count : Int32 = 0
 
   column like_count : Int32 = 0
   column view_count : Int32 = 0
@@ -79,12 +78,8 @@ class YS::Yslist
     self.vdesc = TranUtil.qtran(zdesc, -5, "txt") || ""
   end
 
-  def fix_sort!
-    self._sort = self.book_total &* (self.like_count &+ self.star_count &+ 1) &+ self.view_count
-  end
-
   def set_user_id(user : EmbedUser, force : Bool = false)
-    self.y_uid = user.id
+    self.yu_id = user.id
     # TODO: remove ysuser_id
     return unless force || self.ysuser_id == 0
     self.ysuser_id = Ysuser.upsert!(user).id
@@ -139,7 +134,6 @@ class YS::Yslist
     end
 
     self.updated_at = raw_data.updated_at
-    self.fix_sort!
   end
 
   def self.upsert!(raw_data : RawYsList, rtime : Int64 = Time.utc.to_unix)

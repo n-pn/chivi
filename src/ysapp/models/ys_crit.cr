@@ -19,7 +19,7 @@ class YS::Yscrit
   column ysuser_id : Int32 = 0
   column yslist_id : Int32 = 0
 
-  column y_uid : Int32 = 0
+  column yu_id : Int32 = 0
   column yl_id : String = ""
 
   column ztext : String
@@ -158,7 +158,7 @@ class YS::Yscrit
   end
 
   def set_user_id(user : EmbedUser, force : Bool = false)
-    self.y_uid = user.id
+    self.yu_id = user.id
     # TODO: remove  ysuser_id
     return unless force || self.ysuser_id == 0
     self.ysuser_id = Ysuser.upsert!(user).id

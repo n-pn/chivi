@@ -12,15 +12,15 @@ class YS::CrawlYsuser < CrawlTask
     puts ex
   end
 
-  def self.gen_link(u_id : Int32)
-    "https://api.yousuu.com/api/user/#{u_id}/info"
+  def self.gen_link(yu_id : Int32)
+    "https://api.yousuu.com/api/user/#{yu_id}/info"
   end
 
   DIR = "var/ysraw/users"
   Dir.mkdir_p(DIR)
 
-  def self.gen_path(u_id : Int32)
-    "#{DIR}/#{u_id}.latest.json.zst"
+  def self.gen_path(yu_id : Int32)
+    "#{DIR}/#{yu_id}.latest.json.zst"
   end
 
   def self.run!(argv = ARGV)
@@ -33,20 +33,20 @@ class YS::CrawlYsuser < CrawlTask
     fresh = (Time.utc - 1.day).to_unix
 
     sql = <<-SQL
-      select y_uid, info_rtime from ysusers
+      select yu_id, info_rtime from ysusers
       order by (like_count + star_count) desc
     SQL
 
     PG_DB.query_each(sql) do |rs|
-      y_uid, rtime = rs.read(Int32, Int64)
+      yu_id, rtime = rs.read(Int32, Int64)
       fresh -= 60 # add 1 minute
-      u_ids << y_uid if rtime < fresh
+      u_ids << yu_id if rtime < fresh
     end
 
-    u_ids.map_with_index(1) do |u_id, index|
+    u_ids.map_with_index(1) do |yu_id, index|
       Entry.new(
-        link: gen_link(u_id),
-        path: gen_path(u_id),
+        link: gen_link(yu_id),
+        path: gen_path(yu_id),
         name: "#{index}/#{u_ids.size}"
       )
     end
