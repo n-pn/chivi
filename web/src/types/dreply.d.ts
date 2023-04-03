@@ -2,11 +2,9 @@ declare namespace CV {
   interface Cvrepl {
     id: number
 
+    user_id: number
     post_id: number
     repl_id: number
-
-    u_dname: string
-    u_privi: number
 
     ohtml: string
 
@@ -16,14 +14,15 @@ declare namespace CV {
     like_count: number
     repl_count: number
 
-    self_liked?: boolean
-    self_rp_ii?: number
-
     repls: Cvrepl[] = []
   }
 
-  interface Tplist {
-    items: Array<Cvrepl>
+  interface Rplist {
+    repls: Array<Cvrepl>
+
+    users: Record<number, Cvuser>
+    memos: Record<number, Memoir>
+
     pgidx: number
     pgmax: number
   }

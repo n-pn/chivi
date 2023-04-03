@@ -17,7 +17,13 @@
   import CvreplList from '$gui/parts/dboard/CvreplList.svelte'
 
   let cvpost: CV.Cvpost
-  let tplist: CV.Cvrepl[] = []
+  let rplist: CV.Rplist = {
+    repls: [],
+    users: {},
+    memos: {},
+    pgidx: 0,
+    pgmax: 0,
+  }
 
   $: post_api_url = `/_db/topics/${$tplist_data.topic.id}`
   $: list_api_url = make_api_url(cvpost, $tplist_data.query)
@@ -43,7 +49,9 @@
   async function load_tposts(api_url: string) {
     const res = await fetch(api_url)
     if (!res.ok) alert(await res.text())
-    else tplist = (await res.json()) as CV.Cvrepl[]
+    else rplist = await res.json()
+
+    console.log(rplist)
   }
 </script>
 
@@ -52,7 +60,7 @@
     <CvpostFull {cvpost} {on_cvpost_form} />
   </section>
   <section class="posts">
-    <CvreplList {tplist} {cvpost} {on_cvrepl_form} />
+    <CvreplList {rplist} {cvpost} {on_cvrepl_form} />
   </section>
 {:else}
   Chưa chọn chủ đề

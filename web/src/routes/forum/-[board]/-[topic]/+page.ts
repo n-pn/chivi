@@ -7,7 +7,7 @@ export const load: PageLoad = async ({ parent, fetch, url }) => {
   const extras = { post_id: cvpost.id }
   const path = api_path(`/_db/tposts`, null, url.searchParams, extras)
 
-  const tplist = await fetch(path).then((r) => r.json())
+  const rplist: CV.Rplist = await fetch(path).then((r) => r.json())
 
   const _meta = {
     title: 'Diễn đàn: ' + dboard.bname,
@@ -18,5 +18,5 @@ export const load: PageLoad = async ({ parent, fetch, url }) => {
     ],
   }
 
-  return { tplist, _meta }
+  return { rplist, _meta }
 }

@@ -84,26 +84,4 @@ class CV::UsercpCtrl < CV::BaseCtrl
   rescue err
     raise BadRequest.new(err.message)
   end
-
-  ################
-
-  @[AC::Route::GET("/replied")]
-  def replied(pg pg_no : Int32 = 1, lm limit : Int32 = 10)
-    offset = CtrlUtil.offset(pg_no, limit)
-    user_id = _viuser.id
-
-    query = Cvrepl.query.order_by(id: :desc)
-    query.where("state >= 0 AND _viuser_id != ?", user_id)
-    query.where("(repl_viuser_id = ? OR tagged_ids @> ?::bigint[])", user_id, [user_id])
-
-    query.with_cvpost.with_viuser
-    query.limit(limit).offset(offset)
-
-    items = query.to_a
-    memos = UserRepl.glob(user_id, _viuser.privi, items.map(&.id))
-
-    render json: {
-      items: items.map { |x| CvreplView.new(x, full: true, memo: memos[x.id]?) },
-    }
-  end
 end

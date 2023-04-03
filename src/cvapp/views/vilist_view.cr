@@ -42,9 +42,9 @@ struct CV::VilistView
     list
   end
 
-  def self.as_hash(data : Enumerable(Vilist))
+  def self.as_hash(data : Enumerable(Vilist), mode : Mode = :list)
     hash = {} of Int32 => self
-    data.each { |obj| hash[obj.id] = obj }
+    data.each { |obj| hash[obj.id] = new(x, mode: mode) }
     hash
   end
 end

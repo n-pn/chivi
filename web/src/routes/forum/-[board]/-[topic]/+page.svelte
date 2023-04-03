@@ -4,7 +4,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ dboard, cvpost, tplist } = data)
+  $: ({ dboard, cvpost, rplist } = data)
 </script>
 
 <svelte:head>
@@ -15,7 +15,7 @@
 
 <section>
   <h3>Bình luận</h3>
-  <CvreplList {tplist} {cvpost} fluid={true} />
+  <CvreplList {rplist} {cvpost} fluid={true} />
 </section>
 
 <style lang="scss">

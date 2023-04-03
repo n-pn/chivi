@@ -82,13 +82,13 @@ class CV::Ubmemo
     find_or_new(viuser.id, nvinfo.id)
   end
 
-  def self.upsert!(viuser : Viuser, nvinfo : Nvinfo) : self
+  def self.upsert!(viuser : Viuser, nvinfo : Nvinfo, &) : self
     ubmemo = find_or_new(viuser, nvinfo)
     yield ubmemo
     ubmemo.save!
   end
 
-  def self.upsert!(viuser_id : Int64, nvinfo_id : Int64) : self
+  def self.upsert!(viuser_id : Int64, nvinfo_id : Int64, &) : self
     ubmemo = find_or_new(viuser_id, nvinfo_id)
     yield ubmemo
     ubmemo.save!

@@ -5,25 +5,46 @@ class CV::CvreplCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/")]
   def index(sort : String = "-id", post_id : Int64? = nil, uname : String? = nil)
-    query = Cvrepl.query.sort_by(sort)
+    repls = Cvrepl.query.sort_by(sort)
 
-    query.where("cvpost_id = ?", post_id) if post_id
+    repls.where("cvpost_id = ?", post_id) if post_id
 
     if uname
-      query.where("viuser_id = (select id from viusers where uname = ? limit 1)", uname)
+      repls.where("viuser_id = (select id from viusers where uname = ? limit 1)", uname)
     end
 
-    query.with_cvpost
-    query.with_viuser
+    repls.with_cvpost
 
-    items = query.to_a
-    memos = UserRepl.glob(_viuser.id, _viuser.privi, items.map(&.id))
+    render_repls(repls)
+  end
 
-    repls = items.map do |x|
-      CvreplView.new(x, false, memo: memos[x.id]?)
-    end
+  @[AC::Route::GET("/tagged")]
+  def tagged
+    pg_no, limit, offset = _paginate(min: 10)
 
-    render json: repls
+    repls = Cvrepl.query.order_by(id: :desc)
+    repls.where("state >= 0 AND viuser_id != ?", _vu_id)
+    repls.where("(repl_viuser_id = ? OR tagged_ids @> ?::bigint[])", _vu_id, [_vu_id])
+
+    repls.with_cvpost
+    repls.limit(limit).offset(offset)
+
+    render_repls(repls, pg_no)
+  end
+
+  private def render_repls(repls : Enumerable(Cvrepl), pg_no = 1)
+    user_ids = repls.map(&.viuser_id)
+    user_ids << _vu_id if _vu_id >= 0
+
+    users = Viuser.glob(user_ids)
+    memos = Memoir.glob(_vu_id, :dreply, repls.map(&.id.to_i))
+
+    render json: {
+      pgidx: pg_no,
+      repls: DreplyView.as_list(repls),
+      users: ViuserView.as_hash(users),
+      memos: MemoirView.as_hash(memos),
+    }
   end
 
   @[AC::Route::GET("/:repl_id/detail")]
@@ -61,7 +82,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     cvrepl.update_content!(form.input)
     cvpost.bump!(cvrepl.id)
 
-    render json: CvreplView.new(cvrepl)
+    render json: DreplyView.new(cvrepl)
   end
 
   @[AC::Route::PATCH("/:repl_id", body: :form)]
@@ -70,7 +91,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     guard_owner cvrepl.viuser_id, 0, "sửa bình luận"
 
     cvrepl.update_content!(form.input)
-    render json: CvreplView.new(cvrepl)
+    render json: DreplyView.new(cvrepl)
   end
 
   @[AC::Route::DELETE("/:repl_id")]

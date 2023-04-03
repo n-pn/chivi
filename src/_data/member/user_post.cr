@@ -38,13 +38,13 @@ class CV::UserPost
     self.find_or_new(viuser.id, cvpost.id)
   end
 
-  def self.upsert!(viuser : Viuser, cvpost : Cvpost) : self
+  def self.upsert!(viuser : Viuser, cvpost : Cvpost, &) : self
     user_post = find_or_new(viuser, cvpost)
     yield user_post
     user_post.save!
   end
 
-  def self.upsert!(viuser_id : Int64, cvpost_id : Int64) : self
+  def self.upsert!(viuser_id : Int64, cvpost_id : Int64, &) : self
     user_post = find_or_new(viuser_id, cvpost_id)
     yield user_post
     user_post.save!

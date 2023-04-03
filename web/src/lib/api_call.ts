@@ -62,9 +62,6 @@ export const ROUTES = {
   'vicrits.edit': (id: any) => `/_db/crits/${id}/edit`,
   'vicrits.update': (id: any) => `/_db/crits/${id}`,
 
-  // reviews' replies
-  'virepls.index': '/_db/repls',
-
   // yousuu booklists
   'yslists.index': `/_ys/lists`,
   'yslists.show': (id: any) => `/_ys/lists/${id}`,

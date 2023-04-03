@@ -3,11 +3,14 @@
   import CvreplForm from './CvreplForm.svelte'
 
   export let cvpost: CV.Cvpost
-  export let tplist: CV.Cvrepl[]
+  export let rplist: CV.Rplist
 
   export let on_cvrepl_form = (new_repl?: CV.Cvrepl) => {
-    if (new_repl) tplist.unshift(new_repl)
-    tplist = tplist
+    if (new_repl) {
+      rplist.repls ||= []
+      rplist.repls.unshift(new_repl)
+      rplist = rplist
+    }
   }
 
   function build_tree(repls: CV.Cvrepl[]) {
@@ -35,10 +38,12 @@
   <CvreplForm cvpost_id={cvpost.id} on_destroy={on_cvrepl_form} />
 </div>
 
-{#if tplist.length > 0}
+{#if rplist.repls.length > 0}
   <CvreplTree
     {cvpost}
-    repls={build_tree(tplist)}
+    repls={build_tree(rplist.repls)}
+    users={rplist.users}
+    memos={rplist.memos}
     level={0}
     fluid={$$props.fluid} />
 {:else}

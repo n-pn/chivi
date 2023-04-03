@@ -5,27 +5,31 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import CvreplForm from './CvreplForm.svelte'
 
-  export let cvrepl: CV.Cvrepl
+  export let repl: CV.Cvrepl
+
+  export let user: CV.Viuser
+  export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
+
   export let on_focus = false
   export let nest_level = 0
 
   $: _user = $page.data._user
-  $: is_owner = _user.uname == cvrepl.u_dname
+  $: is_owner = _user.uname == user.uname
   $: can_edit = _user.privi > 3 || (is_owner && _user.privi >= 0)
 
   let show_repl = false
 
   async function toggle_like() {
-    const action = cvrepl.self_liked ? 'unlike' : 'like'
-    const api_url = `/_db/!repls/${cvrepl.id}/${action}`
+    const action = memo?.liked > 0 ? 'unlike' : 'like'
+    const api_url = `/_db/memos/repls/${repl.id}/${action}`
     const api_res = await fetch(api_url, { method: 'PUT' })
 
     if (!api_res.ok) {
       alert(await api_res.text())
     } else {
-      const payload = await api_res.json()
-      cvrepl.like_count = payload.like_count
-      cvrepl.self_liked = !cvrepl.self_liked
+      const { like_count, memo_liked } = await api_res.json()
+      repl.like_count = like_count
+      memo.liked = memo_liked
     }
   }
 
@@ -33,33 +37,33 @@
     show_repl = false
     if (!new_repl) return
 
-    cvrepl.repls ||= []
-    cvrepl.repls.unshift(new_repl)
-    cvrepl = cvrepl
+    repl.repls ||= []
+    repl.repls.unshift(new_repl)
+    repl = repl
   }
 </script>
 
 <div
-  id="rp-{cvrepl.id}"
+  id="rp-{repl.id}"
   class="repl nest_{nest_level % 5}"
   class:nested={nest_level > 0}
   class:on_focus>
   <header class="repl-head">
-    <cvrepl-meta>
-      <a class="cv-user" href="/@{cvrepl.u_dname}" data-privi={cvrepl.u_privi}
-        >{cvrepl.u_dname}
+    <repl-meta>
+      <a class="cv-user" href="/@{user.uname}" data-privi={user.privi}
+        >{user.uname}
       </a>
-    </cvrepl-meta>
+    </repl-meta>
 
-    <cvrepl-sep>·</cvrepl-sep>
+    <repl-sep>·</repl-sep>
 
     <span class="meta">
-      {rel_time(cvrepl.ctime)}
-      {#if cvrepl.utime > cvrepl.ctime}*{/if}
+      {rel_time(repl.ctime)}
+      {#if repl.utime > repl.ctime}*{/if}
     </span>
   </header>
 
-  <main class="repl-body m-article">{@html cvrepl.ohtml}</main>
+  <main class="repl-body m-article">{@html repl.ohtml}</main>
 
   <footer class="repl-foot">
     <button
@@ -72,13 +76,13 @@
 
     <button
       class="btn"
-      class:_active={cvrepl.self_liked}
+      class:_active={memo?.liked > 0}
       disabled={_user.privi < 0}
       on:click={toggle_like}>
       <SIcon name="thumb-up" />
       <span>Ưa thích</span>
-      {#if cvrepl.like_count > 0}
-        <span class="badge">{cvrepl.like_count}</span>
+      {#if repl.like_count > 0}
+        <span class="badge">{repl.like_count}</span>
       {/if}
     </button>
   </footer>
@@ -87,8 +91,8 @@
 {#if show_repl}
   <section class="new-repl">
     <CvreplForm
-      cvpost_id={cvrepl.post_id}
-      dtrepl_id={cvrepl.id}
+      cvpost_id={repl.post_id}
+      dtrepl_id={repl.id}
       disabled={_user.privi < 1}
       on_destroy={handle_repl_form} />
   </section>
@@ -161,7 +165,7 @@
     // }
   }
 
-  cvrepl-sep {
+  repl-sep {
     @include flex-ca;
     @include fgcolor(tert);
   }

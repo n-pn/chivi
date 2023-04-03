@@ -26,7 +26,7 @@
 
   async function show_replies() {
     const extra = { crit: crit.id, order: 'ctime' }
-    const path = api_path('virepls.index', null, null, extra)
+    const path = api_path('/_db/virepls', null, null, extra)
     replies = await fetch(path).then((r: Response) => r.json())
     show_repls = true
   }

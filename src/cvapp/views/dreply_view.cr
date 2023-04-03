@@ -1,12 +1,9 @@
 require "./_base_view"
 
-struct CV::CvreplView
+struct CV::DreplyView
   include BaseView
 
-  @memo : UserRepl?
-
-  def initialize(@data : Cvrepl, @full : Bool = false,
-                 @memo = nil)
+  def initialize(@data : Cvrepl, @full : Bool = false)
   end
 
   def to_json(jb : JSON::Builder)
@@ -15,9 +12,7 @@ struct CV::CvreplView
 
       jb.field "post_id", @data.cvpost_id
       jb.field "repl_id", @data.repl_cvrepl_id
-
-      jb.field "u_dname", @data.viuser.uname
-      jb.field "u_privi", @data.viuser.privi
+      jb.field "user_id", @data.viuser_id
 
       jb.field "ohtml", @data.ohtml
 
@@ -29,11 +24,12 @@ struct CV::CvreplView
 
       jb.field "coins", @data.coins
       jb.field "repls", [] of Cvrepl
-
-      if memo = @memo
-        jb.field "self_liked", memo.liked
-        jb.field "self_rp_ii", memo.last_rp_ii
-      end
     }
+  end
+
+  def self.as_list(data : Enumerable(Cvrepl), full = false)
+    list = [] of self
+    data.each { |x| list << new(x, full: full) }
+    list
   end
 end

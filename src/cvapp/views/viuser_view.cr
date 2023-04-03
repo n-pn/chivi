@@ -27,7 +27,7 @@ struct CV::ViuserView
   end
 
   def self.as_hash(data : Enumerable(Viuser))
-    hash = {} of Int64 => self
+    hash = {} of Int32 => self
     data.each { |x| hash[x.id] = new(x, full: false) }
     hash
   end

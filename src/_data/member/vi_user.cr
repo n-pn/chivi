@@ -192,4 +192,8 @@ class CV::Viuser
   def self.find_any(name_or_email : String)
     query.where("uname = ? OR email = ?", name_or_email, name_or_email).first
   end
+
+  def self.glob(user_ids : Array(Int32))
+    self.query.where { id.in? user_ids }
+  end
 end
