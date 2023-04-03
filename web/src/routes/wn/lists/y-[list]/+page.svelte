@@ -73,7 +73,7 @@
 
   <div class="origin">
     <a
-      href="https://www.yousuu.com/booklist/{ylist.y_lid}"
+      href="https://www.yousuu.com/booklist/{ylist.yl_id}"
       rel="noreferrer"
       target="_blank">
       <SIcon name="external-link" />

@@ -13,7 +13,7 @@ class YS::RawYsRepl
   getter to_user : EmbedUser? = nil
 
   @[JSON::Field(key: "bookCommentId")]
-  getter y_cid : String
+  getter yc_id : String
 
   @[JSON::Field(key: "content")]
   getter ztext : String = ""

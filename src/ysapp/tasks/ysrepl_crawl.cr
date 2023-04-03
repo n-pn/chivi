@@ -5,8 +5,8 @@ class YS::CrawlYslistByUser < CrawlTask
   private def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
 
-    y_cid = File.basename File.dirname(entry.path)
-    endpoint = "/_ys/repls/by_crit/#{y_cid}?rtime=#{Time.utc.to_unix}"
+    yc_id = File.basename File.dirname(entry.path)
+    endpoint = "/_ys/repls/by_crit/#{yc_id}?rtime=#{Time.utc.to_unix}"
 
     post_raw_data(endpoint, json)
   rescue ex
@@ -14,14 +14,14 @@ class YS::CrawlYslistByUser < CrawlTask
     Log.error { ex.message }
   end
 
-  def self.gen_link(y_cid : String, page : Int32 = 1)
-    "https://api.yousuu.com/api/comment/#{y_cid}/reply?&page=#{page}"
+  def self.gen_link(yc_id : String, page : Int32 = 1)
+    "https://api.yousuu.com/api/comment/#{yc_id}/reply?&page=#{page}"
   end
 
   DIR = "var/ysraw/repls-by-crit"
 
-  def self.gen_path(y_cid : String, page : Int32 = 1)
-    "#{DIR}/#{y_cid}/#{page}.latest.json.zst"
+  def self.gen_path(yc_id : String, page : Int32 = 1)
+    "#{DIR}/#{yc_id}/#{page}.latest.json.zst"
   end
 
   ################
@@ -38,7 +38,7 @@ class YS::CrawlYslistByUser < CrawlTask
     queue_init = gen_queue_init
     return if queue_init.empty?
 
-    queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.y_cid}") }
+    queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.yc_id}") }
 
     max_pages = queue_init.max_of(&.pgmax)
     crawler = new(false)
@@ -48,8 +48,8 @@ class YS::CrawlYslistByUser < CrawlTask
 
       queue = queue_init.map_with_index(1) do |init, index|
         Entry.new(
-          link: gen_link(init.y_cid, pg_no),
-          path: gen_path(init.y_cid, pg_no),
+          link: gen_link(init.yc_id, pg_no),
+          path: gen_path(init.yc_id, pg_no),
           name: "#{index}/#{queue_init.size}"
         )
       end
@@ -60,7 +60,7 @@ class YS::CrawlYslistByUser < CrawlTask
     end
   end
 
-  record QueueInit, y_cid : String, pgmax : Int32
+  record QueueInit, yc_id : String, pgmax : Int32
 
   def self.gen_queue_init(min_ttl = 1.day)
     output = [] of QueueInit
@@ -75,7 +75,7 @@ class YS::CrawlYslistByUser < CrawlTask
     SQL
 
     sql = <<-SQL
-      select y_cid, repl_total from yscrits
+      select yc_id, repl_total from yscrits
       where repl_total > repl_count
       order by repl_total desc
     SQL

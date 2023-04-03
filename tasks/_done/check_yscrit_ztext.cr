@@ -20,14 +20,14 @@ require "../../src/ysapp/models/*"
 
 # 1.upto(max_ysbook_id) do |book_id|
 #   query = YS::Yscrit.query.where("ysbook_id = ?", book_id)
-#   crits = query.select("id", "y_cid", "ztext").to_a
+#   crits = query.select("id", "yc_id_cid", "ztext").to_a
 #   next if crits.empty?
 
 #   in_zip = Set(String).new saved_crit_list(book_id)
 
 #   crits.each do |crit|
 #     blank = crit.ztext == "$$$" || crit.ztext.empty?
-#     saved = in_zip.includes?(crit.y_cid)
+#     saved = in_zip.includes?(crit.yc__dcid)
 
 #     if saved
 #       restored += 1 if blank

@@ -1,5 +1,6 @@
 require "./_ys_ctrl_base"
 require "../../_util/text_util"
+require "../_raw/raw_ys_list"
 
 class YS::ListCtrl < AC::Base
   base "/_ys"
@@ -72,5 +73,11 @@ class YS::ListCtrl < AC::Base
     }
   rescue ex
     render :not_found, text: "Thư đơn không tồn tại"
+  end
+
+  @[AC::Route::POST("/lists/info", body: :data)]
+  def upsert(data : RawYsList, rtime : Int64 = Time.utc.to_unix)
+    yslist = Yslist.upsert!(data, rtime: rtime)
+    render text: yslist.id
   end
 end

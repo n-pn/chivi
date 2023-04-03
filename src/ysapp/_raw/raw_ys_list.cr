@@ -4,7 +4,7 @@ class YS::RawYsList
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
-  getter y_lid : String = ""
+  getter yl_id : String = ""
 
   @[JSON::Field(key: "booklistId")]
   getter list_id : String = ""

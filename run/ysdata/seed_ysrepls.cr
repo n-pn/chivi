@@ -9,15 +9,15 @@ require "../../src/ysapp/models/ys_repl"
 
 DIR = "var/ysraw/repls"
 
-Dir.children(DIR).each do |y_cid|
-  seed_dir(y_cid)
+Dir.children(DIR).each do |yc_id|
+  seed_dir(yc_id)
 end
 
-UPDATE_STMT = "update yscrits set repl_total = $1 where y_cid = $2 and repl_total < $1"
+UPDATE_STMT = "update yscrits set repl_total = $1 where yc_id = $2 and repl_total < $1"
 
-def seed_dir(y_cid : String)
-  files = Dir.glob("#{DIR}/#{y_cid}/*.json.zst")
-  puts "#{y_cid}: #{files.size} files"
+def seed_dir(yc_id : String)
+  files = Dir.glob("#{DIR}/#{yc_id}/*.json.zst")
+  puts "#{yc_id}: #{files.size} files"
 
   files.sort_by! do |file|
     page = File.basename(file).split('.').first.to_i
@@ -37,7 +37,7 @@ def seed_dir(y_cid : String)
   end
 
   # update repl_total counter
-  PG_DB.exec UPDATE_STMT, repl_total, y_cid
+  PG_DB.exec UPDATE_STMT, repl_total, yc_id
   PG_DB.exec "commit"
 
   puts "- total: #{repl_total}, seeded: #{seeded.size}"

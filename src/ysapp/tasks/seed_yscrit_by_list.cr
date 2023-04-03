@@ -7,13 +7,13 @@ def seed_crit_by_list(path : String)
   json = read_zstd(path)
   return unless json.includes?("data")
 
-  y_lid = File.basename(File.dirname(path))
+  yl_id = File.basename(File.dirname(path))
   rtime = File.info(path).modification_time.to_unix
 
   data = YS::RawListEntries.from_json(json)
   return if data.books.empty?
 
-  yslist = YS::Yslist.load(y_lid)
+  yslist = YS::Yslist.load(yl_id)
 
   yslist.book_total = data.total if yslist.book_total < data.total
   yslist.book_rtime = rtime

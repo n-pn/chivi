@@ -12,21 +12,6 @@ class YS::YslistCrawl < CrawlTask
   #     YS::Ysuser.upsert!(user.name, user._id)
   #   end
 
-  #   yslist.set_name(self.zname)
-  #   yslist.set_desc(self.zdesc)
-
-  #   yslist.klass = klass
-  #   yslist.stime = stime
-  #   yslist.utime = self.updated_at.to_unix
-
-  #   yslist.book_total = self.book_total if self.book_total > yslist.book_total
-  #   yslist.like_count = self.like_count if self.like_count > yslist.like_count
-
-  #   yslist.view_count = self.view_count if self.view_count > yslist.view_count
-  #   yslist.star_count = self.star_count if self.star_count > yslist.star_count
-
-  #   yslist.fix_sort!
-  #   yslist.save!
   # rescue err
   #   Log.error { err.inspect_with_backtrace.colorize.red }
   # end
@@ -66,7 +51,7 @@ class YS::YslistCrawl < CrawlTask
   def self.gen_queue : Array(Entry)
     # fresh = Time.utc - ttl
 
-    stmt = "select y_lid from yslists"
+    stmt = "select yl_id from yslists"
     uuids = PG_DB.query_all(stmt, as: String)
 
     uuids.map_with_index do |uuid, index|

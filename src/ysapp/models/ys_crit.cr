@@ -11,7 +11,7 @@ class YS::Yscrit
   self.table = "yscrits"
 
   primary_key
-  column y_cid : String = ""
+  column yc_id : String = ""
 
   column nvinfo_id : Int32 = 0
   column ysbook_id : Int32 = 0
@@ -20,10 +20,12 @@ class YS::Yscrit
   column yslist_id : Int32 = 0
 
   column y_uid : Int32 = 0
-  column y_lid : String = ""
+  column yl_id : String = ""
 
-  column stars : Int32 = 3  # voting 1 2 3 4 5 stars
-  column b_len : Int32 = -1 # body size (real data is stored in a different location)
+  column ztext : String
+  column vhtml : String
+
+  column stars : Int32 = 3 # voting 1 2 3 4 5 stars
 
   column ztags : Array(String) = [] of String
   column vtags : Array(String) = [] of String
@@ -49,14 +51,11 @@ class YS::Yscrit
     end
   end
 
-  getter ztext : String { load_ztext_from_disk }
-  getter vhtml : String { load_vhtml_from_disk }
-
   ZIP_DIR = "var/ysapp/crits-zip"
   TXT_DIR = "var/ysapp/crits-txt"
 
   private def group_by
-    self.y_cid[0..3]
+    self.yc_id[0..3]
   end
 
   def zip_path(type = "zh")
@@ -68,18 +67,16 @@ class YS::Yscrit
   end
 
   def filename(ext = "txt")
-    "#{self.y_cid}.#{ext}"
+    "#{self.yc_id}.#{ext}"
   end
 
-  def load_ztext_from_disk : String
-    # return "$$$" if self.b_len == 0
-    YsUtil.read_zip(self.zip_path("zh"), filename("txt")) { "$$$" }
-  end
+  def fix_vhtml(ztext = self.ztext, persist : Bool = false) : Nil
+    return if ztext.empty?
 
-  def load_vhtml_from_disk : String
-    load_htm_from_disk("vi", persist: true) do |ztext|
-      TranUtil.qtran(ztext, self.nvinfo_id, "txt")
-    end
+    vtext = TranUtil.qtran(ztext, self.nvinfo_id, "txt") || "$$$"
+    self.vhtml = "<p>#{vtext.gsub('\n', "</p><p>")}</p>"
+
+    self.save! if persist
   end
 
   def load_btran_from_disk : String
@@ -92,9 +89,9 @@ class YS::Yscrit
 
   private def load_htm_from_disk(type : String, persist : Bool = true, &)
     YsUtil.read_zip(self.zip_path(type), filename("htm")) do
-      ztext = self.load_ztext_from_disk
+      ztext = self.ztext
 
-      if ztext != "$$$" && (vtext = yield ztext)
+      if !ztext.empty? && (vtext = yield ztext)
         html = "<p>#{vtext.gsub('\n', "</p><p>")}</p>"
       else
         html = "<p>$$$</p>"
@@ -108,7 +105,7 @@ class YS::Yscrit
       html
     end
   rescue err
-    Log.error(exception: err) { "error loading #{type} html for #{y_cid} of #{ysbook_id}" }
+    Log.error(exception: err) { "error loading #{type} html for #{yc_id} of #{ysbook_id}" }
     "<p>$$$</p>"
   end
 
@@ -134,9 +131,10 @@ class YS::Yscrit
 
   def set_text(ztext : String, force : Bool = false)
     return if ztext == "请登录查看评论内容" || ztext.blank?
+    ztext = ztext.tr("\u0000", "\n").lines.map(&.strip).reject(&.empty?).join('\n')
 
-    self.b_len = ztext.size
-    self.save_data_to_disk(ztext, type: "zh", ext: "txt")
+    self.ztext = ztext
+    self.fix_vhtml(ztext) if force || self.vhtml.empty?
   end
 
   def fix_vtags!(ztags = self.ztags)
@@ -147,10 +145,6 @@ class YS::Yscrit
     self.vtags = output.split('\n', remove_empty: true)
   end
 
-  # def fix_vhtml(ztext : String, dname = self.nvinfo.dname)
-  #   self.vhtml = CV::BookUtil.cv_lines(ztext, dname, mode: :html)
-  # end
-
   def set_book_id(y_bid : Int32, force : Bool = false)
     self.ysbook_id = y_bid
 
@@ -160,7 +154,7 @@ class YS::Yscrit
 
   def set_list_id(yslist : Yslist)
     self.yslist_id = yslist.id
-    self.y_lid = yslist.y_lid
+    self.yl_id = yslist.yl_id
   end
 
   def set_user_id(user : EmbedUser, force : Bool = false)
@@ -180,19 +174,19 @@ class YS::Yscrit
 
   ###################
 
-  def self.gen_id(y_cid : String)
-    y_cid[12..].to_i64(base: 16)
+  def self.gen_id(yc_id : String)
+    yc_id[12..].to_i64(base: 16)
   end
 
-  def self.load(y_cid : String)
-    find({y_cid: y_cid}) || new({id: gen_id(y_cid), y_cid: y_cid})
+  def self.load(yc_id : String)
+    find({yc_id: yc_id}) || new({id: gen_id(yc_id), yc_id: yc_id})
   end
 
   ####
 
   def self.bulk_upsert(raw_crits : Array(RawYsCrit), yslist : Yslist? = nil, save_text : Bool = true)
     raw_crits.each do |raw_crit|
-      out_crit = self.load(raw_crit.y_cid)
+      out_crit = self.load(raw_crit.yc_id)
 
       out_crit.set_book_id(raw_crit.book.id)
       out_crit.set_user_id(raw_crit.user)

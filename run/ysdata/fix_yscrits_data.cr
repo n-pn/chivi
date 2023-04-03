@@ -10,9 +10,9 @@ at_exit { PG_DB.close }
 # File.each_line("var/ysraw/crit_users.tsv") do |line|
 #   cols = line.split('\t')
 #   next unless cols.size > 1
-#   y_cid, y_uid = cols
+#   yc_id, y_uid = cols
 
-#   PG_DB.exec "update yscrits set y_uid = $1 where y_cid = $2", y_uid.to_i, y_cid
+#   PG_DB.exec "update yscrits set y_uid = $1 where yc_id = $2", y_uid.to_i, yc_id
 # end
 
 # PG_DB.exec "commit"

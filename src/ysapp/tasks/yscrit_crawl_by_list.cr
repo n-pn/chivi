@@ -8,21 +8,21 @@ class YS::CrawlYscritByUser < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
 
-    y_lid = File.basename(File.dirname(entry.path))
+    yl_id = File.basename(File.dirname(entry.path))
     rtime = Time.utc.to_unix
 
-    api_path = "/_ys/crits/by_list/#{y_lid}?rtime=#{rtime}"
+    api_path = "/_ys/crits/by_list/#{yl_id}?rtime=#{rtime}"
     post_raw_data(api_path, json)
   end
 
-  def self.gen_link(y_lid : String, page : Int32 = 1)
-    "https://api.yousuu.com/api/booklist/#{y_lid}?page=#{page}"
+  def self.gen_link(yl_id : String, page : Int32 = 1)
+    "https://api.yousuu.com/api/booklist/#{yl_id}?page=#{page}"
   end
 
   DIR = "var/ysraw/crits-by-list"
 
-  def self.gen_path(y_lid : String, page : Int32 = 1)
-    "#{DIR}/#{y_lid}/#{page}.latest.json.zst"
+  def self.gen_path(yl_id : String, page : Int32 = 1)
+    "#{DIR}/#{yl_id}/#{page}.latest.json.zst"
   end
 
   ################
@@ -41,7 +41,7 @@ class YS::CrawlYscritByUser < CrawlTask
     queue_init = gen_queue_init(fix_db_stat)
     return if queue_init.empty?
 
-    queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.y_lid}") }
+    queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.yl_id}") }
 
     max_pages = queue_init.max_of(&.pgmax)
     crawler = new(false)
@@ -51,8 +51,8 @@ class YS::CrawlYscritByUser < CrawlTask
 
       queue = queue_init.map_with_index(1) do |init, index|
         Entry.new(
-          link: gen_link(init.y_lid, pg_no),
-          path: gen_path(init.y_lid, pg_no),
+          link: gen_link(init.yl_id, pg_no),
+          path: gen_path(init.yl_id, pg_no),
           name: "#{index}/#{queue_init.size}"
         )
       end
@@ -63,7 +63,7 @@ class YS::CrawlYscritByUser < CrawlTask
     end
   end
 
-  record QueueInit, y_lid : String, pgmax : Int32
+  record QueueInit, yl_id : String, pgmax : Int32
 
   FIX_STAT_SQL = <<-SQL
     update yslists set book_count = (
@@ -76,15 +76,15 @@ class YS::CrawlYscritByUser < CrawlTask
     PG_DB.exec(FIX_STAT_SQL) if fix_db_stat
 
     select_smt = <<-SQL
-      select y_lid, book_total from yslists
+      select yl_id, book_total from yslists
       where book_total > book_count
     SQL
 
     output = [] of QueueInit
 
     PG_DB.query_each(select_smt) do |rs|
-      y_lid, total = rs.read(String, Int32)
-      output << QueueInit.new(y_lid, (total - 1) // 20 + 1)
+      yl_id, total = rs.read(String, Int32)
+      output << QueueInit.new(yl_id, (total - 1) // 20 + 1)
     end
 
     output

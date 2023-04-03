@@ -7,8 +7,8 @@ CREATE TABLE ysrepls (
   ysuser_id bigint NOT NULL DEFAULT 0,
   yscrit_id bigint NOT NULL DEFAULT 0,
   --
-  ztext text NOT NULL DEFAULT '',
-  vhtml text NOT NULL DEFAULT '',
+  ztext text compression lz4 NOT NULL DEFAULT '',
+  vhtml text compression lz4 NOT NULL DEFAULT '',
   --
   stime bigint NOT NULL DEFAULT 0,
   --

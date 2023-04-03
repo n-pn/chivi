@@ -5,33 +5,34 @@ require "./_crawl_common"
 require "../_raw/raw_ys_list"
 
 class CV::YslistCrawlByBook < CrawlTask
-  # def db_seed_tasks(json : String)
-  #   yslist = YS::Yslist.upsert!(self.oid, self.created_at || self.updated_at)
+  def db_seed_tasks(entry : Entry, json : String)
+    return unless json.starts_with?('{')
+    post_raw_data("/lists/info", json)
 
-  #   yslist.ysuser = ysuser || begin
-  #     user = self.user.not_nil!
-  #     YS::Ysuser.upsert!(user.name, user._id)
-  #   end
+    #   yslist = YS::Yslist.upsert!(self.oid, self.created_at || self.updated_at)
+    #   yslist.ysuser = ysuser || begin
+    #     user = self.user.not_nil!
+    #     YS::Ysuser.upsert!(user.name, user._id)
+    #   end
 
-  #   yslist.set_name(self.zname)
-  #   yslist.set_desc(self.zdesc)
+    #   yslist.set_name(self.zname)
+    #   yslist.set_desc(self.zdesc)
 
-  #   yslist.klass = klass
-  #   yslist.stime = stime
-  #   yslist.utime = self.updated_at.to_unix
+    #   yslist.klass = klass
+    #   yslist.stime = stime
+    #   yslist.utime = self.updated_at.to_unix
 
-  #   yslist.book_total = self.book_total if self.book_total > yslist.book_total
-  #   yslist.like_count = self.like_count if self.like_count > yslist.like_count
+    #   yslist.book_total = self.book_total if self.book_total > yslist.book_total
+    #   yslist.like_count = self.like_count if self.like_count > yslist.like_count
 
-  #   yslist.view_count = self.view_count if self.view_count > yslist.view_count
-  #   yslist.star_count = self.star_count if self.star_count > yslist.star_count
+    #   yslist.view_count = self.view_count if self.view_count > yslist.view_count
+    #   yslist.star_count = self.star_count if self.star_count > yslist.star_count
 
-  #   yslist.fix_sort!
-  #   yslist.save!
-  # rescue err
-  #   Log.error { err.inspect_with_backtrace.colorize.red }
-  # end
-  # end
+    #   yslist.fix_sort!
+    #   yslist.save!
+    # rescue err
+    #   Log.error { err.inspect_with_backtrace.colorize.red }
+  end
 
   #####################
 

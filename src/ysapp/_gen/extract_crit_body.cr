@@ -30,10 +30,10 @@ files.each do |path|
   crits.each do |crit|
     next if crit.ztext == "请登录查看评论内容" || crit.ztext.blank?
 
-    out_dir = "#{TXT_DIR}/#{crit.y_cid[0..3]}-zh"
+    out_dir = "#{TXT_DIR}/#{crit.yc_id[0..3]}-zh"
     Dir.mkdir_p(out_dir)
 
-    File.write("#{out_dir}/#{crit.y_cid}.txt", crit.ztext)
+    File.write("#{out_dir}/#{crit.yc_id}.txt", crit.ztext)
   end
 rescue ex
   puts path.colorize.red

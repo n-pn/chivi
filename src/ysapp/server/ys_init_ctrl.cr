@@ -67,9 +67,9 @@ class YS::InitCtrl < AC::Base
     render text: data.comments.size
   end
 
-  @[AC::Route::POST("/crits/by_list/:y_lid", body: :data)]
-  def crits_by_list(data : RawListEntries, y_lid : String, rtime : Int64 = Time.utc.to_unix)
-    yslist = Yslist.load(y_lid)
+  @[AC::Route::POST("/crits/by_list/:yl_id", body: :data)]
+  def crits_by_list(data : RawListEntries, yl_id : String, rtime : Int64 = Time.utc.to_unix)
+    yslist = Yslist.load(yl_id)
 
     yslist.book_total = data.total if yslist.book_total < data.total
     yslist.book_rtime = rtime
@@ -91,9 +91,9 @@ class YS::InitCtrl < AC::Base
     render text: json.total
   end
 
-  @[AC::Route::POST("/repls/by_crit/:y_cid", body: :json)]
-  def repls_by_crit(json : RawCritReplies, y_cid : String, rtime : Int64 = Time.utc.to_unix)
-    yscrit = Yscrit.load(y_cid)
+  @[AC::Route::POST("/repls/by_crit/:yc_id", body: :json)]
+  def repls_by_crit(json : RawCritReplies, yc_id : String, rtime : Int64 = Time.utc.to_unix)
+    yscrit = Yscrit.load(yc_id)
 
     yscrit.repl_total = json.total if yscrit.repl_total < json.total
     yscrit.repl_rtime = rtime

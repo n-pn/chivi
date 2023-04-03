@@ -21,6 +21,8 @@ struct YS::CritView
 
       jb.field "stars", @data.stars
       jb.field "vtags", @data.vtags
+
+      @data.fix_vhtml(persist: true) if @data.vhtml.empty?
       jb.field "vhtml", @data.vhtml
 
       jb.field "like_count", @data.like_count

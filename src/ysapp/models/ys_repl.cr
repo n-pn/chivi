@@ -17,7 +17,7 @@ class YS::Ysrepl
   column to_y_uid : Int32 = 0 # to ysuser id
 
   column yscrit_id : Int64 = 0_i64
-  column y_cid : String = ""
+  column yc_id : String = ""
 
   column stime : Int64 = 0 # list checked at by minutes from epoch
 
@@ -90,10 +90,10 @@ class YS::Ysrepl
     raw_repls.each do |raw_repl|
       out_repl = self.load(raw_repl.y_rid)
 
-      out_repl.y_cid = raw_repl.y_cid
+      out_repl.yc_id = raw_repl.yc_id
       out_repl.y_uid = raw_repl.user.id
 
-      out_crit = Yscrit.load(raw_repl.y_cid)
+      out_crit = Yscrit.load(raw_repl.yc_id)
       out_user = Ysuser.upsert!(raw_repl.user)
 
       out_repl.yscrit_id = out_crit.id

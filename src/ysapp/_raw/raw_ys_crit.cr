@@ -4,7 +4,7 @@ class YS::RawYsCrit
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
-  getter y_cid : String
+  getter yc_id : String
 
   @[JSON::Field(key: "bookId")]
   getter book : EmbedBook

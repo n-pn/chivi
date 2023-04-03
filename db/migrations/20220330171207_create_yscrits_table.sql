@@ -1,7 +1,7 @@
 -- +micrate Up
 CREATE TABLE yscrits (
   id bigserial PRIMARY KEY,
-  y_cid text NOT NULL,
+  yc_id text NOT NULL,
   --
   ysbook_id bigint NOT NULL DEFAULT 0,
   nvinfo_id bigint NOT NULL DEFAULT 0,
@@ -10,7 +10,7 @@ CREATE TABLE yscrits (
   y_uid int4 NOT NULL DEFAULT 0, -- original user id
   --
   yslist_id bigint NOT NULL DEFAULT 0,
-  y_lid text NOT NULL DEFAULT '',
+  yl_id text NOT NULL DEFAULT '',
   --
   stars int NOT NULL DEFAULT 3,
   _sort int GENERATED ALWAYS AS (stars * (stars * like_count + repl_count)) STORED,
@@ -32,7 +32,7 @@ CREATE TABLE yscrits (
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX yscrit_uniq_idx ON yscrits (y_cid);
+CREATE UNIQUE INDEX yscrit_uniq_idx ON yscrits (yc_id);
 
 CREATE INDEX yscrit_nvinfo_idx ON yscrits (nvinfo_id, _sort);
 

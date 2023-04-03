@@ -1,7 +1,7 @@
 -- +micrate Up
 CREATE TABLE yslists (
   id bigserial PRIMARY KEY,
-  y_lid text NOT NULL,
+  yl_id text NOT NULL,
   --
   ysuser_id bigint NOT NULL DEFAULT 0,
   --
@@ -34,7 +34,7 @@ CREATE TABLE yslists (
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX yslist_uniq_idx ON yslists (y_lid);
+CREATE UNIQUE INDEX yslist_uniq_idx ON yslists (yl_id);
 
 CREATE INDEX yslist_ysuser_idx ON yslists (ysuser_id);
 
