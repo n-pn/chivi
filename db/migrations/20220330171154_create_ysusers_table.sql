@@ -1,32 +1,30 @@
 -- +micrate Up
 CREATE TABLE ysusers (
-  id serial primary key,
-  yu_id int4 not null,
-
-  zname text not null,
-  vname text not null,
-
-  vslug text not null default '',
-
-  like_count int4 not null default 0,
-  star_count int4 not null default 0,
-
-  crit_count int4 not null default 0,
-  crit_total int4 not null default 0,
-
-  list_count int4 not null default 0,
-  list_total int4 not null default 0,
-
-  repl_count int4 not null default 0,
-  repl_total int4 not null default 0,
-
-  info_rtime int8 not null default 0,
-
-  created_at timestamptz not null default CURRENT_TIMESTAMP,
-  updated_at timestamptz not null default CURRENT_TIMESTAMP
+  id serial PRIMARY KEY,
+  yu_id int NOT NULL UNIQUE,
+  --
+  zname text NOT NULL,
+  vname text NOT NULL,
+  vslug text NOT NULL DEFAULT '',
+  --
+  like_count int NOT NULL DEFAULT 0,
+  star_count int NOT NULL DEFAULT 0,
+  --
+  crit_count int NOT NULL DEFAULT 0,
+  crit_total int NOT NULL DEFAULT 0,
+  --
+  list_count int NOT NULL DEFAULT 0,
+  list_total int NOT NULL DEFAULT 0,
+  --
+  repl_count int NOT NULL DEFAULT 0,
+  repl_total int NOT NULL DEFAULT 0,
+  --
+  info_rtime bigint NOT NULL DEFAULT 0,
+  --
+  created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX ysuser_yu_id_idx ON ysusers (yu_id);
 CREATE INDEX ysuser_uname_idx ON ysusers (zname);
 
 -- +micrate Down

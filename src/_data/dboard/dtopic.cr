@@ -9,7 +9,7 @@ class CV::Cvpost
   include Clear::Model
 
   self.table = "cvposts"
-  primary_key
+  primary_key type: :serial
 
   column ii : Int32 = 1 # increase for each board
   getter oid : String { HashUtil.encode32(ii) }
@@ -17,10 +17,8 @@ class CV::Cvpost
   belongs_to viuser : Viuser, foreign_key_type: Int32
   # getter viuser : Viuser { Viuser.load!(self.viuser_id) }
 
-  belongs_to nvinfo : Nvinfo
+  belongs_to nvinfo : Nvinfo, foreign_key_type: Int32
   # getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
-
-  # belongs_to lastrp : Cvrepl?, foreign_key: "lastrp_id"
 
   #####
 
@@ -92,8 +90,7 @@ class CV::Cvpost
     self.state &* MINUTES_OF_30_DAYS &* bonus
   end
 
-  def bump!(lastrp_id = 0_i64)
-    # self.lastrp_id = lastrp_id
+  def bump!
     self.repl_count = self.repl_count + 1
     self.set_utime(Time.utc.to_unix)
     self.save!

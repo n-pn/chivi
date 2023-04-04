@@ -1,7 +1,7 @@
 -- +micrate Up
 CREATE TABLE wnseeds (
   wn_id int NOT NULL REFERENCES nvinfos (id) ON UPDATE CASCADE ON DELETE CASCADE,
-  sname varchar NOT NULL DEFAULT '',
+  sname text NOT NULL DEFAULT '',
   s_bid int NOT NULL DEFAULT 0,
   --
   chap_total int NOT NULL DEFAULT 0,

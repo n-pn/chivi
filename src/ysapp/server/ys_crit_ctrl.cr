@@ -64,8 +64,8 @@ class YS::CritCtrl < AC::Base
     }
   end
 
-  @[AC::Route::GET("/crits/:crit_id", converters: {crit_id: ConvertBase32})]
-  def entry(crit_id : Int64)
+  @[AC::Route::GET("/crits/:crit_id")]
+  def entry(crit_id : Int32)
     ycrit = Yscrit.find!({id: crit_id})
     repls = Ysrepl.query.where("yscrit_id = ?", crit_id)
 
@@ -84,8 +84,8 @@ class YS::CritCtrl < AC::Base
     render :not_found, text: "Đánh giá không tồn tại"
   end
 
-  @[AC::Route::GET("/crits/:crit_id/ztext", converters: {crit_id: ConvertBase32})]
-  def ztext(crit_id : Int64)
+  @[AC::Route::GET("/crits/:crit_id/ztext")]
+  def ztext(crit_id : Int32)
     ycrit = Yscrit.find!({id: crit_id})
 
     response.headers["X-WN_ID"] = ycrit.nvinfo_id.to_s
@@ -94,24 +94,24 @@ class YS::CritCtrl < AC::Base
     render :not_found, text: "Đánh giá không tồn tại"
   end
 
-  @[AC::Route::GET("/crits/:crit_id/vhtml", converters: {crit_id: ConvertBase32})]
-  def vhtml(crit_id : Int64)
+  @[AC::Route::GET("/crits/:crit_id/vhtml")]
+  def vhtml(crit_id : Int32)
     ycrit = Yscrit.find!({id: crit_id})
     render text: ycrit.vhtml
   rescue err
     render :not_found, text: "Đánh giá không tồn tại"
   end
 
-  @[AC::Route::GET("/crits/:crit_id/btran", converters: {crit_id: ConvertBase32})]
-  def btran(crit_id : Int64)
+  @[AC::Route::GET("/crits/:crit_id/btran")]
+  def btran(crit_id : Int32)
     ycrit = Yscrit.find!({id: crit_id})
     render text: ycrit.load_btran_from_disk
   rescue err
     render :not_found, text: "Đánh giá không tồn tại"
   end
 
-  @[AC::Route::GET("/crits/:crit_id/deepl", converters: {crit_id: ConvertBase32})]
-  def deepl(crit_id : Int64)
+  @[AC::Route::GET("/crits/:crit_id/deepl")]
+  def deepl(crit_id : Int32)
     ycrit = Yscrit.find!({id: crit_id})
 
     # res = @context.response

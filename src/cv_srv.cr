@@ -179,12 +179,6 @@ struct ConvertArray
   end
 end
 
-struct ConvertBase32
-  def convert(raw : String)
-    HashUtil.decode32(raw)
-  end
-end
-
 class ErrorHandler
   include HTTP::Handler
 

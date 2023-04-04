@@ -1,6 +1,6 @@
 declare namespace CV {
   interface Yscrit {
-    v_cid: string
+    id: number
 
     book_id: number
     user_id: number

@@ -65,7 +65,7 @@
     {@const user = users[crit.user_id]}
     {@const list = lists[crit.list_id]}
 
-    {#key crit.v_cid}
+    {#key crit.id}
       <YscritCard
         {crit}
         {user}

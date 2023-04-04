@@ -27,7 +27,8 @@
   let replies = []
 
   async function show_replies() {
-    const path = api_path('yscrits.repls', crit.v_cid)
+    const path = `/_ys/crits/${crit.id}/repls`
+    // TODO: add type here
     replies = await fetch(path).then((r: Response) => r.json())
     show_repls = true
   }
@@ -52,7 +53,7 @@
 
     _onload = true
 
-    const url = `/_ys/crits/${crit.v_cid}/${body_type}`
+    const url = `/_ys/crits/${crit.id}/${body_type}`
     const res = await globalThis.fetch(url)
     const res_text = await res.text()
     _onload = false
@@ -74,7 +75,7 @@
     <a class="meta _user" href="/wn/crits?from=ys&user={user.id}"
       >{user.uname}</a>
 
-    <a class="meta _time" href="/sp/qtran/crits/{crit.v_cid}">
+    <a class="meta _time" href="/sp/qtran/crits/{crit.id}">
       <SIcon name="clock" />
       <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
     </a>
@@ -115,7 +116,7 @@
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="meta">&middot;</span> -->
 
-    <a class="meta" href="/wn/crits/y-{crit.v_cid}">
+    <a class="meta" href="/wn/crits/y-{crit.id}">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>

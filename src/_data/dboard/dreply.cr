@@ -8,12 +8,10 @@ class CV::Cvrepl
   include Clear::Model
 
   self.table = "cvrepls"
-  primary_key
+  primary_key type: :serial
 
   belongs_to viuser : Viuser, foreign_key_type: Int32
-  belongs_to cvpost : Cvpost
-
-  column ii : Int32 = 0 # post index in the thread
+  belongs_to cvpost : Cvpost, foreign_key_type: Int32
 
   column repl_cvrepl_id : Int64 = 0 # replied to cvrepl.id
   column repl_viuser_id : Int64 = 0 # replied to cvrepl's viuser.id
@@ -21,7 +19,6 @@ class CV::Cvrepl
   column tagged_ids : Array(Int64) = [] of Int64
 
   column input : String = ""
-  column itype : String = "md"
 
   column ohtml : String = ""
   column otext : String = ""
@@ -39,18 +36,15 @@ class CV::Cvrepl
 
   scope :sort_by do |order|
     case order
-    when "tn"  then order_by(ii: :asc)
-    when "-tn" then order_by(ii: :desc)
     when "-id" then order_by(id: :desc)
     else            order_by(id: :asc)
     end
   end
 
-  def set_input(input : String, itype = "md")
+  def set_input(input : String)
     self.utime = Time.utc.to_unix
 
     self.input = input
-    self.itype = itype
     self.ohtml = PostUtil.md_to_html(input)
 
     self.ohtml, self.tagged_ids = extract_user_ids(self.ohtml)
@@ -81,9 +75,9 @@ class CV::Cvrepl
     end
   end
 
-  def update_content!(input : String, itype = "md")
+  def update_content!(input : String)
     self.utime = Time.utc.to_unix
-    set_input(input, itype)
+    self.set_input(input)
     self.save!
   end
 

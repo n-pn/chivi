@@ -1,16 +1,16 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE ysrepls (
-  id bigserial PRIMARY KEY,
-  yr_id text NOT NULL,
+  id erial PRIMARY KEY,
+  yr_id bytea NOT NULL UNIQUE,
   --
-  ysuser_id bigint NOT NULL DEFAULT 0,
-  yscrit_id bigint NOT NULL DEFAULT 0,
+  ysuser_id int NOT NULL DEFAULT 0,
+  yscrit_id int NOT NULL DEFAULT 0,
   --
   ztext text compression lz4 NOT NULL DEFAULT '',
   vhtml text compression lz4 NOT NULL DEFAULT '',
   --
-  stime bigint NOT NULL DEFAULT 0,
+  info_rtime bigint NOT NULL DEFAULT 0,
   --
   like_count int NOT NULL DEFAULT 0,
   repl_count int NOT NULL DEFAULT 0,

@@ -10,8 +10,8 @@ class YS::Yscrit
   include Clear::Model
   self.table = "yscrits"
 
-  primary_key
-  column yc_id : String = ""
+  primary_key type: :serial
+  column yc_id : Bytes #  mongodb objectid
 
   column nvinfo_id : Int32 = 0
   column ysbook_id : Int32 = 0
@@ -55,7 +55,7 @@ class YS::Yscrit
   TXT_DIR = "var/ysapp/crits-txt"
 
   private def group_by
-    self.yc_id[0..3]
+    self.yc_id.first(2).join(&.to_s(16))
   end
 
   def zip_path(type = "zh")
@@ -174,12 +174,8 @@ class YS::Yscrit
 
   ###################
 
-  def self.gen_id(yc_id : String)
-    yc_id[12..].to_i64(base: 16)
-  end
-
-  def self.load(yc_id : String)
-    find({yc_id: yc_id}) || new({id: gen_id(yc_id), yc_id: yc_id})
+  def self.load(yc_id : String | Bytes)
+    find({yc_id: yc_id}) || new({yc_id: yc_id})
   end
 
   ####

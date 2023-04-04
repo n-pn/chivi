@@ -8,24 +8,24 @@ class YS::Ysrepl
   include Clear::Model
   self.table = "ysrepls"
 
-  primary_key
-  column yr_id : String # hexstring from yousuu
+  primary_key type: :serial
+  column yr_id : Bytes # mongodb objectid
 
-  belongs_to ysuser : Ysuser
   column yu_id : Int32 = 0
+  belongs_to ysuser : Ysuser
 
   column to_yu_id : Int32 = 0 # to ysuser id
 
+  column yc_id : Bytes
   column yscrit_id : Int64 = 0_i64
-  column yc_id : String = ""
-
-  column stime : Int64 = 0 # list checked at by minutes from epoch
 
   column ztext : String = ""
   column vhtml : String = ""
 
   column like_count : Int32 = 0
   column repl_count : Int32 = 0 # reply count, optional
+
+  column info_rtime : Int64 = 0 # list checked at by minutes from epoch
 
   timestamps
 
@@ -83,14 +83,14 @@ class YS::Ysrepl
   ##############
 
   def self.load(yr_id : String)
-    find({yr_id: yr_id}) || new({yr_id: yr_id})
+    find({yr_id: yr_id.hexbytes}) || new({yr_id: yr_id.hexbytes})
   end
 
   def self.bulk_upsert(raw_repls : Array(RawYsRepl), save_text : Bool = true)
     raw_repls.each do |raw_repl|
       out_repl = self.load(raw_repl.yr_id)
 
-      out_repl.yc_id = raw_repl.yc_id
+      out_repl.yc_id = raw_repl.yc_id.hexbytes
       out_repl.yu_id = raw_repl.user.id
 
       out_crit = Yscrit.load(raw_repl.yc_id)

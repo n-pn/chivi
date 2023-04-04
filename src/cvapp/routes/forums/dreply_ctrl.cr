@@ -82,7 +82,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
 
     cvrepl.set_dtrepl_id(form.repl_id)
     cvrepl.update_content!(form.input)
-    cvpost.bump!(cvrepl.id)
+    cvpost.bump!
 
     render json: DreplyView.new(cvrepl)
   end

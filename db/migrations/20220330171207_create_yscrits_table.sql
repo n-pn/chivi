@@ -1,16 +1,16 @@
 -- +micrate Up
 CREATE TABLE yscrits (
-  yc_id text NOT NULL PRIMARY KEY,
-  id serial NOT NULL,
+  id serial PRIMARY KEY,
+  yc_id bytea NOT NULL UNIQUE,
   --
-  ysbook_id int4 NOT NULL DEFAULT 0 REFERENCES ysbooks (id) ON UPDATE CASCADE ON DELETE CASCADE,
-  nvinfo_id int4 NOT NULL DEFAULT 0 REFERENCES nvinfos (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  ysbook_id int NOT NULL DEFAULT 0 REFERENCES ysbooks (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  nvinfo_id int NOT NULL DEFAULT 0 REFERENCES nvinfos (id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
-  gu_id int4 NOT NULL DEFAULT 0, -- chivi ysuser id
-  yu_id int4 NOT NULL DEFAULT 0, -- original user id
+  gu_id int NOT NULL DEFAULT 0, -- chivi ysuser id
+  yu_id int NOT NULL DEFAULT 0, -- original user id
   --
-  yslist_id int4 NOT NULL DEFAULT 0,
   yl_id bytea NOT NULL DEFAULT ''::bytea,
+  yslist_id int NOT NULL DEFAULT 0,
   --
   stars int NOT NULL DEFAULT 3,
   _sort int GENERATED ALWAYS AS (stars * (stars * like_count + repl_count)) STORED,
@@ -31,8 +31,6 @@ CREATE TABLE yscrits (
   created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
-CREATE UNIQUE INDEX yscrit_uniq_idx ON yscrits (yc_id);
 
 CREATE INDEX yscrit_nvinfo_idx ON yscrits (nvinfo_id, _sort);
 

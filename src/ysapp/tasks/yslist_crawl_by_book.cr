@@ -88,9 +88,9 @@ class CV::YslistCrawlByBook < CrawlTask
 
     DB.open(CV_ENV.database_url) do |db|
       sql = <<-SQL
-      select id::int, list_total from ysbooks
+      select id, list_total from ysbooks
       where list_count < list_total
-      order by id asc
+      order by id desc
       SQL
 
       db.query_each(sql) do |rs|

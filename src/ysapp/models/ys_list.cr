@@ -6,8 +6,8 @@ class YS::Yslist
   include Clear::Model
   self.table = "yslists"
 
-  primary_key type: :serial
-  column yl_id : Bytes
+  primary_key type: :serial # pseudo primary key to sastify clear
+  column yl_id : Bytes      # real primary key which is a mongodb objectid
 
   column ysuser_id : Int32 = 0
   column yu_id : Int32 = 0

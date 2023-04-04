@@ -10,21 +10,40 @@
 --   ALTER COLUMN ysuser_id TYPE int;
 -- ALTER TABLE yscrits
 --   ADD CONSTRAINT yscrits_ysusers_fkey FOREIGN KEY (ysuser_id) REFERENCES ysusers (id) ON UPDATE CASCADE ON DELETE CASCADE;
-ALTER TABLE yslists
-  DROP CONSTRAINT yslists_pkey;
+ALTER TABLE ysrepls
+  DROP CONSTRAINT ysrepls_pkey;
 
-ALTER TABLE yslists
-  ADD CONSTRAINT yslists_pkey PRIMARY KEY ("yl_id");
+ALTER TABLE ysrepls
+  ADD CONSTRAINT ysrepls_pkey PRIMARY KEY ("yr_id");
 
-DROP INDEX yslist_origin_idx;
+DROP INDEX ysrepl_origin_idx;
 
-ALTER TABLE yslists
-  ADD CONSTRAINT yslists_uniq UNIQUE ("id");
+ALTER TABLE ysrepls
+  ADD CONSTRAINT ysrepls_uniq UNIQUE ("id");
 
-ALTER SEQUENCE yslists_id_seq
+ALTER SEQUENCE yscrits_id_seq
   RESTART WITH 1;
 
 UPDATE
-  yslists
+  yscrits
 SET
-  id = nextval('yslists_id_seq');
+  id = nextval('yscrits_id_seq');
+
+ALTER TABLE ysrepls
+  ALTER COLUMN yr_id TYPE bytea
+  USING decode(yr_id, 'hex');
+
+ALTER TABLE ysrepls
+  DROP CONSTRAINT ysrepls_pkey;
+
+ALTER TABLE ysrepls
+  ADD CONSTRAINT ysrepls_pkey PRIMARY KEY ("id");
+
+ALTER TABLE ysrepls
+  DROP CONSTRAINT ysrepls_uniq;
+
+ALTER TABLE ysrepls
+  ADD CONSTRAINT ysrepls_uniq UNIQUE ("yr_id");
+
+ALTER TABLE ysrepls
+  ADD CONSTRAINT yscrits_yscrits_fkey FOREIGN KEY (yscrit_id) REFERENCES yscrits (id) ON UPDATE CASCADE ON DELETE CASCADE;

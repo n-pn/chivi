@@ -12,7 +12,6 @@ class YS::Ysbook
   self.table = "ysbooks"
 
   primary_key type: :serial
-
   column nvinfo_id : Int32 = 0
 
   column btitle : String = ""
