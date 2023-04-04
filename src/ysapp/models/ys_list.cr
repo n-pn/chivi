@@ -7,7 +7,7 @@ class YS::Yslist
   self.table = "yslists"
 
   primary_key type: :serial
-  column yl_id : String = ""
+  column yl_id : Bytes
 
   column ysuser_id : Int32 = 0
   column yu_id : Int32 = 0
@@ -144,7 +144,7 @@ class YS::Yslist
   end
 
   def self.load(yl_id : String)
-    find({yl_id: yl_id}) || new({id: gen_id(yl_id), yl_id: yl_id})
+    find({yl_id: yl_id.hexbytes}) || new({id: gen_id(yl_id), yl_id: yl_id.hexbytes})
   end
 
   CACHE_INT = CV::RamCache(Int64, self).new

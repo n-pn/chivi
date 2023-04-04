@@ -20,7 +20,7 @@ const dev = process.env['ENV'] == 'dev'
 const proxy = {
   '/covers': 'https://chivi.app',
 
-  '/_db': 'http://127.0.0.1:5011',
+  '/_db': 'http://127.0.0.1:5010',
   '/_wn': 'http://127.0.0.1:5020',
 
   '/_m0': 'http://127.0.0.1:5100',

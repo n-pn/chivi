@@ -76,7 +76,7 @@ class YS::CrawlYscritByUser < CrawlTask
     PG_DB.exec(FIX_STAT_SQL) if fix_db_stat
 
     select_smt = <<-SQL
-      select yl_id, book_total from yslists
+      select encode(yl_id, 'hex'), book_total from yslists
       where book_total > book_count
     SQL
 

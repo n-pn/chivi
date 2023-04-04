@@ -20,7 +20,7 @@ class YS::Yscrit
   column yslist_id : Int32 = 0
 
   column yu_id : Int32 = 0
-  column yl_id : String = ""
+  column yl_id : Bytes
 
   column ztext : String
   column vhtml : String

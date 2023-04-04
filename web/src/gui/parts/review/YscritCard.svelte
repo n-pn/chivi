@@ -71,7 +71,7 @@
 
 <crit-item class="island">
   <header>
-    <a class="meta _user" href="/wn/crits?from=ys&user={user.id}-{user.uslug}"
+    <a class="meta _user" href="/wn/crits?from=ys&user={user.id}"
       >{user.uname}</a>
 
     <a class="meta _time" href="/sp/qtran/crits/{crit.v_cid}">
@@ -161,7 +161,7 @@
 
   {#if show_list && list}
     <footer class="list">
-      <a class="link _list" href="/wn/lists/y-{list.id}{list.vslug}">
+      <a class="link _list" href="/wn/lists/{list.uslug}">
         <SIcon name="bookmarks" />
         <span>{list.vname}</span>
         <span>({list.book_count} bộ truyện)</span>

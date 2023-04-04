@@ -1,9 +1,9 @@
 -- +micrate Up
 CREATE TABLE yslists (
-  id bigserial PRIMARY KEY,
-  yl_id text NOT NULL,
+  id bigserial NOT NULL,
+  yl_id bytea NOT NULL PRIMARY KEY,
   --
-  ysuser_id bigint NOT NULL DEFAULT 0,
+  ysuser_id int NOT NULL DEFAULT 0,
   --
   zname text NOT NULL,
   vname text NOT NULL,
@@ -14,8 +14,8 @@ CREATE TABLE yslists (
   --
   klass text NOT NULL DEFAULT 'male',
   --
-  covers text[] NOT NULL DEFAULT '{}',
-  genres text[] NOT NULL DEFAULT '{}',
+  covers text[] NOT NULL DEFAULT '{}' ::text[],
+  genres text[] NOT NULL DEFAULT '{}' ::text[],
   --
   utime bigint NOT NULL DEFAULT 0,
   stime bigint NOT NULL DEFAULT 0,

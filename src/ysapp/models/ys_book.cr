@@ -1,7 +1,8 @@
 require "./_base"
 require "./cv_book"
 require "../_raw/raw_ys_book"
-require "../../_data/wnovel/nv_info"
+
+require "../../_data/wnovel/wn_info"
 require "../../_data/wnovel/wn_link"
 require "../../_util/tran_util"
 require "../../mt_v1/data/v1_dict"

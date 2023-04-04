@@ -42,8 +42,8 @@ class YS::ListCtrl < AC::Base
     }
   end
 
-  @[AC::Route::GET("/lists/:id", converters: {id: ConvertBase32})]
-  def entry(id : Int64, sort : String = "utime",
+  @[AC::Route::GET("/lists/:id")]
+  def entry(id : Int32, sort : String = "utime",
             smin : Int32 = 0, smax : Int32 = 6,
             lb : String? = nil)
     pg_no, limit, offset = _paginate(max: 20)

@@ -1,13 +1,13 @@
 declare namespace CV {
   interface Yslist {
     id: string
+
+    uslug: string
     yl_id: string
 
     user_id: number
 
     vname: string
-    vslug: string
-
     vdesc: string
     class: string
 
@@ -19,6 +19,7 @@ declare namespace CV {
 
     book_count: number
     view_count: number
+
     like_count: number
     star_count: number
   }

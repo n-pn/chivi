@@ -5,10 +5,10 @@ class YS::CritCtrl < AC::Base
   base "/_ys"
 
   # list revies
-  @[AC::Route::GET("/crits", converters: {list: ConvertBase32})]
+  @[AC::Route::GET("/crits")]
   def query(sort : String = "utime",
             smin : Int32 = 1, smax : Int32 = 5,
-            user : String? = nil, book : Int64? = nil, list : Int64? = nil,
+            user : String? = nil, book : Int32? = nil, list : Int32? = nil,
             lb tags : String? = nil)
     pg_no, limit, offset = _paginate(max: 24)
 

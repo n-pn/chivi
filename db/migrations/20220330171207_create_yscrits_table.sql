@@ -1,28 +1,28 @@
 -- +micrate Up
 CREATE TABLE yscrits (
-  id bigserial PRIMARY KEY,
-  yc_id text NOT NULL,
+  yc_id text NOT NULL PRIMARY KEY,
+  id serial NOT NULL,
   --
-  ysbook_id bigint NOT NULL DEFAULT 0,
-  nvinfo_id bigint NOT NULL DEFAULT 0,
+  ysbook_id int4 NOT NULL DEFAULT 0 REFERENCES ysbooks (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  nvinfo_id int4 NOT NULL DEFAULT 0 REFERENCES nvinfos (id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   gu_id int4 NOT NULL DEFAULT 0, -- chivi ysuser id
   yu_id int4 NOT NULL DEFAULT 0, -- original user id
   --
-  yslist_id bigint NOT NULL DEFAULT 0,
-  yl_id text NOT NULL DEFAULT '',
+  yslist_id int4 NOT NULL DEFAULT 0,
+  yl_id bytea NOT NULL DEFAULT ''::bytea,
   --
   stars int NOT NULL DEFAULT 3,
   _sort int GENERATED ALWAYS AS (stars * (stars * like_count + repl_count)) STORED,
   --
-  b_len int NOT NULL DEFAULT -1,
-  -- ztext text not null default '',
-  -- vhtml text not null default '',
+  ztext text compresssion lz4 NOT NULL DEFAULT '',
+  vhtml text compresssion lz4 NOT NULL DEFAULT '',
+  --
   ztags text[] NOT NULL DEFAULT '{}',
   vtags text[] NOT NULL DEFAULT '{}',
   --
-  utime bigint NOT NULL DEFAULT 0,
-  stime bigint NOT NULL DEFAULT 0,
+  utime int8 NOT NULL DEFAULT 0,
+  stime int8 NOT NULL DEFAULT 0,
   --
   repl_total int NOT NULL DEFAULT 0,
   repl_count int NOT NULL DEFAULT 0,

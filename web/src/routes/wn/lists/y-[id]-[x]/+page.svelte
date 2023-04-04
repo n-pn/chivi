@@ -15,9 +15,7 @@
   <meta property="og:title" content={ylist.vname} />
   <meta property="og:article" content="novel" />
   <meta property="og:description" content={ylist.vdesc} />
-  <meta
-    property="og:url"
-    content="https://chivi.app/list/y-{ylist.id}{ylist.vslug}" />
+  <meta property="og:url" content="https://chivi.app/list/{ylist.uslug}" />
   <meta
     property="og:image"
     content="https://chivi.app/covers/{ylist.covers[0] || 'blank.webp'}" />
@@ -28,7 +26,7 @@
     <def class="left">
       <span class="entry">
         <SIcon name="user" />
-        <a class="uname" href="/wn/lists?from=ys&user={yuser.id}-{yuser.uslug}"
+        <a class="uname" href="/wn/lists?from=ys&user={yuser.id}"
           >{yuser.uname}</a>
       </span>
 

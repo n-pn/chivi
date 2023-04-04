@@ -5,8 +5,6 @@
   export let list: CV.Yslist
   export let user: CV.Ysuser
 
-  $: uslug = list.id + list.vslug + '-' + user.uslug
-
   function humanize(num: number) {
     if (num < 1000) return num
     return Math.round(num / 1000) + 'k'
@@ -30,7 +28,7 @@
   </div>
 
   <div class="infos">
-    <a class="vname" href="/wn/lists/y-{uslug}">{list.vname}</a>
+    <a class="vname" href="/wn/lists/{list.uslug}">{list.vname}</a>
 
     <div class="genres">
       {#each list.genres.slice(0, 4) as genre}
@@ -49,7 +47,7 @@
       <def class="left">
         <span class="entry">
           <SIcon name="user" />
-          <a class="uname" href="/wn/lists?from=ys&user={user.id}-{user.uslug}"
+          <a class="uname" href="/wn/lists?from=ys&user={user.id}"
             >{user.uname}</a>
         </span>
 
