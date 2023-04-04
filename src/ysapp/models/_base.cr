@@ -5,7 +5,6 @@ require "../../cv_env"
 require "../../_util/hash_util"
 require "../../_util/tran_util"
 
-Log.setup :debug
 Clear::Log.level = ::Log::Severity::Error if CV_ENV.production?
 
 Clear::SQL.init(CV_ENV.database_url)

@@ -1,7 +1,7 @@
 -- +micrate Up
-CREATE TABLE ysbooks (
+CREATE TABLE ysbooks(
   id serial PRIMARY KEY,
-  nvinfo_id int NOT NULL DEFAULT 0 REFERENCES nvinfos (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  nvinfo_id int NOT NULL DEFAULT 0 REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   btitle text NOT NULL DEFAULT '',
   author text NOT NULL DEFAULT '',
@@ -10,7 +10,7 @@ CREATE TABLE ysbooks (
   rating int NOT NULL DEFAULT 0,
   -- book info
   cover text NOT NULL DEFAULT '',
-  intro text NOT NULL DEFAULT '',
+  intro text compression lz4 NOT NULL DEFAULT '',
   genre text NOT NULL DEFAULT '',
   btags text[] NOT NULL DEFAULT '{}' ::text[],
   --
@@ -33,7 +33,7 @@ CREATE TABLE ysbooks (
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX ysbooks_wninfos_idx ON ysbooks (nvinfo_id);
+CREATE INDEX ysbooks_wninfos_idx ON ysbooks(nvinfo_id);
 
 -- +micrate Down
 DROP TABLE IF EXISTS ysbooks;
