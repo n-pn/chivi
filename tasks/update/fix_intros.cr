@@ -34,7 +34,7 @@ module CV::FixIntros
     return unless bintro
 
     if DEBUG
-      title = "#{nvinfo.bslug}\t#{nvinfo.bhash}\n"
+      title = "#{nvinfo.id}-#{nvinfo.bslug}"
       File.write("tmp/fix-intro.log", "#{title}\n#{bintro.join('\n')}")
     end
 
@@ -56,15 +56,18 @@ module CV::FixIntros
     BookInfo.new("var/books/infos/#{sname}/#{snvid}.tsv")
   end
 
-  def reconvert!(nvinfo : Nvinfo)
-    bintro = load_zinfo("=base", nvinfo.bhash).bintro
-
-    if DEBUG
-      title = "#{nvinfo.bslug}\t#{nvinfo.bhash}\n"
-      File.write("tmp/fix-intro.log", "#{title}\n#{bintro.join('\n')}")
+  def save_current_intro(nvinfo : Nvinfo, lines : Array(String))
+    File.open("tmp/fix-intro.log", "w") do |file|
+      file << nvinfo.id << "-" << nvinfo.bslug << '\n'
+      bintro.join(file, '\n')
     end
+  end
 
-    nvinfo.bintro = BookUtil.cv_lines(bintro, nvinfo.dname, :text)
+  def reconvert!(nvinfo : Nvinfo)
+    zintro = nvinfo.zintro.lines
+    save_current_intro(nvinfo, zintro) if DEBUG
+
+    nvinfo.bintro = BookUtil.cv_lines(zintro, nvinfo.dname, :text)
     nvinfo.save!
   rescue err
     puts err

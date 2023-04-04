@@ -6,7 +6,7 @@ class ZH::WnInit
   @@table = "books"
 
   field s_bid : Int32
-  field bhash : String = ""
+  # field bhash : String = ""
 
   field btitle : String = ""
   field author : String = ""
@@ -43,13 +43,12 @@ class ZH::WnInit
       db.exec <<-SQL
         create table if not exists books (
           s_bid integer primary key,
-          bhash varchar not null default "",
 
-          author varchar not null default "",
-          btitle varchar not null default "",
+          author varchar not null default '',
+          btitle varchar not null default '',
 
-          genres varchar not null default "",
-          bcover varchar not null default "",
+          genres varchar not null default '',
+          bcover varchar not null default '',
 
           "status" integer not null default 0,
           "update" integer not null default 0,
@@ -63,7 +62,6 @@ class ZH::WnInit
           updated_at integer not null default 0
         );
 
-        create index identify_idx on books (bhash);
         create index author_idx on books (author);
         create index btitle_idx on books (btitle);
         create index update_idx on books (update, status);

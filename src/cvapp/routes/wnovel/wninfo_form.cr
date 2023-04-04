@@ -1,5 +1,5 @@
 # require "../../../wndata/models/zh_book"
-require "../../../_data/wnovel/nv_info"
+require "../../../_data/wnovel/wn_info"
 
 class CV::WnovelForm
   include JSON::Serializable

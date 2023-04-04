@@ -28,7 +28,6 @@ end
 
 changed_author = {} of String => String
 changed_btitle = {} of String => String
-changed_nvhash = {} of String => String
 
 CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   old_btitle = nvinfo.zname
@@ -37,7 +36,7 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   fix_btitle, fix_author = CV::BookUtil.fix_names(old_btitle, old_author)
   next if old_btitle == fix_btitle && old_author == fix_author
 
-  puts "- #{nvinfo.bhash}"
+  puts "- #{nvinfo.vname}"
   puts "  btitle: #{old_btitle} => #{fix_btitle}" if old_btitle != fix_btitle
   puts "  author: #{old_author} => #{fix_author}" if old_author != fix_author
 
@@ -48,8 +47,6 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   end
 
   new_nvinfo = CV::Nvinfo.upsert!(author, fix_btitle)
-
-  changed_nvhash[nvinfo.bhash] = new_nvinfo.bhash
 
   changed_author[old_author] = fix_author if old_author != fix_author
   changed_btitle[old_btitle] = fix_btitle if old_btitle != fix_btitle
@@ -68,4 +65,3 @@ end
 DIR = "db/seed_data/nvinfos"
 write_change("#{DIR}/author_changes.tsv", changed_author)
 write_change("#{DIR}/btitle_changes.tsv", changed_btitle)
-write_change("#{DIR}/nvhash_changes.tsv", changed_nvhash)

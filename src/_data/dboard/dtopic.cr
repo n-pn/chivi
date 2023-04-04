@@ -2,7 +2,7 @@ require "cmark"
 require "../../_util/hash_util"
 
 require "../_base"
-require "../wnovel/nv_info"
+require "../wnovel/wn_info"
 require "../member/vi_user"
 
 class CV::Cvpost
@@ -15,12 +15,12 @@ class CV::Cvpost
   getter oid : String { HashUtil.encode32(ii) }
 
   belongs_to viuser : Viuser, foreign_key_type: Int32
-  getter viuser : Viuser { Viuser.load!(self.viuser_id) }
+  # getter viuser : Viuser { Viuser.load!(self.viuser_id) }
 
   belongs_to nvinfo : Nvinfo
-  getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
+  # getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
-  belongs_to lastrp : Cvrepl?, foreign_key: "lastrp_id"
+  # belongs_to lastrp : Cvrepl?, foreign_key: "lastrp_id"
 
   #####
 
@@ -93,9 +93,9 @@ class CV::Cvpost
   end
 
   def bump!(lastrp_id = 0_i64)
-    self.lastrp_id = lastrp_id
+    # self.lastrp_id = lastrp_id
     self.repl_count = self.repl_count + 1
-    set_utime(Time.utc.to_unix)
+    self.set_utime(Time.utc.to_unix)
     self.save!
 
     self.nvinfo.update!({board_bump: self.utime})

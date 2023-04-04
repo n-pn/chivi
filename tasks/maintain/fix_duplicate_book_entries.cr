@@ -1,5 +1,3 @@
-require "./shared/bootstrap"
-
 CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   old_btitle = nvinfo.zname
   old_author = nvinfo.author.zname
@@ -7,7 +5,7 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   fix_btitle, fix_author = CV::BookUtil.fix_names(old_btitle, old_author)
   next if old_btitle == fix_btitle && old_author == fix_author
 
-  puts "- #{nvinfo.bhash}"
+  puts "- #{nvinfo.bslug}"
   puts "  btitle: #{old_btitle} => #{fix_btitle}" if old_btitle != fix_btitle
   puts "  author: #{old_author} => #{fix_author}" if old_author != fix_author
 

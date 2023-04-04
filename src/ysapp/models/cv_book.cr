@@ -23,9 +23,6 @@ class YS::CvBook
   column vname : String
   column bslug : String
 
-  # column bhash : String
-  # getter dname : String { "-" + bhash }
-
   column igenres : Array(Int32) = [] of Int32
 
   column scover : String = ""

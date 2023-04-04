@@ -14,7 +14,7 @@ class CV::Nvinfo
   include Clear::Model
 
   self.table = "nvinfos"
-  primary_key
+  primary_key type: :serial
 
   getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
 
@@ -31,7 +31,7 @@ class CV::Nvinfo
 
   #################
 
-  column bhash : String # unique string generate from zh_title & zh_author
+  # column bhash : String # unique string generate from zh_title & zh_author
   column bslug : String # unique string generate from hv_title & bhash
 
   ###########
@@ -207,8 +207,8 @@ class CV::Nvinfo
 
   def self.upsert!(author : Author, btitle : Btitle, fix_names : Bool = false)
     unless nvinfo = get(author, btitle)
-      bhash = HashUtil.digest32("#{btitle.zname}--#{author.zname}")
-      nvinfo = new({author: author, btitle: btitle, bhash: bhash})
+      # bhash = HashUtil.digest32("#{btitle.zname}--#{author.zname}")
+      nvinfo = new({author: author, btitle: btitle})
       fix_names = true
     end
 

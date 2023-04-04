@@ -1,10 +1,7 @@
 require "../shared/book_util"
 
-require "../../_util/ram_cache"
-
 require "../_base"
-
-require "./nv_info"
+require "./wn_info"
 
 class CV::Author
   include Clear::Model

@@ -23,7 +23,6 @@ alter table nvinfos alter column author_id type int;
 alter table nvinfos alter column btitle_id type int;
 
 alter table nvinfos alter column vname type varchar;
-alter table nvinfos alter column bhash type varchar;
 alter table nvinfos alter column bslug type varchar;
 alter table nvinfos alter column scover type varchar;
 alter table nvinfos alter column bcover type varchar;

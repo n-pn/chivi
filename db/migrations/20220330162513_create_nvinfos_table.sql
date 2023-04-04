@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE nvinfos (
-  id bigserial primary key,
+  id serial primary key,
 
   author_id int not null references authors (id) on update cascade on delete cascade,
   btitle_id int not null references btitles (id) on update cascade on delete cascade,
@@ -11,7 +11,6 @@ CREATE TABLE nvinfos (
   -- title
 
   vname varchar not null default '',
-  bhash varchar unique not null,
   bslug varchar unique not null,
 
   -- extra

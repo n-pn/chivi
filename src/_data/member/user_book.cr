@@ -1,7 +1,7 @@
 require "../_base"
 require "./vi_user"
 
-require "../wnovel/nv_info"
+require "../wnovel/wn_info"
 
 class CV::Ubmemo
   include Clear::Model

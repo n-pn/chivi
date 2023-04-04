@@ -44,6 +44,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/find/:bslug")]
   def find(bslug : String) : Nil
+    # TODO: remove this
     frags = TextUtil.slugify(bslug).split('-')
     query = "bhash like '#{frags[0]}%' or bhash like '#{frags[-1]}%'"
 
