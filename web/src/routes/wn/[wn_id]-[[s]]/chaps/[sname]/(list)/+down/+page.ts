@@ -16,7 +16,7 @@ export const load = (async ({ fetch, url, params, depends, parent }) => {
   const { nvinfo } = await parent()
 
   const pg_no = +url.searchParams.get('pg') || 1
-  const api_url = `/_db/dlcvs?wn_id=${params.wn_id}&sname=?${params.sname}&pg=${pg_no}&lm=10`
+  const api_url = `/_db/dlcvs?wn_id=${params.wn_id}&sname=${params.sname}&pg=${pg_no}&lm=10`
 
   const dlcvs = await api_get<DlTran[]>(api_url, fetch)
 
