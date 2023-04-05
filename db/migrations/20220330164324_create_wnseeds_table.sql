@@ -1,6 +1,6 @@
 -- +micrate Up
-CREATE TABLE wnseeds (
-  wn_id int NOT NULL REFERENCES nvinfos (id) ON UPDATE CASCADE ON DELETE CASCADE,
+CREATE TABLE wnseeds(
+  wn_id int NOT NULL REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   sname text NOT NULL DEFAULT '',
   s_bid int NOT NULL DEFAULT 0,
   --
@@ -19,7 +19,7 @@ CREATE TABLE wnseeds (
   PRIMARY KEY (wn_id, sname)
 );
 
-CREATE INDEX wnseed_orig_idx ON wnseeds (sname, s_bid);
+CREATE INDEX wnseed_orig_idx ON wnseeds(sname, s_bid);
 
 -- +micrate Down
 DROP TABLE IF EXISTS wnseeds;

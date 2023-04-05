@@ -1,5 +1,5 @@
 -- +micrate Up
-CREATE TABLE cvusers (
+CREATE TABLE cvusers(
   id serial PRIMARY KEY,
   uname citext UNIQUE NOT NULL,
   email citext UNIQUE NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE cvusers (
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX cvuser_privi_idx ON cvusers (privi);
+CREATE INDEX cvuser_privi_idx ON cvusers(privi);
 
 -- +micrate Down
 DROP TABLE IF EXISTS cvusers;

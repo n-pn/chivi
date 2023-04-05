@@ -1,8 +1,8 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE TABLE IF NOT EXISTS donate_logs (
+CREATE TABLE IF NOT EXISTS donate_logs(
   id serial PRIMARY KEY,
-  donor_id int4 NOT NULL REFERENCES viusers (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  donor_id int NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   amount float8 NOT NULL DEFAULT 0,
   source text NOT NULL DEFAULT '',
@@ -10,18 +10,18 @@ CREATE TABLE IF NOT EXISTS donate_logs (
   proof text NOT NULL DEFAULT '',
   extra text NOT NULL DEFAULT '',
   --
-  state int2 NOT NULL DEFAULT 0,
+  state smallint NOT NULL DEFAULT 0,
   --
   verified_at timestamptz,
-  verified_by int4 REFERENCES viusers (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  verified_by int REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS donate_log_donor_idx ON donate_logs (donor_id, state);
+CREATE INDEX IF NOT EXISTS donate_log_donor_idx ON donate_logs(donor_id, state);
 
-CREATE INDEX IF NOT EXISTS donate_log_source_idx ON donate_logs (source, amount);
+CREATE INDEX IF NOT EXISTS donate_log_source_idx ON donate_logs(source, amount);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

@@ -1,5 +1,5 @@
 -- +micrate Up
-CREATE TABLE yslists (
+CREATE TABLE yslists(
   id serial PRIMARY KEY,
   yl_id bytea NOT NULL UNIQUE,
   --
@@ -34,17 +34,17 @@ CREATE TABLE yslists (
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX yslist_uniq_idx ON yslists (yl_id);
+CREATE UNIQUE INDEX yslist_uniq_idx ON yslists(yl_id);
 
-CREATE INDEX yslist_ysuser_idx ON yslists (ysuser_id);
+CREATE INDEX yslist_ysuser_idx ON yslists(ysuser_id);
 
-CREATE INDEX yslist_search_idx ON yslists USING GIN (vslug gin_trgm_ops);
+CREATE INDEX yslist_search_idx ON yslists USING GIN(vslug gin_trgm_ops);
 
-CREATE INDEX yslist_update_idx ON yslists (utime);
+CREATE INDEX yslist_update_idx ON yslists(utime);
 
-CREATE INDEX yslist_viewed_idx ON yslists (view_count);
+CREATE INDEX yslist_viewed_idx ON yslists(view_count);
 
-CREATE INDEX yslist_ranked_idx ON yslists (like_count);
+CREATE INDEX yslist_ranked_idx ON yslists(like_count);
 
 -- +micrate Down
 DROP TABLE IF EXISTS yslists;

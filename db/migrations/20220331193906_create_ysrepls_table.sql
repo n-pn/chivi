@@ -1,7 +1,7 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE TABLE ysrepls (
-  id erial PRIMARY KEY,
+CREATE TABLE ysrepls(
+  id serial PRIMARY KEY,
   yr_id bytea NOT NULL UNIQUE,
   --
   ysuser_id int NOT NULL DEFAULT 0,
@@ -19,11 +19,11 @@ CREATE TABLE ysrepls (
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX ysrepl_uniq_idx ON ysrepls (yr_id);
+CREATE UNIQUE INDEX ysrepl_uniq_idx ON ysrepls(yr_id);
 
-CREATE INDEX ysrepl_ysuser_idx ON ysrepls (ysuser_id);
+CREATE INDEX ysrepl_ysuser_idx ON ysrepls(ysuser_id);
 
-CREATE INDEX ysrepl_yscrit_idx ON ysrepls (yscrit_id, created_at);
+CREATE INDEX ysrepl_yscrit_idx ON ysrepls(yscrit_id, created_at);
 
 -- +micrate Down
 DROP TABLE IF EXISTS ysrepls;

@@ -1,5 +1,5 @@
 -- +micrate Up
-CREATE TABLE blabels (
+CREATE TABLE blabels(
   "name" citext PRIMARY KEY,
   "slug" text NOT NULL DEFAULT '',
   "type" int NOT NULL DEFAULT 0,
@@ -11,7 +11,7 @@ CREATE TABLE blabels (
   mtime bigint NOT NULL DEFAULT 0
 );
 
-CREATE INDEX blabel_type_idx ON blabels ("type", "book_count");
+CREATE INDEX blabel_type_idx ON blabels("type", "book_count");
 
 -- +micrate Down
 DROP TABLE IF EXISTS blabels;

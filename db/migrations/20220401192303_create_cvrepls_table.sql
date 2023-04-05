@@ -1,6 +1,6 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE TABLE cvrepls (
+CREATE TABLE cvrepls(
   id serial PRIMARY KEY,
   --
   viuser_id int NOT NULL DEFAULT 0,
@@ -28,15 +28,15 @@ CREATE TABLE cvrepls (
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX cvrepl_cvuser_idx ON cvrepls (viuser_id);
+CREATE INDEX cvrepl_cvuser_idx ON cvrepls(viuser_id);
 
-CREATE INDEX cvrepl_cvpost_idx ON cvrepls (cvpost_id, ii);
+CREATE INDEX cvrepl_cvpost_idx ON cvrepls(cvpost_id, ii);
 
-CREATE INDEX cvrepl_tagged_idx ON cvrepls USING GIN (tagged_ids);
+CREATE INDEX cvrepl_tagged_idx ON cvrepls USING GIN(tagged_ids);
 
-CREATE INDEX cvrepl_repl_cvrepl_idx ON cvrepls (repl_cvrepl_id);
+CREATE INDEX cvrepl_repl_cvrepl_idx ON cvrepls(repl_cvrepl_id);
 
-CREATE INDEX cvrepl_repl_cvuser_idx ON cvrepls (repl_viuser_id);
+CREATE INDEX cvrepl_repl_cvuser_idx ON cvrepls(repl_viuser_id);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

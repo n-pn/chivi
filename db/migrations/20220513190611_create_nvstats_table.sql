@@ -1,21 +1,21 @@
 -- +micrate Up
-CREATE TABLE nvstats (
-  id bigserial primary key,
-
-  nvinfo_id bigint not null,
-
-  klass int not null default 0,
-  stamp int not null default 0,
-  value int not null default 0,
-
-  created_at timestamptz not null default CURRENT_TIMESTAMP,
-  updated_at timestamptz not null default CURRENT_TIMESTAMP,
-
-  constraint nvstat_unique_key unique(klass, stamp, nvinfo_id)
+CREATE TABLE nvstats(
+  id serial PRIMARY KEY,
+  nvinfo_id int NOT NULL,
+  --
+  klass int NOT NULL DEFAULT 0,
+  stamp int NOT NULL DEFAULT 0,
+  value int NOT NULL DEFAULT 0,
+  --
+  created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  --
+  CONSTRAINT nvstat_unique_key UNIQUE (klass, stamp, nvinfo_id)
 );
 
-CREATE INDEX nvstat_nvinfo_idx ON nvstats (nvinfo_id);
-CREATE INDEX nvstat_values_idx ON nvstats (klass, stamp, value);
+CREATE INDEX nvstat_nvinfo_idx ON nvstats(nvinfo_id);
+
+CREATE INDEX nvstat_values_idx ON nvstats(klass, stamp, value);
 
 -- +micrate Down
 DROP TABLE IF EXISTS nvstats;

@@ -1,9 +1,9 @@
 -- +micrate Up
-CREATE TABLE nvinfos (
+CREATE TABLE nvinfos(
   id serial PRIMARY KEY,
   --
-  author_id int NOT NULL REFERENCES authors (id) ON UPDATE CASCADE ON DELETE CASCADE,
-  btitle_id int NOT NULL REFERENCES btitles (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  author_id int NOT NULL REFERENCES authors(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  btitle_id int NOT NULL REFERENCES btitles(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   ysbook_id int NOT NULL DEFAULT 0,
   subdue_id int NOT NULL DEFAULT 0,
@@ -49,32 +49,32 @@ CREATE TABLE nvinfos (
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX nvinfo_unique_idx ON nvinfos (btitle_id, author_id);
+CREATE UNIQUE INDEX nvinfo_unique_idx ON nvinfos(btitle_id, author_id);
 
-CREATE INDEX nvinfo_author_idx ON nvinfos (author_id);
+CREATE INDEX nvinfo_author_idx ON nvinfos(author_id);
 
-CREATE INDEX nvinfo_yousuu_idx ON nvinfos (ysbook_id);
+CREATE INDEX nvinfo_yousuu_idx ON nvinfos(ysbook_id);
 
 ----
-CREATE INDEX nvinfo_zseed_idx ON nvinfos USING GIN (zseeds gin__int_ops);
+CREATE INDEX nvinfo_zseed_idx ON nvinfos USING GIN(zseeds gin__int_ops);
 
-CREATE INDEX nvinfo_genre_idx ON nvinfos USING GIN (igenres gin__int_ops);
+CREATE INDEX nvinfo_genre_idx ON nvinfos USING GIN(igenres gin__int_ops);
 
-CREATE INDEX nvinfo_label_idx ON nvinfos USING GIN (vlabels);
-
----
-CREATE INDEX nvinfo_atime_idx ON nvinfos (atime);
-
-CREATE INDEX nvinfo_utime_idx ON nvinfos (utime);
-
-CREATE INDEX nvinfo_bump_idx ON nvinfos (board_bump);
+CREATE INDEX nvinfo_label_idx ON nvinfos USING GIN(vlabels);
 
 ---
-CREATE INDEX nvinfo_weight_idx ON nvinfos (weight);
+CREATE INDEX nvinfo_atime_idx ON nvinfos(atime);
 
-CREATE INDEX nvinfo_voters_idx ON nvinfos (voters);
+CREATE INDEX nvinfo_utime_idx ON nvinfos(utime);
 
-CREATE INDEX nvinfo_rating_idx ON nvinfos (rating);
+CREATE INDEX nvinfo_bump_idx ON nvinfos(board_bump);
+
+---
+CREATE INDEX nvinfo_weight_idx ON nvinfos(weight);
+
+CREATE INDEX nvinfo_voters_idx ON nvinfos(voters);
+
+CREATE INDEX nvinfo_rating_idx ON nvinfos(rating);
 
 -- +micrate Down
 DROP TABLE IF EXISTS nvinfos;

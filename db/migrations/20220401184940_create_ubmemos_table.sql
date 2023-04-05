@@ -1,32 +1,34 @@
 -- +micrate Up
-CREATE TABLE ubmemos (
-  id bigserial primary key,
-
-  viuser_id int not null,
-  nvinfo_id bigint not null,
-
-  status int not null default 0,
-  locked boolean not null default false,
-
-  atime bigint not null default 0,
-  utime bigint not null default 0,
-
-  lr_sname text not null default '',
-  lr_zseed int not null default 0,
-
-  lr_chidx int not null default 0,
-  lr_cpart int not null default 0,
-
-  lc_title text not null default '',
-  lc_uslug text not null default '',
-
-  created_at timestamptz not null default CURRENT_TIMESTAMP,
-  updated_at timestamptz not null default CURRENT_TIMESTAMP
+CREATE TABLE ubmemos(
+  id serial PRIMARY KEY,
+  --
+  viuser_id int NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  nvinfo_id int NOT NULL REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  --
+  status int NOT NULL DEFAULT 0,
+  locked boolean NOT NULL DEFAULT FALSE,
+  --
+  atime bigint NOT NULL DEFAULT 0,
+  utime bigint NOT NULL DEFAULT 0,
+  --
+  lr_sname text NOT NULL DEFAULT '',
+  lr_zseed int NOT NULL DEFAULT 0,
+  --
+  lr_chidx int NOT NULL DEFAULT 0,
+  lr_cpart int NOT NULL DEFAULT 0,
+  --
+  lc_title text NOT NULL DEFAULT '',
+  lc_uslug text NOT NULL DEFAULT '',
+  --
+  created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX ubmemo_unique_idx ON ubmemos (nvinfo_id, viuser_id);
-CREATE INDEX ubmemo_cvuser_idx ON ubmemos (status, viuser_id);
-CREATE INDEX ubmemo_viewed_idx ON ubmemos (viuser_id, atime);
+CREATE UNIQUE INDEX ubmemo_unique_idx ON ubmemos(nvinfo_id, viuser_id);
+
+CREATE INDEX ubmemo_cvuser_idx ON ubmemos(status, viuser_id);
+
+CREATE INDEX ubmemo_viewed_idx ON ubmemos(viuser_id, atime);
 
 -- +micrate Down
 DROP TABLE IF EXISTS ubmemos;

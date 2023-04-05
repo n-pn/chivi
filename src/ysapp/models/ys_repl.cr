@@ -12,7 +12,7 @@ class YS::Ysrepl
   column yr_id : Bytes # mongodb objectid
 
   column yu_id : Int32 = 0
-  belongs_to ysuser : Ysuser
+  belongs_to ysuser : Ysuser, foreign_key_type: Int32
 
   column to_yu_id : Int32 = 0 # to ysuser id
 

@@ -1,5 +1,5 @@
 -- +micrate Up
-CREATE TABLE ysusers (
+CREATE TABLE ysusers(
   id serial PRIMARY KEY,
   yu_id int NOT NULL UNIQUE,
   --
@@ -25,7 +25,7 @@ CREATE TABLE ysusers (
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX ysuser_uname_idx ON ysusers (zname);
+CREATE INDEX ysuser_uname_idx ON ysusers(zname);
 
 -- +micrate Down
 DROP TABLE IF EXISTS ysusers;

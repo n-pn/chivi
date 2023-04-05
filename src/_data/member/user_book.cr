@@ -7,10 +7,10 @@ class CV::Ubmemo
   include Clear::Model
 
   self.table = "ubmemos"
-  primary_key
+  primary_key type: :serial
 
-  belongs_to viuser : Viuser, foreign_key_type: Int32
-  belongs_to nvinfo : Nvinfo, foreign_key: "nvinfo_id"
+  belongs_to viuser : Viuser, foreign_key: "viuser_id", foreign_key_type: Int32
+  belongs_to nvinfo : Nvinfo, foreign_key: "nvinfo_id", foreign_key_type: Int32
 
   # bookmark types: default, reading, finished, onhold, dropped, pending
   column status : Int32 = 0

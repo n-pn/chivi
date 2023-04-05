@@ -14,10 +14,9 @@ end
 
 class YS::CvBook
   include Clear::Model
-
   self.table = "nvinfos"
-  primary_key
 
+  primary_key type: :serial
   belongs_to author : Author, foreign_key_type: Int32
 
   column vname : String
