@@ -113,10 +113,6 @@ class YS::CritCtrl < AC::Base
   @[AC::Route::GET("/crits/:crit_id/deepl")]
   def deepl(crit_id : Int32)
     ycrit = Yscrit.find!({id: crit_id})
-
-    # res = @context.response
-    # res.headers["Content-Type"] = "text/plain; charset=utf-8"
-
     render text: ycrit.load_deepl_from_disk
   rescue err
     render :not_found, text: "Đánh giá không tồn tại"

@@ -1,3 +1,4 @@
+require "./_base"
 require "./_util"
 
 require "./ys_list"
@@ -20,10 +21,10 @@ class YS::Yscrit
   column yslist_id : Int32 = 0
 
   column yu_id : Int32 = 0
-  column yl_id : Bytes
+  column yl_id : Bytes = Bytes[]
 
-  column ztext : String
-  column vhtml : String
+  column ztext : String = ""
+  column vhtml : String = ""
 
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
 
