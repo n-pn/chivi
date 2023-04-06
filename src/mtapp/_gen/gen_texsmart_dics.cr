@@ -1,5 +1,5 @@
 require "colorize"
-require "../data/tx_term"
+require "../data/ts_term"
 
 IDX_DIR = "var/anlzs/texsmart/idx"
 INP_DIR = "var/anlzs/texsmart/tmp"
@@ -16,7 +16,7 @@ def extract(bname : String)
 
   wn_id = bname.split('-').first
 
-  db = MT::TxTerm.open_db(wn_id)
+  db = MT::TsTerm.open_db(wn_id)
   db.exec "begin"
 
   word_size = save_terms(db, dir_path, 111)
@@ -68,7 +68,7 @@ def save_terms(db, dir_path : String, type : Int32)
 
   output.each do |(zstr, ztag), count|
     mrate = (wcount * count) // 1_000_000
-    MT::TxTerm.upsert(zstr, type, ztag, count, mrate.to_i, db)
+    MT::TsTerm.upsert(zstr, type, ztag, count, mrate.to_i, db)
   end
 
   wcount
@@ -94,6 +94,6 @@ def save_entities(db, dir_path : String, wcount : Int64, type : Int32) : Nil
 
   output.each do |(zstr, ztag), count|
     mrate = (wcount * count) // 1_000_000
-    MT::TxTerm.upsert(zstr, type, ztag, count, mrate.to_i, db)
+    MT::TsTerm.upsert(zstr, type, ztag, count, mrate.to_i, db)
   end
 end

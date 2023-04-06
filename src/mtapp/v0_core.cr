@@ -1,7 +1,7 @@
 require "../_util/char_util"
-require "./core/*"
+require "./mt_v0/*"
 
-class SP::MtCore
+class MT::V0Core
   class_getter sino_vi : self { new(MtDict.sino_vi) }
   class_getter pin_yin : self { new(MtDict.pin_yin) }
 

@@ -1,6 +1,6 @@
 require "./v0_node"
 
-class M0::MtData < Array(M0::MtNode)
+class MT::V0Data < Array(MT::V0Node)
   def to_txt(cap : Bool = true) : String
     String.build { |io| to_txt(io, cap: cap) }
   end

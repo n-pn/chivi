@@ -1,6 +1,6 @@
 require "sqlite3"
 
-class MT::TxTerm
+class MT::TsTerm
   include DB::Serializable
 
   getter zstr : String

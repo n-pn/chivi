@@ -1,4 +1,4 @@
-struct M0::MtNode
+struct MT::V0Node
   getter val : String
   getter len : Int32
 

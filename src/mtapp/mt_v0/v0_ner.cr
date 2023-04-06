@@ -1,4 +1,4 @@
-require "./mt_node"
+require "./v0_node"
 
 module SP::SpNers
   extend self
@@ -6,11 +6,11 @@ module SP::SpNers
   enum Kind
     Int; Str; Url; Mix; Err
 
-    def is_url?
+    def _url?
       value <= Url.value
     end
 
-    def is_mix?
+    def _mix?
       value <= Str.value
     end
 
@@ -36,10 +36,10 @@ module SP::SpNers
     def self.map(node : MtNode, prev : self)
       case node.prop
       when .content?  then Err
-      when .int_part? then prev.is_url? ? prev : Err
-      when .str_part? then prev.is_url? ? prev : Err
-      when .url_part? then prev.mix? ? prev : Url
-      else                 prev.mix? ? prev : Err
+      when .int_part? then prev._url? ? prev : Err
+      when .str_part? then prev._url? ? prev : Err
+      when .url_part? then prev._mix? ? prev : Url
+      else                 prev._mix? ? prev : Err
       end
     end
   end
