@@ -144,16 +144,14 @@ export class VpForm {
     return req_privi(this.dic, this.tab)
   }
 
-  toJSON(ztext: string, zfrom: number) {
-    const _ctx = `${ztext}:${zfrom}:${this.dic}`
-
+  toJSON(wn_id: number, input: string, index: number) {
     return JSON.stringify({
       key: this.key,
       val: this.val,
       ptag: this.ptag,
       prio: this.prio,
       dic: this.dic,
-      _ctx,
+      _ctx: { wn_id, input, index },
     })
   }
 }

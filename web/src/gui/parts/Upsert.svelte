@@ -114,7 +114,7 @@
     const res = await fetch('/_m1/defns', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: form.toJSON($ztext, $zfrom),
+      body: form.toJSON($vdict.vd_id, $ztext, $zfrom),
     })
 
     const data = await res.json()

@@ -112,6 +112,20 @@ class M1::DefnCtrl < AC::Base
     render json: defn
   end
 
+  # private def save_log!(defn : DbDefn, form)
+  #   date = Time.local.to_s("%Y-%m/%d")
+  #   log_file = "var/dicts/ulogs/#{date}.jsonl"
+  #   Dir.mkdir_p(File.dirname(log_file))
+
+  #   data = {
+  #     mtime: defn.mtime,
+  #     wn_id: defn.dic,
+  #     dic:   defn.dic,
+  #   }
+
+  #   File.open(log_file, "a", &.puts(data.to_json))
+  # end
+
   private def rebuild_trie(defn : DbDefn)
     case defn.tab
     when 0, 1 # add to main dict

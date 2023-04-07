@@ -1,5 +1,5 @@
 require "./m1_core"
-require "../../mt_sp/sp_core"
+require "../../mtapp/v0_core"
 require "../../_util/text_util"
 
 module M1::TlUtil
@@ -30,47 +30,39 @@ module M1::TlUtil
   end
 
   def tl_author(author : String) : String
-    self.wn_authors.fetch(author) { to_hanviet(author, w_cap: true) }
-  end
-
-  def tl_btitle(btitle : String, wn_id : Int32 = 0)
-    output = self.wn_btitles.fetch(btitle) { cv_btitle(btitle, wn_id) }
-    TextUtil.titleize(output)
+    self.wn_authors.fetch(author) do
+      input.matches?(/\p{Han}/) ? MT::V0Core.tl_hvname(author) : author
+    end
   end
 
   BTITLE_PREFIX = {
     "华娱之"   => "C-biz: ",
     "韩娱之"   => "K-biz: ",
     "火影之"   => "NARUTO: ",
-    "民国之"   => "Dân quốc: ",
+    "民国之"   => "Dân qQốc: ",
     "三国之"   => "Tam Quốc: ",
-    "综漫之"   => "Tổng mạn: ",
-    "娱乐之"   => "Giải trí: ",
-    "重生之"   => "Trùng sinh: ",
-    "穿越之"   => "Xuyên qua: ",
-    "复活之"   => "Phục sinh: ",
-    "网游之"   => "Game online: ",
-    "异界之"   => "Thế giới khác: ",
+    "综漫之"   => "Tổng Mạn: ",
+    "娱乐之"   => "Giải Trí: ",
+    "重生之"   => "Trùng Sinh: ",
+    "穿越之"   => "Xuyên Qua: ",
+    "复活之"   => "Phục Sinh: ",
+    "网游之"   => "Game Online: ",
+    "异界之"   => "Thế Giới Khác: ",
     "哈利波特之" => "Harry Potter: ",
-    "网游三国之" => "Tam Quốc game online: ",
+    "网游三国之" => "Tam Quốc OL: ",
   }
 
   BTITLE_RE = /^(#{BTITLE_PREFIX.keys.join('|')})(.+)/
 
-  def cv_btitle(input : String, wn_id : Int32 = 0)
-    if input =~ BTITLE_RE
-      prefix = BTITLE_PREFIX[$1]
-      input = $2
+  def tl_btitle(btitle : String, wn_id : Int32 = 0)
+    output = self.wn_btitles.fetch(btitle) do
+      engine = MtCore.init(wn_id)
+
+      if input =~ BTITLE_RE
+        BTITLE_PREFIX[$1] + TextUtil.titleize(engine.translate($2))
+      else
+        TextUtil.titleize(btitle)
+      end
     end
-
-    vname = MtCore.init(wn_id).translate(input)
-    prefix ? prefix + vname : vname
-  end
-
-  def to_hanviet(input : String, w_cap : Bool = true)
-    return input unless input.matches?(/\p{Han}/)
-
-    output = SP::MtCore.tl_sinovi(input, false)
-    w_cap ? TextUtil.titleize(output) : output
   end
 end

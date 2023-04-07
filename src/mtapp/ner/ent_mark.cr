@@ -1,11 +1,17 @@
 @[Flags]
-enum MT::EntFlag : UInt64
+enum MT::EntMark : UInt64
   # detect foreign words
   WORD # raw string
   LINK # url
   MATH # math
   # MAIL # email
   FRAG # unknown fragment
+
+  #
+
+  DATE # Date
+  DURA # Duration
+  TIME # Time
 
   ###
 
@@ -22,10 +28,6 @@ enum MT::EntFlag : UInt64
   NEVT # Named hurricanes, battles, wars, sports events, etc.
   NTTL # Titles of books, songs, etc.
   # N_LAW # Named documents made into laws
-
-  DATE # Date
-  DURA # Duration
-  TIME # Time
 
   # S_PHO # PHONE
   # S_TEL # TELEX

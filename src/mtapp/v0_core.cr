@@ -1,12 +1,15 @@
 require "../_util/char_util"
-require "./mt_v0/*"
+require "./data/v0_dict"
+require "./core/v0_data"
 
 class MT::V0Core
-  class_getter sino_vi : self { new(MtDict.sino_vi) }
-  class_getter pin_yin : self { new(MtDict.pin_yin) }
+  class_getter sino_vi : self { new(V0Dict.sino_vi) }
+  class_getter hv_name : self { new(V0Dict.hv_name) }
+  class_getter pin_yin : self { new(V0Dict.pin_yin) }
 
-  def self.tl_name(name : String)
-    name.matches?(/\p{Han}/) ? tl_sinovi(name, true) : name
+  def self.tl_hvname(name : String)
+    return name unless name.matches?(/\p{Han}/)
+    self.hv_name.tokenize(str).to_txt(cap: false)
   end
 
   def self.tl_sinovi(str : String, cap : Bool = false)
@@ -17,51 +20,38 @@ class MT::V0Core
     self.pin_yin.tokenize(str).to_txt(cap: cap)
   end
 
-  def initialize(@dict : MtDict)
+  def initialize(@dict : V0Dict)
   end
 
-  def tokenize(input : String)
+  @[Flags]
+  enum NerOpts
+    Enabled
+    Persist
+  end
+
+  def tokenize(input : String, ner_opts : NerOpts = :enabled)
     chars = input.chars.map! do |char|
       char = CharUtil.normalize(char)
       char == '､' ? ',' : char
     end
 
-    costs = Array(Int32).new(chars.size + 1, 0)
-    bests = chars.map_with_index { |char, idx| MtNode.new(char, idx: idx) }
-
-    entities = SpNers.scan_all(bests, 0)
-
-    (chars.size - 1).downto(0) do |index|
-      best_cost = 0
-
-      if entity = entities[index]?
-        last_cost = costs.unsafe_fetch(index &+ entity.size)
-        best_cost = last_cost &+ entity.cost
-
-        costs[index] = best_cost
-        bests[index] = entity
-      end
-
-      @dict.scan(chars, start: index) do |node|
-        last_cost = costs.unsafe_fetch(index &+ node.size)
-        curr_cost = last_cost &+ node.cost
-
-        next if best_cost > curr_cost
-
-        costs[index] = best_cost = curr_cost
-        bests[index] = node.dup!(index)
+    bests = Array(V0Node).new(chars.size) do |index|
+      @dict.find_best(chars, start: index) || begin
+        char = chars.unsafe_fetch(index)
+        V0Node.new(char, idx: index)
       end
     end
 
-    index = 0
-    mt_data = MtData.new
+    cursor = 0
+    output = V0Data.new
 
-    while index < bests.size
-      node = bests.unsafe_fetch(index)
-      mt_data << node
-      index &+= node.size
+    while cursor < bests.size
+      node = bests.unsafe_fetch(cursor)
+      output << node
+      cursor &+= node.len
     end
 
-    mt_data
+    @dict.clear_entities! unless ner_opts.persist?
+    output
   end
 end

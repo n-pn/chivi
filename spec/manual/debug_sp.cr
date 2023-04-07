@@ -1,5 +1,5 @@
 require "colorize"
-require "../../src/mt_sp/sp_core"
+require "../../src/mtapp/v0_core"
 
 time = Time.monotonic
 
@@ -17,7 +17,7 @@ tests = {
 tests.each do |test|
   puts test.colorize.blue
 
-  mtl = SP::MtCore.sino_vi
+  mtl = MT::V0Core.sino_vi
   res = mtl.tokenize(test)
 
   puts res.to_txt.colorize.light_yellow

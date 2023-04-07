@@ -1,6 +1,6 @@
 require "./_m1_ctrl_base"
 require "./m1_tran_data"
-require "../../mt_sp/sp_core"
+require "../../mtapp/v0_core"
 
 class M1::TranCtrl < AC::Base
   base "/_m1/qtran"

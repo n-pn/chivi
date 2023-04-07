@@ -7,11 +7,55 @@ enum MT::FmtFlag : UInt8
   NoSpaceBefore  # do not add whitespace before
   NoSpacePassive # do not add whitespace after if previous node prevent adding whitespace before
 
-  Initial = AddCapAfter | NoSpaceBefore
+  Initial = AddCapAfter | NoSpaceBefore | NoSpaceAfter
   Passive = AddCapPassive | NoSpacePassive
 
+  # TODO: remove this line
+  @@known_chars = {} of Char => self
+
+  @@known_chars = {
+    ' '  => AddCapAfter | NoSpaceBefore | NoSpaceAfter,
+    '.'  => AddCapAfter | NoSpaceBefore,
+    '!'  => AddCapAfter | NoSpaceBefore,
+    '?'  => AddCapAfter | NoSpaceBefore,
+    '⟨'  => AddCapAfter | NoSpaceAfter,
+    '<'  => AddCapAfter | NoSpaceAfter,
+    '‹'  => AddCapAfter | NoSpaceAfter,
+    '⟩'  => AddCapAfter | NoSpaceBefore,
+    '>'  => AddCapAfter | NoSpaceBefore,
+    '›'  => AddCapAfter | NoSpaceBefore,
+    '“'  => AddCapPassive | NoSpaceAfter,
+    '‘'  => AddCapPassive | NoSpaceAfter,
+    '['  => AddCapPassive | NoSpaceAfter,
+    '{'  => AddCapPassive | NoSpaceAfter,
+    '('  => AddCapPassive | NoSpaceAfter,
+    '”'  => AddCapPassive | NoSpaceBefore,
+    '’'  => AddCapPassive | NoSpaceBefore,
+    ']'  => AddCapPassive | NoSpaceBefore,
+    '}'  => AddCapPassive | NoSpaceBefore,
+    ')'  => AddCapPassive | NoSpaceBefore,
+    ','  => AddCapPassive | NoSpaceBefore,
+    ';'  => AddCapPassive | NoSpaceBefore,
+    '…'  => AddCapPassive | NoSpaceBefore,
+    '\'' => AddCapPassive | NoSpaceBefore | NoSpaceAfter,
+    '"'  => AddCapPassive | NoSpaceBefore | NoSpaceAfter,
+    '·'  => AddCapPassive | NoSpaceBefore | NoSpaceAfter,
+    ':'  => AddCapPassive | NoSpaceBefore,
+    '%'  => AddCapPassive | NoSpaceBefore,
+    '~'  => AddCapPassive | NoSpaceBefore,
+    '#'  => AddCapPassive | NoSpaceAfter,
+    '$'  => AddCapPassive | NoSpaceAfter,
+    '@'  => AddCapPassive | NoSpaceAfter,
+    '+'  => AddCapPassive | NoSpaceBefore | NoSpaceAfter,
+    '-'  => AddCapPassive | NoSpaceBefore | NoSpaceAfter,
+    '='  => AddCapPassive | NoSpaceBefore | NoSpaceAfter,
+    '/'  => AddCapPassive | NoSpaceBefore | NoSpaceAfter,
+    '&'  => AddCapPassive | NoSpaceBefore | NoSpaceAfter,
+    '*'  => AddCapPassive | NoSpaceBefore | NoSpaceAfter,
+  }
+
   @[AlwaysInline]
-  def add_space?(prev : self)
+  def no_space?(prev : self)
     self.no_space_before? || prev.no_space_after? ||
       (self.no_space_passive? && prev.no_space_before?)
   end
@@ -29,20 +73,24 @@ enum MT::FmtFlag : UInt8
     end
   end
 
-  def self.from(flags : Enumerable(String))
-    output = None
+  def self.detect(chr : Char)
+    chr.alphanumeric? ? None : @@known_chars.fetch(chr, AddCapPassive)
+  end
 
-    flags.each do |flag|
+  def self.detect(inp : String)
+    inp.each_char.reduce(None) { |acc, chr| acc | detect(chr) }
+  end
+
+  def self.parse(flags : Enumerable(String))
+    flags.reduce(None) do |acc, flag|
       case flag
-      when "ac_a" then output |= AddCapAfter
-      when "ac_p" then output |= AddCapPassive
-      when "ns_a" then output |= NoSpaceAfter
-      when "ns_b" then output |= NoSpaceBefore
-      when "ns_p" then output |= NoSpacePassive
+      when "ac_a" then acc | AddCapAfter
+      when "ac_p" then acc | AddCapPassive
+      when "ns_a" then acc | NoSpaceAfter
+      when "ns_b" then acc | NoSpaceBefore
+      when "ns_p" then acc | NoSpacePassive
       else             raise "Unknown fmt flag #{flag}"
       end
     end
-
-    output
   end
 end

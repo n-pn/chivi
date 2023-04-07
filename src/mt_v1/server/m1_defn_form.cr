@@ -13,7 +13,15 @@ class M1::DefnForm
   getter dic : Int32 = 0
   getter tab : Int32 = 1
 
-  getter _ctx : String
+  record Ctx, wn_id : Int32, input : String, index : Int32 do
+    include JSON::Serializable
+
+    def to_s
+      "#{input}:#{index}:#{wn_id}"
+    end
+  end
+
+  getter _ctx : Ctx | Nil = nil
 
   def after_initialize
     @key = @key.gsub(/[\p{C}\s]+/, " ").strip
@@ -49,7 +57,7 @@ class M1::DefnForm
     defn.uname = uname
     defn.mtime = mtime
 
-    defn._ctx = @_ctx
+    defn._ctx = @_ctx.to_s
 
     defn.tap(&.create!)
   end

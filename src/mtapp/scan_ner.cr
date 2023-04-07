@@ -1,6 +1,7 @@
-require "./basic_ner/*"
+require "./cvner/*"
+require "./core/ent_term"
 
-module MT::BasicNER
+module MT::BasicNer
   HANNUM_CHARS = {
     '一', '两',
     '二', '三',
