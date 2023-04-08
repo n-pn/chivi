@@ -34,7 +34,8 @@ class MT::V0Dict
     trie = Trie.new
 
     V0Term.load_data(dname) do |zstr, defs|
-      trie[zstr] = make_node(zstr, defs)
+      node = defs.empty? ? nil : make_node(zstr, defs)
+      trie[zstr] = node
     end
 
     @data << trie
@@ -42,8 +43,7 @@ class MT::V0Dict
   end
 
   @[AlwaysInline]
-  def make_node(zstr : String, defs : String) : V0Node?
-    return if defs.empty?
+  def make_node(zstr : String, defs : String) : V0Node
     V0Node.new(val: defs.split('\t').first, len: zstr.size, idx: 0)
   end
 

@@ -38,10 +38,11 @@ class MT::V0Core
       end
     end
 
-    @ner_core.fetch_all(chars) do |idx, len, _mark, vstr|
-      next if len < @bests.unsafe_fetch(idx).size
-      zstr = chars[idx, len].join
-      bests[idx] = @dict.make_node(zstr, vstr)
+    @ner_core.fetch_all(chars) do |idx, len, mark, vstr|
+      next if len < bests.unsafe_fetch(idx).len
+
+      fmt = mark.link? || mark.frag? ? FmtFlag::Frozen : FmtFlag::None
+      bests[idx] = V0Node.new(vstr, len, idx, fmt: fmt)
     end
 
     cursor = 0

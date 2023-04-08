@@ -1,5 +1,8 @@
 @[Flags]
 enum MT::FmtFlag : UInt8
+  Hidden # do not render content
+  Frozen # do not add cap
+
   AddCapAfter   # cap after
   AddCapPassive # cap after only if cap flag is raised
 
@@ -61,15 +64,23 @@ enum MT::FmtFlag : UInt8
       (self.no_space_passive? && prev.no_space_before?)
   end
 
+  @[AlwaysInline]
+  private def merge_add_cap_after(prev : self)
+    prev.add_cap_after? ? self | AddCapAfter : self
+  end
+
   def apply_cap(io : IO, str : String, prev : self) : self
-    if self.add_cap_passive? # usually for punctuation or special tokens
+    case
+    when self.hidden?
+      self.merge_add_cap_after(prev)
+    when self.add_cap_passive? # usually for punctuation or special tokens
       io << str
-      prev.add_cap_after? ? self | AddCapAfter : self
-    elsif prev.add_cap_after? # for normal tokens, apply upper case for the first letter
-      str.each_char_with_index { |c, i| io << (i == 0 ? c.upcase : c) }
+      self.merge_add_cap_after(prev)
+    when self.frozen? || !prev.add_cap_after?
+      io << str
       self
     else # do not do anything if no capitalization needed
-      io << str
+      str.each_char_with_index { |c, i| io << (i == 0 ? c.upcase : c) }
       self
     end
   end
