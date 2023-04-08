@@ -4,8 +4,8 @@ enum MT::EntMark : UInt64
   WORD # raw string
   LINK # url
   MATH # math
-  # MAIL # email
   FRAG # unknown fragment
+  # MAIL # email
 
   #
 
@@ -63,19 +63,11 @@ enum MT::EntMark : UInt64
   MACC # Acceleration
   MMEA # Other measures
 
-  def self.extract(marks : Enumerable(String))
-    bner = iner = ener = sner = None
+end
 
-    marks.each do |entry|
-      type, mark = entry.split('-', 2)
-      case type[0]
-      when 'B' then bner |= parse(mark)
-      when 'I' then iner |= parse(mark)
-      when 'E' then ener |= parse(mark)
-      when 'S' then sner |= parse(mark)
-      end
-    end
-
-    {bner, iner, ener, sner}
-  end
+enum MT::NerMark : UInt8
+  B
+  I
+  E
+  S
 end

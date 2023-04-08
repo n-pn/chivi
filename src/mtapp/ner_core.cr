@@ -1,16 +1,77 @@
+require "./ner_core/*"
+
 class MT::NerCore
   @[Flags]
-  enum Opts
-    Enabled
-    Persist
+  struct Opts
+    getter? enabled = false
+    getter? persist = false
+
+    getter detects : Enumerable(EntMark)
+    getter selects : Enumerable(EntMark)
+
+    def initialize(@enabled, @persist, @detects, @selects)
+    end
   end
 
-  def initialize
+  def initialize(@dict : NerDict, @opts : Opts)
   end
 
-  def fetch_all(ner_chars : Array(Char), raw_chars = ner_chars, &)
-    # TODO
+  def fetch_all(chars : Array(Char), &)
+    hash = gen_hash(chars)
+
+    index = 0
+    while index < chars.size
+      data = hash[index]
+
+      best_node = nil
+      best_mark = EntMark::None
+
+      @opts.selects.each do |mark|
+        next unless node = data.sner[mark]?
+        next if best_node && best_node.sum >= node.sum
+
+        best_node = node
+        best_mark = mark
+      end
+
+      if best_node
+        yield index, best_node.sum, best_mark, best_node.get_value(best_mark)
+        index &+= best_node.sum
+      else
+        index &+= 1
+      end
+    end
   end
 
-  class_getter translit : self { new }
+  private def gen_hash(chars : Array(Char))
+    hash = {} of Int32 => NerData
+
+    (chars.size - 1).downto(0) do |index|
+      curr = hash[index] = NerData.new
+
+      @dict.fetch_all(chars, start: index) do |node|
+        @opts.selects.each do |mark|
+          curr.add_sner(mark, node) if node.sner?(mark)
+        end
+
+        succ = hash[index &+ node.sum]?
+
+        @opts.detects.each do |mark|
+          curr.add_ener(mark, node) if node.ener?(mark)
+          next unless succ && (succ_node = succ.ener[mark]?)
+
+          curr.add_ener(mark, NerNode.new(node, succ_node)) if node.iner?(mark)
+          curr.add_sner(mark, NerNode.new(node, succ_node)) if node.bner?(mark)
+        end
+      end
+    end
+
+    hash
+  end
+
+  class_getter translit : self do
+    detects = selects = {EntMark::LINK, EntMark::WORD, EntMark::FRAG}
+    opts = Opts.new(enabled: true, persist: false, detects: detects, selects: selects)
+    new(NerDict.translit, opts)
+  end
 end

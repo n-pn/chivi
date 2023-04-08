@@ -24,7 +24,7 @@ class MT::V0Core
   def initialize(@dict : V0Dict, @ner_core = NerCore.translit)
   end
 
-  def tokenize(input : String, ner_opts : NerCore::Opts = :enabled)
+  def tokenize(input : String)
     # TODO: make two version of chars, one for dic lookup, one for ner task
     chars = input.chars.map! do |char|
       char = CharUtil.normalize(char)
@@ -38,10 +38,11 @@ class MT::V0Core
       end
     end
 
-    # @ner_core.fetch_all(chars, opts: ner_opts) do |term, idx|
-    #   next if term.size < @bests.unsafe_fetch(idx).size
-    #   bests[idx] = @dict.make_node(term.zstr, term.vstr)
-    # end
+    @ner_core.fetch_all(chars) do |idx, len, _mark, vstr|
+      next if len < @bests.unsafe_fetch(idx).size
+      zstr = chars[idx, len].join
+      bests[idx] = @dict.make_node(zstr, vstr)
+    end
 
     cursor = 0
     output = V0Data.new
