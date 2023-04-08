@@ -72,7 +72,8 @@ enum MT::FmtFlag : UInt8
   def apply_cap(io : IO, str : String, prev : self) : self
     case
     when self.hidden?
-      self.merge_add_cap_after(prev)
+      flag = self.merge_add_cap_after(prev)
+      prev.no_space_after? ? flag | NoSpaceAfter : flag
     when self.add_cap_passive? # usually for punctuation or special tokens
       io << str
       self.merge_add_cap_after(prev)
