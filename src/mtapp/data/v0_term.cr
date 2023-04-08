@@ -53,7 +53,7 @@ class MT::V0Term
 
   def self.upsert_sql
     <<-SQL
-    insert into "#{@@table}" ("zstr", "defs", "tags", "sign", "uname", "mtime")
+    insert into "terms" ("zstr", "defs", "tags", "sign", "uname", "mtime")
     values ($1, $2, $3, $4, $5, $6)
     on conflict("zstr", "uname")do update set
       "defs" = excluded.defs,
@@ -68,22 +68,17 @@ class MT::V0Term
   # return path for database
   @[AlwaysInline]
   def self.db_path(dname : String)
-    "var/dicts/spdic/#{dname}.dic"
-  end
-
-  def self.open_db(dname : String)
-    DB.open("sqlite3:#{self.db_path(dname)}")
+    "var/dicts/v0dic/#{dname}.dic"
   end
 
   # open database for reading/writing
   def self.open_db(dname : String, &)
-    DB.open("sqlite3:#{self.db_path(dname)}") { |db| yield db }
+    DB.open("sqlite3:#{self.db_path(dname)}?synchronous=normal") { |db| yield db }
   end
 
   # open database with transaction for writing
   def self.open_tx(dname : String, &)
     open_db(dname) do |db|
-      db.exec "pragma synchronous = normal"
       db.exec "begin"
       yield db
       db.exec "commit"
@@ -112,7 +107,7 @@ class MT::V0Term
     end
   end
 
-  SELECT_STMT = "select zstr, defs from #{@@table}"
+  SELECT_STMT = "select zstr, defs from terms"
 
   def self.load_data(dname : String, &)
     open_db(dname) do |db|

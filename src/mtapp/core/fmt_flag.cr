@@ -7,7 +7,8 @@ enum MT::FmtFlag : UInt8
   NoSpaceBefore  # do not add whitespace before
   NoSpacePassive # do not add whitespace after if previous node prevent adding whitespace before
 
-  Initial = AddCapAfter | NoSpaceBefore | NoSpaceAfter
+  Nospace = NoSpaceBefore | NoSpaceAfter
+  Initial = AddCapAfter | Nospace
   Passive = AddCapPassive | NoSpacePassive
 
   # TODO: remove this line

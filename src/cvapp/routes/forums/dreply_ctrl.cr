@@ -50,7 +50,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::GET("/:repl_id/detail")]
-  def detail(repl_id : Int64)
+  def detail(repl_id : Int32)
     cvrepl = Cvrepl.load!(repl_id)
 
     render json: {
@@ -64,7 +64,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
     render :not_found, text: "Bài viết không tồn tại!"
   end
 
-  record CvreplForm, input : String, repl_id : Int64 = 0, post_id : Int64 = 0 do
+  record CvreplForm, input : String, repl_id : Int32 = 0, post_id : Int32 = 0 do
     include JSON::Serializable
 
     def after_initialize
@@ -88,7 +88,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::PATCH("/:repl_id", body: :form)]
-  def update(repl_id : Int64, form : CvreplForm)
+  def update(repl_id : Int32, form : CvreplForm)
     cvrepl = Cvrepl.load!(repl_id)
     guard_owner cvrepl.viuser_id, 0, "sửa bình luận"
 
@@ -97,7 +97,7 @@ class CV::CvreplCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::DELETE("/:repl_id")]
-  def delete(repl_id : Int64)
+  def delete(repl_id : Int32)
     cvrepl = Cvrepl.load!(repl_id)
     guard_owner cvrepl.viuser_id, 0, "xoá bình luận"
 

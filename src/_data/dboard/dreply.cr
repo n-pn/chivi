@@ -13,10 +13,10 @@ class CV::Cvrepl
   belongs_to viuser : Viuser, foreign_key_type: Int32
   belongs_to cvpost : Cvpost, foreign_key_type: Int32
 
-  column repl_cvrepl_id : Int64 = 0 # replied to cvrepl.id
-  column repl_viuser_id : Int64 = 0 # replied to cvrepl's viuser.id
+  column repl_cvrepl_id : Int32 = 0 # replied to cvrepl.id
+  column repl_viuser_id : Int32 = 0 # replied to cvrepl's viuser.id
 
-  column tagged_ids : Array(Int64) = [] of Int64
+  column tagged_ids : Array(Int32) = [] of Int32
 
   column input : String = ""
 
@@ -52,7 +52,7 @@ class CV::Cvrepl
   end
 
   def extract_user_ids(input : String)
-    users = [] of Int64
+    users = [] of Int32
 
     output = input.gsub(/@\[(.+?)\]/) do |str|
       user = Viuser.load!($1)
@@ -65,7 +65,7 @@ class CV::Cvrepl
     {output, users}
   end
 
-  def set_dtrepl_id(dtrepl_id : Int64)
+  def set_dtrepl_id(dtrepl_id : Int32)
     self.repl_cvrepl_id = dtrepl_id
 
     if dtrepl_id > 0
@@ -86,7 +86,7 @@ class CV::Cvrepl
   end
 
   def brief
-    self.otext.split("\n", 2).first? || ""
+    self.otext.split('\n', 2).first? || ""
   end
 
   def inc_like_count!(value = 1)
@@ -96,9 +96,9 @@ class CV::Cvrepl
 
   #################
 
-  CACHE = RamCache(Int64, self).new(1024, ttl: 20.minutes)
+  CACHE = RamCache(Int32, self).new(1024, ttl: 20.minutes)
 
-  def self.load!(id : Int64)
+  def self.load!(id : Int32)
     CACHE.get(id) { find!({id: id}) }
   end
 end

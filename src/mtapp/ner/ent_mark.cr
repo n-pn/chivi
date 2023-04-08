@@ -37,19 +37,19 @@ enum MT::EntMark : UInt64
   # numbers:
 
   # mark generic nmumber
-  D_NUM # cardinal
-  D_ORD # ordinal
+  DNUM # cardinal
+  DORD # ordinal
 
-  D_INT # pure digital
-  D_LIT # han letters
-  D_MIX # mix digit and hanzi
+  DINT # pure digital
+  DLIT # han letters
+  DMIX # mix digit and hanzi
 
-  D_PCT # Percent
-  D_MON # Money
-  D_FRE # Frequency
-  D_FRA # Fraction
-  D_DEC # Decimal
-  D_RAT # Rate
+  DPCT # Percent
+  DMON # Money
+  DFRE # Frequency
+  DFRA # Fraction
+  DDEC # Decimal
+  DRAT # Rate
 
   # measure
   MAGE # Age
@@ -62,4 +62,20 @@ enum MT::EntMark : UInt64
   MSPE # Speed
   MACC # Acceleration
   MMEA # Other measures
+
+  def self.extract(marks : Enumerable(String))
+    bner = iner = ener = sner = None
+
+    marks.each do |entry|
+      type, mark = entry.split('-', 2)
+      case type[0]
+      when 'B' then bner |= parse(mark)
+      when 'I' then iner |= parse(mark)
+      when 'E' then ener |= parse(mark)
+      when 'S' then sner |= parse(mark)
+      end
+    end
+
+    {bner, iner, ener, sner}
+  end
 end

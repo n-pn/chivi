@@ -2,7 +2,7 @@ require "./v0_node"
 
 class MT::V0Data < Array(MT::V0Node)
   def to_txt(cap : Bool = true) : String
-    fmt = cap ? FmtFlag::Initial : FmtFlag::NoSpaceBefore
+    fmt = cap ? FmtFlag::Initial : FmtFlag::Nospace
     String.build { |io| to_txt(io, fmt: fmt) }
   end
 
@@ -11,7 +11,7 @@ class MT::V0Data < Array(MT::V0Node)
   end
 
   def to_mtl(cap : Bool = true) : String
-    fmt = cap ? FmtFlag::Initial : FmtFlag::NoSpaceBefore
+    fmt = cap ? FmtFlag::Initial : FmtFlag::Nospace
     String.build { |io| to_mtl(io, fmt: fmt) }
   end
 

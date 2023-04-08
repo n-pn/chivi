@@ -12,10 +12,12 @@ tests = {
   "12：12",
   "一. 屠龙之术",
   "@ 无聊得很啊",
+  "为人作嫁",
 }
 
 tests.each do |test|
   puts test.colorize.blue
+  puts MT::V0Core.tl_hvname(test)
 
   mtl = MT::V0Core.sino_vi
   res = mtl.tokenize(test)

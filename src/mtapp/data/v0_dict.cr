@@ -14,23 +14,19 @@ class MT::V0Dict
       .load_dic!("pin_yin")
   end
 
+  class_getter hv_name : self do
+    new
+      # .load_dic!("essence")
+      .load_dic!("hv_name")
+  end
+
   def initialize
-    @ent = Trie.new
-    @all = [@ent]
-  end
-
-  def run_ner!(key_chars : Array(Char), val_char = key_chars)
-    # TODO: fill dictionary with ner result
-  end
-
-  # remover all cached entities
-  def clear_entities!
-    @ent.trie.clear
+    @data = [] of Trie
   end
 
   def load_tsv!(dname : String) : self
     # TODO: allow to load v0 dict from tsv files
-    self
+    raise "unsupported!"
   end
 
   # load terms from dic file
@@ -41,7 +37,7 @@ class MT::V0Dict
       trie[zstr] = make_node(zstr, defs)
     end
 
-    @all << trie
+    @data << trie
     self
   end
 
@@ -52,7 +48,7 @@ class MT::V0Dict
   end
 
   def find_best(inp : Array(Char), start = 0) : V0Node?
-    @all.reverse_each do |trie|
+    @data.reverse_each do |trie|
       node = trie
 
       start.upto(inp.size &- 1) do |idx|

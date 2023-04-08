@@ -1,5 +1,5 @@
 require "./_base"
-require "../../mt_sp/sp_core"
+require "../../mtapp/v0_core"
 
 class YS::Ysuser
   include Clear::Model
@@ -35,7 +35,7 @@ class YS::Ysuser
 
   def set_name(zname : String)
     self.zname = zname
-    self.vname = SP::MtCore.tl_name(zname)
+    self.vname = MT::V0Core.tl_hvname(zname)
     self.vslug = TextUtil.slugify(self.vname)
   end
 

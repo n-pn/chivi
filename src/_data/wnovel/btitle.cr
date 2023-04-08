@@ -1,4 +1,5 @@
-require "../shared/book_util"
+require "../../mtapp/v0_core"
+
 require "../_base"
 
 # storing book names
@@ -28,7 +29,7 @@ class CV::Btitle
     else
       entry = new({zname: zname})
 
-      entry.hname = BookUtil.tl_name(zname)
+      entry.hname = MT::V0Core.tl_hvname(zname)
       entry.vname = vname || entry.hname
 
       entry.tap(&.save!)

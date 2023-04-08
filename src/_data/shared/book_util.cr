@@ -2,7 +2,7 @@ require "json"
 # require "tabkv"
 
 require "../../_util/text_util"
-require "../../mt_sp/sp_core"
+require "../../mtapp/v0_core"
 
 module CV::BookUtil
   extend self
@@ -98,80 +98,6 @@ module CV::BookUtil
   end
 
   def tl_name(input : String)
-    return input unless input =~ /\p{Han}/
-    output = SP::MtCore.tl_sinovi(input)
-    TextUtil.capitalize(output)
+    MT::V0Core.tl_hvname(input)
   end
-
-  # enum RenderMode
-  #   Mtl; Text; Html
-  # end
-
-  # def cv_lines(input : String, udict : String, mode : RenderMode) : String
-  #   cv_lines(split_lines(input), udict, mode)
-  # end
-
-  # def cv_lines(lines : Array(String), udict : String = "combine", mode : RenderMode = :text) : String
-  #   cvmtl = M1::MtCore.init(udict)
-
-  #   String.build do |io|
-  #     lines.each_with_index do |line, idx|
-  #       mt_list = cvmtl.cv_plain(line)
-  #       io << '\n' if idx > 0
-
-  #       case mode
-  #       when .html?
-  #         io << "<p>"
-  #         mt_list.to_txt(io)
-  #         io << "</p>"
-  #       when .text?
-  #         mt_list.to_txt(io)
-  #       else
-  #         mt_list.to_mtl(io)
-  #       end
-  #     end
-  #   end
-  # end
-
-  # ###################
-
-  # def author_vname(author : String) : String
-  #   vi_authors[author]? || hanviet(author)
-  # end
-
-  # def btitle_vname(zname : String, bdict : String = "combine") : String
-  #   vname = vi_btitles[zname]? || btitle_vname_mtl(zname, bdict)
-  #   TextUtil.titleize(vname)
-  # end
-
-  # def btitle_vname_mtl(zname : String, bdict : String) : String
-  #   cvmtl = M1::MtCore.init(bdict)
-
-  #   NAME_PREFIXES.each do |key, val|
-  #     next unless zname.starts_with?(key)
-  #     return val + cvmtl.translate(zname[key.size..])
-  #   end
-
-  #   cvmtl.translate(zname)
-  # end
-
-  # NAME_PREFIXES = {
-  #   "华娱之"   => "C-biz: ",
-  #   "韩娱之"   => "K-biz: ",
-  #   "火影之"   => "NARUTO: ",
-  #   "民国之"   => "Dân quốc: ",
-  #   "三国之"   => "Tam Quốc: ",
-  #   "综漫之"   => "Tổng mạn: ",
-  #   "娱乐之"   => "Giải trí: ",
-  #   "重生之"   => "Trùng sinh: ",
-  #   "穿越之"   => "Xuyên qua: ",
-  #   "复活之"   => "Phục sinh: ",
-  #   "网游之"   => "Game online: ",
-  #   "异界之"   => "Thế giới khác: ",
-  #   "哈利波特之" => "Harry Potter: ",
-  #   "网游三国之" => "Tam Quốc game online: ",
-  # }
 end
-
-# puts CV::BookUtil.scrub_zname("9205.第9205章 test 番外 test??!!")
-# puts CV::BookUtil.scrub_vname("sd9205.test 番外 12 test2??!! tiếng việt=", "-")

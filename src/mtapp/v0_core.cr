@@ -1,14 +1,15 @@
 require "../_util/char_util"
 require "./data/v0_dict"
 require "./core/v0_data"
+require "./ner_core"
 
 class MT::V0Core
-  class_getter sino_vi : self { new(V0Dict.sino_vi) }
   class_getter hv_name : self { new(V0Dict.hv_name) }
+  class_getter sino_vi : self { new(V0Dict.sino_vi) }
   class_getter pin_yin : self { new(V0Dict.pin_yin) }
 
-  def self.tl_hvname(name : String)
-    return name unless name.matches?(/\p{Han}/)
+  def self.tl_hvname(str : String)
+    return str unless str.matches?(/\p{Han}/)
     self.hv_name.tokenize(str).to_txt(cap: false)
   end
 
@@ -20,16 +21,11 @@ class MT::V0Core
     self.pin_yin.tokenize(str).to_txt(cap: cap)
   end
 
-  def initialize(@dict : V0Dict)
+  def initialize(@dict : V0Dict, @ner_core = NerCore.translit)
   end
 
-  @[Flags]
-  enum NerOpts
-    Enabled
-    Persist
-  end
-
-  def tokenize(input : String, ner_opts : NerOpts = :enabled)
+  def tokenize(input : String, ner_opts : NerCore::Opts = :enabled)
+    # TODO: make two version of chars, one for dic lookup, one for ner task
     chars = input.chars.map! do |char|
       char = CharUtil.normalize(char)
       char == '､' ? ',' : char
@@ -42,6 +38,11 @@ class MT::V0Core
       end
     end
 
+    # @ner_core.fetch_all(chars, opts: ner_opts) do |term, idx|
+    #   next if term.size < @bests.unsafe_fetch(idx).size
+    #   bests[idx] = @dict.make_node(term.zstr, term.vstr)
+    # end
+
     cursor = 0
     output = V0Data.new
 
@@ -51,7 +52,6 @@ class MT::V0Core
       cursor &+= node.len
     end
 
-    @dict.clear_entities! unless ner_opts.persist?
     output
   end
 end
