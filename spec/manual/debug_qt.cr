@@ -1,8 +1,8 @@
 require "colorize"
-require "../../src/mtapp/v0_core"
+require "../../src/mtapp/qt_core"
 
-DIC = MT::V0Dict.new.load_tsv!("var/dicts/_temp/essential.tsv")
-MTL = MT::V0Core.new(DIC)
+DIC = MT::QtDict.new.load_tsv!("var/dicts/_temp/essential.tsv")
+MTL = MT::QtCore.new(DIC)
 
 text = ARGV[0]? || "“可以问你几个问题吗？”主持人开始线下活动互动了。"
 # book = ARGV[1]?.try(&.to_i) || 5344

@@ -1,6 +1,6 @@
 require "sqlite3"
 
-class MT::V0Term
+class MT::QtTerm
   include DB::Serializable
   class_getter table = "terms"
 
@@ -13,16 +13,16 @@ class MT::V0Term
   property uname : String = ""
   property mtime : Int64 = 0
 
-  def initialize(@zstr, @defs, @tags = "", @sign = 1, @uname = "", @mtime = Time.utc.to_unix)
-  end
+  # def initialize(@zstr, @defs, @tags = "", @sign = 1, @uname = "", @mtime = Time.utc.to_unix)
+  # end
 
-  def db_fields
-    {"zstr", "defs", "tags", "sign", "uname", "mtime"}
-  end
+  # def db_fields
+  #   {"zstr", "defs", "tags", "sign", "uname", "mtime"}
+  # end
 
-  def db_values
-    {@zstr, @defs, @tags, @sign, @uname, @mtime}
-  end
+  # def db_values
+  #   {@zstr, @defs, @tags, @sign, @uname, @mtime}
+  # end
 
   # def self.find(dict : String, zstr : String)
   #   query = "select * from terms where zstr = ?"

@@ -1,25 +1,7 @@
-require "./v0_term"
-require "../core/v0_node"
+require "./qt_term"
+require "./qt_node"
 
-class MT::V0Dict
-  class_getter sino_vi : self do
-    new
-      # .load_dic!("essence")
-      .load_dic!("sino_vi")
-  end
-
-  class_getter pin_yin : self do
-    new
-      # .load_dic!("essence")
-      .load_dic!("pin_yin")
-  end
-
-  class_getter hv_name : self do
-    new
-      # .load_dic!("essence")
-      .load_dic!("hv_name")
-  end
-
+class MT::QtDict
   @data = [] of Trie
 
   def initialize
@@ -44,7 +26,7 @@ class MT::V0Dict
   def load_dic!(dname : String) : self
     trie = Trie.new
 
-    V0Term.load_data(dname) do |zstr, defs|
+    QtTerm.load_data(dname) do |zstr, defs|
       node = defs.empty? ? nil : make_node(zstr, defs)
       trie[zstr] = node
     end
@@ -54,11 +36,11 @@ class MT::V0Dict
   end
 
   @[AlwaysInline]
-  def make_node(zstr : String, defs : String, sep = '\t') : V0Node
-    V0Node.new(val: defs.split(sep).first, len: zstr.size, idx: 0)
+  def make_node(zstr : String, defs : String, sep = '\t') : QtNode
+    QtNode.new(val: defs.split(sep).first, len: zstr.size, idx: 0)
   end
 
-  def find_best(inp : Array(Char), start = 0) : V0Node?
+  def find_best(inp : Array(Char), start = 0) : QtNode?
     output = nil
 
     @data.reverse_each do |trie|
@@ -77,14 +59,14 @@ class MT::V0Dict
   end
 
   class Trie
-    property data : V0Node? = nil
+    property data : QtNode? = nil
     property trie = {} of Char => Trie
 
     def [](key : String)
       key.each_char.reduce(self) { |acc, chr| acc.trie[chr] ||= Trie.new }
     end
 
-    def []=(key : String, data : V0Node?)
+    def []=(key : String, data : QtNode?)
       self[key].data = data
     end
 

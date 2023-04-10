@@ -1,7 +1,6 @@
-require "../shared/fmt_flag"
-require "../shared/cws_cost"
+require "../shared/*"
 
-struct MT::V0Node
+struct MT::QtNode
   getter val : String
   getter len : Int32
 
@@ -41,4 +40,8 @@ struct MT::V0Node
   def dup!(@idx : Int32) : self
     self.dup
   end
+end
+
+class MT::QtData < Array(MT::QtNode)
+  include MtOutput
 end

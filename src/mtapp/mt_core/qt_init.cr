@@ -1,7 +1,7 @@
 require "crorm"
 require "crorm/sqlite3"
 
-class MT::V0Init
+class MT::QtInit
   include Crorm::Model
   @@table = "defns"
 

@@ -1,10 +1,9 @@
 require "../_util/char_util"
-require "./data/v0_dict"
-require "./core/v0_data"
 require "./ner_core"
+require "./qt_core/*"
 
-class MT::SpCore
-  def initialize(@dict : V0Dict, @ner_core = NerCore.translit)
+class MT::QtCore
+  def initialize(@dict : QtDict, @ner_core = NerCore.translit)
   end
 
   def tokenize(input : String)
@@ -14,10 +13,10 @@ class MT::SpCore
       char == '､' ? ',' : char
     end
 
-    bests = Array(V0Node).new(chars.size) do |index|
+    bests = Array(QtNode).new(chars.size) do |index|
       @dict.find_best(chars, start: index) || begin
         char = chars.unsafe_fetch(index)
-        V0Node.new(char, idx: index)
+        QtNode.new(char, idx: index)
       end
     end
 
@@ -26,11 +25,11 @@ class MT::SpCore
       next if cost < bests.unsafe_fetch(idx).cost
 
       fmt = mark.link? || mark.frag? ? FmtFlag::Frozen : FmtFlag::None
-      bests[idx] = V0Node.new(vstr, len, idx, fmt: fmt)
+      bests[idx] = QtNode.new(vstr, len, idx, fmt: fmt)
     end
 
     cursor = 0
-    output = V0Data.new
+    output = QtData.new
 
     while cursor < bests.size
       node = bests.unsafe_fetch(cursor)
