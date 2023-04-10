@@ -99,7 +99,7 @@ class M1::TranCtrl < AC::Base
     output = String.build do |io|
       cv_mt.cv_plain(input, w_cap).to_txt(io)
       io << '\n'
-      io << SP::MtCore.tl_sinovi(input, cap: w_cap)
+      io << MT::V0Core.tl_sinovi(input, cap: w_cap)
     end
 
     render text: output
@@ -114,7 +114,23 @@ class M1::TranCtrl < AC::Base
       cv_chap(io, engine, w_title, label)
     end
 
+    spawn log_tran_stats(input.size, wn_id)
+
     render text: cvmtl
+  end
+
+  def log_tran_stats(c_len : Int32, wn_id : Int32)
+    time_now = Time.utc
+    log_file = "var/users/mtlogs/#{time_now.to_s("%F")}.log"
+
+    File.open(log_file, "a") do |io|
+      {
+        ctime: time_now.to_unix, uname: _uname, privi: _privi, wn_id: wn_id, c_len: c_len,
+        _v: 1,
+      }.to_json(io)
+
+      io << '\n'
+    end
   end
 
   @[AC::Route::POST("/tl_mulu")]
