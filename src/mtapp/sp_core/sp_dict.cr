@@ -44,8 +44,14 @@ class MT::SpDict
       char = chars.unsafe_fetch(index)
       break unless '!' <= char <= '~'
 
-      flag |= :frozen unless char.ascii_alphanumeric?
-      index &+= 1
+      if char.ascii_alphanumeric?
+        index &+= 1
+      elsif chars[index &+ 1]?.try(&.ascii_alphanumeric?)
+        flag |= :frozen
+        index &+= 2
+      else
+        break
+      end
     end
 
     vstr = chars[start...index].join
