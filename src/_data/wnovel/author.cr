@@ -1,4 +1,4 @@
-require "../../mtapp/v0_core"
+require "../../mtapp/sp_core"
 
 require "../_base"
 require "./wn_info"
@@ -36,7 +36,7 @@ class CV::Author
 
       author
     else
-      vname ||= MT::V0Core.tl_hvname(zname)
+      vname ||= MT::SpCore.tl_hvname(zname)
       new({zname: zname, vname: vname}).tap(&.save!)
     end
   end

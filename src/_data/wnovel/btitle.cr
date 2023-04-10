@@ -1,4 +1,4 @@
-require "../../mtapp/v0_core"
+require "../../mtapp/sp_core"
 
 require "../_base"
 
@@ -29,7 +29,7 @@ class CV::Btitle
     else
       entry = new({zname: zname})
 
-      entry.hname = MT::V0Core.tl_hvname(zname)
+      entry.hname = MT::SpCore.tl_hvname(zname)
       entry.vname = vname || entry.hname
 
       entry.tap(&.save!)

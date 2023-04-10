@@ -1,4 +1,5 @@
-require "./fmt_flag"
+require "../shared/fmt_flag"
+require "../shared/cws_cost"
 
 struct MT::V0Node
   getter val : String
@@ -7,15 +8,20 @@ struct MT::V0Node
   getter idx : Int32
   getter fmt : FmtFlag
 
+  getter cost : Int32
+
   INIT = new(val: "", len: 0, idx: 0, fmt: FmtFlag::Initial)
 
-  def initialize(@val, @len, @idx, @fmt = FmtFlag::None)
+  def initialize(@val, @len, @idx, @fmt = FmtFlag::None, rank = 2)
+    @cost = CwsCost.node_cost(len, rank)
   end
 
   def initialize(chr : Char, @idx : Int32)
     @val = chr.to_s
     @len = 1
     @fmt = FmtFlag.detect(chr)
+
+    @cost = CwsCost.node_cost(1, 1)
   end
 
   def to_txt(io : IO, fmt prev = FmtFlag::None) : FmtFlag

@@ -2,7 +2,7 @@ require "json"
 # require "tabkv"
 
 require "../../_util/text_util"
-require "../../mtapp/v0_core"
+require "../../mtapp/sp_core"
 
 module CV::BookUtil
   extend self
@@ -98,6 +98,6 @@ module CV::BookUtil
   end
 
   def tl_name(input : String)
-    MT::V0Core.tl_hvname(input)
+    MT::SpCore.tl_hvname(input)
   end
 end

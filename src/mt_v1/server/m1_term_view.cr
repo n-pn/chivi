@@ -1,6 +1,6 @@
 require "json"
 
-require "../../mtapp/v0_core"
+require "../../mtapp/sp_core"
 
 require "../data/v1_defn"
 require "../core/m1_dict"
@@ -35,7 +35,7 @@ struct M1::M1TermView
           entries = @defns[form]? || [] of DbDefn
           entries.sort_by! { |e| {-e.dic, -e.tab, -e.mtime} }
 
-          hanviet = MT::V0Core.tl_sinovi(form, false)
+          hanviet = MT::SpCore.tl_sinovi(form, false)
 
           tag_hints = entries.map(&.ptag)
           tag_hints.concat(gen_tag_hints(form)).uniq!
@@ -50,7 +50,7 @@ struct M1::M1TermView
             jb.field "history", entries
 
             jb.field "hanviet", hanviet
-            jb.field "pin_yin", MT::V0Core.tl_pinyin(form, false)
+            jb.field "pin_yin", MT::SpCore.tl_pinyin(form, false)
 
             jb.field "val_hints", val_hints
             jb.field "tag_hints", tag_hints

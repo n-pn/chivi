@@ -1,6 +1,6 @@
 require "./_m1_ctrl_base"
 require "./m1_tran_data"
-require "../../mtapp/v0_core"
+require "../../mtapp/sp_core"
 
 class M1::TranCtrl < AC::Base
   base "/_m1/qtran"
@@ -99,7 +99,7 @@ class M1::TranCtrl < AC::Base
     output = String.build do |io|
       cv_mt.cv_plain(input, w_cap).to_txt(io)
       io << '\n'
-      io << MT::V0Core.tl_sinovi(input, cap: w_cap)
+      io << MT::SpCore.tl_sinovi(input, cap: w_cap)
     end
 
     render text: output

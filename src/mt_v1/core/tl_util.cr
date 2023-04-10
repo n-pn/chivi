@@ -1,5 +1,5 @@
 require "./m1_core"
-require "../../mtapp/v0_core"
+require "../../mtapp/sp_core"
 require "../../_util/text_util"
 
 module M1::TlUtil
@@ -30,9 +30,7 @@ module M1::TlUtil
   end
 
   def tl_author(author : String) : String
-    self.wn_authors.fetch(author) do
-      input.matches?(/\p{Han}/) ? MT::V0Core.tl_hvname(author) : author
-    end
+    self.wn_authors.fetch(author) { MT::SpCore.tl_hvname(author) }
   end
 
   BTITLE_PREFIX = {
@@ -55,10 +53,10 @@ module M1::TlUtil
   BTITLE_RE = /^(#{BTITLE_PREFIX.keys.join('|')})(.+)/
 
   def tl_btitle(btitle : String, wn_id : Int32 = 0)
-    output = self.wn_btitles.fetch(btitle) do
+    self.wn_btitles.fetch(btitle) do
       engine = MtCore.init(wn_id)
 
-      if input =~ BTITLE_RE
+      if btitle =~ BTITLE_RE
         BTITLE_PREFIX[$1] + TextUtil.titleize(engine.translate($2))
       else
         TextUtil.titleize(btitle)

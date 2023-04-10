@@ -27,8 +27,7 @@ class M1::MtPair < M1::MtNode
   end
 
   private def is_empty?(node : MtNode)
-    return false unless node.is_a?(MtTerm)
-    node.val.empty?
+    node.is_a?(MtTerm) && node.val.empty? || false
   end
 
   def modifier?

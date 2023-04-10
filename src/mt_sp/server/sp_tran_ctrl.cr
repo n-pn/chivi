@@ -1,6 +1,6 @@
 require "./_sp_ctrl_base"
 
-require "../sp_core"
+require "../../mtapp/sp_core"
 require "../util/*"
 
 class SP::TranCtrl < AC::Base
@@ -8,37 +8,32 @@ class SP::TranCtrl < AC::Base
 
   @[AC::Route::PUT("/hanviet")]
   def hanviet(mode : String = "mtl", cap_first : Bool = true)
-    @render_called = true
-    res = @context.response
-
-    res.status_code = 200
-    res.content_type = "text/plain; charset=utf-8"
-
-    engine = MtCore.sino_vi
-
     input = request.body.try(&.gets_to_end) || ""
-    input.lines.each_with_index do |line, idx|
-      res << '\n' if idx > 0
-      data = engine.tokenize(line)
-      mode == "txt" ? data.to_txt(res, cap: cap_first) : data.to_mtl(res, cap: cap_first)
+
+    output = String.build do |io|
+      sp_mt = MT::SpCore.sino_vi
+      plain = mode != "mtl"
+
+      input.each_line do |line|
+        data = sp_mt.tokenize(line)
+        plain ? data.to_txt(io, cap: cap_first) : data.to_mtl(io, cap: cap_first)
+        io << '\n'
+      end
     end
+
+    response.content_type = "text/plain; charset=utf-8"
+    render text: output
   end
 
   @[AC::Route::POST("/btran")]
   def btran(sl : String = "zh", tl : String = "vi", no_cap : Bool = false)
-    @render_called = true
-    res = @context.response
+    input = request.body.try(&.gets_to_end) || ""
 
-    res.status_code = 200
-    res.content_type = "text/plain; charset=utf-8"
+    output = Btran.translate(input.lines, source: sl, target: tl, no_cap: no_cap)
+    output = output.join('\n', &.[1])
 
-    text = request.body.try(&.gets_to_end) || ""
-    output = Btran.translate(text.lines, source: sl, target: tl, no_cap: no_cap)
-
-    output.each_with_index do |line, i|
-      res << '\n' if i > 0
-      res << line[1]
-    end
+    context.response.content_type = "text/plain; charset=utf-8"
+    render text: output
   end
 
   @[AC::Route::POST("/deepl")]

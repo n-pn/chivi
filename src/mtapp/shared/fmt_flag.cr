@@ -86,14 +86,6 @@ enum MT::FmtFlag : UInt8
     end
   end
 
-  def self.detect(chr : Char)
-    chr.alphanumeric? ? None : @@known_chars.fetch(chr, AddCapPassive)
-  end
-
-  def self.detect(inp : String)
-    inp.each_char.reduce(None) { |acc, chr| acc | detect(chr) }
-  end
-
   def self.parse(flags : Enumerable(String))
     flags.reduce(None) do |acc, flag|
       case flag
@@ -105,5 +97,29 @@ enum MT::FmtFlag : UInt8
       else             raise "Unknown fmt flag #{flag}"
       end
     end
+  end
+
+  def self.detect(char : Char)
+    char.alphanumeric? ? None : @@known_chars.fetch(char, AddCapPassive)
+  end
+
+  def self.detect(zstr : String)
+    zstr.each_char.reduce(None) { |acc, char| acc | detect(char) }
+  end
+
+  def self.auto_detect(zstr : String)
+    return None if zstr.empty?
+    return Hidden if zstr == "⛶"
+
+    flag = zstr.matches?(/[\P{Han}\P{L}\P{N}]/) ? None : AddCapPassive
+
+    flag_of_first_char = detect(zstr[0])
+    flag |= NoSpaceBefore if flag_of_first_char.no_space_before?
+
+    flag_of_last_char = detect(zstr[-1])
+    flag |= NoSpaceAfter if flag_of_last_char.no_space_after?
+    flag |= AddCapAfter if flag_of_last_char.add_cap_after?
+
+    flag
   end
 end

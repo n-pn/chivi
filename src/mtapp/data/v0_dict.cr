@@ -20,13 +20,24 @@ class MT::V0Dict
       .load_dic!("hv_name")
   end
 
+  @data = [] of Trie
+
   def initialize
-    @data = [] of Trie
   end
 
-  def load_tsv!(dname : String) : self
-    # TODO: allow to load v0 dict from tsv files
-    raise "unsupported!"
+  def load_tsv!(path : String) : self
+    trie = Trie.new
+
+    File.each_line(path) do |line|
+      next if line.empty?
+      zstr, defs = line.split('\t', 2)
+
+      node = defs.empty? ? nil : make_node(zstr, defs, 'ǀ')
+      trie[zstr] = node
+    end
+
+    @data << trie
+    self
   end
 
   # load terms from dic file
@@ -43,20 +54,26 @@ class MT::V0Dict
   end
 
   @[AlwaysInline]
-  def make_node(zstr : String, defs : String) : V0Node
-    V0Node.new(val: defs.split('\t').first, len: zstr.size, idx: 0)
+  def make_node(zstr : String, defs : String, sep = '\t') : V0Node
+    V0Node.new(val: defs.split(sep).first, len: zstr.size, idx: 0)
   end
 
   def find_best(inp : Array(Char), start = 0) : V0Node?
+    output = nil
+
     @data.reverse_each do |trie|
       node = trie
 
       start.upto(inp.size &- 1) do |idx|
         char = inp.unsafe_fetch(idx)
         break unless node = node.trie[char]?
-        node.data.try { |data| return data.dup!(idx) }
+
+        next unless data = node.data
+        output = data.dup!(idx) unless output && output.len >= data.len
       end
     end
+
+    output
   end
 
   class Trie
