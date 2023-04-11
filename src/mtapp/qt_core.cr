@@ -14,10 +14,7 @@ class MT::QtCore
     end
 
     bests = Array(QtNode).new(chars.size) do |index|
-      @dict.find_best(chars, start: index) || begin
-        char = chars.unsafe_fetch(index)
-        QtNode.new(char, idx: index)
-      end
+      @dict.find_best(chars, start: index)
     end
 
     @ner_core.fetch_all(chars) do |idx, len, mark, vstr|

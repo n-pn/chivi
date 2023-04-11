@@ -26,6 +26,8 @@ db_path = "var/dicts/defns/ent_freqs.dic"
 DB.open("sqlite3:#{db_path}?journal_mode=WAL&synchronous=normal") do |db|
   db.exec "begin"
 
+  counter = counter.to_a.sort_by(&.[1].-)
+
   counter.each do |(zstr, ztag), occu|
     db.exec upsert_sql, zstr, ztag, occu
   end

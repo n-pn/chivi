@@ -32,7 +32,7 @@ class MT::SpDefn
   # return path for database
   @[AlwaysInline]
   def self.db_path(dname : String)
-    "var/dicts/system/#{dname}.dic"
+    "var/dicts/spdic/#{dname}.dic"
   end
 
   # open database for reading/writing

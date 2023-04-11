@@ -1,4 +1,4 @@
-require "./qt_term"
+require "../mt_core/mt_defn"
 require "./qt_node"
 
 class MT::QtDict
@@ -7,28 +7,35 @@ class MT::QtDict
   def initialize
   end
 
-  def load_tsv!(path : String) : self
-    trie = Trie.new
+  # def load_tsv!(path : String) : self
+  #   trie = Trie.new
 
-    File.each_line(path) do |line|
-      next if line.empty?
-      zstr, defs = line.split('\t', 2)
+  #   File.each_line(path) do |line|
+  #     next if line.empty?
+  #     zstr, defs = line.split('\t', 2)
 
-      node = defs.empty? ? nil : make_node(zstr, defs, 'ǀ')
-      trie[zstr] = node
-    end
+  #     node = defs.empty? ? nil : make_node(zstr, defs, 'ǀ')
+  #     trie[zstr] = node
+  #   end
 
-    @data << trie
-    self
-  end
+  #   @data << trie
+  #   self
+  # end
 
   # load terms from dic file
   def load_dic!(dname : String) : self
     trie = Trie.new
 
-    QtTerm.load_data(dname) do |zstr, defs|
-      node = defs.empty? ? nil : make_node(zstr, defs)
-      trie[zstr] = node
+    db = MtDefn.repo(dname).db
+
+    db.query_each "select zstr, vstr, _fmt from defns" do |rs|
+      zstr = rs.read(String)
+
+      vstr = rs.read(String).split('\t').first
+      next if vstr.empty?
+
+      fmt = FmtFlag.new(rs.read(Int32).to_u16)
+      trie[zstr] = QtNode.new(val: vstr, len: zstr.size, idx: 0, fmt: fmt)
     end
 
     @data << trie
@@ -40,14 +47,14 @@ class MT::QtDict
     QtNode.new(val: defs.split(sep).first, len: zstr.size, idx: 0)
   end
 
-  def find_best(inp : Array(Char), start = 0) : QtNode?
+  def find_best(chars : Array(Char), start = 0) : QtNode
     output = nil
 
     @data.reverse_each do |trie|
       node = trie
 
-      start.upto(inp.size &- 1) do |idx|
-        char = inp.unsafe_fetch(idx)
+      start.upto(chars.size &- 1) do |idx|
+        char = chars.unsafe_fetch(idx)
         break unless node = node.trie[char]?
 
         next unless data = node.data
@@ -55,7 +62,10 @@ class MT::QtDict
       end
     end
 
-    output
+    output || begin
+      char = chars.unsafe_fetch(start)
+      QtNode.new(char, idx: start)
+    end
   end
 
   class Trie

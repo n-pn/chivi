@@ -1,5 +1,5 @@
 @[Flags]
-enum MT::FmtFlag : UInt8
+enum MT::FmtFlag : UInt16
   Hidden # do not render content
   Frozen # do not add cap
 
@@ -60,7 +60,7 @@ enum MT::FmtFlag : UInt8
 
   @[AlwaysInline]
   def no_space?(prev : self)
-    self.no_space_before? || prev.no_space_after? ||
+    self.hidden? || self.no_space_before? || prev.no_space_after? ||
       (self.no_space_passive? && prev.no_space_before?)
   end
 
@@ -109,7 +109,7 @@ enum MT::FmtFlag : UInt8
 
   def self.auto_detect(zstr : String)
     return None if zstr.empty?
-    return Hidden if zstr == "⛶"
+    # return Hidden if zstr == "⛶"
 
     flag = zstr.matches?(/[\P{Han}\P{L}\P{N}]/) ? None : AddCapPassive
 

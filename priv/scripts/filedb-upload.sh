@@ -14,7 +14,6 @@ then
   # rsync-fast "var/dicts/v1raw" "$SSH/var/dicts"
   rsync-fast "var/dicts/defns" "$SSH/var/dicts"
   rsync-fast "var/dicts/inits" "$SSH/var/dicts"
-  rsync-fast "var/dicts/spdic" "$SSH/var/dicts"
   rsync-fast "var/dicts/init.dic" "$SSH/var/dicts"
   # rsync-fast "var/dicts/v1dic" "$SSH/var/dicts"
 fi
