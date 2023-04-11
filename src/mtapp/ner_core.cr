@@ -6,10 +6,7 @@ class MT::NerCore
     getter? enabled = false
     getter? persist = false
 
-    getter detects : Enumerable(EntMark)
-    getter selects : Enumerable(EntMark)
-
-    def initialize(@enabled, @persist, @detects, @selects)
+    def initialize(@enabled, @persist)
     end
   end
 
@@ -26,8 +23,7 @@ class MT::NerCore
       best_node = nil
       best_mark = EntMark::None
 
-      @opts.selects.each do |mark|
-        next unless node = data.sner[mark]?
+      data.sner.each do |mark, node|
         next if best_node && best_node.sum >= node.sum
 
         best_node = node
@@ -50,13 +46,13 @@ class MT::NerCore
       curr = hash[index] = NerData.new
 
       @dict.fetch_all(chars, start: index) do |node|
-        @opts.selects.each do |mark|
+        EntMark.each do |mark|
           curr.add_sner(mark, node) if node.sner?(mark)
         end
 
         succ = hash[index &+ node.sum]?
 
-        @opts.detects.each do |mark|
+        EntMark.each do |mark|
           curr.add_ener(mark, node) if node.ener?(mark)
           next unless succ && (succ_node = succ.ener[mark]?)
 
@@ -69,9 +65,8 @@ class MT::NerCore
     hash
   end
 
-  class_getter translit : self do
-    detects = selects = {EntMark::LINK, EntMark::WORD, EntMark::FRAG}
-    opts = Opts.new(enabled: true, persist: false, detects: detects, selects: selects)
-    new(NerDict.translit, opts)
+  class_getter base : self do
+    opts = Opts.new(enabled: true, persist: false)
+    new(NerDict.base, opts)
   end
 end

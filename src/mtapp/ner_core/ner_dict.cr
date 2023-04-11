@@ -23,7 +23,7 @@ class MT::NerDict
     File.each_line(path) do |line|
       next if line.empty?
 
-      zstr, marks, *trans = line.split('\t')
+      zstr, trans, marks = line.split('\t')
       @trie[zstr] = EntTerm.new(marks.split(' '), trans)
     end
 
@@ -47,5 +47,5 @@ class MT::NerDict
 
   DIR = "var/dicts/entdb"
 
-  class_getter translit : self { new.load_tsv!("#{DIR}/translit.tsv") }
+  class_getter base : self { new.load_tsv!("#{DIR}/base.tsv") }
 end

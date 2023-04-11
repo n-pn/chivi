@@ -3,7 +3,7 @@ require "./ner_core"
 require "./qt_core/*"
 
 class MT::QtCore
-  def initialize(@dict : QtDict, @ner_core = NerCore.translit)
+  def initialize(@dict : QtDict, @ner_core = NerCore.base)
   end
 
   def tokenize(input : String)

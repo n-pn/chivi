@@ -1,7 +1,7 @@
 # require "json"
 # require "../vp_init"
 require "sqlite3"
-require "../../src/mtapp/data/ent_defn"
+require "../../src/mtapp/ner_core/ent_defn"
 
 DIR = "var/anlzs/texsmart/out"
 

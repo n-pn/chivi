@@ -6,15 +6,15 @@ class MT::EntTerm
   getter ener = EntMark::None # mark end
   getter sner = EntMark::None # mark single
 
-  getter vals = {} of EntMark => String # translation if avaiable
+  getter vstr : String # translation if avaiable
 
-  def initialize(marks : Enumerable(String), trans : Enumerable(String))
+  def initialize(marks : Enumerable(String), @vstr)
     @bner = @iner = @ener = @sner = EntMark::None
 
     marks.each do |entry|
       mark, _, type = entry.partition('-')
 
-      mark = EntMark.parse(mark)
+      mark = EntMark.parse?(mark) || EntMark::None
       type = "BIES" if type.empty?
 
       type.each_char do |char|
@@ -26,16 +26,5 @@ class MT::EntTerm
         end
       end
     end
-
-    trans.each do |entry|
-      val, _, mark = entry.partition('ǀ')
-      mark = EntMark.parse?(mark) || EntMark::None
-      @vals[mark] = val
-    end
-  end
-
-  @[AlwaysInline]
-  def get_val(mark : EntMark)
-    @vals[mark]? || @vals.first_value
   end
 end

@@ -1,13 +1,53 @@
 @[Flags]
 enum MT::EntMark : UInt64
-  # detect foreign words
-  WORD # raw string
-  LINK # url
-  MATH # math
-  FRAG # unknown fragment
-  # MAIL # email
+  # foreign words
 
+  FRAG # unknown fragment
+  LINK # url
+  WORD # raw string
+  MATH # math
+  # MAIL # email
+  # WPHO # PHONE
+  # WTEL # TELEX
+  # WFAX # FAX
+  # WPOS # POSTALCODE
+
+  # numbers:
+
+  DINT # pure digit
+  DPCT # Percent (12%)
+  DFRA # Fraction (1/2)
+  DDEC # Decimal (1.2)
+
+  ZINT # han letters
+  ZPCT # han letters
+  ZFRA # han letters
+  ZDEC # han letters
+
+  DCAR # mix digit and hanzi
+  DORD # ordinal
+
+  # DMON # Money (4$)
+  # DFRE # Frequency
+  # DRAT # Rate
+
+  # measure
+  # MAGE # Age
+  # MWEI # Weight
+  # MLEN # Length
+  # MTEM # Temperature
+  # MANG # Angle
+  # MARE # Area
+  # MCAP # Capacity
+  # MSPE # Speed
+  # MACC # Acceleration
+  # MMEA # Other measures
   #
+
+  DYMD # year month day in 2022/20/20 or 2022-10-10 or 20.10.10 format
+  DHMS # time in 10:00:00 or 10:10 format
+  ZYMD
+  ZHMS
 
   DATE # Date
   DURA # Duration
@@ -29,45 +69,4 @@ enum MT::EntMark : UInt64
   NTTL # Titles of books, songs, etc.
   # N_LAW # Named documents made into laws
 
-  # S_PHO # PHONE
-  # S_TEL # TELEX
-  # S_FAX # FAX
-  # S_POS # POSTALCODE
-
-  # numbers:
-
-  # mark generic nmumber
-  DNUM # cardinal
-  DORD # ordinal
-
-  DINT # pure digital
-  DLIT # han letters
-  DMIX # mix digit and hanzi
-
-  DPCT # Percent
-  DMON # Money
-  DFRE # Frequency
-  DFRA # Fraction
-  DDEC # Decimal
-  DRAT # Rate
-
-  # measure
-  MAGE # Age
-  MWEI # Weight
-  MLEN # Length
-  MTEM # Temperature
-  MANG # Angle
-  MARE # Area
-  MCAP # Capacity
-  MSPE # Speed
-  MACC # Acceleration
-  MMEA # Other measures
-
-end
-
-enum MT::NerMark : UInt8
-  B
-  I
-  E
-  S
 end

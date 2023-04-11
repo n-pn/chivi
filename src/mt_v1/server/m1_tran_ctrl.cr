@@ -120,7 +120,7 @@ class M1::TranCtrl < AC::Base
   end
 
   def log_tran_stats(c_len : Int32, wn_id : Int32)
-    time_now = Time.utc
+    time_now = Time.local
     log_file = "var/users/mtlogs/#{time_now.to_s("%F")}.log"
 
     File.open(log_file, "a") do |io|

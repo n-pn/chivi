@@ -8,6 +8,8 @@ end
 counter = Hash(String, Int32).new 0
 
 files.each do |file|
+  puts file
+
   File.each_line(file) do |line|
     next if line.empty?
 
@@ -17,6 +19,6 @@ files.each do |file|
   end
 end
 
-puts counter.to_a.sort_by(&.[1].-)
-
-puts Time.unix(1681117041)
+counter = counter.to_a
+puts counter.sum(&.[1])
+puts counter.sort_by(&.[1].-)

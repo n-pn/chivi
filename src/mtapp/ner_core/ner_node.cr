@@ -27,7 +27,7 @@ class MT::NerNode
       node = self
 
       loop do
-        io << node.term.get_val(mark)
+        io << node.term.vstr
         break unless node = node.succ
       end
     end
