@@ -68,14 +68,14 @@ class SP::Deepl
   end
 
   def self.translate(terms : Enumerable(String),
-                     source = "zh", target = "vi",
+                     source = "zh", target = "en",
                      no_cap : Bool = false)
-    raise "no more available client" unless client = @@clients.first?
+    raise "no more available client" unless client = @@clients.last?
     translate(client, terms, source: source, target: target, no_cap: no_cap)
   end
 
   def self.translate(client : Deepl, terms : Enumerable(String),
-                     source = "zh", target = "vi",
+                     source = "zh", target = "en",
                      no_cap : Bool = false)
     client.translate(terms, source: source, target: target, no_cap: no_cap)
   rescue err

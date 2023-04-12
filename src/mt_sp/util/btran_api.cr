@@ -56,7 +56,7 @@ class SP::Btran
 
       data = entry.translations.map do |item|
         text = item.text
-        no_cap ? text.sub(/^\*,\s/, "") : text
+        no_cap ? text.sub(/^\s*[*,]{1,2}\s*/, "") : text
       end
 
       {term, data.join('\t')}
