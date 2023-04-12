@@ -10,13 +10,13 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
 
     entries = VcoinXlog.query.order_by(id: :desc)
     # entries.where("kind >= 0")
-    entries.where("(sender_id = ? or receiver_id = ?)", vu_id, vu_id) if vu_id
+    entries.where("(sender_id = ? or target_id = ?)", vu_id, vu_id) if vu_id
 
     total = entries.dup.count
     entries = entries.limit(limit).offset(offset).to_a
 
     user_ids = Set(Int32).new
-    entries.each { |entry| user_ids << entry.sender_id << entry.receiver_id }
+    entries.each { |entry| user_ids << entry.sender_id << entry.target_id }
     viusers = Viuser.preload(user_ids)
 
     render json: {
@@ -30,14 +30,14 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
   struct VcoinForm
     include JSON::Serializable
 
-    getter receiver : String
+    getter target : String
     getter reason : String
     getter amount : Float64
 
     getter? as_admin : Bool = false
 
     def after_initialize
-      @receiver = @receiver.strip
+      @target = @target.strip
       @amount = @amount.round(2)
       @amount = 0.1 if @amount < 0.1
     end
@@ -45,7 +45,7 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/", body: :form)]
   def send_vcoin(form : VcoinForm)
-    unless receiver = Viuser.find_any(form.receiver)
+    unless target = Viuser.find_any(form.target)
       raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại")
     end
 
@@ -59,29 +59,29 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
 
     Clear::SQL.transaction do
       sender.update(vcoin: sender.vcoin - form.amount)
-      receiver.update(vcoin: receiver.vcoin + form.amount)
+      target.update(vcoin: target.vcoin + form.amount)
 
       VcoinXlog.new({
-        kind:          form.as_admin? ? 2 : 1,
-        sender_id:     sender.id,
-        receiver_id:   receiver.id,
-        receiver_name: form.receiver,
-        amount:        form.amount,
-        reason:        form.reason,
+        kind:        form.as_admin? ? 2 : 1,
+        sender_id:   sender.id,
+        target_id:   target.id,
+        target_name: form.target,
+        amount:      form.amount,
+        reason:      form.reason,
       }).save!
 
       sender.cache!
-      receiver.cache!
+      target.cache!
 
-      spawn send_vcoin_receive_email(sender, receiver, form.amount, form.reason)
+      spawn send_vcoin_receive_email(sender, target, form.amount, form.reason)
     end
 
     spawn CtrlUtil.log_user_action("send-vcoin", form, _viuser.uname)
-    render json: {receiver: receiver.uname, remain: _viuser.vcoin}
+    render json: {target: target.uname, remain: _viuser.vcoin}
   end
 
-  private def send_vcoin_receive_email(sender : Viuser, receiver : Viuser, amount : Float64, reason : String)
-    MailUtil.send(to: receiver.email, name: receiver.uname) do |mail|
+  private def send_vcoin_receive_email(sender : Viuser, target : Viuser, amount : Float64, reason : String)
+    MailUtil.send(to: target.email, name: target.uname) do |mail|
       mail.subject "Chivi: Bạn nhận được #{amount} vcoin"
 
       mail.message_html <<-HTML

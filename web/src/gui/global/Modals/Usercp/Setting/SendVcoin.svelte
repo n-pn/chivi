@@ -4,10 +4,11 @@
 
   export let user: App.CurrentUser
 
-  let receiver = ''
-
-  let amount = 10
-  let reason = ''
+  let form = {
+    target: '',
+    reason: '',
+    amount: 10,
+  }
 
   let as_admin = false
 
@@ -21,12 +22,11 @@
     res_text = ''
 
     try {
-      const body = { receiver, reason, amount: +amount, as_admin }
-      const data = await api_call(action_url, body, 'POST')
-      user.vcoin -= amount
+      const data = await api_call(action_url, form, 'POST')
+      user.vcoin -= form.amount
 
       res_type = 'ok'
-      res_text = `[${data.receiver}] đã nhận được ${amount} vcoin, bạn còn có ${data.remain} vcoin.`
+      res_text = `[${data.target}] đã nhận được ${form.amount} vcoin, bạn còn có ${data.remain} vcoin.`
     } catch (ex) {
       res_type = 'err'
       res_text = ex.body?.message
@@ -37,26 +37,26 @@
 <form action={action_url} method="POST" on:submit|preventDefault={submit}>
   <form-group>
     <form-field>
-      <label class="form-label" for="receiver">Người nhận</label>
+      <label class="form-label" for="target">Người nhận</label>
       <input
         type="text"
         class="m-input"
-        name="receiver"
+        name="target"
         placeholder="Tên tài khoản hoặc hòm thư"
         required
-        bind:value={receiver} />
+        bind:value={form.target} />
     </form-field>
   </form-group>
 
   <form-group>
     <form-field>
-      <label class="form-label" for="receiver">Lý do gửi tặng</label>
+      <label class="form-label" for="target">Lý do gửi tặng</label>
       <textarea
         class="m-input"
         name="reason"
-        rows="1"
+        rows="2"
         placeholder="Có thể để trắng"
-        bind:value={reason} />
+        bind:value={form.reason} />
     </form-field>
   </form-group>
 
@@ -77,15 +77,15 @@
 
     <radio-group>
       {#each [5, 10, 20, 30, 50] as value}
-        <label class="m-radio amount" class:_active={value == amount}>
-          <input type="radio" bind:group={amount} {value} />
+        <label class="m-radio amount" class:_active={value == form.amount}>
+          <input type="radio" bind:group={form.amount} {value} />
           {value}
         </label>
       {/each}
 
       <div>
         <label for="amount">Khác:</label>
-        <input class="amount" name="amount" bind:value={amount} />
+        <input class="amount" name="amount" bind:value={form.amount} />
       </div>
     </radio-group>
   </div>
@@ -97,11 +97,11 @@
   <footer class="form-action">
     <button
       type="submit"
-      class="m-btn _primary  _fill"
-      disabled={!as_admin && user.vcoin < amount}>
+      class="m-btn _primary _fill"
+      disabled={!as_admin && user.vcoin < form.amount}>
       <span>Gửi tặng</span>
       <SIcon name="coin" />
-      {amount}
+      {form.amount}
     </button>
   </footer>
 </form>

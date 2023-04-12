@@ -7,17 +7,21 @@ interface XlogData extends CV.Paginate {
   users: Record<number, CV.Viuser>
 }
 
-const _meta = {
-  title: 'Lịch sử giao dịch vcoin',
-  left_nav: [home_nav('ps')],
-  right_nav: [],
-}
-
 export const load = (async ({ fetch, parent }) => {
   const { _user } = await parent()
 
   const path = `/_db/vcoins?vu_id=${_user.vu_id}`
   const data = await api_get<XlogData>(path, fetch)
+
+  const _meta = {
+    title: 'Lịch sử giao dịch vcoin',
+    left_nav: [
+      home_nav('ps'),
+      nav_link('me', 'Cá nhân', 'user'),
+      nav_link('me/vcoin', 'Vcoin', 'coin', { kind: 'title' }),
+    ],
+    right_nav: [],
+  }
 
   return { ...data, _meta }
 }) satisfies PageLoad

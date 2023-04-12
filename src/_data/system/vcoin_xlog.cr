@@ -10,8 +10,8 @@ class CV::VcoinXlog
 
   column sender_id : Int32
 
-  column receiver_id : Int32
-  column receiver_name : String = ""
+  column target_id : Int32
+  column target_name : String = ""
 
   column amount : Float64 = 0_f64
   column reason : String = ""
@@ -24,7 +24,7 @@ class CV::VcoinXlog
     jb.object do
       jb.field "id", self.id
       jb.field "sender_id", self.sender_id
-      jb.field "receiver_id", self.receiver_id
+      jb.field "target_id", self.target_id
 
       jb.field "amount", self.amount.round(2)
       jb.field "reason", self.reason
