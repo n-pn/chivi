@@ -1,8 +1,9 @@
 require "colorize"
 require "../../src/ysapp/_raw/raw_ys_repl"
-require "../../src/mt_v1/core/m1_core"
+require "../../src/mtapp/qt_core"
 
-MTL = M1::MtCore.init
+DIC = MT::QtDict.new.load_dic!("common-main")
+MTL = MT::QtCore.new(DIC)
 
 DIR = "var/ysraw/repls"
 
@@ -28,7 +29,6 @@ def try_file(file : String)
 end
 
 def try_translate(line : String)
-  puts line.colorize.blue
-  puts MTL.cv_plain(line)
-  # .to_txt.colorize.green
+  puts line
+  puts MTL.tokenize(line).to_txt.colorize.green
 end

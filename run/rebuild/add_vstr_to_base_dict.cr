@@ -1,6 +1,6 @@
 require "./_shared"
 
-DIC = DB.open("sqlite3:#{MT::MtDefn.db_path("base")}")
+DIC = DB.open("sqlite3:#{MT::MtDefn.db_path("common-main")}")
 at_exit { DIC.close }
 
 missing = DIC.scalar "select count(*) from defns where vstr = ''"

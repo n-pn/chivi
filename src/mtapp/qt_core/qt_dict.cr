@@ -26,16 +26,15 @@ class MT::QtDict
   def load_dic!(dname : String) : self
     trie = Trie.new
 
-    db = MtDefn.repo(dname).db
+    db_path = MtDefn.db_path(dname)
 
-    db.query_each "select zstr, vstr, _fmt from defns" do |rs|
-      zstr = rs.read(String)
-
-      vstr = rs.read(String).split('\t').first
-      next if vstr.empty?
-
-      fmt = FmtFlag.new(rs.read(Int32).to_u16)
-      trie[zstr] = QtNode.new(val: vstr, len: zstr.size, idx: 0, fmt: fmt)
+    DB.open("sqlite3:#{db_path}") do |db|
+      db.query_each "select zstr, vstr, _fmt from defns where vstr <> ''" do |rs|
+        zstr = rs.read(String)
+        vstr = rs.read(String).split('\t').first
+        fmt = FmtFlag.new(rs.read(Int32).to_u16)
+        trie[zstr] = QtNode.new(zstr: zstr, vstr: vstr, dic: 2, idx: 0, fmt: fmt)
+      end
     end
 
     @data << trie
@@ -43,8 +42,8 @@ class MT::QtDict
   end
 
   @[AlwaysInline]
-  def make_node(zstr : String, defs : String, sep = '\t') : QtNode
-    QtNode.new(val: defs.split(sep).first, len: zstr.size, idx: 0)
+  def make_node(zstr : String, defs : String, dic = 0, sep = '\t') : QtNode
+    QtNode.new(zstr: zstr, vstr: defs.split(sep).first, dic: dic, idx: 0)
   end
 
   def find_best(chars : Array(Char), start = 0) : QtNode
@@ -58,7 +57,7 @@ class MT::QtDict
         break unless node = node.trie[char]?
 
         next unless data = node.data
-        output = data.dup!(idx) unless output && output.len >= data.len
+        output = data.dup!(idx) unless output && output.zlen >= data.zlen
       end
     end
 
@@ -70,14 +69,16 @@ class MT::QtDict
 
   class Trie
     property data : QtNode? = nil
-    property trie = {} of Char => Trie
+    getter trie = {} of Char => Trie
 
-    def [](key : String)
-      key.each_char.reduce(self) { |acc, chr| acc.trie[chr] ||= Trie.new }
-    end
+    def []=(zstr : String, data : QtNode?)
+      node = self
 
-    def []=(key : String, data : QtNode?)
-      self[key].data = data
+      zstr.each_char do |char|
+        node = node.trie[char] ||= Trie.new
+      end
+
+      node.data = data
     end
 
     def find!(zstr : String)
@@ -91,15 +92,15 @@ class MT::QtDict
       node
     end
 
-    def find(zstr : String)
-      node = self
+    # def find(zstr : String)
+    #   node = self
 
-      zstr.each_char do |char|
-        return unless trie = node.trie
-        return unless node = trie[char]?
-      end
+    #   zstr.each_char do |char|
+    #     return unless trie = node.trie
+    #     return unless node = trie[char]?
+    #   end
 
-      node
-    end
+    #   node
+    # end
   end
 end

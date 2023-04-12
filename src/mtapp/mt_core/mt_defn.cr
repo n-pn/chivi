@@ -9,7 +9,7 @@ class MT::MtDefn
   field zstr : String = ""
 
   field vstr : String = ""
-  field _ver : Int16 = 0_i16
+  field vmap : String = ""
 
   field upos : String = ""
   field xpos : String = ""
@@ -17,9 +17,11 @@ class MT::MtDefn
 
   field _fmt : Int16 = 0_i16
   field _wsr : Int16 = 2_i16 # word segmentation rank
+  field _ver : Int16 = 0_i16
 
   field mtime : Int32 = 0
   field uname : String = ""
+
   field _flag : Int16 = 0_i16
 
   ###

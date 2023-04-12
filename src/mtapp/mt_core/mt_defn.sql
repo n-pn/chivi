@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS defns(
   "zstr" varchar NOT NULL,
   --
   "vstr" varchar NOT NULL DEFAULT '',
-  "_ver" smallint NOT NULL DEFAULT 0,
+  "vmap" varchar NOT NULL DEFAULT '',
   -- postag and entity
   "upos" varchar NOT NULL DEFAULT '',
   "xpos" varchar NOT NULL DEFAULT '',
@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS defns(
   -- version and format
   "_fmt" smallint NOT NULL DEFAULT 0,
   "_wsr" smallint NOT NULL DEFAULT 2,
+  "_ver" smallint NOT NULL DEFAULT 0,
   -- user data
   "mtime" int NOT NULL DEFAULT 0,
   "uname" varchar NOT NULL DEFAULT '',

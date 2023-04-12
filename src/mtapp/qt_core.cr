@@ -18,11 +18,12 @@ class MT::QtCore
     end
 
     @ner_core.fetch_all(chars) do |idx, len, mark, vstr|
-      cost = CwsCost.node_cost(len, 2) &- 1
-      next if cost < bests.unsafe_fetch(idx).cost
+      wgt = CwsCost.node_cost(len, 2) &- 1
+      next if wgt < bests.unsafe_fetch(idx).wgt
 
       fmt = mark.link? || mark.frag? ? FmtFlag::Frozen : FmtFlag::None
-      bests[idx] = QtNode.new(vstr, len, idx, fmt: fmt)
+      zstr = chars[idx, len].join
+      bests[idx] = QtNode.new(zstr, vstr, dic: 1, idx: idx, fmt: fmt)
     end
 
     cursor = 0
@@ -31,7 +32,7 @@ class MT::QtCore
     while cursor < bests.size
       node = bests.unsafe_fetch(cursor)
       output << node
-      cursor &+= node.len
+      cursor &+= node.zlen
     end
 
     output

@@ -3,10 +3,12 @@ require "../../src/mtapp/qt_core"
 
 time = Time.monotonic
 
-DIC = MT::QtDict.new.load_dic!("base")
+DIC = MT::QtDict.new.load_dic!("common-main")
 MTL = MT::QtCore.new(DIC)
 
-text = ARGV[0]? || "“可以问你几个问题吗？”主持人开始线下活动互动了。"
+puts "Dict loading time: #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red
+
+text = ARGV[0]? || "他也懒得计较，大大方方地点了点头，反正他也不是什么知名人物，就算露个脸也没什么关系。"
 # book = ARGV[1]?.try(&.to_i) || 5344
 # user = ARGV[2]?
 

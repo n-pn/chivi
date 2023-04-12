@@ -1,7 +1,7 @@
 require "../../src/mt_v1/core/m1_core"
 
 text = ARGV[0]? || "然而这是他唯一的机会"
-book = ARGV[1]?.try(&.to_i) || 5344
+book = ARGV[1]?.try(&.to_i?) || 0
 user = ARGV[2]?
 
 time = Time.monotonic
