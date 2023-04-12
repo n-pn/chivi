@@ -73,9 +73,9 @@ end
 
 output = {} of String => Array(String)
 
-DIR = "var/inits/vietphrase"
+DIR = "var/dicts/_temp"
 
-File.each_line("#{DIR}/combined.tsv") do |line|
+File.each_line("#{DIR}/qt-combined.tsv") do |line|
   vals = line.split('\t')
   next if vals.size < 2
 
@@ -83,10 +83,10 @@ File.each_line("#{DIR}/combined.tsv") do |line|
   output[key] = vals.map { |v| fix_hanviet(key, v) }.uniq!
 end
 
-puncts = File.open("#{DIR}/combine-puncts.tsv", "w")
-numbers = File.open("#{DIR}/combine-numbers.tsv", "w")
-propers = File.open("#{DIR}/combine-propers.tsv", "w")
-cleaned = File.open("#{DIR}/combine-cleaned.tsv", "w")
+puncts = File.open("#{DIR}/qt-puncts.tsv", "w")
+numbers = File.open("#{DIR}/qt-numbers.tsv", "w")
+propers = File.open("#{DIR}/qt-propers.tsv", "w")
+cleaned = File.open("#{DIR}/qt-cleaned.tsv", "w")
 
 output.each do |key, vals|
   line = String.build { |io| io << key; vals.each { |v| io << '\t' << v }; io << '\n' }

@@ -1,6 +1,6 @@
 require "sqlite3"
 
-DIC = DB.open "sqlite3:var/dicts/defns.dic"
+DIC = DB.open "sqlite3:var/dicts/v1raw/v1_defns.dic"
 at_exit { DIC.close }
 
 def extract(dic = 0)
@@ -32,7 +32,7 @@ common.sort_by!(&.-).each do |dic|
   puts "#{dic} => #{current.size} (#{generic.size})"
 end
 
-File.open("var/dicts/_temp/generic.tsv", "w") do |file|
+File.open("var/dicts/_temp/cv-generic.tsv", "w") do |file|
   generic.each do |key, vals|
     next if vals.first.empty?
     file << key << '\t' << vals.flat_map(&.split('ǀ').map(&.strip)).uniq!.join('\t') << '\n'
@@ -46,7 +46,7 @@ unique.sort!.each do |dic|
   puts "#{dic} => #{current.size} (#{generic.size})"
 end
 
-File.open("var/dicts/_temp/special.tsv", "w") do |file|
+File.open("var/dicts/_temp/cv-special.tsv", "w") do |file|
   special.each do |key, vals|
     next if vals.first.empty?
     file << key << '\t' << vals.flat_map(&.split('ǀ').map(&.strip)).uniq!.join('\t') << '\n'

@@ -1,6 +1,16 @@
-DIR = "var/inits/vietphrase"
+require "./_shared"
 
-files = Dir.glob("#{DIR}/*/**/*.txt").sort!
+INP = "var/cvmtl/inits/vietphrase"
+OUT = "var/dicts/_temp"
+
+files = [] of String
+files.concat Dir.glob("#{INP}/0-fixtures/*.txt")
+files.concat Dir.glob("#{INP}/0-localqt/*.txt").sort!
+files.concat Dir.glob("#{INP}/0-localqt/names/*.txt")
+files.concat Dir.glob("#{INP}/0-localqt/names/fictions/*.txt")
+files.concat Dir.glob("#{INP}/1-thtgiang/*.txt").sort!
+files.concat Dir.glob("#{INP}/2-cvuser/*.txt").sort!
+files.concat Dir.glob("#{INP}/3-unknown/*.txt").sort!
 
 output = {} of String => Set(String)
 
@@ -61,7 +71,7 @@ files.each do |file|
   puts "file: #{file}, output: #{output.size}"
 end
 
-out_path = "#{DIR}/combined.tsv"
+out_path = "#{INP}/qt-combined.tsv"
 File.open(out_path, "w") do |file|
   output.each do |key, vals|
     next if vals.empty?
