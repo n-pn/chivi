@@ -5,6 +5,7 @@ title: Ủng hộ Chivi bằng tiền mặt
 <script>
   import { page } from '$app/stores'
   $: uname = $page.data._user.uname || 'Chivi'
+  $: ucode = `CHIVI ${uname} ID ${$page.data._user.vu_id}`
 </script>
 
 Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.
@@ -52,22 +53,22 @@ Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy
 <div class="qr">
   <figure>
     <figcaption>Techcombank</figcaption>
-    <img src="/imgs/techcombank-fs8.png" alt="Techcombank"/>
+    <img
+    src="https://img.vietqr.io/image/TCB-1606281089-compact.png?amount=50000&addInfo={ucode}"
+    onerror="this.src='/imgs/techcombank-fs8.png'" alt="Techcombank"/>
   </figure>
 
   <figure>
     <figcaption>Vietcombank</figcaption>
-    <img src="/imgs/vietcombank-fs8.png" alt="Vietcombank"/>
+    <img
+   src="https://img.vietqr.io/image/VCB-1035430031-compact.png?amount=50000&addInfo={ucode}"
+    onerror="this.src='/imgs/vietcombank-fs8.png'"
+    alt="Vietcombank"/>
   </figure>
 
   <figure>
     <figcaption>Ví Mommo</figcaption>
     <img src="/imgs/momo-fs8.png" alt="Momo"/>
-  </figure>
-
-  <figure>
-    <figcaption>Ví VNPAY</figcaption>
-    <img src="/imgs/vnpay-fs8.png" alt="VNPAY"/>
   </figure>
 </div>
 
@@ -110,7 +111,7 @@ Vì vậy, nếu điều kiện cho phép, hãy ủng hộ cho Chivi để trang
 <style>
   .qr {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
     gap: 2vw;
 
   }

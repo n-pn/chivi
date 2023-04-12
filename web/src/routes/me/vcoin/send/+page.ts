@@ -5,9 +5,8 @@ export const load = (async ({ url }) => {
   const _meta = {
     title: 'Lịch sử giao dịch vcoin',
     left_nav: [
-      nav_link('me', 'Cá nhân', 'user', { show: 'pl' }),
-      nav_link('me/vcoin', 'Vcoin', 'coin', { kind: 'title' }),
-      nav_link('me/vcoin/send', 'Gửi tặng', 'gift', { kind: 'title' }),
+      nav_link('/me', 'Cá nhân', 'user', { show: 'pl' }),
+      nav_link('/me/vcoin', 'Vcoin', 'coin', { kind: 'title' }),
     ],
     right_nav: [],
   }

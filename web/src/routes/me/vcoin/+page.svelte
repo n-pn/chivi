@@ -11,7 +11,9 @@
 </script>
 
 <article class="article island">
-  <table>
+  <h1>Lịch sử giao dịch Vcoin</h1>
+
+  <table class="table">
     <thead>
       <tr>
         <th>#</th>
@@ -26,7 +28,7 @@
     <tbody>
       {#each data.xlogs as xlog}
         {@const sender = data.users[xlog.sender_id]}
-        {@const receiver = data.users[xlog.receiver_id]}
+        {@const target = data.users[xlog.target_id]}
         <tr>
           <td>{xlog.id}</td>
           <td>
@@ -36,9 +38,9 @@
             </span>
           </td>
           <td>
-            <span class="cv-user" data-privi={receiver.privi}>
-              {receiver.uname}
-              <SIcon name="privi-{receiver.privi}" iset="sprite" />
+            <span class="cv-user" data-privi={target.privi}>
+              {target.uname}
+              <SIcon name="privi-{target.privi}" iset="sprite" />
             </span>
           </td>
           <td>{xlog.amount}</td>
@@ -60,5 +62,9 @@
       border-right: none;
       text-align: center;
     }
+  }
+
+  table {
+    margin-top: 1rem;
   }
 </style>

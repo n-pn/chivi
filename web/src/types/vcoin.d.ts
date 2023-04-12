@@ -3,7 +3,7 @@ declare namespace CV {
     id: number
 
     sender_id: number
-    receiver_id: number
+    target_id: number
 
     amount: number
     reason: string

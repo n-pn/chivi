@@ -20,7 +20,9 @@ export const load = (async ({ fetch, parent }) => {
       nav_link('me', 'Cá nhân', 'user'),
       nav_link('me/vcoin', 'Vcoin', 'coin', { kind: 'title' }),
     ],
-    right_nav: [],
+    right_nav: [
+      nav_link('/me/vcoin/send', 'Gửi tặng', 'gift', { kind: 'title' }),
+    ],
   }
 
   return { ...data, _meta }

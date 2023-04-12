@@ -27,7 +27,7 @@
     <tbody>
       {#each data.xlogs as xlog}
         {@const sender = data.users[xlog.sender_id]}
-        {@const receiver = data.users[xlog.receiver_id]}
+        {@const target = data.users[xlog.target_id]}
         <tr>
           <td>{xlog.id}</td>
           <td>
@@ -42,10 +42,10 @@
           <td>
             <a
               class="cv-user"
-              href={pager.gen_url({ vu_id: xlog.receiver_id, pg: 1 })}
-              data-privi={receiver.privi}>
-              {receiver.uname}
-              <SIcon name="privi-{receiver.privi}" iset="sprite" />
+              href={pager.gen_url({ vu_id: xlog.target_id, pg: 1 })}
+              data-privi={target.privi}>
+              {target.uname}
+              <SIcon name="privi-{target.privi}" iset="sprite" />
             </a>
           </td>
           <td>{xlog.amount}</td>
