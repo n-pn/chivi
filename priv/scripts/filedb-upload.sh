@@ -55,7 +55,6 @@ then
   rsync-fast "var/mt_v2/rules" "$SSH/var/mt_v2"
 
   rsync-fast "var/dicts/hints" "$SSH/var/dicts"
-  rsync-fast "var/dicts/qtran" "$SSH/var/dicts"
 
   rsync-fast "var/dicts/index.db" "$SSH/var/dicts"
   rsync-fast "var/dicts/init.dic" "$SSH/var/dicts"

@@ -1,4 +1,5 @@
-require "../data/lu_term"
+require "../../src/mt_sp/data/wd_defn"
+# require "../../src/mt_sp/data/lu_term"
 
 terms = [] of TL::LuTerm
 

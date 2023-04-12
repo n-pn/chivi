@@ -1,4 +1,4 @@
-require "../wd_defn"
+require "../../src/mt_sp/data/wd_defn"
 
 def cleanup(input : String)
   input.split("\\t")
@@ -8,7 +8,7 @@ end
 
 defns = [] of SP::WdDefn
 
-File.each_line("var/inits/system/trichdan.txt") do |line|
+File.each_line("var/cvmtl/spdic/trichdan.txt") do |line|
   key, vals = line.split("=", 2)
   vals = vals.split("\\n").map { |x| cleanup(x) }
   defns << SP::WdDefn.new(key, vals.join('\n'))

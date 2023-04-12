@@ -1,5 +1,5 @@
-require "../v1_dict"
-require "../v1_defn"
+require "../../src/mt_v1/data/v1_dict"
+require "../../src/mt_v1/data/v1_defn"
 
 dict_ids = M1::DbDict.repo.open_db(&.query_all "select id from dicts", as: Int32)
 
@@ -31,6 +31,7 @@ M1::DbDict.repo.open_tx do |db|
     SQL
 
   output.each do |args|
+    puts args
     db.exec query, args: args
   end
 end

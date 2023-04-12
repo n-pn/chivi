@@ -1,4 +1,5 @@
 require "sqlite3"
+require "../shared/utils"
 
 class MT::SpDefn
   include DB::Serializable
@@ -10,15 +11,15 @@ class MT::SpDefn
   property _fmt : Int32 = 0
 
   property uname : String = ""
-  property mtime : Int64 = 0
+  property mtime : Int32 = 0
 
-  def initialize(@zstr, @vstr, @_fmt = 0, @uname = "", @mtime = Time.utc.to_unix)
+  def initialize(@zstr, @vstr, @_fmt = 0, @uname = "", @mtime = Utils.mtime)
   end
 
   def save!(db : DB::Database | DB::Connection)
-    db.exec <<-SQL, @zstr, @vstr, @uname, @mtime
+    db.exec <<-SQL, @zstr, @vstr, @_fmt, @uname, @mtime
       insert into "defns" ("zstr", "vstr", "_fmt", "uname", "mtime")
-      values ($1, $2, $3, $4, $5, $6)
+      values ($1, $2, $3, $4, $5)
       on conflict("zstr") do update set
         "vstr" = excluded.vstr,
         "_fmt" = excluded._fmt,
@@ -38,9 +39,8 @@ class MT::SpDefn
   # open database for reading/writing
   def self.open_db(dname : String, &)
     db_path = self.db_path(dname)
-    DB.open("sqlite3:#{db_path}?journal_mode=WAL&synchronous=normal") do |db|
-      yield db
-    end
+    connection = "sqlite3:#{db_path}?journal_mode=WAL&synchronous=normal"
+    DB.open(connection) { |db| yield db }
   end
 
   # open database with transaction for writing

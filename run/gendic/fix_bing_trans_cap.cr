@@ -24,7 +24,7 @@ db.query_each "select zh, vi, bi from terms where bi <> '' order by rowid asc" d
   fixes[zh] = vi.empty? ? bi : "#{vi}\t#{bi}"
 end
 
-require "../../src/mt_sp/util/btran_api"
+require "../../src/mtapp/service/btran_api"
 
 fixes.keys.each_slice(100) do |group|
   SP::Btran.translate(group, no_cap: true).each do |(zh, vi)|

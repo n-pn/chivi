@@ -3,13 +3,13 @@ require "colorize"
 require "http/client"
 require "compress/zip"
 
-require "../wd_defn"
+require "../../src/mt_sp/data/wd_defn"
 
 URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
-DIR = "var/inits/system"
+DIR = "var/cvmtl/spdic"
 
 ZIP_FILE = "#{DIR}/cc-cedict.zip"
-PY_TONES = Hash(String, String).from_json File.read("#{__DIR__}/py-tones.json")
+PY_TONES = Hash(String, String).from_json File.read("#{__DIR__}/pinyin-tones.json")
 
 def fetch_zip(output : String)
   tls = OpenSSL::SSL::Context::Client.insecure

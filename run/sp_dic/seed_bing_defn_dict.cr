@@ -1,8 +1,7 @@
 require "sqlite3"
-require "../../util/btran_api"
+require "../../src/mtapp/service/btran_api"
 
-DIC = DB.open("sqlite3:var/dicts/hints/bing_dict.dic")
-DIC.exec "pragma journal_mode = WAL"
+DIC = DB.open("sqlite3:var/dicts/hints/bing_dict.dic?journal_mode=WAL")
 at_exit { DIC.close }
 
 # DIC.exec "drop table if exists defns"
@@ -25,8 +24,10 @@ def add_lookup(input : Array(String))
 
   utime = Time.utc.to_unix
 
+  stmt = "update defns set sense = $1, utime = $2 where word = $3"
+
   SP::Btran.lookup(input).each_with_index do |output, i|
-    DIC.exec "update defns set sense = ?, utime = ? where word= ?", output.translations.to_json, utime, input[i]
+    DIC.exec stmt, output.translations.to_json, utime, input[i]
   end
 
   DIC.exec "commit"

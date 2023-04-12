@@ -1,4 +1,4 @@
-require "../sp_ents"
+require "../../src/mt_sp/data/sp_ents"
 
 knowns = Set(String).new
 SP::EntRelate.db.query_each("select form, etag from ent_relates") do |rs|

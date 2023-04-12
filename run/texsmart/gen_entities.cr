@@ -1,6 +1,6 @@
 require "json"
 require "colorize"
-require "../sp_ents"
+require "../../src/mt_sp/data/sp_ents"
 
 DIR = "var/anlzs/texsmart/tmp"
 

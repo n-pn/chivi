@@ -1,6 +1,9 @@
 # Dir.mkdir_p("var/dicts/v1raw")
 
-require "../v1_dict"
+require "pg"
+
+require "../../src/cv_env"
+require "../../src/mt_v1/data/v1_dict"
 
 # basics = {
 #   {0, "combine", "Tổng hợp", "Từ điển tổng hợp dùng cho chế độ dịch nhanh", 1},
@@ -33,9 +36,6 @@ require "../v1_dict"
 # basics.each { |x| M1::DbDict.new(*x, dtype: 0).save! }
 # others.each { |x| M1::DbDict.new(*x, dtype: 1).save! }
 # cvmtls.each { |x| M1::DbDict.new(*x, dtype: 2).save! }
-
-require "../../../cv_env"
-require "pg"
 
 dicts = [] of M1::DbDict
 
