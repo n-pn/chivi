@@ -15,13 +15,13 @@ def export(files : Array(String), name : String, encoding = "UTF-8", &)
 
   items.uniq!
 
-  out_path = "var/inits/known/#{name}.tsv"
+  out_path = "var/cvmtl/known/#{name}.tsv"
 
   puts "exported to #{out_path}, items: #{items.size}"
   File.write(out_path, items.join('\n'))
 end
 
-DIR = "var/inits"
+DIR = "var/cvmtl"
 # export(["#{DIR}/bdtmp/raw-books.tsv"], "bdlac", &.split('\t').first?)
 # export(["#{DIR}/cvmtl/input/Tiếng trung hiện đại từ dùng nhiều/现代汉语常用词表[以词频排序] - Tiếng Trung hiện đại danh sách từ thường dùng (theo số lần xuất hiện).txt"], "common", encoding: "GB18030", &.split('\t')[1]?)
 
@@ -69,7 +69,7 @@ DIR = "var/inits"
 
 # export(["var/dicts/inits/count-by-books.tsv"], "texsmart", &.split('\t').first?)
 
-files = Dir.glob("var/inits/known/*.tsv")
+files = Dir.glob("var/cvmtl/known/*.tsv")
 
 output = Set(String).new
 
@@ -79,4 +79,4 @@ files.each do |file|
 end
 
 puts output.size
-File.write("var/inits/known/all-known.tsv", output.join('\n'))
+File.write("var/cvmtl/known/all-known.tsv", output.join('\n'))

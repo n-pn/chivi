@@ -5,9 +5,7 @@ File.each_line("var/dicts/_temp/all-proper.tsv") do |line|
   propers << line.split('\t', 2).first
 end
 
-db_path = "sqlite3:var/dicts/defns/all_terms.dic"
-
-db = DB.open(db_path)
+db = DB.open("sqlite3:var/dicts/defns/all_terms.dic")
 
 fixes = {} of String => String
 

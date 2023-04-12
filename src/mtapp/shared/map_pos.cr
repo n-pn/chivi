@@ -1,4 +1,4 @@
-module MT::PosTag
+module MT::MapPos
   extend self
 
   UD_TO_CTB = {

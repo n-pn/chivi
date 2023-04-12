@@ -1,5 +1,5 @@
 ARGV.each do |file|
-  file = "var/mt_v2/inits/#{file}"
+  file = "var/cvmtl/inits/#{file}"
   next unless File.exists?(file)
 
   lines = File.read_lines(file)

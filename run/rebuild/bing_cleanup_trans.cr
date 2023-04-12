@@ -1,5 +1,4 @@
 require "colorize"
-
 require "sqlite3"
 
 DIC = DB.open("sqlite3:var/dicts/mtdic/base.dic")
@@ -48,10 +47,13 @@ def is_lower?(x : String)
   x[0].downcase == x[0]
 end
 
+count = 0
+
 File.open(out_path, "w") do |file|
   cached.each do |zstr, vals|
     vals.uniq!.reject! { |x| x =~ /\p{Han}/ || x =~ /[[:punct:]]/ }
     next if vals.empty?
+
     vstr = vals.find(vals.first) { |x| is_lower?(x) }
 
     if is_lower?(vstr) || vstr != vstr.capitalize
@@ -66,5 +68,8 @@ File.open(out_path, "w") do |file|
     end
 
     file << zstr << '\t' << vstr << '\n'
+    count += 1
   end
 end
+
+puts "output: #{count}"

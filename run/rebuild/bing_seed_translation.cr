@@ -1,6 +1,5 @@
 require "sqlite3"
 require "colorize"
-
 require "../../src/mtapp/service/btran_api"
 
 DIR = "var/dicts/outer"
@@ -20,8 +19,9 @@ puts "cached: #{cached.size}"
 DIC = DB.open("sqlite3:var/dicts/mtdic/base.dic")
 at_exit { DIC.close }
 
-inputs = DIC.query_all "select zstr from defns", as: String
-inputs.select! { |x| x.matches?(/\p{Han}/) }
+inputs = DIC.query_all "select zstr from defns where _flag < 4", as: String
+# inputs.select! { |x| x.matches?(/\p{Han}/) }
+inputs.select! { |x| !cached.has_key?(x) }
 
 inputs.shuffle!
 

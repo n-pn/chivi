@@ -12,7 +12,7 @@ end
 
 DICT = {} of String => String
 
-File.each_line("var/inits/vietphrase/combine-cleaned.tsv") do |line|
+File.each_line("var/cvmtl/vietphrase/combine-cleaned.tsv") do |line|
   next if line.empty?
   key, val = line.split('\t', 2)
   DICT[key] = val
@@ -21,7 +21,7 @@ end
 out_file = File.open("var/dicts/hints.tsv", "w")
 existing = 0
 
-File.each_line("var/inits/known/all-known.tsv") do |key|
+File.each_line("var/cvmtl/known/all-known.tsv") do |key|
   key = normalize(key)
   next unless val = DICT[key]?
 
