@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let name = 'mdform'

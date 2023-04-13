@@ -9,7 +9,7 @@
   import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
   import pt_labels from '$lib/consts/postag_labels.json'
 
-  import { Crumb, SIcon } from '$gui'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import Postag from '$gui/parts/Postag.svelte'
   import DictDl from './DictDl.svelte'
@@ -44,12 +44,6 @@
 
   const tab_labels = ['Tự chọn', 'Chung', 'Nháp', 'Riêng']
 </script>
-
-<Crumb
-  tree={[
-    ['Từ điển', '/mt/dicts'],
-    [data.label, root_path],
-  ]} />
 
 <article class="article m-article">
   <header>

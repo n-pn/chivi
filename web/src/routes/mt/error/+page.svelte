@@ -1,7 +1,6 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { page } from '$app/stores'
-  import { Crumb } from '$gui'
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
@@ -14,8 +13,6 @@
 
   $: pager = new Pager($page.url)
 </script>
-
-<Crumb tree={[['Dịch nhanh', '/sp/qtran']]} />
 
 <article class="md-article">
   <h1>Lỗi máy dịch (Đỏ: Đang lỗi, Xanh: Đã sửa đúng)</h1>

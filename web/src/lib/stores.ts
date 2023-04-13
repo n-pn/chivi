@@ -16,4 +16,4 @@ export * from './stores/global_stores'
 export * from './stores/dboard_stores'
 
 export { form as cvpost_form } from './stores/cvpost_stores'
-export { form as cvrepl_form } from './stores/cvrepl_stores'
+export { form as murepl_form } from './stores/murepl_stores'

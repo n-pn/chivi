@@ -1,8 +1,8 @@
 import preprocess from 'svelte-preprocess'
 import adapter from '@sveltejs/adapter-node'
+
 import { mdsvex } from 'mdsvex'
 import breaks from 'remark-breaks'
-// import autoImport from 'sveltekit-autoimport'
 
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -13,21 +13,13 @@ const mdsvexConfig = {
   smartypants: { dashes: 'oldschool' },
   remarkPlugins: [breaks],
   rehypePlugins: [],
-  layout: path.resolve(_cwd, 'src/gui/sects/MdPost.svelte'),
+  layout: path.resolve(_cwd, 'src/routes/hd/layout.svelte'),
 }
 
 /** @type {import('@sveltejs/kit').Config} */
 export default {
   extensions: ['.svelte', '.svx', '.md'],
   preprocess: [
-    // autoImport({
-    //   components: [{ name: './src/gui/atoms', flat: true }],
-    //   module: {
-    //     svelte: ['onMount', 'createEventDispatcher'],
-    //   },
-    //   include: ['**/*.svelte'],
-    //   exclude: ['**/node_modules/**'],
-    // }),
     preprocess({
       scss: {
         prependData: `@use "sass:math";\n@use "sass:list";\n@import "essence";`,

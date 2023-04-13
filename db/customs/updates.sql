@@ -1,5 +1,5 @@
 UPDATE
-  cvrepls
+  murepls
 SET
   like_count =(
     SELECT
@@ -7,7 +7,7 @@ SET
     FROM
       memoirs
     WHERE
-      target_id = cvrepls.id
+      target_id = murepls.id
       AND target_type = 11
       AND liked_at > 0);
 

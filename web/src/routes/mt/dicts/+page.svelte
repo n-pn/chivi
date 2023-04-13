@@ -2,15 +2,12 @@
   import { page } from '$app/stores'
   import { Footer, Mpager } from '$gui'
   import { Pager } from '$gui/molds/Mpager.svelte'
-  import { Crumb } from '$gui'
 
   import type { PageData } from './$types'
   export let data: PageData
 
   $: ({ cores = [], books = [] } = data)
 </script>
-
-<Crumb tree={[['Từ điển', '/mt/dicts']]} />
 
 <article class="article m-article">
   <h1>Từ điển</h1>

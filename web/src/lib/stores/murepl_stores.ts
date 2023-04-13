@@ -1,18 +1,18 @@
 import { writable, get } from 'svelte/store'
 
-export interface CvreplForm {
+export interface MureplForm {
   input: string
   repl_id: number
 }
 
-function init(repl_id = 0): CvreplForm {
+function init(repl_id = 0): MureplForm {
   return { input: '', repl_id }
 }
 
-async function load(id: number, repl_id: number): Promise<CvreplForm> {
+async function load(id: number, repl_id: number): Promise<MureplForm> {
   if (id == 0) return init(repl_id)
 
-  const api_url = `/_db/tposts/${id}/detail`
+  const api_url = `/_db/mrepls/edit/${id}`
   const api_res = await fetch(api_url)
 
   if (!api_res.ok) return init(repl_id)
@@ -23,7 +23,7 @@ export const form = {
   ...writable(init()),
   init: async (id = 0, repl_id = 0) => form.set(await load(id, repl_id)),
   // prettier-ignore
-  validate(data: CvreplForm = get(form) ) {
+  validate(data: MureplForm = get(form) ) {
     const { input } = data
 
     if (input.length < 1) return 'Độ dài của nội dung phải dài hơn 1 ký tự'

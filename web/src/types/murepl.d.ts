@@ -1,12 +1,16 @@
 declare namespace CV {
-  interface Cvrepl {
+  interface Murepl {
     id: number
-
     user_id: number
-    post_id: number
-    repl_id: number
+
+    thread_id: number
+    thread_mu: number
+
+    torepl_id: number
+    touser_id: number
 
     ohtml: string
+    level: number
 
     ctime: number
     utime: number
@@ -14,11 +18,12 @@ declare namespace CV {
     like_count: number
     repl_count: number
 
-    repls: Cvrepl[] = []
+    vcoin: number
+    repls: Murepl[] = []
   }
 
   interface Rplist {
-    repls: Array<Cvrepl>
+    repls: Array<Murepl>
 
     users: Record<number, Cvuser>
     memos: Record<number, Memoir>

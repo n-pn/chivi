@@ -1,11 +1,11 @@
 <script lang="ts">
-  import CvreplTree from './CvreplTree.svelte'
-  import CvreplForm from './CvreplForm.svelte'
+  import MureplTree from './MureplTree.svelte'
+  import MureplForm from './MureplForm.svelte'
 
   export let cvpost: CV.Cvpost
   export let rplist: CV.Rplist
 
-  export let on_cvrepl_form = (new_repl?: CV.Cvrepl) => {
+  export let on_murepl_form = (new_repl?: CV.Murepl) => {
     if (new_repl) {
       rplist.repls ||= []
       rplist.repls.unshift(new_repl)
@@ -13,18 +13,18 @@
     }
   }
 
-  function build_tree(repls: CV.Cvrepl[]) {
-    const map = new Map<number, CV.Cvrepl>()
+  function build_tree(repls: CV.Murepl[]) {
+    const map = new Map<number, CV.Murepl>()
 
     for (const repl of repls) {
       repl.repls ||= []
       map.set(repl.id, repl)
     }
 
-    const output: CV.Cvrepl[] = []
+    const output: CV.Murepl[] = []
 
     for (const repl of repls) {
-      const parent = map.get(repl.repl_id)
+      const parent = map.get(repl.torepl_id)
 
       if (parent) parent.repls.push(repl)
       else output.push(repl)
@@ -35,11 +35,21 @@
 </script>
 
 <div class="new-repl">
-  <CvreplForm cvpost_id={cvpost.id} on_destroy={on_cvrepl_form} />
+  <MureplForm
+    form={{
+      itext: '',
+      level: 0,
+      murepl_id: 0,
+      torepl_id: 0,
+      touser_id: cvpost.user_id,
+      thread_id: cvpost.id,
+      thread_mu: 0,
+    }}
+    on_destroy={on_murepl_form} />
 </div>
 
 {#if rplist.repls.length > 0}
-  <CvreplTree
+  <MureplTree
     {cvpost}
     repls={build_tree(rplist.repls)}
     users={rplist.users}

@@ -2,7 +2,8 @@ require "../_base"
 
 class CV::Memoir
   enum Type
-    Dreply = 11
+    Murepl = 11
+
     Dtopic = 12
     Dboard = 12
   end

@@ -1,11 +1,12 @@
-import { api_get, merge_query } from '$lib/api_call'
+import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
-export const load: PageLoad = async ({ parent, fetch, url }) => {
-  const { dboard, cvpost } = await parent()
+export const load: PageLoad = async ({ parent, fetch, params }) => {
+  const topic_id = params.topic.split('-').pop()
+  const api_path = `/_db/mrepls/thread/${topic_id}/0`
+  const rplist = await api_get<CV.Rplist>(api_path, fetch)
 
-  const search = merge_query(url.searchParams, { post: cvpost.post.id })
-  const rplist = await api_get<CV.Rplist>(`/_db/tposts?${search}`, fetch)
+  const { dboard, cvpost } = await parent()
 
   const _meta = {
     title: 'Diễn đàn: ' + dboard.bname,

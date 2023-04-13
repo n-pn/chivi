@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { CvpostFull, CvreplList } from '$gui'
+  import CvpostFull from '$gui/parts/dboard/CvpostFull.svelte'
+  import MureplList from '$gui/parts/dboard/MureplList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -20,7 +21,7 @@
 
 <section>
   <h3>Bình luận</h3>
-  <CvreplList {rplist} {cvpost} fluid={true} />
+  <MureplList {rplist} {cvpost} fluid={true} />
 </section>
 
 <style lang="scss">

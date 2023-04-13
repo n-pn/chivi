@@ -3,9 +3,9 @@
 
   import { rel_time } from '$utils/time_utils'
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import CvreplForm from './CvreplForm.svelte'
+  import MureplForm from './MureplForm.svelte'
 
-  export let repl: CV.Cvrepl
+  export let repl: CV.Murepl
 
   export let user: CV.Viuser
   export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
@@ -33,7 +33,7 @@
     }
   }
 
-  const handle_repl_form = (new_repl?: CV.Cvrepl) => {
+  const handle_repl_form = (new_repl?: CV.Murepl) => {
     show_repl = false
     if (!new_repl) return
 
@@ -90,9 +90,16 @@
 
 {#if show_repl}
   <section class="new-repl">
-    <CvreplForm
-      cvpost_id={repl.post_id}
-      dtrepl_id={repl.id}
+    <MureplForm
+      form={{
+        itext: '',
+        level: repl.level + 1,
+        murepl_id: 0,
+        torepl_id: repl.id,
+        touser_id: repl.user_id,
+        thread_id: repl.thread_id,
+        thread_mu: repl.thread_mu,
+      }}
       disabled={_user.privi < 1}
       on_destroy={handle_repl_form} />
   </section>

@@ -2,9 +2,9 @@
   import { dboard_ctrl, tplist_data, popups } from '$lib/stores'
 
   export function make_api_url(data: CV.Cvpost, { op }) {
-    let api_url = `/_db/tposts`
-    if (data) api_url += '?post=' + data.id
-    if (op) api_url += '&uname=' + op
+    let api_url = `/_db/mrepls`
+    if (data) api_url += `/thread/${data.id || 0}/0`
+    if (op) api_url += '?from=' + op
 
     return api_url
   }
@@ -14,7 +14,7 @@
   import { invalidate } from '$app/navigation'
 
   import CvpostFull from '$gui/parts/dboard/CvpostFull.svelte'
-  import CvreplList from '$gui/parts/dboard/CvreplList.svelte'
+  import MureplList from '$gui/parts/dboard/MureplList.svelte'
 
   let cvpost: CV.CvpostFull = {
     post: { dboard: { id: 0, bname: '', bslug: '' }, bhtml: '', labels: [] },
@@ -34,28 +34,26 @@
   $: list_api_url = make_api_url(cvpost.post, $tplist_data.query)
 
   $: if ($popups.dboard && $tplist_data.topic) load_cvpost(post_api_url)
-  $: if (cvpost) load_tposts(list_api_url)
+  $: if (cvpost) load_repls(list_api_url)
 
   const on_cvpost_form = async () => {
     await invalidate(post_api_url)
     await load_cvpost(post_api_url)
   }
 
-  const on_cvrepl_form = async () => {
+  const on_murepl_form = async () => {
     await invalidate(list_api_url)
-    await load_tposts(list_api_url)
+    await load_repls(list_api_url)
   }
 
   async function load_cvpost(url: string) {
     cvpost = await fetch(url).then((r) => r.json())
   }
 
-  async function load_tposts(api_url: string) {
+  async function load_repls(api_url: string) {
     const res = await fetch(api_url)
     if (!res.ok) alert(await res.text())
     else rplist = await res.json()
-
-    console.log(rplist)
   }
 </script>
 
@@ -64,7 +62,7 @@
     <CvpostFull {...cvpost} {on_cvpost_form} />
   </section>
   <section class="posts">
-    <CvreplList {rplist} cvpost={cvpost.post} {on_cvrepl_form} />
+    <MureplList {rplist} cvpost={cvpost.post} {on_murepl_form} />
   </section>
 {:else}
   Chưa chọn chủ đề

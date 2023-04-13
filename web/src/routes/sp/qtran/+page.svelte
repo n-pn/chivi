@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
 
-  import { Footer, SIcon, Crumb } from '$gui'
+  import { Footer, SIcon } from '$gui'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -31,8 +31,6 @@
     }
   }
 </script>
-
-<Crumb tree={[['Dịch nhanh', '/sp/qtran']]} />
 
 <div class="input">
   <textarea

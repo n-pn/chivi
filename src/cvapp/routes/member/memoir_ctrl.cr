@@ -12,8 +12,8 @@ class CV::MemoirCtrl < CV::BaseCtrl
   def mark_repl(repl_id : Int32, action : MarkAction)
     guard_privi 0, "tương tác với phản hồi"
 
-    target = Cvrepl.find!({id: repl_id})
-    memoir = Memoir.load(_vu_id, :dreply, repl_id)
+    target = Murepl.find!({id: repl_id})
+    memoir = Memoir.load(_vu_id, :murepl, repl_id)
 
     do_mark_action(memoir, target, action)
 
@@ -39,7 +39,7 @@ class CV::MemoirCtrl < CV::BaseCtrl
     }
   end
 
-  private def do_mark_action(memoir : Memoir, target : Cvpost | Cvrepl, action : MarkAction)
+  private def do_mark_action(memoir : Memoir, target : Cvpost | Murepl, action : MarkAction)
     utc_unix = Time.utc.to_unix
 
     case action

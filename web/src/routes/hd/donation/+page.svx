@@ -1,67 +1,43 @@
 ---
 title: Ủng hộ Chivi bằng tiền mặt
+desc: Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.
 ---
 
 <script>
   import { page } from '$app/stores'
-  $: uname = $page.data._user.uname || 'Chivi'
-  $: ucode = `CHIVI ${uname} ID ${$page.data._user.vu_id}`
+  $: user = $page.data._user
+  $: code = `CHIVI ${user.uname} ID ${user.vu_id}`
 </script>
 
 Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.
 
 <p class="em strong">
-Lưu ý: Để ban quản trị dễ dàng phân biệt tài khoản của bạn, khi chuyển khoản ủng hộ Chivi hãy để lại lời nhắn theo định dạng <code>CHIVI tendangnhap</code>.
+Để ban quản trị dễ dàng phân biệt tài khoản của bạn, khi chuyển khoản ủng hộ Chivi hãy để lại lời nhắn theo định dạng <code>{code}</code>.
 </p>
 
-<p class="em">
-<code>tendangnhap</code> ở đây là thông tin để định danh tài khoản, bạn hãy thay thế bằng tên tài khoản của bạn trên Chivi, hoặc địa chỉ email của bạn dùng để đăng ký Chivi.
-</p>
+_Gợi ý: Bạn có thể scan mã QR ở bên dưới. Thông tin định danh của bạn đã được điền sẵn nếu bạn dùng QR của Techcombank hoặc Vietcombank._
 
-<p class="strong">
-Ví dụ tên tài khoản bạn là {uname}, hãy để lại lời nhắn là <code>CHIVI {uname}</code>.
-</p>
+Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy liên hệ với ban quản trị để được hỗ trợ thông qua các kênh:
 
-_Gợi ý 1: Từ `CHIVI` ở phía trước là không bắt buộc, bạn có thể bỏ qua nếu muốn._
-_Gợi ý 2: Nếu tên tài khoản có dấu, để chắc chắn hãy để lại địa chỉ email._
-_Gợi ý 3: Bạn có thể scan mã QR để việc ủng hộ thuận tiện hơn._
-
-Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy liên hệ với ban quản trị để được hỗ trợ thông qua các kênh liên hệ của trang:
-
-- Discord: https://discord.gg/mdC3KQH
 - Facebook: https://www.facebook.com/chivi.fb/
+- Discord: https://discord.gg/mdC3KQH
 
 ## Phương thức ủng hộ
 
-<p class="em strong">
-
-</p>
-### Quốc tế
-
-- Ko-Fi: https://ko-fi.com/chivi
-- Paypal: https://www.paypal.com/paypalme/nipinium
-
-### Việt Nam:
-
-- Techcombank: **1606281089**
-- Vietcombank: **1035430031**
-- Ví Momo: https://me.momo.vn/nipin
-- VNPAY: **0965952021**
-
-**Quét mã QR:**
+### Quét mã QR:
 
 <div class="qr">
   <figure>
     <figcaption>Techcombank</figcaption>
     <img
-    src="https://img.vietqr.io/image/TCB-1606281089-compact.png?amount=50000&addInfo={ucode}"
+    src="https://img.vietqr.io/image/TCB-1606281089-compact.png?amount=50000&addInfo={code}"
     onerror="this.src='/imgs/techcombank-fs8.png'" alt="Techcombank"/>
   </figure>
 
   <figure>
     <figcaption>Vietcombank</figcaption>
     <img
-   src="https://img.vietqr.io/image/VCB-1035430031-compact.png?amount=50000&addInfo={ucode}"
+   src="https://img.vietqr.io/image/VCB-1035430031-compact.png?amount=50000&addInfo={code}"
     onerror="this.src='/imgs/vietcombank-fs8.png'"
     alt="Vietcombank"/>
   </figure>
@@ -71,6 +47,14 @@ Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy
     <img src="/imgs/momo-fs8.png" alt="Momo"/>
   </figure>
 </div>
+
+### Chuyển thủ công:
+
+- Số tài khoản Techcombank: **1606281089**
+- Số tài khoản Vietcombank: **1035430031**
+- Ví Momo: https://me.momo.vn/nipin
+- Paypal: https://www.paypal.com/paypalme/nipinium
+- Ko-Fi: https://ko-fi.com/chivi
 
 _Khi bạn ủng hộ Chivi bằng tiền mặt, bạn sẽ được tặng một đơn vị tiền tệ ảo là vcoin, bạn có thể dùng vcoin để nâng cấp quyền hạn, gửi tặng người dùng khác, hoặc sử dụng các tính năng nâng cao sẽ dần được phát triển bổ sung._
 
@@ -140,5 +124,9 @@ Vì vậy, nếu điều kiện cho phép, hãy ủng hộ cho Chivi để trang
   .qr img {
     max-height: 20rem;
     width: auto;
+  }
+
+  li + li {
+    margin-top: .5rem;
   }
 </style >

@@ -1,6 +1,6 @@
 export async function toggle_like(
   memoir: CV.Memoir,
-  target: CV.Cvpost | CV.Cvrepl,
+  target: CV.Cvpost | CV.Murepl,
   type: string
 ) {
   const action = memoir.liked > 0 ? 'unlike' : 'like'
