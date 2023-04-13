@@ -11,16 +11,41 @@
 
   $: nvinfo = $page.data.nvinfo
   $: ubmemo = $page.data.ubmemo
-  $: nv_tab = map_tab_from_route($page.route.id || '')
+
+  $: _curr = map_tab_from_route($page.route.id || '')
 
   function map_tab_from_route(route_id: string) {
-    if (route_id.includes('crits')) return 'crits'
-    if (route_id.includes('chaps')) return 'chaps'
-    if (route_id.includes('lists')) return 'lists'
-    return 'index'
+    if (route_id.includes('crits')) return '/crits'
+    if (route_id.includes('chaps')) return '/chaps'
+    if (route_id.includes('lists')) return '/lists'
+    if (route_id.includes('bants')) return '/bants'
+    return ''
   }
 
   $: root_path = `/wn/${nvinfo.bslug}`
+
+  const tabs = [
+    {
+      href: '',
+      icon: 'news',
+      text: 'Tổng quan',
+    },
+    {
+      href: '/bants',
+      icon: 'message',
+      text: 'Thảo luận',
+    },
+    {
+      href: '/crits',
+      icon: 'stars',
+      text: 'Đánh giá',
+    },
+    {
+      href: '/lists',
+      icon: 'bookmarks',
+      text: 'Thư đơn',
+    },
+  ]
 </script>
 
 <div class="main-info">
@@ -111,23 +136,15 @@
 
 <section class="section island">
   <header class="section-header">
-    <a href={root_path} class="header-tab" class:_active={nv_tab == 'index'}>
-      <span>Tổng quan</span>
-    </a>
-
-    <a
-      href="{root_path}/crits"
-      class="header-tab"
-      class:_active={nv_tab == 'crits'}>
-      <span>Đánh giá</span>
-    </a>
-
-    <a
-      href="{root_path}/lists"
-      class="header-tab"
-      class:_active={nv_tab == 'lists'}>
-      <span>Thư đơn</span>
-    </a>
+    {#each tabs as { href, icon, text }}
+      <a
+        href="{root_path}{href}"
+        class="header-tab"
+        class:_active={href == _curr}>
+        <SIcon name={icon} />
+        <span>{text}</span>
+      </a>
+    {/each}
   </header>
 
   <div class="section-content">
@@ -279,10 +296,8 @@
     }
   }
 
-  $section-height: 3rem;
   .section-header {
     display: flex;
-    height: $section-height;
     @include border(--bd-main, $loc: bottom);
 
     @include tm-dark {
@@ -290,24 +305,62 @@
     }
   }
 
-  .header-tab {
-    height: $section-height;
-    line-height: $section-height;
-    width: 50%;
-    font-weight: 500;
-    text-align: center;
-    text-transform: uppercase;
+  .section-content {
+    padding: 0.75rem 0;
+    display: block;
+    min-height: 50vh;
+  }
 
-    @include ftsize(sm);
-    @include bp-min(tm) {
-      @include ftsize(md);
-    }
+  .header-tab {
+    flex: 1;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    font-weight: 500;
+
+    padding: 0.5rem 0 0.25rem;
 
     @include fgcolor(neutral, 6);
 
+    :global(svg) {
+      width: 1.25rem;
+      height: 1.25rem;
+      // opacity: 0.8;
+    }
+
+    span {
+      @include ftsize(sm);
+    }
+
+    @include bp-min(ts) {
+      flex-direction: row;
+
+      padding: 0.75rem 0;
+
+      span {
+        @include ftsize(md);
+      }
+
+      :global(svg) {
+        margin-right: 0.25rem;
+      }
+    }
+
     &._active {
       @include fgcolor(primary, 6);
-      @include border(primary, 5, $width: 2px, $loc: bottom);
+      position: relative;
+      &:after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        content: '';
+        @include border(primary, 5, $width: 2px, $loc: bottom);
+      }
     }
 
     @include tm-dark {
@@ -317,11 +370,5 @@
         @include fgcolor(primary, 4);
       }
     }
-  }
-
-  .section-content {
-    padding: 0.75rem 0;
-    display: block;
-    min-height: 50vh;
   }
 </style>

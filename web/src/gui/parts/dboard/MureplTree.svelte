@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-  export let cvpost: CV.Cvpost
+  export let thread = { id: 0, mu: 0, to: 0 }
 
   export let repls: CV.Murepl[]
   export let users: Record<number, CV.Viuser>
@@ -23,7 +23,7 @@
 
     {#if repl.repls && repl.repls.length > 0}
       <svelte:self
-        {cvpost}
+        {thread}
         repls={repl.repls}
         {users}
         {memos}

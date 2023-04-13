@@ -183,7 +183,7 @@
       }
 
       textarea {
-        height: 8rem;
+        height: 7rem;
       }
     }
   }
@@ -236,7 +236,7 @@
   textarea {
     display: block;
     width: 100%;
-    min-height: 5rem;
+    min-height: 4rem;
     max-height: 80vh;
     border: 0;
     outline: 0;

@@ -14,6 +14,7 @@
     touser_id: 0,
   }
 
+  export let placeholder = 'Nội dung bình luận'
   export let disabled = false
 
   export let on_destroy = (new_repl?: CV.Murepl) => {
@@ -48,14 +49,16 @@
       error = ex.body?.message
     }
   }
-
-  $: placeholder = disabled
-    ? 'Bạn cần đăng nhập để thêm bình luận'
-    : 'Nội dung bình luận'
 </script>
 
 <form class="repl-form" {action} {method} on:submit|preventDefault={submit}>
-  <MdForm bind:value={form.itext} name="itext" {disabled} {placeholder}>
+  <MdForm
+    bind:value={form.itext}
+    name="itext"
+    {disabled}
+    placeholder={disabled
+      ? 'Bạn cần đăng nhập để thêm bình luận'
+      : placeholder}>
     <svelte:fragment slot="footer">
       {#if error}<div class="form-msg _err">{error}</div>{/if}
 

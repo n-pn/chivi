@@ -36,6 +36,12 @@
   $: if ($popups.dboard && $tplist_data.topic) load_cvpost(post_api_url)
   $: if (cvpost) load_repls(list_api_url)
 
+  $: thread = {
+    to: cvpost.post.user_id,
+    id: cvpost.post.id,
+    mu: 0,
+  }
+
   const on_cvpost_form = async () => {
     await invalidate(post_api_url)
     await load_cvpost(post_api_url)
@@ -62,7 +68,7 @@
     <CvpostFull {...cvpost} {on_cvpost_form} />
   </section>
   <section class="posts">
-    <MureplList {rplist} cvpost={cvpost.post} {on_murepl_form} />
+    <MureplList {thread} {rplist} {on_murepl_form} />
   </section>
 {:else}
   Chưa chọn chủ đề

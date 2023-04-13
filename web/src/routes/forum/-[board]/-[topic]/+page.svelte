@@ -6,6 +6,12 @@
   export let data: PageData
 
   $: ({ dboard, cvpost, rplist } = data)
+
+  $: thread = {
+    to: cvpost.post.user_id,
+    id: cvpost.post.id,
+    mu: 0,
+  }
 </script>
 
 <svelte:head>
@@ -21,7 +27,7 @@
 
 <section>
   <h3>Bình luận</h3>
-  <MureplList {rplist} {cvpost} fluid={true} />
+  <MureplList {rplist} {thread} fluid={true} />
 </section>
 
 <style lang="scss">
