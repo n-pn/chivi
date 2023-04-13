@@ -12,6 +12,8 @@
 </script>
 
 <article class="article island">
+  <h1>Lịch sử giao dịch Vcoin</h1>
+
   <table>
     <thead>
       <tr>

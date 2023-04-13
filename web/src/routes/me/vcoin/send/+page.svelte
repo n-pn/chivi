@@ -78,7 +78,11 @@
 
         <div class="flex">
           <label for="amount">Số khác:</label>
-          <input class="amount" name="amount" bind:value={form.amount} />
+          <input
+            class="amount"
+            name="amount"
+            type="number"
+            bind:value={form.amount} />
         </div>
       </radio-group>
     </div>
