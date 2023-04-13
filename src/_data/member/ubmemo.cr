@@ -1,5 +1,5 @@
 require "../_base"
-require "./vi_user"
+require "./viuser"
 
 require "../wnovel/wn_info"
 

@@ -7,7 +7,6 @@
   import CvpostForm, { ctrl as post_ctrl } from './CvpostForm.svelte'
 
   export let post: CV.Cvpost
-  export let dboard: CV.Dboard = post.dboard
 
   export let user: CV.Viuser
   export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
@@ -16,7 +15,7 @@
 
   export let on_post_form = () => window.location.reload()
 
-  $: board_url = `/forum/-${dboard.bslug}`
+  $: board_url = `/fr/b-${post.dboard.bslug}`
 
   async function toggle_like() {
     const action = memo.liked > 0 ? 'unlike' : 'like'
@@ -118,7 +117,7 @@
 </topic-full>
 
 {#if $post_ctrl.actived}
-  <CvpostForm {dboard} on_destroy={on_post_form} />
+  <CvpostForm dboard={post.dboard} on_destroy={on_post_form} />
 {/if}
 
 <style lang="scss">

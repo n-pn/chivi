@@ -24,6 +24,6 @@ class CV::DboardCtrl < CV::BaseCtrl
       raise NotFound.new("Diễn đàn không tồn tại!")
     end
 
-    render json: {dboard: DboardView.new(dboard)}
+    render json: DboardView.new(dboard)
   end
 end

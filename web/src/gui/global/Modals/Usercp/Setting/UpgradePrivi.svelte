@@ -1,5 +1,5 @@
 <script context="module">
-  const tspans = ['2 tuần', '1 tháng', '2 tháng', '3 tháng']
+  const ranges = ['2 tuần', '1 tháng', '2 tháng', '3 tháng']
 
   const costs = [
     [0, 0, 0, 0],
@@ -20,9 +20,9 @@
   let error = ''
 
   let privi = $page.data._user.privi < 3 ? $page.data._user.privi + 1 : 3
-  let tspan = 1
+  let range = 1
 
-  $: cost = costs[privi][tspan]
+  $: cost = costs[privi][range]
 
   const action = '/_db/_self/upgrade-privi'
 
@@ -33,7 +33,7 @@
     _onload = true
 
     try {
-      user = await api_call(action, { privi, tspan }, 'PUT')
+      user = await api_call(action, { privi, range }, 'PUT')
       window.location.reload()
     } catch (ex) {
       console.log(ex)
@@ -64,9 +64,9 @@
     <label class="form-label" for="privi">Chọn thời gian:</label>
     <div class="radio-group">
       {#each [0, 1, 2, 3] as value}
-        <label class="m-label _{value}" class:_active={value == tspan}>
-          <input type="radio" bind:group={tspan} {value} />
-          <SIcon name="clock" />{tspans[value]}
+        <label class="m-label _{value}" class:_active={value == range}>
+          <input type="radio" bind:group={range} {value} />
+          <SIcon name="clock" />{ranges[value]}
         </label>
       {/each}
     </div>

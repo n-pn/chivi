@@ -62,7 +62,7 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
       target.update(vcoin: target.vcoin + form.amount)
 
       VcoinXlog.new({
-        kind:        form.as_admin? ? 2 : 1,
+        kind:        form.as_admin? ? 100 : 0,
         sender_id:   sender.id,
         target_id:   target.id,
         target_name: form.target,

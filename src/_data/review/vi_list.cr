@@ -1,4 +1,4 @@
-require "../member/vi_user"
+require "../member/viuser"
 
 require "../../_util/text_util"
 require "../../_util/post_util"

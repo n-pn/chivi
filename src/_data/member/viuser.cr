@@ -17,15 +17,14 @@ class CV::Viuser
 
   # user group and privilege:
   # - admin: 4 // granted all access
-  # - vip_2: 3 // granted all premium features
-  # - vip_1: 2 // freely reading all content
-  # - vip_0: 1 // once a vip, still retain some privilege
-  # - leech: 0  // leecher has restristed access
+  # - vip_3: 3 // granted all premium features
+  # - vip_2: 2 // freely reading all content
+  # - vip_1: 1 // limited access
+  # - basic: 0 // restristed access
   # - banned: -1 // banned user is treated similar to unregisted user
+
   column privi : Int32 = 0
-  column privi_1_until : Int64 = 0
-  column privi_2_until : Int64 = 0
-  column privi_3_until : Int64 = 0
+  column privi_until : Array(Int64) = [0_i64, 0_i64, 0_i64]
 
   column vcoin : Float64 = 0
   column vcoin_total : Int32 = 0
@@ -60,13 +59,11 @@ class CV::Viuser
     self.save!
   end
 
-  TSPAN_UNIT = 1.days.total_seconds.to_i
-  PRIVI_SPAN = {14, 30, 60, 90}.map(&.* TSPAN_UNIT)
+  PRIVI_DAYS = {14, 30, 60, 90}
   PRIVI_COST = {
-    {0, 0, 0, 0},        # privi 0
     {10, 20, 35, 50},    # privi 1
     {30, 50, 90, 130},   # privi 2
-    {50, 100, 175, 250}, # privi 2
+    {50, 100, 175, 250}, # privi 3
   }
 
   def fix_vcoin(value : Float64)
@@ -74,66 +71,58 @@ class CV::Viuser
     self.vcoin += value
   end
 
-  def privi_until
-    {self.privi_1_until, self.privi_2_until, self.privi_3_until}
+  def current_privi_until(privi = self.privi)
+    privi_until[privi &- 1]? || Time.utc.to_unix &+ 86400 &* 360
   end
 
-  def until
-    privi_until[self.privi &- 1]? || Time.utc.to_unix &+ 86400 * 360
-  end
+  def upgrade_privi!(new_privi : Int32, range : Int32, persist : Bool = true)
+    req_vcoin = PRIVI_COST[new_privi &- 1][range]
+    raise "Lượng vcoin không đủ!" if req_vcoin > self.vcoin
 
-  def upgrade!(privi : Int32, tspan : Int32) : Tuple(Int64, Int64, Int64)
-    vcoin = PRIVI_COST[privi][tspan]
-    raise "Lượng vcoin không đủ!" if vcoin > self.vcoin
+    self.vcoin -= req_vcoin
+    self.privi = new_privi if self.privi < new_privi
 
-    self.vcoin -= vcoin
-    self.privi = privi if self.privi < privi
-
-    tspan = PRIVI_SPAN[tspan]
+    pdays = PRIVI_DAYS[range]
+    tspan = pdays &* 86400
     t_now = Time.utc.to_unix
 
-    if privi > 0
-      self.privi_1_until = t_now if self.privi_1_until < t_now
-      self.privi_1_until += tspan
+    if new_privi > 0
+      extend_privi_until(0, tspan, t_now)
     end
 
-    if privi > 1
-      self.privi_2_until = t_now if self.privi_2_until < t_now
-      self.privi_2_until += tspan
-      self.privi_1_until += privi == 2 ? tspan // 2 : tspan // 4
+    if new_privi > 1
+      extend_privi_until(1, tspan, t_now)
+      self.privi_until[0] &+= new_privi == 2 ? tspan // 2 : tspan // 4
     end
 
-    if privi > 2
-      self.privi_3_until = t_now if self.privi_3_until < t_now
-      self.privi_3_until += tspan
-      self.privi_2_until += tspan // 2
+    if new_privi > 2
+      extend_privi_until(2, tspan, t_now)
+      self.privi_until[1] &+= tspan // 2
     end
 
-    self.save!
-    {self.privi_1_until, self.privi_2_until, self.privi_3_until}
+    self.save! if persist
+    {req_vcoin, pdays}
+  end
+
+  private def extend_privi_until(index : Int32, tspan : Int32, t_now = Time.utc.to_unix)
+    self.privi_until[index] = t_now if self.privi_until[index] < t_now
+    self.privi_until[index] &+= tspan
   end
 
   def downgrade_privi! : Nil
-    now = Time.utc.to_unix
+    t_now = Time.utc.to_unix
 
-    if self.privi == 3
-      return if now < self.privi_3_until
-      self.privi = 2
-    end
-
-    if self.privi == 2
-      return if now < self.privi_2_until
-      self.privi = 1
-    end
-
-    if self.privi == 1
-      self.privi = 0 if now > self.privi_1_until
+    {3, 2, 1}.each do |privi|
+      next unless self.privi == privi
+      return if t_now <= self.privi_until[privi &- 1]
+      self.privi = privi &- 1
     end
   end
 
   def check_privi! : Nil
     self.downgrade_privi!
     self.last_loggedin_at = Time.utc
+
     self.save!
     self.cache!
   end

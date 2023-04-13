@@ -15,7 +15,7 @@ struct CV::ViuserView
 
       if @full
         jb.field "vcoin", @data.vcoin.round(2)
-        jb.field "until", @data.until
+        jb.field "until", @data.current_privi_until
       end
     }
   end

@@ -10,12 +10,10 @@
   export let post: CV.Cvpost
   export let user: CV.Viuser
   export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
-
   export let _mode = 0
 
   $: dboard = post.dboard
-  $: board_url = `/forum/-${dboard.bslug}`
-  $: label_url = _mode > -1 ? board_url : `/-${dboard.bslug}/board`
+  $: board_url = `/fr/b-${dboard.bslug}`
 
   async function toggle_like() {
     const action = memo?.liked > 0 ? 'unlike' : 'like'
@@ -33,10 +31,10 @@
 </script>
 
 <topic-card class:sm={$$props.size == 'sm'}>
-  <topic-head class={_mode}>
+  <topic-head>
     <a
       class="topic-title"
-      href="{board_url}/-{post.tslug}-{post.id}"
+      href="/fr/t-{post.id}-{post.tslug}"
       on:click={(e) => dboard_ctrl.view_topic(e, post)}>
       {post.title}
     </a>
@@ -44,7 +42,7 @@
     {#each post.labels as label}
       <a
         class="m-label _{dlabels[label]} _sm"
-        href="{label_url}?lb={label}"
+        href="/fr?lb={label}"
         on:click={(e) => dboard_ctrl.view_board(e, dboard, label)}>{label}</a>
     {/each}
   </topic-head>

@@ -16,11 +16,10 @@
   <table class="table">
     <thead>
       <tr>
-        <th>#</th>
         <th>Người gửi</th>
         <th>Người nhận</th>
         <th>Số vcoin</th>
-        <th>Lý do gửi</th>
+        <th>Lý do</th>
         <th>Thời gian</th>
       </tr>
     </thead>
@@ -30,7 +29,6 @@
         {@const sender = data.users[xlog.sender_id]}
         {@const target = data.users[xlog.target_id]}
         <tr>
-          <td>{xlog.id}</td>
           <td>
             <span class="cv-user" data-privi={sender.privi}>
               <SIcon name="privi-{sender.privi}" iset="sprite" />
@@ -44,12 +42,16 @@
             </span>
           </td>
           <td>{xlog.amount}</td>
-          <td>{xlog.reason}</td>
-          <td>{rel_time(xlog.ctime)}</td>
+          <td class="reason">{xlog.reason}</td>
+          <td class="ctime">{rel_time(xlog.ctime)}</td>
         </tr>
       {/each}
     </tbody>
   </table>
+
+  <footer>
+    <Mpager {pager} pgidx={data.pgidx} pgmax={data.pgmax} />
+  </footer>
 </article>
 
 <style lang="scss">
@@ -66,5 +68,27 @@
 
   table {
     margin-top: 1rem;
+  }
+
+  footer {
+    margin-top: 0.75rem;
+  }
+
+  .cv-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .reason {
+    @include ftsize(sm);
+    @include clamp($width: null);
+    @include fgcolor(secd);
+  }
+
+  .ctime {
+    @include ftsize(sm);
+    @include clamp($width: null);
+    @include fgcolor(tert);
   }
 </style>

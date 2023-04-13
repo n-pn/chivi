@@ -4,7 +4,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ dboard, dtlist = [] } = data)
+  $: ({ dboard, dtlist } = data)
 </script>
 
-<CvpostList dboard={data.dboard} dtlist={data.dtlist} />
+<CvpostList {dboard} {dtlist} />

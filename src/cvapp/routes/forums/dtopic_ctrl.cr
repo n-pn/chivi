@@ -1,5 +1,5 @@
 require "../_ctrl_base"
-require "./cvpost_form"
+require "./dtopic_form"
 
 class CV::CvpostCtrl < CV::BaseCtrl
   base "/_db/topics"
@@ -72,7 +72,6 @@ class CV::CvpostCtrl < CV::BaseCtrl
       post: CvpostView.new(cvpost, full: true),
       user: ViuserView.new(viuser),
       memo: MemoirView.new(memoir),
-
     }
   rescue err
     render :not_found, text: "Chủ đề không tồn tại!"

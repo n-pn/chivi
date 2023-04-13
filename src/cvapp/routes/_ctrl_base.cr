@@ -1,7 +1,6 @@
 require "../../_data/**"
 require "../views/*"
 
-require "./_curr_user"
 require "./_ctrl_util"
 
 require "../../cv_srv"
@@ -24,7 +23,7 @@ abstract class CV::BaseCtrl < AC::Base
     session["vu_id"] = user.id.to_i64
     session["uname"] = user.uname
     session["privi"] = user.privi.to_i64
-    session["until"] = user.until
+    session["until"] = user.current_privi_until
   end
 
   private def guard_privi(min = 0)

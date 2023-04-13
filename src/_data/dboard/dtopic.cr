@@ -3,7 +3,7 @@ require "../../_util/hash_util"
 
 require "../_base"
 require "../wnovel/wn_info"
-require "../member/vi_user"
+require "../member/viuser"
 
 class CV::Cvpost
   include Clear::Model

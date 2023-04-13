@@ -21,7 +21,7 @@
         <th>Người gửi</th>
         <th>Người nhận</th>
         <th>Số vcoin</th>
-        <th>Lý do gửi</th>
+        <th>Lý do</th>
         <th>Thời gian</th>
       </tr>
     </thead>
@@ -51,8 +51,8 @@
             </a>
           </td>
           <td>{xlog.amount}</td>
-          <td>{xlog.reason}</td>
-          <td>{rel_time(xlog.ctime)}</td>
+          <td class="reason">{xlog.reason}</td>
+          <td class="ctime">{rel_time(xlog.ctime)}</td>
         </tr>
       {/each}
     </tbody>
@@ -83,5 +83,17 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
+  }
+
+  .reason {
+    @include ftsize(sm);
+    @include clamp($width: null);
+    @include fgcolor(secd);
+  }
+
+  .ctime {
+    @include ftsize(sm);
+    @include clamp($width: null);
+    @include fgcolor(tert);
   }
 </style>

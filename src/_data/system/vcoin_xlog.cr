@@ -5,8 +5,13 @@ class CV::VcoinXlog
   self.table = "vcoin_xlogs"
 
   primary_key type: :serial
+  column kind : Int32 = 0
 
-  column kind : Int32 = 1
+  # kind values
+  # 0: normal transaction between user
+  # 10: spent by upgrade privi
+  # 20: spent by download translation
+  # 100: reward by system for donating
 
   column sender_id : Int32
 

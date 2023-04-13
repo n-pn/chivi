@@ -67,11 +67,6 @@ const error: App.PageMeta = {
 
 type PageMetaFn = (data: Record<string, any>) => App.PageMeta
 const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
-  // forum pages
-  '/forum': {
-    title: 'Diễn đàn',
-    left_nav: [home_nav('tm'), nav_link('/forum', 'Diễn đàn', 'messages')],
-  },
   // new book pages
   '/wn': {
     title: 'Danh sách truyện',
@@ -83,111 +78,111 @@ const meta_map: Record<string, App.PageMeta | PageMetaFn> = {
       nav_link('/wn/+book', 'Thêm truyện', 'file-plus', { show: 'tm' }),
     ],
   },
-  '/wn/[wn_id]-[[s]]/(info)': ({ nvinfo, ubmemo }) => {
-    if (!nvinfo) return error
+  // '/wn/[wn_id]-[[s]]/(info)': ({ nvinfo, ubmemo }) => {
+  //   if (!nvinfo) return error
 
-    return {
-      title: `${nvinfo.vtitle}`,
-      desc: nvinfo.bintro.substring(0, 300),
-      left_nav: [home_nav(''), book_nav(nvinfo.bslug, nvinfo.vtitle, '')],
-      right_nav: [quick_read_v2(nvinfo, ubmemo)],
-    }
-  },
-  '/wn/[wn_id]-[[s]]/+info': ({ nvinfo }) => {
-    if (!nvinfo) return error
-    return {
-      title: `Sửa thông tin truyện: ${nvinfo.vtitle}`,
-      desc: 'Sửa thông tin truyện',
-      left_nav: [
-        home_nav('', ''),
-        book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
-        nav_link('+info', 'Sửa thông tin', 'pencil'),
-      ],
-    }
-  },
-  '/wn/[wn_id]-[[s]]/(info)/crits/+crit': ({ nvinfo }) => {
-    if (!nvinfo) return error
+  //   return {
+  //     title: `${nvinfo.vtitle}`,
+  //     desc: nvinfo.bintro.substring(0, 300),
+  //     left_nav: [home_nav(''), book_nav(nvinfo.bslug, nvinfo.vtitle, '')],
+  //     right_nav: [quick_read_v2(nvinfo, ubmemo)],
+  //   }
+  // },
+  // '/wn/[wn_id]-[[s]]/+info': ({ nvinfo }) => {
+  //   if (!nvinfo) return error
+  //   return {
+  //     title: `Sửa thông tin truyện: ${nvinfo.vtitle}`,
+  //     desc: 'Sửa thông tin truyện',
+  //     left_nav: [
+  //       home_nav('', ''),
+  //       book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
+  //       nav_link('+info', 'Sửa thông tin', 'pencil'),
+  //     ],
+  //   }
+  // },
+  // '/wn/[wn_id]-[[s]]/(info)/crits/+crit': ({ nvinfo }) => {
+  //   if (!nvinfo) return error
 
-    return {
-      title: `${nvinfo.vtitle}`,
-      desc: nvinfo.bintro.substring(0, 300),
-      left_nav: [
-        home_nav('', ''),
-        book_nav(nvinfo.bslug, 'book-open', 'pl'),
-        nav_link('.', 'Đánh giá', 'stars', { show: 'ts' }),
-        nav_link('+crit', 'Thêm đánh giá', 'circle-plus', { show: 'pl' }),
-      ],
-      right_nav: [nav_link('../lists', 'Thư đơn', 'bookmarks', { show: 'tl' })],
-    }
-  },
+  //   return {
+  //     title: `${nvinfo.vtitle}`,
+  //     desc: nvinfo.bintro.substring(0, 300),
+  //     left_nav: [
+  //       home_nav('', ''),
+  //       book_nav(nvinfo.bslug, 'book-open', 'pl'),
+  //       nav_link('.', 'Đánh giá', 'stars', { show: 'ts' }),
+  //       nav_link('+crit', 'Thêm đánh giá', 'circle-plus', { show: 'pl' }),
+  //     ],
+  //     right_nav: [nav_link('../lists', 'Thư đơn', 'bookmarks', { show: 'tl' })],
+  //   }
+  // },
 
   // book chapters
-  '/wn/[wn_id]-[[s]]/(info)/lists': ({ nvinfo }) => {
-    if (!nvinfo) return error
+  // '/wn/[wn_id]-[[s]]/(info)/lists': ({ nvinfo }) => {
+  //   if (!nvinfo) return error
 
-    return {
-      title: `${nvinfo.vtitle}`,
-      desc: nvinfo.bintro.substring(0, 300),
-      left_nav: [
-        home_nav('', ''),
-        book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
-        nav_link('lists', 'Thư đơn', 'bookmarks'),
-      ],
-      right_nav: [
-        nav_link('lists/+list', 'Thư đơn', 'circle-plus', { show: 'tl' }),
-      ],
-    }
-  },
+  //   return {
+  //     title: `${nvinfo.vtitle}`,
+  //     desc: nvinfo.bintro.substring(0, 300),
+  //     left_nav: [
+  //       home_nav('', ''),
+  //       book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
+  //       nav_link('lists', 'Thư đơn', 'bookmarks'),
+  //     ],
+  //     right_nav: [
+  //       nav_link('lists/+list', 'Thư đơn', 'circle-plus', { show: 'tl' }),
+  //     ],
+  //   }
+  // },
 
-  '/wn/[wn_id]-[[s]]/chaps/[sname]/(list)': ({ nvinfo, ubmemo }) => {
-    if (!nvinfo || !ubmemo) return error
+  // '/wn/[wn_id]-[[s]]/chaps/[sname]/(list)': ({ nvinfo, ubmemo }) => {
+  //   if (!nvinfo || !ubmemo) return error
 
-    return {
-      title: `Chương tiết truyện  ${nvinfo.vtitle}`,
-      desc: nvinfo.bintro.substring(0, 300),
-      left_nav: [
-        home_nav('', ''),
-        book_nav(nvinfo.bslug, nvinfo.vtitle, 'ts'),
-        nav_link('../chaps', 'Chương tiết', 'list', { show: 'pl' }),
-      ],
-      right_nav: [quick_read_v2(nvinfo, ubmemo)],
-    }
-  },
-  '/wn/[wn_id]-[[s]]/chaps/+seed': ({ nvinfo, ubmemo }) => {
-    if (!nvinfo || !ubmemo) return error
+  //   return {
+  //     title: `Chương tiết truyện  ${nvinfo.vtitle}`,
+  //     desc: nvinfo.bintro.substring(0, 300),
+  //     left_nav: [
+  //       home_nav('', ''),
+  //       book_nav(nvinfo.bslug, nvinfo.vtitle, 'ts'),
+  //       nav_link('../chaps', 'Chương tiết', 'list', { show: 'pl' }),
+  //     ],
+  //     right_nav: [quick_read_v2(nvinfo, ubmemo)],
+  //   }
+  // },
+  // '/wn/[wn_id]-[[s]]/chaps/+seed': ({ nvinfo, ubmemo }) => {
+  //   if (!nvinfo || !ubmemo) return error
 
-    return {
-      title: `Thêm nguồn truyện: ${nvinfo.vtitle}`,
-      desc: `Quản lý nguồn truyện cho bộ truyện ${nvinfo.vtitle}`,
-      left_nav: [
-        home_nav('', ''),
-        book_nav(nvinfo.bslug, '', 'tl'),
-        nav_link('.', 'Chương tiết', 'list', { show: 'pm' }),
-        nav_link('+seed', 'Nguồn chương', 'pencil'),
-      ],
-      right_nav: [quick_read_v2(nvinfo, ubmemo)],
-    }
-  },
+  //   return {
+  //     title: `Thêm nguồn truyện: ${nvinfo.vtitle}`,
+  //     desc: `Quản lý nguồn truyện cho bộ truyện ${nvinfo.vtitle}`,
+  //     left_nav: [
+  //       home_nav('', ''),
+  //       book_nav(nvinfo.bslug, '', 'tl'),
+  //       nav_link('.', 'Chương tiết', 'list', { show: 'pm' }),
+  //       nav_link('+seed', 'Nguồn chương', 'pencil'),
+  //     ],
+  //     right_nav: [quick_read_v2(nvinfo, ubmemo)],
+  //   }
+  // },
 
-  '/wn/[wn_id]-[[s]]/chaps/[sname]/[ch_no]/[[cpart]]': (data) => {
-    const { nvinfo, curr_seed, curr_chap } = data
-    if (!(nvinfo && curr_seed && curr_chap)) return error
+  // '/wn/[wn_id]-[[s]]/chaps/[sname]/[ch_no]/[[cpart]]': (data) => {
+  //   const { nvinfo, curr_seed, curr_chap } = data
+  //   if (!(nvinfo && curr_seed && curr_chap)) return error
 
-    const { bslug } = nvinfo
-    const { title, uslug, chidx: ch_no } = curr_chap
+  //   const { bslug } = nvinfo
+  //   const { title, uslug, chidx: ch_no } = curr_chap
 
-    const chap_href = chap_path(bslug, curr_seed.sname, ch_no, uslug)
+  //   const chap_href = chap_path(bslug, curr_seed.sname, ch_no, uslug)
 
-    return {
-      title: `${title} - ${nvinfo.vtitle}`,
-      left_nav: [
-        book_nav(bslug, nvinfo.vtitle, 'tm'),
-        seed_nav(bslug, curr_seed.sname, _pgidx(ch_no), 'ts'),
-        nav_link(chap_href, `Ch. ${ch_no}`, '', { show: 'lg', kind: 'uname' }),
-      ],
-      show_config: true,
-    }
-  },
+  //   return {
+  //     title: `${title} - ${nvinfo.vtitle}`,
+  //     left_nav: [
+  //       book_nav(bslug, nvinfo.vtitle, 'tm'),
+  //       seed_nav(bslug, curr_seed.sname, _pgidx(ch_no), 'ts'),
+  //       nav_link(chap_href, `Ch. ${ch_no}`, '', { show: 'lg', kind: 'uname' }),
+  //     ],
+  //     show_config: true,
+  //   }
+  // },
 }
 
 // function right_btn(text: string, icon: string, opts = {}) {

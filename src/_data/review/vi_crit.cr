@@ -1,5 +1,5 @@
 require "../wnovel/wn_info"
-require "../member/vi_user"
+require "../member/viuser"
 
 class CV::Vicrit
   include Clear::Model
