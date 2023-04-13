@@ -11,7 +11,6 @@
   }
 
   let as_admin = false
-
   let res_type: '' | 'ok' | 'err' = ''
   let res_text = ''
 
@@ -22,7 +21,8 @@
     res_text = ''
 
     try {
-      const data = await api_call(action_url, form, 'POST')
+      const body = { ...form, as_admin }
+      const data = await api_call(action_url, body, 'POST')
       user.vcoin -= form.amount
 
       res_type = 'ok'
