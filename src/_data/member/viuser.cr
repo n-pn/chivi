@@ -72,7 +72,7 @@ class CV::Viuser
   end
 
   def current_privi_until(privi = self.privi)
-    privi_until[privi &- 1]? || Time.utc.to_unix &+ 86400 &* 360
+    self.privi_until[privi &- 1]? || Time.utc.to_unix &+ 86400 &* 360
   end
 
   def upgrade_privi!(new_privi : Int32, range : Int32, persist : Bool = true)
