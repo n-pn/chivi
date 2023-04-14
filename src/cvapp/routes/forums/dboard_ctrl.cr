@@ -3,9 +3,9 @@ require "../_ctrl_base"
 class CV::DboardCtrl < CV::BaseCtrl
   base "/_db/boards"
 
-  @[AC::Route::GET("/", converters: {limit: ConvertLimit})]
-  def index(pg pg_no : Int32, lm limit : Int32 = 24)
-    offset = CtrlUtil.offset(pg_no, limit)
+  @[AC::Route::GET("/")]
+  def index
+    pg_no, limit, offset = _paginate(min: 24, max: 100)
 
     query = Nvinfo.query.order_by(utime: :desc)
     total = query.dup.limit(limit * 3 + offset).count
@@ -18,9 +18,9 @@ class CV::DboardCtrl < CV::BaseCtrl
     }
   end
 
-  @[AC::Route::GET("/:name")]
-  def show(name : String)
-    unless dboard = Nvinfo.load!(name)
+  @[AC::Route::GET("/:wm_id")]
+  def show(wm_id : Int32)
+    unless dboard = Nvinfo.load!(wm_id)
       raise NotFound.new("Diễn đàn không tồn tại!")
     end
 

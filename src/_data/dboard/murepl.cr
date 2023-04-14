@@ -1,5 +1,6 @@
-require "../_base"
 require "../../_util/post_util"
+require "../_base"
+require "../member/viuser"
 
 class CV::Murepl
   # note: mu stand for multiuse/multipurpose

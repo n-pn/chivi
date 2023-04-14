@@ -50,18 +50,19 @@ rescue
 end
 
 def fetch_image(link : String, name : String) : String
-  ext = ".jpg"
-  path = image_path(name, ext)
+  ext_name = ".jpg"
+  path = image_path(name, ext_name)
 
   HTTP::Client.get(link) do |res|
     _ext = map_extension(res.content_type)
-    path = path.sub(ext, _ext)
-    ext = _ext
+    path = path.sub(ext_name, _ext) if _ext != ext_name
 
-    if res.headers["Content-Encoding"]? == "gzip"
-      Compress::Gzip::Reader.open(res.body_io) { |io| File.write(path, io.gets_to_end) }
+    if !res.headers["Content-Encoding"]?.try(&.includes?("gzip"))
+      File.open(path, "w") { |file| IO.copy res.body_io, file }
     else
-      File.write(path, res.body_io)
+      Compress::Gzip::Reader.open(res.body_io) do |io|
+        File.open(path, "w") { |file| IO.copy io, file }
+      end
     end
   end
 

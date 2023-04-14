@@ -7,6 +7,8 @@ output = [] of Array(DB::Any)
 M1::DbDefn.repo.open_db do |db|
   dict_ids.each do |dic|
     total = db.query_one("select count (*) from defns where dic = ?", dic, as: Int32)
+    next if total == 0
+
     avail = db.query_one("select count (*) from defns where dic = ? and _flag >= 0 ", dic, as: Int32)
 
     mains = db.query_one("select count (*) from defns where dic = ? and tab = 1", dic, as: Int32)

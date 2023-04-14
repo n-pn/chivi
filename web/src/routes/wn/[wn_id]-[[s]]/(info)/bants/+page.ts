@@ -23,9 +23,6 @@ export const load = (async ({ url, fetch, params, parent }) => {
       book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
       nav_link('crits', 'Thảo luận', 'message'),
     ],
-    right_nav: [
-      nav_link(`/fr/b-${nvinfo.bslug}`, 'Diễn đàn', 'messages', { show: 'tl' }),
-    ],
   }
   return { rplist, thread, sort, _meta }
 }) satisfies PageLoad

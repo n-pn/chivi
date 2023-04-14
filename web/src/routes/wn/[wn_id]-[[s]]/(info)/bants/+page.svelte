@@ -9,8 +9,13 @@
 
 <section>
   <header>
-    <h3>Bình luận chung cho bộ truyện {nvinfo.vtitle}</h3>
-    <p><em>Để bình luận các chủ đề cụ thể hơn, hãy vào diễn đàn.</em></p>
+    <p>
+      <em
+        >Nơi để thảo luận tổng hợp về bộ truyện, để bình luận theo chủ đề cụ
+        thể, hãy vào
+        <a href="/fr/b-{nvinfo.bslug}">diễn đàn</a> của bộ truyện.
+      </em>
+    </p>
   </header>
   <MureplList {thread} {rplist} />
 </section>
@@ -20,8 +25,15 @@
     margin-bottom: 1rem;
   }
 
-  h3 {
-    @include ftsize(lg);
+  // h3 {
+  //   @include ftsize(lg);
+  // }
+
+  a {
+    @include fgcolor(primary, 5);
+    &:hover {
+      @include fgcolor(primary, 4);
+    }
   }
 
   section {

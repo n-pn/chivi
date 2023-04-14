@@ -14,7 +14,10 @@ PY_TONES = Hash(String, String).from_json File.read("#{__DIR__}/pinyin-tones.jso
 def fetch_zip(output : String)
   tls = OpenSSL::SSL::Context::Client.insecure
   puts "- fetching latest CC_CEDICT from internet... ".colorize.light_cyan
-  HTTP::Client.get(URL, tls: tls) { |res| File.write(output, res.body_io) }
+
+  HTTP::Client.get(URL, tls: tls) do |res|
+    File.open(output, "w") { |file| IO.copy res.body_io, file }
+  end
 end
 
 def file_outdated?(file : String, expiry : Time::Span = 1.days)
