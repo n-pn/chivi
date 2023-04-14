@@ -1,4 +1,4 @@
-require "../../src/_data/wnovel/nv_info"
+require "../../src/_data/wnovel/wn_info"
 
 nvinfos = CV::Nvinfo.query
   .where("scover <> ''")

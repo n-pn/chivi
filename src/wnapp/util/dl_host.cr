@@ -28,17 +28,20 @@ struct DlHost
   getter book_id_regex = "(\\w+)\\D*$"
   getter chap_id_regex = "(\\w+)/(\\w+)\\D*$"
 
+  getter book_path = "/%{bid}"
+  getter list_path = "/%{bid}"
+  getter chap_path = "/%{bid}/%{cid}"
+
+  def http_client : HTTP::Client
+    HTTP::Client.new(@hostname, tls: !@insecure)
+  end
+
   struct Autogen
     getter cache_dir : String
-    getter client : HTTP::Client
-
+    getter chap_id_regex : Regex
     getter chap_body_clean : Array(Regex)
 
-    getter chap_id_regex : Regex
-
     def initialize(host : DlHost)
-      @client = HTTP::Client.new(host.hostname, tls: !host.insecure?)
-
       @chap_body_clean = host.chap_body_clean.map { |x| Regex.new(x) }
 
       @book_id_regex = Regex.new(host.book_id_regex)
@@ -62,6 +65,30 @@ struct DlHost
     html
   end
 
+  def get_book_path(bid : Int32)
+    @book_path % {bid: bid, div: bid // 1000}
+  end
+
+  def get_book_path(bid : String)
+    @book_path % {bid: bid}
+  end
+
+  def get_list_path(bid : Int32)
+    @list_path % {bid: bid, div: bid // 1000}
+  end
+
+  def get_list_path(bid : String)
+    @list_path % {bid: bid}
+  end
+
+  def get_chap_path(bid : Int32, cid : Int32)
+    @chap_path % {bid: bid, cid: cid, div: bid // 1000}
+  end
+
+  def get_chap_path(bid : String, cid : Int32 | String)
+    @chap_path % {bid: bid, cid: cid}
+  end
+
   def cache_path(uri_path : String, ext = "htm.zst")
     "#{self.autogen.cache_dir}/#{uri_path.gsub(/\W/, '_')}.#{ext}"
   end
@@ -78,7 +105,7 @@ struct DlHost
       html = res.body_io.gets_to_end
 
       return html if html.empty? || @encoding == "UTF-8"
-      html.sub(/#{@encoding}/i, "utf-8")
+      html.sub(/#{@encoding}|gb2312/i, "utf-8")
     end
   end
 
@@ -94,9 +121,7 @@ struct DlHost
 
   def fetch_page(uri_path : String, headers : HTTP::Headers = HEADERS, &)
     Log.debug { "GET: #{hostname}#{uri_path}".colorize.magenta }
-
-    client = self.autogen.client
-    client.get(uri_path, headers: headers) { |res| yield res }
+    http_client.get(uri_path, headers: headers) { |res| yield res }
   end
 
   @[AlwaysInline]
