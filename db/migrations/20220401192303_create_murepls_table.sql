@@ -30,15 +30,15 @@ CREATE TABLE murepls(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX murepl_cvuser_idx ON murepls(viuser_id);
+CREATE INDEX murepls_viuser_idx ON murepls(viuser_id);
 
-CREATE INDEX murepl_cvpost_idx ON murepls(cvpost_id, ii);
+CREATE INDEX murepls_thread_idx ON murepls(thread_id, thread_mu);
 
-CREATE INDEX murepl_tagged_idx ON murepls USING GIN(tagged_ids);
+CREATE INDEX murepls_tagged_idx ON murepls USING GIN(tagged_ids);
 
-CREATE INDEX murepl_repl_murepl_idx ON murepls(repl_murepl_id);
+CREATE INDEX murepls_touser_idx ON murepls(touser_id);
 
-CREATE INDEX murepl_repl_cvuser_idx ON murepls(repl_viuser_id);
+CREATE INDEX murepls_torepl_idx ON murepls(torepl_id);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

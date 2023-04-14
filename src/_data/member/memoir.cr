@@ -1,11 +1,11 @@
 require "../_base"
 
 class CV::Memoir
-  enum Type
+  enum Type : Int16
     Murepl = 11
 
     Dtopic = 12
-    Dboard = 12
+    Dboard = 20
   end
 
   include Clear::Model
@@ -13,10 +13,9 @@ class CV::Memoir
 
   primary_key type: :serial
 
-  column target_type : Int32 = 0
-  column target_id : Int32 = 0
-
   column viuser_id : Int32 = 0
+  column target_type : Int16 = 0
+  column target_id : Int32 = 0
 
   column liked_at : Int64 = 0
   column track_at : Int64 = 0

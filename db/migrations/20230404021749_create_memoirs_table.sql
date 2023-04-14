@@ -1,10 +1,10 @@
 -- +micrate Up
 CREATE TABLE memoirs(
-  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  id serial NOT NULL,
   --
   viuser_id int NOT NULL,
-  target_type int NOT NULL,
   target_id int NOT NULL,
+  target_type smallint NOT NULL,
   --
   liked_at bigint NOT NULL DEFAULT 0,
   track_at bigint NOT NULL DEFAULT 0,

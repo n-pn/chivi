@@ -12,7 +12,7 @@ class PostUtil
     vhtml = md_to_html(input)
     users = [] of String
 
-    vhtml = input.gsub(/@\[(.+?)\]/) do |uname|
+    vhtml = vhtml.gsub(/@\[(.+?)\]/) do |uname|
       users << uname
       "<cv-user>@[#{uname}]</cv-user>"
     end

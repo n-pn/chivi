@@ -1,4 +1,5 @@
-require "./_logger_base"
+require "crorm"
+require "../_data"
 require "../../_util/hash_util"
 
 class CV::QtranXlog
