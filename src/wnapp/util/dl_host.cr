@@ -5,6 +5,7 @@ require "colorize"
 require "http/client"
 
 require "zstd"
+require "./dl_page"
 
 struct DlHost
   include YAML::Serializable
@@ -28,9 +29,12 @@ struct DlHost
   getter book_id_regex = "(\\w+)\\D*$"
   getter chap_id_regex = "(\\w+)/(\\w+)\\D*$"
 
-  getter book_path = "/%{bid}"
-  getter list_path = "/%{bid}"
-  getter chap_path = "/%{bid}/%{cid}"
+  getter book_path = "/book/%{bid}/"
+  getter list_path = "/book/%{bid}/"
+  getter chap_path = "/book/%{bid}/%{cid}.html"
+
+  getter last_bid_url = "/"
+  getter last_bid_css = "#newscontent > .r > ul > li:first-child > .s2 > a"
 
   def http_client : HTTP::Client
     HTTP::Client.new(@hostname, tls: !@insecure)
@@ -38,6 +42,7 @@ struct DlHost
 
   struct Autogen
     getter cache_dir : String
+    getter book_id_regex : Regex
     getter chap_id_regex : Regex
     getter chap_body_clean : Array(Regex)
 
@@ -63,6 +68,12 @@ struct DlHost
     save_zst(file_path, html)
 
     html
+  end
+
+  def get_last_bid(ttl = 1.days)
+    page = DlPage.new(get_page(@last_bid_url, ttl: ttl))
+    href = page.get(@last_bid_css, "href") || raise "invalid css query"
+    Regex.new(@book_id_regex).match(href).try(&.[1])
   end
 
   def get_book_path(bid : Int32)
@@ -93,9 +104,6 @@ struct DlHost
     "#{self.autogen.cache_dir}/#{uri_path.gsub(/\W/, '_')}.#{ext}"
   end
 
-  U_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:110.0) Gecko/20100101 Firefox/110.0"
-  HEADERS = HTTP::Headers{"User-Agent" => U_AGENT}
-
   Log = ::Log.for("wndl")
   ::Log.setup_from_env
 
@@ -109,6 +117,18 @@ struct DlHost
     end
   end
 
+  U_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:110.0) Gecko/20100101 Firefox/110.0"
+
+  def gen_headers(uri_path : String)
+    scheme = @insecure ? "http" : "https"
+
+    HTTP::Headers{
+      "Referer"    => "#{scheme}://#{@hostname}#{uri_path}",
+      "User-Agent" => U_AGENT,
+      "Cookie"     => @cookie,
+    }
+  end
+
   def hts_headers(uri_path : String)
     HTTP::Headers{
       "Referer"          => "https://#{@hostname}#{uri_path}",
@@ -119,7 +139,7 @@ struct DlHost
     }
   end
 
-  def fetch_page(uri_path : String, headers : HTTP::Headers = HEADERS, &)
+  def fetch_page(uri_path : String, headers : HTTP::Headers = gen_headers(uri_path), &)
     Log.debug { "GET: #{hostname}#{uri_path}".colorize.magenta }
     http_client.get(uri_path, headers: headers) { |res| yield res }
   end
@@ -149,10 +169,12 @@ struct DlHost
   CONFS = Hash(String, self).from_yaml(File.read("#{__DIR__}/dl_host.yml"))
 
   def self.load_by_name(hostname : String, &)
-    CONFS[hostname] ||= begin
+    hostbase = hostname.sub(/^www\./, "")
+
+    CONFS[hostbase] ||= begin
       Log.info { "hostname #{hostname} not defined!".colorize.red }
 
-      host = CONFS["_base"].dup
+      host = CONFS["[unknown]"].dup
 
       host.hostname = hostname
       host.insecure = yield

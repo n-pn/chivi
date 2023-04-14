@@ -1,10 +1,9 @@
-require "http/client"
 require "option_parser"
 require "../../src/wnapp/util/dl_host"
 
 hostname = "www.uukanshu.com"
 from_bid = 1
-upto_bid = 233014
+upto_bid = 0
 conn_num = 8
 
 OptionParser.parse(ARGV) do |parser|
@@ -19,6 +18,13 @@ Log.setup_from_env
 dlhost = DlHost.load_by_name(hostname) { exit 1 }
 out_dir = "var/books/.html/#{dlhost.hostname}"
 Dir.mkdir_p(out_dir)
+
+if upto_bid < from_bid
+  upto_bid = dlhost.get_last_bid.try(&.to_i) || raise "can't find latest book id"
+  puts "Auto guess latest book id: #{upto_bid.colorize.yellow}"
+end
+
+puts "Crawling #{hostname} from #{from_bid} to #{upto_bid}"
 
 inputs = [] of {String, String}
 
