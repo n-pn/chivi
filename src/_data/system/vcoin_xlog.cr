@@ -5,7 +5,7 @@ class CV::VcoinXlog
   self.table = "vcoin_xlogs"
 
   primary_key type: :serial
-  column kind : Int32 = 0
+  column kind : Int16 = 0
 
   # kind values
   # 0: normal transaction between user
