@@ -2,6 +2,8 @@ require "./_m1_ctrl_base"
 require "./m1_tran_data"
 require "../../mtapp/sp_core"
 
+require "../../_data/logger/qtran_xlog"
+
 class M1::TranCtrl < AC::Base
   base "/_m1/qtran"
 
@@ -114,23 +116,28 @@ class M1::TranCtrl < AC::Base
       cv_chap(io, engine, w_title, label)
     end
 
-    spawn log_tran_stats(input.size, wn_id)
+    spawn log_tran_stats(input, wn_id)
 
     render text: cvmtl
   end
 
-  def log_tran_stats(c_len : Int32, wn_id : Int32)
+  def log_tran_stats(input : String, wn_dic : Int32, w_udic = true)
+    xlog = CV::QtranXlog.new(
+      input: input,
+      viuser_id: _vu_id,
+      wn_dic: wn_dic,
+      w_udic: w_udic,
+      mt_ver: 1_i16,
+      cv_ner: false,
+      ts_sdk: false,
+      ts_acc: false,
+    )
+
+    xlog.create!
+
     time_now = Time.local
-    log_file = "var/users/mtlogs/#{time_now.to_s("%F")}.log"
-
-    File.open(log_file, "a") do |io|
-      {
-        ctime: time_now.to_unix, uname: _uname, privi: _privi, wn_id: wn_id, c_len: c_len,
-        _v: 1,
-      }.to_json(io)
-
-      io << '\n'
-    end
+    log_file = "var/users/qtlogs/#{time_now.to_s("%F")}.log"
+    File.open(log_file, "a", &.puts(xlog.to_json))
   end
 
   @[AC::Route::POST("/tl_mulu")]

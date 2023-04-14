@@ -1,6 +1,8 @@
 require "json"
 files = Dir.glob "var/users/mtlogs/*.log"
 
+files.sort!
+
 record Stat, uname : String, c_len : Int32, wn_id : Int32 do
   include JSON::Serializable
 end
@@ -8,7 +10,7 @@ end
 users = Hash(String, Int32).new 0
 books = Hash(Int32, Int32).new 0
 
-files.each do |file|
+files.last(2).each do |file|
   puts file
 
   File.each_line(file) do |line|
