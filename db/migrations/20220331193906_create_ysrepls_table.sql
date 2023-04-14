@@ -1,7 +1,7 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE ysrepls(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   yr_id bytea NOT NULL UNIQUE,
   --
   ysuser_id int NOT NULL DEFAULT 0,

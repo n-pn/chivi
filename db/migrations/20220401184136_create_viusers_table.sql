@@ -1,6 +1,6 @@
 -- +micrate Up
-CREATE TABLE cvusers(
-  id serial PRIMARY KEY,
+CREATE TABLE viusers(
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   uname citext UNIQUE NOT NULL,
   email citext UNIQUE NOT NULL,
   cpass text NOT NULL,
@@ -8,13 +8,11 @@ CREATE TABLE cvusers(
   vcoin double8 DEFAULT 0 NOT NULL,
   vcoin_total int DEFAULT 0 NOT NULL,
   --
-  karma_avail int DEFAULT 0 NOT NULL,
-  karma_total int DEFAULT 0 NOT NULL,
+  point int DEFAULT 0 NOT NULL,
+  karma int DEFAULT 0 NOT NULL,
   --
   privi int DEFAULT 0 NOT NULL,
-  privi_1_until bigint NOT NULL DEFAULT '0',
-  privi_2_until bigint NOT NULL DEFAULT '0',
-  privi_3_until bigint NOT NULL DEFAULT '0',
+  privi_until bigint[] NOT NULL DEFAULT '{0, 0, 0}' ::bigint[],
   --
   wtheme text NOT NULL DEFAULT 'light',
   --
@@ -29,7 +27,7 @@ CREATE TABLE cvusers(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX cvuser_privi_idx ON cvusers(privi);
+CREATE INDEX viuser_privi_idx ON viusers(privi);
 
 -- +micrate Down
-DROP TABLE IF EXISTS cvusers;
+DROP TABLE IF EXISTS viusers;

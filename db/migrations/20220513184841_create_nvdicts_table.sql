@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE IF NOT EXISTS nvdicts(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   nvinfo_id int NOT NULL,
   --
   dname text NOT NULL DEFAULT '',

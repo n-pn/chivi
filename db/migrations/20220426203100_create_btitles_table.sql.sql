@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE btitles(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
   zname text NOT NULL UNIQUE,
   vname text NOT NULL DEFAULT '',

@@ -1,11 +1,10 @@
 -- +micrate Up
 CREATE TABLE vicrits(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
   viuser_id int NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
   nvinfo_id int NOT NULL REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   vilist_id int NOT NULL,
-  UNIQUE (nvinfo_id, vilist_id),
   --
   itext text NOT NULL,
   ohtml text NOT NULL DEFAULT '',
@@ -21,7 +20,8 @@ CREATE TABLE vicrits(
   --
   created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  changed_at timestamptz
+  changed_at timestamptz,
+  UNIQUE (nvinfo_id, vilist_id),
 );
 
 CREATE INDEX vicrit_viuser_idx ON vicrits(viuser_id);

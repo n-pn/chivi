@@ -1,7 +1,7 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE cvposts(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   ii int8 NOT NULL DEFAULT 1,
   --
   viuser_id int NOT NULL DEFAULT 0,

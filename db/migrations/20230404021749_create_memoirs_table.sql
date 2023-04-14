@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE memoirs(
-  id serial UNIQUE,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
   viuser_id int NOT NULL,
   target_type int NOT NULL,

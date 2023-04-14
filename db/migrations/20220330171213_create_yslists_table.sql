@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE yslists(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   yl_id bytea NOT NULL UNIQUE,
   --
   ysuser_id int NOT NULL DEFAULT 0,

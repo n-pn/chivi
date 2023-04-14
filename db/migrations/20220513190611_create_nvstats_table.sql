@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE nvstats(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   nvinfo_id int NOT NULL,
   --
   klass int NOT NULL DEFAULT 0,

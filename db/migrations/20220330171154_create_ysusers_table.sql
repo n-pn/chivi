@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE ysusers(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   yu_id int NOT NULL UNIQUE,
   --
   zname text NOT NULL,

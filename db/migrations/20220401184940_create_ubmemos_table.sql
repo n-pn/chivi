@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE ubmemos(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
   viuser_id int NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
   nvinfo_id int NOT NULL REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,

@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE nvinfos(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
   author_id int NOT NULL REFERENCES authors(id) ON UPDATE CASCADE ON DELETE CASCADE,
   btitle_id int NOT NULL REFERENCES btitles(id) ON UPDATE CASCADE ON DELETE CASCADE,

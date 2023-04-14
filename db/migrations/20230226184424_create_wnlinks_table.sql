@@ -1,10 +1,10 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE wnlinks(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   book_id int NOT NULL REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
-  link text NOT NULL,
+  "link" text NOT NULL,
   "name" text NOT NULL,
   "type" int NOT NULL DEFAULT 0,
   --

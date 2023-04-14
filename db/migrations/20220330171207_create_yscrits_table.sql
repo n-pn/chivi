@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE yscrits(
-  id serial PRIMARY KEY,
+  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   yc_id bytea NOT NULL UNIQUE,
   --
   ysbook_id int NOT NULL DEFAULT 0 REFERENCES ysbooks(id) ON UPDATE CASCADE ON DELETE CASCADE,
