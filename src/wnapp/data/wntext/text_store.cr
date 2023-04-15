@@ -5,33 +5,29 @@ module WN::TextStore
   extend self
 
   def get_chap(seed : WnSeed, chap : WnChap)
-    # TODO: cleanup logic
-
-    return [""] if chap._flag < 0
-
-    # try reading txt file directly from disk
     txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
-    return read_txt_file(txt_path) if File.file?(txt_path)
+
+    File.file?(txt_path) ? read_txt_file(txt_path) : [""]
 
     # try reading txt file from new zip
-    read_txt_from_zip(seed, chap).try { |x| return x }
+    # read_txt_from_zip(seed, chap).try { |x| return x }
 
-    _path = chap._path
+    # _path = chap._path
 
-    # return blank data if no backend link found
-    return [""] unless _path[0]? == '!'
+    # # return blank data if no backend link found
+    # return [""] unless _path[0]? == '!'
 
-    # try reading txt file from backend txt folder
-    bg_path = _path.split(':')[0]
+    # # try reading txt file from backend txt folder
+    # bg_path = _path.split(':')[0]
 
-    bg_txt_path = gen_txt_path(bg_path)
-    return read_txt_file(bg_txt_path) if File.file?(bg_txt_path)
+    # bg_txt_path = gen_txt_path(bg_path)
+    # return read_txt_file(bg_txt_path) if File.file?(bg_txt_path)
 
-    # reading txt file from backend zip folder
-    bg_sname, bg_s_bid, bg_s_cid = bg_path.split('/')
-    bg_zip_path = gen_zip_path(bg_sname, bg_s_bid.to_i)
+    # # reading txt file from backend zip folder
+    # bg_sname, bg_s_bid, bg_s_cid = bg_path.split('/')
+    # bg_zip_path = gen_zip_path(bg_sname, bg_s_bid.to_i)
 
-    read_txt_from_zip(bg_zip_path, bg_s_cid.to_i)
+    # read_txt_from_zip(bg_zip_path, bg_s_cid.to_i)
   end
 
   TXT_DIR = "var/texts/rgbks"

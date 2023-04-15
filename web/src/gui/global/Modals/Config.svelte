@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { config as data, popups } from '$lib/stores'
+  import { config as data } from '$lib/stores'
   import { ctrl as lookup } from '$gui/parts/Lookup.svelte'
 
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
@@ -40,7 +40,7 @@
 
   $: if (browser && $data) {
     write_cookie('showzh', $data.showzh ? 't' : 'f')
-    write_cookie('w_temp', $data.w_temp ? 't' : 'f')
+    write_cookie('w_udic', $data.w_udic ? 't' : 'f')
     write_cookie('w_init', $data.w_init ? 't' : 'f')
     write_cookie('theme', $data.wtheme)
   }
@@ -151,12 +151,12 @@
     </label>
   </config-item> -->
 
-  <!-- <config-item>
+  <config-item>
     <label class="switch">
-      <input type="checkbox" bind:checked={$data.w_temp} />
-      <span class="switch-label">Hiển thị từ điển tạm thời:</span>
+      <input type="checkbox" bind:checked={$data.w_udic} />
+      <span class="switch-label">Sử dụng từ điển cá nhân:</span>
     </label>
-  </config-item> -->
+  </config-item>
 
   <config-item>
     <label class="switch">

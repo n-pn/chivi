@@ -1,18 +1,21 @@
 require "./_m1_ctrl_base"
 require "./m1_tran_data"
-require "../../mtapp/sp_core"
 
+require "../../mtapp/sp_core"
 require "../../_data/logger/qtran_xlog"
 
 class M1::TranCtrl < AC::Base
   base "/_m1/qtran"
 
-  @w_temp : Bool = false
+  @w_user : String = ""
   @w_init : Bool = false
 
   @[AC::Route::Filter(:before_action)]
   def before_action
     @w_init = _read_cookie("w_init").try(&.starts_with?('t')) || false
+    w_udic = _read_cookie("w_udic").try(&.starts_with?('t')) || false
+
+    @w_user = w_udic ? _uname : ""
   end
 
   @[AC::Route::POST("/")]
@@ -110,27 +113,23 @@ class M1::TranCtrl < AC::Base
   @[AC::Route::POST("/cv_chap")]
   def cv_chap(wn_id : Int32 = 0, w_title : Bool = true, label : String? = nil)
     input = request.body.try(&.gets_to_end) || ""
+    spawn log_tran_stats(input, wn_id)
+
     qtran = TranData.new(input.lines, wn_id, format: "mtl")
 
-    cvmtl = qtran.cv_wrap(w_user: _uname, w_init: @w_init) do |io, engine|
+    cvmtl = qtran.cv_wrap(w_user: @w_user, w_init: @w_init) do |io, engine|
       cv_chap(io, engine, w_title, label)
     end
-
-    spawn log_tran_stats(input, wn_id)
 
     render text: cvmtl
   end
 
-  def log_tran_stats(input : String, wn_dic : Int32, w_udic = true)
+  private def log_tran_stats(input : String, wn_dic : Int32, w_udic = true)
     xlog = CV::QtranXlog.new(
-      input: input,
-      viuser_id: _vu_id,
-      wn_dic: wn_dic,
-      w_udic: w_udic,
-      mt_ver: 1_i16,
-      cv_ner: false,
-      ts_sdk: false,
-      ts_acc: false,
+      input: input, viuser_id: _vu_id,
+      wn_dic: wn_dic, w_udic: w_udic,
+      mt_ver: 1_i16, cv_ner: false,
+      ts_sdk: false, ts_acc: false,
     )
 
     xlog.create!

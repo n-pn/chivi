@@ -88,7 +88,7 @@ class WN::ChapCtrl < AC::Base
 
   @[AlwaysInline]
   private def should_fetch_text?(empty_body : Bool = false, load_mode : Int32 = 0)
-    load_mode > 1 || (_privi > 0 || empty_body)
+    load_mode > 1 || (_privi >= 0 && empty_body)
     # _privi > 0 && (load_mode > 0 || cookies["auto_load"]?)
   end
 

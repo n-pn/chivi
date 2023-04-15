@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores'
-
   import { status_names, status_icons } from '$lib/constants'
   import { chap_path, _pgidx } from '$lib/kit_path'
 
@@ -8,7 +6,7 @@
   import { get_rtime } from '$gui/atoms/RTime.svelte'
 
   export let tab = 0
-  export let user
+  export let user: App.CurrentUser
 
   let chaps: Array<any>
 

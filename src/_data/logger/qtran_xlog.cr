@@ -66,6 +66,11 @@ class CV::QtranXlog
     PGDB.query_one(stmt, viuser_id, input_hash, as: Int32) rescue 0
   end
 
+  def self.today_point_cost(viuser_id : Int32)
+    stmt = "select sum(point_cost) from #{@@table} where viuser_id = $1 and created_at >= $2"
+    PGDB.query_one(stmt, viuser_id, Time.local.to_s("%F"), as: Int64) rescue 0
+  end
+
   def create!(db = PGDB)
     stmt = <<-SQL
       insert into #{@@table} (

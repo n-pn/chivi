@@ -64,7 +64,8 @@ const guest_user = {
   privi: -1,
   until: 0,
   vcoin: 0,
-  karma: 0,
+  point_today: 0,
+  point_limit: 0,
 }
 
 const get_hash = (hash?: string) => hash?.replace('/', '_')

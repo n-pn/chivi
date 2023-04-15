@@ -18,6 +18,8 @@ class WN::TextCtrl < AC::Base
       title: wn_chap.title,
       chdiv: wn_chap.chdiv,
     }
+  rescue ex : NotFound
+    render 404, text: ex.message
   end
 
   def guard_sname_privi(sname : String)

@@ -6,12 +6,13 @@ declare namespace App {
   interface CurrentUser {
     vu_id: number
     uname: string
+    privi: number
 
     vcoin: number
-    karma: number
-
-    privi: number
     until: number
+
+    point_today: number
+    point_limit: number
   }
 
   interface Locals {

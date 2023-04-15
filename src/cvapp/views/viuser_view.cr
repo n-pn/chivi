@@ -16,6 +16,9 @@ struct CV::ViuserView
       if @full
         jb.field "vcoin", @data.vcoin.round(2)
         jb.field "until", @data.current_privi_until
+
+        jb.field "point_today", QtranXlog.today_point_cost(@data.id)
+        jb.field "point_limit", @data.point_limit
       end
     }
   end

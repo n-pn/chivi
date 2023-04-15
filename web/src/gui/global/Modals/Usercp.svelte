@@ -27,6 +27,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
+  import { api_get } from '$lib/api_call'
   import { get_dmy } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -43,7 +44,7 @@
   $: if (actived) reload()
 
   const reload = async () => {
-    user = await fetch('/_db/_self').then((r) => r.json())
+    user = await api_get<App.CurrentUser>('/_db/_self', fetch)
   }
 
   const tabs = [
@@ -99,6 +100,16 @@
       </div>
 
       <a href="/hd/tat-ca-ve-vcoin" class="m-btn _xs">Giải thích</a>
+    </div>
+
+    <div class="info">
+      <div>
+        <span class="lbl">Giới hạn ký tự dịch thuật:</span>
+        <strong class:exceed={user.point_today >= user.point_limit}
+          >{user.point_today}</strong>
+        /
+        <span>{user.point_limit}</span>
+      </div>
     </div>
   </section>
 
@@ -158,5 +169,9 @@
   usercp-body {
     display: block;
     padding: 0.75rem;
+  }
+
+  .exceed {
+    @include fgcolor(harmful, 5);
   }
 </style>
