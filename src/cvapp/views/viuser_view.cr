@@ -19,6 +19,8 @@ struct CV::ViuserView
 
         jb.field "point_today", QtranXlog.today_point_cost(@data.id)
         jb.field "point_limit", @data.point_limit
+
+        jb.field "unread_notif", Unotif.count_unread(@data.id)
       end
     }
   end

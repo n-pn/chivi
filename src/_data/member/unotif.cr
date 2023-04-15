@@ -14,19 +14,21 @@ class CV::Unotif
   field details : String = ""
   field link_to : String = ""
 
+  field _undo_tag_ : String = ""
+
   field reached_at : Time? = nil
   field created_at : Time = Time.utc
 
-  def initialize(@viuser_id, @content, @details, @link_to)
+  def initialize(@viuser_id, @content, @details, @link_to, @_undo_tag_ = "")
   end
 
   def create!(db = @@db)
     stmt = <<-SQL
-      insert into #{@@table}(viuser_id, content, details, link_to, created_at)
-      values ($1, $2, $3, $4, $5)
+      insert into #{@@table}(viuser_id, content, details, link_to, _undo_tag_, created_at)
+      values ($1, $2, $3, $4, $5, $6)
     SQL
 
-    db.exec stmt, @viuser_id, @content, @details, @link_to, @created_at
+    db.exec stmt, @viuser_id, @content, @details, @link_to, @_undo_tag_, @created_at
   end
 
   def self.count_unread(viuser_id : Int32)

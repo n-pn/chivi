@@ -8,11 +8,15 @@ CREATE TABLE IF NOT EXISTS unotifs(
   details text NOT NULL DEFAULT '',
   link_to text NOT NULL DEFAULT '',
   --
+  _undo_tag_ text NOT NULL DEFAULT '',
+  --
   created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   reached_at timestamptz
 );
 
 CREATE INDEX IF NOT EXISTS unotifs_viuser_idx ON unotifs(viuser_id, reached_at);
+
+CREATE INDEX IF NOT EXISTS unotifs_toundo_idx ON unotifs(_undo_tag_);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
