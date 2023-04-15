@@ -17,11 +17,11 @@ export const load = (async ({ fetch, parent }) => {
     title: 'Lịch sử giao dịch vcoin',
     left_nav: [
       home_nav('ps'),
-      nav_link('me', 'Cá nhân', 'user'),
-      nav_link('me/vcoin', 'Vcoin', 'coin', { kind: 'title' }),
+      nav_link('/me', 'Cá nhân', 'user'),
+      nav_link('/me/vcoin-xlog', 'Vcoin', 'coin', { kind: 'title' }),
     ],
     right_nav: [
-      nav_link('/me/vcoin/send', 'Gửi tặng', 'gift', { kind: 'title' }),
+      nav_link('/me/send-vcoin', 'Gửi tặng', 'gift', { kind: 'title' }),
     ],
   }
 

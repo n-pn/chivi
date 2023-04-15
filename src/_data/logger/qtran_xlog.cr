@@ -4,6 +4,9 @@ require "../../_util/hash_util"
 
 class CV::QtranXlog
   include Crorm::Model
+
+  @@db : DB::Database = PGDB
+
   @@table = "qtran_xlogs"
 
   field id : Int32, primary: true
@@ -61,17 +64,7 @@ class CV::QtranXlog
     cost
   end
 
-  def self.count_previous(viuser_id : Int32, input_hash : Int32) : Int32
-    stmt = "select count(*)::int from #{@@table} where viuser_id = $1 and input_hash = $2"
-    PGDB.query_one(stmt, viuser_id, input_hash, as: Int32) rescue 0
-  end
-
-  def self.today_point_cost(viuser_id : Int32)
-    stmt = "select sum(point_cost) from #{@@table} where viuser_id = $1 and created_at >= $2"
-    PGDB.query_one(stmt, viuser_id, Time.local.to_s("%F"), as: Int64) rescue 0
-  end
-
-  def create!(db = PGDB)
+  def create!(db = @@db)
     stmt = <<-SQL
       insert into #{@@table} (
         viuser_id, input_hash,
@@ -85,5 +78,72 @@ class CV::QtranXlog
 
     db.exec stmt, @viuser_id, @input_hash, @char_count, @point_cost,
       @wn_dic, @w_udic, @mt_ver, @cv_ner, @ts_sdk, @ts_acc, @created_at
+  end
+
+  ####
+
+  def self.count(vu_id : Nil)
+    @@db.query_one <<-SQL, as: Int32
+      select COALESCE(COUNT(*), 0)::int from "#{@@table}"
+    SQL
+  end
+
+  def self.count(vu_id : Int32)
+    @@db.query_one <<-SQL, vu_id, as: Int32
+      select COALESCE(COUNT(*), 0)::int from "#{@@table}" where viuser_id = $1
+    SQL
+  end
+
+  record UserStat, viuser_id : Int32, point_cost : Int64 do
+    include DB::Serializable
+    include JSON::Serializable
+  end
+
+  def self.user_stats(from_time = Time.local - 7.days, upto_time = Time.local + 1.days)
+    @@db.query_all <<-SQL, from_time.to_s("%F"), upto_time.to_s("%F"), as: UserStat
+      select viuser_id, sum(point_cost) from "#{@@table}"
+      where created_at >= $1 and created_at <= $2
+      group by viuser_id
+    SQL
+  end
+
+  record BookStat, wninfo_id : Int32, point_cost : Int64 do
+    include DB::Serializable
+    include JSON::Serializable
+  end
+
+  def self.book_stats(from_time = Time.local - 7.days, upto_time = Time.local + 1.days)
+    @@db.query_all <<-SQL, from_time.to_s("%F"), upto_time.to_s("%F"), as: BookStat
+      select wn_dic as wninfo_id, sum(point_cost) from "#{@@table}"
+      where created_at >= $1 and created_at <= $2
+      group by wn_dic
+    SQL
+  end
+
+  def self.fetch(vu_id : Int32, limit = 50, offset = 0)
+    @@db.query_all <<-SQL, vu_id, limit, offset, as: QtranXlog
+      select * from "#{@@table}"
+      where viuser_id = $1
+      order by id desc
+      limit $2 offset $3
+    SQL
+  end
+
+  def self.fetch(vu_id : Nil, limit = 50, offset = 0)
+    @@db.query_all <<-SQL, limit, offset, as: QtranXlog
+      select * from "#{@@table}"
+      order by id desc
+      limit $1 offset $2
+    SQL
+  end
+
+  def self.count_previous(viuser_id : Int32, input_hash : Int32) : Int32
+    stmt = "select count(*)::int from #{@@table} where viuser_id = $1 and input_hash = $2"
+    @@db.query_one(stmt, viuser_id, input_hash, as: Int32) rescue 0
+  end
+
+  def self.today_point_cost(viuser_id : Int32)
+    stmt = "select sum(point_cost) from #{@@table} where viuser_id = $1 and created_at >= $2"
+    @@db.query_one(stmt, viuser_id, Time.local.to_s("%F"), as: Int64) rescue 0
   end
 end

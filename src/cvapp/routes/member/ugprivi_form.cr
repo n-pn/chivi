@@ -16,11 +16,11 @@ struct CV::UgpriviForm
     @range = 0 if @range < 0
   end
 
-  def do_upgrade!(user : Viuser)
-    vcoin_req, pdays = user.upgrade_privi!(@privi, @range, persist: true)
+  def do_upgrade!(user : Viuser, persist : Bool = true)
+    vcoin_req, pdays = user.upgrade_privi!(@privi, @range, persist: persist)
     spawn run_after_upgrade_tasks(user.uname)
     spawn create_vcoin_xlog(user, vcoin_req, pdays)
-    spawn send_notification(user)
+    spawn send_notification(user, vcoin_req)
   end
 
   private def run_after_upgrade_tasks(uname : String)
@@ -41,7 +41,7 @@ struct CV::UgpriviForm
     }).save!
   end
 
-  private def send_notification(user : Viuser)
+  private def send_notification(user : Viuser, vcoin_req : Int32)
     message = String.build do |io|
       io << "<p><strong>Bạn đã cập nhật/gia hạn quyền hạn #{@privi} thành công.</strong></p>\n"
 
@@ -55,6 +55,20 @@ struct CV::UgpriviForm
         HTML
       end
     end
+
+    details = {
+      _type: "ug_privi",
+      privi: @privi,
+      range: @range,
+      vcoin: vcoin_req,
+    }
+
+    link_to = "/me/vcoin-xlog"
+
+    Unotif.new(
+      viuser_id: user.id, content: message,
+      details: details.to_json, link_to: link_to
+    ).create!
 
     MailUtil.send(to: user.email, name: user.uname) do |mail|
       mail.subject "Chivi: Nâng cấp quyền hạn thành công"

@@ -104,6 +104,8 @@ class CV::Viuser
       self.privi_until[1] &+= tspan // 2
     end
 
+    self.privi_until_column.dirty! # make clear update this column
+
     self.save! if persist
     {req_vcoin, pdays}
   end

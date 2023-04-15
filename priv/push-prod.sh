@@ -1,28 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SSH=nipin@ssh.chivi.app:/app/chivi
-
-function rsync-fast {
-  rsync -aHAXxviz --compress-choice=zstd --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x ' $@
-}
+export GC_INITIAL_HEAP_SIZE=4G
 
 for target in "$@"
 do
   echo push $target!
 
-  if [[ $target == "cvweb-srv" ]]
+  if [[ $target == "cvweb" ]]
   then
     cd web && pnpm run build
     rsync-fast build/ $SSH/web/
     cd ..
-  # elif [[ $target == "hanlp-srv" ]]
+  # elif [[ $target == "hanlp" ]]
   # then
-  #   rsync-fast "src/mt_sp/hanlp_srv.py" $SSH/bin
+  #   rsync-fast "src/hanlp-srv.py" $SSH/bin
   else
-    GC_INITIAL_HEAP_SIZE=4G shards build -s --release --production $target
-    rsync-fast bin/$target $SSH/bin
+    # shards build -s --release --production $target
+    crystal build -s --release src/$target-srv.cr -o /app/chivi/bin/$target-srv
   fi
 
-  ssh nipin@ssh.chivi.app "sudo service $target restart"
+  echo restarting $target service
+  sudo service $target-srv restart
 done

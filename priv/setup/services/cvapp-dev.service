@@ -1,0 +1,19 @@
+[Unit]
+Description=cvapp dev server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=nipin
+Environment=PORT=5011
+Environment=CV_ENV=development
+WorkingDirectory=/app/chivi.dev
+ExecStart=/app/chivi.dev/bin/cvapp-srv
+StandardOutput=file:/app/chivi.dev/log/cvapp-srv.log
+StandardError=append:/app/chivi.dev/log/cvapp-err.log
+
+[Install]
+WantedBy=multi-user.target

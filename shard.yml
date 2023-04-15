@@ -10,25 +10,22 @@ license: MIT
 
 targets:
   cvapp-srv:
-    main: src/cvapp/cvapp_srv.cr
+    main: src/cvapp-srv.cr
 
   ysapp-srv:
-    main: src/ysapp/ysapp_srv.cr
+    main: src/ysapp-srv.cr
 
   wnapp-srv:
-    main: src/wnapp/wnapp_srv.cr
+    main: src/wnapp-srv.cr
 
   mt_sp-srv:
-    main: src/mt_sp/mt_sp_srv.cr
-
-  # mt_v0-srv:
-  #   main: src/mt_v0/mt_v0_srv.cr
+    main: src/mt_sp-srv.cr
 
   mt_v1-srv:
-    main: src/mt_v1/mt_v1_srv.cr
+    main: src/mt_v1-srv.cr
 
   mt_v2-srv:
-    main: src/mt_v2/mt_v2_srv.cr
+    main: src/mt_v2-srv.cr
 
   bcover_cli:
     main: cli/bcover_cli.cr

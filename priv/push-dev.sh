@@ -1,22 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export GC_INITIAL_HEAP_SIZE=4G
+
 for target in "$@"
 do
   echo push $target!
 
-  if [[ $target == "cvweb-srv" ]]
+  if [[ $target == "cvweb" ]]
   then
     cd web && pnpm run build
-    rsync -ai --no-p build/ /app/chivi/web/
+    rsync -ai --no-p build/ /app/chivi.dev/web/
     cd ..
-  elif [[ $target == "hanlp-srv" ]]
+  elif [[ $target == "hanlp" ]]
   then
-    cp -f "src/mt_sp/hanlp_srv.py" /app/chivi/bin
+    cp -f "src/mt_sp/hanlp_srv.py" /app/chivi.dev/bin
   else
-    GC_INITIAL_HEAP_SIZE=4G shards build -s --release --production $target
+    crystal build -s --release src/$target-srv.cr -o /app/chivi.dev/bin/$target-srv
   fi
 
-  echo restarting $target service
-  sudo service $target restart
+  echo restarting $target-dev service
+  sudo service $target-dev restart
 done

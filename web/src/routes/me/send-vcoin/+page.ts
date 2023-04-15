@@ -3,12 +3,14 @@ import type { PageLoad } from './$types'
 
 export const load = (async ({ url }) => {
   const _meta = {
-    title: 'Lịch sử giao dịch vcoin',
+    title: 'Gửi tặng Vcoin cho người khác',
     left_nav: [
       nav_link('/me', 'Cá nhân', 'user', { show: 'pl' }),
-      nav_link('/me/vcoin', 'Vcoin', 'coin', { kind: 'title' }),
+      nav_link('/me/send-vcoin', 'Gửi tặng vcoin', 'gift', { kind: 'title' }),
     ],
-    right_nav: [],
+    right_nav: [
+      nav_link('/me/vcoin-xlog', 'Lịch sử', 'coin', { kind: 'title' }),
+    ],
   }
 
   const form = {
