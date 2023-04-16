@@ -7,11 +7,8 @@
 
   $: ({ dboard, cvpost, rplist } = data)
 
-  $: thread = {
-    to: cvpost.post.user_id,
-    id: cvpost.post.id,
-    mu: 0,
-  }
+  $: muhead = `gd:${cvpost.post.id}`
+  $: touser = cvpost.post.user_id
 </script>
 
 <svelte:head>
@@ -27,7 +24,7 @@
 
 <section>
   <h3>Bình luận</h3>
-  <MureplList {rplist} {thread} fluid={true} />
+  <MureplList {rplist} {muhead} {touser} fluid={true} />
 </section>
 
 <style lang="scss">

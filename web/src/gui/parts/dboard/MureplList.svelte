@@ -3,6 +3,8 @@
   import MureplForm from './MureplForm.svelte'
 
   export let muhead = ''
+  export let touser = 0
+
   export let rplist: CV.Rplist
 
   export let on_murepl_form = (new_repl?: CV.Murepl) => {
@@ -39,10 +41,10 @@
     form={{
       itext: '',
       level: 0,
-      muhead,
-      touser: 0,
       murepl: 0,
       torepl: 0,
+      touser,
+      muhead,
     }}
     placeholder="Thêm bình luận mới"
     on_destroy={on_murepl_form} />
