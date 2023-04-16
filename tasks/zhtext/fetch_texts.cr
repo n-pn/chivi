@@ -6,7 +6,7 @@
 
 #   @queue = [] of ChInfo
 
-#   def initialize(@nvinfo : Nvinfo)
+#   def initialize(@nvinfo : Wninfo)
 #     @snvid = @nvinfo.bhash
 
 #     @nvinfo.nvseeds.each do |nvseed|
@@ -99,8 +99,8 @@
 #     channel = Channel(Nil).new(workers)
 
 #     query = "select nvinfo_id from ubmemos where status > 0"
-#     infos = Nvinfo.query.where("id IN (#{query})").sort_by("weight").to_set
-#     infos.concat Nvinfo.query.sort_by("weight").limit(20000)
+#     infos = Wninfo.query.where("id IN (#{query})").sort_by("weight").to_set
+#     infos.concat Wninfo.query.sort_by("weight").limit(20000)
 
 #     total = infos.size
 #     infos.each_with_index(1) do |info, idx|

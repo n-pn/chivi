@@ -4,8 +4,8 @@
 #   FRESH = (Time.utc - 3.years).to_unix
 
 #   def set!
-#     total, index = Nvinfo.query.count, 0
-#     query = Nvinfo.query.order_by(weight: :desc)
+#     total, index = Wninfo.query.count, 0
+#     query = Wninfo.query.order_by(weight: :desc)
 #     query.each_with_cursor(20) do |nvinfo|
 #       index += 1
 #       puts "- [fix_status] <#{index}/#{total}>".colorize.blue if index % 100 == 0

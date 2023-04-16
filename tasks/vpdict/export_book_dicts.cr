@@ -17,7 +17,7 @@
 
 # def extract_book(file : String)
 #   bslug = File.basename(file).sub("-names.tsv", "")
-#   return unless bhash = CV::Nvinfo.load!(bslug).try(&.bhash)
+#   return unless bhash = CV::Wninfo.load!(bslug).try(&.bhash)
 
 #   vdict = CV::VpDict.load_novel(bhash, mode: :none)
 #   vdict.load!(vdict.flog) if File.exists?(vdict.flog)

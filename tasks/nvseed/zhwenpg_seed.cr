@@ -66,7 +66,7 @@
 #   end
 
 #   def seed!(force = false, label = "1/1")
-#     NvinfoData.print_stats("zhwenpg")
+#     WninfoData.print_stats("zhwenpg")
 #     @seed.seed!(force: force, label: label)
 #   end
 # end

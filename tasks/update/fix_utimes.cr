@@ -1,6 +1,6 @@
 # require "../shared/bootstrap"
 
-# CV::Nvinfo.query.each do |nvinfo|
+# CV::Wninfo.query.each do |nvinfo|
 #   bseeds = nvinfo.nvseeds.to_a.reject(&.zseed.in?(0, 1, 4, 63))
 
 #   if bseeds.empty?

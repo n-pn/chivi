@@ -49,10 +49,10 @@
 #   def get_nvinfo(zauthor : String, ztitle : String)
 #     return if ztitle.blank? || zauthor.blank?
 
-#     return unless author = NvinfoUtil.get_author(zauthor, force: @force_author)
-#     return unless btitle = NvinfoUtil.get_btitle(ztitle, force: @force_btitle)
+#     return unless author = WninfoUtil.get_author(zauthor, force: @force_author)
+#     return unless btitle = WninfoUtil.get_btitle(ztitle, force: @force_btitle)
 
-#     Nvinfo.upsert!(author, btitle)
+#     Wninfo.upsert!(author, btitle)
 #   end
 
 #   def seed!(mode : Int32 = 0, label : String = "-/-")
@@ -63,7 +63,7 @@
 #       puts "#{snvid}: #{bindex}"
 #     end
 
-#     NvinfoUtil.print_stats("#{@sname}/#{label}")
+#     WninfoUtil.print_stats("#{@sname}/#{label}")
 #   end
 
 #   def seed_entry!(snvid : String, bindex : Bindex, mode : Int32 = 0)
