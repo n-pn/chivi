@@ -142,7 +142,7 @@ class CV::RemoteSeed
       spawn do
         snvid = index.to_s
         ifile = File.join(@inp_dir, "#{snvid}.html.gz")
-        stime = NvinfoUtil.mtime(ifile)
+        stime = WninfoUtil.mtime(ifile)
 
         if !(bindex = @data._index[snvid]?)
           if stime

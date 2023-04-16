@@ -1,7 +1,7 @@
 require "../../mtapp/sp_core"
 
 require "../_base"
-require "./wn_info"
+require "./wninfo"
 
 class CV::Author
   include Clear::Model
@@ -9,15 +9,11 @@ class CV::Author
   self.table = "authors"
   primary_key type: :serial
 
-  # has_many nvinfos : Nvinfo, foreign_key: "author_id"
-
   column zname : String
   column vname : String
 
-  # column vslug : String # for text search
-
-  # column alter : Array(String) = [] of String
   column vdesc : String = ""
+  # column alter : Array(String) = [] of String
 
   column book_count : Int32 = 0
   # column post_count : Int32 = 0

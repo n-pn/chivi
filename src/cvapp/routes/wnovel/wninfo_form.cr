@@ -1,5 +1,5 @@
 # require "../../../wndata/models/zh_book"
-require "../../../_data/wnovel/wn_info"
+require "../../../_data/wnovel/wninfo"
 
 class CV::WnovelForm
   include JSON::Serializable
@@ -49,11 +49,11 @@ class CV::WnovelForm
     end
   end
 
-  def save!(_uname : String, _privi : Int32) : Nvinfo
+  def save!(_uname : String, _privi : Int32) : Wninfo
     author = Author.upsert!(@zauthor, @vauthor)
     btitle = Btitle.upsert!(@ztitle, @vtitle)
 
-    vi_book = Nvinfo.upsert!(author, btitle, fix_names: true)
+    vi_book = Wninfo.upsert!(author, btitle, fix_names: true)
 
     @zintro.try do |intro|
       intro = TextUtil.split_html(intro, true).join('\n')

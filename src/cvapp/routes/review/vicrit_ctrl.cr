@@ -30,11 +30,11 @@ class CV::VicritCtrl < CV::BaseCtrl
 
     if crits.empty?
       users = [] of Viuser
-      books = [] of Nvinfo
+      books = [] of Wninfo
       lists = [] of Vilist
     else
       users = Viuser.query.where("id in (#{crits.join(",", &.viuser_id)})")
-      books = Nvinfo.query.where("id in (#{crits.join(",", &.nvinfo_id)})")
+      books = Wninfo.query.where("id in (#{crits.join(",", &.nvinfo_id)})")
       lists = Vilist.query.where("id in (#{crits.join(",", &.vilist_id)})")
     end
 
@@ -57,7 +57,7 @@ class CV::VicritCtrl < CV::BaseCtrl
   @[AC::Route::GET("/:crit_id")]
   def show(crit_id : Int32)
     vicrit = load_crit(crit_id)
-    nvinfo = Nvinfo.load!(vicrit.nvinfo_id)
+    nvinfo = Wninfo.load!(vicrit.nvinfo_id)
 
     viuser = Viuser.load!(vicrit.viuser_id)
     vilist = Vilist.load!(vicrit.vilist_id)

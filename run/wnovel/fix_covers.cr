@@ -1,6 +1,6 @@
-require "../../src/_data/wnovel/wn_info"
+require "../../src/_data/wnovel/wninfo"
 
-nvinfos = CV::Nvinfo.query
+nvinfos = CV::Wninfo.query
   .where("scover <> ''")
   .where("bcover = ''")
   .to_a.shuffle!
@@ -8,7 +8,7 @@ nvinfos = CV::Nvinfo.query
 w_size = 16
 q_size = nvinfos.size
 
-workers = Channel({CV::Nvinfo, Int32}).new(q_size)
+workers = Channel({CV::Wninfo, Int32}).new(q_size)
 results = Channel(Nil).new(w_size)
 
 w_size.times do

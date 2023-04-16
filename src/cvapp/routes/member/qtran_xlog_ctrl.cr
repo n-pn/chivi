@@ -37,7 +37,7 @@ class CV::QtranXlogCtrl < CV::BaseCtrl
     user_infos = Viuser.preload(user_stats.map(&.viuser_id))
 
     book_stats = QtranXlog.book_stats(from, upto)
-    book_infos = Nvinfo.preload(book_stats.map(&.wninfo_id))
+    book_infos = Wninfo.preload(book_stats.map(&.wninfo_id))
 
     render json: {
       user_stats: user_stats,

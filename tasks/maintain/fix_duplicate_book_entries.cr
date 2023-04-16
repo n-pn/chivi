@@ -1,4 +1,4 @@
-CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
+CV::Wninfo.query.with_author.to_a.each do |nvinfo|
   old_btitle = nvinfo.zname
   old_author = nvinfo.author.zname
 
@@ -15,7 +15,7 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
     author = CV::Author.upsert!(fix_author)
   end
 
-  new_nvinfo = CV::Nvinfo.upsert!(author, fix_btitle)
+  new_nvinfo = CV::Wninfo.upsert!(author, fix_btitle)
   nvinfo.update!({subdue_id: new_nvinfo.id})
 
   nvseeds = nvinfo.nvseeds.to_a.sort_by(&.zseed)

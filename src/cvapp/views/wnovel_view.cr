@@ -3,7 +3,7 @@ require "./_base_view"
 struct CV::WnovelView
   include BaseView
 
-  def initialize(@data : Nvinfo, @full = true)
+  def initialize(@data : Wninfo, @full = true)
   end
 
   def cover_url
@@ -41,13 +41,13 @@ struct CV::WnovelView
     end
   end
 
-  def self.as_list(inp : Enumerable(Nvinfo), full = false)
+  def self.as_list(inp : Enumerable(Wninfo), full = false)
     res = [] of self
     inp.each { |obj| res << new(obj, full) }
     res
   end
 
-  def self.as_hash(inp : Enumerable(Nvinfo))
+  def self.as_hash(inp : Enumerable(Wninfo))
     res = {} of Int64 => self
     inp.each { |obj| res[obj.id] = new(obj) }
     res

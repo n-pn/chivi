@@ -1,7 +1,6 @@
 require "../_base"
+require "../wnovel/wninfo"
 require "./viuser"
-
-require "../wnovel/wn_info"
 
 class CV::Ubmemo
   include Clear::Model
@@ -10,7 +9,7 @@ class CV::Ubmemo
   primary_key type: :serial
 
   belongs_to viuser : Viuser, foreign_key: "viuser_id", foreign_key_type: Int32
-  belongs_to nvinfo : Nvinfo, foreign_key: "nvinfo_id", foreign_key_type: Int32
+  belongs_to nvinfo : Wninfo, foreign_key: "nvinfo_id", foreign_key_type: Int32
 
   # bookmark types: default, reading, finished, onhold, dropped, pending
   column status : Int32 = 0
@@ -78,18 +77,18 @@ class CV::Ubmemo
     end
   end
 
-  def self.find_or_new(viuser : Viuser, nvinfo : Nvinfo) : self
-    find_or_new(viuser.id, nvinfo.id)
+  def self.find_or_new(viuser : Viuser, wninfo : Wninfo) : self
+    find_or_new(viuser.id, wninfo.id)
   end
 
-  def self.upsert!(viuser : Viuser, nvinfo : Nvinfo, &) : self
-    ubmemo = find_or_new(viuser, nvinfo)
+  def self.upsert!(viuser : Viuser, wninfo : Wninfo, &) : self
+    ubmemo = find_or_new(viuser, wninfo)
     yield ubmemo
     ubmemo.save!
   end
 
-  def self.upsert!(viuser_id : Int64, nvinfo_id : Int64, &) : self
-    ubmemo = find_or_new(viuser_id, nvinfo_id)
+  def self.upsert!(viuser_id : Int64, wninfo_id : Int64, &) : self
+    ubmemo = find_or_new(viuser_id, wninfo_id)
     yield ubmemo
     ubmemo.save!
   end

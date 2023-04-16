@@ -2,8 +2,8 @@ require "./_base"
 require "./cv_book"
 require "../_raw/raw_ys_book"
 
-require "../../_data/wnovel/wn_info"
-require "../../_data/wnovel/wn_link"
+require "../../_data/wnovel/wninfo"
+require "../../_data/wnovel/wnlink"
 require "../../_util/tran_util"
 require "../../mt_v1/data/v1_dict"
 
@@ -90,7 +90,7 @@ class YS::Ysbook
   def get_nvinfo(force : Bool = false)
     case self.nvinfo_id
     when 0    then create_nvinfo if force || worth_saving?
-    when .> 0 then CV::Nvinfo.find({id: self.nvinfo_id})
+    when .> 0 then CV::Wninfo.find({id: self.nvinfo_id})
     else           nil
     end
   end
@@ -109,7 +109,7 @@ class YS::Ysbook
 
     author = CV::Author.upsert!(zauthor, vauthor)
     btitle = CV::Btitle.upsert!(ztitle, vtitle)
-    nvinfo = CV::Nvinfo.upsert!(author, btitle, fix_names: true)
+    nvinfo = CV::Wninfo.upsert!(author, btitle, fix_names: true)
 
     nvinfo.zintro = zintro
     nvinfo.bintro = vintro

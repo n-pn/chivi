@@ -1,12 +1,16 @@
 require "../../_util/post_util"
 require "../_base"
+
+require "./dtopic"
+
 require "../member/viuser"
+require "../wnovel/wninfo"
 
 class CV::Murepl
   # note: mu stand for multiuse/multipurpose
   # convention:
   # - for wnovel general discussion, thread_id = -wnovel_id * 2, thread_mu = 0
-  # - for wnovel chapter discussion, thread_id = -wnseed_id * 2 + 1, thread_mu = -ch_no
+  # - for wnovel chapter discussion, thread_id = -wnseed_id * 2 - 1, thread_mu = -ch_no
   # - for dboard general discussion, thread_id = dtopic_id, thread_mu = 0
 
   # - for cvuser review comments, thread_id = vicrit_id, thread_mu = 10

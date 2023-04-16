@@ -4,8 +4,8 @@ module CV::FixGenres
   extend self
 
   def fix_all!(redo = false)
-    total, index = Nvinfo.query.count, 0
-    query = Nvinfo.query.order_by(id: :desc)
+    total, index = Wninfo.query.count, 0
+    query = Wninfo.query.order_by(id: :desc)
 
     query.each_with_cursor(20) do |nvinfo|
       index += 1
@@ -21,7 +21,7 @@ module CV::FixGenres
     end
   end
 
-  def pick_genres(nvinfo : Nvinfo, redo = false)
+  def pick_genres(nvinfo : Wninfo, redo = false)
     genres = [] of String
 
     nvinfo.ysbook.try do |ysbook|

@@ -29,7 +29,7 @@ end
 changed_author = {} of String => String
 changed_btitle = {} of String => String
 
-CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
+CV::Wninfo.query.with_author.to_a.each do |nvinfo|
   old_btitle = nvinfo.zname
   old_author = nvinfo.author.zname
 
@@ -46,7 +46,7 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
     author = CV::Author.upsert!(fix_author)
   end
 
-  new_nvinfo = CV::Nvinfo.upsert!(author, fix_btitle)
+  new_nvinfo = CV::Wninfo.upsert!(author, fix_btitle)
 
   changed_author[old_author] = fix_author if old_author != fix_author
   changed_btitle[old_btitle] = fix_btitle if old_btitle != fix_btitle

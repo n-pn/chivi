@@ -3,7 +3,7 @@ require "./_base_view"
 struct CV::DboardView
   include BaseView
 
-  def initialize(@data : Nvinfo)
+  def initialize(@data : Wninfo)
   end
 
   def to_json(jb : JSON::Builder)

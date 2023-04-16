@@ -12,24 +12,24 @@
 
 #   @dir_name : String
 
-#   def initialize(@nvinfo : Nvinfo, @parse_all = false)
-#     @inp_dir = File.join(INP_DIR, "=base", @nvinfo.id)
+#   def initialize(@wninfo : Wninfo, @parse_all = false)
+#     @inp_dir = File.join(INP_DIR, "=base", @wninfo.id)
 
-#     @dir_name = nvinfo.bslug
+#     @dir_name = wninfo.bslug
 
 #     @out_path = File.join(OUT_DIR, @dir_name)
 #     Dir.mkdir_p(@out_path)
 
-#     @chap_count = load_chap_count(@nvinfo)
+#     @chap_count = load_chap_count(@wninfo)
 #   end
 
-#   def load_chap_count(nvinfo : Nvinfo)
-#     return 0 if nvinfo.subdue_id > 0
+#   def load_chap_count(wninfo : Wninfo)
+#     return 0 if wninfo.subdue_id > 0
 
-#     if nvseed = Chroot.find(nvinfo.id, 0)
+#     if nvseed = Chroot.find(wninfo.id, 0)
 #       nvseed.refresh!(force: false)
 #     else
-#       nvseed = Chroot.init!(nvinfo, 0)
+#       nvseed = Chroot.init!(wninfo, 0)
 #     end
 
 #     nvseed.chap_count
@@ -50,7 +50,7 @@
 #       extract(existed.map { |x| get_chidx(x) }.to_set)
 #     end
 
-#     Log.info { "<#{lbl}> #{@nvinfo.bslug.colorize(color)}: #{existed.size.colorize(color)} parsed, \
+#     Log.info { "<#{lbl}> #{@wninfo.bslug.colorize(color)}: #{existed.size.colorize(color)} parsed, \
 #                 to parse: #{@to_parse.colorize(color)}" }
 #     Process.run("python3", {SCRIPT, @dir_name})
 #   end
@@ -120,11 +120,11 @@
 #     end
 
 #     if books.empty?
-#       query = "select nvinfo_id from ubmemos where status > 0"
-#       infos = Nvinfo.query.where("id IN (#{query})").sort_by("weight").to_set
-#       infos.concat Nvinfo.query.sort_by("weight").limit(20000)
+#       query = "select wninfo_id from ubmemos where status > 0"
+#       infos = Wninfo.query.where("id IN (#{query})").sort_by("weight").to_set
+#       infos.concat Wninfo.query.sort_by("weight").limit(20000)
 #     else
-#       infos = Nvinfo.query.where { bslug.in?(books) }.to_set
+#       infos = Wninfo.query.where { bslug.in?(books) }.to_set
 #     end
 
 #     workers = infos.size if workers > infos.size

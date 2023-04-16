@@ -2,23 +2,23 @@ require "cmark"
 require "../../_util/hash_util"
 
 require "../_base"
-require "../wnovel/wn_info"
+require "../wnovel/wninfo"
 require "../member/viuser"
 
-class CV::Cvpost
+class CV::Dtopic
   include Clear::Model
 
   self.table = "cvposts"
   primary_key type: :serial
 
   column ii : Int32 = 1 # increase for each board
-  getter oid : String { HashUtil.encode32(ii) }
+  # getter oid : String { HashUtil.encode32(ii) }
 
   belongs_to viuser : Viuser, foreign_key_type: Int32
   # getter viuser : Viuser { Viuser.load!(self.viuser_id) }
 
-  belongs_to nvinfo : Nvinfo, foreign_key_type: Int32
-  # getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
+  belongs_to nvinfo : Wninfo, foreign_key_type: Int32
+  # getter nvinfo : Wninfo { Wninfo.load!(self.nvinfo_id) }
 
   #####
 
@@ -140,7 +140,7 @@ class CV::Cvpost
     CACHE.get(id) { find!({id: id}) }
   end
 
-  # def self.init_base_topic!(nvinfo : Nvinfo)
+  # def self.init_base_topic!(nvinfo : Wninfo)
   #   cvpost = find({ii: nvinfo.dt_ii}) || new({
   #     ii:        nvinfo.dt_ii,
   #     state:     1,

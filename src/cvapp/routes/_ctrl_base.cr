@@ -15,8 +15,8 @@ abstract class CV::BaseCtrl < AC::Base
 
   getter _viuser : Viuser { Viuser.load!(_uname) }
 
-  private def get_nvinfo(b_id : Int64) : Nvinfo
-    Nvinfo.load!(b_id) || raise NotFound.new("Quyển sách không tồn tại")
+  private def get_nvinfo(b_id : Int64) : Wninfo
+    Wninfo.load!(b_id) || raise NotFound.new("Quyển sách không tồn tại")
   end
 
   def save_current_user!(user : Viuser) : Nil

@@ -1,4 +1,4 @@
-require "../wnovel/wn_info"
+require "../wnovel/wninfo"
 require "../member/viuser"
 
 class CV::Vicrit

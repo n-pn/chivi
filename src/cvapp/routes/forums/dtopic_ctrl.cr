@@ -1,19 +1,19 @@
 require "../_ctrl_base"
 require "./dtopic_form"
 
-class CV::CvpostCtrl < CV::BaseCtrl
+class CV::DtopicCtrl < CV::BaseCtrl
   base "/_db/topics"
 
   @[AC::Route::GET("/")]
   def index(lb labels : String? = nil, dboard : Int64? = nil, viuser : String? = nil)
     pgidx, limit, offset = _paginate(max: 100)
 
-    query = Cvpost.query.order_by(_sort: :desc)
+    query = Dtopic.query.order_by(_sort: :desc)
 
     query.where("state >= -1")
     query.filter_label(labels) if labels
 
-    if nvinfo = dboard.try { |x| Nvinfo.load!(x) }
+    if nvinfo = dboard.try { |x| Wninfo.load!(x) }
       query.filter_board(nvinfo)
     end
 
@@ -40,36 +40,36 @@ class CV::CvpostCtrl < CV::BaseCtrl
       pgidx: pgidx,
       pgmax: _pgidx(total, limit),
 
-      posts: CvpostView.as_list(posts, false),
+      posts: DtopicView.as_list(posts, false),
       memos: MemoirView.as_hash(memos),
       users: ViuserView.as_hash(users),
     }
   end
 
   @[AC::Route::POST("/", body: :form)]
-  def create(dboard : Int64, form : CvpostForm)
+  def create(dboard : Int64, form : DtopicForm)
     guard_privi 0, "tạo chủ đề"
-    nvinfo = Nvinfo.load!(dboard)
+    nvinfo = Wninfo.load!(dboard)
 
     count = nvinfo.post_count + 1
-    cvpost = Cvpost.new({viuser_id: _viuser.id, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
+    cvpost = Dtopic.new({viuser_id: _viuser.id, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
 
     cvpost.update_content!(form)
     nvinfo.update!({post_count: count, board_bump: cvpost.utime})
 
-    render json: {cvpost: CvpostView.new(cvpost)}
+    render json: {cvpost: DtopicView.new(cvpost)}
   end
 
   @[AC::Route::GET("/:post_id")]
   def show(post_id : Int64)
-    cvpost = Cvpost.load!(post_id)
+    cvpost = Dtopic.load!(post_id)
     cvpost.bump_view_count!
 
     viuser = Viuser.load!(cvpost.viuser_id)
     memoir = Memoir.load(_vu_id, :dtopic, cvpost.id.to_i)
 
     render json: {
-      post: CvpostView.new(cvpost, full: true),
+      post: DtopicView.new(cvpost, full: true),
       user: ViuserView.new(viuser),
       memo: MemoirView.new(memoir),
     }
@@ -79,7 +79,7 @@ class CV::CvpostCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/:post_id/detail")]
   def detail(post_id : Int64)
-    cvpost = Cvpost.load!(post_id)
+    cvpost = Dtopic.load!(post_id)
 
     render json: {
       id:     cvpost.oid,
@@ -92,17 +92,17 @@ class CV::CvpostCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::POST("/:post_id", body: :form)]
-  def update(post_id : Int64, form : CvpostForm)
-    cvpost = Cvpost.load!(post_id)
+  def update(post_id : Int64, form : DtopicForm)
+    cvpost = Dtopic.load!(post_id)
     guard_owner cvpost.viuser_id, 0, "sửa chủ đề"
 
     cvpost.update_content!(form)
-    render json: {cvpost: CvpostView.new(cvpost)}
+    render json: {cvpost: DtopicView.new(cvpost)}
   end
 
   @[AC::Route::DELETE("/:post_id")]
   def delete(post_id : Int64)
-    cvpost = Cvpost.load!(post_id)
+    cvpost = Dtopic.load!(post_id)
     guard_owner cvpost.viuser_id, 0, "xoá chủ đề"
 
     is_admin = _privi > 3 && _vu_id != cvpost.viuser_id

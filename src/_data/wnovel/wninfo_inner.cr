@@ -1,6 +1,6 @@
-require "../../../_util/hash_util"
+require "../../_util/hash_util"
 
-module CV::NvinfoInner
+module CV::WninfoInner
   def set_genres(zgenres : Array(String), force = false) : Nil
     return unless force || self.igenres.empty? || self.igenres == [0]
     set_vgenres(GenreMap.zh_to_vi(zgenres), force: force)

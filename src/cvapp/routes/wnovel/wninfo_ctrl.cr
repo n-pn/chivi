@@ -17,7 +17,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
   )
     pg_no, limit, offset = _paginate(max: 100)
 
-    query = Nvinfo.query.sort_by(order)
+    query = Wninfo.query.sort_by(order)
 
     query.filter_btitle(btitle) if btitle
     query.filter_author(author) if author
@@ -48,7 +48,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
     frags = TextUtil.slugify(bslug).split('-')
     query = "bhash like '#{frags[0]}%' or bhash like '#{frags[-1]}%'"
 
-    if wnovel = Nvinfo.find(query)
+    if wnovel = Wninfo.find(query)
       found = "#{wnovel.id}-#{wnovel.bslug}"
     end
 
@@ -57,7 +57,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
 
   #############
   private def get_wnovel(wn_id : Int64)
-    Nvinfo.find({id: wn_id}) || raise NotFound.new("Quyển sách không tồn tại!")
+    Wninfo.find({id: wn_id}) || raise NotFound.new("Quyển sách không tồn tại!")
   end
 
   @[AC::Route::GET("/:wn_id/show")]
@@ -74,7 +74,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
 
     # spawn Nvstat.inc_info_view(nvinfo.id)
 
-    books = Nvinfo.query
+    books = Wninfo.query
       .where("author_id = ?", nvinfo.author_id)
       .where("id <> ?", nvinfo.id)
       .order_by(weight: :desc)
@@ -117,9 +117,9 @@ class CV::WnovelCtrl < CV::BaseCtrl
     guard_privi 2, "thêm truyện/sửa nội dung truyện"
 
     nvinfo = form.save!(_uname, _privi)
-    WnLink.upsert!(nvinfo.id.to_i, form.wn_links)
+    WnLink.upsert!(nvinfo.id.to_i, form.origins)
 
-    Nvinfo.cache!(nvinfo)
+    Wninfo.cache!(nvinfo)
 
     spawn add_book_dict(nvinfo.id, nvinfo.bslug, nvinfo.vname)
     spawn CtrlUtil.log_user_action("nvinfo-upsert", params.to_h, _viuser.uname)

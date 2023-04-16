@@ -1,9 +1,9 @@
-require "../../src/_data/wnovel/nv_info"
+require "../../src/_data/wnovel/wninfo"
 
 # CV::VpDict.regular.set("三国", ["Tam Quốc"], "Na")
 
 def fix_all_entries
-  books = CV::Nvinfo.query.order_by(id: :desc).to_a
+  books = CV::Wninfo.query.order_by(id: :desc).to_a
 
   books.each_with_index(1) do |nvinfo, index|
     next if nvinfo.id <= 0
@@ -18,7 +18,7 @@ end
 
 def fix_selected(titles : Array(String))
   titles.each do |title|
-    query = CV::Nvinfo.query.filter_btitle(title)
+    query = CV::Wninfo.query.filter_btitle(title)
     query.each(&.fix_names!)
   end
 end

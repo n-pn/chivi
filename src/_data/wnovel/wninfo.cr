@@ -1,16 +1,16 @@
 require "../_base"
 require "../shared/*"
 
-require "./author"
-require "./btitle"
-require "./nvinfo/*"
-
-require "./wn_link"
-
-require "../../mt_v1/core/m1_core"
+# require "../../mt_v1/core/m1_core"
 require "../../_util/ram_cache"
 
-class CV::Nvinfo
+require "./author"
+require "./btitle"
+require "./wnlink"
+
+require "./wninfo_inner"
+
+class CV::Wninfo
   include Clear::Model
 
   self.table = "nvinfos"
@@ -156,7 +156,7 @@ class CV::Nvinfo
 
   getter orig_links : Array(WnLink) { WnLink.all_origs(self.id.to_i) }
 
-  include NvinfoInner
+  include WninfoInner
 
   #########################################
 

@@ -9,7 +9,7 @@
 #     next
 #   end
 
-#   next unless nvinfo = CV::Nvinfo.find({bhash: bhash})
+#   next unless nvinfo = CV::Wninfo.find({bhash: bhash})
 #   nvseed = CV::Chroot.load!(nvinfo, "users")
 
 #   list_file = idx_files.sort_by { |x| File.basename(x, ".tsv").to_i }.last

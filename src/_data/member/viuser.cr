@@ -1,4 +1,5 @@
 require "crypto/bcrypt/password"
+require "../../_util/ram_cache"
 require "../_base"
 
 class CV::Viuser
@@ -167,10 +168,10 @@ class CV::Viuser
     end
   end
 
-  CACHE_INT = RamCache(Int64, self).new(ttl: 3.minutes)
+  CACHE_INT = RamCache(Int32, self).new(ttl: 3.minutes)
   CACHE_STR = RamCache(String, self).new(ttl: 3.minutes)
 
-  def self.load!(id : Int64)
+  def self.load!(id : Int32)
     CACHE_INT.get(id) { find!({id: id}) }
   end
 

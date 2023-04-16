@@ -7,7 +7,7 @@ class CV::DboardCtrl < CV::BaseCtrl
   def index
     pg_no, limit, offset = _paginate(min: 24, max: 100)
 
-    query = Nvinfo.query.order_by(utime: :desc)
+    query = Wninfo.query.order_by(utime: :desc)
     total = query.dup.limit(limit * 3 + offset).count
 
     render json: {
@@ -20,7 +20,7 @@ class CV::DboardCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/:wm_id")]
   def show(wm_id : Int32)
-    unless dboard = Nvinfo.load!(wm_id)
+    unless dboard = Wninfo.load!(wm_id)
       raise NotFound.new("Diễn đàn không tồn tại!")
     end
 

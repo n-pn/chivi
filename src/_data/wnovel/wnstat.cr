@@ -1,5 +1,5 @@
 require "../_base"
-require "./wn_info"
+require "./wninfo"
 
 class CV::Nvstat
   enum Klass
@@ -30,7 +30,7 @@ class CV::Nvstat
   include Clear::Model
   self.table = "nvstats"
 
-  belongs_to nvinfo : Nvinfo, foreign_key_type: Int32
+  belongs_to nvinfo : Wninfo, foreign_key_type: Int32
 
   column klass : Int32 = 0 # type of nvstats
   # timestamp map to integer:

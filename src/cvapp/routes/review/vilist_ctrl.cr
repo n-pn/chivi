@@ -51,7 +51,7 @@ class CV::VilistCtrl < CV::BaseCtrl
 
     crits.limit(limit).offset(offset).to_a
 
-    books = Nvinfo.preload(crits.map(&.nvinfo_id))
+    books = Wninfo.preload(crits.map(&.nvinfo_id))
 
     render json: {
       list: VilistView.new(vilist, mode: :full),
