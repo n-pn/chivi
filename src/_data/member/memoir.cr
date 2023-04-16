@@ -37,6 +37,8 @@ class CV::Memoir
   end
 
   def create_like_notif!(target : Murepl | Dtopic, from_user : String)
+    return if target.viuser_id == self.target_id
+
     type = target.is_a?(Murepl) ? :like_repl : :like_dtop
 
     _undo_tag_ = Unotif.gen_undo_tag(target.viuser_id, type, target.id)

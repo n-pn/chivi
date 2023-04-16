@@ -123,7 +123,7 @@ class CV::Muhead
   end
 
   def self.bump!(id : Int32, last_repl_at : Time = Time.utc)
-    @@db.exec <<-SQL, id, last_repl_at
+    @@db.exec <<-SQL, last_repl_at, id
       update #{@@table} set repl_count = repl_count + 1, last_repl_at = $1
       where id = $2
       SQL

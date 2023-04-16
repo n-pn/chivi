@@ -136,17 +136,21 @@
 </Slider>
 
 <style lang="scss">
-  .-btn._dot:after {
-    $size: 0.625rem;
-    position: absolute;
+  // .-btn._dot:after {
+  //   $size: 0.625rem;
+  //   position: absolute;
 
-    content: '';
-    right: math.div($size * -1, 3);
-    top: math.div($size * -1, 3);
-    width: $size;
-    height: $size;
-    border-radius: $size;
-    @include bgcolor(warning, 5);
+  //   content: '';
+  //   right: math.div($size * -1, 3);
+  //   top: math.div($size * -1, 3);
+  //   width: $size;
+  //   height: $size;
+  //   border-radius: $size;
+  //   @include bgcolor(warning, 5);
+  // }
+
+  .-btn._hl {
+    @include fgcolor(warning, 5);
   }
 
   .-btn._active {
