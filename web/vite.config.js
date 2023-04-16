@@ -1,34 +1,25 @@
 // vite.config.js
 import { sveltekit } from '@sveltejs/kit/vite'
-// import autoImport from 'sveltekit-autoimport'
+import { loadEnv } from 'vite'
 
 import path from 'path'
 import { fileURLToPath } from 'url'
 const _cwd = path.dirname(fileURLToPath(import.meta.url))
 
-// const autoImportPlugin = autoImport({
-//   components: [{ name: './src/gui/atoms', flat: true }],
-//   module: {
-//     svelte: ['onMount', 'createEventDispatcher'],
-//   },
-//   include: ['**/*.svelte'],
-//   exclude: ['**/node_modules/**'],
-// })
-
 const dev = process.env['ENV'] == 'dev'
+const env = loadEnv('dev', _cwd)
 
 const proxy = {
   '/covers': 'https://chivi.app',
 
-  '/_db': 'http://127.0.0.1:5010',
-  '/_wn': 'http://127.0.0.1:5020',
+  '/_db': `http://127.0.0.1:${env.VITE_BE_PORT}`,
+  '/_wn': `http://127.0.0.1:${env.VITE_WN_PORT}`,
 
-  '/_m0': 'http://127.0.0.1:5100',
-  '/_m1': 'http://127.0.0.1:5110',
-  '/_m2': 'http://127.0.0.1:5120',
+  '/_m1': `http://127.0.0.1:${env.VITE_M1_PORT}`,
+  '/_m2': `http://127.0.0.1:${env.VITE_M2_PORT}`,
 
-  '/_sp': 'http://127.0.0.1:5300',
-  '/_ys': 'http://127.0.0.1:5400',
+  '/_sp': `http://127.0.0.1:${env.VITE_SP_PORT}`,
+  '/_ys': `http://127.0.0.1:${env.VITE_YS_PORT}`,
 }
 
 /** @type {import('vite').UserConfig} */

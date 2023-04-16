@@ -18,7 +18,6 @@ const api_hosts = {
   _db: `127.0.0.1:${import.meta.env.VITE_BE_PORT || 5010}`,
   _wn: `127.0.0.1:${import.meta.env.VITE_WN_PORT || 5020}`,
 
-  _m0: `127.0.0.1:${import.meta.env.VITE_M0_PORT || 5100}`,
   _m1: `127.0.0.1:${import.meta.env.VITE_M1_PORT || 5110}`,
   _m2: `127.0.0.1:${import.meta.env.VITE_M2_PORT || 5120}`,
 
@@ -66,9 +65,10 @@ const guest_user = {
   vcoin: 0,
   point_today: 0,
   point_limit: 0,
+  unread_notif: 0,
 }
 
-const get_hash = (hash?: string) => hash?.replace('/', '_')
+const get_hash = (cookie: string) => cookie && cookie.replace('/', '_')
 
 async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   const hash = get_hash(event.cookies.get('_auth')) || 'guest'
@@ -82,8 +82,8 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   //   cached_users[hash] = cached_user
   // }
 
-  // const now_unix = new Date().getTime() / 1000
-  // if (cached_user && cached_user.until >= now_unix) return cached_user
+  const now_unix = new Date().getTime() / 1000
+  if (cached_user && cached_user.until >= now_unix) return cached_user
 
   const req_init = { headers: { cookie: event.request.headers.get('cookie') } }
   const response = await globalThis.fetch(session_url, req_init)
@@ -91,8 +91,8 @@ async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   if (!response.ok) return guest_user
 
   cached_user = (await response.json()) as App.CurrentUser
+  cached_users[hash] = cached_user
   // fs.writeFileSync(path, JSON.stringify(cached_user))
-  // cached_users[hash] = cached_user
 
   return cached_user || guest_user
 }
