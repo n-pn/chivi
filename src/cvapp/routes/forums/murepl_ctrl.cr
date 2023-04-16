@@ -6,7 +6,7 @@ class CV::MureplCtrl < CV::BaseCtrl
   @[AC::Route::GET("/")]
   def index(sort : String = "-id",
             from from_user : String? = nil, to to_user : String? = nil,
-            memo : String? = nil)
+            self memo : String? = nil)
     repls = Murepl.query.where("id > 0").sort_by(sort)
 
     pg_no, limit, offset = _paginate(min: 20, max: 100)
@@ -14,9 +14,7 @@ class CV::MureplCtrl < CV::BaseCtrl
 
     user_stmt = "select id from viusers where uname = ? limit 1"
     repls.where("viuser_id = (#{user_stmt})", from_user) if from_user
-    repls.where("to_viuser_id = (#{user_stmt})", to_user) if to_user
-
-    # repls.with_cvpost
+    repls.where("touser_id = (#{user_stmt})", to_user) if to_user
 
     render_repls(repls, pg_no)
   end

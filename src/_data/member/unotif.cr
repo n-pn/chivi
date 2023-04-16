@@ -31,6 +31,20 @@ class CV::Unotif
     db.exec stmt, @viuser_id, @content, @details, @link_to, @_undo_tag_, @created_at
   end
 
+  def self.count_by_user(viuser_id : Int32)
+    @@db.query_one(<<-SQL, viuser_id, as: Int32)
+      select COALESCE(COUNT(*), 0)::int from #{@@table}
+      where viuser_id = $1
+    SQL
+  end
+
+  def self.mark_as_read(ids : Enumerable(Int32), reached_at = Time.utc)
+    @@db.query <<-SQL, ids
+      update #{@@table} set reached_at = $1
+      where id = any ($2) and reached_at is null
+    SQL
+  end
+
   def self.count_unread(viuser_id : Int32)
     @@db.query_one(<<-SQL, viuser_id, as: Int32)
       select COALESCE(COUNT(*), 0)::int from #{@@table}
@@ -39,12 +53,12 @@ class CV::Unotif
     SQL
   end
 
-  def self.user_notifs(viuser_id : Int32, limit = 20, offset = 0)
+  def self.user_notifs(viuser_id : Int32, limit = 20, offset = 0) : Array(self)
     @@db.query_all <<-SQL, viuser_id, limit, offset, as: self
       select * from #{@@table}
       where viuser_id = $1
       limit $2 offset $3
-      order by id desc
+      order by created_at desc
     SQL
   end
 end

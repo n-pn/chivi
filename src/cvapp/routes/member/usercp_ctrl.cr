@@ -13,6 +13,24 @@ class CV::UsercpCtrl < CV::BaseCtrl
     render json: ViuserView.new(_viuser, true)
   end
 
+  @[AC::Route::GET("/notifs")]
+  def notifs
+    guard_privi 0, "xem thông báo cá nhân"
+
+    pg_no, limit, offset = _paginate(min: 10, max: 100)
+    notifs = Unotif.user_notifs(_vu_id, limit: limit, offset: offset)
+
+    total = Unotif.count_by_user(_vu_id)
+    spawn Unotif.mark_as_read(notifs.map(&.id!))
+
+    render json: {
+      notifs: notifs,
+      pgidx:  pg_no,
+      total:  total,
+      pgmax:  _pgidx(total, limit),
+    }
+  end
+
   @[AC::Route::PUT("/upgrade-privi", body: :form)]
   def upgrade_privi(form : UgpriviForm)
     guard_privi 0, "nâng cấp quyền hạn"
