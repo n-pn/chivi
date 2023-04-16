@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=oneshot
 User=nipin
 WorkingDirectory=/app/chivi/srv
-ExecStart=/usr/bin/bash tasks/backup/aws-s3.sh
+ExecStart=/usr/bin/bash priv/run-hourly.sh
 
 [Install]
 WantedBy=multi-user.target

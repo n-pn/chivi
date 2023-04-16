@@ -1,0 +1,19 @@
+[Unit]
+Description=ysapp dev server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=nipin
+Environment=PORT=5401
+Environment=CV_ENV=development
+WorkingDirectory=/app/chivi.dev
+ExecStart=/app/chivi.dev/bin/ysapp-srv
+StandardOutput=file:/app/chivi.dev/log/ysapp-srv.log
+StandardError=append:/app/chivi.dev/log/ysapp-err.log
+
+[Install]
+WantedBy=multi-user.target

@@ -8,4 +8,3 @@ rclone sync var/cvmtl/users oracle:chivi/users/mtl_err
 
 rclone sync var/.keep/web_log oracle:chivi/web_log
 rclone sync var/.keep/wal_log oracle:chivi/wal_log
-rclone sync var/.keep/pg_data oracle:chivi/pg_data

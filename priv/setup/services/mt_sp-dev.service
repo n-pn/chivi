@@ -1,0 +1,19 @@
+[Unit]
+Description=mt_sp server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=nipin
+Environment=PORT=5301
+Environment=CV_ENV=development
+WorkingDirectory=/app/chivi.dev
+ExecStart=/app/chivi.dev/bin/mt_sp-srv
+StandardOutput=file:/app/chivi.dev/log/mt_sp-srv.log
+StandardError=append:/app/chivi.dev/log/mt_sp-err.log
+
+[Install]
+WantedBy=multi-user.target

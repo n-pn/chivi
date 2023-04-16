@@ -1,0 +1,19 @@
+[Unit]
+Description=mt_v2 dev server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=nipin
+Environment=PORT=5120
+Environment=CV_ENV=development
+WorkingDirectory=/app/chivi.dev
+ExecStart=/app/chivi.dev/bin/mt_v2-srv
+StandardOutput=file:/app/chivi.dev/log/mt_v2-srv.log
+StandardError=append:/app/chivi.dev/log/mt_v2-err.log
+
+[Install]
+WantedBy=multi-user.target

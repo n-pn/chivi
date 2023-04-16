@@ -6,7 +6,8 @@ ENV=${1:-"dev"}
 
 if [[ $ENV == "prod" ]]
 then
-  ssh nipin@ssh.chivi.app \"sudo service $NAME-srv restart\"
-else
+  # ssh nipin@ssh.chivi.app \"sudo service $NAME-srv restart\"
   sudo service $NAME-srv restart
+else
+  sudo service $NAME-dev restart
 fi
