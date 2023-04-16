@@ -21,10 +21,10 @@ class CV::UsercpCtrl < CV::BaseCtrl
     notifs = Unotif.user_notifs(_vu_id, limit: limit, offset: offset)
 
     total = Unotif.count_by_user(_vu_id)
-    spawn Unotif.mark_as_read(notifs.map(&.id!))
+    spawn Unotif.mark_as_read(ids: notifs.map(&.id!))
 
     render json: {
-      notifs: notifs,
+      notifs: UnotifView.as_list(notifs),
       pgidx:  pg_no,
       total:  total,
       pgmax:  _pgidx(total, limit),

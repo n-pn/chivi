@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { browser } from '$app/environment'
+
   import { status_names, status_icons } from '$lib/constants'
   import { chap_path, _pgidx } from '$lib/kit_path'
 
@@ -11,7 +13,7 @@
   let chaps: Array<any>
 
   let kind = ''
-  $: if (tab == 0) load_history(kind)
+  $: if (browser && tab == 0) load_history(kind)
 
   async function load_history(kind = '', pg = 1) {
     const api_url = `/_db/_self/books/access?kind=${kind}&pg=${pg}&lm=15`

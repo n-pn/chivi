@@ -1,0 +1,89 @@
+<script lang="ts">
+  import { api_get } from '$lib/api_call'
+  import { browser } from '$app/environment'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import { rel_time_vp } from '$utils/time_utils'
+
+  export let tab = 2
+  export let user: App.CurrentUser
+
+  let data: CV.UnotifPage = {
+    notifs: [],
+    pgidx: 1,
+    total: 0,
+    pgmax: 0,
+  }
+
+  $: if (browser && tab == 2) load_notifs()
+
+  async function load_notifs(pg = 1) {
+    user.unread_notif = 0
+
+    const api_url = `/_db/_self/notifs?&pg=${pg}&lm=20`
+    try {
+      data = await api_get<CV.UnotifPage>(api_url, fetch)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+</script>
+
+<header class="label">
+  <SIcon name="bell" />
+  <span>Thông báo ({data.total})</span>
+</header>
+
+<div class="notifs">
+  {#each data.notifs as notif}
+    <div class="notif" class:_fresh={!notif.reached_at}>
+      {@html notif.content}
+      <footer class="notif-foot">
+        <time>{rel_time_vp(notif.created_at)}</time>
+      </footer>
+    </div>
+  {/each}
+</div>
+
+<style lang="scss">
+  .label {
+    @include flex-cy();
+    gap: 0.25rem;
+
+    // padding-left: 0.25rem;
+    margin-bottom: 0.75rem;
+    // margin: 0.25rem 0;
+
+    // line-height: 2.25rem;
+    font-weight: 500;
+
+    @include fgcolor(tert);
+  }
+
+  .notif {
+    font-size: rem(15px);
+    padding: 0.5rem;
+
+    line-height: 1.25rem;
+    @include border(--bd-soft, $loc: top);
+
+    &._fresh {
+      @include bgcolor(warning, 5, 1);
+    }
+
+    :global(a) {
+      @include fgcolor(primary, 5);
+      text-decoration: none;
+
+      &:hover {
+        // @include fgcolor(primary, 4);
+        @include border(primary, 4, $loc: bottom);
+      }
+    }
+  }
+
+  .notif-foot {
+    margin-top: 0.25rem;
+    @include ftsize(sm);
+    @include fgcolor(secd);
+  }
+</style>

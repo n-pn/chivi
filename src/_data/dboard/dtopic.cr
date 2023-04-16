@@ -133,8 +133,7 @@ class CV::Dtopic
 
     link_to = muhead._link
     content = <<-HTML
-    <p><a href="/@#{from_user}>" class="cv-user">#{from_user}</a> đã thích #{muhead._type} <a href="#{link_to}">#{muhead._name}</a> của bạn.</p>
-    <p><em>#{TextUtil.truncate(self.brief, 100)}</em></p>
+    <p><a href="/@#{from_user}" class="cv-user">#{from_user}</a> đã thích #{muhead._type} <a href="#{link_to}">#{muhead._name}</a> của bạn.</p>
     HTML
 
     details = {_type: "like-dtop", from_user: from_user, dtopic_id: self.id}

@@ -4,9 +4,11 @@
   export let text: string | null = null
   export let icon: string | null = null
   export let type: string = 'a'
+
+  export let _dot = false
 </script>
 
-<svelte:element this={type} class="item" {...$$restProps} on:click>
+<svelte:element this={type} class="item" class:_dot {...$$restProps} on:click>
   {#if icon}
     <SIcon name={icon} />
   {:else if $$props['data-kind'] == 'brand'}
@@ -54,6 +56,19 @@
       cursor: text;
       @include fgcolor(mute);
       @include bgcolor(primary, 7);
+    }
+
+    &._dot:after {
+      $size: 0.625rem;
+
+      position: absolute;
+      content: '';
+      right: math.div($size * -1, 3);
+      top: math.div($size * -1, 3);
+      width: $size;
+      height: $size;
+      border-radius: $size;
+      @include bgcolor(warning, 5);
     }
 
     :global(img),

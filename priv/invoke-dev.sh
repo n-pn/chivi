@@ -12,7 +12,7 @@ then
   WATCH="$WATCH --watch ./src/_data"
 fi
 
-sudo service $TARGET-dev stop
+# sudo service $TARGET-dev stop
 echo killed service $TARGET-dev to start $TARGET-srv in dev mode!
 
 nodemon $WATCH --exec "crystal run --error-trace" src/$TARGET-srv.cr

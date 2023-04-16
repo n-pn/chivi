@@ -1,4 +1,5 @@
 require "../_base"
+require "../member/unotif"
 
 class CV::VcoinXlog
   include Clear::Model
@@ -36,5 +37,16 @@ class CV::VcoinXlog
 
       jb.field "ctime", self.created_at.to_unix
     end
+  end
+
+  def gen_notif(sender : String)
+    content = <<-HTML
+      <p>Bạn nhận được: <strong>#{amount}</strong> vcoin từ <strong>#{sender}</strong>.</p>
+      <p>Chú thích của người tặng: #{reason}</p>
+      HTML
+    link_to = "https://chivi.app/hd/tat-ca-ve-vcoin"
+    details = {_type: "send-vcoin", amount: amount, reason: reason}
+
+    {content, link_to, details}
   end
 end

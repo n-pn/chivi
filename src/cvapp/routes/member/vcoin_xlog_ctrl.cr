@@ -61,33 +61,44 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
       sender.update(vcoin: sender.vcoin - form.amount)
       target.update(vcoin: target.vcoin + form.amount)
 
-      VcoinXlog.new({
+      xlog = VcoinXlog.new({
         kind:        form.as_admin? ? 100 : 0,
         sender_id:   sender.id,
         target_id:   target.id,
         target_name: form.target,
         amount:      form.amount,
         reason:      form.reason,
-      }).save!
+      })
+
+      xlog.save!
 
       sender.cache!
       target.cache!
 
-      spawn send_vcoin_receive_email(sender, target, form.amount, form.reason)
+      spawn send_vcoin_notification(sender, target, xlog)
     end
 
     spawn CtrlUtil.log_user_action("send-vcoin", form, _viuser.uname)
     render json: {target: target.uname, remain: _viuser.vcoin}
   end
 
-  private def send_vcoin_receive_email(sender : Viuser, target : Viuser, amount : Float64, reason : String)
+  private def send_vcoin_notification(sender : Viuser, target : Viuser, xlog : VcoinXlog)
+    content, link_to, details = xlog.gen_notif(sender.uname)
+
+    Unotif.new(
+      viuser_id: target.id,
+      content: content,
+      link_to: link_to,
+      details: details.to_json
+    ).create!
+
     MailUtil.send(to: target.email, name: target.uname) do |mail|
-      mail.subject "Chivi: Bạn nhận được #{amount} vcoin"
+      mail.subject "Chivi: Bạn nhận được #{xlog.amount} vcoin"
 
       mail.message_html <<-HTML
         <h2>Thông báo từ Chivi:</h2>
-        <p>Bạn nhận được: <strong>#{amount}</strong> vcoin từ <strong>#{sender.uname}</strong>.</p>
-        <p>Chú thích của người tặng: #{reason}</p>
+        <p>Bạn nhận được: <strong>#{xlog.amount}</strong> vcoin từ <strong>#{sender.uname}</strong>.</p>
+        <p>Chú thích của người tặng: #{xlog.reason}</p>
         <p>Bạn có thể vào <a href="https://chivi.app/hd/tat-ca-ve-vcoin">Tất cả về Vcoin</a>
           để tìm hiểu các cách dùng của vcoin.</p>
       HTML

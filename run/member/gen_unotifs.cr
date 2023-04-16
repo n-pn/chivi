@@ -23,7 +23,10 @@ def create_like_notif(memo : CV::Memoir)
   when .murepl?
     murepl = CV::Murepl.find!({id: memo.target_id})
     _undo_tag_ = CV::Unotif.gen_undo_tag(murepl.viuser_id, :like_repl, murepl.id)
-    return if CV::Unotif.find_by_utag(_undo_tag_)
+
+    # return if CV::Unotif.find_by_utag(_undo_tag_)
+    CV::Unotif.remove_notif(_undo_tag_)
+    return if murepl.viuser_id == memo.target_id
 
     from_user = CV::Viuser.load!(memo.viuser_id)
     content, details, link_to = murepl.gen_like_notif(from_user.uname)
@@ -36,7 +39,9 @@ def create_like_notif(memo : CV::Memoir)
   when .dtopic?
     dtopic = CV::Dtopic.find!({id: memo.target_id})
     _undo_tag_ = CV::Unotif.gen_undo_tag(dtopic.viuser_id, :like_dtop, dtopic.id)
-    return if CV::Unotif.find_by_utag(_undo_tag_)
+
+    CV::Unotif.remove_notif(_undo_tag_)
+    return if dtopic.viuser_id == memo.target_id
 
     from_user = CV::Viuser.load!(memo.viuser_id)
     content, details, link_to = dtopic.gen_like_notif(from_user.uname)

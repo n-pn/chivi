@@ -6,7 +6,8 @@
   import Item from './Header/HeaderItem.svelte'
 
   $: meta = $page.data._meta || gen_meta($page.route?.id || '/', $page.data)
-  $: uname = $page.data._user?.uname
+  $: user = $page.data._user
+
   $: image = meta.image || '/imgs/avatar.png'
 </script>
 
@@ -52,11 +53,12 @@
         data-show="tl"
         on:click={() => popups.show('dboard')} />
 
-      {#if uname != 'Khách'}
+      {#if user.uname != 'Khách'}
         <Item
           type="button"
-          text={uname}
+          text={user.uname}
           icon="user"
+          _dot={user.unread_notif > 0}
           data-kbd="u"
           data-show="tl"
           data-kind="uname"

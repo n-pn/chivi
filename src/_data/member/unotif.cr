@@ -38,8 +38,8 @@ class CV::Unotif
     SQL
   end
 
-  def self.mark_as_read(ids : Enumerable(Int32), reached_at = Time.utc)
-    @@db.query <<-SQL, ids
+  def self.mark_as_read(ids : Enumerable(Int32), reached_at : Time = Time.utc)
+    @@db.query <<-SQL, reached_at, ids
       update #{@@table} set reached_at = $1
       where id = any ($2) and reached_at is null
     SQL
@@ -57,8 +57,8 @@ class CV::Unotif
     @@db.query_all <<-SQL, viuser_id, limit, offset, as: self
       select * from #{@@table}
       where viuser_id = $1
-      limit $2 offset $3
       order by created_at desc
+      limit $2 offset $3
     SQL
   end
 
