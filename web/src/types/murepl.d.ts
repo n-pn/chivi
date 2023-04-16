@@ -1,10 +1,9 @@
 declare namespace CV {
   interface Murepl {
     id: number
-    user_id: number
 
-    thread_id: number
-    thread_mu: number
+    user_id: number
+    head_id: number
 
     torepl_id: number
     touser_id: number

@@ -11,11 +11,7 @@ class CV::Dtopic
   self.table = "cvposts"
   primary_key type: :serial
 
-  column ii : Int32 = 1 # increase for each board
-  # getter oid : String { HashUtil.encode32(ii) }
-
-  belongs_to viuser : Viuser, foreign_key_type: Int32
-  # getter viuser : Viuser { Viuser.load!(self.viuser_id) }
+  column viuser_id : Int32 = 0
 
   belongs_to nvinfo : Wninfo, foreign_key_type: Int32
   # getter nvinfo : Wninfo { Wninfo.load!(self.nvinfo_id) }
@@ -58,9 +54,9 @@ class CV::Dtopic
     board ? where({nvinfo_id: board.id}) : with_nvinfo
   end
 
-  scope :filter_owner do |owner|
-    owner ? where({viuser_id: owner.id}) : with_viuser
-  end
+  # scope :filter_owner do |owner|
+  #   owner ? where({viuser_id: owner.id}) : with_viuser
+  # end
 
   def set_title(title : String)
     self.title = title
@@ -134,35 +130,9 @@ class CV::Dtopic
 
   #################
 
-  CACHE = RamCache(Int64, self).new(1024, ttl: 10.minutes)
+  CACHE = RamCache(Int32, self).new(1024, ttl: 10.minutes)
 
-  def self.load!(id : Int64) : self
+  def self.load!(id : Int32) : self
     CACHE.get(id) { find!({id: id}) }
   end
-
-  # def self.init_base_topic!(nvinfo : Wninfo)
-  #   cvpost = find({ii: nvinfo.dt_ii}) || new({
-  #     ii:        nvinfo.dt_ii,
-  #     state:     1,
-  #     viuser_id: -2,
-  #     nvinfo_id: nvinfo.id,
-  #     labels:    "thao-luan",
-  #   })
-
-  #   intro = nvinfo.vintro.split("\n").map { |x| "> #{x}\n>\n" }.join("\n")
-  #   btext = <<-MARKDOWN
-  #   **Tên truyện**: #{nvinfo.vname}
-  #   **Tác giả**: #{nvinfo.author.vname}
-
-  #   ### Giới thiệu vắn tắt:
-
-  #   #{intro.empty? ? "Cần bổ sung" : intro}
-  #   MARKDOWN
-
-  #   cvpost.update_content!({
-  #     "labels": "1",
-  #     "title":  "Thảo luận chung truyện #{nvinfo.vname}",
-  #     "btext":  btext,
-  #   }, set_utime: false)
-  # end
 end

@@ -1,7 +1,7 @@
 # require "../../../wndata/models/zh_book"
 require "../../../_data/wnovel/wninfo"
 
-class CV::WnovelForm
+class CV::WninfoForm
   include JSON::Serializable
 
   getter wn_id : Int32 = 0
@@ -19,7 +19,7 @@ class CV::WnovelForm
   getter bcover : String? = nil
   getter status : Int32? = nil
 
-  getter wn_links : Array(String) = [] of String
+  getter origins : Array(String) = [] of String
 
   def after_initialize
     @ztitle, @zauthor = BookUtil.fix_names(@ztitle, @zauthor)

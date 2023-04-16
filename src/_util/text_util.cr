@@ -232,6 +232,22 @@ module TextUtil
   def fix_viet(str : String)
     str.unicode_normalize(:nfkc).gsub(MARK_RE) { |key| FIX_MARKS[key] }
   end
+
+  def truncate(input : String, limit = 100)
+    String.build do |io|
+      count = 0
+
+      input.split(/\s+/).each do |word|
+        io << ' ' if count > 0
+        io << word
+
+        count &+= word.size
+        break if count > limit
+      end
+
+      io << '…' if count > limit
+    end
+  end
 end
 
 # pp TextUtil.format_title("第二十集 红粉骷髅 第八章")

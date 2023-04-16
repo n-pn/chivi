@@ -7,11 +7,11 @@
   export let form = {
     itext: '',
     level: 0,
-    murepl_id: 0,
-    thread_id: 0,
-    thread_mu: 0,
-    torepl_id: 0,
-    touser_id: 0,
+
+    muhead: '',
+    murepl: 0,
+    torepl: 0,
+    touser: 0,
   }
 
   export let placeholder = 'Nội dung bình luận'
@@ -24,9 +24,9 @@
   let action = `/_db/mrepls/create`
   let method = `POST`
 
-  $: if (form.murepl_id > 0) {
-    load_form(form.murepl_id)
-    action = `/_db/mrepls/update/${form.murepl_id}`
+  $: if (form.murepl > 0) {
+    load_form(form.murepl)
+    action = `/_db/mrepls/update/${form.murepl}`
     method = 'PATCH'
   }
 
@@ -63,7 +63,7 @@
       {#if error}<div class="form-msg _err">{error}</div>{/if}
 
       <footer>
-        {#if form.murepl_id || form.torepl_id}
+        {#if form.murepl || form.torepl}
           <button type="button" class="m-btn _sm" on:click={() => on_destroy()}>
             <SIcon name="x" />
           </button>
@@ -75,7 +75,7 @@
           disabled={disabled || form.itext.trim().length < 3}
           on:click|preventDefault={submit}>
           <SIcon name="send" />
-          <span>Lưu {form.torepl_id ? 'trả lời' : 'bình luận'}</span>
+          <span>Lưu {form.torepl ? 'trả lời' : 'bình luận'}</span>
         </button>
       </footer>
     </svelte:fragment>

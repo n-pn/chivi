@@ -2,7 +2,7 @@
   import MureplTree from './MureplTree.svelte'
   import MureplForm from './MureplForm.svelte'
 
-  export let thread = { id: 0, mu: 0, to: 0 }
+  export let muhead = ''
   export let rplist: CV.Rplist
 
   export let on_murepl_form = (new_repl?: CV.Murepl) => {
@@ -39,11 +39,10 @@
     form={{
       itext: '',
       level: 0,
-      murepl_id: 0,
-      torepl_id: 0,
-      touser_id: thread.to,
-      thread_id: thread.id,
-      thread_mu: thread.mu,
+      muhead,
+      touser: 0,
+      murepl: 0,
+      torepl: 0,
     }}
     placeholder="Thêm bình luận mới"
     on_destroy={on_murepl_form} />
@@ -51,7 +50,7 @@
 
 {#if rplist.repls.length > 0}
   <MureplTree
-    {thread}
+    {muhead}
     repls={build_tree(rplist.repls)}
     users={rplist.users}
     memos={rplist.memos}

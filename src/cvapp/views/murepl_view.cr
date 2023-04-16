@@ -9,10 +9,9 @@ struct CV::MureplView
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "id", @data.id
-      jb.field "user_id", @data.viuser_id
 
-      jb.field "thread_id", @data.thread_id
-      jb.field "thread_mu", @data.thread_mu
+      jb.field "user_id", @data.viuser_id
+      jb.field "head_id", @data.muhead_id
 
       jb.field "touser_id", @data.touser_id
       jb.field "torepl_id", @data.torepl_id

@@ -59,7 +59,7 @@ class CV::VilistCtrl < CV::BaseCtrl
 
       books: {
         crits: VicritView.as_list(crits, false),
-        books: WnovelView.as_hash(books),
+        books: WninfoView.as_hash(books),
 
         pgidx: pg_no,
         pgmax: _pgidx(vilist.book_count, limit),

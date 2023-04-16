@@ -43,9 +43,7 @@ class CV::QtranXlogCtrl < CV::BaseCtrl
       user_stats: user_stats,
       user_infos: ViuserView.as_hash(user_infos),
       book_stats: book_stats,
-      book_infos: WnovelView.as_hash(book_infos),
+      book_infos: WninfoView.as_hash(book_infos),
     }
   end
 end
-
-puts (Time.utc + 14.days).to_unix

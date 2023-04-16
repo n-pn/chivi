@@ -2,7 +2,7 @@ require "../_ctrl_base"
 require "./wninfo_form"
 require "../../../mt_v1/data/v1_dict"
 
-class CV::WnovelCtrl < CV::BaseCtrl
+class CV::WninfoCtrl < CV::BaseCtrl
   base "/_db/books"
 
   @[AC::Route::GET("/")]
@@ -36,7 +36,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
     query.limit(limit == 24 ? 25 : limit).offset(offset).with_author
 
     render json: {
-      books: WnovelView.as_list(query),
+      books: WninfoView.as_list(query),
       total: total, pgidx: pg_no,
       pgmax: _pgidx(total, limit),
     }
@@ -64,7 +64,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
   def show(wn_id : Int64) : Nil
     nvinfo = get_wnovel(wn_id)
     spawn nvinfo.bump! if _privi >= 0
-    render json: WnovelView.new(nvinfo, true)
+    render json: WninfoView.new(nvinfo, true)
   end
 
   # show related data for book front page
@@ -87,7 +87,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
       .with_viuser
 
     render json: {
-      books: books.map { |x| WnovelView.new(x, false) },
+      books: books.map { |x| WninfoView.new(x, false) },
       users: users.map { |x| {u_dname: x.viuser.uname, u_privi: x.viuser.privi, _status: x.status_s} },
     }
   end
@@ -113,7 +113,7 @@ class CV::WnovelCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::POST("/", body: :form)]
-  def upsert(form : WnovelForm)
+  def upsert(form : WninfoForm)
     guard_privi 2, "thêm truyện/sửa nội dung truyện"
 
     nvinfo = form.save!(_uname, _privi)

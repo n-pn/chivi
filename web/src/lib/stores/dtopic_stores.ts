@@ -1,3 +1,4 @@
+import { api_get } from '$lib/api_call'
 import { writable, get } from 'svelte/store'
 
 export interface DtopicForm {
@@ -18,7 +19,7 @@ async function load(id: number): Promise<DtopicForm> {
   if (id == 0) return init()
 
   try {
-    return await fetch(`/_db/topics/${id}/detail`).then((r) => r.json())
+    return await api_get<CV.DtopicForm>(`/_db/topics/edit/${id}`)
   } catch (ex) {
     console.log(ex)
     return init()

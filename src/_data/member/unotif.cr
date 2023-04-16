@@ -61,4 +61,61 @@ class CV::Unotif
       order by created_at desc
     SQL
   end
+
+  def self.find_by_utag(undo_tag : String)
+    @@db.query_one? <<-SQL, undo_tag, as: self
+      select * from #{@@table} where _undo_tag_ = $1
+    SQL
+  end
+
+  def self.new_repl_like(
+    viuser_id : Int32,
+    from_user : String,
+    murepl_id : Int32,
+    repl_peak : String,
+    thread_type : String,
+    thread_name : String,
+    thread_link : String
+  )
+    _undo_tag_ = gen_undo_tag(:repl, viuser_id, murepl_id)
+    find_by_utag(_undo_tag_).try { |existed| return existed }
+
+    new(
+      viuser_id: viuser_id,
+      content: content,
+      link_to: link_to,
+      details: details.to_json,
+      _undo_tag_: _undo_tag_
+    )
+  end
+
+  def self.new_repl_like(
+    viuser_id : Int32,
+    from_user : String,
+    dtopic_id : Int32,
+    thread_name : String,
+    thread_link : String
+  )
+    _undo_tag_ = gen_undo_tag(:repl, viuser_id, murepl_id)
+    find_by_utag(_undo_tag_).try { |existed| return existed }
+
+    details = {_type: "like-repl", from_user: from_user, murepl_id: murepl_id}
+    link_to = "#{thread_link}#r#{murepl_id}"
+    content = <<-HTML
+      <p><a href="/@#{from_user}>" class="cv-user">#{from_user}</a> đã thích bài viết của bạn trong #{thread_type} <a href="#{link_to}">#{thread_name}</a>.</p>
+      <p>#{repl_peak}<em>
+      HTML
+
+    new(
+      viuser_id: viuser_id,
+      content: content,
+      link_to: link_to,
+      details: details.to_json,
+      _undo_tag_: _undo_tag_
+    )
+  end
+
+  def self.gen_undo_tag(type : String | Symbol, user : Int32, ukey : String | Int32)
+    "#{type}:#{user}:#{ukey}"
+  end
 end

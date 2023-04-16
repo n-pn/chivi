@@ -4,8 +4,7 @@ CREATE TABLE murepls(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
   viuser_id int NOT NULL DEFAULT 0,
-  thread_id int NOT NULL DEFAULT 0,
-  thread_mu smallint NOT NULL DEFAULT 0::smallint,
+  muhead_id int NOT NULL DEFAULT 0,
   --
   touser_id int NOT NULL DEFAULT 0,
   torepl_id int NOT NULL DEFAULT 0,
@@ -15,7 +14,6 @@ CREATE TABLE murepls(
   --
   itext text NOT NULL DEFAULT '', -- text input
   ohtml text NOT NULL DEFAULT '', -- html output
-  otext text NOT NULL DEFAULT '', -- text output
   --
   like_count int NOT NULL DEFAULT 0, -- like count
   repl_count int NOT NULL DEFAULT 0, -- like count
@@ -31,8 +29,6 @@ CREATE TABLE murepls(
 );
 
 CREATE INDEX murepls_viuser_idx ON murepls(viuser_id);
-
-CREATE INDEX murepls_thread_idx ON murepls(thread_id, thread_mu);
 
 CREATE INDEX murepls_tagged_idx ON murepls USING GIN(tagged_ids);
 

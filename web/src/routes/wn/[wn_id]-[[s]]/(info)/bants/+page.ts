@@ -5,11 +5,9 @@ import type { PageLoad } from './$types'
 
 export const load = (async ({ url, fetch, params, parent }) => {
   const wn_id = +params.wn_id
-  const thread_id = -wn_id * 2
-  const thread = { id: thread_id, mu: 0, to: 0 }
-
+  const muhead = `wn:${wn_id}`
   const sort = url.searchParams.get('sort') || '-id'
-  const path = `/_db/mrepls/thread/${thread_id}/0?sort=${sort}`
+  const path = `/_db/mrepls/thread/${muhead}?sort=${sort}`
 
   const rplist = await api_get<CV.Rplist>(path, fetch)
 
@@ -24,5 +22,5 @@ export const load = (async ({ url, fetch, params, parent }) => {
       nav_link('crits', 'Thảo luận', 'message'),
     ],
   }
-  return { rplist, thread, sort, _meta }
+  return { rplist, muhead, sort, _meta }
 }) satisfies PageLoad

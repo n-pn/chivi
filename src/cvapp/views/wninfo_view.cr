@@ -1,6 +1,6 @@
 require "./_base_view"
 
-struct CV::WnovelView
+struct CV::WninfoView
   include BaseView
 
   def initialize(@data : Wninfo, @full = true)

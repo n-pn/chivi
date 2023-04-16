@@ -94,13 +94,12 @@
       form={{
         itext: '',
         level: repl.level + 1,
-        murepl_id: 0,
-        torepl_id: repl.id,
-        touser_id: repl.user_id,
-        thread_id: repl.thread_id,
-        thread_mu: repl.thread_mu,
+        murepl: 0,
+        torepl: repl.id,
+        touser: repl.user_id,
+        muhead: `id:${repl.head_id}`,
       }}
-      disabled={_user.privi < 1}
+      disabled={_user.privi < 0}
       on_destroy={handle_repl_form} />
   </section>
 {/if}

@@ -27,6 +27,13 @@ declare namespace CV {
     memo: Memoir
   }
 
+  interface DtopicForm {
+    id: number
+    title: string
+    btext: string
+    labels: string
+  }
+
   interface Dtlist extends Paginate {
     posts: Dtopic[]
     users: Record<number, Cvuser>

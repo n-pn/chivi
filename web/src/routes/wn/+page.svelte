@@ -11,9 +11,9 @@
   import { page } from '$app/stores'
   import Footer from '$gui/sects/Footer.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
 
   import type { PageData } from './$types'
-  import WnovelList from './WnovelList.svelte'
   export let data: PageData
 
   $: ({ books, pgidx, pgmax } = data)
@@ -32,7 +32,7 @@
 </div>
 
 {#if books.length > 0}
-  <WnovelList {books} />
+  <WninfoList {books} />
 {:else}
   <div class="empty">Danh sách trống</div>
 {/if}

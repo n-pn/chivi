@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
   import { writable } from 'svelte/store'
-
-  import { cvpost_form as data } from '$lib/stores'
+  import { dtopic_form as data } from '$lib/stores'
   import { dlabels } from '$lib/constants'
 
   function build_labels(labels: string): Record<string, boolean> {
@@ -39,28 +38,25 @@
   export let on_destroy = () => window.location.reload()
 
   $: on_edit = $ctrl.id != 0
-  $: api_url = make_api_endpoint(dboard.id)
+  $: action = api_endpoint(dboard.id, $ctrl.id)
 
   let labels = build_labels($data.labels)
   $: $data.labels = extract_labels(labels)
 
   let error = ''
 
-  function make_api_endpoint(dboard_id: string | number) {
-    if ($ctrl.id != 0) {
-      return `/_db/topics/${$ctrl.id}`
-    } else {
-      return `/_db/topics?dboard=${dboard_id}`
-    }
+  function api_endpoint(b_id: number, t_id?: number) {
+    return t_id ? `/_db/topics/${t_id}` : `/_db/topics?b_id=${b_id}`
   }
 
   async function submit() {
-    error = await data.submit(api_url)
+    error = await data.submit(action)
     if (error) return
 
     data.init()
-    on_destroy()
     ctrl.hide()
+
+    on_destroy()
   }
 
   const focus = (node: HTMLElement) => node.focus()
@@ -78,7 +74,7 @@
   </svelte:fragment>
 
   <board-form>
-    <form action={api_url} method="POST" on:submit|preventDefault={submit}>
+    <form {action} method="POST" on:submit|preventDefault={submit}>
       <form-field>
         <form-chips>
           <label-cap>Phân loại:</label-cap>

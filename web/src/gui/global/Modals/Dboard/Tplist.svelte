@@ -3,7 +3,7 @@
 
   export function make_api_url(data: CV.Dtopic, { op }) {
     let api_url = `/_db/mrepls`
-    if (data) api_url += `/thread/${data.id || 0}/0`
+    if (data) api_url += `/thread/gd:${data.id || 0}`
     if (op) api_url += '?from=' + op
 
     return api_url

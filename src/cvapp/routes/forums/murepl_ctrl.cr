@@ -1,4 +1,5 @@
 require "../_ctrl_base"
+require "./murepl_form"
 
 class CV::MureplCtrl < CV::BaseCtrl
   base "/_db/mrepls"
@@ -19,14 +20,14 @@ class CV::MureplCtrl < CV::BaseCtrl
     render_repls(repls, pg_no)
   end
 
-  @[AC::Route::GET("/thread/:id/:mu")]
-  def thread(id thread : Int32, mu mutype : Int16, sort : String = "-id")
-    repls = Murepl.query.where("id > 0").sort_by(sort)
-
+  @[AC::Route::GET("/thread/:urn")]
+  def thread(urn : String, sort : String = "-id")
     pg_no, limit, offset = _paginate(min: 50, max: 2000)
+
+    repls = Murepl.query.where("id > 0").sort_by(sort)
+    repls.where("muhead_id = (select id from muheads where urn = ?)", urn)
     repls.limit(limit).offset(offset)
 
-    repls.where("(thread_id = ? and thread_mu = ?)", thread, mutype)
     render_repls(repls, pg_no)
   end
 
@@ -58,44 +59,21 @@ class CV::MureplCtrl < CV::BaseCtrl
     }
   end
 
-  struct MureplForm
-    include JSON::Serializable
-
-    getter itext : String
-    getter level : Int16 = 0_i16
-
-    getter thread_id : Int32 = 0
-    getter thread_mu : Int16 = 0_i16
-
-    getter torepl_id : Int32 = 0
-    getter touser_id : Int32 = 0
-
-    def after_initialize
-      @itext = @itext.strip
-      @level = 0 if @level < 0
-    end
-
-    def valid?
-      raise "Độ dài nội dung quá ngắn" if @itext.size < 3
-    end
-  end
-
   @[AC::Route::POST("/create", body: :form)]
   def create(form : MureplForm)
     guard_privi 0, "tạo bình luận"
 
     murepl = Murepl.new({
       viuser_id: _vu_id,
-      thread_id: form.thread_id,
-      thread_mu: form.thread_mu,
-      touser_id: form.touser_id,
-      torepl_id: form.torepl_id,
+      muhead_id: Muhead.init!(form.muhead).id,
+      touser_id: form.touser,
+      torepl_id: form.torepl,
     })
 
     murepl.level = form.level
     murepl.update_content!(form.itext, persist: true)
 
-    spawn murepl.bump_parent_on_create!
+    spawn Muhead.bump!(murepl.muhead_id)
 
     render json: MureplView.new(murepl)
   end
@@ -108,11 +86,9 @@ class CV::MureplCtrl < CV::BaseCtrl
       id:    murepl.id,
       itext: murepl.itext,
 
-      thread_id: murepl.thread_id,
-      thread_mu: murepl.thread_mu,
-
-      touser_id: murepl.touser_id,
-      torepl_id: murepl.torepl_id,
+      muhead: "id:#{murepl.muhead_id}",
+      touser: murepl.touser_id,
+      torepl: murepl.torepl_id,
     }
   rescue err
     render :not_found, text: "Bài viết không tồn tại!"
@@ -124,7 +100,6 @@ class CV::MureplCtrl < CV::BaseCtrl
     guard_owner murepl.viuser_id, 0, "sửa bình luận"
 
     murepl.update_content!(form.itext, persist: true)
-
     render json: MureplView.new(murepl)
   end
 

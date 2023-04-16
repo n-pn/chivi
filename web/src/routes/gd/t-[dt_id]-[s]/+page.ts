@@ -4,7 +4,7 @@ import type { PageLoad } from './$types'
 
 export const load: PageLoad = async ({ parent, fetch, params }) => {
   const topic_id = params.dt_id
-  const api_path = `/_db/mrepls/thread/${topic_id}/0`
+  const api_path = `/_db/mrepls/thread/gd:${topic_id}`
   const rplist = await api_get<CV.Rplist>(api_path, fetch)
 
   const { cvpost } = await parent()

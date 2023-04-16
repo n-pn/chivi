@@ -1,12 +1,12 @@
 <script lang="ts">
-  import WnovelCard from './WnovelCard.svelte'
+  import WninfoCard from './WninfoCard.svelte'
   export let books: CV.Wninfo[] = []
   export let nvtab = 'index'
 </script>
 
 <div class="list">
   {#each books as nvinfo (nvinfo)}
-    <WnovelCard {nvinfo} {nvtab} />
+    <WninfoCard {nvinfo} {nvtab} />
   {/each}
 </div>
 

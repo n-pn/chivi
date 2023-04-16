@@ -47,21 +47,25 @@ class CV::DtopicCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::POST("/", body: :form)]
-  def create(dboard : Int64, form : DtopicForm)
+  def create(b_id : Int32, form : DtopicForm)
     guard_privi 0, "tạo chủ đề"
-    nvinfo = Wninfo.load!(dboard)
+    dboard = Wninfo.load!(b_id)
 
-    count = nvinfo.post_count + 1
-    cvpost = Dtopic.new({viuser_id: _viuser.id, nvinfo: nvinfo, ii: nvinfo.dt_ii + count})
+    dtopic = Dtopic.new({viuser_id: _viuser.id, nvinfo_id: dboard.id})
+    dtopic.update_content!(form)
+    spawn Muhead.new(dtopic).upsert!
 
-    cvpost.update_content!(form)
-    nvinfo.update!({post_count: count, board_bump: cvpost.utime})
+    spawn do
+      # TODO: directly call sql
+      count = dboard.post_count &+ 1
+      dboard.update!({post_count: count, board_bump: dtopic.utime})
+    end
 
-    render json: {cvpost: DtopicView.new(cvpost)}
+    render json: {cvpost: DtopicView.new(dtopic)}
   end
 
   @[AC::Route::GET("/:post_id")]
-  def show(post_id : Int64)
+  def show(post_id : Int32)
     cvpost = Dtopic.load!(post_id)
     cvpost.bump_view_count!
 
@@ -77,12 +81,12 @@ class CV::DtopicCtrl < CV::BaseCtrl
     render :not_found, text: "Chủ đề không tồn tại!"
   end
 
-  @[AC::Route::GET("/:post_id/detail")]
-  def detail(post_id : Int64)
+  @[AC::Route::GET("/edit/:post_id")]
+  def edit(post_id : Int32)
     cvpost = Dtopic.load!(post_id)
 
     render json: {
-      id:     cvpost.oid,
+      id:     cvpost.id,
       title:  cvpost.title,
       btext:  cvpost.btext,
       labels: cvpost.labels.join(","),
@@ -91,8 +95,8 @@ class CV::DtopicCtrl < CV::BaseCtrl
     render :not_found, text: "Chủ đề không tồn tại!"
   end
 
-  @[AC::Route::POST("/:post_id", body: :form)]
-  def update(post_id : Int64, form : DtopicForm)
+  @[AC::Route::PATCH("/:post_id", body: :form)]
+  def update(post_id : Int32, form : DtopicForm)
     cvpost = Dtopic.load!(post_id)
     guard_owner cvpost.viuser_id, 0, "sửa chủ đề"
 
@@ -101,7 +105,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::DELETE("/:post_id")]
-  def delete(post_id : Int64)
+  def delete(post_id : Int32)
     cvpost = Dtopic.load!(post_id)
     guard_owner cvpost.viuser_id, 0, "xoá chủ đề"
 

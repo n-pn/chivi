@@ -4,7 +4,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ thread, rplist, nvinfo } = data)
+  $: ({ muhead, rplist, nvinfo } = data)
 </script>
 
 <section>
@@ -17,7 +17,7 @@
       </em>
     </p>
   </header>
-  <MureplList {thread} {rplist} />
+  <MureplList {muhead} {rplist} />
 </section>
 
 <style lang="scss">

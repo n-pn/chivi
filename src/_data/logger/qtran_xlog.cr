@@ -9,8 +9,8 @@ class CV::QtranXlog
 
   @@table = "qtran_xlogs"
 
-  field id : Int32, primary: true
-  field viuser_id : Int32
+  field id : Int32 = 0, primary: true
+  field viuser_id : Int32 = 0
 
   field input_hash : Int32 = 0
   field char_count : Int32 = 0

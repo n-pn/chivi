@@ -34,7 +34,7 @@
 
 <topic-full class:fluid={$$props.fluid}>
   <topic-navi>
-    <a href="/forum" class="m-board">
+    <a href="/gd" class="m-board">
       <SIcon name="messages" />
       <span>Diễn đàn</span>
     </a>

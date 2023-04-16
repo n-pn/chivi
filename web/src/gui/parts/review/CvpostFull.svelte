@@ -12,7 +12,7 @@
 
   export let on_cvpost_form = () => window.location.reload()
 
-  $: board_url = `/forum/-${dboard.bslug}`
+  $: board_url = `/gd/-${dboard.bslug}`
 
   async function toggle_like() {
     const action = cvpost.self_liked ? 'unlike' : 'like'
@@ -31,7 +31,7 @@
 
 <topic-full class:fluid={$$props.fluid}>
   <topic-navi>
-    <a href="/forum" class="m-board">
+    <a href="/gd" class="m-board">
       <SIcon name="messages" />
       <span>Diễn đàn</span>
     </a>

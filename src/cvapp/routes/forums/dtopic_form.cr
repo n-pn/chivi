@@ -1,6 +1,6 @@
 require "json"
 
-struct CV::CvpostForm
+struct CV::DtopicForm
   include JSON::Serializable
 
   getter db_id : Int32 = 0 # dboard id

@@ -1,5 +1,6 @@
 require "../_ctrl_base"
-require "../../views/wnovel_view"
+
+# require "../../views/wninfo_view"
 
 class CV::AuthorCtrl < CV::BaseCtrl
   @[AC::Route::GET("/authors/:id/books", converters: {lm: ConvertLimit})]
@@ -13,7 +14,7 @@ class CV::AuthorCtrl < CV::BaseCtrl
       total: books.size,
       pgidx: pgidx,
       pgmax: _pgidx(books.size, limit),
-      books: books[offset, limit].map { |x| WnovelView.new(x, false) },
+      books: books[offset, limit].map { |x| WninfoView.new(x, false) },
     }
   end
 end

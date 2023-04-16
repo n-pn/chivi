@@ -56,12 +56,12 @@ class M1::TranCtrl < AC::Base
     render text: TlUtil.tl_author(author)
   end
 
-  record WnovelForm, btitle : String, author : String, bintro : String do
+  record WninfoForm, btitle : String, author : String, bintro : String do
     include JSON::Serializable
   end
 
   @[AC::Route::POST("/tl_wnovel", body: :form)]
-  def tl_wnovel(form : WnovelForm, wn_id : Int32 = 0)
+  def tl_wnovel(form : WninfoForm, wn_id : Int32 = 0)
     cv_mt = MtCore.init(wn_id, user: _uname, init: @w_init)
 
     intro = String.build do |io|
