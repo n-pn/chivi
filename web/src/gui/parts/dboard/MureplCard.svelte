@@ -4,6 +4,7 @@
   import { rel_time } from '$utils/time_utils'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import MureplForm from './MureplForm.svelte'
+  import { browser } from '$app/environment'
 
   export let repl: CV.Murepl
 
@@ -15,8 +16,9 @@
 
   $: _user = $page.data._user
   $: is_owner = _user.uname == user.uname
-  $: can_edit = _user.privi > 3 || (is_owner && _user.privi >= 0)
+  // $: can_edit = _user.privi > 3 || (is_owner && _user.privi >= 0)
 
+  $: if (browser) on_focus = on_focus || location.hash == '#r' + repl.id
   let show_repl = false
 
   async function toggle_like() {
@@ -44,7 +46,7 @@
 </script>
 
 <div
-  id="rp-{repl.id}"
+  id="r{repl.id}"
   class="repl nest_{nest_level % 5}"
   class:nested={nest_level > 0}
   class:on_focus>
@@ -106,14 +108,12 @@
 
 <style lang="scss">
   .repl {
-    margin: 0.75rem 0;
+    margin: 0.75rem -0.5rem;
+    padding: 0.25rem 0.5rem;
     font-size: rem(17px);
 
-    // border-left: 3px solid var(--bdcolor);
-    // padding-left: 0.75rem;
-
     &.on_focus {
-      @include bgcolor(warning, 5, 1);
+      @include bgcolor(warning, 5, 0.75);
     }
   }
 
