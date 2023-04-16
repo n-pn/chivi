@@ -1,46 +1,34 @@
-require "pg"
-
-require "../src/cv_env"
-
 require "../src/wnapp/data/wn_seed"
+require "../src/_data/wnovel/wnseed"
 
-PG_DB = DB.open(CV_ENV.database_url)
-at_exit { PG_DB.close }
+CV::Wnseed.db.exec "begin transaction"
 
-upsert_sql = <<-SQL
-  insert into wnseeds (
-    wn_id, sname, s_bid,
-    chap_total, chap_avail,
-    mtime, atime,
-    rm_links, rm_stime,
-    edit_privi, read_privi,
-    _flag
-  ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-  on conflict (wn_id, sname) do update set
-    s_bid = excluded.s_bid,
-    chap_total = excluded.chap_total,
-    chap_avail = excluded.chap_avail,
-    mtime = excluded.mtime,
-    atime = excluded.atime,
-    rm_links = excluded.rm_links,
-    rm_stime = excluded.rm_stime,
-    edit_privi = excluded.edit_privi,
-    read_privi = excluded.read_privi,
-    _flag = excluded._flag
-SQL
+STMT = "select * from seeds order by wn_id asc, sname asc"
 
-PG_DB.exec "begin transaction"
+WN::WnSeed.repo.db.query_each STMT do |rs|
+  input = rs.read(WN::WnSeed)
 
-WN::WnSeed.repo.db.query_each "select * from seeds order by wn_id asc" do |rs|
-  seed = rs.read(WN::WnSeed)
+  output = CV::Wnseed.new(
+    wn_id: input.wn_id,
+    sname: input.sname,
+    s_bid: input.s_bid,
+  )
 
-  PG_DB.exec upsert_sql, seed.wn_id, seed.sname, seed.s_bid,
-    seed.chap_total, seed.chap_avail,
-    seed.mtime, seed.atime,
-    Array(String).from_json(seed.rm_links), seed.rm_stime,
-    seed.edit_privi, seed.read_privi, seed._flag
+  output.chap_total = input.chap_total
+  output.chap_avail = input.chap_avail
 
-  puts "#{seed.wn_id}/#{seed.sname} (#{seed.chap_total}) synced"
+  output.created_at = Time.unix(input.mtime)
+  output.updated_at = Time.unix(input.mtime)
+
+  output.slink = Array(String).from_json(input.rm_links).first? || ""
+  output.stime = input.rm_stime
+
+  output.privi = input.edit_privi.to_i16
+  output._flag = input._flag.to_i16
+
+  output.upsert!
+
+  puts "#{input.wn_id}/#{input.sname} (#{input.chap_total}) synced"
 end
 
-PG_DB.exec "commit"
+CV::Wnseed.db.exec "commit"
