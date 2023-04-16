@@ -1,6 +1,6 @@
 <script lang="ts">
   import WnovelCard from './WnovelCard.svelte'
-  export let books: CV.Nvinfo[] = []
+  export let books: CV.Wninfo[] = []
   export let nvtab = 'index'
 </script>
 

@@ -6,7 +6,7 @@
   import { api_call } from '$lib/api_call'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let book_info: CV.Nvinfo
+  export let book_info: CV.Wninfo
   export let seed_list: { users: CV.Chroot[]; backs: CV.Chroot[] }
   export let curr_seed: CV.Chroot
 

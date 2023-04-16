@@ -3,7 +3,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import { rel_time } from '$utils/time_utils'
   import { map_status } from '$utils/nvinfo_utils'
-  export let nvinfo: CV.Nvinfo
+  export let nvinfo: CV.Wninfo
 </script>
 
 <a href="/wn/{nvinfo.bslug}" class="nvinfo">

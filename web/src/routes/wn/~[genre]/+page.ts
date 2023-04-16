@@ -4,7 +4,7 @@ import { nav_link } from '$gui/global/header_util'
 import type { PageLoad } from './$types'
 
 interface JsonData extends CV.Paginate {
-  books: CV.Nvinfo[]
+  books: CV.Wninfo[]
 }
 
 export const load = (async ({ fetch, url, params: { genre } }) => {

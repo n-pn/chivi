@@ -7,7 +7,7 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let book_info: CV.Nvinfo
+  export let book_info: CV.Wninfo
   export let curr_seed: CV.Chroot
 
   export let can_edit = false

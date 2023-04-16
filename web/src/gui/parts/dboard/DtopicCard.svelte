@@ -7,13 +7,13 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let post: CV.Cvpost
+  export let post: CV.Dtopic
   export let user: CV.Viuser
   export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
   export let _mode = 0
 
   $: dboard = post.dboard
-  $: board_url = `/fr/b-${dboard.bslug}`
+  $: board_url = `/gd/b-${dboard.bslug}`
 
   async function toggle_like() {
     const action = memo?.liked > 0 ? 'unlike' : 'like'
@@ -34,7 +34,7 @@
   <topic-head>
     <a
       class="topic-title"
-      href="/fr/t-{post.id}-{post.tslug}"
+      href="/gd/t-{post.id}-{post.tslug}"
       on:click={(e) => dboard_ctrl.view_topic(e, post)}>
       {post.title}
     </a>
@@ -42,7 +42,7 @@
     {#each post.labels as label}
       <a
         class="m-label _{dlabels[label]} _sm"
-        href="/fr?lb={label}"
+        href="/gd?lb={label}"
         on:click={(e) => dboard_ctrl.view_board(e, dboard, label)}>{label}</a>
     {/each}
   </topic-head>

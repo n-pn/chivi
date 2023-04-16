@@ -41,13 +41,13 @@ export const dtlist_data = {
 }
 
 export class TplistData {
-  topic: CV.Cvpost
+  topic: CV.Dtopic
   query = { pg: 1, kw: '', op: '' }
 }
 
 export const tplist_data = {
   ...writable(new TplistData()),
-  set_topic(topic: CV.Cvpost, pg = 1) {
+  set_topic(topic: CV.Dtopic, pg = 1) {
     tplist_data.update((x) => {
       x.topic = topic
       x.query = { pg, kw: '', op: '' }
@@ -75,7 +75,7 @@ export const dboard_ctrl = {
     dboard_ctrl.change_tab(0)
     dtlist_data.set_board(board, lb, pg)
   },
-  view_topic(evt: Event, topic: CV.Cvpost) {
+  view_topic(evt: Event, topic: CV.Dtopic) {
     dboard_ctrl.stop_event(evt)
     dboard_ctrl.change_tab(1)
     tplist_data.set_topic(topic)

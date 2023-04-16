@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CvpostList from '$gui/parts/dboard/CvpostList.svelte'
+  import DtopicList from '$gui/parts/dboard/DtopicList.svelte'
   import type { PageData } from './$types'
   export let data: PageData
 
@@ -10,4 +10,4 @@
   <title>Diễn đàn - Chivi</title>
 </svelte:head>
 
-<CvpostList dtlist={data.dtlist} {dboard} _mode={1} />
+<DtopicList dtlist={data.dtlist} {dboard} _mode={1} />

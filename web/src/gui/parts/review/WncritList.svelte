@@ -32,8 +32,8 @@
 
   $: opts = {
     sort: _sort,
-    smin: $page.url.searchParams.get('smin') || 1,
-    smax: $page.url.searchParams.get('smax') || 5,
+    smin: +$page.url.searchParams.get('smin') || 1,
+    smax: +$page.url.searchParams.get('smax') || 5,
   }
 
   $: pgidx = ys.pgidx > vi.pgidx ? ys.pgidx : vi.pgidx

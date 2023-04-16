@@ -11,7 +11,7 @@
 
   import { SIcon, Gmenu } from '$gui'
 
-  export let nvinfo: CV.Nvinfo
+  export let nvinfo: CV.Wninfo
   export let ubmemo: CV.Ubmemo
   $: book_status = ubmemo.status
 

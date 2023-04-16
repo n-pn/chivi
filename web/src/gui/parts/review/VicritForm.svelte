@@ -4,7 +4,7 @@
   import Star from '$gui/atoms/Star.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let nvinfo: CV.Nvinfo
+  export let nvinfo: CV.Wninfo
   export let form: CV.VicritForm = {
     id: 0,
     stars: 3,

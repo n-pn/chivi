@@ -12,7 +12,7 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let nvinfo: Partial<CV.Nvinfo>
+  export let nvinfo: Partial<CV.Wninfo>
   export let wnform: CV.WnForm
 
   let errors: string

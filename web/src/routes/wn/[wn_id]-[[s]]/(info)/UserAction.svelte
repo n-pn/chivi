@@ -4,7 +4,7 @@
   import { SIcon, Gmenu } from '$gui'
   import MarkBook from './MarkBook.svelte'
 
-  export let nvinfo: CV.Nvinfo
+  export let nvinfo: CV.Wninfo
   export let ubmemo: CV.Ubmemo
 
   $: toread = last_read(nvinfo, ubmemo)

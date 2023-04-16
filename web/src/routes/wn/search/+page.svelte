@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NvinfoList from '$gui/sects/Nvinfo/List.svelte'
+  import WnList from '$gui/parts/wninfo/WninfoList2.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -20,7 +20,7 @@
     <h1>Không tìm được kết quả phù hợp cho từ khoá "{input}"</h1>
   {/if}
 
-  <NvinfoList items={books} {pgidx} {pgmax} />
+  <WnList items={books} {pgidx} {pgmax} />
 </section>
 
 <style lang="scss">

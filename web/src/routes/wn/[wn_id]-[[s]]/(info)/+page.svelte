@@ -2,13 +2,13 @@
   import { status_icons, status_names, status_colors } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
+  import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
   import YscritCard from '$gui/parts/review/YscritCard.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  let nvinfo: CV.Nvinfo
+  let nvinfo: CV.Wninfo
 
   $: ({ nvinfo, bdata, ydata } = data)
 
@@ -67,7 +67,7 @@
   </h3>
 
   {#if bdata.books.length > 0}
-    <NvinfoList books={bdata.books} />
+    <WninfoList books={bdata.books} />
   {:else}
     <div class="empty">Danh sách trống</div>
   {/if}

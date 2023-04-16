@@ -2,7 +2,7 @@
   import { page } from '$app/stores'
   import { status_types, status_names } from '$lib/constants'
 
-  import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
+  import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
   import Footer from '$gui/sects/Footer.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
@@ -28,7 +28,7 @@
 {#if books.length == 0}
   <div class="empty">Danh sách trống</div>
 {:else}
-  <NvinfoList {books} nvtab="chaps" />
+  <WninfoList {books} nvtab="chaps" />
 {/if}
 
 <Footer>

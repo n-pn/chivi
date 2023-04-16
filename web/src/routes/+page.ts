@@ -3,9 +3,9 @@ import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 interface BookList {
-  recent: CV.Nvinfo[]
-  update: CV.Nvinfo[]
-  weight: CV.Nvinfo[]
+  recent: CV.Wninfo[]
+  update: CV.Wninfo[]
+  weight: CV.Wninfo[]
 }
 
 const _meta = {

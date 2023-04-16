@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { session } from '$lib/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import NvinfoForm from '$gui/parts/nvinfo/NvinfoForm.svelte'
+  import WninfoForm from '$gui/parts/wninfo/WninfoForm.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -15,9 +15,9 @@
   }
 </script>
 
-<NvinfoForm {nvinfo} {wnform}>
+<WninfoForm {nvinfo} {wnform}>
   <h1 slot="header">Sửa thông tin truyện [{nvinfo.vtitle}]</h1>
-</NvinfoForm>
+</WninfoForm>
 
 {#if $session.privi > 3}
   <footer>

@@ -29,7 +29,7 @@
   import { invalidate } from '$app/navigation'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import CvpostList from '$gui/parts/dboard/CvpostList.svelte'
+  import DtopicList from '$gui/parts/dboard/DtopicList.svelte'
 
   let dtlist: CV.Dtlist = {
     posts: [],
@@ -106,7 +106,7 @@
 </nav>
 
 <section>
-  <CvpostList
+  <DtopicList
     dboard={$data[$data.tab]}
     tlabel={$data.query.lb}
     {dtlist}

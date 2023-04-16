@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-  import NvinfoCard from '$gui/sects/Nvinfo/Card.svelte'
+  import WnCard from './WninfoCard2.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
   export let items = []
@@ -15,7 +15,7 @@
 
 <book-list>
   {#each items as nvinfo}
-    <NvinfoCard {nvinfo} />
+    <WnCard {nvinfo} />
   {/each}
 </book-list>
 

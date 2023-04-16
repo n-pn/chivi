@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { dboard_ctrl, tplist_data, popups } from '$lib/stores'
 
-  export function make_api_url(data: CV.Cvpost, { op }) {
+  export function make_api_url(data: CV.Dtopic, { op }) {
     let api_url = `/_db/mrepls`
     if (data) api_url += `/thread/${data.id || 0}/0`
     if (op) api_url += '?from=' + op
@@ -13,10 +13,10 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
 
-  import CvpostFull from '$gui/parts/dboard/CvpostFull.svelte'
+  import DtopicFull from '$gui/parts/dboard/DtopicFull.svelte'
   import MureplList from '$gui/parts/dboard/MureplList.svelte'
 
-  let cvpost: CV.CvpostFull = {
+  let cvpost: CV.DtopicFull = {
     post: { dboard: { id: 0, bname: '', bslug: '' }, bhtml: '', labels: [] },
     user: {},
     memo: {},
@@ -65,7 +65,7 @@
 
 {#if cvpost}
   <section class="topic">
-    <CvpostFull {...cvpost} {on_cvpost_form} />
+    <DtopicFull {...cvpost} {on_cvpost_form} />
   </section>
   <section class="posts">
     <MureplList {thread} {rplist} {on_murepl_form} />

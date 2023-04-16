@@ -4,9 +4,9 @@
   import { dlabels } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import CvpostForm, { ctrl as cvpost_ctrl } from './VicritForm.svelte'
+  import DtopicForm, { ctrl as cvpost_ctrl } from './VicritForm.svelte'
 
-  export let cvpost: CV.Cvpost
+  export let cvpost: CV.Dtopic
   export let dboard: CV.Dboard = cvpost.dboard
   export let _all = cvpost.bhtml.length < 500
 
@@ -112,7 +112,7 @@
 </topic-full>
 
 {#if $cvpost_ctrl.actived}
-  <CvpostForm {dboard} on_destroy={on_cvpost_form} />
+  <DtopicForm {dboard} on_destroy={on_cvpost_form} />
 {/if}
 
 <style lang="scss">

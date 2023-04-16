@@ -4,7 +4,7 @@
 
   import { SIcon, BCover } from '$gui'
 
-  export let book: CV.Crbook | CV.Nvinfo
+  export let book: CV.Crbook | CV.Wninfo
 </script>
 
 <section class="book">

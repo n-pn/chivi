@@ -45,7 +45,7 @@ declare namespace App {
   }
 
   interface PageData {
-    nvinfo?: CV.Nvinfo
+    nvinfo?: CV.Wninfo
     ubmemo?: CV.Ubmemo
 
     _user?: CurrentUser

@@ -1,12 +1,12 @@
 import { writable, get } from 'svelte/store'
 
-export interface CvpostForm {
+export interface DtopicForm {
   labels: string
   title: string
   btext: string
 }
 
-function init(): CvpostForm {
+function init(): DtopicForm {
   return {
     labels: 'Thảo luận',
     title: '',
@@ -14,7 +14,7 @@ function init(): CvpostForm {
   }
 }
 
-async function load(id: number): Promise<CvpostForm> {
+async function load(id: number): Promise<DtopicForm> {
   if (id == 0) return init()
 
   try {
@@ -28,7 +28,7 @@ async function load(id: number): Promise<CvpostForm> {
 export const form = {
   ...writable(init()),
   init: async (id = 0) => form.set(await load(id)),
-  validate(data: CvpostForm = get(form)) {
+  validate(data: DtopicForm = get(form)) {
     const { title, btext } = data
 
     if (title.length < 4) return 'Độ dài của chủ đề phải dài hơn 4 ký tự'

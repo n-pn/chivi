@@ -2,7 +2,7 @@ import { api_path, api_get } from '$lib/api_call'
 import type { LoadEvent } from '@sveltejs/kit'
 
 interface BookList extends CV.Paginate {
-  books: CV.Nvinfo[]
+  books: CV.Wninfo[]
 }
 
 export async function load({ url, fetch }: LoadEvent) {

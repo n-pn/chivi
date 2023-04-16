@@ -5,7 +5,7 @@ import type { PageLoad } from './$types'
 
 interface CritData {
   crit: CV.Vicrit
-  book: CV.Nvinfo
+  book: CV.Wninfo
   list: CV.Vilist
   user: CV.Viuser
 }

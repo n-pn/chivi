@@ -4,9 +4,9 @@
   import { dlabels } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import CvpostForm, { ctrl as post_ctrl } from './CvpostForm.svelte'
+  import DtopicForm, { ctrl as post_ctrl } from './DtopicForm.svelte'
 
-  export let post: CV.Cvpost
+  export let post: CV.Dtopic
 
   export let user: CV.Viuser
   export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
@@ -15,7 +15,7 @@
 
   export let on_post_form = () => window.location.reload()
 
-  $: board_url = `/fr/b-${post.dboard.bslug}`
+  $: board_url = `/gd/b-${post.dboard.bslug}`
 
   async function toggle_like() {
     const action = memo.liked > 0 ? 'unlike' : 'like'
@@ -117,7 +117,7 @@
 </topic-full>
 
 {#if $post_ctrl.actived}
-  <CvpostForm dboard={post.dboard} on_destroy={on_post_form} />
+  <DtopicForm dboard={post.dboard} on_destroy={on_post_form} />
 {/if}
 
 <style lang="scss">

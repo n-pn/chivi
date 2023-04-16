@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CvpostFull from '$gui/parts/dboard/CvpostFull.svelte'
+  import DtopicFull from '$gui/parts/dboard/DtopicFull.svelte'
   import MureplList from '$gui/parts/dboard/MureplList.svelte'
 
   import type { PageData } from './$types'
@@ -15,10 +15,10 @@
 </script>
 
 <svelte:head>
-  <title>{cvpost.title} - Diễn đàn - Chivi</title>
+  <title>{cvpost.post.title} - Diễn đàn - Chivi</title>
 </svelte:head>
 
-<CvpostFull
+<DtopicFull
   post={cvpost.post}
   user={cvpost.user}
   memo={cvpost.memo}

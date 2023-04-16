@@ -13,7 +13,7 @@ export const load = (async ({ url, fetch, parent, params }) => {
   return { ...data, _meta }
 }) satisfies PageLoad
 
-const build_meta = (book: CV.Nvinfo) => {
+const build_meta = (book: CV.Wninfo) => {
   return {
     title: `${book.vtitle}`,
     desc: book.bintro.substring(0, 300),

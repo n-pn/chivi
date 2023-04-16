@@ -6,7 +6,7 @@ export const load: LayoutLoad = async ({ params: { wn_id }, fetch }) => {
   const book_path = api_path('wnovels.show', wn_id)
   const memo_path = `/_db/_self/books/${wn_id}`
 
-  const nvinfo = await api_get<CV.Nvinfo>(book_path, fetch)
+  const nvinfo = await api_get<CV.Wninfo>(book_path, fetch)
   const ubmemo = await api_get<CV.Ubmemo>(memo_path, fetch)
 
   const _meta = {

@@ -5,8 +5,8 @@
 
   import { dtlist_data, dboard_ctrl } from '$lib/stores'
 
-  import CvpostCard from './CvpostCard.svelte'
-  import CvpostForm, { ctrl as cvpost_form } from './CvpostForm.svelte'
+  import DtopicCard from './DtopicCard.svelte'
+  import DtopicForm, { ctrl as cvpost_form } from './DtopicForm.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 </script>
 
@@ -51,7 +51,7 @@
 
 <topic-list>
   {#each dtlist.items as cvpost}
-    <CvpostCard size="sm" {cvpost} {_mode} />
+    <DtopicCard size="sm" {cvpost} {_mode} />
   {:else}
     <div class="empty">
       <h4>Chưa có chủ đề thảo luận :(</h4>
@@ -75,7 +75,7 @@
 </board-foot>
 
 {#if $cvpost_form.actived}
-  <CvpostForm {dboard} on_destroy={on_cvpost_form} />
+  <DtopicForm {dboard} on_destroy={on_cvpost_form} />
 {/if}
 
 <style lang="scss">

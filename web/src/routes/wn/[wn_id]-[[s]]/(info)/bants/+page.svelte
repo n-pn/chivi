@@ -13,7 +13,7 @@
       <em
         >Nơi để thảo luận tổng hợp về bộ truyện, để bình luận theo chủ đề cụ
         thể, hãy vào
-        <a href="/fr/b-{nvinfo.bslug}">diễn đàn</a> của bộ truyện.
+        <a href="/gd/b-{nvinfo.bslug}">diễn đàn</a> của bộ truyện.
       </em>
     </p>
   </header>

@@ -10,7 +10,7 @@ export const load = (async ({ fetch, url }) => {
 
   const _meta = {
     title: 'Diễn đàn',
-    left_nav: [home_nav('tm'), nav_link('/fr', 'Diễn đàn', 'messages')],
+    left_nav: [home_nav('tm'), nav_link('/gd', 'Diễn đàn', 'messages')],
   }
   return { dtlist, _meta }
 }) satisfies PageData

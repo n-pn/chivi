@@ -44,7 +44,7 @@
         type="radio"
         {value}
         bind:group={seed_data.read_privi}
-        disabled={value > _privi} />
+        disabled={+value > _privi} />
       <span> {label}</span>
     </label>
   {/each}

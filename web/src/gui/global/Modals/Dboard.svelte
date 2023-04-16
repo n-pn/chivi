@@ -35,10 +35,9 @@
 </Slider>
 
 <style lang="scss">
-  .-btn._active {
-    // @include bgcolor(primary, 1, 5);
-    @include fgcolor(primary, 5);
-  }
+  // .-btn._active {
+  // @include fgcolor(primary, 5);
+  // }
 
   dboard-body {
     display: flex;

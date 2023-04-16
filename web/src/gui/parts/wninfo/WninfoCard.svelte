@@ -1,7 +1,7 @@
 <script lang="ts">
   import BCover from '$gui/atoms/BCover.svelte'
 
-  export let nvinfo: CV.Nvinfo
+  export let nvinfo: CV.Wninfo
   export let nvtab = ''
 
   function rating_stars(rating: number, voters: number) {

@@ -34,7 +34,7 @@ $breakpoints: (
   // prettier-ignore
   @if $val { @return $val; }
 
-  @warn "custom screen size `#{$key}` is not recommended";
+  // @warn "custom screen size `#{$key}` is not recommended";
   @return $key;
 }
 

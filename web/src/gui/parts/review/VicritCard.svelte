@@ -11,7 +11,7 @@
   import YscritBook from './YscritBook.svelte'
 
   export let crit: CV.Vicrit
-  export let book: CV.Nvinfo
+  export let book: CV.Wninfo
   export let user: CV.Viuser
   export let list: CV.Vilist
 

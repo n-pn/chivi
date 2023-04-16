@@ -25,8 +25,8 @@
 
   $: opts = {
     sort: $page.url.searchParams.get('sort') || _sort,
-    smin: $page.url.searchParams.get('smin') || 1,
-    smax: $page.url.searchParams.get('smax') || 5,
+    smin: +$page.url.searchParams.get('smin') || 1,
+    smax: +$page.url.searchParams.get('smax') || 5,
   }
 </script>
 

@@ -10,7 +10,7 @@ declare namespace CV {
     link: string
   }
 
-  interface Nvinfo {
+  interface Wninfo {
     id: number
     bslug: string
 

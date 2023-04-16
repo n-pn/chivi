@@ -3,7 +3,7 @@ import { api_path } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 interface JsonData extends CV.Paginate {
-  books: CV.Nvinfo[]
+  books: CV.Wninfo[]
 }
 
 export const load = (async ({ url, params, fetch }) => {

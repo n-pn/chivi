@@ -16,7 +16,7 @@ export function last_read({ bslug }, ubmemo: CV.Ubmemo) {
 }
 
 export function suggest_read(
-  nvinfo: CV.Nvinfo,
+  nvinfo: CV.Wninfo,
   ubmemo: CV.Ubmemo
 ): App.HeadItem {
   const { text, icon, href, mute } = last_read(nvinfo, ubmemo)

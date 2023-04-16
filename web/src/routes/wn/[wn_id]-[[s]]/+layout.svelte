@@ -2,7 +2,7 @@
   import { map_status } from '$utils/nvinfo_utils'
   import { vdict } from '$lib/stores'
 
-  function gen_keywords(nvinfo: CV.Nvinfo) {
+  function gen_keywords(nvinfo: CV.Wninfo) {
     const kw = [
       nvinfo.ztitle,
       nvinfo.vtitle,

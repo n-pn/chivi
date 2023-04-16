@@ -25,6 +25,6 @@ const wnform: CV.WnForm = {
 }
 
 export function load() {
-  const nvinfo: Partial<CV.Nvinfo> = { id: 0 }
+  const nvinfo: Partial<CV.Wninfo> = { id: 0 }
   return { nvinfo, wnform, _meta }
 }

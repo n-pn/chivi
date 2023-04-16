@@ -16,7 +16,7 @@
 
   onMount(() => {
     $config.wtheme = $page.data._conf.theme
-    $config.w_temp = $page.data._conf.w_temp == 't'
+    $config.w_udic = $page.data._conf.w_udic == 't'
     $config.showzh = $page.data._conf.showzh == 't'
   })
 

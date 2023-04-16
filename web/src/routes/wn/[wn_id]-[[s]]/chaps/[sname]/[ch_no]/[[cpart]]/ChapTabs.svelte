@@ -1,25 +1,24 @@
 <script lang="ts">
-  import { session } from '$lib/stores'
+  import { page } from '$app/stores'
 
-  // $: {nvinfo, nvlist, nvseed, chmeta, chinfo} = $page.data
-  export let nvinfo: CV.Nvinfo
-  export let nvseed: CV.Chroot
+  export let nvinfo: CV.Wninfo
+  // export let nvseed: CV.Chroot
 
   export let seeds: CV.Chroot[]
 
   export let chmeta: CV.Chmeta
   export let chinfo: CV.Chinfo
 
-  let show_users = false
-  let show_other = false
+  // let show_users = false
+  // let show_other = false
 
   function chap_href(sname: string) {
     return `/wn/${nvinfo.bslug}/chaps/${sname}/${chinfo.chidx}`
   }
 
-  $: _main = seeds.find((x) => x.sname == '_')
-  $: uname = '@' + $session.uname
-  $: _self = seeds.find((x) => x.sname == uname)
+  // $: uname = '@' + $page.data._user.uname
+  // $: _main = seeds.find((x) => x.sname == '_')
+  // $: _self = seeds.find((x) => x.sname == uname)
 </script>
 
 <!-- <nav class="nslist">
@@ -92,46 +91,46 @@
     margin-bottom: 0.5rem;
   }
 
-  .nvseed {
-    display: flex;
-    @include bdradi();
-    @include linesd(--bd-main);
-    padding: 0 0.375rem;
-    line-height: 1.75rem;
+  // .nvseed {
+  //   display: flex;
+  //   @include bdradi();
+  //   @include linesd(--bd-main);
+  //   padding: 0 0.375rem;
+  //   line-height: 1.75rem;
 
-    @include fgcolor(tert);
-    font-size: rem(12px);
-    font-weight: 500;
-    text-transform: uppercase;
+  //   @include fgcolor(tert);
+  //   font-size: rem(12px);
+  //   font-weight: 500;
+  //   text-transform: uppercase;
 
-    &._btn {
-      background: transparent;
-    }
+  //   &._btn {
+  //     background: transparent;
+  //   }
 
-    &._active {
-      @include linesd(primary, 5, $ndef: false);
-    }
+  //   &._active {
+  //     @include linesd(primary, 5, $ndef: false);
+  //   }
 
-    // prettier-ignore
-    &._active, &:hover, &:active {
-      @include fgcolor(primary, 5);
-    }
+  //   // prettier-ignore
+  //   &._active, &:hover, &:active {
+  //     @include fgcolor(primary, 5);
+  //   }
 
-    &._focus {
-      @include fgcolor(secd);
-    }
+  //   &._focus {
+  //     @include fgcolor(secd);
+  //   }
 
-    &._hidden {
-      @include linesd(--bd-soft, $ndef: false);
+  //   &._hidden {
+  //     @include linesd(--bd-soft, $ndef: false);
 
-      > .nvseed-name {
-        @include fgcolor(mute);
-      }
-    }
-  }
+  //     > .nvseed-name {
+  //       @include fgcolor(mute);
+  //     }
+  //   }
+  // }
 
-  .nvseed-more {
-    font-size: rem(13px);
-    margin-left: 0.25rem;
-  }
+  // .nvseed-more {
+  //   font-size: rem(13px);
+  //   margin-left: 0.25rem;
+  // }
 </style>

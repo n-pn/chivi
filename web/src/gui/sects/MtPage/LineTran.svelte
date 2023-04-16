@@ -4,9 +4,10 @@
 </script>
 
 <script lang="ts">
+  import { page } from '$app/stores'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
-  import { page } from '$app/stores'
 
   export let actived = false
 
@@ -78,34 +79,34 @@
     resize: vertical;
   }
 
-  .overlay,
-  .underlay {
-    padding: 0.25rem 0.5rem;
-    width: 100%;
-    height: 100%;
-  }
+  // .overlay,
+  // .underlay {
+  //   padding: 0.25rem 0.5rem;
+  //   width: 100%;
+  //   height: 100%;
+  // }
 
-  .overlay {
-    position: relative;
-    color: transparent;
-    caret-color: color(primary, 5);
-    background: transparent;
-  }
+  // .overlay {
+  //   position: relative;
+  //   color: transparent;
+  //   caret-color: color(primary, 5);
+  //   background: transparent;
+  // }
 
-  .underlay {
-    position: absolute;
-    // top: 0;
-    // left: 0;
+  // .underlay {
+  //   position: absolute;
+  //   // top: 0;
+  //   // left: 0;
 
-    // bottom: 0;
-    // right: 0;
-    // user-select: none;
+  //   // bottom: 0;
+  //   // right: 0;
+  //   // user-select: none;
 
-    :global(x-c.active) {
-      font-weight: 500;
-      @include fgcolor(primary, 5);
-    }
-  }
+  //   :global(x-c.active) {
+  //     font-weight: 500;
+  //     @include fgcolor(primary, 5);
+  //   }
+  // }
   // div.m-input {
   //   display: flex;
   //   flex-wrap: wrap;
@@ -116,27 +117,27 @@
     padding-top: 0.5rem;
   }
 
-  .suggest {
-    display: flex;
-    align-items: center;
-    height: 1.5rem;
-    margin-bottom: 0.25rem;
-  }
+  // .suggest {
+  //   display: flex;
+  //   align-items: center;
+  //   height: 1.5rem;
+  //   margin-bottom: 0.25rem;
+  // }
 
-  .suggests {
-    margin-left: auto;
-  }
+  // .suggests {
+  //   margin-left: auto;
+  // }
 
-  .suggest,
-  .preview {
-    font-size: rem(15px);
-    @include fgcolor(tert);
-  }
+  // .suggest,
+  // .preview {
+  //   font-size: rem(15px);
+  //   @include fgcolor(tert);
+  // }
 
-  .no-suggest {
-    font-style: italic;
-    @include fgcolor(mute);
-  }
+  // .no-suggest {
+  //   font-style: italic;
+  //   @include fgcolor(mute);
+  // }
 
   footer {
     @include flex();
@@ -145,23 +146,24 @@
     justify-content: center;
   }
 
-  .suggest-btn {
-    background: none;
-    font-size: rem(14px);
+  // .suggest-btn {
+  //   background: none;
+  //   font-size: rem(14px);
 
-    @include fgcolor(main);
-    @include hover {
-      @include fgcolor(primary, 5);
-    }
-  }
+  //   @include fgcolor(main);
+  //   @include hover {
+  //     @include fgcolor(primary, 5);
+  //   }
+  // }
 
-  .mute {
-    @include fgcolor(mute);
-  }
+  // .mute {
+  //   @include fgcolor(mute);
+  // }
 
   .label {
     font-weight: 500;
   }
+
   .preview {
     margin-top: 0.5rem;
   }

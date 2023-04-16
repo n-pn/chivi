@@ -8,7 +8,7 @@ interface BookUser {
 }
 
 export interface BookFront {
-  books: CV.Nvinfo[]
+  books: CV.Wninfo[]
   users: BookUser[]
 }
 

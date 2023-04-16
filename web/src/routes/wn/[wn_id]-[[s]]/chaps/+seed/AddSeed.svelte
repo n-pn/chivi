@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation'
   import { api_call } from '$lib/api_call'
 
-  export let nvinfo: CV.Nvinfo
+  export let nvinfo: CV.Wninfo
 
   let url = ''
   let err = ''

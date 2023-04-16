@@ -1,5 +1,5 @@
 declare namespace CV {
-  interface Cvpost {
+  interface Dtopic {
     dboard?: Dboard
 
     id: number
@@ -21,14 +21,14 @@ declare namespace CV {
     like_count?: number
   }
 
-  interface CvpostFull {
-    post: Cvpost
+  interface DtopicFull {
+    post: Dtopic
     user: Viuser
     memo: Memoir
   }
 
   interface Dtlist extends Paginate {
-    posts: Cvpost[]
+    posts: Dtopic[]
     users: Record<number, Cvuser>
     memos: Record<number, Memoir>
   }

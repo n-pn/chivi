@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NvinfoList from '$gui/sects/Nvinfo/List.svelte'
+  import WninfoList from '$gui/parts/wninfo/WninfoList2.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -13,7 +13,7 @@
 
 <section>
   <h1>Truyện của tác giả [<em>{author}</em>]</h1>
-  <NvinfoList items={books} {pgidx} {pgmax} />
+  <WninfoList items={books} {pgidx} {pgmax} />
 </section>
 
 <style lang="scss">

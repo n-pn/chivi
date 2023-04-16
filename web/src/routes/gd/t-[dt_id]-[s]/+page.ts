@@ -1,3 +1,4 @@
+import { nav_link } from '$gui/global/header_util'
 import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
@@ -9,14 +10,16 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
   const { cvpost } = await parent()
   const dboard = cvpost.post.dboard
 
+  const { bslug, bname } = dboard
+  const { id, title, tslug } = cvpost.post
+
   const _meta = {
-    title: 'Diễn đàn: ' + dboard.bname,
+    title: `${title} - ${bname} - Diễn đàn`,
     left_nav: [
-      // prettier-ignore
-      { 'text': dboard.bname, icon:'message', 'href': `/fr/b-${dboard.bslug}`, 'data-kind': 'title', },
-      { 'text': cvpost.post.title, 'href': '.', 'data-kind': 'title' },
+      nav_link(`/gd/b-${bslug}`, bname, 'message', { kind: 'title' }),
+      nav_link(`/gd/t-${id}-${tslug}`, title, null, { kind: 'title' }),
     ],
   }
 
-  return { rplist, _meta }
+  return { rplist, dboard, _meta }
 }

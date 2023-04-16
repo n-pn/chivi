@@ -18,7 +18,7 @@ declare namespace CV {
 
   interface VicritList extends Paginate {
     crits: Array<Vicrit>
-    books: Record<number, Nvinfo>
+    books: Record<number, Wninfo>
     users: Record<number, Viuser>
     lists: Record<number, Vilist>
   }

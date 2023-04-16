@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CvpostList from '$gui/parts/dboard/CvpostList.svelte'
+  import DtopicList from '$gui/parts/dboard/DtopicList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -7,4 +7,4 @@
   $: ({ dboard, dtlist } = data)
 </script>
 
-<CvpostList {dboard} {dtlist} />
+<DtopicList {dboard} {dtlist} />

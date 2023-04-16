@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NvinfoList from '$gui/parts/nvinfo/NvinfoList.svelte'
+  import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
   // import YscritCard from '$gui/parts/review/YscritCard.svelte'
   // import YslistCard from '$gui/parts/review/YslistCard.svelte'
 
@@ -13,7 +13,7 @@
     <a class="link" href="/wn">Xem tất cả</a>
   </header>
 
-  <NvinfoList books={data.books.recent} />
+  <WninfoList books={data.books.recent} />
 </section>
 
 <section class="list">
@@ -21,7 +21,7 @@
     <h3 class="text">Truyện mới cập nhật</h3>
     <a class="link" href="/wn?order=update">Xem tất cả</a>
   </header>
-  <NvinfoList books={data.books.update} />
+  <WninfoList books={data.books.update} />
 </section>
 
 <section class="list">
@@ -30,7 +30,7 @@
     <a class="link" href="/wn?order=weight">Xem tất cả</a>
   </header>
 
-  <NvinfoList books={data.books.weight} />
+  <WninfoList books={data.books.weight} />
 </section>
 
 <!-- <section class="list">
