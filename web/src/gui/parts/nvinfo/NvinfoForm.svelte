@@ -45,20 +45,24 @@
 
   const tl_btitle = async (value: string) => {
     const href = `/_m1/qtran/tl_btitle?btitle=${value}&wn_id=${nvinfo.id}`
-    wnform.vtitle = await fetch(href).then((r) => r.text())
+    wnform.vtitle = await fetch_text(href)
+    console.log(wnform.vtitle)
   }
 
   const tl_author = async (value: string) => {
     const href = `/_m1/qtran/tl_author?author=${value}&wn_id=${nvinfo.id}`
-    wnform.vauthor = await fetch(href).then((r) => r.text())
+    wnform.vauthor = await fetch_text(href)
   }
 
-  const tl_bintro = async (value: string) => {
-    const headers = { 'Content-Type': 'text/plain' }
-    const init = { method: 'POST', body: value, headers: headers }
-
+  const tl_bintro = async (body: string) => {
     const href = `/_m1/qtran?wn_id=${nvinfo.id}&format=txt`
-    wnform.vintro = await fetch(href, init).then((r) => r.text())
+    const headers = { 'Content-Type': 'text/plain' }
+    wnform.vintro = await fetch_text(href, { method: 'POST', body, headers })
+  }
+
+  const fetch_text = async (href: string, init?: RequestInit) => {
+    const res = await fetch(href, init)
+    return await res.text()
   }
 </script>
 
@@ -157,7 +161,7 @@
       <form-field>
         <label class="label" for="genres">Thể loại</label>
 
-        <div class="m-chips ">
+        <div class="m-chips">
           {#each wnform.genres as genre}
             <button
               type="button"

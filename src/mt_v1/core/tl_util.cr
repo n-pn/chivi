@@ -22,11 +22,11 @@ module M1::TlUtil
   end
 
   class_getter wn_btitles : Hash(String, String) do
-    load_tsv_hash("var/books/fixes/btitles_zh.tsv")
+    load_tsv_hash("var/books/fixes/btitles_vi.tsv")
   end
 
   class_getter wn_authors : Hash(String, String) do
-    load_tsv_hash("var/books/fixes/authors_zh.tsv")
+    load_tsv_hash("var/books/fixes/authors_vi.tsv")
   end
 
   def tl_author(author : String) : String
@@ -52,15 +52,18 @@ module M1::TlUtil
 
   BTITLE_RE = /^(#{BTITLE_PREFIX.keys.join('|')})(.+)/
 
-  def tl_btitle(btitle : String, wn_id : Int32 = 0)
-    self.wn_btitles.fetch(btitle) do
+  def tl_btitle(ztitle : String, wn_id : Int32 = 0)
+    btitle = self.wn_btitles.fetch(ztitle) do
       engine = MtCore.init(wn_id)
 
-      if btitle =~ BTITLE_RE
-        BTITLE_PREFIX[$1] + TextUtil.titleize(engine.translate($2))
-      else
-        TextUtil.titleize(btitle)
+      if match = ztitle.match(BTITLE_RE)
+        _, prefix, ztitle = match
       end
+
+      vtitle = engine.translate(ztitle)
+      prefix ? "#{prefix}#{vtitle}" : vtitle
     end
+
+    TextUtil.titleize(btitle)
   end
 end
