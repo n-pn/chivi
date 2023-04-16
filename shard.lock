@@ -11,7 +11,7 @@ shards:
 
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
-    version: 1.4.1
+    version: 1.4.3
 
   backtracer:
     git: https://github.com/sija/backtracer.cr.git
