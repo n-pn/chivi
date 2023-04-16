@@ -9,14 +9,12 @@ do
 
   if [[ $target == "cvweb" ]]
   then
-    cd web && pnpm run build
-    rsync-fast build/ $SSH/web/
+    cd web && pnpm run build && rsync -ai --no-p build/ /app/chivi/web/
     cd ..
   # elif [[ $target == "hanlp" ]]
   # then
   #   rsync-fast "src/hanlp-srv.py" $SSH/bin
   else
-    # shards build -s --release --production $target
     crystal build -s --release src/$target-srv.cr -o /app/chivi/bin/$target-srv
   fi
 
