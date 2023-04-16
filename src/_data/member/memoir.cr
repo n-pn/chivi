@@ -1,4 +1,8 @@
 require "../_base"
+require "./unotif"
+
+require "../dboard/dtopic"
+require "../dboard/murepl"
 
 class CV::Memoir
   enum Type : Int16
@@ -24,6 +28,31 @@ class CV::Memoir
   column tagged_at : Int64 = 0 # user get called in context
 
   column extra : String? = nil
+
+  def send_notif!(action : Symbol)
+    case symbol
+    when :like   then create_like_notif!
+    when :unlike then remove_like_notif!
+    end
+  end
+
+  def create_like_notif!(target : Murepl | Dtopic, from_user : String)
+    type = target.is_a?(Murepl) ? :like_repl : :like_dtop
+
+    _undo_tag_ = Unotif.gen_undo_tag(target.viuser_id, type, target.id)
+    return if Unotif.find_by_utag(_undo_tag_)
+
+    content, details, link_to = target.gen_like_notif(from_user)
+    unotif = Unotif.new(target.viuser_id, content, details.to_json, link_to, _undo_tag_)
+
+    unotif.created_at = Time.unix(self.liked_at)
+    unotif.create!
+  end
+
+  def remove_like_notif!(target : Murepl | Dtopic)
+    type = target.is_a?(Murepl) ? :like_repl : :like_dtop
+    Unotif.remove_notif Unotif.gen_undo_tag(target.viuser_id, :type, target.id)
+  end
 
   #
 

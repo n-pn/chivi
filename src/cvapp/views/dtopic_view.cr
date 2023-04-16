@@ -1,4 +1,5 @@
 require "./_base_view"
+require "./dboard_view"
 
 struct CV::DtopicView
   include BaseView
@@ -9,11 +10,7 @@ struct CV::DtopicView
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "dboard" do
-        jb.object {
-          jb.field "id", @data.nvinfo.id
-          jb.field "bname", @data.nvinfo.vname
-          jb.field "bslug", @data.nvinfo.bslug
-        }
+        DboardView.new(@data.nvinfo).to_json(jb)
       end
 
       jb.field "id", @data.id

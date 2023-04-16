@@ -11,7 +11,7 @@ struct CV::DboardView
       jb.field "id", @data.id
 
       jb.field "bname", @data.vname
-      jb.field "bslug", @data.bslug
+      jb.field "bslug", "#{@data.id}-#{@data.bslug}"
 
       jb.field "post_count", @data.post_count
     }

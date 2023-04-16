@@ -1,10 +1,11 @@
 require "../../_util/post_util"
 require "../_base"
 
-require "./dtopic"
-
 require "../member/viuser"
 require "../wnovel/wninfo"
+
+require "./muhead"
+require "./dtopic"
 
 class CV::Murepl
   # note: mu stand for multiuse/multipurpose
@@ -54,13 +55,12 @@ class CV::Murepl
 
     link_to = "#{muhead._link}#r#{self.id}"
     content = <<-HTML
-    <p><a href="/@#{from_user}>" class="cv-user">#{from_user}</a> đã thích
-    bài viết của bạn trong #{muhead._type} <a href="#{link_to}">#{muhead._name}</a>.</p>
-    <p>#{self.repl_peak}<em>
+    <p><a href="/@#{from_user}>" class="cv-user">#{from_user}</a> đã thích bài viết của bạn trong #{muhead._type} <a href="#{link_to}">#{muhead._name}</a>.</p>
+    <p><em>#{self.repl_peak}</em></p>
     HTML
 
     details = {_type: "like-repl", from_user: from_user, murepl_id: self.id}
-    {details, link_to, content}
+    {content, details, link_to}
   end
 
   def update_content!(itext : String, persist : Bool = true)

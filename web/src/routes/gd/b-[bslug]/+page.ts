@@ -15,7 +15,7 @@ export async function load({ parent, fetch, url }: PageLoadEvent) {
     title: 'Diễn đàn: ' + dboard.bname,
     left_nav: [
       nav_link('/gd', 'Diễn đàn', 'messages'),
-      nav_link(`/gd/b-${dboard.id}-${dboard.bslug}`, dboard.bname, 'messages', {
+      nav_link(`/gd/b-${dboard.bslug}`, dboard.bname, 'messages', {
         kind: 'title',
       }),
     ],

@@ -16,7 +16,9 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
   const _meta = {
     title: `${title} - ${bname} - Diễn đàn`,
     left_nav: [
-      nav_link(`/gd/b-${bslug}`, bname, 'message', { kind: 'title' }),
+      nav_link(`/gd/b-${bslug}`, bname, 'message', {
+        kind: 'title',
+      }),
       nav_link(`/gd/t-${id}-${tslug}`, title, null, { kind: 'title' }),
     ],
   }

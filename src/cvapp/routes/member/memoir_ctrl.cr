@@ -65,5 +65,12 @@ class CV::MemoirCtrl < CV::BaseCtrl
 
     target.save!
     memoir.save!
+
+    spawn do
+      case action
+      when .like?   then memoir.create_like_notif!(target, _uname)
+      when .unlike? then memoir.remove_like_notif!(target)
+      end
+    end
   end
 end

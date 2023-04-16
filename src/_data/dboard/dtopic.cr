@@ -128,6 +128,19 @@ class CV::Dtopic
     update!(state: admin ? -3 : -2)
   end
 
+  def gen_like_notif(from_user : String)
+    muhead = Muhead.find!("gd:#{self.id}")
+
+    link_to = muhead._link
+    content = <<-HTML
+    <p><a href="/@#{from_user}>" class="cv-user">#{from_user}</a> đã thích #{muhead._type} <a href="#{link_to}">#{muhead._name}</a> của bạn.</p>
+    <p><em>#{TextUtil.truncate(self.brief, 100)}</em></p>
+    HTML
+
+    details = {_type: "like-dtop", from_user: from_user, dtopic_id: self.id}
+    {content, details, link_to}
+  end
+
   #################
 
   CACHE = RamCache(Int32, self).new(1024, ttl: 10.minutes)
