@@ -32,7 +32,12 @@ class CV::QtranXlogCtrl < CV::BaseCtrl
     when "yesterday"
       from, upto = t_now - 1.day, t_now
     when "last_7_days"
-      from, upto = t_now - 1.day, t_now
+      from, upto = t_now - 6.day, t_now + 1.days
+    when "today"
+      from, upto = t_now, t_now + 1.days
+    when /^\d\d\d\d-\d\d-\d\d$/
+      from = Time.parse(scope, "%F", Time::Location.fixed(3600 * 7))
+      upto = from + 1.days
     else # assume today is the default
       from, upto = t_now, t_now + 1.days
     end

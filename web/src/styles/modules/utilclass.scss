@@ -31,3 +31,7 @@
 .fg-mute {
   @include fgcolor(mute);
 }
+
+.fg-link {
+  @include fgcolor(primary, 6);
+}

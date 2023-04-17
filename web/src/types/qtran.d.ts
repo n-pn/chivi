@@ -23,4 +23,21 @@ declare namespace CV {
     users: Record<number, CV.Viuser>
     books: Record<number, CV.Wninfo>
   }
+
+  interface QtranBookStat {
+    wninfo_id: number
+    point_cost: number
+  }
+
+  interface QtranUserStat {
+    viuser_id: number
+    point_cost: number
+  }
+
+  interface QtranStat {
+    user_stats: QtranUserStat[]
+    book_stats: QtranBookStat[]
+    user_infos: Record<number, CV.Viuser>
+    book_infos: Record<number, CV.Wninfo>
+  }
 }

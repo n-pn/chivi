@@ -116,9 +116,10 @@ class CV::QtranXlog
 
   def self.user_stats(from_time = Time.local - 7.days, upto_time = Time.local + 1.days)
     @@db.query_all <<-SQL, from_time.to_s("%F"), upto_time.to_s("%F"), as: UserStat
-      select viuser_id, sum(point_cost) from "#{@@table}"
+      select viuser_id, sum(point_cost) as point_cost from "#{@@table}"
       where created_at >= $1 and created_at <= $2
       group by viuser_id
+      order by point_cost desc
     SQL
   end
 
@@ -129,9 +130,10 @@ class CV::QtranXlog
 
   def self.book_stats(from_time = Time.local - 7.days, upto_time = Time.local + 1.days)
     @@db.query_all <<-SQL, from_time.to_s("%F"), upto_time.to_s("%F"), as: BookStat
-      select wn_dic as wninfo_id, sum(point_cost) from "#{@@table}"
+      select wn_dic as wninfo_id, sum(point_cost) as point_cost from "#{@@table}"
       where created_at >= $1 and created_at <= $2
       group by wn_dic
+      order by point_cost desc
     SQL
   end
 
