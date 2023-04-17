@@ -19,3 +19,15 @@
 .fg-4 {
   color: #{color(harmful, 5)};
 }
+
+.fg-secd {
+  @include fgcolor(secd);
+}
+
+.fg-tert {
+  @include fgcolor(tert);
+}
+
+.fg-mute {
+  @include fgcolor(mute);
+}

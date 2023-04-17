@@ -121,6 +121,8 @@
           /
           <span>{user.point_limit}</span>
         </div>
+
+        <a href="/me/qtran-xlog" class="m-btn _xs">Lịch sử</a>
       </div>
     </section>
   {/if}

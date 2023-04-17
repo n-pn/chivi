@@ -4,17 +4,21 @@ class CV::QtranXlogCtrl < CV::BaseCtrl
   base "/_db/qtran_xlogs"
 
   @[AC::Route::GET("/")]
-  def index(vu_id : Int32? = nil)
+  def index(vu_id : Int32? = nil, ihash : Int32? = nil)
     vu_id = _vu_id if _privi < 3
-    pg_no, limit, offset = _paginate(min: 50, max: 100)
 
-    total = QtranXlog.count(vu_id)
-    entries = QtranXlog.fetch(vu_id, limit, offset)
+    pg_no, limit, offset = _paginate(min: 50, max: 100)
+    total = QtranXlog.count(vu_id, ihash)
+
+    entries = QtranXlog.fetch(vu_id, ihash, limit, offset)
     viusers = Viuser.preload(entries.map(&.viuser_id))
+
+    wninfos = Wninfo.preload(entries.map(&.wn_dic))
 
     render json: {
       xlogs: entries,
       users: ViuserView.as_hash(viusers),
+      books: WninfoView.as_hash(wninfos),
       pgidx: pg_no,
       pgmax: _pgidx(total, limit),
     }

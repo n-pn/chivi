@@ -41,7 +41,7 @@ class CV::QtranXlog
     @input_hash = ihash = HashUtil.fnv_1a(input).unsafe_as(Int32)
 
     point_cost = calculate_cost(isize, w_udic, mt_ver, cv_ner, ts_sdk, ts_acc)
-    prev_count = self.class.count_previous(viuser_id, ihash)
+    prev_count = self.class.count(viuser_id, ihash)
 
     @point_cost = prev_count < 1 ? point_cost : point_cost // (prev_count &+ 1)
   end
@@ -82,15 +82,30 @@ class CV::QtranXlog
 
   ####
 
-  def self.count(vu_id : Nil)
-    @@db.query_one <<-SQL, as: Int32
+  def self.count(vu_id : Int32, ihash : Int32)
+    @@db.query_one <<-SQL, vu_id, ihash, as: Int32
       select COALESCE(COUNT(*), 0)::int from "#{@@table}"
+      where viuser_id = $1 and input_hash = $2
     SQL
   end
 
-  def self.count(vu_id : Int32)
+  def self.count(vu_id : Nil, ihash : Int32)
+    @@db.query_one <<-SQL, ihash, as: Int32
+      select COALESCE(COUNT(*), 0)::int from "#{@@table}"
+      where input_hash = $1
+    SQL
+  end
+
+  def self.count(vu_id : Int32, ihash : Nil)
     @@db.query_one <<-SQL, vu_id, as: Int32
-      select COALESCE(COUNT(*), 0)::int from "#{@@table}" where viuser_id = $1
+      select COALESCE(COUNT(*), 0)::int from "#{@@table}"
+      where viuser_id = $1
+    SQL
+  end
+
+  def self.count(vu_id : Nil, ihash : Nil)
+    @@db.query_one <<-SQL, as: Int32
+      select COALESCE(COUNT(*), 0)::int from "#{@@table}"
     SQL
   end
 
@@ -120,7 +135,7 @@ class CV::QtranXlog
     SQL
   end
 
-  def self.fetch(vu_id : Int32, limit = 50, offset = 0)
+  def self.fetch(vu_id : Int32, ihash : Nil, limit = 50, offset = 0)
     @@db.query_all <<-SQL, vu_id, limit, offset, as: QtranXlog
       select * from "#{@@table}"
       where viuser_id = $1
@@ -129,7 +144,7 @@ class CV::QtranXlog
     SQL
   end
 
-  def self.fetch(vu_id : Nil, limit = 50, offset = 0)
+  def self.fetch(vu_id : Nil, ihash : Nil, limit = 50, offset = 0)
     @@db.query_all <<-SQL, limit, offset, as: QtranXlog
       select * from "#{@@table}"
       order by id desc
@@ -137,9 +152,22 @@ class CV::QtranXlog
     SQL
   end
 
-  def self.count_previous(viuser_id : Int32, input_hash : Int32) : Int32
-    stmt = "select count(*)::int from #{@@table} where viuser_id = $1 and input_hash = $2"
-    @@db.query_one(stmt, viuser_id, input_hash, as: Int32) rescue 0
+  def self.fetch(vu_id : Int32, ihash : Int32, limit = 50, offset = 0)
+    @@db.query_all <<-SQL, vu_id, ihash, limit, offset, as: QtranXlog
+      select * from "#{@@table}"
+      where viuser_id = $1 and input_hash = $2
+      order by id desc
+      limit $3 offset $4
+    SQL
+  end
+
+  def self.fetch(vu_id : Nil, ihash : Int32, limit = 50, offset = 0)
+    @@db.query_all <<-SQL, ihash, limit, offset, as: QtranXlog
+      select * from "#{@@table}"
+      where input_hash = $1
+      order by id desc
+      limit $2 offset $3
+    SQL
   end
 
   def self.today_point_cost(viuser_id : Int32)
