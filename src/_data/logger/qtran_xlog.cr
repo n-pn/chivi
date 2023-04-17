@@ -6,7 +6,6 @@ class CV::QtranXlog
   include Crorm::Model
 
   @@db : DB::Database = PGDB
-
   @@table = "qtran_xlogs"
 
   field id : Int32 = 0, primary: true

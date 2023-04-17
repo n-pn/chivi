@@ -123,8 +123,9 @@ abstract class AC::Base
 
   #####
 
+  @[AlwaysInline]
   private def _read_cookie(name : String)
-    cookies["name"]?.try(&.value)
+    cookies[name]?.try(&.value)
   end
 
   private def _paginate(min = 5, max = 100)

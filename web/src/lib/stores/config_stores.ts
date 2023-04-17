@@ -12,7 +12,7 @@ class ConfigData {
   showzh = false
   tosimp = false
   engine = 1
-  w_udic = true
+  w_udic = false
   w_init = false
 }
 

@@ -14,7 +14,6 @@ class M1::TranCtrl < AC::Base
   def before_action
     @w_init = _read_cookie("w_init").try(&.starts_with?('t')) || false
     w_udic = _read_cookie("w_udic").try(&.starts_with?('t')) || false
-
     @w_user = w_udic ? _uname : ""
   end
 
@@ -113,7 +112,7 @@ class M1::TranCtrl < AC::Base
   @[AC::Route::POST("/cv_chap")]
   def cv_chap(wn_id : Int32 = 0, w_title : Bool = true, label : String? = nil)
     input = request.body.try(&.gets_to_end) || ""
-    spawn log_tran_stats(input, wn_id)
+    spawn log_tran_stats(input, wn_id, w_udic: !@w_user.empty?)
 
     qtran = TranData.new(input.lines, wn_id, format: "mtl")
 
@@ -125,6 +124,8 @@ class M1::TranCtrl < AC::Base
   end
 
   private def log_tran_stats(input : String, wn_dic : Int32, w_udic = true)
+    Log.info { [@w_init, @w_user, wn_dic, w_udic] }
+
     xlog = CV::QtranXlog.new(
       input: input, viuser_id: _vu_id,
       wn_dic: wn_dic, w_udic: w_udic,

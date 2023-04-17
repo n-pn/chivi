@@ -11,7 +11,7 @@ require "../core/m1_dict"
 struct M1::M1TermView
   getter defns : Hash(String, Array(DbDefn))
 
-  def initialize(@forms : Array(String), @uname : String, @wn_id : Int32, @w_temp = true)
+  def initialize(@forms : Array(String), @uname : String, @wn_id : Int32, @w_udic = true)
     @defns = DbDefn.repo.open_db do |db|
       sql = String.build do |str|
         str << "select * from defns where dic >= -4"
@@ -70,7 +70,7 @@ struct M1::M1TermView
       return term
     end
 
-    if @w_temp && (term == term_tabs[2]?.try(&.first))
+    if @w_udic && (term == term_tabs[2]?.try(&.first))
       return term
     end
 

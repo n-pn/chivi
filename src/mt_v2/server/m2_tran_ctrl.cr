@@ -16,9 +16,9 @@ class M2::TranCtrl < AC::Base
 
   @[AC::Route::POST("/qtran")]
   def qtran(udict : Int32, format : String = "txt", apply_cap : Bool = true)
-    w_temp = cookies["w_temp"]?.try(&.value) || "f"
+    w_udic = cookies["w_udic"]?.try(&.value) || "f"
 
-    engine = Engine.new(udict, user: _uname, temp: w_temp == "t")
+    engine = Engine.new(udict, user: _uname, temp: w_udic == "t")
     to_mtl = format == "mtl"
 
     input = request.body.not_nil!.gets_to_end
