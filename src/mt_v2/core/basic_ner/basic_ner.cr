@@ -1,7 +1,7 @@
 require "./numlit_ner"
 require "./number_ner"
 require "./string_ner"
-require "../mt_node"
+require "../mt_data/mt_node"
 
 module M2::BasicNER
   HANNUM_CHARS = {

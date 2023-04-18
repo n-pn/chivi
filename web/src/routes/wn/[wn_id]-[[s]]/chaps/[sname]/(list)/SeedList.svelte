@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { session } from '$lib/stores'
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
@@ -12,7 +13,7 @@
 
   $: pgidx = +$page.url.searchParams.get('pg') || 1
 
-  $: uname = '@' + $session.uname
+  $: uname = '@' + $_user.uname
   $: _self = find_or_init(seed_list, uname)
 
   function find_or_init(seed_list: { users: CV.Chroot[] }, sname: string) {
@@ -51,7 +52,7 @@
     {/if}
   {/each}
 
-  {#if _self && $session.privi > 0}
+  {#if _self && $_user.privi > 0}
     <a
       href={seed_path(nvinfo.bslug, _self.sname, pgidx)}
       class="seed-name"
@@ -91,7 +92,7 @@
     <a
       href={book_path(nvinfo.bslug, 'chaps/+seed')}
       class="seed-name _sub _btn"
-      class:_disable={$session.privi < 3}
+      class:_disable={$_user.privi < 3}
       data-tip="Thêm/sửa/xóa các nguồn ngoài"
       data-tip-loc="bottom">
       <SIcon name="tools" />

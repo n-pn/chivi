@@ -1,5 +1,4 @@
 <script lang="ts">
-  // import { session } from '$lib/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import type { PageData } from './$types'
@@ -24,7 +23,7 @@
   <div class="form-inp">
     <label class="form-lbl" for="email">Hòm thư</label>
     <input
-      class="m-input "
+      class="m-input"
       type="email"
       id="email"
       name="email"
@@ -37,7 +36,7 @@
     <label class="form-lbl" for="cpass">Mật khẩu</label>
     <input
       type="password"
-      class="m-input "
+      class="m-input"
       id="upass"
       name="upass"
       placeholder="Mật khẩu"

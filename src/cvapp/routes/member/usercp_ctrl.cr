@@ -25,9 +25,10 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
     render json: {
       notifs: UnotifView.as_list(notifs),
-      pgidx:  pg_no,
-      total:  total,
-      pgmax:  _pgidx(total, limit),
+
+      pgidx: pg_no,
+      total: total,
+      pgmax: _pgidx(total, limit),
     }
   end
 

@@ -1,13 +1,13 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { scroll, popups } from '$lib/stores'
+  import { scroll, popups, get_user } from '$lib/stores'
 
   import { gen_meta } from './header_util'
   import Item from './Header/HeaderItem.svelte'
 
-  $: meta = $page.data._meta || gen_meta($page.route?.id || '/', $page.data)
-  $: user = $page.data._user
+  const _user = get_user()
 
+  $: meta = $page.data._meta || gen_meta($page.route?.id || '/', $page.data)
   $: image = meta.image || '/imgs/avatar.png'
 </script>
 
@@ -53,12 +53,12 @@
         data-show="tl"
         on:click={() => popups.show('dboard')} />
 
-      {#if user.uname != 'Khách'}
+      {#if $_user.uname != 'Khách'}
         <Item
           type="button"
-          text={user.uname}
+          text={$_user.uname}
           icon="user"
-          _dot={user.unread_notif > 0}
+          _dot={$_user.unread_notif > 0}
           data-kbd="u"
           data-show="tl"
           data-kind="uname"

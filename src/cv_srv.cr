@@ -71,8 +71,8 @@ class NotFound < UserError
 end
 
 abstract class AC::Base
-  add_responder("text/plain") { |io, result| io << result }
-  add_responder("text/html") { |io, result| io << result }
+  # add_responder("text/plain") { |io, result| io << result }
+  # add_responder("text/html") { |io, result| io << result }
 
   @[AC::Route::Filter(:before_action)]
   def before_all_actions

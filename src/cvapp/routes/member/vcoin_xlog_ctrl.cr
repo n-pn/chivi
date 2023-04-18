@@ -83,13 +83,12 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
   end
 
   private def send_vcoin_notification(sender : Viuser, target : Viuser, xlog : VcoinXlog)
-    content, link_to, details = xlog.gen_notif(sender.uname)
+    content, link_to, details = gen_exchange_notif(xlog, sender.uname)
 
     Unotif.new(
       viuser_id: target.id,
-      content: content,
-      link_to: link_to,
-      details: details.to_json
+      action: :vcoin_ex, object_id: xlog.id, byuser_id: sender.id,
+      content: content, link_to: link_to, details: details.to_json
     ).create!
 
     MailUtil.send(to: target.email, name: target.uname) do |mail|
@@ -103,5 +102,16 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
           để tìm hiểu các cách dùng của vcoin.</p>
       HTML
     end
+  end
+
+  def gen_exchange_notif(xlog : VcoinXlog, sender : String)
+    content = <<-HTML
+      <p>Bạn nhận được: <strong>#{xlog.amount}</strong> vcoin từ <strong>#{sender}</strong>.</p>
+      <p>Chú thích của người tặng: #{xlog.reason}</p>
+      HTML
+    link_to = "https://chivi.app/hd/tat-ca-ve-vcoin"
+    details = {_type: "send-vcoin", amount: xlog.amount, reason: xlog.reason}
+
+    {content, link_to, details}
   end
 end

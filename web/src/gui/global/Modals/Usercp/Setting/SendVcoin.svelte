@@ -1,14 +1,11 @@
 <script lang="ts">
+  import type { Writable } from 'svelte/store'
   import { api_call } from '$lib/api_call'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let user: App.CurrentUser
+  export let _user: Writable<App.CurrentUser>
 
-  let form = {
-    target: '',
-    reason: '',
-    amount: 10,
-  }
+  let form = { target: '', reason: '', amount: 10 }
 
   let as_admin = false
   let res_type: '' | 'ok' | 'err' = ''
@@ -17,13 +14,12 @@
   const action_url = '/_db/vcoins'
 
   async function submit() {
-    res_type = ''
-    res_text = ''
+    res_type = res_text = ''
 
     try {
       const body = { ...form, as_admin }
       const data = await api_call(action_url, body, 'POST')
-      user.vcoin -= form.amount
+      $_user.vcoin -= form.amount
 
       res_type = 'ok'
       res_text = `[${data.target}] đã nhận được ${form.amount} vcoin, bạn còn có ${data.remain} vcoin.`
@@ -60,13 +56,13 @@
     </form-field>
   </form-group>
 
-  {#if user.privi > 3}
+  {#if $_user.privi > 3}
     <label for="as_admin" class="as_admin">
       <input
         type="checkbox"
         id="as_admin"
         name="as_admin"
-        disabled={user.privi < 4}
+        disabled={$_user.privi < 4}
         bind:checked={as_admin} />
       <span>Gửi dưới quyền hệ thống</span>
     </label>
@@ -102,7 +98,7 @@
     <button
       type="submit"
       class="m-btn _primary _fill"
-      disabled={!as_admin && user.vcoin < form.amount}>
+      disabled={!as_admin && $_user.vcoin < form.amount}>
       <span>Gửi tặng</span>
       <SIcon name="coin" />
       {form.amount}

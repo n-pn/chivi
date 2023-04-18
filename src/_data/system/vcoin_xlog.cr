@@ -2,6 +2,16 @@ require "../_base"
 require "../member/unotif"
 
 class CV::VcoinXlog
+  enum Kind : Int16
+    Normal = 10
+
+    PriviUg = 20
+    QtranDl = 30
+
+    Reward = 50
+    Donate = 60
+  end
+
   include Clear::Model
   self.table = "vcoin_xlogs"
 
@@ -37,16 +47,5 @@ class CV::VcoinXlog
 
       jb.field "ctime", self.created_at.to_unix
     end
-  end
-
-  def gen_notif(sender : String)
-    content = <<-HTML
-      <p>Bạn nhận được: <strong>#{amount}</strong> vcoin từ <strong>#{sender}</strong>.</p>
-      <p>Chú thích của người tặng: #{reason}</p>
-      HTML
-    link_to = "https://chivi.app/hd/tat-ca-ve-vcoin"
-    details = {_type: "send-vcoin", amount: amount, reason: reason}
-
-    {content, link_to, details}
   end
 end

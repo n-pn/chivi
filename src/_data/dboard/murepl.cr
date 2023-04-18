@@ -62,6 +62,37 @@ class CV::Murepl
     {content, details, link_to}
   end
 
+  def gen_repl_notif
+    muhead = Muhead.find!(id: self.muhead_id)
+    viuser = Viuser.load!(id: self.viuser_id)
+
+    from_user = viuser.uname
+    action = muhead.repl_action(prev_is_repl: self.torepl_id > 0)
+
+    link_to = "#{muhead._link}#r#{self.id}"
+    content = <<-HTML
+    <p><a href="/@#{from_user}" class="cv-user">#{from_user}</a> đã #{action} <a href="#{link_to}">#{muhead._name}</a>.</p>
+    HTML
+
+    details = {_type: "make-repl", from_user: from_user, murepl_id: self.id}
+    {content, details, link_to}
+  end
+
+  def gen_tagged_notif
+    muhead = Muhead.find!(id: self.muhead_id)
+    viuser = Viuser.load!(id: self.viuser_id)
+
+    from_user = viuser.uname
+
+    link_to = "#{muhead._link}#r#{self.id}"
+    content = <<-HTML
+    <p><a href="/@#{from_user}" class="cv-user">#{from_user}</a> đã nhắc đến tên bạn tại một bài viết trong #{muhead._type} <a href="#{link_to}">#{muhead._name}</a>.</p>
+    HTML
+
+    details = {_type: "repl-tagged", from_user: from_user, murepl_id: self.id}
+    {content, details, link_to}
+  end
+
   def update_content!(itext : String, persist : Bool = true)
     self.utime = Time.utc.to_unix
     self.set_itext(itext)

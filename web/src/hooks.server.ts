@@ -54,45 +54,29 @@ export const handleError = (({ event, error }) => {
 // import * as fs from 'fs'
 // fs.mkdirSync('tmp/_user', { recursive: true })
 
-const cached_users: Record<string, App.CurrentUser> = {}
-const session_url = `http://127.0.0.1:5010/_db/_self`
+type CachedUser = { user: App.CurrentUser; expiry: number }
 
-const guest_user = {
-  vu_id: 0,
-  uname: 'Khách',
-  privi: -1,
-  until: 0,
-  vcoin: -10000,
-  point_today: 0,
-  point_limit: 0,
-  unread_notif: 0,
-}
+const cached_users: Record<string, CachedUser> = {}
+const session_url = `http://${api_hosts._db}/_db/_self`
 
 const get_hash = (cookie: string) => cookie && cookie.replace('/', '_')
 
 async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
   const hash = get_hash(event.cookies.get('_a')) || 'guest'
-  // const path = `tmp/_user/${hash}.json`
-
   let cached_user = cached_users[hash]
 
-  // if (!cached_user && fs.existsSync(path)) {
-  //   const file_data = fs.readFileSync(path).toString()
-  //   cached_user = JSON.parse(file_data) as App.CurrentUser
-  //   cached_users[hash] = cached_user
-  // }
-
   const now_unix = new Date().getTime() / 1000
-  if (cached_user && cached_user.until >= now_unix) return cached_user
+  if (cached_user && cached_user.expiry >= now_unix) {
+    return cached_user.user
+  }
 
   const req_init = { headers: { cookie: event.request.headers.get('cookie') } }
   const response = await globalThis.fetch(session_url, req_init)
 
-  if (!response.ok) return guest_user
+  if (!response.ok && cached_user) return cached_user.user
 
-  cached_user = (await response.json()) as App.CurrentUser
-  cached_users[hash] = cached_user
-  // fs.writeFileSync(path, JSON.stringify(cached_user))
+  const user = (await response.json()) as App.CurrentUser
+  cached_users[hash] = { user, expiry: now_unix + 10 }
 
-  return cached_user || guest_user
+  return user
 }

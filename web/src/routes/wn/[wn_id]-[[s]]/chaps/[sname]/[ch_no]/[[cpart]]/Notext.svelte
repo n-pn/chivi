@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { get_user } from '$lib/stores'
+
   import { seed_path } from '$lib/kit_path'
   import { recrawl_chap } from './shared'
 
@@ -7,8 +9,8 @@
   import type { PageData } from './$types'
   export let data: PageData
   export let _onload = false
+  const _user = get_user()
 
-  $: _privi = data._user?.privi || 0
   $: search = `"${data.nvinfo.ztitle}" ${data.chap_data.title}`
   $: seed_href = seed_path(data.nvinfo.bslug, data.curr_seed.sname)
   $: edit_href = `${seed_href}/${data.curr_chap.chidx}/+edit`
@@ -34,11 +36,11 @@
 
     <p class="em">
       <em>
-        {#if _privi < 0}
+        {#if $_user.privi < 0}
           Bạn chưa đăng nhập, hãy bấm biểu tượng <SIcon name="login" /> bên phải
           màn hình để đăng nhập hoặc đăng ký tài khoản mới.
         {:else}
-          Quyền hạn hiện tại của bạn là {_privi}, nâng cấp quyền hạn lên
+          Quyền hạn hiện tại của bạn là {$_user.privi}, nâng cấp quyền hạn lên
           <strong>{data.chap_data.privi}</strong> để xem nội dung chương tiết.
         {/if}
       </em>
@@ -124,7 +126,7 @@
     </p>
 
     <h3>Tự thêm text gốc cho chương:</h3>
-    {#if _privi >= data.seed_data.edit_privi}
+    {#if $_user.privi >= data.seed_data.edit_privi}
       <p>
         Bạn có đủ quyền hạn để thêm text gốc cho bộ truyện, bấm vào nút
         <a href={edit_href}>Thêm text gốc</a>
@@ -161,7 +163,7 @@
       <button
         class="m-btn _harmful"
         on:click={() => reload_chap(2)}
-        disabled={data._user.privi < 1}>
+        disabled={$_user.privi < 0}>
         <SIcon name="rotate-rectangle" spin={_onload} />
         <span>Tải lại nguồn</span>
       </button>

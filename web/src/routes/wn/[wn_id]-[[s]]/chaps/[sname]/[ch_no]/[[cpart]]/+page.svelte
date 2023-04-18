@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { get_user } from '$lib/stores'
   import { seed_path, _pgidx } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -16,6 +17,7 @@
 
   import type { PageData } from './$types'
   export let data: PageData
+  const _user = get_user()
 
   $: ({ nvinfo, curr_seed, curr_chap, chap_data } = data)
 
@@ -48,7 +50,7 @@
   })
 
   async function update_memo(locking: boolean) {
-    if (data._user.privi < 0) return
+    if ($_user.privi < 0) return
 
     const { chidx: ch_no, title, uslug } = curr_chap
     const { sname } = curr_seed
@@ -147,7 +149,7 @@
         <svelte:fragment slot="content">
           <a
             class="gmenu-item"
-            class:_disable={data._user.privi < 1}
+            class:_disable={$_user.privi < 1}
             href="{seed_path(
               nvinfo.bslug,
               curr_seed.sname
@@ -158,7 +160,7 @@
 
           <button
             class="gmenu-item"
-            disabled={data._user.privi < 1}
+            disabled={$_user.privi < 1}
             on:click={() => reload_chap(2)}>
             <SIcon name="rotate-rectangle" spin={_onload} />
             <span>Tải lại nguồn</span>
@@ -166,7 +168,7 @@
 
           <!-- <button
             class="gmenu-item"
-            disabled={$session.privi < 0}
+            disabled={$_user.privi < 0}
             on:click={() => retranslate(false)}
             data-kbd="r">
             <SIcon name="rotate-clockwise" />
@@ -176,7 +178,7 @@
           {#if on_memory && data.ubmemo.locked}
             <button
               class="gmenu-item"
-              disabled={data._user.privi < 0}
+              disabled={$_user.privi < 0}
               on:click={() => update_memo(false)}
               data-kbd="p">
               <SIcon name="bookmark-off" />
@@ -185,7 +187,7 @@
           {:else}
             <button
               class="gmenu-item"
-              disabled={data._user.privi < 0}
+              disabled={$_user.privi < 0}
               on:click={() => update_memo(true)}
               data-kbd="p">
               <SIcon name="bookmark" />

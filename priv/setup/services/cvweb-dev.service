@@ -1,0 +1,19 @@
+[Unit]
+Description=chivi dev webapp
+After=network.target cvapp-dev.service wnapp-dev.service mt_v1-dev.service mt_sp-dev.service ysapp-dev.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=nipin
+Environment=PORT=5001
+Environment=NODE_ENV=production
+WorkingDirectory=/app/chivi.dev/web
+ExecStart=/usr/bin/node index.js
+StandardOutput=file:/app/chivi.dev/log/cvweb-serv.log
+StandardError=append:/app/chivi.dev/log/cvweb-err.log
+
+[Install]
+WantedBy=multi-user.target

@@ -1,32 +1,34 @@
 <script lang="ts">
-  import SIcon from '$gui/atoms/SIcon.svelte'
+  import type { Writable } from 'svelte/store'
 
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import UpgradePrivi from './Setting/UpgradePrivi.svelte'
   import SendVcoin from './Setting/SendVcoin.svelte'
   import UpdatePasswd from './Setting/UpdatePasswd.svelte'
 
-  export let user: App.CurrentUser
-  export let tab = 2
+  export let _user: Writable<App.CurrentUser>
 
   async function logout() {
-    await fetch('/_db/_user/logout', { method: 'DELETE' })
-    window.location.reload()
+    const res = await fetch('/_db/_user/logout', { method: 'DELETE' })
+    if (res.ok) {
+      $_user = (await res.json()) as App.CurrentUser
+    }
   }
 </script>
 
 <details open>
   <summary>Nâng quyền hạn</summary>
-  <UpgradePrivi bind:user />
+  <UpgradePrivi {_user} />
 </details>
 
 <details>
   <summary>Tặng vcoin</summary>
-  <SendVcoin bind:user />
+  <SendVcoin {_user} />
 </details>
 
 <details>
   <summary>Đổi mật khẩu</summary>
-  <UpdatePasswd bind:tab />
+  <UpdatePasswd {_user} />
 </details>
 
 <div class="form-action">

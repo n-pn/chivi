@@ -4,8 +4,10 @@
 
 <script lang="ts">
   import { goto } from '$app/navigation'
-  // import { page } from '$app/stores'
-  import { session } from '$lib/stores'
+
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
+
   import { api_call } from '$lib/api_call'
 
   import { book_status } from '$utils/nvinfo_utils'
@@ -234,7 +236,7 @@
       <button
         class="m-btn _primary _fill _lg"
         type="submit"
-        disabled={$session.privi < 2}>
+        disabled={$_user.privi < 2}>
         <SIcon name="send" />
         <span class="-txt">Lưu thông tin</span>
         <SIcon name="privi-2" iset="sprite" />

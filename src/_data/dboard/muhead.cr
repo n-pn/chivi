@@ -38,7 +38,7 @@ class CV::Muhead
     @viuser_id = dtopic.viuser_id
     @dboard_id = dtopic.nvinfo_id
 
-    @_type = "thảo luận"
+    @_type = "chủ đề"
     @_link = "/gd/t-#{dtopic.id}-#{dtopic.tslug}"
     @_name = dtopic.title
     @_desc = dtopic.brief
@@ -68,6 +68,17 @@ class CV::Muhead
 
     @created_at = wninfo.created_at
     @updated_at = wninfo.updated_at
+  end
+
+  def repl_action(prev_is_repl = false)
+    case
+    when prev_is_repl
+      "phản hồi bình luận của bạn trong #{@_type}"
+    when @urn.starts_with?("gd")
+      "thêm bình luận mới trong chủ đề bạn tạo"
+    else
+      "thêm bình luận mới trong #{@_type}"
+    end
   end
 
   def fix_data
@@ -138,5 +149,12 @@ class CV::Muhead
     when "wn" then new(Wninfo.load!(o_id.to_i)).upsert!
     else           raise "unsuported urn: #{urn}"
     end
+  end
+
+  def self.glob(ids : Enumerable(Int32))
+    @@db.query_all <<-SQL, ids, as: self
+      select * from #{@@table}
+      where id = any($1)
+      SQL
   end
 end

@@ -2,12 +2,13 @@
   import { browser } from '$app/environment'
   import { goto, invalidateAll } from '$app/navigation'
 
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
+
   import { chap_path } from '$lib/kit_path'
-  import { session } from '$lib/stores'
   import { debounce, sync_scroll } from '$lib/svelte'
 
   import { SIcon, Footer } from '$gui'
-
   import { opencc, diff_html, fix_breaks, translate } from '$utils/text_utils'
 
   import type { PageData } from './$types'
@@ -19,8 +20,7 @@
   let ch_no = data.ch_no
 
   $: ({ nvinfo } = data)
-  $: privi = $session.privi || -1
-  $: disabled = privi < 1 || (privi == 1 && ztext.length > 30000)
+  $: disabled = $_user.privi < 1 || ($_user.privi == 1 && ztext.length > 30000)
 
   $: action_url = `/_wn/texts/${data.wn_id}/${data.sname}/${ch_no}`
 

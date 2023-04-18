@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores'
+  import { get_user } from '$lib/stores'
 
   import { rel_time } from '$utils/time_utils'
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -7,15 +7,15 @@
   import { browser } from '$app/environment'
 
   export let repl: CV.Murepl
-
   export let user: CV.Viuser
   export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
 
   export let on_focus = false
   export let nest_level = 0
 
-  $: _user = $page.data._user
-  $: is_owner = _user.uname == user.uname
+  const _user = get_user()
+
+  // $: is_owner = $_user.uname == user.uname
   // $: can_edit = _user.privi > 3 || (is_owner && _user.privi >= 0)
 
   $: if (browser) on_focus = on_focus || location.hash == '#r' + repl.id
@@ -79,7 +79,7 @@
     <button
       class="btn"
       class:_active={memo?.liked > 0}
-      disabled={_user.privi < 0}
+      disabled={$_user.privi < 0}
       on:click={toggle_like}>
       <SIcon name="thumb-up" />
       <span>Ưa thích</span>
@@ -101,7 +101,7 @@
         touser: repl.user_id,
         muhead: `id:${repl.head_id}`,
       }}
-      disabled={_user.privi < 0}
+      disabled={$_user.privi < 0}
       on_destroy={handle_repl_form} />
   </section>
 {/if}

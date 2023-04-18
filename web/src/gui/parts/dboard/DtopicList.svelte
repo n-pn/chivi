@@ -1,9 +1,8 @@
 <script context="module" lang="ts">
   import { page } from '$app/stores'
-  import { session } from '$lib/stores'
   import { dlabels } from '$lib/constants'
 
-  import { dtlist_data, dboard_ctrl } from '$lib/stores'
+  import { dtlist_data, dboard_ctrl, get_user } from '$lib/stores'
 
   import DtopicCard from './DtopicCard.svelte'
   import DtopicForm, { ctrl as cvpost_form } from './DtopicForm.svelte'
@@ -20,6 +19,7 @@
   export let _mode = 0
 
   export let on_cvpost_form = () => window.location.reload()
+  const _user = get_user()
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
 
@@ -73,7 +73,7 @@
 <board-foot>
   <button
     class="m-btn _primary _fill"
-    disabled={$session.privi < 0}
+    disabled={$_user.privi < 0}
     on:click={() => cvpost_form.show(0)}>
     <SIcon name="message-plus" />
     <span>Tạo chủ đề mới</span></button>

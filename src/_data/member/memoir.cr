@@ -39,24 +39,27 @@ class CV::Memoir
   def create_like_notif!(target : Murepl | Dtopic, from_user : String)
     return if target.viuser_id == self.target_id
 
-    type = target.is_a?(Murepl) ? :like_repl : :like_dtop
-
-    _undo_tag_ = Unotif.gen_undo_tag(target.viuser_id, type, target.id)
-    return if Unotif.find_by_utag(_undo_tag_)
+    action = target.is_a?(Murepl) ? Unotif::Action::LikeRepl : Unotif::Action::LikeDtop
+    return if Unotif.find(action, target.id, target.viuser_id)
 
     content, details, link_to = target.gen_like_notif(from_user)
-    unotif = Unotif.new(target.viuser_id, content, details.to_json, link_to, _undo_tag_)
 
-    unotif.created_at = Time.unix(self.liked_at)
+    unotif = Unotif.new(
+      target.viuser_id,
+      action, self.id, self.viuser_id,
+      content, details.to_json, link_to,
+      Time.unix(self.liked_at)
+    )
+
     unotif.create!
   end
 
   def remove_like_notif!(target : Murepl | Dtopic)
-    type = target.is_a?(Murepl) ? :like_repl : :like_dtop
-    Unotif.remove_notif Unotif.gen_undo_tag(target.viuser_id, :type, target.id)
+    action = target.is_a?(Murepl) ? Unotif::Action::LikeRepl : Unotif::Action::LikeDtop
+    Unotif.remove_notif(action, target.id, target.viuser_id)
   end
 
-  #
+  ####
 
   def self.load(viuser_id : Int32, target_type : Type, target_id : Int32) : self
     params = {viuser_id: viuser_id, target_type: target_type.value, target_id: target_id}

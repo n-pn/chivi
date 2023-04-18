@@ -1,11 +1,12 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
+  import type { Writable } from 'svelte/store'
   import { api_get } from '$lib/api_call'
-  import { browser } from '$app/environment'
-  import SIcon from '$gui/atoms/SIcon.svelte'
-  import { rel_time_vp } from '$utils/time_utils'
 
-  export let tab = 2
-  export let user: App.CurrentUser
+  import { rel_time_vp } from '$utils/time_utils'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+
+  export let _user: Writable<App.CurrentUser>
 
   let data: CV.UnotifPage = {
     notifs: [],
@@ -14,10 +15,10 @@
     pgmax: 0,
   }
 
-  $: if (browser && tab == 2) load_notifs()
+  onMount(load_notifs)
 
   async function load_notifs(pg = 1) {
-    user.unread_notif = 0
+    $_user.unread_notif = 0
 
     const api_url = `/_db/_self/notifs?&pg=${pg}&lm=20`
     try {
@@ -31,6 +32,7 @@
 <header class="label">
   <SIcon name="bell" />
   <span>Thông báo ({data.total})</span>
+  <a class="link" href="/me/notif">Xem tất cả</a>
 </header>
 
 <div class="notifs">
@@ -78,6 +80,18 @@
         // @include fgcolor(primary, 4);
         @include border(primary, 4, $loc: bottom);
       }
+    }
+  }
+
+  .link {
+    margin-left: auto;
+    font-weight: 400;
+    font-style: italic;
+    font-size: rem(15px);
+    @include fgcolor(tert);
+
+    &:hover {
+      @include fgcolor(primary, 4);
     }
   }
 

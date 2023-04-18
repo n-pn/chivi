@@ -27,8 +27,7 @@
 </script>
 
 <script lang="ts">
-  import { page } from '$app/stores'
-  import { api_get } from '$lib/api_call'
+  import { get_user } from '$lib/stores'
   import { get_dmy } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -41,17 +40,7 @@
   const components = [Reading, Setting, Unotifs]
 
   export let actived = false
-  let user = $page.data._user
-
-  $: if (browser && actived) reload()
-
-  const reload = async () => {
-    try {
-      user = await api_get<App.CurrentUser>('/_db/_self', fetch)
-    } catch (ex) {
-      console.log(ex)
-    }
-  }
+  const _user = get_user()
 
   const tabs = [
     { icon: 'history', btip: 'Lịch sửa đọc' },
@@ -59,20 +48,20 @@
     { icon: 'bell', btip: 'Thông báo' },
   ]
 
-  $: privi = user.privi || 0
+  $: privi = $_user.privi || 0
 </script>
 
 <Slider class="usercp" bind:actived --slider-width="26rem">
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name="privi-{privi}" iset="sprite" /></div>
     <div class="-text">
-      <cv-user data-privi={privi}>{user.uname}</cv-user>
+      <cv-user data-privi={privi}>{$_user.uname}</cv-user>
     </div>
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
     {#each tabs as { icon, btip }, tab}
-      {@const _hl = tab == 2 && user.unread_notif > 0}
+      {@const _hl = tab == 2 && $_user.unread_notif > 0}
       <button
         class="-btn"
         class:_active={tab == $usercp}
@@ -81,7 +70,7 @@
         data-tip={btip}
         data-tip-loc="bottom">
         <SIcon name={icon} />
-        {#if _hl}({user.unread_notif}){/if}
+        {#if _hl}({$_user.unread_notif}){/if}
       </button>
     {/each}
   </svelte:fragment>
@@ -96,7 +85,7 @@
         {#if privi > 0 && privi < 4}
           <div>
             <span class="lbl">Hết hạn:</span>
-            <strong>{avail_until(user.until)}</strong>
+            <strong>{avail_until($_user.until)}</strong>
           </div>
         {/if}
         <button class="m-btn _xs _primary" on:click={() => usercp.change_tab(1)}
@@ -107,7 +96,7 @@
         <div>
           <span class="lbl">Số lượng vcoin hiện có:</span>
           <SIcon name="coin" /><strong
-            >{Math.round(user.vcoin * 100) / 100}</strong>
+            >{Math.round($_user.vcoin * 100) / 100}</strong>
         </div>
 
         <a href="/hd/tat-ca-ve-vcoin" class="m-btn _xs">Giải thích</a>
@@ -116,10 +105,10 @@
       <div class="info">
         <div>
           <span class="lbl">Giới hạn ký tự dịch thuật:</span>
-          <strong class:exceed={user.point_today >= user.point_limit}
-            >{user.point_today}</strong>
-          /
-          <span>{user.point_limit}</span>
+          <strong class:exceed={$_user.point_today >= $_user.point_limit}
+            >{$_user.point_today}</strong>
+          <span class="sep">/</span>
+          <span>{$_user.point_limit}</span>
         </div>
 
         <a href="/me/qtran-xlog" class="m-btn _xs">Lịch sử</a>
@@ -128,11 +117,8 @@
   {/if}
 
   <section class="body">
-    {#if actived}
-      <svelte:component
-        this={components[$usercp]}
-        bind:tab={$usercp}
-        bind:user />
+    {#if actived && browser}
+      <svelte:component this={components[$usercp]} {_user} />
     {/if}
   </section>
 </Slider>

@@ -1,9 +1,11 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { invalidate, invalidateAll } from '$app/navigation'
 
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
+
+  import { invalidateAll } from '$app/navigation'
   import { seed_path } from '$lib/kit_path'
-  import { rel_time } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
@@ -51,7 +53,7 @@
   $: [can_upsert, can_reload] = check_edit_privi(
     curr_seed.sname,
     seed_data.edit_privi,
-    data._user
+    $_user
   )
 
   const check_edit_privi = (
@@ -124,7 +126,7 @@
           </a>
           <a
             class="gmenu-item"
-            class:_disable={data._user.privi < 1}
+            class:_disable={$_user.privi < 1}
             href="/wn/{nvinfo.bslug}/chaps/{curr_seed.sname}/+down">
             <SIcon name="download" />
             <span>Tải xuống</span>
@@ -132,7 +134,7 @@
 
           <button
             class="gmenu-item"
-            class:_disable={data._user.privi < 0}
+            class:_disable={$_user.privi < 0}
             on:click={reconvert}>
             <SIcon name="language" />
             <span>Dịch lại</span>

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-
   import { Footer, SIcon } from '$gui'
 
   import type { PageData } from './$types'
@@ -8,8 +7,6 @@
 
   let error = ''
   async function submit() {
-    // if ($session.privi < 0) return
-
     if (data.input.length > 10000) {
       error = `Số ký tự phải nhỏ hơn 10000, hiện tại: ${data.input.length}`
       return

@@ -1,8 +1,11 @@
 <script lang="ts">
+  import { get_user } from '$lib/stores'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
+  const _user = get_user()
 
   let dl_opts = {
     format: 'qt',
@@ -69,7 +72,7 @@
       href="/_m1/dicts/{data.dname}/export?{dl_opts.to_query()}"
       download="{data.label}.{dl_opts.format == 'q' ? 'txt' : 'tsv'}"
       class="m-btn _primary _fill _lg"
-      class:_disable={data._user.privi < 1}>
+      class:_disable={$_user.privi < 1}>
       <SIcon name="download" />
       <span>Tải xuống</span>
     </a>

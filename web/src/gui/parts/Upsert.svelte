@@ -3,7 +3,7 @@
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
 
-  import { vdict, ztext, zfrom, zupto } from '$lib/stores'
+  import { vdict, ztext, zfrom, zupto, get_user } from '$lib/stores'
   import { upsert_dicts } from '$utils/vpdict_utils'
   import { api_call } from '$lib/api_call'
 
@@ -42,6 +42,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
+
   import { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -74,7 +75,9 @@
     tag_hints: [],
   }
 
-  let privi = $page.data._user.privi
+  const _user = get_user()
+  $: privi = $_user.privi
+
   let show_opts = false
 
   let key = $ztext.substring($zfrom, $zupto)

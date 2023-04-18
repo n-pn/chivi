@@ -7,36 +7,32 @@
     [30, 50, 90, 130],
     [50, 100, 175, 250],
   ]
+
+  const ranges_days = [14, 30, 60, 90]
 </script>
 
 <script lang="ts">
-  import { page } from '$app/stores'
+  import type { Writable } from 'svelte/store'
   import { api_call } from '$lib/api_call'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let user: App.CurrentUser
+  export let _user: Writable<App.CurrentUser>
 
+  let form = { privi: $_user.privi < 3 ? $_user.privi + 1 : 3, range: 1 }
   let error = ''
+  let _onload = false
 
-  let privi = $page.data._user.privi < 3 ? $page.data._user.privi + 1 : 3
-  let range = 1
-
-  $: cost = costs[privi][range]
+  $: cost = costs[form.privi][form.range]
 
   const action = '/_db/_self/upgrade-privi'
-
-  let _onload = false
 
   async function submit() {
     error = ''
     _onload = true
 
     try {
-      user = await api_call(action, { privi, range }, 'PUT')
-      window.location.reload()
+      $_user = await api_call(action, form, 'PUT')
     } catch (ex) {
-      console.log(ex)
       error = ex.body.message
     }
 
@@ -51,8 +47,8 @@
     <label class="form-label" for="privi">Chọn quyền hạn:</label>
     <div class="radio-group">
       {#each [1, 2, 3] as value}
-        <label class="m-label _{value}" class:_active={value == privi}>
-          <input type="radio" bind:group={privi} {value} />
+        <label class="m-label _{value}" class:_active={value == form.privi}>
+          <input type="radio" bind:group={form.privi} {value} />
           <span class="icon"><SIcon name="privi-{value}" iset="sprite" /></span
           >Q.hạn {value}
         </label>
@@ -64,12 +60,16 @@
     <label class="form-label" for="privi">Chọn thời gian:</label>
     <div class="radio-group">
       {#each [0, 1, 2, 3] as value}
-        <label class="m-label _{value}" class:_active={value == range}>
-          <input type="radio" bind:group={range} {value} />
+        <label class="m-label _{value}" class:_active={value == form.range}>
+          <input type="radio" bind:group={form.range} {value} />
           <SIcon name="clock" />{ranges[value]}
         </label>
       {/each}
     </div>
+  </div>
+
+  <div class="explain">
+    Nâng cấp/gia hạn quyền hạn {form.privi} khoảng {ranges_days[form.range]} ngày.
   </div>
 
   {#if error}<div class="form-error">{error}</div>{/if}
@@ -77,8 +77,8 @@
   <footer class="form-action">
     <button
       type="submit"
-      class="m-btn _fill _{privi_colors[privi]}"
-      disabled={_onload || cost > user.vcoin}
+      class="m-btn _fill _{privi_colors[form.privi]}"
+      disabled={_onload || cost > $_user.vcoin}
       on:click={submit}>
       <span>Nâng cấp</span>
       <SIcon name="coin" />{cost}
@@ -91,7 +91,16 @@
     @include flex-ca($gap: 0.5rem);
   }
 
+  .explain {
+    @include fgcolor(tert);
+    font-style: italic;
+    text-align: center;
+    margin-top: 0.5rem;
+
+    @include ftsize(sm);
+  }
+
   .form-action {
-    margin-top: 1.5rem;
+    margin-top: 0.25rem;
   }
 </style>

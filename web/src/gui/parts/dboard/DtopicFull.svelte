@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { session } from '$lib/stores'
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
+
   import { rel_time } from '$utils/time_utils'
   import { dlabels } from '$lib/constants'
 
@@ -7,12 +9,9 @@
   import DtopicForm, { ctrl as post_ctrl } from './DtopicForm.svelte'
 
   export let post: CV.Dtopic
-
   export let user: CV.Viuser
   export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
-
   export let _all = post.bhtml.length < 500
-
   export let on_post_form = () => window.location.reload()
 
   $: board_url = `/gd/b-${post.dboard.bslug}`
@@ -66,7 +65,7 @@
       <topic-sep>·</topic-sep>
       <topic-time>{rel_time(post.ctime)}</topic-time>
 
-      {#if $session.privi > 3 || $session.uname == user.uname}
+      {#if $_user.privi > 3 || $_user.uname == user.uname}
         <topic-sep>·</topic-sep>
         <button class="action" on:click={() => post_ctrl.show(post.id)}>
           <span>Sửa</span>
@@ -90,7 +89,7 @@
         <button
           class="meta"
           class:_active={memo.liked > 0}
-          disabled={$session.privi < 0}
+          disabled={$_user.privi < 0}
           data-tip={new Date(Math.abs(memo.liked) * 1000).toString()}
           on:click={toggle_like}>
           <SIcon name="star" />

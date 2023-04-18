@@ -1,6 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { session } from '$lib/stores'
+
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import WninfoForm from '$gui/parts/wninfo/WninfoForm.svelte'
 
@@ -19,7 +22,7 @@
   <h1 slot="header">Sửa thông tin truyện [{nvinfo.vtitle}]</h1>
 </WninfoForm>
 
-{#if $session.privi > 3}
+{#if $_user.privi > 3}
   <footer>
     <button class="m-btn _harmful _lg" type="button" on:click={delete_book}>
       <SIcon name="trash" />

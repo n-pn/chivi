@@ -1,9 +1,12 @@
 <script lang="ts">
+  import { get_user } from '$lib/stores'
   import { api_call } from '$lib/api_call'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
+
+  const _user = get_user()
 
   let form = data.form || {
     target: '',
@@ -22,7 +25,7 @@
 
     try {
       const data = await api_call(action_url, form, 'POST')
-
+      $_user.vcoin -= form.amount
       res_type = 'ok'
       res_text = `[${data.target}] đã nhận được ${form.amount} vcoin, bạn còn có ${data.remain} vcoin.`
     } catch (ex) {
@@ -95,7 +98,7 @@
       <button
         type="submit"
         class="m-btn _primary _fill"
-        disabled={data._user.vcoin < form.amount}>
+        disabled={$_user.vcoin < form.amount}>
         <span>Gửi tặng</span>
         <SIcon name="coin" />
         {form.amount}

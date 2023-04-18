@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { session } from '$lib/stores'
+  import { get_user } from '$lib/stores'
   import { dboard_ctrl } from '$lib/stores'
 
   import { dlabels } from '$lib/constants'
@@ -12,6 +12,7 @@
   export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
   export let _mode = 0
 
+  const _user = get_user()
   $: dboard = post.dboard
   $: board_url = `/gd/b-${dboard.bslug}`
 
@@ -81,7 +82,7 @@
       <button
         class="meta"
         class:_active={memo?.liked > 0}
-        disabled={$session.privi < 0}
+        disabled={$_user.privi < 0}
         on:click={toggle_like}>
         <SIcon name="star" />
         <span>{post.like_count}</span>

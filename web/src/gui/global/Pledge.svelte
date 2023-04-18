@@ -1,18 +1,20 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  $: _privi = $page.data._user.privi
+  import { get_user } from '$lib/stores'
+
+  const _user = get_user()
 
   $: route_id = $page.route?.id || ''
 </script>
 
 {#if !route_id.includes('_auth')}
   <div class="app-vessel">
-    {#if _privi < 0}
+    {#if $_user.privi < 0}
       <a class="pledge" href="/_auth/signup">
         Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá các tính
         năng!
       </a>
-    {:else if _privi < 1}
+    {:else if $_user.privi < 1}
       <a class="pledge" href="/hd/nang-cap-quyen-han">
         Nâng cấp quyền hạn để mở khoá các tính năng!
       </a>

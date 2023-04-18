@@ -1,10 +1,9 @@
-<script context="module" lang="ts">
-  import { session } from '$lib/stores'
-  import { api_path } from '$lib/api_call'
-  import { rel_time } from '$utils/time_utils'
-</script>
-
 <script lang="ts">
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
+
+  import { rel_time } from '$utils/time_utils'
+
   import { SIcon, Stars } from '$gui'
   import Truncate from '$gui/atoms/Truncate.svelte'
 
@@ -137,7 +136,7 @@
         {#each Object.entries(body_types) as [value, [label, privi]]}
           <button
             class="gmenu-item"
-            disabled={$session.privi < privi}
+            disabled={$_user.privi < privi}
             on:click={() => (body_type = value)}>
             <span>{label}</span>
           </button>

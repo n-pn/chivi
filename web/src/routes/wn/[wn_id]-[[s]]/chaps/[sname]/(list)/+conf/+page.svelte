@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { get_user } from '$lib/stores'
+
   import ReadPrivi from './ReadPrivi.svelte'
   import Remotes from './Remotes.svelte'
   import DeleteSeed from './DeleteSeed.svelte'
@@ -7,14 +9,15 @@
 
   import type { PageData } from './$types'
   export let data: PageData
+  const _user = get_user()
 
   $: ({ nvinfo, curr_seed } = data)
 
-  $: can_edit = check_privi(data.curr_seed, data.seed_data, data._user)
+  $: can_edit = check_privi(data.curr_seed, data.seed_data, $_user)
   $: edit_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}`
   $: ztitle = `${nvinfo.ztitle} ${nvinfo.zauthor}`
 
-  $: can_conf = check_conf_privi(data.curr_seed, data._user)
+  $: can_conf = check_conf_privi(data.curr_seed, $_user)
 
   const check_privi = ({ sname }, { edit_privi }, { uname, privi }) => {
     if (privi < edit_privi) return false
@@ -48,7 +51,7 @@
     <ReadPrivi
       {can_conf}
       {edit_url}
-      _privi={data._user.privi}
+      _privi={$_user.privi}
       seed_data={data.seed_data}
       bind:curr_seed={data.curr_seed} />
   </details>

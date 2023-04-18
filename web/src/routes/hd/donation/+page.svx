@@ -4,15 +4,15 @@ desc: Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của c�
 ---
 
 <script>
-  import { page } from '$app/stores'
-  $: user = $page.data._user
-  $: code = `CHIVI ${user.uname} ID ${user.vu_id}`
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
+  $: code = `CHIVI ${$_user.uname} ID ${$_user.vu_id}`
 </script>
 
 Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.
 
 <p class="em strong">
-Để ban quản trị dễ dàng phân biệt tài khoản của bạn, khi chuyển khoản ủng hộ Chivi hãy để lại lời nhắn theo định dạng <code>{code}</code>. {#if user.vu_id == 0}(Lưu ý: Bạn cần đăng nhập để thông tin gợi ý được chính xác.){/if}
+Để ban quản trị dễ dàng phân biệt tài khoản của bạn, khi chuyển khoản ủng hộ Chivi hãy để lại lời nhắn theo định dạng <code>{code}</code>. {#if $_user.vu_id == 0}(Lưu ý: Bạn cần đăng nhập để thông tin gợi ý được chính xác.){/if}
 </p>
 
 _Mách nhỏ: Bạn có thể scan mã QR ở bên dưới. Thông tin định danh của bạn đã được điền sẵn nếu bạn dùng QR của Techcombank hoặc Vietcombank._

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { session } from '$lib/stores'
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
 
   import Star from '$gui/atoms/Star.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -48,7 +49,7 @@
 
 <form class="form" {action} {method} on:submit={submit}>
   <header class="head">
-    <span class="cv-user" data-privi={$session.privi}>{$session.uname}</span>
+    <span class="cv-user" data-privi={$_user.privi}>{$_user.uname}</span>
     <span class="stars">
       {#each [1, 2, 3, 4, 5] as star}
         <button type="button" class="star" on:click={() => (form.stars = star)}>

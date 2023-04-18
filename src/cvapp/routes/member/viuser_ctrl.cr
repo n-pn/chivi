@@ -20,7 +20,7 @@ class CV::SigninCtrl < CV::BaseCtrl
     body = {email: viuser.email, uname: viuser.uname, cpass: viuser.cpass}
     spawn CtrlUtil.log_user_action("user-signup", body, viuser)
 
-    login_user!(viuser)
+    render_user!(viuser)
   rescue err
     raise BadRequest.new(err.message)
   end
@@ -36,7 +36,7 @@ class CV::SigninCtrl < CV::BaseCtrl
     end
 
     user.check_privi!
-    login_user!(user)
+    render_user!(user)
   end
 
   DUMMY_PASS = Crypto::Bcrypt::Password.create("-", cost: 10)
@@ -48,11 +48,6 @@ class CV::SigninCtrl < CV::BaseCtrl
       DUMMY_PASS.verify(upass) # prevent timing attack
       nil
     end
-  end
-
-  private def login_user!(user : Viuser)
-    save_current_user!(user)
-    render json: ViuserView.new(user)
   end
 
   record PwtempForm, email : String do
@@ -86,8 +81,12 @@ class CV::SigninCtrl < CV::BaseCtrl
 
   @[AC::Route::DELETE("/logout")]
   def logout
-    save_current_user!(Viuser.load!("Khách"))
+    guest = Viuser.load!(0)
+    render_user!(guest)
+  end
 
-    render :accepted, text: "Đã đăng xuất"
+  private def render_user!(user : Viuser)
+    save_current_user!(user)
+    render json: ViuserView.new(user)
   end
 end

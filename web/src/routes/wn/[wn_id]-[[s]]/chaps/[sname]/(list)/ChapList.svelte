@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { page } from '$app/stores'
+  import { get_user } from '$lib/stores'
+  import { seed_path } from '$lib/kit_path'
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import { seed_path } from '$lib/kit_path'
 
   export let nvinfo: CV.Wninfo
   export let ubmemo: CV.Ubmemo
@@ -19,16 +19,19 @@
 
   $: base_url = seed_path(nvinfo.bslug, curr_seed.sname)
 
-  $: _privi = $page.data._user.privi
+  const _user = get_user()
 
   function map_privi(ch_no: number): string[] {
     let min = seed_data.read_privi
     if (ch_no <= seed_data.gift_chaps) min -= 1
 
-    if (_privi >= min) return ['Bạn đủ quyền xem chương', 'lock-open', 'tabler']
-
-    if (min < 1) return ['Bạn cần đăng nhập để xem chương', 'lock', 'tabler']
-    return [`Cần quyền hạn ${min} để xem chương`, `privi-${min}`, 'sprite']
+    if ($_user.privi >= min) {
+      return ['Bạn đủ quyền xem chương', 'lock-open', 'tabler']
+    } else if (min < 1) {
+      return ['Bạn cần đăng nhập để xem chương', 'lock', 'tabler']
+    } else {
+      return [`Cần quyền hạn ${min} để xem chương`, `privi-${min}`, 'sprite']
+    }
   }
 </script>
 

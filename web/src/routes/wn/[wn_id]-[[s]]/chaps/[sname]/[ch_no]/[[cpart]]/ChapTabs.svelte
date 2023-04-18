@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { page } from '$app/stores'
+  // import { get_user } from '$lib/stores'
+  // const _user = get_user()
 
   export let nvinfo: CV.Wninfo
   // export let nvseed: CV.Chroot
@@ -16,7 +17,7 @@
     return `/wn/${nvinfo.bslug}/chaps/${sname}/${chinfo.chidx}`
   }
 
-  // $: uname = '@' + $page.data._user.uname
+  // $: uname = '@' + $_user.uname
   // $: _main = seeds.find((x) => x.sname == '_')
   // $: _self = seeds.find((x) => x.sname == uname)
 </script>

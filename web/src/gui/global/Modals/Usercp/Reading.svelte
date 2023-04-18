@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { browser } from '$app/environment'
+  import { onMount } from 'svelte'
+  import type { Writable } from 'svelte/store'
 
   import { status_names, status_icons } from '$lib/constants'
   import { chap_path, _pgidx } from '$lib/kit_path'
@@ -7,13 +8,12 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import { get_rtime } from '$gui/atoms/RTime.svelte'
 
-  export let tab = 0
-  export let user: App.CurrentUser
+  export let _user: Writable<App.CurrentUser>
 
   let chaps: Array<any>
-
   let kind = ''
-  $: if (browser && tab == 0) load_history(kind)
+
+  onMount(load_history)
 
   async function load_history(kind = '', pg = 1) {
     const api_url = `/_db/_self/books/access?kind=${kind}&pg=${pg}&lm=15`
@@ -32,7 +32,7 @@
 <div class="chips">
   {#each ['reading', 'onhold', 'pending'] as status}
     {@const icon = status_icons[status]}
-    <a href="/@{user.uname}/books/{status}" class="chip">
+    <a href="/@{$_user.uname}/books/{status}" class="chip">
       <SIcon name={icon} />
       {status_names[status]}
     </a>

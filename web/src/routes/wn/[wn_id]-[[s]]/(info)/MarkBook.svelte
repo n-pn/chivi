@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { session } from '$lib/stores'
   import { api_call } from '$lib/api_call'
+
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
 
   import {
     status_types,
@@ -16,7 +18,7 @@
   $: book_status = ubmemo.status
 
   async function update_status(status: string) {
-    if ($session.privi < 0) return
+    if ($_user.privi < 0) return
 
     try {
       if (status == book_status) status = 'default'

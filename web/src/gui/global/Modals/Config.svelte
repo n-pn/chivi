@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { config as data } from '$lib/stores'
+  import { config as data, get_user } from '$lib/stores'
   import { ctrl as lookup } from '$gui/parts/Lookup.svelte'
 
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
@@ -18,18 +18,18 @@
 </script>
 
 <script lang="ts">
-  import { page } from '$app/stores'
   import { browser } from '$app/environment'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
 
   let elem: HTMLElement
-
   $: if (elem) elem.focus()
 
+  const _user = get_user()
+
   async function update_wtheme(wtheme: string) {
-    if ($page.data._user.privi < 0) return
+    if ($_user.privi < 0) return
 
     await fetch('/_db/_self/config', {
       method: 'PUT',

@@ -1,5 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores'
+  import { get_user } from '$lib/stores'
+
   import { invalidateAll } from '$app/navigation'
 
   import { ztext, vdict } from '$lib/stores'
@@ -16,6 +18,7 @@
 
   import type { PageData } from './$types'
   export let data: PageData
+  const _user = get_user()
 
   $: vdict.put(+data.vd_id, data.label, data.brief)
   $: query = data.query
@@ -96,7 +99,7 @@
 
       <tbody>
         {#each data.terms as { key, val, ptag, prio, mtime, uname, tab = 0 }, idx}
-          {@const uname_class = uname == data._user.uname ? '_self' : '_else'}
+          {@const uname_class = uname == $_user.uname ? '_self' : '_else'}
 
           <tr class="term" class:_mute={tab < 0} class:_temp={tab > 1}>
             <td class="-idx">{data.start + idx}</td>

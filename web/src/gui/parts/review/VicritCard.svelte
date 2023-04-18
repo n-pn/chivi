@@ -1,12 +1,11 @@
-<script context="module" lang="ts">
-  import { session } from '$lib/stores'
-  import { rel_time } from '$utils/time_utils'
-</script>
-
 <script lang="ts">
-  import { SIcon, Stars } from '$gui'
-  import { api_path } from '$lib/api_call'
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
 
+  import { api_path } from '$lib/api_call'
+  import { rel_time } from '$utils/time_utils'
+
+  import { SIcon, Stars } from '$gui'
   import Truncate from '$gui/atoms/Truncate.svelte'
   import YscritBook from './YscritBook.svelte'
 
@@ -76,7 +75,7 @@
       <span>Liên kết</span>
     </a>
 
-    {#if $session.privi > 3 || $session.uname == user.uname}
+    {#if $_user.privi > 3 || $_user.uname == user.uname}
       <a class="meta" href={edit_path}>
         <SIcon name="pencil" />
         <span>Sửa chữa</span>
