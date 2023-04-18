@@ -103,6 +103,7 @@ class CV::Unotif
     @@db.query_one? <<-SQL, action.value, object_id, byuser_id, as: self
       select * from #{@@table}
       where "action" = $1 and object_id = $2 and byuser_id = $3
+      limit 1
     SQL
   end
 

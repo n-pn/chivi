@@ -36,8 +36,16 @@ class CV::Memoir
     end
   end
 
+  def target
+    case Type.new(target_type)
+    when .murepl? then Murepl.load!(id: self.target_id)
+    when .dtopic? then Dtopic.load!(id: self.target_id)
+    else               raise "unknown type"
+    end
+  end
+
   def create_like_notif!(target : Murepl | Dtopic, from_user : String)
-    return if target.viuser_id == self.target_id
+    return if target.viuser_id == self.viuser_id
 
     action = target.is_a?(Murepl) ? Unotif::Action::LikeRepl : Unotif::Action::LikeDtop
     return if Unotif.find(action, target.id, target.viuser_id)
@@ -45,10 +53,10 @@ class CV::Memoir
     content, details, link_to = target.gen_like_notif(from_user)
 
     unotif = Unotif.new(
-      target.viuser_id,
-      action, self.id, self.viuser_id,
-      content, details.to_json, link_to,
-      Time.unix(self.liked_at)
+      viuser_id: target.viuser_id,
+      action: action, object_id: target.id, byuser_id: self.viuser_id,
+      content: content, details: details.to_json, link_to: link_to,
+      created_at: Time.unix(self.liked_at)
     )
 
     unotif.create!
