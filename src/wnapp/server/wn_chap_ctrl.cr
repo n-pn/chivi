@@ -58,8 +58,6 @@ class WN::ChapCtrl < AC::Base
       "Cookie"       => context.request.headers["Cookie"],
     }
 
-    Log.info { context.request.headers["Cookie"] }
-
     HTTP::Client.post(url, headers: headers, body: ztext) do |res|
       res.success? ? res.body_io.gets_to_end : ""
     end

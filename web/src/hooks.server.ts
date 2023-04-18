@@ -62,7 +62,7 @@ const guest_user = {
   uname: 'Khách',
   privi: -1,
   until: 0,
-  vcoin: 0,
+  vcoin: -10000,
   point_today: 0,
   point_limit: 0,
   unread_notif: 0,
@@ -71,7 +71,7 @@ const guest_user = {
 const get_hash = (cookie: string) => cookie && cookie.replace('/', '_')
 
 async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
-  const hash = get_hash(event.cookies.get('_auth')) || 'guest'
+  const hash = get_hash(event.cookies.get('_a')) || 'guest'
   // const path = `tmp/_user/${hash}.json`
 
   let cached_user = cached_users[hash]
