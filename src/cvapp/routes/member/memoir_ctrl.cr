@@ -66,6 +66,8 @@ class CV::MemoirCtrl < CV::BaseCtrl
     target.save!
     memoir.save!
 
+    return if target.viuser_id == memoir.viuser_id
+
     spawn do
       case action
       when .like?   then memoir.create_like_notif!(target, _uname)
