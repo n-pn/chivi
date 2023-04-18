@@ -15,7 +15,7 @@ max_chaps = seeds.group_by(&.wn_id).map do |wn_id, items|
   {wn_id, items.max_of(&.chap_total)}
 end
 
-index_map = Dir.glob("/mnt/vault/devel/chivi/var/anlzs/texsmart/idx/*.tsv").map do |file|
+index_map = Dir.glob("var/anlzs/texsmart/idx/*.tsv").map do |file|
   {File.basename(file).split('-', 2).first.to_i, file}
 end.to_h
 

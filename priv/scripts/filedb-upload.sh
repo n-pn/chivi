@@ -27,7 +27,6 @@ then
 
   rsync-fast "var/chaps/seed-infos.db" "$SSH/var/chaps"
   # rsync-fast "var/chaps/infos" "$SSH/var/chaps"
-  # rsync-fast --include="*/" --exclude="*.zip" "var/chaps/texts" "$SSH/var/chaps"
 fi
 
 if [[ $* == *misc* ]]

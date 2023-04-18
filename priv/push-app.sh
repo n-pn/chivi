@@ -9,13 +9,13 @@ do
 
   if [[ $target == "cvweb" ]]
   then
-    cd web && pnpm run build && rsync -ai --no-p build/ /app/chivi/web/
+    cd web && pnpm run build && rsync -ai --no-p build/ /app/chivi.app/web/
     cd ..
   # elif [[ $target == "hanlp" ]]
   # then
   #   rsync-fast "src/hanlp-srv.py" $SSH/bin
   else
-    crystal build -s --release src/$target-srv.cr -o /app/chivi/bin/$target-srv
+    crystal build -s --release src/$target-srv.cr -o /app/chivi.app/bin/$target-srv
   fi
 
   echo restarting $target service

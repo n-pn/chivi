@@ -56,32 +56,31 @@ module WN::TextStore
 
   # save chap text file with body parts provided
   @[AlwaysInline]
-  def save_txt_file(seed : WnSeed, chap : WnChap) : Nil
+  def save_txt_file(seed : WnSeed, chap : WnChap) : String
     txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
     save_txt_file(txt_path, chap.body)
   end
 
   # :ditto:
   @[AlwaysInline]
-  def save_txt_file(txt_path : String, body_parts : Array(String)) : Nil
+  def save_txt_file(txt_path : String, body_parts : Array(String)) : String
     body = body_parts.join("\n\n").encode(ENCODING)
     File.write(txt_path, body, encoding: ENCODING)
-
-    zip_path = File.dirname(txt_path).sub("rgbks", "rzips") + ".zip"
-    `zip -jyoq '#{zip_path}' '#{txt_path}'`
-  rescue ex
-    Log.error(exception: ex) { ex.message }
+    txt_path
   end
 
-  def zip_one(sname : String, s_bid : Int32, txt_path : String)
+  def zip_one(sname : String, s_bid : Int32, txt_path : String) : Nil
     zip_path = gen_zip_path(sname, s_bid)
+    Dir.mkdir_p(File.dirname(zip_path))
+
     `zip -jyoq '#{zip_path}' '#{txt_path}'`
   end
 
-  def zip_all(sname : String, s_bid : Int32)
+  def zip_all(sname : String, s_bid : Int32) : Nil
     zip_path = gen_zip_path(sname, s_bid)
+    Dir.mkdir_p(File.dirname(zip_path))
+
     text_dir = "#{TXT_DIR}/#{sname}/#{s_bid}"
-
     `zip -FSrjyoq '#{zip_path}' '#{text_dir}'`
   end
 

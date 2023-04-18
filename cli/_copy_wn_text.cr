@@ -3,8 +3,6 @@ require "colorize"
 
 TXT_DIR = "var/texts/rgbks"
 
-# ZIP_DIR = "var/chaps/texts-zip"
-
 def copy_book(sname : String, s_bid : String)
   queue = [] of {String, String}
 

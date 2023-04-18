@@ -152,7 +152,8 @@ class WN::WnChap
   end
 
   def save_body_copy!(seed : WnSeed = self.seed, @_flag = 2) : Nil
-    TextStore.save_txt_file(seed, self)
+    txt_path = TextStore.save_txt_file(seed, self)
+    TextStore.zip_one(seed.sname, seed.s_bid, txt_path)
     seed.save_chap!(self)
   end
 
