@@ -47,7 +47,7 @@ class CV::Viuser
   end
 
   def point_limit
-    (self.vcoin * 1000).round.to_i + 2 ** self.privi * 100_000
+    privi < 0 ? 0 : (self.vcoin * 1000).round.to_i &+ (2 ** self.privi) * 100_000
   end
 
   def pwtemp?(upass : String)

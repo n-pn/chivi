@@ -81,7 +81,7 @@ class CV::SigninCtrl < CV::BaseCtrl
 
   @[AC::Route::DELETE("/logout")]
   def logout
-    guest = Viuser.load!(0)
+    guest = Viuser.load!("Khách")
     render_user!(guest)
   end
 

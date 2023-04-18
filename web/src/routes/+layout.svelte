@@ -34,10 +34,10 @@
   setContext('_user', _user)
 
   const short_pulling_user_data = async () => {
+    if ($_user.privi < 0) return
+
     try {
-      console.log('load user data from server!')
       $_user = await api_get<App.CurrentUser>('/_db/_self', fetch)
-      console.log({ unread: $_user.unread_notif })
     } catch (ex) {
       console.log(ex)
     }

@@ -10,9 +10,8 @@
 
   async function logout() {
     const res = await fetch('/_db/_user/logout', { method: 'DELETE' })
-    if (res.ok) {
-      $_user = (await res.json()) as App.CurrentUser
-    }
+    if (!res.ok) return
+    window.location.reload()
   }
 </script>
 
