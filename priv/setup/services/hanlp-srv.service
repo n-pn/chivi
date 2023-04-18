@@ -10,13 +10,13 @@ RestartSec=100
 User=nipin
 Environment=PORT=5600
 Environment=HANLP_VERBOSE=0
-Environment=HANLP_HOME=/app/chivi/.hanlp
+Environment=HANLP_HOME=/app/.hanlp
 #Environment=PYTHONPATH=$PYTHONPATH:/home/nipin/.local/lib/python3.10/site-packages
 
-WorkingDirectory=/app/chivi
-ExecStart=/usr/bin/python3 /app/chivi/bin/hanlp_srv.py
-StandardOutput=file:/app/chivi/log/hanlp-srv.log
-StandardError=append:/app/chivi/log/hanlp-err.log
+WorkingDirectory=/app/chivi.app
+ExecStart=/usr/bin/python3 /app/chivi.app/bin/hanlp_srv.py
+StandardOutput=file:/app/chivi.app/log/hanlp-srv.log
+StandardError=append:/app/chivi.app/log/hanlp-err.log
 
 [Install]
 WantedBy=multi-user.target

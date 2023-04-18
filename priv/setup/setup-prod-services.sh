@@ -11,19 +11,15 @@ sudo cp -f "$CWD/services/mt_v2-srv.service" /etc/systemd/system/mt_v2-srv.servi
 sudo cp -f "$CWD/services/mt_sp-srv.service" /etc/systemd/system/mt_sp-srv.service
 sudo cp -f "$CWD/services/ysapp-srv.service" /etc/systemd/system/ysapp-srv.service
 sudo cp -f "$CWD/services/wnapp-srv.service" /etc/systemd/system/wnapp-srv.service
-
 #sudo cp -f "$CWD/services/hanlp-srv.service" /etc/systemd/system/hanlp-srv.service
-
-#sudo cp -f "$CWD/services/mt_v2-mon.service" /etc/systemd/system/mt_v2-mon.service
-#sudo cp -f "$CWD/services/mt_v2-mon.path" /etc/systemd/system/mt_v2-mon.path
 
 sudo systemctl daemon-reload
 
 sudo systemctl enable cvapp-srv.service
 sudo service cvapp-srv restart
 
-sudo systemctl enable cvweb-srv.service
-sudo service cvweb-srv restart
+sudo systemctl enable wnapp-srv.service
+sudo service wnapp-srv restart
 
 sudo systemctl enable ysapp-srv.service
 sudo service ysapp-srv restart
@@ -40,11 +36,5 @@ sudo service mt_v1-srv restart
 sudo systemctl enable mt_v2-srv.service
 sudo service mt_v2-srv restart
 
-#sudo systemctl enable mt_v2-mon.service
-#sudo service mt_v2-mon restart
-
-#sudo systemctl enable mt_v2-mon.path
-#sudo systemctl start mt_v2-mon.path
-
-sudo systemctl enable wnapp-srv.service
-sudo service wnapp-srv restart
+sudo systemctl enable cvweb-srv.service
+sudo service cvweb-srv restart

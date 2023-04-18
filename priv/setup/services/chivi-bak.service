@@ -6,7 +6,7 @@ StartLimitIntervalSec=0
 [Service]
 Type=oneshot
 User=nipin
-WorkingDirectory=/app/chivi/srv
+WorkingDirectory=/app/chivi.app/srv
 ExecStart=/usr/bin/bash priv/run-hourly.sh
 
 [Install]
