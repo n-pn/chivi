@@ -6,7 +6,6 @@ CREATE TABLE viusers(
   cpass text NOT NULL,
   --
   vcoin double8 DEFAULT 0 NOT NULL,
-  vcoin_total int DEFAULT 0 NOT NULL,
   --
   point int DEFAULT 0 NOT NULL,
   karma int DEFAULT 0 NOT NULL,

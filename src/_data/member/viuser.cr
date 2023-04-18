@@ -28,7 +28,6 @@ class CV::Viuser
   column privi_until : Array(Int64) = [0_i64, 0_i64, 0_i64]
 
   column vcoin : Float64 = 0
-  column vcoin_total : Int32 = 0
 
   column last_loggedin_at : Time = Time.utc
   column reply_checked_at : Time = Time.utc
@@ -70,11 +69,6 @@ class CV::Viuser
     {30, 50, 90, 130},   # privi 2
     {50, 100, 175, 250}, # privi 3
   }
-
-  def fix_vcoin(value : Float64)
-    self.vcoin_total += value if value > 0
-    self.vcoin += value
-  end
 
   def current_privi_until(privi = self.privi)
     self.privi_until[privi &- 1]? || Time.utc.to_unix &+ 86400 &* 360
