@@ -23,12 +23,12 @@
           {@const user = replies.users[repl.yu_id]}
           <div class="repl">
             <header class="repl-head">
-              <a class="-user" href="/wn/crits?from=ys&user={user.uslug}"
+              <a class="repl-user" href="/wn/crits?from=ys&user={user.id}"
                 >{user.uname}</a>
-              <span class="-sep">·</span>
-              <time class="-time">{get_rtime(repl.ctime)}</time>
+              <span class="fg-tert">·</span>
+              <time class="repl-time">{get_rtime(repl.ctime)}</time>
 
-              <div class="-like">
+              <div class="repl-like">
                 <SIcon name="thumb-up" />
                 <span>{repl.like_count}</span>
               </div>
@@ -121,20 +121,15 @@
     @include bps(font-size, rem(13px), rem(14px), rem(15px));
   }
 
-  .-user,
-  .-time {
-    @include clamp($width: null);
-  }
-
-  .-time,
-  .-like,
-  .-sep {
+  .repl-time {
     @include fgcolor(tert);
   }
 
-  .-user {
+  .repl-user {
     font-weight: 500;
-    max-width: 50vw;
+    max-width: min(50vw, 12rem);
+
+    @include clamp($width: null);
     @include fgcolor(secd);
 
     &:hover {
@@ -142,7 +137,7 @@
     }
   }
 
-  .-like {
+  .repl-like {
     margin-left: auto;
     display: inline-flex;
     align-items: center;

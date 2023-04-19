@@ -34,4 +34,8 @@
 
 .fg-link {
   @include fgcolor(primary, 6);
+
+  &:hover {
+    @include fgcolor(primary, 5);
+  }
 }

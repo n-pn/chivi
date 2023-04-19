@@ -260,9 +260,4 @@
       @include fgcolor(primary, 5);
     }
   }
-
-  .mute {
-    @include fgcolor(secd);
-    font-size: em(15, 16);
-  }
 </style>

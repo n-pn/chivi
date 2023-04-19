@@ -21,7 +21,7 @@
       {@const user = data.users[repl.yu_id]}
       <div class="repl">
         <header class="repl-head">
-          <a class="repl-user" href="/wn/crits?from=ys&user={user.uslug}"
+          <a class="repl-user" href="/wn/crits?from=ys&user={user.id}"
             >{user.uname}</a>
           <span class="fg-tert">·</span>
           <time class="repl-time">{get_rtime(repl.ctime)}</time>
@@ -47,8 +47,8 @@
   }
 
   .replies {
-    padding: var(--gutter);
-    // max-width: min(40rem, 100%);
+    @include padding-x(var(--gutter));
+    max-width: min(40rem, 100%);
     // margin: 0 auto;
   }
 
@@ -63,7 +63,7 @@
   .repl-head {
     @include flex($gap: 0.3rem);
 
-    line-height: 1.5rem;
+    line-height: 1.75rem;
     padding-top: 0.375rem;
 
     @include bps(font-size, rem(13px), rem(14px), rem(15px));
@@ -71,8 +71,8 @@
 
   .repl-body {
     @include bps(font-size, rem(15px), rem(16px));
-    padding-bottom: 0.5rem;
-    > :global(*) + :global(*) {
+    padding-bottom: 0.75rem;
+    > :global(* + *) {
       margin-top: 0.75rem;
     }
   }

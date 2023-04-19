@@ -7,7 +7,7 @@ struct YS::UserView
 
   def to_json(jb = JSON::Builder.new)
     jb.object do
-      jb.field "yu_id", @data.id
+      jb.field "id", @data.id
       jb.field "uname", @data.vname
       jb.field "uslug", @data.vslug
       jb.field "avatar", @data.y_avatar

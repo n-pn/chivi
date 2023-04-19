@@ -36,14 +36,10 @@ class YS::CritCtrl < AC::Base
 
     lists = yslist ? [yslist] : Yslist.preload(crits.compact_map(&.yslist_id))
 
-    if total < offset + crits.size
-      total = offset + crits.size
-    end
+    total = offset &+ crits.size if total < offset &+ crits.size
 
     pgmax = _pgidx(total, limit)
     pgmax += 1 if pgmax == pg_no && crits.size == limit
-
-    Log.info { "total: #{total}, pgmax: #{pgmax}" }
 
     render json: ({
       crits: CritView.as_list(crits),
@@ -54,14 +50,6 @@ class YS::CritCtrl < AC::Base
       total: total,
       pgmax: pgmax,
     })
-  rescue err
-    render json: {
-      pgidx: 0,
-      pgmax: 0,
-      crits: [] of Yscrit,
-      books: {} of Int64 => CvBook,
-      error: err.message,
-    }
   end
 
   @[AC::Route::GET("/crits/:crit_id")]

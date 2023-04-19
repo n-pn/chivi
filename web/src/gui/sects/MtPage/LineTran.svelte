@@ -168,17 +168,17 @@
     margin-top: 0.5rem;
   }
 
-  .hanviet,
-  .convert {
-    @include border();
-    @include bdradi();
-    min-height: 5rem;
-    padding: 0.25rem 0.75rem;
-    margin-top: 0.25rem;
-    line-height: 1.25rem;
-    font-weight: 400;
-    font-size: rem(14px);
-    @include fgcolor(tert);
-    @include bgcolor(tert);
-  }
+  // .hanviet,
+  // .convert {
+  //   @include border();
+  //   @include bdradi();
+  //   min-height: 5rem;
+  //   padding: 0.25rem 0.75rem;
+  //   margin-top: 0.25rem;
+  //   line-height: 1.25rem;
+  //   font-weight: 400;
+  //   font-size: rem(14px);
+  //   @include fgcolor(tert);
+  //   @include bgcolor(tert);
+  // }
 </style>
