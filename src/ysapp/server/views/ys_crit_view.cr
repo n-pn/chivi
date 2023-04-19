@@ -1,6 +1,6 @@
 require "json"
 
-require "../../models/ys_crit"
+require "../../data/yscrit"
 require "../../../_util/hash_util"
 
 struct YS::CritView

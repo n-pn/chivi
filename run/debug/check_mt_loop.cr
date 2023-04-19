@@ -1,5 +1,5 @@
 require "colorize"
-require "../../src/ysapp/_raw/raw_ys_repl"
+require "../../src/ysapp/_raw/raw_ysrepl"
 require "../../src/mtapp/qt_core"
 
 DIC = MT::QtDict.new.load_dic!("common-main")

@@ -1,6 +1,6 @@
 require "colorize"
 require "http/client"
-require "../models/ys_crit"
+require "../../src/ysapp/data/yscrit"
 
 def seed_crit_by_user(path : String)
   puts path

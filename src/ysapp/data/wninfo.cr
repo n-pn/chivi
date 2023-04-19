@@ -12,7 +12,7 @@ class YS::Author
   end
 end
 
-class YS::CvBook
+class YS::Wninfo
   include Clear::Model
   self.table = "nvinfos"
 

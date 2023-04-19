@@ -1,9 +1,9 @@
 require "json"
 
-require "../../models/cv_book"
+require "../../data/wninfo"
 
 struct YS::BookView
-  def initialize(@data : CvBook)
+  def initialize(@data : Wninfo)
   end
 
   def to_json(io : IO)
@@ -35,7 +35,7 @@ struct YS::BookView
     }
   end
 
-  def self.as_hash(inp : Enumerable(CvBook))
+  def self.as_hash(inp : Enumerable(Wninfo))
     res = {} of Int64 => self
     inp.each { |obj| res[obj.id] = new(obj) }
     res

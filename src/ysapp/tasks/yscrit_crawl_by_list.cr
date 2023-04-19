@@ -2,7 +2,7 @@ require "pg"
 require "../../cv_env"
 
 require "./_crawl_common"
-require "../_raw/raw_ys_crit"
+require "../_raw/raw_yscrit"
 
 class YS::CrawlYscritByUser < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
@@ -11,7 +11,7 @@ class YS::CrawlYscritByUser < CrawlTask
     yl_id = File.basename(File.dirname(entry.path))
     rtime = Time.utc.to_unix
 
-    api_path = "/_ys/crits/by_list/#{yl_id}?rtime=#{rtime}"
+    api_path = "crits/by_list/#{yl_id}?rtime=#{rtime}"
     post_raw_data(api_path, json)
   end
 

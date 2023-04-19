@@ -2,12 +2,12 @@ require "pg"
 require "../../cv_env"
 
 require "./_crawl_common"
-require "../_raw/raw_ys_crit"
+require "../_raw/raw_yscrit"
 
 class YS::CrawlYscritByBook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
-    api_path = "/_ys/crits/by_book?rtime=#{Time.utc.to_unix}"
+    api_path = "crits/by_book?rtime=#{Time.utc.to_unix}"
     post_raw_data(api_path, json)
   end
 

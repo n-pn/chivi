@@ -2,12 +2,12 @@ require "pg"
 require "../../cv_env"
 
 require "./_crawl_common"
-require "../_raw/raw_ys_list"
+require "../_raw/raw_yslist"
 
 class CV::YslistCrawlByBook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
-    post_raw_data("/lists/info", json)
+    post_raw_data("lists/info", json)
 
     #   yslist = YS::Yslist.upsert!(self.oid, self.created_at || self.updated_at)
     #   yslist.ysuser = ysuser || begin

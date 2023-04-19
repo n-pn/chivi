@@ -1,9 +1,9 @@
 require "./_crawl_common"
-require "../_raw/raw_ys_user"
+require "../_raw/raw_ysuser"
 
 class YS::CrawlYsuser < CrawlTask
   def self.upsert_user_info(json : String, rtime : Time)
-    post_raw_data("/_ys/users/info?rtime=#{rtime.to_unix}", json)
+    post_raw_data("users/info?rtime=#{rtime.to_unix}", json)
   end
 
   def db_seed_tasks(entry : Entry, json : String)

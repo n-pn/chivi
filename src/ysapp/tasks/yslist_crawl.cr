@@ -1,5 +1,5 @@
 require "./_crawl_common"
-require "../_raw/raw_ys_list"
+require "../_raw/raw_yslist"
 
 class YS::YslistCrawl < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)

@@ -1,5 +1,5 @@
 require "json"
-require "../../models/ys_list"
+require "../../data/yslist"
 
 struct YS::ListView
   def initialize(@data : Yslist, @full = false)

@@ -7,7 +7,7 @@ class YS::InitCtrl < AC::Base
   base "/_ys"
 
   @[AC::Route::POST("/books/info", body: :json)]
-  def book_info(json : RawYsBook, rtime : Int64 = Time.utc.to_unix)
+  def book_info(json : RawYsbook, rtime : Int64 = Time.utc.to_unix)
     json.info_rtime = rtime
 
     if model = Ysbook.upsert!(json)
@@ -18,7 +18,7 @@ class YS::InitCtrl < AC::Base
   end
 
   @[AC::Route::POST("/users/info", body: :data)]
-  def user_info(data : RawYsUser, rtime : Int64 = Time.utc.to_unix)
+  def user_info(data : RawYsuser, rtime : Int64 = Time.utc.to_unix)
     ysuser = Ysuser.load(data.user.id)
 
     ysuser.set_data(data.user)

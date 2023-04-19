@@ -55,7 +55,7 @@ class YS::Ysuser
     self.save! if persist || !id_column.defined?
   end
 
-  def set_stat(stat : RawYsUser, rtime : Int64)
+  def set_stat(stat : RawYsuser, rtime : Int64)
     self.like_count = stat.like_count
     self.star_count = stat.star_count
 

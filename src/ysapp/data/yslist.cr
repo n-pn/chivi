@@ -1,6 +1,6 @@
 require "./ys_user"
 require "./ys_crit"
-require "../_raw/raw_ys_list"
+require "../_raw/raw_yslist"
 
 class YS::Yslist
   include Clear::Model
@@ -87,7 +87,7 @@ class YS::Yslist
     find({yl_id: yl_id}) || new({yl_id: yl_id, created_at: created_at})
   end
 
-  def update_from(raw_data : RawYsList, rtime : Int64 = Time.utc.to_unix)
+  def update_from(raw_data : RawYslist, rtime : Int64 = Time.utc.to_unix)
     self.set_name(raw_data.zname)
     self.set_desc(raw_data.zdesc)
 
@@ -117,7 +117,7 @@ class YS::Yslist
     self.updated_at = raw_data.updated_at
   end
 
-  def self.upsert!(raw_data : RawYsList, rtime : Int64 = Time.utc.to_unix)
+  def self.upsert!(raw_data : RawYslist, rtime : Int64 = Time.utc.to_unix)
     inp_list = find({yl_id: raw_data.yl_id}) || new({yl_id: raw_data.yl_id, created_at: raw_data.created_at})
 
     inp_list.update_from(raw_data, rtime: rtime)

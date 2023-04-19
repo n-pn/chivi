@@ -1,6 +1,6 @@
 require "./_common"
 
-class YS::RawYsList
+class YS::RawYslist
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
@@ -63,7 +63,7 @@ class YS::RawYsList
 
   ###################
 
-  record ListJson, booklists : Array(RawYsList), total : Int32 do
+  record ListJson, booklists : Array(RawYslist), total : Int32 do
     include JSON::Serializable
   end
 

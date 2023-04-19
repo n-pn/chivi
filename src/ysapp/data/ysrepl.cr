@@ -85,7 +85,7 @@ class YS::Ysrepl
     find({yr_id: yr_id.hexbytes}) || new({yr_id: yr_id.hexbytes})
   end
 
-  def self.bulk_upsert!(raw_repls : Array(RawYsRepl), save_text : Bool = true)
+  def self.bulk_upsert!(raw_repls : Array(RawYsrepl), save_text : Bool = true)
     crit_ids = {} of Bytes => Int32
 
     raw_repls.map do |raw_repl|

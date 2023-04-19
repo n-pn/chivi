@@ -1,5 +1,5 @@
 require "colorize"
-require "../models/ys_crit"
+require "../../src/ysapp/data/yscrit"
 
 def seed_crit_by_list(path : String)
   puts path

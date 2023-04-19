@@ -1,12 +1,12 @@
 require "./_crawl_common"
-require "../_raw/raw_ys_list"
+require "../_raw/raw_yslist"
 
 class YS::CrawlYslistByUser < CrawlTask
   alias RawData = NamedTuple(data: NamedTuple(total: Int32))
 
   private def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
-    post_raw_data("/_ys/lists/by_user?rtime=#{Time.utc.to_unix}", json)
+    post_raw_data("lists/by_user?rtime=#{Time.utc.to_unix}", json)
   rescue ex
     puts entry.path, json
     Log.error { ex.message }

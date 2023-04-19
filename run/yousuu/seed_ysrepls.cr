@@ -4,8 +4,8 @@
 # - sort files by modification time so older entries do not override newer entries
 # - keep track of seeded entries so you don't have to seed twice
 
-require "../../src/ysapp/_raw/raw_ys_repl"
-require "../../src/ysapp/models/ys_repl"
+require "../../src/ysapp/_raw/raw_ysrepl"
+require "../../src/ysapp/data/ysrepl"
 
 DIR = "var/ysraw/repls"
 
@@ -49,7 +49,7 @@ def seed_page(json : String, seeded : Set(String), repl_total : Int32)
   repl_total = data.total if repl_total < data.total
 
   repls = data.repls.reject!(&.yr_id.in?(seeded))
-  YS::Ysrepl.bulk_upsert(repls)
+  YS::Ysrepl.bulk_upsert!(repls)
 
   repls.each { |repl| seeded << repl.yr_id }
   {seeded, repl_total}

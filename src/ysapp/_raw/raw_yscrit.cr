@@ -1,6 +1,6 @@
 require "./_common"
 
-class YS::RawYsCrit
+class YS::RawYscrit
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
@@ -33,7 +33,7 @@ class YS::RawYsCrit
   getter updated_at : Time?
 end
 
-record YS::RawBookComments, comments : Array(YS::RawYsCrit), total : Int32 do
+record YS::RawBookComments, comments : Array(YS::RawYscrit), total : Int32 do
   include JSON::Serializable
 
   def self.from_json(string_or_io : String | IO)
@@ -42,7 +42,7 @@ record YS::RawBookComments, comments : Array(YS::RawYsCrit), total : Int32 do
   end
 end
 
-record YS::RawListEntries, books : Array(YS::RawYsCrit), total : Int32 do
+record YS::RawListEntries, books : Array(YS::RawYscrit), total : Int32 do
   include JSON::Serializable
 
   def self.from_json(string_or_io : String | IO)

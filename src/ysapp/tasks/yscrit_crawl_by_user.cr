@@ -1,10 +1,10 @@
 require "./_crawl_common"
-require "../_raw/raw_ys_crit"
+require "../_raw/raw_yscrit"
 
 class YS::CrawlYscritByUser < CrawlTask
   def self.seed_db_from_json(json : String, rtime : Time)
     return unless json.starts_with?('{')
-    post_raw_data("/_ys/crits/by_user?rtime=#{rtime.to_unix}", json)
+    post_raw_data("crits/by_user?rtime=#{rtime.to_unix}", json)
   end
 
   def db_seed_tasks(entry : Entry, json : String)

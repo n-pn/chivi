@@ -9,7 +9,7 @@ class YS::HomeCtrl < AC::Base
     crits = Yscrit.query.order_by(utime: :desc).offset(0).limit(2)
     lists = Yslist.query.where("book_count > 0").order_by(utime: :desc).offset(0).limit(3)
 
-    books = CvBook.preload(crits.map(&.nvinfo_id))
+    books = Wninfo.preload(crits.map(&.nvinfo_id))
 
     u_ids = crits.map(&.ysuser_id).concat(lists.map(&.ysuser_id))
     users = Ysuser.preload(u_ids)

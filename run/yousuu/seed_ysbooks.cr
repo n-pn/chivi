@@ -1,5 +1,5 @@
 require "colorize"
-require "../../src/ysapp/models/ys_book"
+require "../../src/ysapp/data/ysbook"
 
 def sync_file(path : String, force = false)
   puts path
@@ -7,7 +7,7 @@ def sync_file(path : String, force = false)
   json = read_zstd(path)
   return unless json.includes?("data")
 
-  data = YS::RawYsBook.from_json(json)
+  data = YS::RawYsbook.from_json(json)
   data.info_rtime = File.info(path).modification_time.to_unix
 
   return unless model = YS::Ysbook.upsert!(data, force: force)

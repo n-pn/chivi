@@ -1,12 +1,12 @@
 require "./_crawl_common"
-require "../_raw/raw_ys_repl"
+require "../_raw/raw_ysrepl"
 
 class YS::CrawlYslistByUser < CrawlTask
   private def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
 
     yc_id = File.basename File.dirname(entry.path)
-    endpoint = "/_ys/repls/by_crit/#{yc_id}?rtime=#{Time.utc.to_unix}"
+    endpoint = "repls/by_crit/#{yc_id}?rtime=#{Time.utc.to_unix}"
 
     post_raw_data(endpoint, json)
   rescue ex

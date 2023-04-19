@@ -1,5 +1,5 @@
 require "colorize"
-require "../../src/ysapp/_raw/raw_ys_repl"
+require "../../src/ysapp/_raw/raw_ysrepl"
 require "../../src/mt_v1/core/m1_core"
 
 MTL = M1::MtCore.init

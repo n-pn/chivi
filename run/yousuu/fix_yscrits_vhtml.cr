@@ -1,5 +1,5 @@
-require "../models/_base"
-require "../../mt_v1/core/m1_core"
+require "../../src/ysapp/models/_base"
+require "../../src/mt_v1/core/m1_core"
 
 DICT_MAP = {} of Int32 => Int32
 

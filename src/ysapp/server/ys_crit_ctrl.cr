@@ -1,5 +1,5 @@
 require "./_ys_ctrl_base"
-require "../models/ys_book"
+require "../data/ysbook"
 
 class YS::CritCtrl < AC::Base
   base "/_ys"
@@ -31,7 +31,7 @@ class YS::CritCtrl < AC::Base
       crits = query.to_a
     end
 
-    books = CvBook.preload(crits.map(&.nvinfo_id))
+    books = Wninfo.preload(crits.map(&.nvinfo_id))
     users = Ysuser.preload(crits.map(&.ysuser_id))
 
     lists = yslist ? [yslist] : Yslist.preload(crits.compact_map(&.yslist_id))
@@ -56,7 +56,7 @@ class YS::CritCtrl < AC::Base
   def entry(crit_id : Int32)
     ycrit = Yscrit.find!({id: crit_id})
     yuser = Ysuser.find!({id: ycrit.ysuser_id})
-    vbook = CvBook.find({id: ycrit.nvinfo_id})
+    vbook = Wninfo.find({id: ycrit.nvinfo_id})
     ylist = Yslist.find({id: ycrit.yslist_id})
 
     repls = Ysrepl.query.where("yscrit_id = ?", crit_id).where("vhtml <> ''")

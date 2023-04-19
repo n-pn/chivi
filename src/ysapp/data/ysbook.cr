@@ -1,6 +1,6 @@
 require "./_base"
 require "./cv_book"
-require "../_raw/raw_ys_book"
+require "../_raw/raw_ysbook"
 
 require "../../_data/wnovel/wninfo"
 require "../../_data/wnovel/wnlink"
@@ -135,7 +135,7 @@ class YS::Ysbook
     model.tap(&.save!)
   end
 
-  def self.upsert!(raw_data : RawYsBook, force : Bool = false)
+  def self.upsert!(raw_data : RawYsbook, force : Bool = false)
     model = load(raw_data.id)
 
     return if !force && model.info_rtime >= raw_data.info_rtime

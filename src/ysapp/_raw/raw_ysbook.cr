@@ -1,6 +1,6 @@
 require "./_common"
 
-class YS::RawYsBook
+class YS::RawYsbook
   annotation Temp; end
 
   include JSON::Serializable
@@ -120,7 +120,7 @@ class YS::RawYsBook
     include JSON::Serializable
 
     @[JSON::Field(key: "bookInfo")]
-    getter info : RawYsBook
+    getter info : RawYsbook
 
     @[JSON::Field(key: "bookSource")]
     property sources : Array(Source)

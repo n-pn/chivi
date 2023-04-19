@@ -1,7 +1,7 @@
 require "log"
 require "./_common"
 
-class YS::RawYsUser
+class YS::RawYsuser
   include JSON::Serializable
 
   @[JSON::Field(key: "userId")]

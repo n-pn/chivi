@@ -3,7 +3,7 @@ require "./_crawl_common"
 class YS::CrawlYsbook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
     return if json.includes?("未找到该图书")
-    post_raw_data("/books/info", json)
+    post_raw_data("books/info", json)
   end
 
   def self.gen_link(yb_id : Int32)
@@ -56,8 +56,6 @@ class YS::CrawlYsbook < CrawlTask
 
   def self.gen_queue(min = 1, max = 300000)
     y_bids = Set(Int32).new(min..max)
-
-  
 
     PG_DB.query_each(SELECT_STMT, min, max) do |rs|
       id, voters, rtime = rs.read(Int32, Int32, Int64)

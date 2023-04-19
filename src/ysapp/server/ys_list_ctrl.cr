@@ -1,6 +1,6 @@
 require "./_ys_ctrl_base"
 require "../../_util/text_util"
-require "../_raw/raw_ys_list"
+require "../_raw/raw_yslist"
 
 class YS::ListCtrl < AC::Base
   base "/_ys"
@@ -59,7 +59,7 @@ class YS::ListCtrl < AC::Base
 
     crits.limit(limit).offset(offset).to_a
 
-    books = CvBook.preload(crits.map(&.nvinfo_id))
+    books = Wninfo.preload(crits.map(&.nvinfo_id))
 
     render json: {
       ylist: ListView.new(ylist, true),
@@ -76,7 +76,7 @@ class YS::ListCtrl < AC::Base
   end
 
   @[AC::Route::POST("/lists/info", body: :data)]
-  def upsert(data : RawYsList, rtime : Int64 = Time.utc.to_unix)
+  def upsert(data : RawYslist, rtime : Int64 = Time.utc.to_unix)
     yslist = Yslist.upsert!(data, rtime: rtime)
     render text: yslist.id
   end

@@ -1,5 +1,5 @@
 require "json"
-require "../../models/ys_repl"
+require "../../data/ysrepl"
 
 struct YS::ReplView
   def initialize(@data : Ysrepl)

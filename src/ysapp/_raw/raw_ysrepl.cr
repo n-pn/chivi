@@ -1,6 +1,6 @@
 require "./_common"
 
-class YS::RawYsRepl
+class YS::RawYsrepl
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
@@ -41,7 +41,7 @@ struct YS::RawCritReplies
   include JSON::Serializable
 
   @[JSON::Field(key: "commentReply")]
-  getter repls : Array(YS::RawYsRepl)
+  getter repls : Array(YS::RawYsrepl)
 
   getter total : Int32
 

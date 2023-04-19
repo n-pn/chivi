@@ -1,5 +1,5 @@
 require "json"
-require "../../models/ys_user"
+require "../../data/ysuser"
 
 struct YS::UserView
   def initialize(@data : Ysuser)

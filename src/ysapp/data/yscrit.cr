@@ -5,7 +5,7 @@ require "./ys_list"
 require "./ys_book"
 require "./ys_user"
 
-require "../_raw/raw_ys_crit"
+require "../_raw/raw_yscrit"
 
 class YS::Yscrit
   include Clear::Model
@@ -180,7 +180,7 @@ class YS::Yscrit
 
   ####
 
-  def self.bulk_upsert(raw_crits : Array(RawYsCrit), save_text : Bool = true)
+  def self.bulk_upsert(raw_crits : Array(RawYscrit), save_text : Bool = true)
     raw_crits.map do |raw_crit|
       out_crit = self.load(raw_crit.yc_id)
 
