@@ -8,12 +8,12 @@ Type=simple
 Restart=always
 RestartSec=5
 User=nipin
-Environment=PORT=5110
-Environment=CV_ENV=production
-WorkingDirectory=/app/chivi
-ExecStart=/app/chivi/bin/mt_v1-srv
-StandardOutput=file:/app/chivi/log/mt_v1-srv.log
-StandardError=append:/app/chivi/log/mt_v1-err.log
+Environment=PORT=5111
+Environment=CV_ENV=development
+WorkingDirectory=/app/chivi.dev
+ExecStart=/app/chivi.dev/bin/mt_v1-srv
+StandardOutput=file:/app/chivi.dev/log/mt_v1-srv.log
+StandardError=append:/app/chivi.dev/log/mt_v1-err.log
 
 [Install]
 WantedBy=multi-user.target

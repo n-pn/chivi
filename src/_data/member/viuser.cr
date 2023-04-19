@@ -183,7 +183,7 @@ class CV::Viuser
     query.where("uname = ? OR email = ?", name_or_email, name_or_email).first
   end
 
-  def self.glob(user_ids : Array(Int32))
-    self.query.where { id.in? user_ids }
+  def self.preload(ids : Array(Int32))
+    ids.empty? ? [] of self : query.where { id.in?(ids) }
   end
 end

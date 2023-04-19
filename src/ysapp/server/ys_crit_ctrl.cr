@@ -9,14 +9,17 @@ class YS::CritCtrl < AC::Base
   def query(sort : String = "utime",
             smin : Int32 = 1, smax : Int32 = 5,
             user : String? = nil, book : Int32? = nil, list : Int32? = nil,
-            lb tags : String? = nil)
+            vtag : String? = nil)
     pg_no, limit, offset = _paginate(max: 24)
 
-    query = Yscrit.query.sort_by(sort)
-    query.where("vtags @> ?", tags.split("&")) if tags
-    query.where("ysuser_id = ?", user.split('-', 2)[0]) if user
+    query = Yscrit.query.sort_by(sort).where("vhtml <> ''")
+
+    query.where("? = any vtags", vtag) if vtag
+    query.where("ysuser_id = ?", user) if user
+
     query.where("stars >= ?", smin) if smin > 1
     query.where("stars <= ?", smax) if smax < 5
+
     query.limit(limit).offset(offset)
 
     if book

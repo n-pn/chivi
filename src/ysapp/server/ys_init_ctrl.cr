@@ -1,7 +1,7 @@
 require "./_ys_ctrl_base"
 
-require "../models/*"
 require "../_raw/*"
+require "../data/*"
 
 class YS::InitCtrl < AC::Base
   base "/_ys"
@@ -39,13 +39,9 @@ class YS::InitCtrl < AC::Base
   @[AC::Route::POST("/crits/by_user", body: :json)]
   def crits_by_user(json : RawBookComments, rtime : Int64 = Time.utc.to_unix)
     guard_empty json.comments
-    raw_ysuser = json.comments.first.user
 
-    PG_DB.exec <<-SQL, json.total, rtime, raw_ysuser.id
-      update ysusers
-      set crit_total = $1, crit_rtime = $2
-      where yu_id = $3 and list_total < $1
-      SQL
+    raw_ysuser = json.comments.first.user
+    Ysuser.update_crit_total(raw_ysuser.id, json.total, rtime)
 
     Yscrit.bulk_upsert(json.comments)
     render text: json.comments.size
@@ -68,21 +64,9 @@ class YS::InitCtrl < AC::Base
   @[AC::Route::POST("/crits/by_list/:yl_id", body: :json)]
   def crits_by_list(json : RawListEntries, yl_id : String, rtime : Int64 = Time.utc.to_unix)
     yl_id = yl_id.hexbytes
-
-    PG_DB.exec <<-SQL, json.total, rtime, yl_id
-      update yslists
-      set book_total = $1, book_rtime = $2
-      where yl_id = $3 and book_total < $1
-      SQL
-
-    crits = Yscrit.bulk_upsert(json.books, save_text: true)
-
-    PG_DB.exec <<-SQL, yl_id, Yslist.get_id(yl_id), crits.map(&.id)
-      update yscrits
-      set yl_id = $1, yslist_id = $2
-      where id = any ($3)
-      SQL
-
+    Yslist.update_book_total(yl_id, json.total, rtime)
+    Yscrit.bulk_upsert(json.books, save_text: true)
+    Yscrit.update_list_id(yl_id)
     render text: json.books.size
   end
 

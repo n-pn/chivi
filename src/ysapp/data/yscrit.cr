@@ -1,9 +1,9 @@
 require "./_base"
 require "./_util"
 
-require "./ys_list"
-require "./ys_book"
-require "./ys_user"
+require "./yslist"
+require "./ysbook"
+require "./ysuser"
 
 require "../_raw/raw_yscrit"
 
@@ -126,7 +126,7 @@ class YS::Yscrit
     return unless force || self.ztags.empty?
 
     self.ztags = ztags
-    self.fix_vtags!(ztags) unless ztags.empty?
+    self.fix_vtags!(ztags) if force && !ztags.empty?
   end
 
   def set_text(ztext : String, force : Bool = false)
@@ -134,7 +134,7 @@ class YS::Yscrit
     ztext = ztext.tr("\u0000", "\n").lines.map(&.strip).reject(&.empty?).join('\n')
 
     self.ztext = ztext
-    self.fix_vhtml(ztext) if force || self.vhtml.empty?
+    self.fix_vhtml(ztext) if force # || self.vhtml.empty?
   end
 
   def fix_vtags!(ztags = self.ztags)
@@ -166,12 +166,12 @@ class YS::Yscrit
 
   ###################
 
-  def self.load(yc_id : String)
-    load(yc_id.hexbytes)
+  def self.load(id : Int32)
+    find({id: id})
   end
 
-  def self.load(yc_id : Bytes)
-    find({yc_id: yc_id}) || new({yc_id: yc_id}).tap(&.save!)
+  def self.find(yc_id : Bytes)
+    query.where("yc_id = ?", yc_id).first
   end
 
   def self.get_id(yc_id : Bytes)
@@ -180,12 +180,15 @@ class YS::Yscrit
 
   ####
 
-  def self.bulk_upsert(raw_crits : Array(RawYscrit), save_text : Bool = true)
-    raw_crits.map do |raw_crit|
-      out_crit = self.load(raw_crit.yc_id)
+  def self.bulk_upsert(raw_crits : Array(RawYscrit), yl_id : Bytes? = nil, save_text : Bool = true) : Nil
+    raw_crits.each do |raw_crit|
+      yc_id = raw_crit.yc_id.hexbytes
+      out_crit = self.find(yc_id) || new({yc_id: yc_id})
 
       out_crit.set_book_id(raw_crit.book.id)
       out_crit.ysuser_id = raw_crit.user.id
+
+      out_crit.ys_id = yl_id if yl_id
 
       out_crit.stars = raw_crit.stars
       out_crit.set_tags(raw_crit.tags, force: false)
@@ -199,8 +202,8 @@ class YS::Yscrit
 
       out_crit.utime = out_crit.updated_at.to_unix
       out_crit.save!
-
-      out_crit
+    rescue ex
+      Log.error(exception: ex) { raw_crit }
     end
   end
 
@@ -211,6 +214,15 @@ class YS::Yscrit
       update yscrits
       set repl_total = $1, repl_rtime = $2
       where yc_id = $3 and repl_total < $1
+      SQL
+  end
+
+  def self.update_list_id(molist_id : Bytes)
+    PG_DB.exec <<-SQL, molist_id
+      update yscrits set yslist_id = (
+        select id from yslists
+        where yslists.yl_id = yscrits.yl_id
+      ) where yl_id = $1
       SQL
   end
 end

@@ -3,50 +3,40 @@ require "../_ctrl_base"
 class CV::VicritCtrl < CV::BaseCtrl
   base "/_db/crits"
 
-  @[AC::Route::GET("/", converters: {lb: ConvertArray})]
-  def index(
-    sort : String = "utime", smin : Int32 = 1, smax : Int32 = 5,
-    user : String? = nil, book : Int32? = nil, list : Int32? = nil,
-    lb tags : Array(String)? = nil
-  )
+  @[AC::Route::GET("/")]
+  def index(sort : String = "utime",
+            smin : Int32 = 1, smax : Int32 = 5,
+            user : String? = nil, book : Int32? = nil, list : Int32? = nil,
+            vtag : String? = nil)
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
     query = Vicrit.query.sort_by(sort)
 
-    if user && (user_data = Viuser.find({uname: user}))
-      query.where("viuser_id = ?", user_data.id)
-    end
-
+    query.where("viuser_id = (select id from viusers where uname = ?)", user) if user
     query.where("nvinfo_id = ?", book) if book
     query.where("vilist_id = ?", list) if list
 
     query.where("stars >= ?", smin) if smin > 1
     query.where("stars <= ?", smax) if smax < 5
 
-    query.where("btags @> ?", tags) if tags
+    query.where("? = any btags", vtag) if vtag
 
-    total = query.dup.limit(limit * 3 + offset).offset(0).count
+    total = query.dup.limit(limit &* 3 &+ offset).count
     crits = query.limit(limit).offset(offset).to_a
 
-    if crits.empty?
-      users = [] of Viuser
-      books = [] of Wninfo
-      lists = [] of Vilist
-    else
-      users = Viuser.query.where("id in (#{crits.join(",", &.viuser_id)})")
-      books = Wninfo.query.where("id in (#{crits.join(",", &.nvinfo_id)})")
-      lists = Vilist.query.where("id in (#{crits.join(",", &.vilist_id)})")
-    end
+    users = Viuser.preload(crits.map(&.viuser_id))
+    books = Wninfo.preload(crits.map(&.nvinfo_id))
+    lists = Vilist.preload(crits.map(&.vilist_id))
 
     render json: {
-      crits: crits.map { |x| VicritView.new(x, full: false) },
-      users: users.map { |x| {x.id, ViuserView.new(x, false)} }.to_h,
-      books: books.map { |x| {x.id, WninfoView.new(x, false)} }.to_h,
-      lists: lists.map { |x| {x.id, VilistView.new(x, :crit)} }.to_h,
+      crits: VicritView.as_list(crits, full: false),
+      users: ViuserView.as_hash(users),
+      books: WninfoView.as_hash(books),
+      lists: VilistView.as_hash(lists),
 
+      total: total,
       pgidx: pg_no,
       pgmax: _pgidx(total, limit),
-      total: total,
     }
   end
 

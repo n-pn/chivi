@@ -1,6 +1,7 @@
-require "./ys_user"
-require "./ys_crit"
 require "../_raw/raw_yslist"
+
+require "./ysuser"
+require "./yscrit"
 
 class YS::Yslist
   include Clear::Model
@@ -126,5 +127,13 @@ class YS::Yslist
 
   def self.get_id(yl_id : Bytes)
     PG_DB.query_one("select id from yslists where yl_id = $1", yl_id, as: Int32)
+  end
+
+  def self.update_book_total(yl_id : Bytes, total : Int32, rtime : Int64)
+    PG_DB.exec <<-SQL, total, rtime, yl_id
+      update yslists
+      set book_total = $1, book_rtime = $2
+      where yl_id = $3 and book_total < $1
+      SQL
   end
 end

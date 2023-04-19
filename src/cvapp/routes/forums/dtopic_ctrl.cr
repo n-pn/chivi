@@ -29,7 +29,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     user_ids = posts.map(&.viuser_id)
     user_ids << _vu_id if _vu_id >= 0
 
-    users = Viuser.glob(user_ids)
+    users = Viuser.preload(user_ids)
 
     render json: {
       total: total,

@@ -90,7 +90,7 @@
 
   <div class="vtags">
     {#each crit.vtags as label}
-      <a class="vtag" href="/wn/crits?lb={label}">
+      <a class="vtag" href="/wn/crits?vtag={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>

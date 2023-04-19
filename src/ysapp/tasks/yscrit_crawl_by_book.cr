@@ -11,14 +11,14 @@ class YS::CrawlYscritByBook < CrawlTask
     post_raw_data(api_path, json)
   end
 
-  def self.gen_link(y_bid : Int32, page : Int32 = 1)
-    "https://api.yousuu.com/api/book/#{y_bid}/comment?type=latest&page=#{page}"
+  def self.gen_link(yb_id : Int32, page : Int32 = 1)
+    "https://api.yousuu.com/api/book/#{yb_id}/comment?type=latest&page=#{page}"
   end
 
   DIR = "var/ysraw/crits-by-book"
 
-  def self.gen_path(y_bid : Int32, page : Int32 = 1)
-    "#{DIR}/#{y_bid}/#{page}.latest.json.zst"
+  def self.gen_path(yb_id : Int32, page : Int32 = 1)
+    "#{DIR}/#{yb_id}/#{page}.latest.json.zst"
   end
 
   ################
@@ -35,7 +35,7 @@ class YS::CrawlYscritByBook < CrawlTask
     queue_init = gen_queue_init
     return if queue_init.empty?
 
-    queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.y_bid}") }
+    queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.yb_id}") }
 
     max_pages = queue_init.max_of(&.pgmax)
     crawler = new(false)
@@ -45,8 +45,8 @@ class YS::CrawlYscritByBook < CrawlTask
 
       queue = queue_init.map_with_index(1) do |init, index|
         Entry.new(
-          link: gen_link(init.y_bid, pg_no),
-          path: gen_path(init.y_bid, pg_no),
+          link: gen_link(init.yb_id, pg_no),
+          path: gen_path(init.yb_id, pg_no),
           name: "#{index}/#{queue_init.size}"
         )
       end
@@ -57,7 +57,7 @@ class YS::CrawlYscritByBook < CrawlTask
     end
   end
 
-  record QueueInit, y_bid : Int32, pgmax : Int32
+  record QueueInit, yb_id : Int32, pgmax : Int32
 
   def self.gen_queue_init
     PG_DB.exec <<-SQL
@@ -76,9 +76,9 @@ class YS::CrawlYscritByBook < CrawlTask
     output = [] of QueueInit
 
     PG_DB.query_each(select_stmt) do |rs|
-      y_bid, total = rs.read(Int32, Int32)
+      yb_id, total = rs.read(Int32, Int32)
       pgmax = (total - 1) // 20 + 1
-      output << QueueInit.new(y_bid, pgmax)
+      output << QueueInit.new(yb_id, pgmax)
     end
 
     output

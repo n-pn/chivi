@@ -47,7 +47,7 @@ class CV::MureplCtrl < CV::BaseCtrl
     user_ids = repls.map(&.viuser_id)
     user_ids << _vu_id if _vu_id >= 0
 
-    users = Viuser.glob(user_ids)
+    users = Viuser.preload(user_ids)
     memos = Memoir.glob(_vu_id, :murepl, repls.map(&.id.to_i))
 
     # heads = glob_heads(repls, multi_heads: multi_heads)

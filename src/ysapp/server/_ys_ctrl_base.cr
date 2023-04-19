@@ -1,8 +1,3 @@
 require "../../cv_srv"
-require "../models/*"
-
+require "../data/*"
 require "./views/*"
-
-abstract class AC::Base
-  # add helpers here
-end

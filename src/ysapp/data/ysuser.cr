@@ -107,11 +107,19 @@ class YS::Ysuser
     end
   end
 
+  def self.update_crit_total(id : Int32, total : Int32, rtime : Int64)
+    PG_DB.exec <<-SQL, total, rtime, id
+      update ysusers
+      set crit_total = $1, crit_rtime = $2
+      where id = $3 and crit_total < $1
+      SQL
+  end
+
   def self.update_list_total(id : Int32, total : Int32, rtime : Int64)
     PG_DB.exec <<-SQL, total, rtime, id
       update ysusers
       set list_total = $1, list_rtime = $2
-      where yc_id = $3 and list_total < $1
+      where id = $3 and list_total < $1
       SQL
   end
 end

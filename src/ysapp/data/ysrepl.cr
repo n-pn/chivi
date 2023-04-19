@@ -1,8 +1,8 @@
 require "./_base"
 require "./_util"
 
-require "./ys_crit"
-require "./ys_user"
+require "./yscrit"
+require "./ysuser"
 
 class YS::Ysrepl
   include Clear::Model

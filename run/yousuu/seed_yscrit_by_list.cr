@@ -1,40 +1,34 @@
 require "colorize"
+require "file_utils"
 require "../../src/ysapp/data/yscrit"
 
-def seed_crit_by_list(path : String)
+DIR = "var/ysraw/crits-by-list"
+Dir.children(DIR).each do |yl_id|
+  files = Dir.glob("#{DIR}/#{yl_id}/*.zst")
+  files.select!(&.ends_with?("latest.json.zst")) unless ARGV.includes?("--all")
+  files.sort_by! { |x| File.basename(x).split('.', 2).first.to_i? || 0 }
+
+  files.each do |path|
+    seed_crit_by_list(path, yl_id.hexbytes)
+  rescue ex
+    puts ex.inspect_with_backtrace.colorize.red
+  end
+end
+
+def seed_crit_by_list(path : String, yl_id : Bytes)
   puts path
 
   json = read_zstd(path)
   return unless json.includes?("data")
 
-  yl_id = File.basename(File.dirname(path))
-  rtime = File.info(path).modification_time.to_unix
-
   data = YS::RawListEntries.from_json(json)
   return if data.books.empty?
 
-  raise "need implementation!"
+  rtime = File.info(path).modification_time.to_unix
+  YS::Yslist.update_book_total(yl_id, data.total, rtime)
 
-  # yslist = YS::Yslist.load(yl_id)
+  YS::Yscrit.bulk_upsert(data.books, save_text: true)
+  YS::Yscrit.update_list_id(yl_id)
 
-  # yslist.book_total = data.total if yslist.book_total < data.total
-  # yslist.book_rtime = rtime
-
-  # yslist.save!
-
-  # YS::Yscrit.bulk_upsert(data.books, yslist: yslist, save_text: false)
-  # puts "yslist: #{yslist.id}, total: #{data.books.size}".colorize.yellow
-end
-
-DIR = "var/ysraw/crits-by-list"
-Dir.children(DIR).each do |yu_id|
-  files = Dir.glob("#{DIR}/#{yu_id}/*.zst")
-  files.select!(&.ends_with?("latest.json.zst")) unless ARGV.includes?("--all")
-  files.sort_by! { |x| File.basename(x).split('.', 2).first.to_i? || 0 }
-
-  files.each do |path|
-    seed_crit_by_list(path)
-  rescue ex
-    puts ex.colorize.red
-  end
+  puts "yslist: #{yl_id.join(&.to_s(16))}, total: #{data.books.size}".colorize.yellow
 end

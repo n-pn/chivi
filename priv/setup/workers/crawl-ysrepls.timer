@@ -2,7 +2,7 @@
 Description=yousuu replies timer
 
 [Timer]
-OnCalendar=0/8:00:00
+OnCalendar=0/12:00:00
 RandomizedDelaySec=600
 OnBootSec=300
 Persistent=true

@@ -1,11 +1,12 @@
 require "./_base"
-require "./cv_book"
-require "../_raw/raw_ysbook"
 
 require "../../_data/wnovel/wninfo"
 require "../../_data/wnovel/wnlink"
 require "../../_util/tran_util"
 require "../../mt_v1/data/v1_dict"
+
+require "../_raw/raw_ysbook"
+require "./wninfo"
 
 class YS::Ysbook
   include Clear::Model
@@ -194,7 +195,14 @@ class YS::Ysbook
 
   def self.get_wn_id(yb_id : Int32)
     PG_DB.query_one(<<-SQL, yb_id, as: Int32)
-      select nvinfo_id from ysbooks where yb_id = $1
+      select nvinfo_id from ysbooks where id = $1
       SQL
+  end
+
+  def self.update_crit_total(id : Int32, total : Int32)
+    PG_DB.exec <<-SQL, total, id
+    update ysbooks set crit_total = $1
+    where id = $2 and crit_total < $1
+    SQL
   end
 end
