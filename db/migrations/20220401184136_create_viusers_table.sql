@@ -5,9 +5,7 @@ CREATE TABLE viusers(
   email citext UNIQUE NOT NULL,
   cpass text NOT NULL,
   --
-  vcoin double8 DEFAULT 0 NOT NULL,
-  --
-  point int DEFAULT 0 NOT NULL,
+  vcoin double precision DEFAULT 0 NOT NULL,
   karma int DEFAULT 0 NOT NULL,
   --
   privi int DEFAULT 0 NOT NULL,

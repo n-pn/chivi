@@ -1,10 +1,9 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE TABLE cvposts(
+CREATE TABLE dtopics(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  ii int8 NOT NULL DEFAULT 1,
   --
-  viuser_id int NOT NULL DEFAULT 0,
+  viuser_id int NOT NULL DEFAULT REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
   nvinfo_id int NOT NULL DEFAULT 0,
   --
   ptype int NOT NULL DEFAULT 0,

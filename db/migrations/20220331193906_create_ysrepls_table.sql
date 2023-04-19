@@ -19,11 +19,11 @@ CREATE TABLE ysrepls(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX ysrepl_uniq_idx ON ysrepls(yr_id);
+CREATE UNIQUE INDEX ysrepls_uniq_idx ON ysrepls(yr_id);
 
-CREATE INDEX ysrepl_ysuser_idx ON ysrepls(ysuser_id);
+CREATE INDEX ysrepls_ysuser_idx ON ysrepls(ysuser_id);
 
-CREATE INDEX ysrepl_yscrit_idx ON ysrepls(yscrit_id, created_at);
+CREATE INDEX ysrepls_yscrit_idx ON ysrepls(yscrit_id, created_at);
 
 -- +micrate Down
 DROP TABLE IF EXISTS ysrepls;

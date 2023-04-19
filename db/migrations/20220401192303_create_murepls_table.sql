@@ -3,11 +3,11 @@
 CREATE TABLE murepls(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
-  viuser_id int NOT NULL DEFAULT 0,
-  muhead_id int NOT NULL DEFAULT 0,
+  viuser_id int NOT NULL DEFAULT REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  muhead_id int NOT NULL DEFAULT REFERENCES muheads(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
-  touser_id int NOT NULL DEFAULT 0,
-  torepl_id int NOT NULL DEFAULT 0,
+  touser_id int NOT NULL DEFAULT REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  torepl_id int REFERENCES murepls(id) ON UPDATE CASCADE ON DELETE SET NULL,
   --
   level smallint NOT NULL DEFAULT 0,
   utime bigint NOT NULL DEFAULT 0, -- update time, change after edits

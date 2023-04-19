@@ -5,8 +5,7 @@ CREATE TABLE yscrits(
   --
   ysbook_id int NOT NULL DEFAULT 0 REFERENCES ysbooks(id) ON UPDATE CASCADE ON DELETE CASCADE,
   nvinfo_id int NOT NULL DEFAULT 0 REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  --
-  ysuser_id int NOT NULL DEFAULT 0,
+  ysuser_id int NOT NULL DEFAULT 0 REFERENCES ysusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   yl_id bytea NOT NULL DEFAULT ''::bytea,
   yslist_id int NOT NULL DEFAULT 0,
@@ -31,21 +30,21 @@ CREATE TABLE yscrits(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX yscrit_nvinfo_idx ON yscrits(nvinfo_id, _sort);
+CREATE INDEX yscrits_nvinfo_idx ON yscrits(nvinfo_id, _sort);
 
-CREATE INDEX yscrit_ysbook_idx ON yscrits(ysbook_id);
+CREATE INDEX yscrits_ysbook_idx ON yscrits(ysbook_id);
 
-CREATE INDEX yscrit_ysuser_idx ON yscrits(ysuser_id, created_at);
+CREATE INDEX yscrits_ysuser_idx ON yscrits(ysuser_id, created_at);
 
-CREATE INDEX yscrit_yslist_idx ON yscrits(yslist_id);
+CREATE INDEX yscrits_yslist_idx ON yscrits(yslist_id);
 
-CREATE INDEX yscrit_sorted_idx ON yscrits(_sort, stars);
+CREATE INDEX yscrits_sorted_idx ON yscrits(_sort, stars);
 
-CREATE INDEX yscrit_update_idx ON yscrits(utime, stars);
+CREATE INDEX yscrits_update_idx ON yscrits(utime, stars);
 
-CREATE INDEX yscrit_liked_idx ON yscrits(like_count, stars);
+CREATE INDEX yscrits_liked_idx ON yscrits(like_count, stars);
 
-CREATE INDEX yscrit_vtags_idx ON yscrits USING GIN(vtags);
+CREATE INDEX yscrits_vtags_idx ON yscrits USING GIN(vtags);
 
 -- +micrate Down
 DROP TABLE IF EXISTS yscrits;
