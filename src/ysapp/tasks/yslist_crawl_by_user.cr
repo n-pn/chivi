@@ -66,9 +66,9 @@ class YS::CrawlYslistByUser < CrawlTask
     # fresh = (Time.utc - min_ttl).to_unix
 
     sql = <<-SQL
-      select yu_id, list_total from ysusers
+      select id, list_total from ysusers
       order by (like_count + star_count) desc
-    SQL
+      SQL
 
     PG_DB.query_each(sql) do |rs|
       id, total = rs.read(Int32, Int32)

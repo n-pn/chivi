@@ -185,10 +185,16 @@ class YS::Ysbook
     model.tap(&.save!)
   end
 
-  def self.crit_count(wn_id : Int64)
+  def self.crit_count(wn_id : Int32)
     query.find({nvinfo_id: wn_id}).try(&.crit_count) || begin
       query_stmt = "select count(*) from yscrits where nvinfo_id = $1"
       PG_DB.query_one query_stmt, wn_id, as: Int32
     end
+  end
+
+  def self.get_wn_id(yb_id : Int32)
+    PG_DB.query_one(<<-SQL, yb_id, as: Int32)
+      select nvinfo_id from ysbooks where yb_id = $1
+      SQL
   end
 end

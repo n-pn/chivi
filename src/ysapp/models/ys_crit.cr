@@ -14,14 +14,13 @@ class YS::Yscrit
   primary_key type: :serial
   column yc_id : Bytes #  mongodb objectid
 
+  column yl_id : Bytes = "".hexbytes # mongodb yslist objectid
+
   column nvinfo_id : Int32 = 0
   column ysbook_id : Int32 = 0
 
   column ysuser_id : Int32 = 0
   column yslist_id : Int32 = 0
-
-  column yu_id : Int32 = 0
-  column yl_id : Bytes = Bytes[]
 
   column ztext : String = ""
   column vhtml : String = ""
@@ -146,23 +145,15 @@ class YS::Yscrit
     self.vtags = output.split('\n', remove_empty: true)
   end
 
-  def set_book_id(y_bid : Int32, force : Bool = false)
-    self.ysbook_id = y_bid
-
+  def set_book_id(ysbook_id : Int32, force : Bool = false)
+    self.ysbook_id = ysbook_id
     return unless force || self.nvinfo_id == 0
-    self.nvinfo_id = Ysbook.load(y_bid).nvinfo_id
+    self.nvinfo_id = Ysbook.get_wn_id(ysbook_id)
   end
 
   def set_list_id(yslist : Yslist)
     self.yslist_id = yslist.id
     self.yl_id = yslist.yl_id
-  end
-
-  def set_user_id(user : EmbedUser, force : Bool = false)
-    self.yu_id = user.id
-    # TODO: remove  ysuser_id
-    return unless force || self.ysuser_id == 0
-    self.ysuser_id = Ysuser.upsert!(user).id
   end
 
   def set_repl_total(value : Int32)
@@ -175,19 +166,26 @@ class YS::Yscrit
 
   ###################
 
-  def self.load(yc_id : String | Bytes)
-    find({yc_id: yc_id}) || new({yc_id: yc_id})
+  def self.load(yc_id : String)
+    load(yc_id.hexbytes)
+  end
+
+  def self.load(yc_id : Bytes)
+    find({yc_id: yc_id}) || new({yc_id: yc_id}).tap(&.save!)
+  end
+
+  def self.get_id(yc_id : Bytes)
+    PG_DB.query_one("select id from yscrits where yc_id = $1", yc_id, as: Int32)
   end
 
   ####
 
-  def self.bulk_upsert(raw_crits : Array(RawYsCrit), yslist : Yslist? = nil, save_text : Bool = true)
-    raw_crits.each do |raw_crit|
+  def self.bulk_upsert(raw_crits : Array(RawYsCrit), save_text : Bool = true)
+    raw_crits.map do |raw_crit|
       out_crit = self.load(raw_crit.yc_id)
 
       out_crit.set_book_id(raw_crit.book.id)
-      out_crit.set_user_id(raw_crit.user)
-      out_crit.set_list_id(yslist) if yslist
+      out_crit.ysuser_id = raw_crit.user.id
 
       out_crit.stars = raw_crit.stars
       out_crit.set_tags(raw_crit.tags, force: false)
@@ -201,6 +199,18 @@ class YS::Yscrit
 
       out_crit.utime = out_crit.updated_at.to_unix
       out_crit.save!
+
+      out_crit
     end
+  end
+
+  ####
+
+  def self.update_repl_total(yc_id : Bytes, total : Int32, rtime : Int64)
+    PG_DB.exec <<-SQL, total, rtime, yc_id
+      update yscrits
+      set repl_total = $1, repl_rtime = $2
+      where yc_id = $3 and repl_total < $1
+      SQL
   end
 end

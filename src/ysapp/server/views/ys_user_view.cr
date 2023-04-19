@@ -15,7 +15,7 @@ struct YS::UserView
   end
 
   def self.as_hash(inp : Enumerable(Ysuser))
-    res = {} of Int64 => self
+    res = {} of Int32 => self
     inp.each { |obj| res[obj.id] = new(obj) }
     res
   end

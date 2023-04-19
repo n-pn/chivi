@@ -29,16 +29,18 @@ class YS::CrawlYscritByUser < CrawlTask
 
   def self.run!(argv = ARGV)
     start = 1
-    fix_db_stat = true
+    update = false
     reseed = false
 
     OptionParser.parse(argv) do |opt|
       opt.on("-p PAGE", "start page") { |i| start = i.to_i }
       opt.on("-r", "Reseed content") { reseed = true }
-      opt.on("--nofix", "Do not caculate book_count before run") { fix_db_stat = false }
+      opt.on("--update", "Update counters before run") { update = true }
     end
 
-    queue_init = gen_queue_init(fix_db_stat)
+    fix_stats! if update
+
+    queue_init = gen_queue_init
     return if queue_init.empty?
 
     queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.yl_id}") }
@@ -63,26 +65,26 @@ class YS::CrawlYscritByUser < CrawlTask
     end
   end
 
+  def self.fix_stats!
+    PG_DB.exec <<-SQL
+      update yslists set book_count = (
+        select count(*) from yscrits
+        where yscrits.yslist_id = yslists.id
+      );
+      SQL
+  end
+
   record QueueInit, yl_id : String, pgmax : Int32
 
-  FIX_STAT_SQL = <<-SQL
-    update yslists set book_count = (
-      select count(*) from yscrits
-      where yslist_id = yslists.id
-    );
-  SQL
-
-  def self.gen_queue_init(fix_db_stat : Bool = true)
-    PG_DB.exec(FIX_STAT_SQL) if fix_db_stat
-
-    select_smt = <<-SQL
-      select encode(yl_id, 'hex'), book_total from yslists
-      where book_total > book_count
+  SELECT_STMT = <<-SQL
+    select encode(yl_id, 'hex'), book_total from yslists
+    where book_total > book_count
     SQL
 
+  def self.gen_queue_init(fix_db_stat : Bool = true)
     output = [] of QueueInit
 
-    PG_DB.query_each(select_smt) do |rs|
+    PG_DB.query_each(SELECT_STMT) do |rs|
       yl_id, total = rs.read(String, Int32)
       output << QueueInit.new(yl_id, (total - 1) // 20 + 1)
     end

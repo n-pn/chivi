@@ -33,7 +33,7 @@ class YS::CrawlYsuser < CrawlTask
     fresh = (Time.utc - 1.day).to_unix
 
     sql = <<-SQL
-      select yu_id, info_rtime from ysusers
+      select id, info_rtime from ysusers
       order by (like_count + star_count) desc
     SQL
 

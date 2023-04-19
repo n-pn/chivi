@@ -13,15 +13,17 @@ def seed_crit_by_list(path : String)
   data = YS::RawListEntries.from_json(json)
   return if data.books.empty?
 
-  yslist = YS::Yslist.load(yl_id)
+  raise "need implementation!"
 
-  yslist.book_total = data.total if yslist.book_total < data.total
-  yslist.book_rtime = rtime
+  # yslist = YS::Yslist.load(yl_id)
 
-  yslist.save!
+  # yslist.book_total = data.total if yslist.book_total < data.total
+  # yslist.book_rtime = rtime
 
-  YS::Yscrit.bulk_upsert(data.books, yslist: yslist, save_text: false)
-  puts "yslist: #{yslist.id}, total: #{data.books.size}".colorize.yellow
+  # yslist.save!
+
+  # YS::Yscrit.bulk_upsert(data.books, yslist: yslist, save_text: false)
+  # puts "yslist: #{yslist.id}, total: #{data.books.size}".colorize.yellow
 end
 
 DIR = "var/ysraw/crits-by-list"

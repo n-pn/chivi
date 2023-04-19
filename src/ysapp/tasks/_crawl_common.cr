@@ -18,6 +18,8 @@ end
 
 HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
 
+puts "contact server: #{CV_ENV.ys_host}"
+
 def post_raw_data(href : String, body : String)
   HTTP::Client.post("#{CV_ENV.ys_host}#{href}", headers: HEADERS, body: body) do |res|
     color = res.success? ? :green : :red

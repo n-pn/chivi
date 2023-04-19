@@ -6,8 +6,7 @@ CREATE TABLE yscrits(
   ysbook_id int NOT NULL DEFAULT 0 REFERENCES ysbooks(id) ON UPDATE CASCADE ON DELETE CASCADE,
   nvinfo_id int NOT NULL DEFAULT 0 REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
-  gu_id int NOT NULL DEFAULT 0, -- chivi ysuser id
-  yu_id int NOT NULL DEFAULT 0, -- original user id
+  ysuser_id int NOT NULL DEFAULT 0,
   --
   yl_id bytea NOT NULL DEFAULT ''::bytea,
   yslist_id int NOT NULL DEFAULT 0,
@@ -22,7 +21,7 @@ CREATE TABLE yscrits(
   vtags text[] NOT NULL DEFAULT '{}' ::text[],
   --
   utime bigint NOT NULL DEFAULT 0,
-  stime bigint NOT NULL DEFAULT 0,
+  info_rtime bigint NOT NULL DEFAULT 0,
   --
   repl_total int NOT NULL DEFAULT 0,
   repl_count int NOT NULL DEFAULT 0,

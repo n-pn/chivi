@@ -9,15 +9,14 @@ class YS::Ysrepl
   self.table = "ysrepls"
 
   primary_key type: :serial
-  column yr_id : Bytes # mongodb objectid
+
+  column yr_id : Bytes # mongodb booklist objectid
+  column yc_id : Bytes # mongodb review objectid
+
+  column yscrit_id : Int32 = 0
 
   column ysuser_id : Int32 = 0
-
-  column yu_id : Int32 = 0
-  column to_yu_id : Int32 = 0 # to ysuser id
-
-  column yc_id : Bytes
-  column yscrit_id : Int32 = 0
+  column touser_id : Int32 = 0 # to ysuser id
 
   column ztext : String = ""
   column vhtml : String = ""
@@ -86,26 +85,23 @@ class YS::Ysrepl
     find({yr_id: yr_id.hexbytes}) || new({yr_id: yr_id.hexbytes})
   end
 
-  def self.bulk_upsert(raw_repls : Array(RawYsRepl), save_text : Bool = true)
-    raw_repls.each do |raw_repl|
+  def self.bulk_upsert!(raw_repls : Array(RawYsRepl), save_text : Bool = true)
+    crit_ids = {} of Bytes => Int32
+
+    raw_repls.map do |raw_repl|
       out_repl = self.load(raw_repl.yr_id)
 
       out_repl.yc_id = raw_repl.yc_id.hexbytes
-      out_repl.yu_id = raw_repl.user.id
+      out_repl.yscrit_id = crit_ids[out_repl.yc_id] ||= Yscrit.get_id(out_repl.yc_id)
 
-      out_crit = Yscrit.load(raw_repl.yc_id)
-      out_user = Ysuser.upsert!(raw_repl.user)
+      out_repl.ysuser_id = raw_repl.user.id
+      out_repl.touser_id = raw_repl.to_user.try(&.id) || 0
 
-      out_repl.yscrit_id = out_crit.id
-      out_repl.ysuser_id = out_user.id # TODO: remove this
+      out_repl.ztext = raw_repl.ztext
 
-      if to_user = raw_repl.to_user
-        out_repl.to_yu_id = to_user.id
-      end
-
-      if save_text || out_repl.ztext.empty?
-        out_repl.set_ztext(raw_repl.ztext)
-      end
+      # if save_text || out_repl.ztext.empty?
+      #   out_repl.set_ztext(raw_repl.ztext)
+      # end
 
       out_repl.like_count = raw_repl.like_count
       out_repl.repl_count = raw_repl.repl_count
@@ -113,7 +109,22 @@ class YS::Ysrepl
       out_repl.created_at = raw_repl.created_at
       out_repl.updated_at = raw_repl.created_at
 
-      out_repl.save!
+      out_repl
     end
+  end
+
+  def self.update_yscrit_id(ids : Enumerable(Int32), yscrit_id : Int32)
+    PG_DB.exec <<-SQL, yscrit_id, ids
+      update ysrepls set yscrit_id = $1 where ids = any ($2)
+      SQL
+  end
+
+  def self.update_fkeys(ids : Enumerable(Int32))
+    PG_DB.exec <<-SQL, ids
+      update ysrepls set
+        ysuser_id = ( select id from ysusers where ysusers.yu_id = ysrepls.yu_id ),
+        yscrit_id = ( select id from yscrits where yscrits.yc_id = ysrepls.yc_id ),
+      where ids = any ($2)
+      SQL
   end
 end

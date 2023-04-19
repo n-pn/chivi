@@ -1,7 +1,6 @@
 -- +micrate Up
 CREATE TABLE ysusers(
-  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  yu_id int NOT NULL UNIQUE,
+  id int PRIMARY KEY NOT NULL,
   --
   zname text NOT NULL,
   vname text NOT NULL,
@@ -25,7 +24,7 @@ CREATE TABLE ysusers(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX ysuser_uname_idx ON ysusers(zname);
+CREATE INDEX ysusers_zname_idx ON ysusers(zname);
 
 -- +micrate Down
 DROP TABLE IF EXISTS ysusers;

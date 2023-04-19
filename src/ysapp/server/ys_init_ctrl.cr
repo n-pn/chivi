@@ -36,70 +36,70 @@ class YS::InitCtrl < AC::Base
     end
   end
 
-  @[AC::Route::POST("/crits/by_user", body: :data)]
-  def crits_by_user(data : RawBookComments, rtime : Int64 = Time.utc.to_unix)
-    guard_empty data.comments
+  @[AC::Route::POST("/crits/by_user", body: :json)]
+  def crits_by_user(json : RawBookComments, rtime : Int64 = Time.utc.to_unix)
+    guard_empty json.comments
+    raw_ysuser = json.comments.first.user
 
-    raw_ysuser = data.comments.first.user
-    ysuser = YS::Ysuser.upsert!(raw_ysuser)
+    PG_DB.exec <<-SQL, json.total, rtime, raw_ysuser.id
+      update ysusers
+      set crit_total = $1, crit_rtime = $2
+      where yu_id = $3 and list_total < $1
+      SQL
 
-    if ysuser.crit_total < data.total
-      ysuser.update!({crit_total: data.total, crit_rtime: rtime})
-    end
-
-    ysuser.save!
-
-    Yscrit.bulk_upsert(data.comments)
-    render text: data.comments.size
+    Yscrit.bulk_upsert(json.comments)
+    render text: json.comments.size
   end
 
-  @[AC::Route::POST("/crits/by_book", body: :data)]
-  def crits_by_book(data : RawBookComments, rtime : Int64 = Time.utc.to_unix)
-    guard_empty data.comments
+  @[AC::Route::POST("/crits/by_book", body: :json)]
+  def crits_by_book(json : RawBookComments, rtime : Int64 = Time.utc.to_unix)
+    guard_empty json.comments
+    ysbook = json.comments.first.book
 
-    ysbook = Ysbook.load(data.comments.first.book.id)
+    PG_DB.exec <<-SQL, json.total, ysbook.id
+      update ysbooks set crit_total = $1
+      where id = $2 and crit_total < $1
+      SQL
 
-    if ysbook.crit_total < data.total
-      ysbook.update!({crit_total: data.total})
-    end
-
-    Yscrit.bulk_upsert(data.comments)
-    render text: data.comments.size
+    Yscrit.bulk_upsert(json.comments)
+    render text: json.comments.size
   end
 
-  @[AC::Route::POST("/crits/by_list/:yl_id", body: :data)]
-  def crits_by_list(data : RawListEntries, yl_id : String, rtime : Int64 = Time.utc.to_unix)
-    yslist = Yslist.load(yl_id)
+  @[AC::Route::POST("/crits/by_list/:yl_id", body: :json)]
+  def crits_by_list(json : RawListEntries, yl_id : String, rtime : Int64 = Time.utc.to_unix)
+    yl_id = yl_id.hexbytes
 
-    yslist.book_total = data.total if yslist.book_total < data.total
-    yslist.book_rtime = rtime
+    PG_DB.exec <<-SQL, json.total, rtime, yl_id
+      update yslists
+      set book_total = $1, book_rtime = $2
+      where yl_id = $3 and book_total < $1
+      SQL
 
-    yslist.save!
+    crits = Yscrit.bulk_upsert(json.books, save_text: true)
 
-    Yscrit.bulk_upsert(data.books, yslist: yslist, save_text: true)
-    render text: data.books.size
+    PG_DB.exec <<-SQL, yl_id, Yslist.get_id(yl_id), crits.map(&.id)
+      update yscrits
+      set yl_id = $1, yslist_id = $2
+      where id = any ($3)
+      SQL
+
+    render text: json.books.size
   end
 
   @[AC::Route::POST("/lists/by_user/:yu_id", body: :json)]
   def lists_by_user(json : RawListEntries, yu_id : Int32, rtime : Int64 = Time.utc.to_unix)
-    yuser = Ysuser.load(yu_id)
-
-    yuser.list_total = json.total if yuser.list_total < json.total
-    yuser.list_rtime = rtime
-
+    Ysuser.update_list_total(yu_id, json.total, rtime)
     # Yslist.bulk_upsert(json.lists)
     render text: json.total
   end
 
   @[AC::Route::POST("/repls/by_crit/:yc_id", body: :json)]
   def repls_by_crit(json : RawCritReplies, yc_id : String, rtime : Int64 = Time.utc.to_unix)
-    yscrit = Yscrit.load(yc_id)
+    Yscrit.update_repl_total(yc_id.hexbytes, json.total, rtime)
 
-    yscrit.repl_total = json.total if yscrit.repl_total < json.total
-    yscrit.repl_rtime = rtime
-    yscrit.save!
+    Ysuser.bulk_upsert!(json.repls.map(&.user))
+    Ysrepl.bulk_upsert!(json.repls)
 
-    Ysrepl.bulk_upsert(json.repls)
     render text: json.total
   end
 end

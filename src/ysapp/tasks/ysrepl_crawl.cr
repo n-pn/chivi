@@ -29,11 +29,15 @@ class YS::CrawlYslistByUser < CrawlTask
   def self.run!(argv = ARGV)
     start = 1
     reseed = false
+    update = false
 
     OptionParser.parse(argv) do |opt|
       opt.on("-p PAGE", "start page") { |i| start = i.to_i }
       opt.on("-r", "Reseed content") { reseed = true }
+      opt.on("--update", "update counter") { update = true }
     end
+
+    update_counters! if update
 
     queue_init = gen_queue_init
     return if queue_init.empty?
@@ -60,33 +64,32 @@ class YS::CrawlYslistByUser < CrawlTask
     end
   end
 
-  record QueueInit, yc_id : String, pgmax : Int32
-
-  def self.gen_queue_init(min_ttl = 1.day)
-    output = [] of QueueInit
-
-    # fresh = (Time.utc - min_ttl).to_unix
-
+  def self.update_counters!
     PG_DB.exec <<-SQL
       update yscrits set repl_count = (
         select count(*) from ysrepls
         where yscrit_id = yscrits.id
       ) where repl_total > 0;
     SQL
+  end
 
-    sql = <<-SQL
-      select yc_id, repl_total from yscrits
-      where repl_total > repl_count
-      order by repl_total desc
+  record QueueInit, yc_id : String, pgmax : Int32
+
+  SELECT_STMT = <<-SQL
+    select encode(yc_id, 'hex'), repl_total from yscrits
+    where repl_total > repl_count
+    order by repl_total desc
     SQL
 
-    PG_DB.query_each(sql) do |rs|
-      id, total = rs.read(String, Int32)
+  def self.gen_queue_init(min_ttl = 1.day)
+    output = [] of QueueInit
 
-      total = 1 if total < 1
-      pages = (total - 1) // 20 + 1
+    # fresh = (Time.utc - min_ttl).to_unix
 
-      output << QueueInit.new(id, pages)
+    PG_DB.query_each(SELECT_STMT) do |rs|
+      yc_id, total = rs.read(String, Int32)
+      next if yc_id.size != 24
+      output << QueueInit.new(yc_id, (total &- 1) // 20 &+ 1)
     end
 
     output

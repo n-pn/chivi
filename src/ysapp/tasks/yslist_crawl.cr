@@ -51,8 +51,7 @@ class YS::YslistCrawl < CrawlTask
   def self.gen_queue : Array(Entry)
     # fresh = Time.utc - ttl
 
-    stmt = "select yl_id from yslists"
-    uuids = PG_DB.query_all(stmt, as: String)
+    uuids = PG_DB.query_all("select encode(yl_id, 'hex') from yslists", as: String)
 
     uuids.map_with_index do |uuid, index|
       Entry.new(

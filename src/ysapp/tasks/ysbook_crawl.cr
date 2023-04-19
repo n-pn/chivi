@@ -6,17 +6,19 @@ class YS::CrawlYsbook < CrawlTask
     post_raw_data("/books/info", json)
   end
 
-  def self.gen_link(b_id : Int32)
-    "https://api.yousuu.com/api/book/#{b_id}"
+  def self.gen_link(yb_id : Int32)
+    "https://api.yousuu.com/api/book/#{yb_id}"
   end
 
   DIR = "var/ysraw/books"
 
   # Dir.mkdir_p(DIR)
 
-  def self.gen_path(b_id : Int32)
-    group = (b_id // 1000).to_s.rjust(3, '0')
-    "#{DIR}/#{group}/#{b_id}.latest.json.zst"
+  def self.gen_path(yb_id : Int32)
+    # TODO: remove group
+
+    group = (yb_id // 1000).to_s.rjust(3, '0')
+    "#{DIR}/#{group}/#{yb_id}.latest.json.zst"
   end
 
   #####
@@ -47,15 +49,17 @@ class YS::CrawlYsbook < CrawlTask
     worker.crawl!(queue)
   end
 
+  SELECT_STMT = <<-SQL
+    select id, voters, info_rtime from ysbooks
+    where id >= $1 and id <= $2
+    SQL
+
   def self.gen_queue(min = 1, max = 300000)
     y_bids = Set(Int32).new(min..max)
 
-    select_stmt = <<-SQL
-      select id, voters, info_rtime from ysbooks
-      where id >= $1 and id <= $2
-    SQL
+  
 
-    PG_DB.query_each(select_stmt, min, max) do |rs|
+    PG_DB.query_each(SELECT_STMT, min, max) do |rs|
       id, voters, rtime = rs.read(Int32, Int32, Int64)
       y_bids.delete(id) unless should_crawl?(voters, rtime)
     end

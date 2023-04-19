@@ -5,8 +5,7 @@ class YS::Ysuser
   include Clear::Model
   self.table = "ysusers"
 
-  primary_key type: :serial
-  column yu_id : Int32 # origin yousuu id
+  primary_key type: :serial # origin yousuu id
 
   column zname : String = ""
   column vname : String = ""
@@ -44,9 +43,16 @@ class YS::Ysuser
     self.y_avatar = avatar
   end
 
-  def set_data(data : EmbedUser)
-    self.set_name(data.name) unless data.name.empty?
-    self.set_avatar(data.avatar) unless data.avatar.empty?
+  def set_data(raw : EmbedUser, force : Bool = false, persist : Bool = false)
+    if force || self.zname.empty?
+      self.set_name(raw.name)
+    end
+
+    if !raw.avatar.empty? && (force || self.y_avatar.empty?)
+      self.set_avatar(raw.avatar)
+    end
+
+    self.save! if persist || !id_column.defined?
   end
 
   def set_stat(stat : RawYsUser, rtime : Int64)
@@ -69,26 +75,43 @@ class YS::Ysuser
 
   ###############
 
-  def self.load(yu_id : Int32)
-    find({yu_id: yu_id}) || new({yu_id: yu_id})
+  def self.load(id : Int32)
+    find({id: id}) || new({id: id})
   end
 
   def self.upsert!(raw_user : EmbedUser)
-    find({yu_id: raw_user.id}) || begin
-      entry = new({yu_id: raw_user.id})
+    find({id: raw_user.id}) || begin
+      entry = new({id: raw_user.id})
       entry.set_data(raw_user)
       entry.tap(&.save!)
     end
   end
 
-  def self.upsert!(yu_id : Int32, zname : String)
-    find({yu_id: yu_id}) || begin
-      entry = new({yu_id: yu_id, zname: zname}).tap(&.fix_name)
+  def self.upsert!(id : Int32, zname : String)
+    find({id: id}) || begin
+      entry = new({id: id})
+      entry.set_name(zname)
       entry.tap(&.save!)
     end
   end
 
   def self.preload(ids : Enumerable(Int32))
-    ids.empty? ? [] of self : query.where { id.in? ids }
+    ids.empty? ? [] of self : query.where { id.in?(ids) }
+  end
+
+  def self.bulk_upsert!(raw_users : Enumerable(EmbedUser))
+    raw_users.map do |raw_user|
+      out_user = self.load(raw_user.id)
+      out_user.set_data(raw_user, persist: true)
+      out_user
+    end
+  end
+
+  def self.update_list_total(id : Int32, total : Int32, rtime : Int64)
+    PG_DB.exec <<-SQL, total, rtime, id
+      update ysusers
+      set list_total = $1, list_rtime = $2
+      where yc_id = $3 and list_total < $1
+      SQL
   end
 end

@@ -71,7 +71,7 @@ class YS::CritCtrl < AC::Base
     vbook = CvBook.find({id: ycrit.nvinfo_id})
     ylist = Yslist.find({id: ycrit.yslist_id})
 
-    repls = Ysrepl.query.where("yscrit_id = ?", crit_id)
+    repls = Ysrepl.query.where("yscrit_id = ?", crit_id).where("vhtml <> ''")
     users = Ysuser.preload(repls.map(&.ysuser_id))
 
     render json: {

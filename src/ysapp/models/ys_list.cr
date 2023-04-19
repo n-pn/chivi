@@ -10,7 +10,6 @@ class YS::Yslist
   column yl_id : Bytes      # real primary key which is a mongodb objectid
 
   column ysuser_id : Int32 = 0
-  column yu_id : Int32 = 0
 
   column zname : String = "" # original list name
   column vname : String = "" # translated name
@@ -78,39 +77,21 @@ class YS::Yslist
     self.vdesc = TranUtil.qtran(zdesc, -5, "txt") || ""
   end
 
-  def set_user_id(user : EmbedUser, force : Bool = false)
-    self.yu_id = user.id
-    # TODO: remove ysuser_id
-    return unless force || self.ysuser_id == 0
-    self.ysuser_id = Ysuser.upsert!(user).id
-  end
-
   ##################
 
   def self.preload(ids : Enumerable(Int32))
     ids.empty? ? [] of self : query.where { id.in? ids }
   end
 
-  def self.gen_id(yl_id : String)
-    yl_id[-7..-1].to_i64(base: 16)
-  end
-
   def self.upsert!(yl_id : String, created_at : Time)
-    find({yl_id: yl_id}) || new({
-      id: gen_id(yl_id),
-
-      yl_id:      yl_id,
-      created_at: created_at,
-    })
+    find({yl_id: yl_id}) || new({yl_id: yl_id, created_at: created_at})
   end
 
   def update_from(raw_data : RawYsList, rtime : Int64 = Time.utc.to_unix)
     self.set_name(raw_data.zname)
     self.set_desc(raw_data.zdesc)
 
-    if raw_user = raw_data.user
-      self.set_user_id(raw_user)
-    end
+    self.ysuser_id = raw_data.user.try(&.id) || self.ysuser_id
 
     self.klass = klass
     self.utime = raw_data.updated_at.to_unix
@@ -143,13 +124,7 @@ class YS::Yslist
     inp_list.tap(&.save!)
   end
 
-  def self.load(yl_id : String)
-    find({yl_id: yl_id.hexbytes}) || new({id: gen_id(yl_id), yl_id: yl_id.hexbytes})
-  end
-
-  CACHE_INT = CV::RamCache(Int64, self).new
-
-  def self.load!(id : Int64)
-    CACHE_INT.get(id) { find!({id: id}) }
+  def self.get_id(yl_id : Bytes)
+    PG_DB.query_one("select id from yslists where yl_id = $1", yl_id, as: Int32)
   end
 end

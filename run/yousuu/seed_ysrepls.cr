@@ -53,8 +53,7 @@ def seed_page(json : String, seeded : Set(String), repl_total : Int32)
 
   repls.each { |repl| seeded << repl.yr_id }
   {seeded, repl_total}
-rescue error
-  puts error
-  puts json
+rescue ex
+  puts ex.inspect_with_backtrace
   exit 1
 end

@@ -83,24 +83,22 @@ class CV::YslistCrawlByBook < CrawlTask
 
   record QueueInit, ybid : Int32, pgmax : Int32
 
+  SELECT_STMT = <<-SQL
+    select id, list_total from ysbooks
+    where list_count < list_total
+    order by id desc
+    SQL
+
   def self.gen_queue_init(crawl_mode : CrawlMode = :head)
     output = [] of QueueInit
 
-    DB.open(CV_ENV.database_url) do |db|
-      sql = <<-SQL
-      select id, list_total from ysbooks
-      where list_count < list_total
-      order by id desc
-      SQL
+    PG_DB.query_each(SELECT_STMT) do |rs|
+      ybid, total = rs.read(Int32, Int32)
 
-      db.query_each(sql) do |rs|
-        ybid, total = rs.read(Int32, Int32)
+      total = 1 if total < 1
+      pages = (total - 1) // 20 + 1
 
-        total = 1 if total < 1
-        pages = (total - 1) // 20 + 1
-
-        output << QueueInit.new(ybid, pages)
-      end
+      output << QueueInit.new(ybid, pages)
     end
 
     crawl_mode.rearrange!(output)
