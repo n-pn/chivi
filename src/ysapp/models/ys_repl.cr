@@ -73,7 +73,7 @@ class YS::Ysrepl
   def fix_vhtml(ztext = self.ztext)
     if ztext.empty?
       self.vhtml = EMPTY_BODY
-    elsif vtext = TranUtil.qtran(ztext, wn_id: 0)
+    elsif vtext = TranUtil.qtran(ztext, wn_id: 0, format: "txt")
       self.vhtml = TranUtil.txt_to_htm(vtext)
     else
       self.vhtml = ERROR_BODY
