@@ -8,7 +8,9 @@ class CV::Ubmemo
   self.table = "ubmemos"
   primary_key type: :serial
 
-  belongs_to viuser : Viuser, foreign_key: "viuser_id", foreign_key_type: Int32
+  column viuser_id : Int32 = 0
+
+  # column nvinfo_id : Int32 = 0
   belongs_to nvinfo : Wninfo, foreign_key: "nvinfo_id", foreign_key_type: Int32
 
   # bookmark types: default, reading, finished, onhold, dropped, pending
@@ -87,9 +89,23 @@ class CV::Ubmemo
     ubmemo.save!
   end
 
-  def self.upsert!(viuser_id : Int64, wninfo_id : Int64, &) : self
+  def self.upsert!(viuser_id : Int32, wninfo_id : Int32, &) : self
     ubmemo = find_or_new(viuser_id, wninfo_id)
     yield ubmemo
     ubmemo.save!
+  end
+
+  record BookUser, uname : String, privi : Int32, umark : Int32 do
+    include DB::Serializable
+    include JSON::Serializable
+  end
+
+  def self.book_users(wninfo_id : Int32)
+    PGDB.query_all <<-SQL, wninfo_id, as: BookUser
+      select u.uname as uname, u.privi as privi, m.status as "umark"
+      from ubmemos as m inner join viusers as u on u.id = m.viuser_id
+      where m.nvinfo_id = $1 and m.status > 0
+      order by m.utime desc
+    SQL
   end
 end

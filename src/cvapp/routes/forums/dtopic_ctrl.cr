@@ -23,8 +23,6 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count
 
-    query.with_nvinfo unless nvinfo
-
     posts = query.limit(limit).offset(offset).to_a
     memos = Memoir.glob(_vu_id, :dtopic, posts.map(&.id.to_i))
 
@@ -32,8 +30,6 @@ class CV::DtopicCtrl < CV::BaseCtrl
     user_ids << _vu_id if _vu_id >= 0
 
     users = Viuser.glob(user_ids)
-
-    posts.map(&.nvinfo = nvinfo) if nvinfo
 
     render json: {
       total: total,

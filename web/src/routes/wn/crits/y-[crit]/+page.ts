@@ -8,11 +8,13 @@ interface CritData {
   ylist: CV.Yslist
   yuser: CV.Ysuser
   vbook: CV.Crbook
-  repls: CV.YsRepl[]
+
+  repls: CV.Ysrepl[]
+  users: Record<number, CV.Ysuser>
 }
 
 export const load = (async ({ fetch, params: { crit } }) => {
-  const path = api_path('yscrits.show', crit)
+  const path = `/_ys/crits/${crit}`
   const data = await api_get<CritData>(path, fetch)
 
   const _meta = {

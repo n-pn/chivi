@@ -2,9 +2,9 @@ import type { LoadEvent } from '@sveltejs/kit'
 import { api_path, api_get } from '$lib/api_call'
 
 interface BookUser {
-  u_dname: string
-  u_privi: number
-  _status: string
+  uname: string
+  privi: number
+  umark: number
 }
 
 export interface BookFront {
@@ -22,8 +22,6 @@ export const load = async ({ fetch, params }: LoadEvent) => {
 }
 
 const load_ycrits = async (book: string, fetch = globalThis.fetch) => {
-  const extra = { book, sort: 'score', lm: 3 }
-  const ypath = api_path('yscrits.index', null, null, extra)
-  const ydata = await api_get<CV.YscritList>(ypath, fetch)
-  return ydata
+  const path = `/_ys/crits?book=${book}&sort=score&limit=3`
+  return await api_get<CV.YscritList>(path, fetch)
 }

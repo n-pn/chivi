@@ -5,7 +5,7 @@ class CV::MarkBookCtrl < CV::BaseCtrl
 
   @[AC::Route::Filter(:before_action, except: [:show])]
   def ensure_logged_in
-    render :unauthorized unless _viuser.privi >= 0
+    render :unauthorized if _privi < 0
   end
 
   @[AC::Route::GET("/access",
@@ -28,12 +28,12 @@ class CV::MarkBookCtrl < CV::BaseCtrl
   getter! book_mark : Ubmemo
 
   @[AC::Route::Filter(:before_action, except: [:access])]
-  def get_book_mark(wn_id : Int64)
-    @book_mark = Ubmemo.find_or_new(_viuser.id, wn_id)
+  def get_book_mark(wn_id : Int32)
+    @book_mark = Ubmemo.find_or_new(_vu_id, wn_id)
   end
 
   @[AC::Route::GET("/:wn_id")]
-  def show(wn_id : Int64) : Nil
+  def show(wn_id : Int32) : Nil
     render json: UbmemoView.new(book_mark)
   end
 

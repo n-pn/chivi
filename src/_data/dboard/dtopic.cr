@@ -13,8 +13,8 @@ class CV::Dtopic
 
   column viuser_id : Int32 = 0
 
+  # column nvinfo_id : Int32 = 0
   belongs_to nvinfo : Wninfo, foreign_key_type: Int32
-  # getter nvinfo : Wninfo { Wninfo.load!(self.nvinfo_id) }
 
   #####
 

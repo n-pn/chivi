@@ -70,25 +70,19 @@ class CV::WninfoCtrl < CV::BaseCtrl
   # show related data for book front page
   @[AC::Route::GET("/:wn_id/front")]
   def front(wn_id : Int64)
-    nvinfo = get_wnovel(wn_id)
+    wninfo = get_wnovel(wn_id)
 
-    # spawn Nvstat.inc_info_view(nvinfo.id)
+    # spawn Nvstat.inc_info_view(wninfo.id)
 
     books = Wninfo.query
-      .where("author_id = ?", nvinfo.author_id)
-      .where("id <> ?", nvinfo.id)
+      .where("author_id = ?", wninfo.author_id)
+      .where("id <> ?", wninfo.id)
       .order_by(weight: :desc)
       .limit(6)
 
-    users = Ubmemo.query
-      .where("nvinfo_id = ?", nvinfo.id)
-      .where("status > 0")
-      .order_by(utime: :desc)
-      .with_viuser
-
     render json: {
-      books: books.map { |x| WninfoView.new(x, false) },
-      users: users.map { |x| {u_dname: x.viuser.uname, u_privi: x.viuser.privi, _status: x.status_s} },
+      books: WninfoView.as_list(books),
+      users: Ubmemo.book_users(wninfo.id),
     }
   end
 

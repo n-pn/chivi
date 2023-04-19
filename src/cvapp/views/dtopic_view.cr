@@ -9,16 +9,11 @@ struct CV::DtopicView
 
   def to_json(jb : JSON::Builder)
     jb.object {
-      jb.field "dboard" do
-        DboardView.new(@data.nvinfo).to_json(jb)
-      end
-
       jb.field "id", @data.id
       jb.field "user_id", @data.viuser_id
 
       jb.field "title", @data.title
       jb.field "tslug", @data.tslug
-      jb.field "brief", @data.brief
 
       jb.field "labels", @data.labels
 

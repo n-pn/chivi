@@ -1,4 +1,5 @@
 export const status_types = [
+  'default',
   'reading',
   'onhold',
   'finished',

@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { status_icons, status_names, status_colors } from '$lib/constants'
+  import {
+    status_types,
+    status_icons,
+    status_names,
+    status_colors,
+  } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
@@ -8,13 +13,10 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  let nvinfo: CV.Wninfo
-
   $: ({ nvinfo, bdata, ydata } = data)
+  $: root_path = `/wn/${nvinfo.bslug}`
 
   let short_intro = false
-
-  $: root_path = `/wn/${nvinfo.bslug}`
 </script>
 
 <article class="m-article">
@@ -77,13 +79,14 @@
   </h3>
 
   <div class="users">
-    {#each bdata.users as { u_dname, u_privi, _status }}
+    {#each bdata.users as { uname, privi, umark }}
+      {@const status = status_types[umark]}
       <a
-        class="m-chip _{status_colors[_status]}"
-        href="/@{u_dname}/books/{_status}"
-        data-tip="[{status_names[_status]}]">
-        <cv-user data-privi={u_privi}>{u_dname}</cv-user>
-        <SIcon name={status_icons[_status]} />
+        class="m-chip _{status_colors[status]}"
+        href="/@{uname}/books/{status}"
+        data-tip="[{status_names[status]}]">
+        <cv-user data-privi={privi}>{uname}</cv-user>
+        <SIcon name={status_icons[status]} />
       </a>
     {:else}
       <div class="empty">Chưa có người đọc</div>

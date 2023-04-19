@@ -5,12 +5,21 @@ class YS::ReplCtrl < AC::Base
 
   @[AC::Route::GET("/crits/:crit/repls")]
   def index(crit : Int32)
-    _pg_no, limit, offset = _paginate(min: 25, max: 50)
+    pg_no, limit, offset = _paginate(min: 25, max: 50)
     repls = Ysrepl.query.where("yscrit_id = ?", crit)
 
-    repls = repls.limit(limit).offset(offset)
+    total = repls.dup.limit(limit &* (pg_no &+ 2)).count
 
-    render json: repls.with_ysuser.map { |x| ReplView.new(x) }
+    repls = repls.limit(limit).offset(offset)
+    users = Ysuser.preload(repls.map(&.ysuser_id))
+
+    render json: {
+      repls: ReplView.as_list(repls),
+      users: UserView.as_hash(users),
+      pgidx: pg_no,
+      total: total,
+      pgmax: _pgidx(limit, total),
+    }
   end
 
   @[AC::Route::GET("/repls/:id/ztext")]

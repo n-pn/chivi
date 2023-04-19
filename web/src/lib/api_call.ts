@@ -62,12 +62,8 @@ export const ROUTES = {
   'vicrits.edit': (id: any) => `/_db/crits/${id}/edit`,
   'vicrits.update': (id: any) => `/_db/crits/${id}`,
 
-  // yousuu booklists
-  'yslists.index': `/_ys/lists`,
-  'yslists.show': (id: any) => `/_ys/lists/${id}`,
-
   // yosuu reviews
-  'yscrits.index': `/_ys/crits`,
+
   'yscrits.show': (id: any) => `/_ys/crits/${id}`,
   'yscrits.repls': (id: any) => `/_ys/crits/${id}/repls`,
 

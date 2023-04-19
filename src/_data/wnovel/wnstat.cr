@@ -30,7 +30,7 @@ class CV::Nvstat
   include Clear::Model
   self.table = "nvstats"
 
-  belongs_to nvinfo : Wninfo, foreign_key_type: Int32
+  column nvinfo_id : Int32 = 0
 
   column klass : Int32 = 0 # type of nvstats
   # timestamp map to integer:

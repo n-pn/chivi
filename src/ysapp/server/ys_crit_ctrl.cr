@@ -67,18 +67,20 @@ class YS::CritCtrl < AC::Base
   @[AC::Route::GET("/crits/:crit_id")]
   def entry(crit_id : Int32)
     ycrit = Yscrit.find!({id: crit_id})
-    repls = Ysrepl.query.where("yscrit_id = ?", crit_id)
-
     yuser = Ysuser.find!({id: ycrit.ysuser_id})
     vbook = CvBook.find({id: ycrit.nvinfo_id})
     ylist = Yslist.find({id: ycrit.yslist_id})
+
+    repls = Ysrepl.query.where("yscrit_id = ?", crit_id)
+    users = Ysuser.preload(repls.map(&.ysuser_id))
 
     render json: {
       ycrit: CritView.new(ycrit),
       yuser: UserView.new(yuser),
       vbook: vbook ? BookView.new(vbook) : nil,
       ylist: ylist ? ListView.new(ylist) : nil,
-      repls: repls.with_ysuser.map { |x| ReplView.new(x) },
+      repls: ReplView.as_list(repls),
+      users: UserView.as_hash(users),
     }
   rescue err
     render :not_found, text: "Đánh giá không tồn tại"

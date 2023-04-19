@@ -10,6 +10,7 @@
   import YsreplList from './YsreplList.svelte'
   import YscritBook from './YscritBook.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
+  import { api_get } from '$lib/api_call'
 
   export let crit: CV.Yscrit
   export let user: CV.Ysuser
@@ -23,12 +24,12 @@
   export let big_text = false
 
   let show_repls = false
-  let replies = []
+
+  let replies: CV.YsreplPage
 
   async function show_replies() {
     const path = `/_ys/crits/${crit.id}/repls`
-    // TODO: add type here
-    replies = await fetch(path).then((r: Response) => r.json())
+    replies = await api_get<CV.YsreplPage>(path, fetch)
     show_repls = true
   }
 
@@ -73,9 +74,8 @@
   <header>
     <a class="meta _user" href="/wn/crits?from=ys&user={user.id}"
       >{user.uname}</a>
-
+    <span class="meta">&middot;</span>
     <a class="meta _time" href="/sp/qtran/crits/{crit.id}">
-      <SIcon name="clock" />
       <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
     </a>
 
@@ -170,7 +170,7 @@
   {/if}
 </crit-item>
 
-{#if show_repls}
+{#if show_repls && replies}
   <YsreplList {replies} bind:_active={show_repls} />
 {/if}
 

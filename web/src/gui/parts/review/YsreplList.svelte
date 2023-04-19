@@ -2,7 +2,7 @@
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let replies = []
+  export let replies: CV.YsreplPage
   export let _active = true
 </script>
 
@@ -19,13 +19,14 @@
 
     <section class="body">
       <div class="repls">
-        {#each replies as repl}
+        {#each replies.repls as repl}
+          {@const user = replies.users[repl.yu_id]}
           <div class="repl">
             <header class="repl-head">
-              <a class="-user" href="/wn/crits?from=ys&user={repl.uslug}"
-                >{repl.uname}</a>
+              <a class="-user" href="/wn/crits?from=ys&user={user.uslug}"
+                >{user.uname}</a>
               <span class="-sep">·</span>
-              <time class="-time">{get_rtime(repl.mftime)}</time>
+              <time class="-time">{get_rtime(repl.ctime)}</time>
 
               <div class="-like">
                 <SIcon name="thumb-up" />
@@ -38,7 +39,7 @@
             </section>
           </div>
         {:else}
-          <div class="empty">Không có nội dung!</div>
+          <div class="empty">Không có phản hồi</div>
         {/each}
       </div>
     </section>

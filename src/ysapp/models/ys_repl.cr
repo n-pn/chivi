@@ -11,13 +11,13 @@ class YS::Ysrepl
   primary_key type: :serial
   column yr_id : Bytes # mongodb objectid
 
-  column yu_id : Int32 = 0
-  belongs_to ysuser : Ysuser, foreign_key_type: Int32
+  column ysuser_id : Int32 = 0
 
+  column yu_id : Int32 = 0
   column to_yu_id : Int32 = 0 # to ysuser id
 
   column yc_id : Bytes
-  column yscrit_id : Int64 = 0_i64
+  column yscrit_id : Int32 = 0
 
   column ztext : String = ""
   column vhtml : String = ""
