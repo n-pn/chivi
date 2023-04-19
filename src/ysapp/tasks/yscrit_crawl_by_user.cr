@@ -2,17 +2,9 @@ require "./_crawl_common"
 require "../_raw/raw_yscrit"
 
 class YS::CrawlYscritByUser < CrawlTask
-  def self.seed_db_from_json(json : String, rtime : Time)
-    return unless json.starts_with?('{')
-    post_raw_data("crits/by_user?rtime=#{rtime.to_unix}", json)
-  end
-
   def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
-    self.class.seed_db_from_json(json, Time.utc)
-  rescue ex
-    puts entry.path, json
-    Log.error { ex.message }
+    post_raw_data("crits/by_user?rtime=#{Time.utc.to_unix}", json)
   end
 
   def self.gen_link(yu_id : Int32, page : Int32 = 1)
@@ -82,24 +74,6 @@ class YS::CrawlYscritByUser < CrawlTask
 
     output
   end
-
-  # def self.seed_crawled!(all : Bool = false)
-  #   u_ids = Dir.children(DIR)
-
-  #   u_ids.each do |yu_id|
-  #     files = Dir.glob("#{DIR}/#{yu_id}/*.zst")
-  #     files.select!(&.ends_with?("latest.json.zst")) unless all
-
-  #     files.each do |file|
-  #       puts file
-  #       mtime = File.info(file).modification_time
-  #       seed_db_from_json(read_zstd(file), mtime)
-  #     rescue ex
-  #       puts ex
-  #       File.delete(file)
-  #     end
-  #   end
-  # end
 
   run!(ARGV)
 end

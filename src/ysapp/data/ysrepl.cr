@@ -122,7 +122,6 @@ class YS::Ysrepl
   def self.update_fkeys(ids : Enumerable(Int32))
     PG_DB.exec <<-SQL, ids
       update ysrepls set
-        ysuser_id = ( select id from ysusers where ysusers.yu_id = ysrepls.yu_id ),
         yscrit_id = ( select id from yscrits where yscrits.yc_id = ysrepls.yc_id ),
       where ids = any ($2)
       SQL

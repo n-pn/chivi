@@ -2,7 +2,7 @@ require "./_crawl_common"
 
 class YS::CrawlYsbook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
-    return if json.includes?("未找到该图书")
+    return unless json.starts_with?('{')
     post_raw_data("books/info", json)
   end
 

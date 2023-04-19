@@ -2,14 +2,8 @@ require "./_crawl_common"
 require "../_raw/raw_ysuser"
 
 class YS::CrawlYsuser < CrawlTask
-  def self.upsert_user_info(json : String, rtime : Time)
-    post_raw_data("users/info?rtime=#{rtime.to_unix}", json)
-  end
-
   def db_seed_tasks(entry : Entry, json : String)
-    self.class.upsert_user_info(json, Time.utc)
-  rescue ex
-    puts ex
+    post_raw_data("users/info?rtime=#{Time.utc.to_unix}", json)
   end
 
   def self.gen_link(yu_id : Int32)
@@ -52,24 +46,5 @@ class YS::CrawlYsuser < CrawlTask
     end
   end
 
-  def self.seed_crawled!(latest_only = true)
-    files = Dir.glob("#{DIR}/*.zst")
-    files.select!(&.ends_with?("latest.json.zst")) if latest_only
-
-    files.each do |file|
-      puts file
-      json = read_zstd(file)
-      rtime = File.info(file).modification_time
-      upsert_user_info(json, rtime)
-    rescue ex
-      puts ex.colorize.red
-      File.delete(file)
-    end
-  end
-
-  if ARGV.includes?("--seed")
-    seed_crawled!(ARGV.includes?("--latest"))
-  else
-    run!(ARGV)
-  end
+  run!(ARGV)
 end

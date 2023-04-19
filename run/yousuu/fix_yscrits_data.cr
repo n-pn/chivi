@@ -5,18 +5,6 @@ require "../../src/cv_env"
 PG_DB = DB.open(CV_ENV.database_url)
 at_exit { PG_DB.close }
 
-# PG_DB.exec "begin transaction"
-
-# File.each_line("var/ysraw/crit_users.tsv") do |line|
-#   cols = line.split('\t')
-#   next unless cols.size > 1
-#   yc_id, yu_id = cols
-
-#   PG_DB.exec "update yscrits set yu_id = $1 where yc_id = $2", yu_id.to_i, yc_id
-# end
-
-# PG_DB.exec "commit"
-
 DICT_MAP = {} of Int32 => Int32
 
 dict_sql = "select id::int, nvinfo_id::int from ysbooks order by voters desc"

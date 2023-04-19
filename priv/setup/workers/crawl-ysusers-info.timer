@@ -1,0 +1,12 @@
+[Unit]
+Description=yousuu user info crawl timer
+
+[Timer]
+OnCalendar=0/12:00:00
+RandomizedDelaySec=600
+OnBootSec=300
+Persistent=true
+Unit=crawl-ysusers-info.service
+
+[Install]
+WantedBy=timers.target
