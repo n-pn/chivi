@@ -1,3 +1,4 @@
+sudo service nginx stop
 sudo service cvweb-srv stop
 sudo service cvapp-srv stop
 sudo service wnapp-srv stop

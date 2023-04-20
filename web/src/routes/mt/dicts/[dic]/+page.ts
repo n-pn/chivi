@@ -20,10 +20,10 @@ export interface V1Dict {
   users: string[]
 }
 
-export const load = (async ({ fetch, url, params: { dict } }) => {
-  const dinfo = await api_get<V1Dict>(`/_m1/dicts/${dict}`, fetch)
+export const load = (async ({ fetch, url, params: { dic } }) => {
+  const dinfo = await api_get<V1Dict>(`/_m1/dicts/${dic}`, fetch)
 
-  const search = merge_query(url.searchParams, { lm: 50 })
+  const search = merge_query(url.searchParams, { dic, lm: 50 })
   const terms = await api_get<TermsData>(`/_m1/defns?${search}`, fetch)
 
   const _meta = {
@@ -31,22 +31,21 @@ export const load = (async ({ fetch, url, params: { dict } }) => {
     left_nav: [
       home_nav('ps'),
       nav_link('/mt/dicts', 'Từ điển', 'package', { show: 'ts' }),
-      nav_link(dict, dinfo.label, '', { kind: 'title' }),
+      nav_link(dic, dinfo.label, '', { kind: 'title' }),
     ],
   }
 
-  const query = gen_query(dict, url.searchParams)
+  const query = gen_query(url.searchParams)
   return { ...dinfo, ...terms, query, _meta }
 }) satisfies PageLoad
 
-function gen_query(dic: string, params: URLSearchParams) {
+function gen_query(params: URLSearchParams) {
   return {
-    dic: dic,
     key: params.get('key') || '',
     val: params.get('val') || '',
     ptag: params.get('ptag') || '',
-    prio: +params.get('prio') || '',
-    tab: +params.get('tab') || '',
+    prio: params.get('prio') || '',
+    tab: params.get('tab') || '',
     uname: params.get('uname') || '',
   }
 }
