@@ -184,6 +184,6 @@ class CV::Viuser
   end
 
   def self.preload(ids : Array(Int32))
-    ids.empty? ? [] of self : query.where { id.in?(ids) }
+    ids.empty? ? [] of self : query.where("id = any(?)", ids)
   end
 end

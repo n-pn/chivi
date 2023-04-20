@@ -95,8 +95,8 @@ class YS::Ysuser
     end
   end
 
-  def self.preload(ids : Enumerable(Int32))
-    ids.empty? ? [] of self : query.where { id.in?(ids) }
+  def self.preload(ids : Array(Int32))
+    ids.empty? ? [] of self : query.where("id = any(?)", ids)
   end
 
   def self.bulk_upsert!(raw_users : Enumerable(EmbedUser))

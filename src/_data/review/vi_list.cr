@@ -69,6 +69,6 @@ class CV::Vilist
   end
 
   def self.preload(ids : Enumerable(Int32))
-    ids.empty? ? [] of self : query.where { id.in?(ids) }
+    ids.empty? ? [] of self : query.where("id = any(?)", ids)
   end
 end

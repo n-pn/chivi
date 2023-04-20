@@ -161,7 +161,7 @@ class CV::Wninfo
   #########################################
 
   def self.preload(ids : Array(Int32))
-    ids.empty? ? [] of self : query.where { id.in?(ids) }
+    ids.empty? ? [] of self : query.where("id = any(?)", ids)
   end
 
   class_getter total : Int32 { query.count.to_i }
