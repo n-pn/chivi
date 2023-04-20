@@ -16,7 +16,7 @@ class CV::Wninfo
   self.table = "nvinfos"
   primary_key type: :serial
 
-  getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
+  # getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
 
   belongs_to author : Author, foreign_key_type: Int32
   belongs_to btitle : Btitle, foreign_key_type: Int32
@@ -154,7 +154,7 @@ class CV::Wninfo
     end
   end
 
-  getter orig_links : Array(WnLink) { WnLink.all_origs(self.id.to_i) }
+  getter orig_links : Array(Wnlink) { Wnlink.all_origs(self.id.to_i) }
 
   include WninfoInner
 

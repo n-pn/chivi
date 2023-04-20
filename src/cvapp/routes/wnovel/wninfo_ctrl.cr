@@ -9,7 +9,7 @@ class CV::WninfoCtrl < CV::BaseCtrl
   def index(
     order : String = "access",
     btitle : String? = nil, author : String? = nil,
-    seed : String? = nil, origin : String? = nil,
+    seed : String? = nil, from : String? = nil,
     genres : String? = nil, tagged : String? = nil,
     voters : Int32? = nil, rating : Int32? = nil,
     uname : String? = nil, bmark : String? = nil,
@@ -22,7 +22,7 @@ class CV::WninfoCtrl < CV::BaseCtrl
     query.filter_btitle(btitle) if btitle
     query.filter_author(author) if author
     query.filter_wnseed(seed) if seed
-    query.filter_origin(origin) if origin
+    query.filter_origin(from) if from
 
     query.filter_genres(genres)
     query.filter_tagged(tagged)
@@ -111,7 +111,7 @@ class CV::WninfoCtrl < CV::BaseCtrl
     guard_privi 2, "thêm truyện/sửa nội dung truyện"
 
     nvinfo = form.save!(_uname, _privi)
-    WnLink.upsert!(nvinfo.id.to_i, form.origins)
+    Wnlink.upsert!(nvinfo.id.to_i, form.origins)
 
     Wninfo.cache!(nvinfo)
 

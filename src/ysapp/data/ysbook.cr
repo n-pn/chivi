@@ -56,8 +56,11 @@ class YS::Ysbook
   # end
 
   def worth_saving?
-    self.crit_total > 0 || self.list_total > 0 || self.voters > 10 ||
-      self.author.in?(Author.known_authors)
+    self.crit_total > 0 || Author.known_authors.includes?(self.author) || self.class.in_crits.includes?(self.id)
+  end
+
+  class_getter in_crits : Set(Int32) do
+    PG_DB.query_all("select distinct(ysbook_id) from yscrits", as: Int32).to_set
   end
 
   def sync_with_wn!(force : Bool = false) : Nil
@@ -84,8 +87,8 @@ class YS::Ysbook
 
     M1::DbDict.init_wn_dict(self.nvinfo_id, nvinfo.bslug, nvinfo.vname)
 
-    CV::WnLink.upsert!(self.nvinfo_id, "https://www.yousuu.com/book/#{self.id}")
-    CV::WnLink.upsert!(self.nvinfo_id, self.sources)
+    CV::Wnlink.upsert!(self.nvinfo_id, "https://www.yousuu.com/book/#{self.id}")
+    CV::Wnlink.upsert!(self.nvinfo_id, self.sources)
   end
 
   def get_nvinfo(force : Bool = false)
@@ -187,15 +190,16 @@ class YS::Ysbook
   end
 
   def self.crit_count(wn_id : Int32)
-    query.find({nvinfo_id: wn_id}).try(&.crit_count) || begin
-      query_stmt = "select count(*) from yscrits where nvinfo_id = $1"
-      PG_DB.query_one query_stmt, wn_id, as: Int32
-    end
+    PG_DB.query_one?(<<-SQL, wn_id, as: Int32) || 0
+      select count(*)::int from yscrits
+      where nvinfo_id = $1
+      SQL
   end
 
   def self.get_wn_id(yb_id : Int32)
     PG_DB.query_one(<<-SQL, yb_id, as: Int32)
       select nvinfo_id from ysbooks where id = $1
+      order by id asc limit 1
       SQL
   end
 

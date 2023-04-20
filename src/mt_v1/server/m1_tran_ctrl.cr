@@ -124,8 +124,6 @@ class M1::TranCtrl < AC::Base
   end
 
   private def log_tran_stats(input : String, wn_dic : Int32, w_udic = true)
-    Log.info { [@w_init, @w_user, wn_dic, w_udic] }
-
     xlog = CV::QtranXlog.new(
       input: input, viuser_id: _vu_id,
       wn_dic: wn_dic, w_udic: w_udic,

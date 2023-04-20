@@ -1,22 +1,33 @@
-require "../../src/_data/wnovel/wninfo"
+require "colorize"
+require "../../src/_data/_data"
+require "../../src/_util/hash_util"
 
-nvinfos = CV::Wninfo.query
-  .where("scover <> ''")
-  .where("bcover = ''")
-  .to_a.shuffle!
+def cache_cover(scover : String) : String
+  bcover = HashUtil.digest32(scover, 8)
+  `./bin/bcover_cli -i '#{scover}' -n '#{bcover}'`
+  $?.success? ? "#{bcover}.webp" : ""
+end
+
+input = PGDB.query_all <<-SQL, as: {Int32, String}
+  select id, scover from nvinfos
+  where scover <> '' and bcover = ''
+SQL
+
+input.shuffle!
 
 w_size = 16
-q_size = nvinfos.size
+q_size = input.size
 
-workers = Channel({CV::Wninfo, Int32}).new(q_size)
+workers = Channel({Int32, String, Int32}).new(q_size)
 results = Channel(Nil).new(w_size)
 
 w_size.times do
   spawn do
     loop do
-      wnovel, idx = workers.receive
-      wnovel.cache_cover(persist: true)
-      puts "- #{idx}/#{q_size} <#{wnovel.id}-#{wnovel.vname.colorize.cyan}> #{wnovel.scover.colorize.blue} => [#{wnovel.bcover.colorize.yellow}]"
+      wn_id, scover, idx = workers.receive
+      bcover = cache_cover(scover)
+      PGDB.exec "update nvinfos set bcover = $1 where id = $2", bcover, wn_id
+      puts "- #{idx}/#{q_size} <#{wn_id}> #{scover.colorize.blue} => [#{bcover.colorize.yellow}]"
     rescue err
       Log.error(exception: err) { err.message.colorize.red }
     ensure
@@ -25,5 +36,5 @@ w_size.times do
   end
 end
 
-nvinfos.each_with_index(1) { |nvinfo, idx| workers.send({nvinfo, idx}) }
+input.each_with_index(1) { |(wn_id, scover), idx| workers.send({wn_id, scover, idx}) }
 q_size.times { results.receive }

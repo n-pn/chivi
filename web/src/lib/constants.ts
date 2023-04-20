@@ -1,8 +1,8 @@
 export const status_types = [
   'default',
   'reading',
-  'onhold',
   'finished',
+  'onhold',
   'dropped',
   'pending',
 ]
@@ -10,8 +10,8 @@ export const status_types = [
 export const status_names = {
   default: 'Đánh dấu',
   reading: 'Đang đọc',
-  onhold: 'Tạm dừng',
   finished: 'Hoàn thành',
+  onhold: 'Tạm dừng',
   dropped: 'Vứt bỏ',
   pending: 'Đọc sau',
 }
@@ -19,8 +19,8 @@ export const status_names = {
 export const status_icons = {
   default: 'bookmark',
   reading: 'eye',
-  onhold: 'player-pause',
   finished: 'square-check',
+  onhold: 'player-pause',
   dropped: 'trash',
   pending: 'calendar',
 }
@@ -28,8 +28,8 @@ export const status_icons = {
 export const status_colors = {
   default: 'neutral',
   reading: 'primary',
-  onhold: 'warning',
   finished: 'success',
+  onhold: 'warning',
   dropped: 'harmful',
   pending: 'private',
 }
@@ -70,8 +70,6 @@ export const bgenres: Array<[string, string, boolean]> = [
 ]
 
 export const snames = [
-  '=user',
-  'miscs',
   'hetushu',
   'zxcs_me',
   '69shu',

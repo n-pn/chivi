@@ -3,7 +3,7 @@
     'author',
     'btitle',
     'genres',
-    'origin',
+    'from',
     'seed',
     'status',
     'rating',
@@ -11,6 +11,8 @@
   ]
 
   const status_values = ['Tất cả', 'Còn tiếp', 'Hoàn thành', 'Thái giám']
+
+  type Blabel = { name: string; slug: string }
 </script>
 
 <script lang="ts">
@@ -18,10 +20,10 @@
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
 
-  import { snames, bgenres, book_origins } from '$lib/constants'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
+
+  import { bgenres } from '$lib/constants'
 
   export let actived = false
 
@@ -32,14 +34,20 @@
     author: '',
     btitle: '',
     genres: '',
-    origin: '',
+    from: '',
     seed: '',
     status: 0,
     rating: 0,
     voters: 0,
   }
 
-  onMount(() => {
+  type Labels = { seeds: Blabel[]; origs: Blabel[] }
+  let labels: Labels = { seeds: [], origs: [] }
+
+  onMount(async () => {
+    const res = await fetch('/_db/blbls/front')
+    labels = await res.json()
+
     const params = $page.url.searchParams
     params.forEach((val, key) => {
       if (keys.includes(key)) query[key] = val
@@ -79,13 +87,16 @@
 
   let full_genres = false
 
+  let all_seed = false
+  let all_from = false
+
   const triggers = {
     status: true,
     voters: true,
     rating: true,
     genres: true,
     seed: !!query.seed,
-    origin: !!query.origin,
+    from: !!query.from,
   }
 
   let qsearch: HTMLInputElement
@@ -255,10 +266,10 @@
         {#if !query.seed}<SIcon name="check" />{/if}
       </label>
 
-      {#each snames as name}
-        {@const actived = name == query.seed}
+      {#each labels.seeds as { name, slug }}
+        {@const actived = slug == query.seed}
         <label class="m-chip _caps" class:_active={actived}>
-          <input type="radio" bind:group={query.seed} value={name} />
+          <input type="radio" bind:group={query.seed} value={slug} />
           <span class="radio-text">{name}</span>
           {#if actived}<SIcon name="check" />{/if}
         </label>
@@ -266,25 +277,25 @@
     </div>
   </details>
 
-  <details class="content" bind:open={triggers.origin}>
+  <details class="content" bind:open={triggers.from}>
     <summary class="summary">
       <span class="type">Trang gốc: </span>
-      <span class="data " class:_caps={query.origin}
-        >{query.origin || 'Tất cả'}</span>
+      <span class="data" class:_caps={query.from}
+        >{query.from || 'Tất cả'}</span>
     </summary>
 
     <div class="choices">
-      <label class="m-chip _caps " class:_active={!query.origin}>
-        <input type="radio" bind:group={query.origin} value="" />
+      <label class="m-chip _caps" class:_active={!query.from}>
+        <input type="radio" bind:group={query.from} value="" />
         <span class="radio-text">Tất cả</span>
-        {#if !query.origin}<SIcon name="check" />{/if}
+        {#if !query.from}<SIcon name="check" />{/if}
       </label>
 
-      {#each book_origins as value}
-        {@const actived = value == query.origin}
-        <label class="m-chip _caps " class:_active={actived}>
-          <input type="radio" bind:group={query.origin} {value} />
-          <span class="radio-text">{value}</span>
+      {#each labels.origs as { name, slug }}
+        {@const actived = slug == query.from}
+        <label class="m-chip _caps" class:_active={actived}>
+          <input type="radio" bind:group={query.from} value={slug} />
+          <span class="radio-text">{name}</span>
           {#if actived}<SIcon name="check" />{/if}
         </label>
       {/each}

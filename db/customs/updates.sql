@@ -3,7 +3,7 @@ UPDATE
 SET
   like_count =(
     SELECT
-      count(*)
+      count(*)::int
     FROM
       memoirs
     WHERE
@@ -16,7 +16,7 @@ UPDATE
 SET
   like_count =(
     SELECT
-      count(*)
+      count(*)::int
     FROM
       memoirs
     WHERE

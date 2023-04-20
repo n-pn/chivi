@@ -68,7 +68,7 @@ class YS::CrawlYscritByUser < CrawlTask
   def self.fix_stats!
     PG_DB.exec <<-SQL
       update yslists set book_count = (
-        select count(*) from yscrits
+        select count(*)::int from yscrits
         where yscrits.yslist_id = yslists.id
       );
       SQL

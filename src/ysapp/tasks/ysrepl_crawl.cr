@@ -67,7 +67,7 @@ class YS::CrawlYslistByUser < CrawlTask
   def self.update_counters!
     PG_DB.exec <<-SQL
       update yscrits set repl_count = (
-        select count(*) from ysrepls
+        select count(*)::int from ysrepls
         where yscrit_id = yscrits.id
       ) where repl_total > 0;
     SQL

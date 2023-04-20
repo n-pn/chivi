@@ -1,8 +1,6 @@
 require "../src/wnapp/data/wn_seed"
 require "../src/_data/wnovel/wnseed"
 
-CV::Wnseed.db.exec "begin transaction"
-
 STMT = "select * from seeds order by wn_id asc, sname asc"
 
 WN::WnSeed.repo.db.query_each STMT do |rs|
@@ -20,8 +18,8 @@ WN::WnSeed.repo.db.query_each STMT do |rs|
   output.created_at = Time.unix(input.mtime)
   output.updated_at = Time.unix(input.mtime)
 
-  output.slink = Array(String).from_json(input.rm_links).first? || ""
-  output.stime = input.rm_stime
+  output.rlink = Array(String).from_json(input.rm_links).first? || ""
+  output.rtime = input.rm_stime
 
   output.privi = input.edit_privi.to_i16
   output._flag = input._flag.to_i16
@@ -29,6 +27,6 @@ WN::WnSeed.repo.db.query_each STMT do |rs|
   output.upsert!
 
   puts "#{input.wn_id}/#{input.sname} (#{input.chap_total}) synced"
+rescue ex
+  puts ex
 end
-
-CV::Wnseed.db.exec "commit"

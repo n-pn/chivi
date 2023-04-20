@@ -1,6 +1,6 @@
 require "../_base"
 
-class CV::WnLink
+class CV::Wnlink
   include DB::Serializable
   include JSON::Serializable
 
@@ -34,11 +34,12 @@ class CV::WnLink
     links.each { |link| upsert!(wn_id, link) }
   end
 
-  USE_SUBDOMAIN = {"yunqi", "chuangshi", "huayu", "yuedu", "shenqi"}
+  # USE_SUBDOMAIN = {"yunqi", "chuangshi", "huayu", "yuedu", "shenqi"}
+
+  IGNORES = {"www", "book", "b", "novel", "shushan", "wenxue"}
 
   def self.extract_name(link : String)
-    return "" if link.empty? || !(host = URI.parse(link).host)
-    host = host.split('.')
-    USE_SUBDOMAIN.includes?(host.first) ? host.first : host[-2]
+    return "" unless host = URI.parse(link).host
+    host.split('.').find!(&.in?(IGNORES).!)
   end
 end

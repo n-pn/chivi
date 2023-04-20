@@ -11,7 +11,16 @@ def sync_file(path : String, force = false)
   data.info_rtime = File.info(path).modification_time.to_unix
 
   return unless model = YS::Ysbook.upsert!(data, force: force)
-  puts "ysbook: #{model.id}, voters: #{model.voters}, nvinfo: #{model.nvinfo_id}".colorize.yellow
+
+  color = model.nvinfo_id == 0 ? :light_gray : :yellow
+  puts "ysbook: #{model.id}, voters: #{model.voters}, nvinfo: #{model.nvinfo_id}".colorize(color)
+
+  return if model.nvinfo_id == 0
+  spawn do
+    PG_DB.exec <<-SQL, model.nvinfo_id, model.id
+    update yscrits set nvinfo_id = $1 where ysbook_id = $2
+    SQL
+  end
 end
 
 whole = ARGV.includes?("--whole")

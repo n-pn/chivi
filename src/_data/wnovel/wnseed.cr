@@ -16,8 +16,8 @@ class CV::Wnseed
   field chap_total : Int32 = 0
   field chap_avail : Int32 = 0
 
-  field slink : String = "" # remote page link
-  field stime : Int64 = 0   # remote sync time
+  field rlink : String = "" # remote page link
+  field rtime : Int64 = 0   # remote sync time
 
   field privi : Int16 = 0
   field _flag : Int16 = 0
@@ -50,17 +50,21 @@ class CV::Wnseed
     insert into #{@@table} (
       wn_id, sname, s_bid,
       chap_total, chap_avail,
-      slink, stime, privi, _flag,
+      rlink, rtime, privi, _flag,
       created_at, updated_at
     ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     on conflict (wn_id, sname) do update set
       s_bid = excluded.s_bid,
       chap_total = excluded.chap_total,
       chap_avail = excluded.chap_avail,
-      slink = excluded.slink, stime = excluded.stime,
+      rlink = excluded.rlink, rtime = excluded.rtime,
       privi = excluded.privi, _flag = excluded._flag,
       updated_at = excluded.updated_at
     SQL
+
+    db.exec stmt,
+      @wn_id, @sname, @s_bid, @chap_total, @chap_avail,
+      @rlink, @rtime, @privi, @_flag, @created_at, @updated_at
   end
 
   ###

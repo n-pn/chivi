@@ -62,7 +62,7 @@ class YS::CrawlYscritByBook < CrawlTask
   def self.gen_queue_init
     PG_DB.exec <<-SQL
       update ysbooks set crit_count = (
-        select count(*) from yscrits
+        select count(*)::init from yscrits
         where ysbook_id = ysbooks.id
       ) where crit_total > 0;
     SQL
