@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
-  import { api_call, api_path } from '$lib/api_call'
+  import { api_call } from '$lib/api_call'
   import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
   const entry = {
@@ -61,9 +61,8 @@
     const input = ztext.substring(lower, upper)
     if (!input) return
 
-    const path = api_path('tlspec.qtran')
     const body = { input, vd_id: $vdict.vd_id }
-    const data = await api_call(path, body, 'PUT')
+    const data = await api_call('/_m1/qtran/debug', body, 'PUT')
 
     const [convert, hanviet] = data.split('\n')
     if (!$entry.match || $entry.match == $entry.cvmtl) $entry.match = convert
@@ -78,12 +77,11 @@
   }
 
   async function handle_submit() {
-    const ukey = $entry._ukey
-    const path = api_path(ukey ? 'tlspec.update' : 'tlspec.create', ukey)
+    const path = `/_mt/specs/${$entry._ukey}`
     const body = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
 
     try {
-      await api_call(path, body)
+      await api_call(path, body, 'POST', fetch)
       ctrl.hide()
       on_destroy()
     } catch (ex) {
@@ -94,9 +92,7 @@
 
   async function delete_tlspec() {
     try {
-      const path = api_path('tlspec.delete', $entry._ukey)
-      await api_call(path, {}, 'DELETE')
-
+      await api_call(`/_mt/specs/${$entry._ukey}`, {}, 'DELETE', fetch)
       ctrl.hide()
       on_destroy()
     } catch (ex) {

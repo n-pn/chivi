@@ -1,5 +1,5 @@
 import type { LoadEvent } from '@sveltejs/kit'
-import { api_path, api_get } from '$lib/api_call'
+import { api_get } from '$lib/api_call'
 
 interface BookUser {
   uname: string

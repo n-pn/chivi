@@ -2,7 +2,6 @@
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
-  import { api_path } from '$lib/api_call'
   import { rel_time } from '$utils/time_utils'
 
   import { SIcon, Stars } from '$gui'
@@ -24,8 +23,7 @@
   let replies = []
 
   async function show_replies() {
-    const extra = { crit: crit.id, order: 'ctime' }
-    const path = api_path('/_db/virepls', null, null, extra)
+    const path = `/_db/virepls?crit=${crit.id}&order=ctime`
     replies = await fetch(path).then((r: Response) => r.json())
     show_repls = true
   }

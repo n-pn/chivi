@@ -13,7 +13,7 @@
 
   $: search = `"${data.nvinfo.ztitle}" ${data.chap_data.title}`
   $: seed_href = seed_path(data.nvinfo.bslug, data.curr_seed.sname)
-  $: edit_href = `${seed_href}/${data.curr_chap.chidx}/+edit`
+  $: edit_href = `${seed_href}/+chap?ch_no=${data.curr_chap.chidx}`
 
   const reload_chap = async (load_mode = 2) => {
     _onload = true

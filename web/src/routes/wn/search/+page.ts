@@ -1,5 +1,6 @@
-import { nav_link } from '$gui/global/header_util'
-import { api_path } from '$lib/api_call'
+import { api_get, merge_query } from '$lib/api_call'
+import { nav_link } from '$utils/header_util'
+
 import type { PageLoad } from './$types'
 
 interface JsonData extends CV.Paginate {
@@ -11,15 +12,15 @@ export const load = (async ({ fetch, url: { searchParams } }) => {
   const input = searchParams.get('q').replace('+', ' ')
 
   const extras = { order: 'weight', lm: 8, [type]: input }
+  const query = merge_query(searchParams, extras)
 
-  const path = api_path('wnovels.index', null, searchParams, extras)
-  const data: JsonData = await fetch(path).then((x) => x.json())
+  const data = await api_get<JsonData>(`/_db/books?${query}`, fetch)
 
   const _meta: App.PageMeta = {
     title: `Kết quả tìm kiếm cho "${input}"`,
     left_nav: [
       nav_link('/wn', 'Thư viện', 'books', { show: 'md' }),
-      nav_link('/wn/search', 'Tìm kiếm', 'search', { kind: 'title' }),
+      nav_link('search', 'Tìm kiếm', 'search', { kind: 'title' }),
     ],
   }
 

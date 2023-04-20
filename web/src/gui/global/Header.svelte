@@ -2,12 +2,12 @@
   import { page } from '$app/stores'
   import { scroll, popups, get_user } from '$lib/stores'
 
-  import { gen_meta } from './header_util'
+  import { default_meta } from '$utils/header_util'
   import Item from './Header/HeaderItem.svelte'
 
   const _user = get_user()
 
-  $: meta = $page.data._meta || gen_meta($page.route?.id || '/', $page.data)
+  $: meta = $page.data._meta || default_meta
   $: image = meta.image || '/imgs/avatar.png'
 </script>
 

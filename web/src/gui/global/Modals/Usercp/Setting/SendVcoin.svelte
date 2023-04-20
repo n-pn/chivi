@@ -18,7 +18,7 @@
 
     try {
       const body = { ...form, as_admin }
-      const data = await api_call(action_url, body, 'POST')
+      const data = await api_call(action_url, body)
       $_user.vcoin -= form.amount
 
       res_type = 'ok'

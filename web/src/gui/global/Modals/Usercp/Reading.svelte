@@ -23,9 +23,8 @@
     else console.log(await api_res.text())
   }
 
-  const chap_href = ({ bslug, sname, chidx: ch_no, cpart: part_no, uslug }) => {
-    uslug = `${part_no > 1 ? part_no : ''}-${uslug}`
-    return chap_path(bslug, sname, ch_no, uslug)
+  const chap_href = ({ bslug, sname, chidx: ch_no, cpart, uslug }) => {
+    return chap_path(bslug, sname, ch_no, cpart, uslug)
   }
 </script>
 

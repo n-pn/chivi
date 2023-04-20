@@ -22,9 +22,9 @@
   export let data: LayoutData
 
   $: nvinfo = data.nvinfo
+  $: genres = nvinfo.genres || []
 
   $: update = new Date(nvinfo.mftime || 0).toISOString()
-  $: genres = nvinfo.genres || []
 
   $: dtlist_data.update((x) => {
     x.tab = 'book'

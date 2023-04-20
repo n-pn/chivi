@@ -1,10 +1,7 @@
 <!-- @hmr:keep-all -->
-<script context="module" lang="ts">
-  import { onDestroy, onMount } from 'svelte'
-</script>
 
 <script lang="ts">
-  import { page } from '$app/stores'
+  import { onMount } from 'svelte'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
@@ -14,15 +11,10 @@
   export let raw_txt = ''
   export let line_no = 0
 
-  export let dname = 'combine'
-  export let caret = 0
-
   export let on_changed = (_n: number, _s: string, _s2: string) => {}
   export let on_destroy = () => {}
 
-  onDestroy(() => {
-    on_destroy()
-  })
+  onMount(() => on_destroy)
 
   let hint_tabs = ['Bản dịch trước', 'Dịch máy', 'Hán Việt', 'Google', 'Bing']
   let hint_data = []
@@ -69,15 +61,15 @@
 </Dialog>
 
 <style lang="scss">
-  .raw_txt {
-    position: relative;
-    padding: 0;
+  // .raw_txt {
+  //   position: relative;
+  //   padding: 0;
 
-    min-height: 4rem;
-    max-height: 10rem;
-    overflow-y: scroll;
-    resize: vertical;
-  }
+  //   min-height: 4rem;
+  //   max-height: 10rem;
+  //   overflow-y: scroll;
+  //   resize: vertical;
+  // }
 
   // .overlay,
   // .underlay {
@@ -112,10 +104,10 @@
   //   flex-wrap: wrap;
   // }
 
-  .body {
-    padding: 0.75rem;
-    padding-top: 0.5rem;
-  }
+  // .body {
+  //   padding: 0.75rem;
+  //   padding-top: 0.5rem;
+  // }
 
   // .suggest {
   //   display: flex;
@@ -139,12 +131,12 @@
   //   @include fgcolor(mute);
   // }
 
-  footer {
-    @include flex();
-    padding-bottom: 0.75rem;
-    gap: 0.75rem;
-    justify-content: center;
-  }
+  // footer {
+  //   @include flex();
+  //   padding-bottom: 0.75rem;
+  //   gap: 0.75rem;
+  //   justify-content: center;
+  // }
 
   // .suggest-btn {
   //   background: none;
@@ -160,13 +152,13 @@
   //   @include fgcolor(mute);
   // }
 
-  .label {
-    font-weight: 500;
-  }
+  // .label {
+  //   font-weight: 500;
+  // }
 
-  .preview {
-    margin-top: 0.5rem;
-  }
+  // .preview {
+  //   margin-top: 0.5rem;
+  // }
 
   // .hanviet,
   // .convert {

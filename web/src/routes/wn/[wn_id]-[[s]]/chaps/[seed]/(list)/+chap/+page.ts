@@ -1,14 +1,16 @@
+import { book_nav, seed_nav, nav_link } from '$utils/header_util'
+
 import { api_get } from '$lib/api_call'
+import { _pgidx } from '$lib/kit_path'
 
 type ZtextRaw = { ztext: string; title: string; chdiv: string }
 
-export async function load({ fetch, parent, params }) {
-  const sname = params.sname
-  const wn_id = +params.wn_id
-  const ch_no = +params.ch_no
+export async function load({ url: { searchParams }, fetch, parent, params }) {
+  const wn_id = parseInt(params.wn_id, 10)
+  const sname = params.seed
+  const ch_no = parseInt(searchParams.get('ch_no'), 10)
 
   const api_url = `/_wn/texts/${wn_id}/${sname}/${ch_no}`
-
   const { ztext, title, chdiv } = await api_get<ZtextRaw>(api_url, fetch)
 
   const { nvinfo } = await parent()
@@ -17,17 +19,18 @@ export async function load({ fetch, parent, params }) {
   return { ztext, title, chdiv, ch_no, wn_id, sname, _meta }
 }
 
-import { book_nav, seed_nav, nav_link } from '$gui/global/header_util'
-import { _pgidx } from '$lib/kit_path'
-
 function page_meta({ bslug, vtitle }, sname: string, ch_no: number) {
+  const chap_url = `/wn/${bslug}/chaps/${sname}/${ch_no}-`
+
   return {
-    title: `Sửa text gốc chương #${ch_no} - ${vtitle}`,
+    title: `Thêm sửa đơn chương - ${vtitle}`,
     left_nav: [
       book_nav(bslug, vtitle, 'tm'),
       seed_nav(bslug, sname, _pgidx(ch_no), 'ts'),
-      nav_link('+edit', `Ch. ${ch_no}`, 'edit'),
+      nav_link('+chap', '', 'edit'),
     ],
-    right_nav: [nav_link('-', `Chương`, 'arrow-back-up', { show: 'tm' })],
+    right_nav: [
+      nav_link(chap_url, 'Hồi chương', 'arrow-back-up', { show: 'tm' }),
+    ],
   }
 }

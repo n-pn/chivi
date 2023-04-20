@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   // import { page } from '$app/stores'
   import { goto } from '$app/navigation'
   import { seed_path, _pgidx } from '$lib/kit_path'
@@ -153,4 +153,4 @@
       min-width: 8rem;
     }
   }
-</style>
+</style> -->

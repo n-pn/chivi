@@ -1,15 +1,15 @@
 <script lang="ts">
   import { get_user } from '$lib/stores'
+  const _user = get_user()
 
   import ReadPrivi from './ReadPrivi.svelte'
   import Remotes from './Remotes.svelte'
   import DeleteSeed from './DeleteSeed.svelte'
   import CutChapters from './CutChapters.svelte'
-  import CopyChapters from './CopyChapters.svelte'
+  // import CopyChapters from './CopyChapters.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
-  const _user = get_user()
 
   $: ({ nvinfo, curr_seed } = data)
 
@@ -56,7 +56,7 @@
       bind:curr_seed={data.curr_seed} />
   </details>
 
-  <details>
+  <!-- <details>
     <summary>Sao chép từ danh sách chương tiết khác</summary>
     <CopyChapters
       book_info={nvinfo}
@@ -64,7 +64,7 @@
       {curr_seed}
       {can_edit}
       {edit_url} />
-  </details>
+  </details> -->
 
   <details>
     <summary>Cắt bỏ các chương tiết bị thừa</summary>

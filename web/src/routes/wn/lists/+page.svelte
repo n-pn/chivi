@@ -8,7 +8,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  let qs = data.params.qs || ''
+  const do_filter = async () => await goto(`/wn/lists?qs=${data.filter.qs}`)
 </script>
 
 <WnNavMenu tab="lists" />
@@ -18,11 +18,11 @@
     class="search-bar"
     method="get"
     action="/wn/lists"
-    on:submit|preventDefault={() => goto(`/wn/lists?qs=${qs}`)}>
+    on:submit|preventDefault={do_filter}>
     <input
       type="search"
       class="m-input _sm"
-      bind:value={qs}
+      bind:value={data.filter.qs}
       name="qs"
       placeholder="Tìm theo từ khóa" />
 

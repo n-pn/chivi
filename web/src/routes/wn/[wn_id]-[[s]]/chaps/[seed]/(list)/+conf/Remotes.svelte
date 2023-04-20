@@ -122,7 +122,7 @@
         </td>
         <td align="center">
           <button
-            class="m-btn _xs "
+            class="m-btn _xs"
             class:_active={index < 1}
             disabled={index < 1}
             data-tip="Làm nguồn ngoài mặc định"

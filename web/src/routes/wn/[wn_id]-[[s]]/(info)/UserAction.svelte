@@ -11,13 +11,13 @@
   $: root_path = `/wn/${nvinfo.bslug}`
 
   function last_read({ bslug }, ubmemo: CV.Ubmemo) {
-    let { locked, chidx } = ubmemo
+    let { locked, chidx = 1, cpart = 1 } = ubmemo
     if (chidx < 1) chidx = 1
 
     let sname = ubmemo.sname || '_'
 
     return {
-      href: chap_path(bslug, sname, chidx),
+      href: chap_path(bslug, sname, chidx, cpart),
       icon: locked ? 'player-skip-forward' : 'player-play',
       text: ubmemo.chidx > 0 ? 'Đọc tiếp' : 'Đọc thử',
       mute: ubmemo.chidx < 0,
@@ -39,7 +39,7 @@
   <MarkBook {nvinfo} {ubmemo} />
 
   <Gmenu class="action" loc="bottom" r>
-    <button class="m-btn " slot="trigger">
+    <button class="m-btn" slot="trigger">
       <SIcon name="dots" />
     </button>
 
@@ -49,7 +49,7 @@
         <span>Từ điển truyện</span>
       </a>
 
-      <a class="gmenu-item _harmful" href="{root_path}/+info">
+      <a class="gmenu-item _harmful" href="/wn/+book?id={nvinfo.id}">
         <SIcon name="edit" />
         <span>Sửa thông tin</span>
       </a>

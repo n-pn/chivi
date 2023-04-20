@@ -71,7 +71,7 @@
     }
   }
 
-  $: edit_href = `${seed_path(nvinfo.bslug, curr_seed.sname)}/+chap`
+  $: edit_href = `${seed_path(nvinfo.bslug, curr_seed.sname)}/+bulk`
 
   // prettier-ignore
   const privi_str = (privi: number) => privi < 1 ? 'đăng nhập' : `quyền hạn ${privi}`

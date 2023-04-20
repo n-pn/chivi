@@ -42,7 +42,7 @@
     const prev = _prev_url ? `${base}/${_prev_url}` : base
     const next = _next_url ? `${base}/${_next_url}` : list
 
-    return { list, prev, next }
+    return { base, list, prev, next }
   }
 
   afterNavigate(() => {
@@ -56,11 +56,11 @@
     const { sname } = curr_seed
     const { cpart } = chap_data
 
-    const url = `/_db/_self/books/${nvinfo.id}/access`
+    const path = `/_db/_self/books/${nvinfo.id}/access`
     const body = { sname, ch_no, cpart, title, uslug, locking }
 
     try {
-      data.ubmemo = await api_call(url, body, 'PUT')
+      data.ubmemo = await api_call(path, body, 'PUT')
     } catch (ex) {
       console.log(ex)
     }
@@ -150,10 +150,7 @@
           <a
             class="gmenu-item"
             class:_disable={$_user.privi < 1}
-            href="{seed_path(
-              nvinfo.bslug,
-              curr_seed.sname
-            )}/{curr_chap.chidx}/+edit">
+            href="{paths.base}/+chap?ch_no={curr_chap.chidx}">
             <SIcon name="pencil" />
             <span>Sửa text gốc</span>
           </a>

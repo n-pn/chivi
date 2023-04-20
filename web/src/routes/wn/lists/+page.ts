@@ -1,5 +1,5 @@
 import { load_lists } from '$lib/fetch_data'
-import { home_nav, nav_link } from '$gui/global/header_util'
+import { home_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -9,8 +9,9 @@ export const load = (async ({ url, fetch, parent }) => {
   const { _user } = await parent()
   const _meta = build_meta(_user)
 
-  const params = Object.fromEntries(url.searchParams)
-  return { ...data, params, _meta }
+  const filter = { qs: url.searchParams.get('qs') }
+
+  return { ...data, filter, _meta }
 }) satisfies PageLoad
 
 const build_meta = (user: App.CurrentUser) => {

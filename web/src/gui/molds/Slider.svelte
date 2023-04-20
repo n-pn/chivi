@@ -18,6 +18,7 @@
   $: layers.toggle(actived, '.' + klass)
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <slider-wrap
   class:_active={actived}
   class:_sticky={sticked}

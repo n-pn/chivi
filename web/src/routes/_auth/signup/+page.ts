@@ -1,4 +1,4 @@
-import { home_nav, nav_link } from '$gui/global/header_util'
+import { home_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 

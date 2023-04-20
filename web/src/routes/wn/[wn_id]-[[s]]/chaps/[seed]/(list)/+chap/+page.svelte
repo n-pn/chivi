@@ -64,17 +64,8 @@
   }
 </script>
 
-<nav class="bread">
-  <a href="/wn/{nvinfo.bslug}" class="crumb _link">
-    <SIcon name="book" />
-    <span>{nvinfo.vtitle}</span>
-  </a>
-  <span>/</span>
-  <a href="/wn/{nvinfo.bslug}/-union" class="crumb _link">Chương tiết</a>
-</nav>
-
 <section class="article">
-  <h2>Sửa text chương #{ch_no}</h2>
+  <h2>Thêm sửa text gốc đơn chương #{ch_no}</h2>
 
   <form action={action_url} method="POST" on:submit={submit}>
     <div class="form-group _fluid">

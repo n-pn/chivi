@@ -32,9 +32,14 @@ export function chap_path(
   bslug: string,
   sname: string,
   ch_no: number,
-  uslug = '-'
+  cpart = 1,
+  uslug = ''
 ) {
-  return `${seed_path(bslug, sname)}/${ch_no}/${uslug}`
+  if (cpart > 1) {
+    return `${seed_path(bslug, sname)}/${ch_no}_${cpart}-${uslug}`
+  } else {
+    return `${seed_path(bslug, sname)}/${ch_no}-${uslug}`
+  }
 }
 
 export function _pgidx(index: number, limit = 32) {

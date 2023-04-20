@@ -1,5 +1,5 @@
 import type { PageLoad } from './$types'
-import { home_nav, book_nav, seed_nav, nav_link } from '$gui/global/header_util'
+import { home_nav, book_nav, seed_nav, nav_link } from '$utils/header_util'
 
 export const load = (async ({ url, parent }) => {
   const { nvinfo, curr_seed } = await parent()
@@ -10,7 +10,7 @@ export const load = (async ({ url, parent }) => {
       home_nav('', ''),
       book_nav(nvinfo.bslug, '', 'tl'),
       seed_nav(nvinfo.bslug, curr_seed.sname),
-      nav_link('+chap', 'Thêm/sửa chương', 'file-plus', { show: 'pm' }),
+      nav_link('+bulk', 'Thêm/sửa chương', 'file-plus', { show: 'pm' }),
     ],
   }
 

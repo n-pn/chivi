@@ -1,4 +1,4 @@
-import { home_nav } from '$gui/global/header_util'
+import { home_nav } from '$utils/header_util'
 import type { LayoutLoad } from './$types'
 
 export const load = (async () => {

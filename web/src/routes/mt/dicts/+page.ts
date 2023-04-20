@@ -1,5 +1,5 @@
-import { api_path, api_get } from '$lib/api_call'
-import { home_nav, nav_link } from '$gui/global/header_util'
+import { api_get } from '$lib/api_call'
+import { home_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -16,10 +16,8 @@ const _meta: App.PageMeta = {
 }
 
 export const load = (async ({ fetch, url }) => {
-  const path = api_path('v1dict.index', 0, url.searchParams)
-
-  // FIXME: update api result
-  const data: JsonData = await api_get<JsonData>(path, fetch)
+  const path = `/_m1/dicts${url.search}`
+  const data = await api_get<JsonData>(path, fetch)
 
   return { ...data, _meta }
 }) satisfies PageLoad

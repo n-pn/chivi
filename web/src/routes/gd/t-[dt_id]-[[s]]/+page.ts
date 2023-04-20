@@ -1,11 +1,10 @@
-import { nav_link } from '$gui/global/header_util'
+import { nav_link } from '$utils/header_util'
 import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 export const load: PageLoad = async ({ parent, fetch, params }) => {
-  const topic_id = params.dt_id
-  const api_path = `/_db/mrepls/thread/gd:${topic_id}`
-  const rplist = await api_get<CV.Rplist>(api_path, fetch)
+  const path = `/_db/mrepls/thread/gd:${params.dt_id}`
+  const rplist = await api_get<CV.Rplist>(path, fetch)
 
   const { cvpost } = await parent()
   const dboard = cvpost.post.dboard

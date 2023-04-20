@@ -1,5 +1,5 @@
-import { api_path, api_get } from '$lib/api_call'
-import { home_nav, nav_link } from '$gui/global/header_util'
+import { merge_query, api_get } from '$lib/api_call'
+import { home_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -21,12 +21,10 @@ export interface V1Dict {
 }
 
 export const load = (async ({ fetch, url, params: { dict } }) => {
-  const dict_path = api_path('v1dict.show', dict)
-  const dinfo = await api_get<V1Dict>(dict_path, fetch)
+  const dinfo = await api_get<V1Dict>(`/_m1/dicts/${dict}`, fetch)
 
-  const query = gen_query(dict, url.searchParams)
-  const terms_url = api_path('v1defn.index', null, url.searchParams, query)
-  const terms = await api_get<TermsData>(terms_url, fetch)
+  const search = merge_query(url.searchParams, { lm: 50 })
+  const terms = await api_get<TermsData>(`/_m1/defns?${search}`, fetch)
 
   const _meta = {
     title: 'Từ điển: ' + dinfo.label,
@@ -37,6 +35,7 @@ export const load = (async ({ fetch, url, params: { dict } }) => {
     ],
   }
 
+  const query = gen_query(dict, url.searchParams)
   return { ...dinfo, ...terms, query, _meta }
 }) satisfies PageLoad
 
@@ -49,7 +48,5 @@ function gen_query(dic: string, params: URLSearchParams) {
     prio: +params.get('prio') || '',
     tab: +params.get('tab') || '',
     uname: params.get('uname') || '',
-    pg: +params.get('pg') || 1,
-    lm: +params.get('lm') || 50,
   }
 }
