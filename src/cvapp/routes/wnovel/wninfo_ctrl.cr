@@ -111,23 +111,17 @@ class CV::WninfoCtrl < CV::BaseCtrl
     guard_privi 2, "thêm truyện/sửa nội dung truyện"
 
     nvinfo = form.save!(_uname, _privi)
-    Wnlink.upsert!(nvinfo.id.to_i, form.origins)
-
     Wninfo.cache!(nvinfo)
 
-    spawn add_book_dict(nvinfo.id, nvinfo.bslug, nvinfo.vname)
-    spawn CtrlUtil.log_user_action("nvinfo-upsert", params.to_h, _viuser.uname)
+    _log_action("wninfo-upsert", form)
+
+    Wnlink.upsert!(nvinfo.id, form.origins)
+    spawn M1::DbDict.init_wn_dict(nvinfo.id, nvinfo.bslug, nvinfo.vname)
 
     render json: {id: nvinfo.id, bslug: nvinfo.bslug}
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }
     render :bad_request, text: ex.message
-  end
-
-  private def add_book_dict(wn_id : Int64, bslug : String, bname : String)
-    dname = "#{wn_id}-#{bslug}"
-    url = "#{CV_ENV.m1_host}/_m1/dicts?wn_id=#{wn_id}&dname=#{dname}&bname=#{bname}"
-    HTTP::Client.put(url)
   end
 
   @[AC::Route::DELETE("/:wn_id")]

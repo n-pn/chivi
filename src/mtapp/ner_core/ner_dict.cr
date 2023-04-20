@@ -45,7 +45,7 @@ class MT::NerDict
 
   ###
 
-  DIR = "var/dicts/entdb"
+  DIR = "var/mtdic/fixed/zners"
 
   class_getter base : self { new.load_tsv!("#{DIR}/base.tsv") }
 end

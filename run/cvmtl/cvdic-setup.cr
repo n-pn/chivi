@@ -1,6 +1,6 @@
 require "sqlite3"
 
-DB.open("sqlite3:var/dicts/hints/all_terms.dic") do |db|
+DB.open("sqlite3:var/mtdic/fixed/hints/all_terms.dic") do |db|
   db.exec "drop table if exists terms"
 
   db.exec <<-SQL

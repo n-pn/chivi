@@ -159,26 +159,39 @@ abstract class AC::Base
   private def _get_int(name : String)
     params[name]?.try(&.to_i?)
   end
-end
 
-struct ConvertLimit
-  def initialize(@min = 0, @max = 24)
-  end
+  LOG_DIR = "var/ulogs/daily"
+  Dir.mkdir_p(LOG_DIR)
 
-  def convert(raw : String)
-    return @max unless int = raw.to_i?
-    int > @max ? @max : int < @min ? @min : int
-  end
-end
+  def _log_action(type : String, data : Object, user = _uname)
+    spawn do
+      local_now = Time.local
+      log_file = "#{LOG_DIR}/#{local_now.to_s("%F")}.jsonl"
 
-struct ConvertArray
-  def initialize(@delimit = ",")
-  end
-
-  def convert(raw : String)
-    raw.split(@delimit, remove_empty: true).map(&.strip).uniq!
+      action = {time: local_now, user: user, type: type, data: data}
+      File.open(log_file, "a", &.puts(action.to_json))
+    end
   end
 end
+
+# struct ConvertLimit
+#   def initialize(@min = 0, @max = 24)
+#   end
+
+#   def convert(raw : String)
+#     return @max unless int = raw.to_i?
+#     int > @max ? @max : int < @min ? @min : int
+#   end
+# end
+
+# struct ConvertArray
+#   def initialize(@delimit = ",")
+#   end
+
+#   def convert(raw : String)
+#     raw.split(@delimit, remove_empty: true).map(&.strip).uniq!
+#   end
+# end
 
 class ErrorHandler
   include HTTP::Handler

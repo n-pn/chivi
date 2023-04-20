@@ -10,7 +10,7 @@ mains = {} of String => Array(String)
 bings = {} of String => Array(String)
 prevs = {} of String => Array(String)
 
-DB.open("sqlite3:var/dicts/v1raw/v1_defns.dic") do |db|
+DB.open("sqlite3:var/mtdic/users/v1_defns.dic") do |db|
   sql = <<-SQL
   select key, val from defns
   where dic > -4 and val <> ''and _flag >= 0
@@ -27,14 +27,14 @@ end
 
 puts "main data: #{mains.size}"
 
-File.each_line("var/dicts/_temp/qt-known.tsv") do |line|
+File.each_line("var/mtdic/_temp/qt-known.tsv") do |line|
   zstr, *vstr = line.split('\t')
   prevs[normalize(zstr)] = vstr
 end
 
 puts "prev data: #{prevs.size}"
 
-File.each_line("var/dicts/_temp/bing-cleaned.tsv") do |line|
+File.each_line("var/mtdic/_temp/bing-cleaned.tsv") do |line|
   zstr, *vstr = line.split('\t')
   bings[normalize(zstr)] ||= vstr
 end

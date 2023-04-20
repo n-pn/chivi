@@ -17,7 +17,7 @@ enum Mark
   Cdict # exists in chinese dicts
 end
 
-DIC = DB.open("sqlite3:var/dicts/hints/all_terms.dic")
+DIC = DB.open("sqlite3:var/mtdic/fixed/hints/all_terms.dic")
 # DIC.exec "pragma journal_mode = WAL"
 DIC.exec "begin transaction"
 at_exit { DIC.exec "commit"; DIC.close }

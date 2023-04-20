@@ -160,18 +160,18 @@ class CV::Wninfo
 
   #########################################
 
-  def self.preload(ids : Enumerable(Int32))
-    ids.empty? ? [] of self : query.where { id.in? ids }
+  def self.preload(ids : Array(Int32))
+    ids.empty? ? [] of self : query.where { id.in?(ids) }
   end
 
-  class_getter total : Int64 { query.count }
+  class_getter total : Int32 { query.count.to_i }
 
   def self.get(author : Author, btitle : Btitle)
     find({author_id: author.id, btitle_id: btitle.id})
   end
 
-  CACHE_INT = RamCache(Int64, self).new
-  CACHE_STR = {} of String => Int64
+  CACHE_INT = RamCache(Int32, self).new
+  CACHE_STR = {} of String => Int32
 
   def self.find(sql : String) : self | Nil
     query.where(sql).limit(1).first
@@ -181,7 +181,7 @@ class CV::Wninfo
     CACHE_INT.set(nvinfo.id, nvinfo)
   end
 
-  def self.load!(id : Int64)
+  def self.load!(id : Int32)
     CACHE_INT.get(id) { find!({id: id}) }
   end
 

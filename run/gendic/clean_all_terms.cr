@@ -1,6 +1,6 @@
 require "sqlite3"
 
-db_path = "sqlite3:var/dicts/defns/all_terms.dic"
+db_path = "sqlite3:var/mtdic/fixed/defns/all_terms.dic"
 
 db = DB.open(db_path)
 

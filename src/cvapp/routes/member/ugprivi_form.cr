@@ -18,15 +18,8 @@ struct CV::UgpriviForm
 
   def do_upgrade!(user : Viuser, persist : Bool = true)
     vcoin_req, pdays = user.upgrade_privi!(@privi, @range, persist: persist)
-    spawn run_after_upgrade_tasks(user.uname)
+
     spawn create_vcoin_xlog(user, vcoin_req, pdays)
-  end
-
-  private def run_after_upgrade_tasks(uname : String)
-    Dir.mkdir_p("var/chaps/infos/@#{uname}")
-    Dir.mkdir_p("var/texts/rzips/@#{uname}")
-
-    CtrlUtil.log_user_action("upgrade-privi", self, uname)
   end
 
   private def create_vcoin_xlog(user : Viuser, vcoin_req : Int32, pdays : Int32)

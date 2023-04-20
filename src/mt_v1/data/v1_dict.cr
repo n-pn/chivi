@@ -70,7 +70,7 @@ class M1::DbDict
 
   @[AlwaysInline]
   def self.db_path
-    "var/dicts/v1raw/dicts_v1.db"
+    "var/mtdic/users/dicts_v1.db"
   end
 
   def self.init_sql

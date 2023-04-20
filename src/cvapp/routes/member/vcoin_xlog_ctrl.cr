@@ -78,7 +78,8 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
       spawn send_vcoin_notification(sender, target, xlog)
     end
 
-    spawn CtrlUtil.log_user_action("send-vcoin", form, _viuser.uname)
+    _log_action("send-vcoin", form)
+
     render json: {target: target.uname, remain: _viuser.vcoin}
   end
 

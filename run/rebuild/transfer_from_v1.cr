@@ -45,7 +45,7 @@ end
 
 defns = {} of String => Defn
 
-DB.open("sqlite3:var/dicts/v1raw/v1_defns.dic") do |db|
+DB.open("sqlite3:var/mtdic/users/v1_defns.dic") do |db|
   stmt = <<-SQL
     select
       "key" as zstr,

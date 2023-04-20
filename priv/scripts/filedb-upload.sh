@@ -11,11 +11,10 @@ if [[ $* == "all" || $* == *dict* ]]
 then
   echo upload dicts!
 
-  # rsync-fast "var/dicts/v1raw" "$SSH/var/dicts"
-  rsync-fast "var/dicts/defns" "$SSH/var/dicts"
-  rsync-fast "var/dicts/inits" "$SSH/var/dicts"
-  rsync-fast "var/dicts/init.dic" "$SSH/var/dicts"
-  # rsync-fast "var/dicts/v1dic" "$SSH/var/dicts"
+  # rsync-fast "var/mtdic/users" "$SSH/var/dicts"
+  rsync-fast "mtdic/fixed/defns" "$SSH/mtdic/fixed"
+  rsync-fast "mtdic/fixed/inits" "$SSH/mtdic/fixed"
+  rsync-fast "mtdic/fixed/v1_init.dic" "$SSH/mtdic/fixed"
 fi
 
 ## upload parsed seed data
@@ -33,13 +32,9 @@ if [[ $* == *misc* ]]
 then
   echo upload misc!
 
-  # rsync-fast "var/dicts/defns" --include="*/" --exclude="*.zst" "$SSH/var/dicts"
-
   rsync-fast "var/_conf" "$SSH/var"
 
 
-  # rsync-fast "var/dicts/v2raw" "$SSH/var/dicts"
-  # rsync-fast "var/dicts/v2dic" "$SSH/var/dicts"
 fi
 
 echo $*
@@ -53,12 +48,6 @@ then
   rsync-fast "var/mt_v2/ptags" "$SSH/var/mt_v2"
   rsync-fast "var/mt_v2/rules" "$SSH/var/mt_v2"
 
-  rsync-fast "var/dicts/hints" "$SSH/var/dicts"
-
-  rsync-fast "var/dicts/index.db" "$SSH/var/dicts"
-  rsync-fast "var/dicts/init.dic" "$SSH/var/dicts"
-  rsync-fast "var/dicts/core.dic" "$SSH/var/dicts"
-  rsync-fast "var/dicts/book.dic" "$SSH/var/dicts"
 fi
 
 ## upload parsed seed data

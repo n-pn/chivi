@@ -64,7 +64,7 @@ class SP::WdDefn
   # return path for database
   @[AlwaysInline]
   def self.db_path(dname : String)
-    "var/dicts/defns/#{dname}.dic"
+    "var/mtdic/fixed/defns/#{dname}.dic"
   end
 
   # open database for reading/writing

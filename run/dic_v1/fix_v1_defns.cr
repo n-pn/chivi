@@ -1,6 +1,6 @@
 require "sqlite3"
 
-db = DB.open("sqlite3:var/dicts/v1raw/v1_defns.dic")
+db = DB.open("sqlite3:var/mtdic/users/v1_defns.dic")
 at_exit { db.close }
 
 struct Term

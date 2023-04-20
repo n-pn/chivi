@@ -5,26 +5,21 @@ class CV::DtopicCtrl < CV::BaseCtrl
   base "/_db/topics"
 
   @[AC::Route::GET("/")]
-  def index(lb labels : String? = nil, dboard : Int64? = nil, viuser : String? = nil)
-    pgidx, limit, offset = _paginate(max: 100)
-
+  def index(lb dlabel : String? = nil, dboard : Int32? = nil, by user : String? = nil)
+    pg_no, limit, offset = _paginate(max: 100)
     query = Dtopic.query.order_by(_sort: :desc)
 
-    query.where("state >= -1")
-    query.filter_label(labels) if labels
+    query.where("? = ANY(lslugs)", TextUtil.slugify(dlabel)) if dlabel
+    query.where("nvinfo_id = ?", dboard) if dboard
 
-    if nvinfo = dboard.try { |x| Wninfo.load!(x) }
-      query.filter_board(nvinfo)
-    end
-
-    if viuser
-      query.where("viuser_id = (select id from viusers where uname = ? limit 1)", viuser)
-    end
+    query.where(<<-SQL, user) if user
+      viuser_id = (select id from viusers where uname = ? limit 1)
+      SQL
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count
 
-    posts = query.limit(limit).offset(offset).to_a
-    memos = Memoir.glob(_vu_id, :dtopic, posts.map(&.id.to_i))
+    posts = query.with_nvinfo.limit(limit).offset(offset).to_a
+    memos = Memoir.glob(_vu_id, :dtopic, posts.map(&.id))
 
     user_ids = posts.map(&.viuser_id)
     user_ids << _vu_id if _vu_id >= 0
@@ -33,7 +28,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
     render json: {
       total: total,
-      pgidx: pgidx,
+      pgidx: pg_no,
       pgmax: _pgidx(total, limit),
 
       posts: DtopicView.as_list(posts, false),

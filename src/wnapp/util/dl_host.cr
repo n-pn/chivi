@@ -166,7 +166,7 @@ struct DlHost
 
   ###
 
-  CONFS = Hash(String, self).from_yaml(File.read("#{__DIR__}/dl_host.yml"))
+  CONFS = Hash(String, self).from_yaml(File.read("var/_conf/dl_host.yml"))
 
   def self.load_by_name(hostname : String, &)
     hostbase = hostname.sub(/^www\./, "")

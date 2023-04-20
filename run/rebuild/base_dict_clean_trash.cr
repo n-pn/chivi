@@ -1,11 +1,11 @@
 require "sqlite3"
 require "colorize"
 
-DIR = "var/dicts/outer"
+DIR = "var/mtdic/outer"
 
 valids = File.read_lines("#{DIR}/valids.tsv").map!(&.split('\t').first)
 
-DIC = DB.open("sqlite3:var/dicts/mtdic/base.dic")
+DIC = DB.open("sqlite3:var/mtdic/fixed/common-main.dic")
 at_exit { DIC.close }
 
 words = DIC.query_all "select zstr, xpos from defns", as: {String, String}

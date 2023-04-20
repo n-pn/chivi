@@ -8,11 +8,9 @@ class CV::MarkBookCtrl < CV::BaseCtrl
     render :unauthorized if _privi < 0
   end
 
-  @[AC::Route::GET("/access",
-    converters: {lm: ConvertLimit},
-    config: {lm: {min: 15, max: 30}})]
-  def access(pg pg_no : Int32 = 0, lm limit : Int32 = 15, kind : String? = nil)
-    offset = CtrlUtil.offset(pg_no, limit)
+  @[AC::Route::GET("/access")]
+  def access(kind : String? = nil)
+    pg_no, limit, offset = _paginate(min: 15, max: 30)
 
     query = Ubmemo.query.where("viuser_id = ?", _viuser.id)
 

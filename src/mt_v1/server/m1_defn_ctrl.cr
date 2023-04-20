@@ -93,6 +93,9 @@ class M1::DefnCtrl < AC::Base
     str
   end
 
+  LOG_DIR = "var/ulogs/mtdic"
+  Dir.mkdir_p(LOG_DIR)
+
   @[AC::Route::POST("/defns", body: :form)]
   def create(form : DefnForm)
     form.validate!(_privi)
@@ -102,29 +105,12 @@ class M1::DefnCtrl < AC::Base
     update_stats(defn)
 
     spawn do
-      date = Time.local.to_s("%Y-%m/%d")
-      log_file = "var/dicts/v1log/#{date}.jsonl"
-
-      Dir.mkdir_p(File.dirname(log_file))
+      log_file = "#{LOG_DIR}/#{Time.local.to_s("%F")}.jsonl"
       File.open(log_file, "a", &.puts(form.to_json))
     end
 
     render json: defn
   end
-
-  # private def save_log!(defn : DbDefn, form)
-  #   date = Time.local.to_s("%Y-%m/%d")
-  #   log_file = "var/dicts/ulogs/#{date}.jsonl"
-  #   Dir.mkdir_p(File.dirname(log_file))
-
-  #   data = {
-  #     mtime: defn.mtime,
-  #     wn_id: defn.dic,
-  #     dic:   defn.dic,
-  #   }
-
-  #   File.open(log_file, "a", &.puts(data.to_json))
-  # end
 
   private def rebuild_trie(defn : DbDefn)
     case defn.tab

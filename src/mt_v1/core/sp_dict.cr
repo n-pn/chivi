@@ -4,7 +4,7 @@ require "./mt_node/mt_term"
 require "./pos_tag"
 
 class M1::SpDict
-  DB_PATH = "var/dicts/v1raw/v1_defns.dic"
+  DB_PATH = "var/mtdic/users/v1_defns.dic"
 
   def initialize(@df_ptag : PosTag, @fixed_tag = false)
     @hash = Hash(String, {String, PosTag}).new

@@ -4,7 +4,7 @@ defns = {} of String => String
 bings = {} of String => String
 prevs = {} of String => String
 
-DB.open("sqlite3:var/dicts/v1raw/v1_defns.dic") do |db|
+DB.open("sqlite3:/app/chivi.app/var/mtdic/users/v1_defns.dic") do |db|
   sql = <<-SQL
   select key, val from defns
   where dic > -4 and val <> '' and _flag >= 0
@@ -17,7 +17,7 @@ DB.open("sqlite3:var/dicts/v1raw/v1_defns.dic") do |db|
   end
 end
 
-DB.open("sqlite3:var/dicts/defns/all_terms.dic") do |db|
+DB.open("sqlite3:var/mtdic/fixed/defns/all_terms.dic") do |db|
   db.query_each "select zh, bi from terms where bi <> ''" do |rs|
     key, val = rs.read(String, String)
     bings[key] ||= val
@@ -38,7 +38,7 @@ defn_count = 0
 bing_count = 0
 prev_count = 0
 
-File.each_line("var/dicts/inits/regular-terms-cleaned.tsv") do |line|
+File.each_line("var/mtdic/fixed/inits/regular-terms-cleaned.tsv") do |line|
   key = line.split('\t')[0]
   next if key =~ /^[\d+零〇一二两三四五六七八九十百千万亿]+(元|英寸)?$/
   next if key =~ /^第[\d+零〇一二两三四五六七八九十百千万亿]+章$/

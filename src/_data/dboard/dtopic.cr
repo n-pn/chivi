@@ -45,15 +45,6 @@ class CV::Dtopic
 
   timestamps
 
-  scope :filter_label do |labels|
-    labels = labels.split('+').map! { |x| TextUtil.slugify(x.strip) }
-    where("lslugs @> ?", labels)
-  end
-
-  scope :filter_board do |board|
-    board ? where({nvinfo_id: board.id}) : with_nvinfo
-  end
-
   # scope :filter_owner do |owner|
   #   owner ? where({viuser_id: owner.id}) : with_viuser
   # end

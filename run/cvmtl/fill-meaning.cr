@@ -1,6 +1,6 @@
 require "sqlite3"
 
-DIC = DB.open("sqlite3:var/dicts/hints/all_terms.dic")
+DIC = DB.open("sqlite3:var/mtdic/fixed/hints/all_terms.dic")
 at_exit { DIC.close }
 
 def find_value(zh : String)

@@ -45,7 +45,7 @@ class M1::MtTrie
 end
 
 class M1::MtDict
-  DB_PATH = "var/dicts/v1raw/v1_defns.dic"
+  DB_PATH = "var/mtdic/users/v1_defns.dic"
 
   MAINS = {} of Int32 => self
   AUTOS = {} of Int32 => self
@@ -128,7 +128,7 @@ class M1::MtDict
   end
 
   def load_init!
-    DB.open("sqlite3:var/dicts/init.dic") do |db|
+    DB.open("sqlite3:var/mtdic/fixed/v1_init.dic") do |db|
       sql = "select zstr, tags, mtls from terms where _flag >= 0 and mtls <> ''"
 
       db.query_each(sql) do |rs|

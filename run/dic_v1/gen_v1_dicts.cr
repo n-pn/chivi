@@ -1,5 +1,3 @@
-# Dir.mkdir_p("var/dicts/v1raw")
-
 require "pg"
 
 require "../../src/cv_env"

@@ -134,7 +134,7 @@ class M1::TranCtrl < AC::Base
     xlog.create!
 
     time_now = Time.local
-    log_file = "var/users/qtlogs/#{time_now.to_s("%F")}.log"
+    log_file = "var/ulogs/qtlog/#{time_now.to_s("%F")}.log"
     File.open(log_file, "a", &.puts(xlog.to_json))
   end
 

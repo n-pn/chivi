@@ -22,7 +22,7 @@ puts counter.size
 
 upsert_sql = "replace into ent_freqs (form, etag, freq) values ($1, $2, $3)"
 
-db_path = "var/dicts/defns/ent_freqs.dic"
+db_path = "var/mtdic/fixed/defns/ent_freqs.dic"
 DB.open("sqlite3:#{db_path}?journal_mode=WAL&synchronous=normal") do |db|
   db.exec "begin"
 

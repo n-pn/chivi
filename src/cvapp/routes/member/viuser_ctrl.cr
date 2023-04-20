@@ -17,8 +17,8 @@ class CV::SigninCtrl < CV::BaseCtrl
   def signup(form : SignupForm)
     viuser = Viuser.create!(form.email.strip, form.uname.strip, form.upass.strip)
 
-    body = {email: viuser.email, uname: viuser.uname, cpass: viuser.cpass}
-    spawn CtrlUtil.log_user_action("user-signup", body, viuser)
+    data = {email: viuser.email, uname: viuser.uname, cpass: viuser.cpass}
+    _log_action("user-signup", data, viuser.uname)
 
     render_user!(viuser)
   rescue err

@@ -38,6 +38,7 @@ class CV::UsercpCtrl < CV::BaseCtrl
 
     form.do_upgrade!(_viuser)
     save_current_user!(_viuser)
+    _log_action("ug-privi", form)
 
     render json: ViuserView.new(_viuser, true)
   rescue ex
@@ -83,10 +84,8 @@ class CV::UsercpCtrl < CV::BaseCtrl
     form.validate!(_viuser)
     _viuser.tap(&.passwd = form.newpw).save!
 
-    spawn do
-      body = {email: _viuser.email, cpass: _viuser.cpass}
-      CtrlUtil.log_user_action("change-pass", body, _viuser.uname)
-    end
+    data = {email: _viuser.email, cpass: _viuser.cpass}
+    _log_action("ug-passwd", data)
 
     render :accepted, text: "Đổi mật khẩu thành công"
   rescue err

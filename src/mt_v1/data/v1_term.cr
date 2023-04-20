@@ -11,7 +11,7 @@ class M1::DbTerm
 
   @[AlwaysInline]
   def self.db_path(name : String)
-    "var/dicts/v1dic/#{name}_v1.dic"
+    "var/mtdic/users/#{name}_v1.dic"
   end
 
   def self.init_sql

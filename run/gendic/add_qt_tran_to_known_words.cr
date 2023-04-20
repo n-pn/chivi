@@ -18,7 +18,7 @@ File.each_line("var/cvmtl/vietphrase/combine-cleaned.tsv") do |line|
   DICT[key] = val
 end
 
-out_file = File.open("var/dicts/hints.tsv", "w")
+out_file = File.open("var/mtdic/fixed/hints.tsv", "w")
 existing = 0
 
 File.each_line("var/cvmtl/known/all-known.tsv") do |key|

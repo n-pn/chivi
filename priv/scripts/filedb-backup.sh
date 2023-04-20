@@ -22,14 +22,7 @@ fi
 if [[ $1 == "all" || $* == *dict* ]]
 then
   echo backup dicts data!
-
-  # rsync-fast "$SSH/var/dicts/v1/" "var/dicts/v1/"
-  # rsync-fast "$SSH/var/dicts/ulogs" "var/dicts"
-
-  rsync-fast "$SSH/var/dicts/v1log" "var/dicts"
-  rsync-fast "$SSH/var/dicts/v1raw" "var/dicts"
-  rsync-fast "$SSH/var/users" "var"
-  # rsync-fast "$SSH/var/dicts/v1dic" "var/dicts"
+  rsync-fast "$SSH/var/mtdic/users/" "var/mtdic/users/"
 fi
 
 ## backup book data

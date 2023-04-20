@@ -1,4 +1,4 @@
-DIR = "var/dicts/entdb"
+DIR = "var/mtdic/fixed/zners"
 
 out_file = File.open("#{DIR}/translit.tsv", "w")
 at_exit { out_file.close }

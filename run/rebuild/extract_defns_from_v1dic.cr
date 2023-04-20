@@ -1,6 +1,6 @@
 require "sqlite3"
 
-DIC = DB.open "sqlite3:var/dicts/v1raw/v1_defns.dic"
+DIC = DB.open "sqlite3:var/mtdic/users/v1_defns.dic"
 at_exit { DIC.close }
 
 def extract(dic = 0)

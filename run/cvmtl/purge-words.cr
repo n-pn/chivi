@@ -1,7 +1,7 @@
 require "sqlite3"
 
-CORE = DB.open("sqlite3:var/dicts/core.dic")
-BOOK = DB.open("sqlite3:var/dicts/book.dic")
+CORE = DB.open("sqlite3:var/mtdic/fixed/core.dic")
+BOOK = DB.open("sqlite3:var/mtdic/fixed/book.dic")
 at_exit { CORE.close; BOOK.close }
 
 def find(dict, word)
