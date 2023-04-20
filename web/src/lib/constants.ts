@@ -18,7 +18,7 @@ export const status_names = {
 
 export const status_icons = {
   default: 'bookmark',
-  reading: 'eye',
+  reading: 'eyeglass',
   finished: 'square-check',
   onhold: 'player-pause',
   dropped: 'trash',

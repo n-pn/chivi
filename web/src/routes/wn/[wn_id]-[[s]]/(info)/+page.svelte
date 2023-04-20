@@ -81,13 +81,23 @@
   <div class="users">
     {#each bdata.users as { uname, privi, umark }}
       {@const status = status_types[umark]}
-      <a
-        class="m-chip _{status_colors[status]}"
-        href="/@{uname}/books/{status}"
-        data-tip="[{status_names[status]}]">
-        <cv-user data-privi={privi}>{uname}</cv-user>
-        <SIcon name={status_icons[status]} />
-      </a>
+      {#if umark > 0}
+        <a
+          class="m-chip _{status_colors[status]}"
+          href="/@{uname}/books/{status}"
+          data-tip="Đánh dấu: {status_names[status]}">
+          <cv-user data-privi={privi}>{uname}</cv-user>
+          <SIcon name={status_icons[status]} />
+        </a>
+      {:else}
+        <a
+          class="m-chip _neutral"
+          href="/@{uname}/books/default"
+          data-tip="Chưa thêm đánh dấu">
+          <cv-user data-privi={privi}>{uname}</cv-user>
+          <SIcon name="eye" />
+        </a>
+      {/if}
     {:else}
       <div class="empty">Chưa có người đọc</div>
     {/each}
@@ -158,12 +168,12 @@
   }
 
   .m-chip {
-    margin-right: 0.5rem;
-    display: inline-flex;
-    align-items: center;
+    gap: 0.25rem;
+  }
 
-    > cv-user {
-      padding: 0 0.25rem;
-    }
+  .users {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
   }
 </style>
