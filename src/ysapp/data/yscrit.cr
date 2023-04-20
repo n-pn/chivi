@@ -123,8 +123,6 @@ class YS::Yscrit
   end
 
   def set_tags(ztags : Array(String), force : Bool = false)
-    return unless force || self.ztags.empty?
-
     self.ztags = ztags
     self.fix_vtags!(ztags) if force && !ztags.empty?
   end

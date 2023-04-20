@@ -25,7 +25,7 @@ class YS::CrawlYsbook < CrawlTask
 
   def self.run!(argv = ARGV)
     min_id = 1
-    max_id = 297207
+    max_id = 299302
 
     reseed_proxies = false
     crawl_mode = CrawlMode::Tail

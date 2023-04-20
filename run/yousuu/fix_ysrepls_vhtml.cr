@@ -7,6 +7,8 @@ input = PGDB.query_all <<-SQL, as: {Int32, String, Int32}
   where ysrepls.vhtml = ''
   SQL
 
+puts "input: #{input.size}"
+
 engines = Hash(Int32, M1::MtCore).new { |h, k| h[k] = M1::MtCore.init(udic: k) }
 
 input.each_with_index(1) do |(yr_id, ztext, wn_id), index|
@@ -15,7 +17,10 @@ input.each_with_index(1) do |(yr_id, ztext, wn_id), index|
   engine = engines[wn_id]
 
   vhtml = String.build do |io|
-    ztext.lines.map(&.strip).reject!(&.empty?).each do |line|
+    ztext.each_line do |line|
+      line = line.strip
+      next if line.empty?
+
       io << "<p>"
       engine.cv_plain(line, true).to_txt(io)
       io << "</p>\n"
