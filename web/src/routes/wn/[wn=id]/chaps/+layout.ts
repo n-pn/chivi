@@ -7,8 +7,7 @@ export interface SeedList {
 }
 
 export async function load({ fetch, depends, params }) {
-  const wn = parseInt(params.wn, 10)
-  const path = `/_wn/seeds?wn_id=${wn}`
+  const path = `/_wn/seeds?wn_id=${parseInt(params.wn, 10)}`
 
   const seed_list = await api_get<SeedList>(path, fetch)
 
