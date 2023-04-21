@@ -90,7 +90,7 @@
     {/each}
 
     <a
-      href={book_path(nvinfo.bslug, 'chaps/+seed')}
+      href={book_path(nvinfo.bslug, '+seed')}
       class="seed-name _sub _btn"
       class:_disable={$_user.privi < 3}
       data-tip="Thêm/sửa/xóa các nguồn ngoài"
