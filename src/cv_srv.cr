@@ -97,7 +97,7 @@ abstract class AC::Base
     _privi = session["privi"]?.try(&.as(Int64).to_i) || -1
     _until = session["until"]?.try(&.as(Int64)) || 0_i64
 
-    (0 < _privi < 4) && _until < Time.utc.to_unix ? _privi &- 1 : _privi
+    (0 < _privi < 4) && _until < Time.utc.to_unix ? 0 : _privi
   end
 
   private def guard_privi(min min_privi : Int32, action : String = "thực hiện hoạt động")
