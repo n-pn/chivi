@@ -104,11 +104,7 @@ class M1::DefnCtrl < AC::Base
     rebuild_trie(defn)
     update_stats(defn)
 
-    spawn do
-      log_file = "#{LOG_DIR}/#{Time.local.to_s("%F")}.jsonl"
-      File.open(log_file, "a", &.puts(form.to_json))
-    end
-
+    _log_action("set", form, ldir: LOG_DIR)
     render json: defn
   end
 

@@ -163,10 +163,10 @@ abstract class AC::Base
   LOG_DIR = "var/ulogs/daily"
   Dir.mkdir_p(LOG_DIR)
 
-  def _log_action(type : String, data : Object, user = _uname)
+  def _log_action(type : String, data : Object, user = _uname, ldir = LOG_DIR)
     spawn do
       local_now = Time.local
-      log_file = "#{LOG_DIR}/#{local_now.to_s("%F")}.jsonl"
+      log_file = "#{ldir}/#{local_now.to_s("%F")}.jsonl"
 
       action = {time: local_now, user: user, type: type, data: data}
       File.open(log_file, "a", &.puts(action.to_json))

@@ -182,8 +182,33 @@ class SP::Btran
       lookup(terms)
     end
   end
+
+  class_getter free_token : String do
+    HTTP::Client.get("https://edge.microsoft.com/translate/auth", &.body_io.gets_to_end)
+  end
+
+  def self.free_translate(text : String, target = "vi")
+    free_translate({text}, target)
+  end
+
+  def self.free_translate(words : Enumerable(String), target = "vi")
+    endpoint = "https://api.cognitive.microsofttranslator.com/translate?from=zh-Hans&to=#{target}&api-version=3.0&textType=plain"
+
+    headers = HTTP::Headers{
+      "Authorization" => "Bearer #{free_token}",
+      "Content-Type"  => "application/json",
+    }
+
+    body = words.map { |text| {Text: text} }.to_json
+
+    HTTP::Client.post(endpoint, headers: headers, body: body) do |res|
+      res.body_io.gets_to_end
+    end
+  end
 end
 
 # test = "能源、表情".split("、")
 # puts SP::Btran.translate(test).to_pretty_json
 # puts SP::Btran.lookup(["in", "out"]).to_pretty_json
+
+# puts SP::Btran.free_translate(["*,朱铁崖", "卢修斯", "同文"])
