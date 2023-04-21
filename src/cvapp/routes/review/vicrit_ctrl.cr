@@ -19,7 +19,7 @@ class CV::VicritCtrl < CV::BaseCtrl
     query.where("stars >= ?", smin) if smin > 1
     query.where("stars <= ?", smax) if smax < 5
 
-    query.where("? = any btags", vtag) if vtag
+    query.where("? = any(btags)", vtag) if vtag
 
     total = query.dup.limit(limit &* 3 &+ offset).count
     crits = query.limit(limit).offset(offset).to_a
@@ -60,17 +60,36 @@ class CV::VicritCtrl < CV::BaseCtrl
     }
   end
 
-  @[AC::Route::GET("/:crit_id/edit")]
-  def edit_form(crit_id : Int32)
-    vicrit = load_crit(crit_id)
-    guard_owner vicrit.viuser_id, 0, "sửa đánh giá"
+  @[AC::Route::GET("/form")]
+  def upsert_form(wn wn_id : Int32 = 0, id vc_id : Int32 = 0)
+    guard_privi 0, "thêm/sửa đánh giá"
+
+    wninfo = Wninfo.load!(wn_id)
+
+    lists = Vilist.query.where("viuser_id = ?", _vu_id).to_a
+    crits = Vicrit.query.where("nvinfo_id = ?", wn_id).to_a
+
+    vcrit = crits.find(&.id.== vc_id)
+    crits.reject!(&.id.== vc_id) if vcrit
 
     render json: {
-      id:    vicrit.id,
-      bl_id: vicrit.vilist_id,
-      stars: vicrit.stars,
-      input: vicrit.itext,
-      btags: vicrit.btags.join(", "),
+      bname: wninfo.btitle.vname,
+      bslug: "#{wn_id}-#{wninfo.bslug}",
+      ctime: vcrit.try(&.created_at.to_unix) || 0,
+      cform: init_form(vcrit, wn_id),
+      lists: VilistView.as_list(lists, mode: :crit),
+      crits: VicritView.as_list(crits),
+    }
+  end
+
+  private def init_form(crit : Nil, wn_id : Int32)
+    {id: 0, wn_id: wn_id, bl_id: -_vu_id, stars: 3, input: "", btags: ""}
+  end
+
+  private def init_form(crit : Vicrit, wn_id : Int32)
+    {
+      id: crit.id, wn_id: wn_id, bl_id: crit.vilist_id,
+      stars: crit.stars, input: crit.itext, btags: crit.btags.join(", "),
     }
   end
 
@@ -82,14 +101,16 @@ class CV::VicritCtrl < CV::BaseCtrl
 
     getter input : String
     getter stars : Int32 = 3
-    getter btags : Array(String)
+    getter btags : String
 
     def after_initialize
       @input = @input.strip
-      @btags.map!(&.strip).reject!(&.empty?).uniq!
-
       @stars = 3 unless @stars.in?(1..5)
       @bl_id = nil if @bl_id == 0
+    end
+
+    def tag_list
+      @btags.split(',').map!(&.strip).reject!(&.empty?).uniq!(&.downcase)
     end
   end
 
@@ -103,27 +124,27 @@ class CV::VicritCtrl < CV::BaseCtrl
       vilist_id: form.bl_id || -_vu_id,
     })
 
-    vicrit.patch!(form.input, form.stars, form.btags)
+    vicrit.patch!(form.input, form.stars, form.tag_list)
 
     render json: VicritView.new(vicrit, full: true)
-  rescue err : PG::Error
+  rescue err
     case msg = err.message || "Không rõ lỗi!"
     when .includes?("unique constraint")
-      raise BadRequest.new "Bình luận cho bộ sách đã tồn tại!"
+      render :bad_request, text: "Thư đơn bạn chọn đã có đánh giá bộ truyện!"
     else
-      raise BadRequest.new msg
+      render :bad_request, text: msg
     end
   end
 
-  @[AC::Route::PATCH("/:crit_id", body: body)]
-  def update(crit_id : Int32, body : CritForm)
+  @[AC::Route::PATCH("/:crit_id", body: form)]
+  def update(crit_id : Int32, form : CritForm)
     vicrit = load_crit(crit_id)
 
     owner_id = vicrit.viuser_id
     guard_owner owner_id, 0, "sửa đánh giá"
 
     vicrit.changed_at = Time.utc
-    vicrit.patch!(body.input, body.stars, body.btags)
+    vicrit.patch!(form.input, form.stars, form.tag_list)
 
     render json: VicritView.new(vicrit, full: true)
   end

@@ -1,32 +1,31 @@
-import { load_lists } from '$lib/fetch_data'
+import { load_crits } from '$lib/fetch_data'
 import { home_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
 export const load = (async ({ url, fetch, parent }) => {
-  const data = await load_lists(url, fetch)
+  const sort = url.searchParams.get('sort') || 'utime'
+  const data = await load_crits(url, fetch, { sort })
 
   const { _user } = await parent()
   const _meta = build_meta(_user)
 
-  const params = Object.fromEntries(url.searchParams)
-  return { ...data.ys, params, _meta }
+  return { ...data, sort, _meta }
 }) satisfies PageLoad
 
 const build_meta = (user: App.CurrentUser) => {
   const right_nav = []
 
   if (user.privi >= 0) {
-    const href = `/ul?from=vi&user=${user.uname}`
+    const href = `/uc?from=vi&user=${user.uname}`
     right_nav.push(nav_link(href, 'Của bạn', 'at', { show: 'tm' }))
   }
 
   return {
-    title: 'Thư đơn truyện chữ',
+    title: 'Đánh giá truyện chữ',
     left_nav: [
       home_nav('tm'),
-      nav_link('/wn', 'Truyện chữ', 'books', { show: 'ts' }),
-      nav_link('/ul', 'Thư đơn', 'stars', { show: 'ts' }),
+      nav_link('/uc', 'Đánh giá', 'stars', { show: 'ts' }),
     ],
     right_nav,
   }

@@ -14,7 +14,7 @@ class YS::CritCtrl < AC::Base
 
     query = Yscrit.query.sort_by(sort).where("vhtml <> ''")
 
-    query.where("? = any vtags", vtag) if vtag
+    query.where("? = any(vtags)", vtag) if vtag
     query.where("ysuser_id = ?", user) if user
 
     query.where("stars >= ?", smin) if smin > 1

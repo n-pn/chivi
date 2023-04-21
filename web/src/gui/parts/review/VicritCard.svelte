@@ -9,8 +9,8 @@
   import YscritBook from './YscritBook.svelte'
 
   export let crit: CV.Vicrit
-  export let book: CV.Wninfo
-  export let user: CV.Viuser
+  export let book: CV.Wninfo | undefined
+  export let user: CV.Viuser | App.CurrentUser
   export let list: CV.Vilist
 
   export let show_book = true
@@ -27,8 +27,6 @@
     replies = await fetch(path).then((r: Response) => r.json())
     show_repls = true
   }
-
-  $: edit_path = `/wn/${book.bslug}/crits/+crit?id=${crit.id}`
 </script>
 
 <article class="crit island">
@@ -36,7 +34,7 @@
     <a
       class="meta _user cv-user"
       data-privi={user.privi}
-      href="/wn/crits?from=vi&user={user.uname}">{user.uname}</a>
+      href="/uc?from=vi&user={user.uname}">{user.uname}</a>
 
     <span class="meta _time">
       <SIcon name="clock" />
@@ -54,7 +52,7 @@
 
   <div class="vtags">
     {#each crit.btags as label}
-      <a class="vtag" href="/wn/crits?vtag={label}">
+      <a class="vtag" href="/uc?vtag={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>
@@ -68,13 +66,13 @@
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="meta">&middot;</span> -->
 
-    <a class="meta" href="/wn/crits/v-{crit.id}">
+    <a class="meta" href="/uc/v-{crit.id}">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
 
     {#if $_user.privi > 3 || $_user.uname == user.uname}
-      <a class="meta" href={edit_path}>
+      <a class="meta" href="/uc/+crit?wn={crit.book_id}&id={crit.id}">
         <SIcon name="pencil" />
         <span>Sửa chữa</span>
       </a>
@@ -104,7 +102,7 @@
 
   {#if show_list && list}
     <footer class="list">
-      <a class="link _list" href="/wn/lists/v-{list.id}-{list.tslug}">
+      <a class="link _list" href="/ul/v-{list.id}-{list.tslug}">
         <SIcon name="bookmarks" />
         <span>{list.title}</span>
         <span>({list.book_count} bộ truyện)</span>

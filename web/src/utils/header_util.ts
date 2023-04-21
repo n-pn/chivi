@@ -37,7 +37,7 @@ export const default_meta: App.PageMeta = {
   left_nav: [home_nav('ps')],
   right_nav: [
     nav_link('/sp/qtran', 'Dịch nhanh', 'bolt', { show: 'tm' }),
-    nav_link('/wn/crits', 'Đánh giá', 'stars', { show: 'tm' }),
+    nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' }),
   ],
 }
 

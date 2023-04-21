@@ -1,6 +1,6 @@
 declare namespace CV {
   interface Vilist {
-    id: string
+    id: number
     user_id: number
 
     title: string

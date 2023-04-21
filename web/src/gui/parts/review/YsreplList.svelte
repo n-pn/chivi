@@ -23,7 +23,7 @@
           {@const user = replies.users[repl.yu_id]}
           <div class="repl">
             <header class="repl-head">
-              <a class="repl-user" href="/wn/crits?from=ys&user={user.id}"
+              <a class="repl-user" href="/uc?from=ys&user={user.id}"
                 >{user.uname}</a>
               <span class="fg-tert">·</span>
               <time class="repl-time">{get_rtime(repl.ctime)}</time>

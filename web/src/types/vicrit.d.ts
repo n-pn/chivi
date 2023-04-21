@@ -1,6 +1,7 @@
 declare namespace CV {
   interface Vicrit {
-    id: string
+    id: number
+
     book_id: number
     user_id: number
     list_id: number
@@ -25,6 +26,8 @@ declare namespace CV {
 
   interface VicritForm {
     id: number
+
+    wn_id: number
     bl_id: number
 
     stars: number

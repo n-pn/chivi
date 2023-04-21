@@ -18,7 +18,7 @@
 
 <style lang="scss">
   .star {
-    color: var(--bd-bold);
+    color: var(--bd-soft);
 
     &.active {
       color: rgb(247, 186, 42);

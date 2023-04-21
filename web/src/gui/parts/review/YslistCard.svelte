@@ -16,9 +16,7 @@
     {#each list.covers as cover, idx}
       <div class="cover _{idx}">
         <picture>
-          <source
-            type="image/webp"
-            srcset="https://cr2.chivi.app/covers/{cover}" />
+          <source type="image/webp" srcset="/covers/{cover}" />
           <img src="/imgs/empty.png" alt="" />
         </picture>
       </div>
@@ -28,7 +26,7 @@
   </div>
 
   <div class="infos">
-    <a class="vname" href="/wn/lists/{list.uslug}">{list.vname}</a>
+    <a class="vname" href="/ul/{list.uslug}">{list.vname}</a>
 
     <div class="genres">
       {#each list.genres.slice(0, 4) as genre}
@@ -47,8 +45,7 @@
       <def class="left">
         <span class="entry">
           <SIcon name="user" />
-          <a class="uname" href="/wn/lists?from=ys&user={user.id}"
-            >{user.uname}</a>
+          <a class="uname" href="/ul?from=ys&user={user.id}">{user.uname}</a>
         </span>
 
         <span class="entry">

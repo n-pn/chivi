@@ -39,3 +39,24 @@
     @include fgcolor(primary, 5);
   }
 }
+
+.show-pl {
+  display: none;
+  @include bp-min(pl) {
+    display: initial;
+  }
+}
+
+.show-ts {
+  display: none;
+  @include bp-min(ts) {
+    display: initial;
+  }
+}
+
+.show-tm {
+  display: none;
+  @include bp-min(tm) {
+    display: initial;
+  }
+}
