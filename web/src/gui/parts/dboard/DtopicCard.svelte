@@ -33,31 +33,6 @@
 
 <topic-card class:sm={$$props.size == 'sm'}>
   <topic-head>
-    <a
-      class="topic-title"
-      href="/gd/t-{post.id}-{post.tslug}"
-      on:click={(e) => dboard_ctrl.view_topic(e, post)}>
-      {post.title}
-    </a>
-
-    {#each post.labels as label}
-      <a
-        class="m-label _{dlabels[label]} _sm"
-        href="/gd?lb={label}"
-        on:click={(e) => dboard_ctrl.view_board(e, dboard, label)}>{label}</a>
-    {/each}
-  </topic-head>
-
-  <topic-brief>
-    <span><SIcon name="send" /></span>
-    <cv-user data-privi={user.privi}>{user.uname}</cv-user>
-    <span>·</span>
-    <topic-time>{rel_time(post.ctime)}</topic-time>
-    <topic-sep>·</topic-sep>
-    <span class="brief">{post.brief}</span>
-  </topic-brief>
-
-  <topic-foot>
     {#if _mode > 0}
       <a
         class="m-board"
@@ -67,6 +42,30 @@
         <span>{dboard.bname}</span>
       </a>
     {/if}
+
+    {#each post.labels as label}
+      <a
+        class="m-label _{dlabels[label]} _sm"
+        href="/gd?lb={label}"
+        on:click={(e) => dboard_ctrl.view_board(e, dboard, label)}>{label}</a>
+    {/each}
+  </topic-head>
+
+  <a
+    class="topic-title"
+    href="/gd/t-{post.id}-{post.tslug}"
+    on:click={(e) => dboard_ctrl.view_topic(e, post)}>
+    {post.title}
+  </a>
+
+  <topic-foot>
+    <topic-brief>
+      <a href="/@{user.uname}" class="cv-user" data-privi={user.privi}>
+        {user.uname}
+      </a>
+      <span class="fg-tert">&middot;</span>
+      <time>{rel_time(post.ctime)}</time>
+    </topic-brief>
 
     <foot-right>
       <topic-meta class="meta">
@@ -115,6 +114,9 @@
   }
 
   .topic-title {
+    display: block;
+    margin: 0.5rem 0;
+
     font-weight: 500;
 
     @include fgcolor(secd);
@@ -165,10 +167,6 @@
   foot-right {
     margin-left: auto;
     @include flex-cy($gap: 0.5rem);
-  }
-
-  topic-time {
-    @include clamp($width: null);
   }
 
   .meta {

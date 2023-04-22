@@ -41,11 +41,6 @@
   $: api_url = make_api_url($data)
   $: load_topics(api_url)
 
-  const on_cvpost_form = async () => {
-    await invalidate(api_url)
-    await load_topics(api_url)
-  }
-
   async function load_topics(api_url: string) {
     const api_res = await fetch(api_url)
     if (!api_res.ok) alert(await api_res.text())
@@ -110,7 +105,6 @@
     dboard={$data[$data.tab]}
     tlabel={$data.query.lb}
     {dtlist}
-    {on_cvpost_form}
     _mode={1} />
 </section>
 

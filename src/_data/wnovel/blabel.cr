@@ -13,6 +13,7 @@ class CV::Blabel
   end
 
   include Crorm::Model
+  include DB::Serializable::NonStrict
 
   class_getter table = "blabels"
   class_getter db : DB::Database = PGDB
@@ -21,7 +22,7 @@ class CV::Blabel
   field type : Int16 = 0
 
   field slug : String = ""
-  # field alts : Array(String) = [""]
+  # field alts : Array(String) = []
 
   field book_count : Int32 = 0
   field view_count : Int32 = 0
@@ -46,7 +47,7 @@ class CV::Blabel
   def upsert!(db = @@db)
     stmt = <<-SQL
     insert into #{@@table} (
-      "name", "type", slug
+      "name", "type", "slug",
       book_count, view_count,
       created_at, updated_at
     ) values ($1, $2, $3, $4, $5, $6, $7)
@@ -65,8 +66,7 @@ class CV::Blabel
 
   def self.fetch_all(type : Type)
     @@db.query_all <<-SQL, type.value, as: self
-      select "name", "type", slug, book_count, view_count, created_at, updated_at
-      from #{@@table} where "type" = $1 order by book_count desc
+      select * from #{@@table} where "type" = $1 order by book_count desc
     SQL
   end
 

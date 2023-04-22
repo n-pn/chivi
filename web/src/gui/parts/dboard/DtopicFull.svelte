@@ -6,13 +6,11 @@
   import { dlabels } from '$lib/constants'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import DtopicForm, { ctrl as post_ctrl } from './DtopicForm.svelte'
 
   export let post: CV.Dtopic
   export let user: CV.Viuser
   export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
   export let _all = post.bhtml.length < 500
-  export let on_post_form = () => window.location.reload()
 
   $: board_url = `/gd/b-${post.dboard.bslug}`
 
@@ -67,7 +65,7 @@
 
       {#if $_user.privi > 3 || $_user.uname == user.uname}
         <topic-sep>·</topic-sep>
-        <a class="action fg-tert" href="/gd/+post?id={post.id}"
+        <a class="action fg-tert" href="/gd/+topic?id={post.id}"
           ><span>Sửa</span>
         </a>
       {/if}
@@ -113,10 +111,6 @@
     {/if}
   </topic-pbody>
 </topic-full>
-
-{#if $post_ctrl.actived}
-  <DtopicForm dboard={post.dboard} on_destroy={on_post_form} />
-{/if}
 
 <style lang="scss">
   topic-full {

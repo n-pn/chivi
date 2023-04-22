@@ -1,15 +1,12 @@
-<script context="module" lang="ts">
+<script lang="ts">
   import { page } from '$app/stores'
   import { dlabels } from '$lib/constants'
 
   import { dtlist_data, dboard_ctrl, get_user } from '$lib/stores'
 
   import DtopicCard from './DtopicCard.svelte'
-  import DtopicForm, { ctrl as cvpost_form } from './DtopicForm.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-</script>
 
-<script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let dboard: CV.Dboard
@@ -18,7 +15,6 @@
   export let tlabel = $page.url.searchParams.get('lb')
   export let _mode = 0
 
-  export let on_cvpost_form = () => window.location.reload()
   const _user = get_user()
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
@@ -65,23 +61,20 @@
 </topic-list>
 
 {#if dtlist.pgmax > 1}
-  <board-pagi>
+  <nav>
     <Mpager {pager} pgidx={dtlist.pgidx} pgmax={dtlist.pgmax} {on_navigate} />
-  </board-pagi>
+  </nav>
 {/if}
 
 <board-foot>
-  <button
+  <a
+    href="/gd/+topic?tb={dboard?.id || -1}"
     class="m-btn _primary _fill"
-    disabled={$_user.privi < 0}
-    on:click={() => cvpost_form.show(0)}>
+    class:_disable={$_user.privi < 0}>
     <SIcon name="message-plus" />
-    <span>Tạo chủ đề mới</span></button>
+    <span>Tạo chủ đề mới</span>
+  </a>
 </board-foot>
-
-{#if $cvpost_form.actived}
-  <DtopicForm {dboard} on_destroy={on_cvpost_form} />
-{/if}
 
 <style lang="scss">
   board-head {
@@ -90,10 +83,8 @@
     margin-bottom: 0.75rem;
   }
 
-  board-pagi {
-    display: block;
+  .pagi {
     padding: 0.75rem 0;
-
     @include border($loc: bottom);
   }
 
@@ -112,8 +103,7 @@
 
   .empty {
     @include flex-ca();
-    height: 20rem;
-    max-height: 50vh;
+    height: 30vh;
     font-style: italic;
     @include ftsize(lg);
     @include fgcolor(mute);

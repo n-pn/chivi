@@ -6,7 +6,6 @@ export { default as BCover } from './atoms/BCover.svelte'
 export { default as Gmenu } from './molds/Gmenu.svelte'
 export { default as Mpager } from './molds/Mpager.svelte'
 
-export { default as DtopicForm } from './parts/dboard/DtopicForm.svelte'
 export { default as DtopicList } from './parts/dboard/DtopicList.svelte'
 export { default as DtopicCard } from './parts/dboard/DtopicCard.svelte'
 export { default as DtopicFull } from './parts/dboard/DtopicFull.svelte'
