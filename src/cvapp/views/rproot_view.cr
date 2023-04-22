@@ -1,6 +1,6 @@
 require "./_base_view"
 
-struct CV::MuheadView
+struct CV::RprootView
   include BaseView
 
   enum Mode
@@ -9,7 +9,7 @@ struct CV::MuheadView
     Full
   end
 
-  def initialize(@data : Muhead, @mode : Mode = :full)
+  def initialize(@data : Rproot, @mode : Mode = :full)
   end
 
   def to_json(jb : JSON::Builder)
@@ -36,13 +36,13 @@ struct CV::MuheadView
     }
   end
 
-  def self.as_list(data : Enumerable(Muhead))
+  def self.as_list(data : Enumerable(Rproot))
     list = [] of self
     data.each { |x| list << new(x, mode: :list) }
     list
   end
 
-  def self.as_hash(data : Enumerable(Muhead))
+  def self.as_hash(data : Enumerable(Rproot))
     hash = {} of Int32 => self
     data.each { |x| hash[x.id] = new(x, mode: :head) }
     hash

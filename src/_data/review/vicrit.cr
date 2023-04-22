@@ -44,4 +44,10 @@ class CV::Vicrit
     self.ohtml = PostUtil.md_to_html(itext)
     self.save!
   end
+
+  ###
+
+  def self.load!(id : Int32)
+    find!({id: id})
+  end
 end

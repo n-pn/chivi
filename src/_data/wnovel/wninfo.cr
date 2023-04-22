@@ -214,4 +214,8 @@ class CV::Wninfo
 
     nvinfo.tap { |x| x.fix_names! if fix_names }
   end
+
+  def self.get_vname(id : Int32)
+    PGDB.query_one("select vname from nvinfos where id = $1 limit 1", id, as: String)
+  end
 end

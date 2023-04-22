@@ -120,7 +120,7 @@ class CV::Dtopic
   end
 
   def gen_like_notif(from_user : String)
-    muhead = Muhead.find!("gd:#{self.id}")
+    muhead = Rproot.find!("gd:#{self.id}")
 
     link_to = muhead._link
     content = <<-HTML

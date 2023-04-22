@@ -1,6 +1,6 @@
 require "../_ctrl_base"
 
-struct CV::MureplForm
+struct CV::RpnodeForm
   include JSON::Serializable
 
   getter itext : String

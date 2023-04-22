@@ -10,10 +10,10 @@ require "../../src/_data/dboard/muhead"
 #   SQL
 # end
 
-CV::Murepl.query.order_by(id: :asc).each do |murepl|
+CV::Rpnode.query.order_by(id: :asc).each do |murepl|
   next if murepl.torepl_id == 0
 
-  parent = CV::Murepl.find!({id: murepl.torepl_id})
+  parent = CV::Rpnode.find!({id: murepl.torepl_id})
   next if murepl.touser_id == parent.viuser_id
 
   puts [murepl.touser_id, parent.viuser_id]

@@ -44,7 +44,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
     dtopic = Dtopic.new({viuser_id: _viuser.id, nvinfo_id: dboard.id})
     dtopic.update_content!(form)
-    spawn Muhead.new(dtopic).upsert!
+    spawn Rproot.new(dtopic).upsert!
 
     spawn do
       # TODO: directly call sql

@@ -19,56 +19,42 @@ struct CV::UgpriviForm
   def do_upgrade!(user : Viuser, persist : Bool = true)
     vcoin_req, pdays = user.upgrade_privi!(@privi, @range, persist: persist)
 
-    spawn create_vcoin_xlog(user, vcoin_req, pdays)
+    spawn record_action!(user, vcoin_req, pdays)
   end
 
-  private def create_vcoin_xlog(user : Viuser, vcoin_req : Int32, pdays : Int32)
+  private def record_action!(user : Viuser, vcoin_req : Int32, pdays : Int32)
     xlog = VcoinXlog.new({
-      kind:        10,
-      sender_id:   user.id,
-      target_id:   -1,
-      target_name: "Chivi",
-      amount:      vcoin_req,
-      reason:      "Nâng cấp quyền hạn Chivi lên #{@privi} trong #{pdays} ngày.",
+      kind: VcoinXlog::Kind::PriviUg.value,
+      sender_id: user.id, target_id: -1, target_name: "Chivi",
+      amount: vcoin_req, reason: "Nâng cấp quyền hạn Chivi lên #{@privi} trong #{pdays} ngày.",
     })
 
     xlog.save!
 
-    send_notification(xlog, user, vcoin_req)
-  end
+    content = String.build do |io|
+      io << <<-HTML
+        <p><strong>Bạn đã nâng cấp/gia hạn quyền hạn #{@privi} <a href="/me/vcoin-xlog#id-#{xlog.id}">thành công</a>.</strong></p>
+        <p>Bạn đã mất #{vcoin_req} vcoin để quyền hạn mới có hiệu lực thêm trong vòng #{pdays} ngày.
+        HTML
 
-  private def send_notification(xlog : VcoinXlog, user : Viuser, vcoin_req : Int32)
-    content, details, link_to = gen_ugprivi_notif(xlog, user, vcoin_req)
+      {3, 2, 1}.each do |privi|
+        time = Time.unix(user.current_privi_until(privi))
+        next if privi > @privi || time < Time.utc
+
+        io << <<-HTML
+          <p>Quyền hạn #{privi} của bạn có hiệu lực đến #{time.to_s("ngày %d-%m-%Y lúc %H:%M:%S")}.</p>
+          HTML
+      end
+    end
 
     Unotif.new(
-      viuser_id: user.id,
-      action: :privi_ug, object_id: xlog.id, byuser_id: -1,
-      content: content, details: details.to_json, link_to: link_to
+      viuser_id: user.id, content: content,
+      action: :privi_upgrade, object_id: xlog.id, byuser_id: -1,
     ).create!
 
     MailUtil.send(to: user.email, name: user.uname) do |mail|
       mail.subject "Chivi: Nâng cấp quyền hạn thành công"
       mail.message_html content
     end
-  end
-
-  private def gen_ugprivi_notif(xlog, user, vcoin_req)
-    content = String.build do |io|
-      io << "<p><strong>Bạn đã cập nhật/gia hạn quyền hạn #{@privi} thành công.</strong></p>\n"
-
-      {3, 2, 1}.each do |privi|
-        time = Time.unix(user.current_privi_until(privi))
-        next if privi > user.privi || time < Time.utc
-
-        io << <<-HTML
-          <p>Quyền hạn #{privi} của bạn có hiệu lực đến #{time.to_s("ngày %d-%m-%Y lúc %H:%M:%S")}.</p>
-        HTML
-      end
-    end
-
-    details = {_type: "privi_ug", privi: @privi, range: @range, vcoin: vcoin_req}
-    link_to = "/me/vcoin-xlog#id-#{xlog.id}"
-
-    {content, details, link_to}
   end
 end

@@ -14,15 +14,19 @@ export const load = (async ({ fetch, params: { crit } }) => {
   const path = `/_db/crits/${crit}`
   const data = await api_get<CritData>(path, fetch)
 
+  const rppath = `/_db/mrepls/thread/vc:${crit}`
+  const rplist = await api_get<CV.Rplist>(rppath, fetch)
+
   const _meta = {
     title: `Đánh giá [${crit}]`,
     desc: `Đánh giá cho bộ truyện ${data.book.vtitle}`,
     left_nav: [
+      home_nav('ts'),
       nav_link('/uc', 'Đánh giá truyện', 'stars', { show: 'tm' }),
-      nav_link(crit, `[${crit}]`, null, { kind: 'zseed' }),
+      nav_link(crit, `[@${data.user.uname}]`, null, { kind: 'zseed' }),
     ],
     right_nav: [nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' })],
   }
 
-  return { ...data, _meta }
+  return { ...data, rplist, _meta }
 }) satisfies PageLoad

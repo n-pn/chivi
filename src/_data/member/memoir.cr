@@ -2,14 +2,39 @@ require "../_base"
 require "./unotif"
 
 require "../dboard/dtopic"
-require "../dboard/murepl"
+require "../dboard/rpnode"
 
 class CV::Memoir
   enum Type : Int16
-    Murepl = 11
+    Viuser = 1
+
+    Rproot = 10
+    Rpnode = 11
 
     Dtopic = 12
-    Dboard = 20
+    # Dboard = 15
+
+    Author = 30
+    Wnovel = 31
+    Wnseed = 35
+
+    Vilist = 41
+    Vicrit = 42
+
+    Ysuser = 140
+    Yslist = 141
+    Yscrit = 142
+    Ysrepl = 143
+
+    def self.by_target(target)
+      case target
+      when CV::Rpnode then Rpnode
+      when CV::Dtopic then Dtopic
+      when CV::Vicrit then Vicrit
+      when CV::Vilist then Vilist
+      else                 raise "unknown type"
+      end
+    end
   end
 
   include Clear::Model
@@ -29,45 +54,21 @@ class CV::Memoir
 
   column extra : String? = nil
 
-  def send_notif!(action : Symbol)
-    case symbol
-    when :like   then create_like_notif!
-    when :unlike then remove_like_notif!
+  def self.target(type : Type, o_id : Int32)
+    case type
+    when .rpnode? then Rpnode.load!(id: o_id)
+    when .dtopic? then Dtopic.load!(id: o_id)
+    when .vicrit? then Vicrit.load!(id: o_id)
+    when .vilist? then Vilist.load!(id: o_id)
+    else               raise "unsupported type #{type}"
     end
-  end
-
-  def target
-    case Type.new(target_type)
-    when .murepl? then Murepl.load!(id: self.target_id)
-    when .dtopic? then Dtopic.load!(id: self.target_id)
-    else               raise "unknown type"
-    end
-  end
-
-  def create_like_notif!(target : Murepl | Dtopic, from_user : String)
-    return if target.viuser_id == self.viuser_id
-
-    action = target.is_a?(Murepl) ? Unotif::Action::LikeRepl : Unotif::Action::LikeDtop
-    return if Unotif.find(action, target.id, target.viuser_id)
-
-    content, details, link_to = target.gen_like_notif(from_user)
-
-    unotif = Unotif.new(
-      viuser_id: target.viuser_id,
-      action: action, object_id: target.id, byuser_id: self.viuser_id,
-      content: content, details: details.to_json, link_to: link_to,
-      created_at: Time.unix(self.liked_at)
-    )
-
-    unotif.create!
-  end
-
-  def remove_like_notif!(target : Murepl | Dtopic)
-    action = target.is_a?(Murepl) ? Unotif::Action::LikeRepl : Unotif::Action::LikeDtop
-    Unotif.remove_notif(action, target.id, target.viuser_id)
   end
 
   ####
+
+  def self.load(viuser_id : Int32, target)
+    load(viuser_id, Type.by_target(target), target.id)
+  end
 
   def self.load(viuser_id : Int32, target_type : Type, target_id : Int32) : self
     params = {viuser_id: viuser_id, target_type: target_type.value, target_id: target_id}

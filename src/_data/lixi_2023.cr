@@ -8,10 +8,13 @@ class CV::Lixi2023
   field id : Int32, primary: true
 
   field uname : String
-  field vcoin : Int32 = Random.rand(1..20)
+  field vcoin : Int32
   field mtime : Int64 = Time.utc.to_unix
 
   class_getter repo = Crorm::Sqlite3::Repo.new(db_path, init_sql)
+
+  def initialize(@uname, @vcoin)
+  end
 
   def self.roll_count(uname : String)
     @@repo.open_db do |db|

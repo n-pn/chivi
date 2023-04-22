@@ -1,9 +1,9 @@
 require "crorm"
 require "../_data"
 require "./dtopic"
-require "./murepl"
+require "./rpnode"
 
-class CV::Muhead
+class CV::Rproot
   include Crorm::Model
 
   class_getter table = "muheads"
@@ -21,7 +21,6 @@ class CV::Muhead
   field _link : String = ""
 
   field repl_count : Int32 = 0
-  field member_ids : Array(Int32)
 
   field last_seen_at : Time = Time.utc
   field last_repl_at : Time = Time.utc
@@ -44,7 +43,6 @@ class CV::Muhead
     @_desc = dtopic.brief
 
     @repl_count = 0
-    @member_ids = [dtopic.viuser_id]
     @last_seen_at = @last_repl_at = dtopic.updated_at
 
     @created_at = dtopic.created_at
@@ -64,36 +62,56 @@ class CV::Muhead
     @_desc = TextUtil.truncate(wninfo.bintro, 100)
 
     @repl_count = 0
-    @member_ids = [] of Int32
 
     @created_at = wninfo.created_at
     @updated_at = wninfo.updated_at
   end
 
-  def repl_action(prev_is_repl = false)
-    case
-    when prev_is_repl
-      "phản hồi bình luận của bạn trong #{@_type}"
-    when @urn.starts_with?("gd")
-      "thêm bình luận mới trong chủ đề bạn tạo"
-    else
-      "thêm bình luận mới trong #{@_type}"
-    end
+  def initialize(vicrit : Vicrit)
+    @urn = "vc:#{vicrit.id}"
+
+    @viuser_id = vicrit.viuser_id
+    @dboard_id = vicrit.nvinfo_id
+
+    @_type = "đánh giá truyện"
+    @_link = "/uc/v#{vicrit.id}"
+
+    @_name = "Đánh giá của [@#{Viuser.get_uname(vicrit.viuser_id)}] cho bộ truyện [#{Wninfo.get_vname(vicrit.nvinfo_id)}]"
+    @_desc = TextUtil.truncate(vicrit.itext, 100)
+
+    @repl_count = 0
+    @created_at = vicrit.created_at
+    @updated_at = vicrit.updated_at
+  end
+
+  def initialize(vilist : Vilist)
+    @urn = "vl:#{vilist.id}"
+
+    @viuser_id = vilist.viuser_id
+    @dboard_id = 0
+
+    @_type = "thư đơn"
+    @_link = "/ul/v#{vilist.id}-#{vilist.tslug}"
+
+    @_name = vilist.title
+    @_desc = TextUtil.truncate(vilist.dtext, 100)
+
+    @repl_count = 0
+    @created_at = vilist.created_at
+    @updated_at = vilist.updated_at
   end
 
   def fix_data
-    murepls = Murepl.get_all(muhead_id: id)
-    @repl_count = murepls.size
-    @member_ids.concat(murepls.map(&.viuser_id)).uniq!
-    @last_repl_at = Time.unix(murepls.max_of(&.utime))
+    repls = Rpnode.get_all(muhead_id: id)
+    @repl_count = repls.size
+    @last_repl_at = Time.unix(repls.max_of(&.utime))
   end
 
   def upsert!(db = @@db)
     insert_fields = %w{
       urn viuser_id dboard_id
       _type _name _link _desc
-      repl_count member_ids
-      last_seen_at last_repl_at
+      repl_count last_seen_at last_repl_at
       created_at updated_at}
 
     update_fields = insert_fields.reject(&.in?(%w(id urn created_at)))
@@ -111,23 +129,22 @@ class CV::Muhead
     db.query_one upsert_stmt,
       @urn, @viuser_id, @dboard_id,
       @_type, @_name, @_link, @_desc,
-      @repl_count, @member_ids,
-      @last_seen_at, @last_repl_at,
+      @repl_count, @last_seen_at, @last_repl_at,
       @created_at, @updated_at,
-      as: Muhead
+      as: Rproot
   end
 
   ####
 
   def self.find!(id : Int32)
-    @@db.query_one <<-SQL, id, as: Muhead
+    @@db.query_one <<-SQL, id, as: Rproot
       select * from #{@@table}
       where id = $1 limit 1
       SQL
   end
 
   def self.find!(urn : String)
-    @@db.query_one <<-SQL, urn, as: Muhead
+    @@db.query_one <<-SQL, urn, as: Rproot
       select * from #{@@table}
       where urn = $1 limit 1
       SQL
@@ -147,6 +164,8 @@ class CV::Muhead
     when "id" then find!(o_id.to_i)
     when "gd" then new(Dtopic.find!(o_id.to_i)).upsert!
     when "wn" then new(Wninfo.load!(o_id.to_i)).upsert!
+    when "vc" then new(Vicrit.load!(o_id.to_i)).upsert!
+    when "vl" then new(Vilist.load!(o_id.to_i)).upsert!
     else           raise "unsuported urn: #{urn}"
     end
   end

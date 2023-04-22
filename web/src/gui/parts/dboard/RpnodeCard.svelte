@@ -51,18 +51,16 @@
   class:nested={nest_level > 0}
   class:on_focus>
   <header class="repl-head">
-    <repl-meta>
-      <a class="cv-user" href="/@{user.uname}" data-privi={user.privi}
-        >{user.uname}
-      </a>
-    </repl-meta>
+    <a class="cv-user _meta" href="/@{user.uname}" data-privi={user.privi}
+      >{user.uname}
+    </a>
 
-    <repl-sep>·</repl-sep>
+    <span class="fg-tert">&middot;</span>
 
-    <span class="meta">
+    <time class="meta">
       {rel_time(repl.ctime)}
-      {#if repl.utime > repl.ctime}*{/if}
-    </span>
+      {repl.utime > repl.ctime ? '*' : ''}
+    </time>
   </header>
 
   <main class="repl-body m-article">{@html repl.ohtml}</main>
@@ -158,22 +156,17 @@
 
     font-size: rem(16px);
 
-    // .fluid & {
-    //   @include bps(font-size, rem(16px), $tm: rem(17px));
-    // }
-
-    > :global(*) + :global(*) {
-      margin-top: 1em;
+    > :global(*) {
+      max-width: 70ch;
     }
 
-    // > :global(*) {
-    //   max-width: 70ch;
-    // }
+    > :global(* + *) {
+      margin-top: 1em;
+    }
   }
 
-  repl-sep {
-    @include flex-ca;
-    @include fgcolor(tert);
+  ._meta {
+    @include ftsize(sm);
   }
 
   .meta {
@@ -184,11 +177,6 @@
     @include fgcolor(tert);
     @include ftsize(sm);
   }
-
-  // dthead-right {
-  //   @include flex-cy($gap: 0.25rem);
-  //   margin-left: auto;
-  // }
 
   .repl-foot {
     margin-top: 0.375rem;

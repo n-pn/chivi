@@ -4,41 +4,54 @@ require "../../_util/hash_util"
 
 class CV::Unotif
   enum Action : Int16
-    LikeRepl = 1
-    LikeDtop = 2
+    LikeRphead = 0
+    LikeRrnode = 1
+    LikeDtopic = 2
 
-    Replby = 20
+    LikeVicrit = 4
+    LikeVilist = 5
 
-    Saving = 50
+    GetReplied = 20
 
-    TaggedInRepl = 70
-    TaggedInPost = 71
+    GetFollowed = 50
 
-    VcoinEx = 100
-    PriviUg = 200
+    TaggedInReply = 70
+    TaggedInTopic = 71
+
+    VcoinXchange = 100
+    PriviUpgrade = 200
+
+    def self.map_liking(target)
+      case target
+      when Rpnode then LikeRrnode
+      when Dtopic then LikeDtopic
+      when Vicrit then LikeVicrit
+      when Vilist then LikeVilist
+      else             raise "unknown like action"
+      end
+    end
   end
 
   include Crorm::Model
+  include DB::Serializable::NonStrict
+
   class_getter table = "unotifs"
   class_getter db : DB::Database = PGDB
 
   field id : Int32, primary: true
   field viuser_id : Int32
 
+  field content : String = ""
+
   field action : Int16 = 0
   field object_id : Int32 = 0
   field byuser_id : Int32 = 0
 
-  field content : String = ""
-  field details : String = ""
-  field link_to : String = ""
-
   field reached_at : Time? = nil
   field created_at : Time = Time.utc
 
-  def initialize(@viuser_id,
+  def initialize(@viuser_id, @content,
                  action : Action, @object_id, @byuser_id,
-                 @content, @details, @link_to,
                  @created_at = Time.utc)
     @action = action.value
   end
@@ -46,16 +59,14 @@ class CV::Unotif
   def create!(db = @@db)
     stmt = <<-SQL
       insert into #{@@table}(
-        viuser_id,
-        "action", object_id, byuser_id,
-        content, details, link_to,
+        viuser_id, content,
+        "action", "object_id", "byuser_id",
         created_at
-      ) values ($1, $2, $3, $4, $5, $6, $7, $8)
+      ) values ($1, $2, $3, $4, $5, $6)
     SQL
 
-    db.exec stmt, @viuser_id,
+    db.exec stmt, @viuser_id, @content,
       @action, @object_id, @byuser_id,
-      @content, @details, @link_to,
       @created_at
   end
 
@@ -112,48 +123,5 @@ class CV::Unotif
       delete from #{@@table}
       where "action" = $1 and object_id = $2 and byuser_id = $3
       SQL
-  end
-
-  def self.create_repl_notif(repl : Murepl)
-    return if repl.touser_id == 0 || repl.touser_id == repl.viuser_id
-    return if find(:replby, repl.id, repl.viuser_id)
-
-    content, details, link_to = repl.gen_repl_notif
-
-    unotif = Unotif.new(
-      repl.touser_id,
-      :replby, repl.id, repl.viuser_id,
-      content, details.to_json, link_to,
-      repl.created_at
-    )
-    puts unotif.to_pretty_json.colorize.green
-    unotif.create!
-  end
-
-  def self.create_tagged_notif(repl : Murepl)
-    return if repl.tagged_ids.empty?
-
-    repl.tagged_ids.each do |tagged_id|
-      memoir = Memoir.load(tagged_id, :murepl, repl.id)
-      memoir.tagged_at = repl.utime
-      memoir.save!
-    end
-
-    content, details, link_to = repl.gen_tagged_notif
-
-    repl.tagged_ids.each do |tagged_id|
-      next if tagged_id == repl.touser_id || tagged_id == repl.viuser_id
-      return if find(:tagged_in_repl, repl.id, repl.viuser_id)
-
-      unotif = CV::Unotif.new(
-        tagged_id,
-        :tagged_in_repl, repl.id, repl.viuser_id,
-        content, details.to_json, link_to,
-        repl.created_at
-      )
-
-      puts unotif.to_pretty_json.colorize.blue
-      unotif.create!
-    end
   end
 end

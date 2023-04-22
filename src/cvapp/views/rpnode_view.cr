@@ -1,9 +1,9 @@
 require "./_base_view"
 
-struct CV::MureplView
+struct CV::RpnodeView
   include BaseView
 
-  def initialize(@data : Murepl, @full : Bool = false)
+  def initialize(@data : Rpnode, @full : Bool = false)
   end
 
   def to_json(jb : JSON::Builder)
@@ -26,11 +26,11 @@ struct CV::MureplView
       jb.field "repl_count", @data.repl_count
 
       jb.field "vcoin", @data.gift_vcoin
-      jb.field "repls", [] of Murepl
+      jb.field "repls", [] of Rpnode
     }
   end
 
-  def self.as_list(data : Enumerable(Murepl), full = false)
+  def self.as_list(data : Enumerable(Rpnode), full = false)
     list = [] of self
     data.each { |x| list << new(x, full: full) }
     list

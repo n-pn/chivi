@@ -19,7 +19,8 @@
   <YscritCard {crit} {book} {list} {user} view_all={true} />
 
   <section id="repls" class="replies">
-    <h3 class="replies-header">Phản hồi bình luận ({data.repls.length}):</h3>
+    <h3 class="replies-header">Bình luận đánh giá ({crit.repl_count}):</h3>
+
     {#each data.repls as repl}
       {@const user = data.users[repl.yu_id]}
       <div class="repl">

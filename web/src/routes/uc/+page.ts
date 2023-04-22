@@ -24,7 +24,7 @@ const build_meta = (user: App.CurrentUser) => {
   return {
     title: 'Đánh giá truyện chữ',
     left_nav: [
-      home_nav('tm'),
+      home_nav('ts'),
       nav_link('/uc', 'Đánh giá', 'stars', { show: 'ts' }),
     ],
     right_nav,
