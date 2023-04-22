@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
+
   import { rel_time } from '$utils/time_utils'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import WncritList from '$gui/parts/review/WncritList.svelte'
@@ -21,15 +24,21 @@
 <section class="content">
   <header class="header">
     <def class="left">
-      <span class="entry">
-        <SIcon name="user" />
-        <a class="uname" href="/ul?from=vi&user={user.uname}">{user.uname}</a>
-      </span>
+      <a
+        class="uname vi-user"
+        href="/ul?from=vi&user={user.uname}"
+        data-privi={user.privi}>{user.uname}</a>
+
+      <span class="fg-tert">&middot;</span>
 
       <span class="entry">
-        <SIcon name="clock" />
         <span>{rel_time(list.utime)}</span>
       </span>
+
+      {#if $_user.uname == user.uname || $_user.privi > 3}
+        <span class="fg-tert">&middot;</span>
+        <a class="entry fs-i" href="/ul/+list?id={list.id}">Sửa</a>
+      {/if}
     </def>
 
     <div class="right">

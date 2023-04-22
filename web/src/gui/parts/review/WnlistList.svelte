@@ -1,6 +1,6 @@
 <script context="module">
   const sort_lbls = { score: 'Nổi bật', likes: 'Ưa thích', utime: 'Đổi mới' }
-  const type_lbls = { male: 'Nam tần', female: 'Nữ tần', both: 'Tất cả' }
+  const type_lbls = { male: 'Nam sinh', female: 'Nữ sinh', both: 'Tất cả' }
 </script>
 
 <script lang="ts">
@@ -38,7 +38,7 @@
   </div>
 
   <div class="type">
-    <span class="label">Phân loại:</span>
+    <span class="label">Đối tượng:</span>
     {#each Object.entries(type_lbls) as [type, label]}
       {@const href = pager.gen_url({ sort: opts.sort, type, pg: 1 })}
       <a {href} class="m-chip _sort" class:_active={type == opts.type}>
@@ -57,6 +57,10 @@
   {#each ys.lists as list}
     {@const user = ys.users[list.user_id]}
     <YslistCard {list} {user} />
+  {:else}
+    <div class="empty">
+      <p class="fg-tert"><em>Không có nội dung</em></p>
+    </div>
   {/each}
 
   <footer class="pagi">
@@ -87,6 +91,11 @@
     @include bp-min(ts) {
       align-items: left;
     }
+  }
+
+  .empty {
+    @include flex-ca;
+    height: 30vh;
   }
 
   .type {

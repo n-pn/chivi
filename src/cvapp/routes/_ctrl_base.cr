@@ -25,8 +25,4 @@ abstract class CV::BaseCtrl < AC::Base
     session["privi"] = user.privi.to_i64
     session["until"] = user.current_privi_until
   end
-
-  private def guard_privi(min = 0)
-    raise Unauthorized.new("Quyền hạn không đủ!") if _viuser.privi < min
-  end
 end

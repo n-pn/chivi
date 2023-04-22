@@ -6,12 +6,12 @@
   export let data: PageData
 </script>
 
-<WnNavMenu tab="crits" />
+<WnNavMenu tab="/uc" />
 
 <article class="article island">
   <WncritList
-    ys={data.ys || undefined}
-    vi={data.vi || undefined}
+    ys={data.ys}
+    vi={data.vi}
     _sort={data.sort || 'utime'}
     show_book={true} />
 </article>

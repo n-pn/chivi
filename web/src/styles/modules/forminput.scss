@@ -46,7 +46,7 @@
   &:disabled {
     @include fgcolor(mute);
     @include bgcolor(mute);
-    @include bdcolor(mute);
+    border-color: var(--bg-mute);
   }
 
   &._error {

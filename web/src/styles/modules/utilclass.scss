@@ -20,6 +20,14 @@
   color: #{color(harmful, 5)};
 }
 
+.fs-i {
+  font-style: italic;
+}
+
+.fw-b {
+  font-weight: 500;
+}
+
 .fg-secd {
   @include fgcolor(secd);
 }

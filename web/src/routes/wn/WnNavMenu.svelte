@@ -4,15 +4,15 @@
   export let tab = ''
 
   const tabs = [
-    ['', 'Danh sách', 'books'],
-    ['crits', 'Đánh giá', 'stars'],
-    ['lists', 'Thư đơn', 'stars'],
+    ['/wn', 'Thư viện', 'books'],
+    ['/uc', 'Đánh giá', 'stars'],
+    ['/ul', 'Thư đơn', 'bookmarks'],
   ]
 </script>
 
 <nav class="nav-menu">
-  {#each tabs as [link, text, icon]}
-    <a class="nav-link" class:_active={link == tab} href="/wn/{link}">
+  {#each tabs as [href, text, icon]}
+    <a class="nav-link" class:_active={href == tab} {href}>
       <SIcon name={icon} />
       <span class="nav-text">{text}</span>
     </a>
@@ -23,7 +23,7 @@
   .nav-menu {
     @include flex-ca;
     gap: 0.5rem;
-    padding: var(--gutter-small) 0;
+    margin: 0.75rem 0;
   }
 
   .nav-link {

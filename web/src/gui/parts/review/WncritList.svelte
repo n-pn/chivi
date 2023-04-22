@@ -95,6 +95,13 @@
         {view_all} />
     {/key}
   {/each}
+
+  {#if vi.crits.length + ys.crits.length == 0}
+    <div class="empty">
+      <p class="fg-tert fs-i">Chưa có đánh giá.</p>
+      <p><slot name="add_crit" /></p>
+    </div>
+  {/if}
 </div>
 
 <footer class="pagi">
@@ -119,11 +126,22 @@
     }
   }
 
+  .crits {
+    min-height: 10rem;
+  }
+
   .sorts {
     @include flex-cx($gap: 0.5rem);
     @include bp-min(ts) {
       align-items: left;
     }
+  }
+
+  .empty {
+    @include flex-ca;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 40vh;
   }
 
   .stars {

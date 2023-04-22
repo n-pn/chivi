@@ -6,6 +6,7 @@
 
   export let placeholder = ''
   export let disabled = false
+  export let min_rows = 2
 
   let input: HTMLTextAreaElement
 
@@ -151,6 +152,7 @@
         {disabled}
         lang="vi"
         bind:value
+        rows={min_rows}
         bind:this={input} />
     {:else}
       <div class="preview">
@@ -168,12 +170,6 @@
   .md-form {
     &.active,
     &:focus-within {
-      .input {
-        @include bgcolor(secd);
-        border-color: color(primary, 5);
-        box-shadow: 0 0 0 2px color(primary, 5, 5);
-      }
-
       .md-head {
         display: flex;
       }
@@ -183,7 +179,7 @@
       }
 
       textarea {
-        height: 7rem;
+        min-height: 7rem;
       }
     }
   }
@@ -194,6 +190,12 @@
 
     @include bdradi();
     @include border($width: 1px);
+
+    &:focus-within {
+      @include bgcolor(secd);
+      border-color: color(primary, 5);
+      box-shadow: 0 0 0 2px color(primary, 5, 5);
+    }
   }
 
   .md-head,

@@ -4,22 +4,17 @@ class CV::VilistCtrl < CV::BaseCtrl
   base "/_db/lists"
 
   @[AC::Route::GET("/")]
-  def index(sort : String? = nil, user : Int32? = nil, type : String? = nil)
+  def index(sort : String? = nil, user : String? = nil, type : String? = nil)
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
     query = Vilist.query.sort_by(sort)
-    query.where("_flag >= 0")
 
-    if viuser = Viuser.find({uname: user})
-      query.where("viuser_id = ?", viuser.id)
-    end
-
+    query.where("viuser_id = (select id from viusers where uname = ?)", user) if user
     query.where("klass = ?", type) if type
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count
     lists = query.limit(limit).offset(offset).to_a
-
-    users = viuser ? [viuser] : Viuser.preload(lists.map(&.viuser_id))
+    users = Viuser.preload(lists.map(&.viuser_id))
 
     render json: {
       lists: VilistView.as_list(lists, mode: :full),
@@ -67,29 +62,40 @@ class CV::VilistCtrl < CV::BaseCtrl
     }
   end
 
-  @[AC::Route::GET("/:list_id/edit")]
-  def edit_form(list_id : Int32)
-    vilist = load_list(list_id)
-    guard_owner vilist.viuser_id, 0, "sửa đánh giá"
+  @[AC::Route::GET("/form")]
+  def upsert_form(id vl_id : Int32 = 0)
+    guard_privi 0, "thêm/sửa thư đơn"
+
+    lists = Vilist.query.where("viuser_id = ?", _vu_id).to_a
+
+    vlist = lists.find(&.id.== vl_id)
+    lists.reject!(&.id.== vl_id) if vlist
 
     render json: {
-      id:    vilist.id,
-      title: vilist.title,
-      intro: vilist.dtext,
-      klass: vilist.klass,
+      ctime: vlist.try(&.created_at.to_unix) || 0,
+      lform: init_form(vlist),
+      lists: VilistView.as_list(lists, mode: :full),
     }
+  end
+
+  private def init_form(list : Nil)
+    {id: 0, title: "[#{_uname}] Vô đề", dtext: "Tổng hợp truyện của tôi", klass: "both"}
+  end
+
+  private def init_form(list : Vilist)
+    {id: list.id, title: list.title, dtext: list.dtext, klass: list.klass}
   end
 
   struct ListForm
     include JSON::Serializable
 
     getter title : String
-    getter intro : String
+    getter dtext : String
     getter klass : String
 
     def after_initialize
       @title = @title.strip
-      @intro = @intro.strip
+      @dtext = @dtext.strip
 
       @klass = "both" unless @klass.in?("male", "female")
     end
@@ -100,9 +106,7 @@ class CV::VilistCtrl < CV::BaseCtrl
     guard_privi 0, "tạo thư đơn"
 
     vilist = Vilist.new({viuser_id: _vu_id})
-
-    vilist.set_title form.title
-    vilist.set_intro form.intro
+    vilist.patch!(form.title, form.dtext, form.klass)
 
     render json: VilistView.new(vilist, mode: :full)
   end
@@ -112,8 +116,7 @@ class CV::VilistCtrl < CV::BaseCtrl
     vilist = load_list(list_id)
     guard_owner vilist.viuser_id, 0, "sửa thư đơn"
 
-    vilist.set_title(form.title) unless list_id < 0
-    vilist.set_intro(form.intro)
+    vilist.patch!(form.title, form.dtext, form.klass)
 
     render json: VilistView.new(vilist, mode: :full)
   end
@@ -122,12 +125,13 @@ class CV::VilistCtrl < CV::BaseCtrl
   def delete(list_id : Int32)
     vilist = load_list(list_id)
 
-    owner_id = vilist.viuser_id
-    guard_owner owner_id, 0, "xoá thư đơn"
+    guard_owner vilist.viuser_id, 0, "xoá thư đơn"
 
-    is_admin = _privi > 3 && _vu_id != owner_id
-    vilist.update!({_flag: is_admin ? -3 : -2})
-
-    render json: {msg: "thư đơn đã bị xoá"}
+    if vilist.book_count > 0
+      render :forbidden, text: "Bạn chỉ có thể xoá nếu thư đơn không có bộ sách nào"
+    else
+      PGDB.exec("delete from vilists where id = $1", list_id)
+      render text: "thư đơn đã bị xoá"
+    end
   end
 end

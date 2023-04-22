@@ -186,4 +186,8 @@ class CV::Viuser
   def self.preload(ids : Array(Int32))
     ids.empty? ? [] of self : query.where("id = any(?)", ids)
   end
+
+  def self.get_uname(id : Int32)
+    PGDB.query_one("select uname from viuser where id = $1 limit 1", id, as: String)
+  end
 end

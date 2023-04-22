@@ -22,4 +22,12 @@ declare namespace CV {
     lists: Vilist[]
     users: Record<number, Viuser>
   }
+
+  interface VilistForm {
+    id: number = 0
+
+    title: string
+    dtext: string
+    klass: string
+  }
 }

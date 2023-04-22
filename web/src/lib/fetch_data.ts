@@ -6,6 +6,7 @@ const get = async <T>(
   search: URLSearchParams
 ) => {
   const url = `${path}?${search}`
+  console.log(url)
   return await api_get<T>(url, fetch)
 }
 

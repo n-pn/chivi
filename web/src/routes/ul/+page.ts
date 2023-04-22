@@ -26,8 +26,7 @@ const build_meta = (user: App.CurrentUser) => {
     title: 'Thư đơn truyện chữ',
     left_nav: [
       home_nav('tm'),
-      nav_link('/wn', 'Truyện chữ', 'books', { show: 'ts' }),
-      nav_link('/ul', 'Thư đơn', 'stars', { show: 'ts' }),
+      nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'ts' }),
     ],
     right_nav,
   }

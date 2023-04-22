@@ -21,7 +21,7 @@ export const load = (async ({ url, fetch, params }) => {
   data.books.lists = { [data.list.id]: data.list }
 
   const { id, title, tslug } = data.list
-  const uslug = `${id}${tslug}-${data.user.uname}`
+  const uslug = `${id}-${tslug}--${data.user.uname}`
 
   const _meta: App.PageMeta = {
     title: `Thư đơn: ${title}`,
