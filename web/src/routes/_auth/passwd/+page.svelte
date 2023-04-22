@@ -10,7 +10,9 @@
 
   const action = '/_db/_user/pwtemp'
 
-  async function submit() {
+  async function submit(evt: Event) {
+    evt.preventDefault()
+
     msg_type = ''
     msg_text = ''
 
@@ -19,7 +21,7 @@
   }
 </script>
 
-<form {action} method="POST" on:submit|preventDefault={submit}>
+<form {action} method="POST" on:submit={submit}>
   <div class="form-inp">
     <label class="form-lbl" for="email">Hòm thư</label>
     <input

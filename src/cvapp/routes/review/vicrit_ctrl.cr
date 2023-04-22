@@ -67,7 +67,7 @@ class CV::VicritCtrl < CV::BaseCtrl
     wninfo = Wninfo.load!(wn_id)
 
     lists = Vilist.query.where("viuser_id = ?", _vu_id).to_a
-    crits = Vicrit.query.where("nvinfo_id = ?", wn_id).to_a
+    crits = Vicrit.query.where("nvinfo_id = ?", wn_id).where("viuser_id = ?", _vu_id).to_a
 
     vcrit = crits.find(&.id.== vc_id)
     crits.reject!(&.id.== vc_id) if vcrit
@@ -125,6 +125,7 @@ class CV::VicritCtrl < CV::BaseCtrl
     })
 
     vicrit.patch!(form.input, form.stars, form.tag_list)
+    spawn Vilist.inc_counter(vicrit.vilist_id, "book_count")
 
     render json: VicritView.new(vicrit, full: true)
   rescue err
@@ -152,6 +153,8 @@ class CV::VicritCtrl < CV::BaseCtrl
   @[AC::Route::DELETE("/:crit_id")]
   def delete(crit_id : Int32)
     vicrit = load_crit(crit_id)
+
+    spawn Vilist.dec_counter(vicrit.vilist_id, "book_count")
 
     owner_id = vicrit.viuser_id
     guard_owner owner_id, 0, "xoá đánh giá"

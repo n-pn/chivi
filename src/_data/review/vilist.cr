@@ -80,4 +80,12 @@ class CV::Vilist
   def self.preload(ids : Enumerable(Int32))
     ids.empty? ? [] of self : query.where("id = any(?)", ids)
   end
+
+  def self.inc_counter(id : Int32, name : String, value = 1)
+    PGDB.exec "update vilists set #{name} = #{name} + $1 where id = $2", value, id
+  end
+
+  def self.dec_counter(id : Int32, name : String, value = 1)
+    PGDB.exec "update vilists set #{name} = #{name} - $1 where id = $2", value, id
+  end
 end

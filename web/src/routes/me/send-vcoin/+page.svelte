@@ -17,14 +17,16 @@
   let res_type: '' | 'ok' | 'err' = ''
   let res_text = ''
 
-  const action_url = '/_db/vcoins'
+  const action = '/_db/vcoins'
 
-  async function submit() {
+  async function submit(evt: Event) {
+    evt.preventDefault()
+
     res_type = ''
     res_text = ''
 
     try {
-      const data = await api_call(action_url, form, 'POST')
+      const data = await api_call(action, form, 'POST')
       $_user.vcoin -= form.amount
       res_type = 'ok'
       res_text = `[${data.target}] đã nhận được ${form.amount} vcoin, bạn còn có ${data.remain} vcoin.`
@@ -38,11 +40,7 @@
 <article class="article island">
   <h1>Gửi tặng Vcoin</h1>
 
-  <form
-    class="form"
-    action={action_url}
-    method="POST"
-    on:submit|preventDefault={submit}>
+  <form class="form" {action} method="POST" on:submit={submit}>
     <form-group>
       <form-field>
         <label class="form-label" for="receiver">Người nhận</label>

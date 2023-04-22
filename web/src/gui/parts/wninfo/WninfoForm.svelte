@@ -19,7 +19,8 @@
 
   let errors: string
 
-  async function submit() {
+  async function submit(evt: Event) {
+    evt.preventDefault()
     for (const key in wnform) {
       if (key == 'ztitle' || key == 'zauthor') continue
       const val = wnform[key]
@@ -73,7 +74,7 @@
     <slot name="header"><h1>Thêm/sửa thông tin bộ truyện</h1></slot>
   </header>
 
-  <form action="/_db/books" method="POST" on:submit|preventDefault={submit}>
+  <form action="/_db/books" method="POST" on:submit={submit}>
     <form-group>
       <form-field>
         <label class="form-label" for="ztitle">Tên truyện tiếng Trung</label>

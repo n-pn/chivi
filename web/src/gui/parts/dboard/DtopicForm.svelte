@@ -49,7 +49,9 @@
     return t_id ? `/_db/topics/${t_id}` : `/_db/topics?b_id=${b_id}`
   }
 
-  async function submit() {
+  async function submit(evt: Event) {
+    evt.preventDefault()
+
     error = await data.submit(action)
     if (error) return
 
@@ -74,7 +76,7 @@
   </svelte:fragment>
 
   <board-form>
-    <form {action} method="POST" on:submit|preventDefault={submit}>
+    <form {action} method="POST" on:submit={submit}>
       <form-field>
         <form-chips>
           <label-cap>Phân loại:</label-cap>
@@ -110,10 +112,7 @@
       {/if}
 
       <form-foot>
-        <button
-          type="submit"
-          class="m-btn _primary _fill"
-          on:click|preventDefault={submit}>
+        <button type="submit" class="m-btn _primary _fill" on:click>
           <SIcon name="send" />
           <!-- prettier-ignore -->
           <span>{#if on_edit}Lưu nội dung{:else}Tạo chủ đề{/if}</span>

@@ -2,14 +2,14 @@ declare namespace CV {
   interface Yslist {
     id: string
 
-    uslug: string
-    yl_id: string
-
     user_id: number
+    orig_id: string
 
     vname: string
+    vslug: string
+
     vdesc: string
-    class: string
+    klass: string
 
     genres: string[]
     covers: string[]

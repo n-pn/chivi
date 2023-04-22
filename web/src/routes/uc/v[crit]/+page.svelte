@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SIcon from '$gui/atoms/SIcon.svelte'
+  // import SIcon from '$gui/atoms/SIcon.svelte'
   import VicritCard from '$gui/parts/review/VicritCard.svelte'
 
   import type { PageData } from './$types'

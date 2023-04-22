@@ -25,7 +25,9 @@
     ? [`/_db/crits/${data.cform.id}`, 'PATCH']
     : ['/_db/crits', 'POST']
 
-  async function submit(_evt: Event) {
+  async function submit(evt: Event) {
+    evt.preventDefault()
+
     const headers = { 'content-type': 'application/json' }
     const init = { method, headers, body: JSON.stringify(data.cform) }
     const res = await fetch(action, init)
@@ -34,7 +36,7 @@
       error = await res.text()
     } else {
       const crit = (await res.json()) as CV.Vicrit
-      await goto(`/uc/v-${crit.id}`)
+      await goto(`/uc/v${crit.id}`)
     }
   }
 
@@ -54,7 +56,7 @@
     <a class="fg-link" href="/wn/{data.bslug}">{data.bname}</a>
   </h2>
 
-  <form class="form" {action} {method} on:submit|preventDefault={submit}>
+  <form class="form" {action} {method} on:submit={submit}>
     <header class="head">
       <span class="cv-user" data-privi={$_user.privi}>{$_user.uname}</span>
 
@@ -124,6 +126,7 @@
   </form>
 
   <h3>Các đánh giá khác cho bộ truyện</h3>
+
   {#each data.crits as crit}
     {@const list = data.lists.find((x) => x.id == crit.list_id)}
     <VicritCard
@@ -132,12 +135,18 @@
       {list}
       book={undefined}
       show_book={false} />
+  {:else}
+    <p class="fg-tert">Chưa có đánh giá khác.</p>
   {/each}
 </article>
 
 <style lang="scss">
   .article {
     @include margin-y(var(--gutter));
+
+    p {
+      margin-top: 0.75rem;
+    }
   }
 
   .form {

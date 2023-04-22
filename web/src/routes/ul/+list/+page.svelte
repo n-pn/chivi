@@ -17,7 +17,9 @@
     ? [`/_db/lists/${data.lform.id}`, 'PATCH']
     : ['/_db/lists', 'POST']
 
-  async function submit(_evt: Event) {
+  async function submit(evt: Event) {
+    evt.preventDefault()
+
     const headers = { 'content-type': 'application/json' }
     const init = { method, headers, body: JSON.stringify(data.lform) }
     const res = await fetch(action, init)
@@ -26,7 +28,7 @@
       error = await res.text()
     } else {
       const list = (await res.json()) as CV.Vilist
-      await goto(`/ul/v-${list.id}-${list.tslug}--${$_user.uname}`)
+      await goto(`/ul/v${list.id}-${list.tslug}`)
     }
   }
 
@@ -46,7 +48,7 @@
 <article class="article island">
   <h2>Thêm/sửa thư đơn truyện chữ</h2>
 
-  <form class="form" {action} {method} on:submit|preventDefault={submit}>
+  <form class="form" {action} {method} on:submit={submit}>
     {#if error}<section class="error">Lỗi: {error}</section>{/if}
 
     <section class="ibody">
@@ -86,8 +88,7 @@
       <button
         type="submit"
         class="m-btn _primary _fill"
-        disabled={data.lform.title.length < 3 && data.lform.dtext.length < 1}
-        on:click={submit}>
+        disabled={data.lform.title.length < 3 && data.lform.dtext.length < 1}>
         <SIcon name="send" />
         <span>{data.lform.id ? 'Lưu' : 'Tạo'} thư đơn</span>
       </button>

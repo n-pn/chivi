@@ -36,10 +36,9 @@
       data-privi={user.privi}
       href="/uc?from=vi&user={user.uname}">{user.uname}</a>
 
-    <span class="meta _time">
-      <SIcon name="clock" />
-      <span>{rel_time(crit.ctime)}{crit.edited ? '*' : ''}</span>
-    </span>
+    <span class="fg-tert">&middot;</span>
+    <span class="meta _time"
+      >{rel_time(crit.ctime)}{crit.edited ? '*' : ''}</span>
 
     <div class="right">
       <span class="meta _star">
@@ -66,7 +65,7 @@
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="meta">&middot;</span> -->
 
-    <a class="meta" href="/uc/v-{crit.id}">
+    <a class="meta" href="/uc/v{crit.id}">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
@@ -102,7 +101,7 @@
 
   {#if show_list && list}
     <footer class="list">
-      <a class="link _list" href="/ul/v-{list.id}-{list.tslug}">
+      <a class="link _list" href="/ul/v{list.id}-{list.tslug}">
         <SIcon name="bookmarks" />
         <span>{list.title}</span>
         <span>({list.book_count} bộ truyện)</span>

@@ -4,7 +4,10 @@ import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 export const load = (async ({ url, fetch, params, parent }) => {
-  const muhead = `wn:${parseInt(params.wn, 10)}`
+  const wn_id = parseInt(params.wn, 10)
+  const { chap: ch_no, seed: sname } = params
+
+  const muhead = `ch:${wn_id}:${ch_no}:${sname}`
 
   const sort = url.searchParams.get('sort') || '-id'
   const path = `/_db/mrepls/thread/${muhead}?sort=${sort}`
@@ -14,12 +17,12 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const { nvinfo } = await parent()
 
   const _meta = {
-    title: `Thảo luận: ${nvinfo.vtitle}`,
-    desc: nvinfo.bintro.substring(0, 300),
+    title: `Bình luận chương ${ch_no} (${sname}) - ${nvinfo.vtitle}`,
     left_nav: [
-      home_nav('', ''),
       book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
-      nav_link('bants', 'Thảo luận', 'message'),
+      nav_link('crits', `Bình luận chương ${ch_no}`, 'message', {
+        show: 'pl',
+      }),
     ],
   }
   return { rplist, muhead, sort, _meta }

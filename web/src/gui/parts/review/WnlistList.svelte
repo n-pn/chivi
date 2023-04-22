@@ -57,11 +57,13 @@
   {#each ys.lists as list}
     {@const user = ys.users[list.user_id]}
     <YslistCard {list} {user} />
-  {:else}
+  {/each}
+
+  {#if vi.lists.length + ys.lists.length == 0}
     <div class="empty">
       <p class="fg-tert"><em>Không có nội dung</em></p>
     </div>
-  {/each}
+  {/if}
 
   <footer class="pagi">
     <Mpager {pager} {pgidx} {pgmax} />

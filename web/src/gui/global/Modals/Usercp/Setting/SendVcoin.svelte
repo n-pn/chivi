@@ -11,14 +11,16 @@
   let res_type: '' | 'ok' | 'err' = ''
   let res_text = ''
 
-  const action_url = '/_db/vcoins'
+  const action = '/_db/vcoins'
 
-  async function submit() {
+  async function submit(evt: Event) {
+    evt.preventDefault()
+
     res_type = res_text = ''
 
     try {
       const body = { ...form, as_admin }
-      const data = await api_call(action_url, body)
+      const data = await api_call(action, body)
       $_user.vcoin -= form.amount
 
       res_type = 'ok'
@@ -30,7 +32,7 @@
   }
 </script>
 
-<form action={action_url} method="POST" on:submit|preventDefault={submit}>
+<form {action} method="POST" on:submit={submit}>
   <form-group>
     <form-field>
       <label class="form-label" for="target">Người nhận</label>

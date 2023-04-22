@@ -26,7 +26,9 @@
 
   const action = '/_db/_self/upgrade-privi'
 
-  async function submit() {
+  async function submit(evt: Event) {
+    evt.preventDefault()
+
     error = ''
     _onload = true
 
@@ -42,7 +44,7 @@
   const privi_colors = ['neutral', 'success', 'primary', 'warning', 'harmful']
 </script>
 
-<section class="form">
+<form {action} method="PUT" class="form" on:submit={submit}>
   <div class="form-field">
     <label class="form-label" for="privi">Chọn quyền hạn:</label>
     <div class="radio-group">
@@ -78,13 +80,12 @@
     <button
       type="submit"
       class="m-btn _fill _{privi_colors[form.privi]}"
-      disabled={_onload || cost > $_user.vcoin}
-      on:click={submit}>
+      disabled={_onload || cost > $_user.vcoin}>
       <span>Nâng cấp</span>
       <SIcon name="coin" />{cost}
     </button>
   </footer>
-</section>
+</form>
 
 <style lang="scss">
   .radio-group {

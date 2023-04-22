@@ -114,7 +114,7 @@
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="meta">&middot;</span> -->
 
-    <a class="meta" href="/uc/y-{crit.id}">
+    <a class="meta" href="/uc/y{crit.id}">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
@@ -160,7 +160,7 @@
 
   {#if show_list && list}
     <footer class="list">
-      <a class="link _list" href="/ul/{list.uslug}">
+      <a class="link _list" href="/ul/y{list.id}{list.vslug}">
         <SIcon name="bookmarks" />
         <span>{list.vname}</span>
         <span>({list.book_count} bộ truyện)</span>

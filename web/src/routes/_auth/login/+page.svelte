@@ -12,14 +12,16 @@
 
   const action = '/_db/_user/log-in'
 
-  const submit = async () => {
+  async function submit(evt: Event) {
+    evt.preventDefault()
+
     error = ''
     error = await post_form(action, { email, upass })
     if (!error) return_back()
   }
 </script>
 
-<form {action} method="POST" on:submit|preventDefault={submit}>
+<form {action} method="POST" on:submit={submit}>
   <div class="form-inp">
     <label class="form-lbl" for="email">Hòm thư</label>
     <input

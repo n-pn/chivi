@@ -26,7 +26,7 @@
   </div>
 
   <div class="infos">
-    <a class="vname" href="/ul/{list.uslug}">{list.vname}</a>
+    <a class="vname" href="/ul/y{list.id}{list.vslug}">{list.vname}</a>
 
     <div class="genres">
       {#each list.genres.slice(0, 4) as genre}

@@ -15,7 +15,7 @@
 <svelte:head>
   <meta
     property="og:url"
-    content="https://chivi.app/list/v-{list.id}-{list.tslug}" />
+    content="https://chivi.app/ul/v{list.id}-{list.tslug}" />
   <meta
     property="og:image"
     content="https://chivi.app/covers/{list.covers[0] || 'blank.webp'}" />

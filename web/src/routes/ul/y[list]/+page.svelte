@@ -9,16 +9,16 @@
   $: ({ ylist, yuser, crits, books, pgidx, pgmax } = data)
 
   $: users = { [yuser.id]: yuser }
+
+  $: cover = ylist.covers[0] || 'blank.webp'
 </script>
 
 <svelte:head>
   <meta property="og:title" content={ylist.vname} />
   <meta property="og:article" content="novel" />
   <meta property="og:description" content={ylist.vdesc} />
-  <meta property="og:url" content="https://chivi.app/list/{ylist.uslug}" />
-  <meta
-    property="og:image"
-    content="https://chivi.app/covers/{ylist.covers[0] || 'blank.webp'}" />
+  <meta property="og:url" content="//chivi.app/yl/y{ylist.id}{ylist.vslug}" />
+  <meta property="og:image" content="//chivi.app/covers/{cover}" />
 </svelte:head>
 
 <section class="content">
@@ -70,7 +70,7 @@
 
   <div class="origin">
     <a
-      href="https://www.yousuu.com/booklist/{ylist.yl_id}"
+      href="https://www.yousuu.com/booklist/{ylist.orig_id}"
       rel="noreferrer"
       target="_blank">
       <SIcon name="external-link" />

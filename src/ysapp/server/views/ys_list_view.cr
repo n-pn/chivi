@@ -12,17 +12,16 @@ struct YS::ListView
   def to_json(jb = JSON::Builder.new)
     jb.object do
       jb.field "id", @data.id
-
       jb.field "user_id", @data.ysuser_id
 
       jb.field "vname", @data.vname
-      jb.field "uslug", "y-#{@data.id}#{@data.vslug}"
+      jb.field "vslug", @data.vslug
 
-      jb.field "class", @data.klass
+      jb.field "klass", @data.klass
       jb.field "book_count", @data.book_count
 
       if @full
-        jb.field "yl_id", @data.yl_id.join(&.to_s(base: 16))
+        jb.field "orig_id", @data.yl_id.join(&.to_s(base: 16))
         jb.field "vdesc", @data.vdesc
 
         jb.field "genres", @data.genres

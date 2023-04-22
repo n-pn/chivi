@@ -44,14 +44,19 @@
     </button>
 
     <svelte:fragment slot="content">
-      <a class="gmenu-item" href="/mt/dicts/{nvinfo.bslug}" data-kbd="p">
-        <SIcon name="package" />
-        <span>Từ điển truyện</span>
+      <a class="gmenu-item _success" href="/uc/+crit?wn={nvinfo.id}">
+        <SIcon name="ballpen" />
+        <span>Thêm đánh giá</span>
       </a>
 
       <a class="gmenu-item _harmful" href="/wn/+book?id={nvinfo.id}">
         <SIcon name="edit" />
         <span>Sửa thông tin</span>
+      </a>
+
+      <a class="gmenu-item" href="/mt/dicts/{nvinfo.bslug}" data-kbd="p">
+        <SIcon name="package" />
+        <span>Từ điển truyện</span>
       </a>
     </svelte:fragment>
   </Gmenu>

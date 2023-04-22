@@ -102,6 +102,13 @@
   let qsearch: HTMLInputElement
 
   const refocus_on_qsearch = () => qsearch && qsearch.focus()
+
+  const head_navs = [
+    ['/sp/qtran', 'bolt', 'Dịch nhanh'],
+    ['/uc', 'stars', 'Đánh giá'],
+    ['/ul', 'bookmarks', 'Thư đơn'],
+    ['/mt/dicts', 'package', 'Từ điển'],
+  ]
 </script>
 
 <Slider class="appnav" bind:actived _slider="left" --slider-width="22rem">
@@ -113,10 +120,10 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <a href="/sp/qtran" class="-btn"><SIcon name="bolt" /></a>
-    <a href="/crits" class="-btn"><SIcon name="stars" /></a>
-    <a href="/mt/dicts" class="-btn"><SIcon name="package" /></a>
-    <a href="/" class="-btn"><SIcon name="home" /></a>
+    {#each head_navs as [href, name, tip]}
+      <a {href} class="-btn" data-tip={tip} data-tip-loc="bottom"
+        ><SIcon {name} /></a>
+    {/each}
   </svelte:fragment>
 
   <header class="header">

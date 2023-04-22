@@ -76,7 +76,9 @@
     }, 10)
   }
 
-  async function handle_submit() {
+  async function handle_submit(evt: Event) {
+    evt.preventDefault()
+
     const path = `/_mt/specs/${$entry._ukey}`
     const body = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
 
@@ -213,8 +215,8 @@
     <form
       action="/_db/tlspecs"
       method="POST"
-      class="tlspec-form"
-      on:submit|preventDefault={handle_submit}>
+      class="form"
+      on:submit={handle_submit}>
       <form-group>
         <form-label>
           <span>Kết quả dịch chính xác</span>

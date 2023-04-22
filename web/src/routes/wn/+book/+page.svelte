@@ -18,7 +18,11 @@
 
   let errors: string
 
-  async function submit() {
+  const action = '/_db/books'
+
+  async function submit(evt: Event) {
+    evt.preventDefault()
+
     for (const key in form) {
       if (key == 'ztitle' || key == 'zauthor') continue
       const val = form[key]
@@ -26,7 +30,7 @@
     }
 
     try {
-      const { id, bslug } = await api_call('/_db/books', form, 'POST')
+      const { id, bslug } = await api_call(action, form, 'POST')
       await goto(`/wn/${id}-${bslug}`)
     } catch (ex) {
       errors = ex.body.message
@@ -72,7 +76,7 @@
     <h1>Thêm/sửa thông tin bộ truyện</h1>
   </header>
 
-  <form action="/_db/books" method="POST" on:submit|preventDefault={submit}>
+  <form {action} method="POST" on:submit={submit}>
     <form-group>
       <form-field>
         <label class="form-label" for="ztitle">Tên truyện tiếng Trung</label>

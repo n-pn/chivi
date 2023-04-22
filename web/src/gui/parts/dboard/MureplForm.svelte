@@ -38,7 +38,8 @@
     if (api_res.ok) form = await api_res.json()
   }
 
-  async function submit() {
+  async function submit(evt: Event) {
+    evt.preventDefault()
     error = ''
 
     try {
@@ -51,7 +52,7 @@
   }
 </script>
 
-<form class="repl-form" {action} {method} on:submit|preventDefault={submit}>
+<form class="repl-form" {action} {method} on:submit={submit}>
   <MdForm
     bind:value={form.itext}
     name="itext"
@@ -72,8 +73,7 @@
         <button
           type="submit"
           class="m-btn _primary _fill _sm"
-          disabled={disabled || form.itext.trim().length < 3}
-          on:click|preventDefault={submit}>
+          disabled={disabled || form.itext.trim().length < 3}>
           <SIcon name="send" />
           <span>Lưu {form.torepl ? 'trả lời' : 'bình luận'}</span>
         </button>

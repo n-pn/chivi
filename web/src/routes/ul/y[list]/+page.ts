@@ -12,10 +12,11 @@ interface YslistData extends CV.Paginate {
 }
 
 export const load = (async ({ url, fetch, params }) => {
-  const path = `/_ys/lists/${params.id}${url.search}`
+  const l_id = parseInt(params.list, 10)
+  const path = `/_ys/lists/${l_id}${url.search}`
   const data = await api_get<YslistData>(path, fetch)
 
-  const { uslug, vname, vdesc } = data.ylist
+  const { id, vslug, vname, vdesc } = data.ylist
 
   const _meta: App.PageMeta = {
     title: `Thư đơn: ${vname}`,
@@ -23,7 +24,7 @@ export const load = (async ({ url, fetch, params }) => {
     left_nav: [
       home_nav('', ''),
       nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' }),
-      nav_link(uslug, vname, null, { kind: 'title' }),
+      nav_link(`/ul/y${id}${vslug}`, vname, null, { kind: 'title' }),
     ],
     right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
   }
