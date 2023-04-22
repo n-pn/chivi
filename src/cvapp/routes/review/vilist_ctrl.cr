@@ -4,13 +4,20 @@ class CV::VilistCtrl < CV::BaseCtrl
   base "/_db/lists"
 
   @[AC::Route::GET("/")]
-  def index(sort : String? = nil, user : String? = nil, type : String? = nil)
+  def index(
+    sort : String? = nil, type : String? = nil,
+    user : String? = nil, book : Int64? = nil,
+    qs : String? = nil
+  )
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
     query = Vilist.query.sort_by(sort)
 
-    query.where("viuser_id = (select id from viusers where uname = ?)", user) if user
     query.where("klass = ?", type) if type
+    query.where("viuser_id = (select id from viusers where uname = ?)", user) if user
+    query.where("id in (select vilist_id from vicrits where nvinfo_id = ?)", book) if book
+
+    query.where("tslug LIKE '%#{TextUtil.slugify(qs)}%'") if qs
 
     total = query.dup.limit(limit * 3 + offset).offset(0).count
     lists = query.limit(limit).offset(offset).to_a

@@ -7,27 +7,22 @@ class YS::ListCtrl < AC::Base
 
   # get all lists
   @[AC::Route::GET("/lists")]
-  def query(sort : String = "utime", user : String? = nil,
-            type : String? = nil, book : Int64? = nil,
-            qs : String? = nil)
+  def query(
+    sort : String = "utime", type : String? = nil,
+    user : String? = nil, book : Int64? = nil,
+    qs : String? = nil
+  )
     pg_no, limit, offset = _paginate(max: 24)
 
     query = Yslist.sort_by(sort)
-
-    if qs
-      qs = TextUtil.slugify(qs)
-      query.where("vslug LIKE '%-#{qs}-%'")
-    end
-
-    query.where("ysuser_id = ?", user.split('-', 2)[0]) if user
     query.where("klass = ?", type) if type
 
-    if book
-      fragment = "id in (select yslist_id from yscrits where nvinfo_id = ?)"
-      query.where(fragment, book)
-    end
+    query.where("ysuser_id = ?", user.split('-', 2)[0]) if user
+    query.where("vslug LIKE '%-#{TextUtil.slugify(qs)}-%'") if qs
 
-    query.where("book_count > 0")
+    query.where("id in (select yslist_id from yscrits where nvinfo_id = ?)", book) if book
+
+    # query.where("book_count > 0")
 
     total = query.dup.limit(offset &+ 2 &* limit).count
     lists = query.limit(limit).offset(offset).to_a
