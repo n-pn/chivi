@@ -5,6 +5,7 @@ require "./rpnode"
 
 class CV::Rproot
   include Crorm::Model
+  include DB::Serializable::NonStrict
 
   class_getter table = "muheads"
   class_getter db : DB::Database = PGDB
@@ -150,7 +151,9 @@ class CV::Rproot
       SQL
   end
 
-  def self.bump!(id : Int32, last_repl_at : Time = Time.utc)
+  def self.bump_on_new_reply!(id : Int32, last_repl_at : Time = Time.utc)
+    # FIXME: update parent object
+
     @@db.exec <<-SQL, last_repl_at, id
       update #{@@table} set repl_count = repl_count + 1, last_repl_at = $1
       where id = $2

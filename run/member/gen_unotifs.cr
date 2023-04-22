@@ -6,11 +6,10 @@ require "../../src/_data/notifier"
 #   CV::Unotif.create_tagged_notif(repl)
 # end
 
-CV::Memoir.query.order_by(id: :asc).each do |memo|
-  next unless memo.liked_at > 0
+CV::Memoir.query.order_by(id: :asc).each do |memoir|
+  next unless memoir.liked_at > 0
 
-  target = memo.target
-  viuser = CV::Viuser.load!(memo.viuser_id)
-
-  memo.create_like_notif!(target, viuser.uname)
+  target = memoir.target
+  byuser = CV::Viuser.get_uname(memoir.viuser_id)
+  puts CV::Notifier.on_liking_target(target, memoir, byuser).to_pretty_json
 end

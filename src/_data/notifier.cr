@@ -4,6 +4,8 @@ module CV::Notifier
   extend self
 
   def on_liking_target(target, memoir : Memoir, byuser : String)
+    return if target.viuser_id == memoir.viuser_id
+
     action = Unotif::Action.map_liking(target)
     return if Unotif.find(action, target.id, memoir.viuser_id)
 

@@ -2,7 +2,7 @@ require "crorm"
 require "../_data"
 require "../../_util/hash_util"
 
-class CV::Unotif
+struct CV::Unotif
   enum Action : Int16
     LikeRphead = 0
     LikeRrnode = 1
@@ -63,11 +63,13 @@ class CV::Unotif
         "action", "object_id", "byuser_id",
         created_at
       ) values ($1, $2, $3, $4, $5, $6)
+      returning *
     SQL
 
-    db.exec stmt, @viuser_id, @content,
+    db.query_one stmt, @viuser_id, @content,
       @action, @object_id, @byuser_id,
-      @created_at
+      @created_at,
+      as: Unotif
   end
 
   def self.count_by_user(viuser_id : Int32)

@@ -85,7 +85,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
     rpnode.level = form.level
     rpnode.update_content!(form.itext, persist: true)
 
-    spawn Rproot.bump!(rpnode.muhead_id)
+    spawn Rproot.bump_on_new_reply!(rpnode.muhead_id)
     spawn Notifier.on_user_making_reply(rpnode)
     spawn Notifier.on_user_tagged_in_reply(rpnode)
 

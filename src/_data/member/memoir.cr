@@ -54,6 +54,12 @@ class CV::Memoir
 
   column extra : String? = nil
 
+  def target
+    self.class.target(Type.new(self.target_type), self.target_id)
+  end
+
+  ####
+
   def self.target(type : Type, o_id : Int32)
     case type
     when .rpnode? then Rpnode.load!(id: o_id)
