@@ -17,8 +17,8 @@
   $: board_url = `/gd/b-${post.dboard.bslug}`
 
   async function toggle_like() {
-    const action = memo.liked > 0 ? 'unlike' : 'like'
-    const api_url = `/_db/memos/posts/${post.id}/${action}`
+    const type = memo.liked > 0 ? 'unlike' : 'like'
+    const api_url = `/_db/memos/dtopic/${post.id}/${type}`
     const api_res = await fetch(api_url, { method: 'PUT' })
 
     if (!api_res.ok) {
@@ -38,7 +38,7 @@
       <span>Diễn đàn</span>
     </a>
 
-    <navi-sep>/</navi-sep>
+    <span class="fs-sm fg-mute">/</span>
 
     <a class="m-board" href={board_url}>
       <SIcon name="message" />
@@ -52,14 +52,14 @@
   </topic-navi>
 
   <topic-head class={_all}>
-    <a class="topic-title" href="{board_url}/-{post.tslug}-{post.id}">
+    <a class="topic-title" href="/gd/t-{post.id}-{post.tslug}">
       {post.title}
     </a>
 
     <topic-foot>
       <topic-user>
-        <SIcon name="edit" />
-        <cv-user data-privi={user.privi}>{user.uname}</cv-user>
+        <SIcon name="user" />
+        <a class="cv-user" href="/@{user.uname}">{user.uname}</a>
       </topic-user>
 
       <topic-sep>·</topic-sep>
@@ -67,9 +67,9 @@
 
       {#if $_user.privi > 3 || $_user.uname == user.uname}
         <topic-sep>·</topic-sep>
-        <button class="action" on:click={() => post_ctrl.show(post.id)}>
-          <span>Sửa</span>
-        </button>
+        <a class="action fg-tert" href="/gd/+post?id={post.id}"
+          ><span>Sửa</span>
+        </a>
       {/if}
 
       <foot-right>
@@ -84,13 +84,12 @@
           <span>{post.view_count}</span>
         </topic-meta>
 
-        <topic-sep>·</topic-sep>
+        <span class="fg-mute">&middot;</span>
 
         <button
           class="meta"
           class:_active={memo.liked > 0}
           disabled={$_user.privi < 0}
-          data-tip={new Date(Math.abs(memo.liked) * 1000).toString()}
           on:click={toggle_like}>
           <SIcon name="star" />
           <span>{post.like_count}</span>
@@ -147,11 +146,6 @@
   topic-navi {
     @include flex-cy($gap: 0.25rem);
     flex-wrap: wrap;
-  }
-
-  navi-sep {
-    @include fgcolor(mute);
-    @include ftsize(xs);
   }
 
   .m-label {

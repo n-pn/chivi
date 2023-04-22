@@ -18,7 +18,7 @@
 
   async function toggle_like() {
     const action = memo?.liked > 0 ? 'unlike' : 'like'
-    const api_url = `/_db/memos/posts/${post.id}/${action}`
+    const api_url = `/_db/memos/dtopic/${post.id}/${action}`
     const api_res = await fetch(api_url, { method: 'PUT' })
 
     if (!api_res.ok) {

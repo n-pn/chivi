@@ -22,8 +22,8 @@
   let show_repl = false
 
   async function toggle_like() {
-    const action = memo?.liked > 0 ? 'unlike' : 'like'
-    const api_url = `/_db/memos/repls/${repl.id}/${action}`
+    const type = memo?.liked > 0 ? 'unlike' : 'like'
+    const api_url = `/_db/memos/rpnode/${repl.id}/${type}`
     const api_res = await fetch(api_url, { method: 'PUT' })
 
     if (!api_res.ok) {

@@ -52,7 +52,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
       dboard.update!({post_count: count, board_bump: dtopic.utime})
     end
 
-    render json: {cvpost: DtopicView.new(dtopic)}
+    render json: DtopicView.new(dtopic)
   end
 
   @[AC::Route::GET("/:post_id")]
@@ -72,18 +72,33 @@ class CV::DtopicCtrl < CV::BaseCtrl
     render :not_found, text: "Chủ đề không tồn tại!"
   end
 
-  @[AC::Route::GET("/edit/:post_id")]
-  def edit(post_id : Int32)
-    cvpost = Dtopic.load!(post_id)
+  @[AC::Route::GET("/form")]
+  def edit(id dt_id : Int32 = 0, tb tb_id : Int32 = 0)
+    if dt_id != 0
+      dtopic = Dtopic.load!(dt_id)
+      dboard = Wninfo.load!(dtopic.nvinfo_id)
+    else
+      dboard = Wninfo.load!(tb_id)
+    end
 
     render json: {
-      id:     cvpost.id,
-      title:  cvpost.title,
-      btext:  cvpost.btext,
-      labels: cvpost.labels.join(","),
+      dtform: init_form(dtopic),
+      dboard: {
+        id:    dboard.id,
+        bname: dboard.vname,
+        bslug: dboard.bslug,
+      },
     }
   rescue err
     render :not_found, text: "Chủ đề không tồn tại!"
+  end
+
+  private def init_form(dtopic : Dtopic)
+    {id: dtopic.id, title: dtopic.title, btext: dtopic.btext, labels: dtopic.labels.join(",")}
+  end
+
+  private def init_form(dtopic : Nil)
+    {id: 0, title: "", btext: "", labels: "Thảo luận"}
   end
 
   @[AC::Route::PATCH("/:post_id", body: :form)]
@@ -92,7 +107,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     guard_owner cvpost.viuser_id, 0, "sửa chủ đề"
 
     cvpost.update_content!(form)
-    render json: {cvpost: DtopicView.new(cvpost)}
+    render json: DtopicView.new(cvpost)
   end
 
   @[AC::Route::DELETE("/:post_id")]

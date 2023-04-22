@@ -23,15 +23,12 @@
   fluid={true} />
 
 <section>
-  <h3>Bình luận</h3>
+  <h3>Bình luận chủ đề ({rplist.repls.length})</h3>
   <RpnodeList {rplist} {muhead} {touser} fluid={true} />
 </section>
 
 <style lang="scss">
   h3 {
     padding: 0.5rem 0;
-  }
-  section {
-    padding: 0 var(--gutter);
   }
 </style>

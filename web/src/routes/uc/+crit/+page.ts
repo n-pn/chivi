@@ -19,11 +19,13 @@ export const load = (async ({ fetch, url }) => {
   const path = `/_db/crits/form?wn=${wn}&id=${id}`
   const data = await api_get<CritFormPage>(path, fetch)
 
+  const curr_path = `/uc/+crit${url.search}`
   const _meta = {
     title: 'Tạo/sửa đánh giá',
     left_nav: [
+      home_nav('tm'),
       nav_link('/uc', 'Đánh giá', 'stars', { show: 'ts' }),
-      nav_link(`/uc${url.search}`, 'Thêm đánh giá', 'ballpen', { show: 'ts' }),
+      nav_link(curr_path, 'Thêm đánh giá', 'ballpen', { show: 'ts' }),
     ],
     right_nav: [
       nav_link(`/ul/+list?wn=${wn}`, 'Thêm thư đơn', 'bookmarks', {

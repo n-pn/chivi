@@ -28,6 +28,14 @@
   font-weight: 500;
 }
 
+.fs-xs {
+  @include ftsize(xs);
+}
+
+.fs-sm {
+  @include ftsize(sm);
+}
+
 .fg-secd {
   @include fgcolor(secd);
 }
