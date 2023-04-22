@@ -1,5 +1,5 @@
 declare namespace CV {
-  interface VpDict {
+  interface Cvdict {
     vd_id: number
     label: string
 

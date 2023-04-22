@@ -8,7 +8,7 @@
   export let seeds: CV.Chroot[]
 
   export let chmeta: CV.Chmeta
-  export let chinfo: CV.Chinfo
+  export let chinfo: CV.Wnchap
 
   // let show_users = false
   // let show_other = false

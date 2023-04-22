@@ -7,10 +7,8 @@
   import { SIcon, Stars } from '$gui'
   import Truncate from '$gui/atoms/Truncate.svelte'
 
-  import YsreplList from './YsreplList.svelte'
   import YscritBook from './YscritBook.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
-  import { api_get } from '$lib/api_call'
 
   export let crit: CV.Yscrit
   export let user: CV.Ysuser
@@ -24,14 +22,6 @@
   export let big_text = false
 
   let show_repls = false
-
-  let replies: CV.YsreplPage
-
-  async function show_replies() {
-    const path = `/_ys/crits/${crit.id}/repls`
-    replies = await api_get<CV.YsreplPage>(path, fetch)
-    show_repls = true
-  }
 
   let body_type = 'vhtml'
 
@@ -150,11 +140,11 @@
         <span class="badge">{crit.like_count}</span>
       </span>
 
-      <button class="meta" on:click={show_replies}>
+      <a class="meta" href="/uc/y{crit.id}#repls">
         <SIcon name="message" />
         <span class="u-show-pl">Phản hồi</span>
         <span class="badge">{crit.repl_count}</span>
-      </button>
+      </a>
     </div>
   </footer>
 
@@ -168,10 +158,6 @@
     </footer>
   {/if}
 </crit-item>
-
-{#if show_repls && replies}
-  <YsreplList {replies} bind:_active={show_repls} />
-{/if}
 
 <style lang="scss">
   crit-item {

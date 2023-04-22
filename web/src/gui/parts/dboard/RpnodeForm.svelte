@@ -17,7 +17,7 @@
   export let placeholder = 'Nội dung bình luận'
   export let disabled = false
 
-  export let on_destroy = (new_repl?: CV.Murepl) => {
+  export let on_destroy = (new_repl?: CV.Rpnode) => {
     if (new_repl) window.location.reload()
   }
 
@@ -45,7 +45,7 @@
     try {
       const new_repl = await api_call(action, form, method)
       form.itext = ''
-      on_destroy(new_repl as CV.Murepl)
+      on_destroy(new_repl as CV.Rpnode)
     } catch (ex) {
       error = ex.body?.message
     }

@@ -1,9 +1,9 @@
 <script lang="ts">
   import { rel_time_vp } from '$utils/time_utils'
-  import type { VpForm } from './_shared'
+  import type { CvtermForm } from './_shared'
 
-  export let form: VpForm
-  export let dicts: CV.VpDict[]
+  export let form: CvtermForm
+  export let dicts: CV.Cvdict[]
 
   const save_modes = ['Tự động', 'Chung', 'Riêng', 'Riêng']
 

@@ -102,7 +102,7 @@
     <p>
       <button class="m-btn _harmful _fill _lg" on:click={delete_list}>
         <SIcon name="eraser" />
-        <span>Xoá thư đơns</span>
+        <span>Xoá thư đơn</span>
       </button>
     </p>
   {/if}

@@ -14,7 +14,7 @@
   import { invalidate } from '$app/navigation'
 
   import DtopicFull from '$gui/parts/dboard/DtopicFull.svelte'
-  import MureplList from '$gui/parts/dboard/MureplList.svelte'
+  import RpnodeList from '$gui/parts/dboard/RpnodeList.svelte'
 
   let cvpost: CV.DtopicFull = {
     post: { dboard: { id: 0, bname: '', bslug: '' }, bhtml: '', labels: [] },
@@ -68,7 +68,7 @@
     <DtopicFull {...cvpost} {on_cvpost_form} />
   </section>
   <section class="posts">
-    <MureplList {thread} {rplist} {on_murepl_form} />
+    <RpnodeList {thread} {rplist} {on_murepl_form} />
   </section>
 {:else}
   Chưa chọn chủ đề

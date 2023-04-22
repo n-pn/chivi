@@ -27,7 +27,7 @@ function page_meta({ bslug, vtitle }, sname: string, ch_no: number) {
     left_nav: [
       book_nav(bslug, vtitle, 'tm'),
       seed_nav(bslug, sname, _pgidx(ch_no), 'ts'),
-      nav_link('+chap', '', 'edit'),
+      nav_link('+text', '', 'edit'),
     ],
     right_nav: [
       nav_link(chap_url, 'Hồi chương', 'arrow-back-up', { show: 'tm' }),

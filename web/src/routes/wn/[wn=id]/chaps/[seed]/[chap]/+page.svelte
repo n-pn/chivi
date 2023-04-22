@@ -150,7 +150,7 @@
           <a
             class="gmenu-item"
             class:_disable={$_user.privi < 1}
-            href="{paths.base}/+chap?ch_no={curr_chap.chidx}">
+            href="{paths.base}/+text?ch_no={curr_chap.chidx}">
             <SIcon name="pencil" />
             <span>Sửa text gốc</span>
           </a>

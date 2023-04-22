@@ -5,8 +5,8 @@ import type { LayoutLoad } from './$types'
 
 export interface SeedData {
   curr_seed: CV.Chroot
-  top_chaps: CV.Chinfo[]
-  seed_data: CV.WnSeed
+  top_chaps: CV.Wnchap[]
+  seed_data: CV.Wnseed
 }
 
 const prefixes = ['_', '@', '+', '!']

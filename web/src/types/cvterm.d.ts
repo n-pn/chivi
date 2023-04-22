@@ -1,5 +1,5 @@
 declare namespace CV {
-  interface VpTerm {
+  interface Cvterm {
     id: number
 
     dic: number

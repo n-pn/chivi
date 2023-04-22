@@ -10,9 +10,9 @@
 </script>
 
 <script lang="ts">
-  import { type VpForm, hint } from './_shared'
+  import { type CvtermForm, hint } from './_shared'
 
-  export let form: VpForm
+  export let form: CvtermForm
 </script>
 
 <div class="prio">

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { gtran, btran, deepl } from '$utils/qtran_utils'
 
-  import { hint, type VpForm } from './_shared'
+  import { hint, type CvtermForm } from './_shared'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let form: VpForm
+  export let form: CvtermForm
   export let hanviet: string
   export let val_hints: string[]
 

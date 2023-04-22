@@ -8,11 +8,11 @@
 </script>
 
 <script lang="ts">
-  import { type VpForm, hint, req_privi } from './_shared'
+  import { type CvtermForm, hint, req_privi } from './_shared'
 
-  export let form: VpForm
+  export let form: CvtermForm
   export let privi: number
-  export let vdict: CV.VpDict
+  export let vdict: CV.Cvdict
 </script>
 
 <section class="opts">

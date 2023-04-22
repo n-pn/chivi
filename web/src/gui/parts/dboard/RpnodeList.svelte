@@ -1,13 +1,13 @@
 <script lang="ts">
-  import MureplTree from './MureplTree.svelte'
-  import MureplForm from './MureplForm.svelte'
+  import RpnodeTree from './RpnodeTree.svelte'
+  import RpnodeForm from './RpnodeForm.svelte'
 
   export let muhead = ''
   export let touser = 0
 
   export let rplist: CV.Rplist
 
-  export let on_murepl_form = (new_repl?: CV.Murepl) => {
+  export let on_murepl_form = (new_repl?: CV.Rpnode) => {
     if (new_repl) {
       rplist.repls ||= []
       rplist.repls.unshift(new_repl)
@@ -15,15 +15,15 @@
     }
   }
 
-  function build_tree(repls: CV.Murepl[]) {
-    const map = new Map<number, CV.Murepl>()
+  function build_tree(repls: CV.Rpnode[]) {
+    const map = new Map<number, CV.Rpnode>()
 
     for (const repl of repls) {
       repl.repls ||= []
       map.set(repl.id, repl)
     }
 
-    const output: CV.Murepl[] = []
+    const output: CV.Rpnode[] = []
 
     for (const repl of repls) {
       const parent = map.get(repl.torepl_id)
@@ -37,7 +37,7 @@
 </script>
 
 <div class="new-repl">
-  <MureplForm
+  <RpnodeForm
     form={{
       itext: '',
       level: 0,
@@ -51,7 +51,7 @@
 </div>
 
 {#if rplist.repls.length > 0}
-  <MureplTree
+  <RpnodeTree
     {muhead}
     repls={build_tree(rplist.repls)}
     users={rplist.users}

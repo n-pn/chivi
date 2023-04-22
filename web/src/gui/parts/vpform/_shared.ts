@@ -75,12 +75,12 @@ export const req_privi = (dic: number, tab: number = 1) => {
   return dic < 0 ? privi : privi - 1
 }
 
-export class VpForm {
-  init: Partial<CV.VpTerm>
+export class CvtermForm {
+  init: Partial<CV.Cvterm>
 
   static from(key: string, dic: number = 0, privi = -1) {
     const term = { key, val: '', ptag: '', wseg: 2, dic, tab: 1 }
-    return new VpForm(term, dic, privi)
+    return new CvtermForm(term, dic, privi)
   }
 
   key: string
@@ -92,7 +92,7 @@ export class VpForm {
   dic: number = 0
   tab: number = 0
 
-  constructor(init: Partial<CV.VpTerm>, wn_id = 0, privi = 0) {
+  constructor(init: Partial<CV.Cvterm>, wn_id = 0, privi = 0) {
     this.init = init
 
     this.key = init.key

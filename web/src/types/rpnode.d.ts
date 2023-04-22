@@ -1,5 +1,5 @@
 declare namespace CV {
-  interface Murepl {
+  interface Rpnode {
     id: number
 
     user_id: number
@@ -18,11 +18,11 @@ declare namespace CV {
     repl_count: number
 
     vcoin: number
-    repls: Murepl[] = []
+    repls: Rpnode[] = []
   }
 
   interface Rplist {
-    repls: Array<Murepl>
+    repls: Array<Rpnode>
 
     users: Record<number, Cvuser>
     memos: Record<number, Memoir>

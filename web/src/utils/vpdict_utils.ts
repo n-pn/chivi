@@ -53,7 +53,7 @@ export function make_vdict(
   vd_id: number,
   label?: string,
   brief?: string
-): CV.VpDict {
+): CV.Cvdict {
   label = label || dict_labels[vd_id] || vd_id
   brief = brief || dict_briefs[vd_id] || make_brief(vd_id, label)
 
@@ -61,7 +61,7 @@ export function make_vdict(
   return { vd_id, label, brief, dslug }
 }
 
-export function upsert_dicts(vdict: CV.VpDict, extra?: CV.VpDict) {
+export function upsert_dicts(vdict: CV.Cvdict, extra?: CV.Cvdict) {
   const { vd_id } = vdict
   extra = extra || make_vdict(-10)
 

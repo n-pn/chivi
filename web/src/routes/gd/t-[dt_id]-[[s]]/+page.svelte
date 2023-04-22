@@ -1,6 +1,6 @@
 <script lang="ts">
   import DtopicFull from '$gui/parts/dboard/DtopicFull.svelte'
-  import MureplList from '$gui/parts/dboard/MureplList.svelte'
+  import RpnodeList from '$gui/parts/dboard/RpnodeList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -24,7 +24,7 @@
 
 <section>
   <h3>Bình luận</h3>
-  <MureplList {rplist} {muhead} {touser} fluid={true} />
+  <RpnodeList {rplist} {muhead} {touser} fluid={true} />
 </section>
 
 <style lang="scss">

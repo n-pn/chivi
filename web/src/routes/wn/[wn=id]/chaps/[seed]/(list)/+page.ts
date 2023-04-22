@@ -7,6 +7,6 @@ export const load = (async ({ fetch, url, params }) => {
 
   const api_url = `/_wn/chaps/${wn_id}/${params.seed}?pg=${pg_no}`
 
-  const chaps = await api_get<CV.Chinfo[]>(api_url, fetch)
+  const chaps = await api_get<CV.Wnchap[]>(api_url, fetch)
   return { chaps, pg_no }
 }) satisfies PageLoad

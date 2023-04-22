@@ -28,9 +28,9 @@
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import { hint, type VpForm } from './_shared'
+  import { hint, type CvtermForm } from './_shared'
 
-  export let form: VpForm
+  export let form: CvtermForm
   export let refocus = () => {}
 
   let capped = 0

@@ -9,9 +9,9 @@
   export let ubmemo: CV.Ubmemo
 
   export let curr_seed: CV.Chroot
-  export let seed_data: CV.WnSeed
+  export let seed_data: CV.Wnseed
 
-  export let chaps: CV.Chinfo[]
+  export let chaps: CV.Wnchap[]
 
   export let mark_chidx = ubmemo.chidx
 

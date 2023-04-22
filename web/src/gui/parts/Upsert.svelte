@@ -7,7 +7,7 @@
   import { upsert_dicts } from '$utils/vpdict_utils'
   import { api_call } from '$lib/api_call'
 
-  import { related_words, VpForm, hint } from './vpform/_shared'
+  import { related_words, CvtermForm, hint } from './vpform/_shared'
 
   import pt_labels from '$lib/consts/postag_labels.json'
 
@@ -33,7 +33,7 @@
     pin_yin: string
     hanviet: string
 
-    current?: CV.VpTerm
+    current?: CV.Cvterm
 
     tag_hints: string[]
     val_hints: string[]
@@ -81,7 +81,7 @@
   let show_opts = false
 
   let key = $ztext.substring($zfrom, $zupto)
-  let form = VpForm.from(key, $vdict.vd_id, privi)
+  let form = CvtermForm.from(key, $vdict.vd_id, privi)
 
   $: dicts = upsert_dicts($vdict)
   $: update_data($ztext, $zfrom, $zupto)
@@ -101,7 +101,7 @@
     }
 
     data = cached[words[0]]
-    form = new VpForm(data.current, vd_id, privi)
+    form = new CvtermForm(data.current, vd_id, privi)
   }
 
   let field: HTMLInputElement

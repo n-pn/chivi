@@ -6,7 +6,7 @@ import { book_nav, seed_nav, nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
 export interface ChapPart {
-  curr_chap: CV.Chinfo
+  curr_chap: CV.Wnchap
   //
   _prev_url: string | null
   _next_url: string | null

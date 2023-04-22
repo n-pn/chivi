@@ -1,15 +1,15 @@
 import { writable, get } from 'svelte/store'
 
-export interface MureplForm {
+export interface RpnodeForm {
   input: string
   repl_id: number
 }
 
-function init(repl_id = 0): MureplForm {
+function init(repl_id = 0): RpnodeForm {
   return { input: '', repl_id }
 }
 
-async function load(id: number, repl_id: number): Promise<MureplForm> {
+async function load(id: number, repl_id: number): Promise<RpnodeForm> {
   if (id == 0) return init(repl_id)
 
   const api_url = `/_db/mrepls/edit/${id}`
@@ -23,7 +23,7 @@ export const form = {
   ...writable(init()),
   init: async (id = 0, repl_id = 0) => form.set(await load(id, repl_id)),
   // prettier-ignore
-  validate(data: MureplForm = get(form) ) {
+  validate(data: RpnodeForm = get(form) ) {
     const { input } = data
 
     if (input.length < 1) return 'Độ dài của nội dung phải dài hơn 1 ký tự'

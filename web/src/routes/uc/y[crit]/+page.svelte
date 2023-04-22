@@ -11,12 +11,15 @@
 </script>
 
 <article class="article island _narrow">
-  <h2>Đánh giá của {user.uname} cho bộ truyện {book.vtitle}</h2>
+  <h2>
+    Đánh giá của <strong>{user.uname}</strong> cho bộ truyện
+    <strong>{book.vtitle}</strong>
+  </h2>
 
   <YscritCard {crit} {book} {list} {user} view_all={true} />
 
-  <section class="replies">
-    <h3 class="replies-header">Phản hồi bình luận:</h3>
+  <section id="repls" class="replies">
+    <h3 class="replies-header">Phản hồi bình luận ({data.repls.length}):</h3>
     {#each data.repls as repl}
       {@const user = data.users[repl.yu_id]}
       <div class="repl">
@@ -24,7 +27,10 @@
           <a class="repl-user" href="/uc?from=ys&user={user.id}"
             >{user.uname}</a>
           <span class="fg-tert">·</span>
-          <time class="repl-time">{get_rtime(repl.ctime)}</time>
+          <time
+            class="repl-time"
+            datetime={new Date(repl.ctime * 1000).toString()}
+            >{get_rtime(repl.ctime)}</time>
           <div class="repl-like">
             <SIcon name="thumb-up" />
             <span>{repl.like_count}</span>
@@ -43,17 +49,17 @@
 
 <style lang="scss">
   article {
-    margin-top: 0.75rem;
-  }
-
-  .replies {
-    @include padding-x(var(--gutter));
-    max-width: min(40rem, 100%);
-    // margin: 0 auto;
+    margin-top: var(--gutter);
   }
 
   .replies-header {
-    margin-bottom: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .replies {
+    @include bp-min(tl) {
+      @include padding-x(var(--gutter));
+    }
   }
 
   .repl {
@@ -72,6 +78,11 @@
   .repl-body {
     @include bps(font-size, rem(15px), rem(16px));
     padding-bottom: 0.75rem;
+
+    > :global(p) {
+      max-width: 70ch;
+    }
+
     > :global(* + *) {
       margin-top: 0.75rem;
     }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import MureplList from '$gui/parts/dboard/MureplList.svelte'
+  import RpnodeList from '$gui/parts/dboard/RpnodeList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -17,7 +17,7 @@
       </em>
     </p>
   </header>
-  <MureplList {muhead} {rplist} />
+  <RpnodeList {muhead} {rplist} />
 </section>
 
 <style lang="scss">

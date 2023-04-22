@@ -1,4 +1,16 @@
 declare namespace CV {
+  interface VcoinXlog {
+    id: number
+
+    sender_id: number
+    target_id: number
+
+    amount: number
+    reason: string
+
+    ctime: number
+  }
+
   interface QtranXlog {
     id: number
     viuser_id: number
@@ -18,10 +30,10 @@ declare namespace CV {
     created_at: string
   }
 
-  interface QtranXlogPage extends CV.Paginate {
-    xlogs: CV.QtranXlog[]
-    users: Record<number, CV.Viuser>
-    books: Record<number, CV.Wninfo>
+  interface QtranXlogPage extends Paginate {
+    xlogs: QtranXlog[]
+    users: Record<number, Viuser>
+    books: Record<number, Wninfo>
   }
 
   interface QtranBookStat {
@@ -37,7 +49,7 @@ declare namespace CV {
   interface QtranStat {
     user_stats: QtranUserStat[]
     book_stats: QtranBookStat[]
-    user_infos: Record<number, CV.Viuser>
-    book_infos: Record<number, CV.Wninfo>
+    user_infos: Record<number, Viuser>
+    book_infos: Record<number, Wninfo>
   }
 }

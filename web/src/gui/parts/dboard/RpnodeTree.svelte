@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
-  import MureplCard from './MureplCard.svelte'
+  import RpnodeCard from './RpnodeCard.svelte'
 </script>
 
 <script lang="ts">
   export let muhead = ''
 
-  export let repls: CV.Murepl[]
+  export let repls: CV.Rpnode[]
   export let users: Record<number, CV.Viuser>
   export let memos: Record<number, CV.Memoir>
 
@@ -15,7 +15,7 @@
 
 <div class="repl-list" class:_nest={level > 0}>
   {#each repls as repl}
-    <MureplCard
+    <RpnodeCard
       bind:repl
       bind:memo={memos[repl.id]}
       user={users[repl.user_id]}

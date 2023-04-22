@@ -22,4 +22,22 @@ declare namespace CV {
     //
     _path?: string
   }
+
+  interface Wnchap {
+    chidx: number
+    title: string
+    chvol: string
+    uslug: string
+
+    chars: number
+    parts: number
+    utime: number
+    uname: string
+
+    sname: string
+  }
+
+  interface Chlist extends Paginate {
+    chaps: Wnchap[]
+  }
 }

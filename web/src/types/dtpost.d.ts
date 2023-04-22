@@ -39,4 +39,6 @@ declare namespace CV {
     users: Record<number, Cvuser>
     memos: Record<number, Memoir>
   }
+
+  type DtlistType = 'book' | 'show' | 'star' | 'seen' | 'mine' | ''
 }

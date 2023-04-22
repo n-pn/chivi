@@ -5,7 +5,7 @@
 
   export let can_edit = true
   export let edit_url: string
-  export let seed_data: CV.WnSeed
+  export let seed_data: CV.Wnseed
 
   export let ztitle: string
 
