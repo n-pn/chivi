@@ -22,6 +22,7 @@ declare namespace CV {
     books: Record<number, Wninfo>
     users: Record<number, Viuser>
     lists: Record<number, Vilist>
+    memos: Record<number, CV.Memoir>
   }
 
   interface VicritForm {

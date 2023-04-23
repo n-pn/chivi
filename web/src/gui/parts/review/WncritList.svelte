@@ -3,9 +3,10 @@
 
   const empty_crits = {
     crits: [],
-    books: [],
-    users: [],
-    lists: [],
+    books: {},
+    users: {},
+    lists: {},
+    memos: {},
     pgmax: 0,
     pgidx: 0,
     total: 0,
@@ -73,9 +74,9 @@
     {@const book = vi.books[crit.book_id]}
     {@const user = vi.users[crit.user_id]}
     {@const list = vi.lists[crit.list_id]}
-    {#key crit.id}
-      <VicritCard {crit} {book} {user} {list} {show_book} {show_list} />
-    {/key}
+    {@const memo = vi.memos[crit.id]}
+
+    <VicritCard {crit} {book} {user} {memo} {list} {show_book} {show_list} />
   {/each}
 
   {#each ys.crits as crit}
@@ -84,16 +85,14 @@
     {@const user = ys.users[crit.user_id]}
     {@const list = ys.lists[crit.list_id]}
 
-    {#key crit.id}
-      <YscritCard
-        {crit}
-        {user}
-        {book}
-        {list}
-        {show_book}
-        {show_list}
-        {view_all} />
-    {/key}
+    <YscritCard
+      {crit}
+      {user}
+      {book}
+      {list}
+      {show_book}
+      {show_list}
+      {view_all} />
   {/each}
 
   {#if vi.crits.length + ys.crits.length == 0}

@@ -27,8 +27,8 @@ export async function gtran(text: string, tab: number) {
 
     results[key] = tran
     return results[key]
-  } catch (err) {
-    console.log(err)
+  } catch (ex) {
+    console.log(ex)
     return null
   }
 }

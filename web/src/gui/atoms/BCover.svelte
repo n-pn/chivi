@@ -4,7 +4,6 @@
 
   const on_error = (e: Event) => {
     const target = e.target as HTMLImageElement
-    console.log(target.src)
     target.src = '/covers/_blank.png'
   }
 </script>

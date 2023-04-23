@@ -6,10 +6,10 @@
 
   import Star from '$gui/atoms/Star.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import VicritCard from '$gui/parts/review/VicritCard.svelte'
 
   import type { PageData } from './$types'
   import { rel_time } from '$utils/time_utils'
-  import VicritCard from '$gui/parts/review/VicritCard.svelte'
 
   export let data: PageData
 
@@ -129,10 +129,13 @@
 
   {#each data.crits as crit}
     {@const list = data.lists.find((x) => x.id == crit.list_id)}
+    {@const memo = data.memos[crit.id]}
+
     <VicritCard
       {crit}
       user={$_user}
       {list}
+      {memo}
       book={undefined}
       show_book={false} />
   {:else}

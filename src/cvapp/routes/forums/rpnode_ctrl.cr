@@ -1,5 +1,5 @@
 require "../_ctrl_base"
-require "./murepl_form"
+require "./rpnode_form"
 
 class CV::RpnodeCtrl < CV::BaseCtrl
   base "/_db/mrepls"

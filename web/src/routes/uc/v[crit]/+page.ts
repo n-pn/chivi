@@ -8,6 +8,7 @@ interface CritData {
   book: CV.Wninfo
   list: CV.Vilist
   user: CV.Viuser
+  memo: CV.Memoir
 }
 
 export const load = (async ({ fetch, params: { crit } }) => {

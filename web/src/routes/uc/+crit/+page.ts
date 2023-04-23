@@ -10,6 +10,7 @@ interface CritFormPage {
   cform: CV.VicritForm
   lists: CV.Vilist[]
   crits: CV.Vicrit[]
+  memos: Record<number, CV.Memoir>
 }
 
 export const load = (async ({ fetch, url }) => {

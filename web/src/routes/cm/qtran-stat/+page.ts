@@ -18,7 +18,5 @@ export const load = (async ({ fetch, url }) => {
 
   const data = await api_get<CV.QtranStat>(path, fetch)
 
-  console.log(data)
-
   return { ...data, scope, _meta }
 }) satisfies PageLoad

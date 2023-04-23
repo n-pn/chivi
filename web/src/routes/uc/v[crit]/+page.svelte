@@ -11,6 +11,11 @@
 </script>
 
 <article class="article island _narrow">
+  <h2>
+    Đánh giá của <strong>{data.user.uname}</strong> cho bộ truyện
+    <strong>{data.book.vtitle}</strong>
+  </h2>
+
   <VicritCard {...data} view_all={true} />
 
   <section id="repls" class="replies">

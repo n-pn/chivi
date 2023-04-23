@@ -61,7 +61,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     cvpost.bump_view_count!
 
     viuser = Viuser.load!(cvpost.viuser_id)
-    memoir = Memoir.load(_vu_id, :dtopic, cvpost.id.to_i)
+    memoir = Memoir.load(_vu_id, :dtopic, cvpost.id)
 
     render json: {
       post: DtopicView.new(cvpost, full: true),

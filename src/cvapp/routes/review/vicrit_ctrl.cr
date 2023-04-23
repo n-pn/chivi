@@ -28,9 +28,13 @@ class CV::VicritCtrl < CV::BaseCtrl
     books = Wninfo.preload(crits.map(&.nvinfo_id))
     lists = Vilist.preload(crits.map(&.vilist_id))
 
+    memos = Memoir.glob(_vu_id, :vicrit, crits.map(&.id.to_i))
+
     render json: {
       crits: VicritView.as_list(crits, full: false),
       users: ViuserView.as_hash(users),
+      memos: MemoirView.as_hash(memos),
+
       books: WninfoView.as_hash(books),
       lists: VilistView.as_hash(lists),
 
@@ -52,11 +56,14 @@ class CV::VicritCtrl < CV::BaseCtrl
     viuser = Viuser.load!(vicrit.viuser_id)
     vilist = Vilist.load!(vicrit.vilist_id)
 
+    memoir = Memoir.load(_vu_id, :vicrit, vicrit.id)
+
     render json: {
       crit: VicritView.new(vicrit, full: true),
       book: WninfoView.new(nvinfo, false),
       user: ViuserView.new(viuser, false),
       list: VilistView.new(vilist, mode: :crit),
+      memo: MemoirView.new(memoir),
     }
   end
 
@@ -71,14 +78,18 @@ class CV::VicritCtrl < CV::BaseCtrl
 
     vcrit = crits.find(&.id.== vc_id)
     crits.reject!(&.id.== vc_id) if vcrit
+    memos = Memoir.glob(_vu_id, :vicrit, crits.map(&.id.to_i))
 
     render json: {
       bname: wninfo.btitle.vname,
       bslug: "#{wn_id}-#{wninfo.bslug}",
+
       ctime: vcrit.try(&.created_at.to_unix) || 0,
       cform: init_form(vcrit, wn_id),
+
       lists: VilistView.as_list(lists, mode: :crit),
       crits: VicritView.as_list(crits),
+      memos: MemoirView.as_hash(memos),
     }
   end
 
