@@ -7,10 +7,10 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const wn_id = parseInt(params.wn, 10)
   const { chap: ch_no, seed: sname } = params
 
-  const muhead = `ch:${wn_id}:${ch_no}:${sname}`
+  const rproot = `ch:${wn_id}:${ch_no}:${sname}`
 
   const sort = url.searchParams.get('sort') || '-id'
-  const path = `/_db/mrepls/thread/${muhead}?sort=${sort}`
+  const path = `/_db/mrepls/thread/${rproot}?sort=${sort}`
 
   const rplist = await api_get<CV.Rplist>(path, fetch)
 
@@ -25,5 +25,5 @@ export const load = (async ({ url, fetch, params, parent }) => {
       }),
     ],
   }
-  return { rplist, muhead, sort, _meta }
+  return { rplist, rproot, sort, _meta }
 }) satisfies PageLoad

@@ -10,14 +10,14 @@ require "./dtopic"
 class CV::Rpnode
   include Clear::Model
 
-  self.table = "murepls"
+  self.table = "rpnodes"
   primary_key type: :serial
 
   column viuser_id : Int32 = 0
-  column muhead_id : Int32 = 0
+  column rproot_id : Int32 = 0
 
   column touser_id : Int32 = 0 # parent viuser_id
-  column torepl_id : Int32 = 0 # parent murepl_id
+  column torepl_id : Int32 = 0 # parent rpnode_id
 
   column level : Int16 = 0 # nesting level
   column utime : Int64 = 0 # update when new post created/updated
@@ -73,26 +73,26 @@ class CV::Rpnode
     CACHE.get(id) { find!({id: id}) }
   end
 
-  def self.get_all(muhead_id : Int32)
-    self.query.where({muhead_id: muhead_id}).to_a
+  def self.get_all(rproot_id : Int32)
+    self.query.where("rproot_id = ?", rproot_id).to_a
 
-    # PGDB.query_all <<-SQL, muhead_id, as: self
+    # PGDB.query_all <<-SQL, rproot_id, as: self
     #   select * from #{@@table}
-    #   where muhead_id = $1  and id > 0
+    #   where rproot_id = $1  and id > 0
     #   SQL
   end
 
-  def self.repl_count(muhead_id : Int32)
-    PGDB.query_one <<-SQL, muhead_id, as: Int32
+  def self.repl_count(rproot_id : Int32)
+    PGDB.query_one <<-SQL, rproot_id, as: Int32
       select coalesce(count(*)) from #{@@table}
-      where tmuhead_idhread_id = $1 and id > 0
+      where trproot_idhread_id = $1 and id > 0
       SQL
   end
 
-  def self.member_ids(muhead_id : Int32)
-    PGDB.query_all <<-SQL, muhead_id, as: Int32
+  def self.member_ids(rproot_id : Int32)
+    PGDB.query_all <<-SQL, rproot_id, as: Int32
       select distinct(viuser_id) from #{@@table}
-      where muhead_id = $1
+      where rproot_id = $1
     SQL
   end
 end

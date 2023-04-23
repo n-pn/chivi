@@ -4,13 +4,47 @@ require "./dtopic"
 require "./rpnode"
 
 class CV::Rproot
+  enum Kind : Int16
+    Dtopic = 0
+    Wninfo = 1
+    Wnseed = 2
+    Wnchap = 3
+
+    Viuser = 20
+    Vilist = 21
+    Vicrit = 22
+
+    Ysuser = 120
+    Yslist = 121
+    Yscrit = 122
+
+    Author = 200
+
+    def to_vstr
+      case self
+      in .dtopic? then "chủ đề"
+      in .wninfo? then "bình luận truyện"
+      in .wnseed? then "bình luận nguồn"
+      in .wnchap? then "bình luận chương"
+      in .vilist? then "thư đơn"
+      in .vicrit? then "đánh giá truyện"
+      in .viuser? then "trang người dùng"
+      in .author? then "trang tác giả"
+      end
+    end
+  end
+
   include Crorm::Model
   include DB::Serializable::NonStrict
 
-  class_getter table = "muheads"
+  class_getter table = "rproots"
   class_getter db : DB::Database = PGDB
 
   field id : Int32 = 0, primary: true
+
+  field kind : Int16 = 0_i16
+  field pkey : String = ""
+
   field urn : String = ""
 
   field viuser_id : Int32 = 0
@@ -22,6 +56,9 @@ class CV::Rproot
   field _link : String = ""
 
   field repl_count : Int32 = 0
+  field view_count : Int32 = 0
+  field like_count : Int32 = 0
+  field star_count : Int32 = 0
 
   field last_seen_at : Time = Time.utc
   field last_repl_at : Time = Time.utc
@@ -37,6 +74,9 @@ class CV::Rproot
 
     @viuser_id = dtopic.viuser_id
     @dboard_id = dtopic.nvinfo_id
+
+    @kind = Kind::Dtopic.value
+    @pkey = "#{dtopic.id}"
 
     @_type = "chủ đề"
     @_link = "/gd/t-#{dtopic.id}-#{dtopic.tslug}"
@@ -56,6 +96,9 @@ class CV::Rproot
     @viuser_id = 1
     @dboard_id = wninfo.id
 
+    @kind = Kind::Wninfo.value
+    @pkey = "#{wninfo.id}"
+
     @_type = "bình luận truyện"
     @_link = "/wn/#{wninfo.id}-#{wninfo.bslug}/bants"
 
@@ -74,6 +117,9 @@ class CV::Rproot
     @viuser_id = vicrit.viuser_id
     @dboard_id = vicrit.nvinfo_id
 
+    @kind = Kind::Vicrit.value
+    @pkey = "#{vicrit.id}"
+
     @_type = "đánh giá truyện"
     @_link = "/uc/v#{vicrit.id}"
 
@@ -91,6 +137,9 @@ class CV::Rproot
     @viuser_id = vilist.viuser_id
     @dboard_id = 0
 
+    @kind = Kind::Vilist.value
+    @pkey = "#{vilist.id}"
+
     @_type = "thư đơn"
     @_link = "/ul/v#{vilist.id}-#{vilist.tslug}"
 
@@ -102,8 +151,37 @@ class CV::Rproot
     @updated_at = vilist.updated_at
   end
 
+  def initialize(wn_id : Int32, ch_no : Int32, sname : String)
+    @urn = "ch:#{wn_id}:#{ch_no}:#{sname}"
+
+    @viuser_id = 1
+    @dboard_id = wn_id
+
+    @kind = Kind::Wnchap.value
+    @pkey = "#{wn_id}:#{ch_no}:#{sname}"
+
+    @_type = "bình luận chương"
+    @_link = "/ul/v#{vilist.id}-#{vilist.tslug}"
+
+    @_name = vilist.title
+    @_desc = TextUtil.truncate(vilist.dtext, 100)
+  end
+
+  # def gen_link
+  #   case Kind.new(@kind)
+  #   in .dtopic? then "/gd/t-#{@pkey}-#{@slug}"
+  #   in .wninfo? then "/wn/#{@pkey}-#{@slug}/bants"
+  #   in .wnseed? then "/wn/#{@pkey}-#{@slug}/bants/"
+  #   in .wnchap? then "bình luận chương"
+  #   in .vilist? then "thư đơn"
+  #   in .vicrit? then "đánh giá truyện"
+  #   in .viuser? then "/@#{@uslug}"
+  #   in .author? then "/wn/=#{@slug}"
+  #   end
+  # end
+
   def fix_data
-    repls = Rpnode.get_all(muhead_id: id)
+    repls = Rpnode.get_all(rproot: id)
     @repl_count = repls.size
     @last_repl_at = Time.unix(repls.max_of(&.utime))
   end

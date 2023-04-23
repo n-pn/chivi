@@ -1,4 +1,4 @@
-require "../src/_data/dboard/murepl"
+require "../src/_data/dboard/rpnode"
 
 repls = CV::Rpnode.query
 

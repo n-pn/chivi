@@ -8,8 +8,8 @@
     itext: '',
     level: 0,
 
-    muhead: '',
-    murepl: 0,
+    rproot: '',
+    rpnode: 0,
     torepl: 0,
     touser: 0,
   }
@@ -24,9 +24,9 @@
   let action = `/_db/mrepls/create`
   let method = `POST`
 
-  $: if (form.murepl > 0) {
-    load_form(form.murepl)
-    action = `/_db/mrepls/update/${form.murepl}`
+  $: if (form.rpnode > 0) {
+    load_form(form.rpnode)
+    action = `/_db/mrepls/update/${form.rpnode}`
     method = 'PATCH'
   }
 
@@ -64,7 +64,7 @@
       {#if error}<div class="form-msg _err">{error}</div>{/if}
 
       <footer>
-        {#if form.murepl || form.torepl}
+        {#if form.rpnode || form.torepl}
           <button type="button" class="m-btn _sm" on:click={() => on_destroy()}>
             <SIcon name="x" />
           </button>

@@ -2,12 +2,12 @@
   import RpnodeTree from './RpnodeTree.svelte'
   import RpnodeForm from './RpnodeForm.svelte'
 
-  export let muhead = ''
+  export let rproot = ''
   export let touser = 0
 
   export let rplist: CV.Rplist
 
-  export let on_murepl_form = (new_repl?: CV.Rpnode) => {
+  export let on_rpnode_form = (new_repl?: CV.Rpnode) => {
     if (new_repl) {
       rplist.repls ||= []
       rplist.repls.unshift(new_repl)
@@ -41,18 +41,18 @@
     form={{
       itext: '',
       level: 0,
-      murepl: 0,
+      rpnode: 0,
       torepl: 0,
       touser,
-      muhead,
+      rproot,
     }}
     placeholder="Thêm bình luận mới"
-    on_destroy={on_murepl_form} />
+    on_destroy={on_rpnode_form} />
 </div>
 
 {#if rplist.repls.length > 0}
   <RpnodeTree
-    {muhead}
+    {rproot}
     repls={build_tree(rplist.repls)}
     users={rplist.users}
     memos={rplist.memos}

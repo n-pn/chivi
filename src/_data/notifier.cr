@@ -17,7 +17,7 @@ module CV::Notifier
   end
 
   private def liking_content(target : Rpnode, byuser : String) : String
-    rproot = Rproot.find!(id: target.muhead_id)
+    rproot = Rproot.find!(id: target.rproot_id)
     <<-HTML
     <p><a href="/@#{byuser}" class="cv-user">#{byuser}</a> đã thích bài viết của bạn
     trong #{rproot._type} <a href="#{rproot._link}#r#{target.id}">#{rproot._name}</a>.</p>
@@ -56,7 +56,7 @@ module CV::Notifier
     return if repl.touser_id == 0 || repl.touser_id == repl.viuser_id
     return if Unotif.find(:get_replied, repl.id, repl.viuser_id)
 
-    rproot = Rproot.find!(id: repl.muhead_id)
+    rproot = Rproot.find!(id: repl.rproot_id)
     byuser = Viuser.get_uname(id: repl.viuser_id)
 
     action = reply_action(rproot, prev_is_repl: repl.torepl_id > 0)
@@ -96,13 +96,13 @@ module CV::Notifier
   def on_user_tagged_in_reply(repl : Rpnode)
     return if repl.tagged_ids.empty?
 
-    muhead = Rproot.find!(id: repl.muhead_id)
+    rproot = Rproot.find!(id: repl.rproot_id)
     byuser = Viuser.get_uname(id: repl.viuser_id)
 
-    link_to = "#{muhead._link}#r#{repl.id}"
+    link_to = "#{rproot._link}#r#{repl.id}"
     content = <<-HTML
       <p><a href="/@#{byuser}" class="cv-user">#{byuser}</a> đã nhắc đến tên bạn
-      tại một bài viết trong #{muhead._type} <a href="#{link_to}">#{muhead._name}</a>.</p>
+      tại một bài viết trong #{rproot._type} <a href="#{link_to}">#{rproot._name}</a>.</p>
     HTML
 
     repl.tagged_ids.each do |tagged_id|

@@ -11,7 +11,7 @@ struct CV::RpnodeView
       jb.field "id", @data.id
 
       jb.field "user_id", @data.viuser_id
-      jb.field "head_id", @data.muhead_id
+      jb.field "head_id", @data.rproot_id
 
       jb.field "touser_id", @data.touser_id
       jb.field "torepl_id", @data.torepl_id
@@ -21,6 +21,7 @@ struct CV::RpnodeView
 
       jb.field "ctime", @data.created_at.to_unix
       jb.field "utime", @data.utime
+      jb.field "dtime", @data.deleted_at.try(&.to_unix)
 
       jb.field "like_count", @data.like_count
       jb.field "repl_count", @data.repl_count

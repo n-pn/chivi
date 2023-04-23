@@ -1,16 +1,16 @@
-require "../../src/_data/dboard/murepl"
 require "../../src/_data/dboard/dtopic"
-require "../../src/_data/dboard/muhead"
+require "../../src/_data/dboard/rproot"
+require "../../src/_data/dboard/rpnode"
 
 # Log.setup :debug
 
 CV::Dtopic.query.order_by(id: :asc).each do |dtopic|
   puts "#{dtopic.id}-#{dtopic.title}"
-  muhead = CV::Rproot.find!("gd:#{dtopic.id}")
+  rproot = CV::Rproot.find!("gd:#{dtopic.id}")
 
-  PGDB.query <<-SQL, muhead.viuser_id, muhead.id
-    update murepls set touser_id = $1
-    where torepl_id = 0 and muhead_id = $2
+  PGDB.query <<-SQL, rproot.viuser_id, rproot.id
+    update rproots set touser_id = $1
+    where torepl_id = 0 and rproot_id = $2
   SQL
   # CV::Rproot.new(dtopic).upsert!
 end

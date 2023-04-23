@@ -47,7 +47,7 @@
     await load_cvpost(post_api_url)
   }
 
-  const on_murepl_form = async () => {
+  const on_rpnode_form = async () => {
     await invalidate(list_api_url)
     await load_repls(list_api_url)
   }
@@ -68,7 +68,7 @@
     <DtopicFull {...cvpost} {on_cvpost_form} />
   </section>
   <section class="posts">
-    <RpnodeList {thread} {rplist} {on_murepl_form} />
+    <RpnodeList {thread} {rplist} {on_rpnode_form} />
   </section>
 {:else}
   Chưa chọn chủ đề

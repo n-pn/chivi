@@ -25,7 +25,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
     pg_no, limit, offset = _paginate(min: 50, max: 2000)
 
     repls = Rpnode.query.where("id > 0").sort_by(sort)
-    repls.where("muhead_id = (select id from muheads where urn = ?)", urn)
+    repls.where("rproot_id = (select id from rproots where urn = ?)", urn)
     repls.limit(limit).offset(offset)
 
     render_repls(repls, pg_no, multi_heads: false)
@@ -65,9 +65,9 @@ class CV::RpnodeCtrl < CV::BaseCtrl
     if repls.empty?
       [] of Rproot
     elsif multi_heads
-      Rproot.glob(repls.map(&.muhead_id).uniq!)
+      Rproot.glob(repls.map(&.rproot_id).uniq!)
     else
-      [Rproot.find!(repls.first!.muhead_id)]
+      [Rproot.find!(repls.first!.rproot_id)]
     end
   end
 
@@ -77,7 +77,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
 
     rpnode = Rpnode.new({
       viuser_id: _vu_id,
-      muhead_id: Rproot.init!(form.muhead).id,
+      rproot_id: Rproot.init!(form.rproot).id,
       touser_id: form.touser,
       torepl_id: form.torepl,
     })
@@ -85,7 +85,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
     rpnode.level = form.level
     rpnode.update_content!(form.itext, persist: true)
 
-    spawn Rproot.bump_on_new_reply!(rpnode.muhead_id)
+    spawn Rproot.bump_on_new_reply!(rpnode.rproot_id)
     spawn Notifier.on_user_making_reply(rpnode)
     spawn Notifier.on_user_tagged_in_reply(rpnode)
 
@@ -100,7 +100,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
       id:    rpnode.id,
       itext: rpnode.itext,
 
-      muhead: "id:#{rpnode.muhead_id}",
+      rproot: "id:#{rpnode.rproot_id}",
       touser: rpnode.touser_id,
       torepl: rpnode.torepl_id,
     }
@@ -121,15 +121,10 @@ class CV::RpnodeCtrl < CV::BaseCtrl
 
   @[AC::Route::DELETE("/:repl_id")]
   def delete(repl_id : Int32)
-    murepl = Rpnode.load!(repl_id)
-    guard_owner murepl.viuser_id, 0, "xoá bình luận"
+    rpnode = Rpnode.load!(repl_id)
+    guard_owner rpnode.viuser_id, 0, "xoá bình luận"
 
-    murepl.update({
-      id:         -murepl.id,
-      deleted_at: Time.utc,
-      deleted_by: _vu_id,
-    })
-
+    rpnode.update({deleted_at: Time.utc, deleted_by: _vu_id})
     render json: {msg: "bình luận đã bị xoá"}
   end
 end

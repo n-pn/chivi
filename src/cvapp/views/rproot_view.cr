@@ -29,10 +29,6 @@ struct CV::RprootView
         jb.field "repl_count", @data.repl_count
         jb.field "created_at", @data.created_at.to_unix
       end
-
-      if @mode.full?
-        jb.field "desc", @data._desc
-      end
     }
   end
 

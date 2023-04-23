@@ -6,7 +6,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: muhead = `vc:${data.crit.id}`
+  $: rproot = `vc:${data.crit.id}`
   $: touser = data.crit.user_id
 </script>
 
@@ -20,7 +20,7 @@
 
   <section id="repls" class="replies">
     <h3 class="repls-head">Bình luận đánh giá ({data.crit.repl_count}):</h3>
-    <RpnodeList rplist={data.rplist} {muhead} {touser} fluid={true} />
+    <RpnodeList rplist={data.rplist} {rproot} {touser} fluid={true} />
   </section>
 </article>
 

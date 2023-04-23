@@ -1,5 +1,5 @@
 UPDATE
-  murepls
+  rpnodes
 SET
   like_count =(
     SELECT
@@ -7,7 +7,7 @@ SET
     FROM
       memoirs
     WHERE
-      target_id = murepls.id
+      target_id = rpnodes.id
       AND target_type = 11
       AND liked_at > 0);
 

@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-  export let muhead = ''
+  export let rproot = ''
 
   export let repls: CV.Rpnode[]
   export let users: Record<number, CV.Viuser>
@@ -23,7 +23,7 @@
 
     {#if repl.repls && repl.repls.length > 0}
       <svelte:self
-        {muhead}
+        {rproot}
         repls={repl.repls}
         {users}
         {memos}

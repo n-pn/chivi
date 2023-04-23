@@ -4,10 +4,10 @@ import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 export const load = (async ({ url, fetch, params, parent }) => {
-  const muhead = `wn:${parseInt(params.wn, 10)}`
+  const rproot = `wn:${parseInt(params.wn, 10)}`
 
   const sort = url.searchParams.get('sort') || '-id'
-  const path = `/_db/mrepls/thread/${muhead}?sort=${sort}`
+  const path = `/_db/mrepls/thread/${rproot}?sort=${sort}`
 
   const rplist = await api_get<CV.Rplist>(path, fetch)
 
@@ -22,5 +22,5 @@ export const load = (async ({ url, fetch, params, parent }) => {
       nav_link('bants', 'Thảo luận', 'message'),
     ],
   }
-  return { rplist, muhead, sort, _meta }
+  return { rplist, rproot, sort, _meta }
 }) satisfies PageLoad
