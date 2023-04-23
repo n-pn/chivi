@@ -43,6 +43,7 @@ class CV::VilistCtrl < CV::BaseCtrl
            lb : String? = nil)
     vilist = load_list(list_id)
     viuser = Viuser.load!(vilist.viuser_id)
+    memoir = Memoir.load(_vu_id, :vilist, vilist.id)
 
     pg_no, limit, offset = _paginate(max: 20)
     crits = Vicrit.sort_by(sort)
@@ -52,16 +53,18 @@ class CV::VilistCtrl < CV::BaseCtrl
     crits.where("stars <= ?", smax) if smax < 5
 
     crits.limit(limit).offset(offset).to_a
-
+    memos = Memoir.glob(_vu_id, :vicrit, crits.map(&.id.to_i))
     books = Wninfo.preload(crits.map(&.nvinfo_id))
 
     render json: {
       list: VilistView.new(vilist, mode: :full),
       user: ViuserView.new(viuser, full: false),
+      memo: MemoirView.new(memoir),
 
       books: {
         crits: VicritView.as_list(crits, false),
         books: WninfoView.as_hash(books),
+        memos: MemoirView.as_hash(memos),
 
         pgidx: pg_no,
         pgmax: _pgidx(vilist.book_count, limit),

@@ -41,6 +41,9 @@ class M1::DbDefn
 
   SPLIT = 'ǀ'
 
+  def initialize
+  end
+
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "id", self.id
