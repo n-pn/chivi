@@ -1,7 +1,7 @@
 require "crorm/model"
 require "crorm/sqlite3"
 
-class WN::ChTextEdit
+struct WN::ChTextEdit
   include Crorm::Model
   @@table = "text_edits"
 
@@ -19,7 +19,10 @@ class WN::ChTextEdit
   field ctime : Int64 = Time.utc.to_unix
   field _flag : Int32 = 0
 
-  def save!(repo : SQ3::Repo = self.class.repo)
+  def initialize(@sname, @s_bid, @s_cid, @ch_no, @patch, @uname)
+  end
+
+  def create!(repo : SQ3::Repo = self.class.repo)
     fields, values = db_changes()
     repo.insert(@@table, fields, values)
   end

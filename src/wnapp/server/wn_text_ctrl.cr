@@ -94,11 +94,11 @@ class WN::TextCtrl < AC::Base
     wn_seed.mkdirs!
 
     spawn do
-      ChTextEdit.new({
+      ChTextEdit.new(
         sname: wn_seed.sname, s_bid: wn_seed.s_bid,
         s_cid: wn_chap.s_cid, ch_no: wn_chap.ch_no,
         patch: form.ztext, uname: _uname,
-      }).save!
+      ).create!
     rescue ex
       Log.error(exception: ex) { ex.message.colorize.red }
     end
@@ -137,12 +137,12 @@ class WN::TextCtrl < AC::Base
     wn_chap = get_wn_chap(wn_seed, ch_no)
 
     spawn do
-      ChTextEdit.new({
+      ChLineEdit.new(
         sname: wn_seed.sname, s_bid: wn_seed.s_bid,
         s_cid: wn_chap.s_cid, ch_no: wn_chap.ch_no,
         part_no: form.part_no, line_no: form.line_no,
         patch: form.edit, uname: _uname,
-      }).save!
+      ).create!
     rescue ex
       Log.error(exception: ex) { ex.message.colorize.red }
     end
