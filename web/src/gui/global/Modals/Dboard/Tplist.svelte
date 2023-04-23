@@ -11,8 +11,6 @@
 </script>
 
 <script lang="ts">
-  import { invalidate } from '$app/navigation'
-
   import DtopicFull from '$gui/parts/dboard/DtopicFull.svelte'
   import RpnodeList from '$gui/parts/dboard/RpnodeList.svelte'
 

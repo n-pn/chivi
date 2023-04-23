@@ -3,6 +3,7 @@
   import { dlabels } from '$lib/constants'
 
   import { dtlist_data, dboard_ctrl, get_user } from '$lib/stores'
+  const _user = get_user()
 
   import DtopicCard from './DtopicCard.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
@@ -14,8 +15,6 @@
 
   export let tlabel = $page.url.searchParams.get('lb')
   export let _mode = 0
-
-  const _user = get_user()
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
 
@@ -61,9 +60,9 @@
 </topic-list>
 
 {#if dtlist.pgmax > 1}
-  <nav>
+  <footer>
     <Mpager {pager} pgidx={dtlist.pgidx} pgmax={dtlist.pgmax} {on_navigate} />
-  </nav>
+  </footer>
 {/if}
 
 <board-foot>
@@ -83,7 +82,7 @@
     margin-bottom: 0.75rem;
   }
 
-  .pagi {
+  .footer {
     padding: 0.75rem 0;
     @include border($loc: bottom);
   }

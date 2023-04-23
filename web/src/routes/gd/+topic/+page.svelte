@@ -29,14 +29,14 @@
 
   const on_edit = data.dtform.id != 0
   const [action, method] = on_edit
-    ? [`/_db/topics?b_id=${data.dboard.id}`, 'POST']
-    : [`/_db/topics/${data.dtform.id}`, 'PATCH']
+    ? [`/_db/topics/${data.dtform.id}`, 'PATCH']
+    : [`/_db/topics?b_id=${data.dboard.id}`, 'POST']
 
   const validate = ({ title, btext }: CV.DtopicForm) => {
-    if (title.length < 4) return 'Độ dài của chủ đề phải dài hơn 4 ký tự'
     if (title.length > 200) return 'Độ dài của chủ đề phải nhỏ hơn 200 ký tự'
 
-    if (btext.length < 4) return 'Độ dài của nội dung phải dài hơn 4 ký tự'
+    if (title.length < 4) return 'Độ dài của chủ đề phải dài hơn 3 ký tự'
+    if (btext.length < 4) return 'Độ dài của nội dung phải dài hơn 3 ký tự'
 
     return ''
   }
@@ -50,8 +50,8 @@
     if (error) return
 
     try {
-      const dtopic = (await api_call(action, data.dtform, method)) as CV.Dtopic
-      await goto(`/gd/t-${dtopic.id}-${dtopic.tslug}`)
+      const { id, tslug } = await api_call(action, data.dtform, method)
+      await goto(`/gd/t-${id}-${tslug}`)
     } catch (ex) {
       error = ex.body?.message || ex.message
     }
