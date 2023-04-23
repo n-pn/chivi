@@ -155,6 +155,17 @@ class CV::VicritCtrl < CV::BaseCtrl
     owner_id = vicrit.viuser_id
     guard_owner owner_id, 0, "sửa đánh giá"
 
+    old_list_id = vicrit.vilist_id
+    new_list_id = form.bl_id || old_list_id
+
+    if old_list_id != new_list_id
+      spawn do
+        Vilist.dec_counter(old_list_id, "book_count")
+        Vilist.inc_counter(new_list_id, "book_count")
+      end
+    end
+
+    vicrit.vilist_id = new_list_id
     vicrit.changed_at = Time.utc
     vicrit.patch!(form.input, form.stars, form.tag_list)
 

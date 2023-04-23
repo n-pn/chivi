@@ -86,8 +86,6 @@
     const res = await fetch(url, { method: 'PUT', headers, body: input })
     const res_text = await res.text()
 
-    console.log(res_text)
-
     if (!res.ok) console.log(res_text)
     else hv_html_cache[input] = hv_html = new MtData(res_text).render_hv()
   }

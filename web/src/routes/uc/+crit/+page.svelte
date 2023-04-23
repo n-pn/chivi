@@ -210,6 +210,8 @@
       height: 2rem;
 
       background: none;
+      @include fgcolor(main);
+
       @include bdradi();
       @include border(--bd-soft);
     }
@@ -221,11 +223,13 @@
   }
 
   .input {
-    font-size: 1.1rem;
-    min-height: 7rem;
+    display: block;
     width: 100%;
+    min-height: 7rem;
+    font-size: 1.1rem;
     background: none;
     border: none;
+    @include fgcolor(main);
   }
 
   .label {

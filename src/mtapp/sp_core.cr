@@ -30,8 +30,8 @@ class MT::SpCore
 
     while index < chars.size
       term = @dict.find_best(chars, start: index)
-      index &+= term.len
       output << SpNode.new(term, index)
+      index &+= term.len
     end
 
     output

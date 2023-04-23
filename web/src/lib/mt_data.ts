@@ -146,7 +146,7 @@ export default class MtData {
   render_hv() {
     let res = ''
 
-    for (const [val, dic, idx] of this.data) {
+    for (const [val, dic, idx, len] of this.data) {
       if (val == ' ') {
         res += ' '
         continue
