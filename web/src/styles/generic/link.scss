@@ -8,10 +8,10 @@ a[class] {
 
 a:not([class]),
 .m-link {
-  color: var(--color-link);
+  color: var(--color-link, #0e97ec);
   text-decoration: none;
 
   &:hover {
-    text-decoration: underline;
+    border-bottom: 1px solid #50b7f7;
   }
 }

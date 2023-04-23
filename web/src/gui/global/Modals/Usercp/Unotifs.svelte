@@ -71,16 +71,6 @@
     &._fresh {
       @include bgcolor(warning, 5, 1);
     }
-
-    :global(a) {
-      @include fgcolor(primary, 5);
-      text-decoration: none;
-
-      &:hover {
-        // @include fgcolor(primary, 4);
-        @include border(primary, 4, $loc: bottom);
-      }
-    }
   }
 
   .link {
