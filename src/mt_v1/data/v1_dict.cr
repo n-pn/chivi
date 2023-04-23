@@ -3,6 +3,8 @@ require "crorm/sqlite3"
 
 class M1::DbDict
   include Crorm::Model
+  include DB::Serializable::NonStrict
+
   @@table = "dicts"
 
   field id : Int32, primary: true

@@ -17,7 +17,12 @@
   import RpnodeList from '$gui/parts/dboard/RpnodeList.svelte'
 
   let cvpost: CV.DtopicFull = {
-    post: { dboard: { id: 0, bname: '', bslug: '' }, bhtml: '', labels: [] },
+    post: {
+      dboard: { id: 0, bname: '', bslug: '' },
+      id: 0,
+      bhtml: '',
+      labels: [],
+    },
     user: {},
     memo: {},
   }
@@ -36,21 +41,8 @@
   $: if ($popups.dboard && $tplist_data.topic) load_cvpost(post_api_url)
   $: if (cvpost) load_repls(list_api_url)
 
-  $: thread = {
-    to: cvpost.post.user_id,
-    id: cvpost.post.id,
-    mu: 0,
-  }
-
-  const on_cvpost_form = async () => {
-    await invalidate(post_api_url)
-    await load_cvpost(post_api_url)
-  }
-
-  const on_rpnode_form = async () => {
-    await invalidate(list_api_url)
-    await load_repls(list_api_url)
-  }
+  $: touser = cvpost.post.id
+  $: rproot = `gd:${cvpost.post.user_id}`
 
   async function load_cvpost(url: string) {
     cvpost = await fetch(url).then((r) => r.json())
@@ -65,10 +57,10 @@
 
 {#if cvpost}
   <section class="topic">
-    <DtopicFull {...cvpost} {on_cvpost_form} />
+    <DtopicFull {...cvpost} />
   </section>
   <section class="posts">
-    <RpnodeList {thread} {rplist} {on_rpnode_form} />
+    <RpnodeList {rproot} {touser} {rplist} />
   </section>
 {:else}
   Chưa chọn chủ đề

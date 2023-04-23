@@ -4,7 +4,6 @@
 
   export let rproot = ''
   export let touser = 0
-
   export let rplist: CV.Rplist
 
   export let on_rpnode_form = (new_repl?: CV.Rpnode) => {

@@ -222,11 +222,15 @@ class CV::Rproot
       SQL
   end
 
-  def self.find!(urn : String)
-    @@db.query_one <<-SQL, urn, as: Rproot
+  def self.find(urn : String)
+    @@db.query_one? <<-SQL, urn, as: Rproot
       select * from #{@@table}
       where urn = $1 limit 1
       SQL
+  end
+
+  def self.find!(urn : String)
+    find!(urn) || raise "Thread không tồn tại!"
   end
 
   def self.bump_on_new_reply!(id : Int32, last_repl_at : Time = Time.utc)
@@ -239,15 +243,18 @@ class CV::Rproot
   end
 
   def self.init!(urn : String)
-    type, o_id, *rest = urn.split(':')
+    find(urn) || begin
+      Log.info { urn.colorize.red }
+      type, o_id = urn.split(':')
 
-    case type
-    when "id" then find!(o_id.to_i)
-    when "gd" then new(Dtopic.find!(o_id.to_i)).upsert!
-    when "wn" then new(Wninfo.load!(o_id.to_i)).upsert!
-    when "vc" then new(Vicrit.load!(o_id.to_i)).upsert!
-    when "vl" then new(Vilist.load!(o_id.to_i)).upsert!
-    else           raise "unsuported urn: #{urn}"
+      case type
+      when "id" then find!(o_id.to_i)
+      when "gd" then new(Dtopic.find!(o_id.to_i)).upsert!
+      when "wn" then new(Wninfo.load!(o_id.to_i)).upsert!
+      when "vc" then new(Vicrit.load!(o_id.to_i)).upsert!
+      when "vl" then new(Vilist.load!(o_id.to_i)).upsert!
+      else           raise "unsuported urn: #{urn}"
+      end
     end
   end
 

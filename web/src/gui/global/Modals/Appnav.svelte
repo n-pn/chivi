@@ -105,9 +105,10 @@
 
   const head_navs = [
     ['/sp/qtran', 'bolt', 'Dịch nhanh'],
+    ['/mt/dicts', 'package', 'Từ điển'],
     ['/uc', 'stars', 'Đánh giá'],
     ['/ul', 'bookmarks', 'Thư đơn'],
-    ['/mt/dicts', 'package', 'Từ điển'],
+    ['/gd', 'messages', 'Diễn đàn'],
   ]
 </script>
 

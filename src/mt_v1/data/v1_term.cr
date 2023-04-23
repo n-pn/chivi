@@ -3,7 +3,9 @@ require "crorm/sqlite3"
 
 class M1::DbTerm
   include Crorm::Model
-  @@table = "terms"
+  include DB::Serializable::NonStrict
+
+  class_getter table : String = "terms"
 
   def self.repo(name : String = "_main")
     SQ3::Repo.new(db_path(name), init_sql)

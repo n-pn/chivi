@@ -24,7 +24,9 @@ export const load = (async ({ fetch, params: { crit } }) => {
     left_nav: [
       home_nav('ts'),
       nav_link('/uc', 'Đánh giá truyện', 'stars', { show: 'tm' }),
-      nav_link(crit, `[@${data.user.uname}]`, null, { kind: 'zseed' }),
+      nav_link('/uc/v' + crit, `[@${data.user.uname}]`, null, {
+        kind: 'zseed',
+      }),
     ],
     right_nav: [nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' })],
   }
