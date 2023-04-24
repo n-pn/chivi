@@ -59,12 +59,16 @@ module CV::Notifier
     rproot = Rproot.find!(id: repl.rproot_id)
     byuser = Viuser.get_uname(id: repl.viuser_id)
 
-    action = reply_action(rproot, prev_is_repl: repl.torepl_id > 0)
+    kind = Rproot::Kind.new(rproot.kind)
+    if repl.torepl_id > 0
+      context = "phản hồi bình luận của bạn trong #{kind.vstr}"
+    else
+      context = "thêm bình luận mới trong #{kind.vstr}"
+    end
 
-    link_to = "#{rproot._link}#r#{repl.id}"
     content = <<-HTML
-      <p><a href="/@#{byuser}" class="cv-user">#{byuser}</a> đã #{action}
-      <a href="#{link_to}">#{rproot._name}</a>.</p>
+      <p><a href="/@#{byuser}" class="cv-user">#{byuser}</a> đã #{context}
+      <a href="#{rproot._link}#r#{repl.id}">#{rproot._name}</a>.</p>
       HTML
 
     Unotif.new(
@@ -74,20 +78,13 @@ module CV::Notifier
     ).create!
   end
 
-  private def reply_action(rproot : Rproot, prev_is_repl = false)
-    case
-    when prev_is_repl
-      "phản hồi bình luận của bạn trong #{rproot._type}"
-    when rproot.urn.starts_with?("gd")
-      "thêm bình luận mới trong chủ đề bạn tạo"
-    when rproot.urn.starts_with?("vc")
-      "thêm bình luận mới trong đánh giá truyện của bạn"
-    when rproot.urn.starts_with?("vl")
-      "thêm bình luận mới trong thư đơn của bạn"
-    when rproot.urn.starts_with?("vu")
-      "thêm bình luận mới trên trang cá nhân của bạn"
-    else
-      "thêm bình luận mới trong #{rproot._type}"
+  private def reply_action(rproot : Rproot, is_repl = false)
+    case kind
+    when .dtopic? then "thêm bình luận mới trong chủ đề bạn tạo"
+    when .vicrit? then "thêm bình luận mới trong đánh giá truyện của bạn"
+    when .vilist? then "thêm bình luận mới trong thư đơn của bạn"
+    when .viuser? then "thêm bình luận mới trên trang cá nhân của bạn"
+    else               "thêm bình luận mới trong #{kind.vstr}"
     end
   end
 

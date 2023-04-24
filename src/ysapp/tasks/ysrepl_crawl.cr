@@ -58,8 +58,7 @@ class YS::CrawlYslistByUser < CrawlTask
         )
       end
 
-      expiry = pg_no * (pg_no - 1) // 2 + 1
-      queue.reject!(&.existed?(expiry.days))
+      queue.reject!(&.existed?(3.months))
       crawler.crawl!(queue)
     end
   end

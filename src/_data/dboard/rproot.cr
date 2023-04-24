@@ -20,7 +20,7 @@ class CV::Rproot
 
     Author = 200
 
-    def to_vstr
+    def vstr
       case self
       in .dtopic? then "chủ đề"
       in .wninfo? then "bình luận truyện"
@@ -31,6 +31,10 @@ class CV::Rproot
       in .viuser? then "trang người dùng"
       in .author? then "trang tác giả"
       end
+    end
+
+    def self.value(kind : self)
+      kind.value
     end
   end
 
@@ -43,7 +47,7 @@ class CV::Rproot
   field id : Int32 = 0, primary: true
 
   field kind : Int16 = 0_i16
-  field pkey : String = ""
+  field ukey : String = ""
 
   field urn : String = ""
 
@@ -70,20 +74,17 @@ class CV::Rproot
   field deleted_by : Int32? = nil
 
   def initialize(dtopic : Dtopic)
-    @urn = "gd:#{dtopic.id}"
-
     @viuser_id = dtopic.viuser_id
     @dboard_id = dtopic.nvinfo_id
 
-    @kind = Kind::Dtopic.value
-    @pkey = "#{dtopic.id}"
+    @kind = Kind.value(:dtopic)
+    @ukey = "#{dtopic.id}"
 
     @_type = "chủ đề"
     @_link = "/gd/t-#{dtopic.id}-#{dtopic.tslug}"
     @_name = dtopic.title
     @_desc = dtopic.brief
 
-    @repl_count = 0
     @last_seen_at = @last_repl_at = dtopic.updated_at
 
     @created_at = dtopic.created_at
@@ -91,13 +92,11 @@ class CV::Rproot
   end
 
   def initialize(wninfo : Wninfo)
-    @urn = "wn:#{wninfo.id}"
-
     @viuser_id = 1
     @dboard_id = wninfo.id
 
     @kind = Kind::Wninfo.value
-    @pkey = "#{wninfo.id}"
+    @ukey = "#{wninfo.id}"
 
     @_type = "bình luận truyện"
     @_link = "/wn/#{wninfo.id}-#{wninfo.bslug}/bants"
@@ -112,13 +111,11 @@ class CV::Rproot
   end
 
   def initialize(vicrit : Vicrit)
-    @urn = "vc:#{vicrit.id}"
-
     @viuser_id = vicrit.viuser_id
     @dboard_id = vicrit.nvinfo_id
 
     @kind = Kind::Vicrit.value
-    @pkey = "#{vicrit.id}"
+    @ukey = "#{vicrit.id}"
 
     @_type = "đánh giá truyện"
     @_link = "/uc/v#{vicrit.id}"
@@ -132,13 +129,11 @@ class CV::Rproot
   end
 
   def initialize(vilist : Vilist)
-    @urn = "vl:#{vilist.id}"
-
     @viuser_id = vilist.viuser_id
     @dboard_id = 0
 
     @kind = Kind::Vilist.value
-    @pkey = "#{vilist.id}"
+    @ukey = "#{vilist.id}"
 
     @_type = "thư đơn"
     @_link = "/ul/v#{vilist.id}-#{vilist.tslug}"
@@ -152,31 +147,29 @@ class CV::Rproot
   end
 
   def initialize(wn_id : Int32, ch_no : Int32, sname : String)
-    @urn = "ch:#{wn_id}:#{ch_no}:#{sname}"
+    @kind = Kind::Wnchap.value
+    @ukey = "#{wn_id}:#{ch_no}:#{sname}"
 
     @viuser_id = 1
     @dboard_id = wn_id
 
-    @kind = Kind::Wnchap.value
-    @pkey = "#{wn_id}:#{ch_no}:#{sname}"
-
     @_type = "bình luận chương"
-    @_link = "/ul/v#{vilist.id}-#{vilist.tslug}"
+    @_link = "/gd/ch#{wn_id}-#{sname}-#{ch_no}"
 
-    @_name = vilist.title
-    @_desc = TextUtil.truncate(vilist.dtext, 100)
+    @_name = "#{sname}-#{ch_no}"
+    @_desc = ""
   end
 
   # def gen_link
   #   case Kind.new(@kind)
-  #   in .dtopic? then "/gd/t-#{@pkey}-#{@slug}"
-  #   in .wninfo? then "/wn/#{@pkey}-#{@slug}/bants"
-  #   in .wnseed? then "/wn/#{@pkey}-#{@slug}/bants/"
-  #   in .wnchap? then "bình luận chương"
-  #   in .vilist? then "thư đơn"
-  #   in .vicrit? then "đánh giá truyện"
-  #   in .viuser? then "/@#{@uslug}"
-  #   in .author? then "/wn/=#{@slug}"
+  #   in .dtopic? then "/gd/t-#{@ukey}-#{@slug}"
+  #   in .wninfo? then "/gd/wn#{@ukey}"
+  #   in .wnseed? then "/gd/ws#{@ukey}"
+  #   in .wnchap? then "/gd/ch#{@ukey}"
+  #   in .vilist? then "/gd/vl#{@ukey}"
+  #   in .vicrit? then "/gd/vc#{@ukey}"
+  #   in .viuser? then "/gd/vu#{@ukey}"
+  #   in .author? then "/gd/wa{@slug}"
   #   end
   # end
 
@@ -186,9 +179,13 @@ class CV::Rproot
     @last_repl_at = Time.unix(repls.max_of(&.utime))
   end
 
+  def root_id
+    "#{Kind.from(@kind).to_s.downcase}/#{@ukey}"
+  end
+
   def upsert!(db = @@db)
     insert_fields = %w{
-      urn viuser_id dboard_id
+      viuser_id dboard_id kind ukey
       _type _name _link _desc
       repl_count last_seen_at last_repl_at
       created_at updated_at}
@@ -207,6 +204,7 @@ class CV::Rproot
 
     db.query_one upsert_stmt,
       @urn, @viuser_id, @dboard_id,
+      @kind, @ukey,
       @_type, @_name, @_link, @_desc,
       @repl_count, @last_seen_at, @last_repl_at,
       @created_at, @updated_at,
@@ -244,7 +242,6 @@ class CV::Rproot
 
   def self.init!(urn : String)
     find(urn) || begin
-      Log.info { urn.colorize.red }
       type, o_id = urn.split(':')
 
       case type

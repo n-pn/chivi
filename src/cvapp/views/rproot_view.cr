@@ -15,7 +15,7 @@ struct CV::RprootView
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "id", @data.id
-      jb.field "urn", @data.urn
+      jb.field "root", @data.root_id
 
       if @mode.head?
         jb.field "link", @data._link
