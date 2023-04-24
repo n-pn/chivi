@@ -36,7 +36,6 @@
     cursor: pointer;
     padding: 0 0.5rem;
     height: $height;
-    // line-height: $height;
 
     @include fgcolor(neutral, 0);
     @include bdradi();
@@ -45,10 +44,6 @@
     :global(.__left) > &:last-child,
     &:hover {
       @include bgcolor(primary, 6);
-    }
-
-    &[data-kind='brand'] > span {
-      @include bps(display, none, $ts: inline-flex);
     }
 
     &:disabled,
@@ -82,11 +77,11 @@
     font-weight: 500;
     font-size: rem(15px);
 
-    [data-show='pm'] > & {
+    :global([data-show='pm']) > & {
       @include bps(display, none, $pm: inline);
     }
 
-    [data-show='pl'] > & {
+    :global([data-show='pl']) > & {
       @include bps(display, none, $pl: inline);
     }
 
@@ -102,19 +97,19 @@
       @include bps(display, none, $tl: inline);
     }
 
-    [data-kind='brand'] > & {
+    :global([data-kind='brand']) > & {
       text-transform: uppercase;
       font-weight: 500;
       font-size: rem(17px);
       letter-spacing: 0.1em;
     }
 
-    [data-kind='title'] > & {
+    :global([data-kind='title']) > & {
       @include clamp($width: null);
       @include bps(max-width, 25vw, $tl: 12rem);
     }
 
-    [data-kind='zseed'] > & {
+    :global([data-kind='zseed']) > & {
       @include clamp($width: null);
 
       max-width: 25vw;
@@ -122,7 +117,7 @@
       font-size: 0.85em;
     }
 
-    [data-kind='uname'] > & {
+    :global([data-kind='uname']) > & {
       @include clamp($width: null);
       max-width: 4.5rem;
     }

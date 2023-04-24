@@ -1,11 +1,29 @@
 <script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
-  // import YscritCard from '$gui/parts/review/YscritCard.svelte'
-  // import YslistCard from '$gui/parts/review/YslistCard.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
+
+  $: ({ books } = data)
+
+  const links = [
+    ['/wn', 'books', 'Thư viện'],
+    ['/uc', 'stars', 'Đánh giá'],
+    ['/ul', 'bookmarks', 'Thư đơn'],
+    ['/gd', 'message', 'Diễn đàn'],
+    ['/sp/qtran', 'bolt', 'Dịch nhanh'],
+  ]
 </script>
+
+<nav class="nav-list">
+  {#each links as [href, icon, text]}
+    <a {href} class="nav-link">
+      <SIcon class="show-ts" name={icon} />
+      <span>{text}</span>
+    </a>
+  {/each}
+</nav>
 
 <section class="list">
   <header class="head">
@@ -13,7 +31,7 @@
     <a class="link" href="/wn">Xem tất cả</a>
   </header>
 
-  <WninfoList books={data.books.recent} />
+  <WninfoList books={books.recent} />
 </section>
 
 <section class="list">
@@ -21,7 +39,7 @@
     <h3 class="text">Truyện mới cập nhật</h3>
     <a class="link" href="/wn?order=update">Xem tất cả</a>
   </header>
-  <WninfoList books={data.books.update} />
+  <WninfoList books={books.update} />
 </section>
 
 <section class="list">
@@ -30,7 +48,7 @@
     <a class="link" href="/wn?order=weight">Xem tất cả</a>
   </header>
 
-  <WninfoList books={data.books.weight} />
+  <WninfoList books={books.weight} />
 </section>
 
 <!-- <section class="list">
@@ -60,8 +78,12 @@
   </div>
 </section> -->
 <style lang="scss">
-  .list {
+  .nav-link {
     margin-top: 1.5rem;
+  }
+
+  .list {
+    margin-top: 1rem;
     margin-bottom: 0.75rem;
   }
 

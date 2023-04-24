@@ -32,7 +32,21 @@
     ['hk2s', 'Hồng Kông sang Giản'],
     ['tw2s', 'Đài Loan sang Giản'],
   ]
+
+  const links = [
+    ['/sp/qtran', 'bolt', 'Dịch nhanh'],
+    ['/sp/opencc', 'arrows-shuffle', 'Phồn -> Giản'],
+  ]
 </script>
+
+<nav class="nav-list">
+  {#each links as [href, icon, text]}
+    <a {href} class="nav-link" class:_active={href == '/sp/opencc'}>
+      <SIcon class="show-ts" name={icon} />
+      <span>{text}</span>
+    </a>
+  {/each}
+</nav>
 
 <article class="article island">
   <header class="head">
@@ -83,8 +97,9 @@
 </article>
 
 <style lang="scss">
+  .nav-link,
   .article {
-    margin-top: var(--gutter);
+    margin-top: 1rem;
   }
 
   .head {
@@ -104,6 +119,7 @@
     display: block;
     width: 100%;
     border-radius: 0;
+    height: 60vh;
     @include bdradi($loc: left);
   }
 

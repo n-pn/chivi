@@ -1,0 +1,23 @@
+@use '../essence' as *;
+
+.nav-list {
+  @include flex-ca($gap: 0.5rem);
+  @include bps(font-size, rem(13px), $pl: rem(14px), $ts: rem(15px), $tm: 1rem);
+  @include bps(line-height, 1.75rem, $pl: 2rem);
+}
+
+.nav-link {
+  @include fgcolor(tert);
+
+  padding: 0 0.75em;
+  font-weight: 500;
+
+  @include linesd(--bd-main);
+  @include bdradi();
+
+  &._active,
+  &:hover {
+    @include fgcolor(primary, 6);
+    @include linesd(primary, 5, $ndef: false);
+  }
+}

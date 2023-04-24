@@ -3,7 +3,7 @@ import { home_nav, nav_link } from '$utils/header_util'
 const _meta: App.PageMeta = {
   title: 'Dịch nhanh',
   desc: 'Dịch nhanh từ tiếng Trung sang tiếng Việt',
-  left_nav: [home_nav('tm'), nav_link('/sp/qtran', 'Dịch nhanh', 'bolt')],
+  left_nav: [home_nav('ts'), nav_link('/sp/qtran', 'Dịch nhanh', 'bolt')],
 }
 
 export async function load({ url }) {

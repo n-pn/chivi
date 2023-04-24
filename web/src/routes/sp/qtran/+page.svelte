@@ -27,36 +27,60 @@
       error = data.message
     }
   }
+  const links = [
+    ['/sp/qtran', 'bolt', 'Dịch nhanh'],
+    ['/sp/opencc', 'arrows-shuffle', 'Phồn -> Giản'],
+  ]
 </script>
 
-<div class="input">
-  <textarea
-    class="m-input"
-    lang="zh"
-    class:_error={error}
-    bind:value={data.input}
-    placeholder="Nhập dữ liệu vào đây" />
-</div>
+<nav class="nav-list">
+  {#each links as [href, icon, text]}
+    <a {href} class="nav-link" class:_active={href == '/sp/qtran'}>
+      <SIcon class="show-ts" name={icon} />
+      <span>{text}</span>
+    </a>
+  {/each}
+</nav>
 
-{#if error}
-  <div class="error">{error}</div>
-{/if}
+<article class="article island">
+  <h2>Dịch nhanh tiếng trung</h2>
 
-<Footer>
-  <div class="foot">
-    <button class="m-btn" on:click={() => (data.input = '')}>
-      <SIcon name="eraser" />
-      <span>Xoá</span>
-    </button>
-
-    <button class="m-btn _primary _fill" on:click={submit}>
-      <span>Dịch nhanh</span>
-    </button>
+  <div class="input">
+    <textarea
+      class="m-input"
+      lang="zh"
+      class:_error={error}
+      bind:value={data.input}
+      placeholder="Nhập dữ liệu vào đây" />
   </div>
-</Footer>
+
+  {#if error}
+    <div class="error">{error}</div>
+  {/if}
+
+  <Footer>
+    <div class="foot">
+      <button class="m-btn" on:click={() => (data.input = '')}>
+        <SIcon name="eraser" />
+        <span>Xoá</span>
+      </button>
+
+      <button class="m-btn _primary _fill" on:click={submit}>
+        <span>Dịch nhanh</span>
+      </button>
+    </div>
+  </Footer>
+</article>
 
 <style lang="scss">
+  .nav-link,
+  .article {
+    margin-top: 1rem;
+  }
+
   .m-input {
+    margin-top: 1rem;
+
     width: 100%;
     min-height: calc(100vh - 15.5rem);
 
