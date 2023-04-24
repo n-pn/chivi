@@ -2,6 +2,12 @@
 
 CWD=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+sudo cp -f "$CWD/workers/backup-hourly.service" /etc/systemd/system/backup-hourly.service
+sudo cp -f "$CWD/workers/backup-hourly.timer" /etc/systemd/system/backup-hourly.timer
+
+sudo cp -f "$CWD/workers/backup-daily.service" /etc/systemd/system/backup-daily.service
+sudo cp -f "$CWD/workers/backup-daily.timer" /etc/systemd/system/backup-daily.timer
+
 sudo cp -f "$CWD/workers/crawl-ysbooks.service" /etc/systemd/system/crawl-ysbooks.service
 sudo cp -f "$CWD/workers/crawl-ysbooks.timer" /etc/systemd/system/crawl-ysbooks.timer
 
@@ -20,21 +26,28 @@ sudo cp -f "$CWD/workers/crawl-yscrits-by-list.timer" /etc/systemd/system/crawl-
 sudo cp -f "$CWD/workers/crawl-yscrits-by-book.service" /etc/systemd/system/crawl-yscrits-by-book.service
 sudo cp -f "$CWD/workers/crawl-yscrits-by-book.timer" /etc/systemd/system/crawl-yscrits-by-book.timer
 
-
 sudo systemctl daemon-reload
 
+sudo systemctl enable backup-hourly.service
+sudo systemctl enable --now backup-hourly.timer
+
+sudo systemctl enable backup-daily.service
+sudo systemctl enable --now backup-daily.timer
+
 sudo systemctl enable crawl-ysbooks.service
-sudo systemctl enable crawl-ysrepls.service
-sudo systemctl enable crawl-ysusers-info.service
-
-sudo systemctl enable crawl-yscrits-by-user.service
-sudo systemctl enable crawl-yscrits-by-list.service
-sudo systemctl enable crawl-yscrits-by-book.service
-
 sudo systemctl enable --now crawl-ysbooks.timer
+
+sudo systemctl enable crawl-ysrepls.service
 sudo systemctl enable --now crawl-ysrepls.timer
+
+sudo systemctl enable crawl-ysusers-info.service
 sudo systemctl enable --now crawl-ysusers-info.timer
 
+sudo systemctl enable crawl-yscrits-by-user.service
 sudo systemctl enable --now crawl-yscrits-by-user.timer
+
+sudo systemctl enable crawl-yscrits-by-list.service
 sudo systemctl enable --now crawl-yscrits-by-list.timer
+
+sudo systemctl enable crawl-yscrits-by-book.service
 sudo systemctl enable --now crawl-yscrits-by-book.timer

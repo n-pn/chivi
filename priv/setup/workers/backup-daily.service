@@ -1,0 +1,18 @@
+[Unit]
+Description=backup daily
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+User=nipin
+
+WorkingDirectory=/www/chivi/app
+Environment=CV_ENV=production
+ExecStart=/bin/bash /www/chivi/app/run/backup-daily.sh
+
+StandardOutput=append:/www/chivi/app/log/backup-daily.log
+StandardError=append:/www/chivi/app/log/backup-daily-err.log
+
+[Install]
+WantedBy=multi-user.target

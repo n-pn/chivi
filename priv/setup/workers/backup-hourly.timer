@@ -1,0 +1,12 @@
+[Unit]
+Description=backup hourly
+
+[Timer]
+RandomizedDelaySec=600
+OnBootSec=10min
+OnUnitActiveSec=1h
+Persistent=true
+Unit=backup-hourly.service
+
+[Install]
+WantedBy=timers.target
