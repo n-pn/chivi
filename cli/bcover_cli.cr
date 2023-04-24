@@ -16,8 +16,46 @@ Dir.mkdir_p(DIR)
 
 MAX_WIDTH = 300
 
+DEAD_LINKS = {
+  "https://qidian.qpic.cn/qdbimg/1/300",
+  "http://pic.hxcdn.net/www/cover0.jpg",
+  "http://pic.hxcdn.net/www/cover1.jpg",
+}
+
+DEAD_HOSTS = {
+  "yododo",
+  "bxwxorg",
+  "biqugee",
+  "jx\\.la",
+  "zhwenpg",
+  "shubaow",
+  "chuantu",
+  "jjwxc",
+  "xhhread",
+  "kanshu",
+  "hxcdn",
+  "motie",
+  "nofff",
+  "aixs\\.org",
+  "photo\\.qq\\.com",
+  "meowlove",
+  "yuanchuangyanyi",
+  "nosdn0\\.126\\.net",
+  "voidtech\\.cn",
+  "read\\.fmx\\.cn",
+  "file\\.ihuayue\\.cn",
+  "picphotos\\.baidu\\.com",
+  "wal8\\.com",
+  "s6\\.jpg\\.cm",
+  "aliyuncs\\.com",
+  "sinaimg\\.cn",
+  "pic\\.iqy\\.ink",
+}
+
+DEAD_HOSTS_RE = Regex.new("#{DEAD_HOSTS.join('|')}")
+
 def dead_link?(link : String)
-  link =~ /bxwxorg|biqugee|jx.la|zhwenpg|shubaow/
+  DEAD_HOSTS_RE.matches?(link) || DEAD_LINKS.includes?(link)
 end
 
 def image_path(name : String, ext : String = ".jpg")
@@ -67,6 +105,9 @@ def fetch_image(link : String, name : String) : String
   end
 
   path
+rescue ex
+  puts [link, ex.message].colorize.red
+  exit 1
 end
 
 def img_to_webp(orig_path : String, webp_path : String) : Bool
@@ -96,8 +137,6 @@ end
 
 name = HashUtil.digest32(link, 8) if name.empty?
 
-puts "LINK: #{link}, NAME: #{name}"
-
 exit 1 if link.empty? || dead_link?(link)
 
 webp_path = image_path(name, ".webp")
@@ -110,4 +149,4 @@ if redo || !File.file?(webp_path)
   exit 1 unless img_to_webp(orig_path, webp_path)
 end
 
-puts "WEBP: #{name}.webp"
+puts "LINK: #{link}, WEBP: #{name}.webp".colorize.yellow
