@@ -37,7 +37,7 @@
     const base = seed_path(nvinfo.bslug, sname)
     const list = seed_path(nvinfo.bslug, sname, _pgidx(wnchap.ch_no))
 
-    const curr = `${base}/${chap_tail(ch_no, cpart, uslug, rmode)}`
+    const curr = `${base}/${chap_tail(ch_no, cpart - 1, uslug, '')}`
 
     const prev =
       cpart < 2
@@ -107,7 +107,7 @@
 
 <nav class="nav-list">
   {#each links as [href, icon, text]}
-    <a href="{paths.curr}-{href}" class="nav-link">
+    <a href="{paths.curr}{href}" class="nav-link">
       <SIcon class="show-ts" name={icon} />
       <span>{text}</span>
     </a>
