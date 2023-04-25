@@ -72,8 +72,8 @@ class CV::UsercpCtrl < CV::BaseCtrl
     end
 
     def validate!(user : Viuser)
-      raise BadRequest.new "Mật khẩu mới quá ngắn" if @newpw.size < 8
-      raise BadRequest.new "Mật khẩu cũ không đúng" unless user.authentic?(@oldpw)
+      raise BadRequest.new "Mật khẩu mới quá ngắn!" if @newpw.size < 8
+      raise BadRequest.new "Mật khẩu cũ không chính xác!" unless user.authentic?(@oldpw)
     end
   end
 

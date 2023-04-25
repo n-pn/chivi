@@ -22,7 +22,6 @@ export const load = (async ({ url: { searchParams }, fetch }) => {
   const id = searchParams.get('id')
 
   const _meta: App.PageMeta = {
-    title: 'Thêm/sửa thông tin truyện',
     left_nav: [
       nav_link('/wn', 'Thư viện', 'books', { show: 'md' }),
       nav_link('/wn/+book', 'Thêm sửa truyện', 'file-plus', { kind: 'title' }),
@@ -42,7 +41,7 @@ export const load = (async ({ url: { searchParams }, fetch }) => {
     _meta.right_nav.push(right_nav)
   }
 
-  return { id: 0, form, _meta }
+  return { id: 0, form, _meta, _title: 'Thêm/sửa thông tin truyện' }
 }) satisfies PageLoad
 
 // export function load() {

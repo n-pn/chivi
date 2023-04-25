@@ -18,7 +18,6 @@ export const load = (async ({ fetch, url }) => {
   const curr_path = `/gd/+topic${url.search}`
 
   const _meta = {
-    title: 'Tạo/sửa chủ đề',
     left_nav: [
       home_nav('tm'),
       nav_link('/gd', 'Diễn đàn', 'messages', { show: 'ts' }),
@@ -26,5 +25,5 @@ export const load = (async ({ fetch, url }) => {
     ],
     right_nav: [],
   }
-  return { dboard, dtform, _meta }
+  return { dboard, dtform, _meta, _title: 'Tạo/sửa chủ đề' }
 }) satisfies PageLoad

@@ -1,12 +1,11 @@
+import { home_nav, nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
-import { home_nav, nav_link } from '$utils/header_util'
-
 const _meta: App.PageMeta = {
-  title: 'Đăng ký',
-  left_nav: [home_nav('ps'), nav_link('signup', 'Đăng ký', 'user-plus')],
+  left_nav: [home_nav('ps'), nav_link('paswrd', 'Đổi mật khẩu', 'key')],
 }
 
 export const load = (({ url }) => {
-  return { email: url.searchParams.get('email') || '', _meta }
+  const email = url.searchParams.get('email') || ''
+  return { email, _meta, _title: 'Đổi mật khẩu' }
 }) satisfies PageLoad

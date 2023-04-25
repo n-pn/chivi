@@ -22,7 +22,6 @@ export const load = (async ({ fetch, url }) => {
 
   const curr_path = `/uc/+crit${url.search}`
   const _meta = {
-    title: 'Tạo/sửa đánh giá',
     left_nav: [
       home_nav('tm'),
       nav_link('/uc', 'Đánh giá', 'stars', { show: 'ts' }),
@@ -34,5 +33,5 @@ export const load = (async ({ fetch, url }) => {
       }),
     ],
   }
-  return { ...data, _meta }
+  return { ...data, _meta, _title: 'Tạo/sửa đánh giá' }
 }) satisfies PageLoad

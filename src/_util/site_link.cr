@@ -21,7 +21,7 @@ module SiteLink
     "paoshu8"  => "http://www.paoshu8.com/%{div}_%{bid}/",
     "duokan8"  => "http://www.duokanba.com/%{div}_%{bid}/",
     "shubaow"  => "https://www.shubaow.net/%{div}_%{bid}/",
-    "zxcs_me"  => "http://www.zxcs.me/post/%{bid}/",
+    "zxcs_me"  => "http://www.zxcs.info/post/%{bid}/",
     "biqugee"  => "https://www.biqugee.com/book/%{bid}/",
     "bxwxorg"  => "https://www.bxwxorg.com/read/%{bid}/",
     "zhwenpg"  => "https://novel.zhwenpg.com/b.php?id=%{bid}",

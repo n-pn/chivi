@@ -17,7 +17,6 @@ export const load = (async ({ fetch, url }) => {
   const data = await api_get<ListFormPage>(path, fetch)
 
   const _meta = {
-    title: 'Tạo/sửa thư đơn',
     left_nav: [
       nav_link('/ul', 'Thư đơn', 'stars', { show: 'ts' }),
       nav_link(`/ul${url.search}`, 'Thêm thư đơn', 'ballpen', { show: 'ts' }),
@@ -28,5 +27,5 @@ export const load = (async ({ fetch, url }) => {
       }),
     ],
   }
-  return { ...data, _meta }
+  return { ...data, _meta, _title: 'Tạo/sửa thư đơn' }
 }) satisfies PageLoad

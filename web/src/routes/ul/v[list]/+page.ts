@@ -22,7 +22,6 @@ export const load = (async ({ url, fetch, params }) => {
   const { id, title, tslug } = data.list
 
   const _meta: App.PageMeta = {
-    title: `Thư đơn: ${title}`,
     left_nav: [
       home_nav('', ''),
       nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' }),
@@ -31,5 +30,5 @@ export const load = (async ({ url, fetch, params }) => {
     right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
   }
 
-  return { ...data, _meta }
+  return { ...data, _meta, _title: `Thư đơn: ${title}` }
 }) satisfies PageLoad

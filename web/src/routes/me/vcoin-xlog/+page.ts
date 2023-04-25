@@ -14,7 +14,6 @@ export const load = (async ({ fetch, parent }) => {
   const data = await api_get<XlogData>(path, fetch)
 
   const _meta = {
-    title: 'Lịch sử giao dịch vcoin',
     left_nav: [
       home_nav('ps'),
       nav_link('/me', 'Cá nhân', 'user'),
@@ -25,5 +24,5 @@ export const load = (async ({ fetch, parent }) => {
     ],
   }
 
-  return { ...data, _meta }
+  return { ...data, _meta, _title: 'Lịch sử giao dịch vcoin' }
 }) satisfies PageLoad

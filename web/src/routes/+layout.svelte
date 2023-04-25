@@ -12,7 +12,6 @@
 
   import Loader from '$gui/global/Loader.svelte'
   import Header from '$gui/global/Header.svelte'
-  import Modals from '$gui/global/Modals.svelte'
   import Pledge from '$gui/global/Pledge.svelte'
   import Footer from '$gui/global/Footer.svelte'
   import { api_get } from '$lib/api_call'
@@ -78,7 +77,6 @@
 <chivi-app class="tm-{wtheme}" class:kbd-hint={kbd_hint} class:_shift={$toleft}>
   {#if $navigating}<Loader />{/if}
 
-  <Modals />
   <Header />
   <Pledge />
   <main class="app-vessel"><slot /></main>

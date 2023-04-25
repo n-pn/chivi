@@ -23,7 +23,6 @@ export const load = (async ({ fetch, url, params, depends, parent }) => {
   const { nvinfo } = await parent()
 
   const _meta = {
-    title: `Tải xuống bản dịch truyện: ${nvinfo.vtitle}`,
     desc: 'Tải xuống bản dịch bộ truyện',
     left_nav: [
       home_nav('', ''),
@@ -32,5 +31,10 @@ export const load = (async ({ fetch, url, params, depends, parent }) => {
     ],
   }
 
-  return { dlcvs, pg_no, _meta }
+  return {
+    dlcvs,
+    pg_no,
+    _meta,
+    _title: `Tải xuống bản dịch truyện: ${nvinfo.vtitle}`,
+  }
 }) satisfies PageLoad

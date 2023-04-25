@@ -5,10 +5,13 @@ require "./rpnode"
 
 class CV::Rproot
   enum Kind : Int16
-    Dtopic = 0
-    Wninfo = 1
-    Wnseed = 2
-    Wnchap = 3
+    Global = 0
+    Dtopic = 1
+
+    Author = 10
+    Wninfo = 11
+    Wnseed = 12
+    Wnchap = 13
 
     Viuser = 20
     Vilist = 21
@@ -18,23 +21,66 @@ class CV::Rproot
     Yslist = 121
     Yscrit = 122
 
-    Author = 200
-
     def vstr
       case self
-      in .dtopic? then "chủ đề"
+      in .global? then "thảo luận chung"
+      in .dtopic? then "chủ đề thảo luận"
+        ##
+      in .author? then "trang tác giả"
       in .wninfo? then "bình luận truyện"
       in .wnseed? then "bình luận nguồn"
       in .wnchap? then "bình luận chương"
+        ##
       in .vilist? then "thư đơn"
       in .vicrit? then "đánh giá truyện"
       in .viuser? then "trang người dùng"
-      in .author? then "trang tác giả"
+        ##
+      in .yslist? then "thư đơn yousuu"
+      in .yscrit? then "đánh giá yousuu"
+      in .ysuser? then "người dùng yousuu"
+        ##
+      end
+    end
+
+    def rkey(ukey : String)
+      case self
+      in Global then "xx:#{ukey}"
+      in Dtopic then "dt:#{ukey}"
+      in Wninfo then "wn:#{ukey}"
+      in Author then "na:#{ukey}"
+      in Wnseed then "ns:#{ukey}"
+      in Wnchap then "nc:#{ukey}"
+      in Vicrit then "vc:#{ukey}"
+      in Vilist then "vl:#{ukey}"
+      in Viuser then "vu:#{ukey}"
+      in Yscrit then "yc:#{ukey}"
+      in Yslist then "yl:#{ukey}"
+      in Ysuser then "yu:#{ukey}"
       end
     end
 
     def self.value(kind : self)
       kind.value
+    end
+
+    def self.parse_ruid(str : String)
+      case str
+      when "xx" then Global
+      when "gd" then Dtopic
+      when "dt" then Dtopic
+      when "wn" then Wninfo
+      when "na" then Author
+      when "ni" then Wninfo
+      when "ns" then Wnseed
+      when "nc" then Wnchap
+      when "vc" then Vicrit
+      when "vl" then Vilist
+      when "vu" then Viuser
+      when "yc" then Yscrit
+      when "yl" then Yslist
+      when "yu" then Ysuser
+      else           parse(str)
+      end
     end
   end
 
@@ -48,8 +94,6 @@ class CV::Rproot
 
   field kind : Int16 = 0_i16
   field ukey : String = ""
-
-  field urn : String = ""
 
   field viuser_id : Int32 = 0
   field dboard_id : Int32 = 0
@@ -160,18 +204,11 @@ class CV::Rproot
     @_desc = ""
   end
 
-  # def gen_link
-  #   case Kind.new(@kind)
-  #   in .dtopic? then "/gd/t-#{@ukey}-#{@slug}"
-  #   in .wninfo? then "/gd/wn#{@ukey}"
-  #   in .wnseed? then "/gd/ws#{@ukey}"
-  #   in .wnchap? then "/gd/ch#{@ukey}"
-  #   in .vilist? then "/gd/vl#{@ukey}"
-  #   in .vicrit? then "/gd/vc#{@ukey}"
-  #   in .viuser? then "/gd/vu#{@ukey}"
-  #   in .author? then "/gd/wa{@slug}"
-  #   end
-  # end
+  def initialize(kind : Kind, @ukey : String,
+                 @viuser_id = -1, @dboard_id = -1,
+                 @_type = "", @_link = "", @_name = "")
+    @kind = kind.value
+  end
 
   def fix_data
     repls = Rpnode.get_all(rproot: id)
@@ -179,8 +216,8 @@ class CV::Rproot
     @last_repl_at = Time.unix(repls.max_of(&.utime))
   end
 
-  def root_id
-    "#{Kind.from(@kind).to_s.downcase}/#{@ukey}"
+  def rkey
+    Kind.new(@kind).rkey(@ukey)
   end
 
   def upsert!(db = @@db)
@@ -190,21 +227,20 @@ class CV::Rproot
       repl_count last_seen_at last_repl_at
       created_at updated_at}
 
-    update_fields = insert_fields.reject(&.in?(%w(id urn created_at)))
+    update_fields = insert_fields.reject(&.in?(%w(id kind, ukey, created_at)))
 
     upsert_stmt = String.build do |sql|
       sql << "insert into " << @@table << '('
       insert_fields.join(sql, ", ")
       sql << ") values ("
       (1..insert_fields.size).join(sql, ", ") { |i, _| sql << '$' << i }
-      sql << ") on conflict(urn) do update set "
+      sql << ") on conflict(kind, ukey) do update set "
       update_fields.join(sql, ", ") { |field, _| sql << field << " = excluded." << field }
       sql << " returning *"
     end
 
     db.query_one upsert_stmt,
-      @urn, @viuser_id, @dboard_id,
-      @kind, @ukey,
+      @viuser_id, @dboard_id, @kind, @ukey,
       @_type, @_name, @_link, @_desc,
       @repl_count, @last_seen_at, @last_repl_at,
       @created_at, @updated_at,
@@ -220,15 +256,15 @@ class CV::Rproot
       SQL
   end
 
-  def self.find(urn : String)
-    @@db.query_one? <<-SQL, urn, as: Rproot
+  def self.find(kind : Kind, ukey : String)
+    @@db.query_one? <<-SQL, kind.value, ukey, as: Rproot
       select * from #{@@table}
-      where urn = $1 limit 1
+      where kind = $1 and ukey = $2 limit 1
       SQL
   end
 
-  def self.find!(urn : String)
-    find!(urn) || raise "Thread không tồn tại!"
+  def self.find!(kind : Kind, ukey : String)
+    find(kind, ukey) || raise "Thread không tồn tại!"
   end
 
   def self.bump_on_new_reply!(id : Int32, last_repl_at : Time = Time.utc)
@@ -240,17 +276,47 @@ class CV::Rproot
       SQL
   end
 
-  def self.init!(urn : String)
-    find(urn) || begin
-      type, o_id = urn.split(':')
+  def self.init!(ruid : String)
+    kind, ukey = ruid.split(':', 2)
+    kind = Kind.parse_ruid(kind)
 
-      case type
-      when "id" then find!(o_id.to_i)
-      when "gd" then new(Dtopic.find!(o_id.to_i)).upsert!
-      when "wn" then new(Wninfo.load!(o_id.to_i)).upsert!
-      when "vc" then new(Vicrit.load!(o_id.to_i)).upsert!
-      when "vl" then new(Vilist.load!(o_id.to_i)).upsert!
-      else           raise "unsuported urn: #{urn}"
+    find(kind, ukey) || begin
+      case kind
+      when .dtopic? then new(Dtopic.find!(ukey.to_i)).upsert!
+      when .wninfo? then new(Wninfo.load!(ukey.to_i)).upsert!
+      when .vicrit? then new(Vicrit.load!(ukey.to_i)).upsert!
+      when .vilist? then new(Vilist.load!(ukey.to_i)).upsert!
+      when .wnseed?
+        wn_id, sname = ukey.split(':', 2)
+        wninfo = Wninfo.load!(wn_id.to_i)
+
+        new(
+          kind: kind, ukey: ukey,
+          dboard_id: wninfo.id,
+          _type: "bình luận nguồn",
+          _name: "Bình luận nguồn [#{sname}] bộ truyện [#{wninfo.vname}]",
+          _link: "/wn/#{wninfo.id}-#{wninfo.bslug}/chaps/#{sname}"
+        )
+      when .wnchap?
+        wn_id, ch_no, sname = ukey.split(':', 3)
+        wninfo = Wninfo.load!(wn_id.to_i)
+
+        new(
+          kind: kind, ukey: ukey,
+          dboard_id: wninfo.id,
+          _type: "bình luận chương",
+          _name: "Bình luận chương [#{ch_no}] nguồn [#{sname}] bộ truyện [#{wninfo.vname}]",
+          _link: "/wn/#{wninfo.id}-#{wninfo.bslug}/chaps/#{sname}/#{ch_no}"
+        )
+      when .global?
+        new(
+          kind: kind, ukey: ukey,
+          _type: "thảo luận",
+          _name: "Thảo luận",
+          _link: ""
+        )
+      else
+        raise "unsuported ruid: #{ruid}"
       end
     end
   end

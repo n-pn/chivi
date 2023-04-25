@@ -13,9 +13,8 @@ export const load = (async ({ fetch, url: { searchParams } }) => {
   const { rolls, pg_no, avail } = await fetch(api_url).then((r) => r.json())
 
   const _meta = {
-    title: 'Chúc mừng năm mới!',
     left_nav: [{ text: 'Lì xì năm mới', icon: 'gift', href: '/li-xi' }],
   } satisfies App.PageMeta
 
-  return { rolls, pg_no, avail, _meta }
+  return { rolls, pg_no, avail, _meta, _title: 'Chúc mừng năm mới!' }
 }) satisfies PageLoad

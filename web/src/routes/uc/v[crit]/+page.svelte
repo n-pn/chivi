@@ -19,7 +19,9 @@
   <VicritCard {...data} view_all={true} />
 
   <section id="repls" class="replies">
-    <h3 class="repls-head">Bình luận đánh giá ({data.crit.repl_count}):</h3>
+    <h3 class="repls-head">
+      Bình luận đánh giá <span class="m-badge">{data.rplist.repls.length}</span>
+    </h3>
     <RpnodeList rplist={data.rplist} {rproot} {touser} fluid={true} />
   </section>
 </article>

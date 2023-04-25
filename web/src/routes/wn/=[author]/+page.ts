@@ -14,12 +14,11 @@ export const load = (async ({ fetch, url, params: { author } }) => {
   const data = await api_get<JsonData>(`/_db/books?${query}`, fetch)
 
   const _meta: App.PageMeta = {
-    title: `Truyện của tác giả: ${author}`,
     left_nav: [
       nav_link('/wn', 'Thư viện', 'books', { show: 'md' }),
       nav_link(`/wn/=${author}`, author, 'edit', { kind: 'title' }),
     ],
   }
 
-  return { ...data, author, _meta }
+  return { ...data, author, _meta, _title: `Truyện của tác giả: ${author}` }
 }) satisfies PageLoad

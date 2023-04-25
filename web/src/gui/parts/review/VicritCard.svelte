@@ -98,13 +98,13 @@
         class:_active={memo?.liked > 0}>
         <SIcon name="thumb-up" />
         <span class="u-show-pl">Ưa thích</span>
-        <span class="badge">{crit.like_count}</span>
+        <span class="m-badge">{crit.like_count}</span>
       </button>
 
       <a class="meta" href="/uc/v{crit.id}#repls">
         <SIcon name="message" />
         <span class="u-show-pl">Phản hồi</span>
-        <span class="badge">{crit.repl_count}</span>
+        <span class="m-badge">{crit.repl_count}</span>
       </a>
     </div>
   </footer>

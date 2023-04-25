@@ -15,19 +15,19 @@ struct CV::RprootView
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "id", @data.id
-      jb.field "root", @data.root_id
-
-      if @mode.head?
-        jb.field "link", @data._link
-      end
+      jb.field "rkey", @data.rkey
+      jb.field "link", @data._link
 
       if @mode.list? || @mode.full?
         jb.field "type", @data._type
         jb.field "name", @data._name
         jb.field "link", @data._link
 
+        jb.field "like_count", @data.like_count
         jb.field "repl_count", @data.repl_count
-        jb.field "created_at", @data.created_at.to_unix
+        jb.field "view_count", @data.view_count
+
+        jb.field "ctime", @data.created_at.to_unix
       end
     }
   end

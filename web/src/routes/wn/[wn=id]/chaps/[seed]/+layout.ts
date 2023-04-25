@@ -1,4 +1,3 @@
-import { redirect } from '@sveltejs/kit'
 import { api_get } from '$lib/api_call'
 
 import type { LayoutLoad } from './$types'
@@ -9,14 +8,9 @@ export interface SeedData {
   seed_data: CV.Wnseed
 }
 
-const prefixes = ['_', '@', '+', '!']
-
 export const load = (async ({ params: { wn, seed }, fetch, url }) => {
-  if (!prefixes.includes(seed[0])) {
-    const location = url.pathname.replace(`/${seed}`, '/_')
-    throw redirect(300, location)
-  }
+  const wn_id = parseInt(wn, 10)
 
-  const path = `/_wn/seeds/${parseInt(wn, 10)}/${seed}`
+  const path = `/_wn/seeds/${wn_id}/${seed}`
   return await api_get<SeedData>(path, fetch)
 }) satisfies LayoutLoad

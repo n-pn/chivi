@@ -8,12 +8,9 @@ export async function load({ fetch, url }: LoadEvent) {
   const api_url = `/_db/vpinits/fixtag/${source}/${target}`
   const content: Data[] = await fetch(api_url).then((r) => r.json())
 
-  const data = { content, source, target, _meta: null }
-
-  data._meta = {
-    title: 'Sửa phân loại',
+  const _meta: App.PageMeta = {
     left_nav: [{ text: 'Phân loại', icon: 'pencil', href: '.' }],
-  } satisfies App.PageMeta
+  }
 
-  return data
+  return { content, source, target, _meta, _title: 'Sửa phân loại' }
 }

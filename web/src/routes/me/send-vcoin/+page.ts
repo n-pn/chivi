@@ -3,7 +3,6 @@ import type { PageLoad } from './$types'
 
 export const load = (async ({ url }) => {
   const _meta = {
-    title: 'Gửi tặng Vcoin cho người khác',
     left_nav: [
       nav_link('/me', 'Cá nhân', 'user', { show: 'pl' }),
       nav_link('/me/send-vcoin', 'Gửi tặng vcoin', 'gift', { kind: 'title' }),
@@ -19,5 +18,5 @@ export const load = (async ({ url }) => {
     amount: +url.searchParams.get('amount') || 10,
   }
 
-  return { form, _meta }
+  return { form, _meta, _title: 'Gửi tặng Vcoin cho người khác' }
 }) satisfies PageLoad

@@ -1,38 +1,20 @@
 require "../_ctrl_base"
 require "./rpnode_form"
 
-class CV::RpnodeCtrl < CV::BaseCtrl
-  base "/_db/mrepls"
+class CV::RprootCtrl < CV::BaseCtrl
+  base "/_db/rproots"
 
-  @[AC::Route::GET("/")]
-  def index(sort : String = "-id",
-            from from_user : String? = nil, to to_user : String? = nil,
-            self memo : String? = nil)
+  @[AC::Route::GET("/show/:ruid")]
+  def thread(ruid : String, sort : String = "-id")
+    rproot = Rproot.init!(ruid)
+
+    pg_no, limit, offset = _paginate(min: 50, max: 2000)
+
     repls = Rpnode.query.where("id > 0").sort_by(sort)
+    repls.where("rproot_id = ?", rproot.id)
 
-    pg_no, limit, offset = _paginate(min: 20, max: 100)
     repls.limit(limit).offset(offset)
 
-    user_stmt = "select id from viusers where uname = ? limit 1"
-    repls.where("viuser_id = (#{user_stmt})", from_user) if from_user
-    repls.where("touser_id = (#{user_stmt})", to_user) if to_user
-
-    render_repls(repls, pg_no, multi_heads: true)
-  end
-
-  # @[AC::Route::GET("/tagged")]
-  # def tagged
-  #   pg_no, limit, offset = _paginate(min: 10)
-
-  #   repls = Rpnode.query.where("id > 0").order_by(id: :desc)
-  #   repls.where("(to_viuser_id = ? OR ? = any(tagged_ids)", _vu_id, _vu_id)
-
-  #   # repls.with_cvpost
-  #   repls.limit(limit).offset(offset)
-  #   render_repls(repls, pg_no, multi_heads: true)
-  # end
-
-  private def render_repls(repls : Enumerable(Rpnode), pg_no = 1, multi_heads = false)
     user_ids = repls.map(&.viuser_id)
     user_ids << _vu_id if _vu_id >= 0
 
@@ -42,11 +24,15 @@ class CV::RpnodeCtrl < CV::BaseCtrl
     # heads = glob_heads(repls, multi_heads: multi_heads)
 
     render json: {
-      pgidx: pg_no,
-      repls: RpnodeView.as_list(repls),
-      # heads: RprootView.as_hash(heads),
-      users: ViuserView.as_hash(users),
-      memos: MemoirView.as_hash(memos),
+      rproot: RprootView.new(rproot),
+
+      rplist: {
+        pgidx: pg_no,
+        repls: RpnodeView.as_list(repls),
+        # heads: RprootView.as_hash(heads),
+        users: ViuserView.as_hash(users),
+        memos: MemoirView.as_hash(memos),
+      },
     }
   end
 

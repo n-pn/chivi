@@ -34,21 +34,19 @@ declare namespace App {
   }
 
   interface PageMeta {
-    title: string
-    desc?: string
     url?: string
-    image?: string
-
     left_nav?: HeadItem[]
     right_nav?: HeadItem[]
     show_config?: boolean
   }
 
   interface PageData {
-    nvinfo?: CV.Wninfo
-    ubmemo?: CV.Ubmemo
-
-    _user?: CurrentUser
+    _user: CurrentUser
     _meta?: PageMeta
+
+    _title?: string
+    _image?: string
+    _mdesc?: string
+    _board?: string
   }
 }

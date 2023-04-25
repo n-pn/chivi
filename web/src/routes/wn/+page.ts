@@ -12,7 +12,6 @@ export const load = (async ({ url, fetch }) => {
   const data = await api_get<BookList>(`/_db/books?${query}`, fetch)
 
   const _meta = {
-    title: 'Danh sách truyện',
     left_nav: [
       home_nav('tm'),
       nav_link('/wn', 'Danh sách truyện', 'books', { kind: 'title' }),
@@ -22,5 +21,5 @@ export const load = (async ({ url, fetch }) => {
     ],
   }
 
-  return { ...data, _meta }
+  return { ...data, _meta, _title: 'Danh sách truyện' }
 }) satisfies PageLoad

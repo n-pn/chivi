@@ -5,9 +5,7 @@ export const load = (async ({ url, parent }) => {
   const { nvinfo, curr_seed } = await parent()
 
   const _meta: App.PageMeta = {
-    title: 'Thêm/sửa chương truyện ' + nvinfo.vtitle,
     left_nav: [
-      home_nav('', ''),
       book_nav(nvinfo.bslug, '', 'tl'),
       seed_nav(nvinfo.bslug, curr_seed.sname),
       nav_link('+bulk', 'Thêm/sửa chương', 'file-plus', { show: 'pm' }),
@@ -17,5 +15,6 @@ export const load = (async ({ url, parent }) => {
   return {
     _meta,
     start: +url.searchParams.get('start') || 1,
+    _title: 'Thêm/sửa chương truyện ' + nvinfo.vtitle,
   }
 }) satisfies PageLoad

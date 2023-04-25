@@ -4,23 +4,22 @@ import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 export const load = (async ({ url, fetch, params, parent }) => {
-  const rproot = `wn:${parseInt(params.wn, 10)}`
+  const rproot = `ni:${parseInt(params.wn, 10)}`
 
   const sort = url.searchParams.get('sort') || '-id'
-  const path = `/_db/mrepls/thread/${rproot}?sort=${sort}`
+  const path = `/_db/rproots/show/${rproot}?sort=${sort}`
 
-  const rplist = await api_get<CV.Rplist>(path, fetch)
-
+  const { rplist } = await api_get<CV.RprootPage>(path, fetch)
   const { nvinfo } = await parent()
 
+  const _title = `Thảo luận: ${nvinfo.vtitle}`
+
   const _meta = {
-    title: `Thảo luận: ${nvinfo.vtitle}`,
-    desc: nvinfo.bintro.substring(0, 300),
     left_nav: [
       home_nav('', ''),
       book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
       nav_link('bants', 'Thảo luận', 'message'),
     ],
   }
-  return { rplist, rproot, sort, _meta }
+  return { rplist, rproot, sort, _meta, _title }
 }) satisfies PageLoad

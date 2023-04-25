@@ -27,7 +27,6 @@ export const load = (async ({ fetch, url, params: { dic } }) => {
   const terms = await api_get<TermsData>(`/_m1/defns?${search}`, fetch)
 
   const _meta = {
-    title: 'Từ điển: ' + dinfo.label,
     left_nav: [
       home_nav('ps'),
       nav_link('/mt/dicts', 'Từ điển', 'package', { show: 'ts' }),
@@ -36,7 +35,7 @@ export const load = (async ({ fetch, url, params: { dic } }) => {
   }
 
   const query = gen_query(url.searchParams)
-  return { ...dinfo, ...terms, query, _meta }
+  return { ...dinfo, ...terms, query, _meta, _title: 'Từ điển: ' + dinfo.label }
 }) satisfies PageLoad
 
 function gen_query(params: URLSearchParams) {

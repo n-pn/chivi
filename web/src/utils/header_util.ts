@@ -32,8 +32,6 @@ export const nav_link = (
 }
 
 export const default_meta: App.PageMeta = {
-  title: 'Trang chủ',
-  desc: 'Truyện Tàu dịch máy, đánh giá truyện, dịch nhanh tiếng Trung...',
   left_nav: [home_nav('ps')],
   right_nav: [
     nav_link('/sp/qtran', 'Dịch nhanh', 'bolt', { show: 'tm' }),

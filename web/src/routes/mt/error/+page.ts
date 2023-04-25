@@ -7,9 +7,8 @@ export const load = (async ({ url, params, fetch }) => {
   const data = await fetch(path).then((r) => r.json())
 
   const _meta = {
-    title: 'Tổng hợp lỗi máy dịch',
     left_nav: [{ text: 'Lỗi máy dịch', icon: 'flag', href: url.pathname }],
   } satisfies App.PageMeta
 
-  return { ...data, _meta }
+  return { ...data, _meta, _title: 'Tổng hợp lỗi máy dịch' }
 }) satisfies PageLoad

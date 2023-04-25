@@ -15,12 +15,10 @@ export const load = (async ({ fetch, params: { crit } }) => {
   const path = `/_db/crits/${crit}`
   const data = await api_get<CritData>(path, fetch)
 
-  const rppath = `/_db/mrepls/thread/vc:${crit}`
-  const rplist = await api_get<CV.Rplist>(rppath, fetch)
+  const rppath = `/_db/rproots/show/vc:${crit}`
+  const { rplist } = await api_get<CV.RprootPage>(rppath, fetch)
 
   const _meta = {
-    title: `Đánh giá [${crit}]`,
-    desc: `Đánh giá cho bộ truyện ${data.book.vtitle}`,
     left_nav: [
       home_nav('ts'),
       nav_link('/uc', 'Đánh giá truyện', 'stars', { show: 'tm' }),
@@ -31,5 +29,11 @@ export const load = (async ({ fetch, params: { crit } }) => {
     right_nav: [nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' })],
   }
 
-  return { ...data, rplist, _meta }
+  return {
+    ...data,
+    rplist,
+    _meta,
+    _title: `Đánh giá truyện của [@${data.user.uname}]`,
+    _mdesc: `Đánh giá cho bộ truyện ${data.book.vtitle}`,
+  }
 }) satisfies PageLoad

@@ -8,6 +8,9 @@
 
 .nav-link {
   @include fgcolor(tert);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 
   padding: 0 0.75em;
   font-weight: 500;

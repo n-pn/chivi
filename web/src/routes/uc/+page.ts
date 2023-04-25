@@ -10,7 +10,7 @@ export const load = (async ({ url, fetch, parent }) => {
   const { _user } = await parent()
   const _meta = build_meta(_user)
 
-  return { ...data, sort, _meta }
+  return { ...data, sort, _meta, _title: 'Đánh giá truyện chữ' }
 }) satisfies PageLoad
 
 const build_meta = (user: App.CurrentUser) => {
@@ -22,7 +22,6 @@ const build_meta = (user: App.CurrentUser) => {
   }
 
   return {
-    title: 'Đánh giá truyện chữ',
     left_nav: [
       home_nav('ts'),
       nav_link('/uc', 'Đánh giá', 'stars', { show: 'ts' }),

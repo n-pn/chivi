@@ -11,7 +11,6 @@ interface JsonData extends CV.Paginate {
 }
 
 const _meta: App.PageMeta = {
-  title: 'Từ điển',
   left_nav: [home_nav('ps'), nav_link('dicts', 'Từ điển', 'package')],
 }
 
@@ -19,5 +18,5 @@ export const load = (async ({ fetch, url }) => {
   const path = `/_m1/dicts${url.search}`
   const data = await api_get<JsonData>(path, fetch)
 
-  return { ...data, _meta }
+  return { ...data, _meta, _title: 'Từ điển' }
 }) satisfies PageLoad

@@ -21,13 +21,9 @@ declare namespace CV {
     repls: Rpnode[] = []
   }
 
-  interface Rplist {
+  interface Rplist extends Paginate {
     repls: Array<Rpnode>
-
     users: Record<number, Cvuser>
     memos: Record<number, Memoir>
-
-    pgidx: number
-    pgmax: number
   }
 }

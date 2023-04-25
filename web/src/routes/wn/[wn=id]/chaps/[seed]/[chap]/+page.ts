@@ -31,11 +31,10 @@ export const load = (async ({ parent, params, fetch }) => {
 
   const chap_href = chap_path(bslug, curr_seed.sname, ch_no, cpart, uslug)
 
+  const _title = `${title} - ${nvinfo.vtitle}`
+  const _board = `nc:${book}:${ch_no}:${params.seed}`
+
   const _meta: App.PageMeta = {
-    title: `${title} - ${nvinfo.vtitle}`,
-    image: nvinfo.bcover.startsWith('/')
-      ? nvinfo.bcover
-      : '/covers/_blank.webp',
     left_nav: [
       book_nav(bslug, nvinfo.vtitle, 'tm'),
       seed_nav(bslug, curr_seed.sname, _pgidx(ch_no), 'ts'),
@@ -44,5 +43,5 @@ export const load = (async ({ parent, params, fetch }) => {
     show_config: true,
   }
 
-  return { ...data, cpart, redirect: slug == '', _meta }
+  return { ...data, cpart, redirect: slug == '', _meta, _title, _board }
 }) satisfies PageLoad

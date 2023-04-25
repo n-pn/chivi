@@ -137,13 +137,13 @@
       <span class="meta">
         <SIcon name="thumb-up" />
         <span class="u-show-pl">Ưa thích</span>
-        <span class="badge">{crit.like_count}</span>
+        <span class="m-badge">{crit.like_count}</span>
       </span>
 
       <a class="meta" href="/uc/y{crit.id}#repls">
         <SIcon name="message" />
         <span class="u-show-pl">Phản hồi</span>
-        <span class="badge">{crit.repl_count}</span>
+        <span class="m-badge">{crit.repl_count}</span>
       </a>
     </div>
   </footer>
@@ -212,10 +212,6 @@
       @include clamp($width: null);
       @include bps(font-size, rem(13px), $pl: rem(14px), $tm: rem(15px));
       // flex-shrink: 0;
-    }
-
-    .badge {
-      font-size: 0.85em;
     }
 
     :global(.m-icon) {

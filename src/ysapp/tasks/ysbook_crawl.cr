@@ -1,3 +1,4 @@
+require "lexbor"
 require "./_crawl_common"
 
 class YS::CrawlYsbook < CrawlTask
@@ -25,7 +26,7 @@ class YS::CrawlYsbook < CrawlTask
 
   def self.run!(argv = ARGV)
     min_id = 1
-    max_id = 299302
+    max_id = 0
 
     reseed_proxies = false
     crawl_mode = CrawlMode::Tail
@@ -39,6 +40,9 @@ class YS::CrawlYsbook < CrawlTask
 
       opt.on("--reseed-proxies", "Refresh proxies from init lists") { reseed_proxies = true }
     end
+
+    max_id = get_max_book_id if max_id == 0
+    puts "MIN: #{min_id}, MAX: #{max_id}"
 
     queue = gen_queue(min_id, max_id).reject!(&.existed?(1.days))
     queue = crawl_mode.rearrange!(queue)
@@ -69,6 +73,26 @@ class YS::CrawlYsbook < CrawlTask
         name: "#{index}/#{y_bids.size}"
       )
     end
+  end
+
+  def self.get_max_book_id
+    out_path = "tmp/yousuu_newbooks.html"
+
+    if File.exists?(out_path)
+      html = File.read(out_path)
+    else
+      html = HTTP::Client.get("https://www.yousuu.com/newbooks") do |res|
+        res.body_io.gets_to_end.tap do |x|
+          File.write(out_path, x)
+        end
+      end
+    end
+
+    html = File.read(out_path)
+    page = Lexbor::Parser.new(html)
+    node = page.css(".book-info > .book-name").first
+    href = node.attributes["href"]
+    File.basename(href).to_i
   end
 
   def self.should_crawl?(voters : Int32, rtime : Int64)

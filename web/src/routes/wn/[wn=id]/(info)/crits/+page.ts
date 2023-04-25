@@ -14,7 +14,6 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const { nvinfo } = await parent()
 
   const _meta = {
-    title: `Đánh giá: ${nvinfo.vtitle}`,
     desc: nvinfo.bintro.substring(0, 300),
     left_nav: [
       home_nav('', ''),
@@ -25,5 +24,5 @@ export const load = (async ({ url, fetch, params, parent }) => {
       nav_link(new_crit_path, 'Tạo mới', 'circle-plus', { show: 'tl' }),
     ],
   }
-  return { ...data, sort, _meta }
+  return { ...data, sort, _meta, _title: `Đánh giá: ${nvinfo.vtitle}` }
 }) satisfies PageLoad

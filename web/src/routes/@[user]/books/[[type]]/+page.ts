@@ -14,13 +14,14 @@ export const load = (async ({ url, params, fetch }) => {
 
   const data = await api_get<JsonData>(`/_db/books?${query}`, fetch)
 
+  const _title = `Tủ truyện của @${uname}`
+
   const _meta = {
-    title: `Tủ truyện của @${uname}`,
     left_nav: [
       nav_link(`/@${uname}`, uname, 'user', { show: 'md' }),
       { text: 'Tủ truyện', icon: 'notebook', href: url.pathname },
     ],
   }
 
-  return { ...data, uname: uname, bmark, _meta }
+  return { ...data, uname: uname, bmark, _title, _meta }
 }) satisfies PageLoad

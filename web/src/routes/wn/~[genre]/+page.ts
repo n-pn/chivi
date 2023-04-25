@@ -13,13 +13,14 @@ export const load = (async ({ fetch, url, params: { genre } }) => {
 
   const data = await api_get<JsonData>(`/_db/books?${query}`, fetch)
 
+  const _title = 'Lọc truyện theo thể loại'
+
   const _meta = {
-    title: 'Lọc truyện theo thể loại',
     left_nav: [
       nav_link('/wn', 'Thư viện', 'books', { show: 'md' }),
       nav_link(url.pathname, 'Thể loại', 'folder', { kind: 'title' }),
     ],
   }
 
-  return { ...data, genres: genre.split('+'), _meta }
+  return { ...data, genres: genre.split('+'), _title, _meta }
 }) satisfies PageLoad

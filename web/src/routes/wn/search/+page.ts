@@ -16,13 +16,14 @@ export const load = (async ({ fetch, url: { searchParams } }) => {
 
   const data = await api_get<JsonData>(`/_db/books?${query}`, fetch)
 
+  const _title = `Kết quả tìm kiếm cho "${input}"`
+
   const _meta: App.PageMeta = {
-    title: `Kết quả tìm kiếm cho "${input}"`,
     left_nav: [
       nav_link('/wn', 'Thư viện', 'books', { show: 'md' }),
       nav_link('search', 'Tìm kiếm', 'search', { kind: 'title' }),
     ],
   }
 
-  return { ...data, input, type, _meta }
+  return { ...data, input, type, _meta, _title }
 }) satisfies PageLoad

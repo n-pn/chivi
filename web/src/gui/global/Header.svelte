@@ -4,21 +4,30 @@
 
   import { default_meta } from '$utils/header_util'
   import Item from './Header/HeaderItem.svelte'
+  import Config from './Modals/Config.svelte'
+  import Appnav from './Modals/Appnav.svelte'
+  import Usercp from './Modals/Usercp.svelte'
+  import Dboard from './Modals/Dboard.svelte'
 
   const _user = get_user()
 
   $: meta = $page.data._meta || default_meta
-  $: image = meta.image || '/imgs/avatar.png'
+
+  $: title = $page.data._title || 'Trang chủ'
+  $: image = $page.data._image || '/imgs/avatar.png'
+  $: mdesc = $page.data._mdesc || ''
+
+  $: thread = $page.data._board || ''
 </script>
 
 <svelte:head>
-  <title>{meta.title || ''} - Chivi</title>
-  <meta name="description" content={meta.desc} />
+  <title>{title} - Chivi</title>
+  <meta name="description" content={mdesc} />
 
   {#if meta.url}<meta property="og:url" content={meta.url} />{/if}
 
-  <meta property="og:title" content={meta.title} />
-  <meta property="og:description" content={meta.desc} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={mdesc} />
   <meta property="og:image" content="https://chivi.app{image}" />
 </svelte:head>
 
@@ -45,13 +54,15 @@
           on:click={() => popups.show('config')} />
       {/if}
 
-      <Item
-        type="button"
-        text="Thảo luận"
-        icon="messages"
-        data-kbd="f"
-        data-show="tl"
-        on:click={() => popups.show('dboard')} />
+      {#if thread}
+        <Item
+          type="button"
+          text="Chat nhanh"
+          icon="message-circle"
+          data-kbd="f"
+          data-show="tl"
+          on:click={() => popups.show('dboard')} />
+      {/if}
 
       {#if $_user.uname != 'Khách'}
         <Item
@@ -76,6 +87,12 @@
     </div>
   </nav>
 </header>
+
+{#if $popups.appnav}<Appnav bind:actived={$popups.appnav} />{/if}
+
+{#if $popups.config}<Config bind:actived={$popups.config} />{/if}
+{#if $popups.dboard}<Dboard {thread} bind:actived={$popups.dboard} />{/if}
+{#if $popups.usercp}<Usercp bind:actived={$popups.usercp} />{/if}
 
 <style lang="scss">
   $header-height: 3rem;

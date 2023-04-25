@@ -91,11 +91,6 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
       href: 'http://www.shubaow.net',
       desc: 'Nguồn này chứa nhiều truyện độc, nhưng ban IP nước ngoài/server, hiện tại chỉ truy cập được từ TQ hoặc Hàn Quốc.',
     },
-    {
-      site: 'zxcs.me',
-      href: 'http://www.zxcs.me',
-      desc: 'Nguồn này chứa file text tổng hợp, thường là bản tinh chỉnh có hiệu đính, có thể dùng kết hợp với tính năng tự thêm text.',
-    },
   ]
 
   $: google_url = 'https://www.google.com/search?q=' + nvinfo.ztitle

@@ -104,11 +104,12 @@
   const refocus_on_qsearch = () => qsearch && qsearch.focus()
 
   const head_navs = [
-    ['/sp/qtran', 'bolt', 'Dịch nhanh'],
-    ['/mt/dicts', 'package', 'Từ điển'],
+    // ['/wn', 'books', 'Thư viện'],
     ['/uc', 'stars', 'Đánh giá'],
     ['/ul', 'bookmarks', 'Thư đơn'],
     ['/gd', 'messages', 'Diễn đàn'],
+    ['/mt/dicts', 'package', 'Từ điển'],
+    ['/sp/qtran', 'bolt', 'Dịch nhanh'],
   ]
 </script>
 

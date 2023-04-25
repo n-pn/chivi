@@ -10,8 +10,10 @@ export const load: PageLoad = (async ({ fetch, params, url }) => {
 
   const data = await api_get<CV.VicritList>(path, fetch)
 
+  const _title = 'Đánh giá truyện'
+  // FIXME: add _mdesc and _image here
+
   const _meta: App.PageMeta = {
-    title: 'Đánh giá truyện',
     left_nav: [
       home_nav('tm'),
       nav_link(`/@${user}/crits`, 'Đánh giá', 'stars'),
@@ -21,5 +23,5 @@ export const load: PageLoad = (async ({ fetch, params, url }) => {
     ],
   }
 
-  return { ...data, _meta }
+  return { ...data, _title, _meta }
 }) satisfies PageLoad

@@ -5,17 +5,22 @@
   export let _user: Writable<App.CurrentUser>
 
   let form = { oldpw: '', newpw: '' }
-  let error = ''
+
+  let msg_type = ''
+  let msg_text = ''
 
   const action = '/_db/_self/passwd'
   async function submit(evt: Event) {
     evt.preventDefault()
-    error = ''
+    msg_type = msg_text = ''
 
     try {
       await api_call(action, form, 'PUT')
+      msg_type = '_ok'
+      msg_text = 'Bạn đã đổi mật khẩu thành công!'
     } catch (ex) {
-      error = ex.body.message
+      msg_type = '_err'
+      msg_text = ex.body.message
     }
   }
 </script>
@@ -47,9 +52,7 @@
     </form-field>
   </form-group>
 
-  {#if error}
-    <div class="form-error">{error}</div>
-  {/if}
+  <div class="form-msg {msg_type}">{msg_text}</div>
 
   <footer class="form-action">
     <button

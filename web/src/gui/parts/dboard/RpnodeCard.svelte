@@ -82,7 +82,7 @@
       <SIcon name="thumb-up" />
       <span>Ưa thích</span>
       {#if repl.like_count > 0}
-        <span class="badge">{repl.like_count}</span>
+        <span class="m-badge">{repl.like_count}</span>
       {/if}
     </button>
   </footer>

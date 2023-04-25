@@ -1,36 +1,42 @@
 <script lang="ts">
+  import { browser } from '$app/environment'
+  import { api_get } from '$lib/api_call'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
-
-  import Dtlist from './Dboard/Dtlist.svelte'
-  import Tplist from './Dboard/Tplist.svelte'
-
-  import { dboard_ctrl as ctrl } from '$lib/stores'
+  import RpnodeList from '$gui/parts/dboard/RpnodeList.svelte'
 
   export let actived = false
+  export let thread = ''
 
-  const tabs = [
-    ['messages', 'Chủ đề thảo luận'],
-    ['message', 'Bình luận chủ đề'],
-  ]
+  type Data = { rproot: CV.Rproot; rplist: CV.Rplist }
+  let data: Data
 
-  $: [curr_icon, curr_text] = tabs[$ctrl.tab]
+  $: if (browser && actived && thread) load_data(thread)
+
+  async function load_data(thread: string) {
+    const path = `/_db/rproots/show/${thread}`
+
+    try {
+      data = await api_get<Data>(path, fetch)
+    } catch (ex) {
+      console.log(ex.mesage)
+    }
+  }
 </script>
 
 <Slider class="dboard" bind:actived --slider-width="32rem">
   <svelte:fragment slot="header-left">
-    <div class="-icon"><SIcon name={curr_icon} /></div>
-    <div class="-text">{curr_text}</div>
+    <div class="-icon"><SIcon name="message-circle" /></div>
+    <div class="-text">{data?.rproot?.type || 'Bình luận chung'}</div>
   </svelte:fragment>
 
-  {#if actived}
-    <dboard-body>
-      {#if $ctrl.tab == 0}
-        <Dtlist />
-      {:else if $ctrl.tab == 1}
-        <Tplist />
-      {/if}
-    </dboard-body>
+  {#if data}
+    {@const touser = data.rproot.user_id}
+
+    <section class="body">
+      <RpnodeList {touser} rproot={thread} rplist={data.rplist} />
+    </section>
   {/if}
 </Slider>
 
@@ -39,10 +45,14 @@
   // @include fgcolor(primary, 5);
   // }
 
-  dboard-body {
+  .-text {
+    @include clamp($width: null);
+  }
+  .body {
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding-top: 0.5rem;
+
+    padding: 0.75rem;
   }
 </style>

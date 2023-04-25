@@ -11,7 +11,7 @@ export const load = (async ({ url, fetch, parent }) => {
 
   const filter = { qs: url.searchParams.get('qs') }
 
-  return { ...data, filter, _meta }
+  return { ...data, filter, _meta, _title: 'Thư đơn truyện chữ' }
 }) satisfies PageLoad
 
 const build_meta = (user: App.CurrentUser) => {
@@ -23,7 +23,6 @@ const build_meta = (user: App.CurrentUser) => {
   }
 
   return {
-    title: 'Thư đơn truyện chữ',
     left_nav: [
       home_nav('tm'),
       nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'ts' }),

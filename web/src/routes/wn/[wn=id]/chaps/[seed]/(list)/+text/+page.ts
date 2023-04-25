@@ -14,16 +14,17 @@ export async function load({ url: { searchParams }, fetch, parent, params }) {
   const { ztext, title, chdiv } = await api_get<ZtextRaw>(api_url, fetch)
 
   const { nvinfo } = await parent()
+
+  const _title = `Thêm sửa đơn chương - ${nvinfo.vtitle}`
   const _meta = page_meta(nvinfo, sname, ch_no)
 
-  return { ztext, title, chdiv, ch_no, wn_id, sname, _meta }
+  return { ztext, title, chdiv, ch_no, wn_id, sname, _meta, _title }
 }
 
 function page_meta({ bslug, vtitle }, sname: string, ch_no: number) {
   const chap_url = `/wn/${bslug}/chaps/${sname}/${ch_no}-`
 
   return {
-    title: `Thêm sửa đơn chương - ${vtitle}`,
     left_nav: [
       book_nav(bslug, vtitle, 'tm'),
       seed_nav(bslug, sname, _pgidx(ch_no), 'ts'),

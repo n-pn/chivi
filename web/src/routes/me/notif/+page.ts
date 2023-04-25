@@ -9,7 +9,6 @@ export const load = (async ({ url, fetch }) => {
   const data = await api_get<CV.UnotifPage>(path, fetch)
 
   const _meta = {
-    title: 'Thông báo',
     left_nav: [
       home_nav('ps'),
       nav_link('/me', 'Cá nhân', 'user'),
@@ -18,5 +17,5 @@ export const load = (async ({ url, fetch }) => {
     right_nav: [],
   }
 
-  return { ...data, _meta }
+  return { ...data, _meta, _title: 'Thông báo' }
 }) satisfies PageLoad

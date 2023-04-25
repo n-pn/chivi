@@ -16,8 +16,6 @@ export async function load({ fetch, url, params: { type, name } }) {
   const path = `/_m1/qtran/cached/?type=${type}&name=${name}&wn_id=${wn_id}`
 
   const _meta: App.PageMeta = {
-    title: `Dịch nhanh: [${type}/${name}]`,
-    desc: 'Dịch nhanh từ tiếng Trung sang tiếng Việt',
     left_nav: [
       home_nav('tm'),
       nav_link('/sp/qtran', 'Dịch nhanh', 'bolt', { show: 'ts' }),
@@ -27,5 +25,11 @@ export async function load({ fetch, url, params: { type, name } }) {
   }
 
   const data = await api_get<Data>(path, fetch)
-  return { ...data, _meta }
+
+  return {
+    ...data,
+    _meta,
+    _title: `Dịch nhanh: [${type}/${name}]`,
+    _mdesc: 'Dịch nhanh từ tiếng Trung sang tiếng Việt',
+  }
 }

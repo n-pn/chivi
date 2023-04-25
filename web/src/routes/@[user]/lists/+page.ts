@@ -10,7 +10,9 @@ export const load = (async ({ url, fetch, parent }) => {
   const _meta = build_meta(_user)
 
   const params = Object.fromEntries(url.searchParams)
-  return { ...data.ys, params, _meta }
+  const _title = 'Thư đơn truyện chữ'
+
+  return { ...data.ys, params, _title, _meta }
 }) satisfies PageLoad
 
 const build_meta = (user: App.CurrentUser) => {
@@ -22,7 +24,6 @@ const build_meta = (user: App.CurrentUser) => {
   }
 
   return {
-    title: 'Thư đơn truyện chữ',
     left_nav: [
       home_nav('tm'),
       nav_link('/wn', 'Truyện chữ', 'books', { show: 'ts' }),

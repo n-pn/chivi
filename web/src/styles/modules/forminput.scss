@@ -114,9 +114,13 @@ textarea {
 .form-msg {
   margin-top: .75rem;
   line-height: 1.25rem;
+  font-style: italic;
+
+  @include fgcolor(tert);
   @include ftsize(sm);
+
+  &._ok { @include fgcolor(success, 5); }
 
   &._err { @include fgcolor(harmful, 5); }
 
-  &._ok { @include fgcolor(success, 5); }
 }

@@ -10,12 +10,11 @@ export const load = (async ({ url, fetch, parent, params }) => {
   const { nvinfo } = await parent()
   const _meta = build_meta(nvinfo)
 
-  return { ...data, _meta }
+  return { ...data, _meta, _title: nvinfo.vtitle }
 }) satisfies PageLoad
 
 const build_meta = (book: CV.Wninfo) => {
   return {
-    title: `${book.vtitle}`,
     desc: book.bintro.substring(0, 300),
     left_nav: [
       home_nav('', ''),
