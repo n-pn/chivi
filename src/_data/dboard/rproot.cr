@@ -275,48 +275,44 @@ class CV::Rproot
       SQL
   end
 
-  def self.init!(ruid : String)
+  def self.load!(ruid : String)
     kind, ukey = ruid.split(':', 2)
     kind = Kind.parse_ruid(kind)
+    find(kind, ukey) || init(kind, ukey).upsert!
+  end
 
-    find(kind, ukey) || begin
-      case kind
-      when .dtopic? then new(Dtopic.find!(ukey.to_i)).upsert!
-      when .wninfo? then new(Wninfo.load!(ukey.to_i)).upsert!
-      when .vicrit? then new(Vicrit.load!(ukey.to_i)).upsert!
-      when .vilist? then new(Vilist.load!(ukey.to_i)).upsert!
-      when .wnseed?
-        wn_id, sname = ukey.split(':', 2)
-        wninfo = Wninfo.load!(wn_id.to_i)
+  def self.init(kind : Kind, ukey : String)
+    case kind
+    when .dtopic? then new(Dtopic.find!(ukey.to_i))
+    when .wninfo? then new(Wninfo.load!(ukey.to_i))
+    when .vicrit? then new(Vicrit.load!(ukey.to_i))
+    when .vilist? then new(Vilist.load!(ukey.to_i))
+    when .wnseed?
+      wn_id, sname = ukey.split(':', 2)
+      wninfo = Wninfo.load!(wn_id.to_i)
 
-        new(
-          kind: kind, ukey: ukey,
-          dboard_id: wninfo.id,
-          _type: "bình luận nguồn",
-          _name: "Bình luận nguồn [#{sname}] bộ truyện [#{wninfo.vname}]",
-          _link: "/wn/#{wninfo.id}-#{wninfo.bslug}/chaps/#{sname}"
-        )
-      when .wnchap?
-        wn_id, ch_no, sname = ukey.split(':', 3)
-        wninfo = Wninfo.load!(wn_id.to_i)
+      new(
+        kind: kind, ukey: ukey,
+        dboard_id: wninfo.id,
+        _type: "bình luận",
+        _name: "nguồn [#{sname}] bộ truyện [#{wninfo.vname}]",
+        _link: "/wn/#{wninfo.id}-#{wninfo.bslug}/chaps/#{sname}"
+      )
+    when .wnchap?
+      wn_id, ch_no, sname = ukey.split(':', 3)
+      wninfo = Wninfo.load!(wn_id.to_i)
 
-        new(
-          kind: kind, ukey: ukey,
-          dboard_id: wninfo.id,
-          _type: "bình luận chương",
-          _name: "Bình luận chương [#{ch_no}] nguồn [#{sname}] bộ truyện [#{wninfo.vname}]",
-          _link: "/wn/#{wninfo.id}-#{wninfo.bslug}/chaps/#{sname}/#{ch_no}"
-        )
-      when .global?
-        new(
-          kind: kind, ukey: ukey,
-          _type: "thảo luận",
-          _name: "Thảo luận",
-          _link: ""
-        )
-      else
-        raise "unsuported ruid: #{ruid}"
-      end
+      new(
+        kind: kind, ukey: ukey,
+        dboard_id: wninfo.id,
+        _type: "bình luận",
+        _name: "chương [#{ch_no}] nguồn [#{sname}] bộ truyện [#{wninfo.vname}]",
+        _link: "/wn/#{wninfo.id}-#{wninfo.bslug}/chaps/#{sname}/#{ch_no}"
+      )
+    when .global?
+      new(kind: kind, ukey: ukey, _type: "thảo luận", _name: ukey, _link: "")
+    else
+      raise "unsuported kind: #{kind}/#{ukey}"
     end
   end
 

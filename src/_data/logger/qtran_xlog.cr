@@ -27,7 +27,8 @@ class CV::QtranXlog
   field created_at : Time = Time.utc
 
   def initialize(
-    input : String,
+    @input_hash,
+    @char_count,
     @viuser_id,
     @wn_dic = 0,
     @w_udic = true,
@@ -36,12 +37,8 @@ class CV::QtranXlog
     @ts_sdk = false,
     @ts_acc = false
   )
-    @char_count = isize = input.size
-    @input_hash = ihash = HashUtil.fnv_1a(input).unsafe_as(Int32)
-
-    point_cost = calculate_cost(isize, w_udic, mt_ver, cv_ner, ts_sdk, ts_acc)
-    prev_count = self.class.count(viuser_id, ihash)
-
+    point_cost = calculate_cost(char_count, w_udic, mt_ver, cv_ner, ts_sdk, ts_acc)
+    prev_count = self.class.count(viuser_id, input_hash)
     @point_cost = prev_count < 1 ? point_cost : point_cost // (prev_count &+ 1)
   end
 

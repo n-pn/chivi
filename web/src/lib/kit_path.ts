@@ -35,11 +35,13 @@ export function chap_path(
   cpart = 1,
   uslug = ''
 ) {
-  if (cpart > 1) {
-    return `${seed_path(bslug, sname)}/${ch_no}_${cpart}-${uslug}`
-  } else {
-    return `${seed_path(bslug, sname)}/${ch_no}-${uslug}`
-  }
+  return `${seed_path(bslug, sname)}/${chap_tail(ch_no, cpart, uslug)}`
+}
+
+export function chap_tail(ch_no: number, cpart = 1, uslug = '', rmode = 'mt') {
+  return cpart > 1
+    ? `${ch_no}/${uslug}-${cpart}-${rmode}`
+    : `${ch_no}/${uslug}-${rmode}`
 }
 
 export function _pgidx(index: number, limit = 32) {

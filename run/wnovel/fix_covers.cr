@@ -33,10 +33,10 @@ end
 input = PGDB.query_all <<-SQL, as: {Int32, String}
   select id, scover from nvinfos
   where scover <> '' and bcover = ''
+  order by id desc
 SQL
 
 input.reject! { |x| dead_link?(x[1]) }
-input.shuffle!
 
 w_size = 16
 q_size = input.size

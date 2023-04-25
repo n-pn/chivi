@@ -9,16 +9,18 @@ class M1::TranData
   def self.load_cached(type : String, name : String, wn_id : Int32, format : String = "mtl")
     case type
     when "crits"
-      lines, wn_id = load_remote("#{CRIT_URL}/#{name}/ztext", wn_id)
+      input, wn_id = load_remote("#{CRIT_URL}/#{name}/ztext", wn_id)
     when "repls"
-      lines, wn_id = load_remote("#{REPL_URL}/#{name}/ztext", wn_id)
+      input, wn_id = load_remote("#{REPL_URL}/#{name}/ztext", wn_id)
     when "posts"
-      lines = File.read_lines("tmp/qtran/#{name}.txt")
+      input = File.read("tmp/qtran/#{name}.txt")
+    when "chaps"
+      input = File.read("/www/chivi/tmp/#{name}.txt")
     else
       raise "unsupported!"
     end
 
-    new(lines, wn_id, format)
+    new(input, wn_id, format)
   end
 
   def self.load_remote(href : String, wn_id : Int32)
@@ -26,17 +28,17 @@ class M1::TranData
       body = res.body_io.gets_to_end
       raise NotFound.new(body) unless res.status.success?
 
-      lines = body.tr("\t", " ").lines.map!(&.strip).reject!(&.empty?)
+      input = body.tr("\t", " ")
       wn_id = res.headers["X-WN_ID"]?.try(&.to_i?) || wn_id
 
-      {lines, wn_id}
+      {input, wn_id}
     end
   end
 
-  getter lines : Array(String)
+  getter input : String
   getter udict : DbDict
 
-  def initialize(@lines : Array(String), @wn_id : Int32, format : String)
+  def initialize(@input, @wn_id : Int32, format : String)
     @udict = DbDict.load(wn_id) rescue DbDict.load(0)
     @to_mtl = format == "mtl"
   end
@@ -55,7 +57,7 @@ class M1::TranData
   end
 
   def cv_post(io : IO, engine : MtCore)
-    @lines.each do |line|
+    @input.each_line do |line|
       data = engine.cv_plain(line)
       @to_mtl ? data.to_mtl(io) : data.to_txt(io)
       io << '\n'
@@ -65,16 +67,15 @@ class M1::TranData
   def cv_chap(io : IO, engine : MtCore, w_title : Bool = true, label : String? = nil)
     # render title
 
-    title = @lines.first
+    input = @input.each_line
+    title = input.next.as(String)
+
     data = w_title ? engine.cv_title(title) : engine.cv_plain(title)
     @to_mtl ? data.to_mtl(io) : data.to_txt(io)
     io << '\t' << ' ' << label if label
     io << '\n'
 
-    # render body
-
-    1.upto(lines.size - 1) do |i|
-      line = @lines.unsafe_fetch(i)
+    input.each do |line|
       data = engine.cv_plain(line)
       @to_mtl ? data.to_mtl(io) : data.to_txt(io)
       io << '\n'

@@ -15,14 +15,6 @@ article {
   }
 }
 
-.article.article {
-  margin-bottom: var(--gutter);
-
-  @include bp-min(tl) {
-    border-radius: 1rem;
-  }
-}
-
 .md-post {
   margin-top: 1rem;
   font-size: em(17px);

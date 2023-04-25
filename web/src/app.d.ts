@@ -41,12 +41,14 @@ declare namespace App {
   }
 
   interface PageData {
-    _user: CurrentUser
+    _user?: CurrentUser
     _meta?: PageMeta
 
     _title?: string
     _image?: string
     _mdesc?: string
+
     _board?: string
+    _mtcfg?: boolean
   }
 }

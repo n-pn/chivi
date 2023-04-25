@@ -66,7 +66,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
 
     rpnode = Rpnode.new({
       viuser_id: _vu_id,
-      rproot_id: Rproot.init!(form.rproot).id,
+      rproot_id: Rproot.load!(form.rproot).id,
       touser_id: form.touser,
       torepl_id: form.torepl,
     })

@@ -94,8 +94,26 @@ module HashUtil
     hash
   end
 
+  def fnv_1a(*strs : String) : UInt32
+    hash = BASIS_32
+
+    strs.each do |str|
+      str.each_byte do |byte|
+        hash ^= byte
+        hash = hash &* PRIME_32
+        hash &= MASK_32
+      end
+    end
+
+    hash
+  end
+
   def uniq_hash(inp : String) : String
     encode32(fnv_1a(inp))
+  end
+
+  def uniq_hash(*inp : String) : String
+    encode32(fnv_1a(*inp))
   end
 
   # B32_ZH = {

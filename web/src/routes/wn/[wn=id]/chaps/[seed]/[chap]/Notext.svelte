@@ -1,36 +1,39 @@
 <script lang="ts">
   import { get_user } from '$lib/stores'
+  const _user = get_user()
 
   import { seed_path } from '$lib/kit_path'
   import { recrawl_chap } from './shared'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  import type { PageData } from './$types'
-  export let data: PageData
+  import type { LayoutData } from './$types'
+  export let data: LayoutData
+
   export let _onload = false
-  const _user = get_user()
 
-  $: search = `"${data.nvinfo.ztitle}" ${data.chap_data.title}`
-  $: seed_href = seed_path(data.nvinfo.bslug, data.curr_seed.sname)
-  $: edit_href = `${seed_href}/+text?ch_no=${data.curr_chap.chidx}`
+  $: ({ nvinfo, wnchap } = data)
 
-  const reload_chap = async (load_mode = 2) => {
+  $: search = `"${nvinfo.ztitle}" ${wnchap.title}`
+  $: seed_href = seed_path(nvinfo.bslug, data.curr_seed.sname)
+  $: edit_href = `${seed_href}/+text?ch_no=${wnchap.ch_no}`
+
+  const reload_chap = async () => {
     _onload = true
-    const json = await recrawl_chap(data, load_mode)
+    const json = await recrawl_chap(data)
     data = { ...data, ...json }
     _onload = false
   }
 </script>
 
-<div class="notext">
-  {#if !data.chap_data.grant}
-    <h1>Bạn không đủ quyền hạn để xem chương {data.curr_chap.chidx}.</h1>
+<article class="article island notext">
+  {#if $_user.privi < wnchap.privi}
+    <h1>Bạn không đủ quyền hạn để xem chương {wnchap.ch_no}.</h1>
 
     <p>
       <strong>
         Quyền hạn tối thiểu để xem chương hiện tại: <x-chap
-          >{data.chap_data.privi}</x-chap>
+          >{wnchap.privi}</x-chap>
       </strong>
     </p>
 
@@ -41,7 +44,7 @@
           màn hình để đăng nhập hoặc đăng ký tài khoản mới.
         {:else}
           Quyền hạn hiện tại của bạn là {$_user.privi}, nâng cấp quyền hạn lên
-          <strong>{data.chap_data.privi}</strong> để xem nội dung chương tiết.
+          <strong>{wnchap.privi}</strong> để xem nội dung chương tiết.
         {/if}
       </em>
     </p>
@@ -162,8 +165,8 @@
 
       <button
         class="m-btn _harmful"
-        on:click={() => reload_chap(2)}
-        disabled={$_user.privi < 0}>
+        on:click={reload_chap}
+        disabled={$_user.privi < wnchap.privi}>
         <SIcon name="rotate-rectangle" spin={_onload} />
         <span>Tải lại nguồn</span>
       </button>
@@ -180,7 +183,7 @@
       </a>
     </div>
   {/if}
-</div>
+</article>
 
 <style lang="scss">
   .notext {

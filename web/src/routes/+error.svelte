@@ -11,7 +11,7 @@
     <h1>{$page.status}</h1>
 
     {#if $page.status == 404}
-      <p>Đường dẫn không tồn tại!</p>
+      <p>{$page.error.message || 'Đường dẫn không tồn tại!'}</p>
     {:else}
       <p>{$page.error.message}</p>
     {/if}

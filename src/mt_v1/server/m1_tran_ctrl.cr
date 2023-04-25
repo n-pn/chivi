@@ -26,7 +26,7 @@ class M1::TranCtrl < AC::Base
     #   return
     # end
 
-    qtran = TranData.new(input.lines, wn_id, format)
+    qtran = TranData.new(input, wn_id, format)
     cvmtl = qtran.cv_wrap(_uname, w_init: @w_init, w_stat: false) do |io, engine|
       cv_post(io, engine)
     end
@@ -39,10 +39,24 @@ class M1::TranCtrl < AC::Base
     qtran = TranData.load_cached(type, name, wn_id, format)
     cvmtl = qtran.cv_wrap(_uname, w_init: @w_init) { |io, engine| cv_post(io, engine) }
 
-    render json: {
-      cvmtl: cvmtl,
-      ztext: qtran.lines.join('\n'),
-    }
+    render json: {cvmtl: cvmtl, ztext: qtran.input}
+  end
+
+  @[AC::Route::GET("/wnchap/:hash")]
+  def tl_wnchap(hash : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
+    qtran = TranData.load_cached("chaps", "#{_uname}-#{hash}", wn_id, format)
+
+    spawn do
+      ihash = HashUtil.decode32(hash).to_u32.unsafe_as(Int32)
+      isize = qtran.input.size
+      log_tran_stats(ihash, isize, wn_id, w_udic: !@w_user.empty?)
+    end
+
+    cvmtl = qtran.cv_wrap(w_user: @w_user, w_init: @w_init) do |io, engine|
+      cv_chap(io, engine, w_title: true, label: label)
+    end
+
+    render json: {cvmtl: cvmtl, ztext: qtran.input}
   end
 
   @[AC::Route::GET("/tl_btitle")]
@@ -112,9 +126,14 @@ class M1::TranCtrl < AC::Base
   @[AC::Route::POST("/cv_chap")]
   def cv_chap(wn_id : Int32 = 0, w_title : Bool = true, label : String? = nil)
     input = request.body.try(&.gets_to_end) || ""
-    spawn log_tran_stats(input, wn_id, w_udic: !@w_user.empty?)
 
-    qtran = TranData.new(input.lines, wn_id, format: "mtl")
+    spawn do
+      ihash = HashUtil.fnv_1a(input).unsafe_as(Int32)
+      isize = input.size
+      log_tran_stats(ihash, isize, wn_id, w_udic: !@w_user.empty?)
+    end
+
+    qtran = TranData.new(input, wn_id, format: "mtl")
 
     cvmtl = qtran.cv_wrap(w_user: @w_user, w_init: @w_init) do |io, engine|
       cv_chap(io, engine, w_title, label)
@@ -123,9 +142,9 @@ class M1::TranCtrl < AC::Base
     render text: cvmtl
   end
 
-  private def log_tran_stats(input : String, wn_dic : Int32, w_udic = true)
+  private def log_tran_stats(ihash : Int32, isize : Int32, wn_dic : Int32, w_udic = true)
     xlog = CV::QtranXlog.new(
-      input: input, viuser_id: _vu_id,
+      input_hash: ihash, char_count: isize, viuser_id: _vu_id,
       wn_dic: wn_dic, w_udic: w_udic,
       mt_ver: 1_i16, cv_ner: false,
       ts_sdk: false, ts_acc: false,
@@ -135,6 +154,7 @@ class M1::TranCtrl < AC::Base
 
     time_now = Time.local
     log_file = "var/ulogs/qtlog/#{time_now.to_s("%F")}.log"
+
     File.open(log_file, "a", &.puts(xlog.to_json))
   end
 

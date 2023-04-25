@@ -76,7 +76,7 @@ def map_extension(mime : String?) : String
 end
 
 def valid_extension?(path : String)
-  !File.extname(path).in?("", ".raw", ".txt", ".xml", ".html", ".ascii")
+  !File.extname(path).in?("", ".raw", ".txt", ".xml", ".html", ".json", ".ascii")
 end
 
 def image_width(path : String) : Int32

@@ -65,13 +65,8 @@ class WN::WnChap
 
   def _href(part_no : Int32 = 1)
     String.build do |io|
-      io << @ch_no
-
-      if self.p_len > 1 && part_no != 1
-        io << '_' << (part_no < 1 ? self.p_len : part_no)
-      end
-
-      io << '-' << self.uslug
+      io << @ch_no << '/' << self.uslug << '-'
+      io << (part_no < 1 ? self.p_len : part_no) if part_no != 1
     end
   end
 

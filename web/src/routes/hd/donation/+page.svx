@@ -1,6 +1,6 @@
 ---
 title: Ủng hộ Chivi bằng tiền mặt
-desc: Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.
+mdesc: Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.
 ---
 
 <script>

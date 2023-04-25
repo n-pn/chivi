@@ -46,10 +46,10 @@
     l_focus = 0
   })
 
-  $: zlines = ztext ? ztext.split('\n') : []
   $: [datav1, tspan, dsize, dname] = MtData.parse_cvmtl(cvmtl)
+  $: zlines = ztext ? ztext.split('\n') : []
 
-  $: if (browser && ztext && $config.render != 3) render_v2(ztext)
+  // $: if (browser && ztext && $config.render != 3) render_v2(ztext)
 
   async function render_v1(body: string, cv_title = 'first') {
     const url = `/_m1/qtran/cv_chap?wn_id=${wn_id}&cv_title=${cv_title}`
@@ -64,15 +64,15 @@
     dname = data[3]
   }
 
-  async function render_v2(body: string, cv_title = '') {
-    if ($config.render != 1) {
-      datav2 = []
-    } else {
-      const url = `/_m2/qtran?udict=-${wn_id}&format=txt&cv_title=${cv_title}`
-      const res = await fetch(url, { method: 'POST', body })
-      if (res.ok) datav2 = (await res.text()).split('\n')
-    }
-  }
+  // async function render_v2(body: string, cv_title = '') {
+  //   if ($config.render != 1) {
+  //     datav2 = []
+  //   } else {
+  //     const url = `/_m2/qtran?udict=-${wn_id}&format=txt&cv_title=${cv_title}`
+  //     const res = await fetch(url, { method: 'POST', body })
+  //     if (res.ok) datav2 = (await res.text()).split('\n')
+  //   }
+  // }
 
   const on_fixraw = async (line_no: number, orig: string, edit: string) => {
     const message = await do_fixraw(line_no, orig, edit)
@@ -91,7 +91,7 @@
 </script>
 
 <article
-  class="article island app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+  class="article island reader app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   style:--textlh="{$config.textlh}%"
   bind:this={article}>
   <header>
@@ -160,8 +160,6 @@
           <p class="v2">{mtlv2}</p>
         {/if}
       </svelte:element>
-    {:else}
-      <slot name="notext" />
     {/each}
   </section>
 
@@ -210,88 +208,6 @@
 
     :global(.tm-warm) & {
       background-color: #fffbeb;
-    }
-
-    @include bps(
-      --head-fs,
-      rem(22px),
-      rem(23px),
-      rem(24px),
-      rem(26px),
-      rem(28px)
-    );
-
-    &.app-fs-1 {
-      @include bps(
-        --para-fs,
-        rem(15px),
-        rem(16px),
-        rem(17px),
-        rem(18px),
-        rem(19px)
-      );
-
-      @include bps(
-        --head-fs,
-        rem(21px),
-        rem(22px),
-        rem(23px),
-        rem(25px),
-        rem(27px)
-      );
-    }
-
-    &.app-fs-2 {
-      @include bps(
-        --para-fs,
-        rem(16px),
-        rem(17px),
-        rem(18px),
-        rem(19px),
-        rem(20px)
-      );
-    }
-
-    &.app-fs-3 {
-      @include bps(
-        --para-fs,
-        rem(17px),
-        rem(18px),
-        rem(19px),
-        rem(20px),
-        rem(21px)
-      );
-    }
-
-    &.app-fs-4 {
-      @include bps(
-        --para-fs,
-        rem(19px),
-        rem(20px),
-        rem(21px),
-        rem(22px),
-        rem(23px)
-      );
-    }
-
-    &.app-fs-5 {
-      @include bps(
-        --para-fs,
-        rem(21px),
-        rem(22px),
-        rem(23px),
-        rem(24px),
-        rem(25px)
-      );
-
-      @include bps(
-        --head-fs,
-        rem(23px),
-        rem(24px),
-        rem(25px),
-        rem(26px),
-        rem(29px)
-      );
     }
 
     :global(cite) {
