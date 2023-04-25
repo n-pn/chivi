@@ -46,7 +46,7 @@ class CV::Rproot
       case self
       in Global then "xx:#{ukey}"
       in Dtopic then "dt:#{ukey}"
-      in Wninfo then "wn:#{ukey}"
+      in Wninfo then "ni:#{ukey}"
       in Author then "na:#{ukey}"
       in Wnseed then "ns:#{ukey}"
       in Wnchap then "nc:#{ukey}"
@@ -68,7 +68,6 @@ class CV::Rproot
       when "xx" then Global
       when "gd" then Dtopic
       when "dt" then Dtopic
-      when "wn" then Wninfo
       when "na" then Author
       when "ni" then Wninfo
       when "ns" then Wnseed

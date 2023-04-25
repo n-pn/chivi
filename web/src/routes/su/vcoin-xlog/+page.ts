@@ -9,7 +9,7 @@ interface XlogData extends CV.Paginate {
 
 const _meta = {
   left_nav: [home_nav('ps'), nav_link('.', 'Lịch sử giao dịch', '')],
-  right_nav: [nav_link('/cm/qtran-xlog', 'Lịch sử qtran', '')],
+  right_nav: [nav_link('/su/qtran-xlog', 'Lịch sử qtran', '')],
 }
 
 export const load = (async ({ fetch, url }) => {

@@ -11,7 +11,7 @@
     <a
       class="scope"
       class:_active={scope == data.scope}
-      href="/cm/qtran-stat?scope={scope}">{scope}</a>
+      href="/su/qtran-stat?scope={scope}">{scope}</a>
   {/each}
 </nav>
 

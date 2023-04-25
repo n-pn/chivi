@@ -4,8 +4,8 @@ import { home_nav, nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
 const _meta = {
-  left_nav: [home_nav('ps'), nav_link('/cm/qtran-xlog', 'Lịch sử qtran', '')],
-  right_nav: [nav_link('/cm/vcoin-xlog', 'Lịch sử vcoin', '')],
+  left_nav: [home_nav('ps'), nav_link('/su/qtran-xlog', 'Lịch sử qtran', '')],
+  right_nav: [nav_link('/su/vcoin-xlog', 'Lịch sử vcoin', '')],
 }
 
 export const load = (async ({ fetch, url }) => {

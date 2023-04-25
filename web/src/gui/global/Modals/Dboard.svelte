@@ -32,6 +32,9 @@
   </svelte:fragment>
 
   {#if data}
+    <header class="head">
+      <h3>Bình luận {data.rproot.type} <strong>{data.rproot.name}</strong></h3>
+    </header>
     {@const touser = data.rproot.user_id}
 
     <section class="body">
@@ -48,6 +51,15 @@
   .-text {
     @include clamp($width: null);
   }
+
+  .head {
+    padding: 0.75rem;
+  }
+
+  h3 {
+    line-height: 1.5rem;
+  }
+
   .body {
     display: flex;
     flex-direction: column;

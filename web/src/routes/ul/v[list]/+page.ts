@@ -30,5 +30,6 @@ export const load = (async ({ url, fetch, params }) => {
     right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
   }
 
-  return { ...data, _meta, _title: `Thư đơn: ${title}` }
+  const _board = `vl:${l_id}`
+  return { ...data, _meta, _title: `Thư đơn: ${title}`, _board }
 }) satisfies PageLoad

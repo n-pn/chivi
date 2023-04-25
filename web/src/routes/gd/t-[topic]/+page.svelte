@@ -7,7 +7,7 @@
 
   $: ({ dboard, cvpost, rplist } = data)
 
-  $: rproot = `gd:${cvpost.post.id}`
+  $: rproot = `dt:${cvpost.post.id}`
   $: touser = cvpost.post.user_id
 </script>
 

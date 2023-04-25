@@ -120,15 +120,12 @@ class CV::Dtopic
   end
 
   def gen_like_notif(from_user : String)
-    rproot = Rproot.find!("gd:#{self.id}")
+    rproot = Rproot.find!(:dtopic, self.id.to_s)
 
     link_to = rproot._link
-    content = <<-HTML
+    <<-HTML
     <p><a href="/@#{from_user}" class="cv-user">#{from_user}</a> đã thích #{rproot._type} <a href="#{link_to}">#{rproot._name}</a> của bạn.</p>
     HTML
-
-    details = {_type: "like-dtop", from_user: from_user, dtopic_id: self.id}
-    {content, details, link_to}
   end
 
   #################
