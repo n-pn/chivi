@@ -119,15 +119,6 @@ class CV::Dtopic
     update!(state: admin ? -3 : -2)
   end
 
-  def gen_like_notif(from_user : String)
-    rproot = Rproot.find!(:dtopic, self.id.to_s)
-
-    link_to = rproot._link
-    <<-HTML
-    <p><a href="/@#{from_user}" class="cv-user">#{from_user}</a> đã thích #{rproot._type} <a href="#{link_to}">#{rproot._name}</a> của bạn.</p>
-    HTML
-  end
-
   #################
 
   CACHE = RamCache(Int32, self).new(1024, ttl: 10.minutes)

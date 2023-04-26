@@ -1,58 +1,7 @@
-require "./**"
+require "./_notif_base"
 
 module CV::Notifier
-  extend self
-
-  def on_liking_target(target, memoir : Memoir, byuser : String)
-    return if target.viuser_id == memoir.viuser_id
-
-    action = Unotif::Action.map_liking(target)
-    return if Unotif.find(action, target.id, memoir.viuser_id)
-
-    Unotif.new(
-      viuser_id: target.viuser_id, content: liking_content(target, byuser),
-      action: action, object_id: target.id, byuser_id: memoir.viuser_id,
-      created_at: Time.unix(memoir.liked_at)
-    ).create!
-  end
-
-  private def liking_content(target : Rpnode, byuser : String) : String
-    rproot = Rproot.find!(id: target.rproot_id)
-    <<-HTML
-    <p><a href="/@#{byuser}" class="cv-user">#{byuser}</a> đã thích bài viết của bạn
-    trong #{rproot._type} <a href="#{rproot._link}#r#{target.id}">#{rproot._name}</a>.</p>
-    HTML
-  end
-
-  private def liking_content(target : Dtopic, byuser : String)
-    <<-HTML
-    <p><a href="/@#{byuser}" class="cv-user">#{byuser}</a> đã thích chủ đề
-    <a href="/gd/t-#{target.id}-#{target.tslug}">#{target.title}</a> của bạn.</p>
-    HTML
-  end
-
-  private def liking_content(target : Vicrit, byuser : String)
-    <<-HTML
-    <p><a href="/@#{byuser}" class="cv-user">#{byuser}</a> đã thích
-    <a href="/uc/v#{target.id}">đánh giá truyện</a> của bạn.</p>
-    HTML
-  end
-
-  private def liking_content(target : Vilist, byuser : String)
-    <<-HTML
-    <p><a href="/@#{byuser}" class="cv-user">#{byuser}</a> đã thích
-    <a href="/ul/v#{target.id}-#{target.tslug}">thư đơn</a> của bạn.</p>
-    HTML
-  end
-
-  def on_unliking_target(target, memoir : Memoir)
-    action = Unotif::Action.map_liking(target)
-    Unotif.remove_notif(action, target.id, memoir.viuser_id)
-  end
-
-  ###############
-
-  def on_user_making_reply(repl : Rpnode)
+  def on_repl_event(repl : Rpnode)
     return if repl.touser_id == 0 || repl.touser_id == repl.viuser_id
     return if Unotif.find(:get_replied, repl.id, repl.viuser_id)
 
@@ -113,6 +62,4 @@ module CV::Notifier
       ).create!
     end
   end
-
-  ###
 end

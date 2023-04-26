@@ -54,8 +54,8 @@ class CV::MemoirCtrl < CV::BaseCtrl
     return if target.viuser_id == memoir.viuser_id
 
     case kind
-    when .like?   then Notifier.on_liking_target(target, memoir, _uname)
-    when .unlike? then Notifier.on_unliking_target(target, memoir)
+    when .like?   then Notifier.on_like_event(target, memoir, _uname)
+    when .unlike? then Notifier.on_unlike_event(target, memoir)
     end
   end
 end

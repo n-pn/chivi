@@ -29,10 +29,12 @@ def split_and_zip(sname : String, sb_id : String)
 end
 
 def split_and_write(file_path : String, mnt_dir : String)
+  sc_id = File.basename(file_path, ".gbk")
+  return if File.exists?("#{mnt_dir}/#{sc_id}.0.gbk")
+
   ztext = File.read(file_path, encoding: "GB18030")
   parts = ztext.split("\n\n")
 
-  sc_id = File.basename(file_path, ".gbk")
   title = parts[0]
 
   parts[1..].each_with_index do |part, idx|
@@ -44,7 +46,10 @@ def split_and_write(file_path : String, mnt_dir : String)
   end
 end
 
-ARGV.each do |sname|
+# seeds = Dir.children(INP).select!(&.starts_with?('@'))
+seeds = ARGV
+
+seeds.each do |sname|
   Dir.children("#{INP}/#{sname}").each do |sb_id|
     next if sb_id.includes?('.')
 
