@@ -32,7 +32,7 @@ class MT::MtDefn
 
   @[AlwaysInline]
   def self.db_path(dname : String | Int32)
-    "var/mtdic/users/#{dname}.dic"
+    "var/mtdic/fixed/#{dname}.dic"
   end
 
   def self.init_sql
