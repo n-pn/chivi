@@ -29,7 +29,7 @@ SQL
 end
 
 DIC.exec <<-SQL
-  update defns set feat = 'attrib' where upos = 'Nl';
+  update defns set xpos = 'PU' where upos = 'w';
   SQL
 
 cleanup_feats

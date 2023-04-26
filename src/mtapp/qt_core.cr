@@ -3,6 +3,10 @@ require "./ner_core"
 require "./qt_core/*"
 
 class MT::QtCore
+  def self.new(d_id : Int32, user : String = "")
+    new(QtDict.new(d_id, user))
+  end
+
   def initialize(@dict : QtDict, @ner_core = NerCore.base)
   end
 

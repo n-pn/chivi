@@ -33,7 +33,7 @@ struct MT::QtNode
   def to_mtl(io : IO, fmt = FmtFlag::None) : FmtFlag
     io << '\t'
     fmt = to_txt(io, fmt: fmt)
-    io << MTL_CHR << (@fmt.none? ? 1 : 0) << MTL_CHR << @idx << MTL_CHR << @zlen
+    io << MTL_CHR << @dic << MTL_CHR << @idx << MTL_CHR << @zlen
     fmt
   end
 

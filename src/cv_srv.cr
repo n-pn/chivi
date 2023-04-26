@@ -128,6 +128,16 @@ abstract class AC::Base
     cookies[name]?.try(&.value)
   end
 
+  @[AlwaysInline]
+  private def _cfg_enabled?(name : String)
+    cookies[name]?.try(&.value.starts_with?('t')) || false
+  end
+
+  @[AlwaysInline]
+  private def _read_body
+    request.body.try(&.gets_to_end) || ""
+  end
+
   private def _paginate(min = 5, max = 100)
     pg_no = params["pg"]?.try(&.to_i?) || 1
     limit = params["lm"]?.try(&.to_i?) || min

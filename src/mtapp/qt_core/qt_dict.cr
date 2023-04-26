@@ -2,54 +2,19 @@ require "../mt_core/mt_defn"
 require "./qt_node"
 
 class MT::QtDict
-  @data = [] of Trie
+  @tries = [] of Trie
 
-  def initialize
-  end
-
-  # def load_tsv!(path : String) : self
-  #   trie = Trie.new
-
-  #   File.each_line(path) do |line|
-  #     next if line.empty?
-  #     zstr, defs = line.split('\t', 2)
-
-  #     node = defs.empty? ? nil : make_node(zstr, defs, 'ǀ')
-  #     trie[zstr] = node
-  #   end
-
-  #   @data << trie
-  #   self
-  # end
-
-  # load terms from dic file
-  def load_dic!(dname : String) : self
-    trie = Trie.new
-
-    db_path = MtDefn.db_path(dname)
-
-    DB.open("sqlite3:#{db_path}") do |db|
-      db.query_each "select zstr, vstr, _fmt from defns where vstr <> ''" do |rs|
-        zstr = rs.read(String)
-        vstr = rs.read(String).split('\t').first
-        fmt = FmtFlag.new(rs.read(Int32).to_u16)
-        trie[zstr] = QtNode.new(zstr: zstr, vstr: vstr, dic: 2, idx: 0, fmt: fmt)
-      end
-    end
-
-    @data << trie
-    self
-  end
-
-  @[AlwaysInline]
-  def make_node(zstr : String, defs : String, dic = 0, sep = '\t') : QtNode
-    QtNode.new(zstr: zstr, vstr: defs.split(sep).first, dic: dic, idx: 0)
+  def initialize(d_id : Int32, user : String = "")
+    @tries << Trie.new(MtDefn.db_path("common-main"))
+    @tries << Trie.new(MtDefn.db_path("common-user"), user) unless user.empty?
+    @tries << Trie.new(MtDefn.db_path("wnovel-main"), d_id)
+    @tries << Trie.new(MtDefn.db_path("wnovel-user"), d_id, user) unless user.empty?
   end
 
   def find_best(chars : Array(Char), start = 0) : QtNode
     output = nil
 
-    @data.reverse_each do |trie|
+    @tries.reverse_each do |trie|
       node = trie
 
       start.upto(chars.size &- 1) do |idx|
@@ -71,6 +36,37 @@ class MT::QtDict
     property data : QtNode? = nil
     getter trie = {} of Char => Trie
 
+    def initialize
+    end
+
+    def initialize(db_path : String)
+      DB.open("sqlite3://#{db_path}") do |db|
+        stmt = "select zstr, vstr, _fmt from defns where vstr <> ''"
+        db.query_each(stmt) { |rs| self.add!(rs, dic: 2) }
+      end
+    end
+
+    def initialize(db_path : String, user : String)
+      DB.open("sqlite3://#{db_path}") do |db|
+        stmt = "select zstr, vstr, _fmt from defns where vstr <> '' and uname = $1"
+        db.query_each(stmt, user) { |rs| self.add!(rs, dic: 4) }
+      end
+    end
+
+    def initialize(db_path : String, d_id : Int32)
+      DB.open("sqlite3://#{db_path}") do |db|
+        stmt = "select zstr, vstr, _fmt from defns where vstr <> '' and d_id = $1"
+        db.query_each(stmt, d_id) { |rs| self.add!(rs, dic: 6) }
+      end
+    end
+
+    def initialize(db_path : String, d_id : Int32, user : String)
+      DB.open("sqlite3://#{db_path}") do |db|
+        stmt = "select zstr, vstr, _fmt from defns where vstr <> '' and d_id = $1 and uname = $2"
+        db.query_each(stmt, d_id, user) { |rs| self.add!(rs, dic: 8) }
+      end
+    end
+
     def []=(zstr : String, data : QtNode?)
       node = self
 
@@ -79,6 +75,14 @@ class MT::QtDict
       end
 
       node.data = data
+    end
+
+    def add!(rs : DB::ResultSet, dic : Int32)
+      zstr = rs.read(String)
+      vstr = rs.read(String).split('\t').first
+
+      fmt = FmtFlag.new(rs.read(Int32).to_i16)
+      self[zstr] = QtNode.new(zstr: zstr, vstr: vstr, dic: dic, fmt: fmt, idx: 0)
     end
 
     def find!(zstr : String)
@@ -91,16 +95,5 @@ class MT::QtDict
 
       node
     end
-
-    # def find(zstr : String)
-    #   node = self
-
-    #   zstr.each_char do |char|
-    #     return unless trie = node.trie
-    #     return unless node = trie[char]?
-    #   end
-
-    #   node
-    # end
   end
 end

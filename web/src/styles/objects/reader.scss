@@ -83,3 +83,50 @@
     );
   }
 }
+
+.cv-line {
+  display: block;
+
+  color: var(--fgcolor, var(--fg-main));
+
+  .app-ff-1 & {
+    font-family: var(--font-sans);
+  }
+
+  .app-ff-2 & {
+    font-family: var(--font-serif);
+  }
+
+  .app-ff-3 & {
+    font-family: Nunito Sans, var(--font-sans);
+  }
+
+  .app-ff-4 & {
+    font-family: Lora, var(--font-serif);
+  }
+
+  .app-ff-5 & {
+    font-family: Roboto Slab, var(--font-serif);
+  }
+
+  // &.focus {
+  //   .tm-light & { @include bgcolor(warning, 2, 1); }
+  //   .tm-warm & { @include bgcolor(warning, 0, 4); }
+  //   .tm-dark & { @include bgcolor(neutral, 8, 9); }
+  //   .tm-oled & { @include bgcolor(neutral, 9, 8); }
+  // }
+}
+
+h1.cv-line {
+  line-height: 1.4em;
+  margin: 1em 0;
+  font-size: var(--head-fs);
+}
+
+p.cv-line {
+  margin: 1em 0;
+  text-align: justify;
+  text-justify: auto;
+  line-height: var(--textlh, 160%);
+  font-size: var(--para-fs);
+}

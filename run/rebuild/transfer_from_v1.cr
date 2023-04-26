@@ -31,7 +31,7 @@ struct Defn
     @mtime = rs.read(Int32)
 
     @uname = "!cv" if @uname.empty?
-    @_flag = @mtime > 0 ? 4 : 3
+    @_flag = @d_id == -3 ? 5 : @mtime > 0 ? 4 : 3
   end
 
   UPDATE_STMT = <<-SQL
@@ -65,14 +65,17 @@ def transfer(db_path : String, where_dic : String)
 
   puts "#{db_path}: #{defns.size} items"
 
-  DB.open("sqlite3:#{db_path}?synchronous=norma") do |db|
+  DB.open("sqlite3:#{db_path}?synchronous=normal") do |db|
     db.exec "begin"
     defns.values.sort_by!(&.mtime).each(&.save!(db))
     db.exec "commit"
   end
 end
 
+transfer(MT::MtDefn.db_path("common-main"), "dic = -2")
 transfer(MT::MtDefn.db_path("common-main"), "dic = -1 and tab = 1")
-transfer(MT::MtDefn.db_path("wnovel-main"), "dic > 0 and tab = 1")
+transfer(MT::MtDefn.db_path("common-main"), "dic = -3")
 transfer(MT::MtDefn.db_path("common-user"), "dic = -1 and tab > 1")
+
+transfer(MT::MtDefn.db_path("wnovel-main"), "dic > 0 and tab = 1")
 transfer(MT::MtDefn.db_path("wnovel-user"), "dic > 0 and tab > 1")

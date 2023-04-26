@@ -242,49 +242,6 @@
     padding-left: 0.25rem;
   }
 
-  .cv-line {
-    display: block;
-
-    color: var(--fgcolor, var(--fg-main));
-
-    :global(.app-ff-1) & {
-      font-family: var(--font-sans);
-    }
-    :global(.app-ff-2) & {
-      font-family: var(--font-serif);
-    }
-    :global(.app-ff-3) & {
-      font-family: Nunito Sans, var(--font-sans);
-    }
-    :global(.app-ff-4) & {
-      font-family: Lora, var(--font-serif);
-    }
-    :global(.app-ff-5) & {
-      font-family: Roboto Slab, var(--font-serif);
-    }
-
-    // &.focus {
-    //   :global(.tm-light) & { @include bgcolor(warning, 2, 1); }
-    //   :global(.tm-warm) & { @include bgcolor(warning, 0, 4); }
-    //   :global(.tm-dark) & { @include bgcolor(neutral, 8, 9); }
-    //   :global(.tm-oled) & { @include bgcolor(neutral, 9, 8); }
-    // }
-  }
-
-  :global(h1).cv-line {
-    line-height: 1.4em;
-    margin: 1em 0;
-    font-size: var(--head-fs);
-  }
-
-  :global(p).cv-line {
-    margin: 1em 0;
-    text-align: justify;
-    text-justify: auto;
-    line-height: var(--textlh, 160%);
-    font-size: var(--para-fs);
-  }
-
   .stats {
     display: inline-flex;
     align-items: center;

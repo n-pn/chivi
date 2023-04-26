@@ -70,10 +70,12 @@ class CV::QtranXlog
         ts_sdk, ts_acc,
         created_at
       ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-    SQL
+      returning *
+      SQL
 
-    db.exec stmt, @viuser_id, @input_hash, @char_count, @point_cost,
-      @wn_dic, @w_udic, @mt_ver, @cv_ner, @ts_sdk, @ts_acc, @created_at
+    db.query_one stmt, @viuser_id, @input_hash, @char_count, @point_cost,
+      @wn_dic, @w_udic, @mt_ver, @cv_ner, @ts_sdk, @ts_acc, @created_at,
+      as: QtranXlog
   end
 
   ####

@@ -1,8 +1,14 @@
 <script context="module" lang="ts">
   const links = [
-    ['mt', 'bolt', 'Dịch máy'],
-    ['tl', 'language', 'Dịch tay'],
-    ['bv', 'brand-bing', 'Dịch Bing'],
+    [
+      'tl',
+      'language',
+      'Dịch tay',
+      'Bản dịch có chỉnh sửa bởi người dùng Chivi',
+    ],
+    ['bv', 'brand-bing', 'Dịch Bing', 'Xem kết quả dịch từ Binh Translator'],
+    ['mt', 'bolt', 'Dịch máy', 'Dịch máy bằng phiên bản máy dịch hiện tại'],
+    ['qt', 'bolt', 'Dịch QT+', 'Dịch máy bằng phiên bản máy dịch thử nghiệm'],
   ]
 </script>
 
@@ -106,8 +112,12 @@
 </nav>
 
 <nav class="nav-list">
-  {#each links as [href, icon, text]}
-    <a href="{paths.curr}{href}" class="nav-link">
+  {#each links as [mode, icon, text, dtip]}
+    <a
+      href="{paths.curr}{mode}"
+      class="nav-link"
+      class:_active={mode == $page.data.rmode}
+      data-tip={dtip}>
       <SIcon class="show-ts" name={icon} />
       <span>{text}</span>
     </a>

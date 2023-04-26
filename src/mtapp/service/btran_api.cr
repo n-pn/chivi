@@ -202,7 +202,13 @@ class SP::Btran
     body = words.map { |text| {Text: text} }.to_json
 
     HTTP::Client.post(endpoint, headers: headers, body: body) do |res|
-      res.body_io.gets_to_end
+      unless res.status.success?
+        raise res.body_io.gets_to_end
+      end
+
+      output = Array(TlOutput).from_json(res.body_io)
+      raise "size mismatch" if output.size != words.size
+      output.map(&.translations.first.text)
     end
   end
 end

@@ -75,7 +75,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
     rpnode.update_content!(form.itext, persist: true)
 
     spawn Rproot.bump_on_new_reply!(rpnode.rproot_id)
-    spawn Notifier.on_user_making_reply(rpnode)
+    spawn Notifier.on_repl_event(rpnode)
     spawn Notifier.on_user_tagged_in_reply(rpnode)
 
     render json: RpnodeView.new(rpnode)

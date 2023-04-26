@@ -1,5 +1,5 @@
 @[Flags]
-enum MT::FmtFlag : UInt16
+enum MT::FmtFlag : Int16
   Hidden # do not render content
   Frozen # do not add cap
 
@@ -25,9 +25,9 @@ enum MT::FmtFlag : UInt16
     '⟨'  => AddCapAfter | NoSpaceAfter,
     '<'  => AddCapAfter | NoSpaceAfter,
     '‹'  => AddCapAfter | NoSpaceAfter,
-    '⟩'  => AddCapAfter | NoSpaceBefore,
-    '>'  => AddCapAfter | NoSpaceBefore,
-    '›'  => AddCapAfter | NoSpaceBefore,
+    '⟩'  => NoSpaceBefore,
+    '>'  => NoSpaceBefore,
+    '›'  => NoSpaceBefore,
     '“'  => AddCapPassive | NoSpaceAfter,
     '‘'  => AddCapPassive | NoSpaceAfter,
     '['  => AddCapPassive | NoSpaceAfter,
@@ -111,7 +111,7 @@ enum MT::FmtFlag : UInt16
     return None if zstr.empty?
     # return Hidden if zstr == "⛶"
 
-    flag = zstr.matches?(/[\P{Han}\P{L}\P{N}]/) ? None : AddCapPassive
+    flag = zstr.matches?(/[\p{Han}\p{L}\p{N}]/) ? None : AddCapPassive
 
     flag_of_first_char = detect(zstr[0])
     flag |= NoSpaceBefore if flag_of_first_char.no_space_before?
@@ -123,3 +123,5 @@ enum MT::FmtFlag : UInt16
     flag
   end
 end
+
+# puts MT::FmtFlag.auto_detect("“")
