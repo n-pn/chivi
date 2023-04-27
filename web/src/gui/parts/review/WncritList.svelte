@@ -42,16 +42,6 @@
 </script>
 
 <div class="filter">
-  <div class="sorts">
-    <span class="label">Sắp xếp:</span>
-    {#each Object.entries(sort_trans) as [sort, name]}
-      {@const href = pager.gen_url({ sort, smin: 1, smax: 5, pg: 1 })}
-      <a {href} class="m-chip _sort" class:_active={sort == opts.sort}>
-        <span>{name}</span>
-      </a>
-    {/each}
-  </div>
-
   <div class="stars">
     <span class="label">Số sao:</span>
 
@@ -64,6 +54,16 @@
       <a {href} class="m-star" class:_active>
         <span>{star}</span>
         <SIcon name="star" iset="sprite" />
+      </a>
+    {/each}
+  </div>
+
+  <div class="sorts">
+    <span class="label">Sắp xếp:</span>
+    {#each Object.entries(sort_trans) as [sort, name]}
+      {@const href = pager.gen_url({ sort, smin: 1, smax: 5, pg: 1 })}
+      <a {href} class="m-chip _sort" class:_active={sort == opts.sort}>
+        <span>{name}</span>
       </a>
     {/each}
   </div>
@@ -129,13 +129,6 @@
     min-height: 10rem;
   }
 
-  .sorts {
-    @include flex-cx($gap: 0.5rem);
-    @include bp-min(ts) {
-      align-items: left;
-    }
-  }
-
   .empty {
     @include flex-ca;
     flex-direction: column;
@@ -145,6 +138,13 @@
 
   .stars {
     @include flex-cx;
+    @include bp-min(ts) {
+      align-items: left;
+    }
+  }
+
+  .sorts {
+    @include flex-cx($gap: 0.5rem);
     margin-top: 0.5rem;
     @include bp-min(ts) {
       align-items: right;

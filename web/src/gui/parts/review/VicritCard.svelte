@@ -33,6 +33,12 @@
       memo.liked = memo_liked
     }
   }
+
+  $: book_path = book ? `/wn/${book.bslug}` : `/wn/${crit.book_id}`
+  $: crit_path = `${book_path}/uc/v${crit.id}`
+  $: edit_path = `${book_path}/uc/+crit?id=${crit.id}`
+
+  $: list_path = `/ul/v${list.id}-${list.tslug}`
 </script>
 
 <article class="crit island">
@@ -71,13 +77,13 @@
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="meta">&middot;</span> -->
 
-    <a class="meta" href="/uc/v{crit.id}">
+    <a class="meta" href="{crit_path}#vcrit">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
 
     {#if $_user.privi > 3 || $_user.uname == user.uname}
-      <a class="meta" href="/uc/+crit?wn={crit.book_id}&id={crit.id}">
+      <a class="meta" href={edit_path}>
         <SIcon name="pencil" />
         <span>Sửa chữa</span>
       </a>
@@ -101,7 +107,7 @@
         <span class="m-badge">{crit.like_count}</span>
       </button>
 
-      <a class="meta" href="/uc/v{crit.id}#repls">
+      <a class="meta" href="{crit_path}#repls">
         <SIcon name="message" />
         <span class="u-show-pl">Phản hồi</span>
         <span class="m-badge">{crit.repl_count}</span>
@@ -111,7 +117,7 @@
 
   {#if show_list && list}
     <footer class="list">
-      <a class="link _list" href="/ul/v{list.id}-{list.tslug}">
+      <a class="link _list" href={list_path}>
         <SIcon name="bookmarks" />
         <span>{list.title}</span>
         <span>({list.book_count} bộ truyện)</span>
@@ -130,10 +136,6 @@
 
     // @include bdradi();
     @include linesd(--bd-main, $inset: false);
-  }
-
-  .badge {
-    font-size: 0.85em;
   }
 
   .head {

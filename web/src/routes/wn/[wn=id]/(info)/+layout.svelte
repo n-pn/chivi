@@ -15,10 +15,10 @@
   $: _curr = map_tab_from_route($page.route.id || '')
 
   function map_tab_from_route(route_id: string) {
-    if (route_id.includes('crits')) return '/crits'
     if (route_id.includes('chaps')) return '/chaps'
-    if (route_id.includes('lists')) return '/lists'
-    if (route_id.includes('bants')) return '/bants'
+    if (route_id.includes('/uc')) return '/uc'
+    if (route_id.includes('/ul')) return '/ul'
+    if (route_id.includes('/gd')) return '/gd'
     return ''
   }
 
@@ -31,17 +31,17 @@
       text: 'Tổng quan',
     },
     {
-      href: '/bants',
+      href: '/gd',
       icon: 'message',
       text: 'Thảo luận',
     },
     {
-      href: '/crits',
+      href: '/uc',
       icon: 'stars',
       text: 'Đánh giá',
     },
     {
-      href: '/lists',
+      href: '/ul',
       icon: 'bookmarks',
       text: 'Thư đơn',
     },

@@ -25,7 +25,6 @@ struct YS::BookView
 
       jb.field "genres", @data.genres
       jb.field "bcover", cover_url
-      jb.field "scover", @data.scover
 
       jb.field "voters", @data.voters
       jb.field "rating", @data.rating / 10

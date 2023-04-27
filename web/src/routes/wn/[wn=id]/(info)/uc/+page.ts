@@ -9,16 +9,15 @@ export const load = (async ({ url, fetch, params, parent }) => {
 
   const data = await load_crits(url, fetch, { book, sort })
 
-  const new_crit_path = `/uc/+crit?wn=${book}`
-
   const { nvinfo } = await parent()
+  const new_crit_path = `/wn/${nvinfo.bslug}/uc/+crit`
 
   const _meta = {
     desc: nvinfo.bintro.substring(0, 300),
     left_nav: [
       home_nav('', ''),
       book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
-      nav_link('crits', 'Đánh giá', 'stars'),
+      nav_link('uc', 'Đánh giá', 'stars'),
     ],
     right_nav: [
       nav_link(new_crit_path, 'Tạo mới', 'circle-plus', { show: 'tl' }),

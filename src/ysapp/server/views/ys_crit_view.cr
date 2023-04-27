@@ -22,7 +22,7 @@ struct YS::CritView
       jb.field "stars", @data.stars
       jb.field "vtags", @data.vtags
 
-      @data.fix_vhtml(persist: true) if @data.vhtml.empty?
+      # @data.fix_vhtml(persist: true) if @data.vhtml.empty?
       jb.field "vhtml", @data.vhtml
 
       jb.field "like_count", @data.like_count
@@ -30,8 +30,6 @@ struct YS::CritView
 
       jb.field "ctime", @data.created_at.to_unix
       jb.field "utime", @data.utime
-    rescue err
-      puts err, @data.id
     end
   end
 

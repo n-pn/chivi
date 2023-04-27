@@ -4,6 +4,11 @@
 
   export let replies: CV.YsreplPage
   export let _active = true
+
+  const gen_avatar_url = (yu_id: number, u_pic: string) => {
+    if (!u_pic) return '/img/blank.png'
+    return `https://image.lkong.com/avatar/${yu_id}/${u_pic}`
+  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -20,11 +25,13 @@
     <section class="body">
       <div class="repls">
         {#each replies.repls as repl}
-          {@const user = replies.users[repl.yu_id]}
+          {@const src = gen_avatar_url(repl.yu_id, repl.u_pic)}
           <div class="repl">
+            <img class="u-pic" {src} alt={repl.uname} />
+
             <header class="repl-head">
-              <a class="repl-user" href="/uc?from=ys&user={user.id}"
-                >{user.uname}</a>
+              <a class="repl-user" href="/uc?from=ys&user={repl.yu_id}"
+                >{repl.uname}</a>
               <span class="fg-tert">·</span>
               <time class="repl-time">{get_rtime(repl.ctime)}</time>
 

@@ -7,29 +7,22 @@
   import { SIcon, Stars } from '$gui'
   import Truncate from '$gui/atoms/Truncate.svelte'
 
-  import YscritBook from './YscritBook.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
 
-  export let crit: CV.Yscrit
-  export let user: CV.Ysuser
-  export let book: CV.Crbook | null = null
-  export let list: CV.Yslist | null = null
+  export let ycrit: CV.YscritFull
 
-  export let show_book = true
   export let show_list = true
 
-  export let view_all = crit.vhtml.length < 600
+  export let view_all = ycrit.vhtml.length < 600
   export let big_text = false
-
-  let show_repls = false
 
   let body_type = 'vhtml'
 
-  let content = crit.vhtml
+  let content = ycrit.vhtml
   $: swap_content(body_type)
 
   let cached = {}
-  $: cached = { vhtml: crit.vhtml }
+  $: cached = { vhtml: ycrit.vhtml }
 
   let _onload = false
 
@@ -37,13 +30,13 @@
     let cached_data = cached[body_type]
 
     if (cached_data || body_type == 'vhtml') {
-      content = cached_data || crit.vhtml
+      content = cached_data || ycrit.vhtml
       return
     }
 
     _onload = true
 
-    const url = `/_ys/crits/${crit.id}/${body_type}`
+    const url = `/_ys/crits/${ycrit.yc_id}/${body_type}`
     const res = await globalThis.fetch(url)
     const res_text = await res.text()
     _onload = false
@@ -59,29 +52,28 @@
     deepl: ['DeepL (Eng)', 3],
   }
 
-  $: book_path = book ? `/wn/${book.bslug}` : `/wn/${crit.book_id}`
-  $: crit_path = `${book_path}/uc/y${crit.id}`
+  $: crit_path = `/wn/${ycrit.wn_slug}/uc/y${ycrit.yc_id}`
 </script>
 
 <crit-item class="island">
   <header>
-    <a class="meta _user" href="/uc?from=ys&user={user.id}">{user.uname}</a>
+    <a class="meta _user" href="/uc?from=ys&user={ycrit.yu_id}"
+      >{ycrit.uname}</a>
     <span class="meta">&middot;</span>
-    <a class="meta _time" href="/sp/qtran/crits/{crit.id}">
-      <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
+    <a class="meta _time" href="/sp/qtran/crits/{ycrit.yc_id}">
+      <span
+        >{rel_time(ycrit.utime)}{ycrit.utime != ycrit.ctime ? '*' : ''}</span>
     </a>
 
     <div class="right">
       <span class="meta _star">
-        <Stars count={crit.stars} />
+        <Stars count={ycrit.stars} />
       </span>
     </div>
   </header>
 
-  {#if show_book && book}<YscritBook {book} />{/if}
-
   <div class="vtags">
-    {#each crit.vtags as label}
+    {#each ycrit.btags as label}
       <a class="vtag" href="/uc?vtag={label}">
         <SIcon name="hash" />
         <span>{label}</span>
@@ -105,9 +97,7 @@
   </section>
 
   <footer class="foot" class:_sticky={view_all}>
-    <!-- <span class="meta">&middot;</span> -->
-
-    <a class="meta" href={crit_path}>
+    <a class="meta" href="{crit_path}#ycrit">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
@@ -140,23 +130,23 @@
       <span class="meta">
         <SIcon name="thumb-up" />
         <span class="u-show-pl">Ưa thích</span>
-        <span class="m-badge">{crit.like_count}</span>
+        <span class="m-badge">{ycrit.like_count}</span>
       </span>
 
       <a class="meta" href="{crit_path}#repls">
         <SIcon name="message" />
         <span class="u-show-pl">Phản hồi</span>
-        <span class="m-badge">{crit.repl_count}</span>
+        <span class="m-badge">{ycrit.repl_count}</span>
       </a>
     </div>
   </footer>
 
-  {#if show_list && list}
+  {#if show_list && ycrit.yl_slug}
     <footer class="list">
-      <a class="link _list" href="/ul/y{list.id}{list.vslug}">
+      <a class="link _list" href="/ul/y{ycrit.yl_slug}">
         <SIcon name="bookmarks" />
-        <span>{list.vname}</span>
-        <span>({list.book_count} bộ truyện)</span>
+        <span>{ycrit.yl_name}</span>
+        <span>({ycrit.yl_bnum} bộ truyện)</span>
       </a>
     </footer>
   {/if}

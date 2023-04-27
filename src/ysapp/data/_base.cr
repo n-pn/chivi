@@ -1,16 +1,10 @@
 require "compress/zip"
 require "clear"
 
-require "../../cv_env"
-require "../../_util/hash_util"
-require "../../_util/tran_util"
+require "./_data"
 
 Clear::Log.level = ::Log::Severity::Error if CV_ENV.production?
-
 Clear::SQL.init(CV_ENV.database_url)
-
-PG_DB = DB.open(CV_ENV.database_url)
-at_exit { PG_DB.close }
 
 class Clear::Model::Converter::BytesConverter
   def self.to_column(x) : Bytes?

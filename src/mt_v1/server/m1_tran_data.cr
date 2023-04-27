@@ -11,7 +11,7 @@ class M1::TranData
     when "crits"
       input, wn_id = load_remote("#{CRIT_URL}/#{name}/ztext", wn_id)
     when "repls"
-      input, wn_id = load_remote("#{REPL_URL}/#{name}/ztext", wn_id)
+      input, wn_id = load_remote("#{REPL_URL}/ztext/#{name}", wn_id)
     when "posts"
       input = File.read("tmp/qtran/#{name}.txt")
     when "chaps"

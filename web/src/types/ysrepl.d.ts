@@ -1,6 +1,8 @@
 declare namespace CV {
   interface Ysrepl {
     yu_id: number
+    uname: string
+    u_pic: string
 
     vhtml: string
     ctime: number
@@ -11,6 +13,5 @@ declare namespace CV {
 
   interface YsreplPage extends Paginate {
     repls: CV.Ysrepl[]
-    users: Record<number, CV.Ysuser>
   }
 }

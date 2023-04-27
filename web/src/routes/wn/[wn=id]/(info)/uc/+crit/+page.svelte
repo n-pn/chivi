@@ -36,7 +36,7 @@
       error = await res.text()
     } else {
       const crit = (await res.json()) as CV.Vicrit
-      await goto(`/uc/v${crit.id}`)
+      await goto(`/wn/${data.nvinfo.bslug}/uc/v${crit.id}`)
     }
   }
 
@@ -50,106 +50,97 @@
   ]
 </script>
 
-<article class="article island">
-  <h2>
-    Thêm/sửa đánh giá bộ truyện
-    <a class="fg-link" href="/wn/{data.bslug}">{data.bname}</a>
-  </h2>
+<h3 id="cform">{data.cform.id ? 'Sửa' : 'Tạo'} đánh giá truyện</h3>
 
-  <form class="form" {action} {method} on:submit={submit}>
-    <header class="head">
-      <span class="cv-user" data-privi={$_user.privi}>{$_user.uname}</span>
+<form class="form" {action} {method} on:submit={submit}>
+  <header class="head">
+    <span class="cv-user" data-privi={$_user.privi}>{$_user.uname}</span>
 
-      <span class="fg-tert">&middot;</span>
-      <span class="ctime">
-        {data.ctime ? rel_time(data.ctime) : 'đánh giá mới'}
-      </span>
+    <span class="fg-tert">&middot;</span>
+    <span class="ctime">
+      {data.ctime ? rel_time(data.ctime) : 'đánh giá mới'}
+    </span>
 
-      <span class="stars">
-        <span class="label show-pl">Đánh giá: </span>
-        {#each [1, 2, 3, 4, 5] as star}
-          <button
-            type="button"
-            class="star"
-            data-tip={scores[star]}
-            on:click={() => (data.cform.stars = star)}>
-            <Star active={star <= data.cform.stars} />
-          </button>
+    <span class="stars">
+      <span class="label show-pl">Đánh giá: </span>
+      {#each [1, 2, 3, 4, 5] as star}
+        <button
+          type="button"
+          class="star"
+          data-tip={scores[star]}
+          on:click={() => (data.cform.stars = star)}>
+          <Star active={star <= data.cform.stars} />
+        </button>
+      {/each}
+    </span>
+  </header>
+
+  {#if error}<section class="error">Lỗi: {error}</section>{/if}
+
+  <section class="ibody">
+    <textarea
+      class="input"
+      name="input"
+      rows="8"
+      placeholder="Nội dung đánh giá"
+      lang="vi"
+      bind:value={data.cform.input} />
+  </section>
+
+  <section class="btags">
+    <label class="label" for="btags">Nhãn: </label>
+    <input
+      type="text"
+      name="btags"
+      bind:value={data.cform.btags}
+      placeholder="Phân cách bằng dấu phẩy (,)" />
+  </section>
+
+  <footer class="foot">
+    <label class="vilist">
+      <span class="label">Thư đơn:</span>
+      <select
+        class="m-input"
+        name="vilist"
+        id="vilist"
+        bind:value={data.cform.bl_id}>
+        {#each data.lists as list}
+          <option value={list.id}>{list.title}</option>
         {/each}
-      </span>
-    </header>
+      </select>
+    </label>
 
-    {#if error}<section class="error">Lỗi: {error}</section>{/if}
+    <button
+      type="submit"
+      class="m-btn _primary _fill"
+      disabled={data.cform.input.length < 3}
+      on:click={submit}>
+      <SIcon name="send" />
+      <span>{data.cform.id ? 'Lưu' : 'Tạo'} đánh giá</span>
+    </button>
+  </footer>
+</form>
 
-    <section class="ibody">
-      <textarea
-        class="input"
-        name="input"
-        rows="8"
-        placeholder="Nội dung đánh giá"
-        lang="vi"
-        bind:value={data.cform.input} />
-    </section>
+<h4>Các đánh giá khác cho bộ truyện</h4>
 
-    <section class="btags">
-      <label class="label" for="btags">Nhãn: </label>
-      <input
-        type="text"
-        name="btags"
-        bind:value={data.cform.btags}
-        placeholder="Phân cách bằng dấu phẩy (,)" />
-    </section>
+{#each data.crits as crit}
+  {@const list = data.lists.find((x) => x.id == crit.list_id)}
+  {@const memo = data.memos[crit.id]}
 
-    <footer class="foot">
-      <label class="vilist">
-        <span class="label">Thư đơn:</span>
-        <select
-          class="m-input"
-          name="vilist"
-          id="vilist"
-          bind:value={data.cform.bl_id}>
-          {#each data.lists as list}
-            <option value={list.id}>{list.title}</option>
-          {/each}
-        </select>
-      </label>
-
-      <button
-        type="submit"
-        class="m-btn _primary _fill"
-        disabled={data.cform.input.length < 3}
-        on:click={submit}>
-        <SIcon name="send" />
-        <span>{data.cform.id ? 'Lưu' : 'Tạo'} đánh giá</span>
-      </button>
-    </footer>
-  </form>
-
-  <h3>Các đánh giá khác cho bộ truyện</h3>
-
-  {#each data.crits as crit}
-    {@const list = data.lists.find((x) => x.id == crit.list_id)}
-    {@const memo = data.memos[crit.id]}
-
-    <VicritCard
-      {crit}
-      user={$_user}
-      {list}
-      {memo}
-      book={undefined}
-      show_book={false} />
-  {:else}
-    <p class="fg-tert">Chưa có đánh giá khác.</p>
-  {/each}
-</article>
+  <VicritCard
+    {crit}
+    user={$_user}
+    {list}
+    {memo}
+    book={undefined}
+    show_book={false} />
+{:else}
+  <p class="fg-tert">Chưa có đánh giá khác.</p>
+{/each}
 
 <style lang="scss">
-  .article {
-    @include margin-y(var(--gutter));
-
-    p {
-      margin-top: 0.75rem;
-    }
+  p {
+    margin-top: 0.75rem;
   }
 
   .form {
@@ -265,7 +256,7 @@
     @include fgcolor(harmful, 5);
   }
 
-  h3 {
+  h4 {
     margin-top: 1rem;
   }
 </style>

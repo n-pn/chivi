@@ -44,7 +44,7 @@
     </button>
 
     <svelte:fragment slot="content">
-      <a class="gmenu-item _success" href="/uc/+crit?wn={nvinfo.id}">
+      <a class="gmenu-item _success" href="{root_path}/uc/+crit">
         <SIcon name="ballpen" />
         <span>Thêm đánh giá</span>
       </a>
