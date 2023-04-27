@@ -22,7 +22,7 @@ class RamCache(K, V)
     return entry.value if entry.stale >= stale
   end
 
-  def get(key : K, stale = Time.utc) : V
+  def get(key : K, stale = Time.utc, &) : V
     get?(key, stale).try { |x| return x }
     yield.tap { |x| set(key, x) }
   end

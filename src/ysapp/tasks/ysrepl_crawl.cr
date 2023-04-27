@@ -49,6 +49,7 @@ class YS::CrawlYslistByUser < CrawlTask
 
     start.upto(max_pages) do |pg_no|
       queue_init.reject!(&.pgmax.< pg_no)
+      break if queue_init.empty?
 
       queue = queue_init.map_with_index(1) do |init, index|
         Entry.new(
@@ -82,8 +83,6 @@ class YS::CrawlYslistByUser < CrawlTask
 
   def self.gen_queue_init(min_ttl = 1.day)
     output = [] of QueueInit
-
-    # fresh = (Time.utc - min_ttl).to_unix
 
     PG_DB.query_each(SELECT_STMT) do |rs|
       yc_id, total = rs.read(String, Int32)
