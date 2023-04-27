@@ -1,6 +1,7 @@
 require "json"
 require "uuid"
 require "http/client"
+require "../../_util/ram_cache"
 
 class SP::Btran
   ENDPOINT = "https://api.cognitive.microsofttranslator.com"
@@ -183,8 +184,16 @@ class SP::Btran
     end
   end
 
-  class_getter free_token : String do
-    HTTP::Client.get("https://edge.microsoft.com/translate/auth", &.body_io.gets_to_end)
+  @@free_token : String? = nil
+  @@free_token_expiry = Time.utc
+
+  def self.free_token : String
+    if free_token = @@free_token
+      return free_token if @@free_token_expiry >= Time.utc
+    end
+
+    @@free_token_expiry = Time.utc + 5.minutes
+    @@free_token = HTTP::Client.get("https://edge.microsoft.com/translate/auth", &.body_io.gets_to_end)
   end
 
   def self.free_translate(text : String, target = "vi")
@@ -193,21 +202,16 @@ class SP::Btran
 
   def self.free_translate(words : Enumerable(String), target = "vi")
     endpoint = "https://api.cognitive.microsofttranslator.com/translate?from=zh-Hans&to=#{target}&api-version=3.0&textType=plain"
+    body = words.map { |text| {Text: text} }.to_json
 
     headers = HTTP::Headers{
-      "Authorization" => "Bearer #{free_token}",
+      "Authorization" => "Bearer #{self.free_token}",
       "Content-Type"  => "application/json",
     }
 
-    body = words.map { |text| {Text: text} }.to_json
-
     HTTP::Client.post(endpoint, headers: headers, body: body) do |res|
-      unless res.status.success?
-        raise res.body_io.gets_to_end
-      end
-
+      raise res.body_io.gets_to_end unless res.status.success?
       output = Array(TlOutput).from_json(res.body_io)
-      raise "size mismatch" if output.size != words.size
       output.map(&.translations.first.text)
     end
   end
