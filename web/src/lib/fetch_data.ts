@@ -11,9 +11,10 @@ const get = async <T>(
 
 const empty_crits = {
   crits: [],
-  books: [],
-  users: [],
-  lists: [],
+  books: {},
+  users: {},
+  lists: {},
+  memos: {},
   pgmax: 0,
   pgidx: 0,
   total: 0,
@@ -28,10 +29,15 @@ export const load_crits = async (url: URL, fetch: CV.Fetch, opts = {}) => {
   const from = url.searchParams.get('from') || ''
 
   let vi: CV.VicritList = empty_crits
-  if (from != 'ys') vi = await get<CV.VicritList>('/_db/crits', fetch, search)
-
   let ys: CV.YscritList = empty_crits
-  if (from != 'vi') ys = await get<CV.YscritList>('/_ys/crits', fetch, search)
+
+  if (from != 'ys') {
+    vi = await get<CV.VicritList>('/_db/crits', fetch, search)
+  }
+
+  if (from == 'ys' || from == '') {
+    ys = await get<CV.YscritList>('/_ys/crits', fetch, search)
+  }
 
   return { vi, ys }
 }

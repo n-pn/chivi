@@ -28,7 +28,7 @@ struct YS::YscritPeek
   def self.fetch_one(id : Int32)
     PG_DB.query_one <<-SQL, id, as: self
     select
-      c.id::int as yc_id,
+      c.id as yc_id,
       extract(epoch from c.created_at)::bigint as ctime,
       c.utime as utime,
 

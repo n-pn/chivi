@@ -15,7 +15,7 @@ interface CritFormPage {
 
 export const load = (async ({ url, fetch, parent }) => {
   const id = +url.searchParams.get('id') || 0
-  const type = id ? 'Sửa' : 'Tạo'
+  const title = id ? 'Sửa đánh giá' : 'Thêm đánh giá'
 
   const { nvinfo } = await parent()
   const book_path = `/wn/${nvinfo.bslug}`
@@ -28,7 +28,7 @@ export const load = (async ({ url, fetch, parent }) => {
     left_nav: [
       nav_link(book_path, nvinfo.vtitle, 'book', { show: 'tl', kind: 'title' }),
       nav_link(book_path + '/uc', 'Đánh giá', 'stars', { show: 'tm' }),
-      nav_link(curr_path, type, 'ballpen', { show: 'ts' }),
+      nav_link(curr_path, title, 'ballpen', { show: 'pm' }),
     ],
     right_nav: [
       nav_link(`/ul/+list`, 'Thêm thư đơn', 'bookmarks', {
@@ -36,5 +36,5 @@ export const load = (async ({ url, fetch, parent }) => {
       }),
     ],
   }
-  return { ...data, _meta, _title: type + ' đánh giá' }
+  return { ...data, _meta, _title: title }
 }) satisfies PageLoad

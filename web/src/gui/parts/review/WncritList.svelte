@@ -11,6 +11,13 @@
     pgidx: 0,
     total: 0,
   }
+
+  const origs = [
+    ['', 'Tất cả', 'Hiển thị tất cả đánh giá'],
+    ['vi', 'Chivi', 'Đánh giá do người dùng Chivi viết'],
+    ['ys', 'Yousuu', 'Đánh giá sưu tầm từ yousuu.com'],
+    ['me', 'Của bạn', 'Đánh giá truyện của riêng bạn'],
+  ]
 </script>
 
 <script lang="ts">
@@ -25,6 +32,7 @@
   export let vi: CV.VicritList = empty_crits
 
   export let _sort = 'score'
+  export let bslug = ''
 
   export let show_book = true
   export let show_list = true
@@ -32,6 +40,7 @@
   $: pager = new Pager($page.url, { sort: _sort, smin: 1, smax: 5, pg: 1 })
 
   $: opts = {
+    from: $page.url.searchParams.get('from') || '',
     sort: _sort,
     smin: +$page.url.searchParams.get('smin') || 1,
     smax: +$page.url.searchParams.get('smax') || 5,
@@ -39,7 +48,34 @@
 
   $: pgidx = ys.pgidx > vi.pgidx ? ys.pgidx : vi.pgidx
   $: pgmax = ys.pgmax > vi.pgmax ? ys.pgmax : vi.pgidx
+
+  $: no_crit = vi.crits.length + ys.crits.length == 0
 </script>
+
+<header class="select">
+  <span class="label">Xuất xứ:</span>
+
+  {#each origs as [from, name, dtip]}
+    {@const page = { from, sort: _sort, smin: 1, smax: 5, pg: 1 }}
+    {@const href = pager.gen_url(page)}
+    <a
+      {href}
+      class="m-chip _sort"
+      class:_active={from == opts.from}
+      data-tip={dtip}>
+      <span>{name}</span>
+    </a>
+  {/each}
+
+  {#if bslug}
+    <nav class="right">
+      <a class="m-btn _primary _fill _sm" href="/wn/{bslug}/uc/+crit#cform">
+        <SIcon name="ballpen" />
+        <span class="show-pl">Viết đánh giá</span>
+      </a>
+    </nav>
+  {/if}
+</header>
 
 <div class="filter">
   <div class="stars">
@@ -61,7 +97,7 @@
   <div class="sorts">
     <span class="label">Sắp xếp:</span>
     {#each Object.entries(sort_trans) as [sort, name]}
-      {@const href = pager.gen_url({ sort, smin: 1, smax: 5, pg: 1 })}
+      {@const href = pager.gen_url({ sort, pg: 1 })}
       <a {href} class="m-chip _sort" class:_active={sort == opts.sort}>
         <span>{name}</span>
       </a>
@@ -95,10 +131,15 @@
       {view_all} />
   {/each}
 
-  {#if vi.crits.length + ys.crits.length == 0}
+  {#if bslug && no_crit}
     <div class="empty">
       <p class="fg-tert fs-i">Chưa có đánh giá.</p>
-      <p><slot name="add_crit" /></p>
+      <p>
+        <a class="m-btn _primary _fill _lg" href="/wn/{bslug}/uc/+crit#cform">
+          <SIcon name="ballpen" />
+          <span class="-text">Thêm đánh giá</span>
+        </a>
+      </p>
     </div>
   {/if}
 </div>
@@ -108,6 +149,19 @@
 </footer>
 
 <style lang="scss">
+  .select {
+    @include flex-ca();
+    gap: 0.5rem;
+
+    @include border($loc: bottom);
+    // margin-top: 0.25rem;
+    padding-bottom: 0.75rem;
+
+    .right {
+      margin-left: auto;
+    }
+  }
+
   .crits,
   .filter {
     @include bps(margin-left, 0rem, $tm: 0.75rem, $tl: 1.5rem);
@@ -116,13 +170,15 @@
 
   .filter {
     display: flex;
-    margin-top: 0.25rem;
-    @include bps(flex-direction, column, $ts: row);
+    margin-top: 0.5rem;
 
-    .label {
-      line-height: 1.75rem;
-      @include fgcolor(mute);
-    }
+    @include bps(flex-direction, column, $ts: row);
+  }
+
+  .label {
+    line-height: 1.75rem;
+    @include fgcolor(mute);
+    font-size: rem(15px);
   }
 
   .crits {
@@ -145,10 +201,10 @@
 
   .sorts {
     @include flex-cx($gap: 0.5rem);
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
     @include bp-min(ts) {
       align-items: right;
-      margin-top: 0;
+      // margin-top: 0;
       margin-left: auto;
     }
   }

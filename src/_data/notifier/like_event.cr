@@ -12,7 +12,7 @@ module CV::Notifier
     end
 
     Unotif.new(
-      viuser_id: target.viuser_id, content: liking_content(target, byuser),
+      viuser_id: target.viuser_id, content: liking_content(target),
       action: action, object_id: target.id, byuser_id: memoir.viuser_id,
       created_at: Time.unix(memoir.liked_at)
     ).create!

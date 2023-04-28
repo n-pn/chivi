@@ -6,13 +6,16 @@ class CV::VicritCtrl < CV::BaseCtrl
   @[AC::Route::GET("/")]
   def index(sort : String = "utime",
             smin : Int32 = 1, smax : Int32 = 5,
-            user : String? = nil, book : Int32? = nil, list : Int32? = nil,
+            from : String = "vi", user : String? = nil,
+            book : Int32? = nil, list : Int32? = nil,
             vtag : String? = nil)
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
     query = Vicrit.query.sort_by(sort)
 
+    query.where("viuser_id = ?", _vu_id) if from == "me"
     query.where("viuser_id = (select id from viusers where uname = ?)", user) if user
+
     query.where("nvinfo_id = ?", book) if book
     query.where("vilist_id = ?", list) if list
 

@@ -48,9 +48,13 @@
     'Rất khá (7.5/10)',
     'Tuyệt vời (10/10)',
   ]
+
+  const type = data.cform.id ? 'Sửa' : 'Thêm'
 </script>
 
-<h3 id="cform">{data.cform.id ? 'Sửa' : 'Tạo'} đánh giá truyện</h3>
+<h3 id="cform">
+  {type} đánh giá của bạn cho bộ truyện <strong>{data.nvinfo.vtitle}</strong>
+</h3>
 
 <form class="form" {action} {method} on:submit={submit}>
   <header class="head">
@@ -116,12 +120,12 @@
       disabled={data.cform.input.length < 3}
       on:click={submit}>
       <SIcon name="send" />
-      <span>{data.cform.id ? 'Lưu' : 'Tạo'} đánh giá</span>
+      <span class="show-ts">{data.cform.id ? 'Lưu' : 'Tạo'} đánh giá</span>
     </button>
   </footer>
 </form>
 
-<h4>Các đánh giá khác cho bộ truyện</h4>
+<h3>Các đánh giá khác của bạn cho bộ truyện:</h3>
 
 {#each data.crits as crit}
   {@const list = data.lists.find((x) => x.id == crit.list_id)}
@@ -135,7 +139,7 @@
     book={undefined}
     show_book={false} />
 {:else}
-  <p class="fg-tert">Chưa có đánh giá khác.</p>
+  <p class="fg-tert"><em>Chưa có đánh giá khác.</em></p>
 {/each}
 
 <style lang="scss">
@@ -256,7 +260,12 @@
     @include fgcolor(harmful, 5);
   }
 
-  h4 {
+  .form + h3 {
     margin-top: 1rem;
+  }
+
+  p.fg-tert {
+    line-height: 2rem;
+    margin-bottom: 0.5rem;
   }
 </style>
