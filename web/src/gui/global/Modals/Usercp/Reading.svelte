@@ -30,7 +30,7 @@
 <div class="chips">
   {#each ['reading', 'onhold', 'pending'] as status}
     {@const icon = status_icons[status]}
-    <a href="/@{$_user.uname}/books/{status}" class="chip">
+    <a href="/me/books/{status}" class="chip">
       <SIcon name={icon} />
       {status_names[status]}
     </a>

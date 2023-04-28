@@ -30,11 +30,6 @@ export const load = (async ({ url, fetch, parent }) => {
       nav_link(book_path + '/uc', 'Đánh giá', 'stars', { show: 'tm' }),
       nav_link(curr_path, title, 'ballpen', { show: 'pm' }),
     ],
-    right_nav: [
-      nav_link(`/ul/+list`, 'Thêm thư đơn', 'bookmarks', {
-        show: 'ts',
-      }),
-    ],
   }
   return { ...data, _meta, _title: title }
 }) satisfies PageLoad

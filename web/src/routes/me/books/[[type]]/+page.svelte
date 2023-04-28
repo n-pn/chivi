@@ -9,17 +9,14 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ books, pgidx, pgmax, uname, bmark } = data)
+  $: ({ books, pgidx, pgmax, bmark } = data)
 
   $: pager = new Pager($page.url)
 </script>
 
 <div class="tabs">
   {#each status_types as status}
-    <a
-      href="/@{uname}/books/{status}"
-      class="tab"
-      class:_active={status == bmark}>
+    <a href="/me/books/{status}" class="tab" class:_active={status == bmark}>
       {status_names[status]}
     </a>
   {/each}
@@ -28,7 +25,7 @@
 {#if books.length == 0}
   <div class="empty">Danh sách trống</div>
 {:else}
-  <WninfoList {books} nvtab="" />
+  <WninfoList {books} nvtab="chaps" />
 {/if}
 
 <Footer>
