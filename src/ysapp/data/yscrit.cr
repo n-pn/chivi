@@ -12,9 +12,7 @@ class YS::Yscrit
   self.table = "yscrits"
 
   primary_key type: :serial
-  column yc_id : Bytes #  mongodb objectid
-
-  column yl_id : Bytes = "".hexbytes # mongodb yslist objectid
+  column yc_id : Bytes
 
   column nvinfo_id : Int32 = 0
   column ysbook_id : Int32 = 0
@@ -26,18 +24,9 @@ class YS::Yscrit
   column vhtml : String = ""
 
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
-
-  column ztags : Array(String) = [] of String
   column vtags : Array(String) = [] of String
 
-  column utime : Int64 = 0 # list changed at by seconds from epoch
-
-  column info_rtime : Int64 = 0
-  column repl_rtime : Int64 = 0
-
-  column repl_total : Int32 = 0
   column repl_count : Int32 = 0
-
   column like_count : Int32 = 0
 
   timestamps
@@ -45,7 +34,7 @@ class YS::Yscrit
   scope :sort_by do |order|
     case order
     when "ctime" then self.order_by(id: :desc)
-    when "utime" then self.order_by(utime: :desc)
+    when "utime" then self.order_by(updated_at: :desc)
     when "likes" then self.order_by(like_count: :desc, stars: :desc)
     else              self.order_by(_sort: :desc, stars: :desc)
     end
@@ -70,15 +59,6 @@ class YS::Yscrit
     "#{self.yc_id}.#{ext}"
   end
 
-  def fix_vhtml(ztext = self.ztext, persist : Bool = false) : Nil
-    return if ztext.empty?
-
-    vtext = TranUtil.qtran(ztext, self.nvinfo_id, "txt") || "$$$"
-    self.vhtml = "<p>#{vtext.gsub('\n', "</p><p>")}</p>"
-
-    self.save! if persist
-  end
-
   def load_btran_from_disk : String
     load_htm_from_disk("bv", persist: true) { |ztext| TranUtil.btran(ztext) }
   end
@@ -98,10 +78,7 @@ class YS::Yscrit
         persist = false
       end
 
-      if persist
-        save_data_to_disk(html, type: type, ext: "htm")
-      end
-
+      save_data_to_disk(html, type: type, ext: "htm") if persist
       html
     end
   rescue err
@@ -122,46 +99,6 @@ class YS::Yscrit
     Log.debug { "save #{file_path} to #{zip_path}" }
   end
 
-  def set_tags(ztags : Array(String), force : Bool = false)
-    self.ztags = ztags
-    self.fix_vtags!(ztags) if force && !ztags.empty?
-  end
-
-  def set_text(ztext : String, force : Bool = false)
-    return if ztext == "请登录查看评论内容" || ztext.blank?
-    ztext = ztext.tr("\u0000", "\n").lines.map(&.strip).reject(&.empty?).join('\n')
-
-    self.ztext = ztext
-    self.fix_vhtml(ztext) if force # || self.vhtml.empty?
-  end
-
-  def fix_vtags!(ztags = self.ztags)
-    input = ztags.join('\n')
-    return if input.blank?
-
-    return unless output = TranUtil.qtran(input, wn_id: -2, format: "txt")
-    self.vtags = output.split('\n', remove_empty: true)
-  end
-
-  def set_book_id(ysbook_id : Int32, force : Bool = false)
-    self.ysbook_id = ysbook_id
-    return unless force || self.nvinfo_id == 0
-    self.nvinfo_id = Ysbook.get_wn_id(ysbook_id)
-  end
-
-  def set_list_id(yslist : Yslist)
-    self.yslist_id = yslist.id
-    self.yl_id = yslist.yl_id
-  end
-
-  def set_repl_total(value : Int32)
-    self.repl_total = value if value > self.repl_total
-  end
-
-  def set_like_count(value : Int32)
-    self.like_count = value if value > self.like_count
-  end
-
   ###################
 
   def self.load(id : Int32)
@@ -177,50 +114,4 @@ class YS::Yscrit
   end
 
   ####
-
-  def self.bulk_upsert(raw_crits : Array(RawYscrit), yl_id : Bytes? = nil, save_text : Bool = true) : Nil
-    raw_crits.each do |raw_crit|
-      yc_id = raw_crit.yc_id.hexbytes
-      out_crit = self.find(yc_id) || new({yc_id: yc_id})
-
-      out_crit.set_book_id(raw_crit.book.id)
-      out_crit.ysuser_id = raw_crit.user.id
-
-      out_crit.ys_id = yl_id if yl_id
-
-      out_crit.stars = raw_crit.stars
-      out_crit.set_tags(raw_crit.tags, force: false)
-      out_crit.set_text(raw_crit.ztext) if save_text
-
-      out_crit.set_like_count(raw_crit.like_count)
-      out_crit.set_repl_total(raw_crit.repl_total)
-
-      out_crit.created_at = raw_crit.created_at
-      out_crit.updated_at = raw_crit.updated_at || raw_crit.created_at
-
-      out_crit.utime = out_crit.updated_at.to_unix
-      out_crit.save!
-    rescue ex
-      Log.error(exception: ex) { raw_crit }
-    end
-  end
-
-  ####
-
-  def self.update_repl_total(yc_id : Bytes, total : Int32, rtime : Int64)
-    PG_DB.exec <<-SQL, total, rtime, yc_id
-      update yscrits
-      set repl_total = $1, repl_rtime = $2
-      where yc_id = $3 and repl_total < $1
-      SQL
-  end
-
-  def self.update_list_id(molist_id : Bytes)
-    PG_DB.exec <<-SQL, molist_id
-      update yscrits set yslist_id = (
-        select id from yslists
-        where yslists.yl_id = yscrits.yl_id
-      ) where yl_id = $1
-      SQL
-  end
 end

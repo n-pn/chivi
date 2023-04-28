@@ -57,6 +57,15 @@ targets:
   yslist_crawl_by_user:
     main: src/ysapp/tasks/yslist_crawl_by_user.cr
 
+  seed_yscrits_by_book:
+    main: run/yousuu/seed_yscrits_by_book.cr
+
+  seed_yscrits_by_list:
+    main: run/yousuu/seed_yscrits_by_list.cr
+
+  seed_yscrits_by_user:
+    main: run/yousuu/seed_yscrits_by_user.cr
+
 dependencies:
   tabkv:
     github: chi-vi/tabkv

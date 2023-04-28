@@ -43,7 +43,7 @@ class YS::InitCtrl < AC::Base
     raw_ysuser = json.comments.first.user
     Ysuser.update_crit_total(raw_ysuser.id, json.total, rtime)
 
-    Yscrit.bulk_upsert(json.comments)
+    YscritForm.bulk_upsert(json.comments, rtime: rtime)
     render text: json.comments.size
   end
 
@@ -57,7 +57,7 @@ class YS::InitCtrl < AC::Base
       where id = $2 and crit_total < $1
       SQL
 
-    Yscrit.bulk_upsert(json.comments)
+    YscritForm.bulk_upsert(json.comments, rtime: rtime)
     render text: json.comments.size
   end
 
@@ -65,8 +65,7 @@ class YS::InitCtrl < AC::Base
   def crits_by_list(json : RawListEntries, yl_id : String, rtime : Int64 = Time.utc.to_unix)
     yl_id = yl_id.hexbytes
     Yslist.update_book_total(yl_id, json.total, rtime)
-    Yscrit.bulk_upsert(json.books, save_text: true)
-    Yscrit.update_list_id(yl_id)
+    YscritForm.bulk_upsert(json.books, rtime: rtime, yl_id: yl_id)
     render text: json.books.size
   end
 
@@ -79,7 +78,7 @@ class YS::InitCtrl < AC::Base
 
   @[AC::Route::POST("/repls/by_crit/:yc_id", body: :json)]
   def repls_by_crit(json : RawCritReplies, yc_id : String, rtime : Int64 = Time.utc.to_unix)
-    Yscrit.update_repl_total(yc_id.hexbytes, json.total, rtime)
+    YscritForm.update_repl_total(yc_id.hexbytes, json.total, rtime)
 
     Ysuser.bulk_upsert!(json.repls.map(&.user))
     Ysrepl.bulk_upsert!(json.repls)

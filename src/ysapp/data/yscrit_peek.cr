@@ -30,7 +30,7 @@ struct YS::YscritPeek
     select
       c.id as yc_id,
       extract(epoch from c.created_at)::bigint as ctime,
-      c.utime as utime,
+      extract(epoch from c.updated_at)::bigint as utime,
 
       c.stars as stars,
       c.vtags as btags,
@@ -64,6 +64,13 @@ struct YS::YscritPeek
   def self.get_ztext(crit_id : Int32)
     PG_DB.query_one <<-SQL, crit_id, as: String
     select coalesce(ztext, '') from yscrits
+    where id = $1
+    SQL
+  end
+
+  def self.get_ztext_and_wn_id(crit_id : Int32)
+    PG_DB.query_one <<-SQL, crit_id, as: {String, Int32}
+    select ztext, nvinfo_id from yscrits
     where id = $1
     SQL
   end

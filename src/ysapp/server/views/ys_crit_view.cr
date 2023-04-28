@@ -29,7 +29,7 @@ struct YS::CritView
       jb.field "repl_count", @data.repl_count
 
       jb.field "ctime", @data.created_at.to_unix
-      jb.field "utime", @data.utime
+      jb.field "utime", @data.updated_at.to_unix
     end
   end
 

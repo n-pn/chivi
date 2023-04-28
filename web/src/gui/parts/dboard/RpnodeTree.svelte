@@ -16,6 +16,7 @@
 <div class="repl-list" class:_nest={level > 0}>
   {#each repls as repl}
     <RpnodeCard
+      {rproot}
       bind:repl
       bind:memo={memos[repl.id]}
       user={users[repl.user_id]}

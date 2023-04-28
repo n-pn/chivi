@@ -7,7 +7,7 @@
 require "../../src/ysapp/_raw/raw_ysrepl"
 require "../../src/ysapp/data/ysrepl"
 
-DIR = "var/ysraw/repls"
+DIR = "var/ysraw/repls-by-crit"
 
 Dir.children(DIR).each do |yc_id|
   seed_dir(yc_id)

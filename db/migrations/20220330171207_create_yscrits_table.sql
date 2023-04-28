@@ -1,5 +1,5 @@
 -- +micrate Up
-CREATE TABLE yscrits(
+CREATE TABLE yscrit(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   yc_id bytea NOT NULL UNIQUE,
   --
@@ -19,7 +19,6 @@ CREATE TABLE yscrits(
   ztags text[] NOT NULL DEFAULT '{}' ::text[],
   vtags text[] NOT NULL DEFAULT '{}' ::text[],
   --
-  utime bigint NOT NULL DEFAULT 0,
   info_rtime bigint NOT NULL DEFAULT 0,
   --
   repl_total int NOT NULL DEFAULT 0,
@@ -30,21 +29,21 @@ CREATE TABLE yscrits(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX yscrits_nvinfo_idx ON yscrits(nvinfo_id, _sort);
+CREATE INDEX yscrit_nvinfo_idx ON yscrit(nvinfo_id);
 
-CREATE INDEX yscrits_ysbook_idx ON yscrits(ysbook_id);
+CREATE INDEX yscrit_ysbook_idx ON yscrit(ysbook_id);
 
-CREATE INDEX yscrits_ysuser_idx ON yscrits(ysuser_id, created_at);
+CREATE INDEX yscrit_ysuser_idx ON yscrit(ysuser_id);
 
-CREATE INDEX yscrits_yslist_idx ON yscrits(yslist_id);
+CREATE INDEX yscrit_yslist_idx ON yscrit(yslist_id);
 
-CREATE INDEX yscrits_sorted_idx ON yscrits(_sort, stars);
+CREATE INDEX yscrit_rating_idx ON yscrit(stars);
 
-CREATE INDEX yscrits_update_idx ON yscrits(utime, stars);
+CREATE INDEX yscrit_update_idx ON yscrit(updated_at);
 
-CREATE INDEX yscrits_liked_idx ON yscrits(like_count, stars);
+CREATE INDEX yscrit_liked_idx ON yscrit(like_count);
 
-CREATE INDEX yscrits_vtags_idx ON yscrits USING GIN(vtags);
+CREATE INDEX yscrit_vtags_idx ON yscrit USING GIN(vtags);
 
 -- +micrate Down
-DROP TABLE IF EXISTS yscrits;
+DROP TABLE IF EXISTS yscrit;

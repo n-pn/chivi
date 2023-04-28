@@ -22,6 +22,8 @@
 </script>
 
 <a class="book" href="/wn/{nvinfo.bslug}/{route}">
+  <div class="tooltip">{nvinfo.vtitle} - {nvinfo.vauthor}</div>
+
   <div class="cover">
     <BCover srcset={nvinfo.bcover} />
     {#if nvinfo.voters > 10}
@@ -42,8 +44,34 @@
     @include bps(display, none, $tm: block, $ls: none);
   }
 
+  .book {
+    position: relative;
+  }
   .cover {
     position: relative;
+  }
+
+  .tooltip {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    padding: 0.375rem;
+    line-height: 1.25em;
+    font-family: var(--font-sans);
+
+    color: var(--bg-main);
+    background-color: var(--fg-secd);
+    opacity: 0.85;
+
+    @include ftsize(xs);
+    @include bdradi(0.25rem);
+
+    .book:hover & {
+      display: initial;
+    }
   }
 
   .extra {
@@ -86,11 +114,6 @@
 
     @include tm-dark {
       @include fgcolor(neutral, 3);
-    }
-
-    .book:hover & {
-      @include fgcolor(primary, 5);
-      display: block;
     }
   }
 

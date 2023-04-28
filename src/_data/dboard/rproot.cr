@@ -277,8 +277,13 @@ class CV::Rproot
 
   def self.load!(ruid : String)
     kind, ukey = ruid.split(':', 2)
-    kind = Kind.parse_ruid(kind)
-    find(kind, ukey) || init(kind, ukey).upsert!
+
+    if kind == "id"
+      find!(ukey.to_i)
+    else
+      kind = Kind.parse_ruid(kind)
+      find(kind, ukey) || init(kind, ukey).upsert!
+    end
   end
 
   def self.init(kind : Kind, ukey : String)

@@ -31,6 +31,11 @@ class YS::RawYscrit
 
   @[JSON::Field(key: "updateAt")]
   getter updated_at : Time?
+
+  def ztext?
+    return if @ztext.blank? || @ztext == "请登录查看评论内容"
+    @ztext.tr("\u0000", "\n").lines.map(&.strip).reject(&.empty?).join('\n')
+  end
 end
 
 record YS::RawBookComments, comments : Array(YS::RawYscrit), total : Int32 do

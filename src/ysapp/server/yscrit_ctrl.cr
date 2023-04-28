@@ -66,10 +66,9 @@ class YS::CritCtrl < AC::Base
 
   @[AC::Route::GET("/crits/:crit_id/ztext")]
   def ztext(crit_id : Int32)
-    ycrit = Yscrit.find!({id: crit_id})
-
-    response.headers["X-WN_ID"] = ycrit.nvinfo_id.to_s
-    render text: ycrit.ztext
+    ztext, wn_id = YscritPeek.get_ztext_and_wn_id(crit_id)
+    response.headers["X-WN_ID"] = wn_id.to_s
+    render text: ztext
   rescue err
     render :not_found, text: "Đánh giá không tồn tại"
   end
