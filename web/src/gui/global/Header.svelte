@@ -57,10 +57,8 @@
       {#if thread}
         <Item
           type="button"
-          text="Chat nhanh"
           icon="message-circle"
           data-kbd="f"
-          data-show="tl"
           on:click={() => popups.show('dboard')} />
       {/if}
 

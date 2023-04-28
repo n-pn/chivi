@@ -126,4 +126,12 @@ class CV::Dtopic
   def self.load!(id : Int32) : self
     CACHE.get(id) { find!({id: id}) }
   end
+
+  def self.inc_repl_count!(id : Int32, value = 1)
+    PGDB.exec <<-SQL, value, id
+      update cvposts
+      set repl_count = repl_count + $1
+      where id = $2
+      SQL
+  end
 end

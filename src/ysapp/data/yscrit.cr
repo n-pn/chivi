@@ -112,6 +112,4 @@ class YS::Yscrit
   def self.get_id(yc_id : Bytes)
     PG_DB.query_one("select id from yscrits where yc_id = $1", yc_id, as: Int32)
   end
-
-  ####
 end

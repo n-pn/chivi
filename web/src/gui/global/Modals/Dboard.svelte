@@ -19,7 +19,6 @@
 
     try {
       data = await api_get<Data>(path, fetch)
-      console.log(data)
     } catch (ex) {
       console.log(ex.mesage)
     }

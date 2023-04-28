@@ -56,7 +56,7 @@ SET
       AND m.liked_at > 0);
 
 UPDATE
-  cvposts AS repl_count
+  cvposts AS c
 SET
   like_count =(
     SELECT
@@ -68,3 +68,41 @@ SET
       AND m.viuser_id <> c.viuser_id
       AND m.target_type = 12
       AND m.liked_at > 0);
+
+---
+UPDATE
+  rproots AS h
+SET
+  repl_count =(
+    SELECT
+      count(*)
+    FROM
+      rpnodes AS r
+    WHERE
+      r.rproot_id = h.id);
+
+---
+UPDATE
+  cvposts AS c
+SET
+  repl_count =(
+    SELECT
+      repl_count
+    FROM
+      rproots AS h
+    WHERE
+      h.kind = 1
+      AND h.ukey = c.id::text);
+
+---
+UPDATE
+  vicrits AS c
+SET
+  repl_count =(
+    SELECT
+      repl_count
+    FROM
+      rproots AS h
+    WHERE
+      h.kind = 22
+      AND h.ukey = c.id::text);

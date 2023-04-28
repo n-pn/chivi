@@ -42,23 +42,6 @@ class CV::Rproot
       end
     end
 
-    def rkey(ukey : String)
-      case self
-      in Global then "xx:#{ukey}"
-      in Dtopic then "dt:#{ukey}"
-      in Wninfo then "ni:#{ukey}"
-      in Author then "na:#{ukey}"
-      in Wnseed then "ns:#{ukey}"
-      in Wnchap then "nc:#{ukey}"
-      in Vicrit then "vc:#{ukey}"
-      in Vilist then "vl:#{ukey}"
-      in Viuser then "vu:#{ukey}"
-      in Yscrit then "yc:#{ukey}"
-      in Yslist then "yl:#{ukey}"
-      in Ysuser then "yu:#{ukey}"
-      end
-    end
-
     def self.value(kind : self)
       kind.value
     end
@@ -89,10 +72,10 @@ class CV::Rproot
   class_getter table = "rproots"
   class_getter db : DB::Database = PGDB
 
-  field id : Int32 = 0, primary: true
+  field id : Int32 = 0, auto: true
 
-  field kind : Int16 = 0_i16
-  field ukey : String = ""
+  field kind : Int16 = 0_i16, primary: true
+  field ukey : String = "", primary: true
 
   field viuser_id : Int32 = 0
   field dboard_id : Int32 = 0
@@ -216,34 +199,39 @@ class CV::Rproot
   end
 
   def rkey
-    Kind.new(@kind).rkey(@ukey)
+    case Kind.new(@kind)
+    in .global? then "xx:#{@ukey}"
+    in .dtopic? then "dt:#{@ukey}"
+    in .wninfo? then "ni:#{@ukey}"
+    in .author? then "na:#{@ukey}"
+    in .wnseed? then "ns:#{@ukey}"
+    in .wnchap? then "nc:#{@ukey}"
+    in .vicrit? then "vc:#{@ukey}"
+    in .vilist? then "vl:#{@ukey}"
+    in .viuser? then "vu:#{@ukey}"
+    in .yscrit? then "yc:#{@ukey}"
+    in .yslist? then "yl:#{@ukey}"
+    in .ysuser? then "yu:#{@ukey}"
+    end
   end
 
-  def upsert!(db = @@db)
-    insert_fields = %w{
-      viuser_id dboard_id kind ukey
-      _type _name _link _desc
-      repl_count last_seen_at last_repl_at
-      created_at updated_at}
-
-    update_fields = insert_fields.reject(&.in?(%w(id kind, ukey, created_at)))
+  def do_upsert!(db = @@db)
+    fields = @@db_fields.reject("id")
 
     upsert_stmt = String.build do |sql|
       sql << "insert into " << @@table << '('
-      insert_fields.join(sql, ", ")
+      fields.join(sql, ", ")
       sql << ") values ("
-      (1..insert_fields.size).join(sql, ", ") { |i, _| sql << '$' << i }
+      (1..fields.size).join(sql, ", ") { |i, _| sql << '$' << i }
       sql << ") on conflict(kind, ukey) do update set "
-      update_fields.join(sql, ", ") { |field, _| sql << field << " = excluded." << field }
+
+      fields = fields.reject(&.in?(%w(kind ukey)))
+      fields.join(sql, ", ") { |field, _| sql << field << " = excluded." << field }
       sql << " returning *"
     end
 
-    db.query_one upsert_stmt,
-      @viuser_id, @dboard_id, @kind, @ukey,
-      @_type, @_name, @_link, @_desc,
-      @repl_count, @last_seen_at, @last_repl_at,
-      @created_at, @updated_at,
-      as: Rproot
+    Log.info { upsert_stmt }
+    db.query_one upsert_stmt, *self.db_values, as: Rproot
   end
 
   ####
@@ -267,12 +255,16 @@ class CV::Rproot
   end
 
   def self.bump_on_new_reply!(id : Int32, last_repl_at : Time = Time.utc)
-    # FIXME: update parent object
-
-    @@db.exec <<-SQL, last_repl_at, id
+    kind, ukey = @@db.query_one <<-SQL, last_repl_at, id, as: {Int16, String}
       update #{@@table} set repl_count = repl_count + 1, last_repl_at = $1
       where id = $2
+      returning kind, ukey
       SQL
+
+    case Kind.new(kind)
+    when .vicrit? then Vicrit.inc_repl_count!(ukey.to_i)
+    when .dtopic? then Dtopic.inc_repl_count!(ukey.to_i)
+    end
   end
 
   def self.load!(ruid : String)
@@ -282,7 +274,7 @@ class CV::Rproot
       find!(ukey.to_i)
     else
       kind = Kind.parse_ruid(kind)
-      find(kind, ukey) || init(kind, ukey).upsert!
+      find(kind, ukey) || init(kind, ukey).do_upsert!
     end
   end
 
