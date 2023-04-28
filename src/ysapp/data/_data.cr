@@ -5,6 +5,8 @@ require "../../cv_env"
 require "../../_util/hash_util"
 require "../../_util/tran_util"
 
+Log.setup_from_env
+
 PG_DB = DB.open(CV_ENV.database_url)
 at_exit { PG_DB.close }
 

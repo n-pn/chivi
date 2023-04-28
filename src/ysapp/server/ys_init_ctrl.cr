@@ -65,7 +65,11 @@ class YS::InitCtrl < AC::Base
   def crits_by_list(json : RawListEntries, yl_id : String, rtime : Int64 = Time.utc.to_unix)
     yl_id = yl_id.hexbytes
     Yslist.update_book_total(yl_id, json.total, rtime)
-    YscritForm.bulk_upsert!(json.books, rtime: rtime, yl_id: yl_id)
+    crits = YscritForm.bulk_upsert!(json.books, rtime: rtime)
+
+    vl_id = YS::DBRepo.get_vl_id(yl_id)
+    YscritForm.update_list_id(crits.map(&.id!), yl_id, vl_id)
+
     render text: json.books.size
   end
 

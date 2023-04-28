@@ -215,25 +215,6 @@ class CV::Rproot
     end
   end
 
-  def do_upsert!(db = @@db)
-    fields = @@db_fields.reject("id")
-
-    upsert_stmt = String.build do |sql|
-      sql << "insert into " << @@table << '('
-      fields.join(sql, ", ")
-      sql << ") values ("
-      (1..fields.size).join(sql, ", ") { |i, _| sql << '$' << i }
-      sql << ") on conflict(kind, ukey) do update set "
-
-      fields = fields.reject(&.in?(%w(kind ukey)))
-      fields.join(sql, ", ") { |field, _| sql << field << " = excluded." << field }
-      sql << " returning *"
-    end
-
-    Log.info { upsert_stmt }
-    db.query_one upsert_stmt, *self.db_values, as: Rproot
-  end
-
   ####
 
   def self.find!(id : Int32)
@@ -274,7 +255,7 @@ class CV::Rproot
       find!(ukey.to_i)
     else
       kind = Kind.parse_ruid(kind)
-      find(kind, ukey) || init(kind, ukey).do_upsert!
+      find(kind, ukey) || init(kind, ukey).upsert!
     end
   end
 

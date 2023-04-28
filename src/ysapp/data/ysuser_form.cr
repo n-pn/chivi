@@ -66,7 +66,7 @@ class YS::YsuserForm
   def self.find(id : Int32)
     stmt = String.build do |sql|
       sql << "select "
-      @@db_fields.join(sql, ", ")
+      @@load_fields.join(sql, ", ")
       sql << " from #{@@table} where id = $1"
     end
 

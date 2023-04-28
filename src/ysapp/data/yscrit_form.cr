@@ -11,8 +11,9 @@ class YS::YscritForm
   @@db : DB::Database = PG_DB
   # @@conflicts = {"yc_id"}
 
+  field id : Int32, auto: true
   field yc_id : Bytes, primary: true
-  field yl_id : Bytes? = nil
+  # field yl_id : Bytes? = nil
 
   field nvinfo_id : Int32 = 0
   field ysbook_id : Int32 = 0
@@ -23,18 +24,19 @@ class YS::YscritForm
   field ztext : String = ""
   field stars : Int32 = 0
 
-  field ztags : Array(String)
+  field ztags : Array(String) = [] of String
 
-  field info_rtime : Int64
-  field repl_total : Int32
-  field like_count : Int32
+  field info_rtime : Int64 = 0_i64
+  field repl_total : Int32 = 0
+  field like_count : Int32 = 0
 
-  field created_at : Time
-  field updated_at : Time
+  field created_at : Time = Time.utc
+  field updated_at : Time = Time.utc
 
-  def initialize(raw : RawYscrit, @info_rtime : Int64)
-    @yc_id = raw.yc_id.hexbytes
+  def initialize(@yc_id)
+  end
 
+  def import!(raw : RawYscrit, @info_rtime : Int64)
     @ysbook_id = raw.book.id
     @nvinfo_id = DBRepo.get_wn_id(@ysbook_id)
 
@@ -50,22 +52,23 @@ class YS::YscritForm
 
     @created_at = raw.created_at
     @updated_at = raw.updated_at || raw.created_at
+
+    self.upsert!
   end
 
-  def set_list_id(@yl_id : Bytes, @yslist_id = DBRepo.get_vl_id(yl_id))
+  @@load_stmt = stmt = String.build do |sql|
+    sql << "select "
+    @@load_fields.join(sql, ", ")
+    sql << " from #{@@table} where yc_id = $1"
   end
 
-  def self.bulk_upsert!(
-    raws : Array(RawYscrit),
-    rtime : Int64 = Time.utc.to_unix,
-    yl_id : Bytes? = nil, vl_id : Int32? = nil
-  ) : Nil
-    vl_id ||= DBRepo.get_vl_id(yl_id) if yl_id
+  def self.load(yc_id : Bytes)
+    PG_DB.query_one?(@@load_stmt, yc_id, as: self) || new(yc_id)
+  end
 
-    raws.each do |raw|
-      form = new(raw, info_rtime: rtime)
-      form.set_list_id(yl_id, vl_id) if yl_id && vl_id
-      form.upsert!(@@db)
+  def self.bulk_upsert!(raws : Array(RawYscrit), rtime : Int64 = Time.utc.to_unix)
+    raws.compact_map do |raw|
+      load(raw.yc_id.hexbytes).import!(raw, rtime)
     rescue ex
       Log.error(exception: ex) { raw.to_json }
     end
@@ -81,12 +84,17 @@ class YS::YscritForm
       SQL
   end
 
-  def self.update_list_id(molist_id : Bytes)
-    PG_DB.exec <<-SQL, molist_id
-      update yscrits set yslist_id = (
-        select id from yslists
-        where yslists.yl_id = yscrits.yl_id
-      ) where yl_id = $1
+  def self.update_list_id(ids : Array(Int32), yl_id : Bytes, vl_id : Int32)
+    PG_DB.exec <<-SQL, vl_id, yl_id, ids
+      update yscrits
+      set yslist_id = $1, yl_id = $2
+      where id = any ($3)
+      SQL
+  end
+
+  def self.update_list_id(yc_id : Bytes, yl_id : Bytes, vl_id : Int32)
+    PG_DB.exec <<-SQL, vl_id, yl_id, yc_id
+      update yscrits set yslist_id = $1, yl_id = $2 where id = $3
       SQL
   end
 end

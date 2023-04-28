@@ -33,7 +33,7 @@
 
   {#if data}
     <header class="head">
-      <h3>Bình luận {data.rproot.type} <strong>{data.rproot.name}</strong></h3>
+      <h3>Bình luận <strong>{data.rproot.name}</strong></h3>
     </header>
     {@const touser = data.rproot.user_id}
 
