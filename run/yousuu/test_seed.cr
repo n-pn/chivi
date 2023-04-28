@@ -1,26 +1,5 @@
 require "../../src/ysapp/data/yscrit_form"
 
-WHOLE = ARGV.includes?("--whole")
-
-DIR = "var/ysraw/crits-by-user"
-dirs = Dir.children(DIR)
-dirs.each_with_index(1) do |yu_id, idx|
-  files = Dir.glob("#{DIR}/#{yu_id}/*.zst")
-
-  files.select!(&.ends_with?("latest.json.zst")) unless WHOLE
-  next if files.empty?
-
-  files.sort_by! { |x| File.basename(x).split('.', 2).first.to_i? || 0 }
-  total = files.size
-
-  files.each_with_index(1) do |path, jdx|
-    puts "- [#{idx}/#{dirs.size}] <#{jdx}/#{total}>: #{path}"
-    seed_crit_by_user(path)
-  rescue ex
-    Log.error(exception: ex) { path }
-  end
-end
-
 def seed_crit_by_user(path : String)
   json = read_zstd(path)
   return unless json.includes?("data")
@@ -42,3 +21,5 @@ def seed_crit_by_user(path : String)
 
   puts "yuser: #{raw_user.id}, crits: #{crits.size}".colorize.yellow
 end
+
+seed_crit_by_user("var/ysraw/crits-by-user/1/1.latest.json.zst")

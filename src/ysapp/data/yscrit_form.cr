@@ -1,8 +1,7 @@
-require "./_data"
-require "./_util"
-
 require "crorm/model"
 
+require "./_data"
+require "./_util"
 require "../_raw/raw_yscrit"
 
 class YS::YscritForm
@@ -10,9 +9,10 @@ class YS::YscritForm
 
   @@table = "yscrits"
   @@db : DB::Database = PG_DB
+  # @@conflicts = {"yc_id"}
 
-  field yc_id : Bytes #  mongodb objectid
-  field yl_id : Bytes?
+  field yc_id : Bytes, primary: true
+  field yl_id : Bytes? = nil
 
   field nvinfo_id : Int32 = 0
   field ysbook_id : Int32 = 0
@@ -43,9 +43,7 @@ class YS::YscritForm
     @stars = raw.stars
     @ztags = raw.tags
 
-    if ztext = raw.ztext?
-      @ztext = ztext
-    end
+    raw.ztext?.try { |z| @ztext = z }
 
     @like_count = raw.like_count
     @repl_total = raw.repl_total
@@ -57,31 +55,11 @@ class YS::YscritForm
   def set_list_id(@yl_id : Bytes, @yslist_id = DBRepo.get_vl_id(yl_id))
   end
 
-  def upsert!(db = @@db)
-    fields = self.db_fields
-
-    stmt = String.build do |io|
-      io << "insert into #{@@table} ("
-      fields.join(io, ", ")
-
-      io << ") values ("
-      (1..fields.size).join(io, ", ") { |id, _| io << '$' << id }
-
-      io << ") on conflict (yc_id) do update set "
-      fields.reject("yc_id").join(io, ", ") do |field|
-        io << field << " = excluded." << field
-      end
-
-      io << " returning id"
-    end
-
-    # Log.debug { stmt.colorize.blue }
-    db.query_one(stmt, *db_values, as: Int32)
-  end
-
-  def self.bulk_upsert(raws : Array(RawYscrit),
-                       rtime : Int64 = Time.utc.to_unix,
-                       yl_id : Bytes? = nil, vl_id : Int32? = nil) : Nil
+  def self.bulk_upsert!(
+    raws : Array(RawYscrit),
+    rtime : Int64 = Time.utc.to_unix,
+    yl_id : Bytes? = nil, vl_id : Int32? = nil
+  ) : Nil
     vl_id ||= DBRepo.get_vl_id(yl_id) if yl_id
 
     raws.each do |raw|
@@ -89,7 +67,7 @@ class YS::YscritForm
       form.set_list_id(yl_id, vl_id) if yl_id && vl_id
       form.upsert!(@@db)
     rescue ex
-      Log.error(exception: ex) { raw }
+      Log.error(exception: ex) { raw.to_json }
     end
   end
 

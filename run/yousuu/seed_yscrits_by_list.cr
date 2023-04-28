@@ -31,7 +31,7 @@ def seed_crit_by_list(path : String, yl_id : Bytes)
   crits = data.books
 
   rtime = File.info(path).modification_time.to_unix
-  YS::YscritForm.bulk_upsert(crits, rtime, yl_id)
+  YS::YscritForm.bulk_upsert!(crits, rtime, yl_id)
 
   PG_DB.exec <<-SQL, data.total, rtime, yl_id
     update yslists

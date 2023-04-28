@@ -1,4 +1,5 @@
 require "../../src/ysapp/data/yscrit_form"
+require "../../src/ysapp/data/ysuser_form"
 
 DIR   = "var/ysraw/crits-by-book"
 WHOLE = ARGV.includes?("--whole")
@@ -27,9 +28,12 @@ def seed_crit_by_book(path : String, yb_id : Int32)
 
   data = YS::RawBookComments.from_json(json)
   crits = data.comments
+  return if crits.empty?
+
+  YS::YsuserForm.bulk_upsert!(crits.map(&.user))
 
   rtime = File.info(path).modification_time.to_unix
-  YS::YscritForm.bulk_upsert(crits, rtime)
+  YS::YscritForm.bulk_upsert!(crits, rtime)
 
   PG_DB.exec <<-SQL, data.total, yb_id
     update ysbooks set crit_total = $1
