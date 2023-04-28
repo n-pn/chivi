@@ -4,6 +4,8 @@ require "../../src/ysapp/data/ysuser_form"
 DIR   = "var/ysraw/crits-by-book"
 WHOLE = ARGV.includes?("--whole")
 
+Log.setup_from_env
+
 dirs = Dir.children(DIR)
 dirs.each_with_index(1) do |yb_id, idx|
   files = Dir.glob("#{DIR}/#{yb_id}/*.zst")

@@ -11,7 +11,7 @@ class YS::YsuserForm
   @@table = "ysusers"
   @@db : DB::Database = PG_DB
 
-  field id : Int32 = 0
+  field id : Int32, primary: true
 
   field zname : String = ""
   field vname : String = ""
@@ -67,10 +67,10 @@ class YS::YsuserForm
     stmt = String.build do |sql|
       sql << "select "
       @@db_fields.join(sql, ", ")
-      sql << "from #{@@table} where id = $1"
+      sql << " from #{@@table} where id = $1"
     end
 
-    PG_DB.query_one(stmt, id, as: self)
+    PG_DB.query_one?(stmt, id, as: self)
   end
 
   def self.load(id : Int32)

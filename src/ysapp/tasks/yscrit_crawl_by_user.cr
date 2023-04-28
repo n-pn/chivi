@@ -50,6 +50,8 @@ class YS::CrawlYscritByUser < CrawlTask
       expiry = pg_no * (pg_no - 1) // 2 + 1
       queue.reject!(&.existed?(expiry.days))
       crawler.crawl!(queue)
+
+      `/app/chivi.app/bin/fix_yscrits_vhtml`
     end
   end
 
