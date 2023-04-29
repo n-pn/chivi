@@ -15,15 +15,15 @@
 
   export let _sort = 'utime'
 
-  $: pager = new Pager($page.url, { sort: _sort, pg: 1, type: 'both' })
+  $: pager = new Pager($page.url, { sort: _sort, pg: 1, type: '' })
 
   $: opts = {
     sort: $page.url.searchParams.get('sort') || _sort,
     type: $page.url.searchParams.get('type') || 'both',
   }
 
-  $: pgidx = ys.pgidx > vi.pgidx ? ys.pgidx : vi.pgidx
-  $: pgmax = ys.pgmax > vi.pgmax ? ys.pgmax : vi.pgidx
+  $: pgidx = vi.pgidx > ys.pgidx ? vi.pgidx : ys.pgidx
+  $: pgmax = vi.pgmax > ys.pgmax ? vi.pgmax : ys.pgmax
 </script>
 
 <div class="filter">

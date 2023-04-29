@@ -45,7 +45,7 @@ class YS::CrawlYslistByUser < CrawlTask
     queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.yc_id}") }
 
     max_pages = queue_init.max_of(&.pgmax)
-    crawler = new(false)
+    crawler = new(reseed)
 
     start.upto(max_pages) do |pg_no|
       queue_init.reject!(&.pgmax.< pg_no)
@@ -77,7 +77,7 @@ class YS::CrawlYslistByUser < CrawlTask
 
   SELECT_STMT = <<-SQL
     select encode(yc_id, 'hex'), repl_total from yscrits
-    where repl_total > repl_count
+    where repl_count < repl_total
     order by repl_total desc
     SQL
 

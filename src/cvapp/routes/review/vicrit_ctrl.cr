@@ -24,7 +24,7 @@ class CV::VicritCtrl < CV::BaseCtrl
 
     query.where("? = any(btags)", vtag) if vtag
 
-    total = query.dup.limit(limit &* 3 &+ offset).count
+    total = query.dup.limit((pg_no &+ 2) &* limit).offset(0).count
     crits = query.limit(limit).offset(offset).to_a
 
     users = Viuser.preload(crits.map(&.viuser_id))

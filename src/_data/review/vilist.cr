@@ -69,7 +69,7 @@ class CV::Vilist
       model.patch!(
         title: "Đánh giá truyện chung của @[#{Viuser.get_uname(-id)}]",
         dtext: "Tổng hợp đánh giá các bộ truyện không theo đề tài cụ thể",
-        klass: "both",
+        klass: "",
         persist: true,
       )
 

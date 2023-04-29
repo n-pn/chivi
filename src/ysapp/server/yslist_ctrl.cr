@@ -15,7 +15,7 @@ class YS::ListCtrl < AC::Base
     pg_no, limit, offset = _paginate(max: 24)
 
     query = Yslist.sort_by(sort)
-    query.where("klass = ?", type) if type
+    query.where("klass = ?", type) if type && type != "both"
 
     query.where("ysuser_id = ?", user.split('-', 2)[0]) if user
     query.where("vslug LIKE '%-#{TextUtil.slugify(qs)}-%'") if qs
@@ -24,7 +24,7 @@ class YS::ListCtrl < AC::Base
 
     # query.where("book_count > 0")
 
-    total = query.dup.limit(offset &+ 2 &* limit).count
+    total = query.dup.limit((pg_no &+ 2) &* limit).offset(0).count
     lists = query.limit(limit).offset(offset).to_a
 
     users = Ysuser.preload(lists.map(&.ysuser_id))
@@ -33,6 +33,7 @@ class YS::ListCtrl < AC::Base
       lists: ListView.as_list(lists, true),
       users: UserView.as_hash(users),
       pgidx: pg_no,
+      total: total,
       pgmax: _pgidx(total, limit),
     }
   end

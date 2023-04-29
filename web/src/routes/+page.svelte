@@ -19,8 +19,8 @@
 <nav class="nav-list">
   {#each links as [href, icon, text]}
     <a {href} class="nav-link">
-      <SIcon class="show-ts" name={icon} />
-      <span>{text}</span>
+      <SIcon name={icon} />
+      <span class="show-ts">{text}</span>
     </a>
   {/each}
 </nav>
@@ -54,7 +54,7 @@
 <!-- <section class="list">
   <header class="head">
     <h3 class="text">Đánh giá mới nhất</h3>
-    <a class="link" href="/crits">Xem tất cả</a>
+    <a class="link" href="/uc">Xem tất cả</a>
   </header>
 
   <div class="ycrit-list">
@@ -68,7 +68,7 @@
 <section class="list">
   <header class="head">
     <h3 class="text">Thư đơn mới nhất</h3>
-    <a class="link" href="/lists">Xem tất cả</a>
+    <a class="link" href="/ul">Xem tất cả</a>
   </header>
 
   <div class="ylist-list">

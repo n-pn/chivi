@@ -14,12 +14,9 @@ export const load: PageLoad = (async ({ fetch, params, url }) => {
   // FIXME: add _mdesc and _image here
 
   const _meta: App.PageMeta = {
-    left_nav: [
-      home_nav('tm'),
-      nav_link(`/@${user}/crits`, 'Đánh giá', 'stars'),
-    ],
+    left_nav: [home_nav('tm'), nav_link(`/@${user}/uc`, 'Đánh giá', 'stars')],
     right_nav: [
-      nav_link(`/@${user}/lists`, 'Thư đơn', 'bookmarks', { show: 'tm' }),
+      nav_link(`/@${user}/ul`, 'Thư đơn', 'bookmarks', { show: 'tm' }),
     ],
   }
 

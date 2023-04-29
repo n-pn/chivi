@@ -94,7 +94,7 @@ class YS::YscritForm
 
   def self.update_list_id(yc_id : Bytes, yl_id : Bytes, vl_id : Int32)
     PG_DB.exec <<-SQL, vl_id, yl_id, yc_id
-      update yscrits set yslist_id = $1, yl_id = $2 where id = $3
+      update yscrits set yslist_id = $1, yl_id = $2 where yc_id = $3
       SQL
   end
 end

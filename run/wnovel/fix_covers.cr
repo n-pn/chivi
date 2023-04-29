@@ -3,19 +3,23 @@ require "../../src/_data/_data"
 require "../../src/_util/hash_util"
 
 DEAD_LINKS = {
+  "https://qidian.qpic.cn/qdbimg/0/300",
   "https://qidian.qpic.cn/qdbimg/1/300",
   "http://pic.hxcdn.net/www/cover0.jpg",
   "http://pic.hxcdn.net/www/cover1.jpg",
 }
 
 DEAD_HOSTS = {
-  "yododo", "bxwxorg", "biqugee", "jx\\.la", "zhwenpg", "shubaow", "chuantu",
-  "jjwxc", "xhhread", "kanshu", "hxcdn", "motie", "nofff", "aixs\\.org",
-  "photo\\.qq\\.com", "meowlove", "yuanchuangyanyi", "nosdn0\\.126\\.net",
-  "voidtech\\.cn", "read\\.fmx\\.cn", "file\\.ihuayue\\.cn", "picphotos\\.baidu\\.com",
-  "wal8\\.com", "s6\\.jpg\\.cm", "aliyuncs\\.com", "sinaimg\\.cn", "pic\\.iqy\\.ink",
-  "bvimg\\.com", "qifeng\\.com", "tietuku\\.com", "p\\.yoho\\.cn", "baixiongz\\.com",
-  "piimg\\.com", "buimg\\.com",
+  "bxwxorg\\.com", "biqugee\\.com", "jx\\.la", "zhwenpg", "shubaow\\.net",
+  "kanshu\\.com", "motieimg\\.com", "nofff\\.com", "aixs\\.org",
+  "b\\.heiyanimg\\.com", "xhhread\\.cn", "pic\\.hxcdn\\.net",
+  "pic\\.iqy\\.ink",
+  # "jjwxc", "chuantu", "yododo",
+  # "photo\\.qq\\.com", "meowlove", "yuanchuangyanyi", "nosdn0\\.126\\.net",
+  # "voidtech\\.cn", "read\\.fmx\\.cn", "file\\.ihuayue\\.cn", "picphotos\\.baidu\\.com",
+  # "wal8\\.com", "s6\\.jpg\\.cm", "aliyuncs\\.com", "sinaimg\\.cn",
+  # "bvimg\\.com", "qifeng\\.com", "tietuku\\.com", "p\\.yoho\\.cn", "baixiongz\\.com",
+  # "piimg\\.com", "buimg\\.com",
 }
 
 DEAD_HOSTS_RE = Regex.new("#{DEAD_HOSTS.join('|')}")
@@ -26,8 +30,8 @@ end
 
 def cache_cover(scover : String) : String
   bcover = HashUtil.digest32(scover, 8)
-  status = Process.run("./bin/bcover_cli -i '#{scover}' -n '#{bcover}'", shell: true, output: :inherit, error: :inherit)
-  status.success? ? "#{bcover}.webp" : ""
+  `./bin/bcover_cli -i "#{scover}" -n "#{bcover}"`
+  $?.success? ? "#{bcover}.webp" : ""
 end
 
 input = PGDB.query_all <<-SQL, as: {Int32, String}

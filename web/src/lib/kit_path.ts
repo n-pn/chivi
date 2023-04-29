@@ -41,7 +41,7 @@ export function chap_path(
 export function chap_tail(ch_no: number, cpart = 1, uslug = '', rmode = 'mt') {
   return cpart > 1
     ? `${ch_no}/${uslug}-${cpart}-${rmode}`
-    : `${ch_no}/${uslug}-${rmode}`
+    : `${ch_no}/${uslug}--${rmode}`
 }
 
 export function _pgidx(index: number, limit = 32) {

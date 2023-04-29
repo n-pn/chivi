@@ -73,7 +73,7 @@ class ProxyClient
 
     body = `curl -f -s -L -x #{proxy.host} -m 20 "#{link}"`
 
-    if !$?.success? || body.empty?
+    if !$?.success? || body.empty? || body == "请稍后访问"
       Log.info { "- <#{label}> failed, remain proxies: #{@proxies.size}".colorize.yellow }
       add_proxy(proxy.count_ng!) unless proxy.already_ng?
       return nil

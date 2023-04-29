@@ -13,13 +13,13 @@ class CV::VilistCtrl < CV::BaseCtrl
 
     query = Vilist.query.sort_by(sort)
 
-    query.where("klass = ?", type) if type
+    query.where("klass = ?", type) if type && type != "both"
     query.where("viuser_id = (select id from viusers where uname = ?)", user) if user
     query.where("id in (select vilist_id from vicrits where nvinfo_id = ?)", book) if book
 
     query.where("tslug LIKE '%#{TextUtil.slugify(qs)}%'") if qs
 
-    total = query.dup.limit(limit * 3 + offset).offset(0).count
+    total = query.dup.limit((pg_no &+ 2) &* limit).offset(0).count
     lists = query.limit(limit).offset(offset).to_a
     users = Viuser.preload(lists.map(&.viuser_id))
 
@@ -89,7 +89,7 @@ class CV::VilistCtrl < CV::BaseCtrl
   end
 
   private def init_form(list : Nil)
-    {id: 0, title: "[#{_uname}] Vô đề", dtext: "Tổng hợp truyện của tôi", klass: "both"}
+    {id: 0, title: "[#{_uname}] Vô đề", dtext: "Tổng hợp truyện của tôi", klass: ""}
   end
 
   private def init_form(list : Vilist)
@@ -107,7 +107,7 @@ class CV::VilistCtrl < CV::BaseCtrl
       @title = @title.strip
       @dtext = @dtext.strip
 
-      @klass = "both" unless @klass.in?("male", "female")
+      @klass = "" unless @klass.in?("male", "female")
     end
   end
 

@@ -17,39 +17,41 @@ Dir.mkdir_p(DIR)
 MAX_WIDTH = 300
 
 DEAD_LINKS = {
+  "https://qidian.qpic.cn/qdbimg/0/300",
   "https://qidian.qpic.cn/qdbimg/1/300",
   "http://pic.hxcdn.net/www/cover0.jpg",
   "http://pic.hxcdn.net/www/cover1.jpg",
 }
 
 DEAD_HOSTS = {
-  "yododo",
   "bxwxorg",
   "biqugee",
   "jx\\.la",
   "zhwenpg",
   "shubaow",
-  "chuantu",
-  "jjwxc",
-  "xhhread",
-  "kanshu",
-  "hxcdn",
-  "motie",
   "nofff",
-  "aixs\\.org",
-  "photo\\.qq\\.com",
-  "meowlove",
-  "yuanchuangyanyi",
-  "nosdn0\\.126\\.net",
-  "voidtech\\.cn",
-  "read\\.fmx\\.cn",
-  "file\\.ihuayue\\.cn",
-  "picphotos\\.baidu\\.com",
-  "wal8\\.com",
-  "s6\\.jpg\\.cm",
-  "aliyuncs\\.com",
-  "sinaimg\\.cn",
+  # "yododo",
+  # "jjwxc",
+  # "chuantu",
+  "xhhread\\.cn",
+  "kanshu\\.com",
+  "pic\\.hxcdn\\.net",
+  "iqing\\.in",
+  "motieimg\\.com",
   "pic\\.iqy\\.ink",
+  # "aixs\\.org",
+  # "photo\\.qq\\.com",
+  # "meowlove",
+  # "yuanchuangyanyi",
+  # "nosdn0\\.126\\.net",
+  # "voidtech\\.cn",
+  # "read\\.fmx\\.cn",
+  # "file\\.ihuayue\\.cn",
+  # "picphotos\\.baidu\\.com",
+  # "wal8\\.com",
+  # "s6\\.jpg\\.cm",
+  # "aliyuncs\\.com",
+  # "sinaimg\\.cn",
 }
 
 DEAD_HOSTS_RE = Regex.new("#{DEAD_HOSTS.join('|')}")
@@ -62,18 +64,18 @@ def image_path(name : String, ext : String = ".jpg")
   File.join(DIR, "#{name}#{ext}")
 end
 
-def map_extension(mime : String?) : String
-  case mime
-  when .nil?        then ".raw"
-  when "image/jpeg" then ".jpg"
-  when "image/png"  then ".png"
-  when "image/gif"  then ".gif"
-  when "image/webp" then ".webp"
-  when "text/html"  then ".html"
-  else
-    MIME.extensions(mime).first? || ".jpg"
-  end
-end
+# def map_extension(mime : String?) : String
+#   case mime
+#   when .nil?        then ".raw"
+#   when "image/jpeg" then ".jpg"
+#   when "image/png"  then ".png"
+#   when "image/gif"  then ".gif"
+#   when "image/webp" then ".webp"
+#   when "text/html"  then ".html"
+#   else
+#     MIME.extensions(mime).first? || ".jpg"
+#   end
+# end
 
 def valid_extension?(path : String)
   !File.extname(path).in?("", ".raw", ".txt", ".xml", ".html", ".json", ".ascii")
@@ -88,23 +90,21 @@ rescue
 end
 
 def fetch_image(link : String, name : String) : String
-  ext_name = ".jpg"
-  path = image_path(name, ext_name)
+  path = image_path(name, ".jpg")
+  File.delete?(path)
 
-  HTTP::Client.get(link) do |res|
-    _ext = map_extension(res.content_type)
-    path = path.sub(ext_name, _ext) if _ext != ext_name
+  `curl -f -s -L -m 20 "#{link}" -o "#{path}"`
+  raise "File not saved!" unless File.file?(path)
 
-    if !res.headers["Content-Encoding"]?.try(&.includes?("gzip"))
-      File.open(path, "w") { |file| IO.copy res.body_io, file }
-    else
-      Compress::Gzip::Reader.open(res.body_io) do |io|
-        File.open(path, "w") { |file| IO.copy io, file }
-      end
-    end
-  end
+  ext_name = `gm identify "#{path}"`.split(/\s+/, 3)[1].downcase
 
-  path
+  return path if ext_name == "jpg"
+  raise "invalid real extension" if ext_name.empty?
+
+  new_path = path.sub(/jpg$/, ext_name)
+  File.rename(path, new_path)
+
+  new_path
 rescue ex
   puts [link, ex.message].colorize.red
   exit 1

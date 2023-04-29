@@ -41,7 +41,7 @@
 
   <h3 class="sub">
     <sub-label>Đánh giá nổi bật</sub-label>
-    <a class="sub-link" href="{root_path}/crits">Xem tất cả</a>
+    <a class="sub-link" href="{root_path}/uc">Xem tất cả</a>
   </h3>
 
   <div class="crits">

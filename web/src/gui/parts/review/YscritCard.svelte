@@ -21,8 +21,6 @@
   export let view_all = crit.vhtml.length < 600
   export let big_text = false
 
-  let show_repls = false
-
   let body_type = 'vhtml'
 
   let content = crit.vhtml

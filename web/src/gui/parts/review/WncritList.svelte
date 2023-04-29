@@ -46,8 +46,8 @@
     smax: +$page.url.searchParams.get('smax') || 5,
   }
 
-  $: pgidx = ys.pgidx > vi.pgidx ? ys.pgidx : vi.pgidx
-  $: pgmax = ys.pgmax > vi.pgmax ? ys.pgmax : vi.pgidx
+  $: pgidx = vi.pgidx > ys.pgidx ? vi.pgidx : ys.pgidx
+  $: pgmax = vi.pgmax > ys.pgmax ? vi.pgmax : ys.pgmax
 
   $: no_crit = vi.crits.length + ys.crits.length == 0
 </script>
@@ -112,23 +112,19 @@
     {@const list = vi.lists[crit.list_id]}
     {@const memo = vi.memos[crit.id]}
 
-    <VicritCard {crit} {book} {user} {memo} {list} {show_book} {show_list} />
+    {#key crit.id}
+      <VicritCard {crit} {book} {user} {memo} {list} {show_book} {show_list} />
+    {/key}
   {/each}
 
   {#each ys.crits as crit}
-    {@const view_all = crit.vhtml.length < 600}
     {@const book = ys.books[crit.book_id]}
     {@const user = ys.users[crit.user_id]}
     {@const list = ys.lists[crit.list_id]}
 
-    <YscritCard
-      {crit}
-      {user}
-      {book}
-      {list}
-      {show_book}
-      {show_list}
-      {view_all} />
+    {#key crit.id}
+      <YscritCard {crit} {user} {book} {list} {show_book} {show_list} />
+    {/key}
   {/each}
 
   {#if bslug && no_crit}

@@ -33,10 +33,10 @@ module CV::WninfoInner
   def cache_cover(link = self.scover, persist : Bool = true) : Nil
     return if link.empty?
 
-    cname = HashUtil.digest32(link, 8)
-    `./bin/bcover_cli -i '#{self.scover}' -n '#{cname}'`
+    bcover = HashUtil.digest32(link, 8)
+    `./bin/bcover_cli -i "#{link}" -n "#{bcover}"`
 
-    self.bcover = $?.success? ? "#{cname}.webp" : ""
+    self.bcover = $?.success? ? "#{bcover}.webp" : ""
     self.save! if persist
   end
 
