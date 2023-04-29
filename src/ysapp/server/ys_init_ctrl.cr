@@ -82,11 +82,16 @@ class YS::InitCtrl < AC::Base
 
   @[AC::Route::POST("/repls/by_crit/:yc_id", body: :json)]
   def repls_by_crit(json : RawCritReplies, yc_id : String, rtime : Int64 = Time.utc.to_unix)
-    YscritForm.update_repl_total(yc_id.hexbytes, json.total, rtime)
+    yc_id = yc_id.hexbytes
+    vc_id = DBRepo.get_vc_id(yc_id)
+    repls = json.repls
 
-    Ysuser.bulk_upsert!(json.repls.map(&.user))
-    Ysrepl.bulk_upsert!(json.repls)
+    unless repls.empty?
+      YsuserForm.bulk_upsert!(json.repls.map(&.user))
+      YsreplForm.bulk_upsert!(json.repls, rtime, vc_id)
+    end
 
+    YscritForm.update_repl_total(yc_id, json.total, rtime)
     render text: json.total
   end
 end

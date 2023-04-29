@@ -11,8 +11,8 @@ puts "input: #{input.size}"
 
 engines = Hash(Int32, M1::MtCore).new { |h, k| h[k] = M1::MtCore.init(udic: k) }
 
-input.each_with_index(1) do |(yr_id, ztext, wn_id), index|
-  puts "- #{index}/#{input.size}: #{yr_id} => #{wn_id}"
+input.each_with_index(1) do |(vr_id, ztext, wn_id), index|
+  puts "- #{index}/#{input.size}: #{vr_id} => #{wn_id}"
 
   engine = engines[wn_id]
 
@@ -27,5 +27,5 @@ input.each_with_index(1) do |(yr_id, ztext, wn_id), index|
     end
   end
 
-  PGDB.exec "update ysrepls set vhtml = $1 where id = $2", vhtml, yr_id
+  PGDB.exec "update ysrepls set vhtml = $1 where id = $2", vhtml, vr_id
 end

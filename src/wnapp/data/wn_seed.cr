@@ -38,10 +38,10 @@ class WN::WnSeed
   field _flag : Int32 = 0
 
   @[DB::Field(ignore: true)]
-  getter remotes : Array(String) { Array(String).from_json(self.rm_links) }
+  getter remotes : Array(String) { Array(String).from_json(@rm_links) }
 
   @[DB::Field(ignore: true)]
-  getter chaps : WnRepo { WnRepo.load(self.sname, self.s_bid, self.wn_id) }
+  getter chaps : WnRepo { WnRepo.load(@sname, @s_bid, @wn_id) }
 
   def initialize(@wn_id, @sname, @s_bid = wn_id, privi = 1)
     @read_privi = @edit_privi = privi
@@ -67,15 +67,13 @@ class WN::WnSeed
       jb.field "chmax", @chap_total
       jb.field "utime", @mtime
 
-      # jb.field "stype", self.class.stype(self.sname)
-
       jb.field "edit_privi", @edit_privi
       jb.field "read_privi", @read_privi
     }
   end
 
-  def edit_privi(owner : String)
-    return self.edit_privi if self.sname[0] != '@'
+  def edit_privi(owner : String) : Int32
+    return @edit_privi unless @sname.stars_with?('@')
     @sname == owner ? 2 : 4
   end
 

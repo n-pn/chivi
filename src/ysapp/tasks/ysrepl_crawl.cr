@@ -33,7 +33,7 @@ class YS::CrawlYslistByUser < CrawlTask
 
     OptionParser.parse(argv) do |opt|
       opt.on("-p PAGE", "start page") { |i| start = i.to_i }
-      opt.on("-r", "Reseed content") { reseed = true }
+      opt.on("--reseed", "Reseed content") { reseed = true }
       opt.on("--update", "update counter") { update = true }
     end
 

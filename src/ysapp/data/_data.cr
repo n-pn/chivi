@@ -24,4 +24,10 @@ module YS::DBRepo
       select coalesce(id, 0) from yslists where yl_id = $1
       SQL
   end
+
+  def get_vc_id(yc_id : Bytes)
+    PG_DB.query_one <<-SQL, yc_id, as: Int32
+      select coalesce(id, 0) from yscrits where yc_id = $1
+      SQL
+  end
 end
