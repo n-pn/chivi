@@ -87,8 +87,6 @@ abstract class CrawlTask
 
     fails = [] of Entry
     qsize.times { results.receive.try { |x| fails << x } }
-
-    puts "  loop #{loop_no} done, failure: #{fails.size}"
     crawl!(fails, loop_no &+ 1)
   end
 

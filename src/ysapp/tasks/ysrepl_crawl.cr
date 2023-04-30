@@ -59,7 +59,7 @@ class YS::CrawlYslistByUser < CrawlTask
         )
       end
 
-      queue.reject!(&.existed?(3.months))
+      queue.reject!(&.existed?(10.days))
       crawler.crawl!(queue)
     end
   end

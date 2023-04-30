@@ -61,7 +61,7 @@ module M1::TlUtil
       end
 
       vtitle = engine.translate(ztitle)
-      prefix ? "#{prefix}#{vtitle}" : vtitle
+      prefix ? "#{BTITLE_PREFIX[prefix]}#{vtitle}" : vtitle
     end
 
     TextUtil.titleize(btitle)

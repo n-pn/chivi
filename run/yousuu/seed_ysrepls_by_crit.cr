@@ -10,9 +10,14 @@ require "../../src/ysapp/data/ysuser_form"
 DIR   = "var/ysraw/repls-by-crit"
 WHOLE = ARGV.includes?("--whole")
 
-Dir.children(DIR).each do |yc_id|
+dirs = Dir.children(DIR)
+# trash: 5ab33469f51f55f11cbac13b
+dirs.sort!
+
+dirs.each_with_index(1) do |yc_id, index|
   files = Dir.glob("#{DIR}/#{yc_id}/*.json.zst")
   files.select!(&.ends_with?("latest.json.zst")) unless WHOLE
+
   next if files.empty?
 
   files.sort_by! do |file|
@@ -24,7 +29,7 @@ Dir.children(DIR).each do |yc_id|
   seeded = Set(String).new
 
   max_count = 0
-  vc_id = YS::DBRepo.get_vc_id(yc_id.hexbytes)
+  vc_id = YS::DBRepo.get_vc_id(yc_id.hexbytes) rescue 0
 
   files.each do |file|
     seeded, max_count = seed_page(file, vc_id, seeded, max_count)
@@ -33,12 +38,21 @@ Dir.children(DIR).each do |yc_id|
   end
 
   # update max_count counter
-  PG_DB.exec <<-SQL, max_count, yc_id.hexbytes
+  PG_DB.exec <<-SQL, max_count, vc_id
     update yscrits set repl_total = $1
-    where yc_id = $2 and repl_total < $1
+    where id = $2 and repl_total < $1
     SQL
 
-  puts "- <#{yc_id}> total: #{max_count}, seeded: #{seeded.size}"
+  PG_DB.exec <<-SQL, vc_id
+    update yscrits set repl_count = (
+      select count(*) from ysrepls where ysrepls.yscrit_id = yscrits.id
+    )
+    where id = $1
+    SQL
+
+  puts "- <#{index}/#{dirs.size}> [#{yc_id}] total: #{max_count}, seeded: #{seeded.size}"
+rescue ex
+  Log.error(exception: ex) { yc_id }
 end
 
 # save current page
@@ -49,6 +63,8 @@ def seed_page(path : String, vc_id : Int32, seeded : Set(String), max_count : In
   max_count = data.total if max_count < data.total
 
   repls = data.repls.reject!(&.yr_id.in?(seeded))
+  return {seeded, max_count} if repls.empty?
+
   rtime = File.info(path).modification_time.to_unix
 
   YS::YsuserForm.bulk_upsert!(repls.map(&.user))

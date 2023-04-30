@@ -67,7 +67,7 @@ class YS::YsreplForm
     rtime : Int64 = Time.utc.to_unix,
     vc_id : Int32? = nil
   )
-    raws.map do |raw|
+    raws.each do |raw|
       self.load(raw.yr_id.hexbytes).import!(raw, rtime, vc_id)
     rescue ex
       Log.error(exception: ex) { raw.to_json }
