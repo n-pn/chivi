@@ -60,6 +60,11 @@ class CV::Vilist
     self.dhtml = PostUtil.md_to_html(dtext)
   end
 
+  def canonical_path
+    uname = Viuser.get_uname(self.viuser_id)
+    "/@#{uname}/ul/#{self.id}-#{self.tslug}"
+  end
+
   ###
   def self.load!(id : Int32)
     self.find({id: id}) || begin

@@ -11,41 +11,39 @@ module CV::Notifier
       html << " đã thích " << liking_content(target)
     end
 
-    Unotif.new(
+    output = Unotif.new(
       viuser_id: target.viuser_id, content: liking_content(target),
       action: action, object_id: target.id, byuser_id: memoir.viuser_id,
       created_at: Time.unix(memoir.liked_at)
-    ).create!
+    )
+
+    Log.info { output.to_json.colorize.yellow }
+    output.create!
   end
 
   private def liking_content(target : Rpnode) : String
-    rproot = Rproot.find!(id: target.rproot_id)
-
-    repl_link = "/gd/r#{rproot.id}#r#{target.id}"
-    root_link = rproot._link
-
+    gdroot = Gdroot.find!(id: target.gdroot_id)
     <<-HTML
-    <a href="#{repl_link}">bài viết của bạn</a> trong #{rproot._type}
-    <a href="#{root_link}">#{rproot._name}</a>.</p>
+    <a href="#{gdroot.gdrepl_link(target.id)}">bài viết của bạn</a>
+    trong #{gdroot.thread_type} <a href="#{gdroot.origin_link}">#{gdroot.oname}</a>.</p>
     HTML
   end
 
   private def liking_content(target : Dtopic)
-    link = "/gd/t-#{target.id}-#{target.tslug}"
     <<-HTML
-    chủ đề <a href="#{link}">#{target.title}</a> do bạn tạo.
+    chủ đề <a href="#{target.canonical_path}">#{target.title}</a> của bạn.
     HTML
   end
 
   private def liking_content(target : Vicrit)
     <<-HTML
-    <a href="/uc/v#{target.id}">đánh giá truyện</a> của bạn.
+    <a href="#{target.canonical_path}">đánh giá truyện</a> của bạn.
     HTML
   end
 
   private def liking_content(target : Vilist)
     <<-HTML
-    <a href="/ul/v#{target.id}-#{target.tslug}">thư đơn</a> của bạn.
+    <a href="#{target.canonical_path}">thư đơn</a> của bạn.
     HTML
   end
 

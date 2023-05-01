@@ -45,6 +45,11 @@ class CV::Vicrit
     self.save!
   end
 
+  def canonical_path
+    wninfo = Wninfo.load!(self.nvinfo_id)
+    "#{wninfo.canonical_path}/uc/v#{self.id}"
+  end
+
   ###
 
   def self.load!(id : Int32)

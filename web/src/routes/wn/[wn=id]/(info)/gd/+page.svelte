@@ -4,7 +4,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ rproot, rplist, nvinfo } = data)
+  $: ({ gdroot, rplist, nvinfo } = data)
 </script>
 
 <section>
@@ -17,7 +17,7 @@
       </em>
     </p>
   </header>
-  <RpnodeList {rproot} {rplist} />
+  <RpnodeList {gdroot} {rplist} />
 </section>
 
 <style lang="scss">

@@ -11,7 +11,7 @@ struct CV::RpnodeView
       jb.field "id", @data.id
 
       jb.field "user_id", @data.viuser_id
-      jb.field "head_id", @data.rproot_id
+      jb.field "head_id", @data.gdroot_id
 
       jb.field "touser_id", @data.touser_id
       jb.field "torepl_id", @data.torepl_id

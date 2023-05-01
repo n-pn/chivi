@@ -44,12 +44,13 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
     dtopic = Dtopic.new({viuser_id: _viuser.id, nvinfo_id: dboard.id})
     dtopic.update_content!(form)
-    spawn Rproot.new(dtopic).upsert!
 
     spawn do
       # TODO: directly call sql
       count = dboard.post_count &+ 1
       dboard.update!({post_count: count, board_bump: dtopic.utime})
+
+      Gdroot.new(:dtopic, dtopic.id.to_s).init_from(dtopic).upsert!
     end
 
     render json: DtopicView.new(dtopic)

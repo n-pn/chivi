@@ -1,6 +1,9 @@
 module CharUtil
   extend self
 
+  #### ⟨ => 〈
+  #### ⟩ => 〉
+
   NORMALIZE = {
     '〈' => '⟨',
     '〉' => '⟩',

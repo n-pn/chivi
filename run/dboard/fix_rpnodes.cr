@@ -1,4 +1,4 @@
-require "../../src/_data/dboard/rproot"
+require "../../src/_data/dboard/gdroot"
 require "../../src/_data/dboard/rpnode"
 
 # data = Array({Int32, Int32, Int32}).from_json(File.read "tmp/rpnodes.json")

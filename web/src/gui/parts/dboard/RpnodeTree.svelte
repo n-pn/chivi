@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-  export let rproot = ''
+  export let gdroot = ''
 
   export let repls: CV.Rpnode[]
   export let users: Record<number, CV.Viuser>
@@ -16,7 +16,7 @@
 <div class="repl-list" class:_nest={level > 0}>
   {#each repls as repl}
     <RpnodeCard
-      {rproot}
+      {gdroot}
       bind:repl
       bind:memo={memos[repl.id]}
       user={users[repl.user_id]}
@@ -24,7 +24,7 @@
 
     {#if repl.repls && repl.repls.length > 0}
       <svelte:self
-        {rproot}
+        {gdroot}
         repls={repl.repls}
         {users}
         {memos}

@@ -6,7 +6,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: rproot = `vc:${data.crit.id}`
+  $: gdroot = `vc:${data.crit.id}`
   $: touser = data.crit.user_id
 </script>
 
@@ -22,7 +22,7 @@
     Bình luận đánh giá <span class="m-badge">{data.rplist.repls.length}</span>
   </h3>
 
-  <RpnodeList rplist={data.rplist} {rproot} {touser} fluid={true} />
+  <RpnodeList rplist={data.rplist} {gdroot} {touser} fluid={true} />
 </section>
 
 <style lang="scss">

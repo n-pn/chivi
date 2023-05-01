@@ -4,12 +4,12 @@ import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 export const load = (async ({ url, fetch, params, parent }) => {
-  const rproot = `ni:${parseInt(params.wn, 10)}`
+  const gdroot = `wn:${parseInt(params.wn, 10)}`
 
   const sort = url.searchParams.get('sort') || '-id'
-  const path = `/_db/rproots/show/${rproot}?sort=${sort}`
+  const path = `/_db/gdroots/show/${gdroot}?sort=${sort}`
 
-  const { rplist } = await api_get<CV.RprootPage>(path, fetch)
+  const { rplist } = await api_get<CV.GdrootPage>(path, fetch)
   const { nvinfo } = await parent()
 
   const _title = `Thảo luận: ${nvinfo.vtitle}`
@@ -21,5 +21,5 @@ export const load = (async ({ url, fetch, params, parent }) => {
       nav_link('bants', 'Thảo luận', 'message'),
     ],
   }
-  return { rplist, rproot, sort, _meta, _title }
+  return { rplist, gdroot, sort, _meta, _title }
 }) satisfies PageLoad

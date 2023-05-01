@@ -1,14 +1,15 @@
 declare namespace CV {
-  interface Rproot {
-    user_id: number
-
+  interface Gdroot {
     id: number
     rkey: string
+    user_id: number
 
-    type: string
-    name: string
-    link: string
-    desc: string
+    dtype: string
+    rlink: string
+    title: string
+
+    oname: string
+    olink: string
 
     ctime: number
     utime: number
@@ -18,8 +19,8 @@ declare namespace CV {
     view_count: number
   }
 
-  interface RprootPage {
-    rproot: Rproot
+  interface GdrootPage {
+    gdroot: Gdroot
     rplist: Rplist
   }
 }

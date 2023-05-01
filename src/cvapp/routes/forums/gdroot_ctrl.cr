@@ -1,17 +1,16 @@
 require "../_ctrl_base"
-require "./rpnode_form"
 
-class CV::RprootCtrl < CV::BaseCtrl
-  base "/_db/rproots"
+class CV::GdrootCtrl < CV::BaseCtrl
+  base "/_db/gdroots"
 
   @[AC::Route::GET("/show/:ruid")]
   def thread(ruid : String, sort : String = "-id")
-    rproot = Rproot.load!(ruid)
+    gdroot = Gdroot.load!(ruid)
 
     pg_no, limit, offset = _paginate(min: 50, max: 2000)
 
     repls = Rpnode.query.where("id > 0").sort_by(sort)
-    repls.where("rproot_id = ?", rproot.id)
+    repls.where("gdroot_id = ?", gdroot.id)
 
     repls.limit(limit).offset(offset)
 
@@ -22,7 +21,7 @@ class CV::RprootCtrl < CV::BaseCtrl
     memos = Memoir.glob(_vu_id, :rpnode, repls.map(&.id.to_i))
 
     render json: {
-      rproot: RprootView.new(rproot),
+      gdroot: GdrootView.new(gdroot),
 
       rplist: {
         pgidx: pg_no,

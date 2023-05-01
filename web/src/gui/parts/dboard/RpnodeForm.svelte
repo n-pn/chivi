@@ -8,7 +8,7 @@
     itext: '',
     level: 0,
 
-    rproot: '',
+    gdroot: '',
     rpnode: 0,
     torepl: 0,
     touser: 0,

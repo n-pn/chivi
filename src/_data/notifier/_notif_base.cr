@@ -9,7 +9,7 @@ module CV::Notifier
   def render_content(uname : String, &)
     String.build do |html|
       html << "<p>"
-      html << %(<a href="/@#{uname}" class="cv-user">#{uname}</a>)
+      html << %(<a href="/@#{uname}" class="cv-user">#{uname}</a> )
       yield html
       html << "</p>"
     end

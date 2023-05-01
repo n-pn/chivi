@@ -1,7 +1,7 @@
 require "../_ctrl_base"
-require "./rpnode_form"
+require "./gdrepl_form"
 
-class CV::RpnodeCtrl < CV::BaseCtrl
+class CV::GdreplCtrl < CV::BaseCtrl
   base "/_db/mrepls"
 
   @[AC::Route::GET("/")]
@@ -44,7 +44,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
     render json: {
       pgidx: pg_no,
       repls: RpnodeView.as_list(repls),
-      # heads: RprootView.as_hash(heads),
+      # heads: GdrootView.as_hash(heads),
       users: ViuserView.as_hash(users),
       memos: MemoirView.as_hash(memos),
     }
@@ -52,11 +52,11 @@ class CV::RpnodeCtrl < CV::BaseCtrl
 
   private def glob_heads(repls : Enumerable(Rpnode), multi_heads = false)
     if repls.empty?
-      [] of Rproot
+      [] of Gdroot
     elsif multi_heads
-      Rproot.glob(repls.map(&.rproot_id).uniq!)
+      Gdroot.glob(repls.map(&.gdroot_id).uniq!)
     else
-      [Rproot.find!(repls.first!.rproot_id)]
+      [Gdroot.find!(repls.first!.gdroot_id)]
     end
   end
 
@@ -66,7 +66,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
 
     rpnode = Rpnode.new({
       viuser_id: _vu_id,
-      rproot_id: Rproot.load!(form.rproot).id,
+      gdroot_id: Gdroot.load!(form.gdroot).id,
       touser_id: form.touser,
       torepl_id: form.torepl,
     })
@@ -74,9 +74,8 @@ class CV::RpnodeCtrl < CV::BaseCtrl
     rpnode.level = form.level
     rpnode.update_content!(form.itext, persist: true)
 
-    spawn Rproot.bump_on_new_reply!(rpnode.rproot_id)
+    spawn Gdroot.bump_on_new_reply!(rpnode.gdroot_id)
     spawn Notifier.on_repl_event(rpnode)
-    spawn Notifier.on_user_tagged_in_reply(rpnode)
 
     render json: RpnodeView.new(rpnode)
   end
@@ -89,7 +88,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
       id:    rpnode.id,
       itext: rpnode.itext,
 
-      rproot: "id:#{rpnode.rproot_id}",
+      gdroot: "id:#{rpnode.gdroot_id}",
       touser: rpnode.touser_id,
       torepl: rpnode.torepl_id,
     }
@@ -103,7 +102,7 @@ class CV::RpnodeCtrl < CV::BaseCtrl
     guard_owner rpnode.viuser_id, 0, "sửa bình luận"
 
     rpnode.update_content!(form.itext, persist: true)
-    spawn Notifier.on_user_tagged_in_reply(rpnode)
+    spawn Notifier.on_tagged_in_reply(rpnode)
 
     render json: RpnodeView.new(rpnode)
   end

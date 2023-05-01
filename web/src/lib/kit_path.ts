@@ -18,7 +18,7 @@ export function seed_path(
   sname: string,
   pg_no: number = 0
 ): string {
-  const path = `/wn/${bslug}/chaps/${sname}`
+  const path = `/wn/${bslug}/ch/${sname}`
   return pg_no > 1 ? path + `?pg=${pg_no}` : path
 }
 

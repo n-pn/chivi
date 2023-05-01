@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
   const dtpath = `/_db/topics/${dt_id}`
   const cvpost = await api_get<CV.DtopicFull>(dtpath, fetch)
 
-  const rppath = `/_db/rproots/show/dt:${dt_id}`
+  const rppath = `/_db/gdroots/show/dt:${dt_id}`
   const { rplist } = await api_get<{ rplist: CV.Rplist }>(rppath, fetch)
 
   const { dboard, title } = cvpost.post

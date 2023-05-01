@@ -15,7 +15,7 @@ export const load = (async ({ params, fetch }) => {
   if (!_image.startsWith('/')) _image = '/covers/_blank.webp'
 
   const _mdesc = nvinfo.bintro.substring(0, 300)
-  const _board = `ni:${wn}`
+  const _board = `wn:${wn}`
 
   const _title = nvinfo.vtitle
 

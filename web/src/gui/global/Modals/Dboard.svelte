@@ -9,13 +9,13 @@
   export let actived = false
   export let thread = ''
 
-  type Data = { rproot: CV.Rproot; rplist: CV.Rplist }
+  type Data = { gdroot: CV.Gdroot; rplist: CV.Rplist }
   let data: Data
 
   $: if (browser && actived && thread) load_data(thread)
 
   async function load_data(thread: string) {
-    const path = `/_db/rproots/show/${thread}`
+    const path = `/_db/gdroots/show/${thread}`
 
     try {
       data = await api_get<Data>(path, fetch)
@@ -28,17 +28,19 @@
 <Slider class="dboard" bind:actived --slider-width="32rem">
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name="message-circle" /></div>
-    <div class="-text">{data?.rproot?.type || 'Bình luận chung'}</div>
+    <div class="-text">{data?.gdroot?.dtype || 'Bình luận chung'}</div>
   </svelte:fragment>
 
   {#if data}
     <header class="head">
-      <h3>Bình luận <strong>{data.rproot.name}</strong></h3>
+      <h3>{data.gdroot.title}</h3>
     </header>
-    {@const touser = data.rproot.user_id}
 
     <section class="body">
-      <RpnodeList {touser} rproot={thread} rplist={data.rplist} />
+      <RpnodeList
+        touser={data.gdroot.user_id}
+        gdroot={thread}
+        rplist={data.rplist} />
     </section>
   {/if}
 </Slider>
@@ -47,6 +49,10 @@
   // .-btn._active {
   // @include fgcolor(primary, 5);
   // }
+
+  .type:first-letter {
+    text-transform: upper;
+  }
 
   .-text {
     @include clamp($width: null);

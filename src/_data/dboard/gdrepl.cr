@@ -4,7 +4,7 @@ require "../_base"
 require "../member/viuser"
 require "../wnovel/wninfo"
 
-require "./rproot"
+require "./gdroot"
 require "./dtopic"
 
 class CV::Rpnode
@@ -14,7 +14,7 @@ class CV::Rpnode
   primary_key type: :serial
 
   column viuser_id : Int32 = 0
-  column rproot_id : Int32 = 0
+  column gdroot_id : Int32 = 0
 
   column touser_id : Int32 = 0 # parent viuser_id
   column torepl_id : Int32 = 0 # parent rpnode_id
@@ -73,26 +73,26 @@ class CV::Rpnode
     CACHE.get(id) { find!({id: id}) }
   end
 
-  def self.get_all(rproot_id : Int32)
-    self.query.where("rproot_id = ?", rproot_id).to_a
+  def self.get_all(gdroot_id : Int32)
+    self.query.where("gdroot_id = ?", gdroot_id).to_a
 
-    # PGDB.query_all <<-SQL, rproot_id, as: self
+    # PGDB.query_all <<-SQL, gdroot_id, as: self
     #   select * from #{@@table}
-    #   where rproot_id = $1  and id > 0
+    #   where gdroot_id = $1  and id > 0
     #   SQL
   end
 
-  def self.repl_count(rproot_id : Int32)
-    PGDB.query_one <<-SQL, rproot_id, as: Int32
+  def self.repl_count(gdroot_id : Int32)
+    PGDB.query_one <<-SQL, gdroot_id, as: Int32
       select coalesce(count(*)) from #{@@table}
-      where trproot_idhread_id = $1 and id > 0
+      where gdroot_id = $1 and id > 0
       SQL
   end
 
-  def self.member_ids(rproot_id : Int32)
-    PGDB.query_all <<-SQL, rproot_id, as: Int32
+  def self.member_ids(gdroot_id : Int32)
+    PGDB.query_all <<-SQL, gdroot_id, as: Int32
       select distinct(viuser_id) from #{@@table}
-      where rproot_id = $1
+      where gdroot_id = $1
     SQL
   end
 end

@@ -10,7 +10,7 @@
   export let user: CV.Viuser
   export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
 
-  export let rproot = `id:${repl.head_id}`
+  export let gdroot = `id:${repl.head_id}`
 
   export let on_focus = false
   export let nest_level = 0
@@ -99,7 +99,7 @@
         rpnode: 0,
         torepl: repl.id,
         touser: repl.user_id,
-        rproot,
+        gdroot,
       }}
       disabled={$_user.privi < 0}
       on_destroy={handle_repl_form} />

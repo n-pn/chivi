@@ -19,7 +19,6 @@ export const load = (async ({ url, fetch, params }) => {
   const { id, vslug, vname, vdesc } = data.ylist
 
   const _meta: App.PageMeta = {
-    desc: vdesc,
     left_nav: [
       home_nav('', ''),
       nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' }),
@@ -28,5 +27,5 @@ export const load = (async ({ url, fetch, params }) => {
     right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
   }
 
-  return { ...data, _meta, _title: `Thư đơn: ${vname}` }
+  return { ...data, _meta, _title: `Thư đơn: ${vname}`, _mdesc: vdesc }
 }) satisfies PageLoad

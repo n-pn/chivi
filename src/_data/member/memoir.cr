@@ -2,13 +2,13 @@ require "../_base"
 require "./unotif"
 
 require "../dboard/dtopic"
-require "../dboard/rpnode"
+require "../dboard/gdroot"
 
 class CV::Memoir
   enum Type : Int16
     Viuser = 1
 
-    Rproot = 10
+    Gdroot = 10
     Rpnode = 11
 
     Dtopic = 12

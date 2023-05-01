@@ -2,7 +2,7 @@
   import RpnodeTree from './RpnodeTree.svelte'
   import RpnodeForm from './RpnodeForm.svelte'
 
-  export let rproot = ''
+  export let gdroot = ''
   export let touser = 0
   export let rplist: CV.Rplist
 
@@ -43,7 +43,7 @@
       rpnode: 0,
       torepl: 0,
       touser,
-      rproot,
+      gdroot,
     }}
     placeholder="Thêm bình luận mới"
     on_destroy={on_rpnode_form} />
@@ -51,7 +51,7 @@
 
 {#if rplist.repls.length > 0}
   <RpnodeTree
-    {rproot}
+    {gdroot}
     repls={build_tree(rplist.repls)}
     users={rplist.users}
     memos={rplist.memos}

@@ -7,7 +7,7 @@
 
   $: ({ dboard, cvpost, rplist } = data)
 
-  $: rproot = `dt:${cvpost.post.id}`
+  $: gdroot = `dt:${cvpost.post.id}`
   $: touser = cvpost.post.user_id
 </script>
 
@@ -24,7 +24,7 @@
 
 <section>
   <h3>Bình luận chủ đề ({rplist.repls.length})</h3>
-  <RpnodeList {rplist} {rproot} {touser} fluid={true} />
+  <RpnodeList {rplist} {gdroot} {touser} fluid={true} />
 </section>
 
 <style lang="scss">

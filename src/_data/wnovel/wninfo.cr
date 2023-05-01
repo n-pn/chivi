@@ -158,6 +158,10 @@ class CV::Wninfo
 
   include WninfoInner
 
+  def canonical_path
+    "/wn/#{self.id}-#{self.bslug}"
+  end
+
   #########################################
 
   def self.preload(ids : Array(Int32))

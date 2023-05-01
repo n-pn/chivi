@@ -119,6 +119,11 @@ class CV::Dtopic
     update!(state: admin ? -3 : -2)
   end
 
+  def canonical_path
+    # TODO: add dboard slug
+    "/gd/t#{self.id}-#{self.tslug}"
+  end
+
   #################
 
   CACHE = RamCache(Int32, self).new(1024, ttl: 10.minutes)

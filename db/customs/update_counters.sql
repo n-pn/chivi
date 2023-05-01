@@ -71,7 +71,7 @@ SET
 
 ---
 UPDATE
-  rproots AS h
+  gdroots AS h
 SET
   repl_count =(
     SELECT
@@ -79,7 +79,7 @@ SET
     FROM
       rpnodes AS r
     WHERE
-      r.rproot_id = h.id);
+      r.gdroot_id = h.id);
 
 ---
 UPDATE
@@ -89,7 +89,7 @@ SET
     SELECT
       repl_count
     FROM
-      rproots AS h
+      gdroots AS h
     WHERE
       h.kind = 1
       AND h.ukey = c.id::text);
@@ -102,7 +102,7 @@ SET
     SELECT
       repl_count
     FROM
-      rproots AS h
+      gdroots AS h
     WHERE
       h.kind = 22
       AND h.ukey = c.id::text);
