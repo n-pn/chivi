@@ -12,6 +12,8 @@
     if (num < 1000) return num
     return Math.round(num / 1000) + 'k'
   }
+
+  $: list_path = `/@${user.uname}/ul/${list.id}-${list.tslug}`
 </script>
 
 <article class="yslist">
@@ -29,7 +31,7 @@
   </div>
 
   <div class="infos">
-    <a class="vname" href="/ul/v{list.id}-{list.tslug}">{list.title}</a>
+    <a class="vname" href={list_path}>{list.title}</a>
 
     <div class="genres">
       {#each (list.genres || []).slice(0, 4) as genre}

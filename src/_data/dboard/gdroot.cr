@@ -71,7 +71,7 @@ class CV::Gdroot
   # field dboard_id : Int32 = 0
 
   # link to official comment page if different from default one
-  # default link: `/gd/r{id}`
+  # default link: `/gd/d{id}`
   # for examples:
   # - general discusion topic, the link is `/gc/t{t_id}` instead
   # - book general discussion, the link is `wn/{b_id}/gd/bants`
@@ -229,6 +229,27 @@ class CV::Gdroot
     in .vilist? then "thư đơn truyện"
     in .vicrit? then "đánh giá truyện"
     in .viuser? then "trang người dùng"
+      ##
+    in .yslist? then "thư đơn yousuu"
+    in .yscrit? then "đánh giá yousuu"
+    in .ysuser? then "người dùng yousuu"
+      ##
+    end
+  end
+
+  def origin_type
+    case Gdroot::Kind.new(@kind)
+    in .global? then "thảo luận chung"
+    in .dtopic? then "chủ đề thảo luận"
+      ##
+    in .author? then "trang tác giả"
+    in .wninfo? then "bộ truyện"
+    in .wnseed? then "danh sách chương"
+    in .wnchap? then "chương truyện"
+      ##
+    in .vilist? then "thư đơn"
+    in .vicrit? then "đánh giá"
+    in .viuser? then "trang cá nhân"
       ##
     in .yslist? then "thư đơn yousuu"
     in .yscrit? then "đánh giá yousuu"

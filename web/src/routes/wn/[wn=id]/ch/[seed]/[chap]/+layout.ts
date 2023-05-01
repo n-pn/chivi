@@ -15,13 +15,13 @@ export const load = (async ({ parent, params: { wn, seed, chap }, fetch }) => {
   const { bslug } = nvinfo
 
   const _title = `${wnchap.title} - ${nvinfo.vtitle}`
-  const _board = `nc:${book}:${chap}:${seed}`
+  const _board = `ch:${book}:${chap}:${seed}`
 
   const _meta: App.PageMeta = {
     left_nav: [
       book_nav(bslug, nvinfo.vtitle, 'tm'),
       seed_nav(bslug, curr_seed.sname, _pgidx(+chap), 'ts'),
-      nav_link('-mt', `#${chap}`, '', { show: 'lg', kind: 'uname' }),
+      nav_link('--mt', `#${chap}`, '', { show: 'lg', kind: 'uname' }),
     ],
     show_config: true,
   }

@@ -15,7 +15,7 @@ export const load = (async ({ fetch, params: { crit } }) => {
   const path = `/_db/crits/${crit}`
   const data = await api_get<CritData>(path, fetch)
 
-  const rppath = `/_db/gdroots/show/vc:${crit}`
+  const rppath = `/_db/droots/show/vc:${crit}`
   const { rplist } = await api_get<CV.GdrootPage>(rppath, fetch)
 
   const _meta = {

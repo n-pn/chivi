@@ -29,7 +29,7 @@
   }
 </script>
 
-<topic-full class:fluid={$$props.fluid}>
+<article class:fluid={$$props.fluid}>
   <topic-navi>
     <a href="/gd" class="m-board">
       <SIcon name="messages" />
@@ -49,8 +49,8 @@
     {/each}
   </topic-navi>
 
-  <topic-head class={_all}>
-    <a class="topic-title" href="/gd/t-{post.id}-{post.tslug}">
+  <header class="topic-head {_all}">
+    <a class="topic-title" href="/gd/t{post.id}-{post.tslug}">
       {post.title}
     </a>
 
@@ -94,10 +94,10 @@
         </button>
       </foot-right>
     </topic-foot>
-  </topic-head>
+  </header>
 
   <topic-pbody class:_all>
-    <article class="m-article">{@html post.bhtml}</article>
+    <section class="m-article">{@html post.bhtml}</section>
 
     {#if post.bhtml.length >= 500}
       <pbody-foot>
@@ -110,14 +110,10 @@
       </pbody-foot>
     {/if}
   </topic-pbody>
-</topic-full>
+</article>
 
 <style lang="scss">
-  topic-full {
-    display: block;
-  }
-
-  topic-head {
+  .topic-head {
     display: block;
     // @include flex-cy($gap: 0.25rem);
     padding: 0.5rem 0 0.25rem;

@@ -7,7 +7,7 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const gdroot = `wn:${parseInt(params.wn, 10)}`
 
   const sort = url.searchParams.get('sort') || '-id'
-  const path = `/_db/gdroots/show/${gdroot}?sort=${sort}`
+  const path = `/_db/droots/show/${gdroot}?sort=${sort}&lm=9999`
 
   const { rplist } = await api_get<CV.GdrootPage>(path, fetch)
   const { nvinfo } = await parent()

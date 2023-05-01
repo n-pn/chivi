@@ -156,11 +156,7 @@
     margin: 0.25rem 0;
     word-wrap: break-word;
 
-    font-size: rem(16px);
-
-    > :global(*) {
-      max-width: 70ch;
-    }
+    @include bps(font-size, rem(15px), $pl: rem(16px), $tl: rem(17px));
 
     > :global(* + *) {
       margin-top: 1em;

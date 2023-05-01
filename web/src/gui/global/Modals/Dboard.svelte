@@ -15,7 +15,7 @@
   $: if (browser && actived && thread) load_data(thread)
 
   async function load_data(thread: string) {
-    const path = `/_db/gdroots/show/${thread}`
+    const path = `/_db/droots/show/${thread}`
 
     try {
       data = await api_get<Data>(path, fetch)

@@ -26,7 +26,7 @@
 </script>
 
 <div class="user-action">
-  <a class="m-btn _fill _primary" href="{root_path}/chaps">
+  <a class="m-btn _fill _primary" href="{root_path}/ch">
     <SIcon name="list" />
     <span>Chương tiết</span>
   </a>

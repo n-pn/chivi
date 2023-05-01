@@ -1,12 +1,11 @@
 require "../_ctrl_base"
 
 class CV::GdrootCtrl < CV::BaseCtrl
-  base "/_db/gdroots"
+  base "/_db/droots"
 
   @[AC::Route::GET("/show/:ruid")]
   def thread(ruid : String, sort : String = "-id")
     gdroot = Gdroot.load!(ruid)
-
     pg_no, limit, offset = _paginate(min: 50, max: 2000)
 
     repls = Rpnode.query.where("id > 0").sort_by(sort)

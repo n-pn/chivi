@@ -53,7 +53,7 @@
 
   <a
     class="topic-title"
-    href="/gd/t-{post.id}-{post.tslug}"
+    href="/gd/t{post.id}-{post.tslug}"
     on:click={(e) => dboard_ctrl.view_topic(e, post)}>
     {post.title}
   </a>

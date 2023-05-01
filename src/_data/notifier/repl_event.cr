@@ -25,10 +25,17 @@ module CV::Notifier
     reached = Set{gdrepl.viuser_id, gdrepl.touser_id}
   ) : Set(Int32)
     content = render_content(byuser) do |html|
-      html << (gdrepl.torepl_id > 0 ? "phản hồi bình luận của bạn" : "thêm bình luận mới")
-      html << <<-HTML
-       trong #{gdroot.thread_type} <a href="#{gdroot.gdrepl_link(gdrepl.id)}">#{gdroot.oname}</a>
-      HTML
+      if gdrepl.torepl_id > 0
+        html << <<-HTML
+          <a href="#{gdroot.gdrepl_link(gdrepl.id)}">phản hồi bình luận</a> của bạn
+          trong #{gdroot.thread_type} <a href="#{gdroot.origin_link}">#{gdroot.oname}</a>.
+        HTML
+      else
+        html << <<-HTML
+        <a href="#{gdroot.gdrepl_link(gdrepl.id)}">thêm bình luận mới</a>
+        trong #{gdroot.thread_type} <a href="#{gdroot.origin_link}">#{gdroot.oname}</a> của bạn.
+        HTML
+      end
     end
 
     targets = Set{gdrepl.touser_id}

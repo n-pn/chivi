@@ -8,11 +8,11 @@ module CV::Notifier
     return if Unotif.find(action, target.id, memoir.viuser_id)
 
     content = render_content(byuser) do |html|
-      html << " đã thích " << liking_content(target)
+      html << "thích " << liking_content(target)
     end
 
     output = Unotif.new(
-      viuser_id: target.viuser_id, content: liking_content(target),
+      viuser_id: target.viuser_id, content: content,
       action: action, object_id: target.id, byuser_id: memoir.viuser_id,
       created_at: Time.unix(memoir.liked_at)
     )
