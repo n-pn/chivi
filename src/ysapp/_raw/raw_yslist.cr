@@ -4,10 +4,10 @@ class YS::RawYslist
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
-  getter yl_id : String = ""
+  getter _id : String = ""
 
   @[JSON::Field(key: "booklistId")]
-  getter list_id : String = ""
+  getter yl_id : String = ""
 
   @[JSON::Field(key: "createrId")]
   getter user : EmbedUser?
@@ -63,21 +63,17 @@ class YS::RawYslist
 
   ###################
 
-  record ListJson, booklists : Array(RawYslist), total : Int32 do
-    include JSON::Serializable
-  end
-
-  def self.from_list_json(json : String) : {Array(self), Int32}
-    data = NamedTuple(data: ListJson).from_json(json)[:data]
-    {data.booklists, data.total}
-  end
-
-  def self.from_info_json(json : String) : self
-    NamedTuple(data: self).from_json(json)[:data]
-  end
-
   def self.from_json(string_or_io : String | IO)
     parser = JSON::PullParser.new(string_or_io)
     parser.on_key!("data") { new(parser) }
+  end
+
+  record YS::RawBooklists, booklists : Array(YS::RawYslist), total : Int32 do
+    include JSON::Serializable
+
+    def self.from_json(string_or_io : String | IO)
+      parser = JSON::PullParser.new(string_or_io)
+      parser.on_key!("data") { new(parser) }
+    end
   end
 end

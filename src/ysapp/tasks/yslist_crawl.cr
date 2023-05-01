@@ -5,17 +5,6 @@ class YS::YslistCrawl < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
   end
 
-  #   yslist = YS::Yslist.upsert!(self.oid, self.created_at || self.updated_at)
-
-  #   yslist.ysuser = ysuser || begin
-  #     user = self.user.not_nil!
-  #     YS::Ysuser.upsert!(user.name, user._id)
-  #   end
-
-  # rescue err
-  #   Log.error { err.inspect_with_backtrace.colorize.red }
-  # end
-
   #####################
 
   def self.gen_link(uuid : String)
@@ -51,13 +40,15 @@ class YS::YslistCrawl < CrawlTask
   def self.gen_queue : Array(Entry)
     # fresh = Time.utc - ttl
 
-    uuids = PG_DB.query_all("select encode(yl_id, 'hex') from yslists", as: String)
+    yl_ids = PG_DB.query_all <<-SQL, as: String
+      select encode(yl_id, 'hex') from yslists
+      SQL
 
-    uuids.map_with_index do |uuid, index|
+    yl_ids.map_with_index do |yl_id, index|
       Entry.new(
-        link: gen_link(uuid),
-        path: gen_path(uuid),
-        name: "#{index}/#{uuids.size}"
+        link: gen_link(yl_id),
+        path: gen_path(yl_id),
+        name: "#{index}/#{yl_ids.size}"
       )
     end
   end

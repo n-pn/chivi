@@ -59,8 +59,9 @@ class YS::CrawlYslistByUser < CrawlTask
         )
       end
 
-      queue.reject!(&.existed?(10.days))
+      queue.reject!(&.existed?((3 + pg_no).days))
       crawler.crawl!(queue)
+      `/app/chivi.app/bin/fix_ysrepls_vhtml`
     end
   end
 
@@ -86,7 +87,8 @@ class YS::CrawlYslistByUser < CrawlTask
 
     PG_DB.query_each(SELECT_STMT) do |rs|
       yc_id, total = rs.read(String, Int32)
-      next if yc_id.size != 24
+
+      next if yc_id.size != 24 || yc_id == "5ab33469f51f55f11cbac13b"
       output << QueueInit.new(yc_id, (total &- 1) // 20 &+ 1)
     end
 

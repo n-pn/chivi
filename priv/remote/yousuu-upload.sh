@@ -81,4 +81,6 @@ then
   yarn build yslist_crawl_by_book && rsync-fast "bin/yslist_crawl_by_book" "$OUT/bin"
   yarn build yslist_crawl_by_user && rsync-fast "bin/yslist_crawl_by_user" "$OUT/bin"
 
+  yarn build fix_yscrits_vhtml && rsync-fast "bin/fix_yscrits_vhtml" "$OUT/bin"
+  yarn build fix_ysrepls_vhtml && rsync-fast "bin/fix_ysrepls_vhtml" "$OUT/bin"
 fi

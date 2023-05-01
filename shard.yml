@@ -66,6 +66,12 @@ targets:
   seed_yscrits_by_user:
     main: run/yousuu/seed_yscrits_by_user.cr
 
+  fix_yscrits_vhtml:
+    main: run/yousuu/fix_yscrits_vhtml.cr
+
+  fix_ysrepls_vhtml:
+    main: run/yousuu/fix_ysrepls_vhtml.cr
+
 dependencies:
   tabkv:
     github: chi-vi/tabkv
