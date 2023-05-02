@@ -49,16 +49,19 @@ class YS::InitCtrl < AC::Base
 
   @[AC::Route::POST("/crits/by_book", body: :json)]
   def crits_by_book(json : RawBookComments, rtime : Int64 = Time.utc.to_unix)
-    guard_empty json.comments
-    ysbook = json.comments.first.book
+    crits = json.comments
+    guard_empty crits
+    ysbook = crits.first.book
 
     PG_DB.exec <<-SQL, json.total, ysbook.id
       update ysbooks set crit_total = $1
       where id = $2 and crit_total < $1
       SQL
 
-    YscritForm.bulk_upsert!(json.comments, rtime: rtime)
-    render text: json.comments.size
+    YsuserForm.bulk_upsert!(crits.map(&.user))
+    YscritForm.bulk_upsert!(crits, rtime: rtime)
+
+    render text: crits.size
   end
 
   @[AC::Route::POST("/crits/by_list/:yl_id", body: :json)]

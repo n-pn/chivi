@@ -34,7 +34,7 @@
 
     <a class="m-btn _primary _fill _sm" href="/ul/+list">
       <SIcon name="ballpen" />
-      <span class="-text">Tạo thư đơn</span>
+      <span class="-text show-ts">Tạo thư đơn</span>
     </a>
   </header>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import WninfoCard from '$gui/parts/wninfo/WninfoCard.svelte'
   export let books: CV.Wninfo[] = []
-  export let nvtab = 'index'
+  export let nvtab = ''
 </script>
 
 <div class="list">

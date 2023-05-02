@@ -15,6 +15,7 @@ export const load = (async ({ url, fetch, params }) => {
   const l_id = parseInt(params.list, 10)
 
   const path = `/_db/lists/${l_id}${url.search}`
+
   const data = await api_get<VilistData>(path, fetch)
 
   data.books.users = { [data.user.vu_id]: data.user }

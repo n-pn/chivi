@@ -18,10 +18,9 @@
   }
 
   $: stars = rating_stars(nvinfo.rating, nvinfo.voters)
-  $: route = nvtab == 'index' ? '' : nvtab
 </script>
 
-<a class="book" href="/wn/{nvinfo.bslug}/{route}">
+<a class="book" href="/wn/{nvinfo.bslug}/{nvtab}">
   <div class="cover">
     <BCover srcset={nvinfo.bcover} />
     {#if nvinfo.voters > 10}

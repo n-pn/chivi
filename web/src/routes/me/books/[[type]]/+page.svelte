@@ -25,7 +25,7 @@
 {#if books.length == 0}
   <div class="empty">Danh sách trống</div>
 {:else}
-  <WninfoList {books} nvtab="chaps" />
+  <WninfoList {books} nvtab="ch" />
 {/if}
 
 <Footer>

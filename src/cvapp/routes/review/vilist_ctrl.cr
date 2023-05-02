@@ -42,6 +42,8 @@ class CV::VilistCtrl < CV::BaseCtrl
            smin : Int32 = 0, smax : Int32 = 6,
            lb : String? = nil)
     vilist = load_list(list_id)
+    spawn Vilist.inc_counter(list_id, "view_count", 1)
+
     viuser = Viuser.load!(vilist.viuser_id)
     memoir = Memoir.load(_vu_id, :vilist, vilist.id)
 

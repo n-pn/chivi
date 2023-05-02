@@ -15,9 +15,9 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const _meta = {
     desc: nvinfo.bintro.substring(0, 300),
     left_nav: [
-      home_nav('', ''),
+      home_nav('tm', ''),
       book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
-      nav_link('uc', 'Đánh giá', 'stars'),
+      nav_link('uc', 'Đánh giá', 'stars', { show: 'pl' }),
     ],
     right_nav: [
       nav_link(new_crit_path, 'Tạo mới', 'circle-plus', { show: 'tl' }),

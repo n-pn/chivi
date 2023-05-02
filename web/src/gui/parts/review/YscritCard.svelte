@@ -11,7 +11,7 @@
   import Gmenu from '$gui/molds/Gmenu.svelte'
 
   export let crit: CV.Yscrit
-  export let user: CV.Ysuser
+  export let user: CV.Ysuser = { id: 0, uslug: '', uname: '', avatar: '' }
   export let book: CV.Crbook | null = null
   export let list: CV.Yslist | null = null
 

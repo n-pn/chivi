@@ -34,13 +34,13 @@ def seed_crit_by_book(path : String, yb_id : Int32)
 
   YS::YsuserForm.bulk_upsert!(crits.map(&.user))
 
-  rtime = File.info(path).modification_time.to_unix
-  YS::YscritForm.bulk_upsert!(crits, rtime)
+  # rtime = File.info(path).modification_time.to_unix
+  # YS::YscritForm.bulk_upsert!(crits, rtime)
 
-  PG_DB.exec <<-SQL, data.total, yb_id
-    update ysbooks set crit_total = $1
-    where id = $2 and crit_total < $1
-    SQL
+  # PG_DB.exec <<-SQL, data.total, yb_id
+  #   update ysbooks set crit_total = $1
+  #   where id = $2 and crit_total < $1
+  #   SQL
 
   puts "ybook: #{yb_id}, crits: #{crits.size}".colorize.yellow
 end

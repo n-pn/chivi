@@ -18,7 +18,7 @@ export const load = (async ({ url, fetch, params, parent }) => {
     left_nav: [
       home_nav('', ''),
       book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
-      nav_link('bants', 'Thảo luận', 'message'),
+      nav_link('bants', 'Thảo luận', 'message', { show: 'pl' }),
     ],
   }
   return { rplist, gdroot, sort, _meta, _title }
