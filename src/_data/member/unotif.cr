@@ -4,8 +4,8 @@ require "../../_util/hash_util"
 
 struct CV::Unotif
   enum Action : Int16
-    LikeRphead = 0
-    LikeRrnode = 1
+    LikeGdroot = 0
+    LikeGdrepl = 1
     LikeDtopic = 2
 
     LikeVicrit = 4
@@ -23,7 +23,7 @@ struct CV::Unotif
 
     def self.map_liking(target)
       case target
-      when Rpnode then LikeRrnode
+      when Rpnode then LikeGdrepl
       when Dtopic then LikeDtopic
       when Vicrit then LikeVicrit
       when Vilist then LikeVilist

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import RpnodeList from '$gui/parts/dboard/RpnodeList.svelte'
+  import GdreplList from '$gui/parts/dboard/GdreplList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -17,7 +17,7 @@
       </em>
     </p>
   </header>
-  <RpnodeList {gdroot} {rplist} />
+  <GdreplList {gdroot} {rplist} />
 </section>
 
 <style lang="scss">

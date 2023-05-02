@@ -1,5 +1,5 @@
 import { api_get } from '$lib/api_call'
-import { home_nav, nav_link } from '$utils/header_util'
+import { nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -11,9 +11,10 @@ interface VilistData extends CV.Paginate {
 }
 
 export const load = (async ({ url, fetch, params }) => {
+  const user = params.user
   const l_id = parseInt(params.list, 10)
-  const path = `/_db/lists/${l_id}${url.search}`
 
+  const path = `/_db/lists/${l_id}${url.search}`
   const data = await api_get<VilistData>(path, fetch)
 
   data.books.users = { [data.user.vu_id]: data.user }
@@ -23,9 +24,9 @@ export const load = (async ({ url, fetch, params }) => {
 
   const _meta: App.PageMeta = {
     left_nav: [
-      home_nav('', ''),
-      nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' }),
-      nav_link(`v${id}-${tslug}`, title, null, { kind: 'title' }),
+      nav_link(`/@${user}`, `@${user}`, ''),
+      nav_link(`/@${user}/ul`, 'Thư đơn', 'bookmarks'),
+      nav_link(`${id}-${tslug}`, title, null, { kind: 'title' }),
     ],
     right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
   }

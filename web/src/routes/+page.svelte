@@ -19,8 +19,8 @@
 <nav class="nav-list">
   {#each links as [href, icon, text]}
     <a {href} class="nav-link">
-      <SIcon name={icon} />
-      <span class="show-ts">{text}</span>
+      <SIcon class="show-pl" name={icon} />
+      <span>{text}</span>
     </a>
   {/each}
 </nav>

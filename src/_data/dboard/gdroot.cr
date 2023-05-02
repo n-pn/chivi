@@ -171,6 +171,20 @@ class CV::Gdroot
     self
   end
 
+  def init_from(viuser : Viuser)
+    @viuser_id = viuser.id
+
+    @oname = viuser.uname
+    @rlink = @olink = "/@#{@oname}"
+
+    @title = "Trang cá nhân của [@#{@oname}]"
+    @tslug = "trang-ca-nhan-cua-#{@oname}"
+
+    @htags << "vu:#{viuser.id}" << "Trang cá nhân"
+
+    self
+  end
+
   def init_as_wnseed_thread
     wn_id, sname = @ukey.split(':', 2)
     wninfo = Wninfo.load!(wn_id.to_i)
@@ -336,6 +350,7 @@ class CV::Gdroot
     when .wninfo? then gdroot.init_from(Wninfo.load!(ukey.to_i))
     when .vicrit? then gdroot.init_from(Vicrit.load!(ukey.to_i))
     when .vilist? then gdroot.init_from(Vilist.load!(ukey.to_i))
+    when .viuser? then gdroot.init_from(Viuser.load!(ukey))
     when .wnseed? then gdroot.init_as_wnseed_thread
     when .wnchap? then gdroot.init_as_wnchap_thread
     else               gdroot

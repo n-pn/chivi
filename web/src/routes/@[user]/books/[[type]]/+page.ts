@@ -19,7 +19,7 @@ export const load = (async ({ url, params, fetch }) => {
   const _meta = {
     left_nav: [
       nav_link(`/@${uname}`, uname, 'user', { show: 'ts' }),
-      nav_link(url.pathname, 'Tủ truyện', 'notebook', { show: 'tm' }),
+      nav_link(url.pathname, 'Tủ truyện', 'books', { show: 'tm' }),
     ],
     right_nav: [nav_link(`/me/books`, 'Cá nhân', 'at', { show: 'tm' })],
   }

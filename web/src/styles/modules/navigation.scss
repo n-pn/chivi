@@ -1,18 +1,22 @@
 @use '../essence' as *;
 
 .nav-list {
-  @include flex-ca($gap: 0.5rem);
+  @include flex-ca($gap: 0.5em);
   @include bps(font-size, rem(13px), $pl: rem(14px), $ts: rem(15px), $tm: 1rem);
-  @include bps(line-height, 1.75rem, $pl: 2rem);
+
+  line-height: 1em;
+
+  @include bps(height, 1.75rem, $pl: 2rem);
 }
 
 .nav-link {
+  @include flex-ca;
+
+  @include clamp($width: null);
   @include fgcolor(tert);
-  display: inline-flex;
-  align-items: center;
   gap: 0.25rem;
 
-  padding: 0 0.75em;
+  padding: 0.5em 0.375em;
   font-weight: 500;
 
   @include linesd(--bd-main);
@@ -23,4 +27,9 @@
     @include fgcolor(primary, 6);
     @include linesd(primary, 5, $ndef: false);
   }
+}
+
+.nav-icon {
+  @include bps(width, rem(18px), $ts: rem(17px), $tm: 1rem);
+  @include bps(height, rem(18px), $ts: rem(17px), $tm: 1rem);
 }

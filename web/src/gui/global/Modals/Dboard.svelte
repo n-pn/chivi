@@ -4,7 +4,7 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
-  import RpnodeList from '$gui/parts/dboard/RpnodeList.svelte'
+  import GdreplList from '$gui/parts/dboard/GdreplList.svelte'
 
   export let actived = false
   export let thread = ''
@@ -37,7 +37,7 @@
     </header>
 
     <section class="body">
-      <RpnodeList
+      <GdreplList
         touser={data.gdroot.user_id}
         gdroot={thread}
         rplist={data.rplist} />
@@ -50,9 +50,9 @@
   // @include fgcolor(primary, 5);
   // }
 
-  .type:first-letter {
-    text-transform: upper;
-  }
+  // .type:first-letter {
+  //   text-transform: upper;
+  // }
 
   .-text {
     @include clamp($width: null);

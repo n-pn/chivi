@@ -36,6 +36,7 @@
 
   export let show_book = true
   export let show_list = true
+  export let view_head = true
 
   $: pager = new Pager($page.url, { sort: _sort, smin: 1, smax: 5, pg: 1 })
 
@@ -52,30 +53,32 @@
   $: no_crit = vi.crits.length + ys.crits.length == 0
 </script>
 
-<header class="select">
-  <span class="label">Xuất xứ:</span>
+{#if view_head}
+  <header class="select">
+    <span class="label">Xuất xứ:</span>
 
-  {#each origs as [from, name, dtip]}
-    {@const page = { from, sort: _sort, smin: 1, smax: 5, pg: 1 }}
-    {@const href = pager.gen_url(page)}
-    <a
-      {href}
-      class="m-chip _sort"
-      class:_active={from == opts.from}
-      data-tip={dtip}>
-      <span>{name}</span>
-    </a>
-  {/each}
-
-  {#if bslug}
-    <nav class="right">
-      <a class="m-btn _primary _fill _sm" href="/wn/{bslug}/uc/+crit#cform">
-        <SIcon name="ballpen" />
-        <span class="show-pl">Viết đánh giá</span>
+    {#each origs as [from, name, dtip]}
+      {@const page = { from, sort: _sort, smin: 1, smax: 5, pg: 1 }}
+      {@const href = pager.gen_url(page)}
+      <a
+        {href}
+        class="m-chip _sort"
+        class:_active={from == opts.from}
+        data-tip={dtip}>
+        <span>{name}</span>
       </a>
-    </nav>
-  {/if}
-</header>
+    {/each}
+
+    {#if bslug}
+      <nav class="right">
+        <a class="m-btn _primary _fill _sm" href="/wn/{bslug}/uc/+crit#cform">
+          <SIcon name="ballpen" />
+          <span class="show-pl">Viết đánh giá</span>
+        </a>
+      </nav>
+    {/if}
+  </header>
+{/if}
 
 <div class="filter">
   <div class="stars">

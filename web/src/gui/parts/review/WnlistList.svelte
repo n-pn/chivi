@@ -1,6 +1,15 @@
 <script context="module">
   const sort_lbls = { score: 'Nổi bật', likes: 'Ưa thích', utime: 'Đổi mới' }
   const type_lbls = { male: 'Nam sinh', female: 'Nữ sinh', both: 'Tất cả' }
+
+  const empty = {
+    lists: [],
+    users: {},
+    memos: {},
+    pgmax: 0,
+    pgidx: 0,
+    total: 0,
+  }
 </script>
 
 <script lang="ts">
@@ -10,8 +19,8 @@
   import VilistCard from './VilistCard.svelte'
   import YslistCard from './YslistCard.svelte'
 
-  export let ys: CV.YslistList
-  export let vi: CV.VilistList
+  export let ys: CV.YslistList = empty
+  export let vi: CV.VilistList = empty
 
   export let _sort = 'utime'
 
@@ -27,22 +36,22 @@
 </script>
 
 <div class="filter">
+  <div class="klass">
+    <span class="label">Đối tượng:</span>
+    {#each Object.entries(type_lbls) as [type, label]}
+      {@const href = pager.gen_url({ sort: opts.sort, type, pg: 1 })}
+      <a {href} class="m-chip _sort" class:_active={type == opts.type}>
+        <span>{label}</span>
+      </a>
+    {/each}
+  </div>
+
   <div class="sorts">
     <span class="label">Sắp xếp:</span>
     {#each Object.entries(sort_lbls) as [sort, name]}
       {@const href = pager.gen_url({ sort, type: 'both', pg: 1 })}
       <a {href} class="m-chip _sort" class:_active={sort == opts.sort}>
         <span>{name}</span>
-      </a>
-    {/each}
-  </div>
-
-  <div class="type">
-    <span class="label">Đối tượng:</span>
-    {#each Object.entries(type_lbls) as [type, label]}
-      {@const href = pager.gen_url({ sort: opts.sort, type, pg: 1 })}
-      <a {href} class="m-chip _sort" class:_active={type == opts.type}>
-        <span>{label}</span>
       </a>
     {/each}
   </div>
@@ -90,8 +99,11 @@
 
   .sorts {
     @include flex-cx($gap: 0.5rem);
+    margin-top: 0.5rem;
     @include bp-min(ts) {
-      align-items: left;
+      align-items: right;
+      margin-top: 0;
+      margin-left: auto;
     }
   }
 
@@ -100,13 +112,10 @@
     height: 30vh;
   }
 
-  .type {
+  .klass {
     @include flex-cx($gap: 0.5rem);
-    margin-top: 0.5rem;
     @include bp-min(ts) {
-      align-items: right;
-      margin-top: 0;
-      margin-left: auto;
+      align-items: left;
     }
   }
 </style>

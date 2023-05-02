@@ -5,7 +5,7 @@ import type { PageLoad } from './$types'
 export const load = (async ({ url, fetch }) => {
   const pg = url.searchParams.get('pg') || '1'
 
-  const path = `/_db/_self/notifs?&pg=${pg}&lm=20`
+  const path = `/_db/_self/notifs?&pg=${pg}&lm=15`
   const data = await api_get<CV.UnotifPage>(path, fetch)
 
   const _meta = {

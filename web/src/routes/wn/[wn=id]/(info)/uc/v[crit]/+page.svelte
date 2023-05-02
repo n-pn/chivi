@@ -1,7 +1,7 @@
 <script lang="ts">
   // import SIcon from '$gui/atoms/SIcon.svelte'
   import VicritCard from '$gui/parts/review/VicritCard.svelte'
-  import RpnodeList from '$gui/parts/dboard/RpnodeList.svelte'
+  import GdreplList from '$gui/parts/dboard/GdreplList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -22,7 +22,7 @@
     Bình luận đánh giá <span class="m-badge">{data.rplist.repls.length}</span>
   </h3>
 
-  <RpnodeList rplist={data.rplist} {gdroot} {touser} fluid={true} />
+  <GdreplList rplist={data.rplist} {gdroot} {touser} fluid={true} />
 </section>
 
 <style lang="scss">

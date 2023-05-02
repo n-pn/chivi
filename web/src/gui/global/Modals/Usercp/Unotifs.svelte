@@ -20,7 +20,7 @@
   async function load_notifs(pg = 1) {
     $_user.unread_notif = 0
 
-    const api_url = `/_db/_self/notifs?&pg=${pg}&lm=20`
+    const api_url = `/_db/_self/notifs?&pg=${pg}&lm=15`
     try {
       data = await api_get<CV.UnotifPage>(api_url, fetch)
     } catch (error) {
@@ -46,6 +46,10 @@
   {/each}
 </div>
 
+<footer class="foot">
+  <a class="m-btn _primary _fill _sm" href="/me/notif">Tất cả thông báo</a>
+</footer>
+
 <style lang="scss">
   .label {
     @include flex-cy();
@@ -65,11 +69,15 @@
     font-size: rem(15px);
     padding: 0.5rem;
 
-    line-height: 1.25rem;
+    line-height: 1.375rem;
     @include border(--bd-soft, $loc: top);
 
     &._fresh {
       @include bgcolor(warning, 5, 1);
+    }
+
+    :global(.cv-user) {
+      @include fgcolor(primary, 5);
     }
   }
 
@@ -89,5 +97,9 @@
     margin-top: 0.25rem;
     @include ftsize(sm);
     @include fgcolor(secd);
+  }
+
+  .foot {
+    text-align: center;
   }
 </style>

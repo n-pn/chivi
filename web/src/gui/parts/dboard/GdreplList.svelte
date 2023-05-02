@@ -6,6 +6,8 @@
   export let touser = 0
   export let rplist: CV.Rplist
 
+  export let _kind = 'bình luận'
+
   export let on_rpnode_form = (new_repl?: CV.Rpnode) => {
     if (new_repl) {
       rplist.repls ||= []
@@ -45,7 +47,7 @@
       touser,
       gdroot,
     }}
-    placeholder="Thêm bình luận mới"
+    placeholder="Thêm {_kind} mới"
     on_destroy={on_rpnode_form} />
 </div>
 
@@ -58,7 +60,7 @@
     level={0}
     fluid={$$props.fluid} />
 {:else}
-  <div class="empty">Chưa có bình luận</div>
+  <div class="empty">Chưa có {_kind}</div>
 {/if}
 
 <style lang="scss">

@@ -39,31 +39,25 @@
   }
 
   .notif {
-    font-size: rem(15px);
+    // font-size: rem(16px);
     padding: 0.5rem;
 
-    line-height: 1.25rem;
+    line-height: 1.5rem;
     @include border(--bd-soft, $loc: top);
 
     &._fresh {
       @include bgcolor(warning, 5, 1);
     }
 
-    :global(a) {
+    :global(.cv-user) {
       @include fgcolor(primary, 5);
-      text-decoration: none;
-
-      &:hover {
-        // @include fgcolor(primary, 4);
-        @include border(primary, 4, $loc: bottom);
-      }
     }
   }
 
   .notif-foot {
     margin-top: 0.25rem;
     @include ftsize(sm);
-    @include fgcolor(secd);
+    @include fgcolor(tert);
   }
 
   .pagi {

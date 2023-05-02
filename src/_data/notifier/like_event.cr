@@ -17,11 +17,10 @@ module CV::Notifier
       created_at: Time.unix(memoir.liked_at)
     )
 
-    Log.info { output.to_json.colorize.yellow }
     output.create!
   end
 
-  private def liking_content(target : Rpnode) : String
+  def liking_content(target : Rpnode) : String
     gdroot = Gdroot.find!(id: target.gdroot_id)
     <<-HTML
     <a href="#{gdroot.gdrepl_link(target.id)}">bài viết của bạn</a>
@@ -29,19 +28,19 @@ module CV::Notifier
     HTML
   end
 
-  private def liking_content(target : Dtopic)
+  def liking_content(target : Dtopic)
     <<-HTML
     chủ đề <a href="#{target.canonical_path}">#{target.title}</a> của bạn.
     HTML
   end
 
-  private def liking_content(target : Vicrit)
+  def liking_content(target : Vicrit)
     <<-HTML
     <a href="#{target.canonical_path}">đánh giá truyện</a> của bạn.
     HTML
   end
 
-  private def liking_content(target : Vilist)
+  def liking_content(target : Vilist)
     <<-HTML
     <a href="#{target.canonical_path}">thư đơn</a> của bạn.
     HTML
