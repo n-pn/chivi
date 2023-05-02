@@ -4,7 +4,7 @@ require "../../src/_data/_data"
 input = PGDB.query_all <<-SQL, as: {Int32, String}
   select id, bcover from nvinfos
   where scover <> '' and bcover <> ''
-  order by id asc
+  order by id desc
 SQL
 
 w_size = 16

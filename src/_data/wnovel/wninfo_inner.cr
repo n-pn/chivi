@@ -34,7 +34,7 @@ module CV::WninfoInner
     return if link.empty?
 
     bcover = HashUtil.digest32(link, 8)
-    `./bin/bcover_cli -i "#{link}" -n "#{bcover}"`
+    `./bin/bcover_cli -f -i "#{link}" -n "#{bcover}"`
 
     self.bcover = $?.success? ? "#{bcover}.webp" : ""
     self.save! if persist
