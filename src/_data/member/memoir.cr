@@ -9,7 +9,7 @@ class CV::Memoir
     Viuser = 1
 
     Gdroot = 10
-    Rpnode = 11
+    Gdrepl = 11
 
     Dtopic = 12
     # Dboard = 15
@@ -28,7 +28,7 @@ class CV::Memoir
 
     def self.by_target(target)
       case target
-      when CV::Rpnode then Rpnode
+      when CV::Gdrepl then Gdrepl
       when CV::Dtopic then Dtopic
       when CV::Vicrit then Vicrit
       when CV::Vilist then Vilist
@@ -62,7 +62,7 @@ class CV::Memoir
 
   def self.target(type : Type, o_id : Int32)
     case type
-    when .rpnode? then Rpnode.load!(id: o_id)
+    when .rpnode? then Gdrepl.load!(id: o_id)
     when .dtopic? then Dtopic.load!(id: o_id)
     when .vicrit? then Vicrit.load!(id: o_id)
     when .vilist? then Vilist.load!(id: o_id)

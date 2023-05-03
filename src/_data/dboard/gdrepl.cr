@@ -7,7 +7,7 @@ require "../wnovel/wninfo"
 require "./gdroot"
 require "./dtopic"
 
-class CV::Rpnode
+class CV::Gdrepl
   include Clear::Model
 
   self.table = "rpnodes"

@@ -1,6 +1,6 @@
 require "../_ctrl_base"
 
-struct CV::RpnodeForm
+struct CV::GdreplForm
   include JSON::Serializable
 
   getter itext : String

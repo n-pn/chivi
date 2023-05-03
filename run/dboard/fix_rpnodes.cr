@@ -10,10 +10,10 @@ require "../../src/_data/dboard/rpnode"
 #   SQL
 # end
 
-CV::Rpnode.query.order_by(id: :asc).each do |rpnode|
+CV::Gdrepl.query.order_by(id: :asc).each do |rpnode|
   next if rpnode.torepl_id == 0
 
-  parent = CV::Rpnode.find!({id: rpnode.torepl_id})
+  parent = CV::Gdrepl.find!({id: rpnode.torepl_id})
   next if rpnode.touser_id == parent.viuser_id
 
   puts [rpnode.touser_id, parent.viuser_id]

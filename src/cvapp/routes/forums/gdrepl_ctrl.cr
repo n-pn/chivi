@@ -8,7 +8,7 @@ class CV::GdreplCtrl < CV::BaseCtrl
   def index(sort : String = "-id",
             from from_user : String? = nil, to to_user : String? = nil,
             self memo : String? = nil)
-    repls = Rpnode.query.where("id > 0").sort_by(sort)
+    repls = Gdrepl.query.where("id > 0").sort_by(sort)
 
     pg_no, limit, offset = _paginate(min: 20, max: 100)
     repls.limit(limit).offset(offset)
@@ -24,7 +24,7 @@ class CV::GdreplCtrl < CV::BaseCtrl
   # def tagged
   #   pg_no, limit, offset = _paginate(min: 10)
 
-  #   repls = Rpnode.query.where("id > 0").order_by(id: :desc)
+  #   repls = Gdrepl.query.where("id > 0").order_by(id: :desc)
   #   repls.where("(to_viuser_id = ? OR ? = any(tagged_ids)", _vu_id, _vu_id)
 
   #   # repls.with_cvpost
@@ -32,7 +32,7 @@ class CV::GdreplCtrl < CV::BaseCtrl
   #   render_repls(repls, pg_no, multi_heads: true)
   # end
 
-  private def render_repls(repls : Enumerable(Rpnode), pg_no = 1, multi_heads = false)
+  private def render_repls(repls : Enumerable(Gdrepl), pg_no = 1, multi_heads = false)
     user_ids = repls.map(&.viuser_id)
     user_ids << _vu_id if _vu_id >= 0
 
@@ -43,14 +43,14 @@ class CV::GdreplCtrl < CV::BaseCtrl
 
     render json: {
       pgidx: pg_no,
-      repls: RpnodeView.as_list(repls),
+      repls: GdreplView.as_list(repls),
       # heads: GdrootView.as_hash(heads),
       users: ViuserView.as_hash(users),
       memos: MemoirView.as_hash(memos),
     }
   end
 
-  private def glob_heads(repls : Enumerable(Rpnode), multi_heads = false)
+  private def glob_heads(repls : Enumerable(Gdrepl), multi_heads = false)
     if repls.empty?
       [] of Gdroot
     elsif multi_heads
@@ -61,10 +61,10 @@ class CV::GdreplCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::POST("/create", body: :form)]
-  def create(form : RpnodeForm)
+  def create(form : GdreplForm)
     guard_privi 0, "tạo bình luận"
 
-    rpnode = Rpnode.new({
+    rpnode = Gdrepl.new({
       viuser_id: _vu_id,
       gdroot_id: Gdroot.load!(form.gdroot).id,
       touser_id: form.touser,
@@ -77,12 +77,12 @@ class CV::GdreplCtrl < CV::BaseCtrl
     spawn Gdroot.bump_on_new_reply!(rpnode.gdroot_id)
     spawn Notifier.on_repl_event(rpnode)
 
-    render json: RpnodeView.new(rpnode)
+    render json: GdreplView.new(rpnode)
   end
 
   @[AC::Route::GET("/edit/:repl_id")]
   def edit(repl_id : Int32)
-    rpnode = Rpnode.load!(repl_id)
+    rpnode = Gdrepl.load!(repl_id)
 
     render json: {
       id:    rpnode.id,
@@ -97,19 +97,19 @@ class CV::GdreplCtrl < CV::BaseCtrl
   end
 
   @[AC::Route::PATCH("/:repl_id", body: :form)]
-  def update(repl_id : Int32, form : RpnodeForm)
-    rpnode = Rpnode.load!(repl_id)
+  def update(repl_id : Int32, form : GdreplForm)
+    rpnode = Gdrepl.load!(repl_id)
     guard_owner rpnode.viuser_id, 0, "sửa bình luận"
 
     rpnode.update_content!(form.itext, persist: true)
     spawn Notifier.on_tagged_in_reply(rpnode)
 
-    render json: RpnodeView.new(rpnode)
+    render json: GdreplView.new(rpnode)
   end
 
   @[AC::Route::DELETE("/:repl_id")]
   def delete(repl_id : Int32)
-    rpnode = Rpnode.load!(repl_id)
+    rpnode = Gdrepl.load!(repl_id)
     guard_owner rpnode.viuser_id, 0, "xoá bình luận"
 
     rpnode.update({deleted_at: Time.utc, deleted_by: _vu_id})

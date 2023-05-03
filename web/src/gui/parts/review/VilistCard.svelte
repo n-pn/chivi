@@ -80,15 +80,10 @@
           <span>{list.book_count}</span>
         </span>
 
-        <button
-          class="entry"
-          data-tip="Ưa thích"
-          class:_active={memo.liked > 0}
-          disabled={$_user.privi < 0}
-          on:click={handle_like}>
+        <span class="entry" data-tip="Ưa thích" class:_active={memo.liked > 0}>
           <SIcon name="heart" />
           <span>{list.like_count}</span>
-        </button>
+        </span>
 
         <span class="entry" data-tip="Lượt xem">
           <SIcon name="eye" />
@@ -224,5 +219,9 @@
     & + & {
       margin-left: 0.25rem;
     }
+  }
+
+  button.entry {
+    background: none;
   }
 </style>

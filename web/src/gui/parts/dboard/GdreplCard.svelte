@@ -8,9 +8,9 @@
   import { toggle_like } from '$utils/memo_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import RpnodeForm from './RpnodeForm.svelte'
+  import GdreplForm from './GdreplForm.svelte'
 
-  export let repl: CV.Rpnode
+  export let repl: CV.Gdrepl
   export let user: CV.Viuser
   export let memo: CV.Memoir = { liked: 0 }
 
@@ -34,7 +34,7 @@
     })
   }
 
-  const handle_repl_form = (new_repl?: CV.Rpnode) => {
+  const handle_repl_form = (new_repl?: CV.Gdrepl) => {
     show_repl = false
     if (!new_repl) return
 
@@ -89,7 +89,7 @@
 
 {#if show_repl}
   <section class="new-repl">
-    <RpnodeForm
+    <GdreplForm
       form={{
         itext: '',
         level: repl.level + 1,

@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
-  import RpnodeCard from './RpnodeCard.svelte'
+  import GdreplCard from './GdreplCard.svelte'
 </script>
 
 <script lang="ts">
   export let gdroot = ''
 
-  export let repls: CV.Rpnode[]
+  export let repls: CV.Gdrepl[]
   export let users: Record<number, CV.Viuser>
   export let memos: Record<number, CV.Memoir>
 
@@ -15,7 +15,7 @@
 
 <div class="repl-list" class:_nest={level > 0}>
   {#each repls as repl}
-    <RpnodeCard
+    <GdreplCard
       {gdroot}
       bind:repl
       bind:memo={memos[repl.id]}

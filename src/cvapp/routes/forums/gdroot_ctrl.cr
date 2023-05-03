@@ -8,7 +8,7 @@ class CV::GdrootCtrl < CV::BaseCtrl
     gdroot = Gdroot.load!(ruid)
     pg_no, limit, offset = _paginate(min: 50, max: 2000)
 
-    repls = Rpnode.query.where("id > 0").sort_by(sort)
+    repls = Gdrepl.query.where("id > 0").sort_by(sort)
     repls.where("gdroot_id = ?", gdroot.id)
 
     repls.limit(limit).offset(offset)
@@ -24,7 +24,7 @@ class CV::GdrootCtrl < CV::BaseCtrl
 
       rplist: {
         pgidx: pg_no,
-        repls: RpnodeView.as_list(repls),
+        repls: GdreplView.as_list(repls),
         users: ViuserView.as_hash(users),
         memos: MemoirView.as_hash(memos),
       },

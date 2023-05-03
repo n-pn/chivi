@@ -1,6 +1,6 @@
 require "../src/_data/dboard/rpnode"
 
-repls = CV::Rpnode.query
+repls = CV::Gdrepl.query
 
 repls.each do |repl|
   puts [repl.id, repl.created_at]

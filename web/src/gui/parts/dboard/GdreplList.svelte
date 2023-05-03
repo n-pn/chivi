@@ -1,6 +1,6 @@
 <script lang="ts">
-  import RpnodeTree from './RpnodeTree.svelte'
-  import RpnodeForm from './RpnodeForm.svelte'
+  import GdreplTree from './GdreplTree.svelte'
+  import GdreplForm from './GdreplForm.svelte'
 
   export let gdroot = ''
   export let touser = 0
@@ -8,7 +8,7 @@
 
   export let _kind = 'bình luận'
 
-  export let on_rpnode_form = (new_repl?: CV.Rpnode) => {
+  export let on_rpnode_form = (new_repl?: CV.Gdrepl) => {
     if (new_repl) {
       rplist.repls ||= []
       rplist.repls.unshift(new_repl)
@@ -16,15 +16,15 @@
     }
   }
 
-  function build_tree(repls: CV.Rpnode[]) {
-    const map = new Map<number, CV.Rpnode>()
+  function build_tree(repls: CV.Gdrepl[]) {
+    const map = new Map<number, CV.Gdrepl>()
 
     for (const repl of repls) {
       repl.repls ||= []
       map.set(repl.id, repl)
     }
 
-    const output: CV.Rpnode[] = []
+    const output: CV.Gdrepl[] = []
 
     for (const repl of repls) {
       const parent = map.get(repl.torepl_id)
@@ -38,7 +38,7 @@
 </script>
 
 <div class="new-repl">
-  <RpnodeForm
+  <GdreplForm
     form={{
       itext: '',
       level: 0,
@@ -52,7 +52,7 @@
 </div>
 
 {#if rplist.repls.length > 0}
-  <RpnodeTree
+  <GdreplTree
     {gdroot}
     repls={build_tree(rplist.repls)}
     users={rplist.users}

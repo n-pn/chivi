@@ -1,5 +1,5 @@
 declare namespace CV {
-  interface Rpnode {
+  interface Gdrepl {
     id: number
 
     user_id: number
@@ -18,11 +18,11 @@ declare namespace CV {
     repl_count: number
 
     vcoin: number
-    repls: Rpnode[] = []
+    repls: Gdrepl[] = []
   }
 
   interface Rplist extends Paginate {
-    repls: Array<Rpnode>
+    repls: Array<Gdrepl>
     users: Record<number, Cvuser>
     memos: Record<number, Memoir>
   }

@@ -20,7 +20,7 @@ module CV::Notifier
     output.create!
   end
 
-  def liking_content(target : Rpnode) : String
+  def liking_content(target : Gdrepl) : String
     gdroot = Gdroot.find!(id: target.gdroot_id)
     <<-HTML
     <a href="#{gdroot.gdrepl_link(target.id)}">bài viết của bạn</a>

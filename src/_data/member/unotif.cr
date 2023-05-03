@@ -23,7 +23,7 @@ struct CV::Unotif
 
     def self.map_liking(target)
       case target
-      when Rpnode then LikeGdrepl
+      when Gdrepl then LikeGdrepl
       when Dtopic then LikeDtopic
       when Vicrit then LikeVicrit
       when Vilist then LikeVilist

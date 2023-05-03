@@ -51,7 +51,7 @@ def fix_gdrepl_liking_notif
   unotifs = fetch_all(:like_gdrepl)
 
   unotifs.each do |unotif|
-    gdrepl = CV::Rpnode.load!(id: unotif.object_id)
+    gdrepl = CV::Gdrepl.load!(id: unotif.object_id)
     puts unotif.content.colorize.blue
 
     byuser = CV::Viuser.get_uname(unotif.byuser_id)
@@ -74,7 +74,7 @@ def fix_direct_reply_notif
   unotifs.each do |unotif|
     puts unotif.content.colorize.blue
 
-    gdrepl = CV::Rpnode.load!(id: unotif.object_id)
+    gdrepl = CV::Gdrepl.load!(id: unotif.object_id)
     gdroot = CV::Gdroot.find!(id: gdrepl.gdroot_id)
     byuser = CV::Viuser.get_uname(unotif.byuser_id)
 
