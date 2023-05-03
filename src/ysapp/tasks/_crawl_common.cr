@@ -4,9 +4,9 @@ require "zstd"
 require "http/client"
 require "option_parser"
 
-require "../../_util/hash_util"
-require "../../_util/proxy_client"
 require "../../cv_env"
+require "../../_util/hash_util"
+require "../service//proxy_client"
 
 PG_DB = DB.open(CV_ENV.database_url)
 at_exit { PG_DB.close }

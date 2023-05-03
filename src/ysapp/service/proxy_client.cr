@@ -65,13 +65,16 @@ class ProxyClient
     end
   end
 
+  UAGENT = "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"
+  COOKIE = {{ read_file("#{__DIR__}/.cookie") }}
+
   def fetch!(link : String, label = "-/-") : String?
     unless proxy = @proxies.pop?
       Log.info { "Out of proxy, aborting!".colorize.red }
       exit 0
     end
 
-    body = `curl -f -s -L -x #{proxy.host} -m 20 "#{link}"`
+    body = `curl "#{link}" -f -s -L -x #{proxy.host} -m 20 -H '#{UAGENT}' -H '#{COOKIE}'`
 
     if !$?.success? || body.empty? || body == "请稍后访问"
       Log.info { "- <#{label}> failed, remain proxies: #{@proxies.size}".colorize.yellow }
