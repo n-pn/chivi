@@ -77,23 +77,23 @@
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="meta">&middot;</span> -->
 
-    <a class="meta" href="{crit_path}#vcrit">
-      <SIcon name="link" />
-      <span>Liên kết</span>
-    </a>
-
-    {#if $_user.privi > 3 || $_user.uname == user.uname}
-      <a class="meta" href={edit_path}>
-        <SIcon name="pencil" />
-        <span>Sửa chữa</span>
-      </a>
-    {/if}
-
     {#if crit.ohtml.length > 600}
       <button class="meta" on:click={() => (view_all = !view_all)}>
         <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
         <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
       </button>
+    {/if}
+
+    <a class="meta" href="{crit_path}#vcrit">
+      <SIcon name="link" />
+      <span>Liên kết</span>
+    </a>
+
+    {#if $_user.uname == user.uname}
+      <a class="meta" href={edit_path}>
+        <SIcon name="pencil" />
+        <span>Sửa chữa</span>
+      </a>
     {/if}
 
     <div class="right">

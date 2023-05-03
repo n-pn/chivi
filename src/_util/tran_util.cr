@@ -30,8 +30,6 @@ module TranUtil
   end
 
   private def call_api(url : String, headers : HTTP::Headers, body : String) : String?
-    Log.debug { "CALL: #{url}" }
-
     HTTP::Client.post(url, headers: headers, body: body) do |res|
       text = res.body_io.gets_to_end
       return text if res.status.success?
@@ -52,13 +50,23 @@ module TranUtil
     end
   end
 
-  def opencc(input : String, config = "hk2s")
+  def opencc(input : String, config = "hk2s") : String
     Process.run("/usr/bin/opencc", {"-c", config}) do |proc|
-      proc.input.print(input)
+      output = String::Builder.new
+
+      input.each_line do |line|
+        if line.blank?
+          output << line << '\n'
+        else
+          proc.input.puts(line)
+          output << proc.output.gets << '\n'
+        end
+      end
+
       proc.input.close
-      proc.output.gets_to_end
-    rescue err
-      Log.error(exception: err) { err.message }
+      output.to_s
+    rescue ex
+      Log.error(exception: ex) { input }
       input
     end
   end

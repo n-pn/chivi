@@ -10,7 +10,8 @@ const _meta: App.PageMeta = {
 }
 
 export const load = (({ url }) => {
-  const config = url.searchParams.get('config') || 'hk2s'
+  const _mode = url.searchParams.get('_mode') || 'hk2s'
+
   const _mdesc = 'Chuyển đổi từ phồn thể sang giản thể'
-  return { config, _meta, _title: 'Phồn -> Giản', _mdesc }
+  return { _mode, _meta, _title: 'Phồn -> Giản', _mdesc }
 }) satisfies PageLoad

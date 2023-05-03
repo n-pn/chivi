@@ -25,8 +25,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let opts: Opts = new Opts()
-
-  export let loading: boolean = false
+  export let _onload: boolean = false
 </script>
 
 <div>
@@ -41,7 +40,7 @@
   <select
     name="split_mode"
     class="m-input _sm"
-    disabled={loading}
+    disabled={_onload}
     bind:value={opts.split_mode}>
     {#each split_modes as [value, label]}
       <option {value}>{label}</option>

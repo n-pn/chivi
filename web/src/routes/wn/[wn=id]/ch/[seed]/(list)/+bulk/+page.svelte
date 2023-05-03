@@ -59,14 +59,14 @@
     }
   }
 
-  let loading = false
+  let _onload = false
 
   let reader: FileReader
 
   onMount(() => {
     reader = new FileReader()
     reader.onloadend = async () => {
-      loading = false
+      _onload = false
       const buffer = reader.result as ArrayBuffer
       const encoding = await get_encoding(buffer)
       const decoder = new TextDecoder(encoding)
@@ -75,26 +75,24 @@
   })
 
   $: if (files) {
-    loading = true
+    _onload = true
     reader.readAsArrayBuffer(files[0])
   }
 
   async function submit(_evt: Event) {
     err_msg = ''
-    loading = true
+    _onload = true
 
     const body = render_body(chaps)
 
     const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}?start=${start}`
     const res = await fetch(url, { method: 'POST', body })
-    loading = false
+    _onload = false
 
     if (!res.ok) {
-      loading = false
       err_msg = await res.text()
       console.log({ err_msg })
     } else {
-      loading = false
       await invalidateAll()
       await goto(seed_path(nvinfo.bslug, curr_seed.sname, _pgidx(start)))
     }
@@ -120,7 +118,11 @@
     return body
   }
 
-  const trad2sim = async (_: Event) => (input = await opencc(input))
+  const trad2sim = async (_: Event) => {
+    _onload = true
+    input = await opencc(input, 'hk2s')
+    _onload = false
+  }
 
   const max_lenth_allowed = [0, 300_000, 1_000_000, 5_000_000, 10_000_000]
 
@@ -149,13 +151,13 @@
         name="input"
         rows="25"
         bind:value={input}
-        disabled={loading}
+        disabled={_onload}
         placeholder="Nội dung chương tiết"
         required />
     </section>
 
     <section class="preview">
-      <SplitOpts bind:opts {loading} />
+      <SplitOpts bind:opts {_onload} />
       <ChapList {chaps} {start} {err_msg} />
     </section>
   </div>
@@ -206,11 +208,11 @@
         <button
           type="button"
           class="m-btn _primary _fill"
-          disabled={cant_submit || loading}
+          disabled={cant_submit || _onload}
           data-tip="Bạn cần quyền hạn tối thiểu là {seed_data.edit_privi} để thêm chương"
           data-tip-pos="right"
           on:click={submit}>
-          <SIcon name={loading ? 'loader-2' : 'send'} spin={loading} />
+          <SIcon name={_onload ? 'loader-2' : 'send'} spin={_onload} />
           <span class="show-ts -text">Đăng tải</span>
           <SIcon name="privi-{seed_data.edit_privi}" iset="sprite" />
         </button>

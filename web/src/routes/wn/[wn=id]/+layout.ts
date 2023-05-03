@@ -20,7 +20,7 @@ export const load = (async ({ params, fetch }) => {
   const _title = nvinfo.vtitle
 
   const _meta = {
-    left_nav: [home_nav(''), book_nav(nvinfo.bslug, nvinfo.vtitle, '')],
+    left_nav: [home_nav('ts'), book_nav(nvinfo.bslug, nvinfo.vtitle, '')],
     right_nav: [quick_read_v2(nvinfo, ubmemo)],
   }
 

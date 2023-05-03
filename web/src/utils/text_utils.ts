@@ -37,9 +37,9 @@ const is_full_line = (line: string, min_invalid = 15) => {
   return full_line_re_1.test(line) || full_line_re_2.test(line)
 }
 
-export async function opencc(input: string, config = 'hk2s') {
-  const href = '/_sp/opencc?config=' + config
-  const init = { method: 'POST', body: input }
+export async function opencc(body: string, config = 'hk2s') {
+  const href = `/_sp/opencc?config=${config}`
+  const init = { headers: text_headers, method: 'POST', body }
   return await fetch(href, init).then((r) => r.text())
 }
 

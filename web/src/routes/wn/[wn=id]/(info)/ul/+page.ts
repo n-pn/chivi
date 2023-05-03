@@ -17,7 +17,7 @@ const build_meta = (book: CV.Wninfo) => {
   return {
     desc: book.bintro.substring(0, 300),
     left_nav: [
-      home_nav('', ''),
+      home_nav('tm', ''),
       book_nav(book.bslug, book.vtitle, 'tm'),
       nav_link('lists', 'Thư đơn', 'bookmarks', { show: 'pl' }),
     ],
