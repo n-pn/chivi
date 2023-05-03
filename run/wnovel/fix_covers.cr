@@ -35,7 +35,7 @@ def cache_cover(scover : String) : String
 end
 
 input = PGDB.query_all <<-SQL, as: {Int32, String}
-  select id, scover from nvinfos
+  select id, scover from wninfos
   where scover <> '' and bcover = ''
   order by id desc
 SQL
@@ -53,7 +53,7 @@ w_size.times do
     loop do
       wn_id, scover, idx = workers.receive
       bcover = cache_cover(scover)
-      PGDB.exec "update nvinfos set bcover = $1 where id = $2", bcover, wn_id
+      PGDB.exec "update wninfos set bcover = $1 where id = $2", bcover, wn_id
       puts "- #{idx}/#{q_size} <#{wn_id}> #{scover.colorize.blue} => [#{bcover.colorize.yellow}]"
     rescue err
       Log.error(exception: err) { err.message.colorize.red }

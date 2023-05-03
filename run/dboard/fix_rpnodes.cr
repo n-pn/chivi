@@ -1,12 +1,12 @@
 require "../../src/_data/dboard/gdroot"
-require "../../src/_data/dboard/rpnode"
+require "../../src/_data/dboard/gdrepl"
 
-# data = Array({Int32, Int32, Int32}).from_json(File.read "tmp/rpnodes.json")
+# data = Array({Int32, Int32, Int32}).from_json(File.read "tmp/gdrepls.json")
 
 # data.each do |id, touser_id, torepl_id|
 #   puts [{id, touser_id, torepl_id}]
 #   PGDB.exec <<-SQL, touser_id, torepl_id, id
-#   update rpnodes set touser_id = $1, torepl_id = $2 where id = $3
+#   update gdrepls set touser_id = $1, torepl_id = $2 where id = $3
 #   SQL
 # end
 
@@ -19,6 +19,6 @@ CV::Gdrepl.query.order_by(id: :asc).each do |rpnode|
   puts [rpnode.touser_id, parent.viuser_id]
 
   PGDB.exec <<-SQL, parent.viuser_id, rpnode.id
-    update rpnodes set touser_id = $1 where id = $2
+    update gdrepls set touser_id = $1 where id = $2
     SQL
 end

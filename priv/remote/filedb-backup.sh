@@ -29,7 +29,7 @@ fi
 if [[ $1 == "all" || $* == *book* ]]
 then
   echo backup books data!
-  # rsync-fast "$SSH/var/nvinfos/autos" "var/nvinfos"
+  # rsync-fast "$SSH/var/wninfos/autos" "var/wninfos"
 
   rsync-fast "$SSH/var/books/infos" "var/books"
   rsync-fast "$SSH/var/books/cover" "var/books"

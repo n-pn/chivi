@@ -1,7 +1,7 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE wninfo_init(
-  id int PRIMARY KEY REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  id int PRIMARY KEY REFERENCES wninfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   yb_id int NOT NULL DEFAULT 0,
   tb_id int NOT NULL DEFAULT 0,

@@ -7,7 +7,7 @@ SELECT
   zvoters AS yvoters,
   zrating AS yrating
 FROM
-  nvinfos
+  wninfos
 ORDER BY
   id ASC
 ON CONFLICT (id)

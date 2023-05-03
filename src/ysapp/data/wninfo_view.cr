@@ -32,7 +32,7 @@ struct YS::WninfoPeek
 
       b.status as "state",
       b.utime as utime
-    from  nvinfos as b
+    from  wninfos as b
       on b.id = c.nvinfo_id
       inner join authors as a
       on a.id = b.author_id

@@ -1,7 +1,7 @@
 -- +micrate Up
 CREATE TABLE ysbooks(
   id int NOT NULL PRIMARY KEY,
-  nvinfo_id int NOT NULL DEFAULT 0 REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  nvinfo_id int NOT NULL DEFAULT 0 REFERENCES wninfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   btitle text NOT NULL DEFAULT '',
   author text NOT NULL DEFAULT '',

@@ -62,7 +62,7 @@ class CV::Memoir
 
   def self.target(type : Type, o_id : Int32)
     case type
-    when .rpnode? then Gdrepl.load!(id: o_id)
+    when .gdrepl? then Gdrepl.load!(id: o_id)
     when .dtopic? then Dtopic.load!(id: o_id)
     when .vicrit? then Vicrit.load!(id: o_id)
     when .vilist? then Vilist.load!(id: o_id)

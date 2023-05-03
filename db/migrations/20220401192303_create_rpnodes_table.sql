@@ -1,13 +1,13 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE TABLE rpnodes(
+CREATE TABLE gdrepls(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
   viuser_id int NOT NULL DEFAULT REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
   gdroot_id int NOT NULL DEFAULT REFERENCES gdroots(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   touser_id int NOT NULL DEFAULT REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  torepl_id int REFERENCES rpnodes(id) ON UPDATE CASCADE ON DELETE SET NULL,
+  torepl_id int REFERENCES gdrepls(id) ON UPDATE CASCADE ON DELETE SET NULL,
   --
   level smallint NOT NULL DEFAULT 0,
   utime bigint NOT NULL DEFAULT 0, -- update time, change after edits
@@ -28,14 +28,14 @@ CREATE TABLE rpnodes(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX rpnodes_viuser_idx ON rpnodes(viuser_id);
+CREATE INDEX gdrepls_viuser_idx ON gdrepls(viuser_id);
 
-CREATE INDEX rpnodes_tagged_idx ON rpnodes USING GIN(tagged_ids);
+CREATE INDEX gdrepls_tagged_idx ON gdrepls USING GIN(tagged_ids);
 
-CREATE INDEX rpnodes_touser_idx ON rpnodes(touser_id);
+CREATE INDEX gdrepls_touser_idx ON gdrepls(touser_id);
 
-CREATE INDEX rpnodes_torepl_idx ON rpnodes(torepl_id);
+CREATE INDEX gdrepls_torepl_idx ON gdrepls(torepl_id);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-DROP TABLE IF EXISTS rpnodes;
+DROP TABLE IF EXISTS gdrepls;

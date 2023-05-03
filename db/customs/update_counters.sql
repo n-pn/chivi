@@ -42,7 +42,7 @@ WHERE
 
 ---
 UPDATE
-  rpnodes AS r
+  gdrepls AS r
 SET
   like_count =(
     SELECT
@@ -77,7 +77,7 @@ SET
     SELECT
       count(*)
     FROM
-      rpnodes AS r
+      gdrepls AS r
     WHERE
       r.gdroot_id = h.id);
 

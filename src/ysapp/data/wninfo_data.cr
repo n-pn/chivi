@@ -14,7 +14,7 @@ end
 
 class YS::Wninfo
   include Clear::Model
-  self.table = "nvinfos"
+  self.table = "wninfos"
 
   primary_key type: :serial
   belongs_to author : Author, foreign_key_type: Int32

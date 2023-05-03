@@ -13,7 +13,7 @@ require "./wninfo_inner"
 class CV::Wninfo
   include Clear::Model
 
-  self.table = "nvinfos"
+  self.table = "wninfos"
   primary_key type: :serial
 
   # getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
@@ -220,6 +220,6 @@ class CV::Wninfo
   end
 
   def self.get_vname(id : Int32)
-    PGDB.query_one("select vname from nvinfos where id = $1 limit 1", id, as: String)
+    PGDB.query_one("select vname from wninfos where id = $1 limit 1", id, as: String)
   end
 end

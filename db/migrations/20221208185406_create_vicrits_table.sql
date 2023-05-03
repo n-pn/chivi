@@ -3,7 +3,7 @@ CREATE TABLE vicrits(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
   viuser_id int NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  nvinfo_id int NOT NULL REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  nvinfo_id int NOT NULL REFERENCES wninfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   vilist_id int NOT NULL,
   --
   itext text NOT NULL,

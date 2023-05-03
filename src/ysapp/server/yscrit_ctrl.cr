@@ -1,5 +1,5 @@
 require "./_ys_ctrl_base"
-require "../data/ysbook"
+require "../data/ysbook_data"
 
 class YS::CritCtrl < AC::Base
   base "/_ys"

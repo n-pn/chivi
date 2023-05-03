@@ -62,6 +62,6 @@ def write_change(file : String, data : Hash(String, String))
   end
 end
 
-DIR = "db/seed_data/nvinfos"
+DIR = "db/seed_data/wninfos"
 write_change("#{DIR}/author_changes.tsv", changed_author)
 write_change("#{DIR}/btitle_changes.tsv", changed_btitle)

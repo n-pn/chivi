@@ -37,7 +37,7 @@ class CV::GdreplCtrl < CV::BaseCtrl
     user_ids << _vu_id if _vu_id >= 0
 
     users = Viuser.preload(user_ids)
-    memos = Memoir.glob(_vu_id, :rpnode, repls.map(&.id.to_i))
+    memos = Memoir.glob(_vu_id, :gdrepl, repls.map(&.id.to_i))
 
     # heads = glob_heads(repls, multi_heads: multi_heads)
 

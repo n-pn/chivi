@@ -2,7 +2,7 @@
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE wnlinks(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  book_id int NOT NULL REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  book_id int NOT NULL REFERENCES wninfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   "link" text NOT NULL,
   "name" text NOT NULL,

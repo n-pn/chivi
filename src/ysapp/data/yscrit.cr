@@ -2,7 +2,7 @@ require "./_base"
 require "./_util"
 
 require "./yslist"
-require "./ysbook"
+require "./ysbook_data"
 require "./ysuser"
 
 require "../_raw/raw_yscrit"

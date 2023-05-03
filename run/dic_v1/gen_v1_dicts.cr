@@ -38,7 +38,7 @@ require "../../src/mt_v1/data/v1_dict"
 dicts = [] of M1::DbDict
 
 select_sql = <<-SQL
-  select id::int, bslug, vname from nvinfos where id > 0 order by id asc
+  select id::int, bslug, vname from wninfos where id > 0 order by id asc
 SQL
 
 DB.open(CV_ENV.database_url) do |db|

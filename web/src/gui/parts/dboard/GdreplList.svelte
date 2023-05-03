@@ -8,7 +8,7 @@
 
   export let _kind = 'bình luận'
 
-  export let on_rpnode_form = (new_repl?: CV.Gdrepl) => {
+  export let on_new_repl = (new_repl?: CV.Gdrepl) => {
     if (new_repl) {
       rplist.repls ||= []
       rplist.repls.unshift(new_repl)
@@ -48,7 +48,7 @@
       gdroot,
     }}
     placeholder="Thêm {_kind} mới"
-    on_destroy={on_rpnode_form} />
+    on_destroy={on_new_repl} />
 </div>
 
 {#if rplist.repls.length > 0}

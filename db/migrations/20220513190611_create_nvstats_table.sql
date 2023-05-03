@@ -1,7 +1,7 @@
 -- +micrate Up
 CREATE TABLE nvstats(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  nvinfo_id int NOT NULL REFERENCES nvinfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  nvinfo_id int NOT NULL REFERENCES wninfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   --
   klass int NOT NULL DEFAULT 0,
   stamp int NOT NULL DEFAULT 0,

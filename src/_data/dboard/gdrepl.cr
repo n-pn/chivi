@@ -10,7 +10,7 @@ require "./dtopic"
 class CV::Gdrepl
   include Clear::Model
 
-  self.table = "rpnodes"
+  self.table = "gdrepls"
   primary_key type: :serial
 
   column viuser_id : Int32 = 0

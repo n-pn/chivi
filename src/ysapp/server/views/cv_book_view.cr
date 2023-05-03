@@ -1,6 +1,6 @@
 require "json"
 
-require "../../data/wninfo"
+require "../../data/wninfo_data"
 
 struct YS::BookView
   def initialize(@data : Wninfo)

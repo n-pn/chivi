@@ -124,7 +124,7 @@ struct CV::DtopicCard
       from dtopics as t
         inner join viusers as u
         on u.id = t.viuser_id
-        inner join nvinfos as b
+        inner join wninfos as b
         on b.id = t.nvinfo_id
         left join memoirs as m
         on m.target_id = t.id and m.target_type = #{TARGET_TYPE} and m.viuser_id = $1

@@ -6,7 +6,7 @@ require "../../_util/tran_util"
 require "../../mt_v1/data/v1_dict"
 
 require "../_raw/raw_ysbook"
-require "./wninfo"
+require "./wninfo_data"
 
 class YS::Ysbook
   include Clear::Model

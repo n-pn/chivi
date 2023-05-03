@@ -16,7 +16,7 @@ SET
     SELECT
       bcover
     FROM
-      nvinfos
+      wninfos
     WHERE
       bcover <> ''
       AND id IN (
@@ -27,7 +27,7 @@ SET
         WHERE
           vilist_id = vilists.id)
       ORDER BY
-        nvinfos.weight DESC
+        wninfos.weight DESC
       LIMIT 3)
 WHERE
   book_count > 0;

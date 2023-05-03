@@ -2,7 +2,7 @@ require "colorize"
 require "../../src/_data/_data"
 
 input = PGDB.query_all <<-SQL, as: {Int32, String}
-  select id, bcover from nvinfos
+  select id, bcover from wninfos
   where scover <> '' and bcover <> ''
   order by id desc
 SQL
@@ -30,7 +30,7 @@ w_size.times do
       next if color == :green
 
       File.delete?(path)
-      PGDB.exec "update nvinfos set bcover = '' where id = $1", wn_id
+      PGDB.exec "update wninfos set bcover = '' where id = $1", wn_id
     rescue err
       Log.error(exception: err) { err.message.colorize.red }
     ensure

@@ -50,7 +50,7 @@ struct YS::YscritPeek
       l.book_count as yl_bnum
     from yscrits as c
       inner join ysusers as u on u.id = c.ysuser_id
-      inner join nvinfos as b on b.id = c.nvinfo_id
+      inner join wninfos as b on b.id = c.nvinfo_id
        left join yslists as l on l.id = c.yslist_id
     where c.id = $1
     limit 1;
