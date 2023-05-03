@@ -2,23 +2,15 @@
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE gdroots(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  urn citext NOT NULL UNIQUE,
   --
   kind smallint NOT NULL DEFAULT 0,
   ukey citext NOT NULL DEFAULT 0,
   --
-  dboard_id int NOT NULL DEFAULT 0,
   viuser_id int NOT NULL DEFAULT 0 REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  --
-  _type text NOT NULL DEFAULT '',
-  _name text NOT NULL DEFAULT '',
-  _link text NOT NULL DEFAULT '',
-  _desc text NOT NULL DEFAULT '',
   --
   repl_count int NOT NULL DEFAULT 0,
   view_count int NOT NULL DEFAULT 0,
   like_count int NOT NULL DEFAULT 0,
-  star_count int NOT NULL DEFAULT 0,
   --
   last_seen_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_repl_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,

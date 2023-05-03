@@ -10,15 +10,15 @@ require "../../src/_data/dboard/gdrepl"
 #   SQL
 # end
 
-CV::Gdrepl.query.order_by(id: :asc).each do |rpnode|
-  next if rpnode.torepl_id == 0
+CV::Gdrepl.query.order_by(id: :asc).each do |gdrepl|
+  next if gdrepl.torepl_id == 0
 
-  parent = CV::Gdrepl.find!({id: rpnode.torepl_id})
-  next if rpnode.touser_id == parent.viuser_id
+  parent = CV::Gdrepl.find!({id: gdrepl.torepl_id})
+  next if gdrepl.touser_id == parent.viuser_id
 
-  puts [rpnode.touser_id, parent.viuser_id]
+  puts [gdrepl.touser_id, parent.viuser_id]
 
-  PGDB.exec <<-SQL, parent.viuser_id, rpnode.id
+  PGDB.exec <<-SQL, parent.viuser_id, gdrepl.id
     update gdrepls set touser_id = $1 where id = $2
     SQL
 end

@@ -42,7 +42,7 @@
     form={{
       itext: '',
       level: 0,
-      rpnode: 0,
+      gdrepl: 0,
       torepl: 0,
       touser,
       gdroot,

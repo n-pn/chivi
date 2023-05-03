@@ -64,33 +64,33 @@ class CV::GdreplCtrl < CV::BaseCtrl
   def create(form : GdreplForm)
     guard_privi 0, "tạo bình luận"
 
-    rpnode = Gdrepl.new({
+    gdrepl = Gdrepl.new({
       viuser_id: _vu_id,
       gdroot_id: Gdroot.load!(form.gdroot).id,
       touser_id: form.touser,
       torepl_id: form.torepl,
     })
 
-    rpnode.level = form.level
-    rpnode.update_content!(form.itext, persist: true)
+    gdrepl.level = form.level
+    gdrepl.update_content!(form.itext, persist: true)
 
-    spawn Gdroot.bump_on_new_reply!(rpnode.gdroot_id)
-    spawn Notifier.on_repl_event(rpnode)
+    spawn Gdroot.bump_on_new_reply!(gdrepl.gdroot_id)
+    spawn Notifier.on_repl_event(gdrepl)
 
-    render json: GdreplView.new(rpnode)
+    render json: GdreplView.new(gdrepl)
   end
 
   @[AC::Route::GET("/edit/:repl_id")]
   def edit(repl_id : Int32)
-    rpnode = Gdrepl.load!(repl_id)
+    gdrepl = Gdrepl.load!(repl_id)
 
     render json: {
-      id:    rpnode.id,
-      itext: rpnode.itext,
+      id:    gdrepl.id,
+      itext: gdrepl.itext,
 
-      gdroot: "id:#{rpnode.gdroot_id}",
-      touser: rpnode.touser_id,
-      torepl: rpnode.torepl_id,
+      gdroot: "id:#{gdrepl.gdroot_id}",
+      touser: gdrepl.touser_id,
+      torepl: gdrepl.torepl_id,
     }
   rescue err
     render :not_found, text: "Bài viết không tồn tại!"
@@ -98,21 +98,21 @@ class CV::GdreplCtrl < CV::BaseCtrl
 
   @[AC::Route::PATCH("/:repl_id", body: :form)]
   def update(repl_id : Int32, form : GdreplForm)
-    rpnode = Gdrepl.load!(repl_id)
-    guard_owner rpnode.viuser_id, 0, "sửa bình luận"
+    gdrepl = Gdrepl.load!(repl_id)
+    guard_owner gdrepl.viuser_id, 0, "sửa bình luận"
 
-    rpnode.update_content!(form.itext, persist: true)
-    spawn Notifier.on_tagged_in_reply(rpnode)
+    gdrepl.update_content!(form.itext, persist: true)
+    spawn Notifier.on_tagged_in_reply(gdrepl)
 
-    render json: GdreplView.new(rpnode)
+    render json: GdreplView.new(gdrepl)
   end
 
   @[AC::Route::DELETE("/:repl_id")]
   def delete(repl_id : Int32)
-    rpnode = Gdrepl.load!(repl_id)
-    guard_owner rpnode.viuser_id, 0, "xoá bình luận"
+    gdrepl = Gdrepl.load!(repl_id)
+    guard_owner gdrepl.viuser_id, 0, "xoá bình luận"
 
-    rpnode.update({deleted_at: Time.utc, deleted_by: _vu_id})
+    gdrepl.update({deleted_at: Time.utc, deleted_by: _vu_id})
     render json: {msg: "bình luận đã bị xoá"}
   end
 end

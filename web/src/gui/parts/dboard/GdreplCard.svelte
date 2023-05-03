@@ -28,7 +28,7 @@
   const handle_like = (evt: Event) => {
     evt.preventDefault()
 
-    toggle_like('rpnode', repl.id, memo.liked, ({ like_count, memo_liked }) => {
+    toggle_like('gdrepl', repl.id, memo.liked, ({ like_count, memo_liked }) => {
       repl.like_count = like_count
       memo.liked = memo_liked
     })
@@ -93,7 +93,7 @@
       form={{
         itext: '',
         level: repl.level + 1,
-        rpnode: 0,
+        gdrepl: 0,
         torepl: repl.id,
         touser: repl.user_id,
         gdroot,

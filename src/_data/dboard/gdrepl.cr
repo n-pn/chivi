@@ -17,7 +17,7 @@ class CV::Gdrepl
   column gdroot_id : Int32 = 0
 
   column touser_id : Int32 = 0 # parent viuser_id
-  column torepl_id : Int32 = 0 # parent rpnode_id
+  column torepl_id : Int32 = 0 # parent gdrepl_id
 
   column level : Int16 = 0 # nesting level
   column utime : Int64 = 0 # update when new post created/updated

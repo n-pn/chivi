@@ -1,6 +1,6 @@
 require "../../src/_data/dboard/dtopic"
 require "../../src/_data/dboard/gdroot"
-require "../../src/_data/dboard/rpnode"
+require "../../src/_data/dboard/gdrepl"
 
 # Log.setup :debug
 

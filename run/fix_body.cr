@@ -1,4 +1,4 @@
-require "../src/_data/dboard/rpnode"
+require "../src/_data/dboard/gdrepl"
 
 repls = CV::Gdrepl.query
 
