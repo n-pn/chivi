@@ -11,6 +11,7 @@ export default class MtData {
 
   static parse_cvmtl(input = ''): [MtData[], number, number, string] {
     if (!input) return [[], 0, 0, '0-tong-hop']
+
     const [lines, extra = ''] = input.split('\n$\t$\t$\n')
     const args = extra.split('\t')
 

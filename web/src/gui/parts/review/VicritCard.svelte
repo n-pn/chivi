@@ -3,6 +3,7 @@
   const _user = get_user()
 
   import { rel_time } from '$utils/time_utils'
+  import { toggle_like } from '$utils/memo_utils'
 
   import { SIcon, Stars } from '$gui'
   import Truncate from '$gui/atoms/Truncate.svelte'
@@ -12,7 +13,7 @@
   export let book: CV.Wninfo | undefined
   export let user: CV.Viuser | App.CurrentUser
   export let list: CV.Vilist
-  export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
+  export let memo: CV.Memoir = { liked: 0 }
 
   export let show_book = true
   export let show_list = true
@@ -20,18 +21,13 @@
   export let view_all = crit.ohtml.length < 600
   export let big_text = false
 
-  async function toggle_like() {
-    const type = memo.liked > 0 ? 'unlike' : 'like'
-    const api_url = `/_db/memos/vicrit/${crit.id}/${type}`
-    const api_res = await fetch(api_url, { method: 'PUT' })
+  const handle_like = (evt: Event) => {
+    evt.preventDefault()
 
-    if (!api_res.ok) {
-      alert(await api_res.text())
-    } else {
-      const { like_count, memo_liked } = await api_res.json()
+    toggle_like('vicrit', crit.id, memo.liked, ({ like_count, memo_liked }) => {
       crit.like_count = like_count
       memo.liked = memo_liked
-    }
+    })
   }
 
   $: book_path = book ? `/wn/${book.bslug}` : `/wn/${crit.book_id}`
@@ -100,7 +96,7 @@
       <button
         class="meta"
         type="button"
-        on:click={toggle_like}
+        on:click={handle_like}
         class:_active={memo?.liked > 0}>
         <SIcon name="thumb-up" />
         <span class="u-show-pl">Ưa thích</span>

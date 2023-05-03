@@ -3,6 +3,8 @@
   const _user = get_user()
 
   import { rel_time } from '$utils/time_utils'
+  import { toggle_like } from '$utils/memo_utils'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import WncritList from '$gui/parts/review/WncritList.svelte'
 

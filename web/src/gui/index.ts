@@ -8,7 +8,6 @@ export { default as Mpager } from './molds/Mpager.svelte'
 
 export { default as DtopicList } from './parts/dboard/DtopicList.svelte'
 export { default as DtopicCard } from './parts/dboard/DtopicCard.svelte'
-export { default as DtopicFull } from './parts/dboard/DtopicFull.svelte'
 
 // export { default as Upsert } from './parts/Upsert.svelte'
 export { default as Footer } from './sects/Footer.svelte'

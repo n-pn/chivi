@@ -1,67 +1,53 @@
 <script lang="ts">
   import { get_user } from '$lib/stores'
-  import { dboard_ctrl } from '$lib/stores'
+  const _user = get_user()
 
   import { dlabels } from '$lib/constants'
   import { rel_time } from '$utils/time_utils'
+  import { toggle_like } from '$utils/memo_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let post: CV.Dtopic
-  export let user: CV.Viuser
-  export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
   export let _mode = 0
 
-  const _user = get_user()
-  $: dboard = post.dboard
-  $: board_url = `/gd/b-${dboard.bslug}`
+  const handle_like = (evt: Event) => {
+    evt.preventDefault()
 
-  async function toggle_like() {
-    const action = memo?.liked > 0 ? 'unlike' : 'like'
-    const api_url = `/_db/memos/dtopic/${post.id}/${action}`
-    const api_res = await fetch(api_url, { method: 'PUT' })
-
-    if (!api_res.ok) {
-      alert(await api_res.text())
-    } else {
-      const { like_count, memo_liked } = await api_res.json()
-      post.like_count = like_count
-      memo.liked = memo_liked
-    }
+    toggle_like(
+      'dtopic',
+      post.dt_id,
+      post.me_liked,
+      ({ like_count, memo_liked }) => {
+        post.like_count = like_count
+        post.me_liked = memo_liked
+      }
+    )
   }
 </script>
 
 <topic-card class:sm={$$props.size == 'sm'}>
   <topic-head>
     {#if _mode > 0}
-      <a
-        class="m-board"
-        href={board_url}
-        on:click={(e) => dboard_ctrl.view_board(e, dboard)}>
+      <a class="m-board" href="/gd/b-{post.b_uslug}">
         <SIcon name="message" />
-        <span>{dboard.bname}</span>
+        <span>{post.b_title}</span>
       </a>
     {/if}
 
-    {#each post.labels as label}
-      <a
-        class="m-label _{dlabels[label]} _sm"
-        href="/gd?lb={label}"
-        on:click={(e) => dboard_ctrl.view_board(e, dboard, label)}>{label}</a>
+    {#each post.dtags as label}
+      <a class="m-label _{dlabels[label]} _sm" href="/gd?lb={label}">{label}</a>
     {/each}
   </topic-head>
 
-  <a
-    class="topic-title"
-    href="/gd/t{post.id}-{post.tslug}"
-    on:click={(e) => dboard_ctrl.view_topic(e, post)}>
+  <a class="topic-title" href="/gd/t{post.tslug}">
     {post.title}
   </a>
 
   <topic-foot>
     <topic-brief>
-      <a href="/@{user.uname}" class="cv-user" data-privi={user.privi}>
-        {user.uname}
+      <a href="/@{post.u_uname}" class="cv-user" data-privi={post.u_privi}>
+        {post.u_uname}
       </a>
       <span class="fg-tert">&middot;</span>
       <time>{rel_time(post.ctime)}</time>
@@ -75,14 +61,14 @@
 
       <topic-meta class="meta">
         <SIcon name="messages" />
-        <span>{post.post_count}</span>
+        <span>{post.repl_count}</span>
       </topic-meta>
 
       <button
         class="meta"
-        class:_active={memo?.liked > 0}
+        class:_active={post.me_liked > 0}
         disabled={$_user.privi < 0}
-        on:click={toggle_like}>
+        on:click={handle_like}>
         <SIcon name="star" />
         <span>{post.like_count}</span>
       </button>

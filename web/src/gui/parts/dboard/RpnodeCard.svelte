@@ -1,21 +1,23 @@
 <script lang="ts">
+  import { browser } from '$app/environment'
+
   import { get_user } from '$lib/stores'
+  const _user = get_user()
 
   import { rel_time } from '$utils/time_utils'
+  import { toggle_like } from '$utils/memo_utils'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RpnodeForm from './RpnodeForm.svelte'
-  import { browser } from '$app/environment'
 
   export let repl: CV.Rpnode
   export let user: CV.Viuser
-  export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
+  export let memo: CV.Memoir = { liked: 0 }
 
   export let gdroot = `id:${repl.head_id}`
 
   export let on_focus = false
   export let nest_level = 0
-
-  const _user = get_user()
 
   // $: is_owner = $_user.uname == user.uname
   // $: can_edit = _user.privi > 3 || (is_owner && _user.privi >= 0)
@@ -23,18 +25,13 @@
   $: if (browser) on_focus = on_focus || location.hash == '#r' + repl.id
   let show_repl = false
 
-  async function toggle_like() {
-    const type = memo?.liked > 0 ? 'unlike' : 'like'
-    const api_url = `/_db/memos/rpnode/${repl.id}/${type}`
-    const api_res = await fetch(api_url, { method: 'PUT' })
+  const handle_like = (evt: Event) => {
+    evt.preventDefault()
 
-    if (!api_res.ok) {
-      alert(await api_res.text())
-    } else {
-      const { like_count, memo_liked } = await api_res.json()
+    toggle_like('rpnode', repl.id, memo.liked, ({ like_count, memo_liked }) => {
       repl.like_count = like_count
       memo.liked = memo_liked
-    }
+    })
   }
 
   const handle_repl_form = (new_repl?: CV.Rpnode) => {
@@ -80,7 +77,7 @@
       class="btn"
       class:_active={memo?.liked > 0}
       disabled={$_user.privi < 0}
-      on:click={toggle_like}>
+      on:click={handle_like}>
       <SIcon name="thumb-up" />
       <span>Ưa thích</span>
       {#if repl.like_count > 0}

@@ -2,7 +2,7 @@ import { home_nav, nav_link } from '$utils/header_util'
 
 import { api_get } from '$lib/api_call'
 
-type Data = { cvmtl: string; ztext: string; wn_id: number }
+type Data = { cvmtl: string; ztext: string }
 
 const qtran_icons = {
   notes: 'notes',
@@ -24,10 +24,12 @@ export async function load({ fetch, url, params: { type, name } }) {
     show_config: true,
   }
 
-  const data = await api_get<Data>(path, fetch)
+  const { cvmtl, ztext } = await api_get<Data>(path, fetch)
 
   return {
-    ...data,
+    cvmtl,
+    ztext,
+    wn_id,
     _meta,
     _title: `Dịch nhanh: [${type}/${name}]`,
     _mdesc: 'Dịch nhanh từ tiếng Trung sang tiếng Việt',

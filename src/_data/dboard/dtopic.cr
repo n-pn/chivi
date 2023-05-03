@@ -8,7 +8,7 @@ require "../member/viuser"
 class CV::Dtopic
   include Clear::Model
 
-  self.table = "cvposts"
+  self.table = "dtopics"
   primary_key type: :serial
 
   column viuser_id : Int32 = 0

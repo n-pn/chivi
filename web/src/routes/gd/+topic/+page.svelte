@@ -50,8 +50,8 @@
     if (error) return
 
     try {
-      const { id, tslug } = await api_call(action, data.dtform, method)
-      await goto(`/gd/t${id}-${tslug}`)
+      const tslug = await api_call(action, data.dtform, method)
+      await goto(`/gd/t${tslug}`)
     } catch (ex) {
       error = ex.body?.message || ex.message
     }

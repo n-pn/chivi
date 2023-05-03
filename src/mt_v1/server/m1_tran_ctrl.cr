@@ -39,7 +39,7 @@ class M1::TranCtrl < AC::Base
     qtran = TranData.load_cached(type, name, wn_id, format)
     cvmtl = qtran.cv_wrap(_uname, w_init: @w_init) { |io, engine| cv_post(io, engine) }
 
-    render json: {cvmtl: cvmtl, ztext: qtran.input}
+    render json: {cvmtl: cvmtl, ztext: qtran.input, wn_id: wn_id}
   end
 
   @[AC::Route::GET("/wnchap/:hash")]
@@ -100,7 +100,7 @@ class M1::TranCtrl < AC::Base
 
   @[AC::Route::POST("/posts")]
   def create_post
-    input = request.body.try(&.gets_to_end) || ""
+    input = TextUtil.split_html(_read_body).join('\n')
     raise BadRequest.new("Dữ liệu quá lớn") if input.size > post_limit(_privi)
 
     pname = HashUtil.uniq_hash(input)

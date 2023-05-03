@@ -5,35 +5,22 @@ class CV::DtopicCtrl < CV::BaseCtrl
   base "/_db/topics"
 
   @[AC::Route::GET("/")]
-  def index(lb dlabel : String? = nil, dboard : Int32? = nil, by user : String? = nil)
+  def index(lb label : String? = nil, dboard : Int32? = nil, by vuser : String? = nil)
     pg_no, limit, offset = _paginate(max: 100)
-    query = Dtopic.query.order_by(_sort: :desc)
+    label = TextUtil.slugify(label) if label
 
-    query.where("? = ANY(lslugs)", TextUtil.slugify(dlabel)) if dlabel
-    query.where("nvinfo_id = ?", dboard) if dboard
-
-    query.where(<<-SQL, user) if user
-      viuser_id = (select id from viusers where uname = ? limit 1)
-      SQL
-
-    total = query.dup.limit(limit * 3 + offset).offset(0).count
-
-    posts = query.with_nvinfo.limit(limit).offset(offset).to_a
-    memos = Memoir.glob(_vu_id, :dtopic, posts.map(&.id))
-
-    user_ids = posts.map(&.viuser_id)
-    user_ids << _vu_id if _vu_id >= 0
-
-    users = Viuser.preload(user_ids)
+    total, posts = DtopicCard.fetch_all(
+      _memo: _vu_id,
+      board: dboard, vuser: vuser,
+      label: label,
+      limit: limit, offset: offset,
+    )
 
     render json: {
+      posts: posts,
       total: total,
       pgidx: pg_no,
       pgmax: _pgidx(total, limit),
-
-      posts: DtopicView.as_list(posts, false),
-      memos: MemoirView.as_hash(memos),
-      users: ViuserView.as_hash(users),
     }
   end
 
@@ -53,23 +40,15 @@ class CV::DtopicCtrl < CV::BaseCtrl
       Gdroot.new(:dtopic, dtopic.id.to_s).init_from(dtopic).upsert!
     end
 
-    render json: DtopicView.new(dtopic)
+    render text: "#{dtopic.id}-#{dtopic.tslug}"
   end
 
   @[AC::Route::GET("/:post_id")]
   def show(post_id : Int32)
-    cvpost = Dtopic.load!(post_id)
-    cvpost.bump_view_count!
-
-    viuser = Viuser.load!(cvpost.viuser_id)
-    memoir = Memoir.load(_vu_id, :dtopic, cvpost.id)
-
-    render json: {
-      post: DtopicView.new(cvpost, full: true),
-      user: ViuserView.new(viuser),
-      memo: MemoirView.new(memoir),
-    }
-  rescue err
+    spawn DtopicCard.inc_counter(post_id, "view_count", 1)
+    render json: DtopicCard.fetch_one(post_id, _vu_id)
+  rescue ex
+    Log.error(exception: ex) { post_id.colorize.red }
     render :not_found, text: "Chủ đề không tồn tại!"
   end
 
@@ -104,20 +83,20 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
   @[AC::Route::PATCH("/:post_id", body: :form)]
   def update(post_id : Int32, form : DtopicForm)
-    cvpost = Dtopic.load!(post_id)
-    guard_owner cvpost.viuser_id, 0, "sửa chủ đề"
+    dtopic = Dtopic.load!(post_id)
+    guard_owner dtopic.viuser_id, 0, "sửa chủ đề"
 
-    cvpost.update_content!(form)
-    render json: DtopicView.new(cvpost)
+    dtopic.update_content!(form)
+    render text: "#{dtopic.id}-#{dtopic.tslug}"
   end
 
   @[AC::Route::DELETE("/:post_id")]
   def delete(post_id : Int32)
-    cvpost = Dtopic.load!(post_id)
-    guard_owner cvpost.viuser_id, 0, "xoá chủ đề"
+    dtopic = Dtopic.load!(post_id)
+    guard_owner dtopic.viuser_id, 0, "xoá chủ đề"
 
-    is_admin = _privi > 3 && _vu_id != cvpost.viuser_id
-    cvpost.soft_delete(admin: is_admin)
+    is_admin = _privi > 3 && _vu_id != dtopic.viuser_id
+    dtopic.soft_delete(admin: is_admin)
 
     render json: {msg: "chủ đề đã bị xoá"}
   end

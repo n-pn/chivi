@@ -2,30 +2,29 @@
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
-  import { rel_time } from '$utils/time_utils'
   import { dlabels } from '$lib/constants'
+  import { rel_time } from '$utils/time_utils'
+  import { toggle_like } from '$utils/memo_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let post: CV.Dtopic
-  export let user: CV.Viuser
-  export let memo: CV.Memoir = { liked: 0, track: 0, tagged: 0, viewed: 0 }
   export let _all = post.bhtml.length < 500
 
-  $: board_url = `/gd/b-${post.dboard.bslug}`
+  $: board_url = `/gd/b-${post.b_uslug}`
 
-  async function toggle_like() {
-    const type = memo.liked > 0 ? 'unlike' : 'like'
-    const api_url = `/_db/memos/dtopic/${post.id}/${type}`
-    const api_res = await fetch(api_url, { method: 'PUT' })
+  const handle_like = (evt: Event) => {
+    evt.preventDefault()
 
-    if (!api_res.ok) {
-      alert(await api_res.text())
-    } else {
-      const { like_count, memo_liked } = await api_res.json()
-      post.like_count = like_count
-      memo.liked = memo_liked
-    }
+    toggle_like(
+      'dtopic',
+      post.dt_id,
+      post.me_liked,
+      ({ like_count, memo_liked }) => {
+        post.like_count = like_count
+        post.me_liked = memo_liked
+      }
+    )
   }
 </script>
 
@@ -40,32 +39,33 @@
 
     <a class="m-board" href={board_url}>
       <SIcon name="message" />
-      <span>{post.dboard.bname}</span>
+      <span>{post.b_title}</span>
     </a>
 
-    {#each post.labels as label}
+    {#each post.dtags as label}
       <a class="m-label _{dlabels[label]}" href="{board_url}?lb={label}"
         >{label}</a>
     {/each}
   </topic-navi>
 
   <header class="topic-head {_all}">
-    <a class="topic-title" href="/gd/t{post.id}-{post.tslug}">
+    <a class="topic-title" href="/gd/t{post.tslug}">
       {post.title}
     </a>
 
     <topic-foot>
       <topic-user>
         <SIcon name="user" />
-        <a class="cv-user" href="/@{user.uname}">{user.uname}</a>
+        <a class="cv-user" href="/@{post.u_uname}" data-privi={post.u_privi}
+          >{post.u_uname}</a>
       </topic-user>
 
       <topic-sep>·</topic-sep>
       <topic-time>{rel_time(post.ctime)}</topic-time>
 
-      {#if $_user.privi > 3 || $_user.uname == user.uname}
+      {#if $_user.privi > 3 || $_user.uname == post.u_uname}
         <topic-sep>·</topic-sep>
-        <a class="action fg-tert" href="/gd/+topic?id={post.id}"
+        <a class="action fg-tert" href="/gd/+topic?id={post.dt_id}"
           ><span>Sửa</span>
         </a>
       {/if}
@@ -73,7 +73,7 @@
       <foot-right>
         <topic-meta class="meta">
           <SIcon name="messages" />
-          <span>{post.post_count}</span>
+          <span>{post.repl_count}</span>
         </topic-meta>
 
         <topic-sep>·</topic-sep>
@@ -86,9 +86,9 @@
 
         <button
           class="meta"
-          class:_active={memo.liked > 0}
+          class:_active={post.me_liked > 0}
           disabled={$_user.privi < 0}
-          on:click={toggle_like}>
+          on:click={handle_like}>
           <SIcon name="star" />
           <span>{post.like_count}</span>
         </button>

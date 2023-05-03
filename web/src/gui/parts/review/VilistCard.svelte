@@ -3,10 +3,13 @@
   const _user = get_user()
 
   import { rel_time } from '$utils/time_utils'
+  import { toggle_like } from '$utils/memo_utils'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let list: CV.Vilist
   export let user: CV.Viuser | App.CurrentUser
+  export let memo: CV.Memoir = { liked: 0 }
 
   function humanize(num: number) {
     if (num < 1000) return num
@@ -14,6 +17,15 @@
   }
 
   $: list_path = `/@${user.uname}/ul/${list.id}-${list.tslug}`
+
+  const handle_like = (evt: Event) => {
+    evt.preventDefault()
+
+    toggle_like('vilist', list.id, memo.liked, ({ like_count, memo_liked }) => {
+      list.like_count = like_count
+      memo.liked = memo_liked
+    })
+  }
 </script>
 
 <article class="yslist">
@@ -68,10 +80,15 @@
           <span>{list.book_count}</span>
         </span>
 
-        <span class="entry" data-tip="Ưa thích">
+        <button
+          class="entry"
+          data-tip="Ưa thích"
+          class:_active={memo.liked > 0}
+          disabled={$_user.privi < 0}
+          on:click={handle_like}>
           <SIcon name="heart" />
           <span>{list.like_count}</span>
-        </span>
+        </button>
 
         <span class="entry" data-tip="Lượt xem">
           <SIcon name="eye" />

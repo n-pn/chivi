@@ -1,24 +1,26 @@
 declare namespace CV {
   interface Dtopic {
-    dboard?: Dboard
-
-    id: number
     user_id: number
+    u_uname: string
+    u_privi: number
 
+    b_title: string
+    b_uslug: string
+
+    dt_id: number
     title: string
     tslug: string
-
-    labels: string[]
-
-    brief: string
-    bhtml: string
+    dtags: string[]
+    bhtml: string = ''
 
     ctime: number
     utime: number
 
-    post_count?: number
-    view_count?: number
-    like_count?: number
+    like_count: number
+    repl_count: number
+    view_count: number
+
+    me_liked: number = 0
   }
 
   interface DtopicFull {
@@ -36,8 +38,6 @@ declare namespace CV {
 
   interface Dtlist extends Paginate {
     posts: Dtopic[]
-    users: Record<number, Cvuser>
-    memos: Record<number, Memoir>
   }
 
   type DtlistType = 'book' | 'show' | 'star' | 'seen' | 'mine' | ''

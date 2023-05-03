@@ -5,22 +5,17 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ dboard, cvpost, rplist } = data)
+  $: ({ dtopic, rplist } = data)
 
-  $: gdroot = `dt:${cvpost.post.id}`
-  $: touser = cvpost.post.user_id
+  $: gdroot = `dt:${dtopic.dt_id}`
+  $: touser = dtopic.user_id
 </script>
 
 <svelte:head>
-  <title>{cvpost.post.title} - Diễn đàn - Chivi</title>
+  <title>{dtopic.title} - Diễn đàn - Chivi</title>
 </svelte:head>
 
-<DtopicFull
-  post={cvpost.post}
-  user={cvpost.user}
-  memo={cvpost.memo}
-  {dboard}
-  fluid={true} />
+<DtopicFull post={dtopic} fluid={true} />
 
 <section>
   <h3>Bình luận chủ đề ({rplist.repls.length})</h3>

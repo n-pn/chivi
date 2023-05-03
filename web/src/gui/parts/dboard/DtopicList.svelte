@@ -2,7 +2,7 @@
   import { page } from '$app/stores'
   import { dlabels } from '$lib/constants'
 
-  import { dtlist_data, dboard_ctrl, get_user } from '$lib/stores'
+  import { get_user } from '$lib/stores'
   const _user = get_user()
 
   import DtopicCard from './DtopicCard.svelte'
@@ -17,27 +17,16 @@
   export let _mode = 0
 
   $: pager = new Pager($page.url, { pg: 1, tl: '' })
-
-  function on_navigate(evt: Event, pgidx: number) {
-    dboard_ctrl.stop_event(evt)
-    dtlist_data.set_pgidx(pgidx)
-  }
 </script>
 
 <board-head>
   <span>Lọc nhãn:</span>
-  <a
-    href={pager.url.pathname}
-    class="m-label _0"
-    on:click={(e) => dboard_ctrl.view_board(e, dboard, '')}>
+  <a href={pager.url.pathname} class="m-label _0">
     <span>Tất cả</span>
     {#if !tlabel}<SIcon name="check" /> {/if}
   </a>
   {#each Object.entries(dlabels) as [value, klass]}
-    <a
-      class="m-label _{klass}"
-      href={pager.gen_url({ lb: value })}
-      on:click={(e) => dboard_ctrl.view_board(e, dboard, value)}>
+    <a class="m-label _{klass}" href={pager.gen_url({ lb: value })}>
       <span>{value}</span>
       {#if tlabel == value}<SIcon name="check" /> {/if}
     </a>
@@ -46,12 +35,7 @@
 
 <topic-list>
   {#each dtlist.posts as post}
-    <DtopicCard
-      {post}
-      user={dtlist.users[post.user_id]}
-      memo={dtlist.memos[post.id]}
-      size="sm"
-      {_mode} />
+    <DtopicCard {post} size="sm" {_mode} />
   {:else}
     <div class="empty">
       <h4>Chưa có chủ đề thảo luận :-(</h4>
@@ -61,7 +45,7 @@
 
 {#if dtlist.pgmax > 1}
   <footer>
-    <Mpager {pager} pgidx={dtlist.pgidx} pgmax={dtlist.pgmax} {on_navigate} />
+    <Mpager {pager} pgidx={dtlist.pgidx} pgmax={dtlist.pgmax} />
   </footer>
 {/if}
 
