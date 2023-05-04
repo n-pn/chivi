@@ -66,24 +66,25 @@
         <a class="cv-user" href="/@{list.u_uname}" data-privi={list.u_privi}
           >{list.u_uname}</a>
 
-        <span class="fg-tert">&middot;</span>
-        <span class="meta">{rel_time(list.utime)} </span>
+        <span class="u-fg-tert">&middot;</span>
+        <span class="m-meta _larger">{rel_time(list.utime)} </span>
 
         {#if $_user.uname == list.u_uname || $_user.privi > 3}
-          <span class="fg-tert">&middot;</span>
-          <a class="meta fs-i" href="/ul/+list?id={list.vl_id}">Sửa</a>
+          <span class="u-fg-tert">&middot;</span>
+          <a class="m-meta _larger fs-i" href="/ul/+list?id={list.vl_id}"
+            >Sửa</a>
         {/if}
       </def>
 
       <div class="right">
-        <span class="meta" data-tip="Bộ truyện">
+        <span class="m-meta _larger" data-tip="Bộ truyện">
           <SIcon name="bookmarks" />
           <span>{list.book_count}</span>
         </span>
 
         <button
           type="button"
-          class="meta"
+          class="m-meta _larger"
           data-tip="Ưa thích"
           class:_active={list.me_liked > 0}
           disabled={$_user.privi < 0}
@@ -92,7 +93,7 @@
           <span>{list.like_count}</span>
         </button>
 
-        <span class="meta" data-tip="Lượt xem">
+        <span class="m-meta _larger" data-tip="Lượt xem">
           <SIcon name="eye" />
           <span>{humanize(list.view_count)}</span>
         </span>
@@ -205,33 +206,5 @@
 
   .left {
     flex: 1;
-  }
-
-  .meta {
-    display: inline-flex;
-    gap: 0.125rem;
-    font-size: rem(15px);
-    align-items: center;
-    @include fgcolor(tert);
-
-    &._active {
-      @include fgcolor(warning, 5);
-
-      :global(.m-icon) {
-        @include fgcolor(warning, 5);
-      }
-    }
-
-    :global(svg) {
-      @include fgcolor(mute);
-    }
-
-    & + & {
-      margin-left: 0.25rem;
-    }
-  }
-
-  button.meta {
-    background: none;
   }
 </style>

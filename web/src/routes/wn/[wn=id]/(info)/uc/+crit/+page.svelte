@@ -60,13 +60,13 @@
   <header class="head">
     <span class="cv-user" data-privi={$_user.privi}>{$_user.uname}</span>
 
-    <span class="fg-tert">&middot;</span>
+    <span class="u-fg-tert">&middot;</span>
     <span class="ctime">
       {data.ctime ? rel_time(data.ctime) : 'đánh giá mới'}
     </span>
 
     <span class="stars">
-      <span class="label show-pl">Đánh giá: </span>
+      <span class="label u-show-pl">Đánh giá: </span>
       {#each [1, 2, 3, 4, 5] as star}
         <button
           type="button"
@@ -130,7 +130,7 @@
 {#each data.crits as crit}
   <VicritCard {crit} book={undefined} show_book={false} />
 {:else}
-  <p class="fg-tert"><em>Chưa có đánh giá khác.</em></p>
+  <p class="u-fg-tert"><em>Chưa có đánh giá khác.</em></p>
 {/each}
 
 <style lang="scss">

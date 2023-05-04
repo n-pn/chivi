@@ -46,9 +46,9 @@
           </td>
           <td>
             <div class="value">
-              <span class="fg-secd" data-tip="Số lượng chữ gốc của chương"
+              <span class="u-fg-secd" data-tip="Số lượng chữ gốc của chương"
                 >{xlog.char_count}</span>
-              <span class="fg-mute"><SIcon name="arrow-right" /></span>
+              <span class="u-fg-mute"><SIcon name="arrow-right" /></span>
               <a
                 class="link"
                 href={pager.gen_url({ ihash: xlog.input_hash, pg: 1 })}

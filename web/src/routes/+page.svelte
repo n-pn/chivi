@@ -19,7 +19,7 @@
 <nav class="nav-list">
   {#each links as [href, icon, text]}
     <a {href} class="nav-link">
-      <SIcon class="show-pl" name={icon} />
+      <SIcon class="u-show-pl" name={icon} />
       <span>{text}</span>
     </a>
   {/each}

@@ -31,7 +31,7 @@
     <div class="repl">
       <header class="repl-head">
         <a class="repl-user" href={user_href}>{repl.uname}</a>
-        <span class="fg-tert">·</span>
+        <span class="u-fg-tert">·</span>
         <time class="repl-time" datetime={repl_date}
           >{get_rtime(repl.ctime)}</time>
         <div class="repl-like">

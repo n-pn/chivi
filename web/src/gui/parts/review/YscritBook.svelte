@@ -5,47 +5,46 @@
   import { SIcon, BCover } from '$gui'
 
   export let book: CV.Crbook | CV.Wninfo
+
+  //
 </script>
 
 <section class="book">
-  <a class="-cover" href="/wn/{book.bslug}">
+  <a class="cover" href="/wn/{book.bslug}">
     <BCover srcset={book.bcover} _class="square" />
   </a>
 
-  <div class="-info">
-    <div class="-title">
-      <a class="link _title" href="/wn/{book.bslug}">
-        <span>{book.vtitle}</span>
-      </a>
-    </div>
-    <div class="-extra">
-      <a class="link _author" href="/wn/={book.vauthor}">
+  <div class="info">
+    <a class="m-meta title" href="/wn/{book.bslug}">{book.vtitle} </a>
+
+    <div class="extra">
+      <a class="m-meta link" href="/wn/={book.vauthor}">
         <SIcon name="edit" />
         <span>{book.vauthor}</span>
       </a>
 
-      <a class="link _genre" href="/wn/~{book.genres[0]}">
+      <a class="m-meta link" href="/wn/~{book.genres[0]}">
         <SIcon name="folder" />
         <span>{book.genres[0]}</span>
       </a>
     </div>
-    <div class="-extra">
-      <span class="meta">
+    <div class="extra">
+      <span class="m-meta">
         <SIcon name="activity" />
         <span>{map_status(book.status)}</span>
       </span>
 
-      <span class="meta">
+      <span class="m-meta">
         <SIcon name="clock" />
         <span>{rel_time(book.mftime)}</span>
       </span>
     </div>
   </div>
 
-  <div class="-vote">
+  <div class="vote">
     {#if book.voters > 0}
-      <div class="-rating" data-tip="Đánh giá">{book.rating}</div>
-      <div class="-voters" data-tip="Lượt đánh giá" data-tip-loc="bottom">
+      <div class="rating" data-tip="Đánh giá">{book.rating}</div>
+      <div class="voters" data-tip="Lượt đánh giá" data-tip-loc="bottom">
         {book.voters} lượt
       </div>
     {/if}
@@ -68,11 +67,11 @@
     @include padding-x(var(--gutter));
   }
 
-  .-info {
+  .info {
     overflow: hidden;
   }
 
-  .-vote {
+  .vote {
     min-width: 3.5rem;
     margin-left: auto;
     margin-right: 0.5rem;
@@ -80,31 +79,39 @@
     @include flex-ca;
   }
 
-  .-title,
-  .-extra {
+  .title,
+  .extra {
     @include flex($gap: 0.5rem);
     line-height: 1.5rem;
   }
 
-  .-title {
-    @include ftsize(md);
-    @include fgcolor(secd);
+  .title {
     @include clamp($width: null);
-    margin-top: 0.5rem;
+
+    font-weight: 500;
+    margin: 0.25rem 0;
+
+    @include bps(font-size, rem(15px), $pm: rem(16px), $ts: rem(17px));
+
+    @include fgcolor(secd);
+
+    @include hover {
+      @include fgcolor(primary, 5);
+    }
   }
 
-  .-extra {
+  .extra {
     @include ftsize(sm);
     @include fgcolor(tert);
   }
 
-  .-rating {
+  .rating {
     font-weight: 500;
     margin-bottom: 0.25rem;
     @include ftsize(xl);
   }
 
-  .-voters {
+  .voters {
     @include ftsize(sm);
     font-style: italic;
     line-height: 1rem;
@@ -113,20 +120,16 @@
     @include clamp($width: null);
   }
 
-  .-cover {
+  .cover {
     height: 100%;
     width: 4rem;
   }
 
   .link {
     font-weight: 500;
-    // padding: 0.375rem 0;
     flex-shrink: 1;
 
     color: inherit;
-    // @include fgcolor(tert);
     @include clamp($width: null);
-    // prettier-ignore
-    &:hover { @include fgcolor(primary, 5); }
   }
 </style>

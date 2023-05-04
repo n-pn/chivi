@@ -49,23 +49,23 @@
       <a href="/@{post.u_uname}" class="cv-user" data-privi={post.u_privi}>
         {post.u_uname}
       </a>
-      <span class="fg-tert">&middot;</span>
+      <span class="u-fg-tert">&middot;</span>
       <time>{rel_time(post.ctime)}</time>
     </topic-brief>
 
     <foot-right>
-      <topic-meta class="meta">
+      <span class="m-meta">
         <SIcon name="eye" />
         <span>{post.view_count}</span>
-      </topic-meta>
+      </span>
 
-      <topic-meta class="meta">
+      <span class="m-meta">
         <SIcon name="messages" />
         <span>{post.repl_count}</span>
-      </topic-meta>
+      </span>
 
       <button
-        class="meta"
+        class="m-meta"
         class:_active={post.me_liked > 0}
         disabled={$_user.privi < 0}
         on:click={handle_like}>
@@ -153,18 +153,5 @@
   foot-right {
     margin-left: auto;
     @include flex-cy($gap: 0.5rem);
-  }
-
-  .meta {
-    @include flex-cy;
-
-    @include fgcolor(tert);
-    padding: 0;
-    background: transparent;
-    gap: 0.25rem;
-
-    &._active {
-      @include fgcolor(warning, 5);
-    }
   }
 </style>

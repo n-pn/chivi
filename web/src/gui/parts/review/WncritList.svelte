@@ -73,7 +73,7 @@
       <nav class="right">
         <a class="m-btn _primary _fill _sm" href="/wn/{bslug}/uc/+crit#cform">
           <SIcon name="ballpen" />
-          <span class="show-pl">Viết đánh giá</span>
+          <span class="u-show-pl">Viết đánh giá</span>
         </a>
       </nav>
     {/if}
@@ -129,7 +129,7 @@
 
   {#if bslug && no_crit}
     <div class="empty">
-      <p class="fg-tert fs-i">Chưa có đánh giá.</p>
+      <p class="u-fg-tert fs-i">Chưa có đánh giá.</p>
       <p>
         <a class="m-btn _primary _fill _lg" href="/wn/{bslug}/uc/+crit#cform">
           <SIcon name="ballpen" />

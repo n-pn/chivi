@@ -1,0 +1,16 @@
+@use '../essence' as *;
+
+.m-badge {
+  display: inline-block;
+  padding: 0 0.375em;
+  line-height: 1.25em;
+
+  border-radius: 1em;
+  font-weight: 500;
+  font-size: 0.875em !important;
+
+  // min-width: 1em;
+  text-align: center;
+  @include bgcolor(neutral, 5, 1);
+  @include fgcolor(tert);
+}

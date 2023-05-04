@@ -173,38 +173,3 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   appearance: textfield;
 }
-
-.u-show-pm {
-  @include bps(display, none, $pm: initial);
-}
-
-.u-show-pl {
-  @include bps(display, none, $pl: initial);
-}
-
-.u-show-ts {
-  @include bps(display, none, $ts: initial);
-}
-
-.u-show-tm {
-  @include bps(display, none, $tm: initial);
-}
-
-.u-show-tl {
-  @include bps(display, none, $tl: initial);
-}
-
-.m-badge {
-  display: inline-block;
-  padding: 0 0.375em;
-  line-height: 1.25em;
-
-  border-radius: 1em;
-  font-weight: 500;
-  font-size: 0.875em !important;
-
-  // min-width: 1em;
-  text-align: center;
-  @include bgcolor(neutral, 5, 1);
-  @include fgcolor(tert);
-}

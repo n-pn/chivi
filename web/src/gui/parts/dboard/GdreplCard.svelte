@@ -53,9 +53,9 @@
       >{repl.u_uname}
     </a>
 
-    <span class="fg-tert">&middot;</span>
+    <span class="u-fg-tert">&middot;</span>
 
-    <time class="meta">
+    <time class="m-meta">
       {rel_time(repl.ctime)}
       {repl.utime > repl.ctime ? '*' : ''}
     </time>
@@ -65,7 +65,7 @@
 
   <footer class="repl-foot">
     <button
-      class="meta btn"
+      class="m-meta btn"
       class:_active={show_form}
       on:click={() => (show_form = !show_form)}>
       <SIcon name="arrow-forward" />
@@ -160,15 +160,6 @@
   }
 
   ._meta {
-    @include ftsize(sm);
-  }
-
-  .meta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.125rem;
-
-    @include fgcolor(tert);
     @include ftsize(sm);
   }
 

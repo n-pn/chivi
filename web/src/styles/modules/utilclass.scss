@@ -36,15 +36,15 @@
   @include ftsize(sm);
 }
 
-.fg-secd {
+.u-fg-secd {
   @include fgcolor(secd);
 }
 
-.fg-tert {
+.u-fg-tert {
   @include fgcolor(tert);
 }
 
-.fg-mute {
+.u-fg-mute {
   @include fgcolor(mute);
 }
 
@@ -56,23 +56,22 @@
   }
 }
 
-.show-pl {
-  display: none;
-  @include bp-min(pl) {
-    display: initial;
-  }
+.u-show-pm {
+  @include bps(display, none, $pm: initial);
 }
 
-.show-ts {
-  display: none;
-  @include bp-min(ts) {
-    display: initial;
-  }
+.u-show-pl {
+  @include bps(display, none, $pl: initial);
 }
 
-.show-tm {
-  display: none;
-  @include bp-min(tm) {
-    display: initial;
-  }
+.u-show-ts {
+  @include bps(display, none, $ts: initial);
+}
+
+.u-show-tm {
+  @include bps(display, none, $tm: initial);
+}
+
+.u-show-tl {
+  @include bps(display, none, $tl: initial);
 }

@@ -40,16 +40,16 @@
 <article class="crit island">
   <header class="head">
     <a
-      class="meta _user cv-user"
+      class="m-meta _user cv-user"
       data-privi={crit.u_privi}
       href="/uc?from=vi&user={crit.u_uname}">{crit.u_uname}</a>
 
-    <span class="fg-tert">&middot;</span>
-    <span class="meta _time"
+    <span class="u-fg-tert">&middot;</span>
+    <span class="m-meta _time"
       >{rel_time(crit.ctime)}{crit.utime > crit.ctime ? '*' : ''}</span>
 
     <div class="right">
-      <span class="meta _star">
+      <span class="m-meta _star">
         <Stars count={crit.stars} />
       </span>
     </div>
@@ -71,22 +71,22 @@
   </section>
 
   <footer class="foot" class:_sticky={view_all}>
-    <!-- <span class="meta">&middot;</span> -->
+    <!-- <span class="m-meta">&middot;</span> -->
 
     {#if crit.ohtml.length > 600}
-      <button class="meta" on:click={() => (view_all = !view_all)}>
+      <button class="m-meta" on:click={() => (view_all = !view_all)}>
         <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
         <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
       </button>
     {/if}
 
-    <a class="meta" href="{crit_path}#vcrit">
+    <a class="m-meta" href="{crit_path}#vcrit">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
 
     {#if $_user.uname == crit.u_uname}
-      <a class="meta" href={edit_path}>
+      <a class="m-meta" href={edit_path}>
         <SIcon name="pencil" />
         <span>Sửa chữa</span>
       </a>
@@ -94,18 +94,18 @@
 
     <div class="right">
       <button
-        class="meta"
+        class="m-meta"
         type="button"
         on:click={handle_like}
         class:_active={crit.me_liked > 0}>
         <SIcon name="thumb-up" />
-        <span class="u-show-pl">Ưa thích</span>
+        <span class="u-show-pm">Ưa thích</span>
         <span class="m-badge">{crit.like_count}</span>
       </button>
 
-      <a class="meta" href="{crit_path}#repls">
+      <a class="m-meta" href="{crit_path}#repls">
         <SIcon name="message" />
-        <span class="u-show-pl">Phản hồi</span>
+        <span class="u-show-pm">Phản hồi</span>
         <span class="m-badge">{crit.repl_count}</span>
       </a>
     </div>
@@ -156,13 +156,7 @@
     @include flex($gap: 0.375rem);
   }
 
-  .meta {
-    display: inline-flex;
-    gap: 0.125rem;
-    align-items: center;
-
-    @include bps(font-size, rem(12px), $pl: rem(13px), $tm: rem(14px));
-
+  .m-meta {
     &._user {
       font-weight: 500;
       @include clamp($width: null);
@@ -170,36 +164,9 @@
       // flex-shrink: 0;
     }
 
-    &:not(.cv-user) {
-      @include fgcolor(tert);
-    }
-
-    :global(.m-icon) {
-      width: 1.1em;
-      height: 1.1em;
-      @include fgcolor(mute);
-    }
-
     &._star :global(.star) {
       width: 1.1em;
       height: 1.1em;
-    }
-
-    &._active {
-      @include fgcolor(warning, 5);
-
-      :global(.m-icon) {
-        @include fgcolor(warning, 5);
-      }
-    }
-  }
-
-  a.meta,
-  button.meta {
-    background: inherit;
-    padding: 0;
-    &:hover {
-      @include fgcolor(primary, 5);
     }
   }
 

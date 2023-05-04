@@ -15,7 +15,7 @@
       >@{viuser.uname}</cv-user>
   </h1>
 
-  <p class="fg-tert"><em>(Trang đang hoàn thiện)</em></p>
+  <p class="u-fg-tert"><em>(Trang đang hoàn thiện)</em></p>
   <p>Bạn có thể thêm lời nhắn cho {viuser.uname} tại đây.</p>
 
   <section>

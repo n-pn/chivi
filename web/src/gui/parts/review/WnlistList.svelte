@@ -68,7 +68,7 @@
 
   {#if vi.lists.length + ys.lists.length == 0}
     <div class="empty">
-      <p class="fg-tert"><em>Không có nội dung</em></p>
+      <p class="u-fg-tert"><em>Không có nội dung</em></p>
     </div>
   {/if}
 

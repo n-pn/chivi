@@ -61,16 +61,16 @@
   $: crit_path = `${book_path}/uc/y${crit.id}`
 </script>
 
-<crit-item class="island">
+<section class="crit island">
   <header>
-    <a class="meta _user" href="/uc?from=ys&user={user.id}">{user.uname}</a>
-    <span class="meta">&middot;</span>
-    <a class="meta _time" href="/sp/qtran/crits/{crit.id}">
+    <a class="m-meta _user" href="/uc?from=ys&user={user.id}">{user.uname}</a>
+    <span class="m-meta">&middot;</span>
+    <a class="m-meta" href="/sp/qtran/crits/{crit.id}">
       <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
     </a>
 
     <div class="right">
-      <span class="meta _star">
+      <span class="m-meta _star">
         <Stars count={crit.stars} />
       </span>
     </div>
@@ -103,22 +103,22 @@
   </section>
 
   <footer class="foot" class:_sticky={view_all}>
-    <!-- <span class="meta">&middot;</span> -->
-
-    <a class="meta" href={crit_path}>
-      <SIcon name="link" />
-      <span>Liên kết</span>
-    </a>
+    <!-- <span class="m-meta">&middot;</span> -->
 
     {#if content.length > 600}
-      <button class="meta" on:click={() => (view_all = !view_all)}>
+      <button class="m-meta" on:click={() => (view_all = !view_all)}>
         <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
         <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
       </button>
     {/if}
 
+    <a class="m-meta" href={crit_path}>
+      <SIcon name="link" />
+      <span>Liên kết</span>
+    </a>
+
     <Gmenu dir="left" loc="bottom">
-      <button class="meta" slot="trigger">
+      <button class="m-meta" slot="trigger">
         <SIcon name="language" />
         <span>{body_types[body_type][0]}</span>
       </button>
@@ -135,13 +135,13 @@
     </Gmenu>
 
     <div class="right">
-      <span class="meta">
+      <span class="m-meta">
         <SIcon name="thumb-up" />
         <span class="u-show-pl">Ưa thích</span>
         <span class="m-badge">{crit.like_count}</span>
       </span>
 
-      <a class="meta" href="{crit_path}#repls">
+      <a class="m-meta" href="{crit_path}#repls">
         <SIcon name="message" />
         <span class="u-show-pl">Phản hồi</span>
         <span class="m-badge">{crit.repl_count}</span>
@@ -158,18 +158,14 @@
       </a>
     </footer>
   {/if}
-</crit-item>
+</section>
 
 <style lang="scss">
-  crit-item {
-    display: block;
+  .crit {
     @include margin-y(1rem);
-    // padding-bottom: 0.01px;
 
-    // @include shadow();
     @include bgcolor(tert);
 
-    // @include bdradi();
     @include linesd(--bd-main, $inset: false);
 
     @include tm-dark {
@@ -199,41 +195,12 @@
     @include flex($gap: 0.375rem);
   }
 
-  .meta {
-    @include fgcolor(tert);
-    display: inline-flex;
-    gap: 0.125rem;
-    align-items: center;
-
-    @include bps(font-size, rem(12px), $pl: rem(13px), $tm: rem(14px));
-
-    &._user {
-      font-weight: 500;
-      @include fgcolor(secd);
-      @include clamp($width: null);
-      @include bps(font-size, rem(13px), $pl: rem(14px), $tm: rem(15px));
-      // flex-shrink: 0;
-    }
-
-    :global(.m-icon) {
-      width: 1.1em;
-      height: 1.1em;
-      @include fgcolor(mute);
-    }
-
-    &._star :global(.star) {
-      width: 1.1em;
-      height: 1.1em;
-    }
-  }
-
-  a.meta,
-  button.meta {
-    background: inherit;
-    padding: 0;
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
+  .m-meta._user {
+    font-weight: 500;
+    @include fgcolor(secd);
+    @include clamp($width: null);
+    @include bps(font-size, rem(13px), $pl: rem(14px), $tm: rem(15px));
+    // flex-shrink: 0;
   }
 
   .body {
@@ -255,15 +222,7 @@
     // prettier-ignore
     @include bp-min(ts) { --line: 10; }
     // prettier-ignore
-    @include bp-min(ds) { --line: 8; }
-
-    // &._onload:after {
-    //   display: block;
-    //   position: absolute;
-    //   content: '';
-    //   inset: 0;
-    //   @include bgcolor(neutral, 5, 1);
-    // }
+    @include bp-min(tl) { --line: 8; }
   }
 
   .loading {
@@ -285,17 +244,13 @@
     @include fgcolor(tert);
   }
 
-  .list {
-    @include ftsize(sm);
-  }
-
   .foot {
     padding: 0.375rem var(--gutter);
   }
 
   .list {
     padding: 0.25rem var(--gutter);
-
+    @include ftsize(sm);
     @include border(--bd-soft, $loc: top);
   }
 

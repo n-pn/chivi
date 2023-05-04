@@ -3,14 +3,31 @@
   const _user = get_user()
 
   import { rel_time } from '$utils/time_utils'
+  import { toggle_like } from '$utils/memo_utils'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import WncritList from '$gui/parts/review/WncritList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
+
   $: ({ list } = data)
 
   $: list_path = `/@${list.u_uname}/ul/${list.tslug}`
+
+  const handle_like = (evt: Event) => {
+    evt.preventDefault()
+
+    toggle_like(
+      'vilist',
+      list.vl_id,
+      list.me_liked,
+      ({ like_count, memo_liked }) => {
+        list.like_count = like_count
+        list.me_liked = memo_liked
+      }
+    )
+  }
 </script>
 
 <svelte:head>
@@ -23,30 +40,36 @@
       <a class="cv-user" href="/@{list.u_uname}" data-privi={list.u_privi}
         >{list.u_uname}</a>
 
-      <span class="fg-tert">&middot;</span>
+      <span class="u-fg-tert">&middot;</span>
 
-      <span class="entry">
+      <span class="m-meta">
         <span>{rel_time(list.utime)}</span>
       </span>
 
       {#if $_user.uname == list.u_uname}
-        <span class="fg-tert">&middot;</span>
-        <a class="entry fs-i" href="/ul/+list?id={list.vl_id}">Sửa</a>
+        <span class="u-fg-tert">&middot;</span>
+        <a class="m-meta fs-i" href="/ul/+list?id={list.vl_id}">Sửa</a>
       {/if}
     </def>
 
     <div class="right">
-      <span class="entry" data-tip="Bộ truyện">
+      <span class="m-meta" data-tip="Bộ truyện">
         <SIcon name="bookmarks" />
         <span>{list.book_count}</span>
       </span>
 
-      <span class="entry" data-tip="Ưa thích">
+      <button
+        type="button"
+        class="m-meta"
+        data-tip="Ưa thích"
+        class:_active={list.me_liked > 0}
+        disabled={$_user.privi < 0}
+        on:click={handle_like}>
         <SIcon name="heart" />
         <span>{list.like_count}</span>
-      </span>
+      </button>
 
-      <span class="entry" data-tip="Lượt xem">
+      <span class="m-meta" data-tip="Lượt xem">
         <SIcon name="eye" />
         <span>{list.view_count}</span>
       </span>
@@ -67,7 +90,12 @@
 </section>
 
 <article class="article island">
-  <WncritList vi={data.books} ys={undefined} _sort="utime" show_list={false} />
+  <WncritList
+    vi={data.books}
+    ys={undefined}
+    _sort="utime"
+    show_list={false}
+    view_head={false} />
 </article>
 
 <style lang="scss">
@@ -103,21 +131,6 @@
 
   .left {
     flex: 1;
-  }
-
-  .entry {
-    display: inline-flex;
-    gap: 0.125rem;
-    align-items: center;
-    @include fgcolor(tert);
-
-    :global(svg) {
-      @include fgcolor(mute);
-    }
-
-    & + & {
-      margin-left: 0.25rem;
-    }
   }
 
   .vdesc :global(p) {

@@ -57,16 +57,16 @@
 
 <crit-item class="island">
   <header>
-    <a class="meta _user" href="/uc?from=ys&user={ycrit.yu_id}"
+    <a class="m-meta _user" href="/uc?from=ys&user={ycrit.yu_id}"
       >{ycrit.uname}</a>
-    <span class="meta">&middot;</span>
-    <a class="meta _time" href="/sp/qtran/crits/{ycrit.yc_id}">
+    <span class="m-meta">&middot;</span>
+    <a class="m-meta _time" href="/sp/qtran/crits/{ycrit.yc_id}">
       <span
         >{rel_time(ycrit.utime)}{ycrit.utime != ycrit.ctime ? '*' : ''}</span>
     </a>
 
     <div class="right">
-      <span class="meta _star">
+      <span class="m-meta _star">
         <Stars count={ycrit.stars} />
       </span>
     </div>
@@ -97,20 +97,20 @@
   </section>
 
   <footer class="foot" class:_sticky={view_all}>
-    <a class="meta" href="{crit_path}#ycrit">
+    <a class="m-meta" href="{crit_path}#ycrit">
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
 
     {#if content.length > 600}
-      <button class="meta" on:click={() => (view_all = !view_all)}>
+      <button class="m-meta" on:click={() => (view_all = !view_all)}>
         <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
         <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
       </button>
     {/if}
 
     <Gmenu dir="left" loc="bottom">
-      <button class="meta" slot="trigger">
+      <button class="m-meta" slot="trigger">
         <SIcon name="language" />
         <span>{body_types[body_type][0]}</span>
       </button>
@@ -127,13 +127,13 @@
     </Gmenu>
 
     <div class="right">
-      <span class="meta">
+      <span class="m-meta">
         <SIcon name="thumb-up" />
         <span class="u-show-pl">Ưa thích</span>
         <span class="m-badge">{ycrit.like_count}</span>
       </span>
 
-      <a class="meta" href="{crit_path}#repls">
+      <a class="m-meta" href="{crit_path}#repls">
         <SIcon name="message" />
         <span class="u-show-pl">Phản hồi</span>
         <span class="m-badge">{ycrit.repl_count}</span>
@@ -191,41 +191,11 @@
     @include flex($gap: 0.375rem);
   }
 
-  .meta {
-    @include fgcolor(tert);
-    display: inline-flex;
-    gap: 0.125rem;
-    align-items: center;
-
-    @include bps(font-size, rem(12px), $pl: rem(13px), $tm: rem(14px));
-
-    &._user {
-      font-weight: 500;
-      @include fgcolor(secd);
-      @include clamp($width: null);
-      @include bps(font-size, rem(13px), $pl: rem(14px), $tm: rem(15px));
-      // flex-shrink: 0;
-    }
-
-    :global(.m-icon) {
-      width: 1.1em;
-      height: 1.1em;
-      @include fgcolor(mute);
-    }
-
-    &._star :global(.star) {
-      width: 1.1em;
-      height: 1.1em;
-    }
-  }
-
-  a.meta,
-  button.meta {
-    background: inherit;
-    padding: 0;
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
+  .m-meta._user {
+    font-weight: 500;
+    @include fgcolor(secd);
+    @include clamp($width: null);
+    @include bps(font-size, rem(13px), $pl: rem(14px), $tm: rem(15px));
   }
 
   .body {

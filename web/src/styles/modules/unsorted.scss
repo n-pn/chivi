@@ -1,0 +1,42 @@
+@use '../essence' as *;
+
+.m-meta {
+  display: inline-flex;
+  gap: 0.125rem;
+  align-items: center;
+
+  padding: 0;
+  background: inherit;
+
+  @include fgcolor(tert);
+  @include bps(font-size, rem(12px), $pm: rem(13px), $ts: rem(14px));
+
+  &._larger {
+    font-size: rem(15px);
+  }
+
+  &._active {
+    @include fgcolor(warning, 5);
+
+    svg {
+      @include fgcolor(warning, 5, 8);
+    }
+  }
+
+  svg {
+    width: 1.1em;
+    height: 1.1em;
+    @include fgcolor(mute);
+  }
+
+  span + span {
+    margin-left: 0.125rem;
+  }
+}
+
+a.m-meta,
+button.m-meta {
+  @include hover {
+    @include fgcolor(primary, 5);
+  }
+}

@@ -35,7 +35,7 @@
       <span>Diễn đàn</span>
     </a>
 
-    <span class="fs-sm fg-mute">/</span>
+    <span class="fs-sm u-fg-mute">/</span>
 
     <a class="m-board" href={board_url}>
       <SIcon name="message" />
@@ -65,27 +65,27 @@
 
       {#if $_user.privi > 3 || $_user.uname == post.u_uname}
         <topic-sep>·</topic-sep>
-        <a class="action fg-tert" href="/gd/+topic?id={post.dt_id}"
+        <a class="action u-fg-tert" href="/gd/+topic?id={post.dt_id}"
           ><span>Sửa</span>
         </a>
       {/if}
 
       <foot-right>
-        <topic-meta class="meta">
+        <span class="m-meta">
           <SIcon name="messages" />
           <span>{post.repl_count}</span>
-        </topic-meta>
+        </span>
 
         <topic-sep>·</topic-sep>
-        <topic-meta class="meta">
+        <span class="m-meta">
           <SIcon name="eye" />
           <span>{post.view_count}</span>
-        </topic-meta>
+        </span>
 
-        <span class="fg-mute">&middot;</span>
+        <span class="u-fg-mute">&middot;</span>
 
         <button
-          class="meta"
+          class="m-meta"
           class:_active={post.me_liked > 0}
           disabled={$_user.privi < 0}
           on:click={handle_like}>
@@ -192,18 +192,6 @@
 
   topic-time {
     @include clamp($width: null);
-  }
-
-  .meta {
-    @include flex-cy;
-    @include fgcolor(tert);
-    padding: 0;
-    background: transparent;
-    gap: 0.25rem;
-
-    &._active {
-      @include fgcolor(warning, 5);
-    }
   }
 
   foot-right {
