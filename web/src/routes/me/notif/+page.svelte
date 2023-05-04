@@ -11,7 +11,7 @@
 </script>
 
 <article class="article">
-  <h1>Thông báo ({data.total})</h1>
+  <h1>Thông báo <span class="u-badge">{data.total}</span></h1>
 
   <div class="notifs">
     {#each data.notifs as notif}

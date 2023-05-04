@@ -26,7 +26,7 @@
     {/each}
   </div>
 
-  <h2>Theo bộ ({data.total})</h2>
+  <h2>Theo bộ <span class="u-badge">{data.total}</span></h2>
 
   <div class="dicts">
     {#each books as [dname, label, dsize]}

@@ -31,28 +31,27 @@ class CV::VilistCtrl < CV::BaseCtrl
   def show(list_id : Int32,
            sort : String = "utime",
            smin : Int32 = 0, smax : Int32 = 6,
-           lb : String? = nil)
+           lb vtag : String? = nil)
     spawn VilistCard.inc_counter(list_id, "view_count", 1)
     vlist = VilistCard.fetch_one(list_id, _vu_id)
 
     pg_no, limit, offset = _paginate(max: 20)
-    crits = Vicrit.sort_by(sort)
 
-    crits.where("vilist_id = ?", list_id)
-    crits.where("stars >= ?", smin) if smin > 1
-    crits.where("stars <= ?", smax) if smax < 5
+    crits = VicritCard.fetch_all(
+      self_id: _vu_id, order: sort,
+      vlist: list_id, btags: vtag,
+      s_min: smin, s_max: smax,
+      limit: limit, offset: offset,
+    )
 
-    crits.limit(limit).offset(offset).to_a
-    memos = Memoir.glob(_vu_id, :vicrit, crits.map(&.id.to_i))
-    books = Wninfo.preload(crits.map(&.nvinfo_id))
+    books = Wninfo.preload(crits.map(&.book_id))
 
     render json: {
       list: vlist,
 
       books: {
-        crits: VicritView.as_list(crits, false),
+        crits: crits,
         books: WninfoView.as_hash(books),
-        memos: MemoirView.as_hash(memos),
 
         pgidx: pg_no,
         pgmax: _pgidx(vlist.book_count, limit),

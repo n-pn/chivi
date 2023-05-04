@@ -142,7 +142,7 @@ struct CV::VicritCard
 
       case order
       when "ctime" then sql << " order by t.id desc"
-      when "utime" then sql << " order by t.changed_at desc"
+      when "utime" then sql << " order by t.id desc"
       when "likes" then sql << " order by t.like_count desc, t.stars desc"
       else              sql << " order by t._sort desc, t.stars desc"
       end
