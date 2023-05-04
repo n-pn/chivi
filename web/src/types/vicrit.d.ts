@@ -1,35 +1,42 @@
 declare namespace CV {
   interface Vicrit {
-    id: number
+    user_id: number
+    u_uname: string
+    u_privi: number
 
     book_id: number
-    user_id: number
-    list_id: number
+    b_uslug: string
+    b_title: string
 
+    list_id: number
+    l_title: string
+    l_uslug: string
+    l_count: number
+
+    vc_id: number
     stars: number
     ohtml: string
     btags: string[]
 
     ctime: number
-    edited: boolean = false
+    utime: number
 
     like_count: number
     repl_count: number
+
+    me_liked: number
   }
 
   interface VicritList extends Paginate {
     crits: Array<Vicrit>
     books: Record<number, Wninfo>
-    users: Record<number, Viuser>
-    lists: Record<number, Vilist>
-    memos: Record<number, CV.Memoir>
   }
 
   interface VicritForm {
     id: number
 
     wn_id: number
-    bl_id: number
+    vl_id: number
 
     stars: number
     input: string

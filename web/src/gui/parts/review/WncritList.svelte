@@ -111,12 +111,9 @@
 <div class="crits">
   {#each vi.crits as crit}
     {@const book = vi.books[crit.book_id]}
-    {@const user = vi.users[crit.user_id]}
-    {@const list = vi.lists[crit.list_id]}
-    {@const memo = vi.memos[crit.id]}
 
-    {#key crit.id}
-      <VicritCard {crit} {book} {user} {memo} {list} {show_book} {show_list} />
+    {#key crit.vc_id}
+      <VicritCard {crit} {book} {show_book} {show_list} />
     {/key}
   {/each}
 

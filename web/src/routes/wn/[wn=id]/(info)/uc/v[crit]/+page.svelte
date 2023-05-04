@@ -6,20 +6,22 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: gdroot = `vc:${data.crit.id}`
-  $: touser = data.crit.user_id
+  $: ({ vcdata } = data)
+
+  $: gdroot = `vc:${vcdata.vc_id}`
+  $: touser = vcdata.user_id
 </script>
 
 <h3 id="vcrit">
-  Đánh giá truyện của <strong>{data.user.uname}</strong> cho bộ truyện
-  <strong>{data.book.vtitle}</strong>
+  Đánh giá truyện của <strong>{vcdata.u_uname}</strong> cho bộ truyện
+  <strong>{vcdata.b_title}</strong>
 </h3>
 
-<VicritCard {...data} show_book={false} view_all={true} />
+<VicritCard crit={vcdata} book={undefined} show_book={false} view_all={true} />
 
 <section id="repls" class="repls">
   <h3 class="repls-head">
-    Bình luận đánh giá <span class="m-badge">{data.rplist.repls.length}</span>
+    Bình luận đánh giá <span class="m-badge">{vcdata.repl_count}</span>
   </h3>
 
   <GdreplList rplist={data.rplist} {gdroot} {touser} fluid={true} />

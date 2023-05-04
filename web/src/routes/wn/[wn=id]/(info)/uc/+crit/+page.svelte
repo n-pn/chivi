@@ -17,7 +17,7 @@
 
   $: list_ids = data.crits.map((x) => x.list_id)
 
-  $: if (list_ids.includes(data.cform.bl_id)) {
+  $: if (list_ids.includes(data.cform.vl_id)) {
     error = 'Thư đơn bạn chọn đã có đánh giá, mời chọn cái khác!'
   }
 
@@ -35,8 +35,8 @@
     if (!res.ok) {
       error = await res.text()
     } else {
-      const crit = (await res.json()) as CV.Vicrit
-      await goto(`/wn/${data.nvinfo.bslug}/uc/v${crit.id}`)
+      const vc_id = await res.text()
+      await goto(`/wn/${data.nvinfo.bslug}/uc/v${vc_id}`)
     }
   }
 
@@ -107,9 +107,9 @@
         class="m-input"
         name="vilist"
         id="vilist"
-        bind:value={data.cform.bl_id}>
+        bind:value={data.cform.vl_id}>
         {#each data.lists as list}
-          <option value={list.id}>{list.title}</option>
+          <option value={list.vl_id}>{list.title}</option>
         {/each}
       </select>
     </label>
@@ -128,16 +128,7 @@
 <h3>Các đánh giá khác của bạn cho bộ truyện:</h3>
 
 {#each data.crits as crit}
-  {@const list = data.lists.find((x) => x.id == crit.list_id)}
-  {@const memo = data.memos[crit.id]}
-
-  <VicritCard
-    {crit}
-    user={$_user}
-    {list}
-    {memo}
-    book={undefined}
-    show_book={false} />
+  <VicritCard {crit} book={undefined} show_book={false} />
 {:else}
   <p class="fg-tert"><em>Chưa có đánh giá khác.</em></p>
 {/each}

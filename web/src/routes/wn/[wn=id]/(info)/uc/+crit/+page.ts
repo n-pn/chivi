@@ -4,13 +4,10 @@ import { nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
 interface CritFormPage {
-  bname: string
-  bslug: string
   ctime: number
   cform: CV.VicritForm
   lists: CV.Vilist[]
   crits: CV.Vicrit[]
-  memos: Record<number, CV.Memoir>
 }
 
 export const load = (async ({ url, fetch, parent }) => {

@@ -11,9 +11,6 @@
 
   export let crit: CV.Vicrit
   export let book: CV.Wninfo | undefined
-  export let user: CV.Viuser | App.CurrentUser
-  export let list: CV.Vilist
-  export let memo: CV.Memoir = { liked: 0 }
 
   export let show_book = true
   export let show_list = true
@@ -24,29 +21,32 @@
   const handle_like = (evt: Event) => {
     evt.preventDefault()
 
-    toggle_like('vicrit', crit.id, memo.liked, ({ like_count, memo_liked }) => {
-      crit.like_count = like_count
-      memo.liked = memo_liked
-    })
+    toggle_like(
+      'vicrit',
+      crit.vc_id,
+      crit.me_liked,
+      ({ like_count, memo_liked }) => {
+        crit.like_count = like_count
+        crit.me_liked = memo_liked
+      }
+    )
   }
 
-  $: book_path = book ? `/wn/${book.bslug}` : `/wn/${crit.book_id}`
-  $: crit_path = `${book_path}/uc/v${crit.id}`
-  $: edit_path = `${book_path}/uc/+crit?id=${crit.id}`
-
-  $: list_path = `/ul/v${list.id}-${list.tslug}`
+  $: crit_path = `/wn/${crit.b_uslug}/uc/v${crit.vc_id}`
+  $: edit_path = `/wn/${crit.b_uslug}/uc/+crit?id=${crit.vc_id}`
+  $: list_path = `/@${crit.u_uname}/ul/${crit.l_uslug}`
 </script>
 
 <article class="crit island">
   <header class="head">
     <a
       class="meta _user cv-user"
-      data-privi={user.privi}
-      href="/uc?from=vi&user={user.uname}">{user.uname}</a>
+      data-privi={crit.u_privi}
+      href="/uc?from=vi&user={crit.u_uname}">{crit.u_uname}</a>
 
     <span class="fg-tert">&middot;</span>
     <span class="meta _time"
-      >{rel_time(crit.ctime)}{crit.edited ? '*' : ''}</span>
+      >{rel_time(crit.ctime)}{crit.utime > crit.ctime ? '*' : ''}</span>
 
     <div class="right">
       <span class="meta _star">
@@ -85,7 +85,7 @@
       <span>Liên kết</span>
     </a>
 
-    {#if $_user.uname == user.uname}
+    {#if $_user.uname == crit.u_uname}
       <a class="meta" href={edit_path}>
         <SIcon name="pencil" />
         <span>Sửa chữa</span>
@@ -97,7 +97,7 @@
         class="meta"
         type="button"
         on:click={handle_like}
-        class:_active={memo?.liked > 0}>
+        class:_active={crit.me_liked > 0}>
         <SIcon name="thumb-up" />
         <span class="u-show-pl">Ưa thích</span>
         <span class="m-badge">{crit.like_count}</span>
@@ -111,12 +111,12 @@
     </div>
   </footer>
 
-  {#if show_list && list}
+  {#if show_list}
     <footer class="list">
       <a class="link _list" href={list_path}>
         <SIcon name="bookmarks" />
-        <span>{list.title}</span>
-        <span>({list.book_count} bộ truyện)</span>
+        <span>{crit.l_title}</span>
+        <span>({crit.l_count} bộ truyện)</span>
       </a>
     </footer>
   {/if}

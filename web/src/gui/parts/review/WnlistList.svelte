@@ -5,7 +5,6 @@
   const empty = {
     lists: [],
     users: {},
-    memos: {},
     pgmax: 0,
     pgidx: 0,
     total: 0,
