@@ -17,15 +17,15 @@ export const load = (async ({ url, fetch, params }) => {
   const data = await api_get<VilistData>(path, fetch)
 
   data.books.users = { [data.user.vu_id]: data.user }
-  data.books.lists = { [data.list.id]: data.list }
+  data.books.lists = { [data.list.vl_id]: data.list }
 
-  const { id, title, tslug } = data.list
+  const { title, tslug } = data.list
 
   const _meta: App.PageMeta = {
     left_nav: [
       home_nav('tm', ''),
       nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' }),
-      nav_link(`v${id}-${tslug}`, title, null, { kind: 'title' }),
+      nav_link(`v${tslug}`, title, null, { kind: 'title' }),
     ],
     right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
   }

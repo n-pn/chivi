@@ -5,35 +5,26 @@ class CV::VilistCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/")]
   def index(
-    sort : String? = nil, type : String? = nil,
-    user : String? = nil, book : Int64? = nil,
-    qs : String? = nil
+    sort order : String = "mixed",
+    user vuser : String? = nil,
+    type klass : String? = nil,
+    book wbook : Int32? = nil,
+    qs query : String? = nil
   )
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
-    query = Vilist.query.sort_by(sort)
+    klass = nil unless klass.in?("male", "female")
+    query = TextUtil.slugify(query) if query
 
-    query.where("klass = ?", type) if type && type != "both"
-    query.where("viuser_id = (select id from viusers where uname = ?)", user) if user
-    query.where("id in (select vilist_id from vicrits where nvinfo_id = ?)", book) if book
-
-    query.where("tslug LIKE '%#{TextUtil.slugify(qs)}%'") if qs
-
-    total = query.dup.limit((pg_no &+ 2) &* limit).offset(0).count
-    lists = query.limit(limit).offset(offset).to_a
-    users = Viuser.preload(lists.map(&.viuser_id))
+    total = VilistCard.count_all(vuser, klass, wbook, query)
+    lists = VilistCard.fetch_all(_vu_id, order, vuser, klass, wbook, query, limit, offset)
 
     render json: {
-      lists: VilistView.as_list(lists, mode: :full),
-      users: ViuserView.as_hash(users),
+      lists: lists,
       total: total,
       pgidx: pg_no,
       pgmax: _pgidx(total, limit),
     }
-  end
-
-  private def load_list(id : Int32)
-    Vilist.find({id: id}) || raise NotFound.new("Thư đơn không tồn tại!")
   end
 
   @[AC::Route::GET("/:list_id")]
@@ -41,11 +32,8 @@ class CV::VilistCtrl < CV::BaseCtrl
            sort : String = "utime",
            smin : Int32 = 0, smax : Int32 = 6,
            lb : String? = nil)
-    vilist = load_list(list_id)
-    spawn Vilist.inc_counter(list_id, "view_count", 1)
-
-    viuser = Viuser.load!(vilist.viuser_id)
-    memoir = Memoir.load(_vu_id, :vilist, vilist.id)
+    spawn VilistCard.inc_counter(list_id, "view_count", 1)
+    vlist = VilistCard.fetch_one(list_id, _vu_id)
 
     pg_no, limit, offset = _paginate(max: 20)
     crits = Vicrit.sort_by(sort)
@@ -59,9 +47,7 @@ class CV::VilistCtrl < CV::BaseCtrl
     books = Wninfo.preload(crits.map(&.nvinfo_id))
 
     render json: {
-      list: VilistView.new(vilist, mode: :full),
-      user: ViuserView.new(viuser, full: false),
-      memo: MemoirView.new(memoir),
+      list: vlist,
 
       books: {
         crits: VicritView.as_list(crits, false),
@@ -69,33 +55,43 @@ class CV::VilistCtrl < CV::BaseCtrl
         memos: MemoirView.as_hash(memos),
 
         pgidx: pg_no,
-        pgmax: _pgidx(vilist.book_count, limit),
+        pgmax: _pgidx(vlist.book_count, limit),
       },
     }
   end
 
   @[AC::Route::GET("/form")]
-  def upsert_form(id vl_id : Int32 = 0)
+  def upsert_form(id list_id : Int32 = 0)
     guard_privi 0, "thêm/sửa thư đơn"
 
-    lists = Vilist.query.where("viuser_id = ?", _vu_id).to_a
+    lists = VilistCard.all_by_user(_vu_id, _vu_id)
 
-    vlist = lists.find(&.id.== vl_id)
-    lists.reject!(&.id.== vl_id) if vlist
+    vlist = lists.find(&.vl_id.== list_id)
+    lists.reject!(&.vl_id.== list_id) if vlist
 
     render json: {
-      ctime: vlist.try(&.created_at.to_unix) || 0,
+      ctime: vlist.try(&.ctime) || 0,
       lform: init_form(vlist),
-      lists: VilistView.as_list(lists, mode: :full),
+      lists: lists,
     }
   end
 
   private def init_form(list : Nil)
-    {id: 0, title: "[#{_uname}] Vô đề", dtext: "Tổng hợp truyện của tôi", klass: ""}
+    {
+      id:    0,
+      title: "[#{_uname}] Vô đề",
+      klass: "",
+      dtext: "Tổng hợp truyện của tôi",
+    }
   end
 
-  private def init_form(list : Vilist)
-    {id: list.id, title: list.title, dtext: list.dtext, klass: list.klass}
+  private def init_form(list : VilistCard)
+    {
+      id:    list.vl_id,
+      title: list.title,
+      klass: list.klass,
+      dtext: VilistCard.get_dtext(list.vl_id),
+    }
   end
 
   struct ListForm
@@ -120,7 +116,11 @@ class CV::VilistCtrl < CV::BaseCtrl
     vilist = Vilist.new({viuser_id: _vu_id})
     vilist.patch!(form.title, form.dtext, form.klass)
 
-    render json: VilistView.new(vilist, mode: :full)
+    render text: "#{vilist.id}-#{vilist.tslug}"
+  end
+
+  private def load_list(id : Int32)
+    Vilist.find({id: id}) || raise NotFound.new("Thư đơn không tồn tại!")
   end
 
   @[AC::Route::PATCH("/:list_id", body: form)]
@@ -130,7 +130,7 @@ class CV::VilistCtrl < CV::BaseCtrl
 
     vilist.patch!(form.title, form.dtext, form.klass)
 
-    render json: VilistView.new(vilist, mode: :full)
+    render text: "#{vilist.id}-#{vilist.tslug}"
   end
 
   @[AC::Route::DELETE("/:list_id")]

@@ -8,26 +8,20 @@
 
   import type { PageData } from './$types'
   export let data: PageData
+  $: ({ list } = data)
 
-  $: ({ list, user } = data)
+  $: list_path = `/@${list.u_uname}/ul/${list.tslug}`
 </script>
 
 <svelte:head>
-  <meta
-    property="og:url"
-    content="https://chivi.app/ul/v{list.id}-{list.tslug}" />
-  <meta
-    property="og:image"
-    content="https://chivi.app/covers/{list.covers[0] || 'blank.webp'}" />
+  <meta property="og:url" content="https://chivi.app/{list_path}" />
 </svelte:head>
 
 <section class="content">
   <header class="header">
     <def class="left">
-      <a
-        class="uname vi-user"
-        href="/ul?from=vi&user={user.uname}"
-        data-privi={user.privi}>{user.uname}</a>
+      <a class="cv-user" href="/@{list.u_uname}" data-privi={list.u_privi}
+        >{list.u_uname}</a>
 
       <span class="fg-tert">&middot;</span>
 
@@ -35,9 +29,9 @@
         <span>{rel_time(list.utime)}</span>
       </span>
 
-      {#if $_user.uname == user.uname || $_user.privi > 3}
+      {#if $_user.uname == list.u_uname}
         <span class="fg-tert">&middot;</span>
-        <a class="entry fs-i" href="/ul/+list?id={list.id}">Sửa</a>
+        <a class="entry fs-i" href="/ul/+list?id={list.vl_id}">Sửa</a>
       {/if}
     </def>
 
@@ -109,11 +103,6 @@
 
   .left {
     flex: 1;
-  }
-
-  .uname {
-    font-weight: 500;
-    @include fgcolor(secd);
   }
 
   .entry {

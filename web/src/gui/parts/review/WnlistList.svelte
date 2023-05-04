@@ -59,8 +59,7 @@
 
 <div class="lists">
   {#each vi.lists as list}
-    {@const user = vi.users[list.user_id]}
-    <VilistCard {list} {user} />
+    <VilistCard {list} />
   {/each}
 
   {#each ys.lists as list}

@@ -5,8 +5,6 @@ import type { PageLoad } from './$types'
 
 interface VilistData extends CV.Paginate {
   list: CV.Vilist
-  user: CV.Viuser
-
   books: CV.VicritList
 }
 
@@ -16,26 +14,22 @@ export const load = (async ({ url, fetch, params }) => {
 
   const path = `/_db/lists/${l_id}${url.search}`
 
-  const data = await api_get<VilistData>(path, fetch)
+  const { list, books } = await api_get<VilistData>(path, fetch)
 
-  data.books.users = { [data.user.vu_id]: data.user }
-  data.books.lists = { [data.list.id]: data.list }
-
-  const { id, title, tslug } = data.list
-
-  const curr_path = `${id}-${tslug}`
   const _meta: App.PageMeta = {
     left_nav: [
       nav_link(`/@${user}`, `@${user}`, ''),
       nav_link(`/@${user}/ul`, 'Thư đơn', 'bookmarks', { show: 'tm' }),
-      nav_link(curr_path, title, 'article', {
+      nav_link(list.tslug, list.title, 'article', {
         kind: 'title',
         show: 'pl',
       }),
     ],
-    right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
+    // right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
   }
 
   const _board = `vl:${l_id}`
-  return { ...data, _meta, _title: `Thư đơn: ${title}`, _board }
+  const _title = `Thư đơn: ${list.title}`
+  const _image = list.covers[0] || 'blank.webp'
+  return { list, books, _meta, _title, _board, _image }
 }) satisfies PageLoad

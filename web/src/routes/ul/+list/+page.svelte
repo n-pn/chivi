@@ -17,18 +17,19 @@
     ? [`/_db/lists/${data.lform.id}`, 'PATCH']
     : ['/_db/lists', 'POST']
 
+  const headers = { 'content-type': 'application/json' }
+
   async function submit(evt: Event) {
     evt.preventDefault()
-
-    const headers = { 'content-type': 'application/json' }
     const init = { method, headers, body: JSON.stringify(data.lform) }
-    const res = await fetch(action, init)
 
-    if (!res.ok) {
-      error = await res.text()
+    const resp = await fetch(action, init)
+    const text = await resp.text()
+
+    if (!resp.ok) {
+      error = text
     } else {
-      const list = (await res.json()) as CV.Vilist
-      await goto(`/ul/v${list.id}-${list.tslug}`)
+      await goto(`/@${$_user.uname}/ul/${text}`)
     }
   }
 
@@ -109,7 +110,7 @@
 
   <h3>Các thư đơn khác của bạn:</h3>
   {#each data.lists as list}
-    <VilistCard {list} user={$_user} />
+    <VilistCard {list} />
   {/each}
 </article>
 

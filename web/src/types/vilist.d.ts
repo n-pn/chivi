@@ -1,21 +1,28 @@
 declare namespace CV {
   interface Vilist {
-    id: number
     user_id: number
+    u_uname: string
+    u_privi: number
+
+    vl_id: number
+    tslug: string
 
     title: string
-    tslug: string
+    dhtml: string
 
     genres: string[]
     covers: string[]
 
-    dhtml: string
+    ctime: number
     utime: number
 
     book_count: number
     view_count: number
     like_count: number
-    star_count: number
+
+    me_liked: number
+
+    // star_count: number
   }
 
   interface VilistList extends Paginate {
