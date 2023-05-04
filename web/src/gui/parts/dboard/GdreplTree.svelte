@@ -6,8 +6,6 @@
   export let gdroot = ''
 
   export let repls: CV.Gdrepl[]
-  export let users: Record<number, CV.Viuser>
-  export let memos: Record<number, CV.Memoir>
 
   export let level = 0
   export let fluid = false
@@ -15,21 +13,10 @@
 
 <div class="repl-list" class:_nest={level > 0}>
   {#each repls as repl}
-    <GdreplCard
-      {gdroot}
-      bind:repl
-      bind:memo={memos[repl.id]}
-      user={users[repl.user_id]}
-      nest_level={level} />
+    <GdreplCard {gdroot} bind:repl nest_level={level} />
 
     {#if repl.repls && repl.repls.length > 0}
-      <svelte:self
-        {gdroot}
-        repls={repl.repls}
-        {users}
-        {memos}
-        level={level + 1}
-        {fluid} />
+      <svelte:self {gdroot} repls={repl.repls} level={level + 1} {fluid} />
     {/if}
   {/each}
 </div>

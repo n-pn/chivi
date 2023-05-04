@@ -21,13 +21,13 @@
 
     for (const repl of repls) {
       repl.repls ||= []
-      map.set(repl.id, repl)
+      map.set(repl.rp_id, repl)
     }
 
     const output: CV.Gdrepl[] = []
 
     for (const repl of repls) {
-      const parent = map.get(repl.torepl_id)
+      const parent = map.get(repl.torepl)
 
       if (parent) parent.repls.push(repl)
       else output.push(repl)
@@ -55,8 +55,6 @@
   <GdreplTree
     {gdroot}
     repls={build_tree(rplist.repls)}
-    users={rplist.users}
-    memos={rplist.memos}
     level={0}
     fluid={$$props.fluid} />
 {:else}

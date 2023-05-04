@@ -4,21 +4,20 @@ require "./gdrepl_form"
 class CV::GdreplCtrl < CV::BaseCtrl
   base "/_db/mrepls"
 
-  @[AC::Route::GET("/")]
-  def index(sort : String = "-id",
-            from from_user : String? = nil, to to_user : String? = nil,
-            self memo : String? = nil)
-    repls = Gdrepl.query.where("id > 0").sort_by(sort)
+  # @[AC::Route::GET("/")]
+  # def index(sort : String = "-id",
+  #           by by_user : String? = nil, to to_user : String? = nil)
+  #   repls = Gdrepl.query.where("id > 0").sort_by(sort)
 
-    pg_no, limit, offset = _paginate(min: 20, max: 100)
-    repls.limit(limit).offset(offset)
+  #   pg_no, limit, offset = _paginate(min: 20, max: 100)
+  #   repls.limit(limit).offset(offset)
 
-    user_stmt = "select id from viusers where uname = ? limit 1"
-    repls.where("viuser_id = (#{user_stmt})", from_user) if from_user
-    repls.where("touser_id = (#{user_stmt})", to_user) if to_user
+  #   user_stmt = "select id from viusers where uname = ? limit 1"
+  #   repls.where("viuser_id = (#{user_stmt})", by_user) if by_user
+  #   repls.where("touser_id = (#{user_stmt})", to_user) if to_user
 
-    render_repls(repls, pg_no, multi_heads: true)
-  end
+  #   render_repls(repls, pg_no, multi_heads: true)
+  # end
 
   # @[AC::Route::GET("/tagged")]
   # def tagged
@@ -32,33 +31,33 @@ class CV::GdreplCtrl < CV::BaseCtrl
   #   render_repls(repls, pg_no, multi_heads: true)
   # end
 
-  private def render_repls(repls : Enumerable(Gdrepl), pg_no = 1, multi_heads = false)
-    user_ids = repls.map(&.viuser_id)
-    user_ids << _vu_id if _vu_id >= 0
+  # private def render_repls(repls : Enumerable(Gdrepl), pg_no = 1, multi_heads = false)
+  #   user_ids = repls.map(&.viuser_id)
+  #   user_ids << _vu_id if _vu_id >= 0
 
-    users = Viuser.preload(user_ids)
-    memos = Memoir.glob(_vu_id, :gdrepl, repls.map(&.id.to_i))
+  #   users = Viuser.preload(user_ids)
+  #   memos = Memoir.glob(_vu_id, :gdrepl, repls.map(&.id.to_i))
 
-    # heads = glob_heads(repls, multi_heads: multi_heads)
+  #   # heads = glob_heads(repls, multi_heads: multi_heads)
 
-    render json: {
-      pgidx: pg_no,
-      repls: GdreplView.as_list(repls),
-      # heads: GdrootView.as_hash(heads),
-      users: ViuserView.as_hash(users),
-      memos: MemoirView.as_hash(memos),
-    }
-  end
+  #   render json: {
+  #     pgidx: pg_no,
+  #     repls: GdreplView.as_list(repls),
+  #     # heads: GdrootView.as_hash(heads),
+  #     users: ViuserView.as_hash(users),
+  #     memos: MemoirView.as_hash(memos),
+  #   }
+  # end
 
-  private def glob_heads(repls : Enumerable(Gdrepl), multi_heads = false)
-    if repls.empty?
-      [] of Gdroot
-    elsif multi_heads
-      Gdroot.glob(repls.map(&.gdroot_id).uniq!)
-    else
-      [Gdroot.find!(repls.first!.gdroot_id)]
-    end
-  end
+  # private def glob_heads(repls : Enumerable(Gdrepl), multi_heads = false)
+  #   if repls.empty?
+  #     [] of Gdroot
+  #   elsif multi_heads
+  #     Gdroot.glob(repls.map(&.gdroot_id).uniq!)
+  #   else
+  #     [Gdroot.find!(repls.first!.gdroot_id)]
+  #   end
+  # end
 
   @[AC::Route::POST("/create", body: :form)]
   def create(form : GdreplForm)
@@ -77,7 +76,7 @@ class CV::GdreplCtrl < CV::BaseCtrl
     spawn Gdroot.bump_on_new_reply!(gdrepl.gdroot_id)
     spawn Notifier.on_repl_event(gdrepl)
 
-    render json: GdreplView.new(gdrepl)
+    render json: GdreplCard.fetch_one(gdrepl.id, _vu_id)
   end
 
   @[AC::Route::GET("/edit/:repl_id")]
@@ -104,7 +103,7 @@ class CV::GdreplCtrl < CV::BaseCtrl
     gdrepl.update_content!(form.itext, persist: true)
     spawn Notifier.on_tagged_in_reply(gdrepl)
 
-    render json: GdreplView.new(gdrepl)
+    render json: GdreplCard.fetch_one(repl_id, _vu_id)
   end
 
   @[AC::Route::DELETE("/:repl_id")]

@@ -11,47 +11,46 @@
   import GdreplForm from './GdreplForm.svelte'
 
   export let repl: CV.Gdrepl
-  export let user: CV.Viuser
-  export let memo: CV.Memoir = { liked: 0 }
-
-  export let gdroot = `id:${repl.head_id}`
-
+  export let gdroot = `id:${repl.gdroot}`
   export let on_focus = false
   export let nest_level = 0
 
   // $: is_owner = $_user.uname == user.uname
   // $: can_edit = _user.privi > 3 || (is_owner && _user.privi >= 0)
 
-  $: if (browser) on_focus = on_focus || location.hash == '#r' + repl.id
-  let show_repl = false
+  $: if (browser) on_focus = on_focus || location.hash == '#r' + repl.rp_id
+  let show_form = false
 
   const handle_like = (evt: Event) => {
     evt.preventDefault()
 
-    toggle_like('gdrepl', repl.id, memo.liked, ({ like_count, memo_liked }) => {
-      repl.like_count = like_count
-      memo.liked = memo_liked
-    })
+    toggle_like(
+      'gdrepl',
+      repl.rp_id,
+      repl.me_liked,
+      ({ like_count, memo_liked }) => {
+        repl.like_count = like_count
+        repl.me_liked = memo_liked
+      }
+    )
   }
 
-  const handle_repl_form = (new_repl?: CV.Gdrepl) => {
-    show_repl = false
+  const on_form_destroy = (new_repl?: CV.Gdrepl) => {
+    show_form = false
     if (!new_repl) return
-
-    repl.repls ||= []
     repl.repls.unshift(new_repl)
-    repl = repl
+    repl.repls = repl.repls
   }
 </script>
 
 <div
-  id="r{repl.id}"
+  id="r{repl.rp_id}"
   class="repl nest_{nest_level % 5}"
   class:nested={nest_level > 0}
   class:on_focus>
   <header class="repl-head">
-    <a class="cv-user _meta" href="/@{user.uname}" data-privi={user.privi}
-      >{user.uname}
+    <a class="cv-user _meta" href="/@{repl.u_uname}" data-privi={repl.u_privi}
+      >{repl.u_uname}
     </a>
 
     <span class="fg-tert">&middot;</span>
@@ -67,15 +66,15 @@
   <footer class="repl-foot">
     <button
       class="meta btn"
-      class:_active={show_repl}
-      on:click={() => (show_repl = !show_repl)}>
+      class:_active={show_form}
+      on:click={() => (show_form = !show_form)}>
       <SIcon name="arrow-forward" />
       <span>Trả lời</span>
     </button>
 
     <button
       class="btn"
-      class:_active={memo?.liked > 0}
+      class:_active={repl.me_liked > 0}
       disabled={$_user.privi < 0}
       on:click={handle_like}>
       <SIcon name="thumb-up" />
@@ -87,19 +86,19 @@
   </footer>
 </div>
 
-{#if show_repl}
+{#if show_form}
   <section class="new-repl">
     <GdreplForm
       form={{
         itext: '',
         level: repl.level + 1,
         gdrepl: 0,
-        torepl: repl.id,
+        torepl: repl.rp_id,
         touser: repl.user_id,
         gdroot,
       }}
       disabled={$_user.privi < 0}
-      on_destroy={handle_repl_form} />
+      on_destroy={on_form_destroy} />
   </section>
 {/if}
 

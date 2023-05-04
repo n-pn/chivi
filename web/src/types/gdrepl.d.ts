@@ -1,15 +1,16 @@
 declare namespace CV {
   interface Gdrepl {
-    id: number
-
     user_id: number
-    head_id: number
+    u_uname: string
+    u_privi: number
 
-    torepl_id: number
-    touser_id: number
+    gdroot: number
+    torepl: number
+    touser: number
 
-    ohtml: string
+    rp_id: number
     level: number
+    ohtml: string
 
     ctime: number
     utime: number
@@ -19,11 +20,11 @@ declare namespace CV {
 
     vcoin: number
     repls: Gdrepl[] = []
+
+    me_liked: number
   }
 
   interface Rplist extends Paginate {
     repls: Array<Gdrepl>
-    users: Record<number, Cvuser>
-    memos: Record<number, Memoir>
   }
 }
