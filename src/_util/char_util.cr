@@ -1,8 +1,8 @@
 module CharUtil
   extend self
 
-  #### ⟨ => 〈
-  #### ⟩ => 〉
+  # ### ⟨ => 〈
+  # ### ⟩ => 〉
 
   NORMALIZE = {
     '〈' => '⟨',
@@ -70,15 +70,15 @@ module CharUtil
   end
 
   def fullwidth?(char : Char)
-    (char.ord & 0xff00) == 0xff00
+    '！' <= char <= '～'
   end
 
   def to_fullwidth(char : Char)
-    (char.ord + 0xfee0).chr
+    (char.ord &+ 0xfee0).chr
   end
 
   def to_halfwidth(char : Char)
-    (char.ord - 0xfee0).chr
+    (char.ord &- 0xfee0).chr
   end
 
   def is_number?(char : Char)
