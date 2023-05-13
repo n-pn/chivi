@@ -3,6 +3,7 @@ module CharUtil
 
   # ### ⟨ => 〈
   # ### ⟩ => 〉
+  #
 
   NORMALIZE = {
     '〈' => '⟨',
@@ -61,32 +62,66 @@ module CharUtil
     '｠' => ')',
   }
 
-  def normalize(char : Char) : Char
-    if (char.ord & 0xff00) == 0xff00
-      (char.ord - 0xfee0).chr
-    else
-      NORMALIZE.fetch(char, char)
+  def normalize(str : String) : String
+    String.build do |io|
+      str.each_char { |char| io << normalize(char) }
     end
   end
 
+  def normalize(char : Char) : Char
+    fullwidth?(char) ? to_halfwidth(char) : NORMALIZE.fetch(char, char)
+  end
+
+  def downcase_normalize(char : Char) : Char
+    fullwidth?(char) ? to_halfwidth(char).downcase : NORMALIZE.fetch(char) { char.downcase }
+  end
+
+  CANONICAL = {
+    '⟨' => '《',
+    '⟩' => '》',
+    '〈' => '《',
+    '〉' => '》',
+    ' ' => '　',
+  }
+
+  # convert input to fullwidth form
+  def canonicalize(char : Char) : Char
+    halfwidth?(char) ? to_fullwidth(char) : CANONICAL.fetch(char, char)
+  end
+
+  # :ditto:
+  def canonicalize(str : String) : String
+    String.build do |io|
+      str.each_char { |char| io << canonicalize(char) }
+    end
+  end
+
+  @[AlwaysInline]
   def fullwidth?(char : Char)
     '！' <= char <= '～'
   end
 
+  @[AlwaysInline]
+  def halfwidth?(char : Char)
+    '!' <= char <= '~'
+  end
+
+  @[AlwaysInline]
   def to_fullwidth(char : Char)
     (char.ord &+ 0xfee0).chr
   end
 
+  @[AlwaysInline]
   def to_halfwidth(char : Char)
     (char.ord &- 0xfee0).chr
   end
 
   def is_number?(char : Char)
-    char.ord > 0x2F && char.ord < 0x3A
+    0x2F < char.ord < 0x3A
   end
 
   def is_letter?(char : Char)
-    'a' <= char <= 'z' || 'A' <= char <= 'Z'
+    ('a' <= char <= 'z') || ('A' <= char <= 'Z')
   end
 
   HANNUM_CHARS = {

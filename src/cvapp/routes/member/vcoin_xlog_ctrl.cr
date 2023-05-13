@@ -45,9 +45,14 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/", body: :form)]
   def send_vcoin(form : VcoinForm)
-    unless target = Viuser.find_any(form.target)
-      raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại")
+    if form.target.starts_with?("ID ")
+      user_id = form.target.sub(/^ID\s*/, "").strip.to_i
+      target = Viuser.find({id: user_id})
+    else
+      target = Viuser.find_any(form.target)
     end
+
+    raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại") unless target
 
     if _viuser.privi > 3 && form.as_admin?
       sender = Viuser.load!(-1) # sender is admin
