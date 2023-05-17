@@ -5,7 +5,6 @@
   export let chaps: Zchap[]
 
   export let start: number = 1
-  export let err_msg: string
 
   const sum_length = (list: string[]) => list.reduce((a, x) => a + x.length, 0)
 
@@ -44,8 +43,6 @@
         </div>
       {/if}
     </div>
-  {:else}
-    <div class="err_msg">{err_msg}</div>
   {/each}
 
   {#if pgmax > 0}
@@ -182,12 +179,5 @@
   .count {
     @include fgcolor(tert);
     font-size: rem(15px);
-  }
-
-  .err_msg {
-    @include flex-ca();
-    @include fgcolor(harmful);
-    min-height: 10rem;
-    font-style: italic;
   }
 </style>

@@ -2,6 +2,9 @@
   import { onMount } from 'svelte'
   import { goto, invalidateAll } from '$app/navigation'
 
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
+
   import { opencc, fix_breaks } from '$utils/text_utils'
 
   import { SIcon, Footer } from '$gui'
@@ -17,13 +20,11 @@
   import ChapList from './ChapList.svelte'
 
   export let data: PageData
-  $: ({ nvinfo, curr_seed, seed_data, _user } = data)
+  $: ({ nvinfo, curr_seed, seed_data } = data)
 
-  let input = ``
+  let input = ''
   let start = data.start
-
   let files: FileList
-
   let chaps: Zchap[] = []
 
   let opts = new Opts()
@@ -124,12 +125,13 @@
     _onload = false
   }
 
-  const max_lenth_allowed = [0, 300_000, 1_000_000, 5_000_000, 10_000_000]
+  const max_chars_allowed = [
+    100_000, 500_000, 2_000_000, 5_000_000, 10_000_000, 20_000_000,
+  ]
 
-  $: max_lenth = _user.privi < 0 ? 0 : max_lenth_allowed[_user.privi]
-
-  $: cant_submit =
-    _user.privi < seed_data.edit_privi || input.length > max_lenth
+  $: _privi = $_user.privi
+  $: max_chars = _privi < 0 ? 0 : max_chars_allowed[_privi]
+  $: limit_exceed = input.length > max_chars
 </script>
 
 <svelte:head>
@@ -143,11 +145,12 @@
     <section class="input">
       <div class="label">
         <span>Nội dung:</span>
-        <em data-tip="Giới hạn số ký tự">{input.length}/{max_lenth}</em>
+        <em data-tip="Giới hạn số ký tự">{input.length}/{max_chars}</em>
       </div>
 
       <textarea
         class="m-input"
+        class:_err={input.length > max_chars}
         name="input"
         rows="25"
         bind:value={input}
@@ -158,9 +161,11 @@
 
     <section class="preview">
       <SplitOpts bind:opts {_onload} />
-      <ChapList {chaps} {start} {err_msg} />
+      <ChapList {chaps} {start} />
     </section>
   </div>
+
+  {#if err_msg}<div class="form-msg _err">{err_msg}</div>{/if}
 
   <Footer>
     <footer class="footer">
@@ -171,7 +176,7 @@
             data-tip="Đăng tải nội dung chương tiết từ máy tính"
             data-tip-pos="left">
             <SIcon name="upload" />
-            <span class="show-tm">Chọn tệp tin</span>
+            <span class="m-show-tm">Chọn tệp tin</span>
             <input type="file" bind:files accept=".txt" />
           </label>
         </div>
@@ -182,7 +187,7 @@
           data-tip="Chuyển đổi từ phồn thể sang giản thể"
           on:click={trad2sim}>
           <SIcon name="language" />
-          <span class="show-tl">Phồn 🠖 Giản</span>
+          <span class="m-show-tl">Phồn 🠖 Giản</span>
         </button>
 
         <button
@@ -191,7 +196,7 @@
           data-tip="Gộp các dòng bị vỡ thành các câu văn hoàn chỉnh."
           on:click={() => (input = fix_breaks(input))}>
           <SIcon name="bandage" />
-          <span class="show-tl">Sửa vỡ dòng</span>
+          <span class="m-show-tl">Sửa vỡ dòng</span>
         </button>
       </div>
 
@@ -208,12 +213,12 @@
         <button
           type="button"
           class="m-btn _primary _fill"
-          disabled={cant_submit || _onload}
+          disabled={_onload || _privi < seed_data.edit_privi || limit_exceed}
           data-tip="Bạn cần quyền hạn tối thiểu là {seed_data.edit_privi} để thêm chương"
           data-tip-pos="right"
           on:click={submit}>
           <SIcon name={_onload ? 'loader-2' : 'send'} spin={_onload} />
-          <span class="show-ts -text">Đăng tải</span>
+          <span class="m-show-ts -text">Đăng tải</span>
           <SIcon name="privi-{seed_data.edit_privi}" iset="sprite" />
         </button>
       </div>
@@ -305,15 +310,8 @@
     }
   }
 
-  .show-ts {
-    @include bps(display, none, $ts: initial);
-  }
-
-  .show-tm {
-    @include bps(display, none, $tm: initial);
-  }
-
-  .show-tl {
-    @include bps(display, none, $tl: initial);
+  ._err {
+    @include fgcolor(harmful);
+    font-style: italic;
   }
 </style>

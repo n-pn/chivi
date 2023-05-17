@@ -75,10 +75,11 @@ struct CV::DtopicCard
       total = offset &+ items.size
     else
       args[1] = offset &+ limit &* 3
+      args[2] = 0
 
       counter_stmt = String.build do |sql|
         sql << "select count(*)::int from #{@@table} as t"
-        sql << " where t.id > 1 and $1::int is not null"
+        sql << " where t.id > 0 and $1::int is not null"
 
         cond.each_with_index(4) do |where, index|
           sql << " and " << where.sub('?', "$#{index}")

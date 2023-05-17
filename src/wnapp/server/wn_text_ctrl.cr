@@ -22,20 +22,23 @@ class WN::TextCtrl < AC::Base
     render 404, text: ex.message
   end
 
-  def guard_sname_privi(sname : String)
-    case sname
-    when "_"
-      guard_privi min: 1, action: "thêm chương tiết cho nguồn chính"
-    when .starts_with?('@')
-      guard_owner sname[1..], min: 2, action: "thêm chương tiết cho nguồn cá nhân"
+  def guard_edit_privi(wn_id : Int32, sname : String)
+    base = wn_id == 0 ? 0 : 1
+
+    case sname[0]
+    when '_'
+      guard_privi min: base, action: "thêm chương tiết cho nguồn chính"
+    when '@'
+      uname = sname[1..]
+      guard_owner uname, min: base + 1, action: "thêm chương tiết cho nguồn cá nhân"
     else
-      guard_privi min: 3, action: "thêm chương tiết cho các nguồn phụ"
+      guard_privi min: base + 2, action: "thêm chương tiết cho các nguồn đặc biệt"
     end
   end
 
   @[AC::Route::POST("/")]
-  def upsert_batch(wn_id : Int32, sname : String, start : Int32 = 0)
-    guard_sname_privi sname: sname
+  def bulk_upsert(wn_id : Int32, sname : String, start : Int32 = 0)
+    guard_edit_privi wn_id: wn_id, sname: sname
 
     wn_seed = get_wn_seed(wn_id, sname)
     wn_seed.mkdirs!
@@ -86,8 +89,8 @@ class WN::TextCtrl < AC::Base
   end
 
   @[AC::Route::PUT("/:ch_no", body: :form)]
-  def upsert_entry(form : EntryForm, wn_id : Int32, sname : String, ch_no : Int32)
-    guard_sname_privi sname: sname
+  def upsert_chap(form : EntryForm, wn_id : Int32, sname : String, ch_no : Int32)
+    guard_edit_privi wn_id: wn_id, sname: sname
 
     wn_seed = get_wn_seed(wn_id, sname)
     wn_chap = get_wn_chap(wn_seed, ch_no)
@@ -130,8 +133,8 @@ class WN::TextCtrl < AC::Base
   end
 
   @[AC::Route::PATCH("/:ch_no", body: :form)]
-  def edit_line(form : PatchForm, wn_id : Int32, sname : String, ch_no : Int32)
-    guard_sname_privi sname: sname
+  def update_line(form : PatchForm, wn_id : Int32, sname : String, ch_no : Int32)
+    guard_edit_privi wn_id: wn_id, sname: sname
 
     wn_seed = get_wn_seed(wn_id, sname)
     wn_chap = get_wn_chap(wn_seed, ch_no)

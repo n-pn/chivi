@@ -121,8 +121,7 @@ struct CV::VilistCard
 
   def self.all_by_user(user_id : Int32, self_id : Int32 = 0) : Array(self)
     stmt = build_query do |sql|
-      sql << " where t.book_count > 0 and t.viuser_id = $2"
-      sql << " order by t.updated_at desc"
+      sql << " where t.viuser_id = $2 order by t.updated_at desc"
     end
 
     PGDB.query_all stmt, user_id, self_id, as: self

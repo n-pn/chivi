@@ -123,7 +123,7 @@ class WN::WnChap
       @c_len = 0
     else
       parts, @c_len = TextSplit.split_entry(lines)
-      validate_body!(parts)
+      raise "too many parts: #{parts.size} (max: 30)!" if parts.size > 30
     end
 
     @p_len = parts.size - 1
@@ -132,18 +132,6 @@ class WN::WnChap
 
     @body = parts
     save_body_copy!(seed, _flag: _flag)
-  end
-
-  private def validate_body!(parts : Array(String))
-    if parts.size > 31
-      raise "too many parts: #{parts.size} (max: 30)!"
-    end
-
-    parts.each do |part|
-      c_len = part.size
-      next if c_len <= 4500
-      raise "part char count exceed limit: #{c_len} (max: 4500)!"
-    end
   end
 
   def save_body_copy!(seed : WnSeed = self.seed, @_flag = 2) : Nil
