@@ -91,7 +91,3 @@ end
 # /// tên tập
 # chương 3
 # TXT
-
-# WN::TextSplit.split_batch(text).each do |chap|
-#   pp chap
-# end

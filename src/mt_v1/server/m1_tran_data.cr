@@ -68,7 +68,9 @@ class M1::TranData
     # render title
 
     input = @input.each_line
-    title = input.next.as(String)
+    title = input.next
+
+    return unless title.is_a?(String)
 
     data = w_title ? engine.cv_title(title) : engine.cv_plain(title)
     @to_mtl ? data.to_mtl(io) : data.to_txt(io)
