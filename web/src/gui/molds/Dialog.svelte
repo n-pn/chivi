@@ -17,12 +17,12 @@
 <div
   class="wrap"
   on:click={() => on_close(false)}
-  transition:fade={{ duration: 100 }}>
+  transition:fade|global={{ duration: 100 }}>
   <div
     class="dialog-main {$$props.class} _{_size}"
     tabindex="-1"
     on:click={(e) => e.stopPropagation()}
-    transition:scale={{ duration: 100, easing: backInOut }}>
+    transition:scale|global={{ duration: 100, easing: backInOut }}>
     {#if $$slots.header}
       <header class="dialog-head">
         <slot name="header" />

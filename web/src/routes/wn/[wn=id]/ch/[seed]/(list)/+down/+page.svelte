@@ -75,7 +75,6 @@
       err_msg = await res.text()
     }
   }
-  DlcvList
 </script>
 
 <article class="article island">
