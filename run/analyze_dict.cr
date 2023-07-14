@@ -15,7 +15,7 @@ end
 
 def write_to_disk(out_path : String, data : Array(Term))
   File.open(out_path, "w") do |file|
-    data.join(file, '\n') { |term| term.to_tsv(file) }
+    data.join(file, '\n', &.to_tsv(file))
   end
 end
 

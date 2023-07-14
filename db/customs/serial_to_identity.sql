@@ -1,5 +1,5 @@
 BEGIN;
-COPY gdrepls TO '/mnt/serve/chivi/_pg/.bak/gdrepls.csv' WITH DELIMITER ',' CSV HEADER;
+COPY gdrepls TO '/2tb/chivi/_pg/.bak/gdrepls.csv' WITH DELIMITER ',' CSV HEADER;
 ALTER TABLE gdrepls
   ALTER id DROP DEFAULT;
 -- drop default

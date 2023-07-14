@@ -21,7 +21,7 @@ def convert(inp_path : String)
   out_file.close
 end
 
-TMP = "/mnt/serve/chivi/var/anlzs/texsmart/tmp"
+TMP = "/2tb/chivi/var/anlzs/texsmart/tmp"
 
 books = Dir.children(INP)
 books.each do |bname|
