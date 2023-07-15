@@ -96,7 +96,7 @@ class WN::WnSeed
   REMOTES = {
     "!hetushu.com",
     "!69shu.com",
-    "!xbiquge.so",
+    "!xbiquge.bz",
     "!uukanshu.com",
     "!ptwxz.com",
     "!133txt.com",

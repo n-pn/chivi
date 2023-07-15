@@ -66,8 +66,8 @@
       desc: 'Nguồn mới thêm, chưa kiểm tra.',
     },
     {
-      site: 'xbiquge.so',
-      href: 'http://www.xbiquge.so',
+      site: 'xbiquge.bz',
+      href: 'http://www.xbiquge.bz',
       desc: `Nguồn sống dai, nhưng ít truyện.`,
     },
     {

@@ -16,7 +16,7 @@ def fetch_zip(output : String)
   puts "- fetching latest CC_CEDICT from internet... ".colorize.light_cyan
 
   HTTP::Client.get(URL, tls: tls) do |res|
-    File.open(output, "w") { |file| IO.copy res.body_io, file }
+    File.open(output, "wb") { |file| IO.copy res.body_io, file }
   end
 end
 

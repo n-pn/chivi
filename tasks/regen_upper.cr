@@ -33,7 +33,7 @@ private def index_link(sname : String) : String
   when "xswang"   then "https://www.xswang.com/"
   when "hetushu"  then "https://www.hetushu.com/book/index.php"
   when "rengshu"  then "http://www.rengshu.com/"
-  when "xbiquge"  then "https://www.xbiquge.so/"
+  when "xbiquge"  then "https://www.xbiquge.bz/"
   when "biqugee"  then "https://www.biqugee.com/"
   when "biquyue"  then "https://www.biquyue.com/"
   when "5200"     then "https://www.5200.tv/"

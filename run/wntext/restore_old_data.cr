@@ -9,7 +9,7 @@ MAP_SNAME = {
   "duokan8":  "!duokan8.com",
   "paoshu8":  "!paoshu8.com",
   "miscs":    "!chivi.app",
-  "xbiquge":  "!xbiquge.so",
+  "xbiquge":  "!xbiquge.bz",
   "hetushu":  "!hetushu.com",
   "69shu":    "!69shu.com",
   "sdyfcm":   "!nofff.com",

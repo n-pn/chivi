@@ -16,7 +16,7 @@ SEED_ORDER = {
   "!hetushu.com",
   "!rengshu.com",
   "_",
-  "!xbiquge.so",
+  "!xbiquge.bz",
   "bxwxorg.com",
   "69shu.com",
   "biqugee.com",

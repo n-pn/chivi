@@ -8,7 +8,7 @@ MAP_SNAME = {
   "duokan8":  "!duokan8.com",
   "paoshu8":  "!paoshu8.com",
   "miscs":    "!chivi.app",
-  "xbiquge":  "!xbiquge.so",
+  "xbiquge":  "!xbiquge.bz",
   "hetushu":  "!hetushu.com",
   "69shu":    "!69shu.com",
   "sdyfcm":   "!nofff.com",
@@ -74,16 +74,14 @@ def restore(inp_sname : String)
       tmp_path = "#{tmp_dir}/#{htm_file}"
       next if File.exists?(tmp_path)
 
-      puts "<#{index} (#{restore}/#{checked})>: #{out_sname}/#{wn_id}/#{htm_file} found!".colorize.yellow
+      puts "<#{index}> (#{restore}/#{checked}): [#{out_sname}/#{wn_id}/#{htm_file}] found!".colorize.yellow
       File.copy("#{entry_dir}/#{htm_file}", tmp_path)
 
       restore += 1
-    rescue err
-      puts err
     end
 
     File.open(log_file, "a", &.puts(wn_id))
-    sleep 300.milliseconds
+    checked > 1_000_000 ? break : sleep 500.milliseconds
   rescue err
     puts err
   end
@@ -92,4 +90,6 @@ def restore(inp_sname : String)
 end
 
 # restore("bxwxorg")
-restore("jx_la")
+# restore("jx_la")
+# restore("shubaow")
+restore("biqugee")

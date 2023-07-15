@@ -3,7 +3,7 @@ require "../wn_seed"
 MAP = {
   "!hetushu.com"  => "https://www.hetushu.com/book/%{bid}/index.html",
   "!69shu.com"    => "https://www.69shu.com/%{bid}/",
-  "!xbiquge.so"   => "https://www.xbiquge.so/book/%{bid}/",
+  "!xbiquge.bz"   => "https://www.xbiquge.bz/book/%{bid}/",
   "!ptwxz.com"    => "https://www.ptwxz.com/html/%{div}/%{bid}/index.html",
   "!uukanshu.com" => "https://www.uukanshu.com/b/%{bid}/",
   # "!uuks.org"     => "https://www.uuks.org/b/%{bid}/",

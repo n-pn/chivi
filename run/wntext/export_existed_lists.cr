@@ -19,6 +19,6 @@ end
 # export_seed("!jx.la")
 # export_seed("!shubaow.net")
 # export_seed("!nofff.com")
-# export_seed("!xbiquge.so")
+# export_seed("!xbiquge.bz")
 # export_seed("!duokan8.com")
 export_seed("!5200.tv")

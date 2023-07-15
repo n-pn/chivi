@@ -62,8 +62,8 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
       desc: `Nguồn text sạch, nhưng ít truyện.`,
     },
     {
-      site: 'xbiquge.so',
-      href: 'http://www.xbiquge.so',
+      site: 'xbiquge.bz',
+      href: 'http://www.xbiquge.bz',
       desc: `Nguồn sống dai, nhưng ít truyện.`,
     },
     {
