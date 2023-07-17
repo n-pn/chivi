@@ -92,4 +92,8 @@ end
 # restore("bxwxorg")
 # restore("jx_la")
 # restore("shubaow")
-restore("biqugee")
+# restore("biqugee")
+
+ARGV.each do |sname|
+  restore(sname)
+end
