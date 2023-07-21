@@ -15,10 +15,9 @@ def do_test(sname : String, bid : String | Int32)
   parser = Rmcata.new(conf, html)
 
   puts "\n[#{cata_link}]".colorize.green.bold
-  puts "------".colorize.green
 
-  # puts "latest_cid: #{parser.latest_cid}"
-  # puts "update_str: #{parser.update_str}"
+  puts "latest_cid: #{parser.latest_cid}"
+  puts "update_str: #{parser.update_str}"
 
   chlist = parser.chap_list
   puts "chap_count: #{chlist.size}"
@@ -36,12 +35,11 @@ end
 tests = [
   {"!69shu", 35875},
   {"!hetushu", 5},
+  {"!uukanshu", 33933},
 
   # {"!xbiquge", 48680},
   # {"!paoshu8", 817},
   # {"!biqu5200", 131878},
-
-  # {"!uukanshu", 33933},
 
   # {"!b5200", 160872},
   # {"!bxwxio", 127400},
@@ -50,7 +48,6 @@ tests = [
 
   # {"!uuks", 56862},
 
-  {"!69shu", 41121},
 ]
 
 tests.each { |sname, bid| do_test(sname, bid) }

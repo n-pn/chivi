@@ -110,6 +110,10 @@ dependencies:
   micrate:
     github: amberframework/micrate
 
+  xxhash:
+    github: zph/xxhash
+    version: ~> 1.0.0
+
   # zip:
   #   github: n-pn/libzip.cr
 

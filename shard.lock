@@ -27,7 +27,7 @@ shards:
 
   crorm: # Overridden
     path: ../crorm
-    version: 0.1.4
+    version: 0.2.0
 
   db:
     git: https://github.com/crystal-lang/crystal-db.git
@@ -100,6 +100,10 @@ shards:
   tabkv:
     git: https://github.com/chi-vi/tabkv.git
     version: 0.2.0+git.commit.56cf3099f2bb0e58f5e9a3870fb7aec348c07020
+
+  xxhash:
+    git: https://github.com/zph/xxhash.git
+    version: 1.0.0
 
   zstd:
     git: https://github.com/didactic-drunk/zstd.cr.git
