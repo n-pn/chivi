@@ -39,14 +39,15 @@ bmax.to(bmin) do |bid|
   index &+= 1
   next unless index % cnn_mod == cnn_rem
 
-  file_path = remote.book_file(bid)
-  next if remote.still_fresh?(file_path, too_old: too_old)
+  file_path = remote.conf.book_file_path(bid)
+  next if Rmutil.still_fresh?(file_path, too_old: too_old)
 
-  link_path = remote.book_link(bid)
+  sleep 3.seconds
+
+  link_path = remote.conf.make_book_path(bid)
   remote.save_page(link_path, file_path)
 
   puts "- <#{index}/#{total}> [#{host}/#{bid.colorize.cyan}] saved."
-  sleep 3.seconds
 rescue err
   puts err
 end

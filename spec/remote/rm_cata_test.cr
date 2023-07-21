@@ -1,61 +1,64 @@
 require "json"
-require "../../src/wnapp/remote/rm_cata.cr"
-require "../../src/_util/site_link"
+require "../../src/tasks/remote/shared/rmcata.cr"
+require "../../src/tasks/remote/shared/rmseed.cr"
 
-def fetch_info(sname, s_bid, fresh = false) : Nil
-  link = SiteLink.mulu_url(sname, s_bid)
-  fetch_info(link, fresh)
-end
+def do_test(sname : String, bid : String | Int32)
+  conf = Rmconf.load_known!(sname)
 
-def fetch_info(link : String, fresh = false)
-  puts "\n[#{link}]".colorize.green.bold
+  cata_path = conf.make_cata_path(bid)
+  cata_link = conf.make_full_link(cata_path)
 
-  parser = WN::RmCata.new(link, ttl: fresh ? 10.seconds : 10.years)
-  parser.parse!
+  save_to = conf.cata_file_path(bid)
+  too_old = Time.utc - 10.years
 
+  html = Rmseed.new(conf).read_page(cata_path, save_to, too_old: too_old)
+  parser = Rmcata.new(conf, html)
+
+  puts "\n[#{cata_link}]".colorize.green.bold
   puts "------".colorize.green
 
-  puts "chap_count: #{parser.chaps.size}"
-  puts "last_s_cid: #{parser.last_s_cid}"
+  # puts "latest_cid: #{parser.latest_cid}"
+  # puts "update_str: #{parser.update_str}"
+
+  chlist = parser.chap_list
+  puts "chap_count: #{chlist.size}"
   puts "------".colorize.green
 
-  parser.chaps.first(4).map { |x| puts [x.ch_no, x.s_cid, x.title, x.chdiv, x._path] }
+  chlist.first(4).map { |x| puts [x.ch_no, x.s_cid, x.ctitle, x.subdiv] }
   puts "------".colorize.green
 
-  parser.chaps.last(4).map { |x| puts [x.ch_no, x.s_cid, x.title, x.chdiv, x._path] }
+  chlist.last(4).map { |x| puts [x.ch_no, x.s_cid, x.ctitle, x.subdiv] }
   puts "------".colorize.green
 rescue err
-  puts err.colorize.red
+  puts err.inspect_with_backtrace.colorize.red
 end
 
 tests = [
-  {"69shu", 35875, false},
-  {"hetushu", 5, false},
+  {"!69shu", 35875},
+  {"!hetushu", 5},
 
-  {"xbiquge", 48680, false},
-  {"paoshu8", 817, false},
-  {"biqu5200", 131878, false},
+  # {"!xbiquge", 48680},
+  # {"!paoshu8", 817},
+  # {"!biqu5200", 131878},
 
-  {"uukanshu", 33933, false},
+  # {"!uukanshu", 33933},
 
-  {"b5200", 160872, false},
-  {"bxwxio", 127400, false},
+  # {"!b5200", 160872},
+  # {"!bxwxio", 127400},
 
-  {"133txt", 9, false},
+  # {"!133txt", 9},
 
-  {"uuks", 56862, false},
+  # {"!uuks", 56862},
 
-  {"69shu", 41121, false},
+  {"!69shu", 41121},
 ]
 
-# tests.each do |sname, s_bid, fresh|
-#   fetch_info(sname, s_bid, fresh: fresh)
-# end
+tests.each { |sname, bid| do_test(sname, bid) }
 
-fetch_info("http://www.kenshuzw.com/xiaoshuo/30192/0/")
-fetch_info("http://www.ymxwx.com/book/31/31577/index.html")
-fetch_info("https://www.wenku8.net/novel/1/1973/index.htm")
+# do_test("http://www.kenshuzw.com/xiaoshuo/30192/0/")
+# do_test("http://www.ymxwx.com/book/31/31577/index.html")
+# do_test("https://www.wenku8.net/novel/1/1973/index.htm")
 
-# fetch_info("https://www.00kxs.com/html/91/91911/", true)
-# fetch_info("https://www.xklxsw.com/book/119080/", true)
-fetch_info("https://www.yannuozw.com/yn/VFBUBQ.html", false)
+# do_test("https://www.00kxs.com/html/91/91911/", true)
+# do_test("https://www.xklxsw.com/book/119080/", true)
+# do_test("https://www.yannuozw.com/yn/VFBUBQ.html")
