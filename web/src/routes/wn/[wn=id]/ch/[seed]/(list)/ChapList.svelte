@@ -16,7 +16,6 @@
   export let mark_chidx = ubmemo.chidx
 
   $: same_sname = curr_seed.sname == ubmemo.sname
-
   $: base_url = seed_path(nvinfo.bslug, curr_seed.sname)
 
   const _user = get_user()
@@ -44,7 +43,7 @@
         href="{base_url}/{chinfo.chidx}/{chinfo.uslug}--mt"
         class="chinfo"
         class:_active={chinfo.chidx == mark_chidx}
-        rel={curr_seed.sname != '_' ? 'nofollow' : null}>
+        rel="nofollow">
         <div class="chap-text">
           <chap-title>{chinfo.title}</chap-title>
           <chap-chidx>{chinfo.chidx}.</chap-chidx>
@@ -52,9 +51,7 @@
         <div class="chap-meta">
           <chap-chvol>{chinfo.chvol || 'Chính văn'}</chap-chvol>
           {#if chinfo.utime > 0}
-            <chap-track
-              data-tip="Lưu: {get_rtime(chinfo.utime)} bởi {chinfo.uname ||
-                '?'}">
+            <chap-track data-tip="Lưu: {get_rtime(chinfo.utime)}}">
               <SIcon name="file-download" />
             </chap-track>
           {/if}

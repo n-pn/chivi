@@ -7,27 +7,28 @@
   export let edit_url: string
   export let seed_data: CV.Wnseed
 
+  export let links = [seed_data.rlink]
   export let ztitle: string
 
   let slink = ''
   let error = ''
 
   const add_seed = () => {
-    if (seed_data.links.includes(slink)) return
-    seed_data.links.push(slink)
-    update_rm_links(seed_data.links)
+    if (links.includes(slink)) return
+    links.push(slink)
+    update_rm_links(links)
     slink = ''
   }
 
   const delete_seed = (slink: string) => {
-    seed_data.links = seed_data.links.filter((x) => x != slink)
-    update_rm_links(seed_data.links)
+    links = links.filter((x) => x != slink)
+    update_rm_links(links)
   }
 
   const make_slink_as_main = (slink: string) => {
-    seed_data.links = seed_data.links.filter((x) => x != slink)
-    seed_data.links.unshift(slink)
-    update_rm_links(seed_data.links)
+    links = links.filter((x) => x != slink)
+    links.unshift(slink)
+    update_rm_links(links)
   }
 
   const update_rm_links = async (rm_links: string[]) => {
@@ -114,7 +115,7 @@
   </thead>
 
   <tbody>
-    {#each seed_data.links as slink, index}
+    {#each links as slink, index}
       <tr>
         <td>
           <a href={slink} class="slink" rel="noreferrer" target="_blank"

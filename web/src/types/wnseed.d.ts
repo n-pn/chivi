@@ -3,21 +3,21 @@ declare namespace CV {
     sname: string
     snvid: string
 
+    stype: number
+
     chmax: number // chap_count
     utime: number // updated_at
 
-    stype: number
-    slink: string
-
-    stime: number = 0
+    rlink: string
+    rtime: number = 0
     fresh: bool = false
+
+    privi: number = 1
 
     lasts: Wnchap[]
 
     free_chap: number = 40
     privi_map: [number, number, number] = [0, 1, 1]
-
-    privi: number = 1
   }
 
   interface Nslist {
@@ -28,8 +28,9 @@ declare namespace CV {
   }
 
   interface Wnseed {
-    links: string[]
-    stime: number
+    rlink: string
+    rtime: number
+
     _flag: number
     fresh: boolean
     //

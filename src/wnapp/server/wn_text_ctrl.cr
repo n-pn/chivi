@@ -23,17 +23,12 @@ class WN::TextCtrl < AC::Base
   end
 
   def guard_edit_privi(wn_id : Int32, sname : String)
-    base = wn_id == 0 ? 0 : 1
+    type = WnSeed::Type.parse(sname)
 
-    case sname[0]
-    when '_'
-      guard_privi min: base, action: "thêm chương tiết cho nguồn chính"
-    when '@'
-      uname = sname[1..]
-      guard_owner uname, min: base + 1, action: "thêm chương tiết cho nguồn cá nhân"
-    else
-      guard_privi min: base + 2, action: "thêm chương tiết cho các nguồn đặc biệt"
-    end
+    edit_privi = type.edit_privi(sname == "@#{_uname}")
+    edit_privi -= 1 if wn_id == 0
+
+    guard_privi edit_privi, action: "thêm chương tiết cho nguồn #{type.type_name}"
   end
 
   @[AC::Route::POST("/")]

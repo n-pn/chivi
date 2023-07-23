@@ -17,6 +17,34 @@ class WN::WnSeed
     Globs
     Other
 
+    def edit_privi(is_owner = false)
+      case self
+      when .draft? then 1
+      when .chivi? then 3
+      when .users? then is_owner ? 2 : 4
+      else              3
+      end
+    end
+
+    def read_privi(is_owner = false)
+      case self
+      when .draft? then 1
+      when .chivi? then 2
+      when .users? then is_owner ? 1 : 2
+      else              3
+      end
+    end
+
+    def type_name
+      case self
+      when Chivi then "chính thức"
+      when Draft then "tạm thời"
+      when Users then "cá nhân"
+      when Globs then "bên ngoài"
+      else            "đặc biệt"
+      end
+    end
+
     def self.parse(sname : String)
       fchar = sname[0]
       case
@@ -53,8 +81,8 @@ class WN::WnSeed
 
   field mtime : Int64 = 0
 
-  field created_at : Time = Time.utc
-  field updated_at : Time = Time.utc
+  # field created_at : Time = Time.utc
+  # field updated_at : Time = Time.utc
 
   @[DB::Field(ignore: true)]
   # getter chaps : Wncata { Wncata.load(@wn_id, @sname, @s_bid) }
@@ -91,21 +119,11 @@ class WN::WnSeed
   end
 
   def edit_privi(uname = "")
-    case self.seed_type
-    when .draft? then 1
-    when .chivi? then 3
-    when .users? then owner?(uname) ? 2 : 4
-    else              3
-    end
+    self.seed_type.edit_privi(owner?(uname))
   end
 
   def read_privi(uname = "")
-    case self.seed_type
-    when .draft? then 1
-    when .chivi? then 2
-    when .users? then owner?(uname) ? 1 : 2
-    else              3
-    end
+    self.seed_type.read_privi(owner?(uname))
   end
 
   def lower_read_privi_count
@@ -136,22 +154,21 @@ class WN::WnSeed
   def upsert!(db = @@db)
     stmt = <<-SQL
     insert into #{@@table} (
-      wn_id, sname, s_bid,
-      chap_total, chap_avail,
-      rlink, rtime,
-      privi, _flag, mtime
-    ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      wn_id, sname, s_bid, chap_total, chap_avail,
+      rlink, rtime, privi, _flag, mtime
+    ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     on conflict (wn_id, sname) do update set
       s_bid = excluded.s_bid,
       chap_total = excluded.chap_total, chap_avail = excluded.chap_avail,
       rlink = excluded.rlink, rtime = excluded.rtime,
-      privi = excluded.privi, _flag = excluded._flag, mtime = excluded.mtime,
+      privi = excluded.privi, _flag = excluded._flag, mtime = excluded.mtime
     returning id
     SQL
 
     @id = db.query_one stmt,
       @wn_id, @sname, @s_bid, @chap_total, @chap_avail,
-      @rlink, @rtime, @privi, @_flag, @created_at, @updated_at, as: Int32
+      @rlink, @rtime, @privi, @_flag, @mtime,
+      as: Int32
 
     self
   end
@@ -256,17 +273,6 @@ class WN::WnSeed
     Log.error(exception: ex) { ex.message }
     chap.body
   end
-
-  ####
-
-  # def self.stype(sname : String)
-  #   case sname[0]
-  #   when '_' then 0 # base user seed
-  #   when '@' then 1 # foreground user seed
-  #   else
-  #     sname.in?(ALIVE_SEEDS) ? 3 : 2 # dead remote seed
-  #   end
-  # end
 
   #######
 

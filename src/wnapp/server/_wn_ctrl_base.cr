@@ -8,10 +8,10 @@ abstract class AC::Base
   CACHE = {} of String => WN::WnSeed
 
   private def get_wn_seed(wn_id : Int32, sname : String)
-    sname = "_" if sname[0] == '='
+    sname = "~draft" if sname[0] == '='
 
     CACHE["#{wn_id}/#{sname}"] ||= WN::WnSeed.get(wn_id, sname) || begin
-      unless min_privi = auto_min_privi(sname)
+      unless min_privi = auto_create_privi(sname)
         raise NotFound.new("Nguồn truyện không tồn tại")
       end
 
@@ -25,10 +25,13 @@ abstract class AC::Base
     end
   end
 
-  private def auto_min_privi(sname : String) : Int32?
-    return 1 if sname == "_"
-    return if sname != "@#{_uname}"
-    return 2 if _privi > 1
+  private def auto_create_privi(sname : String) : Int32?
+    case WN::WnSeed::Type.parse(sname)
+    when .chivi? then 0
+    when .draft? then 0
+    when .users? then sname == "@#{_uname}" ? 2 : 5
+    else              nil
+    end
   end
 
   private def get_wn_chap(seed : WN::WnSeed, ch_no : Int32)

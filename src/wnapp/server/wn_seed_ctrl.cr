@@ -8,9 +8,10 @@ class WN::SeedCtrl < AC::Base
     seeds = WnSeed.all(wn_id).sort_by!(&.mtime.-)
 
     render json: {
-      _main: find_or_init(seeds, wn_id, "_"),
+      chivi: find_or_init(seeds, wn_id, "~chivi"),
+      draft: find_or_init(seeds, wn_id, "~draft"),
       users: seeds.select(&.sname.[0].== '@'),
-      backs: seeds.select(&.sname.[0].== '!'),
+      globs: seeds.select(&.sname.[0].== '!'),
     }
   end
 
@@ -30,8 +31,9 @@ class WN::SeedCtrl < AC::Base
       curr_seed: wn_seed,
       top_chaps: wn_seed.chaps.top(4),
       seed_data: {
-        links: [wn_seed.rlink],
-        stime: wn_seed.rtime,
+        rlink: wn_seed.rlink,
+        rtime: wn_seed.rtime,
+        ##
         _flag: wn_seed._flag,
         fresh: fresh,
         # extra

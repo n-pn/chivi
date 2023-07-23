@@ -97,7 +97,7 @@
         <span class="-hide">Thêm text</span>
       </a>
 
-      {#if seed_data.links.length > 0}
+      {#if seed_data.rlink}
         <button
           class="m-btn _primary"
           disabled={!can_reload}
@@ -147,12 +147,11 @@
     <div class="chap-hint _error">{err_msg}</div>
   {/if}
 
-  {#if seed_data.links.length > 0}
-    {@const href = seed_data.links[0]}
+  {#if seed_data.rlink}
     <div class="chap-hint" class:_bold={!seed_data.fresh}>
       <SIcon name="alert-triangle" />
       Danh sách chương tiết được liên kết tới
-      <a class="link" {href} rel="noreferrer" target="_blank"
+      <a class="link" href={seed_data.rlink} rel="noreferrer" target="_blank"
         >nguồn ngoài
         <SIcon name="external-link" />
       </a>. Bạn có thể bấm [<SIcon name="refresh" /> Đổi mới] để cập nhật theo nguồn

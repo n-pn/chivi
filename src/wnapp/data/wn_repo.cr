@@ -21,6 +21,8 @@ class WN::WnRepo
       reinit = retran = true
     end
 
+    Dir.mkdir_p(File.dirname(db_path))
+
     @repo = SQ3::Repo.new(db_path, INIT_SQL)
     self.import_zh! if reinit
     self.translate! if retran

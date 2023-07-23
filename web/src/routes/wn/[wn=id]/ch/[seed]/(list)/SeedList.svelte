@@ -26,14 +26,26 @@
 
 <div class="seed-list">
   <a
-    href={seed_path(nvinfo.bslug, seed_list._main.sname, pgidx)}
+    href={seed_path(nvinfo.bslug, seed_list.chivi.sname, pgidx)}
     class="seed-name"
-    class:_active={seed_list._main.sname == curr_seed.sname}
-    data-tip="Danh sách chương trộn tổng hợp"
+    class:_active={seed_list.chivi.sname == curr_seed.sname}
+    data-tip="Danh sách chương chính thức"
     data-tip-loc="bottom">
-    <div class="seed-label">Tổng hợp</div>
+    <div class="seed-label">Chính thức</div>
     <div class="seed-stats">
-      <strong>{seed_list._main.chmax}</strong> chương
+      <strong>{seed_list.chivi.chmax}</strong> chương
+    </div>
+  </a>
+
+  <a
+    href={seed_path(nvinfo.bslug, seed_list.draft.sname, pgidx)}
+    class="seed-name"
+    class:_active={seed_list.draft.sname == curr_seed.sname}
+    data-tip="Danh sách chương tạm thời"
+    data-tip-loc="bottom">
+    <div class="seed-label">Tạm thời</div>
+    <div class="seed-stats">
+      <strong>{seed_list.draft.chmax}</strong> chương
     </div>
   </a>
 
@@ -72,14 +84,14 @@
     on:click={() => (show_bg = !show_bg)}>
     <div class="seed-label">Nguồn khác</div>
     <div class="seed-stats">
-      <strong>{seed_list.backs.length}</strong> nguồn
+      <strong>{seed_list.globs.length}</strong> nguồn
     </div>
   </button>
 </div>
 
 {#if show_bg}
   <div class="seed-list -extra">
-    {#each seed_list.backs as { sname, chmax }}
+    {#each seed_list.globs as { sname, chmax }}
       <a
         href={seed_path(nvinfo.bslug, sname, pgidx)}
         class="seed-name _sub"

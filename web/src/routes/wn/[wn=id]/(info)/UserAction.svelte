@@ -14,7 +14,7 @@
     let { locked, chidx = 1, cpart = 1 } = ubmemo
     if (chidx < 1) chidx = 1
 
-    let sname = ubmemo.sname || '_'
+    let sname = ubmemo.sname || '~draft'
 
     return {
       href: chap_path(bslug, sname, chidx, cpart),
