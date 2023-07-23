@@ -3,11 +3,12 @@ require "./_base"
 class Rmchap
   getter ch_no : Int32
   getter s_cid : String
+  getter cpath : String
 
   getter ctitle : String
   getter subdiv : String
 
-  def initialize(@ch_no, @s_cid, @ctitle, @subdiv)
+  def initialize(@ch_no, @s_cid, @cpath, @ctitle, @subdiv)
   end
 
   def self.clean_subdiv(subdiv : String)
@@ -37,8 +38,11 @@ class Rmchap
 end
 
 class Rmcata
-  def initialize(@conf : Rmconf, html : String)
+  @root : String
+
+  def initialize(html : String, @conf : Rmconf, bid : String | Int32 = "0")
     @doc = Rmpage.new(html)
+    @root = @conf.make_cata_path(bid)
   end
 
   getter latest_cid : String { @conf.extract_cid(@doc.get!(@conf.cata_latest)) }
@@ -46,6 +50,17 @@ class Rmcata
 
   def content_changed?(prev_latest : String, prev_update : String)
     (prev_latest != latest_cid) || (update_str != prev_update)
+  end
+
+  def get_chap_path(href : String)
+    case href
+    when .starts_with?('/')
+      href[1] == '/' ? href.sub("//#{@conf.hostname}", "") : href
+    when .starts_with?("http")
+      href.sub(/^https?:\/\/[^\/]+/, "")
+    else
+      "#{@root}#{href}"
+    end
   end
 
   @chaps = [] of Rmchap
@@ -73,11 +88,13 @@ class Rmcata
     return if ctitle.empty?
 
     ch_no = @chaps.size &+ 1
+
     s_cid = @conf.extract_cid(href)
+    cpath = self.get_chap_path(href)
 
     ctitle, subdiv = Rmchap.split_ctitle(ctitle, subdiv)
 
-    @chaps << Rmchap.new(ch_no, s_cid, ctitle, subdiv)
+    @chaps << Rmchap.new(ch_no, s_cid, cpath, ctitle, subdiv)
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }
   end

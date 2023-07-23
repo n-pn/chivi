@@ -50,7 +50,7 @@ class Zhcata
       yield db
       db.exec "commit"
     rescue ex
-      db.exec "abort"
+      db.exec "rollback"
       Log.error(exception: ex) { ex.message }
     end
   end

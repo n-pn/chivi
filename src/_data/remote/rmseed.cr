@@ -42,7 +42,10 @@ class Rmseed
     Log.debug { "- Fetching: #{@conf.hostname}#{path}" }
 
     http_client.get(path, headers: headers(path)) do |res|
-      raise "http error: #{res.status_code}" unless res.status.success?
+      unless res.status.success?
+        Log.error { res.body_io.gets_to_end }
+        raise "http error: #{res.status_code}"
+      end
 
       res.body_io.set_encoding(@conf.encoding, invalid: :skip)
       html = res.body_io.gets_to_end

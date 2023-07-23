@@ -20,7 +20,7 @@ OptionParser.parse(ARGV) do |parser|
   parser.on("--old TOO_OLD", "skips fresh") { |i| days = i.to_i.days }
 end
 
-remote = Rmseed.new(host)
+remote = Rmseed.from(host)
 
 if bmax < 1
   bmax = remote.get_mbid.to_i

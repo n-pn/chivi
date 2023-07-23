@@ -1,7 +1,6 @@
 require "log"
 require "yaml"
 require "lexbor"
-require "../../../_util/text_util"
 
 Log.setup_from_env
 
@@ -116,12 +115,14 @@ class Rmconf
   ####
 
   getter book_page_match = ""
+  getter chap_page_match = ""
+
   @[YAML::Field(ignore: true)]
   getter book_page_re : Regex { Regex.new(@book_page_match) }
 
-  getter chap_page_match = ""
+  getter chap_id_re = "(\\d+)\\D*$"
   @[YAML::Field(ignore: true)]
-  getter chap_page_re : Regex { Regex.new(@chap_page_match) }
+  getter chap_id_regex : Regex { Regex.new(@chap_id_re) }
 
   ###
 
@@ -146,12 +147,23 @@ class Rmconf
 
   getter chap_path = ""
 
+  getter chap_name = ""
+  getter chap_body = ""
+
+  getter chap_elem_prune : Array(String)? = nil
+  getter chap_body_scrub : Array(String)? = nil
+
+  ###
+
   def extract_bid(href : String)
     book_page_re.match!(href)[1]
   end
 
   def extract_cid(href : String)
-    chap_page_re.match!(href)[2]
+    self.chap_id_regex.match!(href)[1]
+  rescue ex
+    puts "can not extract chap_id from #{href}"
+    ""
   end
 
   ####

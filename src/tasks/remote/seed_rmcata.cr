@@ -41,6 +41,6 @@ task = SeedRmcata.new("!hetushu")
 
 mbid = task.seed.get_mbid
 
-mbid.to_i.downto(1) do |bid|
+mbid.to_i.downto(7000) do |bid|
   task.seed_book(bid)
 end
