@@ -51,12 +51,30 @@ tests = [
   # {"!ddyueshu", 34642769},
   # {"!ibiquxs", 268453},
   # {"!ishuquge", 5994},
-
   # {"!00kxs", 92948},
   # {"!uuks_org", 28834},
   # {"!b5200_org", 160872},
+  # {"!paoshu8", 198663},
+  # {"!ymxwx", 31577},
+  # {"!xklxsw", 119080},
+  # {"!wenku8", 1985},
+  # {"!paopaoxs", 234492},
+  # {"!hotupub", 771},
+  # {"!51shucheng", "guichuideng"},
 
-  # {"!paoshu8", 817},
+  # dead:
+
+  # {"!56shuku_la", 1},
+  # {"!5200_tv", 1},
+  # {"!biqugee", 1},
+  # {"!bxwxorg", 1},
+  # {"!duokan8", 1},
+  # {"!shubaow", 1},
+  # {"!rengshu", 1},
+  # {"!nofff", 1},
+  # {"!kenshuzw", 1},
+  # {"!kanshu8", 1},
+  # {"!jx_la", 1},
 ]
 
 tests.each { |sname, bid| do_test(sname, bid) }

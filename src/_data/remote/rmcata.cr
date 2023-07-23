@@ -72,12 +72,15 @@ class Rmcata
 
   def extract_chaps!(chap_type : String = "anchor")
     case chap_type
-    when "anchor"   then extract_type_anchor(@conf.cata_elem)
-    when "subdiv"   then extract_type_subdiv(@conf.cata_elem)
-    when "wenku8"   then extract_type_wenku8(@conf.cata_elem)
-    when "uukanshu" then extract_type_uukanshu(@conf.cata_elem)
-    when "ymxwx"    then extract_type_ymxwx(@conf.cata_elem)
-    else                 raise "unsupported parser type: #{chap_type}"
+    when "anchor"     then extract_type_anchor(@conf.cata_elem)
+    when "subdiv"     then extract_type_subdiv(@conf.cata_elem)
+    when "wenku8"     then extract_type_wenku8(@conf.cata_elem)
+    when "uukanshu"   then extract_type_uukanshu(@conf.cata_elem)
+    when "ymxwx"      then extract_type_ymxwx(@conf.cata_elem)
+    when "00kxs"      then extract_type_00kxs(@conf.cata_elem)
+    when "paopaoxs"   then extract_type_paopaoxs(@conf.cata_elem)
+    when "51shucheng" then extract_type_51shucheng(@conf.cata_elem)
+    else                   raise "unsupported parser type: #{chap_type}"
     end
   end
 
@@ -164,6 +167,36 @@ class Rmcata
       when "col3"
         next if subdiv.includes?("最新九章")
         add_chap(node.css("a", &.first?), subdiv)
+      end
+    end
+  end
+
+  # extract chap info for some certain website
+  private def extract_type_00kxs(selector : String)
+    return unless container = @doc.find(selector)
+    container.children.each { |node| node.remove! if node.tag_sym != :li }
+    container.css("a").each { |node| add_chap(node, "") }
+  end
+
+  # extract chap info for some certain website
+  private def extract_type_paopaoxs(selector : String)
+    @doc.css(selector).each do |node|
+      node.css(".chapter_date").each(&.remove!)
+      add_chap(node)
+    end
+  end
+
+  # extract chap info for some certain website
+  private def extract_type_51shucheng(selector : String)
+    return unless container = @doc.find(selector)
+    subdiv = ""
+
+    container.children.each do |node|
+      case klass = node.attributes["class"]?
+      when "mulu-title"
+        subdiv = Rmchap.clean_subdiv(node.inner_text)
+      when "mulu-list quanji"
+        node.css("a").each { |link| add_chap(link, subdiv) }
       end
     end
   end
