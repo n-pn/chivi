@@ -75,7 +75,7 @@ shards:
 
   lexbor:
     git: https://github.com/kostya/lexbor.git
-    version: 3.0.4
+    version: 3.1.2
 
   lucky_router:
     git: https://github.com/luckyframework/lucky_router.git
