@@ -16,8 +16,12 @@ abstract class AC::Base
       end
 
       min_privi -= 1 if wn_id == 0
-      entry = WN::WnSeed.new(wn_id, sname, wn_id, min_privi)
-      entry.tap(&.mkdirs!.save!)
+      entry = WN::WnSeed.new(wn_id, sname, wn_id, min_privi.to_i16)
+
+      entry.mkdirs!
+      entry.upsert!
+
+      entry
     end
   end
 

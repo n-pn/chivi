@@ -15,14 +15,14 @@ class WN::SeedCtrl < AC::Base
   end
 
   private def find_or_init(seeds : Array(WnSeed), wn_id : Int32, sname : String)
-    seeds.find(&.sname.== sname) || WnSeed.new(wn_id, sname).tap(&.save!)
+    seeds.find(&.sname.== sname) || WnSeed.new(wn_id, sname).tap(&.upsert!)
   end
 
   @[AC::Route::GET("/:wn_id/:sname")]
   def show(wn_id : Int32, sname : String)
     wn_seed = get_wn_seed(wn_id, sname)
 
-    tdiff = Time.utc - Time.unix(wn_seed.rm_stime)
+    tdiff = Time.utc - Time.unix(wn_seed.rtime)
     # FIXME: change timespan according to `_flag`
     fresh = tdiff < 24.hours
 
@@ -30,14 +30,14 @@ class WN::SeedCtrl < AC::Base
       curr_seed: wn_seed,
       top_chaps: wn_seed.chaps.top(4),
       seed_data: {
-        links: wn_seed.remotes,
-        stime: wn_seed.rm_stime,
+        links: [wn_seed.rlink],
+        stime: wn_seed.rtime,
         _flag: wn_seed._flag,
         fresh: fresh,
         # extra
-        read_privi: wn_seed.read_privi,
-        edit_privi: wn_seed.edit_privi,
-        gift_chaps: wn_seed.gift_chaps,
+        read_privi: wn_seed.read_privi(_uname),
+        edit_privi: wn_seed.edit_privi(_uname),
+        gift_chaps: wn_seed.lower_read_privi_count,
       },
     }
   end
@@ -84,10 +84,10 @@ class WN::SeedCtrl < AC::Base
     wn_seed = get_wn_seed(wn_id, sname)
     guard_privi wn_seed.read_privi - 1, "cập nhật nguồn"
 
-    if slink = wn_seed.remotes.first?
-      wn_seed.update_from_remote!(slink, mode: mode)
-    else
+    if wn_seed.rlink.empty?
       wn_seed.chaps.translate!
+    else
+      wn_seed.update_from_remote!(mode: mode)
     end
 
     render json: wn_seed
@@ -113,16 +113,11 @@ class WN::SeedCtrl < AC::Base
 
   @[AC::Route::PATCH("/:wn_id/:sname", body: :form)]
   def update_seed(form : UpdateForm, wn_id : Int32, sname : String)
-    guard_privi update_privi(sname), "cập nhật nguồn"
-
     wn_seed = get_wn_seed(wn_id, sname)
+    guard_privi wn_seed.edit_privi(_uname), "cập nhật nguồn"
 
-    if read_privi = form.read_privi
-      wn_seed.read_privi = read_privi
-    end
-
-    if rm_links = form.rm_links
-      wn_seed.rm_links = rm_links
+    if rlink = form.rm_links.try(&.first?)
+      wn_seed.rlink = rlink
     end
 
     if cut_from = form.cut_from
@@ -130,18 +125,8 @@ class WN::SeedCtrl < AC::Base
       wn_seed.chap_total = cut_from - 1
     end
 
-    wn_seed.save!
+    wn_seed.upsert!
     render json: wn_seed
-  end
-
-  private def update_privi(sname : String)
-    case sname
-    when "@#{_uname}"       then 2
-    when "!chivi.app"       then 4
-    when .starts_with?('!') then 3
-    when .starts_with?('@') then 4
-    else                         2
-    end
   end
 
   @[AC::Route::DELETE("/:wn_id/:sname")]

@@ -17,7 +17,7 @@ class WN::ChapCtrl < AC::Base
     wn_chap = get_wn_chap(wn_seed, ch_no)
 
     read_privi = wn_seed.read_privi
-    read_privi &-= 1 if ch_no <= wn_seed.gift_chaps
+    read_privi &-= 1 if ch_no <= wn_seed.lower_read_privi_count
 
     if _privi >= read_privi
       ztext = load_ztext(wn_seed, wn_chap, load_mode)

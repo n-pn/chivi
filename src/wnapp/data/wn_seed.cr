@@ -2,15 +2,41 @@ require "crorm"
 require "crorm/sqlite3"
 
 require "../../_util/site_link"
+require "../../_data/_data"
 
-require "./wn_repo"
 require "../remote/rm_cata"
-
 require "../util/dl_chap"
 
+require "./wn_repo"
+
 class WN::WnSeed
+  enum Type
+    Chivi
+    Draft
+    Users
+    Globs
+    Other
+
+    def self.parse(sname : String)
+      fchar = sname[0]
+      case
+      when fchar == '!'      then Globs
+      when fchar == '@'      then Users
+      when sname == "~chivi" then Chivi
+      when sname == "~draft" then Draft
+      else                        Other
+      end
+    end
+  end
+
+  ############
+
   include Crorm::Model
-  @@table = "seeds"
+
+  class_getter table = "wnseeds"
+  class_getter db : DB::Database = PGDB
+
+  field id : Int32, primary: true
 
   field wn_id : Int32 = 0
   field sname : String = ""
@@ -19,44 +45,29 @@ class WN::WnSeed
   field chap_total : Int32 = 0
   field chap_avail : Int32 = 0
 
-  # field rm_link : String = ""   # link to remote catalog page
-  # field rm_kind : String = ""   # parser type
-  # field rm_time : Int64 = 0_i64 # last remote refreshed at
+  field rlink : String = "" # remote page link
+  field rtime : Int64 = 0   # remote sync time
 
-  # field rm_last_s_cid : Int32 = 0 # the last remote chap id crawled
-  # field rm_last_ch_no : Int32 = 0 # matching remote last chap with ch_no position
+  field privi : Int16 = 0
+  field _flag : Int16 = 0
 
-  field mtime : Int64 = Time.utc.to_unix # last updated at
-  field atime : Int64 = Time.utc.to_unix # last accessed at
+  field mtime : Int64 = 0
 
-  field rm_links : String = "[]" # remote catalog links associated with this seed
-  field rm_stime : Int64 = 0
-
-  field edit_privi : Int32 = 1
-  field read_privi : Int32 = 1
-
-  field _flag : Int32 = 0
+  field created_at : Time = Time.utc
+  field updated_at : Time = Time.utc
 
   @[DB::Field(ignore: true)]
-  getter remotes : Array(String) { Array(String).from_json(@rm_links) }
-
-  @[DB::Field(ignore: true)]
+  # getter chaps : Wncata { Wncata.load(@wn_id, @sname, @s_bid) }
   getter chaps : WnRepo { WnRepo.load(@sname, @s_bid, @wn_id) }
 
-  def initialize(@wn_id, @sname, @s_bid = wn_id, privi = 1)
-    @read_privi = @edit_privi = privi
+  #########
+
+  def initialize(@wn_id, @sname, @s_bid = wn_id, @privi = 1_i16)
   end
 
-  def mkdirs!(sname = self.sname, s_bid = self.s_bid) : self
-    # Dir.mkdir_p("var/chaps/infos/#{sname}")
-    Dir.mkdir_p("var/texts/rzips/#{sname}")
-    Dir.mkdir_p("var/texts/rgbks/#{sname}/#{s_bid}")
-
-    self
-  end
-
-  def rm_links=(@remotes : Array(String))
-    @rm_links = remotes.to_json
+  def mkdirs! : Nil
+    Dir.mkdir_p("var/texts/rgbks/#{@sname}/#{@s_bid}")
+    Dir.mkdir_p("var/texts/rzips/#{@sname}")
   end
 
   def to_json(jb : JSON::Builder)
@@ -67,33 +78,85 @@ class WN::WnSeed
       jb.field "chmax", @chap_total
       jb.field "utime", @mtime
 
-      jb.field "edit_privi", @edit_privi
-      jb.field "read_privi", @read_privi
+      jb.field "privi", @privi
     }
   end
 
-  def edit_privi(owner : String) : Int32
-    return @edit_privi unless @sname.stars_with?('@')
-    @sname == owner ? 2 : 4
+  def seed_type
+    Type.parse(sname)
   end
 
-  def gift_chaps
-    gift = self.chap_total // 3
-    gift > 20 ? gift : 20
+  def owner?(uname : String = "")
+    @sname == "@#{uname}"
+  end
+
+  def edit_privi(uname = "")
+    case self.seed_type
+    when .draft? then 1
+    when .chivi? then 3
+    when .users? then owner?(uname) ? 2 : 4
+    else              3
+    end
+  end
+
+  def read_privi(uname = "")
+    case self.seed_type
+    when .draft? then 1
+    when .chivi? then 2
+    when .users? then owner?(uname) ? 1 : 2
+    else              3
+    end
+  end
+
+  def lower_read_privi_count
+    chap_count = @chap_total // 2
+    chap_count > 40 ? chap_count : 40
   end
 
   def reload_stats!(force : Bool = false)
-    return unless force || self.chap_avail < 0
-    TextStore.unload_zip!(self.sname, self.s_bid)
-    self.chaps.reload_stats!(self.sname, self.s_bid)
-    self.save!
+    return unless force || @chap_avail < 0
+
+    # TextStore.unload_zip!(@sname, @s_bid)
+    self.chaps.reload_stats!(@sname, @s_bid)
+
+    # self.upsert!
   end
 
-  def word_count(from = 1, upto = self.chap_total) : Int32
-    self.chaps.word_count(from, upto)
+  ####
+
+  def bump_mtime(mtime : Int64, force : Bool = false)
+    @mtime = mtime if mtime > 0 || force
   end
 
-  REMOTES = {
+  def bump_chmax(ch_no : Int32, force : Bool = false)
+    return unless force || ch_no > self.chap_total
+    @chap_total = ch_no
+  end
+
+  def upsert!(db = @@db)
+    stmt = <<-SQL
+    insert into #{@@table} (
+      wn_id, sname, s_bid,
+      chap_total, chap_avail,
+      rlink, rtime,
+      privi, _flag, mtime
+    ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    on conflict (wn_id, sname) do update set
+      s_bid = excluded.s_bid,
+      chap_total = excluded.chap_total, chap_avail = excluded.chap_avail,
+      rlink = excluded.rlink, rtime = excluded.rtime,
+      privi = excluded.privi, _flag = excluded._flag, mtime = excluded.mtime,
+    returning id
+    SQL
+
+    @id = db.query_one stmt,
+      @wn_id, @sname, @s_bid, @chap_total, @chap_avail,
+      @rlink, @rtime, @privi, @_flag, @created_at, @updated_at, as: Int32
+
+    self
+  end
+
+  ALIVE_SEEDS = {
     "!hetushu.com",
     "!69shu.com",
     "!xbiquge.bz",
@@ -106,57 +169,48 @@ class WN::WnSeed
     "!biqu5200.net",
   }
 
-  # def self.stype(sname : String)
-  #   case sname[0]
-  #   when '_' then 0 # base user seed
-  #   when '@' then 1 # foreground user seed
-  #   else
-  #     sname.in?(REMOTES) ? 3 : 2 # dead remote seed
-  #   end
-  # end
+  def word_count(from = 1, upto = @chap_total) : Int32
+    self.chaps.word_count(from, upto)
+  end
 
-  ###
+  def update_from_remote!(mode : Int32 = 0)
+    parser = RmCata.new(@rlink, ttl: mode > 0 ? 3.minutes : 30.minutes)
 
-  ###
+    chap_list = parser.parse!
+    return if chap_list.empty?
 
-  def update_from_remote!(slink = self.remotes.first, mode : Int32 = 0)
-    parser = RmCata.new(slink, ttl: mode > 0 ? 3.minutes : 30.minutes)
-
-    raw_chaps = parser.parse!
-    # return if raw_chaps.empty?
-
-    last_ch_no = raw_chaps.size
-
-    if last_ch_no > self.chap_total
-      self.chap_total = last_ch_no
-      # last_ch_no = self.chap_total
-    end
+    max_ch_no = chap_list.size
 
     # FIXME: check for real last_chap and offset
-    # if last_ch_no > 0
-    #   raw_chaps = raw_chaps[last_ch_no..]
+    # if max_ch_no > 0
+    #   chap_list = chap_list[max_ch_no..]
     # end
 
     # @_flag = parser.status_int.to_i
 
-    self.bump_times(parser.last_mtime, force: true)
-    self.save!(self.class.repo)
+    self.update_stats!(max_ch_no, parser.last_mtime)
 
     if self.sname[0] == '!'
       # _path can be generated from `s_cid` field
-      raw_chaps.each(&._path = "")
+      chap_list.each(&._path = "")
     else
       # do not keep remote chap id info if seed is not a remote one
-      raw_chaps.each { |x| x.s_cid = x.ch_no }
+      chap_list.each { |x| x.s_cid = x.ch_no }
     end
 
-    self.chaps.upsert_chap_infos(raw_chaps)
-    self.chaps.translate!(raw_chaps.first.ch_no, raw_chaps.last.ch_no)
+    self.chaps.upsert_chap_infos(chap_list)
+    self.chaps.translate!(chap_list.first.ch_no, chap_list.last.ch_no)
   end
 
-  def update_stats!(chmax : Int32, @mtime : Int64 = Time.utc.to_unix)
-    @chap_total = chmax if chmax > self.chap_total
-    self.save!
+  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
+    @chap_total = chmax if @chap_total < chmax
+    @mtime = mtime if @mtime < mtime
+
+    # Log.info { [@chap_total, @mtime, @id, mtime] }
+
+    @@db.exec <<-SQL, @chap_total, @mtime, @id
+      update #{@@table} set chap_total = $1, mtime = $2 where id = $3
+      SQL
   end
 
   def reload_content!(min = 1, max = 99999)
@@ -165,8 +219,8 @@ class WN::WnSeed
   end
 
   private def get_fetch_url(chap : WnChap)
-    if self.sname[0] == '!'
-      SiteLink.text_url(self.sname, self.s_bid, chap.s_cid)
+    if @sname[0] == '!'
+      SiteLink.text_url(@sname, @s_bid, chap.s_cid)
     elsif chap._path.starts_with?('!')
       bg_path = chap._path.split(':').first
 
@@ -203,62 +257,27 @@ class WN::WnSeed
     chap.body
   end
 
-  #############
-
-  def bump_times(mtime : Int64 = 0, force : Bool = false)
-    @atime = Time.utc.to_unix
-
-    if mtime > 0
-      @mtime = mtime
-    elsif force
-      @mtime = @atime
-    end
-  end
-
-  def bump_chmax(ch_no : Int32, force : Bool = false)
-    return unless force || ch_no > self.chap_total
-    @chap_total = ch_no
-  end
-
-  #####
-
-  def save!(repo : SQ3::Repo = self.class.repo, @mtime = Time.utc.to_unix)
-    fields, values = self.db_changes
-    raise "invalid" if fields.empty? || fields.size != values.size
-
-    repo.insert(@@table, fields, values, "replace")
-  end
-
   ####
 
-  def self.upsert!(wn_id : Int32, sname : String, s_bid = wn_id)
-    smt = <<-SQL
-      insert into #{@@table} (wn_id, sname, s_bid) values (?, ?, ?)
-      on conflict do update set s_bid = excluded.s_bid
-    SQL
+  # def self.stype(sname : String)
+  #   case sname[0]
+  #   when '_' then 0 # base user seed
+  #   when '@' then 1 # foreground user seed
+  #   else
+  #     sname.in?(ALIVE_SEEDS) ? 3 : 2 # dead remote seed
+  #   end
+  # end
 
-    self.repo.open_tx(&.exec(smt, wn_id, sname, s_bid))
-  end
-
-  class_getter repo : SQ3::Repo { SQ3::Repo.new(db_path, init_sql, 10.minutes) }
-
-  @[AlwaysInline]
-  def self.db_path
-    "var/chaps/seed-infos.db"
-  end
-
-  def self.init_sql
-    {{ read_file("#{__DIR__}/sql/init_wn_seed.sql") }}
-  end
+  #######
 
   def self.all(wn_id : Int32) : Array(self)
-    smt = "select * from #{@@table} where wn_id = ? order by mtime desc"
-    self.repo.open_db(&.query_all(smt, wn_id, as: self))
+    smt = "select * from #{@@table} where wn_id = $1 order by mtime desc"
+    self.db.query_all(smt, wn_id, as: self)
   end
 
   def self.get(wn_id : Int32, sname : String) : self | Nil
-    smt = "select * from #{@@table} where wn_id = ? and sname = ?"
-    self.repo.open_db(&.query_one?(smt, wn_id, sname, as: self))
+    smt = "select * from #{@@table} where wn_id = $1 and sname = $2"
+    self.db.query_one?(smt, wn_id, sname, as: self)
   end
 
   def self.get!(wn_id : Int32, sname : String) : self
@@ -273,16 +292,116 @@ class WN::WnSeed
     self.get(wn_id, sname) || yield
   end
 
-  def self.soft_delete!(wn_id : Int32, sname : String)
-    smt = <<-SQL
-      update #{@@table}
-      set wn_id = -wn_id, s_bid = -s_bid
-      where wn_id = ? and sname = ?
-    SQL
+  def self.find(id : Int32)
+    self.find!(id) rescue nil
+  end
 
-    self.repo.open_db(&.exec smt, wn_id, sname)
+  def self.find!(id : Int32)
+    self.db.query_one "select * from #{@@table} where id = $1", id, as: self
+  end
+
+  def self.upsert!(wn_id : Int32, sname : String, s_bid = wn_id)
+    self.db.exec <<-SQL, wn_id, sname, s_bid
+      insert into #{@@table} (wn_id, sname, s_bid) values ($1, $2, $3)
+      on conflict do update set s_bid = excluded.s_bid
+    SQL
+  end
+
+  def self.soft_delete!(wn_id : Int32, sname : String)
+    self.db.exec <<-SQL, wn_id, sname
+      update #{@@table} set wn_id = -wn_id where wn_id = $1 and sname = $2
+    SQL
   end
 end
+
+# class WN::WnSeed
+#   include Crorm::Model
+#   @@table = "seeds"
+
+#   ###
+
+#   ###
+
+#   #############
+
+#   def bump_times(mtime : Int64 = 0, force : Bool = false)
+#     @atime = Time.utc.to_unix
+
+#     if mtime > 0
+#       @mtime = mtime
+#     elsif force
+#       @mtime = @atime
+#     end
+#   end
+
+#   def bump_chmax(ch_no : Int32, force : Bool = false)
+#     return unless force || ch_no > self.chap_total
+#     @chap_total = ch_no
+#   end
+
+#   #####
+
+#   def save!(repo : SQ3::Repo = self.class.repo, @mtime = Time.utc.to_unix)
+#     fields, values = self.db_changes
+#     raise "invalid" if fields.empty? || fields.size != values.size
+
+#     repo.insert(@@table, fields, values, "replace")
+#   end
+
+#   ####
+
+#   def self.upsert!(wn_id : Int32, sname : String, s_bid = wn_id)
+#     smt = <<-SQL
+#       insert into #{@@table} (wn_id, sname, s_bid) values (?, ?, ?)
+#       on conflict do update set s_bid = excluded.s_bid
+#     SQL
+
+#     self.repo.open_tx(&.exec(smt, wn_id, sname, s_bid))
+#   end
+
+#   class_getter repo : SQ3::Repo { SQ3::Repo.new(db_path, init_sql, 10.minutes) }
+
+#   @[AlwaysInline]
+#   def self.db_path
+#     "var/chaps/seed-infos.db"
+#   end
+
+#   def self.init_sql
+#     {{ read_file("#{__DIR__}/sql/init_wn_seed.sql") }}
+#   end
+
+#   def self.all(wn_id : Int32) : Array(self)
+#     smt = "select * from #{@@table} where wn_id = ? order by mtime desc"
+#     self.repo.open_db(&.query_all(smt, wn_id, as: self))
+#   end
+
+#   def self.get(wn_id : Int32, sname : String) : self | Nil
+#     smt = "select * from #{@@table} where wn_id = ? and sname = ?"
+#     self.repo.open_db(&.query_one?(smt, wn_id, sname, as: self))
+#   end
+
+#   def self.get!(wn_id : Int32, sname : String) : self
+#     self.get(wn_id, sname) || raise "wn_seed [#{wn_id}/#{sname}] not found!"
+#   end
+
+#   def self.load(wn_id : Int32, sname : String)
+#     self.load(wn_id, sname) { new(wn_id, sname) }
+#   end
+
+#   def self.load(wn_id : Int32, sname : String, &)
+#     self.get(wn_id, sname) || yield
+#   end
+
+#   def self.soft_delete!(wn_id : Int32, sname : String)
+#     smt = <<-SQL
+#       update #{@@table}
+#       set wn_id = -wn_id, s_bid = -s_bid
+#       where wn_id = ? and sname = ?
+#     SQL
+
+#     self.repo.open_db(&.exec smt, wn_id, sname)
+#   end
+# end
 
 # repo = WN::WnSeed.load("_hetushu", 6236)
 # repo.remote_reload!

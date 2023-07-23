@@ -55,6 +55,7 @@ class WN::RmCata
 
     def get_update_time(page : RmPage)
       time = page.get(@time_css, @time_key)
+      Log.info { time.colorize.blue }
       time ? TimeUtil.parse_time(time).to_unix : 0_i64
     end
 
