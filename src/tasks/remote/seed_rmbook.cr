@@ -1,6 +1,6 @@
 require "colorize"
 require "option_parser"
-require "./shared/rmseed"
+require "../../_data/remote/rmseed"
 
 host = "www.hetushu.com"
 

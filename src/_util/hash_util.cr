@@ -39,8 +39,17 @@ module HashUtil
     'y', 'z',
   }
 
+  def encode32_fixed(number : Int, fixed_size : Int32 = 7)
+    String.build do |io|
+      fixed_size.times do
+        io << B32_CF.unsafe_fetch(number % 32)
+        number //= 32
+      end
+    end
+  end
+
   # convert integer to zbase32
-  def encode32(number : Int32 | Int64 | UInt32)
+  def encode32(number : Int)
     buffer = String::Builder.new
 
     while number >= 32

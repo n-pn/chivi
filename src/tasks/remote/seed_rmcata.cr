@@ -1,6 +1,6 @@
-require "./shared/rmcata"
-require "./shared/rmseed"
-require "./shared/zhcata"
+require "../../_data/remote/rmseed"
+require "../../_data/remote/rmcata"
+require "../../_data/remote/zhcata"
 
 class SeedRmcata
   getter conf, seed
@@ -17,7 +17,7 @@ class SeedRmcata
     cata_path = @conf.make_cata_path(bid)
 
     html = @seed.read_page(cata_path, cata_file, too_old: @too_old)
-    parser = Rmcata.new(@conf, html)
+    parser = Rmcata.new(html, @conf, bid)
 
     zhcata = Zhcata.load(@conf.seedname, bid)
 

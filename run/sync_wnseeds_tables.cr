@@ -2,15 +2,13 @@ require "../src/wnapp/data/wn_seed"
 require "../src/_data/wnovel/wnseed"
 
 STMT = "select * from seeds order by wn_id asc, sname asc"
+inputs = DB.open("sqlite3:var/chaps/seed-infos.db", &.query_all(STMT, as: WN::WnSeed))
 
-WN::WnSeed.repo.db.query_each STMT do |rs|
-  input = rs.read(WN::WnSeed)
+PGDB.exec "begin transaction"
 
-  output = CV::Wnseed.new(
-    wn_id: input.wn_id,
-    sname: input.sname,
-    s_bid: input.s_bid,
-  )
+inputs.each do |input|
+  next if input.wn_id < 0
+  output = CV::Wnseed.new(wn_id: input.wn_id, sname: input.sname, s_bid: input.s_bid)
 
   output.chap_total = input.chap_total
   output.chap_avail = input.chap_avail
@@ -28,5 +26,7 @@ WN::WnSeed.repo.db.query_each STMT do |rs|
 
   puts "#{input.wn_id}/#{input.sname} (#{input.chap_total}) synced"
 rescue ex
-  puts ex
+  puts [input.wn_id, input.sname, ex.message.colorize.red]
 end
+
+PGDB.exec "commit"

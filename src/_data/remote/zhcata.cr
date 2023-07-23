@@ -58,8 +58,8 @@ class Zhcata
   def import_from(src_db_path : String)
     db.exec "attach database '#{src_db_path}' as src"
     db.exec <<-SQL
-      replace into chaps (ch_no, s_cid, ctitle, subdiv, chlen, xxhash, mtime)
-      select ch_no, s_cid as varchar, title, chdiv, c_len, 0 as xxhash, mtime
+      replace into chaps (ch_no, s_cid, ctitle, subdiv, chlen, xxh32, mtime)
+      select ch_no, s_cid as varchar, title, chdiv, c_len, 0 as xxh32, mtime
       from src.chaps
       SQL
   end

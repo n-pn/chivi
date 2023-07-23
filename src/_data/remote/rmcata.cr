@@ -1,4 +1,5 @@
 require "./_base"
+require "colorize"
 
 class Rmchap
   getter ch_no : Int32
