@@ -22,10 +22,10 @@ export function seed_path(
   return pg_no > 1 ? path + `?pg=${pg_no}` : path
 }
 
-const seed_prefixes = ['_', '@', '!', '+']
+const seed_prefixes = ['~', '@', '!', '+']
 // prettier-ignore
 export const fix_sname = (sname: string) => {
-  return seed_prefixes.includes(sname[0]) ? sname : '_'
+  return seed_prefixes.includes(sname[0]) ? sname : '~draft'
 }
 
 export function chap_path(

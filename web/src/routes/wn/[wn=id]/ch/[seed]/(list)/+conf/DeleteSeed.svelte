@@ -16,13 +16,14 @@
   async function delete_seed() {
     try {
       await api_call(edit_url, {}, 'DELETE')
-      goto(`/wn/${bslug}/ch/_`)
+      goto(`/wn/${bslug}/ch/~draft`)
     } catch (ex) {
       alert(ex.body.message)
     }
   }
 
-  $: can_delete = can_edit && !['_', '!chivi.app'].includes(curr_seed.sname)
+  const system_seeds = ['~draft', '~chivi']
+  $: can_delete = can_edit && !system_seeds.includes(curr_seed.sname)
 </script>
 
 <div class="form-group">

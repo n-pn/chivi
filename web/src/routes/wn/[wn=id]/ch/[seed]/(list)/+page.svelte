@@ -80,8 +80,7 @@
 <article class="article island">
   <page-info>
     <info-left>
-      <info-text
-        >{curr_seed.sname != '_' ? curr_seed.sname : 'Tổng hợp'}</info-text>
+      <info-text>{curr_seed.sname}</info-text>
       <info-span>{curr_seed.chmax} chương</info-span>
       <info-span class="u-show-pl"><RTime mtime={curr_seed.utime} /></info-span>
     </info-left>

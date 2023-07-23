@@ -16,7 +16,7 @@ export const seed_nav = (
 ) => {
   const seed_href = seed_path(bslug, sname, pg_no)
 
-  const seed_name = sname == '_' ? '[Tổng hợp]' : `[${sname}]`
+  const seed_name = `[${sname}]`
   return nav_link(seed_href, seed_name, 'list', { kind: 'zseed', show })
 }
 
