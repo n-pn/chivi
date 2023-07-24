@@ -16,7 +16,7 @@ class WN::ChapCtrl < AC::Base
     wn_seed = get_wn_seed(wn_id, sname)
     wn_chap = get_wn_chap(wn_seed, ch_no)
 
-    read_privi = wn_seed.read_privi
+    read_privi = wn_seed.read_privi(_uname)
     read_privi &-= 1 if ch_no <= wn_seed.lower_read_privi_count
 
     if _privi >= read_privi

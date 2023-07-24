@@ -70,12 +70,11 @@ class WN::SeedCtrl < AC::Base
   @[AC::Route::PUT("/", body: :form)]
   def create(form : CreateForm)
     # user own seed list can be auto created, not needed here
+    guard_privi 3, "thêm nguồn truyện"
 
     if form.sname[0] != '!'
       raise BadRequest.new("Tên nguồn truyện không được chấp nhận")
     end
-
-    guard_privi 3, "thêm nguồn truyện"
 
     WnSeed.upsert!(form.wn_id, form.sname, form.s_bid)
     render json: WnSeed.get!(form.wn_id, form.sname)
@@ -83,8 +82,8 @@ class WN::SeedCtrl < AC::Base
 
   @[AC::Route::GET("/:wn_id/:sname/refresh")]
   def refresh(wn_id : Int32, sname : String, mode : Int32 = 1)
+    guard_privi WnSeed::Type.edit_privi(sname, _uname) - 1, "cập nhật nguồn"
     wn_seed = get_wn_seed(wn_id, sname)
-    guard_privi wn_seed.read_privi - 1, "cập nhật nguồn"
 
     if wn_seed.rlink.empty?
       wn_seed.chaps.translate!
@@ -107,16 +106,16 @@ class WN::SeedCtrl < AC::Base
   struct UpdateForm
     include JSON::Serializable
 
-    getter read_privi : Int32?
     getter rm_links : Array(String)?
-
     getter cut_from : Int32?
+
+    getter read_privi : Int32?
   end
 
   @[AC::Route::PATCH("/:wn_id/:sname", body: :form)]
   def update_seed(form : UpdateForm, wn_id : Int32, sname : String)
+    guard_privi WnSeed::Type.edit_privi(sname, _uname), "cập nhật nguồn"
     wn_seed = get_wn_seed(wn_id, sname)
-    guard_privi wn_seed.edit_privi(_uname), "cập nhật nguồn"
 
     if rlink = form.rm_links.try(&.first?)
       wn_seed.rlink = rlink
@@ -127,27 +126,22 @@ class WN::SeedCtrl < AC::Base
       wn_seed.chap_total = cut_from - 1
     end
 
+    if privi = form.read_privi
+      wn_seed.privi = privi.to_i16
+    end
+
     wn_seed.upsert!
     render json: wn_seed
   end
 
   @[AC::Route::DELETE("/:wn_id/:sname")]
   def delete(wn_id : Int32, sname : String, mode : Int32 = 1)
-    guard_privi delete_privi(sname), "xóa danh sách chương"
+    guard_privi WnSeed::Type.delete_privi(sname, _uname), "xóa danh sách chương"
     wn_seed = get_wn_seed(wn_id, sname)
 
     WnSeed.soft_delete!(wn_id, sname)
     WnRepo.soft_delete!(wn_seed.sname, wn_seed.s_bid)
 
     render json: {message: "ok"}
-  end
-
-  private def delete_privi(sname : String)
-    case sname
-    when "@#{_uname}"       then 2
-    when "!chivi.app"       then 4
-    when .starts_with?('!') then 3
-    else                         5
-    end
   end
 end

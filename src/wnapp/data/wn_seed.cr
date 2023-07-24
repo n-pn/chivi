@@ -17,21 +17,29 @@ class WN::WnSeed
     Globs
     Other
 
-    def edit_privi(is_owner = false)
+    def read_privi(is_owner = false, base_privi = 2)
       case self
-      when .draft? then 1
-      when .chivi? then 3
-      when .users? then is_owner ? 2 : 4
+      when Draft then 1
+      when Chivi then 2
+      when Users then is_owner ? 1 : base_privi
       else              3
       end
     end
 
-    def read_privi(is_owner = false)
+    def edit_privi(is_owner = false)
       case self
-      when .draft? then 1
-      when .chivi? then 2
-      when .users? then is_owner ? 1 : 2
+      when Draft then 1
+      when Chivi then 3
+      when Users then is_owner ? 2 : 4
       else              3
+      end
+    end
+
+    def delete_privi(is_owner = false)
+      case self
+      when Globs then 3
+      when Users then is_owner ? 2 : 4
+      else            5
       end
     end
 
@@ -54,6 +62,22 @@ class WN::WnSeed
       when sname == "~draft" then Draft
       else                        Other
       end
+    end
+
+    def self.read_privi(sname : String, uname : String, base_privi : Int32)
+      parse(sname).read_privi(owner?(sname, uname), base_privi)
+    end
+
+    def self.edit_privi(sname : String, uname : String)
+      parse(sname).edit_privi(owner?(sname, uname))
+    end
+
+    def self.delete_privi(sname : String, uname : String)
+      parse(sname).delete_privi(owner?(sname, uname))
+    end
+
+    def self.owner?(sname : String, uname : String)
+      sname == "@#{uname}"
     end
   end
 
@@ -90,7 +114,7 @@ class WN::WnSeed
 
   #########
 
-  def initialize(@wn_id, @sname, @s_bid = wn_id, @privi = 1_i16)
+  def initialize(@wn_id, @sname, @s_bid = wn_id, @privi = 2_i16)
   end
 
   def mkdirs! : Nil
@@ -119,11 +143,11 @@ class WN::WnSeed
   end
 
   def edit_privi(uname = "")
-    self.seed_type.edit_privi(owner?(uname))
+    Type.edit_privi(@sname, uname)
   end
 
   def read_privi(uname = "")
-    self.seed_type.read_privi(owner?(uname))
+    Type.read_privi(@sname, uname, privi.to_i)
   end
 
   def lower_read_privi_count
@@ -318,6 +342,8 @@ class WN::WnSeed
       update #{@@table} set wn_id = -wn_id where wn_id = $1 and sname = $2
     SQL
   end
+
+  ###
 end
 
 # class WN::WnSeed

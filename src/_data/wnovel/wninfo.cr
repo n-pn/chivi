@@ -27,8 +27,8 @@ class CV::Wninfo
 
   ##############
 
-  column zname : String = "" # localization
-  column hname : String = "" # localization
+  # column zname : String = "" # localization
+  # column hname : String = "" # localization
   column vname : String = "" # localization
 
   #################
