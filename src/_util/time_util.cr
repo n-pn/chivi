@@ -29,6 +29,10 @@ module TimeUtil
     end
   end
 
+  def parse_time(input : String, format : String)
+    Time.parse(input, format, LOCATION)
+  end
+
   def get_date(time : Time)
     sprintf("%04d-%02d-%02d", *time.date)
   end

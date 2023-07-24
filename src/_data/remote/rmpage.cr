@@ -1,0 +1,96 @@
+require "lexbor"
+
+class Rmpage
+  getter doc : Lexbor::Parser
+  delegate css, to: @doc
+
+  # forward_missing_to @doc
+
+  def initialize(html : String)
+    @doc = Lexbor::Parser.new(html)
+  end
+
+  def purge_tags!(node : Lexbor::Node, *tags : Symbol)
+    node.children.each { |x| x.remove! if tags.includes?(x.tag_sym) }
+  end
+
+  @[AlwaysInline]
+  def find!(query : String)
+    @doc.css(query, &.first)
+  end
+
+  @[AlwaysInline]
+  def find(query : String)
+    @doc.css(query, &.first?)
+  end
+
+  @[AlwaysInline]
+  def inner_text(node : Lexbor::Node, sep = '\n')
+    clean_text(node.inner_text(sep))
+  end
+
+  private def extract_text(node : Lexbor::Node, extract_type : String)
+    case extract_type
+    when "", "text" then node.inner_text(' ')
+    else                 node.attributes[extract_type]? || ""
+    end
+  end
+
+  @[AlwaysInline]
+  private def clean_text(text : String)
+    text.gsub(/\p{Z}/, ' ').strip
+  end
+
+  @[AlwaysInline]
+  private def clean_text(text : Array(String))
+    text.map! { |line| clean_text(line) }
+  end
+
+  @[AlwaysInline]
+  def get(selector : String, extract_type : String = "") : String?
+    find(selector).try do |node|
+      text = extract_text(node, extract_type)
+      clean_text(text)
+    end
+  end
+
+  @[AlwaysInline]
+  def get(extractor : Tuple(String, String)) : String?
+    selector, extract_type = extractor
+    get(selector, extract_type)
+  end
+
+  @[AlwaysInline]
+  def get!(query : String, attr : String = "") : String
+    get(query, attr) || raise "invalid query: #{query}"
+  end
+
+  @[AlwaysInline]
+  def get!(extractor : Tuple(String, String)) : String?
+    get(extractor) || raise "invalid extractor #{extractor}"
+  end
+
+  def get_all(query : String, attr : String = "") : Array(String)
+    @doc.css(query).map { |x| extract_text(x, attr) }
+  end
+
+  def get_lines(query : String, purges : Enumerable(Symbol)) : Array(String)
+    return [] of String unless node = find(query)
+    node.children.each { |x| x.remove! if purges.includes?(x.tag_sym) }
+    get_lines(node)
+  end
+
+  @[AlwaysInline]
+  def get_lines(query : String) : Array(String)
+    get_lines(@doc.css(query))
+  end
+
+  def get_lines(node : Lexbor::Node) : Array(String)
+    text = node.inner_text('\n')
+
+    text.each_line.compact_map do |line|
+      line = clean_text(line)
+      line unless line.blank?
+    end.to_a
+  end
+end

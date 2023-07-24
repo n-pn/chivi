@@ -1,53 +1,91 @@
-require "./_base"
+require "uri"
 require "colorize"
 
-class Rmchap
-  getter ch_no : Int32
-  getter s_cid : String
-  getter cpath : String
+require "../../_util/time_util"
 
-  getter ctitle : String
-  getter subdiv : String
-
-  def initialize(@ch_no, @s_cid, @cpath, @ctitle, @subdiv)
-  end
-
-  def self.clean_subdiv(subdiv : String)
-    subdiv.gsub(/《.*》/, "").gsub(/\n|\t|\s{3,}/, "  ").strip
-  end
-
-  HAN_NUMS = "零〇一二两三四五六七八九十百千"
-  HAN_SUBS = "集卷季"
-
-  SUBDIV_RE = {
-    /^(第?[#{HAN_NUMS}\d]+[#{HAN_SUBS}].*?)(第?[#{HAN_NUMS}\d]+[章节幕回折].*)$/,
-    # /^(第?[#{HAN_NUMS}\d]+[#{HAN_SUBS}].*?)(（\p{N}+）.*)$/,
-    /^【(第?[#{HAN_NUMS}\d]+[#{HAN_SUBS}])】(.+)$/,
-  }
-
-  def self.split_ctitle(ctitle : String, subdiv = "") : Tuple(String, String)
-    ctitle = Rmutil.clean_text(ctitle)
-    return {ctitle, subdiv} unless subdiv.empty?
-
-    SUBDIV_RE.each do |regex|
-      next unless match = regex.match(ctitle)
-      return {match[2].lstrip, match[1].rstrip}
-    end
-
-    {ctitle, subdiv}
-  end
-end
+require "./_conf"
+require "./rmpage"
 
 class Rmcata
-  @root : String
+  class Chap
+    getter ch_no : Int32
+    getter s_cid : String
+    getter cpath : String
 
-  def initialize(html : String, @conf : Rmconf, bid : String | Int32 = "0")
-    @doc = Rmpage.new(html)
-    @root = @conf.make_cata_path(bid)
+    getter ctitle : String
+    getter subdiv : String
+
+    def initialize(@ch_no, @s_cid, @cpath, @ctitle, @subdiv)
+    end
+
+    def self.clean_subdiv(subdiv : String)
+      subdiv.gsub(/《.*》/, "").gsub(/\n|\t|\s{3,}/, "  ").strip
+    end
+
+    HAN_NUMS = "零〇一二两三四五六七八九十百千"
+    HAN_SUBS = "集卷季"
+
+    SUBDIV_RE = {
+      /^(第?[#{HAN_NUMS}\d]+[#{HAN_SUBS}].*?)(第?[#{HAN_NUMS}\d]+[章节幕回折].*)$/,
+      # /^(第?[#{HAN_NUMS}\d]+[#{HAN_SUBS}].*?)(（\p{N}+）.*)$/,
+      /^【(第?[#{HAN_NUMS}\d]+[#{HAN_SUBS}])】(.+)$/,
+    }
+
+    def self.split_ctitle(ctitle : String, subdiv = "") : Tuple(String, String)
+      ctitle = Rmutil.clean_text(ctitle)
+      return {ctitle, subdiv} unless subdiv.empty?
+
+      SUBDIV_RE.each do |regex|
+        next unless match = regex.match(ctitle)
+        return {match[2].lstrip, match[1].rstrip}
+      end
+
+      {ctitle, subdiv}
+    end
   end
 
-  getter latest_cid : String { @conf.extract_cid(@doc.get!(@conf.cata_latest)) }
-  getter update_str : String { @conf.cata_update.try { |x| @doc.get!(x) } || "" }
+  ####
+
+  def self.from_link(rlink : String, stale : Time = Time.utc - 1.years)
+    host, path = URI.parse(rlink).try { |x| {x.host, x.path} }
+    conf = Rmconf.from_host!(host.as(String))
+    new(conf, b_id: conf.extract_bid(path.as(String)), stale: stale)
+  end
+
+  def self.new(sname : String, b_id : String | Int32, stale : Time = Time.utc - 1.years)
+    new(Rmconf.load!(sname), b_id: b_id.to_s, stale: stale)
+  end
+
+  ###
+
+  @root : String
+
+  def initialize(@conf : Rmconf, b_id : String, stale : Time)
+    @root = @conf.make_cata_path(b_id)
+
+    path = conf.cata_file_path(b_id)
+    html = conf.load_page(@root, path, stale: stale)
+
+    @page = Rmpage.new(html)
+  end
+
+  getter latest_cid : String { @conf.extract_cid(@page.get!(@conf.cata_latest)) }
+  getter update_str : String { @conf.cata_update.try { |x| @page.get!(x) } || "" }
+
+  getter update_int : Int64 do
+    update_str = self.update_str
+    return 0_i64 if update_str.empty?
+
+    case @conf.seedname
+    when "!uukanshu"
+      0_i64
+    when "!yannuozw"
+      TimeUtil.parse_time(update_str, "更新：(%Y年%m月%d日)").to_unix
+    else
+      update_str = update_str.sub(/更新：|更新时间 : /, "")
+      TimeUtil.parse_time(update_str).to_unix
+    end
+  end
 
   def content_changed?(prev_latest : String, prev_update : String)
     (prev_latest != latest_cid) || (update_str != prev_update)
@@ -64,7 +102,7 @@ class Rmcata
     end
   end
 
-  @chaps = [] of Rmchap
+  @chaps = [] of Chap
 
   def chap_list
     extract_chaps!(@conf.cata_type) if @chaps.empty?
@@ -96,28 +134,28 @@ class Rmcata
     s_cid = @conf.extract_cid(href)
     cpath = self.get_chap_path(href)
 
-    ctitle, subdiv = Rmchap.split_ctitle(ctitle, subdiv)
+    ctitle, subdiv = Chap.split_ctitle(ctitle, subdiv)
 
-    @chaps << Rmchap.new(ch_no, s_cid, cpath, ctitle, subdiv)
+    @chaps << Chap.new(ch_no, s_cid, cpath, ctitle, subdiv)
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }
   end
 
   # extract chapter info by finding <a> elements
   private def extract_type_anchor(selector : String)
-    @doc.css(selector).each { |node| add_chap(node) }
+    @page.css(selector).each { |node| add_chap(node) }
   end
 
   # extract chapter info + subdiv by scanning <dt> and <dd> elements
   private def extract_type_subdiv(selector : String)
-    return unless container = @doc.find(selector)
+    return unless container = @page.find(selector)
     subdiv = ""
 
     container.children.each do |node|
       case node.tag_sym
       when :dt
         inner = node.css("b", &.first?) || node
-        subdiv = Rmchap.clean_subdiv(inner.inner_text)
+        subdiv = Chap.clean_subdiv(inner.inner_text)
         add_chap(node.css("a", &.first?), subdiv)
       when :dd
         next if subdiv.includes?("最新章节")
@@ -128,12 +166,12 @@ class Rmcata
 
   # extract chap info for some certain website
   private def extract_type_wenku8(selector : String)
-    return unless container = @doc.find(selector)
+    return unless container = @page.find(selector)
     subdiv = ""
 
     container.css("td").each do |node|
       case node.attributes["class"]?
-      when "vcss" then subdiv = Rmchap.clean_subdiv(node.inner_text)
+      when "vcss" then subdiv = Chap.clean_subdiv(node.inner_text)
       when "ccss" then add_chap(node.css("a", &.first?), subdiv)
       end
     end
@@ -141,7 +179,7 @@ class Rmcata
 
   # extract chap info for some certain website
   private def extract_type_uukanshu(selector : String)
-    return unless container = @doc.find(selector)
+    return unless container = @page.find(selector)
     subdiv = ""
 
     # NOTE: chapters are in reversed order
@@ -156,7 +194,7 @@ class Rmcata
 
   # extract chap info for some certain website
   private def extract_type_ymxwx(selector : String)
-    return unless container = @doc.find(selector)
+    return unless container = @page.find(selector)
     subdiv = ""
 
     container.children.each do |node|
@@ -164,7 +202,7 @@ class Rmcata
 
       case node.attributes["class"]?
       when "col1 volumn"
-        subdiv = Rmchap.clean_subdiv(node.inner_text)
+        subdiv = Chap.clean_subdiv(node.inner_text)
       when "col3"
         next if subdiv.includes?("最新九章")
         add_chap(node.css("a", &.first?), subdiv)
@@ -174,14 +212,14 @@ class Rmcata
 
   # extract chap info for some certain website
   private def extract_type_00kxs(selector : String)
-    return unless container = @doc.find(selector)
+    return unless container = @page.find(selector)
     container.children.each { |node| node.remove! if node.tag_sym != :li }
     container.css("a").each { |node| add_chap(node, "") }
   end
 
   # extract chap info for some certain website
   private def extract_type_paopaoxs(selector : String)
-    @doc.css(selector).each do |node|
+    @page.css(selector).each do |node|
       node.css(".chapter_date").each(&.remove!)
       add_chap(node)
     end
@@ -189,13 +227,13 @@ class Rmcata
 
   # extract chap info for some certain website
   private def extract_type_51shucheng(selector : String)
-    return unless container = @doc.find(selector)
+    return unless container = @page.find(selector)
     subdiv = ""
 
     container.children.each do |node|
       case klass = node.attributes["class"]?
       when "mulu-title"
-        subdiv = Rmchap.clean_subdiv(node.inner_text)
+        subdiv = Chap.clean_subdiv(node.inner_text)
       when "mulu-list quanji"
         node.css("a").each { |link| add_chap(link, subdiv) }
       end

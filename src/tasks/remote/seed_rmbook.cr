@@ -30,7 +30,7 @@ end
 total = bmax - bmin + 1
 index = 0
 
-too_old = Time.utc - days
+stale = Time.utc - days
 
 cnn_mod = 1 if cnn_mod < 1
 cnn_rem %= cnn_mod
@@ -40,7 +40,7 @@ bmax.to(bmin) do |bid|
   next unless index % cnn_mod == cnn_rem
 
   file_path = remote.conf.book_file_path(bid)
-  next if Rmutil.still_fresh?(file_path, too_old: too_old)
+  next if Rmutil.still_fresh?(file_path, stale: stale)
 
   sleep 3.seconds
 

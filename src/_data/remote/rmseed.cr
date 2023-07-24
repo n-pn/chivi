@@ -1,5 +1,5 @@
 require "http/client"
-require "./_base"
+require "./_conf"
 
 class Rmseed
   getter conf : Rmconf
@@ -37,11 +37,11 @@ class Rmseed
     HTTP::Client.new(@conf.hostname, tls: tls)
   end
 
-  def save_page(path : String, save_to : String,
+  def save_page(href : String, save_to : String,
                 http_client : HTTP::Client = make_client) : Nil
-    Log.debug { "- Fetching: #{@conf.hostname}#{path}" }
+    Log.debug { "- Fetching: #{@conf.hostname}#{href}" }
 
-    http_client.get(path, headers: headers(path)) do |res|
+    http_client.get(href, headers: headers(href)) do |res|
       unless res.status.success?
         Log.error { res.body_io.gets_to_end }
         raise "http error: #{res.status_code}"
@@ -54,18 +54,17 @@ class Rmseed
     end
   end
 
-  def read_page(path : String, save_to : String,
-                too_old : Time = Time.utc - 12.hours) : String
-    save_page(path, save_to) unless Rmutil.still_fresh?(save_to, too_old)
-    File.read(save_to)
+  def read_page(href : String, path : String,
+                stale : Time = Time.utc - 12.hours) : String
+    save_page(href, path) unless Rmutil.still_fresh?(path, stale)
+    File.read(path)
   end
 
   def get_mbid(ttl = 12.hours) : String
-    html = read_page(@conf.mbid_path, @conf.mbid_file_path, too_old: Time.utc - ttl)
+    html = read_page(@conf.mbid_path, @conf.mbid_file_path, stale: Time.utc - ttl)
     page = Rmpage.new(html)
 
-    mbid_href = page.get!(@conf.mbid_elem, "href")
-    @conf.extract_bid(mbid_href)
+    @conf.extract_bid(page.get!(@conf.mbid_elem, "href"))
   end
 end
 

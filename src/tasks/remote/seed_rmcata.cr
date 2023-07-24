@@ -8,15 +8,14 @@ class SeedRmcata
   def initialize(sname : String, tspan = 100.days)
     @conf = Rmconf.load_known!(sname)
     @seed = Rmseed.new(@conf)
-
-    @too_old = Time.utc - tspan
+    @stale = Time.utc - tspan
   end
 
   def seed_book(bid : String | Int32, force : Bool = false)
     cata_file = @conf.cata_file_path(bid)
     cata_path = @conf.make_cata_path(bid)
 
-    html = @seed.read_page(cata_path, cata_file, too_old: @too_old)
+    html = @seed.read_page(cata_path, cata_file, stale: @stale)
     parser = Rmcata.new(html, @conf, bid)
 
     zhcata = Zhcata.load(@conf.seedname, bid)

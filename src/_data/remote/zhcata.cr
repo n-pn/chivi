@@ -1,47 +1,68 @@
 require "sqlite3"
+require "./rmcata"
 
 class Zhcata
   OUT = "/2tb/var.chivi/zchap"
 
-  def self.db_path(sname : String, s_bid : String | Int32)
+  def self.file_path(sname : String, s_bid : String, type = "db3")
     case sname[0]
-    when '!' then "#{OUT}/globs/#{sname}/#{s_bid}.db3"
+    when '!' then "#{OUT}/globs/#{sname}/#{s_bid}.#{ext}"
+    when '+' then "#{OUT}/users/#{sname}/#{s_bid}.#{ext}"
     else          raise "to be unsupported sname: #{sname}"
     end
   end
 
-  def self.load(sname : String, s_bid : String | Int32)
-    db_path = self.db_path(sname, s_bid)
-    new(db_path)
-  end
+  @idx_path : String
+  @zip_path : String
+  @tmp_path : String
 
-  @db_path : String
+  def initialize(@sname : String, @s_bid : String)
+    @conf = Rmconf.load_known!(@sname)
 
-  def initialize(@db_path)
-    init_db(db_path) unless File.file?(db_path)
+    @idx_path = self.class.file_path(sname, s_bid, "db3")
+    @zip_path = self.class.file_path(sname, s_bid, "zip")
+    @tmp_path = self.class.file_path(sname, s_bid, "/")
+
+    init_db(@idx_path) unless File.file?(@idx_path)
   end
 
   def init_db(db_path : String)
     DB.open("sqlite3:#{db_path}") do |db|
       db.exec "pragma journal_mode=WAL"
+
       db.exec <<-SQL
-      create table chaps(
-        ch_no int primary key,
-        s_cid varchar not null,
+        create table if not exists chaps(
+          ch_no int primary key,
+          s_cid varchar not null,
 
-        ctitle varchar not null default '',
-        subdiv varchar not null default '',
+          ctitle varchar not null default '',
+          subdiv varchar not null default '',
 
-        chlen int not null default 0,
-        xxh32 int not null default 0,
-        mtime bigint not null default 0
-      )
-      SQL
+          chlen int not null default 0,
+          xxh32 int not null default 0,
+          mtime bigint not null default 0
+        )
+        SQL
+
+      db.exec <<-SQL
+        create table if not exists bumps(
+          id int primary key,
+
+          total_chap int not null default 0,
+          latest_cid varchar not null default '',
+
+          status_str varchar not null default '',
+          update_str varchar not null default '',
+
+          uname varchar not null default '',
+          rtime bigint not null default 0
+        );
+        SQL
     end
   end
 
   def open_db(&)
-    DB.open("sqlite3://#{@db_path}?synchronous=normal") { |db| yield db }
+    DB.open("sqlite3://#{@idx_path}?synchronous=normal") { |db| yield db }
   end
 
   def open_tx(&)
@@ -53,6 +74,18 @@ class Zhcata
       db.exec "rollback"
       Log.error(exception: ex) { ex.message }
     end
+  end
+
+  def remote_update!(stale : Time = Time.utc - 1.days, uname : String = "")
+    href = @conf.make_cata_path(@s_bid)
+    path = @conf.cata_file_path(@s_bid)
+
+    case conf.seedtype
+    when 0, 1, 2
+      html = Rmseed.new(conf).read_page(cata_href, save_path, stale: stale)
+    end
+
+    # parser = Rmcata.init(@sname, @s_bid, stale: stale)
   end
 
   def import_from(src_db_path : String)
@@ -75,7 +108,7 @@ class Zhcata
   end
 
   def upsert_info(ch_no : Int32, s_cid : String, ctitle : String, sudbiv : String)
-    open_tx { |db| upsert_info(ch_no, s_cid, ctitle, subdiv, db) }
+    open_tx { |db| upsert_info(ch_no, s_cid, ctitle, subdiv, db: db) }
   end
 
   def update_stat(ch_no : Int32, chlen : Int32, xxh32 : Int32, mtime : Int64,

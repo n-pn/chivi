@@ -1,10 +1,9 @@
 require "crorm"
 require "crorm/sqlite3"
 
-require "../../_util/site_link"
 require "../../_data/_data"
+require "../../_data/remote/rmcata"
 
-require "../remote/rm_cata"
 require "../util/dl_chap"
 
 require "./wn_repo"
@@ -215,9 +214,15 @@ class WN::WnSeed
   end
 
   def update_from_remote!(mode : Int32 = 0)
-    parser = RmCata.new(@rlink, ttl: mode > 0 ? 3.minutes : 30.minutes)
+    stale = mode > 0 ? Time.utc - 3.minutes : Time.utc - 30.minutes
 
-    chap_list = parser.parse!
+    if @sname[0] == '!'
+      parser = Rmcata.init(@sname, @s_bid, stale: stale)
+    else
+      parser = Rmcata.init(@rlink, stale: stale)
+    end
+
+    chap_list = parser.chap_list
     return if chap_list.empty?
 
     max_ch_no = chap_list.size
@@ -229,12 +234,9 @@ class WN::WnSeed
 
     # @_flag = parser.status_int.to_i
 
-    self.update_stats!(max_ch_no, parser.last_mtime)
+    self.update_stats!(max_ch_no, parser.update_int)
 
-    if self.sname[0] == '!'
-      # _path can be generated from `s_cid` field
-      chap_list.each(&._path = "")
-    else
+    if self.sname[0] != '!'
       # do not keep remote chap id info if seed is not a remote one
       chap_list.each { |x| x.s_cid = x.ch_no }
     end
@@ -259,14 +261,24 @@ class WN::WnSeed
     self.chaps.translate!(min: min, max: max)
   end
 
+  getter seed_conf : Rmconf do
+    case
+    when @sname[0] == '!' then Rmconf.load_known!(@sname)
+    when !@rlink.empty? then RmConf.from_link!(from_link)
+    else raise "not linked with remote source"
+    end
+  end
+
   private def get_fetch_url(chap : WnChap)
+
     if @sname[0] == '!'
-      SiteLink.text_url(@sname, @s_bid, chap.s_cid)
+      Rmconf.full_chap_link(@sname, @s_bid, chap.s_cid)
+
     elsif chap._path.starts_with?('!')
       bg_path = chap._path.split(':').first
-
       sname, s_bid, s_cid = bg_path.split('/')
-      SiteLink.text_url(sname, s_bid.to_i, s_cid.to_i)
+
+      Rmconf.full_chap_link(sname, s_bid, s_cid)
     else
       chap._path
     end
