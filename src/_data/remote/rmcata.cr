@@ -70,21 +70,23 @@ class Rmcata
   end
 
   getter latest_cid : String { @conf.extract_cid(@page.get!(@conf.cata_latest)) }
-  getter update_str : String { @conf.cata_update.try { |x| @page.get!(x) } || "" }
+
+  getter status_str : String do
+    return "" unless matcher = @conf.cata_status
+    @page.get!(matcher).sub(/(book_info|状态：)\s*/, "")
+  end
+
+  getter update_str : String do
+    return "" unless matcher = @conf.cata_update
+    @page.get!(matcher).sub(/^\s*更新(时间)?\s*[: ：]\s*/, "")
+  end
 
   getter update_int : Int64 do
     update_str = self.update_str
-    return 0_i64 if update_str.empty?
-
-    case @conf.seedname
-    when "!uukanshu"
-      0_i64
-    when "!yannuozw"
-      TimeUtil.parse_time(update_str, "更新：(%Y年%m月%d日)").to_unix
-    else
-      update_str = update_str.sub(/更新：|更新时间 : /, "")
-      TimeUtil.parse_time(update_str).to_unix
-    end
+    update_str.empty? ? 0_i64 : @conf.parse_time(update_str).to_unix
+  rescue ex
+    puts [update_str, ex]
+    0_i64
   end
 
   def content_changed?(prev_latest : String, prev_update : String)
@@ -231,7 +233,7 @@ class Rmcata
     subdiv = ""
 
     container.children.each do |node|
-      case klass = node.attributes["class"]?
+      case node.attributes["class"]?
       when "mulu-title"
         subdiv = Chap.clean_subdiv(node.inner_text)
       when "mulu-list quanji"

@@ -11,8 +11,9 @@ def do_test(sname : String, b_id : String | Int32, fresh : Bool = false)
 
   parser = Rmcata.new(sname, b_id, stale: fresh ? Time.utc : Time.utc - 10.years)
 
+  puts "update_str: [#{parser.update_str}], real_time: #{Time.unix(parser.update_int)}"
+  puts "status_str: [#{parser.status_str}]"
   puts "latest_cid: #{parser.latest_cid}"
-  puts "update_str: #{parser.update_str}"
 
   chlist = parser.chap_list
   puts "chap_count: #{chlist.size}"

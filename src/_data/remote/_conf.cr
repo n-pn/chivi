@@ -28,6 +28,8 @@ class Rmconf
   property? insecure = false
   property cookie = ""
 
+  property time_fmt = "%F %T"
+
   ####
 
   property book_id_re = "(\\d+)$"
@@ -50,6 +52,7 @@ class Rmconf
 
   property book_latest = {"meta[property=\"og:novel:latest_chapter_url\"]", "content"}
   property book_update : {String, String} | Nil = {"meta[property=\"og:novel:update_time\"]", "content"}
+  property book_status : {String, String} | Nil = {"meta[property=\"og:novel:status\"]", "content"}
 
   ###
 
@@ -57,8 +60,9 @@ class Rmconf
   property cata_type = "subdiv"
   property cata_elem = "#list > dl"
 
-  property cata_latest = {"meta[property=\"og:novel:latest_chapter_url\"]", "content"}
+  property cata_latest = {"meta[property=\"og:novel:status\"]", "content"}
   property cata_update : {String, String} | Nil = {"meta[property=\"og:novel:update_time\"]", "content"}
+  property cata_status : {String, String} | Nil = {"meta[property=\"og:novel:status\"]", "content"}
 
   ###
 
@@ -94,6 +98,13 @@ class Rmconf
 
   def extract_cid(href : String)
     self.chap_id_regex.match!(href)[1]
+  end
+
+  TIMEZONE = Time::Location.fixed(3600 * 8) # chinese timezone
+
+  def parse_time(date : String)
+    time = Time.parse(date, @time_fmt, TIMEZONE) + 1.days
+    time > Time.utc ? Time.utc : time
   end
 
   ####
@@ -189,6 +200,16 @@ class Rmconf
   def load_page(href : String, path : String,
                 stale : Time = Time.utc - 1.days) : String
     Rmutil.still_fresh?(path, stale) ? File.read(path) : save_page(href, path)
+  end
+
+  ###
+
+  def book_save_dir
+    "#{ROOT_DIR}/wnbook/#{@hostname}"
+  end
+
+  def chap_save_dir(bid : Int32 | String)
+    "#{ROOT_DIR}/wnchap/#{@hostname}/#{bid}"
   end
 
   #######
