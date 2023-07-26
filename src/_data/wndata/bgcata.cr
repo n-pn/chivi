@@ -1,8 +1,8 @@
 require "json"
 require "sqlite3"
-require "./rmcata"
+require "../remote/rmcata"
 
-class Zhcata
+class Bgcata
   class Chap
     include DB::Serializable
 
@@ -53,9 +53,9 @@ class Zhcata
 
   getter conf : Rmconf
 
-  @idx_path : String
-  @zip_path : String
-  @tmp_path : String
+  getter idx_path : String
+  getter zip_path : String
+  getter tmp_path : String
 
   def initialize(@sname : String, @s_bid : String)
     @conf = Rmconf.load!(@sname)
@@ -66,9 +66,9 @@ class Zhcata
 
     return if File.file?(@idx_path)
 
-    Dir.mkdir_p(@conf.book_save_dir)
-    Dir.mkdir_p(@conf.chap_save_dir(s_bid))
-    Dir.mkdir_p(File.dirname(@tmp_path))
+    # Dir.mkdir_p(@conf.book_save_dir)
+    # Dir.mkdir_p(@conf.chap_save_dir(s_bid))
+    # Dir.mkdir_p(File.dirname(@tmp_path))
 
     init_db(@idx_path)
   end
@@ -134,7 +134,7 @@ class Zhcata
   def insert_rlog!(db : DB::Database,
                    total_chap : Int32, latest_cid : String,
                    status_str : String, update_str : String,
-                   uname = "", rtime = Time.utc.to_unix) : Rlog
+                   uname = "", rtime = Time.utc.to_unix)
     stmt = <<-SQL
       insert into rlogs (total_chap, latest_cid, status_str, update_str, uname, rtime)
       values ($1, $2, $3, $4, $5, $6)
