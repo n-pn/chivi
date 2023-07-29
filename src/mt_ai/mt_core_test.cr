@@ -1,81 +1,4 @@
-class Node
-  property pos : String = ""
-  property tag : String = ""
-  property data : String | self | Array(self) = ""
-
-  def inspect(io : IO)
-    io << '(' << @pos
-    io << '-' << @tag unless @tag.empty?
-
-    case data = @data
-    in String
-      io << ' ' << data
-    in Node
-      io << ' '
-      data.inspect(io)
-    in Array(Node)
-      data.each { |node| io << ' '; node.inspect(io) }
-    end
-
-    io << ')'
-  end
-end
-
-def parse_con_str(str : String)
-  output = [] of Node
-
-  acc_strio = String::Builder.new
-  acc_empty = true
-
-  str.each_char do |char|
-    # pp char
-    case char
-    when '\n', '\t' then next
-    when '('        then output << Node.new
-    when ' '
-      next if acc_empty
-
-      node = output.last
-      is_undef = node.pos.empty?
-
-      unless is_undef
-        acc_strio << char # allow whitespace inside raw string
-        next
-      end
-
-      acc = acc_strio.to_s
-      acc_strio = String::Builder.new
-      acc_empty = true
-
-      if is_undef
-        node.pos, _, node.tag = acc.partition('-')
-      else
-        node.data = acc
-      end
-    when ')'
-      unless acc_empty
-        output.last.data = acc_strio.to_s
-        acc_strio = String::Builder.new
-        acc_empty = true
-      end
-
-      break if output.size == 1
-      child = output.pop
-      parent = output.last
-
-      case data = parent.data
-      in Array(Node) then data << child
-      in Node        then parent.data = [data, child]
-      in String      then parent.data = child
-      end
-    else
-      acc_strio << char
-      acc_empty = false
-    end
-  end
-
-  output.first
-end
+require "./con_parser"
 
 TXT1 = <<-TXT
 (TOP (IP (IP (NP-PN-SBJ (NR 路易斯·布努埃尔))
@@ -169,4 +92,4 @@ TXT2 = <<-TXT
 (TOP (IP (NP-PN-SBJ (NR 布赖恩·Ｍ·帕普斯克))
       (VP (VV 撰写))))
 TXT
-pp parse_con_str(TXT1)
+pp AI::MtNode.from_str(TXT1)
