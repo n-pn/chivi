@@ -1,7 +1,7 @@
 require "./sp_core"
 
 class MT::TlName
-  DIR = "var/mt/tl_name"
+  DIR = "var/mtdic/tl_name"
 
   class Trie
     class_getter human : self { new("#{DIR}/human.tsv") }

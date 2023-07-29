@@ -61,21 +61,21 @@ class SP::Deepl
     lines.each_with_object([] of Deepl) do |line, list|
       args = line.split('\t')
       next unless key = args[0]?
-      next if args[2]? == "dead"
+      next if key[0]? == '#' || args[2]? == "dead"
 
       list << Deepl.new(key, free: args[1]? != "pro")
     end
   end
 
   def self.translate(terms : Enumerable(String),
-                     source = "zh", target = "vi",
+                     source = "zh", target = "en",
                      no_cap : Bool = false)
     raise "no more available client" unless client = @@clients.first?
     translate(client, terms, source: source, target: target, no_cap: no_cap)
   end
 
   def self.translate(client : Deepl, terms : Enumerable(String),
-                     source = "zh", target = "vi",
+                     source = "zh", target = "en",
                      no_cap : Bool = false)
     client.translate(terms, source: source, target: target, no_cap: no_cap)
   rescue err
