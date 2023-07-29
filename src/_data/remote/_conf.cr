@@ -40,6 +40,10 @@ class Rmconf
   @[YAML::Field(ignore: true)]
   getter chap_id_regex : Regex { Regex.new(@chap_id_re) }
 
+  property bid_cid_re = "(?<bid>\\d+)/(?<cid>\\d+)\\D$"
+  @[YAML::Field(ignore: true)]
+  getter bid_cid_regex : Regex { Regex.new(@bid_cid_re) }
+
   ###
 
   property mbid_path = "/"
@@ -72,8 +76,9 @@ class Rmconf
   property chap_name = "h1"
   property chap_body = "#content"
 
-  property chap_elem_prune : Array(String)? = nil
-  property chap_body_scrub : Array(String)? = nil
+  property chap_body_scrub : String? = nil
+  @[YAML::Field(ignore: true)]
+  getter chap_scrub_re : Regex { Regex.new(@chap_body_scrub || ".") }
 
   ###
 
@@ -84,7 +89,7 @@ class Rmconf
   #   end
   # end
 
-  def real_link(path : String = "/")
+  def full_path(path : String = "/")
     String.build do |io|
       io << (self.insecure? ? "http" : "https") << "://" << @hostname << path
     end
@@ -98,6 +103,11 @@ class Rmconf
 
   def extract_cid(href : String)
     self.chap_id_regex.match!(href)[1]
+  end
+
+  def extract_ids(href : String)
+    match = self.bid_cid_re.match!(href)
+    {match["bid"], match["cid"]}
   end
 
   TIMEZONE = Time::Location.fixed(3600 * 8) # chinese timezone
@@ -142,7 +152,7 @@ class Rmconf
   end
 
   def make_chap_path(bid : Int32 | String, cid : Int32 | String)
-    @chap_path % {div: gen_div(div), bid: bid, cid: cid}
+    @chap_path % {div: gen_div(bid), bid: bid, cid: cid}
   end
 
   def chap_file_path(bid : Int32 | String, cid : Int32 | String)
@@ -155,7 +165,7 @@ class Rmconf
 
   def headers(uri_path : String)
     HTTP::Headers{
-      "Referer"    => real_link(uri_path),
+      "Referer"    => full_path(uri_path),
       "User-Agent" => USER_AGENT,
       "Cookie"     => @cookie,
     }
@@ -163,7 +173,7 @@ class Rmconf
 
   def xhr_headers(uri_path : String)
     HTTP::Headers{
-      "Referer"          => real_link(uri_path),
+      "Referer"          => full_path(uri_path),
       "Content-Type"     => "application/x-www-form-urlencoded",
       "X-Requested-With" => "XMLHttpRequest",
       "User-Agent"       => USER_AGENT,
@@ -220,8 +230,10 @@ class Rmconf
     Hash(String, String).from File.read("#{CONF}/meta/mapping.yml")
   end
 
+  CACHED = {} of String => self
+
   def self.load!(sname : String)
-    from_yaml(File.read("#{CONF_DIR}/#{sname}.yml"))
+    CACHED[sname] ||= from_yaml(File.read("#{CONF_DIR}/#{sname}.yml"))
   end
 
   def self.from_host!(host : String)
@@ -236,17 +248,17 @@ class Rmconf
 
   def self.full_book_link(sname : String, s_bid : Int32 | String)
     conf = load!(sname)
-    conf.real_link(conf.make_book_path(s_bid))
+    conf.full_path(conf.make_book_path(s_bid))
   end
 
   def self.full_cata_link(sname : String, s_bid : Int32 | String)
     conf = load!(sname)
-    conf.real_link(conf.make_cata_path(s_bid))
+    conf.full_path(conf.make_cata_path(s_bid))
   end
 
   def self.full_chap_link(sname : String, s_bid : Int32 | String, s_cid : Int32 | String)
     conf = load!(sname)
     href = conf.make_chap_path(s_bid, s_cid)
-    conf.real_link(href)
+    conf.full_path(href)
   end
 end

@@ -1,8 +1,6 @@
 require "uri"
 require "colorize"
 
-require "../../_util/time_util"
-
 require "./_conf"
 require "./rmpage"
 

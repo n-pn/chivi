@@ -1,59 +1,57 @@
 require "colorize"
 
-INP = ENV["INP"]? || "var/texts/rgbks"
-OUT = ENV["OUT"]? || "var/wn/texts/rzips"
+INP = "var/texts/rgbks"
+OUT = "/2tb/var.chivi/zchap"
 
-WORKERS = ENV["WORKERS"]?.try(&.to_i?) || 4
+def gen_out_dir(sname : String)
+  case sname[0]
+  when '!' then "#{OUT}/globs/#{sname}"
+  when '@' then "#{OUT}/users/#{sname}"
+  else          "#{OUT}/blend/#{sname}"
+  end
+end
 
-def zip_seed_dir(sname : String, threads : Int32 = WORKERS, upload = true)
-  out_dir = "#{OUT}/#{sname}"
-  puts out_dir.colorize.yellow
+def zip_seed_dir(sname : String, threads : Int32 = WORKERS, upload = false)
+  inp_dir = "#{INP}/#{sname}"
+  out_dir = gen_out_dir(sname)
   Dir.mkdir_p(out_dir)
 
-  inputs = gen_inputs(sname)
+  puts out_dir.colorize.yellow
+
+  inputs = Dir.children(inp_dir).map do |b_id|
+    {"#{out_dir}/#{b_id}.zip", "#{inp_dir}/#{b_id}"}
+  end
 
   workers = Channel({String, String, Int32}).new(inputs.size)
-  results = Channel(Nil).new(threads)
+  results = Channel({String, Int32}).new(threads)
 
   threads.times do
     spawn do
       loop do
         zip_path, inp_path, idx = workers.receive
         `zip -FSrjyoq '#{zip_path}' '#{inp_path}'`
-        puts " - #{idx}/#{inputs.size}: #{zip_path}"
-      rescue err
-        puts err.inspect_with_backtrace
-        puts "#{sname}, #{zip_path}, #{err.message} ".colorize.red
-      ensure
-        results.send(nil)
+        results.send({zip_path, idx})
       end
     end
   end
 
-  inputs.each { |input| workers.send(input) }
-  inputs.size.times { results.receive }
+  inputs.each_with_index(1) { |(zip_path, txt_path), idx| workers.send({zip_path, txt_path, idx}) }
+  inputs.size.times do
+    zip_path, idx = results.receive
+    puts " - #{idx}/#{inputs.size}: #{zip_path}"
+  end
 
   return unless upload
   `rclone sync '#{OUT}/#{sname}' 'b2:cvtxts/#{sname}' -v --auto-confirm`
 end
 
-def gen_inputs(sname : String)
-  index = 0
-
-  Dir.children("#{INP}/#{sname}").compact_map do |dirname|
-    zip_path = "#{OUT}/#{sname}/#{dirname}.zip"
-    # next if File.file?(zip_path)
-
-    index += 1
-    {zip_path, "#{INP}/#{sname}/#{dirname}", index}
-  end
-end
+threads = ENV["WORKERS"]?.try(&.to_i?) || 6
 
 upload = ARGV.includes?("--upload")
 snames = ARGV.reject(&.starts_with?('-'))
 snames = Dir.children(INP) if snames.empty?
 
-snames.select!(&.starts_with?('@')) if ARGV.includes?("--member")
-snames.select!(&.starts_with?('!')) if ARGV.includes?("--remote")
+snames.select!(&.starts_with?('@')) if ARGV.includes?("--users")
+snames.select!(&.starts_with?('!')) if ARGV.includes?("--globs")
 
-snames.each { |sname| zip_seed_dir(sname, upload: upload) }
+snames.each { |sname| zip_seed_dir(sname, threads: threads, upload: upload) }
