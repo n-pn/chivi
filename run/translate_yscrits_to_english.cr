@@ -13,7 +13,11 @@ SQL
 
 DIR = "/2tb/var.chivi/ysapp/crits"
 
+translated = 0
+
 inputs.each_with_index(1) do |input, idx|
+  translated += input.ztext.size
+
   dir_path = "#{DIR}/#{input.yc_id[0..4]}-de"
   Dir.mkdir_p(dir_path)
 
@@ -23,5 +27,6 @@ inputs.each_with_index(1) do |input, idx|
   deepl = SP::Deepl.translate(input.ztext.split(/\R/))
   File.write(file_path, deepl.map(&.[1]).join('\n'))
 
-  puts "- <#{idx}/#{inputs.size}> #{input.yc_id} translated"
+  puts "- <#{idx}/#{inputs.size}> #{input.yc_id} translated \
+          (total: #{translated} chars, remain keys: #{SP::Deepl.clients.size})"
 end

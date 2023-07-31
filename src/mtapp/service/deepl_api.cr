@@ -59,11 +59,11 @@ class SP::Deepl
     lines = {{ read_file("#{__DIR__}/deepl.tsv").split('\n') }}
 
     lines.each_with_object([] of Deepl) do |line, list|
-      args = line.split('\t')
-      next unless key = args[0]?
-      next if key[0]? == '#' || args[2]? == "dead"
+      next if line.blank?
+      auth_key = line.split('\t', 2).first
 
-      list << Deepl.new(key, free: args[1]? != "pro")
+      next if auth_key.starts_with?('#')
+      list << Deepl.new(auth_key, free: auth_key.ends_with?(":fx"))
     end
   end
 

@@ -1,16 +1,31 @@
 require "sqlite3"
+require "./mt_opts"
 
 struct AI::MtDefn
-  @defns = {} of String => String
+  getter vstr : String | Hash(String, String)
+  getter opts = MtOpts::None
 
-  def initialize(vstr : String, vmap : String)
-    vmap.split('|') do |item|
-      xpos, vstr = item.split(':', 2)
-      add_defn("xpos", vstr)
-      @defns[xpos] = vstr
+  def initialize(vstr : String, xpos : String, vmap : String = "")
+    if xpos == "PU"
+      @opts = MtOpts.for_punctuation(vstr)
+    elsif vstr == "⛶"
+      @opts = MtOpts::Hidden
+      vstr = ""
+    else
+      @opts = MtOpts::None
     end
 
-    @defns["*"] = vstr
+    if vmap.empty?
+      @vstr = vstr
+    else
+      hash = {"" => vstr}
+      vmap.split('ǀ') do |elem|
+        xpos, vstr = elem.split(':', 2)
+        hash[xpos] = vstr
+      end
+
+      @vstr = hash
+    end
   end
 
   # EXTRA TAGS:
@@ -20,32 +35,23 @@ struct AI::MtDefn
   # _F: all function words
 
   SUPERSETS = {
-    "VV" => {"V", "_C", "*"},
-    "VA" => {"V", "_C", "*"},
-    "NN" => {"N", "_C", "*"},
-    "NT" => {"N", "_C", "*"},
+    "VV" => {"V", "_C"},
+    "VA" => {"V", "_C"},
+    "NN" => {"N", "_C"},
+    "NT" => {"N", "_C"},
   }
 
   def add_defn(xpos : String, vstr : String)
-    @defns[xpos] = vstr
+    @vmap[xpos] = vstr
     return unless alts = SUPERSETS[xpos]?
-    alts.each { |alt| @defns[alt] = vstr }
+    alts.each { |alt| @vmap[alt] = vstr }
   end
 
-  def get_defn(xpos : String) : String?
-    @defns[xpos]?
-  end
-
-  def get_alt_defn(xpos : String) : String
-    if alts = SUPERSETS[xpos]?
-      alts.each do |alt|
-        if vstr = @defns[alt]?
-          return vstr
-        end
-      end
+  def get_defn(xpos : String) : String
+    case val = @vstr
+    when String then val
+    else             val.fetch(xpos) { val[""] }
     end
-
-    @defns["*"]
   end
 end
 
@@ -56,9 +62,9 @@ class AI::MtDict
     defns = Defns.new
 
     DB.open("sqlite3:#{db_path}") do |db|
-      db.query_each "select zstr, vstr, vmap from defns" do |rs|
-        zstr, vstr, vmap = rs.read(String, String, String)
-        defns[zstr] = MtDefn.new(vstr, vmap)
+      db.query_each "select zstr, vstr, vmap, xpos from defns" do |rs|
+        zstr, vstr, vmap, xpos = rs.read(String, String, String, String)
+        defns[zstr] = MtDefn.new(vstr, xpos, vmap)
       end
     end
 
@@ -75,13 +81,33 @@ class AI::MtDict
     @defns = self.class.common
   end
 
-  def translate(zstr : String, xpos : String)
-    return auto_translate(zstr, xpos) unless existed = @defns[zstr]?
-    existed.get_defn(xpos) || existed.get_alt_defn(xpos)
+  def find(zstr : String, xpos : String) : {String, MtOpts}
+    return init(zstr, xpos) unless defn = @defns[zstr]?
+    {defn.get_defn(xpos), defn.opts}
   end
 
-  def auto_translate(zstr : String, xpos : String)
+  def init(zstr : String, xpos : String)
     # FIXME: add simple translation machine here
-    zstr
+    # FIXME: cache translation
+
+    case xpos
+    when "PU"
+      vstr = CharUtil.normalize(zstr)
+      {vstr, MtOpts.for_punctuation(vstr)}
+    when "CD"
+      {translate_number(zstr), MtOpts::None}
+    else
+      pp [zstr, xpos]
+      {zstr, MtOpts::None}
+    end
+  end
+
+  def translate_number(zstr : String)
+    case zstr
+    when /^[\d+\p{P}]+$/ then CharUtil.normalize(zstr)
+    else
+      # TODO: translate hanzi numbers
+      zstr
+    end
   end
 end
