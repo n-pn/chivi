@@ -53,6 +53,7 @@ tests = [
   {"!paopaoxs", 234492},
   {"!hotupub", 771},
   {"!51shucheng", "guichuideng"},
+  {"!tasim", 2777},
 
   # dead:
 

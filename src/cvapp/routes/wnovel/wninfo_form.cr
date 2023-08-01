@@ -1,4 +1,5 @@
 # require "../../../wndata/models/zh_book"
+require "../../../_util/book_util"
 require "../../../_data/wnovel/wninfo"
 
 class CV::WninfoForm

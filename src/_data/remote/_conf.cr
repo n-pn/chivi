@@ -75,9 +75,9 @@ class Rmconf
   property cata_type = "subdiv"
   property cata_elem = "#list > dl"
 
-  property cata_latest = {"meta[property=\"og:novel:status\"]", "content"}
-  property cata_update : {String, String} | Nil = {"meta[property=\"og:novel:update_time\"]", "content"}
-  property cata_status : {String, String} | Nil = {"meta[property=\"og:novel:status\"]", "content"}
+  property cata_latest = {"head > meta[property=\"og:novel:status\"]", "content"}
+  property cata_update : {String, String} | Nil = {"head > meta[property=\"og:novel:update_time\"]", "content"}
+  property cata_status : {String, String} | Nil = {"head > meta[property=\"og:novel:status\"]", "content"}
 
   ###
 
@@ -109,15 +109,24 @@ class Rmconf
   ###
 
   def extract_bid(href : String)
-    self.book_id_regex.match!(href)[1]
+    if match = self.book_id_regex.match(href)
+      match[1]
+    else
+      raise "can't extract bid from [#{href}]"
+    end
   end
 
-  def extract_cid(href : String)
-    self.chap_id_regex.match!(href)[1]
+  def extract_cid(href : String) : String
+    if match = self.chap_id_regex.match(href)
+      match[1]
+    else
+      raise "can't extract cid from [#{href}]"
+    end
   end
 
   def extract_ids(href : String)
     match = self.bid_cid_re.match!(href)
+
     {match["bid"], match["cid"]}
   end
 

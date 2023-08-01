@@ -37,14 +37,25 @@ module BookUtil
   end
 
   @[AlwaysInline]
-  private def fix_zname(known_fixes : Hash(Strnig, String), zname : String, zname_alt : String)
+  def fix_author(zname : String) : String
+    fix_zname(self.zh_authors, zname, "?")
+  end
+
+  @[AlwaysInline]
+  def fix_btitle(zname : String) : String
+    fix_zname(self.zh_btitles, zname, "?")
+  end
+
+  @[AlwaysInline]
+  private def fix_zname(known_fixes : Hash(String, String),
+                        zname : String, zname_alt : String)
     known_fixes[zname_alt]? || (known_fixes[zname] ||= scrub_name(zname))
   end
 
-  def scrub_name(zname : String)
-    CharUtil.canonicalize(zname)
-      .sub(/\s*(ˇ第.+章ˇ)?\s*(最新更新.+)?$/, "")
-      .sub(/^\s*(.+?)\s*[（【\(\[].*?[）】\)\]]$/) { |_, x| x[1] }
-      .sub(/\.(QD|CS)$/, "")
+  def scrub_name(zname : String, upcase : Bool = true)
+    CharUtil.canonicalize(zname, upcase: upcase)
+      .sub(/　*(ˇ第.+章ˇ)?　*(最新更新.+)?$/, "")
+      .sub(/^　*(.+?)　*[（［].*?[］）]$/) { |_, x| x[1] }
+      .sub(/．(ＱＤ|ＣＳ)$/, "")
   end
 end

@@ -38,6 +38,7 @@ do_test("!xbiquge", 42736, 26039221, reset: false)
 do_test("!paoshu8", 1986, 1447835, reset: false)
 
 do_test("!biqu5200", 139731, 174666986, reset: false)
+do_test("!tasim", 2777, 1, reset: false)
 
 # do_test("!shubaow", 150092, 32706021, reset: false)
 # do_test("!biqugee", 33775, 18804401, reset: false)
@@ -45,13 +46,10 @@ do_test("!biqu5200", 139731, 174666986, reset: false)
 # do_test("!bxwxorg", 119227, 1367374, reset: false)
 # do_test("!biqugee", 51452, 649594, reset: false)
 
-
 # do_test("!133txt", 9, 5900, reset: false)
 # do_test("!5200_tv", 28208, 12163631, reset: false)
 # do_test("!biqugse", 69761, 95223327, reset: false)
 # do_test("!bqxs520", 122958, 95416098, reset: false)
-
-
 
 # do_test("!uuks_org", 23389, 292361, reset: false)
 # do_test("!yannuozw", 147108, 69474701, reset: false)

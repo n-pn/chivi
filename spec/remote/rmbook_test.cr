@@ -3,7 +3,6 @@ require "../../src/_data/remote/rmbook.cr"
 
 def fetch_info(sname : String, s_bid : String | Int32, fresh = false) : Void
   puts "\n[#{Rmconf.full_book_link(sname, s_bid)}]".colorize.green.bold
-
   parser = Rmbook.init(sname, s_bid, stale: Time.utc - (fresh ? 10.seconds : 10.years))
 
   puts "------".colorize.green
@@ -56,6 +55,7 @@ tests = [
   # {"!kanshu8", 59127, false},
 
   {"!133txt", 9, false},
+  {"!tasim", 2777, false},
 ]
 
 tests.each do |sname, s_bid, fresh|

@@ -89,10 +89,10 @@ class Rmchap
 
     container.children.each do |node|
       case node.tag_sym
-      when :script, :div, :h1, :table, :ul
+      when :script, :div, :h1, :table, :ul, :a
         node.remove!
       when :p
-        node.remove! if node.attributes["style"]?
+        node.remove! if node.attributes["style"]? || node.attributes["class"]? == "readinline"
       end
     end
 

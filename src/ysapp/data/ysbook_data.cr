@@ -1,8 +1,10 @@
 require "./_base"
 
+require "../../_util/book_util"
+require "../../_util/tran_util"
+
 require "../../_data/wnovel/wninfo"
 require "../../_data/wnovel/wnlink"
-require "../../_util/tran_util"
 require "../../mt_v1/data/v1_dict"
 
 require "../_raw/raw_ysbook"
@@ -103,7 +105,7 @@ class YS::Ysbook
   JSON_HEADER = HTTP::Headers{"content-type" => "application/json"}
 
   def create_nvinfo
-    ztitle, zauthor = CV::BookUtil.fix_names(self.btitle, self.author)
+    ztitle, zauthor = BookUtil.fix_names(self.btitle, self.author)
     zintro = TextUtil.split_html(self.intro, true).join('\n')
 
     raise "uknown error" unless tl_data = TranUtil.tl_book(ztitle, zauthor, zintro)

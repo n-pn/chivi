@@ -1,36 +1,43 @@
+require "colorize"
 require "../../src/_data/_data"
 require "../../src/_util/char_util"
+require "../../src/_util/book_util"
 
-titles = PGDB.query_all "select zname from authors where id > 0", as: String
+authors = {} of String => Int32
 
-hash = {} of String => Array(String)
-
-titles.each do |title|
-  clean_title = title.gsub(/\p{P}/, "")
-  clean_title = CharUtil.canonicalize(clean_title)
-
-  list = hash[clean_title] ||= [] of String
-  list << title
+PGDB.query_each "select id, zname from authors where id > 0 order by id asc" do |rs|
+  id, zname = rs.read(Int32, String)
+  authors[zname] = id
 end
 
-hash.reject! do |key, val|
-  val.size < 2
-end
+# authors.each do |author, id|
+#   fix_author = BookUtil.fix_author(author)
+#   next if author == fix_author
 
-def get_titles(zname : String)
-  PGDB.query_all <<-SQL, zname, as: String
-    select zname from btitles
-    where id in (
-      select btitle_id from wninfos
-      where author_id = (select id from authors where zname = $1 limit 1)
-    )
-  SQL
-end
+#   PGDB.exec "update authors set zname = $1 where id = $2", fix_author, id
+#   puts "(#{id}) [#{author}] => [#{fix_author}]".colorize.green
+# rescue err
+#   puts [err.message.colorize.red, author, id]
+# end
 
-hash.each_value do |names|
-  names.each do |zname|
-    puts "#{zname} => #{get_titles(zname)}"
+authors.each do |author, old_id|
+  fix_author = BookUtil.fix_author(author)
+
+  next if author == fix_author
+  next unless fix_id = authors[fix_author]?
+
+  books = PGDB.query_all "select id, btitle_id from wninfos where author_id = $1", old_id, as: {Int32, Int32}
+  next if books.empty?
+
+  puts "[#{old_id}] (#{author}) => [#{fix_id}] (#{fix_author})".colorize.yellow
+
+  books.each do |wn_id, btitle_id|
+    if other_id = PGDB.query_one?("select id from wninfos where btitle_id = $1 and author_id = $2", btitle_id, fix_id, as: Int32)
+      puts "- book: #{wn_id} => #{other_id}"
+    else
+      PGDB.exec "update wninfos set author_id = $1 where id = $2", fix_id, wn_id
+    end
+  rescue err
+    puts [err.message.colorize.red, fix_author, wn_id]
   end
-
-  puts "-----"
 end

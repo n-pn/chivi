@@ -11,7 +11,7 @@ class Rmbook
     bpath = conf.make_book_path(s_bid)
     bfile = conf.book_file_path(s_bid)
 
-    # Dir.mkdir_p(File.dirname(bfile))
+    Dir.mkdir_p(File.dirname(bfile))
     html = conf.load_page(bpath, bfile, stale: stale)
     new(html, conf: conf)
   end

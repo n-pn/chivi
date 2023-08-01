@@ -19,4 +19,5 @@ def update_file(inp_path : String)
   out_file.close
 end
 
-update_file "#{DIR}/authors_zh.tsv"
+# update_file "#{DIR}/authors_zh.tsv"
+update_file "#{DIR}/btitles_zh.tsv"
