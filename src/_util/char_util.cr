@@ -85,14 +85,23 @@ module CharUtil
   }
 
   # convert input to fullwidth form
-  def canonicalize(char : Char) : Char
-    halfwidth?(char) ? to_fullwidth(char) : CANONICAL.fetch(char, char)
+  def canonicalize(char : Char, upcase : Bool = false) : Char
+    case
+    when 'a' <= char <= 'z' then to_fullwidth(upcase ? char - 32 : char)
+    when '!' <= char <= '~' then to_fullwidth(char)
+    else                         CANONICAL.fetch(char, char)
+    end
   end
 
+  # puts canonicalize('a', true)
+  # puts canonicalize('a', false)
+  # puts canonicalize('?', true)
+  # puts canonicalize('$', true)
+
   # :ditto:
-  def canonicalize(str : String) : String
+  def canonicalize(str : String, upcase : Bool = false) : String
     String.build do |io|
-      str.each_char { |char| io << canonicalize(char) }
+      str.each_char { |char| io << canonicalize(char, upcase: upcase) }
     end
   end
 
