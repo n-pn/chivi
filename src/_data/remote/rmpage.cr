@@ -15,13 +15,13 @@ class Rmpage
   end
 
   @[AlwaysInline]
-  def find!(query : String)
-    @doc.css(query, &.first)
+  def find!(selector : String)
+    @doc.css(selector, &.first)
   end
 
   @[AlwaysInline]
-  def find(query : String)
-    @doc.css(query, &.first?)
+  def find(selector : String)
+    @doc.css(selector, &.first?)
   end
 
   @[AlwaysInline]
@@ -32,6 +32,7 @@ class Rmpage
   private def extract_text(node : Lexbor::Node, extract_type : String)
     case extract_type
     when "", "text" then node.inner_text(' ')
+    when "para"     then node.inner_text('\n')
     else                 node.attributes[extract_type]? || ""
     end
   end
@@ -57,7 +58,12 @@ class Rmpage
   @[AlwaysInline]
   def get(extractor : Tuple(String, String)) : String?
     selector, extract_type = extractor
-    get(selector, extract_type)
+    return get(selector, extract_type) unless extract_type.ends_with?("_list")
+
+    extract_type = extract_type.sub("_list", "")
+    text_joiner = extract_type == "para" ? '\n' : '\t'
+
+    @doc.css(selector).map { |x| extract_text(x, extract_type) }.join(text_joiner)
   end
 
   @[AlwaysInline]

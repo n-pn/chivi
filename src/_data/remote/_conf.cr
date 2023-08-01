@@ -12,6 +12,10 @@ module Rmutil
   def self.clean_text(input : String)
     input.tr("\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000\t\n", " ").strip
   end
+
+  def self.clean_para(input : String)
+    input.split(/\R+|\s{2,}/, remove_empty: true).map! { |line| clean_text(line) }.join('\n')
+  end
 end
 
 class Rmconf
@@ -54,10 +58,17 @@ class Rmconf
   property book_path = "/book/%{bid}/"
   property book_type = ""
 
-  property book_latest = {"meta[property=\"og:novel:latest_chapter_url\"]", "content"}
-  property book_update : {String, String} | Nil = {"meta[property=\"og:novel:update_time\"]", "content"}
-  property book_status : {String, String} | Nil = {"meta[property=\"og:novel:status\"]", "content"}
+  property book_btitle = {"head > meta[property=\"og:novel:book_name\"]", "content"}
+  property book_author = {"head > meta[property=\"og:novel:author\"]", "content"}
 
+  property book_latest = {"head > meta[property=\"og:novel:latest_chapter_url\"]", "content"}
+  property book_update : {String, String} | Nil = {"head > meta[property=\"og:novel:update_time\"]", "content"}
+  property book_status : {String, String} | Nil = {"head > meta[property=\"og:novel:status\"]", "content"}
+
+  property book_cover = {"head > meta[property=\"og:image\"]", "content"}
+  property book_intro = {"head > meta[property=\"og:description\"]", "content"}
+  property book_genre = {"head > meta[property=\"og:novel:category\"]", "content"}
+  property book_xtags : {String, String} | Nil = nil
   ###
 
   property cata_path = "/book/%{bid}/"
