@@ -1,9 +1,5 @@
 #!/usr/bin/python3
-import os, sys, glob
-import json
-import hanlp
-import gc
-import torch
+import os, sys, glob, json, hanlp, gc, torch
 
 MTL = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH) # 世界最大中文语料库
 
