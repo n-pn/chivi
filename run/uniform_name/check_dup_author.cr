@@ -32,8 +32,9 @@ authors.each do |author, old_id|
   puts "[#{old_id}] (#{author}) => [#{fix_id}] (#{fix_author})".colorize.yellow
 
   books.each do |wn_id, btitle_id|
-    if other_id = PGDB.query_one?("select id from wninfos where btitle_id = $1 and author_id = $2", btitle_id, fix_id, as: Int32)
-      puts "- book: #{wn_id} => #{other_id}"
+    if new_id = PGDB.query_one?("select id from wninfos where btitle_id = $1 and author_id = $2", btitle_id, fix_id, as: Int32)
+      puts "- book: #{wn_id} => #{new_id}"
+      PGDB.exec "update wninfos set subdue_id = $1 where id = $2", new_id, wn_id
     else
       PGDB.exec "update wninfos set author_id = $1 where id = $2", fix_id, wn_id
     end

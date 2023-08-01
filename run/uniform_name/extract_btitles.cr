@@ -1,18 +1,21 @@
 require "../../src/_data/_data"
-require "../../src/_util/char_util"
+require "../../src/_util/book_util"
 
-titles = PGDB.query_all "select zname from btitles where id > 0", as: String
+titles = PGDB.query_all "select zname from btitles where id > 0 order by id asc", as: String
 
 hash = {} of String => Array(String)
-titles.each do |title|
-  # clean_title = title.gsub(/\p{P}/, "")
-  clean_title = CharUtil.canonicalize(title)
+titles.each do |btitle|
+  clean_title = BookUtil.fix_btitle(btitle).gsub(/\p{P}/, "")
   list = hash[clean_title] ||= [] of String
-  list << title
+  list << btitle
 end
 
-hash.reject! do |key, val|
-  val.size < 2
+count = 0
+
+hash.each do |key, val|
+  next if val.size < 2
+  count += 1
+  puts val
 end
 
-puts hash.size, hash
+puts count
