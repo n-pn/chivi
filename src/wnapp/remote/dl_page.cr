@@ -1,14 +1,6 @@
-# require "log"
-# require "colorize"
-# # require "http/client"
-
 # require "lexbor"
 
-# require "../../_util/http_util"
-# require "../../_util/zstd_util"
-# require "../../_util/time_util"
-
-# class WN::RmPage
+# class DlPage
 #   getter doc : Lexbor::Parser
 #   delegate css, to: @doc
 
@@ -30,11 +22,6 @@
 #   @[AlwaysInline]
 #   def find(query : String)
 #     @doc.css(query, &.first?)
-#   end
-
-#   @[AlwaysInline]
-#   def find!(query : String)
-#     @doc.css(query, &.first)
 #   end
 
 #   @[AlwaysInline]
@@ -79,51 +66,5 @@
 #   @[AlwaysInline]
 #   private def clean_text(text : String)
 #     text.gsub(/\p{Z}/, ' ').strip
-#   end
-
-#   # class methods
-
-#   CACHE_DIR = "var/.html"
-
-#   def self.cache_file(link : String)
-#     parts = link.split('/', 4)
-
-#     dir = "#{CACHE_DIR}/#{parts[2]}" # host name
-#     Dir.mkdir_p(dir)
-
-#     path = parts[3].gsub(/\W/, '_') # path name
-#     "#{dir}/#{path}.htm.zst"
-#   end
-
-#   def self.cached?(file : String, ttl : Time::Span | Time::MonthSpan)
-#     return false unless info = File.info?(file)
-#     info.modification_time > Time.utc - ttl
-#   end
-
-#   def self.get_host(href : String)
-#     String.build do |io|
-#       count = 0
-#       href.each_char do |char|
-#         if char == '/'
-#           break if count == 2
-#           count += 1
-#         end
-
-#         io << char
-#       end
-#     end
-#   end
-
-#   def self.load_html(link : String, ttl : Time::Span | Time::MonthSpan, encoding : String)
-#     file = cache_file(link)
-
-#     if cached?(file, ttl: ttl)
-#       html = ZstdUtil.read_file(file)
-#     else
-#       html = HttpUtil.fetch(link, encoding: encoding)
-#       ZstdUtil.save_ctx(html, file)
-#     end
-
-#     html
 #   end
 # end

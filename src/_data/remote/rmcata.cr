@@ -16,6 +16,11 @@ class Rmcata
     def initialize(@ch_no, @s_cid, @cpath, @ctitle, @subdiv)
     end
 
+    def as_mirror!(conf : Rmconf)
+      @cpath = conf.full_path(@cpath)
+      @s_cid = @ch_no.to_s
+    end
+
     def self.clean_subdiv(subdiv : String)
       subdiv.gsub(/《.*》/, "").gsub(/\n|\t|\s{3,}/, "  ").strip
     end
@@ -50,20 +55,21 @@ class Rmcata
     new(conf, b_id: conf.extract_bid(path.as(String)), stale: stale)
   end
 
-  def self.new(sname : String, b_id : String | Int32, stale : Time = Time.utc - 1.years)
+  def self.from_seed(sname : String, b_id : String | Int32, stale : Time = Time.utc - 1.years)
     new(Rmconf.load!(sname), b_id: b_id.to_s, stale: stale)
+  end
+
+  def self.new(conf : Rmconf, b_id : String, stale : Time)
+    lpath = conf.make_cata_path(b_id)
+    lfile = conf.cata_file_path(b_id)
+
+    html = conf.load_page(lpath, lfile, stale: stale)
+    new(html, conf, lpath: lpath)
   end
 
   ###
 
-  @root : String
-
-  def initialize(@conf : Rmconf, b_id : String, stale : Time)
-    @root = @conf.make_cata_path(b_id)
-
-    path = conf.cata_file_path(b_id)
-    html = conf.load_page(@root, path, stale: stale)
-
+  def initialize(html : String, @conf : Rmconf, @lpath : String)
     @page = Rmpage.new(html)
   end
 
@@ -98,14 +104,15 @@ class Rmcata
     when .starts_with?("http")
       href.sub(/^https?:\/\/[^\/]+/, "")
     else
-      "#{@root}#{href}"
+      "#{@lpath}#{href}"
     end
   end
 
   @chaps = [] of Chap
 
-  def chap_list
+  def chap_list(as_mirror : Bool = false)
     extract_chaps!(@conf.cata_type) if @chaps.empty?
+    @chaps.each(&.as_mirror!(@conf)) if as_mirror
     @chaps
   end
 

@@ -81,6 +81,8 @@ def transfer(from_id : Int32, to_id : Int32)
   DB.open("sqlite3:var/mtdic/users/v1_defns.dic") do |db|
     db.exec "update defns set dic = $1 where dic = $2", to_id, from_id
   end
+
+  puts success_all
 end
 
 inputs = PGDB.query_all <<-SQL, as: {Int32, Int32}

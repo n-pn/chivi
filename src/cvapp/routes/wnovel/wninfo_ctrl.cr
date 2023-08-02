@@ -17,7 +17,7 @@ class CV::WninfoCtrl < CV::BaseCtrl
   )
     pg_no, limit, offset = _paginate(max: 100)
 
-    query = Wninfo.query.sort_by(order)
+    query = Wninfo.query.sort_by(order).where("subdue_id = 0")
 
     query.filter_btitle(btitle) if btitle
     query.filter_author(author) if author

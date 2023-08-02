@@ -47,12 +47,6 @@ class Rmchap
     end
   end
 
-  ###
-
-  getter title = ""
-  getter paras = [] of String
-  getter? parsed = false
-
   def self.new(conf : Rmconf, cpath : String, cfile : String, stale : Time)
     Dir.mkdir_p(File.dirname(cfile))
 
@@ -61,6 +55,12 @@ class Rmchap
 
     new(html, conf, extra)
   end
+
+  ###
+
+  getter title = ""
+  getter paras = [] of String
+  getter? parsed = false
 
   def initialize(html : String, @conf : Rmconf, @extra = "")
     @page = Rmpage.new(html)

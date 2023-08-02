@@ -3,9 +3,6 @@ require "crorm/sqlite3"
 
 require "../../_data/_data"
 require "../../_data/remote/rmcata"
-
-require "../util/dl_chap"
-
 require "./wn_repo"
 
 class WN::WnSeed
@@ -21,7 +18,7 @@ class WN::WnSeed
       when Draft then 1
       when Chivi then 2
       when Users then is_owner ? 1 : base_privi
-      else              3
+      else            3
       end
     end
 
@@ -30,7 +27,7 @@ class WN::WnSeed
       when Draft then 1
       when Chivi then 3
       when Users then is_owner ? 2 : 4
-      else              3
+      else            3
       end
     end
 
@@ -137,6 +134,10 @@ class WN::WnSeed
     Type.parse(sname)
   end
 
+  def remote?
+    @sname.starts_with?('!')
+  end
+
   def owner?(uname : String = "")
     @sname == "@#{uname}"
   end
@@ -196,19 +197,6 @@ class WN::WnSeed
     self
   end
 
-  ALIVE_SEEDS = {
-    "!hetushu.com",
-    "!69shu.com",
-    "!xbiquge.bz",
-    "!uukanshu.com",
-    "!ptwxz.com",
-    "!133txt.com",
-    "!bxwx.io",
-    "!b5200.org",
-    "!paoshu8.com",
-    "!biqu5200.net",
-  }
-
   def word_count(from = 1, upto = @chap_total) : Int32
     self.chaps.word_count(from, upto)
   end
@@ -216,16 +204,18 @@ class WN::WnSeed
   def update_from_remote!(mode : Int32 = 0)
     stale = mode > 0 ? Time.utc - 3.minutes : Time.utc - 30.minutes
 
-    if @sname[0] == '!'
-      parser = Rmcata.init(@sname, @s_bid, stale: stale)
+    if self.remote?
+      parser = Rmcata.from_seed(@sname, @s_bid, stale: stale)
+      chlist = parser.chap_list(false)
+    elsif !@rlink.empty?
+      parser = Rmcata.from_link(@rlink, stale: stale)
+      chlist = parser.chap_list(true)
     else
-      parser = Rmcata.init(@rlink, stale: stale)
+      raise "not following any remote source!"
     end
 
-    chap_list = parser.chap_list
-    return if chap_list.empty?
-
-    max_ch_no = chap_list.size
+    return if chlist.empty?
+    max_ch_no = chlist.size
 
     # FIXME: check for real last_chap and offset
     # if max_ch_no > 0
@@ -235,14 +225,8 @@ class WN::WnSeed
     # @_flag = parser.status_int.to_i
 
     self.update_stats!(max_ch_no, parser.update_int)
-
-    if self.sname[0] != '!'
-      # do not keep remote chap id info if seed is not a remote one
-      chap_list.each { |x| x.s_cid = x.ch_no }
-    end
-
-    self.chaps.upsert_chap_infos(chap_list)
-    self.chaps.translate!(chap_list.first.ch_no, chap_list.last.ch_no)
+    self.chaps.upsert_chap_infos(chlist)
+    self.chaps.translate!(chlist.first.ch_no, chlist.last.ch_no)
   end
 
   def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
@@ -263,24 +247,9 @@ class WN::WnSeed
 
   getter seed_conf : Rmconf do
     case
-    when @sname[0] == '!' then Rmconf.load_known!(@sname)
-    when !@rlink.empty? then RmConf.from_link!(from_link)
-    else raise "not linked with remote source"
-    end
-  end
-
-  private def get_fetch_url(chap : WnChap)
-
-    if @sname[0] == '!'
-      Rmconf.full_chap_link(@sname, @s_bid, chap.s_cid)
-
-    elsif chap._path.starts_with?('!')
-      bg_path = chap._path.split(':').first
-      sname, s_bid, s_cid = bg_path.split('/')
-
-      Rmconf.full_chap_link(sname, s_bid, s_cid)
-    else
-      chap._path
+    when @sname[0] == '!' then Rmconf.load!(@sname)
+    when !@rlink.empty?   then Rmconf.from_link!(@rlink)
+    else                       raise "not linked with remote source"
     end
   end
 
@@ -290,24 +259,6 @@ class WN::WnSeed
 
   def save_chap!(chap : WnChap) : Nil
     self.chaps.upsert_chap_full(chap)
-  end
-
-  def fetch_text!(chap : WnChap, uname : String = "", force : Bool = false) : Array(String)
-    href = get_fetch_url(chap)
-
-    return chap.body if href.empty?
-    self.mkdirs!
-
-    Log.info { "HIT: #{href}".colorize.magenta }
-
-    parser = DlChap.new(href, ttl: force ? 3.minutes : 1.years)
-    lines = parser.body.tap(&.unshift(parser.title))
-    chap.save_body!(lines, seed: self, uname: uname)
-
-    chap.body
-  rescue ex
-    Log.error(exception: ex) { ex.message }
-    chap.body
   end
 
   #######

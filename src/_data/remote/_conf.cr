@@ -125,8 +125,7 @@ class Rmconf
   end
 
   def extract_ids(href : String)
-    match = self.bid_cid_re.match!(href)
-
+    match = self.bid_cid_regex.match!(href)
     {match["bid"], match["cid"]}
   end
 
@@ -247,7 +246,7 @@ class Rmconf
   CONF_DIR = "var/_conf/globs"
 
   class_getter mapping : Hash(String, String) do
-    Hash(String, String).from File.read("#{CONF}/meta/mapping.yml")
+    Hash(String, String).from_yaml File.read("#{CONF_DIR}/meta/mapping.yml")
   end
 
   CACHED = {} of String => self

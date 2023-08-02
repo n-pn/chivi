@@ -49,7 +49,7 @@ class WN::ChapCtrl < AC::Base
 
     # auto reload remote texts
     if load_mode > 1 || (load_mode > 0 && zh_text.size < 2)
-      zh_text = wn_seed.fetch_text!(wn_chap, _uname, force: load_mode == 2)
+      zh_text = TextFetch.fetch(wn_seed, wn_chap, _uname, force: load_mode == 2)
     end
 
     # save chap text directly to `temps` folder

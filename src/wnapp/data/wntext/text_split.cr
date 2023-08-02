@@ -46,8 +46,8 @@ module WN::TextSplit
   # end
 
   # # split text of a single chapter, returning text parts and char count
-  def split_entry(lines : Array(String))
-    c_len = lines.sum(&.size) &+ lines.size &- 1
+  def split_entry(lines : Array(String)) : Array(String)
+    c_len = lines.sum(&.size)
 
     if c_len <= UPPER
       limit = UPPER
@@ -75,7 +75,7 @@ module WN::TextSplit
     end
 
     parts << strio.to_s if count > 0
-    {parts, c_len}
+    parts
   end
 end
 

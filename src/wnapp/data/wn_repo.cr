@@ -204,9 +204,17 @@ class WN::WnRepo
   UPSERT_FULL_SQL = upsert_sql(WnChap::FULL_FIELDS, unsafe: false)
   UPDATE_TRAN_SQL = "update chaps set vtitle = ?, vchdiv = ? where ch_no = ?"
 
-  def upsert_chap_infos(chapters : Enumerable(WnChap))
+  def upsert_chap_infos(chlist : Enumerable(WnChap))
     @repo.open_tx do |db|
-      chapters.each { |chap| db.exec UPSERT_INFO_SQL, *chap.info_values }
+      chlist.each { |chap| db.exec UPSERT_INFO_SQL, *chap.info_values }
+    end
+  end
+
+  def upsert_chap_infos(chlist : Enumerable(Rmcata::Chap))
+    @repo.open_tx do |db|
+      chlist.each do |chap|
+        db.exec UPSERT_INFO_SQL, chap.ch_no, chap.s_cid, chap.ctitle, chap.subdiv, chap.cpath
+      end
     end
   end
 

@@ -58,7 +58,7 @@ class WN::WnChap
     }
   end
 
-  def uslug(title = self.vtitle)
+  def uslug(title = @vtitle)
     input = title.unicode_normalize(:nfd).gsub(/[\x{0300}-\x{036f}]/, "")
     input.downcase.tr("đ", "d").split(/\W+/, remove_empty: true).first(7).join('-')
   end
@@ -66,7 +66,7 @@ class WN::WnChap
   def _href(part_no : Int32 = 1)
     String.build do |io|
       io << @ch_no << '/' << self.uslug << '-'
-      io << (part_no < 1 ? self.p_len : part_no) if part_no != 1
+      io << (part_no < 1 ? @p_len : part_no) if part_no != 1
     end
   end
 
@@ -118,29 +118,29 @@ class WN::WnChap
   end
 
   def save_body!(lines : Array(String), seed : WnSeed = self.seed, @uname = "", _flag = 2) : Nil
-    if lines.empty?
-      parts = [self.title]
-      @c_len = 0
-    else
-      parts, @c_len = TextSplit.split_entry(lines)
-      raise "too many parts: #{parts.size} (max: 30)!" if parts.size > 30
-    end
+    parts = lines.empty? ? [self.title] : TextSplit.split_entry(lines)
+    save_full!(parts, seed, uname, _flag: _flag)
+  end
 
-    @p_len = parts.size - 1
+  def save_full!(body : Array(String), seed : WnSeed = self.seed, @uname = "", _flag = 1)
+    @body = body
+    @title = body.first if @title.empty?
+
+    @c_len = body.sum(&.size)
+    @p_len = body.size - 1
+
     @mtime = Time.utc.to_unix
-    @title = lines.first if self.title.empty?
 
-    @body = parts
     save_body_copy!(seed, _flag: _flag)
   end
 
   def save_body_copy!(seed : WnSeed = self.seed, @_flag = 2) : Nil
     txt_path = TextStore.save_txt_file(seed, self)
-    TextStore.zip_one(seed.sname, seed.s_bid, txt_path)
+    # TextStore.zip_one(seed.sname, seed.s_bid, txt_path)
     seed.save_chap!(self)
   end
 
   def on_txt_dir?
-    self._flag > 1
+    self._flag > 0
   end
 end
