@@ -1,13 +1,12 @@
 require "crorm"
-require "crorm/sqlite3"
+require "crorm/sqlite"
 
 class M1::DbDict
   include Crorm::Model
-  include DB::Serializable::NonStrict
 
-  @@table = "dicts"
+  schema "dicts"
 
-  field id : Int32, primary: true
+  field id : Int32, pkey: true
 
   field dname : String = ""
 
@@ -47,14 +46,14 @@ class M1::DbDict
 
   def update_after_term_added!(@mtime : Int64, @term_total : Int32)
     smt = "update dicts set mtime = ?, term_total = ? where id = ?"
-    self.class.repo.db.exec smt, mtime, term_total, self.id!
+    self.class.db.db.exec smt, mtime, term_total, self.id!
   end
 
   def update_after_term_added!(@mtime : Int64)
     update_smt = "update dicts set mtime = ?, term_total = term_total + 1 where id = ?"
     select_smt = "select term_total from dicts where id = ?"
 
-    self.class.repo.open_db do |db|
+    self.class.db.open_db do |db|
       db.exec update_smt, mtime, self.id!
       @term_total = db.query_one(select_smt, self.id!, as: Int32)
     end
@@ -66,8 +65,8 @@ class M1::DbDict
 
   ######
 
-  class_getter repo : SQ3::Repo do
-    SQ3::Repo.new(self.db_path, self.init_sql, ttl: 3.minutes)
+  class_getter db : Crorm::SQ3 do
+    Crorm::SQ3.new(self.db_path, self.init_sql, ttl: 3.minutes)
   end
 
   @[AlwaysInline]

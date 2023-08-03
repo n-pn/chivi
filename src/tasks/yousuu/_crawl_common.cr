@@ -1,35 +1,32 @@
 require "pg"
 require "json"
-require "zstd"
+require "xxhash"
 require "http/client"
 require "option_parser"
 
 require "../../cv_env"
-require "../../_util/hash_util"
-require "../service//proxy_client"
+require "../shared/proxy_client"
 
 PG_DB = DB.open(CV_ENV.database_url)
 at_exit { PG_DB.close }
 
-def read_zstd(path : String)
-  file = File.open(path, "r")
-  Zstd::Decompress::IO.open(file, sync_close: true, &.gets_to_end)
-end
-
 HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
 
-puts "contact server: #{CV_ENV.ys_host}"
+module CrUtil
+  extend self
+  puts "contact server: #{CV_ENV.ys_host}"
 
-def post_raw_data(href : String, body : String)
-  HTTP::Client.post("#{CV_ENV.ys_host}/_ys/#{href}", headers: HEADERS, body: body) do |res|
-    color = res.success? ? :green : :red
-    puts res.body_io.gets_to_end.colorize(color)
+  def post_raw_data(href : String, body : String)
+    HTTP::Client.post("#{CV_ENV.ys_host}/_ys/#{href}", headers: HEADERS, body: body) do |res|
+      color = res.success? ? :green : :red
+      puts res.body_io.gets_to_end.colorize(color)
+    end
   end
-end
 
-def file_exists?(file : String, span = 1.days)
-  return false unless info = File.info?(file)
-  info.modification_time > Time.utc - span
+  def file_exists?(file : String, span = 1.days)
+    return false unless info = File.info?(file)
+    info.modification_time > Time.utc - span
+  end
 end
 
 enum CrawlMode
@@ -94,8 +91,10 @@ abstract class CrawlTask
     puts "- <#{entry.name.colorize.magenta}> GET: #{entry.link.colorize.magenta}"
     return entry unless json = @http.fetch!(entry.link, entry.name)
 
-    save_raw_json(entry, json)
-    db_seed_tasks(entry, json)
+    hash = XXHash.xxh32(json)
+
+    save_raw_json(entry, json, hash: hash)
+    db_seed_tasks(entry, json, hash: hash)
 
     nil
   rescue ex
@@ -103,20 +102,16 @@ abstract class CrawlTask
     entry
   end
 
-  ZSTD = Zstd::Compress::Context.new(level: 3)
+  private def save_raw_json(entry : Entry, json : String, hash : UInt32 = 0)
+    File.write(entry.path, json)
 
-  private def save_raw_json(entry : Entry, json : String)
-    File.write(entry.path, ZSTD.compress(json.to_slice))
-
-    hash = HashUtil.encode32(HashUtil.fnv_1a(json))
-    hash_path = entry.path.sub("latest", hash)
-
+    hash_path = entry.path.sub("latest", hash.to_s(base: 36))
     File.copy(entry.path, hash_path) unless File.file?(hash_path)
 
     puts "  [#{entry.path}] saved.".colorize.green
   end
 
-  abstract def db_seed_tasks(entry : Entry, json : String)
+  abstract def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
 
   def mkdirs!(queue : Enumerable(Entry))
     dirs = queue.map { |entry| File.dirname(entry.path) }.uniq!

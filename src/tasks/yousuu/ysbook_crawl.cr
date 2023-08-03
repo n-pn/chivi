@@ -1,10 +1,14 @@
 require "lexbor"
+require "../../zdeps/data/ysbook"
 require "./_crawl_common"
 
-class YS::CrawlYsbook < CrawlTask
-  def db_seed_tasks(entry : Entry, json : String)
+class CrawlYsbook < CrawlTask
+  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
     return unless json.starts_with?('{')
-    post_raw_data("books/info", json)
+    spawn CrUtil.post_raw_data("books/info", json)
+
+    zhbook = ZD::Ysbook.from_raw_json(json, rhash: hash)
+    ZD::Ysbook.open_tx { |db| zhbook.upsert!(db) }
   end
 
   def self.gen_link(yb_id : Int32)

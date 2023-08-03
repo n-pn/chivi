@@ -31,7 +31,7 @@ targets:
     main: cli/bcover_cli.cr
 
   ysbook_crawl:
-    main: src/ysapp/tasks/ysbook_crawl.cr
+    main: src/tasks/yousuu/ysbook_crawl.cr
 
   ysuser_crawl:
     main: src/ysapp/tasks/ysuser_crawl.cr

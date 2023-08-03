@@ -11,9 +11,9 @@ class CV::Author
 
   column zname : String
   column vname : String
+  # column alter : Array(String) = [] of String
 
   column vdesc : String = ""
-  # column alter : Array(String) = [] of String
 
   column book_count : Int32 = 0
   # column post_count : Int32 = 0
