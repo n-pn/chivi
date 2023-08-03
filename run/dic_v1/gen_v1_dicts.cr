@@ -38,7 +38,7 @@ require "../../src/mt_v1/data/v1_dict"
 dicts = [] of M1::DbDict
 
 select_sql = <<-SQL
-  select id::int, bslug, vname from wninfos where id > 0 order by id asc
+  select id::int, bslug, btitle_vi as vname from wninfos where id > 0 order by id asc
 SQL
 
 DB.open(CV_ENV.database_url) do |db|
@@ -48,11 +48,6 @@ DB.open(CV_ENV.database_url) do |db|
   end
 end
 
-M1::DbDict.repo.begin_tx
-
-dicts.each do |dict|
-  puts dict.dname
-  dict.save!
+M1::DbDict.open_tx do |db|
+  dicts.each(&.tap { |x| puts x.dname }.upsert!(db))
 end
-
-M1::DbDict.repo.commit_tx

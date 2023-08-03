@@ -254,9 +254,4 @@
   .form + h3 {
     margin-top: 1rem;
   }
-
-  p.fg-tert {
-    line-height: 2rem;
-    margin-bottom: 0.5rem;
-  }
 </style>

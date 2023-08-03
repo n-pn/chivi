@@ -162,3 +162,8 @@ $-colors: (primary, success, warning, harmful, private, teal, pink, purple);
   --gutter: var(--gutter-ts);
   --ftsize: #{ftsize(xl)};
 }
+
+.m-as-btn {
+  display: inline;
+  background: none;
+}

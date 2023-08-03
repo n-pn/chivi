@@ -1,17 +1,8 @@
 require "crorm"
 require "../_data"
+
 require "./dtopic"
 require "./gdrepl"
-
-# module CitextArray
-#   def self.from_rs(rs)
-#     rs.read(Array(Bytea)).map { |x| String.new(x) }
-#   end
-
-#   def self.to_db(data)
-#     data.each(&.to_slice)
-#   end
-# end
 
 class CV::Gdroot
   class_getter db : DB::Database = PGDB
@@ -60,9 +51,10 @@ class CV::Gdroot
   end
 
   include Crorm::Model
-  schema "gdroots", :postgres, false
+  schema "gdroots", :postgres, strict: false
 
-  field id : Int32, auto: true, skip: true
+  field id : Int32, auto: true
+
   field kind : Int16 = 0, pkey: true
   field ukey : String = "", pkey: true
 

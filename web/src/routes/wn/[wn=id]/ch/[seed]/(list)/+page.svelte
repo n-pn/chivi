@@ -227,10 +227,6 @@
     // @include bdradi(1rem, $loc: top);
   }
 
-  .show-pl {
-    @include bps(display, none, $pl: initial);
-  }
-
   info-left {
     display: flex;
     flex: 1;

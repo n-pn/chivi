@@ -137,10 +137,12 @@
               </div>
             </td>
             <td class="-tag">
-              <!-- svelte-ignore a11y-click-events-have-key-events -->
-              <span on:click={() => show_upsert(key, 2)}>
+              <button
+                type="button"
+                class="m-as-btn"
+                on:click={() => show_upsert(key, 2)}>
                 {pt_labels[ptag || '~']}
-              </span>
+              </button>
               <div class="hover">
                 <button
                   on:click={() => show_upsert(key, 2)}

@@ -2,7 +2,7 @@ require "../_base"
 require "./unotif"
 
 require "../dboard/dtopic"
-require "../dboard/gdroot"
+require "../dboard/thread"
 
 class CV::Memoir
   enum Type : Int16

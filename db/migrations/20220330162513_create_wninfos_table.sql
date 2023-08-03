@@ -2,13 +2,16 @@
 CREATE TABLE wninfos(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
-  author_id int NOT NULL REFERENCES authors(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  btitle_id int NOT NULL REFERENCES btitles(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  --
   ysbook_id int NOT NULL DEFAULT 0,
   subdue_id int NOT NULL DEFAULT 0,
-  -- title
-  vname varchar NOT NULL DEFAULT '',
+  --
+  author_zh varchar NOT NULL DEFAULT '',
+  author_vi varchar NOT NULL DEFAULT '',
+  --
+  btitle_zh varchar NOT NULL DEFAULT '',
+  btitle_vi varchar NOT NULL DEFAULT '',
+  btitle_hv varchar NOT NULL DEFAULT '',
+  --
   bslug varchar UNIQUE NOT NULL,
   -- extra
   igenres int[] NOT NULL DEFAULT '{}',
@@ -49,32 +52,26 @@ CREATE TABLE wninfos(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX nvinfo_unique_idx ON wninfos(btitle_id, author_id);
+CREATE INDEX wninfo_yousuu_idx ON wninfos(ysbook_id);
 
-CREATE INDEX nvinfo_author_idx ON wninfos(author_id);
-
-CREATE INDEX nvinfo_yousuu_idx ON wninfos(ysbook_id);
+CREATE UNIQUE INDEX wninfo_unique_idx ON wninfos(author_zh, btitle_zh);
 
 ----
-CREATE INDEX nvinfo_zseed_idx ON wninfos USING GIN(zseeds gin__int_ops);
+CREATE INDEX wninfo_genre_idx ON wninfos USING GIN(igenres gin__int_ops);
 
-CREATE INDEX nvinfo_genre_idx ON wninfos USING GIN(igenres gin__int_ops);
-
-CREATE INDEX nvinfo_label_idx ON wninfos USING GIN(vlabels);
+CREATE INDEX wninfo_label_idx ON wninfos USING GIN(vlabels);
 
 ---
-CREATE INDEX nvinfo_atime_idx ON wninfos(atime);
+CREATE INDEX wninfo_atime_idx ON wninfos(atime);
 
-CREATE INDEX nvinfo_utime_idx ON wninfos(utime);
-
-CREATE INDEX nvinfo_bump_idx ON wninfos(board_bump);
+CREATE INDEX wninfo_utime_idx ON wninfos(utime);
 
 ---
-CREATE INDEX nvinfo_weight_idx ON wninfos(weight);
+CREATE INDEX wninfo_weight_idx ON wninfos(weight);
 
-CREATE INDEX nvinfo_voters_idx ON wninfos(voters);
+CREATE INDEX wninfo_voters_idx ON wninfos(voters);
 
-CREATE INDEX nvinfo_rating_idx ON wninfos(rating);
+CREATE INDEX wninfo_rating_idx ON wninfos(rating);
 
 -- +micrate Down
 DROP TABLE IF EXISTS wninfos;

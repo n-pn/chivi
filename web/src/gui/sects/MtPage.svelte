@@ -147,7 +147,8 @@
         id="L{index}"
         class="cv-line"
         class:focus={index == l_focus}
-        on:mouseenter={() => (l_hover = index)}>
+        on:mouseenter={() => (l_hover = index)}
+        role="tooltip">
         {#if $config.showzh}
           <Zhline ztext={input} plain={!view_mtl} />
         {/if}

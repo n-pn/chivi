@@ -91,14 +91,14 @@ class CV::WninfoCtrl < CV::BaseCtrl
     nvinfo = get_wnovel(wn_id)
 
     render json: {
-      ztitle: nvinfo.btitle_zh,
-      vtitle: nvinfo.btitle_vi,
+      btitle_zh: nvinfo.btitle_zh,
+      btitle_vi: nvinfo.btitle_vi,
 
-      zauthor: nvinfo.author_zh,
-      vauthor: nvinfo.author_vi,
+      author_zh: nvinfo.author_zh,
+      author_vi: nvinfo.author_vi,
 
-      zintro: nvinfo.zintro,
-      vintro: nvinfo.bintro,
+      intro_zh: nvinfo.zintro,
+      intro_vi: nvinfo.bintro,
 
       genres: nvinfo.vgenres,
       bcover: nvinfo.scover,

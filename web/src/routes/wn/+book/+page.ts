@@ -2,15 +2,15 @@ import { nav_link } from '$utils/header_util'
 import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
-const empty_form: CV.WnForm = {
-  ztitle: '',
-  vtitle: '',
+const empty_form: CV.Wnform = {
+  btitle_zh: '',
+  btitle_vi: '',
 
-  zauthor: '',
-  vauthor: '',
+  author_zh: '',
+  author_vi: '',
 
-  zintro: '',
-  vintro: '',
+  intro_zh: '',
+  intro_vi: '',
 
   genres: [],
 
@@ -33,7 +33,7 @@ export const load = (async ({ url: { searchParams }, fetch }) => {
 
   if (id) {
     const href = `/_db/books/${id}/edit_form`
-    form = await api_get<CV.WnForm>(href, fetch)
+    form = await api_get<CV.Wnform>(href, fetch)
 
     const right_nav = nav_link(`/wn/${id}-`, 'Về bộ truyện', 'arrow-back-up', {
       show: 'tm',

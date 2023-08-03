@@ -6,7 +6,6 @@
   const _user = get_user()
 
   import { api_call } from '$lib/api_call'
-
   import { book_status } from '$utils/nvinfo_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -14,7 +13,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  let form = { ...data.form }
+  let form = data.form
 
   let errors: string
 
@@ -24,7 +23,7 @@
     evt.preventDefault()
 
     for (const key in form) {
-      if (key == 'ztitle' || key == 'zauthor') continue
+      if (key == 'btitle_zh' || key == 'author_zh') continue
       const val = form[key]
       if (val == data.form[key]) delete form[key]
     }
@@ -50,19 +49,19 @@
 
   const tl_btitle = async (value: string) => {
     const href = `/_m1/qtran/tl_btitle?btitle=${value}&wn_id=${data.id}`
-    form.vtitle = await fetch_text(href)
-    console.log(form.vtitle)
+    form.btitle_vi = await fetch_text(href)
+    console.log(form.btitle_vi)
   }
 
   const tl_author = async (value: string) => {
     const href = `/_m1/qtran/tl_author?author=${value}&wn_id=${data.id}`
-    form.vauthor = await fetch_text(href)
+    form.author_vi = await fetch_text(href)
   }
 
   const tl_bintro = async (body: string) => {
     const href = `/_m1/qtran?wn_id=${data.id}&format=txt`
     const headers = { 'Content-Type': 'text/plain' }
-    form.vintro = await fetch_text(href, { method: 'POST', body, headers })
+    form.intro_vi = await fetch_text(href, { method: 'POST', body, headers })
   }
 
   const fetch_text = async (href: string, init?: RequestInit) => {
@@ -79,74 +78,75 @@
   <form {action} method="POST" on:submit={submit}>
     <form-group>
       <form-field>
-        <label class="form-label" for="ztitle">Tên truyện tiếng Trung</label>
+        <label class="form-label" for="btitle_zh">Tên truyện tiếng Trung</label>
         <input
           type="text"
           class="m-input"
-          name="ztitle"
+          name="btitle_zh"
           placeholder="Tựa bộ truyện"
           disabled={data.id != 0}
-          on:change={() => tl_btitle(form.ztitle)}
+          on:change={() => tl_btitle(form.btitle_zh)}
           required
-          bind:value={form.ztitle} />
+          bind:value={form.btitle_zh} />
       </form-field>
 
       <form-field>
-        <label class="form-label" for="vtitle">Tên truyện tiếng Việt</label>
+        <label class="form-label" for="btitle_vi">Tên truyện tiếng Việt</label>
         <input
           type="text"
           class="m-input"
-          name="vtitle"
+          name="btitle_vi"
           placeholder="Để trắng để hệ thống tự gợi ý"
-          bind:value={form.vtitle} />
+          bind:value={form.btitle_vi} />
       </form-field>
     </form-group>
 
     <form-group>
       <form-field>
-        <label class="form-label" for="zauthor">Tên tác giả tiếng Trung</label>
+        <label class="form-label" for="author_zh"
+          >Tên tác giả tiếng Trung</label>
         <input
           type="text"
           class="m-input"
-          name="zauthor"
+          name="author_zh"
           placeholder="Tên tác giả bộ truyện"
           required
           disabled={data.id != 0}
-          on:change={() => tl_author(form.zauthor)}
-          bind:value={form.zauthor} />
+          on:change={() => tl_author(form.author_zh)}
+          bind:value={form.author_zh} />
       </form-field>
 
       <form-field>
-        <label class="form-label" for="vauthor">Tên tác giả tiếng Việt</label>
+        <label class="form-label" for="author_vi">Tên tác giả tiếng Việt</label>
         <input
           type="text"
           class="m-input"
-          name="vauthor"
+          name="author_vi"
           placeholder="Để trắng để hệ thống tự gợi ý"
-          bind:value={form.vauthor} />
+          bind:value={form.author_vi} />
       </form-field>
     </form-group>
 
     <form-group>
       <form-field>
-        <label class="form-label" for="zintro">Giới thiệu tiếng Trung</label>
+        <label class="form-label" for="intro_zh">Giới thiệu tiếng Trung</label>
         <textarea
           class="m-input"
-          name="zintro"
+          name="intro_zh"
           rows="8"
           placeholder="Giới thiệu vắn tắt nội dung"
-          on:change={() => tl_bintro(form.zintro)}
-          bind:value={form.zintro} />
+          on:change={() => tl_bintro(form.intro_zh)}
+          bind:value={form.intro_zh} />
       </form-field>
 
       <form-field>
-        <label class="form-label" for="vintro">Giới thiệu tiếng Việt</label>
+        <label class="form-label" for="intro_vi">Giới thiệu tiếng Việt</label>
         <textarea
           class="m-input"
-          name="vintro"
+          name="intro_vi"
           rows="8"
           placeholder="Để trắng để hệ thống tự gợi ý"
-          bind:value={form.vintro} />
+          bind:value={form.intro_vi} />
       </form-field>
     </form-group>
 

@@ -4,7 +4,7 @@ require "../_base"
 require "../member/viuser"
 require "../wnovel/wninfo"
 
-require "./gdroot"
+require "./thread"
 require "./dtopic"
 
 class CV::Gdrepl

@@ -15,14 +15,14 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let nvinfo: Partial<CV.Wninfo>
-  export let wnform: CV.WnForm
+  export let wnform: CV.Wnform
 
   let errors: string
 
   async function submit(evt: Event) {
     evt.preventDefault()
     for (const key in wnform) {
-      if (key == 'ztitle' || key == 'zauthor') continue
+      if (key == 'btitle_zh' || key == 'author_zh') continue
       const val = wnform[key]
       if (val == nvinfo[key]) delete wnform[key]
     }
@@ -48,19 +48,19 @@
 
   const tl_btitle = async (value: string) => {
     const href = `/_m1/qtran/tl_btitle?btitle=${value}&wn_id=${nvinfo.id}`
-    wnform.vtitle = await fetch_text(href)
-    console.log(wnform.vtitle)
+    wnform.btitle_vi = await fetch_text(href)
+    console.log(wnform.btitle_vi)
   }
 
   const tl_author = async (value: string) => {
     const href = `/_m1/qtran/tl_author?author=${value}&wn_id=${nvinfo.id}`
-    wnform.vauthor = await fetch_text(href)
+    wnform.author_vi = await fetch_text(href)
   }
 
   const tl_bintro = async (body: string) => {
     const href = `/_m1/qtran?wn_id=${nvinfo.id}&format=txt`
     const headers = { 'Content-Type': 'text/plain' }
-    wnform.vintro = await fetch_text(href, { method: 'POST', body, headers })
+    wnform.intro_vi = await fetch_text(href, { method: 'POST', body, headers })
   }
 
   const fetch_text = async (href: string, init?: RequestInit) => {
@@ -77,74 +77,75 @@
   <form action="/_db/books" method="POST" on:submit={submit}>
     <form-group>
       <form-field>
-        <label class="form-label" for="ztitle">Tên truyện tiếng Trung</label>
+        <label class="form-label" for="btitle_zh">Tên truyện tiếng Trung</label>
         <input
           type="text"
           class="m-input"
-          name="ztitle"
+          name="btitle_zh"
           placeholder="Tựa bộ truyện"
           disabled={nvinfo.id != 0}
-          on:change={() => tl_btitle(wnform.ztitle)}
+          on:change={() => tl_btitle(wnform.btitle_zh)}
           required
-          bind:value={wnform.ztitle} />
+          bind:value={wnform.btitle_zh} />
       </form-field>
 
       <form-field>
-        <label class="form-label" for="vtitle">Tên truyện tiếng Việt</label>
+        <label class="form-label" for="btitle_vi">Tên truyện tiếng Việt</label>
         <input
           type="text"
           class="m-input"
-          name="vtitle"
+          name="btitle_vi"
           placeholder="Để trắng để hệ thống tự gợi ý"
-          bind:value={wnform.vtitle} />
+          bind:value={wnform.btitle_vi} />
       </form-field>
     </form-group>
 
     <form-group>
       <form-field>
-        <label class="form-label" for="zauthor">Tên tác giả tiếng Trung</label>
+        <label class="form-label" for="author_zh"
+          >Tên tác giả tiếng Trung</label>
         <input
           type="text"
           class="m-input"
-          name="zauthor"
+          name="author_zh"
           placeholder="Tên tác giả bộ truyện"
           required
           disabled={nvinfo.id != 0}
-          on:change={() => tl_author(wnform.zauthor)}
-          bind:value={wnform.zauthor} />
+          on:change={() => tl_author(wnform.author_zh)}
+          bind:value={wnform.author_zh} />
       </form-field>
 
       <form-field>
-        <label class="form-label" for="vauthor">Tên tác giả tiếng Việt</label>
+        <label class="form-label" for="author_vi">Tên tác giả tiếng Việt</label>
         <input
           type="text"
           class="m-input"
-          name="vauthor"
+          name="author_vi"
           placeholder="Để trắng để hệ thống tự gợi ý"
-          bind:value={wnform.vauthor} />
+          bind:value={wnform.author_vi} />
       </form-field>
     </form-group>
 
     <form-group>
       <form-field>
-        <label class="form-label" for="zintro">Giới thiệu tiếng Trung</label>
+        <label class="form-label" for="intro_zh">Giới thiệu tiếng Trung</label>
         <textarea
           class="m-input"
-          name="zintro"
+          name="intro_zh"
           rows="8"
           placeholder="Giới thiệu vắn tắt nội dung"
-          on:change={() => tl_bintro(wnform.zintro)}
-          bind:value={wnform.zintro} />
+          on:change={() => tl_bintro(wnform.intro_zh)}
+          bind:value={wnform.intro_zh} />
       </form-field>
 
       <form-field>
-        <label class="form-label" for="vintro">Giới thiệu tiếng Việt</label>
+        <label class="form-label" for="intro_vi">Giới thiệu tiếng Việt</label>
         <textarea
           class="m-input"
-          name="vintro"
+          name="intro_vi"
           rows="8"
           placeholder="Để trắng để hệ thống tự gợi ý"
-          bind:value={wnform.vintro} />
+          bind:value={wnform.intro_vi} />
       </form-field>
     </form-group>
 

@@ -53,15 +53,15 @@ declare namespace CV {
     mftime: number
   }
 
-  interface WnForm {
-    ztitle: string
-    vtitle: string
+  interface Wnform {
+    btitle_zh: string
+    btitle_vi: string
 
-    zauthor: string
-    vauthor: string
+    author_zh: string
+    author_vi: string
 
-    zintro: string
-    vintro: string
+    intro_zh: string
+    intro_vi: string
 
     genres: string[]
     bcover: string
