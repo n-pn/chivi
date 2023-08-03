@@ -35,7 +35,7 @@ struct WN::ChLineEdit
   include Crorm::Model
   schema "line_edits", :sqlite
 
-  field id : Int32, pkey: true
+  # field id : Int32, pkey: true, auto: true, skip: true
 
   field sname : String = ""
   field s_bid : Int32 = 0

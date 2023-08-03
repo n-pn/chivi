@@ -8,7 +8,7 @@ class CV::GdrootCtrl < CV::BaseCtrl
     gdroot = Gdroot.load!(ruid)
 
     pg_no, limit, offset = _paginate(min: 50, max: 9999)
-    repls = GdreplCard.by_thread(gdroot.id, _vu_id, limit, offset)
+    repls = GdreplCard.by_thread(gdroot.id!, _vu_id, limit, offset)
 
     render json: {
       gdroot: GdrootView.new(gdroot),

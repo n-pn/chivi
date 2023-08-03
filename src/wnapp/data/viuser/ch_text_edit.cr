@@ -31,7 +31,7 @@ struct WN::ChTextEdit
   include Crorm::Model
   schema "text_edits", :sqlite
 
-  field id : Int32, pkey: true, auto: true
+  # field id : Int32, pkey: true, auto: true, skip: true
 
   field sname : String = ""
   field s_bid : Int32 = 0

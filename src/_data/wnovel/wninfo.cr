@@ -97,7 +97,7 @@ class CV::Wninfo
     if input =~ /\p{Han}/
       where("btitle_zh %> ?", input)
     else
-      where("_btitle_ts_ like ('%' || scrub_name(?)) || '%')", input)
+      where("_btitle_ts_ like '%' || scrub_name(?) || '%'", input)
     end
   end
 
@@ -105,7 +105,7 @@ class CV::Wninfo
     if input =~ /\p{Han}/
       where("author_zh %> ?", input)
     else
-      where("_author_ts_ like ('%' || scrub_name(?)) || '%')", input)
+      where("_author_ts_ like '%' || scrub_name(?) || '%'", input)
     end
   end
 

@@ -62,9 +62,8 @@ class CV::Gdroot
   include Crorm::Model
   schema "gdroots", :postgres, false
 
-  field id : Int32 = 0, auto: true
-
-  field kind : Int16 = 0_i16, pkey: true
+  field id : Int32, auto: true, skip: true
+  field kind : Int16 = 0, pkey: true
   field ukey : String = "", pkey: true
 
   field viuser_id : Int32 = 1
@@ -101,9 +100,6 @@ class CV::Gdroot
 
   field deleted_at : Time? = nil
   field deleted_by : Int32? = nil
-
-  def initialize(@id, @ukey)
-  end
 
   def initialize(kind : Kind, @ukey)
     @kind = kind.value
